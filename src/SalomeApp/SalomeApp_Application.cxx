@@ -389,7 +389,7 @@ void SalomeApp_Application::onDeleteInvalidReferences()
 {
   SALOME_ListIO aList;
   LightApp_SelectionMgr* mgr = selectionMgr();
-  mgr->selectedObjects(aList);
+  mgr->selectedObjects( aList, QString::null, false );
 
   if( aList.IsEmpty() )
     return;
@@ -402,8 +402,11 @@ void SalomeApp_Application::onDeleteInvalidReferences()
   for( SALOME_ListIteratorOfListIO it( aList ); it.More(); it.Next() )
     if ( it.Value()->hasEntry() )
     {
-      _PTR(SObject) aSObject = aStudyDS->FindObjectID( it.Value()->getEntry() );
-       if( aSObject && aSObject->ReferencedObject( anObj ) && QString( anObj->GetName().c_str() ).isEmpty() )
+      _PTR(SObject) aSObject = aStudyDS->FindObjectID( it.Value()->getEntry() ), aRefObj = aSObject;
+      while( aRefObj && aRefObj->ReferencedObject( anObj ) )
+	aRefObj = anObj;
+
+      if( aRefObj && aRefObj!=aSObject && QString( aRefObj->GetName().c_str() ).isEmpty() )
 	 aStudyBuilder->RemoveReference( aSObject );
     }
   updateObjectBrowser();
@@ -699,7 +702,7 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QPopupMenu* t
   // Get selected objects
   SALOME_ListIO aList;
   LightApp_SelectionMgr* mgr = selectionMgr();
-  mgr->selectedObjects(aList);
+  mgr->selectedObjects( aList, QString::null, false );
 
   // "Delete reference" item should appear only for invalid references
 
@@ -712,18 +715,24 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QPopupMenu* t
   for( SALOME_ListIteratorOfListIO it( aList ); it.More() && !isInvalidRefs; it.Next() )
     if( it.Value()->hasEntry() )
     {
-      _PTR(SObject) aSObject = aStudyDS->FindObjectID( it.Value()->getEntry() );
-      if( aSObject && aSObject->ReferencedObject( anObj ) && QString( anObj->GetName().c_str() ).isEmpty() )
+      _PTR(SObject) aSObject = aStudyDS->FindObjectID( it.Value()->getEntry() ), aRefObj = aSObject;
+      while( aRefObj && aRefObj->ReferencedObject( anObj ) )
+	aRefObj = anObj;
+
+      if( aRefObj && aRefObj!=aSObject && QString( aRefObj->GetName().c_str() ).isEmpty() )
 	isInvalidRefs = true;
     }
 
-  // Add "Delete refrence" item to popup
+  // Add "Delete reference" item to popup
   if ( isInvalidRefs )
   {
     thePopup->insertSeparator();
-    thePopup->insertItem( tr( "MEN_DELETE_REFERENCE" ), this, SLOT( onDeleteInvalidReferences() ) );
+    thePopup->insertItem( tr( "MEN_DELETE_INVALID_REFERENCE" ), this, SLOT( onDeleteInvalidReferences() ) );
     return;
   }
+
+  aList.Clear();
+  mgr->selectedObjects( aList );
 
   // "Activate module" item should appear only if it's necessary
   if (aList.Extent() != 1)

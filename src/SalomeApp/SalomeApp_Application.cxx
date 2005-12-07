@@ -385,29 +385,27 @@ void SalomeApp_Application::onSelectionChanged()
 }
 
 /*!Delete references.*/
-void SalomeApp_Application::onDeleteReferences()
+void SalomeApp_Application::onDeleteInvalidReferences()
 {
   SALOME_ListIO aList;
   LightApp_SelectionMgr* mgr = selectionMgr();
   mgr->selectedObjects(aList);
 
-  if (aList.Extent() < 1) return;
+  if( aList.IsEmpty() )
+    return;
 
   SalomeApp_Study* aStudy = dynamic_cast<SalomeApp_Study*>(activeStudy());
   _PTR(Study) aStudyDS = aStudy->studyDS();
   _PTR(StudyBuilder) aStudyBuilder = aStudyDS->NewBuilder();
   _PTR(SObject) anObj;
 
-  for ( SALOME_ListIteratorOfListIO it( aList ); it.More(); it.Next() )
+  for( SALOME_ListIteratorOfListIO it( aList ); it.More(); it.Next() )
+    if ( it.Value()->hasEntry() )
     {
-      if ( it.Value()->hasEntry() )
-	{
-	  _PTR(SObject) aSObject = aStudyDS->FindObjectID( it.Value()->getEntry() );
-	  if ( aSObject->ReferencedObject(anObj) )
-	    aStudyBuilder->RemoveReference(aSObject);
-	}
+      _PTR(SObject) aSObject = aStudyDS->FindObjectID( it.Value()->getEntry() );
+       if( aSObject && aSObject->ReferencedObject( anObj ) && QString( anObj->GetName().c_str() ).isEmpty() )
+	 aStudyBuilder->RemoveReference( aSObject );
     }
-
   updateObjectBrowser();
 }
 
@@ -705,38 +703,27 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QPopupMenu* t
 
   // "Delete reference" item should appear only for invalid references
 
-  // Check if selected objects is invalid references
-  bool isInvalidRefs = true;
+  // isInvalidRefs will be true, if at least one of selected objects is invalid reference
+  bool isInvalidRefs = false;
+  SalomeApp_Study* aStudy = dynamic_cast<SalomeApp_Study*>(activeStudy());
+  _PTR(Study) aStudyDS = aStudy->studyDS();
+  _PTR(SObject) anObj;
 
-  if ( aList.Extent() < 1 )
-    isInvalidRefs = false;
-
-  if ( isInvalidRefs )
+  for( SALOME_ListIteratorOfListIO it( aList ); it.More() && !isInvalidRefs; it.Next() )
+    if( it.Value()->hasEntry() )
     {
-      SalomeApp_Study* aStudy = dynamic_cast<SalomeApp_Study*>(activeStudy());
-      _PTR(Study) aStudyDS = aStudy->studyDS();
-      _PTR(SObject) anObj;
-
-      for ( SALOME_ListIteratorOfListIO it( aList ); it.More() && isInvalidRefs; it.Next() )
-	{
-	  if ( it.Value()->hasEntry() )
-	    {
-	      _PTR(SObject) aSObject = aStudyDS->FindObjectID( it.Value()->getEntry() );
-              SALOMEDS_SObject* aSO = dynamic_cast<SALOMEDS_SObject*>(aSObject.get());
-              if( aSO )
-                if ( aSObject->ReferencedObject(anObj) == false || !QString(anObj->GetName().c_str()).isEmpty() )
-                  isInvalidRefs = false;
-	    }
-	}
+      _PTR(SObject) aSObject = aStudyDS->FindObjectID( it.Value()->getEntry() );
+      if( aSObject && aSObject->ReferencedObject( anObj ) && QString( anObj->GetName().c_str() ).isEmpty() )
+	isInvalidRefs = true;
     }
 
   // Add "Delete refrence" item to popup
   if ( isInvalidRefs )
-    {
-      thePopup->insertSeparator();
-      thePopup->insertItem( tr( "MEN_DELETE_REFERENCE" ), this, SLOT( onDeleteReferences() ) );
-      return;
-    }
+  {
+    thePopup->insertSeparator();
+    thePopup->insertItem( tr( "MEN_DELETE_REFERENCE" ), this, SLOT( onDeleteInvalidReferences() ) );
+    return;
+  }
 
   // "Activate module" item should appear only if it's necessary
   if (aList.Extent() != 1)
@@ -748,7 +735,6 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QPopupMenu* t
   if (currentModule && currentModule->moduleName() == aModuleTitle)
     return;
   thePopup->insertItem( tr( "MEN_OPENWITH" ), this, SLOT( onOpenWith() ) );
-
 }
 
 /*!Update obect browser:
@@ -782,7 +768,7 @@ void SalomeApp_Application::updateObjectBrowser( const bool updateModels )
   if ( objectBrowser() )
   {
     objectBrowser()->updateGeometry();
-    objectBrowser()->updateTree();
+    objectBrowser()->updateTree( 0, false );
   }
 }
 

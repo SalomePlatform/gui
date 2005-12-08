@@ -372,7 +372,7 @@ void SalomeApp_Application::onSelectionChanged()
       if( so ) {
         SALOMEDS_SObject* aSO = dynamic_cast<SALOMEDS_SObject*>(so.get());
         if( aSO && studyMgr()->CanPaste(so) ) qaction->setEnabled(true);
-        qaction->setEnabled(false);
+        else qaction->setEnabled(false);
       }
       else qaction->setEnabled(false);
    }

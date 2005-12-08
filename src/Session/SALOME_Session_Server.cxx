@@ -413,8 +413,9 @@ int main( int argc, char **argv )
       SUIT_Application* aGUIApp = aGUISession->startApplication( "SalomeApp", 0, 0 );
       if ( aGUIApp )
       {
-	_qappl.setHandler( aGUISession->handler() ); // after loading SalomeApp application
-	                                             // aGUISession contains SalomeApp_ExceptionHandler
+	if ( !isFound( "noexcepthandler", argc, argv ) )
+	  _qappl.setHandler( aGUISession->handler() ); // after loading SalomeApp application
+	                                               // aGUISession contains SalomeApp_ExceptionHandler
 	// Run GUI loop
 	MESSAGE( "run(): starting the main event loop" );
 	result = _qappl.exec();

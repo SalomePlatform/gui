@@ -1250,7 +1250,11 @@ void LightApp_Application::onPreferences()
   if ( !prefDlg )
     return;
 
-  prefDlg->exec();
+  if ( ( prefDlg->exec() == QDialog::Accepted || prefDlg->isSaved() ) &&  resourceMgr() ) {
+    if ( desktop() )
+      desktop()->saveGeometry( resourceMgr(), "desktop" );
+    resourceMgr()->save();
+  }
 
   delete prefDlg;
 }

@@ -41,6 +41,7 @@
 
 #include <LogWindow.h>
 #include <OB_Browser.h>
+#include <OB_ListView.h>
 #include <PythonConsole_PyConsole.h>
 
 #include <GLViewer_Viewer.h>
@@ -76,9 +77,6 @@
 #include <qobjectlist.h>
 #include <qcombobox.h>
 #include <qinputdialog.h>
-
-#define OBJECT_BROWSER_WIDTH 300
-#define OBJECT_COLUMN_WIDTH 150
 
 #ifdef WIN32
 #define DEFAULT_BROWSER "start iexplore.exe"
@@ -888,6 +886,8 @@ void LightApp_Application::addWindow( QWidget* wid, const int flag, const int st
     myWindows[flag]->setResizeEnabled( true );
     myWindows[flag]->setCloseMode( QDockWindow::Always );
     myWindows[flag]->setName( QString( "dock_window_%1" ).arg( flag ) );
+    myWindows[flag]->setFixedExtentWidth( wid->width() );
+    myWindows[flag]->setFixedExtentHeight( wid->height() );
   }
 
   QFont f;
@@ -1317,10 +1317,12 @@ QWidget* LightApp_Application::createWindow( const int flag )
     ob->setAutoUpdate( true );
     ob->setAutoOpenLevel( 1 );
     ob->setCaption( tr( "OBJECT_BROWSER" ) );
-    ob->listView()->setColumnWidth( 0, OBJECT_COLUMN_WIDTH );
-    ob->resize( OBJECT_BROWSER_WIDTH, ob->height() );
-    ob->setFilter( new LightApp_OBFilter( selectionMgr() ) );
 
+    OB_ListView* ob_list = dynamic_cast<OB_ListView*>( const_cast<QListView*>( ob->listView() ) );
+    if( ob_list )
+      ob_list->setColumnMaxWidth( 0, desktop()->width()/4 );
+
+    ob->setFilter( new LightApp_OBFilter( selectionMgr() ) );
     ob->setNameTitle( tr( "OBJ_BROWSER_NAME" ) );
 
     // Create OBSelector
@@ -1584,6 +1586,13 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 		       LightApp_Preferences::Color, "SUPERVGraph", "Title" );
 //  pref->addPreference( tr( "PREF_SUPERV_CTRL_COLOR" ), supervGroup,
 //		       LightApp_Preferences::Color, "SUPERVGraph", "Ctrl" );
+
+  int obTab = pref->addPreference( tr( "PREF_TAB_OBJBROWSER" ), salomeCat );
+  int objSetGroup = pref->addPreference( tr( "PREF_OBJ_BROWSER_SETTINGS" ), obTab );
+  pref->addPreference( tr( "PREF_AUTO_SIZE_FIRST" ), objSetGroup, LightApp_Preferences::Bool,
+		       "ObjectBrowser", "auto_size_first" );
+  pref->addPreference( tr( "PREF_AUTO_SIZE" ), objSetGroup, LightApp_Preferences::Bool,
+		       "ObjectBrowser", "auto_size" );
 }
 
 /*!Changed preferences */
@@ -1646,15 +1655,16 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 
   if( sec=="ObjectBrowser" )
   {
-    if( param=="auto_size" )
+    if( param=="auto_size" || param=="auto_size_first" )
     {
       OB_Browser* ob = objectBrowser();
       if( !ob )
 	return;
 
-      bool autoSize = resMgr->booleanValue( "ObjectBrowser", "auto_size", false );
+      bool autoSize = resMgr->booleanValue( "ObjectBrowser", "auto_size", false ),
+           autoSizeFirst = resMgr->booleanValue( "ObjectBrowser", "auto_size_first", true );
       ob->setWidthMode( autoSize ? QListView::Maximum : QListView::Manual );
-
+      ob->listView()->setColumnWidthMode( 0, autoSizeFirst ? QListView::Maximum : QListView::Manual );
       updateObjectBrowser( false );
     }
   }

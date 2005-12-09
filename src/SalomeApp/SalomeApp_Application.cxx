@@ -557,7 +557,8 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
   {
     OB_Browser* ob = (OB_Browser*)wid;
     connect( ob->listView(), SIGNAL( doubleClicked( QListViewItem* ) ), this, SLOT( onDblClick( QListViewItem* ) ) );
-    bool autoSize = resMgr->booleanValue( "ObjectBrowser", "auto_size", false );
+    bool autoSize = resMgr->booleanValue( "ObjectBrowser", "auto_size", false ),
+         autoSizeFirst = resMgr->booleanValue( "ObjectBrowser", "auto_size_first", true );
     for ( int i = SalomeApp_DataObject::CT_Value; i <= SalomeApp_DataObject::CT_RefEntry; i++ )
     {
       ob->addColumn( tr( QString().sprintf( "OBJ_BROWSER_COLUMN_%d", i ) ), i );
@@ -565,6 +566,8 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
                                                    QString().sprintf( "visibility_column_%d", i ), true ) );
     }
     ob->setWidthMode( autoSize ? QListView::Maximum : QListView::Manual );
+    ob->listView()->setColumnWidthMode( 0, autoSizeFirst ? QListView::Maximum : QListView::Manual );
+    ob->resize( desktop()->width()/3, ob->height() );
   }
   else if ( flag == WT_PyConsole )
   {
@@ -573,6 +576,7 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
     PythonConsole* pyCons = new PythonConsole( desktop(), new SalomeApp_PyInterp() );
     pyCons->setCaption( tr( "PYTHON_CONSOLE" ) );
     wid = pyCons;
+    pyCons->resize( pyCons->width(), desktop()->height()/4 );
     //    pyCons->connectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
   }
   return wid;
@@ -595,9 +599,6 @@ void SalomeApp_Application::createPreferences( LightApp_Preferences* pref )
                          LightApp_Preferences::Bool, "ObjectBrowser", QString().sprintf( "visibility_column_%d", i ) );
   }
   pref->setItemProperty( defCols, "columns", 1 );
-
-  int objSetGroup = pref->addPreference( tr( "PREF_OBJ_BROWSER_SETTINGS" ), obTab );
-  pref->addPreference( tr( "PREF_AUTO_SIZE" ), objSetGroup, LightApp_Preferences::Bool, "ObjectBrowser", "auto_size" );
 }
 
 /*!Update desktop title.*/

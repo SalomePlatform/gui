@@ -138,6 +138,9 @@ msgstr "Font"
 msgid "LightApp_Application::PREF_TAB_OBJBROWSER"
 msgstr "Object browser"
 
+msgid "LightApp_Application::PREF_OBJ_BROWSER_SETTINGS"
+msgstr "Object browser settings"
+
 msgid "LightApp_Application::PREF_GROUP_DEF_COLUMNS"
 msgstr "Default columns"
 
@@ -229,6 +232,12 @@ msgstr "Title color"
 
 msgid "LightApp_Application::PREF_SUPERV_CTRL_COLOR"
 msgstr "Ctrl color"
+
+msgid "LightApp_Application::PREF_AUTO_SIZE"
+msgstr "Auto size for other columns"
+
+msgid "LightApp_Application::PREF_AUTO_SIZE_FIRST"
+msgstr "Auto size for first column"
 
 //=======================================================================================
 

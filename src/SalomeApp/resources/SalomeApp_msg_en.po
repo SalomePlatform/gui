@@ -99,8 +99,8 @@ msgstr "Object browser"
 msgid "SalomeApp_Application::MEN_OPENWITH"
 msgstr "Activate Module"
 
-msgid "SalomeApp_Application::MEN_DELETE_REFERENCE"
-msgstr "Delete Reference"
+msgid "SalomeApp_Application::MEN_DELETE_INVALID_REFERENCE"
+msgstr "Delete Invalid Reference"
 
 //=======================================================================================
 
@@ -117,9 +117,6 @@ msgstr "Default columns"
 
 msgid "SalomeApp_Application::PREF_OBJ_BROWSER_SETTINGS"
 msgstr "Settings"
-
-msgid "SalomeApp_Application::PREF_AUTO_SIZE"
-msgstr "Auto size columns"
 
 //=======================================================================================
 

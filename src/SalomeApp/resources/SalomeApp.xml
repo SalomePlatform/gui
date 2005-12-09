@@ -89,7 +89,8 @@
   </section>
   <section name="ObjectBrowser" >
     <parameter value="false" name="auto_size" />
-    <parameter value="true" name="visibility_column_0" />
+    <parameter value="true"  name="auto_size_first" />
+    <parameter value="true"  name="visibility_column_0" />
     <parameter value="false" name="visibility_column_1" />
     <parameter value="false" name="visibility_column_2" />
     <parameter value="false" name="visibility_column_3" />

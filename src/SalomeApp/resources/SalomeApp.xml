@@ -53,6 +53,9 @@
     <parameter name="GHS3DPlugin"  value="${GHS3DPLUGIN_ROOT_DIR}/share/salome/resources"/>
     <parameter name="ToolsGUI"     value="${SUITRoot}/resources"/>
   </section>
+  <section name="Study">
+    <parameter name="store_positions" value="true" />
+  </section>
   <section name="GEOM">
     <parameter name="name"       value="Geometry"/>
     <parameter name="icon"       value="ModuleGeom.png"/>

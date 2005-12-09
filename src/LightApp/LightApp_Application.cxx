@@ -1456,6 +1456,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   int undoPref = pref->addPreference( tr( "PREF_UNDO_LEVEL" ), studyGroup, LightApp_Preferences::IntSpin, "Study", "undo_level" );
   pref->setItemProperty( undoPref, "min", 1 );
   pref->setItemProperty( undoPref, "max", 100 );
+  pref->addPreference( tr( "PREF_STORE_POS" ), studyGroup, LightApp_Preferences::Bool, "Study", "store_positions" );
 
   int extgroup = pref->addPreference( tr( "PREF_GROUP_EXT_BROWSER" ), genTab );
   pref->setItemProperty( extgroup, "columns", 1 );
@@ -1669,6 +1670,12 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
     }
   }
 
+  if( sec=="Study" )
+  { 
+    if( param=="store_positions" )
+      updateWindows();
+  }
+
   if( sec=="PyConsole" )
   {
     if( param=="font" )
@@ -1764,6 +1771,10 @@ void LightApp_Application::updateViewManagers()
 /*!Load windows geometry.*/
 void LightApp_Application::loadWindowsGeometry()
 {
+  bool store = resourceMgr()->booleanValue( "Study", "store_positions", true );
+  if( !store )
+    return;
+
   QtxDockAction* dockMgr = 0;
 
   QAction* a = action( ViewWindowsId );
@@ -1788,6 +1799,10 @@ void LightApp_Application::loadWindowsGeometry()
 /*!Save windows geometry.*/
 void LightApp_Application::saveWindowsGeometry()
 {
+  bool store = resourceMgr()->booleanValue( "Study", "store_positions", true );
+  if( !store )
+    return;
+
   QtxDockAction* dockMgr = 0;
 
   QAction* a = action( ViewWindowsId );

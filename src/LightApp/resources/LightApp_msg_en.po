@@ -120,6 +120,9 @@ msgstr "ASCII save"
 msgid "LightApp_Application::PREF_UNDO_LEVEL"
 msgstr "Undo level"
 
+msgid "LightApp_Application::PREF_STORE_POS"
+msgstr "Store positions of windows"
+
 msgid "LightApp_Application::PREF_GROUP_EXT_BROWSER"
 msgstr "External browser"
 

@@ -671,6 +671,7 @@ void Plot2d_ViewFrame::eraseCurve( Plot2d_Curve* curve, bool update )
   if ( curveKey ) {
     myPlot->removeCurve( curveKey );
     myCurves.remove( curveKey );
+    updateTitles();
     if ( update )
       myPlot->replot();
   }

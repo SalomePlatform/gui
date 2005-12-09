@@ -54,7 +54,6 @@ public:
   virtual bool      eventFilter( QObject*, QEvent* );
 
 public slots:
-  virtual void      show();
   virtual void      setAppropriate( QDockWindow*, bool );
 
 protected:
@@ -67,6 +66,7 @@ private:
   int               windowState( const QString& ) const;
   int               windowPosition( const QString& ) const;
   int               relativeCoordinate( const int, const int, const int ) const;
+  void              showWithMode();
 
 private:
   int               myMode;

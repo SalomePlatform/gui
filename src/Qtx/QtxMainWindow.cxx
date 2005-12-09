@@ -226,15 +226,14 @@ void QtxMainWindow::loadGeometry( QtxResourceMgr* resMgr, const QString& section
 
   myMode = winState;
 
-  vis ? show() : hide();
+  vis ? showWithMode() : hide();
 }
 
-void QtxMainWindow::show()
+void QtxMainWindow::showWithMode()
 {
   int mode = myMode;
 
   myMode = -1;
-
   switch ( mode )
   {
   case WS_Normal:
@@ -247,8 +246,6 @@ void QtxMainWindow::show()
     showMaximized();
     break;
   }
-
-  QMainWindow::show();
 }
 
 int QtxMainWindow::relativeCoordinate( const int type, const int WH, const int wh ) const

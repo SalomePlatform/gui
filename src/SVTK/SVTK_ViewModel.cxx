@@ -368,6 +368,9 @@ SVTK_Viewer
   for(int i = 0, iEnd = aViews.size(); i < iEnd; i++){
     if(SUIT_ViewWindow* aViewWindow = aViews.at(i)){
       if(SVTK_ViewWindow* aView = dynamic_cast<SVTK_ViewWindow*>(aViewWindow)){
+
+	aView->unHighlightAll();
+
 	vtkRenderer* aRenderer =  aView->getRenderer();
 	vtkActorCollection* anActorCollection = aRenderer->GetActors();
 	anActorCollection->InitTraversal();

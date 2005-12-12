@@ -892,7 +892,15 @@ void LightApp_Application::addWindow( QWidget* wid, const int flag, const int st
 
   QFont f;
   if( wid->inherits( "PythonConsole" ) )
-    f = ( ( PythonConsole* )wid )->font();
+  {
+    if( resourceMgr()->hasValue( "PyConsole", "font" ) )
+      f = resourceMgr()->fontValue( "PyConsole", "font" );
+    else
+    {
+      f = ( ( PythonConsole* )wid )->font();
+      resourceMgr()->setValue( "PyConsole", "font", f );
+    }
+  }
   else
     f = wid->font();
 

@@ -101,27 +101,27 @@ void SalomeApp_Application::createActions()
   //! Dump study
   createAction( DumpStudyId, tr( "TOT_DESK_FILE_DUMP_STUDY" ), QIconSet(),
 		tr( "MEN_DESK_FILE_DUMP_STUDY" ), tr( "PRP_DESK_FILE_DUMP_STUDY" ),
-		0, desk, false, this, SLOT( onDumpStudy() ) );
+		CTRL+Key_D, desk, false, this, SLOT( onDumpStudy() ) );
     
   //! Load script
   createAction( LoadScriptId, tr( "TOT_DESK_FILE_LOAD_SCRIPT" ), QIconSet(),
 		tr( "MEN_DESK_FILE_LOAD_SCRIPT" ), tr( "PRP_DESK_FILE_LOAD_SCRIPT" ),
-		0, desk, false, this, SLOT( onLoadScript() ) );
+		CTRL+Key_T, desk, false, this, SLOT( onLoadScript() ) );
 
   //! Properties
   createAction( PropertiesId, tr( "TOT_DESK_PROPERTIES" ), QIconSet(),
 	        tr( "MEN_DESK_PROPERTIES" ), tr( "PRP_DESK_PROPERTIES" ),
-	        0, desk, false, this, SLOT( onProperties() ) );
+	        CTRL+Key_P, desk, false, this, SLOT( onProperties() ) );
 
   //! Catalog Generator
   createAction( CatalogGenId, tr( "TOT_DESK_CATALOG_GENERATOR" ),  QIconSet(),
 		tr( "MEN_DESK_CATALOG_GENERATOR" ), tr( "PRP_DESK_CATALOG_GENERATOR" ),
-		0, desk, false, this, SLOT( onCatalogGen() ) );
+		SHIFT+Key_G, desk, false, this, SLOT( onCatalogGen() ) );
 
   //! Registry Display
   createAction( RegDisplayId, tr( "TOT_DESK_REGISTRY_DISPLAY" ),  QIconSet(),
 		tr( "MEN_DESK_REGISTRY_DISPLAY" ), tr( "PRP_DESK_REGISTRY_DISPLAY" ),
-		0, desk, false, this, SLOT( onRegDisplay() ) );
+		SHIFT+Key_D, desk, false, this, SLOT( onRegDisplay() ) );
 
   int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1 );
 

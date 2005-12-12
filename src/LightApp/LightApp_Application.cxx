@@ -336,7 +336,7 @@ void LightApp_Application::createActions()
   //! Preferences
   createAction( PreferencesId, tr( "TOT_DESK_PREFERENCES" ), QIconSet(),
 		tr( "MEN_DESK_PREFERENCES" ), tr( "PRP_DESK_PREFERENCES" ),
-		CTRL+Key_P, desk, false, this, SLOT( onPreferences() ) );
+		CTRL+Key_F, desk, false, this, SLOT( onPreferences() ) );
 
   //! Help for modules
   int helpMenu = createMenu( tr( "MEN_DESK_HELP" ), -1, -1, 1000 );
@@ -483,8 +483,8 @@ void LightApp_Application::createActions()
     createMenu( a, newWinMenu, -1 );
   }
 
-  createAction( RenameId, tr( "TOT_RENAME" ), QIconSet(), tr( "MEN_RENAME" ), tr( "PRP_RENAME" ),
-		0, desk, false, this, SLOT( onRenameWindow() ) );
+  createAction( RenameId, tr( "TOT_RENAME" ), QIconSet(), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ),
+		SHIFT+Key_R, desk, false, this, SLOT( onRenameWindow() ) );
   createMenu( RenameId, windowMenu, -1 );
 
   connect( modGroup, SIGNAL( selected( QAction* ) ), this, SLOT( onModuleActivation( QAction* ) ) );

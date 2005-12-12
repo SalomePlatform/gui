@@ -176,7 +176,7 @@ int OB_ListView::columnMaxWidth( const int col ) const
   int res = -1;
   if( myMaxColWidth.contains( col ) )
     res = myMaxColWidth[col];
-  else if( myMaxColRatio[col] )
+  else if( myMaxColRatio.contains( col ) )
     res = int( myMaxColRatio[col]*height() );
   return res;
 }

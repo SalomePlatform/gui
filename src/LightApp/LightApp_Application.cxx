@@ -1385,7 +1385,8 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
 
   LightApp_Application* that = (LightApp_Application*)this;
 
-  if ( !_prefs_ && crt )
+  bool toCreate = !_prefs_ && crt;
+  if( toCreate )
   {
     _prefs_ = new LightApp_Preferences( resourceMgr() );
     that->createPreferences( _prefs_ );
@@ -1421,7 +1422,8 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
       {
 	int modCat = _prefs_->addPreference( mod->moduleName() );
 	_prefs_->setItemProperty( modCat, "info", QString::null );
-	mod->createPreferences();
+	if( toCreate )
+	  mod->createPreferences();
       }
     }
   }

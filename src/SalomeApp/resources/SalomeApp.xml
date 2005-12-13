@@ -111,6 +111,9 @@
     <parameter value="0, 0, 0" name="background" />
     <parameter value="100" name="trihedron_size" />
  </section>
+ <section name="ExternalBrowser" >
+    <parameter value="/usr/bin/mozilla" name="application" />
+  </section>
  <section name="Plot2d" >
     <parameter value="255, 255, 255" name="Background" />
     <parameter value="1" name="CurveType" />

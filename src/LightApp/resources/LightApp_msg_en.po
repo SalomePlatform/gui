@@ -80,6 +80,12 @@ msgstr "VT&K view"
 msgid "LightApp_Application::INF_CANCELLED"
 msgstr "Module activation cancelled"
 
+msgid "EXTERNAL_BROWSER_CANNOT_SHOW_PAGE"
+msgstr "External browser \"%1\" can not show help page \"%2\""
+
+msgid "LightApp_Application::DEFINE_EXTERNAL_BROWSER"
+msgstr "Define external browser in preferences"
+
 msgid "LightApp_Application::DATA_MODELS"
 msgstr "Data models"
 

@@ -77,12 +77,7 @@
 #include <qobjectlist.h>
 #include <qcombobox.h>
 #include <qinputdialog.h>
-
-#ifdef WIN32
-#define DEFAULT_BROWSER "start iexplore.exe"
-#else
-#define DEFAULT_BROWSER "mozilla"
-#endif
+#include <qmessagebox.h>
 
 #define FIRST_HELP_ID 1000000
 
@@ -778,17 +773,13 @@ public:
 	    postEvent (qApp, ce2000);
 	  }
       }
-
-    if( myStatus != 0 || myApp.isEmpty())
+      if( myStatus != 0)
       {
-	myParams = "";
-	aCommand.sprintf("%s %s %s", QString(DEFAULT_BROWSER).latin1(),myParams.latin1(), myHelpFile.latin1());
-	myStatus = system(aCommand);
-	if(myStatus != 0)
-	  {
-	    QCustomEvent* ce2001 = new QCustomEvent (2001);
-	    postEvent (qApp, ce2001);
-	  }
+        qApp->lock();
+        SUIT_MessageBox::warn1(0, QObject::tr("WRN_WARNING"),
+                               QObject::tr("EXTERNAL_BROWSER_CANNOT_SHOW_PAGE").arg(myApp).arg(myHelpFile),
+                               QObject::tr("BUT_OK"));
+        qApp->unlock();
       }
   }
 
@@ -819,8 +810,15 @@ void LightApp_Application::onHelpContentsModule()
   QString anApp = resMgr->stringValue("ExternalBrowser", "application");
   QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 
-  RunBrowser* rs = new RunBrowser(anApp, aParams, helpFile);
-  rs->start();
+  if (!anApp.isEmpty()) {
+    RunBrowser* rs = new RunBrowser(anApp, aParams, helpFile);
+    rs->start();
+  }
+  else {
+    SUIT_MessageBox::warn1(desktop(), tr("WRN_WARNING"),
+                           tr("DEFINE_EXTERNAL_BROWSER"),
+                           tr("BUT_OK"));
+  }
 }
 
 /*!Sets enable or disable some actions on selection changed.*/
@@ -1475,6 +1473,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   int apppref = pref->addPreference( tr( "PREF_APP" ), extgroup, LightApp_Preferences::File, "ExternalBrowser", "application" );
   pref->setItemProperty( apppref, "existing", true );
   pref->setItemProperty( apppref, "flags", QFileInfo::ExeUser );
+  pref->setItemProperty( apppref, "readOnly", false );
 
   pref->addPreference( tr( "PREF_PARAM" ), extgroup, LightApp_Preferences::String, "ExternalBrowser", "parameters" );
 

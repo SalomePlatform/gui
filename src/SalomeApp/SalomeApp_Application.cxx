@@ -471,10 +471,8 @@ void SalomeApp_Application::updateCommandsStatus()
   if( a )
     a->setEnabled( activeStudy() );
 
-  a = action(EditCopyId);
-  a->setEnabled(false);
-  a = action(EditPasteId);
-  a->setEnabled(false);
+  // update state of Copy/Paste menu items
+  onSelectionChanged();
 }
 
 /*!Private SLOT. On dump study.*/

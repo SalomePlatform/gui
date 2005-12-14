@@ -36,8 +36,6 @@
 #include <qapplication.h>
 #include <qinputdialog.h>
 
-#define ACTIVE_PIXEL_SIZE     15
-#define NOT_ACTIVE_PIXEL_SIZE 12
 #define HIGH_COLOR_LIGHT      200
 #define HIGH_TEXT_COLOR_DARK  300
 
@@ -1775,17 +1773,14 @@ void QtxWorkstackTabBar::setActive( const bool on )
 {
   QFont aFont = font();
   aFont.setUnderline( on );
-  if ( on ) {
+  if ( !on ) {
     QPalette aPal = palette();
-    aFont.setPixelSize(ACTIVE_PIXEL_SIZE);
     aPal.setColor( QColorGroup::Highlight, colorGroup().highlight().light( HIGH_COLOR_LIGHT ) );
     aPal.setColor( QColorGroup::HighlightedText, colorGroup().highlightedText().dark( HIGH_TEXT_COLOR_DARK ) );
     setPalette( aPal );
   }
-  else {
-    aFont.setPixelSize( NOT_ACTIVE_PIXEL_SIZE );
+  else
     unsetPalette();
-  }
   setFont( aFont );
 
   update();
@@ -1860,7 +1855,6 @@ void QtxWorkstackTabBar::paintLabel( QPainter* p, const QRect& br, QTab* t, bool
   {
     QFont fnt = p->font();
     fnt.setUnderline( false );
-    fnt.setPixelSize(NOT_ACTIVE_PIXEL_SIZE);
     p->setFont( fnt );
   }
   QTabBar::paintLabel( p, br, t, has_focus );

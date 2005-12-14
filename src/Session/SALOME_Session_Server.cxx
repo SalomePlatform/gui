@@ -295,7 +295,6 @@ int main( int argc, char **argv )
     {
       INFOS( "salome_shared_modules_module == NULL" );
       PyErr_Print();
-      PyErr_Clear();
     }
     PyEval_ReleaseThread( KERNEL_PYTHON::_gtstate );
 

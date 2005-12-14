@@ -80,7 +80,8 @@ SalomeApp_Application::SalomeApp_Application()
  */
 SalomeApp_Application::~SalomeApp_Application()
 {
-  SalomeApp_EventFilter::Destroy();
+  // Do not destroy. It's a singleton !
+  //SalomeApp_EventFilter::Destroy();
 }
 
 /*!Start application.*/
@@ -549,7 +550,8 @@ QString SalomeApp_Application::getFileFilter() const
 /*!Create window.*/
 QWidget* SalomeApp_Application::createWindow( const int flag )
 {
-  QWidget* wid = LightApp_Application::createWindow(flag);
+  QWidget* wid = 0;
+  if ( flag != WT_PyConsole ) wid = LightApp_Application::createWindow(flag);
 
   SUIT_ResourceMgr* resMgr = resourceMgr();
 
@@ -571,13 +573,11 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
   }
   else if ( flag == WT_PyConsole )
   {
-    delete wid;
-    wid = 0;
     PythonConsole* pyCons = new PythonConsole( desktop(), new SalomeApp_PyInterp() );
     pyCons->setCaption( tr( "PYTHON_CONSOLE" ) );
     wid = pyCons;
     pyCons->resize( pyCons->width(), desktop()->height()/4 );
-    //    pyCons->connectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
+    //pyCons->connectPopupRequest(this, SLOT(onConnectPopupRequest(SUIT_PopupClient*, QContextMenuEvent*)));
   }
   return wid;
 }

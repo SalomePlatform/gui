@@ -303,8 +303,8 @@ void Plot2d_ViewFrame::readPreferences()
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
 
   myCurveType = resMgr->integerValue( "Plot2d", "CurveType", myCurveType );
-  if ( myCurveType < 1 || myCurveType > 2 )
-    myCurveType = 1;
+  setCurveType( resMgr->integerValue( "Plot2d", "CurveType", myCurveType ) );
+
   myShowLegend = resMgr->booleanValue( "Plot2d", "ShowLegend", myShowLegend );
   myLegendPos = resMgr->integerValue( "Plot2d", "LegendPos", myLegendPos );
   myMarkerSize = resMgr->integerValue( "Plot2d", "MarkerSize", myMarkerSize );

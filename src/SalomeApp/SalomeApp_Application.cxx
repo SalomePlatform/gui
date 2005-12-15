@@ -348,41 +348,33 @@ void SalomeApp_Application::onSelectionChanged()
    LightApp_SelectionMgr* mgr = selectionMgr();
    mgr->selectedObjects(list);
 
+   bool canCopy  = false;
+   bool canPaste = false;
+
    SalomeApp_Study* study = dynamic_cast<SalomeApp_Study*>(activeStudy());
-   if(study == NULL) return;
+   if (study != NULL) {
+     _PTR(Study) stdDS = study->studyDS();
 
-   _PTR(Study) stdDS = study->studyDS();
-   if(!stdDS) return;
+     if (stdDS) {
+       SALOME_ListIteratorOfListIO it ( list );
 
-   QAction* qaction;
+       if (it.More() && list.Extent() == 1) {
+         _PTR(SObject) so = stdDS->FindObjectID(it.Value()->getEntry());
 
-   SALOME_ListIteratorOfListIO it( list );
-   if(it.More() && list.Extent() == 1)
-   {
-      _PTR(SObject) so = stdDS->FindObjectID(it.Value()->getEntry());
+         if ( so ) {
+           SALOMEDS_SObject* aSO = dynamic_cast<SALOMEDS_SObject*>(so.get());
 
-      qaction = action(EditCopyId);
-      if( so ) {
-        SALOMEDS_SObject* aSO = dynamic_cast<SALOMEDS_SObject*>(so.get());
-        if ( aSO && studyMgr()->CanCopy(so) ) qaction->setEnabled(true);  
-        else qaction->setEnabled(false);
-      }
-      else qaction->setEnabled(false);
-
-      qaction = action(EditPasteId);
-      if( so ) {
-        SALOMEDS_SObject* aSO = dynamic_cast<SALOMEDS_SObject*>(so.get());
-        if( aSO && studyMgr()->CanPaste(so) ) qaction->setEnabled(true);
-        else qaction->setEnabled(false);
-      }
-      else qaction->setEnabled(false);
+           if ( aSO ) {
+             canCopy = studyMgr()->CanCopy(so);
+             canPaste = studyMgr()->CanPaste(so);
+           }
+         }
+       }
+     }
    }
-   else {
-     qaction = action(EditCopyId);
-     qaction->setEnabled(false);
-     qaction = action(EditPasteId);
-     qaction->setEnabled(false);
-   }
+
+   action(EditCopyId)->setEnabled(canCopy);
+   action(EditPasteId)->setEnabled(canPaste);
 }
 
 /*!Delete references.*/

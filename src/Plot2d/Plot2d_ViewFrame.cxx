@@ -127,13 +127,6 @@ const char* imageCrossCursor[] = {
   "................................"};
   
 
-QPixmap zoomPixmap(imageZoomCursor);
-QPixmap globalPanPixmap(imageCrossCursor);
-
-QCursor	panCursor(Qt::SizeAllCursor);
-QCursor	zoomCursor(zoomPixmap);
-QCursor	glPanCursor(globalPanPixmap);
-
 //=================================================================================
 // Plot2d_ViewFrame implementation
 //=================================================================================
@@ -894,8 +887,12 @@ int Plot2d_ViewFrame::testOperation( const QMouseEvent& me )
   switch (btn)
   {
   case zoomBtn:
-    myPlot->canvas()->setCursor( zoomCursor );
-    return ZoomId;
+    {
+      QPixmap zoomPixmap (imageZoomCursor);
+      QCursor zoomCursor (zoomPixmap);
+      myPlot->canvas()->setCursor( zoomCursor );
+      return ZoomId;
+    }
   case panBtn:
     myPlot->canvas()->setCursor( QCursor( Qt::SizeAllCursor ) );
     return PanId;
@@ -1503,6 +1500,7 @@ void Plot2d_ViewFrame::wheelEvent(QWheelEvent* event)
 */
 void Plot2d_ViewFrame::onViewPan()
 { 
+  QCursor panCursor (Qt::SizeAllCursor);
   myPlot->canvas()->setCursor( panCursor );
   myOperation = PanId;
   qApp->installEventFilter( this );
@@ -1512,6 +1510,8 @@ void Plot2d_ViewFrame::onViewPan()
 */
 void Plot2d_ViewFrame::onViewZoom() 
 {
+  QPixmap zoomPixmap (imageZoomCursor);
+  QCursor zoomCursor (zoomPixmap);
   myPlot->canvas()->setCursor( zoomCursor );
   myOperation = ZoomId;
   qApp->installEventFilter( this );
@@ -1537,6 +1537,8 @@ void Plot2d_ViewFrame::onViewFitArea()
 */
 void Plot2d_ViewFrame::onViewGlobalPan() 
 {
+  QPixmap globalPanPixmap (imageCrossCursor);
+  QCursor glPanCursor (globalPanPixmap);
   myPlot->canvas()->setCursor( glPanCursor );
   myPlot->changeAxisOptions( QwtPlot::xBottom, QwtAutoScale::Logarithmic, false );
   myPlot->changeAxisOptions( QwtPlot::yLeft, QwtAutoScale::Logarithmic, false );

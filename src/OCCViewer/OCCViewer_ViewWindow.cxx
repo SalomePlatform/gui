@@ -154,19 +154,6 @@ const char* imageCrossCursor[] = {
   "................................",
   "................................",
   "................................"};
-  
-
-QPixmap zoomPixmap(imageZoomCursor);
-QPixmap rotatePixmap(imageRotateCursor);
-QPixmap globalPanPixmap(imageCrossCursor);
-
-QCursor	defCursor(Qt::ArrowCursor);
-QCursor	handCursor(Qt::PointingHandCursor);
-QCursor	panCursor(Qt::SizeAllCursor);
-QCursor	zoomCursor(zoomPixmap);
-QCursor	rotCursor(rotatePixmap);
-QCursor	glPanCursor(globalPanPixmap);
-
 
 
 //////////////////////////////////////////////////////////////////////
@@ -331,6 +318,8 @@ void OCCViewer_ViewWindow::activateZoom()
     myCursor = cursor();	        /* save old cursor */
   
   if ( myOperation != ZOOMVIEW ) {
+    QPixmap zoomPixmap (imageZoomCursor);
+    QCursor zoomCursor (zoomPixmap);
     setTransformRequested ( ZOOMVIEW );		
     setCursor( zoomCursor );
   }
@@ -347,6 +336,7 @@ void OCCViewer_ViewWindow::activatePanning()
     myCursor = cursor();	        // save old cursor 
   
   if ( myOperation != PANVIEW ) {
+    QCursor panCursor (Qt::SizeAllCursor);
     setTransformRequested ( PANVIEW );
     setCursor( panCursor );
   }
@@ -362,6 +352,8 @@ void OCCViewer_ViewWindow::activateRotation()
     myCursor = cursor();	        // save old cursor 
   
   if ( myOperation != ROTATE ) {
+    QPixmap rotatePixmap (imageRotateCursor);
+    QCursor rotCursor (rotatePixmap);
     setTransformRequested ( ROTATE );
     setCursor( rotCursor );	
   }
@@ -372,6 +364,8 @@ void OCCViewer_ViewWindow::activateGlobalPanning()
 {
   Handle(V3d_View) aView3d = myViewPort->getView();
   if ( !aView3d.IsNull() ) {
+    QPixmap globalPanPixmap (imageCrossCursor);
+    QCursor glPanCursor (globalPanPixmap);
     myCurScale = aView3d->Scale();
     aView3d->FitAll(0.01, false);
     myCursor = cursor();	        // save old cursor 
@@ -391,6 +385,7 @@ void OCCViewer_ViewWindow::activateWindowFit()
     myCursor = cursor();	        /* save old cursor */
 
   if ( myOperation != WINDOWFIT ) {
+    QCursor handCursor (Qt::PointingHandCursor);
     setTransformRequested ( WINDOWFIT );		
     setCursor ( handCursor );
     myCursorIsHand = true;
@@ -447,6 +442,7 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent(QMouseEvent* theEvent)
       if ( myDrawRect ) {
         drawRect();
 	if ( !myCursorIsHand )	{   // we are going to sketch a rectangle
+          QCursor handCursor (Qt::PointingHandCursor);
 	  myCursorIsHand = true;		
 	  myCursor = cursor();
 	  setCursor( handCursor );

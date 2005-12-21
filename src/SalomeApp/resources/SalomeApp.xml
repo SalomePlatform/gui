@@ -19,8 +19,8 @@
     <parameter name="noexcepthandler"  value="no"/>
     <parameter name="modules"    value="GEOM,SMESH,VISU,SUPERV,MED,COMPONENT"/>
     <parameter name="pyModules"  value=""/>
-    <parameter name="embedded"   value="SalomeAppEngine,study"/>
-    <parameter name="standalone" value="pyContainer,cppContainer,registry,moduleCatalog"/>
+    <parameter name="embedded"   value="SalomeAppEngine,study,cppContainer,registry,moduleCatalog"/>
+    <parameter name="standalone" value="pyContainer,supervContainer"/>
   </section>
   <section name="language">
     <parameter name="language"    value="en"/>
@@ -48,7 +48,8 @@
     <parameter name="MED"          value="${MED_ROOT_DIR}/share/salome/resources"/>
     <parameter name="StdMeshers"   value="${SMESH_ROOT_DIR}/share/salome/resources"/>
     <parameter name="COMPONENT"    value="${COMPONENT_ROOT_DIR}/share/salome/resources"/>
-    <parameter name="HELLO"        value="${HELLO1_ROOT_DIR}/share/salome/resources"/>
+    <parameter name="HELLO"        value="${HELLO_ROOT_DIR}/share/salome/resources"/>
+    <parameter name="PYHELLO"      value="${PYHELLO_ROOT_DIR}/share/salome/resources"/>
     <parameter name="NETGENPlugin" value="${NETGENPLUGIN_ROOT_DIR}/share/salome/resources"/>
     <parameter name="GHS3DPlugin"  value="${GHS3DPLUGIN_ROOT_DIR}/share/salome/resources"/>
     <parameter name="ToolsGUI"     value="${SUITRoot}/resources"/>
@@ -86,6 +87,11 @@
   <section name="HELLO">
     <parameter name="name"       value="Hello"/>
     <parameter name="icon"       value="HELLO.png"/>
+  </section>
+  <section name="PYHELLO">
+    <parameter name="name"       value="PyHello"/>
+    <parameter name="icon"       value="PYHELLO.png"/>
+    <parameter name="library"    value="SalomePyQtGUI"/>
   </section>
 
 <!-- values below this line are just an example, they are not used  -->

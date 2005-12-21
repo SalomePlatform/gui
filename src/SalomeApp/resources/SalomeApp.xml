@@ -58,7 +58,7 @@
     <parameter name="font" value="Helvetic,12" />
   </section>
   <section name="Study">
-    <parameter name="store_positions" value="true" />
+    <parameter name="store_positions" value="false" />
   </section>
   <section name="GEOM">
     <parameter name="name"       value="Geometry"/>

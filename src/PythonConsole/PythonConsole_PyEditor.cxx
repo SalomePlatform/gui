@@ -51,7 +51,8 @@ enum { IdCopy, IdPaste, IdClear, IdSelectAll };
 
 static QString READY_PROMPT = ">>> ";
 static QString DOTS_PROMPT  = "... ";
-#define PROMPT_SIZE _currentPrompt.length()
+
+#define PROMPT_SIZE (int)_currentPrompt.length()
 
 class ExecCommand : public PyInterp_LockRequest
 {
@@ -598,9 +599,9 @@ void PythonConsole_PyEditor::keyPressEvent( QKeyEvent* e )
 	if ( ctrlPressed && !hasSelectedText() ) {
 	  QString txt = text( curLine );
 	  int ind = curCol;
-	  while ( ind < txt.length()-1 && txt[ ind ] == ' ' ) ind++;
+	  while ( ind < (int)( txt.length() - 1 ) && txt[ind] == ' ' ) ind++;
 	  ind = txt.find( ' ', ind );
-	  while ( ind < txt.length()-1 && txt[ ind ] == ' ' ) ind++;
+	  while ( ind < (int)( txt.length() - 1 ) && txt[ ind ] == ' ' ) ind++;
 	  if ( ind > PROMPT_SIZE-1 ) {
 	    setSelection( curLine, curCol, curLine, ind );
 	    removeSelectedText();
@@ -708,7 +709,7 @@ QPopupMenu* PythonConsole_PyEditor::createPopupMenu( const QPoint& pos )
   QPopupMenu* popup = QTextEdit::createPopupMenu( pos );
 
   QValueList<int> ids;
-  for ( int i = 0; popup && i < popup->count(); i++ )
+  for ( int i = 0; popup && i < (int)popup->count(); i++ )
   {
     if ( !popup->isItemEnabled( popup->idAt( i ) ) )
       ids.append( popup->idAt( i ) );

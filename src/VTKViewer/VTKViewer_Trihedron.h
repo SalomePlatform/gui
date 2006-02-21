@@ -113,7 +113,7 @@ protected:
 
 //****************************************************************
 /*!This class provide support trihedron object in vtk viewer.*/
-class VTKVIEWER_EXPORT VTKVIEWER_EXPORT VTKViewer_Trihedron : public vtkObject
+class VTKVIEWER_EXPORT VTKViewer_Trihedron : public vtkObject
 {
 protected:
   /*!Initialize fields by default values.*/

@@ -91,7 +91,7 @@ bool QtxAction::addTo( QWidget* w )
 		  successfully and false otherwise.
 */
 
-bool QtxAction::addTo( QWidget* w, int index )
+bool QtxAction::addTo( QWidget* w, const int index )
 {
   if ( !addTo( w ) )
     return false;

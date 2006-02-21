@@ -37,7 +37,7 @@ public:
     virtual ~QtxAction();
 
     virtual bool addTo( QWidget* );
-    virtual bool addTo( QWidget*, int );
+    virtual bool addTo( QWidget*, const int );
 
 protected:
     void         setPopup( QPopupMenu*, const int, QPopupMenu* ) const;

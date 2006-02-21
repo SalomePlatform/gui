@@ -220,7 +220,7 @@ void OCCViewer_Viewer::enableSelection(bool isEnabled)
     return;
 
   QPtrVector<SUIT_ViewWindow> wins = myViewManager->getViews();
-  for ( int i = 0; i < wins.count(); i++ )
+  for ( int i = 0; i < (int)wins.count(); i++ )
   {
     OCCViewer_ViewWindow* win = ::qt_cast<OCCViewer_ViewWindow*>( wins.at( i ) );
     if ( win )
@@ -237,7 +237,7 @@ void OCCViewer_Viewer::enableMultiselection(bool isEnable)
     return;
 
   QPtrVector<SUIT_ViewWindow> wins = myViewManager->getViews();
-  for ( int i = 0; i < wins.count(); i++ )
+  for ( int i = 0; i < (int)wins.count(); i++ )
   {
     OCCViewer_ViewWindow* win = ::qt_cast<OCCViewer_ViewWindow*>( wins.at( i ) );
     if ( win )

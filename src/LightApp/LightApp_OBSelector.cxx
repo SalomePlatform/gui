@@ -24,7 +24,10 @@
 #include <OB_Browser.h>
 
 #include <SUIT_DataObjectIterator.h>
+
 #include <qdatetime.h>
+
+#include <time.h>
 
 /*!
   Constructor

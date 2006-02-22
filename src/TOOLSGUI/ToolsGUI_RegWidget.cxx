@@ -150,23 +150,23 @@ Registry::Components_var MakeRegistry( CORBA::ORB_var &orb )
   // Recuperation de la reference de l'objet
   CORBA::Object_var object = 0 ;
   try
-    {
-      SCRUTE(registryName) ;
-      object = naming.Resolve( registryName ) ;
-      if(CORBA::is_nil(object)) throw CommException( "unable to find the RegistryService" ) ;
-    }
-  catch( const ServiceUnreachable &ex )
-    {
-      MESSAGE( ex.what() )
-      exit( EXIT_FAILURE ) ;
-    }
-  catch( const CORBA::Exception &exx )
-    {
-      exit( EXIT_FAILURE ) ;
-    }
-  
+  {
+    SCRUTE(registryName) ;
+    object = naming.Resolve( registryName ) ;
+    if(CORBA::is_nil(object)) throw CommException( "unable to find the RegistryService" ) ;
+  }
+  catch( const ServiceUnreachable& )
+  {
+    MESSAGE( ex.what() )
+    exit( EXIT_FAILURE ) ;
+  }
+  catch( const CORBA::Exception& )
+  {
+    exit( EXIT_FAILURE ) ;
+  }
+
   // Specialisation de l'objet generique
-  
+
   return Registry::Components::_narrow( object ) ;
 }
 
@@ -782,29 +782,22 @@ QString findFile( QString filename )
   // Try CSF_SaloameResources env.var directory ( or directory list )
   cenv = getenv( "CSF_SalomeResources" );
   if ( cenv ) {
-    dir.sprintf( "%s", cenv );
-    if ( !dir.isEmpty() ) {
-      QStringList dirList = QStringList::split( SEPARATOR, dir, false ); // skip empty entries
-      for ( int i = 0; i < dirList.count(); i++ ) {
-	QFileInfo fileInfo( addSlash( dirList[ i ] ) + filename );
-	if ( fileInfo.isFile() && fileInfo.exists() )
-	  return fileInfo.filePath();
+  dir.sprintf( "%s", cenv );
+  if ( !dir.isEmpty() )
+  {
+    QStringList dirList = QStringList::split( SEPARATOR, dir, false ); // skip empty entries
+    for ( int i = 0; i < (int)dirList.count(); i++ )
+    {
+	    QFileInfo fileInfo( addSlash( dirList[ i ] ) + filename );
+	    if ( fileInfo.isFile() && fileInfo.exists() )
+	      return fileInfo.filePath();
       }
     }
   }
   return filename;
 }
+
 QString addSlash( const QString& path )
 {
   return Qtx::addSlash( path );
-//  if (!path.isNull()) {
-//#ifdef WNT
-//    QChar slash ('\\');
-//#else
-//    QChar slash ('/');
-//#endif
-//    if ( path.at(path.length()-1) != slash )
-//      return path + slash;
-//  }
-//  return path;
 }

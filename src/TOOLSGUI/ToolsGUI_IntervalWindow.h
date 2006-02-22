@@ -22,6 +22,8 @@ using namespace std;
 
 class ToolsGUI_IntervalWindow : public QDialog
 {
+  Q_OBJECT
+
 public:
   ToolsGUI_IntervalWindow( QWidget* parent = 0 );
   ~ToolsGUI_IntervalWindow();

@@ -33,13 +33,14 @@
 #include <qptrlist.h>
 
 #include "utilities.h"
-#include "string.h"
-#include "vector.h"
 
-#include "SALOMEDS_Tool.hxx"
+#include <string>
+#include <vector>
 
 #include <SALOMEconfig.h>
 #include CORBA_SERVER_HEADER(SALOME_Exception)
+
+#include "SALOMEDS_Tool.hxx"
 
 /*!
   Constructor.

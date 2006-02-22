@@ -20,10 +20,10 @@
 #include <SUIT_TreeSync.h>
 #include <SUIT_DataObjectIterator.h>
 
-#include "SALOMEDS_Tool.hxx"
-
 #include <SALOMEconfig.h>
 #include CORBA_SERVER_HEADER(SALOME_Exception)
+
+#include "SALOMEDS_Tool.hxx"
 
 //=======================================================================
 // name    : SalomeApp_DataModelSync
@@ -64,7 +64,7 @@ SalomeApp_DataModelSync::SalomeApp_DataModelSync( _PTR( Study ) aStudy, SUIT_Dat
 bool SalomeApp_DataModelSync::isCorrect( const kerPtr& so ) const
 {
   kerPtr refObj;
-  QString name = so->GetName();
+  QString name( so->GetName().c_str() );
   bool res = so && ( so->GetName().size() || so->ReferencedObject( refObj ) );
   return res;
 }
@@ -116,7 +116,7 @@ void SalomeApp_DataModelSync::deleteItemWithChildren( const suitPtr& p ) const
 bool SalomeApp_DataModelSync::isEqual( const kerPtr& p, const suitPtr& q ) const
 {
   LightApp_DataObject* obj = dynamic_cast<LightApp_DataObject*>( q );
-  return ( !p && !q ) || ( obj && isCorrect( p ) && p->GetID()==obj->entry() );
+  return ( !p && !q ) || ( obj && isCorrect( p ) && QString( p->GetID().c_str() ) == obj->entry() );
 }
 
 kerPtr SalomeApp_DataModelSync::nullSrc() const

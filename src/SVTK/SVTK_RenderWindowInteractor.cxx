@@ -80,33 +80,29 @@ QVTK_RenderWindowInteractor
 }
 
 
-void 
-QVTK_RenderWindowInteractor
-::Initialize(vtkGenericRenderWindowInteractor* theDevice)
+void QVTK_RenderWindowInteractor::Initialize( vtkGenericRenderWindowInteractor* theDevice )
 {
-  if(GetDevice())
-    myDevice->SetRenderWindow(NULL);
+  if ( GetDevice() )
+    myDevice->SetRenderWindow( NULL );
 
   myDevice = theDevice;
 
-  if(theDevice)
-    theDevice->SetRenderWindow(getRenderWindow());
+  if ( theDevice )
+    theDevice->SetRenderWindow( getRenderWindow() );
 }
 
 //----------------------------------------------------------------------------
-QVTK_RenderWindowInteractor
-::~QVTK_RenderWindowInteractor() 
+QVTK_RenderWindowInteractor::~QVTK_RenderWindowInteractor() 
 {
-  if(SVTK_SpaceMouse* aSpaceMouse = SVTK_SpaceMouse::getInstance())
-    if(aSpaceMouse->isSpaceMouseOn())
-      aSpaceMouse->close(x11Display());
+#ifndef WIN32
+  SVTK_SpaceMouse* aSpaceMouse = SVTK_SpaceMouse::getInstance();
+  if ( aSpaceMouse && aSpaceMouse->isSpaceMouseOn() )
+    aSpaceMouse->close( x11Display() );
+#endif
 }
 
-
 //----------------------------------------------------------------------------
-vtkGenericRenderWindowInteractor* 
-QVTK_RenderWindowInteractor
-::GetDevice()
+vtkGenericRenderWindowInteractor* QVTK_RenderWindowInteractor::GetDevice()
 {
   return myDevice.GetPointer();
 }
@@ -318,56 +314,69 @@ QVTK_RenderWindowInteractor
 
 
 //----------------------------------------------------------------------------
-void  
-QVTK_RenderWindowInteractor
-::focusInEvent( QFocusEvent* event )
+void QVTK_RenderWindowInteractor::focusInEvent( QFocusEvent* event )
 {
   QWidget::focusInEvent( event );
 
+#ifndef WIN32
   // register set space mouse events receiver
-  if(SVTK_SpaceMouse* aSpaceMouse = SVTK_SpaceMouse::getInstance()){
-    if(!aSpaceMouse->isSpaceMouseOn()) {// initialize 3D space mouse driver 
-      aSpaceMouse->initialize(x11Display(),winId());
-    }else{
-      aSpaceMouse->setWindow(x11Display(),winId());
-    }
+  SVTK_SpaceMouse* aSpaceMouse = SVTK_SpaceMouse::getInstance();
+
+  if ( aSpaceMouse )
+  {
+    if ( !aSpaceMouse->isSpaceMouseOn() )
+      // initialize 3D space mouse driver 
+      aSpaceMouse->initialize( x11Display(), winId() );
+    else
+      aSpaceMouse->setWindow( x11Display(), winId() );
   }
+#endif
 }
 
 //----------------------------------------------------------------------------
-void  
-QVTK_RenderWindowInteractor
-::focusOutEvent ( QFocusEvent* event )
+void QVTK_RenderWindowInteractor::focusOutEvent( QFocusEvent* event )
 {
   QWidget::focusOutEvent( event );
 
+#ifndef WIN32
   // unregister set space mouse events receiver
-  if(SVTK_SpaceMouse* aSpaceMouse = SVTK_SpaceMouse::getInstance()){
-    if(aSpaceMouse->isSpaceMouseOn())
-      aSpaceMouse->setWindow(x11Display(),0);
-  }
+  SVTK_SpaceMouse* aSpaceMouse = SVTK_SpaceMouse::getInstance();
+  if ( aSpaceMouse && aSpaceMouse->isSpaceMouseOn() )
+    aSpaceMouse->setWindow( x11Display(), 0 );
+#endif
 }
 
 
 //----------------------------------------------------------------------------
-bool 
-QVTK_RenderWindowInteractor
-::x11Event( XEvent *xEvent )
+#ifdef WIN32
+
+bool QVTK_RenderWindowInteractor::winEvent( MSG* msg )
+{
+  // TODO: Implement event handling for SpaceMouse
+  return QWidget::winEvent( msg );
+}
+
+#else
+
+bool QVTK_RenderWindowInteractor::x11Event( XEvent *xEvent )
 {
   // handle 3d space mouse events
-  if(SVTK_SpaceMouse* aSpaceMouse = SVTK_SpaceMouse::getInstance()){
-    if(aSpaceMouse->isSpaceMouseOn() && xEvent->type == ClientMessage){
+  if ( SVTK_SpaceMouse* aSpaceMouse = SVTK_SpaceMouse::getInstance() )
+  {
+    if ( aSpaceMouse->isSpaceMouseOn() && xEvent->type == ClientMessage )
+    {
       SVTK_SpaceMouse::MoveEvent anEvent;
       int type = aSpaceMouse->translateEvent( x11Display(), xEvent, &anEvent, 1.0, 1.0 );
-      switch( type ){
-      case SVTK_SpaceMouse::SpaceMouseMove : 
-	GetDevice()->InvokeEvent(SVTK::SpaceMouseMoveEvent, anEvent.data );
-	break;
-      case SVTK_SpaceMouse::SpaceButtonPress :
-	GetDevice()->InvokeEvent( SVTK::SpaceMouseButtonEvent, &anEvent.button );
-	break;
-      case SVTK_SpaceMouse::SpaceButtonRelease :
-	break;
+      switch ( type )
+      {
+      case SVTK_SpaceMouse::SpaceMouseMove:
+	      GetDevice()->InvokeEvent( SVTK::SpaceMouseMoveEvent, anEvent.data );
+	      break;
+      case SVTK_SpaceMouse::SpaceButtonPress:
+	      GetDevice()->InvokeEvent( SVTK::SpaceMouseButtonEvent, &anEvent.button );
+	      break;
+      case SVTK_SpaceMouse::SpaceButtonRelease:
+	      break;
       }
       return true; // stop handling the event
     }
@@ -376,6 +385,7 @@ QVTK_RenderWindowInteractor
   return QWidget::x11Event( xEvent );
 }
 
+#endif
 
 //----------------------------------------------------------------------------
 SVTK_RenderWindowInteractor

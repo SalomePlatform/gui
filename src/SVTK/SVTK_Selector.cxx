@@ -214,24 +214,19 @@ SVTK_SelectorDef
     theIndex.Clear();
 }
 
-bool
-SVTK_SelectorDef
-::IsIndexSelected(const Handle(SALOME_InteractiveObject)& theIO, 
-		  int theIndex) const
+bool SVTK_SelectorDef::IsIndexSelected( const Handle(SALOME_InteractiveObject)& theIO, 
+		                                    int theIndex) const
 {
   TMapIOSubIndex::const_iterator anIter = myMapIOSubIndex.find(theIO);
   if(anIter != myMapIOSubIndex.end()){
     const TColStd_IndexedMapOfInteger& aMapIndex = anIter->second.myMap;
-    return aMapIndex.Contains(theIndex);
+    return aMapIndex.Contains( theIndex ) == Standard_True;
   }
 
   return false;
 }
 
-static 
-bool
-removeIndex(TColStd_IndexedMapOfInteger& theMapIndex,
-	    const int theIndex)
+static bool removeIndex(TColStd_IndexedMapOfInteger& theMapIndex, const int theIndex)
 {
   int anId = theMapIndex.FindIndex(theIndex); // i==0 if Index is not in the MapIndex
   if(anId){
@@ -250,9 +245,8 @@ removeIndex(TColStd_IndexedMapOfInteger& theMapIndex,
       theMapIndex = aNewMap;
     }
   }
-  return anId;
+  return anId != 0;
 }
-
 
 bool
 SVTK_SelectorDef
@@ -327,22 +321,21 @@ SVTK_SelectorDef
   }
   TColStd_IndexedMapOfInteger& aMapIndex = anIter->second.myMap;
 
-  bool anIsConatains = aMapIndex.Contains(theIndex);
-  if(anIsConatains)
-    removeIndex(aMapIndex,theIndex);
+  bool anIsConatains = aMapIndex.Contains( theIndex ) == Standard_True;
+  if ( anIsConatains )
+    removeIndex( aMapIndex, theIndex );
   
-  if(!theIsModeShift)
+  if ( !theIsModeShift )
     aMapIndex.Clear();
   
-  if(!anIsConatains)
+  if ( !anIsConatains )
     aMapIndex.Add( theIndex );
 
-  if( aMapIndex.IsEmpty())
-    myMapIOSubIndex.erase(theIO);
+  if ( aMapIndex.IsEmpty() )
+    myMapIOSubIndex.erase( theIO );
 
   return false;
 }
-
 
 void
 SVTK_SelectorDef

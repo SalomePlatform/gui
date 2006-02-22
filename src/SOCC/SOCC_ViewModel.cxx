@@ -628,7 +628,7 @@ bool SOCC_Viewer::getTrihedronSize( double& theNewSize, double& theSize )
 
   float aSizeInPercents = SUIT_Session::session()->resourceMgr()->doubleValue("Viewer","TrihedronSize", 105.);
 
-  static float EPS = 5.0E-3;
+  static double EPS = 5.0E-3;
   theSize = getTrihedron()->Size();
   theNewSize = aMaxSide*aSizeInPercents / 100.0;
 

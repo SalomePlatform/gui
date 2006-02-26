@@ -390,6 +390,20 @@ void QDS_Datum::clear()
   }
 }
 
+void QDS_Datum::updateUnits()
+{
+  Handle(DDS_DicItem) item = dicItem();
+  if ( item.IsNull() )
+    return;
+
+  unitSystemChanged( activeUnitSystem( toQString( item->GetComponent() ) ) );
+}
+
+bool QDS_Datum::flags( const int f ) const
+{
+  return ( myFlags & f  ) == f;
+}
+
 void QDS_Datum::setValue( const QVariant& val )
 {
   if ( val.isValid() && val.canCast( QVariant::String ) )

@@ -32,7 +32,7 @@ class QDS_EXPORT QDS
 public:
   typedef enum { None = 0x00, Label = 0x01, Control = 0x02, Units = 0x04,
                  NotFormat = 0x08, NotAccel = 0x10, UnitsWithLabel = 0x20,
-                 All = Label | Control | Units } DatumFlags;
+                 AutoUnits = 0x40, All = Label | Control | Units } DatumFlags;
 
 public:
   static bool                       load( const QString& );

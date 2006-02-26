@@ -146,7 +146,7 @@ void QDS::setActiveUnitSystem( const QString& sys, const QString& comp )
   for ( QValueList<QDS_Datum*>::iterator it = _datumList.begin(); it != _datumList.end(); ++it )
   {
     QDS_Datum* datum = *it;
-    if ( !datum )
+    if ( !datum || !datum->flags( AutoUnits ) )
       continue;
 
     bool ok = aComp.IsEmpty();

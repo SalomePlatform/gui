@@ -3,7 +3,7 @@
 
 #include "QDS.h"
 
-#include <qobject.h>
+#include <qwidget.h>
 #include <qstring.h>
 #include <qvariant.h>
 #include <qguardedptr.h>
@@ -54,6 +54,9 @@ public:
 
   virtual void              reset();
   virtual void              clear();
+
+  void                      updateUnits();
+  bool                      flags( const int ) const;
 
   virtual void              setValue( const QVariant& );
 

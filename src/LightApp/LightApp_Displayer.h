@@ -20,11 +20,13 @@
 #ifndef LIGHTAPP_DISPLAYER_HEADER
 #define LIGHTAPP_DISPLAYER_HEADER
 
+#include "LightApp.h"
+
 #include <SALOME_Prs.h>
 
 class QString;
 
-class LightApp_Displayer : public SALOME_Displayer
+class LIGHTAPP_EXPORT LightApp_Displayer : public SALOME_Displayer
 {
 public:
   LightApp_Displayer();

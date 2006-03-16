@@ -6,6 +6,8 @@
 #ifndef LIGHTAPP_MODULE_H
 #define LIGHTAPP_MODULE_H
 
+#pragma warning( disable : 4251 )
+
 #include "LightApp.h"
 #include <CAM_Module.h>
 
@@ -118,5 +120,7 @@ private:
 protected:
   int                   myDisplay, myErase, myDisplayOnly, myEraseAll;
 };
+
+#pragma warning( default : 4251 )
 
 #endif

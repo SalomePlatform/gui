@@ -25,9 +25,10 @@
 // $Header   : $
 //=============================================================================
 
+#include "PyInterp_Dispatcher.h"
 #include "SALOME_PYQT_Module.h"
 
-#include "PyInterp_Dispatcher.h"
+
 #include "SUIT_ResourceMgr.h"
 #include "STD_MDIDesktop.h"
 #include "STD_TabDesktop.h"
@@ -44,14 +45,10 @@
 #include <qpopupmenu.h>
 
 #include "SALOME_PYQT_SipDefs.h"
-#if defined(SIP_VERS_v4_old) || defined(SIP_VERS_v4_new)
 #include "sipAPISalomePyQtGUI.h"
-#else
-#include "sipSalomePyQtGUIDeclSalomePyQtGUI.h"
-#endif
 
-#include <sipqtQWidget.h>
-#include <sipqtQPopupMenu.h>
+#include "sipqtQWidget.h"
+#include "sipqtQPopupMenu.h"
 
 #include <CORBA.h>
 

@@ -77,9 +77,16 @@ bool PythonConsole_PyInterp::initState()
    * It is the caller responsability to release the lock if needed
    */
   PyEval_AcquireLock();
-  _tstate = Py_NewInterpreter(); // create an interpreter and save current state
-  PySys_SetArgv(PyInterp_base::_argc,PyInterp_base::_argv); // initialize sys.argv
-//  if(MYDEBUG) MESSAGE("PythonConsole_PyInterp::initState - this = "<<this<<"; _tstate = "<<_tstate);
+  _tstate = PyGILState_GetThisThreadState();
+  // if no thread state defined
+  if ( _tstate )
+    PyThreadState_Swap(_tstate);
+  else
+  {
+    _tstate = Py_NewInterpreter(); // create an interpreter and save current state
+    PySys_SetArgv(PyInterp_base::_argc,PyInterp_base::_argv); // initialize sys.argv
+    //if(MYDEBUG) MESSAGE("PythonConsole_PyInterp::initState - this = "<<this<<"; _tstate = "<<_tstate);
+  }
 
   /*
    * If builtinmodule has been initialized all the sub interpreters
@@ -91,7 +98,7 @@ bool PythonConsole_PyInterp::initState()
 //    SCRUTE(builtinmodule->ob_refcnt); // builtinmodule reference counter
     _tstate->interp->builtins = PyModule_GetDict(builtinmodule);
     Py_INCREF(_tstate->interp->builtins);
-  }
+  }    
   PyEval_ReleaseThread(_tstate);
   return true;
 }

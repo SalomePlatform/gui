@@ -44,7 +44,9 @@
 #include <qworkspace.h>
 #include <qpopupmenu.h>
 
+#ifndef WIN32
 #include "SALOME_PYQT_SipDefs.h"
+#endif
 #include "sipAPISalomePyQtGUI.h"
 
 #include "sipqtQWidget.h"

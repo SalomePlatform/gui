@@ -44,6 +44,8 @@ class vtkDataSet;
 class vtkShrinkFilter;
 class vtkDataSetMapper;
 
+#include "SVTK.h"
+
 //----------------------------------------------------------------------------
 namespace SVTK
 {
@@ -59,7 +61,7 @@ namespace SVTK
 
 
 //----------------------------------------------------------------------------
-class SVTK_DeviceActor: public vtkLODActor
+class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
 {
  public:
   vtkTypeMacro(SVTK_DeviceActor,vtkLODActor);

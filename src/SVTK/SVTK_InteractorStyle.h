@@ -51,7 +51,7 @@
   This class controls of value of increment,
   for pan/rotate/zoom operations in SALOME way
 */
-class SVTK_ControllerIncrement : public vtkObject{
+class SVTK_EXPORT SVTK_ControllerIncrement : public vtkObject{
  public:
   vtkTypeMacro(SVTK_ControllerIncrement, vtkObject);
   static SVTK_ControllerIncrement* New();
@@ -83,7 +83,7 @@ class SVTK_ControllerIncrement : public vtkObject{
   This class controls the behaviour of KeyDown event
   in SALOME way
 */
-class SVTK_ControllerOnKeyDown : public vtkObject{
+class SVTK_EXPORT SVTK_ControllerOnKeyDown : public vtkObject{
  public:
   vtkTypeMacro(SVTK_ControllerOnKeyDown, vtkObject);
   static SVTK_ControllerOnKeyDown* New();

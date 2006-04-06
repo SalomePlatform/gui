@@ -334,6 +334,12 @@ protected:
   SVTK_ViewModelBase* myModel;
 };
 
+extern "C"
+{
+SVTK_EXPORT
+  int convertAction( const int accelAction );
+};
+
 #ifdef WIN32
 #pragma warning( default:4251 )
 #endif

@@ -13,7 +13,7 @@
 #include "SalomeApp.h"
 #include <LightApp_Application.h>
 
-#include <CORBA.h>
+#include <omniORB4/CORBA.h>
 
 #include <SALOMEconfig.h>
 //#include CORBA_CLIENT_HEADER(SALOMEDS)

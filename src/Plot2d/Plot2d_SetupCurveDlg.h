@@ -12,6 +12,8 @@
 #ifndef Plot2d_SetupCurveDlg_H
 #define Plot2d_SetupCurveDlg_H
 
+#include "Plot2d.h"
+
 #include <qdialog.h>
 
 //=================================================================================
@@ -24,7 +26,7 @@ class QComboBox;
 class QSpinBox;
 class QToolButton;
 
-class Plot2d_SetupCurveDlg : public QDialog
+class PLOT2D_EXPORT Plot2d_SetupCurveDlg : public QDialog
 { 
   Q_OBJECT
 

@@ -96,7 +96,7 @@ private:
 // Template classes for member function
 //-------------------------------------
 template<class TObject, typename TRes>
-class EVENT_EXPORT TMemFunEvent: public SALOME_Event{
+class TMemFunEvent: public SALOME_Event{
 public:
   typedef TRes TResult;
   TResult myResult;
@@ -117,7 +117,7 @@ private:
 
 
 template<class TObject>
-class EVENT_EXPORT TVoidMemFunEvent: public SALOME_Event{
+class TVoidMemFunEvent: public SALOME_Event{
 public:
   typedef void (TObject::* TAction)();
   TVoidMemFunEvent(TObject* theObject, TAction theAction):
@@ -137,7 +137,7 @@ private:
 //-----------------------------------------------
 template<class TObject, typename TRes, 
 	 typename TArg, typename TStoreArg = TArg>
-class EVENT_EXPORT TMemFun1ArgEvent: public SALOME_Event{
+class TMemFun1ArgEvent: public SALOME_Event{
 public:
   typedef TRes TResult;
   TResult myResult;
@@ -160,7 +160,7 @@ private:
 
 
 template<class TObject, typename TArg, typename TStoreArg = TArg>
-class EVENT_EXPORT TVoidMemFun1ArgEvent: public SALOME_Event{
+class TVoidMemFun1ArgEvent: public SALOME_Event{
 public:
   typedef void (TObject::* TAction)(TArg);
   TVoidMemFun1ArgEvent(TObject* theObject, TAction theAction, TArg theArg):
@@ -183,7 +183,7 @@ private:
 template<class TObject, typename TRes,
 	 typename TArg, typename TArg1, 
 	 typename TStoreArg = TArg, typename TStoreArg1 = TArg1>
-class EVENT_EXPORT TMemFun2ArgEvent: public SALOME_Event{
+class TMemFun2ArgEvent: public SALOME_Event{
 public:
   typedef TRes TResult;
   TResult myResult;
@@ -210,7 +210,7 @@ private:
 
 template<class TObject, typename TArg, typename TArg1, 
 	 typename TStoreArg = TArg, typename TStoreArg1 = TArg1>
-class EVENT_EXPORT TVoidMemFun2ArgEvent: public SALOME_Event{
+class TVoidMemFun2ArgEvent: public SALOME_Event{
 public:
   typedef void (TObject::* TAction)(TArg,TArg1);
   TVoidMemFun2ArgEvent(TObject* theObject, TAction theAction, TArg theArg, TArg1 theArg1):

@@ -66,6 +66,8 @@ public:
   void NSregister();
 
   CORBA::Long GetActiveStudyId();
+
+  CORBA::Boolean restoreVisualState(CORBA::Long theSavePoint){ return false; };
   
   void ping(){};
 

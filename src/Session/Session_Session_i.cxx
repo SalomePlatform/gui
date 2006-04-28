@@ -213,3 +213,8 @@ CORBA::Long SALOME_Session_i::GetActiveStudyId()
   }
   return aStudyId;
 }
+
+bool SALOME_Session_i::restoreVisualState(CORBA::Long theSavePoint)
+{  
+  return false;
+}

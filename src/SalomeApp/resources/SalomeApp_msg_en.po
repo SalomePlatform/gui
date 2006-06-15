@@ -1,3 +1,21 @@
+// Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License.
+// 
+// This library is distributed in the hope that it will be useful 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public  
+// License along with this library; if not, write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
 // File:      CATHAREGUI_msg_en.po
 // Created:   10/25/2004 12:46:36 PM
 // Author:    Sergey LITONIN
@@ -13,9 +31,6 @@ msgstr ""
 
 //=======================================================================================
 
-msgid "BUT_OK"
-msgstr "&OK"
-
 msgid "BUT_NEW"
 msgstr "&New"
 
@@ -24,9 +39,6 @@ msgstr "&Open"
 
 msgid "BUT_LOAD"
 msgstr "&Load"
-
-msgid "BUT_CANCEL"
-msgstr "&Cancel"
 
 //=======================================================================================
 
@@ -41,6 +53,15 @@ msgstr "&Dump study..."
 
 msgid "SalomeApp_Application::PRP_DESK_FILE_DUMP_STUDY"
 msgstr "Dumps study to the python script"
+
+msgid "SalomeApp_Application::TOT_DESK_FILE_SAVE_GUI_STATE"
+msgstr "Save GUI state"
+
+msgid "SalomeApp_Application::MEN_DESK_FILE_SAVE_GUI_STATE"
+msgstr "Save GUI state"
+
+msgid "SalomeApp_Application::PRP_DESK_FILE_SAVE_GUI_STATE"
+msgstr "Saves current state of viewers, displayed objects, etc."
 
 msgid "SalomeApp_Application::TOT_DESK_FILE_LOAD_SCRIPT"
 msgstr "Load python script"
@@ -101,6 +122,17 @@ msgstr "Activate Module"
 
 msgid "SalomeApp_Application::MEN_DELETE_INVALID_REFERENCE"
 msgstr "Delete Invalid Reference"
+
+msgid "SalomeApp_Application::PREF_STORE_VISUAL_STATE"
+msgstr "Store/restore last GUI state"
+
+//=======================================================================================
+
+msgid "PUBLISH_IN_STUDY"
+msgstr "Publish in study"
+
+msgid "SAVE_GUI_STATE"
+msgstr "Save GUI state"
 
 //=======================================================================================
 
@@ -190,3 +222,25 @@ msgstr "Publish in study"
 msgid "SalomeApp_Application::WRN_DUMP_STUDY_FAILED"
 msgstr "Dump study failed"
 
+msgid "SAVE_POINT_OBJECT_TOOLTIP"
+msgstr "Saved GUI state: %1"
+
+msgid "SAVE_POINT_DEF_NAME"
+msgstr "GUI state: "
+
+msgid "SAVE_POINT_ROOT_TOOLTIP"
+msgstr "Persistent GUI states"
+
+msgid "SAVE_POINT_ROOT_NAME"
+msgstr "GUI states"
+
+//=======================================================================================
+
+msgid "SalomeApp_Application::MEN_RESTORE_VS"
+msgstr "Restore"
+
+msgid "SalomeApp_Application::MEN_RENAME_VS"
+msgstr "Rename"
+
+msgid "SalomeApp_Application::MEN_DELETE_VS"
+msgstr "Delete"

@@ -1,3 +1,21 @@
+// Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License.
+// 
+// This library is distributed in the hope that it will be useful 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public  
+// License along with this library; if not, write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
 // File:      LightApp_Module.cxx
 // Created:   6/20/2005 16:30:56 AM
 // Author:    OCC team
@@ -23,16 +41,37 @@
 #include <SUIT_DataObject.h>
 #include <SUIT_ResourceMgr.h>
 
-#include <SVTK_ViewWindow.h>
-#include <SVTK_ViewModel.h>
-#include <OCCViewer_ViewWindow.h>
-#include <OCCViewer_ViewPort3d.h>
-#include <SOCC_ViewModel.h>
-#include <GLViewer_ViewFrame.h>
-#include <GLViewer_ViewPort.h>
-#include <Plot2d_ViewWindow.h>
-#include <Plot2d_ViewFrame.h>
-#include <SPlot2d_ViewModel.h>
+#ifndef DISABLE_VTKVIEWER
+#ifndef DISABLE_SALOMEOBJECT
+  #include <SVTK_ViewWindow.h>
+  #include <SVTK_ViewModel.h>
+#else
+  #include <VTKViewer_ViewWindow.h>
+#endif
+  #include <VTKViewer_ViewModel.h>
+#endif
+#ifndef DISABLE_OCCVIEWER
+  #include <OCCViewer_ViewWindow.h>
+  #include <OCCViewer_ViewPort3d.h>
+#ifndef DISABLE_SALOMEOBJECT
+  #include <SOCC_ViewModel.h>
+#else
+  #include <OCCViewer_ViewModel.h>
+#endif
+#endif
+#ifndef DISABLE_GLVIEWER
+  #include <GLViewer_ViewFrame.h>
+  #include <GLViewer_ViewPort.h>
+#endif
+#ifndef DISABLE_PLOT2DVIEWER
+  #include <Plot2d_ViewWindow.h>
+  #include <Plot2d_ViewFrame.h>
+#ifndef DISABLE_SALOMEOBJECT
+  #include <SPlot2d_ViewModel.h>
+#else
+  #include <Plot2d_ViewModel.h>
+#endif
+#endif
 
 #include <OB_Browser.h>
 
@@ -96,6 +135,9 @@ void LightApp_Module::contextMenuPopup( const QString& client, QPopupMenu* menu,
 void LightApp_Module::updateObjBrowser( bool theIsUpdateDataModel, 
 					SUIT_DataObject* theDataObject )
 {
+  bool upd = getApp()->objectBrowser()->isAutoUpdate();
+  getApp()->objectBrowser()->setAutoUpdate( false );
+
   SUIT_DataObject* aDataObject = theDataObject;
   if( theIsUpdateDataModel ){
     if( CAM_DataModel* aDataModel = dataModel() ){
@@ -113,7 +155,8 @@ void LightApp_Module::updateObjBrowser( bool theIsUpdateDataModel,
       }
     }
   }
-  getApp()->objectBrowser()->updateTree( aDataObject );
+  getApp()->objectBrowser()->setAutoUpdate( upd );
+  getApp()->objectBrowser()->updateTree( 0, false /*aDataObject*/ );
 }
 
 /*!NOT IMPLEMENTED*/
@@ -129,6 +172,11 @@ bool LightApp_Module::activateModule( SUIT_Study* study )
   if ( res && application() && application()->resourceMgr() )
     application()->resourceMgr()->raiseTranslators( name() );
 
+  connect( application(), SIGNAL( viewManagerAdded( SUIT_ViewManager* ) ),
+           this, SLOT( onViewManagerAdded( SUIT_ViewManager* ) ) );
+  connect( application(), SIGNAL( viewManagerRemoved( SUIT_ViewManager* ) ),
+           this, SLOT( onViewManagerRemoved( SUIT_ViewManager* ) ) );
+
   if ( mySwitchOp == 0 )
     mySwitchOp = new LightApp_SwitchOp( this );
 
@@ -140,6 +188,11 @@ bool LightApp_Module::deactivateModule( SUIT_Study* study )
 {
   delete mySwitchOp;
   mySwitchOp = 0;
+
+  disconnect( application(), SIGNAL( viewManagerAdded( SUIT_ViewManager* ) ),
+	      this, SLOT( onViewManagerAdded( SUIT_ViewManager* ) ) );
+  disconnect( application(), SIGNAL( viewManagerRemoved( SUIT_ViewManager* ) ),
+	      this, SLOT( onViewManagerRemoved( SUIT_ViewManager* ) ) );
 
   // abort all operations
   MapOfOperation::const_iterator anIt;
@@ -196,14 +249,27 @@ void LightApp_Module::update( const int theFlags )
     if ( SUIT_ViewManager* viewMgr = getApp()->activeViewManager() )
       if ( SUIT_ViewWindow* viewWnd = viewMgr->getActiveView() )
       {
+#ifndef DISABLE_VTKVIEWER
+#ifndef DISABLE_SALOMEOBJECT
         if ( viewWnd->inherits( "SVTK_ViewWindow" ) )
           ( (SVTK_ViewWindow*)viewWnd )->Repaint();
-        else if ( viewWnd->inherits( "OCCViewer_ViewWindow" ) )
+#else
+        if ( viewWnd->inherits( "VTKViewer_ViewWindow" ) )
+          ( (VTKViewer_ViewWindow*)viewWnd )->Repaint();
+#endif
+#endif
+#ifndef DISABLE_OCCVIEWER
+        if ( viewWnd->inherits( "OCCViewer_ViewWindow" ) )
           ( (OCCViewer_ViewWindow*)viewWnd )->getViewPort()->onUpdate();
-        else if ( viewWnd->inherits( "Plot2d_ViewWindow" ) )
+#endif
+#ifndef DISABLE_PLOT2DVIEWER
+        if ( viewWnd->inherits( "Plot2d_ViewWindow" ) )
           ( (Plot2d_ViewWindow*)viewWnd )->getViewFrame()->Repaint();
-        else if ( viewWnd->inherits( "GLViewer_ViewFrame" ) )
+#endif
+#ifndef DISABLE_GLVIEWER
+        if ( viewWnd->inherits( "GLViewer_ViewFrame" ) )
           ( (GLViewer_ViewFrame*)viewWnd )->getViewPort()->onUpdate();
+#endif
       }
   }
 }
@@ -280,9 +346,40 @@ QtxPopupMgr* LightApp_Module::popupMgr()
     myPopupMgr->setRule( disp, /*QString( "( not isVisible ) and " ) + */ uniform, true );
     myPopupMgr->setRule( erase, /*QString( "( isVisible ) and " ) + */ uniform, true );
     myPopupMgr->setRule( dispOnly, uniform, true );
-    QString viewers = "{ '%1' '%2' '%3' }";
-    viewers = viewers.arg( SOCC_Viewer::Type() ).arg( SVTK_Viewer::Type() ).arg( SPlot2d_Viewer::Type() );
-    myPopupMgr->setRule( eraseAll, QString( "client in %1" ).arg( viewers ), true );
+
+    QStringList viewers;
+
+#ifndef DISABLE_OCCVIEWER
+#ifndef DISABLE_SALOMEOBJECT
+    viewers.append( SOCC_Viewer::Type() );
+#else
+    viewers.append( OCCViewer_Viewer::Type() );
+#endif
+#endif
+#ifndef DISABLE_VTKVIEWER
+#ifndef DISABLE_SALOMEOBJECT
+    viewers.append( SVTK_Viewer::Type() );
+#else
+    viewers.append( VTKViewer_Viewer::Type() );
+#endif
+#endif
+#ifndef DISABLE_PLOT2DVIEWER
+#ifndef DISABLE_SALOMEOBJECT
+    viewers.append( SPlot2d_Viewer::Type() );
+#else
+    viewers.append( Plot2d_Viewer::Type() );
+#endif
+#endif
+
+    if( !viewers.isEmpty() )
+    {
+      QString strViewers = "{ ", temp = "'%1' ";
+      QStringList::const_iterator anIt = viewers.begin(), aLast = viewers.end();
+      for( ; anIt!=aLast; anIt++ )
+        strViewers+=temp.arg( *anIt );
+      strViewers+="}";
+      myPopupMgr->setRule( eraseAll, QString( "client in %1" ).arg( strViewers ), true );
+    }
   }
   return myPopupMgr;
 }
@@ -434,11 +531,18 @@ void LightApp_Module::onOperationDestroyed()
   }
 }
 
+/*!
+  Must be redefined in order to use standard displayer mechanism
+  \return displayer of module
+*/
 LightApp_Displayer* LightApp_Module::displayer()
 {
   return 0;
 }
 
+/*!
+  SLOT: called on activating of standard operations show/hide
+*/
 void LightApp_Module::onShowHide()
 {
   if( !sender()->inherits( "QAction" ) || !popupMgr() )
@@ -448,4 +552,18 @@ void LightApp_Module::onShowHide()
   int id = actionId( act );
   if( id!=-1 )
     startOperation( id );
+}
+
+/*!
+  virtual SLOT: called on view manager adding
+*/
+void LightApp_Module::onViewManagerAdded( SUIT_ViewManager* )
+{
+}
+
+/*!
+  virtual SLOT: called on view manager removing
+*/
+void LightApp_Module::onViewManagerRemoved( SUIT_ViewManager* )
+{
 }

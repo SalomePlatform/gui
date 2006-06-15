@@ -1,3 +1,21 @@
+// Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License.
+// 
+// This library is distributed in the hope that it will be useful 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public  
+// License along with this library; if not, write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
 // File:      SalomeApp_Module.cxx
 // Created:   10/25/2004 11:39:56 AM
 // Author:    Sergey LITONIN
@@ -11,6 +29,7 @@
 #include "LightApp_Selection.h"
 #include "LightApp_Operation.h"
 #include "LightApp_Preferences.h"
+//#include "LightApp_Displayer.h"
 
 #include "CAM_DataModel.h"
 
@@ -19,11 +38,21 @@
 #include <SALOME_ListIO.hxx>
 #include <SALOME_ListIteratorOfListIO.hxx>
 #include <SALOME_InteractiveObject.hxx>
+//#include <SALOME_Actor.h>
 
 #include <SUIT_Session.h>
+#include <SUIT_ViewModel.h>
+
+#include <SVTK_ViewWindow.h>
+//#include <SVTK_ViewModel.h>
+//#include <SVTK_MainWindow.h>
+//#include <SVTK_RenderWindowInteractor.h>
 
 #include <qstring.h>
 #include <qmap.h>
+
+//#include <vtkActorCollection.h>
+//#include <vtkRenderer.h>
 
 /*!Constructor.*/
 SalomeApp_Module::SalomeApp_Module( const QString& name )
@@ -54,6 +83,12 @@ LightApp_Selection* SalomeApp_Module::createSelection() const
   return LightApp_Module::createSelection();
 }
 
+/*!
+  Converts objects-containers to list of objects, those are contained
+  Other objects must be added without conversion
+  \param source - source list of objects
+  \param dest - list of converted objects
+*/
 void SalomeApp_Module::extractContainers( const SALOME_ListIO& source, SALOME_ListIO& dest ) const
 {
   SalomeApp_Study* study = dynamic_cast<SalomeApp_Study*>( SUIT_Session::session()->activeApplication()->activeStudy() );
@@ -97,3 +132,24 @@ void SalomeApp_Module::extractContainers( const SALOME_ListIO& source, SALOME_Li
     dest.Append( obj );
   }
 }
+
+/*!
+ * \brief Virtual public
+ *
+ * This method is called just before the study document is saved, so the module has a possibility
+ * to store visual parameters in AttributeParameter attribue(s)
+ */
+void SalomeApp_Module::storeVisualParameters(int savePoint)
+{
+}
+
+/*!
+ * \brief Virtual public
+ *
+ * This method is called after the study document is opened, so the module has a possibility to restore
+ * visual parameters
+ */
+void SalomeApp_Module::restoreVisualParameters(int savePoint)
+{
+}
+

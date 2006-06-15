@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef CAM_STUDY_H
 #define CAM_STUDY_H
@@ -31,6 +31,12 @@
 #pragma warning( disable:4251 )
 #endif
 
+/*!
+  \class CAM_Study
+  Represents study for using in CAM, contains list of
+  data model references from all modules. Provides
+  necessary functionality for data models management.
+*/
 class CAM_EXPORT CAM_Study : public SUIT_Study
 {
   Q_OBJECT

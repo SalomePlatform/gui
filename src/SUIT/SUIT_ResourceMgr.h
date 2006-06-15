@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef SUIT_RESOURCEMGR_H
 #define SUIT_RESOURCEMGR_H
@@ -35,7 +35,9 @@ public:
   QString         loadDoc( const QString&, const QString& ) const;
 
 protected:
-  virtual QString userFileName( const QString& ) const;
+  virtual QString userFileName( const QString&, const bool = true ) const;
+  virtual QString findAppropriateUserFile( const QString& ) const;
+  virtual int     userFileId( const QString& ) const;
 
 private:
   QString         myVersion;

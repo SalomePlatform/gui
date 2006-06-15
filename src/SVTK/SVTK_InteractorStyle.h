@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software 
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 // 
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org 
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -45,7 +45,6 @@
 
 #include <vtkObject.h>
 //
-//-------------------------------------------
 //! Control the value of increment  in SALOME way.
 /*!
   This class controls of value of increment,
@@ -77,7 +76,6 @@ class SVTK_EXPORT SVTK_ControllerIncrement : public vtkObject{
   void operator=(const SVTK_ControllerIncrement&);          //Not implemented
 };
 //
-//-------------------------------------------
 //! Control the behaviour of KeyDown event in SALOME way.
 /*!
   This class controls the behaviour of KeyDown event
@@ -99,7 +97,6 @@ class SVTK_EXPORT SVTK_ControllerOnKeyDown : public vtkObject{
   SVTK_ControllerOnKeyDown(const SVTK_ControllerOnKeyDown&);//Not implemented
   void operator=(const SVTK_ControllerOnKeyDown&);          //Not implemented
 };
-//-------------------------------------------
 
 class vtkCell;
 class vtkPicker;
@@ -143,7 +140,7 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
   SVTK_SelectionEvent*
   GetSelectionEventFlipY();
 
-  //! Redefined in order to add an observer (callback) for custorm event (space mouse event)
+  //! Redefined in order to add an observer (callback) for custom event (space mouse event)
   virtual
   void
   SetInteractor( vtkRenderWindowInteractor* );

@@ -15,7 +15,7 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -27,7 +27,8 @@
 #ifndef SVTK_CubeAxesDlg_H
 #define SVTK_CubeAxesDlg_H
 
-#include <qdialog.h>
+#include "SVTK_DialogBase.h"
+
 #include <qframe.h>
 
 class QWidget;
@@ -39,6 +40,7 @@ class QLineEdit;
 class QGroupBox;
 
 class QtxAction;
+class QtxIntSpinBox;
 
 class vtkAxisActor2D;
 class SVTK_CubeAxesActor2D;
@@ -51,14 +53,14 @@ class SVTK_MainWindow;
  * Class       : SVTK_CubeAxesDlg
  * Description : Dialog for specifynig cube axes properties
  */
-class SVTK_CubeAxesDlg : public QDialog
+class SVTK_CubeAxesDlg : public SVTK_DialogBase
 {
   Q_OBJECT
 
 public:
-                  SVTK_CubeAxesDlg(SVTK_MainWindow* theParent,
-				   const char* theName,
-				   QtxAction* theAction);
+                  SVTK_CubeAxesDlg(QtxAction* theAction,
+				   SVTK_MainWindow* theParent,
+				   const char* theName);
   virtual         ~SVTK_CubeAxesDlg();
 
   void            Update();
@@ -68,8 +70,6 @@ private slots:
   bool            onApply();
   void            onClose();
 
-  virtual void    done( int );
-
 private:
   QWidget*        createButtonFrame( QWidget* );
   QWidget*        createMainFrame  ( QWidget* );
@@ -78,7 +78,6 @@ private:
 private:
   SVTK_MainWindow *myMainWindow;
   SVTK_CubeAxesActor2D* myActor;
-  QtxAction* myAction;
 
   QTabWidget*     myTabWg;
   QCheckBox*      myIsVisible;
@@ -107,9 +106,6 @@ public:
   bool            ReadData( vtkAxisActor2D* );
   bool            Apply( vtkAxisActor2D* );
 
-protected:
-  bool            eventFilter(QObject*, QEvent*);
-
 private slots:
   void            onNameChecked();
   void            onLabelsChecked();
@@ -129,14 +125,14 @@ private:
   // labels
   QGroupBox*      myLabelsGrp;
   QCheckBox*      myIsLabelsVisible;
-  QLineEdit*      myLabelNumber;
-  QLineEdit*      myLabelOffset;
+  QtxIntSpinBox*  myLabelNumber;
+  QtxIntSpinBox*  myLabelOffset;
   SVTK_FontWidget* myLabelsFont;
 
   // tick marks
   QGroupBox*      myTicksGrp;
   QCheckBox*      myIsTicksVisible;
-  QLineEdit*      myTickLength;
+  QtxIntSpinBox*  myTickLength;
 
   friend class SVTK_CubeAxesDlg;
 };

@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
 #ifndef LIGHTAPP_DISPLAYER_HEADER
@@ -26,6 +26,11 @@
 
 class QString;
 
+/*!
+  \class LightApp_Displayer
+  Uniform mechanism of display/erase of objects in different views.
+  Objects are specified by string entry
+*/
 class LIGHTAPP_EXPORT LightApp_Displayer : public SALOME_Displayer
 {
 public:

@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software 
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 // 
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org 
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -28,10 +28,9 @@
 
 #include "ToolsGUI.h"
 
-//=======================================================================
-// name    : GetVisibility
-// Purpose : Verify whether object is visible or not
-//=======================================================================
+/*!
+  \return true if object is visible
+*/
 bool ToolsGUI::GetVisibility( _PTR(Study)   theStudy,
                               _PTR(SObject) theObj,
                               void*         theId )
@@ -46,10 +45,13 @@ bool ToolsGUI::GetVisibility( _PTR(Study)   theStudy,
   return false;
 }
 
-//=======================================================================
-// name    : SetVisibility
-// Purpose : Set flag visibility of object
-//=======================================================================
+/*!
+  Set flag visibility of object
+  \param theStudy - study
+  \param theEntry - entry
+  \param theValue - flag visibility
+  \param theId - id
+*/
 bool ToolsGUI::SetVisibility( _PTR(Study) theStudy,
                               const char* theEntry,
                               const bool  theValue,
@@ -76,9 +78,4 @@ bool ToolsGUI::SetVisibility( _PTR(Study) theStudy,
 
   return false;
 }
-
-
-
-
-
 

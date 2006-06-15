@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software 
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 // 
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org 
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -52,9 +52,9 @@ class vtkObject;
 class SVTK_Selector;
 class SVTK_Renderer;
 
-//============================================================================
-//! Implemements Qt based vtkRenderWindowInteractor.
 /*!
+  \class QVTK_RenderWindowInteractor
+  Implements Qt based vtkRenderWindowInteractor.
   The class inherits #QWidget class in order to be possible process Qt events.
   It invokes corresponding VTK events through usage of its device - a #vtkGenericRenderWindowInteractor.
   Also, it creates, initialize and holds vtkRenderWindow instance.
@@ -128,9 +128,9 @@ class SVTK_EXPORT QVTK_RenderWindowInteractor: public QWidget
 };
 
 
-//============================================================================
 //! Extends QVTK_RenderWindowInteractor functionality.
 /*!
+  \class SVTK_RenderWindowInteractor
   Implements such features as 
   support of selection, 
   run-time interactor style management,

@@ -14,16 +14,8 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//=============================================================================
-// File      : SALOME_PYQT_Module.h
-// Created   : 25/04/05
-// Author    : Vadim SANDLER
-// Project   : SALOME
-// Copyright : 2003-2005 CEA/DEN, EDF R&D
-// $Header   : $
-//=============================================================================
 
 #ifndef SALOME_PYQT_MODULE_H
 #define SALOME_PYQT_MODULE_H
@@ -60,20 +52,22 @@ private:
   SALOME_PYQT_PyInterp*            myInterp;
   /* Python GUI module loaded */
   PyObjWrapper                     myModule;
-  /* Pytho GUI being initialized (not zero only during the initialization)*/
-  static SALOME_PYQT_Module* myInitModule;
+  /* Python GUI being initialized (not zero only during the initialization)*/
+  static SALOME_PYQT_Module*       myInitModule;
 
-  typedef QPtrList<QAction> ActionList;
-  
-  /* own actions list */
-  ActionList                       myMenuActionList;
-  ActionList                       myPopupActionList;
-  ActionList                       myToolbarActionList;
+  /* own menus list */
+  struct MenuId
+  {
+    int  id;
+    bool constantMenu;
+    MenuId() : id( -1 ), constantMenu( false ) {}
+    MenuId( const int _id, const bool _constantMenu )
+      : id( _id ), constantMenu( _constantMenu ) {}
+  };
+  typedef QValueList<MenuId>   MenuIdList;
+  typedef QMap<int,MenuIdList> MenuMap;
+  MenuMap                      myMenus;
  
-  enum PyQtGUIAction { PYQT_ACTION_MENU    = 10000000,
-		       PYQT_ACTION_TOOLBAL = 20000000,
-		       PYQT_ACTION_POPUP   = 30000000 };
-
   /* XML resource file parser */
   SALOME_PYQT_XmlHandler*          myXmlHandler;  
   /* windows map*/
@@ -121,6 +115,9 @@ public:
   /* called when study desktop is activated */
   virtual void    studyActivated();
 
+  /* returns default menu group */
+  static int             defaultMenuGroup();
+
   /* working with toolbars : open protected methods */
   int                    createTool( const QString& );
   int                    createTool( const int, const int, const int = -1 );
@@ -129,12 +126,15 @@ public:
   int                    createTool( QAction*, const QString&, const int = -1, const int = -1 );
 
   /* working with menus : open protected methods */
-  int                    createMenu( const QString&, const int, const int = -1, const int = -1, const int = -1 );
-  int                    createMenu( const QString&, const QString&, const int = -1, const int = -1, const int = -1 );
-  int                    createMenu( const int, const int, const int = -1, const int = -1 );
-  int                    createMenu( const int, const QString&, const int = -1, const int = -1 );
-  int                    createMenu( QAction*, const int, const int = -1, const int = -1, const int = -1 );
-  int                    createMenu( QAction*, const QString&, const int = -1, const int = -1, const int = -1 );
+  int                    createMenu( const QString&, const int, const int = -1, const int = -1, const int = -1, const bool = false );
+  int                    createMenu( const QString&, const QString&, const int = -1, const int = -1, const int = -1, const bool = false );
+  int                    createMenu( const int, const int, const int = -1, const int = -1, const bool = false );
+  int                    createMenu( const int, const QString&, const int = -1, const int = -1, const bool = false );
+  int                    createMenu( QAction*, const int, const int = -1, const int = -1, const int = -1, const bool = false );
+  int                    createMenu( QAction*, const QString&, const int = -1, const int = -1, const int = -1, const bool = false );
+
+  /* clear given menu */
+  bool                   clearMenu( const int = 0, const int = 0, const bool = true );
 
   /* create separator : open protected method */
   QAction*               createSeparator();
@@ -144,6 +144,12 @@ public:
   int                    actionId( const QAction* ) const;
   QAction*               createAction( const int, const QString&, const QString&, const QString&,
                                        const QString&, const int, const bool = false );
+  /* load icon from resource file */
+  QIconSet               loadIcon( const QString& fileName );
+
+  /* Show/hide menus/toolbars */
+  void                   setMenuShown( const bool );
+  void                   setToolShown( const bool );
 
 public slots:
   /* activation */
@@ -160,6 +166,17 @@ public slots:
   void            onGUIEvent();
   void            onGUIEvent( int );
 
+protected:
+  /* Menu processing */
+  bool            hasMenu( const QString&, const int );
+  void            registerMenu( const int, const int, const bool = false );
+  void            unregisterMenu( const int, const int );
+  bool            registered( const int, const int = 0 );
+  bool            isConstantMenu( const int, const int );
+
+protected slots:
+  void            onMenuHighlighted( int, int );
+
 private:
   /* internal initizalition */ 
   void            init        ( CAM_Application* );
@@ -167,15 +184,16 @@ private:
   void            activate    ( SUIT_Study* );
   /* internal deactivation */ 
   void            deactivate  ( SUIT_Study* );
+  /* customization */ 
+  void            customize   ( SUIT_Study* );
   /* study activation */ 
   void            studyChanged( SUIT_Study* );
   /* context popup menu processing */
   void            contextMenu( const QString&, QPopupMenu* );
   /* GUI event processing */
   void            guiEvent( const int );
-
-  /* add action to the private action map */ 
-  void            addAction   ( const PyQtGUIAction, QAction* );
+  /* Menu highlight processing */
+  void            menuHighlight( const int, const int );
 
   /* initialize a Python subinterpreter */
   void            initInterp  ( int );

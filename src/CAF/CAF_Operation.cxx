@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "CAF_Operation.h"
 
@@ -23,19 +23,24 @@
 
 #include <TDocStd_Document.hxx>
 
-//////////////////////////////////////////////////////////////////////
-// Construction/Destruction
-//////////////////////////////////////////////////////////////////////
-
+/*!
+  Default constructor
+*/
 CAF_Operation::CAF_Operation(SUIT_Application* theApp)
 :SUIT_Operation(theApp)
 {
 }
 
+/*!
+  Destructor
+*/
 CAF_Operation::~CAF_Operation()
 {
 }
 
+/*!
+  \return OCAF document
+*/
 Handle(TDocStd_Document) CAF_Operation::stdDoc() const
 {
   Handle(TDocStd_Document) doc;

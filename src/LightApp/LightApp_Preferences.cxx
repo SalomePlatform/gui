@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      LightApp_Preferences.cxx
 // Author:    Sergey TELKOV
@@ -61,7 +61,7 @@ int LightApp_Preferences::addPreference( const QString& mod, const QString& labe
   return id;
 }
 
-/*
+/*!
   Checks: is preferences has module with name \a mod.
 */
 bool LightApp_Preferences::hasModule( const QString& mod ) const

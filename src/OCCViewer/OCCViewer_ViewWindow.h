@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef OCCVIEWER_VIEWWINDOW_H
 #define OCCVIEWER_VIEWWINDOW_H
@@ -62,6 +62,11 @@ public:
 
   void setCuttingPlane( bool on, const double x = 0 , const double y = 0 , const double z = 0,
                                  const double dx = 0, const double dy = 0, const double dz = 1);
+
+  bool isCuttingPlane();
+
+  virtual QString   getVisualParameters();
+  virtual void      setVisualParameters( const QString& parameters );
  
 public slots:
   void onFrontView();
@@ -119,6 +124,8 @@ protected:
  
   virtual OperationType getButtonState(QMouseEvent* theEvent);
 
+  viewAspect getViewParams() const;
+
   OperationType         myOperation;
   OCCViewer_Viewer*     myModel;
   OCCViewer_ViewPort3d* myViewPort;
@@ -146,6 +153,7 @@ protected:
 
 private:
   OCCViewer_ClippingDlg* myClippingDlg;
+  QtxAction* myClippingAction;
   
 };
 

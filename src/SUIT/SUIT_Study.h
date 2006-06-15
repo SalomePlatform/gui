@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef SUIT_STUDY_H
 #define SUIT_STUDY_H
@@ -74,6 +74,9 @@ public:
   bool              commit( SUIT_Operation* );
   bool              suspend( SUIT_Operation* );
   bool              resume( SUIT_Operation* );
+
+  virtual int       storeState();
+  virtual void      restoreState(int savePoint);
 
 signals:
   void              studyModified( SUIT_Study* );

@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
 #ifndef LIGHTAPP_SHOW_HIDE_OPERATION_HEADER
@@ -23,6 +23,12 @@
 #include "LightApp_Operation.h"
 
 class LightApp_Displayer;
+
+/*!
+  \class LightApp_ShowHideOp
+  Standard operation allowing to show/hide selected objects
+  corresponding to any module with help of module displayer
+*/
 class LIGHTAPP_EXPORT LightApp_ShowHideOp : public LightApp_Operation
 {
   Q_OBJECT

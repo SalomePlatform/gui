@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      QtxDockAction.cxx
 // Author:    Sergey TELKOV
@@ -28,6 +28,7 @@
 #include <qdockarea.h>
 #include <qdockwindow.h>
 #include <qmainwindow.h>
+#include <qobjectlist.h>
 #include <qapplication.h>
 
 /*!
@@ -254,6 +255,10 @@ bool QtxDockAction::removeFrom( QWidget* wid )
   return QtxAction::removeFrom( wid );
 }
 
+/*!
+  Sets menu text of action
+  \param txt - new menu text
+*/
 void QtxDockAction::setMenuText( const QString& txt )
 {
   if ( menuText() == txt )
@@ -707,7 +712,41 @@ void QtxDockAction::dockWindows( QPtrList<QDockWindow>& lst, QMainWindow* main )
   if ( !mw )
     return;
 
-  lst = mw->dockWindows();
+  QObjectList* objs = mw->queryList( "QDockWindow" );
+  if ( objs )
+  {
+    for ( QObjectListIt it( *objs ); it.current(); ++it )
+    {
+      QDockWindow* dockWin = ::qt_cast<QDockWindow*>( it.current() );
+      if ( dockWin && dockMainWindow( mw, dockWin ) )
+        lst.append( dockWin );
+    }
+  }
+  delete objs;
+}
+
+/*!
+  \return true if main window is parent of object
+  \param mw - main window
+  \param win - object
+*/
+bool QtxDockAction::dockMainWindow( QMainWindow* mw, QObject* win ) const
+{
+  if ( !mw || !win )
+    return false;
+
+  while ( win )
+  {
+    if ( win->parent() && win->parent() == mw )
+      return true;
+
+    if ( ::qt_cast<QMainWindow*>( win->parent() ) )
+      return false;
+
+    win = win->parent();
+  }
+
+  return false;
 }
 
 /*!
@@ -772,6 +811,14 @@ void QtxDockAction::loadPlaceInfo( QDockWindow* dw ) const
   if ( !myInfo.contains( dw ) )
     return;
 
+  QMainWindow* mw = mainWindow();
+  if ( !mw )
+    return;
+
+  QObject* p = dw->parent();
+  if ( !( !p || p == mw || ( p->parent() && p->parent() == mw ) ) )
+    return;
+
   QString winName = myInfo[dw].name;
   if ( winName.isEmpty() || !myGeom.contains( winName ) )
     return;
@@ -807,6 +854,10 @@ void QtxDockAction::loadPlaceInfo() const
   QMap<QString, QDockWindow*> nameMap;
   for ( QPtrListIterator<QDockWindow> itr( lst ); itr.current(); ++itr )
   {
+    QObject* p = itr.current()->parent();
+    if ( !( !p || p == mw || ( p->parent() && p->parent() == mw ) ) )
+      continue;
+
     QString name;
     if ( myInfo.contains( itr.current() ) )
       name = myInfo[itr.current()].name;
@@ -1209,6 +1260,9 @@ void QtxDockAction::collectNames( const int place, QStringList& lst ) const
   }
 }
 
+/*!
+  Updates menu of action
+*/
 void QtxDockAction::updateMenus()
 {
   for ( MenuMap::Iterator it = myMenu.begin(); it != myMenu.end(); ++it )

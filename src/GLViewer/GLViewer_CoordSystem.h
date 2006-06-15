@@ -14,7 +14,7 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  Author : OPEN CASCADE
 //
@@ -35,6 +35,10 @@
 #pragma warning( disable:4251 )
 #endif
 
+/*!
+  \class GLViewer_CoordSystem
+  \brief Class implementing mathematical model of 2D coordinate system 
+*/
 class GLVIEWER_API GLViewer_CoordSystem
 {
 public:

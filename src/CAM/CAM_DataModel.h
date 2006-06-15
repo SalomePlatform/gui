@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef CAM_DATAMODEL_H
 #define CAM_DATAMODEL_H
@@ -29,6 +29,11 @@ class CAM_DataObject;
 class CAM_Study;
 class SUIT_DataObject;
 
+/*!
+  \class CAM_DataModel
+  Base class for all data models used in CAM-based applications.
+  Represents data model of CAM module. Provides necessary interface (default implementation is empty)
+*/
 class CAM_EXPORT CAM_DataModel : public QObject
 {
   Q_OBJECT

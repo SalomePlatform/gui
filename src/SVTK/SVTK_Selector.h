@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software 
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 // 
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org 
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -128,7 +128,7 @@ public:
   GetIndex( const Handle(SALOME_InteractiveObject)& theIO, 
 	    TColStd_IndexedMapOfInteger& theIndex ) = 0;
 	
-  //! Change indexes of subslection for given #SALOME_InteractiveObject
+  //! Change indices of subselection for given #SALOME_InteractiveObject
   virtual
   bool 
   AddOrRemoveIndex( const Handle(SALOME_InteractiveObject)& theIO, 
@@ -155,7 +155,7 @@ public:
   RemoveIndex( const Handle(SALOME_InteractiveObject)& theIO, 
 	       int theIndex) = 0;
 
-  //! Check, if the given index is present in subslection 
+  //! Check, if the given index is present in subselection 
   virtual
   bool 
   IsIndexSelected(const Handle(SALOME_InteractiveObject)& theIO, 

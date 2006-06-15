@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      QtxOperations.h
 // Author:    Alexander SOLOVYOV
@@ -25,10 +25,6 @@
 #include "Qtx.h"
 #include "QtxParser.h"
 
-//================================================================
-// Class    : 
-// Purpose  : 
-//================================================================
 class QTX_EXPORT QtxOperations
 {
 public:

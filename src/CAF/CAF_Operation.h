@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef CAF_OPERATION_H
 #define CAF_OPERATION_H
@@ -29,8 +29,14 @@
 #include <Standard.hxx>
 
 class CAF_Study;
+//! OCC OCAF Std document
 class Handle(TDocStd_Document);
 
+/*!
+  \class CAF_Operation
+  Base operation for all operations used in CAF package
+  Operation has link to OCC OCAF std document
+*/
 class CAF_EXPORT CAF_Operation : public SUIT_Operation
 {
 	Q_OBJECT

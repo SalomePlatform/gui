@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software 
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 // 
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org 
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -40,10 +40,18 @@
 
 class Standard_Transient;
 class Handle_Standard_Type;
+/*!
+  \class Handle(MMgt_TShared)
+  Smart pointer (handle) to MMgt_TShared
+*/
 class Handle(MMgt_TShared);
 class SALOME_InteractiveObject;
 Standard_EXPORT Handle_Standard_Type& STANDARD_TYPE(SALOME_InteractiveObject);
 
+/*!
+  \class Handle(SALOME_InteractiveObject)
+  Smart pointer (handle) to SALOME_InteractiveObject
+*/
 class Handle(SALOME_InteractiveObject) : public Handle(MMgt_TShared) {
   public:
     void* operator new(size_t,void* anAddress) 

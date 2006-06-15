@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      QtxResourceEdit.h
 // Author:    Sergey TELKOV
@@ -35,6 +35,10 @@ class QtxResourceMgr;
 #include <qvariant.h>
 #include <qfont.h>
 
+/*!
+  \class QtxResourceEdit
+  Class for managing preferences items
+*/
 class QTX_EXPORT QtxResourceEdit
 {
 public:
@@ -104,9 +108,9 @@ private:
   friend class QtxResourceEdit::Item;
 };
 
-/*
-  Class: QtxResourceEditor::Item
-  Descr: Class for incapsulation of one preference item
+/*!
+  \class QtxResourceEditor::Item
+  Class for incapsulation of one preference item
 */
 
 class QTX_EXPORT QtxResourceEdit::Item

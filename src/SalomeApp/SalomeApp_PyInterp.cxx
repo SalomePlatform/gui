@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software 
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 // 
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org 
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -108,12 +108,12 @@ bool SalomeApp_PyInterp::initContext()
   return true;
 }
 
+/*!
+  Do nothing
+  The initialization has been done in main
+ */
 void SalomeApp_PyInterp::init_python()
 {
-  /*
-   * Do nothing
-   * The initialization has been done in main
-   */
   MESSAGE("PyInterp_base::init_python");
   ASSERT(KERNEL_PYTHON::_gtstate); // initialisation in main
   SCRUTE(KERNEL_PYTHON::_gtstate);

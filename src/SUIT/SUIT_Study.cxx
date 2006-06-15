@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "SUIT_Study.h"
 
@@ -117,11 +117,12 @@ void SUIT_Study::closeDocument(bool permanently)
 {
 }
 
+/*!
+  Custom document initialization to be performed \n
+   within onNewDoc() handler can be put here
+*/
 void SUIT_Study::createDocument()
 {
-  /*! Custom document initialization to be performed \n
-   *  within onNewDoc() handler can be put here
-   */
 }
 
 /*!
@@ -509,4 +510,19 @@ bool SUIT_Study::commitTransaction( const QString& )
 bool SUIT_Study::hasTransaction() const
 {
   return false;
+}
+
+/*!
+ * \brief Stores the study state
+*/
+int SUIT_Study::storeState()
+{
+  return -1;
+}
+ 
+/*!
+ * \brief Restores the study state
+*/
+void SUIT_Study::restoreState(int savePoint)
+{
 }

@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "SOCC_ViewWindow.h"
 
@@ -22,7 +22,9 @@
 
 #include "SUIT_Accel.h"
 
-//----------------------------------------------------------------------------
+/*!
+  Constructor
+*/
 SOCC_ViewWindow
 ::SOCC_ViewWindow( SUIT_Desktop* theDesktop, 
 		   OCCViewer_Viewer* theModel)
@@ -30,14 +32,19 @@ SOCC_ViewWindow
 {
 }
 
-//----------------------------------------------------------------------------
+/*!
+  Destructor
+*/
 SOCC_ViewWindow
 ::~SOCC_ViewWindow()
 {
 }
 
-//----------------------------------------------------------------------------
-void 
+/*!
+  Performs action
+  \param theAction - type of action
+*/
+bool 
 SOCC_ViewWindow
 ::action( const int theAction  )
 {
@@ -91,5 +98,6 @@ SOCC_ViewWindow
     myViewPort->rotate( cx, cy + inc );
     myViewPort->endRotation();
     break;
-  } 
+  }
+  return true;
 }

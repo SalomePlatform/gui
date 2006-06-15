@@ -14,24 +14,17 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "SalomeApp_ExceptionHandler.h"
+#include "CASCatch.hxx"
 
 #include <OSD.hxx>
-
-#include <Standard_Failure.hxx>
-#include <Standard_ErrorHandler.hxx>
 
 #include <stdexcept>
 #include <exception>
 
 #include <qstring.h>
-
-#include <CASCatch_CatchSignals.hxx>
-#include <CASCatch_ErrorHandler.hxx>
-#include <CASCatch_Failure.hxx> 
-
 
 /*!Constructor. Initialize by \a floatSignal.*/
 SalomeApp_ExceptionHandler::SalomeApp_ExceptionHandler( const bool floatSignal )
@@ -43,31 +36,16 @@ SalomeApp_ExceptionHandler::SalomeApp_ExceptionHandler( const bool floatSignal )
 /*!Try to call SUIT_ExceptionHandler::internalHandle(o, e), catch if failure.*/
 bool SalomeApp_ExceptionHandler::handleSignals( QObject* o, QEvent* e )
 {
-
-  CASCatch_CatchSignals aCatchSignals;
-  aCatchSignals.Activate();
-    
-    
   CASCatch_TRY {   
     SUIT_ExceptionHandler::internalHandle( o, e );
   }
-  CASCatch_CATCH(CASCatch_Failure) {
-    aCatchSignals.Deactivate();
-    Handle(CASCatch_Failure) aFail = CASCatch_Failure::Caught();          
-    throw std::runtime_error( aFail->GetError() );
+  CASCatch_CATCH(Standard_Failure) {
+    Handle(Standard_Failure) aFail = Standard_Failure::Caught();          
+    throw Standard_Failure( aFail->GetMessageString() );
   }
   
-  aCatchSignals.Deactivate();   
   return true;
 }
-
-#ifdef try
-#undef try
-#endif
-
-#ifdef catch
-#undef catch
-#endif
 
 /*!Try to call handleSignals( o, e ), catch and show error message.*/
 bool SalomeApp_ExceptionHandler::handle( QObject* o, QEvent* e )
@@ -99,5 +77,17 @@ bool SalomeApp_ExceptionHandler::handle( QObject* o, QEvent* e )
 /*!Create new SUIT_ExceptionHandler*/
 extern "C" SALOMEAPP_EXPORT SUIT_ExceptionHandler* getExceptionHandler()
 {
-  return new SalomeApp_ExceptionHandler( true );
+  // MSV 2006-04-26: work around PAL12004 "VTK window => SIGFPE Arithmetic Exception Detected"
+  // We disable FPE signal as it was in earlier versions of SALOME. It is enabled
+  // only in debug mode if the environment variable DISABLE_FPE is not set to 1.
+  bool raiseFPE;
+#ifdef _DEBUG_
+  raiseFPE = true;
+  char* envDisableFPE = getenv("DISABLE_FPE");
+  if (envDisableFPE && atoi(envDisableFPE))
+    raiseFPE = false;
+#else
+  raiseFPE = false;
+#endif
+  return new SalomeApp_ExceptionHandler( raiseFPE );
 }

@@ -1,8 +1,20 @@
-//  SALOME RegistryDisplay : GUI for Registry server implementation
+// Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License.
+// 
+// This library is distributed in the hope that it will be useful 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+// Lesser General Public License for more details.
 //
-//  Copyright (C) 2003  CEA/DEN, EDF R&D
+// You should have received a copy of the GNU Lesser General Public  
+// License along with this library; if not, write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  File   : ToolsGUI_IntervalWindow.cxx
 //  Author : Oksana TCHEBANOVA
@@ -20,8 +32,11 @@
 #define SPACING_SIZE      6
 #define MIN_SPIN_WIDTH  100 
 
+/*!
+  Constructor
+*/
 ToolsGUI_IntervalWindow::ToolsGUI_IntervalWindow ( QWidget* parent )
-     : QDialog( parent, "ToolsGUI_IntervalWindow" , true, WStyle_Customize | WStyle_NormalBorder | WStyle_Title | WStyle_SysMenu | WDestructiveClose )
+: QDialog( parent, "ToolsGUI_IntervalWindow" , true, WStyle_Customize | WStyle_NormalBorder | WStyle_Title | WStyle_SysMenu | WDestructiveClose )
 {
   BEGIN_OF("ToolsGUI_IntervalWindow constructor")
   setCaption( tr( "Refresh Interval"  ) );
@@ -73,8 +88,13 @@ ToolsGUI_IntervalWindow::ToolsGUI_IntervalWindow ( QWidget* parent )
 
   END_OF("ToolsGUI_IntervalWindow constructor")
 }
+
+/*!
+  Destructor
+*/
 ToolsGUI_IntervalWindow::~ToolsGUI_IntervalWindow() {}
-/* 
+
+/*!
    Sets start interval size
 */
 void ToolsGUI_IntervalWindow::setValue(const int size)
@@ -82,24 +102,24 @@ void ToolsGUI_IntervalWindow::setValue(const int size)
   mySpinBox->setValue(size);
 }
 
-/*
-   Gets interval size
+/*!
+   \return interval size
 */
 int ToolsGUI_IntervalWindow::getValue()
 {
   return mySpinBox->value();
 }
 
-/*
-   gets a pointer to myButtonOk
+/*!
+   \return a pointer to myButtonOk
 */
 QPushButton* ToolsGUI_IntervalWindow::Ok()
 {
   return myButtonOk;
 }
 
-/*
-   gets a pointer to myButtonCancel
+/*!
+   \return a pointer to myButtonCancel
 */
 QPushButton* ToolsGUI_IntervalWindow::Cancel()
 {

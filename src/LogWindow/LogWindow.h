@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software 
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 // 
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org 
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  File   : LogWindow.h
 //  Author : 
@@ -52,6 +52,10 @@
 class QAction;
 class QTextBrowser;
 
+/*!
+  \class LogWindow
+  Widget, showing logs message. Allows to show, to clear, to copy messages and to save then to file
+*/
 class LOGWINDOW_EXPORT LogWindow : public QFrame, public SUIT_PopupClient
 {
   Q_OBJECT

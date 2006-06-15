@@ -14,7 +14,7 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  Author : OPEN CASCADE
 //
@@ -40,9 +40,10 @@ class GLViewer_AspectLine;
 #pragma warning( disable:4251 )
 #endif
 
-/*! Class GLViewer_MarkerDrawer
-*  Drawer for GLViewer_MarkerSet
- */
+/*! 
+  \class GLViewer_MarkerDrawer
+  Drawer for GLViewer_MarkerSet
+*/
 
 class GLVIEWER_API GLViewer_MarkerDrawer : public GLViewer_Drawer  
 {
@@ -58,8 +59,9 @@ private:
   void               drawMarker( float& x, float& y, float& radius, QColor& color, GLViewer_AspectLine* aspect );
 };
 
-/*! Class  GLViewer_PolylineDrawer
-* Drawer for GLViewer_Polyline
+/*!
+  \class  GLViewer_PolylineDrawer
+  Drawer for GLViewer_Polyline
 */
 
 class GLVIEWER_API GLViewer_PolylineDrawer : public GLViewer_Drawer  
@@ -71,8 +73,9 @@ public:
   virtual void       create( float, float, bool );    
 };
 
-/* Class GLViewer_TextDrawer
-* Drawer for GLViewer_Text
+/*!
+   \class GLViewer_TextDrawer
+   Drawer for GLViewer_Text
 */
 
 class GLVIEWER_API GLViewer_TextDrawer: public GLViewer_Drawer

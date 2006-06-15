@@ -1,6 +1,20 @@
-//  Copyright (C) 2003  CEA/DEN, EDF R&D
+// Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License.
+// 
+// This library is distributed in the hope that it will be useful 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+// Lesser General Public License for more details.
 //
+// You should have received a copy of the GNU Lesser General Public  
+// License along with this library; if not, write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  File   : InquireServersQThread.cxx
 //  Author : Vasily RUSYAEV
@@ -49,6 +63,9 @@ using namespace std;
 #define MARGIN_SIZE  5
 #define SPACING_SIZE 3
 
+/*!
+  Constructor
+*/
 InquireServersGUI::InquireServersGUI()
      : QVBox(0, "SFA splash", Qt::WDestructiveClose | Qt::WStyle_Customize | Qt::WStyle_NoBorder | WType_TopLevel | WStyle_StaysOnTop | WX11BypassWM  )
 {
@@ -137,6 +154,10 @@ InquireServersGUI::InquireServersGUI()
   myThread->start();
 }
 
+/*!
+  Sets pixmap of splash screen
+  \param pix - new pixmap
+*/
 void InquireServersGUI::setPixmap( QPixmap pix )
 {
   if ( !pix.isNull() ) 
@@ -148,21 +169,28 @@ void InquireServersGUI::setPixmap( QPixmap pix )
   }
 }
 
+/*!
+  Destructor
+*/
 InquireServersGUI::~InquireServersGUI()
 {
   delete myThread;
 }
 
+/*!
+  Gets parameters from qApp
+  \param _argc - variable to return number of arguments
+  \param _argv - variable to return array of arguments
+*/
 void InquireServersGUI::getArgs( int& _argc, char *** _argv)
 {
   _argc = qApp->argc();
   *_argv = qApp->argv();
 }
 
-//=================================================================================
-// function : ClickOnCancel()
-// purpose  : cancel loading of SALOME
-//=================================================================================
+/*!
+  Cancel loading of SALOME
+*/
 void InquireServersGUI::ClickOnCancel()
 {
   myThread->stop(); //it's necessary to stop asking servers
@@ -170,6 +198,9 @@ void InquireServersGUI::ClickOnCancel()
   qApp->exit( 1 );
 }
 
+/*!
+  Custom event filter
+*/
 void InquireServersGUI::customEvent( QCustomEvent* pe )
 {
   switch( pe->type() )
@@ -204,11 +235,17 @@ void InquireServersGUI::customEvent( QCustomEvent* pe )
     }
 }
 
+/*!
+  \return status of thread exit
+*/
 int InquireServersGUI::getExitStatus()
 {
   return myThread->getExitStatus();
 }
 
+/*!
+  Constructor
+*/
 InquireServersQThread::InquireServersQThread( InquireServersGUI* r )
      : receiver(r),  myExitStatus(0)
 {
@@ -258,6 +295,9 @@ InquireServersQThread::InquireServersQThread( InquireServersGUI* r )
   }
 }
 
+/*!
+  The main loop of this thread
+*/
 void InquireServersQThread::run()
 {
   while ( IsChecking && receiver )
@@ -305,12 +345,18 @@ void InquireServersQThread::run()
   qApp->exit( myExitStatus );
 }
 
+/*!
+  Stops this thread
+*/
 void InquireServersQThread::stop()
 {
   IsChecking = false;
   myExitStatus = 1;
 }
 
+/*!
+  Destructor
+*/
 InquireServersQThread::~InquireServersQThread()
 {
 }

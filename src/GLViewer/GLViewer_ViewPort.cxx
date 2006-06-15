@@ -14,20 +14,13 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  Author : OPEN CASCADE
 //
 
 // File:      GLViewer_ViewPort.cxx
 // Created:   November, 2004
-
-/***************************************************************************
-**  Class:   GLViewer_ViewPort
-**  Descr:   Visualisation canvas of QAD-based application
-**  Module:  QAD
-**  Created: UI team, 05.09.00
-****************************************************************************/
 
 //#include <GLViewerAfx.h>
 
@@ -60,6 +53,11 @@
 #include <Xw_Window.hxx>
 #include <Graphic3d_GraphicDevice.hxx>
 
+/*!
+  \struct CMapEntry
+  Map of indexed colors
+  For internal purposes
+*/
 struct CMapEntry
 {
     CMapEntry();
@@ -69,6 +67,9 @@ struct CMapEntry
     XStandardColormap scmap;
 };
 
+/*!
+  Constructor
+*/
 CMapEntry::CMapEntry()
 {
     cmap = 0;
@@ -76,6 +77,9 @@ CMapEntry::CMapEntry()
     scmap.colormap = 0;
 }
 
+/*!
+  Destructor
+*/
 CMapEntry::~CMapEntry()
 {
     if ( alloc )
@@ -587,6 +591,9 @@ void GLViewer_ViewPort::onChangeBgColor()
         setBackgroundColor( selColor );
 }
 
+/*!
+  Custom context menu event handler
+*/
 void GLViewer_ViewPort::contextMenuEvent( QContextMenuEvent* e )
 {
   //if ( e->reason() != QContextMenuEvent::Mouse )

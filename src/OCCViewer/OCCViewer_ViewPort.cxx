@@ -14,14 +14,9 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-/***************************************************************************
-**  Class:   OCCViewer_ViewPort
-**  Descr:   Visualisation canvas of SUIT-based application
-**  Module:  SUIT
-**  Created: UI team, 05.09.00
-****************************************************************************/
+
 #if !defined WNT
 #define QT_CLEAN_NAMESPACE         /* avoid definition of INT32 and INT8 */
 #endif
@@ -59,6 +54,9 @@ struct CMapEntry
 	XStandardColormap scmap;
 };
 
+/*!
+  Constructor
+*/
 CMapEntry::CMapEntry()
 {
 	cmap = 0;
@@ -66,6 +64,9 @@ CMapEntry::CMapEntry()
 	scmap.colormap = 0;
 }
 
+/*!
+  Destructor
+*/
 CMapEntry::~CMapEntry()
 {
 	if ( alloc )

@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  File   : SPlot2d_Prs.cxx
 //  Author : Sergey RUIN
@@ -25,40 +25,34 @@
 using namespace std;
 #endif
 
-//==========================================================
 /*!
- *  SPlot2d_Prs::SPlot2d_Prs
- *  Default constructor
- */
-//==========================================================
+ Default constructor
+*/
 SPlot2d_Prs::SPlot2d_Prs()
 :Plot2d_Prs()  
 {
 }
 
-//==========================================================
 /*!
- *  SPlot2d_Prs::SPlot2d_Prs
- *  Standard constructor
- */
-//==========================================================
+ Standard constructor
+*/
 SPlot2d_Prs::SPlot2d_Prs( const Plot2d_Curve* obj )
 :Plot2d_Prs(obj)
 { 
 }
 
+/*!
+ Standard constructor
+*/
 SPlot2d_Prs::SPlot2d_Prs( const Plot2d_Prs* prs )
 {
   mySecondY = prs->isSecondY();
   myCurves = prs->getCurves();
 }
 
-//==========================================================
 /*!
- *  SPlot2d_Prs::~SPlot2d_Prs
- *  Destructor
- */
-//==========================================================
+ Destructor
+*/
 SPlot2d_Prs::~SPlot2d_Prs()
 { 
 }

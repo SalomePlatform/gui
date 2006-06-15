@@ -14,7 +14,7 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  Author : OPEN CASCADE
 //
@@ -28,12 +28,10 @@
 
 #include <iostream>
 
-/****************************************************************************
-**  Class:   GLViewer_LineList 
-**  Descr:   Tools for distinct line
-**  Module:  GLViewer
-**  Created: UI team, 27.10.05
-*****************************************************************************/
+/*!
+  Constructor
+  \param size - size of internal array
+*/
 GLViewer_LineList::GLViewer_LineList( int size )
 {
   myRealSize = 2*size;
@@ -51,11 +49,18 @@ GLViewer_LineList::GLViewer_LineList( int size )
     memset( myArray, 0, myRealSize*sizeof(double) );
 }
 
+/*!
+  Destructor
+*/
 GLViewer_LineList::~GLViewer_LineList()
 {
   delete myArray;
 }
 
+/*!
+  Adds new line segment to list
+  \param coord1, coord2 - co-ordinates of points
+*/
 bool GLViewer_LineList::addSegment( double coord1, double coord2 )
 {
   if( coord1 > coord2 )
@@ -157,6 +162,11 @@ bool GLViewer_LineList::addSegment( double coord1, double coord2 )
   return true;
 }
 
+/*!
+  Gets info about segment
+  \param theIndex - index of segment
+  \param coord1, coord2 - co-ordinates of points
+*/
 bool GLViewer_LineList::readSegment( int theIndex, double& coord1, double& coord2 )
 {
   if( theIndex > mySegmentNumber || !myArray)
@@ -168,6 +178,10 @@ bool GLViewer_LineList::readSegment( int theIndex, double& coord1, double& coord
   return true;
 }
 
+/*!
+  \return true if line list covers point
+  \param thePoint - point co-ordinate
+*/
 int GLViewer_LineList::contains( double thePoint ) const
 {
   if( !myArray || mySegmentNumber == 0 )
@@ -181,6 +195,10 @@ int GLViewer_LineList::contains( double thePoint ) const
 
 }
 
+/*!
+  Removes segment
+  \param theIndex - segment index
+*/
 bool GLViewer_LineList::removeSegment( int theIndex )
 {
   if( theIndex > mySegmentNumber || !myArray)
@@ -197,6 +215,10 @@ bool GLViewer_LineList::removeSegment( int theIndex )
   return true;
 }
 
+/*!
+  Removes segment from line list
+  \param coord1, coord2 - co-ordinates of points
+*/
 bool GLViewer_LineList::removeSegment( double coord1, double coord2 )
 {
   if( coord1 > coord2 )
@@ -349,12 +371,18 @@ bool GLViewer_LineList::removeSegment( double coord1, double coord2 )
   return true;
 }
 
+/*!
+  Clears line list
+*/
 void GLViewer_LineList::clear()
 {
   if( myArray )
     memset( myArray, 0, myRealSize*sizeof(double) );
 }
 
+/*!
+  Prints debug info about line list
+*/
 void GLViewer_LineList::print()
 {
   std::cout << "MainCoord: " << myMainCoord <<" SIZE: " << myRealSize << " ENum: " << mySegmentNumber << " :::";
@@ -364,6 +392,10 @@ void GLViewer_LineList::print()
   std::cout << std::endl;
 }
 
+/*!
+  Draws line list with help of OpenGL 
+  \param theDim - dimension
+*/
 void GLViewer_LineList::show( FieldDim theDim )
 {
   if( !myArray )
@@ -392,12 +424,10 @@ void GLViewer_LineList::show( FieldDim theDim )
   }
 }
 
-/****************************************************************************
-**  Class:   GLViewer_LineField 
-**  Descr:   Tools for solving 
-**  Module:  GLViewer
-**  Created: UI team, 27.10.05
-*****************************************************************************/
+
+/*!
+  Constructor
+*/
 GLViewer_LineField::GLViewer_LineField()
 {
   myCurArrayIndex = 0;
@@ -411,6 +441,10 @@ GLViewer_LineField::GLViewer_LineField()
   myXLineArray = NULL;
   myYLineArray = NULL;
 }
+
+/*!
+  Constructor
+*/
 GLViewer_LineField::GLViewer_LineField( const int theMAXSize, const int theXN, const int theYN )
 {
   myCurArrayIndex = 0;
@@ -442,6 +476,9 @@ GLViewer_LineField::GLViewer_LineField( const int theMAXSize, const int theXN, c
   }
 }
 
+/*!
+  Destructor
+*/
 GLViewer_LineField::~GLViewer_LineField()
 {
   if( myXLineArray )
@@ -467,11 +504,21 @@ GLViewer_LineField::~GLViewer_LineField()
     delete myGraphArray2;
 }
 
+/*!
+  Adds line
+*/
 void GLViewer_LineField::addLine( FieldDim theDim, GLViewer_LineList* )
 {
   //not implemented
 }
 
+/*!
+  Adds line
+  \param theDim - dimension
+  \param theMC - main co-ordinate
+  \param theBegin - start co-ordinate
+  \param theEnd - end co-ordinate
+*/
 void GLViewer_LineField:: addLine( FieldDim theDim, double theMC, double theBegin, double theEnd )
 {
   GLViewer_LineList* aLL = new GLViewer_LineList( 1 );
@@ -480,7 +527,12 @@ void GLViewer_LineField:: addLine( FieldDim theDim, double theMC, double theBegi
   addLine( theDim, aLL );
 }
 
-
+/*!
+  Adds line
+  \param theDim - dimension
+  \param theLL - main co-ordinate
+  \param thePosition - index in list
+*/
 int GLViewer_LineField::insertLine( FieldDim theDim, GLViewer_LineList* theLL, int thePosition )
 {
   if( !myXLineArray || !myYLineArray )
@@ -532,6 +584,14 @@ int GLViewer_LineField::insertLine( FieldDim theDim, GLViewer_LineList* theLL, i
   return -1;
 }
 
+/*!
+  Adds line
+  \param theDim - dimension
+  \param theMainCoord - main co-ordinate
+  \param theBegin - start co-ordinate
+  \param theEnd - end co-ordinate
+  \param thePosition - index in list
+*/
 int GLViewer_LineField::insertLine( FieldDim theDim, double theMainCoord, double theBegin, double theEnd, int thePosition )
 {
   GLViewer_LineList* aLL = new GLViewer_LineList( 1 );
@@ -540,7 +600,9 @@ int GLViewer_LineField::insertLine( FieldDim theDim, double theMainCoord, double
   return insertLine( theDim, aLL, thePosition );
 }
 
-
+/*!
+  \return other dimension
+*/
 FieldDim GLViewer_LineField::invertDim( FieldDim theFD )
 {
   if( theFD == FD_X )
@@ -549,6 +611,11 @@ FieldDim GLViewer_LineField::invertDim( FieldDim theFD )
     return FD_X;
 }
 
+/*!
+  \return line list
+  \param theIndex - index in list
+  \param tehFD - dimension
+*/
 GLViewer_LineList* GLViewer_LineField::getLine( int theIndex, FieldDim theFD )
 {
   if( !myXLineArray || !myYLineArray )
@@ -572,6 +639,11 @@ GLViewer_LineList* GLViewer_LineField::getLine( int theIndex, FieldDim theFD )
   return NULL;
 }
 
+/*!
+  Sets borders of field
+  \param X1, X2 - minimal and maximal abscisses
+  \param Y1, Y2 - minimal and maximal ordinates
+*/
 void GLViewer_LineField::setBorders( double X1, double X2, double Y1, double Y2 )
 {
   if( !myXLineArray || !myYLineArray )
@@ -592,6 +664,11 @@ void GLViewer_LineField::setBorders( double X1, double X2, double Y1, double Y2 
   }
 } 
 
+/*!
+  Adds rectangle
+  \param top, right - a corner of rectangle
+  \param bottom, left - other corner of rectangle
+*/
 void GLViewer_LineField::addRectangle( double top, double right, double bottom, double left )
 {
   if( !myXLineArray || !myYLineArray )
@@ -611,6 +688,9 @@ void GLViewer_LineField::addRectangle( double top, double right, double bottom, 
   }
 }
 
+/*!
+  Prints debug info about line field
+*/
 void GLViewer_LineField::print()
 {
   std::cout << "My X matrix Number: " << myXSize << std::endl;
@@ -622,6 +702,9 @@ void GLViewer_LineField::print()
     myYLineArray[j]->print();
 }
 
+/*!
+  Draws field with help of OpenGL 
+*/
 void GLViewer_LineField::show()
 {
   for( int i = 0; i < myXSize; i++ )
@@ -643,6 +726,10 @@ void GLViewer_LineField::show()
   std::cout << "Show function" << std::endl;
 }
 
+/*!
+  \return size
+  \param theDim - dimension
+*/
 int GLViewer_LineField::getDimSize( FieldDim theDim )
 {
   if( theDim == FD_X )
@@ -653,6 +740,13 @@ int GLViewer_LineField::getDimSize( FieldDim theDim )
   return -1;
 }
 
+/*!
+  \return array of intersected indexes
+  \param theDim - dimension
+  \param theIndex - index
+  \param theLL - line with that intersection is checked
+  \param theSize - to return value of array size
+*/
 int* GLViewer_LineField::intersectIndexes( FieldDim theDim, int theIndex, const GLViewer_LineList* theLL, int& theSize )
 {
   theSize = 0;
@@ -677,7 +771,11 @@ int* GLViewer_LineField::intersectIndexes( FieldDim theDim, int theIndex, const 
   return anArray;
 }
 
-
+/*!
+  Sets start/end search point
+  \param thePoint - type of point (start: FP_Start; end: FP_End )
+  \param theX, theY - point co-ordinates
+*/
 bool GLViewer_LineField::setPoint( FieldPoint thePoint, double theX, double theY )
 {
   if( !myXLineArray || !myYLineArray )
@@ -729,6 +827,9 @@ bool GLViewer_LineField::setPoint( FieldPoint thePoint, double theX, double theY
     return false;
 }
 
+/*!
+  \return number of segments
+*/
 int GLViewer_LineField::segmentNumber()
 {
   if( !(myXLineArray || myYLineArray) )
@@ -742,6 +843,9 @@ int GLViewer_LineField::segmentNumber()
   return aNumber;
 }
 
+/*!
+  Removes all multiple segments
+*/
 void GLViewer_LineField::optimize()
 {
   if( !myXLineArray || !myYLineArray )
@@ -789,6 +893,10 @@ void GLViewer_LineField::optimize()
   }
 }
 
+/*!
+  Some prepare actions
+  Needs call setPoint before
+*/
 void GLViewer_LineField::initialize()
 {
   if( !myXLineArray || !myYLineArray )
@@ -842,6 +950,9 @@ void GLViewer_LineField::initialize()
   }
 }
 
+/*!
+  One iteration of algorithm
+*/
 void GLViewer_LineField::iteration()
 {
   int aParam = myCurCount;
@@ -873,6 +984,9 @@ void GLViewer_LineField::iteration()
   delete[] aNodes;
 }
 
+/*!
+  Checks for complete status
+*/
 GLViewer_LineField::IterationStatus GLViewer_LineField::checkComplete()
 {
   if( !myXLineArray || !myYLineArray || !myGraphArray1 || !myGraphArray2 )
@@ -923,6 +1037,9 @@ GLViewer_LineField::IterationStatus GLViewer_LineField::checkComplete()
   return IS_NOT_SOLVED;
 }
 
+/*!
+  Finds LineList by counts and returns indexes
+*/
 int* GLViewer_LineField::findByCount( int& theParam )
 {
   if( !myXLineArray || !myYLineArray || !myGraphArray1 || !myGraphArray2 )
@@ -947,6 +1064,9 @@ int* GLViewer_LineField::findByCount( int& theParam )
   return anArray;
 }
 
+/*!
+  Finds LineList by segment and dimension
+*/
 int GLViewer_LineField::findBySegment( FieldDim theDim, int theLineIndex, int theSegment, bool inCurArray )
 {
   if( !myXLineArray || !myYLineArray || !myGraphArray1 || !myGraphArray2 || getDimSize( theDim ) <= theLineIndex )
@@ -968,6 +1088,9 @@ int GLViewer_LineField::findBySegment( FieldDim theDim, int theLineIndex, int th
   return -1;
 }
 
+/*!
+  Main method, performs algorithm execution
+*/
 GLViewer_LineField::EndStatus GLViewer_LineField::startAlgorithm()
 {
   if( !myXLineArray || !myYLineArray || !myGraphArray1 || !myGraphArray2 )
@@ -989,6 +1112,9 @@ GLViewer_LineField::EndStatus GLViewer_LineField::startAlgorithm()
   return ES_SOLVED;
 }
 
+/*!
+  \return solution and size of solution
+*/
 double* GLViewer_LineField::solution( int& theSize )
 {
   if( !myXLineArray || !myYLineArray || !myGraphArray1 || !myGraphArray2 )
@@ -1032,6 +1158,9 @@ double* GLViewer_LineField::solution( int& theSize )
   return anArray;
 }
 
+/*!
+  \return current solution array
+*/
 GraphNode* GLViewer_LineField::getCurArray()
 {
   if( !myGraphArray1 || !myGraphArray2 )
@@ -1043,6 +1172,9 @@ GraphNode* GLViewer_LineField::getCurArray()
     return myGraphArray2;
 }
 
+/*!
+  \return other solution array
+*/
 GraphNode* GLViewer_LineField::getSecArray()
 {
   if( !myGraphArray1 || !myGraphArray2 )
@@ -1054,6 +1186,9 @@ GraphNode* GLViewer_LineField::getSecArray()
     return myGraphArray1;
 }
 
+/*!
+  \return maximum segment number
+*/
 int GLViewer_LineField::maxSegmentNum()
 {
   if( !myXLineArray || !myYLineArray )
@@ -1073,6 +1208,10 @@ int GLViewer_LineField::maxSegmentNum()
   return max_num;
 }
 
+/*!
+  \return list of LileList by dimension
+  \param theDim - dimension
+*/
 GLViewer_LineList** GLViewer_LineField::getLLArray( FieldDim theDim )
 {
   if( theDim == FD_X )

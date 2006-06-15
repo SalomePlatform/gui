@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef CAF_APPLICATION_H
 #define CAF_APPLICATION_H
@@ -35,6 +35,12 @@ class CAF_Study;
 #pragma warning ( disable: 4251 )
 #endif
 
+/*!
+  \class CAF_Application
+  Defines application configuration and behaviour for application with 
+  link to standard OCC OCAF data model. Allows to use OCC OCAF serives
+  (for example, undo/redo)
+*/
 class CAF_EXPORT CAF_Application : public STD_Application
 {
   Q_OBJECT

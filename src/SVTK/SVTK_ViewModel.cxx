@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include <qpopupmenu.h>
 #include <qcolordialog.h>
@@ -59,17 +59,25 @@
 //  return aMgr->GetStudyByID( id );
 //}
 
-//==========================================================
+/*!
+  Constructor
+*/
 SVTK_Viewer::SVTK_Viewer()
 {
   myTrihedronSize = 105;
+  myTrihedronRelative = true;
 }
 
-//==========================================================
+/*!
+  Destructor
+*/
 SVTK_Viewer::~SVTK_Viewer() 
 {
 }
 
+/*!
+  \return background color
+*/
 QColor
 SVTK_Viewer
 ::backgroundColor() const
@@ -77,6 +85,10 @@ SVTK_Viewer
   return myBgColor;
 }
 
+/*!
+  Changes background color
+  \param theColor - new background color
+*/
 void
 SVTK_Viewer
 ::setBackgroundColor( const QColor& theColor )
@@ -88,7 +100,7 @@ SVTK_Viewer
   for(int i = 0, iEnd = aViews.size(); i < iEnd; i++){
     if(SUIT_ViewWindow* aViewWindow = aViews.at(i)){
       if(TViewWindow* aView = dynamic_cast<TViewWindow*>(aViewWindow)){
-	aView->getMainWindow()->SetBackgroundColor(theColor);
+	aView->setBackgroundColor(theColor);
       }
     }
   }
@@ -96,46 +108,62 @@ SVTK_Viewer
   myBgColor = theColor;
 }
 
-//==========================================================
-SUIT_ViewWindow* 
+/*!Create new instance of view window on desktop \a theDesktop.
+ *\retval SUIT_ViewWindow* - created view window pointer.
+ */
+SUIT_ViewWindow*
 SVTK_Viewer::
 createView( SUIT_Desktop* theDesktop )
 {
-  SVTK_ViewWindow* aViewWindow = new SVTK_ViewWindow(theDesktop);
+  TViewWindow* aViewWindow = new TViewWindow(theDesktop);
   aViewWindow->Initialize(this);
-    
+
   aViewWindow->setBackgroundColor( backgroundColor() );
-  aViewWindow->SetTrihedronSize( trihedronSize() );
+  aViewWindow->SetTrihedronSize( trihedronSize(), trihedronRelative() );
 
   return aViewWindow;
 }
 
+/*!
+  \return trihedron size
+*/
 int SVTK_Viewer::trihedronSize() const
 {
   return myTrihedronSize;
 }
 
-void SVTK_Viewer::setTrihedronSize( const int sz )
+/*!
+  \return true if thihedron changes size in accordance with bounding box
+*/
+bool SVTK_Viewer::trihedronRelative() const
 {
-  myTrihedronSize = sz;
+  return myTrihedronRelative;
+}
 
-  SUIT_ViewManager* vm = getViewManager();
-  if ( !vm )
-    return;
+/*!
+  Sets trihedron size and relativeness( whether thihedron changes size in accordance with bounding box)
+  \param theSize - new size
+  \param theRelative - new relativeness
+*/
+void SVTK_Viewer::setTrihedronSize( const int theSize, const bool theRelative )
+{
+  myTrihedronSize = theSize;
+  myTrihedronRelative = theRelative;
 
-  QPtrVector<SUIT_ViewWindow> vec = vm->getViews();
-  for ( int i = 0; i < vec.count(); i++ )
-  {
-    SUIT_ViewWindow* win = vec.at( i );
-    if ( !win || !win->inherits( "SVTK_ViewWindow" ) )
-      continue;
-
-    SVTK_ViewWindow* vw = (SVTK_ViewWindow*)win;
-    vw->SetTrihedronSize( sz );
+  if (SUIT_ViewManager* aViewManager = getViewManager()) {
+    QPtrVector<SUIT_ViewWindow> aViews = aViewManager->getViews();
+    for (int i = 0; i < aViews.count(); i++) {
+      if (TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at(i))) {
+	aView->SetTrihedronSize(theSize, theRelative);
+      }
+    }
   }
 }
 
-//==========================================================
+/*!
+  Sets new view manager
+  \param theViewManager - new view manager
+*/
 void SVTK_Viewer::setViewManager(SUIT_ViewManager* theViewManager)
 {
   SUIT_ViewModel::setViewManager(theViewManager);
@@ -153,7 +181,9 @@ void SVTK_Viewer::setViewManager(SUIT_ViewManager* theViewManager)
           this, SLOT(onMouseRelease(SUIT_ViewWindow*, QMouseEvent*)));
 }
 
-//==========================================================
+/*!
+  Builds popup for vtk viewer
+*/
 void
 SVTK_Viewer
 ::contextMenuPopup( QPopupMenu* thePopup )
@@ -164,31 +194,40 @@ SVTK_Viewer
   thePopup->insertSeparator();
 
   if(TViewWindow* aView = dynamic_cast<TViewWindow*>(myViewManager->getActiveView())){
-    if ( !aView->getView()->GetMainWindow()->getToolBar()->isVisible() ){
+    if ( !aView->getMainWindow()->getToolBar()->isVisible() ){
       thePopup->insertItem( VTKViewer_Viewer::tr( "MEN_SHOW_TOOLBAR" ), this, SLOT( onShowToolbar() ) );
     }
   }
 }
 
-//==========================================================
+/*!
+  SLOT: called on mouse button press, empty implementation
+*/
 void 
 SVTK_Viewer
 ::onMousePress(SUIT_ViewWindow* vw, QMouseEvent* event)
 {}
 
-//==========================================================
+/*!
+  SLOT: called on mouse move, empty implementation
+*/
 void 
 SVTK_Viewer
 ::onMouseMove(SUIT_ViewWindow* vw, QMouseEvent* event)
 {}
 
-//==========================================================
+/*!
+  SLOT: called on mouse button release, empty implementation
+*/
 void 
 SVTK_Viewer
 ::onMouseRelease(SUIT_ViewWindow* vw, QMouseEvent* event)
 {}
 
-//==========================================================
+/*!
+  Enables/disables selection
+  \param isEnabled - new state
+*/
 void 
 SVTK_Viewer
 ::enableSelection(bool isEnabled)
@@ -197,7 +236,10 @@ SVTK_Viewer
   //!! To be done for view windows
 }
 
-//==========================================================
+/*!
+  Enables/disables selection of many object
+  \param isEnabled - new state
+*/
 void
 SVTK_Viewer
 ::enableMultiselection(bool isEnable)
@@ -206,6 +248,9 @@ SVTK_Viewer
   //!! To be done for view windows
 }
 
+/*!
+  SLOT: called on dump view operation is activated, stores scene to raster file
+*/
 void
 SVTK_Viewer
 ::onDumpView()
@@ -214,7 +259,9 @@ SVTK_Viewer
     aView->onDumpView();
 }
 
-//==========================================================
+/*!
+  SLOT: called if background color is to be changed changed, passes new color to view port
+*/
 void
 SVTK_Viewer
 ::onChangeBgColor()
@@ -225,7 +272,9 @@ SVTK_Viewer
   }
 }
 
-//==========================================================
+/*!
+  SLOT: called when popup item "Show toolbar" is activated, shows toolbar of active view window
+*/
 void
 SVTK_Viewer
 ::onShowToolbar() 
@@ -233,12 +282,15 @@ SVTK_Viewer
   QPtrVector<SUIT_ViewWindow> aViews = myViewManager->getViews();
   for(int i = 0, iEnd = aViews.size(); i < iEnd; i++){
     if(TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at(i))){
-      aView->getView()->GetMainWindow()->getToolBar()->show();
+      aView->getMainWindow()->getToolBar()->show();
     }
   }
 }
 
-//==========================================================
+/*!
+  Display presentation
+  \param prs - presentation
+*/
 void
 SVTK_Viewer
 ::Display( const SALOME_VTKPrs* prs )
@@ -283,7 +335,11 @@ SVTK_Viewer
   }
 }
 
-//==========================================================
+/*!
+  Erase presentation
+  \param prs - presentation
+  \param forced - removes object from view
+*/
 void
 SVTK_Viewer
 ::Erase( const SALOME_VTKPrs* prs, const bool forced )
@@ -323,8 +379,11 @@ SVTK_Viewer
     }
   }
 }
-  
-//==========================================================
+
+/*!
+  Erase all presentations
+  \param forced - removes all objects from view
+*/
 void
 SVTK_Viewer
 ::EraseAll( const bool forced )
@@ -369,7 +428,10 @@ SVTK_Viewer
   Repaint();
 }
 
-//==========================================================
+/*!
+  Create presentation corresponding to the entry
+  \param entry - entry
+*/
 SALOME_Prs* 
 SVTK_Viewer
 ::CreatePrs( const char* entry )
@@ -393,7 +455,9 @@ SVTK_Viewer
   return prs;
 }
 
-//==========================================================
+/*!
+  Auxiliary method called before displaying of objects
+*/
 void
 SVTK_Viewer
 ::BeforeDisplay( SALOME_Displayer* d )
@@ -401,29 +465,37 @@ SVTK_Viewer
   d->BeforeDisplay( this, SALOME_VTKViewType() );
 }
 
-//==========================================================
+/*!
+  Auxiliary method called after displaying of objects
+*/
 void
 SVTK_Viewer::AfterDisplay( SALOME_Displayer* d )
 {
   d->AfterDisplay( this, SALOME_VTKViewType() );
 }
 
-//==========================================================
+/*!
+  \return true if object is displayed in viewer
+  \param obj - object to be checked
+*/
 bool
 SVTK_Viewer
 ::isVisible( const Handle(SALOME_InteractiveObject)& io )
 {
   QPtrVector<SUIT_ViewWindow> aViews = myViewManager->getViews();
   for(int i = 0, iEnd = aViews.size(); i < iEnd; i++)
-    if(SVTK_ViewWindow* aViewWindow = dynamic_cast<SVTK_ViewWindow*>(aViews.at(i)))
-      if(SVTK_View* aView = aViewWindow->getView())
-	if(!aView->isVisible( io ))
-	  return false;
+    if(SUIT_ViewWindow* aViewWindow = aViews.at(i))
+      if(TViewWindow* aViewWnd = dynamic_cast<TViewWindow*>(aViewWindow))
+        if(SVTK_View* aView = aViewWnd->getView())
+          if(!aView->isVisible( io ))
+            return false;
 
   return true;
 }
 
-//==========================================================
+/*!
+  Updates current viewer
+*/
 void 
 SVTK_Viewer
 ::Repaint()
@@ -431,7 +503,7 @@ SVTK_Viewer
 //  if (theUpdateTrihedron) onAdjustTrihedron();
   QPtrVector<SUIT_ViewWindow> aViews = myViewManager->getViews();
   for(int i = 0, iEnd = aViews.size(); i < iEnd; i++)
-    if(SVTK_ViewWindow* aViewWindow = dynamic_cast<SVTK_ViewWindow*>(aViews.at(i)))
+    if(TViewWindow* aViewWindow = dynamic_cast<TViewWindow*>(aViews.at(i)))
       if(SVTK_View* aView = aViewWindow->getView())
 	aView->Repaint();
 }

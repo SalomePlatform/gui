@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef SVTK_VIEWMANAGER_H
 #define SVTK_VIEWMANAGER_H
@@ -35,6 +35,8 @@ public:
 
   //! Destroy the view manager
   virtual ~SVTK_ViewManager();
+
+  SUIT_Desktop* getDesktop();
 
 protected:
   void setViewName( SUIT_ViewWindow* theView );

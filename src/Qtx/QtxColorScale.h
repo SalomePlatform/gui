@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      QtxColorScale.h
 // Author:    Sergey TELKOV
@@ -38,6 +38,10 @@ class QSimpleRichText;
 #pragma warning( disable:4251 )
 #endif
 
+/*!
+  \class QtxColorScale
+  Color Scale widget.
+*/
 class QTX_EXPORT QtxColorScale : public QFrame
 {
 	  Q_OBJECT
@@ -152,7 +156,9 @@ private:
 	  QSize                 calculateSize( const bool, const int,
 										                     const bool, const bool, const bool ) const;
 
-	  friend class Dock;
+#if QT_VER == 3
+	  friend class QtxColorScale::Dock;
+#endif
 
 private:
 	  double                myMin;

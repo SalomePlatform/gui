@@ -14,14 +14,16 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "SVTK_ViewManager.h"
 #include "SVTK_ViewModel.h"
 
 int SVTK_ViewManager::_SVTKViewMgr_Id = 0;
 
-//***************************************************************
+/*!
+  Constructor
+*/
 SVTK_ViewManager::SVTK_ViewManager( SUIT_Study* study, 
 		    SUIT_Desktop* theDesktop ) 
 : SUIT_ViewManager( study, theDesktop )
@@ -30,12 +32,24 @@ SVTK_ViewManager::SVTK_ViewManager( SUIT_Study* study,
   setViewModel( new SVTK_Viewer() );
 }
 
-//***************************************************************
+/*!
+  Destructor
+*/
 SVTK_ViewManager::~SVTK_ViewManager()
 {
 }
 
-//***************************************************************
+/*!
+  \return corresponding main window
+*/
+SUIT_Desktop* SVTK_ViewManager::getDesktop()
+{
+  return myDesktop;
+}
+
+/*!
+  Sets default name of view
+*/
 void SVTK_ViewManager::setViewName(SUIT_ViewWindow* theView)
 {
   int aPos = myViews.find(theView);

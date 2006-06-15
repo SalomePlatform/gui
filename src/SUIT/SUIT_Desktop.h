@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef SUIT_DESKTOP_H
 #define SUIT_DESKTOP_H
@@ -31,6 +31,11 @@ class SUIT_ViewWindow;
 class QtxActionMenuMgr;
 class QtxActionToolMgr;
 
+/*!
+  \class SUIT_Desktop
+  Provides standard desktop: main window with
+  main menu manager, toolbars manager and logo.
+*/
 class SUIT_EXPORT SUIT_Desktop : public QtxMainWindow
 {
   Q_OBJECT

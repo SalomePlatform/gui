@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "LightApp_DataObject.h"
 
@@ -73,10 +73,6 @@ bool LightApp_DataObject::Key::isEqual( const SUIT_DataObjectKey* other ) const
   return myEntry == that->myEntry;
 }
 
-/*
-	Class: LightApp_DataObject
-	Level: Public
-*/
 /*!Constructor. Initialize by \a parent*/
 LightApp_DataObject::LightApp_DataObject( SUIT_DataObject* parent )
 : CAM_DataObject( parent ), myCompObject( 0 ), myCompDataType( "" )
@@ -142,10 +138,7 @@ QString LightApp_DataObject::componentDataType() const
   return myCompDataType;
 }
 
-/*
-	Class: LightApp_ModuleObject
-	Level: Public
-*/
+
 
 /*!Constructor.Initialize by \a parent.*/
 LightApp_ModuleObject::LightApp_ModuleObject( SUIT_DataObject* parent )

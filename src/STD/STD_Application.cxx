@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "STD_Application.h"
 
@@ -199,32 +199,32 @@ void STD_Application::createActions()
 
   // Create menus
 
-  int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1, -1, 0 );
-  int editMenu = createMenu( tr( "MEN_DESK_EDIT" ), -1, -1, 10 );
-  int viewMenu = createMenu( tr( "MEN_DESK_VIEW" ), -1, -1, 10 );
-  int helpMenu = createMenu( tr( "MEN_DESK_HELP" ), -1, -1, 1000 );
+  int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1, MenuFileId, 0 );
+  int editMenu = createMenu( tr( "MEN_DESK_EDIT" ), -1, MenuEditId, 10 );
+  int viewMenu = createMenu( tr( "MEN_DESK_VIEW" ), -1, MenuViewId, 10 );
+  int helpMenu = createMenu( tr( "MEN_DESK_HELP" ), -1, MenuHelpId, 1000 );
 
   // Create menu items
 
-  createMenu( FileNewId, fileMenu, 0 );
-  createMenu( FileOpenId, fileMenu, 0 );
-  createMenu( FileLoadId, fileMenu, 0 );  //SRN: BugID IPAL9021, add a menu item "Load"
-  createMenu( FileCloseId, fileMenu, 0 );
-  createMenu( separator(), fileMenu, -1, 0 );
-  createMenu( FileSaveId, fileMenu, 0 );
+  createMenu( FileNewId,    fileMenu, 0 );
+  createMenu( FileOpenId,   fileMenu, 0 );
+  createMenu( FileLoadId,   fileMenu, 0 );  //SRN: BugID IPAL9021, add a menu item "Load"
+  createMenu( FileCloseId,  fileMenu, 0 );
+  createMenu( separator(),  fileMenu, -1, 0 );
+  createMenu( FileSaveId,   fileMenu, 0 );
   createMenu( FileSaveAsId, fileMenu, 0 );
-  createMenu( separator(), fileMenu, -1, 0 );
+  createMenu( separator(),  fileMenu, -1, 0 );
 
-  createMenu( separator(), fileMenu );
-  createMenu( FileExitId, fileMenu );
+  createMenu( separator(),  fileMenu );
+  createMenu( FileExitId,   fileMenu );
 
-  createMenu( EditCopyId, editMenu );
+  createMenu( EditCopyId,  editMenu );
   createMenu( EditPasteId, editMenu );
   createMenu( separator(), editMenu );
 
-  createMenu( ViewWindowsId, viewMenu );
+  createMenu( ViewWindowsId,   viewMenu );
   createMenu( ViewStatusBarId, viewMenu );
-  createMenu( separator(), viewMenu );
+  createMenu( separator(),     viewMenu );
 
   createMenu( HelpAboutId, helpMenu );
   createMenu( separator(), helpMenu );
@@ -472,8 +472,11 @@ void STD_Application::onSaveDoc()
     if ( !isOk )
     {
       putInfo( "" );
-      SUIT_MessageBox::error1( desktop(), tr( "TIT_FILE_SAVEAS" ),
-			                         tr( "MSG_CANT_SAVE" ).arg( activeStudy()->studyName() ), tr( "BUT_OK" ) );
+      // displaying a message box as SUIT_Validator in case file can't be written (the most frequent case)
+      SUIT_MessageBox::error1( desktop(), 
+			       tr( "ERR_ERROR" ),
+			       tr( "ERR_PERMISSION_DENIED" ).arg( activeStudy()->studyName() ),
+			       tr( "BUT_OK" ) );
     }
     else
       putInfo( tr( "INF_DOC_SAVED" ).arg( "" ) );
@@ -510,7 +513,8 @@ bool STD_Application::onSaveAsDoc()
 
     if ( !isOk )
       SUIT_MessageBox::error1( desktop(), tr( "ERROR" ),
-                             tr( "INF_DOC_SAVING_FAILS" ).arg( aName ), tr( "BUT_OK" ) );
+			       tr( "INF_DOC_SAVING_FAILS" ).arg( aName ), 
+			       tr( "BUT_OK" ) );
   }
 
   studySaved( activeStudy() );
@@ -547,8 +551,8 @@ void STD_Application::setEditEnabled( bool theEnable )
 
   for ( int i = EditCopyId; i <= EditPasteId; i++ )
   {
-    mMgr->setShown( i, myEditEnabled );
-    tMgr->setShown( i, myEditEnabled );
+    mMgr->setShown( mMgr->actionId(action(i)), myEditEnabled );
+    tMgr->setShown( tMgr->actionId(action(i)), myEditEnabled );
   }
 }
 
@@ -835,6 +839,10 @@ QString STD_Application::getDirectory( const QString& initial, const QString& ca
   return QFileDialog::getExistingDirectory( initial, parent, 0, caption, true );
 }
 
+/*!
+  Changes desktop
+  \param desk - new desktop
+*/
 void STD_Application::setDesktop( SUIT_Desktop* desk )
 {
   SUIT_Desktop* prev = desktop();
@@ -860,18 +868,30 @@ void STD_Application::savePreferences()
 {
 }
 
+/*!
+  Custom activity after study is created
+  Updates desktop and actions
+*/
 void STD_Application::studyCreated( SUIT_Study* )
 {
   updateDesktopTitle();
   updateCommandsStatus();
 }
 
+/*!
+  Custom activity after study is opened
+  Updates desktop and actions
+*/
 void STD_Application::studyOpened( SUIT_Study* )
 {
   updateDesktopTitle();
   updateCommandsStatus();
 }
 
+/*!
+  Custom activity after study is opened
+  Updates desktop and actions
+*/
 void STD_Application::studySaved( SUIT_Study* )
 {
   updateDesktopTitle();

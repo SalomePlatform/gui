@@ -1,3 +1,21 @@
+// Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License.
+// 
+// This library is distributed in the hope that it will be useful 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public  
+// License along with this library; if not, write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
 // File:      SalomeApp_Application.h
 // Created:   10/22/2004 3:37:25 PM
 // Author:    Sergey LITONIN
@@ -27,6 +45,7 @@ class QDockWindow;
 
 class LightApp_Preferences;
 class SalomeApp_Module;
+class SalomeApp_Study;
 
 class SALOME_LifeCycleCORBA;
 
@@ -37,7 +56,8 @@ class QListViewItem;
 #endif
 
 /*!
-  Description : Application containing SalomeApp module or LightApp module
+  \class SalomeApp_Application
+  \brief Application containing SalomeApp module or LightApp module
 */
 
 class SALOMEAPP_EXPORT SalomeApp_Application : public LightApp_Application
@@ -45,8 +65,9 @@ class SALOMEAPP_EXPORT SalomeApp_Application : public LightApp_Application
   Q_OBJECT
 
 public:
+  enum { MenuToolsId = 5 };
   enum { DumpStudyId = LightApp_Application::UserID, LoadScriptId, PropertiesId,
-         CatalogGenId, RegDisplayId, UserID };
+         CatalogGenId, RegDisplayId, SaveGUIStateId, UserID };
 
 public:
   SalomeApp_Application();
@@ -66,12 +87,20 @@ public:
   static SALOME_LifeCycleCORBA*       lcc();
   static QString                      defaultEngineIOR();
 
+  SUIT_ViewManager*                   newViewManager(const QString&);
+  void                                updateSavePointDataObjects( SalomeApp_Study* );
+
 public slots:
   virtual bool                        onOpenDoc( const QString& );
   virtual void                        onLoadDoc();
   virtual bool                        onLoadDoc( const QString& );
   virtual void                        onCopy();
   virtual void                        onPaste();
+  void                                onSaveGUIState();// called from VISU
+
+protected slots:
+  void                                onStudySaved( SUIT_Study* );
+  void                                onStudyOpened( SUIT_Study* );
 
 protected:
   virtual void                        createActions();
@@ -90,6 +119,10 @@ private slots:
   void                                onProperties();
   void                                onDumpStudy();
   void                                onLoadScript(); 
+
+  void                                onDeleteGUIState(); 
+  void                                onRestoreGUIState();
+  void                                onRenameGUIState();
 
   void                                onCatalogGen();
   void                                onRegDisplay();

@@ -14,7 +14,7 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  Author : OPEN CASCADE
 //
@@ -22,9 +22,6 @@
 // File:      GLViewer_Widget.h
 // Created:   November, 2004
 
-/*! Class GLViewer_Widget
- *  Class for visualization OpenGL scene (widget) for GLViewer
- */
 #ifndef GLVIEWER_WIDGET_H
 #define GLVIEWER_WIDGET_H
 
@@ -36,6 +33,10 @@
 class GLViewer_ViewPort2d;
 class GLViewer_CoordSystem;
 
+/*!
+  \class GLViewer_Widget
+  Widget for visualization of OpenGL scene
+*/
 class GLVIEWER_API GLViewer_Widget : public QGLWidget
 {
   Q_OBJECT

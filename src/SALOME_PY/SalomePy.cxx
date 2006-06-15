@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software 
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 // 
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org 
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -45,15 +45,15 @@
 
 using namespace std;
 
-//////////////////////////////////////////////////////////////////////////////
-// VSR : 19.04.05 : Reimplemented for new SALOME GUI (SUIT-based)
-// All methods are implemented using Event mechanism:
-// - getRenderer()
-// - getRenderWindow()
-// - getRenderWindowInteractor()
-// These methods open new VTK viewer if there is no one opened.
-// In case of error methods return None object in Python.
-//////////////////////////////////////////////////////////////////////////////
+/*!
+  VSR : 19.04.05 : Reimplemented for new SALOME GUI (SUIT-based)
+  All methods are implemented using Event mechanism:
+  - getRenderer()
+  - getRenderWindow()
+  - getRenderWindowInteractor()
+  These methods open new VTK viewer if there is no one opened.
+  In case of error methods return None object in Python.
+*/
 
 static PyObject* GetPyClass(const char* theClassName){
   static PyObject *aVTKModule = NULL;

@@ -17,7 +17,7 @@
 #  License along with this library; if not, write to the Free Software 
 #  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 # 
-#  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org 
+# See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 #
 #
@@ -123,7 +123,7 @@ msgid "MNU_DUMP_VIEW"
 msgstr "Dump view"
 
 msgid "DSC_CLIPPING"
-msgstr "Define clipping plane"
+msgstr "Set clipping plane"
 
 msgid "MNU_CLIPPING"
 msgstr "Clipping"
@@ -160,10 +160,6 @@ msgstr "Cannot save file"
 
 msgid "ERROR"
 msgstr "Error"
-
-msgid "BUT_OK"
-msgstr "Ok"
-
 
 msgid "OCCViewer_Viewer::MEN_DUMP_VIEW"
 msgstr "Dump view..."

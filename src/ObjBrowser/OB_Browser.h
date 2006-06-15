@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef OB_BROWSER_H
 #define OB_BROWSER_H
@@ -39,6 +39,12 @@ class OB_Filter;
 class OB_ListView;
 class OB_ListItem;
 
+/*!
+  \class OB_Browser
+  Represents object browser. Allows to get/set selection, 
+  to drag-n-drop of objects, to determine item by SUIT object and 
+  vice versa
+*/
 class OB_EXPORT OB_Browser : public QFrame, public SUIT_PopupClient
 {
 	Q_OBJECT
@@ -162,6 +168,7 @@ private:
   void              removeObject( SUIT_DataObject*, const bool = true );
 
   void              updateText( QListViewItem* );
+  bool              needToUpdateTexts( QListViewItem* ) const;
 
   DataObjectKey     objectKey( QListViewItem* ) const;
   DataObjectKey     objectKey( SUIT_DataObject* ) const;

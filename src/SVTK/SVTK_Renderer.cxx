@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software 
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 // 
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org 
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -55,10 +55,11 @@
 #undef max
 
 
-//----------------------------------------------------------------------------
 vtkStandardNewMacro(SVTK_Renderer);
 
-//----------------------------------------------------------------------------
+/*!
+  Constructor
+*/
 SVTK_Renderer
 ::SVTK_Renderer():
   myDevice(vtkRenderer::New()),
@@ -74,7 +75,8 @@ SVTK_Renderer
   myTransform(VTKViewer_Transform::New()),
   myCubeAxes(SVTK_CubeAxesActor2D::New()),
   myTrihedron(SVTK_Trihedron::New()),
-  myTrihedronSize(105)
+  myTrihedronSize(105),
+  myIsTrihedronRelative(true)
 {
   myDevice->Delete();
   myTransform->Delete();
@@ -151,6 +153,9 @@ SVTK_Renderer
 			   myPriority);
 }
 
+/*!
+  Destructor
+*/
 SVTK_Renderer
 ::~SVTK_Renderer()
 {
@@ -175,6 +180,9 @@ SVTK_Renderer
 }
 
 
+/*!
+  Main process event method
+*/
 void 
 SVTK_Renderer
 ::ProcessEvents(vtkObject* vtkNotUsed(theObject), 
@@ -197,7 +205,9 @@ SVTK_Renderer
   }
 }
 
-//----------------------------------------------------------------------------
+/*!
+  \return renderer's device
+*/
 vtkRenderer* 
 SVTK_Renderer
 ::GetDevice()
@@ -205,6 +215,9 @@ SVTK_Renderer
   return myDevice.GetPointer();
 }
 
+/*!
+  Initialize renderer
+*/
 void 
 SVTK_Renderer
 ::Initialize(vtkRenderWindowInteractor* theInteractor,
@@ -214,7 +227,9 @@ SVTK_Renderer
   mySelector = theSelector;
 }
 
-//----------------------------------------------------------------------------
+/*!
+  Publishes pointed actor into the renderer
+*/
 void
 SVTK_Renderer
 ::AddActor(VTKViewer_Actor* theActor)
@@ -238,6 +253,9 @@ SVTK_Renderer
   }
 }
 
+/*!
+  Removes pointed actor from the renderer
+*/
 void
 SVTK_Renderer
 ::RemoveActor(VTKViewer_Actor* theActor)
@@ -263,6 +281,9 @@ SVTK_Renderer
   }
 }
 
+/*!
+  Get special container that keeps scaling of the scene
+*/
 VTKViewer_Transform* 
 SVTK_Renderer
 ::GetTransform()
@@ -270,6 +291,9 @@ SVTK_Renderer
   return myTransform.GetPointer();
 }
 
+/*!
+  Allows to get a scale that is applied on the whole scene
+*/
 void
 SVTK_Renderer
 ::GetScale( double theScale[3] ) 
@@ -277,6 +301,9 @@ SVTK_Renderer
   myTransform->GetMatrixScale( theScale );
 }
 
+/*!
+  Allows to apply a scale on the whole scene
+*/
 void
 SVTK_Renderer
 ::SetScale( double theScale[3] ) 
@@ -285,8 +312,9 @@ SVTK_Renderer
   AdjustActors();
 }
 
-
-//----------------------------------------------------------------------------
+/*!
+  Applies color and size (PointSize and LineWidth) of primitives in selection mode
+*/
 void
 SVTK_Renderer
 ::SetSelectionProp(const double& theRed, 
@@ -299,7 +327,9 @@ SVTK_Renderer
   myHighlightProperty->SetPointSize( theWidth );
 }
 
-//----------------------------------------------------------------------------
+/*!
+  Applies color and size (PointSize and LineWidth) of primitives in preselection mode
+*/
 void
 SVTK_Renderer
 ::SetPreselectionProp(const double& theRed, 
@@ -312,7 +342,9 @@ SVTK_Renderer
   myPreHighlightProperty->SetPointSize( theWidth );
 }
 
-//----------------------------------------------------------------------------
+/*!
+  Setup requested tolerance for the picking
+*/
 void
 SVTK_Renderer
 ::SetSelectionTolerance(const double& theTolNodes, 
@@ -326,14 +358,13 @@ SVTK_Renderer
 }
 
 
-//----------------------------------------------------------------------------
 /*! If parameter theIsForcedUpdate is true, recalculate parameters for
  *  trihedron and cube axes, even if trihedron and cube axes is invisible.
  */
 
 inline
 bool
-CheckBndBox(const float theBounds[6])
+CheckBndBox(const vtkFloatingPointType theBounds[6])
 {
   if(theBounds[0] > -VTK_LARGE_FLOAT && theBounds[1] < VTK_LARGE_FLOAT &&
      theBounds[2] > -VTK_LARGE_FLOAT && theBounds[3] < VTK_LARGE_FLOAT &&
@@ -342,6 +373,9 @@ CheckBndBox(const float theBounds[6])
   return false;
 }
 
+/*!
+  Adjusts size of actors
+*/
 bool
 SVTK_Renderer
 ::OnAdjustActors()
@@ -349,7 +383,7 @@ SVTK_Renderer
   bool aTDisplayed = IsTrihedronDisplayed();
   bool aCDisplayed = IsCubeAxesDisplayed();
 
-  float aNewBndBox[6];
+  vtkFloatingPointType aNewBndBox[6];
   aNewBndBox[ 0 ] = aNewBndBox[ 2 ] = aNewBndBox[ 4 ] = VTK_LARGE_FLOAT;
   aNewBndBox[ 1 ] = aNewBndBox[ 3 ] = aNewBndBox[ 5 ] = -VTK_LARGE_FLOAT;
 
@@ -362,9 +396,14 @@ SVTK_Renderer
       myCubeAxes->VisibilityOff();
 
     // if the new trihedron size have sufficient difference, then apply the value
-    double aSize = myTrihedron->GetSize();
-    ComputeTrihedronSize(GetDevice(),aSize,aSize,myTrihedronSize);
-    myTrihedron->SetSize(aSize);
+    vtkFloatingPointType aSize = myTrihedron->GetSize();
+    if ( IsTrihedronRelative() )
+      {
+	ComputeTrihedronSize(GetDevice(),aSize,aSize,myTrihedronSize);
+	myTrihedron->SetSize(aSize);
+      }
+    else
+      myTrihedron->SetSize( myTrihedronSize );
 
     // iterate through displayed objects and set size if necessary
     vtkActorCollection* anActors = GetDevice()->GetActors();
@@ -374,7 +413,7 @@ SVTK_Renderer
 	if(anActor->IsResizable())
 	  anActor->SetSize(0.5*aSize);
         if(anActor->GetVisibility() && !anActor->IsInfinitive()){
-	  float *aBounds = anActor->GetBounds();
+	  vtkFloatingPointType *aBounds = anActor->GetBounds();
           if(CheckBndBox(aBounds))
 	    for(int i = 0; i < 5; i = i + 2){
 	      if(aBounds[i] < aNewBndBox[i]) 
@@ -408,6 +447,9 @@ SVTK_Renderer
   return false;
 }
 
+/*!
+  Adjusts size of actors
+*/
 void
 SVTK_Renderer
 ::AdjustActors()
@@ -416,16 +458,26 @@ SVTK_Renderer
     ::ResetCameraClippingRange(GetDevice());
 }
 
+/*!
+  Set size of the trihedron
+  \param theSize - new size
+  \param theRelative - if it is true, then size is mesured in percents from bounding box of the scene,
+  otherwise - in viewer units
+*/
 void
 SVTK_Renderer
-::SetTrihedronSize(int theSize)
+::SetTrihedronSize(int theSize, const bool theRelative)
 {
-  if(myTrihedronSize != theSize){
+  if(myTrihedronSize != theSize || myIsTrihedronRelative != theRelative){
     myTrihedronSize = theSize;
+    myIsTrihedronRelative = theRelative;
     AdjustActors();
   }
 }
 
+/*!
+  \return size of the trihedron in percents from bounding box of the scene
+*/
 int
 SVTK_Renderer
 ::GetTrihedronSize() const
@@ -433,8 +485,19 @@ SVTK_Renderer
   return myTrihedronSize;
 }
 
+/*!
+  \return true if the size of the trihedron is relative
+*/
+bool 
+SVTK_Renderer
+::IsTrihedronRelative() const
+{
+  return myIsTrihedronRelative;
+}
 
-//----------------------------------------------------------------------------
+/*!
+  \return trihedron control
+*/
 VTKViewer_Trihedron* 
 SVTK_Renderer
 ::GetTrihedron()
@@ -442,6 +505,9 @@ SVTK_Renderer
   return myTrihedron.GetPointer();
 }
 
+/*!
+  \return true if trihedron is displayed
+*/
 bool
 SVTK_Renderer
 ::IsTrihedronDisplayed()
@@ -449,6 +515,9 @@ SVTK_Renderer
   return myTrihedron->GetVisibility() == VTKViewer_Trihedron::eOn;
 }
 
+/*!
+  Toggle trihedron visibility
+*/
 void 
 SVTK_Renderer
 ::OnViewTrihedron()
@@ -459,6 +528,9 @@ SVTK_Renderer
     myTrihedron->VisibilityOn();
 }
 
+/*!
+  Adjust size of the trihedron to the bounding box of the scene
+*/
 void
 SVTK_Renderer
 ::OnAdjustTrihedron()
@@ -466,8 +538,9 @@ SVTK_Renderer
   AdjustActors();
 }
 
-
-//----------------------------------------------------------------------------
+/*!
+  \return graduated rules control
+*/
 SVTK_CubeAxesActor2D* 
 SVTK_Renderer
 ::GetCubeAxes()
@@ -475,6 +548,9 @@ SVTK_Renderer
   return myCubeAxes.GetPointer();
 }
 
+/*!
+  \return true if graduated rules displayed
+*/
 bool
 SVTK_Renderer
 ::IsCubeAxesDisplayed()
@@ -482,6 +558,9 @@ SVTK_Renderer
   return myCubeAxes->GetVisibility() == 1;
 }
 
+/*!
+  Toggle graduated rules visibility
+*/
 void
 SVTK_Renderer
 ::OnViewCubeAxes()
@@ -492,6 +571,9 @@ SVTK_Renderer
     myCubeAxes->VisibilityOn();
 }
 
+/*!
+  Adjust size of the graduated rules to the bounding box of the scene
+*/
 void
 SVTK_Renderer
 ::OnAdjustCubeAxes()
@@ -499,8 +581,9 @@ SVTK_Renderer
   AdjustActors();
 }
 
-
-//----------------------------------------------------------------------------
+/*!
+  Sets camera into predefined state
+*/
 void
 SVTK_Renderer
 ::OnResetView()
@@ -527,12 +610,13 @@ SVTK_Renderer
   else
     myCubeAxes->VisibilityOff();
 
-  static float aCoeff = 3.0;
+  static vtkFloatingPointType aCoeff = 3.0;
   aCamera->SetParallelScale(aCoeff*aCamera->GetParallelScale());
 }
 
-
-//----------------------------------------------------------------------------
+/*!
+  Fit all presentation in the scene into the window
+*/
 void
 SVTK_Renderer
 ::OnFitAll()
@@ -571,8 +655,9 @@ SVTK_Renderer
   ::ResetCameraClippingRange(GetDevice());
 }
 
-
-//----------------------------------------------------------------------------
+/*!
+  Reset camera clipping range to adjust the range to the bounding box of the scene
+*/
 void
 SVTK_Renderer
 ::OnResetClippingRange()
@@ -581,8 +666,9 @@ SVTK_Renderer
   ::ResetCameraClippingRange(GetDevice());
 }
 
-
-//----------------------------------------------------------------------------
+/*!
+  To reset direction of the camera to front view
+*/
 void
 SVTK_Renderer
 ::OnFrontView()
@@ -594,7 +680,9 @@ SVTK_Renderer
   this->OnFitAll();
 }
 
-//----------------------------------------------------------------------------
+/*!
+  To reset direction of the camera to back view
+*/
 void
 SVTK_Renderer
 ::OnBackView()
@@ -606,7 +694,9 @@ SVTK_Renderer
   this->OnFitAll();
 }
 
-//----------------------------------------------------------------------------
+/*!
+  To reset direction of the camera to top view
+*/
 void
 SVTK_Renderer
 ::OnTopView()
@@ -618,7 +708,9 @@ SVTK_Renderer
   this->OnFitAll();
 }
 
-//----------------------------------------------------------------------------
+/*!
+  To reset direction of the camera to bottom view
+*/
 void
 SVTK_Renderer
 ::OnBottomView()
@@ -630,7 +722,9 @@ SVTK_Renderer
   this->OnFitAll();
 }
 
-//----------------------------------------------------------------------------
+/*!
+  To reset direction of the camera to left view
+*/
 void
 SVTK_Renderer
 ::OnLeftView()
@@ -642,7 +736,9 @@ SVTK_Renderer
   this->OnFitAll();
 }
 
-//----------------------------------------------------------------------------
+/*!
+  To reset direction of the camera to right view
+*/
 void
 SVTK_Renderer
 ::OnRightView()

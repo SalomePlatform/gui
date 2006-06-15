@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef CAF_STUDY_H
 #define CAF_STUDY_H
@@ -34,6 +34,12 @@ class CAF_Application;
 #pragma warning ( disable: 4251 )
 #endif
 
+/*!
+  \class CAF_Study
+  Represents study for using in CAF, contains reference
+  to OCAF std document and allows to use OCAF services.
+  Provides necessary functionality for OCC transactions management.
+*/
 class CAF_EXPORT CAF_Study : public SUIT_Study
 {
   Q_OBJECT

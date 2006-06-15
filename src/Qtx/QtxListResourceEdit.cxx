@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      QtxListResourceEdit.cxx
 // Author:    Sergey TELKOV
@@ -39,17 +39,16 @@
 #include <qfontdatabase.h>
 #include <qfileinfo.h>
 #include <qfiledialog.h>
+#include <qapplication.h>
 
 #include "QtxIntSpinBox.h"
 #include "QtxDblSpinBox.h"
 #include "QtxComboBox.h"
 #include "QtxDirListEditor.h"
 
-/*
-  Class: QtxListResourceEdit
-  Descr: GUI implementation of QtxResourceEdit - manager of resources
+/*!
+  Constructor
 */
-
 QtxListResourceEdit::QtxListResourceEdit( QtxResourceMgr* mgr, QWidget* parent )
 : QFrame( parent ),
 QtxResourceEdit( mgr )
@@ -75,10 +74,19 @@ QtxResourceEdit( mgr )
   updateState();
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::~QtxListResourceEdit()
 {
 }
 
+/*!
+  Sets value to widget
+  \param id - id of widget
+  \param prop - name of resource
+  \param val - value of resource
+*/
 void QtxListResourceEdit::setItemProperty( const int id, const QString& prop, const QVariant& val )
 {
   Item* i = item( id );
@@ -95,6 +103,9 @@ void QtxListResourceEdit::setItemProperty( const int id, const QString& prop, co
     updateVisible();
 }
 
+/*!
+  SLOT: called if main list selection changed, raises resource group widgets
+*/
 void QtxListResourceEdit::onSelectionChanged()
 {
   QString title = myList->text( myList->index( myList->selectedItem() ) );
@@ -114,6 +125,10 @@ void QtxListResourceEdit::onSelectionChanged()
     myStack->raiseWidget( i->id() );
 }
 
+/*!
+  Custom activity after item addition
+  \param i - added item
+*/
 void QtxListResourceEdit::itemAdded( QtxResourceEdit::Item* i )
 {
   if ( !i )
@@ -126,6 +141,10 @@ void QtxListResourceEdit::itemAdded( QtxResourceEdit::Item* i )
     updateVisible();
 }
 
+/*!
+  Creates and \return category
+  \param title - category title
+*/
 QtxResourceEdit::Item* QtxListResourceEdit::createItem( const QString& title, const int )
 {
   Item* i = item( title, -1 );
@@ -145,6 +164,10 @@ QtxResourceEdit::Item* QtxListResourceEdit::createItem( const QString& title, co
   return category;
 }
 
+/*!
+  Emits signal about resource changing
+  \param map - map of changed resources
+*/
 void QtxListResourceEdit::changedResources( const QMap<Item*, QString>& map )
 {
   QMap<int, QString> idMap;
@@ -162,6 +185,9 @@ void QtxListResourceEdit::changedResources( const QMap<Item*, QString>& map )
   emit resourcesChanged( idMap );
 }
 
+/*!
+  Updates widgets with accordance with main list selection
+*/
 void QtxListResourceEdit::updateState()
 {
   if ( myList->selectedItem() &&  myStack->visibleWidget() )
@@ -172,6 +198,9 @@ void QtxListResourceEdit::updateState()
   myList->setShown( myList->count() > 1 );
 }
 
+/*!
+  Updates visibility state
+*/
 void QtxListResourceEdit::updateVisible()
 {
   QPtrList<Item> items;
@@ -200,11 +229,9 @@ void QtxListResourceEdit::updateVisible()
   updateState();
 }
 
-/*
-  Class: QtxListResourceEdit::Category
-  Descr: GUI implementation of preferences category.
+/*!
+  Constructor
 */
-
 QtxListResourceEdit::Category::Category( QtxListResourceEdit* edit, QWidget* parent )
 : QFrame( parent ),
 Item( edit )
@@ -225,28 +252,47 @@ Item( edit )
   updateState();
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::Category::~Category()
 {
 }
 
+/*!
+  \return true if it is empty
+*/
 bool QtxListResourceEdit::Category::isEmpty() const
 {
   return Item::isEmpty() && myInfo->text().isEmpty();
 }
 
+/*!
+  \return category type
+*/
 int QtxListResourceEdit::Category::type() const
 {
   return -1;
 }
 
+/*!
+  Default empty implementation of resources storing
+*/
 void QtxListResourceEdit::Category::store()
 {
 }
 
+/*!
+  Default empty implementation of resources retrieving
+*/
 void QtxListResourceEdit::Category::retrieve()
 {
 }
 
+/*!
+  \return value of property
+  \param prop - property name
+*/
 QVariant QtxListResourceEdit::Category::property( const QString& prop ) const
 {
   QVariant var;
@@ -255,6 +301,11 @@ QVariant QtxListResourceEdit::Category::property( const QString& prop ) const
   return var;
 }
 
+/*!
+  Sets property value
+  \param name - name of property
+  \param var - value of property
+*/
 void QtxListResourceEdit::Category::setProperty( const QString& name, const QVariant& var )
 {
   QVariant prop = var;
@@ -267,6 +318,10 @@ void QtxListResourceEdit::Category::setProperty( const QString& name, const QVar
   updateState();
 }
 
+/*!
+  Creates new tab
+  \param title - name of tab
+*/
 QtxResourceEdit::Item* QtxListResourceEdit::Category::createItem( const QString& title, const int )
 {
   Item* i = item( title, id() );
@@ -281,6 +336,9 @@ QtxResourceEdit::Item* QtxListResourceEdit::Category::createItem( const QString&
   return tab;
 }
 
+/*!
+  Updates category
+*/
 void QtxListResourceEdit::Category::updateState()
 {
   if ( myTabs->count() )
@@ -294,11 +352,10 @@ void QtxListResourceEdit::Category::updateState()
     myInfo->hide();
 }
 
-/*
-  Class: QtxListResourceEdit::Tab
-  Descr: GUI implementation of resources tab.
-*/
 
+/*!
+  Constructor
+*/
 QtxListResourceEdit::Tab::Tab( QtxResourceEdit* edit, Item* pItem, QWidget* parent )
 : QFrame( parent ),
 Item( edit, pItem )
@@ -311,23 +368,38 @@ Item( edit, pItem )
   main->addStretch( 1 );
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::Tab::~Tab()
 {
 }
 
+/*!
+  \return tab type
+*/
 int QtxListResourceEdit::Tab::type() const
 {
   return -1;
 }
 
+/*!
+  Default empty implementation of resources storing
+*/
 void QtxListResourceEdit::Tab::store()
 {
 }
 
+/*!
+  Default empty implementation of resources retrieving
+*/
 void QtxListResourceEdit::Tab::retrieve()
 {
 }
 
+/*!
+  Delayed initialization of a widget
+*/
 void QtxListResourceEdit::Tab::polish()
 {
   QFrame::polish();
@@ -335,6 +407,10 @@ void QtxListResourceEdit::Tab::polish()
   adjustLabels();
 }
 
+/*!
+  Creates new group
+  \param title - name of group
+*/
 QtxResourceEdit::Item* QtxListResourceEdit::Tab::createItem( const QString& title, const int )
 {
   Item* i = item( title, id() );
@@ -346,6 +422,9 @@ QtxResourceEdit::Item* QtxListResourceEdit::Tab::createItem( const QString& titl
   return group;
 }
 
+/*!
+  Adjusts sizes of labels
+*/
 void QtxListResourceEdit::Tab::adjustLabels()
 {
   QObjectList* labels = queryList( "QLabel" );
@@ -372,34 +451,48 @@ void QtxListResourceEdit::Tab::adjustLabels()
   }
 }
 
-/*
-  Class: QtxListResourceEdit::Group
-  Descr: GUI implementation of resources group.
+/*!
+  Constructor
 */
-
 QtxListResourceEdit::Group::Group( const QString& title, QtxResourceEdit* edit, Item* pItem, QWidget* parent )
 : QGroupBox( 2, Qt::Horizontal, title, parent ),
 Item( edit, pItem )
 {
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::Group::~Group()
 {
 }
 
+/*!
+  \return group type
+*/
 int QtxListResourceEdit::Group::type() const
 {
   return -1;
 }
 
+/*!
+  Default empty implementation of resources storing
+*/
 void QtxListResourceEdit::Group::store()
 {
 }
 
+/*!
+  Default empty implementation of resources retrieving
+*/
 void QtxListResourceEdit::Group::retrieve()
 {
 }
 
+/*!
+  \return value of property
+  \param prop - property name
+*/
 QVariant QtxListResourceEdit::Group::property( const QString& prop ) const
 {
   QVariant var;
@@ -412,6 +505,11 @@ QVariant QtxListResourceEdit::Group::property( const QString& prop ) const
   return var;
 }
 
+/*!
+  Sets property value
+  \param name - name of property
+  \param var - value of property
+*/
 void QtxListResourceEdit::Group::setProperty( const QString& name, const QVariant& var )
 {
   QVariant prop = var;
@@ -434,12 +532,21 @@ void QtxListResourceEdit::Group::setProperty( const QString& name, const QVarian
   }
 }
 
+/*!
+  Sets title of group
+  \param title - new title of group
+*/
 void QtxListResourceEdit::Group::setTitle( const QString& title )
 {
   Item::setTitle( title );
   QGroupBox::setTitle( title );
 }
 
+/*!
+  Creates new item
+  \param title - title of new item
+  \type - type of new item
+*/
 QtxResourceEdit::Item* QtxListResourceEdit::Group::createItem( const QString& title, const int type )
 {
   Item* item = 0;
@@ -490,11 +597,9 @@ QtxResourceEdit::Item* QtxListResourceEdit::Group::createItem( const QString& ti
   return item;
 }
 
-/*
-  Class: QtxListResourceEdit::PrefItem
-  Descr: Base class for preferences items.
+/*!
+  Constructor
 */
-
 QtxListResourceEdit::PrefItem::PrefItem( const int type, QtxResourceEdit* edit, Item* pi, QWidget* parent )
 : QHBox( parent ),
 Item( edit, pi ),
@@ -503,48 +608,62 @@ myType( type )
   setSpacing( 5 );
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::PrefItem::~PrefItem()
 {
 }
 
+/*!
+  \return preference item type
+*/
 int QtxListResourceEdit::PrefItem::type() const
 {
   return myType;
 }
 
+/*!
+  Doesn't create item, \return 0 by default
+*/
 QtxResourceEdit::Item* QtxListResourceEdit::PrefItem::createItem( const QString&, const int )
 {
   return 0;
 }
 
-/*
-  Class: QtxListResourceEdit::Spacer
-  Descr: GUI implementation of resources spacer.
+/*!
+  Constructor
 */
-
 QtxListResourceEdit::Spacer::Spacer( QtxResourceEdit* edit, Item* pItem, QWidget* parent )
 : PrefItem( Space, edit, pItem, parent )
 {
   setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::Spacer::~Spacer()
 {
 }
 
+/*!
+  Default empty implementation of resources storing
+*/
 void QtxListResourceEdit::Spacer::store()
 {
 }
 
+/*!
+  Default empty implementation of resources retrieving
+*/
 void QtxListResourceEdit::Spacer::retrieve()
 {
 }
 
-/*
-  Class: QtxListResourceEdit::SelectItem
-  Descr: GUI implementation of resources list item.
+/*!
+  Constructor
 */
-
 QtxListResourceEdit::SelectItem::SelectItem( const QString& title, QtxResourceEdit* edit,
 					     Item* pItem, QWidget* parent )
 : PrefItem( Selector, edit, pItem, parent )
@@ -554,10 +673,16 @@ QtxListResourceEdit::SelectItem::SelectItem( const QString& title, QtxResourceEd
   myList->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::SelectItem::~SelectItem()
 {
 }
 
+/*!
+  Stores value to resource manager
+*/
 void QtxListResourceEdit::SelectItem::store()
 {
   int idx = myList->currentItem();
@@ -565,6 +690,9 @@ void QtxListResourceEdit::SelectItem::store()
     setInteger( myIndex[idx] );
 }
 
+/*!
+  Retrieve value to resource manager
+*/
 void QtxListResourceEdit::SelectItem::retrieve()
 {
   int id = getInteger( -1 );
@@ -579,6 +707,10 @@ void QtxListResourceEdit::SelectItem::retrieve()
   myList->setCurrentItem( idx );
 }
 
+/*!
+  \return value of property
+  \param prop - property name
+*/
 QVariant QtxListResourceEdit::SelectItem::property( const QString& name ) const
 {
   QVariant val;
@@ -599,6 +731,11 @@ QVariant QtxListResourceEdit::SelectItem::property( const QString& name ) const
   return val;
 }
 
+/*!
+  Sets property value
+  \param name - name of property
+  \param var - value of property
+*/
 void QtxListResourceEdit::SelectItem::setProperty( const QString& name, const QVariant& val )
 {
   if ( name == QString( "strings" ) )
@@ -607,6 +744,10 @@ void QtxListResourceEdit::SelectItem::setProperty( const QString& name, const QV
     setIndexes( val );
 }
 
+/*!
+  Sets property "strings" - items for selection in combo box
+  \param var - must be string list: list of items
+*/
 void QtxListResourceEdit::SelectItem::setStrings( const QVariant& var )
 {
   if ( var.type() != QVariant::StringList )
@@ -615,6 +756,10 @@ void QtxListResourceEdit::SelectItem::setStrings( const QVariant& var )
   setStrings( var.toStringList() );
 }
 
+/*!
+  Sets property "indexes" - corresponding indices of items in combo box
+  \param var - must be list of integer variants: list of indices
+*/
 void QtxListResourceEdit::SelectItem::setIndexes( const QVariant& var )
 {
   if ( var.type() != QVariant::List )
@@ -630,12 +775,20 @@ void QtxListResourceEdit::SelectItem::setIndexes( const QVariant& var )
   setIndexes( lst );
 }
 
+/*!
+  Sets property "strings" - items for selection in combo box
+  \param lst - list of items
+*/
 void QtxListResourceEdit::SelectItem::setStrings( const QStringList& lst )
 {
   myList->clear();
   myList->insertStringList( lst );
 }
 
+/*!
+  Sets property "indexes" - corresponding indices of items in combo box
+  \param var - list of indices
+*/
 void QtxListResourceEdit::SelectItem::setIndexes( const QValueList<int>& lst )
 {
   myIndex.clear();
@@ -645,11 +798,9 @@ void QtxListResourceEdit::SelectItem::setIndexes( const QValueList<int>& lst )
     myIndex.insert( idx, *it );
 }
 
-/*
-  Class: QtxListResourceEdit::StateItem
-  Descr: GUI implementation of resources bool item.
+/*!
+  Constructor
 */
-
 QtxListResourceEdit::StateItem::StateItem( const QString& title, QtxResourceEdit* edit,
                                            Item* pItem, QWidget* parent )
 : PrefItem( Bool, edit, pItem, parent )
@@ -658,25 +809,32 @@ QtxListResourceEdit::StateItem::StateItem( const QString& title, QtxResourceEdit
   myState->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::StateItem::~StateItem()
 {
 }
 
+/*!
+  Stores value to resource manager
+*/
 void QtxListResourceEdit::StateItem::store()
 {
   setBoolean( myState->isChecked() );
 }
 
+/*!
+  Retrieve value to resource manager
+*/
 void QtxListResourceEdit::StateItem::retrieve()
 {
   myState->setChecked( getBoolean() );
 }
 
-/*
-  Class: QtxListResourceEdit::StringItem
-  Descr: GUI implementation of resources string item.
+/*!
+  Constructor
 */
-
 QtxListResourceEdit::StringItem::StringItem( const QString& title, QtxResourceEdit* edit,
                                              Item* pItem, QWidget* parent )
 : PrefItem( String, edit, pItem, parent )
@@ -686,25 +844,32 @@ QtxListResourceEdit::StringItem::StringItem( const QString& title, QtxResourceEd
   myString->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::StringItem::~StringItem()
 {
 }
 
+/*!
+  Stores value to resource manager
+*/
 void QtxListResourceEdit::StringItem::store()
 {
   setString( myString->text() );
 }
 
+/*!
+  Retrieve value to resource manager
+*/
 void QtxListResourceEdit::StringItem::retrieve()
 {
   myString->setText( getString() );
 }
 
-/*
-  Class: QtxListResourceEdit::IntegerEditItem
-  Descr: GUI implementation of resources integer item.
+/*!
+  Constructor
 */
-
 QtxListResourceEdit::IntegerEditItem::IntegerEditItem( const QString& title, QtxResourceEdit* edit, Item* pItem, QWidget* parent )
 : PrefItem( Integer, edit, pItem, parent )
 {
@@ -714,25 +879,32 @@ QtxListResourceEdit::IntegerEditItem::IntegerEditItem( const QString& title, Qtx
   myInteger->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::IntegerEditItem::~IntegerEditItem()
 {
 }
 
+/*!
+  Stores value to resource manager
+*/
 void QtxListResourceEdit::IntegerEditItem::store()
 {
   setString( myInteger->text() );
 }
 
+/*!
+  Retrieve value to resource manager
+*/
 void QtxListResourceEdit::IntegerEditItem::retrieve()
 {
   myInteger->setText( getString() );
 }
 
-/*
-  Class: QtxListResourceEdit::IntegerSpinItem
-  Descr: GUI implementation of resources integer item.
+/*!
+  Constructor
 */
-
 QtxListResourceEdit::IntegerSpinItem::IntegerSpinItem( const QString& title, QtxResourceEdit* edit, Item* pItem, QWidget* parent )
 : PrefItem( IntSpin, edit, pItem, parent )
 {
@@ -741,20 +913,33 @@ QtxListResourceEdit::IntegerSpinItem::IntegerSpinItem( const QString& title, Qtx
   myInteger->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::IntegerSpinItem::~IntegerSpinItem()
 {
 }
 
+/*!
+  Stores value to resource manager
+*/
 void QtxListResourceEdit::IntegerSpinItem::store()
 {
   setInteger( myInteger->value() );
 }
 
+/*!
+  Retrieve value to resource manager
+*/
 void QtxListResourceEdit::IntegerSpinItem::retrieve()
 {
   myInteger->setValue( getInteger() );
 }
 
+/*!
+  \return value of property
+  \param prop - property name
+*/
 QVariant QtxListResourceEdit::IntegerSpinItem::property( const QString& name ) const
 {
   QVariant var;
@@ -773,6 +958,11 @@ QVariant QtxListResourceEdit::IntegerSpinItem::property( const QString& name ) c
   return var;
 }
 
+/*!
+  Sets property value
+  \param name - name of property
+  \param var - value of property
+*/
 void QtxListResourceEdit::IntegerSpinItem::setProperty( const QString& name, const QVariant& var )
 {
   QVariant prop = var;
@@ -791,11 +981,9 @@ void QtxListResourceEdit::IntegerSpinItem::setProperty( const QString& name, con
     myInteger->setSuffix( prop.toString() );
 }
 
-/*
-  Class: QtxListResourceEdit::DoubleEditItem
-  Descr: GUI implementation of resources string item.
+/*!
+  Constructor
 */
-
 QtxListResourceEdit::DoubleEditItem::DoubleEditItem( const QString& title, QtxResourceEdit* edit,
                                                      Item* pItem, QWidget* parent )
 : PrefItem( Double, edit, pItem, parent )
@@ -806,25 +994,32 @@ QtxListResourceEdit::DoubleEditItem::DoubleEditItem( const QString& title, QtxRe
   myDouble->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::DoubleEditItem::~DoubleEditItem()
 {
 }
 
+/*!
+  Stores value to resource manager
+*/
 void QtxListResourceEdit::DoubleEditItem::store()
 {
   setString( myDouble->text() );
 }
 
+/*!
+  Retrieve value to resource manager
+*/
 void QtxListResourceEdit::DoubleEditItem::retrieve()
 {
   myDouble->setText( getString() );
 }
 
-/*
-  Class: QtxListResourceEdit::DoubleSpinItem
-  Descr: GUI implementation of resources double item.
+/*!
+  Constructor
 */
-
 QtxListResourceEdit::DoubleSpinItem::DoubleSpinItem( const QString& title, QtxResourceEdit* edit,
                                                      Item* pItem, QWidget* parent )
 : PrefItem( DblSpin, edit, pItem, parent )
@@ -834,20 +1029,33 @@ QtxListResourceEdit::DoubleSpinItem::DoubleSpinItem( const QString& title, QtxRe
   myDouble->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::DoubleSpinItem::~DoubleSpinItem()
 {
 }
 
+/*!
+  Stores value to resource manager
+*/
 void QtxListResourceEdit::DoubleSpinItem::store()
 {
   setDouble( myDouble->value() );
 }
 
+/*!
+  Retrieve value to resource manager
+*/
 void QtxListResourceEdit::DoubleSpinItem::retrieve()
 {
   myDouble->setValue( getDouble() );
 }
 
+/*!
+  \return value of property
+  \param prop - property name
+*/
 QVariant QtxListResourceEdit::DoubleSpinItem::property( const QString& name ) const
 {
   QVariant var;
@@ -868,6 +1076,11 @@ QVariant QtxListResourceEdit::DoubleSpinItem::property( const QString& name ) co
   return var;
 }
 
+/*!
+  Sets property value
+  \param name - name of property
+  \param var - value of property
+*/
 void QtxListResourceEdit::DoubleSpinItem::setProperty( const QString& name, const QVariant& var )
 {
   QVariant prop = var;
@@ -888,15 +1101,17 @@ void QtxListResourceEdit::DoubleSpinItem::setProperty( const QString& name, cons
     myDouble->setSuffix( prop.toString() );
 }
 
-/*
-  Class: QtxListResourceEdit::ColorItem
-  Descr: GUI implementation of resources color item.
+/*!
+  Constructor
 */
-
 QtxListResourceEdit::ColorItem::ColorItem( const QString& title, QtxResourceEdit* edit,
                                            Item* pItem, QWidget* parent )
 : PrefItem( Color, edit, pItem, parent )
 {
+  /*!
+    \class QtxListResourceEdit::ColorItem::ColorSelector
+    \brief Label, showing color and allowing to pick color with help of standard color dialog
+  */
   class ColorSelector : public QLabel
   {
   public:
@@ -930,24 +1145,32 @@ QtxListResourceEdit::ColorItem::ColorItem( const QString& title, QtxResourceEdit
   myColor->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::ColorItem::~ColorItem()
 {
 }
 
+/*!
+  Stores value to resource manager
+*/
 void QtxListResourceEdit::ColorItem::store()
 {
   setColor( myColor->paletteBackgroundColor() );
 }
 
+/*!
+  Retrieve value to resource manager
+*/
 void QtxListResourceEdit::ColorItem::retrieve()
 {
   myColor->setPaletteBackgroundColor( getColor() );
 }
 
 
-/*
-  Class: QtxListResourceEdit::FontItem
-  Descr: GUI implementation of resources font item.
+/*!
+  Constructor
 */
 QtxListResourceEdit::FontItem::FontItem( const QString& title, QtxResourceEdit* edit,
                                          Item* pItem, QWidget* parent )
@@ -973,10 +1196,16 @@ QtxListResourceEdit::FontItem::FontItem( const QString& title, QtxResourceEdit* 
   setProperty( "widget_flags", ( int )All );
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::FontItem::~FontItem()
 {
 }
 
+/*!
+  Stores value to resource manager
+*/
 void QtxListResourceEdit::FontItem::store()
 {
   QFont f( family(), size() );
@@ -988,6 +1217,9 @@ void QtxListResourceEdit::FontItem::store()
   Item::setFont( f );
 }
 
+/*!
+  Retrieve value to resource manager
+*/
 void QtxListResourceEdit::FontItem::retrieve()
 {
   QFont f = getFont();
@@ -996,6 +1228,10 @@ void QtxListResourceEdit::FontItem::retrieve()
   setParams( f.bold(), f.italic(), f.underline() );
 }
 
+/*!
+  \return value of property
+  \param prop - property name
+*/
 QVariant QtxListResourceEdit::FontItem::property( const QString& name ) const
 {
   if( name=="system" )
@@ -1065,6 +1301,11 @@ QVariant QtxListResourceEdit::FontItem::property( const QString& name ) const
   return QVariant();
 }
 
+/*!
+  Sets property value
+  \param name - name of property
+  \param var - value of property
+*/
 void QtxListResourceEdit::FontItem::setProperty( const QString& name, const QVariant& value )
 {
   if( name=="system" )
@@ -1116,6 +1357,10 @@ void QtxListResourceEdit::FontItem::setProperty( const QString& name, const QVar
     myProperties[ name ] = value;
 }
 
+/*!
+  Sets family of font
+  \param f - new family
+*/
 void QtxListResourceEdit::FontItem::setFamily( const QString& f )
 {
   QString curtext;
@@ -1130,6 +1375,9 @@ void QtxListResourceEdit::FontItem::setFamily( const QString& f )
     if( deffam.canCast( QVariant::String ) )
       curtext = deffam.toString();
   }
+  
+  if ( curtext.isEmpty() )
+    curtext = (QApplication::font()).family();
 
   int idx = -1;
   for ( int i = 0; i < (int)myFamilies->count() && idx < 0; i++ )
@@ -1144,11 +1392,18 @@ void QtxListResourceEdit::FontItem::setFamily( const QString& f )
   onActivateFamily( idx );  
 }
 
+/*!
+  \return family of font
+*/
 QString QtxListResourceEdit::FontItem::family() const
 {
   return myFamilies->currentText();
 }
 
+/*!
+  Sets size of font
+  \param s - new size of font
+*/
 void QtxListResourceEdit::FontItem::setSize( const int s )
 {
   int cursize = -1;
@@ -1167,6 +1422,9 @@ void QtxListResourceEdit::FontItem::setSize( const int s )
   mySizes->setCurrentText( cursize>0 ? QString( "%1" ).arg( cursize ) : "" );
 }
 
+/*!
+  \return size of font
+*/
 int QtxListResourceEdit::FontItem::size() const
 {
   QString s = mySizes->currentText();
@@ -1175,6 +1433,12 @@ int QtxListResourceEdit::FontItem::size() const
   return ( ok ? pSize : 0 );
 }
 
+/*!
+  Sets font parameters
+  \param bold - is font bold
+  \param italic - is font italic
+  \param underline - is font underlined
+*/
 void QtxListResourceEdit::FontItem::setParams( const bool bold, const bool italic, const bool underline )
 {
   bool curbold = false, curitalic = false, curunderline = false;
@@ -1207,6 +1471,12 @@ void QtxListResourceEdit::FontItem::setParams( const bool bold, const bool itali
   myUnderline->setChecked( curunderline );
 }
 
+/*!
+  \return font parameters
+  \param bold - is font bold
+  \param italic - is font italic
+  \param underline - is font underlined
+*/
 void QtxListResourceEdit::FontItem::params( bool& bold, bool& italic, bool& underline )
 {
   bold = myBold->isChecked();
@@ -1214,9 +1484,11 @@ void QtxListResourceEdit::FontItem::params( bool& bold, bool& italic, bool& unde
   underline = myUnderline->isChecked();
 }
 
+/*!
+  Updates internal selection of font properties
+*/
 void QtxListResourceEdit::FontItem::internalUpdate()
 {
-  //update internal selection of font properties
   setFamily( family() );
   setSize( size() );
   bool b1, b2, b3;
@@ -1224,6 +1496,9 @@ void QtxListResourceEdit::FontItem::internalUpdate()
   setParams( b1, b2, b3 );
 }
 
+/*!
+  SLOT: called if family is activated, updates list of possible sizes
+*/
 void QtxListResourceEdit::FontItem::onActivateFamily( int )
 {
   QVariant sizes = property( QString( "%1:sizes" ).arg( family() ) );
@@ -1244,6 +1519,9 @@ void QtxListResourceEdit::FontItem::onActivateFamily( int )
   setSize( s );
 }
 
+/*!
+  SLOT: called if it is necessary to show font preview
+*/
 void QtxListResourceEdit::FontItem::onPreview()
 {
   QFont f( family(), size() );
@@ -1266,11 +1544,8 @@ void QtxListResourceEdit::FontItem::onPreview()
 
 
 
-
-
-/*
-  Class: QtxListResourceEdit::DirListItem
-  Descr: 
+/*!
+  Constructor
 */
 QtxListResourceEdit::DirListItem::DirListItem( const QString& title, QtxResourceEdit* edit, Item* pItem, QWidget* parent )
 : PrefItem( Font, edit, pItem, parent )
@@ -1278,10 +1553,16 @@ QtxListResourceEdit::DirListItem::DirListItem( const QString& title, QtxResource
   myDirListEditor = new QtxDirListEditor( this ); 
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::DirListItem::~DirListItem()
 {
 }
 
+/*!
+  Stores value to resource manager
+*/
 void QtxListResourceEdit::DirListItem::store()
 {
   QStringList list;
@@ -1289,6 +1570,9 @@ void QtxListResourceEdit::DirListItem::store()
   setString( QString(list.join(";")) );
 }
 
+/*!
+  Retrieve value to resource manager
+*/
 void QtxListResourceEdit::DirListItem::retrieve()
 {
   myDirListEditor->setPathList(QStringList::split(";", getString()));
@@ -1296,9 +1580,8 @@ void QtxListResourceEdit::DirListItem::retrieve()
 
 
 
-/*
-  Class: QtxListResourceEdit::FileItem
-  Descr: GUI implementation of resources file item.
+/*!
+  Constructor
 */
 QtxListResourceEdit::FileItem::FileItem( const QString& title, QtxResourceEdit* edit,
                                          Item* pItem, QWidget* parent )
@@ -1317,22 +1600,35 @@ QtxListResourceEdit::FileItem::FileItem( const QString& title, QtxResourceEdit* 
   connect( myOpenFile, SIGNAL( clicked() ), this, SLOT( onOpenFile() ) );
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::FileItem::~FileItem()
 {
   if( myFileDlg ) 
     delete myFileDlg;
 }
 
+/*!
+  Stores value to resource manager
+*/
 void QtxListResourceEdit::FileItem::store()
 {
   setString( myFile->text() );
 }
 
+/*!
+  Retrieve value to resource manager
+*/
 void QtxListResourceEdit::FileItem::retrieve()
 {
   myFile->setText( getString() );
 }
 
+/*!
+  \return value of property
+  \param prop - property name
+*/
 QVariant QtxListResourceEdit::FileItem::property( const QString& name ) const
 {
   if( name=="filter" )
@@ -1347,6 +1643,11 @@ QVariant QtxListResourceEdit::FileItem::property( const QString& name ) const
   return QVariant();
 }
 
+/*!
+  Sets property value
+  \param name - name of property
+  \param var - value of property
+*/
 void QtxListResourceEdit::FileItem::setProperty( const QString& name, const QVariant& value )
 {
   if( name=="filter" )
@@ -1371,6 +1672,9 @@ void QtxListResourceEdit::FileItem::setProperty( const QString& name, const QVar
   }
 }
 
+/*!
+  SLOT: called if user click "Open File" button, shows dialog 
+*/
 void QtxListResourceEdit::FileItem::onOpenFile()
 {
   if( !myFileDlg )
@@ -1389,6 +1693,10 @@ void QtxListResourceEdit::FileItem::onOpenFile()
   }
 }
 
+/*!
+  \return true if file satisfies permissions
+  \param f - file name
+*/
 bool QtxListResourceEdit::FileItem::isFileCorrect( const QString& f ) const
 {
   bool res = false;
@@ -1399,6 +1707,10 @@ bool QtxListResourceEdit::FileItem::isFileCorrect( const QString& f ) const
   return res;
 }
 
+/*!
+  SLOT: called if user has selected file in file dialog, checks file permissions and passes it's name to widget
+  \param f - file name
+*/
 void QtxListResourceEdit::FileItem::onFileSelected( const QString& f )
 {
   if( myFileDlg && !isFileCorrect( f ) )
@@ -1406,17 +1718,26 @@ void QtxListResourceEdit::FileItem::onFileSelected( const QString& f )
 }
 
 
-
+/*!
+  Constructor
+*/
 QtxListResourceEdit::FileItem::FileValidator::FileValidator( FileItem* item, QObject* parent )
 : QValidator( parent ),
   myItem( item )
 {
 }
 
+/*!
+  Destructor
+*/
 QtxListResourceEdit::FileItem::FileValidator::~FileValidator()
 {
 }
 
+/*!
+  Check file permissions
+  \param f - file name
+*/
 QValidator::State QtxListResourceEdit::FileItem::FileValidator::validate( QString& f, int& ) const
 {
   if( myItem && myItem->isFileCorrect( f ) )

@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "SUIT_ViewManager.h"
 
@@ -254,9 +254,9 @@ void SUIT_ViewManager::onDeleteStudy()
     myStudy = NULL;
 }
 
+/*! invoke method of SUIT_PopupClient, which notifies about popup*/
 void SUIT_ViewManager::onContextMenuRequested( QContextMenuEvent* e )
 {
-  /*! invoke method of SUIT_PopupClient, which notifies about popup*/
   contextMenuRequest( e );
 }
 

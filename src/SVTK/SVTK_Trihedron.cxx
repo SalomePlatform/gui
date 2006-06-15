@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "SVTK_Trihedron.h"
 #include "SALOME_Actor.h"
@@ -23,16 +23,20 @@
 #include <vtkActorCollection.h>
 #include <vtkRenderer.h>
 
-//****************************************************************
 vtkStandardNewMacro(SVTK_Trihedron);
 
-//****************************************************************
+/*!
+  Constructor
+*/
 SVTK_Trihedron
 ::SVTK_Trihedron()
 {
 }
 
-//****************************************************************
+/*!
+  \return count of visible actors
+  \param theRenderer - renderer to be checked
+*/
 int 
 SVTK_Trihedron
 ::GetVisibleActorCount(vtkRenderer* theRenderer)

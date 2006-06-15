@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef SUIT_DATAOWNER_H
 #define SUIT_DATAOWNER_H
@@ -28,6 +28,12 @@
 #pragma warning( disable:4251 )
 #pragma warning( disable:4275 )
 #endif
+
+/*!
+  \class SUIT_DataOwner
+  Represents abstract selected objects.
+  Used for selection synchronizing between windows(e.g. ObjectBrowser) and viewers
+*/
 
 class SUIT_EXPORT SUIT_DataOwner : public RefCount 
 {

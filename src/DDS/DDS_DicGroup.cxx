@@ -1,3 +1,21 @@
+// Copyright (C) 2005  CEA/DEN, EDF R&D, OPEN CASCADE, PRINCIPIA R&D
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License.
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
 #include "DDS_DicGroup.h"
 
 #include "DDS_Dictionary.h"
@@ -76,7 +94,10 @@ void DDS_DicGroup::FillDataMap( const LDOM_Element& theComponentData, const LDOM
     LDOM_NodeList systemList = systems.getElementsByTagName( DDS_Dictionary::KeyWord( "UNIT_SYSTEM" ) );
     for ( Standard_Integer i = 0; i < systemList.getLength(); i++ )
     {
-      LDOM_Element aSystem = (const LDOM_Element &)systemList.item( i );
+      //const LDOM_Element& aSystem = (const LDOM_Element &)systemList.item( i );
+      LDOM_Node aNode = systemList.item( i );
+      const LDOM_Element& anElem = (const LDOM_Element&) aNode;
+      LDOM_Element aSystem(anElem);
       TCollection_AsciiString aName = aSystem.getAttribute( DDS_Dictionary::KeyWord( "UNIT_SYSTEM_NAME" ) );
       TCollection_ExtendedString aLabel = aSystem.getAttribute( DDS_Dictionary::KeyWord( "UNIT_SYSTEM_LABEL" ) );
 
@@ -103,7 +124,10 @@ void DDS_DicGroup::FillDataMap( const LDOM_Element& theComponentData, const LDOM
 
   for ( Standard_Integer i = 0; i < aData.getLength(); i++ )
   {
-    LDOM_Element aQuantity = (const LDOM_Element&)aData.item( i );
+    //LDOM_Element aQuantity = (const LDOM_Element&)aData.item( i );
+    LDOM_Node aNode = aData.item( i );
+    const LDOM_Element& anElem = (const LDOM_Element&) aNode;
+    LDOM_Element aQuantity(anElem);
 
     // 1. Attributes (id,label,units?,format?,required?)
     TCollection_AsciiString anID = aQuantity.getAttribute( DDS_Dictionary::KeyWord( "DATUM_ID" ) );

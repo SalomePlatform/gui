@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      QtxListOfOperations.h
 // Author:    Alexander SOLOVYOV
@@ -30,10 +30,15 @@
 #endif
 
 
-//================================================================
-// Class    : 
-// Purpose  : 
-//================================================================
+/*!
+  Class: QtxListOfOperations
+
+  This class provides special variant of QtxOperations. It contains list of QtxOperations* with 
+  fixed order. When it is necessary to calculate operation or get it's priority, this operation is
+  being found starting from first item. It makes possible to create unions of operations. Every QtxOperations*
+  has priority, which is added to priority of operation, so that it makes possible to increase priority of
+  whole group of operations
+*/
 class QTX_EXPORT QtxListOfOperations : public QtxOperations
 {
 public:

@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "LightApp_OBSelector.h"
 
@@ -74,9 +74,13 @@ void LightApp_OBSelector::getSelection( SUIT_DataOwnerPtrList& theList ) const
       LightApp_DataObject* obj = dynamic_cast<LightApp_DataObject*>( it.current() );
       if ( obj )
       {
+#ifndef DISABLE_SALOMEOBJECT
         Handle(SALOME_InteractiveObject) aSObj = new SALOME_InteractiveObject
           ( obj->entry(), obj->componentDataType(), obj->name() );
         LightApp_DataOwner* owner = new LightApp_DataOwner( aSObj  );
+#else
+        LightApp_DataOwner* owner = new LightApp_DataOwner( obj->entry() );
+#endif
         that->mySelectedList.append( SUIT_DataOwnerPtr( owner ) );
       }
     }
@@ -103,6 +107,7 @@ void LightApp_OBSelector::setSelection( const SUIT_DataOwnerPtrList& theList )
   }
 
   myBrowser->setSelected( objList );
+  mySelectedList.clear();
 }
 
 /*!On selection changed.*/

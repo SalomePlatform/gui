@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
 #include "SalomeApp_EventFilter.h"
@@ -38,6 +38,9 @@ SalomeApp_EventFilter::~SalomeApp_EventFilter()
   qApp->removeEventFilter( this );
 }
 
+/*!
+  Custom event filter
+*/
 bool SalomeApp_EventFilter::eventFilter( QObject* o, QEvent* e )
 {
   if ( e->type() == SALOME_EVENT )

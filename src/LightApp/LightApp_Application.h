@@ -1,3 +1,21 @@
+// Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License.
+// 
+// This library is distributed in the hope that it will be useful 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public  
+// License along with this library; if not, write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
 // File:      LightApp_Application.h
 // Created:   6/20/2005 18:39:25 PM
 // Author:    OCC team
@@ -15,7 +33,9 @@
 
 class LogWindow;
 class OB_Browser;
-class PythonConsole;
+#ifndef DISABLE_PYCONSOLE
+  class PythonConsole;
+#endif
 class STD_Application;
 class LightApp_WidgetContainer;
 class LightApp_Preferences;
@@ -42,10 +62,35 @@ class LIGHTAPP_EXPORT LightApp_Application : public CAM_Application
   Q_OBJECT
 
 public:
-  typedef enum { WT_ObjectBrowser, WT_PyConsole, WT_LogWindow, WT_User } WindowTypes;
+  typedef enum { WT_ObjectBrowser, 
+#ifndef DISABLE_PYCONSOLE
+                 WT_PyConsole,
+#endif
+                 WT_LogWindow,
+                 WT_User }
+  WindowTypes;
 
-  enum { NewGLViewId = CAM_Application::UserID, NewPlot2dId, NewOCCViewId, NewVTKViewId,
-         PreferencesId, MRUId, RenameId, UserID };
+  enum { MenuWindowId = 6 };
+
+  enum { RenameId = CAM_Application::UserID,
+
+#ifndef DISABLE_GLVIEWER
+         NewGLViewId ,
+#endif
+
+#ifndef DISABLE_PLOT2DVIEWER
+         NewPlot2dId,
+#endif
+
+#ifndef DISABLE_OCCVIEWER
+         NewOCCViewId,
+#endif
+
+#ifndef DISABLE_VTKVIEWER
+         NewVTKViewId,
+#endif
+
+         PreferencesId, MRUId, UserID };
 public:
   LightApp_Application();
   virtual ~LightApp_Application();
@@ -62,7 +107,9 @@ public:
   
   LogWindow*                          logWindow();
   OB_Browser*                         objectBrowser();
+#ifndef DISABLE_PYCONSOLE
   PythonConsole*                      pythonConsole(); 
+#endif
 
   virtual void                        updateObjectBrowser( const bool = true );
 
@@ -79,6 +126,7 @@ public:
   void                                updateActions();
 
   SUIT_ViewManager*                   getViewManager( const QString&, const bool );
+  virtual void                        addViewManager( SUIT_ViewManager* );
   virtual void                        removeViewManager( SUIT_ViewManager* );
   QWidget*                            getWindow( const int, const int = -1 );
   QWidget*                            window( const int, const int = -1 ) const;
@@ -96,6 +144,12 @@ public:
 
   SUIT_Accel*                         accel() const;
 
+  void                                setDefaultStudyName( const QString& theName );
+
+  static int                          studyId();
+
+  virtual bool                        event( QEvent* );
+
 signals:
   void                                studyOpened();
   void                                studySaved();
@@ -103,6 +157,7 @@ signals:
 
 public slots:
   virtual void                        onHelpContentsModule();
+  virtual void                        onHelpContextModule( const QString&, const QString& );
   virtual void                        onNewDoc();
   virtual void                        onOpenDoc();
   virtual void                        onHelpAbout();
@@ -111,6 +166,10 @@ public slots:
 
 protected:
   virtual void                        createActions();
+  virtual void                        createActionForViewer( const int id,
+                                                             const int parentId,
+                                                             const QString& suffix,
+                                                             const int accel );
   virtual SUIT_Study*                 createNewStudy();
   virtual QWidget*                    createWindow( const int );
   virtual void                        defaultWindows( QMap<int, int>& ) const;
@@ -128,6 +187,7 @@ protected:
   LightApp_Preferences*               preferences( const bool ) const;
   virtual void                        createPreferences( LightApp_Preferences* );
   virtual void                        preferencesChanged( const QString&, const QString& );
+  virtual void                        savePreferences();
   virtual void                        updateDesktopTitle();
 
 protected slots:
@@ -151,6 +211,7 @@ private slots:
   void                                onMRUActivated( QString );
   void                                onPreferenceChanged( QString&, QString&, QString& );
   void                                onRenameWindow();
+  void                                onVisibilityChanged( bool );
 
 protected:
   void                                updateWindows();
@@ -169,20 +230,25 @@ protected:
   void                                moduleIconNames( QMap<QString, QString>& ) const;
 
   void                                activateWindows();
+  bool                                isLibExists( const QString& ) const;
 
 protected:
   typedef QMap<QString, QAction*>              ActionMap;
   typedef QMap<int, LightApp_WidgetContainer*> WindowMap;
+  typedef QMap<int, bool>                      WindowVisibilityMap;
 
 protected:
   LightApp_Preferences*               myPrefs;
   LightApp_SelectionMgr*              mySelMgr;
   ActionMap                           myActions;
   WindowMap                           myWindows;
+  WindowVisibilityMap                 myWindowsVisible;
 
   SUIT_Accel*                         myAccel;
 
   static LightApp_Preferences*        _prefs_;
+
+  static int                          lastStudyId;
 };
 
 #ifdef WIN32

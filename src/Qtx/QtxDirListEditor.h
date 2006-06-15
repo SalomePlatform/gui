@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef QTX_DIRLISTEDITOR_H
 #define QTX_DIRLISTEDITOR_H
@@ -74,7 +74,7 @@ protected:
    * \brief Validates entered path
    * \retval bool - returns status (true if OK)
    */
-  bool          validate();
+  bool          validate( const bool quietMode = false );
 
   /*!
    * \brief Appends/changes path

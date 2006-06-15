@@ -14,20 +14,13 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  Author : OPEN CASCADE
 //
 
 // File:      GLViewer_Selector.cxx
 // Created:   November, 2004
-
-/****************************************************************************
-**  Class:   GLViewer_Selector
-**  Descr:   Base class for object selection in QAD-based application
-**  Module:  GLViewer
-**  Created: UI team, 22.09.00
-*****************************************************************************/
 
 //#include <GLViewerAfx.h>
 #include "GLViewer_Selector.h"

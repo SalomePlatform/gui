@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef SUIT_TOOLS_H
 #define SUIT_TOOLS_H
@@ -27,6 +27,10 @@
 #include <qfont.h>
 #include <qstring.h>
 
+/*!
+  \class SUIT_Tools
+  Prodives set of auxiliary static methods
+*/
 class SUIT_EXPORT SUIT_Tools : public Qtx
 {
 public:

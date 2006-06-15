@@ -14,16 +14,8 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//=============================================================================
-// File      : SalomePyQt.h
-// Created   : 25/04/05
-// Author    : Vadim SANDLER
-// Project   : SALOME
-// Copyright : 2003-2005 CEA/DEN, EDF R&D
-// $Header   : $
-//=============================================================================
 
 #ifndef SALOME_PYQT_H
 #define SALOME_PYQT_H
@@ -102,6 +94,8 @@ public:
 
   static bool              dumpView( const QString& );
 
+  static int               defaultMenuGroup();
+
   static int               createTool( const QString& );
   static int               createTool( const int,  const int,      const int = -1 );
   static int               createTool( const int,  const QString&, const int = -1 );
@@ -109,9 +103,9 @@ public:
   static int               createTool( QtxAction*, const QString&, const int = -1, const int = -1 );
 
   static int               createMenu( const QString&, const int = -1,
-				       const int = -1, const int = -1 );
+				       const int = -1, const int = -1, const int = -1 );
   static int               createMenu( const QString&, const QString& = QString::null, 
-				       const int = -1, const int = -1 );
+				       const int = -1, const int = -1, const int = -1 );
   static int               createMenu( const int,      const int = -1,
 				       const int = -1, const int = -1 );
   static int               createMenu( const int,      const QString& = QString::null, 
@@ -129,6 +123,9 @@ public:
 
   static QtxAction*        action( const int );
   static int               actionId( const QtxAction* );
+
+  static bool              clearMenu( const int = 0, const int = 0,
+				      const bool = true );
 
   static void              addSetting    ( const QString&, const QString&, const double );
   static void              addSetting    ( const QString&, const QString&, const int );

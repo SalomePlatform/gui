@@ -1,8 +1,22 @@
+// Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License.
+// 
+// This library is distributed in the hope that it will be useful 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public  
+// License along with this library; if not, write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
 //  SALOME SALOMEGUI : implementation of desktop and GUI kernel
-//
-//  Copyright (C) 2003  CEA/DEN, EDF R&D
-//
-//
 //
 //  File   : PyInterp_base.cxx
 //  Author : Christian CAREMOLI, Paul RASCLE, EDF
@@ -112,8 +126,10 @@ void PyInterp_base::initialize()
 
   // Create cStringIO to capture stdout and stderr
   PycString_IMPORT;
-  _vout = PycStringIO->NewOutput(128);
-  _verr = PycStringIO->NewOutput(128);
+  if (PycStringIO) { // CTH11627 : additional check
+    _vout = PycStringIO->NewOutput(128);
+    _verr = PycStringIO->NewOutput(128);
+  }
 
   // All the initRun outputs are redirected to the standard output (console)
   initRun();
@@ -222,7 +238,7 @@ int PyInterp_base::run(const char *command)
       _atFirst = false;
       return ret;
     }
-    ret = simpleRun("salome.salome_init()");
+    ret = simpleRun("salome.salome_init(0,1)");
     if (ret) { 
       _atFirst = false;
       return ret;

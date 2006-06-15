@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software 
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 // 
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org 
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -65,6 +65,7 @@ public:
 			 PortableServer::POA_ptr poa,
 			 QMutex *GUIMutex,
 			 QWaitCondition *ServerLaunch,
+			 QMutex *SessionMutex,
 			 QWaitCondition *SessionStarted);
   virtual ~Session_ServerLauncher();
   void run();
@@ -77,13 +78,14 @@ protected:
 private:
   int _argc;
   char ** _argv;
-  CORBA::ORB_var _orb;
-  PortableServer::POA_var _root_poa;
-  QMutex* _GUIMutex;
-  QWaitCondition *_ServerLaunch;
-  QWaitCondition *_SessionStarted;
-  list<ServArg> _argServToLaunch;
-  vector<string> _argCopy;
+  CORBA::ORB_var              _orb;
+  PortableServer::POA_var     _root_poa;
+  QMutex*                     _GUIMutex;
+  QWaitCondition*             _ServerLaunch;
+  QMutex*                     _SessionMutex;
+  QWaitCondition*             _SessionStarted;
+  list<ServArg>               _argServToLaunch;
+  vector<string>              _argCopy;
   list<Session_ServerThread*> _serverThreads;
 };
 

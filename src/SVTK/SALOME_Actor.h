@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software 
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 // 
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -100,12 +100,14 @@ class SVTK_EXPORT SALOME_Actor : public VTKViewer_Actor
   //! Apply additional position
   virtual
   void
-  SetPosition(float _arg1, float _arg2, float _arg3);
+  SetPosition(vtkFloatingPointType _arg1, 
+	      vtkFloatingPointType _arg2, 
+	      vtkFloatingPointType _arg3);
 
   //! Apply additional position
   virtual
   void
-  SetPosition(float _arg[3]);
+  SetPosition(vtkFloatingPointType _arg[3]);
 
   //----------------------------------------------------------------------------
   //! Visibility management

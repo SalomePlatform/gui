@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "SalomeApp_Study.h"
 
@@ -23,6 +23,7 @@
 #include "SalomeApp_DataObject.h"
 #include "SalomeApp_Application.h"
 #include "SalomeApp_Engine_i.hxx"
+#include "SalomeApp_VisualState.h"
 
 #include "LightApp_RootObject.h"
 
@@ -31,16 +32,29 @@
 #include <SUIT_ResourceMgr.h>
 
 #include <qptrlist.h>
+#include <qapplication.h>
+#include <qdict.h>
 
 #include "utilities.h"
+
+#include <iostream>
+#include <string>
+#include <vector>
+
+#include <SUIT_Session.h>
 
 #include <string>
 #include <vector>
 
+#include "SALOMEDS_Tool.hxx"
+
+#include "SALOMEDSClient_ClientFactory.hxx"
+#include "SALOMEDSClient_IParameters.hxx"
+
 #include <SALOMEconfig.h>
 #include CORBA_SERVER_HEADER(SALOME_Exception)
 
-#include "SALOMEDS_Tool.hxx"
+using namespace std;
 
 /*!
   Constructor.
@@ -99,10 +113,10 @@ void SalomeApp_Study::createDocument()
   emit created( this );
 }
 
-//=======================================================================
-// name    : openDocument
-/*! Purpose : Open document*/
-//=======================================================================
+/*!
+  Opens document
+  \param theFileName - name of file
+*/
 bool SalomeApp_Study::openDocument( const QString& theFileName )
 {
   MESSAGE( "openDocument" );
@@ -131,13 +145,21 @@ bool SalomeApp_Study::openDocument( const QString& theFileName )
   
   emit opened( this );
   study->IsSaved(true);
+
+  bool restore = application()->resourceMgr()->booleanValue( "Study", "store_visual_state", true );
+  if ( restore ) {
+    std::vector<int> savePoints = getSavePoints();
+    if ( savePoints.size() > 0 )
+      SalomeApp_VisualState( (SalomeApp_Application*)application() ).restoreState( savePoints[savePoints.size()-1] );
+  }
+
   return res;
 }
 
-//=======================================================================
-// name    : loadDocument
-/*! Purpose : Connects GUI study to SALOMEDS one already loaded into StudyManager*/
-//=======================================================================
+/*!
+  Connects GUI study to SALOMEDS one already loaded into StudyManager
+  \param theStudyName - name of study
+*/
 bool SalomeApp_Study::loadDocument( const QString& theStudyName )
 {
   MESSAGE( "loadDocument" );
@@ -168,17 +190,28 @@ bool SalomeApp_Study::loadDocument( const QString& theStudyName )
   bool res = CAM_Study::openDocument( theStudyName );
   emit opened( this );
 
+  bool restore = application()->resourceMgr()->booleanValue( "Study", "store_visual_state", true );
+  if ( restore ) {
+    std::vector<int> savePoints = getSavePoints();
+    if ( savePoints.size() > 0 )
+      SalomeApp_VisualState( (SalomeApp_Application*)application() ).restoreState( savePoints[savePoints.size()-1] );
+  }
+
   //SRN: BugID IPAL9021: End
 
   return res;
 }
 
-//=======================================================================
-// name    : saveDocumentAs
-/*! Purpose : Save document*/
-//=======================================================================
+/*!
+  Saves document
+  \param theFileName - name of file
+*/
 bool SalomeApp_Study::saveDocumentAs( const QString& theFileName )
 {
+  bool store = application()->resourceMgr()->booleanValue( "Study", "store_visual_state", true );
+  if ( store )
+    SalomeApp_VisualState( (SalomeApp_Application*)application() ).storeState();
+  
   ModelList list; dataModels( list );
 
   SalomeApp_DataModel* aModel = (SalomeApp_DataModel*)list.first();
@@ -195,13 +228,14 @@ bool SalomeApp_Study::saveDocumentAs( const QString& theFileName )
   if( !resMgr )
     return false;
 
-  bool isMultiFile = resMgr->booleanValue( "Study", "multi_file", false ),
-       isAscii = resMgr->booleanValue( "Study", "ascii_file", false ),
-       res = isAscii ? 
-	 SalomeApp_Application::studyMgr()->SaveAsASCII( theFileName.latin1(), studyDS(), isMultiFile ) :
-	 SalomeApp_Application::studyMgr()->SaveAs     ( theFileName.latin1(), studyDS(), isMultiFile ) &&
-    CAM_Study::saveDocumentAs( theFileName ) &&  //SRN: BugID IPAL9377, removed usage of uninitialized variable <res>
-    saveStudyData(theFileName);
+  bool isMultiFile = resMgr->booleanValue( "Study", "multi_file", false );
+  bool isAscii = resMgr->booleanValue( "Study", "ascii_file", false );
+  bool res = (isAscii ? 
+    SalomeApp_Application::studyMgr()->SaveAsASCII( theFileName.latin1(), studyDS(), isMultiFile ) :
+    SalomeApp_Application::studyMgr()->SaveAs     ( theFileName.latin1(), studyDS(), isMultiFile ))
+    && CAM_Study::saveDocumentAs( theFileName );
+  
+  res = res && saveStudyData(theFileName);
 
   if ( res )
     emit saved( this );
@@ -209,12 +243,15 @@ bool SalomeApp_Study::saveDocumentAs( const QString& theFileName )
   return res;
 }
 
-//=======================================================================
-// name    : saveDocument
-/*! Purpose : Save document*/
-//=======================================================================
+/*!
+  Saves previously opened document
+*/
 bool SalomeApp_Study::saveDocument()
 {
+  bool store = application()->resourceMgr()->booleanValue( "Study", "store_visual_state", true );
+  if ( store )
+    SalomeApp_VisualState( (SalomeApp_Application*)application() ).storeState();
+
   ModelList list; dataModels( list );
 
   SalomeApp_DataModel* aModel = (SalomeApp_DataModel*)list.first();
@@ -222,7 +259,7 @@ bool SalomeApp_Study::saveDocument()
   for ( ; aModel; aModel = (SalomeApp_DataModel*)list.next() ) {
     listOfFiles.clear();
     aModel->save(listOfFiles);
-    if ( !listOfFiles.isEmpty() )
+    if ( !listOfFiles.isEmpty() ) 
       saveModuleData(aModel->module()->name(), listOfFiles);
   }
 
@@ -231,11 +268,11 @@ bool SalomeApp_Study::saveDocument()
   if( !resMgr )
     return false;
 
-  bool isMultiFile = resMgr->booleanValue( "Study", "multi_file", false ),
-       isAscii = resMgr->booleanValue( "Study", "ascii_file", false ),
-       res = isAscii ? 
-	 SalomeApp_Application::studyMgr()->SaveASCII( studyDS(), isMultiFile ) :
-         SalomeApp_Application::studyMgr()->Save     ( studyDS(), isMultiFile ) && CAM_Study::saveDocument();
+  bool isMultiFile = resMgr->booleanValue( "Study", "multi_file", false );
+  bool isAscii = resMgr->booleanValue( "Study", "ascii_file", false );
+  bool res = (isAscii ? 
+    SalomeApp_Application::studyMgr()->SaveASCII( studyDS(), isMultiFile ) :
+    SalomeApp_Application::studyMgr()->Save     ( studyDS(), isMultiFile )) && CAM_Study::saveDocument();
 
   res = res && saveStudyData(studyName());
   if ( res )
@@ -244,10 +281,9 @@ bool SalomeApp_Study::saveDocument()
   return res;
 }
 
-//================================================================
-// Function : closeDocument
-/*! Purpose  : Close document*/
-//================================================================
+/*!
+  Closes document
+*/
 void SalomeApp_Study::closeDocument(bool permanently)
 {
   LightApp_Study::closeDocument(permanently);
@@ -262,10 +298,9 @@ void SalomeApp_Study::closeDocument(bool permanently)
   }
 }
 
-//================================================================
-// Function : isModified
-// Purpose  : 
-//================================================================
+/*!
+  \return true, if study is modified in comparison with last open/save
+*/
 bool SalomeApp_Study::isModified() const
 {
   bool isAnyChanged = studyDS() && studyDS()->IsModified();
@@ -275,23 +310,23 @@ bool SalomeApp_Study::isModified() const
   return isAnyChanged; 
 }
 
-//================================================================
-// Function : isSaved
-/*! Purpose  : Check: data model is saved?*/
-//================================================================
+/*!
+  \return if data model is saved
+*/
 bool SalomeApp_Study::isSaved() const
 {
   bool isAllSaved = studyDS() && studyDS()->GetPersistentReference().size();
   if (!isAllSaved)
-    isAllSaved = LightApp_Study::isModified();
+    isAllSaved = LightApp_Study::isSaved();
 
   return isAllSaved; 
 }
 
-//=======================================================================
-// name    : saveModuleData
-/*! Purpose : save list file for module 'theModuleName' */
-//=======================================================================
+/*!
+  Saves data of module
+  \param theModuleName - name of module
+  \param theListOfFiles - list of files to be saved
+*/
 void SalomeApp_Study::saveModuleData( QString theModuleName, QStringList theListOfFiles )
 {
   int aNb = theListOfFiles.count();
@@ -309,10 +344,11 @@ void SalomeApp_Study::saveModuleData( QString theModuleName, QStringList theList
   SetListOfFiles(theModuleName, aListOfFiles);
 }
 
-//=======================================================================
-// name    : openModuleData
-/*! Purpose : gets list of file for module 'theModuleNam' */
-//=======================================================================
+/*!
+  Loads data of module
+  \param theModuleName - name of module
+  \param theListOfFiles - list of files to be loaded
+*/
 void SalomeApp_Study::openModuleData( QString theModuleName, QStringList& theListOfFiles )
 {
   std::vector<std::string> aListOfFiles =  GetListOfFiles( theModuleName );
@@ -328,10 +364,9 @@ void SalomeApp_Study::openModuleData( QString theModuleName, QStringList& theLis
     theListOfFiles.append(aListOfFiles[i+1].c_str());
 }
 
-//=======================================================================
-// name    : saveStudyData
-/*! Purpose : save data from study */
-//=======================================================================
+/*!
+  Saves data from study
+*/
 bool SalomeApp_Study::saveStudyData( const QString& theFileName )
 {
   ModelList list; dataModels( list );
@@ -342,10 +377,9 @@ bool SalomeApp_Study::saveStudyData( const QString& theFileName )
   return true;
 }
 
-//=======================================================================
-// name    : openStudyData
-/*! Purpose : open data for study */
-//=======================================================================
+/*!
+  Loads data for study
+*/
 bool SalomeApp_Study::openStudyData( const QString& theFileName )
 {
  return true;
@@ -372,7 +406,7 @@ void SalomeApp_Study::dataModelInserted (const CAM_DataModel* dm)
 }
 
 /*!
- Create SComponent for module, using default engine (CORBAless)
+  Create SComponent for module, using default engine (CORBAless)
 */
 void SalomeApp_Study::addComponent(const CAM_DataModel* dm)
 {
@@ -490,10 +524,10 @@ QString SalomeApp_Study::newStudyName() const
   return newName;
 }
 
-//================================================================
-// Function : GetListOfFiles
-/*! Purpose  : to be used by CORBAless modules*/
-//================================================================
+/*!
+  \return list of files used by module: to be used by CORBAless modules
+  \param theModuleName - name of module
+*/
 std::vector<std::string> SalomeApp_Study::GetListOfFiles( const char* theModuleName  ) const
 {
   SalomeApp_Engine_i* aDefaultEngine = SalomeApp_Engine_i::GetInstance();
@@ -504,10 +538,11 @@ std::vector<std::string> SalomeApp_Study::GetListOfFiles( const char* theModuleN
   return aListOfFiles;
 }
 
-//================================================================
-// Function : SetListOfFiles
-/*! Purpose  : to be used by CORBAless modules*/
-//================================================================
+/*!
+  Sets list of files used by module: to be used by CORBAless modules
+  \param theModuleName - name of module
+  \param theListOfFiles - list of files
+*/
 void SalomeApp_Study::SetListOfFiles ( const char* theModuleName,
                                        const std::vector<std::string> theListOfFiles )
 {
@@ -516,10 +551,9 @@ void SalomeApp_Study::SetListOfFiles ( const char* theModuleName,
     aDefaultEngine->SetListOfFiles(theListOfFiles, id(), theModuleName);
 }
 
-//================================================================
-// Function : GetTmpDir
-/*! Purpose  : to be used by CORBAless modules*/
-//================================================================
+/*!
+  \return temporary directory for saving files of modules
+*/
 std::string SalomeApp_Study::GetTmpDir ( const char* theURL, const bool  isMultiFile )
 {
   std::string anURLDir = SALOMEDS_Tool::GetDirFromPath(theURL);
@@ -527,10 +561,9 @@ std::string SalomeApp_Study::GetTmpDir ( const char* theURL, const bool  isMulti
   return aTmpDir;
 }
 
-//================================================================
-// Function : RemoveTemporaryFiles
-/*! Purpose  : to be used by CORBAless modules*/
-//================================================================
+/*!
+  Removes temporary files
+*/
 void SalomeApp_Study::RemoveTemporaryFiles ( const char* theModuleName, const bool isMultiFile ) const
 {
   if (isMultiFile)
@@ -550,8 +583,10 @@ void SalomeApp_Study::RemoveTemporaryFiles ( const char* theModuleName, const bo
   }
 }
 
-// END: methods to be used by CORBAless modules
-
+/*!
+  Deletes all references to object
+  \param obj - object
+*/
 void SalomeApp_Study::deleteReferencesTo( _PTR( SObject ) obj )
 {
   _PTR(StudyBuilder) sb = studyDS()->NewBuilder();
@@ -567,10 +602,10 @@ void SalomeApp_Study::deleteReferencesTo( _PTR( SObject ) obj )
   }
 }
 
-//================================================================
-// Function : referencedToEntry
-/*! Purpose  : Return referenced entry from entry*/
-//================================================================
+/*!
+  \return real entry by entry of reference
+  \param entry - entry of reference object
+*/
 QString SalomeApp_Study::referencedToEntry( const QString& entry ) const
 {
   _PTR(SObject) obj = studyDS()->FindObjectID( entry.latin1() );
@@ -581,10 +616,9 @@ QString SalomeApp_Study::referencedToEntry( const QString& entry ) const
   return LightApp_Study::referencedToEntry( entry );
 }
 
-//================================================================
-// Function : componentDataType
-/*! Purpose  : Return component data type from entry*/
-//================================================================
+/*!
+  \return component data type for entry
+*/
 QString SalomeApp_Study::componentDataType( const QString& entry ) const
 {
   _PTR(SObject) obj( studyDS()->FindObjectID( entry.latin1() ) );
@@ -593,20 +627,18 @@ QString SalomeApp_Study::componentDataType( const QString& entry ) const
   return obj->GetFatherComponent()->ComponentDataType().c_str();
 }
 
-//================================================================
-// Function : componentDataType
-/*! Purpose  : Return component data type from entry*/
-//================================================================
+/*!
+  \return true if entry corresponds to component
+*/
 bool SalomeApp_Study::isComponent( const QString& entry ) const
 {
   _PTR(SObject) obj( studyDS()->FindObjectID( entry.latin1() ) );
   return obj && QString( obj->GetID().c_str() ) == obj->GetFatherComponent()->GetID().c_str();
 }
 
-//================================================================
-// Function : children
-/*! Purpose : Return entries of children of object*/
-//================================================================
+/*!
+  \return entries of object children
+*/
 void SalomeApp_Study::children( const QString& entry, QStringList& child_entries ) const
 {
   _PTR(SObject) SO = studyDS()->FindObjectID( entry.latin1() );
@@ -620,6 +652,10 @@ void SalomeApp_Study::children( const QString& entry, QStringList& child_entries
   }
 }
 
+/*!
+  Fills list with components names
+  \param comp - list to be filled
+*/
 void SalomeApp_Study::components( QStringList& comps ) const
 {
   for( _PTR(SComponentIterator) it ( studyDS()->NewComponentIterator() ); it->More(); it->Next() ) 
@@ -629,4 +665,78 @@ void SalomeApp_Study::components( QStringList& comps ) const
       continue; // skip the magic "Interface Applicative" component
     comps.append( aComponent->ComponentDataType().c_str() );
   }
+}
+
+/*!
+  \return a list of saved points' IDs
+*/
+std::vector<int> SalomeApp_Study::getSavePoints()
+{
+  std::vector<int> v;
+
+  _PTR(SObject) so = studyDS()->FindComponent("Interface Applicative");
+  if(!so) return v;
+
+  _PTR(StudyBuilder) builder = studyDS()->NewBuilder();
+  _PTR(ChildIterator) anIter ( studyDS()->NewChildIterator( so ) );
+  for(; anIter->More(); anIter->Next())
+  {
+    _PTR(SObject) val( anIter->Value() );
+    _PTR(GenericAttribute) genAttr;
+    if(builder->FindAttribute(val, genAttr, "AttributeParameter")) v.push_back(val->Tag());
+  }
+
+  return v;
+}
+
+/*!
+  Removes a given save point
+*/
+void SalomeApp_Study::removeSavePoint(int savePoint)
+{
+  if(savePoint <= 0) return;
+ _PTR(AttributeParameter) AP = studyDS()->GetCommonParameters(getVisualComponentName(), savePoint);
+  _PTR(SObject) so = AP->GetSObject();
+  _PTR(StudyBuilder) builder = studyDS()->NewBuilder();
+  builder->RemoveObjectWithChildren(so);
+}
+
+/*!
+  \return a name of save point
+*/
+QString SalomeApp_Study::getNameOfSavePoint(int savePoint)
+{
+  _PTR(AttributeParameter) AP = studyDS()->GetCommonParameters(getVisualComponentName(), savePoint);
+  _PTR(IParameters) ip = ClientFactory::getIParameters(AP);
+  return ip->getProperty("AP_SAVEPOINT_NAME").c_str();
+}
+
+/*!
+  Sets a name of save point
+*/
+void SalomeApp_Study::setNameOfSavePoint(int savePoint, const QString& nameOfSavePoint)
+{
+  _PTR(AttributeParameter) AP = studyDS()->GetCommonParameters(getVisualComponentName(), savePoint);
+  _PTR(IParameters) ip = ClientFactory::getIParameters(AP);
+  ip->setProperty("AP_SAVEPOINT_NAME", nameOfSavePoint.latin1());
+}
+
+/*!
+  \return a name of the component where visual parameters are stored
+*/
+std::string SalomeApp_Study::getVisualComponentName()
+{
+  return "Interface Applicative";
+}
+
+/*!
+  Slot: called on change of a root of a data model. Redefined from CAM_Study
+*/
+void SalomeApp_Study::updateModelRoot( const CAM_DataModel* dm )
+{
+  LightApp_Study::updateModelRoot( dm );
+
+  // calling updateSavePointDataObjects in order to set correct order of "Gui states" object
+  // it must always be the last one.
+  ((SalomeApp_Application*)application())->updateSavePointDataObjects( this );
 }

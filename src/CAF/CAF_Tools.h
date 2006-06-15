@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  File   : CAF_Tools.h
 //  Author : UI team
@@ -33,6 +33,10 @@
 #include <TCollection_AsciiString.hxx>
 #include <TCollection_ExtendedString.hxx>
 
+/*!
+  \class CAF_Tools
+  Prodives set of auxiliary static methods
+*/
 class CAF_EXPORT CAF_Tools : public SUIT_Tools
 {
 public:

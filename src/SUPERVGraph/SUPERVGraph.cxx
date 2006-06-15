@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software 
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 // 
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org 
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -31,6 +31,9 @@
 
 using namespace std;
 
+/*!
+  Creates view
+*/
 SUIT_ViewWindow* SUPERVGraph::createView(SUIT_Desktop* parent)
 {
   return new SUPERVGraph_ViewFrame( parent/*, "vtkView"*/ ); 
@@ -38,6 +41,9 @@ SUIT_ViewWindow* SUPERVGraph::createView(SUIT_Desktop* parent)
 
 extern "C"
 {
+  /*!
+    Creates view
+  */
   SUIT_ViewWindow* createView(SUIT_Desktop* parent)
   {
     return SUPERVGraph::createView(parent);

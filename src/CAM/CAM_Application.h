@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef CAM_APPLICATION_H
 #define CAM_APPLICATION_H
@@ -31,6 +31,13 @@ class QPopupMenu;
 #pragma warning( disable:4251 )
 #endif
 
+/*!
+  \class CAM_Application
+  Defines application configuration and behaviour for application with modules.
+  Every module has own data model, necessary windows and viewers, etc.
+  Application provides all necessary functionality for module management
+  (loading of modules/activation/deactivation, etc)
+*/
 class CAM_EXPORT CAM_Application : public STD_Application  
 {
   Q_OBJECT

@@ -14,7 +14,7 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  Author : OPEN CASCADE
 //
@@ -22,11 +22,6 @@
 // File:      GLViewer_ViewPort.h
 // Created:   November, 2004
 
-/***************************************************************************
-**  Class:   GLViewer_ViewPort
-**  Descr:   Visualisation canvas of GLViewer
-**  Created: UI team, 05.09.04
-****************************************************************************/
 #ifndef GLVIEWER_VIEWPORT_H
 #define GLVIEWER_VIEWPORT_H
 
@@ -57,10 +52,10 @@ enum BlockStatus
     BS_Dragging         = 0x0004
 };
 
-/*! 
- * Class GLViewer_ViewPort
- * Visualisation canvas of GLViewer
- */
+/*!
+  \class GLViewer_ViewPort
+  Visualisation canvas of GLViewer
+*/
 class GLVIEWER_API GLViewer_ViewPort: public QWidget
 {
     Q_OBJECT

@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -38,11 +38,17 @@ using namespace std;
 
 SalomeApp_Engine_i* SalomeApp_Engine_i::myInstance = NULL;
 
+/*!
+  Constructor
+*/
 SalomeApp_Engine_i::SalomeApp_Engine_i()
 {
   myInstance = this;
 }
 
+/*!
+  Destructor
+*/
 SalomeApp_Engine_i::~SalomeApp_Engine_i()
 {
 }
@@ -163,6 +169,9 @@ void SalomeApp_Engine_i::SetListOfFiles (const ListOfFiles theListOfFiles,
   mapOfListOfFiles[componentName] = theListOfFiles;
 }
 
+/*!
+  \return shared instance of engine
+*/
 SalomeApp_Engine_i* SalomeApp_Engine_i::GetInstance()
 {
   return myInstance;

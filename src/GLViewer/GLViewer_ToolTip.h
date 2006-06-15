@@ -14,7 +14,7 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  Author : OPEN CASCADE
 //
@@ -35,12 +35,10 @@
 
 class GLViewer_ViewPort2d;
 class QLabel;
-/***************************************************************************
-**  Class:   GLViewer_ObjectTip
-**  Descr:   ToolTip of GLViewer_Objects
-**  Module:  GLViewer
-**  Created: UI team, 28.03.05
-****************************************************************************/
+/*!
+  \class GLViewer_ObjectTip
+  ToolTip of GLViewer_Objects
+*/
 class GLVIEWER_API GLViewer_ObjectTip: public QObject//QToolTip//QtxToolTip
 {
   Q_OBJECT

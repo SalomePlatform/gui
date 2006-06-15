@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      QtxAction.hxx
 // Author:    Sergey TELKOV
@@ -25,6 +25,7 @@
 #include "Qtx.h"
 
 #include <qaction.h>
+#include <qmap.h>
 
 class QTX_EXPORT QtxAction : public QAction
 {
@@ -38,9 +39,13 @@ public:
 
     virtual bool addTo( QWidget* );
     virtual bool addTo( QWidget*, const int );
+    virtual bool removeFrom( QWidget* );
 
 protected:
-    void         setPopup( QPopupMenu*, const int, QPopupMenu* ) const;
+    void         setPopup( QWidget*, const int, QPopupMenu* ) const;
+
+private:
+    QMap<QWidget*,int> myMenuIds;
 };
 
 #endif

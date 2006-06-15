@@ -14,13 +14,12 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      LightApp_PreferencesDlg.cxx
 // Author:    Sergey TELKOV
 
 #include "LightApp_PreferencesDlg.h"
-
 #include "LightApp_Preferences.h"
 
 #include "QtxResourceMgr.h"
@@ -29,12 +28,13 @@
 #include <qlayout.h>
 #include <qmessagebox.h>
 #include <qvbox.h>
+#include <qfiledialog.h>
 
 /*!
   Constructor.
 */
 LightApp_PreferencesDlg::LightApp_PreferencesDlg( LightApp_Preferences* prefs, QWidget* parent )
-: QtxDialog( parent, 0, true, false, OK | Close | Apply ),
+: QtxDialog( parent, 0, true, true, OK | Close | Apply ),
 myPrefs( prefs ), mySaved ( false )
 {
   setCaption( tr( "CAPTION" ) );
@@ -58,6 +58,9 @@ myPrefs( prefs ), mySaved ( false )
   QButton* defBtn = userButton( insertButton( tr( "DEFAULT_BTN_TEXT" ) ) );
   if ( defBtn )
     connect( defBtn, SIGNAL( clicked() ), this, SLOT( onDefault() ) );
+  QButton* impBtn = userButton( insertButton( tr( "IMPORT_BTN_TEXT" ) ) );
+  if( impBtn )
+    connect( impBtn, SIGNAL( clicked() ), this, SLOT( onImportPref() ) );
 }
 
 /*!
@@ -131,4 +134,25 @@ void LightApp_PreferencesDlg::onDefault()
           myPrefs->resourceMgr()->setIgnoreUserValues( prev );
 	}      
     }
+}
+
+/*! Import preferences from some file */
+void LightApp_PreferencesDlg::onImportPref()
+{
+  QtxResourceMgr* mgr = myPrefs->resourceMgr();
+  if( !mgr )
+    return;
+
+  QFileDialog dlg( ".", "*", this, "", tr( "IMPORT_PREFERENCES" ) );
+  dlg.setShowHiddenFiles( true );
+  dlg.exec();
+  QString fname = dlg.selectedFile();
+  if( fname.isEmpty() )
+    return;
+
+  if( mgr->import( fname ) )
+  {
+    myPrefs->retrieve();
+    myPrefs->toBackup();
+  }
 }

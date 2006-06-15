@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      QtxDockAction.h
 // Author:    Sergey TELKOV
@@ -120,6 +120,8 @@ private:
   void         collectNames( const int, QStringList& ) const;
 
   void         updateMenus();
+
+  bool         dockMainWindow( QMainWindow*, QObject* ) const;
 
 private:
   enum { AutoAdd = QEvent::User, LoadArea };

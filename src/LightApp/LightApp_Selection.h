@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -37,7 +37,13 @@ class LightApp_DataOwner;
 class LightApp_Study;
 class SUIT_ViewWindow;
 
-
+/*!
+  \class LightApp_Selection 
+  Custom selection class, allowing to build popup with rules on the base
+  of owners selected in all selectors (popup client has more priority).
+  It is able to return values of standard object properties
+  (isVisible,isComponent,canBeDisplayed,isReference, etc)
+*/
 class LIGHTAPP_EXPORT LightApp_Selection : public QtxPopupMgr::Selection
 {
 public:

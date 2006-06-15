@@ -14,15 +14,13 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "SUIT_DataObject.h"
 
 #include <qobject.h>
 
 #include "SUIT_DataObjectKey.h"
-
-#include <iostream> // for cout in dump()
 
 /*!
     Constructor
@@ -466,11 +464,17 @@ void SUIT_DataObject::setOn( const bool on )
   myCheck = on;
 }
 
+/*!
+    \return the opened state of the object (used in Object Browser).
+*/
 bool SUIT_DataObject::isOpen() const
 {
   return myOpen;
 }
 
+/*!
+    Sets the opened state of the object (used in Object Browser).
+*/
 void SUIT_DataObject::setOpen( const bool on )
 {
   myOpen = on;
@@ -491,7 +495,7 @@ SUIT_DataObjectKey* SUIT_DataObject::key() const
 void SUIT_DataObject::dump( const int indent ) const
 {
   QString strIndent = QString().fill( ' ', indent ); // indentation string 
-  std::cout << strIndent << name() << std::endl;     // dump to cout
+  printf( "%s%s\n", strIndent.latin1(), name().latin1() );
   for ( DataObjectListIterator it( myChildren ); it.current(); ++it ) // iterate all children
     it.current()->dump( indent + 2 );  // dump every child with indent + 2 spaces
 }

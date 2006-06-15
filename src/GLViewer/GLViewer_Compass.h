@@ -14,7 +14,7 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  Author : OPEN CASCADE
 //
@@ -33,14 +33,13 @@
 #pragma warning( disable:4251 )
 #endif
 
+class GLViewer_TexFont;
+
 /*! Class GLViewer_Compass
  * Class implement representatiof of compass in one of corner in GLViewer.
  * Compass it's a some round visual pointer rotated with view window and 
  * located in fixed place (in one fixed corner)
  */
-
-class GLViewer_TexFont;
-
 class GLVIEWER_API GLViewer_Compass
 {
 public:

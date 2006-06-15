@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef QTX_RESOURCEMGR_H
 #define QTX_RESOURCEMGR_H
@@ -133,6 +133,7 @@ public:
   QString         path( const QString&, const QString&, const QString& ) const;
 
   bool            load();
+  bool            import( const QString& );
   bool            save();
 
   QStringList     sections() const;
@@ -144,7 +145,7 @@ protected:
   virtual void    setDirList( const QStringList& );
   virtual void    setResource( const QString&, const QString&, const QString& );
 
-  virtual QString userFileName( const QString& ) const;
+  virtual QString userFileName( const QString&, const bool = true ) const;
   virtual QString globalFileName( const QString& ) const;
 
 private:

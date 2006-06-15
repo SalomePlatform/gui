@@ -14,7 +14,7 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  Author : OPEN CASCADE
 //
@@ -22,12 +22,6 @@
 // File:      GLViewer_Selector2d.h
 // Created:   November, 2004
 
-/****************************************************************************
-**  Class:   GLViewer_Selector2d 
-**  Descr:   OpenGL Selector 2D
-**  Module:  GLViewer
-**  Created: UI team, 20.09.02
-*****************************************************************************/
 #ifndef GLVIEWER_SELECTOR2D_H
 #define GLVIEWER_SELECTOR2D_H
 
@@ -42,8 +36,9 @@
 class GLViewer_Viewer2d;
 class GLViewer_Context;
 
-/*! Class GLViewer_Selector2d
-*   2D select manager for GLViewer
+/*!
+  \class GLViewer_Selector2d 
+  2D select manager for GLViewer
 */
 class GLVIEWER_API GLViewer_Selector2d : public GLViewer_Selector
 {

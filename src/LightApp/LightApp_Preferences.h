@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      LightApp_Preferences.h
 // Author:    Sergey TELKOV
@@ -31,6 +31,11 @@
 
 class QtxResourceMgr;
 
+/*!
+  \class LightApp_Preferences
+  Custom preference container. Assign each preference category with module.
+  Emits signal on preference changing
+*/
 class LIGHTAPP_EXPORT LightApp_Preferences : public QtxListResourceEdit
 {
   Q_OBJECT

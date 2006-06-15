@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software 
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 // 
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org 
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -52,8 +52,7 @@ public:
   Session_ServerThread(int argc,
 		       char ** argv, 
 		       CORBA::ORB_ptr orb, 
-		       PortableServer::POA_ptr poa,
-		       QMutex *GUIMutex);
+		       PortableServer::POA_ptr poa);
   virtual ~Session_ServerThread();
   void         Init();
 protected:
@@ -70,7 +69,6 @@ protected:
   int                     _servType;
   CORBA::ORB_var          _orb;
   PortableServer::POA_var _root_poa;
-  QMutex*                 _GUIMutex;
   SALOME_NamingService *  _NS;
 };
 
@@ -90,6 +88,7 @@ public:
 protected:
   virtual void ActivateSession       ( int argc, char ** argv );
 private:
+  QMutex*                 _GUIMutex;
   QWaitCondition*         _GUILauncher;
 };
 

@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef LIGHTAPP_SELECTIONMGR_H
 #define LIGHTAPP_SELECTIONMGR_H
@@ -22,15 +22,24 @@
 #include "LightApp.h"
 
 #include <SUIT_SelectionMgr.h>
-#include <SALOME_InteractiveObject.hxx>
 
-#include <qmap.h>
+#ifndef DISABLE_SALOMEOBJECT
+  #include <SALOME_InteractiveObject.hxx>
+  #include <qmap.h>
 
-class SALOME_ListIO;
+  class SALOME_ListIO;
+  class TColStd_IndexedMapOfInteger;
+  class TColStd_MapOfInteger;
+#else
+#include <qstringlist.h>
+#endif
+
 class LightApp_Application;
-class TColStd_IndexedMapOfInteger;
-class TColStd_MapOfInteger;
 
+/*!
+  Custom selection manager, allowing to work with object selection
+  (additionally to data owners) and to access to sub-selection of objects
+*/
 class LIGHTAPP_EXPORT LightApp_SelectionMgr : public SUIT_SelectionMgr
 {
   Q_OBJECT
@@ -39,10 +48,11 @@ public:
   LightApp_SelectionMgr( LightApp_Application*, const bool = true );
   virtual ~LightApp_SelectionMgr();
 
+  LightApp_Application* application() const;
+
+#ifndef DISABLE_SALOMEOBJECT
   typedef QMap< Handle(SALOME_InteractiveObject), TColStd_IndexedMapOfInteger > MapIOOfMapOfInteger;
   typedef QMap< QString, TColStd_IndexedMapOfInteger > MapEntryOfMapOfInteger;
-
-  LightApp_Application* application() const;
 
   void                   selectedObjects( SALOME_ListIO&, const QString& = QString::null, const bool = true ) const;
   void                   setSelectedObjects( const SALOME_ListIO&, const bool = false );
@@ -61,6 +71,9 @@ public:
   void                   selectObjects( MapIOOfMapOfInteger theMapIO, bool append );
 
   void                   selectedSubOwners( MapEntryOfMapOfInteger& theMap );
+#else
+  void                   selectedObjects( QStringList&, const QString& = QString::null, const bool = true ) const;
+#endif
 
 signals:
   void                   currentSelectionChanged();

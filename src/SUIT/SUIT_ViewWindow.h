@@ -14,11 +14,10 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // SUIT_ViewWindow.h: interface for the SUIT_ViewWindow class.
 //
-//////////////////////////////////////////////////////////////////////
 
 #if !defined(AFX_SUIT_VIEWWINDOW_H__82C3D51A_6F10_45B0_BCFE_3CB3EF596A4D__INCLUDED_)
 #define AFX_SUIT_VIEWWINDOW_H__82C3D51A_6F10_45B0_BCFE_3CB3EF596A4D__INCLUDED_
@@ -48,9 +47,12 @@ public:
   bool              event(QEvent*);
 
   virtual QImage    dumpView();
-  virtual bool      dumpViewToFormat( const QString& fileName, const QString& format );
+  bool              dumpViewToFormat( const QString& fileName, const QString& format );
 
-  void              onAccelAction( int );
+  bool              onAccelAction( int );
+
+  virtual QString   getVisualParameters();
+  virtual void      setVisualParameters( const QString& parameters );
 
 public slots:
   virtual void      onDumpView();
@@ -70,7 +72,8 @@ protected:
   void              closeEvent( QCloseEvent* );
   virtual void      contextMenuEvent( QContextMenuEvent* );
   virtual QString   filter() const;
-  virtual void      action( const int );
+  virtual bool      action( const int );
+  virtual bool      dumpViewToFormat( const QImage&, const QString& fileName, const QString& format );
 
   SUIT_Desktop*     myDesktop;
   SUIT_ViewManager* myManager;

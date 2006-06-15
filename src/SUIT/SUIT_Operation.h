@@ -14,19 +14,8 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-/**
-*  SALOME SalomeApp
-*
-*  Copyright (C) 2005  CEA/DEN, EDF R&D
-*
-*
-*
-*  File   : SUIT_Operation.h
-*  Author : Unknown
-*  Module : SALOME
-*/
 
 #ifndef SUIT_OPERATION_H
 #define SUIT_OPERATION_H
@@ -40,6 +29,7 @@ class SUIT_Study;
 class SUIT_Application;
 
 /*!
+   \class SUIT_Operation
  * \brief Base class for all operations
  *
  *  Base class for all operations. If you perform an action it is reasonable to create

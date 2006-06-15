@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software 
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 // 
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org 
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -55,13 +55,13 @@ void VTKViewer_ShrinkFilter::Execute()
   int i, j, numIds, abort=0;
   vtkIdType cellId, numCells, numPts;
   vtkIdType oldId, newId;
-  float center[3], *p, pt[3];
+  vtkFloatingPointType center[3], *p, pt[3];
   vtkPointData *pd, *outPD;;
   vtkIdList *ptIds, *newPtIds;
   vtkDataSet *input= this->GetInput();
   vtkUnstructuredGrid *output = this->GetOutput();
   vtkIdType tenth;
-  float decimal;
+  vtkFloatingPointType decimal;
 
   vtkDebugMacro(<<"Shrinking cells");
 

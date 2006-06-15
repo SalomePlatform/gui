@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "CAM_DataModel.h"
 
@@ -33,10 +33,12 @@ CAM_DataModel::~CAM_DataModel()
 {
 }
 
+/*!
+  Default implementation, does nothing.
+  Can be used for creation of root object.
+*/
 void CAM_DataModel::initialize()
 {
-  //! Default implementation, does nothing.\n
-  //! Can be used for creation of root object.
 }
 
 /*!Get root object.

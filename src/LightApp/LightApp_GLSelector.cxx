@@ -14,13 +14,11 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "LightApp_GLSelector.h"
 
 #include "LightApp_DataOwner.h"
-
-#include <SALOME_GLOwner.h>
 
 #include <GLViewer_Context.h>
 
@@ -66,7 +64,7 @@ void LightApp_GLSelector::getSelection( SUIT_DataOwnerPtrList& aList ) const
     GLViewer_Object* obj = cont->SelectedObject();
     if ( obj )
     {
-      SALOME_GLOwner* owner = dynamic_cast< SALOME_GLOwner* >( obj->owner() );
+      LightApp_GLOwner* owner = dynamic_cast< LightApp_GLOwner* >( obj->owner() );
       if( owner )
         aList.append( SUIT_DataOwnerPtr( new LightApp_DataOwner( owner->entry() ) ) );
     }
@@ -90,7 +88,7 @@ void LightApp_GLSelector::setSelection( const SUIT_DataOwnerPtrList& aList )
     GLViewer_Object* obj = *it;
     if ( obj && obj->getVisible() )
     {
-      SALOME_GLOwner* owner = dynamic_cast< SALOME_GLOwner* >( obj->owner() );
+      LightApp_GLOwner* owner = dynamic_cast< LightApp_GLOwner* >( obj->owner() );
       if ( owner )
 	aDisplayed.insert( owner->entry(), obj );
     }
@@ -114,4 +112,39 @@ void LightApp_GLSelector::setSelection( const SUIT_DataOwnerPtrList& aList )
 
   if ( Nb > 0 )
     myViewer->updateAll();
+}
+
+
+/*!
+  Constructor
+  \param entry - entry of object
+*/
+LightApp_GLOwner::LightApp_GLOwner( const char* entry )
+: GLViewer_Owner()
+{
+  setEntry( entry );
+}
+
+/*!
+  Destructor
+*/
+LightApp_GLOwner::~LightApp_GLOwner()
+{
+}
+
+/*!
+  \return entry
+*/
+const char* LightApp_GLOwner::entry() const
+{
+  return myEntry.c_str();
+}
+
+/*!
+  Sets new entry
+  \param entry - entry of object
+*/
+void LightApp_GLOwner::setEntry( const char* entry )
+{
+  myEntry = entry;
 }

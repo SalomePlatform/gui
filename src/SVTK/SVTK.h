@@ -14,19 +14,26 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+#ifndef SVTK_H
+#define SVTK_H
+
+#include "VTKViewer.h"
+
 #ifdef WNT
-#ifdef SVTK_EXPORTS
-#define SVTK_EXPORT __declspec(dllexport)
+#  ifdef SVTK_EXPORTS
+#    define SVTK_EXPORT __declspec(dllexport)
+#  else
+#   define SVTK_EXPORT __declspec(dllimport)
+#  endif
 #else
-#define SVTK_EXPORT __declspec(dllimport)
-#endif
-#else
-#define SVTK_EXPORT
+#  define SVTK_EXPORT
 #endif
 
 #if defined WNT
 #pragma warning ( disable: 4251 )
 #pragma warning ( disable: 4786 )
+#endif
+
 #endif

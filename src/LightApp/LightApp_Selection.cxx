@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
 #include "LightApp_Selection.h"
@@ -86,13 +86,13 @@ void LightApp_Selection::init( const QString& client, LightApp_SelectionMgr* mgr
       LightApp_DataOwner* sowner = dynamic_cast<LightApp_DataOwner*>( (*anIt ).get() );
       if( sowner )
       {
-	if( entries.contains( sowner->entry() ) )
+        entry = myStudy->referencedToEntry( sowner->entry() );
+	if( entries.contains( entry ) )
 	  continue;
 
-        entry = myStudy->referencedToEntry( sowner->entry() );
 	entries.insert( entry, 0 );
         myEntries.insert( num, entry );
-	myIsReferences.insert( num, sowner->entry() == entry );
+	myIsReferences.insert( num, sowner->entry() != entry );
         processOwner( sowner );
 	num++;
       }
@@ -153,7 +153,12 @@ QtxValue LightApp_Selection::param( const int ind, const QString& p ) const
     LightApp_Displayer* d = LightApp_Displayer::FindDisplayer( mod_name, false );
     // false in last parameter means that now we doesn't load module, if it isn't loaded
 
-    return QtxValue( d ? d->canBeDisplayed( myEntries[ ind ] ) : true, 0 );
+    if ( d )
+      return d->canBeDisplayed( myEntries[ ind ] );
+    else if ( myEntries[ ind ].startsWith( QObject::tr( "SAVE_POINT_DEF_NAME" ) ) ) // object is a Save Point object
+      return false;
+
+    return true;
     //now if displayer is null, it means, that according module isn't loaded, so that we allow to all display/erase
     //operations under object
   }

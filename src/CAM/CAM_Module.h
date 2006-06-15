@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef CAM_MODULE_H
 #define CAM_MODULE_H
@@ -28,6 +28,7 @@
 
 class QAction;
 class SUIT_Study;
+class SUIT_Application;
 class CAM_Study;
 class CAM_DataModel;
 class CAM_Application;
@@ -65,14 +66,14 @@ public:
 
   /** @name Set Menu Shown*/
   //@{
-  void                   setMenuShown( const bool );
+  virtual void           setMenuShown( const bool );
   void                   setMenuShown( QAction*, const bool );
   void                   setMenuShown( const int, const bool );
   //@}
 
   /** @name Set Tool Shown*/
   //@{
-  void                   setToolShown( const bool );
+  virtual void           setToolShown( const bool );
   void                   setToolShown( QAction*, const bool );
   void                   setToolShown( const int, const bool );
   //@}
@@ -85,6 +86,8 @@ public slots:
 
   virtual void           studyClosed( SUIT_Study* );
   virtual void           studyChanged( SUIT_Study*, SUIT_Study* );
+
+  virtual void           onApplicationClosed( SUIT_Application* );
 
 protected: 
   virtual CAM_DataModel* createDataModel();
@@ -106,8 +109,8 @@ protected:
 
   /** @name Create menu methods.*/
   //@{
-  int                    createMenu( const QString&, const int, const int = -1, const int = -1, const int = -1 );
-  int                    createMenu( const QString&, const QString&, const int = -1, const int = -1, const int = -1 );
+  int                    createMenu( const QString&, const int, const int = -1, const int = -1, const int = -1, const bool = false );
+  int                    createMenu( const QString&, const QString&, const int = -1, const int = -1, const int = -1, const bool = false );
   int                    createMenu( const int, const int, const int = -1, const int = -1 );
   int                    createMenu( const int, const QString&, const int = -1, const int = -1 );
   int                    createMenu( QAction*, const int, const int = -1, const int = -1, const int = -1 );
@@ -123,6 +126,8 @@ protected:
   //@}
 
   int                    registerAction( const int, QAction* );
+  bool                   unregisterAction( const int );
+  bool                   unregisterAction( QAction* );
   QAction*               createAction( const int, const QString&, const QIconSet&, const QString&,
                                        const QString&, const int, QObject* = 0,
                                        const bool = false, QObject* = 0, const char* = 0 );

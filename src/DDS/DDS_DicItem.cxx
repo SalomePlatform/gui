@@ -1,3 +1,21 @@
+// Copyright (C) 2005  CEA/DEN, EDF R&D, OPEN CASCADE, PRINCIPIA R&D
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License.
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
 #include "DDS_DicItem.h"
 #include "DDS_Dictionary.h"
 
@@ -506,7 +524,10 @@ void DDS_DicItem::FillDataMap( TCollection_AsciiString theID, const LDOM_Element
             if ( aListValueID.IsIntegerValue() )
             {
               //  Read the text in the element "value"
-              LDOM_Text aListItemTxt = (const LDOM_Text&)aListItemValue.getFirstChild();
+              //LDOM_Text aListItemTxt = (const LDOM_Text&)aListItemValue.getFirstChild();
+	      LDOM_Node aNode = aListItemValue.getFirstChild();
+	      const LDOM_Text& aText = (const LDOM_Text&) aNode;
+	      LDOM_Text aListItemTxt(aText);
               if ( !aListItemTxt.isNull() )
               {
                 // adding ID and text value to sequence
@@ -533,7 +554,10 @@ void DDS_DicItem::FillDataMap( TCollection_AsciiString theID, const LDOM_Element
     if ( !aShDescr.isNull() )
     {
       // text is always a sub-node of element, containing it
-      LDOM_Text aShDescrTxt = (const LDOM_Text&)aShDescr.getFirstChild();
+      //LDOM_Text aShDescrTxt = (const LDOM_Text&)aShDescr.getFirstChild();
+      LDOM_Node aNode = aShDescr.getFirstChild();
+      const LDOM_Text& aText = (const LDOM_Text&) aNode;
+      LDOM_Text aShDescrTxt(aText);
       if ( !aShDescrTxt.isNull() )
         aShortD = aShDescrTxt.getData();
     }
@@ -543,7 +567,10 @@ void DDS_DicItem::FillDataMap( TCollection_AsciiString theID, const LDOM_Element
     if ( !aLDescr.isNull() )
     {
       // text is always a sub-node of element, containing it
-      LDOM_Text aLDescrTxt = (const LDOM_Text&)aLDescr.getFirstChild();
+      //LDOM_Text aLDescrTxt = (const LDOM_Text&)aLDescr.getFirstChild();
+      LDOM_Node aNode = aLDescr.getFirstChild();
+      const LDOM_Text& aText = (const LDOM_Text&) aNode;
+      LDOM_Text aLDescrTxt(aText);
       if ( !aLDescrTxt.isNull() )
         aLongD = aLDescrTxt.getData();
     }

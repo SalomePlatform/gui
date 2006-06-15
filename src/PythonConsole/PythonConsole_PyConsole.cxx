@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "PythonConsole_PyConsole.h"
 #include "PythonConsole_PyEditor.h"
@@ -26,7 +26,9 @@
 
 using namespace std;
 
-//****************************************************************
+/*!
+  Constructor
+*/
 PythonConsole::PythonConsole(QWidget* parent, PyInterp_base* interp)
 : QWidget(parent), myEditor( 0 )
 {
@@ -44,26 +46,36 @@ PythonConsole::PythonConsole(QWidget* parent, PyInterp_base* interp)
   lay->addWidget( myEditor );
 }
 
-//****************************************************************
+/*!
+  Destructor
+*/
 PythonConsole::~PythonConsole()
 {
 }
 
-//****************************************************************
+/*!
+  Executes command
+  \param command - string with command and arguments
+*/
 void PythonConsole::exec( const QString& command )
 {
   if ( myEditor )
     myEditor->exec( command );
 }
 
-//****************************************************************
+/*!
+  Changes font of python console
+  \param f - new font
+*/
 void PythonConsole::setFont( const QFont& f )
 {
   if( myEditor )
     myEditor->setFont( f );
 }
 
-//****************************************************************
+/*!
+  \return font of python console
+*/
 QFont PythonConsole::font() const
 {
   QFont res;

@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software 
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 // 
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org 
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -28,6 +28,9 @@
 
 #ifndef SVTK_DEVICE_ACTOR_H
 #define SVTK_DEVICE_ACTOR_H
+
+#include "SVTK.h"
+#include "VTKViewer.h"
 
 #include <vector>
 
@@ -44,9 +47,6 @@ class vtkDataSet;
 class vtkShrinkFilter;
 class vtkDataSetMapper;
 
-#include "SVTK.h"
-
-//----------------------------------------------------------------------------
 namespace SVTK
 {
   namespace Representation
@@ -60,7 +60,6 @@ namespace SVTK
 }
 
 
-//----------------------------------------------------------------------------
 class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
 {
  public:
@@ -97,7 +96,7 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
   GetNodeObjId(int theVtkID);
 
   virtual
-  float* 
+  vtkFloatingPointType* 
   GetNodeCoord(int theObjID);
 
   virtual
@@ -120,12 +119,12 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
 
   /** @name For shrink mamnagement purpose */
   //@{
-  float
+  vtkFloatingPointType
   GetShrinkFactor();
 
   virtual 
   void  
-  SetShrinkFactor(float value);
+  SetShrinkFactor(vtkFloatingPointType value);
 
   virtual
   void
@@ -155,11 +154,11 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
   GetRepresentation();
 
   virtual
-  float
+  vtkFloatingPointType
   GetDefaultPointSize();
 
   virtual
-  float
+  vtkFloatingPointType
   GetDefaultLineWidth();
 
   bool
@@ -192,11 +191,13 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
   bool myIsShrunk;
   
   bool myIsResolveCoincidentTopology;
-  float myPolygonOffsetFactor;
-  float myPolygonOffsetUnits;
+  vtkFloatingPointType myPolygonOffsetFactor;
+  vtkFloatingPointType myPolygonOffsetUnits;
 
-  void SetPolygonOffsetParameters(float factor, float units);
-  void GetPolygonOffsetParameters(float& factor, float& units);
+  void SetPolygonOffsetParameters(vtkFloatingPointType factor, 
+				  vtkFloatingPointType units);
+  void GetPolygonOffsetParameters(vtkFloatingPointType& factor, 
+				  vtkFloatingPointType& units);
 
   SVTK_DeviceActor();
   ~SVTK_DeviceActor();

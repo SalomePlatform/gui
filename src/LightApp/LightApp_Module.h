@@ -1,3 +1,21 @@
+// Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License.
+// 
+// This library is distributed in the hope that it will be useful 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public  
+// License along with this library; if not, write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
 // File:      LightApp_Module.h
 // Created:   6/20/2005 16:25:06 AM
 // Author:    OCC team
@@ -22,6 +40,7 @@ class LightApp_Displayer;
 class SUIT_Study;
 class SUIT_DataObject;
 class SUIT_Operation;
+class SUIT_ViewManager;
 class CAM_Application;
 
 class QtxPopupMgr;
@@ -29,9 +48,9 @@ class QtxPopupMgr;
 class QString;
 class QVariant;
 
-/*
-  Class : LightApp_Module
-  Description : Base class for all light modules
+/*!
+  \class LightApp_Module
+  Base class for all light modules
 */
 
 class LIGHTAPP_EXPORT LightApp_Module : public CAM_Module
@@ -82,6 +101,8 @@ protected slots:
   virtual void                        onOperationStopped( SUIT_Operation* );
   virtual void                        onOperationDestroyed();
   virtual void                        onShowHide();
+  virtual void                        onViewManagerAdded( SUIT_ViewManager* );
+  virtual void                        onViewManagerRemoved( SUIT_ViewManager* );
 
 protected:
   virtual QtxPopupMgr*                popupMgr();

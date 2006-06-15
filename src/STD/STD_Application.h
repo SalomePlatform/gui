@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef STD_APPLICATION_H
 #define STD_APPLICATION_H
@@ -120,9 +120,19 @@ private slots:
   virtual void          onViewManagerActivated( SUIT_ViewManager* );
 
 protected:
-  enum {  FileNewId, FileOpenId, FileCloseId, FileSaveId, FileSaveAsId,
-          FileExitId, EditCutId, EditCopyId, EditPasteId, ViewStatusBarId,
-          NewWindowId, HelpAboutId, ViewWindowsId, FileLoadId, UserID };
+  enum {  MenuFileId = 1,
+          MenuViewId = 2,
+          MenuEditId = 3,
+          MenuHelpId = 7
+       };
+
+  enum {  FileNewId,   FileOpenId,   FileLoadId, FileCloseId,
+	  FileSaveId,  FileSaveAsId, FileExitId, 
+	  ViewStatusBarId, ViewWindowsId, NewWindowId,
+          EditCutId, EditCopyId, EditPasteId,
+          HelpAboutId,
+	  UserID
+       };
  
 protected:
   virtual void          createActions();

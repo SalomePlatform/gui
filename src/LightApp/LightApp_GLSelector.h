@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef LIGHTAPP_GLSELECTOR_H
 #define LIGHTAPP_GLSELECTOR_H
@@ -25,6 +25,13 @@
 
 #include <GLViewer_Viewer2d.h>
 
+#include <string>
+#include <GLViewer_Object.h>
+
+/*!
+  \class LightApp_GLSelector
+  Custom selector to get/set selection from GL viewer
+*/
 class LIGHTAPP_EXPORT LightApp_GLSelector : public SUIT_Selector
 {
   Q_OBJECT
@@ -46,6 +53,23 @@ protected:
 
 private:
   GLViewer_Viewer2d*  myViewer;
+};
+
+
+/*!
+  This class provide data owner objects for GLViewer.
+*/
+class LIGHTAPP_EXPORT LightApp_GLOwner : public GLViewer_Owner
+{
+public:
+  LightApp_GLOwner( const char* );
+  ~LightApp_GLOwner();
+
+  const char*       entry() const;
+  void              setEntry( const char* );
+
+private:
+  std::string       myEntry;
 };
 
 #endif

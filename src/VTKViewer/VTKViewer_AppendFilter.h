@@ -1,3 +1,21 @@
+// Copyright (C) 2005  CEA/DEN, EDF R&D, OPEN CASCADE, PRINCIPIA R&D
+//
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License.
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
 #ifndef VTKVIEWER_APPENDFILTER_H
 #define VTKVIEWER_APPENDFILTER_H
 
@@ -36,18 +54,26 @@ public:
   GetPoints();
 
   vtkIdType
-  GetPointOutputID(vtkIdType theInputID);
+  GetPointOutputID(vtkIdType theInputID,
+		   vtkIdType theInputDataSetID);
 
   vtkIdType
-  GetCellOutputID(vtkIdType theInputID);
+  GetCellOutputID(vtkIdType theInputID,
+		  vtkIdType theInputDataSetID);
 
-  vtkIdType 
-  GetPointInputID(vtkIdType theOutputID, 
-		  vtkIdType& theInputDataSetID);
-
-  vtkIdType
-  GetCellInputID(vtkIdType theOutputID, 
+  void 
+  GetPointInputID(vtkIdType theOutputID,
+		 vtkIdType& theInputID,
+		 vtkIdType& theStartID,
 		 vtkIdType& theInputDataSetID);
+
+  void
+  GetCellInputID(vtkIdType theOutputID,
+		 vtkIdType& theInputID,
+		 vtkIdType& theStartID,
+		 vtkIdType& theInputDataSetID);
+
+  typedef std::vector<vtkIdType> TVectorIds;
 
 protected:
   /*! \fn VTKViewer_AppendFilter();
@@ -69,23 +95,10 @@ protected:
 
   void MakeOutput();
 
-  //
+  bool myDoMappingFlag;
+  TVectorIds myNodeRanges;
+  TVectorIds myCellRanges;
   vtkSmartPointer<vtkPoints> myPoints;
-
-private:
-  typedef std::vector<vtkIdType> TVectorId;
-  typedef std::vector<int> VectorInt;
-  typedef std::map <int,int>                  DataMapOfIntegerInteger;
-  typedef DataMapOfIntegerInteger::iterator   IteratorOfDataMapOfIntegerInteger;
-  typedef DataMapOfIntegerInteger::value_type PairOfDataMapOfIntegerInteger;
-private:
-  bool      myDoMappingFlag;
-  TVectorId myNodeIds;
-  TVectorId myCellIds;
-  VectorInt myNodeRanges;
-  VectorInt myCellRanges;
-  DataMapOfIntegerInteger myNodeMapObjIDVtkID;
-  DataMapOfIntegerInteger myCellMapObjIDVtkID;
 };
 
 #endif

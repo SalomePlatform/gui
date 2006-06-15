@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      LightApp_Dialog.h
 // Author:    Alexander SOLOVYOV
@@ -35,9 +35,13 @@ class QLabel;
 
 class SUIT_ResourceMgr;
 
-/*
-  Class       : LightApp_Dialog
-  Description : Base class for all LightApp dialogs
+/*!
+  \class LightApp_Dialog
+  Base class for all LightApp dialogs.
+  Provides standard widget for object selection: line edit, button;
+  it is necessary to call corresponding methods on selection change.
+  Standard dialog provides filtering, selection string representation,
+  possibility to indicate necessary selection by text with list of ids.
 */
 class LIGHTAPP_EXPORT LightApp_Dialog : public QtxDialog
 {

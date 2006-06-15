@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
 #ifndef OB_LISTITEM_H
@@ -26,10 +26,10 @@
 
 class SUIT_DataObject;
 
-/* 
-  base template class for ListViewItems and CheckListItems
+/*!
+  \class ListItemF
+  Base template class for ListViewItems and CheckListItems
 */
-
 template<class T> class ListItemF
 {
 public:
@@ -57,10 +57,10 @@ protected:
   T*  myT;
 };
 
-/* 
-   ListViewItem class
+/*!
+  \class OB_ListItem
+  Provides custom list item for Object Browser tree
 */
-
 class OB_EXPORT OB_ListItem : public ListItemF<QListViewItem>, public QListViewItem
 {
 public:
@@ -82,10 +82,10 @@ public:
   static int       RTTI();
 };
 
-/* 
-   CheckListItem class
+/*!
+  \class OB_CheckListItem
+  Provides custom list item with check box
 */
-
 class OB_EXPORT OB_CheckListItem : public ListItemF<QCheckListItem>, public QCheckListItem
 {
 public:

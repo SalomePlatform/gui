@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "STD_CloseDlg.h"
 
@@ -85,12 +85,9 @@ STD_CloseDlg::STD_CloseDlg( QWidget* parent, bool modal, WFlags f )
   connect( m_pb4, SIGNAL( clicked() ), this, SLOT( reject() ) );
 }
 
-//================================================================================
 /*!
  * \brief reaction on clicked(pressed) button
  */
-//================================================================================
-
 void STD_CloseDlg::onButtonClicked()
 {
   QPushButton* btn = ( QPushButton* )sender();

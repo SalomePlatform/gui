@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "SUIT_DataOwner.h"
 
@@ -25,11 +25,6 @@
 #include <typeinfo.h>
 #define _typeinfo type_info
 #endif
-
-//********************************************************************
-// SUIT_DataOwner class
-//********************************************************************
-
 
 /*! Constructor*/
 SUIT_DataOwner::SUIT_DataOwner()
@@ -49,43 +44,42 @@ bool operator==( const SUIT_DataOwnerPtr& p1, const SUIT_DataOwnerPtr& p2 )
   return p1.isNull() && p2.isNull();
 }
 
-//********************************************************************
-/*! \class SUIT_DataOwnerPtrList 
- * implements value list with unique items (uniqueness is 
- * provided by operator==())
- */
-//********************************************************************
+/*!
+  \class SUIT_DataOwnerPtrList 
+  implements value list with unique items (uniqueness is 
+  provided by operator==())
+*/
 
-//====================================================================
-//! Constructor (default)
-//====================================================================
+/*!
+  Constructor (default)
+*/
 SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList()
   : QValueList<SUIT_DataOwnerPtr>(),
     mySkipEqual( true )
 {
 }
 
-//====================================================================
-//! Constructor (default)
-//====================================================================
+/*!
+  Constructor (default)
+*/
 SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList( const bool skipAllEqual )
   : QValueList<SUIT_DataOwnerPtr>(),
     mySkipEqual( skipAllEqual )
 {
 }
 
-//====================================================================
-//! Constructor (copy)
-//====================================================================
+/*!
+  Constructor (copy)
+*/
 SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList( const SUIT_DataOwnerPtrList& l )
   : QValueList<SUIT_DataOwnerPtr>( l ),
     mySkipEqual( true )
 {
 }
 
-//====================================================================
-//! Constructor (copy)
-//====================================================================
+/*!
+  Constructor (copy)
+*/
 SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList( const SUIT_DataOwnerPtrList& l, const bool skipAllEqual )
   : QValueList<SUIT_DataOwnerPtr>(),
     mySkipEqual( skipAllEqual )
@@ -102,9 +96,9 @@ SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList( const SUIT_DataOwnerPtrList& l, co
 }
 
 #ifndef QT_NO_STL
-//====================================================================
-//! Constructor (from stl)
-//====================================================================
+/*!
+  Constructor (from stl)
+*/
 SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList( const std::list<SUIT_DataOwnerPtr>& l )
   : QValueList<SUIT_DataOwnerPtr>( l ),
     mySkipEqual( true )
@@ -113,9 +107,9 @@ SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList( const std::list<SUIT_DataOwnerPtr>
 #endif
 
 #ifndef QT_NO_STL
-//====================================================================
-//! Constructor (from stl)
-//====================================================================
+/*!
+  Constructor (from stl)
+*/
 SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList( const std::list<SUIT_DataOwnerPtr>& l, const bool skipAllEqual )
   : QValueList<SUIT_DataOwnerPtr>(),
     mySkipEqual( skipAllEqual )
@@ -127,9 +121,9 @@ SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList( const std::list<SUIT_DataOwnerPtr>
 }
 #endif
 
-//====================================================================
-//! Appends an item to the list
-//====================================================================
+/*!
+  Appends an item to the list
+*/
 SUIT_DataOwnerPtrList::iterator SUIT_DataOwnerPtrList::append( const SUIT_DataOwnerPtr& x )
 {
   if( mySkipEqual && myMap.contains( x ) ) //contains uses SUIT_DataOwnerPtr::operator==
@@ -143,9 +137,9 @@ SUIT_DataOwnerPtrList::iterator SUIT_DataOwnerPtrList::append( const SUIT_DataOw
   return it;
 }
 
-//====================================================================
-//! Clear list
-//====================================================================
+/*!
+  Clear list
+*/
 void SUIT_DataOwnerPtrList::clear()
 {
   if( mySkipEqual )
@@ -153,9 +147,9 @@ void SUIT_DataOwnerPtrList::clear()
   QValueList<SUIT_DataOwnerPtr>::clear();
 }
 
-//====================================================================
-//! Remove an item from the list
-//====================================================================
+/*!
+  Remove an item from the list
+*/
 uint SUIT_DataOwnerPtrList::remove(const SUIT_DataOwnerPtr& x )
 {
   if( mySkipEqual && myMap.contains(x) )
@@ -163,9 +157,9 @@ uint SUIT_DataOwnerPtrList::remove(const SUIT_DataOwnerPtr& x )
   return QValueList<SUIT_DataOwnerPtr>::remove( x );
 }
 
-//====================================================================
-//! 
-//====================================================================
+/*!
+  Operator < allows to order suit data owners for map
+*/
 bool operator<( const SUIT_DataOwnerPtr& p1, const SUIT_DataOwnerPtr& p2 )
 {
   return p1.get()<p2.get();

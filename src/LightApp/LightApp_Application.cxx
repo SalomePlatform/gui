@@ -1,9 +1,30 @@
+// Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License.
+// 
+// This library is distributed in the hope that it will be useful 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public  
+// License along with this library; if not, write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
 // File:      LightApp_Application.cxx
 // Created:   6/20/2005 18:39:45 PM
 // Author:    Natalia Donis
 // Copyright (C) CEA 2005
 
-#include "PythonConsole_PyInterp.h" // WARNING! This include must be the first!
+#ifndef DISABLE_PYCONSOLE
+  #include "PythonConsole_PyInterp.h" // WARNING! This include must be the first!
+  #include <PythonConsole_PyConsole.h>
+#endif
 
 #include "LightApp_Application.h"
 #include "LightApp_WidgetContainer.h"
@@ -17,10 +38,7 @@
 
 #include "LightApp_OBFilter.h"
 
-#include "LightApp_GLSelector.h"
 #include "LightApp_OBSelector.h"
-#include "LightApp_OCCSelector.h"
-#include "LightApp_VTKSelector.h"
 #include "LightApp_SelectionMgr.h"
 
 #include <CAM_Module.h>
@@ -42,25 +60,50 @@
 #include <LogWindow.h>
 #include <OB_Browser.h>
 #include <OB_ListView.h>
-#include <PythonConsole_PyConsole.h>
 
-#include <GLViewer_Viewer.h>
-#include <GLViewer_ViewManager.h>
+#ifndef DISABLE_GLVIEWER
+  #include <GLViewer_Viewer.h>
+  #include <GLViewer_ViewManager.h>
+  #include "LightApp_GLSelector.h"
+#endif
 
-#include <Plot2d_ViewManager.h>
-#include <Plot2d_ViewModel.h>
-#include <SPlot2d_ViewModel.h>
+#ifndef DISABLE_PLOT2DVIEWER
+  #include <Plot2d_ViewManager.h>
+  #include <Plot2d_ViewModel.h>
+#ifndef DISABLE_SALOMEOBJECT
+  #include <SPlot2d_ViewModel.h>
+#else
+  #include <Plot2d_ViewModel.h>
+#endif
+#endif
 
-#include <OCCViewer_ViewManager.h>
-#include <SOCC_ViewModel.h>
+#ifndef DISABLE_OCCVIEWER
+  #include <OCCViewer_ViewManager.h>
+#ifndef DISABLE_SALOMEOBJECT
+  #include <SOCC_ViewModel.h>
+#else
+  #include <OCCViewer_ViewModel.h>
+#endif
+  #include "LightApp_OCCSelector.h"
+#endif
 
-#include <SVTK_ViewModel.h>
-#include <SVTK_ViewManager.h>
-#include <VTKViewer_ViewModel.h>
+#ifndef DISABLE_VTKVIEWER
+#ifndef DISABLE_SALOMEOBJECT
+  #include <SVTK_ViewModel.h>
+  #include <SVTK_ViewManager.h>
+  #include "LightApp_VTKSelector.h"
+#else
+  #include <VTKViewer_ViewModel.h>
+  #include <VTKViewer_ViewManager.h>
+#endif
+  #include <VTKViewer_ViewModel.h>
+#endif
 
-#include <SUPERVGraph_ViewModel.h>
-#include <SUPERVGraph_ViewFrame.h>
-#include <SUPERVGraph_ViewManager.h>
+//#ifndef DISABLE_SUPERVGRAPHVIEWER
+//  #include <SUPERVGraph_ViewModel.h>
+//  #include <SUPERVGraph_ViewFrame.h>
+//  #include <SUPERVGraph_ViewManager.h>
+//#endif
 
 #include <QtxWorkstack.h>
 
@@ -78,11 +121,14 @@
 #include <qcombobox.h>
 #include <qinputdialog.h>
 #include <qmessagebox.h>
+#include <qfontdatabase.h>
 
 #define FIRST_HELP_ID 1000000
 
-#include "SALOME_InteractiveObject.hxx"
-#include "SALOME_ListIO.hxx"
+#ifndef DISABLE_SALOMEOBJECT
+  #include "SALOME_InteractiveObject.hxx"
+  #include "SALOME_ListIO.hxx"
+#endif
 
 static const char* imageEmptyIcon[] = {
 "20 20 1 1",
@@ -108,17 +154,28 @@ static const char* imageEmptyIcon[] = {
 "....................",
 "...................."};
 
+int LightApp_Application::lastStudyId = 0;
+
+/*!
+  \return last global id of study
+*/
+int LightApp_Application::studyId()
+{
+  return LightApp_Application::lastStudyId;
+}
+
 /*!Create new instance of LightApp_Application.*/
 extern "C" LIGHTAPP_EXPORT SUIT_Application* createApplication()
 {
   return new LightApp_Application();
 }
 
+/*! \var global preferences of LightApp */
 LightApp_Preferences* LightApp_Application::_prefs_ = 0;
 
-/*
-  Class       : LightApp_Application
-  Description : Application containing LightApp module
+/*!
+  \class LightApp_Application
+  Application containing LightApp module
 */
 
 /*!Constructor.*/
@@ -146,7 +203,9 @@ myPrefs( 0 )
 
   mySelMgr = new LightApp_SelectionMgr( this );
 
-  myAccel = new SUIT_Accel( desktop() );
+  myAccel = SUIT_Accel::getAccel();
+
+#ifndef DISABLE_OCCVIEWER
   myAccel->setActionKey( SUIT_Accel::PanLeft,     CTRL+Key_Left,     OCCViewer_Viewer::Type() );
   myAccel->setActionKey( SUIT_Accel::PanRight,    CTRL+Key_Right,    OCCViewer_Viewer::Type() );
   myAccel->setActionKey( SUIT_Accel::PanUp,       CTRL+Key_Up,       OCCViewer_Viewer::Type() );
@@ -158,6 +217,8 @@ myPrefs( 0 )
   myAccel->setActionKey( SUIT_Accel::RotateRight, ALT+Key_Right,     OCCViewer_Viewer::Type() );
   myAccel->setActionKey( SUIT_Accel::RotateUp,    ALT+Key_Up,        OCCViewer_Viewer::Type() );
   myAccel->setActionKey( SUIT_Accel::RotateDown,  ALT+Key_Down,      OCCViewer_Viewer::Type() );
+#endif
+#ifndef DISABLE_VTKVIEWER
   myAccel->setActionKey( SUIT_Accel::PanLeft,     CTRL+Key_Left,     VTKViewer_Viewer::Type() );
   myAccel->setActionKey( SUIT_Accel::PanRight,    CTRL+Key_Right,    VTKViewer_Viewer::Type() );
   myAccel->setActionKey( SUIT_Accel::PanUp,       CTRL+Key_Up,       VTKViewer_Viewer::Type() );
@@ -169,8 +230,33 @@ myPrefs( 0 )
   myAccel->setActionKey( SUIT_Accel::RotateRight, ALT+Key_Right,     VTKViewer_Viewer::Type() );
   myAccel->setActionKey( SUIT_Accel::RotateUp,    ALT+Key_Up,        VTKViewer_Viewer::Type() );
   myAccel->setActionKey( SUIT_Accel::RotateDown,  ALT+Key_Down,      VTKViewer_Viewer::Type() );
+#endif
 
   connect( mySelMgr, SIGNAL( selectionChanged() ), this, SLOT( onSelection() ) );
+
+  // Set existing font for the python console in resources
+  if( !aResMgr->hasValue( "PyConsole", "font" ) )
+    return;
+  
+  QFont f = aResMgr->fontValue( "PyConsole", "font" );
+  QFontDatabase fdb;
+  QStringList famdb = fdb.families();
+  
+  if ( famdb.contains(f.family()) || !aResMgr->hasValue( "PyConsole", "additional_families" ) )
+    return;
+  
+  QStringList anAddFamilies = QStringList::split( ";", aResMgr->stringValue( "PyConsole", "additional_families" ) );
+  QString aFamily;
+  for ( QStringList::Iterator it = anAddFamilies.begin(); it != anAddFamilies.end(); ++it )
+    {
+      aFamily = *it;
+      if ( famdb.contains(aFamily) )
+	{
+	  f.setFamily( aFamily );
+	  aResMgr->setValue( "PyConsole", "font", f );
+	  break;
+	}
+    }
 }
 
 /*!Destructor.
@@ -181,14 +267,6 @@ myPrefs( 0 )
  */
 LightApp_Application::~LightApp_Application()
 {
-  saveWindowsGeometry();
-
-  if ( resourceMgr() )
-  {
-    if ( desktop() )
-      desktop()->saveGeometry( resourceMgr(), "desktop" );
-    resourceMgr()->save();
-  }
   delete mySelMgr;
 }
 
@@ -302,6 +380,10 @@ bool LightApp_Application::activateModule( const QString& modName )
   return true;
 }
 
+/*!
+  Opens other study into active Study. If Study is empty - creates it.
+  \param theName - name of study
+*/
 bool LightApp_Application::useStudy(const QString& theName)
 {
   createEmptyStudy();
@@ -318,6 +400,19 @@ bool LightApp_Application::useStudy(const QString& theName)
 LightApp_SelectionMgr* LightApp_Application::selectionMgr() const
 {
   return mySelMgr;
+}
+
+/*!Creat action "New window" for certain type of viewer:*/
+void LightApp_Application::createActionForViewer( const int id,
+                                                  const int parentId,
+                                                  const QString& suffix,
+                                                  const int accel )
+{
+  QAction* a = createAction( id, tr( QString( "NEW_WINDOW_%1" ).arg( suffix ) ), QIconSet(),
+			       tr( QString( "NEW_WINDOW_%1" ).arg( suffix ) ),
+			       tr( QString( "NEW_WINDOW_%1" ).arg( suffix ) ),
+			       accel, desktop(), false, this, SLOT( onNewWindow() ) );
+  createMenu( a, parentId, -1 );
 }
 
 /*!Create actions:*/
@@ -344,18 +439,32 @@ void LightApp_Application::createActions()
   int id = LightApp_Application::UserID + FIRST_HELP_ID;
   // help for KERNEL and GUI
   QCString dir;
-  QString aFileName;
+  QString aFileName = "index.htm";
   QString root;
   QAction* a;
   if (dir = getenv("GUI_ROOT_DIR")) {
-    aFileName = "GUI_index_v3.1.0.html";
-    root = Qtx::addSlash( Qtx::addSlash(dir) +  Qtx::addSlash("doc") +  Qtx::addSlash("salome") );
+    root = Qtx::addSlash( Qtx::addSlash(dir) +  Qtx::addSlash("doc") +  Qtx::addSlash("salome") + 
+			  Qtx::addSlash("gui") +  Qtx::addSlash("GUI") );
     if ( QFileInfo( root + aFileName ).exists() ) {
-      a = createAction( id, tr( QString("Kernel & GUI Help") ), QIconSet(),
-			tr( QString("Kernel && GUI Help") ),
-			tr( QString("Kernel & GUI Help") ),
+      a = createAction( id, tr( QString("GUI Help") ), QIconSet(),
+			tr( QString("GUI Help") ),
+			tr( QString("GUI Help") ),
 			0, desk, false, this, SLOT( onHelpContentsModule() ) );
       a->setName( QString("GUI") );
+      createMenu( a, helpModuleMenu, -1 );
+      id++;
+    }
+  }
+  if (dir = getenv("KERNEL_ROOT_DIR")) {
+    QString aFN = "index.html";
+    root = Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") + 
+			  Qtx::addSlash("salome") );
+    if ( QFileInfo( root + aFN ).exists() ) {
+      a = createAction( id, tr( QString("KERNEL Help") ), QIconSet(),
+			tr( QString("KERNEL Help") ),
+			tr( QString("KERNEL Help") ),
+			0, desk, false, this, SLOT( onHelpContentsModule() ) );
+      a->setName( QString("KERNEL") );
       createMenu( a, helpModuleMenu, -1 );
       id++;
     }
@@ -368,10 +477,10 @@ void LightApp_Application::createActions()
       continue;
 
     QString modName = moduleName( *it );
-    aFileName = modName + "_index_v3.1.0.html";
     
     if (dir = getenv( modName + "_ROOT_DIR")) {
-      root = Qtx::addSlash( Qtx::addSlash(dir) +  Qtx::addSlash("doc") +  Qtx::addSlash("salome") );
+      root = Qtx::addSlash( Qtx::addSlash(dir) +  Qtx::addSlash("doc") +  Qtx::addSlash("salome") + 
+			    Qtx::addSlash("gui") +  Qtx::addSlash(modName) );
       if ( QFileInfo( root + aFileName ).exists() ) {
 
 	QAction* a = createAction( id, tr( moduleTitle(modName) + QString(" Help") ), QIconSet(),
@@ -434,8 +543,11 @@ void LightApp_Application::createActions()
 
   for ( it = modList.begin(); it != modList.end(); ++it )
   {
-    if ( (*it).isEmpty() )
+    if ( !isLibExists( *it ) )
+    {
+      qDebug( QString( "Library '%1' cannot be found" ).arg( *it ) );
       continue;
+    }
 
     QString iconName;
     if ( iconMap.contains( *it ) )
@@ -459,24 +571,24 @@ void LightApp_Application::createActions()
   SUIT_Tools::simplifySeparators( modTBar );
 
   // New window
-  int windowMenu = createMenu( tr( "MEN_DESK_WINDOW" ), -1, 100 );
+  int windowMenu = createMenu( tr( "MEN_DESK_WINDOW" ), -1, MenuWindowId, 100 );
   int newWinMenu = createMenu( tr( "MEN_DESK_NEWWINDOW" ), windowMenu, -1, 0 );
   createMenu( separator(), windowMenu, -1, 1 );
 
-  QMap<int, int> accelMap;
-  accelMap[NewGLViewId]  = ALT+Key_G;
-  accelMap[NewPlot2dId]  = ALT+Key_P;
-  accelMap[NewOCCViewId] = ALT+Key_O;
-  accelMap[NewVTKViewId] = ALT+Key_K;
 
-  for ( id = NewGLViewId; id <= NewVTKViewId; id++ )
-  {
-    QAction* a = createAction( id, tr( QString( "NEW_WINDOW_%1" ).arg( id - NewGLViewId ) ), QIconSet(),
-			       tr( QString( "NEW_WINDOW_%1" ).arg( id - NewGLViewId ) ),
-			       tr( QString( "NEW_WINDOW_%1" ).arg( id - NewGLViewId ) ),
-			       accelMap.contains( id ) ? accelMap[id] : 0, desk, false, this, SLOT( onNewWindow() ) );
-    createMenu( a, newWinMenu, -1 );
-  }
+#ifndef DISABLE_GLVIEWER
+  createActionForViewer( NewGLViewId, newWinMenu, QString::number( 0 ), ALT+Key_G );
+#endif
+#ifndef DISABLE_PLOT2DVIEWER
+  createActionForViewer( NewPlot2dId, newWinMenu, QString::number( 1 ), ALT+Key_P );
+#endif
+#ifndef DISABLE_OCCVIEWER
+  createActionForViewer( NewOCCViewId, newWinMenu, QString::number( 2 ), ALT+Key_O );
+#endif
+#ifndef DISABLE_VTKVIEWER
+  createActionForViewer( NewVTKViewId, newWinMenu, QString::number( 3 ), ALT+Key_K );
+#endif
+
 
   createAction( RenameId, tr( "TOT_RENAME" ), QIconSet(), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ),
 		SHIFT+Key_R, desk, false, this, SLOT( onRenameWindow() ) );
@@ -560,28 +672,35 @@ void LightApp_Application::onNewWindow()
   int id = actionId( (QAction*)obj );
   switch ( id )
   {
+#ifndef DISABLE_GLVIEWER
   case NewGLViewId:
     type = GLViewer_Viewer::Type();
     break;
+#endif
+#ifndef DISABLE_PLOT2DVIEWER
   case NewPlot2dId:
     type = Plot2d_Viewer::Type();
     break;
+#endif
+#ifndef DISABLE_OCCVIEWER
   case NewOCCViewId:
     type = OCCViewer_Viewer::Type();
     break;
+#endif
+#ifndef DISABLE_VTKVIEWER
   case NewVTKViewId:
     type = VTKViewer_Viewer::Type();
     break;
+#endif
   }
 
   if ( !type.isEmpty() )
     createViewManager( type );
 }
 
-//=======================================================================
-//  name    : onNewDoc
-/*! Purpose : SLOT. Create new document*/
-//=======================================================================
+/*!
+  SLOT: Creates new document
+*/
 void LightApp_Application::onNewDoc()
 {
   SUIT_Study* study = activeStudy();
@@ -597,10 +716,9 @@ void LightApp_Application::onNewDoc()
   }
 }
 
-//=======================================================================
-// name    : onOpenDoc
-/*! Purpose : SLOT. Open new document*/
-//=======================================================================
+/*!
+  SLOT: Opens new document
+*/
 void LightApp_Application::onOpenDoc()
 {
   SUIT_Study* study = activeStudy();
@@ -616,7 +734,11 @@ void LightApp_Application::onOpenDoc()
 }
 
 #include "SUIT_MessageBox.h"
-/*! Purpose : SLOT. Open new document with \a aName.*/
+
+/*!
+  SLOT: Opens new document.
+  \param aName - name of file
+*/
 bool LightApp_Application::onOpenDoc( const QString& aName )
 {
   bool isAlreadyOpen = false;
@@ -683,10 +805,9 @@ bool LightApp_Application::onOpenDoc( const QString& aName )
   return res;
 }
 
-//=======================================================================
-// name    : onHelpAbout
-/*! Purpose : SLOT. Display "About" message box*/
-//=======================================================================
+/*!
+  SLOT: Displays "About" message box
+*/
 void LightApp_Application::onHelpAbout()
 {
   LightApp_AboutDlg* dlg = new LightApp_AboutDlg( applicationName(), applicationVersion(), desktop() );
@@ -694,7 +815,10 @@ void LightApp_Application::onHelpAbout()
   delete dlg;
 }
 
-/*!SLOT. Load document with \a aName.*/
+/*!
+  SLOT: Loads document
+  \param aName - name of document
+*/
 bool LightApp_Application::onLoadDoc( const QString& aName )
 {
   bool res = CAM_Application::onLoadDoc( aName );
@@ -711,7 +835,10 @@ bool LightApp_Application::onLoadDoc( const QString& aName )
   return res;
 }
 
-/*!Private SLOT. Selection.*/
+/*!
+  Private SLOT: Called on selection is changed
+  Dispatchs active module that selection is changed
+*/
 void LightApp_Application::onSelection()
 {
   onSelectionChanged();
@@ -720,9 +847,10 @@ void LightApp_Application::onSelection()
     ((LightApp_Module*)activeModule())->selectionChanged();
 }
 
-/*!Set active study.
- *\param study - SUIT_Study.
- */
+/*!
+  Sets active study.
+ \param study - SUIT_Study.
+*/
 void LightApp_Application::setActiveStudy( SUIT_Study* study )
 {
   CAM_Application::setActiveStudy( study );
@@ -730,34 +858,57 @@ void LightApp_Application::setActiveStudy( SUIT_Study* study )
   activateWindows();
 }
 
-//=======================================================================
-// name    : updateCommandsStatus
-/*! Purpose : Enable/Disable menu items and toolbar buttons. Rebuild menu*/
-//=======================================================================
+/*!
+  Enables/Disables menu items and toolbar buttons. Rebuild menu
+*/
 void LightApp_Application::updateCommandsStatus()
 {
   CAM_Application::updateCommandsStatus();
+  QAction* a = 0;
 
-  for ( int id = NewGLViewId; id <= NewVTKViewId; id++ )
-  {
-    QAction* a = action( id );
-    if ( a )
-      a->setEnabled( activeStudy() );
-  }
+#ifndef DISABLE_GLVIEWER
+  a = action( NewGLViewId );
+  if( a )
+    a->setEnabled( activeStudy() );
+#endif
+
+#ifndef DISABLE_PLOT2DVIEWER
+  a = action( NewPlot2dId );
+  if( a )
+    a->setEnabled( activeStudy() );
+#endif
+
+#ifndef DISABLE_OCCVIEWER
+  a = action( NewOCCViewId );
+  if( a )
+    a->setEnabled( activeStudy() );
+#endif
+
+#ifndef DISABLE_VTKVIEWER
+  a = action( NewVTKViewId );
+  if( a )
+    a->setEnabled( activeStudy() );
+#endif
 }
 
-// Helps to execute command
+/*!
+  \class RunBrowser
+  Runs system command in separate thread
+*/
 class RunBrowser: public QThread {
 public:
 
-  RunBrowser(QString theApp, QString theParams, QString theHelpFile, QString theContext=NULL):
+  RunBrowser( LightApp_Application* app, QString theApp, QString theParams, QString theHelpFile, QString theContext=NULL):
     myApp(theApp), myParams(theParams), 
 #ifdef WIN32
       myHelpFile("file://" + theHelpFile + theContext), 
 #else
       myHelpFile("file:" + theHelpFile + theContext),
 #endif
-      myStatus(0) {};
+      myStatus(0),
+      myLApp( app )
+{
+};
 
   virtual void run()
   {
@@ -769,17 +920,11 @@ public:
 	myStatus = system(aCommand);
 	if(myStatus != 0)
 	  {
-	    QCustomEvent* ce2000 = new QCustomEvent (2000);
-	    postEvent (qApp, ce2000);
+	    QCustomEvent* ce2000 = new QCustomEvent( 2000 );
+	    QString* msg = new QString( QObject::tr("EXTERNAL_BROWSER_CANNOT_SHOW_PAGE").arg(myApp).arg(myHelpFile) );
+	    ce2000->setData( msg );
+	    postEvent( myLApp, ce2000 );
 	  }
-      }
-      if( myStatus != 0)
-      {
-        qApp->lock();
-        SUIT_MessageBox::warn1(0, QObject::tr("WRN_WARNING"),
-                               QObject::tr("EXTERNAL_BROWSER_CANNOT_SHOW_PAGE").arg(myApp).arg(myHelpFile),
-                               QObject::tr("BUT_OK"));
-        qApp->unlock();
       }
   }
 
@@ -788,49 +933,80 @@ private:
   QString myParams;
   QString myHelpFile;
   int myStatus;
-
+  LightApp_Application* myLApp;
 };
 
-//=======================================================================
-// name    : onHelpContentsModule
-/*! Purpose : SLOT. Display help contents for choosen module*/
-//=======================================================================
+/*!
+  SLOT: Displays help contents for choosen module
+*/
 void LightApp_Application::onHelpContentsModule()
 {
   const QAction* obj = (QAction*) sender();
 
   QString aComponentName = obj->name();
-  QString aFileName = aComponentName + "_index_v3.1.0.html";
+  QString aFileName = "index.htm";
+  QString aFileNameKernel = "index.html";
 
   QCString dir = getenv( aComponentName + "_ROOT_DIR");
-  QString homeDir = Qtx::addSlash( Qtx::addSlash(dir) +  Qtx::addSlash("doc") +  Qtx::addSlash("salome") );
-
-  QString helpFile = QFileInfo( homeDir + aFileName ).absFilePath();
+  QString homeDir = !aComponentName.compare(QString("KERNEL")) ? 
+    Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") + Qtx::addSlash("salome") ) : 
+    Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("doc") + Qtx::addSlash("salome") + Qtx::addSlash("gui") +  Qtx::addSlash(aComponentName) );
+  
+  QString helpFile = QFileInfo( homeDir + (!aComponentName.compare(QString("KERNEL")) ? aFileNameKernel : aFileName) ).absFilePath();
   SUIT_ResourceMgr* resMgr = resourceMgr();
   QString anApp = resMgr->stringValue("ExternalBrowser", "application");
   QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 
   if (!anApp.isEmpty()) {
-    RunBrowser* rs = new RunBrowser(anApp, aParams, helpFile);
+    RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile );
     rs->start();
   }
   else {
-    SUIT_MessageBox::warn1(desktop(), tr("WRN_WARNING"),
+    if( SUIT_MessageBox::warn2(desktop(), tr("WRN_WARNING"),
                            tr("DEFINE_EXTERNAL_BROWSER"),
-                           tr("BUT_OK"));
+                           tr("BUT_OK"),tr("BUT_CANCEL"),0,1,0 )==0 )
+      onPreferences();
   }
 }
 
-/*!Sets enable or disable some actions on selection changed.*/
+/*!
+  SLOT: Displays help contents for choosen dialog
+*/
+void LightApp_Application::onHelpContextModule(const QString& theComponentName, const QString& theFileName)
+{
+  QCString dir = getenv( theComponentName + "_ROOT_DIR");
+  QString homeDir = Qtx::addSlash(Qtx::addSlash(dir)+Qtx::addSlash("doc")+Qtx::addSlash("salome")+Qtx::addSlash("gui")+Qtx::addSlash(theComponentName));
+
+  QString helpFile = QFileInfo( homeDir + theFileName ).absFilePath();
+  SUIT_ResourceMgr* resMgr = resourceMgr();
+  QString anApp = resMgr->stringValue("ExternalBrowser", "application");
+  QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
+
+  if (!anApp.isEmpty()) {
+    RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile );
+    rs->start();
+  }
+  else {
+    if( SUIT_MessageBox::warn2(desktop(), tr("WRN_WARNING"),
+                           tr("DEFINE_EXTERNAL_BROWSER"),
+                           tr("BUT_OK"), tr("BUT_CANCEL"),0,1,0)==0 )
+      onPreferences();
+  }
+}
+
+/*!
+  Sets enable or disable some actions on selection changed.
+*/
 void LightApp_Application::onSelectionChanged()
 {
 }
 
-/*!Return window.
- *\param flag - key for window
- *\param studyId - study id
- * Flag used how identificator of window in windows list.
- */
+/*!
+  \return window by key
+  \param flag - key for window
+  \param studyId - study id
+  Flag used how identificator of window in windows list.
+*/
 QWidget* LightApp_Application::window( const int flag, const int studyId ) const
 {
   QWidget* wid = 0;
@@ -850,12 +1026,13 @@ QWidget* LightApp_Application::window( const int flag, const int studyId ) const
   return wid;
 }
 
-/*!Adds window to application.
- *\param wid - QWidget
- *\param flag - key wor window
- *\param studyId - study id
- * Flag used how identificator of window in windows list.
- */
+/*!
+  Adds window to application.
+  \param wid - QWidget
+  \param flag - key for window
+  \param studyId - study id
+  Flag used how identificator of window in windows list.
+*/
 void LightApp_Application::addWindow( QWidget* wid, const int flag, const int studyId )
 {
   if ( !wid )
@@ -877,6 +1054,8 @@ void LightApp_Application::addWindow( QWidget* wid, const int flag, const int st
 
     LightApp_WidgetContainer* newWC = new LightApp_WidgetContainer( flag, desktop() );
     connect( newWC, SIGNAL(  destroyed ( QObject* ) ), this, SLOT( onWCDestroyed( QObject* ) ) );
+    // asv: connecting a slot for storing visibility flag of a window 
+    connect( newWC, SIGNAL( visibilityChanged ( bool ) ), SLOT( onVisibilityChanged( bool ) ) );
     myWindows.insert( flag, newWC );
     if ( winMap.contains( flag ) )
       desktop()->moveDockWindow( myWindows[flag], (Dock)winMap[flag] );
@@ -889,17 +1068,19 @@ void LightApp_Application::addWindow( QWidget* wid, const int flag, const int st
   }
 
   QFont f;
+#ifndef DISABLE_PYCONSOLE
   if( wid->inherits( "PythonConsole" ) )
   {
     if( resourceMgr()->hasValue( "PyConsole", "font" ) )
       f = resourceMgr()->fontValue( "PyConsole", "font" );
     else
-    {
-      f = ( ( PythonConsole* )wid )->font();
-      resourceMgr()->setValue( "PyConsole", "font", f );
-    }
+      {
+	f = ( ( PythonConsole* )wid )->font();
+	resourceMgr()->setValue( "PyConsole", "font", f );
+      }
   }
   else
+#endif
     f = wid->font();
 
   myWindows[flag]->insert( sId, wid );
@@ -908,11 +1089,12 @@ void LightApp_Application::addWindow( QWidget* wid, const int flag, const int st
   setWindowShown( flag, !myWindows[flag]->isEmpty() );
 }
 
-/*!Remove window from application.
- *\param flag - key wor window
- *\param studyId - study id
- * Flag used how identificator of window in windows list.
- */
+/*!
+  Removes window from application.
+  \param flag - key for window
+  \param studyId - study id
+  Flag used how identificator of window in windows list.
+*/
 void LightApp_Application::removeWindow( const int flag, const int studyId )
 {
   if ( !myWindows.contains( flag ) )
@@ -934,11 +1116,12 @@ void LightApp_Application::removeWindow( const int flag, const int studyId )
   setWindowShown( flag, !myWindows[flag]->isEmpty() );
 }
 
-/*!Gets window.
- *\param flag - key wor window
- *\param studyId - study id
- * Flag used how identificator of window in windows list.
- */
+/*!
+  Gets window.
+  \param flag - key for window
+  \param studyId - study id
+  Flag used how identificator of window in windows list.
+*/
 QWidget* LightApp_Application::getWindow( const int flag, const int studyId )
 {
   QWidget* wid = window( flag, studyId );
@@ -948,7 +1131,10 @@ QWidget* LightApp_Application::getWindow( const int flag, const int studyId )
   return wid;
 }
 
-/*!Check is window visible?(with identificator \a type)*/
+/*!
+  \return is window visible
+  \param type - flag of window
+*/
 bool LightApp_Application::isWindowVisible( const int type ) const
 {
   bool res = false;
@@ -960,10 +1146,11 @@ bool LightApp_Application::isWindowVisible( const int type ) const
   return res;
 }
 
-/*!Sets window show or hide.
- *\param type - window identificator.
- *\param on   - true/false (window show/hide)
- */
+/*!
+  Sets window show or hide.
+  \param type - window identificator.
+  \param on   - true/false (window show/hide)
+*/
 void LightApp_Application::setWindowShown( const int type, const bool on )
 {
   if ( !desktop() || !myWindows.contains( type ) )
@@ -971,10 +1158,18 @@ void LightApp_Application::setWindowShown( const int type, const bool on )
 
   QDockWindow* dw = myWindows[type];
   desktop()->setAppropriate( dw, on );
-  on ? dw->show() : dw->hide();
+  if( on )
+    dw->show();
+  else if( dw->isShown() )
+  {
+    dw->hide();
+    myWindowsVisible[ type ] = true;
+  }
 }
 
-/*!Gets "ObjectBrowser".*/
+/*!
+  \return Object Browser
+*/
 OB_Browser* LightApp_Application::objectBrowser()
 {
   OB_Browser* ob = 0;
@@ -984,7 +1179,9 @@ OB_Browser* LightApp_Application::objectBrowser()
   return ob;
 }
 
-/*!Gets "LogWindow".*/
+/*!
+  \return Log Window
+*/
 LogWindow* LightApp_Application::logWindow()
 {
   LogWindow* lw = 0;
@@ -994,7 +1191,10 @@ LogWindow* LightApp_Application::logWindow()
   return lw;
 }
 
-/*!Get "PythonConsole"*/
+#ifndef DISABLE_PYCONSOLE
+/*!
+  \return Python Console
+*/
 PythonConsole* LightApp_Application::pythonConsole()
 {
   PythonConsole* console = 0;
@@ -1003,13 +1203,21 @@ PythonConsole* LightApp_Application::pythonConsole()
     console = (PythonConsole*)wid;
   return console;
 }
+#endif
 
-/*!Update obect browser*/
+/*!
+  Updates object browser and maybe data models
+  \param updateModels - if it is true, then data models are updated
+*/
 void LightApp_Application::updateObjectBrowser( const bool updateModels )
 {
   // update existing data models
   if ( updateModels ) 
   {
+    const bool isAutoUpdate = objectBrowser() ? objectBrowser()->isAutoUpdate() : true;
+    if( objectBrowser() )
+      objectBrowser()->setAutoUpdate( false );
+
     LightApp_Study* study = dynamic_cast<LightApp_Study*>(activeStudy());
     if ( study ) {
       CAM_Study::ModelList dm_list;
@@ -1020,6 +1228,9 @@ void LightApp_Application::updateObjectBrowser( const bool updateModels )
           ((LightApp_DataModel*)camDM)->update();
       }
     }
+
+    if( objectBrowser() )
+      objectBrowser()->setAutoUpdate( isAutoUpdate );
   }
   if ( objectBrowser() )
   {
@@ -1028,13 +1239,19 @@ void LightApp_Application::updateObjectBrowser( const bool updateModels )
   }
 }
 
-/*!Gets preferences.*/
+/*!
+  \return preferences
+*/
 LightApp_Preferences* LightApp_Application::preferences() const
 {
   return preferences( false );
 }
 
-/*!Gets view manager*/
+/*!
+  \return first view manager of some type
+  \param vmType - type of view manager
+  \param create - is it necessary to create view manager in case, when there is no manager of such type
+*/
 SUIT_ViewManager* LightApp_Application::getViewManager( const QString& vmType, const bool create )
 {
   SUIT_ViewManager* aVM = viewManager( vmType );
@@ -1056,21 +1273,32 @@ SUIT_ViewManager* LightApp_Application::getViewManager( const QString& vmType, c
   return aVM;
 }
 
-/*!Create view manager.*/
+/*!
+  Creates view manager of some type
+  \param vmType - type of view manager
+*/
 SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType )
 {
   SUIT_ResourceMgr* resMgr = resourceMgr();
 
   SUIT_ViewManager* viewMgr = 0;
+#ifndef DISABLE_GLVIEWER
   if( vmType == GLViewer_Viewer::Type() )
   {
     viewMgr = new GLViewer_ViewManager( activeStudy(), desktop() );
     new LightApp_GLSelector( (GLViewer_Viewer2d*)viewMgr->getViewModel(), mySelMgr );
   }
-  else if( vmType == Plot2d_Viewer::Type() )
+#endif
+#ifndef DISABLE_PLOT2DVIEWER
+  if( vmType == Plot2d_Viewer::Type() )
   {
     viewMgr = new Plot2d_ViewManager( activeStudy(), desktop() );
-    SPlot2d_Viewer* vm = new SPlot2d_Viewer();
+    Plot2d_Viewer* vm;
+#ifndef DISABLE_SALOMEOBJECT
+    vm = new SPlot2d_Viewer();
+#else
+    vm = new Plot2d_Viewer();
+#endif
     viewMgr->setViewModel( vm  );// custom view model, which extends SALOME_View interface 
     Plot2d_ViewWindow* wnd = dynamic_cast<Plot2d_ViewWindow*>( viewMgr->getActiveView() );
     if( wnd )
@@ -1079,18 +1307,23 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
       frame->setBackgroundColor( resMgr->colorValue( "Plot2d", "Background", frame->backgroundColor() ) );
     }
   }
-  else if( vmType == SUPERVGraph_Viewer::Type() )
-  {
-    viewMgr = new SUPERVGraph_ViewManager( activeStudy(), desktop() );
-    SUPERVGraph_Viewer* vm = new SUPERVGraph_Viewer();
-    SUPERVGraph_ViewFrame* view = dynamic_cast<SUPERVGraph_ViewFrame*>( vm->getViewManager()->getActiveView() );
-    if( view )
-      view->setBackgroundColor( resMgr->colorValue( "SUPERVGraph", "Background", view->backgroundColor() ) );
-  }
-  else if( vmType == OCCViewer_Viewer::Type() )
+#endif
+  //#ifndef DISABLE_SUPERVGRAPHVIEWER
+  //  if( vmType == SUPERVGraph_Viewer::Type() )
+  //  {
+  //    viewMgr = new SUPERVGraph_ViewManager( activeStudy(), desktop(), new SUPERVGraph_Viewer() );
+  //  }
+  //#endif
+#ifndef DISABLE_OCCVIEWER
+  if( vmType == OCCViewer_Viewer::Type() )
   {
     viewMgr = new OCCViewer_ViewManager( activeStudy(), desktop() );
-    SOCC_Viewer* vm = new SOCC_Viewer();
+    OCCViewer_Viewer* vm;
+#ifndef DISABLE_SALOMEOBJECT
+    vm = new SOCC_Viewer();
+#else
+    vm = new OCCViewer_Viewer();
+#endif
     vm->setBackgroundColor( resMgr->colorValue( "OCCViewer", "background", vm->backgroundColor() ) );
     vm->setTrihedronSize( resMgr->integerValue( "OCCViewer", "trihedron_size", vm->trihedronSize() ) );
     int u( 1 ), v( 1 );
@@ -1101,17 +1334,32 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
     viewMgr->setViewModel( vm );// custom view model, which extends SALOME_View interface
     new LightApp_OCCSelector( (OCCViewer_Viewer*)viewMgr->getViewModel(), mySelMgr );
   }
-  else if ( vmType == SVTK_Viewer::Type() )
+#endif
+#ifndef DISABLE_VTKVIEWER
+#ifndef DISABLE_SALOMEOBJECT
+  if ( vmType == SVTK_Viewer::Type() )
+#else
+  if ( vmType == VTKViewer_Viewer::Type() )
+#endif
   {
+#ifndef DISABLE_SALOMEOBJECT
     viewMgr = new SVTK_ViewManager( activeStudy(), desktop() );
     SVTK_Viewer* vm = dynamic_cast<SVTK_Viewer*>( viewMgr->getViewModel() );
     if( vm )
     {
       vm->setBackgroundColor( resMgr->colorValue( "VTKViewer", "background", vm->backgroundColor() ) );
-      vm->setTrihedronSize( resMgr->integerValue( "VTKViewer", "trihedron_size", vm->trihedronSize() ) );
+      vm->setTrihedronSize( resMgr->integerValue( "VTKViewer", "trihedron_size", vm->trihedronSize() ),
+			    resMgr->booleanValue( "VTKViewer", "relative_size", vm->trihedronRelative() ) );
       new LightApp_VTKSelector( vm, mySelMgr );
     }
+#else
+    viewMgr = new VTKViewer_ViewManager( activeStudy(), desktop() );
+    VTKViewer_Viewer* vm = dynamic_cast<VTKViewer_Viewer*>( viewMgr->getViewModel() );
+    if ( vm )
+      vm->setBackgroundColor( resMgr->colorValue( "VTKViewer", "background", vm->backgroundColor() ) );
+#endif
   }
+#endif
 
   if ( !viewMgr )
     return 0;
@@ -1122,22 +1370,21 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
   if ( viewWin && desktop() )
     viewWin->resize( (int)( desktop()->width() * 0.6 ), (int)( desktop()->height() * 0.6 ) );
 
-  connect( viewMgr, SIGNAL( lastViewClosed( SUIT_ViewManager* ) ),
-           this, SLOT( onCloseView( SUIT_ViewManager* ) ) );
-
   return viewMgr;
 }
 
-//=======================================================================
-// name    : onCloseView
-/*! Purpose : SLOT. Remove view manager from application*/
-//=======================================================================
+/*!
+  SLOT: Removes view manager from application
+*/
 void LightApp_Application::onCloseView( SUIT_ViewManager* theVM )
 {
   removeViewManager( theVM );
 }
 
-/*!Protected SLOT. On study created.*/
+/*!
+  Protected SLOT: On study created.
+  \param theStudy - just created study
+*/
 void LightApp_Application::onStudyCreated( SUIT_Study* theStudy )
 {
   SUIT_DataObject* aRoot = 0;
@@ -1155,7 +1402,10 @@ void LightApp_Application::onStudyCreated( SUIT_Study* theStudy )
   activateWindows();
 }
 
-/*!Protected SLOT. On study opened.*/
+/*!
+  Protected SLOT: On study opened.
+  \param theStudy - just opened  study
+*/
 void LightApp_Application::onStudyOpened( SUIT_Study* theStudy )
 {
   SUIT_DataObject* aRoot = 0;
@@ -1209,12 +1459,14 @@ void LightApp_Application::onDesktopActivated()
  */
 QString LightApp_Application::getFileFilter() const
 {
-  return "(*.bin)";
-  // HDF persistence not yet completed - to be uncommented later
-  //return "(*.hdf)";
+  //return "(*.bin)";
+  // HDF persistence
+  return "(*.hdf)";
 }
 
-/*! Gets file name*/
+/*!
+  Shows file dialog and return user selected file name
+*/
 QString LightApp_Application::getFileName( bool open, const QString& initial, const QString& filters, 
                                            const QString& caption, QWidget* parent )
 {
@@ -1304,12 +1556,13 @@ void LightApp_Application::updateActions()
   updateCommandsStatus();
 }
 
-//=======================================================================
-// name    : createNewStudy
-/*! Purpose : Create new study*/
-//=======================================================================
+/*!
+  Creates new study
+*/
 SUIT_Study* LightApp_Application::createNewStudy()
 {
+  LightApp_Application::lastStudyId++;
+
   LightApp_Study* aStudy = new LightApp_Study( this );
 
   // Set up processing of major study-related events
@@ -1321,7 +1574,10 @@ SUIT_Study* LightApp_Application::createNewStudy()
   return aStudy;
 }
 
-/*!Create window.*/
+/*!
+  Creates window by flag.
+  \param flag - identificator of window type
+*/
 QWidget* LightApp_Application::createWindow( const int flag )
 {
   QWidget* wid = 0;
@@ -1329,7 +1585,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
   {
     OB_Browser* ob = new OB_Browser( desktop() );
     ob->setAutoUpdate( true );
-    ob->setAutoOpenLevel( 1 );
+    //ob->setAutoOpenLevel( 1 ); // commented by ASV as a fix to bug IPAL10107
     ob->setCaption( tr( "OBJECT_BROWSER" ) );
 
     OB_ListView* ob_list = dynamic_cast<OB_ListView*>( const_cast<QListView*>( ob->listView() ) );
@@ -1346,6 +1602,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
 
     ob->connectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
   }
+#ifndef DISABLE_PYCONSOLE
   else  if ( flag == WT_PyConsole )
   {
     PythonConsole* pyCons = new PythonConsole( desktop() );
@@ -1353,6 +1610,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
     wid = pyCons;
     //    pyCons->connectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
   }
+#endif
   else if ( flag == WT_LogWindow )
   {
     LogWindow* logWin = new LogWindow( desktop() );
@@ -1363,25 +1621,29 @@ QWidget* LightApp_Application::createWindow( const int flag )
   return wid;
 }
 
-/*!Default windows(Object Browser, Python Console).
- * Adds to map \a aMap.
+/*!
+  \return default windows( Object Browser, Python Console )
+  Adds to map \a aMap.
  */
 void LightApp_Application::defaultWindows( QMap<int, int>& aMap ) const
 {  
   aMap.insert( WT_ObjectBrowser, Qt::DockLeft );
+#ifndef DISABLE_PYCONSOLE
   aMap.insert( WT_PyConsole, Qt::DockBottom );
+#endif
   //  aMap.insert( WT_LogWindow, Qt::DockBottom );
 }
 
-/*!Default view manager.*/
+/*!Default view managers*/
 void LightApp_Application::defaultViewManagers( QStringList& ) const
 {
   /*!Do nothing.*/
 }
 
-/*!Gets preferences.
- * Create preferences, if \a crt = true.
- */
+/*!
+  \return preferences.
+  Create preferences, if \a crt = true.
+*/
 LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
 {
   if ( myPrefs )
@@ -1438,7 +1700,9 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
   return myPrefs;
 }
 
-/*!Add new module to application.*/
+/*!
+  Adds new module to application
+*/
 void LightApp_Application::moduleAdded( CAM_Module* mod )
 {
   CAM_Application::moduleAdded( mod );
@@ -1455,7 +1719,9 @@ void LightApp_Application::moduleAdded( CAM_Module* mod )
   }
 }
 
-/*!Create preferences.*/
+/*!
+  Create preferences
+*/
 void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 {
   if ( !pref )
@@ -1469,9 +1735,6 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   pref->addPreference( tr( "PREF_MULTI_FILE" ), studyGroup, LightApp_Preferences::Bool, "Study", "multi_file" );
   pref->addPreference( tr( "PREF_ASCII_FILE" ), studyGroup, LightApp_Preferences::Bool, "Study", "ascii_file" );
-  int undoPref = pref->addPreference( tr( "PREF_UNDO_LEVEL" ), studyGroup, LightApp_Preferences::IntSpin, "Study", "undo_level" );
-  pref->setItemProperty( undoPref, "min", 1 );
-  pref->setItemProperty( undoPref, "max", 100 );
   pref->addPreference( tr( "PREF_STORE_POS" ), studyGroup, LightApp_Preferences::Bool, "Study", "store_positions" );
 
   int extgroup = pref->addPreference( tr( "PREF_GROUP_EXT_BROWSER" ), genTab );
@@ -1507,7 +1770,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 		       LightApp_Preferences::Color, "OCCViewer", "background" );
 
   pref->setItemProperty( occTS, "min", 1 );
-  pref->setItemProperty( occTS, "max", 150 );
+  pref->setItemProperty( occTS, "max", 1000 );
 
   int isoU = pref->addPreference( tr( "PREF_ISOS_U" ), occGroup,
 				  LightApp_Preferences::IntSpin, "OCCViewer", "iso_number_u" );
@@ -1614,13 +1877,18 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 		       "ObjectBrowser", "auto_size" );
 }
 
-/*!Changed preferences */
+/*!
+  Changes appearance of application according to changed preferences
+  \param sec - section
+  \param param - name of changed parameter
+*/
 void LightApp_Application::preferencesChanged( const QString& sec, const QString& param )
 {
   SUIT_ResourceMgr* resMgr = resourceMgr();
   if ( !resMgr )
     return;
 
+#ifndef DISABLE_OCCVIEWER
   if ( sec == QString( "OCCViewer" ) && param == QString( "trihedron_size" ) )
   {
     int sz = resMgr->integerValue( sec, param, -1 );
@@ -1637,11 +1905,15 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
       occVM->getAISContext()->UpdateCurrentViewer();
     }
   }
+#endif
 
+#ifndef DISABLE_VTKVIEWER
   if ( sec == QString( "VTKViewer" ) && (param == QString( "trihedron_size" ) || param == QString( "relative_size" )) )
   {
     int sz = resMgr->integerValue( "VTKViewer", "trihedron_size", -1 );
+    bool isRelative = resMgr->booleanValue( "VTKViewer", "relative_size", true );
     QPtrList<SUIT_ViewManager> lst;
+#ifndef DISABLE_SALOMEOBJECT
     viewManagers( SVTK_Viewer::Type(), lst );
     for ( QPtrListIterator<SUIT_ViewManager> it( lst ); it.current() && sz >= 0; ++it )
     {
@@ -1652,12 +1924,15 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
       SVTK_Viewer* vtkVM = dynamic_cast<SVTK_Viewer*>( vm );
       if( vtkVM )
       {
-	vtkVM->setTrihedronSize( sz );
+	vtkVM->setTrihedronSize( sz, isRelative );
 	vtkVM->Repaint();
       }
     }
+#endif
   }
+#endif
 
+#ifndef DISABLE_OCCVIEWER
   if ( sec == QString( "OCCViewer" ) && ( param == QString( "iso_number_u" ) || param == QString( "iso_number_v" ) ) )
   {
     QPtrList<SUIT_ViewManager> lst;
@@ -1671,6 +1946,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 	mgr->getOCCViewer()->setIsos( u, v );
     }
   }
+#endif
 
   if( sec=="ObjectBrowser" )
   {
@@ -1684,6 +1960,10 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
            autoSizeFirst = resMgr->booleanValue( "ObjectBrowser", "auto_size_first", true );
       ob->setWidthMode( autoSize ? QListView::Maximum : QListView::Manual );
       ob->listView()->setColumnWidthMode( 0, autoSizeFirst ? QListView::Maximum : QListView::Manual );
+      if( autoSize )
+	for( int i=1; i<ob->listView()->columns(); i++ )
+	  if( ob->listView()->columnWidth( i )>0 )
+	    ob->listView()->adjustColumn( i );
       updateObjectBrowser( false );
     }
   }
@@ -1694,25 +1974,51 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
       updateWindows();
   }
 
+#ifndef DISABLE_PYCONSOLE
   if( sec=="PyConsole" )
   {
     if( param=="font" )
       if( pythonConsole() )
 	pythonConsole()->setFont( resMgr->fontValue( "PyConsole", "font" ) );
   }
+#endif
 }
 
-/*!Update desktop title.*/
+/*!
+  Saves preferences
+*/
+void LightApp_Application::savePreferences()
+{
+  saveWindowsGeometry();
+  
+  if ( resourceMgr() )
+    {
+      if ( desktop() )
+	desktop()->saveGeometry( resourceMgr(), "desktop" );
+      resourceMgr()->save();
+    }
+}
+
+/*!
+  Updates desktop title
+*/
 void LightApp_Application::updateDesktopTitle() {
   QString aTitle = applicationName();
   QString aVer = applicationVersion();
   if ( !aVer.isEmpty() )
     aTitle += QString( " " ) + aVer;
 
+  if ( activeStudy() ) {
+    QString sName = SUIT_Tools::file( activeStudy()->studyName().stripWhiteSpace(), false );
+    aTitle += QString( " - [%1]" ).arg( sName );
+  }
+
   desktop()->setCaption( aTitle );
 }
 
-/*!Update windows after close document.*/
+/*!
+  Updates windows after close document
+*/
 void LightApp_Application::afterCloseDoc()
 {
   updateWindows();
@@ -1720,7 +2026,9 @@ void LightApp_Application::afterCloseDoc()
   CAM_Application::afterCloseDoc();
 }
 
-/*!Update module action.*/
+/*!
+  Updates actions of active module
+*/
 void LightApp_Application::updateModuleActions()
 {
   QString modName;
@@ -1731,9 +2039,10 @@ void LightApp_Application::updateModuleActions()
     myActions[modName]->setOn( true );
 }
 
-/*!Gets current windows.
- *\param winMap - output current windows map.
- */
+/*!
+  Gets current windows.
+  \param winMap - output current windows map.
+*/
 void LightApp_Application::currentWindows( QMap<int, int>& winMap ) const
 {
   winMap.clear();
@@ -1746,9 +2055,10 @@ void LightApp_Application::currentWindows( QMap<int, int>& winMap ) const
     defaultWindows( winMap );
 }
 
-/*!Gets current view managers.
- *\param lst - output current view managers list.
- */
+/*!
+  Gets current view managers.
+  \param lst - output current view managers list.
+*/
 void LightApp_Application::currentViewManagers( QStringList& lst ) const
 {
   lst.clear();
@@ -1761,22 +2071,36 @@ void LightApp_Application::currentViewManagers( QStringList& lst ) const
     defaultViewManagers( lst );
 }
 
-/*!Update windows.*/
+/*!
+  Updates windows
+*/
 void LightApp_Application::updateWindows()
 {
   QMap<int, int> winMap;
   currentWindows( winMap );
 
-  for ( QMap<int, int>::ConstIterator it = winMap.begin(); it != winMap.end(); ++it )
-    getWindow( it.key() );
+  if ( activeStudy() ) {
+    for ( QMap<int, int>::ConstIterator it = winMap.begin(); it != winMap.end(); ++it )
+      getWindow( it.key() );
 
-  loadWindowsGeometry();
+    loadWindowsGeometry();
+  }
 
-  for ( WindowMap::ConstIterator itr = myWindows.begin(); itr != myWindows.end(); ++itr )
+  // setWindowShown should be done even if no study is active (open). in this case all open windows
+  // will be hidden, which is neccessary in this case.
+  for ( WindowMap::ConstIterator itr = myWindows.begin(); itr != myWindows.end(); ++itr ) {
+    
+    if ( myWindowsVisible.contains( itr.key() ) && 
+	 !myWindowsVisible[ itr.key() ] )
+      continue;
+
     setWindowShown( itr.key(), !itr.data()->isEmpty() && winMap.contains( itr.key() ) );
+  }
 }
 
-/*!Update view managers.*/
+/*!
+  Updates view managers
+*/
 void LightApp_Application::updateViewManagers()
 {
   QStringList lst;
@@ -1786,7 +2110,9 @@ void LightApp_Application::updateViewManagers()
     getViewManager( *it, true );
 }
 
-/*!Load windows geometry.*/
+/*!
+  Loads windows geometry
+*/
 void LightApp_Application::loadWindowsGeometry()
 {
   bool store = resourceMgr()->booleanValue( "Study", "store_positions", true );
@@ -1814,7 +2140,9 @@ void LightApp_Application::loadWindowsGeometry()
   dockMgr->restoreGeometry();
 }
 
-/*!Save windows geometry.*/
+/*!
+  Saves windows geometry
+*/
 void LightApp_Application::saveWindowsGeometry()
 {
   bool store = resourceMgr()->booleanValue( "Study", "store_positions", true );
@@ -1842,7 +2170,9 @@ void LightApp_Application::saveWindowsGeometry()
   dockMgr->saveGeometry( resourceMgr(), section, false );
 }
 
-/*!Activate windows.*/
+/*!
+  Activates windows
+*/
 void LightApp_Application::activateWindows()
 {
   if ( activeStudy() )
@@ -1852,7 +2182,9 @@ void LightApp_Application::activateWindows()
   }
 }
 
-/*!Adds icon names for modules.*/
+/*!
+  Adds icon names for modules
+*/
 void LightApp_Application::moduleIconNames( QMap<QString, QString>& iconMap ) const
 {
   iconMap.clear();
@@ -1880,7 +2212,9 @@ void LightApp_Application::moduleIconNames( QMap<QString, QString>& iconMap ) co
   }
 }
 
-/*!Insert items in popup, which necessary for current application*/
+/*!
+  Inserts items in popup, which necessary for current application
+*/
 void LightApp_Application::contextMenuPopup( const QString& type, QPopupMenu* thePopup, QString& title )
 {
   CAM_Application::contextMenuPopup( type, thePopup, title );
@@ -1893,7 +2227,9 @@ void LightApp_Application::contextMenuPopup( const QString& type, QPopupMenu* th
   thePopup->insertItem( tr( "MEN_REFRESH" ), this, SLOT( onRefresh() ) );
 }
 
-/*!Create empty study.*/
+/*!
+  Create empty study
+*/
 void LightApp_Application::createEmptyStudy()
 {
   CAM_Application::createEmptyStudy();
@@ -1901,7 +2237,10 @@ void LightApp_Application::createEmptyStudy()
     objectBrowser()->updateTree();
 }
 
-/*!Activate module \a mod.*/
+/*!
+  Activates module
+  \param mod - module to be activated
+*/
 bool LightApp_Application::activateModule( CAM_Module* mod )
 {
   bool res = CAM_Application::activateModule( mod );
@@ -1910,13 +2249,17 @@ bool LightApp_Application::activateModule( CAM_Module* mod )
   return res;
 }
 
-/*!return keyborad accelerators manager object */
+/*!
+  \return keyborad accelerators manager object
+*/
 SUIT_Accel* LightApp_Application::accel() const
 {
   return myAccel;
 }
 
-/*! remove dead widget container from map */
+/*!
+  Removes dead widget container from map
+*/
 void LightApp_Application::onWCDestroyed( QObject* ob )
 {
   // remove destroyed widget container from windows map
@@ -1931,7 +2274,19 @@ void LightApp_Application::onWCDestroyed( QObject* ob )
   }
 }
 
-/*! redefined to remove view manager from memory */
+/*!
+  Connects just added view manager
+*/
+void LightApp_Application::addViewManager( SUIT_ViewManager* vm )
+{
+  connect( vm, SIGNAL( lastViewClosed( SUIT_ViewManager* ) ),
+           this, SLOT( onCloseView( SUIT_ViewManager* ) ) );
+  STD_Application::addViewManager( vm );
+}
+
+/*!
+  Remove view manager from memory
+*/
 void LightApp_Application::removeViewManager( SUIT_ViewManager* vm )
 {
   disconnect( vm, SIGNAL( lastViewClosed( SUIT_ViewManager* ) ),
@@ -1940,7 +2295,9 @@ void LightApp_Application::removeViewManager( SUIT_ViewManager* vm )
   delete vm;
 }
 
-/*! rename active window of desktop */
+/*!
+  Renames active window of desktop
+*/
 void LightApp_Application::onRenameWindow()
 {
   if( !desktop() )
@@ -1954,4 +2311,81 @@ void LightApp_Application::onRenameWindow()
   QString name = QInputDialog::getText( tr( "TOT_RENAME" ), tr( "PRP_RENAME" ), QLineEdit::Normal, w->caption(), &ok, w );
   if( ok && !name.isEmpty() )
     w->setCaption( name );
+}
+
+/*!
+  \return if the library of module exists
+  \param moduleTitle - title of module
+*/
+bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
+{
+  if( moduleTitle.isEmpty() )
+    return false;
+
+  QString lib = moduleLibrary( moduleTitle );
+  QStringList paths;
+#ifdef WIN32
+  paths = QStringList::split( ";", ::getenv( "PATH" ) );
+#else
+  paths = QStringList::split( ":", ::getenv( "LD_LIBRARY_PATH" ) );
+#endif
+
+  QStringList::const_iterator anIt = paths.begin(), aLast = paths.end();
+  for( ; anIt!=aLast; anIt++ )
+  {
+    QFileInfo inf( Qtx::addSlash( *anIt ) + lib );
+    if( inf.exists() )
+      return true;
+  }
+  return false;
+}
+
+/*!
+  \return default name for an active study
+*/
+void LightApp_Application::setDefaultStudyName( const QString& theName )
+{
+  QStringList anInfoList;
+  modules( anInfoList, false );
+
+  LightApp_Study* aStudy = (LightApp_Study*)activeStudy();
+  if( anInfoList.count() == 1 && // to avoid a conflict between different modules
+      !aStudy->isSaved() )
+  {
+    aStudy->setStudyName( theName );
+    updateDesktopTitle();
+  }
+}
+
+/*! slot, called on show/hide of a dock window */
+void LightApp_Application::onVisibilityChanged( bool visible )
+{
+  const QObject* win = sender();
+ 
+  for ( WindowMap::ConstIterator itr = myWindows.begin(); itr != myWindows.end(); ++itr )
+    if ( itr.data() == win ) 
+    {
+      myWindowsVisible[ itr.key() ] = visible;
+      return;
+    }
+}
+
+/*!
+  Custom event handler
+*/
+bool LightApp_Application::event( QEvent* e )
+{
+  if( e && e->type()==2000 )
+  {
+    QCustomEvent* ce = ( QCustomEvent* )e;
+    QString* d = ( QString* )ce->data();
+    if( SUIT_MessageBox::warn2(0, tr("WRN_WARNING"),
+			   d ? *d : "",
+			   tr("BUT_OK"), tr("BUT_CANCEL"), 0, 1, 0 )==0 )
+       onPreferences();
+    if( d )
+      delete d;
+    return true;
+  }
+  return CAM_Application::event( e );
 }

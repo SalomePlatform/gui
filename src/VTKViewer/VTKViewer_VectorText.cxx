@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 /*=========================================================================
 
@@ -1751,6 +1751,11 @@ void VTKViewer_VectorText::Execute()
   newPolys->Delete();
 }
   
+/*!
+  Print text to stream
+  \param os - stream
+  \param indent
+*/
 void VTKViewer_VectorText::PrintSelf(ostream& os, vtkIndent indent)
 {
   this->Superclass::PrintSelf(os,indent);

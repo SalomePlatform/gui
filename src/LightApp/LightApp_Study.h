@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef LIGHTAPP_STUDY_H
 #define LIGHTAPP_STUDY_H
@@ -32,6 +32,11 @@
 class SUIT_Application;
 class CAM_DataModel;
 
+/*!
+  Custom study, using for open/close of documents HDF format.
+  Data of each module can be saved to different files, those 
+  after that are combined into one HDF file
+*/
 class LIGHTAPP_EXPORT LightApp_Study : public CAM_Study
 {
   Q_OBJECT
@@ -86,6 +91,8 @@ signals:
 
 private:
   LightApp_Driver*    myDriver;
+
+  friend class LightApp_Application;
 };
 
 #endif 

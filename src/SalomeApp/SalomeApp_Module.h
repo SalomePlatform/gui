@@ -1,3 +1,21 @@
+// Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
+// 
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either 
+// version 2.1 of the License.
+// 
+// This library is distributed in the hope that it will be useful 
+// but WITHOUT ANY WARRANTY; without even the implied warranty of 
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+// Lesser General Public License for more details.
+//
+// You should have received a copy of the GNU Lesser General Public  
+// License along with this library; if not, write to the Free Software 
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
 // File:      SalomeApp_Module.h
 // Created:   10/25/2004 11:33:06 AM
 // Author:    Sergey LITONIN
@@ -9,8 +27,6 @@
 #include "SalomeApp.h"
 
 #include <LightApp_Module.h>
-
-#include <string>
 
 class CAM_DataModel;
 class SalomeApp_Application;
@@ -40,6 +56,9 @@ public:
   /*! Convenient shortcuts*/
 
   SalomeApp_Application*              getApp() const;
+
+  virtual void                        storeVisualParameters(int savePoint);
+  virtual void                        restoreVisualParameters(int savePoint);
 
 protected:
   virtual CAM_DataModel*              createDataModel();

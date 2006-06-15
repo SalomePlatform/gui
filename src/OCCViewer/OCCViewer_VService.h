@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef OCCVIEWER_VSERVICE_H
 #define OCCVIEWER_VSERVICE_H
@@ -115,11 +115,12 @@ public:
                                   const Standard_Integer hiwin,
                                   const Standard_Integer lowin,
                                   const Quantity_NameOfColor color = Quantity_NOC_GRAY69 );
-    static Handle_Aspect_WindowDriver
+    /*static Handle_Aspect_WindowDriver
                     XdpsDriver( const Standard_CString display,
                                 const Standard_Integer hiwin,
                                 const Standard_Integer lowin,
                                 const Quantity_NameOfColor color = Quantity_NOC_GRAY69 );
+    */
     static Handle_Aspect_WindowDriver
                     ImageDriver( const Standard_CString display,
                                  const Standard_Integer hiwin,

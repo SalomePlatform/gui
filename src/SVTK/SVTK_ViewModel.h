@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef SVTK_VIEWMODEL_H
 #define SVTK_VIEWMODEL_H
@@ -65,8 +65,11 @@ public:
   //! Get size of trihedron of the viewer (see #SVTK_Renderer::SetTrihedronSize)
   int trihedronSize() const;
 
+  //! Shows if the size of trihedron relative (see #SVTK_Renderer::SetTrihedronSize)
+  bool trihedronRelative() const;
+
   //! Set size of trihedron of the viewer (see #SVTK_Renderer::SetTrihedronSize)
-  void setTrihedronSize( const int );
+  void setTrihedronSize( const int, const bool = true );
 
 public:
   void enableSelection(bool isEnabled);
@@ -115,6 +118,7 @@ protected slots:
 private:
   QColor myBgColor;
   int    myTrihedronSize;
+  bool   myTrihedronRelative;
   bool   mySelectionEnabled;
   bool   myMultiSelectionEnabled;
 };

@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "SUIT_Session.h"
 
@@ -290,7 +290,7 @@ SUIT_Session::AppLib SUIT_Session::loadLibrary( const QString& name, QString& li
 #ifdef WIN32
   lib = ::LoadLibrary( (char*)libFile.latin1() );
 #else
-  lib = dlopen( (char*)libFile.latin1(), RTLD_LAZY );
+  lib = dlopen( (char*)libFile.latin1(), RTLD_LAZY | RTLD_GLOBAL  );
 #endif
   return lib;
 }
@@ -313,7 +313,7 @@ QString SUIT_Session::applicationName( const QString& str ) const
 */
 SUIT_ResourceMgr* SUIT_Session::createResourceMgr( const QString& appName ) const
 {
-  return new SUIT_ResourceMgr( appName );
+  return new SUIT_ResourceMgr( applicationName( appName ) );
 }
 
 /*!

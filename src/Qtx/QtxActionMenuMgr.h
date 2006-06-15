@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      QtxActionMenuMgr.h
 // Author:    Alexander SOLOVYEV, Sergey TELKOV
@@ -35,6 +35,18 @@ class QMainWindow;
 #pragma warning( disable:4251 )
 #endif
 
+/*!
+  \class QtxActionMenuMgr
+  Allows to use set of action to automatically build main menu.
+  With help of methods insert/append/remove it is possible to 
+  describe whole structure of menu. Method hide allows
+  to temporary remove some items from menu, method show allows to 
+  recreate them.
+  Actions can be grouped with help of group identifictor.
+  Inside popup or menu bar items have order by increasing group id.
+  This manager is able to attune menu: to remove excess separators,
+  to remove empty popup menu etc.
+*/
 class QTX_EXPORT QtxActionMenuMgr : public QtxActionMgr
 {
   Q_OBJECT
@@ -44,6 +56,11 @@ class QTX_EXPORT QtxActionMenuMgr : public QtxActionMgr
   typedef QPtrList<MenuNode>         NodeList;
   typedef QPtrListIterator<MenuNode> NodeListIterator;
 
+  /*!
+    \class MenuNode
+    Represents a menu item inside main menu structure.
+    For internal purposes only
+  */
   class MenuNode
   {
   public:
@@ -51,6 +68,7 @@ class QTX_EXPORT QtxActionMenuMgr : public QtxActionMgr
     MenuNode( MenuNode* p ) : parent( p ), visible( true ) { children.setAutoDelete( true ); };
 
     int       id;
+    int       idx;
     int       group;
     MenuNode* parent;
     bool      visible;
@@ -79,17 +97,17 @@ public:
   virtual int  insert( const int, const int, const int, const int = -1 );
   int          insert( QAction*, const int, const int, const int = -1 );
 
-  int          insert( const QString&, const QString&, const int, const int = -1 );
-  int          insert( const QString&, const QStringList&, const int, const int = -1 );
-  virtual int  insert( const QString&, const int, const int, const int = -1 );
+  int          insert( const QString&, const QString&, const int, const int = -1, const int = -1, const bool = false );
+  int          insert( const QString&, const QStringList&, const int, const int = -1, const int = -1, const bool = false );
+  virtual int  insert( const QString&, const int, const int, const int = -1, const int = -1, const bool = false );
 
   int          append( const int, const int, const int );
   int          append( QAction*, const int, const int );
-  int          append( const QString&, const int, const int );
+  int          append( const QString&, const int, const int, const int = -1, const bool = false );
 
   int          prepend( const int, const int, const int );
   int          prepend( QAction*, const int, const int );
-  int          prepend( const QString&, const int, const int );
+  int          prepend( const QString&, const int, const int, const int = -1, const bool = false );
 
   void         remove( const int );
   void         remove( const int, const int, const int = -1 );
@@ -102,14 +120,26 @@ public:
 
   virtual bool load( const QString&, QtxActionMgr::Reader& );
 
+  bool         containsMenu( const QString&, const int ) const;
+  bool         containsMenu( const int, const int ) const;
+
+
 private slots:
   void         onDestroyed( QObject* );
+  void         onHighlighted( int );
+
+signals:
+  void         menuHighlighted( int, int );
 
 protected:
   void         setWidget( QWidget* );
-  MenuNode*    find( const int, const int ) const;
-  MenuNode*    find( const int, MenuNode* = 0 ) const;
+  MenuNode*    find( const int, const int, const bool = true ) const;
+  MenuNode*    find( const int, MenuNode* = 0, const bool = true ) const;
   bool         find( const int, NodeList&, MenuNode* = 0 ) const;
+  MenuNode*    find( const QString&, const int, const bool = true ) const;
+  MenuNode*    find( const QString&, MenuNode* = 0, const bool = true ) const;
+  bool         find( const QString&, NodeList&, MenuNode* = 0 ) const;
+  int          findId( const int, const int = -1 ) const;
 
   void         removeMenu( const int, MenuNode* );
 
@@ -135,6 +165,10 @@ private:
   MenuMap      myMenus;
 };
 
+/*!
+  \class QtxActionMenuMgr::MenuCreator
+  Allows to create automatically main menu by data read from file
+*/
 class QtxActionMenuMgr::MenuCreator : public QtxActionMgr::Creator
 {
 public:

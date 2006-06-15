@@ -17,7 +17,7 @@
 //  License along with this library; if not, write to the Free Software 
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
 // 
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org 
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //
 //
@@ -174,7 +174,7 @@ void PythonConsole_PyEditor::handleReturn()
   PyInterp_Dispatcher::Get()->Exec( new ExecCommand( myInterp, _buf.latin1(), this ) );
 }
 
-/*
+/*!
    Processes drop event: paste dragged text
 */
 void PythonConsole_PyEditor::contentsDropEvent( QDropEvent* event )
@@ -198,7 +198,7 @@ void PythonConsole_PyEditor::contentsDropEvent( QDropEvent* event )
   }
 }
 
-/*
+/*!
    Processes middle button release event - paste clipboard's contents
 */
 void PythonConsole_PyEditor::contentsMouseReleaseEvent( QMouseEvent* event )
@@ -704,6 +704,9 @@ void PythonConsole_PyEditor::onPyInterpChanged( PyInterp_base* interp )
   }
 }
 
+/*!
+  Creates popup menu
+*/
 QPopupMenu* PythonConsole_PyEditor::createPopupMenu( const QPoint& pos )
 {
   QPopupMenu* popup = QTextEdit::createPopupMenu( pos );

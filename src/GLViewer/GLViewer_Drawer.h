@@ -14,7 +14,7 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  Author : OPEN CASCADE
 //
@@ -98,17 +98,11 @@ struct GLVIEWER_API GLViewer_TexFindId
   }
 };
 
-/***************************************************************************
-**  Class:   GLViewer_TexFont
-**  Descr:   Font for GLViewer_Drawer
-**  Module:  GLViewer
-**  Created: UI team, 03.10.01
-****************************************************************************/
+/*!
+  \class GLViewer_TexFont
+  Font for GLViewer_Drawer, Drawing bitmap and texture fonts in GLViewer
+*/
 
-/*! 
- * Class GLViewer_TexFont
- * Drawing bitmap and texture fonts in GLViewer
- */
 class GLVIEWER_API GLViewer_TexFont
 {
 public:
@@ -185,17 +179,11 @@ private:
   int             myMaxRowWidth;
 };
 
-/***************************************************************************
-**  Class:   GLViewer_Drawer
-**  Descr:   Drawer for GLObject
-**  Module:  GLViewer
-**  Created: UI team, 03.10.01
-****************************************************************************/
 /*! 
- * Class GLViewer_Drawer
- * Drawer for GLViewer_Objects.
- * Drawer creates only one times per one type of object
- */
+  \class GLViewer_Drawer
+  Drawer for GLViewer_Objects.
+  Drawer creates only one times per one type of object
+*/
 class GLVIEWER_API GLViewer_Drawer
 {
 public:

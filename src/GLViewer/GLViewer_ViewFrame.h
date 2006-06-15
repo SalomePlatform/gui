@@ -14,7 +14,7 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  Author : OPEN CASCADE
 //
@@ -22,12 +22,6 @@
 // File:      GLViewer_ViewFrame.h
 // Created:   November, 2004
 
-/***************************************************************************
-**  Class:   GLViewer_ViewFrame
-**  Descr:   Frame window for viewport in QAD-based application
-**  Module:  QAD
-**  Created: UI team, 05.09.00
-****************************************************************************/
 #ifndef GLVIEWER_VIEWFRAME_H
 #define GLVIEWER_VIEWFRAME_H
 
@@ -47,8 +41,9 @@ class GLViewer_ViewPort;
 #pragma warning( disable:4251 )
 #endif
 
-/*! Class GLViewer_ViewFrame
-*   Frame window for viewport in GLViewer
+/*!
+  \class GLViewer_ViewFrame
+  Frame window for viewport in QAD-based application
 */
 
 class GLVIEWER_API GLViewer_ViewFrame: public SUIT_ViewWindow
@@ -72,6 +67,9 @@ public:
   QSize                   sizeHint() const;
   
   virtual void            onUpdate( int );
+
+  virtual QString         getVisualParameters();
+  virtual void            setVisualParameters( const QString& parameters );  
   
 signals:
   void                    vfDrawExternal( QPainter* );

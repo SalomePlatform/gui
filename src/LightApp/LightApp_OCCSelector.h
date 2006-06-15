@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef LIGHTAPP_OCCSELECTOR_H
 #define LIGHTAPP_OCCSELECTOR_H
@@ -27,6 +27,10 @@
 
 class Handle_AIS_InteractiveObject;
 
+/*!
+  \class LightApp_OCCSelector
+  Custom selector to get/set selection from OCC viewer
+*/
 class LIGHTAPP_EXPORT LightApp_OCCSelector : public SUIT_Selector
 {
   Q_OBJECT

@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef LIGHTAPP_OBFILTER_H
 #define LIGHTAPP_OBFILTER_H
@@ -24,6 +24,10 @@
 
 class LightApp_SelectionMgr;
 
+/*!
+  \class LightApp_OBFilter
+  Custom Object Browser filter, that checks correctness of object by all filters set in selection manager
+*/
 class LIGHTAPP_EXPORT LightApp_OBFilter: public OB_Filter
 {
 public:

@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  File   : CAF_Tools.cxx
 //  Author : UI team
@@ -62,6 +62,9 @@ TCollection_ExtendedString CAF_Tools::toExtString ( const QString& src )
   return result;
 }
 
+/*!
+    Converts Qt color to OCC color
+*/
 Quantity_Color CAF_Tools::color( const QColor& c )
 {
   Quantity_Color aColor;
@@ -71,6 +74,9 @@ Quantity_Color CAF_Tools::color( const QColor& c )
   return aColor;
 }
 
+/*!
+    Converts OCC color to Qt color
+*/
 QColor CAF_Tools::color( const Quantity_Color& c )
 {
   return QColor ( int( c.Red()   * 255 ),

@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef SUIT_APPLICATION_H
 #define SUIT_APPLICATION_H
@@ -146,7 +146,7 @@ protected:
   static QAction*       separator();
   QAction*              action( const int ) const;
   int                   actionId( const QAction* ) const;
-  void                  registerAction( const int, QAction* );
+  int                   registerAction( const int, QAction* );
   QAction*              createAction( const int, const QString&, const QIconSet&, const QString&,
                                       const QString&, const int, QObject* = 0,
                                       const bool = false, QObject* = 0, const char* = 0 );
@@ -157,6 +157,7 @@ protected slots:
 private:
   SUIT_Study*           myStudy;
   SUIT_Desktop*         myDesktop;
+  QMap<int, QAction*>   myActionMap;
 
   QLabel*               myStatusLabel;
 };

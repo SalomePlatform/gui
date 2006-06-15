@@ -14,16 +14,8 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//=============================================================================
-// File      : SALOME_PYQT_PyInterp.h
-// Created   : 25/04/05
-// Author    : Christian CAREMOLI, Paul RASCLE, EDF
-// Project   : SALOME
-// Copyright : 2003-2005 CEA/DEN, EDF R&D
-// $Header   : $
-//=============================================================================
 
 #ifndef SALOME_PYQT_PYINTERP_H
 #define SALOME_PYQT_PYINTERP_H

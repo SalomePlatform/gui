@@ -14,11 +14,10 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // SUIT_Convertor.h: interface for the SUIT_Convertor class.
 //
-//////////////////////////////////////////////////////////////////////
 
 #if !defined(AFX_SUIT_CONVERTOR_H__4C27F4C7_DC7C_4BEF_9DC1_EFB97B387EBF__INCLUDED_)
 #define AFX_SUIT_CONVERTOR_H__4C27F4C7_DC7C_4BEF_9DC1_EFB97B387EBF__INCLUDED_

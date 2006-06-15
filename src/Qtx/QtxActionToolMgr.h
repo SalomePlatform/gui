@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      QtxActionToolMgr.h
 // Author:    Alexander SOLOVYEV, Sergey TELKOV
@@ -35,10 +35,22 @@ class QMainWindow;
 #pragma warning( disable:4251 )
 #endif
 
+/*!
+  \class QtxActionToolMgr
+  Allows to use set of action to automatically build set of toolbars.
+  With help of methods insert/append/remove it is possible to 
+  describe toolbars and its internal structure.
+  This manager is able to attune toolbar by removing excess separators
+*/
 class QTX_EXPORT QtxActionToolMgr : public QtxActionMgr
 {
   Q_OBJECT
 
+  /*!
+    \class ToolNode
+    Represents a toolbutton inside toolbar
+    For internal purposes only
+  */
   class ToolNode
   {
   public:
@@ -95,6 +107,8 @@ public:
   bool            hasToolBar( const int ) const;
   bool            hasToolBar( const QString& ) const;
 
+  bool            containsAction( const int, const int = -1 ) const;
+
   virtual bool    load( const QString&, QtxActionMgr::Reader& );
 
 protected slots:
@@ -120,6 +134,10 @@ private:
   QMainWindow*    myMainWindow;
 };
 
+/*!
+  \class QtxActionToolMgr::ToolCreator
+  Allows to create automatically toolbar by data read from file
+*/
 class QtxActionToolMgr::ToolCreator : public QtxActionMgr::Creator
 {
 public:

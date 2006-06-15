@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "Plot2d_ViewFrame.h"
 
@@ -129,10 +129,6 @@ const char* imageCrossCursor[] = {
   "................................",
   "................................"};
   
-
-//=================================================================================
-// Plot2d_ViewFrame implementation
-//=================================================================================
 
 /*!
   Constructor
@@ -1082,6 +1078,11 @@ void Plot2d_ViewFrame::setCurveType( int curveType, bool update )
   emit vpCurveChanged();
 }
 
+/*!
+  Sets curve title
+  \param curveKey - curve id
+  \param title - new title
+*/
 void Plot2d_ViewFrame::setCurveTitle( int curveKey, const QString& title ) 
 { 
   if(myPlot) myPlot->setCurveTitle(curveKey, title); 
@@ -1609,9 +1610,6 @@ bool Plot2d_ViewFrame::isYLogEnabled() const
   return allPositive;
 }
 
-//=================================================================================
-// Plot2d_Plot2d implementation
-//=================================================================================
 /*!
   Constructor
 */
@@ -1745,11 +1743,17 @@ void Plot2d_Plot2d::getNextMarker( QwtSymbol::Style& typeMarker, QColor& color, 
 */
 }
 
+/*!
+  \return the default layout behavior of the widget
+*/
 QSizePolicy Plot2d_Plot2d::sizePolicy() const
 {
   return QSizePolicy( QSizePolicy::Preferred, QSizePolicy::Preferred );
 }
 
+/*!
+  \return the recommended size for the widget
+*/
 QSize Plot2d_Plot2d::sizeHint() const
 {
   return QwtPlot::minimumSizeHint();
@@ -1790,12 +1794,19 @@ bool Plot2d_Plot2d::existMarker( const QwtSymbol::Style typeMarker, const QColor
   return false;
 }
 
-// TEMPORARY SOLUTION!!!  TO BE IMPLEMENTED!!!
+/*!
+  Creates presentation of object
+  Default implementation is empty
+*/
 Plot2d_Prs* Plot2d_ViewFrame::CreatePrs( const char* /*entry*/ )
 {
   return 0;
 }
 
+/*!
+  Copies preferences from other viewframe
+  \param vf - other view frame
+*/
 void Plot2d_ViewFrame::copyPreferences( Plot2d_ViewFrame* vf )
 {
   if( !vf )
@@ -1888,6 +1899,11 @@ void Plot2d_ViewFrame::updateTitles()
   setTitle( true, aTables.join("; "), MainTitle, true );
 }
 
+/*!
+  Outputs content of viewframe to file
+  \param file - file name
+  \param format - file format
+*/
 bool Plot2d_ViewFrame::print( const QString& file, const QString& format ) const
 {
 #ifdef WIN32
@@ -1917,4 +1933,50 @@ bool Plot2d_ViewFrame::print( const QString& file, const QString& format ) const
   }
   return res;
 #endif
+}
+
+/*!
+  \return string with all visual parameters
+*/
+QString Plot2d_ViewFrame::getVisualParameters()
+{
+  double xmin, xmax, ymin, ymax, y2min, y2max;
+  getFitRanges( xmin, xmax, ymin, ymax, y2min, y2max );
+  QString retStr;
+  retStr.sprintf( "%d*%d*%d*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e", myXMode,
+		  myYMode, mySecondY, xmin, xmax, ymin, ymax, y2min, y2max );
+  return retStr; 
+}
+
+/*!
+  Restores all visual parameters from string
+*/
+void Plot2d_ViewFrame::setVisualParameters( const QString& parameters )
+{
+  QStringList paramsLst = QStringList::split( '*', parameters, true );
+  if ( paramsLst.size() == 9 ) {
+    double xmin, xmax, ymin, ymax, y2min, y2max;
+    myXMode = paramsLst[0].toInt();
+    myYMode = paramsLst[1].toInt();
+    mySecondY = (bool)paramsLst[2].toInt();
+    xmin =  paramsLst[3].toDouble();
+    xmax =  paramsLst[4].toDouble();
+    ymin =  paramsLst[5].toDouble();
+    ymax =  paramsLst[6].toDouble();
+    y2min = paramsLst[7].toDouble();
+    y2max = paramsLst[8].toDouble();
+
+    if (mySecondY)
+      setTitle( myY2TitleEnabled, myY2Title, Y2Title, false );
+    setHorScaleMode( myXMode, /*update=*/false );
+    setVerScaleMode( myYMode, /*update=*/false );
+    
+    if (mySecondY) {
+      QwtDiMap yMap2 = myPlot->canvasMap( QwtPlot::yRight );
+      myYDistance2 = yMap2.d2() - yMap2.d1();
+    }
+
+    fitData( 0, xmin, xmax, ymin, ymax, y2min, y2max );
+    fitData( 0, xmin, xmax, ymin, ymax, y2min, y2max );
+  }  
 }

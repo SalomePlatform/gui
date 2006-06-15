@@ -14,20 +14,13 @@
 //  License along with this library; if not, write to the Free Software
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.opencascade.org/SALOME/ or email : webmaster.salome@opencascade.org
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  Author : OPEN CASCADE
 //
 
 // File:      GLViewer_ViewFrame.cxx
 // Created:   November, 2004
-
-/***************************************************************************
-**  Class:   GLViewer_ViewFrame
-**  Descr:   Frame window for viewport in QAD-based application
-**  Module:  QAD
-**  Created: UI team, 05.09.00
-****************************************************************************/
 
 //#include <GLViewerAfx.h>
 #include "GLViewer_ViewFrame.h"
@@ -82,10 +75,9 @@ GLViewer_ViewFrame::~GLViewer_ViewFrame()
 {
 }
 
-//================================================================
-// Function : createActions
-// Purpose  : 
-//================================================================
+/*!
+  Creates actions of GL view frame
+*/
 void GLViewer_ViewFrame::createActions()
 {
   if (!myActionsMap.isEmpty()) return;
@@ -148,10 +140,9 @@ void GLViewer_ViewFrame::createActions()
   myActionsMap[ ResetId ] = aAction;
 }
 
-//================================================================
-// Function : createToolBar
-// Purpose  : 
-//================================================================
+/*!
+  Creates toolbar of GL view frame
+*/
 void GLViewer_ViewFrame::createToolBar()
 {
   myActionsMap[DumpId]->addTo(myToolBar);
@@ -248,7 +239,7 @@ QSize GLViewer_ViewFrame::sizeHint() const
 {
     QWidget* p = parentWidget();
     if ( p && p->inherits( "QWorkspaceChild" ) )
-        p = p->parentWidget();      /* QWorkspaceChild: internal impl class in QWorkspace */
+        p = p->parentWidget();
     if ( !p )
         return QMainWindow::sizeHint();
     return QSize( 9 * p->width() / 10 , 9 * p->height() / 10  );
@@ -263,6 +254,9 @@ void GLViewer_ViewFrame::onUpdate( int )
 
 //#include <windows.h>
 
+/*!
+  SLOT: called on dump view operation is activated, stores scene to raster file
+*/
 void GLViewer_ViewFrame::onViewDump()
 {
     GLViewer_Widget* aWidget = ((GLViewer_ViewPort2d*)myVP)->getGLWidget();
@@ -448,50 +442,73 @@ void GLViewer_ViewFrame::onViewDump()
     }
 }
 
+/*!
+  Start panning
+*/
 void GLViewer_ViewFrame::onViewPan()
 {
     myViewer->activateTransform( GLViewer_Viewer::Pan );
 }
 
+/*!
+  Start zooming
+*/
 void GLViewer_ViewFrame::onViewZoom()
 {
     myViewer->activateTransform( GLViewer_Viewer::Zoom );
 }
 
+/*!
+  Start fit all
+*/
 void GLViewer_ViewFrame::onViewFitAll()
 {
     myViewer->activateTransform( GLViewer_Viewer::FitAll );
 }
 
+/*!
+  Start fit area
+*/
 void GLViewer_ViewFrame::onViewFitArea()
 { 
     myViewer->activateTransform( GLViewer_Viewer::FitRect );
 }
 
+/*!
+  Start fit selected
+*/
 void GLViewer_ViewFrame::onViewFitSelect()
 { 
     myViewer->activateTransform( GLViewer_Viewer::FitSelect );
 }
 
+/*!
+  Start global panning
+*/
 void GLViewer_ViewFrame::onViewGlobalPan()
 { 
     myViewer->activateTransform( GLViewer_Viewer::PanGlobal );
 }
 
+/*!
+  Start rotating
+*/
 void GLViewer_ViewFrame::onViewRotate()
 { 
     //myViewer->activateTransform( GLViewer_Viewer::Rotate );
 }
 
+/*!
+  Start reset default view aspects
+*/
 void GLViewer_ViewFrame::onViewReset()
 { 
     myViewer->activateTransform( GLViewer_Viewer::Reset );
 }
-  
-//================================================================
-// Function : mouseEvent
-// Purpose  : dispatches mouse events
-//================================================================
+ 
+/*! 
+  Dispatches mouse events
+*/
 void GLViewer_ViewFrame::mouseEvent( QMouseEvent* e )
 {
   switch ( e->type() )
@@ -513,10 +530,9 @@ void GLViewer_ViewFrame::mouseEvent( QMouseEvent* e )
   }
 }
 
-//================================================================
-// Function : keyEvent
-// Purpose  : dispatches key events
-//================================================================
+/*!
+  Dispatches key events
+*/
 void GLViewer_ViewFrame::keyEvent( QKeyEvent* e )
 {
   switch ( e->type() )
@@ -532,10 +548,9 @@ void GLViewer_ViewFrame::keyEvent( QKeyEvent* e )
   }
 }
 
-//================================================================
-// Function : wheelEvent
-// Purpose  : dispatches wheel events
-//================================================================
+/*!
+  Dispatches wheel events
+*/
 void GLViewer_ViewFrame::wheelEvent( QWheelEvent* e )
 {
   switch ( e->type() )
@@ -545,5 +560,41 @@ void GLViewer_ViewFrame::wheelEvent( QWheelEvent* e )
     break;
   default:
     break;
+  }
+}
+
+/*!
+  \return the visual parameters of this view as a formated string
+*/
+QString GLViewer_ViewFrame::getVisualParameters()
+{
+  QString retStr;
+  if ( myVP && myVP->inherits( "GLViewer_ViewPort2d" ) ) {
+    GLViewer_ViewPort2d* vp2d = (GLViewer_ViewPort2d*)myVP;
+    GLfloat xSc, ySc, xPan, yPan;
+    vp2d->getScale( xSc, ySc );
+    vp2d->getPan( xPan, yPan );
+    retStr.sprintf( "%.12e*%.12e*%.12e*%.12e", xSc, ySc, xPan, yPan );
+  }
+  return retStr;
+}
+
+/*!
+  The method restores visual parameters of this view from a formated string
+*/
+void GLViewer_ViewFrame::setVisualParameters( const QString& parameters )
+{
+  QStringList paramsLst = QStringList::split( '*', parameters, true );
+  if ( myVP && myVP->inherits( "GLViewer_ViewPort2d" ) && paramsLst.size() == 4) {
+    GLViewer_ViewPort2d* vp2d = (GLViewer_ViewPort2d*)myVP;
+
+    GLfloat xSc, ySc, xPan, yPan;
+    xSc = paramsLst[0].toDouble();
+    ySc = paramsLst[1].toDouble();
+    xPan = paramsLst[2].toDouble();
+    yPan = paramsLst[3].toDouble();
+
+    vp2d->getGLWidget()->setScale( xSc, ySc, 1. );
+    vp2d->getGLWidget()->setPan( xPan, yPan, 0. );
   }
 }

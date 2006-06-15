@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifndef CAM_DATAOBJECT_H
 #define CAM_DATAOBJECT_H
@@ -26,6 +26,10 @@
 class CAM_Module;
 class CAM_DataModel;
 
+/*!
+  \class CAM_DataObject
+  Provides only additional link to CAM_DataModel
+*/
 class CAM_EXPORT CAM_DataObject : public SUIT_DataObject
 {
 public:

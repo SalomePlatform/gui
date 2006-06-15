@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "VTKViewer_ViewWindow.h"
 #include "VTKViewer_ViewModel.h"
@@ -387,7 +387,7 @@ void VTKViewer_ViewWindow::onResetView()
   ::ResetCamera(myRenderer,true);  
   if(aTriedronIsVisible) myTrihedron->VisibilityOn();
   else myTrihedron->VisibilityOff();
-  static float aCoeff = 3.0;
+  static vtkFloatingPointType aCoeff = 3.0;
   aCamera->SetParallelScale(aCoeff*aCamera->GetParallelScale());
   Repaint();
 }
@@ -409,7 +409,7 @@ void VTKViewer_ViewWindow::setBackgroundColor( const QColor& color )
 /*!Returns background of the viewport*/
 QColor VTKViewer_ViewWindow::backgroundColor() const
 {
-  float backint[3];
+  vtkFloatingPointType backint[3];
   if ( myRenderer ) {
     myRenderer->GetBackground( backint );
     return QColor(int(backint[0]*255), int(backint[1]*255), int(backint[2]*255));
@@ -443,11 +443,11 @@ void VTKViewer_ViewWindow::onAdjustTrihedron(){
   int aVisibleNum = myTrihedron->GetVisibleActorCount(myRenderer);
   if(aVisibleNum){
     // calculating diagonal of visible props of the renderer
-    float bnd[6];
+    vtkFloatingPointType bnd[6];
     myTrihedron->VisibilityOff();
     ::ComputeVisiblePropBounds(myRenderer,bnd);
     myTrihedron->VisibilityOn();
-    float aLength = 0;
+    vtkFloatingPointType aLength = 0;
     static bool CalcByDiag = false;
     if(CalcByDiag){
       aLength = sqrt((bnd[1]-bnd[0])*(bnd[1]-bnd[0])+
@@ -459,13 +459,13 @@ void VTKViewer_ViewWindow::onAdjustTrihedron(){
       aLength = max((bnd[5]-bnd[4]),aLength);
     }
    
-    static float aSizeInPercents = 105;
+    static vtkFloatingPointType aSizeInPercents = 105;
     QString aSetting;// = SUIT_CONFIG->getSetting("Viewer:TrihedronSize");
     if(!aSetting.isEmpty()) aSizeInPercents = aSetting.toFloat();
 
-    static float EPS_SIZE = 5.0E-3;
-    float aSize = myTrihedron->GetSize();
-    float aNewSize = aLength*aSizeInPercents/100.0;
+    static vtkFloatingPointType EPS_SIZE = 5.0E-3;
+    vtkFloatingPointType aSize = myTrihedron->GetSize();
+    vtkFloatingPointType aNewSize = aLength*aSizeInPercents/100.0;
     // if the new trihedron size have sufficient difference, then apply the value
     if(fabs(aNewSize-aSize) > aSize*EPS_SIZE || fabs(aNewSize-aSize) > aNewSize*EPS_SIZE){
       myTrihedron->SetSize(aNewSize);
@@ -558,4 +558,55 @@ QImage VTKViewer_ViewWindow::dumpView()
 {
   QPixmap px = QPixmap::grabWindow( myRenderWindow->winId() );
   return px.convertToImage();
+}
+
+/*! The method returns the visual parameters of this view as a formated string
+ */
+QString VTKViewer_ViewWindow::getVisualParameters()
+{
+  double pos[3], focalPnt[3], viewUp[3], parScale, scale[3];
+
+  vtkCamera* camera = myRenderer->GetActiveCamera();
+  camera->GetPosition( pos );
+  camera->GetFocalPoint( focalPnt );
+  camera->GetViewUp( viewUp );
+  parScale = camera->GetParallelScale();
+  GetScale( scale );
+
+  QString retStr;
+  retStr.sprintf( "%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e", 
+		  pos[0], pos[1], pos[2], focalPnt[0], focalPnt[1], focalPnt[2], viewUp[0], viewUp[1], 
+		  viewUp[2], parScale, scale[0], scale[1], scale[2] );
+  return retStr;
+}
+
+/*! The method restors visual parameters of this view from a formated string
+ */
+void VTKViewer_ViewWindow::setVisualParameters( const QString& parameters )
+{
+  QStringList paramsLst = QStringList::split( '*', parameters, true );
+  if ( paramsLst.size() == 13 ) {
+    double pos[3], focalPnt[3], viewUp[3], parScale, scale[3];
+    pos[0] = paramsLst[0].toDouble();
+    pos[1] = paramsLst[1].toDouble();
+    pos[2] = paramsLst[2].toDouble();
+    focalPnt[0] = paramsLst[3].toDouble();
+    focalPnt[1] = paramsLst[4].toDouble();
+    focalPnt[2] = paramsLst[5].toDouble();
+    viewUp[0] = paramsLst[6].toDouble();
+    viewUp[1] = paramsLst[7].toDouble();
+    viewUp[2] = paramsLst[8].toDouble();
+    parScale = paramsLst[9].toDouble();
+    scale[0] = paramsLst[10].toDouble();
+    scale[1] = paramsLst[11].toDouble();
+    scale[2] = paramsLst[12].toDouble();
+
+    vtkCamera* camera = myRenderer->GetActiveCamera();
+    camera->SetPosition( pos );
+    camera->SetFocalPoint( focalPnt );
+    camera->SetViewUp( viewUp );
+    camera->SetParallelScale( parScale );
+    myTransform->SetMatrixScale( scale[0], scale[1], scale[2] );
+    myRWInteractor->Render();
+  }
 }

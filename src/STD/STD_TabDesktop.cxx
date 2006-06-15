@@ -14,7 +14,7 @@
 // License along with this library; if not, write to the Free Software 
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #include "STD_TabDesktop.h"
 
@@ -177,7 +177,7 @@ void STD_TabDesktop::createActions()
   if ( !mMgr )
     return;
 
-  int winMenuId = mMgr->insert( tr( "MEN_DESK_WINDOW" ), -1, 100 );
+  int winMenuId = mMgr->insert( tr( "MEN_DESK_WINDOW" ), -1, 100, MenuWindowId );
   mMgr->insert( myWorkstackAction, winMenuId, -1 );
   mMgr->insert( QtxActionMenuMgr::separator(), winMenuId, -1 );
 }

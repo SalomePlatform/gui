@@ -87,7 +87,7 @@ void LightApp_SelectionMgr::selectedObjects( SALOME_ListIO& theList, const QStri
     entry = owner->entry();
     if ( convertReferences ) {
       QString refEntry = study->referencedToEntry( entry );
-      if( !entryMap.contains( entry ) ) {
+      if ( !entryMap.contains( entry ) && !entryMap.contains( refEntry ) ) {
         if ( refEntry != entry ) {
           QString component = study->componentDataType( refEntry );
           theList.Append( new SALOME_InteractiveObject( refEntry, component, ""/*refobj->Name().c_str()*/ ) );

@@ -20,6 +20,7 @@
 
 #include <qfileinfo.h>
 #include <qdir.h>
+#include <stdlib.h>
 
 /*!
     Constructor

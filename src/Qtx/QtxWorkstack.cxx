@@ -1424,7 +1424,8 @@ void QtxWorkstack::setSplitter( QSplitter* splitter, const QString& parameters, 
   // get splitter sizes and store it in the map for future setting
   QValueList<int> sizes;
   QStringList sizesLst = QStringList::split( ':', ::getValue( params, "sizes" ) );
-  for ( QStringList::Iterator it = sizesLst.begin(); it != sizesLst.end(); ++it )
+  QStringList::Iterator it;
+  for ( it = sizesLst.begin(); it != sizesLst.end(); ++it )
     sizes.append( (*it).toInt() );
   sMap[ splitter ] = sizes;
 
@@ -1442,7 +1443,7 @@ void QtxWorkstack::setSplitter( QSplitter* splitter, const QString& parameters, 
   //  for ( QStringList::Iterator tit = children.begin(); tit != children.end(); ++tit ) 
   //    printf ("   |-> child = [%s]\n", (*tit).latin1() );
 
-  for ( QStringList::Iterator it = children.begin(); it != children.end(); ++it ) {
+  for ( it = children.begin(); it != children.end(); ++it ) {
     if ( (*it).startsWith( "(splitter" ) ) {
       QSplitter* newSplitter = new QSplitter( splitter );
       setSplitter( newSplitter, *it, sMap );
@@ -1450,7 +1451,7 @@ void QtxWorkstack::setSplitter( QSplitter* splitter, const QString& parameters, 
     else if ( (*it).startsWith( "(views" ) ) {
       QtxWorkstackArea* newArea = createArea( splitter );
       QString activeViewName = ::getValue( *it, "active" );
-      QWidget* activeView( 0 );
+      QWidget* activeView = 0;
       activeViewName = activeViewName.mid( 1, activeViewName.length()-2 ); // chop off ' symbols
       int i = 0;
       QString viewName = ::getViewName( *it, i );
@@ -1499,8 +1500,8 @@ QtxWorkstack& QtxWorkstack::operator<<( const QString& parameters )
   qApp->processEvents();
 
   // restore splitters' sizes (map of sizes is filled in setSplitters)
-  for ( QMap< QSplitter*, QValueList<int> >::Iterator it = sMap.begin(); it != sMap.end(); ++it )
-    it.key()->setSizes( it.data() );
+  for ( QMap< QSplitter*, QValueList<int> >::Iterator itm = sMap.begin(); itm != sMap.end(); ++itm )
+    itm.key()->setSizes( itm.data() );
 
   return (*this);
 }

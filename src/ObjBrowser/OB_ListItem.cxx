@@ -28,6 +28,10 @@
 #include <iostream>
 using namespace std;
 
+#ifdef WNT
+#define min(a, b)  (((a) < (b)) ? (a) : (b))
+#endif
+
 /*!
   Constructor
 */
@@ -221,7 +225,7 @@ void OB_ListItem::paintCell( QPainter* p, const QColorGroup& cg, int c, int w, i
   if ( listView() && !listView()->allColumnsShowFocus() )
     W = width( p->fontMetrics(), listView(), c );
 
-	QListViewItem::paintCell( p, col_group, c, min( W, w ), align );
+	QListViewItem::paintCell( p, col_group, c, min( W, w ), align ); 
 }
 
 /*!

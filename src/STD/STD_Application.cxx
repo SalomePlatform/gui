@@ -64,6 +64,7 @@ myActiveViewMgr( 0 )
 /*!Destructor.*/
 STD_Application::~STD_Application()
 {
+  clearViewManagers();
 }
 
 /*! \retval QString "StdApplication"*/
@@ -691,8 +692,11 @@ void STD_Application::clearViewManagers()
   ViewManagerList lst;
   viewManagers( lst );
 
-  for ( QPtrListIterator<SUIT_ViewManager> it( lst ); it.current(); ++it )
-    removeViewManager( it.current() );
+  for ( QPtrListIterator<SUIT_ViewManager> it( lst ); it.current(); ++it ) {
+    SUIT_ViewManager* vm = it.current();
+    removeViewManager( vm );
+    delete vm;
+  }
 }
 
 /*!\retval TRUE, if view manager \a vm, already in view manager list (\a myViewMgrs).*/

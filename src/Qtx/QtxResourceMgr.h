@@ -175,6 +175,8 @@ private:
   bool            myIsPixmapCached;
 
   bool            myIsIgnoreUserValues;
+
+  friend class QtxResourceMgr::Format;
 };
 
 /*!

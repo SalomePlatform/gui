@@ -30,6 +30,7 @@
 #include <PyInterp_Dispatcher.h>
 
 #include <SUIT_Tools.h>
+#include <SUIT_Session.h>
 
 #include <qmap.h>
 #include <qclipboard.h>
@@ -66,7 +67,9 @@ protected:
   virtual void execute(){
     if(myCommand != ""){
 //      if(MYDEBUG) MESSAGE("*** ExecCommand::execute() started");
+      SUIT_Session::SetPythonExecuted(true); // disable GUI user actions
       int ret = getInterp()->run( myCommand.latin1() );
+      SUIT_Session::SetPythonExecuted(false); // enable GUI user actions
 //      if(MYDEBUG) MESSAGE("ExecCommand::execute() - myInterp = "<<getInterp()<<"; myCommand = '"<<myCommand.latin1()<<"' - "<<ret);
       if(ret < 0)
 	myState = PyInterp_Event::ERROR;

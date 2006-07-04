@@ -209,7 +209,8 @@ protected:
       int dev = dev1*100+dev2, id = major;
       id*=100; id+=minor;
       id*=100; id+=release;
-      id*=10000; id+=dev;
+      id*=10000;
+      if ( dev > 0 ) id+=dev-10000;
       return id;
     }
 

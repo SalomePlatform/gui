@@ -879,6 +879,9 @@ QtxResourceMgr::~QtxResourceMgr()
   QStringList prefList = myTranslator.keys();
   for ( QStringList::const_iterator it = prefList.begin(); it != prefList.end(); ++it )
     removeTranslators( *it );
+  for ( ResListIterator it( myResources ); it.current(); ++it )
+    delete it.current();
+  myResources.clear();
 }
 
 /*!

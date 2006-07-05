@@ -524,10 +524,15 @@ VTKViewer_DelaunayTriangulator
     }
   }
 
+  return myPoints;
+}
+
+void
+VTKViewer_DelaunayTriangulator
+::UpdatePolyData()
+{
   myGeometryFilter->Update();
   myPolyData = myGeometryFilter->GetOutput();
-
-  return myPoints;
 }
 
 vtkIdType 
@@ -548,6 +553,7 @@ vtkFloatingPointType
 VTKViewer_DelaunayTriangulator
 ::GetCellLength()
 {
+  if(!myPolyData) this->UpdatePolyData();
   return myPolyData->GetLength();
 }
 
@@ -555,6 +561,7 @@ vtkIdType
 VTKViewer_DelaunayTriangulator
 ::GetNumFaces()
 {
+  if(!myPolyData) this->UpdatePolyData();
   return myPolyData->GetNumberOfCells();
 }
 
@@ -562,6 +569,7 @@ vtkCell*
 VTKViewer_DelaunayTriangulator
 ::GetFace(vtkIdType theFaceId)
 {
+  if(!myPolyData) this->UpdatePolyData();
   return myPolyData->GetCell(theFaceId);
 }
 

@@ -508,12 +508,17 @@ vtkPoints*
 VTKViewer_DelaunayTriangulator
 ::InitPoints()
 {
+  myPoints->Reset();
   myUnstructuredGrid->Initialize();
   myUnstructuredGrid->Allocate();
   myUnstructuredGrid->SetPoints(myPoints);
 
   vtkIdType aNumPts;
   myInput->GetCellPoints(myCellId,aNumPts,myPointIds); 
+  
+  if ( aNumPts < myPoints->GetNumberOfPoints() )
+    myPoints->Reset();
+  
   {
     vtkFloatingPointType aPntCoord[3];
     myPoints->SetNumberOfPoints(aNumPts);
@@ -524,15 +529,13 @@ VTKViewer_DelaunayTriangulator
     }
   }
 
-  return myPoints;
-}
+  myPoints->Modified();
+  myUnstructuredGrid->Modified();
 
-void
-VTKViewer_DelaunayTriangulator
-::UpdatePolyData()
-{
   myGeometryFilter->Update();
   myPolyData = myGeometryFilter->GetOutput();
+  
+  return myPoints;
 }
 
 vtkIdType 
@@ -553,7 +556,6 @@ vtkFloatingPointType
 VTKViewer_DelaunayTriangulator
 ::GetCellLength()
 {
-  if(!myPolyData) this->UpdatePolyData();
   return myPolyData->GetLength();
 }
 
@@ -561,7 +563,6 @@ vtkIdType
 VTKViewer_DelaunayTriangulator
 ::GetNumFaces()
 {
-  if(!myPolyData) this->UpdatePolyData();
   return myPolyData->GetNumberOfCells();
 }
 
@@ -569,7 +570,6 @@ vtkCell*
 VTKViewer_DelaunayTriangulator
 ::GetFace(vtkIdType theFaceId)
 {
-  if(!myPolyData) this->UpdatePolyData();
   return myPolyData->GetCell(theFaceId);
 }
 

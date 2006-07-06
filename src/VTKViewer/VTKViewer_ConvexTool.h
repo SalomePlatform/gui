@@ -198,8 +198,6 @@ class VTKVIEWER_EXPORT VTKViewer_DelaunayTriangulator : public VTKViewer_Triangu
   vtkIdType 
   GetConnectivity(vtkIdType thePntId);
 
-  void UpdatePolyData();
-  
 };
 
 

@@ -215,13 +215,15 @@ void PythonConsole_PyEditor::contentsMouseReleaseEvent( QMouseEvent* event )
       int endLine = paragraphs() -1;
       col = charAt( event->pos(), &par );
       if ( col >= 0 && par >= 0 ) {
-	if ( par != endLine || col < PROMPT_SIZE )
-	  setCursorPosition( endLine, paragraphLength( endLine ) );
+	// PAL12896 -->
+	if ( par != endLine || col < PROMPT_SIZE ) {
+	  QPoint aPos = paragraphRect(endLine).bottomRight();
+	  QMouseEvent* e = new QMouseEvent(event->type(),aPos,event->button(),event->state());
+	  QTextEdit::contentsMouseReleaseEvent(e);
+	}
 	else
-	  setCursorPosition( par, col );
-	QApplication::clipboard()->setSelectionMode(TRUE);
-	paste();
-	QApplication::clipboard()->setSelectionMode(FALSE);
+	  QTextEdit::contentsMouseReleaseEvent(event);
+	// PAL12896 <--
       }
     }
   }

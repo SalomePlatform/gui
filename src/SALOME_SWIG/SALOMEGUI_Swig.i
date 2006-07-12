@@ -32,6 +32,13 @@
 
 %include "pointer.i"
 
+/* Exception handler for all functions */
+%exception {
+   Py_BEGIN_ALLOW_THREADS
+   $action
+   Py_END_ALLOW_THREADS
+}
+
 class SALOMEGUI_Swig
 {
  public:

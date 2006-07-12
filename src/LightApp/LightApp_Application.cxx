@@ -1435,10 +1435,11 @@ void LightApp_Application::onStudySaved( SUIT_Study* )
 /*!Protected SLOT. On study closed.*/
 void LightApp_Application::onStudyClosed( SUIT_Study* )
 {
-  emit studyClosed();
-
   // Bug 10396: clear selection
   mySelMgr->clearSelected();
+
+  // Bug 12944: emit signal only after clear selection
+  emit studyClosed();
 
   activateModule( "" );
 

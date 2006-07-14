@@ -742,7 +742,10 @@ QString SalomeApp_Application::defaultEngineIOR()
   QString anIOR( "" );
   CORBA::Object_ptr anEngine = namingService()->Resolve( "/SalomeAppEngine" );
   if ( !CORBA::is_nil( anEngine ) )
-    anIOR = orb()->object_to_string( anEngine );
+  {
+    CORBA::String_var objStr = orb()->object_to_string( anEngine );
+    anIOR = QString( objStr.in() );
+  }
   return anIOR;
 }
 

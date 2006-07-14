@@ -825,9 +825,13 @@ Engines::Component_var SALOME_PYQT_Module::getEngine() const
  */
 QString SALOME_PYQT_Module::engineIOR() const
 {
+  QString anIOR = QString::null;
   if ( !CORBA::is_nil( getEngine() ) )
-    return QString( getApp()->orb()->object_to_string( getEngine() ) );
-  return QString( "" );
+  {
+    CORBA::String_var objStr = getApp()->orb()->object_to_string( getEngine() );
+    anIOR = QString( objStr.in() );
+  }
+  return anIOR;
 }
 
 /*!

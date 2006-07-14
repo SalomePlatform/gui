@@ -80,7 +80,11 @@ Session_ServerThread::Session_ServerThread(int argc,
 {
   //MESSAGE("Session_ServerThread Constructor " << argv[0]);
   _argc = argc;
-  _argv = argv;
+  _argv = new char*[ _argc + 1 ];
+  _argv[_argc] = 0;
+  for (int i = 0; i < _argc; i++ )
+    _argv[i] = strdup( argv[i] );
+
   _orb = CORBA::ORB::_duplicate(orb);
   _root_poa = PortableServer::POA::_duplicate(poa);
   _servType =-1;
@@ -94,6 +98,10 @@ Session_ServerThread::Session_ServerThread(int argc,
 Session_ServerThread::~Session_ServerThread()
 {
   //MESSAGE("~Session_ServerThread "<< _argv[0]);
+  delete _NS;
+  for (int i = 0; i <_argc ; i++ )
+    free( _argv[i] );
+  delete[] _argv;
 }
 
 /*! 
@@ -283,10 +291,10 @@ void Session_ServerThread::ActivateRegistry(int argc,
 	  INFOS("RegistryService servant already existing" );
 	  ASSERT(0);
 	}
-      catch( const ServiceUnreachable &ex )
+      catch( const ServiceUnreachable &/*ex*/ )
 	{
 	}
-      catch( const CORBA::Exception &exx )
+      catch( const CORBA::Exception &/*exx*/ )
 	{
 	}
       string absoluteName = string("/") + registryName;
@@ -422,10 +430,14 @@ void Session_ServerThread::ActivateEngine(int /*argc*/, char ** /*argv*/)
       {
 	INFOS("SalomeApp_Engine thread started");
 	SalomeApp_Engine_i* anEngine = new SalomeApp_Engine_i();
-	/*PortableServer::ObjectId_var id = */_root_poa->activate_object( anEngine );
+  // declare variable and get value for them to avoid compilation warning of unused variable
+  // this variable is necessary to avoid memory leak of memory allocated in corba
+  PortableServer::ObjectId_var id = 0;
+  id = _root_poa->activate_object( anEngine );
+	///*PortableServer::ObjectId_var id = */_root_poa->activate_object( anEngine );
 	INFOS("poa->activate_object( SalomeApp_Engine )");
       
-	CORBA::Object_ptr obj = anEngine->_this();
+	CORBA::Object_var obj = anEngine->_this();
 	_NS->Register( obj ,"/SalomeAppEngine");
 
       }

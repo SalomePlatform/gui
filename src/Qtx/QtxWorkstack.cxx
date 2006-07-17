@@ -2342,16 +2342,16 @@ void QtxWorkstackTabBar::setActive( const bool on )
 {
   QFont aFont = font();
   aFont.setUnderline( on );
-  QColorGroup* aColGrp = new QColorGroup();
+  QColorGroup aColGrp;
   QPalette aPal = palette();
   if ( !on ) {
-    aPal.setColor( QColorGroup::HighlightedText, aColGrp->foreground() );
+    aPal.setColor( QColorGroup::HighlightedText, aColGrp.foreground() );
     aPal.setColor( QColorGroup::Highlight, colorGroup().dark().light( DARK_COLOR_LIGHT ) );
     setPalette( aPal );
   }
   else {
-    aPal.setColor( QColorGroup::HighlightedText, aColGrp->highlightedText() );
-    aPal.setColor( QColorGroup::Highlight, aColGrp->highlight() );
+    aPal.setColor( QColorGroup::HighlightedText, aColGrp.highlightedText() );
+    aPal.setColor( QColorGroup::Highlight, aColGrp.highlight() );
     unsetPalette();
   }
   setFont( aFont );

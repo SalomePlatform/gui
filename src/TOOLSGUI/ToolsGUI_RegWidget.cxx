@@ -342,6 +342,8 @@ QString ToolsGUI_RegWidget::setlongText( const Registry::Infos &c_info)
   QString a = QString( "<hr><h2>" ) + tr( "Code" ) + QString( " : " );
   a.append( QString( c_info.name ) );
   a.append( "</h1><hr><br>" );
+  a.append( "<code>" ); // ASV: 28.07.06 : added <code> tags to make the text font be 
+                        // fixed width (looks much better on Windows)
   a.append( tr( "Process Id" ) + QString( " : " ) );
   a.append( BOLD( QString::number( int( c_info.pid ) ) ) );
   a.append( QString( " " ) + tr( "on machine" ) + QString( " " ) );
@@ -400,6 +402,8 @@ QString ToolsGUI_RegWidget::setlongText( const Registry::Infos &c_info)
       a.append( BOLD( QString::number( int( c_info.difftime ) ) ) );
       a.append( QString( " " ) + tr( "seconds" ) + QString( ")<br>" ) );
     }
+  a.append( "</code>" ); // ASV: 28.07.06 : added <code> tags to make the text font be 
+                         // fixed width (looks much better on Windows)
   END_OF("setlongText");  
   return a;
   

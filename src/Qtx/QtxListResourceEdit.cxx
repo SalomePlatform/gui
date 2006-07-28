@@ -1182,7 +1182,7 @@ QtxListResourceEdit::FontItem::FontItem( const QString& title, QtxResourceEdit* 
   mySizes->setInsertionPolicy( QComboBox::NoInsertion );
   myBold = new QCheckBox( tr( "Bold" ), this );
   myItalic = new QCheckBox( tr( "Italic" ), this );
-  myUnderline = new QCheckBox( tr( "Underline" ), this );
+  myUnderline = new QCheckBox( tr( "Shadow" ), this );
   myPreview = new QToolButton( this );
   myPreview->setText( "..." );
 

@@ -161,7 +161,7 @@ QVTK_RenderWindowInteractor
 {
   // Final initialization just before the widget is displayed
   GetDevice()->SetSize(width(),height());
-  if(!GetDevice()->GetInitialized()){
+  if(!GetDevice()->GetInitialized() && GetDevice()->GetRenderWindow()){
     GetDevice()->Initialize();
     GetDevice()->ConfigureEvent();
   }

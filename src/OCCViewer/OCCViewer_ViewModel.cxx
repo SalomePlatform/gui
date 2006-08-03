@@ -517,7 +517,7 @@ void OCCViewer_Viewer::setColor( const Handle(AIS_InteractiveObject)& obj,
 void OCCViewer_Viewer::switchRepresentation( const Handle(AIS_InteractiveObject)& obj,
                                              int mode, bool update )
 {
-  myAISContext->SetDisplayMode( obj, (Standard_Integer)mode, true );
+  myAISContext->SetDisplayMode( obj, (Standard_Integer)mode, update );
   if( update )
     myV3dViewer->Update();
 }

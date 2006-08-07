@@ -1689,7 +1689,8 @@ void QtxListResourceEdit::FileItem::onOpenFile()
 
   if( myFileDlg->exec()==QDialog::Accepted )
   {
-    myFile->setText( myFileDlg->selectedFile() ); 
+		QString selFile = QDir::convertSeparators( myFileDlg->selectedFile() );
+    myFile->setText( selFile ); 
   }
 }
 

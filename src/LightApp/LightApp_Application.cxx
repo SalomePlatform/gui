@@ -56,6 +56,7 @@
 #include <QtxMRUAction.h>
 #include <QtxDockAction.h>
 #include <QtxToolBar.h>
+#include <qprocess.h>
 
 #include <LogWindow.h>
 #include <OB_Browser.h>
@@ -917,8 +918,13 @@ public:
     if ( !myApp.isEmpty())
       {
 	aCommand.sprintf("%s %s %s",myApp.latin1(),myParams.latin1(),myHelpFile.latin1());
-	myStatus = system(aCommand);
-	if(myStatus != 0)
+
+	QProcess* proc = new QProcess();
+  proc->addArgument( aCommand );
+	//myStatus = system(aCommand);
+
+	//if(myStatus != 0)
+	if(!proc->start())
 	  {
 	    QCustomEvent* ce2000 = new QCustomEvent( 2000 );
 	    QString* msg = new QString( QObject::tr("EXTERNAL_BROWSER_CANNOT_SHOW_PAGE").arg(myApp).arg(myHelpFile) );
@@ -954,11 +960,22 @@ void LightApp_Application::onHelpContentsModule()
   
   QString helpFile = QFileInfo( homeDir + (!aComponentName.compare(QString("KERNEL")) ? aFileNameKernel : aFileName) ).absFilePath();
   SUIT_ResourceMgr* resMgr = resourceMgr();
-  QString anApp = resMgr->stringValue("ExternalBrowser", "application");
+	QString platform;
+#ifdef WIN32
+	platform = "winapplication";
+#else
+	platform = "application";
+#endif
+	QString anApp = resMgr->stringValue("ExternalBrowser", platform);
+#ifdef WIN32
+	QString quote("\""); 
+	anApp.prepend( quote ); 
+	anApp.append( quote ); 
+#endif
   QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 
   if (!anApp.isEmpty()) {
-    RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile );
+		RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile );
     rs->start();
   }
   else {
@@ -979,7 +996,18 @@ void LightApp_Application::onHelpContextModule(const QString& theComponentName, 
 
   QString helpFile = QFileInfo( homeDir + theFileName ).absFilePath();
   SUIT_ResourceMgr* resMgr = resourceMgr();
-  QString anApp = resMgr->stringValue("ExternalBrowser", "application");
+	QString platform;
+#ifdef WIN32
+	platform = "winapplication";
+#else
+	platform = "application";
+#endif
+	QString anApp = resMgr->stringValue("ExternalBrowser", platform);
+#ifdef WIN32
+	QString quote("\""); 
+	anApp.prepend( quote ); 
+	anApp.append( quote ); 
+#endif
   QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 
   if (!anApp.isEmpty()) {
@@ -1740,7 +1768,13 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   int extgroup = pref->addPreference( tr( "PREF_GROUP_EXT_BROWSER" ), genTab );
   pref->setItemProperty( extgroup, "columns", 1 );
-  int apppref = pref->addPreference( tr( "PREF_APP" ), extgroup, LightApp_Preferences::File, "ExternalBrowser", "application" );
+	QString platform;
+#ifdef WIN32
+	platform = "winapplication";
+#else
+	platform = "application";
+#endif
+  int apppref = pref->addPreference( tr( "PREF_APP" ), extgroup, LightApp_Preferences::File, "ExternalBrowser", platform );
   pref->setItemProperty( apppref, "existing", true );
   pref->setItemProperty( apppref, "flags", QFileInfo::ExeUser );
   pref->setItemProperty( apppref, "readOnly", false );

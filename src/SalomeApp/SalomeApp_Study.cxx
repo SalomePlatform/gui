@@ -288,7 +288,14 @@ void SalomeApp_Study::closeDocument(bool permanently)
   _PTR(Study) studyPtr = studyDS();
   if ( studyPtr )
   {
-    if(permanently) SalomeApp_Application::studyMgr()->Close( studyPtr );
+    if(permanently) {
+      //SRN: bug 13069: If the study is closed permanently it is closed so remove its Id from the list of
+      //IDs of studies to be closed on the application closing
+      SalomeApp_Application* app = dynamic_cast<SalomeApp_Application*>(application());
+      if(app) app->removeStudyId(studyPtr->StudyId());  
+      //SRN: End
+      SalomeApp_Application::studyMgr()->Close( studyPtr );
+    }
     SALOMEDSClient_Study* aStudy = 0;
     setStudyDS( _PTR(Study)(aStudy) );
   }
@@ -386,7 +393,13 @@ bool SalomeApp_Study::openStudyData( const QString& theFileName )
 */
 void SalomeApp_Study::setStudyDS( const _PTR(Study)& s )
 {
+   
   myStudyDS = s;
+
+  if(myStudyDS) {
+   SalomeApp_Application* app = dynamic_cast<SalomeApp_Application*>(application());
+   if(app) app->addStudyId(myStudyDS->StudyId()); //Add a new study Id
+  }
 }
 
 /*!

@@ -31,6 +31,8 @@
 #include "SalomeApp.h"
 #include <LightApp_Application.h>
 
+#include <qmap.h>
+
 #include <CORBA.h>
 
 #include <SALOMEconfig.h>
@@ -90,6 +92,10 @@ public:
   SUIT_ViewManager*                   newViewManager(const QString&);
   void                                updateSavePointDataObjects( SalomeApp_Study* );
 
+  virtual void                        closeApplication();
+  void                                addStudyId(const int theId);
+  void                                removeStudyId(const int theId);
+
 public slots:
   virtual bool                        onOpenDoc( const QString& );
   virtual void                        onLoadDoc();
@@ -127,6 +133,11 @@ private slots:
   void                                onCatalogGen();
   void                                onRegDisplay();
   void                                onOpenWith();
+
+private:
+
+  QMap<int,int> _studyIDs;
+
 };
 
 #ifdef WIN32

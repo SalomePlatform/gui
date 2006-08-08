@@ -61,7 +61,6 @@
 #include <SALOME_ModuleCatalog_impl.hxx>
 #include <SALOME_LifeCycleCORBA.hxx>
 
-#include <qmap.h>
 #include <qaction.h>
 #include <qcombobox.h>
 #include <qlistbox.h>
@@ -81,6 +80,8 @@
 
 #include <SALOMEDSClient_ClientFactory.hxx>
 
+#include <vector>
+
 /*!Create new instance of SalomeApp_Application.*/
 extern "C" SALOMEAPP_EXPORT SUIT_Application* createApplication()
 {
@@ -91,6 +92,8 @@ extern "C" SALOMEAPP_EXPORT SUIT_Application* createApplication()
 SalomeApp_Application::SalomeApp_Application()
 : LightApp_Application()
 {
+  cout << "The constructor : " << this   << endl;
+  _studyIDs.clear();
 }
 
 /*!Destructor.
@@ -1103,3 +1106,33 @@ void SalomeApp_Application::updateSavePointDataObjects( SalomeApp_Study* study )
     delete it.data();
 }
 
+/*!Adds a study Id to the map of stored IDs - to be closed on the application closing*/
+void SalomeApp_Application::addStudyId(const int theId)
+{ 
+  _studyIDs[theId] = 10;
+}
+
+/*!Removes a study Id from the map of stored IDs*/
+void SalomeApp_Application::removeStudyId(const int theId)
+{
+  _studyIDs.remove(theId);
+}
+
+
+
+/*!Iterates all opened study and closes them*/
+void SalomeApp_Application::closeApplication()
+{
+  std::vector<int> ids;
+  QMap<int, int>::Iterator it;
+  for (it = _studyIDs.begin(); it != _studyIDs.end(); it++) {
+    ids.push_back(it.key());
+  }
+
+  LightApp_Application::closeApplication();
+
+  for(int i = 0,sz = ids.size(); i<sz; i++) {
+    _PTR(Study) aStudy = studyMgr()->GetStudyByID(ids[i]);
+    if (aStudy) studyMgr()->Close(aStudy);
+  }
+}

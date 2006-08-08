@@ -39,7 +39,8 @@ EXPORT_HEADERS= Session_Session_i.hxx \
 		Session_ServerLauncher.hxx \
 		Session_ServerThread.hxx \
 		Session_ServerCheck.hxx \
-		SalomeApp_Engine_i.hxx
+		SalomeApp_Engine_i.hxx \
+		SALOME_Session.hxx
 
 # Libraries targets
 LIB = libSalomeSession.la

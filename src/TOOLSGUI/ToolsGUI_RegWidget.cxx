@@ -155,7 +155,7 @@ Registry::Components_var MakeRegistry( CORBA::ORB_var &orb )
     object = naming.Resolve( registryName ) ;
     if(CORBA::is_nil(object)) throw CommException( "unable to find the RegistryService" ) ;
   }
-  catch( const ServiceUnreachable& )
+  catch( const ServiceUnreachable& ex )
   {
     MESSAGE( ex.what() )
     exit( EXIT_FAILURE ) ;

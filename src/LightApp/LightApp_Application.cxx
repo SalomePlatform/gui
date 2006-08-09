@@ -1137,11 +1137,13 @@ void LightApp_Application::removeWindow( const int flag, const int studyId )
       sId = activeStudy()->id();
   }
 
+  bool anIsEmpty = !myWindows[flag]->isEmpty();
   QWidget* wid = myWindows[flag]->widget( sId );
   myWindows[flag]->remove( sId );
   delete wid;
 
-  setWindowShown( flag, !myWindows[flag]->isEmpty() );
+  //setWindowShown( flag, !myWindows[flag]->isEmpty() );
+  setWindowShown( flag, anIsEmpty );
 }
 
 /*!

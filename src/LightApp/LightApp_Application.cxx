@@ -231,6 +231,15 @@ myPrefs( 0 )
   myAccel->setActionKey( SUIT_Accel::RotateUp,    ALT+Key_Up,        VTKViewer_Viewer::Type() );
   myAccel->setActionKey( SUIT_Accel::RotateDown,  ALT+Key_Down,      VTKViewer_Viewer::Type() );
 #endif
+#ifndef DISABLE_PLOT2DKVIEWER
+  myAccel->setActionKey( SUIT_Accel::PanLeft,     CTRL+Key_Left,     Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanRight,    CTRL+Key_Right,    Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanUp,       CTRL+Key_Up,       Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanDown,     CTRL+Key_Down,     Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::ZoomIn,      CTRL+Key_Plus,     Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::ZoomOut,     CTRL+Key_Minus,    Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::ZoomFit,     CTRL+Key_Asterisk, Plot2d_Viewer::Type() );
+#endif
 
   connect( mySelMgr, SIGNAL( selectionChanged() ), this, SLOT( onSelection() ) );
 

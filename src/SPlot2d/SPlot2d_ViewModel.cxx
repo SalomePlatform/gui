@@ -22,6 +22,8 @@
 
 #include "SPlot2d_ViewModel.h"
 
+#include "SPlot2d_ViewWindow.h"
+
 #include "SPlot2d_Prs.h"
 #include "SUIT_Session.h"
 #include "SUIT_Application.h"
@@ -378,4 +380,15 @@ void SPlot2d_Viewer::onCloneView( Plot2d_ViewFrame* clonedVF, Plot2d_ViewFrame* 
     if( clonedVF->isVisible( *anIt ) )
       newVF->displayCurve( *anIt, false );
   newVF->Repaint();
+}
+
+/*!
+  create SPlot2d_ViewWindow
+*/
+SUIT_ViewWindow* SPlot2d_Viewer::createView( SUIT_Desktop* theDesktop )
+{
+  SPlot2d_ViewWindow* aPlot2dView = new SPlot2d_ViewWindow(theDesktop, this);
+  if (getPrs())
+    aPlot2dView->getViewFrame()->Display(getPrs());
+  return aPlot2dView;
 }

@@ -75,7 +75,7 @@ bool SUITApp_Application::notify( QObject* receiver, QEvent* e )
     QEvent::Type aType = e->type();
     if (aType == QEvent::MouseButtonPress || aType == QEvent::MouseButtonRelease ||
         aType == QEvent::MouseButtonDblClick || aType == QEvent::MouseMove ||
-        aType == QEvent::Wheel ||
+        aType == QEvent::Wheel || aType == QEvent::ContextMenu ||
         aType == QEvent::KeyPress || aType == QEvent::KeyRelease ||
         aType == QEvent::Accel || aType == QEvent::AccelOverride)
       return false;

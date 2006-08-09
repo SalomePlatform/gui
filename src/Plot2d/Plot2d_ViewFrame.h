@@ -121,6 +121,9 @@ public:
   QString getVisualParameters();
   void    setVisualParameters( const QString& parameters );
 
+  void    incrementalPan ( const int incrX, const int incrY );
+  void    incrementalZoom( const int incrX, const int incrY );
+
 protected:
   int     testOperation( const QMouseEvent& );
   void    readPreferences();
@@ -137,6 +140,13 @@ public slots:
   void    onSettings();
   void    onFitData();
   void    onChangeBackground();
+
+  void    onPanLeft();
+  void    onPanRight();
+  void    onPanUp();
+  void    onPanDown();
+  void    onZoomIn();
+  void    onZoomOut();
 
 protected slots:
   void    plotMousePressed( const QMouseEvent& );

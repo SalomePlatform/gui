@@ -249,8 +249,14 @@ SVTK_DeviceActor
 {
   if ( !myIsShrinkable ) 
     return;
+  
   if ( vtkDataSet* aDataSet = myPassFilter[ 0 ]->GetOutput() )
-  {
+  {     
+    int numCells=aDataSet->GetNumberOfCells();
+    int numPts = aDataSet->GetNumberOfPoints();
+    //It's impossible to use to apply "shrink" for "empty" dataset
+    if (numCells < 1 || numPts < 1)
+ 	    return;
     myShrinkFilter->SetInput( aDataSet );
     myPassFilter[ 1 ]->SetInput( myShrinkFilter->GetOutput() );
     myIsShrunk = true;

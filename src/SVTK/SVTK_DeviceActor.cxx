@@ -252,6 +252,7 @@ SVTK_DeviceActor
   
   if ( vtkDataSet* aDataSet = myPassFilter[ 0 ]->GetOutput() )
   {     
+    aDataSet->Update();
     int numCells=aDataSet->GetNumberOfCells();
     int numPts = aDataSet->GetNumberOfPoints();
     //It's impossible to use to apply "shrink" for "empty" dataset

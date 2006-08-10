@@ -92,7 +92,6 @@ extern "C" SALOMEAPP_EXPORT SUIT_Application* createApplication()
 SalomeApp_Application::SalomeApp_Application()
 : LightApp_Application()
 {
-  cout << "The constructor : " << this   << endl;
   _studyIDs.clear();
 }
 

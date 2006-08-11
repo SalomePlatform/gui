@@ -73,9 +73,6 @@ public:
   virtual void              reset();
   virtual void              clear();
 
-  void                      updateUnits();
-  bool                      flags( const int ) const;
-
   virtual void              setValue( const QVariant& );
 
   virtual void              setStringValue( const QString& );

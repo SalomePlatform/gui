@@ -34,9 +34,25 @@
 
 /* Exception handler for all functions */
 %exception {
-   Py_BEGIN_ALLOW_THREADS
-   $action
-   Py_END_ALLOW_THREADS
+  class PyAllowThreadsGuard {
+   public:
+    // Py_BEGIN_ALLOW_THREADS
+    PyAllowThreadsGuard() { _save = PyEval_SaveThread(); }
+    // Py_END_ALLOW_THREADS
+    ~PyAllowThreadsGuard() { PyEval_RestoreThread(_save); }
+   private:
+    PyThreadState *_save;
+  };
+
+  PyAllowThreadsGuard guard;
+
+  try {
+    $action
+  }
+  catch(...) {
+    PyErr_SetString(PyExc_RuntimeError,"Unknown exception caught");
+    return NULL;
+  }
 }
 
 class SALOMEGUI_Swig

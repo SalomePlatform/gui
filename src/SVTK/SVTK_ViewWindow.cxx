@@ -68,7 +68,8 @@ SVTK_ViewWindow
 ::SVTK_ViewWindow(SUIT_Desktop* theDesktop):
   SUIT_ViewWindow(theDesktop),
   myMainWindow(NULL),
-  myView(NULL)
+  myView(NULL),
+  myDumpImage(QImage())
 {}
 
 /*!
@@ -684,8 +685,19 @@ SVTK_ViewWindow
 QImage
 SVTK_ViewWindow
 ::dumpView()
+{    
+  if ( myMainWindow->getToolBar()->hasMouse() || myDumpImage.isNull() )
+    return myMainWindow->dumpView();
+  
+  return myDumpImage;
+}
+
+/*!
+  \refresh QImage, containing all scene rendering in window
+*/
+void SVTK_ViewWindow::RefreshDumpImage()
 {
-  return myMainWindow->dumpView();
+  myDumpImage = myMainWindow->dumpView();
 }
 
 /*!

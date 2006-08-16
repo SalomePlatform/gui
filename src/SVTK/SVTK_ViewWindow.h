@@ -28,6 +28,8 @@
 #include "SUIT_ViewWindow.h"
 #include "SALOME_InteractiveObject.hxx"
 
+#include <qimage.h>
+
 class SUIT_Desktop;
 
 class VTKViewer_Actor;
@@ -255,6 +257,9 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
   virtual
   bool
   eventFilter( QObject*, QEvent* );
+
+  virtual
+  void RefreshDumpImage();
   
 public slots:
   virtual
@@ -344,12 +349,15 @@ protected:
 
   QImage dumpView();
   virtual bool action( const int );
-
+  
   SVTK_View* myView;
   SVTK_MainWindow* myMainWindow;
   SVTK_ViewModelBase* myModel;
 
   QString myVisualParams; // used for delayed setting of view parameters 
+
+private:
+  QImage myDumpImage;
 };
 
 #ifdef WIN32

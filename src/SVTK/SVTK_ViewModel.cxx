@@ -197,6 +197,7 @@ SVTK_Viewer
     if ( !aView->getMainWindow()->getToolBar()->isVisible() ){
       thePopup->insertItem( VTKViewer_Viewer::tr( "MEN_SHOW_TOOLBAR" ), this, SLOT( onShowToolbar() ) );
     }
+    aView->RefreshDumpImage();
   }
 }
 

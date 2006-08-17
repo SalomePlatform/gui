@@ -553,11 +553,8 @@ void LightApp_Application::createActions()
   for ( it = modList.begin(); it != modList.end(); ++it )
   {
     if ( !isLibExists( *it ) )
-    {
-      qDebug( QString( "Library '%1' cannot be found" ).arg( *it ) );
       continue;
-    }
-
+    
     QString iconName;
     if ( iconMap.contains( *it ) )
       iconName = iconMap[*it];
@@ -566,7 +563,12 @@ void LightApp_Application::createActions()
 
     QPixmap icon = resMgr->loadPixmap( modName, iconName, false );
     if ( icon.isNull() )
-      icon = modIcon;
+      {
+	icon = modIcon;
+	printf( "****************************************************************\n" );
+	printf( "*    Icon for %s not found. Using the default one.\n", (*it).latin1() );
+	printf( "****************************************************************\n" );
+      }
 
     icon.convertFromImage( icon.convertToImage().smoothScale( iconSize, iconSize, QImage::ScaleMin ) );
 
@@ -2327,11 +2329,14 @@ void LightApp_Application::onRenameWindow()
   \param moduleTitle - title of module
 */
 bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
-{
+{ 
   if( moduleTitle.isEmpty() )
     return false;
 
   QString lib = moduleLibrary( moduleTitle );
+  
+  bool isPythonModule = lib.contains("libSalomePyQtGUI");
+
   QStringList paths;
 #ifdef WIN32
   paths = QStringList::split( ";", ::getenv( "PATH" ) );
@@ -2339,13 +2344,67 @@ bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
   paths = QStringList::split( ":", ::getenv( "LD_LIBRARY_PATH" ) );
 #endif
 
+  bool isLibFound = false;
   QStringList::const_iterator anIt = paths.begin(), aLast = paths.end();
   for( ; anIt!=aLast; anIt++ )
   {
     QFileInfo inf( Qtx::addSlash( *anIt ) + lib );
+    
     if( inf.exists() )
-      return true;
+      {
+	isLibFound = true;
+	break;
+      }
   }
+  
+  if ( !isLibFound )
+    {
+      printf( "****************************************************************\n" );
+      printf( "*    Warning: library %s cannot be found\n", moduleTitle.latin1() );
+      printf( "*    Module will not be available\n" );
+      printf( "****************************************************************\n" );
+    }
+  else if ( !isPythonModule )
+    return true;
+
+  if ( isPythonModule )
+    {
+      QString pylib = moduleName( moduleTitle ) + QString(".py");
+      QString pylibgui = moduleName( moduleTitle ) + QString("GUI.py");
+
+      // Check the python library
+#ifdef WIN32
+      paths = QStringList::split( ";", ::getenv( "PATH" ) );
+#else
+      paths = QStringList::split( ":", ::getenv( "PYTHONPATH" ) );
+#endif
+      bool isPyLib = false, isPyGuiLib = false;
+      QStringList::const_iterator anIt = paths.begin(), aLast = paths.end();
+      for( ; anIt!=aLast; anIt++ )
+	{
+	  QFileInfo inf( Qtx::addSlash( *anIt ) + pylib );
+	  QFileInfo infgui( Qtx::addSlash( *anIt ) + pylibgui );
+    
+	  if( !isPyLib && inf.exists() )
+	    isPyLib = true;
+	  
+	  if( !isPyGuiLib && infgui.exists() )
+	    isPyGuiLib = true;
+	  
+	  if ( isPyLib && isPyGuiLib && isLibFound)
+	    return true;
+	}
+      
+      printf( "****************************************************************\n" );
+      printf( "*    Warning: python library for %s cannot be found:\n", moduleTitle.latin1() );
+      if (!isPyLib)
+	printf( "*    No module named %s\n", moduleName( moduleTitle ).latin1() );
+      if (!isPyGuiLib)
+	printf( "*    No module named %s\n", (moduleName( moduleTitle ) + QString("GUI")).latin1() );
+      printf( "****************************************************************\n" );
+      return true;
+    }
+  
   return false;
 }
 

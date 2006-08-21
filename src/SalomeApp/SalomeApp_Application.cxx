@@ -299,7 +299,11 @@ void SalomeApp_Application::onLoadDoc()
     return;
 
   name = studyname;
+#ifndef WNT
+  //this code replace marker of windows drive and path become invalid therefore 
+  // defines placed there
   name.replace( QRegExp(":"), "/" );
+#endif
 
   if( LightApp_Application::onLoadDoc( name ) )
   {

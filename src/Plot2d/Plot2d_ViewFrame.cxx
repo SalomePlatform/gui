@@ -23,6 +23,7 @@
 #include "Plot2d_FitDataDlg.h"
 #include "Plot2d_ViewWindow.h"
 #include "Plot2d_SetupViewDlg.h"
+#include "Plot2d_ToolTip.h"
 
 #include "SUIT_Tools.h"
 #include "SUIT_Session.h"
@@ -152,6 +153,8 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
   /* Plot 2d View */
   QVBoxLayout* aLayout = new QVBoxLayout( this ); 
   myPlot = new Plot2d_Plot2d( this );
+  new Plot2d_ToolTip( this, myPlot );
+
   aLayout->addWidget( myPlot );
 
 //  createActions();

@@ -99,6 +99,7 @@ public slots:
   virtual void                        onCopy();
   virtual void                        onPaste();
   void                                onSaveGUIState();// called from VISU
+  virtual void                        onCloseDoc( bool ask = true);
 
 protected slots:
   void                                onStudySaved( SUIT_Study* );

@@ -377,6 +377,29 @@ void SalomeApp_Application::onPaste()
     }
 }
 
+/*! Check if the study is locked */
+void SalomeApp_Application::onCloseDoc( bool ask )
+{
+  SalomeApp_Study* study = dynamic_cast<SalomeApp_Study*>(activeStudy());
+
+  if (study != NULL) {
+    _PTR(Study) stdDS = study->studyDS(); 
+    if(stdDS && stdDS->IsStudyLocked()) {
+      if ( SUIT_MessageBox::warn2( desktop(),
+				   QObject::tr( "WRN_WARNING" ),
+				   QObject::tr( "CLOSE_LOCKED_STUDY" ),
+				   QObject::tr( "BUT_YES" ), 
+				   QObject::tr( "BUT_NO" ),
+				   SUIT_YES, 
+				   SUIT_NO, 
+				   SUIT_NO ) == SUIT_NO ) return;
+	
+    }
+  }
+
+  LightApp_Application::onCloseDoc( ask );
+}
+
 /*!Sets enable or disable some actions on selection changed.*/
 void SalomeApp_Application::onSelectionChanged()
 {

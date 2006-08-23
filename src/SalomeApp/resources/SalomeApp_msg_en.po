@@ -234,6 +234,9 @@ msgstr "Persistent GUI states"
 msgid "SAVE_POINT_ROOT_NAME"
 msgstr "GUI states"
 
+msgid "CLOSE_LOCKED_STUDY"
+msgstr "Close locked study?"
+
 //=======================================================================================
 
 msgid "SalomeApp_Application::MEN_RESTORE_VS"

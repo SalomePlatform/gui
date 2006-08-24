@@ -858,7 +858,7 @@ QtxResourceMgr::QtxResourceMgr( const QString& appName, const QString& resVarTem
   QString dirs;
   if ( ::getenv( envVar ) )
     dirs = ::getenv( envVar );
-#ifdef WNT
+#ifdef WIN32
   QString dirsep = ";";      // for Windows: ";" is used as directories separator
 #else
   QString dirsep = "[:|;]";  // for Linux: both ":" and ";" can be used

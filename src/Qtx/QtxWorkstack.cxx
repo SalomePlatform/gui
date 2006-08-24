@@ -919,7 +919,7 @@ void QtxWorkstack::onDeactivated( QtxWorkstackArea* area )
 */
 void QtxWorkstack::onContextMenuRequested( QWidget* w, QPoint p )
 {
-  QtxWorkstackArea* anArea = dynamic_cast<QtxWorkstackArea*>( (QObject*)sender()  );
+  QtxWorkstackArea* anArea = ::qt_cast<QtxWorkstackArea*>( (QObject*)sender() );
   if ( !anArea )
     anArea = activeArea();
 
@@ -1362,16 +1362,19 @@ QStringList getChildren( const QString& str )
   int i = 1,
   nOpen = 1, // count brackets: '(' increments nOpen, ')' decrements
   start = 0;
-  while ( i < str.length() ) {
-    if ( str[i] == '(' ) {
+  while ( i < (int)str.length() )
+  {
+    if ( str[i] == '(' )
+    {
       nOpen++;
       if ( nOpen == 1 )
-	start = i;
+	      start = i;
     }
-    else if ( str[i] == ')' ) {
+    else if ( str[i] == ')' )
+    {
       nOpen--;
       if ( nOpen == 0 ) 
-	lst.append( str.mid( start, i-start+1 ) );
+	      lst.append( str.mid( start, i-start+1 ) );
     }
     i++;
   }
@@ -1403,7 +1406,7 @@ QWidget* getView( const QWidget* parent, const QString& aName )
   QWidget* view = 0;
   QObjectList *l = parent->topLevelWidget()->queryList( "QWidget", aName, false, true );
   if ( !l->isEmpty() )
-    view = dynamic_cast<QWidget*>( l->first() );
+    view = ::qt_cast<QWidget*>( l->first() );
   delete l;
   return view;
 }

@@ -1288,6 +1288,7 @@ void QtxWorkstack::splitterInfo( QSplitter* split, QString& info ) const
     }
   }
   info += ')';
+  printf( QString( info + '\n' ).latin1() );
 }
 
 
@@ -1295,7 +1296,7 @@ void QtxWorkstack::splitterInfo( QSplitter* split, QString& info ) const
 void cutBrackets( QString& parameters )
 {
   QChar c1 = parameters[0];
-  QChar c2 = parameters.length()-1;
+  QChar c2 = parameters[int(parameters.length()-1)];
   if ( !parameters.isEmpty() && c1 == '(' && c2 == ')' )
     parameters = parameters.mid( 1, parameters.length()-2 );
 }
@@ -1327,7 +1328,7 @@ bool checkFormat( const QString& parameters )
   QString params( parameters );
   // 1. begins and ends with brackets
   QChar c1 = params[0];
-  QChar c2 = params.length()-1;
+  QChar c2 = params[int(params.length()-1)];
   bool ok = ( c1 == '(' && c2 == ')' );
   if ( !ok ) return ok;
   ::cutBrackets( params );
@@ -1416,6 +1417,7 @@ QWidget* getView( const QWidget* parent, const QString& aName )
 */
 void QtxWorkstack::setSplitter( QSplitter* splitter, const QString& parameters, QMap< QSplitter*, QValueList<int> >& sMap )
 {
+  printf( QString(parameters+'\n').latin1() );
   if ( !::checkFormat( parameters ) ) {
     printf( "\nInvalid format of workstack parameters.  Positions of viewers can not be restored.\n" );
     return;

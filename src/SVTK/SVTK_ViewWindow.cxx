@@ -443,6 +443,7 @@ SVTK_ViewWindow
 ::setBackgroundColor( const QColor& color )
 {
   myMainWindow->SetBackgroundColor( color );
+  SUIT_ViewWindow::setBackgroundColor( color );
 }
 
 /*!

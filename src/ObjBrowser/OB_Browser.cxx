@@ -366,8 +366,25 @@ void OB_Browser::setAutoOpenLevel( const int level )
     return;
 
   myAutoOpenLevel = level;
+}
 
-  autoOpenBranches();
+/*!
+  Opens branches from 1 to \alevels. If parameter value negative then autoOpenLevel() value will be used.
+  \sa autoOpenLevel()
+*/
+void OB_Browser::openLevels( const int levels )
+{
+  int level = levels < 0 ? autoOpenLevel() : levels;
+  QListView* lv = listView();
+  if ( !lv || level < 1 )
+    return;
+
+  QListViewItem* item = lv->firstChild();
+  while ( item )
+  {
+    openBranch( item, level );
+    item = item->nextSibling();
+  }
 }
 
 /*!
@@ -892,7 +909,7 @@ void OB_Browser::updateTree( SUIT_DataObject* obj, const bool autoOpen )
 
   restoreState( selObjs, openObjs, curObj, selKeys, openKeys, curKey );
 
-  if( autoOpen )
+  if ( autoOpen )
     autoOpenBranches();
 
   setModified();
@@ -938,8 +955,6 @@ void OB_Browser::replaceTree( SUIT_DataObject* src, SUIT_DataObject* trg )
   createConnections( trg );
 
   restoreState( selObjs, openObjs, curObj, selKeys, openKeys, curKey );
-
-  autoOpenBranches();
 
   setModified();
 
@@ -1574,17 +1589,7 @@ void OB_Browser::removeObject( SUIT_DataObject* obj, const bool autoUpd )
 */
 void OB_Browser::autoOpenBranches()
 {
-  int level = autoOpenLevel();
-  QListView* lv = listView();
-  if ( !lv || level < 1 )
-    return;
-
-  QListViewItem* item = lv->firstChild();
-  while ( item )
-  {
-    openBranch( item, level );
-    item = item->nextSibling();
-  }
+  openLevels();
 }
 
 /*!

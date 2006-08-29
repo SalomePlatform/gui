@@ -77,7 +77,7 @@ public:
   bool              isAutoDeleteObjects() const;
   virtual void      setAutoDeleteObjects( const bool );
 
-  virtual void      updateTree( SUIT_DataObject* = 0, const bool autoOpen = true );
+  virtual void      updateTree( SUIT_DataObject* = 0, const bool = false );
   virtual void      replaceTree( SUIT_DataObject*, SUIT_DataObject* );
 
   bool              isShowToolTips();
@@ -95,6 +95,7 @@ public:
 
   int               autoOpenLevel() const;
   void              setAutoOpenLevel( const int );
+  void              openLevels( const int = -1 );
 
   virtual int       addColumn( const QString&, const int id = -1, const int width = -1 );
   virtual int       addColumn( const QIconSet&, const QString&, const int id = -1, const int width = -1 );

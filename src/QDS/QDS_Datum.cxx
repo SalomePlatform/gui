@@ -45,15 +45,12 @@ public:
   QWidget*      widget() const;
   void          setWidget( QWidget* );
 
-  virtual bool  eventFilter( QObject*, QEvent* );
-
-protected:
-  virtual void  resizeEvent( QResizeEvent* );
+  virtual void  setGeometry( int x, int y, int w, int h );
+  virtual void  setSizePolicy( QSizePolicy );
 
 private:
   QWidget*      myWid;
 };
-
 
 QDS_Datum::Wrapper::Wrapper( QWidget* parent )
 : QWidget( parent ),
@@ -78,9 +75,6 @@ void QDS_Datum::Wrapper::setWidget( QWidget* wid )
   if ( myWid == wid )
     return;
 
-  if ( myWid )
-    myWid->removeEventFilter( this );
-
   myWid = wid;
 
   if ( !myWid )
@@ -94,27 +88,22 @@ void QDS_Datum::Wrapper::setWidget( QWidget* wid )
 
   myWid->updateGeometry();
   updateGeometry();
-
-  myWid->installEventFilter( this );
 }
 
-bool QDS_Datum::Wrapper::eventFilter( QObject* o, QEvent* e )
+void QDS_Datum::Wrapper::setSizePolicy( QSizePolicy sp )
 {
-  if ( e->type() == QEvent::Resize && o == widget() )
-  {
-    QResizeEvent* re = (QResizeEvent*)e;
-    if ( re->size() != size() )
-      resize( re->size() );
-  }
-  return QWidget::eventFilter( o, e );
+  QWidget::setSizePolicy( sp );
+
+  if ( widget() )
+    widget()->setSizePolicy( sp );
 }
 
-void QDS_Datum::Wrapper::resizeEvent( QResizeEvent* e )
+void QDS_Datum::Wrapper::setGeometry( int x, int y, int w, int h )
 {
-  QWidget::resizeEvent( e );
+  QWidget::setGeometry( x, y, w, h );
 
   if ( widget() && widget()->size() != size() )
-    widget()->resize( size() );
+    widget()->setGeometry( 0, 0, width(), height() );
 }
 
 /*!
@@ -634,10 +623,15 @@ void QDS_Datum::setEnabled( bool on )
 */
 void QDS_Datum::setShown( const bool visible, const int flags )
 {
-  if ( visible )
-    show( flags );
-  else
-    hide( flags );
+  initDatum();
+
+  uint flag = Units;
+  while ( flag )
+  {
+    if ( flags & flag && widget( flag ) )
+      widget( flag )->setShown( visible );
+    flag = flag >> 1;
+  }
 }
 
 /*!
@@ -646,14 +640,7 @@ void QDS_Datum::setShown( const bool visible, const int flags )
 */
 void QDS_Datum::show( const int element )
 {
-  initDatum();
-
-  if ( ( element & Label ) && labelWidget() )
-    labelWidget()->show();
-  if ( ( element & Units ) && unitsWidget() )
-    unitsWidget()->show();
-  if ( ( element & Control ) && controlWidget() )
-    controlWidget()->show();
+  setShown( true, element );
 }
 
 /*!
@@ -662,14 +649,7 @@ void QDS_Datum::show( const int element )
 */
 void QDS_Datum::hide( const int element )
 {
-  initDatum();
-
-  if ( ( element & Label ) && labelWidget() )
-    labelWidget()->hide();
-  if ( ( element & Units ) && unitsWidget() )
-    unitsWidget()->hide();
-  if ( ( element & Control ) && controlWidget() )
-    controlWidget()->hide();
+  setShown( false, element );
 }
 
 /*!

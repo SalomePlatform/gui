@@ -525,23 +525,27 @@ void LightApp_Application::createActions()
   QMap<QString, QString> iconMap;
   moduleIconNames( iconMap );
 
-  const int iconSize = 20;
-
   modGroup->addTo( modTBar );
   QObjectList *l = modTBar->queryList( "QComboBox" );
-  QObjectListIt oit( *l );
-  while ( QObject* obj = oit.current() ) {
-    QComboBox* cb = (QComboBox*)obj;
-    if ( cb ) cb->setFocusPolicy( QWidget::NoFocus );
-    ++oit;
+  if ( l )
+  {
+    for ( QObjectListIt oit( *l ); oit.current(); ++oit )
+    {
+      QComboBox* cb = ::qt_cast<QComboBox*>( oit.current() );
+      if ( !cb )
+        continue;
+      cb->setFocusPolicy( QWidget::NoFocus );
+      cb->setSizePolicy( QSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding ) );
+    }
   }
   delete l;
   
-   modTBar->addSeparator();
+  modTBar->addSeparator();
 
   QStringList modList;
   modules( modList, false );
 
+  const int iconSize = 16;
   for ( it = modList.begin(); it != modList.end(); ++it )
   {
     if ( !isLibExists( *it ) )
@@ -1429,6 +1433,9 @@ void LightApp_Application::onStudyCreated( SUIT_Study* theStudy )
 
   activateModule( defaultModule() );
 
+  if ( objectBrowser() )
+    objectBrowser()->openLevels();
+
   activateWindows();
 }
 
@@ -1445,11 +1452,13 @@ void LightApp_Application::onStudyOpened( SUIT_Study* theStudy )
     //aRoot->dump();
   }
   getWindow( WT_ObjectBrowser );
-  if ( objectBrowser() != 0 ) {
+  if ( objectBrowser() )
     objectBrowser()->setRootObject( aRoot );
-  }
 
   activateModule( defaultModule() );
+
+  if ( objectBrowser() )
+    objectBrowser()->openLevels();
 
   activateWindows();
 
@@ -1616,7 +1625,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
   {
     OB_Browser* ob = new OB_Browser( desktop() );
     ob->setAutoUpdate( true );
-    //ob->setAutoOpenLevel( 1 ); // commented by ASV as a fix to bug IPAL10107
+    ob->setAutoOpenLevel( 1 );
     ob->setCaption( tr( "OBJECT_BROWSER" ) );
 
     OB_ListView* ob_list = dynamic_cast<OB_ListView*>( const_cast<QListView*>( ob->listView() ) );

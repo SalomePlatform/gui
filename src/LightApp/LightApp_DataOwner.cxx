@@ -31,42 +31,41 @@
 #include <iostream>
 
 /*!Constructor. Initialize by \a theEntry.*/
-LightApp_DataOwner
-::LightApp_DataOwner( const QString& theEntry ): 
-  myEntry( theEntry )
+LightApp_DataOwner::LightApp_DataOwner( const QString& theEntry )
+: myEntry( theEntry )
+{
+}
+
+LightApp_DataOwner::LightApp_DataOwner( const LightApp_DataObject* obj )
+: myEntry( obj ? obj->entry() : QString::null )
 {
 }
 
 #ifndef DISABLE_SALOMEOBJECT
 /*!Constructor. Initialize by \a SALOME_InteractiveObject.*/
-LightApp_DataOwner
-::LightApp_DataOwner( const Handle(SALOME_InteractiveObject)& theIO ):
-  myEntry(!theIO.IsNull()? theIO->getEntry(): ""),
-  myIO(theIO)
+LightApp_DataOwner::LightApp_DataOwner( const Handle(SALOME_InteractiveObject)& theIO )
+: myEntry( !theIO.IsNull() ? theIO->getEntry() : "" ),
+myIO( theIO )
 {
 }
 #endif
 
 /*!Destructor. Do nothing.*/
-LightApp_DataOwner
-::~LightApp_DataOwner()
+LightApp_DataOwner::~LightApp_DataOwner()
 {
 }
 
 /*!Checks: Is current data owner equal \a obj.*/
-bool
-LightApp_DataOwner
-::isEqual( const SUIT_DataOwner& obj ) const
+bool LightApp_DataOwner::isEqual( const SUIT_DataOwner& obj ) const
 {
   const LightApp_DataOwner* other = dynamic_cast<const LightApp_DataOwner*>( &obj );
-
   return other && entry() == other->entry();
 }
 
-bool LightApp_DataOwner::operator<( const SUIT_DataOwner& obj ) const
+bool LightApp_DataOwner::isLess( const SUIT_DataOwner& obj ) const
 {
   const LightApp_DataOwner* other = dynamic_cast<const LightApp_DataOwner*>( &obj );
-  return entry() < other->entry();
+  return other && entry() < other->entry();
 }
 
 /*!Gets entry.*/

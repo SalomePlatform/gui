@@ -119,7 +119,7 @@ void LightApp_DataModel::update( LightApp_DataObject*, LightApp_Study* )
   build();
   updateWidgets();
   for( DataObjectListIterator it( ch ); it.current(); ++it )
-    delete it.current();
+    it.current()->deleteLater();
 }
 
 /*!

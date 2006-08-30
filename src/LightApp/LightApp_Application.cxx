@@ -565,6 +565,9 @@ void LightApp_Application::createActions()
       icon = modIcon;
 
     icon.convertFromImage( icon.convertToImage().smoothScale( iconSize, iconSize, QImage::ScaleMin ) );
+    QPixmap blank = SUIT_Tools::transparentPixmap( 20, 20 );
+    icon = SUIT_Tools::composite( icon, ( blank.width() - icon.width() ) / 2,
+                                  ( blank.height() - icon.height() ) / 2, blank );
 
     QAction* a = createAction( -1, *it, icon, *it, tr( "PRP_MODULE" ).arg( *it ), 0, desk, true );
     a->addTo( modTBar );

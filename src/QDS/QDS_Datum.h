@@ -60,6 +60,12 @@ public:
   QString                   minimumValue() const;
   QString                   maximumValue() const;
 
+  QStringList               options() const;
+  QVariant                  option( const QString& ) const;
+  QString                   optionString( const QString& ) const;
+  double                    optionDouble( const QString& ) const;
+  int                       optionInteger( const QString& ) const;
+
   virtual QVariant          value() const;
 
   virtual QString           stringValue() const;

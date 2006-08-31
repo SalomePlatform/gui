@@ -434,6 +434,32 @@ Standard_Boolean DDS_DicItem::HasData( const Standard_Integer flag ) const
 }
 
 /*!
+  Returns options for specified name \aname. If option not found then empty string returned.
+*/
+TCollection_ExtendedString DDS_DicItem::GetOption( const TCollection_AsciiString& name ) const
+{
+  TCollection_ExtendedString res;
+  if ( myOptions.IsBound( name ) )
+    res = myOptions.Find( name );
+  return res;
+}
+
+/*!
+  Returns names list of existing options in the specified sequence \anames.
+  If list not empty retunrs 'true' otherwise 'false'.
+*/
+Standard_Boolean DDS_DicItem::GetOptionNames( TColStd_SequenceOfAsciiString& names ) const
+{
+  names.Clear();
+
+  for ( OptionsMap::Iterator it( myOptions ); it.More(); it.Next() )
+    names.Append( it.Key() );
+
+  return !names.IsEmpty();
+}
+
+
+/*!
   Parse record in XML file and retrieve information relevant for this dictionary item
 */
 void DDS_DicItem::FillDataMap( TCollection_AsciiString theID, const LDOM_Element& theDatum,
@@ -675,6 +701,31 @@ void DDS_DicItem::FillDataMap( TCollection_AsciiString theID, const LDOM_Element
       LDOM_Text aLDescrTxt(aText);
       if ( !aLDescrTxt.isNull() )
         aLongD = aLDescrTxt.getData();
+    }
+  }
+
+  // Quantity::Options
+  LDOM_Element anOpt = theDatum.GetChildByTagName( DDS_Dictionary::KeyWord( "OPTIONS" ) );
+  if ( !anOpt.isNull() )
+  {
+    LDOM_NodeList anOptions = anOpt.getElementsByTagName( DDS_Dictionary::KeyWord( "OPTION" ) );
+    for ( Standard_Integer oi = 0; oi < anOptions.getLength(); oi++ )
+    {
+      LDOM_Node node = anOptions.item( oi );
+      if ( node.getNodeType() != LDOM_Node::ELEMENT_NODE )
+        continue;
+
+      LDOM_Element& elem = (LDOM_Element&)node;
+      TCollection_AsciiString name = elem.getAttribute( DDS_Dictionary::KeyWord( "OPTION_NAME" ) );
+
+      TCollection_ExtendedString value;
+      const LDOM_Text& aText = (const LDOM_Text&)elem.getFirstChild();
+      LDOM_Text anOptTxt( aText );
+      if ( !anOptTxt.isNull() )
+        value = anOptTxt.getData();
+
+      if ( !name.IsEmpty() && value.Length() && !myOptions.IsBound( name ) )
+        myOptions.Bind( name, value );
     }
   }
 

@@ -31,6 +31,8 @@
 #include <qvalidator.h>
 #include <qmessagebox.h>
 
+#include <TColStd_SequenceOfAsciiString.hxx>
+
 /*!
   class: QDS_Datum::Wrapper
   descr: Wrapper widget for sub widgets. [internal]
@@ -366,6 +368,72 @@ QString QDS_Datum::shortDescription() const
   if ( !myDicItem.IsNull() )
     sdStr = toQString( myDicItem->GetLongDescription() );
   return sdStr;
+}
+
+/*!
+  Returns the list of option names.
+*/
+QStringList QDS_Datum::options() const
+{
+  QStringList res;
+  if ( !dicItem().IsNull() )
+  {
+    TColStd_SequenceOfAsciiString lst;
+    dicItem()->GetOptionNames( lst );
+    for ( int i = 1; i <= lst.Length(); i++ )
+      res.append( toQString( lst.Value( i ) ) );
+  }
+  return res;
+}
+
+/*!
+  Returns the option specified by \aname as QVariant.
+  If option not exist then not valid QVariant returned.
+*/
+QVariant QDS_Datum::option( const QString& name ) const
+{
+  QVariant res;
+  if ( !dicItem().IsNull() )
+    res = QVariant( toQString( dicItem()->GetOption( toAsciiString( name ) ) ) );
+  return res;
+}
+
+/*!
+  Returns the option specified by \aname as QString.
+  If option not exist then empty string returned.
+*/
+QString QDS_Datum::optionString( const QString& name ) const
+{
+  QString res;
+  if ( !dicItem().IsNull() )
+    res = toQString( dicItem()->GetOption( toAsciiString( name ) ) );
+  return res;
+}
+
+/*!
+  Returns the option specified by \aname as double.
+  If option not exist then 0 returned.
+*/
+double QDS_Datum::optionDouble( const QString& name ) const
+{
+  double res = 0;
+  QVariant opt = option( name );
+  if ( opt.isValid() && opt.canCast( QVariant::Double ) )
+    res = opt.toDouble();
+  return res;
+}
+
+/*!
+  Returns the option specified by \aname as integer.
+  If option not exist then 0 returned.
+*/
+int QDS_Datum::optionInteger( const QString& name ) const
+{
+  int res = 0;
+  QVariant opt = option( name );
+  if ( opt.isValid() && opt.canCast( QVariant::Int ) )
+    res = opt.toInt();
+  return res;
 }
 
 /*!

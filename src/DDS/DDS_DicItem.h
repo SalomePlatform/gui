@@ -120,13 +120,16 @@ public:
   Standard_EXPORT Standard_Real              GetMaxZoom() const;
   Standard_EXPORT Standard_Real              GetZoomOrder() const;
 
-  Standard_EXPORT Standard_Real ToSI( const Standard_Real ) const;
-  Standard_EXPORT Standard_Real FromSI( const Standard_Real ) const;
+  Standard_EXPORT Standard_Real              ToSI( const Standard_Real ) const;
+  Standard_EXPORT Standard_Real              FromSI( const Standard_Real ) const;
 
-  Standard_EXPORT Standard_Real ToSI( const Standard_Real, const UnitSystem& ) const;
-  Standard_EXPORT Standard_Real FromSI( const Standard_Real, const UnitSystem& ) const;
+  Standard_EXPORT Standard_Real              ToSI( const Standard_Real, const UnitSystem& ) const;
+  Standard_EXPORT Standard_Real              FromSI( const Standard_Real, const UnitSystem& ) const;
 
   Standard_EXPORT Standard_Boolean           HasData( const Standard_Integer ) const;
+
+  Standard_EXPORT TCollection_ExtendedString GetOption( const TCollection_AsciiString& ) const;
+  Standard_EXPORT Standard_Boolean           GetOptionNames( TColStd_SequenceOfAsciiString& ) const;
 
 private:
   DDS_DicItem( const DDS_DicItem& );
@@ -161,6 +164,9 @@ private:
   UnitData*                                  GetUnitData( const UnitSystem& ) const;
 
 private:
+  typedef NCollection_DataMap<TCollection_AsciiString, TCollection_ExtendedString> OptionsMap;
+
+private:
   TCollection_AsciiString                    myId;
   TCollection_ExtendedString                 myLabel;
   TCollection_ExtendedString                 myFilter;
@@ -193,6 +199,7 @@ private:
 
   Handle(Standard_Transient)                 myComponent;
 
+  OptionsMap                                 myOptions;
   // unitData
   NCollection_DataMap<UnitSystem, UnitData>  myUnitData;
 

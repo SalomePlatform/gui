@@ -67,6 +67,12 @@ IMPLEMENT_STANDARD_RTTIEXT(DDS_Dictionary, MMgt_TShared)
         <SHORT_D>[brief_desription_text]</SHORT_D>
         <LONG_D>[full_description_text]</LONG_D>
       </DESCR>
+      <OPTIONS>
+        <OPTION OPTION_NAME="[option_name_1]">[option_value_1]</OPTION>
+        <OPTION OPTION_NAME="[option_name_2]">[option_value_2]</OPTION>
+        ...
+        <OPTION OPTION_NAME="[option_name_n]">[option_value_n]</OPTION>
+      </OPTIONS>
     </DATUM>
 
     ...
@@ -120,7 +126,11 @@ IMPLEMENT_STANDARD_RTTIEXT(DDS_Dictionary, MMgt_TShared)
       Tag "description" (key DESCR) can be defined under the tag "datum". This tag contains two sub tags:
          \lo "short description" (key SHORT_D) specify a brief datum description text
          \lo "long description" (key LONG_D) specify a detailed description text
-  
+
+      Tag "options" (key OPTIONS) can be defined under the tag "datum". This tag contains one or more sub
+      tags "option" (key OPTION). Each of these XML elements should contain text option value and attribute
+      "name" (key OPTION_NAME) which specified option name.
+
       Each tag "datum" define most common parameters of phisical characteristic.
       This parameters placed in two groups:
       \lo Domain parameters under tag "domain" (key DY_DOMAIN). This tag can contains value description tag

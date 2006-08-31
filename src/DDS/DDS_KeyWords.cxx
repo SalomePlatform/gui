@@ -68,6 +68,9 @@ IMPLEMENT_STANDARD_RTTIEXT(DDS_KeyWords, MMgt_TShared)
   \li LZ_MINV - min
   \li LZ_MAXV - max
   \li LZ_ORDER - order
+  \li OPTIONS - options
+  \li OPTION - option
+  \li OPTION_NAME - name
 */
 
 /*!
@@ -124,6 +127,10 @@ DDS_KeyWords::DDS_KeyWords()
   SetKeyWord( "LZ_MINV",              "min" );
   SetKeyWord( "LZ_MAXV",              "max" );
   SetKeyWord( "LZ_ORDER",             "order" );
+
+  SetKeyWord( "OPTIONS",              "options" );
+  SetKeyWord( "OPTION",               "option" );
+  SetKeyWord( "OPTION_NAME",          "name" );
 }
 
 /*!

@@ -114,10 +114,10 @@ void SPlot2d_Viewer::rename( const Handle(SALOME_InteractiveObject)& IObject,
 void SPlot2d_Viewer::renameAll( const Handle(SALOME_InteractiveObject)& IObj, const QString& name )
 {
   SUIT_ViewManager* vm = getViewManager();
-  if( vm )
+  if ( vm )
   {
     const QPtrVector<SUIT_ViewWindow>& wnds = vm->getViews();
-    for( int i=0; i<wnds.size(); i++ )
+    for ( uint i = 0; i < wnds.size(); i++ )
     {
       Plot2d_ViewWindow* pwnd = dynamic_cast<Plot2d_ViewWindow*>( wnds.at( i ) );
       rename( IObj, name, pwnd->getViewFrame() );

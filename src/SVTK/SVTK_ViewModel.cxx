@@ -152,10 +152,10 @@ void SVTK_Viewer::setTrihedronSize( const int theSize, const bool theRelative )
 
   if (SUIT_ViewManager* aViewManager = getViewManager()) {
     QPtrVector<SUIT_ViewWindow> aViews = aViewManager->getViews();
-    for (int i = 0; i < aViews.count(); i++) {
-      if (TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at(i))) {
-	aView->SetTrihedronSize(theSize, theRelative);
-      }
+    for ( uint i = 0; i < aViews.count(); i++ )
+    {
+      if ( TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at( i )) )
+	      aView->SetTrihedronSize( theSize, theRelative );
     }
   }
 }

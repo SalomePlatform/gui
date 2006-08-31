@@ -28,6 +28,10 @@
 
 class QRect;
 
+#ifdef WIN32
+#pragma warning ( disable:4251 )
+#endif
+
 class OCCVIEWER_EXPORT OCCViewer_ViewPort3d: public OCCViewer_ViewPort
 {
 	Q_OBJECT
@@ -88,5 +92,9 @@ private:
   bool    myAnimate;
 	double	myScale;
 };
+
+#ifdef WIN32
+#pragma warning ( default:4251 )
+#endif
 
 #endif

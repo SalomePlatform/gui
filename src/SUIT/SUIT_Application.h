@@ -25,14 +25,14 @@
 #include <qobject.h>
 #include <qwidget.h>
 
+class QLabel;
+class QString;
 class QAction;
+class QIconSet;
 class SUIT_Desktop;
 class SUIT_Convertor;
 class SUIT_ViewModel;
 class SUIT_ResourceMgr;
-class QString;
-class QIconSet;
-class QLabel;
 
 #ifdef WIN32
 #pragma warning ( disable:4251 )
@@ -112,6 +112,10 @@ public:
 signals:
   void                  applicationClosed( SUIT_Application* );
   void                  activated( SUIT_Application* );
+  void                  infoChanged( QString );
+
+private slots:
+  void                  onInfoClear();
 
 protected:
   SUIT_Application*     startApplication( int, char** ) const;

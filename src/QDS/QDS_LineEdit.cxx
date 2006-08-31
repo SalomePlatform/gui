@@ -117,6 +117,15 @@ void QDS_LineEdit::unitSystemChanged( const QString& system )
 }
 
 /*!
+  Select all text in the editor.
+*/
+void QDS_LineEdit::selectAll()
+{
+  if ( lineEdit() )
+    lineEdit()->selectAll();
+}
+
+/*!
   Set the aligment of line edit. Reimplemented from QDS_Datum.
 */
 void QDS_LineEdit::setAlignment( const int align, const int type )

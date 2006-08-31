@@ -34,6 +34,7 @@ public:
   QDS_LineEdit( const QString&, QWidget* = 0, const int = All, const QString& = QString::null );
   virtual ~QDS_LineEdit();
 
+  virtual void         selectAll();
   virtual void         setAlignment( const int, const int = Label );
 
 signals:

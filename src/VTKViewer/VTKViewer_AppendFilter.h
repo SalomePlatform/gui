@@ -29,6 +29,10 @@
 
 class vtkPoints;
 
+#ifdef WIN32
+#pragma warning ( disable:4251 )
+#endif
+
 /*! \brief This class used same as vtkAppendFilter. See documentation on VTK for more information.
  */
 class VTKVIEWER_EXPORT VTKViewer_AppendFilter : public vtkAppendFilter 
@@ -100,5 +104,9 @@ protected:
   TVectorIds myCellRanges;
   vtkSmartPointer<vtkPoints> myPoints;
 };
+
+#ifdef WIN32
+#pragma warning ( default:4251 )
+#endif
 
 #endif

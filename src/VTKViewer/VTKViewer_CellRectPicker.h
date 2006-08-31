@@ -46,6 +46,11 @@ typedef std::map<vtkActor*, VTKViewer_CellDataSet> VTKViewer_ActorDataMap;
 class vtkCell;
 class vtkGenericCell;
 class vtkQuad;
+
+#ifdef WIN32
+#pragma warning ( disable:4251 )
+#endif
+
 /*!Rectangular cell picker class.*/
 class VTK_EXPORT VTKViewer_CellRectPicker : public VTKViewer_RectPicker
 {
@@ -92,6 +97,10 @@ private:
   vtkQuad* Quad1;
   vtkQuad* Quad2;
 };
+
+#ifdef WIN32
+#pragma warning ( default:4251 )
+#endif
 
 #endif
 

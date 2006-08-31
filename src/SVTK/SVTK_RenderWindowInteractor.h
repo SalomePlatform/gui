@@ -52,6 +52,10 @@ class vtkObject;
 class SVTK_Selector;
 class SVTK_Renderer;
 
+#ifdef WIN32
+#pragma warning ( disable:4251 )
+#endif
+
 /*!
   \class QVTK_RenderWindowInteractor
   Implements Qt based vtkRenderWindowInteractor.
@@ -253,5 +257,8 @@ class SVTK_EXPORT SVTK_RenderWindowInteractor: public QVTK_RenderWindowInteracto
   TInteractorStyles myInteractorStyles;
 };
 
+#ifdef WIN32
+#pragma warning ( default:4251 )
+#endif
 
 #endif

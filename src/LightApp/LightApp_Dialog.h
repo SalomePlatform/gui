@@ -35,6 +35,10 @@ class QLabel;
 
 class SUIT_ResourceMgr;
 
+#ifdef WIN32
+#pragma warning ( disable:4251 )
+#endif
+
 /*!
   \class LightApp_Dialog
   Base class for all LightApp dialogs.
@@ -285,5 +289,9 @@ private:
   bool                myIsExclusive, myIsBusy;
   QPixmap             myPixmap;
 };
+
+#ifdef WIN32
+#pragma warning ( default:4251 )
+#endif
 
 #endif

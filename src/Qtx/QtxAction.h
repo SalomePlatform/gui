@@ -27,6 +27,10 @@
 #include <qaction.h>
 #include <qmap.h>
 
+#ifdef WIN32
+#pragma warning ( disable:4251 )
+#endif
+
 class QTX_EXPORT QtxAction : public QAction
 {
     Q_OBJECT
@@ -47,5 +51,9 @@ protected:
 private:
     QMap<QWidget*,int> myMenuIds;
 };
+
+#ifdef WIN32
+#pragma warning ( default:4251 )
+#endif
 
 #endif

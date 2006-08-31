@@ -52,6 +52,9 @@ class SVTK_CubeAxesActor2D;
 class VTKViewer_Actor;
 class SVTK_Selector;
 
+#ifdef WIN32
+#pragma warning ( disable:4251 )
+#endif
 
 /*! 
   \class SVTK_Renderer
@@ -247,5 +250,9 @@ class SVTK_EXPORT SVTK_Renderer : public vtkObject
   bool myIsTrihedronRelative;
   vtkFloatingPointType myBndBox[6];
 };
+
+#ifdef WIN32
+#pragma warning ( default:4251 )
+#endif
 
 #endif

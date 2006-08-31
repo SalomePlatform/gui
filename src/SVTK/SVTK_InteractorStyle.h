@@ -44,6 +44,11 @@
 #include <map>
 
 #include <vtkObject.h>
+
+#ifdef WIN32
+#pragma warning ( disable:4251 )
+#endif
+
 //
 //! Control the value of increment  in SALOME way.
 /*!
@@ -321,5 +326,9 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
 
   vtkSmartPointer<vtkPicker> myPicker;
 };
+
+#ifdef WIN32
+#pragma warning ( default:4251 )
+#endif
 
 #endif

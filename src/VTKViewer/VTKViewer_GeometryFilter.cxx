@@ -814,8 +814,10 @@ VTKViewer_GeometryFilter
 }
 
 
-vtkIdType VTKViewer_GeometryFilter::GetElemObjId(int theVtkID){
-  if(myVTK2ObjIds.empty() || theVtkID > myVTK2ObjIds.size()) return -1;
+vtkIdType VTKViewer_GeometryFilter::GetElemObjId( int theVtkID )
+{
+  if( myVTK2ObjIds.empty() || theVtkID > (int)myVTK2ObjIds.size() )
+    return -1;
 #if defined __GNUC_2__
   return myVTK2ObjIds[theVtkID];
 #else

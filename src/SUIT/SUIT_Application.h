@@ -33,6 +33,11 @@ class SUIT_ResourceMgr;
 class QString;
 class QIconSet;
 class QLabel;
+
+#ifdef WIN32
+#pragma warning ( disable:4251 )
+#endif
+
 /*! \class QObject
  * \brief For more information see <a href="http://doc.trolltech.com">QT documentation</a>.
  */
@@ -170,5 +175,9 @@ extern "C"
 }
 
 #define APP_CREATE_NAME "createApplication"
+
+#ifdef WIN32
+#pragma warning ( default:4251 )
+#endif
 
 #endif

@@ -24,8 +24,6 @@
 #ifndef LIGHTAPP_MODULE_H
 #define LIGHTAPP_MODULE_H
 
-#pragma warning( disable : 4251 )
-
 #include "LightApp.h"
 #include <CAM_Module.h>
 
@@ -47,6 +45,10 @@ class QtxPopupMgr;
 
 class QString;
 class QVariant;
+
+#ifdef WIN32
+#pragma warning ( disable:4251 )
+#endif
 
 /*!
   \class LightApp_Module
@@ -142,6 +144,8 @@ protected:
   int                   myDisplay, myErase, myDisplayOnly, myEraseAll;
 };
 
-#pragma warning( default : 4251 )
+#ifdef WIN32
+#pragma warning ( default:4251 )
+#endif
 
 #endif

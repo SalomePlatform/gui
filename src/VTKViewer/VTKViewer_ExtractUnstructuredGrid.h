@@ -26,6 +26,11 @@
 #include <set>
 #include <map>
 #include <vector>
+
+#ifdef WIN32
+#pragma warning ( disable:4251 )
+#endif
+
 /*! \class vtkUnstructuredGridToUnstructuredGridFilter
  * \brief For more information see <a href="http://www.vtk.org/">VTK documentation</a>
  */
@@ -118,5 +123,9 @@ private:
   //! Not implemented.
   void operator=(const VTKViewer_ExtractUnstructuredGrid&);
 };
+
+#ifdef WIN32
+#pragma warning ( default:4251 )
+#endif
 
 #endif

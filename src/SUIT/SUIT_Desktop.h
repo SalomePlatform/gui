@@ -59,6 +59,8 @@ public:
   void                     logoRemove( const QString& );
   void                     logoInsert( const QString&, const QPixmap&, const int = -1 );
 
+  void                     emitActivated();
+
 signals:
   void                     activated();
   void                     deactivated();

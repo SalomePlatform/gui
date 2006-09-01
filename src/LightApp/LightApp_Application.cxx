@@ -38,6 +38,8 @@
 
 #include "LightApp_OBFilter.h"
 
+#include "LightApp_EventFilter.h"
+
 #include "LightApp_OBSelector.h"
 #include "LightApp_SelectionMgr.h"
 
@@ -296,6 +298,8 @@ void LightApp_Application::start()
 
   putInfo( "" );
   desktop()->statusBar()->message( "" );
+
+  LightApp_EventFilter::Init();
 }
 
 /*!Gets application name.*/

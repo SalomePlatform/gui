@@ -55,7 +55,16 @@ bool operator<( const SUIT_DataOwnerPtr& p1, const SUIT_DataOwnerPtr& p2 )
   else if ( p2.isNull() )
     return false;
 
-  return p1->isLess( *p2 );
+  //bug with acrossentry of DataOwner and DataSubOwner
+  const _typeinfo& ti1 = typeid( *(p1.operator->()) );
+  const _typeinfo& ti2 = typeid( *(p2.operator->()) );
+
+  int res = strcmp( ti1.name(), ti2.name() );
+
+  if ( !res )
+    return p1->isLess( *p2 );
+
+  return res;
 }
 
 /*!

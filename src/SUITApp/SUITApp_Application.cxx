@@ -69,6 +69,7 @@ myExceptHandler( hand )
 */
 bool SUITApp_Application::notify( QObject* receiver, QEvent* e )
 {
+#if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) < 0x060101
   // Disable GUI user actions while python command is executed
   if (SUIT_Session::IsPythonExecuted()) {
     // Disable mouse and keyboard events
@@ -80,6 +81,7 @@ bool SUITApp_Application::notify( QObject* receiver, QEvent* e )
         aType == QEvent::Accel || aType == QEvent::AccelOverride)
       return false;
   }
+#endif
 
   return myExceptHandler ? myExceptHandler->handle( receiver, e ) :
                            QApplication::notify( receiver, e );

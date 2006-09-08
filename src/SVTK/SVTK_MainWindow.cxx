@@ -312,7 +312,7 @@ SVTK_MainWindow
 /*!
   Redirect the request to SVTK_Renderer::GetTrihedronSize
 */
-int
+vtkFloatingPointType
 SVTK_MainWindow
 ::GetTrihedronSize()
 {
@@ -324,7 +324,7 @@ SVTK_MainWindow
 */
 void 
 SVTK_MainWindow
-::SetTrihedronSize( const int theSize, const bool theRelative )
+::SetTrihedronSize( const vtkFloatingPointType theSize, const bool theRelative )
 {
   GetRenderer()->SetTrihedronSize(theSize, theRelative);
   Repaint();

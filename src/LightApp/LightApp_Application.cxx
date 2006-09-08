@@ -1340,7 +1340,7 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
     vm = new OCCViewer_Viewer();
 #endif
     vm->setBackgroundColor( resMgr->colorValue( "OCCViewer", "background", vm->backgroundColor() ) );
-    vm->setTrihedronSize( resMgr->integerValue( "OCCViewer", "trihedron_size", vm->trihedronSize() ) );
+    vm->setTrihedronSize( resMgr->doubleValue( "OCCViewer", "trihedron_size", vm->trihedronSize() ) );
     int u( 1 ), v( 1 );
     vm->isos( u, v );
     u = resMgr->integerValue( "OCCViewer", "iso_number_u", u );
@@ -1363,7 +1363,7 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
     if( vm )
     {
       vm->setBackgroundColor( resMgr->colorValue( "VTKViewer", "background", vm->backgroundColor() ) );
-      vm->setTrihedronSize( resMgr->integerValue( "VTKViewer", "trihedron_size", vm->trihedronSize() ),
+      vm->setTrihedronSize( resMgr->doubleValue( "VTKViewer", "trihedron_size", vm->trihedronSize() ),
 			    resMgr->booleanValue( "VTKViewer", "relative_size", vm->trihedronRelative() ) );
       new LightApp_VTKSelector( vm, mySelMgr );
     }
@@ -1780,11 +1780,11 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( plot2dGroup, "columns", 1 );
 
   int occTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), occGroup,
-				   LightApp_Preferences::IntSpin, "OCCViewer", "trihedron_size" );
+				   LightApp_Preferences::DblSpin, "OCCViewer", "trihedron_size" );
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), occGroup,
 		       LightApp_Preferences::Color, "OCCViewer", "background" );
 
-  pref->setItemProperty( occTS, "min", 1 );
+  pref->setItemProperty( occTS, "min", 1.0E-06 );
   pref->setItemProperty( occTS, "max", 1000 );
 
   int isoU = pref->addPreference( tr( "PREF_ISOS_U" ), occGroup,
@@ -1799,12 +1799,12 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( isoV, "max", 100000 );
 
   int vtkTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), vtkGroup,
-				   LightApp_Preferences::IntSpin, "VTKViewer", "trihedron_size" );
+				   LightApp_Preferences::DblSpin, "VTKViewer", "trihedron_size" );
   pref->addPreference( tr( "PREF_RELATIVE_SIZE" ), vtkGroup, LightApp_Preferences::Bool, "VTKViewer", "relative_size" );
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), vtkGroup,
 		       LightApp_Preferences::Color, "VTKViewer", "background" );
 
-  pref->setItemProperty( vtkTS, "min", 1 );
+  pref->setItemProperty( vtkTS, "min", 1.0E-06 );
   pref->setItemProperty( vtkTS, "max", 150 );
 
   pref->addPreference( tr( "PREF_SHOW_LEGEND" ), plot2dGroup,
@@ -1906,7 +1906,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 #ifndef DISABLE_OCCVIEWER
   if ( sec == QString( "OCCViewer" ) && param == QString( "trihedron_size" ) )
   {
-    int sz = resMgr->integerValue( sec, param, -1 );
+    double sz = resMgr->doubleValue( sec, param, -1 );
     QPtrList<SUIT_ViewManager> lst;
     viewManagers( OCCViewer_Viewer::Type(), lst );
     for ( QPtrListIterator<SUIT_ViewManager> it( lst ); it.current() && sz >= 0; ++it )
@@ -1925,7 +1925,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 #ifndef DISABLE_VTKVIEWER
   if ( sec == QString( "VTKViewer" ) && (param == QString( "trihedron_size" ) || param == QString( "relative_size" )) )
   {
-    int sz = resMgr->integerValue( "VTKViewer", "trihedron_size", -1 );
+    double sz = resMgr->doubleValue( "VTKViewer", "trihedron_size", -1 );
     bool isRelative = resMgr->booleanValue( "VTKViewer", "relative_size", true );
     QPtrList<SUIT_ViewManager> lst;
 #ifndef DISABLE_SALOMEOBJECT

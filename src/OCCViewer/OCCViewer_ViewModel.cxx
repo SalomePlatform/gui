@@ -572,11 +572,11 @@ void OCCViewer_Viewer::setTrihedronShown( const bool on )
 /*!
   \return trihedron size
 */
-int OCCViewer_Viewer::trihedronSize() const
+double OCCViewer_Viewer::trihedronSize() const
 {
-  int sz = 0;
+  double sz = 0;
   if ( !myTrihedron.IsNull() )
-    sz = (int)myTrihedron->Size();
+    sz = myTrihedron->Size();
   return sz;
 }
 
@@ -584,7 +584,7 @@ int OCCViewer_Viewer::trihedronSize() const
   Changes trihedron size
   \param sz - new size
 */
-void OCCViewer_Viewer::setTrihedronSize( const int sz )
+void OCCViewer_Viewer::setTrihedronSize( const double sz )
 {
   if ( !myTrihedron.IsNull() )
     myTrihedron->SetSize( sz );

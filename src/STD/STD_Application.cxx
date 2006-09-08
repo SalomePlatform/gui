@@ -223,8 +223,9 @@ void STD_Application::createActions()
   createMenu( EditPasteId, editMenu );
   createMenu( separator(), editMenu );
 
-  createMenu( ViewWindowsId,   viewMenu );
-  createMenu( ViewStatusBarId, viewMenu );
+  createMenu( ViewWindowsId,   viewMenu, 0 );
+  createMenu( separator(),     viewMenu, -1, 10 );
+  createMenu( ViewStatusBarId, viewMenu, 10 );
   createMenu( separator(),     viewMenu );
 
   createMenu( HelpAboutId, helpMenu );

@@ -128,6 +128,8 @@ public:
   SUIT_ViewManager*                   getViewManager( const QString&, const bool );
   virtual void                        addViewManager( SUIT_ViewManager* );
   virtual void                        removeViewManager( SUIT_ViewManager* );
+  virtual SUIT_ViewManager*           createViewManager( const QString& vmType );
+
   QWidget*                            getWindow( const int, const int = -1 );
   QWidget*                            window( const int, const int = -1 ) const;
   void                                addWindow( QWidget*, const int, const int = -1 );
@@ -226,7 +228,6 @@ protected:
   QString                             defaultModule() const;
   void                                currentWindows( QMap<int, int>& ) const;
   void                                currentViewManagers( QStringList& ) const;
-  virtual SUIT_ViewManager*           createViewManager( const QString& vmType );
   void                                moduleIconNames( QMap<QString, QString>& ) const;
 
   void                                activateWindows();

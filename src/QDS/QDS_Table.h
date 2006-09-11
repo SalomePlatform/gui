@@ -32,6 +32,8 @@ class QDS_EXPORT QDS_Table : public QtxTable
 
   Q_OBJECT
 
+  Q_PROPERTY( bool KeepEditors READ isKeepEditors WRITE setKeepEditors )
+
 public:
   QDS_Table( QWidget* = 0, const char* = 0 );
   QDS_Table( int, int, QWidget* = 0, const char* = 0 );
@@ -65,6 +67,9 @@ public:
   virtual void     setNumCols( int );
   virtual void     clearCellWidget( int, int );
 
+  bool             isKeepEditors() const;
+  void             setKeepEditors( const bool );
+
 protected:
   virtual QWidget* createHeaderEditor( QHeader*, const int, const bool = true );
   virtual QWidget* createEditor( int, int, bool ) const;
@@ -88,6 +93,7 @@ private:
   DatumVector      myColEdit;
   CellMap          myCellEdit;
   QDS_Datum*       myTableEdit;
+  bool             myKeepEdits;
 };
 
 #endif 

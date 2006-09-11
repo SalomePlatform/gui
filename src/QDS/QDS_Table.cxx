@@ -19,6 +19,8 @@
 
 #include "QDS_Table.h"
 
+#include "QDS_LineEdit.h"
+
 class QDS_Table::DeleteFilter : public QObject
 {
 public:
@@ -49,7 +51,8 @@ QDS_Table::QDS_Table( QWidget* parent, const char* name )
 : QtxTable( parent, name ),
 myHorEdit( 0 ),
 myVerEdit( 0 ),
-myTableEdit( 0 )
+myTableEdit( 0 ),
+myKeepEdits( false )
 {
 }
 
@@ -57,7 +60,8 @@ QDS_Table::QDS_Table( int r, int c, QWidget* parent, const char* name )
 : QtxTable( r, c, parent, name ),
 myHorEdit( 0 ),
 myVerEdit( 0 ),
-myTableEdit( 0 )
+myTableEdit( 0 ),
+myKeepEdits( false )
 {
   myRowEdit.resize( r );
   myColEdit.resize( c );
@@ -214,23 +218,33 @@ void QDS_Table::setNumRows( int r )
 {
   int old = numRows();
   QtxTable::setNumRows( r );
-  myRowEdit.resize( r );
 
-  for ( int i = r + 1; i <= old; i++ )
-    myCellEdit.remove( i );
+  if ( isKeepEditors() )
+    myRowEdit.resize( QMAX( (int)myRowEdit.size(), r ) );
+  else
+  {
+    myRowEdit.resize( r );
+    for ( int i = r + 1; i <= old; i++ )
+      myCellEdit.remove( i );
+  }
 }
 
 void QDS_Table::setNumCols( int c )
 {
   int old = numCols();
   QtxTable::setNumCols( c );
-  myColEdit.resize( c );
 
-  for ( CellMap::Iterator it = myCellEdit.begin(); it != myCellEdit.end(); ++it )
+  if ( isKeepEditors() )
+    myColEdit.resize( QMAX( (int)myColEdit.size(), c ) );
+  else
   {
-    DatumMap& map = it.data();
-    for ( int i = c + 1; i <= old; i++ )
-      map.remove( i );
+    myColEdit.resize( c );
+    for ( CellMap::Iterator it = myCellEdit.begin(); it != myCellEdit.end(); ++it )
+    {
+      DatumMap& map = it.data();
+      for ( int i = c + 1; i <= old; i++ )
+        map.remove( i );
+    }
   }
 }
 
@@ -241,6 +255,16 @@ void QDS_Table::clearCellWidget( int row, int col )
     dat->hide();
 
   QtxTable::clearCellWidget( row, col );
+}
+
+bool QDS_Table::isKeepEditors() const
+{
+  return myKeepEdits;
+}
+
+void QDS_Table::setKeepEditors( const bool on )
+{
+  myKeepEdits = on;
 }
 
 QWidget* QDS_Table::createHeaderEditor( QHeader* header, const int sect, const bool init )
@@ -256,7 +280,7 @@ QWidget* QDS_Table::createHeaderEditor( QHeader* header, const int sect, const b
       dat->setStringValue( header->label( sect ) );
     else
       dat->clear();
-//    dat->selectAll();
+    dat->setProperty( "Selection", true );
   }
   else
     wid = QtxTable::createHeaderEditor( header, sect, init );
@@ -274,7 +298,7 @@ QWidget* QDS_Table::createEditor( int row, int col, bool init ) const
       dat->setStringValue( text( row, col ) );
     else
       dat->clear();
-//    dat->selectAll();
+    dat->setProperty( "Selection", true );
   }
   else
     wid = QtxTable::createEditor( row, col, init );

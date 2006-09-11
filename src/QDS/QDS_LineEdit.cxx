@@ -126,6 +126,34 @@ void QDS_LineEdit::selectAll()
 }
 
 /*!
+  Deselect all text in the editor.
+*/
+void QDS_LineEdit::deselect()
+{
+  if ( lineEdit() )
+    lineEdit()->deselect();
+}
+
+/*!
+  Select or deselect all text in the editor.
+*/
+void QDS_LineEdit::setSelection( const bool on )
+{
+  if ( on )
+    selectAll();
+  else
+    deselect();
+}
+
+/*!
+  Returns true if the editor has selected text.
+*/
+bool QDS_LineEdit::hasSelection() const
+{
+  return lineEdit() ? lineEdit()->hasSelectedText() : false;
+}
+
+/*!
   Set the aligment of line edit. Reimplemented from QDS_Datum.
 */
 void QDS_LineEdit::setAlignment( const int align, const int type )

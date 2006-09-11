@@ -46,6 +46,16 @@ bool LightApp_DataSubOwner::isEqual( const SUIT_DataOwner& obj ) const
   return false;
 }
 
+/*!Checks: Is current data sub owner less \a obj.*/
+bool LightApp_DataSubOwner::isLess( const SUIT_DataOwner& obj ) const
+{
+  const LightApp_DataSubOwner* other = dynamic_cast<const LightApp_DataSubOwner*>( &obj );
+  if(other && entry() == other->entry()){
+	  return index() < other->index();
+  }
+  return other && entry() < other->entry();
+}
+
 /*!Gets index.*/
 int LightApp_DataSubOwner::index() const
 {

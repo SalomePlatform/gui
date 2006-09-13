@@ -1628,7 +1628,8 @@ QWidget* LightApp_Application::createWindow( const int flag )
   {
     OB_Browser* ob = new OB_Browser( desktop() );
     ob->setAutoUpdate( true );
-    ob->setAutoOpenLevel( 1 );
+    //QA regression automatic tests
+    //ob->setAutoOpenLevel( 1 );
     ob->setCaption( tr( "OBJECT_BROWSER" ) );
 
     OB_ListView* ob_list = dynamic_cast<OB_ListView*>( const_cast<QListView*>( ob->listView() ) );

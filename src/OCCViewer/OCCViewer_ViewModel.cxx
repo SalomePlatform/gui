@@ -358,7 +358,7 @@ void OCCViewer_Viewer::setObjectsSelected(const AIS_ListOfInteractive& theList)
 {
   AIS_ListIteratorOfListOfInteractive aIt;
   for (aIt.Initialize(theList); aIt.More(); aIt.Next())
-    myAISContext->SetSelected(aIt.Value(), false);
+    myAISContext->AddOrRemoveSelected(aIt.Value(), false);
   myAISContext->UpdateCurrentViewer();
 }
 

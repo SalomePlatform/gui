@@ -57,6 +57,18 @@ endif
 LIBS+= -lsuit -lqtx
 LIBSFORBIN+= -lsuit -lqtx
 
+PLUGINDIR = $(top_builddir)/bin/salome/styles
+MYPLUGINDIR = styles
+
+$(MYPLUGINDIR): $(PLUGINDIR)
+	-$(RM) $@
+	ln -sf $< $@
+
+$(PLUGINDIR):
+	mkdir -p $@
+
+bin: $(MYPLUGINDIR)
+
 @CONCLUDE@
 
 

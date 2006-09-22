@@ -65,5 +65,17 @@ LDFLAGS += $(QT_MT_LIBS) $(KERNEL_LDFLAGS) -lSalomeNS -lsuit -lSalomeLifeCycleCO
 
 LDFLAGSFORBIN= $(LDFLAGS) $(OMNIORB_LIBS) $(HDF5_LIBS) -lqtx -lSalomeContainer -lSalomeResourcesManager -lTOOLSDS -lSalomeHDFPersist -lSalomeDSImpl -lSalomeGenericObj -lRegistry -lSalomeNotification -lSALOMEBasics
 
+PLUGINDIR = $(top_builddir)/bin/salome/styles
+MYPLUGINDIR = styles
+
+$(MYPLUGINDIR): $(PLUGINDIR)
+	-$(RM) $@
+	ln -sf $< $@
+
+$(PLUGINDIR):
+	mkdir -p $@
+
+bin: $(MYPLUGINDIR)
+
 @CONCLUDE@
 

@@ -69,7 +69,7 @@ class SALOMEAPP_EXPORT SalomeApp_Application : public LightApp_Application
 public:
   enum { MenuToolsId = 5 };
   enum { DumpStudyId = LightApp_Application::UserID, LoadScriptId, PropertiesId,
-         CatalogGenId, RegDisplayId, SaveGUIStateId, UserID };
+         CatalogGenId, RegDisplayId, SaveGUIStateId, FileLoadId, UserID };
 
 public:
   SalomeApp_Application();

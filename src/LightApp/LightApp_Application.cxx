@@ -233,7 +233,7 @@ myPrefs( 0 )
   myAccel->setActionKey( SUIT_Accel::RotateUp,    ALT+Key_Up,        VTKViewer_Viewer::Type() );
   myAccel->setActionKey( SUIT_Accel::RotateDown,  ALT+Key_Down,      VTKViewer_Viewer::Type() );
 #endif
-#ifndef DISABLE_PLOT2DKVIEWER
+#ifndef DISABLE_PLOT2DVIEWER
   myAccel->setActionKey( SUIT_Accel::PanLeft,     CTRL+Key_Left,     Plot2d_Viewer::Type() );
   myAccel->setActionKey( SUIT_Accel::PanRight,    CTRL+Key_Right,    Plot2d_Viewer::Type() );
   myAccel->setActionKey( SUIT_Accel::PanUp,       CTRL+Key_Up,       Plot2d_Viewer::Type() );
@@ -522,51 +522,53 @@ void LightApp_Application::createActions()
   if ( modIcon.isNull() )
     modIcon = QPixmap( imageEmptyIcon );
 
-  QToolBar* modTBar = new QtxToolBar( true, desk );
-  modTBar->setLabel( tr( "INF_TOOLBAR_MODULES" ) );
-
-  QActionGroup* modGroup = new QActionGroup( this );
-  modGroup->setExclusive( true );
-  modGroup->setUsesDropDown( true );
-
-  a = createAction( -1, tr( "APP_NAME" ), defIcon, tr( "APP_NAME" ),
-                    tr( "PRP_APP_MODULE" ), 0, desk, true );
-  modGroup->add( a );
-  myActions.insert( QString(), a );
-
-  QMap<QString, QString> iconMap;
-  moduleIconNames( iconMap );
-
-  const int iconSize = 20;
-
-  modGroup->addTo( modTBar );
-  QObjectList *l = modTBar->queryList( "QComboBox" );
-  QObjectListIt oit( *l );
-  while ( QObject* obj = oit.current() ) {
-    QComboBox* cb = (QComboBox*)obj;
-    if ( cb ) cb->setFocusPolicy( QWidget::NoFocus );
-    ++oit;
-  }
-  delete l;
-  
-   modTBar->addSeparator();
-
   QStringList modList;
   modules( modList, false );
 
-  for ( it = modList.begin(); it != modList.end(); ++it )
+  if( modList.count()>1 )
   {
-    if ( !isLibExists( *it ) )
-      continue;
+    QToolBar* modTBar = new QtxToolBar( true, desk );
+    modTBar->setLabel( tr( "INF_TOOLBAR_MODULES" ) );
+
+    QActionGroup* modGroup = new QActionGroup( this );
+    modGroup->setExclusive( true );
+    modGroup->setUsesDropDown( true );
+
+    a = createAction( -1, tr( "APP_NAME" ), defIcon, tr( "APP_NAME" ),
+                      tr( "PRP_APP_MODULE" ), 0, desk, true );
+    modGroup->add( a );
+    myActions.insert( QString(), a );
+
+    QMap<QString, QString> iconMap;
+    moduleIconNames( iconMap );
+
+    const int iconSize = 20;
+
+    modGroup->addTo( modTBar );
+    QObjectList *l = modTBar->queryList( "QComboBox" );
+    QObjectListIt oit( *l );
+    while ( QObject* obj = oit.current() ) {
+      QComboBox* cb = (QComboBox*)obj;
+      if ( cb ) cb->setFocusPolicy( QWidget::NoFocus );
+    ++oit;
+    }
+    delete l;
+  
+    modTBar->addSeparator();
+
+    for ( it = modList.begin(); it != modList.end(); ++it )
+    {
+      if ( !isLibExists( *it ) )
+        continue;
     
-    QString iconName;
-    if ( iconMap.contains( *it ) )
-      iconName = iconMap[*it];
+      QString iconName;
+      if ( iconMap.contains( *it ) )
+        iconName = iconMap[*it];
 
-    QString modName = moduleName( *it );
+      QString modName = moduleName( *it );
 
-    QPixmap icon = resMgr->loadPixmap( modName, iconName, false );
-    if ( icon.isNull() )
+      QPixmap icon = resMgr->loadPixmap( modName, iconName, false );
+      if ( icon.isNull() )
       {
 	icon = modIcon;
 	printf( "****************************************************************\n" );
@@ -574,16 +576,18 @@ void LightApp_Application::createActions()
 	printf( "****************************************************************\n" );
       }
 
-    icon.convertFromImage( icon.convertToImage().smoothScale( iconSize, iconSize, QImage::ScaleMin ) );
+      icon.convertFromImage( icon.convertToImage().smoothScale( iconSize, iconSize, QImage::ScaleMin ) );
 
-    QAction* a = createAction( -1, *it, icon, *it, tr( "PRP_MODULE" ).arg( *it ), 0, desk, true );
-    a->addTo( modTBar );
-    modGroup->add( a );
+      QAction* a = createAction( -1, *it, icon, *it, tr( "PRP_MODULE" ).arg( *it ), 0, desk, true );
+      a->addTo( modTBar );
+      modGroup->add( a );
 
-    myActions.insert( *it, a );
+      myActions.insert( *it, a );
+    }
+
+    SUIT_Tools::simplifySeparators( modTBar );
+    connect( modGroup, SIGNAL( selected( QAction* ) ), this, SLOT( onModuleActivation( QAction* ) ) );
   }
-
-  SUIT_Tools::simplifySeparators( modTBar );
 
   // New window
   int windowMenu = createMenu( tr( "MEN_DESK_WINDOW" ), -1, MenuWindowId, 100 );
@@ -608,8 +612,6 @@ void LightApp_Application::createActions()
   createAction( RenameId, tr( "TOT_RENAME" ), QIconSet(), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ),
 		SHIFT+Key_R, desk, false, this, SLOT( onRenameWindow() ) );
   createMenu( RenameId, windowMenu, -1 );
-
-  connect( modGroup, SIGNAL( selected( QAction* ) ), this, SLOT( onModuleActivation( QAction* ) ) );
 
   int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1 );
   createMenu( PreferencesId, fileMenu, 15, -1 );
@@ -1448,7 +1450,7 @@ void LightApp_Application::onStudySaved( SUIT_Study* )
 }
 
 /*!Protected SLOT. On study closed.*/
-void LightApp_Application::onStudyClosed( SUIT_Study* )
+void LightApp_Application::onStudyClosed( SUIT_Study* s )
 {
   emit studyClosed();
 
@@ -1457,7 +1459,8 @@ void LightApp_Application::onStudyClosed( SUIT_Study* )
 
   activateModule( "" );
 
-  saveWindowsGeometry();
+  for ( WindowMap::ConstIterator itr = myWindows.begin(); s && itr != myWindows.end(); ++itr )
+    removeWindow( itr.key(), s->id() );
 }
 
 /*!Protected SLOT.On desktop activated.*/
@@ -1560,9 +1563,6 @@ void LightApp_Application::onMRUActivated( QString aName )
 void LightApp_Application::beforeCloseDoc( SUIT_Study* s )
 {
   CAM_Application::beforeCloseDoc( s );
-
-  for ( WindowMap::ConstIterator itr = myWindows.begin(); s && itr != myWindows.end(); ++itr )
-    removeWindow( itr.key(), s->id() );
 }
 
 /*!Update actions.*/

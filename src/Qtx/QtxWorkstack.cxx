@@ -948,6 +948,8 @@ void QtxWorkstack::onContextMenuRequested( QWidget* w, QPoint p )
     myActionsMap[Rename]->addTo( pm );
   }
 
+  Qtx::simplifySeparators( pm );
+
   if ( pm->count() )
     pm->exec( p );
 

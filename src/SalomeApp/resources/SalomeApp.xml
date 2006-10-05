@@ -44,6 +44,10 @@
     <parameter name="CAM"          value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
     <parameter name="SUPERVGraph"  value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
     <parameter name="ToolsGUI"     value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
+    <!-- NETGENPlugin and GHS3DPlugin -->
+    <!-- Here the environment variables are used in upper case, -->
+    <!-- In SMESH/resources/SalomeApp.xml case-sensitive notation is used. -->
+    <!-- As a result, both variants are acceptable. -->
     <parameter name="NETGENPlugin" value="${NETGENPLUGIN_ROOT_DIR}/share/salome/resources/netgenplugin"/>
     <parameter name="GHS3DPlugin"  value="${GHS3DPLUGIN_ROOT_DIR}/share/salome/resources/ghs3dplugin"/>
   </section>

@@ -81,6 +81,49 @@
 #include <SALOMEDSClient_ClientFactory.hxx>
 
 #include <vector>
+/*!Internal class that updates object browser item properties */
+class SalomeApp_Updater : public OB_Updater
+{
+public:
+  SalomeApp_Updater() : OB_Updater(){};
+  virtual ~SalomeApp_Updater(){};
+  virtual void update( SUIT_DataObject* theObj, OB_ListItem* theItem );
+};
+
+void SalomeApp_Updater::update( SUIT_DataObject* theObj, OB_ListItem* theItem )
+{
+  if( !theObj || !theItem )
+    return;
+
+  SalomeApp_DataObject* SAObj = dynamic_cast<SalomeApp_DataObject*>( theObj );
+  if( !SAObj )
+    return;
+  
+  _PTR(SObject) SObj = SAObj->object();
+  if( !SObj )
+    return;
+  _PTR( GenericAttribute ) anAttr;
+
+  // Selectable
+  if ( SObj->FindAttribute( anAttr, "AttributeSelectable" ) )
+  {
+    _PTR(AttributeSelectable) aAttrSel = anAttr;
+    theItem->setSelectable( aAttrSel->IsSelectable() );
+  }
+  // Expandable
+  if ( SObj->FindAttribute(anAttr, "AttributeExpandable") ) 
+  {
+    _PTR(AttributeExpandable) aAttrExpand = anAttr;
+    theItem->setExpandable( aAttrExpand->IsExpandable() );
+  }
+  // Opened
+  //this attribute is not supported in the version of SALOME 3.x
+  //if ( SObj->FindAttribute(anAttr, "AttributeOpened") ) 
+  //{
+  //  _PTR(AttributeOpened) aAttrOpen = anAttr;
+  //  theItem->setOpen( aAttrOpen->IsOpened() );
+  //}
+}
 
 /*!Create new instance of SalomeApp_Application.*/
 extern "C" SALOMEAPP_EXPORT SUIT_Application* createApplication()
@@ -662,6 +705,7 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
   if ( flag == WT_ObjectBrowser )
   {
     OB_Browser* ob = (OB_Browser*)wid;
+    ob->setUpdater( new SalomeApp_Updater() );
     connect( ob->listView(), SIGNAL( doubleClicked( QListViewItem* ) ), this, SLOT( onDblClick( QListViewItem* ) ) );
     bool autoSize = resMgr->booleanValue( "ObjectBrowser", "auto_size", false ),
          autoSizeFirst = resMgr->booleanValue( "ObjectBrowser", "auto_size_first", true );

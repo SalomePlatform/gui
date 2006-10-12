@@ -36,14 +36,7 @@
 SalomeApp_ExceptionHandler::SalomeApp_ExceptionHandler( const bool floatSignal )
 : SUIT_ExceptionHandler()
 {
-  // JFA 2006-09-28: PAL10867: suppress signal catching,
-  // if environment variable DISABLE_SIGNALS_CATCHING is set to 1.
-  // Commonly this is used with "noexcepthandler" option.
-  char* envNoCatchSignals = getenv("NOT_INTERCEPT_SIGNALS");
-  if (!envNoCatchSignals || !atoi(envNoCatchSignals))
-  {
-    OSD::SetSignal( floatSignal );
-  }
+  OSD::SetSignal( floatSignal );
 }
 
 /*!Try to call SUIT_ExceptionHandler::internalHandle(o, e), catch if failure.*/
@@ -111,6 +104,5 @@ extern "C" SALOMEAPP_EXPORT SUIT_ExceptionHandler* getExceptionHandler()
 #else
   raiseFPE = false;
 #endif
-
   return new SalomeApp_ExceptionHandler( raiseFPE );
 }

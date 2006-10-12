@@ -39,6 +39,14 @@ class OB_Filter;
 class OB_ListView;
 class OB_ListItem;
 
+class OB_Updater 
+{
+public:
+  OB_Updater(){};
+  virtual ~OB_Updater(){};
+  virtual void update( SUIT_DataObject* theObj, OB_ListItem* theLI ) = 0;
+};
+
 /*!
   \class OB_Browser
   Represents object browser. Allows to get/set selection, 
@@ -126,6 +134,9 @@ public:
 
   void              setModified();
   unsigned long     getModifiedTime() { return myModifiedTime; }
+  
+  OB_Updater*       getUpdater() const;
+  virtual void      setUpdater( OB_Updater* theUpdate = 0 );
 
 signals:
   void              selectionChanged();
@@ -188,6 +199,7 @@ private:
   SUIT_DataObject*  myRoot;
   ItemMap           myItems;
   QToolTip*         myTooltip;
+  OB_Updater*       myUpdater;
   QMap<int, int>    myColumnIds;
   bool              myAutoUpdate;
   bool              myAutoDelObjs;

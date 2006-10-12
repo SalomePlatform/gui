@@ -113,7 +113,7 @@ public:
   ObjPtr   nullSrc() const;
   ItemPtr  nullTrg() const;
   ItemPtr  createItem( const ObjPtr&, const ItemPtr&, const ItemPtr&, const bool ) const;
-  void     updateItem( const ItemPtr& ) const;
+  void     updateItem( const ObjPtr& , const ItemPtr& ) const;
   void     deleteItemWithChildren( const ItemPtr& ) const;
   void     children( const ObjPtr&, QValueList<ObjPtr>& ) const;
   void     children( const ItemPtr&, QValueList<ItemPtr>& ) const;
@@ -171,13 +171,17 @@ bool OB_BrowserSync::needUpdate( const ItemPtr& item ) const
   Updates item
   \param p - item
 */
-void OB_BrowserSync::updateItem( const ItemPtr& p ) const
+void OB_BrowserSync::updateItem( const ObjPtr& o, const ItemPtr& p ) const
 {
   if ( p && needUpdate( p ) ) { 
     //    printf( "--- needUpdate for %s = true ---\n", p->text( 0 ).latin1() );
     myBrowser->updateText( p );
     p->update();
   }
+  if( o && myBrowser->getUpdater() )
+    {
+      myBrowser->getUpdater()->update( o, p );
+    }
 }
 
 /*!
@@ -288,6 +292,7 @@ OB_Browser::OB_Browser( QWidget* parent, SUIT_DataObject* root )
 
 myRoot( 0 ),
 myTooltip( 0 ),
+myUpdater( 0 ),
 myAutoOpenLevel( 0 ),
 myAutoUpdate( false ),
 myAutoDelObjs( false ),
@@ -325,6 +330,7 @@ OB_Browser::~OB_Browser()
 {
   myItems.clear();
   delete myTooltip;
+  setUpdater( 0 );
 }
 
 /*!
@@ -419,6 +425,24 @@ bool OB_Browser::isAutoDeleteObjects() const
 void OB_Browser::setAutoDeleteObjects( const bool on )
 {
   myAutoDelObjs = on;
+}
+
+/*!
+  \return updater of browser
+*/
+OB_Updater* OB_Browser::getUpdater() const
+{
+  return myUpdater;
+}
+
+/*!
+  \sets new updater of browser
+*/
+void OB_Browser::setUpdater( OB_Updater* theUpdate )
+{
+  if( myUpdater )
+    delete myUpdater;
+  myUpdater = theUpdate;
 }
 
 /*!

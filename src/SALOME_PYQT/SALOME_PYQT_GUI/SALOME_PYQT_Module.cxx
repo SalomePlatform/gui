@@ -539,6 +539,38 @@ void SALOME_PYQT_Module::contextMenuPopup( const QString& theContext, QPopupMenu
 }
 
 /*!
+ * Export preferences for the Python module.
+ * Called only once when the first instance of the module is created.
+ */
+void SALOME_PYQT_Module::createPreferences()
+{
+  MESSAGE( "SALOME_PYQT_Module::createPr eferences");
+  // perform synchronous request to Python event dispatcher
+  class Event : public PyInterp_LockRequest
+  {
+  public:
+    Event( PyInterp_base*      _py_interp,
+	   SALOME_PYQT_Module* _obj )
+      : PyInterp_LockRequest( _py_interp, 0, true ), // this request should be processed synchronously (sync == true)
+        myObj    ( _obj )   {}
+
+  protected:
+    virtual void execute()
+    {
+      myObj->initPreferences();
+    }
+
+  private:
+    SALOME_PYQT_Module* myObj;
+  };
+
+  // Posting the request only if dispatcher is not busy!
+  // Executing the request synchronously
+  if ( !PyInterp_Dispatcher::Get()->IsBusy() )
+    PyInterp_Dispatcher::Get()->Exec( new Event( myInterp, this ) );
+}
+
+/*!
  * Defines the dockable window associated with the module.
  * To fill the list of windows the correspondind Python module's windows()
  * method is called from SALOME_PYQT_Module::init() method.
@@ -947,6 +979,31 @@ void SALOME_PYQT_Module::menuHighlight( const int menu, const int submenu )
 }
 
 /*!
+ *  Initialises preferences for the module
+ *  - calls Python module's createPreferences() method
+ */
+void SALOME_PYQT_Module::initPreferences()
+{
+  // Python interpreter should be initialized and Python module should be
+  // import first
+  if ( !myInterp || !myModule )
+    return;
+
+  // temporary set myInitModule because createPreferences() method
+  // might be called during the module intialization process
+  myInitModule = this;
+
+  if ( PyObject_HasAttrString(myModule , "createPreferences") ) {
+    PyObjWrapper res( PyObject_CallMethod( myModule, "createPreferences", "" ) );
+    if( !res ) {
+      PyErr_Print();
+    }
+  }
+
+  myInitModule = 0;
+}
+
+/*!
  *  Initialises python subinterpreter (one per study)
  */
 void SALOME_PYQT_Module::initInterp( int theStudyId )
@@ -1241,6 +1298,7 @@ QAction* SALOME_PYQT_Module::createAction( const int id, const QString& text, co
   }
   return a;
 }
+
 /*! 
  * Load icon from resource file
  */
@@ -1432,6 +1490,38 @@ bool SALOME_PYQT_Module::clearMenu( const int id, const int menu, const bool rem
     }
   }
   return false;
+}
+
+/*!
+ * The next methods call the parent implementation.
+ * This is done to open protected methods from LightApp_Module class.
+ */
+
+int SALOME_PYQT_Module::addPreference( const QString& label )
+{
+  return SalomeApp_Module::addPreference( label );
+}
+				       
+int SALOME_PYQT_Module::addPreference( const QString& label, 
+				       const int pId, const int type,
+				       const QString& section,
+				       const QString& param )
+{
+  return SalomeApp_Module::addPreference( label, pId, type, section, param );
+}
+
+QVariant SALOME_PYQT_Module::preferenceProperty( const int id, 
+						 const QString& prop ) const
+{
+  QVariant v = SalomeApp_Module::preferenceProperty( id, prop );
+  return v;
+}
+
+void SALOME_PYQT_Module::setPreferenceProperty( const int id, 
+						const QString& prop, 
+						const QVariant& var )
+{
+  SalomeApp_Module::setPreferenceProperty( id, prop, var );
 }
 
 // SALOME_PYQT_XmlHandler class implementation

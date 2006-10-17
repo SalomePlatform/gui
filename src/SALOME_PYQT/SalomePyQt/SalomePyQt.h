@@ -25,6 +25,7 @@
 #include <qcolor.h>
 
 #include <LightApp_Application.h>
+#include <LightApp_Preferences.h>
 
 class LightApp_SelectionMgr;
 class SalomeApp_Application;
@@ -71,6 +72,23 @@ enum {
   WT_PyConsole     = LightApp_Application::WT_PyConsole,
   WT_LogWindow     = LightApp_Application::WT_LogWindow,
   WT_User          = LightApp_Application::WT_User
+};
+
+enum { 
+  PT_Space    = LightApp_Preferences::Space,
+  PT_Bool     = LightApp_Preferences::Bool, 
+  PT_Color    = LightApp_Preferences::Color,
+  PT_String   = LightApp_Preferences::String, 
+  PT_Selector = LightApp_Preferences::Selector, 
+  PT_DblSpin  = LightApp_Preferences::DblSpin, 
+  PT_IntSpin  = LightApp_Preferences::IntSpin, 
+  PT_Double   = LightApp_Preferences::Double, 
+  PT_Integer  = LightApp_Preferences::Integer, 
+  PT_GroupBox = LightApp_Preferences::GroupBox, 
+  PT_Font     = LightApp_Preferences::Font, 
+  PT_DirList  = LightApp_Preferences::DirList, 
+  PT_File     = LightApp_Preferences::File, 
+  PT_User     = LightApp_Preferences::User
 };
 
 class SalomePyQt
@@ -143,6 +161,20 @@ public:
   static void              addDoubleSetting( const QString&, const double,   bool = true );
   static void              removeSettings  ( const QString& );
   static QString           getSetting      ( const QString& );
+
+  static int               addPreference( const QString& );
+  static int               addPreference( const QString&,
+                                          const int, const int = -1,
+                                          const QString& = QString::null,
+				          const QString& = QString::null );
+  static QVariant          preferenceProperty( const int, const QString& );
+  static void              setPreferenceProperty( const int, 
+                                                  const QString&,
+                                                  const QVariant& );
+  static void              addPreferenceProperty( const int,
+						  const QString&,
+						  const int,
+						  const QVariant& );
 };
 
 #endif // SALOME_PYQT_H

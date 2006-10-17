@@ -46,6 +46,23 @@ enum WindowType {
   WT_User
 };
 
+enum PrefType { 
+  PT_Space,
+  PT_Bool, 
+  PT_Color,
+  PT_String, 
+  PT_Selector, 
+  PT_DblSpin, 
+  PT_IntSpin, 
+  PT_Double, 
+  PT_Integer, 
+  PT_GroupBox, 
+  PT_Font, 
+  PT_DirList, 
+  PT_File, 
+  PT_User
+};
+
 class QtxAction : QAction
 {
 %TypeHeaderCode
@@ -130,4 +147,18 @@ public:
   static void              addDoubleSetting( const QString&, const double,   bool = true ) /ReleaseGIL/ ;
   static void              removeSettings  ( const QString& ) /ReleaseGIL/ ;
   static QString           getSetting      ( const QString& ) /ReleaseGIL/ ;
+
+  static int               addPreference( const QString& ) /ReleaseGIL/ ;
+  static int               addPreference( const QString&,
+                                          const int, const int = -1,
+                                          const QString& = QString::null,
+				          const QString& = QString::null ) /ReleaseGIL/ ;
+  static QVariant          preferenceProperty( const int, const QString& ) /ReleaseGIL/ ;
+  static void              setPreferenceProperty( const int, 
+                                                  const QString&,
+                                                  const QVariant& ) /ReleaseGIL/ ;
+  static void              addPreferenceProperty( const int, 
+                                                  const QString&, 
+						  const int, 
+						  const QVariant& ) /ReleaseGIL/ ;
 };

@@ -109,6 +109,9 @@ public:
   /* context popup menu request */
   void            contextMenuPopup( const QString&, QPopupMenu*, QString& );
 
+  /* create preferences */
+  void            createPreferences();
+
   /* get module engine IOR */
   virtual QString engineIOR() const;
 
@@ -146,6 +149,14 @@ public:
                                        const QString&, const int, const bool = false );
   /* load icon from resource file */
   QIconSet               loadIcon( const QString& fileName );
+
+  /* working with preferences : open protected methods */
+  int                    addPreference( const QString& );
+  int                    addPreference( const QString&, const int, const int = -1,
+					const QString& = QString::null,
+					const QString& = QString::null );
+  QVariant               preferenceProperty( const int, const QString& ) const;
+  void                   setPreferenceProperty( const int, const QString&, const QVariant& );
 
   /* Show/hide menus/toolbars */
   void                   setMenuShown( const bool );
@@ -194,6 +205,8 @@ private:
   void            guiEvent( const int );
   /* Menu highlight processing */
   void            menuHighlight( const int, const int );
+  /* Init preferences */
+  void            initPreferences();
 
   /* initialize a Python subinterpreter */
   void            initInterp  ( int );

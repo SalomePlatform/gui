@@ -1364,3 +1364,181 @@ bool SalomePyQt::clearMenu( const int id, const int menu, const bool removeActio
   return ProcessEvent( new TClearMenuEvent( id, menu, removeActions ) );
 }
 
+/*!
+  SalomePyQt::addPreference
+  Adds preference 
+ */
+class TAddPrefEvent: public SALOME_Event {
+public:
+  typedef int TResult;
+  TResult myResult;
+  QString myLabel;
+  TAddPrefEvent( const QString& label )
+    : myResult( -1 ), myLabel( label ) {}
+  virtual void Execute() {
+    if ( SalomeApp_Application* anApp = getApplication() ) {
+      SALOME_PYQT_Module* module = SALOME_PYQT_Module::getInitModule();
+      if ( !module )
+        module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );
+      if ( module )
+	myResult = module->addPreference( myLabel );
+    }
+  }
+};
+int SalomePyQt::addPreference( const QString& label )
+{
+  return ProcessEvent( new TAddPrefEvent( label ) );
+}
+
+/*!
+  SalomePyQt::addPreference
+  Adds preference 
+ */
+class TAddPrefParamEvent: public SALOME_Event {
+public:
+  typedef int TResult;
+  TResult myResult;
+  QString myLabel;
+  int     myPId;
+  int     myType;
+  QString mySection;
+  QString myParam;
+  TAddPrefParamEvent( const QString& label, 
+		      const int pId, const int type,
+		      const QString& section, 
+		      const QString& param )
+    : myResult( -1 ),
+      myLabel( label ), myPId( pId ), myType( type ), 
+      mySection( section ), myParam ( param ) {}
+  virtual void Execute() {
+    if ( SalomeApp_Application* anApp = getApplication() ) {
+      SALOME_PYQT_Module* module = SALOME_PYQT_Module::getInitModule();
+      if ( !module )
+        module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );
+      if ( module )
+	myResult = module->addPreference( myLabel, myPId, myType, mySection, myParam );
+    }
+  }
+};
+int SalomePyQt::addPreference( const QString& label, const int pId, const int type,
+			       const QString& section, const QString& param )
+{
+  return ProcessEvent( new TAddPrefParamEvent( label, pId, type, section, param ) );
+}
+
+/*!
+  SalomePyQt::preferenceProperty
+  Gets the property value for the given (by id) preference
+ */
+class TPrefPropEvent: public SALOME_Event {
+public:
+  typedef QVariant TResult;
+  TResult myResult;
+  int     myId;
+  QString myProp;
+  TPrefPropEvent( const int id, const QString& prop )
+    : myId( id ), myProp( prop )
+  { 
+    myResult = QVariant();
+  }
+  virtual void Execute() {
+    if ( SalomeApp_Application* anApp = getApplication() ) {
+      SALOME_PYQT_Module* module = SALOME_PYQT_Module::getInitModule();
+      if ( !module )
+        module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );
+      if ( module )
+	myResult = module->preferenceProperty( myId, myProp );
+    }
+  }
+};
+QVariant SalomePyQt::preferenceProperty( const int id, const QString& prop )
+{
+  return ProcessEvent( new TPrefPropEvent( id, prop ) );
+}
+
+/*!
+  SalomePyQt::setPreferenceProperty
+  Sets the property value for the given (by id) preference
+ */
+void SalomePyQt::setPreferenceProperty( const int id, 
+					const QString& prop,
+					const QVariant& var )
+{
+  class TEvent: public SALOME_Event {
+    int      myId;
+    QString  myProp;
+    QVariant myVar;
+  public:
+    TEvent( const int id, const QString& prop, const QVariant& var ) 
+      : myId( id ), myProp( prop ), myVar( var ) {}
+    virtual void Execute() {
+      if ( SalomeApp_Application* anApp = getApplication() ) {
+	SALOME_PYQT_Module* module = SALOME_PYQT_Module::getInitModule();
+	if ( !module )
+	  module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );
+	if ( module )
+	  module->setPreferenceProperty( myId, myProp, myVar );
+      }
+    }
+  };
+  ProcessVoidEvent( new TEvent( id, prop, var) );
+}
+
+/*!
+  SalomePyQt::addPreferenceProperty
+  Adds the property value to the list of values 
+  for the given (by id) preference
+
+  This method allows creating properties which are QValueList<QVariant>
+  - there is no way to pass such values directly to QVariant parameter
+  from Python
+ */
+void SalomePyQt::addPreferenceProperty( const int id, 
+					const QString& prop,
+					const int idx, 
+					const QVariant& var )
+{
+  class TEvent: public SALOME_Event {
+    int      myId;
+    QString  myProp;
+    int      myIdx;
+    QVariant myVar;
+  public:
+    TEvent( const int id, const QString& prop, const int idx, const QVariant& var ) 
+      : myId( id ), myProp( prop ), myIdx( idx), myVar( var ) {}
+    virtual void Execute() {
+      if ( SalomeApp_Application* anApp = getApplication() ) {
+	SALOME_PYQT_Module* module = SALOME_PYQT_Module::getInitModule();
+	if ( !module )
+	  module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );
+	if ( module ) {
+	  QVariant var =  module->preferenceProperty( myId, myProp );
+	  if ( var.isValid() ) {
+	    if ( var.type() == QVariant::StringList ) {
+	      QStringList sl = var.asStringList();
+	      if ( myIdx >= 0 && myIdx < sl.count() ) 
+		sl[myIdx] = myVar.asString();
+	      else
+		sl.append( myVar.asString() );
+	      module->setPreferenceProperty( myId, myProp, sl );
+	    }
+	    else if ( var.type() == QVariant::List ) {
+	      QValueList<QVariant> vl = var.asList();
+	      if ( myIdx >= 0 && myIdx < vl.count() ) 
+		vl[myIdx] = myVar;
+	      else
+		vl.append( myVar );
+	      module->setPreferenceProperty( myId, myProp, vl );
+	    }
+	  }
+	  else {
+	    QValueList<QVariant> vl;
+	    vl.append( myVar );
+	    module->setPreferenceProperty( myId, myProp, vl );
+	  }
+	}
+      }
+    }
+  };
+  ProcessVoidEvent( new TEvent( id, prop, idx, var) );
+}

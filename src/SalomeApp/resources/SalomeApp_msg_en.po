@@ -118,7 +118,7 @@ msgid "SalomeApp_Application::PREF_TAB_OBJBROWSER"
 msgstr "Object browser"
 
 msgid "SalomeApp_Application::MEN_OPENWITH"
-msgstr "Activate Module"
+msgstr "Activate %1 Module"
 
 msgid "SalomeApp_Application::MEN_DELETE_INVALID_REFERENCE"
 msgstr "Delete Invalid Reference"

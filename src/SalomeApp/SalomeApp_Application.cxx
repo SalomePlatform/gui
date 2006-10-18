@@ -951,7 +951,8 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QPopupMenu* t
   CAM_Module* currentModule = activeModule();
   if (currentModule && currentModule->moduleName() == aModuleTitle)
     return;
-  thePopup->insertItem( tr( "MEN_OPENWITH" ), this, SLOT( onOpenWith() ) );
+  if ( !aModuleTitle.isEmpty() )
+    thePopup->insertItem( tr( "MEN_OPENWITH" ).arg( aModuleTitle ), this, SLOT( onOpenWith() ) );
 }
 
 /*!Update obect browser:

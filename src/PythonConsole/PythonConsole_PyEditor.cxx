@@ -148,8 +148,10 @@ void PythonConsole_PyEditor::setText(QString s)
 void PythonConsole_PyEditor::exec( const QString& command )
 {
   // Some interactive command is being executed in this editor -> do nothing
-  if ( isReadOnly() )
+  if ( isReadOnly() ) {
+    myQueue.push_back( command );
     return;
+  }
   int para=paragraphs()-1;
   removeParagraph( para );
   _currentPrompt = READY_PROMPT;
@@ -680,6 +682,12 @@ void PythonConsole_PyEditor::customEvent(QCustomEvent* e)
 
   setReadOnly( false );
   _isInHistory = false;
+
+  if ( e->type() == PyInterp_Event::OK && myQueue.count() > 0 ) {
+    QString nextcmd = myQueue[0];
+    myQueue.pop_front();
+    exec( nextcmd );
+  }
 }
 
 /*!

@@ -69,9 +69,10 @@ private:
 
   PyInterp_base* myInterp;
 
-  QString myBanner;
-  QString myOutput;
-  QString myError;
+  QString        myBanner;
+  QString        myOutput;
+  QString        myError;
+  QStringList    myQueue;
 };
 
 #endif

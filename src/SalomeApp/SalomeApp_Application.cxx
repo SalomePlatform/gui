@@ -151,6 +151,46 @@ void SalomeApp_Application::start()
   LightApp_Application::start();
 
   SalomeApp_EventFilter::Init();
+
+  static bool isFirst = true;
+  if ( isFirst ) {
+    isFirst = false;
+    QString hdffile;
+    QStringList pyfiles;
+    for (int i = 1; i < qApp->argc(); i++) {
+      QRegExp rx("--test=(.+)");
+      if ( rx.search( QString(qApp->argv()[i]) ) >= 0 && rx.capturedTexts().count() > 0 ) {
+	QStringList files = QStringList::split(",",rx.capturedTexts()[1],false);
+	for (uint j = 0; j < files.count(); j++ ) {
+	  QFileInfo fi( files[j] );
+	  QString extension = fi.extension( false ).lower();
+	  if ( extension == "hdf" && fi.exists() )
+	    hdffile = fi.absFilePath();
+	  else if ( extension == "py" || extension == "" )
+	    pyfiles.append( fi.baseName( true ) );
+	}
+      }
+    }
+    if ( !hdffile.isEmpty() )       // open hdf file given as parameter
+      onOpenDoc( hdffile );
+    else if ( pyfiles.count() > 0 ) // create new study
+      onNewDoc();
+    // import python scripts
+    if ( pyfiles.count() > 0 && activeStudy() ) {
+      SalomeApp_Study* appStudy = dynamic_cast<SalomeApp_Study*>( activeStudy() );
+      if ( appStudy ) {
+	_PTR(Study) aStudy = appStudy->studyDS();
+	if ( !aStudy->GetProperties()->IsLocked() ) {
+	  for ( uint i = 0; i < pyfiles.count(); i++ ) {
+	    QString command = QString( "import %1" ).arg( pyfiles[i] );
+	    PythonConsole* pyConsole = pythonConsole();
+	    if ( pyConsole )
+	      pyConsole->exec( command );
+	  }
+	}
+      }
+    }
+  }
 }
 
 /*!Create actions:*/

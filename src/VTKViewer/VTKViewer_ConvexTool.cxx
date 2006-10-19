@@ -31,7 +31,10 @@
 
 #include <set>
 #include <map>
+
+#ifdef WNT
 #include <algorithm>
+#endif
 
 #include <vtkUnstructuredGrid.h>
 #include <vtkGeometryFilter.h>
@@ -509,12 +512,17 @@ vtkPoints*
 VTKViewer_DelaunayTriangulator
 ::InitPoints()
 {
+  myPoints->Reset();
   myUnstructuredGrid->Initialize();
   myUnstructuredGrid->Allocate();
   myUnstructuredGrid->SetPoints(myPoints);
 
   vtkIdType aNumPts;
   myInput->GetCellPoints(myCellId,aNumPts,myPointIds); 
+  
+  if ( aNumPts < myPoints->GetNumberOfPoints() )
+    myPoints->Reset();
+  
   {
     vtkFloatingPointType aPntCoord[3];
     myPoints->SetNumberOfPoints(aNumPts);
@@ -525,9 +533,12 @@ VTKViewer_DelaunayTriangulator
     }
   }
 
+  myPoints->Modified();
+  myUnstructuredGrid->Modified();
+
   myGeometryFilter->Update();
   myPolyData = myGeometryFilter->GetOutput();
-
+  
   return myPoints;
 }
 

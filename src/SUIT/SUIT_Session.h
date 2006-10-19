@@ -24,6 +24,7 @@
 #include "SUIT_Application.h"
 #include "SUIT_ResourceMgr.h"
 
+#include <qmutex.h>
 #include <qobject.h>
 #include <qptrlist.h>
 #include <qptrvector.h>
@@ -72,6 +73,10 @@ public:
   void                         closeSession( int mode = ASK );
 
   SUIT_ExceptionHandler*       handler() const;
+
+  // To lock GUI user actions during python command execution (PAL12651)
+  static bool                  IsPythonExecuted();
+  static void                  SetPythonExecuted(bool isPythonExecuted);
 
 signals:
   void                         applicationClosed( SUIT_Application* );

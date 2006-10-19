@@ -32,6 +32,23 @@
 
 %include "pointer.i"
 
+/* Exception handler for all functions */
+%exception {
+  class PyAllowThreadsGuard {
+   public:
+    // Py_BEGIN_ALLOW_THREADS
+    PyAllowThreadsGuard() { _save = PyEval_SaveThread(); }
+    // Py_END_ALLOW_THREADS
+    ~PyAllowThreadsGuard() { PyEval_RestoreThread(_save); }
+   private:
+    PyThreadState *_save;
+  };
+
+  PyAllowThreadsGuard guard;
+
+  $action
+}
+
 class SALOMEGUI_Swig
 {
  public:

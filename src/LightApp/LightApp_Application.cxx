@@ -38,6 +38,8 @@
 
 #include "LightApp_OBFilter.h"
 
+#include "LightApp_EventFilter.h"
+
 #include "LightApp_OBSelector.h"
 #include "LightApp_SelectionMgr.h"
 
@@ -232,6 +234,15 @@ myPrefs( 0 )
   myAccel->setActionKey( SUIT_Accel::RotateUp,    ALT+Key_Up,        VTKViewer_Viewer::Type() );
   myAccel->setActionKey( SUIT_Accel::RotateDown,  ALT+Key_Down,      VTKViewer_Viewer::Type() );
 #endif
+#ifndef DISABLE_PLOT2DVIEWER
+  myAccel->setActionKey( SUIT_Accel::PanLeft,     CTRL+Key_Left,     Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanRight,    CTRL+Key_Right,    Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanUp,       CTRL+Key_Up,       Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanDown,     CTRL+Key_Down,     Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::ZoomIn,      CTRL+Key_Plus,     Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::ZoomOut,     CTRL+Key_Minus,    Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::ZoomFit,     CTRL+Key_Asterisk, Plot2d_Viewer::Type() );
+#endif
 
   connect( mySelMgr, SIGNAL( selectionChanged() ), this, SLOT( onSelection() ) );
 
@@ -288,6 +299,8 @@ void LightApp_Application::start()
 
   putInfo( "" );
   desktop()->statusBar()->message( "" );
+
+  LightApp_EventFilter::Init();
 }
 
 /*!Gets application name.*/
@@ -510,73 +523,72 @@ void LightApp_Application::createActions()
   if ( modIcon.isNull() )
     modIcon = QPixmap( imageEmptyIcon );
 
-  QToolBar* modTBar = new QtxToolBar( true, desk );
-  modTBar->setLabel( tr( "INF_TOOLBAR_MODULES" ) );
-
-  QActionGroup* modGroup = new QActionGroup( this );
-  modGroup->setExclusive( true );
-  modGroup->setUsesDropDown( true );
-
-  a = createAction( -1, tr( "APP_NAME" ), defIcon, tr( "APP_NAME" ),
-                    tr( "PRP_APP_MODULE" ), 0, desk, true );
-  modGroup->add( a );
-  myActions.insert( QString(), a );
-
-  QMap<QString, QString> iconMap;
-  moduleIconNames( iconMap );
-
-  modGroup->addTo( modTBar );
-  QObjectList *l = modTBar->queryList( "QComboBox" );
-  if ( l )
-  {
-    for ( QObjectListIt oit( *l ); oit.current(); ++oit )
-    {
-      QComboBox* cb = ::qt_cast<QComboBox*>( oit.current() );
-      if ( !cb )
-        continue;
-      cb->setFocusPolicy( QWidget::NoFocus );
-      cb->setSizePolicy( QSizePolicy( QSizePolicy::Preferred, QSizePolicy::Expanding ) );
-    }
-  }
-  delete l;
-  
-  modTBar->addSeparator();
-
   QStringList modList;
   modules( modList, false );
 
-  const int iconSize = 16;
-  for ( it = modList.begin(); it != modList.end(); ++it )
+  if( modList.count()>1 )
   {
-    if ( !isLibExists( *it ) )
+    QToolBar* modTBar = new QtxToolBar( true, desk );
+    modTBar->setLabel( tr( "INF_TOOLBAR_MODULES" ) );
+
+    QActionGroup* modGroup = new QActionGroup( this );
+    modGroup->setExclusive( true );
+    modGroup->setUsesDropDown( true );
+
+    a = createAction( -1, tr( "APP_NAME" ), defIcon, tr( "APP_NAME" ),
+                      tr( "PRP_APP_MODULE" ), 0, desk, true );
+    modGroup->add( a );
+    myActions.insert( QString(), a );
+
+    QMap<QString, QString> iconMap;
+    moduleIconNames( iconMap );
+
+    const int iconSize = 20;
+
+    modGroup->addTo( modTBar );
+    QObjectList *l = modTBar->queryList( "QComboBox" );
+    QObjectListIt oit( *l );
+    while ( QObject* obj = oit.current() ) {
+      QComboBox* cb = (QComboBox*)obj;
+      if ( cb ) cb->setFocusPolicy( QWidget::NoFocus );
+    ++oit;
+    }
+    delete l;
+  
+    modTBar->addSeparator();
+
+    for ( it = modList.begin(); it != modList.end(); ++it )
     {
-      qDebug( QString( "Library '%1' cannot be found" ).arg( *it ) );
-      continue;
+      if ( !isLibExists( *it ) )
+        continue;
+    
+      QString iconName;
+      if ( iconMap.contains( *it ) )
+        iconName = iconMap[*it];
+
+      QString modName = moduleName( *it );
+
+      QPixmap icon = resMgr->loadPixmap( modName, iconName, false );
+      if ( icon.isNull() )
+      {
+	icon = modIcon;
+	printf( "****************************************************************\n" );
+	printf( "*    Icon for %s not found. Using the default one.\n", (*it).latin1() );
+	printf( "****************************************************************\n" );
+      }
+
+      icon.convertFromImage( icon.convertToImage().smoothScale( iconSize, iconSize, QImage::ScaleMin ) );
+
+      QAction* a = createAction( -1, *it, icon, *it, tr( "PRP_MODULE" ).arg( *it ), 0, desk, true );
+      a->addTo( modTBar );
+      modGroup->add( a );
+
+      myActions.insert( *it, a );
     }
 
-    QString iconName;
-    if ( iconMap.contains( *it ) )
-      iconName = iconMap[*it];
-
-    QString modName = moduleName( *it );
-
-    QPixmap icon = resMgr->loadPixmap( modName, iconName, false );
-    if ( icon.isNull() )
-      icon = modIcon;
-
-    icon.convertFromImage( icon.convertToImage().smoothScale( iconSize, iconSize, QImage::ScaleMin ) );
-    QPixmap blank = SUIT_Tools::transparentPixmap( 20, 20 );
-    icon = SUIT_Tools::composite( icon, ( blank.width() - icon.width() ) / 2,
-                                  ( blank.height() - icon.height() ) / 2, blank );
-
-    QAction* a = createAction( -1, *it, icon, *it, tr( "PRP_MODULE" ).arg( *it ), 0, desk, true );
-    a->addTo( modTBar );
-    modGroup->add( a );
-
-    myActions.insert( *it, a );
+    SUIT_Tools::simplifySeparators( modTBar );
+    connect( modGroup, SIGNAL( selected( QAction* ) ), this, SLOT( onModuleActivation( QAction* ) ) );
   }
-
-  SUIT_Tools::simplifySeparators( modTBar );
 
   // New window
   int windowMenu = createMenu( tr( "MEN_DESK_WINDOW" ), -1, MenuWindowId, 100 );
@@ -601,8 +613,6 @@ void LightApp_Application::createActions()
   createAction( RenameId, tr( "TOT_RENAME" ), QIconSet(), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ),
 		SHIFT+Key_R, desk, false, this, SLOT( onRenameWindow() ) );
   createMenu( RenameId, windowMenu, -1 );
-
-  connect( modGroup, SIGNAL( selected( QAction* ) ), this, SLOT( onModuleActivation( QAction* ) ) );
 
   int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1 );
   createMenu( PreferencesId, fileMenu, 15, -1 );
@@ -982,7 +992,7 @@ void LightApp_Application::onHelpContentsModule()
   QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 
   if (!anApp.isEmpty()) {
-		RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile );
+    RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile );
     rs->start();
   }
   else {
@@ -1362,7 +1372,7 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
     vm = new OCCViewer_Viewer();
 #endif
     vm->setBackgroundColor( resMgr->colorValue( "OCCViewer", "background", vm->backgroundColor() ) );
-    vm->setTrihedronSize( resMgr->integerValue( "OCCViewer", "trihedron_size", vm->trihedronSize() ) );
+    vm->setTrihedronSize( resMgr->doubleValue( "OCCViewer", "trihedron_size", vm->trihedronSize() ) );
     int u( 1 ), v( 1 );
     vm->isos( u, v );
     u = resMgr->integerValue( "OCCViewer", "iso_number_u", u );
@@ -1385,7 +1395,7 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
     if( vm )
     {
       vm->setBackgroundColor( resMgr->colorValue( "VTKViewer", "background", vm->backgroundColor() ) );
-      vm->setTrihedronSize( resMgr->integerValue( "VTKViewer", "trihedron_size", vm->trihedronSize() ),
+      vm->setTrihedronSize( resMgr->doubleValue( "VTKViewer", "trihedron_size", vm->trihedronSize() ),
 			    resMgr->booleanValue( "VTKViewer", "relative_size", vm->trihedronRelative() ) );
       new LightApp_VTKSelector( vm, mySelMgr );
     }
@@ -1475,7 +1485,7 @@ void LightApp_Application::onStudySaved( SUIT_Study* )
 }
 
 /*!Protected SLOT. On study closed.*/
-void LightApp_Application::onStudyClosed( SUIT_Study* )
+void LightApp_Application::onStudyClosed( SUIT_Study* s )
 {
   // Bug 10396: clear selection
   mySelMgr->clearSelected();
@@ -1485,7 +1495,8 @@ void LightApp_Application::onStudyClosed( SUIT_Study* )
 
   activateModule( "" );
 
-  saveWindowsGeometry();
+  for ( WindowMap::ConstIterator itr = myWindows.begin(); s && itr != myWindows.end(); ++itr )
+    removeWindow( itr.key(), s->id() );
 }
 
 /*!Protected SLOT.On desktop activated.*/
@@ -1588,9 +1599,6 @@ void LightApp_Application::onMRUActivated( QString aName )
 void LightApp_Application::beforeCloseDoc( SUIT_Study* s )
 {
   CAM_Application::beforeCloseDoc( s );
-
-  for ( WindowMap::ConstIterator itr = myWindows.begin(); s && itr != myWindows.end(); ++itr )
-    removeWindow( itr.key(), s->id() );
 }
 
 /*!Update actions.*/
@@ -1628,8 +1636,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
   {
     OB_Browser* ob = new OB_Browser( desktop() );
     ob->setAutoUpdate( true );
-    //QA regression automatic tests
-    //ob->setAutoOpenLevel( 1 );
+    //ob->setAutoOpenLevel( 1 ); // commented by ASV as a fix to bug IPAL10107
     ob->setCaption( tr( "OBJECT_BROWSER" ) );
 
     OB_ListView* ob_list = dynamic_cast<OB_ListView*>( const_cast<QListView*>( ob->listView() ) );
@@ -1815,11 +1822,11 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( plot2dGroup, "columns", 1 );
 
   int occTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), occGroup,
-				   LightApp_Preferences::IntSpin, "OCCViewer", "trihedron_size" );
+				   LightApp_Preferences::DblSpin, "OCCViewer", "trihedron_size" );
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), occGroup,
 		       LightApp_Preferences::Color, "OCCViewer", "background" );
 
-  pref->setItemProperty( occTS, "min", 1 );
+  pref->setItemProperty( occTS, "min", 1.0E-06 );
   pref->setItemProperty( occTS, "max", 1000 );
 
   int isoU = pref->addPreference( tr( "PREF_ISOS_U" ), occGroup,
@@ -1834,12 +1841,12 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( isoV, "max", 100000 );
 
   int vtkTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), vtkGroup,
-				   LightApp_Preferences::IntSpin, "VTKViewer", "trihedron_size" );
+				   LightApp_Preferences::DblSpin, "VTKViewer", "trihedron_size" );
   pref->addPreference( tr( "PREF_RELATIVE_SIZE" ), vtkGroup, LightApp_Preferences::Bool, "VTKViewer", "relative_size" );
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), vtkGroup,
 		       LightApp_Preferences::Color, "VTKViewer", "background" );
 
-  pref->setItemProperty( vtkTS, "min", 1 );
+  pref->setItemProperty( vtkTS, "min", 1.0E-06 );
   pref->setItemProperty( vtkTS, "max", 150 );
 
   pref->addPreference( tr( "PREF_SHOW_LEGEND" ), plot2dGroup,
@@ -1941,7 +1948,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 #ifndef DISABLE_OCCVIEWER
   if ( sec == QString( "OCCViewer" ) && param == QString( "trihedron_size" ) )
   {
-    int sz = resMgr->integerValue( sec, param, -1 );
+    double sz = resMgr->doubleValue( sec, param, -1 );
     QPtrList<SUIT_ViewManager> lst;
     viewManagers( OCCViewer_Viewer::Type(), lst );
     for ( QPtrListIterator<SUIT_ViewManager> it( lst ); it.current() && sz >= 0; ++it )
@@ -1960,7 +1967,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 #ifndef DISABLE_VTKVIEWER
   if ( sec == QString( "VTKViewer" ) && (param == QString( "trihedron_size" ) || param == QString( "relative_size" )) )
   {
-    int sz = resMgr->integerValue( "VTKViewer", "trihedron_size", -1 );
+    double sz = resMgr->doubleValue( "VTKViewer", "trihedron_size", -1 );
     bool isRelative = resMgr->booleanValue( "VTKViewer", "relative_size", true );
     QPtrList<SUIT_ViewManager> lst;
 #ifndef DISABLE_SALOMEOBJECT
@@ -2373,6 +2380,10 @@ bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
     return false;
 
   QString lib = moduleLibrary( moduleTitle );
+  
+  //abd: changed libSalomePyQtGUI to SalomePyQtGUI for WIN32
+  bool isPythonModule = lib.contains("SalomePyQtGUI");
+
   QStringList paths;
 #ifdef WIN32
   paths = QStringList::split( ";", ::getenv( "PATH" ) );
@@ -2380,11 +2391,64 @@ bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
   paths = QStringList::split( ":", ::getenv( "LD_LIBRARY_PATH" ) );
 #endif
 
+  bool isLibFound = false;
   QStringList::const_iterator anIt = paths.begin(), aLast = paths.end();
   for( ; anIt!=aLast; anIt++ )
   {
     QFileInfo inf( Qtx::addSlash( *anIt ) + lib );
+    
     if( inf.exists() )
+      {
+	isLibFound = true;
+	break;
+      }
+  }
+  
+  if ( !isLibFound )
+    {
+      printf( "****************************************************************\n" );
+      printf( "*    Warning: library %s cannot be found\n", moduleTitle.latin1() );
+      printf( "*    Module will not be available\n" );
+      printf( "****************************************************************\n" );
+    }
+  else if ( !isPythonModule )
+    return true;
+
+  if ( isPythonModule )
+    {
+      QString pylib = moduleName( moduleTitle ) + QString(".py");
+      QString pylibgui = moduleName( moduleTitle ) + QString("GUI.py");
+
+      // Check the python library
+#ifdef WIN32
+      paths = QStringList::split( ";", ::getenv( "PATH" ) );
+#else
+      paths = QStringList::split( ":", ::getenv( "PYTHONPATH" ) );
+#endif
+      bool isPyLib = false, isPyGuiLib = false;
+      QStringList::const_iterator anIt = paths.begin(), aLast = paths.end();
+      for( ; anIt!=aLast; anIt++ )
+	{
+	  QFileInfo inf( Qtx::addSlash( *anIt ) + pylib );
+	  QFileInfo infgui( Qtx::addSlash( *anIt ) + pylibgui );
+    
+	  if( !isPyLib && inf.exists() )
+	    isPyLib = true;
+	  
+	  if( !isPyGuiLib && infgui.exists() )
+	    isPyGuiLib = true;
+	  
+	  if ( isPyLib && isPyGuiLib && isLibFound)
+	    return true;
+	}
+      
+      printf( "****************************************************************\n" );
+      printf( "*    Warning: python library for %s cannot be found:\n", moduleTitle.latin1() );
+      if (!isPyLib)
+	printf( "*    No module named %s\n", moduleName( moduleTitle ).latin1() );
+      if (!isPyGuiLib)
+	printf( "*    No module named %s\n", (moduleName( moduleTitle ) + QString("GUI")).latin1() );
+      printf( "****************************************************************\n" );
       return true;
   }
   return false;

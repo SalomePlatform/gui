@@ -466,7 +466,7 @@ SVTK_Renderer
 */
 void
 SVTK_Renderer
-::SetTrihedronSize(int theSize, const bool theRelative)
+::SetTrihedronSize(vtkFloatingPointType theSize, const bool theRelative)
 {
   if(myTrihedronSize != theSize || myIsTrihedronRelative != theRelative){
     myTrihedronSize = theSize;
@@ -478,7 +478,7 @@ SVTK_Renderer
 /*!
   \return size of the trihedron in percents from bounding box of the scene
 */
-int
+vtkFloatingPointType
 SVTK_Renderer
 ::GetTrihedronSize() const
 {

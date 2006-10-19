@@ -17,46 +17,40 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#ifndef LIGHTAPP_DATAOWNER_H
-#define LIGHTAPP_DATAOWNER_H
+#ifndef LIGHTAPP_EVENTFILTER_H
+#define LIGHTAPP_EVENTFILTER_H
 
 #include "LightApp.h"
-#include "SUIT_DataOwner.h"
 
-#ifndef DISABLE_SALOMEOBJECT
-  #include "SALOME_InteractiveObject.hxx"
+#include <qobject.h>
+
+#if defined WNT
+#pragma warning( disable: 4251 )
 #endif
-
-class LightApp_DataObject;
 
 /*!
-  This class provide data owner objects.
+  Class provide event filter.
 */
-class LIGHTAPP_EXPORT LightApp_DataOwner : public SUIT_DataOwner
+class LIGHTAPP_EXPORT LightApp_EventFilter: public QObject 
 {
 public:
-#ifndef DISABLE_SALOMEOBJECT
-    LightApp_DataOwner( const Handle(SALOME_InteractiveObject)& theIO );
-#endif
-    LightApp_DataOwner( const LightApp_DataObject* );
-    LightApp_DataOwner( const QString& );
-    virtual ~LightApp_DataOwner();
+  static void Init();
+  static void Destroy();
 
-    virtual bool isEqual( const SUIT_DataOwner& ) const;
-    virtual bool isLess( const SUIT_DataOwner& ) const;
-
-#ifndef DISABLE_SALOMEOBJECT
-    const Handle(SALOME_InteractiveObject)& IO() const;
-#endif
-    QString entry() const;
+protected:
+  LightApp_EventFilter();
+  virtual ~LightApp_EventFilter();
 
 private:
-    QString  myEntry;
-#ifndef DISABLE_SALOMEOBJECT
-    Handle(SALOME_InteractiveObject) myIO;
-#endif
+  /*! global event filter for qapplication */
+  virtual bool eventFilter( QObject* o, QEvent* e );
+
+private:
+  static LightApp_EventFilter* myFilter;
 };
 
-typedef SMART(LightApp_DataOwner) LightApp_DataOwnerPtr;
+#if defined WNT
+#pragma warning( default: 4251 )
+#endif
 
 #endif

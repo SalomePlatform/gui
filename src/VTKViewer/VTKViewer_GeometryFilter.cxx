@@ -60,7 +60,6 @@
 
 //#define USE_ROBUST_TRIANGULATION
 
-//----------------------------------------------------------------------------
 vtkCxxRevisionMacro(VTKViewer_GeometryFilter, "$Revision$");
 vtkStandardNewMacro(VTKViewer_GeometryFilter);
 

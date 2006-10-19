@@ -28,6 +28,8 @@
 #include "SUIT_ViewWindow.h"
 #include "SALOME_InteractiveObject.hxx"
 
+#include <qimage.h>
+
 class SUIT_Desktop;
 
 class VTKViewer_Actor;
@@ -47,6 +49,12 @@ class SVTK_RenderWindowInteractor;
 class vtkRenderer;
 class vtkRenderWindow;
 class vtkRenderWindowInteractor;
+
+namespace SVTK
+{
+  SVTK_EXPORT
+    int convertAction( const int );
+}
 
 //! Define a container for SALOME VTK view window
 class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
@@ -213,13 +221,13 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
   GetCubeAxes();
 
   //! Redirect the request to #SVTK_Renderer::GetTrihedronSize
-  int  
+  vtkFloatingPointType  
   GetTrihedronSize() const;
 
   //! Redirect the request to #SVTK_Renderer::SetTrihedronSize
   virtual
   void 
-  SetTrihedronSize( const int, const bool = true );
+  SetTrihedronSize( const vtkFloatingPointType, const bool = true );
 
   //! Redirect the request to #SVTK_Renderer::SetSelectionProp
   virtual
@@ -255,6 +263,9 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
   virtual
   bool
   eventFilter( QObject*, QEvent* );
+
+  virtual
+  void RefreshDumpImage();
   
 public slots:
   virtual
@@ -344,18 +355,15 @@ protected:
 
   QImage dumpView();
   virtual bool action( const int );
-
+  
   SVTK_View* myView;
   SVTK_MainWindow* myMainWindow;
   SVTK_ViewModelBase* myModel;
 
   QString myVisualParams; // used for delayed setting of view parameters 
-};
 
-extern "C"
-{
-SVTK_EXPORT
-  int convertAction( const int accelAction );
+private:
+  QImage myDumpImage;
 };
 
 #ifdef WIN32

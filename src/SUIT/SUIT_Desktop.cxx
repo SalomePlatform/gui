@@ -171,4 +171,10 @@ void SUIT_Desktop::logoClear()
     myLogoMgr->clear();
 }
 
-
+/*!
+  Emits activated signal
+*/
+void SUIT_Desktop::emitActivated()
+{
+  emit activated();
+}

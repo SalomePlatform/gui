@@ -209,7 +209,8 @@ protected:
       int dev = dev1*100+dev2, id = major;
       id*=100; id+=minor;
       id*=100; id+=release;
-      id*=10000; id+=dev;
+      id*=10000;
+      if ( dev > 0 ) id+=dev-10000;
       return id;
     }
 
@@ -246,6 +247,20 @@ public:
 
   virtual bool notify( QObject* receiver, QEvent* e )
   {
+#if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) < 0x060101
+    // Disable GUI user actions while python command is executed
+    if (SUIT_Session::IsPythonExecuted()) {
+      // Disable mouse and keyboard events
+      QEvent::Type aType = e->type();
+      if (aType == QEvent::MouseButtonPress || aType == QEvent::MouseButtonRelease ||
+          aType == QEvent::MouseButtonDblClick || aType == QEvent::MouseMove ||
+          aType == QEvent::Wheel || aType == QEvent::ContextMenu ||
+          aType == QEvent::KeyPress || aType == QEvent::KeyRelease ||
+          aType == QEvent::Accel || aType == QEvent::AccelOverride)
+        return false;
+    }
+#endif
+
     return myHandler ? myHandler->handle( receiver, e ) :
       QApplication::notify( receiver, e );
   }

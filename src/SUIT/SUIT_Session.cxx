@@ -35,6 +35,9 @@
 #include <dlfcn.h>
 #endif
 
+static bool   SUIT_Session_IsPythonExecuted = false;
+static QMutex SUIT_Session_PythonMutex;
+
 SUIT_Session* SUIT_Session::mySession = 0;
 
 /*! Constructor.*/
@@ -326,4 +329,29 @@ SUIT_ResourceMgr* SUIT_Session::createResourceMgr( const QString& appName ) cons
 void SUIT_Session::onApplicationActivated( SUIT_Application* app ) 
 {
   myActiveApp = app;
+}
+
+/*!
+  \retval Return TRUE, if a command is currently executed in Python Console,
+                 FALSE otherwise.
+*/
+bool SUIT_Session::IsPythonExecuted()
+{
+  bool ret;
+  SUIT_Session_PythonMutex.lock();
+  ret = SUIT_Session_IsPythonExecuted;
+  SUIT_Session_PythonMutex.unlock();
+  return ret;
+}
+
+/*!
+  Set value of boolean flag, being returned by method \a IsPythonExecuted().
+  It is supposed to set the flag to TRUE when any python command starts
+  and reset it to FALSE when the command finishes.
+*/
+void SUIT_Session::SetPythonExecuted(bool isPythonExecuted)
+{
+  SUIT_Session_PythonMutex.lock();
+  SUIT_Session_IsPythonExecuted = isPythonExecuted;
+  SUIT_Session_PythonMutex.unlock();
 }

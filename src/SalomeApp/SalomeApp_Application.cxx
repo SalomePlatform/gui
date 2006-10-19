@@ -61,7 +61,6 @@
 #include <SALOME_ModuleCatalog_impl.hxx>
 #include <SALOME_LifeCycleCORBA.hxx>
 
-#include <qmap.h>
 #include <qaction.h>
 #include <qcombobox.h>
 #include <qlistbox.h>
@@ -81,6 +80,8 @@
 
 #include <SALOMEDSClient_ClientFactory.hxx>
 
+#include <vector>
+
 /*!Create new instance of SalomeApp_Application.*/
 extern "C" SALOMEAPP_EXPORT SUIT_Application* createApplication()
 {
@@ -90,8 +91,7 @@ extern "C" SALOMEAPP_EXPORT SUIT_Application* createApplication()
 /*!Constructor.*/
 SalomeApp_Application::SalomeApp_Application()
 : LightApp_Application()
-{
-}
+{}
 
 /*!Destructor.
  *\li Destroy event filter.
@@ -148,11 +148,21 @@ void SalomeApp_Application::createActions()
 		tr( "MEN_DESK_REGISTRY_DISPLAY" ), tr( "PRP_DESK_REGISTRY_DISPLAY" ),
 		/*SHIFT+Key_D*/0, desk, false, this, SLOT( onRegDisplay() ) );
 
+  //SRN: BugID IPAL9021, add an action "Load"
+  createAction( FileLoadId, tr( "TOT_DESK_FILE_LOAD" ),
+                resourceMgr()->loadPixmap( "STD", tr( "ICON_FILE_OPEN" ) ),
+		tr( "MEN_DESK_FILE_LOAD" ), tr( "PRP_DESK_FILE_LOAD" ),
+		CTRL+Key_L, desk, false, this, SLOT( onLoadDoc() ) );
+  //SRN: BugID IPAL9021: End
+
+
   int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1 );
 
   // "Save GUI State" command is renamed to "Save VISU State" and 
   // creation of menu item is moved to VISU
   //  createMenu( SaveGUIStateId, fileMenu, 10, -1 ); 
+
+  createMenu( FileLoadId,   fileMenu, 0 );  //SRN: BugID IPAL9021, add a menu item "Load"
 
   createMenu( DumpStudyId, fileMenu, 10, -1 );
   createMenu( separator(), fileMenu, -1, 15, -1 );
@@ -379,6 +389,29 @@ void SalomeApp_Application::onPaste()
       catch(...) {
       }
     }
+}
+
+/*! Check if the study is locked */
+void SalomeApp_Application::onCloseDoc( bool ask )
+{
+  SalomeApp_Study* study = dynamic_cast<SalomeApp_Study*>(activeStudy());
+
+  if (study != NULL) {
+    _PTR(Study) stdDS = study->studyDS(); 
+    if(stdDS && stdDS->IsStudyLocked()) {
+      if ( SUIT_MessageBox::warn2( desktop(),
+				   QObject::tr( "WRN_WARNING" ),
+				   QObject::tr( "CLOSE_LOCKED_STUDY" ),
+				   QObject::tr( "BUT_YES" ), 
+				   QObject::tr( "BUT_NO" ),
+				   SUIT_YES, 
+				   SUIT_NO, 
+				   SUIT_NO ) == SUIT_NO ) return;
+	
+    }
+  }
+
+  LightApp_Application::onCloseDoc( ask );
 }
 
 /*!Sets enable or disable some actions on selection changed.*/

@@ -16,21 +16,35 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifndef SUIT_SELECTIONFILTER_H
-#define SUIT_SELECTIONFILTER_H
+// File:      Plot2d_ToolTip.h
+// Author:    Alexandre SOLOVYOV
 
-#include "SUIT.h"
+#ifndef PLOT2D_TOOLTIP_H
+#define PLOT2D_TOOLTIP_H
 
-class SUIT_DataOwner;
+#include <Plot2d.h>
+#include <QtxToolTip.h>
 
-/*!Base class.*/
-class SUIT_EXPORT SUIT_SelectionFilter
+class Plot2d_ViewFrame;
+class Plot2d_Plot2d;
+
+class PLOT2D_EXPORT Plot2d_ToolTip : public QtxToolTip
 {
-public:
-  SUIT_SelectionFilter();
-  virtual ~SUIT_SelectionFilter();
+  Q_OBJECT
 
-  virtual bool isOk( const SUIT_DataOwner* ) const = 0;
+public:
+  Plot2d_ToolTip( Plot2d_ViewFrame*, Plot2d_Plot2d* );
+  virtual ~Plot2d_ToolTip();
+
+public slots:
+  void onToolTip( QPoint, QString&, QFont&, QRect&, QRect& );
+
+protected:
+  virtual bool eventFilter( QObject*, QEvent* );
+
+private:
+  Plot2d_ViewFrame* myFrame;
+  Plot2d_Plot2d*    myPlot;
 };
 
 #endif

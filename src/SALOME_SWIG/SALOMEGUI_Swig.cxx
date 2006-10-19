@@ -554,7 +554,7 @@ public:
 	SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
 	if ( view ) {
 	  SALOME_Prs* aPrs = view->CreatePrs( myEntry );
-	  myResult = aPrs->IsNull();
+	  myResult = !aPrs->IsNull();
 	}
       }
     }

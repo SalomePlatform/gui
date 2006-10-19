@@ -101,7 +101,6 @@ public slots:
   virtual void          onOpenDoc();
   virtual bool          onOpenDoc( const QString& );
 
-  virtual void          onLoadDoc();
   virtual bool          onLoadDoc( const QString& );
 
   virtual void          onExit();
@@ -126,7 +125,7 @@ protected:
           MenuHelpId = 7
        };
 
-  enum {  FileNewId,   FileOpenId,   FileLoadId, FileCloseId,
+  enum {  FileNewId,   FileOpenId,   FileCloseId,
 	  FileSaveId,  FileSaveAsId, FileExitId, 
 	  ViewStatusBarId, ViewWindowsId, NewWindowId,
           EditCutId, EditCopyId, EditPasteId,

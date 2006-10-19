@@ -358,7 +358,7 @@ void OCCViewer_Viewer::setObjectsSelected(const AIS_ListOfInteractive& theList)
 {
   AIS_ListIteratorOfListOfInteractive aIt;
   for (aIt.Initialize(theList); aIt.More(); aIt.Next())
-    myAISContext->SetSelected(aIt.Value(), false);
+    myAISContext->AddOrRemoveSelected(aIt.Value(), false);
   myAISContext->UpdateCurrentViewer();
 }
 
@@ -517,7 +517,7 @@ void OCCViewer_Viewer::setColor( const Handle(AIS_InteractiveObject)& obj,
 void OCCViewer_Viewer::switchRepresentation( const Handle(AIS_InteractiveObject)& obj,
                                              int mode, bool update )
 {
-  myAISContext->SetDisplayMode( obj, (Standard_Integer)mode, true );
+  myAISContext->SetDisplayMode( obj, (Standard_Integer)mode, update );
   if( update )
     myV3dViewer->Update();
 }
@@ -572,11 +572,11 @@ void OCCViewer_Viewer::setTrihedronShown( const bool on )
 /*!
   \return trihedron size
 */
-int OCCViewer_Viewer::trihedronSize() const
+double OCCViewer_Viewer::trihedronSize() const
 {
-  int sz = 0;
+  double sz = 0;
   if ( !myTrihedron.IsNull() )
-    sz = (int)myTrihedron->Size();
+    sz = myTrihedron->Size();
   return sz;
 }
 
@@ -584,7 +584,7 @@ int OCCViewer_Viewer::trihedronSize() const
   Changes trihedron size
   \param sz - new size
 */
-void OCCViewer_Viewer::setTrihedronSize( const int sz )
+void OCCViewer_Viewer::setTrihedronSize( const double sz )
 {
   if ( !myTrihedron.IsNull() )
     myTrihedron->SetSize( sz );

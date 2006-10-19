@@ -1,6 +1,8 @@
 # common directories to put headerfiles
 inc_builddir=$(top_builddir)/include/salome
 
+MODULE_NAME=@MODULE_NAME@
+
 GUI_DISABLE_CORBA=@GUI_DISABLE_CORBA@
 DISABLE_GLVIEWER=@DISABLE_GLVIEWER@
 DISABLE_PYCONSOLE=@DISABLE_PYCONSOLE@

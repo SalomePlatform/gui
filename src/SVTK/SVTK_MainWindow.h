@@ -163,12 +163,12 @@ public:
 	      bool theIsUpdate = false);
 
   //! Redirect the request to #SVTK_Renderer::GetTrihedronSize
-  int  
+  vtkFloatingPointType  
   GetTrihedronSize();
 
   //! Redirect the request to #SVTK_Renderer::SetTrihedronSize
   void
-  SetTrihedronSize(const int theSize, const bool theRelative = true);
+  SetTrihedronSize(const vtkFloatingPointType theSize, const bool theRelative = true);
 
   //! Redirect the request to #SVTK_Renderer::AdjustActors
   void 

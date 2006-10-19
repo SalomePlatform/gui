@@ -23,6 +23,7 @@
 #include "Plot2d_FitDataDlg.h"
 #include "Plot2d_ViewWindow.h"
 #include "Plot2d_SetupViewDlg.h"
+#include "Plot2d_ToolTip.h"
 
 #include "SUIT_Tools.h"
 #include "SUIT_Session.h"
@@ -152,6 +153,8 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
   /* Plot 2d View */
   QVBoxLayout* aLayout = new QVBoxLayout( this ); 
   myPlot = new Plot2d_Plot2d( this );
+  new Plot2d_ToolTip( this, myPlot );
+
   aLayout->addWidget( myPlot );
 
 //  createActions();
@@ -1414,6 +1417,7 @@ void Plot2d_ViewFrame::plotMousePressed(const QMouseEvent& me )
       parent()->eventFilter(this, aEvent);
     }
   }
+  setFocus(); 
 }
 /*!
   Slot, called when user moves mouse
@@ -1425,41 +1429,11 @@ void Plot2d_ViewFrame::plotMouseMoved( const QMouseEvent& me )
 
   if ( myOperation != NoOpId) {
     if ( myOperation == ZoomId ) {
-      QwtDiMap xMap = myPlot->canvasMap( QwtPlot::xBottom );
-      QwtDiMap yMap = myPlot->canvasMap( QwtPlot::yLeft );
-
-      myPlot->setAxisScale( QwtPlot::yLeft, 
-          myPlot->invTransform( QwtPlot::yLeft, yMap.i1() ), 
-          myPlot->invTransform( QwtPlot::yLeft, yMap.i2() + dy ) );
-      myPlot->setAxisScale( QwtPlot::xBottom, 
-          myPlot->invTransform( QwtPlot::xBottom, xMap.i1() ), 
-          myPlot->invTransform( QwtPlot::xBottom, xMap.i2() - dx ) );
-      if (mySecondY) {
-        QwtDiMap y2Map = myPlot->canvasMap( QwtPlot::yRight );
-        myPlot->setAxisScale( QwtPlot::yRight, 
-          myPlot->invTransform( QwtPlot::yRight, y2Map.i1() ), 
-          myPlot->invTransform( QwtPlot::yRight, y2Map.i2() + dy ) );
-      }
-      myPlot->replot();
+      this->incrementalZoom( dx, dy ); 
       myPnt = me.pos();
     }
     else if ( myOperation == PanId ) {
-      QwtDiMap xMap = myPlot->canvasMap( QwtPlot::xBottom );
-      QwtDiMap yMap = myPlot->canvasMap( QwtPlot::yLeft );
-
-      myPlot->setAxisScale( QwtPlot::yLeft, 
-          myPlot->invTransform( QwtPlot::yLeft, yMap.i1()-dy ), 
-          myPlot->invTransform( QwtPlot::yLeft, yMap.i2()-dy ) );
-      myPlot->setAxisScale( QwtPlot::xBottom, 
-          myPlot->invTransform( QwtPlot::xBottom, xMap.i1()-dx ),
-          myPlot->invTransform( QwtPlot::xBottom, xMap.i2()-dx ) ); 
-      if (mySecondY) {
-        QwtDiMap y2Map = myPlot->canvasMap( QwtPlot::yRight );
-        myPlot->setAxisScale( QwtPlot::yRight,
-          myPlot->invTransform( QwtPlot::yRight, y2Map.i1()-dy ), 
-          myPlot->invTransform( QwtPlot::yRight, y2Map.i2()-dy ) );
-      }
-      myPlot->replot();
+      this->incrementalPan( dx, dy );
       myPnt = me.pos();
     }
   }
@@ -1979,4 +1953,98 @@ void Plot2d_ViewFrame::setVisualParameters( const QString& parameters )
     fitData( 0, xmin, xmax, ymin, ymax, y2min, y2max );
     fitData( 0, xmin, xmax, ymin, ymax, y2min, y2max );
   }  
+}
+
+/*!
+  Incremental zooming operation
+*/
+void Plot2d_ViewFrame::incrementalPan( const int incrX, const int incrY ) {
+  QwtDiMap xMap = myPlot->canvasMap( QwtPlot::xBottom );
+  QwtDiMap yMap = myPlot->canvasMap( QwtPlot::yLeft );
+  
+  myPlot->setAxisScale( QwtPlot::yLeft, 
+			myPlot->invTransform( QwtPlot::yLeft, yMap.i1()-incrY ), 
+			myPlot->invTransform( QwtPlot::yLeft, yMap.i2()-incrY ) );
+  myPlot->setAxisScale( QwtPlot::xBottom, 
+			myPlot->invTransform( QwtPlot::xBottom, xMap.i1()-incrX ),
+			myPlot->invTransform( QwtPlot::xBottom, xMap.i2()-incrX ) ); 
+  if (mySecondY) {
+    QwtDiMap y2Map = myPlot->canvasMap( QwtPlot::yRight );
+    myPlot->setAxisScale( QwtPlot::yRight,
+			  myPlot->invTransform( QwtPlot::yRight, y2Map.i1()-incrY ), 
+			  myPlot->invTransform( QwtPlot::yRight, y2Map.i2()-incrY ) );
+  }
+  myPlot->replot();
+}
+
+/*!
+  Incremental panning operation
+*/
+void Plot2d_ViewFrame::incrementalZoom( const int incrX, const int incrY ) {
+  QwtDiMap xMap = myPlot->canvasMap( QwtPlot::xBottom );
+  QwtDiMap yMap = myPlot->canvasMap( QwtPlot::yLeft );
+  
+  myPlot->setAxisScale( QwtPlot::yLeft, 
+			myPlot->invTransform( QwtPlot::yLeft, yMap.i1() ), 
+			myPlot->invTransform( QwtPlot::yLeft, yMap.i2() + incrY ) );
+  myPlot->setAxisScale( QwtPlot::xBottom, 
+			myPlot->invTransform( QwtPlot::xBottom, xMap.i1() ), 
+			myPlot->invTransform( QwtPlot::xBottom, xMap.i2() - incrX ) );
+  if (mySecondY) {
+    QwtDiMap y2Map = myPlot->canvasMap( QwtPlot::yRight );
+    myPlot->setAxisScale( QwtPlot::yRight, 
+			  myPlot->invTransform( QwtPlot::yRight, y2Map.i1() ), 
+			  myPlot->invTransform( QwtPlot::yRight, y2Map.i2() + incrY ) );
+  }
+  myPlot->replot();
+}
+
+#define INCREMENT_FOR_OP 10
+
+/*!
+  Performs incremental panning to the left
+*/
+void Plot2d_ViewFrame::onPanLeft()
+{
+  this->incrementalPan( -INCREMENT_FOR_OP, 0 );
+}
+
+/*!
+  Performs incremental panning to the right
+*/
+void Plot2d_ViewFrame::onPanRight()
+{
+  this->incrementalPan( INCREMENT_FOR_OP, 0 );
+}
+
+/*!
+  Performs incremental panning to the top
+*/
+void Plot2d_ViewFrame::onPanUp()
+{
+  this->incrementalPan( 0, -INCREMENT_FOR_OP );
+}
+
+/*!
+  Performs incremental panning to the bottom
+*/
+void Plot2d_ViewFrame::onPanDown()
+{
+  this->incrementalPan( 0, INCREMENT_FOR_OP );
+}
+
+/*!
+  Performs incremental zooming in
+*/
+void Plot2d_ViewFrame::onZoomIn()
+{
+  this->incrementalZoom( INCREMENT_FOR_OP, INCREMENT_FOR_OP );
+}
+
+/*!
+  Performs incremental zooming out
+*/
+void Plot2d_ViewFrame::onZoomOut()
+{
+  this->incrementalZoom( -INCREMENT_FOR_OP, -INCREMENT_FOR_OP );
 }

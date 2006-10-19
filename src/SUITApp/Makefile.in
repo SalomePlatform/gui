@@ -51,9 +51,23 @@ CPPFLAGS+=$(QT_INCLUDES) $(PYTHON_INCLUDES)
 
 LDFLAGS+=$(QT_MT_LIBS) 
 
+ifneq ($(DISABLE_PYCONSOLE),yes)
 LIBS+= -Xlinker -export-dynamic $(PYTHON_LIBS)
+endif
 LIBS+= -lsuit -lqtx
 LIBSFORBIN+= -lsuit -lqtx
+
+PLUGINDIR = $(top_builddir)/bin/salome/styles
+MYPLUGINDIR = styles
+
+$(MYPLUGINDIR): $(PLUGINDIR)
+	-$(RM) $@
+	ln -sf $< $@
+
+$(PLUGINDIR):
+	mkdir -p $@
+
+bin: $(MYPLUGINDIR)
 
 @CONCLUDE@
 

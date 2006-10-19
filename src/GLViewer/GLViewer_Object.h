@@ -50,7 +50,7 @@ class GLViewer_AspectLine;
 class GLViewer_Group;
 class GLViewer_CoordSystem;
 class GLViewer_Text;
-class GLViewer_Owner;
+//class GLViewer_Owner;
 
 /*! 
  * Class GLViewer_Object

@@ -31,7 +31,9 @@
 #include "SalomeApp.h"
 #include <LightApp_Application.h>
 
-#include <omniORB4/CORBA.h>
+#include <qmap.h>
+
+#include <CORBA.h>
 
 #include <SALOMEconfig.h>
 //#include CORBA_CLIENT_HEADER(SALOMEDS)
@@ -67,7 +69,7 @@ class SALOMEAPP_EXPORT SalomeApp_Application : public LightApp_Application
 public:
   enum { MenuToolsId = 5 };
   enum { DumpStudyId = LightApp_Application::UserID, LoadScriptId, PropertiesId,
-         CatalogGenId, RegDisplayId, SaveGUIStateId, UserID };
+         CatalogGenId, RegDisplayId, SaveGUIStateId, FileLoadId, UserID };
 
 public:
   SalomeApp_Application();
@@ -97,6 +99,7 @@ public slots:
   virtual void                        onCopy();
   virtual void                        onPaste();
   void                                onSaveGUIState();// called from VISU
+  virtual void                        onCloseDoc( bool ask = true);
 
 protected slots:
   void                                onStudySaved( SUIT_Study* );
@@ -127,6 +130,7 @@ private slots:
   void                                onCatalogGen();
   void                                onRegDisplay();
   void                                onOpenWith();
+
 };
 
 #ifdef WIN32

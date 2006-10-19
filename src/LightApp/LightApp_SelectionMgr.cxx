@@ -73,7 +73,7 @@ void LightApp_SelectionMgr::selectedObjects( SALOME_ListIO& theList, const QStri
 
   QMap<QString,int> entryMap;
 
-  QString entry;
+  QString entry, checkEntry;
   for ( SUIT_DataOwnerPtrList::const_iterator itr = aList.begin(); itr != aList.end(); ++itr )
   {
     const LightApp_DataOwner* owner = dynamic_cast<const LightApp_DataOwner*>( (*itr).operator->() );
@@ -85,9 +85,14 @@ void LightApp_SelectionMgr::selectedObjects( SALOME_ListIO& theList, const QStri
       return;
 
     entry = owner->entry();
+    // Entry to check object uniqueness.
+    // It is selected owner entry in the case, when we do not convert references,
+    // and entry of a real object, when we convert references.
+    checkEntry = entry;
     if ( convertReferences ) {
       QString refEntry = study->referencedToEntry( entry );
-      if( !entryMap.contains( entry ) ) {
+      checkEntry = refEntry;
+      if ( !entryMap.contains( checkEntry ) ) {
         if ( refEntry != entry ) {
           QString component = study->componentDataType( refEntry );
           theList.Append( new SALOME_InteractiveObject( refEntry, component, ""/*refobj->Name().c_str()*/ ) );
@@ -101,7 +106,7 @@ void LightApp_SelectionMgr::selectedObjects( SALOME_ListIO& theList, const QStri
 	theList.Append( owner->IO() );
     }
 
-    entryMap.insert(owner->entry(), 1);
+    entryMap.insert(checkEntry, 1);
   }
 }
 

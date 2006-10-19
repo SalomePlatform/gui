@@ -107,7 +107,7 @@ QString SUIT_ResourceMgr::findAppropriateUserFile( const QString& fname ) const
     if( id<0 )
       continue;
 
-    if( abs( id-id0 ) < abs( appr-id0 ) )
+    if( appr < 0 || abs( id-id0 ) < abs( appr-id0 ) )
     {
       appr = id;
       appr_file = d.absFilePath( *anIt );

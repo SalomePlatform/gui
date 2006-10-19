@@ -16,21 +16,31 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifndef SUIT_SELECTIONFILTER_H
-#define SUIT_SELECTIONFILTER_H
+#ifndef SPLOT2D_VIEWWINDOW_H
+#define SPLOT2D_VIEWWINDOW_H
 
-#include "SUIT.h"
+#ifdef WIN32
+#pragma warning( disable:4251 )
+#endif
 
-class SUIT_DataOwner;
+#include "SPlot2d.h"
+#include "Plot2d_ViewWindow.h"
 
-/*!Base class.*/
-class SUIT_EXPORT SUIT_SelectionFilter
+class SPLOT2D_EXPORT SPlot2d_ViewWindow : public Plot2d_ViewWindow
 {
-public:
-  SUIT_SelectionFilter();
-  virtual ~SUIT_SelectionFilter();
+  Q_OBJECT;
 
-  virtual bool isOk( const SUIT_DataOwner* ) const = 0;
+public:
+  SPlot2d_ViewWindow( SUIT_Desktop*, Plot2d_Viewer* );
+  virtual ~SPlot2d_ViewWindow();
+  
+protected:
+  virtual bool      action( const int );
+
 };
+
+#ifdef WIN32
+#pragma warning( default:4251 )
+#endif
 
 #endif

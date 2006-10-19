@@ -36,15 +36,11 @@
 #include <qdict.h>
 
 #include "utilities.h"
-
 #include <iostream>
 #include <string>
 #include <vector>
 
 #include <SUIT_Session.h>
-
-#include <string>
-#include <vector>
 
 #include "SALOMEDS_Tool.hxx"
 
@@ -292,7 +288,9 @@ void SalomeApp_Study::closeDocument(bool permanently)
   _PTR(Study) studyPtr = studyDS();
   if ( studyPtr )
   {
-    if(permanently) SalomeApp_Application::studyMgr()->Close( studyPtr );
+    if(permanently) {
+      SalomeApp_Application::studyMgr()->Close( studyPtr );
+    }
     SALOMEDSClient_Study* aStudy = 0;
     setStudyDS( _PTR(Study)(aStudy) );
   }

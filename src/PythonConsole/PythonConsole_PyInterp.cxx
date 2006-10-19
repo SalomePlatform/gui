@@ -80,11 +80,13 @@ bool PythonConsole_PyInterp::initState()
    * It is the caller responsability to release the lock if needed
    */
   PyEval_AcquireLock();
+#ifdef WNT 
   _tstate = PyGILState_GetThisThreadState();
   // if no thread state defined
   if ( _tstate )
     PyThreadState_Swap(_tstate);
   else
+#endif
   {
     _tstate = Py_NewInterpreter(); // create an interpreter and save current state
     PySys_SetArgv(PyInterp_base::_argc,PyInterp_base::_argv); // initialize sys.argv
@@ -95,7 +97,9 @@ bool PythonConsole_PyInterp::initState()
    * If builtinmodule has been initialized all the sub interpreters
    * will have the same __builtin__ module
    */
-  if(builtinmodule){ 
+ 
+  if(builtinmodule)
+    { 
     PyObject *m = PyImport_GetModuleDict();
     PyDict_SetItemString(m, "__builtin__", builtinmodule);
 //    SCRUTE(builtinmodule->ob_refcnt); // builtinmodule reference counter

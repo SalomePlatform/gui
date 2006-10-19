@@ -23,10 +23,14 @@ AC_CANONICAL_HOST
 PACKAGE=salome
 AC_SUBST(PACKAGE)
 
-VERSION=3.2.0
-XVERSION=0x030200
+VERSION=3.2.2
+XVERSION=0x030202
 AC_SUBST(VERSION)
 AC_SUBST(XVERSION)
+
+# set up MODULE_NAME variable for dynamic construction of directories (resources, etc.)
+MODULE_NAME=gui
+AC_SUBST(MODULE_NAME)
 
 ########################################################################
 # Check --disable-corba-gen and other --disable-* options
@@ -512,9 +516,9 @@ fi
 
 # make other build directories
 if test "$GUI_DISABLE_CORBA" == "yes"; then 
-  dir_variables="salome_adm adm_local doc bin/salome include/salome lib${LIB_LOCATION_SUFFIX}/salome share/salome/resources idl"
+  dir_variables="salome_adm adm_local doc bin/salome include/salome lib${LIB_LOCATION_SUFFIX}/salome share/salome/resources/${MODULE_NAME} idl"
 else
-  dir_variables="salome_adm adm_local doc bin/salome include/salome lib${LIB_LOCATION_SUFFIX}/salome share/salome/resources"
+  dir_variables="salome_adm adm_local doc bin/salome include/salome lib${LIB_LOCATION_SUFFIX}/salome share/salome/resources/${MODULE_NAME}"
 fi
 
 for rep in $dir_variables

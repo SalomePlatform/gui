@@ -30,6 +30,7 @@
 #include <PyInterp_Dispatcher.h>
 
 #include <SUIT_Tools.h>
+#include <SUIT_Session.h>
 
 #include <qmap.h>
 #include <qclipboard.h>
@@ -67,7 +68,9 @@ protected:
   virtual void execute(){
     if(myCommand != ""){
 //      if(MYDEBUG) MESSAGE("*** ExecCommand::execute() started");
+      SUIT_Session::SetPythonExecuted(true); // disable GUI user actions
       int ret = getInterp()->run( myCommand.latin1() );
+      SUIT_Session::SetPythonExecuted(false); // enable GUI user actions
 //      if(MYDEBUG) MESSAGE("ExecCommand::execute() - myInterp = "<<getInterp()<<"; myCommand = '"<<myCommand.latin1()<<"' - "<<ret);
       if(ret < 0)
 	myState = PyInterp_Event::ERROR;
@@ -213,13 +216,15 @@ void PythonConsole_PyEditor::contentsMouseReleaseEvent( QMouseEvent* event )
       int endLine = paragraphs() -1;
       col = charAt( event->pos(), &par );
       if ( col >= 0 && par >= 0 ) {
-	if ( par != endLine || col < PROMPT_SIZE )
-	  setCursorPosition( endLine, paragraphLength( endLine ) );
+	// PAL12896 -->
+	if ( par != endLine || col < PROMPT_SIZE ) {
+	  QPoint aPos = paragraphRect(endLine).bottomRight();
+	  QMouseEvent* e = new QMouseEvent(event->type(),aPos,event->button(),event->state());
+	  QTextEdit::contentsMouseReleaseEvent(e);
+	}
 	else
-	  setCursorPosition( par, col );
-	QApplication::clipboard()->setSelectionMode(TRUE);
-	paste();
-	QApplication::clipboard()->setSelectionMode(FALSE);
+	  QTextEdit::contentsMouseReleaseEvent(event);
+	// PAL12896 <--
       }
     }
   }

@@ -131,10 +131,10 @@ class SVTK_EXPORT SVTK_Renderer : public vtkObject
 
   //! Set size of the trihedron in percents from bounding box of the scene
   void
-  SetTrihedronSize(int theSize, const bool theRelative = true);
+  SetTrihedronSize(vtkFloatingPointType theSize, const bool theRelative = true);
  
   //! Get size of the trihedron in percents from bounding box of the scene
-  int  
+  vtkFloatingPointType  
   GetTrihedronSize() const;
 
   //! Shows if the size of the trihedron is relative
@@ -246,7 +246,7 @@ class SVTK_EXPORT SVTK_Renderer : public vtkObject
   //----------------------------------------------------------------------------
   vtkSmartPointer<SVTK_CubeAxesActor2D> myCubeAxes;
   vtkSmartPointer<VTKViewer_Trihedron> myTrihedron;  
-  int  myTrihedronSize;
+  vtkFloatingPointType myTrihedronSize;
   bool myIsTrihedronRelative;
   vtkFloatingPointType myBndBox[6];
 };

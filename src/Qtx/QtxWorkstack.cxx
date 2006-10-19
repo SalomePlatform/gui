@@ -1290,7 +1290,6 @@ void QtxWorkstack::splitterInfo( QSplitter* split, QString& info ) const
     }
   }
   info += ')';
-  printf( QString( info + '\n' ).latin1() );
 }
 
 
@@ -1371,13 +1370,13 @@ QStringList getChildren( const QString& str )
     {
       nOpen++;
       if ( nOpen == 1 )
-	      start = i;
+	start = i;
     }
     else if ( str[i] == ')' )
     {
       nOpen--;
       if ( nOpen == 0 ) 
-	      lst.append( str.mid( start, i-start+1 ) );
+	lst.append( str.mid( start, i-start+1 ) );
     }
     i++;
   }
@@ -1419,7 +1418,6 @@ QWidget* getView( const QWidget* parent, const QString& aName )
 */
 void QtxWorkstack::setSplitter( QSplitter* splitter, const QString& parameters, QMap< QSplitter*, QValueList<int> >& sMap )
 {
-  printf( QString(parameters+'\n').latin1() );
   if ( !::checkFormat( parameters ) ) {
     printf( "\nInvalid format of workstack parameters.  Positions of viewers can not be restored.\n" );
     return;
@@ -1450,7 +1448,7 @@ void QtxWorkstack::setSplitter( QSplitter* splitter, const QString& parameters, 
   //  for ( QStringList::Iterator tit = children.begin(); tit != children.end(); ++tit ) 
   //    printf ("   |-> child = [%s]\n", (*tit).latin1() );
 
-  for ( it = children.begin(); it != children.end(); ++it ) {
+  for ( QStringList::Iterator it = children.begin(); it != children.end(); ++it ) {
     if ( (*it).startsWith( "(splitter" ) ) {
       QSplitter* newSplitter = new QSplitter( splitter );
       setSplitter( newSplitter, *it, sMap );
@@ -1458,7 +1456,7 @@ void QtxWorkstack::setSplitter( QSplitter* splitter, const QString& parameters, 
     else if ( (*it).startsWith( "(views" ) ) {
       QtxWorkstackArea* newArea = createArea( splitter );
       QString activeViewName = ::getValue( *it, "active" );
-      QWidget* activeView = 0;
+      QWidget* activeView( 0 );
       activeViewName = activeViewName.mid( 1, activeViewName.length()-2 ); // chop off ' symbols
       int i = 0;
       QString viewName = ::getViewName( *it, i );

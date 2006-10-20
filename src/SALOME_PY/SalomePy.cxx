@@ -181,9 +181,9 @@ extern "C" PyObject *libSalomePy_getRenderWindowInteractor(PyObject *self, PyObj
 */
 static PyMethodDef Module_Methods[] = 
 {
-  { "getRenderer",               libSalomePy_getRenderer,     METH_NOARGS },
-  { "getRenderWindow",           libSalomePy_getRenderWindow, METH_NOARGS },
-  { "getRenderWindowInteractor", libSalomePy_getRenderWindow, METH_NOARGS },
+  { "getRenderer",               libSalomePy_getRenderer,               METH_NOARGS },
+  { "getRenderWindow",           libSalomePy_getRenderWindow,           METH_NOARGS },
+  { "getRenderWindowInteractor", libSalomePy_getRenderWindowInteractor, METH_NOARGS },
   { NULL, NULL }
 };
 

@@ -118,9 +118,7 @@ extern "C" PyObject *libSalomePy_getRenderer(PyObject *self, PyObject *args)
 {
   //return ProcessEvent( new TGetRendererEvent() );
   PyObject * aResult;
-  Py_BEGIN_ALLOW_THREADS // PAL12755
   aResult = ProcessEvent( new TGetRendererEvent() );
-  Py_END_ALLOW_THREADS // PAL12755
   return aResult;
 }
 
@@ -144,9 +142,7 @@ extern "C" PyObject *libSalomePy_getRenderWindow(PyObject *self, PyObject *args)
 {
   //return ProcessEvent( new TGetRenderWindowEvent() );
   PyObject * aResult;
-  Py_BEGIN_ALLOW_THREADS // PAL12755
   aResult = ProcessEvent( new TGetRenderWindowEvent() );
-  Py_END_ALLOW_THREADS // PAL12755
   return aResult;
 }
 
@@ -170,9 +166,7 @@ extern "C" PyObject *libSalomePy_getRenderWindowInteractor(PyObject *self, PyObj
 {
   //return ProcessEvent( new TGetRenderWindowInteractorEvent() );
   PyObject * aResult;
-  Py_BEGIN_ALLOW_THREADS // PAL12755
   aResult = ProcessEvent( new TGetRenderWindowInteractorEvent() );
-  Py_END_ALLOW_THREADS // PAL12755
   return aResult;
 }
 

@@ -39,6 +39,7 @@
 #include "LightApp_SelectionMgr.h"
 #include "OB_Browser.h"
 #include "QtxAction.h"
+#include "LogWindow.h"
 
 using namespace std;
 
@@ -1541,4 +1542,27 @@ void SalomePyQt::addPreferenceProperty( const int id,
     }
   };
   ProcessVoidEvent( new TEvent( id, prop, idx, var) );
+}
+
+/*!
+  SalomePyQt::message
+  Puts the message to the Log output window
+ */
+void SalomePyQt::message( const QString& msg, bool addSeparator )
+{
+  class TEvent: public SALOME_Event {
+    QString  myMsg;
+    bool     myAddSep;
+  public:
+    TEvent( const QString& msg, bool addSeparator ) 
+      : myMsg( msg ), myAddSep( addSeparator ) {}
+    virtual void Execute() {
+      if ( SalomeApp_Application* anApp = getApplication() ) {
+	LogWindow* lw = anApp->logWindow();
+	if ( lw )
+	  lw->putMessage( myMsg, myAddSep );
+      }
+    }
+  };
+  ProcessVoidEvent( new TEvent( msg, addSeparator ) );
 }

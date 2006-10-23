@@ -161,4 +161,6 @@ public:
                                                   const QString&,
 						  const int, 
 						  const QVariant& );
+
+  static void              message( const QString&, bool = true );
 };

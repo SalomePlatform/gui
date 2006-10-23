@@ -161,4 +161,6 @@ public:
                                                   const QString&, 
 						  const int, 
 						  const QVariant& ) /ReleaseGIL/ ;
+
+  static void              message( const QString&, bool = true ) /ReleaseGIL/ ;
 };

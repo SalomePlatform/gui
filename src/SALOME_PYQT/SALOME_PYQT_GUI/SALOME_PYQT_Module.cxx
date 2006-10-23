@@ -650,8 +650,7 @@ void SALOME_PYQT_Module::init( CAM_Application* app )
   // ... first put default values
   myWindowsMap.insert( SalomeApp_Application::WT_ObjectBrowser, Qt::DockLeft );
   myWindowsMap.insert( SalomeApp_Application::WT_PyConsole,     Qt::DockBottom );
-  // VSR: LogWindow is not yet implemented
-  // myWindowsMap.insert( SalomeApp_Application::WT_LogWindow,     Qt::DockBottom );
+  myWindowsMap.insert( SalomeApp_Application::WT_LogWindow,     Qt::DockBottom );
 
   if(PyObject_HasAttrString(myModule , "windows")){
     PyObjWrapper res1( PyObject_CallMethod( myModule, "windows", "" ) );

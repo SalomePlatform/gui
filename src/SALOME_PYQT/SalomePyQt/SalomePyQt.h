@@ -177,6 +177,7 @@ public:
 						  const QVariant& );
 
   static void              message( const QString&, bool = true );
+  static void              clearMessages();
 };
 
 #endif // SALOME_PYQT_H

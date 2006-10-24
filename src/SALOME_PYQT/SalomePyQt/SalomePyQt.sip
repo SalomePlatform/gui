@@ -163,4 +163,5 @@ public:
 						  const QVariant& );
 
   static void              message( const QString&, bool = true );
+  static void              clearMessages();
 };

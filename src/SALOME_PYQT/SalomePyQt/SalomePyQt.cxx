@@ -1566,3 +1566,23 @@ void SalomePyQt::message( const QString& msg, bool addSeparator )
   };
   ProcessVoidEvent( new TEvent( msg, addSeparator ) );
 }
+
+/*!
+  SalomePyQt::clearMessages
+  Removes all the messages from the Log output window
+ */
+void SalomePyQt::clearMessages()
+{
+  class TEvent: public SALOME_Event {
+  public:
+    TEvent() {}
+    virtual void Execute() {
+      if ( SalomeApp_Application* anApp = getApplication() ) {
+	LogWindow* lw = anApp->logWindow();
+	if ( lw )
+	  lw->clear();
+      }
+    }
+  };
+  ProcessVoidEvent( new TEvent() );
+}

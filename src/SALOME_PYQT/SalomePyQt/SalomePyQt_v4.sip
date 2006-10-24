@@ -163,4 +163,5 @@ public:
 						  const QVariant& ) /ReleaseGIL/ ;
 
   static void              message( const QString&, bool = true ) /ReleaseGIL/ ;
+  static void              clearMessages() /ReleaseGIL/ ;
 };

@@ -74,7 +74,7 @@ static PyObject* GetPyClass(const char* theClassName){
   return aPyClass;
 }
 
-static SVTK_ViewWindow* GetVTKViewWindow() {
+static SVTK_ViewWindow* GetVTKViewWindow( bool toCreate = false ) {
   SVTK_ViewWindow* aVW = NULL;
   if ( SUIT_Session::session() ) {
     // get application
@@ -84,13 +84,27 @@ static SVTK_ViewWindow* GetVTKViewWindow() {
       SalomeApp_Study* aStudy = dynamic_cast<SalomeApp_Study*>( anApp->activeStudy() );
       if ( aStudy ) {
 	// find or create VTK view manager
-	SVTK_ViewManager* aVM = dynamic_cast<SVTK_ViewManager*>( anApp->getViewManager( "VTKViewer", true ) );
-	if ( aVM ) {
-	  aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->getActiveView() );
-	  // VSR : When new view window is created it can be not active yet at this moment,
-	  // so the following is a some workaround
-	  if ( !aVW && !aVM->getViews().isEmpty() )
-	    aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->getViews()[ 0 ] );
+	if ( toCreate ) {
+	  SVTK_ViewManager* aVM = dynamic_cast<SVTK_ViewManager*>( anApp->createViewManager( "VTKViewer" ) );
+	  if ( aVM ) {
+	    aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->getActiveView() );
+	    if ( !aVW )
+	      aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->createViewWindow() );
+	    // VSR : When new view window is created it can be not active yet at this moment,
+	    // so the following is a some workaround
+	    if ( !aVW && !aVM->getViews().isEmpty() )
+	      aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->getViews()[ 0 ] );
+	  }
+	}
+	else {
+	  SVTK_ViewManager* aVM = dynamic_cast<SVTK_ViewManager*>( anApp->getViewManager( "VTKViewer", true ) );
+	  if ( aVM ) {
+	    aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->getActiveView() );
+	    // VSR : When new view window is created it can be not active yet at this moment,
+	    // so the following is a some workaround
+	    if ( !aVW && !aVM->getViews().isEmpty() )
+	      aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->getViews()[ 0 ] );
+	  }
 	}
       }
     }
@@ -105,9 +119,11 @@ class TGetRendererEvent: public SALOME_Event {
 public:
   typedef PyObject* TResult;
   TResult myResult;
-  TGetRendererEvent() : myResult( Py_None ) {}
+  int     myCreate;
+  TGetRendererEvent( bool toCreate )
+    : myResult( Py_None ), myCreate( toCreate )  {}
   virtual void Execute() {
-    if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow() ) {
+    if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( myCreate ) ) {
       PyObject* aPyClass = GetPyClass("vtkRenderer");
       vtkRenderer* aVTKObject = aVTKViewWindow->getRenderer();
       myResult = PyVTKObject_New(aPyClass,aVTKObject);
@@ -116,9 +132,12 @@ public:
 };
 extern "C" PyObject *libSalomePy_getRenderer(PyObject *self, PyObject *args)
 {
-  //return ProcessEvent( new TGetRendererEvent() );
-  PyObject * aResult;
-  aResult = ProcessEvent( new TGetRendererEvent() );
+  PyObject* aResult = Py_None;
+  int toCreate = 0;
+  if ( !PyArg_ParseTuple(args, "|i:test", &toCreate) )
+    PyErr_Print();
+  else
+    aResult = ProcessEvent( new TGetRendererEvent( toCreate ) );
   return aResult;
 }
 
@@ -129,9 +148,11 @@ class TGetRenderWindowEvent: public SALOME_Event {
 public:
   typedef PyObject* TResult;
   TResult myResult;
-  TGetRenderWindowEvent() : myResult( Py_None ) {}
+  int     myCreate;
+  TGetRenderWindowEvent( bool toCreate )
+    : myResult( Py_None ), myCreate( toCreate )  {}
   virtual void Execute() {
-    if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow() ) {
+    if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( myCreate ) ) {
       PyObject* aPyClass = GetPyClass("vtkRenderWindow");
       vtkRenderWindow* aVTKObject = aVTKViewWindow->getRenderWindow();
       myResult = PyVTKObject_New(aPyClass,aVTKObject);
@@ -140,9 +161,12 @@ public:
 };
 extern "C" PyObject *libSalomePy_getRenderWindow(PyObject *self, PyObject *args)
 {
-  //return ProcessEvent( new TGetRenderWindowEvent() );
-  PyObject * aResult;
-  aResult = ProcessEvent( new TGetRenderWindowEvent() );
+  PyObject* aResult = Py_None;
+  int toCreate = 0;
+  if ( !PyArg_ParseTuple(args, "|i:test", &toCreate) )
+    PyErr_Print();
+  else
+    aResult = ProcessEvent( new TGetRenderWindowEvent( toCreate ) );
   return aResult;
 }
 
@@ -153,9 +177,11 @@ class TGetRenderWindowInteractorEvent: public SALOME_Event {
 public:
   typedef PyObject* TResult;
   TResult myResult;
-  TGetRenderWindowInteractorEvent() : myResult( Py_None ) {}
+  int     myCreate;
+  TGetRenderWindowInteractorEvent( bool toCreate )
+    : myResult( Py_None ), myCreate( toCreate )  {}
   virtual void Execute() {
-    if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow() ) {
+    if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( myCreate ) ) {
       PyObject* aPyClass = GetPyClass("vtkRenderWindowInteractor");
       vtkRenderWindowInteractor* aVTKObject = aVTKViewWindow->getInteractor();
       myResult = PyVTKObject_New(aPyClass,aVTKObject);
@@ -164,9 +190,12 @@ public:
 };
 extern "C" PyObject *libSalomePy_getRenderWindowInteractor(PyObject *self, PyObject *args)
 {
-  //return ProcessEvent( new TGetRenderWindowInteractorEvent() );
-  PyObject * aResult;
-  aResult = ProcessEvent( new TGetRenderWindowInteractorEvent() );
+  PyObject* aResult = Py_None;
+  int toCreate = 0;
+  if ( !PyArg_ParseTuple(args, "|i:test", &toCreate) )
+    PyErr_Print();
+  else
+    aResult = ProcessEvent( new TGetRenderWindowInteractorEvent( toCreate ) );
   return aResult;
 }
 
@@ -175,9 +204,9 @@ extern "C" PyObject *libSalomePy_getRenderWindowInteractor(PyObject *self, PyObj
 */
 static PyMethodDef Module_Methods[] = 
 {
-  { "getRenderer",               libSalomePy_getRenderer,               METH_NOARGS },
-  { "getRenderWindow",           libSalomePy_getRenderWindow,           METH_NOARGS },
-  { "getRenderWindowInteractor", libSalomePy_getRenderWindowInteractor, METH_NOARGS },
+  { "getRenderer",               libSalomePy_getRenderer,               METH_VARARGS },
+  { "getRenderWindow",           libSalomePy_getRenderWindow,           METH_VARARGS },
+  { "getRenderWindowInteractor", libSalomePy_getRenderWindowInteractor, METH_VARARGS },
   { NULL, NULL }
 };
 

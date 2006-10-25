@@ -172,6 +172,8 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
   void
   Render(vtkRenderer *, vtkMapper *);
 
+  vtkDataSetMapper* GetDataSetMapper();
+
  protected:
   SVTK::Representation::Type myRepresentation;
   vtkProperty *myProperty;

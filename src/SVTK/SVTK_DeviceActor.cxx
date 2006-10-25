@@ -293,7 +293,6 @@ SVTK_DeviceActor
   myShrinkFilter->SetShrinkFactor(theValue);
 }
 
-
 /*!
   Set representation (VTK_SURFACE, VTK_POINTS, VTK_WIREFRAME and so on)
   param theMode - new mode
@@ -307,13 +306,17 @@ SVTK_DeviceActor
     switch(myRepresentation){
     case Points : 
     case Surface : 
-      myProperty->DeepCopy(GetProperty());
+      myProperty->SetAmbient(GetProperty()->GetAmbient());
+      myProperty->SetDiffuse(GetProperty()->GetDiffuse());
+      myProperty->SetSpecular(GetProperty()->GetSpecular());
     }
     
     switch(theMode){
     case Points : 
     case Surface : 
-      GetProperty()->DeepCopy(myProperty);
+      GetProperty()->SetAmbient(myProperty->GetAmbient());
+      GetProperty()->SetDiffuse(myProperty->GetDiffuse());
+      GetProperty()->SetSpecular(myProperty->GetSpecular());
       break;
     default:
       GetProperty()->SetAmbient(1.0);
@@ -489,4 +492,9 @@ SVTK_DeviceActor
 {
   factor = myPolygonOffsetFactor;
   units = myPolygonOffsetUnits;
+}
+
+vtkDataSetMapper* SVTK_DeviceActor::GetDataSetMapper()
+{
+  return myMapper;
 }

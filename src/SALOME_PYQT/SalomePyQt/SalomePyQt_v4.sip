@@ -148,6 +148,7 @@ public:
   static void              removeSettings  ( const QString& ) /ReleaseGIL/ ;
   static QString           getSetting      ( const QString& ) /ReleaseGIL/ ;
 
+  static int               addGlobalPreference( const QString& ) /ReleaseGIL/ ;
   static int               addPreference( const QString& ) /ReleaseGIL/ ;
   static int               addPreference( const QString&,
                                           const int, const int = -1,

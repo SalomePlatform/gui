@@ -151,6 +151,7 @@ public:
   QIconSet               loadIcon( const QString& fileName );
 
   /* working with preferences : open protected methods */
+  int                    addGlobalPreference( const QString& );
   int                    addPreference( const QString& );
   int                    addPreference( const QString&, const int, const int = -1,
 					const QString& = QString::null,

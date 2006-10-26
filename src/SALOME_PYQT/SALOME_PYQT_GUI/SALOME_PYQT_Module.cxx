@@ -25,6 +25,7 @@
 #include "STD_TabDesktop.h"
 #include "SalomeApp_Application.h"
 #include "SalomeApp_Study.h"
+#include "LightApp_Preferences.h"
 
 #include "QtxWorkstack.h"
 #include "QtxActionMenuMgr.h"
@@ -1495,6 +1496,15 @@ bool SALOME_PYQT_Module::clearMenu( const int id, const int menu, const bool rem
  * The next methods call the parent implementation.
  * This is done to open protected methods from LightApp_Module class.
  */
+
+int SALOME_PYQT_Module::addGlobalPreference( const QString& label )
+{
+  LightApp_Preferences* pref = preferences();
+  if ( !pref )
+    return -1;
+
+  return pref->addPreference( label, -1 );
+}
 
 int SALOME_PYQT_Module::addPreference( const QString& label )
 {

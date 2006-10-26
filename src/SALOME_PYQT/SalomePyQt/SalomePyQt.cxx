@@ -1366,6 +1366,32 @@ bool SalomePyQt::clearMenu( const int id, const int menu, const bool removeActio
 }
 
 /*!
+  SalomePyQt::addGlobalPreference
+  Adds global (not module) preferences group 
+ */
+class TAddGlobalPrefEvent: public SALOME_Event {
+public:
+  typedef int TResult;
+  TResult myResult;
+  QString myLabel;
+  TAddGlobalPrefEvent( const QString& label )
+    : myResult( -1 ), myLabel( label ) {}
+  virtual void Execute() {
+    if ( SalomeApp_Application* anApp = getApplication() ) {
+      SALOME_PYQT_Module* module = SALOME_PYQT_Module::getInitModule();
+      if ( !module )
+        module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );
+      if ( module )
+	myResult = module->addGlobalPreference( myLabel );
+    }
+  }
+};
+int SalomePyQt::addGlobalPreference( const QString& label )
+{
+  return ProcessEvent( new TAddGlobalPrefEvent( label ) );
+}
+
+/*!
   SalomePyQt::addPreference
   Adds preference 
  */

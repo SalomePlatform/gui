@@ -149,6 +149,7 @@ public:
   static void              removeSettings  ( const QString& );
   static QString           getSetting      ( const QString& );
 
+  static int               addGlobalPreference( const QString& );
   static int               addPreference( const QString& );
   static int               addPreference( const QString&, const int, int = -1,
 					  const QString& = QString::null,

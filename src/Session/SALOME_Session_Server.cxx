@@ -165,6 +165,7 @@ public:
   {
     if ( myExtAppName.isNull() || myExtAppVersion.isNull() ) {
       SALOME_ResourceMgr resMgr( "SalomeApp", QString( "%1Config" ) );
+      resMgr.loadLanguage( "LightApp",  "en" );
       resMgr.loadLanguage( "SalomeApp", "en" );
 
       myExtAppName = QObject::tr( "APP_NAME" ).stripWhiteSpace();
@@ -189,29 +190,30 @@ protected:
 
   virtual int userFileId( const QString& _fname ) const
   {
-    QRegExp exp( "\\.SalomeApprc\\.([a-zA-Z0-9.]+)$" );
-    QRegExp vers_exp( "^([0-9]+)([A-Za-z]?)([0-9]*)$" );
-
-    QString fname = QFileInfo( _fname ).fileName();
-    if( exp.exactMatch( fname ) )
-    {
-      QStringList vers = QStringList::split( ".", exp.cap( 1 ) );
-      int major=0, minor=0;
-      major = vers[0].toInt();
-      minor = vers[1].toInt();
-      if( vers_exp.search( vers[2] )==-1 )
-	return -1;
-      int release = 0, dev1 = 0, dev2 = 0;
-      release = vers_exp.cap( 1 ).toInt();
-      dev1 = vers_exp.cap( 2 )[ 0 ].latin1();
-      dev2 = vers_exp.cap( 3 ).toInt();
-
-      int dev = dev1*100+dev2, id = major;
-      id*=100; id+=minor;
-      id*=100; id+=release;
-      id*=10000;
-      if ( dev > 0 ) id+=dev-10000;
-      return id;
+    if ( !myExtAppName.isEmpty() ) {
+      QRegExp exp( QString( "\\.%1rc\\.([a-zA-Z0-9.]+)$" ).arg( myExtAppName ) );
+      QRegExp vers_exp( "^([0-9]+)([A-Za-z]?)([0-9]*)$" );
+      
+      QString fname = QFileInfo( _fname ).fileName();
+      if( exp.exactMatch( fname ) ) {
+	QStringList vers = QStringList::split( ".", exp.cap( 1 ) );
+	int major=0, minor=0;
+	major = vers[0].toInt();
+	minor = vers[1].toInt();
+	if( vers_exp.search( vers[2] )==-1 )
+	  return -1;
+	int release = 0, dev1 = 0, dev2 = 0;
+	release = vers_exp.cap( 1 ).toInt();
+	dev1 = vers_exp.cap( 2 )[ 0 ].latin1();
+	dev2 = vers_exp.cap( 3 ).toInt();
+	
+	int dev = dev1*100+dev2, id = major;
+	id*=100; id+=minor;
+	id*=100; id+=release;
+	id*=10000;
+	if ( dev > 0 ) id+=dev-10000;
+	return id;
+      }
     }
 
     return -1;

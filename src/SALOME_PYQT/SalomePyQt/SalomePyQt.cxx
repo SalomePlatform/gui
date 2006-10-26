@@ -818,6 +818,30 @@ void SalomePyQt::removeSetting( const QString& section, const QString& name )
 }
 
 /*!
+  SalomePyQt::hasSetting
+  Returns True if the settings exists
+*/
+class THasColorSettingEvent: public SALOME_Event {
+public:
+  typedef bool TResult;
+  TResult myResult;
+  QString mySection;
+  QString myName;
+  THasColorSettingEvent( const QString& section, const QString& name ) 
+    : mySection( section ), myName( name ) {}
+  virtual void Execute() {
+    if ( SUIT_Session::session() ) {
+      SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+      myResult = resMgr->hasValue( mySection, myName );
+    }
+  }
+};
+bool SalomePyQt::hasSetting( const QString& section, const QString& name )
+{
+  return ProcessEvent( new THasColorSettingEvent( section, name ) );
+}
+
+/*!
   SalomePyQt::getFileName
   Displays 'Open/Save file' dialog box and returns a user's choice (file name)
 */

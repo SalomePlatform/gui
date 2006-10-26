@@ -155,6 +155,7 @@ public:
   static QString           stringSetting ( const QString&, const QString&, const QString& = QString("") );
   static QColor            colorSetting  ( const QString&, const QString&, const QColor& = QColor() );
   static void              removeSetting ( const QString&, const QString& );
+  static bool              hasSetting    ( const QString&, const QString& );
   // obsolete
   static void              addStringSetting( const QString&, const QString&, bool = true );
   static void              addIntSetting   ( const QString&, const int,      bool = true );

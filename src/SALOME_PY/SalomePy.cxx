@@ -51,8 +51,10 @@ using namespace std;
   - getRenderer()
   - getRenderWindow()
   - getRenderWindowInteractor()
-  These methods open new VTK viewer if there is no one opened.
-  In case of error methods return None object in Python.
+  - showTrihedron()
+  These methods (except showTrihedron() ) open new VTK viewer
+  if there is no one opened.
+  In case of error all methods return None object in Python.
 */
 
 static PyObject* GetPyClass(const char* theClassName){
@@ -74,7 +76,9 @@ static PyObject* GetPyClass(const char* theClassName){
   return aPyClass;
 }
 
-static SVTK_ViewWindow* GetVTKViewWindow( bool toCreate = false ) {
+enum { __Find, __FindOrCreate, __Create };
+
+static SVTK_ViewWindow* GetVTKViewWindow( int toCreate = __FindOrCreate ) {
   SVTK_ViewWindow* aVW = NULL;
   if ( SUIT_Session::session() ) {
     // get application
@@ -84,7 +88,7 @@ static SVTK_ViewWindow* GetVTKViewWindow( bool toCreate = false ) {
       SalomeApp_Study* aStudy = dynamic_cast<SalomeApp_Study*>( anApp->activeStudy() );
       if ( aStudy ) {
 	// find or create VTK view manager
-	if ( toCreate ) {
+	if ( toCreate == __Create ) {
 	  SVTK_ViewManager* aVM = dynamic_cast<SVTK_ViewManager*>( anApp->createViewManager( "VTKViewer" ) );
 	  if ( aVM ) {
 	    aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->getActiveView() );
@@ -97,7 +101,7 @@ static SVTK_ViewWindow* GetVTKViewWindow( bool toCreate = false ) {
 	  }
 	}
 	else {
-	  SVTK_ViewManager* aVM = dynamic_cast<SVTK_ViewManager*>( anApp->getViewManager( "VTKViewer", true ) );
+	  SVTK_ViewManager* aVM = dynamic_cast<SVTK_ViewManager*>( anApp->getViewManager( "VTKViewer", toCreate == __FindOrCreate ) );
 	  if ( aVM ) {
 	    aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->getActiveView() );
 	    // VSR : When new view window is created it can be not active yet at this moment,
@@ -113,7 +117,9 @@ static SVTK_ViewWindow* GetVTKViewWindow( bool toCreate = false ) {
 }
 
 /*!
-  Get VTK renderer (opens new VTK window if there is no one opened)
+  Get VTK renderer.
+  Always opens new VTK window if <toCreate> parameter is non zero.
+  Otherwise opens new VTK window only if there is no one opened.
 */
 class TGetRendererEvent: public SALOME_Event {
 public:
@@ -123,7 +129,7 @@ public:
   TGetRendererEvent( bool toCreate )
     : myResult( Py_None ), myCreate( toCreate )  {}
   virtual void Execute() {
-    if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( myCreate ) ) {
+    if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( myCreate ? __Create : __FindOrCreate ) ) {
       PyObject* aPyClass = GetPyClass("vtkRenderer");
       vtkRenderer* aVTKObject = aVTKViewWindow->getRenderer();
       myResult = PyVTKObject_New(aPyClass,aVTKObject);
@@ -134,7 +140,7 @@ extern "C" PyObject *libSalomePy_getRenderer(PyObject *self, PyObject *args)
 {
   PyObject* aResult = Py_None;
   int toCreate = 0;
-  if ( !PyArg_ParseTuple(args, "|i:test", &toCreate) )
+  if ( !PyArg_ParseTuple(args, "|i:getRenderer", &toCreate) )
     PyErr_Print();
   else
     aResult = ProcessEvent( new TGetRendererEvent( toCreate ) );
@@ -142,7 +148,9 @@ extern "C" PyObject *libSalomePy_getRenderer(PyObject *self, PyObject *args)
 }
 
 /*!
-  Get VTK render window (opens new VTK window if there is no one opened)
+  Get VTK render window.
+  Always opens new VTK window if <toCreate> parameter is non zero.
+  Otherwise opens new VTK window only if there is no one opened.
 */
 class TGetRenderWindowEvent: public SALOME_Event {
 public:
@@ -152,7 +160,7 @@ public:
   TGetRenderWindowEvent( bool toCreate )
     : myResult( Py_None ), myCreate( toCreate )  {}
   virtual void Execute() {
-    if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( myCreate ) ) {
+    if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( myCreate ? __Create : __FindOrCreate ) ) {
       PyObject* aPyClass = GetPyClass("vtkRenderWindow");
       vtkRenderWindow* aVTKObject = aVTKViewWindow->getRenderWindow();
       myResult = PyVTKObject_New(aPyClass,aVTKObject);
@@ -163,7 +171,7 @@ extern "C" PyObject *libSalomePy_getRenderWindow(PyObject *self, PyObject *args)
 {
   PyObject* aResult = Py_None;
   int toCreate = 0;
-  if ( !PyArg_ParseTuple(args, "|i:test", &toCreate) )
+  if ( !PyArg_ParseTuple(args, "|i:getRenderWindow", &toCreate) )
     PyErr_Print();
   else
     aResult = ProcessEvent( new TGetRenderWindowEvent( toCreate ) );
@@ -171,7 +179,9 @@ extern "C" PyObject *libSalomePy_getRenderWindow(PyObject *self, PyObject *args)
 }
 
 /*!
-  Get VTK render window interactor (opens new VTK window if there is no one opened)
+  Get VTK render window interactor.
+  Always opens new VTK window if <toCreate> parameter is non zero.
+  Otherwise opens new VTK window only if there is no one opened.
 */
 class TGetRenderWindowInteractorEvent: public SALOME_Event {
 public:
@@ -181,7 +191,7 @@ public:
   TGetRenderWindowInteractorEvent( bool toCreate )
     : myResult( Py_None ), myCreate( toCreate )  {}
   virtual void Execute() {
-    if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( myCreate ) ) {
+    if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( myCreate ? __Create : __FindOrCreate ) ) {
       PyObject* aPyClass = GetPyClass("vtkRenderWindowInteractor");
       vtkRenderWindowInteractor* aVTKObject = aVTKViewWindow->getInteractor();
       myResult = PyVTKObject_New(aPyClass,aVTKObject);
@@ -192,10 +202,37 @@ extern "C" PyObject *libSalomePy_getRenderWindowInteractor(PyObject *self, PyObj
 {
   PyObject* aResult = Py_None;
   int toCreate = 0;
-  if ( !PyArg_ParseTuple(args, "|i:test", &toCreate) )
+  if ( !PyArg_ParseTuple(args, "|i:getRenderWindowInteractor", &toCreate) )
     PyErr_Print();
   else
     aResult = ProcessEvent( new TGetRenderWindowInteractorEvent( toCreate ) );
+  return aResult;
+}
+
+/*!
+  Show/hide trihedron in the current VTK viewer (if there is one)
+*/
+extern "C" PyObject *libSalomePy_showTrihedron(PyObject *self, PyObject *args)
+{
+  class TEvent: public SALOME_Event {
+  public:
+    int myShow;
+    TEvent( int bShow )
+      : myShow( bShow )  {}
+    virtual void Execute() {
+      if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( __Find ) ) {
+	if ( aVTKViewWindow->isTrihedronDisplayed() != myShow )
+	  aVTKViewWindow->onViewTrihedron();
+      }
+    }
+  };
+  
+  PyObject* aResult = Py_None;
+  int bShow = 0;
+  if ( !PyArg_ParseTuple(args, "i:showTrihedron", &bShow) )
+    PyErr_Print();
+  else
+    ProcessVoidEvent( new TEvent( bShow ) );
   return aResult;
 }
 
@@ -207,6 +244,7 @@ static PyMethodDef Module_Methods[] =
   { "getRenderer",               libSalomePy_getRenderer,               METH_VARARGS },
   { "getRenderWindow",           libSalomePy_getRenderWindow,           METH_VARARGS },
   { "getRenderWindowInteractor", libSalomePy_getRenderWindowInteractor, METH_VARARGS },
+  { "showTrihedron",             libSalomePy_showTrihedron,             METH_VARARGS },
   { NULL, NULL }
 };
 

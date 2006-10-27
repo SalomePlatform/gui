@@ -170,6 +170,12 @@ public:
    */
   virtual int         GetVisibleActorCount(vtkRenderer* theRenderer);
   
+  /*! Check if actor belongs to the trihedron object
+   * \param theActor - vtkActor pointer
+   * \retval Return true if the actor belongs to the trihedron object
+   */
+  virtual bool        OwnActor(const vtkActor* theActor);
+
 protected:
   /*! Actor collection*/
   vtkActorCollection* myPresent;
@@ -234,6 +240,12 @@ public:
    * \retval Return myArrowActor
    */
   virtual VTKViewer_UnScaledActor* GetArrow() { return myArrowActor; }
+
+  /*! Check if actor belongs to the axis object
+   * \param theActor - vtkActor pointer
+   * \retval Return true if the actor belongs to the axis object
+   */
+  virtual bool OwnActor(const vtkActor* theActor);
   
 protected:
   /*! Visibility flag.

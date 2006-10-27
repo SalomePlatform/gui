@@ -569,3 +569,25 @@ bool SALOMEGUI_Swig::IsInCurrentView( const char* theEntry )
 {
   return ProcessEvent( new TIsInViewerEvent( theEntry ) );
 }
+
+/*!
+  Updates (repaint) current view
+*/
+void SALOMEGUI_Swig::UpdateView()
+{
+  class TEvent: public SALOME_Event {
+  public:
+    TEvent() {}
+    virtual void Execute() {
+      if ( SalomeApp_Application* anApp = getApplication() ) {
+	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
+	if ( window ) {
+	  SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
+	  if ( view )
+	    view->Repaint();
+	}
+      }
+    }
+  };
+  ProcessVoidEvent( new TEvent() );
+}

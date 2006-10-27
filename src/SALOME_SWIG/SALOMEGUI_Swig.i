@@ -80,6 +80,7 @@ class SALOMEGUI_Swig
   void DisplayAll();
   void EraseAll();
   bool IsInCurrentView(const char *Entry);
+  void UpdateView();
 
 /* get component name/username */
   const char* getComponentName( const char* ComponentUserName );

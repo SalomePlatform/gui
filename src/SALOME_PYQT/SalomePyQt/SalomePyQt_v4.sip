@@ -132,10 +132,11 @@ public:
 
   static void              addSetting    ( const QString&, const QString&, const double ) /ReleaseGIL/ ;
   static void              addSetting    ( const QString&, const QString&, const int /Constrained/ ) /ReleaseGIL/ ;
+  static void              addSetting    ( const QString&, const QString&, const bool, const int ) /ReleaseGIL/ ;
   static void              addSetting    ( const QString&, const QString&, const QString& ) /ReleaseGIL/ ;
   static void              addSetting    ( const QString&, const QString&, const QColor& ) /ReleaseGIL/ ;
   static int               integerSetting( const QString&, const QString&, const int = 0 ) /ReleaseGIL/ ;
-  static double            doubleSetting ( const QString&, const QString&, const int = 0 ) /ReleaseGIL/ ;
+  static double            doubleSetting ( const QString&, const QString&, const double = 0 ) /ReleaseGIL/ ;
   static bool              boolSetting   ( const QString&, const QString&, const bool = false ) /ReleaseGIL/ ;
   static QString           stringSetting ( const QString&, const QString&, const QString& = QString("") ) /ReleaseGIL/ ;
   static QColor            colorSetting  ( const QString&, const QString&, const QColor& = QColor() ) /ReleaseGIL/ ;
@@ -146,6 +147,7 @@ public:
   static void              addStringSetting( const QString&, const QString&, bool = true ) /ReleaseGIL/ ;
   static void              addIntSetting   ( const QString&, const int,      bool = true ) /ReleaseGIL/ ;
   static void              addDoubleSetting( const QString&, const double,   bool = true ) /ReleaseGIL/ ;
+  static void              addBoolSetting  ( const QString&, const bool,     bool = true ) /ReleaseGIL/ ;
   static void              removeSettings  ( const QString& ) /ReleaseGIL/ ;
   static QString           getSetting      ( const QString& ) /ReleaseGIL/ ;
 

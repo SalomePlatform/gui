@@ -497,6 +497,35 @@ void SalomePyQt::addDoubleSetting( const QString& name, const double value, bool
 }
 
 /*!
+  SalomePyQt::addBoolSetting
+  Adds an boolean setting to the application preferences
+  <autoValue> parameter is obsolete parameter and currently not used. To be removed lately.
+  This function is obsolete. Use addSetting() instead.
+*/
+void SalomePyQt::addBoolSetting( const QString& name, const bool value, bool autoValue )
+{
+  class TEvent: public SALOME_Event {
+    QString myName;
+    bool    myValue;
+    bool    myAutoValue;
+  public:
+    TEvent( const QString& name, const bool value, bool autoValue ) 
+      : myName( name ), myValue( value ), myAutoValue( autoValue ) {}
+    virtual void Execute() {
+      if ( SUIT_Session::session() ) {
+        SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+	QStringList sl = QStringList::split( ":", myName );
+	QString _sec = sl.count() > 1 ? sl[ 0 ].stripWhiteSpace() : QString( DEFAULT_SECTION );
+	QString _nam = sl.count() > 1 ? sl[ 1 ].stripWhiteSpace() : sl.count() > 0 ? sl[ 0 ].stripWhiteSpace() : QString( "" );
+	if ( !_sec.isEmpty() && !_nam.isEmpty() )
+          resMgr->setValue( _sec, _nam, myValue );
+      }
+    }
+  };
+  ProcessVoidEvent( new TEvent( name, value, autoValue ) );
+}
+
+/*!
   SalomePyQt::removeSettings
   Removes a setting from the application preferences
   This function is obsolete. Use removeSetting() instead.
@@ -590,6 +619,32 @@ void SalomePyQt::addSetting( const QString& section, const QString& name, const 
     int     myValue;
   public:
     TEvent( const QString& section, const QString& name, int value ) 
+      : mySection( section ), myName( name ), myValue( value ) {}
+    virtual void Execute() {
+      if ( SUIT_Session::session() ) {
+        SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+	if ( !mySection.isEmpty() && !myName.isEmpty() )
+          resMgr->setValue( mySection, myName, myValue );
+      }
+    }
+  };
+  ProcessVoidEvent( new TEvent( section, name, value ) );
+}
+
+/*!
+  SalomePyQt::addSetting
+  Adds a boolean setting to the application preferences
+  (note: the last "dumb" parameter is used in order to avoid
+  sip compilation error because of conflicting int and bool types)
+*/
+void SalomePyQt::addSetting( const QString& section, const QString& name, const bool value, const int )
+{
+  class TEvent: public SALOME_Event {
+    QString mySection;
+    QString myName;
+    bool    myValue;
+  public:
+    TEvent( const QString& section, const QString& name, bool value ) 
       : mySection( section ), myName( name ), myValue( value ) {}
     virtual void Execute() {
       if ( SUIT_Session::session() ) {
@@ -703,7 +758,7 @@ public:
 /*!
   \return an double setting from the application preferences
 */
-double SalomePyQt::doubleSetting( const QString& section, const QString& name, const int def )
+double SalomePyQt::doubleSetting( const QString& section, const QString& name, const double def )
 {
   return ProcessEvent( new TGetDblSettingEvent( section, name, def ) );
 }

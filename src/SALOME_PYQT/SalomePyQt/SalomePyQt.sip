@@ -133,10 +133,11 @@ public:
 
   static void              addSetting    ( const QString&, const QString&, const double );
   static void              addSetting    ( const QString&, const QString&, const int /Constrained/ );
+  static void              addSetting    ( const QString&, const QString&, const bool, const int );
   static void              addSetting    ( const QString&, const QString&, const QString& );
   static void              addSetting    ( const QString&, const QString&, const QColor& );
   static int               integerSetting( const QString&, const QString&, int = 0 );
-  static double            doubleSetting ( const QString&, const QString&, int = 0 );
+  static double            doubleSetting ( const QString&, const QString&, double = 0 );
   static bool              boolSetting   ( const QString&, const QString&, bool = false );
   static QString           stringSetting ( const QString&, const QString&, const QString& = QString("") );
   static QColor            colorSetting  ( const QString&, const QString&, const QColor& = QColor() );
@@ -147,6 +148,7 @@ public:
   static void              addStringSetting( const QString&, const QString&, bool = true );
   static void              addIntSetting   ( const QString&, const int,      bool = true );
   static void              addDoubleSetting( const QString&, const double,   bool = true );
+  static void              addBoolSetting  ( const QString&, const bool,     bool = true );
   static void              removeSettings  ( const QString& );
   static QString           getSetting      ( const QString& );
 

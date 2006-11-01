@@ -45,6 +45,27 @@
 
 using namespace std;
 
+#define PUBLISH_ENUM(i)                              \
+{                                                    \
+  PyObject *w;                                       \
+  int rc;                                            \
+  if ( ( w = PyInt_FromLong( i ) ) == NULL ) return; \
+  rc = PyDict_SetItemString( aModuleDict, #i, w );   \
+  Py_DECREF( w );                                    \
+  if ( rc < 0 ) return;                              \
+}
+
+// enumeration : view type
+enum {
+  ViewFront,     // fron view
+  ViewBack,      // back view
+  ViewTop,       // top view
+  ViewBottom,    // bottom view
+  ViewRight,     // right view
+  ViewLeft       // left view
+};
+
+
 /*!
   VSR : 19.04.05 : Reimplemented for new SALOME GUI (SUIT-based)
   All methods are implemented using Event mechanism:
@@ -76,7 +97,10 @@ static PyObject* GetPyClass(const char* theClassName){
   return aPyClass;
 }
 
-enum { __Find, __FindOrCreate, __Create };
+// internal enum: find or create VTK window
+enum { __Find,          // try to find only 
+       __FindOrCreate,  // try to find: if not found - create new 
+       __Create };      // try to find: if not found - create new 
 
 static SVTK_ViewWindow* GetVTKViewWindow( int toCreate = __FindOrCreate ) {
   SVTK_ViewWindow* aVW = NULL;
@@ -237,6 +261,88 @@ extern "C" PyObject *libSalomePy_showTrihedron(PyObject *self, PyObject *args)
 }
 
 /*!
+  Fit all the contents in the current VTK viewer (if there is one)
+*/
+extern "C" PyObject *libSalomePy_fitAll(PyObject *self, PyObject *args)
+{
+  class TEvent: public SALOME_Event {
+  public:
+    TEvent() {}
+    virtual void Execute() {
+      if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( __Find ) ) {
+	aVTKViewWindow->onFitAll();
+      }
+    }
+  };
+  
+  ProcessVoidEvent( new TEvent() );
+  return Py_None;
+}
+
+/*!
+  Set view type fot the current VTK viewer (if there is one)
+*/
+extern "C" PyObject *libSalomePy_setView(PyObject *self, PyObject *args)
+{
+  class TEvent: public SALOME_Event {
+  public:
+    long myType;
+    TEvent( long type ) : myType( type) {}
+    virtual void Execute() {
+      if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( __Find ) ) {
+	switch( myType ) {
+	case ViewFront:
+	  aVTKViewWindow->onFrontView();  break;
+	case ViewBack:
+	  aVTKViewWindow->onBackView();   break;
+	case ViewTop:
+	  aVTKViewWindow->onTopView();    break;
+	case ViewBottom:
+	  aVTKViewWindow->onBottomView(); break;
+	case ViewRight:
+	  aVTKViewWindow->onRightView();  break;
+	case ViewLeft:
+	  aVTKViewWindow->onLeftView();   break;
+	default:
+	  PyErr_Format(PyExc_ValueError,"setView%: wrong parameter value; must be between %d and %d", ViewFront, ViewLeft );
+	  break;
+	}
+      }
+    }
+  };
+  
+  long type = -1;
+  if ( !PyArg_ParseTuple(args, "l:setView", &type) )
+    PyErr_Print();
+  else {
+    ProcessVoidEvent( new TEvent( type ) );
+    if( PyErr_Occurred() )
+      PyErr_Print();
+  }
+  return Py_None;
+}
+
+/*!
+  Reset contents of the current VTK viewer (if there is one)
+  to the default state
+*/
+extern "C" PyObject *libSalomePy_resetView(PyObject *self, PyObject *args)
+{
+  class TEvent: public SALOME_Event {
+  public:
+    TEvent() {}
+    virtual void Execute() {
+      if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( __Find ) ) {
+	aVTKViewWindow->onResetView();
+      }
+    }
+  };
+  
+  ProcessVoidEvent( new TEvent() );
+  return Py_None;
+}
+
+/*!
   Library initialization
 */
 static PyMethodDef Module_Methods[] = 
@@ -245,15 +351,30 @@ static PyMethodDef Module_Methods[] =
   { "getRenderWindow",           libSalomePy_getRenderWindow,           METH_VARARGS },
   { "getRenderWindowInteractor", libSalomePy_getRenderWindowInteractor, METH_VARARGS },
   { "showTrihedron",             libSalomePy_showTrihedron,             METH_VARARGS },
+  { "fitAll",                    libSalomePy_fitAll,                    METH_NOARGS  },
+  { "setView",                   libSalomePy_setView,                   METH_VARARGS },
+  { "resetView",                 libSalomePy_resetView,                 METH_NOARGS  },
   { NULL, NULL }
 };
 
 extern "C" void initlibSalomePy()
 {
   static char modulename[] = "libSalomePy";
-  /*PyObject* aModule = */Py_InitModule(modulename, Module_Methods);
-  if(PyErr_Occurred()){
+  // init module
+  PyObject* aModule = Py_InitModule(modulename, Module_Methods);
+  if( PyErr_Occurred() ) {
     PyErr_Print();
     return;
   }
+  // get module's dictionary
+  PyObject *aModuleDict = PyModule_GetDict( aModule );
+  if ( aModuleDict == NULL )
+    return;
+  // add View type enumeration
+  PUBLISH_ENUM( ViewFront );
+  PUBLISH_ENUM( ViewBack );
+  PUBLISH_ENUM( ViewTop );
+  PUBLISH_ENUM( ViewBottom );
+  PUBLISH_ENUM( ViewRight );
+  PUBLISH_ENUM( ViewLeft );
 }

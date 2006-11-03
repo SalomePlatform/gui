@@ -1551,6 +1551,8 @@ void LightApp_Application::onPreferenceChanged( QString& modName, QString& secti
     sMod->preferencesChanged( section, param );
   else
     preferencesChanged( section, param );
+  // emit signal to allow additional preferences changing processing
+  emit preferenceChanged( modName, section, param );
 }
 
 /*!Private SLOT. On open document with name \a aName.*/

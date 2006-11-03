@@ -282,6 +282,8 @@ bool SALOME_PYQT_Module::activateModule( SUIT_Study* theStudy )
   if ( menuMgr() )
     connect( menuMgr(), SIGNAL( menuHighlighted( int, int ) ),
 	     this,      SLOT( onMenuHighlighted( int, int ) ) );
+  connect( getApp(), SIGNAL( preferenceChanged( const QString&, const QString&, const QString& ) ),
+	   this,     SLOT(   preferenceChanged( const QString&, const QString&, const QString& ) ) );
 
   // create menus & toolbars from XML file if required
   if ( myXmlHandler )
@@ -325,6 +327,8 @@ bool SALOME_PYQT_Module::deactivateModule( SUIT_Study* theStudy )
   if ( menuMgr() )
     disconnect( menuMgr(), SIGNAL( menuHighlighted( int, int ) ),
 		this,      SLOT( onMenuHighlighted( int, int ) ) );
+  disconnect( getApp(), SIGNAL( preferenceChanged( const QString&, const QString&, const QString& ) ),
+	      this,     SLOT(   preferenceChanged( const QString&, const QString&, const QString& ) ) );
 
   // remove menus & toolbars created from XML file if required
   if ( myXmlHandler )
@@ -360,6 +364,49 @@ bool SALOME_PYQT_Module::deactivateModule( SUIT_Study* theStudy )
   PyInterp_Dispatcher::Get()->Exec( new DeactivateReq( myInterp, theStudy, this ) );
 
   return SalomeApp_Module::deactivateModule( theStudy );
+}
+
+/*!
+  Preferences changing (application) - called when preference is changed
+*/
+void SALOME_PYQT_Module::preferenceChanged( const QString& module, 
+					    const QString& section, 
+					    const QString& setting )
+{
+  MESSAGE( "SALOME_PYQT_Module::preferenceChanged");
+
+  // perform synchronous request to Python event dispatcher
+  class Event : public PyInterp_LockRequest
+  {
+  public:
+    Event( PyInterp_base*      _py_interp,
+	   SALOME_PYQT_Module* _obj,
+	   const QString&      _section,
+	   const QString&      _setting )
+      : PyInterp_LockRequest( _py_interp, 0, true ), // this request should be processed synchronously (sync == true)
+        myObj    ( _obj ),
+        mySection( _section ),
+        mySetting( _setting ) {}
+
+  protected:
+    virtual void execute()
+    {
+      myObj->prefChanged( mySection, mySetting );
+    }
+
+  private:
+    SALOME_PYQT_Module* myObj;
+    QString mySection, mySetting;
+  };
+
+  if ( module != moduleName() ) {
+    // Module's preferences are processed by preferencesChanged() method
+    // ...
+    // Posting the request only if dispatcher is not busy!
+    // Executing the request synchronously
+    if ( !PyInterp_Dispatcher::Get()->IsBusy() )
+      PyInterp_Dispatcher::Get()->Exec( new Event( myInterp, this, section, setting ) );
+  }
 }
 
 /*!
@@ -545,7 +592,7 @@ void SALOME_PYQT_Module::contextMenuPopup( const QString& theContext, QPopupMenu
  */
 void SALOME_PYQT_Module::createPreferences()
 {
-  MESSAGE( "SALOME_PYQT_Module::createPr eferences");
+  MESSAGE( "SALOME_PYQT_Module::createPreferences");
   // perform synchronous request to Python event dispatcher
   class Event : public PyInterp_LockRequest
   {
@@ -598,6 +645,44 @@ void SALOME_PYQT_Module::viewManagers( QStringList& listik ) const
     listik.append( *it );
   }
 }
+
+/*!
+  Preferences changing (module) - called when the module's preferences are changed
+*/
+void SALOME_PYQT_Module::preferencesChanged( const QString& section, const QString& setting )
+{
+  MESSAGE( "SALOME_PYQT_Module::preferencesChanged");
+
+  // perform synchronous request to Python event dispatcher
+  class Event : public PyInterp_LockRequest
+  {
+  public:
+    Event( PyInterp_base*      _py_interp,
+	   SALOME_PYQT_Module* _obj,
+	   const QString&      _section,
+	   const QString&      _setting )
+      : PyInterp_LockRequest( _py_interp, 0, true ), // this request should be processed synchronously (sync == true)
+        myObj    ( _obj ),
+        mySection( _section ),
+        mySetting( _setting ) {}
+
+  protected:
+    virtual void execute()
+    {
+      myObj->prefChanged( mySection, mySetting );
+    }
+
+  private:
+    SALOME_PYQT_Module* myObj;
+    QString mySection, mySetting;
+  };
+
+  // Posting the request only if dispatcher is not busy!
+  // Executing the request synchronously
+  if ( !PyInterp_Dispatcher::Get()->IsBusy() )
+    PyInterp_Dispatcher::Get()->Exec( new Event( myInterp, this, section, setting ) );
+}
+
 
 /*!
  * Performs internal initialization
@@ -1122,6 +1207,29 @@ void SALOME_PYQT_Module::setWorkSpace()
       }
     }
   }                         //__CALL_OLD_METHODS__
+}
+
+/*!
+ *  Preference changing callback function
+ * - calls Python module's preferenceChanged(string,string,string) method
+ */
+void SALOME_PYQT_Module::prefChanged( const QString& section, const QString& setting )
+{
+  // Python interpreter should be initialized and Python module should be
+  // import first
+  if ( !myInterp || !myModule )
+    return;
+
+  if ( PyObject_HasAttrString(myModule , "preferenceChanged") ) {
+    PyObjWrapper res( PyObject_CallMethod( myModule,
+					   "preferenceChanged", 
+					   "ss", 
+					   section.latin1(), 
+					   setting.latin1() ) );
+    if( !res ) {
+      PyErr_Print();
+    }
+  }
 }
 
 /*!

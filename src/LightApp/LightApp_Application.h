@@ -155,6 +155,7 @@ signals:
   void                                studyOpened();
   void                                studySaved();
   void                                studyClosed();
+  void                                preferenceChanged( const QString&, const QString&, const QString& );
 
 public slots:
   virtual void                        onHelpContentsModule();

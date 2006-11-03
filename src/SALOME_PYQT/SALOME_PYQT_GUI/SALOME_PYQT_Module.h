@@ -163,11 +163,17 @@ public:
   void                   setMenuShown( const bool );
   void                   setToolShown( const bool );
 
+  /* Preferences changing (module) */
+  void                   preferencesChanged( const QString&, const QString& );
+
 public slots:
   /* activation */
   virtual bool    activateModule( SUIT_Study* );
   /* deactivation */
   virtual bool    deactivateModule( SUIT_Study* );
+
+  /* Preferences changing (application) */
+  void            preferenceChanged( const QString&, const QString&, const QString& );
 
   /******************************
    * Internal methods
@@ -215,6 +221,9 @@ private:
   void            importModule();
   /* set workspace to Python GUI module */
   void            setWorkSpace();
+
+  /* preferences changing */
+  void            prefChanged( const QString&, const QString& );
 
   friend class SALOME_PYQT_XmlHandler;
 };

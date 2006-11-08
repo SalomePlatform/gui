@@ -124,6 +124,8 @@ void ListItemF<T>::update()
     else
       myT->setPixmap( 0, p );
   }
+  else if ( p.isNull() )
+    myT->setPixmap( 0, p );
 
   myT->setDragEnabled( obj->isDragable() );
   myT->setDropEnabled( true );

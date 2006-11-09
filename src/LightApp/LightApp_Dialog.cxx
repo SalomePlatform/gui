@@ -807,39 +807,6 @@ void LightApp_Dialog::deactivateAll()
   }
 }
 
-
-//! Return toggle buttons on/off state
-LightApp_SimpleGuiStateMap LightApp_Dialog::getActiveState() const {
-
-    LightApp_SimpleGuiStateMap state;
-	ObjectMap::const_iterator anIt = myObjects.begin(),
-						aLast = myObjects.end();
-	for( ; anIt!=aLast; anIt++ )
-	{
-		QToolButton* btn = ( QToolButton* )anIt.data().myBtn;
-		const bool isOn = btn->isOn();
-		const int id = anIt.key();
-		state[id] = isOn;
-	}
-
-    return state;
-}
-
-/*! Restores the state of toggle buttons - 
-to activate the buttons, deactivated by deactivateAll()
-*/
-void LightApp_Dialog::restoreState(const LightApp_SimpleGuiStateMap& stateMap) {
-	LightApp_SimpleGuiStateMap::const_iterator it = stateMap.begin(),
-		aLast = stateMap.end();
-	for (; it != aLast; it++) {
-		int btnId = it.key();
-		bool btnOn = (bool) it.data();
-	    if (btnOn) activateObject(btnId);
-	}
-}
-
-
-
 /*!
   Passes to widget name, type and id of selected object
   \param id - identificator of object selection widget

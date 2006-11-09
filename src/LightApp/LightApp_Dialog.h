@@ -39,10 +39,6 @@ class SUIT_ResourceMgr;
 #pragma warning ( disable:4251 )
 #endif
 
-
-
-  typedef QMap<int, int>         LightApp_SimpleGuiStateMap;
-
 /*!
   \class LightApp_Dialog
   Base class for all LightApp dialogs.
@@ -58,7 +54,6 @@ class LIGHTAPP_EXPORT LightApp_Dialog : public QtxDialog
 public:
   typedef QValueList<int>        TypesList;
   typedef QMap<int,QStringList>  SelectedObjects;
-
 
   enum ObjectWg
   {
@@ -159,15 +154,6 @@ public:
   //! Set all object selection buttons to inactive state
   void deactivateAll();
 
-  
-
-  //! Return toggle buttons on/off state
-  LightApp_SimpleGuiStateMap getActiveState() const;
-
-  //! Restores the state of toggle buttons - 
-  // to activate the buttons, deactivated by deactivateAll()
-  void restoreState(const LightApp_SimpleGuiStateMap&);
-  
 signals:
   //! selection in certain widget is changed
   void selectionChanged ( int );

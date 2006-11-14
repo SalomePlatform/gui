@@ -117,6 +117,7 @@
   </section>
   <section name="ExternalBrowser" >
     <!-- External HELP browser settings -->
+    <parameter value="D:\Program Files\Internet Explorer\iexplore.exe" name="winapplication" />
     <parameter value="/usr/bin/mozilla" name="application" />
   </section>
 </document>

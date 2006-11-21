@@ -335,8 +335,13 @@ void OCCViewer_Viewer::onShowToolbar() {
 */
 void OCCViewer_Viewer::update()
 {
+  printf("=========== OCCViewer_Viewer::update()\n");
   if (!myV3dViewer.IsNull())
     myV3dViewer->Update();
+
+  OCCViewer_ViewWindow* aView = (OCCViewer_ViewWindow*)(myViewManager->getActiveView());
+  if ( aView )
+    aView->updateGravityCoords();
 }
 
 /*!

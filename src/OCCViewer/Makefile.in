@@ -54,7 +54,8 @@ LIB_SRC= OCCViewer_AISSelector.cxx \
 	 OCCViewer_ViewWindow.cxx \
 	 OCCViewer_VService.cxx \
 	 OCCViewer_CreateRestoreViewDlg.cxx \
-	 OCCViewer_ClippingDlg.cxx
+	 OCCViewer_ClippingDlg.cxx \
+	 OCCViewer_SetRotationPointDlg.cxx
 
 LIB_MOC = OCCViewer_AISSelector.h \
           OCCViewer_ViewModel.h \
@@ -63,7 +64,8 @@ LIB_MOC = OCCViewer_AISSelector.h \
 	  OCCViewer_ViewWindow.h \
 	  OCCViewer_ViewManager.h \
 	  OCCViewer_CreateRestoreViewDlg.h \
-	  OCCViewer_ClippingDlg.h
+	  OCCViewer_ClippingDlg.h \
+	  OCCViewer_SetRotationPointDlg.h
 
 RESOURCES_FILES = \
 view_back.png \

@@ -74,6 +74,7 @@ LIB_SRC= \
 	SVTK_NonIsometricDlg.cxx \
 	SVTK_UpdateRateDlg.cxx \
 	SVTK_CubeAxesDlg.cxx \
+	SVTK_SetRotationPointDlg.cxx \
 	SVTK_DialogBase.cxx \
 	SVTK_FontWidget.cxx \
 	SVTK_Trihedron.cxx \
@@ -95,6 +96,7 @@ LIB_MOC = \
 	SVTK_NonIsometricDlg.h \
 	SVTK_UpdateRateDlg.h \
 	SVTK_CubeAxesDlg.h \
+	SVTK_SetRotationPointDlg.h \
 	SVTK_FontWidget.h \
 	SVTK_DialogBase.h \
 	SVTK_ViewModelBase.h \

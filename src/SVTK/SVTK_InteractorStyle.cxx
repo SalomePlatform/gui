@@ -282,13 +282,16 @@ SVTK_InteractorStyle
   
   double rxf = double(dx) * aDeltaAzimuth * this->MotionFactor;
   aTransform->RotateWXYZ(rxf, cam->GetViewUp());
-            
+
   // Elevation transformation
   double aDeltaElevation = -20.0 / size[1];
 
   double ryf = double(dy) * aDeltaElevation * this->MotionFactor;
   vtkMatrix4x4* aMatrix = cam->GetViewTransformMatrix();
-  const double anAxis[3] = {aMatrix->GetElement(0,0), aMatrix->GetElement(0,1), aMatrix->GetElement(0,2)};
+  const double anAxis[3] = {-aMatrix->GetElement(0,0), // mkr : 27.11.2006 : PAL14011 - Strange behaviour in rotation in VTK Viewer.
+			    -aMatrix->GetElement(0,1), 
+			    -aMatrix->GetElement(0,2)};
+  
   aTransform->RotateWXYZ(ryf, anAxis);
             
   aTransform->Translate(-myRotationPointX, -myRotationPointY, -myRotationPointZ);

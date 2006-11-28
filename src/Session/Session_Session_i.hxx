@@ -70,6 +70,10 @@ public:
   //! Restors a visual state of the study at theSavePoint
   bool restoreVisualState(CORBA::Long theSavePoint);
 
+  //! Emit a qt signal from the session GUI desktop window.
+  void emitMessage(const char* theMessage);
+  void emitMessageOneWay(const char* theMessage);
+
 protected:
 
   //! Naming service interface

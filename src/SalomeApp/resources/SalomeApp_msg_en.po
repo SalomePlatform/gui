@@ -16,10 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      CATHAREGUI_msg_en.po
+// File:      SalomeApp_msg_en.po
 // Created:   10/25/2004 12:46:36 PM
 // Author:    Sergey LITONIN
-// Copyright (C) CEA 2004
 
 msgid ""
 msgstr ""

@@ -536,10 +536,6 @@ SVTK_InteractorStyle
 	  
 	  // invoke event for update coordinates in SVTK_SetRotationPointDlg
 	  InvokeEvent(SVTK::RotationPointChanged,(void*)aCoords);
-	  
-	  myHighlightRotationPointActor->SetVisibility( false );
-	  if(GetCurrentRenderer() != NULL)
-	    GetCurrentRenderer()->RemoveActor( myHighlightRotationPointActor.GetPointer() );
 	}
 	else
 	{
@@ -555,6 +551,10 @@ SVTK_InteractorStyle
 	myCurrRotationPointType = myPrevRotationPointType;
       }
     
+      myHighlightRotationPointActor->SetVisibility( false );
+      if(GetCurrentRenderer() != NULL)
+	GetCurrentRenderer()->RemoveActor( myHighlightRotationPointActor.GetPointer() );
+
       GetRenderWidget()->setCursor(myDefCursor); 
     }
     else
@@ -1586,6 +1586,13 @@ SVTK_InteractorStyle
 	return;
 
       case SVTK::SetRotateGravity:
+	if ( self->myCurrRotationPointType == SVTK::StartPointSelection )
+	{
+	  self->myHighlightRotationPointActor->SetVisibility( false );
+	  if( self->GetCurrentRenderer() != NULL )
+	    self->GetCurrentRenderer()->RemoveActor( self->myHighlightRotationPointActor.GetPointer() );
+	  self->GetRenderWidget()->setCursor(self->myDefCursor); 
+	}
 	self->myPrevRotationPointType = self->myCurrRotationPointType;
 	self->myCurrRotationPointType = SVTK::SetRotateGravity;
 	if ( ComputeBBCenter(self->GetCurrentRenderer(),aCenter) ) 
@@ -1597,6 +1604,13 @@ SVTK_InteractorStyle
 	return;
 
       case SVTK::ChangeRotationPoint:
+	if ( self->myCurrRotationPointType == SVTK::StartPointSelection )
+	{
+	  self->myHighlightRotationPointActor->SetVisibility( false );
+	  if( self->GetCurrentRenderer() != NULL )
+	    self->GetCurrentRenderer()->RemoveActor( self->myHighlightRotationPointActor.GetPointer() );
+	  self->GetRenderWidget()->setCursor(self->myDefCursor); 
+	}
 	self->myPrevRotationPointType = self->myCurrRotationPointType;
 	self->myCurrRotationPointType = SVTK::SetRotateSelected;
 	aSelectedPoint = (vtkFloatingPointType*)callData;

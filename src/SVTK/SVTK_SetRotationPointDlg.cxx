@@ -260,7 +260,10 @@ SVTK_SetRotationPointDlg
   setEnabled(myGroupBoxCoord,!myIsBBCenter->isChecked());
   
   if ( myIsBBCenter->isChecked() )
-  { // activate mode : the rotation point is the center of the bounding box
+  { 
+    if ( mySelectPoint->state() == QButton::On )
+      mySelectPoint->toggle();
+    // activate mode : the rotation point is the center of the bounding box
     // send the data to the SVTK_InteractorStyle: set the type of the rotation point
     //                                            calculate coordinates of the rotation point
     myMainWindow->activateSetRotationGravity();
@@ -277,6 +280,8 @@ void
 SVTK_SetRotationPointDlg
 ::onToOrigin()
 {
+  if ( mySelectPoint->state() == QButton::On )
+    mySelectPoint->toggle();
   myX->setText(QString::number(0.0));
   myY->setText(QString::number(0.0));
   myZ->setText(QString::number(0.0));
@@ -297,6 +302,10 @@ SVTK_SetRotationPointDlg
 ::onCoordChanged()
 {
   if ( !myIsBBCenter->isChecked() ) {
+    if ( mySelectPoint->state() == QButton::On
+	 &&
+	 ( myX->hasFocus() || myY->hasFocus() || myZ->hasFocus() ) )
+      mySelectPoint->toggle();
     vtkFloatingPointType aCenter[3] = {myX->text().toDouble(), 
 				       myY->text().toDouble(), 
 				       myZ->text().toDouble()};

@@ -356,7 +356,11 @@ void OCCViewer_ViewWindow::vpMousePressEvent(QMouseEvent* theEvent)
 	    if ( !aShape.IsNull() && aShape.ShapeType() == TopAbs_VERTEX )
 	    {
 	      gp_Pnt aPnt = BRep_Tool::Pnt( TopoDS::Vertex( ic->SelectedShape() ) ); 
-	      if ( mySetRotationPointDlg ) mySetRotationPointDlg->setCoords(aPnt.X(), aPnt.Y(), aPnt.Z());
+	      if ( mySetRotationPointDlg )
+	      {
+		myRotationPointSelection = false;
+		mySetRotationPointDlg->setCoords(aPnt.X(), aPnt.Y(), aPnt.Z());
+	      }
 	    }	 
 	    else 
 	    {
@@ -507,6 +511,16 @@ bool OCCViewer_ViewWindow::computeGravityCenter( double& theX, double& theY, dou
 */
 void OCCViewer_ViewWindow::activateSetRotationGravity()
 {
+  if ( myRotationPointSelection )
+  {
+    Handle(AIS_InteractiveContext) ic = myModel->getAISContext();
+    ic->CloseAllContexts();
+    myOperation = NOTHING; 
+    setCursor( myCursor );
+    myCursorIsHand = false;
+    myRotationPointSelection = false;
+  }
+
   myPrevPointType = myCurrPointType;
   myCurrPointType = GRAVITY;
 
@@ -533,6 +547,16 @@ void OCCViewer_ViewWindow::updateGravityCoords()
 */
 void OCCViewer_ViewWindow::activateSetRotationSelected(double theX, double theY, double theZ)
 {
+  if ( myRotationPointSelection )
+  {
+    Handle(AIS_InteractiveContext) ic = myModel->getAISContext();
+    ic->CloseAllContexts();
+    myOperation = NOTHING; 
+    setCursor( myCursor );
+    myCursorIsHand = false;
+    myRotationPointSelection = false;
+  }
+
   myPrevPointType = myCurrPointType;
   myCurrPointType = SELECTED;
   mySelectedPoint.SetCoord(theX,theY,theZ);
@@ -1074,8 +1098,6 @@ void OCCViewer_ViewWindow::onFitAll()
 */
 void OCCViewer_ViewWindow::onSetRotationPoint( bool on )
 {
-  SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
-  
   if ( on )
     {
       if ( !mySetRotationPointDlg )

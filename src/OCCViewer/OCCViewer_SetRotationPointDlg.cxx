@@ -186,7 +186,11 @@ OCCViewer_SetRotationPointDlg
   setEnabled(myGroupBoxCoord,!myIsBBCenter->isChecked());
   
   if ( myIsBBCenter->isChecked() )
+  {
+    if ( mySelectPoint->state() == QButton::On )
+      mySelectPoint->toggle();
     myView->activateSetRotationGravity();
+  }
   else
     myView->activateSetRotationSelected(myX->text().toDouble(), 
 					myY->text().toDouble(), 
@@ -197,6 +201,8 @@ void
 OCCViewer_SetRotationPointDlg
 ::onToOrigin()
 {
+  if ( mySelectPoint->state() == QButton::On )
+    mySelectPoint->toggle();
   setCoords();
   myView->activateSetRotationSelected(myX->text().toDouble(), 
 				      myY->text().toDouble(), 
@@ -218,9 +224,15 @@ OCCViewer_SetRotationPointDlg
 ::onCoordChanged()
 {
   if ( !myIsBBCenter->isChecked() )
+  {
+    if ( mySelectPoint->state() == QButton::On
+	 &&
+	 ( myX->hasFocus() || myY->hasFocus() || myZ->hasFocus() ) )
+      mySelectPoint->toggle();
     myView->activateSetRotationSelected(myX->text().toDouble(), 
 					myY->text().toDouble(), 
 					myZ->text().toDouble());
+  }
 }
 
 void

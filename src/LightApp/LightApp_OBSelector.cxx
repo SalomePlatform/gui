@@ -69,7 +69,7 @@ void LightApp_OBSelector::getSelection( SUIT_DataOwnerPtrList& theList ) const
     for ( DataObjectListIterator it( objlist ); it.current(); ++it )
     {
       LightApp_DataObject* obj = dynamic_cast<LightApp_DataObject*>( it.current() );
-      if ( obj )
+      if ( obj && !obj->entry().isEmpty() && !obj->componentDataType().isEmpty() && !obj->name().isEmpty() )
       {
 #ifndef DISABLE_SALOMEOBJECT
         Handle(SALOME_InteractiveObject) aSObj = new SALOME_InteractiveObject

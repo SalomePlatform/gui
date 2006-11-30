@@ -162,5 +162,5 @@ uint SUIT_DataOwnerPtrList::remove(const SUIT_DataOwnerPtr& x )
 */
 bool operator<( const SUIT_DataOwnerPtr& p1, const SUIT_DataOwnerPtr& p2 )
 {
-  return p1.get()<p2.get();
+  return p1->operator<( *p2 );
 }

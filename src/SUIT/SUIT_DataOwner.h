@@ -42,6 +42,7 @@ public:
   virtual ~SUIT_DataOwner();//!< destructor
   //! compare function
   virtual bool isEqual( const SUIT_DataOwner& ) const = 0;
+  virtual bool operator<( const SUIT_DataOwner& ) const = 0;
 };
 
 /*! \typedef SUIT_DataOwnerPtr

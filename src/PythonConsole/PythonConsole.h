@@ -40,12 +40,12 @@
 #ifdef _DEBUG
 
 #undef _DEBUG
-#include <Python.h>
+//#include <Python.h>
 #define _DEBUG
 
 #else  // _DEBUG
 
-#include <Python.h>
+//#include <Python.h>
 
 #endif // _DEBUG
 

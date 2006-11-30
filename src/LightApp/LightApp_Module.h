@@ -84,6 +84,7 @@ public:
   virtual void                        studyActivated() {};
 
   virtual LightApp_Displayer*         displayer();
+  virtual LightApp_Selection*         createSelection() const;
 
 public slots:
   virtual bool                        activateModule( SUIT_Study* );
@@ -107,7 +108,6 @@ protected:
   LightApp_Preferences*               preferences() const;
 
   virtual CAM_DataModel*              createDataModel();
-  virtual LightApp_Selection*         createSelection() const;
 
   int                                 addPreference( const QString& label );
   int                                 addPreference( const QString& label, const int pId, const int = -1,

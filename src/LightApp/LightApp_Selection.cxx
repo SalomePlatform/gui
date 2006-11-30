@@ -86,7 +86,7 @@ void LightApp_Selection::init( const QString& client, LightApp_SelectionMgr* mgr
       LightApp_DataOwner* sowner = dynamic_cast<LightApp_DataOwner*>( (*anIt ).get() );
       if( sowner )
       {
-        entry = myStudy->referencedToEntry( sowner->entry() );
+        entry = referencedToEntry( sowner->entry() );
 	if( entries.contains( entry ) )
 	  continue;
 
@@ -98,6 +98,11 @@ void LightApp_Selection::init( const QString& client, LightApp_SelectionMgr* mgr
       }
     }
   }
+}
+
+QString LightApp_Selection::referencedToEntry( const QString& entry ) const
+{
+  return myStudy->referencedToEntry( entry );
 }
 
 /*!
@@ -146,6 +151,9 @@ QtxValue LightApp_Selection::param( const int ind, const QString& p ) const
 
   else if( p=="isReference" )
     return QtxValue( isReference( ind ), false );
+
+  else if( p=="displayer" )
+    return param( ind, "component" );
 
   else if( p=="canBeDisplayed" )
   {

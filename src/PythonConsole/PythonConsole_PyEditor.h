@@ -47,6 +47,7 @@ public:
   bool isCommand(const QString& str) const;
 
   virtual void exec( const QString& command );
+  void execAndWait( const QString& command );
   
 protected:
   virtual void contentsDropEvent( QDropEvent* event );
@@ -65,7 +66,7 @@ private:
   QString        _buf;
   QString        _currentCommand;
   QString        _currentPrompt;
-  bool           _isInHistory;
+  bool           _isInHistory, myIsInLoop;
 
   PyInterp_base* myInterp;
 

@@ -2097,8 +2097,15 @@ void LightApp_Application::updateWindows()
   currentWindows( winMap );
 
   if ( activeStudy() ) {
-    for ( QMap<int, int>::ConstIterator it = winMap.begin(); it != winMap.end(); ++it )
-      getWindow( it.key() );
+    for ( QMap<int, int>::ConstIterator it = winMap.begin(); it != winMap.end(); ++it ) {
+      getWindow( it.key() ); 
+      
+      Dock dock; int index, extraOffset; bool nl;
+      if ( desktop()->getLocation( myWindows[it.key()], dock, index, nl, extraOffset )
+	   &&
+	   dock != (Dock)it.data() )
+	desktop()->moveDockWindow( myWindows[it.key()], (Dock)it.data() );
+    }
 
     loadWindowsGeometry();
   }

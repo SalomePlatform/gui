@@ -1221,3 +1221,11 @@ void SalomeApp_Application::updateSavePointDataObjects( SalomeApp_Study* study )
     delete it.data();
 }
 
+/*! Check data object */
+bool SalomeApp_Application::checkDataObject(LightApp_DataObject* theObj)
+{
+  if (theObj)
+    return true;
+
+  return false;
+}

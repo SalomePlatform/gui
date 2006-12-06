@@ -42,6 +42,7 @@
 
 #include "LightApp_OBSelector.h"
 #include "LightApp_SelectionMgr.h"
+#include "LightApp_DataObject.h"
 
 #include <CAM_Module.h>
 #include <CAM_DataModel.h>
@@ -2469,4 +2470,18 @@ bool LightApp_Application::event( QEvent* e )
     return true;
   }
   return CAM_Application::event( e );
+}
+
+/*! Check data object */
+bool LightApp_Application::checkDataObject(LightApp_DataObject* theObj)
+{
+  if (theObj)
+    {
+      bool isSuitable =	!theObj->entry().isEmpty() && 
+	                !theObj->componentDataType().isEmpty() && 
+	                !theObj->name().isEmpty();
+      return isSuitable;
+    }
+
+  return false;
 }

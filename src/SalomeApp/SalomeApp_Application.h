@@ -83,6 +83,8 @@ public:
 
   virtual void                        contextMenuPopup( const QString&, QPopupMenu*, QString& );
 
+  virtual bool                        checkDataObject(LightApp_DataObject* theObj);
+
   static CORBA::ORB_var               orb();
   static SALOMEDSClient_StudyManager* studyMgr();
   static SALOME_NamingService*        namingService();
@@ -115,7 +117,7 @@ protected:
 
   virtual void                        createPreferences( LightApp_Preferences* );
   virtual void                        updateDesktopTitle();
-
+  
 private slots:
   void                                onDeleteInvalidReferences();
   void                                onDblClick( QListViewItem* );

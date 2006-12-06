@@ -40,6 +40,7 @@ class STD_Application;
 class LightApp_WidgetContainer;
 class LightApp_Preferences;
 class LightApp_SelectionMgr;
+class LightApp_DataObject;
 class SUIT_Study;
 class SUIT_Accel;
 class CAM_Module;
@@ -150,6 +151,8 @@ public:
   static int                          studyId();
 
   virtual bool                        event( QEvent* );
+  
+  virtual bool                        checkDataObject( LightApp_DataObject* theObj );
 
 signals:
   void                                studyOpened();
@@ -191,7 +194,7 @@ protected:
   virtual void                        preferencesChanged( const QString&, const QString& );
   virtual void                        savePreferences();
   virtual void                        updateDesktopTitle();
-
+  
 protected slots:
   virtual void                        onDesktopActivated();
 

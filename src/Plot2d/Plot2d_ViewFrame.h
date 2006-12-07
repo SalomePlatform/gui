@@ -25,6 +25,7 @@
 
 class Plot2d_Plot2d;
 class Plot2d_Prs;
+class QCustomEvent;
 
 typedef QIntDict<Plot2d_Curve> CurveDict;
 
@@ -148,6 +149,9 @@ public slots:
   void    onZoomIn();
   void    onZoomOut();
 
+protected:
+  virtual void customEvent( QCustomEvent* );
+
 protected slots:
   void    plotMousePressed( const QMouseEvent& );
   void    plotMouseMoved( const QMouseEvent& );
@@ -183,6 +187,7 @@ protected:
 
 class Plot2d_Plot2d : public QwtPlot 
 {
+  Q_OBJECT
 public:
   Plot2d_Plot2d( QWidget* parent );
 
@@ -199,11 +204,17 @@ public:
   virtual QSizePolicy sizePolicy() const;
   virtual QSize       minimumSizeHint() const;
 
+  bool                polished() const { return myIsPolished; }
+
+public slots:
+  virtual void polish();
+
 protected:
   bool       existMarker( const QwtSymbol::Style typeMarker, const QColor& color, const Qt::PenStyle typeLine );
 
 protected:
   QValueList<QColor> myColors;
+  bool               myIsPolished;
 };
 
 #endif

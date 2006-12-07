@@ -41,6 +41,7 @@
 #include <qmap.h>
 #include <qpainter.h>
 #include <qpaintdevicemetrics.h>
+#include <qevent.h>
 
 #include <qwt_math.h>
 #include <qwt_plot_canvas.h>
@@ -53,6 +54,8 @@
 #define DEFAULT_LINE_WIDTH     0     // (default) line width
 #define DEFAULT_MARKER_SIZE    9     // default marker size
 #define MIN_RECT_SIZE          11    // min sensibility area size
+
+#define FITALL_EVENT           ( QEvent::User + 9999 )
 
 const char* imageZoomCursor[] = { 
 "32 32 3 1",
@@ -787,6 +790,13 @@ void Plot2d_ViewFrame::updateLegend( const Plot2d_Prs* prs )
 */
 void Plot2d_ViewFrame::fitAll()
 {
+  // Postpone fitAll operation until QwtPlot geometry
+  // has been fully defined
+  if ( !myPlot->polished() ){
+    QApplication::postEvent( this, new QCustomEvent( FITALL_EVENT ) );
+    return;
+  }
+
   QwtDiMap xMap1 = myPlot->canvasMap( QwtPlot::xBottom );
 
   myPlot->setAxisAutoScale( QwtPlot::yLeft );
@@ -1588,7 +1598,8 @@ bool Plot2d_ViewFrame::isYLogEnabled() const
   Constructor
 */
 Plot2d_Plot2d::Plot2d_Plot2d( QWidget* parent )
-     : QwtPlot( parent )
+  : QwtPlot( parent ),
+    myIsPolished( false )
 {
   // outline
   enableOutline( true );
@@ -1767,6 +1778,16 @@ bool Plot2d_Plot2d::existMarker( const QwtSymbol::Style typeMarker, const QColor
   }
   return false;
 }
+
+/*!
+  Sets the flag saying that QwtPlot geometry has been fully defined.
+*/
+void Plot2d_Plot2d::polish()
+{
+  QwtPlot::polish();
+  myIsPolished = true;
+}
+
 
 /*!
   Creates presentation of object
@@ -2047,4 +2068,15 @@ void Plot2d_ViewFrame::onZoomIn()
 void Plot2d_ViewFrame::onZoomOut()
 {
   this->incrementalZoom( -INCREMENT_FOR_OP, -INCREMENT_FOR_OP );
+}
+
+/*!
+  Schedules a FitAll operation by putting it to the application's
+  event queue. This ensures that other important events (show, resize, etc.)
+  are processed first.
+*/
+void Plot2d_ViewFrame::customEvent( QCustomEvent* ce )
+{
+  if ( ce->type() == FITALL_EVENT )
+    fitAll();
 }

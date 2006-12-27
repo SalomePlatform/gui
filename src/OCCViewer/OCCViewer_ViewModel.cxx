@@ -201,6 +201,8 @@ void OCCViewer_Viewer::onMouseRelease(SUIT_ViewWindow* theWindow, QMouseEvent* t
   myEndPnt.setX(theEvent->x()); myEndPnt.setY(theEvent->y());
   OCCViewer_ViewWindow* aView = (OCCViewer_ViewWindow*) theWindow;
   bool aHasShift = (theEvent->state() & Qt::ShiftButton);
+  
+  if (!aHasShift) emit deselection();
 
   if (myStartPnt == myEndPnt)
   {

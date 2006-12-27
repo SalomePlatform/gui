@@ -139,6 +139,7 @@ public:
 
 signals:
   void selectionChanged();
+  void deselection();
 
 protected:
   void initView( OCCViewer_ViewWindow* view );

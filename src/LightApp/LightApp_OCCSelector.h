@@ -22,6 +22,7 @@
 #include "LightApp.h"
 
 #include <SUIT_Selector.h>
+#include <SUIT_DataOwner.h>
 
 #include <OCCViewer_ViewModel.h>
 
@@ -45,12 +46,15 @@ public:
 
 private slots:
   virtual void      onSelectionChanged();
+  virtual void      onDeselection();
 
 protected:
   virtual void      getSelection( SUIT_DataOwnerPtrList& ) const;
   virtual void      setSelection( const SUIT_DataOwnerPtrList& );
 
   QString           entry( const Handle_AIS_InteractiveObject& ) const;
+
+  SUIT_DataOwnerPtrList mySelectedExternals;
 
 private:
   OCCViewer_Viewer* myViewer;

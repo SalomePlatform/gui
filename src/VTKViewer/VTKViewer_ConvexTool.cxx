@@ -215,7 +215,17 @@ VTKViewer_Triangulator
       aPoints->GetPoint(aNewPts[1],aCoord[1]);
       aPoints->GetPoint(aNewPts[2],aCoord[2]);
       
-      // To calculate plane normal
+      /* To calculate plane normal for face (aFace)
+
+
+	^ aNormal
+	|     
+	|   ^ aVector01
+	| /
+	/_________> aVector02
+       
+      
+      */
       vtkFloatingPointType aVector01[3] = { aCoord[1][0] - aCoord[0][0],
 					    aCoord[1][1] - aCoord[0][1],
 					    aCoord[1][2] - aCoord[0][2] };
@@ -239,11 +249,6 @@ VTKViewer_Triangulator
       {
 	TPointIds::const_iterator anIter = anInitialPointIds.begin();
 	TPointIds::const_iterator anEndIter = anInitialPointIds.end();
-	static vtkFloatingPointType aEps = 1.0E-3;
-	
-	bool aIsStartedCheck = false;// needed for define first position of point
-	char aSign;
-	
 	for(; anIter != anEndIter; anIter++){
 	  vtkFloatingPointType aPntCoord[3];
 	  vtkIdType aPntId = *anIter;
@@ -274,10 +279,24 @@ VTKViewer_Triangulator
  	    vtkFloatingPointType aAngPnt01 = fabs(acos(aCosPnt01));
 	    vtkFloatingPointType aAngPnt02 = fabs(acos(aCosPnt02));
 
+	    /*  check that triangle similar to equilateral triangle
+		AOC or COB ?
+		aVector0Pnt = (OC)
+		aVector01   = (OB)
+		aVector02   = (OA)
+	    
+	    B
+	    ^ aVector01  C     
+	    |           ^ aVector0Pnt  
+	    |     _____/ 
+	    | ___/
+	    |/________> aVector02
+	    O          A
+	    */
 	    aDist01 = fabs(aAngPnt01-(vtkMath::Pi())/3.0); 
 	    aDist02 = fabs(aAngPnt02-(vtkMath::Pi())/3.0);
 	    
-	    // 	    if((aAngPnt01 > aEps) && (aAngPnt01 < vtkMath::Pi()-aEps))
+	    // caculate a normal for best triangle
 	    if(aDist01 <= aDist02)
 	      vtkMath::Cross(aVector0Pnt,aVector01,aNormalPnt);
  	    else
@@ -287,17 +306,8 @@ VTKViewer_Triangulator
 	  
 	  vtkMath::Normalize(aNormalPnt);
 	  
-	  vtkFloatingPointType aCos = vtkMath::Dot(aNormalPnt,aNormal);
-	  if(aCos<-1)
-	    aCos = -1;
-	  if(aCos>1)
-	    aCos = 1;
-	  
-	  vtkFloatingPointType aSignAng = acos(aCos);
-	  vtkFloatingPointType aAng = fabs(aSignAng);
-	  
 	  if(DEBUG_TRIA_EXECUTE)
-	    cout<<"\t\taPntId = "<<aPntId<<" {"<<aPntCoord[0]<<", "<<aPntCoord[1]<<", "<<aPntCoord[2]<<"}; aAngle="<<aAng<<"  ";
+	    cout<<"\t\taPntId = "<<aPntId<<" {"<<aPntCoord[0]<<", "<<aPntCoord[1]<<", "<<aPntCoord[2]<<"};";
 	  
 	  vtkFloatingPointType aDist = vtkPlane::DistanceToPlane(aPntCoord,aNormal,aCoord[0]);
 	  if(DEBUG_TRIA_EXECUTE) cout<<": aDist = "<<aDist;

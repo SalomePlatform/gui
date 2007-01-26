@@ -24,8 +24,10 @@
 <topic name="Using Object Browser" url="kernel/using_object_browser.htm" />
 <topic name="Using Registry tool" url="kernel/using_registry.htm" />
 <topic name="MESH preferences" url="mesh_preferences.htm" />
+<topic name="OCC 3D Viewer" url="occ_3d_viewer.htm" />
 <topic name="Post-Pro Preferences" url="post-pro_preferences.htm" />
 <topic name="Select Color and Font" url="select_color_and_font.htm" />
 <topic name="Setting Preferences" url="setting_preferences.htm" />
+<topic name="VTK 3D Viewer" url="vtk_3d_viewer.htm" />
 
 </ftstdata>  

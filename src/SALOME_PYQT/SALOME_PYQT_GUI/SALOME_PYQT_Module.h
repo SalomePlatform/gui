@@ -74,6 +74,9 @@ private:
   QMap<int, int>                   myWindowsMap;
   /* compatible view managers list */
   QStringList                      myViewMgrList;
+
+  /* status of last trying of module activation*/
+  bool                             myLastActivateStatus;
   
   /******************************
    * Construction/destruction
@@ -200,6 +203,10 @@ private:
   void            init        ( CAM_Application* );
   /* internal activation */ 
   void            activate    ( SUIT_Study* );
+
+  /* getting status of last module activation */
+  bool            lastActivationStatus() const;
+
   /* internal deactivation */ 
   void            deactivate  ( SUIT_Study* );
   /* customization */ 

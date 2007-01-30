@@ -84,7 +84,7 @@ public:
   static QWidget*          getMainFrame() /ReleaseGIL/ ;
   static QMenuBar*         getMainMenuBar() /ReleaseGIL/ ;
   static QPopupMenu*       getPopupMenu( const MenuName ) /ReleaseGIL/ ;
-  static SALOME_Selection* getSelection() /Factory,ReleaseGIL/ ;
+  static SALOME_Selection* getSelection() /ReleaseGIL/ ;
   static int               getStudyId() /ReleaseGIL/ ;
   static void              putInfo( const QString&, const int = 0 ) /ReleaseGIL/ ;
   static const QString     getActiveComponent() /ReleaseGIL/ ;

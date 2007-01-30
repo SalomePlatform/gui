@@ -84,7 +84,7 @@ public:
   static QWidget*          getMainFrame();
   static QMenuBar*         getMainMenuBar();
   static QPopupMenu*       getPopupMenu( const MenuName );
-  static SALOME_Selection* getSelection() /Factory/;
+  static SALOME_Selection* getSelection();
   static int               getStudyId();
   static void              putInfo( const QString&, int = 0 );
   static const QString     getActiveComponent();

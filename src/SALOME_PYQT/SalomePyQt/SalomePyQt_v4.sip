@@ -46,6 +46,23 @@ enum WindowType {
   WT_User
 };
 
+enum PrefType { 
+  PT_Space,
+  PT_Bool, 
+  PT_Color,
+  PT_String, 
+  PT_Selector, 
+  PT_DblSpin, 
+  PT_IntSpin, 
+  PT_Double, 
+  PT_Integer, 
+  PT_GroupBox, 
+  PT_Font, 
+  PT_DirList, 
+  PT_File, 
+  PT_User
+};
+
 class QtxAction : QAction
 {
 %TypeHeaderCode
@@ -115,19 +132,40 @@ public:
 
   static void              addSetting    ( const QString&, const QString&, const double ) /ReleaseGIL/ ;
   static void              addSetting    ( const QString&, const QString&, const int /Constrained/ ) /ReleaseGIL/ ;
+  static void              addSetting    ( const QString&, const QString&, const bool, const int ) /ReleaseGIL/ ;
   static void              addSetting    ( const QString&, const QString&, const QString& ) /ReleaseGIL/ ;
   static void              addSetting    ( const QString&, const QString&, const QColor& ) /ReleaseGIL/ ;
   static int               integerSetting( const QString&, const QString&, const int = 0 ) /ReleaseGIL/ ;
-  static double            doubleSetting ( const QString&, const QString&, const int = 0 ) /ReleaseGIL/ ;
+  static double            doubleSetting ( const QString&, const QString&, const double = 0 ) /ReleaseGIL/ ;
   static bool              boolSetting   ( const QString&, const QString&, const bool = false ) /ReleaseGIL/ ;
   static QString           stringSetting ( const QString&, const QString&, const QString& = QString("") ) /ReleaseGIL/ ;
   static QColor            colorSetting  ( const QString&, const QString&, const QColor& = QColor() ) /ReleaseGIL/ ;
   static void              removeSetting ( const QString&, const QString& ) /ReleaseGIL/ ;
+  static bool              hasSetting    ( const QString&, const QString& ) /ReleaseGIL/ ;
 
 // obsolete
   static void              addStringSetting( const QString&, const QString&, bool = true ) /ReleaseGIL/ ;
   static void              addIntSetting   ( const QString&, const int,      bool = true ) /ReleaseGIL/ ;
   static void              addDoubleSetting( const QString&, const double,   bool = true ) /ReleaseGIL/ ;
+  static void              addBoolSetting  ( const QString&, const bool,     bool = true ) /ReleaseGIL/ ;
   static void              removeSettings  ( const QString& ) /ReleaseGIL/ ;
   static QString           getSetting      ( const QString& ) /ReleaseGIL/ ;
+
+  static int               addGlobalPreference( const QString& ) /ReleaseGIL/ ;
+  static int               addPreference( const QString& ) /ReleaseGIL/ ;
+  static int               addPreference( const QString&,
+                                          const int, const int = -1,
+                                          const QString& = QString::null,
+				          const QString& = QString::null ) /ReleaseGIL/ ;
+  static QVariant          preferenceProperty( const int, const QString& ) /ReleaseGIL/ ;
+  static void              setPreferenceProperty( const int, 
+                                                  const QString&,
+                                                  const QVariant& ) /ReleaseGIL/ ;
+  static void              addPreferenceProperty( const int, 
+                                                  const QString&, 
+						  const int, 
+						  const QVariant& ) /ReleaseGIL/ ;
+
+  static void              message( const QString&, bool = true ) /ReleaseGIL/ ;
+  static void              clearMessages() /ReleaseGIL/ ;
 };

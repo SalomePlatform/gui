@@ -42,6 +42,7 @@
 
 #include "LightApp_OBSelector.h"
 #include "LightApp_SelectionMgr.h"
+#include "LightApp_DataObject.h"
 
 #include <CAM_Module.h>
 #include <CAM_DataModel.h>
@@ -58,6 +59,7 @@
 #include <QtxMRUAction.h>
 #include <QtxDockAction.h>
 #include <QtxToolBar.h>
+#include <qprocess.h>
 
 #include <LogWindow.h>
 #include <OB_Browser.h>
@@ -233,7 +235,7 @@ myPrefs( 0 )
   myAccel->setActionKey( SUIT_Accel::RotateUp,    ALT+Key_Up,        VTKViewer_Viewer::Type() );
   myAccel->setActionKey( SUIT_Accel::RotateDown,  ALT+Key_Down,      VTKViewer_Viewer::Type() );
 #endif
-#ifndef DISABLE_PLOT2DKVIEWER
+#ifndef DISABLE_PLOT2DVIEWER
   myAccel->setActionKey( SUIT_Accel::PanLeft,     CTRL+Key_Left,     Plot2d_Viewer::Type() );
   myAccel->setActionKey( SUIT_Accel::PanRight,    CTRL+Key_Right,    Plot2d_Viewer::Type() );
   myAccel->setActionKey( SUIT_Accel::PanUp,       CTRL+Key_Up,       Plot2d_Viewer::Type() );
@@ -522,51 +524,53 @@ void LightApp_Application::createActions()
   if ( modIcon.isNull() )
     modIcon = QPixmap( imageEmptyIcon );
 
-  QToolBar* modTBar = new QtxToolBar( true, desk );
-  modTBar->setLabel( tr( "INF_TOOLBAR_MODULES" ) );
-
-  QActionGroup* modGroup = new QActionGroup( this );
-  modGroup->setExclusive( true );
-  modGroup->setUsesDropDown( true );
-
-  a = createAction( -1, tr( "APP_NAME" ), defIcon, tr( "APP_NAME" ),
-                    tr( "PRP_APP_MODULE" ), 0, desk, true );
-  modGroup->add( a );
-  myActions.insert( QString(), a );
-
-  QMap<QString, QString> iconMap;
-  moduleIconNames( iconMap );
-
-  const int iconSize = 20;
-
-  modGroup->addTo( modTBar );
-  QObjectList *l = modTBar->queryList( "QComboBox" );
-  QObjectListIt oit( *l );
-  while ( QObject* obj = oit.current() ) {
-    QComboBox* cb = (QComboBox*)obj;
-    if ( cb ) cb->setFocusPolicy( QWidget::NoFocus );
-    ++oit;
-  }
-  delete l;
-  
-   modTBar->addSeparator();
-
   QStringList modList;
   modules( modList, false );
 
-  for ( it = modList.begin(); it != modList.end(); ++it )
+  if( modList.count()>1 )
   {
-    if ( !isLibExists( *it ) )
-      continue;
+    QToolBar* modTBar = new QtxToolBar( true, desk );
+    modTBar->setLabel( tr( "INF_TOOLBAR_MODULES" ) );
+
+    QActionGroup* modGroup = new QActionGroup( this );
+    modGroup->setExclusive( true );
+    modGroup->setUsesDropDown( true );
+
+    a = createAction( -1, tr( "APP_NAME" ), defIcon, tr( "APP_NAME" ),
+                      tr( "PRP_APP_MODULE" ), 0, desk, true );
+    modGroup->add( a );
+    myActions.insert( QString(), a );
+
+    QMap<QString, QString> iconMap;
+    moduleIconNames( iconMap );
+
+    const int iconSize = 20;
+
+    modGroup->addTo( modTBar );
+    QObjectList *l = modTBar->queryList( "QComboBox" );
+    QObjectListIt oit( *l );
+    while ( QObject* obj = oit.current() ) {
+      QComboBox* cb = (QComboBox*)obj;
+      if ( cb ) cb->setFocusPolicy( QWidget::NoFocus );
+    ++oit;
+    }
+    delete l;
+  
+    modTBar->addSeparator();
+
+    for ( it = modList.begin(); it != modList.end(); ++it )
+    {
+      if ( !isLibExists( *it ) )
+        continue;
     
-    QString iconName;
-    if ( iconMap.contains( *it ) )
-      iconName = iconMap[*it];
+      QString iconName;
+      if ( iconMap.contains( *it ) )
+        iconName = iconMap[*it];
 
-    QString modName = moduleName( *it );
+      QString modName = moduleName( *it );
 
-    QPixmap icon = resMgr->loadPixmap( modName, iconName, false );
-    if ( icon.isNull() )
+      QPixmap icon = resMgr->loadPixmap( modName, iconName, false );
+      if ( icon.isNull() )
       {
 	icon = modIcon;
 	printf( "****************************************************************\n" );
@@ -574,16 +578,18 @@ void LightApp_Application::createActions()
 	printf( "****************************************************************\n" );
       }
 
-    icon.convertFromImage( icon.convertToImage().smoothScale( iconSize, iconSize, QImage::ScaleMin ) );
+      icon.convertFromImage( icon.convertToImage().smoothScale( iconSize, iconSize, QImage::ScaleMin ) );
 
-    QAction* a = createAction( -1, *it, icon, *it, tr( "PRP_MODULE" ).arg( *it ), 0, desk, true );
-    a->addTo( modTBar );
-    modGroup->add( a );
+      QAction* a = createAction( -1, *it, icon, *it, tr( "PRP_MODULE" ).arg( *it ), 0, desk, true );
+      a->addTo( modTBar );
+      modGroup->add( a );
 
-    myActions.insert( *it, a );
+      myActions.insert( *it, a );
+    }
+
+    SUIT_Tools::simplifySeparators( modTBar );
+    connect( modGroup, SIGNAL( selected( QAction* ) ), this, SLOT( onModuleActivation( QAction* ) ) );
   }
-
-  SUIT_Tools::simplifySeparators( modTBar );
 
   // New window
   int windowMenu = createMenu( tr( "MEN_DESK_WINDOW" ), -1, MenuWindowId, 100 );
@@ -608,8 +614,6 @@ void LightApp_Application::createActions()
   createAction( RenameId, tr( "TOT_RENAME" ), QIconSet(), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ),
 		SHIFT+Key_R, desk, false, this, SLOT( onRenameWindow() ) );
   createMenu( RenameId, windowMenu, -1 );
-
-  connect( modGroup, SIGNAL( selected( QAction* ) ), this, SLOT( onModuleActivation( QAction* ) ) );
 
   int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1 );
   createMenu( PreferencesId, fileMenu, 15, -1 );
@@ -932,8 +936,13 @@ public:
     if ( !myApp.isEmpty())
       {
 	aCommand.sprintf("%s %s %s",myApp.latin1(),myParams.latin1(),myHelpFile.latin1());
-	myStatus = system(aCommand);
-	if(myStatus != 0)
+
+	QProcess* proc = new QProcess();
+  proc->addArgument( aCommand );
+	//myStatus = system(aCommand);
+
+	//if(myStatus != 0)
+	if(!proc->start())
 	  {
 	    QCustomEvent* ce2000 = new QCustomEvent( 2000 );
 	    QString* msg = new QString( QObject::tr("EXTERNAL_BROWSER_CANNOT_SHOW_PAGE").arg(myApp).arg(myHelpFile) );
@@ -969,7 +978,18 @@ void LightApp_Application::onHelpContentsModule()
   
   QString helpFile = QFileInfo( homeDir + (!aComponentName.compare(QString("KERNEL")) ? aFileNameKernel : aFileName) ).absFilePath();
   SUIT_ResourceMgr* resMgr = resourceMgr();
-  QString anApp = resMgr->stringValue("ExternalBrowser", "application");
+	QString platform;
+#ifdef WIN32
+	platform = "winapplication";
+#else
+	platform = "application";
+#endif
+	QString anApp = resMgr->stringValue("ExternalBrowser", platform);
+#ifdef WIN32
+	QString quote("\""); 
+	anApp.prepend( quote ); 
+	anApp.append( quote ); 
+#endif
   QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 
   if (!anApp.isEmpty()) {
@@ -994,7 +1014,18 @@ void LightApp_Application::onHelpContextModule(const QString& theComponentName, 
 
   QString helpFile = QFileInfo( homeDir + theFileName ).absFilePath();
   SUIT_ResourceMgr* resMgr = resourceMgr();
-  QString anApp = resMgr->stringValue("ExternalBrowser", "application");
+	QString platform;
+#ifdef WIN32
+	platform = "winapplication";
+#else
+	platform = "application";
+#endif
+	QString anApp = resMgr->stringValue("ExternalBrowser", platform);
+#ifdef WIN32
+	QString quote("\""); 
+	anApp.prepend( quote ); 
+	anApp.append( quote ); 
+#endif
   QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 
   if (!anApp.isEmpty()) {
@@ -1124,11 +1155,13 @@ void LightApp_Application::removeWindow( const int flag, const int studyId )
       sId = activeStudy()->id();
   }
 
+  bool anIsEmpty = !myWindows[flag]->isEmpty();
   QWidget* wid = myWindows[flag]->widget( sId );
   myWindows[flag]->remove( sId );
   delete wid;
 
-  setWindowShown( flag, !myWindows[flag]->isEmpty() );
+  //setWindowShown( flag, !myWindows[flag]->isEmpty() );
+  setWindowShown( flag, anIsEmpty );
 }
 
 /*!
@@ -1414,6 +1447,9 @@ void LightApp_Application::onStudyCreated( SUIT_Study* theStudy )
 
   activateModule( defaultModule() );
 
+  if ( objectBrowser() )
+    objectBrowser()->openLevels();
+
   activateWindows();
 }
 
@@ -1430,11 +1466,13 @@ void LightApp_Application::onStudyOpened( SUIT_Study* theStudy )
     //aRoot->dump();
   }
   getWindow( WT_ObjectBrowser );
-  if ( objectBrowser() != 0 ) {
+  if ( objectBrowser() )
     objectBrowser()->setRootObject( aRoot );
-  }
 
   activateModule( defaultModule() );
+
+  if ( objectBrowser() )
+    objectBrowser()->openLevels();
 
   activateWindows();
 
@@ -1448,16 +1486,18 @@ void LightApp_Application::onStudySaved( SUIT_Study* )
 }
 
 /*!Protected SLOT. On study closed.*/
-void LightApp_Application::onStudyClosed( SUIT_Study* )
+void LightApp_Application::onStudyClosed( SUIT_Study* s )
 {
-  emit studyClosed();
-
   // Bug 10396: clear selection
   mySelMgr->clearSelected();
 
+  // Bug 12944: emit signal only after clear selection
+  emit studyClosed();
+
   activateModule( "" );
 
-  saveWindowsGeometry();
+  for ( WindowMap::ConstIterator itr = myWindows.begin(); s && itr != myWindows.end(); ++itr )
+    removeWindow( itr.key(), s->id() );
 }
 
 /*!Protected SLOT.On desktop activated.*/
@@ -1548,6 +1588,8 @@ void LightApp_Application::onPreferenceChanged( QString& modName, QString& secti
     sMod->preferencesChanged( section, param );
   else
     preferencesChanged( section, param );
+  // emit signal to allow additional preferences changing processing
+  emit preferenceChanged( modName, section, param );
 }
 
 /*!Private SLOT. On open document with name \a aName.*/
@@ -1560,9 +1602,6 @@ void LightApp_Application::onMRUActivated( QString aName )
 void LightApp_Application::beforeCloseDoc( SUIT_Study* s )
 {
   CAM_Application::beforeCloseDoc( s );
-
-  for ( WindowMap::ConstIterator itr = myWindows.begin(); s && itr != myWindows.end(); ++itr )
-    removeWindow( itr.key(), s->id() );
 }
 
 /*!Update actions.*/
@@ -1754,7 +1793,13 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   int extgroup = pref->addPreference( tr( "PREF_GROUP_EXT_BROWSER" ), genTab );
   pref->setItemProperty( extgroup, "columns", 1 );
-  int apppref = pref->addPreference( tr( "PREF_APP" ), extgroup, LightApp_Preferences::File, "ExternalBrowser", "application" );
+	QString platform;
+#ifdef WIN32
+	platform = "winapplication";
+#else
+	platform = "application";
+#endif
+  int apppref = pref->addPreference( tr( "PREF_APP" ), extgroup, LightApp_Preferences::File, "ExternalBrowser", platform );
   pref->setItemProperty( apppref, "existing", true );
   pref->setItemProperty( apppref, "flags", QFileInfo::ExeUser );
   pref->setItemProperty( apppref, "readOnly", false );
@@ -2095,8 +2140,15 @@ void LightApp_Application::updateWindows()
   currentWindows( winMap );
 
   if ( activeStudy() ) {
-    for ( QMap<int, int>::ConstIterator it = winMap.begin(); it != winMap.end(); ++it )
-      getWindow( it.key() );
+    for ( QMap<int, int>::ConstIterator it = winMap.begin(); it != winMap.end(); ++it ) {
+      getWindow( it.key() ); 
+      
+      Dock dock; int index, extraOffset; bool nl;
+      if ( desktop()->getLocation( myWindows[it.key()], dock, index, nl, extraOffset )
+	   &&
+	   dock != (Dock)it.data() )
+	desktop()->moveDockWindow( myWindows[it.key()], (Dock)it.data() );
+    }
 
     loadWindowsGeometry();
   }
@@ -2333,13 +2385,14 @@ void LightApp_Application::onRenameWindow()
   \param moduleTitle - title of module
 */
 bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
-{ 
+{
   if( moduleTitle.isEmpty() )
     return false;
 
   QString lib = moduleLibrary( moduleTitle );
   
-  bool isPythonModule = lib.contains("libSalomePyQtGUI");
+  //abd: changed libSalomePyQtGUI to SalomePyQtGUI for WIN32
+  bool isPythonModule = lib.contains("SalomePyQtGUI");
 
   QStringList paths;
 #ifdef WIN32
@@ -2407,8 +2460,7 @@ bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
 	printf( "*    No module named %s\n", (moduleName( moduleTitle ) + QString("GUI")).latin1() );
       printf( "****************************************************************\n" );
       return true;
-    }
-  
+  }
   return false;
 }
 
@@ -2460,4 +2512,18 @@ bool LightApp_Application::event( QEvent* e )
     return true;
   }
   return CAM_Application::event( e );
+}
+
+/*! Check data object */
+bool LightApp_Application::checkDataObject(LightApp_DataObject* theObj)
+{
+  if (theObj)
+    {
+      bool isSuitable =	!theObj->entry().isEmpty() && 
+	                !theObj->componentDataType().isEmpty() && 
+	                !theObj->name().isEmpty();
+      return isSuitable;
+    }
+
+  return false;
 }

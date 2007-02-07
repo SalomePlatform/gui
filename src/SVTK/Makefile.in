@@ -55,7 +55,8 @@ EXPORT_HEADERS= \
 	SVTK_SelectionEvent.h \
 	SVTK_SpaceMouse.h \
 	SVTK_Event.h \
-	SVTK_ViewModelBase.h
+	SVTK_ViewModelBase.h \
+	SVTK_Extension.h
 
 PO_FILES = \
 	SVTK_msg_en.po \
@@ -74,6 +75,7 @@ LIB_SRC= \
 	SVTK_NonIsometricDlg.cxx \
 	SVTK_UpdateRateDlg.cxx \
 	SVTK_CubeAxesDlg.cxx \
+	SVTK_SetRotationPointDlg.cxx \
 	SVTK_DialogBase.cxx \
 	SVTK_FontWidget.cxx \
 	SVTK_Trihedron.cxx \
@@ -87,7 +89,8 @@ LIB_SRC= \
 	SVTK_RenderWindowInteractor.cxx \
 	SVTK_GenericRenderWindowInteractor.cxx \
 	SVTK_SpaceMouse.cxx \
-	SVTK_Selector.cxx
+	SVTK_Selector.cxx \
+	SVTK_Extension.cxx
 
 LIB_MOC = \
 	SVTK_GenericRenderWindowInteractor.h \
@@ -95,6 +98,7 @@ LIB_MOC = \
 	SVTK_NonIsometricDlg.h \
 	SVTK_UpdateRateDlg.h \
 	SVTK_CubeAxesDlg.h \
+	SVTK_SetRotationPointDlg.h \
 	SVTK_FontWidget.h \
 	SVTK_DialogBase.h \
 	SVTK_ViewModelBase.h \

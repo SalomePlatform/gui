@@ -686,8 +686,8 @@ QtxListResourceEdit::SelectItem::~SelectItem()
 void QtxListResourceEdit::SelectItem::store()
 {
   int idx = myList->currentItem();
-  if ( myIndex.contains( idx ) )
-    setInteger( myIndex[idx] );
+  if ( idx >= 0 )
+    setInteger( myIndex.contains( idx ) ? myIndex[idx] : idx );
 }
 
 /*!
@@ -697,14 +697,15 @@ void QtxListResourceEdit::SelectItem::retrieve()
 {
   int id = getInteger( -1 );
 
-  int idx = -1;
-  for ( QMap<int, int>::ConstIterator it = myIndex.begin(); it != myIndex.end() && idx == -1; ++it )
+  for ( QMap<int, int>::ConstIterator it = myIndex.begin(); it != myIndex.end(); ++it )
   {
-    if ( it.data() == id )
-      idx = it.key();
+    if ( it.data() == id ) {
+      myList->setCurrentItem( it.key() );
+      return;
+    }
   }
-
-  myList->setCurrentItem( idx );
+  if ( id >= 0 )
+    myList->setCurrentItem( id );
 }
 
 /*!
@@ -1689,7 +1690,8 @@ void QtxListResourceEdit::FileItem::onOpenFile()
 
   if( myFileDlg->exec()==QDialog::Accepted )
   {
-    myFile->setText( myFileDlg->selectedFile() ); 
+		QString selFile = QDir::convertSeparators( myFileDlg->selectedFile() );
+    myFile->setText( selFile ); 
   }
 }
 

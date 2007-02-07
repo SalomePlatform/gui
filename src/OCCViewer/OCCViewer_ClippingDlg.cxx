@@ -220,6 +220,9 @@ OCCViewer_ClippingDlg::OCCViewer_ClippingDlg( OCCViewer_ViewWindow* view, QWidge
   connect( buttonApply, SIGNAL( clicked() ), this, SLOT( ClickOnApply() ) );
   
   myBusy = false;
+
+  connect(view, SIGNAL(Show( QShowEvent * )), this, SLOT(onViewShow()));
+  connect(view, SIGNAL(Hide( QHideEvent * )), this, SLOT(onViewHide()));
 }
 
 /*!
@@ -559,3 +562,17 @@ void OCCViewer_ClippingDlg::ReserveClippingPlane()
 	myClippingPlane = aView3d->ActivePlane();
     }
 }
+
+void OCCViewer_ClippingDlg::onViewShow()
+{
+  if(myAction->isOn())
+    show();
+  else
+    hide();
+}
+
+void OCCViewer_ClippingDlg::onViewHide()
+{
+  hide();
+}
+

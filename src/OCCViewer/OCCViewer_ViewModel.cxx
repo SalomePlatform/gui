@@ -201,6 +201,8 @@ void OCCViewer_Viewer::onMouseRelease(SUIT_ViewWindow* theWindow, QMouseEvent* t
   myEndPnt.setX(theEvent->x()); myEndPnt.setY(theEvent->y());
   OCCViewer_ViewWindow* aView = (OCCViewer_ViewWindow*) theWindow;
   bool aHasShift = (theEvent->state() & Qt::ShiftButton);
+  
+  if (!aHasShift) emit deselection();
 
   if (myStartPnt == myEndPnt)
   {
@@ -250,7 +252,7 @@ void OCCViewer_Viewer::enableSelection(bool isEnabled)
     return;
 
   QPtrVector<SUIT_ViewWindow> wins = myViewManager->getViews();
-  for ( int i = 0; i < wins.count(); i++ )
+  for ( int i = 0; i < (int)wins.count(); i++ )
   {
     OCCViewer_ViewWindow* win = ::qt_cast<OCCViewer_ViewWindow*>( wins.at( i ) );
     if ( win )
@@ -270,7 +272,7 @@ void OCCViewer_Viewer::enableMultiselection(bool isEnable)
     return;
 
   QPtrVector<SUIT_ViewWindow> wins = myViewManager->getViews();
-  for ( int i = 0; i < wins.count(); i++ )
+  for ( int i = 0; i < (int)wins.count(); i++ )
   {
     OCCViewer_ViewWindow* win = ::qt_cast<OCCViewer_ViewWindow*>( wins.at( i ) );
     if ( win )
@@ -337,6 +339,10 @@ void OCCViewer_Viewer::update()
 {
   if (!myV3dViewer.IsNull())
     myV3dViewer->Update();
+
+  OCCViewer_ViewWindow* aView = (OCCViewer_ViewWindow*)(myViewManager->getActiveView());
+  if ( aView )
+    aView->updateGravityCoords();
 }
 
 /*!
@@ -358,7 +364,7 @@ void OCCViewer_Viewer::setObjectsSelected(const AIS_ListOfInteractive& theList)
 {
   AIS_ListIteratorOfListOfInteractive aIt;
   for (aIt.Initialize(theList); aIt.More(); aIt.Next())
-    myAISContext->SetSelected(aIt.Value(), false);
+    myAISContext->AddOrRemoveSelected(aIt.Value(), false);
   myAISContext->UpdateCurrentViewer();
 }
 

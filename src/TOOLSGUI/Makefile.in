@@ -37,7 +37,9 @@ VPATH=.:@srcdir@:@top_srcdir@/idl:@srcdir@/resources
 # header files 
 EXPORT_HEADERS = ToolsGUI.h \
 		 ToolsGUI_RegWidget.h \
-		 ToolsGUI_CatalogGeneratorDlg.h
+		 ToolsGUI_CatalogGeneratorDlg.h \
+		 ToolsGUI_HelpWindow.h \
+		 ToolsGUI_IntervalWindow.h
 
 # .po files to transform in .qm
 PO_FILES = ToolsGUI_icons.po \
@@ -53,7 +55,9 @@ LIB_SRC = ToolsGUI_CatalogGeneratorDlg.cxx \
 	  ToolsGUI.cxx
 
 LIB_MOC = ToolsGUI_CatalogGeneratorDlg.h \
-          ToolsGUI_RegWidget.h
+          ToolsGUI_RegWidget.h \
+	  ToolsGUI_HelpWindow.h \
+	  ToolsGUI_IntervalWindow.h
 
 LIB_CLIENT_IDL = SALOME_Registry.idl SALOME_Exception.idl
 

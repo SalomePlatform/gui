@@ -32,6 +32,10 @@
 #include <set>
 #include <map>
 
+#ifdef WNT
+#include <algorithm>
+#endif
+
 #include <vtkUnstructuredGrid.h>
 #include <vtkGeometryFilter.h>
 #include <vtkDelaunay3D.h>

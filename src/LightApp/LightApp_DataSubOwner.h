@@ -33,6 +33,7 @@ public:
     virtual ~LightApp_DataSubOwner();
 
     virtual bool isEqual( const SUIT_DataOwner& ) const;
+    virtual bool isLess( const SUIT_DataOwner& obj ) const;
     int          index() const;
 
 private:

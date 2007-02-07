@@ -186,6 +186,17 @@ QColor SalomeApp_DataObject::color( const ColorRole cr ) const
 	else
 	  clr = QColor( 200, 200, 200 );
       }
+    else if ( myObject )
+    {
+      _PTR(GenericAttribute) anAttr;
+      if( myObject->FindAttribute ( anAttr, "AttributeTextHighlightColor") )
+      {
+        _PTR(AttributeTextHighlightColor) aHighColAttr = anAttr;
+	clr = QColor( (int)(aHighColAttr->TextHighlightColor().R), 
+		      (int)(aHighColAttr->TextHighlightColor().G), 
+		      (int)(aHighColAttr->TextHighlightColor().B));
+      }
+    }
     break;
   case HighlightedText:
     if ( isReference() )

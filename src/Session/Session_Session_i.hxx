@@ -29,6 +29,8 @@
 #ifndef _SESSION_SESSION_I_HXX_
 #define _SESSION_SESSION_I_HXX_
 
+#include <SALOME_Session.hxx>
+
 #include <qthread.h> 
 
 #include <SALOMEconfig.h>
@@ -36,7 +38,7 @@
 #include CORBA_SERVER_HEADER(SALOME_Session)
 class SALOME_NamingService;
 
-class SALOME_Session_i:  public virtual POA_SALOME::Session,
+class SESSION_EXPORT SALOME_Session_i:  public virtual POA_SALOME::Session,
 		         public virtual PortableServer::RefCountServantBase
 {
 public:
@@ -64,11 +66,15 @@ public:
   void NSregister();
 
   CORBA::Long GetActiveStudyId();
-  
+
   void ping(){};
 
   //! Restors a visual state of the study at theSavePoint
   bool restoreVisualState(CORBA::Long theSavePoint);
+
+  //! Emit a qt signal from the session GUI desktop window.
+  void emitMessage(const char* theMessage);
+  void emitMessageOneWay(const char* theMessage);
 
 protected:
 

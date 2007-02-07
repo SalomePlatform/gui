@@ -50,6 +50,12 @@ class vtkRenderer;
 class vtkRenderWindow;
 class vtkRenderWindowInteractor;
 
+namespace SVTK
+{
+  SVTK_EXPORT
+    int convertAction( const int );
+}
+
 //! Define a container for SALOME VTK view window
 class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
 {

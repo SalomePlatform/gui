@@ -69,7 +69,7 @@ class SALOMEAPP_EXPORT SalomeApp_Application : public LightApp_Application
 public:
   enum { MenuToolsId = 5 };
   enum { DumpStudyId = LightApp_Application::UserID, LoadScriptId, PropertiesId,
-         CatalogGenId, RegDisplayId, SaveGUIStateId, UserID };
+         CatalogGenId, RegDisplayId, SaveGUIStateId, FileLoadId, UserID };
 
 public:
   SalomeApp_Application();
@@ -82,6 +82,8 @@ public:
   virtual void                        start();
 
   virtual void                        contextMenuPopup( const QString&, QPopupMenu*, QString& );
+
+  virtual bool                        checkDataObject(LightApp_DataObject* theObj);
 
   static CORBA::ORB_var               orb();
   static SALOMEDSClient_StudyManager* studyMgr();
@@ -115,7 +117,7 @@ protected:
 
   virtual void                        createPreferences( LightApp_Preferences* );
   virtual void                        updateDesktopTitle();
-
+  
 private slots:
   void                                onDeleteInvalidReferences();
   void                                onDblClick( QListViewItem* );

@@ -20,6 +20,7 @@
 
 #include <qfileinfo.h>
 #include <qdir.h>
+#include <stdlib.h>
 
 /*!
     Constructor
@@ -64,7 +65,9 @@ QString SUIT_ResourceMgr::loadDoc( const QString& prefix, const QString& id ) co
   return path( docSection, prefix, id );
 }
 
+#ifndef WIN32
 #include <unistd.h>
+#endif
 /*!
     Returns the user file name for specified application
 */

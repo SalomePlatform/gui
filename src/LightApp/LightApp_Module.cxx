@@ -138,7 +138,6 @@ void LightApp_Module::updateObjBrowser( bool theIsUpdateDataModel,
   bool upd = getApp()->objectBrowser()->isAutoUpdate();
   getApp()->objectBrowser()->setAutoUpdate( false );
 
-  SUIT_DataObject* aDataObject = theDataObject;
   if( theIsUpdateDataModel ){
     if( CAM_DataModel* aDataModel = dataModel() ){
       if ( LightApp_DataModel* aModel = dynamic_cast<LightApp_DataModel*>( aDataModel ) ) {
@@ -149,14 +148,11 @@ void LightApp_Module::updateObjBrowser( bool theIsUpdateDataModel,
 	LightApp_DataObject* anObject = dynamic_cast<LightApp_DataObject*>(theDataObject);
 	LightApp_Study* aStudy = dynamic_cast<LightApp_Study*>(getApp()->activeStudy());
         aModel->update( anObject, aStudy );
-
-	if(aParent && aParent->childPos(anObject) < 0)
-	  aDataObject = dynamic_cast<LightApp_DataObject*>(aParent);
       }
     }
   }
   getApp()->objectBrowser()->setAutoUpdate( upd );
-  getApp()->objectBrowser()->updateTree( 0, false /*aDataObject*/ );
+  getApp()->objectBrowser()->updateTree( 0, false );
 }
 
 /*!NOT IMPLEMENTED*/
@@ -340,7 +336,7 @@ QtxPopupMgr* LightApp_Module::popupMgr()
     myPopupMgr->insert( eraseAll, -1, 0 );
     myPopupMgr->insert( separator(), -1, 0 );
 
-    QString oneAndNotActive = "( count( $component ) = 1 ) and ( component != activeModule )";
+    QString oneAndNotActive = "( count( $component ) = 1 ) and ( not( activeModule in $component ) )";
     QString uniform = "true in $canBeDisplayed and %1 and ( activeModule = '%2' )";
     uniform = uniform.arg( oneAndNotActive ).arg( name() );
     myPopupMgr->setRule( disp, /*QString( "( not isVisible ) and " ) + */ uniform, true );

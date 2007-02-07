@@ -61,6 +61,31 @@
 #include "VTKViewer_Algorithm.h"
 #include "SVTK_Functor.h"
 
+
+namespace SVTK
+{
+  int convertAction( const int accelAction )
+  {
+    switch ( accelAction ) {
+    case SUIT_Accel::PanLeft     : return SVTK::PanLeftEvent;
+    case SUIT_Accel::PanRight    : return SVTK::PanRightEvent;
+    case SUIT_Accel::PanUp       : return SVTK::PanUpEvent;
+    case SUIT_Accel::PanDown     : return SVTK::PanDownEvent;
+    case SUIT_Accel::ZoomIn      : return SVTK::ZoomInEvent;
+    case SUIT_Accel::ZoomOut     : return SVTK::ZoomOutEvent;
+    case SUIT_Accel::RotateLeft  : return SVTK::RotateLeftEvent;
+    case SUIT_Accel::RotateRight : return SVTK::RotateRightEvent;
+    case SUIT_Accel::RotateUp    : return SVTK::RotateUpEvent;
+    case SUIT_Accel::RotateDown  : return SVTK::RotateDownEvent;  
+    }
+    return accelAction;
+  }
+}
+
+
+
+
+
 /*!
   Constructor
 */
@@ -738,23 +763,6 @@ SVTK_ViewWindow
   myView->SetSelectionTolerance(theTolNodes,theTolItems);
 }
 
-int convertAction( const int accelAction )
-{
-  switch ( accelAction ) {
-  case SUIT_Accel::PanLeft     : return SVTK::PanLeftEvent;
-  case SUIT_Accel::PanRight    : return SVTK::PanRightEvent;
-  case SUIT_Accel::PanUp       : return SVTK::PanUpEvent;
-  case SUIT_Accel::PanDown     : return SVTK::PanDownEvent;
-  case SUIT_Accel::ZoomIn      : return SVTK::ZoomInEvent;
-  case SUIT_Accel::ZoomOut     : return SVTK::ZoomOutEvent;
-  case SUIT_Accel::RotateLeft  : return SVTK::RotateLeftEvent;
-  case SUIT_Accel::RotateRight : return SVTK::RotateRightEvent;
-  case SUIT_Accel::RotateUp    : return SVTK::RotateUpEvent;
-  case SUIT_Accel::RotateDown  : return SVTK::RotateDownEvent;  
-  }
-  return accelAction;
-}
-
 /*!
   Performs action
   \param accelAction - action
@@ -768,7 +776,7 @@ SVTK_ViewWindow
   if ( accelAction == SUIT_Accel::ZoomFit )
     onFitAll();
   else {
-    int anEvent = convertAction( accelAction );
+    int anEvent = SVTK::convertAction( accelAction );
     myMainWindow->InvokeEvent( anEvent, 0 );
   }
   return true;

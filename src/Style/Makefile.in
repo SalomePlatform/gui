@@ -50,16 +50,23 @@ CPPFLAGS+=$(QT_INCLUDES)
 LDFLAGS+=$(QT_MT_LIBS)
 LIBS+=
 
-# create $(top_builddir)/src/Session/styles directory and copy libSalomeStyle.so there
-LIB_PLUGINDIR = $(top_builddir)/src/Session/styles
-LIB_PLUGINLIB = $(patsubst %.la, $(LIB_PLUGINDIR)/%.so, $(filter %.la, $(LIB)))
+# create $(top_builddir)/bin/salome/styles directory and 
+# make link to the libSalomeStyle.so there
+PLUGINDIR = $(top_builddir)/bin/salome/styles
+PLUGIN_LIB_LA = $(patsubst %.la, $(PLUGINDIR)/%.so, $(filter %.la, $(LIB)))
+PLUGIN_LIB_SO = $(patsubst %.so, $(PLUGINDIR)/%.so, $(filter %.so, $(LIB)))
 
-lib: $(LIB) $(LIB_PLUGINDIR) $(LIB_PLUGINLIB)
+lib: $(LIB) $(PLUGINDIR) $(PLUGIN_LIB_LA) $(PLUGIN_LIB_SO)
 
-$(LIB_PLUGINDIR):
+$(PLUGINDIR):
 	mkdir -p $@
 
-$(LIB_PLUGINLIB): $(LIB_PLUGINDIR)/%.so: .libs/%.so
+$(PLUGIN_LIB_LA): $(PLUGINDIR)/%.so: %.la
+	-$(RM) $@
+	ln -sf $(patsubst %.la, %.so, $(CURDIR)/.libs/$<) $@ || true
+	ln -sf $(patsubst %.la, %.so, $(CURDIR)/.libs/$<).0 $@.0 || true
+
+$(PLUGIN_LIB_SO): $(PLUGINDIR)/%.so: %.so
 	-$(RM) $@
 	ln -sf $(CURDIR)/$< $@ || true
 

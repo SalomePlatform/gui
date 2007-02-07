@@ -79,9 +79,13 @@ void VTKViewer_ExtractUnstructuredGrid::SetStoreMapping(int theStoreMapping){
   this->Modified();
 }
 
-vtkIdType VTKViewer_ExtractUnstructuredGrid::GetInputId(int theOutId) const{
-  if(myCellIds.empty() && myCellTypes.empty()) return theOutId;
-  if(myOut2InId.empty() || theOutId > myOut2InId.size()) return -1;
+vtkIdType VTKViewer_ExtractUnstructuredGrid::GetInputId(int theOutId) const
+{
+  if ( myCellIds.empty() && myCellTypes.empty() )
+    return theOutId;
+
+  if ( myOut2InId.empty() || theOutId > (int)myOut2InId.size() )
+    return -1;
 #if defined __GNUC_2__
   return myOut2InId[theOutId];
 #else

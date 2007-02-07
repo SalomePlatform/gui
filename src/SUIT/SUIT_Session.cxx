@@ -61,6 +61,10 @@ SUIT_Session::~SUIT_Session()
 {
   myAppList.clear();
 
+  if (myResMgr) {
+    delete myResMgr;
+    myResMgr = 0;
+  }
   mySession = 0;
 }
 

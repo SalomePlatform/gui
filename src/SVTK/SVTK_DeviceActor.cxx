@@ -249,8 +249,15 @@ SVTK_DeviceActor
 {
   if ( !myIsShrinkable ) 
     return;
+  
   if ( vtkDataSet* aDataSet = myPassFilter[ 0 ]->GetOutput() )
-  {
+  {     
+    aDataSet->Update();
+    int numCells=aDataSet->GetNumberOfCells();
+    int numPts = aDataSet->GetNumberOfPoints();
+    //It's impossible to use to apply "shrink" for "empty" dataset
+    if (numCells < 1 || numPts < 1)
+ 	    return;
     myShrinkFilter->SetInput( aDataSet );
     myPassFilter[ 1 ]->SetInput( myShrinkFilter->GetOutput() );
     myIsShrunk = true;
@@ -293,7 +300,6 @@ SVTK_DeviceActor
   myShrinkFilter->SetShrinkFactor(theValue);
 }
 
-
 /*!
   Set representation (VTK_SURFACE, VTK_POINTS, VTK_WIREFRAME and so on)
   param theMode - new mode
@@ -307,13 +313,17 @@ SVTK_DeviceActor
     switch(myRepresentation){
     case Points : 
     case Surface : 
-      myProperty->DeepCopy(GetProperty());
+      myProperty->SetAmbient(GetProperty()->GetAmbient());
+      myProperty->SetDiffuse(GetProperty()->GetDiffuse());
+      myProperty->SetSpecular(GetProperty()->GetSpecular());
     }
     
     switch(theMode){
     case Points : 
     case Surface : 
-      GetProperty()->DeepCopy(myProperty);
+      GetProperty()->SetAmbient(myProperty->GetAmbient());
+      GetProperty()->SetDiffuse(myProperty->GetDiffuse());
+      GetProperty()->SetSpecular(myProperty->GetSpecular());
       break;
     default:
       GetProperty()->SetAmbient(1.0);
@@ -489,4 +499,9 @@ SVTK_DeviceActor
 {
   factor = myPolygonOffsetFactor;
   units = myPolygonOffsetUnits;
+}
+
+vtkDataSetMapper* SVTK_DeviceActor::GetDataSetMapper()
+{
+  return myMapper;
 }

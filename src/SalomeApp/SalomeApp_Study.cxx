@@ -36,7 +36,7 @@
 #include <qdict.h>
 
 #include "utilities.h"
-#include <iostream.h>
+#include <iostream>
 #include <string>
 #include <vector>
 
@@ -204,7 +204,7 @@ bool SalomeApp_Study::loadDocument( const QString& theStudyName )
 */
 bool SalomeApp_Study::saveDocumentAs( const QString& theFileName )
 {
-  bool store = application()->resourceMgr()->booleanValue( "Study", "store_visual_state", true );
+  bool store = application()->resourceMgr()->booleanValue( "Study", "store_visual_state", false );
   if ( store )
     SalomeApp_VisualState( (SalomeApp_Application*)application() ).storeState();
   

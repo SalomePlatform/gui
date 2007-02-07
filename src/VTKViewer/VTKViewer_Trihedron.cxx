@@ -259,6 +259,17 @@ void VTKViewer_Axis::SetSize(vtkFloatingPointType theSize)
   myLabelActor->AddPosition(aPosition);
 }
 
+/*! Check if actor belongs to the axis object
+ * \param theActor - vtkActor pointer
+ * \retval Return true if the actor belongs to the axis object
+ */
+bool VTKViewer_Axis::OwnActor(const vtkActor* theActor)
+{
+  return theActor == myLineActor  || 
+         theActor == myArrowActor ||
+         theActor == myLabelActor;
+}
+
 /*! \class VTKViewer_XAxis
  * \brief X Axis actor
  */
@@ -425,11 +436,31 @@ int VTKViewer_Trihedron::GetVisibleActorCount(vtkRenderer* theRenderer)
   int aCount = 0;
   while(vtkActor* prop = aCollection->GetNextActor()) {
     if( prop->GetVisibility())
-      if(VTKViewer_Actor* anActor = VTKViewer_Actor::SafeDownCast(prop))
+      if(VTKViewer_Actor* anActor = VTKViewer_Actor::SafeDownCast(prop)) {
         if(!anActor->IsInfinitive()) 
-          aCount++;
+	  aCount++;
+      }
+      else if ( !OwnActor( anActor ) ) {
+	aCount++;
+      }
         //int aCount = theRenderer->VisibleActorCount();
         //SetVisibility(aVis);
   }
   return aCount;
+}
+
+/*! Check if actor belongs to the axis object
+ * \param theActor - vtkActor pointer
+ * \retval Return true if the actor belongs to the axis object
+ */
+bool VTKViewer_Trihedron::OwnActor(const vtkActor* theActor)
+{
+  myPresent->InitTraversal();
+  while(vtkActor* anActor = myPresent->GetNextActor()) {
+    if ( anActor == theActor ) return true;
+  }
+  for(int i = 0; i < 3; i++) {
+    if ( myAxis[i]->OwnActor(theActor) ) return true;
+  }
+  return false;
 }

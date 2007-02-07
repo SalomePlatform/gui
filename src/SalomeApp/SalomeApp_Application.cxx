@@ -81,6 +81,49 @@
 #include <SALOMEDSClient_ClientFactory.hxx>
 
 #include <vector>
+/*!Internal class that updates object browser item properties */
+class SalomeApp_Updater : public OB_Updater
+{
+public:
+  SalomeApp_Updater() : OB_Updater(){};
+  virtual ~SalomeApp_Updater(){};
+  virtual void update( SUIT_DataObject* theObj, OB_ListItem* theItem );
+};
+
+void SalomeApp_Updater::update( SUIT_DataObject* theObj, OB_ListItem* theItem )
+{
+  if( !theObj || !theItem )
+    return;
+
+  SalomeApp_DataObject* SAObj = dynamic_cast<SalomeApp_DataObject*>( theObj );
+  if( !SAObj )
+    return;
+  
+  _PTR(SObject) SObj = SAObj->object();
+  if( !SObj )
+    return;
+  _PTR( GenericAttribute ) anAttr;
+
+  // Selectable
+  if ( SObj->FindAttribute( anAttr, "AttributeSelectable" ) )
+  {
+    _PTR(AttributeSelectable) aAttrSel = anAttr;
+    theItem->setSelectable( aAttrSel->IsSelectable() );
+  }
+  // Expandable
+  if ( SObj->FindAttribute(anAttr, "AttributeExpandable") ) 
+  {
+    _PTR(AttributeExpandable) aAttrExpand = anAttr;
+    theItem->setExpandable( aAttrExpand->IsExpandable() );
+  }
+  // Opened
+  //this attribute is not supported in the version of SALOME 3.x
+  //if ( SObj->FindAttribute(anAttr, "AttributeOpened") ) 
+  //{
+  //  _PTR(AttributeOpened) aAttrOpen = anAttr;
+  //  theItem->setOpen( aAttrOpen->IsOpened() );
+  //}
+}
 
 /*!Create new instance of SalomeApp_Application.*/
 extern "C" SALOMEAPP_EXPORT SUIT_Application* createApplication()
@@ -108,6 +151,46 @@ void SalomeApp_Application::start()
   LightApp_Application::start();
 
   SalomeApp_EventFilter::Init();
+
+  static bool isFirst = true;
+  if ( isFirst ) {
+    isFirst = false;
+    QString hdffile;
+    QStringList pyfiles;
+    for (int i = 1; i < qApp->argc(); i++) {
+      QRegExp rx("--test=(.+)");
+      if ( rx.search( QString(qApp->argv()[i]) ) >= 0 && rx.capturedTexts().count() > 0 ) {
+	QStringList files = QStringList::split(",",rx.capturedTexts()[1],false);
+	for (uint j = 0; j < files.count(); j++ ) {
+	  QFileInfo fi( files[j] );
+	  QString extension = fi.extension( false ).lower();
+	  if ( extension == "hdf" && fi.exists() )
+	    hdffile = fi.absFilePath();
+	  else if ( extension == "py" || extension == "" )
+	    pyfiles.append( fi.baseName( true ) );
+	}
+      }
+    }
+    if ( !hdffile.isEmpty() )       // open hdf file given as parameter
+      onOpenDoc( hdffile );
+    else if ( pyfiles.count() > 0 ) // create new study
+      onNewDoc();
+    // import python scripts
+    if ( pyfiles.count() > 0 && activeStudy() ) {
+      SalomeApp_Study* appStudy = dynamic_cast<SalomeApp_Study*>( activeStudy() );
+      if ( appStudy ) {
+	_PTR(Study) aStudy = appStudy->studyDS();
+	if ( !aStudy->GetProperties()->IsLocked() ) {
+	  for ( uint i = 0; i < pyfiles.count(); i++ ) {
+	    QString command = QString( "import %1" ).arg( pyfiles[i] );
+	    PythonConsole* pyConsole = pythonConsole();
+	    if ( pyConsole )
+	      pyConsole->exec( command );
+	  }
+	}
+      }
+    }
+  }
 }
 
 /*!Create actions:*/
@@ -148,11 +231,21 @@ void SalomeApp_Application::createActions()
 		tr( "MEN_DESK_REGISTRY_DISPLAY" ), tr( "PRP_DESK_REGISTRY_DISPLAY" ),
 		/*SHIFT+Key_D*/0, desk, false, this, SLOT( onRegDisplay() ) );
 
+  //SRN: BugID IPAL9021, add an action "Load"
+  createAction( FileLoadId, tr( "TOT_DESK_FILE_LOAD" ),
+                resourceMgr()->loadPixmap( "STD", tr( "ICON_FILE_OPEN" ) ),
+		tr( "MEN_DESK_FILE_LOAD" ), tr( "PRP_DESK_FILE_LOAD" ),
+		CTRL+Key_L, desk, false, this, SLOT( onLoadDoc() ) );
+  //SRN: BugID IPAL9021: End
+
+
   int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1 );
 
   // "Save GUI State" command is renamed to "Save VISU State" and 
   // creation of menu item is moved to VISU
   //  createMenu( SaveGUIStateId, fileMenu, 10, -1 ); 
+
+  createMenu( FileLoadId,   fileMenu, 0 );  //SRN: BugID IPAL9021, add a menu item "Load"
 
   createMenu( DumpStudyId, fileMenu, 10, -1 );
   createMenu( separator(), fileMenu, -1, 15, -1 );
@@ -299,7 +392,11 @@ void SalomeApp_Application::onLoadDoc()
     return;
 
   name = studyname;
+#ifndef WNT
+  //this code replace marker of windows drive and path become invalid therefore 
+  // defines placed there
   name.replace( QRegExp(":"), "/" );
+#endif
 
   if( LightApp_Application::onLoadDoc( name ) )
   {
@@ -652,6 +749,7 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
   if ( flag == WT_ObjectBrowser )
   {
     OB_Browser* ob = (OB_Browser*)wid;
+    ob->setUpdater( new SalomeApp_Updater() );
     connect( ob->listView(), SIGNAL( doubleClicked( QListViewItem* ) ), this, SLOT( onDblClick( QListViewItem* ) ) );
     bool autoSize = resMgr->booleanValue( "ObjectBrowser", "auto_size", false ),
          autoSizeFirst = resMgr->booleanValue( "ObjectBrowser", "auto_size_first", true );
@@ -765,7 +863,10 @@ QString SalomeApp_Application::defaultEngineIOR()
   QString anIOR( "" );
   CORBA::Object_ptr anEngine = namingService()->Resolve( "/SalomeAppEngine" );
   if ( !CORBA::is_nil( anEngine ) )
-    anIOR = orb()->object_to_string( anEngine );
+  {
+    CORBA::String_var objStr = orb()->object_to_string( anEngine );
+    anIOR = QString( objStr.in() );
+  }
   return anIOR;
 }
 
@@ -857,7 +958,8 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QPopupMenu* t
   CAM_Module* currentModule = activeModule();
   if (currentModule && currentModule->moduleName() == aModuleTitle)
     return;
-  thePopup->insertItem( tr( "MEN_OPENWITH" ), this, SLOT( onOpenWith() ) );
+  if ( !aModuleTitle.isEmpty() )
+    thePopup->insertItem( tr( "MEN_OPENWITH" ).arg( aModuleTitle ), this, SLOT( onOpenWith() ) );
 }
 
 /*!Update obect browser:
@@ -1126,3 +1228,11 @@ void SalomeApp_Application::updateSavePointDataObjects( SalomeApp_Study* study )
     delete it.data();
 }
 
+/*! Check data object */
+bool SalomeApp_Application::checkDataObject(LightApp_DataObject* theObj)
+{
+  if (theObj)
+    return true;
+
+  return false;
+}

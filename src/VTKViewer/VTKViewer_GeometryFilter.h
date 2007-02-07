@@ -24,6 +24,11 @@
 #include <vtkGeometryFilter.h>
 
 #include <vector>
+
+#ifdef WIN32
+#pragma warning ( disable:4251 )
+#endif
+
 /*! \brief This class used same as vtkGeometryFilter. See documentation on VTK for more information.
  */
 class VTKVIEWER_EXPORT VTKViewer_GeometryFilter : public vtkGeometryFilter 
@@ -105,5 +110,9 @@ private:
   int       myStoreMapping;
   int       myIsWireframeMode;
 };
+
+#ifdef WIN32
+#pragma warning ( default:4251 )
+#endif
 
 #endif

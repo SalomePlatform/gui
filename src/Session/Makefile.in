@@ -39,7 +39,8 @@ EXPORT_HEADERS= Session_Session_i.hxx \
 		Session_ServerLauncher.hxx \
 		Session_ServerThread.hxx \
 		Session_ServerCheck.hxx \
-		SalomeApp_Engine_i.hxx
+		SalomeApp_Engine_i.hxx \
+		SALOME_Session.hxx
 
 # Libraries targets
 LIB = libSalomeSession.la
@@ -64,6 +65,18 @@ CXXFLAGS += $(OCC_CXXFLAGS) $(BOOST_CPPFLAGS)
 LDFLAGS += $(QT_MT_LIBS) $(KERNEL_LDFLAGS) -lSalomeNS -lsuit -lSalomeLifeCycleCORBA -lOpUtil -lSALOMELocalTrace -lwith_loggerTraceCollector -lEvent -lSalomeCatalog -lSalomeDSClient $(CAS_KERNEL)
 
 LDFLAGSFORBIN= $(LDFLAGS) $(OMNIORB_LIBS) $(HDF5_LIBS) -lqtx -lSalomeContainer -lSalomeResourcesManager -lTOOLSDS -lSalomeHDFPersist -lSalomeDSImpl -lSalomeGenericObj -lRegistry -lSalomeNotification -lSALOMEBasics
+
+PLUGINDIR = $(top_builddir)/bin/salome/styles
+MYPLUGINDIR = styles
+
+$(MYPLUGINDIR): $(PLUGINDIR)
+	-$(RM) $@
+	ln -sf $< $@
+
+$(PLUGINDIR):
+	mkdir -p $@
+
+bin: $(MYPLUGINDIR)
 
 @CONCLUDE@
 

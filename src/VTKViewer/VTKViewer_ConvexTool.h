@@ -197,7 +197,6 @@ class VTKVIEWER_EXPORT VTKViewer_DelaunayTriangulator : public VTKViewer_Triangu
   virtual
   vtkIdType 
   GetConnectivity(vtkIdType thePntId);
-
 };
 
 

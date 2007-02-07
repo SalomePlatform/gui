@@ -52,7 +52,8 @@ enum { IdCopy, IdPaste, IdClear, IdSelectAll };
 
 static QString READY_PROMPT = ">>> ";
 static QString DOTS_PROMPT  = "... ";
-#define PROMPT_SIZE _currentPrompt.length()
+
+#define PROMPT_SIZE (int)_currentPrompt.length()
 
 class ExecCommand : public PyInterp_LockRequest
 {
@@ -104,7 +105,8 @@ private:
 */
 PythonConsole_PyEditor::PythonConsole_PyEditor(PyInterp_base* theInterp, QWidget *theParent, const char* theName): 
   QTextEdit(theParent,theName),
-  myInterp( 0 )
+  myInterp( 0 ),
+  myIsInLoop( false )
 {
   QString fntSet( "" );
   QFont aFont = SUIT_Tools::stringToFont( fntSet );
@@ -148,8 +150,10 @@ void PythonConsole_PyEditor::setText(QString s)
 void PythonConsole_PyEditor::exec( const QString& command )
 {
   // Some interactive command is being executed in this editor -> do nothing
-  if ( isReadOnly() )
+  if ( isReadOnly() ) {
+    myQueue.push_back( command );
     return;
+  }
   int para=paragraphs()-1;
   removeParagraph( para );
   _currentPrompt = READY_PROMPT;
@@ -158,6 +162,17 @@ void PythonConsole_PyEditor::exec( const QString& command )
   setText( "\n" + _currentPrompt); 
   setText( command + "\n" ); 
   handleReturn();
+}
+
+void PythonConsole_PyEditor::execAndWait( const QString& command )
+{
+  if( myIsInLoop )
+    return;
+
+  myIsInLoop = true;
+  exec( command );
+  qApp->enter_loop();
+  myIsInLoop = false;
 }
 
 /*!
@@ -603,9 +618,9 @@ void PythonConsole_PyEditor::keyPressEvent( QKeyEvent* e )
 	if ( ctrlPressed && !hasSelectedText() ) {
 	  QString txt = text( curLine );
 	  int ind = curCol;
-	  while ( ind < txt.length()-1 && txt[ ind ] == ' ' ) ind++;
+	  while ( ind < (int)( txt.length() - 1 ) && txt[ind] == ' ' ) ind++;
 	  ind = txt.find( ' ', ind );
-	  while ( ind < txt.length()-1 && txt[ ind ] == ' ' ) ind++;
+	  while ( ind < (int)( txt.length() - 1 ) && txt[ ind ] == ' ' ) ind++;
 	  if ( ind > PROMPT_SIZE-1 ) {
 	    setSelection( curLine, curCol, curLine, ind );
 	    removeSelectedText();
@@ -664,6 +679,8 @@ void PythonConsole_PyEditor::customEvent(QCustomEvent* e)
       _currentPrompt = READY_PROMPT;
       setText(_currentPrompt);
       viewport()->unsetCursor();
+      if( myIsInLoop )
+	qApp->exit_loop();
       break;
     }
   case PyInterp_Event::INCOMPLETE:
@@ -672,6 +689,8 @@ void PythonConsole_PyEditor::customEvent(QCustomEvent* e)
       _currentPrompt = DOTS_PROMPT;
       setText(_currentPrompt);
       viewport()->unsetCursor();
+      if( myIsInLoop )
+	qApp->exit_loop();
       break;
     }
   default:
@@ -680,6 +699,12 @@ void PythonConsole_PyEditor::customEvent(QCustomEvent* e)
 
   setReadOnly( false );
   _isInHistory = false;
+
+  if ( e->type() == PyInterp_Event::OK && myQueue.count() > 0 ) {
+    QString nextcmd = myQueue[0];
+    myQueue.pop_front();
+    exec( nextcmd );
+  }
 }
 
 /*!
@@ -699,6 +724,8 @@ void PythonConsole_PyEditor::onPyInterpChanged( PyInterp_base* interp )
       _isInHistory = false;
       setText(_currentPrompt);
       viewport()->unsetCursor();
+      if( myIsInLoop )
+	qApp->exit_loop();
     }
     else {
       clear();
@@ -716,7 +743,7 @@ QPopupMenu* PythonConsole_PyEditor::createPopupMenu( const QPoint& pos )
   QPopupMenu* popup = QTextEdit::createPopupMenu( pos );
 
   QValueList<int> ids;
-  for ( int i = 0; popup && i < popup->count(); i++ )
+  for ( int i = 0; popup && i < (int)popup->count(); i++ )
   {
     if ( !popup->isItemEnabled( popup->idAt( i ) ) )
       ids.append( popup->idAt( i ) );

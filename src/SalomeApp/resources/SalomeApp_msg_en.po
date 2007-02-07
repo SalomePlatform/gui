@@ -16,10 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      CATHAREGUI_msg_en.po
+// File:      SalomeApp_msg_en.po
 // Created:   10/25/2004 12:46:36 PM
 // Author:    Sergey LITONIN
-// Copyright (C) CEA 2004
 
 msgid ""
 msgstr ""
@@ -118,7 +117,7 @@ msgid "SalomeApp_Application::PREF_TAB_OBJBROWSER"
 msgstr "Object browser"
 
 msgid "SalomeApp_Application::MEN_OPENWITH"
-msgstr "Activate Module"
+msgstr "Activate %1 Module"
 
 msgid "SalomeApp_Application::MEN_DELETE_INVALID_REFERENCE"
 msgstr "Delete Invalid Reference"

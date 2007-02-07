@@ -76,7 +76,7 @@ int VTKViewer_RectPicker::Pick(float selectionX1, float selectionY1, float selec
   float c1[3], c2[3];
   int picked=0;
   int *winSize;
-  float x, y, t, p;
+  float x, y, t;
   float *viewport;
   float cameraPos[4], cameraFP[4];
   float *displayCoords, *worldCoords;
@@ -88,7 +88,6 @@ int VTKViewer_RectPicker::Pick(float selectionX1, float selectionY1, float selec
   float windowLowerLeft[4], windowUpperRight[4];
   float bounds[6], tol;
   float tF, tB;
-  float hitPosition[3];
   float cameraDOP[3];
   
   //  Initialize picking process
@@ -729,9 +728,9 @@ char VTKViewer_RectPicker::HitBBox (float bounds[6], float origin[4][4], float d
  * p2[4][4] is the corner points of bottom face. 
  * \retval The method returns a non-zero value, if the point is inside.
  */
-char VTKViewer_RectPicker::PointInside (float p[3], float p1[4][4], float p2[4][4], float tol)
+char VTKViewer_RectPicker::PointInside(float p[3], float p1[4][4], float p2[4][4], float tol)
 {
-  int i, j, k;
+  int j, k;
   float t, coord[3];
 
   // Fix one coordinate (x, for example) and 

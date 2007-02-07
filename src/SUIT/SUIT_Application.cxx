@@ -168,7 +168,7 @@ SUIT_ResourceMgr* SUIT_Application::resourceMgr() const
   \param msg - text of message
   \param msec - time in milliseconds, after that the status label will be cleared
 */
-void SUIT_Application::putInfo ( const QString& msg, const int msec )
+void SUIT_Application::putInfo( const QString& msg, const int msec )
 {
   if ( !desktop() )
     return;
@@ -180,9 +180,28 @@ void SUIT_Application::putInfo ( const QString& msg, const int msec )
     myStatusLabel->show();
   }
 
+  QString prev = myStatusLabel->text();
+
   myStatusLabel->setText( msg );
   if ( msec != -1 )
-    QTimer::singleShot( msec <= 0 ? DEFAULT_MESSAGE_DELAY : msec, myStatusLabel, SLOT( clear() ) );
+    QTimer::singleShot( msec <= 0 ? DEFAULT_MESSAGE_DELAY : msec, this, SLOT( onInfoClear() ) );
+
+  if ( prev != msg )
+    emit infoChanged( msg );
+}
+
+/*!
+  Clear the information label in status bar after delay.
+*/
+void SUIT_Application::onInfoClear()
+{
+  if ( !myStatusLabel )
+    return;
+
+  bool changed = !myStatusLabel->text().isEmpty();
+  myStatusLabel->clear();
+  if ( changed )
+    emit infoChanged( QString::null );
 }
 
 /*!

@@ -64,6 +64,7 @@ myActiveViewMgr( 0 )
 /*!Destructor.*/
 STD_Application::~STD_Application()
 {
+  clearViewManagers();
 }
 
 /*! \retval QString "StdApplication"*/
@@ -186,13 +187,6 @@ void STD_Application::createActions()
                 tr( "MEN_DESK_HELP_ABOUT" ), tr( "PRP_DESK_HELP_ABOUT" ),
                 SHIFT+Key_A, desk, false, this, SLOT( onHelpAbout() ) );
 
-  //SRN: BugID IPAL9021, add an action "Load"
-  createAction( FileLoadId, tr( "TOT_DESK_FILE_LOAD" ),
-                resMgr->loadPixmap( "STD", tr( "ICON_FILE_OPEN" ) ),
-		tr( "MEN_DESK_FILE_LOAD" ), tr( "PRP_DESK_FILE_LOAD" ),
-		CTRL+Key_L, desk, false, this, SLOT( onLoadDoc() ) );
-  //SRN: BugID IPAL9021: End
-
   QtxDockAction* da = new QtxDockAction( tr( "TOT_DOCK_WINDOWS" ), tr( "MEN_DOCK_WINDOWS" ), desk );
   registerAction( ViewWindowsId, da );
   da->setAutoPlace( false );
@@ -208,7 +202,6 @@ void STD_Application::createActions()
 
   createMenu( FileNewId,    fileMenu, 0 );
   createMenu( FileOpenId,   fileMenu, 0 );
-  createMenu( FileLoadId,   fileMenu, 0 );  //SRN: BugID IPAL9021, add a menu item "Load"
   createMenu( FileCloseId,  fileMenu, 0 );
   createMenu( separator(),  fileMenu, -1, 0 );
   createMenu( FileSaveId,   fileMenu, 0 );
@@ -222,8 +215,9 @@ void STD_Application::createActions()
   createMenu( EditPasteId, editMenu );
   createMenu( separator(), editMenu );
 
-  createMenu( ViewWindowsId,   viewMenu );
-  createMenu( ViewStatusBarId, viewMenu );
+  createMenu( ViewWindowsId,   viewMenu, 0 );
+  createMenu( separator(),     viewMenu, -1, 10 );
+  createMenu( ViewStatusBarId, viewMenu, 10 );
   createMenu( separator(),     viewMenu );
 
   createMenu( HelpAboutId, helpMenu );
@@ -320,11 +314,6 @@ bool STD_Application::onOpenDoc( const QString& aName )
   QApplication::restoreOverrideCursor();
 
   return res;
-}
-
-/*! called on loading the existent study */
-void STD_Application::onLoadDoc()
-{
 }
 
 /*! \retval true, if document was loaded successful, else false.*/
@@ -678,7 +667,8 @@ void STD_Application::removeViewManager( SUIT_ViewManager* vm )
   emit viewManagerRemoved( vm );
 
   vm->disconnectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
-  vm->disconnect();
+  disconnect( vm, SIGNAL( activated( SUIT_ViewManager* ) ),
+             this, SLOT( onViewManagerActivated( SUIT_ViewManager* ) ) );
   myViewMgrs.removeRef( vm );
 
   if ( myActiveViewMgr == vm )
@@ -691,8 +681,11 @@ void STD_Application::clearViewManagers()
   ViewManagerList lst;
   viewManagers( lst );
 
-  for ( QPtrListIterator<SUIT_ViewManager> it( lst ); it.current(); ++it )
-    removeViewManager( it.current() );
+  for ( QPtrListIterator<SUIT_ViewManager> it( lst ); it.current(); ++it ) {
+    QGuardedPtr<SUIT_ViewManager> vm = it.current();
+    removeViewManager( vm );
+    delete vm;
+  }
 }
 
 /*!\retval TRUE, if view manager \a vm, already in view manager list (\a myViewMgrs).*/

@@ -719,8 +719,8 @@ void DDS_DicItem::FillDataMap( TCollection_AsciiString theID, const LDOM_Element
       TCollection_AsciiString name = elem.getAttribute( DDS_Dictionary::KeyWord( "OPTION_NAME" ) );
 
       TCollection_ExtendedString value;
-      const LDOM_Text& aText = (const LDOM_Text&)elem.getFirstChild();
-      LDOM_Text anOptTxt( aText );
+      const LDOM_Node aNode = elem.getFirstChild();
+      LDOM_Text anOptTxt( (const LDOM_Text&)(aNode) );
       if ( !anOptTxt.isNull() )
         value = anOptTxt.getData();
 

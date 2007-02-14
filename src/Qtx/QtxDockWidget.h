@@ -16,40 +16,31 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      QtxDockWindow.h
+// File:      QtxDockWidget.h
 // Author:    Sergey TELKOV
 
 #include "Qtx.h"
 
-#include <qdockwindow.h>
+#include <QtGui/qdockwidget.h>
 
-class QTX_EXPORT QtxDockWindow : public QDockWindow
+class QTX_EXPORT QtxDockWidget : public QDockWidget
 {
   Q_OBJECT
 
   class Watcher;
 
 public:
-  QtxDockWindow( Place = InDock, QWidget* = 0, const char* = 0, WFlags = 0 );
-  QtxDockWindow( const bool, QWidget*, const char* = 0, WFlags = 0 );
-  QtxDockWindow( QWidget*, const char* = 0, WFlags = 0 );
-  virtual ~QtxDockWindow();
-
-  virtual void  setWidget( QWidget* );
-
-  bool          isStretchable() const;
-  virtual void  setStretchable( const bool );
+  QtxDockWidget( const QString&, QWidget* = 0, Qt::WindowFlags = 0 );
+  QtxDockWidget( const bool, QWidget* = 0, Qt::WindowFlags = 0 );
+  QtxDockWidget( QWidget*, Qt::WindowFlags = 0 );
+  virtual ~QtxDockWidget();
 
   virtual QSize sizeHint() const;
   virtual QSize minimumSizeHint() const;
 
-  QMainWindow*  mainWindow() const;
-
 public slots:
-  virtual void  show();
-  virtual void  hide();
+  virtual void  setVisible( bool );
 
 private:
   Watcher*      myWatcher;
-  bool          myStretch;
 };

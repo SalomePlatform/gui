@@ -25,8 +25,8 @@
 #include "Qtx.h"
 #include "QtxActionMgr.h"
 
-#include <qptrlist.h>
-#include <qstringlist.h>
+#include <QtCore/qlist.h>
+#include <QtCore/qstringlist.h>
 
 class QPopupMenu;
 class QMainWindow;
@@ -53,8 +53,7 @@ class QTX_EXPORT QtxActionMenuMgr : public QtxActionMgr
 
   class MenuNode;
 
-  typedef QPtrList<MenuNode>         NodeList;
-  typedef QPtrListIterator<MenuNode> NodeListIterator;
+  typedef QList<MenuNode*> NodeList;
 
   /*!
     \class MenuNode
@@ -64,8 +63,13 @@ class QTX_EXPORT QtxActionMenuMgr : public QtxActionMgr
   class MenuNode
   {
   public:
-    MenuNode() : parent( 0 ), visible( true ) { children.setAutoDelete( true ); };
-    MenuNode( MenuNode* p ) : parent( p ), visible( true ) { children.setAutoDelete( true ); };
+    MenuNode() : parent( 0 ), visible( true ) {};
+    MenuNode( MenuNode* p ) : parent( p ), visible( true ) {};
+    ~MenuNode()
+    {
+      for ( NodeList::iterator it = children.begin(); it != children.end(); ++it )
+        delete *it;
+    }
 
     int       id;
     int       idx;
@@ -118,6 +122,8 @@ public:
   bool         isShown( const int ) const;
   void         setShown( const int, const bool );
 
+  virtual void change( const int, const QString& );
+
   virtual bool load( const QString&, QtxActionMgr::Reader& );
 
   bool         containsMenu( const QString&, const int ) const;
@@ -144,10 +150,11 @@ protected:
   void         removeMenu( const int, MenuNode* );
 
   QAction*     itemAction( const int ) const;
-  MenuAction*  menuAction( const int ) const;
+  QAction*     menuAction( const int ) const;
 
   void         updateMenu( MenuNode* = 0, const bool = true, const bool = true );
   virtual void internalUpdate();  
+  virtual void updateContent();
 
 private:
   bool         checkWidget( QWidget* ) const;
@@ -156,13 +163,16 @@ private:
   QString      clearTitle( const QString& ) const;
   int          createMenu( const QStringList&, const int );
 
+  void         triggerUpdate( const int, const bool rec = true );
+
 private:
-  typedef QMap<int, MenuAction*> MenuMap;
+  typedef QMap<int, QAction*> MenuMap;
 
 private:
   MenuNode     myRoot;
   QWidget*     myMenu;
   MenuMap      myMenus;
+  QMap<int, bool> myUpdateIds;
 };
 
 /*!

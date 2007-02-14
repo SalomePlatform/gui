@@ -24,7 +24,10 @@
 
 #include "Qtx.h"
 
-#include <qaction.h>
+#include <QtCore/qmap.h>
+#include <QtCore/qlist.h>
+
+#include <QtGui/qaction.h>
 
 #include "QtxActionMgr.h"
 
@@ -60,7 +63,7 @@ class QTX_EXPORT QtxActionToolMgr : public QtxActionMgr
     bool      visible;
   };
 
-  typedef QValueList<ToolNode> NodeList;
+  typedef QList<ToolNode> NodeList;
 
 protected:
   class ToolCreator;
@@ -122,8 +125,11 @@ protected:
   virtual void    internalUpdate();
   void            updateToolBar( const int );
 
+  virtual void    updateContent();
+
 private:
   void            simplifySeparators( QToolBar* );
+  void            triggerUpdate( const int );
 
 private:
   typedef struct { NodeList nodes; QToolBar* toolBar; } ToolBarInfo;
@@ -132,6 +138,7 @@ private:
 private:
   ToolBarMap      myToolBars;
   QMainWindow*    myMainWindow;
+  QMap<int,int>   myUpdateIds;
 };
 
 /*!

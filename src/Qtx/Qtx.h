@@ -42,81 +42,79 @@
 #define true  1
 #endif
 
-#ifndef INCLUDE_MENUITEM_DEF
-#define INCLUDE_MENUITEM_DEF
-#endif
+#define QT_VER 4
 
-#include <qnamespace.h>
+#include <Qt/qnamespace.h>
 
-#ifndef QT_VERSION
-#define QT_VER 0
-#else
-#if QT_VERSION >= 0x30000
-#define QT_VER 3
-#else
-#if QT_VERSION >= 300
-#define QT_VER 3
-#else
-#if QT_VERSION >= 200
-#define QT_VER 2
-#else
-#if QT_VERSION >= 100
-#define QT_VER 1
-#endif
-#endif
-#endif
-#endif
-#endif
+#include <QtGui/qcolor.h>
+#include <QtGui/qimage.h>
+#include <QtGui/qpixmap.h>
 
-#include <qimage.h>
-#include <qpixmap.h>
-
+class QMenu;
 class QObject;
 class QString;
 class QWidget;
 class QToolBar;
-class QGroupBox;
-class QPopupMenu;
-class QWidgetList;
 
-template <class> class QValueList;
+template <class> class QList;
 
-#if QT_VER < 3
-#define QPtrList QList
-#define QPtrListIterator QListIterator
-#endif
-
-typedef QValueList<int>    QIntList;
-typedef QValueList<short>  QShortList;
-typedef QValueList<double> QDoubleList;
+typedef QList<int>    QIntList;
+typedef QList<short>  QShortList;
+typedef QList<double> QDoubleList;
 
 /*!
   \class Qtx
   \brief Set of auxiliary static methods
 */
+
+#ifndef QT_MOC_RUN
+class QTX_EXPORT Qtx
+#else
 class QTX_EXPORT Qtx : public Qt
+#endif
 {
 public:
   enum AlignmentFlags
   {
-    AlignOutLeft   = AlignVCenter  << 2,
+    AlignLeft = Qt::AlignLeft,
+    AlignLeading = Qt::AlignLeading,
+    AlignRight = Qt::AlignRight,
+    AlignTrailing = Qt::AlignTrailing,
+    AlignHCenter = Qt::AlignHCenter,
+    AlignJustify = Qt::AlignJustify,
+    AlignAbsolute = Qt::AlignAbsolute,
+    AlignHorizontal_Mask = Qt::AlignHorizontal_Mask,
+
+    AlignTop = Qt::AlignTop,
+    AlignBottom = Qt::AlignBottom,
+    AlignVCenter = Qt::AlignVCenter,
+    AlignVertical_Mask = Qt::AlignVertical_Mask,
+
+    AlignCenter = Qt::AlignCenter,
+
+    AlignOutLeft   = Qt::AlignVCenter  << 2,
     AlignOutRight  = AlignOutLeft  << 2,
     AlignOutTop    = AlignOutRight << 2,
     AlignOutBottom = AlignOutTop   << 2
   };
 
+  static QString toQString( const char*, const int = -1 );
+  static QString toQString( const short*, const int = -1 );
+  static QString toQString( const unsigned char*, const int = -1 );
+  static QString toQString( const unsigned short*, const int = -1 );
+
   static void    setTabOrder( QWidget*, ... );
   static void    setTabOrder( const QWidgetList& );
   static void    alignWidget( QWidget*, const QWidget*, const int );
 
-  static void    simplifySeparators( QToolBar* );
-  static void    simplifySeparators( QPopupMenu*, const bool = true );
+//  static void    simplifySeparators( QToolBar* );
+  static void    simplifySeparators( QWidget*, const bool = true );
 
   static bool    isParent( QObject*, QObject* );
 
-  static QString extension( const QString& );
   static QString dir( const QString&, const bool = true );
   static QString file( const QString&, const bool = true );
+  static QString extension( const QString&, const bool = false );
 
   static QString library( const QString& );
 
@@ -129,11 +127,11 @@ public:
   static int     rgbSet( const QColor& );
   static int     rgbSet( const int, const int, const int );
 
-  static void    rgbSet( const int, QColor& );
+  static QColor  rgbSet( const int );
   static void    rgbSet( const int, int&, int&, int& );
 
   static QColor  scaleColor( const int, const int, const int );
-  static void    scaleColors( const int, QValueList<QColor>& );
+  static void    scaleColors( const int, QList<QColor>& );
 
   static QImage  grayscale( const QImage& );
   static QPixmap grayscale( const QPixmap& );

@@ -21,23 +21,64 @@
 
 #include "Qtx.h"
 
-#include <qdir.h>
-#include <qbitmap.h>
-#include <qstring.h>
-#include <qwidget.h>
-#include <qlayout.h>
-#include <qpainter.h>
-#include <qtoolbar.h>
-#include <qgroupbox.h>
-#include <qfileinfo.h>
-#include <qpopupmenu.h>
-#include <qobjectlist.h>
-#include <qwidgetlist.h>
-#include <qapplication.h>
+#include <QtCore/qdir.h>
+#include <QtCore/qstring.h>
+#include <QtCore/qfileinfo.h>
+
+#include <QtGui/qmenu.h>
+#include <QtGui/qbitmap.h>
+#include <QtGui/qwidget.h>
+#include <QtGui/qlayout.h>
+#include <QtGui/qpainter.h>
+#include <QtGui/qtoolbar.h>
+#include <QtGui/qapplication.h>
+#include <QtGui/qdesktopwidget.h>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+
+QString Qtx::toQString( const char* str, const int len )
+{
+  return toQString( (unsigned char*)str, len );
+}
+
+QString Qtx::toQString( const short* str, const int len )
+{
+  return toQString( (unsigned short*)str, len );
+}
+
+QString Qtx::toQString( const unsigned char* str, const int len )
+{
+  QString res;
+  int l = len;
+  const unsigned char* s = str;
+  while ( len < 0 || res.length() < len )
+  {
+    if ( *s == '\0' )
+      break;
+
+    res.append( QChar( *s ) );
+    s++;
+  }
+  return res;
+}
+
+QString Qtx::toQString( const unsigned short* str, const int len )
+{
+  QString res;
+  int l = len;
+  const unsigned short* s = str;
+  while ( len < 0 || res.length() < len )
+  {
+    if ( *s == '\0' )
+      break;
+
+    res.append( QChar( *s ) );
+    s++;
+  }
+  return res;
+}
 
 /*!
 	Name: setTabOrder [static public]
@@ -72,9 +113,9 @@ void Qtx::setTabOrder( const QWidgetList& widgets )
     return;
 
   QWidget* prev = 0;
-  for ( QWidgetListIt it( widgets ); it.current(); ++it )
+  for ( QWidgetList::const_iterator it = widgets.begin(); it!= widgets.end(); ++it )
   {
-    QWidget* next = it.current();
+    QWidget* next = *it;
     if ( prev && next )
       QWidget::setTabOrder( prev, next );
     prev = next;
@@ -158,8 +199,8 @@ void Qtx::alignWidget( QWidget* src, const QWidget* ref, const int alignFlags )
 	if ( desk && y + srcHei + border > desk->height() )
 		y = desk->height() - srcHei - border;
 
-	x = QMAX( x, 0 );
-	y = QMAX( y, 0 );
+	x = qMax( x, 0 );
+	y = qMax( y, 0 );
 
 	src->move( x, y );
 }
@@ -168,66 +209,76 @@ void Qtx::alignWidget( QWidget* src, const QWidget* ref, const int alignFlags )
 	Name: simplifySeparators [static public]
 	Desc: Checks toolbar for unnecessary separators and removes them
 */
+/*
 void Qtx::simplifySeparators( QToolBar* toolbar )
 {
   if ( !toolbar )
     return;
 
-  const QObjectList* objList = toolbar->children();
-  if ( !objList )
-    return;
+  const QObjectList& objList = toolbar->children();
 
   QObjectList delList;
 
   bool isPrevSep = true;
-  for ( QObjectListIt it( *objList ); it.current(); ++it )
+  QObject* lastVis = 0; // last visible
+  for ( QObjectList::const_iterator it = objList.begin(); it != objList.end(); ++it )
   {
-    bool isSep = it.current()->isA( "QToolBarSeparator" );
+    QObject* obj = *it;
+    if ( !obj || !obj->isWidgetType() )
+      continue;
+    bool isSep = obj->inherits( "QToolBarSeparator" );
+    if ( !isSep && !((QWidget*)obj)->isVisibleTo( toolbar ) )
+      continue;
     if ( isPrevSep && isSep )
-      delList.append( it.current() );
-    isPrevSep = isSep;
+      delList.append( obj );
+    else
+    {
+      isPrevSep = isSep;
+      lastVis = obj;
+    }
   }
+  // remove last visible separator
+  if ( lastVis && lastVis->inherits( "QToolBarSeparator" ) )
+      delList.append( lastVis );
 
-  for ( QObjectListIt itr( delList ); itr.current(); ++itr )
-    delete itr.current();
-
-  if ( toolbar->children() && !toolbar->children()->isEmpty() &&
-       toolbar->children()->getFirst()->isA( "QToolBarSeparator" ) )
-    delete toolbar->children()->getFirst();
-
-  if ( toolbar->children() && !toolbar->children()->isEmpty() &&
-       toolbar->children()->getLast()->isA( "QToolBarSeparator" ) )
-    delete toolbar->children()->getLast();
+  for ( QObjectList::iterator itr = delList.begin(); itr != delList.end(); ++itr )
+    delete *itr;
 }
+*/
 
 /*!
 	Name: simplifySeparators [static public]
 	Desc: Checks popup menu recursively for unnecessary separators and removes them
 */
-void Qtx::simplifySeparators( QPopupMenu* popup, const bool recursive )
+void Qtx::simplifySeparators( QWidget* wid, const bool recursive )
 {
-  if ( !popup || !popup->count() )
+  if ( !wid )
     return;
 
-  QIntList idRemove;
-  for ( uint i = 1; i < popup->count(); i++ )
-  {
-    if ( popup->findItem( popup->idAt( i ) )->isSeparator() &&
-         popup->findItem( popup->idAt( i - 1 ) )->isSeparator() )
-      idRemove.append( popup->idAt( i ) );
+  QList<QAction*> items = wid->actions();
+  if ( items.isEmpty() )
+    return;
 
-    if ( recursive )
-      simplifySeparators( popup->findItem( popup->idAt( i ) )->popup() );
+  QList<QAction*> toRemove;
+  for ( uint i = 1; i < items.count(); i++ )
+  {
+    if ( items[i]->isSeparator() && items[i - 1]->isSeparator() )
+      toRemove.append( items[i] );
+
+    if ( recursive && items[i]->menu() )
+      simplifySeparators( items[i]->menu(), recursive );
   }
 
-  for ( QIntList::const_iterator it = idRemove.begin(); it != idRemove.end(); ++it )
-    popup->removeItem( *it );
+  for ( QList<QAction*>::iterator it = toRemove.begin(); it != toRemove.end(); ++it )
+    wid->removeAction( *it );
 
-  if ( popup->count() > 0 && popup->findItem( popup->idAt( 0 ) )->isSeparator() )
-    popup->removeItem( popup->idAt( 0 ) );
+  items = wid->actions();
+  if ( !items.isEmpty() && items[0]->isSeparator() )
+    wid->removeAction( items[0] );
 
-  if ( popup->count() > 0 && popup->findItem( popup->idAt( popup->count() - 1 ) )->isSeparator() )
-    popup->removeItem( popup->idAt( popup->count() - 1 ) );
+  items = wid->actions();
+  if ( !items.isEmpty() && items[items.count() - 1]->isSeparator() )
+    wid->removeAction( items[items.count() - 1] );
 }
 
 /*!
@@ -255,7 +306,8 @@ bool Qtx::isParent( QObject* child, QObject* parent )
 */
 QString Qtx::dir( const QString& path, const bool abs )
 {
-  QString dirPath = QFileInfo( path ).dirPath( abs );
+  QDir aDir = QFileInfo( path ).dir();
+  QString dirPath = abs ? aDir.absolutePath() : aDir.path();
   if ( dirPath == QString( "." ) )
     dirPath = QString::null;
   return dirPath;
@@ -277,9 +329,9 @@ QString Qtx::file( const QString& path, bool withExt )
 	Name: extension [static public]
 	Desc: Returns the file extension only or null string.
 */
-QString Qtx::extension( const QString& path )
+QString Qtx::extension( const QString& path, const bool full )
 {
-  return QFileInfo( path ).extension(false); // after the last dot
+  return full ? QFileInfo( path ).completeSuffix() : QFileInfo( path ).suffix();
 }
 
 /*!
@@ -304,7 +356,7 @@ QString Qtx::library( const QString& str )
   QString libExt( "so" );
 #endif
 
-  if ( ext.lower() != QString( "so" ) && ext.lower() != QString( "dll" ) )
+  if ( ext.toLower() != QString( "so" ) && ext.toLower() != QString( "dll" ) )
   {
     if ( !name.isEmpty() && !ext.isEmpty() )
       name += QString( "." );
@@ -345,24 +397,7 @@ QString Qtx::tmpDir()
 */
 bool Qtx::mkDir( const QString& dirPath )
 {
-	QString path = QDir::convertSeparators( dirPath );
-
-#ifdef WIN32
-	while ( !path.isEmpty() && path.at( path.length() - 1 ) == QDir::separator() )
-		path.remove( path.length() - 1, 1 );
-
-	if ( path.at( path.length() - 1 ) == ':' )
-		return QFileInfo( path ).exists();
-#endif
-
-	QFileInfo fInfo( path );
-	if ( fInfo.exists() )
-		return fInfo.isDir();
-
-	if ( !mkDir( fInfo.dirPath() ) )
-		return false;
-
-	return QDir( fInfo.dirPath() ).mkdir( fInfo.fileName() );
+	return QDir().mkpath( dirPath );
 }
 
 /*!
@@ -382,15 +417,13 @@ bool Qtx::rmDir( const QString& thePath )
 	else if ( fi.isDir() )
 	{
 		QDir aDir( thePath );
-		const QFileInfoList* anEntries = aDir.entryInfoList();
-		if ( anEntries )
+		QFileInfoList anEntries = aDir.entryInfoList();
+    for ( QFileInfoList::iterator it = anEntries.begin(); it != anEntries.end(); ++it )
 		{
-			for ( QPtrListIterator<QFileInfo> it( *anEntries ); it.current(); ++it )
-			{
-				if ( it.current()->fileName() == "." || it.current()->fileName() == ".." )
+      QFileInfo inf = *it;
+      if ( inf.fileName() == "." || inf.fileName() == ".." )
 					continue;
-				stat = stat && rmDir( it.current()->absFilePath() );
-			}
+      stat = stat && rmDir( inf.absoluteFilePath() );
 		}
 		stat = stat && aDir.rmdir( thePath );
 	}
@@ -416,14 +449,14 @@ QString Qtx::addSlash( const QString& path )
 */
 bool Qtx::dos2unix( const QString& absName )
 {
-  FILE* src = ::fopen( absName, "rb" );
+  FILE* src = ::fopen( absName.toLatin1(), "rb" );
   if ( !src )
 		return false;
 
   /* we'll use temporary file */
   char temp[512] = { '\0' };
   QString dir = Qtx::dir( absName );
-  FILE* tgt = ::fopen( strcpy( temp, ::tempnam( dir, "__x" ) ), "wb" );
+  FILE* tgt = ::fopen( strcpy( temp, ::tempnam( dir.toLatin1(), "__x" ) ), "wb" );
   if ( !tgt )
 		return false;
 
@@ -502,11 +535,11 @@ int Qtx::rgbSet( const int r, const int g, const int b )
 	Name: rgbSet [static public]
 	Desc: Unpack the specified integer RGB set into the color.
 */
-void Qtx::rgbSet( const int rgb, QColor& c )
+QColor Qtx::rgbSet( const int rgb )
 {
   int r, g, b;
   rgbSet( rgb, r, g, b );
-  c = QColor( r, g, b );
+  return QColor( r, g, b );
 }
 
 /*!
@@ -545,14 +578,14 @@ QColor Qtx::scaleColor( const int index, const int min, const int max )
     }
   }
 
-  return QColor( hue, 255, 255, QColor::Hsv );
+  return QColor::fromHsv( hue, 255, 255 );
 }
 
 /*!
 	Name: scaleColors [static public]
 	Desc: Returns the 'num' number of colors from blue to red.
 */
-void Qtx::scaleColors( const int num, QValueList<QColor>& lst )
+void Qtx::scaleColors( const int num, QList<QColor>& lst )
 {
   lst.clear();
   for ( int i = 0; i < num; i++ )
@@ -595,7 +628,7 @@ QImage Qtx::grayscale( const QImage& img )
 QPixmap Qtx::grayscale( const QPixmap& pix )
 {
   QPixmap res;
-  res.convertFromImage( grayscale( pix.convertToImage() ) );
+  res.fromImage( grayscale( pix.toImage() ) );
   return res;
 }
 
@@ -605,10 +638,27 @@ QPixmap Qtx::grayscale( const QPixmap& pix )
 */
 QImage Qtx::transparentImage( const int w, const int h, const int d )
 {
-  QImage img;
-  if ( img.create( w, h, d < 0 ? QPixmap::defaultDepth() : d ) )
+  QImage::Format fmt;
+  switch ( d )
   {
-    img.setAlphaBuffer( true );
+  case 1:
+    fmt = QImage::Format_Mono;
+    break;
+  case 8:
+    fmt = QImage::Format_Indexed8;
+    break;
+  case 16:
+  case 24:
+  case 32:
+  default:
+    fmt = QImage::Format_ARGB32;
+    break;
+  }
+
+  QImage img( w, h, fmt );
+  if ( !img.isNull() )
+  {
+//    img.setAlphaBuffer( true );
     for ( int i = 0; i < img.height(); i++ )
       for ( int j = 0; j < img.width(); j++ )
         img.setPixel( j, i, qRgba( 0, 0, 0, 0 ) );
@@ -625,7 +675,7 @@ QPixmap Qtx::transparentPixmap( const int w, const int h, const int d )
   QPixmap pix;
   QImage img = transparentImage( w, h, d );
   if ( !img.isNull() )
-    pix.convertFromImage( img );
+    pix.fromImage( img );
   return pix;
 }
 
@@ -640,25 +690,25 @@ QPixmap Qtx::composite( const QPixmap& pix, const int x, const int y, const QPix
   if ( pix.isNull() )
     return dest;
 
-  int width = QMAX( pix.width() + x, dest.width() );
-  int height = QMAX( pix.height() + y, dest.height() );
+  int width = qMax( pix.width() + x, dest.width() );
+  int height = qMax( pix.height() + y, dest.height() );
 
   QPixmap res( width, height );
   QImage img = transparentImage( width, height, 32 );
 
   QPainter p;
   p.begin( &res );
-  p.fillRect( 0, 0, width, height, QBrush( white ) );
+  p.fillRect( 0, 0, width, height, QBrush( Qt::white ) );
 
   if ( !dest.isNull() )
   {
     p.drawPixmap( 0, 0, dest );
-    QImage temp = dest.convertToImage();
+    QImage temp = dest.toImage();
     for ( int i = 0; i < temp.width() && i < img.width(); i++ )
     {
       for ( int j = 0; j < temp.height() && j < img.height(); j++ )
       {
-        if ( temp.hasAlphaBuffer() )
+        if ( temp.hasAlphaChannel() )
           img.setPixel( i, j, temp.pixel( i, j ) );
         else
         {
@@ -670,7 +720,7 @@ QPixmap Qtx::composite( const QPixmap& pix, const int x, const int y, const QPix
   }
 
   p.drawPixmap( x, y, pix );
-  QImage temp = pix.convertToImage();
+  QImage temp = pix.toImage();
   for ( int c = x; c < temp.width() + x && c < img.width(); c++ )
   {
     for ( int r = y; r < temp.height() + y && r < img.height(); r++ )
@@ -694,7 +744,7 @@ QPixmap Qtx::composite( const QPixmap& pix, const int x, const int y, const QPix
   }
 
   QBitmap bmp( width, height );
-  bmp.convertFromImage( img, Qt::ColorMode_Mask | Qt::ThresholdDither );
+  bmp.fromImage( img, Qt::ColorMode_Mask | Qt::ThresholdDither );
   res.setMask( bmp );
 
   return res;

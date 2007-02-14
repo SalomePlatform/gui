@@ -23,20 +23,23 @@
 #include "QtxActionMgr.h"
 #include "QtxAction.h"
 
-#include <qwidget.h>
-#include <qtoolbar.h>
-#include <qpopupmenu.h>
-#include <qwidgetlist.h>
-#include <qobjectlist.h>
-#include <qfile.h>
-#include <qdom.h>
+#include <QtCore/qfile.h>
+#include <QtCore/qtimer.h>
 
-static QAction* qtx_separator_action = 0;
+#include <QtGui/qmenu.h>
+#include <QtGui/qwidget.h>
+#include <QtGui/qtoolbar.h>
+#include <QtGui/qapplication.h>
+
+#include <QtXml/qdom.h>
+
+typedef QList< QPointer<QAction> > qtx_actionlist;
+static qtx_actionlist qtx_separator_actions;
 
 void qtxSeparatorActionCleanup()
 {
-  delete qtx_separator_action;
-  qtx_separator_action = 0;
+  for ( qtx_actionlist::iterator it = qtx_separator_actions.begin(); it != qtx_separator_actions.end(); ++it )
+    delete *it;
 }
 
 /*!
@@ -49,13 +52,6 @@ class QtxActionMgr::SeparatorAction : public QtxAction
 public:
   SeparatorAction( QObject* = 0 );
   virtual ~SeparatorAction();
-
-  virtual bool addTo( QWidget* );
-  virtual bool removeFrom( QWidget* );
-
-private:
-  QMap<QPopupMenu*, QIntList>  myMenus;
-  QMap<QToolBar*, QWidgetList> myTools;
 };
 
 /*!
@@ -64,6 +60,7 @@ private:
 QtxActionMgr::SeparatorAction::SeparatorAction( QObject* parent )
 : QtxAction( parent )
 {
+  setSeparator( true );
 }
 
 /*!
@@ -71,82 +68,6 @@ QtxActionMgr::SeparatorAction::SeparatorAction( QObject* parent )
 */
 QtxActionMgr::SeparatorAction::~SeparatorAction()
 {
-}
-
-/*!
-  Adds action to widget
-  \param wid - widget
-*/
-bool QtxActionMgr::SeparatorAction::addTo( QWidget* wid )
-{
-  if ( !wid )
-    return false;
-
-  bool res = true;
-  if ( wid->inherits( "QPopupMenu" ) )
-  {
-    QPopupMenu* popup = (QPopupMenu*)wid;
-    myMenus[popup].append( popup->insertSeparator() );
-  }
-  else if ( wid->inherits( "QToolBar" ) )
-  {
-    QToolBar* tb = (QToolBar*)wid;
-    tb->addSeparator();
-    myTools[tb].append( (QWidget*)tb->children()->getLast() );
-  }
-  else
-    res = false;
-
-  return res;
-}
-
-/*!
-  Removes action from widget
-  \param wid - widget
-*/
-bool QtxActionMgr::SeparatorAction::removeFrom( QWidget* wid )
-{
-  if ( !wid )
-    return false;
-
-  bool res = true;
-  if ( wid->inherits( "QPopupMenu" ) )
-  {
-    QPopupMenu* popup = (QPopupMenu*)wid;
-    if ( myMenus.contains( popup ) )
-    {
-      const QIntList& list = myMenus[popup];
-      for ( QIntList::const_iterator it = list.begin(); it != list.end(); ++it )
-        popup->removeItem( *it );
-
-      myMenus.remove( popup );
-    }
-  }
-  else if ( wid->inherits( "QToolBar" ) )
-  {
-    QToolBar* tb = (QToolBar*)wid;
-    if ( myTools.contains( tb ) )
-    {
-      QMap<QObject*, int> childMap;
-      if ( tb->children() )
-      {
-        for ( QObjectListIt it( *tb->children() ); it.current(); ++it )
-          childMap.insert( it.current(), 0 );
-      }
-      const QWidgetList& list = myTools[tb];
-      for ( QWidgetListIt it( list ); it.current(); ++it )
-      {
-        if ( childMap.contains( it.current() ) )
-        delete it.current();
-      }
-
-      myTools.remove( tb );
-    }
-  }
-  else
-    res = false;
-
-  return res;
 }
 
 /*!
@@ -159,7 +80,8 @@ bool QtxActionMgr::SeparatorAction::removeFrom( QWidget* wid )
 */
 QtxActionMgr::QtxActionMgr( QObject* parent )
 : QObject( parent ),
-myUpdate( true )
+myUpdate( true ),
+myUpdTimer( 0 )
 {
 }
 
@@ -234,7 +156,7 @@ int QtxActionMgr::actionId( const QAction* a ) const
   int theId = -1;
   for ( ActionMap::ConstIterator it = myActions.begin(); it != myActions.end() && theId == -1; ++it )
   {
-    if ( it.data() == a )
+    if ( it.value() == a )
       theId = it.key();
   }
 
@@ -312,8 +234,12 @@ void QtxActionMgr::setVisible( const int, const int, const bool )
 */
 void QtxActionMgr::update()
 {
-  if ( isUpdatesEnabled() )
-    internalUpdate();
+  if ( !isUpdatesEnabled() )
+    return;
+
+  internalUpdate();
+  if ( myUpdTimer )
+    myUpdTimer->stop();
 }
 
 /*!
@@ -367,12 +293,48 @@ QAction* QtxActionMgr::separator( const bool individual )
   if ( individual )
     return new SeparatorAction();
 
-  if ( !qtx_separator_action )
-  {
-    qtx_separator_action = new SeparatorAction();
+  if ( qtx_separator_actions.isEmpty() )
     qAddPostRoutine( qtxSeparatorActionCleanup );
+
+  SeparatorAction* a = new SeparatorAction();
+  qtx_separator_actions.append( a );
+
+  return a;
+}
+
+/*!
+  \initialise timer for delayed update
+*/
+void QtxActionMgr::triggerUpdate()
+{
+  if ( !isUpdatesEnabled() )
+    return;
+
+  if ( !myUpdTimer )
+  {
+    myUpdTimer = new QTimer( this );
+    myUpdTimer->setSingleShot( true );
+    connect( myUpdTimer, SIGNAL( timeout() ), this, SLOT( onUpdateContent() ) );
   }
-  return qtx_separator_action;
+  myUpdTimer->stop();
+  // add timer event to event list
+  myUpdTimer->start( 0 );
+}
+
+/*!
+  \perform delayed update
+  \default implementation is empty
+*/
+void QtxActionMgr::updateContent()
+{}
+
+/*!
+  \perform delayed update
+  \default implementation is empty
+*/
+void QtxActionMgr::onUpdateContent()
+{
+  updateContent();
 }
 
 /*!
@@ -427,7 +389,8 @@ void QtxActionMgr::Reader::setOption( const QString& name, const QString& value 
 
 
 /*!
-  Constructor
+	Class: QtxActionMgr::XMLReader
+	Level: Public
 */
 QtxActionMgr::XMLReader::XMLReader( const QString& root,
                                     const QString& item,
@@ -467,7 +430,7 @@ bool QtxActionMgr::XMLReader::read( const QString& fname, Creator& cr ) const
 #ifndef QT_NO_DOM
 
   QFile file( fname );
-  if ( !file.open( IO_ReadOnly ) )
+  if ( !file.open( QFile::ReadOnly ) )
     return res;
 
   QDomDocument doc;
@@ -513,7 +476,7 @@ void QtxActionMgr::XMLReader::read( const QDomNode& parent_node,
   if( parent_node.isNull() )
     return;
 
-  QStringList items = QStringList::split( "|", option( QString( "menu_item" ) ) );
+  QStringList items = option( "menu_item" ).split( "|", QString::SkipEmptyParts );
 
   const QDomNodeList& children = parent_node.childNodes();
   for( int i=0, n=children.count(); i<n; i++ )
@@ -566,6 +529,11 @@ bool QtxActionMgr::XMLReader::isNodeSimilar( const QDomNode& node,
   return ok;
 }
 
+
+/*!
+	Class: QtxActionMgr::Creator
+	Level: Public
+*/
 
 /*!
   \return integer value by attributes
@@ -642,7 +610,7 @@ bool QtxActionMgr::Creator::loadPixmap( const QString& fname, QPixmap& pix ) con
   if( !reader() )
     return false;
 
-  QStringList dirlist = QStringList::split( ";", reader()->option( "icons_dir", "." ) );
+  QStringList dirlist = reader()->option( "icons_dir", "." ).split( ";", QString::SkipEmptyParts );
   QStringList::const_iterator anIt = dirlist.begin(),
                               aLast = dirlist.end();
   bool res = false;

@@ -24,8 +24,7 @@
 #include "QtxAction.h"
 #include "QtxToolBar.h"
 
-#include <qmainwindow.h>
-#include <qobjectlist.h>
+#include <QtGui/qmainwindow.h>
 
 /*!
   Constructor
@@ -64,7 +63,7 @@ int QtxActionToolMgr::createToolBar( const QString& name, const int tid )
   int tbId = -1;
   for ( ToolBarMap::ConstIterator it = myToolBars.begin(); it != myToolBars.end() && tbId == -1; ++it )
   {
-    if ( it.data().toolBar->label().lower() == name.lower() )
+    if ( it.value().toolBar->windowTitle().toLower() == name.toLower() )
       tbId = it.key();
   }
 
@@ -81,7 +80,8 @@ int QtxActionToolMgr::createToolBar( const QString& name, const int tid )
   if ( !tb )
   {
     tb = new QtxToolBar( true, mainWindow() );
-    tb->setLabel( name );
+    mainWindow()->addToolBar( tb );
+    tb->setWindowTitle( name );
   }
 
   tInfo.toolBar = tb;
@@ -100,18 +100,14 @@ QToolBar* QtxActionToolMgr::find( const QString& label, QMainWindow* mw ) const
   if ( !mw )
     return 0;
 
-  QString pattern = label.lower();
+  QString pattern = label.toLower();
 
   QToolBar* res = 0;
-  QPtrList<QDockWindow> lst = mw->dockWindows();
-  for ( QPtrListIterator<QDockWindow> it( lst ); it.current() && !res; ++it )
+  QList<QToolBar*> toolbars = qFindChildren<QToolBar*>( mw );
+  for ( QList<QToolBar*>::iterator it = toolbars.begin(); it != toolbars.end() && !res; ++it )
   {
-    if ( !it.current()->inherits( "QToolBar" ) )
-      continue;
-
-    QToolBar* cur = (QToolBar*)it.current();
-    if ( cur->label().lower() == pattern )
-      res = cur;
+    if ( (*it)->windowTitle().toLower() == pattern )
+      res = *it;
   }
   return res;
 }
@@ -148,17 +144,17 @@ int QtxActionToolMgr::insert( const int id, const int tid, const int idx )
 {
   if ( !contains( id ) || !hasToolBar( tid ) )
     return -1;
-
+/*
   if ( containsAction( id, tid ) )
     remove( id, tid );
-
+*/
   ToolNode node;
   node.id = id;
 
   NodeList& list = myToolBars[tid].nodes;
-  int index = idx < 0 ? list.count() : QMIN( idx, (int)list.count() );
-  list.insert( list.at( index ), node );
-  updateToolBar( tid );
+  int index = idx < 0 ? list.count() : qMin( idx, (int)list.count() );
+  list.insert( index, node );
+  triggerUpdate( tid );
 
   return id;
 }
@@ -296,7 +292,7 @@ void QtxActionToolMgr::remove( const int id, const int tid )
 
   myToolBars[tid].nodes = newList;
 
-  updateToolBar( tid );
+  triggerUpdate( tid );
 }
 
 /*!
@@ -357,8 +353,9 @@ bool QtxActionToolMgr::containsAction( const int id, const int tid ) const
 {
   for ( ToolBarMap::ConstIterator it = myToolBars.begin(); it != myToolBars.end(); ++it )
   {
-    if ( tid == -1 || it.key() == tid ) {
-      const NodeList& list = it.data().nodes;
+    if ( tid == -1 || it.key() == tid )
+    {
+      const NodeList& list = it.value().nodes;
       for ( NodeList::const_iterator nit = list.begin(); nit != list.end(); ++nit )
 	if ( (*nit).id == id )
 	  return true;
@@ -384,7 +381,7 @@ int QtxActionToolMgr::find( const QString& tname ) const
   int id = -1;
   for ( ToolBarMap::ConstIterator it = myToolBars.begin(); it != myToolBars.end() && id == -1; ++it )
   {
-    if ( it.data().toolBar->label() == tname )
+    if ( it.value().toolBar->windowTitle() == tname )
       id = it.key();
   }
   return id;
@@ -399,7 +396,7 @@ int QtxActionToolMgr::find( QToolBar* t ) const
   int id = -1;
   for ( ToolBarMap::ConstIterator it = myToolBars.begin(); it != myToolBars.end() && id == -1; ++it )
   {
-    if ( it.data().toolBar == t )
+    if ( it.value().toolBar == t )
       id = it.key();
   }
   return id;
@@ -423,8 +420,9 @@ void QtxActionToolMgr::updateToolBar( const int tId )
   for ( NodeList::const_iterator it = list.begin(); it != list.end(); ++it )
   {
     QAction* a = action( (*it).id );
-    if ( a )
-      a->removeFrom( tb );
+    tb->removeAction( a );
+//    if ( a )
+//      a->removeFrom( tb );
   }
 
   tb->clear();
@@ -435,8 +433,9 @@ void QtxActionToolMgr::updateToolBar( const int tId )
       continue;
 
     QAction* a = action( (*itr).id );
-    if ( a )
-      a->addTo( tb );
+    tb->addAction( a );
+//    if ( a )
+//      a->addTo( tb );
   }
 
   simplifySeparators( tb );
@@ -447,8 +446,13 @@ void QtxActionToolMgr::updateToolBar( const int tId )
 */
 void QtxActionToolMgr::internalUpdate()
 {
+  if ( !isUpdatesEnabled() )
+    return;
+
   for ( ToolBarMap::ConstIterator it1 = myToolBars.begin(); it1 != myToolBars.end(); ++it1 )
     updateToolBar( it1.key() );
+
+  myUpdateIds.clear();
 }
 
 /*!
@@ -456,8 +460,7 @@ void QtxActionToolMgr::internalUpdate()
 */
 void QtxActionToolMgr::simplifySeparators( QToolBar* t )
 {
-  if ( t )
-    Qtx::simplifySeparators( t );
+  Qtx::simplifySeparators( t );
 }
 
 /*!
@@ -495,10 +498,10 @@ void QtxActionToolMgr::setShown( const int id, const bool on )
 */
 bool QtxActionToolMgr::isShown( const int id ) const
 {
-  QPtrList<ToolNode> nodes;
+  QList<const ToolNode*> nodes;
   for ( ToolBarMap::ConstIterator it = myToolBars.begin(); it != myToolBars.end(); ++it )
   {
-    const NodeList& nl = it.data().nodes;
+    const NodeList& nl = it.value().nodes;
     for ( NodeList::const_iterator itr = nl.begin(); itr != nl.end(); ++itr )
     {
       const ToolNode& node = *itr;
@@ -511,8 +514,8 @@ bool QtxActionToolMgr::isShown( const int id ) const
     return false;
 
   bool vis = true;
-  for ( QPtrListIterator<ToolNode> itr( nodes ); itr.current() && vis; ++itr )
-    vis = itr.current()->visible;
+  for ( QList<const ToolNode*>::iterator itr = nodes.begin(); itr != nodes.end() && vis; ++itr )
+    vis = (*itr)->visible;
 
   return vis;
 }
@@ -562,7 +565,7 @@ void QtxActionToolMgr::setVisible( const int id, const int tId, const bool on )
   }
 
   if ( changed )
-    updateToolBar( tId );
+    triggerUpdate( tId );
 }
 
 /*!
@@ -576,9 +579,31 @@ bool QtxActionToolMgr::load( const QString& fname, QtxActionMgr::Reader& r )
   return r.read( fname, cr );
 }
 
+/*!
+  \Perform delayed update
+*/
+void QtxActionToolMgr::updateContent()
+{
+  if ( !isUpdatesEnabled() )
+    return;
+
+  for ( QMap<int,int>::const_iterator it = myUpdateIds.constBegin(); it != myUpdateIds.constEnd(); ++it )
+    updateToolBar( it.key() );
+  myUpdateIds.clear();
+}
 
 /*!
-  Constructor
+  \ Sets trigger to update
+*/
+void QtxActionToolMgr::triggerUpdate( const int id )
+{
+  myUpdateIds.insert( id, 0 );
+  QtxActionMgr::triggerUpdate();
+}
+
+/*!
+	Class: QtxActionToolMgr::ToolCreator
+	Level: Public
 */
 QtxActionToolMgr::ToolCreator::ToolCreator( QtxActionMgr::Reader* r,
                                             QtxActionToolMgr* mgr )
@@ -624,18 +649,17 @@ int QtxActionToolMgr::ToolCreator::append( const QString& tag, const bool subMen
     res = myMgr->insert( separator(), tId, intValue( attr, pos, -1 ) );
   else
   {
-    QPixmap pix; QIconSet set;
+    QIcon set;
+    QPixmap pix;
     QString name = strValue( attr, icon );
     if( !name.isEmpty() && loadPixmap( name, pix ) )
-      set = QIconSet( pix );
+      set = QIcon( pix );
 
-    QtxAction* newAct = new QtxAction( strValue( attr, tooltip ), set,
-                                       strValue( attr, label ), 
-                                       QKeySequence( strValue( attr, accel ) ),
-                                       myMgr );
+    QtxAction* newAct = new QtxAction( strValue( attr, tooltip ), set, strValue( attr, label ),
+                                       QKeySequence( strValue( attr, accel ) ), myMgr );
     QString toggleact = strValue( attr, toggle );
-    newAct->setToggleAction( !toggleact.isEmpty() );
-    newAct->setOn( toggleact.lower()=="true" );
+    newAct->setCheckable( !toggleact.isEmpty() );
+    newAct->setChecked( toggleact.toLower() == "true" );
         
     connect( newAct );
     int aid = myMgr->registerAction( newAct, actId );
@@ -644,5 +668,3 @@ int QtxActionToolMgr::ToolCreator::append( const QString& tag, const bool subMen
 
   return res;
 }
-
-

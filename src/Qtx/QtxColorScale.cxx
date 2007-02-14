@@ -21,30 +21,27 @@
 
 #include "QtxColorScale.h"
 
-#include <qmap.h>
-#include <qimage.h>
-#include <qregexp.h>
-#include <qpixmap.h>
-#include <qbitmap.h>
-#include <qpainter.h>
-#include <qmainwindow.h>
-#include <qstringlist.h>
-#include <qstylesheet.h>
-#include <qsimplerichtext.h>
+#include <QtCore/qmap.h>
+#include <QtCore/qregexp.h>
+#include <QtCore/qstringlist.h>
+
+#include <QtGui/qimage.h>
+#include <QtGui/qpixmap.h>
+#include <QtGui/qbitmap.h>
+#include <QtGui/qpainter.h>
+#include <QtGui/qtextdocument.h>
 
 #include <math.h>
 
 /*!
   Constructor
 */
-QtxColorScale::QtxColorScale( QWidget* parent, const char* name, WFlags f )
-: QFrame( parent, name, f | WResizeNoErase | WRepaintNoErase ),
-myDock( 0 ),
+QtxColorScale::QtxColorScale( QWidget* parent, Qt::WindowFlags f )
+: QFrame( parent, f ),
 myMin( 0.0 ),
 myMax( 1.0 ),
 myTitle( "" ),
 myInterval( 10 ),
-myStyleSheet( 0 ),
 myFormat( "%.4g" ),
 myColorMode( Auto ),
 myLabelMode( Auto ),
@@ -53,20 +50,18 @@ myTitlePos( Center ),
 myDumpMode( NoDump ),
 myFlags( AtBorder | WrapTitle )
 {
-	setCaption( tr ( "Color scale" ) );
+	setWindowTitle( tr ( "Color scale" ) );
 }
 
 /*!
   Constructor
 */
-QtxColorScale::QtxColorScale( const int num, QWidget* parent, const char* name, WFlags f )
-: QFrame( parent, name, f | WResizeNoErase | WRepaintNoErase ),
-myDock( 0 ),
+QtxColorScale::QtxColorScale( const int num, QWidget* parent, Qt::WindowFlags f )
+: QFrame( parent, f ),
 myMin( 0.0 ),
 myMax( 1.0 ),
 myTitle( "" ),
 myInterval( num ),
-myStyleSheet( 0 ),
 myFormat( "%.4g" ),
 myColorMode( Auto ),
 myLabelMode( Auto ),
@@ -75,34 +70,8 @@ myTitlePos( Center ),
 myDumpMode( NoDump ),
 myFlags( AtBorder | WrapTitle )
 {
-	setCaption( tr ( "Color scale" ) );
+	setWindowTitle( tr ( "Color scale" ) );
 }
-
-#if QT_VER == 3
-
-/*!
-  Constructor
-*/
-QtxColorScale::QtxColorScale( Dock* dock, const char* name, WFlags f )
-: QFrame( dock, name, f | WResizeNoErase | WRepaintNoErase ),
-myMin( 0.0 ),
-myMax( 1.0 ),
-myTitle( "" ),
-myDock( dock ),
-myInterval( 10 ),
-myStyleSheet( 0 ),
-myFormat( "%.4g" ),
-myColorMode( Auto ),
-myLabelMode( Auto ),
-myLabelPos( Right ),
-myTitlePos( Center ),
-myDumpMode( NoDump ),
-myFlags( AtBorder | WrapTitle )
-{
-	setCaption( tr ( "Color scale" ) );
-}
-
-#endif
 
 /*!
   Destructor
@@ -191,7 +160,7 @@ QString QtxColorScale::label( const int idx ) const
 {
 	QString res;
 	if ( idx >= 0 && idx < (int)myLabels.count() )
-		res = *myLabels.at( idx );
+		res = myLabels[idx];
 	return res;
 }
 
@@ -202,7 +171,7 @@ QColor QtxColorScale::color( const int idx ) const
 {
 	QColor res;
 	if ( idx >= 0 && idx < (int)myColors.count() )
-		res = *myColors.at( idx );
+		res = myColors[idx];
 	return res;
 }
 
@@ -217,7 +186,7 @@ void QtxColorScale::labels( QStringList& list ) const
 /*!
   \return the user color.
 */
-void QtxColorScale::colors( QValueList<QColor>& list ) const
+void QtxColorScale::colors( QList<QColor>& list ) const
 {
 	list = myColors;
 }
@@ -323,7 +292,7 @@ void QtxColorScale::setLabel( const QString& txt, const int idx )
 	uint i = idx < 0 ? myLabels.count() : idx;
 	if ( i < myLabels.count() )
 	{
-		changed = *myLabels.at( i ) != txt;
+		changed = myLabels[i] != txt;
 		myLabels[i] = txt;
 	}
 	else
@@ -348,7 +317,7 @@ void QtxColorScale::setColor( const QColor& clr, const int idx )
 	uint i = idx < 0 ? myColors.count() : idx;
 	if ( i < myColors.count() )
 	{
-		changed = *myColors.at( i ) != clr;
+		changed = myColors[i] != clr;
 		myColors[i] = clr;
 	}
 	else
@@ -377,7 +346,7 @@ void QtxColorScale::setLabels( const QStringList& list )
 /*!
   Replace the all user colors with specified list.
 */
-void QtxColorScale::setColors( const QValueList<QColor>& list )
+void QtxColorScale::setColors( const QList<QColor>& list )
 {
 	if ( list.isEmpty() )
 	    return;
@@ -509,13 +478,13 @@ QSize QtxColorScale::calculateSize( const bool min, const int flags, const bool 
     QString fmt = that->myFormat;
 
 		for ( int idx = 0; idx < num; idx++ )
-			textWidth = QMAX( textWidth, fontMetrics().width( getLabel( idx ) ) );
+			textWidth = qMax( textWidth, fontMetrics().width( getLabel( idx ) ) );
 
     if ( !min )
       that->myFormat = that->myFormat.replace( QRegExp( "g" ), "f" );
 
 		for ( int index = 0; index < num; index++ )
-			textWidth = QMAX( textWidth, fontMetrics().width( getLabel( index ) ) );
+			textWidth = qMax( textWidth, fontMetrics().width( getLabel( index ) ) );
 
     that->myFormat = fmt;
   }
@@ -537,28 +506,28 @@ QSize QtxColorScale::calculateSize( const bool min, const int flags, const bool 
 	{
 		scaleWidth = colorWidth + textWidth + ( textWidth ? 3 : 2 ) * spacer;
 		if ( min )
-			scaleHeight = QMAX( 2 * num, 3 * textHeight );
+			scaleHeight = qMax( 2 * num, 3 * textHeight );
 		else
 			scaleHeight = (int)( 1.5 * ( num + 1 ) * textHeight );
 	}
 
 	if ( title )
 	{
-		QSimpleRichText* srt = simpleRichText( flags );
+		QTextDocument* srt = textDocument( flags );
 		if ( srt )
 		{
-			QPainter p( this );
+			QPainter p( (QtxColorScale*)this );
 			if ( scaleWidth )
-				srt->setWidth( &p, scaleWidth );
+				srt->setTextWidth( scaleWidth );
 
-			titleHeight = srt->height() + spacer;
-			titleWidth = srt->widthUsed() + 10;
+			titleHeight = srt->size().height() + spacer;
+			titleWidth = srt->size().width() + 10;
 
-			delete srt;
 		}
+    delete srt;
 	}
 
-	int W = QMAX( titleWidth, scaleWidth ) + width() - contentsRect().width();
+	int W = qMax( titleWidth, scaleWidth ) + width() - contentsRect().width();
 	int H = scaleHeight + titleHeight + height() - contentsRect().height();
 
 	return QSize( W, H );
@@ -581,12 +550,7 @@ QPixmap QtxColorScale::dump() const
 						 labelPosition() != None;
 			bool title = ( myDumpMode == TitleDump || myDumpMode == FullDump ) &&
 						 titlePosition() != None;
-
-#if QT_VER < 3
-            QColor bgc = backgroundColor();
-#else
-            QColor bgc = paletteBackgroundColor();
-#endif
+      QColor bgc = palette().color( backgroundRole() );
 			QPainter p;
 			p.begin( &aPix );
 			p.fillRect( 0, 0, aPix.width(), aPix.height(), bgc );
@@ -603,11 +567,7 @@ QPixmap QtxColorScale::dump() const
 */
 QPixmap QtxColorScale::dump( const int w, const int h ) const
 {
-#if QT_VER < 3
-	return dump( backgroundColor(), w, h );
-#else
-	return dump( paletteBackgroundColor(), w, h );
-#endif
+	return dump( palette().color( backgroundRole() ), w, h );
 }
 
 /*!
@@ -655,11 +615,6 @@ QPixmap QtxColorScale::dump( const QColor& bg, const int w, const int h ) const
 */
 void QtxColorScale::show()
 {
-#if QT_VER == 3
-	if ( myDock )
-		myDock->activate();
-	else
-#endif
 	QFrame::show();
 }
 
@@ -668,11 +623,6 @@ void QtxColorScale::show()
 */
 void QtxColorScale::hide()
 {
-#if QT_VER == 3
-	if ( myDock )
-		myDock->deactivate();
-	else
-#endif
 	QFrame::hide();
 }
 
@@ -681,7 +631,7 @@ void QtxColorScale::hide()
 */
 void QtxColorScale::drawContents( QPainter* p )
 {
-	if ( !isUpdatesEnabled() )
+	if ( !updatesEnabled() )
 		return;
 
 	QRect aDrawRect = contentsRect();
@@ -701,11 +651,7 @@ void QtxColorScale::drawScale( QPainter* p, const bool transp, const int X, cons
 	QPixmap cache( W, H );
 	QPainter cp( &cache );
 
-#if QT_VER < 3
-	drawScale( &cp, backgroundColor(), transp, 0, 0, W, H, title, label, scale );
-#else
-	drawScale( &cp, paletteBackgroundColor(), transp, 0, 0, W, H, title, label, scale );
-#endif
+	drawScale( &cp, palette().color( backgroundRole() ), transp, 0, 0, W, H, title, label, scale );
 	cp.end();
 
 	p->drawPixmap( X, Y, cache );
@@ -737,29 +683,29 @@ void QtxColorScale::drawScale( QPainter* p, const QColor& bg, const bool transp,
 	if ( qGray( bg.rgb() ) < 128 )
 		p->setPen( QColor( 255, 255, 255 ) );
 	else
-	    p->setPen( QColor( 0, 0, 0 ) );
+    p->setPen( QColor( 0, 0, 0 ) );
 
 	// Draw title
 	if ( drawTitle )
 	{
-		QSimpleRichText* srt = simpleRichText( myFlags );
+		QTextDocument* srt = textDocument( myFlags );
 		if ( srt )
 		{
-			srt->setWidth( p, W - 10 );
-			titleHeight = srt->height() + spacer;
-			titleWidth = srt->widthUsed();
-			QColorGroup cg = colorGroup();
-			cg.setColor( QColorGroup::Text, p->pen().color() );
-			srt->draw( p, X + 5, Y, QRect( 0, 0, srt->width(), srt->height() ), cg );
-
-			delete srt;
+			srt->setTextWidth( W - 10 );
+			titleHeight = srt->size().height() + spacer;
+			titleWidth = srt->size().width();
+      p->save();
+      p->translate( X + 5, Y );
+			srt->drawContents( p );
+      p->restore();
 		}
+    delete srt;
 	}
 
 	bool reverse = testFlags( Reverse );
 
-	QValueList<QColor>  colors;
-	QValueList<QString> labels;
+	QList<QColor>  colors;
+	QList<QString> labels;
 	for ( int idx = 0; idx < num; idx++ )
 	{
 		if ( reverse )
@@ -781,29 +727,29 @@ void QtxColorScale::drawScale( QPainter* p, const QColor& bg, const bool transp,
 		else
 			labels.prepend( getLabel( num ) );
 		if ( drawLabel )
-			textWidth = QMAX( textWidth, p->fontMetrics().width( labels.last() ) );
+			textWidth = qMax( textWidth, p->fontMetrics().width( labels.last() ) );
 	}
 
 	if ( drawLabel )
 	{
 		const QFontMetrics& fm = p->fontMetrics();
 		for ( QStringList::ConstIterator it = labels.begin(); it != labels.end(); ++it )
-			textWidth = QMAX( textWidth, fm.width( *it) );
+			textWidth = qMax( textWidth, fm.width( *it) );
 	}
 
 	int lab = labels.count();
 
-	double spc = ( H - ( ( QMIN( lab, 2 ) + QABS( lab - num - 1 ) ) * textHeight ) - titleHeight );
-	double val = spc != 0 ? 1.0 * ( lab - QMIN( lab, 2 ) ) * textHeight / spc : 0;
+	double spc = ( H - ( ( qMin( lab, 2 ) + qAbs( lab - num - 1 ) ) * textHeight ) - titleHeight );
+	double val = spc != 0 ? 1.0 * ( lab - qMin( lab, 2 ) ) * textHeight / spc : 0;
 	double iPart;
 	double fPart = modf( val, &iPart );
 	int filter = (int)iPart + ( fPart != 0 ? 1 : 0 );
-	filter = QMAX( filter, 1 );
+	filter = qMax( filter, 1 );
 
-	double step = 1.0 * ( H - ( lab - num + QABS( lab - num - 1 ) ) * textHeight - titleHeight ) / num;
+	double step = 1.0 * ( H - ( lab - num + qAbs( lab - num - 1 ) ) * textHeight - titleHeight ) / num;
 
 	int ascent = p->fontMetrics().ascent();
-	int colorWidth = QMAX( 5, QMIN( 20, W - textWidth - 3 * spacer ) );
+	int colorWidth = qMax( 5, qMin( 20, W - textWidth - 3 * spacer ) );
 	if ( labPos == Center || !drawLabel )
 		colorWidth = W - 2 * spacer;
 
@@ -816,8 +762,8 @@ void QtxColorScale::drawScale( QPainter* p, const QColor& bg, const bool transp,
 		break;
 	}
 
-	double offset = 1.0 * textHeight / 2 * ( lab - num + QABS( lab - num - 1 ) ) + titleHeight;
-	QValueList<QColor>::Iterator cit = colors.begin();
+	double offset = 1.0 * textHeight / 2 * ( lab - num + qAbs( lab - num - 1 ) ) + titleHeight;
+	QList<QColor>::Iterator cit = colors.begin();
   uint ci = 0;
 	for ( ci = 0; cit != colors.end() && drawColors; ++cit, ci++ )
 	{
@@ -830,8 +776,8 @@ void QtxColorScale::drawScale( QPainter* p, const QColor& bg, const bool transp,
 		p->drawRect( int( x - 1 ), int( Y + offset - 1 ), int( colorWidth + 2 ), int( ci * step + 2 ) );
 
 	// Draw labels
-	offset = 1.0 * QABS( lab - num - 1 ) * ( step - textHeight ) / 2 +
-						 1.0 * QABS( lab - num - 1 ) * textHeight / 2;
+	offset = 1.0 * qAbs( lab - num - 1 ) * ( step - textHeight ) / 2 +
+						 1.0 * qAbs( lab - num - 1 ) * textHeight / 2;
 	offset += titleHeight;
 	if ( drawLabel && !labels.isEmpty() )
 	{
@@ -854,12 +800,12 @@ void QtxColorScale::drawScale( QPainter* p, const QColor& bg, const bool transp,
 			int pos2 = lab - 1 - i2;
 			if ( filter && !( pos1 % filter ) )
 			{
-				p->drawText( x, (int)( Y + i1 * step + ascent + offset ), *labels.at( i1 ) );
+				p->drawText( x, (int)( Y + i1 * step + ascent + offset ), labels[i1] );
 				last1 = i1;
 			}
 			if ( filter && !( pos2 % filter ) )
 			{
-				p->drawText( x, (int)( Y + i2 * step + ascent + offset ), *labels.at( i2 ) );
+				p->drawText( x, (int)( Y + i2 * step + ascent + offset ), labels[i2] );
 				last2 = i2;
 			}
 			i1++;
@@ -870,13 +816,13 @@ void QtxColorScale::drawScale( QPainter* p, const QColor& bg, const bool transp,
 		while ( pos <= i2 && i0 == -1 )
 		{
 			if ( filter && !( pos % filter ) &&
-				 QABS( pos - last1 ) >= filter && QABS( pos - last2 ) >= filter )
+				 qAbs( pos - last1 ) >= filter && qAbs( pos - last2 ) >= filter )
 				i0 = pos;
 			pos++;
 		}
 
 		if ( i0 != -1 )
-			p->drawText( x, (int)( Y + i0 * step + ascent + offset ), *labels.at( i0 ) );
+			p->drawText( x, (int)( Y + i0 * step + ascent + offset ), labels[i0] );
 	}
 }
 
@@ -893,11 +839,11 @@ QString QtxColorScale::getFormat() const
 	if ( !myPrecise.isEmpty() )
 		return myPrecise;
 
-	if ( aFormat.find( QRegExp( "^(%[0-9]*.?[0-9]*[fegFEG])$" ) ) != 0 )
+	if ( !aFormat.contains( QRegExp( "^(%[0-9]*.?[0-9]*[fegFEG])$" ) ) )
 		return aFormat;
 
-	int pos1 = aFormat.find( '.' );
-	int pos2 = aFormat.find( QRegExp( "[fegFEG]") );
+	int pos1 = aFormat.indexOf( '.' );
+	int pos2 = aFormat.indexOf( QRegExp( "[fegFEG]") );
 
 	QString aLocFormat;
 	int precision = 1;
@@ -927,7 +873,7 @@ QString QtxColorScale::getFormat() const
 		for ( int idx = 0; idx < intervalsNumber() && !isHasTwinz; idx++ )
 		{
 			double val = getNumber( idx );
-			QString tmpname = QString().sprintf( aTmpFormat, val );
+			QString tmpname = QString().sprintf( aTmpFormat.toLatin1(), val );
 			isHasTwinz = map.contains( tmpname );
 			map.insert( tmpname, 1 );
 		}
@@ -950,7 +896,7 @@ double QtxColorScale::getNumber( const int idx ) const
 {
 	double val = 0;
 	if ( intervalsNumber() > 0 )
-		val = minimum() + idx * ( QABS( maximum() - minimum() ) / intervalsNumber() );
+		val = minimum() + idx * ( qAbs( maximum() - minimum() ) / intervalsNumber() );
 	return val;
 }
 
@@ -965,7 +911,7 @@ QString QtxColorScale::getLabel( const int idx ) const
 	else
 	{
 		double val = getNumber( idx );
-		res = QString().sprintf( getFormat(), testFlags( Integer ) ? (int)val : val );
+		res = QString().sprintf( getFormat().toLatin1(), testFlags( Integer ) ? (int)val : val );
 	}
 	return res;
 }
@@ -997,9 +943,9 @@ void QtxColorScale::updateScale()
   not defined (empty string) then return null pointer.
   Object should be deleted by caller function.
 */
-QSimpleRichText* QtxColorScale::simpleRichText( const int flags ) const
+QTextDocument* QtxColorScale::textDocument( const int flags ) const
 {
-	QSimpleRichText* srt = 0;
+	QTextDocument* doc = 0;
 
 	QString aTitle;
 	switch ( titlePosition() )
@@ -1020,6 +966,7 @@ QSimpleRichText* QtxColorScale::simpleRichText( const int flags ) const
 
 	if ( !aTitle.isEmpty() && !title().isEmpty() )
 	{
+    /*
 		if ( !myStyleSheet )
 		{
 			QtxColorScale* that = (QtxColorScale*)this;
@@ -1033,163 +980,10 @@ QSimpleRichText* QtxColorScale::simpleRichText( const int flags ) const
 				item->setWhiteSpaceMode( flags & WrapTitle ? QStyleSheetItem::WhiteSpaceNormal :
 														     QStyleSheetItem::WhiteSpaceNoWrap );
 		}
-
+*/
 		aTitle = aTitle.arg( title() );
-		srt = new QSimpleRichText( aTitle, font(), QString::null, myStyleSheet );
+		doc = new QTextDocument( aTitle );
 	}
 
-	return srt;
+	return doc;
 }
-
-#if QT_VER == 3
-
-/*!
-  \class QtxColorScale::Dock
-  Dockable window contains the color scale.
-*/
-
-/*!
-  Constructor
-*/
-QtxColorScale::Dock::Dock( Place p, QWidget* parent, const char* name, WFlags f )
-: QDockWindow( p, parent, name, f ),
-myBlockShow( false ),
-myBlockResize( false )
-{
-	myScale = new QtxColorScale( this );
-
-	setWidget( myScale );
-
-	setCloseMode( Always );
-	setMovingEnabled( true );
-	setResizeEnabled( true );
-	setHorizontalStretchable( false );
-
-	setCaption( tr ( "Color scale" ) );
-}
-
-/*!
-  Destructor.
-*/
-QtxColorScale::Dock::~Dock()
-{
-}
-
-/*!
-  \return color scale widget.
-*/
-QtxColorScale* QtxColorScale::Dock::colorScale() const
-{
-	return myScale;
-}
-
-/*!
-  Set the dockable window is visible for main window.
-*/
-void QtxColorScale::Dock::activate()
-{
-	if ( myBlockShow )
-		return;
-
-	QMainWindow* mw = 0;
-	QWidget* p = parentWidget();
-	while ( !mw && p )
-	{
-		if ( p->inherits( "QMainWindow" ) )
-			mw = (QMainWindow*)p;
-		p = p->parentWidget();
-	}
-	if ( mw )
-		mw->setAppropriate( this, true );
-}
-
-/*!
-  Set the dockable window is hidden for main window.
-*/
-void QtxColorScale::Dock::deactivate()
-{
-	if ( myBlockShow )
-		return;
-
-	QMainWindow* mw = 0;
-	QWidget* p = parentWidget();
-	while ( !mw && p )
-	{
-		if ( p->inherits( "QMainWindow" ) )
-			mw = (QMainWindow*)p;
-		p = p->parentWidget();
-	}
-	if ( mw )
-		mw->setAppropriate( this, false );
-}
-
-/*!
-  \return true if the dockable window is visible.
-*/
-bool QtxColorScale::Dock::isActive() const
-{
-	QMainWindow* mw = 0;
-	QWidget* p = parentWidget();
-	while ( !mw && p )
-	{
-		if ( p->inherits( "QMainWindow" ) )
-			mw = (QMainWindow*)p;
-		p = p->parentWidget();
-	}
-	if ( mw )
-		return mw->appropriate( (QDockWindow*)this );
-	else
-		return false;
-}
-
-/*!
-  Redefined show
-*/
-void QtxColorScale::Dock::show()
-{
-	bool f = myBlockShow;
-	myBlockShow = true;
-	QDockWindow::show();
-	myBlockShow = f;
-}
-
-/*!
-  Redefined hide
-*/
-void QtxColorScale::Dock::hide()
-{
-	bool f = myBlockShow;
-	myBlockShow = false;
-	QDockWindow::hide();
-	myBlockShow = f;
-}
-
-/*!
-  Make extent width as maximum value of widget width.
-*/
-void QtxColorScale::Dock::resize( int w, int h )
-{
-	QDockWindow::resize( w, h );
-
-	if ( myBlockResize )
-		return;
-
-	if ( orientation() == Qt::Vertical )
-		setFixedExtentWidth( QMAX( fixedExtent().width(), w ) );
-	else if ( orientation() == Qt::Horizontal )
-		setFixedExtentHeight( QMAX( fixedExtent().height(), h ) );
-}
-
-/*!
-  Set orientation
-  \param o - new orientation
-*/
-void QtxColorScale::Dock::setOrientation( Orientation o )
-{
-	bool b = myBlockResize;
-	myBlockResize = true;
-	QDockWindow::setOrientation( o );
-	myBlockResize = b;
-}
-
-#endif

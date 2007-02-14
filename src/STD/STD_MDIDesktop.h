@@ -26,15 +26,17 @@
 class QtxAction;
 class QPopupMenu;
 class QWorkspace;
-class QtxWorkspaceAction;
+//class QtxWorkspaceAction;
 
-#if defined WNT
+#if defined WIN32
 #pragma warning( disable: 4251 )
 #endif
 
 class STD_EXPORT STD_MDIDesktop: public SUIT_Desktop 
 {
   Q_OBJECT
+
+  class Workspace;
 
 public:
   enum { MenuWindowId = 6 };
@@ -45,12 +47,12 @@ public:
   virtual ~STD_MDIDesktop();
 
   virtual SUIT_ViewWindow* activeWindow() const;
-  virtual QPtrList<SUIT_ViewWindow> windows() const;
+  virtual QList<SUIT_ViewWindow*> windows() const;
 
   void                     windowOperation( const int );
 
   void                     setWindowOperations( const int, ... );
-  void                     setWindowOperations( const QValueList<int>& );
+  void                     setWindowOperations( const QList<int>& );
 
   QWorkspace*              workspace() const;
 
@@ -59,17 +61,17 @@ private slots:
 
 protected:
   void                     createActions();
-  virtual QWidget*         parentArea() const;
+  virtual void             addWindow( QWidget* );
 
 private:
   int                      operationFlag( const int ) const;
 
 private:
   QWorkspace*              myWorkspace;
-  QtxWorkspaceAction*      myWorkspaceAction;
+//  QtxWorkspaceAction*      myWorkspaceAction;
 };
 
-#if defined WNT
+#if defined WIN32
 #pragma warning( default: 4251 )
 #endif
 

@@ -24,14 +24,13 @@
 //  $Header$
 
 
-#include <PyInterp_base.h>
-#include <PyInterp_Dispatcher.h>
-#include <PyInterp_Watcher.h>
+#include "PyInterp_base.h"
+#include "PyInterp_Watcher.h"
+#include "PyInterp_Dispatcher.h"
 
-#include <qapplication.h>
-#include <qobject.h>
+#include <QtCore/qobject.h>
+#include <QtCore/qcoreapplication.h>
 
-//#include <utilities.h>
 using namespace std;
 
 PyInterp_Dispatcher* PyInterp_Dispatcher::myInstance = 0;
@@ -75,13 +74,8 @@ QEvent* PyInterp_Request::getEvent()
 
 void PyInterp_Request::postEvent()
 {
-#if QT_VERSION >= 0x030303
 //  MESSAGE("*** PyInterp_Request::postEvent(): for Qt 3.3.3")
-  QApplication::postEvent( getListener(), getEvent() );
-#else
-//  MESSAGE("*** PyInterp_Request::postEvent(): for Qt 3.0.5")
-  QThread::postEvent( getListener(), getEvent() );
-#endif
+  QCoreApplication::postEvent( getListener(), getEvent() );
 }
 
 void PyInterp_Request::setListener( QObject* o )
@@ -138,7 +132,7 @@ PyInterp_Dispatcher::~PyInterp_Dispatcher()
 
 bool PyInterp_Dispatcher::IsBusy() const
 {
-  return running();
+  return isRunning();
 }
 
 void PyInterp_Dispatcher::Exec( PyInterp_Request* theRequest )

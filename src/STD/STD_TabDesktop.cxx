@@ -25,35 +25,37 @@
 #include <QtxAction.h>
 #include <QtxWorkstack.h>
 #include <QtxActionMenuMgr.h>
-#include <QtxWorkstackAction.h>
+//#include <QtxWorkstackAction.h>
 
-#include <qvbox.h>
-#include <qmenubar.h>
-#include <qworkspace.h>
-#include <qobjectlist.h>
+#include <QtGui/qframe.h>
+#include <QtGui/qlayout.h>
 
 #include <stdarg.h>
 
 /*!Constructor.Create new instances of QVBox and QtxWorkstack.*/
 STD_TabDesktop::STD_TabDesktop()
 : SUIT_Desktop(),
-myWorkstack( 0 ),
-myWorkstackAction( 0 )
+myWorkstack( 0 )//,
+//myWorkstackAction( 0 )
 {
-  QVBox* base = new QVBox( this );
+  QFrame* base = new QFrame( this );
   base->setFrameStyle( QFrame::Panel | QFrame::Sunken );
+
+  QVBoxLayout* main = new QVBoxLayout( base );
+  main->setMargin( 0 );
 
   setCentralWidget( base );
 
   myWorkstack = new QtxWorkstack( base );
+  main->addWidget( myWorkstack );
   // setting Expanding size policy for central workstack.  If there are several widgets
   // in central area of Desktop, other widgets will be added below the workstack (CATHARE, TRIPOLI modules).  
   // But the workstack must occupy as much space as possible -- set Expanding for it.
   myWorkstack->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 
-  myWorkstack->setAccel(QtxWorkstack::SplitVertical,   SHIFT + Key_V);
-  myWorkstack->setAccel(QtxWorkstack::SplitHorizontal, SHIFT + Key_H);
-  myWorkstack->setAccel(QtxWorkstack::Close,           SHIFT + Key_C);
+  myWorkstack->setAccel( QtxWorkstack::SplitVertical,   Qt::SHIFT + Qt::Key_V );
+  myWorkstack->setAccel( QtxWorkstack::SplitHorizontal, Qt::SHIFT + Qt::Key_H );
+  myWorkstack->setAccel( QtxWorkstack::Close,           Qt::SHIFT + Qt::Key_C );
 
   connect( myWorkstack, SIGNAL( windowActivated( QWidget* ) ),
            this, SLOT( onWindowActivated( QWidget* ) ) );
@@ -79,30 +81,33 @@ SUIT_ViewWindow* STD_TabDesktop::activeWindow() const
 }
 
 /*!\retval QPtrList<SUIT_ViewWindow> - return const active window list.*/
-QPtrList<SUIT_ViewWindow> STD_TabDesktop::windows() const
+QList<SUIT_ViewWindow*> STD_TabDesktop::windows() const
 {
-  QPtrList<SUIT_ViewWindow> winList;
+  QList<SUIT_ViewWindow*> winList;
 
   QWidgetList children = myWorkstack->windowList();
-  for ( QWidgetListIt it( children ); it.current(); ++it )
+  for ( QWidgetList::iterator it = children.begin(); it != children.end(); ++it )
   {
-    if ( it.current()->inherits( "SUIT_ViewWindow" ) )
-      winList.append( (SUIT_ViewWindow*)it.current() );
+    if ( (*it)->inherits( "SUIT_ViewWindow" ) )
+      winList.append( (SUIT_ViewWindow*)*it );
   }
 
   return winList;
 }
 
-/*!\retval QWidget pointer - QT work stack.*/
-QWidget* STD_TabDesktop::parentArea() const
+/*! insert new widget into desktop.*/
+void STD_TabDesktop::addWindow( QWidget* w )
 {
-  return workstack();
+  if ( !w || !workstack() )
+    return;
+
+  workstack()->addWindow( w );
 }
 
 /*!Call method perform for operation \a type.*/
 void STD_TabDesktop::windowOperation( const int type )
 {
-  myWorkstackAction->perform( operationFlag( type ) );
+//  myWorkstackAction->perform( operationFlag( type ) );
 }
 
 /*!Sets window operations by \a first ... parameters.*/
@@ -111,7 +116,7 @@ void STD_TabDesktop::setWindowOperations( const int first, ... )
   va_list ints;
 	va_start( ints, first );
 
-	QValueList<int> typeList;
+	QList<int> typeList;
 
 	int cur = first;
 	while ( cur )
@@ -124,14 +129,14 @@ void STD_TabDesktop::setWindowOperations( const int first, ... )
 }
 
 /*!Sets window operations by variable \a opList - operation list.*/
-void STD_TabDesktop::setWindowOperations( const QValueList<int>& opList )
+void STD_TabDesktop::setWindowOperations( const QList<int>& opList )
 {
   int flags = 0;
 
-  for ( QValueList<int>::const_iterator it = opList.begin(); it != opList.end(); ++it )
+  for ( QList<int>::const_iterator it = opList.begin(); it != opList.end(); ++it )
     flags = flags | operationFlag( *it );
 
-  myWorkstackAction->setItems( flags );
+//  myWorkstackAction->setItems( flags );
 }
 
 /*!\retval QtxWorkstack pointer - QT work stack.*/
@@ -150,6 +155,7 @@ void STD_TabDesktop::onWindowActivated( QWidget* w )
 /*!Create actions for window.*/
 void STD_TabDesktop::createActions()
 {
+/*
   if ( myWorkstackAction )
     return;
 
@@ -180,12 +186,14 @@ void STD_TabDesktop::createActions()
   int winMenuId = mMgr->insert( tr( "MEN_DESK_WINDOW" ), -1, 100, MenuWindowId );
   mMgr->insert( myWorkstackAction, winMenuId, -1 );
   mMgr->insert( QtxActionMenuMgr::separator(), winMenuId, -1 );
+*/
 }
 
 /*!Convert STD_TabDesktop enumerations to QtxWorkstackAction*/
 int STD_TabDesktop::operationFlag( const int type ) const
 {
   int res = 0;
+/*
   switch ( type )
   {
   case VSplit:
@@ -195,5 +203,6 @@ int STD_TabDesktop::operationFlag( const int type ) const
     res = QtxWorkstackAction::HSplit;
     break;
   }
+*/
   return res;
 }

@@ -24,27 +24,31 @@
 
 #include <QtxAction.h>
 #include <QtxActionMenuMgr.h>
-#include <QtxWorkspaceAction.h>
+//#include <QtxWorkspaceAction.h>
 
-#include <qvbox.h>
-#include <qmenubar.h>
-#include <qworkspace.h>
-#include <qobjectlist.h>
+#include <QtGui/qframe.h>
+#include <QtGui/qlayout.h>
+#include <QtGui/qmenubar.h>
+#include <QtGui/qworkspace.h>
+#include <QtGui/qapplication.h>
 
 #include <stdarg.h>
 
 /*!Constructor.*/
 STD_MDIDesktop::STD_MDIDesktop()
 : SUIT_Desktop(),
-myWorkspace( 0 ),
-myWorkspaceAction( 0 )
+myWorkspace( 0 )//,
+//myWorkspaceAction( 0 )
 {
-  QVBox* base = new QVBox( this );
+  QFrame* base = new QFrame( this );
+  QVBoxLayout* main = new QVBoxLayout( base );
+  main->setMargin( 0 );
   base->setFrameStyle( QFrame::Panel | QFrame::Sunken );
 
   setCentralWidget( base );
 
   myWorkspace = new QWorkspace( base );
+  main->addWidget( myWorkspace );
 
   connect( myWorkspace, SIGNAL( windowActivated( QWidget* ) ),
            this, SLOT( onWindowActivated( QWidget* ) ) );
@@ -70,30 +74,34 @@ SUIT_ViewWindow* STD_MDIDesktop::activeWindow() const
 }
 
 /*!\retval QPtrList<SUIT_ViewWindow> - return const active window list.*/
-QPtrList<SUIT_ViewWindow> STD_MDIDesktop::windows() const
+QList<SUIT_ViewWindow*> STD_MDIDesktop::windows() const
 {
-  QPtrList<SUIT_ViewWindow> winList;
+  QList<SUIT_ViewWindow*> winList;
 
   QWidgetList children = myWorkspace->windowList();
-  for ( QWidgetListIt it( children ); it.current(); ++it )
+  for ( QWidgetList::iterator it = children.begin(); it != children.end(); ++it )
   {
-    if ( it.current()->inherits( "SUIT_ViewWindow" ) )
-      winList.append( (SUIT_ViewWindow*)it.current() );
+    SUIT_ViewWindow* vw = ::qobject_cast<SUIT_ViewWindow*>( *it );
+    if ( vw )
+      winList.append( vw );
   }
 
   return winList;
 }
 
-/*!\retval QWidget - pointer to work space.*/
-QWidget* STD_MDIDesktop::parentArea() const
+/*! add the new widget into desktop.*/
+void STD_MDIDesktop::addWindow( QWidget* w )
 {
-  return workspace();
+  if ( !w || !workspace() )
+    return;
+
+  workspace()->addWindow( w );
 }
 
 /*!Call method perform for operation \a type.*/
 void STD_MDIDesktop::windowOperation( const int type )
 {
-  myWorkspaceAction->perform( operationFlag( type ) );
+  //myWorkspaceAction->perform( operationFlag( type ) );
 }
 
 /*!Sets window operations by \a first ... parameters.*/
@@ -102,7 +110,7 @@ void STD_MDIDesktop::setWindowOperations( const int first, ... )
   va_list ints;
 	va_start( ints, first );
 
-	QValueList<int> typeList;
+	QList<int> typeList;
 
 	int cur = first;
 	while ( cur )
@@ -115,14 +123,14 @@ void STD_MDIDesktop::setWindowOperations( const int first, ... )
 }
 
 /*!Sets window operations by variable \a opList - operation list.*/
-void STD_MDIDesktop::setWindowOperations( const QValueList<int>& opList )
+void STD_MDIDesktop::setWindowOperations( const QList<int>& opList )
 {
   int flags = 0;
 
-  for ( QValueList<int>::const_iterator it = opList.begin(); it != opList.end(); ++it )
+  for ( QList<int>::const_iterator it = opList.begin(); it != opList.end(); ++it )
     flags = flags | operationFlag( *it );
 
-  myWorkspaceAction->setItems( flags );
+//  myWorkspaceAction->setItems( flags );
 }
 
 /*!\retval QWorkspace pointer - work space.*/
@@ -141,6 +149,7 @@ void STD_MDIDesktop::onWindowActivated( QWidget* w )
 /*!Create actions: cascade, Tile, Tile Horizontal, Tile Vertical*/
 void STD_MDIDesktop::createActions()
 {
+/*
   if ( myWorkspaceAction )
     return;
 
@@ -186,12 +195,14 @@ void STD_MDIDesktop::createActions()
   int winMenuId = mMgr->insert( tr( "MEN_DESK_WINDOW" ), -1, 100, MenuWindowId );
   mMgr->insert( myWorkspaceAction, winMenuId, -1 );
   mMgr->insert( QtxActionMenuMgr::separator(), winMenuId, -1 );
+*/
 }
 
 /*!Convert STD_MDIDesktop enumerations to QtxWorkspaceAction.*/
 int STD_MDIDesktop::operationFlag( const int type ) const
 {
   int res = 0;
+/*
   switch ( type )
   {
   case Cascade:
@@ -207,5 +218,6 @@ int STD_MDIDesktop::operationFlag( const int type ) const
     res = QtxWorkspaceAction::VTile;
     break;
   }
+*/
   return res;
 }

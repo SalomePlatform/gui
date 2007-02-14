@@ -19,11 +19,11 @@
 #ifndef _PYINTERP_WATCHER_H_
 #define _PYINTERP_WATCHER_H_
 
-#include <PyInterp.h>
+#include "PyInterp.h"
 
-#include <PyInterp_Dispatcher.h>
+#include "PyInterp_Dispatcher.h"
 
-#include <qobject.h>
+#include <QtCore/qobject.h>
 
 // Private class that keeps track of destructions of request listeners
 class PYINTERP_EXPORT PyInterp_Watcher : public QObject

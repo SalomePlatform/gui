@@ -16,22 +16,22 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#if !defined ( _PYINTERP_H )
-#define _PYINTERP_H
+#if !defined ( _PYTHONCONSOLE_H )
+#define _PYTHONCONSOLE_H
 
 // ========================================================
 // set dllexport type for Win platform 
 #ifdef WIN32
 
-#ifdef PYINTERP_EXPORTS
-#define PYINTERP_EXPORT __declspec(dllexport)
+#ifdef PYCONSOLE_EXPORTS
+#define PYCONSOLE_EXPORT __declspec(dllexport)
 #else
-#define PYINTERP_EXPORT __declspec(dllimport)
+#define PYCONSOLE_EXPORT __declspec(dllimport)
 #endif
 
 #else   // WIN32
 
-#define PYINTERP_EXPORT
+#define PYCONSOLE_EXPORT
 
 #endif  // WIN32
 
@@ -40,12 +40,12 @@
 #ifdef _DEBUG
 
 #undef _DEBUG
-#include <Python.h>
+//#include <Python.h>
 #define _DEBUG
 
 #else  // _DEBUG
 
-#include <Python.h>
+//#include <Python.h>
 
 #endif // _DEBUG
 
@@ -56,4 +56,4 @@
 #pragma warning (disable : 4251)
 #endif
 
-#endif // _PYINTERP_H
+#endif // _PYTHONCONSOLE_H

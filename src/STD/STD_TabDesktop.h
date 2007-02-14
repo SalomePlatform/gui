@@ -27,9 +27,9 @@ class QtxAction;
 class QPopupMenu;
 class QWorkspace;
 class QtxWorkstack;
-class QtxWorkstackAction;
+//class QtxWorkstackAction;
 
-#if defined WNT
+#if defined WIN32
 #pragma warning( disable: 4251 )
 #endif
 
@@ -46,12 +46,12 @@ public:
   virtual ~STD_TabDesktop();
 
   virtual SUIT_ViewWindow* activeWindow() const;
-  virtual QPtrList<SUIT_ViewWindow> windows() const;
+  virtual QList<SUIT_ViewWindow*> windows() const;
 
   void                     windowOperation( const int );
 
   void                     setWindowOperations( const int, ... );
-  void                     setWindowOperations( const QValueList<int>& );
+  void                     setWindowOperations( const QList<int>& );
 
   QtxWorkstack*            workstack() const;
 
@@ -60,17 +60,17 @@ private slots:
 
 protected:
   void                     createActions();
-  virtual QWidget*         parentArea() const;
+  virtual void             addWindow( QWidget* );
 
 private:
   int                      operationFlag( const int ) const;
 
 private:
   QtxWorkstack*            myWorkstack;
-  QtxWorkstackAction*      myWorkstackAction;
+//  QtxWorkstackAction*      myWorkstackAction;
 };
 
-#if defined WNT
+#if defined WIN32
 #pragma warning( default: 4251 )
 #endif
 

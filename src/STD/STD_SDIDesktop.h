@@ -23,7 +23,7 @@
 
 #include <SUIT_Desktop.h>
 
-class QVBox;
+class QFrame;
 
 class STD_EXPORT STD_SDIDesktop: public SUIT_Desktop 
 {
@@ -34,13 +34,13 @@ public:
   virtual ~STD_SDIDesktop();
 
   virtual SUIT_ViewWindow* activeWindow() const;
-  virtual QPtrList<SUIT_ViewWindow> windows() const;
+  virtual QList<SUIT_ViewWindow*> windows() const;
 
 protected:
-  virtual QWidget*         parentArea() const;
+  virtual void             addWindow( QWidget* );
 
 private:
-  QVBox*                   myMainWidget;
+  QFrame*                  myMainWidget;
 };
 
 #endif

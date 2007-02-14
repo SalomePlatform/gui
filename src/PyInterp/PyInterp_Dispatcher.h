@@ -27,8 +27,10 @@
 
 #include "PyInterp.h"
 
-#include <qthread.h>
-#include <qevent.h>
+#include <QtCore/qmutex.h>
+#include <QtCore/qthread.h>
+
+#include <QtGui/qevent.h>
 
 #include <list>
 
@@ -98,7 +100,7 @@ private:
   PyInterp_base*  myInterp;
 };
 
-class PYINTERP_EXPORT PyInterp_Event : public QCustomEvent
+class PYINTERP_EXPORT PyInterp_Event : public QEvent
 {
   PyInterp_Event();
   PyInterp_Event( const PyInterp_Event& );
@@ -107,7 +109,7 @@ public:
   enum { NOTIFY = QEvent::User + 5000, OK, ERROR, INCOMPLETE, LAST };
 
   PyInterp_Event( int type, PyInterp_Request* request )
-    : QCustomEvent( (QEvent::Type)type ), myRequest( request ) {}
+    : QEvent( (QEvent::Type)type ), myRequest( request ) {}
 
   virtual ~PyInterp_Event();
 

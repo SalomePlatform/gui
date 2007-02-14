@@ -72,7 +72,7 @@ class PYINTERP_EXPORT PyInterp_base{
   static PyInterpreterState *_interp;
   
   PyInterp_base();
-  ~PyInterp_base();
+  virtual ~PyInterp_base();
   
   virtual void initialize();
   virtual void init_python();

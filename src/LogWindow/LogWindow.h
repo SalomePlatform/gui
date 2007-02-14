@@ -42,15 +42,17 @@
 
 #include <SUIT_PopupClient.h>
 
-#include <qframe.h>
-#include <qstringlist.h>
+#include <QtCore/qmap.h>
+#include <QtCore/qstringlist.h>
+
+#include <QtGui/qframe.h>
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 
 class QAction;
-class QTextBrowser;
+class QTextEdit;
 
 /*!
   \class LogWindow
@@ -60,16 +62,25 @@ class LOGWINDOW_EXPORT LogWindow : public QFrame, public SUIT_PopupClient
 {
   Q_OBJECT
 
-  enum { CopyId, ClearId, SelectAllId, SaveToFileId };
+public:
+  //! popup operation flags
+  enum
+  {
+    CopyId = 0x01,
+    ClearId = 0x02,
+    SelectAllId = 0x04,
+    SaveToFileId = 0x08,
+    All = CopyId | ClearId | SelectAllId | SaveToFileId,
+  };
 
 public:
-	LogWindow( QWidget* theParent );
-	virtual ~LogWindow();
+  LogWindow( QWidget* theParent );
+  virtual ~LogWindow();
 
   virtual             QString popupClientType() const { return QString( "LogWindow" ); }
-  virtual void        contextMenuPopup( QPopupMenu* );
+  virtual void        contextMenuPopup( QMenu* );
 
-  bool                eventFilter( QObject* o, QEvent* e );
+  virtual bool        eventFilter( QObject* o, QEvent* e );
 
   void                setBanner( const QString& banner );
   void                setSeparator( const QString& separator );
@@ -78,6 +89,8 @@ public:
   void                clear( bool clearHistory = false );
 
   bool                saveLog( const QString& fileName );
+
+  void                setOperationsFlags( int flags );
 
 protected slots:
   void                onSaveToFile();
@@ -90,12 +103,13 @@ private:
   void                updateActions();
 
 private:
-  QTextBrowser*       myView;
+  QTextEdit*          myView;
   QString             myBanner;
-  QString             mySeparator;
   QStringList         myHistory;
+  QString             mySeparator;
   int                 myBannerSize;
   QMap<int, QAction*> myActions;
+  int                 myOpFlags;
 };
 
 #ifdef WIN32

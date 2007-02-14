@@ -21,13 +21,15 @@
 
 #include "LogWindow.h"
 
-#include <qfile.h>
-#include <qlayout.h>
-#include <qaction.h>
-#include <qpopupmenu.h>
-#include <qtextbrowser.h>
-#include <qapplication.h>
-#include <qdatetime.h>
+#include <QtCore/qfile.h>
+#include <QtCore/qdatetime.h>
+#include <QtCore/qtextstream.h>
+
+#include <QtGui/qmenu.h>
+#include <QtGui/qlayout.h>
+#include <QtGui/qaction.h>
+#include <QtGui/qtextbrowser.h>
+#include <QtGui/qapplication.h>
 
 #include <SUIT_Tools.h>
 #include <SUIT_Session.h>
@@ -42,15 +44,18 @@
 static QString plainText( const QString& richText )
 {
   QString aText = richText;
-  int startTag = aText.find('<');
-  while ( 1 ) {
+  int startTag = aText.indexOf( '<' );
+  while ( true )
+  {
     if ( startTag < 0 )
       break;
-    int finishTag = aText.find('>',startTag);
-    if (finishTag < 0)
+
+    int finishTag = aText.indexOf( '>', startTag );
+    if ( finishTag < 0 )
       break;
-    aText = aText.remove(startTag, finishTag-startTag+1);
-    startTag = aText.find('<');
+
+    aText = aText.remove( startTag, finishTag - startTag + 1 );
+    startTag = aText.indexOf( '<' );
   }
   return aText;
 }
@@ -60,7 +65,8 @@ static QString plainText( const QString& richText )
 */
 LogWindow::LogWindow( QWidget* parent )
 : QFrame( parent ),
-SUIT_PopupClient()
+SUIT_PopupClient(),
+myOpFlags( All )
 {
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
 
@@ -68,13 +74,12 @@ SUIT_PopupClient()
 
   setFont( SUIT_Tools::stringToFont( fntSet ) );
 
-  myView = new QTextBrowser(this,"myView");
-#if QT_VERSION>0x030007
-  myView->setTextFormat( Qt::LogText );
-#endif
+  myView = new QTextEdit( this );
+  myView->setReadOnly( true );
   myView->viewport()->installEventFilter( this );
 
   QVBoxLayout* main = new QVBoxLayout( this );
+  main->setMargin( 5 );
   main->addWidget( myView );
 
   myBannerSize = 0;
@@ -143,7 +148,7 @@ void LogWindow::putMessage( const QString& message, bool addSeparator )
     myView->append( mySeparator );   // add separator
     myHistory.append( plainText( mySeparator ) );
   }
-  myView->scrollToBottom();
+  myView->moveCursor( QTextCursor::End );
 }
 
 /*!
@@ -159,7 +164,7 @@ void LogWindow::clear( bool clearHistory )
   if ( !myBanner.isEmpty() )
   {
     myView->append( myBanner );
-    myBannerSize = myView->paragraphs();
+    myBannerSize = myView->document()->blockCount();
   }
   else
     myBannerSize = 0;
@@ -172,7 +177,7 @@ void LogWindow::clear( bool clearHistory )
 bool LogWindow::saveLog( const QString& fileName )
 {
   QFile file( fileName );
-  if ( !file.open( IO_WriteOnly ) )
+  if ( !file.open( QFile::WriteOnly ) )
     return false;
 
   QTextStream stream( &file );
@@ -195,42 +200,48 @@ bool LogWindow::saveLog( const QString& fileName )
 */
 void LogWindow::createActions()
 {
-  QAction* a = new QAction( "", tr( "&Copy" ), 0, this );
+  QAction* a = new QAction( tr( "&Copy" ), this );
   a->setStatusTip( tr( "&Copy" ) );
-  connect( a, SIGNAL( activated() ), SLOT( onCopy()));
+  connect( a, SIGNAL( triggered( bool ) ), SLOT( onCopy() ) );
   myActions.insert( CopyId, a );
 
-  a = new QAction( "", tr( "Clea&r" ), 0, this );
+  a = new QAction( tr( "Clea&r" ), this );
   a->setStatusTip( tr( "Clea&r" ) );
-  connect( a, SIGNAL( activated() ), SLOT( onClear()));
+  connect( a, SIGNAL( triggered( bool ) ), SLOT( onClear() ) );
   myActions.insert( ClearId, a );
 
-  a = new QAction( "", tr( "Select &All" ), 0, this );
+  a = new QAction( tr( "Select &All" ), this );
   a->setStatusTip( tr( "Select &All" ) );
-  connect( a, SIGNAL( activated() ), SLOT( onSelectAll()));
+  connect( a, SIGNAL( triggered( bool ) ), SLOT( onSelectAll() ) );
   myActions.insert( SelectAllId, a );
 
-  a = new QAction( "", tr( "&Save log to file..." ), 0, this );
+  a = new QAction( tr( "&Save log to file..." ), this );
   a->setStatusTip( tr( "&Save log to file..." ) );
-  connect( a, SIGNAL( activated() ), SLOT( onSaveToFile()));
+  connect( a, SIGNAL( triggered( bool ) ), SLOT( onSaveToFile() ) );
   myActions.insert( SaveToFileId, a );
 }
 
 /*!
   Redefined virtual method for popup filling
 */
-void LogWindow::contextMenuPopup( QPopupMenu* popup )
+void LogWindow::contextMenuPopup( QMenu* popup )
 {
-  myActions[ CopyId ]->addTo( popup );
-  myActions[ ClearId ]->addTo( popup );
+  if ( myOpFlags & CopyId )
+    popup->addAction( myActions[ CopyId ] );
+  if ( myOpFlags & ClearId )
+    popup->addAction( myActions[ ClearId ] );
   
-  popup->insertSeparator();
+  popup->addSeparator();
   
-  myActions[ SelectAllId ]->addTo( popup );
+  if ( myOpFlags & SelectAllId )
+    popup->addAction( myActions[ SelectAllId ] );
   
-  popup->insertSeparator();
+  popup->addSeparator();
   
-  myActions[ SaveToFileId ]->addTo( popup );
+  if ( myOpFlags & SaveToFileId )
+    popup->addAction( myActions[ SaveToFileId ] );
+
+  Qtx::simplifySeparators( popup );
 
   updateActions();
 }
@@ -240,15 +251,17 @@ void LogWindow::contextMenuPopup( QPopupMenu* popup )
 */
 void LogWindow::updateActions()
 {
+/*
   int paraFrom, paraTo, indexFrom, indexTo;
   myView->getSelection( &paraFrom, &indexFrom, &paraTo, &indexTo );
   bool allSelected = myView->hasSelectedText() &&
                      !paraFrom && paraTo == myView->paragraphs() - 1 && 
                      !indexFrom && indexTo == myView->paragraphLength( paraTo );
-  myActions[ CopyId ]->setEnabled( myView->hasSelectedText() );
-  myActions[ ClearId ]->setEnabled( myView->paragraphs() > myBannerSize );
-  myActions[ SelectAllId ]->setEnabled( !allSelected );
-  myActions[ SaveToFileId ]->setEnabled( myHistory.count() > 0 );
+  myActions[ CopyId ]->setEnabled( ( myOpFlags & CopyId )&& myView->hasSelectedText() );
+  myActions[ ClearId ]->setEnabled( ( myOpFlags & ClearId ) && myView->document()->blockCount() > myBannerSize );
+  myActions[ SelectAllId ]->setEnabled( ( myOpFlags & SelectAllId ) && !allSelected );
+  myActions[ SaveToFileId ]->setEnabled( ( myOpFlags & SaveToFileId ) && myHistory.count() > 0 );
+*/
 }
 
 /*!
@@ -265,7 +278,7 @@ void LogWindow::onSaveToFile()
   if ( aName.isNull() )
     return;
 
-  QApplication::setOverrideCursor( Qt::waitCursor );
+  QApplication::setOverrideCursor( Qt::WaitCursor );
     
   bool bOk = saveLog( aName );
 
@@ -299,4 +312,9 @@ void LogWindow::onCopy()
 {
   if ( myView )
     myView->copy();
+}
+
+void LogWindow::setOperationsFlags( int flags )
+{
+  myOpFlags = flags;
 }

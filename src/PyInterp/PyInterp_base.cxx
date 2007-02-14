@@ -24,11 +24,12 @@
 //  $Header$
 
 
+#include "PyInterp_base.h" // this include must be first (see PyInterp_base.h)!
+
+#include <cStringIO.h>
+
 #include <string>
 #include <vector>
-
-#include "PyInterp_base.h" // this include must be first (see PyInterp_base.h)!
-#include <cStringIO.h>
 
 using namespace std;
 

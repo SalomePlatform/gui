@@ -18,14 +18,14 @@
 //
 // SUIT_Accel.h: interface for the SUIT_Accel class.
 
-#ifndef SUIT_Accel_h 
-#define SUIT_Accel_h
+#ifndef SUIT_ACELL_H
+#define SUIT_ACELL_H
 
 #include "SUIT.h"
 
-#include <qobject.h>
-#include <qstring.h>
-#include <qmap.h>
+#include <QtCore/qmap.h>
+#include <QtCore/qobject.h>
+#include <QtCore/qstring.h>
 
 /*!
   \class SUIT_Accel

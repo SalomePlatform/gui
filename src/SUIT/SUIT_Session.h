@@ -24,11 +24,10 @@
 #include "SUIT_Application.h"
 #include "SUIT_ResourceMgr.h"
 
-#include <qmutex.h>
-#include <qobject.h>
-#include <qptrlist.h>
-#include <qptrvector.h>
-#include <qstringlist.h>
+#include <QtCore/qlist.h>
+#include <QtCore/qvector.h>
+#include <QtCore/qobject.h>
+#include <QtCore/qstringlist.h>
 
 #ifdef WIN32
 #define LIB_HANDLE HINSTANCE
@@ -39,7 +38,7 @@
 class SUIT_ResourceMgr;
 class SUIT_ExceptionHandler;
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 /*!
@@ -65,7 +64,7 @@ public:
 
   SUIT_Application*            startApplication( const QString&, int = 0, char** = 0 );
 
-  QPtrList<SUIT_Application>   applications() const;
+  QList<SUIT_Application*>     applications() const;
   SUIT_Application*            activeApplication() const;
 
   SUIT_ResourceMgr*            resourceMgr() const;
@@ -74,9 +73,7 @@ public:
 
   SUIT_ExceptionHandler*       handler() const;
 
-  // To lock GUI user actions during python command execution (PAL12651)
-  static bool                  IsPythonExecuted();
-  static void                  SetPythonExecuted(bool isPythonExecuted);
+  void                         insertApplication( SUIT_Application* );
 
 signals:
   void                         applicationClosed( SUIT_Application* );
@@ -89,9 +86,8 @@ private slots:
   void                         onApplicationActivated( SUIT_Application* ); 
 
 private:
-  typedef QPtrList<SUIT_Application>         AppList;
-  typedef QMap<QString, AppLib>              AppLibMap;
-  typedef QPtrListIterator<SUIT_Application> AppListIterator;
+  typedef QList<SUIT_Application*> AppList;
+  typedef QMap<QString, AppLib>    AppLibMap;
 
 private:
   QString                      lastError() const;

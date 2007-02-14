@@ -16,18 +16,12 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  SALOME SALOMEGUI : implementation of desktop and GUI kernel
-//
-//  File   : SUIT_FileValidator.cxx
-//  Module : SALOME
-//  $Header$
-
 #include "SUIT_FileValidator.h"
 #include "SUIT_MessageBox.h"
 #include "SUIT_Session.h"
 
-#include <qfile.h>
-#include <qfileinfo.h>
+#include <QtCore/qfile.h>
+#include <QtCore/qfileinfo.h>
 
 /*! constructor */
 SUIT_FileValidator::SUIT_FileValidator(QWidget* parent) :
@@ -79,17 +73,19 @@ bool SUIT_FileValidator::canSave( const QString& file )
       return false; 
     }
   }
-  else {
+  else
+  {
     // if file doesn't exist - try to create it
     QFile qf( file );
-    if ( !qf.open( IO_WriteOnly ) ) {
-      SUIT_MessageBox::error1( myParent,
-            QObject::tr( "ERR_ERROR" ),
-            QObject::tr( "ERR_PERMISSION_DENIED" ).arg( file ),
-            QObject::tr( "BUT_OK" ) );
+    if ( !qf.open( QFile::WriteOnly ) )
+    {
+      SUIT_MessageBox::error1( myParent, QObject::tr( "ERR_ERROR" ),
+                               QObject::tr( "ERR_PERMISSION_DENIED" ).arg( file ),
+                               QObject::tr( "BUT_OK" ) );
       return false;
     }
-    else {
+    else
+    {
       // remove just created file
       qf.close();
       qf.remove();
@@ -97,4 +93,3 @@ bool SUIT_FileValidator::canSave( const QString& file )
   }
   return true;
 }
-

@@ -19,18 +19,18 @@
 #ifndef SUIT_DATAOBJECT_H
 #define SUIT_DATAOBJECT_H
 
-#include <qobject.h>
-#include <qstring.h>
-#include <qpixmap.h>
-#include <qptrlist.h>
+#include <QtCore/qlist.h>
+#include <QtCore/qobject.h>
+#include <QtCore/qstring.h>
+
+#include <QtGui/qpixmap.h>
 
 #include "SUIT.h"
 
 class SUIT_DataObject;
 class SUIT_DataObjectKey;
 
-typedef QPtrList<SUIT_DataObject>         DataObjectList;
-typedef QPtrListIterator<SUIT_DataObject> DataObjectListIterator;
+typedef QList<SUIT_DataObject*> DataObjectList;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -112,6 +112,7 @@ private:
   bool                        myCheck;
   Signal*                     mySignal;
   SUIT_DataObject*            myParent;
+  bool                        myAutoDel;
   DataObjectList              myChildren;
 
   friend class SUIT_DataObject::Signal;

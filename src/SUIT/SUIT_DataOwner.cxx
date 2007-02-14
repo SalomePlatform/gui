@@ -18,7 +18,7 @@
 //
 #include "SUIT_DataOwner.h"
 
-#ifndef WNT
+#ifndef WIN32
 #include <typeinfo>
 #define _typeinfo std::type_info
 #else
@@ -77,8 +77,8 @@ bool operator<( const SUIT_DataOwnerPtr& p1, const SUIT_DataOwnerPtr& p2 )
   Constructor (default)
 */
 SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList()
-  : QValueList<SUIT_DataOwnerPtr>(),
-    mySkipEqual( true )
+: QList<SUIT_DataOwnerPtr>(),
+mySkipEqual( true )
 {
 }
 
@@ -86,8 +86,8 @@ SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList()
   Constructor (default)
 */
 SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList( const bool skipAllEqual )
-  : QValueList<SUIT_DataOwnerPtr>(),
-    mySkipEqual( skipAllEqual )
+: QList<SUIT_DataOwnerPtr>(),
+mySkipEqual( skipAllEqual )
 {
 }
 
@@ -95,8 +95,8 @@ SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList( const bool skipAllEqual )
   Constructor (copy)
 */
 SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList( const SUIT_DataOwnerPtrList& l )
-  : QValueList<SUIT_DataOwnerPtr>( l ),
-    mySkipEqual( true )
+: QList<SUIT_DataOwnerPtr>( l ),
+mySkipEqual( true )
 {
 }
 
@@ -104,8 +104,8 @@ SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList( const SUIT_DataOwnerPtrList& l )
   Constructor (copy)
 */
 SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList( const SUIT_DataOwnerPtrList& l, const bool skipAllEqual )
-  : QValueList<SUIT_DataOwnerPtr>(),
-    mySkipEqual( skipAllEqual )
+: QList<SUIT_DataOwnerPtr>(),
+mySkipEqual( skipAllEqual )
 {
   if ( skipAllEqual == l.mySkipEqual )
     operator =( l );
@@ -113,51 +113,23 @@ SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList( const SUIT_DataOwnerPtrList& l, co
   {
     SUIT_DataOwnerPtrList::const_iterator beginIt = l.begin();
     SUIT_DataOwnerPtrList::const_iterator endIt = l.end();
-    for( ; beginIt != endIt; ++beginIt )
+    for ( ; beginIt != endIt; ++beginIt )
       append( *beginIt );
   }
 }
 
-#ifndef QT_NO_STL
-/*!
-  Constructor (from stl)
-*/
-SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList( const std::list<SUIT_DataOwnerPtr>& l )
-  : QValueList<SUIT_DataOwnerPtr>( l ),
-    mySkipEqual( true )
-{
-}
-#endif
-
-#ifndef QT_NO_STL
-/*!
-  Constructor (from stl)
-*/
-SUIT_DataOwnerPtrList::SUIT_DataOwnerPtrList( const std::list<SUIT_DataOwnerPtr>& l, const bool skipAllEqual )
-  : QValueList<SUIT_DataOwnerPtr>(),
-    mySkipEqual( skipAllEqual )
-{
-  std::list<SUIT_DataOwnerPtr>::const_iterator beginIt = l.begin();
-  std::list<SUIT_DataOwnerPtr>::const_iterator endIt = l.begin();
-  for( ; beginIt != endIt; ++beginIt )
-    append( *beginIt );
-}
-#endif
-
 /*!
   Appends an item to the list
 */
-SUIT_DataOwnerPtrList::iterator SUIT_DataOwnerPtrList::append( const SUIT_DataOwnerPtr& x )
+void SUIT_DataOwnerPtrList::append( const SUIT_DataOwnerPtr& x )
 {
   if ( mySkipEqual && myMap.contains( x ) ) //contains uses SUIT_DataOwnerPtr::operator==
-    return myMap[ x ];
+    return;
 
-  iterator it = QValueList<SUIT_DataOwnerPtr>::append( x );
+  QList<SUIT_DataOwnerPtr>::append( x );
 
-   if ( mySkipEqual )
-    myMap.insert( x, it );
-
-  return it;
+  if ( mySkipEqual )
+    myMap.insert( x, 0 );
 }
 
 /*!
@@ -165,9 +137,10 @@ SUIT_DataOwnerPtrList::iterator SUIT_DataOwnerPtrList::append( const SUIT_DataOw
 */
 void SUIT_DataOwnerPtrList::clear()
 {
-  if( mySkipEqual )
+  if ( mySkipEqual )
     myMap.clear();
-  QValueList<SUIT_DataOwnerPtr>::clear();
+
+  QList<SUIT_DataOwnerPtr>::clear();
 }
 
 /*!
@@ -175,7 +148,8 @@ void SUIT_DataOwnerPtrList::clear()
 */
 uint SUIT_DataOwnerPtrList::remove(const SUIT_DataOwnerPtr& x )
 {
-  if( mySkipEqual && myMap.contains(x) )
-    myMap.remove(x);
-  return QValueList<SUIT_DataOwnerPtr>::remove( x );
+  if ( mySkipEqual && myMap.contains(x) )
+    myMap.remove( x );
+
+  return QList<SUIT_DataOwnerPtr>::removeAll( x );
 }

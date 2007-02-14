@@ -49,20 +49,20 @@ QtxAction* SUIT_ActionOperation::action() const
 /*!Set action.
  * Create new instance of QtxAction and set.
  */
-void SUIT_ActionOperation::setAction( const QString& text, const QIconSet& icon,
-				      const QString& menuText, QKeySequence accel,
-                                      QObject* parent, const char* name, bool toggle )
+void SUIT_ActionOperation::setAction( const QString& text, const QIcon& icon,
+				                              const QString& menuText, QKeySequence accel,
+                                      QObject* parent, bool toggle )
 {
-  setAction( new QtxAction( text, icon, menuText, accel, parent, name, toggle ) );
+  setAction( new QtxAction( text, icon, menuText, accel, parent, 0, toggle ) );
 }
 
 /*!Set action.
  * Create new instance of QtxAction and set.
  */
 void SUIT_ActionOperation::setAction( const QString& text, const QString& menuText,
-				      QKeySequence accel, QObject* parent, const char* name, bool toggle )
+				                              QKeySequence accel, QObject* parent, bool toggle )
 {
-  setAction( new QtxAction(text, menuText, accel, parent, name, toggle ) );
+  setAction( new QtxAction( text, menuText, accel, parent, 0, toggle ) );
 }
 
 /*!Set action.

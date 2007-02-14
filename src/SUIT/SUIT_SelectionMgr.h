@@ -23,9 +23,8 @@
 #include "SUIT_DataOwner.h"
 #include "SUIT_SelectionFilter.h"
 
-#include <qobject.h>
-#include <qptrlist.h>
-#include <qvaluelist.h>
+#include <QtCore/qlist.h>
+#include <QtCore/qobject.h>
 
 #ifdef WIN32
 #pragma warning ( disable : 4251 )
@@ -43,24 +42,24 @@ public:
   virtual void    selected( SUIT_DataOwnerPtrList&, const QString& = QString::null ) const;
   virtual void    setSelected( const SUIT_DataOwnerPtrList&, const bool = false );
 
-  void            selectors( QPtrList<SUIT_Selector>& ) const;
-  void            selectors( const QString&, QPtrList<SUIT_Selector>& ) const;
+  void            selectors( QList<SUIT_Selector*>& ) const;
+  void            selectors( const QString&, QList<SUIT_Selector*>& ) const;
 
 
   void            setEnabled( const bool, const QString& = QString::null );
 
 
   bool            hasSelectionMode( const int ) const;
-  void            selectionModes( QValueList<int>& ) const;
+  void            selectionModes( QList<int>& ) const;
 
   void            setSelectionModes( const int );
-  virtual void    setSelectionModes( const QValueList<int>& );
+  virtual void    setSelectionModes( const QList<int>& );
 
   void            appendSelectionModes( const int );
-  virtual void    appendSelectionModes( const QValueList<int>& );
+  virtual void    appendSelectionModes( const QList<int>& );
 
   void            removeSelectionModes( const int );
-  virtual void    removeSelectionModes( const QValueList<int>& );
+  virtual void    removeSelectionModes( const QList<int>& );
 
 
   bool            isOk( const SUIT_DataOwner* ) const;
@@ -83,25 +82,21 @@ signals:
 protected:
   virtual void    selectionChanged( SUIT_Selector* );
 
-  typedef QPtrListIterator<SUIT_Selector>        SelectorListIterator;
-
   virtual void    installSelector( SUIT_Selector* );
   virtual void    removeSelector( SUIT_Selector* );
 
 private:
   void            filterOwners( const SUIT_DataOwnerPtrList&, SUIT_DataOwnerPtrList& ) const;
 
-  typedef QPtrList<SUIT_Selector>                SelectorList;
-  typedef QPtrList<SUIT_SelectionFilter>         SelFilterList;
-  typedef QPtrListIterator<SUIT_SelectionFilter> SelFilterListIterator;
-
-protected:
-  SelectorList    mySelectors;
+  typedef QList<SUIT_Selector*>        SelectorList;
+  typedef QList<SUIT_SelectionFilter*> SelFilterList;
 
 private:
   SelFilterList   myFilters;
-  QValueList<int> mySelModes;
+  QList<int>      mySelModes;
+  SelectorList    mySelectors;
   int             myIterations;
+  bool            myAutoDelFilter;
   bool            myIsSelChangeEnabled;
 
   friend class SUIT_Selector;

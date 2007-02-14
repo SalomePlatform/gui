@@ -19,49 +19,32 @@
 
 #include "SUIT_ToolButton.h"
 
-#include <qpopupmenu.h>
-#include <qstyle.h>
+#include <QtGui/qmenu.h>
+#include <QtGui/qstyle.h>
 
 /*!Constructor.*/
-SUIT_ToolButton::SUIT_ToolButton( QWidget *parent, 
-                                        const char *name,
-                                        bool changeItemAfterClick)
- : QToolButton(  parent, name ),
-   myChangeItemAfterClick( changeItemAfterClick )
+SUIT_ToolButton::SUIT_ToolButton( QWidget *parent, const char *name,
+                                  bool changeItemAfterClick )
+: QToolButton( parent ),
+myChangeItemAfterClick( changeItemAfterClick )
 {
   initialize();
 }
-
-/*!Constructor.*/
-SUIT_ToolButton::SUIT_ToolButton( const QPixmap & pm,
-                                        const QString &textLabel,
-                                        const QString& grouptext,
-                                        QObject * receiver,
-                                        const char* slot,
-                                        QToolBar * parent,
-                                        const char* name,
-                                        bool changeItemAfterClick)
- :QToolButton(pm, textLabel, grouptext, receiver, slot, parent, name),
-  myChangeItemAfterClick( changeItemAfterClick )
-{
-  initialize();
-}
-
 
 /*!Initialize tool buttons.*/
 void SUIT_ToolButton::initialize()
 {
-  mySignal = NULL;
-  myPopup = new QPopupMenu( this );
-  setPopup(myPopup);
-  connect( myPopup, SIGNAL(activated(int)), SLOT(OnSelectAction(int)) );
-  setPopupDelay(250);
+//  mySignal = NULL;
+  myPopup = new QMenu( this );
+  setMenu( myPopup );
+  connect( myPopup, SIGNAL( activated( int ) ), SLOT( OnSelectAction( int ) ) );
 }
 
 /*!drawButton is redefined to draw DownArrow*/
 void SUIT_ToolButton::drawButton( QPainter * p )
 {
-  QToolButton::drawButton(p);
+/*
+  QToolButton::drawButton( p );
 
 //draw DownArrow
   int x, y, w, h;
@@ -69,53 +52,40 @@ void SUIT_ToolButton::drawButton( QPainter * p )
   style().drawPrimitive( QStyle::PE_ArrowDown,
     p, QRect(x+w/2+3, y+h/2+3, w/2, h/2),   //QRect(x+(w-x)/2, y+(h-y)/2, w, h)
     colorGroup(), isEnabled() );
+*/
 }
 
-
 /*! Add action into popup*/
-void SUIT_ToolButton::AddAction(QAction* theAction)
+void SUIT_ToolButton::AddAction( QAction* theAction )
 {
   bool aIsFirst = false;
-  if ( myPopup->count() == 0 ) 
+  if ( myPopup->actions().isEmpty() ) 
   {
     aIsFirst = true;
-    setPixmap(theAction->iconSet().pixmap());
-    setTextLabel(theAction->text());
-    theAction->addTo( myPopup );
-    QMenuItem* aItem = myPopup->findItem(myPopup->idAt(0));
-    if (aItem != NULL) 
-    {
-      mySignal = aItem->signal();
-    }
+    setIcon( theAction->icon() );
+    setText( theAction->text() );
   }
-  else
-    theAction->addTo( myPopup );
+    myPopup->addAction( theAction );
 }
 
 /*! Sets myPopup item with theIndex as current*/
-void SUIT_ToolButton::SetItem(int theIndex)
+void SUIT_ToolButton::SetItem( int theIndex )
 {
-  int anId = myPopup->idAt(theIndex);
-  if (anId != -1)
+  QAction* a = myPopup->actions()[theIndex];
+  if ( a )
   {
-    // Protection against unexpected null pointers returned
-    if ( myPopup->iconSet(anId) )
-      setPixmap(myPopup->iconSet(anId)->pixmap());
-    setTextLabel(myPopup->text(anId));
-    QMenuItem* aItem = myPopup->findItem(anId);
-    if (aItem != NULL) 
-    {
-      mySignal = aItem->signal();
-    }
+    setIcon( a->icon() );
+    setText( a->text() );
   }
 }
 
 /*!Public SLOT.
  * On select action (icon and text set with id = \a theItemID)
  */
-void SUIT_ToolButton::OnSelectAction(int theItemID)
+void SUIT_ToolButton::OnSelectAction( int theItemID )
 {
-  if (myChangeItemAfterClick)
+/*
+  if ( myChangeItemAfterClick )
   {
     // Protection against unexpected null pointers returned
     if ( myPopup->iconSet(theItemID) )
@@ -127,18 +97,15 @@ void SUIT_ToolButton::OnSelectAction(int theItemID)
       mySignal = aItem->signal();
     }
   }
+*/
 }
-
-
 
 /*!On mouse release event.*/
-void SUIT_ToolButton::mouseReleaseEvent ( QMouseEvent * theEvent)
+void SUIT_ToolButton::mouseReleaseEvent( QMouseEvent* theEvent )
 {
-  QToolButton::mouseReleaseEvent(theEvent);
-  if (mySignal != NULL) 
-  {
+  QToolButton::mouseReleaseEvent( theEvent );
+/*
+  if ( mySignal ) 
     mySignal->activate();
-  }
+*/
 }
-
-

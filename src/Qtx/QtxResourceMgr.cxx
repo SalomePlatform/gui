@@ -18,16 +18,20 @@
 //
 #include "QtxResourceMgr.h"
 
-#include <qdir.h>
-#include <qfile.h>
-#include <qregexp.h>
-#include <qpixmap.h>
-#include <qtranslator.h>
-#include <qapplication.h>
+#include <QtCore/qdir.h>
+#include <QtCore/qfile.h>
+#include <QtCore/qregexp.h>
+#include <QtCore/qtextstream.h>
+#include <QtCore/qtranslator.h>
+
+#include <QtGui/qpixmap.h>
+#include <QtGui/qapplication.h>
 
 #ifndef QT_NO_DOM
-#include <qdom.h>
+#include <QtXml/qdom.h>
 #endif
+
+#define EMULATE_GLOBAL_CONTEXT
 
 #include <stdlib.h>
 
@@ -35,6 +39,58 @@
   Class: QtxResourceMgr::Resources
   Level: Internal
 */
+
+class QtxResourceMgr::Resources
+{
+public:
+  Resources( const QtxResourceMgr*, const QString& );
+  virtual ~Resources();
+
+  QString                file() const;
+  void                   setFile( const QString& );
+
+  QString                value( const QString&, const QString&, const bool ) const;
+  void                   setValue( const QString&, const QString&, const QString& );
+
+  bool                   hasSection( const QString& ) const;
+  bool                   hasValue( const QString&, const QString& ) const;
+
+  void                   removeSection( const QString& );
+  void                   removeValue( const QString&, const QString& );
+
+  QPixmap                loadPixmap( const QString&, const QString&, const QString& ) const;
+  QTranslator*           loadTranslator( const QString&, const QString&, const QString& ) const;
+
+  QString                environmentVariable( const QString&, int&, int& ) const;
+  QString                makeSubstitution( const QString&, const QString&, const QString& ) const;
+
+  void                   clear();
+
+  QStringList            sections() const;
+  QStringList            parameters( const QString& ) const;
+
+  QString                path( const QString&, const QString&, const QString& ) const;
+
+protected:
+  QtxResourceMgr*        resMgr() const;
+
+private:
+  Section                section( const QString& );
+  const Section          section( const QString& ) const;
+
+  QString                fileName( const QString&, const QString&, const QString& ) const;
+
+private:
+  typedef QMap<QString, Section> SectionMap;
+
+private:
+  QtxResourceMgr*        myMgr;
+  SectionMap             mySections;
+  QString                myFileName;
+  QMap<QString,QPixmap>  myPixmapCache;
+
+  friend class QtxResourceMgr::Format;
+};
 
 QtxResourceMgr::Resources::Resources( const QtxResourceMgr* mgr, const QString& fileName )
 : myFileName( fileName ),
@@ -99,8 +155,10 @@ QString QtxResourceMgr::Resources::value( const QString& sect, const QString& na
 */
 void QtxResourceMgr::Resources::setValue( const QString& sect, const QString& name, const QString& val )
 {
-  Section& s = section( sect );
-  s.insert( name, val );
+  if ( !mySections.contains( sect ) )
+    mySections.insert( sect, Section() );
+
+  mySections[sect].insert( name, val );
 }
 
 /*!
@@ -138,13 +196,12 @@ void QtxResourceMgr::Resources::removeSection( const QString& sect )
 */
 void QtxResourceMgr::Resources::removeValue( const QString& sect, const QString& name )
 {
-  if ( !hasSection( sect ) )
+  if ( !mySections.contains( sect ) )
     return;
 
-  Section& s = section( sect );
-  s.remove( name );
+  mySections[sect].remove( name );
 
-  if ( s.isEmpty() )
+  if ( mySections[sect].isEmpty() )
     mySections.remove( sect );
 }
 
@@ -205,7 +262,7 @@ QtxResourceMgr* QtxResourceMgr::Resources::resMgr() const
 /*!
   \return instance of section by it's name. Section will be created if it doesn't exist
 */
-QtxResourceMgr::Section& QtxResourceMgr::Resources::section( const QString& sn )
+QtxResourceMgr::Section QtxResourceMgr::Resources::section( const QString& sn )
 {
   if ( !mySections.contains( sn ) )
     mySections.insert( sn, Section() );
@@ -216,7 +273,7 @@ QtxResourceMgr::Section& QtxResourceMgr::Resources::section( const QString& sn )
 /*!
   \return instance of section by it's name. Section will be created if it doesn't exist
 */
-const QtxResourceMgr::Section& QtxResourceMgr::Resources::section( const QString& sn ) const
+const QtxResourceMgr::Section QtxResourceMgr::Resources::section( const QString& sn ) const
 {
   return mySections[sn];
 }
@@ -236,7 +293,7 @@ QString QtxResourceMgr::Resources::fileName( const QString& sect, const QString&
     if ( !path.isEmpty() )
     {
       if ( QFileInfo( path ).isRelative() )
-        path = Qtx::addSlash( QFileInfo( myFileName ).dirPath( true ) ) + path;
+        path = Qtx::addSlash( Qtx::dir( myFileName, true ) ) + path;
 
       path = Qtx::addSlash( path ) + name;
     }
@@ -245,7 +302,7 @@ QString QtxResourceMgr::Resources::fileName( const QString& sect, const QString&
   {
     QString fname = QDir::convertSeparators( path );
     QFileInfo inf( fname );
-    fname = inf.absFilePath();
+    fname = inf.absoluteFilePath();
     return fname;
   }
   return QString();
@@ -282,7 +339,46 @@ QPixmap QtxResourceMgr::Resources::loadPixmap( const QString& sect, const QStrin
 QTranslator* QtxResourceMgr::Resources::loadTranslator( const QString& sect, const QString& prefix, const QString& name ) const
 {
   QTranslator* trans = new QTranslator( 0 );
-  if ( !trans->load( fileName( sect, prefix, name ) ) )
+  QString fname = fileName( sect, prefix, name );
+#ifdef EMULATE_GLOBAL_CONTEXT
+  char* buf = 0;
+  QFile file( fname );
+  int len = file.size();
+  if ( len )
+  {
+    buf = new char[len];
+    if ( !file.open( QIODevice::ReadOnly ) || len != (uint)file.read( buf, len ) )
+    {
+      delete buf;
+      buf = 0;
+    }
+    file.close();
+  }
+  if ( buf )
+  {
+    char* pattern = "@default";
+    size_t pl = strlen( pattern );
+    for ( size_t i = 0; i < len - pl; i++ )
+    {
+      char* cur = buf + i;
+      if ( !strncmp( cur, pattern, pl ) )
+      {
+        *cur = '\0';
+        i += pl - 1;
+      }
+    }
+
+    if ( !trans->load( (uchar*)buf, len ) )
+    {
+      delete buf;
+      buf = 0;
+    }
+  }
+
+  if ( !buf )
+#else
+  if ( !trans->load( Qtx::file( fname, false ), Qtx::dir( fname ) ) )
+#endif
   {
     delete trans;
     trans = 0;
@@ -304,14 +400,14 @@ QString QtxResourceMgr::Resources::environmentVariable( const QString& str, int&
 
   QRegExp rx( "\\$\\{([a-zA-Z]+[a-zA-Z0-9_]*)\\}|\\$\\(([a-zA-Z]+[a-zA-Z0-9_]*)\\)|\\$([a-zA-Z]+[a-zA-Z0-9_]*)|\\%([a-zA-Z]+[a-zA-Z0-9_]*)\\%" );
 
-  int pos = rx.search( str, start );
+  int pos = rx.indexIn( str, start );
   if ( pos != -1 )
   {
     start = pos;
     len = rx.matchedLength();
     QStringList caps = rx.capturedTexts();
     for ( uint i = 1; i <= caps.count() && varName.isEmpty(); i++ )
-      varName = *caps.at( i );
+      varName = caps[i];
   }
   return varName;
 }
@@ -339,9 +435,9 @@ QString QtxResourceMgr::Resources::makeSubstitution( const QString& str, const Q
     if ( envName.isNull() )
       break;
 
-    QString newStr = QString::null;
-    if ( ::getenv( envName ) )
-      newStr = QString( ::getenv( envName ) );
+    QString newStr;
+    if ( ::getenv( envName.toLatin1() ) )
+      newStr = QString( ::getenv( envName.toLatin1() ) );
 
     if ( newStr.isNull() )
     {
@@ -399,7 +495,7 @@ QtxResourceMgr::IniFormat::~IniFormat()
 bool QtxResourceMgr::IniFormat::load( const QString& fname, QMap<QString, Section>& secMap )
 {
   QFile file( fname );
-  if ( !file.open( IO_ReadOnly ) )
+  if ( !file.open( QFile::ReadOnly ) )
     return false;
 
   QTextStream ts( &file );
@@ -425,7 +521,7 @@ bool QtxResourceMgr::IniFormat::load( const QString& fname, QMap<QString, Sectio
     if ( data.isNull() )
       break;
 
-    data = data.stripWhiteSpace();
+    data = data.trimmed();
     if ( data.isEmpty() )
       continue;
 
@@ -433,27 +529,26 @@ bool QtxResourceMgr::IniFormat::load( const QString& fname, QMap<QString, Sectio
       continue;
 
     QRegExp rx( "^\\[([\\w\\s\\._]*)\\]$" );
-    if ( rx.search( data ) != -1 )
+    if ( rx.indexIn( data ) != -1 )
     {
       section = rx.cap( 1 );
       if ( section.isEmpty() )
       {
         res = false;
-        qWarning( QString( "Empty section in line %1" ).arg( line ) );
+        qWarning( "Empty section in line %d", line );
       }
     }
     else if ( data.contains( "=" ) && !section.isEmpty() )
     {
-      int pos = data.find( separator );
-      QString key = data.left( pos ).stripWhiteSpace();
-      QString val = data.mid( pos + 1 ).stripWhiteSpace();
+      int pos = data.indexOf( separator );
+      QString key = data.left( pos ).trimmed();
+      QString val = data.mid( pos + 1 ).trimmed();
       secMap[section].insert( key, val );
     }
     else
     {
       res = false;
-      section.isEmpty() ? qWarning( "Current section is empty" ) :
-                          qWarning( QString( "Error in line: %1" ).arg( line ) );
+      section.isEmpty() ? qWarning( "Current section is empty" ) : qWarning( "Error in line: %d", line );
     }
   }
 
@@ -470,18 +565,21 @@ bool QtxResourceMgr::IniFormat::load( const QString& fname, QMap<QString, Sectio
 bool QtxResourceMgr::IniFormat::save( const QString& fname, const QMap<QString, Section>& secMap )
 {
   QFile file( fname );
-  if ( !file.open( IO_WriteOnly ) )
+  if ( !file.open( QFile::WriteOnly ) )
     return false;
+
+  QTextStream ts( &file );
 
   bool res = true;
   for ( QMap<QString, Section>::ConstIterator it = secMap.begin(); it != secMap.end() && res; ++it )
   {
-    QString data = QString( "[%1]\n" ).arg( it.key() );
-    for ( Section::ConstIterator iter = it.data().begin(); iter != it.data().end(); ++iter )
-      data += iter.key() + " = " + iter.data() + "\n";
-    data += "\n";
+    QStringList data( QString( "[%1]" ).arg( it.key() ) );
+    for ( Section::ConstIterator iter = it.value().begin(); iter != it.value().end(); ++iter )
+      data.append( iter.key() + " = " + iter.value() );
+    data.append( "" );
 
-    res = file.writeBlock( data.latin1(), data.length() ) == (int)data.length();
+    for ( QStringList::const_iterator itr = data.begin(); itr != data.end(); ++itr )
+      ts << *itr << endl;
   }
 
   file.close();
@@ -539,7 +637,7 @@ bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Sectio
 #ifndef QT_NO_DOM
 
   QFile file( fname );
-  if ( !file.open( IO_ReadOnly ) )
+  if ( !file.open( QFile::ReadOnly ) )
   {
     qDebug( "File cannot be opened" );
     return false;
@@ -622,8 +720,8 @@ bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Sectio
 
 #endif
 
-  if( res )
-    qDebug( QString( "File '%1' is loaded successfully" ).arg( fname ) );
+  if ( res )
+    qDebug( "File '%s' is loaded successfully", (const char*)fname.toLatin1() );
   return res;
 }
 
@@ -639,7 +737,7 @@ bool QtxResourceMgr::XmlFormat::save( const QString& fname, const QMap<QString, 
 #ifndef QT_NO_DOM
 
   QFile file( fname );
-  if ( !file.open( IO_WriteOnly ) )
+  if ( !file.open( QFile::WriteOnly ) )
     return false;
 
   QDomDocument doc( docTag() );
@@ -651,17 +749,20 @@ bool QtxResourceMgr::XmlFormat::save( const QString& fname, const QMap<QString, 
     QDomElement sect = doc.createElement( sectionTag() );
     sect.setAttribute( nameAttribute(), it.key() );
     root.appendChild( sect );
-    for ( Section::ConstIterator iter = it.data().begin(); iter != it.data().end(); ++iter )
+    for ( Section::ConstIterator iter = it.value().begin(); iter != it.value().end(); ++iter )
     {
       QDomElement val = doc.createElement( parameterTag() );
       val.setAttribute( nameAttribute(), iter.key() );
-      val.setAttribute( valueAttribute(), iter.data() );
+      val.setAttribute( valueAttribute(), iter.value() );
       sect.appendChild( val );
     }
   }
 
-  QString docStr = doc.toString();
-  res = file.writeBlock( docStr.latin1(), docStr.length() ) == (int)docStr.length();
+  QTextStream ts( &file );
+  QStringList docStr = doc.toString().split( "\n" );
+  for ( QStringList::const_iterator itr = docStr.begin(); itr != docStr.end(); ++itr )
+    ts << *itr << endl;
+
   file.close();
 
 #endif
@@ -798,7 +899,7 @@ bool QtxResourceMgr::Format::load( Resources* res )
   if ( status )
     res->mySections = sections;
   else
-    qDebug( "QtxResourceMgr: Could not load resource file \"%s\"", res->myFileName.latin1() );
+    qDebug( "QtxResourceMgr: Could not load resource file \"%s\"", (const char*)res->myFileName.toLatin1() );
 
   return status;
 }
@@ -856,14 +957,14 @@ QtxResourceMgr::QtxResourceMgr( const QString& appName, const QString& resVarTem
     envVar = envVar.arg( appName );
 
   QString dirs;
-  if ( ::getenv( envVar ) )
-    dirs = ::getenv( envVar );
+  if ( ::getenv( envVar.toLatin1() ) )
+    dirs = ::getenv( envVar.toLatin1() );
 #ifdef WIN32
   QString dirsep = ";";      // for Windows: ";" is used as directories separator
 #else
   QString dirsep = "[:|;]";  // for Linux: both ":" and ";" can be used
 #endif
-  setDirList( QStringList::split( QRegExp(dirsep), dirs ) );
+  setDirList( dirs.split( QRegExp( dirsep ), QString::SkipEmptyParts ) );
 
   installFormat( new XmlFormat() );
   installFormat( new IniFormat() );
@@ -879,11 +980,11 @@ QtxResourceMgr::~QtxResourceMgr()
   QStringList prefList = myTranslator.keys();
   for ( QStringList::const_iterator it = prefList.begin(); it != prefList.end(); ++it )
     removeTranslators( *it );
-  for ( ResListIterator resIt( myResources ); resIt.current(); ++resIt )
-    delete resIt.current();
+  for ( ResList::iterator resIt = myResources.begin(); resIt != myResources.end(); ++resIt )
+    delete *resIt;
   myResources.clear();
-  for ( FormatListIterator formIt( myFormats ); formIt.current(); ++formIt )
-    delete formIt.current();
+  for ( FormatList::iterator formIt = myFormats.begin(); formIt != myFormats.end(); ++formIt )
+    delete *formIt;
 }
 
 /*!
@@ -967,8 +1068,8 @@ void QtxResourceMgr::setIsPixmapCached( const bool on )
 */
 void QtxResourceMgr::clear()
 {
-  for ( ResListIterator it( myResources ); it.current(); ++it )
-    it.current()->clear();
+  for ( ResList::iterator it = myResources.begin(); it != myResources.end(); ++it )
+    (*it)->clear();
 }
 
 /*!
@@ -1046,7 +1147,7 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, bool& bVal
     boolMap["false"] = boolMap["no"]  = boolMap["off"] = false;
   }
 
-  val = val.lower();
+  val = val.toLower();
   bool res = boolMap.contains( val );
   if ( res )
     bVal = boolMap[val];
@@ -1074,7 +1175,7 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QColor& cV
     return false;
 
   bool res = true;
-  QStringList vals = QStringList::split( ",", val, true );
+  QStringList vals = val.split( "," );
 
   QIntList nums;
   for ( QStringList::const_iterator it = vals.begin(); it != vals.end() && res; ++it )
@@ -1086,7 +1187,7 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QColor& cV
   {
     int pack = val.toInt( &res );
     if ( res )
-      Qtx::rgbSet( pack, cVal );
+      cVal = Qtx::rgbSet( pack );
   }
 
   return res;
@@ -1105,7 +1206,7 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QFont& fVa
   if ( !value( sect, name, val, true ) )
     return false;
 
-  QStringList fontDescr = QStringList::split( ",", val );
+  QStringList fontDescr = val.split( ",", QString::SkipEmptyParts );
 
   if ( fontDescr.count() < 2 )
     return false;
@@ -1118,7 +1219,7 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QFont& fVa
 
   for ( int i = 1; i < (int)fontDescr.count(); i++ )
   {
-    QString curval = fontDescr[i].stripWhiteSpace().lower();
+    QString curval = fontDescr[i].trimmed().toLower();
     if ( curval == QString( "bold" ) )
       fVal.setBold( true );
     else if ( curval == QString( "italic" ) )
@@ -1153,15 +1254,15 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QString& v
 
   bool ok = false;
  
-  ResListIterator it( myResources );
+  ResList::const_iterator it = myResources.begin();
   if ( ignoreUserValues() )
     ++it;
 
-  for ( ; it.current() && !ok; ++it )
+  for ( ; it != myResources.end() && !ok; ++it )
   {
-    ok = it.current()->hasValue( sect, name );
+    ok = (*it)->hasValue( sect, name );
     if ( ok )
-      val = it.current()->value( sect, name, subst );
+      val = (*it)->value( sect, name, subst );
   }
 
   return ok;
@@ -1267,8 +1368,8 @@ bool QtxResourceMgr::hasValue( const QString& sect, const QString& name ) const
   initialize();
 
   bool ok = false;
-  for ( ResListIterator it( myResources ); it.current() && !ok; ++it )
-    ok = it.current()->hasValue( sect, name );
+  for ( ResList::const_iterator it = myResources.begin(); it != myResources.end() && !ok; ++it )
+    ok = (*it)->hasValue( sect, name );
 
   return ok;
 }
@@ -1282,8 +1383,8 @@ bool QtxResourceMgr::hasSection( const QString& sect ) const
   initialize();
 
   bool ok = false;
-  for ( ResListIterator it( myResources ); it.current() && !ok; ++it )
-    ok = it.current()->hasSection( sect );
+  for ( ResList::const_iterator it = myResources.begin(); it != myResources.end() && !ok; ++it )
+    ok = (*it)->hasSection( sect );
 
   return ok;
 }
@@ -1396,8 +1497,8 @@ void QtxResourceMgr::remove( const QString& sect )
 {
   initialize();
 
-  for ( ResListIterator it( myResources ); it.current(); ++it )
-    it.current()->removeSection( sect );
+  for ( ResList::iterator it = myResources.begin(); it != myResources.end(); ++it )
+    (*it)->removeSection( sect );
 }
 
 /*!
@@ -1409,8 +1510,8 @@ void QtxResourceMgr::remove( const QString& sect, const QString& name )
 {
   initialize();
 
-  for ( ResListIterator it( myResources ); it.current(); ++it )
-    it.current()->removeValue( sect, name );
+  for ( ResList::iterator it = myResources.begin(); it != myResources.end(); ++it )
+    (*it)->removeValue( sect, name );
 }
 
 /*!
@@ -1420,7 +1521,7 @@ QString QtxResourceMgr::currentFormat() const
 {
   QString fmt;
   if ( !myFormats.isEmpty() )
-    fmt = myFormats.getFirst()->format();
+    fmt = myFormats[0]->format();
   return fmt;
 }
 
@@ -1434,20 +1535,21 @@ void QtxResourceMgr::setCurrentFormat( const QString& fmt )
   if ( !form )
     return;
 
-  myFormats.remove( form );
+  myFormats.removeAll( form );
   myFormats.prepend( form );
 
   if ( myResources.isEmpty() )
     return;
 
-  ResListIterator resIt( myResources );
-  if ( myResources.count() > myDirList.count() && resIt.current() ) {
-    resIt.current()->setFile( userFileName( appName() ) );
+  ResList::iterator resIt = myResources.begin();
+  if ( myResources.count() > myDirList.count() && resIt != myResources.end() )
+  {
+    (*resIt)->setFile( userFileName( appName() ) );
     ++resIt;
   }
 
-  for ( QStringList::const_iterator it = myDirList.begin(); it != myDirList.end() && resIt.current(); ++it, ++resIt )
-    resIt.current()->setFile( Qtx::addSlash( *it ) + globalFileName( appName() ) );
+  for ( QStringList::const_iterator it = myDirList.begin(); it != myDirList.end() && resIt != myResources.end(); ++it, ++resIt )
+    (*resIt)->setFile( Qtx::addSlash( *it ) + globalFileName( appName() ) );
 }
 
 /*!
@@ -1457,10 +1559,10 @@ void QtxResourceMgr::setCurrentFormat( const QString& fmt )
 QtxResourceMgr::Format* QtxResourceMgr::format( const QString& fmt ) const
 {
   Format* form = 0;
-  for ( FormatListIterator it( myFormats ); it.current() && !form; ++it )
+  for ( FormatList::const_iterator it = myFormats.begin(); it != myFormats.end() && !form; ++it )
   {
-    if ( it.current()->format() == fmt )
-      form = it.current();
+    if ( (*it)->format() == fmt )
+      form = *it;
   }
 
   return form;
@@ -1482,7 +1584,7 @@ void QtxResourceMgr::installFormat( QtxResourceMgr::Format* form )
 */
 void QtxResourceMgr::removeFormat( QtxResourceMgr::Format* form )
 {
-  myFormats.remove( form );
+  myFormats.removeAll( form );
 }
 
 /*!
@@ -1528,8 +1630,8 @@ bool QtxResourceMgr::load()
     return false;
 
   bool res = true;
-  for ( ResListIterator it( myResources ); it.current(); ++it )
-    res = fmt->load( it.current() ) && res;
+  for ( ResList::iterator it = myResources.begin(); it != myResources.end(); ++it )
+    res = fmt->load( *it ) && res;
 
   return res;
 }
@@ -1543,8 +1645,8 @@ bool QtxResourceMgr::import( const QString& fname )
   if ( !fmt )
     return false;
 
-  Resources* r = myResources.getFirst();
-  if( !r )
+  Resources* r = myResources[0];
+  if ( !r )
     return false;
 
   QString old = r->file();
@@ -1568,7 +1670,7 @@ bool QtxResourceMgr::save()
   if ( myResources.isEmpty() )
     return true;
 
-  return fmt->save( myResources.getFirst() );
+  return fmt->save( myResources[0] );
 }
 
 /*!
@@ -1579,9 +1681,9 @@ QStringList QtxResourceMgr::sections() const
   initialize();
 
   QMap<QString, int> map;
-  for ( ResListIterator it( myResources ); it.current(); ++it )
+  for ( ResList::const_iterator it = myResources.begin(); it != myResources.end(); ++it )
   {
-    QStringList lst = it.current()->sections();
+    QStringList lst = (*it)->sections();
     for ( QStringList::const_iterator itr = lst.begin(); itr != lst.end(); ++itr )
       map.insert( *itr, 0 );
   }
@@ -1607,10 +1709,13 @@ QStringList QtxResourceMgr::parameters( const QString& sec ) const
   typedef IMap<QString, int> PMap;
 #endif
   PMap pmap;
-  ResListIterator it( myResources );
-  it.toLast();
-  for ( ; it.current(); --it ) {
-    QStringList lst = it.current()->parameters( sec );
+  ResList lst;
+  for ( ResList::const_iterator itr = myResources.begin(); itr != myResources.end(); ++itr )
+    lst.prepend( *itr );
+  
+  for ( ResList::const_iterator it = lst.begin(); it != lst.end(); ++it )
+  {
+    QStringList lst = (*it)->parameters( sec );
     for ( QStringList::const_iterator itr = lst.begin(); itr != lst.end(); ++itr )
       pmap.insert( *itr, 0, false );
   }
@@ -1632,8 +1737,8 @@ QStringList QtxResourceMgr::parameters( const QString& sec ) const
 QString QtxResourceMgr::path( const QString& sect, const QString& prefix, const QString& name ) const
 {
   QString res;
-  for ( ResListIterator it( myResources ); it.current() && res.isEmpty(); ++it )
-    res = it.current()->path( sect, prefix, name );
+  for ( ResList::const_iterator it = myResources.begin(); it != myResources.end() && res.isEmpty(); ++it )
+    res = (*it)->path( sect, prefix, name );
   return res;
 }
 
@@ -1713,8 +1818,8 @@ QPixmap QtxResourceMgr::loadPixmap( const QString& prefix, const QString& name, 
   initialize();
 
   QPixmap pix;
-  for ( ResListIterator it( myResources ); it.current() && pix.isNull(); ++it )
-    pix = it.current()->loadPixmap( resSection(), prefix, name );
+  for ( ResList::const_iterator it = myResources.begin(); it != myResources.end() && pix.isNull(); ++it )
+    pix = (*it)->loadPixmap( resSection(), prefix, name );
   if ( pix.isNull() )
     pix = defPix;
   return pix;
@@ -1750,7 +1855,7 @@ void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
   if ( lang.isEmpty() )
   {
     lang = QString( "en" );
-    qWarning( QString( "Language not specified. Assumed: %1" ).arg( lang ) );
+    qWarning( "Language not specified. Assumed: %s", (const char*)lang.toLatin1() );
   }
 
   substMap.insert( 'L', lang );
@@ -1758,19 +1863,21 @@ void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
   QString trs;
   if ( value( langSection(), "translators", trs, false ) && !trs.isEmpty() )
   {
-    QStringList translators    = QStringList::split( "|", option( "translators" ) );
-    QStringList newTranslators = QStringList::split( "|", trs );
+    QStringList translators    = option( "translators" ).split( "|", QString::SkipEmptyParts );
+    QStringList newTranslators = trs.split( "|", QString::SkipEmptyParts );
     for ( uint i = 0; i < newTranslators.count(); i++ )
-      if ( translators.find( newTranslators[i] ) == translators.end() )
+    {
+      if ( translators.indexOf( newTranslators[i] ) < 0 )
         translators += newTranslators[i];
+    }
     setOption( "translators", translators.join( "|" ) );
   }
 
-  QStringList trList = QStringList::split( "|", option( "translators" ) );
+  QStringList trList = option( "translators" ).split( "|", QString::SkipEmptyParts );
   if ( trList.isEmpty() )
   {
     trList.append( "%P_msg_%L.qm" );
-    qWarning( QString( "Translators not defined. Assumed: %1" ).arg( trList.first() ) );
+    qWarning( "Translators not defined. Assumed: %s", (const char*)trList[0].toLatin1() );
   }
 
   QStringList prefixList;
@@ -1786,7 +1893,7 @@ void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
 
     QStringList trs;
     for ( QStringList::const_iterator it = trList.begin(); it != trList.end(); ++it )
-      trs.append( substMacro( *it, substMap ).stripWhiteSpace() );
+      trs.append( substMacro( *it, substMap ).trimmed() );
 
     loadTranslators( prefix, trs );
   }
@@ -1802,19 +1909,22 @@ void QtxResourceMgr::loadTranslators( const QString& prefix, const QStringList& 
 {
   initialize();
 
+  ResList lst;
+  for ( ResList::iterator iter = myResources.begin(); iter != myResources.end(); ++iter )
+    lst.prepend( *iter );
+
   QTranslator* trans = 0;
-  ResListIterator it( myResources );
-  it.toLast();
-  for ( ; it.current(); --it )
+  
+  for ( ResList::iterator it = lst.begin(); it != lst.end(); ++it )
   {
     for ( QStringList::const_iterator itr = translators.begin(); itr != translators.end(); ++itr )
     {
-      trans = it.current()->loadTranslator( resSection(), prefix, *itr );
+      trans = (*it)->loadTranslator( resSection(), prefix, *itr );
       if ( trans )
       {
         if ( !myTranslator[prefix].contains( trans ) )
           myTranslator[prefix].append( trans );
-        qApp->installTranslator( trans );
+        QApplication::instance()->installTranslator( trans );
       }
     }
   }
@@ -1831,16 +1941,15 @@ void QtxResourceMgr::loadTranslator( const QString& prefix, const QString& name 
   initialize();
 
   QTranslator* trans = 0;
-  ResListIterator it( myResources );
-  it.toLast();
-  for ( ; it.current(); --it )
+  ResList::iterator it = myResources.end();
+  for ( ; it != myResources.begin(); --it )
   {
-    trans = it.current()->loadTranslator( resSection(), prefix, name );
+    trans = (*it)->loadTranslator( resSection(), prefix, name );
     if ( trans )
     {
       if ( !myTranslator[prefix].contains( trans ) )
         myTranslator[prefix].append( trans );
-      qApp->installTranslator( trans );
+      QApplication::instance()->installTranslator( trans );
     }
   }
 }
@@ -1855,10 +1964,10 @@ void QtxResourceMgr::removeTranslators( const QString& prefix )
   if ( !myTranslator.contains( prefix ) )
     return;
 
-  for ( TransListIterator it( myTranslator[prefix] ); it.current(); ++it )
+  for ( TransList::iterator it = myTranslator[prefix].begin(); it != myTranslator[prefix].end(); ++it )
   {
-    qApp->removeTranslator( it.current() );
-    delete it.current();
+    QApplication::instance()->removeTranslator( *it );
+    delete *it;
   }
 
   myTranslator.remove( prefix );
@@ -1874,10 +1983,10 @@ void QtxResourceMgr::raiseTranslators( const QString& prefix )
   if ( !myTranslator.contains( prefix ) )
     return;
 
-  for ( TransListIterator it( myTranslator[prefix] ); it.current(); ++it )
+  for ( TransList::iterator it = myTranslator[prefix].begin(); it != myTranslator[prefix].end(); ++it )
   {
-    qApp->removeTranslator( it.current() );
-    qApp->installTranslator( it.current() );
+    QApplication::instance()->removeTranslator( *it );
+    QApplication::instance()->installTranslator( *it );
   }
 }
 
@@ -1901,8 +2010,8 @@ void QtxResourceMgr::refresh()
 void QtxResourceMgr::setDirList( const QStringList& dl )
 {
   myDirList = dl;
-  for ( ResListIterator it( myResources ); it.current(); ++it )
-    delete it.current();
+  for ( ResList::iterator it = myResources.begin(); it != myResources.end(); ++it )
+    delete *it;
 
   myResources.clear();
 }
@@ -1930,7 +2039,7 @@ void QtxResourceMgr::setResource( const QString& sect, const QString& name, cons
 QString QtxResourceMgr::userFileName( const QString& appName, const bool /*for_load*/ ) const
 {
   QString fileName;
-  QString pathName = QDir::homeDirPath();
+  QString pathName = QDir::homePath();
 
 #ifdef WIN32
   fileName = QString( "%1.%2" ).arg( appName ).arg( currentFormat() );
@@ -1965,7 +2074,7 @@ QString QtxResourceMgr::substMacro( const QString& src, const QMap<QChar, QStrin
   QRegExp rx( "%[A-Za-z%]" );
 
   int idx = 0;
-  while ( ( idx = rx.search( trg, idx ) ) >= 0 )
+  while ( ( idx = rx.indexIn( trg, idx ) ) >= 0 )
   {
     QChar spec = trg.at( idx + 1 );
     QString subst;

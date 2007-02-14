@@ -21,13 +21,14 @@
 
 #include "Qtx.h"
 
-#include <qmap.h>
-#include <qcolor.h>
-#include <qfont.h>
-#include <qpixmap.h>
-#include <qstringlist.h>
-#include <qtranslator.h>
-#include <qvaluelist.h>
+#include <QtCore/qmap.h>
+#include <QtCore/qlist.h>
+#include <QtCore/qstringlist.h>
+#include <QtCore/qtranslator.h>
+
+#include <QtGui/qcolor.h>
+#include <QtGui/qfont.h>
+#include <QtGui/qpixmap.h>
 
 class QPixmap;
 
@@ -153,15 +154,11 @@ private:
   QString         substMacro( const QString&, const QMap<QChar, QString>& ) const;
 
 private:
-  typedef QPtrList<Resources>           ResList;
-  typedef QPtrList<Format>              FormatList;
-  typedef QMap<QString, QString>        OptionsMap;
-  typedef QPtrListIterator<Resources>   ResListIterator;
-  typedef QPtrListIterator<Format>      FormatListIterator;
-
-  typedef QPtrList<QTranslator>         TransList;
-  typedef QMap<QString, TransList>      TransListMap;
-  typedef QPtrListIterator<QTranslator> TransListIterator;
+  typedef QList<Resources*>        ResList;
+  typedef QList<QTranslator*>      TransList;
+  typedef QList<Format*>           FormatList;
+  typedef QMap<QString, QString>   OptionsMap;
+  typedef QMap<QString, TransList> TransListMap;
 
 private:
   QString         myAppName;
@@ -208,62 +205,6 @@ private:
 };
 
 /*!
-  Class: QtxResourceMgr::Resources
-*/
-
-class QtxResourceMgr::Resources
-{
-public:
-  Resources( const QtxResourceMgr*, const QString& );
-  virtual ~Resources();
-
-  QString                file() const;
-  void                   setFile( const QString& );
-
-  QString                value( const QString&, const QString&, const bool ) const;
-  void                   setValue( const QString&, const QString&, const QString& );
-
-  bool                   hasSection( const QString& ) const;
-  bool                   hasValue( const QString&, const QString& ) const;
-
-  void                   removeSection( const QString& );
-  void                   removeValue( const QString&, const QString& );
-
-  QPixmap                loadPixmap( const QString&, const QString&, const QString& ) const;
-  QTranslator*           loadTranslator( const QString&, const QString&, const QString& ) const;
-
-  QString                environmentVariable( const QString&, int&, int& ) const;
-  QString                makeSubstitution( const QString&, const QString&, const QString& ) const;
-
-  void                   clear();
-
-  QStringList            sections() const;
-  QStringList            parameters( const QString& ) const;
-
-  QString                path( const QString&, const QString&, const QString& ) const;
-
-protected:
-  QtxResourceMgr*        resMgr() const;
-
-private:
-  Section&               section( const QString& );
-  const Section&         section( const QString& ) const;
-
-  QString                fileName( const QString&, const QString&, const QString& ) const;
-
-private:
-  typedef QMap<QString, Section> SectionMap;
-
-private:
-  SectionMap             mySections;
-  QString                myFileName;
-  QMap<QString,QPixmap>  myPixmapCache;
-  QtxResourceMgr*        myMgr;
-
-  friend class QtxResourceMgr::Format;
-};
-
-/*!
   Class: QtxResourceMgr::IMapIterator
 */
 
@@ -280,10 +221,10 @@ public:
   operator bool() const { return myIndex >= 0; }
 
   const Key&   key() const  { return myMap->key( myIndex );   }
-  Value&       data()       { return myMap->value( myIndex ); }
-  const Value& data() const { return myMap->value( myIndex ); }
+  Value&       value()       { return myMap->value( myIndex ); }
+  const Value& value() const { return myMap->value( myIndex ); }
 
-  Value& operator*() { return data(); }
+  Value& operator*() { return value(); }
 
   IMapIterator& operator++()      { myIndex++; init(); return *this;                     }
   IMapIterator  operator++( int ) { IMapIterator i = *this; myIndex++; init(); return i; }
@@ -320,10 +261,10 @@ public:
   operator bool() const { return myIndex >= 0; }
   
   const Key&   key() const  { return myMap->key( myIndex );   }
-  const Value& data() const { return myMap->value( myIndex ); }
+  const Value value() const { return myMap->value( myIndex ); }
   
-  const Value& operator*() const { return data(); }
-  
+  const Value operator*() const { return value(); }
+
   IMapConstIterator& operator++()      { myIndex++; init(); return *this;                          }
   IMapConstIterator  operator++( int ) { IMapConstIterator i = *this; myIndex++; init(); return i; }
   IMapConstIterator& operator--()      { myIndex--; init(); return *this;                          }
@@ -362,9 +303,9 @@ public:
   
   void clear() { myKeys.clear(); myData.clear(); }
   
-  QValueList<Key>   keys()   const { return myKeys; }
-  QValueList<Value> values() const { QValueList<Value> l; for ( int i = 0; i < count(); i++ ) l.append( value( i ) ); return l; }
-  bool              contains ( const Key& key ) const { return myData.contains( key ); }
+  QList<Key>   keys()   const { return myKeys; }
+  QList<Value> values() const { QList<Value> l; for ( int i = 0; i < count(); i++ ) l.append( value( i ) ); return l; }
+  bool         contains ( const Key& key ) const { return myData.contains( key ); }
   
   Iterator      begin()       { return Iterator( this );               }
   Iterator      end()         { return Iterator( this, count() );      }
@@ -376,7 +317,7 @@ public:
     if ( myData.find( key ) == myData.end() || overwrite )
     {
       if ( myData.find( key ) != myData.end() && overwrite )
-        myKeys.remove( myKeys.find( key ) );
+        myKeys.removeAt( myKeys.indexOf( key ) );
       myKeys.append( key );
       myData[key] = value;
     }
@@ -391,7 +332,7 @@ public:
     return Iterator( this, index( key ) );
   }
 
-  int           index( const Key& key ) const { return myKeys.findIndex( key );      }
+  int           index( const Key& key ) const { return myKeys.indexOf( key );      }
   Iterator      at( const int index )         { return Iterator( this, index );      }
   ConstIterator at( const int index ) const   { return ConstIterator( this, index ); }
 
@@ -402,25 +343,25 @@ public:
     return myKeys[index];
   }
 
-  Value& value( const int index )
+  Value value( const int index )
   {
     if ( index < 0 || index >= (int)myKeys.count() ) 
       return dummyValue;
     return myData[ myKeys[index] ];
   }
 
-  Value& operator[]( const Key& key )
+  Value operator[]( const Key& key )
   {
     if ( myData.find( key ) == myData.end() )
       insert( key, Value() );
     return myData[ key ];
   }
 
-  const Value& operator[]( const Key& key ) const
+  const Value operator[]( const Key& key ) const
   {
     if ( myData.find( key ) == myData.end() )
       return dummyValue;
-    return myData[ key ];
+    return myData[key];
   }
 
   void erase( Iterator it )     { remove( it );    }
@@ -432,13 +373,13 @@ public:
   {
     if ( index >= 0 && index < (int)myKeys.count() )
     {
-      myData.remove( myKeys[ index ] );
-      myKeys.remove( myKeys.at( index ) );
+      myData.remove( myKeys[index] );
+      myKeys.removeAt( index );
     }
   }
 
 private:
-  QValueList<Key> myKeys;
+  QList<Key>      myKeys;
   QMap<Key,Value> myData;
   Key             dummyKey;
   Value           dummyValue;

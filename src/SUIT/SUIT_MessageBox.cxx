@@ -27,18 +27,16 @@
 #include "SUIT_MessageBox.h"
 #include "SUIT_OverrideCursor.h"
 
-#include <qmessagebox.h>
-#include <qapplication.h>
+#include <QtGui/qmessagebox.h>
+#include <QtGui/qapplication.h>
 
 /*!
     Shows info message box with one button [ static ]
 */
-int SUIT_MessageBox::info1( QWidget* parent, 
-			    const QString& caption, 
-			    const QString& text,
-			    const QString& textButton0 )
+int SUIT_MessageBox::info1( QWidget* parent, const QString& caption, 
+			                      const QString& text, const QString& textButton0 )
 {
-  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::arrowCursor );
+  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::ArrowCursor );
   int ret = QMessageBox::information( parent, caption, text, textButton0,
 				      QString::null, QString::null, 0, 0 );
   qApp->processEvents();
@@ -53,7 +51,7 @@ int SUIT_MessageBox::warn1( QWidget* parent,
 			    const QString& text,
 			    const QString& textButton0 )
 {
-  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::arrowCursor );
+  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::ArrowCursor );
   int ret = QMessageBox::warning( parent, caption, text, textButton0,
 				  QString::null, QString::null, 0, 0 );
   qApp->processEvents();
@@ -68,7 +66,7 @@ int SUIT_MessageBox::error1( QWidget* parent,
 			     const QString& text,
 			     const QString& textButton0 )
 {
-  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::arrowCursor );
+  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::ArrowCursor );
   int ret = QMessageBox::critical( parent, caption, text, textButton0,
 				   QString::null, QString::null, 0, 0 );
   qApp->processEvents();
@@ -83,7 +81,7 @@ int SUIT_MessageBox::question1( QWidget* parent,
 				const QString& text, 
 				const QString& textButton0 )
 {
-  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::arrowCursor );
+  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::ArrowCursor );
   int ret = QMessageBox::question( parent, caption, text, textButton0,
 				   QString::null, QString::null, 0, 0 );
   qApp->processEvents();
@@ -101,7 +99,7 @@ int SUIT_MessageBox::info2( QWidget* parent,
 			    const QString& textButton1, 
 			    int idButton0, int idButton1, int idDefault )
 {
-  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::arrowCursor );
+  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::ArrowCursor );
   if ( idDefault == idButton0 )
     idDefault = 0;
   else if ( idDefault == idButton1 )
@@ -126,7 +124,7 @@ int SUIT_MessageBox::warn2( QWidget* parent,
 			    const QString& textButton1,
 			    int idButton0, int idButton1, int idDefault )
 {
-  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::arrowCursor );
+  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::ArrowCursor );
   
   if ( idDefault == idButton0 )
     idDefault = 0;
@@ -152,7 +150,7 @@ int SUIT_MessageBox::error2( QWidget* parent,
 			     const QString& textButton1,
 			     int idButton0, int idButton1, int idDefault )
 {
-  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::arrowCursor );
+  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::ArrowCursor );
   
   if ( idDefault == idButton0 )
     idDefault = 0;
@@ -178,7 +176,7 @@ int SUIT_MessageBox::question2( QWidget* parent,
 				const QString& textButton1,
 				int idButton0, int idButton1, int idDefault )
 {
-  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::arrowCursor );
+  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::ArrowCursor );
   
   if ( idDefault == idButton0 )
     idDefault = 0;
@@ -206,7 +204,7 @@ int SUIT_MessageBox::info3( QWidget* parent,
 			    int idButton0, int idButton1,
 			    int idButton2, int idDefault )
 {
-  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::arrowCursor );
+  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::ArrowCursor );
   
   if ( idDefault == idButton0 )
     idDefault = 0;
@@ -245,7 +243,7 @@ int SUIT_MessageBox::warn3( QWidget* parent,
 			    int idButton0, int idButton1,
 			    int idButton2, int idDefault )
 {
-  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::arrowCursor );
+  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::ArrowCursor );
   
   if ( idDefault == idButton0 )
     idDefault = 0;
@@ -284,7 +282,7 @@ int SUIT_MessageBox::error3( QWidget* parent,
 			     int idButton0, int idButton1,
 			     int idButton2, int idDefault )
 {
-  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::arrowCursor );
+  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::ArrowCursor );
   
   if ( idDefault == idButton0 )
     idDefault = 0;
@@ -323,7 +321,7 @@ int SUIT_MessageBox::question3( QWidget* parent,
 				int idButton0, int idButton1,
 				int idButton2, int idDefault )
 {
-  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::arrowCursor );
+  SUIT_OverrideCursor cw( parent ? parent->cursor() : Qt::ArrowCursor );
   
   if ( idDefault == idButton0 )
     idDefault = 0;

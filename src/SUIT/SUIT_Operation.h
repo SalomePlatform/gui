@@ -22,8 +22,8 @@
 
 #include "SUIT.h"
 
-#include <qobject.h>
-#include <qguardedptr.h>
+#include <QtCore/qobject.h>
+#include <QtCore/qpointer.h>
 
 class SUIT_Study;
 class SUIT_Application;
@@ -107,6 +107,8 @@ public:
 
   virtual QString   operationName() const;
 
+  int               execStatus() const;
+
 signals:
   void              started( SUIT_Operation* );
   void              aborted( SUIT_Operation* );
@@ -140,7 +142,6 @@ protected:
   virtual bool      hasTransaction() const;
   virtual bool      commitTransaction( const QString& = QString::null );
 
-  int               execStatus() const;
   void              setExecStatus( const int );
 
   void              setState( const OperationState );
@@ -148,7 +149,7 @@ protected:
   void              start( SUIT_Operation*, const bool = false );
 
 private:
-  typedef QGuardedPtr<SUIT_Study> StudyPtr;
+  typedef QPointer<SUIT_Study> StudyPtr;
 
 private:
   SUIT_Application* myApp;        //!< application for this operation

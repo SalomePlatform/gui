@@ -20,13 +20,13 @@
 #define SUIT_H
 
 #if defined SUIT_EXPORTS
-#if defined WNT
+#if defined WIN32
 #define SUIT_EXPORT __declspec( dllexport )
 #else
 #define SUIT_EXPORT
 #endif
 #else
-#if defined WNT
+#if defined WIN32
 #define SUIT_EXPORT __declspec( dllimport )
 #else
 #define SUIT_EXPORT
@@ -39,7 +39,7 @@
 #define true  1
 #endif
 
-#if defined WNT
+#if defined WIN32
 #pragma warning ( disable: 4251 )
 #endif
 

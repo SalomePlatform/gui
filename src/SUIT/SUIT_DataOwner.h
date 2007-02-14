@@ -21,8 +21,8 @@
 
 #include "SUIT_SmartPtr.h"
 
-#include <qvaluelist.h>
-#include <qmap.h>
+#include <QtCore/qmap.h>
+#include <QtCore/qlist.h>
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -60,21 +60,17 @@ bool operator==( const SUIT_DataOwnerPtr&, const SUIT_DataOwnerPtr& );
 /*! \class SUIT_DataOwnerPtrList
  * \brief Manage list of SUIT_DataOwnerPtr.
  */
-class SUIT_EXPORT SUIT_DataOwnerPtrList : public QValueList<SUIT_DataOwnerPtr> 
+class SUIT_EXPORT SUIT_DataOwnerPtrList : public QList<SUIT_DataOwnerPtr>
 {
 public:
   SUIT_DataOwnerPtrList();                         //!< constructor
   SUIT_DataOwnerPtrList( const bool skipAllEqual );//!< constructor
   SUIT_DataOwnerPtrList( const SUIT_DataOwnerPtrList& l );                         //!< copy constructor
   SUIT_DataOwnerPtrList( const SUIT_DataOwnerPtrList& l, const bool skipAllEqual );//!< copy constructor
-#ifndef QT_NO_STL
-  SUIT_DataOwnerPtrList( const std::list<SUIT_DataOwnerPtr>& l );                         //!< copy constructor for STL list
-  SUIT_DataOwnerPtrList( const std::list<SUIT_DataOwnerPtr>& l, const bool skipAllEqual );//!< copy constructor for STL list
-#endif
 
-  iterator append      ( const SUIT_DataOwnerPtr& x );//!< append function
+  void     append      ( const SUIT_DataOwnerPtr& x );//!< append function
   void     clear       ();
-  uint     remove      (const SUIT_DataOwnerPtr& x );
+  uint     remove      ( const SUIT_DataOwnerPtr& x );
 
 private:
   // hide this methods: only append() should be used to add items to the list
@@ -84,8 +80,8 @@ private:
   void push_back  ( const SUIT_DataOwnerPtr& x );//!< hide method
 
 private:
-  bool                              mySkipEqual;
-  QMap<SUIT_DataOwnerPtr, iterator> myMap;
+  QMap<SUIT_DataOwnerPtr, int> myMap;
+  bool                         mySkipEqual;
 };
 
 #ifdef WIN32

@@ -23,8 +23,9 @@
 #include "SUIT_ViewWindow.h"
 #include "SUIT_PopupClient.h"
 
-#include <qobject.h>
-#include <qptrvector.h>
+#include <QtCore/qobject.h>
+#include <QtCore/qvector.h>
+#include <QtCore/qpointer.h>
 
 class SUIT_Study;
 class SUIT_Desktop;
@@ -57,7 +58,7 @@ public:
   SUIT_ViewWindow* getActiveView() { return myActiveView; }
   
   int              getViewsCount() { return myViews.count(); }
-  QPtrVector<SUIT_ViewWindow> getViews() { return myViews; }  
+  QVector<SUIT_ViewWindow*> getViews() const;
 
   QString          getTitle() const { return myTitle; }
   virtual void     setTitle( const QString& );
@@ -107,15 +108,18 @@ protected:
   virtual void     closeView(SUIT_ViewWindow* theView);
   
   /*! Used to set unique name for the view.*/
-  virtual void     setViewName(SUIT_ViewWindow* theView);
+  virtual void     setViewName(SUIT_ViewWindow* theView );
   QString          prepareTitle( const QString&, const int, const int );
 
   static int       useNewId( const QString& );
 
 protected:
+  typedef QPointer<SUIT_ViewWindow> ViewWindow;
+
+protected:
   SUIT_Desktop*               myDesktop;
   SUIT_ViewModel*             myViewModel;
-  QPtrVector<SUIT_ViewWindow> myViews;
+  QVector<ViewWindow>         myViews;
   SUIT_ViewWindow*            myActiveView;
 
   int                         myId;

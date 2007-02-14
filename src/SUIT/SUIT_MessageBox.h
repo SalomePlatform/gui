@@ -22,8 +22,8 @@
 
 #include "SUIT.h"
 
-#include <qstring.h>
-#include <qwidget.h>
+#include <QtCore/qstring.h>
+#include <QtGui/qwidget.h>
 
 #define SUIT_OK                      1
 #define SUIT_CANCEL                  2

@@ -24,8 +24,9 @@
 #include "SUIT_ViewWindow.h"
 #include "SUIT_ViewManager.h"
 
-#include <qobject.h>
-#include <qcursor.h>
+#include <QtCore/qobject.h>
+
+#include <QtGui/qcursor.h>
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -42,8 +43,8 @@ class SUIT_EXPORT SUIT_ViewModel : public QObject
 public:
   enum HotOperation { PAN, ZOOM, ROTATE, FIT_AREA };
 
-  typedef QMap<HotOperation, Qt::ButtonState> StatesMap;
-  typedef QMap<HotOperation, Qt::ButtonState> ButtonsMap;
+  typedef QMap<HotOperation, Qt::KeyboardModifier> StatesMap;
+  typedef QMap<HotOperation, Qt::MouseButton>      ButtonsMap;
   
 	SUIT_ViewModel();
 	virtual ~SUIT_ViewModel();
@@ -57,10 +58,10 @@ public:
 
   virtual void      contextMenuPopup(QPopupMenu*) {}
 
-  static void       setHotButton(HotOperation theOper, Qt::ButtonState theState,
-                                                       Qt::ButtonState theButton);
-  static void       getHotButton(HotOperation theOper, Qt::ButtonState& theState,
-                                                       Qt::ButtonState& theButton);
+  static void       setHotButton( HotOperation theOper, Qt::KeyboardModifier theState,
+                                                        Qt::MouseButton theButton );
+  static void       getHotButton( HotOperation theOper, Qt::KeyboardModifier& theState,
+                                                        Qt::MouseButton& theButton );
 
 protected:
 	SUIT_ViewManager* myViewManager;

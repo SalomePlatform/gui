@@ -20,16 +20,18 @@
 //
 
 #include "SUIT_ViewWindow.h"
-#include "SUIT_Desktop.h"
-#include "SUIT_Application.h"
-#include "SUIT_Study.h"
-#include "SUIT_ViewManager.h"
+
 #include "SUIT_Tools.h"
+#include "SUIT_Study.h"
+#include "SUIT_Desktop.h"
 #include "SUIT_MessageBox.h"
-#include <qhbox.h>
-#include <qpopupmenu.h>
-#include <qapplication.h>
-#include <qimage.h>
+#include "SUIT_Application.h"
+#include "SUIT_ViewManager.h"
+
+#include <QtGui/qmenu.h>
+#include <QtGui/qevent.h>
+#include <QtGui/qimage.h>
+#include <QtGui/qapplication.h>
 
 /*!\class SUIT_ViewWindow
  * Class provide view window.
@@ -39,13 +41,14 @@
 const int DUMP_EVENT = QEvent::User + 123;
 
 /*! Constructor.*/
-SUIT_ViewWindow::SUIT_ViewWindow(SUIT_Desktop* theDesktop)
-: QMainWindow( theDesktop, "SUIT_ViewWindow", Qt::WDestructiveClose )
+SUIT_ViewWindow::SUIT_ViewWindow( SUIT_Desktop* theDesktop )
+: QMainWindow( theDesktop )
 {
   myDesktop = theDesktop;
 
-  if ( myDesktop->icon() )
-    setIcon( *myDesktop->icon() );
+  setWindowIcon( myDesktop->windowIcon() );
+
+  setAttribute( Qt::WA_DeleteOnClose );
 }
 
 /*! Destructor.*/
@@ -95,8 +98,8 @@ bool SUIT_ViewWindow::dumpViewToFormat( const QImage& img, const QString& fileNa
   else if( fmt == "JPG" )
     fmt = "JPEG";
 
-  QApplication::setOverrideCursor( Qt::waitCursor );
-  bool res = img.save( fileName, fmt.latin1() );
+  QApplication::setOverrideCursor( Qt::WaitCursor );
+  bool res = img.save( fileName, fmt.toLatin1() );
   QApplication::restoreOverrideCursor();
   return res;
 }
@@ -116,10 +119,7 @@ bool SUIT_ViewWindow::dumpViewToFormat( const QString& fileName, const QString& 
 */
 void SUIT_ViewWindow::setDestructiveClose( const bool on )
 {
-  if ( on )
-    setWFlags( WDestructiveClose );
-  else
-    clearWFlags( WDestructiveClose );
+  setAttribute( Qt::WA_DeleteOnClose, on );
 }
 
 /*! Close event \a theEvent.
@@ -142,8 +142,8 @@ void SUIT_ViewWindow::contextMenuEvent ( QContextMenuEvent * e )
 */
 void SUIT_ViewWindow::onDumpView()
 {
-  qApp->postEvent( this, new QPaintEvent( QRect( 0, 0, width(), height() ), TRUE ) );
-  qApp->postEvent( this, new QCustomEvent( DUMP_EVENT ) );
+  QApplication::postEvent( this, new QPaintEvent( QRect( 0, 0, width(), height() ) ) );
+  QApplication::postEvent( this, new QEvent( (QEvent::Type)DUMP_EVENT ) );
 }
 
 /*!
@@ -168,20 +168,18 @@ bool SUIT_ViewWindow::event( QEvent* e )
       // get file name
       SUIT_Application* app = myManager->study()->application();
       QString fileName = app->getFileName( false, QString::null, filter(), tr( "TLT_DUMP_VIEW" ), 0 );
-      if( !fileName.isEmpty() )
+      if ( !fileName.isEmpty() )
       {
-	QString fmt = SUIT_Tools::extension( fileName ).upper();
-	bOk = dumpViewToFormat( im, fileName, fmt );
+	      QString fmt = SUIT_Tools::extension( fileName ).toUpper();
+	      bOk = dumpViewToFormat( im, fileName, fmt );
       }
       else
-      {
-	bOk = true; // cancelled
-      }
+	      bOk = true; // cancelled
     }
-    if ( !bOk ) {
+    if ( !bOk )
       SUIT_MessageBox::error1( this, tr( "ERROR" ), tr( "ERR_CANT_DUMP_VIEW" ), tr( "BUT_OK" ) );
-    }
-    return TRUE;
+
+    return true;
   }
   return QMainWindow::event( e );
 }

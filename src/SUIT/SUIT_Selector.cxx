@@ -135,7 +135,7 @@ bool SUIT_Selector::hasSelectionMode( const int mode ) const
 /*!
   Puts to list \a lst selection modes from selection manager.
 */
-void SUIT_Selector::selectionModes( QValueList<int>& lst ) const
+void SUIT_Selector::selectionModes( QList<int>& lst ) const
 {
   if ( selectionMgr() )
     selectionMgr()->selectionModes( lst );

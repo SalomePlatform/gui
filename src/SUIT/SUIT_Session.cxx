@@ -25,18 +25,15 @@
 #include "SUIT_ViewManager.h"
 #include "SUIT_ExceptionHandler.h"
 
-#include <qtextcodec.h>
-#include <qmessagebox.h>
-#include <qapplication.h>
+#include <QtCore/qtextcodec.h>
+#include <QtGui/qmessagebox.h>
+#include <QtGui/qapplication.h>
 
-#ifdef WIN32
+#ifdef Q_OS_WIN32
 #include <windows.h>
 #else
 #include <dlfcn.h>
 #endif
-
-static bool   SUIT_Session_IsPythonExecuted = false;
-static QMutex SUIT_Session_PythonMutex;
 
 SUIT_Session* SUIT_Session::mySession = 0;
 
@@ -52,16 +49,18 @@ myExitStatus( FROM_GUI )
   SUIT_ASSERT( !mySession )
 
   mySession = this;
-
-  myAppList.setAutoDelete( true );
 }
 
 /*!destructor. Clear applications list and set mySession to zero.*/
 SUIT_Session::~SUIT_Session()
 {
+  for ( AppList::iterator it = myAppList.begin(); it != myAppList.end(); ++it )
+    delete *it;
+
   myAppList.clear();
 
-  if (myResMgr) {
+  if ( myResMgr )
+  {
     delete myResMgr;
     myResMgr = 0;
   }
@@ -102,8 +101,8 @@ SUIT_Application* SUIT_Session::startApplication( const QString& name, int args,
 
   APP_CREATE_FUNC crtInst = 0;
 
-#ifdef WIN32
-  crtInst = (APP_CREATE_FUNC)::GetProcAddress( libHandle, APP_CREATE_NAME );
+#ifdef Q_OS_WIN32
+  crtInst = (APP_CREATE_FUNC)::GetProcAddress( (HINSTANCE)libHandle, APP_CREATE_NAME );
 #else
   crtInst = (APP_CREATE_FUNC)dlsym( libHandle, APP_CREATE_NAME );
 #endif
@@ -130,20 +129,15 @@ SUIT_Application* SUIT_Session::startApplication( const QString& name, int args,
     return 0;
   }
 
-  anApp->setName( appName );
+  anApp->setObjectName( appName );
 
-  connect( anApp, SIGNAL( applicationClosed( SUIT_Application* ) ),
-           this, SLOT( onApplicationClosed( SUIT_Application* ) ) );
-  connect( anApp, SIGNAL( activated( SUIT_Application* ) ), 
-	         this, SLOT( onApplicationActivated( SUIT_Application* ) ) );
-
-  myAppList.append( anApp );
+  insertApplication( anApp );
 
   if ( !myHandler )
   {
     APP_GET_HANDLER_FUNC crtHndlr = 0;
-#ifdef WIN32
-    crtHndlr = (APP_GET_HANDLER_FUNC)::GetProcAddress( libHandle, APP_GET_HANDLER_NAME );
+#ifdef Q_OS_WIN32
+    crtHndlr = (APP_GET_HANDLER_FUNC)::GetProcAddress( (HINSTANCE)libHandle, APP_GET_HANDLER_NAME );
 #else
     crtHndlr = (APP_GET_HANDLER_FUNC)dlsym( libHandle, APP_GET_HANDLER_NAME );
 #endif
@@ -163,15 +157,22 @@ SUIT_Application* SUIT_Session::startApplication( const QString& name, int args,
 /*!
   Gets the list of all applications
 */
-QPtrList<SUIT_Application> SUIT_Session::applications() const
+QList<SUIT_Application*> SUIT_Session::applications() const
 {
-  QPtrList<SUIT_Application> apps;
-  apps.setAutoDelete( false );
+  return myAppList;
+}
 
-  for ( AppListIterator it( myAppList ); it.current(); ++it )
-    apps.append( it.current() );
+void SUIT_Session::insertApplication( SUIT_Application* app )
+{
+  if ( !app || myAppList.contains( app ) )
+    return;
 
-  return apps;
+  myAppList.append( app );
+
+  connect( app, SIGNAL( applicationClosed( SUIT_Application* ) ),
+           this, SLOT( onApplicationClosed( SUIT_Application* ) ) );
+  connect( app, SIGNAL( activated( SUIT_Application* ) ), 
+	         this, SLOT( onApplicationActivated( SUIT_Application* ) ) );
 }
 
 /*!
@@ -223,14 +224,16 @@ void SUIT_Session::onApplicationClosed( SUIT_Application* theApp )
 {
   emit applicationClosed( theApp );
 
-  myAppList.remove( theApp );
+  myAppList.removeAll( theApp );
+  delete theApp;
+
   if ( theApp == myActiveApp )
     myActiveApp = 0;
 
   if ( myAppList.isEmpty() )
   {
     printf( "Calling QApplication::exit() with exit code = %d\n", myExitStatus );
-    qApp->exit( myExitStatus );
+    QApplication::instance()->exit( myExitStatus );
   }
 }
 
@@ -239,16 +242,17 @@ void SUIT_Session::onApplicationClosed( SUIT_Application* theApp )
 */
 void SUIT_Session::closeSession( int mode )
 {
-  while ( !myAppList.isEmpty() )
+  AppList apps = myAppList;
+  for ( AppList::const_iterator it = apps.begin(); it != apps.end(); ++it )
   {
-    SUIT_Application* app = myAppList.getFirst();
+    SUIT_Application* app = *it;
     if ( mode == ASK && !app->isPossibleToClose() )
       return;
     else if ( mode == SAVE )
     {
       SUIT_Study* study = app->activeStudy();
       if ( study->isModified() && study->isSaved() )
-	study->saveDocument();
+	      study->saveDocument();
     }
     else if ( mode == DONT_SAVE )
     {
@@ -270,11 +274,12 @@ SUIT_ExceptionHandler* SUIT_Session::handler() const
 QString SUIT_Session::lastError() const
 {
   QString str;
-#ifdef WNT
+#ifdef Q_OS_WIN32
   LPVOID lpMsgBuf;
   ::FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
                    FORMAT_MESSAGE_IGNORE_INSERTS, 0, ::GetLastError(), 0, (LPTSTR)&lpMsgBuf, 0, 0 );
-  str = QString( (LPTSTR)lpMsgBuf );
+  LPTSTR msg = (LPTSTR)lpMsgBuf;
+  str = QString( SUIT_Tools::toQString( msg ) );
   LocalFree( lpMsgBuf );
 #else
   str = QString( dlerror() );
@@ -294,10 +299,16 @@ SUIT_Session::AppLib SUIT_Session::loadLibrary( const QString& name, QString& li
     return 0;
 
   AppLib lib = 0;
-#ifdef WIN32
-  lib = ::LoadLibrary( (char*)libFile.latin1() );
+  QByteArray bid = libFile.toLatin1();
+#ifdef Q_OS_WIN32
+#ifdef UNICODE
+  LPTSTR str = (LPTSTR)libFile.utf16();
 #else
-  lib = dlopen( (char*)libFile.latin1(), RTLD_LAZY | RTLD_GLOBAL  );
+  LPTSTR str = (LPTSTR)(const char*)bid;
+#endif
+  lib = ::LoadLibrary( str );
+#else
+  lib = dlopen( (const char*)libFile.toLatin1(), RTLD_LAZY | RTLD_GLOBAL  );
 #endif
   return lib;
 }
@@ -305,7 +316,7 @@ SUIT_Session::AppLib SUIT_Session::loadLibrary( const QString& name, QString& li
 /*! \retval Return file name by application name.*/
 QString SUIT_Session::applicationName( const QString& str ) const
 {
-#ifdef WIN32
+#ifdef Q_OS_WIN32
   return SUIT_Tools::file( str, false );
 #else
   QString fileName = SUIT_Tools::file( str, false );
@@ -329,29 +340,4 @@ SUIT_ResourceMgr* SUIT_Session::createResourceMgr( const QString& appName ) cons
 void SUIT_Session::onApplicationActivated( SUIT_Application* app ) 
 {
   myActiveApp = app;
-}
-
-/*!
-  \retval Return TRUE, if a command is currently executed in Python Console,
-                 FALSE otherwise.
-*/
-bool SUIT_Session::IsPythonExecuted()
-{
-  bool ret;
-  SUIT_Session_PythonMutex.lock();
-  ret = SUIT_Session_IsPythonExecuted;
-  SUIT_Session_PythonMutex.unlock();
-  return ret;
-}
-
-/*!
-  Set value of boolean flag, being returned by method \a IsPythonExecuted().
-  It is supposed to set the flag to TRUE when any python command starts
-  and reset it to FALSE when the command finishes.
-*/
-void SUIT_Session::SetPythonExecuted(bool isPythonExecuted)
-{
-  SUIT_Session_PythonMutex.lock();
-  SUIT_Session_IsPythonExecuted = isPythonExecuted;
-  SUIT_Session_PythonMutex.unlock();
 }

@@ -22,13 +22,13 @@
 #include "SUIT.h"
 #include "SUIT_Study.h"
 
-#include <qobject.h>
-#include <qwidget.h>
+#include <QtCore/qmap.h>
+#include <QtGui/qwidget.h>
 
+class QIcon;
 class QLabel;
 class QString;
 class QAction;
-class QIconSet;
 class SUIT_Desktop;
 class SUIT_Convertor;
 class SUIT_ViewModel;
@@ -156,7 +156,7 @@ protected:
   QAction*              action( const int ) const;
   int                   actionId( const QAction* ) const;
   int                   registerAction( const int, QAction* );
-  QAction*              createAction( const int, const QString&, const QIconSet&, const QString&,
+  QAction*              createAction( const int, const QString&, const QIcon&, const QString&,
                                       const QString&, const int, QObject* = 0,
                                       const bool = false, QObject* = 0, const char* = 0 );
 

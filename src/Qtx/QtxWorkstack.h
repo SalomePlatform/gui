@@ -24,17 +24,18 @@
 
 #include "Qtx.h"
 
-#include <qhbox.h>
-#include <qwidget.h>
-#include <qtabbar.h>
-#include <qwidgetlist.h>
+#include <QtCore/qmap.h>
+#include <QtGui/qevent.h>
+#include <QtGui/qframe.h>
+#include <QtGui/qtabbar.h>
 
 class QAction;
 class QTabBar;
 class QPainter;
 class QSplitter;
 class QPushButton;
-class QWidgetStack;
+class QRubberBand;
+class QStackedWidget;
 
 class QtxWorkstackArea;
 class QtxWorkstackDrag;
@@ -73,8 +74,7 @@ public:
 
   void                split( const int );
 
-  // STV: Useless function. wid->setFocus() should be used instead.
-  // void OnTop( QWidget* wid);
+  QWidget*            addWindow( QWidget*, Qt::WindowFlags = 0 );
 
   void Split( QWidget* wid, const Qt::Orientation o, const SplitType type );
   void Attract( QWidget* wid1, QWidget* wid2, const bool all );
@@ -85,14 +85,14 @@ public:
   QtxWorkstack& operator<<( const QString& );
   QtxWorkstack& operator>>( QString& );
 
-signals:
+Q_SIGNALS:
   void                windowActivated( QWidget* );
 
-public slots:
+public Q_SLOTS:
   void                splitVertical();
   void                splitHorizontal();
   
-private slots:
+private Q_SLOTS:
   void                onRename();
   void                onCloseWindow();
   void                onDestroyed( QObject* );
@@ -101,13 +101,12 @@ private slots:
   void                onDeactivated( QtxWorkstackArea* );
 
 protected:
-  virtual void        childEvent( QChildEvent* );
-  virtual void        customEvent( QCustomEvent* );
+  virtual void        customEvent( QEvent* );
 
 private:
   QSplitter*          splitter( QtxWorkstackArea* ) const;
-  void                splitters( QSplitter*, QPtrList<QSplitter>&, const bool = false ) const;
-  void                areas( QSplitter*, QPtrList<QtxWorkstackArea>&, const bool = false ) const;
+  void                splitters( QSplitter*, QList<QSplitter*>&, const bool = false ) const;
+  void                areas( QSplitter*, QList<QtxWorkstackArea*>&, const bool = false ) const;
 
   QSplitter*          wrapSplitter( QtxWorkstackArea* );
   void                insertWidget( QWidget*, QWidget*, QWidget* );
@@ -131,7 +130,7 @@ private:
 				                           const int need_pos, const int splitter_pos );
   
   void                splitterInfo( QSplitter*, QString& ) const;
-  void                setSplitter( QSplitter*, const QString&, QMap< QSplitter*,QValueList<int> >& );
+  void                setSplitter( QSplitter*, const QString&, QMap< QSplitter*, QList<int> >& );
   
 private:
   QWidget*            myWin;
@@ -146,9 +145,11 @@ private:
   friend class QtxWorkstackDrag;
 };
 
-class QtxWorkstackArea : public QWidget
+class QtxWorkstackArea : public QFrame
 {
   Q_OBJECT
+
+  class WidgetEvent;
 
 public:
   QtxWorkstackArea( QWidget* );
@@ -156,7 +157,7 @@ public:
 
   bool                isEmpty() const;
 
-  void                insertWidget( QWidget*, const int = -1 );
+  QWidget*            insertWidget( QWidget*, const int = -1, Qt::WindowFlags = 0 );
   void                removeWidget( QWidget*, const bool = true );
 
   QWidget*            activeWidget() const;
@@ -178,18 +179,17 @@ public:
 
   int                 tabAt( const QPoint& ) const;
 
-signals:
+Q_SIGNALS:
   void                activated( QWidget* );
   void                contextMenuRequested( QWidget*, QPoint );
   void                deactivated( QtxWorkstackArea* );
 
-public slots:
-  virtual void        show();
-  virtual void        hide();
+public Q_SLOTS:
+  virtual void        setVisible( bool );
 
-private slots:
+private Q_SLOTS:
   void                onClose();
-  void                onSelected( int );
+  void                onCurrentChanged( int );
 
   void                onWidgetDestroyed();
 
@@ -203,7 +203,7 @@ private slots:
   void                onContextMenuRequested( QPoint );
 
 protected:
-  virtual void        customEvent( QCustomEvent* );
+  virtual void        customEvent( QEvent* );
   virtual void        focusInEvent( QFocusEvent* );
   virtual void        mousePressEvent( QMouseEvent* );
 
@@ -243,7 +243,7 @@ private:
 private:
   QtxWorkstackTabBar* myBar;
   QPushButton*        myClose;
-  QWidgetStack*       myStack;
+  QStackedWidget*     myStack;
 
   QWidgetList         myList;
   WidgetInfoMap       myInfo;
@@ -251,25 +251,25 @@ private:
   BlockMap            myBlock;
 };
 
-class QtxWorkstackChild : public QHBox
+class QtxWorkstackChild : public QWidget
 {
   Q_OBJECT
 
 public:
-  QtxWorkstackChild( QWidget*, QWidget* = 0 );
+  QtxWorkstackChild( QWidget*, QWidget* = 0, Qt::WindowFlags = 0 );
   virtual ~QtxWorkstackChild();
 
   QWidget*            widget() const;
 
   virtual bool        eventFilter( QObject*, QEvent* );
 
-signals:
+Q_SIGNALS:
   void                shown( QtxWorkstackChild* );
   void                hided( QtxWorkstackChild* );
   void                activated( QtxWorkstackChild* );
   void                captionChanged( QtxWorkstackChild* );
 
-private slots:
+private Q_SLOTS:
   void                onDestroyed( QObject* );
 
 protected:
@@ -287,11 +287,13 @@ public:
   QtxWorkstackTabBar( QWidget* = 0 );
   virtual ~QtxWorkstackTabBar();
 
-  QRect               tabRect( const int ) const;
-
   void                setActive( const bool );
 
-signals:
+  int                 tabId( const int ) const;
+  int                 indexOf( const int ) const;
+  void                setTabId( const int, const int );
+
+Q_SIGNALS:
   void                dragActiveTab();
   void                contextMenuRequested( QPoint );
 
@@ -301,7 +303,7 @@ protected:
   virtual void        mouseReleaseEvent( QMouseEvent* );
   virtual void        contextMenuEvent( QContextMenuEvent* );
 
-  virtual void        paintLabel( QPainter*, const QRect&, QTab*, bool ) const;
+//  virtual void        paintLabel( QPainter*, const QRect&, QTab*, bool ) const;
 
 private:
   int                 myId;
@@ -334,8 +336,8 @@ private:
 
   int                 myTab;
   QtxWorkstackArea*   myArea;
-  QPainter*           myPainter;
-  
+  QRubberBand*        myTabRect;
+  QRubberBand*        myAreaRect;
 };
 
 #ifdef WIN32

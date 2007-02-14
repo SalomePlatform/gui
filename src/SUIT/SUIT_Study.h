@@ -23,12 +23,12 @@
 
 #include "SUIT_Operation.h"
 
-#include <qobject.h>
-#include <qptrlist.h>
+#include <QtCore/qlist.h>
+#include <QtCore/qobject.h>
 
+class QDialog;
 class SUIT_DataObject;
 class SUIT_Application;
-class QDialog;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -65,7 +65,7 @@ public:
   // Operation management
   SUIT_Operation*   activeOperation() const;
   virtual void      abortAllOperations();
-  const QPtrList<SUIT_Operation>& operations() const;
+  const QList<SUIT_Operation*>& operations() const;
   
   virtual SUIT_Operation* blockingOperation( SUIT_Operation* ) const;
 
@@ -98,7 +98,7 @@ protected:
   virtual bool      commitTransaction( const QString& = QString::null );
 
 private:
-  typedef QPtrList<SUIT_Operation> Operations;
+  typedef QList<SUIT_Operation*> Operations;
   void              stop( SUIT_Operation* );
 
 private:

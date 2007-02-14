@@ -23,7 +23,6 @@
 #include "SUIT_DataObject.h"
 #include "SUIT_MessageBox.h"
 #include "SUIT_Application.h"
-#include <qvaluevector.h>
 
 /*!\class SUIT_Study
  * Support study management. Object management. Operation management.
@@ -43,8 +42,6 @@ myBlockChangeState( false )
   myId = ++_id;
 
   myRoot = new SUIT_DataObject();
-  myOperations.setAutoDelete( false );
-  myOperations.setAutoDelete( false );
 }
 
 /*!Destructor.*/
@@ -91,7 +88,7 @@ QString SUIT_Study::studyName() const
  */
 SUIT_Operation* SUIT_Study::activeOperation() const
 {
-  return myOperations.count() > 0 ? myOperations.getLast() : 0;
+  return myOperations.count() > 0 ? myOperations.last() : 0;
 }
 
 /*!
@@ -163,8 +160,8 @@ bool SUIT_Study::saveDocument()
 void SUIT_Study::abortAllOperations()
 {
   myBlockChangeState = true;
-  for( SUIT_Operation* op = myOperations.first(); op; op = myOperations.next() )
-    op->abort();
+  for ( Operations::iterator it = myOperations.begin(); it != myOperations.end(); ++it )
+    (*it)->abort();
   myBlockChangeState = false;
   myOperations.clear();
 }
@@ -239,9 +236,9 @@ SUIT_Operation* SUIT_Study::blockingOperation( SUIT_Operation* theOp ) const
     return 0;
 
   Operations tmpOps( myOperations );
-  SUIT_Operation* anOp = 0;
-  for ( anOp = tmpOps.last(); anOp; anOp = tmpOps.prev() )
+  for ( Operations::const_iterator it = tmpOps.end(); it != tmpOps.begin(); --it )
   {
+    SUIT_Operation* anOp = *it;
     if ( anOp != 0 && anOp!= theOp && !anOp->isValid( theOp ) )
       return anOp;
   }
@@ -262,7 +259,7 @@ SUIT_Operation* SUIT_Study::blockingOperation( SUIT_Operation* theOp ) const
 */
 bool SUIT_Study::start( SUIT_Operation* theOp, const bool toCheck )
 {
-  if ( !theOp || myOperations.find( theOp ) >= 0 )
+  if ( !theOp || myOperations.contains( theOp ) )
     return false;
 
   theOp->setExecStatus( SUIT_Operation::Rejected );
@@ -313,7 +310,7 @@ bool SUIT_Study::start( SUIT_Operation* theOp, const bool toCheck )
 */
 bool SUIT_Study::abort( SUIT_Operation* theOp )
 {
-  if ( !theOp || myOperations.find( theOp ) == -1 )
+  if ( !theOp || !myOperations.contains( theOp ) )
     return false;
 
   theOp->setExecStatus( SUIT_Operation::Rejected );
@@ -337,7 +334,7 @@ bool SUIT_Study::abort( SUIT_Operation* theOp )
 */
 bool SUIT_Study::commit( SUIT_Operation* theOp )
 {
-  if ( !theOp || myOperations.find( theOp ) == -1 )
+  if ( !theOp || !myOperations.contains( theOp ) )
     return false;
 
   theOp->setExecStatus( SUIT_Operation::Accepted );
@@ -363,7 +360,7 @@ bool SUIT_Study::commit( SUIT_Operation* theOp )
 */
 bool SUIT_Study::suspend( SUIT_Operation* theOp )
 {
-  if ( !theOp || myOperations.find( theOp ) == -1 || theOp->state() == SUIT_Operation::Suspended )
+  if ( !theOp || !myOperations.contains( theOp ) || theOp->state() == SUIT_Operation::Suspended )
     return false;
 
   theOp->setState( SUIT_Operation::Suspended );
@@ -382,7 +379,7 @@ bool SUIT_Study::suspend( SUIT_Operation* theOp )
 */
 bool SUIT_Study::resume( SUIT_Operation* theOp )
 {
-  if ( !theOp || myOperations.find( theOp ) == -1 ||
+  if ( !theOp || !myOperations.contains( theOp ) ||
        theOp->state() == SUIT_Operation::Running ||
        blockingOperation( theOp ) != 0 )
     return false;
@@ -396,7 +393,7 @@ bool SUIT_Study::resume( SUIT_Operation* theOp )
   // Move operation at the end of list in order to sort it in the order of activation.
   // As result active operation is a last operation of list, operation which was active
   // before currently active operation is located before it and so on
-  myOperations.remove( theOp );
+  myOperations.removeAll( theOp );
   myOperations.append( theOp );
 
   emit theOp->resumed( theOp );
@@ -413,12 +410,13 @@ bool SUIT_Study::resume( SUIT_Operation* theOp )
 void SUIT_Study::stop( SUIT_Operation* theOp )
 {
   theOp->setState( SUIT_Operation::Waiting );
-  myOperations.remove( theOp );
+  myOperations.removeAll( theOp );
 
   // get last operation which can be resumed
-  SUIT_Operation* anOp, *aResultOp = 0;
-  for ( anOp = myOperations.last(); anOp; anOp = myOperations.prev() )
+  SUIT_Operation* aResultOp = 0;
+  for ( Operations::iterator it = myOperations.end(); it != myOperations.begin(); --it )
   {
+    SUIT_Operation* anOp = *it;
     if ( anOp && anOp != theOp && blockingOperation( anOp ) == 0 )
     {
       aResultOp = anOp;
@@ -438,7 +436,7 @@ void SUIT_Study::stop( SUIT_Operation* theOp )
  * \brief Get all started operations
   * \return List of all started operations
 */
-const QPtrList<SUIT_Operation>& SUIT_Study::operations() const
+const QList<SUIT_Operation*>& SUIT_Study::operations() const
 {
   return myOperations;
 }

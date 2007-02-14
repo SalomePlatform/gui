@@ -21,7 +21,7 @@
 
 #include "SUIT.h"
 
-#include <qfiledialog.h>
+#include <QtGui/qfiledialog.h>
 
 class QLabel;
 class QComboBox;
@@ -45,9 +45,6 @@ public:
 
   void                setValidator( SUIT_FileValidator* );
 
-  QString             dirPath() const; // QFileDialog::dirPath() has a bug on Linux Debian (1 level up from correct 
-                                       // directory is returned).  This redefinition fixes the bug.  
-
   static QString      getFileName( QWidget* parent, const QString& initial, const QStringList& filters, 
 				   const QString& caption, const bool open, const bool showQuickDir = true,
                                    SUIT_FileValidator* validator = 0 );
@@ -57,10 +54,8 @@ public:
   static QString      getExistingDirectory( QWidget* parent, const QString& initial,
                                             const QString& caption, const bool showQuickDir = true );
 
-public slots:
-  void                polish();
-
 private:
+  void                polish();
   bool                acceptData();
   void                addExtension();
   bool                processPath( const QString& path );
@@ -70,6 +65,9 @@ protected slots:
   void                reject(); 
   void                quickDir( const QString& );
   void                addQuickDir();
+
+protected:
+  virtual bool        event( QEvent* );
 
 protected:
   bool                myOpen;             //!< open/save selector

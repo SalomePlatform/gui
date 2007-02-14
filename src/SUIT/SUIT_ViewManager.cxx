@@ -22,11 +22,13 @@
 #include "SUIT_ViewModel.h"
 #include "SUIT_Study.h"
 
-#include <qcursor.h>
-#include <qregexp.h>
-#include <qmessagebox.h>
+#include <QtCore/qregexp.h>
+#include <QtCore/qpointer.h>
 
-#ifdef WNT
+#include <QtGui/qcursor.h>
+#include <QtGui/qmessagebox.h>
+
+#ifdef WIN32
 #include <windows.h>
 #endif
 
@@ -104,8 +106,8 @@ void SUIT_ViewManager::setViewModel(SUIT_ViewModel* theViewModel)
 /*!Sets view name for view window \a theView.*/
 void SUIT_ViewManager::setViewName( SUIT_ViewWindow* theView )
 {
-  QString title = prepareTitle( getTitle(), myId + 1, myViews.find( theView ) + 1 );
-  theView->setCaption( title );
+  QString title = prepareTitle( getTitle(), myId + 1, myViews.indexOf( theView ) + 1 );
+  theView->setWindowTitle( title );
 }
 
 QString SUIT_ViewManager::prepareTitle( const QString& title, const int mId, const int vId )
@@ -113,7 +115,7 @@ QString SUIT_ViewManager::prepareTitle( const QString& title, const int mId, con
   QString res = title;
   QRegExp re( "%[%MV]" );
   int i = 0;
-  while ( ( i = re.search( res, i ) ) != -1 )
+  while ( ( i = re.indexIn( res, i ) ) != -1 )
   {
     QString rplc;
     QString str = res.mid( i, re.matchedLength() );
@@ -162,18 +164,28 @@ void SUIT_ViewManager::createView()
   createViewWindow();
 }
 
+QVector<SUIT_ViewWindow*> SUIT_ViewManager::getViews() const
+{
+  QVector<SUIT_ViewWindow*> res;
+  for ( int i = 0; i < myViews.count(); i++ )
+  {
+    if ( myViews[i] )
+      res.append( myViews[i] );
+  }
+
+  return res;
+}
+
 /*!Insert view window to view manager.
  *\retval false - if something wrong, else true.
  */
 bool SUIT_ViewManager::insertView(SUIT_ViewWindow* theView)
 {
   unsigned int aSize = myViews.size();
-  unsigned int aNbItems = myViews.count()+1;
-  if (aNbItems > aSize) {
-    if (!myViews.resize(aNbItems)) {
-      QMessageBox::critical(myDesktop, tr("Critical error"), tr("There is no memory for the new view!!!"));
-      return false;
-    }
+  unsigned int aNbItems = myViews.count() + 1;
+  if ( aNbItems > aSize )
+  {
+    myViews.resize( aNbItems );
     aSize = myViews.size();
   }
   
@@ -228,11 +240,11 @@ void SUIT_ViewManager::closeView( SUIT_ViewWindow* theView )
   if ( !theView )
     return;
 
-  QGuardedPtr<SUIT_ViewWindow> view( theView );
+  QPointer<SUIT_ViewWindow> view( theView );
 
   view->hide();
 
-  if ( !view->testWFlags( WDestructiveClose ) )
+  if ( !view->testAttribute( Qt::WA_DeleteOnClose ) )
     return;
 
   emit deleteView( view );
@@ -245,15 +257,14 @@ void SUIT_ViewManager::closeView( SUIT_ViewWindow* theView )
 /*!Remove view window \a theView from view manager.
  *And close the last view, if it has \a theView.
 */
-void SUIT_ViewManager::removeView(SUIT_ViewWindow* theView) 
+void SUIT_ViewManager::removeView( SUIT_ViewWindow* theView )
 {
-  theView->disconnect(this);
-  myViews.remove(myViews.find(theView));
-  if (myActiveView == theView)
+  theView->disconnect( this );
+  myViews.remove( myViews.indexOf( theView ) );
+  if ( myActiveView == theView )
     myActiveView = 0;
-  int aNumItems = myViews.count();
-  if (aNumItems == 0)
-    emit lastViewClosed(this);
+  if ( !myViews.count() )
+    emit lastViewClosed( this );
 }
 
 /*!

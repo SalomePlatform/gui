@@ -18,8 +18,9 @@
 //
 #include "SUIT_ResourceMgr.h"
 
-#include <qfileinfo.h>
-#include <qdir.h>
+#include <QtCore/qdir.h>
+#include <QtCore/qfileinfo.h>
+
 #include <stdlib.h>
 
 /*!
@@ -65,9 +66,6 @@ QString SUIT_ResourceMgr::loadDoc( const QString& prefix, const QString& id ) co
   return path( docSection, prefix, id );
 }
 
-#ifndef WIN32
-#include <unistd.h>
-#endif
 /*!
     Returns the user file name for specified application
 */
@@ -93,7 +91,7 @@ QString SUIT_ResourceMgr::userFileName( const QString& appName, const bool for_l
 */
 QString SUIT_ResourceMgr::findAppropriateUserFile( const QString& fname ) const
 {
-  QDir d( QFileInfo( fname ).dir( true ) );
+  QDir d( QFileInfo( fname ).dir() );
   d.setFilter( QDir::Files | QDir::Hidden | QDir::NoSymLinks );
   QStringList l = d.entryList();
   QString appr_file;
@@ -110,7 +108,7 @@ QString SUIT_ResourceMgr::findAppropriateUserFile( const QString& fname ) const
     if( appr < 0 || abs( id-id0 ) < abs( appr-id0 ) )
     {
       appr = id;
-      appr_file = d.absFilePath( *anIt );
+      appr_file = d.absoluteFilePath( *anIt );
     }
   }
   return appr_file;

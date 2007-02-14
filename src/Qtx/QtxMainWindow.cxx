@@ -24,10 +24,11 @@
 #include "QtxToolBar.h"
 #include "QtxResourceMgr.h"
 
-#include <qlayout.h>
-#include <qmenubar.h>
-#include <qstatusbar.h>
-#include <qapplication.h>
+#include <QtGui/qlayout.h>
+#include <QtGui/qmenubar.h>
+#include <QtGui/qstatusbar.h>
+#include <QtGui/qapplication.h>
+#include <QtGui/qdesktopwidget.h>
 
 /*!
     Class: QtxMainWindow::Filter [Internal]
@@ -82,8 +83,8 @@ bool QtxMainWindow::Filter::eventFilter( QObject* o, QEvent* e )
     Descr: Main window with support of dockable menubar/status bar
            and geometry store/retrieve.
 */
-QtxMainWindow::QtxMainWindow( QWidget* parent, const char* name, WFlags f )
-: QMainWindow( parent, name, f ),
+QtxMainWindow::QtxMainWindow( QWidget* parent, Qt::WindowFlags f )
+: QMainWindow( parent ),
 myMode( -1 ),
 myMenuBar( NULL ),
 myStatusBar( NULL )
@@ -122,26 +123,22 @@ void QtxMainWindow::setDockableMenuBar( const bool on )
 
   if ( on && !myMenuBar )
   {
-    mb->setCaption( tr( "Menu bar" ) );
-    QtxToolBar* dockMb = new QtxToolBar( true, this, "menu bar container" );
+    mb->setWindowTitle( tr( "Menu bar" ) );
+    QtxToolBar* dockMb = new QtxToolBar( true, this );
+    dockMb->setObjectName( "menu_bar_container" );
     myMenuBar = dockMb;
     new Filter( mb, this, myMenuBar );
-    dockMb->setWidget( mb );
-    dockMb->setNewLine( true );
-    dockMb->setStretchable( true );
-    dockMb->setResizeEnabled( false );
+    dockMb->addWidget( mb );
+    dockMb->setAllowedAreas( Qt::TopToolBarArea | Qt::BottomToolBarArea );
+    addToolBar( Qt::TopToolBarArea, dockMb );
 
-    moveDockWindow( dockMb, DockTop );
-    setDockEnabled( dockMb, Left, false );
-    setDockEnabled( dockMb, Right, false );
-
-    setAppropriate( dockMb, false );
+//    setAppropriate( dockMb, false );
 
     connect( dockMb, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
   }
   else if ( !on && myMenuBar )
   {
-    mb->reparent( this, QPoint( 0, 0 ), mb->isVisibleTo( mb->parentWidget() ) );
+    mb->setParent( this );
     disconnect( myMenuBar, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
     delete myMenuBar;
     myMenuBar = 0;
@@ -175,29 +172,25 @@ void QtxMainWindow::setDockableStatusBar( const bool on )
 
   if ( on && !myStatusBar )
   {
-    sb->setCaption( tr( "Status bar" ) );
-    QtxToolBar* dockSb = new QtxToolBar( true, this, "status bar container" );
+    sb->setWindowTitle( tr( "Status bar" ) );
+    QtxToolBar* dockSb = new QtxToolBar( true, this );
+    dockSb->setObjectName( "status_bar_container" );
     myStatusBar = dockSb;
     new Filter( sb, this, myStatusBar );
-    dockSb->setWidget( sb );
-    dockSb->setNewLine( true );
-    dockSb->setStretchable( true );
-    dockSb->setResizeEnabled( false );
     sb->setMinimumWidth( 250 );
-
     sb->setSizeGripEnabled( false );
 
-    moveDockWindow( dockSb, DockBottom );
-    setDockEnabled( dockSb, Left, false );
-    setDockEnabled( dockSb, Right, false );
+    dockSb->addWidget( sb );
+    dockSb->setAllowedAreas( Qt::TopToolBarArea | Qt::BottomToolBarArea );
+    addToolBar( Qt::BottomToolBarArea, dockSb );
 
-    setAppropriate( dockSb, false );
+//    setAppropriate( dockSb, false );
 
     connect( dockSb, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
   }
   else if ( !on && myStatusBar )
   {
-    sb->reparent( this, QPoint( 0, 0 ), sb->isVisibleTo( sb->parentWidget() ) );
+    sb->setParent( this );
     disconnect( myStatusBar, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
     delete myStatusBar;
     myStatusBar = 0;
@@ -217,7 +210,7 @@ void QtxMainWindow::setDockableStatusBar( const bool on )
 */
 void QtxMainWindow::loadGeometry( QtxResourceMgr* resMgr, const QString& section )
 {
-  QString sec = section.stripWhiteSpace();
+  QString sec = section.trimmed();
   if ( !resMgr || sec.isEmpty() )
     return;
 
@@ -255,11 +248,12 @@ void QtxMainWindow::loadGeometry( QtxResourceMgr* resMgr, const QString& section
   move( win_x, win_y );
 
   myMode = -1;
-
+/*
   if ( vis )
-    QApplication::postEvent( this, new QCustomEvent( QEvent::User, (void*)winState ) );
+    QApplication::postEvent( this, new QEvent( QEvent::User, (void*)winState ) );
   else
     myMode = winState;
+*/
 }
 
 /*!
@@ -267,9 +261,10 @@ void QtxMainWindow::loadGeometry( QtxResourceMgr* resMgr, const QString& section
 */
 void QtxMainWindow::show()
 {
+/*
   if ( myMode != -1 )
     QApplication::postEvent( this, new QCustomEvent( QEvent::User, (void*)myMode ) );
-
+*/
   myMode = -1;
 
   QMainWindow::show();
@@ -278,11 +273,12 @@ void QtxMainWindow::show()
 /*!
   Handler of custom events
 */
-void QtxMainWindow::customEvent( QCustomEvent* e )
+void QtxMainWindow::customEvent( QEvent* e )
 {
   QMainWindow::customEvent( e );
 
-  size_t mode = size_t(e->data());
+  int mode = WS_Normal;
+//  int mode = (int)e->data();
   switch ( mode )
   {
   case WS_Normal:
@@ -328,7 +324,7 @@ int QtxMainWindow::relativeCoordinate( const int type, const int WH, const int w
 */
 void QtxMainWindow::saveGeometry( QtxResourceMgr* resMgr, const QString& section ) const
 {
-  QString sec = section.stripWhiteSpace();
+  QString sec = section.trimmed();
   if ( !resMgr || sec.isEmpty() )
     return;
 
@@ -362,7 +358,7 @@ bool QtxMainWindow::eventFilter( QObject* o, QEvent* e )
 */
 void QtxMainWindow::setAppropriate( QDockWindow* dw, bool a )
 {
-  QMainWindow::setAppropriate( dw, myStatusBar != dw && myMenuBar != dw && a );
+//  QMainWindow::setAppropriate( dw, myStatusBar != dw && myMenuBar != dw && a );
 }
 
 /*!
@@ -370,7 +366,7 @@ void QtxMainWindow::setAppropriate( QDockWindow* dw, bool a )
 */
 void QtxMainWindow::setUpLayout()
 {
-  QMainWindow::setUpLayout();
+//  QMainWindow::setUpLayout();
 
   if ( myMenuBar && layout() )
     layout()->setMenuBar( 0 );
@@ -423,7 +419,7 @@ int QtxMainWindow::windowState( const QString& str ) const
   }
 
   int res = -1;
-  QString stateStr = str.stripWhiteSpace().lower();
+  QString stateStr = str.trimmed().toLower();
   if ( winStateMap.contains( stateStr ) )
     res = winStateMap[stateStr];
   return res;
@@ -446,7 +442,7 @@ int QtxMainWindow::windowPosition( const QString& str ) const
   }
 
   int res = WP_Absolute;
-  QString posStr = str.stripWhiteSpace().lower();
+  QString posStr = str.trimmed().toLower();
   if ( winPosMap.contains( posStr ) )
     res = winPosMap[posStr];
   return res;

@@ -21,8 +21,8 @@
 
 #include "SUIT.h"
 
-#include <qvaluelist.h>
-#include <qobject.h>
+#include <QtCore/qlist.h>
+#include <QtCore/qobject.h>
 
 class SUIT_SelectionMgr;
 class SUIT_DataOwnerPtrList;
@@ -55,7 +55,7 @@ public:
   void               setSelected( const SUIT_DataOwnerPtrList& );
 
   bool               hasSelectionMode( const int ) const;
-  void               selectionModes( QValueList<int>& ) const;
+  void               selectionModes( QList<int>& ) const;
 
 protected:
   void               selectionChanged();

@@ -21,9 +21,12 @@
 #include "SUIT_Tools.h"
 #include "SUIT_ViewWindow.h"
 
-#include <QtxLogoMgr.h>
+//#include <QtxLogoMgr.h>
 #include <QtxActionMenuMgr.h>
 #include <QtxActionToolMgr.h>
+
+#include <QtGui/qevent.h>
+#include <QtGui/qapplication.h>
 
 /*!\class SUIT_Desktop
  * Provide desktop management:\n
@@ -31,6 +34,17 @@
  * \li tool manager
  * \li windows
  */
+
+class SUIT_Desktop::ReparentEvent : public QEvent
+{
+public:
+  ReparentEvent( Type t, QObject* obj ) : QEvent( t ), myObj( obj ) {};
+
+  QObject* object() const { return myObj; }
+
+private:
+  QObject* myObj;
+};
 
 /*!
   Constructor.
@@ -40,7 +54,7 @@ SUIT_Desktop::SUIT_Desktop()
 {
   myMenuMgr = new QtxActionMenuMgr( this );
   myToolMgr = new QtxActionToolMgr( this );
-  myLogoMgr = new QtxLogoMgr( menuBar() );
+  myLogoMgr = 0;//new QtxLogoMgr( menuBar() );
 }
 
 /*!
@@ -85,16 +99,27 @@ void SUIT_Desktop::closeEvent( QCloseEvent* e )
 */
 void SUIT_Desktop::childEvent( QChildEvent* e )
 {
-  if ( e->type() == QEvent::ChildInserted && parentArea() &&
-       e->child()->isWidgetType() && e->child()->inherits( "SUIT_ViewWindow" ) )
-  {
-    QWidget* wid = (QWidget*)e->child();
-    bool vis = wid->isVisibleTo( wid->parentWidget() );
-    wid->reparent( parentArea(), QPoint( 0, 0 ), vis );
-    wid->setShown( vis );
-  }
+  if ( e->type() == QEvent::ChildAdded && e->child()->isWidgetType() )
+    QApplication::postEvent( this, new QChildEvent( QEvent::Type( Reparent ), e->child() ) );
   else
     QtxMainWindow::childEvent( e );
+}
+
+void SUIT_Desktop::customEvent( QEvent* e )
+{
+  if ( e->type() != Reparent )
+    return;
+
+  QChildEvent* re = (QChildEvent*)e;
+  if ( re->child()->inherits( "SUIT_ViewWindow" ) )
+  {
+    QWidget* wid = (QWidget*)re->child();
+    bool invis = wid->testAttribute( Qt::WA_WState_ExplicitShowHide ) &&
+                 wid->testAttribute( Qt::WA_WState_Hidden );
+
+    addWindow( wid );
+    wid->setShown( !invis );
+  }
 }
 
 /*!
@@ -118,30 +143,13 @@ QtxActionToolMgr* SUIT_Desktop::toolMgr() const
 */
 int SUIT_Desktop::logoCount() const
 {
+  return 0;
+/*
   if ( !myLogoMgr )
     return 0;
   else
     return myLogoMgr->count();
-}
-
-/*!
-  Adds new logo to the menu bar area.
-  Obsolete. Not should be used.
-  Use SUIT_Desktop::logoInsert();
 */
-void SUIT_Desktop::addLogo( const QString& id, const QPixmap& pix )
-{
-  logoInsert( id, pix );
-}
-
-/*!
-  Removes a logo.
-  Obsolete. Not should be used.
-  Use SUIT_Desktop::logoRemove();
-*/
-void SUIT_Desktop::removeLogo( const QString& id )
-{
-  logoRemove( id );
 }
 
 /*!
@@ -149,8 +157,10 @@ void SUIT_Desktop::removeLogo( const QString& id )
 */
 void SUIT_Desktop::logoInsert( const QString& logoID, const QPixmap& logo, const int idx )
 {
+/*
   if ( myLogoMgr )
     myLogoMgr->insert( logoID, logo, idx );
+*/
 }
 
 /*!
@@ -158,8 +168,10 @@ void SUIT_Desktop::logoInsert( const QString& logoID, const QPixmap& logo, const
 */
 void SUIT_Desktop::logoRemove( const QString& logoID )
 {
+/*
   if ( myLogoMgr )
     myLogoMgr->remove( logoID );
+*/
 }
 
 /*!
@@ -167,8 +179,10 @@ void SUIT_Desktop::logoRemove( const QString& logoID )
 */
 void SUIT_Desktop::logoClear()
 {
+/*
   if ( myLogoMgr )
     myLogoMgr->clear();
+*/
 }
 
 /*!

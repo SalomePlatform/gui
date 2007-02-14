@@ -21,9 +21,9 @@
 
 #include "SUIT.h"
 
-#include <qobject.h>
+#include <QtCore/qobject.h>
 
-class QPopupMenu;
+class QMenu;
 class QContextMenuEvent;
 
 /*!\class SUIT_PopupClient
@@ -42,7 +42,7 @@ public:
   bool            disconnectPopupRequest( QObject* reciever, const char* slot );
 
   virtual QString popupClientType() const = 0;
-  virtual void    contextMenuPopup( QPopupMenu* ) {}
+  virtual void    contextMenuPopup( QMenu* ) {}
 
 protected:
   void    contextMenuRequest( QContextMenuEvent* e );

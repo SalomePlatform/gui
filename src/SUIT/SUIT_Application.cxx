@@ -22,9 +22,10 @@
 #include "SUIT_Desktop.h"
 #include "SUIT_ResourceMgr.h"
 
-#include <qlabel.h>
-#include <qtimer.h>
-#include <qstatusbar.h>
+#include <QtCore/qtimer.h>
+
+#include <QtGui/qlabel.h>
+#include <QtGui/qstatusbar.h>
 
 #include <QtxAction.h>
 #include <QtxActionMenuMgr.h>
@@ -38,7 +39,9 @@ SUIT_Application::SUIT_Application()
 myStudy( 0 ),
 myDesktop( 0 ),
 myStatusLabel( 0 )
-{ 
+{
+  if ( SUIT_Session::session() )
+    SUIT_Session::session()->insertApplication( this );
 }
 
 /*!
@@ -211,7 +214,7 @@ void SUIT_Application::onInfoClear()
 */
 SUIT_Application* SUIT_Application::startApplication( int argc, char** argv ) const
 {
-  return startApplication( name(), argc, argv );
+  return startApplication( objectName(), argc, argv );
 }
 
 /*!
@@ -462,7 +465,12 @@ int SUIT_Application::createMenu( const int id, const QString& menu, const int g
 */
 void SUIT_Application::setMenuShown( QAction* a, const bool on )
 {
-  setMenuShown( actionId( a ), on );
+  if ( !a || !desktop() )
+    return;
+  
+  QtxActionMenuMgr* mMgr = desktop()->menuMgr();
+  if ( mMgr )
+    mMgr->setShown( mMgr->actionId( a ), on );
 }
 
 /*!
@@ -472,8 +480,7 @@ void SUIT_Application::setMenuShown( QAction* a, const bool on )
 */
 void SUIT_Application::setMenuShown( const int id, const bool on )
 {
-  if ( desktop() && desktop()->menuMgr() )
-    desktop()->menuMgr()->setShown( id, on );
+  setMenuShown( action( id ), on );
 }
 
 /*!
@@ -483,7 +490,12 @@ void SUIT_Application::setMenuShown( const int id, const bool on )
 */
 void SUIT_Application::setToolShown( QAction* a, const bool on )
 {
-  setToolShown( actionId( a ), on );
+  if ( !a || !desktop() )
+    return;
+  
+  QtxActionToolMgr* tMgr = desktop()->toolMgr();
+  if ( tMgr )
+    tMgr->setShown( tMgr->actionId( a ), on );
 }
 
 /*!
@@ -493,8 +505,7 @@ void SUIT_Application::setToolShown( QAction* a, const bool on )
 */
 void SUIT_Application::setToolShown( const int id, const bool on )
 {
-  if ( desktop() && desktop()->toolMgr() )
-    desktop()->toolMgr()->setShown( id, on );
+  setToolShown( action( id ), on );
 }
 
 /*!
@@ -538,10 +549,9 @@ QAction* SUIT_Application::action( const int id ) const
 int SUIT_Application::actionId( const QAction* a ) const
 {
   int id = -1;
-  for ( QMap<int, QAction*>::ConstIterator it = myActionMap.begin(); 
-	it != myActionMap.end() && id == -1;
-	++it ) {
-    if ( it.data() == a )
+  for ( QMap<int, QAction*>::ConstIterator it = myActionMap.begin(); it != myActionMap.end() && id == -1; ++it )
+  {
+    if ( it.value() == a )
       id = it.key();
   }
   return id;
@@ -561,7 +571,7 @@ int SUIT_Application::actionId( const QAction* a ) const
   \param reciever - object that contains slot
   \param member - slot to be called when action is activated
 */
-QAction* SUIT_Application::createAction( const int id, const QString& text, const QIconSet& icon,
+QAction* SUIT_Application::createAction( const int id, const QString& text, const QIcon& icon,
                                          const QString& menu, const QString& tip, const int key,
                                          QObject* parent, const bool toggle, QObject* reciever, const char* member )
 {
@@ -569,7 +579,7 @@ QAction* SUIT_Application::createAction( const int id, const QString& text, cons
   a->setStatusTip( tip );
 
   if ( reciever && member )
-    connect( a, SIGNAL( activated() ), reciever, member );
+    connect( a, SIGNAL( triggered( bool ) ), reciever, member );
 
   registerAction( id, a );
 

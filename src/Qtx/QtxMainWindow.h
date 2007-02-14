@@ -24,7 +24,7 @@
 
 #include "Qtx.h"
 
-#include <qmainwindow.h>
+#include <QtGui/qmainwindow.h>
 
 class QDockWindow;
 class QtxResourceMgr;
@@ -39,7 +39,7 @@ class QTX_EXPORT QtxMainWindow : public QMainWindow
   enum { WP_Absolute, WP_Center, WP_Left, WP_Right, WP_Top = WP_Left, WP_Bottom = WP_Right };
 
 public:
-  QtxMainWindow( QWidget* = 0, const char* = 0, WFlags = WType_TopLevel );
+  QtxMainWindow( QWidget* = 0, Qt::WindowFlags = 0 );
   virtual ~QtxMainWindow();
 
   bool              isDockableMenuBar() const;
@@ -59,7 +59,7 @@ public slots:
 
 protected:
   virtual void      setUpLayout();
-  virtual void      customEvent( QCustomEvent* );
+  virtual void      customEvent( QEvent* );
 
 private slots:
   void              onDestroyed( QObject* );
@@ -71,8 +71,8 @@ private:
 
 private:
   int               myMode;
-  QDockWindow*      myMenuBar;
-  QDockWindow*      myStatusBar;
+  QToolBar*         myMenuBar;
+  QToolBar*         myStatusBar;
 };
 
 #endif

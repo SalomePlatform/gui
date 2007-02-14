@@ -18,7 +18,7 @@
 //
 #include "SUIT_PopupClient.h"
 
-#include <qevent.h>
+#include <QtGui/qevent.h>
 
 /*! constructor. initialize mySignal.*/
 SUIT_PopupClient::SUIT_PopupClient()

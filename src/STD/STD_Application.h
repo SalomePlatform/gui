@@ -26,17 +26,17 @@
 #include <SUIT_Desktop.h>
 #include <SUIT_ViewManager.h>
 
-#include <qmap.h>
-#include <qptrlist.h>
+#include <QtCore/qmap.h>
+#include <QtCore/qlist.h>
 
+class QMenu;
 class QToolBar;
 class QtxAction;
-class QPopupMenu;
 class SUIT_Operation;
 class SUIT_ViewWindow;
 class SUIT_ToolWindow;
 
-typedef QPtrList<SUIT_ViewManager> ViewManagerList;
+typedef QList<SUIT_ViewManager*> ViewManagerList;
 
 #if defined WIN32
 #pragma warning( disable: 4251 )
@@ -82,7 +82,7 @@ public:
 
   virtual void          closeApplication();
 
-  virtual void          contextMenuPopup( const QString&, QPopupMenu*, QString& ) {}
+  virtual void          contextMenuPopup( const QString&, QMenu*, QString& ) {}
 
 signals:
   /*!emit that view manager added*/

@@ -21,16 +21,17 @@
 
 #include <STD.h>
 
-#include <qdialog.h>
-#include <qvariant.h>
+#include <QtCore/qvariant.h>
+
+#include <QtGui/qdialog.h>
 
 class QLabel;
 class QListBox;
 class QPushButton;
 class QVBoxLayout; 
 class QHBoxLayout; 
-class QGridLayout; 
-class QListBoxItem;
+class QGridLayout;
+class QListWidget;
 
 /*!\class STD_LoadStudiesDlg
  * \brief Describes a dialog box that gives a list of opened studies.
@@ -41,7 +42,7 @@ class STD_EXPORT STD_LoadStudiesDlg : public QDialog
    Q_OBJECT
 
 public:
-   STD_LoadStudiesDlg( QWidget* parent = 0, bool modal = FALSE, WFlags fl = 0 );
+   STD_LoadStudiesDlg( QWidget* parent = 0, bool modal = false );
    ~STD_LoadStudiesDlg() {}
 
   /*!\var TextLabel1
@@ -62,7 +63,7 @@ public:
   /*!\var ListComponent
    * \brief stores a dialog list compoent
    */ 
-   QListBox* ListComponent;
+   QListWidget* ListComponent;
 
 };
 

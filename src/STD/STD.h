@@ -20,13 +20,13 @@
 #define STD_H
 
 #if defined STD_EXPORTS
-#if defined WNT
+#if defined WIN32
 #define STD_EXPORT		__declspec( dllexport )
 #else
 #define STD_EXPORT
 #endif
 #else
-#if defined WNT
+#if defined WIN32
 #define STD_EXPORT		__declspec( dllimport )
 #else
 #define STD_EXPORT
@@ -39,7 +39,7 @@
 #define true  1
 #endif
 
-#if defined WNT
+#if defined WIN32
 #pragma warning ( disable: 4251 )
 #endif
 

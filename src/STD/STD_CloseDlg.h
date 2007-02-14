@@ -16,10 +16,10 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifndef STD_CloseDlg_H
-#define STD_CloseDlg_H
+#ifndef STD_CLOSEDLG_H
+#define STD_CLOSEDLG_H
 
-#include <qdialog.h> 
+#include <QtGui/qdialog.h> 
 
 /*! \class QDialog
  * \brief For more information see <a href="http://doc.trolltech.com">QT documentation</a>.
@@ -32,8 +32,8 @@ class STD_CloseDlg: public QDialog
   Q_OBJECT
 
 public:
-  STD_CloseDlg ( QWidget * parent = 0, bool modal = FALSE, WFlags f = 0 ) ;
-  ~STD_CloseDlg ( ) { };
+  STD_CloseDlg( QWidget* = 0, bool = false );
+  virtual ~STD_CloseDlg() {};
 
 private slots:
   void onButtonClicked();

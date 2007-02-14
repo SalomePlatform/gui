@@ -18,15 +18,11 @@
 //
 #include "STD_CloseDlg.h"
 
-#include <qlabel.h> 
-#include <qlayout.h> 
-#include <qpushbutton.h>
-#include <qmessagebox.h>
-#include <qhbuttongroup.h>
-
-#ifndef WNT
-using namespace std;
-#endif
+#include <QtGui/qlabel.h> 
+#include <QtGui/qlayout.h> 
+#include <QtGui/qpushbutton.h>
+#include <QtGui/qmessagebox.h>
+#include <QtGui/qbuttongroup.h>
 
 /*!
  * \brief creates a Close dialog box
@@ -35,23 +31,24 @@ using namespace std;
  * \param f style flags
  */
 
-STD_CloseDlg::STD_CloseDlg( QWidget* parent, bool modal, WFlags f )
-: QDialog( parent, "", true,  WStyle_Customize | WStyle_NormalBorder | WStyle_Title | WStyle_SysMenu )
+STD_CloseDlg::STD_CloseDlg( QWidget* parent, bool modal )
+: QDialog( parent )
 {
+  setModal( modal );
   setSizeGripEnabled( true );
-  setCaption( tr( "CLOSE_DLG_CAPTION" ) );
+  setWindowTitle( tr( "CLOSE_DLG_CAPTION" ) );
 
   QVBoxLayout* m_vbL = new QVBoxLayout( this );
   m_vbL->setMargin( 11 );
   m_vbL->setSpacing( 6 );
 
-  QLabel* m_lIcon = new QLabel( this, "m_lDescr" );
+  QLabel* m_lIcon = new QLabel( this );
   QPixmap pm = QMessageBox::standardIcon( QMessageBox::Warning );
   m_lIcon->setPixmap( pm );
   m_lIcon->setScaledContents( false );
   m_lIcon->setAlignment( Qt::AlignCenter );
 
-  QLabel* m_lDescr = new QLabel (this, "m_lDescr");
+  QLabel* m_lDescr = new QLabel( this );
   m_lDescr->setText ( tr ("CLOSE_DLG_DESCRIPTION") );
   m_lDescr->setAlignment( Qt::AlignCenter );
   m_lDescr->setMinimumHeight( m_lDescr->sizeHint().height()*5 );
@@ -72,8 +69,8 @@ STD_CloseDlg::STD_CloseDlg( QWidget* parent, bool modal, WFlags f )
   m_hl2->addWidget( m_pb1, 0, 0 );
   m_hl2->addWidget( m_pb2, 0, 1 );
   m_hl2->addWidget( m_pb3, 0, 2 );
-  m_hl2->addColSpacing( 3, 10 );
-  m_hl2->setColStretch( 3, 5 );
+  m_hl2->setColumnMinimumWidth( 3, 10 );
+  m_hl2->setColumnStretch( 3, 5 );
   m_hl2->addWidget( m_pb4, 0, 4 );
   
   m_vbL->addLayout( m_hl1 );

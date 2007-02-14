@@ -18,12 +18,13 @@
 //
 #include "SUITApp_Application.h"
 
-#include "SUIT_Session.h"
-#include "SUIT_MessageBox.h"
-#include "SUIT_ExceptionHandler.h"
+#include <SUIT_Tools.h>
+#include <SUIT_MessageBox.h>
+#include <SUIT_ExceptionHandler.h>
 
-#include <qdir.h>
-#include <qfileinfo.h>
+#include <QtCore/qdir.h>
+#include <QtCore/qfileinfo.h>
+#include <QtCore/qtranslator.h>
 
 #ifdef WIN32
 #include <windows.h>
@@ -39,7 +40,7 @@ SUITApp_Application::SUITApp_Application( int& argc, char** argv, SUIT_Exception
 : QApplication( argc, argv ),
 myExceptHandler( hand )
 {
-  QString path = QFileInfo( argv[0] ).dirPath() + QDir::separator() + "../../resources";
+  QString path = SUIT_Tools::dir( argv[0] ) + QDir::separator() + "../../resources";
   path = QDir::convertSeparators( QDir( path ).canonicalPath() );
 
   QTranslator* strTbl = new QTranslator( 0 );
@@ -69,20 +70,6 @@ myExceptHandler( hand )
 */
 bool SUITApp_Application::notify( QObject* receiver, QEvent* e )
 {
-#if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) < 0x060101
-  // Disable GUI user actions while python command is executed
-  if (SUIT_Session::IsPythonExecuted()) {
-    // Disable mouse and keyboard events
-    QEvent::Type aType = e->type();
-    if (aType == QEvent::MouseButtonPress || aType == QEvent::MouseButtonRelease ||
-        aType == QEvent::MouseButtonDblClick || aType == QEvent::MouseMove ||
-        aType == QEvent::Wheel || aType == QEvent::ContextMenu ||
-        aType == QEvent::KeyPress || aType == QEvent::KeyRelease ||
-        aType == QEvent::Accel || aType == QEvent::AccelOverride)
-      return false;
-  }
-#endif
-
   return myExceptHandler ? myExceptHandler->handle( receiver, e ) :
                            QApplication::notify( receiver, e );
 }

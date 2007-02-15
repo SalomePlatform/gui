@@ -172,6 +172,9 @@ AC_SUBST(SIP_INCLUDES)
 AC_SUBST(SIP_LIBS)
 AC_SUBST(SIP_VERS)
 
+AM_CONDITIONAL(IS_SIP_V4, [test $SIP_VERS == v4_old || test $SIP_VERS == v4_new])
+AM_CONDITIONAL(IS_SIP_NEW, [test $SIP_VERS == v3_new || test $SIP_VERS == v4_new])
+
 AC_MSG_RESULT(for sip: $sip_ok)
 
 ])dnl

@@ -16,46 +16,41 @@
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
-# source path
-top_srcdir=@top_srcdir@
-top_builddir=..
-srcdir=@srcdir@
-VPATH=.:$(srcdir)/adm_local
+# -* Makefile *-
+#
+# Author : Patrick GOLDBRONN (CEA)
+# Date : 28/06/2001
+# $Header$
+#
 
+include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-all: resources
+if GUI_ENABLE_CORBA
+    IDLDIR = idl
+else !GUI_ENABLE_CORBA
+    IDLDIR =
+endif
 
-install:
-	cp -rf @top_srcdir@/adm_local @prefix@
+SUBDIRS = $(IDLDIR) adm_local resources src doc bin 
 
-bin:
+DIST_SUBDIRS = idl adm_local resources src doc bin 
 
-resources :
-	cp -rf @top_srcdir@/adm_local $(top_builddir)
+DISTCLEANFILES = a.out aclocal.m4 configure
 
-inc:
+salomeinclude_DATA=GUI_version.h
 
-lib:
+EXTRA_DIST+= \
+	build_configure \
+	clean_configure \
+	LICENCE
 
-depend:
+dist-hook:
+	rm -rf `find $(distdir) -name CVS`
 
-depend_idl:
+usr_docs:
+	(cd doc && $(MAKE) $(AM_MAKEFLAGS) usr_docs)
 
-install-end:
+docs:usr_docs
 
-install-include:
-
-install-bin:
-
-uninstall:
-
-uninstall-idl:
-
-distclean:
-
-clean:
-
-tests:
-
-distclean-other:
-
+dev_docs:
+	(cd doc && $(MAKE) $(AM_MAKEFLAGS) dev_docs)

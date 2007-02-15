@@ -171,6 +171,8 @@ AC_SUBST(QT_LIBS)
 AC_SUBST(QT_MT_LIBS)
 AC_SUBST(QT_VERS)
 
+AM_CONDITIONAL(IS_QT_3_0_0, [test $QT_VERS == Qt_3_3_3 || test $QT_VERS == Qt_3_3_4 || test $QT_VERS == Qt_3_3_6])
+
 AC_LANG_RESTORE
 
 AC_MSG_RESULT(for Qt: $qt_ok)

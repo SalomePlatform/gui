@@ -71,7 +71,8 @@ libSALOME_Swigcmodule_la_CPPFLAGS =\
 	-I$(srcdir)/../ObjBrowser -I$(srcdir)/../LightApp -I$(srcdir)/../SOCC \
 	-I$(srcdir)/../SVTK -I$(srcdir)/../Event -I$(srcdir)/../OBJECT \
 	-I$(srcdir)/../CAM -I$(srcdir)/../STD -I$(srcdir)/../OCCViewer \
-	-I$(srcdir)/../Prs -I$(srcdir)/../VTKViewer \
+	-I$(srcdir)/../Prs -I$(srcdir)/../VTKViewer -I$(srcdir)/../SPlot2d \
+	-I$(srcdir)/../Plot2d \
 	@CORBA_CXXFLAGS@ @CORBA_INCLUDES@
 
 libSALOME_Swigcmodule_la_LDFLAGS  = -module

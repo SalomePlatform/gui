@@ -42,11 +42,14 @@ dist_libToolsGUI_la_SOURCES= \
 	ToolsGUI_IntervalWindow.cxx \
 	ToolsGUI.cxx
 
-EXTRA_DIST+= ToolsGUI_HelpWindow.h ToolsGUI_IntervalWindow.h
+EXTRA_DIST+=
 
 MOC_FILES= \
 	ToolsGUI_CatalogGeneratorDlg_moc.cxx \
-	ToolsGUI_RegWidget_moc.cxx
+	ToolsGUI_RegWidget_moc.cxx \
+	ToolsGUI_HelpWindow_moc.cxx \
+	ToolsGUI_IntervalWindow_moc.cxx
+
 nodist_libToolsGUI_la_SOURCES= $(MOC_FILES)
 
 # .po files to transform in .qm

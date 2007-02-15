@@ -1,4 +1,4 @@
-#  SALOMELocalTrace : log on local machine
+#  SALOME RegistryDisplay : GUI for Registry server implementation
 #
 #  Copyright (C) 2003  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 #  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS 
@@ -22,44 +22,28 @@
 #
 #
 #  File   : Makefile.in
-#  Author : Sergey RUIN
+#  Author : Paul RASCLE, EDF
 #  Module : SALOME
+#  $Header$
 
-top_srcdir=@top_srcdir@
-top_builddir=../../..
-srcdir=@srcdir@
-VPATH=.:@srcdir@:@top_srcdir@/idl
+include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
+lib_LTLIBRARIES = libRegistryDisplay.la 
 
-@COMMENCE@
+salomeinclude_HEADERS= \
+	HelpWindow.hxx \
+	IntervalWindow.hxx \
+	RegWidget.h
 
-# header files  
-EXPORT_HEADERS= SalomeAppTest.hxx
+dist_libRegistryDisplay_la_SOURCES= \
+	HelpWindow.cxx \
+	RegWidget.cxx \
+	RegWidgetFactory.cxx \
+	IntervalWindow.cxx
 
-EXPORT_PYSCRIPTS = TestSalomeApp.py
+MOC_FILES = RegWidget_moc.cxx
+nodist_libRegistryDisplay_la_SOURCES= $(MOC_FILES)
 
-# Libraries targets
-
-LIB = libSalomeAppTest.la 
-LIB_SRC = SalomeAppTest.cxx
-LIB_CLIENT_IDL = 
-
-# Executables targets
-
-BIN = TestSalomeApp
-BIN_SRC = 
-BIN_CLIENT_IDL =
-
-
-CXXFLAGS += $ @CPPUNIT_INCLUDES@ $(KERNEL_CXXFLAGS)
-CPPFLAGS += $ @CPPUNIT_INCLUDES@ $(KERNEL_CXXFLAGS)
-
-LIBS= @LIBS@ @CPPUNIT_LIBS@
-
-LDFLAGS+= 
-
-LDFLAGSFORBIN+= $(LDFLAGS) -lSalomeAppTest 	
-
-UNIT_TEST_PROG = TestSalomeApp
-
-@CONCLUDE@
+libRegistryDisplay_la_CPPFLAGS=$(QT_INCLUDES) @KERNEL_CXXFLAGS@ @CORBA_CXXFLAGS@ @CORBA_INCLUDES@\
+	-I$(top_builddir)/salome_adm/unix -I$(top_builddir)/idl
+libRegistryDisplay_la_LDFLAGS=$(QT_MT_LIBS) $(KERNEL_LDFLAGS) -lSalomeNS -lOpUtil -lSalomeIDLKernel

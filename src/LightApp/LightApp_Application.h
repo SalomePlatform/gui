@@ -127,6 +127,7 @@ public:
   void                                updateActions();
 
   SUIT_ViewManager*                   getViewManager( const QString&, const bool );
+  virtual SUIT_ViewManager*           createViewManager( const QString& vmType );
   virtual void                        addViewManager( SUIT_ViewManager* );
   virtual void                        removeViewManager( SUIT_ViewManager* );
   virtual SUIT_ViewManager*           createViewManager( const QString& vmType );

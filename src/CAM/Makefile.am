@@ -18,30 +18,42 @@
 #
 #  File   : Makefile.in
 #  Author : Vladimir Klyachin (OCN)
-#  Module : LogWindow
+#  Module : CAM
 #  $Header$
 
-top_srcdir=@top_srcdir@
-top_builddir=../..
-srcdir=@srcdir@
-VPATH=.:@srcdir@
+include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-@COMMENCE@
+lib_LTLIBRARIES = libCAM.la
 
-# header files 
-EXPORT_HEADERS= LogWindow.h
-		     
-# Libraries targets
-LIB = libLogWindow.la
+salomeinclude_HEADERS= \
+	CAM_Application.h \
+	CAM_DataModel.h \
+	CAM_DataObject.h \
+	CAM.h \
+	CAM_Module.h \
+	CAM_Study.h \
+	CAM_RootObject.h
 
-LIB_SRC= LogWindow.cxx		
- 
-LIB_MOC = LogWindow.h
+dist_libCAM_la_SOURCES= \
+	CAM_Application.cxx \
+	CAM_DataModel.cxx \
+	CAM_DataObject.cxx \
+	CAM_Module.cxx \
+	CAM_Study.cxx \
+	CAM_RootObject.cxx
 
-CPPFLAGS+=$(QT_INCLUDES)
+MOC_FILES= \
+	CAM_Application_moc.cxx \
+	CAM_Module_moc.cxx \
+	CAM_Study_moc.cxx \
+	CAM_DataModel_moc.cxx
+nodist_libCAM_la_SOURCES= $(MOC_FILES)
 
-LDFLAGS+=$(QT_MT_LIBS)
+nodist_salomeres_DATA=CAM_msg_en.qm
 
-@CONCLUDE@
+libCAM_la_CPPFLAGS=$(QT_INCLUDES) -I$(srcdir)/../SUIT -I$(srcdir)/../STD -I$(srcdir)/../Qtx
+libCAM_la_LDFLAGS=$(QT_MT_LIBS)
+libCAM_la_LIBS=../SUIT/libsuit.la ../STD/libstd.la
 
-
+# what is that?
+#LDFLAGSFORBIN= -lSUITApp

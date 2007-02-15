@@ -20,14 +20,9 @@
 #  Author : Vasily Rusyaev (Open Cascade NN)
 #  Module : doc
 
-top_srcdir=@top_srcdir@
-top_builddir=../../..
-root_srcdir=@ROOT_SRCDIR@
-srcdir=@srcdir@
-VPATH=.:@srcdir@
-doxygen=@DOXYGEN@
+include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-@COMMENCE@
+EXTRA_DIST+=GUI
 
 dev_docs:
 	cp -fr $(srcdir)/GUI ./INPUT; \
@@ -56,16 +51,7 @@ dev_docs:
 	cp -fr $(srcdir)/GUI/sources/ GUI ; \
 	rm -fr INPUT
 
-clean:
-	rm -fr GUI
+doctuidir=$(docdir)/tui/GUI
 
-distclean: clean
-	rm -fr INPUT
-
-install:
-	$(INSTALL) -d $(docdir); \
-	mkdir -p $(docdir)/tui
-	cp -fr GUI $(docdir)/tui
-
-uninstall:
-	rm -fr $(docdir)/tui/GUI
+nodist_doctui_DATA= GUI/doxyfile
+EXTRA_DIST+= GUI/doxyfile.in

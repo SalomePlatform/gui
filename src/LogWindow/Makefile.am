@@ -17,37 +17,23 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 #  File   : Makefile.in
-#  Author : Alexander Solovyov(OCN)
-#  Module : SOCC
-# $Header: /dn06/SALOME_CVS/GUI_SRC/src/SOCC/Makefile.in,v 1.1
+#  Author : Vladimir Klyachin (OCN)
+#  Module : LogWindow
+#  $Header$
 
-top_srcdir=@top_srcdir@
-top_builddir=../..
-srcdir=@srcdir@
-VPATH=.:@srcdir@
+include $(top_srcdir)/adm_local/unix/make_common_starter.am
+
+lib_LTLIBRARIES = libLogWindow.la
+
+salomeinclude_HEADERS= LogWindow.h
+
+dist_libLogWindow_la_SOURCES= LogWindow.cxx		
+
+MOC_FILES= LogWindow_moc.cxx
+nodist_libLogWindow_la_SOURCES = $(MOC_FILES)
+
+libLogWindow_la_CPPFLAGS=$(QT_INCLUDES) -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
+
+libLogWindow_la_LDFLAGS=$(QT_MT_LIBS) ../SUIT/libsuit.la ../Qtx/libqtx.la 
 
 
-@COMMENCE@
-
-# header files
-EXPORT_HEADERS= SOCC.h \
-		SOCC_ViewModel.h \
-		SOCC_Prs.h \
-	 	SOCC_ViewWindow.h
-
-# Libraries targets
-LIB = libSOCC.la
-
-LIB_SRC= SOCC_ViewModel.cxx \
-	 SOCC_Prs.cxx \
-	 SOCC_ViewWindow.cxx
-
-LIB_MOC = SOCC_ViewModel.h \
-	  SOCC_ViewWindow.h
-
-CPPFLAGS+=$(QT_INCLUDES) $(OCC_INCLUDES) $(BOOST_CPPFLAGS) 
-
-LDFLAGS+=$(QT_MT_LIBS)
-LIBS+= -lsuit -lSalomeObject -lSalomePrs -lOCCViewer
-
-@CONCLUDE@

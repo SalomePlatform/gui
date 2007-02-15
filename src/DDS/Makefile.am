@@ -16,44 +16,29 @@
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
-# source path
-top_srcdir=@top_srcdir@
-top_builddir=../..
-srcdir=@srcdir@
-VPATH=.:@srcdir@:@top_srcdir@/idl:@srcdir@/resources
+#  File   : Makefile.in
+#  Author : Alexander SOLOVYOV (OCN)
+#  Module : DDS
+#  $Header: /home/server/cvs/GUI/GUI_SRC/src/DDS/Makefile.in
+
+include $(top_srcdir)/adm_local/unix/make_common_starter.am
+
+lib_LTLIBRARIES = libDDS.la
+
+salomeinclude_HEADERS = DDS.h \
+	DDS_DicGroup.h \
+	DDS_DicItem.h \
+	DDS_Dictionary.h \
+	DDS_KeyWords.h
+
+dist_libDDS_la_SOURCES = DDS_DicGroup.cxx \
+	DDS_DicItem.cxx \
+	DDS_Dictionary.cxx \
+	DDS_KeyWords.cxx
+
+libDDS_la_CPPFLAGS=$(CAS_CPPFLAGS)
+
+libDDS_la_LDFLAGS= $(CAS_KERNEL) $(CAS_OCAF)
 
 
-@COMMENCE@
 
-EXPORT_HEADERS = SUPERVGraph_ViewFrame.h \
-		 SUPERVGraph_ViewManager.h \
-		 SUPERVGraph_ViewModel.h \
-		 SUPERVGraph.h
-
-# .po files to transmit in .qm
-PO_FILES = SUPERVGraph_images.po \
-	   SUPERVGraph_msg_en.po  
-
-# Libraries targets
-
-LIB = libSUPERVGraph.la
-LIB_SRC = 	  SUPERVGraph.cxx \
-		  SUPERVGraph_ViewFrame.cxx \
-		  SUPERVGraph_ViewManager.cxx \
-		  SUPERVGraph_ViewModel.cxx 
-
-LIB_MOC = 	  SUPERVGraph_moc.cxx \
-		  SUPERVGraph_ViewFrame_moc.cxx \
-		  SUPERVGraph_ViewManager_moc.cxx \
-		  SUPERVGraph_ViewModel_moc.cxx 
-
-RESOURCES_FILES = view_pan.png \
-		  view_reset.png
-
-LIB_CLIENT_IDL = 
-
-CPPFLAGS+=$(QT_INCLUDES) $(OCC_INCLUDES) $(PYTHON_INCLUDES) $(BOOST_CPPFLAGS)
-LDFLAGS+=$(QT_MT_LIBS) -lsuit
-
-
-@CONCLUDE@

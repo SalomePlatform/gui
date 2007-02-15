@@ -21,15 +21,12 @@
 #  Module : QDS
 #  $Header: /home/server/cvs/GUI/GUI_SRC/src/QDS/Makefile.in
 
-top_srcdir=@top_srcdir@
-top_builddir=../..
-srcdir=@srcdir@
-VPATH=.:@srcdir@
+include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-@COMMENCE@
+lib_LTLIBRARIES = libQDS.la
 
 # header files 
-EXPORT_HEADERS= QDS.h \
+salomeinclude_HEADERS= QDS.h \
 	QDS_CheckBox.h \
 	QDS_ComboBox.h \
 	QDS_Datum.h \
@@ -38,11 +35,9 @@ EXPORT_HEADERS= QDS.h \
 	QDS_SpinBoxDbl.h \
 	QDS_TextEdit.h \
 	QDS_Validator.h
-		     
-# Libraries targets
-LIB = libQDS.la
 
-LIB_SRC= QDS.cxx \
+dist_libQDS_la_SOURCES= \
+	QDS.cxx \
 	QDS_CheckBox.cxx \
 	QDS_ComboBox.cxx \
 	QDS_Datum.cxx \
@@ -52,18 +47,22 @@ LIB_SRC= QDS.cxx \
 	QDS_TextEdit.cxx \
 	QDS_Validator.cxx
  
-LIB_MOC = QDS_CheckBox.h \
-	QDS_ComboBox.h \
-	QDS_Datum.h \
-	QDS_LineEdit.h \
-	QDS_SpinBox.h \
-	QDS_SpinBoxDbl.h \
-	QDS_TextEdit.h
+MOC_FILES= \
+	QDS_CheckBox_moc.cxx \
+	QDS_ComboBox_moc.cxx \
+	QDS_Datum_moc.cxx \
+	QDS_LineEdit_moc.cxx \
+	QDS_SpinBox_moc.cxx \
+	QDS_SpinBoxDbl_moc.cxx \
+	QDS_TextEdit_moc.cxx
+nodist_libQDS_la_SOURCES= $(MOC_FILES)
 
-CPPFLAGS+=$(QT_INCLUDES) $(OCC_INCLUDES)
+# may be neccessary for the external projects or future improvements
+EXTRA_DIST+= QDS_RadioBox.cxx QDS_RadioBox.h resources/QDS_msg_en.po
 
-LDFLAGS+=$(QT_MT_LIBS) $(CAS_KERNEL) -lDDS -lqtx
+libQDS_la_CPPFLAGS=$(QT_INCLUDES) $(CAS_CPPFLAGS) \
+                   -I$(srcdir)/../Qtx -I$(srcdir)/../DDS
 
-@CONCLUDE@
-
+libQDS_la_LDFLAGS=$(QT_MT_LIBS) $(CAS_KERNEL)
+libQDS_la_LIBADD=../DDS/libDDS.la ../Qtx/libqtx.la
 

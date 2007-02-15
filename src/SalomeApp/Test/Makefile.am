@@ -1,6 +1,7 @@
-#  SALOME PyInterp : implementation of base thread-safe Python services
+#  SALOMELocalTrace : log on local machine
 #
-#  Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D
+#  Copyright (C) 2003  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
+#  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS 
 # 
 #  This library is free software; you can redistribute it and/or 
 #  modify it under the terms of the GNU Lesser General Public 
@@ -21,31 +22,26 @@
 #
 #
 #  File   : Makefile.in
+#  Author : Sergey RUIN
 #  Module : SALOME
 
-top_srcdir=@top_srcdir@
-top_builddir=../..
-srcdir=@srcdir@
-VPATH=.:@srcdir@
+include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
+lib_LTLIBRARIES= libSalomeAppTest.la
 
-@COMMENCE@
+salomeinclude_HEADERS= SalomeAppTest.hxx
 
-# header files 
-EXPORT_HEADERS= PyInterp.h \
-		PyInterp_base.h \
-		PyInterp_Dispatcher.h
-		     
-# Libraries targets
-LIB = libPyInterp.la
+dist_libSalomeAppTest_la_SOURCES= SalomeAppTest.cxx
 
-LIB_SRC= PyInterp_base.cxx \
-	 PyInterp_Dispatcher.cxx
+libSalomeAppTest_la_CXXFLAGS= @CPPUNIT_INCLUDES@ $(KERNEL_CXXFLAGS)
+libSalomeAppTest_la_LIBADD= @CPPUNIT_LIBS@
 
-LIB_MOC = PyInterp_Watcher.h
+bin_PROGRAMS= TestSalomeApp
 
-CPPFLAGS+= $(PYTHON_INCLUDES) $(QT_INCLUDES)
+TestSalomeApp_SOURCES= TestSalomeApp.cxx
 
-LDFLAGS+= $(PYTHON_LIBS) $(QT_MT_LIBS)
+TestSalomeApp_CXXFLAGS= $(libSalomeAppTest_la_CXXFLAGS)
+TestSalomeApp_LDADD= $(libSalomeAppTest_la_LIBADD) libSalomeAppTest.la
 
-@CONCLUDE@
+dist_salomescript_PYTHON = TestSalomeApp.py
+UNIT_TEST_PROG = TestSalomeApp

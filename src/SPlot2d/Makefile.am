@@ -16,37 +16,37 @@
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
-#  File   : Makefile.in
-#  Author : Alexander SOLOVYOV (OCN)
-#  Module : DDS
-#  $Header: /home/server/cvs/GUI/GUI_SRC/src/DDS/Makefile.in
 
-top_srcdir=@top_srcdir@
-top_builddir=../..
-srcdir=@srcdir@
-VPATH=.:@srcdir@
+include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-@COMMENCE@
+lib_LTLIBRARIES = libSPlot2d.la
 
-# header files 
-EXPORT_HEADERS= DDS.h \
-	DDS_DicGroup.h \
-	DDS_DicItem.h \
-	DDS_Dictionary.h \
-	DDS_KeyWords.h
-		     
-# Libraries targets
-LIB = libDDS.la
+salomeinclude_HEADERS = \
+	SPlot2d.h \
+	SPlot2d_Curve.h \
+	SPlot2d_Prs.h \
+	SPlot2d_ViewModel.h \
+	SPlot2d_ViewWindow.h
 
-LIB_SRC= DDS_DicGroup.cxx \
-	DDS_DicItem.cxx \
-	DDS_Dictionary.cxx \
-	DDS_KeyWords.cxx
+dist_libSPlot2d_la_SOURCES = \
+	SPlot2d_Curve.cxx \
+	SPlot2d_Prs.cxx \
+	SPlot2d_ViewModel.cxx \
+	SPlot2d_ViewWindow.cxx
 
-CPPFLAGS+= $(OCC_INCLUDES)
+MOC_FILES = \
+	SPlot2d_ViewModel_moc.cxx \
+	SPlot2d_ViewWindow_moc.cxx
+nodist_libSPlot2d_la_SOURCES = $(MOC_FILES)
 
-LDFLAGS+= $(CAS_KERNEL) $(CAS_OCAF)
+nodist_salomeres_DATA = SPlot2d_msg_en.qm
 
-@CONCLUDE@
+libSPlot2d_la_CPPFLAGS=$(QT_INCLUDES) $(CAS_CPPFLAGS) $(QWT_INCLUDES) $(BOOST_CPPFLAGS) \
+	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../Plot2d -I$(srcdir)/../Prs \
+	-I$(srcdir)/../OBJECT
+libSPlot2d_la_LDFLAGS=$(QT_MT_LIBS) $(QWT_LIBS) ../SUIT/libsuit.la ../Plot2d/libPlot2d.la ../Prs/libSalomePrs.la
+
+
+
 
 

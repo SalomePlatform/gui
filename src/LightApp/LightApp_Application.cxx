@@ -458,8 +458,8 @@ void LightApp_Application::createActions()
   QString root;
   QAction* a;
   if (dir = getenv("GUI_ROOT_DIR")) {
-    root = Qtx::addSlash( Qtx::addSlash(dir) +  Qtx::addSlash("doc") +  Qtx::addSlash("salome") + 
-			  Qtx::addSlash("gui") +  Qtx::addSlash("GUI") );
+    root = Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") +
+                          Qtx::addSlash("salome") + Qtx::addSlash("gui") +  Qtx::addSlash("GUI") );
     if ( QFileInfo( root + aFileName ).exists() ) {
       a = createAction( id, tr( QString("GUI Help") ), QIconSet(),
 			tr( QString("GUI Help") ),
@@ -494,8 +494,8 @@ void LightApp_Application::createActions()
     QString modName = moduleName( *it );
     
     if (dir = getenv( modName + "_ROOT_DIR")) {
-      root = Qtx::addSlash( Qtx::addSlash(dir) +  Qtx::addSlash("doc") +  Qtx::addSlash("salome") + 
-			    Qtx::addSlash("gui") +  Qtx::addSlash(modName) );
+      root = Qtx::addSlash( Qtx::addSlash(dir) +  Qtx::addSlash("share") + Qtx::addSlash("doc") + 
+                            Qtx::addSlash("salome") + Qtx::addSlash("gui") +  Qtx::addSlash(modName) );
       if ( QFileInfo( root + aFileName ).exists() ) {
 
 	QAction* a = createAction( id, tr( moduleTitle(modName) + QString(" Help") ), QIconSet(),
@@ -974,7 +974,7 @@ void LightApp_Application::onHelpContentsModule()
   QCString dir = getenv( aComponentName + "_ROOT_DIR");
   QString homeDir = !aComponentName.compare(QString("KERNEL")) ? 
     Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") + Qtx::addSlash("salome") ) : 
-    Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("doc") + Qtx::addSlash("salome") + Qtx::addSlash("gui") +  Qtx::addSlash(aComponentName) );
+    Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") + Qtx::addSlash("salome") + Qtx::addSlash("gui") +  Qtx::addSlash(aComponentName) );
   
   QString helpFile = QFileInfo( homeDir + (!aComponentName.compare(QString("KERNEL")) ? aFileNameKernel : aFileName) ).absFilePath();
   SUIT_ResourceMgr* resMgr = resourceMgr();
@@ -1010,7 +1010,7 @@ void LightApp_Application::onHelpContentsModule()
 void LightApp_Application::onHelpContextModule(const QString& theComponentName, const QString& theFileName)
 {
   QCString dir = getenv( theComponentName + "_ROOT_DIR");
-  QString homeDir = Qtx::addSlash(Qtx::addSlash(dir)+Qtx::addSlash("doc")+Qtx::addSlash("salome")+Qtx::addSlash("gui")+Qtx::addSlash(theComponentName));
+  QString homeDir = Qtx::addSlash(Qtx::addSlash(dir)+Qtx::addSlash("share")+Qtx::addSlash("doc")+Qtx::addSlash("salome")+Qtx::addSlash("gui")+Qtx::addSlash(theComponentName));
 
   QString helpFile = QFileInfo( homeDir + theFileName ).absFilePath();
   SUIT_ResourceMgr* resMgr = resourceMgr();

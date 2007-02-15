@@ -27,7 +27,6 @@
 //  $Header$
 
 #include "VTKViewer_Actor.h"
-#include "VTKViewer_CellRectPicker.h"
 #include "VTKViewer_ExtractUnstructuredGrid.h"
 #include "VTKViewer_ConvexTool.h"
 #include "VTKViewer_Filter.h"
@@ -36,7 +35,6 @@
 #include "VTKViewer_Algorithm.h"
 #include "VTKViewer_InteractorStyle.h"
 #include "VTKViewer_PassThroughFilter.h"
-#include "VTKViewer_RectPicker.h"
 #include "VTKViewer_RenderWindow.h"
 #include "VTKViewer_RenderWindowInteractor.h"
 #include "VTKViewer_ShrinkFilter.h"

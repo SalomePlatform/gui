@@ -16,30 +16,35 @@
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
-# source path
-top_srcdir=@top_srcdir@
-top_builddir=../..
-srcdir=@srcdir@
-VPATH=.:@srcdir@:@top_srcdir@/idl
+#  File   : Makefile.in
+#  Author : Alexander Solovyov(OCN)
+#  Module : SOCC
+# $Header: /dn06/SALOME_CVS/GUI_SRC/src/SOCC/Makefile.in,v 1.1
 
+include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-@COMMENCE@
+lib_LTLIBRARIES=libSOCC.la
 
-EXPORT_HEADERS = SALOME_Prs.h
+salomeinclude_HEADERS= \
+	SOCC.h \
+	SOCC_ViewModel.h \
+	SOCC_Prs.h \
+	SOCC_ViewWindow.h
 
-# Libraries targets
+dist_libSOCC_la_SOURCES= \
+	SOCC_ViewModel.cxx \
+	SOCC_Prs.cxx \
+	SOCC_ViewWindow.cxx
 
-LIB = libSalomePrs.la
-LIB_SRC =	 SALOME_Prs.cxx
+MOC_FILES= \
+	SOCC_ViewModel_moc.cxx \
+	SOCC_ViewWindow_moc.cxx
+nodist_libSOCC_la_SOURCES= $(MOC_FILES)
 
-LIB_CLIENT_IDL = 
+libSOCC_la_CPPFLAGS=$(QT_INCLUDES) $(CAS_CPPFLAGS) $(BOOST_CPPFLAGS) \
+	-I$(srcdir)/../SUIT -I$(srcdir)/../OBJECT -I$(srcdir)/../Prs \
+	-I$(srcdir)/../OCCViewer -I$(srcdir)/../Qtx
 
-# Executables targets
-BIN = 
-BIN_SRC	=
-
-CPPFLAGS+=
-LDFLAGS+=
-
-
-@CONCLUDE@
+libSOCC_la_LDFLAGS=$(QT_MT_LIBS)
+libSOCC_la_LIBADD= ../SUIT/libsuit.la ../OBJECT/libSalomeObject.la \
+	../Prs/libSalomePrs.la ../OCCViewer/libOCCViewer.la

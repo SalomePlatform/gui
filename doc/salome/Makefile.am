@@ -16,45 +16,26 @@
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
-# source path
-top_srcdir=@top_srcdir@
-top_builddir=../..
-srcdir=@srcdir@
-VPATH=.:@srcdir@:@top_srcdir@/idl
 
+# -* Makefile *- 
+#
+# Author : Patrick GOLDBRONN (CEA)
+# Date : 30/11/2001
+# $Header$
+#
 
-@COMMENCE@
+SUBDIRS= tui gui
+SUBDIRSTUI= tui
+SUBDIRSGUI= gui
 
-EXPORT_HEADERS = \
-           SPlot2d.h \
-           SPlot2d_Curve.h \
-	   SPlot2d_Prs.h \
-	   SPlot2d_ViewModel.h \
-	   SPlot2d_ViewWindow.h
+usr_docs:
+	@@SETX@; for d in $(SUBDIRSGUI); do 	\
+	   (cd $$d && $(MAKE) $@) || exit 1; 	\
+	done;
 
-# .po files to transform in .qm
-PO_FILES = SPlot2d_msg_en.po
+docs: usr_docs
 
-# Libraries targets
-
-LIB = libSPlot2d.la
-LIB_SRC = 	  \
-           SPlot2d_Curve.cxx \
-	   SPlot2d_Prs.cxx \
-	   SPlot2d_ViewModel.cxx \
-	   SPlot2d_ViewWindow.cxx
-
-LIB_MOC = \
-	   SPlot2d_ViewModel.h \
-	   SPlot2d_ViewWindow.h
-
-CPPFLAGS+=$(QT_INCLUDES) $(OCC_INCLUDES) $(QWT_INCLUDES) $(BOOST_CPPFLAGS)
-LDFLAGS+=$(QT_MT_LIBS) $(QWT_LIBS) -lsuit -lPlot2d -lSalomePrs
-
-
-@CONCLUDE@
-
-
-
-
-
+dev_docs:
+	@@SETX@; for d in $(SUBDIRSTUI); do 	\
+	   (cd $$d && $(MAKE) $@) || exit 1; 	\
+	done;

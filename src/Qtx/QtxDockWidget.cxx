@@ -79,9 +79,20 @@ myEmpty( true )
 bool QtxDockWidget::Watcher::eventFilter( QObject* o, QEvent* e )
 {
   if ( o == myCont && ( e->type() == QEvent::Show || e->type() == QEvent::ShowToParent ||
-                        e->type() == QEvent::Hide || e->type() == QEvent::HideToParent ||
-                        e->type() == QEvent::ChildAdded ) )
+                        e->type() == QEvent::Hide || e->type() == QEvent::HideToParent ) )
+  {
+    installFilters();
     QApplication::postEvent( this, new QEvent( QEvent::User ) );
+  }
+
+  if ( o == myCont && e->type() == QEvent::ChildAdded )
+  {
+    QChildEvent* ce = (QChildEvent*)e;
+    if ( ce->child()->isWidgetType() )
+      ce->child()->installEventFilter( this );
+
+    QApplication::postEvent( this, new QEvent( QEvent::User ) );
+  }
 
   if ( o != myCont && e->type() == QEvent::WindowIconChange )
     updateIcon();
@@ -152,8 +163,6 @@ void QtxDockWidget::Watcher::hideContainer()
 */
 void QtxDockWidget::Watcher::customEvent( QEvent* e )
 {
-  installFilters();
-
   updateIcon();
   updateCaption();
   updateVisibility();

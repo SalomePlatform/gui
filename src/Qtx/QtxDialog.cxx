@@ -410,11 +410,9 @@ QSize QtxDialog::Border::minimumSizeHint() const
 */
 QtxDialog::QtxDialog( QWidget* parent, bool modal, bool allowResize, const int f, Qt::WindowFlags wf )
 : QDialog( parent, (Qt::WindowFlags)( wf | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::Dialog |
-	   //#ifdef WIN32
+#ifdef WIN32
            ( allowResize ? 0 : Qt::FramelessWindowHint ) |
-	   //#else
-	   //           WStyle_NormalBorder |
-	   //#endif
+#endif
            ( ( allowResize 
 #ifdef WIN32 
 	       // in qwidget_win.cpp flag WStyle_ContextHelp will be unset in WStyle_MinMax in switched ON

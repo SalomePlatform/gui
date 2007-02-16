@@ -55,10 +55,8 @@ public:
 
 public slots:
   virtual void      show();
-  virtual void      setAppropriate( QDockWindow*, bool );
 
 protected:
-  virtual void      setUpLayout();
   virtual void      customEvent( QEvent* );
 
 private slots:

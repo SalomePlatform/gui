@@ -24,6 +24,7 @@
 #include "QtxToolBar.h"
 #include "QtxResourceMgr.h"
 
+#include <QtGui/qevent.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qmenubar.h>
 #include <QtGui/qstatusbar.h>
@@ -56,7 +57,7 @@ QtxMainWindow::Filter::Filter( QWidget* wid, QtxMainWindow* mw, QObject* parent 
 myMain( mw ),
 myWidget( wid )
 {
-  myMain->installEventFilter( this );
+  QApplication::instance()->installEventFilter( this );
 };
 
 /*!
@@ -86,8 +87,8 @@ bool QtxMainWindow::Filter::eventFilter( QObject* o, QEvent* e )
 QtxMainWindow::QtxMainWindow( QWidget* parent, Qt::WindowFlags f )
 : QMainWindow( parent ),
 myMode( -1 ),
-myMenuBar( NULL ),
-myStatusBar( NULL )
+myMenuBar( 0 ),
+myStatusBar( 0 )
 {
 }
 
@@ -123,30 +124,26 @@ void QtxMainWindow::setDockableMenuBar( const bool on )
 
   if ( on && !myMenuBar )
   {
-    mb->setWindowTitle( tr( "Menu bar" ) );
-    QtxToolBar* dockMb = new QtxToolBar( true, this );
-    dockMb->setObjectName( "menu_bar_container" );
-    myMenuBar = dockMb;
+    myMenuBar = new QtxToolBar( true, this );
     new Filter( mb, this, myMenuBar );
-    dockMb->addWidget( mb );
-    dockMb->setAllowedAreas( Qt::TopToolBarArea | Qt::BottomToolBarArea );
-    addToolBar( Qt::TopToolBarArea, dockMb );
+    myMenuBar->setObjectName( "menu_bar_container" );
+    myMenuBar->setWindowTitle( tr( "Menu bar" ) );
+    myMenuBar->addWidget( mb );
+    myMenuBar->setAllowedAreas( Qt::TopToolBarArea | Qt::BottomToolBarArea );
 
-//    setAppropriate( dockMb, false );
+    addToolBarBreak( Qt::TopToolBarArea );
+    addToolBar( Qt::TopToolBarArea, myMenuBar );
+    addToolBarBreak( Qt::TopToolBarArea );
 
-    connect( dockMb, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
+    connect( myMenuBar, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
   }
   else if ( !on && myMenuBar )
   {
-    mb->setParent( this );
+    setMenuBar( mb );
     disconnect( myMenuBar, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
     delete myMenuBar;
     myMenuBar = 0;
-    QChildEvent ce( QEvent::ChildRemoved, mb );
-    QApplication::sendEvent( this, &ce );
   }
-
-  setUpLayout();
 }
 
 /*!
@@ -172,35 +169,28 @@ void QtxMainWindow::setDockableStatusBar( const bool on )
 
   if ( on && !myStatusBar )
   {
-    sb->setWindowTitle( tr( "Status bar" ) );
-    QtxToolBar* dockSb = new QtxToolBar( true, this );
-    dockSb->setObjectName( "status_bar_container" );
-    myStatusBar = dockSb;
-    new Filter( sb, this, myStatusBar );
     sb->setMinimumWidth( 250 );
     sb->setSizeGripEnabled( false );
+    myStatusBar = new QtxToolBar( true, this );
+    new Filter( sb, this, myStatusBar );
+    myStatusBar->setObjectName( "status_bar_container" );
+    myStatusBar->setWindowTitle( tr( "Status bar" ) );
+    myStatusBar->addWidget( sb );
+    myStatusBar->setAllowedAreas( Qt::TopToolBarArea | Qt::BottomToolBarArea );
 
-    dockSb->addWidget( sb );
-    dockSb->setAllowedAreas( Qt::TopToolBarArea | Qt::BottomToolBarArea );
-    addToolBar( Qt::BottomToolBarArea, dockSb );
+    addToolBar( Qt::BottomToolBarArea, myStatusBar );
 
-//    setAppropriate( dockSb, false );
-
-    connect( dockSb, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
+    connect( myStatusBar, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
   }
   else if ( !on && myStatusBar )
   {
-    sb->setParent( this );
+    setStatusBar( sb );
     disconnect( myStatusBar, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
     delete myStatusBar;
     myStatusBar = 0;
-    QChildEvent ce( QEvent::ChildRemoved, sb );
-    QApplication::sendEvent( this, &ce );
 
     sb->setSizeGripEnabled( true );
   }
-
-  setUpLayout();
 }
 
 /*!
@@ -348,28 +338,6 @@ void QtxMainWindow::saveGeometry( QtxResourceMgr* resMgr, const QString& section
 bool QtxMainWindow::eventFilter( QObject* o, QEvent* e )
 {
   return QMainWindow::eventFilter( o, e );
-}
-
-/*!
-  Controls whether or not the dw dock window's caption should appear
-  as a menu item on the dock window menu that lists the dock windows.
-  \param dw - window
-  \param a - if it is true, then it appears in menu
-*/
-void QtxMainWindow::setAppropriate( QDockWindow* dw, bool a )
-{
-//  QMainWindow::setAppropriate( dw, myStatusBar != dw && myMenuBar != dw && a );
-}
-
-/*!
-  Sets up layout
-*/
-void QtxMainWindow::setUpLayout()
-{
-//  QMainWindow::setUpLayout();
-
-  if ( myMenuBar && layout() )
-    layout()->setMenuBar( 0 );
 }
 
 /*!

@@ -108,7 +108,7 @@ public:
     SUIT_ResourceMgr* resMgr = 0;
     if ( myIniFormat )
     {
-      resMgr = new SUIT_ResourceMgr( appName );
+      resMgr = new SUIT_ResourceMgr( appName, QString( "%1Config" ) );
       resMgr->setCurrentFormat( "ini" );
     }
     else

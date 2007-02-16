@@ -65,7 +65,7 @@ private:
 QtxDockWidget::Watcher::Watcher( QtxDockWidget* cont )
 : QObject( cont ), myCont( cont ),
 myState( true ),
-myEmpty( true )
+myEmpty( false )
 {
   myCont->installEventFilter( this );
   myVisible = myCont->isVisibleTo( myCont->parentWidget() );

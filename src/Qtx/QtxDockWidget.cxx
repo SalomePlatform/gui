@@ -21,6 +21,7 @@
 
 #include "QtxDockWidget.h"
 
+#include <QtGui/qevent.h>
 #include <QtGui/qlayout.h>
 #include <QtGui/qaction.h>
 #include <QtGui/qapplication.h>
@@ -161,7 +162,7 @@ void QtxDockWidget::Watcher::hideContainer()
 /*!
   Event filter of custom events
 */
-void QtxDockWidget::Watcher::customEvent( QEvent* e )
+void QtxDockWidget::Watcher::customEvent( QEvent* )
 {
   updateIcon();
   updateCaption();
@@ -180,7 +181,7 @@ void QtxDockWidget::Watcher::installFilters()
   if ( !l )
     return;
 
-  for ( uint i = 0; i < l->count(); i++ )
+  for ( int i = 0; i < (int)l->count(); i++ )
   {
     if ( l->itemAt( i ) && l->itemAt( i )->widget() )
       l->itemAt( i )->widget()->installEventFilter( this );
@@ -200,7 +201,7 @@ void QtxDockWidget::Watcher::updateVisibility()
     return;
 
   bool vis = false;
-  for ( uint i = 0; i < l->count() && !vis; i++ )
+  for ( int i = 0; i < (int)l->count() && !vis; i++ )
     vis = l->itemAt( i ) && l->itemAt( i )->widget() && l->itemAt( i )->widget()->isVisibleTo( myCont );
 
   if ( myEmpty == vis )
@@ -329,6 +330,10 @@ void QtxDockWidget::setVisible( bool on )
     else
       myWatcher->hided( this );
   }
+
+  updateGeometry();
+  if ( widget() )
+    widget()->updateGeometry();
 
   QDockWidget::setVisible( on );
 }

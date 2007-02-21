@@ -106,6 +106,7 @@ public slots:
 protected slots:
   void                                onStudySaved( SUIT_Study* );
   void                                onStudyOpened( SUIT_Study* );
+  void                                onDesktopMessage( const QString& );
 
 protected:
   virtual void                        createActions();

@@ -134,7 +134,10 @@ extern "C" SALOMEAPP_EXPORT SUIT_Application* createApplication()
 /*!Constructor.*/
 SalomeApp_Application::SalomeApp_Application()
 : LightApp_Application()
-{}
+{
+  connect( desktop(), SIGNAL( message( const QString& ) ), 
+	   this,      SLOT( onDesktopMessage( const QString& ) ) );
+}
 
 /*!Destructor.
  *\li Destroy event filter.
@@ -1229,3 +1232,13 @@ bool SalomeApp_Application::checkDataObject(LightApp_DataObject* theObj)
 
   return false;
 }
+
+/*! Process standard messages from desktop */
+void SalomeApp_Application::onDesktopMessage( const QString& message )
+{
+  // update object browser
+  if ( message.lower() == "updateobjectbrowser" || 
+       message.lower() == "updateobjbrowser" )
+    updateObjectBrowser();
+}
+

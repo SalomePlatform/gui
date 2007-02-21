@@ -47,6 +47,11 @@ class STD_EXPORT STD_Application : public SUIT_Application
   Q_OBJECT
 
 public:
+  enum { FileNewId, FileOpenId, FileCloseId, FileSaveId, FileSaveAsId, FileExitId,
+	       ViewWindowsId, ViewToolBarsId, ViewStatusBarId, NewWindowId,
+         EditCutId, EditCopyId, EditPasteId, HelpAboutId, UserID };
+
+public:
   STD_Application();
   virtual ~STD_Application();
 
@@ -125,14 +130,6 @@ protected:
           MenuHelpId = 7
        };
 
-  enum {  FileNewId,   FileOpenId,   FileCloseId,
-	  FileSaveId,  FileSaveAsId, FileExitId, 
-	  ViewStatusBarId, ViewWindowsId, NewWindowId,
-          EditCutId, EditCopyId, EditPasteId,
-          HelpAboutId,
-	  UserID
-       };
- 
 protected:
   virtual void          createActions();
   virtual void          updateDesktopTitle();

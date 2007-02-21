@@ -973,11 +973,15 @@ void QtxActionMenuMgr::updateMenu( MenuNode* startNode, const bool rec, const bo
       if ( !isVisible( node->id, par ? par->id : -1 ) )
         continue;
 
+      bool isMenu = false;
       QAction* a = itemAction( node->id );
       if ( !a )
+      {
+        isMenu = true;
         a = menuAction( node->id );
+      }
 
-      if ( !a->menu() || !a->menu()->isEmpty() )
+      if ( !isMenu || !a->menu()->isEmpty() )
         mw->addAction( a );
     }
   }

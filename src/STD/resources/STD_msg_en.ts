@@ -454,12 +454,20 @@ Do you want to save changes?</translation>
         <translation>Study %1 saved</translation>
     </message>
     <message>
-        <source>TOT_DOCK_WINDOWS</source>
-        <translation>Show / hide dockable windows and toolbars</translation>
+        <source>TOT_DOCKWINDOWS</source>
+        <translation>Show / hide dockable windows</translation>
     </message>
     <message>
-        <source>MEN_DOCK_WINDOWS</source>
-        <translation>Windows and Toolbars</translation>
+        <source>MEN_DOCKWINDOWS</source>
+        <translation>Windows</translation>
+    </message>
+    <message>
+        <source>TOT_TOOLBARS</source>
+        <translation>Show / hide toolbars</translation>
+    </message>
+    <message>
+        <source>MEN_TOOLBARS</source>
+        <translation>Toolbars</translation>
     </message>
     <message>
         <source>ABOUT_INFO</source>

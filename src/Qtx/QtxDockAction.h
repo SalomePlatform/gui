@@ -16,47 +16,65 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      QtxAction.hxx
+// File:      QtxDockAction.h
 // Author:    Sergey TELKOV
 
-#ifndef QTXACTION_H
-#define QTXACTION_H
+#ifndef QTX_DOCKACTION_H
+#define QTX_DOCKACTION_H
 
-#include "Qtx.h"
+#include "QtxAction.h"
 
-#include <QtCore/qmap.h>
-#include <QtGui/qicon.h>
-#include <QtGui/qaction.h>
+#include <QtCore/qlist.h>
+
+class QIcon;
+class QString;
+class QToolBar;
+class QDockWidget;
+class QMainWindow;
 
 #ifdef WIN32
-#pragma warning ( disable:4251 )
+#pragma warning( disable:4251 )
 #endif
 
-class QMenu;
-
-class QTX_EXPORT QtxAction : public QAction
+class QTX_EXPORT QtxDockAction : public QtxAction
 {
   Q_OBJECT
 
 public:
-  QtxAction( QObject* = 0, const char* = 0, bool = false );
-  QtxAction( const QString&, const QString&, int, QObject*, const char* = 0, bool = false );
-  QtxAction( const QString&, const QIcon&, const QString&, int, QObject*, const char* = 0, bool = false );
-  virtual ~QtxAction();
+  enum { ToolBar, DockWidget, Both };
 
-  virtual bool eventFilter( QObject*, QEvent* );
+public:
+  QtxDockAction( QMainWindow* );
+  QtxDockAction( const QString&, const QString&, QMainWindow* );
+  QtxDockAction( const QString&, const QIcon&, const QString&, QMainWindow* );
+  virtual ~QtxDockAction();
 
-  virtual bool addTo( QWidget* );
-  virtual bool addTo( QWidget*, const int );
-  virtual bool removeFrom( QWidget* );
+  int          dockType() const;
+  void         setDockType( const int );
+
+  QMainWindow* mainWindow() const;
+
+private Q_SLOTS:
+  void         onAboutToShow();
 
 protected:
   virtual void addedTo( QWidget* );
   virtual void removedFrom( QWidget* );
+
+private:
+  void         initialize();
+  void         updateMenu();
+
+  void         toolBars( QList<QToolBar*>& ) const;
+  void         dockWidgets( QList<QDockWidget*>& ) const;
+
+private:
+  int          myType;
+  QMainWindow* myMain;
 };
 
 #ifdef WIN32
-#pragma warning ( default:4251 )
+#pragma warning( default:4251 )
 #endif
 
 #endif

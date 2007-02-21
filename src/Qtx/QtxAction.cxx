@@ -22,7 +22,9 @@
 #include "QtxAction.h"
 
 #include <QtGui/qmenu.h>
+#include <QtGui/qevent.h>
 #include <QtGui/qmenubar.h>
+#include <QtGui/qapplication.h>
 
 /*!
 	Name: QtxAction [public]
@@ -34,6 +36,8 @@ QtxAction::QtxAction( QObject* parent, const char* name, bool toggle )
 : QAction( parent )
 {
   setCheckable( toggle );
+
+  QApplication::instance()->installEventFilter( this );
 }
 
 /*!
@@ -53,6 +57,8 @@ QtxAction::QtxAction( const QString& text, const QIcon& icon,
   setToolTip( text );
   setShortcut( accel );
   setCheckable( toggle );
+
+  QApplication::instance()->installEventFilter( this );
 }
 
 /*!
@@ -70,6 +76,8 @@ QtxAction::QtxAction( const QString& text, const QString& menuText, int accel,
   setToolTip( text );
   setShortcut( accel );
   setCheckable( toggle );
+
+  QApplication::instance()->installEventFilter( this );
 }
 
 /*!
@@ -79,6 +87,18 @@ QtxAction::QtxAction( const QString& text, const QString& menuText, int accel,
 
 QtxAction::~QtxAction()
 {
+}
+
+bool QtxAction::eventFilter( QObject* o, QEvent* e )
+{
+  if ( o && o->isWidgetType() )
+  {
+    if ( e->type() == QEvent::ActionAdded && ((QActionEvent*)e)->action() == this )
+      addedTo( (QWidget*)o );
+    if ( e->type() == QEvent::ActionRemoved && ((QActionEvent*)e)->action() == this )
+      removedFrom( (QWidget*)o );
+  }
+  return QAction::eventFilter( o, e );
 }
 
 /*!
@@ -132,80 +152,10 @@ bool QtxAction::removeFrom( QWidget* w )
   return true;
 }
 
-/*!
-	Name: setPopup [virtual public]
-	Desc: Set or unset the sub popup menu for item with specified id in the given popup.
-*/
-
-void QtxAction::setPopup( QWidget* w, const int id, QMenu* subPopup ) const
+void QtxAction::addedTo( QWidget* )
 {
-/*
-  if ( !w )
-    return;
+}
 
-  QMenuData* pmd = 0;
-
-  if ( w->inherits( "QPopupMenu" ) )
-    pmd = ::qt_cast<QPopupMenu*>( w );
-  else if ( w->inherits( "QMenuBar" ) )
-    pmd = ::qt_cast<QMenuBar*>( w );
-
-  if ( !pmd )
-    return;  // bad widget
-
-  QMenuData* md = 0;
-  QMenuItem* item = pmd->findItem( id, &md );
-  if ( !item || md != pmd )
-    return;  // item is not found
-
-  QPopupMenu* oldPopup = item->popup();
-  if ( oldPopup == subPopup )
-    return;  // popup is not changed
-
-  // get properties
-  int accel = pmd->accel( id );
-  bool isOn = pmd->isItemEnabled( id );
-  bool isVisible = pmd->isItemVisible( id );
-  int pos = pmd->indexOf( id );
-  QString text = pmd->text( id );
-  QIconSet icon;
-  if ( pmd->iconSet( id ) )
-    icon = *pmd->iconSet( id );
-
-  // remove previous item
-  pmd->removeItem( id );
-
-  // add new item
-  if ( w->inherits( "QPopupMenu" ) )
-  {
-    // --- QPopupMenu ---
-    QPopupMenu* popup = (QPopupMenu*)w;
-    if ( icon.isNull() )
-      pos = popup->indexOf( subPopup ? popup->insertItem( text, subPopup, id, pos ) :
-			                                 popup->insertItem( text, id, pos ) );
-    else
-      pos = popup->indexOf( subPopup ? popup->insertItem( icon, text, subPopup, id, pos ) : 
-			                                 popup->insertItem( icon, text, id, pos ) );
-  }
-  else
-  {
-    // --- QMenuBar ---
-    QMenuBar* mb = (QMenuBar*)w;
-    if ( icon.isNull() )
-      pos = mb->indexOf( subPopup ? mb->insertItem( text, subPopup, id, pos ) : 
- 			                              mb->insertItem( text, id, pos ) );
-    else
-      pos = mb->indexOf( subPopup ? mb->insertItem( icon, text, subPopup, id, pos ) : 
- 			                              mb->insertItem( icon, text, id, pos ) );
-  }
-
-  // restore properties
-  pmd->setId( pos, id ); // for sure (if id < 0)
-  pmd->setAccel( accel, id );
-  pmd->setItemEnabled( id, isOn );
-  pmd->setItemVisible( id, isVisible );
-
-  // delete old popup
-  delete oldPopup;
-*/
+void QtxAction::removedFrom( QWidget* )
+{
 }

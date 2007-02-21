@@ -30,7 +30,7 @@
 #include <SUIT_MessageBox.h>
 #include <SUIT_ResourceMgr.h>
 
-//#include <QtxDockAction.h>
+#include <QtxDockAction.h>
 #include <QtxActionMenuMgr.h>
 #include <QtxActionToolMgr.h>
 
@@ -185,11 +185,15 @@ void STD_Application::createActions()
                 tr( "MEN_DESK_HELP_ABOUT" ), tr( "PRP_DESK_HELP_ABOUT" ),
                 Qt::SHIFT+Qt::Key_A, desk, false, this, SLOT( onHelpAbout() ) );
 
-/*
-  QtxDockAction* da = new QtxDockAction( tr( "TOT_DOCK_WINDOWS" ), tr( "MEN_DOCK_WINDOWS" ), desk );
-  registerAction( ViewWindowsId, da );
-  da->setAutoPlace( false );
-*/
+
+  QtxDockAction* dwa = new QtxDockAction( tr( "TOT_DOCKWINDOWS" ), tr( "MEN_DOCKWINDOWS" ), desk );
+  dwa->setDockType( QtxDockAction::DockWidget );
+  registerAction( ViewWindowsId, dwa );
+
+  QtxDockAction* tba = new QtxDockAction( tr( "TOT_TOOLBARS" ), tr( "MEN_TOOLBARS" ), desk );
+  tba->setDockType( QtxDockAction::ToolBar );
+  registerAction( ViewToolBarsId, tba );
+
   // Create menus
 
   int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1, MenuFileId, 0 );
@@ -214,6 +218,7 @@ void STD_Application::createActions()
   createMenu( EditPasteId, editMenu );
   createMenu( separator(), editMenu );
 
+  createMenu( ViewToolBarsId,  viewMenu, 0 );
   createMenu( ViewWindowsId,   viewMenu, 0 );
   createMenu( separator(),     viewMenu, -1, 10 );
   createMenu( ViewStatusBarId, viewMenu, 10 );

@@ -35,6 +35,7 @@
 QtxAction::QtxAction( QObject* parent, const char* name, bool toggle )
 : QAction( parent )
 {
+  setObjectName( name );
   setCheckable( toggle );
 
   QApplication::instance()->installEventFilter( this );
@@ -56,6 +57,7 @@ QtxAction::QtxAction( const QString& text, const QIcon& icon,
 {
   setToolTip( text );
   setShortcut( accel );
+  setObjectName( name );
   setCheckable( toggle );
 
   QApplication::instance()->installEventFilter( this );
@@ -75,6 +77,7 @@ QtxAction::QtxAction( const QString& text, const QString& menuText, int accel,
 {
   setToolTip( text );
   setShortcut( accel );
+  setObjectName( name );
   setCheckable( toggle );
 
   QApplication::instance()->installEventFilter( this );

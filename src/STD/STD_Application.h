@@ -99,6 +99,8 @@ signals:
 
 public slots:
   virtual void          onNewDoc();
+  virtual bool          onNewDoc( const QString& );
+
   virtual void          onCloseDoc( bool ask = true );
   virtual void          onSaveDoc();
   virtual bool          onSaveAsDoc();

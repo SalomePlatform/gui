@@ -245,27 +245,44 @@ void STD_Application::createActions()
 /*!Opens new application*/
 void STD_Application::onNewDoc()
 {
+  onNewDoc( QString() );
+}
+
+/*!Opens new application*/
+bool STD_Application::onNewDoc( const QString& name )
+{
   QApplication::setOverrideCursor( Qt::WaitCursor );
 
+  bool res = true;
   if ( !activeStudy() )
   {
     createEmptyStudy();
-    activeStudy()->createDocument();
-    studyCreated( activeStudy() );
+    res = activeStudy()->createDocument( name );
+    if ( res )
+      studyCreated( activeStudy() );
+    else
+    {
+      delete activeStudy();
+      setActiveStudy( 0 );
+    }
   }
   else
   {
     SUIT_Application* aApp = startApplication( 0, 0 );
     if ( aApp->inherits( "STD_Application" ) )
-      ((STD_Application*)aApp)->onNewDoc();
+      res = ((STD_Application*)aApp)->onNewDoc( name );
     else
     {
       aApp->createEmptyStudy();
-      aApp->activeStudy()->createDocument();
+      res = aApp->activeStudy()->createDocument( name );
     }
+    if ( !res )
+      aApp->closeApplication();
   }
 
   QApplication::restoreOverrideCursor();
+
+  return res;
 }
 
 /*!Put file name from file dialog to onOpenDoc(const QString&) function*/

@@ -1984,7 +1984,9 @@ void QtxWorkstackArea::updateCurrent()
     setBlocked( *it, true );
   }
 
-  myStack->setCurrentWidget( child( widget( myBar->tabId( myBar->currentIndex() ) ) ) );
+  QWidget* cur = child( widget( myBar->tabId( myBar->currentIndex() ) ) );
+  if ( cur )
+    myStack->setCurrentWidget( cur );
 
   for ( QWidgetList::iterator itr = myList.begin(); itr != myList.end(); ++itr )
     setBlocked( *itr, map.contains( *itr ) ? map[*itr] : false );

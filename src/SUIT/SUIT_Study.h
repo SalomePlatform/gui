@@ -51,9 +51,9 @@ public:
   virtual bool      isSaved()  const;
   virtual bool      isModified() const;
 
-  virtual void      createDocument();
   virtual void      closeDocument( bool = true );
   virtual bool      openDocument( const QString& );
+  virtual bool      createDocument( const QString& );
 
   bool              saveDocument();
   virtual bool      saveDocumentAs( const QString& );

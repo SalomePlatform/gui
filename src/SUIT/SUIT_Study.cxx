@@ -118,8 +118,9 @@ void SUIT_Study::closeDocument(bool permanently)
   Custom document initialization to be performed \n
    within onNewDoc() handler can be put here
 */
-void SUIT_Study::createDocument()
+bool SUIT_Study::createDocument( const QString& )
 {
+  return true;
 }
 
 /*!

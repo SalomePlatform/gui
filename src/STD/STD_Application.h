@@ -89,6 +89,9 @@ public:
 
   virtual void          contextMenuPopup( const QString&, QMenu*, QString& ) {}
 
+  bool                  exitConfirmation() const;
+  void                  setExitConfirmation( const bool );
+
 signals:
   /*!emit that view manager added*/
   void                  viewManagerAdded( SUIT_ViewManager* );
@@ -156,6 +159,7 @@ private:
   SUIT_ViewManager*     myActiveViewMgr;
 
 private:
+  bool                  myExitConfirm;
   bool                  myEditEnabled;
   bool                  myClosePermanently;
 };

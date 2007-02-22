@@ -87,7 +87,7 @@ void SUIT_ViewManager::setTitle( const QString& theTitle )
     return;
 
   myTitle = theTitle;
-  for ( uint i = 0; i < myViews.count(); i++ )
+  for ( int i = 0; i < (int)myViews.count(); i++ )
     setViewName( myViews[i] );
 }
 
@@ -216,9 +216,11 @@ bool SUIT_ViewManager::insertView(SUIT_ViewWindow* theView)
   connect(theView, SIGNAL(contextMenuRequested( QContextMenuEvent * )),
           this,    SLOT  (onContextMenuRequested( QContextMenuEvent * )));
 
-  for (uint i = 0; i < aSize; i++) {
-    if (myViews[i]==0) {
-      myViews.insert(i, theView);
+  for ( uint i = 0; i < aSize; i++ )
+  {
+    if ( myViews[i] == 0 )
+    {
+      myViews[i] = theView;
       return true;
     }
   }
@@ -272,7 +274,7 @@ void SUIT_ViewManager::removeView( SUIT_ViewWindow* theView )
 */
 void SUIT_ViewManager::setDestructiveClose( const bool on )
 {
-  for ( uint i = 0; i < myViews.count(); i++ )
+  for ( int i = 0; i < (int)myViews.count(); i++ )
     myViews[i]->setDestructiveClose( on );
 }
 
@@ -282,7 +284,7 @@ void SUIT_ViewManager::setDestructiveClose( const bool on )
 bool SUIT_ViewManager::isVisible() const
 {
   bool res = false;
-  for ( uint i = 0; i < myViews.count() && !res; i++ )
+  for ( int i = 0; i < (int)myViews.count() && !res; i++ )
     res = myViews[i]->isVisibleTo( myViews[i]->parentWidget() );
   return res;
 }
@@ -292,7 +294,7 @@ bool SUIT_ViewManager::isVisible() const
 */
 void SUIT_ViewManager::setShown( const bool on )
 {
-  for ( uint i = 0; i < myViews.count(); i++ )
+  for ( int i = 0; i < (int)myViews.count(); i++ )
     myViews.at( i )->setShown( on );
 }
 
@@ -322,7 +324,7 @@ void SUIT_ViewManager::onWindowActivated(SUIT_ViewWindow* view)
 */
 void SUIT_ViewManager::closeAllViews()
 {
-  for ( uint i = 0; i < myViews.size(); i++ )
+  for ( int i = 0; i < (int)myViews.size(); i++ )
     delete myViews[i];
   myViews.clear();
 }
@@ -358,7 +360,7 @@ void SUIT_ViewManager::onContextMenuRequested( QContextMenuEvent* e )
 }
 
 /*!Context menu popup for \a popup.*/
-void SUIT_ViewManager::contextMenuPopup( QPopupMenu* popup )
+void SUIT_ViewManager::contextMenuPopup( QMenu* popup )
 {
   SUIT_ViewModel* vm = getViewModel();
   if ( vm )

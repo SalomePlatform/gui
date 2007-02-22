@@ -46,25 +46,25 @@ public:
   typedef QMap<HotOperation, Qt::KeyboardModifier> StatesMap;
   typedef QMap<HotOperation, Qt::MouseButton>      ButtonsMap;
   
-	SUIT_ViewModel();
-	virtual ~SUIT_ViewModel();
+  SUIT_ViewModel();
+  virtual ~SUIT_ViewModel();
 
-	virtual SUIT_ViewWindow* createView(SUIT_Desktop* theDesktop);
+  virtual SUIT_ViewWindow* createView( SUIT_Desktop* theDesktop );
 
-	virtual void      setViewManager(SUIT_ViewManager* theViewManager) { myViewManager = theViewManager; }
-	SUIT_ViewManager* getViewManager() const { return myViewManager; }
+  virtual void      setViewManager(SUIT_ViewManager* theViewManager) { myViewManager = theViewManager; }
+  SUIT_ViewManager* getViewManager() const { return myViewManager; }
 
   virtual QString   getType() const { return "SUIT_ViewModel"; }
 
-  virtual void      contextMenuPopup(QPopupMenu*) {}
+  virtual void      contextMenuPopup( QMenu* ) {}
 
   static void       setHotButton( HotOperation theOper, Qt::KeyboardModifier theState,
-                                                        Qt::MouseButton theButton );
+				  Qt::MouseButton theButton );
   static void       getHotButton( HotOperation theOper, Qt::KeyboardModifier& theState,
-                                                        Qt::MouseButton& theButton );
+				  Qt::MouseButton& theButton );
 
 protected:
-	SUIT_ViewManager* myViewManager;
+  SUIT_ViewManager* myViewManager;
 
 public:
   static StatesMap  myStateMap;

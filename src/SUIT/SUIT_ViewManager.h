@@ -31,7 +31,7 @@ class SUIT_Study;
 class SUIT_Desktop;
 class SUIT_ViewModel;
 
-class QPopupMenu;
+class QMenu;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -47,7 +47,7 @@ public:
   virtual ~SUIT_ViewManager();
 
   virtual QString  popupClientType() const { return getType(); }
-  virtual void     contextMenuPopup( QPopupMenu* );
+  virtual void     contextMenuPopup( QMenu* );
   
   void             setViewModel(SUIT_ViewModel* theViewModel);
   SUIT_ViewModel*  getViewModel() { return myViewModel; }

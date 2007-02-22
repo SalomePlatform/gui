@@ -53,8 +53,10 @@ extern "C" STD_EXPORT SUIT_Application* createApplication()
 /*!Constructor.*/
 STD_Application::STD_Application()
 : SUIT_Application(),
+myExitConfirm( true ),
 myEditEnabled( true ),
 myActiveViewMgr( 0 )
+
 {
   setDesktop( new STD_MDIDesktop() );
 }
@@ -63,6 +65,18 @@ myActiveViewMgr( 0 )
 STD_Application::~STD_Application()
 {
   clearViewManagers();
+}
+
+/*! \retval requirement of exit confirmation*/
+bool STD_Application::exitConfirmation() const
+{
+  return myExitConfirm;
+}
+
+/*! Set the requirement of exit confirmation*/
+void STD_Application::setExitConfirmation( const bool on )
+{
+  myExitConfirm = on;
 }
 
 /*! \retval QString "StdApplication"*/
@@ -535,8 +549,10 @@ bool STD_Application::onSaveAsDoc()
 /*!Closing session.*/
 void STD_Application::onExit()
 {
-  int aAnswer = SUIT_MessageBox::info2( desktop(), tr( "INF_DESK_EXIT" ), tr( "QUE_DESK_EXIT" ),
-                                        tr( "BUT_OK" ), tr( "BUT_CANCEL" ), 1, 2, 2 );
+  int aAnswer = 1;
+  if ( exitConfirmation() )
+    aAnswer = SUIT_MessageBox::info2( desktop(), tr( "INF_DESK_EXIT" ), tr( "QUE_DESK_EXIT" ),
+				      tr( "BUT_OK" ), tr( "BUT_CANCEL" ), 1, 2, 2 );
   if ( aAnswer == 1 )
     SUIT_Session::session()->closeSession();
 }
@@ -745,9 +761,6 @@ void STD_Application::onHelpAbout()
 void STD_Application::createEmptyStudy()
 {
   SUIT_Application::createEmptyStudy();
-
-  SUIT_ViewManager* vm = new SUIT_ViewManager( activeStudy(), desktop(), new SUIT_ViewModel() );
-  addViewManager( vm );
 }
 
 /*!Sets active manager to \vm, if \vm in view managers list.*/

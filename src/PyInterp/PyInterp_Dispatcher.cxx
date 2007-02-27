@@ -39,11 +39,16 @@ void PyInterp_Request::process()
 {
   safeExecute();
 
-  myMutex.lock();
-  //if ( !IsSync() && getListener() && getEvent() )
-  if ( getListener() && getEvent() )
-    postEvent();
-  myMutex.unlock();
+  bool isSync = IsSync();
+
+  if ( !isSync )
+    myMutex.lock();
+
+  if ( listener() )
+    processEvent( listener() );
+
+  if ( !isSync )
+    myMutex.unlock();
 }
 
 void PyInterp_Request::safeExecute()
@@ -64,18 +69,22 @@ QEvent* PyInterp_Request::createEvent() const
   return new PyInterp_Event( PyInterp_Event::NOTIFY, (PyInterp_Request*)this );
 }
 
-QEvent* PyInterp_Request::getEvent()
+void PyInterp_Request::processEvent( QObject* o )
 {
-  //if ( !myEvent && !IsSync() )
-  if ( !myEvent )
-    myEvent = createEvent();
-  return myEvent;
-}
+  if ( !o )
+    return;
 
-void PyInterp_Request::postEvent()
-{
-//  MESSAGE("*** PyInterp_Request::postEvent(): for Qt 3.3.3")
-  QCoreApplication::postEvent( getListener(), getEvent() );
+  QEvent* e = createEvent();
+  if ( !e )
+    return;
+
+  if ( !IsSync() )
+    QCoreApplication::postEvent( o, e );
+  else
+  {
+    QCoreApplication::sendEvent( o, e );
+    delete e;
+  }
 }
 
 void PyInterp_Request::setListener( QObject* o )
@@ -143,11 +152,12 @@ void PyInterp_Dispatcher::Exec( PyInterp_Request* theRequest )
   //if ( theRequest->IsSync() && !IsBusy() ) // synchronous processing - nothing is done if dispatcher is busy!
   if ( theRequest->IsSync() ) // synchronous processing - nothing is done if dispatcher is busy!
     processRequest( theRequest );
-  else { // asynchronous processing
+  else // asynchronous processing
+  {
     myQueueMutex.lock();
     myQueue.push_back( theRequest );
-    if ( theRequest->getListener() )
-      QObject::connect( theRequest->getListener(), SIGNAL( destroyed( QObject* ) ), myWatcher, SLOT( onDestroyed( QObject* ) ) );
+    if ( theRequest->listener() )
+      QObject::connect( theRequest->listener(), SIGNAL( destroyed( QObject* ) ), myWatcher, SLOT( onDestroyed( QObject* ) ) );
     myQueueMutex.unlock();  
 
     if ( !IsBusy() )
@@ -197,8 +207,10 @@ void PyInterp_Dispatcher::objectDestroyed( const QObject* o )
   // prepare for modification of the queue
   myQueueMutex.lock();
 
-  for ( std::list<RequestPtr>::iterator it = myQueue.begin(); it != myQueue.end(); ++it ){
-    if ( o == (*it)->getListener() ){
+  for ( std::list<RequestPtr>::iterator it = myQueue.begin(); it != myQueue.end(); ++it )
+  {
+    if ( o == (*it)->listener() )
+    {
       (*it)->setListener( 0 ); // to prevent event posting
       it = myQueue.erase( it );
     }
@@ -206,4 +218,3 @@ void PyInterp_Dispatcher::objectDestroyed( const QObject* o )
 
   myQueueMutex.unlock();
 }
-

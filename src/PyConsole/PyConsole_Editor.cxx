@@ -131,8 +131,8 @@ public:
     \param sync        if True the request is processed synchronously 
   */
   ExecCommand( PyInterp_base*          theInterp, 
-	       const char*             theCommand,
-	       PyConsole_Editor* theListener, 
+	       const QString&          theCommand,
+	       PyConsole_Editor*       theListener, 
 	       bool                    sync = false )
     : PyInterp_LockRequest( theInterp, theListener, sync ),
       myCommand( theCommand ), myState( PyInterp_Event::OK )
@@ -190,11 +190,12 @@ private:
   \param theParent parent widget
 */
 PyConsole_Editor::PyConsole_Editor( PyInterp_base* theInterp, 
-						QWidget*       theParent )
-  : QTextEdit( theParent ),
-    myInterp( 0 ),
-    myCmdInHistory( -1 ),
-    myEventLoop( 0 )
+				    QWidget*       theParent )
+: QTextEdit( theParent ),
+  myInterp( 0 ),
+  myCmdInHistory( -1 ),
+  myEventLoop( 0 ),
+  myIsSync( false )
 {
   QString fntSet( "" );
   QFont aFont = SUIT_Tools::stringToFont( fntSet );
@@ -217,6 +218,16 @@ PyConsole_Editor::PyConsole_Editor( PyInterp_base* theInterp,
 */
 PyConsole_Editor::~PyConsole_Editor()
 {
+}
+
+bool PyConsole_Editor::isSync() const
+{
+  return myIsSync;
+}
+
+void PyConsole_Editor::setIsSync( const bool s )
+{
+  myIsSync = s;
 }
 
 /*!
@@ -274,9 +285,12 @@ void PyConsole_Editor::exec( const QString& command )
   
   // post a request to execute Python command;
   // editor will be informed via a custom event that execution has been completed
-  PyInterp_Dispatcher::Get()->Exec( new ExecCommand( myInterp, 
-						     cmd.toLatin1(), 
-						     this ) );
+  PyInterp_Dispatcher::Get()->Exec( createRequest( cmd ) );
+}
+
+PyInterp_Request* PyConsole_Editor::createRequest( const QString& cmd )
+{
+  return new ExecCommand( myInterp, cmd, this, isSync() );
 }
 
 /*!
@@ -327,9 +341,7 @@ void PyConsole_Editor::handleReturn()
   
   // post a request to execute Python command;
   // editor will be informed via a custom event that execution has been completed
-  PyInterp_Dispatcher::Get()->Exec( new ExecCommand( myInterp, 
-						     myCommandBuffer.toLatin1(), 
-						     this ) );
+  PyInterp_Dispatcher::Get()->Exec( createRequest( myCommandBuffer ) );
 }
 
 /*!
@@ -837,48 +849,51 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
 */
 void PyConsole_Editor::customEvent( QEvent* event )
 {
-  switch( event->type() ) {
+  switch( event->type() )
+  {
   case PyInterp_Event::OK:
   case PyInterp_Event::ERROR:
+  {
+    PyInterp_Event* pe = dynamic_cast<PyInterp_Event*>( event );
+    if ( pe )
     {
-      PyInterp_Event* pe = dynamic_cast<PyInterp_Event*>( event );
-      if ( pe ){
-	ExecCommand* ec = dynamic_cast<ExecCommand*>( pe->GetRequest() );
-	if ( ec ) {
-	  // The next line has appeared dangerous in case if
-	  // Python command execution has produced very large output.
-	  // A more clever approach is needed...
-	  // print python output
-	  addText( ec->myOutput, true );
-	  addText( ec->myError );
-	}
+      ExecCommand* ec = dynamic_cast<ExecCommand*>( pe->GetRequest() );
+      if ( ec )
+      {
+	// The next line has appeared dangerous in case if
+	// Python command execution has produced very large output.
+	// A more clever approach is needed...
+	// print python output
+	addText( ec->myOutput, true );
+	addText( ec->myError );
       }
-      // clear command buffer
-      myCommandBuffer.truncate( 0 );
-      // set "ready" prompt
-      myPrompt = READY_PROMPT;
-      addText( myPrompt );
-      // unset busy cursor
-      unsetCursor();
-      // stop event loop (if running)
-      if( myEventLoop )
-	myEventLoop->exit();
-      break;
     }
+    // clear command buffer
+    myCommandBuffer.truncate( 0 );
+    // set "ready" prompt
+    myPrompt = READY_PROMPT;
+    addText( myPrompt );
+    // unset busy cursor
+    unsetCursor();
+    // stop event loop (if running)
+    if ( myEventLoop )
+      myEventLoop->exit();
+    break;
+  }
   case PyInterp_Event::INCOMPLETE:
-    {
-      // extend command buffer (multi-line command)
-      myCommandBuffer.append( "\n" );
-      // set "dot" prompt
-      myPrompt = DOTS_PROMPT;
-      addText( myPrompt, true );
-      // unset busy cursor
-      unsetCursor();
-      // stop event loop (if running)
-      if( myEventLoop )
-	myEventLoop->exit();
-      break;
-    }
+  {
+    // extend command buffer (multi-line command)
+    myCommandBuffer.append( "\n" );
+    // set "dot" prompt
+    myPrompt = DOTS_PROMPT;
+    addText( myPrompt, true );
+    // unset busy cursor
+    unsetCursor();
+    // stop event loop (if running)
+    if ( myEventLoop )
+      myEventLoop->exit();
+    break;
+  }
   default:
     QTextEdit::customEvent( event );
   }
@@ -888,7 +903,8 @@ void PyConsole_Editor::customEvent( QEvent* event )
   // unset history browsing mode
   myCmdInHistory = -1;
 
-  if ( (int)event->type() == (int)PyInterp_Event::OK && myQueue.count() > 0 ) {
+  if ( (int)event->type() == (int)PyInterp_Event::OK && myQueue.count() > 0 )
+  {
     // process the next sheduled command from the queue (if there is any)
     QString nextcmd = myQueue[0];
     myQueue.pop_front();

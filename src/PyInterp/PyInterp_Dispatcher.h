@@ -48,12 +48,12 @@ class PYINTERP_EXPORT PyInterp_Request
   PyInterp_Request( const PyInterp_Request& );
 
 protected:
-  virtual         ~PyInterp_Request() {}; 
+  virtual ~PyInterp_Request() {};
   // protected destructor - to control deletion of requests
 
 public:
   PyInterp_Request( QObject* listener, bool sync = false )
-    : myIsSync( sync ), myListener( listener ), myEvent( 0 ) {};
+    : myIsSync( sync ), myListener( listener ) {};
 
   static void     Destroy( PyInterp_Request* );
   // Deletes a request
@@ -71,18 +71,17 @@ protected:
   virtual QEvent* createEvent() const;
   // This method can be overridden to customize notification event creation
 
-private:
-  void            process();
-  QObject*        getListener() const { return myListener; }
-  void            setListener( QObject* );
-  QEvent*         getEvent();
-  void            postEvent();
+  virtual void    processEvent( QObject* );
 
 private:
+  void            process();
+  QObject*        listener() const { return myListener; }
+  void            setListener( QObject* );
+
+private:
+  QMutex          myMutex;
   bool            myIsSync;
   QObject*        myListener;
-  QEvent*         myEvent;
-  QMutex          myMutex;
 };
 
 class PYINTERP_EXPORT PyInterp_LockRequest : public PyInterp_Request

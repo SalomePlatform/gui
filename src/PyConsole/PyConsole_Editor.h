@@ -33,6 +33,7 @@
 class QMenu;
 class QEventLoop;
 class PyConsole_Interp;
+class PyInterp_Request;
 
 class PYCONSOLE_EXPORT PyConsole_Editor : public QTextEdit
 {
@@ -48,11 +49,16 @@ public:
   virtual void   exec( const QString& command );
   void           execAndWait( const QString& command );
 
+  bool           isSync() const;
+  void           setIsSync( const bool );
+
 protected:
   virtual void   dropEvent( QDropEvent* event );
   virtual void   mouseReleaseEvent( QMouseEvent* event );
   virtual void   keyPressEvent ( QKeyEvent* event);
   virtual void   customEvent( QEvent* event);
+
+  virtual PyInterp_Request* createRequest( const QString& );
   
 public slots:
   void           cut();
@@ -72,6 +78,7 @@ private:
   QEventLoop*    myEventLoop;        //!< internal event loop
   QString        myBanner;           //!< current banner
   QStringList    myQueue;            //!< python commands queue
+  bool           myIsSync;
 };
 
 #endif

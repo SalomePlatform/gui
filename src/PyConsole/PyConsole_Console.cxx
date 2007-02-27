@@ -102,6 +102,16 @@ void PythonConsole::execAndWait( const QString& command )
     myEditor->execAndWait( command );
 }
 
+bool PythonConsole::isSync() const
+{
+  return myEditor->isSync();
+}
+
+void PythonConsole::setIsSync( const bool s )
+{
+  myEditor->setIsSync( s );
+}
+
 /*!
   \brief Change the python console's font.
   \param f - new font

@@ -56,6 +56,9 @@ public:
   QFont          font() const;
   virtual void   setFont( const QFont& );
 
+  bool           isSync() const;
+  void           setIsSync( const bool );
+
   void           exec( const QString& command );
   void           execAndWait( const QString& command );
 
@@ -73,7 +76,5 @@ private:
   PyConsole_Editor*   myEditor;    //!< python console editor widget
   QMap<int, QAction*> myActions;
 };
-
-
 
 #endif

@@ -108,15 +108,20 @@ void STD_Application::closeApplication()
     savePreferences();
   SUIT_Study* study = activeStudy();
 
-  if ( study ){
+  if ( study )
+  {
+    beforeCloseDoc( study );
+
     study->closeDocument();
 
     setActiveStudy( 0 );
     delete study;
+
+    afterCloseDoc();
   }
 
   setDesktop( 0 );
-  
+
   SUIT_Application::closeApplication();
 }
 

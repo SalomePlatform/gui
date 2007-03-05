@@ -23,7 +23,11 @@
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-SUBDIRS=Test
+if CPPUNIT_IS_OK
+if GUI_ENABLE_CORBA
+  SUBDIRS=Test
+endif
+endif
 
 lib_LTLIBRARIES= libSalomeApp.la
 

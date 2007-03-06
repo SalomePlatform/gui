@@ -34,6 +34,7 @@ salomeinclude_HEADERS= \
 	OCCViewer_ViewWindow.h \
 	OCCViewer_VService.h \
 	OCCViewer_CreateRestoreViewDlg.h \
+	OCCViewer_SetRotationPointDlg.h \
 	OCCViewer.h
 
 dist_libOCCViewer_la_SOURCES= \
@@ -45,6 +46,7 @@ dist_libOCCViewer_la_SOURCES= \
 	OCCViewer_ViewWindow.cxx \
 	OCCViewer_VService.cxx \
 	OCCViewer_CreateRestoreViewDlg.cxx \
+	OCCViewer_SetRotationPointDlg.cxx \
 	OCCViewer_ClippingDlg.cxx
 
 MOC_FILES= \
@@ -55,6 +57,7 @@ MOC_FILES= \
 	OCCViewer_ViewWindow_moc.cxx \
 	OCCViewer_ViewManager_moc.cxx \
 	OCCViewer_CreateRestoreViewDlg_moc.cxx \
+	OCCViewer_SetRotationPointDlg_moc.cxx \
 	OCCViewer_ClippingDlg_moc.cxx
 nodist_libOCCViewer_la_SOURCES= $(MOC_FILES)
 

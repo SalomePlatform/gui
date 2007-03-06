@@ -51,7 +51,8 @@ salomeinclude_HEADERS= \
 	SVTK_SpaceMouse.h \
 	SVTK_Event.h \
 	SVTK_ViewModelBase.h \
-	SVTK_SetRotationPointDlg.h
+	SVTK_SetRotationPointDlg.h \
+	SVTK_Extension.h
 
 dist_libSVTK_la_SOURCES= \
 	SVTK_Prs.cxx \
@@ -77,7 +78,8 @@ dist_libSVTK_la_SOURCES= \
 	SVTK_GenericRenderWindowInteractor.cxx \
 	SVTK_SpaceMouse.cxx \
 	SVTK_Selector.cxx \
-	SVTK_SetRotationPointDlg.cxx
+	SVTK_SetRotationPointDlg.cxx \
+	SVTK_Extension.cxx
 
 EXTRA_DIST+= SVTK_SelectorDef.h SVTK_Trihedron.h
 

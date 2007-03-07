@@ -20,3 +20,6 @@
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 SUBDIRS = config_files
+
+# this is for LIGHT module compatibility
+dist_admlocalunix_DATA=make_conclude.in

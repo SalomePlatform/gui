@@ -398,16 +398,41 @@ QString QtxResourceMgr::Resources::environmentVariable( const QString& str, int&
   QString varName = QString::null;
   len = 0;
 
-  QRegExp rx( "\\$\\{([a-zA-Z]+[a-zA-Z0-9_]*)\\}|\\$\\(([a-zA-Z]+[a-zA-Z0-9_]*)\\)|\\$([a-zA-Z]+[a-zA-Z0-9_]*)|\\%([a-zA-Z]+[a-zA-Z0-9_]*)\\%" );
+  QByteArray ba = str.toLatin1();
+  const char* s = (const char*)ba;
+
+  QRegExp rx( "(^\\$\\{|[^\\$]\\$\\{)([a-zA-Z]+[a-zA-Z0-9_]*)(\\})|(^\\$\\(|[^\\$]\\$\\()([a-zA-Z]+[a-zA-Z0-9_]*)(\\))|(^\\$|[^\\$]\\$)([a-zA-Z]+[a-zA-Z0-9_]*)|(^%|[^%]%)([a-zA-Z]+[a-zA-Z0-9_]*)(%[^%]|%$)" );
 
   int pos = rx.indexIn( str, start );
   if ( pos != -1 )
   {
+    int i = 1;
+    while ( i <= rx.numCaptures() && varName.isEmpty() )
+    {
+      QString capStr = rx.cap( i );
+      if ( !capStr.contains( "%" ) && !capStr.contains( "$" ) )
+        varName = capStr;
+      i++;
+    }
+
+    if ( !varName.isEmpty() )
+    {
+      int capIdx = i - 1;
+      start = rx.pos( capIdx );
+      int end = start + varName.length();
+      if ( capIdx > 1 && rx.cap( capIdx - 1 ).contains( QRegExp( "\\$|%" ) ) )
+        start = rx.pos( capIdx - 1 ) + rx.cap( capIdx - 1 ).indexOf( QRegExp( "\\$|%" ) );
+      if ( capIdx < rx.numCaptures() && !rx.cap( capIdx - 1 ).isEmpty() )
+        end++;
+      len = end - start;
+    }
+/*
     start = pos;
     len = rx.matchedLength();
     QStringList caps = rx.capturedTexts();
     for ( uint i = 1; i <= caps.count() && varName.isEmpty(); i++ )
       varName = caps[i];
+*/
   }
   return varName;
 }
@@ -453,6 +478,9 @@ QString QtxResourceMgr::Resources::makeSubstitution( const QString& str, const Q
     }
     res.replace( start, len, newStr );
   }
+
+  res.replace( "$$", "$" );
+  res.replace( "%%", "%" );
 
   return res;
 }

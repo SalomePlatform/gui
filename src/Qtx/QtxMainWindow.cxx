@@ -236,20 +236,14 @@ QString QtxMainWindow::saveGeometry() const
   return geom;
 }
 
-#include <stdio.h>
-
 void QtxMainWindow::loadGeometry( const QString& str )
 {
   QString geom = str;
-  //  geom.remove( '\t' );
-  //  geom.remove( ' ' );
+  geom.remove( '\t' );
+  geom.remove( ' ' );
 
   QRect rect = geometry();
   QRect screen = QApplication::desktop()->availableGeometry( this );
-
-  QByteArray ba = geom.toLatin1();
-  const char* s = (const char*)ba;
-  printf( "Geometry string: %s\n", s );
 
   QRegExp szRx( "(\\d+%?)\\s*x\\s*(\\d+%?)" );
   if ( szRx.indexIn( geom ) != -1 )

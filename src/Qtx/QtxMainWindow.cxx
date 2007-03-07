@@ -85,7 +85,7 @@ bool QtxMainWindow::Filter::eventFilter( QObject* o, QEvent* e )
            and geometry store/retrieve.
 */
 QtxMainWindow::QtxMainWindow( QWidget* parent, Qt::WindowFlags f )
-: QMainWindow( parent ),
+: QMainWindow( parent, f ),
 myMode( -1 ),
 myMenuBar( 0 ),
 myStatusBar( 0 )
@@ -193,6 +193,158 @@ void QtxMainWindow::setDockableStatusBar( const bool on )
   }
 }
 
+QString QtxMainWindow::saveGeometry() const
+{
+  QRect frame = frameGeometry();
+  QRect screen = QApplication::desktop()->availableGeometry( this );
+
+  QString x;
+  if ( frame.left() == screen.left() )
+    x = QString( "+0" );
+  else if ( frame.right() == screen.right() )
+    x = QString( "-0" );
+  else
+    x = QString( "+%1" ).arg( frame.left() );
+
+  QString y;
+  if ( frame.top() == screen.top() )
+    y = QString( "+0" );
+  else if ( frame.bottom() == screen.bottom() )
+    y = QString( "-0" );
+  else
+    y = QString( "+%1" ).arg( frame.top() );
+
+  QString geom = QString( "%1x%2%3%4" ).arg( frame.width() ).arg( frame.height() ).arg( x ).arg( y );
+
+  QString state;
+  switch ( windowState() )
+  {
+  case Qt::WindowMaximized:
+    state = QString( "max" );
+    break;
+  case Qt::WindowMinimized:
+    state = QString( "min" );
+    break;
+  case Qt::WindowFullScreen:
+    state = QString( "full" );
+    break;
+  }
+
+  if ( !state.isEmpty() )
+    geom += QString( ":" ) + state;
+
+  return geom;
+}
+
+#include <stdio.h>
+
+void QtxMainWindow::loadGeometry( const QString& str )
+{
+  QString geom = str;
+  //  geom.remove( '\t' );
+  //  geom.remove( ' ' );
+
+  QRect rect = geometry();
+  QRect screen = QApplication::desktop()->availableGeometry( this );
+
+  QByteArray ba = geom.toLatin1();
+  const char* s = (const char*)ba;
+  printf( "Geometry string: %s\n", s );
+
+  QRegExp szRx( "(\\d+%?)\\s*x\\s*(\\d+%?)" );
+  if ( szRx.indexIn( geom ) != -1 )
+  {
+    int w = -1;
+    bool wp = false;
+    int ws = geometryValue( szRx.cap( 1 ).trimmed(), w, wp );
+    bool wOk = ws != 0;
+    if ( wOk && wp )
+      w = screen.width() * qMax( qMin( w, 100 ), 0 ) / 100;
+    wOk = wOk && w;
+
+    int h = -1;
+    bool hp = false;
+    int hs = geometryValue( szRx.cap( 2 ).trimmed(), h, hp );
+    bool hOk = hs != 0;
+    if ( hOk && hp )
+      h = screen.height() * qMax( qMin( h, 100 ), 0 ) / 100;
+    hOk = hOk && h;
+
+    if ( wOk && hOk )
+      rect.setSize( QSize( w, h ) );
+  }
+
+  QRegExp posRx( "([+|-]\\d+\%?)\\s*([+|-]\\d+\%?)" );
+  if ( posRx.indexIn( geom ) != -1 )
+  {
+    int x = -1;
+    bool xp = false;
+    int xs = geometryValue( posRx.cap( 1 ).trimmed(), x, xp );
+    bool xOk = xs != 0;
+    if ( xOk )
+    {
+      if ( xp )
+	x = screen.width() * qMax( qMin( x, 100 ), 0 ) / 100;
+      x = ( xs > 0 ? x : screen.right() - x - rect.width() ) + frameGeometry().x() - geometry().x();
+    }
+
+    int y = -1;
+    bool yp = false;
+    int ys = geometryValue( posRx.cap( 2 ).trimmed(), y, yp );
+    bool yOk = ys != 0;
+    if ( yOk )
+    {
+      if ( yp )
+	y = screen.height() * qMax( qMin( y, 100 ), 0 ) / 100;
+      y = ( ys > 0 ? y : screen.bottom() - y - rect.height() ) + frameGeometry().y() - geometry().y();
+    }
+
+    if ( xOk && yOk )
+      rect.moveTo( x, y );
+  }
+
+  Qt::WindowState state = Qt::WindowNoState;
+
+  QRegExp stRx( ":(\\w+)" );
+  if ( stRx.indexIn( geom ) != -1 )
+  {
+    QString stStr = stRx.cap( 1 ).trimmed().toLower();
+    if ( stStr.startsWith( QString( "max" ) ) )
+      state = Qt::WindowMaximized;
+    else if ( stStr.startsWith( QString( "min" ) ) )
+      state = Qt::WindowMinimized;
+    else if ( stStr.startsWith( QString( "full" ) ) )
+      state = Qt::WindowFullScreen;
+  }
+
+  setGeometry( rect );
+  if ( state != Qt::WindowNoState )
+    setWindowState( state );
+}
+
+int QtxMainWindow::geometryValue( const QString& str, int& num, bool& percent ) const
+{
+  num = -1;
+  int res = 1;
+  QString numStr = str;
+  if ( numStr.startsWith( "+" ) || numStr.startsWith( "-" ) )
+  {
+    res = numStr.startsWith( "+" ) ? 1 : -1;
+    numStr = numStr.mid( 1 );
+  }
+
+  percent = numStr.endsWith( "%" );
+  if ( percent )
+    numStr = numStr.mid( 0, numStr.length() - 1 );
+
+  bool ok = false;
+  num = numStr.toInt( &ok );
+  if ( !ok )
+    res = 0;
+
+  return res;
+}
+
 /*!
   Retrieve the geometry information from the specified resource manager section.
   \param resMgr - instance of ersource manager
@@ -203,7 +355,7 @@ void QtxMainWindow::loadGeometry( QtxResourceMgr* resMgr, const QString& section
   QString sec = section.trimmed();
   if ( !resMgr || sec.isEmpty() )
     return;
-
+  /*
   int winState = -1;
   if ( !resMgr->value( sec, "state", winState ) )
   {
@@ -238,6 +390,7 @@ void QtxMainWindow::loadGeometry( QtxResourceMgr* resMgr, const QString& section
   move( win_x, win_y );
 
   myMode = -1;
+  */
 /*
   if ( vis )
     QApplication::postEvent( this, new QEvent( QEvent::User, (void*)winState ) );
@@ -289,6 +442,7 @@ void QtxMainWindow::customEvent( QEvent* e )
   \param wh - left point
   \param WH - right point
 */
+/*
 int QtxMainWindow::relativeCoordinate( const int type, const int WH, const int wh ) const
 {
   int res = 0;
@@ -306,6 +460,7 @@ int QtxMainWindow::relativeCoordinate( const int type, const int WH, const int w
   }
   return res;
 }
+*/
 
 /*!
   Store the geometry information into the specified resource manager section.
@@ -317,7 +472,7 @@ void QtxMainWindow::saveGeometry( QtxResourceMgr* resMgr, const QString& section
   QString sec = section.trimmed();
   if ( !resMgr || sec.isEmpty() )
     return;
-
+  /*
   resMgr->setValue( sec, "pos_x", pos().x() );
   resMgr->setValue( sec, "pos_y", pos().y() );
   resMgr->setValue( sec, "width", width() );
@@ -330,6 +485,7 @@ void QtxMainWindow::saveGeometry( QtxResourceMgr* resMgr, const QString& section
     winState = WS_Maximized;
 
   resMgr->setValue( sec, "state", winState );
+  */
 }
 
 /*!
@@ -368,6 +524,7 @@ void QtxMainWindow::onDestroyed( QObject* obj )
   \return flag of window state by it's name
   \param str - name of flag
 */
+/*
 int QtxMainWindow::windowState( const QString& str ) const
 {
   static QMap<QString, int> winStateMap;
@@ -392,11 +549,13 @@ int QtxMainWindow::windowState( const QString& str ) const
     res = winStateMap[stateStr];
   return res;
 }
+*/
 
 /*!
   \return flag of position by it's name
   \param str - name of position
 */
+/*
 int QtxMainWindow::windowPosition( const QString& str ) const
 {
   static QMap<QString, int> winPosMap;
@@ -415,3 +574,4 @@ int QtxMainWindow::windowPosition( const QString& str ) const
     res = winPosMap[posStr];
   return res;
 }
+*/

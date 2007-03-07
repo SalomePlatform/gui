@@ -23,11 +23,12 @@
 
 #include <QtCore/qmap.h>
 #include <QtCore/qlist.h>
+#include <QtCore/qbytearray.h>
 #include <QtCore/qstringlist.h>
 #include <QtCore/qtranslator.h>
 
-#include <QtGui/qcolor.h>
 #include <QtGui/qfont.h>
+#include <QtGui/qcolor.h>
 #include <QtGui/qpixmap.h>
 
 class QPixmap;
@@ -82,6 +83,7 @@ public:
   bool            value( const QString&, const QString&, bool& ) const;
   bool            value( const QString&, const QString&, QColor& ) const;
   bool            value( const QString&, const QString&, QFont& ) const;  
+  bool            value( const QString&, const QString&, QByteArray& ) const;  
   bool            value( const QString&, const QString&, QString&, const bool = true ) const;
 
   int             integerValue( const QString&, const QString&, const int = 0 ) const;
@@ -90,6 +92,7 @@ public:
   QFont           fontValue( const QString&, const QString&, const QFont& = QFont() ) const;
   QColor          colorValue( const QString&, const QString&, const QColor& = QColor() ) const;
   QString         stringValue( const QString&, const QString&, const QString& = QString::null ) const;
+  QByteArray      byteArrayValue( const QString&, const QString&, const QByteArray& = QByteArray() ) const;
 
   bool            hasSection( const QString& ) const;
   bool            hasValue( const QString&, const QString& ) const;
@@ -100,6 +103,7 @@ public:
   void            setValue( const QString&, const QString&, const QFont& );
   void            setValue( const QString&, const QString&, const QColor& );
   void            setValue( const QString&, const QString&, const QString& );
+  void            setValue( const QString&, const QString&, const QByteArray& );
 
   void            remove( const QString& );
   void            remove( const QString&, const QString& );

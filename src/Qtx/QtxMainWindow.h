@@ -48,6 +48,9 @@ public:
   bool              isDockableStatusBar() const;
   void              setDockableStatusBar( const bool );
 
+  QString           saveGeometry() const;
+  void              loadGeometry( const QString& );
+
   void              loadGeometry( QtxResourceMgr*, const QString& );
   void              saveGeometry( QtxResourceMgr*, const QString& ) const;
 
@@ -63,9 +66,10 @@ private slots:
   void              onDestroyed( QObject* );
 
 private:
-  int               windowState( const QString& ) const;
-  int               windowPosition( const QString& ) const;
-  int               relativeCoordinate( const int, const int, const int ) const;
+  int               geometryValue( const QString&, int&, bool& ) const;
+//  int               windowState( const QString& ) const;
+//  int               windowPosition( const QString& ) const;
+//  int               relativeCoordinate( const int, const int, const int ) const;
 
 private:
   int               myMode;

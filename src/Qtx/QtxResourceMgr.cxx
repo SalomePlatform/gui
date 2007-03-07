@@ -43,7 +43,7 @@
 class QtxResourceMgr::Resources
 {
 public:
-  Resources( const QtxResourceMgr*, const QString& );
+  Resources( QtxResourceMgr*, const QString& );
   virtual ~Resources();
 
   QString                file() const;
@@ -92,9 +92,9 @@ private:
   friend class QtxResourceMgr::Format;
 };
 
-QtxResourceMgr::Resources::Resources( const QtxResourceMgr* mgr, const QString& fileName )
-: myFileName( fileName ),
-  myMgr( const_cast<QtxResourceMgr*>( mgr ) )
+QtxResourceMgr::Resources::Resources( QtxResourceMgr* mgr, const QString& fileName )
+: myMgr( mgr ),
+  myFileName( fileName )
 {
 }
 
@@ -347,7 +347,7 @@ QTranslator* QtxResourceMgr::Resources::loadTranslator( const QString& sect, con
   if ( len )
   {
     buf = new char[len];
-    if ( !file.open( QIODevice::ReadOnly ) || len != (uint)file.read( buf, len ) )
+    if ( !file.open( QIODevice::ReadOnly ) || len != (int)file.read( buf, len ) )
     {
       delete buf;
       buf = 0;
@@ -398,9 +398,6 @@ QString QtxResourceMgr::Resources::environmentVariable( const QString& str, int&
   QString varName = QString::null;
   len = 0;
 
-  QByteArray ba = str.toLatin1();
-  const char* s = (const char*)ba;
-
   QRegExp rx( "(^\\$\\{|[^\\$]\\$\\{)([a-zA-Z]+[a-zA-Z0-9_]*)(\\})|(^\\$\\(|[^\\$]\\$\\()([a-zA-Z]+[a-zA-Z0-9_]*)(\\))|(^\\$|[^\\$]\\$)([a-zA-Z]+[a-zA-Z0-9_]*)|(^%|[^%]%)([a-zA-Z]+[a-zA-Z0-9_]*)(%[^%]|%$)" );
 
   int pos = rx.indexIn( str, start );
@@ -426,13 +423,6 @@ QString QtxResourceMgr::Resources::environmentVariable( const QString& str, int&
         end++;
       len = end - start;
     }
-/*
-    start = pos;
-    len = rx.matchedLength();
-    QStringList caps = rx.capturedTexts();
-    for ( uint i = 1; i <= caps.count() && varName.isEmpty(); i++ )
-      varName = caps[i];
-*/
   }
   return varName;
 }
@@ -1062,12 +1052,12 @@ void QtxResourceMgr::initialize( const bool autoLoad ) const
   QtxResourceMgr* that = (QtxResourceMgr*)this;
 
   if ( !userFileName( appName() ).isEmpty() )
-    that->myResources.append( new Resources( this, userFileName( appName() ) ) );
+    that->myResources.append( new Resources( that, userFileName( appName() ) ) );
 
   for ( QStringList::const_iterator it = myDirList.begin(); it != myDirList.end(); ++it )
   {
     QString path = Qtx::addSlash( *it ) + globalFileName( appName() );
-    that->myResources.append( new Resources( this, path ) );
+    that->myResources.append( new Resources( that, path ) );
   }
 
   if ( autoLoad )
@@ -1203,19 +1193,35 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QColor& cV
     return false;
 
   bool res = true;
-  QStringList vals = val.split( "," );
+  QStringList vals = val.split( QRegExp( "[\\s|,]" ), QString::SkipEmptyParts );
 
   QIntList nums;
   for ( QStringList::const_iterator it = vals.begin(); it != vals.end() && res; ++it )
-    nums.append( (*it).toInt( &res ) );
+  {
+    int num = 0;
+    if ( (*it).startsWith( "#" ) )
+      num = (*it).mid( 1 ).toInt( &res, 16 );
+    else
+      num = (*it).toInt( &res, 10 );
+    if ( res )
+      nums.append( num );
+  }
 
-  if ( res && nums.count() >= 3 )
+  res = res && nums.count() >= 3;
+  if ( res )
     cVal.setRgb( nums[0], nums[1], nums[2] );
-  else
+
+  if ( !res )
   {
     int pack = val.toInt( &res );
     if ( res )
       cVal = Qtx::rgbSet( pack );
+  }
+
+  if ( !res )
+  {
+    cVal = QColor( val );
+    res = cVal.isValid();
   }
 
   return res;
@@ -1264,6 +1270,40 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QFont& fVa
   }
 
   return true;
+}
+
+/*!
+  \brief Get the resource value as byte array. Returns 'true' if it successfull otherwise
+         returns 'false'.
+  \param sect - Resource section name which contains resource.
+  \param name - Name of the resource.
+  \param baVal - Reference on the variable which should contains the resource output.
+*/
+bool QtxResourceMgr::value( const QString& sect, const QString& name, QByteArray& baVal ) const
+{
+  QString val;
+  if ( !value( sect, name, val, true ) )
+    return false;
+
+  baVal.clear();
+  QStringList lst = val.split( QRegExp( "[\\s|,]" ), QString::SkipEmptyParts );
+  for ( QStringList::const_iterator it = lst.begin(); it != lst.end(); ++it )
+  {
+    int base = 10;
+    QString str = *it;
+    if ( str.startsWith( "#" ) )
+    {
+      base = 16;
+      str = str.mid( 1 );
+    }
+    bool ok = false;
+    int num = str.toInt( &ok, base );
+    if ( !ok || num < 0 || num > 255 )
+      continue;
+
+    baVal.append( (char)num );
+  }
+  return !baVal.isEmpty();
 }
 
 /*!
@@ -1387,6 +1427,21 @@ QString QtxResourceMgr::stringValue( const QString& sect, const QString& name, c
 }
 
 /*!
+  \brief Returns the byte array resource value. If resource can not be found or converted
+         then specified default value will be returned.
+  \param sect  - Resource section name which contains resource.
+  \param name  - Name of the resource.
+  \param def   - Default resource value which will be used when resource not found.
+*/
+QByteArray QtxResourceMgr::byteArrayValue( const QString& sect, const QString& name, const QByteArray& def ) const
+{
+  QByteArray val;
+  if ( !value( sect, name, val ) )
+    val = def;
+  return val;
+}
+
+/*!
   \brief Checks existance of the specified resource.
   \param sect  - Resource section name which contains resource.
   \param name  - Name of the resource.
@@ -1474,7 +1529,7 @@ void QtxResourceMgr::setValue( const QString& sect, const QString& name, const Q
   if ( checkExisting() && value( sect, name, res ) && res == val )
     return;
 
-  setResource( sect, name, QString( "%1, %2, %3" ).arg( val.red() ).arg( val.green() ).arg( val.blue() ) );
+  setResource( sect, name, val.isValid() ? val.name() : QString() );
 }
 
 /*!
@@ -1515,6 +1570,29 @@ void QtxResourceMgr::setValue( const QString& sect, const QString& name, const Q
     return;
 
   setResource( sect, name, val );
+}
+
+/*!
+  \brief Sets the string resource value.
+  \param sect  - Resource section name.
+  \param name  - Name of the resource.
+  \param val   - Resource value.
+*/
+void QtxResourceMgr::setValue( const QString& sect, const QString& name, const QByteArray& val )
+{
+  QByteArray res;
+  if ( checkExisting() && value( sect, name, res ) && res == val )
+    return;
+
+  char buf[8];
+  QStringList lst;
+  for ( int i = 0; i < val.size();  i++ )
+  {
+    ::sprintf( buf, "#%02X", val.at( i ) );
+    lst.append( QString( buf ) );
+  }
+
+  setResource( sect, name, lst.join( " " ) );
 }
 
 /*!
@@ -1893,7 +1971,7 @@ void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
   {
     QStringList translators    = option( "translators" ).split( "|", QString::SkipEmptyParts );
     QStringList newTranslators = trs.split( "|", QString::SkipEmptyParts );
-    for ( uint i = 0; i < newTranslators.count(); i++ )
+    for ( int i = 0; i < (int)newTranslators.count(); i++ )
     {
       if ( translators.indexOf( newTranslators[i] ) < 0 )
         translators += newTranslators[i];

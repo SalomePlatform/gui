@@ -34,9 +34,11 @@ class SUIT_DataOwnerPtrList;
   (ObjectBrowser, viewers, etc)
   Used by selection manager for selection synhronizing
 */
-class SUIT_EXPORT SUIT_Selector : public QObject
+
+class SUIT_EXPORT SUIT_Selector
 {
-  Q_OBJECT
+  class Destroyer;
+
 public:
   SUIT_Selector( SUIT_SelectionMgr*, QObject* = 0 );
   virtual ~SUIT_Selector();
@@ -67,6 +69,7 @@ private:
   SUIT_SelectionMgr* mySelMgr;
   bool               myEnabled;
   bool               myAutoBlock;
+  Destroyer*         myDestroyer;
 };
 
 #endif

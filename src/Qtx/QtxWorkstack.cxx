@@ -873,7 +873,7 @@ void QtxWorkstack::onDestroyed( QObject* obj )
 /*!
   SLOT: called on window activating
 */
-void QtxWorkstack::onWindowActivated( QWidget* wid )
+void QtxWorkstack::onWindowActivated( QWidget* )
 {
   const QObject* obj = sender();
   if ( !obj->inherits( "QtxWorkstackArea" ) )
@@ -965,7 +965,7 @@ QWidget* QtxWorkstack::addWindow( QWidget* w, Qt::WindowFlags f )
 /*!
   Handler of custom events
 */
-void QtxWorkstack::customEvent( QEvent* e )
+void QtxWorkstack::customEvent( QEvent* )
 {
   updateState();
 }
@@ -1865,6 +1865,8 @@ void QtxWorkstackArea::customEvent( QEvent* e )
   case RemoveWidget:
     removeWidget( we->widget() );
     break;
+  default:
+    break;
   }
 }
 
@@ -2150,6 +2152,8 @@ void QtxWorkstackArea::updateState()
 
   updateCurrent();
 
+  myBar->updateActiveState();
+
   myBar->setUpdatesEnabled( updBar );
   myStack->setUpdatesEnabled( updStk );
   if ( updBar )
@@ -2321,6 +2325,8 @@ myId( -1 )
 {
   setDrawBase( true );
   setElideMode( Qt::ElideNone );
+
+  connect( this, SIGNAL( currentChanged( int ) ), this, SLOT( onCurrentChanged( int ) ) );
 }
 
 /*!
@@ -2346,7 +2352,7 @@ void QtxWorkstackTabBar::setTabId( const int index, const int id )
 int QtxWorkstackTabBar::indexOf( const int id ) const
 {
   int index = -1;
-  for ( uint i = 0; i < count() && index < 0; i++ )
+  for ( int i = 0; i < (int)count() && index < 0; i++ )
   {
     if ( tabId( i ) == id )
       index = i;
@@ -2355,28 +2361,37 @@ int QtxWorkstackTabBar::indexOf( const int id ) const
 }
 
 /*!
+  Returns 'true' if the tab bar is active
+*/
+bool QtxWorkstackTabBar::isActive() const
+{
+  return myActive;
+}
+
+/*!
   Sets tab bar as active or inactive
   \param on - new active state
 */
 void QtxWorkstackTabBar::setActive( const bool on )
 {
-  QFont aFont = font();
-  aFont.setUnderline( on );
-  QPalette aPal = palette();
-  if ( !on )
-  {
-    aPal.setColor( QPalette::HighlightedText, aPal.color( QPalette::Foreground ) );
-    aPal.setColor( QPalette::Highlight, aPal.color( QPalette::Dark ).light( DARK_COLOR_LIGHT ) );
-    setPalette( aPal );
-  }
-  else
-  {
-    aPal.setColor( QPalette::HighlightedText, aPal.color( QPalette::HighlightedText ) );
-    aPal.setColor( QPalette::Highlight, aPal.color( QPalette::Highlight ) );
-  }
-  setFont( aFont );
+  if ( myActive == on )
+    return;
 
-  update();
+  myActive = on;
+  updateActiveState();
+}
+
+void QtxWorkstackTabBar::updateActiveState()
+{
+  QColor bc = palette().color( QPalette::Text );
+  QColor ac = isActive() ? palette().color( QPalette::Highlight ) : bc;
+  for ( int i = 0; i < (int)count(); i++ )
+    setTabTextColor( i, currentIndex() == i ? ac : bc );
+}
+
+void QtxWorkstackTabBar::onCurrentChanged( int )
+{
+  updateActiveState();
 }
 
 /*!
@@ -2448,9 +2463,9 @@ void QtxWorkstackTabBar::paintLabel( QPainter* p, const QRect& br, QTab* t, bool
 QtxWorkstackDrag::QtxWorkstackDrag( QtxWorkstack* ws, QtxWorkstackChild* child )
 : QObject( 0 ),
 myWS( ws ),
+myChild( child ),
 myTab( -1 ),
 myArea( 0 ),
-myChild( child ),
 myTabRect( 0 ),
 myAreaRect( 0 )
 {

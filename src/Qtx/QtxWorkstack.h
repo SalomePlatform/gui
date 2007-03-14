@@ -287,15 +287,21 @@ public:
   QtxWorkstackTabBar( QWidget* = 0 );
   virtual ~QtxWorkstackTabBar();
 
+  bool                isActive() const;
   void                setActive( const bool );
 
   int                 tabId( const int ) const;
   int                 indexOf( const int ) const;
   void                setTabId( const int, const int );
 
+  void                updateActiveState();
+
 Q_SIGNALS:
   void                dragActiveTab();
   void                contextMenuRequested( QPoint );
+
+private Q_SLOTS:
+  void                onCurrentChanged( int );
 
 protected:
   virtual void        mouseMoveEvent( QMouseEvent* );
@@ -307,6 +313,7 @@ protected:
 
 private:
   int                 myId;
+  bool                myActive;
 };
 
 class QtxWorkstackDrag : public QObject

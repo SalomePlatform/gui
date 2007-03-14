@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -21,10 +21,11 @@
 
 #include "QtxDockWidget.h"
 
-#include <QtGui/qevent.h>
-#include <QtGui/qlayout.h>
-#include <QtGui/qaction.h>
-#include <QtGui/qapplication.h>
+#include <QAction>
+#include <QLayout>
+#include <QMainWindow>
+#include <QResizeEvent>
+#include <QApplication>
 
 /*!
   \class QtxDockWidget::Watcher [Internal]
@@ -228,7 +229,7 @@ void QtxDockWidget::Watcher::updateIcon()
 {
   if ( !myCont || !myCont->widget() )
     return;
-  
+
   myCont->setWindowIcon( myCont->widget()->windowIcon() );
 }
 
@@ -246,8 +247,10 @@ void QtxDockWidget::Watcher::updateCaption()
 */
 QtxDockWidget::QtxDockWidget( const QString& title, QWidget* parent, Qt::WindowFlags f )
 : QDockWidget( title, parent, f ),
-myWatcher( 0 )
+  myWatcher( 0 ),
+  myOrientation( (Qt::Orientation)-1 )
 {
+  updateState();
 }
 
 /*!
@@ -255,10 +258,13 @@ myWatcher( 0 )
 */
 QtxDockWidget::QtxDockWidget( const bool watch, QWidget* parent, Qt::WindowFlags f )
 : QDockWidget( parent, f ),
-myWatcher( 0 )
+  myWatcher( 0 ),
+  myOrientation( (Qt::Orientation)-1 )
 {
   if ( watch )
     myWatcher = new Watcher( this );
+
+  updateState();
 }
 
 /*!
@@ -336,4 +342,54 @@ void QtxDockWidget::setVisible( bool on )
     widget()->updateGeometry();
 
   QDockWidget::setVisible( on );
+}
+
+void QtxDockWidget::resizeEvent( QResizeEvent* e )
+{
+  QDockWidget::resizeEvent( e );
+  updateState();
+}
+
+Qt::Orientation QtxDockWidget::orientation() const
+{
+  QMainWindow* mw = 0;
+  QWidget* wid = parentWidget();
+  while ( wid && !mw )
+  {
+    mw = ::qobject_cast<QMainWindow*>( wid );
+    wid = wid->parentWidget();
+  }
+
+  Qt::Orientation res = (Qt::Orientation)-1;
+
+  if ( !mw )
+    return res;
+
+  Qt::DockWidgetArea area = mw->dockWidgetArea( (QtxDockWidget*)this );
+  switch ( area )
+  {
+  case Qt::LeftDockWidgetArea:
+  case Qt::RightDockWidgetArea:
+    res = Qt::Vertical;
+    break;
+  case Qt::TopDockWidgetArea:
+  case Qt::BottomDockWidgetArea:
+    res = Qt::Horizontal;
+    break;
+  default:
+    break;
+  }
+
+  return res;
+}
+
+void QtxDockWidget::updateState()
+{
+  Qt::Orientation o = orientation();
+  if ( myOrientation == o )
+    return;
+
+  myOrientation = o;
+
+  emit orientationChanged( myOrientation );
 }

@@ -21,7 +21,7 @@
 
 #include "Qtx.h"
 
-#include <QtGui/qdockwidget.h>
+#include <QDockWidget>
 
 class QTX_EXPORT QtxDockWidget : public QDockWidget
 {
@@ -35,12 +35,24 @@ public:
   QtxDockWidget( QWidget*, Qt::WindowFlags = 0 );
   virtual ~QtxDockWidget();
 
-  virtual QSize sizeHint() const;
-  virtual QSize minimumSizeHint() const;
+  virtual QSize   sizeHint() const;
+  virtual QSize   minimumSizeHint() const;
 
-public slots:
-  virtual void  setVisible( bool );
+  Qt::Orientation orientation() const;
+
+Q_SIGNALS:
+  void            orientationChanged( Qt::Orientation );
+
+public Q_SLOTS:
+  virtual void    setVisible( bool );
+
+protected:
+  virtual void    resizeEvent( QResizeEvent* );
 
 private:
-  Watcher*      myWatcher;
+  void            updateState();
+
+private:
+  Watcher*        myWatcher;
+  Qt::Orientation myOrientation;
 };

@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -25,6 +25,7 @@
 #include <QtCore/qregexp.h>
 #include <QtCore/qpointer.h>
 
+#include <QtGui/qicon.h>
 #include <QtGui/qcursor.h>
 #include <QtGui/qmessagebox.h>
 
@@ -53,7 +54,7 @@ myStudy( NULL )
 
   myId = useNewId( getType() );
 
-  connect( theDesktop, SIGNAL( windowActivated( SUIT_ViewWindow* ) ), 
+  connect( theDesktop, SIGNAL( windowActivated( SUIT_ViewWindow* ) ),
            this,       SLOT( onWindowActivated( SUIT_ViewWindow* ) ) );
 
   myStudy = theStudy;
@@ -91,8 +92,15 @@ void SUIT_ViewManager::setTitle( const QString& theTitle )
     setViewName( myViews[i] );
 }
 
+void SUIT_ViewManager::setIcon( const QPixmap& theIcon )
+{
+  myIcon = theIcon;
+  for ( int i = 0; i < (int)myViews.count(); i++ )
+    myViews[i]->setWindowIcon( QIcon( myIcon ) );
+}
+
 /*!Sets view model \a theViewModel to view manager.*/
-void SUIT_ViewManager::setViewModel(SUIT_ViewModel* theViewModel) 
+void SUIT_ViewManager::setViewModel(SUIT_ViewModel* theViewModel)
 {
   if (myViewModel && myViewModel != theViewModel) {
     myViewModel->setViewManager(0);
@@ -140,14 +148,15 @@ SUIT_ViewWindow* SUIT_ViewManager::createViewWindow()
     delete aView;
     return 0;
   }
-  
+
   setViewName( aView );
+  aView->setWindowIcon( QIcon( myIcon ) );
+
   //myDesktop->addViewWindow( aView );
   //it is done automatically during creation of view
 
-  aView->setViewManager(this);
-
-  emit viewCreated(aView);
+  aView->setViewManager( this );
+  emit viewCreated( aView );
 
   // Special treatment for the case when <aView> is the first one in this view manager
   // -> call onWindowActivated() directly, because somebody may always want
@@ -188,7 +197,7 @@ bool SUIT_ViewManager::insertView(SUIT_ViewWindow* theView)
     myViews.resize( aNbItems );
     aSize = myViews.size();
   }
-  
+
   connect(theView, SIGNAL(closing(SUIT_ViewWindow*)),
           this,    SLOT(onClosingView(SUIT_ViewWindow*)));
 
@@ -333,8 +342,8 @@ void SUIT_ViewManager::closeAllViews()
  *\retval QString - type of view model.
  */
 QString SUIT_ViewManager::getType() const
-{ 
-  return (!myViewModel)? "": myViewModel->getType(); 
+{
+  return (!myViewModel)? "": myViewModel->getType();
 }
 
 /*!

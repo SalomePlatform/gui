@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -23,6 +23,7 @@
 #include "SUIT_ViewWindow.h"
 #include "SUIT_PopupClient.h"
 
+#include <QtGui/qpixmap.h>
 #include <QtCore/qobject.h>
 #include <QtCore/qvector.h>
 #include <QtCore/qpointer.h>
@@ -48,20 +49,23 @@ public:
 
   virtual QString  popupClientType() const { return getType(); }
   virtual void     contextMenuPopup( QMenu* );
-  
+
   void             setViewModel(SUIT_ViewModel* theViewModel);
   SUIT_ViewModel*  getViewModel() { return myViewModel; }
-  
+
   SUIT_Study*      study() const;
 
-  QString          getType() const; 
+  QString          getType() const;
   SUIT_ViewWindow* getActiveView() { return myActiveView; }
-  
+
   int              getViewsCount() { return myViews.count(); }
   QVector<SUIT_ViewWindow*> getViews() const;
 
   QString          getTitle() const { return myTitle; }
   virtual void     setTitle( const QString& );
+
+  QPixmap          getIcon() const { return myIcon; }
+  virtual void     setIcon( const QPixmap& );
 
   SUIT_ViewWindow* createViewWindow();
 
@@ -72,7 +76,7 @@ public:
 public slots:
   void             createView();
   void             closeAllViews();
-  
+
 signals:
   void             lastViewClosed(SUIT_ViewManager*);
   void             deleteView(SUIT_ViewWindow*);
@@ -85,7 +89,7 @@ signals:
   void             keyPress(SUIT_ViewWindow*, QKeyEvent*);
   void             keyRelease(SUIT_ViewWindow*, QKeyEvent*);
   void             activated(SUIT_ViewManager*);
-  
+
 protected slots:
   void             onWindowActivated(SUIT_ViewWindow*);
   void             onClosingView( SUIT_ViewWindow* );
@@ -94,19 +98,19 @@ protected slots:
 
 private slots:
   void             onContextMenuRequested( QContextMenuEvent* e );
-  
+
 protected:
   /*! Inserts the View into internal Views Vector.\n
    *  Returns true if view has been added successfully
    */
   virtual bool     insertView(SUIT_ViewWindow* theView);
-  
+
   /*! Removes the View from internal Views Vector.*/
   virtual void     removeView(SUIT_ViewWindow* theView);
-  
+
   /*! Close the specified View.*/
   virtual void     closeView(SUIT_ViewWindow* theView);
-  
+
   /*! Used to set unique name for the view.*/
   virtual void     setViewName(SUIT_ViewWindow* theView );
   QString          prepareTitle( const QString&, const int, const int );
@@ -123,6 +127,7 @@ protected:
   SUIT_ViewWindow*            myActiveView;
 
   int                         myId;
+  QPixmap                     myIcon;
   QString                     myTitle;
   SUIT_Study*                 myStudy;
 

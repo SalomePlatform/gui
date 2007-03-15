@@ -30,7 +30,6 @@ class QLabel;
 class QString;
 class QAction;
 class SUIT_Desktop;
-class SUIT_Convertor;
 class SUIT_ViewModel;
 class SUIT_ResourceMgr;
 
@@ -94,10 +93,6 @@ public:
   virtual int           getNbStudies() const;
 
   SUIT_ResourceMgr*     resourceMgr() const;
-
-  /*! Returns instance of data object Convertor class according to given Viewer. 
-      If convertation is not supported returns 0. */
-  virtual SUIT_Convertor* getConvertor(const SUIT_ViewModel* theViewer) { return 0; }
 
   //! Puts the message to the status bar  
   void putInfo ( const QString&, const int = 0 );

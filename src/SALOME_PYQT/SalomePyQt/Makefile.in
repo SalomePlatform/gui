@@ -38,6 +38,9 @@ endif
 ifeq ($(QT_VERS),Qt_3_3_6)
 QT_VERS = Qt_3_3_0
 endif
+ifeq ($(QT_VERS),Qt_3_3_7)
+QT_VERS = Qt_3_3_0
+endif
 
 # Sip flags
 SIP_FLAGS = -t WS_X11 -t $(QT_VERS) $(PYQT_SIPFLAGS) -s ".cc" -c . -I $(PYQT_SIPS)

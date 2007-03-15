@@ -34,8 +34,9 @@ salomeinclude_HEADERS= \
 	OCCViewer_ViewWindow.h \
 	OCCViewer_VService.h \
 	OCCViewer_CreateRestoreViewDlg.h \
-	OCCViewer_SetRotationPointDlg.h \
-	OCCViewer.h
+	OCCViewer.h \
+	OCCViewer_ClippingDlg.h \
+	OCCViewer_SetRotationPointDlg.h
 
 dist_libOCCViewer_la_SOURCES= \
 	OCCViewer_AISSelector.cxx \

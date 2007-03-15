@@ -41,4 +41,4 @@ libSalomePy_la_CPPFLAGS=$(QT_INCLUDES) $(PYTHON_INCLUDES) $(VTK_INCLUDES) \
 	-I$(top_builddir)/salome_adm/unix @CORBA_CXXFLAGS@ @CORBA_INCLUDES@
 libSalomePy_la_LDFLAGS=$(PYTHON_LIBS) $(QT_MT_LIBS) $(VTK_LIBS) $(OGL_LIBS) \
 	../SalomeApp/libSalomeApp.la \
-	-lvtkCommonPython -lvtkGraphicsPython -lvtkImagingPython
+	-lvtkCommonPythonD -lvtkGraphicsPythonD -lvtkImagingPythonD

@@ -31,9 +31,9 @@ class vtkProperty;
 class vtkPolyDataMapper;
 class vtkLineSource;
 class vtkConeSource;
+class vtkVectorText;
 
 class VTKViewer_Axis;
-class VTKViewer_VectorText;
 
 /*! \class vtkFollower
  * See <a href="http://www.vtk.org/">vtk documentation</a>
@@ -288,7 +288,7 @@ protected:
 
   /*! VTKViewer_VectorText pointer (Label)
    */
-  VTKViewer_VectorText* myVectorText;
+  vtkVectorText* myVectorText;
 };
 
 #endif

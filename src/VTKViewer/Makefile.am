@@ -36,7 +36,6 @@ salomeinclude_HEADERS= \
 	VTKViewer_AppendFilter.h \
 	VTKViewer_Algorithm.h \
 	VTKViewer_InteractorStyle.h \
-	VTKViewer_PassThroughFilter.h \
 	VTKViewer_RenderWindow.h \
 	VTKViewer_RenderWindowInteractor.h \
 	VTKViewer_ShrinkFilter.h \
@@ -44,7 +43,6 @@ salomeinclude_HEADERS= \
 	VTKViewer_Transform.h \
 	VTKViewer_Trihedron.h \
 	VTKViewer_Utilities.h \
-	VTKViewer_VectorText.h \
 	VTKViewer_ViewManager.h \
 	VTKViewer_ViewModel.h \
 	VTKViewer_ViewWindow.h \
@@ -58,7 +56,6 @@ dist_libVTKViewer_la_SOURCES= \
 	VTKViewer_GeometryFilter.cxx \
 	VTKViewer_AppendFilter.cxx \
 	VTKViewer_InteractorStyle.cxx \
-	VTKViewer_PassThroughFilter.cxx \
 	VTKViewer_RenderWindow.cxx \
 	VTKViewer_RenderWindowInteractor.cxx \
 	VTKViewer_ShrinkFilter.cxx \
@@ -66,7 +63,6 @@ dist_libVTKViewer_la_SOURCES= \
 	VTKViewer_TransformFilter.cxx \
 	VTKViewer_Trihedron.cxx \
 	VTKViewer_Utilities.cxx \
-	VTKViewer_VectorText.cxx \
 	VTKViewer_ViewManager.cxx \
 	VTKViewer_ViewModel.cxx \
 	VTKViewer_ConvexTool.cxx \

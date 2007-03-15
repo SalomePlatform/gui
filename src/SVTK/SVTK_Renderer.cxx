@@ -112,7 +112,7 @@ SVTK_Renderer
   myEventCallbackCommand->Delete();
 
   myTrihedron->AddToRender(GetDevice());
-  GetDevice()->AddProp(GetCubeAxes());
+  GetDevice()->AddViewProp(GetCubeAxes());
 
   myBndBox[0] = myBndBox[2] = myBndBox[4] = 0;
   myBndBox[1] = myBndBox[3] = myBndBox[5] = myTrihedron->GetSize();

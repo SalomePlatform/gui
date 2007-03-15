@@ -31,7 +31,6 @@
 
 #include "VTKViewer_Transform.h"
 #include "VTKViewer_TransformFilter.h"
-#include "VTKViewer_PassThroughFilter.h"
 #include "VTKViewer_GeometryFilter.h"
 
 // VTK Includes
@@ -43,6 +42,8 @@
 
 #include <vtkPolyDataMapper.h>
 #include <vtkDataSetMapper.h>
+
+#include <vtkPassThroughFilter.h>
 
 using namespace std;
 
@@ -74,7 +75,7 @@ SVTK_DeviceActor
   myTransformFilter = VTKViewer_TransformFilter::New();
 
   for(int i = 0; i < 6; i++)
-    myPassFilter.push_back(VTKViewer_PassThroughFilter::New());
+    myPassFilter.push_back(vtkPassThroughFilter::New());
 }
 
 /*!
@@ -139,8 +140,7 @@ SVTK_DeviceActor
     }else if(vtkPolyDataMapper* aMapper = dynamic_cast<vtkPolyDataMapper*>(theMapper)){
       aMapper->SetInput(myPassFilter[anId]->GetPolyDataOutput());
     }
-  }else
-    myPassFilter[ 0 ]->SetInput( NULL );
+  }
   Superclass::SetMapper(theMapper);
 }
 

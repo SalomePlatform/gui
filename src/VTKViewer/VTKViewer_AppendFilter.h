@@ -88,16 +88,17 @@ protected:
    * \brief Destructor.
    */
   ~VTKViewer_AppendFilter();
-  /*! \fn void Execute();
-   * \brief Filter culculation method.
-   */
-  virtual void Execute();
-  //
+
+  // Usual data generation method
+  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+
+  virtual int FillInputPortInformation(int port, vtkInformation *info);
+  
   void DoMapping();
 
   void Reset();
 
-  void MakeOutput();
+  int MakeOutput(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
 
   bool myDoMappingFlag;
   TVectorIds myNodeRanges;

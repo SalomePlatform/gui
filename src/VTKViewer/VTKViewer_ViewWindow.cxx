@@ -131,7 +131,7 @@ VTKViewer_ViewWindow::~VTKViewer_ViewWindow()
   myRWInteractor->Delete();
   
   //m_RW->Delete() ;
-  myRenderer->RemoveAllProps();
+  myRenderer->RemoveAllViewProps();
   //m_Renderer->Delete() ;
   myTrihedron->Delete();
 }

@@ -39,13 +39,13 @@
 
 class VTKViewer_Transform;
 class VTKViewer_TransformFilter;
-class VTKViewer_PassThroughFilter;
 class VTKViewer_GeometryFilter;
 
 class vtkCell;
 class vtkDataSet;
 class vtkShrinkFilter;
 class vtkDataSetMapper;
+class vtkPassThroughFilter;
 
 namespace SVTK
 {
@@ -188,7 +188,7 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
 
   VTKViewer_GeometryFilter *myGeomFilter;
   VTKViewer_TransformFilter *myTransformFilter;
-  std::vector<VTKViewer_PassThroughFilter*> myPassFilter;
+  std::vector<vtkPassThroughFilter*> myPassFilter;
   vtkShrinkFilter* myShrinkFilter;
   vtkDataSetMapper* myMapper;
 

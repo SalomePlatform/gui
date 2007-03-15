@@ -70,7 +70,7 @@ then
 fi
 
 LOCAL_INCLUDES="$OGL_INCLUDES"
-LOCAL_LIBS="-lvtkCommon -lvtkGraphics -lvtkImaging -lvtkFiltering -lvtkIO -lvtkRendering -lvtkHybrid $OGL_LIBS $LXLIB -lX11 -lXt"
+LOCAL_LIBS="-lvtkCommon -lvtkGraphics -lvtkImaging -lvtkFiltering -lvtkIO -lvtkRendering -lvtkHybrid -lvtkParallel -lvtkWidgets $OGL_LIBS $LXLIB -lX11 -lXt"
 TRY_LINK_LIBS="-lvtkCommon $OGL_LIBS $LXLIB -lX11 -lXt"
 
 if test -z $VTKHOME

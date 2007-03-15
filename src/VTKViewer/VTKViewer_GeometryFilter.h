@@ -92,14 +92,15 @@ protected:
    * \brief Destructor.
    */
   ~VTKViewer_GeometryFilter();
-  /*! \fn void Execute();
-   * \brief Filter culculation method.
-   */
-  void Execute();
+
+  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
+
+  //special cases for performance
+  
   /*! \fn void UnstructuredGridExecute();
    * \brief Filter culculation method for data object type is VTK_UNSTRUCTURED_GRID.
    */
-  void UnstructuredGridExecute();
+  int UnstructuredGridExecute (vtkDataSet *, vtkPolyData *, vtkInformation *);
     
 private:
   typedef std::vector<vtkIdType> TVectorId;

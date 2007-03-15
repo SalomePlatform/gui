@@ -51,7 +51,7 @@ protected:
   VTKViewer_ShrinkFilter();
   ~VTKViewer_ShrinkFilter();
   
-  void Execute();
+  virtual int RequestData(vtkInformation *, vtkInformationVector **, vtkInformationVector *);
   /*!Not implemented.*/
   void UnstructuredGridExecute();
     

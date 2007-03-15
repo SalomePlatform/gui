@@ -43,11 +43,11 @@ class vtkDataSet;
 class vtkCamera;
 class vtkProperty;
 class vtkRenderer;
+class vtkPassThroughFilter;
 
 class VTKViewer_Transform;
 class VTKViewer_GeometryFilter;
 class VTKViewer_TransformFilter;
-class VTKViewer_PassThroughFilter;
 
 extern int VTKViewer_POINT_SIZE;
 extern int VTKViewer_LINE_WIDTH;
@@ -317,7 +317,7 @@ class VTKVIEWER_EXPORT VTKViewer_Actor : public vtkLODActor
   bool myStoreMapping;
   VTKViewer_GeometryFilter *myGeomFilter;
   VTKViewer_TransformFilter *myTransformFilter;
-  std::vector<VTKViewer_PassThroughFilter*> myPassFilter;
+  std::vector<vtkPassThroughFilter*> myPassFilter;
 
   int myRepresentation;
   vtkProperty *myProperty;

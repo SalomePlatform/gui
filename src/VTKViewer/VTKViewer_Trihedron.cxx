@@ -32,8 +32,7 @@
 #include <vtkLineSource.h>
 #include <vtkConeSource.h>
 #include <vtkPolyDataMapper.h>
-
-#include "VTKViewer_VectorText.h"
+#include <vtkVectorText.h>
 
 vtkStandardNewMacro(VTKViewer_UnScaledActor);
 
@@ -141,7 +140,7 @@ VTKViewer_Axis::VTKViewer_Axis()
   myLineActor->SetArrowActor(myArrowActor);
   
   /*! \li Initialize the Label pipe-line representation */
-  myVectorText = VTKViewer_VectorText::New();
+  myVectorText = vtkVectorText::New();
   
   myMapper[2] = vtkPolyDataMapper::New();
   myMapper[2]->SetInput(myVectorText->GetOutput());

@@ -35,6 +35,8 @@
 #include <vtkObjectFactory.h>
 #include <vtkPointData.h>
 #include <vtkUnstructuredGrid.h>
+#include <vtkInformation.h>
+#include <vtkInformationVector.h>
 
 #include <vtkPoints.h>
 
@@ -95,17 +97,23 @@ VTKViewer_AppendFilter
   return myPoints.GetPointer();
 }
 
-void
+int
 VTKViewer_AppendFilter
-::Execute()
+::RequestData(
+	      vtkInformation *request,
+	      vtkInformationVector **inputVector,
+	      vtkInformationVector *outputVector)
 {
+  int aRet = 0;
   if(myPoints.GetPointer())
-    MakeOutput();
+    aRet = MakeOutput(request,inputVector,outputVector);
   else
-    Superclass::Execute();
+    aRet = Superclass::RequestData(request,inputVector,outputVector);
 
   if(myDoMappingFlag)
     DoMapping();
+  
+  return aRet;
 }
 
 
@@ -119,8 +127,8 @@ VTKViewer_AppendFilter
   vtkIdType aPntStartId = 0;
   vtkIdType aCellStartId = 0;
 
-  for(vtkIdType aDataSetId = 0; aDataSetId < this->NumberOfInputs; ++aDataSetId){
-    vtkDataSet* aDataSet = (vtkDataSet *)(this->Inputs[aDataSetId]);
+  for(vtkIdType aDataSetId = 0; aDataSetId < this->GetNumberOfInputPorts(); ++aDataSetId){
+    vtkDataSet* aDataSet = (vtkDataSet *)(this->GetInput(aDataSetId));
     // Do mapping of the nodes
     if(!myPoints.GetPointer()){
       vtkIdType aNbPnts = aDataSet->GetNumberOfPoints();
@@ -246,25 +254,41 @@ VTKViewer_AppendFilter
 }
 
 
-void 
+int
 VTKViewer_AppendFilter
-::MakeOutput()
+::MakeOutput(
+  vtkInformation *vtkNotUsed(request),
+  vtkInformationVector **inputVector,
+  vtkInformationVector *outputVector)
 {
   int idx;
   vtkIdType numPts, numCells, newCellId, cellId;
   vtkCellData *cd;
   vtkIdList *ptIds;
   vtkDataSet *ds;
-  vtkUnstructuredGrid *output = this->GetOutput();
+  int numInputs = this->GetNumberOfInputConnections(0);
+  
+  // get the output info object
+  vtkInformation *outInfo = outputVector->GetInformationObject(0);
+
+  // get the ouptut
+  vtkUnstructuredGrid *output = vtkUnstructuredGrid::SafeDownCast(
+    outInfo->Get(vtkDataObject::DATA_OBJECT()));
   //
   numPts = myPoints->GetNumberOfPoints();
   if (numPts < 1) {
-    return;
+    return 0;
   }
   //
   numCells = 0;
-  for (idx = 0; idx < this->NumberOfInputs; ++idx) {
-    ds = (vtkDataSet *)(this->Inputs[idx]);
+  vtkInformation *inInfo = 0;
+  for (idx = 0; idx < numInputs;++idx) {
+    inInfo = inputVector[0]->GetInformationObject(idx);
+    ds = 0;
+    if (inInfo)
+      {
+      ds = vtkDataSet::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
+      }
     if (ds != NULL)  {
       if ( ds->GetNumberOfPoints() <= 0 && ds->GetNumberOfCells() <= 0 )  {
         continue; //no input, just skip
@@ -273,7 +297,7 @@ VTKViewer_AppendFilter
     }//if non-empty dataset
   }//for all inputs
   if (numCells < 1) {
-    return;
+    return 0;
   }
   //
   // Now can allocate memory
@@ -286,9 +310,15 @@ VTKViewer_AppendFilter
   // 1.points
   output->SetPoints(myPoints.GetPointer());
   // 2.cells
-  for (idx = 0; idx < this->NumberOfInputs; ++idx) {
-    ds = (vtkDataSet *)(this->Inputs[idx]);
+  for (idx = 0; idx < numInputs; ++idx) {
+    inInfo = inputVector[0]->GetInformationObject(idx);
+    ds = 0;
+    if (inInfo)
+      {
+      ds = vtkDataSet::SafeDownCast(inInfo->Get(vtkDataObject::DATA_OBJECT()));
+      }
     if (ds != NULL) {
+      
       numCells = ds->GetNumberOfCells(); 
       cd = ds->GetCellData();
       // copy cell and cell data
@@ -300,5 +330,12 @@ VTKViewer_AppendFilter
   }
   //
   ptIds->Delete();
+  return 1;
 }
 
+int VTKViewer_AppendFilter::FillInputPortInformation(int, vtkInformation *info)
+{
+  info->Set(vtkAlgorithm::INPUT_REQUIRED_DATA_TYPE(), "vtkDataSet");
+  info->Set(vtkAlgorithm::INPUT_IS_REPEATABLE(), 1);
+  return 1;
+}

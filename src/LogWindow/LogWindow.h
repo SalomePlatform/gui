@@ -73,6 +73,17 @@ public:
     All = CopyId | ClearId | SelectAllId | SaveToFileId,
   };
 
+  //! display messages flags
+  enum
+  {
+    DisplayNormal    = 0x00,
+    DisplayDate      = 0x01,
+    DisplayTime      = 0x02,
+    DisplaySeparator = 0x04,
+    DisplayNoColor   = 0x08,
+    DisplayDateTime  = DisplayDate | DisplayTime
+  };
+
 public:
   LogWindow( QWidget* theParent );
   virtual ~LogWindow();
@@ -82,11 +93,15 @@ public:
 
   virtual bool        eventFilter( QObject* o, QEvent* e );
 
+  QString             banner() const;
+  QString             separator() const;
+
   void                setBanner( const QString& banner );
   void                setSeparator( const QString& separator );
 
-  virtual void        putMessage( const QString& message, bool addSeparator = true );
-  void                clear( bool clearHistory = false );
+  void                putMessage( const QString& message, const int = DisplayNormal );
+  virtual void        putMessage( const QString& message, const QColor&, const int = DisplayNormal );
+  void                clear( const bool clearHistory = false );
 
   bool                saveLog( const QString& fileName );
 

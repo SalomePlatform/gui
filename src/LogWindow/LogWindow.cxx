@@ -1,22 +1,22 @@
 //  KERNEL SALOME_Event : Define event posting mechanism
 //
 //  Copyright (C) 2003  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-//  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS 
-// 
-//  This library is free software; you can redistribute it and/or 
-//  modify it under the terms of the GNU Lesser General Public 
-//  License as published by the Free Software Foundation; either 
-//  version 2.1 of the License. 
-// 
-//  This library is distributed in the hope that it will be useful, 
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of 
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
-//  Lesser General Public License for more details. 
-// 
-//  You should have received a copy of the GNU Lesser General Public 
-//  License along with this library; if not, write to the Free Software 
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA 
-// 
+//  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+//
+//  This library is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License.
+//
+//  This library is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  Lesser General Public License for more details.
+//
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with this library; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 
 #include "LogWindow.h"
@@ -99,16 +99,19 @@ LogWindow::~LogWindow()
 }
 
 /*!
-  Custom event handler
+  Returnss the banner (title of message log)
 */
-bool LogWindow::eventFilter( QObject* o, QEvent* e )
+QString LogWindow::banner() const
 {
-  if ( o == myView->viewport() && e->type() == QEvent::ContextMenu )
-  {
-    contextMenuRequest( (QContextMenuEvent*)e );
-    return true;
-  }
-  return QFrame::eventFilter( o, e );
+  return myBanner;
+}
+
+/*!
+  Returnss the separator (line printing between messages)
+*/
+QString LogWindow::separator() const
+{
+  return mySeparator;
 }
 
 /*!
@@ -134,16 +137,69 @@ void LogWindow::setSeparator( const QString& separator )
 }
 
 /*!
+  Custom event handler
+*/
+bool LogWindow::eventFilter( QObject* o, QEvent* e )
+{
+  if ( o == myView->viewport() && e->type() == QEvent::ContextMenu )
+  {
+    contextMenuRequest( (QContextMenuEvent*)e );
+    return true;
+  }
+  return QFrame::eventFilter( o, e );
+}
+
+/*!
   Puts message to log window
   \param message - text of message
-  \addSeparator - if it is true, then separator is added to tail of message log
+  \flags - bit flags which defines view of printed message
 */
-void LogWindow::putMessage( const QString& message, bool addSeparator )
+void LogWindow::putMessage( const QString& message, const int flags )
 {
-  myView->append( message );
+  putMessage( message, QColor(), flags );
+}
+
+/*!
+  Puts message to log window
+  \param message - text of message
+  \color - text color of printed message
+  \flags - bit flags which defines view of printed message
+*/
+void LogWindow::putMessage( const QString& message, const QColor& color, const int flags )
+{
+  QString msg = message;
+  if ( msg.isEmpty() )
+    return;
+
+  bool noColor = flags & DisplayNoColor;
+
+  if ( color.isValid() )
+    msg = QString( "<font color=\"%1\">%2</font>" ).arg( color.name() ).arg( msg );
+
+  QString dStr;
+  if ( flags & DisplayDate )
+  {
+    dStr = QDate::currentDate().toString( Qt::SystemLocaleDate );
+    if ( !noColor )
+      dStr = QString( "<font color=\"#003380\">%1</font>" ).arg( dStr );
+  }
+
+  QString tStr;
+  if ( flags & DisplayTime )
+  {
+    tStr = QTime::currentTime().toString( Qt::SystemLocaleDate );
+    if ( !noColor )
+      tStr = QString( "<font color=\"#008033\">%1</font>" ).arg( tStr );
+  }
+
+  QString dateTime = QString( "%1 %2" ).arg( dStr ).arg( tStr ).trimmed();
+  if ( !dateTime.isEmpty() )
+    msg = QString( "[%1] %2" ).arg( dateTime ).arg( msg );
+
+  myView->append( msg );
   myHistory.append( plainText( message ) );
 
-  if ( addSeparator && !mySeparator.isNull() )
+  if ( flags & DisplaySeparator && !mySeparator.isEmpty() )
   {
     myView->append( mySeparator );   // add separator
     myHistory.append( plainText( mySeparator ) );
@@ -188,7 +244,7 @@ bool LogWindow::saveLog( const QString& fileName )
   stream << QTime::currentTime().toString( "hh:mm:ss" )   << endl;
   stream << "*****************************************"   << endl;
 
-  for ( uint i = 0; i < myHistory.count(); i++ )
+  for ( int i = 0; i < (int)myHistory.count(); i++ )
     stream << myHistory[ i ] << endl;
 
   file.close();
@@ -230,14 +286,14 @@ void LogWindow::contextMenuPopup( QMenu* popup )
     popup->addAction( myActions[ CopyId ] );
   if ( myOpFlags & ClearId )
     popup->addAction( myActions[ ClearId ] );
-  
+
   popup->addSeparator();
-  
+
   if ( myOpFlags & SelectAllId )
     popup->addAction( myActions[ SelectAllId ] );
-  
+
   popup->addSeparator();
-  
+
   if ( myOpFlags & SaveToFileId )
     popup->addAction( myActions[ SaveToFileId ] );
 
@@ -255,7 +311,7 @@ void LogWindow::updateActions()
   int paraFrom, paraTo, indexFrom, indexTo;
   myView->getSelection( &paraFrom, &indexFrom, &paraTo, &indexTo );
   bool allSelected = myView->hasSelectedText() &&
-                     !paraFrom && paraTo == myView->paragraphs() - 1 && 
+                     !paraFrom && paraTo == myView->paragraphs() - 1 &&
                      !indexFrom && indexTo == myView->paragraphLength( paraTo );
   myActions[ CopyId ]->setEnabled( ( myOpFlags & CopyId )&& myView->hasSelectedText() );
   myActions[ ClearId ]->setEnabled( ( myOpFlags & ClearId ) && myView->document()->blockCount() > myBannerSize );
@@ -279,7 +335,7 @@ void LogWindow::onSaveToFile()
     return;
 
   QApplication::setOverrideCursor( Qt::WaitCursor );
-    
+
   bool bOk = saveLog( aName );
 
   QApplication::restoreOverrideCursor();

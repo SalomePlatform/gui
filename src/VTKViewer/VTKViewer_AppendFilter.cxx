@@ -256,13 +256,17 @@ VTKViewer_AppendFilter
   vtkIdList *ptIds;
   vtkDataSet *ds;
   vtkUnstructuredGrid *output = this->GetOutput();
-  //
+
   numPts = myPoints->GetNumberOfPoints();
   if (numPts < 1) {
     return;
   }
-  //
+
   numCells = 0;
+
+  vtkDataSetAttributes::FieldList cellList(this->NumberOfInputs);
+  int firstCD=1;
+
   for (idx = 0; idx < this->NumberOfInputs; ++idx) {
     ds = (vtkDataSet *)(this->Inputs[idx]);
     if (ds != NULL)  {
@@ -270,14 +274,29 @@ VTKViewer_AppendFilter
         continue; //no input, just skip
       }
       numCells += ds->GetNumberOfCells();
+      
+      cd = ds->GetCellData();
+      if ( firstCD )
+        {
+        cellList.InitializeFieldList(cd);
+        firstCD = 0;
+        }
+      else
+        {
+        cellList.IntersectFieldList(cd);
+        }
     }//if non-empty dataset
   }//for all inputs
+
   if (numCells < 1) {
     return;
   }
-  //
+  
   // Now can allocate memory
   output->Allocate(numCells); 
+  vtkCellData *outputCD = output->GetCellData();
+  outputCD->CopyAllocate(cellList,numCells);
+
   ptIds = vtkIdList::New(); 
   ptIds->Allocate(VTK_CELL_SIZE);
   //
@@ -295,6 +314,7 @@ VTKViewer_AppendFilter
       for (cellId=0; cellId<numCells; cellId++)  {
         ds->GetCellPoints(cellId, ptIds);
         newCellId = output->InsertNextCell(ds->GetCellType(cellId), ptIds);
+        outputCD->CopyData(cellList,cd,idx,cellId,newCellId);
       }
     }
   }

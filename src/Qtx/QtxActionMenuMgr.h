@@ -129,12 +129,16 @@ public:
   bool         containsMenu( const QString&, const int ) const;
   bool         containsMenu( const int, const int ) const;
 
-
-private slots:
-  void         onDestroyed( QObject* );
+private Q_SLOTS:
+  void         onAboutToShow();
+  void         onAboutToHide();
   void         onHighlighted( int );
+  void         onDestroyed( QObject* );
 
-signals:
+Q_SIGNALS:
+  void         menuAboutToShow( QMenu* );
+  void         menuAboutToHide( QMenu* );
+
   void         menuHighlighted( int, int );
 
 protected:

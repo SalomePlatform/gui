@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -37,7 +37,7 @@
 // (emit signals when popup menu is pre-activated)
 // Currently this support is disabled.
 //#define ENABLE_DYNAMIC_MENU
- 
+
 /*!
 	Service functions
 	Level: Internal
@@ -150,7 +150,7 @@ QtxActionMenuMgr::MenuAction::~MenuAction()
 /*
 bool QtxActionMenuMgr::MenuAction::addTo( QWidget* w )
 {
-  if ( !w ) 
+  if ( !w )
     return false;  // bad widget
 
   if ( !w->inherits( "QPopupMenu" ) && !w->inherits( "QMenuBar" ) )
@@ -173,7 +173,7 @@ bool QtxActionMenuMgr::MenuAction::addTo( QWidget* w )
     {
       QPopupMenu* pm = (QPopupMenu*)w;
       myIds[ w ] = pm->idAt( idx );
-      if ( myId != -1 ) 
+      if ( myId != -1 )
 	      pm->setId( idx, myId );
       setPopup( pm, myId != -1 ? myId : myIds[ w ], myPopup );
     }
@@ -186,7 +186,7 @@ bool QtxActionMenuMgr::MenuAction::addTo( QWidget* w )
     {
       QMenuBar* mb = (QMenuBar*)w;
       myIds[ w ] = mb->idAt( idx );
-      if ( myId != -1 ) 
+      if ( myId != -1 )
     	  mb->setId( idx, myId );
       setPopup( mb, myId != -1 ? myId : myIds[ w ], myPopup );
     }
@@ -205,7 +205,7 @@ bool QtxActionMenuMgr::MenuAction::addTo( QWidget* w )
 /*
 bool QtxActionMenuMgr::MenuAction::removeFrom( QWidget* w )
 {
-  if ( !w ) 
+  if ( !w )
     return false;  // bad widget
 
   if ( !w->inherits( "QPopupMenu" ) && !w->inherits( "QMenuBar" ) )
@@ -330,7 +330,7 @@ void QtxActionMenuMgr::setVisible( const int actId, const int place, const bool 
 }
 
 /*!
-  Insert action as children menu item 
+  Insert action as children menu item
   \param id - identificator of action
   \param menus - few names of parent menu items, separated by '|'. It means sequence of menu items,
   for example "File|Edit" means File->Edit submenu. If submenu doesn't exist, it will be created.
@@ -343,7 +343,7 @@ int QtxActionMenuMgr::insert( const int id, const QString& menus, const int grou
 }
 
 /*!
-  Insert action as children menu item 
+  Insert action as children menu item
   \param a - action
   \param menus - few names of parent menu items, separated by '|'. It means sequence of menu items,
   for example "File|Edit" means File->Edit submenu. If submenu doesn't exist, it will be created.
@@ -356,7 +356,7 @@ int QtxActionMenuMgr::insert( QAction* a, const QString& menus, const int group,
 }
 
 /*!
-  Insert action as children menu item 
+  Insert action as children menu item
   \param id - identificator of action
   \param menus - list of names of parent menu items, separated by |. It means sequence of menu items,
   for example "File|Edit" means File->Edit submenu. If submenu doesn't exist, it will be created.
@@ -373,7 +373,7 @@ int QtxActionMenuMgr::insert( const int id, const QStringList& menus, const int 
 }
 
 /*!
-  Insert action as children menu item 
+  Insert action as children menu item
   \param a - action
   \param menus - list of names of parent menu items. It means sequence of menu items,
   for example "File|Edit" means File->Edit submenu. If submenu doesn't exist, it will be created.
@@ -390,7 +390,7 @@ int QtxActionMenuMgr::insert( QAction* a, const QStringList& menus, const int gr
 }
 
 /*!
-  Insert action as children menu item 
+  Insert action as children menu item
   \param id - identificator of action
   \param pId - identificator of action corresponding to parent menu item
   \param group - group identificator
@@ -419,7 +419,7 @@ int QtxActionMenuMgr::insert( const int id, const int pId, const int group, cons
 }
 
 /*!
-  Insert action as children menu item 
+  Insert action as children menu item
   \param a - action
   \param pId - identificator of action corresponding to parent menu item
   \param group - group identificator
@@ -431,7 +431,7 @@ int QtxActionMenuMgr::insert( QAction* a, const int pId, const int group, const 
 }
 
 /*!
-  Create and insert action as children menu item 
+  Create and insert action as children menu item
   \return identificator of inserted action
   \param title - menu text of action
   \param pId - identificator of action corresponding to parent menu item
@@ -463,6 +463,9 @@ int QtxActionMenuMgr::insert( const QString& title, const int pId, const int gro
 
   QAction* ma = new QAction( title, this );
   ma->setMenu( new QMenu( myMenu ) );
+
+  connect( ma->menu(), SIGNAL( aboutToShow() ), this, SLOT( onAboutToShow() ) );
+  connect( ma->menu(), SIGNAL( aboutToHide() ), this, SLOT( onAboutToHide() ) );
 #ifdef ENABLE_DYNAMIC_MENU
   connect( ma->menu(), SIGNAL( highlighted( int ) ), this, SLOT( onHighlighted( int ) ) );
 #endif
@@ -480,7 +483,7 @@ int QtxActionMenuMgr::insert( const QString& title, const int pId, const int gro
 }
 
 /*!
-  Create and insert action as children menu item 
+  Create and insert action as children menu item
   \return identificator of inserted action
   \param title - menu text of action
   \param menus - string list of parents' menu texts, separated by |
@@ -495,7 +498,7 @@ int QtxActionMenuMgr::insert( const QString& title, const QString& menus, const 
 }
 
 /*!
-  Create and insert action as children menu item 
+  Create and insert action as children menu item
   \return identificator of inserted action
   \param title - menu text of action
   \param menus - list of parents menu items
@@ -680,6 +683,20 @@ void QtxActionMenuMgr::change( const int id, const QString& title )
   QAction* a = menuAction( id );
   if ( a )
     a->setText( title );
+}
+
+void QtxActionMenuMgr::onAboutToShow()
+{
+  QMenu* m = ::qobject_cast<QMenu*>( sender() );
+  if ( m )
+    emit menuAboutToShow( m );
+}
+
+void QtxActionMenuMgr::onAboutToHide()
+{
+  QMenu* m = ::qobject_cast<QMenu*>( sender() );
+  if ( m )
+    emit menuAboutToHide( m );
 }
 
 /*!
@@ -1032,7 +1049,7 @@ QWidget* QtxActionMenuMgr::menuWidget( MenuNode* node) const
 }
 
 /*!
-  Removes excess separators of menu 
+  Removes excess separators of menu
   \param wid - menu to be processed
 */
 void QtxActionMenuMgr::simplifySeparators( QWidget* wid )
@@ -1059,7 +1076,7 @@ QString QtxActionMenuMgr::clearTitle( const QString& txt ) const
 }
 
 /*!
-  Creates and inserts many menu items 
+  Creates and inserts many menu items
   \param lst - list of menu texts
   \param pId - id of action corresponding to parent menu item
 */
@@ -1200,14 +1217,14 @@ int QtxActionMenuMgr::MenuCreator::append( const QString& tag, const bool subMen
       set = QIcon( pix );
 
     QtxAction* newAct = new QtxAction( strValue( attr, tooltip ), set,
-                                       strValue( attr, label ), 
+                                       strValue( attr, label ),
                                        QKeySequence( strValue( attr, accel ) ),
                                        myMgr );
     newAct->setToolTip( strValue( attr, tooltip ) );
     QString toggleact = strValue( attr, toggle );
     newAct->setCheckable( !toggleact.isEmpty() );
     newAct->setChecked( toggleact.toLower() == "true" );
-        
+
     connect( newAct );
     int aid = myMgr->registerAction( newAct, actId );
     res = myMgr->insert( aid, pId, intValue( attr, group, 0 ), intValue( attr, pos, -1 ) );

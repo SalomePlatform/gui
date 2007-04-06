@@ -312,12 +312,16 @@ else
   CXXFLAGS=$CXXFLAGS_old
   LIBS=$LIBS_old
 fi
+# get latest Qt version supported
+QT_VERS=`grep -e "[[[:space:]]]*Qt_[[[:digit:]_]]\+}" ${PYQT_SIPS}/versions.sip | sed -e "s/\(.*\)[[[:space:]]]*\(Qt_[[[:digit:]_]]\+\)}/\2/g"`
+AC_MSG_RESULT(Latest Qt version supported by PyQt is $QT_VERS)
 
 AC_SUBST(PYQT_INCLUDES)
 AC_SUBST(PYQT_LIBS)
 AC_SUBST(PYQT_SIPS)
 AC_SUBST(PYUIC)
 AC_SUBST(PYQT_SIPFLAGS)
+AC_SUBST(QT_VERS)
 
 AC_LANG_RESTORE
 

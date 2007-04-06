@@ -22,14 +22,8 @@
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-# small trick for Mandrake-10.1: PyQt 3.13 does not support Qt 3.3.3
 # Sip flags
-if IS_QT_3_0_0
-SIP_FLAGS = -t WS_X11 -t Qt_3_0_0 $(PYQT_SIPFLAGS) -s ".cc" -c . -I $(PYQT_SIPS)
-else !IS_QT_3_0_0
 SIP_FLAGS = -t WS_X11 -t $(QT_VERS) $(PYQT_SIPFLAGS) -s ".cc" -c . -I $(PYQT_SIPS)
-endif
-
 
 ######################
 

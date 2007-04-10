@@ -94,7 +94,8 @@ dist_salomeres_DATA=\
 	resources/view_top.png \
 	resources/view_triedre.png \
 	resources/view_update_rate.png \
-	resources/view_zoom.png
+	resources/view_zoom.png \
+	resources/view_rotation_point.png
 
 nodist_salomeres_DATA= \
 	VTKViewer_images.qm \

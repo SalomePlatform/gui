@@ -82,7 +82,8 @@ dist_salomeres_DATA = \
 	resources/view_shoot.png \
 	resources/view_top.png \
 	resources/view_triedre.png \
-	resources/view_zoom.png
+	resources/view_zoom.png \
+	resources/view_rotation_point.png
 
 nodist_salomeres_DATA = \
 	OCCViewer_images.qm \

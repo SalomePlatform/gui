@@ -27,7 +27,7 @@
 #include <vector>
 #include <map>
 
-class vtkPoints;
+class vtkPointSet;
 
 /*! \brief This class used same as vtkAppendFilter. See documentation on VTK for more information.
  */
@@ -48,10 +48,10 @@ public:
   bool DoMappingFlag() const;
 
   void
-  SetPoints(vtkPoints* thePoints);
+  SetSharedPointsDataSet(vtkPointSet* thePointsDataSet);
 
-  vtkPoints*
-  GetPoints();
+  vtkPointSet*
+  GetSharedPointsDataSet();
 
   vtkIdType
   GetPointOutputID(vtkIdType theInputID,
@@ -98,7 +98,7 @@ protected:
   bool myDoMappingFlag;
   TVectorIds myNodeRanges;
   TVectorIds myCellRanges;
-  vtkSmartPointer<vtkPoints> myPoints;
+  vtkSmartPointer<vtkPointSet> mySharedPointsDataSet;
 };
 
 #endif

@@ -78,28 +78,28 @@ VTKViewer_AppendFilter
 
 void
 VTKViewer_AppendFilter
-::SetPoints(vtkPoints* thePoints)
+::SetSharedPointsDataSet(vtkPointSet* thePointsDataSet)
 {
-  if(GetPoints() == thePoints)
+  if(GetSharedPointsDataSet() == thePointsDataSet)
     return;
 
-  myPoints = thePoints;
+  mySharedPointsDataSet = thePointsDataSet;
 
-  this->Modified();
+  Modified();
 }
 
-vtkPoints*
+vtkPointSet*
 VTKViewer_AppendFilter
-::GetPoints()
+::GetSharedPointsDataSet()
 {
-  return myPoints.GetPointer();
+  return mySharedPointsDataSet.GetPointer();
 }
 
 void
 VTKViewer_AppendFilter
 ::Execute()
 {
-  if(myPoints.GetPointer())
+  if(GetSharedPointsDataSet())
     MakeOutput();
   else
     Superclass::Execute();
@@ -122,7 +122,7 @@ VTKViewer_AppendFilter
   for(vtkIdType aDataSetId = 0; aDataSetId < this->NumberOfInputs; ++aDataSetId){
     vtkDataSet* aDataSet = (vtkDataSet *)(this->Inputs[aDataSetId]);
     // Do mapping of the nodes
-    if(!myPoints.GetPointer()){
+    if(!GetSharedPointsDataSet()){
       vtkIdType aNbPnts = aDataSet->GetNumberOfPoints();
       myNodeRanges.push_back(aPntStartId + aNbPnts);
       aPntStartId += aNbPnts;
@@ -158,7 +158,7 @@ VTKViewer_AppendFilter
 ::GetPointOutputID(vtkIdType theInputID,
 		   vtkIdType theInputDataSetID)
 {
-  if(myPoints.GetPointer())
+  if(GetSharedPointsDataSet())
     return theInputID;
 
   return GetOutputID(theInputID,theInputDataSetID,myNodeRanges);
@@ -170,7 +170,7 @@ VTKViewer_AppendFilter
 ::GetCellOutputID(vtkIdType theInputID,
 		   vtkIdType theInputDataSetID)
 {
-  if(myPoints.GetPointer())
+  if(GetSharedPointsDataSet())
     return theInputID;
 
   return GetOutputID(theInputID,theInputDataSetID,myCellRanges);
@@ -217,7 +217,7 @@ VTKViewer_AppendFilter
 		  vtkIdType& theStartID,
 		  vtkIdType& theInputDataSetID)
 {
-  if(myPoints.GetPointer()) {
+  if(GetSharedPointsDataSet()) {
     theStartID = theInputDataSetID = 0;
     theInputID = theOutputID;
     return;
@@ -257,7 +257,8 @@ VTKViewer_AppendFilter
   vtkDataSet *ds;
   vtkUnstructuredGrid *output = this->GetOutput();
 
-  numPts = myPoints->GetNumberOfPoints();
+  vtkPoints* aPoints = GetSharedPointsDataSet()->GetPoints();
+  numPts = aPoints->GetNumberOfPoints();
   if (numPts < 1) {
     return;
   }
@@ -303,7 +304,9 @@ VTKViewer_AppendFilter
   // Append each input dataset together
   //
   // 1.points
-  output->SetPoints(myPoints.GetPointer());
+  output->SetPoints(GetSharedPointsDataSet()->GetPoints());
+  output->GetPointData()->PassData(GetSharedPointsDataSet()->GetPointData());
+
   // 2.cells
   for (idx = 0; idx < this->NumberOfInputs; ++idx) {
     ds = (vtkDataSet *)(this->Inputs[idx]);

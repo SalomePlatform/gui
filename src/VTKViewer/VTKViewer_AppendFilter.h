@@ -27,7 +27,7 @@
 #include <vector>
 #include <map>
 
-class vtkPoints;
+class vtkPointSet;
 
 #ifdef WIN32
 #pragma warning ( disable:4251 )
@@ -52,10 +52,10 @@ public:
   bool DoMappingFlag() const;
 
   void
-  SetPoints(vtkPoints* thePoints);
+  SetSharedPointsDataSet(vtkPointSet* thePointsDataSet);
 
-  vtkPoints*
-  GetPoints();
+  vtkPointSet*
+  GetSharedPointsDataSet();
 
   vtkIdType
   GetPointOutputID(vtkIdType theInputID,
@@ -103,7 +103,7 @@ protected:
   bool myDoMappingFlag;
   TVectorIds myNodeRanges;
   TVectorIds myCellRanges;
-  vtkSmartPointer<vtkPoints> myPoints;
+  vtkSmartPointer<vtkPointSet> mySharedPointsDataSet;
 };
 
 #ifdef WIN32

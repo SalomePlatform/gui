@@ -425,7 +425,7 @@ int main( int argc, char **argv )
 
     PortableServer::POAManager_var pman = poa->the_POAManager();
     pman->activate() ;
-    INFOS( "pman->activate()" );
+    MESSAGE( "pman->activate()" );
 
     _NS = new SALOME_NamingService( orb );
 
@@ -499,7 +499,7 @@ int main( int argc, char **argv )
       SALOME::Session_var session = SALOME::Session::_narrow( obj ) ;
       ASSERT ( ! CORBA::is_nil( session ) );
       // ...create GUI launcher
-      INFOS( "Session activated, Launch IAPP..." );
+      MESSAGE( "Session activated, Launch IAPP..." );
       guiThread = new GetInterfaceThread( session );
     }
 
@@ -518,7 +518,7 @@ int main( int argc, char **argv )
       aGUISession = new SALOME_Session();
 
       // Load SalomeApp dynamic library
-      INFOS( "creation SUIT_Application" );
+      MESSAGE( "creation SUIT_Application" );
       SUIT_Application* aGUIApp = aGUISession->startApplication( "SalomeApp", 0, 0 );
       if ( aGUIApp )
       {

@@ -296,8 +296,12 @@ void OCCViewer_ViewPort3d::fitRect( const QRect& rect )
 */
 void OCCViewer_ViewPort3d::zoom( int x0, int y0, int x, int y )
 {
-	if ( !activeView().IsNull() )
-	    activeView()->Zoom( x0, y0, x, y );
+  if ( !activeView().IsNull() ) {
+    // as OCCT respects a sign of only dx,
+    // but we want both signes to be taken into account
+    //activeView()->Zoom( x0, y0, x, y );
+    activeView()->Zoom( x0 + y0, 0, x + y, 0 );
+  }
 }
 
 /*!

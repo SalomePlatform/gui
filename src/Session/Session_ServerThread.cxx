@@ -185,7 +185,7 @@ void Session_ServerThread::ActivateModuleCatalog(int argc,
 {
   try
     {
-      INFOS("ModuleCatalog thread started");
+      MESSAGE("ModuleCatalog thread started");
       // allocation on heap to allow destruction by POA
 
       SALOME_ModuleCatalogImpl* Catalogue_i
@@ -224,7 +224,7 @@ void Session_ServerThread::ActivateSALOMEDS(int argc,
 {
   try
     {
-      INFOS("SALOMEDS thread started");
+      MESSAGE("SALOMEDS thread started");
       // We allocate the objects on the heap.  Since these are reference
       // counted objects, they will be deleted by the POA when they are no
       // longer needed.    
@@ -255,7 +255,7 @@ void Session_ServerThread::ActivateSALOMEDS(int argc,
 void Session_ServerThread::ActivateRegistry(int argc,
 					    char ** argv)
 {
-  INFOS("Registry thread started");
+  MESSAGE("Registry thread started");
   SCRUTE(argc); 
   if( argc<3 )
     {
@@ -345,7 +345,7 @@ void Session_ServerThread::ActivateContainer(int argc,
 {
   try
     {
-      INFOS("Container thread started");
+      MESSAGE("Container thread started");
 
       // get or create the child POA
 
@@ -357,7 +357,7 @@ void Session_ServerThread::ActivateContainer(int argc,
 	}
       catch (PortableServer::POA::AdapterNonExistent&)
 	{
-	  INFOS("factory_poa does not exists, create...");
+	  MESSAGE("factory_poa does not exists, create...");
 	  // define policy objects     
 	  PortableServer::ImplicitActivationPolicy_var implicitActivation =
 	    _root_poa->create_implicit_activation_policy(
@@ -428,14 +428,10 @@ void Session_ServerThread::ActivateEngine(int /*argc*/, char ** /*argv*/)
 {
     try
       {
-	INFOS("SalomeApp_Engine thread started");
+	MESSAGE("SalomeApp_Engine thread started");
 	SalomeApp_Engine_i* anEngine = new SalomeApp_Engine_i();
-  // declare variable and get value for them to avoid compilation warning of unused variable
-  // this variable is necessary to avoid memory leak of memory allocated in corba
-  PortableServer::ObjectId_var id = 0;
-  id = _root_poa->activate_object( anEngine );
-	///*PortableServer::ObjectId_var id = */_root_poa->activate_object( anEngine );
-	INFOS("poa->activate_object( SalomeApp_Engine )");
+	/*PortableServer::ObjectId_var id = */_root_poa->activate_object( anEngine );
+	MESSAGE("poa->activate_object( SalomeApp_Engine )");
       
 	CORBA::Object_var obj = anEngine->_this();
 	_NS->Register( obj ,"/SalomeAppEngine");
@@ -488,12 +484,12 @@ void Session_SessionThread::ActivateSession(int argc,
 {
     try
       {
-	INFOS("Session thread started");
+	MESSAGE("Session thread started");
 	SALOME_Session_i * mySALOME_Session
 	  = new SALOME_Session_i(argc, argv, _orb, _root_poa, _GUIMutex, _GUILauncher) ;
 	PortableServer::ObjectId_var mySALOME_Sessionid
 	  = _root_poa->activate_object(mySALOME_Session);
-	INFOS("poa->activate_object(mySALOME_Session)");
+	MESSAGE("poa->activate_object(mySALOME_Session)");
       
 	CORBA::Object_var obj = mySALOME_Session->_this();
 	CORBA::String_var sior(_orb->object_to_string(obj));

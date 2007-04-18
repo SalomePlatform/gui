@@ -54,33 +54,6 @@ OCCViewer_Viewer* LightApp_OCCSelector::viewer() const
   return myViewer;
 }
 
-/*!
-  Acess to external selection for reading( protected )
-*/
-const SUIT_DataOwnerPtrList& LightApp_OCCSelector::getSelectedExt() const
-{
-  return mySelectedExternals;
-}
-
-
-/*!
-  Append owner to external selection ( protected )
-*/
-void LightApp_OCCSelector::appendSelExtOwner( SUIT_DataOwner* theOwner )
-{
-  if ( theOwner )
-    mySelectedExternals.append( theOwner );
-}
-
-/*!
-  Clear external selection
-*/
-void LightApp_OCCSelector::clearSelExtOwners()
-{
-  mySelectedExternals.clear();
-}
-
-
 
 /*!On selection changed.*/
 void LightApp_OCCSelector::onSelectionChanged()
@@ -91,7 +64,7 @@ void LightApp_OCCSelector::onSelectionChanged()
 /*!On selection cleared.*/
 void LightApp_OCCSelector::onDeselection()
 {
-  clearSelExtOwners();
+  mySelectedExternals.clear();
 }
 
 /*!Gets selection list.*/
@@ -115,7 +88,7 @@ void LightApp_OCCSelector::getSelection( SUIT_DataOwnerPtrList& aList ) const
     }
   // add externally selected objects
   SUIT_DataOwnerPtrList::const_iterator anExtIter;
-  for(anExtIter = getSelectedExt().begin(); anExtIter != getSelectedExt().end(); anExtIter++) {
+  for(anExtIter = mySelectedExternals.begin(); anExtIter != mySelectedExternals.end(); anExtIter++) {
     aList.append(*anExtIter);
   }
 }
@@ -141,7 +114,7 @@ void LightApp_OCCSelector::setSelection( const SUIT_DataOwnerPtrList& aList )
       aDisplayed.insert( entryStr, it.Value() );
   }
   
-  clearSelExtOwners();
+  mySelectedExternals.clear();
 
   for ( SUIT_DataOwnerPtrList::const_iterator itr = aList.begin(); itr != aList.end(); ++itr )
   {
@@ -149,7 +122,7 @@ void LightApp_OCCSelector::setSelection( const SUIT_DataOwnerPtrList& aList )
     if ( owner && aDisplayed.contains( owner->entry() ) )
       aSelList.Append( aDisplayed[owner->entry()] );
     else
-      appendSelExtOwner( *itr );
+      mySelectedExternals.append(*itr);
   }
 
   myViewer->unHighlightAll( false );

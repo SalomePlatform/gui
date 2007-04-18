@@ -134,7 +134,9 @@ QString SalomeApp_DataObject::text( const int id ) const
 #else
     if ( componentObject() != (SUIT_DataObject*)this )
 #endif
-      txt = value( referencedObject() );
+      txt = value( object() );
+      if ( txt.isEmpty() )
+	txt = value( referencedObject() );
     break;
   case CT_Entry:
     txt = entry( object() );

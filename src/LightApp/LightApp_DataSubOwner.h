@@ -32,9 +32,10 @@ public:
     LightApp_DataSubOwner( const QString&, const int );
     virtual ~LightApp_DataSubOwner();
 
-    virtual bool isEqual( const SUIT_DataOwner& ) const;
-    virtual bool isLess( const SUIT_DataOwner& obj ) const;
-    int          index() const;
+    // *** jfa: The below line has been put here 14.02.2007.
+    // *** It cancels modifications from branch BR_Dev_For_4_0
+    virtual QString keyString() const;
+    int             index() const;
 
 private:
     int          myIndex;

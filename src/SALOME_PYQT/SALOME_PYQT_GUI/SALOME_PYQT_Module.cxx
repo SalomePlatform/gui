@@ -167,7 +167,8 @@ SALOME_PYQT_Module* SALOME_PYQT_Module::getInitModule()
 SALOME_PYQT_Module::SALOME_PYQT_Module()
   : SalomeApp_Module( __DEFAULT_NAME__ ),
     myModule( 0 ), 
-    myXmlHandler ( 0 )
+    myXmlHandler ( 0 ),
+    myLastActivateStatus( true )
 {
 }
 
@@ -250,6 +251,9 @@ bool SALOME_PYQT_Module::activateModule( SUIT_Study* theStudy )
   if ( !res )
     return res;
 
+  // reset the activation status to the default value
+  myLastActivateStatus = true;
+
   // ActivateReq: request class for internal activate() operation
   class ActivateReq : public PyInterp_Request
   {
@@ -273,6 +277,9 @@ bool SALOME_PYQT_Module::activateModule( SUIT_Study* theStudy )
 
   // Posting the request
   PyInterp_Dispatcher::Get()->Exec( new ActivateReq( theStudy, this ) );
+
+  if ( !lastActivationStatus() )
+    return false;
 
   // activate menus, toolbars, etc
   setMenuShown( true );
@@ -363,6 +370,15 @@ bool SALOME_PYQT_Module::deactivateModule( SUIT_Study* theStudy )
   PyInterp_Dispatcher::Get()->Exec( new DeactivateReq( myInterp, theStudy, this ) );
 
   return SalomeApp_Module::deactivateModule( theStudy );
+}
+
+/*!
+ * Returns the status of last trying of module activation.
+ * Before fisrt activation - status is false
+*/
+bool SALOME_PYQT_Module::lastActivationStatus() const
+{
+  return myLastActivateStatus;
 }
 
 /*!
@@ -815,9 +831,15 @@ void SALOME_PYQT_Module::activate( SUIT_Study* theStudy )
 
   // call Python module's activate() method (for the new modules)
   if(PyObject_HasAttrString(myModule , "activate")){
-    PyObjWrapper res1( PyObject_CallMethod( myModule, "activate", "" ) );
-    if( !res1 ) {
+    PyObject* res1 = PyObject_CallMethod( myModule, "activate", "" );
+    if ( !res1 || !PyBool_Check( res1 ) ) {
       PyErr_Print();
+      //= true: for support of old modules
+      myLastActivateStatus = true;
+    }
+    else {
+      //detect return status
+      myLastActivateStatus = PyObject_IsTrue( res1 );
     }
   }
 }

@@ -193,7 +193,7 @@ void Session_ServerLauncher::ActivateAll()
 	      argv[i+1] = _argv[(*itServ)._firstArg + i];
     }
 
-    std::cout << "*** activating [" << argc << "] : " << argv[0] << std::endl;
+    MESSAGE("*** activating [" << argc << "] : " << argv[0]);
 
     Session_ServerThread* aServerThread
       = new Session_ServerThread(argc, argv, _orb,_root_poa);
@@ -205,7 +205,7 @@ void Session_ServerLauncher::ActivateAll()
   }
 
   // Always launch Session Server
-  std::cout << "*** activating [ SESSION ] " << std::endl;
+  MESSAGE("*** activating [ SESSION ] ");
 
   int argc=1;
   char** argv = new char*[argc];

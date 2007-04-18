@@ -104,9 +104,9 @@ static Colormap choose_cmap( Display *dpy, XVisualInfo *vi )
     XStandardColormap *c;
     int n, i;
 
-#ifdef DEBUG
-    cout << "Choosing cmap for vID = " << vi->visualid << endl;
-#endif
+    //#ifdef DEBUG
+    //cout << "Choosing cmap for vID = " << vi->visualid << endl;
+    //#endif
 
     if ( vi->visualid == XVisualIDFromVisual( (Visual*)QPaintDevice::x11AppVisual() ) )
 	{

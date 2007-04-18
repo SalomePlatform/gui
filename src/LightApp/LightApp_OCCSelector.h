@@ -54,12 +54,10 @@ protected:
 
   QString           entry( const Handle_AIS_InteractiveObject& ) const;
 
-  const SUIT_DataOwnerPtrList& getSelectedExt() const;
-  void              appendSelExtOwner( SUIT_DataOwner* );
-  void              clearSelExtOwners();
+  SUIT_DataOwnerPtrList mySelectedExternals;
+
 private:
   OCCViewer_Viewer*     myViewer;
-  SUIT_DataOwnerPtrList mySelectedExternals;
 };
 
 #endif

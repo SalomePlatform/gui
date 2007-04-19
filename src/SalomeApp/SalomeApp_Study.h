@@ -73,6 +73,8 @@ public:
   void                setNameOfSavePoint(int savePoint, const QString& nameOfSavePoint);
   virtual std::string getVisualComponentName();
 
+  virtual void        restoreState(int savePoint);
+
 protected:
   virtual void        saveModuleData ( QString theModuleName, QStringList theListOfFiles );
   virtual void        openModuleData ( QString theModuleName, QStringList& theListOfFiles );

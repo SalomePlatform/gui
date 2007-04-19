@@ -75,7 +75,6 @@ public:
   bool              suspend( SUIT_Operation* );
   bool              resume( SUIT_Operation* );
 
-  virtual int       storeState();
   virtual void      restoreState(int savePoint);
 
 signals:

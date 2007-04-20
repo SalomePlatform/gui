@@ -458,6 +458,20 @@ int QtxWorkstack::accel( const int id ) const
   return res;
 }
 
+bool QtxWorkstack::isActionEnabled( const int id ) const
+{
+  bool res = false;
+  if ( myActionsMap.contains( id ) )
+    res = myActionsMap[id]->isEnabled();
+  return res;
+}
+
+void QtxWorkstack::setActionEnabled( const int id, const bool on )
+{
+  if ( myActionsMap.contains( id ) )
+    myActionsMap[id]->setEnabled( on );
+}
+
 static int positionSimple (QIntList& szList, const int nb, const int splitter_size,
                            const int item_ind, const int item_rel_pos,
                            const int need_pos, const int splitter_pos)
@@ -932,15 +946,19 @@ void QtxWorkstack::onContextMenuRequested( QWidget* w, QPoint p )
   
   if ( lst.count() > 1 )
   {
-    pm->addAction( myActionsMap[SplitVertical] );
-    pm->addAction( myActionsMap[SplitHorizontal] );
+    if ( myActionsMap[SplitVertical]->isEnabled() )
+      pm->addAction( myActionsMap[SplitVertical] );
+    if ( myActionsMap[SplitHorizontal]->isEnabled() )
+      pm->addAction( myActionsMap[SplitHorizontal] );
     pm->addSeparator();
   }
 
   if ( w )
   {
-    pm->addAction( myActionsMap[Close] );
-    pm->addAction( myActionsMap[Rename] );
+    if ( myActionsMap[Close]->isEnabled() )
+      pm->addAction( myActionsMap[Close] );
+    if ( myActionsMap[Rename]->isEnabled() )
+      pm->addAction( myActionsMap[Rename] );
   }
 
   Qtx::simplifySeparators( pm );

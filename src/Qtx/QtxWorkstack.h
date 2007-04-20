@@ -72,6 +72,9 @@ public:
   int                 accel( const int ) const;
   void                setAccel( const int, const int );
 
+  bool                isActionEnabled( const int ) const;
+  void                setActionEnabled( const int, const bool );
+
   void                split( const int );
 
   QWidget*            addWindow( QWidget*, Qt::WindowFlags = 0 );

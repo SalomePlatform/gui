@@ -113,4 +113,4 @@ sharedpkgpython_PYTHON= SALOMEGUI_shared_modules.py
 install-exec-hook: $(libdir)/_libSALOME_Swig.so
 
 $(libdir)/_libSALOME_Swig.so:
-	ln -sf $(libdir)/libSALOME_Swigcmodule.so $@
+	(cd $(libdir); ln -sf libSALOME_Swigcmodule.so _libSALOME_Swig.so;)

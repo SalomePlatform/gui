@@ -117,11 +117,11 @@ $(MOC_H): $(SIP_FILES)
 if IS_SIP_V4
 install-exec-hook: $(libdir)/SalomePyQt.so
 $(libdir)/SalomePyQt.so:
-	ln -s $(libdir)/libSalomePyQt.so $@
+	(cd $(libdir); ln -s libSalomePyQt.so SalomePyQt.so;)
 else !IS_SIP_V4
 install-exec-hook: $(libdir)/SalomePyQtcmodule.so
 $(libdir)/SalomePyQt.so:
-	ln -sf $(libdir)/libSalomePyQtcmodule.so $@
+	(cd $(libdir); ln -sf libSalomePyQtcmodule.so SalomePyQt.so;)
 endif
 
 $(SIP_SRC): $(MOC_SRC)

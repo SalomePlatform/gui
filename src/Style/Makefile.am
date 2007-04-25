@@ -35,7 +35,7 @@ EXTRA_DIST+=SalomeStyle.h
 
 install-exec-hook:
 	mkdir -p $(bindir)/styles
-	ln -sf $(libdir)/libSalomeStyle.so $(bindir)/styles
+	(cd $(bindir)/styles; ln -sf ../../../lib/salome/libSalomeStyle.so libSalomeStyle.so;)
 
 uninstall-hook:
 	rm -f $(bindir)/styles/libSalomeStyle.so

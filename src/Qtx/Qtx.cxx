@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -319,10 +319,14 @@ QString Qtx::dir( const QString& path, const bool abs )
 */
 QString Qtx::file( const QString& path, bool withExt )
 {
+  QString fPath = path;
+  while ( !fPath.isEmpty() && ( fPath[fPath.length() - 1] == '\\' || fPath[fPath.length() - 1] == '/' ) )
+    fPath.remove( fPath.length() - 1, 1 );
+
   if ( withExt )
-    return QFileInfo( path ).fileName();
+    return QFileInfo( fPath ).fileName();
   else
-    return QFileInfo( path ).baseName();
+    return QFileInfo( fPath ).baseName();
 }
 
 /*!

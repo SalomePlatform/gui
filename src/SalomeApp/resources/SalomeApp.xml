@@ -43,6 +43,7 @@
     <parameter name="OB"           value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
     <parameter name="CAM"          value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
     <parameter name="SUPERVGraph"  value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
+    <parameter name="QxGraph"      value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
     <parameter name="ToolsGUI"     value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
     <!-- NETGENPlugin and GHS3DPlugin -->
     <!-- Here the environment variables are used in upper case, -->
@@ -102,6 +103,12 @@
   </section>
   <section name="SUPERVGraph" >
     <!-- Supervision viewer preferences -->
+    <parameter name="Background" value="144, 208, 211" />
+    <parameter name="Title"      value="63, 213, 255"  />
+    <parameter name="NodeBody"   value="255, 249, 147" />
+  </section>
+  <section name="QxGraph" >
+    <!-- QxGraph viewer preferences -->
     <parameter name="Background" value="144, 208, 211" />
     <parameter name="Title"      value="63, 213, 255"  />
     <parameter name="NodeBody"   value="255, 249, 147" />

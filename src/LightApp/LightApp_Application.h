@@ -91,6 +91,10 @@ public:
          NewVTKViewId,
 #endif
 
+#ifndef DISABLE_QXGRAPHVIEWER
+         NewQxGraphViewId,
+#endif
+
          PreferencesId, MRUId, UserID };
 public:
   LightApp_Application();

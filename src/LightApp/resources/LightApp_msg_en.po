@@ -95,6 +95,9 @@ msgstr "&OCC view"
 msgid "LightApp_Application::NEW_WINDOW_3"
 msgstr "VT&K view"
 
+msgid "LightApp_Application::NEW_WINDOW_4"
+msgstr "&QxGraph view"
+
 msgid "LightApp_Application::INF_CANCELLED"
 msgstr "Module activation cancelled"
 

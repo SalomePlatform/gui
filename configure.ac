@@ -84,6 +84,12 @@ else
     DISABLE_SALOMEOBJECT="yes"
 fi
 
+if test "x${enable_qxGraphViewer}" != "xno" ; then
+    DISABLE_QXGRAPHVIEWER="no"
+else 
+    DISABLE_QXGRAPHVIEWER="yes"
+fi
+
 
 dnl
 dnl Initialize source and build root directories
@@ -425,6 +431,15 @@ echo
 CHECK_SALOMEOBJECT
 echo "DISABLE_SALOMEOBJECT = "$DISABLE_SALOMEOBJECT
 
+echo
+echo ---------------------------------------------
+echo Testing QxGraphViewer
+echo ---------------------------------------------
+echo
+
+CHECK_QXGRAPHVIEWER
+echo "DISABLE_QXGRAPHVIEWER = "$DISABLE_QXGRAPHVIEWER
+
 if test "x${GUI_DISABLE_CORBA}" != "xyes" ; then
   if test "x${DISABLE_PYCONSOLE}" == "xyes" ; then
     echo "failed : for full configuration of GUI module necessary enable PyConsole !"
@@ -452,6 +467,10 @@ if test "x${GUI_DISABLE_CORBA}" != "xyes" ; then
   fi
   if test "x${DISABLE_SALOMEOBJECT}" == "xyes" ; then
     echo "failed : for full configuration of GUI module necessary enable SalomeObject !"
+    exit
+  fi
+  if test "x${DISABLE_QXGRAPHVIEWER}" == "xyes" ; then
+    echo "failed : for full configuration of GUI module necessary enable QxGraphViewer !"
     exit
   fi
 fi
@@ -540,6 +559,7 @@ AM_CONDITIONAL(ENABLE_SUPERVGRAPHVIEWER, [test "$DISABLE_SUPERVGRAPHVIEWER" = no
 AM_CONDITIONAL(ENABLE_OCCVIEWER, [test "$DISABLE_OCCVIEWER" = no])
 AM_CONDITIONAL(ENABLE_VTKVIEWER, [test "$DISABLE_VTKVIEWER" = no])
 AM_CONDITIONAL(ENABLE_SALOMEOBJECT, [test "$DISABLE_SALOMEOBJECT" = no])
+AM_CONDITIONAL(ENABLE_QXGRAPHVIEWER, [test "$DISABLE_QXGRAPHVIEWER" = no])
 
 echo
 echo ---------------------------------------------
@@ -619,6 +639,7 @@ AC_OUTPUT([ \
   ./src/Plot2d/Makefile \
   ./src/SPlot2d/Makefile \
   ./src/SUPERVGraph/Makefile \
+  ./src/QxGraph/Makefile \
   ./src/LightApp/Makefile \
   ./src/ResExporter/Makefile \
   ./src/RegistryDisplay/Makefile \

@@ -109,6 +109,12 @@
 //  #include <SUPERVGraph_ViewManager.h>
 //#endif
 
+#ifndef DISABLE_QXGRAPHVIEWER
+  #include <QxGraph_ViewModel.h>
+  #include <QxGraph_ViewWindow.h>
+  #include <QxGraph_ViewManager.h>
+#endif
+
 #include <QtxWorkstack.h>
 
 #include <qdir.h>
@@ -609,6 +615,9 @@ void LightApp_Application::createActions()
 #ifndef DISABLE_VTKVIEWER
   createActionForViewer( NewVTKViewId, newWinMenu, QString::number( 3 ), ALT+Key_K );
 #endif
+#ifndef DISABLE_QXGRAPHVIEWER
+  createActionForViewer( NewQxGraphViewId, newWinMenu, QString::number( 4 ), ALT+Key_C );
+#endif
 
 
   createAction( RenameId, tr( "TOT_RENAME" ), QIconSet(), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ),
@@ -709,6 +718,11 @@ void LightApp_Application::onNewWindow()
 #ifndef DISABLE_VTKVIEWER
   case NewVTKViewId:
     type = VTKViewer_Viewer::Type();
+    break;
+#endif
+#ifndef DISABLE_QXGRAPHVIEWER
+  case NewQxGraphViewId:
+    type = QxGraph_Viewer::Type();
     break;
 #endif
   }
@@ -905,6 +919,12 @@ void LightApp_Application::updateCommandsStatus()
 
 #ifndef DISABLE_VTKVIEWER
   a = action( NewVTKViewId );
+  if( a )
+    a->setEnabled( activeStudy() );
+#endif
+
+#ifndef DISABLE_QXGRAPHVIEWER
+  a = action( NewQxGraphViewId );
   if( a )
     a->setEnabled( activeStudy() );
 #endif
@@ -1362,6 +1382,12 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
   //    viewMgr = new SUPERVGraph_ViewManager( activeStudy(), desktop(), new SUPERVGraph_Viewer() );
   //  }
   //#endif
+#ifndef DISABLE_QXGRAPHVIEWER
+  if( vmType == QxGraph_Viewer::Type() )
+    {
+      viewMgr = new QxGraph_ViewManager( activeStudy(), desktop(), new QxGraph_Viewer() );
+    }
+#endif
 #ifndef DISABLE_OCCVIEWER
   if( vmType == OCCViewer_Viewer::Type() )
   {

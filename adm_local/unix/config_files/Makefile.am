@@ -36,4 +36,5 @@ check_SupervGraphViewer.m4 \
 check_vtk.m4 \
 check_VTKViewer.m4 \
 check_corba_in_GUI.m4 \
+check_QxGraphViewer.m4 \
 README

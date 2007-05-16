@@ -58,6 +58,9 @@ endif
 if ENABLE_SUPERVGRAPHVIEWER
   SUBDIRS += SUPERVGraph
 endif
+if ENABLE_QXGRAPHVIEWER
+  SUBDIRS += QxGraph
+endif
 SUBDIRS += LightApp ResExporter
 
 if GUI_ENABLE_CORBA

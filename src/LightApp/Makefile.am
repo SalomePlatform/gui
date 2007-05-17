@@ -245,3 +245,6 @@ endif
 if ENABLE_SUPERVGRAPHVIEWER
   libLightApp_la_LIBADD+= ../SUPERVGraph/libSUPERVGraph.la
 endif
+if ENABLE_QXGRAPHVIEWER
+  libLightApp_la_LIBADD+= ../QxGraph/libQxGraph.la
+endif

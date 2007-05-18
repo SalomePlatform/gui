@@ -21,19 +21,18 @@
 
 #include "SUIT.h"
 
-#include <QtCore/qmap.h>
-#include <QtCore/qlist.h>
-
-#include <QtGui/qevent.h>
-#include <QtGui/qpixmap.h>
+#include <QList>
+#include <QEvent>
 
 #include <QtxMainWindow.h>
 
-class QPopupMenu;
+class QMovie;
+
 class QtxLogoMgr;
-class SUIT_ViewWindow;
 class QtxActionMenuMgr;
 class QtxActionToolMgr;
+
+class SUIT_ViewWindow;
 
 /*!
   \class SUIT_Desktop
@@ -54,6 +53,7 @@ public:
 
   QtxActionMenuMgr*        menuMgr() const;
   QtxActionToolMgr*        toolMgr() const;
+  QtxLogoMgr*              logoMgr() const;
 
   virtual SUIT_ViewWindow* activeWindow() const = 0;
   virtual QList<SUIT_ViewWindow*> windows() const = 0;
@@ -62,15 +62,18 @@ public:
 
   void                     logoClear();
   void                     logoRemove( const QString& );
+  void                     logoInsert( const QString&, QMovie*, const int = -1 );
   void                     logoInsert( const QString&, const QPixmap&, const int = -1 );
 
   void                     emitActivated();
+  void                     emitMessage( const QString& );
 
-Q_SIGNALS:
+signals:
   void                     activated();
   void                     deactivated();
   void                     windowActivated( SUIT_ViewWindow* );
   void                     closing( SUIT_Desktop*, QCloseEvent* );
+  void                     message( const QString& );
 
 protected:
   virtual bool             event( QEvent* );

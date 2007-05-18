@@ -18,15 +18,14 @@
 //
 #include "SUIT_Desktop.h"
 
-#include "SUIT_Tools.h"
 #include "SUIT_ViewWindow.h"
 
-//#include <QtxLogoMgr.h>
+#include <QtxLogoMgr.h>
 #include <QtxActionMenuMgr.h>
 #include <QtxActionToolMgr.h>
 
-#include <QtGui/qevent.h>
-#include <QtGui/qapplication.h>
+#include <QApplication>
+#include <QCloseEvent>
 
 /*!\class SUIT_Desktop
  * Provide desktop management:\n
@@ -54,7 +53,7 @@ SUIT_Desktop::SUIT_Desktop()
 {
   myMenuMgr = new QtxActionMenuMgr( this );
   myToolMgr = new QtxActionToolMgr( this );
-  myLogoMgr = 0;//new QtxLogoMgr( menuBar() );
+  myLogoMgr = new QtxLogoMgr( menuBar() );
 }
 
 /*!
@@ -79,6 +78,8 @@ bool SUIT_Desktop::event( QEvent* e )
     break;
   case QEvent::WindowDeactivate:
     emit deactivated();
+    break;
+  default:
     break;
   }
 
@@ -107,7 +108,7 @@ void SUIT_Desktop::childEvent( QChildEvent* e )
 
 void SUIT_Desktop::customEvent( QEvent* e )
 {
-  if ( e->type() != Reparent )
+  if ( (int)e->type() != Reparent )
     return;
 
   QChildEvent* re = (QChildEvent*)e;
@@ -139,17 +140,33 @@ QtxActionToolMgr* SUIT_Desktop::toolMgr() const
 }
 
 /*!
+  Gets logo manager.
+*/
+QtxLogoMgr* SUIT_Desktop::logoMgr() const
+{
+  return myLogoMgr;
+}
+
+/*!
   Returns the count of the existed logos.
 */
 int SUIT_Desktop::logoCount() const
 {
   return 0;
-/*
+
   if ( !myLogoMgr )
     return 0;
   else
     return myLogoMgr->count();
+}
+
+/*!
+  Adds new logo to the menu bar area
 */
+void SUIT_Desktop::logoInsert( const QString& logoID, QMovie* logo, const int idx )
+{
+  if ( myLogoMgr )
+    myLogoMgr->insert( logoID, logo, idx );
 }
 
 /*!
@@ -157,10 +174,8 @@ int SUIT_Desktop::logoCount() const
 */
 void SUIT_Desktop::logoInsert( const QString& logoID, const QPixmap& logo, const int idx )
 {
-/*
   if ( myLogoMgr )
     myLogoMgr->insert( logoID, logo, idx );
-*/
 }
 
 /*!
@@ -168,10 +183,8 @@ void SUIT_Desktop::logoInsert( const QString& logoID, const QPixmap& logo, const
 */
 void SUIT_Desktop::logoRemove( const QString& logoID )
 {
-/*
   if ( myLogoMgr )
     myLogoMgr->remove( logoID );
-*/
 }
 
 /*!
@@ -179,10 +192,8 @@ void SUIT_Desktop::logoRemove( const QString& logoID )
 */
 void SUIT_Desktop::logoClear()
 {
-/*
   if ( myLogoMgr )
     myLogoMgr->clear();
-*/
 }
 
 /*!
@@ -191,4 +202,12 @@ void SUIT_Desktop::logoClear()
 void SUIT_Desktop::emitActivated()
 {
   emit activated();
+}
+
+/*!
+  Emits message signal
+*/
+void SUIT_Desktop::emitMessage( const QString& theMessage )
+{
+  emit message( theMessage );
 }

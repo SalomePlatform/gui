@@ -27,42 +27,45 @@
 #include <QIcon>
 
 /*!
-	Name: QtxMRUAction [public]
-	Desc: Constructs an MRU action with given parent and name.
+  \class QtxMRUAction
+  \brief Menu action which provides most recent used items support.
 */
 
+/*!
+  \brief Constructor.
+  \param parent parent object
+*/
 QtxMRUAction::QtxMRUAction( QObject* parent )
 : QtxAction( "Most Recently Used", "Most Recently Used", 0, parent ),
-myVisCount( 5 ),
-myInsertMode( MoveFirst )
+  myVisCount( 5 ),
+  myInsertMode( MoveFirst )
 {
   setMenu( new QMenu( 0 ) );
   connect( menu(), SIGNAL( aboutToShow() ), this, SLOT( onAboutToShow() ) );
 }
 
 /*!
-	Name: QtxMRUAction [public]
-	Desc: This constructor creates an action with the following properties: the
-		    description text, the menu text and.  It is a child of given parent and
-        named specified name.
+  \brief Constructor.
+  \param description (tooltip) text
+  \param menuText menu text
+  \param parent parent object
 */
-
 QtxMRUAction::QtxMRUAction( const QString& text, const QString& menuText, QObject* parent )
 : QtxAction( text, menuText, 0, parent ),
-myVisCount( 5 ),
-myInsertMode( MoveFirst )
+  myVisCount( 5 ),
+  myInsertMode( MoveFirst )
 {
   setMenu( new QMenu( 0 ) );
   connect( menu(), SIGNAL( aboutToShow() ), this, SLOT( onAboutToShow() ) );
 }
 
 /*!
-	Name: QtxMRUAction [public]
-	Desc: This constructor creates an action with the following properties: the
-		    description text, the menu text, the icon or iconset icon and keyboard
-        accelerator. It is a child of given parent and named specified name.
+  \brief Constructor.
+  \param description (tooltip) text
+  \param icon action icon
+  \param menuText menu text
+  \param parent parent object
 */
-
 QtxMRUAction::QtxMRUAction( const QString& text, const QIcon& icon,
                             const QString& menuText, QObject* parent )
 : QtxAction( text, icon, menuText, 0, parent ),
@@ -74,75 +77,69 @@ myInsertMode( MoveFirst )
 }
 
 /*!
-	Name: ~QtxMRUAction [public]
-	Desc: This destructor removes all added popup items.
+  \brief Destructor.
 */
-
 QtxMRUAction::~QtxMRUAction()
 {
   delete menu();
 }
 
 /*!
-	Name: insertMode [public]
-	Desc: Returns the insert mode.
+  \brief Get items insertion policy.
+  \return insertion policy (QtxMRUAction::InsertionMode)
 */
-
 int QtxMRUAction::insertMode() const
 {
   return myInsertMode;
 }
 
 /*!
-	Name: setInsertMode [public]
-	Desc: Returns the insert mode. Can be following values:
-      MoveFirst - place the specified link to the first position in any case
-      MoveLast  - place the specified link to the last position in any case
-      AddFirst  - if inserted link doesn't exist then add to the first position
-      AddLast   - if inserted link doesn't exist then add to the lase position
+  \brief Set items insertion policy.
+  \param mode insertion policy (QtxMRUAction::InsertionMode)
 */
-
 void QtxMRUAction::setInsertMode( const int mode )
 {
   myInsertMode = mode;
 }
 
 /*!
-	Name: count [public]
-	Desc: Returns the number of links.
+  \brief Get number of MRU items.
+  \return number of MRU items
 */
-
 int QtxMRUAction::count() const
 {
   return myLinks.count();
 }
 
 /*!
-	Name: isEmpty [public]
-	Desc: Returns 'true' if there is no links.
+  \brief Check if the MRU items list is empty.
+  \return \c true if there are no MRU items
 */
-
 bool QtxMRUAction::isEmpty() const
 {
   return myLinks.isEmpty();
 }
 
 /*!
-	Name: visibleCount [public]
-	Desc: Returns the number of first links which will be added to popup menu.
-        If 'visibleCount' less than 1 then all links will be used.
+  \brief Get number of visible MRU items.
+  \return visible MRU items number
+  \sa setVisibleCount()
 */
-
 int QtxMRUAction::visibleCount() const
 {
   return myVisCount;
 }
 
 /*!
-	Name: setVisibleCount [public]
-	Desc: Sets the number of links which will be used in popup menu.
-*/
+  \brief Set number of visible MRU items.
+  
+  This method sets the maximum number of MRU items
+  to be displayed in the popup menu (5 by default).
 
+  If \a num < 1, then all MRU items will be displayed.
+
+  \param num visible MRU items number
+*/
 void QtxMRUAction::setVisibleCount( int num )
 {
   if ( myVisCount == num )
@@ -152,10 +149,12 @@ void QtxMRUAction::setVisibleCount( int num )
 }
 
 /*!
-	Name: insert [public]
-	Desc: Insert the link according to the insert mode.
-*/
+  \brief Insert MRU item.
 
+  The item is inserted according to the current insertion policy.
+
+  \param link MRU item to be added
+*/
 void QtxMRUAction::insert( const QString& link )
 {
   if ( myLinks.contains( link ) && ( insertMode() == AddFirst || insertMode() == AddLast ) )
@@ -177,10 +176,12 @@ void QtxMRUAction::insert( const QString& link )
 }
 
 /*!
-	Name: remove [public]
-	Desc: Removes link with specified index.
-*/
+  \brief Remove MRU item.
 
+  Does nothing if \a idx is out of range.
+
+  \param idx MRU item index
+*/
 void QtxMRUAction::remove( const int idx )
 {
   if ( idx < 0 || idx >= (int)myLinks.count() )
@@ -190,20 +191,22 @@ void QtxMRUAction::remove( const int idx )
 }
 
 /*!
-	Name: remove [public]
-	Desc: Removes specified link.
-*/
+  \brief Remove MRU item.
 
+  Does nothing if there is no speicified item in the list.
+
+  \param link MRU item to be removed
+*/
 void QtxMRUAction::remove( const QString& link )
 {
   myLinks.removeAll( link );
 }
 
 /*!
-	Name: item [public]
-	Desc: Returns the link with specified index.
+  \brief Get MRU item
+  \param idx MRU item index
+  \return MRU item or null QString if \a idx is out of range
 */
-
 QString QtxMRUAction::item( const int idx ) const
 {
   QString res;
@@ -213,31 +216,31 @@ QString QtxMRUAction::item( const int idx ) const
 }
 
 /*!
-	Name: find [public]
-	Desc: Find specified link. If link exists then returns index otherwise -1 returned.
+  \brief Get MRU item index.
+  \param link MRU item
+  \return MRU item index or -1 if item is not found
 */
-
 int QtxMRUAction::find( const QString& link ) const
 {
   return myLinks.indexOf( link );
 }
 
 /*!
-	Name: contains [public]
-	Desc: Returns 'true' if given link exist.
+  \brief Check if MRU item is in the list.
+  \param link MRU item
+  \return \c true if specified item is already added to the list
 */
-
 bool QtxMRUAction::contains( const QString& link ) const
 {
   return myLinks.contains( link );
 }
 
 /*!
-	Name: loadLinks [public]
-	Desc: Load the MRU links from specified resource manager section.
-        If parameter 'clear' is 'true' then link list will be cleared first.
+  \brief Load the MRU items from specified resources section.
+  \param resMgr resources manager
+  \param section resources section
+  \param clear if \c true, previous MRU items list is cleared
 */
-
 void QtxMRUAction::loadLinks( QtxResourceMgr* resMgr, const QString& section, const bool clear )
 {
   if ( !resMgr || section.isEmpty() )
@@ -268,11 +271,11 @@ void QtxMRUAction::loadLinks( QtxResourceMgr* resMgr, const QString& section, co
 }
 
 /*!
-	Name: saveLinks [public]
-	Desc: Save the MRU links into specified resource manager section.
-        If parameter 'clear' is 'true' then section will be cleared first.
+  \brief Save the MRU items to specified resources section.
+  \param resMgr resources manager
+  \param section resources section
+  \param clear if \c true, the resources section is first cleared
 */
-
 void QtxMRUAction::saveLinks( QtxResourceMgr* resMgr, const QString& section, const bool clear ) const
 {
   if ( !resMgr || section.isEmpty() )
@@ -312,21 +315,21 @@ void QtxMRUAction::saveLinks( QtxResourceMgr* resMgr, const QString& section, co
 }
 
 /*!
-	Name: onAboutToShow [private slots]
-	Desc: Enable or disable sub menu item according to number of MRU links
-        in sub popup when parent popup is shown.
+  \brief Prepare MRU items popup menu.
+  
+  This method is called when the parent menu is shown.
+  Enables or disables sub menu item according to the number of MRU items.
 */
-
 void QtxMRUAction::onAboutToShow()
 {
   updateMenu();
 }
 
 /*!
-	Name: onActivated [private slot]
-	Desc: Process popup item activation and emit signal activated with selected MRU link.
-*/
+  \brief Called when any MRU item is selected by the user.
 
+  Emits signal activated(const QString&) passing selected MRU item as parameter.
+*/
 void QtxMRUAction::onActivated()
 {
   QAction* a = ::qobject_cast<QAction*>( sender() );
@@ -339,10 +342,8 @@ void QtxMRUAction::onActivated()
 }
 
 /*!
-	Name: updateMenu [private]
-	Desc: Updates the popup menu which contains MRU link items.
+  \brief Update MRU items popup menu.
 */
-
 void QtxMRUAction::updateMenu()
 {
   QMenu* pm = menu();
@@ -355,3 +356,9 @@ void QtxMRUAction::updateMenu()
   for ( QStringList::const_iterator it = myLinks.begin(); it != myLinks.end() && count > 0; ++it, count-- )
     pm->addAction( *it, this, SLOT( onActivated() ) );
 }
+
+/*!
+  \fn void QtxMRUAction::activated( const QString& link );
+  \brief Emitted when user selects any MRU item in the menu.
+  \param link selected MRU item
+*/

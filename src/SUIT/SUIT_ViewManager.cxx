@@ -22,6 +22,7 @@
 #include "SUIT_ViewModel.h"
 #include "SUIT_Study.h"
 
+#include <QtCore/qmap.h>
 #include <QtCore/qregexp.h>
 #include <QtCore/qpointer.h>
 

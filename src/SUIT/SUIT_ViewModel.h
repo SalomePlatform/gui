@@ -24,6 +24,7 @@
 #include "SUIT_ViewWindow.h"
 #include "SUIT_ViewManager.h"
 
+#include <QtCore/qmap.h>
 #include <QtCore/qobject.h>
 
 #include <QtGui/qcursor.h>

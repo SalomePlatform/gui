@@ -158,9 +158,12 @@ void PythonConsole_PyEditor::exec( const QString& command )
   _currentPrompt = READY_PROMPT;
   _buf.truncate(0);
   _isInHistory = false;
-  setText( "\n" + _currentPrompt); 
-  setText( command + "\n" ); 
-  handleReturn();
+  setText( "\n" + _currentPrompt);
+  // PAL15963 (Problem with option -u (--execute) of runSalome).
+  // Let events creating a study end before script execution starts
+  setText( command /*+ "\n"*/ ); 
+  //handleReturn();
+  qApp->postEvent( this, new QKeyEvent(QEvent::KeyPress,Key_Return,13,Qt::NoButton ));
 }
 
 void PythonConsole_PyEditor::execAndWait( const QString& command )

@@ -63,6 +63,10 @@ public slots:
   virtual QPopupMenu* createPopupMenu( const QPoint& );
   
 private:
+  
+  void scrollViewAfterHistoryUsing( const QString& command );
+  
+private:
   QString        _buf;
   QString        _currentCommand;
   QString        _currentPrompt;

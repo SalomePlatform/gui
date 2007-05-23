@@ -37,6 +37,7 @@
 #include <qdragobject.h>
 #include <qapplication.h>
 #include <qpopupmenu.h>
+#include <qfontmetrics.h>
 
 using namespace std;
 
@@ -137,7 +138,43 @@ void PythonConsole_PyEditor::setText(QString s)
 {
   int para=paragraphs()-1;
   int col=paragraphLength(para);
-  insertAt(s,para,col);
+  
+  // Limit length of the string because exception may occur if string too long (NPAL16033)
+  // Exception occurs if  one of paragraphs of the input string "s" is too long.  Now long 
+  // paragraph is limited with threshold numbers of characters and finished by " ..." string. 
+  // Note that first paragraph of the string is checked only because it is enough for bug fixing. 
+  // If it will be insufficient for other cases then more complicated check should be implemented.
+  // At present it is not done because of possible performance problem.
+  
+  static int threshold = 2000000;
+  long strLength = s.length();
+  if ( col + strLength <= threshold || s.find( '\n' ) < threshold )
+    insertAt(s,para,col);
+  else
+  {
+    if ( col >= threshold )
+    {
+      if ( text( para ).right( 5 )  != QString( " ...\n" ) )
+        insertAt(" ...\n",para,col);
+    }
+    else
+    {
+      long n = threshold - col; 
+      s.truncate( n );
+      if ( n >= 5 )
+      {
+        s[ n - 5 ] = QChar( ' ' );
+        s[ n - 4 ] = QChar( '.' );
+        s[ n - 3 ] = QChar( '.' );
+        s[ n - 2 ] = QChar( '.' );
+        s[ n - 1 ] = QChar( '\n' );
+      }
+      else 
+        s = " ...\n";
+      insertAt(s,para,col);
+    }
+  }
+  
   int n = paragraphs()-1;  
   setCursorPosition( n, paragraphLength(n)); 
 }
@@ -380,20 +417,21 @@ void PythonConsole_PyEditor::keyPressEvent( QKeyEvent* e )
 	moveCursor( QTextEdit::MoveUp, false );
       }
       else { 
-	QString histLine = _currentPrompt;
-	if ( ! _isInHistory ) {
-	  _isInHistory = true;
-	  _currentCommand = text( endLine ).remove( 0, PROMPT_SIZE );
-	  _currentCommand.truncate( _currentCommand.length() - 1 );
-	}
-	QString previousCommand = myInterp->getPrevious();
-	if ( previousCommand.compare( BEGIN_HISTORY_PY ) != 0 )
-  {
-    removeParagraph( endLine );
-	  histLine.append( previousCommand );
-    append( histLine );
-	}
-	moveCursor( QTextEdit::MoveEnd, false );
+        QString histLine = _currentPrompt;
+        if ( ! _isInHistory ) {
+          _isInHistory = true;
+          _currentCommand = text( endLine ).remove( 0, PROMPT_SIZE );
+          _currentCommand.truncate( _currentCommand.length() - 1 );
+        }
+        QString previousCommand = myInterp->getPrevious();
+        if ( previousCommand.compare( BEGIN_HISTORY_PY ) != 0 )
+        {
+          removeParagraph( endLine );
+          histLine.append( previousCommand );
+          append( histLine );
+        }
+        moveCursor( QTextEdit::MoveEnd, false );
+        scrollViewAfterHistoryUsing( previousCommand ); // NPAL16035
       }
       break;
     }
@@ -431,6 +469,7 @@ void PythonConsole_PyEditor::keyPressEvent( QKeyEvent* e )
 	  }
 	}
 	moveCursor( QTextEdit::MoveEnd, false );
+  scrollViewAfterHistoryUsing( nextCommand ); // NPAL16035
       }
       break;
     }
@@ -764,3 +803,23 @@ QPopupMenu* PythonConsole_PyEditor::createPopupMenu( const QPoint& pos )
 
   return popup;
 }
+
+/*!
+  Scrolls view after use of history (Up/Down keys)to the left position if length 
+  of command less than visible width of the view 
+*/
+void PythonConsole_PyEditor::scrollViewAfterHistoryUsing( const QString& command )
+{
+  if ( !command.isEmpty() )
+  {
+    int aCommandLength = QFontMetrics( currentFont() ).width( command );
+    int aVisibleWidth = visibleWidth();
+    if ( aCommandLength < aVisibleWidth )
+    {
+      QScrollBar* aBar = horizontalScrollBar();
+      if ( aBar )
+        aBar->setValue( aBar->minValue() );
+    }
+  }
+}
+

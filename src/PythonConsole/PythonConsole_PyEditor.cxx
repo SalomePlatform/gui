@@ -163,11 +163,11 @@ void PythonConsole_PyEditor::setText(QString s)
       s.truncate( n );
       if ( n >= 5 )
       {
-        s[ n - 5 ] = QChar( ' ' );
-        s[ n - 4 ] = QChar( '.' );
-        s[ n - 3 ] = QChar( '.' );
-        s[ n - 2 ] = QChar( '.' );
-        s[ n - 1 ] = QChar( '\n' );
+        s.at( n - 5 ) = QChar( ' ' );
+        s.at( n - 4 ) = QChar( '.' );
+        s.at( n - 3 ) = QChar( '.' );
+        s.at( n - 2 ) = QChar( '.' );
+        s.at( n - 1 ) = QChar( '\n' );
       }
       else 
         s = " ...\n";

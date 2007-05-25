@@ -812,13 +812,26 @@ void PythonConsole_PyEditor::scrollViewAfterHistoryUsing( const QString& command
 {
   if ( !command.isEmpty() )
   {
+    if ( command == QString( BEGIN_HISTORY_PY ) )
+    {
+      ensureCursorVisible();
+      return;
+    }
+    
     int aCommandLength = QFontMetrics( currentFont() ).width( command );
     int aVisibleWidth = visibleWidth();
-    if ( aCommandLength < aVisibleWidth )
+    QScrollBar* aBar = horizontalScrollBar();
+    if ( aBar )    
     {
-      QScrollBar* aBar = horizontalScrollBar();
-      if ( aBar )
+      if ( aCommandLength <= aVisibleWidth )
         aBar->setValue( aBar->minValue() );
+      else  if ( aVisibleWidth > 0 )
+      {
+        double aRatio = aCommandLength / contentsWidth();
+        double aPos = ( aBar->maxValue() - aBar->minValue() ) * aRatio;
+        aBar->setValue( (int)aPos );
+        ensureCursorVisible();
+      }
     }
   }
 }

@@ -146,7 +146,7 @@ void PythonConsole_PyEditor::setText(QString s)
   // If it will be insufficient for other cases then more complicated check should be implemented.
   // At present it is not done because of possible performance problem.
   
-  static int threshold = 2000000;
+  static int threshold = 50000;
   long strLength = s.length();
   if ( col + strLength <= threshold || s.find( '\n' ) < threshold )
     insertAt(s,para,col);

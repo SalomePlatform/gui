@@ -818,7 +818,8 @@ void PythonConsole_PyEditor::scrollViewAfterHistoryUsing( const QString& command
       return;
     }
     
-    int aCommandLength = QFontMetrics( currentFont() ).width( command );
+    QFontMetrics aFM( currentFont() );
+    int aCommandLength = aFM.width( command ) + aFM.width( READY_PROMPT ) + 5;
     int aVisibleWidth = visibleWidth();
     QScrollBar* aBar = horizontalScrollBar();
     if ( aBar )    

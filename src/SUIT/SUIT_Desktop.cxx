@@ -42,7 +42,7 @@ public:
   QObject* object() const { return myObj; }
 
 private:
-  QObject* myObj;
+  QPointer<QObject> myObj;
 };
 
 /*!
@@ -101,7 +101,7 @@ void SUIT_Desktop::closeEvent( QCloseEvent* e )
 void SUIT_Desktop::childEvent( QChildEvent* e )
 {
   if ( e->type() == QEvent::ChildAdded && e->child()->isWidgetType() )
-    QApplication::postEvent( this, new QChildEvent( QEvent::Type( Reparent ), e->child() ) );
+    QApplication::postEvent( this, new ReparentEvent( QEvent::Type( Reparent ), e->child() ) );
   else
     QtxMainWindow::childEvent( e );
 }
@@ -111,10 +111,10 @@ void SUIT_Desktop::customEvent( QEvent* e )
   if ( (int)e->type() != Reparent )
     return;
 
-  QChildEvent* re = (QChildEvent*)e;
-  if ( re->child()->inherits( "SUIT_ViewWindow" ) )
+  ReparentEvent* re = (ReparentEvent*)e;
+  if ( re->object() && re->object()->inherits( "SUIT_ViewWindow" ) )
   {
-    QWidget* wid = (QWidget*)re->child();
+    QWidget* wid = (QWidget*)re->object();
     bool invis = wid->testAttribute( Qt::WA_WState_ExplicitShowHide ) &&
                  wid->testAttribute( Qt::WA_WState_Hidden );
 

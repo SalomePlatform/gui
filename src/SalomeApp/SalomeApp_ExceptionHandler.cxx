@@ -98,13 +98,14 @@ bool SalomeApp_ExceptionHandler::handle( QObject* o, QEvent* e )
 }
 
 /*!Create new SUIT_ExceptionHandler*/
+
 extern "C" SALOMEAPP_EXPORT SUIT_ExceptionHandler* getExceptionHandler()
 {
   // MSV 2006-04-26: work around PAL12004 "VTK window => SIGFPE Arithmetic Exception Detected"
   // We disable FPE signal as it was in earlier versions of SALOME. It is enabled
   // only in debug mode if the environment variable DISABLE_FPE is not set to 1.
   bool raiseFPE;
-#ifdef _DEBUG_
+#if defined(_DEBUG_) | defined(_DEBUG) //the Last for WNT default settings
   raiseFPE = true;
   char* envDisableFPE = getenv("DISABLE_FPE");
   if (envDisableFPE && atoi(envDisableFPE))

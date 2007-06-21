@@ -79,9 +79,27 @@ bool PyConsole_Interp::initState()
 {
   // The GIL is acquired and will be held on initState output
   // It is the caller responsability to release the lock if needed
+
+/* LLS
   PyEval_AcquireLock();
   _tstate = Py_NewInterpreter(); // create an interpreter and save current state
   PySys_SetArgv(PyInterp_base::_argc,PyInterp_base::_argv); // initialize sys.argv
+*/
+
+  PyEval_AcquireLock();
+#ifdef WIN32 
+  _tstate = PyGILState_GetThisThreadState();
+  // if no thread state defined
+  if ( _tstate )
+    PyThreadState_Swap(_tstate);
+  else
+#endif
+  {
+    _tstate = Py_NewInterpreter(); // create an interpreter and save current state
+    PySys_SetArgv(PyInterp_base::_argc,PyInterp_base::_argv); // initialize sys.argv
+    //if(MYDEBUG) MESSAGE("PythonConsole_PyInterp::initState - this = "<<this<<"; _tstate = "<<_tstate);
+  }
+
   
   //If builtinmodule has been initialized all the sub interpreters
   // will have the same __builtin__ module

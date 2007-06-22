@@ -934,11 +934,12 @@ void LightApp_Application::updateCommandsStatus()
   \class RunBrowser
   Runs system command in separate thread
 */
-class RunBrowser: public QThread {
+class RunBrowser: public QThread
+{
 public:
-
-  RunBrowser( LightApp_Application* app, QString theApp, QString theParams, QString theHelpFile, QString theContext=NULL):
-    myApp(theApp), myParams(theParams), 
+  RunBrowser (LightApp_Application* app, QString theApp, QString theParams,
+              QString theHelpFile, QString theContext=NULL)
+    : myApp(theApp), myParams(theParams), 
 #ifdef WIN32
       myHelpFile("file://" + theHelpFile + theContext), 
 #else
@@ -946,30 +947,35 @@ public:
 #endif
       myStatus(0),
       myLApp( app )
-{
-};
+  {
+  };
 
   virtual void run()
   {
     QString aCommand;
 
-    if ( !myApp.isEmpty())
+    if (!myApp.isEmpty())
+    {
+      //aCommand.sprintf("%s %s %s",myApp.latin1(),myParams.latin1(),myHelpFile.latin1());
+
+      //QProcess* proc = new QProcess();
+      //proc->addArgument( aCommand );
+
+      QProcess* proc = new QProcess();
+      proc->addArgument( myApp );
+      if (!myParams.isEmpty()) proc->addArgument( myParams );
+      proc->addArgument( myHelpFile );
+      //myStatus = system(aCommand);
+
+      //if(myStatus != 0)
+      if(!proc->start())
       {
-	aCommand.sprintf("%s %s %s",myApp.latin1(),myParams.latin1(),myHelpFile.latin1());
-
-	QProcess* proc = new QProcess();
-  proc->addArgument( aCommand );
-	//myStatus = system(aCommand);
-
-	//if(myStatus != 0)
-	if(!proc->start())
-	  {
-	    QCustomEvent* ce2000 = new QCustomEvent( 2000 );
-	    QString* msg = new QString( QObject::tr("EXTERNAL_BROWSER_CANNOT_SHOW_PAGE").arg(myApp).arg(myHelpFile) );
-	    ce2000->setData( msg );
-	    postEvent( myLApp, ce2000 );
-	  }
+        QCustomEvent* ce2000 = new QCustomEvent( 2000 );
+        QString* msg = new QString( QObject::tr("EXTERNAL_BROWSER_CANNOT_SHOW_PAGE").arg(myApp).arg(myHelpFile) );
+        ce2000->setData( msg );
+        postEvent( myLApp, ce2000 );
       }
+    }
   }
 
 private:

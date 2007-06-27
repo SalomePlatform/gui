@@ -1,0 +1,29 @@
+<!DOCTYPE TS><TS>
+<context>
+    <name>@default</name>
+    <message>
+        <source>ICON_QXGRAPH_RESET</source>
+        <translation>view_reset.png</translation>
+    </message>
+    <message>
+        <source>ICON_QXGRAPH_ZOOM</source>
+        <translation>view_zoom.png</translation>
+    </message>
+    <message>
+        <source>ICON_QXGRAPH_GLOBALPAN</source>
+        <translation>view_glpan.png</translation>
+    </message>
+    <message>
+        <source>ICON_QXGRAPH_PAN</source>
+        <translation>view_pan.png</translation>
+    </message>
+    <message>
+        <source>ICON_QXGRAPH_FITALL</source>
+        <translation>view_fitall.png</translation>
+    </message>
+    <message>
+        <source>ICON_QXGRAPH_FITAREA</source>
+        <translation>view_fitarea.png</translation>
+    </message>
+</context>
+</TS>

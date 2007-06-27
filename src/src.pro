@@ -22,6 +22,7 @@ SUBDIRS += SOCC
 SUBDIRS += Plot2d
 SUBDIRS += SPlot2d
 SUBDIRS += SUPERVGraph
+SUBDIRS += QxGraph
 SUBDIRS += Event
 SUBDIRS += LightApp
 SUBDIRS += ResExporter

@@ -84,7 +84,9 @@ if test "x${enable_qxGraphViewer}" != "xno" ; then
 else 
     DISABLE_QXGRAPHVIEWER="yes"
 fi
-
+dnl THIS IS A TEMPORARY SOLUTION BECAUSE QXGRAPH NOT YET PORTING TO QT4
+dnl AFTER PORTING QXGARPH TO QT4 THE STRING BELOW HAVE TO BE REMOVED
+DISABLE_QXGRAPHVIEWER="yes"
 
 dnl
 dnl Initialize source and build root directories
@@ -456,10 +458,12 @@ if test "x${GUI_DISABLE_CORBA}" != "xyes" ; then
     echo "failed : for full configuration of GUI module necessary enable SalomeObject !"
     exit
   fi
-  if test "x${DISABLE_QXGRAPHVIEWER}" == "xyes" ; then
-    echo "failed : for full configuration of GUI module necessary enable QxGraphViewer !"
-    exit
-  fi
+  dnl THIS IS A TEMPORARY SOLUTION BECAUSE QXGRAPH NOT YET PORTING TO QT4
+  dnl AFTER PORTING QXGARPH TO QT4 THE FOLLOWING CHECK HAVE TO BE UNCOMMENTED
+  dnl if test "x${DISABLE_QXGRAPHVIEWER}" == "xyes" ; then
+  dnl   echo "failed : for full configuration of GUI module necessary enable QxGraphViewer !"
+  dnl   exit
+  dnl fi
 fi
 
 echo

@@ -24,27 +24,36 @@
 #include <TDocStd_Document.hxx>
 
 /*!
-  Default constructor
+  \class CAF_Operation
+  \brief Base operation class for all operations used in CAF package.
+  
+  Operation interacts with OCC OCAF std document.
+*/
+
+/*!
+  \brief Constructor.
+  \param theApp application
 */
 CAF_Operation::CAF_Operation(SUIT_Application* theApp)
-:SUIT_Operation(theApp)
+: SUIT_Operation(theApp)
 {
 }
 
 /*!
-  Destructor
+  \brief Destructor.
 */
 CAF_Operation::~CAF_Operation()
 {
 }
 
 /*!
-  \return OCAF document
+  \brief Get OCAF document.
+  \return handle to the OCAF document object
 */
 Handle(TDocStd_Document) CAF_Operation::stdDoc() const
 {
   Handle(TDocStd_Document) doc;
-  CAF_Study* s = ::qt_cast<CAF_Study*>( study() );
+  CAF_Study* s = qobject_cast<CAF_Study*>( study() );
   if ( s )
     doc = s->stdDoc();
   return doc;

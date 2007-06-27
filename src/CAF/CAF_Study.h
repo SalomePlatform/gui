@@ -23,51 +23,43 @@
 
 #include "SUIT_Study.h"
 
-#include <qobject.h>
-
 #include <TDocStd_Document.hxx>
-#include <TDocStd_Application.hxx>
 
 class CAF_Application;
+class Handle(TDocStd_Application);
 
-#if defined WNT
+#if defined WIN32
 #pragma warning ( disable: 4251 )
 #endif
 
-/*!
-  \class CAF_Study
-  Represents study for using in CAF, contains reference
-  to OCAF std document and allows to use OCAF services.
-  Provides necessary functionality for OCC transactions management.
-*/
 class CAF_EXPORT CAF_Study : public SUIT_Study
 {
   Q_OBJECT
 
 public:
-	CAF_Study( SUIT_Application* theApp );
-	CAF_Study( SUIT_Application* theApp, Handle(TDocStd_Document)& aStdDoc );
-	virtual ~CAF_Study();
+  CAF_Study( SUIT_Application* theApp );
+  CAF_Study( SUIT_Application* theApp, Handle(TDocStd_Document)& aStdDoc );
+  virtual ~CAF_Study();
 
-  virtual void                createDocument();
+  virtual bool                createDocument( const QString& );
   virtual void                closeDocument( bool = true );
   virtual bool                openDocument( const QString& );
 
   virtual bool                saveDocumentAs( const QString& );
 
   bool                        isSaved() const;
-	bool                        isModified() const;
-	void                        doModified( bool = true );
-	void                        undoModified();
-	void                        clearModified();
-
+  bool                        isModified() const;
+  void                        doModified( bool = true );
+  void                        undoModified();
+  void                        clearModified();
+  
   bool                        undo();
-	bool                        redo();
-	bool                        canUndo() const;
-	bool                        canRedo() const;
-	QStringList                 undoNames() const;
-	QStringList                 redoNames() const;
-
+  bool                        redo();
+  bool                        canUndo() const;
+  bool                        canRedo() const;
+  QStringList                 undoNames() const;
+  QStringList                 redoNames() const;
+  
   Handle(TDocStd_Document)    stdDoc() const;
 
 protected:
@@ -82,13 +74,13 @@ protected:
   virtual void                setStdDoc( Handle(TDocStd_Document)& );
 
 private:
-	Handle(TDocStd_Document)    myStdDoc;
-	int                         myModifiedCnt;
+  Handle(TDocStd_Document)    myStdDoc;
+  int                         myModifiedCnt;
 
   friend class CAF_Operation;
 };
 
-#if defined WNT
+#if defined WIN32
 #pragma warning ( default: 4251 )
 #endif
 

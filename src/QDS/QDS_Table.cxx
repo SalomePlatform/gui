@@ -19,8 +19,6 @@
 
 #include "QDS_Table.h"
 
-#include "QDS_LineEdit.h"
-
 class QDS_Table::DeleteFilter : public QObject
 {
 public:

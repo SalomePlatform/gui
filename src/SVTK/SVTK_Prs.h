@@ -32,7 +32,8 @@
 #include <SVTK.h>
 #include "SALOME_Prs.h"
 
-#include <vtkActorCollection.h>
+class vtkActorCollection;
+class vtkActor;
 
 class SVTK_EXPORT SVTK_Prs : public SALOME_VTKPrs
 {

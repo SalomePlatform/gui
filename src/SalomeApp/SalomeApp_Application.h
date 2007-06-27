@@ -31,8 +31,6 @@
 #include "SalomeApp.h"
 #include <LightApp_Application.h>
 
-#include <qmap.h>
-
 #include <CORBA.h>
 
 #include <SALOMEconfig.h>
@@ -41,17 +39,12 @@
 
 #include "SALOMEDSClient.hxx"
 
-class QAction;
-class QComboBox;
-class QDockWindow;
-
 class LightApp_Preferences;
-class SalomeApp_Module;
 class SalomeApp_Study;
 
 class SALOME_LifeCycleCORBA;
 
-class QListViewItem;
+class QListViewItem;//? waiting for object browser porting
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -70,6 +63,7 @@ public:
   enum { MenuToolsId = 5 };
   enum { DumpStudyId = LightApp_Application::UserID, LoadScriptId, PropertiesId,
          CatalogGenId, RegDisplayId, SaveGUIStateId, FileLoadId, UserID };
+  enum { CloseUnload = STD_Application::CloseCancel+1 };
 
 public:
   SalomeApp_Application();
@@ -81,7 +75,7 @@ public:
 
   virtual void                        start();
 
-  virtual void                        contextMenuPopup( const QString&, QPopupMenu*, QString& );
+  virtual void                        contextMenuPopup( const QString&, QMenu*, QString& );
 
   virtual bool                        checkDataObject(LightApp_DataObject* theObj);
 
@@ -93,6 +87,8 @@ public:
 
   SUIT_ViewManager*                   newViewManager(const QString&);
   void                                updateSavePointDataObjects( SalomeApp_Study* );
+  
+  virtual bool                        isPossibleToClose( bool& );
 
 public slots:
   virtual bool                        onOpenDoc( const QString& );
@@ -118,6 +114,9 @@ protected:
 
   virtual void                        createPreferences( LightApp_Preferences* );
   virtual void                        updateDesktopTitle();
+
+  virtual bool                        closeAction( const int, bool& );
+  virtual int                         closeChoice( const QString& );
   
 private slots:
   void                                onDeleteInvalidReferences();
@@ -133,7 +132,6 @@ private slots:
   void                                onCatalogGen();
   void                                onRegDisplay();
   void                                onOpenWith();
-
 };
 
 #ifdef WIN32

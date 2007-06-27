@@ -25,7 +25,7 @@
 #ifndef GLVIEWER_SELECTOR2D_H
 #define GLVIEWER_SELECTOR2D_H
 
-#ifdef WNT
+#ifdef WIN32
 #include "windows.h"
 #endif
 

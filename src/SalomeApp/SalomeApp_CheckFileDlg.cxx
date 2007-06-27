@@ -18,9 +18,10 @@
 //
 #include "SalomeApp_CheckFileDlg.h"
 
-#include <qcheckbox.h>
-#include <qlabel.h>
-#include <qpushbutton.h>
+#include <QCheckBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QGridLayout>
 
 /*!
 Constructor
@@ -28,11 +29,20 @@ Constructor
 SalomeApp_CheckFileDlg::SalomeApp_CheckFileDlg( QWidget* parent, bool open, const QString& theCheckBoxName, bool showQuickDir, bool modal) :
 SUIT_FileDlg( parent, open, showQuickDir, modal )
 {    
-  myCheckBox = new QCheckBox( theCheckBoxName, this );
-  QLabel* label = new QLabel("", this);
-  QPushButton* pb = new QPushButton(this);               
-  addWidgets( label, myCheckBox, pb );
-  pb->hide();
+  QGridLayout* grid = ::qobject_cast<QGridLayout*>( layout() );
+  if ( grid )
+  {
+    myCheckBox = new QCheckBox( theCheckBoxName, this );
+    QLabel* label = new QLabel("", this);
+    QPushButton* pb = new QPushButton(this);        
+    
+    int row = grid->rowCount();
+    grid->addWidget( label, row, 0 );
+    grid->addWidget( myCheckBox, row, 1 );
+    grid->addWidget( pb, row, 2 );
+      
+    pb->hide();
+  }
 }
 
 /*!

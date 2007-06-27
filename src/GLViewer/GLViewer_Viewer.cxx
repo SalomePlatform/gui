@@ -28,13 +28,17 @@
 #include "GLViewer_ViewPort.h"
 #include "GLViewer_ViewFrame.h"
 
-#include "SUIT_Desktop.h"
+//#include "SUIT_Desktop.h"
 #include "SUIT_ViewWindow.h"
+#include "SUIT_ViewManager.h"
 
-#include <qapplication.h>
-#include <qpainter.h>
-#include <qpopupmenu.h>
-#include <qcolordialog.h>
+#include <QApplication>
+#include <QMenu>
+#include <QColorDialog>
+#include <QMouseEvent>
+#include <QWheelEvent>
+#include <QRect>
+#include <QRubberBand>
 
 /* used for sketching */
 static QEvent* l_mbPressEvent = 0;
@@ -85,12 +89,12 @@ void GLViewer_Viewer::setViewManager(SUIT_ViewManager* theViewManager)
 /*!
   Builds popup for GL viewer
 */
-void GLViewer_Viewer::contextMenuPopup( QPopupMenu* thePopup )
+void GLViewer_Viewer::contextMenuPopup( QMenu* thePopup )
 {
-  if( thePopup->count() > 0 )
-      thePopup->insertSeparator();
+  if( thePopup->actions().count() > 0 )
+      thePopup->addSeparator();
 
-  thePopup->insertItem( tr( "CHANGE_BGCOLOR" ), this, SLOT( onChangeBgColor() ) );
+  thePopup->addAction( tr( "CHANGE_BGCOLOR" ), this, SLOT( onChangeBgColor() ) );
 }
 
 /*!
@@ -389,7 +393,7 @@ void GLViewer_Viewer::onWheelEvent( SUIT_ViewWindow*, QWheelEvent* e )
 void GLViewer_Viewer::onSelectionModeChanged()
 {
     bool enable = ( mySelMode == Multiple );    
-    QPtrVector<SUIT_ViewWindow> views = getViewManager()->getViews();
+    QVector<SUIT_ViewWindow*> views = getViewManager()->getViews();
     for ( int i = 0, n = views.count(); i < n; i++ )
     {
         GLViewer_ViewPort* vp = ((GLViewer_ViewFrame*)views[i])->getViewPort();
@@ -403,7 +407,7 @@ void GLViewer_Viewer::onSelectionModeChanged()
 */
 void GLViewer_Viewer::update( int flags )
 {
-    QPtrVector<SUIT_ViewWindow> views = getViewManager()->getViews();
+    QVector<SUIT_ViewWindow*> views = getViewManager()->getViews();
     for ( int i = 0, n = views.count(); i < n; i++ )
         ((GLViewer_ViewFrame*)views[i])->onUpdate( flags );
 }
@@ -424,9 +428,9 @@ void GLViewer_Viewer::unhilightDetected()
 void GLViewer_Viewer::handleMousePress( QMouseEvent* e )
 {
     /* test accel for transforms */
-    if ( e->state() & GLViewer_ViewTransformer::accelKey() )
+    if ( e->modifiers() & GLViewer_ViewTransformer::accelKey() )
     {
-        ButtonState bs = e->button();
+        Qt::MouseButton bs = e->button();
         if ( bs == GLViewer_ViewTransformer::zoomButton() )
             activateTransform( Zoom );
         else if ( bs == GLViewer_ViewTransformer::panButton() )
@@ -458,7 +462,7 @@ void GLViewer_Viewer::handleMousePress( QMouseEvent* e )
 void GLViewer_Viewer::handleMouseMove( QMouseEvent* e )
 {
     /* Highlight for selection */
-    bool dragged = ( e->state() & ( LeftButton | MidButton | RightButton ) );
+    bool dragged = ( e->buttons() & ( Qt::LeftButton | Qt::MidButton | Qt::RightButton ) );
     if ( !dragged )
     {
         if ( getSelector() )
@@ -466,7 +470,7 @@ void GLViewer_Viewer::handleMouseMove( QMouseEvent* e )
     }
     /* Try to activate default sketching
     */
-    else if ( e->state() == GLViewer_ViewSketcher::sketchButton() )
+    else if ( e->button() == GLViewer_ViewSketcher::sketchButton() )
     {
         activateSketching( Rect );
         if ( mySketcher )
@@ -495,11 +499,11 @@ void GLViewer_Viewer::handleMouseRelease( QMouseEvent* e )
 {
     /* selection */
     /* tmp - in handleMousePress*/  
-    if( e->button() == LeftButton && !(getActiveView()->getViewPort()->currentBlock() & BS_Selection) )
+    if( e->button() == Qt::LeftButton && !(getActiveView()->getViewPort()->currentBlock() & BS_Selection) )
     {
         if ( getSelector() )
         {
-            bool append = bool ( e->state() & GLViewer_Selector::appendKey() );
+            bool append = bool ( e->modifiers() & GLViewer_Selector::appendKey() );
             getSelector()->select( append );
         }
     }
@@ -526,7 +530,7 @@ int GLViewer_ViewTransformer::panBtn = Qt::MidButton;
 int GLViewer_ViewTransformer::zoomBtn = Qt::LeftButton;
 int GLViewer_ViewTransformer::fitRectBtn = Qt::LeftButton;
 int GLViewer_ViewTransformer::panGlobalBtn = Qt::LeftButton;
-int GLViewer_ViewTransformer::acccelKey = Qt::ControlButton;
+int GLViewer_ViewTransformer::acccelKey = Qt::ControlModifier;
 
 /*!
     Constructor
@@ -535,8 +539,9 @@ GLViewer_ViewTransformer::GLViewer_ViewTransformer( GLViewer_Viewer* v, int type
 : QObject( 0 ),
 myViewer( v ),
 myType( type ),
-myMajorBtn( NoButton ),
-myButtonState( 0 )
+myMajorBtn( Qt::NoButton ),
+myButtonState( 0 ),
+myRectBand( 0 )
 {
     if ( myType == GLViewer_Viewer::Pan ||
          myType == GLViewer_Viewer::Zoom ||
@@ -563,6 +568,8 @@ GLViewer_ViewTransformer::~GLViewer_ViewTransformer()
     }
 
     //QAD_Application::getDesktop()->clearInfo();
+
+    endDrawRect();
 }
 
 /*!
@@ -645,11 +652,11 @@ bool GLViewer_ViewTransformer::eventFilter( QObject* o, QEvent* e )
             TransformState state = EnTrain;
             QMouseEvent* me = ( QMouseEvent* )e;
 
-            myButtonState = me->state();
+            myButtonState = me->modifiers();
             if ( e->type() == QEvent::MouseButtonPress )
                 myButtonState |= me->button();  /* add pressed button */
 
-            int mouseOnlyState = ( myButtonState & ( LeftButton | MidButton | RightButton ) );
+            int mouseOnlyState = ( myButtonState & ( Qt::LeftButton | Qt::MidButton | Qt::RightButton ) );
             if ( myStart.isNull() )
             {
                 state = Debut;
@@ -704,8 +711,8 @@ void GLViewer_ViewTransformer::onTransform( TransformState state )
         {
             if ( doTrsf )
             {
-                QRect rect( QMIN( myStart.x(), myCurr.x() ), QMIN( myStart.y(), myCurr.y() ),
-                            QABS( myStart.x() - myCurr.x() ), QABS( myStart.y() - myCurr.y() ) );
+                QRect rect( qMin( myStart.x(), myCurr.x() ), qMin( myStart.y(), myCurr.y() ),
+                            qAbs( myStart.x() - myCurr.x() ), qAbs( myStart.y() - myCurr.y() ) );
                 if ( !rect.isEmpty() )
                 {
                     switch ( state )
@@ -715,13 +722,7 @@ void GLViewer_ViewTransformer::onTransform( TransformState state )
                             break;
                         default:
                         {
-                            QPainter p( avp->getPaintDevice() ); // for QAD_GLWidget
-                            p.setPen( Qt::white );
-                            p.setRasterOp( Qt::XorROP );
-                            if ( !myDrawRect.isEmpty() )
-                                p.drawRect( myDrawRect );    /* erase */
-                            p.drawRect( rect );
-                            myDrawRect = rect;
+                            drawRect( rect );
                             break;
                         }
                     }
@@ -738,6 +739,34 @@ void GLViewer_ViewTransformer::onTransform( TransformState state )
 }
 
 /*!
+  Draws rectangle by starting and current points
+*/
+void GLViewer_ViewTransformer::drawRect(const QRect& theRect)
+{
+  if ( !myRectBand ) {
+    myRectBand = new QRubberBand( QRubberBand::Rectangle, myViewer->getActiveView()->getViewPort() );
+    QPalette palette;
+    palette.setColor(myRectBand->foregroundRole(), Qt::white);
+    myRectBand->setPalette(palette);
+  }
+  myRectBand->hide();
+
+  myRectBand->setGeometry( theRect );
+  myRectBand->setVisible( theRect.isValid() );
+}
+
+/*!
+  \brief Delete rubber band on the end on the dragging operation.
+*/
+void GLViewer_ViewTransformer::endDrawRect()
+{
+  if ( myRectBand ) myRectBand->hide();
+
+  delete myRectBand;
+  myRectBand = 0;
+}
+
+/*!
     Returns the type of the transformer. [ public ]
 */
 int GLViewer_ViewTransformer::type() const
@@ -746,7 +775,7 @@ int GLViewer_ViewTransformer::type() const
 }
 
 
-int GLViewer_ViewSketcher::sketchBtn = LeftButton;
+int GLViewer_ViewSketcher::sketchBtn = Qt::LeftButton;
 
 /*!
     Constructor
@@ -755,7 +784,8 @@ GLViewer_ViewSketcher::GLViewer_ViewSketcher( GLViewer_Viewer* viewer, int type 
 : QObject( 0 ),
 myViewer( viewer ),
 myData( 0 ),
-myType( type )
+myType( type ),
+myRectBand( 0 )
 {
     if( !myViewer )
         return;
@@ -782,6 +812,8 @@ GLViewer_ViewSketcher::~GLViewer_ViewSketcher()
 
     if ( myType == GLViewer_Viewer::Rect )
         delete ( QRect* ) myData;
+
+    endDrawRect();
 }
 
 /*!
@@ -798,7 +830,7 @@ bool GLViewer_ViewSketcher::eventFilter( QObject* o, QEvent* e )
             SketchState state = EnTrain;
             QMouseEvent* me = (QMouseEvent*)e;
 
-            myButtonState = me->state();
+            myButtonState = me->modifiers();
             if ( e->type() == QEvent::MouseButtonPress )
                 myButtonState |= me->button();  /* add pressed button */
 
@@ -808,7 +840,7 @@ bool GLViewer_ViewSketcher::eventFilter( QObject* o, QEvent* e )
                 myStart = me->pos();
             }
 
-            int mouseOnlyState = ( myButtonState & ( LeftButton | MidButton | RightButton ) );
+            int mouseOnlyState = ( myButtonState & ( Qt::LeftButton | Qt::MidButton | Qt::RightButton ) );
             if ( e->type() == QEvent::MouseButtonRelease && mouseOnlyState == sketchButton() )
             {
                 state = Fin;
@@ -836,18 +868,15 @@ void GLViewer_ViewSketcher::onSketch( SketchState state )
         QRect* sketchRect = ( QRect* )data();
         if ( myButtonState & sketchButton() )
         {
-            QRect rect( QMIN( myStart.x(), myCurr.x() ), QMIN( myStart.y(), myCurr.y() ),
-                        QABS( myStart.x() - myCurr.x() ), QABS( myStart.y() - myCurr.y() ) );
+            QRect rect( qMin( myStart.x(), myCurr.x() ), qMin( myStart.y(), myCurr.y() ),
+                        qAbs( myStart.x() - myCurr.x() ), qAbs( myStart.y() - myCurr.y() ) );
             if ( !rect.isEmpty() )
             {
-                QPainter p( avp );
-                p.setPen( Qt::white );
-                p.setRasterOp( Qt::XorROP );
-                if ( !sketchRect->isEmpty() )
-                    p.drawRect( *sketchRect );    /* erase */
+	        if ( !sketchRect->isEmpty() && myRectBand )
+                    myRectBand->hide();    /* erase */
                 *sketchRect = rect;
                 if ( state != Fin )
-                    p.drawRect( *sketchRect );
+                    drawRect( *sketchRect );
             }
         }
     }
@@ -857,4 +886,32 @@ void GLViewer_ViewSketcher::onSketch( SketchState state )
         QApplication::syncX();  /* force rectangle redrawing */
         myViewer->activateSketching( GLViewer_Viewer::NoSketching );
     }
+}
+
+/*!
+  Draws rectangle by starting and current points
+*/
+void GLViewer_ViewSketcher::drawRect(const QRect& theRect)
+{
+  if ( !myRectBand ) {
+    myRectBand = new QRubberBand( QRubberBand::Rectangle, myViewer->getActiveView()->getViewPort() );
+    QPalette palette;
+    palette.setColor(myRectBand->foregroundRole(), Qt::white);
+    myRectBand->setPalette(palette);
+  }
+  myRectBand->hide();
+
+  myRectBand->setGeometry( theRect );
+  myRectBand->setVisible( theRect.isValid() );
+}
+
+/*!
+  \brief Delete rubber band on the end on the dragging operation.
+*/
+void GLViewer_ViewSketcher::endDrawRect()
+{
+  if ( myRectBand ) myRectBand->hide();
+
+  delete myRectBand;
+  myRectBand = 0;
 }

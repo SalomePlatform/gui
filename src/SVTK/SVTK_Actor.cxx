@@ -20,6 +20,8 @@
 #include "SVTK_Actor.h"
 #include "SALOME_Actor.h"
 
+#include "SALOME_InteractiveObject.hxx"
+
 // VTK Includes
 #include <vtkObjectFactory.h>
 #include <vtkUnstructuredGrid.h>

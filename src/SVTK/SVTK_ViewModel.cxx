@@ -16,14 +16,17 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#include <qpopupmenu.h>
-#include <qcolordialog.h>
+#include <QMenu>
+#include <QColorDialog>
+#include <QToolBar>
 
 #include <vtkCamera.h>
 #include <vtkRenderer.h>
 #include <vtkActorCollection.h>
 
-#include "SUIT_Session.h"
+//#include "SUIT_Session.h"
+#include "SUIT_ViewModel.h"
+#include "SUIT_ViewManager.h"
 
 #include "SVTK_Selection.h"
 #include "SVTK_ViewModel.h"
@@ -35,7 +38,6 @@
 #include "VTKViewer_ViewModel.h"
 
 #include <SALOME_Actor.h>
-#include <SALOME_InteractiveObject.hxx>
 
 // in order NOT TO link with SalomeApp, here the code returns SALOMEDS_Study.
 // SalomeApp_Study::studyDS() does it as well, but -- here it is retrieved from 
@@ -96,7 +98,7 @@ SVTK_Viewer
   if ( !theColor.isValid() )
     return;
 
-  QPtrVector<SUIT_ViewWindow> aViews = myViewManager->getViews();
+  QVector<SUIT_ViewWindow*> aViews = myViewManager->getViews();
   for(int i = 0, iEnd = aViews.size(); i < iEnd; i++){
     if(SUIT_ViewWindow* aViewWindow = aViews.at(i)){
       if(TViewWindow* aView = dynamic_cast<TViewWindow*>(aViewWindow)){
@@ -151,7 +153,7 @@ void SVTK_Viewer::setTrihedronSize( const vtkFloatingPointType theSize, const bo
   myTrihedronRelative = theRelative;
 
   if (SUIT_ViewManager* aViewManager = getViewManager()) {
-    QPtrVector<SUIT_ViewWindow> aViews = aViewManager->getViews();
+    QVector<SUIT_ViewWindow*> aViews = aViewManager->getViews();
     for ( uint i = 0; i < aViews.count(); i++ )
     {
       if ( TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at( i )) )
@@ -186,16 +188,16 @@ void SVTK_Viewer::setViewManager(SUIT_ViewManager* theViewManager)
 */
 void
 SVTK_Viewer
-::contextMenuPopup( QPopupMenu* thePopup )
+::contextMenuPopup( QMenu* thePopup )
 {
-  thePopup->insertItem( VTKViewer_Viewer::tr( "MEN_DUMP_VIEW" ), this, SLOT( onDumpView() ) );
-  thePopup->insertItem( VTKViewer_Viewer::tr( "MEN_CHANGE_BACKGROUD" ), this, SLOT( onChangeBgColor() ) );
+  thePopup->addAction( VTKViewer_Viewer::tr( "MEN_DUMP_VIEW" ), this, SLOT( onDumpView() ) );
+  thePopup->addAction( VTKViewer_Viewer::tr( "MEN_CHANGE_BACKGROUD" ), this, SLOT( onChangeBgColor() ) );
 
-  thePopup->insertSeparator();
+  thePopup->addSeparator();
 
   if(TViewWindow* aView = dynamic_cast<TViewWindow*>(myViewManager->getActiveView())){
     if ( !aView->getMainWindow()->getToolBar()->isVisible() ){
-      thePopup->insertItem( VTKViewer_Viewer::tr( "MEN_SHOW_TOOLBAR" ), this, SLOT( onShowToolbar() ) );
+      thePopup->addAction( VTKViewer_Viewer::tr( "MEN_SHOW_TOOLBAR" ), this, SLOT( onShowToolbar() ) );
     }
     aView->RefreshDumpImage();
   }
@@ -280,7 +282,7 @@ void
 SVTK_Viewer
 ::onShowToolbar() 
 {
-  QPtrVector<SUIT_ViewWindow> aViews = myViewManager->getViews();
+  QVector<SUIT_ViewWindow*> aViews = myViewManager->getViews();
   for(int i = 0, iEnd = aViews.size(); i < iEnd; i++){
     if(TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at(i))){
       aView->getMainWindow()->getToolBar()->show();
@@ -318,7 +320,7 @@ SVTK_Viewer
 	  //  ToolsGUI::SetVisibility(aStudy,anObj->getEntry(),true,this);
 	  //}
 	  // just display the object
-	  QPtrVector<SUIT_ViewWindow> aViews = myViewManager->getViews();
+	  QVector<SUIT_ViewWindow*> aViews = myViewManager->getViews();
 	  for(int i = 0, iEnd = aViews.size(); i < iEnd; i++){
 	    if(SVTK_ViewWindow* aViewWindow = dynamic_cast<SVTK_ViewWindow*>(aViews.at(i))){
 	      if(SVTK_View* aView = aViewWindow->getView()){
@@ -367,7 +369,7 @@ SVTK_Viewer
 	  //  ToolsGUI::SetVisibility(aStudy,anObj->getEntry(),false,this);
 	  //}
 	  // just display the object
-	  QPtrVector<SUIT_ViewWindow> aViews = myViewManager->getViews();
+	  QVector<SUIT_ViewWindow*> aViews = myViewManager->getViews();
 	  for(int i = 0, iEnd = aViews.size(); i < iEnd; i++){
 	    if(SVTK_ViewWindow* aViewWindow = dynamic_cast<SVTK_ViewWindow*>(aViews.at(i)))
 	      if(SVTK_View* aView = aViewWindow->getView())
@@ -393,7 +395,7 @@ SVTK_Viewer
   // TODO: better mechanism of storing display/erse status in a study
   // should be provided...
   //_PTR(Study) aStudy(getStudyDS());
-  QPtrVector<SUIT_ViewWindow> aViews = myViewManager->getViews();
+  QVector<SUIT_ViewWindow*> aViews = myViewManager->getViews();
   for(int i = 0, iEnd = aViews.size(); i < iEnd; i++){
     if(SVTK_ViewWindow* aViewWindow = dynamic_cast<SVTK_ViewWindow*>(aViews.at(i)))
       if(SVTK_View* aView = aViewWindow->getView()){
@@ -483,7 +485,7 @@ bool
 SVTK_Viewer
 ::isVisible( const Handle(SALOME_InteractiveObject)& io )
 {
-  QPtrVector<SUIT_ViewWindow> aViews = myViewManager->getViews();
+  QVector<SUIT_ViewWindow*> aViews = myViewManager->getViews();
   for(int i = 0, iEnd = aViews.size(); i < iEnd; i++)
     if(SUIT_ViewWindow* aViewWindow = aViews.at(i))
       if(TViewWindow* aViewWnd = dynamic_cast<TViewWindow*>(aViewWindow))
@@ -502,7 +504,7 @@ SVTK_Viewer
 ::Repaint()
 {
 //  if (theUpdateTrihedron) onAdjustTrihedron();
-  QPtrVector<SUIT_ViewWindow> aViews = myViewManager->getViews();
+  QVector<SUIT_ViewWindow*> aViews = myViewManager->getViews();
   for(int i = 0, iEnd = aViews.size(); i < iEnd; i++)
     if(TViewWindow* aViewWindow = dynamic_cast<TViewWindow*>(aViews.at(i)))
       if(SVTK_View* aView = aViewWindow->getView())

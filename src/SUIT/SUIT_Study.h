@@ -21,14 +21,12 @@
 
 #include "SUIT.h"
 
-#include "SUIT_Operation.h"
-
-#include <qobject.h>
-#include <qptrlist.h>
+#include <QList>
+#include <QObject>
 
 class SUIT_DataObject;
 class SUIT_Application;
-class QDialog;
+class SUIT_Operation;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -51,9 +49,9 @@ public:
   virtual bool      isSaved()  const;
   virtual bool      isModified() const;
 
-  virtual void      createDocument();
   virtual void      closeDocument( bool = true );
   virtual bool      openDocument( const QString& );
+  virtual bool      createDocument( const QString& );
 
   bool              saveDocument();
   virtual bool      saveDocumentAs( const QString& );
@@ -65,7 +63,7 @@ public:
   // Operation management
   SUIT_Operation*   activeOperation() const;
   virtual void      abortAllOperations();
-  const QPtrList<SUIT_Operation>& operations() const;
+  const QList<SUIT_Operation*>& operations() const;
   
   virtual SUIT_Operation* blockingOperation( SUIT_Operation* ) const;
 
@@ -98,7 +96,7 @@ protected:
   virtual bool      commitTransaction( const QString& = QString::null );
 
 private:
-  typedef QPtrList<SUIT_Operation> Operations;
+  typedef QList<SUIT_Operation*> Operations;
   void              stop( SUIT_Operation* );
 
 private:

@@ -23,11 +23,9 @@
 #define LIGHTAPP_PREFERENCES_H
 
 #include <LightApp.h>
-
-#include <QtxDialog.h>
 #include <QtxListResourceEdit.h>
 
-#include <qmap.h>
+#include <QMap>
 
 class QtxResourceMgr;
 

@@ -22,8 +22,6 @@
 
 #include "LightApp_Operation.h"
 
-class LightApp_Displayer;
-
 /*!
   \class LightApp_ShowHideOp
   Standard operation allowing to show/hide selected objects

@@ -26,8 +26,8 @@
 #define LIGHTAPP_MODULEDLG_H
 
 #include "LightApp.h"
-#include <qdialog.h> 
-#include <qpixmap.h>
+#include <QDialog> 
+#include <QPixmap>
 
 class QFrame;
 class QLabel;

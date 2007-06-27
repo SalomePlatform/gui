@@ -18,17 +18,18 @@
 //
 #include "LightApp_WidgetContainer.h"
 
-#include <qobjectlist.h>
-#include <qwidgetstack.h>
+#include <QList>
+#include <QStackedWidget>
 
 /*!
   Constructor.
 */
 LightApp_WidgetContainer::LightApp_WidgetContainer( const int type, QWidget* parent )
-: QDockWindow( QDockWindow::InDock, parent ),
-myType( type )
+  : QDockWidget( /*QDockWindow::InDock,*/ parent ),
+    myType( type )
 {
-  setWidget( myStack = new QWidgetStack( this ) );
+  setObjectName(QString("WC_%1").arg(type));
+  setWidget( myStack = new QStackedWidget( this ) );
   myStack->show();
 }
 
@@ -44,14 +45,16 @@ LightApp_WidgetContainer::~LightApp_WidgetContainer()
 */
 bool LightApp_WidgetContainer::isEmpty() const
 {
-  const QObjectList* lst = myStack->children();
-  if ( !lst )
+  const QList<QObject*> lst = myStack->children();
+  if ( lst.isEmpty() )
     return true;
 
   bool res = true;
-  for ( QObjectListIt it( *lst ); it.current() && res; ++it )
+  QListIterator<QObject*> it( lst );
+  while ( it.hasNext() && res )
   {
-    if ( it.current()->isWidgetType() && myStack->id( (QWidget*)it.current() ) != -1 )
+    QObject* anItem = it.next();
+    if ( anItem->isWidgetType() && myStack->indexOf( (QWidget*)anItem ) != -1 )
       res = false;
   }
   return res;
@@ -85,11 +88,11 @@ int LightApp_WidgetContainer::insert( const int id, QWidget* wid )
   if ( contains( id ) )
     remove( id );
 
-  int stackId = myStack->addWidget( wid, id );
-  if ( !myStack->visibleWidget() )
-    myStack->raiseWidget( wid );
+  int stackId = myStack->insertWidget( id, wid );
+  if ( !myStack->currentWidget() )
+    myStack->setCurrentWidget( wid );
 
-  setCaption( myStack->visibleWidget() ? myStack->visibleWidget()->caption() : QString::null );
+  setWindowTitle( myStack->currentWidget() ? myStack->currentWidget()->windowTitle() : QString::null );
 
   return stackId;
 }
@@ -101,7 +104,7 @@ void LightApp_WidgetContainer::remove( const int id )
 {
   remove( myStack->widget( id ) );
 
-  setCaption( myStack->visibleWidget() ? myStack->visibleWidget()->caption() : QString::null );
+  setWindowTitle( myStack->currentWidget() ? myStack->currentWidget()->windowTitle() : QString::null );
 }
 
 /*!
@@ -111,7 +114,7 @@ void LightApp_WidgetContainer::remove( QWidget* wid )
 {
   myStack->removeWidget( wid );
 
-  setCaption( myStack->visibleWidget() ? myStack->visibleWidget()->caption() : QString::null );
+  setWindowTitle( myStack->currentWidget() ? myStack->currentWidget()->windowTitle() : QString::null );
 }
 
 /*!
@@ -119,9 +122,9 @@ void LightApp_WidgetContainer::remove( QWidget* wid )
 */
 void LightApp_WidgetContainer::activate( const int id )
 {
-  myStack->raiseWidget( id );
+  myStack->setCurrentIndex( id );
 
-  setCaption( myStack->visibleWidget() ? myStack->visibleWidget()->caption() : QString::null );
+  setWindowTitle( myStack->currentWidget() ? myStack->currentWidget()->windowTitle() : QString::null );
 }
 
 /*!
@@ -129,9 +132,9 @@ void LightApp_WidgetContainer::activate( const int id )
 */
 void LightApp_WidgetContainer::activate( QWidget* wid )
 {
-  myStack->raiseWidget( wid );
+  myStack->setCurrentWidget( wid );
 
-  setCaption( myStack->visibleWidget() ? myStack->visibleWidget()->caption() : QString::null );
+  setWindowTitle( myStack->currentWidget() ? myStack->currentWidget()->windowTitle() : QString::null );
 }
 
 /*!
@@ -147,5 +150,5 @@ QWidget* LightApp_WidgetContainer::widget( const int id ) const
 */
 QWidget* LightApp_WidgetContainer::active() const
 {
-  return myStack->visibleWidget();
+  return myStack->currentWidget();
 }

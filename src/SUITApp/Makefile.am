@@ -25,13 +25,16 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libSUITApp.la
 
-salomeinclude_HEADERS= SUITApp_Application.h
+salomeinclude_HEADERS=		\
+	SUITApp_Application.h
 
-dist_libSUITApp_la_SOURCES= \
-	SUITApp.cxx \
+dist_libSUITApp_la_SOURCES=	\
+	SUITApp.cxx		\
 	SUITApp_Application.cxx 
 
-MOC_FILES=SUITApp_Application_moc.cxx
+MOC_FILES=				\
+	SUITApp_Application_moc.cxx
+
 nodist_libSUITApp_la_SOURCES= $(MOC_FILES)
 
 nodist_salomeres_DATA= SUITApp_msg_en.qm
@@ -40,7 +43,7 @@ libSUITApp_la_CPPFLAGS=$(QT_INCLUDES) $(PYTHON_INCLUDES) \
                        -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 
 libSUITApp_la_LDFLAGS=$(QT_MT_LIBS) 
-libSUITApp_la_LIBADD= ../SUIT/libsuit.la ../Qtx/libqtx.la
+libSUITApp_la_LIBADD=../Qtx/libqtx.la ../SUIT/libsuit.la
 
 if ENABLE_PYCONSOLE
 libSUITApp_la_LDFLAGS+= -Xlinker -export-dynamic $(PYTHON_LIBS)
@@ -54,4 +57,4 @@ dist_SUITApp_SOURCES=SUITApp.cxx
 SUITApp_CPPFLAGS=$(QT_INCLUDES) $(PYTHON_INCLUDES) \
                  -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 
-SUITApp_LDADD= libSUITApp.la ../SUIT/libsuit.la ../Qtx/libqtx.la
+SUITApp_LDADD= libSUITApp.la  ../Qtx/libqtx.la ../SUIT/libsuit.la

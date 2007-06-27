@@ -21,15 +21,15 @@
 
 #include "LightApp.h"
 
-#include <qdockwindow.h>
+#include <QDockWidget>
 
 class QWidget;
-class QWidgetStack;
+class QStackedWidget;
 
 /*!
   Class which privade widget container.
 */
-class LIGHTAPP_EXPORT LightApp_WidgetContainer : public QDockWindow
+class LIGHTAPP_EXPORT LightApp_WidgetContainer : public QDockWidget
 {
     Q_OBJECT
 
@@ -53,8 +53,8 @@ public:
   QWidget*     widget( const int ) const;
 
 private:
-  int            myType;
-  QWidgetStack*  myStack;
+  int              myType;
+  QStackedWidget*  myStack;
 };
 
 #endif

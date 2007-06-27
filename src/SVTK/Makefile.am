@@ -108,20 +108,16 @@ libSVTK_la_CPPFLAGS= \
 	$(QT_INCLUDES) \
 	$(CAS_CPPFLAGS) \
 	$(VTK_INCLUDES) \
-	$(QWT_INCLUDES) \
 	$(BOOST_CPPFLAGS) \
-	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../STD \
-	-I$(srcdir)/../CAM -I$(srcdir)/../OBJECT -I$(srcdir)/../Prs \
+	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../OBJECT -I$(srcdir)/../Prs \
 	-I$(srcdir)/../VTKViewer
 
 libSVTK_la_LDFLAGS= \
 	$(QT_MT_LIBS) \
 	$(OCC_LIBS) \
-	$(QWT_LIBS) \
 	$(VTK_LIBS)
 
-libSVTK_la_LIBADD= ../Qtx/libqtx.la ../SUIT/libsuit.la ../STD/libstd.la \
-		   ../CAM/libCAM.la ../OBJECT/libSalomeObject.la \
+libSVTK_la_LIBADD= ../Qtx/libqtx.la ../SUIT/libsuit.la ../OBJECT/libSalomeObject.la \
 		   ../Prs/libSalomePrs.la ../VTKViewer/libVTKViewer.la
 
 # Executable

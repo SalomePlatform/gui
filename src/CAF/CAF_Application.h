@@ -23,24 +23,14 @@
 
 #include "STD_Application.h"
 
-#include <qmap.h>
-#include <qptrlist.h>
-
 #include <TDocStd_Application.hxx>
 
-class QtxAction;
 class CAF_Study;
 
 #if defined WIN32
 #pragma warning ( disable: 4251 )
 #endif
 
-/*!
-  \class CAF_Application
-  Defines application configuration and behaviour for application with 
-  link to standard OCC OCAF data model. Allows to use OCC OCAF serives
-  (for example, undo/redo)
-*/
 class CAF_EXPORT CAF_Application : public STD_Application
 {
   Q_OBJECT
@@ -72,8 +62,8 @@ protected:
 
   virtual SUIT_Study*         createNewStudy();
 
-  bool				                undo( CAF_Study* doc );
-  bool				                redo( CAF_Study* doc );
+  bool                        undo( CAF_Study* doc );
+  bool                        redo( CAF_Study* doc );
 
   virtual void                setStdApp( const Handle(TDocStd_Application)& );
 

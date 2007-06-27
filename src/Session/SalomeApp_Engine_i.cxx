@@ -30,8 +30,6 @@
 
 #include "SALOMEDS_Tool.hxx"
 
-#include "utilities.h"
-
 #include <iostream>
 
 using namespace std;

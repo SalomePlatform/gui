@@ -37,18 +37,14 @@ salomeinclude_HEADERS= \
 
 dist_libToolsGUI_la_SOURCES= \
 	ToolsGUI_CatalogGeneratorDlg.cxx \
-	ToolsGUI_HelpWindow.cxx \
 	ToolsGUI_RegWidget.cxx \
-	ToolsGUI_IntervalWindow.cxx \
 	ToolsGUI.cxx
 
 EXTRA_DIST+=
 
 MOC_FILES= \
 	ToolsGUI_CatalogGeneratorDlg_moc.cxx \
-	ToolsGUI_RegWidget_moc.cxx \
-	ToolsGUI_HelpWindow_moc.cxx \
-	ToolsGUI_IntervalWindow_moc.cxx
+	ToolsGUI_RegWidget_moc.cxx
 
 nodist_libToolsGUI_la_SOURCES= $(MOC_FILES)
 

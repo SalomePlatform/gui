@@ -31,12 +31,13 @@
 
 #include <SALOME_Session.hxx>
 
-#include <qthread.h> 
-
 #include <SALOMEconfig.h>
 #include CORBA_SERVER_HEADER(SALOME_Component)
 #include CORBA_SERVER_HEADER(SALOME_Session)
 class SALOME_NamingService;
+
+class QMutex;
+class QWaitCondition;
 
 class SESSION_EXPORT SALOME_Session_i:  public virtual POA_SALOME::Session,
 		         public virtual PortableServer::ServantBase

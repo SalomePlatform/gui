@@ -26,7 +26,7 @@
 #include "SVTK.h"
 #include "SALOME_InteractiveObject.hxx"
 
-#include <qobject.h>
+#include <QObject>
 
 class vtkActorCollection;
 class vtkRenderer;
@@ -35,6 +35,13 @@ class SVTK_MainWindow;
 class SVTK_Renderer;
 
 class SALOME_Actor;
+
+class QMouseEvent;
+class QWheelEvent;
+class QKeyEvent;
+class QContextMenuEvent;
+class QColor;
+
 
 //! Main purpose of the class is to provide a way to customize #SVTK_MainWindow.
 /*!

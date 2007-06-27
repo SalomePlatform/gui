@@ -27,12 +27,12 @@
 
 #include "GLViewer.h"
 
-#include <qlist.h>
-#include <qcolor.h>
-#include <qaction.h>
-#include <qwidget.h>
+//#include <QList>
+#include <QColor>
+//#include <QAction>
+#include <QWidget>
 
-#include <Aspect_Window.hxx>
+//#include <Aspect_Window.hxx>
 
 class QRect;
 class QCursor;
@@ -40,7 +40,7 @@ class QPainter;
 class GLViewer_ViewSketcher;
 class GLViewer_ViewTransformer;
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 
@@ -170,7 +170,7 @@ private:
     static QCursor*                  sketchCursor;
 };
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning ( default:4251 )
 #endif
 

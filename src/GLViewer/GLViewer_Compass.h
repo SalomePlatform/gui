@@ -27,9 +27,11 @@
 
 #include "GLViewer.h"
 
-#include <qcolor.h>
+#include <QColor>
 
-#ifdef WNT
+class QFont;
+
+#ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 
@@ -142,7 +144,7 @@ protected:
   bool               isGenereted;
 };
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning ( default:4251 )
 #endif
 

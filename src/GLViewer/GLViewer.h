@@ -23,7 +23,7 @@
 // Created:   November, 2004
 
 //! Macro for exports
-#ifdef WNT
+#ifdef WIN32
 
 #ifdef GLVIEWER_EXPORTS
 #define GLVIEWER_API __declspec(dllexport)
@@ -33,5 +33,5 @@
 
 #else
 #define GLVIEWER_API
-#endif // WNT
+#endif // WIN32
 

@@ -26,22 +26,14 @@
 #ifndef _SALOME_Session_HXX_
 #define _SALOME_Session_HXX_
 
-#ifdef WNT
- #if defined SESSION_EXPORTS
-  #if defined WIN32
-   #define SESSION_EXPORT __declspec( dllexport )
-  #else
-   #define SESSION_EXPORT
-  #endif
- #else
-  #if defined WIN32
-   #define SESSION_EXPORT __declspec( dllimport )
-  #else
-   #define SESSION_EXPORT
-  #endif
- #endif
-#else
- #define SESSION_EXPORT
-#endif
+#if defined WIN32
+#  if defined SESSION_EXPORTS
+#    define SESSION_EXPORT __declspec( dllexport )
+#  else
+#    define SESSION_EXPORT __declspec( dllimport )
+#  endif
+#else  // WIN32
+#  define SESSION_EXPORT
+#endif // WIN32
 
 #endif

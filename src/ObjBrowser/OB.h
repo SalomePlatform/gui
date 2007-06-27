@@ -20,13 +20,13 @@
 #define OB_H
 
 #if defined OB_EXPORTS
-#if defined WNT
+#if defined WIN32
 #define OB_EXPORT __declspec( dllexport )
 #else
 #define OB_EXPORT
 #endif
 #else
-#if defined WNT
+#if defined WIN32
 #define OB_EXPORT __declspec( dllimport )
 #else
 #define OB_EXPORT
@@ -39,7 +39,7 @@
 #define true  1
 #endif
 
-#if defined WNT
+#if defined WIN32
 #pragma warning ( disable: 4251 )
 #endif
 

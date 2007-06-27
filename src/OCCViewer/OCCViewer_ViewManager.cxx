@@ -40,7 +40,7 @@ OCCViewer_ViewManager::~OCCViewer_ViewManager()
   Fills popup menu with custom actions
  \param popup - popup menu to be filled with
 */
-void OCCViewer_ViewManager::contextMenuPopup( QPopupMenu* popup )
+void OCCViewer_ViewManager::contextMenuPopup( QMenu* popup )
 {
   SUIT_ViewManager::contextMenuPopup( popup );
   // if it is necessary invoke method CreatePopup of ViewPort

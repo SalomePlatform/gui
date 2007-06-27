@@ -27,7 +27,7 @@
 // that uses this DLL. This way any other project whose source files include this file see 
 // LightApp_API functions as being imported from a DLL, wheras this DLL sees symbols
 // defined with this macro as being exported.
-#ifdef WNT
+#ifdef WIN32
 
 #ifdef LIGHTAPP_EXPORTS
 #define LIGHTAPP_EXPORT __declspec(dllexport)
@@ -41,6 +41,6 @@
 
 #else
 #define LIGHTAPP_EXPORT
-#endif               //WNT
+#endif               //WIN32
 
 #define APP_VERSION "0.1"

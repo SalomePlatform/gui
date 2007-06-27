@@ -41,6 +41,7 @@ public:
 protected:
   curveList myCurves;
   bool      mySecondY;
+  bool      myIsAutoDel;
 };
 
 #endif

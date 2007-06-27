@@ -27,13 +27,13 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libPyInterp.la
 
-salomeinclude_HEADERS= \
-	PyInterp.h \
-	PyInterp_base.h \
+salomeinclude_HEADERS=		\
+	PyInterp.h		\
+	PyInterp_Interp.h	\
 	PyInterp_Dispatcher.h
 
-dist_libPyInterp_la_SOURCES= \
-	PyInterp_base.cxx \
+dist_libPyInterp_la_SOURCES=	\
+	PyInterp_Interp.cxx	\
 	PyInterp_Dispatcher.cxx
 
 MOC_FILES= PyInterp_Watcher_moc.cxx

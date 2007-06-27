@@ -36,10 +36,12 @@
 #include "LightApp_UpdateFlags.h"
 #include "LightApp_ShowHideOp.h"
 
-#include "SUIT_Operation.h"
 #include <SUIT_Study.h>
 #include <SUIT_DataObject.h>
+#include <SUIT_Operation.h>
+#include <SUIT_ViewManager.h>
 #include <SUIT_ResourceMgr.h>
+#include <SUIT_Desktop.h>
 
 #ifndef DISABLE_VTKVIEWER
 #ifndef DISABLE_SALOMEOBJECT
@@ -73,13 +75,14 @@
 #endif
 #endif
 
-#include <OB_Browser.h>
+// temporary commented
+//#include <OB_Browser.h>
 
 #include <QtxPopupMgr.h>
 
-#include <qvariant.h>
-#include <qstring.h>
-#include <qstringlist.h>
+#include <QVariant>
+#include <QString>
+#include <QStringList>
 
 /*!Constructor.*/
 LightApp_Module::LightApp_Module( const QString& name )
@@ -121,11 +124,12 @@ void LightApp_Module::viewManagers( QStringList& ) const
 }
 
 /*!Context menu popup.*/
-void LightApp_Module::contextMenuPopup( const QString& client, QPopupMenu* menu, QString& /*title*/ )
+void LightApp_Module::contextMenuPopup( const QString& client, QMenu* menu, QString& /*title*/ )
 {
-  LightApp_Selection* sel = createSelection();
-  sel->init( client, getApp()->selectionMgr() );
-  popupMgr()->updatePopup( menu, sel );
+  LightApp_Selection* sel = createSelection( client, getApp()->selectionMgr() );
+  popupMgr()->setSelection( sel );
+  popupMgr()->setMenu( menu );
+  popupMgr()->updateMenu();
   delete sel;
 }
 
@@ -135,8 +139,9 @@ void LightApp_Module::contextMenuPopup( const QString& client, QPopupMenu* menu,
 void LightApp_Module::updateObjBrowser( bool theIsUpdateDataModel, 
 					SUIT_DataObject* theDataObject )
 {
-  bool upd = getApp()->objectBrowser()->isAutoUpdate();
-  getApp()->objectBrowser()->setAutoUpdate( false );
+  // temporary commented
+  /*bool upd = getApp()->objectBrowser()->isAutoUpdate();
+  getApp()->objectBrowser()->setAutoUpdate( false );*/
 
   if( theIsUpdateDataModel ){
     if( CAM_DataModel* aDataModel = dataModel() ){
@@ -151,8 +156,9 @@ void LightApp_Module::updateObjBrowser( bool theIsUpdateDataModel,
       }
     }
   }
-  getApp()->objectBrowser()->setAutoUpdate( upd );
-  getApp()->objectBrowser()->updateTree( 0, false );
+  // temporary commented
+  /*getApp()->objectBrowser()->setAutoUpdate( upd );
+  getApp()->objectBrowser()->updateTree( 0, false );*/
 }
 
 /*!NOT IMPLEMENTED*/
@@ -193,7 +199,7 @@ bool LightApp_Module::deactivateModule( SUIT_Study* study )
   // abort all operations
   MapOfOperation::const_iterator anIt;
   for( anIt = myOperations.begin(); anIt != myOperations.end(); anIt++ ) {
-    anIt.data()->abort();
+    anIt.value()->abort();
   }
 
   return CAM_Module::activateModule( study );
@@ -236,8 +242,9 @@ void LightApp_Module::update( const int theFlags )
       if( LightApp_DataModel* aModel = dynamic_cast<LightApp_DataModel*>( aDataModel ) )
         aModel->update( 0, dynamic_cast<LightApp_Study*>( getApp()->activeStudy() ) );
   }
-  if ( theFlags & UF_ObjBrowser )
-    getApp()->objectBrowser()->updateTree( 0 );
+  // temporary commented
+  /*if ( theFlags & UF_ObjBrowser )
+    getApp()->objectBrowser()->updateTree( 0 );*/
   if ( theFlags & UF_Controls )
     updateControls();
   if ( theFlags & UF_Viewer )
@@ -286,9 +293,9 @@ CAM_DataModel* LightApp_Module::createDataModel()
 }
 
 /*!Create and return instance of LightApp_Selection.*/
-LightApp_Selection* LightApp_Module::createSelection() const
+LightApp_Selection* LightApp_Module::createSelection( const QString& client, LightApp_SelectionMgr* mgr ) const
 {
-  return new LightApp_Selection();
+  return new LightApp_Selection( client, mgr );
 }
 
 /*!NOT IMPLEMENTED*/
@@ -339,9 +346,9 @@ QtxPopupMgr* LightApp_Module::popupMgr()
     QString oneAndNotActive = "( count( $component ) = 1 ) and ( not( activeModule in $component ) )";
     QString uniform = "true in $canBeDisplayed and %1 and ( activeModule = '%2' )";
     uniform = uniform.arg( oneAndNotActive ).arg( name() );
-    myPopupMgr->setRule( disp, /*QString( "( not isVisible ) and " ) + */ uniform, true );
-    myPopupMgr->setRule( erase, /*QString( "( isVisible ) and " ) + */ uniform, true );
-    myPopupMgr->setRule( dispOnly, uniform, true );
+    myPopupMgr->setRule( disp, /*QString( "( not isVisible ) and " ) + */ uniform, QtxPopupMgr::VisibleRule );
+    myPopupMgr->setRule( erase, /*QString( "( isVisible ) and " ) + */ uniform, QtxPopupMgr::VisibleRule );
+    myPopupMgr->setRule( dispOnly, uniform, QtxPopupMgr::VisibleRule );
 
     QStringList viewers;
 
@@ -374,7 +381,7 @@ QtxPopupMgr* LightApp_Module::popupMgr()
       for( ; anIt!=aLast; anIt++ )
         strViewers+=temp.arg( *anIt );
       strViewers+="}";
-      myPopupMgr->setRule( eraseAll, QString( "client in %1" ).arg( strViewers ), true );
+      myPopupMgr->setRule( eraseAll, QString( "client in %1" ).arg( strViewers ), QtxPopupMgr::VisibleRule );
     }
   }
   return myPopupMgr;
@@ -519,7 +526,7 @@ void LightApp_Module::onOperationDestroyed()
     MapOfOperation::const_iterator anIt = myOperations.begin(),
                                    aLast = myOperations.end();
     for( ; anIt!=aLast; anIt++ )
-      if( anIt.data()==op )
+      if( anIt.value()==op )
       {
         myOperations.remove( anIt.key() );
         break;

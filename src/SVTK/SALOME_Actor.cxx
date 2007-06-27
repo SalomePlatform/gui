@@ -33,6 +33,7 @@
 
 
 #include "SALOME_Actor.h"
+#include "SALOME_InteractiveObject.hxx"
 
 #include "VTKViewer_Transform.h"
 #include "VTKViewer_TransformFilter.h"

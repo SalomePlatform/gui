@@ -20,7 +20,7 @@
 #define OCCVIEWER_AISSELECTOR_H
 
 #include "OCCViewer.h"
-#include <qobject.h>
+#include <QObject>
 
 #include <Quantity_NameOfColor.hxx>
 #include <AIS_InteractiveContext.hxx>

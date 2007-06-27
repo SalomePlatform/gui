@@ -24,31 +24,21 @@
 #include "LightApp_Application.h"
 #include "LightApp_Displayer.h"
 
+#include "CAM_Module.h"
+
 #include "SUIT_Session.h"
 #include "SUIT_ViewWindow.h"
+#include "SUIT_ViewManager.h"
+#include "SUIT_Desktop.h"
+#include "SUIT_Selector.h"
 
 /*!
   Constructor
 */
-LightApp_Selection::LightApp_Selection()
+LightApp_Selection::LightApp_Selection( const QString& client, LightApp_SelectionMgr* mgr )
 : myStudy( 0 )
 {
-}
-
-/*!
-  Destructor.
-*/
-LightApp_Selection::~LightApp_Selection()
-{
-}
-
-/*!
-  Initialization.
-*/
-void LightApp_Selection::init( const QString& client, LightApp_SelectionMgr* mgr)
-{
   myPopupClient = client;
-  myStudy = 0;
   
   if( mgr )
   {
@@ -62,11 +52,13 @@ void LightApp_Selection::init( const QString& client, LightApp_SelectionMgr* mgr
     mgr->selected( sel, client );
 
     //2) to take such owners from other popup clients that it's entry is different with every entry from current list
-    QPtrList<SUIT_Selector> aSelectors;
+    QList<SUIT_Selector*> aSelectors;
     mgr->selectors( aSelectors );
-    for( SUIT_Selector* selector = aSelectors.first(); selector; selector = aSelectors.next() )
+    QListIterator<SUIT_Selector*> it( aSelectors );
+    while ( it.hasNext() )
     {
-      qDebug( selector->type() );
+      SUIT_Selector* selector = it.next();
+      qDebug( selector->type().toLatin1().constData() );
       if( selector->type()!=client )
       {
 	mgr->selected( cur_sel, selector->type() );
@@ -100,6 +92,13 @@ void LightApp_Selection::init( const QString& client, LightApp_SelectionMgr* mgr
   }
 }
 
+/*!
+  Destructor.
+*/
+LightApp_Selection::~LightApp_Selection()
+{
+}
+
 QString LightApp_Selection::referencedToEntry( const QString& entry ) const
 {
   return myStudy->referencedToEntry( entry );
@@ -114,17 +113,17 @@ int LightApp_Selection::count() const
 }
 
 /*!
-  Gets QtxValue();
+  Gets QVariant();
 */
-QtxValue LightApp_Selection::param( const int ind, const QString& p ) const
+QVariant LightApp_Selection::parameter( const int ind, const QString& p ) const
 {
   LightApp_Application* app = dynamic_cast<LightApp_Application*>( myStudy ? myStudy->application() : 0 );
   if( !( ind>=0 && ind<count() ) || !app )
-    return QtxValue();
+    return QVariant();
 
   if( p=="isVisible" )
   {
-    QString mod_name = app->moduleTitle( param( ind, "component" ).toString() );
+    QString mod_name = app->moduleTitle( parameter( ind, "component" ).toString() );
     LightApp_Displayer* d = LightApp_Displayer::FindDisplayer( mod_name, false );
     // false in last parameter means that now we doesn't load module, if it isn't loaded
 
@@ -136,7 +135,7 @@ QtxValue LightApp_Selection::param( const int ind, const QString& p ) const
       LightApp_Displayer local_d;
       vis = local_d.IsDisplayed( myEntries[ ind ] );
     }
-    return QtxValue( vis, 0 );
+    return QVariant( vis );
   }
 
   else if( p=="component" )
@@ -146,18 +145,18 @@ QtxValue LightApp_Selection::param( const int ind, const QString& p ) const
   
   else if( p=="isComponent" )
   {
-    return QtxValue( myStudy->isComponent( myEntries[ ind ] ), 0 );
+    return QVariant( myStudy->isComponent( myEntries[ ind ] ) );
   }
 
   else if( p=="isReference" )
-    return QtxValue( isReference( ind ), false );
+    return QVariant( isReference( ind ) );
 
   else if( p=="displayer" )
-    return param( ind, "component" );
+    return parameter( ind, "component" );
 
   else if( p=="canBeDisplayed" )
   {
-    QString mod_name = app->moduleTitle( param( ind, "component" ).toString() );
+    QString mod_name = app->moduleTitle( parameter( ind, "component" ).toString() );
     LightApp_Displayer* d = LightApp_Displayer::FindDisplayer( mod_name, false );
     // false in last parameter means that now we doesn't load module, if it isn't loaded
 
@@ -171,15 +170,15 @@ QtxValue LightApp_Selection::param( const int ind, const QString& p ) const
     //operations under object
   }
 
-  return QtxValue();
+  return QVariant();
 }
 
 /*!
   Gets global parameters. client, isActiveView, activeView etc.
 */
-QtxValue LightApp_Selection::globalParam( const QString& p ) const
+QVariant LightApp_Selection::parameter( const QString& p ) const
 {
-  if      ( p == "client" )        return QtxValue( myPopupClient );
+  if      ( p == "client" )        return QVariant( myPopupClient );
   else if ( p == "activeModule" )
   {
     LightApp_Application* app = dynamic_cast<LightApp_Application*>( myStudy->application() );
@@ -188,14 +187,14 @@ QtxValue LightApp_Selection::globalParam( const QString& p ) const
     if( !mod_name.isEmpty() )
       return mod_name;
     else
-      return QtxValue();
+      return QVariant();
   }
-  else if ( p == "isActiveView" )  return QtxValue( (bool)activeVW() );
-  else if ( p == "activeView" )    return QtxValue( activeViewType() );
-#ifndef WNT
-  else                             return QtxPopupMgr::Selection::globalParam( p );
+  else if ( p == "isActiveView" )  return QVariant( (bool)activeVW() );
+  else if ( p == "activeView" )    return QVariant( activeViewType() );
+#ifndef WIN32
+  else                             return QtxPopupSelection::parameter( p );
 #else
-  else                             return Selection::globalParam( p );
+  else                             return QtxPopupSelection::parameter( p ); //Selection::parameter( p ); //?
 #endif
 }
 

@@ -33,6 +33,7 @@
   #include <TColStd_MapOfInteger.hxx>
   #include <TColStd_MapIteratorOfMapOfInteger.hxx>
   #include <TColStd_IndexedMapOfInteger.hxx>
+  #include <TCollection_AsciiString.hxx>
 #endif
 
 /*!
@@ -95,7 +96,7 @@ void LightApp_SelectionMgr::selectedObjects( SALOME_ListIO& theList, const QStri
       if ( !entryMap.contains( checkEntry ) ) {
         if ( refEntry != entry ) {
           QString component = study->componentDataType( refEntry );
-          theList.Append( new SALOME_InteractiveObject( refEntry, component, ""/*refobj->Name().c_str()*/ ) );
+          theList.Append( new SALOME_InteractiveObject( refEntry.toLatin1().constData(), component.toLatin1().constData(), ""/*refobj->Name().c_str()*/ ) );
         }
         else if( !owner->IO().IsNull() )
           theList.Append( owner->IO() );
@@ -285,16 +286,16 @@ void LightApp_SelectionMgr::selectObjects( MapIOOfMapOfInteger theMapIO, bool ap
 {
   SUIT_DataOwnerPtrList aList;
 
-  MapIOOfMapOfInteger::Iterator it;
-  for ( it = theMapIO.begin(); it != theMapIO.end(); ++it ) 
+  MapIOOfMapOfInteger::Iterator it(theMapIO);
+  for ( ; it.More(); it.Next() ) 
     {
-      if ( it.data().IsEmpty() )
-	aList.append( new LightApp_DataOwner( QString(it.key()->getEntry()) ) );
+      if ( it.Value().IsEmpty() )
+	aList.append( new LightApp_DataOwner( QString(it.Key()->getEntry()) ) );
       else
 	{
 	  int i;
-	  for ( i = 1; i <= it.data().Extent(); i++ )
-	    aList.append( new LightApp_DataSubOwner( QString(it.key()->getEntry()), it.data()( i ) ) );
+	  for ( i = 1; i <= it.Value().Extent(); i++ )
+	    aList.append( new LightApp_DataSubOwner( QString(it.Key()->getEntry()), it.Value()( i ) ) );
 	}
     }
   
@@ -307,7 +308,7 @@ void LightApp_SelectionMgr::selectObjects( MapIOOfMapOfInteger theMapIO, bool ap
 */
 void LightApp_SelectionMgr::selectedSubOwners( MapEntryOfMapOfInteger& theMap )
 {
-  theMap.clear();
+  theMap.Clear();
 
   TColStd_IndexedMapOfInteger anIndexes;
 
@@ -319,11 +320,15 @@ void LightApp_SelectionMgr::selectedSubOwners( MapEntryOfMapOfInteger& theMap )
     const LightApp_DataSubOwner* subOwner = dynamic_cast<const LightApp_DataSubOwner*>( (*itr).operator->() );
     if ( subOwner ) 
     {
-      if ( !theMap.contains( subOwner->entry() ) )
+#ifndef WNT
+      if ( !theMap.IsBound( TCollection_AsciiString(subOwner->entry().toLatin1().data()) ) )
+#else
+      if ( !theMap.IsBound( subOwner->entry().toLatin1().data() ) )
+#endif
       {
 	anIndexes.Clear();
 	GetIndexes( subOwner->entry(), anIndexes );
-	theMap.insert( subOwner->entry(), anIndexes );
+	theMap.Bind( subOwner->entry().toLatin1().data(), anIndexes );
       }
     }
   }

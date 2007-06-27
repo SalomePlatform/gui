@@ -32,7 +32,7 @@
 #include <vtkObjectFactory.h>
 #include <vtkCommand.h>
 
-#include <qtimer.h>
+#include <QTimer>
 
 using namespace std;
 
@@ -80,7 +80,8 @@ QVTK_GenericRenderWindowInteractor
   // Start a one-shot timer for <DELAY> ms. 
   //
   static int DELAY = 1;
-  myTimer->start(DELAY,TRUE);
+  myTimer->setSingleShot(TRUE);
+  myTimer->start(DELAY);
   return 1;
 }
 

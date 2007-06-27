@@ -54,7 +54,10 @@
 #include <vtkProperty.h>
 
 // QT Includes
-#include <qkeycode.h>
+#include <QTimer>
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QContextMenuEvent>
 
 /*! Create new instance of VTKViewer_RenderWindowInteractor*/
 VTKViewer_RenderWindowInteractor* VTKViewer_RenderWindowInteractor::New() 
@@ -324,7 +327,8 @@ int VTKViewer_RenderWindowInteractor::CreateTimer(int vtkNotUsed(timertype))
   ///
   /// Start a one-shot timer for 10ms.
   ///
-  mTimer->start(10, TRUE) ;
+  mTimer->setSingleShot(TRUE) ;
+  mTimer->start(10) ;
   return 1 ;
 }
 
@@ -383,8 +387,8 @@ void VTKViewer_RenderWindowInteractor::LeftButtonPressed(const QMouseEvent *even
   if( ! this->Enabled ) {
     return ;
   }
-  myInteractorStyle->OnLeftButtonDown((event->state() & ControlButton), 
-				      (event->state() & ShiftButton), 
+  myInteractorStyle->OnLeftButtonDown((event->modifiers() & Qt::ControlModifier), 
+				      (event->modifiers() & Qt::ShiftModifier), 
 				      event->x(), event->y());
 }
 
@@ -396,8 +400,8 @@ void VTKViewer_RenderWindowInteractor::LeftButtonReleased(const QMouseEvent *eve
   if( ! this->Enabled ) {
     return ;
   }
-  myInteractorStyle->OnLeftButtonUp( (event->state() & ControlButton), 
-				     (event->state() & ShiftButton), 
+  myInteractorStyle->OnLeftButtonUp( (event->modifiers() & Qt::ControlModifier), 
+				     (event->modifiers() & Qt::ShiftModifier), 
 				     event->x(), event->y() ) ;
 }
 
@@ -409,8 +413,8 @@ void VTKViewer_RenderWindowInteractor::MiddleButtonPressed(const QMouseEvent *ev
   if( ! this->Enabled ) {
     return ;
   }
-  myInteractorStyle->OnMiddleButtonDown((event->state() & ControlButton), 
-					(event->state() & ShiftButton), 
+  myInteractorStyle->OnMiddleButtonDown((event->modifiers() & Qt::ControlModifier), 
+					(event->modifiers() & Qt::ShiftModifier), 
 					event->x(), event->y() ) ;
 }
 
@@ -422,8 +426,8 @@ void VTKViewer_RenderWindowInteractor::MiddleButtonReleased(const QMouseEvent *e
   if( ! this->Enabled ) {
     return ;
   }
-  myInteractorStyle->OnMiddleButtonUp( (event->state() & ControlButton), 
-				       (event->state() & ShiftButton), 
+  myInteractorStyle->OnMiddleButtonUp( (event->modifiers() & Qt::ControlModifier), 
+				       (event->modifiers() & Qt::ShiftModifier), 
 				       event->x(), event->y() ) ;
 }
 
@@ -435,8 +439,8 @@ void VTKViewer_RenderWindowInteractor::RightButtonPressed(const QMouseEvent *eve
   if( ! this->Enabled ) {
     return ;
   }
-  myInteractorStyle->OnRightButtonDown( (event->state() & ControlButton), 
-					(event->state() & ShiftButton), 
+  myInteractorStyle->OnRightButtonDown( (event->modifiers() & Qt::ControlModifier), 
+					(event->modifiers() & Qt::ShiftModifier), 
 					event->x(), event->y() ) ;
 }
 
@@ -449,14 +453,13 @@ void VTKViewer_RenderWindowInteractor::RightButtonReleased(const QMouseEvent *ev
     return ;
   }
   bool isOperation = myInteractorStyle->CurrentState() != VTK_INTERACTOR_STYLE_CAMERA_NONE;
-  myInteractorStyle->OnRightButtonUp( (event->state() & ControlButton),
-				      (event->state() & ShiftButton),
+  myInteractorStyle->OnRightButtonUp( (event->modifiers() & Qt::ControlModifier),
+				      (event->modifiers() & Qt::ShiftModifier),
 				      event->x(), event->y() );
   if ( !isOperation )
   {
     QContextMenuEvent aEvent( QContextMenuEvent::Mouse,
-                              event->pos(), event->globalPos(),
-                              event->state() );
+                              event->pos(), event->globalPos() );
     emit contextMenuRequested( &aEvent );
   }
 }

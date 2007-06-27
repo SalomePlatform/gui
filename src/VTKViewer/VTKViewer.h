@@ -20,7 +20,7 @@
 #ifndef VTKVIEWER_H
 #define VTKVIEWER_H
 
-#ifdef WNT
+#ifdef WIN32
 #  ifdef VTKVIEWER_EXPORTS
 #    define VTKVIEWER_EXPORT __declspec( dllexport )
 #  else

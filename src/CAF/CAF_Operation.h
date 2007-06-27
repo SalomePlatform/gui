@@ -23,27 +23,18 @@
 
 #include "SUIT_Operation.h"
 
-#include <qobject.h>
-#include <qstring.h>
-
 #include <Standard.hxx>
 
 class CAF_Study;
-//! OCC OCAF Std document
 class Handle(TDocStd_Document);
 
-/*!
-  \class CAF_Operation
-  Base operation for all operations used in CAF package
-  Operation has link to OCC OCAF std document
-*/
 class CAF_EXPORT CAF_Operation : public SUIT_Operation
 {
-	Q_OBJECT
+  Q_OBJECT
 
 public:
-	CAF_Operation( SUIT_Application* );
-	virtual ~CAF_Operation();
+  CAF_Operation( SUIT_Application* );
+  virtual ~CAF_Operation();
 
 protected:
   Handle(TDocStd_Document) stdDoc() const;

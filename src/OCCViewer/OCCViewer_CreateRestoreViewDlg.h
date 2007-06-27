@@ -25,16 +25,14 @@
 #include "OCCViewer_ViewWindow.h"
 
 #include <QtxDialog.h>
-#include <QtxListBox.h> 
 #include <SUIT_Application.h>
 
-#include <qmap.h>
-#include <qvbox.h>
-#include <qdialog.h>
-#include <qlistbox.h>
-#include <qstringlist.h>
+#include <QDialog>
+#include <QListWidget>
 
 class OCCViewer_ViewPort3d;
+
+class QListWidgetItem;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -48,26 +46,26 @@ public:
 	OCCViewer_CreateRestoreViewDlg( QWidget*, OCCViewer_Viewer* );
 	virtual ~OCCViewer_CreateRestoreViewDlg();
 
-	const viewAspectList&       parameters() const;
-	viewAspect                  currentItem() const;
-	virtual bool						    eventFilter( QObject*, QEvent* );
+	const viewAspectList&         parameters() const;
+	viewAspect                    currentItem() const;
+	virtual bool		      eventFilter( QObject*, QEvent* );
 
 public slots:
 	void	                      OKpressed();
 	void	                      clearList();
-	void                        editItemText( QListBoxItem* );
-	void	                      changeImage( QListBoxItem* );
+	void                          editItemText( QListWidgetItem* );
+	void	                      changeImage( QListWidgetItem* );
 	void	                      deleteSelectedItems();
 
 signals:
 	void	                      dlgOk();
 
 private:
-	int								          myKeyFlag;
-	QtxListBox*						      myListBox;
+	int		              myKeyFlag;
+	QListWidget*		      myListBox;
 	OCCViewer_ViewPort3d*	      myCurViewPort;
-	viewAspect                  myCurrentItem;
-	viewAspectList              myParametersMap;
+	viewAspect                    myCurrentItem;
+	viewAspectList                myParametersMap;
 };
 
 #ifdef WIN32

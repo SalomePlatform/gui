@@ -22,11 +22,14 @@
 #include "OCCViewer_VService.h"
 #include "OCCViewer_ViewWindow.h"
 
-#include <qrect.h>
-#include <qevent.h>
-#include <qapplication.h>
+#include <QColor>
+#include <QRect>
+#include <QPaintEvent>
+#include <QResizeEvent>
+#include <QApplication>
 
 #include <Visual3d_View.hxx>
+#include <V3d_Viewer.hxx>
 #include <V3d_PerspectiveView.hxx>
 #include <V3d_OrthographicView.hxx>
 

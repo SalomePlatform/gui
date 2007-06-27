@@ -19,7 +19,7 @@
 #ifndef SALOMEAPP_TYPEFILTER_H
 #define SALOMEAPP_TYPEFILTER_H
 
-#include <qstring.h>
+#include <QString>
 
 #include "SalomeApp_Filter.h"
 

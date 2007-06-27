@@ -22,8 +22,9 @@
 #include "LightApp.h"
 
 #include "CAM_DataObject.h"
-#include "CAM_DataModel.h"
 #include "CAM_RootObject.h"
+
+class CAM_DataModel;
 
 class LightApp_Study;
 

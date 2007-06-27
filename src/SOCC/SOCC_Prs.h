@@ -33,8 +33,9 @@
 
 #include <SALOME_Prs.h>
 
-#include <AIS_InteractiveObject.hxx>
 #include <AIS_ListOfInteractive.hxx>
+
+class Handle(AIS_InteractiveObject);
 
 class SOCC_EXPORT SOCC_Prs : public SALOME_OCCPrs
 {

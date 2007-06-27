@@ -18,7 +18,6 @@
 //
 #include "LightApp_HDFDriver.h"
 
-#include "HDFexplorer.hxx"
 #include "HDFOI.hxx"
 
 // OCCT Includes

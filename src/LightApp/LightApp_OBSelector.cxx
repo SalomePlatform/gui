@@ -22,12 +22,13 @@
 #include "LightApp_DataObject.h"
 #include "LightApp_Application.h"
 
-#include <OB_Browser.h>
+// temporary commented
+//#include <OB_Browser.h>
 
 #include <SUIT_Session.h>
 #include <SUIT_DataObjectIterator.h>
 
-#include <qdatetime.h>
+#include <QTime>
 
 #include <time.h>
 
@@ -35,12 +36,13 @@
   Constructor
 */
 LightApp_OBSelector::LightApp_OBSelector( OB_Browser* ob, SUIT_SelectionMgr* mgr )
-: SUIT_Selector( mgr, ob ),
-  myBrowser( ob )
+  : SUIT_Selector( mgr/* temporary commented : , ob */ )/*,*/
+  // temporary commented : myBrowser( ob )
 {
-  if ( myBrowser ) {
+  // temporary commented
+  /*if ( myBrowser ) {
     connect( myBrowser, SIGNAL( selectionChanged() ), this, SLOT( onSelectionChanged() ) );
-  }    
+  }*/    
 
   setModified();
 }
@@ -75,16 +77,20 @@ void LightApp_OBSelector::getSelection( SUIT_DataOwnerPtrList& theList ) const
     if ( !myBrowser )
       return;
     DataObjectList objlist;
-    myBrowser->getSelected( objlist );
+    // temporary commented
+    //myBrowser->getSelected( objlist );
     LightApp_OBSelector* that = (LightApp_OBSelector*)this;
-    for ( DataObjectListIterator it( objlist ); it.current(); ++it )
+    QListIterator<SUIT_DataObject*> it( objlist );
+    while ( it.hasNext() )
     {
-      LightApp_DataObject* obj = dynamic_cast<LightApp_DataObject*>( it.current() );
+      LightApp_DataObject* obj = dynamic_cast<LightApp_DataObject*>( it.next() );
       if ( obj && app->checkDataObject(obj) )
       {
 #ifndef DISABLE_SALOMEOBJECT
         Handle(SALOME_InteractiveObject) aSObj = new SALOME_InteractiveObject
-          ( obj->entry(), obj->componentDataType(), obj->name() );
+          ( obj->entry().toLatin1().constData(),
+	    obj->componentDataType().toLatin1().constData(),
+	    obj->name().toLatin1().constData() );
         LightApp_DataOwner* owner = new LightApp_DataOwner( aSObj  );
 #else
         LightApp_DataOwner* owner = new LightApp_DataOwner( obj->entry() );
@@ -102,8 +108,10 @@ void LightApp_OBSelector::setSelection( const SUIT_DataOwnerPtrList& theList )
   if ( !myBrowser )
     return;
 
-  if( myEntries.count() == 0 ||
-      myModifiedTime < myBrowser->getModifiedTime() )
+  if( myEntries.count() == 0 
+      // temporary commented
+      /*||
+	myModifiedTime < myBrowser->getModifiedTime()*/ )
     fillEntries( myEntries );
 
   DataObjectList objList;
@@ -114,7 +122,8 @@ void LightApp_OBSelector::setSelection( const SUIT_DataOwnerPtrList& theList )
       objList.append( myEntries[owner->entry()] );
   }
 
-  myBrowser->setSelected( objList );
+  // temporary commented
+  //myBrowser->setSelected( objList );
   mySelectedList.clear();
 }
 
@@ -125,7 +134,7 @@ void LightApp_OBSelector::onSelectionChanged()
   mySelectedList.clear();
   selectionChanged();
   QTime t2 = QTime::currentTime();
-  qDebug( QString( "selection time = %1 msecs" ).arg( t1.msecsTo( t2 ) ) );
+  qDebug( QString( "selection time = %1 msecs" ).arg( t1.msecsTo( t2 ) ).toLatin1().constData() );
 }
 
 /*!Fill entries.*/
@@ -136,13 +145,14 @@ void LightApp_OBSelector::fillEntries( QMap<QString, LightApp_DataObject*>& enti
   if ( !myBrowser )
     return;
 
-  for ( SUIT_DataObjectIterator it( myBrowser->getRootObject(),
+  // temporary commented
+  /*for ( SUIT_DataObjectIterator it( myBrowser->getRootObject(),
                                     SUIT_DataObjectIterator::DepthLeft ); it.current(); ++it )
   {
     LightApp_DataObject* obj = dynamic_cast<LightApp_DataObject*>( it.current() );
     if ( obj )
       entires.insert( obj->entry(), obj );
-  }
+  }*/
 
   setModified();
 }

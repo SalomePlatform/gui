@@ -58,15 +58,11 @@
 #include <vtkPerspectiveTransform.h> 
 #include <vtkMatrix4x4.h>
 
-#include <qapplication.h>
-#include <qpixmap.h>
-//VRV: porting on Qt 3.0.5
-#if QT_VERSION >= 0x030005
-#include <qpainter.h>
-#endif
-//VRV: porting on Qt 3.0.5
-#include <algorithm>
+#include <QPixmap>
+#include <QWidget>
+#include <QRubberBand>
 
+#include <algorithm>
 #include <iostream>
 
 using namespace std;
@@ -119,7 +115,8 @@ SVTK_InteractorStyle
   myLastPreHighlitedActor(NULL),
   myControllerIncrement(SVTK_ControllerIncrement::New()),
   myControllerOnKeyDown(SVTK_ControllerOnKeyDown::New()),
-  myHighlightRotationPointActor(SVTK_Actor::New())
+  myHighlightRotationPointActor(SVTK_Actor::New()),
+  myRectBand(0)
 {
   myPicker->Delete();
   myPointPicker->Delete();
@@ -165,6 +162,7 @@ SVTK_InteractorStyle
 SVTK_InteractorStyle
 ::~SVTK_InteractorStyle() 
 {
+  endDrawRect();
 }
 
 /*!
@@ -1037,10 +1035,7 @@ SVTK_InteractorStyle
     case VTK_INTERACTOR_STYLE_CAMERA_SELECT:
     case VTK_INTERACTOR_STYLE_CAMERA_FIT:
     {
-      QPainter p(GetRenderWidget());
-      p.setPen(Qt::lightGray);
-      p.setRasterOp(Qt::XorROP);
-      p.drawRect(QRect(myPoint, myOtherPoint));
+      drawRect();
       break;
     }
     case VTK_INTERACTOR_STYLE_CAMERA_ZOOM:
@@ -1073,12 +1068,9 @@ SVTK_InteractorStyle
     case VTK_INTERACTOR_STYLE_CAMERA_SELECT:
     case VTK_INTERACTOR_STYLE_CAMERA_FIT:
     {
-      QPainter aPainter(GetRenderWidget());
-      aPainter.setPen(Qt::lightGray);
-      aPainter.setRasterOp(Qt::XorROP);
+      endDrawRect();
       QRect aRect(myPoint, myOtherPoint);
-      aPainter.drawRect(aRect);
-      aRect = aRect.normalize();
+      aRect = aRect.normalized();
 
       if (State == VTK_INTERACTOR_STYLE_CAMERA_FIT) {
         // making fit rect opeation 
@@ -1214,12 +1206,7 @@ SVTK_InteractorStyle
     }
   case VTK_INTERACTOR_STYLE_CAMERA_FIT:
     {
-      QPainter p(GetRenderWidget());
-      p.setPen(Qt::lightGray);
-      p.setRasterOp(Qt::XorROP);
-      p.drawRect(QRect(myPoint, myOtherPoint));
-      myOtherPoint = mousePos;
-      p.drawRect(QRect(myPoint, myOtherPoint));
+      drawRect();
       break;
     }
   }
@@ -1498,6 +1485,39 @@ SVTK_InteractorStyle
 ::DominantCombinedSwitch()
 {
   printf( "\n--DominantCombinedSwitch() NOT IMPLEMENTED--\n" );
+}
+
+/*!
+  Draws rectangle by starting and current points
+*/
+void
+SVTK_InteractorStyle
+::drawRect()
+{
+  if ( !myRectBand ) {
+    myRectBand = new QRubberBand( QRubberBand::Rectangle, GetRenderWidget() );
+    QPalette palette;
+    palette.setColor(myRectBand->foregroundRole(), Qt::white);
+    myRectBand->setPalette(palette);
+  }
+  myRectBand->hide();
+
+  QRect aRect(myPoint, myOtherPoint);
+  myRectBand->setGeometry( aRect );
+  myRectBand->setVisible( aRect.isValid() );
+}
+
+/*!
+  \brief Delete rubber band on the end on the dragging operation.
+*/
+void
+SVTK_InteractorStyle
+::endDrawRect()
+{
+  if ( myRectBand ) myRectBand->hide();
+
+  delete myRectBand;
+  myRectBand = 0;
 }
 
 /*!

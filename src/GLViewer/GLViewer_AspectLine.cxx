@@ -127,7 +127,8 @@ QByteArray GLViewer_AspectLine::getByteCopy() const
     int aHR = myHColor.red(), aHG = myHColor.green(), aHB = myHColor.blue();
     int aSR = mySColor.red(), aSG = mySColor.green(), aSB = mySColor.blue();
 
-    QByteArray aResult( anISize * 10 + aFSize );
+    QByteArray aResult;
+    aResult.resize( anISize * 10 + aFSize );
 
     int i = 0;
     

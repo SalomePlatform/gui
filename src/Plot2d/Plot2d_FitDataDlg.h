@@ -20,9 +20,9 @@
 #define PLOT2D_FITDATADLG_H
 
 #include "Plot2d.h"
-#include <qdialog.h>
+#include <QDialog>
 
-class QButtonGroup;
+class QGroupBox;
 class QRadioButton;
 class QLineEdit;
 class QPushButton;
@@ -57,7 +57,7 @@ protected slots:
   void onModeChanged(int);
 
 private:
-  QButtonGroup*           myRangeGrp;
+  QGroupBox*              myRangeGrp;
   QRadioButton*           myModeAllRB;
   QRadioButton*           myModeHorRB;
   QRadioButton*           myModeVerRB;

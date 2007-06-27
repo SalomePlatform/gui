@@ -26,9 +26,10 @@
 #include "SVTK.h"
 #include "SVTK_Selection.h"
 #include "SUIT_ViewWindow.h"
+
 #include "SALOME_InteractiveObject.hxx"
 
-#include <qimage.h>
+#include <QImage>
 
 class SUIT_Desktop;
 
@@ -40,11 +41,7 @@ class SVTK_MainWindow;
 class SVTK_Selector;
 class SVTK_View;
 
-class SVTK_InteractorStyle;
 class SVTK_CubeAxesActor2D;
-
-class SVTK_RenderWindow;
-class SVTK_RenderWindowInteractor;
 
 class vtkRenderer;
 class vtkRenderWindow;

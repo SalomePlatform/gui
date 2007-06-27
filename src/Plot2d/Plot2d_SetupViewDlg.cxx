@@ -23,17 +23,17 @@
 
 #include "Plot2d_SetupViewDlg.h"
 
-#include <qcheckbox.h>
-#include <qlineedit.h>
-#include <qcombobox.h>
-#include <qspinbox.h>
-#include <qtoolbutton.h>
-#include <qlayout.h>
-#include <qgroupbox.h>
-#include <qlabel.h>
-#include <qpushbutton.h>
-#include <qcolordialog.h>
-#include <qtabwidget.h>
+#include <QCheckBox>
+#include <QLineEdit>
+#include <QComboBox>
+#include <QSpinBox>
+#include <QToolButton>
+#include <QLayout>
+#include <QGroupBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QColorDialog>
+#include <QTabWidget>
 
 #define MARGIN_SIZE          11
 #define SPACING_SIZE         6
@@ -45,11 +45,12 @@
   Constructor
 */
 Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bool secondAxisY )
-    : QDialog( parent, "Plot2d_SetupViewDlg", true, 
-         WStyle_Customize | WStyle_NormalBorder | WStyle_Title | WStyle_SysMenu )
+    : QDialog( parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint )
 {
+  setObjectName( "Plot2d_SetupViewDlg" );
+  setModal( true );
   mySecondAxisY = secondAxisY;
-  setCaption( tr("TLT_SETUP_PLOT2D_VIEW") );
+  setWindowTitle( tr("TLT_SETUP_PLOT2D_VIEW") );
   setSizeGripEnabled( TRUE );
   QGridLayout* topLayout = new QGridLayout( this ); 
   topLayout->setSpacing( SPACING_SIZE );
@@ -62,24 +63,29 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   myTitleEdit->setMinimumWidth( MIN_EDIT_WIDTH );
   // curve type : points, lines, spline
   QLabel* aCurveLab = new QLabel( tr( "PLOT2D_CURVE_TYPE_LBL" ), this );
-  myCurveCombo      = new QComboBox( false, this );
+  myCurveCombo      = new QComboBox( this );
+  myCurveCombo->setEditable( false );
   myCurveCombo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myCurveCombo->setMinimumWidth( MIN_COMBO_WIDTH );
-  myCurveCombo->insertItem( tr( "PLOT2D_CURVE_TYPE_POINTS" ) );
-  myCurveCombo->insertItem( tr( "PLOT2D_CURVE_TYPE_LINES" ) );
-  myCurveCombo->insertItem( tr( "PLOT2D_CURVE_TYPE_SPLINE" ) );
+  myCurveCombo->addItem( tr( "PLOT2D_CURVE_TYPE_POINTS" ) );
+  myCurveCombo->addItem( tr( "PLOT2D_CURVE_TYPE_LINES" ) );
+  myCurveCombo->addItem( tr( "PLOT2D_CURVE_TYPE_SPLINE" ) );
   // legend
   myLegendCheck = new QCheckBox( tr( "PLOT2D_ENABLE_LEGEND" ), this );
-  myLegendCombo = new QComboBox( false, this );
+  myLegendCombo = new QComboBox( this );
+  myCurveCombo->setEditable( false );
   myLegendCombo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myLegendCombo->setMinimumWidth( MIN_COMBO_WIDTH );
-  myLegendCombo->insertItem( tr( "PLOT2D_LEGEND_POSITION_LEFT" ) );
-  myLegendCombo->insertItem( tr( "PLOT2D_LEGEND_POSITION_RIGHT" ) );
-  myLegendCombo->insertItem( tr( "PLOT2D_LEGEND_POSITION_TOP" ) );
-  myLegendCombo->insertItem( tr( "PLOT2D_LEGEND_POSITION_BOTTOM" ) );
+  myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_LEFT" ) );
+  myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_RIGHT" ) );
+  myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_TOP" ) );
+  myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_BOTTOM" ) );
   // marker size
   QLabel* aMarkerLab  = new QLabel( tr( "PLOT2D_MARKER_SIZE_LBL" ), this );
-  myMarkerSpin = new QSpinBox( 0, 100, 1, this );
+  myMarkerSpin = new QSpinBox( this );
+  myMarkerSpin->setMinimum( 0 );
+  myMarkerSpin->setMaximum( 100 );
+  myMarkerSpin->setSingleStep( 1 );
   myMarkerSpin->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myMarkerSpin->setMinimumWidth( MIN_SPIN_WIDTH );
 
@@ -90,23 +96,24 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
 
   // scale mode
   QGroupBox* aScaleGrp = new QGroupBox( tr( "PLOT2D_SCALE_TLT" ), this );
-  aScaleGrp->setColumnLayout(0, Qt::Vertical );
-  aScaleGrp->layout()->setSpacing( 0 );  aScaleGrp->layout()->setMargin( 0 );
-  QGridLayout* aScaleLayout = new QGridLayout( aScaleGrp->layout() );
+  QGridLayout* aScaleLayout = new QGridLayout( aScaleGrp );
   aScaleLayout->setMargin( MARGIN_SIZE ); aScaleLayout->setSpacing( SPACING_SIZE );
+  aScaleGrp->setLayout( aScaleLayout );
 
   QLabel* xScaleLab = new QLabel( tr( "PLOT2D_SCALE_MODE_HOR" ), aScaleGrp );
-  myXModeCombo = new QComboBox( false, aScaleGrp );
+  myXModeCombo = new QComboBox( aScaleGrp );
+  myCurveCombo->setEditable( false );
   myXModeCombo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myXModeCombo->setMinimumWidth( MIN_COMBO_WIDTH );
-  myXModeCombo->insertItem( tr( "PLOT2D_SCALE_MODE_LINEAR" ) );
-  myXModeCombo->insertItem( tr( "PLOT2D_SCALE_MODE_LOGARITHMIC" ) );
+  myXModeCombo->addItem( tr( "PLOT2D_SCALE_MODE_LINEAR" ) );
+  myXModeCombo->addItem( tr( "PLOT2D_SCALE_MODE_LOGARITHMIC" ) );
   QLabel* yScaleLab = new QLabel( tr( "PLOT2D_SCALE_MODE_VER" ), aScaleGrp );
-  myYModeCombo = new QComboBox( false, aScaleGrp );
+  myYModeCombo = new QComboBox( aScaleGrp );
+  myCurveCombo->setEditable( false );
   myYModeCombo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myYModeCombo->setMinimumWidth( MIN_COMBO_WIDTH );
-  myYModeCombo->insertItem( tr( "PLOT2D_SCALE_MODE_LINEAR" ) );
-  myYModeCombo->insertItem( tr( "PLOT2D_SCALE_MODE_LOGARITHMIC" ) );
+  myYModeCombo->addItem( tr( "PLOT2D_SCALE_MODE_LINEAR" ) );
+  myYModeCombo->addItem( tr( "PLOT2D_SCALE_MODE_LOGARITHMIC" ) );
 
   aScaleLayout->addWidget( xScaleLab,    0, 0 );
   aScaleLayout->addWidget( myXModeCombo, 0, 1 );
@@ -114,7 +121,8 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   aScaleLayout->addWidget( myYModeCombo, 0, 3 );
 
   // tab widget for choose properties of axis 
-  QTabWidget* aTabWidget = new QTabWidget( this, "tabWidget" );
+  QTabWidget* aTabWidget = new QTabWidget( this );
+  aTabWidget->setObjectName( "tabWidget" );
 
   // widget for parameters on Ox
   QWidget* aXWidget = new QWidget(aTabWidget);
@@ -126,22 +134,27 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   myTitleXEdit  = new QLineEdit( aXWidget );
   myTitleXEdit->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myTitleXEdit->setMinimumWidth( MIN_EDIT_WIDTH );
-  aXLayout->addWidget( myTitleXCheck,         1,    0    );
-  aXLayout->addMultiCellWidget( myTitleXEdit, 1, 1, 1, 3 );
+  aXLayout->addWidget( myTitleXCheck,1,    0    );
+  aXLayout->addWidget( myTitleXEdit, 1, 1, 1, 3 );
   // grid
   QGroupBox* aGridGrpX = new QGroupBox( tr( "PLOT2D_GRID_TLT" ), aXWidget );
-  aGridGrpX->setColumnLayout(0, Qt::Vertical );
-  aGridGrpX->layout()->setSpacing( 0 );  aGridGrpX->layout()->setMargin( 0 );
-  QGridLayout* aGridLayoutX = new QGridLayout( aGridGrpX->layout() );
+  QGridLayout* aGridLayoutX = new QGridLayout( aGridGrpX );
+  aGridGrpX->setLayout( aGridLayoutX );
   aGridLayoutX->setMargin( MARGIN_SIZE ); aGridLayoutX->setSpacing( SPACING_SIZE );
   myXGridCheck      = new QCheckBox( tr( "PLOT2D_GRID_ENABLE_HOR_MAJOR" ), aGridGrpX );
   QLabel* aXMajLbl  = new QLabel( tr( "PLOT2D_MAX_INTERVALS" ), aGridGrpX);
-  myXGridSpin       = new QSpinBox( 1, 100, 1, aGridGrpX );
+  myXGridSpin       = new QSpinBox( aGridGrpX );
+  myXGridSpin->setMinimum( 1 );
+  myXGridSpin->setMaximum( 100 );
+  myXGridSpin->setSingleStep( 1 );
   myXGridSpin->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myXGridSpin->setMinimumWidth( MIN_SPIN_WIDTH );
   myXMinGridCheck      = new QCheckBox( tr( "PLOT2D_GRID_ENABLE_HOR_MINOR" ), aGridGrpX );
   QLabel* aXMinLbl     = new QLabel( tr( "PLOT2D_MAX_INTERVALS" ), aGridGrpX);
-  myXMinGridSpin       = new QSpinBox( 1, 100, 1, aGridGrpX );
+  myXMinGridSpin       = new QSpinBox( aGridGrpX );
+  myXMinGridSpin->setMinimum( 1 );
+  myXMinGridSpin->setMaximum( 100 );
+  myXMinGridSpin->setSingleStep( 1 );
   myXMinGridSpin->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myXMinGridSpin->setMinimumWidth( MIN_SPIN_WIDTH );
 
@@ -151,7 +164,7 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   aGridLayoutX->addWidget( myXMinGridCheck, 1, 0 );
   aGridLayoutX->addWidget( aXMinLbl,        1, 1 );
   aGridLayoutX->addWidget( myXMinGridSpin,  1, 2 );
-  aXLayout->addMultiCellWidget( aGridGrpX, 3, 3, 0, 3 );
+  aXLayout->addWidget( aGridGrpX, 3, 0, 1, 4 );
 
   aTabWidget->addTab( aXWidget, tr( "INF_AXES_X" ) );
 
@@ -165,22 +178,27 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   myTitleYEdit  = new QLineEdit( aYWidget );
   myTitleYEdit->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myTitleYEdit->setMinimumWidth( MIN_EDIT_WIDTH );
-  aYLayout->addWidget( myTitleYCheck,         1,    0    );
-  aYLayout->addMultiCellWidget( myTitleYEdit, 1, 1, 1, 3 );
+  aYLayout->addWidget( myTitleYCheck,1,    0    );
+  aYLayout->addWidget( myTitleYEdit, 1, 1, 1, 3 );
   // grid
   QGroupBox* aGridGrpY = new QGroupBox( tr( "PLOT2D_GRID_TLT" ), aYWidget );
-  aGridGrpY->setColumnLayout(0, Qt::Vertical );
-  aGridGrpY->layout()->setSpacing( 0 );  aGridGrpY->layout()->setMargin( 0 );
-  QGridLayout* aGridLayoutY = new QGridLayout( aGridGrpY->layout() );
+  QGridLayout* aGridLayoutY = new QGridLayout( aGridGrpY );
+  aGridGrpY->setLayout( aGridLayoutY );
   aGridLayoutY->setMargin( MARGIN_SIZE ); aGridLayoutY->setSpacing( SPACING_SIZE );
   myYGridCheck      = new QCheckBox( tr( "PLOT2D_GRID_ENABLE_VER_MAJOR" ), aGridGrpY );
   QLabel* aYMajLbl  = new QLabel( tr( "PLOT2D_MAX_INTERVALS" ), aGridGrpY);
-  myYGridSpin       = new QSpinBox( 1, 100, 1, aGridGrpY );
+  myYGridSpin       = new QSpinBox( aGridGrpY );
+  myYGridSpin->setMinimum( 1 );
+  myYGridSpin->setMaximum( 100 );
+  myYGridSpin->setSingleStep( 1 );
   myYGridSpin->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myYGridSpin->setMinimumWidth( MIN_SPIN_WIDTH );
   myYMinGridCheck      = new QCheckBox( tr( "PLOT2D_GRID_ENABLE_VER_MINOR" ), aGridGrpY );
   QLabel* aYMinLbl     = new QLabel( tr( "PLOT2D_MAX_INTERVALS" ), aGridGrpY);
-  myYMinGridSpin       = new QSpinBox( 1, 100, 1, aGridGrpY );
+  myYMinGridSpin       = new QSpinBox( aGridGrpY );
+  myYMinGridSpin->setMinimum( 1 );
+  myYMinGridSpin->setMaximum( 100 );
+  myYMinGridSpin->setSingleStep( 1 );
   myYMinGridSpin->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myYMinGridSpin->setMinimumWidth( MIN_SPIN_WIDTH );
 
@@ -190,7 +208,7 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   aGridLayoutY->addWidget( myYMinGridCheck, 1, 0 );
   aGridLayoutY->addWidget( aYMinLbl,        1, 1 );
   aGridLayoutY->addWidget( myYMinGridSpin,  1, 2 );
-  aYLayout->addMultiCellWidget( aGridGrpY, 3, 3, 0, 3 );
+  aYLayout->addWidget( aGridGrpY, 3, 0, 1, 4 );
 
   aTabWidget->addTab( aYWidget, tr( "INF_AXES_Y_LEFT" ) );
 
@@ -206,22 +224,27 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
     myTitleY2Edit  = new QLineEdit( aYWidget2 );
     myTitleY2Edit->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
     myTitleY2Edit->setMinimumWidth( MIN_EDIT_WIDTH );
-    aYLayout2->addWidget( myTitleY2Check,         1,    0    );
-    aYLayout2->addMultiCellWidget( myTitleY2Edit, 1, 1, 1, 3 );
+    aYLayout2->addWidget( myTitleY2Check,1,    0    );
+    aYLayout2->addWidget( myTitleY2Edit, 1, 1, 1, 3 );
     // grid
     QGroupBox* aGridGrpY2 = new QGroupBox( tr( "PLOT2D_GRID_TLT" ), aYWidget2 );
-    aGridGrpY2->setColumnLayout(0, Qt::Vertical );
-    aGridGrpY2->layout()->setSpacing( 0 );  aGridGrpY2->layout()->setMargin( 0 );
-    QGridLayout* aGridLayoutY2 = new QGridLayout( aGridGrpY2->layout() );
+    QGridLayout* aGridLayoutY2 = new QGridLayout( aGridGrpY2 );
+    aGridGrpY2->setLayout( aGridLayoutY2 );
     aGridLayoutY2->setMargin( MARGIN_SIZE ); aGridLayoutY2->setSpacing( SPACING_SIZE );
     myY2GridCheck      = new QCheckBox( tr( "PLOT2D_GRID_ENABLE_VER_MAJOR" ), aGridGrpY2 );
     QLabel* aY2MajLbl  = new QLabel( tr( "PLOT2D_MAX_INTERVALS" ), aGridGrpY2);
-    myY2GridSpin       = new QSpinBox( 1, 100, 1, aGridGrpY2 );
+    myY2GridSpin       = new QSpinBox( aGridGrpY2 );
+    myY2GridSpin->setMinimum( 1 );
+    myY2GridSpin->setMaximum( 100 );
+    myY2GridSpin->setSingleStep( 1 );
     myY2GridSpin->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
     myY2GridSpin->setMinimumWidth( MIN_SPIN_WIDTH );
     myY2MinGridCheck      = new QCheckBox( tr( "PLOT2D_GRID_ENABLE_VER_MINOR" ), aGridGrpY2 );
     QLabel* aY2MinLbl     = new QLabel( tr( "PLOT2D_MAX_INTERVALS" ), aGridGrpY2);
-    myY2MinGridSpin       = new QSpinBox( 1, 100, 1, aGridGrpY2 );
+    myY2MinGridSpin       = new QSpinBox( aGridGrpY2 );
+    myY2MinGridSpin->setMinimum( 1 );
+    myY2MinGridSpin->setMaximum( 100 );
+    myY2MinGridSpin->setSingleStep( 1 );
     myY2MinGridSpin->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
     myY2MinGridSpin->setMinimumWidth( MIN_SPIN_WIDTH );
 
@@ -231,7 +254,7 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
     aGridLayoutY2->addWidget( myY2MinGridCheck, 1, 0 );
     aGridLayoutY2->addWidget( aY2MinLbl,        1, 1 );
     aGridLayoutY2->addWidget( myY2MinGridSpin,  1, 2 );
-    aYLayout2->addMultiCellWidget( aGridGrpY2, 3, 3, 0, 3 );
+    aYLayout2->addWidget( aGridGrpY2, 3, 0, 1, 4 );
 
     aTabWidget->addTab( aYWidget2, tr( "INF_AXES_Y_RIGHT" ) );
   }
@@ -244,7 +267,7 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
     myY2MinGridSpin  = 0;
     myY2ModeCombo    = 0;
   }
-  aTabWidget->setCurrentPage( 0 );
+  aTabWidget->setCurrentIndex( 0 );
   /* "Set as default" check box */
   myDefCheck = new QCheckBox( tr( "PLOT2D_SET_AS_DEFAULT_CHECK" ), this );
   /* OK/Cancel buttons */
@@ -259,24 +282,24 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   btnLayout->addWidget( myCancelBtn );
   
   // layout widgets
-  topLayout->addWidget( myTitleCheck,          0,    0    );
-  topLayout->addMultiCellWidget( myTitleEdit,  0, 0, 1, 3 );
-  topLayout->addWidget( aCurveLab,             1,    0    );
-  topLayout->addWidget( myCurveCombo,          1,    1    );
-  topLayout->addWidget( myLegendCheck,         1,    2    );
-  topLayout->addWidget( myLegendCombo,         1,    3    );
-  topLayout->addWidget( aMarkerLab,            2,    0    );
-  topLayout->addWidget( myMarkerSpin,          2,    1    );
+  topLayout->addWidget( myTitleCheck,  0,    0    );
+  topLayout->addWidget( myTitleEdit,   0, 1, 1, 3 );
+  topLayout->addWidget( aCurveLab,     1,    0    );
+  topLayout->addWidget( myCurveCombo,  1,    1    );
+  topLayout->addWidget( myLegendCheck, 1,    2    );
+  topLayout->addWidget( myLegendCombo, 1,    3    );
+  topLayout->addWidget( aMarkerLab,    2,    0    );
+  topLayout->addWidget( myMarkerSpin,  2,    1    );
   QHBoxLayout* bgLayout = new QHBoxLayout;
   bgLayout->addWidget( myBackgroundBtn ); bgLayout->addStretch();
-  topLayout->addWidget( aBGLab,                2,    2    );
-  topLayout->addLayout( bgLayout,              2,    3    );
-  topLayout->addMultiCellWidget( aScaleGrp,    3, 3, 0, 3 );
-  topLayout->addMultiCellWidget( aTabWidget,   4, 4, 0, 3 );
-  topLayout->addMultiCellWidget( myDefCheck,   5, 5, 0, 3 );
+  topLayout->addWidget( aBGLab,        2,    2    );
+  topLayout->addLayout( bgLayout,      2,    3    );
+  topLayout->addWidget( aScaleGrp,     3, 0, 1, 4 );
+  topLayout->addWidget( aTabWidget,    4, 0, 1, 4 );
+  topLayout->addWidget( myDefCheck,    5, 0, 1, 4 );
   topLayout->setRowStretch( 5, 5 );
 
-  topLayout->addMultiCellLayout( btnLayout,    6, 6, 0, 3 );
+  topLayout->addLayout( btnLayout,     6, 0, 1, 4 );
   
   if ( !showDefCheck )
     myDefCheck->hide();
@@ -423,14 +446,14 @@ QString Plot2d_SetupViewDlg::getY2Title()
 */
 void Plot2d_SetupViewDlg::setCurveType( const int type )
 {
-  myCurveCombo->setCurrentItem( type );
+  myCurveCombo->setCurrentIndex( type );
 }
 /*!
   Gets curve type : 0 - points, 1 - lines, 2 - splines
 */
 int Plot2d_SetupViewDlg::getCurveType()
 {
-  return myCurveCombo->currentItem();
+  return myCurveCombo->currentIndex();
 }
 /*!
   Sets legend attributes : pos = 0 - left, 1 - right, 2 - top, 3 - bottom
@@ -438,7 +461,7 @@ int Plot2d_SetupViewDlg::getCurveType()
 void Plot2d_SetupViewDlg::setLegend( bool enable, int pos )
 {
   myLegendCheck->setChecked( enable );
-  myLegendCombo->setCurrentItem( pos );
+  myLegendCombo->setCurrentIndex( pos );
   onLegendChecked();
 }
 /*!
@@ -453,7 +476,7 @@ bool Plot2d_SetupViewDlg::isLegendEnabled()
 */
 int Plot2d_SetupViewDlg::getLegendPos()
 {
-  return myLegendCombo->currentItem();
+  return myLegendCombo->currentIndex();
 }
 /*!
   Sets marker size
@@ -475,12 +498,9 @@ int Plot2d_SetupViewDlg::getMarkerSize()
 void Plot2d_SetupViewDlg::setBackgroundColor( const QColor& color )
 {
   QPalette pal = myBackgroundBtn->palette();
-  QColorGroup ca = pal.active();
-  ca.setColor( QColorGroup::Button, color );
-  QColorGroup ci = pal.inactive();
-  ci.setColor( QColorGroup::Button, color );
-  pal.setActive( ca );
-  pal.setInactive( ci );
+  pal.setColor( QPalette::Active, QPalette::Button, color );
+  pal.setColor( QPalette::Inactive, QPalette::Button, color );
+  
   myBackgroundBtn->setPalette( pal );
 }
 /*!
@@ -488,7 +508,7 @@ void Plot2d_SetupViewDlg::setBackgroundColor( const QColor& color )
 */
 QColor Plot2d_SetupViewDlg::getBackgroundColor()
 {
-  return myBackgroundBtn->palette().active().button();
+  return myBackgroundBtn->palette().color( QPalette::Active, QPalette::Button );
 }
 /*!
   Sets major grid parameters
@@ -573,22 +593,22 @@ void Plot2d_SetupViewDlg::getMinorGrid( bool& enableX, int& divX,
 */
 void Plot2d_SetupViewDlg::setScaleMode( const int xMode, const int yMode )
 {
-  myXModeCombo->setCurrentItem( xMode );
-  myYModeCombo->setCurrentItem( yMode );
+  myXModeCombo->setCurrentIndex( xMode );
+  myYModeCombo->setCurrentIndex( yMode );
 }
 /*!
   Gets scale mode for hor. axis : 0 - linear, 1 - logarithmic
 */
 int  Plot2d_SetupViewDlg::getXScaleMode()
 {
-  return myXModeCombo->currentItem();
+  return myXModeCombo->currentIndex();
 }
 /*!
   Gets scale mode for hor. axis : 0 - linear, 1 - logarithmic
 */
 int  Plot2d_SetupViewDlg::getYScaleMode()
 {
-  return myYModeCombo->currentItem();
+  return myYModeCombo->currentIndex();
 }
 /*!
   Slot, called when user clicks "Show main title" check box

@@ -18,24 +18,31 @@
 //
 #include "QDS_SpinBoxDbl.h"
 
-#include <DDS_Dictionary.h>
-
-#include <qvalidator.h>
-
-#include <QtxDblSpinBox.h>
+#include <QtxDoubleSpinBox.h>
 
 /*
   \class QDS_SpinBoxDbl
+  \brief Datum with control corresponding to spin box.
   
-  Datum with control corresponding to spin box. This control used for double numbers.
-  User can input data directly in spin box or can modify current value with given
-  increment.
+  This control is suitable for double numbers. User can input data directly in the spin box
+  or can modify current value by clicking arrow (+/-) buttons.
 */
 
 /*!
-  Constructor. Create spin box datum object with datum identifier \aid under widget \aparent. Parameter \aflags
-  define behaviour of datum and set of created subwidgets. Default value of this parameter is QDS::All.
-  Parameter \acomp specify the component name which will be used during search of dictionary item.
+  \brief Constructor. 
+
+  Create spin box datum object with datum identifier \a id and parent widget \a parent.
+
+  Parameter \a flags defines behaviour of datum and set of created
+  subwidgets. Default value of this parameter is QDS::All.
+
+  Parameter \a comp specifies the component name which will be used
+  when searching the dictionary item.
+
+  \param id datum identifier
+  \param parent parent widget
+  \param flags datum flags
+  \param comp component
 */
 QDS_SpinBoxDbl::QDS_SpinBoxDbl( const QString& id, QWidget* parent, const int flags, const QString& comp )
 : QDS_Datum( id, parent, flags, comp )
@@ -43,19 +50,20 @@ QDS_SpinBoxDbl::QDS_SpinBoxDbl( const QString& id, QWidget* parent, const int fl
 }
 
 /*!
-  Destructor.
+  \brief Destructor.
 */
 QDS_SpinBoxDbl::~QDS_SpinBoxDbl()
 {
 }
 
 /*!
-  Returns string from QSpinBox widget. Reimplemented.
+  \brief Get string from the spin box.
+  \return string value
 */
 QString QDS_SpinBoxDbl::getString() const
 {
   QString res;
-  QtxDblSpinBox* sb = spinBox();
+  QtxDoubleSpinBox* sb = spinBox();
   if ( sb && !sb->isCleared() )
   {
     bool hasFocus = sb->hasFocus();
@@ -64,9 +72,9 @@ QString QDS_SpinBoxDbl::getString() const
     
     res = sb->text();
     if ( !sb->suffix().isEmpty() )
-      res.remove( res.find( sb->suffix() ), sb->suffix().length() );
+      res.remove( res.indexOf( sb->suffix() ), sb->suffix().length() );
     if ( !sb->prefix().isEmpty() )
-      res.remove( res.find( sb->prefix() ), sb->prefix().length() );
+      res.remove( res.indexOf( sb->prefix() ), sb->prefix().length() );
     
     if ( hasFocus )
       sb->setFocus();
@@ -76,7 +84,8 @@ QString QDS_SpinBoxDbl::getString() const
 }
 
 /*!
-  Sets the string into QSpinBox widget. Reimplemented.
+  \brief Set the string value to the spin box widget.
+  \param txt string value
 */
 void QDS_SpinBoxDbl::setString( const QString& txt )
 {
@@ -89,26 +98,33 @@ void QDS_SpinBoxDbl::setString( const QString& txt )
 }
 
 /*!
-  Returns pointer to QtxDblSpinBox widget.
+  \brief Get spin box widget.
+  \return internal spin box widget.
 */
-QtxDblSpinBox* QDS_SpinBoxDbl::spinBox() const
+QtxDoubleSpinBox* QDS_SpinBoxDbl::spinBox() const
 {
-  return ::qt_cast<QtxDblSpinBox*>( controlWidget() );
+  return ::qobject_cast<QtxDoubleSpinBox*>( controlWidget() );
 }
 
 /*!
-  Create QSpinBox widget as control subwidget. Reimplemented.
+  \brief Create internal spin box as control widget.
+  \param parent parent widget
+  \return created spin box widget
 */
 QWidget* QDS_SpinBoxDbl::createControl( QWidget* parent )
 {
-  QtxDblSpinBox* aSpinBox = new QtxDblSpinBox( parent );
+  QtxDoubleSpinBox* aSpinBox = new QtxDoubleSpinBox( parent );
   aSpinBox->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   connect( aSpinBox, SIGNAL( valueChanged( double ) ), this, SLOT( onValueChanged( double ) ) );
   return aSpinBox;
 }
 
 /*!
-  Notify about value changing in spin box.
+  \brief Called when value in the spin box is changed.
+
+  Emit signals to notify  about value changing in the spin box.
+
+  \param val current spin box value
 */
 void QDS_SpinBoxDbl::onValueChanged( double )
 {
@@ -120,40 +136,47 @@ void QDS_SpinBoxDbl::onValueChanged( double )
 }
 
 /*!
-  Returns the increment step.
+  \brief Get the spin box increment value.
+  \return current increment value
 */
 double QDS_SpinBoxDbl::step() const
 {
   double s = 0;
   if ( spinBox() )
-    s = spinBox()->lineStep();
+    s = spinBox()->singleStep();
   return s;
 }
 
 /*!
-  Sets the increment step.
+  \brief Set the spin box increment value.
+  \param step new increment value
 */
 void QDS_SpinBoxDbl::setStep( const double step )
 {
   if ( spinBox() )
-    spinBox()->setLineStep( step );
+    spinBox()->setSingleStep( step );
 }
 
 /*!
-  Notification about active unit system changing. Reimplemented from QDS_Datum.
-  Update validator and spin box parameters: suffix, prefix, minimum, maximum.
+  \brief Process notification about active units system changing.
+
+  Update spin box contents according to the data dictionary item properties: suffix, prefix, minimum, maximum
+  
+  \param system new active units system
 */
 void QDS_SpinBoxDbl::unitSystemChanged( const QString& system )
 {
   QDS_Datum::unitSystemChanged( system );
 
-  QtxDblSpinBox* sb = spinBox();
+  QtxDoubleSpinBox* sb = spinBox();
   if ( !sb )
     return;
 
-  delete sb->validator();
-  QValidator* valid = validator();
-  sb->setValidator( valid );
+  // not porting this code to qt4, only commented, since from the task context
+  // the new setted validator accepts any double
+  //delete sb->validator();
+  //QValidator* valid = validator();
+  //sb->setValidator( valid );
 
   sb->setSuffix( suffix() );
   sb->setPrefix( prefix() );
@@ -163,9 +186,9 @@ void QDS_SpinBoxDbl::unitSystemChanged( const QString& system )
   if ( !aDicItem.IsNull() )
     aPreci = aDicItem->GetPrecision();
 
-  sb->setPrecision( aPreci );
+  sb->setDecimals( aPreci );
 
-  sb->setLineStep( .1 );
-  sb->setMinValue( minValue().isEmpty() ? -DBL_MAX : minValue().toDouble() );
-  sb->setMaxValue( maxValue().isEmpty() ? DBL_MAX : maxValue().toDouble() );
+  sb->setSingleStep( .1 );
+  sb->setMinimum( minValue().isEmpty() ? -DBL_MAX : minValue().toDouble() );
+  sb->setMaximum( maxValue().isEmpty() ? DBL_MAX : maxValue().toDouble() );
 }

@@ -24,8 +24,7 @@
 
 #include <SALOME_Session.hxx>
 
-#include <qthread.h> 
-#include <qapplication.h> 
+#include <QThread> 
 
 class QMutex;
 class QWaitCondition;

@@ -32,8 +32,8 @@ class LightApp_Preferences;
 class LightApp_Selection;
 class LightApp_Operation;
 class LightApp_SwitchOp;
-class LightApp_ShowHideOp;
 class LightApp_Displayer;
+class LightApp_SelectionMgr;
 
 class SUIT_Study;
 class SUIT_DataObject;
@@ -67,7 +67,7 @@ public:
   virtual void                        windows( QMap<int, int>& ) const;
   virtual void                        viewManagers( QStringList& ) const;
 
-  virtual void                        contextMenuPopup( const QString&, QPopupMenu*, QString& );
+  virtual void                        contextMenuPopup( const QString&, QMenu*, QString& );
 
   virtual void                        createPreferences();
 
@@ -88,7 +88,7 @@ public:
   virtual void                        studyActivated() {};
 
   virtual LightApp_Displayer*         displayer();
-  virtual LightApp_Selection*         createSelection() const;
+  virtual LightApp_Selection*         createSelection( const QString&, LightApp_SelectionMgr* ) const;
 
 public slots:
   virtual bool                        activateModule( SUIT_Study* );

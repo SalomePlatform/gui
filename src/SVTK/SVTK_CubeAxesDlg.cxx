@@ -35,16 +35,14 @@
 #include "QtxAction.h"
 #include "QtxIntSpinBox.h"
 
-#include <qlayout.h>
-#include <qframe.h>
-#include <qpushbutton.h>
-#include <qtabwidget.h>
-#include <qcheckbox.h>
-#include <qgroupbox.h>
-#include <qlineedit.h>
-#include <qlabel.h>
-#include <qobjectlist.h>
-#include <qvalidator.h>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QPushButton>
+#include <QTabWidget>
+#include <QCheckBox>
+#include <QGroupBox>
+#include <QLineEdit>
+#include <QLabel>
 
 #include <vtkAxisActor2D.h>
 #include <vtkTextProperty.h>
@@ -60,64 +58,100 @@
 SVTK_AxisWidget::SVTK_AxisWidget (QWidget* theParent)
 :  QFrame(theParent)
 {
-  QValueList< QLabel* > aLabels;
+  QList< QLabel* > aLabels;
 
   // "Name" grp
 
-  myNameGrp = new QGroupBox(3, Qt::Vertical, tr("AXIS_NAME"), this);
+  myNameGrp = new QGroupBox(tr("AXIS_NAME"), this);
+  QVBoxLayout* aVBox = new QVBoxLayout;
+  
   myIsNameVisible = new QCheckBox(tr("IS_VISIBLE"), myNameGrp);
+  aVBox->addWidget(myIsNameVisible);
 
-  QHBox* aHBox = new QHBox(myNameGrp);
+  QHBoxLayout* aHBox = new QHBoxLayout(myNameGrp);
   aHBox->setSpacing(5);
-  QLabel* aLabel = new QLabel(tr("NAME"), aHBox);
-  myAxisName = new QLineEdit(aHBox);
+  QLabel* aLabel = new QLabel(tr("NAME"));
+  aHBox->addWidget(aLabel);
+  myAxisName = new QLineEdit;
+  aHBox->addWidget(myAxisName);
   aLabels.append(aLabel);
+  aVBox->addLayout(aHBox);
 
-  aHBox = new QHBox(myNameGrp);
+  aHBox = new QHBoxLayout(myNameGrp);
   aHBox->setSpacing(5);
-  aLabel = new QLabel(tr("FONT"), aHBox);
-  myNameFont = new SVTK_FontWidget(aHBox);
+  aLabel = new QLabel(tr("FONT"));
+  aHBox->addWidget(aLabel);
+  myNameFont = new SVTK_FontWidget(myNameGrp);
+  aHBox->addWidget(myNameFont);
   aLabels.append(aLabel);
+  aVBox->addLayout(aHBox);
 
+  myNameGrp->setLayout(aVBox);
 
   // "Labels" grp
 
-  myLabelsGrp = new QGroupBox(4, Qt::Vertical, tr("LABELS"), this);
+  myLabelsGrp = new QGroupBox(tr("LABELS"), this);
+  aVBox = new QVBoxLayout;
+
   myIsLabelsVisible = new QCheckBox(tr("IS_VISIBLE"), myLabelsGrp);
+  aVBox->addWidget(myIsLabelsVisible);
 
-  aHBox = new QHBox(myLabelsGrp);
+  aHBox = new QHBoxLayout(myLabelsGrp);
   aHBox->setSpacing(5);
-  aLabel = new QLabel(tr("NUMBER"), aHBox);
-  myLabelNumber = new QtxIntSpinBox(0,25,1,aHBox,"SpinBoxLabelNumber");
+  aLabel = new QLabel(tr("NUMBER"));
+  aHBox->addWidget(aLabel);
+  myLabelNumber = new QtxIntSpinBox(0,25,1,myLabelsGrp);
+  myLabelNumber->setObjectName("SpinBoxLabelNumber");
+  aHBox->addWidget(myLabelNumber);
   aLabels.append(aLabel);
+  aVBox->addLayout(aHBox);
 
-  aHBox = new QHBox(myLabelsGrp);
+  aHBox = new QHBoxLayout(myLabelsGrp);
   aHBox->setSpacing(5);
-  aLabel = new QLabel(tr("OFFSET"), aHBox);
-  myLabelOffset = new QtxIntSpinBox(0,100,1,aHBox,"SpinBoxLabellOffset");
+  aLabel = new QLabel(tr("OFFSET"));
+  aHBox->addWidget(aLabel);
+  myLabelOffset = new QtxIntSpinBox(0,100,1,myLabelsGrp);
+  myLabelOffset->setObjectName("SpinBoxLabellOffset");
+  aHBox->addWidget(myLabelOffset);
   aLabels.append(aLabel);
+  aVBox->addLayout(aHBox);
 
-  aHBox = new QHBox(myLabelsGrp);
+  aHBox = new QHBoxLayout(myLabelsGrp);
   aHBox->setSpacing(5);
-  aLabel = new QLabel(tr("FONT"), aHBox);
-  myLabelsFont = new SVTK_FontWidget(aHBox);
+  aLabel = new QLabel(tr("FONT"));
+  aHBox->addWidget(aLabel);
+  myLabelsFont = new SVTK_FontWidget(myLabelsGrp);
+  aHBox->addWidget(myLabelsFont);
   aLabels.append(aLabel);
+  aVBox->addLayout(aHBox);
+
+  myLabelsGrp->setLayout(aVBox);
 
   // "Tick marks" grp
 
-  myTicksGrp = new QGroupBox(2, Qt::Vertical, tr("TICK_MARKS"), this);
-  myIsTicksVisible = new QCheckBox(tr("IS_VISIBLE"), myTicksGrp);
+  myTicksGrp = new QGroupBox(tr("TICK_MARKS"), this);
+  aVBox = new QVBoxLayout;
 
-  aHBox = new QHBox(myTicksGrp);
+  myIsTicksVisible = new QCheckBox(tr("IS_VISIBLE"), myTicksGrp);
+  aVBox->addWidget(myIsTicksVisible);
+
+  aHBox = new QHBoxLayout(myTicksGrp);
   aHBox->setSpacing(5);
-  aLabel = new QLabel(tr("LENGTH"), aHBox);
-  myTickLength = new QtxIntSpinBox(0,100,1,aHBox,"SpinBoxTickLength");
-  
+  aLabel = new QLabel(tr("LENGTH"));
+  aHBox->addWidget(aLabel);
+  myTickLength = new QtxIntSpinBox(0,100,1,myTicksGrp);
+  myTickLength->setObjectName("SpinBoxTickLength");
+  aHBox->addWidget(myTickLength);
   aLabels.append(aLabel);
+  aVBox->addLayout(aHBox);
+
+  myTicksGrp->setLayout(aVBox);
 
   // Layout
 
-  QVBoxLayout* aLay = new QVBoxLayout(this, 0, 5);
+  QVBoxLayout* aLay = new QVBoxLayout(this);
+  aLay->setMargin(0);
+  aLay->setSpacing(5);
   aLay->addWidget(myNameGrp);
   aLay->addWidget(myLabelsGrp);
   aLay->addWidget(myTicksGrp);
@@ -129,10 +163,10 @@ SVTK_AxisWidget::SVTK_AxisWidget (QWidget* theParent)
   updateControlState();
 
   // Adjust label widths
-  QValueList< QLabel* >::iterator anIter;
+  QList< QLabel* >::iterator anIter;
   int aMaxWidth = 0;
   for (anIter = aLabels.begin(); anIter != aLabels.end(); anIter++)
-    aMaxWidth = QMAX(aMaxWidth, (*anIter)->sizeHint().width());
+    aMaxWidth = qMax(aMaxWidth, (*anIter)->sizeHint().width());
   for (anIter = aLabels.begin(); anIter != aLabels.end(); anIter++)
     (*anIter)->setFixedWidth(aMaxWidth);
 
@@ -158,11 +192,14 @@ void SVTK_AxisWidget::updateControlState()
 
 void SVTK_AxisWidget::setEnabled(QGroupBox* theGrp, const bool theState)
 {
-  QObjectList aChildren(*theGrp->children());
+  QObjectList aChildren(theGrp->children());
   QObject* anObj;
-  for(anObj = aChildren.first(); anObj !=0; anObj = aChildren.next())
-    if (anObj !=0 && anObj->inherits("QHBox"))
-      ((QHBox*)anObj)->setEnabled(theState);
+  for(int i = 0; i < aChildren.size(); i++)
+  {
+    anObj = aChildren.at(i);
+    if (anObj !=0 && anObj->inherits("QHBoxLayout"))
+      ((QHBoxLayout*)anObj)->setEnabled(theState);
+  }
 }
 
 void SVTK_AxisWidget::onLabelsChecked()
@@ -278,7 +315,7 @@ bool SVTK_AxisWidget::Apply(vtkAxisActor2D* theActor)
   // Name
 
   theActor->SetTitleVisibility(myIsNameVisible->isChecked() ? 1 : 0);
-  theActor->SetTitle(myAxisName->text().latin1());
+  theActor->SetTitle(myAxisName->text().toLatin1());
 
   QColor aTitleColor(255, 255, 255);
   int aTitleFontFamily = VTK_ARIAL;
@@ -360,9 +397,11 @@ SVTK_CubeAxesDlg::SVTK_CubeAxesDlg(QtxAction* theAction,
 		  theName),
   myMainWindow(theParent)
 {
-  setCaption(tr("CAPTION"));
+  setWindowTitle(tr("CAPTION"));
 
-  QVBoxLayout* aLay = new QVBoxLayout(this, 5, 5);
+  QVBoxLayout* aLay = new QVBoxLayout(this);
+  aLay->setMargin(5);
+  aLay->setSpacing(5);
   aLay->addWidget(createMainFrame(this));
   aLay->addWidget(createButtonFrame(this));
 
@@ -387,11 +426,13 @@ QWidget* SVTK_CubeAxesDlg::createMainFrame(QWidget* theParent)
   myTabWg->addTab(myAxes[ 1 ], tr("Y_AXIS"));
   myTabWg->addTab(myAxes[ 2 ], tr("Z_AXIS"));
 
-  myTabWg->setMargin(5);
+  myTabWg->setContentsMargins(5,5,5,5);
 
   myIsVisible = new QCheckBox(tr("IS_VISIBLE"), aFrame);
 
-  QVBoxLayout* aLay = new QVBoxLayout(aFrame, 0, 5);
+  QVBoxLayout* aLay = new QVBoxLayout(aFrame);
+  aLay->setMargin(0);
+  aLay->setSpacing(5);
   aLay->addWidget(myTabWg);
   aLay->addWidget(myIsVisible);
 
@@ -412,7 +453,9 @@ QWidget* SVTK_CubeAxesDlg::createButtonFrame(QWidget* theParent)
 
   QSpacerItem* aSpacer = new QSpacerItem(0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
-  QHBoxLayout* aLay = new QHBoxLayout(aFrame, 5, 5);
+  QHBoxLayout* aLay = new QHBoxLayout(aFrame);
+  aLay->setMargin(5);
+  aLay->setSpacing(5);
 
   aLay->addWidget(myOkBtn);
   aLay->addWidget(myApplyBtn);

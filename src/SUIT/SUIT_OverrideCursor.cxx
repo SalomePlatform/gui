@@ -18,6 +18,8 @@
 //
 #include "SUIT_OverrideCursor.h"
 
+#include <QApplication>
+
 /*!Constructor. Initialize wait cursor.*/
 SUIT_OverrideCursor::SUIT_OverrideCursor()
 {
@@ -61,7 +63,7 @@ void SUIT_OverrideCursor::resume()
   if ( isActive() )
     return;
 
-  for ( QValueList<QCursor>::const_iterator it = myCursors.begin(); it != myCursors.end(); ++it )
+  for ( QList<QCursor>::const_iterator it = myCursors.begin(); it != myCursors.end(); ++it )
     QApplication::setOverrideCursor( *it );
 
   myCursors.clear();

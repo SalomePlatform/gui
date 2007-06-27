@@ -28,8 +28,6 @@
 #include <SUIT_Operation.h>
 
 class LightApp_Module;
-class LightApp_Application;
-class LightApp_Operation;
 class LightApp_SelectionMgr;
 class LightApp_Dialog;
 class SUIT_Desktop;

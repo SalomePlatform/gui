@@ -35,7 +35,7 @@ public:
 
   OCCViewer_Viewer* getOCCViewer() { return (OCCViewer_Viewer*) myViewModel; }
 
-  virtual void      contextMenuPopup( QPopupMenu* );
+  virtual void      contextMenuPopup( QMenu* );
 };
 
 #endif

@@ -19,11 +19,9 @@
 
 #include "LightApp_ShowHideOp.h"
 #include "LightApp_Application.h"
-#include "LightApp_DataOwner.h"
 #include "LightApp_Module.h"
 #include "LightApp_Study.h"
 #include "LightApp_Displayer.h"
-#include "CAM_Study.h"
 
 #include "LightApp_SelectionMgr.h"
 #include "LightApp_Selection.h"
@@ -67,11 +65,10 @@ void LightApp_ShowHideOp::startOperation()
   if( !mod )
     return;
 
-  LightApp_Selection* sel = mod->createSelection();
+  LightApp_Selection* sel = mod->createSelection( "", mgr );
   if( !sel )
     return;
 
-  sel->init( "", mgr );
   if( sel->count()==0 && myActionType!=ERASE_ALL )
   {
     abort();
@@ -81,7 +78,7 @@ void LightApp_ShowHideOp::startOperation()
   QString mod_name;
   if( sel->count()>0 )
   {
-    QString aStr =  sel->param( 0, "displayer" ).toString();
+    QString aStr =  sel->parameter( 0, "displayer" ).toString();
     mod_name = app->moduleTitle( aStr );
   }
   else if( app->activeModule() )

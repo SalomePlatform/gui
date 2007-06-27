@@ -21,7 +21,7 @@
 
 #include "Qtx.h"
 
-#include <qtoolbar.h>
+#include <QToolBar>
 
 class QTX_EXPORT QtxToolBar : public QToolBar
 {
@@ -30,25 +30,21 @@ class QTX_EXPORT QtxToolBar : public QToolBar
   class Watcher;
 
 public:
-  QtxToolBar( const bool, const QString&, QMainWindow*, QWidget*, bool = false, const char* = 0, WFlags = 0 );
-  QtxToolBar( const QString&, QMainWindow*, QWidget*, bool = false, const char* = 0, WFlags = 0 );
-  QtxToolBar( const bool, QMainWindow* = 0, const char* = 0 );
-  QtxToolBar( QMainWindow* = 0, const char* = 0 );
+  QtxToolBar( const bool, const QString&, QWidget* );
+  QtxToolBar( const QString&, QWidget* );
+  QtxToolBar( const bool, QWidget* = 0 );
+  QtxToolBar( QWidget* = 0 );
   virtual ~QtxToolBar();
-
-  virtual void  setWidget( QWidget* );
-
-  bool          isStretchable() const;
-  virtual void  setStretchable( const bool );
 
   virtual QSize sizeHint() const;
   virtual QSize minimumSizeHint() const;
 
+  QMainWindow*  mainWindow() const;
+
 public slots:
-  virtual void  show();
-  virtual void  hide();
+  virtual void  setVisible( bool );
 
 private:
-  Watcher*      myWatcher;
-  bool          myStretch;
+  Watcher*      myWatcher;   //!< watcher object
+  bool          myStretch;   //!< stretching toolbar flag (not used)
 };

@@ -27,13 +27,13 @@
 
 #include "GLViewer.h"
 
-#include <qrect.h>
-#include <qvaluelist.h>
-#include <qgl.h>
+#include <QRect>
+#include <QtOpenGL>
 #include <math.h>
 
+//using namespace QGL;
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 
@@ -59,7 +59,7 @@ private:
   GLfloat myY;
 };
 
-typedef QValueList<GLViewer_Pnt> GLViewer_PntList;
+typedef QList<GLViewer_Pnt> GLViewer_PntList;
 
 /*! Class  GLViewer_Rect
 *  Substitution of QRect for OpenGL
@@ -191,7 +191,7 @@ private:
   GLViewer_PntList* myPoints;
 };
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning ( default:4251 )
 #endif
 

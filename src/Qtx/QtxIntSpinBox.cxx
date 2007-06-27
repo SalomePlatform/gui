@@ -21,40 +21,79 @@
 
 #include "QtxIntSpinBox.h"
 
-#include <qlineedit.h>
-#include <qapplication.h>
+#include <QLineEdit>
+/*!
+  \class QtxIntSpinBox
+  \brief Enhanced version of the Qt's spin box.
+
+  The QtxIntSpinBox class represents the widget for entering the
+  integer values. In addition to the functionality provided by
+  QSpinBox, this class supports "cleared" state - this is the
+  state corresponding to "None" (or empty) entered value.
+
+  To set "cleared" state use setCleared() method. To check if the spin
+  box stores "cleared" state, use isCleared() method.
+  For example:
+  \code
+  if (mySpinBox->isCleared()) {
+    ... // process "None" state
+  }
+  else {
+    int value = mySpinBox->value();
+    ... // process entered value
+  }
+  \endcode
+*/
 
 /*!
-  Constructor
+  \brief Constructor.
+
+  Constructs a spin box with 0 as minimum value and 99 as maximum value, 
+  a step value of 1. The value is initially set to 0.
+
+  \param parent parent object
 */
-QtxIntSpinBox::QtxIntSpinBox( QWidget* parent, const char* name )
-: QSpinBox( parent, name ),
-myCleared( false ),
-myBlocked( false )
+QtxIntSpinBox::QtxIntSpinBox( QWidget* parent )
+: QSpinBox( parent ),
+  myCleared( false )
 {
-  connect( editor(), SIGNAL( textChanged( const QString& ) ), this, SLOT( onTextChanged( const QString& ) ) );
+  connect( lineEdit(), SIGNAL( textChanged( const QString& ) ), 
+	   this, SLOT( onTextChanged( const QString& ) ) );
 }
 
 /*!
-  Constructor
+  \brief Constructor.
+
+  Constructs a spin box with specified minimum, maximum and step value.
+  The value is initially set to the minimum value.
+
+  \param min spin box minimum possible value
+  \param max spin box maximum possible value
+  \param step spin box increment/decrement value
+  \param parent parent object
 */
-QtxIntSpinBox::QtxIntSpinBox( int min, int max, int step, QWidget* parent, const char* name )
-: QSpinBox( min, max, step, parent, name ),
-myCleared( false ),
-myBlocked( false )
+QtxIntSpinBox::QtxIntSpinBox( int min, int max, int step, QWidget* parent )
+: QSpinBox( parent ),
+  myCleared( false )
 {
-  connect( editor(), SIGNAL( textChanged( const QString& ) ), this, SLOT( onTextChanged( const QString& ) ) );
+  setMinimum( min );
+  setMaximum( max );
+  setSingleStep( step );
+
+  connect( lineEdit(), SIGNAL( textChanged( const QString& ) ), 
+	   this, SLOT( onTextChanged( const QString& ) ) );
 }
 
 /*!
-  Destructor
+  \brief Destructor.
 */
 QtxIntSpinBox::~QtxIntSpinBox()
 {
 }
 
 /*!
-  \return true if spin box is cleared
+  \brief Check if spin box is in the "cleared" state.
+  \return \c true if spin box is cleared
 */
 bool QtxIntSpinBox::isCleared() const
 {
@@ -62,112 +101,49 @@ bool QtxIntSpinBox::isCleared() const
 }
 
 /*!
-  Changes cleared status of spin box
-  \param on - new status
+  \brief Change "cleared" status of the spin box.
+  \param on new "cleared" status
 */
 void QtxIntSpinBox::setCleared( const bool on )
 {
   if ( myCleared == on )
     return;
-    
+  
   myCleared = on;
-  updateDisplay();
+  setSpecialValueText( specialValueText() );
 }
 
 /*!
-  Changes value of spin box
-  \param val - new value of spin box
+  \brief Convert value to the text.
+  \param val value being converted
+  \return string containing the converted value
 */
-void QtxIntSpinBox::setValue( int value )
+QString QtxIntSpinBox::textFromValue( int val ) const
+{
+  return myCleared ? QString() : QSpinBox::textFromValue( val );
+}
+
+/*!
+  \brief Perform \a steps increment/decrement steps.
+  
+  The \a steps value can be any integer number. If it is > 0,
+  the value incrementing is done, otherwise value is decremented
+  \a steps times.  
+
+  \param steps number of increment/decrement steps
+*/
+void QtxIntSpinBox::stepBy( int steps )
 {
   myCleared = false;
 
-  QSpinBox::setValue( value );
+  QSpinBox::stepBy( steps );
 }
 
 /*!
-  Custom event filter
-*/
-bool QtxIntSpinBox::eventFilter( QObject* o, QEvent* e )
-{
-  if ( !myCleared || o != editor() || !editor()->text().stripWhiteSpace().isEmpty() )
-    return QSpinBox::eventFilter( o, e );
-
-  if ( e->type() == QEvent::FocusOut || e->type() == QEvent::Leave || e->type() == QEvent::Hide )
-    return false;
-
-  if ( e->type() == QEvent::KeyPress &&
-	     ( ((QKeyEvent*)e)->key() == Key_Tab || ((QKeyEvent*)e)->key() == Key_BackTab ) )
-  {
-    QApplication::sendEvent( this, e );
-    return true;
-  }
-
-  return QSpinBox::eventFilter( o, e );
-}
-
-/*!
-  Sets integer value by text in editor
-*/
-void QtxIntSpinBox::interpretText()
-{
-  myCleared = false;
-
-  QSpinBox::interpretText();
-}
-
-/*!
-  Updates text of editor
-*/
-void QtxIntSpinBox::updateDisplay()
-{
-  if ( myBlocked )
-    return;
-
-  bool block = myBlocked;
-  myBlocked = true;
-
-  QSpinBox::updateDisplay();
-
-  if ( myCleared )
-    editor()->clear();
-  else if ( editor()->hasFocus() )
-  {
-    if ( editor()->text() == specialValueText() )
-      editor()->selectAll();
-    else
-      editor()->setSelection( prefix().length(), editor()->text().length() - prefix().length() - suffix().length() );
-  }
-
-  myBlocked = block;
-}
-
-/*!
-  Custom handler for leave event
-*/
-void QtxIntSpinBox::leaveEvent( QEvent* e )
-{
-  if ( !myCleared )
-    QSpinBox::leaveEvent( e );
-}
-
-/*!
-  Custom handler for wheel event
-*/
-void QtxIntSpinBox::wheelEvent( QWheelEvent* e )
-{
-  if ( !isEnabled() )
-    return;
-
-  QSpinBox::wheelEvent( e );
-  updateDisplay();
-}
-
-/*!
-  SLOT: called if text is changed
+  \brief Called when user enters the text in the spin box.
+  \param txt current spin box text (not used)
 */
 void QtxIntSpinBox::onTextChanged( const QString& )
 {
-  if ( !myBlocked )
-    myCleared = false;
+  myCleared = false;
 }

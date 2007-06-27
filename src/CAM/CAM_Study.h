@@ -21,42 +21,31 @@
 
 #include "CAM.h"
 
-#include "CAM_DataModel.h"
-
 #include <SUIT_Study.h>
+#include <QList>
 
-#include <qptrlist.h>
+class CAM_DataModel;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 
-/*!
-  \class CAM_Study
-  Represents study for using in CAM, contains list of
-  data model references from all modules. Provides
-  necessary functionality for data models management.
-*/
 class CAM_EXPORT CAM_Study : public SUIT_Study
 {
   Q_OBJECT
 
 public:
-  typedef QPtrList<CAM_DataModel>         ModelList;
-  typedef QPtrListIterator<CAM_DataModel> ModelListIterator;
+  typedef QList<CAM_DataModel*> ModelList;
 
 public:
   CAM_Study( SUIT_Application* );
   virtual ~CAM_Study();
 
-  virtual void closeDocument(bool permanently = true);
+  virtual void closeDocument( bool permanently = true );
 
-  /** @name Insert data model methods.*/
-  //@{
   bool         appendDataModel( const CAM_DataModel* );
   virtual bool insertDataModel( const CAM_DataModel*, const int = -1 );
   bool         insertDataModel( const CAM_DataModel*, const CAM_DataModel* );
-  //@}
 
   virtual bool removeDataModel( const CAM_DataModel* );
 
@@ -73,8 +62,7 @@ protected slots:
   virtual void updateModelRoot( const CAM_DataModel* );
 
 private:
-  //! Data model list
-  ModelList    myDataModels;
+  ModelList    myDataModels;   //!< data models list
 };
 
 #ifdef WIN32

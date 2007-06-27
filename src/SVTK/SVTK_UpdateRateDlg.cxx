@@ -33,16 +33,16 @@
 #include "VTKViewer_Algorithm.h"
 #include "SALOME_Actor.h"
 
-#include "QtxDblSpinBox.h"
+#include "QtxDoubleSpinBox.h"
 #include "QtxAction.h"
 
 #include <sstream>
 
-#include <qgroupbox.h>
-#include <qlabel.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qlineedit.h>
+#include <QGroupBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QGridLayout>
+#include <QLineEdit>
 
 #include <vtkGenericRenderWindowInteractor.h>
 #include <vtkCallbackCommand.h>
@@ -178,25 +178,26 @@ SVTK_UpdateRateDlg
   vtkRenderWindowInteractor* aRWI = myRWInteractor->GetDevice();
   bool anIsEnabledUpdateRate = false;
 
-  setCaption(tr("DLG_TITLE"));
-  QVBoxLayout* aVBoxLayout = new QVBoxLayout(this, 5, 5);
+  setWindowTitle(tr("DLG_TITLE"));
+  QVBoxLayout* aVBoxLayout = new QVBoxLayout(this);
+  aVBoxLayout->setMargin(5);
+  aVBoxLayout->setSpacing(5);
   {
     QGroupBox* aGroupBox = new QGroupBox(tr("INPUT_FRAME_TITLE"), this);
-    aGroupBox->setColumnLayout(0, Qt::Vertical );
-    aGroupBox->layout()->setSpacing( 6 );
-    aGroupBox->layout()->setMargin( 11 );
 
     aGroupBox->setCheckable(true);
     aGroupBox->setChecked(anIsEnabledUpdateRate);
     myIsEnableUpdateRateGroupBox = aGroupBox;
 
-    QGridLayout* aGridLayout = new QGridLayout(aGroupBox->layout());
+    QGridLayout* aGridLayout = new QGridLayout(aGroupBox);
+    aGridLayout->setSpacing( 6 );
+    aGridLayout->setMargin( 11 );
     {
       QLabel* aLabel = new QLabel(tr("DESIRED"), aGroupBox);
       aLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
       aGridLayout->addWidget(aLabel, 0, 0);
 
-      QtxDblSpinBox* aDblSpinBox = new QtxDblSpinBox(OFF_UPDATE_RATE, VTK_LARGE_FLOAT, 2, aGroupBox);
+      QtxDoubleSpinBox* aDblSpinBox = new QtxDoubleSpinBox(OFF_UPDATE_RATE, VTK_LARGE_FLOAT, 2, aGroupBox);
       aDblSpinBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
       aGridLayout->addWidget(aDblSpinBox, 0, 1);
 
@@ -210,7 +211,7 @@ SVTK_UpdateRateDlg
       aLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);
       aGridLayout->addWidget(aLabel, 1, 0);
 
-      QtxDblSpinBox* aDblSpinBox = new QtxDblSpinBox(OFF_UPDATE_RATE, VTK_LARGE_FLOAT, 2, aGroupBox);
+      QtxDoubleSpinBox* aDblSpinBox = new QtxDoubleSpinBox(OFF_UPDATE_RATE, VTK_LARGE_FLOAT, 2, aGroupBox);
       aDblSpinBox->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
       aGridLayout->addWidget(aDblSpinBox, 1, 1);
 
@@ -223,11 +224,10 @@ SVTK_UpdateRateDlg
   }
   {
     QGroupBox* aGroupBox = new QGroupBox(tr("INFORMATION_FRAME_TITLE"), this);
-    aGroupBox->setColumnLayout(0, Qt::Vertical );
-    aGroupBox->layout()->setSpacing( 6 );
-    aGroupBox->layout()->setMargin( 11 );
-
-    QGridLayout* aGridLayout = new QGridLayout(aGroupBox->layout());
+    
+    QGridLayout* aGridLayout = new QGridLayout(aGroupBox);
+    aGridLayout->layout()->setSpacing( 6 );
+    aGridLayout->layout()->setMargin( 11 );
     {
       QLabel* aLabel = new QLabel(tr("CURRENT_FPS"), aGroupBox);
       aLabel->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Fixed);

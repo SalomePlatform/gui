@@ -19,20 +19,16 @@
 // SUIT_ViewWindow.h: interface for the SUIT_ViewWindow class.
 //
 
-#if !defined(AFX_SUIT_VIEWWINDOW_H__82C3D51A_6F10_45B0_BCFE_3CB3EF596A4D__INCLUDED_)
-#define AFX_SUIT_VIEWWINDOW_H__82C3D51A_6F10_45B0_BCFE_3CB3EF596A4D__INCLUDED_
-
-#if _MSC_VER > 1000
-#pragma once
-#endif // _MSC_VER > 1000
+#ifndef SUIT_VIEWWINDOW_H
+#define SUIT_VIEWWINDOW_H
 
 #include "SUIT.h"
 
-#include <qmainwindow.h>
+#include <QMainWindow>
+#include <QImage>
 
 class SUIT_Desktop;
 class SUIT_ViewManager;
-class QImage;
 
 class SUIT_EXPORT SUIT_ViewWindow: public QMainWindow 
 {

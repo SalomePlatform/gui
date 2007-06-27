@@ -21,11 +21,15 @@
 
 #include "CAF_Tools.h"
 
-#include <string.h>
-#include <TCollection_ExtendedString.hxx>
+/*!
+  \class CAF_Tools
+  \brief Prodives a set of helpful static methods.
+*/
 
 /*!
-    Converts TCollection_ExtendedString 'src' to Qt string. [ static ]
+  \brief Convert TCollection_ExtendedString \a src to QString.
+  \param src string to be converted
+  \return resulting QString object
 */
 QString CAF_Tools::toQString ( const TCollection_ExtendedString& src )
 {
@@ -33,7 +37,9 @@ QString CAF_Tools::toQString ( const TCollection_ExtendedString& src )
 }
 
 /*!
-    Converts TCollection_AsciiString'src' to Qt string. [ static ]
+  \brief Convert TCollection_AsciiString \a src to QString.
+  \param src string to be converted
+  \return resulting QString object
 */
 QString CAF_Tools::toQString( const TCollection_AsciiString& src )
 {
@@ -41,18 +47,22 @@ QString CAF_Tools::toQString( const TCollection_AsciiString& src )
 }
 
 /*!
-    Converts Qt string to TCollection_AsciiString. [ static ]
+  \brief Convert QString \a src to TCollection_AsciiString.
+  \param src string to be converted
+  \return resulting TCollection_AsciiString object
 */
 TCollection_AsciiString CAF_Tools::toAsciiString( const QString& src )
 {
   TCollection_AsciiString res;
   if ( !src.isEmpty() )
-    res = TCollection_AsciiString( (char*)src.latin1() );
+    res = TCollection_AsciiString( src.toLatin1().data() );
   return res;
 }
 
 /*!
-    Converts Qt string to TCollection_ExtendedString. [ static ]
+  \brief Convert QString \a src to TCollection_ExtendedString.
+  \param src string to be converted
+  \return resulting TCollection_ExtendedString object
 */
 TCollection_ExtendedString CAF_Tools::toExtString ( const QString& src )
 {
@@ -63,7 +73,9 @@ TCollection_ExtendedString CAF_Tools::toExtString ( const QString& src )
 }
 
 /*!
-    Converts Qt color to OCC color
+  \brief Convert QColor object to Quantity_Color object.
+  \param c color object in Qt format
+  \return color object in OCC format
 */
 Quantity_Color CAF_Tools::color( const QColor& c )
 {
@@ -75,7 +87,9 @@ Quantity_Color CAF_Tools::color( const QColor& c )
 }
 
 /*!
-    Converts OCC color to Qt color
+  \brief Convert Quantity_Color object to QColor object.
+  \param c color object in OCC format
+  \return color object in Qt format
 */
 QColor CAF_Tools::color( const Quantity_Color& c )
 {

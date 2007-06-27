@@ -25,8 +25,8 @@
 #ifndef GLVIEWER_DEFS_H
 #define GLVIEWER_DEFS_H
 
-#include <qmap.h>
-#include <qvaluelist.h>
+#include <QMap>
+#include <QList>
 
 class GLViewer_Object;
 //Selection staus 
@@ -57,7 +57,7 @@ enum SelectionStatus
 };
 
 typedef QMap<GLViewer_Object*,int> ObjectMap;
-typedef QValueList<GLViewer_Object*> ObjList;
+typedef QList<GLViewer_Object*> ObjList;
 
 #define SEGMENTS   32
 #define PI         3.14159265359

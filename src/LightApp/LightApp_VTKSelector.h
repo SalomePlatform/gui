@@ -23,10 +23,11 @@
 #include "LightApp.h"
 #include "LightApp_DataOwner.h"
 
+#include <QObject>
+
 class SUIT_Desktop;
 
 #ifndef DISABLE_VTKVIEWER
-  #include <vtkSmartPointer.h>
   #include <TColStd_IndexedMapOfInteger.hxx>
   #include "SVTK_Selection.h"
 #ifndef DISABLE_SALOMEOBJECT
@@ -73,7 +74,7 @@ class LIGHTAPP_EXPORT LightApp_SVTKDataOwner : public LightApp_DataOwner
   \class LightApp_VTKSelector
   Custom selector to get/set selection from object browser
 */
-class LIGHTAPP_EXPORT LightApp_VTKSelector : public SUIT_Selector
+class LIGHTAPP_EXPORT LightApp_VTKSelector : public QObject, public SUIT_Selector
 {
   Q_OBJECT;
 

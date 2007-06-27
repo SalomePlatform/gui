@@ -28,11 +28,9 @@
 #include "LightApp_Module.h"
 #include "LightApp_Application.h"
 
-#include <OB_Browser.h>
+// temporary commented
+//#include <OB_Browser.h>
 
-#include <SUIT_Application.h>
-#include <SUIT_ResourceMgr.h>
-#include <SUIT_Session.h>
 #include <SUIT_DataObject.h>
 
 /*!
@@ -99,8 +97,9 @@ void LightApp_DataModel::build()
 void LightApp_DataModel::updateWidgets()
 {
   LightApp_Application* app = dynamic_cast<LightApp_Application*>( module()->application() );
-  if( app )
-    app->objectBrowser()->updateTree( 0, false );
+  // temporary commented
+  /*if( app )
+    app->objectBrowser()->updateTree( 0, false );*/
 }
 
 /*!
@@ -114,8 +113,9 @@ void LightApp_DataModel::update( LightApp_DataObject*, LightApp_Study* )
   if( modelRoot )
   {
     ch = modelRoot->children();
-    for ( DataObjectListIterator it( ch ); it.current(); ++it )
-      it.current()->setParent( 0 );
+    QListIterator<SUIT_DataObject*> it( ch );
+    while ( it.hasNext() )
+      it.next()->setParent( 0 );
   }
 
   build();
@@ -124,15 +124,19 @@ void LightApp_DataModel::update( LightApp_DataObject*, LightApp_Study* )
   if( modelRoot )
   {
     DataObjectList new_ch = modelRoot->children();
-    for ( DataObjectListIterator it1( new_ch ); it1.current(); ++it1 )
-      aMap.insert( it1.current(), 0 );
+    QListIterator<SUIT_DataObject*> it1( new_ch );
+    while ( it1.hasNext() )
+      aMap.insert( it1.next(), 0 );
   }
 
   updateWidgets();
 
-  for( DataObjectListIterator it( ch ); it.current(); ++it )
-    if( !aMap.contains( it.current() ) )
-      delete it.current();
+  QListIterator<SUIT_DataObject*> it( ch );
+  while ( it.hasNext() ) {
+    SUIT_DataObject* aDO = it.next();
+    if( !aMap.contains( aDO ) )
+      delete aDO;
+  }
 }
 
 /*!

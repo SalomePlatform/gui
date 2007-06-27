@@ -24,8 +24,8 @@
 
 #include "Qtx.h"
 
-#include <qmap.h>
-#include <qcombobox.h>
+#include <QMap>
+#include <QComboBox>
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -33,45 +33,45 @@
 
 class QTX_EXPORT QtxComboBox : public QComboBox
 {
-    Q_OBJECT
-
-    typedef QMap<int, int> IndexIdMap;
+  Q_OBJECT
 
 public:
-    QtxComboBox( QWidget* = 0, const char* = 0 );
-    QtxComboBox( bool, QWidget* = 0, const char* = 0 );
-    virtual ~QtxComboBox();
+  QtxComboBox( QWidget* = 0 );
+  virtual ~QtxComboBox();
 
-    bool         isCleared() const;
-    void         setCleared( const bool );
+  bool         isCleared() const;
+  void         setCleared( const bool );
 
-    virtual void setCurrentItem( int );
-    virtual void setCurrentText( const QString& );
+  virtual void setCurrentIndex( int );
 
-    int          currentId() const;
-    void         setCurrentId( int );
+  int          currentId() const;
+  void         setCurrentId( int );
+
+  int          id( const int ) const;
+  int          index( const int ) const;
+
+  void         setId( const int, const int );
 
 signals:
-    void         activatedId( int );
-    void         highlightedId( int );
+  void         activatedId( int );
+  void         highlightedId( int );
 
 private slots:
-    void         onActivated( int );
-    void         onActivated( const QString& );
+  void         onActivated( int );
+  void         onActivated( const QString& );
 
 protected:
-    virtual void paintEvent( QPaintEvent* );
+  virtual void paintEvent( QPaintEvent* );
 
 private:
-    int          id( const int ) const;
-    int          index( const int ) const;
-
-    void         resetClear();
-    void         paintClear( QPaintEvent* );
+  void         resetClear();
+  void         paintClear( QPaintEvent* );
 
 private:
-    bool         myCleared;
-    IndexIdMap   myIndexId;
+  enum { IdRole = Qt::UserRole + 10 };
+
+private:
+  bool         myCleared;     //!< "cleared" state
 };
 
 #ifdef WIN32

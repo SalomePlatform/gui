@@ -24,11 +24,7 @@
 #include "CAM_DataModel.h"
 #include "CAM_Module.h"
 
-#include <SUIT_Application.h>
-#include <SUIT_ResourceMgr.h>
 #include <SUIT_DataObjectKey.h>
-
-#include <qobject.h>
 
 /*!
 	Class: LightApp_DataObject::Key

@@ -1,0 +1,433 @@
+<!DOCTYPE TS><TS>
+<context>
+    <name>@default</name>
+    <message>
+        <source>EXTERNAL_BROWSER_CANNOT_SHOW_PAGE</source>
+        <translation>External browser &quot;%1&quot; can not show help page &quot;%2&quot;. Do you want to change it in preferences?</translation>
+    </message>
+    <message>
+        <source>ABOUT_COPYRIGHT</source>
+        <translation>Copyright (C) 2003-2006 OPEN CASCADE, EADS/CCR, LIP6,
+CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translation>
+    </message>
+    <message>
+        <source>ABOUT_CAPTION</source>
+        <translation>About %1</translation>
+    </message>
+    <message>
+        <source>APP_NAME</source>
+        <translation>SALOME</translation>
+    </message>
+    <message>
+        <source>ABOUT_LICENSE</source>
+        <translation>GNU LGPL</translation>
+    </message>
+    <message>
+        <source>ABOUT_VERSION</source>
+        <translation>Version %1</translation>
+    </message>
+</context>
+<context>
+    <name>LightApp_Application</name>
+    <message>
+        <source>INF_TOOLBAR_MODULES</source>
+        <translation>Modules</translation>
+    </message>
+    <message>
+        <source>PREF_SHOW_LEGEND</source>
+        <translation>Show legend</translation>
+    </message>
+    <message>
+        <source>MEN_DESK_RENAME</source>
+        <translation>&amp;Rename</translation>
+    </message>
+    <message>
+        <source>PREF_MULTI_FILE</source>
+        <translation>Multi file save</translation>
+    </message>
+    <message>
+        <source>MEN_DESK_PREFERENCES</source>
+        <translation>Pre&amp;ferences...</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_SHOW</source>
+        <translation>Show trihedron</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_SIZE</source>
+        <translation>Trihedron size</translation>
+    </message>
+    <message>
+        <source>OBJECT_BROWSER</source>
+        <translation>Object Browser</translation>
+    </message>
+    <message>
+        <source>PRP_DESK_PREFERENCES</source>
+        <translation>Allow to change the preferences</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_DIRECTORIES</source>
+        <translation>Quick directory list</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_VTKVIEWER</source>
+        <translation>VTK Viewer 3d</translation>
+    </message>
+    <message>
+        <source>PREF_STORE_POS</source>
+        <translation>Store positions of windows</translation>
+    </message>
+    <message>
+        <source>PREF_BOTTOM</source>
+        <translation>Bottom</translation>
+    </message>
+    <message>
+        <source>PREF_CURVE_TYPE</source>
+        <translation>Curve type:</translation>
+    </message>
+    <message>
+        <source>PREF_ISOS_U</source>
+        <translation>Number of isolines along U</translation>
+    </message>
+    <message>
+        <source>PREF_ISOS_V</source>
+        <translation>Number of isolines along V</translation>
+    </message>
+    <message>
+        <source>PREF_POINTS</source>
+        <translation>Points</translation>
+    </message>
+    <message>
+        <source>PRP_MODULE</source>
+        <translation>Switch to the module &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <source>PREF_ASCII_FILE</source>
+        <translation>ASCII save</translation>
+    </message>
+    <message>
+        <source>PREFERENCES_NOT_LOADED</source>
+        <translation>Preferences for module &quot;&lt;b&gt;%1&lt;/b&gt;&quot; will be available when the module will be loaded</translation>
+    </message>
+    <message>
+        <source>PREF_LINEAR</source>
+        <translation>Linear</translation>
+    </message>
+    <message>
+        <source>DATA_MODELS</source>
+        <translation>Data models</translation>
+    </message>
+    <message>
+        <source>PRP_RENAME</source>
+        <translation>Rename active window</translation>
+    </message>
+    <message>
+        <source>TOT_RENAME</source>
+        <translation>Rename</translation>
+    </message>
+    <message>
+        <source>LOG_WINDOW</source>
+        <translation>Message Window</translation>
+    </message>
+    <message>
+        <source>PREF_SPLINE</source>
+        <translation>Spline</translation>
+    </message>
+    <message>
+        <source>PREF_OBJ_BROWSER_SETTINGS</source>
+        <translation>Object browser settings</translation>
+    </message>
+    <message>
+        <source>PRP_APP_MODULE</source>
+        <translation>Switch to SALOME platform neutral point</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_PY_CONSOLE</source>
+        <translation>Python console properties</translation>
+    </message>
+    <message>
+        <source>PREF_MARKER_SIZE</source>
+        <translation>Marker size:</translation>
+    </message>
+    <message>
+        <source>PREF_TAB_VIEWERS</source>
+        <translation>Viewers</translation>
+    </message>
+    <message>
+        <source>PREF_APP</source>
+        <translation>Application</translation>
+    </message>
+    <message>
+        <source>PREF_TOP</source>
+        <translation>Top</translation>
+    </message>
+    <message>
+        <source>MEN_REFRESH</source>
+        <translation>Refresh</translation>
+    </message>
+    <message>
+        <source>PREF_AUTO_SIZE_FIRST</source>
+        <translation>Auto size for first column</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_SUPERV</source>
+        <translation>Graph Supervisor</translation>
+    </message>
+    <message>
+        <source>PREF_TAB_OBJBROWSER</source>
+        <translation>Object browser</translation>
+    </message>
+    <message>
+        <source>PREF_TAB_GENERAL</source>
+        <translation>General</translation>
+    </message>
+    <message>
+        <source>NEW_WINDOW_0</source>
+        <translation>&amp;GL view</translation>
+    </message>
+    <message>
+        <source>NEW_WINDOW_1</source>
+        <translation>&amp;Plot2d view</translation>
+    </message>
+    <message>
+        <source>NEW_WINDOW_2</source>
+        <translation>&amp;OCC view</translation>
+    </message>
+    <message>
+        <source>NEW_WINDOW_3</source>
+        <translation>VT&amp;K view</translation>
+    </message>
+    <message>
+        <source>OBJ_BROWSER_NAME</source>
+        <translation>Object</translation>
+    </message>
+    <message>
+        <source>PREF_LEGEND_POSITION</source>
+        <translation>Legend position:</translation>
+    </message>
+    <message>
+        <source>PREF_RELATIVE_SIZE</source>
+        <translation>Relative size</translation>
+    </message>
+    <message>
+        <source>PREF_VIEWER_BACKGROUND</source>
+        <translation>Background color</translation>
+    </message>
+    <message>
+        <source>PREF_FONT</source>
+        <translation>Font</translation>
+    </message>
+    <message>
+        <source>PREF_LEFT</source>
+        <translation>Left</translation>
+    </message>
+    <message>
+        <source>PREF_TAB_DIRECTORIES</source>
+        <translation>Directories</translation>
+    </message>
+    <message>
+        <source>ACTIVATING_MODULE</source>
+        <translation>Trying to activate module &quot;%1&quot;</translation>
+    </message>
+    <message>
+        <source>PREF_VERT_AXIS_SCALE</source>
+        <translation>Vertical axis scale:</translation>
+    </message>
+    <message>
+        <source>PREF_HOR_AXIS_SCALE</source>
+        <translation>Horizontal axis scale:</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_STUDY</source>
+        <translation>Study properties</translation>
+    </message>
+    <message>
+        <source>PREF_CATEGORY_SALOME</source>
+        <translation>SALOME</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_OCCVIEWER</source>
+        <translation>OCC Viewer 3d</translation>
+    </message>
+    <message>
+        <source>PREF_LOGARITHMIC</source>
+        <translation>Logarithmic</translation>
+    </message>
+    <message>
+        <source>MEN_DESK_MODULE_HELP</source>
+        <translation>Module help</translation>
+    </message>
+    <message>
+        <source>PREF_SUPERV_TITLE_COLOR</source>
+        <translation>Title color</translation>
+    </message>
+    <message>
+        <source>PREF_PARAM</source>
+        <translation>Parameters</translation>
+    </message>
+    <message>
+        <source>PREF_RIGHT</source>
+        <translation>Right</translation>
+    </message>
+    <message>
+        <source>PREF_LINES</source>
+        <translation>Lines</translation>
+    </message>
+    <message>
+        <source>INF_CANCELLED</source>
+        <translation>Module activation cancelled</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_EXT_BROWSER</source>
+        <translation>External browser</translation>
+    </message>
+    <message>
+        <source>PREF_SUPERV_CTRL_COLOR</source>
+        <translation>Ctrl color</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_DEF_COLUMNS</source>
+        <translation>Default columns</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_PLOT2DVIEWER</source>
+        <translation>Plot2d Viewer</translation>
+    </message>
+    <message>
+        <source>MEN_DESK_MRU</source>
+        <translation>Most recently used</translation>
+    </message>
+    <message>
+        <source>TOT_DESK_PREFERENCES</source>
+        <translation>Preferences</translation>
+    </message>
+    <message>
+        <source>DEFINE_EXTERNAL_BROWSER</source>
+        <translation>External browser is not found. Do you want to define it in preferences?</translation>
+    </message>
+    <message>
+        <source>PREF_AUTO_SIZE</source>
+        <translation>Auto size for other columns</translation>
+    </message>
+    <message>
+        <source>TOT_DESK_MRU</source>
+        <translation>Most recently used</translation>
+    </message>
+</context>
+<context>
+    <name>LightApp_Module</name>
+    <message>
+        <source>MEN_ERASE</source>
+        <translation>Erase</translation>
+    </message>
+    <message>
+        <source>TOP_DISPLAY_ONLY</source>
+        <translation>Display only</translation>
+    </message>
+    <message>
+        <source>STB_DISPLAY_ONLY</source>
+        <translation>Display only</translation>
+    </message>
+    <message>
+        <source>MEN_DISPLAY_ONLY</source>
+        <translation>Display only</translation>
+    </message>
+    <message>
+        <source>TOP_ERASE</source>
+        <translation>Erase</translation>
+    </message>
+    <message>
+        <source>MEN_ERASE_ALL</source>
+        <translation>Erase all</translation>
+    </message>
+    <message>
+        <source>STB_ERASE</source>
+        <translation>Erase</translation>
+    </message>
+    <message>
+        <source>STB_DISPLAY</source>
+        <translation>Display</translation>
+    </message>
+    <message>
+        <source>TOP_DISPLAY</source>
+        <translation>Display</translation>
+    </message>
+    <message>
+        <source>MEN_DISPLAY</source>
+        <translation>Display</translation>
+    </message>
+    <message>
+        <source>STB_ERASE_ALL</source>
+        <translation>Erase all</translation>
+    </message>
+    <message>
+        <source>TOP_ERASE_ALL</source>
+        <translation>Erase all</translation>
+    </message>
+</context>
+<context>
+    <name>LightApp_ModuleDlg</name>
+    <message>
+        <source>NEW</source>
+        <translation>&amp;New</translation>
+    </message>
+    <message>
+        <source>LOAD</source>
+        <translation>&amp;Load</translation>
+    </message>
+    <message>
+        <source>OPEN</source>
+        <translation>&amp;Open</translation>
+    </message>
+    <message>
+        <source>ActivateComponent_DESCRIPTION</source>
+        <translation>Create, open or load study.</translation>
+    </message>
+    <message>
+        <source>CANCEL</source>
+        <translation>&amp;Cancel</translation>
+    </message>
+    <message>
+        <source>CAPTION</source>
+        <translation>Activate module</translation>
+    </message>
+</context>
+<context>
+    <name>LightApp_NameDlg</name>
+    <message>
+        <source>TLT_RENAME</source>
+        <translation>Rename</translation>
+    </message>
+    <message>
+        <source>NAME_LBL</source>
+        <translation>Name: </translation>
+    </message>
+</context>
+<context>
+    <name>LightApp_PreferencesDlg</name>
+    <message>
+        <source>IMPORT_PREFERENCES</source>
+        <translation>Import preferences</translation>
+    </message>
+    <message>
+        <source>CAPTION</source>
+        <translation>Preferences</translation>
+    </message>
+    <message>
+        <source>WARNING</source>
+        <translation>Warning</translation>
+    </message>
+    <message>
+        <source>IMPORT_BTN_TEXT</source>
+        <translation>Import</translation>
+    </message>
+    <message>
+        <source>DEFAULT_QUESTION</source>
+        <translation>Do you want to retrieve default preferences?</translation>
+    </message>
+    <message>
+        <source>DEFAULT_BTN_TEXT</source>
+        <translation>Defaults</translation>
+    </message>
+</context>
+</TS>

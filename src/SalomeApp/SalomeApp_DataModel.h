@@ -35,7 +35,8 @@
 
 class SalomeApp_Module;
 class SalomeApp_Study;
-class SalomeApp_DataObject;
+class SUIT_DataObject;
+class LightApp_DataObject;
 
 //   Class       : SalomeApp_DataModel
 ///  Description : Base class of data model

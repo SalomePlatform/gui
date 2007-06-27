@@ -31,14 +31,11 @@
 
 #include <SALOME_Session.hxx>
 
-#include "Session_ServerThread.hxx"
-
 #include <CORBA.h> 
 #include <list>
 #include <vector>
 #include <string>
-#include <qthread.h>
-#include <qwaitcondition.h>
+#include <QThread>
 
 using namespace std;
 
@@ -54,6 +51,11 @@ class SESSION_EXPORT ServArg
 inline ServArg::ServArg(int servType, int firstArg, int lastArg):
   _servType(servType),_firstArg(firstArg),_lastArg(lastArg)
 {}
+
+class Session_ServerThread;
+
+class QMutex;
+class QWaitCondition;
 
 class SESSION_EXPORT Session_ServerLauncher: public QThread
 {

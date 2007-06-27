@@ -24,10 +24,11 @@
 #include <CAM_Application.h>
 #include <SUIT_Operation.h>
 #include <SUIT_Study.h>
-#include <qevent.h>
-#include <qwidget.h>
-#include <qptrlist.h>
-#include <qapplication.h>
+
+#include <QEvent>
+#include <QWidget>
+#include <QList>
+#include <QApplication>
 
 /*!
  * \brief Constructor
@@ -93,14 +94,16 @@ LightApp_Operation* LightApp_SwitchOp::operation( QWidget* theWg ) const
   // try to find operation corresponding to the dialog
   if ( aDlg != 0 && study() != 0 )
   {
-    QPtrListIterator<SUIT_Operation> anIter( study()->operations() );
-    while( SUIT_Operation* anOp = anIter.current() )
+    QListIterator<SUIT_Operation*> anIter( study()->operations() );
+    while( anIter.hasNext() )
     {
-      if ( anOp->inherits( "LightApp_Operation" ) &&
+      SUIT_Operation* anOp = anIter.next();
+          
+      if ( anOp &&
+	   anOp->inherits( "LightApp_Operation" ) &&
            ((LightApp_Operation*)anOp)->dlg() == aDlg )
         return ((LightApp_Operation*)anOp);
-      ++anIter;
-   }
+    }
   }
 
   return 0;

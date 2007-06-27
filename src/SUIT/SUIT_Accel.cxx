@@ -19,22 +19,27 @@
 // SUIT_Accel.cxx: implementation of the SUIT_Accel class.
 
 #include "SUIT_Accel.h"
+
 #include "SUIT_ViewWindow.h"
 #include "SUIT_ViewManager.h"
 #include "SUIT_ViewModel.h"
 
-#include <qobjectlist.h>
-#include <qapplication.h>
-#include <qnamespace.h>
+#include <QCoreApplication>
+#include <QEvent>
+#include <QKeyEvent>
 
+/*!
+  \class SUIT_Accel
+  \brief Manager of keyboard accelerator bindings.
+*/
 
 SUIT_Accel* SUIT_Accel::myself = 0;
 
 /*! Constructor [private].*/
 SUIT_Accel::SUIT_Accel()
-  : QObject( qApp, "SUIT_Accel" )
+: QObject( QCoreApplication::instance() )
 {
-  qApp->installEventFilter( this );
+  QCoreApplication::instance()->installEventFilter( this );
 }
 
 /*! getAccel() : public interface for SUIT_Accel object.  Only one instance is created and returned. */
@@ -61,10 +66,12 @@ void SUIT_Accel::setActionKey( const int action, const int key, const QString& t
 /*! unsetActionKey() : unregister a certain key accelerator */
 void SUIT_Accel::unsetActionKey( const int key, const QString& type )
 {
-  if ( myMap.contains( type ) ) {
+  if ( myMap.contains( type ) )
+  {
     IdActionMap idActionMap = myMap[type];
-    if ( idActionMap.contains( key ) ) {
-      idActionMap.erase( key );
+    if ( idActionMap.contains( key ) )
+    {
+      idActionMap.remove( key );
       myMap[type] = idActionMap;
     }
   }
@@ -73,7 +80,8 @@ void SUIT_Accel::unsetActionKey( const int key, const QString& type )
 /*! getParentViewWindow() : returns given object or any of its parents-grandparents-.. if it is a SUIT_ViewWindow */ 
 SUIT_ViewWindow* getParentViewWindow( const QObject* obj )
 {
-  if ( obj ) {
+  if ( obj )
+  {
     if ( obj->inherits( "SUIT_ViewWindow" ) )
       return (SUIT_ViewWindow*)obj;
     else
@@ -83,22 +91,25 @@ SUIT_ViewWindow* getParentViewWindow( const QObject* obj )
 }
 
 /*! getKey() : returns integer key code (with modifiers) made of key pressed 'inside' given event */
-int getKey( QKeyEvent *keyEvent )
+int getKey( QKeyEvent* keyEvent )
 {
-  int key = keyEvent->key(), 
-    state = keyEvent->state();
-  if ( state & Qt::ShiftButton )   
+  int key = keyEvent->key(), state = keyEvent->modifiers();
+  if ( state & Qt::ShiftModifier )   
     key += Qt::SHIFT;
-  if ( state & Qt::ControlButton ) 
+  if ( state & Qt::ControlModifier )
     key += Qt::CTRL;
-  if ( state & Qt::AltButton )     
+  if ( state & Qt::AltModifier )
     key += Qt::ALT;
-  if ( state & Qt::MetaButton )    
+  if ( state & Qt::MetaModifier )
     key += Qt::META;
   return key;
 }
 
-/*! getAccelKey() : returns key pressed if 1) event was KeyPress 2) pressed key is a registered accelerator */ 
+/*! 
+  Returns key pressed if 
+  -# event was KeyPress 
+  -# pressed key is a registered accelerator
+*/
 int SUIT_Accel::getAccelKey( QEvent *event )
 {
   if ( event && event->type() == QEvent::KeyPress ) {

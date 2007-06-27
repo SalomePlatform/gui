@@ -38,8 +38,7 @@
 #include <vtkInteractorStyle.h>
 #include <vtkSmartPointer.h>
 
-#include <qcursor.h>
-#include <qevent.h>
+#include <QCursor>
 
 #include <map>
 
@@ -103,7 +102,6 @@ class SVTK_EXPORT SVTK_ControllerOnKeyDown : public vtkObject{
   void operator=(const SVTK_ControllerOnKeyDown&);          //Not implemented
 };
 
-class vtkCell;
 class vtkPicker;
 class vtkPointPicker;
 
@@ -112,6 +110,8 @@ class SALOME_Actor;
 class SVTK_Selector;
 class SVTK_GenericRenderWindowInteractor;
 class SVTK_Actor;
+
+class QRubberBand;
 
 #define VTK_INTERACTOR_STYLE_CAMERA_NONE    0
 #define VTK_INTERACTOR_STYLE_CAMERA_ROTATE  1
@@ -297,6 +297,9 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
 
   void DominantCombinedSwitch();
   
+  void drawRect();
+  void endDrawRect();
+
  protected:
   QCursor                   myDefCursor;
   QCursor                   myPanCursor;
@@ -343,6 +346,8 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
   
   vtkFloatingPointType            myBBCenter[3];
   bool                            myBBFirstCheck;
+
+  QRubberBand*                    myRectBand; //!< selection rectangle rubber band
 };
 
 #ifdef WIN32

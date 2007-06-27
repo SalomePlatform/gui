@@ -24,11 +24,8 @@
 #define SALOMEAPP_STUDY_PROPERTIES_DLG_H
 
 #include "SalomeApp.h"
-#include <SALOMEDSClient_definitions.hxx>
-#include <qdialog.h>
-#include <qlineedit.h>
-#include <qcombobox.h>
-#include <qlistview.h>
+
+#include <QDialog>
 
 #include <SALOMEconfig.h>
 #include CORBA_SERVER_HEADER(SALOMEDS)
@@ -37,7 +34,6 @@
 
 class SalomeApp_ListView;
 class QPushButton;
-class QToolButton;
 
 class SALOMEAPP_EXPORT SalomeApp_StudyPropertiesDlg : public QDialog
 { 

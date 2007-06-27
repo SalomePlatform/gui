@@ -24,6 +24,8 @@
 #include <SUIT_Selector.h>
 #include <SUIT_DataOwner.h>
 
+#include <QObject>
+
 #include <OCCViewer_ViewModel.h>
 
 class Handle_AIS_InteractiveObject;
@@ -32,7 +34,7 @@ class Handle_AIS_InteractiveObject;
   \class LightApp_OCCSelector
   Custom selector to get/set selection from OCC viewer
 */
-class LIGHTAPP_EXPORT LightApp_OCCSelector : public SUIT_Selector
+class LIGHTAPP_EXPORT LightApp_OCCSelector : public QObject, public SUIT_Selector
 {
   Q_OBJECT
 

@@ -29,10 +29,13 @@
 
 #include "QtxAction.h"
 
-#include <qstatusbar.h>
-#include <qlayout.h>
-#include <qapplication.h>
-#include <qpopupmenu.h>
+#include <QStatusBar>
+#include <QLayout>
+#include <QApplication>
+#include <QMenu>
+#include <QImage>
+#include <QToolBar>
+#include <QPaintEvent>
 
 /*!
   Constructor
@@ -41,15 +44,13 @@ Plot2d_ViewWindow::Plot2d_ViewWindow(SUIT_Desktop* theDesktop, Plot2d_Viewer* th
 : SUIT_ViewWindow(theDesktop)
 {
   myModel = theModel;
-
   myDumpImage = QImage();
 
   myViewFrame = new Plot2d_ViewFrame(this, "plotView");
   setCentralWidget(myViewFrame);
 
-  myToolBar = new QToolBar(this);
-  myToolBar->setCloseMode(QDockWindow::Undocked);
-  myToolBar->setLabel(tr("LBL_TOOLBAR_LABEL"));
+  myToolBar = addToolBar( tr("LBL_TOOLBAR_LABEL") );
+  //myToolBar->setCloseMode(QDockWindow::Undocked); // toolbar has "Close" (X) button only if it's undocked, but there is no such functionality in Qt4
   createActions();
   createToolBar();
 
@@ -59,6 +60,7 @@ Plot2d_ViewWindow::Plot2d_ViewWindow(SUIT_Desktop* theDesktop, Plot2d_Viewer* th
   connect(myViewFrame, SIGNAL(contextMenuRequested( QContextMenuEvent * )),
           this,        SIGNAL(contextMenuRequested( QContextMenuEvent * )) );
 
+  myViewFrame->installEventFilter( this );
 }
 
 /*!
@@ -75,33 +77,36 @@ Plot2d_ViewWindow::~Plot2d_ViewWindow()
 void Plot2d_ViewWindow::putInfo(QString theMsg)
 {
   QStatusBar*	aStatusBar = myDesktop->statusBar();
-  aStatusBar->message(theMsg/*, 3000*/);
+  aStatusBar->showMessage(theMsg/*, 3000*/);
 }
 
 /*!
   Fills popup menu with custom actions
  \param popup - popup menu to be filled with
 */
-void Plot2d_ViewWindow::contextMenuPopup( QPopupMenu* thePopup )
+void Plot2d_ViewWindow::contextMenuPopup( QMenu* thePopup )
 {
   // scaling
-  QPopupMenu* scalingPopup = new QPopupMenu( thePopup );
+  QMenu* scalingPopup = new QMenu( thePopup );
+  scalingPopup->addAction( myActionsMap[ PModeXLinearId ] );
   myActionsMap[ PModeXLinearId ]->addTo( scalingPopup );
   myActionsMap[ PModeXLogarithmicId ]->addTo( scalingPopup );
   onChangeHorMode();
-  scalingPopup->insertSeparator();
+  scalingPopup->addSeparator();
   myActionsMap[ PModeYLinearId ]->addTo( scalingPopup );
   myActionsMap[ PModeYLogarithmicId ]->addTo( scalingPopup );
-  thePopup->insertItem( tr( "SCALING_POPUP" ), scalingPopup );
+  scalingPopup->setTitle( tr( "SCALING_POPUP" ) );
+  thePopup->addMenu( scalingPopup );
   onChangeVerMode();
 
-  thePopup->insertItem(tr("TOT_PLOT2D_FITDATA"), myViewFrame, SLOT(onFitData()));
+  thePopup->addAction(tr("TOT_PLOT2D_FITDATA"), myViewFrame, SLOT(onFitData()));
   // curve type
-  QPopupMenu* curTypePopup = new QPopupMenu( thePopup );
+  QMenu* curTypePopup = new QMenu( thePopup );
   myActionsMap[ CurvPointsId ]->addTo( curTypePopup );
   myActionsMap[ CurvLinesId ]->addTo( curTypePopup );
   myActionsMap[ CurvSplinesId ]->addTo( curTypePopup );
-  thePopup->insertItem( tr( "CURVE_TYPE_POPUP" ), curTypePopup );
+  curTypePopup->setTitle( tr( "CURVE_TYPE_POPUP" ) );
+  thePopup->addMenu( curTypePopup );
 
   // legend
   myActionsMap[ LegendId ]->addTo(thePopup);
@@ -195,7 +200,7 @@ void Plot2d_ViewWindow::createActions()
                 tr("MEN_PLOT2D_CURVES_POINTS"), 0, this);
   aAction->setStatusTip(tr("PRP_PLOT2D_CURVES_POINTS"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onCurves()));
-  aAction->setToggleAction(true);
+  aAction->setCheckable(true);
   myActionsMap[ CurvPointsId ] = aAction;
 
   // Curve type - lines
@@ -204,7 +209,7 @@ void Plot2d_ViewWindow::createActions()
                tr("MEN_PLOT2D_CURVES_LINES"), 0, this);
   aAction->setStatusTip(tr("PRP_PLOT2D_CURVES_LINES"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onCurves()));
-  aAction->setToggleAction(true);
+  aAction->setCheckable(true);
   myActionsMap[ CurvLinesId ] = aAction;
 
   // Curve type - splines
@@ -213,7 +218,7 @@ void Plot2d_ViewWindow::createActions()
                  tr("MEN_PLOT2D_CURVES_SPLINES"), 0, this);
   aAction->setStatusTip(tr("PRP_PLOT2D_CURVES_SPLINES"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onCurves()));
-  aAction->setToggleAction(true);
+  aAction->setCheckable(true);
   myActionsMap[ CurvSplinesId ] = aAction;
 
   // Mode for X (linear or logarithmic)
@@ -238,7 +243,7 @@ void Plot2d_ViewWindow::createActions()
                 tr("MEN_PLOT2D_SHOW_LEGEND"), 0, this);
   aAction->setStatusTip(tr("PRP_PLOT2D_SHOW_LEGEND"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onLegend()));
-  aAction->setToggleAction(true);
+  aAction->setCheckable(true);
   myActionsMap[ LegendId ] = aAction;
 
   // Settings
@@ -263,7 +268,7 @@ void Plot2d_ViewWindow::createActions()
                  aResMgr->loadPixmap("Plot2d", tr("ICON_PLOT2D_MODE_LINEAR_HOR")),
                  tr("MEN_PLOT2D_MODE_LINEAR_HOR"), 0, this);
   aAction->setStatusTip (tr("PRP_PLOT2D_MODE_LINEAR_HOR"));
-  aAction->setToggleAction(true);
+  aAction->setCheckable(true);
   myActionsMap[PModeXLinearId] = aAction;
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewHorMode()));
 
@@ -271,7 +276,7 @@ void Plot2d_ViewWindow::createActions()
               aResMgr->loadPixmap("Plot2d", tr("ICON_PLOT2D_MODE_LOGARITHMIC_HOR")),
               tr("MEN_PLOT2D_MODE_LOGARITHMIC_HOR"), 0, this);
   aAction->setStatusTip(tr("PRP_PLOT2D_MODE_LOGARITHMIC_HOR"));
-  aAction->setToggleAction(true);
+  aAction->setCheckable(true);
   myActionsMap[PModeXLogarithmicId] = aAction;
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewHorMode()));
 
@@ -280,7 +285,7 @@ void Plot2d_ViewWindow::createActions()
                  aResMgr->loadPixmap("Plot2d", tr("ICON_PLOT2D_MODE_LINEAR_VER")),
                  tr("MEN_PLOT2D_MODE_LINEAR_VER" ), 0, this);
   aAction->setStatusTip(tr("PRP_PLOT2D_MODE_LINEAR_VER"));
-  aAction->setToggleAction(true);
+  aAction->setCheckable(true);
   myActionsMap[PModeYLinearId] = aAction;
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewVerMode()));
 
@@ -288,10 +293,9 @@ void Plot2d_ViewWindow::createActions()
                  aResMgr->loadPixmap("Plot2d", tr("ICON_PLOT2D_MODE_LOGARITHMIC_VER")),
                  tr("MEN_PLOT2D_MODE_LOGARITHMIC_VER" ), 0, this);
   aAction->setStatusTip(tr("PRP_PLOT2D_MODE_LOGARITHMIC_VER"));
-  aAction->setToggleAction(true);
+  aAction->setCheckable(true);
   myActionsMap[PModeYLogarithmicId] = aAction;
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewVerMode()));
-
 }
 
 /*!
@@ -305,16 +309,19 @@ void Plot2d_ViewWindow::createToolBar()
   aScaleBtn->AddAction(myActionsMap[FitAllId]);
   aScaleBtn->AddAction(myActionsMap[FitRectId]);
   aScaleBtn->AddAction(myActionsMap[ZoomId]);
+  myToolBar->addWidget( aScaleBtn );
 
   SUIT_ToolButton* aPanBtn = new SUIT_ToolButton(myToolBar);
   aPanBtn->AddAction(myActionsMap[PanId]);
   aPanBtn->AddAction(myActionsMap[GlobalPanId]);
+  myToolBar->addWidget( aPanBtn );
 
   myCurveBtn = new SUIT_ToolButton(myToolBar);
   myCurveBtn->AddAction(myActionsMap[CurvPointsId]);
   myCurveBtn->AddAction(myActionsMap[CurvLinesId]);
   myCurveBtn->AddAction(myActionsMap[CurvSplinesId]);
-  myActionsMap[CurvLinesId]->setOn(true);
+  myToolBar->addWidget( myCurveBtn );
+  myActionsMap[CurvLinesId]->setChecked(true);
   onChangeCurveMode();
 
   myActionsMap[HorId]->addTo(myToolBar);
@@ -336,12 +343,12 @@ void Plot2d_ViewWindow::onChangeHorMode()
   bool aLinear = myViewFrame->isModeHorLinear();
   SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
 
-  myActionsMap[PModeXLinearId]->setOn( aLinear );
-  myActionsMap[PModeXLogarithmicId]->setOn( !aLinear );
+  myActionsMap[PModeXLinearId]->setChecked( aLinear );
+  myActionsMap[PModeXLogarithmicId]->setChecked( !aLinear );
 
   QPixmap pix = aResMgr->loadPixmap( "Plot2d", tr( aLinear ? "ICON_PLOT2D_MODE_LOGARITHMIC_HOR" :
                                                              "ICON_PLOT2D_MODE_LINEAR_HOR" ) );
-  myActionsMap[HorId]->setIconSet( pix );
+  myActionsMap[HorId]->setIcon( pix );
   myActionsMap[HorId]->setToolTip( tr( aLinear ? "TOT_PLOT2D_MODE_LOGARITHMIC_HOR" :
                                                  "TOT_PLOT2D_MODE_LINEAR_HOR" ) );
   myActionsMap[HorId]->setStatusTip( tr( aLinear ? "PRP_PLOT2D_MODE_LOGARITHMIC_HOR" :
@@ -358,12 +365,12 @@ void Plot2d_ViewWindow::onChangeVerMode()
   bool aLinear = myViewFrame->isModeVerLinear();
   SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
 
-  myActionsMap[PModeYLinearId]->setOn( aLinear );
-  myActionsMap[PModeYLogarithmicId]->setOn( !aLinear );
+  myActionsMap[PModeYLinearId]->setChecked( aLinear );
+  myActionsMap[PModeYLogarithmicId]->setChecked( !aLinear );
 
   QPixmap pix = aResMgr->loadPixmap( "Plot2d", tr( aLinear ? "ICON_PLOT2D_MODE_LOGARITHMIC_VER" :
                                                              "ICON_PLOT2D_MODE_LINEAR_VER" ) );
-  myActionsMap[VerId]->setIconSet( pix );
+  myActionsMap[VerId]->setIcon( pix );
   myActionsMap[VerId]->setToolTip( tr( aLinear ? "TOT_PLOT2D_MODE_LOGARITHMIC_VER" :
                                                  "TOT_PLOT2D_MODE_LINEAR_VER" ) );
   myActionsMap[VerId]->setStatusTip( tr( aLinear ? "PRP_PLOT2D_MODE_LOGARITHMIC_VER" :
@@ -380,9 +387,9 @@ void Plot2d_ViewWindow::onChangeCurveMode()
   int aCurveType = myViewFrame->getCurveType();
   myCurveBtn->SetItem(aCurveType);
 
-  myActionsMap[CurvPointsId]->setOn(aCurveType == 0);
-  myActionsMap[CurvLinesId]->setOn(aCurveType == 1);
-  myActionsMap[CurvSplinesId]->setOn(aCurveType == 2);
+  myActionsMap[CurvPointsId]->setChecked(aCurveType == 0);
+  myActionsMap[CurvLinesId]->setChecked(aCurveType == 1);
+  myActionsMap[CurvSplinesId]->setChecked(aCurveType == 2);
 }
 
 /*!
@@ -390,7 +397,7 @@ void Plot2d_ViewWindow::onChangeCurveMode()
 */
 void Plot2d_ViewWindow::onChangeLegendMode()
 {
-  myActionsMap[ LegendId ]->setOn(myViewFrame->isLegendShow());
+  myActionsMap[ LegendId ]->setChecked(myViewFrame->isLegendShow());
 }
 
 /*!
@@ -483,7 +490,7 @@ void Plot2d_ViewWindow::onCurves()
 */
 void Plot2d_ViewWindow::onDumpView()
 {
-  qApp->postEvent( myViewFrame, new QPaintEvent( QRect( 0, 0, myViewFrame->width(), myViewFrame->height() ), TRUE ) );
+  qApp->postEvent( myViewFrame, new QPaintEvent( QRect( 0, 0, myViewFrame->width(), myViewFrame->height() ) ) );
   SUIT_ViewWindow::onDumpView();
 }
 
@@ -492,10 +499,10 @@ void Plot2d_ViewWindow::onDumpView()
 */
 QImage Plot2d_ViewWindow::dumpView()
 {
-  if ( getToolBar()->hasMouse() || myDumpImage.isNull() )
+  if ( getToolBar()->underMouse() || myDumpImage.isNull() )
     {
       QPixmap px = QPixmap::grabWindow( myViewFrame->winId() );
-      return px.convertToImage();
+      return px.toImage();
     }
   
   return myDumpImage;
@@ -545,5 +552,5 @@ void Plot2d_ViewWindow::setVisualParameters( const QString& parameters )
 void Plot2d_ViewWindow::RefreshDumpImage()
 {
   QPixmap px = QPixmap::grabWindow( myViewFrame->winId() );
-  myDumpImage = px.convertToImage();
+  myDumpImage = px.toImage();
 }

@@ -34,13 +34,11 @@
 #include <CORBA.h> 
 #include <string>
 
-#include "SALOME_NamingService.hxx"
-#include <qthread.h>
-
 using namespace std;
 
 void WaitForServerReadiness(string serverName);
 
+class SALOME_NamingService;
 
 class SESSION_EXPORT Session_ServerThread
 {
@@ -72,6 +70,8 @@ protected:
   SALOME_NamingService *  _NS;
 };
 
+class QMutex;
+class QWaitCondition;
 
 class SESSION_EXPORT Session_SessionThread : public Session_ServerThread
 {

@@ -35,29 +35,33 @@ IMPLEMENT_STANDARD_RTTIEXT(DDS_DicGroup, MMgt_TShared)
 
 /*!
   \class DDS_DicGroup
-  
-  This class to provide set of DDS_DicItem objects from one component.
+  \brief This class provides a set of DDS_DicItem objects from one component.
 */
 
 /*!
-  Constructor. Create the group with name \aname.
+  \brief Constructor.
+
+  Create the group with name \a name.
+
+  \param name group name
 */
 DDS_DicGroup::DDS_DicGroup( const TCollection_AsciiString& name )
 : MMgt_TShared(),
-myName( name ),
-myActiveSystem( UNIT_SYSTEM_SI )
+  myName( name ),
+  myActiveSystem( UNIT_SYSTEM_SI )
 {
 }
 
 /*!
-  Copy constructor.
+  \brief Copy constructor (put in private section to prevent object copying).
 */
 DDS_DicGroup::DDS_DicGroup( const DDS_DicGroup& )
 {
 }
 
 /*!
-  Get the name of group (component).
+  \brief Get the name of group (component).
+  \return group name
 */
 TCollection_AsciiString DDS_DicGroup::GetName() const
 {
@@ -65,8 +69,8 @@ TCollection_AsciiString DDS_DicGroup::GetName() const
 }
 
 /*!
-  Returns the names list of defined unit systems.
-  Parameter \atheSystems will contains the sequence of string names.
+  \brief Get the names of all defined units systems.
+  \param theSystemsSeq returning sequence of names
 */
 void DDS_DicGroup::GetUnitSystems( TColStd_SequenceOfAsciiString& theSystemSeq ) const
 {
@@ -81,7 +85,12 @@ void DDS_DicGroup::GetUnitSystems( TColStd_SequenceOfAsciiString& theSystemSeq )
 }
 
 /*!
-  Returns the label of unit system \aname. If unit system not found then empty string returned.
+  \brief Get the label of units system \a name.
+  
+  If units system is not found, empty string is returned.
+
+  \param make units system name
+  \return units system label
 */
 TCollection_ExtendedString DDS_DicGroup::GetUnitSystemLabel( const TCollection_AsciiString& name ) const
 {
@@ -92,7 +101,8 @@ TCollection_ExtendedString DDS_DicGroup::GetUnitSystemLabel( const TCollection_A
 }
 
 /*!
-  Gets the name of active unit system.
+  \brief Get the name of active units system.
+  \return active units system name
 */
 TCollection_AsciiString DDS_DicGroup::GetActiveUnitSystem() const
 {
@@ -100,7 +110,8 @@ TCollection_AsciiString DDS_DicGroup::GetActiveUnitSystem() const
 }
 
 /*!
-  Sets the name of active unit system.
+  \brief Set the active unit system.
+  \param theSystem name of the units system to be made active
 */
 void DDS_DicGroup::SetActiveUnitSystem( const TCollection_AsciiString& theSystem )
 {
@@ -109,14 +120,16 @@ void DDS_DicGroup::SetActiveUnitSystem( const TCollection_AsciiString& theSystem
 }
 
 /*!
-  Assignment operator.
+  \brief Assignment operator (put in private section to prevent object copying).
 */
 void DDS_DicGroup::operator=( const DDS_DicGroup& )
 {
 }
 
 /*!
-  Fill the internal data structures from XML parsed structures. Internal.
+  \brief Fill the internal data structures from XML parsed structures.
+  \param theComponentData component data DOM node
+  \param theDocElement document element DOM node
 */
 void DDS_DicGroup::FillDataMap( const LDOM_Element& theComponentData, const LDOM_Element& theDocElement )
 {
@@ -174,10 +187,14 @@ void DDS_DicGroup::FillDataMap( const LDOM_Element& theComponentData, const LDOM
 }
 
 /*!
-  Gets dictionary item with specified identifier \atheID.
-  If dictionary item not found then null handle returned.
+  \brief Get the dictionary item with specified identifier \a theID.
+
+  If dictionary item is not found, null handle is returned.
+
+  \param theID item identifier
+  \return dictionary item
 */
-Handle(DDS_DicItem) DDS_DicGroup::GetDicItem( const TCollection_AsciiString& theID ) const
+Handle_DDS_DicItem DDS_DicGroup::GetDicItem( const TCollection_AsciiString& theID ) const
 {
   Handle(DDS_DicItem) aDicItem;
   // get dictionary item by id

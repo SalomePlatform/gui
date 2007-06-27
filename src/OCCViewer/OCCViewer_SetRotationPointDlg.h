@@ -21,14 +21,13 @@
 
 #include "OCCViewer.h"
 
-#include <qdialog.h>
+#include <QDialog>
 
 class QtxAction;
 
 class QLineEdit;
 class QPushButton;
 class QGroupBox;
-class QButtonGroup;
 class QCheckBox;
 
 class OCCViewer_ViewWindow;
@@ -39,7 +38,7 @@ class OCCVIEWER_EXPORT OCCViewer_SetRotationPointDlg : public QDialog
 
 public:
   OCCViewer_SetRotationPointDlg(OCCViewer_ViewWindow* , QWidget* parent = 0, 
-				const char* name = 0, bool modal = FALSE, WFlags fl = 0);
+				const char* name = 0, bool modal = FALSE, Qt::WindowFlags fl = 0);
   ~OCCViewer_SetRotationPointDlg();
 
   void SetAction( QtxAction* theAction ) { myAction = theAction; }
@@ -54,7 +53,7 @@ protected:
 
   QCheckBox*    myIsBBCenter;
 
-  QButtonGroup* myGroupSelButton;
+  QGroupBox   * myGroupBoxSel;
   QPushButton*  myToOrigin;
   QPushButton*  mySelectPoint;
 

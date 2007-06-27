@@ -27,8 +27,9 @@
 
 #include "GLViewer.h"
 
-#include <qgl.h>
-#include <qfile.h>
+#include <QtOpenGL>
+
+class QFile;
 
 class GLViewer_ViewPort2d;
 class GLViewer_CoordSystem;
@@ -153,6 +154,8 @@ protected:
   virtual void           enterEvent( QEvent* );
   /* Needs to redefine because Window must be updated highlight presentation when mouse leave window */
   virtual void           leaveEvent( QEvent* );
+
+  virtual bool           event ( QEvent* );
   
 private:
   //! width of window

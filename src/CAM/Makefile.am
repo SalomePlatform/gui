@@ -26,10 +26,10 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 lib_LTLIBRARIES = libCAM.la
 
 salomeinclude_HEADERS= \
+	CAM.h \
 	CAM_Application.h \
 	CAM_DataModel.h \
 	CAM_DataObject.h \
-	CAM.h \
 	CAM_Module.h \
 	CAM_Study.h \
 	CAM_RootObject.h
@@ -53,7 +53,7 @@ nodist_salomeres_DATA=CAM_msg_en.qm
 
 libCAM_la_CPPFLAGS=$(QT_INCLUDES) -I$(srcdir)/../SUIT -I$(srcdir)/../STD -I$(srcdir)/../Qtx
 libCAM_la_LDFLAGS=$(QT_MT_LIBS)
-libCAM_la_LIBS=../SUIT/libsuit.la ../STD/libstd.la
+libCAM_la_LIBADD=../Qtx/libqtx.la ../SUIT/libsuit.la ../STD/libstd.la
 
 # what is that?
 #LDFLAGSFORBIN= -lSUITApp

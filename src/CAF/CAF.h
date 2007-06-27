@@ -19,18 +19,14 @@
 #ifndef CAF_H
 #define CAF_H
 
-#if defined CAF_EXPORTS
-#if defined WNT
-#define CAF_EXPORT __declspec( dllexport )
+#if defined WIN32
+#  if defined CAF_EXPORTS
+#    define CAF_EXPORT __declspec( dllexport )
+#  else
+#    define CAF_EXPORT __declspec( dllimport )
+#  endif
 #else
-#define CAF_EXPORT
-#endif
-#else
-#if defined WNT
-#define CAF_EXPORT __declspec( dllimport )
-#else
-#define CAF_EXPORT
-#endif
+#  define CAF_EXPORT
 #endif
 
 #if defined SOLARIS
@@ -39,7 +35,7 @@
 #define true  1
 #endif
 
-#if defined WNT
+#if defined WIN32
 #pragma warning ( disable: 4251 )
 #endif
 

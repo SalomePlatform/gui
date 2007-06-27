@@ -27,6 +27,9 @@
 //  $Header$
 
 #include "SOCC_Prs.h"
+
+#include <AIS_InteractiveObject.hxx>
+
 using namespace std;
 
 /*!

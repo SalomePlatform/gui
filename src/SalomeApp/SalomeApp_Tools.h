@@ -23,10 +23,10 @@
 
 #include <SUIT_Tools.h>
 
-#include <qcolor.h>
-#include <qstring.h>
+class QColor;
+class QString;
 
-#include <Quantity_Color.hxx>
+class Quantity_Color;
 
 #include <SALOMEconfig.h>
 #include CORBA_CLIENT_HEADER(SALOME_Exception)

@@ -31,17 +31,13 @@
 #include <SUIT_Desktop.h>
 #include <SUIT_MessageBox.h>
 
-// OCCT Includes
-#include <OSD_Process.hxx>
-#include <Quantity_Date.hxx>
-
 // CORBA Headers
 #include <SALOMEconfig.h>
 #include CORBA_CLIENT_HEADER(SALOMEDS_Attributes)
 
 // QT Includes
-#include <qpushbutton.h>
-#include <qlayout.h>
+#include <QPushButton>
+#include <QGridLayout>
 
 using namespace std;
 
@@ -59,7 +55,7 @@ public:
 		     const QString       theName,
 		     const bool          theEditable,
 		     const int           theUserType) :
-  SalomeApp_ListViewItem( parent, theName, theEditable )
+  SalomeApp_ListViewItem( parent, QStringList(theName), theEditable )
   {
     setUserType(theUserType);
   }
@@ -141,24 +137,29 @@ public:
 
 /*!Constructor. Initialize study properties dialog.*/
 SalomeApp_StudyPropertiesDlg::SalomeApp_StudyPropertiesDlg(QWidget* parent)
-     : QDialog(parent, "", TRUE, WStyle_Customize | WStyle_NormalBorder | WStyle_Title | WStyle_SysMenu ),
+     : QDialog(parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint ),
        myChanged( false )
 {
-  setCaption(tr("TLT_STUDY_PROPERTIES"));
+  setObjectName( "" );
+  setModal( TRUE );
+
+  setWindowTitle(tr("TLT_STUDY_PROPERTIES"));
   setSizeGripEnabled( true );
 
-  clearWFlags(Qt::WStyle_ContextHelp);
+  setWindowFlags( windowFlags() ^ QFlags<Qt::WindowType>(!Qt::WindowContextHelpButtonHint) );
 
   QGridLayout* mainLayout = new QGridLayout(this);
   mainLayout->setMargin(DEFAULT_MARGIN);
   mainLayout->setSpacing(DEFAULT_SPACING);
 
   myPropList = new SalomeApp_ListView(this);
-  myPropList->addColumn("");
-  myPropList->addColumn("");
+  myPropList->setColumnCount(2);
+  QStringList aLabels;
+  aLabels << "" << "";
+  myPropList->setHeaderLabels( aLabels );
   myPropList->enableEditing(TRUE);
   myPropList->setMinimumSize(MIN_LIST_WIDTH, MIN_LIST_HEIGHT);
-  mainLayout->addMultiCellWidget(myPropList, 0, 0, 0, 2);
+  mainLayout->addWidget(myPropList, 0, 0, 1, 3);
 
   myOKBtn = new QPushButton(tr("BUT_OK"), this);
   mainLayout->addWidget(myOKBtn, 1, 0);
@@ -290,26 +291,25 @@ void SalomeApp_StudyPropertiesDlg::onOK()
     _PTR(AttributeStudyProperties) propAttr = myStudyDoc->GetProperties();
     //myChanged = propChanged();
     if ( propAttr /*&& myChanged*/ ) {
-      QListViewItemIterator it( myPropList );
+      QTreeWidgetItemIterator it( myPropList );
       // iterate through all items of the listview
-      for ( ; it.current(); ++it ) {
-	SalomeApp_PropItem* item = (SalomeApp_PropItem*)(it.current());
+      while (*it) {
+	SalomeApp_PropItem* item = (SalomeApp_PropItem*)(*it);
 	switch (item->getUserType()) {
 	case prpAuthorId:
-          if (QString(propAttr->GetUserName().c_str()) != item->getValue().stripWhiteSpace()) {
+          if (QString(propAttr->GetUserName().c_str()) != item->getValue().trimmed()) {
             if (!propAttr->IsLocked()) {
-              propAttr->SetUserName(item->getValue().stripWhiteSpace().latin1());
+              propAttr->SetUserName(item->getValue().trimmed().toStdString());
               myChanged = true;
             } else {
-              SUIT_MessageBox::warn1(SUIT_Session::session()->activeApplication()->desktop(),
-                                     QObject::tr("WRN_WARNING"),
-                                     QObject::tr("WRN_STUDY_LOCKED"),
-                                     QObject::tr("BUT_OK"));
+              SUIT_MessageBox::warning(SUIT_Session::session()->activeApplication()->desktop(),
+				       QObject::tr("WRN_WARNING"),
+				       QObject::tr("WRN_STUDY_LOCKED") );
             }
           }
 	  break;
         //case prpModeId:
-	//  propAttr->SetCreationMode(item->getValue().stripWhiteSpace().latin1());
+	//  propAttr->SetCreationMode(item->getValue().trimmed().latin1());
 	//  break;
 	case prpLockedId:
           {
@@ -323,6 +323,7 @@ void SalomeApp_StudyPropertiesDlg::onOK()
 	default:
 	  break;
 	}
+	++it;
       }
     }
     accept();
@@ -336,18 +337,19 @@ bool SalomeApp_StudyPropertiesDlg::propChanged()
 {
   _PTR(AttributeStudyProperties) propAttr = myStudyDoc->GetProperties();
   if (propAttr) {
-    QListViewItemIterator it (myPropList);
+    QTreeWidgetItemIterator it (myPropList);
+
     // iterate through all items of the listview
-    for (; it.current(); ++it) {
-      SalomeApp_PropItem* item = (SalomeApp_PropItem*)(it.current());
+    while (*it) {
+      SalomeApp_PropItem* item = (SalomeApp_PropItem*)(*it);
       switch (item->getUserType()) {
       case prpAuthorId:
-	if ( QString( propAttr->GetUserName().c_str() ) != item->getValue().stripWhiteSpace() ) {
+	if ( QString( propAttr->GetUserName().c_str() ) != item->getValue().trimmed() ) {
 	  return true;
 	}
 	break;
       //case prpModeId:
-      //  if ( QString( propAttr->GetCreationMode().c_str() ) != item->getValue().stripWhiteSpace() ) {
+      //  if ( QString( propAttr->GetCreationMode().c_str() ) != item->getValue().trimmed() ) {
       //    return true;
       //  }
       //  break;
@@ -362,6 +364,7 @@ bool SalomeApp_StudyPropertiesDlg::propChanged()
       default:
 	break;
       }
+      ++it;
     }
   }
   return false;

@@ -21,8 +21,9 @@
 
 #include "SUIT.h"
 
-#include <qvaluelist.h>
-#include <qobject.h>
+#include <QList>
+
+class QObject;
 
 class SUIT_SelectionMgr;
 class SUIT_DataOwnerPtrList;
@@ -34,9 +35,11 @@ class SUIT_DataOwnerPtrList;
   (ObjectBrowser, viewers, etc)
   Used by selection manager for selection synhronizing
 */
-class SUIT_EXPORT SUIT_Selector : public QObject
+
+class SUIT_EXPORT SUIT_Selector
 {
-  Q_OBJECT
+  class Destroyer;
+
 public:
   SUIT_Selector( SUIT_SelectionMgr*, QObject* = 0 );
   virtual ~SUIT_Selector();
@@ -55,7 +58,7 @@ public:
   void               setSelected( const SUIT_DataOwnerPtrList& );
 
   bool               hasSelectionMode( const int ) const;
-  void               selectionModes( QValueList<int>& ) const;
+  void               selectionModes( QList<int>& ) const;
 
 protected:
   void               selectionChanged();
@@ -63,10 +66,11 @@ protected:
   virtual void       setSelection( const SUIT_DataOwnerPtrList& ) = 0;
 
 private:
-  bool               myBlock;
   SUIT_SelectionMgr* mySelMgr;
+  bool               myBlock;
   bool               myEnabled;
   bool               myAutoBlock;
+  Destroyer*         myDestroyer;
 };
 
 #endif

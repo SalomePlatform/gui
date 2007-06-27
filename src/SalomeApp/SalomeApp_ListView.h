@@ -25,24 +25,20 @@
 #ifndef SALOMEAPP_LISTVIEW_H
 #define SALOMEAPP_LISTVIEW_H
 
-#include <QtxListView.h>
-
-#include <qlist.h>
-#include <qstring.h>
-#include <qpixmap.h>
-#include <qlineedit.h>
-#include <qcombobox.h>
-
-//VRV: porting on Qt 3.0.5
-#if QT_VERSION >= 0x030005
-#include <qtoolbutton.h> 
-#endif
-//VRV: porting on Qt 3.0.5
-
-#include <TColStd_ListOfInteger.hxx>
-#include <TColStd_ListOfReal.hxx>
+//#include <QtxListView.h>
 
 #include <SUIT_PopupClient.h>
+
+#include <QTreeWidget>
+#include <QTreeWidgetItem>
+#include <QString>
+#include <QLineEdit>
+#include <QComboBox>
+
+class QToolButton; 
+
+class TColStd_ListOfInteger;
+class TColStd_ListOfReal;
 
 // enumeration for ListView updating mode
 enum UpdateType {
@@ -61,7 +57,7 @@ class SalomeApp_EntityEdit;
   \class SalomeApp_ListView
   parent class for Data Viewer and Properties Viewer
 */
-class SalomeApp_ListView : public QtxListView , public SUIT_PopupClient  {
+class SalomeApp_ListView : public QTreeWidget/*QtxListView*/ , public SUIT_PopupClient  {
   
   Q_OBJECT
     
@@ -78,7 +74,7 @@ public:
 
 // fills popup with items
   virtual QString popupClientType() const;
-  virtual void    contextMenuPopup( QPopupMenu* );
+  virtual void    contextMenuPopup( QMenu* );
 
 // setting editing of items availbale/not available
   void enableEditing(bool theFlag);
@@ -240,21 +236,17 @@ private:
   QString              myString;
 };
 
-class SalomeApp_ListViewItem : public QListViewItem
+class SalomeApp_ListViewItem : public QTreeWidgetItem
 {
 public:
   SalomeApp_ListViewItem( SalomeApp_ListView* );
   SalomeApp_ListViewItem( SalomeApp_ListView*, 
 			  SalomeApp_ListViewItem* );
   SalomeApp_ListViewItem( SalomeApp_ListView*,
-			  const QString&,
+			  const QStringList&,
 			  const bool = false );
-  SalomeApp_ListViewItem( SalomeApp_ListView*,
-			  const QString& theName,
-			  const QString& theValue, 
-			  const bool = false );
-  SalomeApp_ListViewItem( SalomeApp_ListViewItem* theParent,
-			  const QString&,
+  SalomeApp_ListViewItem( SalomeApp_ListViewItem*,
+			  const QStringList&,
 			  const bool = false );
   SalomeApp_ListViewItem( SalomeApp_ListView*,
 			  SalomeApp_ListViewItem*,
@@ -263,10 +255,6 @@ public:
   SalomeApp_ListViewItem( SalomeApp_ListViewItem*,
 			  SalomeApp_ListViewItem*,
 			  const QString&,
-			  const bool = false);
-  SalomeApp_ListViewItem( SalomeApp_ListViewItem*,
-			  const QString& theName,
-			  const QString& theValue, 
 			  const bool = false);
   SalomeApp_ListViewItem( SalomeApp_ListView*,
 			  SalomeApp_ListViewItem*,
@@ -340,6 +328,7 @@ public:
 protected:
   // initialization
   void               init();
+  int                depth() const;
 
 private:
   bool myEditable;

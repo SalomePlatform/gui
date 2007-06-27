@@ -16,18 +16,12 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  SALOME SALOMEGUI : implementation of desktop and GUI kernel
-//
-//  File   : SUIT_FileValidator.cxx
-//  Module : SALOME
-//  $Header$
-
 #include "SUIT_FileValidator.h"
-#include "SUIT_MessageBox.h"
-#include "SUIT_Session.h"
 
-#include <qfile.h>
-#include <qfileinfo.h>
+#include "SUIT_MessageBox.h"
+
+#include <QFile>
+#include <QFileInfo>
 
 /*! constructor */
 SUIT_FileValidator::SUIT_FileValidator(QWidget* parent) :
@@ -38,18 +32,16 @@ myParent(parent)
 /*! returns false if can't open file */
 bool SUIT_FileValidator::canOpen( const QString& file ) 
 {
-  if ( !QFile::exists( file ) ) {
-    SUIT_MessageBox::error1( myParent,
-          QObject::tr( "ERR_ERROR" ),
-          QObject::tr( "ERR_FILE_NOT_EXIST" ).arg( file ),
-          QObject::tr( "BUT_OK" ) );
+  if ( !QFile::exists( file ) )
+  {
+    SUIT_MessageBox::critical( myParent, QObject::tr( "ERR_ERROR" ),
+                               QObject::tr( "ERR_FILE_NOT_EXIST" ).arg( file ) );
       return false;
-    }
-  if ( !QFileInfo( file ).isReadable() ) {
-    SUIT_MessageBox::error1( myParent,
-          QObject::tr( "ERR_ERROR" ),
-          QObject::tr( "ERR_PERMISSION_DENIED" ).arg( file ),
-          QObject::tr( "BUT_OK" ) );
+  }
+  if ( !QFileInfo( file ).isReadable() )
+  {
+    SUIT_MessageBox::critical( myParent, QObject::tr( "ERR_ERROR" ),
+                               QObject::tr( "ERR_PERMISSION_DENIED" ).arg( file ) );
     return false; 
   }
   return true;
@@ -58,38 +50,36 @@ bool SUIT_FileValidator::canOpen( const QString& file )
 /*! returns false if can't save file */
 bool SUIT_FileValidator::canSave( const QString& file ) 
 {
-  if ( QFile::exists( file ) ) {
+  if ( QFile::exists( file ) )
+  {
     // if file exists - raise warning...
-    if ( SUIT_MessageBox::warn2( myParent,
-              QObject::tr( "WRN_WARNING" ),
-              QObject::tr( "QUE_DOC_FILEEXISTS" ).arg( file ),
-              QObject::tr( "BUT_YES" ), 
-              QObject::tr( "BUT_NO" ),
-              SUIT_YES, 
-              SUIT_NO, 
-              SUIT_NO ) == SUIT_NO ) {
+    if ( SUIT_MessageBox::question( myParent, QObject::tr( "WRN_WARNING" ),
+                                    QObject::tr( "QUE_DOC_FILEEXISTS" ).arg( file ),
+                                    SUIT_MessageBox::Yes | SUIT_MessageBox::No,
+                                    SUIT_MessageBox::No ) != SUIT_MessageBox::Yes )
+    {
       return false;
     }
     // ... and if user wants to overwrite file, check it for writeability
-    if ( !QFileInfo( file ).isWritable() ) {
-      SUIT_MessageBox::error1( myParent,
-            QObject::tr( "ERR_ERROR" ),
-            QObject::tr( "ERR_PERMISSION_DENIED" ).arg( file ),
-            QObject::tr( "BUT_OK" ) );
+    if ( !QFileInfo( file ).isWritable() )
+    {
+      SUIT_MessageBox::critical( myParent, QObject::tr( "ERR_ERROR" ),
+                                 QObject::tr( "ERR_PERMISSION_DENIED" ).arg( file ) );
       return false; 
     }
   }
-  else {
+  else
+  {
     // if file doesn't exist - try to create it
     QFile qf( file );
-    if ( !qf.open( IO_WriteOnly ) ) {
-      SUIT_MessageBox::error1( myParent,
-            QObject::tr( "ERR_ERROR" ),
-            QObject::tr( "ERR_PERMISSION_DENIED" ).arg( file ),
-            QObject::tr( "BUT_OK" ) );
+    if ( !qf.open( QFile::WriteOnly ) )
+    {
+      SUIT_MessageBox::critical( myParent, QObject::tr( "ERR_ERROR" ),
+                                 QObject::tr( "ERR_PERMISSION_DENIED" ).arg( file ) );
       return false;
     }
-    else {
+    else
+    {
       // remove just created file
       qf.close();
       qf.remove();
@@ -97,4 +87,3 @@ bool SUIT_FileValidator::canSave( const QString& file )
   }
   return true;
 }
-

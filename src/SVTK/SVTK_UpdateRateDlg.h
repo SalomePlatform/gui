@@ -36,7 +36,7 @@
 class SVTK_MainWindow;
 class SVTK_RenderWindowInteractor;
 
-class QtxDblSpinBox;
+class QtxDoubleSpinBox;
 class QtxAction;
 
 class QGroupBox;
@@ -61,8 +61,8 @@ public:
 
 protected:
   SVTK_RenderWindowInteractor* myRWInteractor;
-  QtxDblSpinBox* myDesiredUpdateRateSblSpinBox;
-  QtxDblSpinBox* myStillUpdateRateSblSpinBox;
+  QtxDoubleSpinBox* myDesiredUpdateRateSblSpinBox;
+  QtxDoubleSpinBox* myStillUpdateRateSblSpinBox;
   QGroupBox* myIsEnableUpdateRateGroupBox;
 
   QLineEdit* myCurrentUpdateRateLineEdit;

@@ -90,7 +90,7 @@ protected:
   virtual void         itemAdded( Item* );
   virtual void         itemRemoved( Item* );
 
-  void                 childItems( QPtrList<Item>& ) const;
+  void                 childItems( QList<Item*>& ) const;
 
 private:
   void                 removeItem( Item* );
@@ -103,7 +103,7 @@ private:
   ItemMap              myItems;
   QtxResourceMgr*      myResMgr;
   QMap<Item*, QString> myBackup;
-  QPtrList<Item>       myChildren;
+  QList<Item*>         myChildren;
 
   friend class QtxResourceEdit::Item;
 };
@@ -123,7 +123,7 @@ public:
   virtual int          type() const = 0;
 
   Item*                parentItem() const;
-  void                 childItems( QPtrList<Item>& ) const;
+  void                 childItems( QList<Item*>& ) const;
 
   virtual bool         isEmpty() const;
 
@@ -172,8 +172,8 @@ protected:
   Item*                item( const QString&, const int ) const;
 
 protected:
-  typedef QPtrList<Item>         ItemList;
-  typedef QPtrListIterator<Item> ItemListIterator;
+  typedef QList<Item*>         ItemList;
+  typedef QListIterator<Item*> ItemListIterator;
 
 private:
   static int           generateId();

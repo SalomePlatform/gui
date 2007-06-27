@@ -19,9 +19,9 @@
 #include "LightApp_GLSelector.h"
 
 #include "LightApp_DataOwner.h"
-#include "LightApp_DataObject.h"
 
 #include <GLViewer_Context.h>
+#include <GLViewer_Object.h>
 
 /*!Constructor. Initialize by GLViewer_Viewer2d and SUIT_SelectionMgr.*/
 LightApp_GLSelector::LightApp_GLSelector( GLViewer_Viewer2d* viewer, SUIT_SelectionMgr* mgr )

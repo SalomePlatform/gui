@@ -22,20 +22,21 @@
 
 #include <DDS_Dictionary.h>
 
-#include <qtimer.h>
-#include <qlabel.h>
-#include <qwidget.h>
-#include <qlayout.h>
-#include <qtooltip.h>
-#include <qwhatsthis.h>
-#include <qvalidator.h>
-#include <qmessagebox.h>
+#include <QTimer>
+#include <QLabel>
+#include <QWidget>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
+#include <QGridLayout>
+#include <QMessageBox>
+#include <QEvent>
 
 #include <TColStd_SequenceOfAsciiString.hxx>
 
 /*!
-  class: QDS_Datum::Wrapper
-  descr: Wrapper widget for sub widgets. [internal]
+  \class QDS_Datum::Wrapper
+  \internal
+  \brief Wrapper for sub widgets.
 */
 
 class QDS_Datum::Wrapper : public QWidget
@@ -52,26 +53,43 @@ public:
 
 private:
   QWidget*      myWid;
+  QHBoxLayout*  myBase;
 };
 
+/*!
+  \brief Constructor.
+  \param parent parent widget
+*/
 QDS_Datum::Wrapper::Wrapper( QWidget* parent )
 : QWidget( parent ),
-myWid( 0 )
+  myWid( 0 )
 {
-  QHBoxLayout* base = new QHBoxLayout( this );
-  base->setAutoAdd( true );
-  setFocusPolicy( StrongFocus );
+  //QHBoxLayout* base = new QHBoxLayout( this );
+  //base->setAutoAdd( true );
+  myBase = new QHBoxLayout( this );
+  setFocusPolicy( Qt::StrongFocus );
 }
 
+/*!
+  \brief Destructor.
+*/
 QDS_Datum::Wrapper::~Wrapper()
 {
 }
 
+/*!
+  \brief Get widget.
+  \return widget
+*/
 QWidget* QDS_Datum::Wrapper::widget() const
 {
   return myWid;
 }
 
+/*!
+  \brief Set widget.
+  \param wid widget
+*/
 void QDS_Datum::Wrapper::setWidget( QWidget* wid )
 {
   if ( myWid == wid )
@@ -82,8 +100,12 @@ void QDS_Datum::Wrapper::setWidget( QWidget* wid )
   if ( !myWid )
     return;
 
-  if ( myWid->parent() != this )
-    myWid->reparent( this, QPoint( 0, 0 ) );
+  if ( myWid->parent() != this ) {
+    myWid->setParent( this );
+    myWid->move( QPoint( 0, 0 ) );
+    myWid->hide();
+    myBase->addWidget( myWid );
+  }
 
   setTabOrder( this, myWid );
   setFocusProxy( myWid );
@@ -92,6 +114,10 @@ void QDS_Datum::Wrapper::setWidget( QWidget* wid )
   updateGeometry();
 }
 
+/*!
+  \brief Set size policy of the widget.
+  \param sp new size policy
+*/
 void QDS_Datum::Wrapper::setSizePolicy( QSizePolicy sp )
 {
   QWidget::setSizePolicy( sp );
@@ -100,6 +126,13 @@ void QDS_Datum::Wrapper::setSizePolicy( QSizePolicy sp )
     widget()->setSizePolicy( sp );
 }
 
+/*!
+  \brief Set widget geometry.
+  \param x horizontal position
+  \param y vertical position
+  \param w widget width
+  \param h widget height
+*/
 void QDS_Datum::Wrapper::setGeometry( int x, int y, int w, int h )
 {
   QWidget::setGeometry( x, y, w, h );
@@ -110,55 +143,75 @@ void QDS_Datum::Wrapper::setGeometry( int x, int y, int w, int h )
 
 /*!
   \class QDS_Datum
+  \brief Base class for all controls using the data dictionary. 
 
-  This is a base class for control using the data dictionary. Datum is successor of QObject (not QWidget).
-  This object can have three sub widgets named as Label, Control and Units. User can skip creation of
-  some of them manipulate by parameter \aflags. Label widget display label of datum, Control widget allow
-  to input value, Units widget display units of measure in the active system.
+  Datum is successor of QObject (not QWidget). This object can have up to three
+  sub widgets named as QDS::Label, QDS::Control and QDS::Units. 
+  User can prevent creation of any of them by setting corresponding subwidgets IDs
+  in the parameter \a flags of the constructor.
+  QDS::Label widget displays label of datum, QDS::Control widget allows 
+  entering the value and QDS::Units widget displays measure units in the active 
+  units system.
   
-  These widgets constructs under parent of datum. If this parent has layout which can automaticaly add child
-  widgets (see QLayout::setAutoAdd()) then these subwidgets will be placed in following order: first widget
-  is Label, second - Control, third - Unints. User can add these widgets to layout manually using methods
-  QDS_Datum::addTo() or QDS_Datum::widget(). In last case User can retrieve desired widget and place it into
-  layout.
+  These widgets are constructed under the parent widget of the datum. 
+  The sub widgets are layouted in the parent widget in the following order: first widget
+  is QDS::Label, it is followed by QDS::Control, and in the end is QDS::Units.
+  User can add these widgets to layout manually using method addTo().
+  Method widget() can be used to retrieve desired widget and place it into layout.
 
-  If use QGroupBox as parent widget for datum object then all subwidgets will be arranged automatically by
-  group box according to column and orientation properties of QGroupBox.
+  When QGroupBox is used as parent widget for datum object, all subwidgets are 
+  arranged automatically by the group box according to the column and orientation
+  properties of the QGroupBox.
 
-  For example:
-    QGroupBox* box = new QGroupBox( 3, Qt::Horizontal, "datum box" );
-    QDS_Datum* d1  = new QDS_Datum( "datum_1", box, All );
-    QDS_Datum* d2  = new QDS_Datum( "datum_2", box, All );
-    QDS_Datum* d3  = new QDS_Datum( "datum_3", box, All );
+  Example:
+  \code
+  QGroupBox* box = new QGroupBox( 3, Qt::Horizontal, "datum box" );
+  QDS_Datum* d1  = new QDS_Datum( "datum_1", box, All );
+  QDS_Datum* d2  = new QDS_Datum( "datum_2", box, All );
+  QDS_Datum* d3  = new QDS_Datum( "datum_3", box, All );
+  \endcode
 
-  In this example we create the QGroupBox with 3 horizontal columns. All created datum widgets will be
-  placed automatically three widgets in a row. Each datum will be placed from up to bottom one by one.
+  In this example we create the QGroupBox with 3 horizontal columns. 
+  All the created datum widgets will be placed automatically in 3 rows.
+  Datums will be placed from top to bottom one by one and aligned in he grid.
 
-  Datum value is stored as string. User can get/set this value in different kinds:
-    \liAs string  - methods stringValue()/setStringValue().
-    \liAs integer - methods integerValue()/setIntegerValue(). Given value converted to/from SI.
-    \liAs double  - methods doubleValue()/setDoubleValue(). Given value converted to/from SI.
-    \liAs variant - methods value()/setValue().
+  Datum value is stored as string. User can get/set this value:
+  - As string : stringValue()/setStringValue().
+  - As integer : integerValue()/setIntegerValue(). Value is converted to/from SI.
+  - As double : doubleValue()/setDoubleValue(). Value is converted to/from SI.
+  - As variant : value()/setValue().
 
-  User can perform some actions on datum subwidgets using following methods: isEnabled(),
-  setEnabled(), show(), hide(), setShown(), setFocus(), setAlignment().
+  User can enable/disable datum subwidgets with setEnabled() method, show/hide them
+  with show()/hide() methods, set input focus to datum with setFocus(), set widgets 
+  alignment with setAlignment(), etc.
 */
 
 /*!
-  Constructor. Create datum object with datum identifier \aid under widget \aparent. Parameter \aflags
-  define behaviour of datum and set of created subwidgets. Default value of this parameter is QDS::All.
-  Parameter \acomp specify the component name which will be used during search of dictionary item.
+  \brief Constructor. 
 
-  Datum register self in the static list by QDS::insertDatum().
+  Create datum object with datum identifier \a id and parent widget \a parent.
+
+  Parameter \a flags defines behaviour of datum and set of created
+  subwidgets. Default value of this parameter is QDS::All.
+
+  Parameter \a comp specifies the component name which will be used
+  when searching the dictionary item.
+
+  Datum is self-registered in the global list by QDS::insertDatum().
+
+  \param id datum identifier
+  \param parent parent widget
+  \param flags datum flags
+  \param comp component
 */
 QDS_Datum::QDS_Datum( const QString& id, QWidget* parent, const int flags, const QString& comp )
 : QObject( parent ),
-myId( id ),
-myLabel( 0 ),
-myUnits( 0 ),
-myControl( 0 ),
-myFlags( flags ),
-myInitialised( false )
+  myId( id ),
+  myLabel( 0 ),
+  myUnits( 0 ),
+  myControl( 0 ),
+  myFlags( flags ),
+  myInitialised( false )
 {
   if ( myFlags & Label )
     myWrapper.insert( Label, new Wrapper( parent ) );
@@ -168,7 +221,7 @@ myInitialised( false )
     myWrapper.insert( Units, new Wrapper( parent ) );
 
   for ( QMap<int, Wrapper*>::Iterator it = myWrapper.begin(); it != myWrapper.end(); ++it )
-    connect( it.data(), SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
+    connect( it.value(), SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
 
   Handle(DDS_Dictionary) aDict = DDS_Dictionary::Get();
   if ( aDict.IsNull() )
@@ -191,8 +244,10 @@ myInitialised( false )
 }
 
 /*!
-  Destructor. Destroy all subwidget.
-  Datum unregister self from the static list by QDS::removeDatum().
+  \brief Destructor. 
+
+  Destroy all subwidget. Datum is unregistered from the global list
+  by QDS::removeDatum().
 */
 QDS_Datum::~QDS_Datum()
 {
@@ -208,7 +263,8 @@ QDS_Datum::~QDS_Datum()
 }
 
 /*!
-  Overloaded operator allow to retrieve main subwidget named Control.
+  \brief Overloaded operator used to retrieve main subwidget named QDS::Control.
+  \return QDS::Control subwidget
 */
 QDS_Datum::operator QWidget*() const
 {
@@ -216,7 +272,8 @@ QDS_Datum::operator QWidget*() const
 }
 
 /*!
-  Returns the datum id.
+  \brief Get the datum ID.
+  \return datum ID
 */
 QString QDS_Datum::id() const
 {
@@ -226,7 +283,8 @@ QString QDS_Datum::id() const
 }
 
 /*!
-  Returns the datum type of value.
+  \brief Get the datum value type.
+  \return datum value type
 */
 int QDS_Datum::type() const
 {
@@ -239,7 +297,8 @@ int QDS_Datum::type() const
 }
 
 /*!
-  Returns the datum label string.
+  \brief Get the datum label text.
+  \return label text
 */
 QString QDS_Datum::label() const
 {
@@ -256,7 +315,8 @@ QString QDS_Datum::label() const
 }
 
 /*!
-  Returns the datum units string.
+  \brief Get the datum units text.
+  \return units text
 */
 QString QDS_Datum::units() const
 {
@@ -269,7 +329,8 @@ QString QDS_Datum::units() const
 }
 
 /*!
-  Returns the datum value filter string.
+  \brief Get the datum filter string.
+  \return filter string
 */
 QString QDS_Datum::filter() const
 {
@@ -282,7 +343,8 @@ QString QDS_Datum::filter() const
 }
 
 /*!
-  Returns the datum value format string.
+  \brief Get the datum format string
+  \return format string
 */
 QString QDS_Datum::format() const
 {
@@ -295,7 +357,8 @@ QString QDS_Datum::format() const
 }
 
 /*!
-  Returns the datum default value string.
+  \brief Get the datum default value
+  \return default value
 */
 QString QDS_Datum::defaultValue() const
 {
@@ -308,7 +371,7 @@ QString QDS_Datum::defaultValue() const
   if ( !myDicItem.IsNull() )
     def = toQString( myDicItem->GetDefaultValue() );
 
-  QString aDef = def.stripWhiteSpace();
+  QString aDef = def.trimmed();
   if ( !pref.isEmpty() && aDef.left( pref.length() ) == pref )
     aDef = aDef.mid( pref.length() );
 
@@ -319,7 +382,8 @@ QString QDS_Datum::defaultValue() const
 }
 
 /*!
-  Returns the datum minimum value string.
+  \brief Get the datum minimum value.
+  \return minimum value
 */
 QString QDS_Datum::minimumValue() const
 {
@@ -332,7 +396,8 @@ QString QDS_Datum::minimumValue() const
 }
 
 /*!
-  Returns the datum maximum value string.
+  \brief Get the datum maximum value.
+  \return maximum value
 */
 QString QDS_Datum::maximumValue() const
 {
@@ -345,7 +410,8 @@ QString QDS_Datum::maximumValue() const
 }
 
 /*!
-  Returns the datum long description.
+  \brief Get the datum long description.
+  \return datum long description
 */
 QString QDS_Datum::longDescription() const
 {
@@ -358,7 +424,8 @@ QString QDS_Datum::longDescription() const
 }
 
 /*!
-  Returns the datum short description.
+  \brief Get the datum short description.
+  \return datum short description
 */
 QString QDS_Datum::shortDescription() const
 {
@@ -371,7 +438,8 @@ QString QDS_Datum::shortDescription() const
 }
 
 /*!
-  Returns the list of option names.
+  \brief Get the datum options names.
+  \return datum options
 */
 QStringList QDS_Datum::options() const
 {
@@ -387,8 +455,8 @@ QStringList QDS_Datum::options() const
 }
 
 /*!
-  Returns the option specified by \aname as QVariant.
-  If option not exist then not valid QVariant returned.
+  \brief Get datum option specified by \a name as QVariant.
+  \return the option value or invalid QVariant if the option does not exist
 */
 QVariant QDS_Datum::option( const QString& name ) const
 {
@@ -399,8 +467,8 @@ QVariant QDS_Datum::option( const QString& name ) const
 }
 
 /*!
-  Returns the option specified by \aname as QString.
-  If option not exist then empty string returned.
+  \brief Get datum option specified by \a name as string.
+  \return the option value or null QString if the option does not exist
 */
 QString QDS_Datum::optionString( const QString& name ) const
 {
@@ -411,33 +479,34 @@ QString QDS_Datum::optionString( const QString& name ) const
 }
 
 /*!
-  Returns the option specified by \aname as double.
-  If option not exist then 0 returned.
+  \brief Get datum option specified by \a name as double.
+  \return the option value or 0 if the option does not exist
 */
 double QDS_Datum::optionDouble( const QString& name ) const
 {
   double res = 0;
   QVariant opt = option( name );
-  if ( opt.isValid() && opt.canCast( QVariant::Double ) )
+  if ( opt.isValid() && opt.canConvert( QVariant::Double ) )
     res = opt.toDouble();
   return res;
 }
 
 /*!
-  Returns the option specified by \aname as integer.
-  If option not exist then 0 returned.
+  \brief Get datum option specified by \a name as integer.
+  \return the option value or 0 if the option does not exist
 */
 int QDS_Datum::optionInteger( const QString& name ) const
 {
   int res = 0;
   QVariant opt = option( name );
-  if ( opt.isValid() && opt.canCast( QVariant::Int ) )
+  if ( opt.isValid() && opt.canConvert( QVariant::Int ) )
     res = opt.toInt();
   return res;
 }
 
 /*!
-  Returns the datum value as variant (QVariant object).
+  \brief Get the datum value as QVariant.
+  \return datum value
 */
 QVariant QDS_Datum::value() const
 {
@@ -448,7 +517,8 @@ QVariant QDS_Datum::value() const
 }
 
 /*!
-  Returns the datum value as string (QString object).
+  \brief Get the datum value as string.
+  \return datum value converted to string
 */
 QString QDS_Datum::stringValue() const
 {
@@ -461,8 +531,12 @@ QString QDS_Datum::stringValue() const
 }
 
 /*!
-  Returns the datum value as double. This value converted from units of measure in active unit system
-  to units of measure in unit system "SI".
+  \brief Get the datum value as double.
+
+  The value is converted according to the measure units in the active units system
+  to measure units in "SI" units system.
+
+  \return datum value converted to double
 */
 double QDS_Datum::doubleValue() const
 {
@@ -482,8 +556,12 @@ double QDS_Datum::doubleValue() const
 }
 
 /*!
-  Returns the datum value as integer. This value converted from units of measure in active unit system
-  to units of measure in unit system "SI".
+  \brief Get the datum value as integer.
+
+  The value is converted according to the measure units in the active units system
+  to measure units in "SI" units system.
+
+  \return datum value converted to integer
 */
 int QDS_Datum::integerValue() const
 {
@@ -503,7 +581,11 @@ int QDS_Datum::integerValue() const
 }
 
 /*!
-  Returns the text from datum. Text consist of label, string value and units.
+  \brief Get the text data from datum.
+
+  Text consists of label, string value and units.
+
+  \return datum text data
 */
 QString QDS_Datum::text() const
 {
@@ -525,7 +607,8 @@ QString QDS_Datum::text() const
 }
 
 /*!
-  Returns false if datum control has inputted value.
+  \brief Check if the datum is empty.
+  \return \c false if datum control has value entered
 */
 bool QDS_Datum::isEmpty() const
 {
@@ -533,7 +616,7 @@ bool QDS_Datum::isEmpty() const
 }
 
 /*!
-  Reset datum state and set default value as current.
+  \brief Reset datum state and set default value as current.
 */
 void QDS_Datum::reset()
 {
@@ -550,7 +633,7 @@ void QDS_Datum::reset()
 }
 
 /*!
-  Clear the control.
+  \brief Clear the control.
 */
 void QDS_Datum::clear()
 {
@@ -570,18 +653,20 @@ void QDS_Datum::clear()
 }
 
 /*!
-  Set varian value (QVariant object) into datum.
+  \brief Set datum value from QVariant object.
+  \param val new value
 */
 void QDS_Datum::setValue( const QVariant& val )
 {
-  if ( val.isValid() && val.canCast( QVariant::String ) )
+  if ( val.isValid() && val.canConvert( QVariant::String ) )
     setStringValue( val.toString() );
   else
     clear();
 }
 
 /*!
-  Set string value (QString object) into datum.
+  \brief Set datum value from string data.
+  \param txt new value
 */
 void QDS_Datum::setStringValue( const QString& txt )
 {
@@ -599,8 +684,13 @@ void QDS_Datum::setStringValue( const QString& txt )
 }
 
 /*!
-  Set double value into datum. This value converted from units of measure in unit system "SI"
-  to units of measure in active unit system. Format the value using datum format if it required.
+  \brief Set datum value from double data.
+
+  The value is converted from measure units in "SI" units system
+  to the measure units in the active units system.
+  Format the value using datum format internal if it is required.
+  
+  \param num new value
 */
 void QDS_Datum::setDoubleValue( const double num )
 {
@@ -622,8 +712,13 @@ void QDS_Datum::setDoubleValue( const double num )
 }
 
 /*!
-  Set integer value into datum. This value converted from units of measure in unit system "SI"
-  to units of measure in active unit system. Format the value using datum format if it required.
+  \brief Set datum value from integer data.
+
+  The value is converted from measure units in "SI" units system
+  to the measure units in the active units system.
+  Format the value using datum format if it is required.
+  
+  \param num new value
 */
 void QDS_Datum::setIntegerValue( const int num )
 {
@@ -645,7 +740,10 @@ void QDS_Datum::setIntegerValue( const int num )
 }
 
 /*!
-  Returns true if all subwidgets specified by \aelement enabled.
+  \brief Get 'enabled' state of the specified subwidget.
+  \param element ORed subwidget flags (QDS::DatumFlags)
+  \return \c true if all subwidgets specified by \a element are enabled
+  \sa setEnabled()
 */
 bool QDS_Datum::isEnabled( const int element ) const
 {
@@ -662,8 +760,14 @@ bool QDS_Datum::isEnabled( const int element ) const
 }
 
 /*!
-  Enable/Disable subwidgets specified by \aelement.
-  Possible values of \aelement: Label, Control, Units or their combinations.
+  \brief Enable/disable subwidgets specified by \a element.
+
+  Possible values of \a element: QDS::Label, QDS::Control, QDS::Units
+  or their ORed combinations.
+
+  \param on new 'enabled' state
+  \param element ORed subwidget flags (QDS::DatumFlags)
+  \sa isEnabled()
 */
 void QDS_Datum::setEnabled( const bool on, const int element )
 {
@@ -678,7 +782,8 @@ void QDS_Datum::setEnabled( const bool on, const int element )
 }
 
 /*!
-  Enable/Disable control.
+  \brief Enable/disable main control subwidget (QDS::Control).
+  \param on new 'enabled' state
 */
 void QDS_Datum::setEnabled( bool on )
 {
@@ -686,8 +791,14 @@ void QDS_Datum::setEnabled( bool on )
 }
 
 /*!
-  Show/hide subwidgets specified by \aelement.
-  Possible values of \aelement: Label, Control, Units or their combinations.
+  \brief Show/hide subwidgets specified by \a flags.
+
+  Possible values of \a flags: QDS::Label, QDS::Control, QDS::Units
+  or their ORed combinations.
+
+  \param visible new 'visibility' state
+  \param flags ORed subwidget flags (QDS::DatumFlags)
+  \sa show(), hide()
 */
 void QDS_Datum::setShown( const bool visible, const int flags )
 {
@@ -703,8 +814,13 @@ void QDS_Datum::setShown( const bool visible, const int flags )
 }
 
 /*!
-  Show subwidgets specified by \aelement.
-  Possible values of \aelement: Label, Control, Units or their combinations.
+  \brief Show subwidgets specified by \a element.
+
+  Possible values of \a element: QDS::Label, QDS::Control, QDS::Units
+  or their ORed combinations.
+
+  \param element ORed subwidget flags (QDS::DatumFlags)
+  \sa hide(), setShown()
 */
 void QDS_Datum::show( const int element )
 {
@@ -712,8 +828,13 @@ void QDS_Datum::show( const int element )
 }
 
 /*!
-  Hide subwidgets specified by \aelement.
-  Possible values of \aelement: Label, Control, Units or their combinations.
+  \brief Hide subwidgets specified by \a element.
+
+  Possible values of \a element: QDS::Label, QDS::Control, QDS::Units
+  or their ORed combinations.
+
+  \param element ORed subwidget flags (QDS::DatumFlags)
+  \sa show(), setShown()
 */
 void QDS_Datum::hide( const int element )
 {
@@ -721,8 +842,12 @@ void QDS_Datum::hide( const int element )
 }
 
 /*!
-  Returns subwidget specified by \aelement.
-  Possible values of \aelement: Label, Control, Units.
+  \brief Get subwidget specified by \a element.
+
+  Possible values of \a element: QDS::Label, QDS::Control, QDS::Units.
+  
+  \param element subwidget
+  \return widget
 */
 QWidget* QDS_Datum::widget( const int element ) const
 {
@@ -731,7 +856,7 @@ QWidget* QDS_Datum::widget( const int element ) const
 }
 
 /*!
-  Set the input focus on the control widget.
+  \brief Set the input focus to the control widget.
 */
 void QDS_Datum::setFocus()
 {
@@ -742,8 +867,14 @@ void QDS_Datum::setFocus()
 }
 
 /*!
-  Returns true if control contains valid value otherwise returns false
-  and display warning message box if parameter \amsgBox is set.
+  \brief Check if input data is valid.
+
+  If data is invalid and \a msgBox is \c true, the warning message box is shown.
+
+  \param msgBox if \c true, show warning message box if input is invalid
+  \param extMsg warning message
+  \param extLabel optional name of the variable (if QDS::Label control is not used) 
+  \return \c true if input data is valid
 */
 bool QDS_Datum::isValid( const bool msgBox, const QString& extMsg, const QString& extLabel ) const
 {
@@ -828,7 +959,8 @@ bool QDS_Datum::isValid( const bool msgBox, const QString& extMsg, const QString
 }
 
 /*!
-  Add widgets to the vertical box layout.
+  \brief Add widgets to the vertical box layout.
+  \param l layout
 */
 void QDS_Datum::addTo( QVBoxLayout* l )
 {
@@ -846,7 +978,8 @@ void QDS_Datum::addTo( QVBoxLayout* l )
 }
 
 /*!
-  Add widgets to the horizaontal box layout.
+  \brief Add widgets to the horizontal box layout.
+  \param l layout
 */
 void QDS_Datum::addTo( QHBoxLayout* l )
 {
@@ -864,7 +997,11 @@ void QDS_Datum::addTo( QHBoxLayout* l )
 }
 
 /*!
-  Add widgets to the grid layout.
+  \brief Add widgets to the grid layout.
+  \param theLay layout
+  \param theRow layout row index
+  \param theCol layout column index
+  \param vertical if \c true subwidgets are layouted vertically, otherwise - horizontally
 */
 void QDS_Datum::addTo( QGridLayout* theLay, const int theRow, const int theCol, bool vertical )
 {
@@ -890,41 +1027,49 @@ void QDS_Datum::addTo( QGridLayout* theLay, const int theRow, const int theCol, 
 }
 
 /*!
-  Set the aligment of Label or Units. For Control nothing happens.
+  \brief Set the aligment for QDS::Label and/or QDS::Units subwidgets.
+  \param align alignment type (Qt::Alignment)
+  \param type ORed subwidget flags
 */
 void QDS_Datum::setAlignment( const int align, const int type )
 {
   initDatum();
 
   if ( ( type & Label ) && labelWidget() )
-    labelWidget()->setAlignment( align );
+    labelWidget()->setAlignment( Qt::Alignment(align) );
   if ( ( type & Units ) && unitsWidget() )
-    unitsWidget()->setAlignment( align );
+    unitsWidget()->setAlignment( Qt::Alignment(align) );
 }
 
 /*!
+  \brief Event filter.
+
   Perform delayed initialisation. Reimplemented for internal reasons.
+  
+  \param o event reciever object
+  \param e event
+  \return \c true if event should be filtered
 */
 bool QDS_Datum::eventFilter( QObject* o, QEvent* e )
 {
   if ( o == parent() )
   {
     if ( e->type() == QEvent::Show || e->type() == QEvent::ShowToParent ||
-         ( e->type() == QEvent::ChildInserted && ((QChildEvent*)e)->child() == this ) )
+         ( e->type() == QEvent::ChildAdded && ((QChildEvent*)e)->child() == this ) )
       initDatum();
   }
   return QObject::eventFilter( o, e );
 }
 
 /*!
-  Notify about parameter value changing.
+  \brief Called when datum value is changed.
 */
 void QDS_Datum::onParamChanged()
 {
 }
 
 /*!
-  Perform delayed initialization.
+  \brief Perform delayed initialization.
 */
 void QDS_Datum::onInitDatum()
 {
@@ -932,7 +1077,11 @@ void QDS_Datum::onInitDatum()
 }
 
 /*!
-  Notify about subwidgets destroying. Allow to avoid repeated deleting in destructor.
+  \brief Called when child subwidget is destroued.
+
+  Allows avoiding crash of extra calling of the child subwidget destructor.
+
+  \param obj object being destroyed
 */
 void QDS_Datum::onDestroyed( QObject* obj )
 {
@@ -940,7 +1089,8 @@ void QDS_Datum::onDestroyed( QObject* obj )
 }
 
 /*!
-  Returns QLabel widget which contains dictionary item label.
+  \brief Get QDS::Label widget.
+  \return label widget
 */
 QLabel* QDS_Datum::labelWidget() const
 {
@@ -949,7 +1099,8 @@ QLabel* QDS_Datum::labelWidget() const
 }
 
 /*!
-  Returns QLabel widget which contains dictionary item units.
+  \brief Get QDS::Units widget.
+  \return units widget
 */
 QLabel* QDS_Datum::unitsWidget() const
 {
@@ -958,7 +1109,8 @@ QLabel* QDS_Datum::unitsWidget() const
 }
 
 /*!
-  Returns QWidget which contains user input data.
+  \brief Get QDS::Control widget.
+  \return control widget
 */
 QWidget* QDS_Datum::controlWidget() const
 {
@@ -967,7 +1119,8 @@ QWidget* QDS_Datum::controlWidget() const
 }
 
 /*!
-  Returns the dictionary item from the datum.
+  \brief Get the dictionary item from the datum.
+  \return handle to data dictionary item
 */
 Handle(DDS_DicItem) QDS_Datum::dicItem() const
 {
@@ -975,7 +1128,8 @@ Handle(DDS_DicItem) QDS_Datum::dicItem() const
 }
 
 /*!
-  Set the dictionary item in to the datum.
+  \brief Set the dictionary item to the datum.
+  \param item handle to data dictionary item
 */
 void QDS_Datum::setDicItem( const Handle(DDS_DicItem)& item )
 {
@@ -983,7 +1137,9 @@ void QDS_Datum::setDicItem( const Handle(DDS_DicItem)& item )
 }
 
 /*!
-  Creates QLabel widget for dictionary item label.
+  \brief Create QDS::Label widget.
+  \param parent parent widget
+  \return label widget
 */
 QLabel* QDS_Datum::createLabel( QWidget* parent )
 {
@@ -991,7 +1147,9 @@ QLabel* QDS_Datum::createLabel( QWidget* parent )
 }
 
 /*!
-  Creates QLabel widget for dictionary item units.
+  \brief Create QDS::Units widget.
+  \param parent parent widget
+  \return units widget
 */
 QLabel* QDS_Datum::createUnits( QWidget* parent )
 {
@@ -999,7 +1157,37 @@ QLabel* QDS_Datum::createUnits( QWidget* parent )
 }
 
 /*!
-  Creates and returns validator accordance to datum type of value.
+  \fn QWidget* QDS_Datum::createControl( QWidget* parent );
+  \brief Create QDS::Control widget.
+
+  This method should be implemented in the successor classes.
+
+  \param parent parent widget
+  \return control widget
+*/
+
+/*!
+  \fn QString QDS_Datum::getString() const;
+  \brief Get string value from datum.
+  
+  This method should be implemented in the successor classes.
+  
+  \return datum string value
+*/
+
+/*
+  \fn void QDS_Datum::setString( const QString& txt );
+  \brief Set string value to datum.
+  
+  This method should be implemented in the successor classes.
+  
+  \param txt new datum string value
+*/
+
+/*!
+  \brief Create validator according to the datum type of value.
+  \param limits if \c true use minimum and maximum value limits
+  \return validator
 */
 QValidator* QDS_Datum::validator( const bool limits ) const
 {
@@ -1013,7 +1201,7 @@ QValidator* QDS_Datum::validator( const bool limits ) const
     QString aFormat = canonicalFormat( format(), aFlags );
 
     int len = -1;
-    int pos = aFormat.find( "." );
+    int pos = aFormat.indexOf( "." );
     if ( pos != -1 )
     {
       QString numStr = aFormat.mid( pos + 1, aFormat.length() - pos - 2 );
@@ -1063,7 +1251,9 @@ QValidator* QDS_Datum::validator( const bool limits ) const
 }
 
 /*!
-  Checks the given string are valid or not.
+  \brief Validate the specified string.
+  \param txt string to be validated
+  \return \c true if string contains valid data
 */
 bool QDS_Datum::validate( const QString& txt ) const
 {
@@ -1086,8 +1276,12 @@ bool QDS_Datum::validate( const QString& txt ) const
 }
 
 /*!
-  Retrieves information from dictionary and create subwidgets using virtual mechanism.
-  Virtual mechanism doesn't work in constructor and destructor, therefore this method should
+  \brief Initialize datum.
+  
+  Retrieve information from data dictionary and create subwidgets
+  using virtual mechanism.
+
+  Virtual mechanism doesn't work in the constructor, therefore this method should
   be called outside the constructor.
 */
 void QDS_Datum::initialize()
@@ -1118,9 +1312,9 @@ void QDS_Datum::initialize()
     QString lDescr = longDescription();
     QString sDescr = shortDescription();
     if ( !sDescr.isEmpty() )
-      QToolTip::add( ctrl, sDescr );
+      ctrl->setToolTip( sDescr );
     if ( !lDescr.isEmpty() )
-      QWhatsThis::add( ctrl, lDescr );
+      ctrl->setWhatsThis( lDescr );
   }
 
   if ( labelWidget() && ctrl && !( flags() & NotAccel ) )
@@ -1128,7 +1322,11 @@ void QDS_Datum::initialize()
 }
 
 /*!
-  Notification about active unit system changing. Update label and units texts.
+  \brief Process notification about active units system changing.
+  
+  Update label and units widgets.
+
+  \param unitSystem new active units system
 */
 void QDS_Datum::unitSystemChanged( const QString& unitSystem )
 {
@@ -1154,13 +1352,15 @@ void QDS_Datum::unitSystemChanged( const QString& unitSystem )
 }
 
 /*!
-  Covert units into text presentation.
+  \brief Convert units into text presentation.
+  \param uni units to be converted
+  \return text presentation of units (rich-text)
 */
 QString QDS_Datum::unitsToText( const QString& uni )
 {
   int pos = -1;
   QString aUnits = uni;
-  while ( ( pos = aUnits.find( "**" ) ) != -1 )
+  while ( ( pos = aUnits.indexOf( "**" ) ) != -1 )
   {
     aUnits = aUnits.mid( 0, pos ) + QString( "<tt><font size=+2><sup>" ) +
              aUnits.mid( pos + 2, 1 ) + QString( "</sup></font></tt>" ) +
@@ -1170,24 +1370,30 @@ QString QDS_Datum::unitsToText( const QString& uni )
 }
 
 /*!
-  Covert text presentation into internal units format.
+  \brief Convert text presentation into internal units format.
+  \param txt text presentation of units (rich-text)
+  \return units value
 */
 QString QDS_Datum::textToUnits( const QString& txt )
 {
   int pos = -1;
   QString aUnits = txt;
-  while ( ( pos = aUnits.find( "<sup>" ) ) != -1 )
+  while ( ( pos = aUnits.indexOf( "<sup>" ) ) != -1 )
   {
     aUnits.remove( pos, 5 );
     aUnits.insert( pos, "**" );
   }
-  while ( ( pos = aUnits.find( "</sup>" ) ) != -1 )
+  while ( ( pos = aUnits.indexOf( "</sup>" ) ) != -1 )
     aUnits.remove( pos, 6 );
   return aUnits;
 }
 
 /*!
-  Format the specified integer as dictionary item value.
+  \brief Format the specified integer as dictionary item value.
+  \param num integer value being formatted
+  \param id data dictionary ID
+  \param convert if \c true, perform conversion from "SI" units system
+  \return formatted value
 */
 QString QDS_Datum::format( const int num, const QString& id, const bool convert )
 {
@@ -1214,7 +1420,11 @@ QString QDS_Datum::format( const int num, const QString& id, const bool convert 
 }
 
 /*!
-  Format the specified double as dictionary item value.
+  \brief Format the specified double as dictionary item value.
+  \param num double value being formatted
+  \param id data dictionary ID
+  \param convert if \c true, perform conversion from "SI" units system
+  \return formatted value
 */
 QString QDS_Datum::format( const double num, const QString& id, const bool convert )
 {
@@ -1241,7 +1451,11 @@ QString QDS_Datum::format( const double num, const QString& id, const bool conve
 }
 
 /*!
-  Format the specified string as dictionary item value.
+  \brief Format the specified string as dictionary item value.
+  \param str string value being formatted
+  \param id data dictionary ID
+  \param convert if \c true, perform conversion from "SI" units system
+  \return formatted value
 */
 QString QDS_Datum::format( const QString& str, const QString& id, const bool convert )
 {
@@ -1268,7 +1482,11 @@ QString QDS_Datum::format( const QString& str, const QString& id, const bool con
 }
 
 /*!
-  Format the given string accordance to dictionary item format.
+  \brief Format the given value according to the data dictionary item type.
+  \param aFormat format string
+  \param aType data dictionary item type
+  \param aValue integer value being formatted
+  \return formatted value
 */
 QString QDS_Datum::format( const QString& aFormat, const int aType, const int aValue )
 {
@@ -1280,11 +1498,11 @@ QString QDS_Datum::format( const QString& aFormat, const int aType, const int aV
     {
     case DDS_DicItem::Float:
       txt = sprintf( aFormat, (double)aValue );
-      txt = txt.stripWhiteSpace();
+      txt = txt.trimmed();
       break;
     case DDS_DicItem::Integer:
       txt = sprintf( aFormat, aValue );
-      txt = txt.stripWhiteSpace();
+      txt = txt.trimmed();
       break;
     case DDS_DicItem::String:
     default:
@@ -1299,7 +1517,11 @@ QString QDS_Datum::format( const QString& aFormat, const int aType, const int aV
 }
 
 /*!
-  Format the given string accordance to dictionary item format.
+  \brief Format the given value according to the data dictionary item type.
+  \param aFormat format string
+  \param aType data dictionary item type
+  \param aValue double value being formatted
+  \return formatted value
 */
 QString QDS_Datum::format( const QString& aFormat, const int aType, const double aValue )
 {
@@ -1310,16 +1532,16 @@ QString QDS_Datum::format( const QString& aFormat, const int aType, const double
     switch ( aType )
     {
     case DDS_DicItem::Float:
-      txt = QString().sprintf( aFormat, aValue );
-      txt = txt.stripWhiteSpace();
+      txt = QString().sprintf( aFormat.toLatin1().constData(), aValue );
+      txt = txt.trimmed();
       break;
     case DDS_DicItem::Integer:
-      txt = QString().sprintf( aFormat, (int)aValue );
-      txt = txt.stripWhiteSpace();
+      txt = QString().sprintf( aFormat.toLatin1().constData(), (int)aValue );
+      txt = txt.trimmed();
       break;
     case DDS_DicItem::String:
     default:
-      txt = QString().sprintf( aFormat, aValue );
+      txt = QString().sprintf( aFormat.toLatin1().constData(), aValue );
       break;
     }
   }
@@ -1330,14 +1552,18 @@ QString QDS_Datum::format( const QString& aFormat, const int aType, const double
 }
 
 /*!
-  Format the given string accordance to dictionary item format.
+  \brief Format the given value according to the data dictionary item type.
+  \param aFormat format string
+  \param aType data dictionary item type
+  \param aValue string value being formatted
+  \return formatted value
 */
 QString QDS_Datum::format( const QString& aFormat, const int aType, const QString& aValue )
 {
   QString txt = aValue;
 
   if ( aType != DDS_DicItem::String )
-    txt = txt.stripWhiteSpace();
+    txt = txt.trimmed();
 
   if ( aFormat.isEmpty() || txt.isEmpty() )
     return txt;
@@ -1347,11 +1573,11 @@ QString QDS_Datum::format( const QString& aFormat, const int aType, const QStrin
   case DDS_DicItem::Float:
     txt = txt.replace( 'd', 'e' ).replace( 'D', 'E' );
     txt = sprintf( aFormat, txt.toDouble() );
-    txt = txt.stripWhiteSpace();
+    txt = txt.trimmed();
     break;
   case DDS_DicItem::Integer:
     txt = sprintf( aFormat, txt.toInt() );
-    txt = txt.stripWhiteSpace();
+    txt = txt.trimmed();
     break;
   case DDS_DicItem::String:
     txt = sprintf( aFormat, txt );
@@ -1362,26 +1588,43 @@ QString QDS_Datum::format( const QString& aFormat, const int aType, const QStrin
 }
 
 /*!
-  Wrapper around the standard sprintf function.
+  \brief Wrapper around the standard sprintf() function.
+
   Process some non standard flags from format string.
+
+  \param fmt string format
+  \param val value
+  \return formatted value
 */
 QString QDS_Datum::sprintf( const QString& fmt, const int val )
 {
-  return QString().sprintf( canonicalFormat( fmt ), val );
+  return QString().sprintf( canonicalFormat( fmt ).toLatin1().constData(), val );
 }
 
 /*!
-  Wrapper around the standard sprintf function.
+  \brief Wrapper around the standard sprintf() function.
+  \overload
+
   Process some non standard flags from format string.
+
+  \param fmt string format
+  \param val value
+  \return formatted value
 */
 QString QDS_Datum::sprintf( const QString& fmt, const double val )
 {
-  return QString().sprintf( canonicalFormat( fmt ), val );
+  return QString().sprintf( canonicalFormat( fmt ).toLatin1().constData(), val );
 }
 
 /*!
-  Wrapper around the standard sprintf function.
+  \brief Wrapper around the standard sprintf() function.
+  \overload
+
   Process some non standard flags from format string.
+
+  \param fmt string format
+  \param val value
+  \return formatted value
 */
 QString QDS_Datum::sprintf( const QString& fmt, const QString& val )
 {
@@ -1391,11 +1634,11 @@ QString QDS_Datum::sprintf( const QString& fmt, const QString& val )
   QString txt = val;
 
   QRegExp rx( "^(%[0-9]*.?[0-9]*s)$" );
-  if ( aFormat.find( rx ) != -1 )
+  if ( aFormat.indexOf( rx ) != -1 )
   {
     // QString().sprintf() always expects string in UTF8 encoding, so we cannot use it here
     char* buf = new char[txt.length() + 1];
-    ::sprintf( buf, aFormat.latin1(), (const char*)(txt.local8Bit()) );
+    ::sprintf( buf, aFormat.toLatin1().constData(), (const char*)(txt.toLocal8Bit()) );
     txt = QString::fromLocal8Bit( buf );
 
     delete[] buf;
@@ -1412,16 +1655,18 @@ QString QDS_Datum::sprintf( const QString& fmt, const QString& val )
     }*/
   }
 
-  if ( aFlags.contains( "u", false ) )
-    txt = txt.upper();
-  if ( aFlags.contains( "l", false ) )
-    txt = txt.lower();
+  if ( aFlags.contains( "u", Qt::CaseInsensitive ) )
+    txt = txt.toUpper();
+  if ( aFlags.contains( "l", Qt::CaseInsensitive ) )
+    txt = txt.toLower();
 
   return txt;
 }
 
 /*!
-  Returns the canonical sprintf format.
+  \brief Get the canonical sprintf() format.
+  \param fmt string format
+  \return canonical sprintf() format
 */
 QString QDS_Datum::canonicalFormat( const QString& fmt )
 {
@@ -1430,7 +1675,10 @@ QString QDS_Datum::canonicalFormat( const QString& fmt )
 }
 
 /*!
-  Returns the canonical sprintf format and non standard flags.
+  \brief Get the canonical sprintf() format and non standard flags.
+  \param fmt string format
+  \param flags format flags
+  \return canonical sprintf() format
 */
 QString QDS_Datum::canonicalFormat( const QString& fmt, QString& flags )
 {
@@ -1438,7 +1686,7 @@ QString QDS_Datum::canonicalFormat( const QString& fmt, QString& flags )
   flags = QString::null;
 
   QRegExp rx( "^(%[0-9]*.?[0-9]*)([a-z,A-Z]+)[g|c|d|i|o|u|x|e|f|n|p|s|X|E|G]$" );
-  if ( rx.search( newFmt ) >= 0 )
+  if ( rx.indexIn( newFmt ) >= 0 )
   {
     flags = rx.cap( 2 );
     newFmt.remove( rx.pos( 2 ), flags.length() );
@@ -1447,7 +1695,9 @@ QString QDS_Datum::canonicalFormat( const QString& fmt, QString& flags )
 }
 
 /*!
-  Returns displayable units string for given dictionary item id
+  \brief Get displayable units string for specified data dictionary item.
+  \param id data dictionary item ID
+  \return units string
 */
 QString QDS_Datum::units( const QString& id )
 {
@@ -1465,7 +1715,8 @@ QString QDS_Datum::units( const QString& id )
 }
 
 /*!
-  Get prefix string from format.
+  \brief Get prefix string from format.
+  \return current implementation returns null string
 */
 QString QDS_Datum::prefix() const
 {
@@ -1473,7 +1724,8 @@ QString QDS_Datum::prefix() const
 }
 
 /*!
-  Get suffix string from format.
+  \brief Get suffix string from format.
+  \return current implementation returns null string
 */
 QString QDS_Datum::suffix() const
 {
@@ -1481,14 +1733,15 @@ QString QDS_Datum::suffix() const
 }
 
 /*!
-  Get min value.
+  \brief Get minimum value.
+  \return minimum value
 */
 QString QDS_Datum::minValue() const
 {
   QString pref = prefix();
   QString suff = suffix();
 
-  QString aMin = minimumValue().stripWhiteSpace();
+  QString aMin = minimumValue().trimmed();
 
   if ( !pref.isEmpty() && aMin.left( pref.length() ) == pref )
     aMin = aMin.mid( pref.length() );
@@ -1500,14 +1753,15 @@ QString QDS_Datum::minValue() const
 }
 
 /*!
-  Get max value.
+  \brief Get maximum value.
+  \return maximum value
 */
 QString QDS_Datum::maxValue() const
 {
   QString pref = prefix();
   QString suff = suffix();
 
-  QString aMax = maximumValue().stripWhiteSpace();
+  QString aMax = maximumValue().trimmed();
 
   if ( !pref.isEmpty() && aMax.left( pref.length() ) == pref )
     aMax = aMax.mid( pref.length() );
@@ -1519,7 +1773,7 @@ QString QDS_Datum::maxValue() const
 }
 
 /*!
-  Reset the numeric value cache.
+  \brief Reset the numeric value cache.
 */
 void QDS_Datum::invalidateCache()
 {
@@ -1527,7 +1781,9 @@ void QDS_Datum::invalidateCache()
 }
 
 /*!
-  Remove the acceleartor tags '&' from specified label string \asrc.
+  \brief Remove the acceleartor tags '&' from specified label string \a src.
+  \param src processed string
+  \return string after removing '&' symbols
 */
 QString QDS_Datum::removeAccel( const QString& src )
 {
@@ -1546,7 +1802,9 @@ QString QDS_Datum::removeAccel( const QString& src )
 }
 
 /*!
-  Returns true if given format string \atheFormat has specificator for double values.
+  \brief Check if given format specified doube value.
+  \param theFormat format string 
+  \return \c true if \a theFormat has specificator for double values
 */
 bool QDS_Datum::isDoubleFormat( const QString& theFormat )
 {
@@ -1560,7 +1818,8 @@ bool QDS_Datum::isDoubleFormat( const QString& theFormat )
 }
 
 /*!
-  Returns datum flags.
+  \brief Get datum flags.
+  \return datum flags (QDS::DatumFlags)
 */
 int QDS_Datum::flags() const
 {
@@ -1568,7 +1827,8 @@ int QDS_Datum::flags() const
 }
 
 /*!
-  Perform intialization if it needed. [internal]
+  \brief Perform initialization if it needed.
+  \internal
 */
 void QDS_Datum::initDatum() const
 {
@@ -1580,11 +1840,14 @@ void QDS_Datum::initDatum() const
   that->initialize();
 
   if ( parent() )
-    parent()->removeEventFilter( this );
+    parent()->removeEventFilter( (QObject*)this );
 }
 
 /*!
-  Return wrapper for specified subwidget. [internal]
+  \brief Get wrapper for specified subwidget.
+  \internal
+  \param wid subwidget
+  \return wrapper
 */
 QDS_Datum::Wrapper* QDS_Datum::wrapper( QWidget* wid ) const
 {
@@ -1594,14 +1857,17 @@ QDS_Datum::Wrapper* QDS_Datum::wrapper( QWidget* wid ) const
   Wrapper* wrap = 0;
   for ( QMap<int, Wrapper*>::ConstIterator it = myWrapper.begin(); it != myWrapper.end() && !wrap; ++it )
   {
-    if ( it.data() && it.data()->widget() == wid )
-      wrap = it.data();
+    if ( it.value() && it.value()->widget() == wid )
+      wrap = it.value();
   }
   return wrap;
 }
 
 /*!
-  Return wrapper for specified subwidget name. [internal]
+  \brief Get wrapper for specified subwidget.
+  \internal
+  \param id subwidget ID
+  \return wrapper
 */
 QDS_Datum::Wrapper* QDS_Datum::wrapper( const int id ) const
 {
@@ -1612,15 +1878,30 @@ QDS_Datum::Wrapper* QDS_Datum::wrapper( const int id ) const
 }
 
 /*!
-  Return subwidget name for specified wrapper. [internal]
+  \brief Get subwidget type for specified wrapper.
+  \internal
+  \param wrap wrapper
+  \return subwidget ID
 */
 int QDS_Datum::wrapperType( QDS_Datum::Wrapper* wrap ) const
 {
   int id = -1;
   for ( QMap<int, Wrapper*>::ConstIterator it = myWrapper.begin(); it != myWrapper.end() && id == -1; ++it )
   {
-    if ( it.data() == wrap )
+    if ( it.value() == wrap )
       id = it.key();
   }
   return id;
 }
+
+/*!
+  \fn void QDS_Datum::paramChanged();
+  \brief The signal is emitted when the datum value is changed.
+*/
+
+/*!
+  void QDS_Datum::paramChanged( QString& txt );
+  \brief The signal is emitted when the datum value is changed.
+  \param txt new datum value
+*/
+

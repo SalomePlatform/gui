@@ -27,7 +27,7 @@ class SUIT_Desktop;
 class Plot2d_ViewFrame;
 class Plot2d_Prs;
 class QString;
-class QPopupMenu;
+class QMenu;
 
 class PLOT2D_EXPORT Plot2d_Viewer: public SUIT_ViewModel
 {
@@ -42,7 +42,7 @@ public:
   virtual void             setViewManager( SUIT_ViewManager* );
   virtual SUIT_ViewWindow* createView(SUIT_Desktop* theDesktop);
   virtual QString getType() const { return Type(); }
-  virtual void contextMenuPopup(QPopupMenu*);
+  virtual void contextMenuPopup(QMenu*);
   Plot2d_Prs*  getPrs() const { return myPrs; };
   void         setPrs(Plot2d_Prs* thePrs);
   void         update();

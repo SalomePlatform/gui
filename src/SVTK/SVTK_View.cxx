@@ -307,8 +307,8 @@ SVTK_View
   using namespace SVTK;
   ForEachIf<SALOME_Actor>(getRenderer()->GetActors(),
 			  TIsSameIObject<SALOME_Actor>(theIObject),
-			  TSetFunction<SALOME_Actor,const char*,QString>
-			  (&SALOME_Actor::setName,theName.latin1()));
+			  TSetFunction<SALOME_Actor,const char*,const char*>
+			  (&SALOME_Actor::setName,theName.toLatin1().data()));
 }
 
 /*!

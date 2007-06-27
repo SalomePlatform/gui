@@ -31,7 +31,7 @@
 
 #include "SVTK.h"
 
-#include <qdialog.h>
+#include <QDialog>
 
 class QtxAction;
 
@@ -44,7 +44,7 @@ public:
 		  QWidget* theParent,
 		  const char* theName = "", 
 		  bool theModal = FALSE, 
-		  WFlags theWFalgs = 0);
+		  Qt::WindowFlags theWFalgs = 0);
 
   ~SVTK_DialogBase();
 

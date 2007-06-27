@@ -21,27 +21,27 @@
 
 #include "CAM.h"
 
-#include <qpixmap.h>
-#include <qobject.h>
-#include <qpopupmenu.h>
-#include <qstring.h>
+#include <QObject>
+#include <QPixmap>
+#include <QString>
+#include <QMap>
 
 class QAction;
+class QMenu;
+class QIcon;
+
+class QtxActionMenuMgr;
+class QtxActionToolMgr;
 class SUIT_Study;
 class SUIT_Application;
 class CAM_Study;
 class CAM_DataModel;
 class CAM_Application;
-class QtxActionMenuMgr;
-class QtxActionToolMgr;
 
 #ifdef WIN32
 #pragma warning( disable: 4251 )
 #endif
 
-/*! 
- * Class provide support of tool and menu managers.
- */
 class CAM_EXPORT CAM_Module : public QObject
 {
   Q_OBJECT
@@ -53,6 +53,7 @@ public:
 
   virtual void           initialize( CAM_Application* );
 
+  QString                name() const;
   QString                moduleName() const;
   QPixmap                moduleIcon() const;
 
@@ -61,26 +62,20 @@ public:
 
   virtual QString        iconName() const;
 
-  virtual void           contextMenuPopup( const QString&, QPopupMenu*, QString& title ) {};
+  virtual void           contextMenuPopup( const QString&, QMenu*, QString& ) {};
   virtual void           updateCommandsStatus() {};
 
   virtual void           putInfo( const QString&, const int = -1 );
 
   bool                   isActiveModule() const;
 
-  /** @name Set Menu Shown*/
-  //@{
   virtual void           setMenuShown( const bool );
   void                   setMenuShown( QAction*, const bool );
   void                   setMenuShown( const int, const bool );
-  //@}
 
-  /** @name Set Tool Shown*/
-  //@{
   virtual void           setToolShown( const bool );
   void                   setToolShown( QAction*, const bool );
   void                   setToolShown( const int, const bool );
-  //@}
 
 public slots:
   virtual bool           activateModule( SUIT_Study* );
@@ -99,53 +94,45 @@ private slots:
 protected: 
   virtual CAM_DataModel* createDataModel();
 
+  void                   setName( const QString& );
   virtual void           setModuleName( const QString& );
   virtual void           setModuleIcon( const QPixmap& );
 
   QtxActionMenuMgr*      menuMgr() const;
   QtxActionToolMgr*      toolMgr() const;
 
-  /** @name Create tool methods.*/
-  //@{
   int                    createTool( const QString& );
   int                    createTool( const int, const int, const int = -1 );
   int                    createTool( const int, const QString&, const int = -1 );
   int                    createTool( QAction*, const int, const int = -1, const int = -1 );
   int                    createTool( QAction*, const QString&, const int = -1, const int = -1 );
-  //@}
 
-  /** @name Create menu methods.*/
-  //@{
-  int                    createMenu( const QString&, const int, const int = -1, const int = -1, const int = -1, const bool = false );
-  int                    createMenu( const QString&, const QString&, const int = -1, const int = -1, const int = -1, const bool = false );
+  int                    createMenu( const QString&, const int, const int = -1, const int = -1, const int = -1 );
+  int                    createMenu( const QString&, const QString&, const int = -1, const int = -1, const int = -1 );
   int                    createMenu( const int, const int, const int = -1, const int = -1 );
   int                    createMenu( const int, const QString&, const int = -1, const int = -1 );
   int                    createMenu( QAction*, const int, const int = -1, const int = -1, const int = -1 );
   int                    createMenu( QAction*, const QString&, const int = -1, const int = -1, const int = -1 );
-  //@}
 
   static QAction*        separator();
 
-  /**Action ids methods.*/
-  //@{
   QAction*               action( const int ) const;
   int                    actionId( const QAction* ) const;
-  //@}
 
   int                    registerAction( const int, QAction* );
   bool                   unregisterAction( const int );
   bool                   unregisterAction( QAction* );
-  QAction*               createAction( const int, const QString&, const QIconSet&, const QString&,
+  QAction*               createAction( const int, const QString&, const QIcon&, const QString&,
                                        const QString&, const int, QObject* = 0,
                                        const bool = false, QObject* = 0, const char* = 0 );
 
 private:
-  CAM_Application*       myApp;
-  QString                myName;
-  QPixmap                myIcon;
-  QString                myInfo;
-  CAM_DataModel*         myDataModel;
-  QMap<int, QAction*>    myActionMap;
+  CAM_Application*       myApp;             //!< parent application object
+  QString                myName;            //!< module title (user name)
+  QPixmap                myIcon;            //!< module icon
+  QString                myInfo;            //!< latest info message
+  CAM_DataModel*         myDataModel;       //!< data model
+  QMap<int, QAction*>    myActionMap;       //!< menu actions
 
   friend class CAM_Application;
 };

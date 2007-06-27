@@ -20,13 +20,14 @@
 #define SVTK_VIEWMODEL_H
 
 #include "SVTK.h"
-#include "SUIT_ViewModel.h"
 #include "SVTK_ViewModelBase.h"
 
 #include "SALOME_Prs.h"
 #include "SALOME_InteractiveObject.hxx"
 
-#include <qcolor.h>
+#include <QColor>
+
+class QMouseEvent;
 
 class SVTK_ViewWindow;
 
@@ -51,7 +52,7 @@ public:
   virtual void setViewManager(SUIT_ViewManager* theViewManager);
 
   //! See #SUIT_ViewModel::contextMenuPopup
-  virtual void contextMenuPopup( QPopupMenu* );
+  virtual void contextMenuPopup( QMenu* );
 
   //! See #SUIT_ViewModel::getType
   virtual QString getType() const { return Type(); }

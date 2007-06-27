@@ -34,7 +34,7 @@
 #include <qgroupbox.h>
 #include <qcolordialog.h>
 
-#ifndef WNT
+#ifndef WIN32
 using namespace std;
 #endif
 
@@ -48,73 +48,78 @@ using namespace std;
   Constructor
 */
 Plot2d_SetupCurveDlg::Plot2d_SetupCurveDlg( QWidget* parent )
-     : QDialog( parent, "Plot2d_SetupCurveDlg", true, WStyle_Customize | WStyle_NormalBorder | WStyle_Title | WStyle_SysMenu )
+     : QDialog( parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint )
 {
-  setCaption( tr("TLT_SETUP_CURVE") );
+  setObjectName( "Plot2d_SetupCurveDlg" );
+  setModal( true );
+  setWindowTitle( tr("TLT_SETUP_CURVE") );
   setSizeGripEnabled( TRUE );
   QGridLayout* topLayout = new QGridLayout( this ); 
   topLayout->setSpacing( SPACING_SIZE );
   topLayout->setMargin( MARGIN_SIZE );
 
   QGroupBox* TopGroup = new QGroupBox( this );
-  TopGroup->setColumnLayout( 0, Qt::Vertical );
-  TopGroup->layout()->setSpacing( 0 ); TopGroup->layout()->setMargin( 0 );
-  QGridLayout* TopGroupLayout = new QGridLayout( TopGroup->layout() );
+  QGridLayout* TopGroupLayout = new QGridLayout( TopGroup );
+  TopGroup->setLayout( TopGroupLayout );
   TopGroupLayout->setAlignment( Qt::AlignTop );
   TopGroupLayout->setSpacing( SPACING_SIZE ); TopGroupLayout->setMargin( MARGIN_SIZE );
 
   QLabel* aLineTypeLab = new QLabel( tr( "CURVE_LINE_TYPE_LAB" ), TopGroup );
-  myLineCombo = new QComboBox( false, TopGroup );
+  myLineCombo = new QComboBox( TopGroup );
+  myLineCombo->setEditable( false );
   myLineCombo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myLineCombo->setMinimumWidth( MIN_COMBO_WIDTH );
-  myLineCombo->insertItem( tr( "NONE_LINE_LBL" ) );
-  myLineCombo->insertItem( tr( "SOLID_LINE_LBL" ) );
-  myLineCombo->insertItem( tr( "DASH_LINE_LBL" ) );
-  myLineCombo->insertItem( tr( "DOT_LINE_LBL" ) );
-  myLineCombo->insertItem( tr( "DASHDOT_LINE_LBL" ) );
-  myLineCombo->insertItem( tr( "DAHSDOTDOT_LINE_LBL" ) );
-  myLineCombo->setCurrentItem( 1 ); // SOLID by default
+  myLineCombo->addItem( tr( "NONE_LINE_LBL" ) );
+  myLineCombo->addItem( tr( "SOLID_LINE_LBL" ) );
+  myLineCombo->addItem( tr( "DASH_LINE_LBL" ) );
+  myLineCombo->addItem( tr( "DOT_LINE_LBL" ) );
+  myLineCombo->addItem( tr( "DASHDOT_LINE_LBL" ) );
+  myLineCombo->addItem( tr( "DAHSDOTDOT_LINE_LBL" ) );
+  myLineCombo->setCurrentIndex( 1 ); // SOLID by default
 
   QLabel* aLineWidthLab = new QLabel( tr( "CURVE_LINE_WIDTH_LAB" ), TopGroup );
-  myLineSpin = new QSpinBox( 0, MAX_LINE_WIDTH, 1, TopGroup );
+  myLineSpin = new QSpinBox( TopGroup );
+  myLineSpin->setMinimum( 0 );
+  myLineSpin->setMaximum( MAX_LINE_WIDTH );
+  myLineSpin->setSingleStep( 1 );
   myLineSpin->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myLineSpin->setMinimumWidth( MIN_SPIN_WIDTH );
   myLineSpin->setValue( 0 );        // default width is 0
 
   QLabel* aMarkerLab = new QLabel( tr( "CURVE_MARKER_TYPE_LAB" ), TopGroup );
-  myMarkerCombo = new QComboBox( false, TopGroup );
+  myMarkerCombo = new QComboBox( TopGroup );
+  myMarkerCombo->setEditable( false );
   myMarkerCombo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myMarkerCombo->setMinimumWidth( MIN_COMBO_WIDTH );
-  myMarkerCombo->insertItem( tr( "NONE_MARKER_LBL" ) );
-  myMarkerCombo->insertItem( tr( "CIRCLE_MARKER_LBL" ) );
-  myMarkerCombo->insertItem( tr( "RECTANGLE_MARKER_LBL" ) );
-  myMarkerCombo->insertItem( tr( "DIAMOND_MARKER_LBL" ) );
-  myMarkerCombo->insertItem( tr( "DTRIANGLE_MARKER_LBL" ) );
-  myMarkerCombo->insertItem( tr( "UTRIANGLE_MARKER_LBL" ) );
-  myMarkerCombo->insertItem( tr( "LTRIANGLE_MARKER_LBL" ) );
-  myMarkerCombo->insertItem( tr( "RTRIANGLE_MARKER_LBL" ) );
-  myMarkerCombo->insertItem( tr( "CROSS_MARKER_LBL" ) );
-  myMarkerCombo->insertItem( tr( "XCROSS_MARKER_LBL" ) );
-  myMarkerCombo->setCurrentItem( 1 ); // CIRCLE by default
+  myMarkerCombo->addItem( tr( "NONE_MARKER_LBL" ) );
+  myMarkerCombo->addItem( tr( "CIRCLE_MARKER_LBL" ) );
+  myMarkerCombo->addItem( tr( "RECTANGLE_MARKER_LBL" ) );
+  myMarkerCombo->addItem( tr( "DIAMOND_MARKER_LBL" ) );
+  myMarkerCombo->addItem( tr( "DTRIANGLE_MARKER_LBL" ) );
+  myMarkerCombo->addItem( tr( "UTRIANGLE_MARKER_LBL" ) );
+  myMarkerCombo->addItem( tr( "LTRIANGLE_MARKER_LBL" ) );
+  myMarkerCombo->addItem( tr( "RTRIANGLE_MARKER_LBL" ) );
+  myMarkerCombo->addItem( tr( "CROSS_MARKER_LBL" ) );
+  myMarkerCombo->addItem( tr( "XCROSS_MARKER_LBL" ) );
+  myMarkerCombo->setCurrentIndex( 1 ); // CIRCLE by default
 
   QLabel* aColorLab = new QLabel( tr( "CURVE_COLOR_LAB" ), TopGroup );
   myColorBtn = new QToolButton( TopGroup );
   myColorBtn->setMinimumSize(25, 25);
 
   TopGroupLayout->addWidget( aLineTypeLab, 0, 0 );
-  TopGroupLayout->addMultiCellWidget( myLineCombo, 0, 0, 1, 2 );
+  TopGroupLayout->addWidget( myLineCombo, 0, 1, 1, 2 );
   TopGroupLayout->addWidget( aLineWidthLab, 1, 0 );
-  TopGroupLayout->addMultiCellWidget( myLineSpin, 1, 1, 1, 2 );
+  TopGroupLayout->addWidget( myLineSpin, 1, 1, 1, 2 );
   TopGroupLayout->addWidget( aMarkerLab, 2, 0 );
-  TopGroupLayout->addMultiCellWidget( myMarkerCombo, 2, 2, 1, 2 );
+  TopGroupLayout->addWidget( myMarkerCombo, 2, 1, 1, 2 );
   TopGroupLayout->addWidget( aColorLab, 3, 0 );
   TopGroupLayout->addWidget( myColorBtn, 3, 1 );
-  TopGroupLayout->setColStretch( 2, 5 );
+  TopGroupLayout->setColumnStretch( 2, 5 );
 
   QGroupBox* GroupButtons = new QGroupBox( this );
-  GroupButtons->setColumnLayout( 0, Qt::Vertical );
-  GroupButtons->layout()->setSpacing( 0 ); GroupButtons->layout()->setMargin( 0 );
-  QHBoxLayout* GroupButtonsLayout = new QHBoxLayout( GroupButtons->layout() );
+  QHBoxLayout* GroupButtonsLayout = new QHBoxLayout( GroupButtons );
+  GroupButtons->setLayout( GroupButtonsLayout );
   GroupButtonsLayout->setAlignment( Qt::AlignTop );
   GroupButtonsLayout->setSpacing( SPACING_SIZE ); GroupButtonsLayout->setMargin( MARGIN_SIZE );
 
@@ -148,7 +153,7 @@ Plot2d_SetupCurveDlg::~Plot2d_SetupCurveDlg()
 */
 void Plot2d_SetupCurveDlg::setLine( const int line, const int width )
 {
-  myLineCombo->setCurrentItem( line );
+  myLineCombo->setCurrentIndex( line );
   myLineSpin->setValue( width );
 }
 /*!
@@ -156,7 +161,7 @@ void Plot2d_SetupCurveDlg::setLine( const int line, const int width )
 */
 int Plot2d_SetupCurveDlg::getLine() const
 {
-  return myLineCombo->currentItem();
+  return myLineCombo->currentIndex();
 }
 /*!
   Gets line width
@@ -170,14 +175,14 @@ int Plot2d_SetupCurveDlg::getLineWidth() const
 */
 void Plot2d_SetupCurveDlg::setMarker( const int marker )
 {
-  myMarkerCombo->setCurrentItem( marker );
+  myMarkerCombo->setCurrentIndex( marker );
 }
 /*!
   Gets marker style
 */
 int Plot2d_SetupCurveDlg::getMarker() const 
 {
-  return myMarkerCombo->currentItem();
+  return myMarkerCombo->currentIndex();
 }
 /*!
   Sets color
@@ -185,12 +190,9 @@ int Plot2d_SetupCurveDlg::getMarker() const
 void Plot2d_SetupCurveDlg::setColor( const QColor& color )
 {
   QPalette pal = myColorBtn->palette();
-  QColorGroup ca = pal.active();
-  ca.setColor( QColorGroup::Button, color );
-  QColorGroup ci = pal.inactive();
-  ci.setColor( QColorGroup::Button, color );
-  pal.setActive( ca );
-  pal.setInactive( ci );
+  pal.setColor( QPalette::Active, QPalette::Button, color );
+  pal.setColor( QPalette::Inactive, QPalette::Button, color );
+
   myColorBtn->setPalette( pal );
 }
 /*!
@@ -198,7 +200,7 @@ void Plot2d_SetupCurveDlg::setColor( const QColor& color )
 */
 QColor Plot2d_SetupCurveDlg::getColor() const 
 {
-  return myColorBtn->palette().active().button();
+  return myColorBtn->palette().color( QPalette::Active, QPalette::Button );
 }
 /*!
   <Color> button slot, invokes color selection dialog box

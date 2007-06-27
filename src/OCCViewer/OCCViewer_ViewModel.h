@@ -19,8 +19,8 @@
 #ifndef OCCVIEWER_VIEWMODEL_H
 #define OCCVIEWER_VIEWMODEL_H
 
-#include <qcolor.h>
-#include <qcursor.h>
+#include <QColor>
+#include <QPoint>
 
 #include "OCCViewer.h"
 
@@ -28,12 +28,15 @@
 
 #include <V3d_View.hxx>
 #include <AIS_Trihedron.hxx>
-#include <AIS_ListOfInteractive.hxx>
 #include <AIS_InteractiveContext.hxx>
+
+class QMouseEvent;
 
 class SUIT_ViewWindow;
 class SUIT_Desktop;
 class OCCViewer_ViewWindow;
+
+class AIS_ListOfInteractive;
 
 struct viewAspect
 {
@@ -54,7 +57,7 @@ public:
 	QString    name;
 };
 
-typedef QValueList<viewAspect> viewAspectList;
+typedef QList<viewAspect> viewAspectList;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -72,17 +75,16 @@ public:
 
   void update();
 
-	virtual SUIT_ViewWindow* createView(SUIT_Desktop* theDesktop);
-
-	virtual void                    setViewManager(SUIT_ViewManager* theViewManager);
+  virtual SUIT_ViewWindow*        createView(SUIT_Desktop* theDesktop);
+  
+  virtual void                    setViewManager(SUIT_ViewManager* theViewManager);
   virtual QString                 getType() const { return Type(); }
 
-  virtual void                    contextMenuPopup(QPopupMenu*);
+  virtual void                    contextMenuPopup(QMenu*);
   
   void                            getSelectedObjects(AIS_ListOfInteractive& theList);
   void                            setObjectsSelected(const AIS_ListOfInteractive& theList);
-  void                            setSelected(const Handle(AIS_InteractiveObject)& theIO)
-  { myAISContext->SetSelected(theIO);}
+  void                            setSelected(const Handle(AIS_InteractiveObject)& theIO) { myAISContext->SetSelected(theIO);}
 
   void                            performSelectionChanged();
   // emit signal selectionChanged
@@ -115,19 +117,16 @@ public:
   Handle(AIS_Trihedron)           getTrihedron()   const { return myTrihedron; }
 
   void                            enableSelection(bool isEnabled);
-  bool                            isSelectionEnabled() const 
-  { return mySelectionEnabled; }
+  bool                            isSelectionEnabled() const { return mySelectionEnabled; }
 
   void                            enableMultiselection(bool isEnable);
-  bool                            isMultiSelectionEnabled() const 
-  { return myMultiSelectionEnabled; }
+  bool                            isMultiSelectionEnabled() const { return myMultiSelectionEnabled; }
 
-  int                             getSelectionCount() const 
-  { return (!myAISContext.IsNull())? myAISContext->NbSelected():0; }
+  int                             getSelectionCount() const { return (!myAISContext.IsNull())? myAISContext->NbSelected():0; }
 
   /* Selection management */
-  bool		highlight( const Handle(AIS_InteractiveObject)&, bool, bool=true );
-  bool		unHighlightAll( bool=true ); 
+  bool    highlight( const Handle(AIS_InteractiveObject)&, bool, bool=true );
+  bool	  unHighlightAll( bool=true ); 
   bool    isInViewer( const Handle(AIS_InteractiveObject)&, bool=false );
   bool    isVisible( const Handle(AIS_InteractiveObject)& );
 

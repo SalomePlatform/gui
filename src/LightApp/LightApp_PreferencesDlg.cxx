@@ -24,29 +24,37 @@
 
 #include "QtxResourceMgr.h"
 
-#include <qbutton.h>
-#include <qlayout.h>
-#include <qmessagebox.h>
-#include <qvbox.h>
-#include <qfiledialog.h>
+#include <SUIT_MessageBox.h>
+
+#include <QAbstractButton>
+#include <QVBoxLayout>
+#include <QFileDialog>
 
 /*!
   Constructor.
 */
 LightApp_PreferencesDlg::LightApp_PreferencesDlg( LightApp_Preferences* prefs, QWidget* parent )
-: QtxDialog( parent, 0, true, true, OK | Close | Apply ),
+: QtxDialog( parent, true, true, OK | Close | Apply ),
 myPrefs( prefs ), mySaved ( false )
 {
-  setCaption( tr( "CAPTION" ) );
+  setWindowTitle( tr( "CAPTION" ) );
 
-  QVBoxLayout* main = new QVBoxLayout( mainFrame(), 5 );
+  QVBoxLayout* main = new QVBoxLayout( mainFrame() );
+  main->setMargin( 5 );
+  main->setSpacing( 5 );
 
-  QVBox* base = new QVBox( mainFrame() );
-  main->addWidget( base );
+  QWidget* vbox = new QWidget( mainFrame() );
+  main->addWidget( vbox );
 
-  myPrefs->reparent( base, QPoint( 0, 0 ), true );
+  QVBoxLayout *base = new QVBoxLayout( vbox );
+  
+  myPrefs->setParent( vbox );
+  myPrefs->move( QPoint( 0, 0 ) );
+  myPrefs->show();
 
   setFocusProxy( myPrefs );
+
+  base->addWidget( myPrefs );
 
   setButtonPosition( Right, Close );
 
@@ -55,10 +63,10 @@ myPrefs( prefs ), mySaved ( false )
   connect( this, SIGNAL( dlgHelp() ),  this, SLOT( onHelp() ) );
   connect( this, SIGNAL( dlgApply() ), this, SLOT( onApply() ) );
 
-  QButton* defBtn = userButton( insertButton( tr( "DEFAULT_BTN_TEXT" ) ) );
+  QAbstractButton* defBtn = userButton( insertButton( tr( "DEFAULT_BTN_TEXT" ) ) );
   if ( defBtn )
     connect( defBtn, SIGNAL( clicked() ), this, SLOT( onDefault() ) );
-  QButton* impBtn = userButton( insertButton( tr( "IMPORT_BTN_TEXT" ) ) );
+  QAbstractButton* impBtn = userButton( insertButton( tr( "IMPORT_BTN_TEXT" ) ) );
   if( impBtn )
     connect( impBtn, SIGNAL( clicked() ), this, SLOT( onImportPref() ) );
 }
@@ -71,7 +79,9 @@ LightApp_PreferencesDlg::~LightApp_PreferencesDlg()
   if ( !myPrefs )
     return;
 
-  myPrefs->reparent( 0, QPoint( 0, 0 ), false );
+  myPrefs->setParent( 0 );
+  myPrefs->move( QPoint( 0, 0 ) );
+  myPrefs->hide();
   myPrefs = 0;
 }
 
@@ -124,7 +134,9 @@ void LightApp_PreferencesDlg::onApply()
 /*! Restore default preferences*/
 void LightApp_PreferencesDlg::onDefault()
 {
-  if( QMessageBox::Ok == QMessageBox::information( this, tr( "WARNING" ), tr( "DEFAULT_QUESTION" ), QMessageBox::Ok, QMessageBox::Cancel ) )
+  if( SUIT_MessageBox::Ok == SUIT_MessageBox::question( this, tr( "WARNING" ), tr( "DEFAULT_QUESTION" ), 
+							SUIT_MessageBox::Ok | SUIT_MessageBox::Cancel,
+							SUIT_MessageBox::Ok ) )
     {
       if ( myPrefs && myPrefs->resourceMgr() )
 	{
@@ -143,14 +155,16 @@ void LightApp_PreferencesDlg::onImportPref()
   if( !mgr )
     return;
 
-  QFileDialog dlg( ".", "*", this, "" );
-  dlg.setCaption( tr("IMPORT_PREFERENCES") );
-  dlg.setShowHiddenFiles( true );
+  QFileDialog dlg( this, tr("IMPORT_PREFERENCES"), ".", "*" );
+  dlg.setObjectName( "" );
+  //dlg.setShowHiddenFiles( true );
   dlg.exec();
-  QString fname = dlg.selectedFile();
-  if( fname.isEmpty() )
+  
+  QStringList files = dlg.selectedFiles();
+  if ( files.isEmpty() )
     return;
 
+  QString fname = files[0];
   if( mgr->import( fname ) )
   {
     myPrefs->retrieve();

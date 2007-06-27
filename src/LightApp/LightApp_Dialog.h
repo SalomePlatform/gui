@@ -25,12 +25,12 @@
 #include "LightApp.h"
 #include <QtxDialog.h>
 
-#include <qvaluelist.h>
-#include <qmap.h>
-#include <qpixmap.h>
+#include <QList>
+#include <QMap>
+#include <QPixmap>
 
 class QLineEdit;
-class QButton;
+class QAbstractButton;
 class QLabel;
 
 class SUIT_ResourceMgr;
@@ -52,7 +52,7 @@ class LIGHTAPP_EXPORT LightApp_Dialog : public QtxDialog
   Q_OBJECT
   
 public:
-  typedef QValueList<int>        TypesList;
+  typedef QList<int>             TypesList;
   typedef QMap<int,QStringList>  SelectedObjects;
 
   enum ObjectWg
@@ -76,7 +76,7 @@ public:
 
 public:
   LightApp_Dialog( QWidget* = 0, const char* = 0, bool = false,
-                    bool = false, const int = Standard, WFlags = 0 );
+                    bool = false, const int = Standard, Qt::WindowFlags = 0 );
   virtual ~LightApp_Dialog();
   
   virtual void    show();
@@ -272,12 +272,12 @@ private:
 private:
   typedef struct
   {
-    QLineEdit*      myEdit;
-    QButton*        myBtn;
-    QLabel*         myLabel;
-    QStringList     myNames, myIds;
-    TypesList       myTypes, myPossibleTypes;
-    NameIndication  myNI;
+    QLineEdit*       myEdit;
+    QAbstractButton* myBtn;
+    QLabel*          myLabel;
+    QStringList      myNames, myIds;
+    TypesList        myTypes, myPossibleTypes;
+    NameIndication   myNI;
     
   } Object;
   

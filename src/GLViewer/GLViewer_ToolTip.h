@@ -29,12 +29,14 @@
 
 //#include <qtooltip.h>
 //#include <QtxToolTip.h>
-#include <qobject.h>
+#include <QObject>
+#include <QPoint>
 
 #define TIP_TIME            1000
 
 class GLViewer_ViewPort2d;
 class QLabel;
+class QTimer;
 /*!
   \class GLViewer_ObjectTip
   ToolTip of GLViewer_Objects

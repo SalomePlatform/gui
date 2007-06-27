@@ -25,124 +25,139 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 # header files
 
-salomeinclude_HEADERS= Qtx.h \
-	QtxAction.h \
-	QtxColorScale.h \
-	QtxComboBox.h \
-	QtxDblSpinBox.h \
-	QtxDialog.h \
-	QtxDockAction.h \
-	QtxDockWindow.h \
-	QtxGroupBox.h \
-	QtxIntSpinBox.h \
-	QtxListAction.h \
-	QtxListBox.h \
-	QtxListOfOperations.h \
-	QtxLogoMgr.h \
-	QtxMenuButton.h \
-	QtxMRUAction.h \
-	QtxOperations.h \
-	QtxPathDialog.h \
-	QtxPopupMgr.h \
-	QtxResourceMgr.h \
-	QtxStdOperations.h \
-	QtxTable.h \
-	QtxToolBar.h \
-	QtxToolTip.h \
-	QtxParser.h \
-	QtxPopupMenu.h \
-	QtxActionMgr.h \
-	QtxActionMenuMgr.h \
-	QtxActionToolMgr.h \
-	QtxMainWindow.h \
-	QtxWorkspaceAction.h \
-	QtxWorkstackAction.h \
-	QtxListResourceEdit.h \
-	QtxWorkstack.h \
-	QtxResourceEdit.h \
-	QtxListView.h \
-	QtxDirListEditor.h \
-	QtxDblValidator.h \
-	QtxSplash.h
+#VSR: already migrated to Qt4 files
+salomeinclude_HEADERS=		\
+	Qtx.h			\
+	QtxAction.h		\
+	QtxActionMenuMgr.h	\
+	QtxActionMgr.h		\
+	QtxActionSet.h		\
+	QtxActionToolMgr.h	\
+	QtxColorScale.h		\
+	QtxComboBox.h		\
+	QtxDialog.h		\
+	QtxDockAction.h		\
+	QtxDockWidget.h		\
+	QtxDoubleSpinBox.h	\
+	QtxEvalExpr.h		\
+	QtxGridBox.h		\
+	QtxGroupBox.h		\
+	QtxIntSpinBox.h		\
+	QtxListAction.h		\
+	QtxLogoMgr.h		\
+	QtxMainWindow.h 	\
+	QtxMap.h		\
+	QtxMRUAction.h		\
+	QtxPathDialog.h		\
+	QtxPopupMgr.h		\
+	QtxResourceMgr.h	\
+	QtxSplash.h		\
+	QtxToolBar.h		\
+	QtxToolTip.h		\
+	QtxValidator.h		\
+	QtxWorkspace.h		\
+	QtxWorkspaceAction.h	\
+	QtxWorkstack.h		\
+	QtxWorkstackAction.h
+
+#VSR: not yet migrated to Qt4 files
+#				\
+	QtxDirListEditor.h	\
+	QtxListBox.h		\
+	QtxListResourceEdit.h	\
+	QtxListView.h		\
+	QtxPopupMenu.h		\
+	QtxResourceEdit.h	\
+	QtxTable.h
 
 # Libraries targets
 
 lib_LTLIBRARIES= libqtx.la
 
-dist_libqtx_la_SOURCES= \
-	Qtx.cxx \
-	QtxAction.cxx \
-	QtxColorScale.cxx \
-	QtxComboBox.cxx \
-	QtxDblSpinBox.cxx \
-	QtxDialog.cxx \
-	QtxDockAction.cxx \
-	QtxDockWindow.cxx \
-	QtxGroupBox.cxx \
-	QtxIntSpinBox.cxx \
-	QtxListAction.cxx \
-	QtxListBox.cxx \
-	QtxListOfOperations.cxx \
-	QtxLogoMgr.cxx \
-	QtxMenuButton.cxx \
-	QtxMRUAction.cxx \
-	QtxPathDialog.cxx \
-	QtxPopupMgr.cxx \
-	QtxResourceMgr.cxx \
-	QtxStdOperations.cxx \
-	QtxTable.cxx \
-	QtxToolBar.cxx \
-	QtxToolTip.cxx \
-	QtxOperations.cxx \
-	QtxParser.cxx \
-	QtxPopupMenu.cxx \
-	QtxActionMgr.cxx \
-	QtxActionMenuMgr.cxx \
-	QtxActionToolMgr.cxx \
-	QtxMainWindow.cxx \
-	QtxWorkspaceAction.cxx \
-	QtxWorkstackAction.cxx \
-	QtxListResourceEdit.cxx \
-	QtxResourceEdit.cxx \
-	QtxWorkstack.cxx \
-	QtxListView.cxx \
-	QtxDirListEditor.cxx \
-	QtxDblValidator.cxx \
-	QtxSplash.cxx
+#VSR: already migrated to Qt4 files
+dist_libqtx_la_SOURCES=		\
+	Qtx.cxx			\
+	QtxAction.cxx		\
+	QtxActionMenuMgr.cxx	\
+	QtxActionMgr.cxx	\
+	QtxActionSet.cxx	\
+	QtxActionToolMgr.cxx	\
+	QtxColorScale.cxx	\
+	QtxComboBox.cxx		\
+	QtxDialog.cxx		\
+	QtxDockAction.cxx	\
+	QtxDockWidget.cxx	\
+	QtxDoubleSpinBox.cxx	\
+	QtxEvalExpr.cxx		\
+	QtxGridBox.cxx		\
+	QtxGroupBox.cxx		\
+	QtxIntSpinBox.cxx	\
+	QtxListAction.cxx	\
+	QtxLogoMgr.cxx		\
+	QtxMainWindow.cxx	\
+	QtxMRUAction.cxx	\
+	QtxPathDialog.cxx	\
+	QtxPopupMgr.cxx		\
+	QtxResourceMgr.cxx	\
+	QtxSplash.cxx		\
+	QtxToolBar.cxx		\
+	QtxToolTip.cxx		\
+	QtxValidator.cxx	\
+	QtxWorkspace.cxx	\
+	QtxWorkspaceAction.cxx	\
+	QtxWorkstack.cxx	\
+	QtxWorkstackAction.cxx
 
-MOC_FILES= \
-	QtxAction_moc.cxx \
-	QtxColorScale_moc.cxx \
-	QtxComboBox_moc.cxx \
-	QtxDblSpinBox_moc.cxx \
-	QtxDialog_moc.cxx \
-	QtxDockAction_moc.cxx \
-	QtxDockWindow_moc.cxx \
-	QtxGroupBox_moc.cxx \
-	QtxIntSpinBox_moc.cxx \
-	QtxListAction_moc.cxx \
-	QtxListBox_moc.cxx \
-	QtxLogoMgr_moc.cxx \
-	QtxMenuButton_moc.cxx \
-	QtxMRUAction_moc.cxx \
-	QtxPathDialog_moc.cxx \
-	QtxPopupMgr_moc.cxx \
-	QtxPopupMenu_moc.cxx \
-	QtxTable_moc.cxx \
-	QtxToolBar_moc.cxx \
-	QtxToolTip_moc.cxx \
-	QtxActionMgr_moc.cxx \
-	QtxActionMenuMgr_moc.cxx \
-	QtxActionToolMgr_moc.cxx \
-	QtxMainWindow_moc.cxx \
-	QtxWorkspaceAction_moc.cxx \
-	QtxWorkstackAction_moc.cxx \
-	QtxWorkstack_moc.cxx \
-	QtxListView_moc.cxx \
-	QtxListResourceEdit_moc.cxx \
-	QtxDirListEditor_moc.cxx \
-	QtxDblValidator_moc.cxx \
-	QtxSplash_moc.cxx
+#VSR: not yet migrated to Qt4 files
+#				\
+	QtxDirListEditor.cxx	\
+	QtxListBox.cxx		\
+	QtxListResourceEdit.cxx	\
+	QtxListView.cxx		\
+	QtxPopupMenu.cxx	\
+	QtxResourceEdit.cxx	\
+	QtxTable.cxx
+
+#VSR: already migrated to Qt4 files
+MOC_FILES=				\
+	QtxAction_moc.cxx		\
+	QtxActionMenuMgr_moc.cxx	\
+	QtxActionMgr_moc.cxx		\
+	QtxActionSet_moc.cxx		\
+	QtxActionToolMgr_moc.cxx	\
+	QtxColorScale_moc.cxx		\
+	QtxComboBox_moc.cxx		\
+	QtxDialog_moc.cxx		\
+	QtxDockAction_moc.cxx		\
+	QtxDockWidget_moc.cxx		\
+	QtxDoubleSpinBox_moc.cxx	\
+	QtxGridBox_moc.cxx		\
+	QtxGroupBox_moc.cxx		\
+	QtxIntSpinBox_moc.cxx		\
+	QtxListAction_moc.cxx		\
+	QtxLogoMgr_moc.cxx		\
+	QtxMainWindow_moc.cxx		\
+	QtxMRUAction_moc.cxx		\
+	QtxPathDialog_moc.cxx		\
+	QtxPopupMgr_moc.cxx		\
+	QtxSplash_moc.cxx		\
+	QtxToolBar_moc.cxx		\
+	QtxToolTip_moc.cxx		\
+	QtxValidator_moc.cxx		\
+	QtxWorkspace_moc.cxx		\
+	QtxWorkspaceAction_moc.cxx	\
+	QtxWorkstack_moc.cxx		\
+	QtxWorkstackAction_moc.cxx
+
+#VSR: not yet migrated to Qt4 files
+#					\
+	QtxDirListEditor_moc.cxx	\
+	QtxListBox_moc.cxx		\
+	QtxListResourceEdit_moc.cxx	\
+	QtxListView_moc.cxx		\
+	QtxPopupMenu_moc.cxx		\
+	QtxTable_moc.cxx
+
 nodist_libqtx_la_SOURCES= $(MOC_FILES)
 
 libqtx_la_CPPFLAGS=$(QT_INCLUDES)

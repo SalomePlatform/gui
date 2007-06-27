@@ -28,7 +28,7 @@
 #include <iostream>
 using namespace std;
 
-#ifdef WNT
+#ifdef WIN32
 #define min(a, b)  (((a) < (b)) ? (a) : (b))
 #endif
 
@@ -287,11 +287,7 @@ QCheckListItem( parent, "", type )
 */
 OB_CheckListItem::OB_CheckListItem( SUIT_DataObject* obj, QListView* parent, QListViewItem* after, Type type )
 : ListItemF<QCheckListItem>( this, obj),
-#if defined(QT_VERSION) && QT_VERSION >= 0x030101
  QCheckListItem( parent, after, "", type )
-#else
- QCheckListItem( parent, "", type )
-#endif
 {
   update();
 }
@@ -301,11 +297,7 @@ OB_CheckListItem::OB_CheckListItem( SUIT_DataObject* obj, QListView* parent, QLi
 */
 OB_CheckListItem::OB_CheckListItem( SUIT_DataObject* obj, QListViewItem* parent, QListViewItem* after, Type type )
 : ListItemF<QCheckListItem>( this, obj),
-#if defined(QT_VERSION) && QT_VERSION >= 0x030101
  QCheckListItem( parent, after, "", type )
-#else
- QCheckListItem( parent, "", type )
-#endif
 {
   update();
 }

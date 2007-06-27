@@ -25,7 +25,6 @@
 //#include <GLViewerAfx.h>
 #include "GLViewer_ViewFrame.h"
 #include "GLViewer_Viewer.h"
-#include "GLViewer_Viewer2d.h"
 #include "GLViewer_ViewPort2d.h"
 
 #include <SUIT_Desktop.h>
@@ -34,11 +33,22 @@
 #include <SUIT_ResourceMgr.h>
 #include <SUIT_MessageBox.h>
 
-#include <qcolor.h>
-#include <qfiledialog.h>
-#include <qimage.h>
-#include <qlayout.h>
-#include <qstring.h>
+#include <QColor>
+#include <QFileDialog>
+#include <QImage>
+#include <QHBoxLayout>
+#include <QString>
+#include <QFrame>
+#include <QToolBar>
+#include <QMouseEvent>
+#include <QKeyEvent>
+#include <QWheelEvent>
+
+#ifdef WIN32
+#include <Standard_Integer.hxx>
+#include <iostream>
+using namespace std;
+#endif
 
 /*!
     Constructor
@@ -51,8 +61,9 @@ myVP( 0 )
     QFrame* client = new QFrame( this );    
     setCentralWidget( client );
 
-    QBoxLayout* layout = new QHBoxLayout( client, 1, 1 );
-    layout->setAutoAdd( true );
+    QBoxLayout* layout = new QHBoxLayout( client );
+    layout->setMargin(1);
+    layout->setSpacing(1);
 
     GLViewer_ViewPort2d* vp = new GLViewer_ViewPort2d( client, this );
     //vp->turnGrid( true );
@@ -60,10 +71,11 @@ myVP( 0 )
     //vp->enablePopup( false );
     setViewPort( vp );
     setBackgroundColor( Qt::white );
+    layout->addWidget( vp );
 
     myToolBar = new QToolBar(this);
-    myToolBar->setCloseMode(QDockWindow::Undocked);
-    myToolBar->setLabel(tr("LBL_TOOLBAR_LABEL"));
+    //myToolBar->setCloseMode(QDockWindow::Undocked);
+    myToolBar->setWindowTitle(tr("LBL_TOOLBAR_LABEL"));
     createActions();
     createToolBar();
 }
@@ -82,59 +94,59 @@ void GLViewer_ViewFrame::createActions()
 {
   if (!myActionsMap.isEmpty()) return;
   SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
-  QAction* aAction;
+  QtxAction* aAction;
 
   // Dump view
-  aAction = new QAction(tr("MNU_DUMP_VIEW"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_DUMP" ) ),
-                           tr( "MNU_DUMP_VIEW" ), 0, this);
+  aAction = new QtxAction(tr("MNU_DUMP_VIEW"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_DUMP" ) ),
+			  tr( "MNU_DUMP_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_DUMP_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewDump()));
   myActionsMap[ DumpId ] = aAction;
 
   // FitAll
-  aAction = new QAction(tr("MNU_FITALL"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_FITALL" ) ),
-                           tr( "MNU_FITALL" ), 0, this);
+  aAction = new QtxAction(tr("MNU_FITALL"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_FITALL" ) ),
+			  tr( "MNU_FITALL" ), 0, this);
   aAction->setStatusTip(tr("DSC_FITALL"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewFitAll()));
   myActionsMap[ FitAllId ] = aAction;
 
   // FitRect
-  aAction = new QAction(tr("MNU_FITRECT"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_FITAREA" ) ),
-                           tr( "MNU_FITRECT" ), 0, this);
+  aAction = new QtxAction(tr("MNU_FITRECT"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_FITAREA" ) ),
+			  tr( "MNU_FITRECT" ), 0, this);
   aAction->setStatusTip(tr("DSC_FITRECT"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewFitArea()));
   myActionsMap[ FitRectId ] = aAction;
 
   // FitSelect
-  aAction = new QAction(tr("MNU_FITSELECT"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_FITSELECT" ) ),
-                           tr( "MNU_FITSELECT" ), 0, this);
+  aAction = new QtxAction(tr("MNU_FITSELECT"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_FITSELECT" ) ),
+			  tr( "MNU_FITSELECT" ), 0, this);
   aAction->setStatusTip(tr("DSC_FITSELECT"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewFitSelect()));
   myActionsMap[ FitSelectId ] = aAction;
 
   // Zoom
-  aAction = new QAction(tr("MNU_ZOOM_VIEW"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_ZOOM" ) ),
-                           tr( "MNU_ZOOM_VIEW" ), 0, this);
+  aAction = new QtxAction(tr("MNU_ZOOM_VIEW"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_ZOOM" ) ),
+			  tr( "MNU_ZOOM_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_ZOOM_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewZoom()));
   myActionsMap[ ZoomId ] = aAction;
 
   // Panning
-  aAction = new QAction(tr("MNU_PAN_VIEW"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_PAN" ) ),
-                           tr( "MNU_PAN_VIEW" ), 0, this);
+  aAction = new QtxAction(tr("MNU_PAN_VIEW"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_PAN" ) ),
+			  tr( "MNU_PAN_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_PAN_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewPan()));
   myActionsMap[ PanId ] = aAction;
 
   // Global Panning
-  aAction = new QAction(tr("MNU_GLOBALPAN_VIEW"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_GLOBALPAN" ) ),
-                           tr( "MNU_GLOBALPAN_VIEW" ), 0, this);
+  aAction = new QtxAction(tr("MNU_GLOBALPAN_VIEW"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_GLOBALPAN" ) ),
+			  tr( "MNU_GLOBALPAN_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_GLOBALPAN_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewGlobalPan()));
   myActionsMap[ GlobalPanId ] = aAction;
 
-  aAction = new QAction(tr("MNU_RESET_VIEW"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_RESET" ) ),
-                           tr( "MNU_RESET_VIEW" ), 0, this);
+  aAction = new QtxAction(tr("MNU_RESET_VIEW"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_RESET" ) ),
+			  tr( "MNU_RESET_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_RESET_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewReset()));
   myActionsMap[ ResetId ] = aAction;
@@ -213,7 +225,7 @@ QColor GLViewer_ViewFrame::backgroundColor() const
 {
     if ( myVP )
         return myVP->backgroundColor();
-    return QMainWindow::backgroundColor();
+    return palette().color( backgroundRole() );
 }
 
 /*!
@@ -272,7 +284,7 @@ void GLViewer_ViewFrame::onViewDump()
     imageBits = new unsigned char[imageSize];
 
     
-#ifdef WNT
+#ifdef WIN32
 
     int num;
     HBITMAP hBmp;
@@ -380,7 +392,7 @@ void GLViewer_ViewFrame::onViewDump()
 #endif
 
     unsigned int* aPix = NULL;
-    QImage  anImage( width, height, 32 );
+    QImage  anImage( width, height, QImage::Format_RGB32 );
     for( int i = 0; i < height; i++ )
     {
         memset( anImage.scanLine( i ), 0, sizeof(unsigned int)*width );
@@ -397,26 +409,27 @@ void GLViewer_ViewFrame::onViewDump()
 
     QString aFilter( "*.bmp\n*.png" );
 
-    QFileDialog aFileDlg( QDir::current().absPath(), aFilter, this );
-    aFileDlg.setCaption( tr( "DUMP_VIEW_SAVE_FILE_DLG_CAPTION" ) );
-    aFileDlg.setMode( QFileDialog::AnyFile );
+    QFileDialog aFileDlg( this, tr( "DUMP_VIEW_SAVE_FILE_DLG_CAPTION" ), QDir::current().absolutePath(), aFilter );
+    aFileDlg.setFileMode( QFileDialog::AnyFile );
 
     if( !aFileDlg.exec() )
         return;
 
-    QString aFileName = aFileDlg.selectedFile();
+    QStringList files = aFileDlg.selectedFiles();
+    QString aFileName;
+    if ( !files.isEmpty() ) aFileName = files[0];
+
     QString aFileExt = aFileDlg.selectedFilter();
 
     if( aFileName.isEmpty() )
     {
-        SUIT_MessageBox::error1( this,
-                                tr( "DUMP_VIEW_ERROR_DLG_CAPTION" ),
-                                tr( "DUMP_VIEW_ERROR_DLG_TEXT" ),
-                                tr( "BUT_OK" ) );
+        SUIT_MessageBox::critical( this,
+				   tr( "DUMP_VIEW_ERROR_DLG_CAPTION" ),
+				   tr( "DUMP_VIEW_ERROR_DLG_TEXT" ) );
     }
 
     QString aSaveOp = "BMP";
-    QString aTypedFileExt = QFileInfo( aFileName ).extension( false ).lower();
+    QString aTypedFileExt = QFileInfo( aFileName ).suffix().toLower();
 
     if( aFileExt == "*.bmp" )
     {
@@ -429,16 +442,15 @@ void GLViewer_ViewFrame::onViewDump()
             aFileName += ".png";
         aSaveOp = "PNG";
 
-//#ifdef WNT
+//#ifdef WIN32
 //    if( !anImage.save( aFileName, aSaveOp ) )
 //#else
-    if( !aWidget->grabFrameBuffer().save( aFileName, aSaveOp ) )
+    if( !aWidget->grabFrameBuffer().save( aFileName, aSaveOp.toLatin1().constData() ) )
 //#endif
     {
-        SUIT_MessageBox::error1( this,
-                                tr( "DUMP_VIEW_ERROR_DLG_CAPTION" ),
-                                tr( "DUMP_VIEW_ERROR_DLG_TEXT" ),
-                                tr( "BUT_OK" ) );
+      SUIT_MessageBox::critical( this,
+				 tr( "DUMP_VIEW_ERROR_DLG_CAPTION" ),
+				 tr( "DUMP_VIEW_ERROR_DLG_TEXT" ) );
     }
 }
 
@@ -584,7 +596,7 @@ QString GLViewer_ViewFrame::getVisualParameters()
 */
 void GLViewer_ViewFrame::setVisualParameters( const QString& parameters )
 {
-  QStringList paramsLst = QStringList::split( '*', parameters, true );
+  QStringList paramsLst = parameters.split( '*' );
   if ( myVP && myVP->inherits( "GLViewer_ViewPort2d" ) && paramsLst.size() == 4) {
     GLViewer_ViewPort2d* vp2d = (GLViewer_ViewPort2d*)myVP;
 

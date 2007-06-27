@@ -20,29 +20,23 @@
 
 #include "STD_MDIDesktop.h"
 
-#include "STD_CloseDlg.h"
-
 #include <SUIT_Tools.h>
+#include <SUIT_Study.h>
 #include <SUIT_Desktop.h>
 #include <SUIT_Session.h>
-#include <SUIT_ViewModel.h>
-#include <SUIT_Operation.h>
 #include <SUIT_MessageBox.h>
+#include <SUIT_ViewManager.h>
 #include <SUIT_ResourceMgr.h>
 
 #include <QtxDockAction.h>
 #include <QtxActionMenuMgr.h>
 #include <QtxActionToolMgr.h>
-#include <QtxPopupMenu.h>
 
-#include <qmenubar.h>
-#include <qtoolbar.h>
-#include <qpopupmenu.h>
-#include <qstatusbar.h>
-#include <qfiledialog.h>
-#include <qapplication.h>
-
-#include <iostream>
+#include <QMenu>
+#include <QStatusBar>
+#include <QCloseEvent>
+#include <QFileDialog>
+#include <QApplication>
 
 /*!Create and return new instance of STD_Application*/
 extern "C" STD_EXPORT SUIT_Application* createApplication()
@@ -53,18 +47,29 @@ extern "C" STD_EXPORT SUIT_Application* createApplication()
 /*!Constructor.*/
 STD_Application::STD_Application()
 : SUIT_Application(),
-myEditEnabled( true ),
-myActiveViewMgr( 0 )
+  myActiveViewMgr( 0 ),
+  myExitConfirm( true ),
+  myEditEnabled( true )
 {
-  STD_MDIDesktop* desk = new STD_MDIDesktop();
-
-  setDesktop( desk );
+  setDesktop( new STD_MDIDesktop() );
 }
 
 /*!Destructor.*/
 STD_Application::~STD_Application()
 {
   clearViewManagers();
+}
+
+/*! \retval requirement of exit confirmation*/
+bool STD_Application::exitConfirmation() const
+{
+  return myExitConfirm;
+}
+
+/*! Set the requirement of exit confirmation*/
+void STD_Application::setExitConfirmation( const bool on )
+{
+  myExitConfirm = on;
 }
 
 /*! \retval QString "StdApplication"*/
@@ -96,15 +101,20 @@ void STD_Application::closeApplication()
     savePreferences();
   SUIT_Study* study = activeStudy();
 
-  if ( study ){
+  if ( study )
+  {
+    beforeCloseDoc( study );
+
     study->closeDocument();
 
     setActiveStudy( 0 );
     delete study;
+
+    afterCloseDoc();
   }
 
   setDesktop( 0 );
-  
+
   SUIT_Application::closeApplication();
 }
 
@@ -117,7 +127,8 @@ void STD_Application::onDesktopClosing( SUIT_Desktop*, QCloseEvent* e )
     return;
   }
 
-  if ( !isPossibleToClose() )
+  bool closePermanently;
+  if ( !isPossibleToClose( closePermanently ) )
   {
     e->ignore();
     return;
@@ -139,57 +150,62 @@ void STD_Application::createActions()
   createAction( FileNewId, tr( "TOT_DESK_FILE_NEW" ),
                 resMgr->loadPixmap( "STD", tr( "ICON_FILE_NEW" ) ),
                 tr( "MEN_DESK_FILE_NEW" ), tr( "PRP_DESK_FILE_NEW" ),
-                CTRL+Key_N, desk, false, this, SLOT( onNewDoc() ) );
+                Qt::CTRL+Qt::Key_N, desk, false, this, SLOT( onNewDoc() ) );
 
   createAction( FileOpenId, tr( "TOT_DESK_FILE_OPEN" ),
                 resMgr->loadPixmap( "STD", tr( "ICON_FILE_OPEN" ) ),
                 tr( "MEN_DESK_FILE_OPEN" ), tr( "PRP_DESK_FILE_OPEN" ),
-                CTRL+Key_O, desk, false, this, SLOT( onOpenDoc() ) );
+                Qt::CTRL+Qt::Key_O, desk, false, this, SLOT( onOpenDoc() ) );
 
   createAction( FileCloseId, tr( "TOT_DESK_FILE_CLOSE" ),
                 resMgr->loadPixmap( "STD", tr( "ICON_FILE_CLOSE" ) ),
                 tr( "MEN_DESK_FILE_CLOSE" ), tr( "PRP_DESK_FILE_CLOSE" ),
-                CTRL+Key_W, desk, false, this, SLOT( onCloseDoc() ) );
+                Qt::CTRL+Qt::Key_W, desk, false, this, SLOT( onCloseDoc() ) );
 
-  createAction( FileExitId, tr( "TOT_DESK_FILE_EXIT" ), QIconSet(),
+  createAction( FileExitId, tr( "TOT_DESK_FILE_EXIT" ), QIcon(),
                 tr( "MEN_DESK_FILE_EXIT" ), tr( "PRP_DESK_FILE_EXIT" ),
-                CTRL+Key_Q, desk, false, this, SLOT( onExit() ) );
+                Qt::CTRL+Qt::Key_Q, desk, false, this, SLOT( onExit() ) );
 
   createAction( FileSaveId, tr( "TOT_DESK_FILE_SAVE" ),
                 resMgr->loadPixmap( "STD", tr( "ICON_FILE_SAVE" ) ),
                 tr( "MEN_DESK_FILE_SAVE" ), tr( "PRP_DESK_FILE_SAVE" ),
-                CTRL+Key_S, desk, false, this, SLOT( onSaveDoc() ) );
+                Qt::CTRL+Qt::Key_S, desk, false, this, SLOT( onSaveDoc() ) );
 
-  createAction( FileSaveAsId, tr( "TOT_DESK_FILE_SAVEAS" ), QIconSet(),
+  createAction( FileSaveAsId, tr( "TOT_DESK_FILE_SAVEAS" ), QIcon(),
                 tr( "MEN_DESK_FILE_SAVEAS" ), tr( "PRP_DESK_FILE_SAVEAS" ),
-                CTRL+Key_A, desk, false, this, SLOT( onSaveAsDoc() ) );
+                Qt::CTRL+Qt::Key_A, desk, false, this, SLOT( onSaveAsDoc() ) );
 
   createAction( EditCopyId, tr( "TOT_DESK_EDIT_COPY" ),
                 resMgr->loadPixmap( "STD", tr( "ICON_EDIT_COPY" ) ),
                 tr( "MEN_DESK_EDIT_COPY" ), tr( "PRP_DESK_EDIT_COPY" ),
-                CTRL+Key_C, desk, false, this, SLOT( onCopy() ) );
+                Qt::CTRL+Qt::Key_C, desk, false, this, SLOT( onCopy() ) );
 
   createAction( EditPasteId, tr( "TOT_DESK_EDIT_PASTE" ),
                 resMgr->loadPixmap( "STD", tr( "ICON_EDIT_PASTE" ) ),
                 tr( "MEN_DESK_EDIT_PASTE" ), tr( "PRP_DESK_EDIT_PASTE" ),
-                CTRL+Key_V, desk, false, this, SLOT( onPaste() ) );
+                Qt::CTRL+Qt::Key_V, desk, false, this, SLOT( onPaste() ) );
 
   QAction* a = createAction( ViewStatusBarId, tr( "TOT_DESK_VIEW_STATUSBAR" ),
-                             QIconSet(), tr( "MEN_DESK_VIEW_STATUSBAR" ),
-                             tr( "PRP_DESK_VIEW_STATUSBAR" ), SHIFT+Key_S, desk, true );
-  a->setOn( desk->statusBar()->isVisibleTo( desk ) );
+                             QIcon(), tr( "MEN_DESK_VIEW_STATUSBAR" ),
+                             tr( "PRP_DESK_VIEW_STATUSBAR" ), Qt::SHIFT+Qt::Key_S, desk, true );
+  a->setChecked( desk->statusBar()->isVisibleTo( desk ) );
   connect( a, SIGNAL( toggled( bool ) ), this, SLOT( onViewStatusBar( bool ) ) );
 
-  createAction( NewWindowId, tr( "TOT_DESK_NEWWINDOW" ), QIconSet(),
+  createAction( NewWindowId, tr( "TOT_DESK_NEWWINDOW" ), QIcon(),
                 tr( "MEN_DESK_NEWWINDOW" ), tr( "PRP_DESK_NEWWINDOW" ), 0, desk  );
 
-  createAction( HelpAboutId, tr( "TOT_DESK_HELP_ABOUT" ), QIconSet(),
+  createAction( HelpAboutId, tr( "TOT_DESK_HELP_ABOUT" ), QIcon(),
                 tr( "MEN_DESK_HELP_ABOUT" ), tr( "PRP_DESK_HELP_ABOUT" ),
-                SHIFT+Key_A, desk, false, this, SLOT( onHelpAbout() ) );
+                Qt::SHIFT+Qt::Key_A, desk, false, this, SLOT( onHelpAbout() ) );
 
-  QtxDockAction* da = new QtxDockAction( tr( "TOT_DOCK_WINDOWS" ), tr( "MEN_DOCK_WINDOWS" ), desk );
-  registerAction( ViewWindowsId, da );
-  da->setAutoPlace( false );
+
+  QtxDockAction* dwa = new QtxDockAction( tr( "TOT_DOCKWINDOWS" ), tr( "MEN_DOCKWINDOWS" ), desk );
+  dwa->setDockType( QtxDockAction::DockWidget );
+  registerAction( ViewWindowsId, dwa );
+
+  QtxDockAction* tba = new QtxDockAction( tr( "TOT_TOOLBARS" ), tr( "MEN_TOOLBARS" ), desk );
+  tba->setDockType( QtxDockAction::ToolBar );
+  registerAction( ViewToolBarsId, tba );
 
   // Create menus
 
@@ -215,6 +231,7 @@ void STD_Application::createActions()
   createMenu( EditPasteId, editMenu );
   createMenu( separator(), editMenu );
 
+  createMenu( ViewToolBarsId,  viewMenu, 0 );
   createMenu( ViewWindowsId,   viewMenu, 0 );
   createMenu( separator(),     viewMenu, -1, 10 );
   createMenu( ViewStatusBarId, viewMenu, 10 );
@@ -241,27 +258,44 @@ void STD_Application::createActions()
 /*!Opens new application*/
 void STD_Application::onNewDoc()
 {
-  QApplication::setOverrideCursor( Qt::waitCursor );
+  onNewDoc( QString() );
+}
 
+/*!Opens new application*/
+bool STD_Application::onNewDoc( const QString& name )
+{
+  QApplication::setOverrideCursor( Qt::WaitCursor );
+
+  bool res = true;
   if ( !activeStudy() )
   {
     createEmptyStudy();
-    activeStudy()->createDocument();
-    studyCreated( activeStudy() );
+    res = activeStudy()->createDocument( name );
+    if ( res )
+      studyCreated( activeStudy() );
+    else
+    {
+      delete activeStudy();
+      setActiveStudy( 0 );
+    }
   }
   else
   {
     SUIT_Application* aApp = startApplication( 0, 0 );
     if ( aApp->inherits( "STD_Application" ) )
-      ((STD_Application*)aApp)->onNewDoc();
+      res = ((STD_Application*)aApp)->onNewDoc( name );
     else
     {
       aApp->createEmptyStudy();
-      aApp->activeStudy()->createDocument();
+      res = aApp->activeStudy()->createDocument( name );
     }
+    if ( !res )
+      aApp->closeApplication();
   }
 
   QApplication::restoreOverrideCursor();
+
+  return res;
 }
 
 /*!Put file name from file dialog to onOpenDoc(const QString&) function*/
@@ -278,7 +312,7 @@ void STD_Application::onOpenDoc()
 /*! \retval true, if document was opened successful, else false.*/
 bool STD_Application::onOpenDoc( const QString& aName )
 {
-  QApplication::setOverrideCursor( Qt::waitCursor );
+  QApplication::setOverrideCursor( Qt::WaitCursor );
 
   bool res = true;
   if ( !activeStudy() )
@@ -290,12 +324,12 @@ bool STD_Application::onOpenDoc( const QString& aName )
   {
     // if study exists - open in new desktop. Check: is the same file is opened?
     SUIT_Session* aSession = SUIT_Session::session();
-    QPtrList<SUIT_Application> aAppList = aSession->applications();
+    QList<SUIT_Application*> aAppList = aSession->applications();
     bool isAlreadyOpen = false;
     SUIT_Application* aApp = 0;
-    for ( QPtrListIterator<SUIT_Application> it( aAppList ); it.current() && !isAlreadyOpen; ++it )
+    for ( QList<SUIT_Application*>::iterator it = aAppList.begin(); it != aAppList.end() && !isAlreadyOpen; ++it )
     {
-      aApp = it.current();
+      aApp = *it;
       if ( aApp->activeStudy()->studyName() == aName )
         isAlreadyOpen = true;
     }
@@ -308,7 +342,7 @@ bool STD_Application::onOpenDoc( const QString& aName )
         aApp->closeApplication();
     }
     else
-      aApp->desktop()->setActiveWindow();
+      aApp->desktop()->activateWindow();
   }
 
   QApplication::restoreOverrideCursor();
@@ -329,12 +363,12 @@ bool STD_Application::onLoadDoc( const QString& aName )
   {
     // if study exists - load in new desktop. Check: is the same file is loaded?
     SUIT_Session* aSession = SUIT_Session::session();
-    QPtrList<SUIT_Application> aAppList = aSession->applications();
+    QList<SUIT_Application*> aAppList = aSession->applications();
     bool isAlreadyOpen = false;
     SUIT_Application* aApp = 0;
-    for ( QPtrListIterator<SUIT_Application> it( aAppList ); it.current() && !isAlreadyOpen; ++it )
+    for ( QList<SUIT_Application*>::iterator it = aAppList.begin(); it != aAppList.end() && !isAlreadyOpen; ++it )
     {
-      aApp = it.current();
+      aApp = *it;
       if ( aApp->activeStudy()->studyName() == aName )
         isAlreadyOpen = true;
     }
@@ -345,7 +379,7 @@ bool STD_Application::onLoadDoc( const QString& aName )
         res = aApp->useStudy( aName );
     }
     else
-      aApp->desktop()->setActiveWindow();
+      aApp->desktop()->activateWindow();
   }
   return res;
 }
@@ -363,7 +397,9 @@ void STD_Application::afterCloseDoc()
 /*!Close document, if it's possible.*/
 void STD_Application::onCloseDoc( bool ask )
 {
-  if ( ask && !isPossibleToClose() )
+  bool closePermanently = true;
+
+  if ( ask && !isPossibleToClose( closePermanently ) )
     return;
 
   SUIT_Study* study = activeStudy();
@@ -371,7 +407,7 @@ void STD_Application::onCloseDoc( bool ask )
   beforeCloseDoc( study );
 
   if ( study )
-    study->closeDocument(myClosePermanently);
+    study->closeDocument( closePermanently );
 
   clearViewManagers();
 
@@ -379,12 +415,10 @@ void STD_Application::onCloseDoc( bool ask )
   delete study;
 
   int aNbStudies = 0;
-  QPtrList<SUIT_Application> apps = SUIT_Session::session()->applications();
-  for ( unsigned i = 0; i < apps.count(); i++ )
+  QList<SUIT_Application*> apps = SUIT_Session::session()->applications();
+  for ( int i = 0; i < apps.count(); i++ )
     aNbStudies += apps.at( i )->getNbStudies();
 
-  // STV: aNbStudies - number of currently existing studies (exclude currently closed)
-  // STV: aNbStudies should be compared with 0.
   if ( aNbStudies )
   {
     savePreferences();
@@ -405,40 +439,54 @@ void STD_Application::onCloseDoc( bool ask )
 /*!Check the application on closing.
  * \retval true if possible, else false
  */
-bool STD_Application::isPossibleToClose()
+bool STD_Application::isPossibleToClose( bool& closePermanently )
 {
-  myClosePermanently = true; //SRN: BugID: IPAL9021
   if ( activeStudy() )
   {
     activeStudy()->abortAllOperations();
     if ( activeStudy()->isModified() )
     {
-      QString sName = activeStudy()->studyName().stripWhiteSpace();
-      QString msg = sName.isEmpty() ? tr( "INF_DOC_MODIFIED" ) : tr ( "INF_DOCUMENT_MODIFIED" ).arg( sName );
-
-      //SRN: BugID: IPAL9021: Begin
-      STD_CloseDlg dlg(desktop());
-      switch( dlg.exec() )
-      {
-      case 1:
-        if ( activeStudy()->isSaved() )
-          onSaveDoc();
-        else if ( !onSaveAsDoc() )
-          return false;
-        break;
-      case 2:
-        break;
-      case 3:
-	      myClosePermanently = false;
-        break;
-      case 4:
-      default:
-        return false;
-      }
-     //SRN: BugID: IPAL9021: End
+      QString sName = activeStudy()->studyName().trimmed();
+      return closeAction( closeChoice( sName ), closePermanently );
     }
   }
   return true;
+}
+
+int STD_Application::closeChoice( const QString& docName )
+{
+  int answer = SUIT_MessageBox::question( desktop(), tr( "CLOSE_STUDY" ), tr( "CLOSE_QUESTION" ).arg( docName ),
+                                          SUIT_MessageBox::Save | SUIT_MessageBox::Discard | SUIT_MessageBox::Cancel,
+                                          SUIT_MessageBox::Save );
+
+  int res = CloseCancel;
+  if ( answer == SUIT_MessageBox::Save )
+    res = CloseSave;
+  else if ( answer == SUIT_MessageBox::Discard )
+    res = CloseDiscard;
+
+  return res;
+}
+
+bool STD_Application::closeAction( const int choice, bool& closePermanently )
+{
+  bool res = true;
+  switch( choice )
+  {
+  case CloseSave:
+    if ( activeStudy()->isSaved() )
+      onSaveDoc();
+    else if ( !onSaveAsDoc() )
+      res = false;
+    break;
+  case CloseDiscard:
+    break;
+  case CloseCancel:
+  default:
+    res = false;
+  }
+
+  return res;
 }
 
 /*!Save document if all ok, else error message.*/
@@ -452,7 +500,7 @@ void STD_Application::onSaveDoc()
   {
     putInfo( tr( "INF_DOC_SAVING" ) + activeStudy()->studyName() );
 
-    QApplication::setOverrideCursor( Qt::waitCursor );
+    QApplication::setOverrideCursor( Qt::WaitCursor );
 
     isOk = activeStudy()->saveDocument();
 
@@ -462,10 +510,8 @@ void STD_Application::onSaveDoc()
     {
       putInfo( "" );
       // displaying a message box as SUIT_Validator in case file can't be written (the most frequent case)
-      SUIT_MessageBox::error1( desktop(), 
-			       tr( "ERR_ERROR" ),
-			       tr( "ERR_PERMISSION_DENIED" ).arg( activeStudy()->studyName() ),
-			       tr( "BUT_OK" ) );
+      SUIT_MessageBox::critical( desktop(), tr( "ERR_ERROR" ),
+                                 tr( "ERR_PERMISSION_DENIED" ).arg( activeStudy()->studyName() ) );
     }
     else
       putInfo( tr( "INF_DOC_SAVED" ).arg( "" ) );
@@ -491,7 +537,7 @@ bool STD_Application::onSaveAsDoc()
     if ( aName.isNull() )
       return false;
 
-    QApplication::setOverrideCursor( Qt::waitCursor );
+    QApplication::setOverrideCursor( Qt::WaitCursor );
 
     putInfo( tr( "INF_DOC_SAVING" ) + aName );
     isOk = study->saveDocumentAs( aName );
@@ -501,9 +547,7 @@ bool STD_Application::onSaveAsDoc()
     QApplication::restoreOverrideCursor();
 
     if ( !isOk )
-      SUIT_MessageBox::error1( desktop(), tr( "ERROR" ),
-			       tr( "INF_DOC_SAVING_FAILS" ).arg( aName ), 
-			       tr( "BUT_OK" ) );
+      SUIT_MessageBox::critical( desktop(), tr( "ERROR" ), tr( "INF_DOC_SAVING_FAILS" ).arg( aName ) );
   }
 
   studySaved( activeStudy() );
@@ -514,9 +558,11 @@ bool STD_Application::onSaveAsDoc()
 /*!Closing session.*/
 void STD_Application::onExit()
 {
-  int aAnswer = SUIT_MessageBox::info2( desktop(), tr( "INF_DESK_EXIT" ), tr( "QUE_DESK_EXIT" ),
-                                        tr( "BUT_OK" ), tr( "BUT_CANCEL" ), 1, 2, 2 );
-  if ( aAnswer == 1 )
+  int aAnswer = 1;
+  if ( exitConfirmation() )
+    aAnswer = SUIT_MessageBox::question( desktop(), tr( "INF_DESK_EXIT" ), tr( "QUE_DESK_EXIT" ),
+                                         SUIT_MessageBox::Ok | SUIT_MessageBox::Cancel, SUIT_MessageBox::Cancel );
+  if ( aAnswer == SUIT_MessageBox::Ok )
     SUIT_Session::session()->closeSession();
 }
 
@@ -566,12 +612,12 @@ void STD_Application::updateDesktopTitle()
 
   if ( activeStudy() )
   {
-    QString sName = SUIT_Tools::file( activeStudy()->studyName().stripWhiteSpace(), false );
+    QString sName = SUIT_Tools::file( activeStudy()->studyName().trimmed(), false );
     if ( !sName.isEmpty() )
       aTitle += QString( " - [%1]" ).arg( sName );
   }
 
-  desktop()->setCaption( aTitle );
+  desktop()->setWindowTitle( aTitle );
 }
 
 /*!Update commands status.*/
@@ -596,10 +642,10 @@ void STD_Application::updateCommandsStatus()
 SUIT_ViewManager* STD_Application::viewManager( const QString& vmType ) const
 {
   SUIT_ViewManager* vm = 0;
-  for ( QPtrListIterator<SUIT_ViewManager> it( myViewMgrs ); it.current() && !vm; ++it )
+  for ( QList<SUIT_ViewManager*>::const_iterator it = myViewMgrs.begin(); it != myViewMgrs.end() && !vm; ++it )
   {
-    if ( it.current()->getType() == vmType )
-      vm = it.current();
+    if ( (*it)->getType() == vmType )
+      vm = *it;
   }
   return vm;
 }
@@ -609,16 +655,18 @@ SUIT_ViewManager* STD_Application::viewManager( const QString& vmType ) const
  */
 void STD_Application::viewManagers( const QString& vmType, ViewManagerList& lst ) const
 {
-  for ( QPtrListIterator<SUIT_ViewManager> it( myViewMgrs ); it.current(); ++it )
-    if ( it.current()->getType() == vmType )
-      lst.append( it.current() );
+  for ( QList<SUIT_ViewManager*>::const_iterator it = myViewMgrs.begin(); it != myViewMgrs.end(); ++it )
+  {
+    if ( (*it)->getType() == vmType )
+      lst.append( *it );
+  }
 }
 
 /*!\param lst - output list of all view managers.*/
 void STD_Application::viewManagers( ViewManagerList& lst ) const
 {
-  for ( QPtrListIterator<SUIT_ViewManager> it( myViewMgrs ); it.current(); ++it )
-    lst.append( it.current() );
+  for ( QList<SUIT_ViewManager*>::const_iterator it = myViewMgrs.begin(); it != myViewMgrs.end(); ++it )
+    lst.append( *it );
 }
 
 /*!\retval ViewManagerList - const list of all view managers.*/
@@ -669,7 +717,7 @@ void STD_Application::removeViewManager( SUIT_ViewManager* vm )
   vm->disconnectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
   disconnect( vm, SIGNAL( activated( SUIT_ViewManager* ) ),
              this, SLOT( onViewManagerActivated( SUIT_ViewManager* ) ) );
-  myViewMgrs.removeRef( vm );
+  myViewMgrs.removeAll( vm );
 
   if ( myActiveViewMgr == vm )
     myActiveViewMgr = 0;
@@ -681,8 +729,9 @@ void STD_Application::clearViewManagers()
   ViewManagerList lst;
   viewManagers( lst );
 
-  for ( QPtrListIterator<SUIT_ViewManager> it( lst ); it.current(); ++it ) {
-    QGuardedPtr<SUIT_ViewManager> vm = it.current();
+  for ( QList<SUIT_ViewManager*>::iterator it = lst.begin(); it != lst.end(); ++it )
+  {
+    QPointer<SUIT_ViewManager> vm = *it;
     removeViewManager( vm );
     delete vm;
   }
@@ -691,7 +740,7 @@ void STD_Application::clearViewManagers()
 /*!\retval TRUE, if view manager \a vm, already in view manager list (\a myViewMgrs).*/
 bool STD_Application::containsViewManager( SUIT_ViewManager* vm ) const
 {
-  return myViewMgrs.contains( vm ) > 0;
+  return myViewMgrs.contains( vm );
 }
 
 /*!Private slot, sets active manager to \vm, if \vm in view managers list.*/
@@ -712,7 +761,7 @@ void STD_Application::onViewStatusBar( bool on )
 /*!Call SUIT_MessageBox::info1(...) with about information.*/
 void STD_Application::onHelpAbout()
 {
-  SUIT_MessageBox::info1( desktop(), tr( "About" ), tr( "ABOUT_INFO" ), "&OK" );
+  SUIT_MessageBox::information( desktop(), tr( "About" ), tr( "ABOUT_INFO" ) );
 }
 
 /*!Create empty study. \n
@@ -721,10 +770,6 @@ void STD_Application::onHelpAbout()
 void STD_Application::createEmptyStudy()
 {
   SUIT_Application::createEmptyStudy();
-
-  SUIT_ViewManager* vm = new SUIT_ViewManager( activeStudy(), desktop(), new SUIT_ViewModel() );
-
-  addViewManager( vm );
 }
 
 /*!Sets active manager to \vm, if \vm in view managers list.*/
@@ -740,24 +785,22 @@ void STD_Application::setActiveViewManager( SUIT_ViewManager* vm )
 /*!Public slot. */
 void STD_Application::onConnectPopupRequest( SUIT_PopupClient* client, QContextMenuEvent* e )
 {
-  QtxPopupMenu* popup = new QtxPopupMenu();
+  QMenu* popup = new QMenu();
   // fill popup by own items
   QString title;
   contextMenuPopup( client->popupClientType(), popup, title );
-  popup->setTitleText( title );
+  popup->setTitle( title );
 
-  popup->insertSeparator();
+  popup->addSeparator();
   // add items from popup client
   client->contextMenuPopup( popup );
 
   SUIT_Tools::simplifySeparators( popup );
 
-  if ( popup->count() )
+  if ( !popup->actions().isEmpty() )
     popup->exec( e->globalPos() );
   delete popup;
 }
-
-#include <qregexp.h>
 
 /*!\retval QString - return file name from dialog.*/
 QString STD_Application::getFileName( bool open, const QString& initial, const QString& filters,
@@ -766,9 +809,7 @@ QString STD_Application::getFileName( bool open, const QString& initial, const Q
   if ( !parent )
     parent = desktop();
   if ( open )
-  {
-    return QFileDialog::getOpenFileName( initial, filters, parent, 0, caption );
-  }
+    return QFileDialog::getOpenFileName( parent, caption, initial, filters );
   else
   {
     QString aName;
@@ -779,45 +820,45 @@ QString STD_Application::getFileName( bool open, const QString& initial, const Q
     while ( !isOk )
     {
       // It is preferrable to use OS-specific file dialog box here !!!
-      aName = QFileDialog::getSaveFileName( anOldPath, filters, parent, 0, caption, &aUsedFilter );
+      aName = QFileDialog::getSaveFileName( parent, caption, anOldPath, filters, &aUsedFilter );
 
       if ( aName.isNull() )
         isOk = true;
       else
       {
-	      int aEnd = aUsedFilter.findRev( ')' );
-	      int aStart = aUsedFilter.findRev( '(', aEnd );
-	      QString wcStr = aUsedFilter.mid( aStart + 1, aEnd - aStart - 1 );
+	int aEnd = aUsedFilter.lastIndexOf( ')' );
+	int aStart = aUsedFilter.lastIndexOf( '(', aEnd );
+	QString wcStr = aUsedFilter.mid( aStart + 1, aEnd - aStart - 1 );
 
         int idx = 0;
         QStringList extList;
         QRegExp rx( "[\b\\*]*\\.([\\w]+)" );
-        while ( ( idx = rx.search( wcStr, idx ) ) != -1 )
+        while ( ( idx = rx.indexIn( wcStr, idx ) ) != -1 )
         {
           extList.append( rx.cap( 1 ) );
           idx += rx.matchedLength();
         }
 
-        if ( !extList.isEmpty() && !extList.contains( QFileInfo( aName ).extension() ) )
+        if ( !extList.isEmpty() && !extList.contains( SUIT_Tools::extension( aName ) ) )
           aName += QString( ".%1" ).arg( extList.first() );
 
-	      if ( QFileInfo( aName ).exists() )
+	if ( QFileInfo( aName ).exists() )
         {
-	        int aAnswer = SUIT_MessageBox::warn3( desktop(), tr( "TIT_FILE_SAVEAS" ),
-					                                      tr( "MSG_FILE_EXISTS" ).arg( aName ),
-					                                      tr( "BUT_YES" ), tr( "BUT_NO" ), tr( "BUT_CANCEL" ), 1, 2, 3, 1 );
-	        if ( aAnswer == 3 )
+	  int aAnswer = SUIT_MessageBox::question( desktop(), tr( "TIT_FILE_SAVEAS" ),
+						   tr( "MSG_FILE_EXISTS" ).arg( aName ),
+						   SUIT_MessageBox::Yes | SUIT_MessageBox::No | SUIT_MessageBox::Cancel, SUIT_MessageBox::Yes );
+	  if ( aAnswer == SUIT_MessageBox::Cancel )
           {     // cancelled
             aName = QString::null;
-	          isOk = true;
+	    isOk = true;
           }
-	        else if ( aAnswer == 2 ) // not save to this file
-	          anOldPath = aName;             // not to return to the same initial dir at each "while" step
-	        else                     // overwrite the existing file
-	          isOk = true;
+	  else if ( aAnswer == SUIT_MessageBox::No ) // not save to this file
+	    anOldPath = aName;             // not to return to the same initial dir at each "while" step
+	  else                     // overwrite the existing file
+	    isOk = true;
         }
-	      else
-	        isOk = true;
+	else
+	  isOk = true;
       }
     }
     return aName;
@@ -829,7 +870,8 @@ QString STD_Application::getDirectory( const QString& initial, const QString& ca
 {
   if ( !parent )
     parent = desktop();
-  return QFileDialog::getExistingDirectory( initial, parent, 0, caption, true );
+
+  return QFileDialog::getExistingDirectory( parent, caption, initial );
 }
 
 /*!

@@ -25,7 +25,7 @@
 #ifndef GLVIEWER_VIEWPORT2D_H
 #define GLVIEWER_VIEWPORT2D_H
 
-#ifdef WNT
+#ifdef WIN32
 #include <windows.h>
 #endif
 
@@ -36,12 +36,11 @@
 #include "GLViewer_Widget.h"
 #include "GLViewer_Geom.h"
 
-#include <qgl.h>
-#include <qcolor.h>
-#include <qwidget.h>
-#include <qpaintdevice.h>
+#include <QtOpenGL>
+#include <QColor>
+#include <QPaintDevice>
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 
@@ -51,6 +50,10 @@ class GLViewer_Object;
 class GLViewer_ViewFrame;
 
 class QtxToolTip;
+
+class QWidget;
+class QRubberBand;
+
 /*! 
  * Class GLViewer_ViewPort
  * 2D visualisation canvas of GLViewer
@@ -237,9 +240,11 @@ protected:
   QtxToolTip*            myObjectTip;
   //! flag to block mouse release event just after mouse double-click
   bool                   myIsMouseReleaseBlock;
+
+  QRubberBand*           myRectBand; //!< selection rectangle rubber band
 };
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning ( default:4251 )
 #endif
 

@@ -19,6 +19,7 @@
 #include "LightApp_Study.h"
 
 #include "CAM_DataModel.h"
+#include "CAM_Module.h"
 #include "LightApp_Application.h"
 #include "LightApp_DataModel.h"
 #include "LightApp_DataObject.h"
@@ -28,21 +29,8 @@
 #include "SUIT_ResourceMgr.h"
 #include "SUIT_DataObjectIterator.h"
 
-#include <OB_Browser.h>
-
-#include <TCollection_AsciiString.hxx> 
-
-#include <OSD_Path.hxx>
-#include <OSD_File.hxx>
-#include <OSD_Directory.hxx>
-#include <OSD_Process.hxx>
-#include <OSD_Directory.hxx>
-#include <OSD_Protection.hxx>
-#include <OSD_SingleProtection.hxx>
-#include <OSD_FileIterator.hxx>
-
 #include <set>
-#include <qstring.h>
+#include <QString>
 
 /*!
   Constructor.
@@ -65,16 +53,18 @@ LightApp_Study::~LightApp_Study()
 /*!
   Create document.
 */
-void LightApp_Study::createDocument()
+bool LightApp_Study::createDocument( const QString& theStr )
 {
   setStudyName( QString( "Study%1" ).arg( LightApp_Application::studyId() ) );
 
   // create myRoot
   setRoot( new LightApp_RootObject( this ) );
 
-  CAM_Study::createDocument();
+  bool aRet = CAM_Study::createDocument( theStr );
 
   emit created( this );
+
+  return aRet;
 }
 
 /*!
@@ -92,8 +82,9 @@ bool LightApp_Study::openDocument( const QString& theFileName )
   // update loaded data models: call open() and update() on them.
   ModelList dm_s;
   dataModels( dm_s );
-  for ( ModelListIterator it( dm_s ); it.current(); ++it )
-    openDataModel( studyName(), it.current() );
+  QListIterator<CAM_DataModel*> it( dm_s );
+  while ( it.hasNext() )
+    openDataModel( studyName(), it.next() );
   // this will build a SUIT_DataObject-s tree under myRoot member field
   // passing "false" in order NOT to rebuild existing data models' trees - it was done in previous step
   // but tree that corresponds to not-loaded data models will be updated any way. 
@@ -122,8 +113,9 @@ bool LightApp_Study::loadDocument( const QString& theStudyName )
   ModelList dm_s;
   dataModels( dm_s );
 
-  for ( ModelListIterator it( dm_s ); it.current(); ++it )
-    openDataModel( studyName(), it.current() );
+  QListIterator<CAM_DataModel*> it( dm_s );
+  while ( it.hasNext() )
+    openDataModel( studyName(), it.next() );
 
   // this will build a SUIT_DataObject-s tree under myRoot member field
   // passing "false" in order NOT to rebuild existing data models' trees - it was done in previous step
@@ -148,13 +140,15 @@ bool LightApp_Study::saveDocumentAs( const QString& theFileName )
   ModelList list; 
   dataModels( list );
 
-  LightApp_DataModel* aModel = (LightApp_DataModel*)list.first();
-
   QStringList listOfFiles;
   bool isMultiFile = resMgr->booleanValue( "Study", "multi_file", false );
-  for ( ; aModel; aModel = (LightApp_DataModel*)list.next() ) 
+  QListIterator<CAM_DataModel*> itList( list );
+  while ( itList.hasNext() )
   {
-    std::vector<std::string> anOldList = myDriver->GetListOfFiles( aModel->module()->name() );
+    LightApp_DataModel* aModel = (LightApp_DataModel*)itList.next();
+    if ( !aModel ) continue;
+
+    std::vector<std::string> anOldList = myDriver->GetListOfFiles( aModel->module()->name().toLatin1().constData() );
     listOfFiles.clear();
     aModel->saveAs( theFileName, this, listOfFiles );
     if ( !listOfFiles.isEmpty() )
@@ -165,7 +159,7 @@ bool LightApp_Study::saveDocumentAs( const QString& theFileName )
     // removing previous temporary files. These files are not removed before saving
     // because they may be required for it.
 
-    std::vector<std::string> aNewList = myDriver->GetListOfFiles( aModel->module()->name() );
+    std::vector<std::string> aNewList = myDriver->GetListOfFiles( aModel->module()->name().toLatin1().constData() );
     
     std::set<std::string> aNewNames;
     std::set<std::string> toRemove;
@@ -205,11 +199,13 @@ bool LightApp_Study::saveDocument()
 {
   ModelList list; dataModels( list );
 
-  LightApp_DataModel* aModel = (LightApp_DataModel*)list.first();
-
   myDriver->ClearDriverContents();
   QStringList listOfFiles;
-  for ( ; aModel; aModel = (LightApp_DataModel*)list.next() ) {
+  QListIterator<CAM_DataModel*> itList( list );
+  while ( itList.hasNext() ) {
+    LightApp_DataModel* aModel = (LightApp_DataModel*)itList.next();
+    if ( !aModel ) continue;
+
     listOfFiles.clear();
     aModel->save( listOfFiles );
     saveModuleData(aModel->module()->name(), listOfFiles);
@@ -298,8 +294,9 @@ bool LightApp_Study::isModified() const
   ModelList list; dataModels( list );
 
   LightApp_DataModel* aModel = 0;
-  for ( QPtrListIterator<CAM_DataModel> it( list ); it.current() && !isAnyChanged; ++it ){
-    aModel = dynamic_cast<LightApp_DataModel*>( it.current() );
+  QListIterator<CAM_DataModel*> it( list );
+  while ( it.hasNext() && !isAnyChanged ) {
+    aModel = dynamic_cast<LightApp_DataModel*>( it.next() );
     if ( aModel )
       isAnyChanged = aModel->isModified();
   }
@@ -335,10 +332,10 @@ void LightApp_Study::saveModuleData(QString theModuleName, QStringList theListOf
   for ( QStringList::Iterator it = theListOfFiles.begin(); it != theListOfFiles.end(); ++it ) {
     if ( (*it).isEmpty() )
       continue;
-    aListOfFiles[anIndex] = (*it).latin1();
+    aListOfFiles[anIndex] = (*it).toLatin1().constData();
     anIndex++;
   }
-  myDriver->SetListOfFiles(theModuleName, aListOfFiles);
+  myDriver->SetListOfFiles(theModuleName.toLatin1().constData(), aListOfFiles);
 }
 
 /*!
@@ -346,7 +343,7 @@ void LightApp_Study::saveModuleData(QString theModuleName, QStringList theListOf
 */
 void LightApp_Study::openModuleData(QString theModuleName, QStringList& theListOfFiles)
 {
-  std::vector<std::string> aListOfFiles =  myDriver->GetListOfFiles(theModuleName);
+  std::vector<std::string> aListOfFiles =  myDriver->GetListOfFiles(theModuleName.toLatin1().constData());
   int i, aLength = aListOfFiles.size() - 1;
   if (aLength < 0)
     return;
@@ -368,7 +365,7 @@ bool LightApp_Study::saveStudyData( const QString& theFileName )
     return false;
   bool isMultiFile = resMgr->booleanValue( "Study", "multi_file", false );
 
-  bool aRes = myDriver->SaveDatasInFile(theFileName.latin1(), isMultiFile);
+  bool aRes = myDriver->SaveDatasInFile(theFileName.toLatin1(), isMultiFile);
   return aRes;
 }
 
@@ -382,7 +379,7 @@ bool LightApp_Study::openStudyData( const QString& theFileName )
     return false;
   bool isMultiFile = resMgr->booleanValue( "Study", "multi_file", false );
 
-  bool aRes = myDriver->ReadDatasFromFile(theFileName.latin1(), isMultiFile);
+  bool aRes = myDriver->ReadDatasFromFile(theFileName.toLatin1(), isMultiFile);
   return aRes;
 }
 

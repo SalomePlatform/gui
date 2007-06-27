@@ -30,7 +30,7 @@
 #include <SUIT_DataObjectKey.h>
 #include <SUIT_PopupClient.h>
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 

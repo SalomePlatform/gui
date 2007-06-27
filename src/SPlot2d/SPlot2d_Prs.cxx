@@ -21,7 +21,7 @@
 //  Module : SUIT
 
 #include "SPlot2d_Prs.h"
-#ifndef WNT
+#ifndef WIN32
 using namespace std;
 #endif
 

@@ -52,7 +52,8 @@
 
 #include "SVTK_Selector.h"
 
-#include <qimage.h>
+#include <QImage>
+#include <QToolBar>
 
 /*!
   Constructor
@@ -62,12 +63,14 @@ SVTK_MainWindow
 		  const char* theName,
 		  SUIT_ResourceMgr* theResourceMgr,
 		  SUIT_ViewWindow* theViewWindow) :
-  QMainWindow(theParent,theName,0),
+  QMainWindow(theParent,0),
   myViewWindow(theViewWindow)
 {
+  setObjectName(theName);
+
   myToolBar = new QToolBar(this);
-  myToolBar->setCloseMode(QDockWindow::Undocked);
-  myToolBar->setLabel(tr("LBL_TOOLBAR_LABEL"));
+  //myToolBar->setCloseMode(QDockWindow::Undocked);
+  myToolBar->setWindowTitle(tr("LBL_TOOLBAR_LABEL"));
 
   createActions(theResourceMgr);
   createToolBar();
@@ -84,9 +87,9 @@ SVTK_MainWindow
   SetEventDispatcher(myInteractor->GetDevice());
 
   setCentralWidget(myInteractor);
-  myInteractor->setBackgroundMode(Qt::NoBackground);
+  myInteractor->setBackgroundRole( QPalette::NoRole );//NoBackground
 
-  myInteractor->setFocusPolicy(StrongFocus);
+  myInteractor->setFocusPolicy(Qt::StrongFocus);
   myInteractor->setFocus();
   setFocusProxy(myInteractor);
 
@@ -474,7 +477,7 @@ SVTK_MainWindow
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_ROTATION_POINT" ) ),
 			   tr( "MNU_CHANGINGROTATIONPOINT_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_CHANGINGROTATIONPOINT_VIEW"));
-  anAction->setToggleAction(true);
+  anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onChangeRotationPoint(bool)));
   myActionsMap[ ChangeRotationPointId ] = anAction;
 
@@ -550,7 +553,7 @@ SVTK_MainWindow
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_SCALING" ) ),
 			   tr( "MNU_SVTK_SCALING" ), 0, this);
   anAction->setStatusTip(tr("DSC_SVTK_SCALING"));
-  anAction->setToggleAction(true);
+  anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onNonIsometric(bool)));
   myActionsMap[ NonIsometric ] = anAction;
 
@@ -559,7 +562,7 @@ SVTK_MainWindow
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_GRADUATED_AXES" ) ),
 			   tr( "MNU_SVTK_GRADUATED_AXES" ), 0, this);
   anAction->setStatusTip(tr("DSC_SVTK_GRADUATED_AXES"));
-  anAction->setToggleAction(true);
+  anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onGraduatedAxes(bool)));
   myActionsMap[ GraduatedAxes ] = anAction;
 
@@ -568,7 +571,7 @@ SVTK_MainWindow
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_UPDATE_RATE" ) ),
 			   tr( "MNU_SVTK_UPDATE_RATE" ), 0, this);
   anAction->setStatusTip(tr("DSC_SVTK_UPDATE_RATE"));
-  anAction->setToggleAction(true);
+  anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onUpdateRate(bool)));
   myActionsMap[ UpdateRate ] = anAction;
 }
@@ -896,5 +899,5 @@ SVTK_MainWindow
 ::dumpView()
 {
   QPixmap px = QPixmap::grabWindow( GetInteractor()->winId() );
-  return px.convertToImage();
+  return px.toImage();
 }

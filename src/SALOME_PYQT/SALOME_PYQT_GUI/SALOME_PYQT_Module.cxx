@@ -40,9 +40,6 @@
 #include <qmenubar.h>
 #include <qpopupmenu.h>
 
-#ifndef WIN32
-#include "SALOME_PYQT_SipDefs.h"
-#endif
 #include "sipAPISalomePyQtGUI.h"
 
 #include "sipqtQWidget.h"
@@ -116,16 +113,11 @@ private:
 // While the SalomePyQtGUI library is not imported in Python it's initialization function
 // should be called manually (and only once) in order to initialize global sip data
 // and to get C API from sip : sipBuildResult for example
-#if defined(SIP_VERS_v4_old) || defined(SIP_VERS_v4_new)
 #define INIT_FUNCTION initSalomePyQtGUI
 #if defined(SIP_STATIC_MODULE)
 extern "C" void INIT_FUNCTION();
 #else
 PyMODINIT_FUNC INIT_FUNCTION();
-#endif
-#else
-#define INIT_FUNCTION initlibSalomePyQtGUIc
-extern "C" void INIT_FUNCTION();
 #endif
 
 /*!

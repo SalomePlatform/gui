@@ -28,8 +28,10 @@
 #include "GLViewer.h"
 #include "GLViewer_Defs.h"
 
-#include <qsize.h>
-#include <qobject.h>
+#include <QSize>
+#include <QObject>
+
+class QRect;
 
 #include <Quantity_NameOfColor.hxx>
 

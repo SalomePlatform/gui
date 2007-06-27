@@ -31,17 +31,19 @@
 #include "Session_Session_i.hxx"
 
 #include "SALOME_NamingService.hxx"
-#include "SALOME_Event.hxx"
+#include "SALOME_Event.h"
 
 #include "SUIT_Session.h"
-#include "SUIT_Application.h"
+//#include "SUIT_Application.h"
 #include "SUIT_Desktop.h"
+#include "SUIT_Study.h"
 
-#include <qapplication.h>
+//#include <QApplication>
+#include <QMutex>
+#include <QWaitCondition>
 
 // Open CASCADE Includes
 #include <OSD_SharedLibrary.hxx>
-#include <OSD_LoadMode.hxx>
 #include <OSD_Function.hxx>
 
 using namespace std;
@@ -155,12 +157,12 @@ void SALOME_Session_i::StopSession()
   Send a SALOME::StatSession structure (see idl) to the client
   (number of running studies and presence of GUI)
 */
-class QtLock
+/*class QtLock
 {
 public:
   QtLock() { if ( qApp ) qApp->lock(); }
   ~QtLock() { if ( qApp ) qApp->unlock(); }
-};
+};*/
 
 
 SALOME::StatSession SALOME_Session_i::GetStatSession()
@@ -170,7 +172,7 @@ SALOME::StatSession SALOME_Session_i::GetStatSession()
 
   _runningStudies = 0;
   {
-    QtLock lock;
+    //QtLock lock;
     _isGUI = SUIT_Session::session();
     if ( _isGUI && SUIT_Session::session()->activeApplication() )
       _runningStudies = SUIT_Session::session()->activeApplication()->getNbStudies();

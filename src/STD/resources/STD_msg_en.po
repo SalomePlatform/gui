@@ -344,15 +344,6 @@ msgstr "Saving study "
 msgid "STD_Application::INF_DOC_SAVING_FAILS"
 msgstr "Can't save file \"%1\".\nPossible reason is permission denied or disc full.\nTry to use another file name."
 
-msgid "CLOSE_DLG_SAVE_CLOSE"
-msgstr "&Save&&Close"
-
-msgid "CLOSE_DLG_CLOSE"
-msgstr "C&lose w/o saving"
-
-msgid "CLOSE_DLG_UNLOAD"
-msgstr "&Unload"
-
 msgid "TOT_DESK_FILE_LOAD"
 msgstr "Load document"
 
@@ -361,12 +352,6 @@ msgstr "Load a document"
 
 msgid "MEN_DESK_FILE_LOAD"
 msgstr "Conn&ect..."    
-
-msgid "CLOSE_DLG_CAPTION"
-msgstr "Close active study"
-
-msgid "CLOSE_DLG_DESCRIPTION"
-msgstr "Do you want to close or only unload the study"
 
 msgid "DLG_LOAD_STUDY_CAPTION"
 msgstr "Load Study"

@@ -27,15 +27,18 @@
 #include "SPlot2d_Prs.h"
 #include "SUIT_Session.h"
 #include "SUIT_Application.h"
+#include "SUIT_ViewManager.h"
 
 //#include "utilities.h"
-#include "qapplication.h"
-#include <qtoolbar.h>
-#include <qtoolbutton.h>
-#include <qcursor.h>
-#include <qcolordialog.h>
-#include <qwt_math.h>
+#include <QApplication>
+#include <QToolBar>
+#include <QToolButton>
+#include <QCursor>
+#include <QColorDialog>
+
+//#include <qwt_math>
 #include <qwt_plot_canvas.h>
+#include <qwt_plot_curve.h>
 #include <stdlib.h>
 
 using namespace std;
@@ -90,20 +93,19 @@ void SPlot2d_Viewer::rename( const Handle(SALOME_InteractiveObject)& IObject,
   if( !aViewFrame )
     return;
 
-  QIntDictIterator<Plot2d_Curve> it( aViewFrame->getCurves() );
-  for( ; it.current(); ++it )
+  CurveDict aCurves = aViewFrame->getCurves();
+  CurveDict::Iterator it = aCurves.begin();
+  for( ; it != aCurves.end(); ++it )
   {
-    SPlot2d_Curve* aCurve = dynamic_cast<SPlot2d_Curve*>( it.current() );
+    SPlot2d_Curve* aCurve = dynamic_cast<SPlot2d_Curve*>( it.value() );
     if( aCurve && aCurve->hasIO() && aCurve->getIO()->isSame( IObject ) )
     {
       aCurve->setVerTitle( newName );
-      int key = aViewFrame->hasCurve( aCurve );
-      if( key )
-	aViewFrame->setCurveTitle( key, newName );
+      it.key()->setTitle( newName );
     }
 
     if( aCurve && aCurve->hasTableIO() && aCurve->getTableIO()->isSame( IObject ) )
-      aCurve->getTableIO()->setName( newName.latin1() );
+      aCurve->getTableIO()->setName( newName.toLatin1() );
   }
   aViewFrame->updateTitles();
 }
@@ -118,7 +120,8 @@ void SPlot2d_Viewer::renameAll( const Handle(SALOME_InteractiveObject)& IObj, co
   SUIT_ViewManager* vm = getViewManager();
   if ( vm )
   {
-    const QPtrVector<SUIT_ViewWindow>& wnds = vm->getViews();
+    const QVector<SUIT_ViewWindow*>& wnds = vm->getViews();
+
     for ( uint i = 0; i < wnds.size(); i++ )
     {
       Plot2d_ViewWindow* pwnd = dynamic_cast<Plot2d_ViewWindow*>( wnds.at( i ) );
@@ -139,10 +142,11 @@ bool SPlot2d_Viewer::isInViewer( const Handle(SALOME_InteractiveObject)& IObject
     return 1;
   else{
     if(!IObject.IsNull()){
-      QIntDictIterator<Plot2d_Curve> it(aViewFrame->getCurves());
-      for(; it.current();++it) {
-	SPlot2d_Curve* aCurve = dynamic_cast<SPlot2d_Curve*>(it.current()); 
-	if(aCurve->hasIO() && aCurve->getTableIO()->isSame(IObject))
+      CurveDict aCurves = aViewFrame->getCurves();
+      CurveDict::Iterator it = aCurves.begin();
+      for( ; it != aCurves.end(); ++it ) {
+        SPlot2d_Curve* aCurve = dynamic_cast<SPlot2d_Curve*>( it.value() );
+	if(aCurve && aCurve->hasIO() && aCurve->getTableIO()->isSame(IObject))
 	  return 1;
       }
     }
@@ -174,9 +178,10 @@ void SPlot2d_Viewer::DisplayOnly( const Handle(SALOME_InteractiveObject)& IObjec
   if(aViewFrame == NULL) return;
 
   Plot2d_Curve* curve = getCurveByIO( IObject );
-  QIntDictIterator<Plot2d_Curve> it( aViewFrame->getCurves() );
-  for ( ; it.current(); ++it ) {
-    if(it.current() != curve)
+  CurveDict aCurves = aViewFrame->getCurves();
+  CurveDict::Iterator it = aCurves.begin();
+  for( ; it != aCurves.end(); ++it ) {
+    if(it.value() != curve)
       aViewFrame->eraseCurve( curve );
     else
       aViewFrame->updateCurve( curve, false );
@@ -308,10 +313,11 @@ Handle(SALOME_InteractiveObject) SPlot2d_Viewer::FindIObject( const char* Entry 
   Plot2d_ViewFrame* aViewFrame = getActiveViewFrame();
   if(aViewFrame == NULL) return anIO;
 
-  QIntDictIterator<Plot2d_Curve> it( aViewFrame->getCurves() );
-  for ( ; it.current(); ++it ) {
-    SPlot2d_Curve* aCurve = dynamic_cast<SPlot2d_Curve*>(it.current()); 
-    if ( aCurve->hasIO() && !strcmp( aCurve->getIO()->getEntry(), Entry ) ) {
+  CurveDict aCurves = aViewFrame->getCurves();
+  CurveDict::Iterator it = aCurves.begin();
+  for( ; it != aCurves.end(); ++it ) {
+    SPlot2d_Curve* aCurve = dynamic_cast<SPlot2d_Curve*>(it.value()); 
+    if ( aCurve && aCurve->hasIO() && !strcmp( aCurve->getIO()->getEntry(), Entry ) ) {
       anIO = aCurve->getIO();
       break;
     }
@@ -345,9 +351,10 @@ SPlot2d_Curve* SPlot2d_Viewer::getCurveByIO( const Handle(SALOME_InteractiveObje
   if ( !theIObject.IsNull() ) {
     Plot2d_ViewFrame* aViewFrame = fr ? fr : getActiveViewFrame();
     if(aViewFrame) {
-      QIntDictIterator<Plot2d_Curve> it( aViewFrame->getCurves() );
-      for ( ; it.current(); ++it ) {
-	SPlot2d_Curve* aCurve = dynamic_cast<SPlot2d_Curve*>(it.current()); 
+      CurveDict aCurves = aViewFrame->getCurves();
+      CurveDict::Iterator it = aCurves.begin();
+      for( ; it != aCurves.end(); ++it ) {
+        SPlot2d_Curve* aCurve = dynamic_cast<SPlot2d_Curve*>( it.value() );
 	if(aCurve) {
 	  if ( aCurve->hasIO() && aCurve->getIO()->isSame( theIObject ) )
 	    return aCurve;
@@ -372,13 +379,14 @@ void SPlot2d_Viewer::onCloneView( Plot2d_ViewFrame* clonedVF, Plot2d_ViewFrame* 
 
   // 2) Display all curves displayed in cloned view
 
-  QList<Plot2d_Curve> aCurves;
-  clonedVF->getCurves( aCurves );
-  QList<Plot2d_Curve>::const_iterator anIt = aCurves.begin(), aLast = aCurves.end();
-
-  for( ; anIt!=aLast; anIt++ )
-    if( clonedVF->isVisible( *anIt ) )
-      newVF->displayCurve( *anIt, false );
+  CurveDict aCurves = clonedVF->getCurves();
+  CurveDict::Iterator anIt = aCurves.begin();
+  for( ; anIt != aCurves.end(); ++anIt )
+  {
+    SPlot2d_Curve* aCurve = dynamic_cast<SPlot2d_Curve*>( anIt.value() );
+    if( aCurve && clonedVF->isVisible( aCurve ) )
+      newVF->displayCurve( aCurve, false );
+  }
   newVF->Repaint();
 }
 

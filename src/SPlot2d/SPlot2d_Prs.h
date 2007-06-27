@@ -27,8 +27,6 @@
 #include "SALOME_Prs.h"
 #include "Plot2d_Prs.h"
 
-#include <qptrlist.h>
-
 class Plot2d_Curve;
 
 class SPLOT2D_EXPORT SPlot2d_Prs : public SALOME_Prs2d, public Plot2d_Prs

@@ -26,31 +26,41 @@
 #include <SUIT_Session.h>
 #include <SUIT_ResourceMgr.h>
 
-#include <qlabel.h>
-#include <qlayout.h>
-#include <qpixmap.h>
-#include <qgroupbox.h>
+#include <QtxGridBox.h>
+
+#include <QLabel>
+#include <QVBoxLayout>
+#include <QPixmap>
+#include <QIcon>
+#include <QGroupBox>
 
 /*!Constructor.*/
 LightApp_AboutDlg::LightApp_AboutDlg( const QString& defName, const QString& defVer, QWidget* parent )
-: QtxDialog( parent, "salome_about_dialog", true, false, None )
+: QtxDialog( parent, true, false, None )
 {
+  setObjectName( "salome_about_dialog" );
+
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
 
   QPixmap ico = resMgr->loadPixmap( "LightApp", tr( "ICO_ABOUT" ), false );
   if ( !ico.isNull() )
-    setIcon( ico );
+    setWindowIcon( ico );
 
   QPalette pal = palette();
-  QColorGroup cg = pal.active();
-  cg.setColor( QColorGroup::Foreground, Qt::darkBlue ); 
-  cg.setColor( QColorGroup::Background, Qt::white );
-  pal.setActive( cg ); pal.setInactive( cg ); pal.setDisabled( cg );
+
+  pal.setBrush( QPalette::Active, QPalette::WindowText, QBrush( Qt::darkBlue ) );
+  pal.setBrush( QPalette::Active, QPalette::Window,     QBrush( Qt::white ) );
+
+  pal.setBrush( QPalette::Inactive, QPalette::WindowText, QBrush( Qt::darkBlue ) );
+  pal.setBrush( QPalette::Inactive, QPalette::Window,     QBrush( Qt::white ) );
+
+  pal.setBrush( QPalette::Disabled, QPalette::WindowText, QBrush( Qt::darkBlue ) );
+  pal.setBrush( QPalette::Disabled, QPalette::Window,     QBrush( Qt::white ) );
+
   setPalette(pal);
 
   QVBoxLayout* main = new QVBoxLayout( mainFrame() );
-  QGroupBox* base = new QGroupBox( 1, Qt::Horizontal, "", mainFrame() );
-  base->setFrameStyle( QFrame::NoFrame );
+  QtxGridBox* base = new QtxGridBox( 1, Qt::Horizontal, mainFrame(), 0, 0 );
   base->setInsideMargin( 0 );
   main->addWidget( base );
 
@@ -99,7 +109,7 @@ LightApp_AboutDlg::LightApp_AboutDlg( const QString& defName, const QString& def
   QString capText = tr( "ABOUT_CAPTION" );
   if ( capText.contains( "%1" ) )
     capText = capText.arg( defName );
-  setCaption( capText );
+  setWindowTitle( capText );
 
   setSizeGripEnabled( false );
 }
@@ -142,7 +152,7 @@ void LightApp_AboutDlg::checkLabel( QLabel* lab ) const
   if ( !lab )
     return;
 
-  bool vis = !lab->text().stripWhiteSpace().isEmpty() ||
+  bool vis = !lab->text().trimmed().isEmpty() ||
              ( lab->pixmap() && !lab->pixmap()->isNull() );
   vis ? lab->show() : lab->hide();
 }

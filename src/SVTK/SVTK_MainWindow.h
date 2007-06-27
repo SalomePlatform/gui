@@ -28,7 +28,8 @@
 
 #include <vtkSmartPointer.h>
 
-#include <qmainwindow.h>
+#include <QMainWindow>
+#include <QMap>
 
 class QtxAction;
 
@@ -49,7 +50,6 @@ class SVTK_CubeAxesDlg;
 class SVTK_SetRotationPointDlg;
 
 class VTKViewer_Trihedron;
-class VTKViewer_Transform;
 class VTKViewer_Actor;
 
 class SVTK_Renderer;

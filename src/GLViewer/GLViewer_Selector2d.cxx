@@ -26,7 +26,8 @@
 #include "GLViewer_Selector2d.h"
 #include "GLViewer_Viewer2d.h"
 #include "GLViewer_Context.h"
-#include "GLViewer_ViewPort2d.h"
+#include "GLViewer_ViewPort.h"
+#include "GLViewer_ViewFrame.h"
 
 /*!
   Constructor

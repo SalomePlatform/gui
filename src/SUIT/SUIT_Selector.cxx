@@ -20,6 +20,49 @@
 
 #include "SUIT_SelectionMgr.h"
 
+#include <QObject>
+
+/*!\class SUIT_Selector::Destroyer
+  Class provide the watching for qobject parent class of the selector.
+*/
+
+class SUIT_Selector::Destroyer : public QObject
+{
+public:
+  Destroyer( SUIT_Selector*, QObject* = 0 );
+  virtual ~Destroyer();
+
+  SUIT_Selector* selector() const;
+  void           setSelector( SUIT_Selector* );
+
+private:
+  SUIT_Selector* mySelector;
+};
+
+SUIT_Selector::Destroyer::Destroyer( SUIT_Selector* s, QObject* p )
+: QObject( p ),
+  mySelector( s )
+{
+}
+
+SUIT_Selector::Destroyer::~Destroyer()
+{
+  SUIT_Selector* s = mySelector;
+  mySelector = 0;
+  if ( s )
+    delete s;
+}
+
+SUIT_Selector* SUIT_Selector::Destroyer::selector() const
+{
+  return mySelector;
+}
+
+void SUIT_Selector::Destroyer::setSelector( SUIT_Selector* s )
+{
+  mySelector = s;
+}
+
 /*!\class SUIT_Selector
  * Class provide selector for data owners.
  */
@@ -27,15 +70,18 @@
 /*!
   Constructor.
 */
-SUIT_Selector::SUIT_Selector( SUIT_SelectionMgr* selMgr, QObject* parent ) :
-QObject( parent ), 
-mySelMgr( selMgr ),
+SUIT_Selector::SUIT_Selector( SUIT_SelectionMgr* selMgr, QObject* parent )
+: mySelMgr( selMgr ),
 myBlock( false ),
 myEnabled( true ),
-myAutoBlock( true )
+myAutoBlock( true ),
+myDestroyer( 0 )
 {
   if ( selMgr )
     selMgr->installSelector( this );
+
+  if ( parent )
+    myDestroyer = new Destroyer( this, parent );
 }
 
 /*!
@@ -45,6 +91,12 @@ SUIT_Selector::~SUIT_Selector()
 {
   if ( selectionMgr() )
     selectionMgr()->removeSelector( this );
+
+  if ( myDestroyer && myDestroyer->selector() == this )
+  {
+    myDestroyer->setSelector( 0 );
+    delete myDestroyer;
+  }
 }
 
 /*!
@@ -135,7 +187,7 @@ bool SUIT_Selector::hasSelectionMode( const int mode ) const
 /*!
   Puts to list \a lst selection modes from selection manager.
 */
-void SUIT_Selector::selectionModes( QValueList<int>& lst ) const
+void SUIT_Selector::selectionModes( QList<int>& lst ) const
 {
   if ( selectionMgr() )
     selectionMgr()->selectionModes( lst );

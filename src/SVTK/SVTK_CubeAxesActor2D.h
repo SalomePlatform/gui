@@ -48,7 +48,7 @@ class VTKViewer_Transform;
 #pragma warning ( disable:4251 )
 #endif
 
-#ifndef WNT
+#ifndef WIN32
 class VTK_HYBRID_EXPORT SVTK_CubeAxesActor2D : public vtkCubeAxesActor2D
 #else
 class SVTK_EXPORT SVTK_CubeAxesActor2D : public vtkCubeAxesActor2D

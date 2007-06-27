@@ -19,32 +19,24 @@
 #ifndef CAM_APPLICATION_H
 #define CAM_APPLICATION_H
 
-#include "STD_Application.h"
+#include "CAM.h"
 
-#include "CAM_Module.h"
+#include <STD_Application.h>
+#include <QList>
 
-#include <qptrlist.h>
-
-class QPopupMenu;
+class QMenu;
+class CAM_Module;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 
-/*!
-  \class CAM_Application
-  Defines application configuration and behaviour for application with modules.
-  Every module has own data model, necessary windows and viewers, etc.
-  Application provides all necessary functionality for module management
-  (loading of modules/activation/deactivation, etc)
-*/
 class CAM_EXPORT CAM_Application : public STD_Application  
 {
   Q_OBJECT
 
 public:
-  typedef QPtrList<CAM_Module>         ModuleList;
-  typedef QPtrListIterator<CAM_Module> ModuleListIterator;
+  typedef QList<CAM_Module*> ModuleList;
 
 public:
   CAM_Application( const bool = true );
@@ -53,14 +45,11 @@ public:
   virtual void        start();
 
   CAM_Module*         activeModule() const;
-  CAM_Module*         module(  const QString& ) const;
+  CAM_Module*         module( const QString& ) const;
 
-  /** @name Modules lists.*/
-  //@{
-  ModuleListIterator  modules() const;
+  ModuleList          modules() const;
   void                modules( ModuleList& ) const;
   void                modules( QStringList&, const bool loaded = true ) const;
-  //@}
 
   virtual void        addModule( CAM_Module* );
 
@@ -69,7 +58,7 @@ public:
 
   virtual bool        activateModule( const QString& );
 
-  virtual void        contextMenuPopup( const QString&, QPopupMenu*, QString& );
+  virtual void        contextMenuPopup( const QString&, QMenu*, QString& );
 
   QString             moduleName( const QString& ) const;
   QString             moduleTitle( const QString& ) const;
@@ -93,13 +82,13 @@ private:
 
 private:
   typedef struct { QString name, title, internal; } ModuleInfo;
-  typedef QValueList<ModuleInfo>                    ModuleInfoList;
+  typedef QList<ModuleInfo>                         ModuleInfoList;
 
 private:
-  CAM_Module*         myModule;
-  ModuleList          myModules;
-  ModuleInfoList      myInfoList;
-  bool			          myAutoLoad;
+  CAM_Module*         myModule;        //!< active module
+  ModuleList          myModules;       //!< loaded modules list
+  ModuleInfoList      myInfoList;      //!< modules info list
+  bool                myAutoLoad;      //!< auto loading flag
 };
 
 #ifdef WIN32

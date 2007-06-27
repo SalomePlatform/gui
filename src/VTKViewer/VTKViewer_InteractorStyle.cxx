@@ -50,12 +50,9 @@
 #include <vtkSmartPointer.h>
 #include <vtkProperty.h>
 
-#include <qapplication.h>
-//VRV: porting on Qt 3.0.5
-#if QT_VERSION >= 0x030005
-#include <qpainter.h>
-#endif
-//VRV: porting on Qt 3.0.5
+#include <QApplication>
+#include <QRubberBand>
+
 #include <algorithm>
 
 //#include "utilities.h"
@@ -103,6 +100,8 @@ VTKViewer_InteractorStyle::VTKViewer_InteractorStyle()
   myPreSelectionActor->GetProperty()->SetLineWidth(5);
   myPreSelectionActor->GetProperty()->SetPointSize(5);
 
+  myRectBand = 0;
+
   OnSelectionModeChanged();
 }
 
@@ -111,6 +110,7 @@ VTKViewer_InteractorStyle::VTKViewer_InteractorStyle()
 VTKViewer_InteractorStyle::~VTKViewer_InteractorStyle() 
 {
   m_ViewWnd->RemoveActor(myPreSelectionActor);
+  endDrawRect();
 }
 
 
@@ -522,13 +522,13 @@ const char* imageRotateCursor[] = {
 /*! Loads cursors for viewer operations - zoom, pan, etc...*/
 void VTKViewer_InteractorStyle::loadCursors()
 {
-  myDefCursor       = QCursor(ArrowCursor);
-  myHandCursor      = QCursor(PointingHandCursor);
-  myPanCursor       = QCursor(SizeAllCursor);
+  myDefCursor       = QCursor(Qt::ArrowCursor);
+  myHandCursor      = QCursor(Qt::PointingHandCursor);
+  myPanCursor       = QCursor(Qt::SizeAllCursor);
   myZoomCursor      = QCursor(QPixmap(imageZoomCursor));
   myRotateCursor    = QCursor(QPixmap(imageRotateCursor));
   mySpinCursor      = QCursor(QPixmap(imageRotateCursor)); // temporarly !!!!!!
-  myGlobalPanCursor = QCursor(CrossCursor);
+  myGlobalPanCursor = QCursor(Qt::CrossCursor);
   myCursorState     = false;
 }
 
@@ -776,6 +776,32 @@ void VTKViewer_InteractorStyle::setCursor(const int operation)
   }
 }
 
+/*!
+  Draws rectangle by starting and current points
+*/
+void VTKViewer_InteractorStyle::drawRect()
+{
+  if ( !myRectBand ) {
+    myRectBand = new QRubberBand( QRubberBand::Rectangle, myGUIWindow );
+    QPalette palette;
+    palette.setColor(myRectBand->foregroundRole(), Qt::white);
+    myRectBand->setPalette(palette);
+  }
+  myRectBand->hide();
+
+  QRect aRect(myPoint, myOtherPoint);
+  myRectBand->setGeometry( aRect );
+  myRectBand->setVisible( aRect.isValid() );
+}
+
+/*!
+  \brief Delete rubber band on the end on the dragging operation.
+*/
+void VTKViewer_InteractorStyle::endDrawRect()
+{
+  delete myRectBand;
+  myRectBand = 0;
+}
 
 /*! called when viewer operation started (!put necessary initialization here!)*/
 void VTKViewer_InteractorStyle::onStartOperation()
@@ -787,10 +813,7 @@ void VTKViewer_InteractorStyle::onStartOperation()
     case VTK_INTERACTOR_STYLE_CAMERA_SELECT:
     case VTK_INTERACTOR_STYLE_CAMERA_FIT:
     {
-      QPainter p(myGUIWindow);
-      p.setPen(Qt::lightGray);
-      p.setRasterOp(Qt::XorROP);
-      p.drawRect(QRect(myPoint, myOtherPoint));
+      drawRect();
       break;
     }
     case VTK_INTERACTOR_STYLE_CAMERA_ZOOM:
@@ -1163,12 +1186,8 @@ void VTKViewer_InteractorStyle::onOperation(QPoint mousePos)
     }
   case VTK_INTERACTOR_STYLE_CAMERA_FIT:
     {
-      QPainter p(myGUIWindow);
-      p.setPen(Qt::lightGray);
-      p.setRasterOp(Qt::XorROP);
-      p.drawRect(QRect(myPoint, myOtherPoint));
       myOtherPoint = mousePos;
-      p.drawRect(QRect(myPoint, myOtherPoint));
+      drawRect();
       break;
     }
   }

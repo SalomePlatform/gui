@@ -21,7 +21,7 @@
 
 #include <SUIT_Desktop.h>
 
-#include <qapplication.h>
+#include <QApplication>
 
 LightApp_EventFilter* LightApp_EventFilter::myFilter = NULL;
 

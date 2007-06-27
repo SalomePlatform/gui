@@ -32,7 +32,7 @@
 #include <set>
 #include <map>
 
-#ifdef WNT
+#ifdef WIN32
 #include <algorithm>
 #endif
 

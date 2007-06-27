@@ -23,9 +23,10 @@
 #include "GLViewer_Object.h"
 #include "GLViewer_Drawer.h"
 #include "GLViewer_AspectLine.h"
-#include "GLViewer_Geom.h"
 #include "GLViewer_Text.h"
 #include "GLViewer_Group.h"
+
+#include <SUIT_DataOwner.h>
 
 //#include <cmath>
 //using namespace std;
@@ -141,8 +142,8 @@ QByteArray GLViewer_Object::getByteCopy()
     int i = 0;
     int anISize = sizeof( int );
 
-    const char* aTypeStr = myType.data();
-    const char* aToolTipStr = myToolTipText.data();
+    const char* aTypeStr = myType.toLatin1().constData();
+    const char* aToolTipStr = myToolTipText.toLatin1().constData();
 
     int aTypeLength = myType.length();
     int aToolTipLength = myToolTipText.length();
@@ -163,9 +164,10 @@ QByteArray GLViewer_Object::getByteCopy()
     
     int sizeOf8Float = sizeof( aRectData );
 
-    QByteArray aResult( 2*anISize + sizeOf8Float + 
-                        aTypeLength + aToolTipLength +
-                        aGLText.size() + aAspect.size() );
+    QByteArray aResult;
+    aResult.resize( 2*anISize + sizeOf8Float + 
+		    aTypeLength + aToolTipLength +
+		    aGLText.size() + aAspect.size() );
     // puts 8 float values into the byte array
     char* aPointer = (char*)&aRectData;
     for( i = 0; i < sizeOf8Float; i++, aPointer++ )
@@ -225,7 +227,9 @@ bool GLViewer_Object::initializeFromByteCopy( QByteArray theArray )
     GLViewer_AspectLine* aAspectLine = new GLViewer_AspectLine();
     int aGLAspLineSize = (aAspectLine->getByteCopy()).size();
 
-    QByteArray aGLTextArray, aAspect( aGLAspLineSize );
+    QByteArray aGLTextArray, aAspect;
+    aGLTextArray.resize( aGLAspLineSize );
+    aAspect.resize( aGLAspLineSize );
 
     if( aSize < 2*anISize + 8*aFSize + aGLTextMinSize + aGLAspLineSize )
         return false;

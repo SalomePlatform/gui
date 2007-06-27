@@ -35,13 +35,7 @@
 #include <qstringlist.h>
 #include <qlabel.h> 
 #include <qprogressbar.h> 
-
-//VRV: porting on Qt 3.0.5
-#if QT_VERSION >= 0x030005
 #include <qdesktopwidget.h> 
-#endif
-//VRV: porting on Qt 3.0.5
-
 #include <qsize.h> 
 
 #include <SALOMEconfig.h>
@@ -137,12 +131,7 @@ InquireServersGUI::InquireServersGUI()
   aHBoxLayout->addItem( new QSpacerItem( 0, 0, QSizePolicy::Expanding, QSizePolicy::Minimum )  );
 
   //Center widget
-#if QT_VERSION >= 0x030005
   QDesktopWidget *d = QApplication::desktop();
-#else
-  QWidget *d = QApplication::desktop();
-#endif
-//VRV: porting on Qt 3.0.5
 
   int w = d->width();         // returns desktop width
   int h = d->height();        // returns desktop height
@@ -371,14 +360,14 @@ bool InquireServersQThread::AskServer(int iteration, QString ** errMessage)
   //will be set true if we get response from server
   bool IsPassed = false;
   QString errDescription;
-#ifdef WNT
+#ifdef WIN32
   int i;
 #endif
   switch (iteration)
     {
     case 1:
       //First checking - existence of Naming Service
-#ifndef WNT
+#ifndef WIN32
       for (int i = myRepeat; i ; i--)
 #else
 	  for (i = myRepeat; i ; i--)

@@ -25,7 +25,7 @@
 #ifndef GLVIEWER_GRID_H
 #define GLVIEWER_GRID_H
 
-#ifdef WNT
+#ifdef WIN32
 #include "windows.h"
 #endif
 
@@ -34,7 +34,7 @@
 #include <GL/gl.h>
 #include <GL/glu.h>
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 
@@ -115,7 +115,7 @@ protected:
   GLboolean              myIsUpdate;
 };
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning ( default:4251 )
 #endif
 

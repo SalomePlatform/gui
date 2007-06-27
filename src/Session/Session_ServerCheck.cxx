@@ -32,8 +32,12 @@
 #include "Utils_ORB_INIT.hxx"
 #include "Utils_SINGLETON.hxx"
 #include "SALOME_NamingService.hxx"
-#include "utilities.h"
 #include "OpUtil.hxx"
+#include "utilities.h"
+
+#include <QApplication> 
+#include <QMutex>
+#include <QWaitCondition>
 
 // Default settings
 const int __DEFAULT__ATTEMPTS__ = 300;      // number of checks attemtps
@@ -363,10 +367,10 @@ void Session_ServerCheck::run()
 	ASSERT( SINGLETON_<SALOME_NamingService>::IsAlreadyExisting() );
 	NS.init_orb( orb );
 	QString containerName = QString( "/Containers/%1/FactoryServer" ).arg( GetHostname().c_str() );
-	CORBA::Object_var obj = NS.Resolve( containerName.latin1() );
+	CORBA::Object_var obj = NS.Resolve( containerName.toLatin1() );
 	Engines::Container_var FScontainer = Engines::Container::_narrow( obj );
 	if ( !CORBA::is_nil( FScontainer ) ) {
-	  MESSAGE( containerName.latin1() << " is found" );
+	  MESSAGE( containerName.toLatin1().constData() << " is found" );
 	  FScontainer->ping();
 	  MESSAGE( "FactoryServer container was activated" );
 	  bOk = true;
@@ -414,10 +418,10 @@ void Session_ServerCheck::run()
 	ASSERT( SINGLETON_<SALOME_NamingService>::IsAlreadyExisting() );
 	NS.init_orb( orb );
 	QString containerName = QString( "/Containers/%1/FactoryServerPy" ).arg( GetHostname().c_str() );
-	CORBA::Object_var obj = NS.Resolve( containerName.latin1() );
+	CORBA::Object_var obj = NS.Resolve( containerName.toLatin1() );
 	Engines::Container_var FSPcontainer = Engines::Container::_narrow( obj );
 	if ( !CORBA::is_nil( FSPcontainer ) ) {
-	  MESSAGE( containerName.latin1() << " is found" );
+	  MESSAGE( containerName.toLatin1().constData() << " is found" );
 	  FSPcontainer->ping();
 	  MESSAGE("FactoryServerPy container was activated");
 	  bOk = true;
@@ -465,10 +469,10 @@ void Session_ServerCheck::run()
 	ASSERT( SINGLETON_<SALOME_NamingService>::IsAlreadyExisting() );
 	NS.init_orb( orb );
 	QString containerName = QString( "/Containers/%1/SuperVisionContainer" ).arg( GetHostname().c_str() );
-	CORBA::Object_var obj = NS.Resolve( containerName.latin1() );
+	CORBA::Object_var obj = NS.Resolve( containerName.toLatin1() );
 	Engines::Container_var SVcontainer = Engines::Container::_narrow( obj );
 	if ( !CORBA::is_nil( SVcontainer ) ) {
-	  MESSAGE( containerName.latin1() << " is found" );
+	  MESSAGE( containerName.toLatin1().constData() << " is found" );
 	  SVcontainer->ping();
 	  MESSAGE("SuperVisionContainer container was activated");
 	  bOk = true;
@@ -504,6 +508,5 @@ void Session_ServerCheck::run()
     QThread::usleep( 30000 );
   }
   // clear splash status
-  splash->setProgress( 0, 0 );
   splash->setStatus( initialInfo );
 }

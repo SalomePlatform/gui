@@ -30,13 +30,13 @@
 #include "SVTK_MainWindow.h"
 #include "SVTK_Renderer.h"
 
-#include "QtxDblSpinBox.h"
+#include "QtxDoubleSpinBox.h"
 #include "QtxAction.h"
 
-#include <qgroupbox.h>
-#include <qlabel.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
+#include <QGroupBox>
+#include <QLabel>
+#include <QPushButton>
+#include <QGridLayout>
 
 using namespace std;
 
@@ -52,7 +52,7 @@ SVTK_NonIsometricDlg
 		  theName),
   m_MainWindow(theParent)
 {
-  setCaption(tr("DLG_TITLE"));
+  setWindowTitle(tr("DLG_TITLE"));
   setSizeGripEnabled(TRUE);
 
   // Create layout for this dialog
@@ -61,34 +61,39 @@ SVTK_NonIsometricDlg
   layoutDlg->setMargin(11);
 
   // Create croup box with grid layout
-  QGroupBox* aGroupBox = new QGroupBox(this, "GroupBox");
+  QGroupBox* aGroupBox = new QGroupBox(this);
+  aGroupBox->setObjectName("GroupBox");
   QHBoxLayout* aHBoxLayout = new QHBoxLayout(aGroupBox);
   aHBoxLayout->setMargin(11);
   aHBoxLayout->setSpacing(6);
 
   // "X" scaling
-  QLabel* TextLabelX = new QLabel (tr("LBL_X"), aGroupBox, "TextLabelX");
+  QLabel* TextLabelX = new QLabel (tr("LBL_X"), aGroupBox);
+  TextLabelX->setObjectName("TextLabelX");
   TextLabelX->setFixedWidth(15);
-  m_sbXcoeff = new QtxDblSpinBox(-VTK_LARGE_FLOAT, VTK_LARGE_FLOAT, 0.1, aGroupBox);
+  m_sbXcoeff = new QtxDoubleSpinBox(-VTK_LARGE_FLOAT, VTK_LARGE_FLOAT, 0.1, aGroupBox);
   m_sbXcoeff->setMinimumWidth(80);
   m_sbXcoeff->setValue(1.0);
 
   // "Y" scaling
-  QLabel* TextLabelY = new QLabel (tr("LBL_Y"), aGroupBox, "TextLabelY");
+  QLabel* TextLabelY = new QLabel (tr("LBL_Y"), aGroupBox);
+  TextLabelY->setObjectName("TextLabelY");
   TextLabelY->setFixedWidth(15);
-  m_sbYcoeff = new QtxDblSpinBox(-VTK_LARGE_FLOAT, VTK_LARGE_FLOAT, 0.1, aGroupBox);
+  m_sbYcoeff = new QtxDoubleSpinBox(-VTK_LARGE_FLOAT, VTK_LARGE_FLOAT, 0.1, aGroupBox);
   m_sbYcoeff->setMinimumWidth(80);
   m_sbYcoeff->setValue(1.0);
 
   // "Z" scaling
-  QLabel* TextLabelZ = new QLabel (tr("LBL_Z"), aGroupBox, "TextLabelZ");
+  QLabel* TextLabelZ = new QLabel (tr("LBL_Z"), aGroupBox);
+  TextLabelZ->setObjectName("TextLabelZ");
   TextLabelZ->setFixedWidth(15);
-  m_sbZcoeff = new QtxDblSpinBox(-VTK_LARGE_FLOAT, VTK_LARGE_FLOAT, 0.1, aGroupBox);
+  m_sbZcoeff = new QtxDoubleSpinBox(-VTK_LARGE_FLOAT, VTK_LARGE_FLOAT, 0.1, aGroupBox);
   m_sbZcoeff->setMinimumWidth(80);
   m_sbZcoeff->setValue(1.0);
 
   // Create <Reset> button
-  m_bReset = new QPushButton(tr("&Reset"), aGroupBox, "m_bReset");
+  m_bReset = new QPushButton(tr("&Reset"), aGroupBox);
+  m_bReset->setObjectName("m_bReset");
 
   // Layout widgets in the group box
   aHBoxLayout->addWidget(TextLabelX);
@@ -106,14 +111,17 @@ SVTK_NonIsometricDlg
   aHBoxLayout2->setMargin(11);
   aHBoxLayout2->setSpacing(6);
   // Create <OK> button
-  QPushButton* m_bOk = new QPushButton(tr("O&K"), aGroupBox2, "m_bOk");
+  QPushButton* m_bOk = new QPushButton(tr("O&K"), aGroupBox2);
+  m_bOk->setObjectName("m_bOk");
   m_bOk->setDefault(TRUE);
   m_bOk->setAutoDefault(TRUE);
   // Create <Apply> button
-  QPushButton* m_bApply = new QPushButton(tr("&Apply"), aGroupBox2, "m_bApply");
+  QPushButton* m_bApply = new QPushButton(tr("&Apply"), aGroupBox2);
+  m_bApply->setObjectName("m_bApply");
   m_bApply->setAutoDefault(TRUE);
   // Create <Cancel> button
-  QPushButton* m_bCancel = new QPushButton(tr("&Cancel"), aGroupBox2, "m_bCancel");
+  QPushButton* m_bCancel = new QPushButton(tr("&Cancel"), aGroupBox2);
+  m_bCancel->setObjectName("m_bCancel");
   m_bCancel->setAutoDefault(TRUE);
 
   // Layout buttons

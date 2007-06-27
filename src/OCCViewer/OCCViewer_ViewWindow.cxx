@@ -29,24 +29,24 @@
 #include "SUIT_Desktop.h"
 #include "SUIT_Session.h"
 #include "SUIT_ToolButton.h"
+#include "SUIT_ViewManager.h"
 
 #include "SUIT_Tools.h"
 #include "SUIT_ResourceMgr.h"
 #include "SUIT_MessageBox.h"
 
-#include <qptrlist.h>
-#include <qhbox.h>
-#include <qlabel.h>
-#include <qcolor.h>
-#include <qpainter.h>
-#include <qapplication.h>
-#include <qdatetime.h>
-#include <qimage.h>
+#include <QPainter>
+#include <QTime>
+#include <QImage>
+#include <QToolBar>
+#include <QMouseEvent>
+#include <QRubberBand>
 
 #include <V3d_Plane.hxx>
 #include <gp_Dir.hxx>
 #include <gp_Pln.hxx>
 
+#include <AIS_ListOfInteractive.hxx>
 #include <AIS_ListIteratorOfListOfInteractive.hxx>
 #include <AIS_Shape.hxx>
 
@@ -189,6 +189,15 @@ OCCViewer_ViewWindow::OCCViewer_ViewWindow(SUIT_Desktop* theDesktop, OCCViewer_V
   updateEnabledDrawMode();
   myClippingDlg = 0;
   mySetRotationPointDlg = 0;
+  myRectBand = 0;
+}
+
+/*!
+  \brief Destructor.
+*/
+OCCViewer_ViewWindow::~OCCViewer_ViewWindow()
+{
+  endDrawRect();
 }
 
 /*!
@@ -197,7 +206,7 @@ OCCViewer_ViewWindow::OCCViewer_ViewWindow(SUIT_Desktop* theDesktop, OCCViewer_V
 void OCCViewer_ViewWindow::initLayout()
 {
   myViewPort = new OCCViewer_ViewPort3d( this, myModel->getViewer3d(), V3d_ORTHOGRAPHIC );
-  myViewPort->setBackgroundColor(black);
+  myViewPort->setBackgroundColor(Qt::black);
   myViewPort->installEventFilter(this);
   setCentralWidget(myViewPort);
   myOperation = NOTHING;
@@ -211,8 +220,8 @@ void OCCViewer_ViewWindow::initLayout()
   setTransformInProcess ( false );
 
   myToolBar = new QToolBar(this);
-  myToolBar->setCloseMode(QDockWindow::Undocked);
-  myToolBar->setLabel(tr("LBL_TOOLBAR_LABEL"));
+  //myToolBar->setCloseMode(QDockWindow::Undocked); // toolbar has "Close" (X) button only if it's undocked, but there is no such functionality in Qt4
+  myToolBar->setWindowTitle(tr("LBL_TOOLBAR_LABEL"));
 
   createActions();
   createToolBar();
@@ -225,13 +234,13 @@ void OCCViewer_ViewWindow::initLayout()
 OCCViewer_ViewWindow::OperationType OCCViewer_ViewWindow::getButtonState(QMouseEvent* theEvent)
 {
   OperationType aOp = NOTHING;
-  if( (theEvent->state() == SUIT_ViewModel::myStateMap[SUIT_ViewModel::ZOOM]) &&
+  if( (theEvent->modifiers() == SUIT_ViewModel::myStateMap[SUIT_ViewModel::ZOOM]) &&
       (theEvent->button() == SUIT_ViewModel::myButtonMap[SUIT_ViewModel::ZOOM]) )
     aOp = ZOOMVIEW;
-  else if( (theEvent->state() == SUIT_ViewModel::myStateMap[SUIT_ViewModel::PAN]) && 
+  else if( (theEvent->modifiers() == SUIT_ViewModel::myStateMap[SUIT_ViewModel::PAN]) && 
            (theEvent->button() == SUIT_ViewModel::myButtonMap[SUIT_ViewModel::PAN]) )
     aOp = PANVIEW;
-  else if( (theEvent->state()  == SUIT_ViewModel::myStateMap[SUIT_ViewModel::ROTATE]) &&
+  else if( (theEvent->modifiers()  == SUIT_ViewModel::myStateMap[SUIT_ViewModel::ROTATE]) &&
            (theEvent->button() == SUIT_ViewModel::myButtonMap[SUIT_ViewModel::ROTATE]) )
     aOp = ROTATE;
 
@@ -534,7 +543,7 @@ void OCCViewer_ViewWindow::activateSetRotationGravity()
 */
 void OCCViewer_ViewWindow::updateGravityCoords()
 {
-  if ( mySetRotationPointDlg && mySetRotationPointDlg->isShown() && myCurrPointType == GRAVITY )
+  if ( mySetRotationPointDlg && mySetRotationPointDlg->isVisible() && myCurrPointType == GRAVITY )
   {
     Standard_Real Xcenter, Ycenter, Zcenter;
     if ( computeGravityCenter( Xcenter, Ycenter, Zcenter ) )
@@ -680,10 +689,10 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent(QMouseEvent* theEvent)
       emit mouseMoving( this, theEvent ); 
     else
     {
-      int aState = theEvent->state();
-      //int aButton = theEvent->button();
-      if ( aState == Qt::LeftButton ||
-	   aState == ( Qt::LeftButton | Qt::ShiftButton) )	{
+      int aState = theEvent->modifiers();
+      int aButton = theEvent->button();
+      if ( aButton == Qt::LeftButton ||
+	   ( aButton == Qt::LeftButton && aState == Qt::ShiftModifier ) )	{
 	myDrawRect = myEnableDrawMode;
 	if ( myDrawRect ) {
 	  drawRect();
@@ -711,11 +720,10 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
   case NOTHING:
     {
       emit mouseReleased(this, theEvent);
-      if(theEvent->button() == RightButton)
+      if(theEvent->button() == Qt::RightButton)
       {
         QContextMenuEvent aEvent( QContextMenuEvent::Mouse,
-                                  theEvent->pos(), theEvent->globalPos(),
-                                  theEvent->state() );
+                                  theEvent->pos(), theEvent->globalPos() );
         emit contextMenuRequested( &aEvent );
       }
     }
@@ -739,7 +747,7 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
     break;
       
   case WINDOWFIT:
-    if ( theEvent->state() == Qt::LeftButton ) {
+    if ( theEvent->button() == Qt::LeftButton ) {
 	    myCurrX = theEvent->x();
 	    myCurrY = theEvent->y();
 	    QRect rect = SUIT_Tools::makeRect(myStartX, myStartY, myCurrX, myCurrY);
@@ -755,6 +763,7 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
   if ( theEvent->button() == Qt::LeftButton && myDrawRect ) {
     myDrawRect = false;
     drawRect();
+    endDrawRect();
     resetState(); 
     myViewPort->update();
   }
@@ -767,10 +776,6 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
 void OCCViewer_ViewWindow::resetState()
 {
   myDrawRect = false;
-  
-  /* make rectangle empty (left > right) */
-  myRect.setLeft(2);
-  myRect.setRight(0);
   
   if ( myRotationPointSelection )
   {
@@ -797,14 +802,26 @@ void OCCViewer_ViewWindow::resetState()
 */
 void OCCViewer_ViewWindow::drawRect()
 {
-  QPainter aPainter(myViewPort);
-  aPainter.setRasterOp(Qt::XorROP);
-  aPainter.setPen(Qt::white);
+  if ( !myRectBand ) {
+    myRectBand = new QRubberBand( QRubberBand::Rectangle, myViewPort );
+    QPalette palette;
+    palette.setColor(myRectBand->foregroundRole(), Qt::white);
+    myRectBand->setPalette(palette);
+  }
+  myRectBand->hide();
+
   QRect aRect = SUIT_Tools::makeRect(myStartX, myStartY, myCurrX, myCurrY);
-  if ( !myRect.isEmpty() )
-	  aPainter.drawRect( myRect );
-  aPainter.drawRect(aRect);
-  myRect = aRect;
+  myRectBand->setGeometry( aRect );
+  myRectBand->setVisible( aRect.isValid() );
+}
+
+/*!
+  \brief Delete rubber band on the end on the dragging operation.
+*/
+void OCCViewer_ViewWindow::endDrawRect()
+{
+  delete myRectBand;
+  myRectBand = 0;
 }
 
 /*!
@@ -864,7 +881,7 @@ void OCCViewer_ViewWindow::createActions()
   mySetRotationPointAction = new QtxAction(tr("MNU_CHANGINGROTATIONPOINT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_ROTATION_POINT" ) ),
                            tr( "MNU_CHANGINGROTATIONPOINT_VIEW" ), 0, this);
   mySetRotationPointAction->setStatusTip(tr("DSC_CHANGINGROTATIONPOINT_VIEW"));
-  mySetRotationPointAction->setToggleAction( true );
+  mySetRotationPointAction->setCheckable( true );
   connect(mySetRotationPointAction, SIGNAL(toggled( bool )), this, SLOT(onSetRotationPoint( bool )));
   myActionsMap[ ChangeRotationPointId ] = mySetRotationPointAction;
 
@@ -929,7 +946,7 @@ void OCCViewer_ViewWindow::createActions()
   myClippingAction = new QtxAction(tr("MNU_CLIPPING"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_CLIPPING" ) ),
                            tr( "MNU_CLIPPING" ), 0, this);
   myClippingAction->setStatusTip(tr("DSC_CLIPPING"));
-  myClippingAction->setToggleAction( true );
+  myClippingAction->setCheckable( true );
   connect(myClippingAction, SIGNAL(toggled( bool )), this, SLOT(onClipping( bool )));
   myActionsMap[ ClippingId ] = myClippingAction;
 
@@ -1106,7 +1123,7 @@ void OCCViewer_ViewWindow::onSetRotationPoint( bool on )
 	  mySetRotationPointDlg->SetAction( mySetRotationPointAction );
 	}
 
-      if ( !mySetRotationPointDlg->isShown() )
+      if ( !mySetRotationPointDlg->isVisible() )
       {
 	if ( mySetRotationPointDlg->IsFirstShown() )
 	{ 
@@ -1119,7 +1136,7 @@ void OCCViewer_ViewWindow::onSetRotationPoint( bool on )
     }
   else
     {
-      if ( mySetRotationPointDlg->isShown() )
+      if ( mySetRotationPointDlg->isVisible() )
 	mySetRotationPointDlg->hide();
     }
 }
@@ -1140,9 +1157,9 @@ void OCCViewer_ViewWindow::onClipping( bool on )
 {
   SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
   if ( on )
-    myActionsMap[ ClippingId ]->setIconSet(aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_CLIPPING_PRESSED" )));
+    myActionsMap[ ClippingId ]->setIcon(aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_CLIPPING_PRESSED" )));
   else
-    myActionsMap[ ClippingId ]->setIconSet(aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_CLIPPING" )));
+    myActionsMap[ ClippingId ]->setIcon(aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_CLIPPING" )));
   
   if ( on )
     {
@@ -1152,12 +1169,12 @@ void OCCViewer_ViewWindow::onClipping( bool on )
 	  myClippingDlg->SetAction( myClippingAction );
 	}
 
-      if ( !myClippingDlg->isShown() )
+      if ( !myClippingDlg->isVisible() )
 	myClippingDlg->show();
     }
   else
     {
-      if ( myClippingDlg->isShown() )
+      if ( myClippingDlg->isVisible() )
 	myClippingDlg->hide();
       setCuttingPlane(false);
     }
@@ -1225,7 +1242,7 @@ void OCCViewer_ViewWindow::onTrihedronShow()
 QImage OCCViewer_ViewWindow::dumpView()
 {
   QPixmap px = QPixmap::grabWindow( myViewPort->winId() );
-  return px.convertToImage();
+  return px.toImage();
 }
 
 /*!
@@ -1337,7 +1354,7 @@ QString OCCViewer_ViewWindow::getVisualParameters()
 */
 void OCCViewer_ViewWindow::setVisualParameters( const QString& parameters )
 {
-  QStringList paramsLst = QStringList::split( '*', parameters, true );
+  QStringList paramsLst = parameters.split( '*' );
   if ( paramsLst.size() == 13 ) {
     viewAspect params;
     params.scale    = paramsLst[0].toDouble();

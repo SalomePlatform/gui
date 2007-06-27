@@ -27,9 +27,14 @@
 //  $Header$
 
 #include "Session_ServerLauncher.hxx"
+#include "Session_ServerThread.hxx"
 
 #include "Utils_SALOME_Exception.hxx"
 #include "utilities.h"
+
+#include <QMutex>
+#include <QWaitCondition>
+
 using namespace std;
 /*! 
    default constructor not for use

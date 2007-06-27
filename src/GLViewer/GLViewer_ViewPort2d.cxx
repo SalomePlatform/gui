@@ -28,23 +28,26 @@
 #include "GLViewer_ViewPort2d.h"
 #include "GLViewer_Viewer2d.h"
 #include "GLViewer_ViewFrame.h"
-#include "GLViewer_MimeSource.h"
+#include "GLViewer_MimeData.h"
 #include "GLViewer_Context.h"
 #include "GLViewer_Compass.h"
 #include "GLViewer_Grid.h"
+#include "GLViewer_Drawer.h"
 
-#include <QtxToolTip.h>
+// TODO: Porting to Qt4
+//#include <QtxToolTip.h>
 
-#include <qlayout.h>
-#include <qevent.h>
-#include <qrect.h>
-#include <qpopupmenu.h>
-#include <qtooltip.h>
-#include <qapplication.h>
-#include <qclipboard.h>
-#include <qpainter.h>
-#include <qbitmap.h>
-#include <qlabel.h>
+#include <QHBoxLayout>
+#include <QMouseEvent>
+#include <QRect>
+//#include <QMenu>
+//#include <QToolTip>
+#include <QApplication>
+#include <QClipboard>
+#include <QBitmap>
+#include <QLabel>
+#include <QWidget>
+#include <QRubberBand>
 
 #define WIDTH       640
 #define HEIGHT      480
@@ -71,7 +74,8 @@ GLViewer_ViewPort2d::GLViewer_ViewPort2d( QWidget* parent, GLViewer_ViewFrame* t
        myMargin( MARGIN ), myWidth( WIDTH ), myHeight( HEIGHT ),
        myXScale( 1.0 ), myYScale( 1.0 ), myXOldScale( 1.0 ), myYOldScale( 1.0 ),
        myXPan( 0.0 ), myYPan( 0.0 ),
-       myIsMouseReleaseBlock( false )
+       myIsMouseReleaseBlock( false ),
+       myRectBand(0)
 {
     if( theViewFrame == NULL )
         myViewFrame = ( GLViewer_ViewFrame* )parent;
@@ -101,10 +105,11 @@ GLViewer_ViewPort2d::GLViewer_ViewPort2d( QWidget* parent, GLViewer_ViewFrame* t
     mypFirstPoint = NULL;
     mypLastPoint = NULL;
 
-    myObjectTip = new QtxToolTip( myGLWidget );///GLViewer_ObjectTip( this );
+    // TODO: Porting to Qt4
+    /*myObjectTip = new QtxToolTip( myGLWidget );///GLViewer_ObjectTip( this );
     myObjectTip->setShowDelayTime( 60000 );
     connect( myObjectTip, SIGNAL( maybeTip( QPoint, QString&, QFont&, QRect&, QRect& ) ),
-             this, SLOT( onMaybeTip( QPoint, QString&, QFont&, QRect&, QRect& ) ) );
+             this, SLOT( onMaybeTip( QPoint, QString&, QFont&, QRect&, QRect& ) ) );*/
 //    myGLWidget->installEventFilter( myObjectTip );
 }
 
@@ -121,6 +126,9 @@ GLViewer_ViewPort2d::~GLViewer_ViewPort2d()
 
     delete myBorder;
     delete myGLWidget;
+
+    if ( myRectBand ) myRectBand->hide();
+    delete myRectBand;
 }
 
 /*!
@@ -162,17 +170,17 @@ void GLViewer_ViewPort2d::onCutObject()
     int aObjNum = aContext->NbSelected();
     if( aObjNum > 0 )
     {
-        QValueList<GLViewer_Object*> aObjects;
-        GLViewer_MimeSource* aMimeSource = new GLViewer_MimeSource();
+        QList<GLViewer_Object*> aObjects;
+        GLViewer_MimeData* aMimeData = new GLViewer_MimeData();
         aContext->InitSelected();
         for( ; aContext->MoreSelected(); aContext->NextSelected() )
             aObjects.append( aContext->SelectedObject() );
 
-        //aMimeSource->setObjects( aObjects ); ouv 6.05.04
+        //aMimeData->setObjects( aObjects ); ouv 6.05.04
 
         QClipboard *aClipboard = QApplication::clipboard();
         aClipboard->clear();
-        aClipboard->setData( aMimeSource );
+        aClipboard->setMimeData( aMimeData );
 
         for( int i = 0; i < aObjNum; i++ )
             aContext->deleteObject( aObjects[i] );
@@ -199,17 +207,17 @@ void GLViewer_ViewPort2d::onCopyObject()
     int aObjNum = aContext->NbSelected();
     if( aObjNum > 0 )
     {
-        QValueList<GLViewer_Object*> aObjects;
-        GLViewer_MimeSource* aMimeSource = new GLViewer_MimeSource();
+        QList<GLViewer_Object*> aObjects;
+        GLViewer_MimeData* aMimeData = new GLViewer_MimeData();
         aContext->InitSelected();
         for( ; aContext->MoreSelected(); aContext->NextSelected() )
             aObjects.append( aContext->SelectedObject() );
 
-        //aMimeSource->setObjects( aObjects ); ouv 6.05.04
+        //aMimeData->setObjects( aObjects ); ouv 6.05.04
 
         QClipboard *aClipboard = QApplication::clipboard();
         aClipboard->clear();
-        aClipboard->setData( aMimeSource );
+        aClipboard->setMimeData( aMimeData );
     }
 }
 
@@ -251,7 +259,7 @@ void GLViewer_ViewPort2d::onPasteObject()
     if( aMimeSource->provides( "GLViewer_Objects" ) )
     {
         QByteArray anArray = aMimeSource->encodedData( "GLViewer_Objects" );
-        QValueList<GLViewer_Object*> aObjects = GLViewer_MimeSource::getObjects( anArray, "GLViewer_Objects" );
+        QList<GLViewer_Object*> aObjects = GLViewer_MimeSource::getObjects( anArray, "GLViewer_Objects" );
         if( aObjects.empty() )
             return;
         GLViewer_Context* aContext = ((GLViewer_Viewer2d*)getViewFrame()->getViewer())->getGLContext();
@@ -288,7 +296,7 @@ void GLViewer_ViewPort2d::onDragObject( QMouseEvent* e )
   //QPoint aNewPos = e->pos();
   //GLViewer_Viewer2d* aViewer = (GLViewer_Viewer2d*)getViewFrame()->getViewer();
   
-  if( anObject && (e->state() & LeftButton ) )
+  if( anObject && (e->buttons() & Qt::LeftButton ) )
   {
     if( aContext->isSelected( anObject ) )
     {
@@ -302,7 +310,7 @@ void GLViewer_ViewPort2d::onDragObject( QMouseEvent* e )
     else
       anObject->moveObject( aX - *myCurDragPosX, anY - *myCurDragPosY);
   }
-  else if( aContext->NbSelected() && (e->state() & MidButton ) )
+  else if( aContext->NbSelected() && (e->buttons() & Qt::MidButton ) )
     for( aContext->InitSelected(); aContext->MoreSelected(); aContext->NextSelected() )
         (aContext->SelectedObject())->moveObject( aX - *myCurDragPosX, anY - *myCurDragPosY);
   
@@ -328,7 +336,7 @@ void GLViewer_ViewPort2d::mousePressEvent( QMouseEvent* e )
     if( aContext )
         anObject = aContext->getCurrentObject();
     
-    bool accel = e->state() & GLViewer_ViewTransformer::accelKey();
+    bool accel = e->modifiers() & GLViewer_ViewTransformer::accelKey();
     if( ( anObject && !( accel || e->button() == Qt::RightButton ) ) ||
         ( aContext->NbSelected() && !accel && e->button() == Qt::MidButton )  )
     {       
@@ -819,7 +827,7 @@ void GLViewer_ViewPort2d::fitAll( bool keepScale, bool withZ )
     float dx, dy, zm;
     float xScale, yScale;
 
-    myMargin = QMAX( myBorder->width(), myBorder->height() ) / 5;
+    myMargin = qMax( myBorder->width(), myBorder->height() ) / 5;
 
     xa = myBorder->left() - myMargin;
     xb = myBorder->right() + myMargin;
@@ -1156,6 +1164,14 @@ void GLViewer_ViewPort2d::startSelectByRect( int x, int y )
         mypFirstPoint = new QPoint( x, y );
         mypLastPoint = new QPoint( x, y );
     }
+
+    if ( !myRectBand ) {
+      myRectBand = new QRubberBand( QRubberBand::Rectangle, this );
+      QPalette palette;
+      palette.setColor(myRectBand->foregroundRole(), Qt::white);
+      myRectBand->setPalette(palette);
+    }
+    myRectBand->hide();
 }
 
 /*!
@@ -1166,17 +1182,14 @@ void GLViewer_ViewPort2d::drawSelectByRect( int x, int y )
 {
     if( mypFirstPoint && mypLastPoint )
     {
-
-        QPainter p( getPaintDevice() );
-        p.setPen( Qt::white );
-        p.setRasterOp( Qt::XorROP );
-
-        p.drawRect( selectionRect() );    /* erase */
-
-        mypLastPoint->setX( x );
+        myRectBand->hide();    /* erase */
+  
+	mypLastPoint->setX( x );
         mypLastPoint->setY( y );
         
-        p.drawRect( selectionRect() );    /* draw */
+	QRect aRect = selectionRect();
+	myRectBand->setGeometry( aRect );    /* draw */
+	myRectBand->setVisible( aRect.isValid() );
     }
 
 }
@@ -1189,17 +1202,17 @@ void GLViewer_ViewPort2d::finishSelectByRect()
     if( mypFirstPoint && mypLastPoint )
     {
 
-        QPainter p( getPaintDevice() );
-        p.setPen( Qt::white );
-        p.setRasterOp( Qt::XorROP );
 
-        p.drawRect( selectionRect() );    /* erase */
+        if ( myRectBand ) myRectBand->hide();    /* erase */
 
         delete mypFirstPoint;
         delete mypLastPoint;
 
         mypFirstPoint = NULL;
         mypLastPoint = NULL;
+
+	delete myRectBand;
+	myRectBand = 0;
     }
 }
 
@@ -1211,10 +1224,10 @@ QRect GLViewer_ViewPort2d::selectionRect()
     QRect aRect;
     if( mypFirstPoint && mypLastPoint )
     {
-        aRect.setLeft( QMIN( mypFirstPoint->x(), mypLastPoint->x() ) );
-        aRect.setTop( QMIN( mypFirstPoint->y(), mypLastPoint->y() ) );
-        aRect.setRight( QMAX( mypFirstPoint->x(), mypLastPoint->x() ) );
-        aRect.setBottom( QMAX( mypFirstPoint->y(), mypLastPoint->y() ) );
+        aRect.setLeft( qMin( mypFirstPoint->x(), mypLastPoint->x() ) );
+        aRect.setTop( qMin( mypFirstPoint->y(), mypLastPoint->y() ) );
+        aRect.setRight( qMax( mypFirstPoint->x(), mypLastPoint->x() ) );
+        aRect.setBottom( qMax( mypFirstPoint->y(), mypLastPoint->y() ) );
     }
 
     return aRect;
@@ -1357,9 +1370,9 @@ void GLViewer_ViewPort2d::onMaybeTip( QPoint thePoint, QString& theText, QFont& 
 
     QStringList aList;
     if( anObj->isTooTipHTML() )
-      aList = QStringList::split( "<br>", theText );
+      aList = theText.split( "<br>", QString::SkipEmptyParts );
     else
-      aList = QStringList::split( "\n", theText );
+      aList = theText.split( "\n", QString::SkipEmptyParts );
 
     if( !aList.isEmpty() )
     {

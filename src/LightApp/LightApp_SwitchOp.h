@@ -21,7 +21,7 @@
 #define LightApp_SwitchOp_H
 
 #include "LightApp.h"
-#include <qobject.h>
+#include <QObject>
 
 class LightApp_Module;
 class LightApp_Operation;

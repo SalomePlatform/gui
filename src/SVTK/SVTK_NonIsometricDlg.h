@@ -33,7 +33,7 @@
 
 class SVTK_MainWindow;
 
-class QtxDblSpinBox;
+class QtxDoubleSpinBox;
 class QtxAction;
 
 class QPushButton;
@@ -55,9 +55,9 @@ public:
 protected:
   SVTK_MainWindow *m_MainWindow;
 
-  QtxDblSpinBox* m_sbXcoeff;
-  QtxDblSpinBox* m_sbYcoeff;
-  QtxDblSpinBox* m_sbZcoeff;
+  QtxDoubleSpinBox* m_sbXcoeff;
+  QtxDoubleSpinBox* m_sbYcoeff;
+  QtxDoubleSpinBox* m_sbZcoeff;
   QPushButton* m_bReset;
 
 protected slots:

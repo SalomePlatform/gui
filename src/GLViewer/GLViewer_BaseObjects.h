@@ -28,12 +28,11 @@
 #include "GLViewer.h"
 #include "GLViewer_Object.h"
 
-#include <qcolor.h>
-#include <qvaluelist.h>
+#include <QColor>
 
 #include <TColStd_SequenceOfInteger.hxx>
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 
@@ -92,11 +91,11 @@ public:
   float                    getMarkerSize() const { return myMarkerSize; }
   
   //! Export numbers of heghlighted/selected markers
-  void                     exportNumbers( QValueList<int>& high, QValueList<int>& unhigh,
-                                          QValueList<int>& sel, QValueList<int>& unsel );
+  void                     exportNumbers( QList<int>& high, QList<int>& unhigh,
+                                          QList<int>& sel, QList<int>& unsel );
   
   //! Returns selected numbers
-  QValueList<int>          getSelectedElements() { return mySelNumbers; }
+  QList<int>               getSelectedElements() { return mySelNumbers; }
   //! Adds or remove selected number
   bool                     addOrRemoveSelected( int index );
   //! Adds selected numbers
@@ -109,12 +108,12 @@ protected:
   GLfloat*                myXCoord;
   GLfloat*                myYCoord;    
   GLfloat                 myMarkerSize;
-  QValueList<int>         myHNumbers;
-  QValueList<int>         myUHNumbers;
-  QValueList<int>         mySelNumbers;
-  QValueList<int>         myCurSelNumbers;
-  QValueList<int>         myUSelNumbers;
-  QValueList<int>         myPrevHNumbers;
+  QList<int>              myHNumbers;
+  QList<int>              myUHNumbers;
+  QList<int>              mySelNumbers;
+  QList<int>              myCurSelNumbers;
+  QList<int>              myUSelNumbers;
+  QList<int>              myPrevHNumbers;
   TColStd_SequenceOfInteger mySelectedIndexes;
 };
 
@@ -177,11 +176,11 @@ public:
   GLboolean               isHighSelAll() const { return myHighSelAll; }
   
   //! Export numbers of highlighted/selected lines
-  void                     exportNumbers( QValueList<int>& high, QValueList<int>& unhigh,
-                                          QValueList<int>& sel, QValueList<int>& unsel );
+  void                    exportNumbers( QList<int>& high, QList<int>& unhigh,
+					 QList<int>& sel, QList<int>& unsel );
 
   //! Returns numbers of selected lines
-  QValueList<int>         getSelectedElements() { return mySelNumbers; }
+  QList<int>              getSelectedElements() { return mySelNumbers; }
 
 protected:
   GLfloat*                myXCoord;
@@ -190,12 +189,12 @@ protected:
   GLboolean               myIsClosed;
   GLboolean               myHighSelAll;
   
-  QValueList<int>         myHNumbers;
-  QValueList<int>         myUHNumbers;
-  QValueList<int>         mySelNumbers;
-  QValueList<int>         myUSelNumbers;
-  QValueList<int>         myCurSelNumbers;
-  QValueList<int>         myPrevHNumbers;
+  QList<int>              myHNumbers;
+  QList<int>              myUHNumbers;
+  QList<int>              mySelNumbers;
+  QList<int>              myUSelNumbers;
+  QList<int>              myCurSelNumbers;
+  QList<int>              myPrevHNumbers;
   TColStd_SequenceOfInteger mySelectedIndexes;
   
   GLboolean               myHighFlag;
@@ -248,7 +247,7 @@ protected:
   int                       myHeight;
 };
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning ( default:4251 )
 #endif
 

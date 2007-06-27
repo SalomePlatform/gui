@@ -23,15 +23,15 @@
 
 #include <Qtx.h>
 
-#include <qmap.h>
-#include <qpixmap.h>
-#include <qstringlist.h>
+#include <QMap>
+#include <QStringList>
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 
 class QButtonGroup;
+class QGroupBox;
 class QRadioButton;
 
 class QDS_EXPORT QDS_RadioBox : public QDS_Datum
@@ -43,15 +43,15 @@ public:
   virtual ~QDS_RadioBox();
 
   int                        count( bool = false ) const;
-  void                       values( QValueList<int>&, bool = false ) const;
+  void                       values( QList<int>&, bool = false ) const;
 
   int                        columns() const;
   void                       setColumns( const int );
 
   bool                       state( const int ) const;
   void                       setState( const bool, const int, const bool = true );
-  void                       setState( const bool, const QValueList<int>&, const bool = true );
-  void                       setValues( const QValueList<int>&, const QStringList& );
+  void                       setState( const bool, const QList<int>&, const bool = true );
+  void                       setValues( const QList<int>&, const QStringList& );
   void                       setValues( const QStringList& );
 
 signals:
@@ -62,8 +62,9 @@ protected slots:
 
 protected:
   QButtonGroup*              buttonGroup() const;
+  QGroupBox*                 groupBox() const;
   virtual QWidget*           createControl( QWidget* );
-  void                       buttons( QPtrList<QRadioButton>& ) const;
+  void                       buttons( QList<QRadioButton*>& ) const;
 
   virtual QString            getString() const;
   virtual void               setString( const QString& );
@@ -84,9 +85,11 @@ private:
   QIntList                   myDataIds;
   QIntList                   myUserIds;
   QStringList                myUserNames;
+
+  QButtonGroup*              myButtonGroup;
 };
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning( default:4251 )
 #endif
 

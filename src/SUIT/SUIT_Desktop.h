@@ -21,15 +21,18 @@
 
 #include "SUIT.h"
 
-#include <qmap.h>
-#include <qpixmap.h>
+#include <QList>
+#include <QEvent>
+
 #include <QtxMainWindow.h>
 
-class QPopupMenu;
+class QMovie;
+
 class QtxLogoMgr;
-class SUIT_ViewWindow;
 class QtxActionMenuMgr;
 class QtxActionToolMgr;
+
+class SUIT_ViewWindow;
 
 /*!
   \class SUIT_Desktop
@@ -40,23 +43,26 @@ class SUIT_EXPORT SUIT_Desktop : public QtxMainWindow
 {
   Q_OBJECT
 
+  class ReparentEvent;
+
+  enum { Reparent = QEvent::User };
+
 public:
   SUIT_Desktop();
   virtual ~SUIT_Desktop();
 
   QtxActionMenuMgr*        menuMgr() const;
   QtxActionToolMgr*        toolMgr() const;
+  QtxLogoMgr*              logoMgr() const;
 
   virtual SUIT_ViewWindow* activeWindow() const = 0;
-  virtual QPtrList<SUIT_ViewWindow> windows() const = 0;
-
-  void                     addLogo( const QString&, const QPixmap& ); // Not should be used. Will be removed.
-  void                     removeLogo( const QString& );              // Not should be used. Will be removed.
+  virtual QList<SUIT_ViewWindow*> windows() const = 0;
 
   int                      logoCount() const;
 
   void                     logoClear();
   void                     logoRemove( const QString& );
+  void                     logoInsert( const QString&, QMovie*, const int = -1 );
   void                     logoInsert( const QString&, const QPixmap&, const int = -1 );
 
   void                     emitActivated();
@@ -71,10 +77,11 @@ signals:
 
 protected:
   virtual bool             event( QEvent* );
+  virtual void             customEvent( QEvent* );
   virtual void             closeEvent( QCloseEvent* );
   virtual void             childEvent( QChildEvent* );
 
-  virtual QWidget*         parentArea() const = 0;
+  virtual void             addWindow( QWidget* ) = 0;
 
 private:
   QtxActionMenuMgr*        myMenuMgr;

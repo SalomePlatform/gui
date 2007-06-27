@@ -26,15 +26,11 @@
 #include "SalomeApp_DataObject.h"
 #include "SalomeApp_Module.h"
 #include "SalomeApp_Application.h"
-#include "SalomeApp_Engine_i.hxx"
 
 #include "LightApp_RootObject.h"
 
 #include <CAM_DataObject.h>
 
-#include <SUIT_Application.h>
-#include <SUIT_ResourceMgr.h>
-#include <SUIT_Session.h>
 #include <SUIT_TreeSync.h>
 #include <SUIT_DataObjectIterator.h>
 
@@ -58,8 +54,8 @@ public:
   bool     isEqual( const kerPtr&, const suitPtr& ) const;
   kerPtr   nullSrc() const;
   suitPtr  nullTrg() const;
-  void     children( const kerPtr&, QValueList<kerPtr>& ) const;
-  void     children( const suitPtr&, QValueList<suitPtr>& ) const;
+  void     children( const kerPtr&, QList<kerPtr>& ) const;
+  void     children( const suitPtr&, QList<suitPtr>& ) const;
   suitPtr  parent( const suitPtr& ) const;
   bool     isCorrect( const kerPtr& ) const;
   void     updateItem( const kerPtr&, const suitPtr& ) const;
@@ -119,7 +115,7 @@ suitPtr SalomeApp_DataModelSync::createItem( const kerPtr& so,
     {
       DataObjectList ch;
       parent->children( ch );
-      int pos = ch.find( after );
+      int pos = ch.indexOf( after );
       if( pos>=0 )
 	parent->insertChild( nitem, pos+1 );
       else
@@ -188,7 +184,7 @@ suitPtr SalomeApp_DataModelSync::nullTrg() const
   \param obj - kernel object
   \param ch - list to be filled
 */
-void SalomeApp_DataModelSync::children( const kerPtr& obj, QValueList<kerPtr>& ch ) const
+void SalomeApp_DataModelSync::children( const kerPtr& obj, QList<kerPtr>& ch ) const
 {
   ch.clear();
   _PTR(ChildIterator) it ( myStudy->NewChildIterator( obj ) );
@@ -201,15 +197,16 @@ void SalomeApp_DataModelSync::children( const kerPtr& obj, QValueList<kerPtr>& c
   \param p - SUIT object
   \param ch - list to be filled
 */
-void SalomeApp_DataModelSync::children( const suitPtr& p, QValueList<suitPtr>& ch ) const
+void SalomeApp_DataModelSync::children( const suitPtr& p, QList<suitPtr>& ch ) const
 {
   DataObjectList l;
   if( p )
   {
     p->children( l );
     ch.clear();
-    for( SUIT_DataObject* o = l.first(); o; o = l.next() )
-      ch.append( o );
+    QListIterator<suitPtr> it( ch );
+    while ( it.hasNext() )
+      ch.append( it.next() );
   }
 }
 
@@ -244,7 +241,7 @@ void showTree( SUIT_DataObject* root )
   {
     QString marg; marg.fill( ' ', 3*it.depth() );
     QString nnn = "%1 '%2'";
-    qDebug( nnn.arg( marg ).arg( it.current()->name() ) );
+    qDebug( nnn.arg( marg ).arg( it.current()->name() ).toLatin1() );
   }
 }
 
@@ -277,7 +274,7 @@ bool SalomeApp_DataModel::open( const QString& name, CAM_Study* study, QStringLi
     return true; // Probably nothing to load
 
   _PTR(Study)      aStudy ( aDoc->studyDS() ); // shared_ptr cannot be used here
-  _PTR(SComponent) aSComp ( aStudy->FindComponentID( std::string( anId.latin1() ) ) );
+  _PTR(SComponent) aSComp ( aStudy->FindComponentID( std::string( anId.toLatin1() ) ) );
   if ( aSComp )
     updateTree( aSComp, aDoc );
 
@@ -312,7 +309,7 @@ void SalomeApp_DataModel::update( LightApp_DataObject*, LightApp_Study* study )
       QString anId = getRootEntry( aSStudy );
       if ( !anId.isEmpty() ){ // if nothing is published in the study for this module -> do nothing
 	_PTR(Study) aStudy ( aSStudy->studyDS() );
-	sobj = aStudy->FindComponentID( std::string( anId.latin1() ) );
+	sobj = aStudy->FindComponentID( std::string( anId.toLatin1() ) );
       }
     }
   }
@@ -323,7 +320,7 @@ void SalomeApp_DataModel::update( LightApp_DataObject*, LightApp_Study* study )
       if ( aSStudy ) {
         _PTR(Study) aStudy ( aSStudy->studyDS() );
         // modelRoot->object() cannot be reused here: it is about to be deleted by buildTree() soon
-        sobj = aStudy->FindComponentID( std::string( modelRoot->entry().latin1() ) );
+        sobj = aStudy->FindComponentID( std::string( modelRoot->entry().toLatin1() ) );
       }
     }
   }
@@ -408,7 +405,7 @@ QString SalomeApp_DataModel::getRootEntry( SalomeApp_Study* study ) const
       anEntry = anObj->entry();
   }
   else if ( study && study->studyDS() ) { // this works even if <myRoot> is null
-    _PTR(SComponent) aSComp( study->studyDS()->FindComponent( module()->name() ) );
+    _PTR(SComponent) aSComp( study->studyDS()->FindComponent( module()->name().toStdString() ) );
     if ( aSComp )
       anEntry = aSComp->GetID().c_str();
   }

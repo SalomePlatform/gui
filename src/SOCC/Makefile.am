@@ -46,5 +46,5 @@ libSOCC_la_CPPFLAGS=$(QT_INCLUDES) $(CAS_CPPFLAGS) $(BOOST_CPPFLAGS) \
 	-I$(srcdir)/../OCCViewer -I$(srcdir)/../Qtx
 
 libSOCC_la_LDFLAGS=$(QT_MT_LIBS)
-libSOCC_la_LIBADD= ../SUIT/libsuit.la ../OBJECT/libSalomeObject.la \
-	../Prs/libSalomePrs.la ../OCCViewer/libOCCViewer.la
+libSOCC_la_LIBADD=../Qtx/libqtx.la ../SUIT/libsuit.la ../OBJECT/libSalomeObject.la \
+	          ../Prs/libSalomePrs.la ../OCCViewer/libOCCViewer.la

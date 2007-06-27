@@ -18,8 +18,6 @@
 //
 #include "LightApp_DataSubOwner.h"
 
-#include "LightApp_DataObject.h"
-
 /*!Constructor.Initialize by \a entry and \a index*/
 LightApp_DataSubOwner::LightApp_DataSubOwner( const QString& entry, const int index )
 : LightApp_DataOwner( entry ),

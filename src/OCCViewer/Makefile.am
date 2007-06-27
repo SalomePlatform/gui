@@ -92,4 +92,5 @@ nodist_salomeres_DATA = \
 libOCCViewer_la_CPPFLAGS=$(QT_INCLUDES) $(OGL_INCLUDES) $(CAS_CPPFLAGS) \
 	-I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 
-libOCCViewer_la_LDFLAGS=$(OGL_LIBS) $(QT_MT_LIBS) $(CAS_KERNEL) $(CAS_VIEWER) ../SUIT/libsuit.la
+libOCCViewer_la_LDFLAGS=$(OGL_LIBS) $(QT_MT_LIBS) $(CAS_KERNEL) $(CAS_VIEWER)
+libOCCViewer_la_LIBADD=../Qtx/libqtx.la ../SUIT/libsuit.la

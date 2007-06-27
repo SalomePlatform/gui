@@ -27,7 +27,7 @@
 
 #include "GLViewer_Viewer.h"
 
-int GLViewer_Selector::apppendKey = Qt::ShiftButton;
+int GLViewer_Selector::apppendKey = Qt::ShiftModifier;
 
 /*!
     Constructor

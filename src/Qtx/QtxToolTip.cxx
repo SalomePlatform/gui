@@ -21,11 +21,13 @@
 
 #include "QtxToolTip.h"
 
-#include <qfont.h>
-#include <qtimer.h>
-#include <qcursor.h>
-#include <qfontmetrics.h>
-#include <qapplication.h>
+#include <QFont>
+#include <QTimer>
+#include <QCursor>
+#include <QFontMetrics>
+#include <QApplication>
+#include <QPalette>
+#include <QMouseEvent>
 
 #define TOOLTIP_SHOW_DELAY 0500
 #define TOOLTIP_HIDE_DELAY 7000
@@ -34,11 +36,14 @@
   Constructor
 */
 QtxToolTip::QtxToolTip( QWidget* parent )
-: QLabel( parent, "", WStyle_Customize | WStyle_NoBorder | WX11BypassWM | WStyle_Tool | WStyle_StaysOnTop | WType_TopLevel )
+: QLabel( parent, Qt::FramelessWindowHint | Qt::X11BypassWindowManagerHint | Qt::Tool | Qt::WindowStaysOnTopHint | Qt::Window )
 {
+  setObjectName( "" );
   setIndent( 3 );
-	setAlignment( Qt::AlignLeft | Qt::AlignVCenter );
-	setBackgroundColor( QColor( 255, 255, 231 ) );
+  setAlignment( Qt::AlignLeft | Qt::AlignVCenter );
+  QPalette palette;
+  palette.setColor( backgroundRole(), QColor( 255, 255, 231 ) );
+  setPalette( palette );
 
 	myWidgetRegion = QRect( -1, -1, -1, -1 );
 
@@ -50,7 +55,9 @@ QtxToolTip::QtxToolTip( QWidget* parent )
 	installEventFilter( this );
 
 	mySleepTimer = new QTimer( this );
+        mySleepTimer->setSingleShot( true );
 	myWakeUpTimer = new QTimer( this );
+        myWakeUpTimer->setSingleShot( true );
 	connect( mySleepTimer,  SIGNAL( timeout() ), this, SLOT( onSleepTimeOut()  ) );
 	connect( myWakeUpTimer, SIGNAL( timeout() ), this, SLOT( onWakeUpTimeOut() ) );
 
@@ -87,7 +94,7 @@ bool QtxToolTip::eventFilter( QObject* o, QEvent* e )
 		if ( myWakeUpTimer->isActive() )
 		{
 			myWakeUpTimer->stop();
-			myWakeUpTimer->start( myWakeUpDelayTime, true );
+			myWakeUpTimer->start( myWakeUpDelayTime );
 		}
 		if ( isVisible() )
 		{
@@ -100,7 +107,7 @@ bool QtxToolTip::eventFilter( QObject* o, QEvent* e )
 		else
 		{
 			if ( !myWidgetRegion.isValid() || myWidgetRegion.contains( thePos ) )
-				myWakeUpTimer->start( myWakeUpDelayTime, true );
+				myWakeUpTimer->start( myWakeUpDelayTime );
 		}
 	}
 	if ( e->type() == QEvent::KeyPress )
@@ -141,7 +148,7 @@ void QtxToolTip::showTip( const QRect& aRegion, const QString& text, const QRect
 	myWidgetRegion = aWidgetRegion;
 	setGeometry( aRegion );
 	if ( myShowDelayTime != 0 )
-		mySleepTimer->start( myShowDelayTime, true );
+		mySleepTimer->start( myShowDelayTime );
 	show();
 }
 
@@ -176,7 +183,7 @@ void QtxToolTip::maybeTip( const QPoint& pos )
 				         QSize( textRegion.width() + 2 * margin, textRegion.height() ) );
 		QRect tipRegion( parentWidget()->mapToGlobal( dspRegion.topLeft() ), dspRegion.size() );
 		if ( tipRegion.left() < 0 )
-			tipRegion.moveBy( -1 * tipRegion.left(), 0 );
+			tipRegion.translate( -1 * tipRegion.left(), 0 );
 		showTip( tipRegion, text, theRegion );
 	}
 }
@@ -211,7 +218,7 @@ void QtxToolTip::mousePressEvent( QMouseEvent* e )
 	QWidget* reciever = parentWidget();
 	QMouseEvent* me = new QMouseEvent( QEvent::MouseButtonPress,
 									   reciever->mapFromGlobal( e->globalPos() ),
-									   e->button(), e->state() );
+									   e->button(), e->buttons(), Qt::KeypadModifier );
 	QApplication::sendEvent( reciever, me );
 }
 
@@ -224,7 +231,7 @@ void QtxToolTip::mouseDoubleClickEvent( QMouseEvent* e )
 	QWidget* reciever = parentWidget();
 	QMouseEvent* me = new QMouseEvent( QEvent::MouseButtonDblClick,
 									   reciever->mapFromGlobal( e->globalPos() ),
-									   e->button(), e->state() );
+									   e->button(), e->buttons(), Qt::KeypadModifier );
 	QApplication::sendEvent( reciever, me );
 }
 

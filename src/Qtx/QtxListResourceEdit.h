@@ -25,7 +25,8 @@
 #include "QtxResourceEdit.h"
 
 #include <qmap.h>
-#include <qhbox.h>
+//#include <qhbox.h>
+#include <QWidget>
 #include <qframe.h>
 #include <qgroupbox.h>
 #include <qvalidator.h>
@@ -189,7 +190,7 @@ protected:
   Base class for preferences items.
 */
 
-class QtxListResourceEdit::PrefItem : public QHBox, public Item
+class QtxListResourceEdit::PrefItem : public QWidget/*QHBox*/, public Item
 {
 public:
   PrefItem( const int, QtxResourceEdit*, Item* = 0, QWidget* = 0 );
@@ -241,7 +242,7 @@ private:
   void             setIndexes( const QVariant& );
 
   void             setStrings( const QStringList& );
-  void             setIndexes( const QValueList<int>& );
+  void             setIndexes( const QList<int>& );
 
 private:
   QComboBox*       myList;

@@ -44,18 +44,17 @@ class SUIT_ViewWindow;
   It is able to return values of standard object properties
   (isVisible,isComponent,canBeDisplayed,isReference, etc)
 */
-class LIGHTAPP_EXPORT LightApp_Selection : public QtxPopupMgr::Selection
+class LIGHTAPP_EXPORT LightApp_Selection : public QtxPopupSelection
 {
 public:
-  LightApp_Selection();
+  LightApp_Selection( const QString&, LightApp_SelectionMgr* );
   virtual ~LightApp_Selection();
 
-  virtual void                   init( const QString&, LightApp_SelectionMgr* );
   virtual void                   processOwner( const LightApp_DataOwner* );
 
   virtual int                    count() const;
-  virtual QtxValue               param( const int, const QString& ) const;
-  virtual QtxValue               globalParam( const QString& ) const;
+  virtual QVariant               parameter( const int, const QString& ) const;
+  virtual QVariant               parameter( const QString& ) const;
   void                           setModuleName( const QString );
 
 protected:

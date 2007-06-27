@@ -35,7 +35,7 @@
 #include "SUIT_PopupClient.h"
 #include "SUIT_ViewWindow.h"
 
-#include <qaction.h>
+#include <QtxAction.h>
 
 #ifdef WIN32
 #pragma warning ( disable:4251 )
@@ -54,7 +54,7 @@ class SUPERVGRAPH_EXPORT SUPERVGraph_View: public QWidget, public SUIT_PopupClie
 
   /* redefine functions from SUIT_PopupClient */
   virtual QString popupClientType() const { return Type(); }
-  virtual void    contextMenuPopup( QPopupMenu* );
+  virtual void    contextMenuPopup( QMenu* );
   
   virtual void resizeView( QResizeEvent* theEvent ) {};
   
@@ -125,7 +125,7 @@ class SUPERVGRAPH_EXPORT SUPERVGraph_ViewFrame : public SUIT_ViewWindow {
 
   //! Actions ID
   enum { PanId, ResetId };
-  typedef QMap<int, QAction*> ActionsMap;
+  typedef QMap<int, QtxAction*> ActionsMap;
 
   ActionsMap       myActionsMap;
   QToolBar*        myToolBar;

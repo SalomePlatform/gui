@@ -16,7 +16,7 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifdef WNT
+#ifdef WIN32
 #ifdef PLOT2D_EXPORTS
 #define PLOT2D_EXPORT __declspec(dllexport)
 #else
@@ -26,6 +26,6 @@
 #define PLOT2D_EXPORT
 #endif
 
-#if defined WNT
+#if defined WIN32
 #pragma warning ( disable: 4251 )
 #endif

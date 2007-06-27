@@ -23,14 +23,11 @@
 #include <LightApp_Operation.h>
 #include <LightApp_Module.h>
 #include <LightApp_Application.h>
-#include <LightApp_Operation.h>
 #include <LightApp_SelectionMgr.h>
 #include <LightApp_Dialog.h>
 
 #include <SUIT_Desktop.h>
-
-#include <qapplication.h>
-
+#include <SUIT_Study.h>
 
 /*!
  * \brief Constructor
@@ -265,7 +262,7 @@ void LightApp_Operation::setDialogActive( const bool active )
     if( active )
     {
       activateSelection();
-      dlg()->setActiveWindow();
+      dlg()->activateWindow();
     }
   }
 }

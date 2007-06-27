@@ -22,7 +22,7 @@
 #ifndef QTXWORKSTACKACTION_H
 #define QTXWORKSTACKACTION_H
 
-#include "QtxAction.h"
+#include "QtxActionSet.h"
 
 class QtxWorkstack;
 
@@ -30,64 +30,56 @@ class QtxWorkstack;
 #pragma warning( disable:4251 )
 #endif
 
-class QTX_EXPORT QtxWorkstackAction : public QtxAction
+class QTX_EXPORT QtxWorkstackAction : public QtxActionSet
 {
   Q_OBJECT
 
 public:
-  enum { VSplit     = 0x0001,
-         HSplit     = 0x0002,
-         Windows    = 0x0010,
-         Split      = VSplit | HSplit,
-         Standard   = Split | Windows };
+  //! Actions (menu items) ID
+  enum { SplitVertical   = 0x0001,   //!< "Split window vertically" operation
+         SplitHorizontal = 0x0002,   //!< "Split window horizontally" operation
+         Windows         = 0x0010,   //!< A list of child windows menu items
+         Split           = SplitVertical | SplitHorizontal,
+         Standard        = Split | Windows };
 
-public:
-  QtxWorkstackAction( QtxWorkstack*, QObject* = 0, const char* = 0 );
+  QtxWorkstackAction( QtxWorkstack*, QObject* = 0 );
   virtual ~QtxWorkstackAction();
 
   QtxWorkstack* workstack() const;
 
-  int           items() const;
-  void          setItems( const int );
-  bool          hasItems( const int ) const;
+  int           menuActions() const;
+  void          setMenuActions( const int );
 
+  QIcon         icon( const int ) const;
+  QString       text( const int ) const;
   int           accel( const int ) const;
-  QIconSet      iconSet( const int ) const;
-  QString       menuText( const int ) const;
   QString       statusTip( const int ) const;
 
   void          setAccel( const int, const int );
-  void          setIconSet( const int, const QIconSet& );
-  void          setMenuText( const int, const QString& );
+  void          setIcon( const int, const QIcon& );
+  void          setText( const int, const QString& );
   void          setStatusTip( const int, const QString& );
-
-  virtual bool  addTo( QWidget* );
-  virtual bool  addTo( QWidget*, const int );
-  virtual bool  removeFrom( QWidget* );
 
   void          perform( const int );
 
 private slots:
   void          onAboutToShow();
-  void          onItemActivated( int );
-  void          onPopupDestroyed( QObject* );
+  void          onTriggered( int );
+
+protected:
+  virtual void  addedTo( QWidget* );
+  virtual void  removedFrom( QWidget* );
 
 private:
-  void          checkPopup( QPopupMenu* );
-  void          updatePopup( QPopupMenu* );
-
-  int           clearPopup( QPopupMenu* );
-  void          fillPopup( QPopupMenu*, const int );
-
-private:
-  typedef QMap<QPopupMenu*, QIntList> MenuMap;
-  typedef QMap<int, QtxAction*>       ItemMap;
+  void          updateContent();
+  void          updateWindows();
+  void          splitVertical();
+  void          splitHorizontal();
+  void          activateItem( const int );
 
 private:
-  MenuMap       myMenu;
-  ItemMap       myItem;
-  int           myFlags;
-  QtxWorkstack* myWorkstack;
+  QtxWorkstack* myWorkstack;       //!< parent workstack
+  bool          myWindowsFlag;     //!< "show child windows items" flag
 };
 
 #ifdef WIN32

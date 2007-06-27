@@ -29,6 +29,8 @@
 
 #include "SVTK_SelectorDef.h"
 
+#include "VTKViewer_Filter.h"
+
 #include "SALOME_Actor.h"
 
 #include <TColStd_MapIteratorOfMapOfInteger.hxx>

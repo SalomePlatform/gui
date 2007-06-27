@@ -29,6 +29,9 @@
 #include "SUPERVGraph.h"
 #include "SUPERVGraph_ViewFrame.h"
 
+#include "SUIT_Desktop.h"
+#include "SUIT_ViewWindow.h"
+
 using namespace std;
 
 /*!
@@ -36,7 +39,7 @@ using namespace std;
 */
 SUIT_ViewWindow* SUPERVGraph::createView(SUIT_Desktop* parent)
 {
-  return new SUPERVGraph_ViewFrame( parent/*, "vtkView"*/ ); 
+  return new SUPERVGraph_ViewFrame( parent ); 
 }
 
 extern "C"

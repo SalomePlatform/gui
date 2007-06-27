@@ -20,9 +20,9 @@
 #define SALOMEAPP_EVENTFILTER_H
 
 #include "SalomeApp.h"
-#include <qobject.h>
+#include <QObject>
 
-#if defined WNT
+#if defined WIN32
 #pragma warning( disable: 4251 )
 #endif
 
@@ -50,7 +50,7 @@ private:
   static SalomeApp_EventFilter* myFilter;
 };
 
-#if defined WNT
+#if defined WIN32
 #pragma warning( default: 4251 )
 #endif
 

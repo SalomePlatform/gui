@@ -25,7 +25,7 @@
 #ifndef GLVIEWER_TEXT_H
 #define GLVIEWER_TEXT_H
 
-#ifdef WNT
+#ifdef WIN32
 #include <windows.h>
 #endif
 
@@ -34,12 +34,11 @@
 
 #include <GL/gl.h>
 
-#include <qfont.h>
-#include <qstring.h>
-#include <qcolor.h>
-#include <qfontmetrics.h>
+#include <QFont>
+#include <QString>
+#include <QColor>
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 
@@ -107,7 +106,7 @@ protected:
   DisplayTextFormat  myDTF;
 };
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning ( default:4251 )
 #endif
 

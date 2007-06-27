@@ -27,13 +27,13 @@
 
 #include "Plot2d_Curve.h"
 
-#include <qstring.h>
-#include <qcolor.h>
-#include <qmemarray.h>
 #ifndef _Handle_SALOME_InteractiveObject_HeaderFile
 #include <Handle_SALOME_InteractiveObject.hxx>
 #endif
 #include "SALOME_InteractiveObject.hxx"
+
+class QString;
+class QColor;
 
 class SPLOT2D_EXPORT SPlot2d_Curve : public Plot2d_Curve
 {

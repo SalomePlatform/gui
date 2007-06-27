@@ -205,7 +205,7 @@ static void ChangeValues(vtkFloatingPointType* aArray1,
     for (int i=0; i<4; i++){
       tmp = aArray1[i]; aArray1[i] = aArray2[i]; aArray2[i] = tmp;
     }
-#ifndef WNT
+#ifndef WIN32
     for(int i=0;i<2; i++){
 #else
     for(i=0;i<2; i++){
@@ -450,7 +450,7 @@ int SVTK_CubeAxesActor2D::RenderOpaqueGeometry(vtkViewport *viewport)
 
   // XCoords coordinates for X grid
   vtkFloatArray *XCoords = vtkFloatArray::New();
-#ifndef WNT
+#ifndef WIN32
   for(int i=0;i<numOfLabelsX;i++){
 #else
   for(i=0;i<numOfLabelsX;i++){
@@ -460,7 +460,7 @@ int SVTK_CubeAxesActor2D::RenderOpaqueGeometry(vtkViewport *viewport)
   }
   // YCoords coordinates for Y grid
   vtkFloatArray *YCoords = vtkFloatArray::New();
-#ifndef WNT
+#ifndef WIN32
   for(int i=0;i<numOfLabelsX;i++){
 #else
   for(i=0;i<numOfLabelsX;i++){
@@ -470,7 +470,7 @@ int SVTK_CubeAxesActor2D::RenderOpaqueGeometry(vtkViewport *viewport)
   }
   // ZCoords coordinates for Z grid
   vtkFloatArray *ZCoords = vtkFloatArray::New();
-#ifndef WNT
+#ifndef WIN32
   for(int i=0;i<numOfLabelsZ;i++){
 #else
   for(i=0;i<numOfLabelsZ;i++){
@@ -534,7 +534,7 @@ int SVTK_CubeAxesActor2D::RenderOpaqueGeometry(vtkViewport *viewport)
   p[5][1] = YCoords->GetValue(numOfLabelsY-1);
   p[5][2] = aMiddleZ;
 
-#ifndef WNT
+#ifndef WIN32
   for(int i=0;i<3;i++) 
 #else
   for(i=0;i<3;i++) 

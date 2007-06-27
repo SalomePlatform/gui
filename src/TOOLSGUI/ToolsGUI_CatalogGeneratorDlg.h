@@ -19,29 +19,26 @@
 // 
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//
-//
 //  File   : ToolsGUI_CatalogGeneratorDlg.h
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
+//
 
-#ifndef DIALOGBOX_TOOLSGUI_CATALOGGENERATORDLG_H
-#define DIALOGBOX_TOOLSGUI_CATALOGGENERATORDLG_H
+#ifndef TOOLSGUI_CATALOGGENERATORDLG_H
+#define TOOLSGUI_CATALOGGENERATORDLG_H
 
-#include <qdialog.h>
+#include "ToolsGUI.h"
 
-#include <Standard_Macro.hxx>
+#include <QDialog>
 
 class QLineEdit;
 class QPushButton;
 
-class Standard_EXPORT ToolsGUI_CatalogGeneratorDlg : public QDialog
+class TOOLSGUI_EXPORT ToolsGUI_CatalogGeneratorDlg : public QDialog
 { 
     Q_OBJECT
 
 public:
-    ToolsGUI_CatalogGeneratorDlg( QWidget* parent = 0, const char* name = 0 );
+    ToolsGUI_CatalogGeneratorDlg( QWidget* parent = 0 );
     ~ToolsGUI_CatalogGeneratorDlg();
 
     QString getIdlPath();
@@ -78,4 +75,4 @@ private:
     QPushButton*   myCloseBtn;
 };
 
-#endif // DIALOGBOX_TOOLSGUI_CATALOGGENERATORDLG_H
+#endif // TOOLSGUI_CATALOGGENERATORDLG_H

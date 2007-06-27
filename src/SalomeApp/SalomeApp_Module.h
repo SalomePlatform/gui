@@ -30,7 +30,6 @@
 
 class CAM_DataModel;
 class SalomeApp_Application;
-class LightApp_Operation;
 class LightApp_Selection;
 class SALOME_ListIO;
 class QString;
@@ -59,7 +58,7 @@ public:
 
   virtual void                        storeVisualParameters(int savePoint);
   virtual void                        restoreVisualParameters(int savePoint);
-  virtual LightApp_Selection*         createSelection() const;
+  virtual LightApp_Selection*         createSelection( const QString&, LightApp_SelectionMgr* ) const;
 
 protected:
   virtual CAM_DataModel*              createDataModel();

@@ -19,17 +19,23 @@
 // 
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//
-//
 //  File   : ToolsGUI.cxx
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
+//
 
 #include "ToolsGUI.h"
 
 /*!
-  \return true if object is visible
+  \class ToolsGUI
+  \brief Utility class.
+*/
+
+/*!
+  \brief Get visibility value of the "AttributeGraphic" attribute.
+  \param theStudy study
+  \param theObj object
+  \param theId sub-object identifier
+  \return \c true if an object (sub-object) is visible
 */
 bool ToolsGUI::GetVisibility( _PTR(Study)   theStudy,
                               _PTR(SObject) theObj,
@@ -46,11 +52,11 @@ bool ToolsGUI::GetVisibility( _PTR(Study)   theStudy,
 }
 
 /*!
-  Set flag visibility of object
-  \param theStudy - study
-  \param theEntry - entry
-  \param theValue - flag visibility
-  \param theId - id
+  \brief Set visibility value of the "AttributeGraphic" attribute.
+  \param theStudy study
+  \param theObj object
+  \return theValue new visibility value
+  \param theId sub-object identifier
 */
 bool ToolsGUI::SetVisibility( _PTR(Study) theStudy,
                               const char* theEntry,

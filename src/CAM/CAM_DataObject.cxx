@@ -21,20 +21,36 @@
 #include "CAM_Module.h"
 #include "CAM_DataModel.h"
 
-/*!Constructor. Sets parent object.*/
+/*!
+  \class CAM_DataObject
+  \brief CAM-based implementation of data object.
+  
+  In addition to base implementation provides integration
+  with CAM_DataModel.
+*/
+
+/*!
+  \brief Constructor.
+  \param parent parent data object
+*/
 CAM_DataObject::CAM_DataObject( SUIT_DataObject* parent )
 : SUIT_DataObject( parent )
 {
 }
 
-/*!Destructor.Do nothing*/
+/*!
+  \brief Destructor.
+
+  Does nothing.
+*/
 CAM_DataObject::~CAM_DataObject()
 {
 }
 
-/*!Get module.
- *\retval const CAM_Module pointer - module
- */
+/*!
+  \brief Get CAM module.
+  \return parent module object pointer
+*/
 CAM_Module* CAM_DataObject::module() const
 { 
   CAM_Module* mod = 0;
@@ -46,10 +62,11 @@ CAM_Module* CAM_DataObject::module() const
   return mod;
 }
 
-/*!Get data model.
- *Return 0 - if no parent obbject.
- *\retval const CAM_DataModel pointer - data model
- */
+/*!
+  \brief Get CAM data model.
+  \return data model or 0 if it is not set
+  \sa CAM_RootObject class
+*/
 CAM_DataModel* CAM_DataObject::dataModel() const
 {
   CAM_DataObject* parentObj = dynamic_cast<CAM_DataObject*>( parent() );

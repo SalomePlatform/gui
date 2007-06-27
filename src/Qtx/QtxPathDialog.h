@@ -24,7 +24,7 @@
 
 #include "QtxDialog.h"
 
-#include <qmap.h>
+#include <QMap>
 
 class QFrame;
 class QLineEdit;
@@ -40,10 +40,12 @@ class QTX_EXPORT QtxPathDialog : public QtxDialog
   Q_OBJECT
 
 protected:
-  QtxPathDialog( QWidget* = 0, const bool = true, const bool = false, const int = Standard, WFlags = 0 );
+  QtxPathDialog( QWidget* = 0, const bool = true, const bool = false,
+                 const int = Standard, Qt::WindowFlags = 0 );
 
 public:
-  QtxPathDialog( const bool, QWidget* = 0, const bool = true, const bool = false, const int = Standard, WFlags = 0 );
+  QtxPathDialog( const bool, QWidget* = 0, const bool = true,
+                 const bool = false, const int = Standard, Qt::WindowFlags = 0 );
   virtual ~QtxPathDialog();
 
   QString            fileName() const;
@@ -52,10 +54,11 @@ public:
   QString            filter() const;
   void               setFilter( const QString& );
 
-  virtual void       show();
-
 signals:
   void               fileNameChanged( QString );
+
+public slots:
+  virtual void       setVisible( bool );
 
 protected slots:
   void               validate();
@@ -74,16 +77,21 @@ protected:
   QString            fileName( const int ) const;
   void               setFileName( const int, const QString&, const bool = false );
 
+  QString            filter( const int ) const;
+  void               setFilter( const int, const QString& );
+
   QLineEdit*         fileEntry( const int ) const;
   QLineEdit*         fileEntry( const int, int& ) const;
-  int                createFileEntry( const QString&, const int, const int = -1 );
+  int                createFileEntry( const QString&, const int,
+                                      const QString& = QString(), const int = -1 );
 
   int                defaultEntry() const;
   void               setDefaultEntry( const int );
 
 private:
   void               initialize();
-  QStringList        prepareFilters() const;
+  void               updateVisibility();
+  QStringList        prepareFilters( const QString& ) const;
 	bool               hasVisibleChildren( QWidget* ) const;
   QStringList        filterWildCards( const QString& ) const;
   QString            autoExtension( const QString&, const QString& = QString::null ) const;
@@ -92,15 +100,14 @@ protected:
   enum { OpenFile, SaveFile, OpenDir, SaveDir, NewDir };
 
 private:
-  typedef struct { int mode; QLineEdit* edit;
+  typedef struct { int mode; QLineEdit* edit; QString filter;
                    QPushButton* btn; QFileDialog* dlg; } FileEntry;
   typedef QMap<int, FileEntry> FileEntryMap;
 
 private:
-  QString            myFilter;
   FileEntryMap       myEntries;
   int                myDefault;
-  QFrame*            myEntriesFrame;
+  QWidget*           myEntriesFrame;
   QFrame*            myOptionsFrame;
 };
 

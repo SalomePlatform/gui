@@ -33,7 +33,7 @@
 #include "SVTK_Selection.h"
 
 #include <vtkSmartPointer.h>
-#include <qwidget.h>
+#include <QWidget>
 
 // undefining min and max because CASCADE's defines them and
 // it clashes with std::min(), std::max()

@@ -25,18 +25,14 @@
 #ifndef GLVIEWER_BASEDRAWERS_H
 #define GLVIEWER_BASEDRAWERS_H
 
-#include <qcolor.h>
-#include <qobject.h>
-#include <qfile.h>
-#include <qfont.h>
-#include <qgl.h>
+class QColor;
 
 #include "GLViewer.h"
 #include "GLViewer_Drawer.h"
 
 class GLViewer_AspectLine;
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 
@@ -91,7 +87,7 @@ public:
   void                      updateObjects();
 };
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning ( default:4251 )
 #endif
 

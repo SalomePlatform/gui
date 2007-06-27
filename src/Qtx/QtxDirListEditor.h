@@ -34,7 +34,8 @@
 /*!
  * \brief The GUI implementation of the directory list
  */
-class QTX_EXPORT QtxDirListEditor : public QWidget {
+class QTX_EXPORT QtxDirListEditor : public QWidget 
+{
 
   Q_OBJECT
 

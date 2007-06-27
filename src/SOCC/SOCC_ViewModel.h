@@ -26,7 +26,8 @@
 #include "SOCC.h"
 #include "SALOME_Prs.h"
 #include "OCCViewer_ViewModel.h"
-#include "SALOME_InteractiveObject.hxx"
+
+class Handle(SALOME_InteractiveObject);
 
 class SOCC_EXPORT SOCC_Viewer: public OCCViewer_Viewer, public SALOME_View
 {

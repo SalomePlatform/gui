@@ -29,29 +29,23 @@
 #include "Utils_ORB_INIT.hxx"
 #include "Utils_SINGLETON.hxx"
 #include "SALOME_NamingService.hxx"
-#include "SALOMETraceCollector.hxx"
 
-#include <iostream>
-#ifndef WNT
-#include <unistd.h>
-#endif
-
-#include <qdir.h>
-#include <qfile.h>
-#include <qapplication.h>
-#include <qwaitcondition.h>
-#include <qregexp.h>
+#include <QDir>
+#include <QFile>
+#include <QApplication>
+#include <QMutex>
+#include <QWaitCondition>
+#include <QRegExp>
 
 #include "Utils_SALOME_Exception.hxx"
 #include "Utils_CorbaException.hxx"
-#include "SALOME_Event.hxx"
+#include "SALOME_Event.h"
 
 #include <SALOMEconfig.h>
 #include CORBA_SERVER_HEADER(SALOME_Session)
 #include CORBA_SERVER_HEADER(SALOMEDS)
 
 #include <utilities.h>
-#include "Session_Session_i.hxx"
 #include "Session_ServerLauncher.hxx"
 #include "Session_ServerCheck.hxx"
 
@@ -60,7 +54,6 @@
 #include "SUIT_Session.h"
 #include "SUIT_Application.h"
 #include "SUIT_Desktop.h"
-#include "SUIT_MessageBox.h"
 #include "SUIT_ResourceMgr.h"
 #include "SUIT_ExceptionHandler.h"
 
@@ -131,11 +124,11 @@ QString salomeVersion()
   path += QString( "bin/salome/VERSION" );
 
   QFile vf( path );
-  if ( !vf.open( IO_ReadOnly ) )
+  if ( !vf.open( QIODevice::ReadOnly ) )
     return QString::null;
 
-  QString line;
-  vf.readLine( line, 1024 );
+  QString line( vf.readLine( 1024 ) );
+
   vf.close();
 
   if ( line.isEmpty() )
@@ -145,9 +138,9 @@ QString salomeVersion()
     line.remove( line.length() - 1, 1 );
 
   QString ver;
-  int idx = line.findRev( ":" );
+  int idx = line.lastIndexOf( ":" );
   if ( idx != -1 )
-    ver = line.mid( idx + 1 ).stripWhiteSpace();
+    ver = line.mid( idx + 1 ).trimmed();
 
   return ver;
 }
@@ -168,8 +161,8 @@ public:
       resMgr.loadLanguage( "LightApp",  "en" );
       resMgr.loadLanguage( "SalomeApp", "en" );
 
-      myExtAppName = QObject::tr( "APP_NAME" ).stripWhiteSpace();
-      if ( myExtAppName == "APP_NAME" || myExtAppName.lower() == "salome" ) 
+      myExtAppName = QObject::tr( "APP_NAME" ).trimmed();
+      if ( myExtAppName == "APP_NAME" || myExtAppName.toLower() == "salome" ) 
         myExtAppName = "SalomeApp";
       myExtAppVersion = QObject::tr( "APP_VERSION" );
       if ( myExtAppVersion == "APP_VERSION" ) {
@@ -196,15 +189,15 @@ protected:
       
       QString fname = QFileInfo( _fname ).fileName();
       if( exp.exactMatch( fname ) ) {
-	QStringList vers = QStringList::split( ".", exp.cap( 1 ) );
+	QStringList vers = exp.cap( 1 ).split( ".", QString::SkipEmptyParts );
 	int major=0, minor=0;
 	major = vers[0].toInt();
 	minor = vers[1].toInt();
-	if( vers_exp.search( vers[2] )==-1 )
+	if( vers_exp.indexIn( vers[2] )==-1 )
 	  return -1;
 	int release = 0, dev1 = 0, dev2 = 0;
 	release = vers_exp.cap( 1 ).toInt();
-	dev1 = vers_exp.cap( 2 )[ 0 ].latin1();
+	dev1 = vers_exp.cap( 2 )[ 0 ].toLatin1();
 	dev2 = vers_exp.cap( 3 ).toInt();
 	
 	int dev = dev1*100+dev2, id = major;
@@ -344,7 +337,7 @@ int main( int argc, char **argv )
       splash = QtxSplash::splash( px );
       // ...set splash text colors
       if ( !splashTextColors.isEmpty() ) {
-	QStringList colors = QStringList::split( "|", splashTextColors );
+	QStringList colors = splashTextColors.split( "|", QString::SkipEmptyParts );
 	QColor c1, c2;
 	if ( colors.count() > 0 ) c1 = QColor( colors[0] );
 	if ( colors.count() > 1 ) c2 = QColor( colors[1] );
@@ -355,12 +348,12 @@ int main( int argc, char **argv )
       }
       // ...set splash progress colors
       if ( !splashProgressColors.isEmpty() ) {
-	QStringList colors = QStringList::split( "|", splashProgressColors );
+	QStringList colors = splashProgressColors.split( "|", QString::SkipEmptyParts );
 	QColor c1, c2;
-	int gradType = QtxSplash::Vertical;
+	QtxSplash::GradientType gradType = QtxSplash::Vertical;
 	if ( colors.count() > 0 ) c1 = QColor( colors[0] );
 	if ( colors.count() > 1 ) c2 = QColor( colors[1] );
-	if ( colors.count() > 2 ) gradType = colors[2].toInt();
+	if ( colors.count() > 2 ) gradType = QtxSplash::GradientType( colors[2].toInt() );
 	splash->setProgressColors( c1, c2, gradType );
       }
       // ...set splash text font

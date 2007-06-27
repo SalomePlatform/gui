@@ -27,6 +27,9 @@
 //  $Header$
 
 #include "SVTK_Prs.h"
+
+#include <vtkActorCollection.h>
+
 using namespace std;
 
 /*!

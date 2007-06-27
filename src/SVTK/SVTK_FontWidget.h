@@ -29,7 +29,7 @@
 
 #include "SVTK.h"
 
-#include <qhbox.h>
+#include <QWidget>
 
 class QToolButton;
 class QComboBox;
@@ -41,7 +41,7 @@ class QColor;
  * Class       : SVTK_FontWidget
  * Description : Dialog for specifynig font
  */
-class SVTK_EXPORT SVTK_FontWidget : public QHBox
+class SVTK_EXPORT SVTK_FontWidget : public QWidget
 {
   Q_OBJECT
 

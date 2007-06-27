@@ -21,6 +21,9 @@
 //  Module : SUIT
 
 #include "SPlot2d_Curve.h"
+#include <QString>
+#include <QColor>
+
 using namespace std;
 
 /*!

@@ -19,25 +19,27 @@
 // 
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//
-//
 //  File   : ToolsGUI.h
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
+//
 
-#ifndef ToolsGUI_HeaderFile
-#define ToolsGUI_HeaderFile
+#ifndef TOOLSGUI_H
+#define TOOLSGUI_H
+
+#ifdef WIN32
+#  ifdef TOOLSGUI_EXPORTS
+#    define TOOLSGUI_EXPORT __declspec(dllexport)
+#  else
+#    define TOOLSGUI_EXPORT __declspec(dllimport)
+#  endif
+#else   // WIN32
+#  define TOOLSGUI_EXPORT
+#endif  // WIN32
 
 #include "utilities.h"
-
-#ifndef _Standard_HeaderFile
-#include <Standard.hxx>
-#endif
-
 #include "SALOMEDSClient.hxx"
 
-class Standard_EXPORT ToolsGUI  
+class TOOLSGUI_EXPORT ToolsGUI  
 {
 public :
   static bool               GetVisibility( _PTR(Study)   theStudy,
@@ -49,4 +51,4 @@ public :
                                            void*       theId );
 };
 
-#endif
+#endif // TOOLSGUI_H

@@ -20,19 +20,20 @@
 #define SUIT_APPLICATION_H
 
 #include "SUIT.h"
-#include "SUIT_Study.h"
 
-#include <qobject.h>
-#include <qwidget.h>
+#include <QObject>
+#include <QMap>
 
+class QIcon;
 class QLabel;
 class QString;
 class QAction;
-class QIconSet;
+class QWidget;
+
 class SUIT_Desktop;
-class SUIT_Convertor;
 class SUIT_ViewModel;
 class SUIT_ResourceMgr;
+class SUIT_Study;
 
 #ifdef WIN32
 #pragma warning ( disable:4251 )
@@ -63,7 +64,7 @@ public:
 
   /*! Returns FALSE if application can not be closed (because of non saved data for example). 
       This method called by SUIT_Session whin closing of application was requested. */
-  virtual bool          isPossibleToClose();
+  virtual bool          isPossibleToClose( bool& );
 
   /*! Performs some finalization of life cycle of this application.
       For instance, the application can force its documents(s) to close. */
@@ -94,10 +95,6 @@ public:
   virtual int           getNbStudies() const;
 
   SUIT_ResourceMgr*     resourceMgr() const;
-
-  /*! Returns instance of data object Convertor class according to given Viewer. 
-      If convertation is not supported returns 0. */
-  virtual SUIT_Convertor* getConvertor(const SUIT_ViewModel* theViewer) { return 0; }
 
   //! Puts the message to the status bar  
   void putInfo ( const QString&, const int = 0 );
@@ -156,7 +153,7 @@ protected:
   QAction*              action( const int ) const;
   int                   actionId( const QAction* ) const;
   int                   registerAction( const int, QAction* );
-  QAction*              createAction( const int, const QString&, const QIconSet&, const QString&,
+  QAction*              createAction( const int, const QString&, const QIcon&, const QString&,
                                       const QString&, const int, QObject* = 0,
                                       const bool = false, QObject* = 0, const char* = 0 );
 

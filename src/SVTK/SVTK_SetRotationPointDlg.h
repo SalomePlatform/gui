@@ -43,7 +43,6 @@ class QtxAction;
 class QLineEdit;
 class QPushButton;
 class QGroupBox;
-class QButtonGroup;
 class QCheckBox;
 
 class vtkCallbackCommand;
@@ -70,7 +69,7 @@ protected:
   
   QCheckBox*    myIsBBCenter;
 
-  QButtonGroup* myGroupSelButton;
+  QGroupBox   * myGroupBoxSel;
   QPushButton*  myToOrigin;
   QPushButton*  mySelectPoint;
 

@@ -20,7 +20,7 @@
 #define PLOT2D_SETUPVIEWDLG_H
 
 #include "Plot2d.h"
-#include <qdialog.h>
+#include <QDialog>
 
 class QSpinBox;
 class QCheckBox;

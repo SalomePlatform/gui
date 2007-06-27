@@ -19,6 +19,8 @@
 #include "LightApp_VTKSelector.h"
 #include "LightApp_DataOwner.h"
 
+#include "SUIT_Desktop.h"
+
 #ifndef DISABLE_VTKVIEWER
   #include "SVTK_ViewModelBase.h"
   #include "SVTK_ViewManager.h"
@@ -224,7 +226,7 @@ LightApp_VTKSelector
 	      aSelector->AddOrRemoveIndex(anIO,anOwner->GetIds(),false);
 	    }else if(const LightApp_DataOwner* anOwner = dynamic_cast<const LightApp_DataOwner*>(aDataOwner)){
 	      Handle(SALOME_InteractiveObject) anIO = 
-		new SALOME_InteractiveObject(anOwner->entry().latin1(),"");
+		new SALOME_InteractiveObject(anOwner->entry().toLatin1(),"");
 	      aSelector->AddIObject(anIO);
 	      anAppendList.Append(anIO);
 	    }
@@ -243,7 +245,7 @@ LightApp_VTKSelector
 	  QMap< QString, Handle( SALOME_InteractiveObject )>::const_iterator RIt = toRemove.begin(),
 	                                                                     REnd = toRemove.end();
 	  for( ; RIt!=REnd; RIt++ )
-	    aSelector->RemoveIObject( RIt.data() );
+	    aSelector->RemoveIObject( RIt.value() );
 	  
 	  aView->onSelectionChanged();
 	}

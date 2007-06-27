@@ -32,9 +32,9 @@
 
 #include "Session_ServerThread.hxx"
 
+#include "SALOME_NamingService.hxx"
 #include "SALOME_Container_i.hxx"
 #include "SALOME_ContainerManager.hxx"
-#include <SALOMEDSClient.hxx>
 #include <SALOMEDSClient_ClientFactory.hxx>
 #include "SALOME_ModuleCatalog_impl.hxx"
 #include "RegistryService.hxx"
@@ -50,6 +50,9 @@
 
 #include <cstdlib>
 #include <ctime>
+
+#include <QMutex>
+#include <QWaitCondition>
 
 using namespace std;
 
@@ -113,7 +116,7 @@ void Session_ServerThread::Init()
   MESSAGE("Session_ServerThread::Init "<< _argv[0]); 
 
   for (int i=0; i<_argc; i++) SCRUTE(_argv[i]);
-#ifndef WNT
+#ifndef WIN32
   for (int i=0; i<NB_SRV_TYP; i++)
 #else
   for (i=0; i<NB_SRV_TYP; i++)

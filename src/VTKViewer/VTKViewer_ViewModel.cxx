@@ -25,11 +25,10 @@
 #include "SUIT_Desktop.h"
 #include "SUIT_Session.h"
 
-#include <qpainter.h>
-#include <qapplication.h>
-#include <qcolordialog.h>
-#include <qpalette.h>
-#include <qpopupmenu.h>
+#include <QColorDialog>
+#include <QMenu>
+#include <QMouseEvent>
+#include <QToolBar>
 
 bool _InitializeVtkWarningsCall()
 {
@@ -90,16 +89,16 @@ void VTKViewer_Viewer::setViewManager(SUIT_ViewManager* theViewManager)
 }
 
 /*!Insert context into popup menu.*/
-void VTKViewer_Viewer::contextMenuPopup(QPopupMenu* thePopup)
+void VTKViewer_Viewer::contextMenuPopup(QMenu* thePopup)
 {
-  thePopup->insertItem( tr( "MEN_DUMP_VIEW" ), this, SLOT( onDumpView() ) );
-  thePopup->insertItem( tr( "MEN_CHANGE_BACKGROUD" ), this, SLOT( onChangeBgColor() ) );
+  thePopup->addAction( tr( "MEN_DUMP_VIEW" ), this, SLOT( onDumpView() ) );
+  thePopup->addAction( tr( "MEN_CHANGE_BACKGROUD" ), this, SLOT( onChangeBgColor() ) );
 
-  thePopup->insertSeparator();
+  thePopup->addSeparator();
 
   VTKViewer_ViewWindow* aView = (VTKViewer_ViewWindow*)(myViewManager->getActiveView());
   if ( aView && !aView->getToolBar()->isVisible() )
-    thePopup->insertItem( tr( "MEN_SHOW_TOOLBAR" ), this, SLOT( onShowToolbar() ) );
+    thePopup->addAction( tr( "MEN_SHOW_TOOLBAR" ), this, SLOT( onShowToolbar() ) );
 }
 
 /*!On mouse press event.*/
@@ -112,13 +111,13 @@ void VTKViewer_Viewer::onMousePress(SUIT_ViewWindow* vw, QMouseEvent* event)
     return;
 
   switch(event->button()) {
-  case LeftButton:
+  case Qt::LeftButton:
     rwi->LeftButtonPressed(event) ;
     break ;
-  case MidButton:
+  case Qt::MidButton:
     rwi->MiddleButtonPressed(event) ;
     break ;
-  case RightButton:
+  case Qt::RightButton:
     rwi->RightButtonPressed(event) ;
     break;
   default:
@@ -146,13 +145,13 @@ void VTKViewer_Viewer::onMouseRelease(SUIT_ViewWindow* vw, QMouseEvent* event)
     return;
 
   switch(event->button()) {
-  case LeftButton:
+  case Qt::LeftButton:
     rwi->LeftButtonReleased(event) ;
     break ;
-  case MidButton:
+  case Qt::MidButton:
     rwi->MiddleButtonReleased(event) ;
     break ;
-  case RightButton:
+  case Qt::RightButton:
     rwi->RightButtonReleased(event) ;
     break;
   default:

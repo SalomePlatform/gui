@@ -50,11 +50,11 @@ bool SalomeApp_TypeFilter::isOk( const SUIT_DataOwner* sOwner ) const
       _PTR(Study) aStudy = aDoc->studyDS();
       QString entry = owner->entry();
       
-      _PTR(SObject) aSObj( aStudy->FindObjectID( entry.latin1() ) );
+      _PTR(SObject) aSObj( aStudy->FindObjectID( entry.toStdString() ) );
       if (aSObj)
 	{
 	  _PTR(SComponent) aComponent(aSObj->GetFatherComponent());
-	  if ( aComponent && (aComponent->ComponentDataType() == myKind.latin1()) )
+	  if ( aComponent && (aComponent->ComponentDataType() == myKind.toStdString()) )
 	    return true;
 	}
     }

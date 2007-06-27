@@ -21,15 +21,14 @@
 //  $Header$
 
 #include <LightApp_NameDlg.h>
-#include <SUIT_Application.h>
-#include <SUIT_Desktop.h>
 #include <SUIT_Tools.h>
 
-#include <qgroupbox.h>
-#include <qlabel.h>
-#include <qlineedit.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
+#include <QGroupBox>
+#include <QLabel>
+#include <QLineEdit>
+#include <QPushButton>
+#include <QHBoxLayout>
+#include <QVBoxLayout>
 
 #ifndef WIN32
 using namespace std;
@@ -40,48 +39,51 @@ using namespace std;
 */
 LightApp_NameDlg::LightApp_NameDlg( QWidget* parent )
 : QDialog( parent ? parent : NULL,//application()->desktop(), 
-"LightApp_NameDlg",
-true,
-WStyle_Customize | WStyle_NormalBorder | WStyle_Title | WStyle_SysMenu )
+Qt::WindowTitleHint | Qt::WindowSystemMenuHint )
 {
-  setCaption( tr("TLT_RENAME") );
+  setObjectName( "LightApp_NameDlg" );
+  setModal( true );
+
+  setWindowTitle( tr("TLT_RENAME") );
   setSizeGripEnabled( TRUE );
 
   QVBoxLayout* topLayout = new QVBoxLayout( this );
   topLayout->setMargin( 11 ); topLayout->setSpacing( 6 );
 
   /***************************************************************/
-  QGroupBox* GroupC1 = new QGroupBox( this, "GroupC1" );
-  GroupC1->setColumnLayout(0, Qt::Vertical );
-  GroupC1->layout()->setMargin( 0 ); GroupC1->layout()->setSpacing( 0 );
-  QHBoxLayout* GroupC1Layout = new QHBoxLayout( GroupC1->layout() );
+  QGroupBox* GroupC1 = new QGroupBox( this );
+  GroupC1->setObjectName( "GroupC1" );
+  QHBoxLayout* GroupC1Layout = new QHBoxLayout( GroupC1 );
   GroupC1Layout->setAlignment( Qt::AlignTop );
   GroupC1Layout->setMargin( 11 ); GroupC1Layout->setSpacing( 6 );
   
-  QLabel* TextLabel = new QLabel( GroupC1, "TextLabel1" );
+  QLabel* TextLabel = new QLabel( GroupC1 );
+  TextLabel->setObjectName( "TextLabel1" );
   TextLabel->setText( tr( "NAME_LBL" ) );
   GroupC1Layout->addWidget( TextLabel );
   
-  myLineEdit = new QLineEdit( GroupC1, "LineEdit1" );
+  myLineEdit = new QLineEdit( GroupC1 );
+  myLineEdit->setObjectName( "LineEdit1" );
   myLineEdit->setMinimumSize( 250, 0 );
   GroupC1Layout->addWidget( myLineEdit );
   
   /***************************************************************/
-  QGroupBox* GroupButtons = new QGroupBox( this, "GroupButtons" );
-  GroupButtons->setColumnLayout(0, Qt::Vertical );
-  GroupButtons->layout()->setMargin( 0 ); GroupButtons->layout()->setSpacing( 0 ); 
-  QHBoxLayout* GroupButtonsLayout = new QHBoxLayout( GroupButtons->layout() );
+  QGroupBox* GroupButtons = new QGroupBox( this );
+  GroupButtons->setObjectName( "GroupButtons" );
+  QHBoxLayout* GroupButtonsLayout = new QHBoxLayout( GroupButtons );
   GroupButtonsLayout->setAlignment( Qt::AlignTop );
   GroupButtonsLayout->setMargin( 11 ); GroupButtonsLayout->setSpacing( 6 );
   
-  myButtonOk = new QPushButton( GroupButtons, "buttonOk" );
+  myButtonOk = new QPushButton( GroupButtons );
+  myButtonOk->setObjectName( "buttonOk" );
   myButtonOk->setText( tr( "BUT_OK"  ) );
   myButtonOk->setAutoDefault( TRUE ); myButtonOk->setDefault( TRUE );
   GroupButtonsLayout->addWidget( myButtonOk );
 
   GroupButtonsLayout->addStretch();
   
-  myButtonCancel = new QPushButton( GroupButtons, "buttonCancel" );
+  myButtonCancel = new QPushButton( GroupButtons );
+  myButtonCancel->setObjectName( "buttonCancel" );
   myButtonCancel->setText( tr( "BUT_CANCEL"  ) );
   myButtonCancel->setAutoDefault( TRUE );
   GroupButtonsLayout->addWidget( myButtonCancel );
@@ -128,7 +130,7 @@ QString LightApp_NameDlg::name()
 */
 void LightApp_NameDlg::accept()
 {
-  if ( name().stripWhiteSpace().isEmpty() )
+  if ( name().trimmed().isEmpty() )
     return;
   QDialog::accept();
 }

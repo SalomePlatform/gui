@@ -26,16 +26,14 @@
 #ifndef GLVIEWER_CONTEXT_H
 #define GLVIEWER_CONTEXT_H
 
-#ifdef WNT
+#ifdef WIN32
 #include "windows.h"
 #endif
 
 #include "GLViewer_Defs.h"
 #include "GLViewer_Object.h"
 
-#include <qrect.h>
-#include <qobject.h>
-#include <qregion.h>
+class QRect;
 
 #include <Quantity_NameOfColor.hxx>
 #include <Quantity_Color.hxx>
@@ -44,7 +42,7 @@
 
 class GLViewer_Viewer2d;
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 
@@ -201,7 +199,7 @@ protected:
   int                   myTolerance;
 };
 
-#ifdef WNT
+#ifdef WIN32
 #pragma warning ( default:4251 )
 #endif
 

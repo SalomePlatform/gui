@@ -9,18 +9,13 @@
 #
 
 
-AC_INIT([Salome2 Project GUI module], [3.2.2], [gboulant@CS], [salome])
+AC_INIT([Salome2 Project GUI module], [4.0.0], [gboulant@CS], [salome])
 AC_CONFIG_AUX_DIR(salome_adm/unix/config_files)
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
 AM_INIT_AUTOMAKE
 
-PACKAGE=salome
-AC_SUBST(PACKAGE)
-
-VERSION=4.0.0
-XVERSION=0x040000
-AC_SUBST(VERSION)
+XVERSION=`echo $VERSION | awk -F. '{printf("0x%02x%02x%02x",$1,$2,$3)}'`
 AC_SUBST(XVERSION)
 
 # set up MODULE_NAME variable for dynamic construction of directories (resources, etc.)
@@ -306,14 +301,6 @@ CHECK_QT
 
 echo
 echo ---------------------------------------------
-echo testing msg2qm
-echo ---------------------------------------------
-echo
-
-CHECK_MSG2QM
-
-echo
-echo ---------------------------------------------
 echo testing VTK
 echo ---------------------------------------------
 echo
@@ -512,10 +499,10 @@ fi
 
 
 if test "$GUI_DISABLE_CORBA" != "yes"; then
-variables="cc_ok lex_yacc_ok python_ok swig_ok threads_ok OpenGL_ok qt_ok msg2qm_ok vtk_ok hdf5_ok
+variables="cc_ok lex_yacc_ok python_ok swig_ok threads_ok OpenGL_ok qt_ok vtk_ok hdf5_ok
 omniORB_ok boost_ok occ_ok sip_ok pyqt_ok qwt_ok doxygen_ok graphviz_ok Kernel_ok"
 else
-variables="cc_ok lex_yacc_ok python_ok threads_ok OpenGL_ok qt_ok msg2qm_ok vtk_ok hdf5_ok boost_ok
+variables="cc_ok lex_yacc_ok python_ok threads_ok OpenGL_ok qt_ok vtk_ok hdf5_ok boost_ok
 occ_ok sip_ok pyqt_ok qwt_ok doxygen_ok graphviz_ok Kernel_ok"
 fi
 
@@ -635,14 +622,13 @@ AC_OUTPUT([ \
   ./src/OCCViewer/Makefile \
   ./src/SOCC/Makefile \
   ./src/PyInterp/Makefile \
-  ./src/PythonConsole/Makefile \
+  ./src/PyConsole/Makefile \
   ./src/Plot2d/Makefile \
   ./src/SPlot2d/Makefile \
   ./src/SUPERVGraph/Makefile \
   ./src/QxGraph/Makefile \
   ./src/LightApp/Makefile \
   ./src/ResExporter/Makefile \
-  ./src/RegistryDisplay/Makefile \
   ./src/TOOLSGUI/Makefile \
   ./src/Event/Makefile \
   ./src/Session/Makefile \
@@ -654,7 +640,6 @@ AC_OUTPUT([ \
   ./src/SALOME_PY/Makefile \
   ./src/SALOME_PYQT/Makefile \
   ./src/SALOME_PYQT/SALOME_PYQT_GUI/Makefile \
-  ./src/SALOME_PYQT/SALOME_PYQT_GUI/SALOME_PYQT_SipDefs.h \
   ./src/SALOME_PYQT/SalomePyQt/Makefile \
   ./resources/Makefile \
   ./idl/Makefile \

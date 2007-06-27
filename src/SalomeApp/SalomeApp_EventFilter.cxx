@@ -18,9 +18,9 @@
 //
 
 #include "SalomeApp_EventFilter.h"
-#include <SALOME_Event.hxx>
+#include <SALOME_Event.h>
 
-#include <qapplication.h>
+#include <QApplication>
 
 SalomeApp_EventFilter* SalomeApp_EventFilter::myFilter = NULL;
 
@@ -45,9 +45,9 @@ bool SalomeApp_EventFilter::eventFilter( QObject* o, QEvent* e )
 {
   if ( e->type() == SALOME_EVENT )
   { 
-    SALOME_Event* aSE = (SALOME_Event*)((QCustomEvent*)e)->data();
+    SALOME_Event* aSE = (SALOME_Event*)((SALOME_CustomEvent*)e)->data();
     processEvent(aSE);
-    ((QCustomEvent*)e)->setData( 0 );
+    ((SALOME_CustomEvent*)e)->setData( 0 );
     return true;
   }
   return QObject::eventFilter( o, e );

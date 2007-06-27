@@ -29,7 +29,7 @@
 #include <SUIT_ViewModel.h>
 #include <SUIT_ViewWindow.h>
 
-#include <qstring.h>
+#include <QString>
 #ifndef DISABLE_SALOMEOBJECT
   #include "SALOME_InteractiveObject.hxx"
 #endif
@@ -88,11 +88,10 @@ void LightApp_Displayer::Redisplay( const QString& entry, const bool updateViewe
   if ( app )
   {
     SUIT_Desktop* desk = app->desktop();
-    QPtrList<SUIT_ViewWindow> wnds = desk->windows();
-    SUIT_ViewWindow* wnd;
-    for ( wnd = wnds.first(); wnd; wnd = wnds.next() )
+    QListIterator<SUIT_ViewWindow*> itWnds( desk->windows() );
+    while ( itWnds.hasNext() )
     {
-      SUIT_ViewManager* vman = wnd->getViewManager();
+      SUIT_ViewManager* vman = itWnds.next()->getViewManager();
       if( !vman )
         continue;
 
@@ -123,7 +122,7 @@ void LightApp_Displayer::Erase( const QString& entry, const bool forced,
   SALOME_View* vf = theViewFrame ? theViewFrame : GetActiveView();
 
   if ( vf ) {
-    SALOME_Prs* prs = vf->CreatePrs( entry.latin1() );
+    SALOME_Prs* prs = vf->CreatePrs( entry.toLatin1() );
     if ( prs ) {
       vf->Erase( prs, forced );
       if ( updateViewer )
@@ -163,7 +162,7 @@ bool LightApp_Displayer::IsDisplayed( const QString& entry, SALOME_View* theView
   {
 #ifndef DISABLE_SALOMEOBJECT
     Handle( SALOME_InteractiveObject ) temp = new SALOME_InteractiveObject();
-    temp->setEntry( entry.latin1() );
+    temp->setEntry( entry.toLatin1() );
     res = vf->isVisible( temp );
 #endif
   }
@@ -193,7 +192,7 @@ SALOME_Prs* LightApp_Displayer::buildPresentation( const QString& entry, SALOME_
   SALOME_View* vf = theViewFrame ? theViewFrame : GetActiveView();
 
   if ( vf )
-    prs = vf->CreatePrs( entry.latin1() );
+    prs = vf->CreatePrs( entry.toLatin1() );
 
   return prs;
 }

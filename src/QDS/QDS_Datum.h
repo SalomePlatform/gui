@@ -21,10 +21,9 @@
 
 #include "QDS.h"
 
-#include <qwidget.h>
-#include <qstring.h>
-#include <qvariant.h>
-#include <qguardedptr.h>
+#include <QString>
+#include <QVariant>
+#include <QPointer>
 
 #include <DDS_DicItem.h>
 
@@ -34,8 +33,6 @@ class QValidator;
 class QVBoxLayout;
 class QHBoxLayout;
 class QGridLayout;
-
-class Handle(DDS_Dictionary);
 
 class QDS_EXPORT QDS_Datum : public QObject, public QDS
 {
@@ -183,8 +180,8 @@ private:
   static QString            canonicalFormat( const QString&, QString& );
 
 private:
-  typedef QGuardedPtr<QLabel>  GuardedLabel;
-  typedef QGuardedPtr<QWidget> GuardedWidget;
+  typedef QPointer<QLabel>  GuardedLabel;
+  typedef QPointer<QWidget> GuardedWidget;
 
 private:
   QString                   myId;

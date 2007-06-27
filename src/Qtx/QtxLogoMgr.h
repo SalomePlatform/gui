@@ -21,10 +21,12 @@
 
 #include "Qtx.h"
 
-class QMenuBar;
+#include <QObject>
+#include <QList>
+#include <QPixmap>
 
-#include <qobject.h>
-#include <qpixmap.h>
+class QMenuBar;
+class QMovie;
 
 #ifdef WIN32
 #pragma warning( disable : 4251 )
@@ -34,30 +36,38 @@ class QTX_EXPORT QtxLogoMgr : public QObject
 {
   Q_OBJECT
 
+  class LogoBox;
+
 public:
   QtxLogoMgr( QMenuBar* );
   virtual ~QtxLogoMgr();
 
   int        count() const;
 
+  void       insert( const QString&, QMovie*, const int = -1 );
   void       insert( const QString&, const QPixmap&, const int = -1 );
   void       remove( const QString& );
   void       clear();
 
+  void       startAnimation( const QString& = QString() );
+  void       stopAnimation( const QString& = QString() );
+  void       pauseAnimation( const bool, const QString& = QString() );
+
   QMenuBar*  menuBar() const;
+
+private:
+  typedef struct { QString id; QPixmap pix; QMovie* mov; } LogoInfo;
+  typedef QList<LogoInfo>                                  LogoList;
 
 private:
   void       generate();
   int        find( const QString& ) const;
+  LogoInfo&  insert( const QString&, const int );
+  void       movies( const QString&, QList<QMovie*>& ) const;
 
 private:
-  typedef struct { QString id; QPixmap pix; } LogoInfo;
-  typedef QValueList<LogoInfo>                LogoList;
-
-private:
-  int        myId;
-  QMenuBar*  myMenus;
-  LogoList   myLogos;
+  LogoBox*   myBox;         //!< widget containing logox
+  LogoList   myLogos;       //!< list of logo data
 };
 
 #ifdef WIN32

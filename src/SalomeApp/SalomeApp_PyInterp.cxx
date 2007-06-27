@@ -31,12 +31,8 @@
 #include <utilities.h>
 #include <Container_init_python.hxx>
 
-#include <string>
-#include <vector>
+#include "PyInterp.h" // this include must be first (see PyInterp_base.h)!
 
-#include "PyInterp_base.h" // this include must be first (see PyInterp_base.h)!
-
-#include <cStringIO.h>
 using namespace std;
 
 /*!
@@ -44,7 +40,8 @@ using namespace std;
  * calls initialize method defined in base class, which calls virtual methods
  * initstate & initcontext redefined here.
  */
-SalomeApp_PyInterp::SalomeApp_PyInterp(): PythonConsole_PyInterp()
+SalomeApp_PyInterp::SalomeApp_PyInterp(): 
+  PyConsole_Interp(), myFirstRun( true )
 {
 }
 
@@ -81,7 +78,7 @@ bool SalomeApp_PyInterp::initContext()
    * It is the caller responsability caller to acquire the GIL
    * It will still be held on initContext output
    */
-  if ( !PythonConsole_PyInterp::initContext() )
+  if ( !PyConsole_Interp::initContext() )
     return false;
 
   // Import special module to change the import mechanism
@@ -112,12 +109,31 @@ bool SalomeApp_PyInterp::initContext()
   Do nothing
   The initialization has been done in main
  */
-void SalomeApp_PyInterp::init_python()
+void SalomeApp_PyInterp::initPython()
 {
-  MESSAGE("PyInterp_base::init_python");
+  MESSAGE("PyInterp_base::initPython");
   ASSERT(KERNEL_PYTHON::_gtstate); // initialisation in main
   SCRUTE(KERNEL_PYTHON::_gtstate);
   _gtstate=KERNEL_PYTHON::_gtstate;
   _interp=KERNEL_PYTHON::_interp;
 }
 
+/*!
+  Called before each Python command running.
+*/
+int SalomeApp_PyInterp::beforeRun()
+{
+  if ( myFirstRun ) {
+    myFirstRun = false;
+    int ret = simpleRun( "from Help import *", false );
+    if ( ret )
+      return ret;
+    ret = simpleRun( "import salome", false );
+    if (ret)
+      return ret;
+    ret = simpleRun( "salome.salome_init(0,1)", false );
+    if (ret)
+      return ret;
+  }
+  return true;
+}

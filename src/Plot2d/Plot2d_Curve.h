@@ -20,8 +20,7 @@
 #define PLOT2D_CURVE_H
 
 #include "Plot2d.h"
-#include <qvaluelist.h>
-#include <qptrlist.h>
+#include <QList>
 #include <qwt_plot.h>
 
 class QColor;
@@ -33,7 +32,7 @@ typedef struct
   QString text;
 } Plot2d_Point;
 
-typedef QValueList<Plot2d_Point> pointList;
+typedef QList<Plot2d_Point> pointList;
 
 class PLOT2D_EXPORT Plot2d_Curve
 {
@@ -107,6 +106,6 @@ protected:
   pointList   myPoints;
 };
 
-typedef QPtrList<Plot2d_Curve> curveList;
+typedef QList<Plot2d_Curve*> curveList;
 
 #endif

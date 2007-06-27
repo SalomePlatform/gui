@@ -24,7 +24,6 @@
 
 //#include <GLViewerAfx.h>
 #include "GLViewer_ViewManager.h"
-#include "GLViewer_ViewFrame.h"
 #include "GLViewer_Viewer2d.h"
 #include "SUIT_Desktop.h"
 
@@ -41,7 +40,7 @@ GLViewer_ViewManager::~GLViewer_ViewManager()
 }
 
 /*!Context menu popup for \a popup.*/
-void GLViewer_ViewManager::contextMenuPopup( QPopupMenu* popup )
+void GLViewer_ViewManager::contextMenuPopup( QMenu* popup )
 {
   SUIT_ViewManager::contextMenuPopup( popup );
   // if it is necessary invoke method CreatePopup of ViewPort

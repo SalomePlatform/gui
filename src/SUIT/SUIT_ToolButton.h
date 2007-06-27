@@ -19,10 +19,13 @@
 #ifndef SUIT_TOOLBUTTON_H
 #define SUIT_TOOLBUTTON_H
 
-#include <qtoolbutton.h>
-#include <qaction.h>
-
 #include "SUIT.h"
+
+#include <QToolButton>
+
+class QAction;
+class QPixmap;
+class QToolBar;
 
 /*! To draw down arrow on toolbutton.*/
 class SUIT_EXPORT SUIT_ToolButton : public QToolButton
@@ -35,11 +38,6 @@ public:
   SUIT_ToolButton( QWidget *parent = 0, 
                    const char *name = 0,
                    bool changeItemAfterClick = true );
-  SUIT_ToolButton(  const QPixmap & pm, const QString &textLabel,
-                    const QString& grouptext,
-                    QObject * receiver, const char* slot,
-                    QToolBar * parent, const char* name = 0,
-                    bool changeItemAfterClick = true );
   //@}
 
   void drawButton( QPainter * pQPainter);
@@ -49,7 +47,7 @@ public:
   void SetItem(int theIndex);
 
 public slots:
-  void OnSelectAction(int theItemID);
+  void OnSelectAction( QAction* theAction );
 
 protected:
   void  mouseReleaseEvent (QMouseEvent * theEvent);
@@ -57,11 +55,9 @@ protected:
 private:
   void initialize();
 
-  QPopupMenu* myPopup;
-  QSignal* mySignal;
-  bool myChangeItemAfterClick;
+  QMenu*   myPopup;
+  bool     myChangeItemAfterClick;
 
 };
 
 #endif
-

@@ -21,11 +21,8 @@
 
 #include "QDS.h"
 
-#include <qvalidator.h>
+#include <QValidator>
 
-/*!
-  class QDS_IntegerValidator
-*/
 class QDS_EXPORT QDS_IntegerValidator : public QIntValidator
 {
 public:
@@ -36,12 +33,9 @@ public:
   virtual State validate( QString&, int& ) const;
 
 private:
-  QString myFilter;
+  QString myFilter;    //!< string filter
 };
 
-/*!
-  class QDS_DoubleValidator
-*/
 class QDS_DoubleValidator : public QDoubleValidator
 {
 public:
@@ -52,12 +46,9 @@ public:
   virtual State validate( QString&, int& ) const;
 
 private:
-  QString myFilter;
+  QString myFilter;    //!< string filter
 };
 
-/*!
-  class QDS_StringValidator
-*/
 class QDS_EXPORT QDS_StringValidator : public QValidator
 {
 public:
@@ -72,9 +63,9 @@ public:
   void          setLength( const int );
 
 private:
-  int           myLen;
-  QString       myFlags;
-  QString       myFilter;
+  int           myLen;        //!< string length
+  QString       myFlags;      //!< string format flags
+  QString       myFilter;     //!< string filter
 };
 
 #endif

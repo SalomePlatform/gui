@@ -22,25 +22,15 @@
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-# Sip flags
-SIP_FLAGS = -t WS_X11 -t $(QT_VERS) $(PYQT_SIPFLAGS) -s ".cc" -c . -I $(PYQT_SIPS)
-
 ######################
 
 # Library target
 lib_LTLIBRARIES= libSalomePyQtGUI.la
 
-
-# Sip sources
-if IS_SIP_V4
 SIP_SRC   = sipSalomePyQtGUIcmodule.cc
 SIP_FILES = SALOME_PYQT_GUI.sip
-else !IS_SIP_V4
-SIP_SRC   = SalomePyQtGUIcmodule.cc
-SIP_FILES = SALOME_PYQT_GUI.sip
-endif
 
-EXTRA_DIST+= $(SIP_FILES)
+EXTRA_DIST += $(SIP_FILES)
 
 salomeinclude_HEADERS = \
 	SALOME_PYQT_GUI.h \
@@ -72,7 +62,7 @@ libSalomePyQtGUI_la_LIBADD= $(PYTHON_LIBS) $(SIP_LIBS) $(PYQT_LIBS) $(VTK_LIBS) 
 # Custom build step: generate C++ wrapping according to $(SIP_FILES)
 
 $(SIP_SRC): $(SIP_FILES)
-	$(SIP) $(SIP_FLAGS) $<
+	$(SIP) $(PYQT_SIPFLAGS) $<
 
 $(dist_libSalomePyQtGUI_la_SOURCES): $(SIP_SRC)
 

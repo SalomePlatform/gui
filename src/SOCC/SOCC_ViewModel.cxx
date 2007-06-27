@@ -22,7 +22,8 @@
 #include "SOCC_ViewWindow.h"
 
 #include "SUIT_Session.h"
-#include "SUIT_Application.h"
+#include "SUIT_ResourceMgr.h"
+//#include "SUIT_Application.h"
 
 //#include "ToolsGUI.h"
 
@@ -37,6 +38,7 @@
 
 #include <SALOME_AISShape.hxx>
 #include <SALOME_AISObject.hxx>
+#include <SALOME_InteractiveObject.hxx>
 
 // Temporarily commented to avoid awful dependecy on SALOMEDS
 // TODO: better mechanism of storing display/erse status in a study
@@ -289,7 +291,7 @@ void SOCC_Viewer::rename( const Handle(SALOME_InteractiveObject)& obj,
         Handle(SALOME_InteractiveObject) IO = aSh->getIO();
         if ( IO->isSame( obj ) )
         {
-          aSh->setName( (char*)name.latin1() );
+          aSh->setName( name.toLatin1().data() );
           break;
         }
       }

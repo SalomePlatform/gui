@@ -25,13 +25,15 @@
 
 #ifndef DISABLE_SALOMEOBJECT
   #include <SALOME_InteractiveObject.hxx>
-  #include <qmap.h>
+  #include <QMap>
+  #include <NCollection_DataMap.hxx>
 
   class SALOME_ListIO;
   class TColStd_IndexedMapOfInteger;
   class TColStd_MapOfInteger;
+  class TCollection_AsciiString;
 #else
-#include <qstringlist.h>
+#include <QStringList>
 #endif
 
 class LightApp_Application;
@@ -51,8 +53,8 @@ public:
   LightApp_Application* application() const;
 
 #ifndef DISABLE_SALOMEOBJECT
-  typedef QMap< Handle(SALOME_InteractiveObject), TColStd_IndexedMapOfInteger > MapIOOfMapOfInteger;
-  typedef QMap< QString, TColStd_IndexedMapOfInteger > MapEntryOfMapOfInteger;
+  typedef NCollection_DataMap< Handle(SALOME_InteractiveObject), TColStd_IndexedMapOfInteger > MapIOOfMapOfInteger;
+  typedef NCollection_DataMap< TCollection_AsciiString, TColStd_IndexedMapOfInteger > MapEntryOfMapOfInteger;
 
   void                   selectedObjects( SALOME_ListIO&, const QString& = QString::null, const bool = true ) const;
   void                   setSelectedObjects( const SALOME_ListIO&, const bool = false );

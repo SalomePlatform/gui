@@ -20,12 +20,15 @@
 #define SUIT_VIEWMODEL_H
 
 #include "SUIT.h"
-#include "SUIT_Desktop.h"
-#include "SUIT_ViewWindow.h"
-#include "SUIT_ViewManager.h"
 
-#include <qobject.h>
-#include <qcursor.h>
+#include <QObject>
+#include <QMap>
+
+class QMenu;
+
+class SUIT_Desktop;
+class SUIT_ViewWindow;
+class SUIT_ViewManager;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -42,28 +45,28 @@ class SUIT_EXPORT SUIT_ViewModel : public QObject
 public:
   enum HotOperation { PAN, ZOOM, ROTATE, FIT_AREA };
 
-  typedef QMap<HotOperation, Qt::ButtonState> StatesMap;
-  typedef QMap<HotOperation, Qt::ButtonState> ButtonsMap;
+  typedef QMap<HotOperation, Qt::KeyboardModifier> StatesMap;
+  typedef QMap<HotOperation, Qt::MouseButton>      ButtonsMap;
   
-	SUIT_ViewModel();
-	virtual ~SUIT_ViewModel();
+  SUIT_ViewModel();
+  virtual ~SUIT_ViewModel();
 
-	virtual SUIT_ViewWindow* createView(SUIT_Desktop* theDesktop);
+  virtual SUIT_ViewWindow* createView( SUIT_Desktop* theDesktop );
 
-	virtual void      setViewManager(SUIT_ViewManager* theViewManager) { myViewManager = theViewManager; }
-	SUIT_ViewManager* getViewManager() const { return myViewManager; }
+  virtual void      setViewManager(SUIT_ViewManager* theViewManager);
+  SUIT_ViewManager* getViewManager() const;
 
   virtual QString   getType() const { return "SUIT_ViewModel"; }
 
-  virtual void      contextMenuPopup(QPopupMenu*) {}
+  virtual void      contextMenuPopup( QMenu* ) {}
 
-  static void       setHotButton(HotOperation theOper, Qt::ButtonState theState,
-                                                       Qt::ButtonState theButton);
-  static void       getHotButton(HotOperation theOper, Qt::ButtonState& theState,
-                                                       Qt::ButtonState& theButton);
+  static void       setHotButton( HotOperation theOper, Qt::KeyboardModifier theState,
+				  Qt::MouseButton theButton );
+  static void       getHotButton( HotOperation theOper, Qt::KeyboardModifier& theState,
+				  Qt::MouseButton& theButton );
 
 protected:
-	SUIT_ViewManager* myViewManager;
+  SUIT_ViewManager* myViewManager;
 
 public:
   static StatesMap  myStateMap;

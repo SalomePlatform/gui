@@ -16,7 +16,7 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      QtxAction.hxx
+// File:      QtxAction.h
 // Author:    Sergey TELKOV
 
 #ifndef QTXACTION_H
@@ -24,32 +24,37 @@
 
 #include "Qtx.h"
 
-#include <qaction.h>
-#include <qmap.h>
+#include <QWidgetAction>
+
+class QIcon;
 
 #ifdef WIN32
 #pragma warning ( disable:4251 )
 #endif
 
-class QTX_EXPORT QtxAction : public QAction
+class QTX_EXPORT QtxAction : public QWidgetAction
 {
-    Q_OBJECT
+  Q_OBJECT
+
+  class ActionNotify;
 
 public:
-    QtxAction( QObject* = 0, const char* = 0, bool = false );
-    QtxAction( const QString&, const QString&, int, QObject*, const char* = 0, bool = false );
-    QtxAction( const QString&, const QIconSet&, const QString&, int, QObject*, const char* = 0, bool = false );
-    virtual ~QtxAction();
+  QtxAction( QObject* = 0, bool = false );
+  QtxAction( const QString&, const QString&, int, QObject*, bool = false );
+  QtxAction( const QString&, const QIcon&, const QString&, int, QObject*, bool = false );
+  virtual ~QtxAction();
 
-    virtual bool addTo( QWidget* );
-    virtual bool addTo( QWidget*, const int );
-    virtual bool removeFrom( QWidget* );
+  virtual bool eventFilter( QObject*, QEvent* );
+
+  virtual bool addTo( QWidget* );
+  virtual bool addTo( QWidget*, const int );
+  virtual bool removeFrom( QWidget* );
 
 protected:
-    void         setPopup( QWidget*, const int, QPopupMenu* ) const;
+  virtual void addedTo( QWidget* );
+  virtual void removedFrom( QWidget* );
 
-private:
-    QMap<QWidget*,int> myMenuIds;
+  virtual void customEvent( QEvent* );
 };
 
 #ifdef WIN32

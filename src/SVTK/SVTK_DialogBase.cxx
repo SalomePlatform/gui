@@ -38,13 +38,14 @@ SVTK_DialogBase
 		  QWidget* theParent,
 		  const char* theName, 
 		  bool theModal, 
-		  WFlags theWFalgs):
+		  Qt::WindowFlags theWFalgs):
   QDialog(theParent, 
-	  theName, 
-	  theModal, 
-	  theWFalgs | WStyle_Customize | WStyle_NormalBorder | WStyle_Title | WStyle_SysMenu),
+	  theWFalgs | Qt::WindowTitleHint | Qt::WindowSystemMenuHint),
   myAction(theAction)
 {
+  setObjectName(theName);
+  setModal(theModal);
+
   connect(theParent, SIGNAL(Show( QShowEvent * )), this, SLOT(onParentShow()));
   connect(theParent, SIGNAL(Hide( QHideEvent * )), this, SLOT(onParentHide()));
 }
@@ -62,7 +63,7 @@ void
 SVTK_DialogBase
 ::onParentShow()
 {
-  if(myAction->isOn())
+  if(myAction->isChecked())
     show();
   else
     hide();
@@ -79,6 +80,6 @@ void
 SVTK_DialogBase
 ::done( int r )
 {
-  myAction->setOn( false );
+  myAction->setChecked( false );
   QDialog::done( r );
 }

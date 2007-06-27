@@ -21,14 +21,6 @@
 
 #include "CAM_DataObject.h"
 
-/*!
-  CAM_RootObject - class intended for optimized access to CAM_DataModel instance
-  from CAM_DataObject instances.
-
-  To take advantage of this class in a specific application, 
-  custom data model root object class should be derived from both CAM_RootObject
-  and application-specific DataObject implementation using virtual inheritance.
- */
 class CAM_EXPORT CAM_RootObject : public virtual CAM_DataObject
 {
 public:

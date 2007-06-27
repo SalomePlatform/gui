@@ -32,8 +32,8 @@
 #include "SUIT_Tools.h"
 #include "SUIT_ResourceMgr.h"
 
-#include <qapplication.h>
-#include <qimage.h>
+#include <QImage>
+#include <QToolBar>
 
 #include <vtkRenderer.h>
 #include <vtkCamera.h>
@@ -55,7 +55,7 @@ VTKViewer_ViewWindow::VTKViewer_ViewWindow( SUIT_Desktop* theDesktop,
 
   myRenderWindow = new VTKViewer_RenderWindow( this, "RenderWindow" );
   setCentralWidget(myRenderWindow);
-  myRenderWindow->setFocusPolicy( StrongFocus );
+  myRenderWindow->setFocusPolicy( Qt::StrongFocus );
   myRenderWindow->setFocus();
 
   myRenderWindow->getRenderWindow()->AddRenderer( myRenderer );
@@ -89,8 +89,8 @@ VTKViewer_ViewWindow::VTKViewer_ViewWindow( SUIT_Desktop* theDesktop,
   setCentralWidget( myRenderWindow );
 
   myToolBar = new QToolBar(this);
-  myToolBar->setCloseMode(QDockWindow::Undocked);
-  myToolBar->setLabel(tr("LBL_TOOLBAR_LABEL"));
+  //myToolBar->setCloseMode(QDockWindow::Undocked);
+  myToolBar->setWindowTitle(tr("LBL_TOOLBAR_LABEL"));
 
   createActions();
   createToolBar();
@@ -414,7 +414,7 @@ QColor VTKViewer_ViewWindow::backgroundColor() const
     myRenderer->GetBackground( backint );
     return QColor(int(backint[0]*255), int(backint[1]*255), int(backint[2]*255));
   }
-  return SUIT_ViewWindow::backgroundColor();
+  return palette().color( backgroundRole() );
 }
 
 /*!Repaint window. If \a theUpdateTrihedron is true - recalculate trihedron.*/
@@ -557,7 +557,7 @@ void VTKViewer_ViewWindow::onTrihedronShow()
 QImage VTKViewer_ViewWindow::dumpView()
 {
   QPixmap px = QPixmap::grabWindow( myRenderWindow->winId() );
-  return px.convertToImage();
+  return px.toImage();
 }
 
 /*! The method returns the visual parameters of this view as a formated string
@@ -584,7 +584,7 @@ QString VTKViewer_ViewWindow::getVisualParameters()
  */
 void VTKViewer_ViewWindow::setVisualParameters( const QString& parameters )
 {
-  QStringList paramsLst = QStringList::split( '*', parameters, true );
+  QStringList paramsLst = parameters.split( '*' );
   if ( paramsLst.size() == 13 ) {
     double pos[3], focalPnt[3], viewUp[3], parScale, scale[3];
     pos[0] = paramsLst[0].toDouble();

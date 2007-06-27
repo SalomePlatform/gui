@@ -29,7 +29,7 @@
 #include "SalomeApp_ImportOperation.h"
 #include <SUIT_Application.h>
 
-#ifndef WNT
+#ifndef WIN32
 using namespace std;
 #endif
 

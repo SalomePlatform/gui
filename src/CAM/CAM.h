@@ -19,18 +19,14 @@
 #ifndef CAM_H
 #define CAM_H
 
-#if defined CAM_EXPORTS
-#if defined WNT
-#define CAM_EXPORT __declspec( dllexport )
+#if defined WIN32
+#  if defined CAM_EXPORTS
+#    define CAM_EXPORT __declspec( dllexport )
+#  else
+#    define CAM_EXPORT __declspec( dllimport )
+#  endif
 #else
-#define CAM_EXPORT
-#endif
-#else
-#if defined WNT
-#define CAM_EXPORT __declspec( dllimport )
-#else
-#define CAM_EXPORT
-#endif
+#  define CAM_EXPORT
 #endif
 
 #if defined SOLARIS
@@ -39,7 +35,7 @@
 #define true  1
 #endif
 
-#if defined WNT
+#if defined WIN32
 #pragma warning ( disable: 4251 )
 #endif
 

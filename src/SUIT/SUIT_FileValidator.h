@@ -18,14 +18,13 @@
 //
 //  SALOME SALOMEGUI : implementation of desktop and GUI kernel
 //
-//  File   : SUIT_FileValidator.h
-//  Module : SALOME
-
 #ifndef SUIT_FILEVALIDATOR_H
 #define SUIT_FILEVALIDATOR_H
 
-#include <qwidget.h>
 #include "SUIT.h"
+
+class QWidget;
+class QString;
 
 /*!
   \class SUIT_FileValidator

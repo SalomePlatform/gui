@@ -16,9 +16,8 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#include "SUIT_DataObject.h"
 
-#include <qobject.h>
+#include "SUIT_DataObject.h"
 
 #include "SUIT_DataObjectKey.h"
 
@@ -28,12 +27,11 @@
 
 SUIT_DataObject::SUIT_DataObject( SUIT_DataObject* p )
 : myParent( 0 ),
-  mySignal( 0 ),
-  myOpen( false ),
-  myCheck( false )
+myOpen( false ),
+myCheck( false ),
+mySignal( 0 ),
+myAutoDel( true )
 {
-  myChildren.setAutoDelete( true );
-
   setParent( p );
 }
 
@@ -56,8 +54,14 @@ SUIT_DataObject::~SUIT_DataObject()
     mySignal->setOwner( 0 );
   }
 
-  for ( QPtrListIterator<SUIT_DataObject> it( myChildren ); it.current(); ++it )
-    it.current()->myParent = 0;
+  for ( DataObjectList::iterator it = myChildren.begin(); it != myChildren.end(); ++it )
+    (*it)->myParent = 0;
+
+  if ( autoDeleteChildren() )
+  {
+    for ( DataObjectList::iterator itr = myChildren.begin(); itr != myChildren.end(); ++itr )
+      delete *itr;
+  }
 
   delete mySignal;
 }
@@ -79,7 +83,7 @@ SUIT_DataObject* SUIT_DataObject::firstChild() const
 {
   SUIT_DataObject* child = 0;
   if ( !myChildren.isEmpty() )
-    child = myChildren.getFirst();
+    child = myChildren.first();
   return child;
 }
 
@@ -91,7 +95,7 @@ SUIT_DataObject* SUIT_DataObject::lastChild() const
 {
   SUIT_DataObject* child = 0;
   if ( !myChildren.isEmpty() )
-    child = myChildren.getLast();
+    child = myChildren.last();
   return child;
 }
 
@@ -113,9 +117,9 @@ int SUIT_DataObject::childPos( const SUIT_DataObject* obj ) const
   int res = -1;
 
   int i = 0;
-  for ( DataObjectListIterator it( myChildren ); it.current() && res == -1; ++it, i++ )
+  for ( DataObjectList::const_iterator it = myChildren.begin(); it != myChildren.end() && res == -1; ++it, i++ )
   {
-    if ( it.current() == obj )
+    if ( *it == obj )
       res = i;
   }
 
@@ -179,7 +183,7 @@ SUIT_DataObject* SUIT_DataObject::prevBrother() const
 
 bool SUIT_DataObject::autoDeleteChildren() const
 {
-  return myChildren.autoDelete();
+  return myAutoDel;
 }
 
 /*!
@@ -188,7 +192,7 @@ bool SUIT_DataObject::autoDeleteChildren() const
 
 void SUIT_DataObject::setAutoDeleteChildren( const bool on )
 {
-  myChildren.setAutoDelete( on );
+  myAutoDel = on;
 }
 
 /*!
@@ -197,11 +201,11 @@ void SUIT_DataObject::setAutoDeleteChildren( const bool on )
 
 void SUIT_DataObject::children( DataObjectList& lst, const bool rec ) const
 {
-  for ( DataObjectListIterator it( myChildren ); it.current(); ++it )
+  for ( DataObjectList::const_iterator it = myChildren.begin(); it != myChildren.end(); ++it )
   {
-    lst.append( it.current() );
+    lst.append( *it );
     if ( rec )
-      it.current()->children( lst, rec );
+      (*it)->children( lst, rec );
   }
 }
 
@@ -231,11 +235,11 @@ void SUIT_DataObject::appendChild( SUIT_DataObject* theObj )
 
 void SUIT_DataObject::insertChild( SUIT_DataObject* theObj, int thePosition )
 {
-  if ( !theObj || myChildren.find( theObj ) != -1 )
+  if ( !theObj || myChildren.contains( theObj ) )
     return;
 
   int pos = thePosition < 0 ? myChildren.count() : thePosition;
-  myChildren.insert( QMIN( pos, (int)myChildren.count() ), theObj );
+  myChildren.insert( qMin( pos, (int)myChildren.count() ), theObj );
   theObj->setParent( this );
 }
 
@@ -248,13 +252,8 @@ void SUIT_DataObject::removeChild( SUIT_DataObject* theObj )
   if ( !theObj )
     return;
 
-  bool ad = myChildren.autoDelete();
-  myChildren.setAutoDelete( false );
-
-  if ( myChildren.remove( theObj ) )
+  if ( myChildren.removeAll( theObj ) )
     theObj->setParent( 0 );
-
-  myChildren.setAutoDelete( ad );
 }
 
 /*!
@@ -297,8 +296,8 @@ void SUIT_DataObject::reparentChildren( const SUIT_DataObject* obj )
 
   DataObjectList lst;
   obj->children( lst );
-  for ( DataObjectListIterator it( lst ); it.current(); ++it )
-    it.current()->setParent( this );
+  for ( DataObjectList::iterator it = lst.begin(); it != lst.end(); ++it )
+    (*it)->setParent( this );
 }
 
 /*!
@@ -495,9 +494,9 @@ SUIT_DataObjectKey* SUIT_DataObject::key() const
 void SUIT_DataObject::dump( const int indent ) const
 {
   QString strIndent = QString().fill( ' ', indent ); // indentation string 
-  printf( "%s%s\n", strIndent.latin1(), name().latin1() );
-  for ( DataObjectListIterator it( myChildren ); it.current(); ++it ) // iterate all children
-    it.current()->dump( indent + 2 );  // dump every child with indent + 2 spaces
+  printf( "%s%s\n", strIndent.toLatin1().data(), name().toLatin1().data() );
+  for ( DataObjectList::const_iterator it = myChildren.begin(); it != myChildren.end(); ++it )
+    (*it)->dump( indent + 2 );
 }
 
 /*!

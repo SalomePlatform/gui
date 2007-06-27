@@ -25,8 +25,7 @@
 
 #include <GLViewer_Viewer2d.h>
 
-#include <string>
-#include <GLViewer_Object.h>
+#include <QObject>
 
 class LightApp_DataObject;
 
@@ -34,7 +33,7 @@ class LightApp_DataObject;
   \class LightApp_GLSelector
   Custom selector to get/set selection from GL viewer
 */
-class LIGHTAPP_EXPORT LightApp_GLSelector : public SUIT_Selector
+class LIGHTAPP_EXPORT LightApp_GLSelector : public QObject, public SUIT_Selector
 {
   Q_OBJECT
 

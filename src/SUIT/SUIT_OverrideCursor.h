@@ -19,10 +19,10 @@
 #ifndef SUIT_OVERRIDECURSOR_H
 #define SUIT_OVERRIDECURSOR_H
 
-#include <qapplication.h>
-#include <qcursor.h>
-
 #include "SUIT.h"
+
+#include <QList>
+#include <QCursor>
 
 /*! \brief Class used for management cursors.*/
 class SUIT_EXPORT SUIT_OverrideCursor
@@ -37,7 +37,7 @@ public:
   void resume();
 
 private:
-  QValueList<QCursor> myCursors;
+  QList<QCursor> myCursors;
 };
 
 #endif

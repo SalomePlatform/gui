@@ -27,7 +27,6 @@
 #include "GLViewer_Defs.h"
 
 #include <Precision.hxx>
-#include <qglobal.h>
 
 /*!
   Default constructor

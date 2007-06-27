@@ -22,11 +22,10 @@
 
 #include <LightApp_ModuleDlg.h>
 
-#include <qframe.h>
-#include <qlabel.h>
-#include <qpushbutton.h>
-#include <qlayout.h>
-#include <qpixmap.h>
+#include <QFrame>
+#include <QLabel>
+#include <QPushButton>
+#include <QGridLayout>
 
 #ifndef WIN32
 using namespace std;
@@ -109,17 +108,21 @@ static const char* const default_icon[] = {
  */
 //==============================================================================================================================
 LightApp_ModuleDlg::LightApp_ModuleDlg ( QWidget * parent, const QString& component, const QPixmap icon )
-     : QDialog ( parent, "ActivateModuleDlg", true,  WStyle_Customize | WStyle_NormalBorder | WStyle_Title | WStyle_SysMenu )
+     : QDialog ( parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint )
 {
+  setObjectName( "ActivateModuleDlg" );
+  setModal( true );
+
   QPixmap defaultIcon( ( const char** ) default_icon );
-  setCaption( tr( "CAPTION" ) );
+  setWindowTitle( tr( "CAPTION" ) );
   setSizeGripEnabled( TRUE );
   
   QGridLayout* ActivateModuleDlgLayout = new QGridLayout( this ); 
   ActivateModuleDlgLayout->setMargin( 11 ); ActivateModuleDlgLayout->setSpacing( 6 );
 
   // Module's name and icon
-  myComponentFrame = new QFrame( this, "myComponentFrame" );
+  myComponentFrame = new QFrame( this );
+  myComponentFrame->setObjectName( "myComponentFrame" );
   myComponentFrame->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding ) );
   myComponentFrame->setMinimumHeight( 100 );
   myComponentFrame->setFrameStyle( QFrame::Box | QFrame::Sunken );
@@ -128,15 +131,17 @@ LightApp_ModuleDlg::LightApp_ModuleDlg ( QWidget * parent, const QString& compon
   myComponentFrameLayout->setMargin( 11 ); myComponentFrameLayout->setSpacing( 6 );
 
   // --> icon
-  myComponentIcon = new QLabel( myComponentFrame, "myComponentIcon" );
+  myComponentIcon = new QLabel( myComponentFrame );
+  myComponentIcon->setObjectName( "myComponentIcon" );
   myComponentIcon->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed ) );
   myComponentIcon->setPixmap( !icon.isNull() ? icon : defaultIcon );
   myComponentIcon->setScaledContents( false );
-  myComponentIcon->setAlignment( AlignCenter );
+  myComponentIcon->setAlignment( Qt::AlignCenter );
   // --> name
-  myComponentLab = new QLabel( component, myComponentFrame, "myComponentLab" );
+  myComponentLab = new QLabel( component, myComponentFrame );
+  myComponentLab->setObjectName( "myComponentLab" );
   QFont fnt = myComponentLab->font(); fnt.setBold( TRUE ); myComponentLab->setFont( fnt ); 
-  myComponentLab->setAlignment( AlignCenter );
+  myComponentLab->setAlignment( Qt::AlignCenter );
 
   myComponentFrameLayout->addWidget( myComponentIcon, 0, 0 );
   myComponentFrameLayout->addWidget( myComponentLab,  0, 1 );
@@ -146,13 +151,16 @@ LightApp_ModuleDlg::LightApp_ModuleDlg ( QWidget * parent, const QString& compon
   infoLayout->setMargin( 0 ); infoLayout->setSpacing( 6 );
   
   // --> top line
-  QFrame* myLine1 = new QFrame( this, "myLine1" );
+  QFrame* myLine1 = new QFrame( this );
+  myLine1->setObjectName( "myLine1" );
   myLine1->setFrameStyle( QFrame::HLine | QFrame::Plain );
   // --> info label  
-  myInfoLabel = new QLabel( tr ("ActivateComponent_DESCRIPTION"), this, "myInfoLabel" );
-  myInfoLabel->setAlignment( AlignCenter );
+  myInfoLabel = new QLabel( tr ("ActivateComponent_DESCRIPTION"), this );
+  myInfoLabel->setObjectName( "myInfoLabel" );
+  myInfoLabel->setAlignment( Qt::AlignCenter );
   // --> bottom line
-  QFrame*  myLine2 = new QFrame( this, "myLine2" );
+  QFrame*  myLine2 = new QFrame( this );
+  myLine2->setObjectName( "myLine2" );
   myLine2->setFrameStyle( QFrame::HLine | QFrame::Plain );
   
   infoLayout->addStretch();
@@ -166,16 +174,20 @@ LightApp_ModuleDlg::LightApp_ModuleDlg ( QWidget * parent, const QString& compon
   btnLayout->setMargin( 0 ); btnLayout->setSpacing( 6 );
   
   // --> New
-  myNewBtn = new QPushButton( tr( "NEW" ), this, "myNewBtn" );
+  myNewBtn = new QPushButton( tr( "NEW" ), this );
+  myNewBtn->setObjectName( "myNewBtn" );
   myNewBtn->setDefault( true ); myNewBtn->setAutoDefault( true );
   // --> Open
-  myOpenBtn = new QPushButton( tr( "OPEN" ), this, "myOpenBtn" );
+  myOpenBtn = new QPushButton( tr( "OPEN" ), this );
+  myOpenBtn->setObjectName( "myOpenBtn" );
   myOpenBtn->setAutoDefault( true );
   // --> Load
-  myLoadBtn = new QPushButton( tr( "LOAD" ), this, "myLoadBtn" );
+  myLoadBtn = new QPushButton( tr( "LOAD" ), this );
+  myLoadBtn->setObjectName( "myLoadBtn" );
   myLoadBtn->setAutoDefault( true );
   // --> Cancel
-  myCancelBtn = new QPushButton( tr( "CANCEL" ), this, "myCancelBtn" );
+  myCancelBtn = new QPushButton( tr( "CANCEL" ), this );
+  myCancelBtn->setObjectName( "myCancelBtn" );
   myCancelBtn->setAutoDefault( true );
   
   btnLayout->addWidget( myNewBtn );
@@ -186,9 +198,9 @@ LightApp_ModuleDlg::LightApp_ModuleDlg ( QWidget * parent, const QString& compon
   btnLayout->addStretch();
   btnLayout->addWidget( myCancelBtn );
 
-  ActivateModuleDlgLayout->addWidget(          myComponentFrame, 0,    0    );
-  ActivateModuleDlgLayout->addLayout(          infoLayout,       0,    1    );
-  ActivateModuleDlgLayout->addMultiCellLayout( btnLayout,        1, 1, 0, 1 );
+  ActivateModuleDlgLayout->addWidget( myComponentFrame, 0,    0    );
+  ActivateModuleDlgLayout->addLayout( infoLayout,       0,    1    );
+  ActivateModuleDlgLayout->addLayout( btnLayout,        1, 0, 1, 2 );
 
   // signals and slots connections
   connect( myNewBtn,    SIGNAL( clicked() ), this, SLOT( onButtonClicked() ) );

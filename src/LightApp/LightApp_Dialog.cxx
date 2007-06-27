@@ -21,20 +21,23 @@
 
 #include <LightApp_Dialog.h>
 #include <SUIT_Session.h>
+#include <SUIT_ResourceMgr.h>
 
-#include <qtoolbutton.h>
-#include <qlineedit.h>
-#include <qlabel.h>
+#include <QAbstractButton>
+#include <QToolButton>
+#include <QLineEdit>
+#include <QLabel>
 
 /*!
   Constructor
 */
 LightApp_Dialog::LightApp_Dialog( QWidget* parent, const char* name, bool modal,
-                                  bool allowResize, const int f, WFlags wf )
-: QtxDialog( parent, name, modal, allowResize, f, wf ),
+                                  bool allowResize, const int f, Qt::WindowFlags wf )
+: QtxDialog( parent, modal, allowResize, f, wf ),
   myIsExclusive( true ),
   myIsBusy( false )
 {
+  setObjectName( name );
   setObjectPixmap( "LightApp", tr( "ICON_SELECT" ) );
 }
 
@@ -76,14 +79,14 @@ void LightApp_Dialog::updateButtons( const int _id )
                             aLast = myObjects.end();
   for( ; anIt!=aLast; anIt++ )
   {
-    QToolButton* but = (QToolButton*)anIt.data().myBtn;
-    if( but && but->isOn() )
+    QToolButton* but = (QToolButton*)anIt.value().myBtn;
+    if( but && but->isChecked() )
     {
       if( id==-1 )
         id = anIt.key();
 
       if( anIt.key()!=id )
-        but->setOn( false );
+        but->setChecked( false );
     }
   }
 }
@@ -130,7 +133,7 @@ void LightApp_Dialog::setObjectShown( const int id, const bool shown )
     obj.myBtn->setShown( shown );
     obj.myLabel->setShown( shown );
     if( !shown )
-      ( ( QToolButton* )obj.myBtn )->setOn( false );
+      ( ( QToolButton* )obj.myBtn )->setChecked( false );
   }
 }
 
@@ -140,7 +143,7 @@ void LightApp_Dialog::setObjectShown( const int id, const bool shown )
 */
 bool LightApp_Dialog::isObjectShown( const int id ) const
 {
-  return myObjects.contains( id ) && myObjects[ id ].myEdit->isShown();
+  return myObjects.contains( id ) && myObjects[ id ].myEdit->isVisible();
 }
 
 /*!
@@ -157,7 +160,7 @@ void LightApp_Dialog::setObjectEnabled( const int id, const bool en )
     obj.myBtn->setEnabled( en );
 //    obj.myLabel->setEnabled( en );
     if( !en )
-      ( ( QToolButton* )obj.myBtn )->setOn( false );
+      ( ( QToolButton* )obj.myBtn )->setChecked( false );
   } 
 }
 
@@ -200,7 +203,7 @@ void LightApp_Dialog::selectObject( const QStringList& _names,
   ObjectMap::iterator anIt = myObjects.begin(),
                       aLast = myObjects.end();
   for( ; anIt!=aLast; anIt++ )
-    if( anIt.data().myBtn->isOn() )
+    if( anIt.value().myBtn->isChecked() )
       selectObject( anIt.key(), _names, _types, _ids, update );
 }
 
@@ -338,8 +341,8 @@ int LightApp_Dialog::createObject( const QString& label, QWidget* parent, const 
     myObjects[ nid ].myLabel = lab;
     
     QToolButton* but = new QToolButton( parent );
-    but->setIconSet( QIconSet( myPixmap ) );
-    but->setToggleButton( true );
+    but->setIcon( QIcon( myPixmap ) );
+    but->setCheckable( true );
     but->setMaximumWidth( but->height() );
     but->setMinimumWidth( but->height() );    
     connect( but, SIGNAL( toggled( bool ) ), this, SLOT( onToggled( bool ) ) );
@@ -542,7 +545,7 @@ void LightApp_Dialog::objectTypes( const int id, TypesList& list ) const
 */
 void LightApp_Dialog::onToggled( bool on )
 {
-  QButton* but = ( QButton* )sender();
+  QAbstractButton* but = ( QAbstractButton* )sender();
   int id = -1;
 
   if( !but )
@@ -551,7 +554,7 @@ void LightApp_Dialog::onToggled( bool on )
   ObjectMap::const_iterator anIt = myObjects.begin(),
                             aLast = myObjects.end();
   for( ; anIt!=aLast && id==-1; anIt++ )
-    if( anIt.data().myBtn==but )
+    if( anIt.value().myBtn==but )
       id = anIt.key();
 
   if( id!=-1 )
@@ -637,7 +640,7 @@ void LightApp_Dialog::setObjectPixmap( const QPixmap& p )
   ObjectMap::const_iterator anIt = myObjects.begin(),
                             aLast = myObjects.end();
   for( ; anIt!=aLast; anIt++ )
-    ( ( QToolButton* )anIt.data().myBtn )->setIconSet( p );
+    ( ( QToolButton* )anIt.value().myBtn )->setIcon( p );
 }                        
 
 /*!
@@ -687,7 +690,7 @@ void LightApp_Dialog::setNameIndication( const int id, const NameIndication ni )
                         aLast = myObjects.end();
     for( ; anIt!=aLast; anIt++ )
     {
-      anIt.data().myNI = ni;
+      anIt.value().myNI = ni;
       setReadOnly( anIt.key(), isReadOnly( anIt.key() ) );
       aNext = anIt; aNext++;
       updateObject( anIt.key(), aNext==aLast );
@@ -759,7 +762,7 @@ QString LightApp_Dialog::countOfTypes( const TypesList& types ) const
   QMap<int,int>::const_iterator aMIt = typesCount.begin(),
                                 aMLast = typesCount.end();
   for( ; aMIt!=aMLast; aMIt++ )
-    typeCount.append( QString( "%1 %2" ).arg( aMIt.data() ).arg( typeName( aMIt.key() ) ) );
+    typeCount.append( QString( "%1 %2" ).arg( aMIt.value() ).arg( typeName( aMIt.key() ) ) );
 
   return typeCount.join( ", " );
 }
@@ -789,7 +792,7 @@ const QString& LightApp_Dialog::typeName( const int type ) const
 */
 void LightApp_Dialog::activateObject( const int theId )
 {
-  if ( myObjects.contains( theId ) && !myObjects[ theId ].myBtn->isOn() )
+  if ( myObjects.contains( theId ) && !myObjects[ theId ].myBtn->isChecked() )
     myObjects[ theId ].myBtn->toggle();
 }
 
@@ -802,8 +805,8 @@ void LightApp_Dialog::deactivateAll()
                       aLast = myObjects.end();
   for( ; anIt!=aLast; anIt++ )
   {
-    QToolButton* btn = ( QToolButton* )anIt.data().myBtn;
-    btn->setOn( false );
+    QToolButton* btn = ( QToolButton* )anIt.value().myBtn;
+    btn->setChecked( false );
   }
 }
 
@@ -892,12 +895,12 @@ void LightApp_Dialog::onTextChanged( const QString& text )
     ObjectMap::const_iterator anIt = myObjects.begin(),
                               aLast = myObjects.end();
     for( ; anIt!=aLast; anIt++ )
-      if( anIt.data().myEdit == edit )
+      if( anIt.value().myEdit == edit )
         id = anIt.key();
 
     if( id>=0 && !isReadOnly( id ) )
     {
-      QStringList list = QStringList::split( " ", text );
+      QStringList list = text.split( " ", QString::SkipEmptyParts );
       emit objectChanged( id, list );
     }
   }

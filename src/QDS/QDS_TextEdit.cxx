@@ -18,19 +18,31 @@
 //
 #include "QDS_TextEdit.h"
 
-#include <qtextedit.h>
+#include <QTextEdit>
 
 /*
   \class QDS_TextEdit
+  \brief Datum with control corresponding to the text edit. 
 
-  Datum with control corresponding to text edit. User can enter parameter value in multiple line editor.
+  User can enter parameter value in multi line editor.
 */
 
 /*!
-  Constructor. Create text edit datum object with datum identifier \aid under widget \aparent.
-  Parameter \aflags define behaviour of datum and set of created subwidgets. Default value of this
-  parameter is QDS::All. Parameter \acomp specify the component name which will be used during search
-  of dictionary item.
+  \brief Constructor. 
+
+  Create combobox datum object with datum identifier \a id 
+  and parent widget \a parent. 
+
+  Parameter \a flags defines behaviour of datum and set of created
+  subwidgets. Default value of this parameter is QDS::All.
+
+  Parameter \a comp specifies the component name which will be used
+  when searching the dictionary item.
+
+  \param id datum identifier
+  \param parent parent widget
+  \param flags datum flags
+  \param comp component
 */
 QDS_TextEdit::QDS_TextEdit( const QString& id, QWidget* parent, const int flags, const QString& comp )
 : QDS_Datum( id, parent, flags, comp )
@@ -38,25 +50,27 @@ QDS_TextEdit::QDS_TextEdit( const QString& id, QWidget* parent, const int flags,
 }
 
 /*!
-  Destructor.
+  \brief Destructor.
 */
 QDS_TextEdit::~QDS_TextEdit()
 {
 }
 
 /*!
-  Returns string from QTextEdit widget. Reimplemented from QDS_Datum.
+  \brief Get string value from datum.
+  \return datum string value
 */
 QString QDS_TextEdit::getString() const
 {
   QString res;
   if ( textEdit() )
-    res = textEdit()->text();
+    res = textEdit()->toPlainText();
   return res;
 }
 
 /*!
-  Sets the string into QTextEdit widget. Reimplemented from QDS_Datum.
+  \brief Set string value to datum.
+  \param txt new datum string value
 */
 void QDS_TextEdit::setString( const QString& txt )
 {
@@ -65,15 +79,18 @@ void QDS_TextEdit::setString( const QString& txt )
 }
 
 /*!
-  Returns pointer to QTextEdit widget.
+  \brief Get text edit widget.
+  \return internaltext edit widget
 */
 QTextEdit* QDS_TextEdit::textEdit() const
 {
-  return ::qt_cast<QTextEdit*>( controlWidget() );
+  return ::qobject_cast<QTextEdit*>( controlWidget() );
 }
 
 /*!
-  Create QTextEdit widget as control subwidget.
+  \brief Create text edit widget as control subwidget.
+  \param parent parent widget
+  \return created text edit widget
 */
 QWidget* QDS_TextEdit::createControl( QWidget* parent )
 {
@@ -83,6 +100,8 @@ QWidget* QDS_TextEdit::createControl( QWidget* parent )
 }
 
 /*!
+  \brief Called when text is changed by the user.
+
   Notify about text changing in text edit.
 */
 void QDS_TextEdit::onTextChanged()
@@ -96,3 +115,8 @@ void QDS_TextEdit::onTextChanged()
   emit paramChanged();
   emit paramChanged( str );
 }
+
+/*!
+  \fn void QDS_TextEdit::returnPressed();
+  \brief The signal is emitted when user presses \c Enter key in the text edit.
+*/

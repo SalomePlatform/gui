@@ -20,14 +20,19 @@
 #define PLOT2D_VIEWFRAME_H
 
 #include "Plot2d_Curve.h"
-#include <qwidget.h>
-#include <qintdict.h>
+#include <QWidget>
+#include <QMultiHash>
+#include <QList>
+#include <qwt_symbol.h>
 
 class Plot2d_Plot2d;
 class Plot2d_Prs;
 class QCustomEvent;
+class QwtPlotCurve;
+class QwtPlotGrid;
+class QwtPlotZoomer;
 
-typedef QIntDict<Plot2d_Curve> CurveDict;
+typedef QMultiHash<QwtPlotCurve*, Plot2d_Curve*> CurveDict;
 
 class PLOT2D_EXPORT Plot2d_ViewFrame : public QWidget
 { 
@@ -55,6 +60,8 @@ public:
   void    Erase( const Plot2d_Prs*, const bool = false );
   Plot2d_Prs* CreatePrs( const char* entry = 0 );
 
+  virtual bool eventFilter(QObject* watched, QEvent* e);
+
   /* operations */
   void    updateTitles();
   void    setTitle( const QString& title );
@@ -64,8 +71,7 @@ public:
   void    eraseCurve( Plot2d_Curve* curve, bool update = false );
   void    eraseCurves( const curveList& curves, bool update = false );
   int     getCurves( curveList& clist );
-  const   CurveDict& getCurves() { return myCurves; }
-  int     hasCurve( Plot2d_Curve* curve );
+  const   CurveDict& getCurves();
   bool    isVisible( Plot2d_Curve* curve );
   void    updateCurve( Plot2d_Curve* curve, bool update = false );
   void    updateLegend( const Plot2d_Prs* prs );
@@ -84,7 +90,7 @@ public:
   void    copyPreferences( Plot2d_ViewFrame* );
   void    setCurveType( int curveType, bool update = true );
   int     getCurveType() const { return myCurveType; }
-  void    setCurveTitle( int curveKey, const QString& title );
+  void    setCurveTitle( Plot2d_Curve* curve, const QString& title );
   void    showLegend( bool show, bool update = true );
   void    setLegendPos( int pos );
   int     getLegendPos() const { return myLegendPos; }
@@ -131,6 +137,9 @@ protected:
   void    writePreferences();
   QString getInfo( const QPoint& pnt );
   virtual void wheelEvent( QWheelEvent* );
+  QwtPlotCurve* getPlotCurve( Plot2d_Curve* curve );
+  bool    hasPlotCurve( Plot2d_Curve* curve );
+  void    setCurveType( QwtPlotCurve* curve, int curveType );
 
 public slots:
   void    onViewPan(); 
@@ -150,11 +159,9 @@ public slots:
   void    onZoomOut();
 
 protected:
-  virtual void customEvent( QCustomEvent* );
-
-protected slots:
+  virtual void customEvent( QEvent* );
   void    plotMousePressed( const QMouseEvent& );
-  void    plotMouseMoved( const QMouseEvent& );
+  bool    plotMouseMoved( const QMouseEvent& );
   void    plotMouseReleased( const QMouseEvent& );
 
 signals:
@@ -167,7 +174,6 @@ protected:
   Plot2d_Plot2d* myPlot;
   int            myOperation;
   QPoint         myPnt;
-  CurveDict      myCurves;
 
   int            myCurveType;
   bool           myShowLegend;
@@ -191,6 +197,8 @@ class Plot2d_Plot2d : public QwtPlot
 public:
   Plot2d_Plot2d( QWidget* parent );
 
+  void       setLogScale( int axisId, bool log10 );
+
   void       replot();
   void       getNextMarker( QwtSymbol::Style& typeMarker, QColor& color, Qt::PenStyle& typeLine );
   QwtLegend* getLegend() {
@@ -203,8 +211,13 @@ public:
   virtual QSize       sizeHint() const;
   virtual QSizePolicy sizePolicy() const;
   virtual QSize       minimumSizeHint() const;
+  void                defaultPicker();
+  void                setPickerMousePattern( int button, int state = Qt::NoButton );
 
   bool                polished() const { return myIsPolished; }
+  QwtPlotGrid*        grid() { return myGrid; };
+  CurveDict& getCurves() { return myCurves; }
+  Plot2d_Curve*       getClosestCurve( QPoint p, double& distance, int& index );
 
 public slots:
   virtual void polish();
@@ -213,8 +226,11 @@ protected:
   bool       existMarker( const QwtSymbol::Style typeMarker, const QColor& color, const Qt::PenStyle typeLine );
 
 protected:
-  QValueList<QColor> myColors;
+  CurveDict          myCurves;
+  QwtPlotGrid*       myGrid;
+  QList<QColor>      myColors;
   bool               myIsPolished;
+  QwtPlotZoomer*     myPlotZoomer;
 };
 
 #endif

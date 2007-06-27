@@ -16,7 +16,7 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifdef WNT
+#ifdef WIN32
 #ifdef OCCVIEWER_EXPORTS
 #define OCCVIEWER_EXPORT __declspec(dllexport)
 #else
@@ -26,6 +26,6 @@
 #define OCCVIEWER_EXPORT
 #endif
 
-#if defined WNT
+#if defined WIN32
 #pragma warning ( disable: 4251 )
 #endif

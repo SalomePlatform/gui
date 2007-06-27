@@ -209,7 +209,7 @@ void SALOME_View::EraseAll( const bool )
 */
 void SALOME_View::LocalSelection( const SALOME_OCCPrs*, const int )
 {
-//  MESSAGE( "SALOME_View::LocalSelection( const SALOME_OCCPrs* ) called! \
+//  MESSAGE( "SALOME_View::LocalSelection( const SALOME_OCCPrs* ) called!
 //   Probably, selection is being activated in uncompatible viewframe." );
 }
 
@@ -218,7 +218,7 @@ void SALOME_View::LocalSelection( const SALOME_OCCPrs*, const int )
 */
 void SALOME_View::LocalSelection( const SALOME_VTKPrs*, const int )
 {
-//  MESSAGE( "SALOME_View::LocalSelection( const SALOME_VTKPrs* ) called! \
+//  MESSAGE( "SALOME_View::LocalSelection( const SALOME_VTKPrs* ) called!
 //   Probably, selection is being activated in uncompatible viewframe." );
 }
 
@@ -227,7 +227,7 @@ void SALOME_View::LocalSelection( const SALOME_VTKPrs*, const int )
 */
 void SALOME_View::LocalSelection( const SALOME_Prs2d*, const int )
 {
-//  MESSAGE( "SALOME_View::LocalSelection( const SALOME_Prs2d* ) called! \
+//  MESSAGE( "SALOME_View::LocalSelection( const SALOME_Prs2d* ) called!
 //   Probably, selection is being activated in uncompatible viewframe." );
 }
 
@@ -236,7 +236,7 @@ void SALOME_View::LocalSelection( const SALOME_Prs2d*, const int )
 */
 void SALOME_View::GlobalSelection( const bool ) const
 {
-//  MESSAGE( "SALOME_View::GlobalSelection() called! \
+//  MESSAGE( "SALOME_View::GlobalSelection() called!
 //   Probably, selection is being activated in uncompatible viewframe." );
 }
 

@@ -29,6 +29,10 @@
 #include "GLViewer_AspectLine.h"
 #include "GLViewer_BaseObjects.h"
 
+// Qt includes
+#include <QColor>
+
+
 #ifndef WIN32
 #include <GL/glx.h>
 #endif
@@ -66,10 +70,10 @@ GLViewer_MarkerDrawer::~GLViewer_MarkerDrawer()
 */
 void GLViewer_MarkerDrawer::create( float xScale, float yScale, bool onlyUpdate )
 {
-    QValueList<int>::Iterator it;
-    QValueList<int>::Iterator EndIt;
-    QValueList<GLViewer_Object*>::Iterator anObjectIt = myObjects.begin();
-    QValueList<GLViewer_Object*>::Iterator anEndObjectIt = myObjects.end();
+    QList<int>::Iterator it;
+    QList<int>::Iterator EndIt;
+    QList<GLViewer_Object*>::Iterator anObjectIt = myObjects.begin();
+    QList<GLViewer_Object*>::Iterator anEndObjectIt = myObjects.end();
 
     myXScale = xScale;
     myYScale = yScale;
@@ -89,7 +93,7 @@ void GLViewer_MarkerDrawer::create( float xScale, float yScale, bool onlyUpdate 
         float* anYCoord = aMarkerSet->getYCoord();
         float aRadius = aMarkerSet->getMarkerSize();
 
-        QValueList<int> aHNumbers, anUHNumbers, aSelNumbers, anUSelNumbers;
+        QList<int> aHNumbers, anUHNumbers, aSelNumbers, anUSelNumbers;
         aMarkerSet->exportNumbers( aHNumbers, anUHNumbers, aSelNumbers, anUSelNumbers );
 
         if( onlyUpdate )
@@ -189,8 +193,8 @@ GLViewer_PolylineDrawer::~GLViewer_PolylineDrawer()
 */
 void GLViewer_PolylineDrawer::create( float xScale, float yScale, bool onlyUpdate )
 {
-    QValueList<GLViewer_Object*>::Iterator aObjectIt = myObjects.begin();
-    QValueList<GLViewer_Object*>::Iterator aObjectEndIt = myObjects.end();
+    QList<GLViewer_Object*>::Iterator aObjectIt = myObjects.begin();
+    QList<GLViewer_Object*>::Iterator aObjectEndIt = myObjects.end();
     
     myXScale = xScale;
     myYScale = yScale;
@@ -278,8 +282,8 @@ GLViewer_TextDrawer::~GLViewer_TextDrawer()
 */
 void GLViewer_TextDrawer::create( float xScale, float yScale, bool onlyUpdate )
 {
-    QValueList<GLViewer_Object*>::Iterator aObjectIt = myObjects.begin();
-    QValueList<GLViewer_Object*>::Iterator aObjectEndIt = myObjects.end();
+    QList<GLViewer_Object*>::Iterator aObjectIt = myObjects.begin();
+    QList<GLViewer_Object*>::Iterator aObjectEndIt = myObjects.end();
     
     myXScale = xScale;
     myYScale = yScale;
@@ -322,8 +326,8 @@ void GLViewer_TextDrawer::create( float xScale, float yScale, bool onlyUpdate )
 */
 void GLViewer_TextDrawer::updateObjects()
 {
-    QValueList<GLViewer_Object*>::Iterator aObjectIt = myObjects.begin();
-    QValueList<GLViewer_Object*>::Iterator aObjectEndIt = myObjects.end();
+    QList<GLViewer_Object*>::Iterator aObjectIt = myObjects.begin();
+    QList<GLViewer_Object*>::Iterator aObjectEndIt = myObjects.end();
     for( ; aObjectIt != aObjectEndIt; aObjectIt++ )
         (*aObjectIt)->compute();
 }

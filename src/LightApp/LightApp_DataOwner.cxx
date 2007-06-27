@@ -19,10 +19,6 @@
 
 #include "LightApp_DataOwner.h"
 
-#include "LightApp_DataObject.h"
-
-#include <iostream>
-
 /*!Constructor. Initialize by \a theEntry.*/
 LightApp_DataOwner::LightApp_DataOwner( const QString& theEntry )
 : myEntry( theEntry )

@@ -21,8 +21,8 @@
 
 #include "Plot2d.h"
 #include <SUIT_ViewWindow.h>
+#include <QMap>
 
-#include <qimage.h>
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -33,6 +33,9 @@ class Plot2d_Viewer;
 class Plot2d_ViewFrame;
 class QtxAction;
 class SUIT_ToolButton;
+class QImage;
+class QMenu;
+class QToolBar;
 
 class PLOT2D_EXPORT Plot2d_ViewWindow : public SUIT_ViewWindow  
 {
@@ -46,20 +49,18 @@ public:
   void              putInfo(QString theMsg);
   Plot2d_ViewFrame* getViewFrame() { return myViewFrame; };
   QToolBar*         getToolBar() { return myToolBar; };
-  void              contextMenuPopup( QPopupMenu* thePopup );
+  void              contextMenuPopup( QMenu* thePopup );
 
   virtual QString   getVisualParameters();
   virtual void      setVisualParameters( const QString& parameters );
   
   virtual void      RefreshDumpImage();
+  virtual bool eventFilter(QObject* watched, QEvent* e);
 
 protected:
   virtual QImage    dumpView();
   virtual QString   filter() const;
   virtual bool      dumpViewToFormat( const QImage&, const QString& fileName, const QString& format );
-
-private:
-  bool eventFilter(QObject* watched, QEvent* e);
 
   void createActions();
   void createToolBar();

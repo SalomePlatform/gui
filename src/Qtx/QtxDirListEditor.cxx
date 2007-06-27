@@ -242,7 +242,7 @@ bool QtxDirListEditor::validate( const bool quietMode )
   {
     QString dirPath = QFileInfo( myEdit->text().stripWhiteSpace() ).filePath();
 /*
-#ifndef WNT
+#ifndef WIN32
     if ( dirPath.startsWith( "~") ) {
       dirPath = dirPath.remove(0,1);
       QString user;

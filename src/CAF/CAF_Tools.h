@@ -26,17 +26,13 @@
 
 #include <SUIT_Tools.h>
 
-#include <qcolor.h>
+#include <QColor>
 
 #include <Quantity_Color.hxx>
 
 #include <TCollection_AsciiString.hxx>
 #include <TCollection_ExtendedString.hxx>
 
-/*!
-  \class CAF_Tools
-  Prodives set of auxiliary static methods
-*/
 class CAF_EXPORT CAF_Tools : public SUIT_Tools
 {
 public:

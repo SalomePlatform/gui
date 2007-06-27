@@ -22,8 +22,12 @@
 #include "VTKViewer.h"
 #include "VTKViewer_Actor.h"
 
-#include <qtimer.h>
-#include <qobject.h>
+#include <QObject>
+
+class QTimer;
+class QMouseEvent;
+class QKeyEvent;
+class QContextMenuEvent;
 
 // Open CASCADE Includes
 #include <TColStd_MapOfInteger.hxx>

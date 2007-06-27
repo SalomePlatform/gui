@@ -74,11 +74,11 @@ void SUIT_DataObjectIterator::operator++()
         }
         else
         {
-          aParent->myChildren.find( myCurrent );
+          int idx = aParent->myChildren.indexOf( myCurrent );
           if ( myDetourType == DepthLeft )
-            myCurrent = aParent->myChildren.next();
+            myCurrent = idx < aParent->myChildren.count() - 1 ? aParent->myChildren[idx + 1] : 0;
           else
-            myCurrent = aParent->myChildren.prev();
+            myCurrent = idx > 0 ? aParent->myChildren[idx - 1] : 0;
           if ( !myCurrent )
           {
             myCurrent = aParent;
@@ -146,9 +146,9 @@ SUIT_DataObject* SUIT_DataObjectIterator::globalSibling( SUIT_DataObject* obj, b
 
   if ( obj && ( par = parent( obj ) ) )
   {
-    par->myChildren.find( obj );
-    if ( par->myChildren.next() )
-      return par->myChildren.current();
+    int idx = par->myChildren.indexOf( obj );
+    if ( idx < par->myChildren.count() - 1 )
+      return par->myChildren[idx + 1];
     else
     {
       for ( ; par; par = globalSibling( par, next ) )
@@ -170,9 +170,9 @@ SUIT_DataObject* SUIT_DataObjectIterator::globalSibling( SUIT_DataObject* obj, b
 SUIT_DataObject* SUIT_DataObjectIterator::extreme( DataObjectList& aList, bool FromLeft ) const
 {
   if ( FromLeft )
-    return aList.getFirst();
+    return aList.first();
   else
-    return aList.getLast();
+    return aList.last();
 }
 
 /*!

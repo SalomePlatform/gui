@@ -21,7 +21,7 @@
 
 #include "VTKViewer.h"
 
-#ifdef WNT
+#ifdef WIN32
 #  ifdef SVTK_EXPORTS
 #    define SVTK_EXPORT __declspec(dllexport)
 #  else
@@ -31,7 +31,7 @@
 #  define SVTK_EXPORT
 #endif
 
-#if defined WNT
+#if defined WIN32
 #pragma warning ( disable: 4251 )
 #pragma warning ( disable: 4786 )
 #endif

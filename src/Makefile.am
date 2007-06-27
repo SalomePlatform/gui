@@ -24,7 +24,10 @@
 #  Module : SALOME
 # $Header$
 
-SUBDIRS = Qtx Style DDS QDS SUIT STD CAF CAM SUITApp LogWindow ObjBrowser Prs
+# VSR: this is the original packages list
+#SUBDIRS = Qtx Style DDS QDS SUIT STD CAF CAM SUITApp LogWindow ObjBrowser Prs
+# VSR: already migrated to Qt4 packages
+SUBDIRS = Qtx DDS QDS SUIT SUITApp STD CAF CAM LogWindow Prs
 
 if ENABLE_SALOMEOBJECT
   SUBDIRS += OBJECT
@@ -37,22 +40,22 @@ endif
 if ENABLE_VTKVIEWER
   SUBDIRS += VTKViewer
 if ENABLE_SALOMEOBJECT
-  SUBDIRS += SVTK
+    SUBDIRS += SVTK
 endif
 endif
 if ENABLE_OCCVIEWER
- SUBDIRS += OCCViewer
+  SUBDIRS += OCCViewer
 if ENABLE_SALOMEOBJECT
-  SUBDIRS += SOCC
+    SUBDIRS += SOCC
 endif
 endif
 if ENABLE_PYCONSOLE
-  SUBDIRS += PyInterp PythonConsole
+  SUBDIRS += PyInterp PyConsole
 endif
 if ENABLE_PLOT2DVIEWER
   SUBDIRS += Plot2d
 if ENABLE_SALOMEOBJECT
-  SUBDIRS += SPlot2d
+    SUBDIRS += SPlot2d
 endif
 endif
 if ENABLE_SUPERVGRAPHVIEWER
@@ -61,9 +64,11 @@ endif
 if ENABLE_QXGRAPHVIEWER
   SUBDIRS += QxGraph
 endif
-SUBDIRS += LightApp ResExporter
+SUBDIRS += Event LightApp ResExporter
 
 if GUI_ENABLE_CORBA
-  SUBDIRS +=  RegistryDisplay TOOLSGUI \
-          Event Session SalomeApp SALOME_SWIG SALOME_PY SALOME_PYQT
+# VSR: this is the original packages list
+#  SUBDIRS += TOOLSGUI Session SalomeApp SALOME_SWIG SALOME_PY SALOME_PYQT
+# VSR: already migrated to Qt4 packages
+  SUBDIRS += TOOLSGUI Session SalomeApp
 endif

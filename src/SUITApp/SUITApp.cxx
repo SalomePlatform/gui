@@ -16,7 +16,7 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#if defined WNT
+#if defined WIN32
 
 #undef SUIT_ENABLE_PYTHON
 //#else
@@ -26,20 +26,21 @@
 #include "SUITApp_Application.h"
 
 #include <SUIT_Session.h>
-#include <SUIT_Desktop.h>
+//#include <SUIT_Desktop.h>
 #include <SUIT_ResourceMgr.h>
 
-#include <QtxSplash.h>
+// TODO
+//#include <QtxSplash.h>
 
 #ifdef SUIT_ENABLE_PYTHON
 #include <Python.h>
 #endif
 
-#include <qdir.h>
-#include <qfile.h>
-#include <qstring.h>
-#include <qstringlist.h>
-#include <qregexp.h>
+#include <QDir>
+#include <QFile>
+//#include <QRegExp>
+#include <QString>
+#include <QStringList>
 
 #include <stdlib.h>
 
@@ -52,11 +53,10 @@ QString salomeVersion()
   path += QString( "bin/salome/VERSION" );
 
   QFile vf( path );
-  if ( !vf.open( IO_ReadOnly ) )
+  if ( !vf.open( QFile::ReadOnly ) )
     return QString::null;
 
-  QString line;
-  vf.readLine( line, 1024 );
+  QString line = vf.readLine( 1024 );
   vf.close();
 
   if ( line.isEmpty() )
@@ -66,9 +66,9 @@ QString salomeVersion()
     line.remove( line.length() - 1, 1 );
 
   QString ver;
-  int idx = line.findRev( ":" );
+  int idx = line.lastIndexOf( ":" );
   if ( idx != -1 )
-    ver = line.mid( idx + 1 ).stripWhiteSpace();
+    ver = line.mid( idx + 1 ).trimmed();
 
   return ver;
 }
@@ -108,7 +108,7 @@ public:
     SUIT_ResourceMgr* resMgr = 0;
     if ( myIniFormat )
     {
-      resMgr = new SUIT_ResourceMgr( appName );
+      resMgr = new SUIT_ResourceMgr( appName, QString( "%1Config" ) );
       resMgr->setCurrentFormat( "ini" );
     }
     else
@@ -160,69 +160,80 @@ int main( int args, char* argv[] )
   if ( !argList.isEmpty() )
   {
     SUITApp_Session* aSession = new SUITApp_Session( iniFormat );
+    // TODO
+/*
     QtxSplash* splash = 0;
-    if ( !noSplash ) {
+    if ( !noSplash )
+    {
       SUIT_ResourceMgr* resMgr = aSession->createResourceMgr( argList.first() );
-      if ( resMgr ) {
-	resMgr->loadLanguage();
-	QString splashIcon, splashInfo, splashTextColors;
-	resMgr->value( "splash", "image",       splashIcon );
-	resMgr->value( "splash", "info",        splashInfo, false );
-	resMgr->value( "splash", "text_colors", splashTextColors );
-	QString appName    = QObject::tr( "APP_NAME" ).stripWhiteSpace();
-	QString appVersion = QObject::tr( "APP_VERSION" ).stripWhiteSpace();
-	if ( appVersion == "APP_VERSION" ) {
-	  if ( appName == "APP_NAME" || appName.lower() == "salome" )
-	    appVersion = salomeVersion();
-	  else
-	    appVersion = "";
-	}
-	QPixmap px( splashIcon );
-	if ( !px.isNull() ) {
-	  splash = QtxSplash::splash( px );
-	  if ( !splashTextColors.isEmpty() ) {
-	    QStringList colors = QStringList::split( "|", splashTextColors );
-	    QColor c1, c2;
-	    if ( colors.count() > 0 ) c1 = QColor( colors[0] );
-	    if ( colors.count() > 1 ) c2 = QColor( colors[1] );
-	    splash->setTextColors( c1, c2 );
-	  }
-	  else {
-	    splash->setTextColors( Qt::white, Qt::black );
-	  }
+      if ( resMgr )
+      {
+	      resMgr->loadLanguage();
+	      QString splashIcon, splashInfo, splashTextColors;
+	      resMgr->value( "splash", "image",       splashIcon );
+	      resMgr->value( "splash", "info",        splashInfo, false );
+	      resMgr->value( "splash", "text_colors", splashTextColors );
+	      QString appName    = QObject::tr( "APP_NAME" ).stripWhiteSpace();
+	      QString appVersion = QObject::tr( "APP_VERSION" ).stripWhiteSpace();
+	      if ( appVersion == "APP_VERSION" )
+        {
+	        if ( appName == "APP_NAME" || appName.toLower() == "salome" )
+	          appVersion = salomeVersion();
+	        else
+	          appVersion = "";
+	      }
+	      QPixmap px( splashIcon );
+	      if ( !px.isNull() )
+        {
+	        splash = QtxSplash::splash( px );
+	        if ( !splashTextColors.isEmpty() )
+          {
+	          QStringList colors = QStringList::split( "|", splashTextColors );
+	          QColor c1, c2;
+	          if ( colors.count() > 0 )
+              c1 = QColor( colors[0] );
+	          if ( colors.count() > 1 )
+              c2 = QColor( colors[1] );
+	          splash->setTextColors( c1, c2 );
+	        }
+	        else
+          {
+	          splash->setTextColors( Qt::white, Qt::black );
+	        }
 #ifdef _DEBUG_
-	  splash->setHideOnClick( true );
+	        splash->setHideOnClick( true );
 #endif
-	  QFont f = splash->font();
-	  f.setBold( true );
-	  splash->setFont( f );
-	  if ( !splashInfo.isEmpty() ) {
-	    splashInfo.replace( QRegExp( "%A" ),  appName );
-	    splashInfo.replace( QRegExp( "%V" ),  QObject::tr( "ABOUT_VERSION" ).arg( appVersion ) );
-	    splashInfo.replace( QRegExp( "%L" ),  QObject::tr( "ABOUT_LICENSE" ) );
-	    splashInfo.replace( QRegExp( "%C" ),  QObject::tr( "ABOUT_COPYRIGHT" ) );
-	    splashInfo.replace( QRegExp( "\\\\n" ), "\n" );
-	    splash->message( splashInfo );
-	  }
-	  splash->show();
-	  qApp->processEvents();
-	}
+	        QFont f = splash->font();
+	        f.setBold( true );
+	        splash->setFont( f );
+	        if ( !splashInfo.isEmpty() )
+          {
+	          splashInfo.replace( QRegExp( "%A" ),  appName );
+	          splashInfo.replace( QRegExp( "%V" ),  QObject::tr( "ABOUT_VERSION" ).arg( appVersion ) );
+	          splashInfo.replace( QRegExp( "%L" ),  QObject::tr( "ABOUT_LICENSE" ) );
+	          splashInfo.replace( QRegExp( "%C" ),  QObject::tr( "ABOUT_COPYRIGHT" ) );
+	          splashInfo.replace( QRegExp( "\\\\n" ), "\n" );
+	          splash->message( splashInfo );
+	        }
+	        splash->show();
+          QApplication::instance()->processEvents();
+	      }
       }
     }
+*/
     SUIT_Application* theApp = aSession->startApplication( argList.first() );
     if ( theApp )
     {
       if ( !noExceptHandling )
         app.setHandler( aSession->handler() );
 
-//      if ( !app.mainWidget() )
-//        app.setMainWidget( theApp->desktop() );
-      if ( splash )
-	splash->finish( theApp->desktop() );
+// TODO
+//      if ( splash )
+//	      splash->finish( theApp->desktop() );
 
       result = app.exec();
-      if ( splash )
-	delete splash;
+// TODO
+//      delete splash;
     }
     delete aSession;
   }

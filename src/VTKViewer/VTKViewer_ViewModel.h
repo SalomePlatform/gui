@@ -22,7 +22,9 @@
 #include "VTKViewer.h"
 #include "SUIT_ViewModel.h"
 
-#include <qcolor.h>
+#include <QColor>
+
+class QMouseEvent;
 
 class SUIT_ViewWindow;
 class SUIT_Desktop;
@@ -41,7 +43,7 @@ public:
   virtual SUIT_ViewWindow* createView(SUIT_Desktop* theDesktop);
 
   virtual void             setViewManager(SUIT_ViewManager* theViewManager);
-  virtual void             contextMenuPopup( QPopupMenu* );
+  virtual void             contextMenuPopup( QMenu* );
   /*!Gets type of viewer.*/
   virtual QString          getType() const { return Type(); }
 

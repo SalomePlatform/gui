@@ -18,8 +18,8 @@
 //
 #include "SALOME_Actor.h"
 
-#include <qapplication.h>
-#include <qimage.h>
+#include <QToolBar>
+#include <QEvent>
 
 #include <vtkTextProperty.h>
 #include <vtkActorCollection.h>
@@ -468,7 +468,10 @@ SVTK_ViewWindow
 ::setBackgroundColor( const QColor& color )
 {
   myMainWindow->SetBackgroundColor( color );
-  SUIT_ViewWindow::setBackgroundColor( color );
+
+  QPalette palette;
+  palette.setColor(backgroundRole(), color);
+  setPalette(palette);
 }
 
 /*!
@@ -711,8 +714,8 @@ SVTK_ViewWindow
 QImage
 SVTK_ViewWindow
 ::dumpView()
-{    
-  if ( myMainWindow->getToolBar()->hasMouse() || myDumpImage.isNull() )
+{
+  if ( myMainWindow->getToolBar()->testAttribute(Qt::WA_UnderMouse) || myDumpImage.isNull() )
     return myMainWindow->dumpView();
   
   return myDumpImage;
@@ -815,7 +818,7 @@ QString getGradAxisVisualParams( vtkAxisActor2D* actor )
     shadow = txtProp->GetShadow();
   }
   params.sprintf( "* Graduated Axis: * Name *%u*%s*%.2f*%.2f*%.2f*%u*%u*%u*%u", isVisible, 
-		  title.latin1(), color[0], color[1], color[2], font, bold, italic, shadow );
+		  title.toLatin1().data(), color[0], color[1], color[2], font, bold, italic, shadow );
 
   // Labels
   isVisible = actor->GetLabelVisibility();
@@ -854,7 +857,7 @@ void setGradAxisVisualParams( vtkAxisActor2D* actor, const QString& params )
   if ( !actor )
     return;
 
-  QStringList paramsLst = QStringList::split( '*', params, true );
+  QStringList paramsLst = params.split( '*' );
 
   if ( paramsLst.size() == nGradAxisParams ) { // altogether name, lable, ticks parameters make up 25 values
 
@@ -871,7 +874,7 @@ void setGradAxisVisualParams( vtkAxisActor2D* actor, const QString& params )
     int shadow = paramsLst[10].toInt();
 
     actor->SetTitleVisibility( isVisible );
-    actor->SetTitle( title.latin1() );
+    actor->SetTitle( title.toLatin1() );
     vtkTextProperty* txtProp = actor->GetTitleTextProperty();
     if ( txtProp ) {
       txtProp->SetColor( color );
@@ -973,7 +976,7 @@ void
 SVTK_ViewWindow
 ::doSetVisualParameters( const QString& parameters )
 {
-  QStringList paramsLst = QStringList::split( '*', parameters, true );
+  QStringList paramsLst = parameters.split( '*' );
   if ( paramsLst.size() >= nNormalParams ) {
     // 'reading' list of parameters
     double pos[3], focalPnt[3], viewUp[3], parScale, scale[3];

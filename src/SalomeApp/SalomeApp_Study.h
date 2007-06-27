@@ -22,7 +22,6 @@
 #include "SalomeApp.h"
 
 #include <LightApp_Study.h>
-#include <string>
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -40,7 +39,7 @@ public:
 
   virtual int         id() const;
 
-  virtual void        createDocument();
+  virtual bool        createDocument( const QString& );
   virtual bool        openDocument( const QString& );
   virtual bool        loadDocument( const QString& );
 

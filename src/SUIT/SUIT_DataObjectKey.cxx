@@ -18,9 +18,9 @@
 //
 #include "SUIT_DataObjectKey.h"
 
-#include <qobject.h>
+#include <string.h>
 
-#ifndef WNT
+#ifndef WIN32
 #include <typeinfo>
 #define _typeinfo std::type_info
 #else

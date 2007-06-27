@@ -21,10 +21,6 @@
 
 #include "LightApp_Preferences.h"
 
-#include <QtxListResourceEdit.h>
-
-#include <qlayout.h>
-
 /*!
   Constructor.Initialize by resource manager and parent QWidget.
 */
@@ -68,7 +64,7 @@ bool LightApp_Preferences::hasModule( const QString& mod ) const
 {
   bool res = false;
   for ( PrefModuleMap::ConstIterator it = myPrefMod.begin(); it != myPrefMod.end() && !res; ++it )
-    res = it.data() == mod;
+    res = it.value() == mod;
   return res;
 }
 

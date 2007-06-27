@@ -23,12 +23,11 @@
 #include <LightApp_Driver.h>
 
 #include <CAM_Study.h>
-#include <CAM_DataModel.h>
-#include <SUIT_Study.h>
 
 #include "string"
 #include "vector"
 
+class SUIT_Study;
 class SUIT_Application;
 class CAM_DataModel;
 
@@ -45,7 +44,7 @@ public:
   LightApp_Study( SUIT_Application* );
   virtual ~LightApp_Study();
 
-  virtual void        createDocument();
+  virtual bool        createDocument( const QString& );
   virtual bool        openDocument( const QString& );
   virtual bool        loadDocument( const QString& ); 
 

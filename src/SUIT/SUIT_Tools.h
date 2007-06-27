@@ -23,9 +23,9 @@
 
 #include <Qtx.h>
 
-#include <qrect.h>
-#include <qfont.h>
-#include <qstring.h>
+#include <QRect>
+#include <QString>
+#include <QFont>
 
 /*!
   \class SUIT_Tools

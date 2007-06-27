@@ -16,21 +16,21 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 #ifndef SUIT_DATAOBJECT_H
 #define SUIT_DATAOBJECT_H
 
-#include <qobject.h>
-#include <qstring.h>
-#include <qpixmap.h>
-#include <qptrlist.h>
-
 #include "SUIT.h"
+
+#include <QList>
+#include <QObject>
+#include <QString>
+#include <QPixmap>
 
 class SUIT_DataObject;
 class SUIT_DataObjectKey;
 
-typedef QPtrList<SUIT_DataObject>         DataObjectList;
-typedef QPtrListIterator<SUIT_DataObject> DataObjectListIterator;
+typedef QList<SUIT_DataObject*> DataObjectList;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -108,10 +108,11 @@ public:
   void                        dump( const int indent = 2 ) const; // dump to cout
 
 private:
+  SUIT_DataObject*            myParent;
   bool                        myOpen;
   bool                        myCheck;
   Signal*                     mySignal;
-  SUIT_DataObject*            myParent;
+  bool                        myAutoDel;
   DataObjectList              myChildren;
 
   friend class SUIT_DataObject::Signal;

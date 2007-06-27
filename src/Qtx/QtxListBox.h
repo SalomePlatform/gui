@@ -24,7 +24,11 @@
 
 #include "Qtx.h"
 
-#include <qlistbox.h>
+// This file isn't yet ported to Qt4 => there are some corrections for OCCViewer porting  -->
+//#include <qlistbox.h>
+#include <QListWidget>
+#include <QListWidgetItem>
+// <--
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -33,27 +37,27 @@
 class QLineEdit;
 class QValidator;
 
-class QTX_EXPORT QtxListBox : public QListBox
+class QTX_EXPORT QtxListBox : public QListWidget//QListBox // This file isn't yet ported to Qt4 => there are some corrections for OCCViewer porting
 {
     Q_OBJECT
 
 public:
-    QtxListBox( QWidget* = 0, const char* = 0, WFlags = 0 );
+    QtxListBox( QWidget* = 0, const char* = 0, Qt::WindowFlags = 0 );
     virtual ~QtxListBox();
 
     bool              isEditEnabled() const;
     bool              defaultEditAction() const;
     bool              isModificationEnabled() const;
 
-    QListBoxItem*     editedItem() const;
+    QListWidgetItem*  editedItem() const;
     int               editedIndex() const;
 
     void              startEdition( const int );
-    void              startEdition( const QListBoxItem* );
+    void              startEdition( const QListWidgetItem* );
     void              endEdition( const bool );
 
     void              ensureItemVisible( const int );
-    void              ensureItemVisible( const QListBoxItem* );
+    void              ensureItemVisible( const QListWidgetItem* );
 
     virtual bool      eventFilter( QObject*, QEvent* );
 
@@ -68,7 +72,7 @@ public:
 
 signals:
     void              itemEdited( int );
-    void              itemEdited( QListBoxItem* );
+    void              itemEdited( QListWidgetItem* );
     void              itemMoved( int, int );
 
 public slots:

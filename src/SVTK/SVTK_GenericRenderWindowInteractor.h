@@ -31,7 +31,7 @@
 
 #include "SVTK.h"
 
-#include <qobject.h>
+#include <QObject>
 #include <vtkGenericRenderWindowInteractor.h>
 #include <vtkSmartPointer.h>
 
@@ -39,7 +39,7 @@ class QTimer;
 class QWidget;
 
 class SVTK_Selector;
-class SVTK_Renderer;
+//class SVTK_Renderer;
 
 #ifdef WIN32
 #pragma warning ( disable:4251 )

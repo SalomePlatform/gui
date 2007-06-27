@@ -24,6 +24,8 @@
 #include <SUIT_Selector.h>
 #include <SUIT_DataOwner.h>
 
+#include <QObject>
+
 class OB_Browser;
 class LightApp_DataObject;
 
@@ -31,7 +33,7 @@ class LightApp_DataObject;
   \class LightApp_OBSelector
   Custom selector to get/set selection from object browser
 */
-class LIGHTAPP_EXPORT LightApp_OBSelector : public SUIT_Selector
+class LIGHTAPP_EXPORT LightApp_OBSelector : public QObject, public SUIT_Selector
 {
   Q_OBJECT
 

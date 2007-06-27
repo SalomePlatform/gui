@@ -25,55 +25,50 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libstd.la
 
-salomeinclude_HEADERS= \
-	STD_Application.h \
-	STD.h \
-	STD_MDIDesktop.h \
-	STD_SDIDesktop.h \
-	STD_TabDesktop.h \
-	STD_CloseDlg.h \
-	STD_LoadStudiesDlg.h
+salomeinclude_HEADERS=		\
+	STD.h			\
+	STD_Application.h	\
+	STD_MDIDesktop.h	\
+	STD_SDIDesktop.h	\
+	STD_TabDesktop.h
 
-dist_libstd_la_SOURCES=\
-	STD_Application.cxx \
-	STD_MDIDesktop.cxx \
-	STD_SDIDesktop.cxx \
-	STD_TabDesktop.cxx \
-	STD_CloseDlg.cxx \
-	STD_LoadStudiesDlg.cxx
+dist_libstd_la_SOURCES=		\
+	STD_Application.cxx	\
+	STD_MDIDesktop.cxx	\
+	STD_SDIDesktop.cxx	\
+	STD_TabDesktop.cxx
 
-MOC_FILES= \
-	STD_Application_moc.cxx \
-	STD_MDIDesktop_moc.cxx \
-	STD_SDIDesktop_moc.cxx \
-	STD_TabDesktop_moc.cxx \
-	STD_CloseDlg_moc.cxx \
-	STD_LoadStudiesDlg_moc.cxx
+MOC_FILES=				\
+	STD_Application_moc.cxx		\
+	STD_MDIDesktop_moc.cxx		\
+	STD_SDIDesktop_moc.cxx		\
+	STD_TabDesktop_moc.cxx
+
 nodist_libstd_la_SOURCES= $(MOC_FILES)
 
-dist_salomeres_DATA=\
-	resources/config \
-	resources/cut.png \
-	resources/copy.png \
-	resources/close.png \
-	resources/cursor_rotate.png \
-	resources/cursor_zoom.png \
-	resources/help.png \
-	resources/new.png \
-	resources/open.png \
-	resources/print.png \
-	resources/paste.png \
-	resources/redo.png \
-	resources/reset.png \
-	resources/save.png \
-	resources/undo_arrow.png \
-	resources/undo.png \
+dist_salomeres_DATA=			\
+	resources/config		\
+	resources/cut.png		\
+	resources/copy.png		\
+	resources/close.png		\
+	resources/cursor_rotate.png	\
+	resources/cursor_zoom.png	\
+	resources/help.png		\
+	resources/new.png		\
+	resources/open.png		\
+	resources/print.png		\
+	resources/paste.png		\
+	resources/redo.png		\
+	resources/reset.png		\
+	resources/save.png		\
+	resources/undo_arrow.png	\
+	resources/undo.png		\
 	resources/std.ini
 
-nodist_salomeres_DATA=\
-	STD_images.qm \
+nodist_salomeres_DATA=	\
+	STD_images.qm	\
 	STD_msg_en.qm
 
 libstd_la_CPPFLAGS=$(QT_INCLUDES) -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 libstd_la_LDFLAGS=$(QT_MT_LIBS)
-libstd_la_LIBADD=../SUIT/libsuit.la
+libstd_la_LIBADD=../Qtx/libqtx.la ../SUIT/libsuit.la

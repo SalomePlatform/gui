@@ -25,15 +25,17 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libDDS.la
 
-salomeinclude_HEADERS = DDS.h \
-	DDS_DicGroup.h \
-	DDS_DicItem.h \
-	DDS_Dictionary.h \
+salomeinclude_HEADERS = 	\
+	DDS.h			\
+	DDS_DicGroup.h		\
+	DDS_DicItem.h		\
+	DDS_Dictionary.h	\
 	DDS_KeyWords.h
 
-dist_libDDS_la_SOURCES = DDS_DicGroup.cxx \
-	DDS_DicItem.cxx \
-	DDS_Dictionary.cxx \
+dist_libDDS_la_SOURCES = 	\
+	DDS_DicGroup.cxx	\
+	DDS_DicItem.cxx		\
+	DDS_Dictionary.cxx	\
 	DDS_KeyWords.cxx
 
 libDDS_la_CPPFLAGS=$(CAS_CPPFLAGS)

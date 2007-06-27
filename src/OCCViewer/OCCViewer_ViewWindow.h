@@ -25,8 +25,9 @@
 
 #include "QtxAction.h"
 
-#include <qcursor.h>
-#include <qvaluelist.h>
+#include <QCursor>
+
+class QRubberBand;
 
 class SUIT_Desktop;
 class OCCViewer_ViewPort3d;
@@ -50,7 +51,7 @@ public:
   enum RotationPointType{ GRAVITY, SELECTED };
 
   OCCViewer_ViewWindow(SUIT_Desktop* theDesktop, OCCViewer_Viewer* theModel);
-	virtual ~OCCViewer_ViewWindow() {};
+  virtual ~OCCViewer_ViewWindow();
 
   OCCViewer_ViewPort3d* getViewPort() { return myViewPort; }
 
@@ -135,6 +136,7 @@ protected:
 
   void resetState();
   void drawRect();
+  void endDrawRect();
 
   void createActions();
   void createToolBar();
@@ -167,7 +169,6 @@ protected:
   bool		        myEnableDrawMode;
   bool		        myPaintersRedrawing;  // set to draw with external painters 
  
-  QRect		        myRect;				
   QCursor	        myCursor;
 
   QToolBar*  myToolBar;
@@ -181,7 +182,8 @@ private:
 
   OCCViewer_SetRotationPointDlg* mySetRotationPointDlg;
   QtxAction* mySetRotationPointAction;
-  
+
+  QRubberBand* myRectBand; //!< selection rectangle rubber band
 };
 
 #ifdef WIN32

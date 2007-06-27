@@ -32,8 +32,8 @@
 #include <SUIT_Session.h>
 
 //QT Include
-#include <qlayout.h>
-#include <qcolordialog.h>
+#include <QVBoxLayout>
+#include <QToolBar>
 
 using namespace std;
 
@@ -57,7 +57,7 @@ SUPERVGraph_View::SUPERVGraph_View( SUPERVGraph_View* theParent ): QWidget( theP
 /*!
   Builds popup for SUPERVGraph viewer
 */
-void SUPERVGraph_View::contextMenuPopup( QPopupMenu* )
+void SUPERVGraph_View::contextMenuPopup( QMenu* )
 {
   // to be implemented
 }
@@ -94,8 +94,8 @@ SUPERVGraph_ViewFrame::SUPERVGraph_ViewFrame( SUIT_Desktop* theDesktop )
   setBackgroundColor(QColor(R,G,B));*/
 
   myToolBar = new QToolBar(this);
-  myToolBar->setCloseMode(QDockWindow::Undocked);
-  myToolBar->setLabel(tr("LBL_TOOLBAR_LABEL"));
+  //myToolBar->setCloseMode(QDockWindow::Undocked);
+  myToolBar->setWindowTitle(tr("LBL_TOOLBAR_LABEL"));
   createActions();
   createToolBar();
 }
@@ -107,18 +107,18 @@ void SUPERVGraph_ViewFrame::createActions()
 {
   if (!myActionsMap.isEmpty()) return;
   SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
-  QAction* aAction;
+  QtxAction* aAction;
 
   // Panning
-  aAction = new QAction(tr("MNU_PAN_VIEW"), aResMgr->loadPixmap( "SUPERVGraph", tr( "ICON_SUPERVGraph_PAN" ) ),
-			tr( "MNU_PAN_VIEW" ), 0, this);
+  aAction = new QtxAction(tr("MNU_PAN_VIEW"), aResMgr->loadPixmap( "SUPERVGraph", tr( "ICON_SUPERVGraph_PAN" ) ),
+			  tr( "MNU_PAN_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_PAN_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewPan()));
   myActionsMap[ PanId ] = aAction;
 
   // Reset
-  aAction = new QAction(tr("MNU_RESET_VIEW"), aResMgr->loadPixmap( "SUPERVGraph", tr( "ICON_SUPERVGraph_RESET" ) ),
-			tr( "MNU_RESET_VIEW" ), 0, this);
+  aAction = new QtxAction(tr("MNU_RESET_VIEW"), aResMgr->loadPixmap( "SUPERVGraph", tr( "ICON_SUPERVGraph_RESET" ) ),
+			  tr( "MNU_RESET_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_RESET_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewReset()));
   myActionsMap[ ResetId ] = aAction;
@@ -278,8 +278,11 @@ void SUPERVGraph_ViewFrame::onViewFitAll()
 */
 void SUPERVGraph_ViewFrame::setBackgroundColor( const QColor& color )
 {
-    if (myView)
-      myView->setPaletteBackgroundColor(color);
+  if (myView) {
+    QPalette palette;
+    palette.setColor(myView->backgroundRole(), color);
+    myView->setPalette(palette);
+  }
 }
 
 /*!
@@ -288,8 +291,8 @@ void SUPERVGraph_ViewFrame::setBackgroundColor( const QColor& color )
 QColor SUPERVGraph_ViewFrame::backgroundColor() const
 {
   if (myView)
-    return myView->paletteBackgroundColor();
-  return QMainWindow::backgroundColor();
+    return myView->palette().color( myView->backgroundRole() );
+  return palette().color( backgroundRole() );
 }
 
 /*!

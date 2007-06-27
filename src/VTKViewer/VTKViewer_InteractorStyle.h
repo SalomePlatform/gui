@@ -33,8 +33,10 @@
 class vtkCell;
 class vtkRenderWindowInteractor;
 
-#include <qobject.h>
-#include <qcursor.h>
+#include <QObject>
+#include <QCursor>
+
+class QRubberBand;
 
 #include <map>
 
@@ -159,6 +161,8 @@ class VTKVIEWER_EXPORT VTKViewer_InteractorStyle : public QObject, public vtkInt
   virtual void onCursorMove(QPoint mousePos);
   virtual void setCursor(const int operation);
 
+  void drawRect();
+  void endDrawRect();
 
  protected:
   QCursor                   myDefCursor;
@@ -180,6 +184,8 @@ class VTKVIEWER_EXPORT VTKViewer_InteractorStyle : public QObject, public vtkInt
   QWidget*                  myGUIWindow;
   
   std::map<int, Handle(VTKViewer_Filter) > myFilters;
+
+  QRubberBand* myRectBand; //!< selection rectangle rubber band
 
   /**  @name members from old version*/
   //@{

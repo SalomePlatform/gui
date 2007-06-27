@@ -36,6 +36,8 @@
 #include <TColStd_MapOfInteger.hxx>
 #include <vtkSmartPointer.h>
 
+#include "SALOME_InteractiveObject.hxx"
+
 #include "SVTK_Selector.h"
 
 class SALOME_Actor;

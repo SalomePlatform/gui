@@ -18,8 +18,6 @@
 //
 #include "SUIT_PopupClient.h"
 
-#include <qevent.h>
-
 /*! constructor. initialize mySignal.*/
 SUIT_PopupClient::SUIT_PopupClient()
 : mySignal( 0 )

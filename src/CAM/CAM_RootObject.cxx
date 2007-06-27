@@ -21,32 +21,55 @@
 #include "CAM_DataModel.h"
 #include "CAM_Module.h"
 
-/*!Constructor. Initialize by \a parent.
- * Set data model to 0.
- */
+/*!
+  \class CAM_RootObject
+  \brief CAM data model root object.
+  
+  This class is intended for optimized access to CAM_DataModel instance
+  from CAM_DataObject instances.
+
+  To take advantage of this class in a specific application, 
+  custom data model root object class should be derived from both CAM_RootObject
+  and application-specific DataObject implementation using virtual inheritance.
+*/
+
+/*!
+  \brief Constructor.
+  \param parent parent data object
+*/
 CAM_RootObject::CAM_RootObject( SUIT_DataObject* parent )
 : CAM_DataObject( parent ),
-myDataModel( 0 )
+  myDataModel( 0 )
 {
 }
 
-/*!Constructor. Initialize by \a parent and \a data - data object
- *\param data - data object
- *\param parent - parent data object
- */
+/*!
+  \brief Constructor.
+  \param data data model
+  \param parent parent data object
+*/
 CAM_RootObject::CAM_RootObject( CAM_DataModel* data, SUIT_DataObject* parent )
 : CAM_DataObject( parent ),
-myDataModel( data )
+  myDataModel( data )
 {
 }
 
-/*!Destructor. Do nothing.*/
+/*!
+  \brief Destructor.
+
+  Does nothing.
+*/
 CAM_RootObject::~CAM_RootObject()
 {
 }
 
 /*!
-    Returns module name
+  \brief Get root object name.
+
+  If the data model is set, this method returns module name.
+  Otherwise returns empty string.
+
+  \return root object name
 */
 QString CAM_RootObject::name() const
 {
@@ -56,17 +79,19 @@ QString CAM_RootObject::name() const
   return aName;
 }
 
-/*!Get data model
- *\retval const CAM_DataModel pointer to data model.
- */
+/*!
+  \brief Get data model.
+  \return data model pointer or 0 if it is not set
+*/
 CAM_DataModel* CAM_RootObject::dataModel() const
 {
   return myDataModel;
 }
 
-/*!Set data model.
- *\param dm - data model to set.
- */
+/*!
+  \brief Set data model.
+  \param dm data model
+*/
 void CAM_RootObject::setDataModel( CAM_DataModel* dm )
 {
   myDataModel = dm;

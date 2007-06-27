@@ -40,7 +40,7 @@ public:
 
     GLViewer_Viewer* getGLViewer() { return (GLViewer_Viewer*) myViewModel; }
 
-    virtual void     contextMenuPopup( QPopupMenu* );
+    virtual void     contextMenuPopup( QMenu* );
 };
 
 #endif // GLVIEWER_VIEWMANAGER_H

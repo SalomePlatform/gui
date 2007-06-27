@@ -39,6 +39,7 @@ salomeinclude_HEADERS= \
 	LightApp_EventFilter.h \
 	LightApp_HDFDriver.h \
 	LightApp_Module.h \
+	LightApp_ModuleAction.h \
 	LightApp_ModuleDlg.h \
 	LightApp_NameDlg.h \
 	LightApp_OBFilter.h \
@@ -80,6 +81,7 @@ dist_libLightApp_la_SOURCES= \
 	LightApp_EventFilter.cxx \
 	LightApp_HDFDriver.cxx \
 	LightApp_Module.cxx \
+	LightApp_ModuleAction.cxx \
 	LightApp_ModuleDlg.cxx \
 	LightApp_NameDlg.cxx \
 	LightApp_OBFilter.cxx \
@@ -114,6 +116,7 @@ MOC_FILES= \
 	LightApp_OBSelector_moc.cxx \
 	LightApp_Operation_moc.cxx \
 	LightApp_Module_moc.cxx \
+	LightApp_ModuleAction_moc.cxx \
 	LightApp_ModuleDlg_moc.cxx \
 	LightApp_NameDlg_moc.cxx \
 	LightApp_SelectionMgr_moc.cxx \
@@ -154,7 +157,7 @@ nodist_salomeres_DATA= \
 libLightApp_la_CPPFLAGS=$(PYTHON_INCLUDES) $(QT_INCLUDES) $(CAS_CPPFLAGS) \
 	$(HDF5_INCLUDES) @KERNEL_CXXFLAGS@ -I$(srcdir)/../SUIT -I$(srcdir)/../STD \
 	-I$(srcdir)/../CAM -I$(srcdir)/../ObjBrowser -I$(srcdir)/../LogWindow \
-	-I$(srcdir)/../Prs -I$(srcdir)/../Qtx
+	-I$(srcdir)/../Prs -I$(srcdir)/../Qtx -I$(srcdir)/../Event
 libLightApp_la_LDFLAGS=$(QT_MT_LIBS)
 
 if ENABLE_VTKVIEWER
@@ -173,7 +176,7 @@ else !ENABLE_OCCVIEWER
   libLightApp_la_CPPFLAGS+= -DDISABLE_OCCVIEWER
 endif
 if ENABLE_PYCONSOLE
-  libLightApp_la_CPPFLAGS+= $(PYTHON_INCLUDES) -I$(srcdir)/../PythonConsole -I$(srcdir)/../PyInterp
+  libLightApp_la_CPPFLAGS+= $(PYTHON_INCLUDES) -I$(srcdir)/../PyConsole -I$(srcdir)/../PyInterp
   libLightApp_la_LDFLAGS+= $(PYTHON_LIBS)
 else !ENABLE_PYCONSOLE
   libLightApp_la_CPPFLAGS+= -DDISABLE_PYCONSOLE
@@ -212,8 +215,9 @@ else !ENABLE_SALOMEOBJECT
 endif
 
 libLightApp_la_LIBADD= ../SUIT/libsuit.la ../STD/libstd.la ../CAM/libCAM.la \
-	../ObjBrowser/libObjBrowser.la ../LogWindow/libLogWindow.la $(CAS_KERNEL) \
+	../LogWindow/libLogWindow.la $(CAS_KERNEL) \
 	../Prs/libSalomePrs.la $(HDF5_LIBS) $(KERNEL_LDFLAGS) -lSalomeHDFPersist
+#../ObjBrowser/libObjBrowser.la 
 
 if ENABLE_SALOMEOBJECT
   libLightApp_la_LIBADD+= ../OBJECT/libSalomeObject.la
@@ -240,7 +244,7 @@ if ENABLE_SALOMEOBJECT
 endif
 endif
 if ENABLE_PYCONSOLE
-  libLightApp_la_LIBADD+= ../PyInterp/libPyInterp.la ../PythonConsole/libPythonConsole.la
+  libLightApp_la_LIBADD+= ../PyInterp/libPyInterp.la ../PyConsole/libPyConsole.la
 endif
 if ENABLE_SUPERVGRAPHVIEWER
   libLightApp_la_LIBADD+= ../SUPERVGraph/libSUPERVGraph.la

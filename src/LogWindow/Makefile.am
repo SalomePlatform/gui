@@ -34,6 +34,7 @@ nodist_libLogWindow_la_SOURCES = $(MOC_FILES)
 
 libLogWindow_la_CPPFLAGS=$(QT_INCLUDES) -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 
-libLogWindow_la_LDFLAGS=$(QT_MT_LIBS) ../SUIT/libsuit.la ../Qtx/libqtx.la 
+libLogWindow_la_LDFLAGS=$(QT_MT_LIBS)
+libLogWindow_la_LIBADD=../Qtx/libqtx.la ../SUIT/libsuit.la
 
 

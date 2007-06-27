@@ -23,17 +23,21 @@
 #include "OCCViewer_ViewPort3d.h"
 
 #include "SUIT_ViewWindow.h"
+#include "SUIT_ViewManager.h"
 #include "SUIT_Desktop.h"
 #include "SUIT_Session.h"
 
-#include <qpainter.h>
-#include <qapplication.h>
-#include <qcolordialog.h>
-#include <qpalette.h>
-#include <qpopupmenu.h>
+#include <QPainter>
+#include <QApplication>
+#include <QColorDialog>
+#include <QPalette>
+#include <QMenu>
+#include <QMouseEvent>
+#include <QToolBar>
 
 #include <AIS_Axis.hxx>
 #include <AIS_Drawer.hxx>
+#include <AIS_ListOfInteractive.hxx>
 #include <AIS_ListIteratorOfListOfInteractive.hxx>
 
 #include <Geom_Axis2Placement.hxx>
@@ -156,7 +160,7 @@ void OCCViewer_Viewer::setViewManager(SUIT_ViewManager* theViewManager)
   SUIT_ViewModel::setViewManager(theViewManager);
   if (theViewManager) {
     connect(theViewManager, SIGNAL(mousePress(SUIT_ViewWindow*, QMouseEvent*)), 
-            this, SLOT(onMousePress(SUIT_ViewWindow*, QMouseEvent*)));
+	    this, SLOT(onMousePress(SUIT_ViewWindow*, QMouseEvent*)));
 
     connect(theViewManager, SIGNAL(mouseMove(SUIT_ViewWindow*, QMouseEvent*)), 
             this, SLOT(onMouseMove(SUIT_ViewWindow*, QMouseEvent*)));
@@ -200,7 +204,7 @@ void OCCViewer_Viewer::onMouseRelease(SUIT_ViewWindow* theWindow, QMouseEvent* t
 
   myEndPnt.setX(theEvent->x()); myEndPnt.setY(theEvent->y());
   OCCViewer_ViewWindow* aView = (OCCViewer_ViewWindow*) theWindow;
-  bool aHasShift = (theEvent->state() & Qt::ShiftButton);
+  bool aHasShift = (theEvent->modifiers() & Qt::ShiftModifier);
   
   if (!aHasShift) emit deselection();
 
@@ -251,10 +255,10 @@ void OCCViewer_Viewer::enableSelection(bool isEnabled)
   if ( !myViewManager )
     return;
 
-  QPtrVector<SUIT_ViewWindow> wins = myViewManager->getViews();
+  QVector<SUIT_ViewWindow*> wins = myViewManager->getViews();
   for ( int i = 0; i < (int)wins.count(); i++ )
   {
-    OCCViewer_ViewWindow* win = ::qt_cast<OCCViewer_ViewWindow*>( wins.at( i ) );
+    OCCViewer_ViewWindow* win = ::qobject_cast<OCCViewer_ViewWindow*>( wins.at( i ) );
     if ( win )
       win->updateEnabledDrawMode();
   }
@@ -271,10 +275,10 @@ void OCCViewer_Viewer::enableMultiselection(bool isEnable)
   if ( !myViewManager )
     return;
 
-  QPtrVector<SUIT_ViewWindow> wins = myViewManager->getViews();
+  QVector<SUIT_ViewWindow*> wins = myViewManager->getViews();
   for ( int i = 0; i < (int)wins.count(); i++ )
   {
-    OCCViewer_ViewWindow* win = ::qt_cast<OCCViewer_ViewWindow*>( wins.at( i ) );
+    OCCViewer_ViewWindow* win = ::qobject_cast<OCCViewer_ViewWindow*>( wins.at( i ) );
     if ( win )
       win->updateEnabledDrawMode();
   }
@@ -283,16 +287,16 @@ void OCCViewer_Viewer::enableMultiselection(bool isEnable)
 /*!
   Builds popup for occ viewer
 */
-void OCCViewer_Viewer::contextMenuPopup(QPopupMenu* thePopup)
+void OCCViewer_Viewer::contextMenuPopup(QMenu* thePopup)
 {
-  thePopup->insertItem( tr( "MEN_DUMP_VIEW" ), this, SLOT( onDumpView() ) );
-  thePopup->insertItem( tr( "MEN_CHANGE_BACKGROUD" ), this, SLOT( onChangeBgColor() ) );
+  thePopup->addAction( tr( "MEN_DUMP_VIEW" ), this, SLOT( onDumpView() ) );
+  thePopup->addAction( tr( "MEN_CHANGE_BACKGROUD" ), this, SLOT( onChangeBgColor() ) );
 
-  thePopup->insertSeparator();
+  thePopup->addSeparator();
 
   OCCViewer_ViewWindow* aView = (OCCViewer_ViewWindow*)(myViewManager->getActiveView());
   if ( aView && !aView->getToolBar()->isVisible() )
-    thePopup->insertItem( tr( "MEN_SHOW_TOOLBAR" ), this, SLOT( onShowToolbar() ) );
+    thePopup->addAction( tr( "MEN_SHOW_TOOLBAR" ), this, SLOT( onShowToolbar() ) );
 }
 
 /*!

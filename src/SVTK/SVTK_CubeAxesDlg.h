@@ -29,10 +29,9 @@
 
 #include "SVTK_DialogBase.h"
 
-#include <qframe.h>
+#include <QFrame>
 
 class QWidget;
-class QFrame;
 class QPushButton;
 class QTabWidget;
 class QCheckBox;

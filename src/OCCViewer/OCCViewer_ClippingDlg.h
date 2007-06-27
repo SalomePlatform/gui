@@ -21,7 +21,7 @@
 
 #include "OCCViewer.h"
 
-#include <qdialog.h>
+#include <QDialog>
 
 #include <AIS_Plane.hxx>
 #include <V3d_Plane.hxx>
@@ -31,7 +31,7 @@ class QLabel;
 class QPushButton;
 class QComboBox;
 class QCheckBox;
-class QtxDblSpinBox;
+class QtxDoubleSpinBox;
 class QtxAction;
 
 class OCCViewer_ViewWindow;
@@ -46,7 +46,7 @@ class OCCViewer_ClippingDlg : public QDialog
     Q_OBJECT
     
     public:
-    OCCViewer_ClippingDlg(OCCViewer_ViewWindow* , QWidget* parent = 0, const char* name = 0, bool modal = FALSE, WFlags fl = 0);
+    OCCViewer_ClippingDlg(OCCViewer_ViewWindow* , QWidget* parent = 0, const char* name = 0, bool modal = FALSE, Qt::WindowFlags fl = 0);
     ~OCCViewer_ClippingDlg();
 
     void SetAction( QtxAction* theAction ) { myAction = theAction; }
@@ -66,18 +66,18 @@ private :
     QLabel* TextLabelX;
     QLabel* TextLabelY;
     QLabel* TextLabelZ;
-    QtxDblSpinBox* SpinBox_X;
-    QtxDblSpinBox* SpinBox_Y;
-    QtxDblSpinBox* SpinBox_Z;
+    QtxDoubleSpinBox* SpinBox_X;
+    QtxDoubleSpinBox* SpinBox_Y;
+    QtxDoubleSpinBox* SpinBox_Z;
     QPushButton* resetButton;
     
     QGroupBox* GroupDirection;
     QLabel* TextLabelDx;
     QLabel* TextLabelDy;
     QLabel* TextLabelDz;
-    QtxDblSpinBox* SpinBox_Dx;
-    QtxDblSpinBox* SpinBox_Dy;
-    QtxDblSpinBox* SpinBox_Dz;
+    QtxDoubleSpinBox* SpinBox_Dx;
+    QtxDoubleSpinBox* SpinBox_Dy;
+    QtxDoubleSpinBox* SpinBox_Dz;
     QPushButton* invertButton;
     
     QComboBox* DirectionCB;

@@ -32,11 +32,11 @@ lib_LTLIBRARIES = libEvent.la
 
 salomeinclude_HEADERS= \
 	Event.h \
-	SALOME_Event.hxx 
+	SALOME_Event.h 
 
 dist_libEvent_la_SOURCES = SALOME_Event.cxx 
 
-libEvent_la_CPPFLAGS=$(QT_INCLUDES) @KERNEL_CXXFLAGS@
+libEvent_la_CPPFLAGS=$(QT_INCLUDES)
 libEvent_la_LDFLAGS=$(QT_MT_LIBS)
 
 

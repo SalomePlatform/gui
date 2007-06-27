@@ -21,7 +21,7 @@
 
 // ========================================================
 // set dllexport type for Win platform 
-#ifdef WNT
+#ifdef WIN32
 
 #ifdef SALOME_PYQT_EXPORTS
 #define SALOME_PYQT_EXPORT __declspec(dllexport)
@@ -29,15 +29,15 @@
 #define SALOME_PYQT_EXPORT __declspec(dllimport)
 #endif
 
-#else   // WNT
+#else   // WIN32
 
 #define SALOME_PYQT_EXPORT
 
-#endif  // WNT
+#endif  // WIN32
 
 // ========================================================
 // avoid warning messages
-#ifdef WNT
+#ifdef WIN32
 #pragma warning (disable : 4786)
 #pragma warning (disable : 4251)
 #endif

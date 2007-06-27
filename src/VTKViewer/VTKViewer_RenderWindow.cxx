@@ -18,8 +18,8 @@
 //
 #include "VTKViewer_RenderWindow.h"
 
-#include <qcolordialog.h>
-#include <qpopupmenu.h>
+#include <QColorDialog>
+#include <QContextMenuEvent>
 
 #include <stdlib.h>
 #include <math.h>
@@ -27,15 +27,12 @@
 #include <vtkRenderWindowInteractor.h>
 #include <vtkRendererCollection.h>
 #include <vtkCamera.h>
-#ifndef WNT
+#ifndef WIN32
+#include <QX11Info>
 #include <vtkXOpenGLRenderWindow.h>
 //#include <GL/gl.h>
 //#include <GL/glu.h>
 //#include <qgl.h>
-#endif
-
-#if QT_VERSION > 300
-#include <qcursor.h>
 #endif
 
 /*!Constructor. Create render window with parant \a parent and name \a name.
@@ -43,13 +40,14 @@
  *\param name   - render window name.
  */
 VTKViewer_RenderWindow::VTKViewer_RenderWindow(QWidget* parent, const char* name) :
-QWidget(parent, name, 
-        Qt::WStyle_NoBorder | Qt::WDestructiveClose | 
-        Qt::WResizeNoErase | Qt::WRepaintNoErase)
+QWidget(parent, Qt::FramelessWindowHint )
 {
+  setObjectName( name );
+  setAttribute( Qt::WA_DeleteOnClose );
+
   myRW = vtkRenderWindow::New();
-#ifndef WNT
-  myRW->SetDisplayId((void*)x11Display());
+#ifndef WIN32
+  myRW->SetDisplayId((void*)(QX11Info::display()));
 #endif
   myRW->SetWindowId((void*)winId());
   myRW->DoubleBufferOn();

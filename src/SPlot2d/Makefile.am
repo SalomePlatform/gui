@@ -39,8 +39,6 @@ MOC_FILES = \
 	SPlot2d_ViewWindow_moc.cxx
 nodist_libSPlot2d_la_SOURCES = $(MOC_FILES)
 
-nodist_salomeres_DATA = SPlot2d_msg_en.qm
-
 libSPlot2d_la_CPPFLAGS=$(QT_INCLUDES) $(CAS_CPPFLAGS) $(QWT_INCLUDES) $(BOOST_CPPFLAGS) \
 	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../Plot2d -I$(srcdir)/../Prs \
 	-I$(srcdir)/../OBJECT

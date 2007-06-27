@@ -38,7 +38,7 @@ salomeinclude_HEADERS= \
 	GLViewer_Geom.h \
 	GLViewer_Grid.h \
 	GLViewer_Group.h \
-	GLViewer_MimeSource.h \
+	GLViewer_MimeData.h \
 	GLViewer_Object.h \
 	GLViewer_Selector.h \
 	GLViewer_Selector2d.h \
@@ -64,7 +64,7 @@ dist_libGLViewer_la_SOURCES= \
 	GLViewer_Geom.cxx \
 	GLViewer_Grid.cxx \
 	GLViewer_Group.cxx \
-	GLViewer_MimeSource.cxx \
+	GLViewer_MimeData.cxx \
 	GLViewer_Object.cxx \
 	GLViewer_Selector.cxx \
 	GLViewer_Selector2d.cxx \

@@ -16,24 +16,24 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#if !defined ( _PYINTERP_H )
-#define _PYINTERP_H
+//  File   : PyInterp.h
+//  Author : Vadim SANDLER
+//  Module : SALOME
+
+#if !defined ( PYINTERP_H )
+#define PYINTERP_H
 
 // ========================================================
 // set dllexport type for Win platform 
-#ifdef WNT
-
-#ifdef PYINTERP_EXPORTS
-#define PYINTERP_EXPORT __declspec(dllexport)
-#else
-#define PYINTERP_EXPORT __declspec(dllimport)
-#endif
-
-#else   // WNT
-
-#define PYINTERP_EXPORT
-
-#endif  // WNT
+#ifdef WIN32
+# ifdef PYINTERP_EXPORTS
+#  define PYINTERP_EXPORT __declspec(dllexport)
+# else
+#  define PYINTERP_EXPORT __declspec(dllimport)
+# endif
+#else   // WIN32
+# define PYINTERP_EXPORT
+#endif  // WIN32
 
 // ========================================================
 // little trick - if we do not have debug python libraries
@@ -53,9 +53,9 @@
 
 // ========================================================
 // avoid warning messages
-#ifdef WNT
+#ifdef WIN32
 #pragma warning (disable : 4786)
 #pragma warning (disable : 4251)
 #endif
 
-#endif // _PYINTERP_H
+#endif // PYINTERP_H

@@ -23,13 +23,10 @@
 
 #include <SUIT_Desktop.h>
 
-class QtxAction;
-class QPopupMenu;
-class QWorkspace;
 class QtxWorkstack;
 class QtxWorkstackAction;
 
-#if defined WNT
+#if defined WIN32
 #pragma warning( disable: 4251 )
 #endif
 
@@ -38,20 +35,19 @@ class STD_EXPORT STD_TabDesktop: public SUIT_Desktop
   Q_OBJECT
 
 public:
-  enum { MenuWindowId = 6 };
-  enum { VSplit, HSplit };
+  enum { SplitVertical, SplitHorizontal };
 
 public:
   STD_TabDesktop();
   virtual ~STD_TabDesktop();
 
   virtual SUIT_ViewWindow* activeWindow() const;
-  virtual QPtrList<SUIT_ViewWindow> windows() const;
+  virtual QList<SUIT_ViewWindow*> windows() const;
 
   void                     windowOperation( const int );
 
   void                     setWindowOperations( const int, ... );
-  void                     setWindowOperations( const QValueList<int>& );
+  void                     setWindowOperations( const QList<int>& );
 
   QtxWorkstack*            workstack() const;
 
@@ -60,7 +56,7 @@ private slots:
 
 protected:
   void                     createActions();
-  virtual QWidget*         parentArea() const;
+  virtual void             addWindow( QWidget* );
 
 private:
   int                      operationFlag( const int ) const;
@@ -70,7 +66,7 @@ private:
   QtxWorkstackAction*      myWorkstackAction;
 };
 
-#if defined WNT
+#if defined WIN32
 #pragma warning( default: 4251 )
 #endif
 

@@ -27,32 +27,19 @@
 #include "SalomeApp_Study.h"
 
 #include "LightApp_Selection.h"
-#include "LightApp_Operation.h"
-#include "LightApp_Preferences.h"
-//#include "LightApp_Displayer.h"
 
 #include "CAM_DataModel.h"
 
-#include "OB_Browser.h"
+// temporary commented
+//#include "OB_Browser.h"
 
 #include <SALOME_ListIO.hxx>
 #include <SALOME_ListIteratorOfListIO.hxx>
 #include <SALOME_InteractiveObject.hxx>
-//#include <SALOME_Actor.h>
 
 #include <SUIT_Session.h>
-#include <SUIT_ViewModel.h>
 
-#include <SVTK_ViewWindow.h>
-//#include <SVTK_ViewModel.h>
-//#include <SVTK_MainWindow.h>
-//#include <SVTK_RenderWindowInteractor.h>
-
-#include <qstring.h>
-#include <qmap.h>
-
-//#include <vtkActorCollection.h>
-//#include <vtkRenderer.h>
+#include <QString>
 
 /*!Constructor.*/
 SalomeApp_Module::SalomeApp_Module( const QString& name )
@@ -78,9 +65,9 @@ CAM_DataModel* SalomeApp_Module::createDataModel()
 }
 
 /*!Create and return instance of LightApp_Selection.*/
-LightApp_Selection* SalomeApp_Module::createSelection() const
+LightApp_Selection* SalomeApp_Module::createSelection( const QString& client, LightApp_SelectionMgr* mgr ) const
 {
-  return LightApp_Module::createSelection();
+  return LightApp_Module::createSelection( client, mgr );
 }
 
 /*!
@@ -121,7 +108,7 @@ void SalomeApp_Module::extractContainers( const SALOME_ListIO& source, SALOME_Li
 		    val = valSO->GetName().c_str();
 
 	    Handle( SALOME_InteractiveObject ) new_obj =
-	      new SALOME_InteractiveObject( id.latin1(), comp.latin1(), val.latin1() );
+	      new SALOME_InteractiveObject( id.toLatin1(), comp.toLatin1(), val.toLatin1() );
 	    dest.Append( new_obj );
 	  }
 	  anIter->Next();

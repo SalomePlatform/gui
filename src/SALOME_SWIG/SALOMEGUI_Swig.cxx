@@ -28,33 +28,31 @@
 
 #include "SALOMEGUI_Swig.hxx"
 
-#include "SUIT_Session.h"
-#include "SUIT_Desktop.h"
-#include "SUIT_DataObjectIterator.h"
-#include "OB_Browser.h"
-#include "SalomeApp_Application.h"
-#include "SalomeApp_Study.h"
-#include "SalomeApp_Module.h"
-#include "SalomeApp_DataObject.h"
-#include "LightApp_SelectionMgr.h"
-#include "SALOME_Prs.h"
-#include "SOCC_ViewModel.h"
-#include "SVTK_ViewModel.h"
-#include "SVTK_ViewWindow.h"
-#include "SOCC_ViewWindow.h"
-#include "SPlot2d_ViewWindow.h"
+#include <SUIT_Session.h>
+#include <SUIT_Desktop.h>
+#include <SUIT_ViewWindow.h>
+#include <SUIT_ViewManager.h>
+#include <SUIT_DataObjectIterator.h>
+#include <CAM_DataModel.h>
+#include <SalomeApp_Application.h>
+#include <SalomeApp_Study.h>
+#include <SalomeApp_Module.h>
+#include <SalomeApp_DataObject.h>
+#include <LightApp_SelectionMgr.h>
+#include <SALOME_Prs.h>
+#include <SOCC_ViewModel.h>
+#include <SVTK_ViewModel.h>
+#include <SVTK_ViewWindow.h>
+#include <SOCC_ViewWindow.h>
+#include <SPlot2d_ViewWindow.h>
 
-#include "SALOME_Event.hxx"
-#include "SALOME_ListIO.hxx"
-#include "SALOME_InteractiveObject.hxx"
-#include "SALOME_ListIteratorOfListIO.hxx"
-
-//#include "utilities.h"
+#include <SALOME_Event.h>
+#include <SALOME_ListIO.hxx>
+#include <SALOME_InteractiveObject.hxx>
+#include <SALOME_ListIteratorOfListIO.hxx>
 
 #include <SALOMEconfig.h>
 #include CORBA_CLIENT_HEADER(SALOME_ModuleCatalog)
-
-using namespace std;
 
 /*!
   asv : 3.12.04 : added checking for NULL GUI objects in almost all methods.
@@ -182,7 +180,7 @@ int SALOMEGUI_Swig::getActiveStudyId()
 */
 class TGetActiveStudyNameEvent: public SALOME_Event {
 public:
-  typedef string TResult;
+  typedef std::string TResult;
   TResult myResult;
   TGetActiveStudyNameEvent() {}
   virtual void Execute() {
@@ -197,7 +195,7 @@ public:
 */
 const char* SALOMEGUI_Swig::getActiveStudyName()
 {
-  string result = ProcessEvent( new TGetActiveStudyNameEvent() );
+  std::string result = ProcessEvent( new TGetActiveStudyNameEvent() );
   return result.empty() ? NULL : result.c_str();
 }
 
@@ -326,7 +324,7 @@ public:
 const char* SALOMEGUI_Swig::getSelected( int index )
 {
   QString result = ProcessEvent( new TGetSelectedEvent( index ) );
-  return result.isEmpty() ? NULL : strdup(result.latin1());
+  return result.isEmpty() ? NULL : strdup( result.toLatin1() );
 }
 
 /*!
@@ -344,7 +342,7 @@ void SALOMEGUI_Swig::AddIObject( const char* theEntry )
 	LightApp_SelectionMgr* aSelMgr = anApp->selectionMgr(); 
 	if ( aStudy && aSelMgr ) {
 	  SALOME_ListIO anIOList;
-	  anIOList.Append( new SALOME_InteractiveObject( myEntry, "", "" ) );
+	  anIOList.Append( new SALOME_InteractiveObject( myEntry.toLatin1(), "", "" ) );
 	  aSelMgr->setSelectedObjects( anIOList, true );
 	}
       }
@@ -376,7 +374,7 @@ void SALOMEGUI_Swig::RemoveIObject( const char* theEntry )
 	  aSelMgr->selectedObjects( anIOList );
 	  SALOME_ListIteratorOfListIO anIter( anIOList );
 	  for( ; anIter.More(); anIter.Next() ) {
-	    if ( anIter.Value()->isSame( new SALOME_InteractiveObject( myEntry, "", "" ) ) ) { 
+	    if ( anIter.Value()->isSame( new SALOME_InteractiveObject( myEntry.toLatin1(), "", "" ) ) ) { 
 	      anIOList.Remove( anIter );
 	      aSelMgr->setSelectedObjects( anIOList, true );
 	      return;
@@ -426,7 +424,7 @@ void SALOMEGUI_Swig::Display( const char* theEntry )
 	if ( window ) {
 	  SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
 	  if ( view )
-	    view->Display( view->CreatePrs( myEntry ) );
+	    view->Display( view->CreatePrs( myEntry.toLatin1() ) );
 	}
       }
     }
@@ -452,7 +450,7 @@ void SALOMEGUI_Swig::DisplayOnly( const char* theEntry )
 	  SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
 	  if ( view ) {
 	    view->EraseAll( false );
-	    view->Display( view->CreatePrs( myEntry ) );
+	    view->Display( view->CreatePrs( myEntry.toLatin1() ) );
 	  }
 	}
       }
@@ -478,7 +476,7 @@ void SALOMEGUI_Swig::Erase( const char* theEntry )
 	if ( window ) {
 	  SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
 	  if ( view )
-	    view->Erase( view->CreatePrs( myEntry ) );
+	    view->Erase( view->CreatePrs( myEntry.toLatin1() ) );
 	}
       }
     }
@@ -507,7 +505,7 @@ void SALOMEGUI_Swig::DisplayAll()
 	    for ( SUIT_DataObjectIterator it( activeModule->dataModel()->root(), SUIT_DataObjectIterator::DepthLeft ); it.current(); ++it ) {
 	      SalomeApp_DataObject* obj = dynamic_cast<SalomeApp_DataObject*>( it.current() );
 	      if ( obj && !obj->entry().isEmpty() )
-		view->Display( view->CreatePrs( obj->entry() ) );
+		view->Display( view->CreatePrs( obj->entry().toLatin1() ) );
 	    }
 	  }
 	}
@@ -556,7 +554,7 @@ public:
       if ( window ) {
 	SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
 	if ( view ) {
-	  SALOME_Prs* aPrs = view->CreatePrs( myEntry );
+	  SALOME_Prs* aPrs = view->CreatePrs( myEntry.toLatin1() );
 	  myResult = !aPrs->IsNull();
 	}
       }

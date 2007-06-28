@@ -19,12 +19,9 @@
 // 
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//
-//
 //  File   : SALOMEGUI_Swig.hxx
 //  Author : Vadim SANDLER
-//  Module : SALOME
-//  $Header$
+//
 
 #ifndef SALOMEGUI_SWIG_HXX
 #define SALOMEGUI_SWIG_HXX
@@ -32,37 +29,33 @@
 class SALOMEGUI_Swig
 {
 public:
-  /* construction/destruction */
   SALOMEGUI_Swig();
   ~SALOMEGUI_Swig();
 
-  /* check GUI */
   bool             hasDesktop();
 
-  /* update object browser*/
-  void             updateObjBrowser( bool updateSelection );
+  void             updateObjBrowser( bool );
 
-  /* get active study */
   int              getActiveStudyId();
   const char*      getActiveStudyName();
 
-  /* selection processing */
+  const char*      getComponentName( const char* );
+  const char*      getComponentUserName( const char* );
+
   int              SelectedCount();
-  const char*      getSelected(int i);
-  void             AddIObject( const char *Entry );
-  void             RemoveIObject( const char *Entry );
+  const char*      getSelected( int i );
+  void             AddIObject( const char*  );
+  void             RemoveIObject( const char*  );
   void             ClearIObjects();
 
-  /* display/erase */		
-  void             Display( const char *Entry );
-  void             DisplayOnly( const char *Entry );
-  void             Erase( const char *Entry );
+  void             Display( const char* );
+  void             DisplayOnly( const char* );
+  void             Erase( const char* );
   void             DisplayAll();
   void             EraseAll();
-  bool             IsInCurrentView( const char *Entry );
+  bool             IsInCurrentView( const char* );
   void             UpdateView();
 
-  /* view operations */
   void             FitAll();
   void             ResetView();
   void             ViewTop();
@@ -71,10 +64,6 @@ public:
   void             ViewRight();
   void             ViewFront();
   void             ViewBack();
-
-  /* get component name/username */
-  const char*      getComponentName( const char* ComponentUserName );
-  const char*      getComponentUserName( const char* ComponentName );
 };
 
 #endif // SALOMEGUI_SWIG_HXX

@@ -19,12 +19,9 @@
 // 
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//
-//
 //  File   : SALOMEGUI_Swig.i
 //  Author : Paul RASCLE, EDF
-//  Module : SALOME
-//  $Header$
+//
 
 %{
 #include "SALOMEGUI_Swig.hxx"
@@ -39,9 +36,9 @@
     // Py_BEGIN_ALLOW_THREADS
     PyAllowThreadsGuard() { _save = PyEval_SaveThread(); }
     // Py_END_ALLOW_THREADS
-    ~PyAllowThreadsGuard() { PyEval_RestoreThread(_save); }
+    ~PyAllowThreadsGuard() { PyEval_RestoreThread( _save ); }
    private:
-    PyThreadState *_save;
+    PyThreadState* _save;
   };
 
   PyAllowThreadsGuard guard;
@@ -51,29 +48,32 @@
 
 class SALOMEGUI_Swig
 {
- public:
-/* construction/destruction */
+public:
   SALOMEGUI_Swig();
-  ~SALOMEGUI_Swig();
+  virtual ~SALOMEGUI_Swig();
 
-/* check GUI */
+  /* check GUI */
   bool hasDesktop();
 
-/* update object browser*/
+  /* update object browser*/
   void updateObjBrowser(bool);
 
-/* get active study */
+  /* get active study */
   int getActiveStudyId();
   const char *getActiveStudyName();
 
-/* selection processing */
+  /* get component name/username */
+  const char* getComponentName( const char* ComponentUserName );
+  const char* getComponentUserName( const char* ComponentName );
+
+  /* selection processing */
   int SelectedCount();
   const char *getSelected(int i);
   void AddIObject(const char *Entry);
   void RemoveIObject(const char *Entry);
   void ClearIObjects();
 
-/* display/erase */
+  /* display/erase */
   void Display(const char *Entry);
   void DisplayOnly(const char *Entry);
   void Erase(const char *Entry);
@@ -82,7 +82,7 @@ class SALOMEGUI_Swig
   bool IsInCurrentView(const char *Entry);
   void UpdateView();
 
-/* view operations */
+  /* view operations */
   void FitAll();
   void ResetView();
   void ViewTop();
@@ -91,8 +91,4 @@ class SALOMEGUI_Swig
   void ViewRight();
   void ViewFront();
   void ViewBack();
-
-/* get component name/username */
-  const char* getComponentName( const char* ComponentUserName );
-  const char* getComponentUserName( const char* ComponentName );
 };

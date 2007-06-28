@@ -33,8 +33,7 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 #
 # Step 1: build the wrapping source files with swig
 #
-# libSALOME_LifeCycleCORBA.i -- swig --> swig_wrap.cpp
-#                                        libSALOME_Swig.py
+# libSALOME_Swig.i -- swig --> swig_wrap.cpp libSALOME_Swig.py
 #
 # Step 2: build the dynamic library from cpp built source files and
 #         dependant libraries.
@@ -43,9 +42,10 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 #                          +              |
 #                          dependant libs |
 #
-# The file libSALOME_Swigcmodule.py will be installed in
-# <prefix>/lib/python<version>/site-package/salome.
-# The library will be installed in the same place.
+# The file libSALOME_Swig.py will be installed in the
+# <prefix>/lib/python<version>/site-package/salome folder.
+# The library libSALOME_Swigcmodule.so will be installed in 
+# the <prefix>/lib/salome folder.
 #
 
 # this option puts it to dist

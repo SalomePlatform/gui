@@ -117,7 +117,7 @@ QtxActionMenuMgr::QtxActionMenuMgr( QMainWindow* p )
     connect( myMenu, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
 #ifdef ENABLE_DYNAMIC_MENU
     if ( myMenu->inherits( "QMenuBar" ) )
-      connect( myMenu, SIGNAL( highlighted( int ) ), this, SLOT( onHighlighted( int ) ) );
+      connect( myMenu, SIGNAL( hovered( QAction* ) ), this, SLOT( onHighlighted( QAction* ) ) );
 #endif
   }
 }
@@ -136,7 +136,7 @@ QtxActionMenuMgr::QtxActionMenuMgr( QWidget* mw, QObject* p )
     connect( myMenu, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
 #ifdef ENABLE_DYNAMIC_MENU
     if ( myMenu->inherits( "QMenuBar" ) )
-      connect( myMenu, SIGNAL( highlighted( int ) ), this, SLOT( onHighlighted( int ) ) );
+      connect( myMenu, SIGNAL( hovered( QAction* ) ), this, SLOT( onHighlighted( QAction* ) ) );
 #endif
   }
 }
@@ -340,7 +340,7 @@ int QtxActionMenuMgr::insert( const QString& title, const int pId, const int gro
   connect( ma->menu(), SIGNAL( aboutToShow() ), this, SLOT( onAboutToShow() ) );
   connect( ma->menu(), SIGNAL( aboutToHide() ), this, SLOT( onAboutToHide() ) );
 #ifdef ENABLE_DYNAMIC_MENU
-  connect( ma->menu(), SIGNAL( highlighted( int ) ), this, SLOT( onHighlighted( int ) ) );
+  connect( ma->menu(), SIGNAL( hovered( QAction* ) ), this, SLOT( onHighlighted( QAction* ) ) );
 #endif
 
   MenuNode* node = new MenuNode( pNode, myMenus.insert( gid, ma ).key(), idx, group );
@@ -606,10 +606,10 @@ void QtxActionMenuMgr::onDestroyed( QObject* obj )
   \brief Called when menu item is highlighted.
   \param id menu item being highlighted ID
 */
-void QtxActionMenuMgr::onHighlighted( int id )
+void QtxActionMenuMgr::onHighlighted( QAction* a )
 {
   const QObject* snd = sender();
-  int pid = 0, realId;
+  int pid = 0;
   if ( myMenu && snd == myMenu )
     pid = -1;
   else
@@ -617,12 +617,12 @@ void QtxActionMenuMgr::onHighlighted( int id )
     for ( MenuMap::Iterator itr = myMenus.begin(); itr != myMenus.end(); ++itr )
     {
       if ( itr.value()->menu() && itr.value()->menu() == snd )
-	      pid = itr.key();
+	pid = itr.key();
     }
   }
   if ( pid )
   {
-    realId = findId( id, pid );
+    int realId = menuActionId( a );
     if ( realId != -1 )
     {
       emit menuHighlighted( pid, realId );
@@ -832,6 +832,22 @@ QAction* QtxActionMenuMgr::menuAction( const int id ) const
     a = myMenus[id];
 
   return a;
+}
+
+/*!
+  \brief Get submenu action by \a id.
+  \param id submenu ID
+  \return submenu action or 0 if not found
+*/
+int QtxActionMenuMgr::menuActionId( QAction* a ) const
+{
+  int id = -1;
+  for ( MenuMap::ConstIterator itr = myMenus.begin(); itr != myMenus.end() && id == -1; ++itr )
+  {
+    if ( itr.value() == a )
+      id = itr.key();
+  }
+  return id;
 }
 
 /*!

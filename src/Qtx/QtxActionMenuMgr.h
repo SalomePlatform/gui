@@ -96,7 +96,7 @@ public:
 private slots:
   void         onAboutToShow();
   void         onAboutToHide();
-  void         onHighlighted( int );
+  void         onHighlighted( QAction* );
   void         onDestroyed( QObject* );
 
 signals:
@@ -120,6 +120,7 @@ protected:
 
   QAction*     itemAction( const int ) const;
   QAction*     menuAction( const int ) const;
+  int          menuActionId( QAction* ) const;
 
   void         updateMenu( MenuNode* = 0, const bool = true, const bool = true );
   virtual void internalUpdate();

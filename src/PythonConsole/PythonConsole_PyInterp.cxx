@@ -79,7 +79,7 @@ bool PythonConsole_PyInterp::initState()
    * The GIL is acquired and will be held on initState output
    * It is the caller responsability to release the lock if needed
    */
-  PyEval_AcquireLock();
+    /*PyEval_AcquireLock();
 #ifdef WNT 
   _tstate = PyGILState_GetThisThreadState();
   // if no thread state defined
@@ -91,7 +91,18 @@ bool PythonConsole_PyInterp::initState()
     _tstate = Py_NewInterpreter(); // create an interpreter and save current state
     PySys_SetArgv(PyInterp_base::_argc,PyInterp_base::_argv); // initialize sys.argv
     //if(MYDEBUG) MESSAGE("PythonConsole_PyInterp::initState - this = "<<this<<"; _tstate = "<<_tstate);
-  }
+  }*/
+
+  /*
+   * The GIL is acquired and will be held on initState output
+   * It is the caller responsability to release the lock if needed
+   */
+  PyEval_AcquireLock();
+
+  _tstate = Py_NewInterpreter(); // create an interpreter and save current state
+  PySys_SetArgv(PyInterp_base::_argc,PyInterp_base::_argv); // initialize sys.argv
+//  if(MYDEBUG) MESSAGE("PythonConsole_PyInterp::initState - this = "<<this<<"; _tstate = "<<_tstate);
+
 
   /*
    * If builtinmodule has been initialized all the sub interpreters

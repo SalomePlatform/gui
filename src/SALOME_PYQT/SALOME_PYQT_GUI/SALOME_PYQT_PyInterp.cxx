@@ -16,26 +16,20 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  SALOME SALOMEGUI : implementation of desktop and GUI kernel
+// File   : SALOME_PYQT_PyInterp.cxx
+// Author : Vadim SANDLER, Open CASCADE SAS, vadim.sandler@opencascade.com
 //
-//  File   : SALOME_PYQT_PyInterp.cxx
-//  Author : Christian CAREMOLI, Paul RASCLE, EDF
-//  Module : SALOME
-//  $Header$
 
 #include "SALOME_PYQT_PyInterp.h" // this include must be first (see PyInterp_base.h)!
-#include "utilities.h"
-#include "Container_init_python.hxx"
-
-using namespace std;
-
+#include <utilities.h>
+#include <Container_init_python.hxx>
 
 /*!
  * constructor : the main SALOME Python interpreter is used for PyQt GUI.
  * calls initialize method defined in base class, which calls virtual methods
  * initstate & initcontext redefined here
  */
-SALOME_PYQT_PyInterp::SALOME_PYQT_PyInterp(): PyInterp_base()
+SALOME_PYQT_PyInterp::SALOME_PYQT_PyInterp(): PyInterp_Interp()
 {
 }
 

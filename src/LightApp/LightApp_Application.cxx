@@ -917,49 +917,54 @@ void LightApp_Application::updateCommandsStatus()
   \class RunBrowser
   Runs system command in separate thread
 */
-class RunBrowser: public QThread {
+class RunBrowser: public QThread
+{
 public:
-
-  RunBrowser( LightApp_Application* app, QString theApp, QString theParams, QString theHelpFile, QString theContext=NULL):
-    myApp(theApp), myParams(theParams), 
+  RunBrowser( LightApp_Application* app, 
+	      const QString&        theApp, 
+	      const QString&        theParams, 
+	      const QString&        theHelpFile, 
+	      const QString&        theContext = QString() )
+    : myApp( theApp ), 
+      myParams( theParams ), 
 #ifdef WIN32
-      myHelpFile("file://" + theHelpFile + theContext), 
+      myHelpFile( "file://" + theHelpFile ), 
 #else
-      myHelpFile("file:" + theHelpFile + theContext),
+      myHelpFile( "file:" + theHelpFile ),
 #endif
+      myContext( theContext ),
       myStatus(0),
       myLApp( app )
-{
-};
+  {
+  }
 
   virtual void run()
   {
-    QString aCommand;
+    if ( !myApp.isEmpty()) {
+      QString aCommand = QString( "%1 %2 %3" ).arg( myApp, myParams, myHelpFile );
+      if ( !myContext.isEmpty() )
+	aCommand += "#" + myContext;
 
-    if ( !myApp.isEmpty())
-      {
-	aCommand.sprintf("%s %s %s",myApp.toLatin1().constData(),myParams.toLatin1().constData(),myHelpFile.toLatin1().constData());
-
-	QProcess* proc = new QProcess();
-	//myStatus = system(aCommand);
-
-	//if(myStatus != 0)
-	proc->start(aCommand);
-	if (proc->waitForStarted())
-	  {
-	    SALOME_CustomEvent* ce2000 = new SALOME_CustomEvent( 2000 );
-	    QString* msg = new QString( QObject::tr("EXTERNAL_BROWSER_CANNOT_SHOW_PAGE").arg(myApp).arg(myHelpFile) );
-	    ce2000->setData( msg );
-	    QApplication::postEvent( myLApp, ce2000 );
-	  }
+      QProcess* proc = new QProcess();
+      //myStatus = system(aCommand);
+      
+      //if(myStatus != 0)
+      proc->start( aCommand );
+      if ( proc->waitForStarted() ) {
+	SALOME_CustomEvent* ce2000 = new SALOME_CustomEvent( 2000 );
+	QString* msg = new QString( QObject::tr("EXTERNAL_BROWSER_CANNOT_SHOW_PAGE").arg(myApp).arg(myHelpFile) );
+	ce2000->setData( msg );
+	QApplication::postEvent( myLApp, ce2000 );
       }
+    }
   }
 
 private:
-  QString myApp;
-  QString myParams;
-  QString myHelpFile;
-  int myStatus;
+  QString               myApp;
+  QString               myParams;
+  QString               myHelpFile;
+  QString               myContext;
+  int                   myStatus;
   LightApp_Application* myLApp;
 };
 
@@ -1011,10 +1016,21 @@ void LightApp_Application::onHelpContentsModule()
 /*!
   SLOT: Displays help contents for choosen dialog
 */
-void LightApp_Application::onHelpContextModule(const QString& theComponentName, const QString& theFileName)
+void LightApp_Application::onHelpContextModule( const QString& theComponentName, 
+						const QString& theFileName, 
+						const QString& theContext )
 {
-  QString dir = getenv( (theComponentName + "_ROOT_DIR").toLatin1().constData() );
-  QString homeDir = Qtx::addSlash(Qtx::addSlash(dir)+Qtx::addSlash("share")+Qtx::addSlash("doc")+Qtx::addSlash("salome")+Qtx::addSlash("gui")+Qtx::addSlash(theComponentName));
+  QString homeDir = "";
+  if ( !theComponentName.isEmpty() ) {
+    QString dir = getenv( ( theComponentName + "_ROOT_DIR" ).toLatin1().constData() );
+    if ( !dir.isEmpty() )
+      homeDir = Qtx::addSlash( Qtx::addSlash( dir )      + 
+			       Qtx::addSlash( "share" )  + 
+			       Qtx::addSlash( "doc" )    + 
+			       Qtx::addSlash( "salome" ) + 
+			       Qtx::addSlash( "gui" )    +
+			       Qtx::addSlash( theComponentName ) );
+  }
 
   QString helpFile = QFileInfo( homeDir + theFileName ).absoluteFilePath();
   SUIT_ResourceMgr* resMgr = resourceMgr();
@@ -1033,7 +1049,7 @@ void LightApp_Application::onHelpContextModule(const QString& theComponentName, 
   QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 
   if (!anApp.isEmpty()) {
-    RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile );
+    RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile, theContext );
     rs->start();
   }
   else {

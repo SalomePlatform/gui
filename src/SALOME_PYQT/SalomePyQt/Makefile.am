@@ -69,3 +69,6 @@ $(SIP_SRC): $(SIP_FILES)
 install-exec-hook: $(libdir)/SalomePyQt.so
 $(libdir)/SalomePyQt.so:
 	(cd $(libdir); ln -s libSalomePyQt.so SalomePyQt.so;)
+
+mostlyclean-local:
+	rm sip*

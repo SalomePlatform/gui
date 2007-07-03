@@ -16,13 +16,16 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File   : SalomePyQt.h
+// Author : Vadim SANDLER, Open CASCADE SAS, vadim.sandler@opencascade.com
+//
 
 #ifndef SALOME_PYQT_H
 #define SALOME_PYQT_H
 
-#include <qstring.h>
-#include <qobject.h>
-#include <qcolor.h>
+#include <QObject>
+#include <QString>
+#include <QColor>
 
 #include <LightApp_Application.h>
 #include <LightApp_Preferences.h>
@@ -30,7 +33,7 @@
 class LightApp_SelectionMgr;
 class SalomeApp_Application;
 class QMenuBar;
-class QPopupMenu;
+class QMenu;
 class QWidget;
 class QtxAction;
 
@@ -97,7 +100,8 @@ public:
   static QWidget*          getDesktop();
   static QWidget*          getMainFrame();
   static QMenuBar*         getMainMenuBar();
-  static QPopupMenu*       getPopupMenu( const MenuName );
+  static QMenu*            getPopupMenu( const MenuName );
+  static QMenu*            getPopupMenu( const QString& );
   static SALOME_Selection* getSelection();
   static int               getStudyId();
   static void              putInfo( const QString&, const int = 0 );
@@ -141,9 +145,6 @@ public:
 
   static QtxAction*        action( const int );
   static int               actionId( const QtxAction* );
-
-  static bool              clearMenu( const int = 0, const int = 0,
-				      const bool = true );
 
   static void              addSetting    ( const QString&, const QString&, const double );
   static void              addSetting    ( const QString&, const QString&, const int );

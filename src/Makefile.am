@@ -67,8 +67,5 @@ endif
 SUBDIRS += Event LightApp ResExporter
 
 if GUI_ENABLE_CORBA
-# VSR: this is the original packages list
-#  SUBDIRS += TOOLSGUI Session SalomeApp SALOME_SWIG SALOME_PY SALOME_PYQT
-# VSR: already migrated to Qt4 packages
-  SUBDIRS += TOOLSGUI Session SalomeApp
+  SUBDIRS += TOOLSGUI Session SalomeApp SALOME_SWIG SALOME_PY SALOME_PYQT
 endif

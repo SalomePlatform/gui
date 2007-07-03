@@ -16,23 +16,26 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File   : SALOME_PYQT_PyInterp.h
+// Author : Vadim SANDLER, Open CASCADE SAS, vadim.sandler@opencascade.com
+//
 
 #ifndef SALOME_PYQT_PYINTERP_H
 #define SALOME_PYQT_PYINTERP_H
 
 #include "SALOME_PYQT_GUI.h"
 
-#include "PyInterp_base.h" // this include must be first (see PyInterp_base.h)!
+#include <PyInterp_Interp.h> // this include must be first (see PyInterp_base.h)!
 
-class SALOME_PYQT_EXPORT SALOME_PYQT_PyInterp : public PyInterp_base
+class SALOME_PYQT_EXPORT SALOME_PYQT_PyInterp : public PyInterp_Interp
 {
- public:
+public:
   SALOME_PYQT_PyInterp();
   ~SALOME_PYQT_PyInterp();
 
-  int run(const char *command);
-
- protected:
+  int run( const char* );
+  
+protected:
   virtual bool initState();
   virtual bool initContext();  
 };

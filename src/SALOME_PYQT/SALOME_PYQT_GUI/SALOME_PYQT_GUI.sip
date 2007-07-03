@@ -1,4 +1,5 @@
 %Module SalomePyQtGUI
 
-%Import qtmod.sip
+%Import QtGuimod.sip
+%Import QtXmlmod.sip
 

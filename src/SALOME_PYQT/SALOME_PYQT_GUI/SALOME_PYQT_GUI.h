@@ -16,23 +16,23 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File   : SALOME_PYQT_GUI.h
+// Author : Vadim SANDLER, Open CASCADE SAS, vadim.sandler@opencascade.com
+//
+
 #if !defined ( SALOME_PYQT_GUI_H )
 #define SALOME_PYQT_GUI_H
 
 // ========================================================
 // set dllexport type for Win platform 
 #ifdef WIN32
-
-#ifdef SALOME_PYQT_EXPORTS
-#define SALOME_PYQT_EXPORT __declspec(dllexport)
-#else
-#define SALOME_PYQT_EXPORT __declspec(dllimport)
-#endif
-
+#  ifdef SALOME_PYQT_EXPORTS
+#    define SALOME_PYQT_EXPORT __declspec(dllexport)
+#  else
+#    define SALOME_PYQT_EXPORT __declspec(dllimport)
+#  endif
 #else   // WIN32
-
-#define SALOME_PYQT_EXPORT
-
+#  define SALOME_PYQT_EXPORT
 #endif  // WIN32
 
 // ========================================================

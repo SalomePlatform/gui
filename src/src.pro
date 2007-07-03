@@ -27,5 +27,5 @@ SUBDIRS += Event
 SUBDIRS += LightApp
 SUBDIRS += ResExporter
 SUBDIRS += TOOLSGUI
-SUBDIRS += Session
 SUBDIRS += SalomeApp
+SUBDIRS += Session

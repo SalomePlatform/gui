@@ -49,8 +49,9 @@ class TOOLSGUI_EXPORT ToolsGUI_RegWidget : public QMainWindow
   class ToolsGUI_IntervalWindow;
   class ToolsGUI_InfoWindow;
 
-public:
   ToolsGUI_RegWidget( CORBA::ORB_var& orb, QWidget* parent = 0 );
+
+public:
   ~ToolsGUI_RegWidget();
 
   void                       SetListe();

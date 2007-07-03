@@ -218,11 +218,11 @@ void STD_Application::createActions()
 
   createMenu( FileNewId,    fileMenu, 0 );
   createMenu( FileOpenId,   fileMenu, 0 );
-  createMenu( FileCloseId,  fileMenu, 0 );
-  createMenu( separator(),  fileMenu, -1, 0 );
-  createMenu( FileSaveId,   fileMenu, 0 );
-  createMenu( FileSaveAsId, fileMenu, 0 );
-  createMenu( separator(),  fileMenu, -1, 0 );
+  createMenu( FileCloseId,  fileMenu, 5 );
+  createMenu( separator(),  fileMenu, -1, 5 );
+  createMenu( FileSaveId,   fileMenu, 5 );
+  createMenu( FileSaveAsId, fileMenu, 5 );
+  createMenu( separator(),  fileMenu, -1, 5 );
 
   createMenu( separator(),  fileMenu );
   createMenu( FileExitId,   fileMenu );

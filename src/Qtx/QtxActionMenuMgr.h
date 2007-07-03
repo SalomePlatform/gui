@@ -93,17 +93,16 @@ public:
   bool         containsMenu( const QString&, const int ) const;
   bool         containsMenu( const int, const int ) const;
 
+  QMenu*       findMenu( const int ) const;
+
 private slots:
   void         onAboutToShow();
   void         onAboutToHide();
-  void         onHighlighted( QAction* );
   void         onDestroyed( QObject* );
 
 signals:
   void         menuAboutToShow( QMenu* );
   void         menuAboutToHide( QMenu* );
-
-  void         menuHighlighted( int, int );
 
 protected:
   void         setMenuWidget( QWidget* );

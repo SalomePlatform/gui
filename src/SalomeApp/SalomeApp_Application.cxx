@@ -271,11 +271,11 @@ void SalomeApp_Application::createActions()
   createMenu( FileLoadId,   fileMenu, 0 );  //SRN: BugID IPAL9021, add a menu item "Load"
 
   createMenu( DumpStudyId, fileMenu, 10, -1 );
-  createMenu( separator(), fileMenu, -1, 15, -1 );
+  createMenu( separator(), fileMenu, -1, 10, -1 );
   createMenu( LoadScriptId, fileMenu, 10, -1 );
-  createMenu( separator(), fileMenu, -1, 15, -1 );
+  createMenu( separator(), fileMenu, -1, 10, -1 );
   createMenu( PropertiesId, fileMenu, 10, -1 );
-  createMenu( separator(), fileMenu, -1, 15, -1 );
+  createMenu( separator(), fileMenu, -1, 10, -1 );
 
   int toolsMenu = createMenu( tr( "MEN_DESK_TOOLS" ), -1, MenuToolsId, 50 );
   createMenu( CatalogGenId, toolsMenu, 10, -1 );

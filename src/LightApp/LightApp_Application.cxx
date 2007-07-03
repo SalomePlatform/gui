@@ -615,8 +615,8 @@ void LightApp_Application::createActions()
   createMenu( RenameId, windowMenu, -1 );
 
   int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1 );
-  createMenu( PreferencesId, fileMenu, 15, -1 );
-  createMenu( separator(), fileMenu, -1, 15, -1 );
+  createMenu( PreferencesId, fileMenu, 50, -1 );
+  createMenu( separator(), fileMenu, -1, 50, -1 );
 
   /*
   createMenu( separator(), fileMenu, -1, 100, -1 );

@@ -28,11 +28,6 @@
 #include <QWidget>
 #include <QMainWindow>
 
-// VSR: Uncomment this #define in order to allow dynamic menus support
-// (emit signals when popup menu is pre-activated)
-// Currently this support is disabled.
-//#define ENABLE_DYNAMIC_MENU
-
 /*!
   \class QtxActionMenuMgr::MenuNode
   \internal
@@ -115,10 +110,6 @@ QtxActionMenuMgr::QtxActionMenuMgr( QMainWindow* p )
 {
   if ( myMenu ) {
     connect( myMenu, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
-#ifdef ENABLE_DYNAMIC_MENU
-    if ( myMenu->inherits( "QMenuBar" ) )
-      connect( myMenu, SIGNAL( hovered( QAction* ) ), this, SLOT( onHighlighted( QAction* ) ) );
-#endif
   }
 }
 
@@ -134,10 +125,6 @@ QtxActionMenuMgr::QtxActionMenuMgr( QWidget* mw, QObject* p )
 {
   if ( myMenu ) {
     connect( myMenu, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
-#ifdef ENABLE_DYNAMIC_MENU
-    if ( myMenu->inherits( "QMenuBar" ) )
-      connect( myMenu, SIGNAL( hovered( QAction* ) ), this, SLOT( onHighlighted( QAction* ) ) );
-#endif
   }
 }
 
@@ -339,9 +326,6 @@ int QtxActionMenuMgr::insert( const QString& title, const int pId, const int gro
 
   connect( ma->menu(), SIGNAL( aboutToShow() ), this, SLOT( onAboutToShow() ) );
   connect( ma->menu(), SIGNAL( aboutToHide() ), this, SLOT( onAboutToHide() ) );
-#ifdef ENABLE_DYNAMIC_MENU
-  connect( ma->menu(), SIGNAL( hovered( QAction* ) ), this, SLOT( onHighlighted( QAction* ) ) );
-#endif
 
   MenuNode* node = new MenuNode( pNode, myMenus.insert( gid, ma ).key(), idx, group );
 
@@ -600,35 +584,6 @@ void QtxActionMenuMgr::onDestroyed( QObject* obj )
 {
   if ( myMenu == obj )
     myMenu = 0;
-}
-
-/*!
-  \brief Called when menu item is highlighted.
-  \param id menu item being highlighted ID
-*/
-void QtxActionMenuMgr::onHighlighted( QAction* a )
-{
-  const QObject* snd = sender();
-  int pid = 0;
-  if ( myMenu && snd == myMenu )
-    pid = -1;
-  else
-  {
-    for ( MenuMap::Iterator itr = myMenus.begin(); itr != myMenus.end(); ++itr )
-    {
-      if ( itr.value()->menu() && itr.value()->menu() == snd )
-	pid = itr.key();
-    }
-  }
-  if ( pid )
-  {
-    int realId = menuActionId( a );
-    if ( realId != -1 )
-    {
-      emit menuHighlighted( pid, realId );
-      triggerUpdate( realId );
-    }
-  }
 }
 
 /*!
@@ -1064,6 +1019,20 @@ bool QtxActionMenuMgr::containsMenu( const int id, const int pid ) const
 }
 
 /*!
+  \brief Get menu by the specified identifier.
+  \param id menu item ID
+  \return \c menu poiter or 0 if menu is not found
+*/
+QMenu* QtxActionMenuMgr::findMenu( const int id ) const
+{
+  QMenu* m = 0;
+  QAction* a = menuAction( id );
+  if ( a )
+    m = a->menu();
+  return m;
+}
+
+/*!
   \brief Perform delayed menu update.
   \param id menu item ID
   \param rec if \c true, perform recursive update
@@ -1195,9 +1164,4 @@ int QtxActionMenuMgr::MenuCreator::append( const QString& tag, const bool subMen
   \fn void QtxActionMenuMgr::menuAboutToHide( QMenu* m )
   \brief Emitted when the menu is about to be hidden.
   \param m menu being hidden
-*/
-
-/*!
-  \fn void QtxActionMenuMgr::menuHighlighted( int, int )
-  \brief Emitted when the menu is hightlighted [obsolete].
 */

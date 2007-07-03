@@ -862,7 +862,7 @@ QAction* CAM_Module::createAction( const int id, const QString& text, const QIco
   a->setStatusTip( tip );
 
   if ( reciever && member )
-    connect( a, SIGNAL( activated() ), reciever, member );
+    connect( a, SIGNAL( triggered( bool ) ), reciever, member );
 
   registerAction( id, a );
 

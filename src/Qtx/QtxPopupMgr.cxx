@@ -340,7 +340,7 @@ void QtxPopupMgr::unRegisterAction( const int id )
   \param ruleType rule type (QtxPopupMgr::RuleType)
   \return action ID
 */
-int QtxPopupMgr::insert( const int id, const int pId, const QString& rule, const RuleType ruleType )
+int QtxPopupMgr::insertAction( const int id, const int pId, const QString& rule, const RuleType ruleType )
 {
   int res = QtxActionMenuMgr::insert( id, pId, -1 );
   setRule( action( id ), rule, ruleType );
@@ -355,7 +355,7 @@ int QtxPopupMgr::insert( const int id, const int pId, const QString& rule, const
   \param ruleType rule type (QtxPopupMgr::RuleType)
   \return action ID
 */
-int QtxPopupMgr::insert( QAction* a, const int pId, const QString& rule, const RuleType ruleType )
+int QtxPopupMgr::insertAction( QAction* a, const int pId, const QString& rule, const RuleType ruleType )
 {
   int res = QtxActionMenuMgr::insert( a, pId, -1 );
   setRule( a, rule, ruleType );

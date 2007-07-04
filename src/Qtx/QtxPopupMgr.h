@@ -49,8 +49,8 @@ public:
   QtxPopupMgr( QMenu*, QObject* = 0 );
   virtual ~QtxPopupMgr();
 
-  int                insert( const int, const int, const QString&, const RuleType = VisibleRule );
-  int                insert( QAction*, const int, const QString&, const RuleType = VisibleRule );
+  int                insertAction( const int, const int, const QString&, const RuleType = VisibleRule );
+  int                insertAction( QAction*, const int, const QString&, const RuleType = VisibleRule );
 
   virtual int        registerAction( QAction*, const int, const QString& rule,
                                      const RuleType = VisibleRule );

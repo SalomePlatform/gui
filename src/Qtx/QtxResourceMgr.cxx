@@ -1802,10 +1802,9 @@ void QtxResourceMgr::setValue( const QString& sect, const QString& name, const Q
   QStringList lst;
   for ( int i = 0; i < val.size();  i++ )
   {
-    ::sprintf( buf, "#%02X", val.at( i ) );
+    ::sprintf( buf, "#%02X", (unsigned char)val.at( i ) );
     lst.append( QString( buf ) );
   }
-
   setResource( sect, name, lst.join( " " ) );
 }
 

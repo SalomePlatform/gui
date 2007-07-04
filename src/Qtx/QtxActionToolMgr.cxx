@@ -119,6 +119,7 @@ int QtxActionToolMgr::createToolBar( const QString& title, const int tid )
     tb = new QtxToolBar( true, mainWindow() );
     mainWindow()->addToolBar( tb );
     tb->setWindowTitle( title );
+    tb->setObjectName( title );
   }
 
   tInfo.toolBar = tb;

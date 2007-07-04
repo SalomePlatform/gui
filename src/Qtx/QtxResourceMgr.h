@@ -30,11 +30,11 @@
 
 #include <QMap>
 #include <QList>
-#include <QByteArray>
-#include <QStringList>
 #include <QFont>
 #include <QColor>
 #include <QPixmap>
+#include <QByteArray>
+#include <QStringList>
 
 class QTranslator;
 
@@ -169,7 +169,7 @@ private:
   ResList         myResources;               //!< resources list
   bool            myCheckExist;              //!< "check existance" flag
   TransListMap    myTranslator;              //!< map of loaded translators
-  QPixmap         myDefaultPix;              //!< default icon
+  QPixmap*        myDefaultPix;              //!< default icon
   bool            myIsPixmapCached;          //!< "cached pixmaps" flag
 
   bool            myIsIgnoreUserValues;      //!< "ignore user values" flag

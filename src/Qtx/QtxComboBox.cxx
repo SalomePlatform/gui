@@ -228,6 +228,16 @@ int QtxComboBox::index( const int ident ) const
 }
 
 /*!
+  \brief Returns true if the item with index has ID.
+  \param idx item index
+*/
+bool QtxComboBox::hasId( const int idx ) const
+{
+  QVariant v = itemData( idx, (Qt::ItemDataRole)IdRole );
+  return v.canConvert( QVariant::Int );
+}
+
+/*!
   \fn void QtxComboBox::activatedId( int id )
   \brief Emitted when the item with identificator \a id is activated.
   \param id item ID

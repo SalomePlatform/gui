@@ -16,67 +16,57 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      QtxComboBox.h
+// File:      QtxColorButton.h
 // Author:    Sergey TELKOV
 
-#ifndef QTXCOMBOBOX_H
-#define QTXCOMBOBOX_H
+#ifndef QTXCOLORBUTTON_H
+#define QTXCOLORBUTTON_H
 
 #include "Qtx.h"
 
 #include <QMap>
-#include <QComboBox>
+#include <QColor>
+#include <QPixmap>
+#include <QToolButton>
 
-#ifdef WIN32
-#pragma warning( disable:4251 )
-#endif
+class QPaintDevice;
 
-class QTX_EXPORT QtxComboBox : public QComboBox
+class QTX_EXPORT QtxColorButton : public QToolButton
 {
   Q_OBJECT
 
 public:
-  QtxComboBox( QWidget* = 0 );
-  virtual ~QtxComboBox();
+  QtxColorButton( QWidget* = 0 );
+  virtual ~QtxColorButton();
 
-  bool         isCleared() const;
-  void         setCleared( const bool );
-
-  virtual void setCurrentIndex( int );
-
-  int          currentId() const;
-  void         setCurrentId( int );
-
-  int          id( const int ) const;
-  int          index( const int ) const;
-
-  bool         hasId( const int ) const;
-  void         setId( const int, const int );
+  QColor        color() const;
+  void          setColor( const QColor& );
 
 signals:
-  void         activatedId( int );
-  void         highlightedId( int );
+  void          clicked( QColor );
+  void          changed( QColor );
 
 private slots:
-  void         onActivated( int );
-  void         onActivated( const QString& );
+  void          onClicked( bool );
+  void          onToggled( bool );
+  void          onDialogClicked( bool );
 
 protected:
-  virtual void paintEvent( QPaintEvent* );
+  virtual void  paintEvent( QPaintEvent* );
 
 private:
-  void         resetClear();
-  void         paintClear( QPaintEvent* );
+  QList<QColor> colorsList() const;
+
+  void          updateState();
+  void          updateButton( QToolButton* );
+  QPixmap       buttonIcon( const QColor& ) const;
+  void          drawColor( QPaintDevice*, const QColor&, const int = 1 ) const;
 
 private:
-  enum { IdRole = Qt::UserRole + 10 };
+  typedef QMap<const QToolButton*, QColor> ColorMap;
 
 private:
-  bool         myCleared;     //!< "cleared" state
+  ColorMap      myColors;
 };
-
-#ifdef WIN32
-#pragma warning( default:4251 )
-#endif
 
 #endif

@@ -1117,6 +1117,7 @@ bool QtxResourceMgr::Format::save( Resources* res )
 QtxResourceMgr::QtxResourceMgr( const QString& appName, const QString& resVarTemplate )
 : myAppName( appName ),
   myCheckExist( true ),
+  myDefaultPix( 0 ),
   myIsPixmapCached( true ),
   myIsIgnoreUserValues( false )
 {
@@ -1155,6 +1156,8 @@ QtxResourceMgr::~QtxResourceMgr()
   myResources.clear();
   for ( FormatList::iterator formIt = myFormats.begin(); formIt != myFormats.end(); ++formIt )
     delete *formIt;
+
+  delete myDefaultPix;
 }
 
 /*!
@@ -2130,7 +2133,10 @@ QString QtxResourceMgr::langSection() const
 */
 QPixmap QtxResourceMgr::defaultPixmap() const
 {
-  return myDefaultPix;
+  QPixmap res;
+  if ( myDefaultPix && !myDefaultPix->isNull() )
+    res = *myDefaultPix;
+  return res;
 }
 
 /*!
@@ -2143,7 +2149,11 @@ QPixmap QtxResourceMgr::defaultPixmap() const
 */
 void QtxResourceMgr::setDefaultPixmap( const QPixmap& pix )
 {
-  myDefaultPix = pix;
+  delete myDefaultPix;
+  if ( pix.isNull() )
+    myDefaultPix = 0;
+  else
+    myDefaultPix = new QPixmap( pix );
 }
 
 /*!

@@ -42,11 +42,18 @@ public:
   SUIT_PreferenceMgr( QtxResourceMgr*, QWidget* = 0 );
   virtual ~SUIT_PreferenceMgr();
 
-  QVariant      itemProperty( const int, const QString& ) const;
-  void          setItemProperty( const int, const QString&, const QVariant& );
+  QVariant           itemProperty( const QString&, const int = -1 ) const;
+  void               setItemProperty( const QString&, const QVariant&, const int = -1 );
 
-  int           addItem( const QString&, const int pId = -1, const PrefItemType = Auto,
-                         const QString& = QString(), const QString& = QString() );
+  int                addItem( const QString&, const int pId = -1, const PrefItemType = Auto,
+                              const QString& = QString(), const QString& = QString() );
+
+protected:
+  virtual QVariant   optionValue( const QString& ) const;
+  virtual void       setOptionValue( const QString&, const QVariant& );
+
+private:
+  QtxPreferenceItem* myRoot;
 };
 
 #endif

@@ -22,7 +22,8 @@
 #include "SUIT_PreferenceMgr.h"
 
 SUIT_PreferenceMgr::SUIT_PreferenceMgr( QtxResourceMgr* resMgr, QWidget* parent )
-: QtxPagePrefMgr( resMgr, parent )
+: QtxPagePrefMgr( resMgr, parent ),
+myRoot( 0 )
 {
 }
 
@@ -30,15 +31,19 @@ SUIT_PreferenceMgr::~SUIT_PreferenceMgr()
 {
 }
 
-QVariant SUIT_PreferenceMgr::itemProperty( const int id, const QString& prop ) const
+QVariant SUIT_PreferenceMgr::itemProperty( const QString& prop, const int id ) const
 {
-  QtxPreferenceItem* item = findItem( id, true );
+  const QtxPreferenceItem* item = 0;
+  if ( id == -1 )
+    item = this;
+  else
+    item = findItem( id, true );
   return item ? item->option( prop ) : QVariant();
 }
 
-void SUIT_PreferenceMgr::setItemProperty( const int id, const QString& prop, const QVariant& val )
+void SUIT_PreferenceMgr::setItemProperty( const QString& prop, const QVariant& val, const int id )
 {
-  QtxPreferenceItem* item = findItem( id, true );
+  QtxPreferenceItem* item = id == -1 ? this : findItem( id, true );
   if ( item )
     item->setOption( prop, val );
 }
@@ -54,15 +59,15 @@ int SUIT_PreferenceMgr::addItem( const QString& title, const int pId,
   QtxPreferenceItem* parent = 0;
   if ( pId == -1 )
   {
-    QList<QtxPreferenceItem*> lst = childItems();
-    for ( QList<QtxPreferenceItem*>::const_iterator it = lst.begin(); it != lst.end() && !parent; ++it )
-      parent = *it;
+    if ( !myRoot )
+      myRoot = new QtxPagePrefListItem( QString( "root" ), this );
+    parent = myRoot;
   }
   else
-    parent = findItem( pId );
+    parent = findItem( pId, true );
 
   if ( !parent )
-    parent = new QtxPagePrefListItem( QString( "Root" ), this );
+    return -1;
 
   switch( type )
   {
@@ -122,4 +127,19 @@ int SUIT_PreferenceMgr::addItem( const QString& title, const int pId,
   }
 
   return item ? item->id() : -1;
+}
+
+QVariant SUIT_PreferenceMgr::optionValue( const QString& name ) const
+{
+  QVariant val = QtxPagePrefMgr::optionValue( name );
+  if ( !val.isValid() && myRoot )
+    val = myRoot->option( name );
+  return val;
+}
+
+void SUIT_PreferenceMgr::setOptionValue( const QString& name, const QVariant& val )
+{
+  QtxPagePrefMgr::setOptionValue( name, val );
+  if ( myRoot )
+    myRoot->setOption( name, val );
 }

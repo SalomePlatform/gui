@@ -380,7 +380,7 @@ QtxPreferenceMgr* QtxPreferenceItem::preferenceMgr() const
 QtxPreferenceItem* QtxPreferenceItem::findItem( const int id, const bool rec ) const
 {
   QtxPreferenceItem* item = 0;
-  for ( ItemList::const_iterator it = myChildren.begin(); it != myChildren.end() && item; ++it )
+  for ( ItemList::const_iterator it = myChildren.begin(); it != myChildren.end() && !item; ++it )
   {
     QtxPreferenceItem* i = *it;
     if ( i->id() == id )
@@ -398,7 +398,7 @@ QtxPreferenceItem* QtxPreferenceItem::findItem( const int id, const bool rec ) c
 QtxPreferenceItem* QtxPreferenceItem::findItem( const QString& title, const bool rec ) const
 {
   QtxPreferenceItem* item = 0;
-  for ( ItemList::const_iterator it = myChildren.begin(); it != myChildren.end() && item; ++it )
+  for ( ItemList::const_iterator it = myChildren.begin(); it != myChildren.end() && !item; ++it )
   {
     QtxPreferenceItem* i = *it;
     if ( i->title() == title )
@@ -417,7 +417,7 @@ QtxPreferenceItem* QtxPreferenceItem::findItem( const QString& title, const bool
 QtxPreferenceItem* QtxPreferenceItem::findItem( const QString& title, const int id, const bool rec ) const
 {
   QtxPreferenceItem* item = 0;
-  for ( ItemList::const_iterator it = myChildren.begin(); it != myChildren.end() && item; ++it )
+  for ( ItemList::const_iterator it = myChildren.begin(); it != myChildren.end() && !item; ++it )
   {
     QtxPreferenceItem* i = *it;
     if ( i->title() == title && i->id() == id )

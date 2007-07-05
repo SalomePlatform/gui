@@ -42,11 +42,14 @@ public:
   QColor        color() const;
   void          setColor( const QColor& );
 
+  bool          eventFilter( QObject*, QEvent* );
+
 signals:
   void          clicked( QColor );
   void          changed( QColor );
 
 private slots:
+  void          onAboutToShow();
   void          onClicked( bool );
   void          onToggled( bool );
   void          onDialogClicked( bool );

@@ -70,8 +70,10 @@ QtxColorButton::QtxColorButton( QWidget* parent )
       btn->setCheckable( true );
       myColors.insert( btn, c );
       grid->addWidget( btn, y, x );
+      
+      btn->installEventFilter( this );
 
-      connect( btn, SIGNAL( toggled( bool ) ), this, SLOT( onToggled( bool ) ) );
+      connect( btn, SIGNAL( clicked( bool ) ), this, SLOT( onToggled( bool ) ) );
 
       updateButton( btn );
     }
@@ -84,9 +86,12 @@ QtxColorButton::QtxColorButton( QWidget* parent )
   grid->addWidget( other, grid->rowCount(), 0, 1, grid->columnCount() );
   connect( other, SIGNAL( clicked( bool ) ), this, SLOT( onDialogClicked( bool ) ) );
 
+  other->installEventFilter( this );
+
   setMenu( pm );
 
   connect( this, SIGNAL( clicked( bool ) ), this, SLOT( onClicked( bool ) ) );
+  connect( pm,   SIGNAL( aboutToShow() ),   this, SLOT( onAboutToShow() ) );
 }
 
 /*!
@@ -110,7 +115,19 @@ QColor QtxColorButton::color() const
 void QtxColorButton::setColor( const QColor& c )
 {
   myColors.insert( this, c );
-  updateButton( this );
+  updateState();
+  update();
+}
+
+bool QtxColorButton::eventFilter( QObject* o, QEvent* e )
+{
+  if ( e->type() == QEvent::Leave )
+    updateButton( qobject_cast<QToolButton*>( o ) );
+  return QToolButton::eventFilter( o, e );
+}
+
+void QtxColorButton::onAboutToShow()
+{
   updateState();
 }
 
@@ -186,6 +203,7 @@ void QtxColorButton::paintEvent( QPaintEvent* e )
   r.setBottomRight( r.bottomRight() - QPoint( 2, 2 ) );
 
   QPixmap pix( r.size() );
+  pix.fill( palette().color( backgroundRole() ) );
   drawColor( &pix, color() );
 
   QPainter p( this );
@@ -198,20 +216,9 @@ void QtxColorButton::paintEvent( QPaintEvent* e )
 */
 void QtxColorButton::updateState()
 {
-  QColor c = color().toRgb();
-  for ( ColorMap::iterator it = myColors.begin(); it != myColors.end(); ++it )
-  {
-    QColor bc = it.value().toRgb();
-    QToolButton* b = (QToolButton*)it.key();
-    bool block = b->signalsBlocked();
-    b->blockSignals( true );
-
-    if ( bc == c )
-      b->setChecked( true );
-    else
-      b->setChecked( false );
-    b->blockSignals( block );
-  }
+  QList<QToolButton*> bList = qFindChildren<QToolButton*>( menu() );
+  for ( QList<QToolButton*>::iterator cit = bList.begin(); cit != bList.end(); ++cit )
+    updateButton( *cit );
 }
 
 /*!
@@ -219,7 +226,16 @@ void QtxColorButton::updateState()
 */
 void QtxColorButton::updateButton( QToolButton* btn )
 {
-  btn->setIcon( buttonIcon( myColors[btn] ) );
+  QColor c = color().toRgb();
+  bool block = btn->signalsBlocked();
+  btn->blockSignals( true );
+  btn->setChecked( false );
+  if ( myColors.contains( btn ) ) {
+    btn->setIcon( buttonIcon( myColors[btn] ) );
+    btn->setChecked( myColors[btn].toRgb() == c );
+  }
+  btn->setDown( false );
+  btn->blockSignals( block );
 }
 
 QPixmap QtxColorButton::buttonIcon( const QColor& c ) const
@@ -230,6 +246,11 @@ QPixmap QtxColorButton::buttonIcon( const QColor& c ) const
     return pixMap[c.rgb()];
 
   QPixmap pix( 16, 16 );
+
+  QColor bg = Qt::white;
+  if ( bg == c )
+    bg = Qt::gray;
+  pix.fill( bg );
 
   drawColor( &pix, c );
 
@@ -250,7 +271,7 @@ void QtxColorButton::drawColor( QPaintDevice* pd, const QColor& c, const int m )
 
   QPainter p( pd );
   p.setPen( Qt::black );
-  p.fillRect( m, m, pd->width() - 2 * m, pd->height() - 2 * m, QBrush( c ) );
+  p.fillRect( m, m, pd->width() - 2 * m - 1, pd->height() - 2 * m - 1, QBrush( c ) );
   p.drawRect( m, m, pd->width() - 2 * m - 1, pd->height() - 2 * m - 1 );
   p.end();
 }
@@ -272,3 +293,4 @@ QList<QColor> QtxColorButton::colorsList() const
   }
   return lst;
 }
+

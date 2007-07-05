@@ -152,3 +152,17 @@ QWidget* LightApp_WidgetContainer::active() const
 {
   return myStack->currentWidget();
 }
+
+/*!
+  \brief Customize show/hide operations.
+
+  Emits visibilityChanged(bool) signal when the widget is 
+  being shown/hidden.
+  
+  \param visible new visibility state
+*/
+void LightApp_WidgetContainer::setVisible ( bool visible )
+{
+  QDockWidget::setVisible( visible );
+  emit( visibilityChanged( visible ) );
+}

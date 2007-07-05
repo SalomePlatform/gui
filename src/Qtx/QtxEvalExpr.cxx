@@ -16,6 +16,8 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File:      QtxEvalExpr.cxx
+// Author:    Alexander SOLOVYOV, Sergey TELKOV
 
 #include "QtxEvalExpr.h"
 

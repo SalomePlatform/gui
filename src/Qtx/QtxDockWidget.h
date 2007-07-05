@@ -19,6 +19,9 @@
 // File:      QtxDockWidget.h
 // Author:    Sergey TELKOV
 
+#ifndef QTXDOCKWIDGET_H
+#define QTXDOCKWIDGET_H
+
 #include "Qtx.h"
 
 #include <QDockWidget>
@@ -56,3 +59,5 @@ private:
   Watcher*        myWatcher;       //!< watcher object
   Qt::Orientation myOrientation;   //!< dockable window orientation
 };
+
+#endif // QTXDOCKWIDGET_H

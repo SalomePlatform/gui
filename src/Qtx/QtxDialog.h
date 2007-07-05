@@ -16,7 +16,7 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      QtxDialog.hxx
+// File:      QtxDialog.h
 // Author:    Sergey TELKOV
 
 #ifndef QTXDIALOG_H

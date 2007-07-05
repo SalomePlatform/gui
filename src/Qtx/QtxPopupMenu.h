@@ -16,6 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File:      QtxPopupMenu.h
+// Author:    Sergey TELKOV
+
 #ifndef QTXPOPUPMENU_H
 #define QTXPOPUPMENU_H
 
@@ -71,4 +74,4 @@ private:
   int                    myPolicy;
 };
 
-#endif
+#endif // QTXPOPUPMENU_H

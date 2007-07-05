@@ -780,7 +780,7 @@ QString& LightApp_Dialog::typeName( const int type )
   \return const reference to type name
   \param type - integer id of type
 */
-const QString& LightApp_Dialog::typeName( const int type ) const
+const QString LightApp_Dialog::typeName( const int type ) const
 {
   return myTypeNames[ type ];
 }

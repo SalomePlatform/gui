@@ -374,7 +374,7 @@ public:
   virtual ~QtxPagePrefEditItem();
 
   int              inputType() const;
-  void             setInputType( const type );
+  void             setInputType( const int );
 
   virtual void     store();
   virtual void     retrieve();
@@ -409,7 +409,7 @@ public:
   virtual ~QtxPagePrefSelectItem();
 
   int              inputType() const;
-  void             setInputType( const type );
+  void             setInputType( const int );
 
   QStringList      strings() const;
   QList<int>       numbers() const;
@@ -467,7 +467,7 @@ public:
   void             setSpecialValueText( const QString& );
 
   int              inputType() const;
-  void             setInputType( const type );
+  void             setInputType( const int );
 
   virtual void     store();
   virtual void     retrieve();

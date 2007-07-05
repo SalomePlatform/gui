@@ -16,6 +16,8 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File:      QtxListView.cxx
+// Author:    Sergey TELKOV
 
 #include "QtxListView.h"
 

@@ -1127,7 +1127,7 @@ int QtxPagePrefEditItem::inputType() const
   return myType;
 }
 
-void QtxPagePrefEditItem::setInputType( const type )
+void QtxPagePrefEditItem::setInputType( const int type )
 {
   if ( myType == type )
     return;
@@ -1190,7 +1190,8 @@ void QtxPagePrefEditItem::updateEditor()
   if ( !myEditor->text().isEmpty() && val )
   {
     int pos = 0;
-    if ( val->validate( myEditor->text(), pos ) == QValidator::Invalid )
+    QString str = myEditor->text();
+    if ( val->validate( str, pos ) == QValidator::Invalid )
       myEditor->clear();
   }
 
@@ -1232,7 +1233,7 @@ int QtxPagePrefSelectItem::inputType() const
   return myType;
 }
 
-void QtxPagePrefSelectItem::setInputType( const type )
+void QtxPagePrefSelectItem::setInputType( const int type )
 {
   if ( myType == type )
     return;
@@ -1398,7 +1399,8 @@ void QtxPagePrefSelectItem::updateSelector()
   if ( mySelector->isEditable() && !mySelector->currentText().isEmpty() && val )
   {
     int pos = 0;
-    if ( val->validate( mySelector->currentText(), pos ) == QValidator::Invalid )
+    QString str = mySelector->currentText();
+    if ( val->validate( str, pos ) == QValidator::Invalid )
       mySelector->clearEditText();
   }
 
@@ -1436,7 +1438,7 @@ int QtxPagePrefSpinItem::inputType() const
   return myType;
 }
 
-void QtxPagePrefSpinItem::setInputType( const type )
+void QtxPagePrefSpinItem::setInputType( const int type )
 {
   if ( myType == type )
     return;

@@ -259,6 +259,7 @@ QtxToolBar::QtxToolBar( const bool watch, const QString& label, QWidget* parent 
 {
   if ( watch )
     myWatcher = new Watcher( this );
+  setObjectName( label );
 }
 
 /*!
@@ -271,6 +272,7 @@ QtxToolBar::QtxToolBar( const QString& label, QWidget* parent )
   myWatcher( 0 ),
   myStretch( false )
 {
+  setObjectName( label );
 }
 
 /*!

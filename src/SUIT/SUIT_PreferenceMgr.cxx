@@ -62,7 +62,7 @@ int SUIT_PreferenceMgr::addItem( const QString& title, const int pId,
     parent = findItem( pId );
 
   if ( !parent )
-    parent = new QtxPagePrefListItem( QString(), this );
+    parent = new QtxPagePrefListItem( QString( "Root" ), this );
 
   switch( type )
   {

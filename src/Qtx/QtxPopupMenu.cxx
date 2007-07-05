@@ -16,6 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File:      QtxPopupMenu.cxx
+// Author:    Sergey TELKOV
+
 #include "QtxPopupMenu.h"
 
 #include <qpainter.h>

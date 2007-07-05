@@ -23,7 +23,7 @@
 #define LIGHTAPP_PREFERENCES_H
 
 #include <LightApp.h>
-#include <QtxListResourceEdit.h>
+#include <SUIT_PreferenceMgr.h>
 
 #include <QMap>
 
@@ -34,7 +34,7 @@ class QtxResourceMgr;
   Custom preference container. Assign each preference category with module.
   Emits signal on preference changing
 */
-class LIGHTAPP_EXPORT LightApp_Preferences : public QtxListResourceEdit
+class LIGHTAPP_EXPORT LightApp_Preferences : public SUIT_PreferenceMgr
 {
   Q_OBJECT
 
@@ -49,13 +49,15 @@ public:
 
   bool                 hasModule( const QString& ) const;
 
+protected:
+  void                 changedResources( const ResourceMap& );
+
 signals:
   void                 preferenceChanged( QString&, QString&, QString& );
 
 private slots:
   void                 onHelp();
   void                 onApply();
-  virtual void         changedResources( const QMap<Item*, QString>& );
 
 private:
   QString              module( const int ) const;

@@ -33,6 +33,7 @@ salomeinclude_HEADERS=		\
 	QtxActionMgr.h		\
 	QtxActionSet.h		\
 	QtxActionToolMgr.h	\
+	QtxColorButton.h	\
 	QtxColorScale.h		\
 	QtxComboBox.h		\
 	QtxDialog.h		\
@@ -40,6 +41,7 @@ salomeinclude_HEADERS=		\
 	QtxDockWidget.h		\
 	QtxDoubleSpinBox.h	\
 	QtxEvalExpr.h		\
+	QtxFontEdit.h		\
 	QtxGridBox.h		\
 	QtxGroupBox.h		\
 	QtxIntSpinBox.h		\
@@ -48,8 +50,12 @@ salomeinclude_HEADERS=		\
 	QtxMainWindow.h 	\
 	QtxMap.h		\
 	QtxMRUAction.h		\
+	QtxPagePrefMgr.h	\
 	QtxPathDialog.h		\
+	QtxPathEdit.h		\
+	QtxPathListEdit.h	\
 	QtxPopupMgr.h		\
+	QtxPreferenceMgr.h	\
 	QtxResourceMgr.h	\
 	QtxSplash.h		\
 	QtxToolBar.h		\
@@ -62,12 +68,9 @@ salomeinclude_HEADERS=		\
 
 #VSR: not yet migrated to Qt4 files
 #				\
-	QtxDirListEditor.h	\
 	QtxListBox.h		\
-	QtxListResourceEdit.h	\
 	QtxListView.h		\
 	QtxPopupMenu.h		\
-	QtxResourceEdit.h	\
 	QtxTable.h
 
 # Libraries targets
@@ -82,6 +85,7 @@ dist_libqtx_la_SOURCES=		\
 	QtxActionMgr.cxx	\
 	QtxActionSet.cxx	\
 	QtxActionToolMgr.cxx	\
+	QtxColorButton.cxx	\
 	QtxColorScale.cxx	\
 	QtxComboBox.cxx		\
 	QtxDialog.cxx		\
@@ -89,6 +93,7 @@ dist_libqtx_la_SOURCES=		\
 	QtxDockWidget.cxx	\
 	QtxDoubleSpinBox.cxx	\
 	QtxEvalExpr.cxx		\
+	QtxFontEdit.cxx		\
 	QtxGridBox.cxx		\
 	QtxGroupBox.cxx		\
 	QtxIntSpinBox.cxx	\
@@ -96,8 +101,12 @@ dist_libqtx_la_SOURCES=		\
 	QtxLogoMgr.cxx		\
 	QtxMainWindow.cxx	\
 	QtxMRUAction.cxx	\
+	QtxPagePrefMgr.cxx	\
 	QtxPathDialog.cxx	\
+	QtxPathEdit.cxx		\
+	QtxPathListEdit.cxx	\
 	QtxPopupMgr.cxx		\
+	QtxPreferenceMgr.cxx	\
 	QtxResourceMgr.cxx	\
 	QtxSplash.cxx		\
 	QtxToolBar.cxx		\
@@ -110,12 +119,9 @@ dist_libqtx_la_SOURCES=		\
 
 #VSR: not yet migrated to Qt4 files
 #				\
-	QtxDirListEditor.cxx	\
 	QtxListBox.cxx		\
-	QtxListResourceEdit.cxx	\
 	QtxListView.cxx		\
 	QtxPopupMenu.cxx	\
-	QtxResourceEdit.cxx	\
 	QtxTable.cxx
 
 #VSR: already migrated to Qt4 files
@@ -125,12 +131,14 @@ MOC_FILES=				\
 	QtxActionMgr_moc.cxx		\
 	QtxActionSet_moc.cxx		\
 	QtxActionToolMgr_moc.cxx	\
+	QtxColorButton_moc.cxx		\
 	QtxColorScale_moc.cxx		\
 	QtxComboBox_moc.cxx		\
 	QtxDialog_moc.cxx		\
 	QtxDockAction_moc.cxx		\
 	QtxDockWidget_moc.cxx		\
 	QtxDoubleSpinBox_moc.cxx	\
+	QtxFontEdit_moc.cxx		\
 	QtxGridBox_moc.cxx		\
 	QtxGroupBox_moc.cxx		\
 	QtxIntSpinBox_moc.cxx		\
@@ -138,7 +146,10 @@ MOC_FILES=				\
 	QtxLogoMgr_moc.cxx		\
 	QtxMainWindow_moc.cxx		\
 	QtxMRUAction_moc.cxx		\
+	QtxPagePrefMgr_moc.cxx		\
 	QtxPathDialog_moc.cxx		\
+	QtxPathEdit_moc.cxx		\
+	QtxPathListEdit_moc.cxx		\
 	QtxPopupMgr_moc.cxx		\
 	QtxSplash_moc.cxx		\
 	QtxToolBar_moc.cxx		\
@@ -151,9 +162,7 @@ MOC_FILES=				\
 
 #VSR: not yet migrated to Qt4 files
 #					\
-	QtxDirListEditor_moc.cxx	\
 	QtxListBox_moc.cxx		\
-	QtxListResourceEdit_moc.cxx	\
 	QtxListView_moc.cxx		\
 	QtxPopupMenu_moc.cxx		\
 	QtxTable_moc.cxx

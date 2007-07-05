@@ -30,6 +30,21 @@
 #include <QColorDialog>
 #include <QStyleOptionToolButton>
 
+/*!
+  \class QtxColorButton
+  \brief The QtxColorButton class implements a widget for color
+  preference items editing.
+
+  The color preference item is represented as the colored button,
+  clicking on which invokes the standard "Select color" dialog box.
+
+  Initial color value can be set with setColor() method. Currently
+  chosen color can be retrieved with color() method.
+*/
+
+/*!
+  \brief 
+*/
 QtxColorButton::QtxColorButton( QWidget* parent )
 : QToolButton( parent )
 {
@@ -74,15 +89,24 @@ QtxColorButton::QtxColorButton( QWidget* parent )
   connect( this, SIGNAL( clicked( bool ) ), this, SLOT( onClicked( bool ) ) );
 }
 
+/*!
+  \brief 
+*/
 QtxColorButton::~QtxColorButton()
 {
 }
 
+/*!
+  \brief 
+*/
 QColor QtxColorButton::color() const
 {
   return myColors.contains( this ) ? myColors[this] : QColor();
 }
 
+/*!
+  \brief 
+*/
 void QtxColorButton::setColor( const QColor& c )
 {
   myColors.insert( this, c );
@@ -90,11 +114,17 @@ void QtxColorButton::setColor( const QColor& c )
   updateState();
 }
 
+/*!
+  \brief 
+*/
 void QtxColorButton::onClicked( bool )
 {
   emit clicked( color() );
 }
 
+/*!
+  \brief 
+*/
 void QtxColorButton::onToggled( bool on )
 {
   const QToolButton* tb = ::qobject_cast<QToolButton*>( sender() );
@@ -118,6 +148,9 @@ void QtxColorButton::onToggled( bool on )
     emit changed( color() );
 }
 
+/*!
+  \brief 
+*/
 void QtxColorButton::onDialogClicked( bool )
 {
   QColor c = QColorDialog::getColor( color(), this );
@@ -132,6 +165,9 @@ void QtxColorButton::onDialogClicked( bool )
     emit changed( color() );
 }
 
+/*!
+  \brief 
+*/
 void QtxColorButton::paintEvent( QPaintEvent* e )
 {
   QToolButton::paintEvent( e );
@@ -157,6 +193,9 @@ void QtxColorButton::paintEvent( QPaintEvent* e )
   p.end();
 }
 
+/*!
+  \brief 
+*/
 void QtxColorButton::updateState()
 {
   QColor c = color().toRgb();
@@ -175,6 +214,9 @@ void QtxColorButton::updateState()
   }
 }
 
+/*!
+  \brief 
+*/
 void QtxColorButton::updateButton( QToolButton* btn )
 {
   btn->setIcon( buttonIcon( myColors[btn] ) );
@@ -198,6 +240,9 @@ QPixmap QtxColorButton::buttonIcon( const QColor& c ) const
   return pix;
 }
 
+/*!
+  \brief 
+*/
 void QtxColorButton::drawColor( QPaintDevice* pd, const QColor& c, const int m ) const
 {
   if ( !pd )
@@ -210,6 +255,9 @@ void QtxColorButton::drawColor( QPaintDevice* pd, const QColor& c, const int m )
   p.end();
 }
 
+/*!
+  \brief 
+*/
 QList<QColor> QtxColorButton::colorsList() const
 {
   QList<QColor> lst;

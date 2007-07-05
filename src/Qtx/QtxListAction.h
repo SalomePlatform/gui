@@ -16,8 +16,8 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      QtxListAction.hxx
-// Author:    Sergey TELKOV (Based on code by Eugene AKSENOV)
+// File:      QtxListAction.h
+// Author:    Sergey TELKOV
 
 #ifndef QTXLISTACTION_H
 #define QTXLISTACTION_H

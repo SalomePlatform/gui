@@ -19,8 +19,8 @@
 // File:      QtxTable.h
 // Author:    Sergey TELKOV
 
-#ifndef QTX_TABLE_H
-#define QTX_TABLE_H
+#ifndef QTXTABLE_H
+#define QTXTABLE_H
 
 #include "Qtx.h"
 
@@ -85,4 +85,4 @@ private:
 
 #endif
 
-#endif
+#endif // QTXTABLE_H

@@ -16,6 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File:      QtxResourceMgr.cxx
+// Author:    Alexander SOLOVYOV, Sergey TELKOV
+
 #include "QtxResourceMgr.h"
 
 #include <QDir>

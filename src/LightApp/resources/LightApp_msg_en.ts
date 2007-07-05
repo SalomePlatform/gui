@@ -107,7 +107,7 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
     </message>
     <message>
         <source>PREFERENCES_NOT_LOADED</source>
-        <translation>Preferences for module &quot;&lt;b&gt;%1&lt;/b&gt;&quot; will be available when the module will be loaded</translation>
+        <translation>Preferences for module &quot;&lt;b&gt;%N&lt;/b&gt;&quot; will be available when the module will be loaded</translation>
     </message>
     <message>
         <source>PREF_LINEAR</source>

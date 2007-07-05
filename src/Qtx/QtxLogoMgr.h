@@ -16,8 +16,11 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifndef QTX_LOGOMGR_H
-#define QTX_LOGOMGR_H
+// File:      QtxLogoMgr.h
+// Author:    Sergey TELKOV
+
+#ifndef QTXLOGOMGR_H
+#define QTXLOGOMGR_H
 
 #include "Qtx.h"
 
@@ -74,4 +77,4 @@ private:
 #pragma warning( default : 4251 )
 #endif
 
-#endif
+#endif // QTXLOGOMGR_H

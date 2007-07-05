@@ -52,6 +52,12 @@ public:
   QWidget*     active() const;
   QWidget*     widget( const int ) const;
 
+public slots:
+  virtual void setVisible ( bool );
+
+signals:
+  void visibilityChanged ( bool );
+
 private:
   int              myType;
   QStackedWidget*  myStack;

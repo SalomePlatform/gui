@@ -19,8 +19,8 @@
 // File:      QtxFontEdit.h
 // Author:    Sergey TELKOV
 
-#ifndef QtxFontEdit_H
-#define QtxFontEdit_H
+#ifndef QTXFONTEDIT_H
+#define QTXFONTEDIT_H
 
 #include "Qtx.h"
 
@@ -80,4 +80,4 @@ private:
   QToolButton    *myB, *myI, *myU;
 };
 
-#endif
+#endif // QTXFONTEDIT_H

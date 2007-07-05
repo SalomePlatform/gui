@@ -25,7 +25,7 @@
   Constructor.Initialize by resource manager and parent QWidget.
 */
 LightApp_Preferences::LightApp_Preferences( QtxResourceMgr* resMgr, QWidget* parent )
-: QtxListResourceEdit( resMgr, parent )
+: SUIT_PreferenceMgr( resMgr, parent )
 {
 }
 
@@ -42,7 +42,7 @@ LightApp_Preferences::~LightApp_Preferences()
 int LightApp_Preferences::addPreference( const QString& label, const int pId, const int type,
                                          const QString& section, const QString& param )
 {
-  return addItem( label, pId, type, section, param );
+  return addItem( label, pId, (SUIT_PreferenceMgr::PrefItemType)type, section, param );
 }
 
 /*!
@@ -51,7 +51,7 @@ int LightApp_Preferences::addPreference( const QString& label, const int pId, co
 int LightApp_Preferences::addPreference( const QString& mod, const QString& label, const int pId,
                                          const int type, const QString& section, const QString& param )
 {
-  int id = addItem( label, pId, type, section, param );
+  int id = addItem( label, pId, (SUIT_PreferenceMgr::PrefItemType)type, section, param );
   if ( id != -1 && !mod.isEmpty() )
     myPrefMod.insert( id, mod );
   return id;
@@ -80,9 +80,10 @@ void LightApp_Preferences::onApply()
 }
 
 /*!Emit preference changed.*/
-void LightApp_Preferences::changedResources( const QMap<Item*, QString>& map )
+void LightApp_Preferences::changedResources( const ResourceMap& map )
 {
-  for ( QMap<Item*, QString>::ConstIterator it = map.begin(); it != map.end(); ++it )
+  for ( ResourceMap::ConstIterator it = map.begin(); 
+	it != map.end(); ++it )
   {
     QString sec, param;
     it.key()->resource( sec, param );

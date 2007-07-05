@@ -17,7 +17,7 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      QtxActionMenuMgr.cxx
-// Author:    Alexander SOLOVYEV, Sergey TELKOV
+// Author:    Alexander SOLOVYOV, Sergey TELKOV
 
 #include "QtxActionMenuMgr.h"
 

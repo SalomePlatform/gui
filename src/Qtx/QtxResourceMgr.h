@@ -17,10 +17,10 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      QtxResourceMgr.h
-// Author:    Alexander SOLOVYEV, Sergey TELKOV
+// Author:    Alexander SOLOVYOV, Sergey TELKOV
 
-#ifndef QTX_RESOURCEMGR_H
-#define QTX_RESOURCEMGR_H
+#ifndef QTXRESOURCEMGR_H
+#define QTXRESOURCEMGR_H
 
 #include "Qtx.h"
 
@@ -201,4 +201,4 @@ private:
   QMap<QString, QString> myOpt;    //!< options map
 };
 
-#endif // QTX_RESOURCEMGR_H
+#endif // QTXRESOURCEMGR_H

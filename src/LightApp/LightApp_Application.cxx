@@ -199,7 +199,7 @@ LightApp_Preferences* LightApp_Application::_prefs_ = 0;
 /*!Constructor.*/
 LightApp_Application::LightApp_Application()
 : CAM_Application( false ),
-myPrefs( 0 )
+  myPrefs( 0 )
 {
   STD_TabDesktop* desk = new STD_TabDesktop();
 
@@ -209,7 +209,7 @@ myPrefs( 0 )
   QPixmap aLogo = aResMgr->loadPixmap( "LightApp", tr( "APP_DEFAULT_ICO" ), false );
 
   desktop()->setWindowIcon( aLogo );
-  desktop()->setDockableMenuBar( true );
+  desktop()->setDockableMenuBar( false );
   desktop()->setDockableStatusBar( false );
 
   // base logo (salome itself)
@@ -618,11 +618,9 @@ void LightApp_Application::createActions()
   createMenu( PreferencesId, fileMenu, 50, -1 );
   createMenu( separator(), fileMenu, -1, 50, -1 );
 
-  /*
   createMenu( separator(), fileMenu, -1, 100, -1 );
   createMenu( MRUId, fileMenu, 100, -1 );
   createMenu( separator(), fileMenu, -1, 100, -1 );
-  */
 }
 
 /*!On module activation action.*/
@@ -653,7 +651,8 @@ void LightApp_Application::onModuleActivation( const QString& modName )
     case 0:
     default:
       putInfo( tr("INF_CANCELLED") );
-      myModuleAction->setActiveModule( QString() );
+      if ( myModuleAction )
+	myModuleAction->setActiveModule( QString() );
       cancelled = true;
     }
   }
@@ -1125,7 +1124,7 @@ void LightApp_Application::addWindow( QWidget* wid, const int flag, const int st
     connect( newWC, SIGNAL( visibilityChanged ( bool ) ), SLOT( onVisibilityChanged( bool ) ) );
     myWindows.insert( flag, newWC );
     if ( winMap.contains( flag ) ) {
-      desktop()->removeDockWidget( myWindows[flag] );
+      //desktop()->removeDockWidget( myWindows[flag] );
       desktop()->addDockWidget( (DockWidgetArea)winMap[flag], myWindows[flag] );
     }
 
@@ -1768,11 +1767,6 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
 
     QStringList modNameList;
     app->modules( modNameList, false );
-    for ( QStringList::const_iterator it = modNameList.begin(); it != modNameList.end(); ++it )
-    {
-      int id = _prefs_->addPreference( *it );
-      _prefs_->setItemProperty( id, "info", tr( "PREFERENCES_NOT_LOADED" ).arg( *it ) );
-    }
 
     ModuleList modList;
     app->modules( modList );
@@ -1793,6 +1787,8 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
 	  mod->createPreferences();
       }
     }
+    int id = _prefs_->addPreference( "Root" );
+    _prefs_->setItemProperty( id, "info", tr( "PREFERENCES_NOT_LOADED" ) );
   }
 
   connect( myPrefs, SIGNAL( preferenceChanged( QString&, QString&, QString& ) ),
@@ -2145,8 +2141,9 @@ void LightApp_Application::updateModuleActions()
   QString modName;
   if ( activeModule() )
     modName = activeModule()->moduleName();
-
-  myModuleAction->setActiveModule( modName );
+  
+  if ( myModuleAction )
+    myModuleAction->setActiveModule( modName );
 }
 
 /*!
@@ -2197,7 +2194,7 @@ void LightApp_Application::updateWindows()
       if ( dock != NoDockWidgetArea
 	   &&
 	   dock != (DockWidgetArea)it.value() ) {
-	desktop()->removeDockWidget( myWindows[it.key()] );
+	//desktop()->removeDockWidget( myWindows[it.key()] );
 	desktop()->addDockWidget( (DockWidgetArea)it.value(), myWindows[it.key()] );
       }
     }
@@ -2213,7 +2210,8 @@ void LightApp_Application::updateWindows()
 	 !myWindowsVisible[ itr.key() ] )
       continue;
 
-    setWindowShown( itr.key(), !itr.value()->isEmpty() && winMap.contains( itr.key() ) );
+    if ( itr.value() ) 
+      setWindowShown( itr.key(), !itr.value()->isEmpty() && winMap.contains( itr.key() ) );
   }
 }
 
@@ -2240,7 +2238,7 @@ void LightApp_Application::loadWindowsGeometry()
 
   QString modName;
   if ( activeModule() )
-    modName = activeModule()->objectName();
+    modName = activeModule()->name();
 
   desktop()->restoreState( resourceMgr()->stringValue( "windows_geometry", modName ).toLatin1() );
 }
@@ -2256,7 +2254,7 @@ void LightApp_Application::saveWindowsGeometry()
 
   QString modName;
   if ( activeModule() )
-    modName = activeModule()->objectName();
+    modName = activeModule()->name();
 
   resourceMgr()->setValue( "windows_geometry", modName, desktop()->saveState() );
 }

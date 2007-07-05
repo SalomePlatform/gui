@@ -42,6 +42,7 @@ salomeinclude_HEADERS=			\
 	SUIT_Operation.h		\
 	SUIT_OverrideCursor.h		\
 	SUIT_PopupClient.h		\
+	SUIT_PreferenceMgr.h		\
 	SUIT_ResourceMgr.h		\
 	SUIT_SelectionFilter.h		\
 	SUIT_SelectionMgr.h		\
@@ -72,6 +73,7 @@ dist_libsuit_la_SOURCES=		\
 	SUIT_Operation.cxx		\
 	SUIT_OverrideCursor.cxx		\
 	SUIT_PopupClient.cxx		\
+	SUIT_PreferenceMgr.cxx		\
 	SUIT_ResourceMgr.cxx		\
 	SUIT_SelectionFilter.cxx	\
 	SUIT_SelectionMgr.cxx		\
@@ -93,6 +95,7 @@ MOC_FILES=				\
 	SUIT_FileDlg_moc.cxx		\
 	SUIT_Operation_moc.cxx		\
 	SUIT_PopupClient_moc.cxx	\
+	SUIT_PreferenceMgr_moc.cxx	\
 	SUIT_SelectionMgr_moc.cxx	\
 	SUIT_Selector_moc.cxx		\
 	SUIT_Session_moc.cxx		\

@@ -16,6 +16,8 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File:      QtxPopupMgr.cxx
+// Author:    Alexander SOLOVYOV, Sergey TELKOV
 
 #include "QtxPopupMgr.h"
 #include "QtxAction.h"

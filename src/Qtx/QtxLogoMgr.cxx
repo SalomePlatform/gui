@@ -16,6 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File:      QtxLogoMgr.cxx
+// Author:    Sergey TELKOV
+
 #include "QtxLogoMgr.h"
 
 #include <QLabel>

@@ -19,8 +19,8 @@
 // File:      QtxDockAction.h
 // Author:    Sergey TELKOV
 
-#ifndef QTX_DOCKACTION_H
-#define QTX_DOCKACTION_H
+#ifndef QTXDOCKACTION_H
+#define QTXDOCKACTION_H
 
 #include "QtxAction.h"
 
@@ -81,4 +81,4 @@ private:
 #pragma warning( default:4251 )
 #endif
 
-#endif // QTX_DOCKACTION_H
+#endif // QTXDOCKACTION_H

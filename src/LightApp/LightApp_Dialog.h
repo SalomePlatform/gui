@@ -224,7 +224,7 @@ protected:
   
   //!Change and get type name for indicating in selection widget
   QString& typeName( const int );
-  const QString& typeName( const int ) const;
+  const QString typeName( const int ) const;
   
   //! Create string contains selection list by list of names, list of types and current name indication state
   virtual QString selectionDescription( const QStringList&, const TypesList&, const NameIndication ) const;

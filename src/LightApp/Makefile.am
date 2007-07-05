@@ -42,7 +42,6 @@ salomeinclude_HEADERS= \
 	LightApp_ModuleAction.h \
 	LightApp_ModuleDlg.h \
 	LightApp_NameDlg.h \
-	LightApp_OBFilter.h \
 	LightApp_OBSelector.h \
 	LightApp_Operation.h \
 	LightApp_Selection.h \
@@ -55,6 +54,8 @@ salomeinclude_HEADERS= \
 	LightApp_RootObject.h \
 	LightApp_UpdateFlags.h \
 	LightApp_WidgetContainer.h
+
+#	LightApp_OBFilter.h
 
 if ENABLE_VTKVIEWER
 if ENABLE_SALOMEOBJECT
@@ -84,7 +85,6 @@ dist_libLightApp_la_SOURCES= \
 	LightApp_ModuleAction.cxx \
 	LightApp_ModuleDlg.cxx \
 	LightApp_NameDlg.cxx \
-	LightApp_OBFilter.cxx \
 	LightApp_OBSelector.cxx \
 	LightApp_Operation.cxx \
 	LightApp_Selection.cxx \
@@ -95,6 +95,8 @@ dist_libLightApp_la_SOURCES= \
 	LightApp_Preferences.cxx \
 	LightApp_PreferencesDlg.cxx \
 	LightApp_WidgetContainer.cxx
+
+#	LightApp_OBFilter.cxx
 
 if ENABLE_VTKVIEWER
 if ENABLE_SALOMEOBJECT

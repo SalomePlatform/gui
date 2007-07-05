@@ -19,8 +19,8 @@
 // File:      QtxMap.h
 // Author:    Vadim SANDLER
 
-#ifndef QTX_MAP_H
-#define QTX_MAP_H
+#ifndef QTXMAP_H
+#define QTXMAP_H
 
 template <class Key, class Value> class IMap;
 template <class Key, class Value> class IMapIterator;
@@ -207,4 +207,4 @@ private:
   friend class IMap<Key,Value>;
 };
 
-#endif // QTX_MAP_H
+#endif // QTXMAP_H

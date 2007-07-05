@@ -17,7 +17,7 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      QtxActionToolMgr.h
-// Author:    Alexander SOLOVYEV, Sergey TELKOV
+// Author:    Alexander SOLOVYOV, Sergey TELKOV
 
 #ifndef QTXACTIONTOOLMGR_H
 #define QTXACTIONTOOLMGR_H

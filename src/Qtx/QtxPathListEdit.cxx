@@ -16,6 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File:      QtxPathListEdit.cxx
+// Author:    Sergey TELKOV
+
 #include "QtxPathListEdit.h"
 
 #include "QtxPathEdit.h"

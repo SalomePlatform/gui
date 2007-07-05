@@ -17,10 +17,10 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      QtxEvalExpr.h
-// Author:    Alexander SOLOVYOV
+// Author:    Alexander SOLOVYOV, Sergey TELKOV
 
-#ifndef QTX_EVALEXPR_H
-#define QTX_EVALEXPR_H
+#ifndef QTXEVALEXPR_H
+#define QTXEVALEXPR_H
 
 #include "Qtx.h"
 
@@ -321,4 +321,4 @@ public:
   virtual QtxEvalExpr::Error calculate( const QString&, QVariant&, QVariant& ) const;
 };
 
-#endif
+#endif // QTXEVALEXPR_H

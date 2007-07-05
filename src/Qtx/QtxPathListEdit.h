@@ -16,8 +16,11 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifndef QTX_PATHLISTEDIT_H
-#define QTX_PATHLISTEDIT_H
+// File:      QtxPathListEdit.h
+// Author:    Sergey TELKOV
+
+#ifndef QTXPATHLISTEDIT_H
+#define QTXPATHLISTEDIT_H
 
 #include "Qtx.h"
 
@@ -87,4 +90,4 @@ private:
   friend class QtxPathListEdit::Delegate;
 };
 
-#endif
+#endif // QTXPATHLISTEDIT_H

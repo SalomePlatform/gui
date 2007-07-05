@@ -19,8 +19,8 @@
 // File:      QtxValidator.h
 // Author:    Alexandre SOLOVYOV
 
-#ifndef QTX_VALIDATOR_H
-#define QTX_VALIDATOR_H
+#ifndef QTXVALIDATOR_H
+#define QTXVALIDATOR_H
 
 #include "Qtx.h"
 
@@ -50,4 +50,4 @@ public:
   virtual void fixup( QString& ) const;
 };
 
-#endif
+#endif // QTXVALIDATOR_H

@@ -16,6 +16,8 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File:      QtxPopupMgr.h
+// Author:    Alexander SOLOVYOV, Sergey TELKOV
 
 #ifndef QTXPOPUPMGR_H
 #define QTXPOPUPMGR_H
@@ -121,4 +123,4 @@ private:
   OptionsMap         myOptions;
 };
 
-#endif
+#endif // QTXPOPUPMGR_H

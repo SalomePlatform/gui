@@ -19,6 +19,9 @@
 // File:      QtxToolBar.h
 // Author:    Sergey TELKOV
 
+#ifndef QTXTOOLBAR_H
+#define QTXTOOLBAR_H
+
 #include "Qtx.h"
 
 #include <QToolBar>
@@ -48,3 +51,5 @@ private:
   Watcher*      myWatcher;   //!< watcher object
   bool          myStretch;   //!< stretching toolbar flag (not used)
 };
+
+#endif // QTXTOOLBAR_H

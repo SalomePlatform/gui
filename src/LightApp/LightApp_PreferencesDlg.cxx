@@ -42,19 +42,14 @@ myPrefs( prefs ), mySaved ( false )
   QVBoxLayout* main = new QVBoxLayout( mainFrame() );
   main->setMargin( 5 );
   main->setSpacing( 5 );
+  main->addWidget( myPrefs );
 
-  QWidget* vbox = new QWidget( mainFrame() );
-  main->addWidget( vbox );
-
-  QVBoxLayout *base = new QVBoxLayout( vbox );
-  
-  myPrefs->setParent( vbox );
-  myPrefs->move( QPoint( 0, 0 ) );
-  myPrefs->show();
+  //  myPrefs->setParent( vbox );
+  //  myPrefs->move( QPoint( 0, 0 ) );
+  //  myPrefs->show();
 
   setFocusProxy( myPrefs );
-
-  base->addWidget( myPrefs );
+  myPrefs->setFrameStyle( QFrame::Box | QFrame::Sunken );
 
   setButtonPosition( Right, Close );
 
@@ -79,8 +74,8 @@ LightApp_PreferencesDlg::~LightApp_PreferencesDlg()
   if ( !myPrefs )
     return;
 
+  mainFrame()->layout()->removeWidget( myPrefs );
   myPrefs->setParent( 0 );
-  myPrefs->move( QPoint( 0, 0 ) );
   myPrefs->hide();
   myPrefs = 0;
 }

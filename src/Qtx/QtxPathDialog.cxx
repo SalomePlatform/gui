@@ -27,7 +27,7 @@
 #include <QDir>
 #include <QLabel>
 #include <QPixmap>
-#include <QVBoxLayout>
+#include <QLayout>
 #include <QLineEdit>
 #include <QObjectList>
 #include <QStringList>
@@ -536,7 +536,7 @@ QLineEdit* QtxPathDialog::fileEntry( const int theId, int& theMode ) const
   \return created file entry ID
 */
 int QtxPathDialog::createFileEntry( const QString& lab, const int mode, 
-				    const QString& filter, const int id )
+				                            const QString& filter, const int id )
 {
   int num = id;
   if ( num == -1 )
@@ -553,10 +553,28 @@ int QtxPathDialog::createFileEntry( const QString& lab, const int mode,
   
   new QLabel( lab, myEntriesFrame );
   entry.edit = new QLineEdit( myEntriesFrame );
+
   entry.btn = new QPushButton( myEntriesFrame );
   entry.btn->setAutoDefault( false );
   entry.btn->setIcon( QPixmap( open_icon ) );
-  
+
+  Qtx::PathType type = Qtx::PT_OpenFile;
+  switch ( mode )
+  {
+  case OpenFile:
+    type = Qtx::PT_OpenFile;
+    break;
+  case SaveFile:
+    type = Qtx::PT_SaveFile;
+    break;
+  case OpenDir:
+  case SaveDir:
+  case NewDir:
+    type = Qtx::PT_Directory;
+    break;
+  }
+  entry.edit->setCompleter( Qtx::pathCompleter( type, filter ) );
+
   connect( entry.btn, SIGNAL( clicked() ), this, SLOT( onBrowse() ) );
   connect( entry.edit, SIGNAL( returnPressed() ), this, SLOT( onReturnPressed() ) );
   connect( entry.edit, SIGNAL( textChanged( const QString& ) ), this, SLOT( onTextChanged( const QString& ) ) );

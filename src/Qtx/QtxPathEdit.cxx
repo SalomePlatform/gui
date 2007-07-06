@@ -29,16 +29,41 @@
 #include <QFileDialog>
 #include <QRegExpValidator>
 
-QtxPathEdit::QtxPathEdit( const int mode, QWidget* parent )
+static const char* browse_icon[] = {
+"16 16 5 1",
+"  c none",
+". c #ffff00",
+"# c #848200",
+"a c #ffffff",
+"b c #000000",
+"                ",
+"          bbb   ",
+"         b   b b",
+"              bb",
+"  bbb        bbb",
+" ba.abbbbbbb    ",
+" b.a.a.a.a.b    ",
+" ba.a.a.a.ab    ",
+" b.a.abbbbbbbbbb",
+" ba.ab#########b",
+" b.ab#########b ",
+" bab#########b  ",
+" bb#########b   ",
+" bbbbbbbbbbb    ",
+"                ",
+"                "
+};
+
+QtxPathEdit::QtxPathEdit( const Qtx::PathType type, QWidget* parent )
 : QFrame( parent ),
-myMode( mode )
+myType( type )
 {
   initialize();
 }
 
 QtxPathEdit::QtxPathEdit( QWidget* parent )
 : QFrame( parent ),
-myMode( OpenFile )
+myType( Qtx::PT_OpenFile )
 {
   initialize();
 }
@@ -47,17 +72,17 @@ QtxPathEdit::~QtxPathEdit()
 {
 }
 
-int QtxPathEdit::mode() const
+Qtx::PathType QtxPathEdit::pathType() const
 {
-  return myMode;
+  return myType;
 }
 
-void QtxPathEdit::setMode( const int mode )
+void QtxPathEdit::setPathType( const Qtx::PathType type )
 {
-  if ( myMode == mode )
+  if ( myType == type )
     return;
 
-  myMode = mode;
+  myType = type;
   updateState();
 }
 
@@ -71,12 +96,12 @@ void QtxPathEdit::setPath( const QString& txt )
   myPath->setText( txt );
 }
 
-QString QtxPathEdit::filter() const
+QString QtxPathEdit::pathFilter() const
 {
   return myFilter;
 }
 
-void QtxPathEdit::setFilter( const QString& f )
+void QtxPathEdit::setPathFilter( const QString& f )
 {
   if ( myFilter == f )
     return;
@@ -89,15 +114,15 @@ void QtxPathEdit::onBrowse( bool )
 {
   QString path;
   QString initial = QFileInfo( myPath->text() ).path();
-  switch ( mode() )
+  switch ( pathType() )
   {
-  case OpenFile:
-    path = QFileDialog::getOpenFileName( myPath, QString(), initial, filter() );
+  case Qtx::PT_OpenFile:
+    path = QFileDialog::getOpenFileName( myPath, QString(), initial, pathFilter() );
     break;
-  case SaveFile:
-    path = QFileDialog::getSaveFileName( myPath, QString(), initial, filter() );
+  case Qtx::PT_SaveFile:
+    path = QFileDialog::getSaveFileName( myPath, QString(), initial, pathFilter() );
     break;
-  case Directory:
+  case Qtx::PT_Directory:
     path = QFileDialog::getExistingDirectory( myPath, QString(), initial );
     break;
   }
@@ -123,7 +148,7 @@ void QtxPathEdit::initialize()
   myPath->setValidator( new QRegExpValidator( QRegExp( "^([\\w/]{2}|[A-Z]:)[^:;\\*\\?]*[\\w\\\\/\\.]$" ), myPath ) );
 
   QToolButton* browse = new QToolButton( this );
-  browse->setText( "..." );
+  browse->setIcon( QPixmap( browse_icon ) );
   base->addWidget( browse );
 
   connect( browse, SIGNAL( clicked( bool ) ), this, SLOT( onBrowse( bool ) ) );
@@ -135,34 +160,5 @@ void QtxPathEdit::initialize()
 
 void QtxPathEdit::updateState()
 {
-  QStringList extList;
-  QStringList filterList = filter().split( ";;" );
-  for ( QStringList::const_iterator it = filterList.begin(); it != filterList.end(); ++it )
-  {
-    QRegExp rx( "[\\s\\w,;]*\\(?\\*\\.([\\w]+)\\)?[\\d\\s\\w]*" );
-    int index = 0;
-    while ( ( index = rx.indexIn( *it, index ) ) != -1 )
-    {
-      extList.append( QString( "*.%1" ).arg( rx.cap( 1 ) ) );
-      index += rx.matchedLength();
-    }
-  }
-
-  QDir::Filters filters = 0;
-  switch ( mode() )
-  {
-  case OpenFile:
-  case SaveFile:
-    filters = QDir::AllEntries | QDir::AllDirs | QDir::NoDotAndDotDot;
-    break;
-  case Directory:
-    filters = QDir::Drives | QDir::Dirs | QDir::NoDotAndDotDot;
-    break;
-  }
-
-  QDirModel* dm = new QDirModel( extList, filters, QDir::Unsorted );
-  QCompleter* cmp = new QCompleter( dm, myPath );
-  dm->setParent( cmp );
-
-  myPath->setCompleter( cmp );
+  myPath->setCompleter( Qtx::pathCompleter( pathType(), pathFilter() ) );
 }

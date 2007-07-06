@@ -46,18 +46,18 @@ class QTX_EXPORT QtxPathListEdit : public QFrame
   class Delegate;
 
 public:
-  typedef enum { File, Directory } PathMode;
-
-public:
-  QtxPathListEdit( const int, QWidget* = 0 );
+  QtxPathListEdit( const Qtx::PathType, QWidget* = 0 );
   QtxPathListEdit( QWidget* = 0 );
   virtual ~QtxPathListEdit();
 
-  int               mode() const;
-  void              setMode( const int );
+  Qtx::PathType     pathType() const;
+  void              setPathType( const Qtx::PathType );
 
   QStringList       pathList() const;
   void              setPathList( const QStringList& );
+
+  bool              isDuplicateEnabled() const;
+  void              setDuplicateEnabled( const bool );
 
   int               count() const;
   bool              contains( const QString& ) const;
@@ -81,13 +81,17 @@ private:
   void              setModelData( QWidget*, const QModelIndex& );
   void              setEditorData( QWidget*, const QModelIndex& );
 
+  bool              checkExistance( const QString&, const bool = true );
+  bool              checkDuplicate( const QString&, const int, const bool = true );
+
 private:
-  int               myMode;
   QListView*        myList;
+  Qtx::PathType     myType;
   QStringListModel* myModel;
   QCompleter*       myCompleter;
+  bool              myDuplicate;
 
   friend class QtxPathListEdit::Delegate;
 };
 
-#endif // QTXPATHLISTEDIT_H
+#endif

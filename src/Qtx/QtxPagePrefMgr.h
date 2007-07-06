@@ -557,22 +557,17 @@ private:
 class QTX_EXPORT QtxPagePrefPathItem : public QtxPageNamedPrefItem
 {
 public:
-  typedef enum { OpenFile  = QtxPathEdit::OpenFile,
-                 SaveFile  = QtxPathEdit::SaveFile,
-                 Directory = QtxPathEdit::Directory } Mode;
-
-public:
-  QtxPagePrefPathItem( const int, const QString&, QtxPreferenceItem* = 0,
+  QtxPagePrefPathItem( const Qtx::PathType, const QString&, QtxPreferenceItem* = 0,
                        const QString& = QString(), const QString& = QString() );
   QtxPagePrefPathItem( const QString&, QtxPreferenceItem* = 0,
                        const QString& = QString(), const QString& = QString() );
   virtual ~QtxPagePrefPathItem();
 
-  int              mode() const;
-  void             setMode( const int );
+  Qtx::PathType    pathType() const;
+  void             setPathType( const Qtx::PathType );
 
-  QString          filter() const;
-  void             setFilter( const QString& );
+  QString          pathFilter() const;
+  void             setPathFilter( const QString& );
 
   virtual void     store();
   virtual void     retrieve();
@@ -592,20 +587,16 @@ private:
 class QTX_EXPORT QtxPagePrefPathsItem : public QtxPageNamedPrefItem
 {
 public:
-  typedef enum { File      = QtxPathListEdit::File,
-                 Directory = QtxPathListEdit::Directory } Mode;
-
-public:
   QtxPagePrefPathsItem( QtxPreferenceItem* = 0,
                         const QString& = QString(), const QString& = QString() );
   QtxPagePrefPathsItem( const QString&, QtxPreferenceItem* = 0,
                         const QString& = QString(), const QString& = QString() );
-  QtxPagePrefPathsItem( const int, const QString&, QtxPreferenceItem* = 0,
+  QtxPagePrefPathsItem( const Qtx::PathType, const QString&, QtxPreferenceItem* = 0,
                         const QString& = QString(), const QString& = QString() );
   virtual ~QtxPagePrefPathsItem();
 
-  int              mode() const;
-  void             setMode( const int );
+  Qtx::PathType    pathType() const;
+  void             setPathType( const Qtx::PathType );
 
   virtual void     store();
   virtual void     retrieve();

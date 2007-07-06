@@ -119,10 +119,10 @@ int SUIT_PreferenceMgr::addItem( const QString& title, const int pId,
     item = new QtxPagePrefFontItem( title, parent, sect, param );
     break;
   case File:
-    item = new QtxPagePrefPathItem( QtxPagePrefPathItem::OpenFile, title, parent, sect, param );
+    item = new QtxPagePrefPathItem( Qtx::PT_OpenFile, title, parent, sect, param );
     break;
   case DirList:
-    item = new QtxPagePrefPathsItem( QtxPagePrefPathsItem::Directory, title, parent, sect, param );
+    item = new QtxPagePrefPathsItem( Qtx::PT_Directory, title, parent, sect, param );
     break;
   }
 

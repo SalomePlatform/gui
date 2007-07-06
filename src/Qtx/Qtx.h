@@ -50,6 +50,7 @@
 
 class QObject;
 class QWidget;
+class QCompleter;
 
 typedef QList<int>    QIntList;       //!< list of int values
 typedef QList<short>  QShortList;     //!< list of short int values
@@ -60,7 +61,7 @@ class QTX_EXPORT Qtx
 {
 public:
   //! Widget alignment flags
-  enum AlignmentFlags
+  typedef enum
   {
     AlignLeft            = Qt::AlignLeft,            //!< align left side of one widget to the left side of another widget
     AlignLeading         = Qt::AlignLeading,         //!< synonim for AlignLeft
@@ -82,47 +83,51 @@ public:
     AlignOutRight        = AlignOutLeft      << 2,   //!< align left side of one widget to the right side of another widget
     AlignOutTop          = AlignOutRight     << 2,   //!< align bottom side of one widget to the top side of another widget
     AlignOutBottom       = AlignOutTop       << 2    //!< align top side of one widget to the bottom side of another widget
-  };
+  } AlignmentFlags;
 
-  static QString toQString( const char*, const int = -1 );
-  static QString toQString( const short*, const int = -1 );
-  static QString toQString( const unsigned char*, const int = -1 );
-  static QString toQString( const unsigned short*, const int = -1 );
+  typedef enum { PT_OpenFile, PT_SaveFile, PT_Directory } PathType;
 
-  static void    setTabOrder( QWidget*, ... );
-  static void    setTabOrder( const QWidgetList& );
-  static void    alignWidget( QWidget*, const QWidget*, const int );
+  static QString     toQString( const char*, const int = -1 );
+  static QString     toQString( const short*, const int = -1 );
+  static QString     toQString( const unsigned char*, const int = -1 );
+  static QString     toQString( const unsigned short*, const int = -1 );
 
-  static void    simplifySeparators( QWidget*, const bool = true );
+  static void        setTabOrder( QWidget*, ... );
+  static void        setTabOrder( const QWidgetList& );
+  static void        alignWidget( QWidget*, const QWidget*, const int );
 
-  static bool    isParent( QObject*, QObject* );
+  static void        simplifySeparators( QWidget*, const bool = true );
 
-  static QString dir( const QString&, const bool = true );
-  static QString file( const QString&, const bool = true );
-  static QString extension( const QString&, const bool = false );
+  static bool        isParent( QObject*, QObject* );
 
-  static QString library( const QString& );
+  static QString     dir( const QString&, const bool = true );
+  static QString     file( const QString&, const bool = true );
+  static QString     extension( const QString&, const bool = false );
 
-  static QString tmpDir();
-  static bool    mkDir( const QString& );
-  static bool    rmDir( const QString& );
-  static bool    dos2unix( const QString& );
-  static QString addSlash( const QString& );
+  static QString     library( const QString& );
 
-  static int     rgbSet( const QColor& );
-  static int     rgbSet( const int, const int, const int );
+  static QString     tmpDir();
+  static bool        mkDir( const QString& );
+  static bool        rmDir( const QString& );
+  static bool        dos2unix( const QString& );
+  static QString     addSlash( const QString& );
 
-  static QColor  rgbSet( const int );
-  static void    rgbSet( const int, int&, int&, int& );
+  static QCompleter* pathCompleter( const PathType, const QString& = QString() );
 
-  static QColor  scaleColor( const int, const int, const int );
-  static void    scaleColors( const int, QColorList& );
+  static int         rgbSet( const QColor& );
+  static int         rgbSet( const int, const int, const int );
 
-  static QImage  grayscale( const QImage& );
-  static QPixmap grayscale( const QPixmap& );
-  static QImage  transparentImage( const int, const int, const int = -1 );
-  static QPixmap transparentPixmap( const int, const int, const int = -1 );
-  static QPixmap composite( const QPixmap&, const int, const int, const QPixmap& = QPixmap() );
+  static QColor      rgbSet( const int );
+  static void        rgbSet( const int, int&, int&, int& );
+
+  static QColor      scaleColor( const int, const int, const int );
+  static void        scaleColors( const int, QColorList& );
+
+  static QImage      grayscale( const QImage& );
+  static QPixmap     grayscale( const QPixmap& );
+  static QImage      transparentImage( const int, const int, const int = -1 );
+  static QPixmap     transparentPixmap( const int, const int, const int = -1 );
+  static QPixmap     composite( const QPixmap&, const int, const int, const QPixmap& = QPixmap() );
 };
 
 #endif

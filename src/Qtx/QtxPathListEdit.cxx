@@ -218,10 +218,11 @@ void QtxPathListEdit::Delegate::drawFocus( QPainter* painter, const QStyleOption
 /*!
   \class QtxPathListEdit
 */
-QtxPathListEdit::QtxPathListEdit( const int mode, QWidget* parent )
+QtxPathListEdit::QtxPathListEdit( const Qtx::PathType type, QWidget* parent )
 : QFrame( parent ),
 myCompleter( 0 ),
-myMode( mode )
+myType( type ),
+myDuplicate( false )
 {
   initialize();
 }
@@ -229,7 +230,8 @@ myMode( mode )
 QtxPathListEdit::QtxPathListEdit( QWidget* parent )
 : QFrame( parent ),
 myCompleter( 0 ),
-myMode( File )
+myType( Qtx::PT_OpenFile ),
+myDuplicate( false )
 {
   initialize();
 }
@@ -241,17 +243,18 @@ QtxPathListEdit::~QtxPathListEdit()
 {
 }
 
-int QtxPathListEdit::mode() const
+Qtx::PathType QtxPathListEdit::pathType() const
 {
-  return myMode;
+  return myType;
 }
 
-void QtxPathListEdit::setMode( const int m )
+void QtxPathListEdit::setPathType( const Qtx::PathType t )
 {
-  if ( myMode == m )
+  if ( myType == t )
     return;
 
-  myMode = m;
+  myType = t;
+
   delete myCompleter;
   myCompleter = 0;
 }
@@ -264,6 +267,16 @@ QStringList QtxPathListEdit::pathList() const
 void QtxPathListEdit::setPathList( const QStringList& lst )
 {
   myModel->setStringList( lst );
+}
+
+bool QtxPathListEdit::isDuplicateEnabled() const
+{
+  return myDuplicate;
+}
+
+void QtxPathListEdit::setDuplicateEnabled( const bool on )
+{
+  myDuplicate = on;
 }
 
 int QtxPathListEdit::count() const
@@ -399,8 +412,18 @@ bool QtxPathListEdit::eventFilter( QObject* o, QEvent* e )
 
 void QtxPathListEdit::onInsert( bool )
 {
-  myModel->insertRows( myModel->rowCount(), 1 );
-  QModelIndex idx = myModel->index( myModel->rowCount() - 1, 0 );
+  int empty = -1;
+  QStringList lst = myModel->stringList();
+  for ( int r = 0; r < lst.count() && empty == -1; r++ )
+  {
+    if ( lst.at( r ).isEmpty() )
+      empty = r;
+  }
+
+  if ( empty == -1 )
+    myModel->insertRows( empty = myModel->rowCount(), 1 );
+
+  QModelIndex idx = myModel->index( empty, 0 );
   myList->setCurrentIndex( idx );
   myList->edit( idx );
 }
@@ -492,6 +515,7 @@ void QtxPathListEdit::initialize()
   myList->setSelectionMode( QListView::SingleSelection );
   myList->setSelectionBehavior( QListView::SelectRows );
   myList->setHorizontalScrollBarPolicy( Qt::ScrollBarAlwaysOff );
+  myList->setEditTriggers( QListView::DoubleClicked );
   myList->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
   myList->installEventFilter( this );
 
@@ -506,16 +530,7 @@ void QtxPathListEdit::initialize()
 QWidget* QtxPathListEdit::createEditor( QWidget* parent )
 {
   QtxPathEdit* edit = new Editor( parent );
-  switch ( mode() )
-  {
-  case File:
-    edit->setMode( QtxPathEdit::OpenFile );
-    break;
-  case Directory:
-    edit->setMode( QtxPathEdit::Directory );
-    break;
-  }
-
+  edit->setPathType( pathType() );
   return edit;
 }
 
@@ -525,7 +540,15 @@ void QtxPathListEdit::setModelData( QWidget* editor, const QModelIndex& index )
   if ( !edit )
     return;
 
-  myModel->setData( index, edit->path(), Qt::EditRole );
+  QString path = edit->path().trimmed();
+
+  if ( !isDuplicateEnabled() && !checkDuplicate( path, index.row() ) )
+    return;
+
+  if ( !checkExistance( path ) )
+    return;
+
+  myModel->setData( index, path, Qt::EditRole );
 }
 
 void QtxPathListEdit::setEditorData( QWidget* editor, const QModelIndex& index )
@@ -536,4 +559,50 @@ void QtxPathListEdit::setEditorData( QWidget* editor, const QModelIndex& index )
 
   QVariant v = myModel->data( index, Qt::EditRole );
   edit->setPath( v.toString() );
+}
+
+bool QtxPathListEdit::checkExistance( const QString& str, const bool msg )
+{
+  if ( pathType() == Qtx::PT_SaveFile )
+    return true;
+
+  bool ok = QFileInfo( str ).exists();
+  if ( !ok && msg )
+    ok = QMessageBox::question( this, tr( "Warning" ), tr( "Path \"%1\" doesn't exist. Add it to list anyway?" ).arg( str ),
+                                QMessageBox::Yes, QMessageBox::No ) == QMessageBox::Yes;
+
+  if ( ok && QFileInfo( str ).exists() )
+  {
+    switch ( pathType() )
+    {
+    case Qtx::PT_OpenFile:
+      ok = QFileInfo( str ).isFile();
+      if ( !ok && msg )
+        QMessageBox::warning( this, tr( "Error" ), tr( "Location \"%1\" doesn't point to file" ).arg( str ) );
+      break;
+    case Qtx::PT_Directory:
+      ok = QFileInfo( str ).isDir();
+      if ( !ok && msg )
+        QMessageBox::warning( this, tr( "Error" ), tr( "Location \"%1\" doesn't point to directory" ).arg( str ) );
+      break;
+    }
+  }
+
+  return ok;
+}
+
+bool QtxPathListEdit::checkDuplicate( const QString& str, const int row, const bool msg )
+{
+  int cur = -1;
+  QStringList lst = myModel->stringList();
+  for ( int r = 0; r < lst.count() && cur == -1; r++ )
+  {
+    if ( r != row && lst.at( r ) == str )
+      cur = r;
+  }
+
+  if ( cur != -1 && msg )
+    QMessageBox::warning( this, tr( "Error" ), tr( "Path \"%1\" already exist in the list" ).arg( str ) );
+   
+  return cur == -1;
 }

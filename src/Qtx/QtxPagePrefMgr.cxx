@@ -1809,11 +1809,11 @@ void QtxPagePrefFontItem::setOptionValue( const QString& name, const QVariant& v
   \class  QtxPagePrefPathItem
   GUI implementation of resources path item.
 */
-QtxPagePrefPathItem::QtxPagePrefPathItem( const int mode, const QString& title,
+QtxPagePrefPathItem::QtxPagePrefPathItem( const Qtx::PathType type, const QString& title,
                                           QtxPreferenceItem* parent, const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param )
 {
-  setControl( myPath = new QtxPathEdit( mode ) );
+  setControl( myPath = new QtxPathEdit( type ) );
 }
 
 QtxPagePrefPathItem::QtxPagePrefPathItem( const QString& title, QtxPreferenceItem* parent,
@@ -1827,24 +1827,24 @@ QtxPagePrefPathItem::~QtxPagePrefPathItem()
 {
 }
 
-int QtxPagePrefPathItem::mode() const
+Qtx::PathType QtxPagePrefPathItem::pathType() const
 {
-  return myPath->mode();
+  return myPath->pathType();
 }
 
-void QtxPagePrefPathItem::setMode( const int mode )
+void QtxPagePrefPathItem::setPathType( const Qtx::PathType type )
 {
-  myPath->setMode( mode );
+  myPath->setPathType( type );
 }
 
-QString QtxPagePrefPathItem::filter() const
+QString QtxPagePrefPathItem::pathFilter() const
 {
-  return myPath->filter();
+  return myPath->pathFilter();
 }
 
-void QtxPagePrefPathItem::setFilter( const QString& f )
+void QtxPagePrefPathItem::setPathFilter( const QString& f )
 {
-  myPath->setFilter( f );
+  myPath->setPathFilter( f );
 }
 
 void QtxPagePrefPathItem::store()
@@ -1859,25 +1859,25 @@ void QtxPagePrefPathItem::retrieve()
 
 QVariant QtxPagePrefPathItem::optionValue( const QString& name ) const
 {
-  if ( name == "mode" )
-    return mode();
-  else if ( name == "filter" )
-    return filter();
+  if ( name == "path_type" )
+    return pathType();
+  else if ( name == "path_filter" )
+    return pathFilter();
   else
     return QtxPageNamedPrefItem::optionValue( name );
 }
 
 void QtxPagePrefPathItem::setOptionValue( const QString& name, const QVariant& val )
 {
-  if ( name == "mode" )
+  if ( name == "path_type" )
   {
     if ( val.canConvert( QVariant::Int ) )
-      setMode( val.toInt() );
+      setPathType( (Qtx::PathType)val.toInt() );
   }
-  else if ( name == "filter" )
+  else if ( name == "path_filter" )
   {
     if ( val.canConvert( QVariant::String ) )
-      setFilter( val.toString() );
+      setPathFilter( val.toString() );
   }
   else
     QtxPageNamedPrefItem::setOptionValue( name, val );
@@ -1893,11 +1893,11 @@ QtxPagePrefPathsItem::QtxPagePrefPathsItem( QtxPreferenceItem* parent, const QSt
   setControl( myPaths = new QtxPathListEdit() );
 }
 
-QtxPagePrefPathsItem::QtxPagePrefPathsItem( const int mode, const QString& title, QtxPreferenceItem* parent,
-                                            const QString& sect, const QString& param )
+QtxPagePrefPathsItem::QtxPagePrefPathsItem( const Qtx::PathType type, const QString& title,
+                                            QtxPreferenceItem* parent, const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param )
 {
-  setControl( myPaths = new QtxPathListEdit( mode ) );
+  setControl( myPaths = new QtxPathListEdit( type ) );
 }
 
 QtxPagePrefPathsItem::QtxPagePrefPathsItem( const QString& title, QtxPreferenceItem* parent,
@@ -1911,14 +1911,14 @@ QtxPagePrefPathsItem::~QtxPagePrefPathsItem()
 {
 }
 
-int QtxPagePrefPathsItem::mode() const
+Qtx::PathType QtxPagePrefPathsItem::pathType() const
 {
-  return myPaths->mode();
+  return myPaths->pathType();
 }
 
-void QtxPagePrefPathsItem::setMode( const int mode )
+void QtxPagePrefPathsItem::setPathType( const Qtx::PathType type )
 {
-  myPaths->setMode( mode );
+  myPaths->setPathType( type );
 }
 
 void QtxPagePrefPathsItem::store()
@@ -1933,18 +1933,18 @@ void QtxPagePrefPathsItem::retrieve()
 
 QVariant QtxPagePrefPathsItem::optionValue( const QString& name ) const
 {
-  if ( name == "mode" )
-    return mode();
+  if ( name == "path_type" )
+    return pathType();
   else
     return QtxPageNamedPrefItem::optionValue( name );
 }
 
 void QtxPagePrefPathsItem::setOptionValue( const QString& name, const QVariant& val )
 {
-  if ( name == "mode" )
+  if ( name == "path_type" )
   {
     if ( val.canConvert( QVariant::Int ) )
-      setMode( val.toInt() );
+      setPathType( (Qtx::PathType)val.toInt() );
   }
   else
     QtxPageNamedPrefItem::setOptionValue( name, val );

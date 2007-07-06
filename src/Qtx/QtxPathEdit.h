@@ -33,36 +33,33 @@ class QTX_EXPORT QtxPathEdit : public QFrame
   Q_OBJECT
 
 public:
-  typedef enum { OpenFile, SaveFile, Directory } Mode;
-
-public:
-  QtxPathEdit( const int, QWidget* = 0 );
+  QtxPathEdit( const Qtx::PathType, QWidget* = 0 );
   QtxPathEdit( QWidget* = 0 );
   virtual ~QtxPathEdit();
 
-  int          mode() const;
-  void         setMode( const int );
+  QString       path() const;
+  void          setPath( const QString& );
 
-  QString      path() const;
-  void         setPath( const QString& );
+  Qtx::PathType pathType() const;
+  void          setPathType( const Qtx::PathType );
 
-  QString      filter() const;
-  void         setFilter( const QString& );
+  QString       pathFilter() const;
+  void          setPathFilter( const QString& );
 
 private slots:
-  void         onBrowse( bool = false );
+  void          onBrowse( bool = false );
 
 protected:
-  QLineEdit*   lineEdit() const;
+  QLineEdit*    lineEdit() const;
 
 private:
-  void         initialize();
-  void         updateState();
+  void          initialize();
+  void          updateState();
 
 private:
-  int          myMode;
-  QLineEdit*   myPath;
-  QString      myFilter;
+  QLineEdit*    myPath;
+  Qtx::PathType myType;
+  QString       myFilter;
 };
 
 #endif

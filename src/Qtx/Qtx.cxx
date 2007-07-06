@@ -22,12 +22,15 @@
 #include "Qtx.h"
 
 #include <QDir>
-#include <QFileInfo>
 #include <QMenu>
+#include <QRegExp>
 #include <QBitmap>
 #include <QWidget>
 #include <QLayout>
 #include <QPainter>
+#include <QDirModel>
+#include <QFileInfo>
+#include <QCompleter>
 #include <QApplication>
 #include <QDesktopWidget>
 
@@ -536,6 +539,40 @@ bool Qtx::dos2unix( const QString& absName )
     return false;
 
   return QDir().rename( QString( temp ), absName );
+}
+
+QCompleter* Qtx::pathCompleter( const PathType type, const QString& filter )
+{
+  QStringList extList;
+  QStringList filterList = filter.split( ";;" );
+  for ( QStringList::const_iterator it = filterList.begin(); it != filterList.end(); ++it )
+  {
+    QRegExp rx( "[\\s\\w,;]*\\(?\\*\\.([\\w]+)\\)?[\\d\\s\\w]*" );
+    int index = 0;
+    while ( ( index = rx.indexIn( *it, index ) ) != -1 )
+    {
+      extList.append( QString( "*.%1" ).arg( rx.cap( 1 ) ) );
+      index += rx.matchedLength();
+    }
+  }
+
+  QDir::Filters filters = 0;
+  switch ( type )
+  {
+  case PT_OpenFile:
+  case PT_SaveFile:
+    filters = QDir::AllEntries | QDir::AllDirs | QDir::NoDotAndDotDot;
+    break;
+  case PT_Directory:
+    filters = QDir::Drives | QDir::Dirs | QDir::NoDotAndDotDot;
+    break;
+  }
+
+  QDirModel* dm = new QDirModel( extList, filters, QDir::Unsorted );
+  QCompleter* cmp = new QCompleter( dm, 0 );
+  dm->setParent( cmp );
+
+  return cmp;
 }
 
 /*!

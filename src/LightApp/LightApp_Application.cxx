@@ -1848,7 +1848,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 	platform = "application";
 #endif
   int apppref = pref->addPreference( tr( "PREF_APP" ), extgroup, LightApp_Preferences::File, "ExternalBrowser", platform );
-  pref->setItemProperty( "mode", QtxPagePrefPathItem::OpenFile, apppref );
+  pref->setItemProperty( "mode", Qtx::PT_OpenFile, apppref );
 
   pref->addPreference( tr( "PREF_PARAM" ), extgroup, LightApp_Preferences::String, "ExternalBrowser", "parameters" );
 

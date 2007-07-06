@@ -87,18 +87,8 @@ bool SUIT_ActionOperation::addTo( QWidget* wid )
   if ( !action() )
     return false;
 
-  return action()->addTo( wid );
-}
-
-/*! Add action to widget \a wid.
- *\retval TRUE - successful, FALSE - not successful.
- */
-bool SUIT_ActionOperation::addTo( QWidget* wid, int idx )
-{
-  if ( !action() )
-    return false;
-
-  return action()->addTo( wid, idx );
+  wid->addAction( action() );
+  return true;
 }
 
 /*! Set status tip for action.

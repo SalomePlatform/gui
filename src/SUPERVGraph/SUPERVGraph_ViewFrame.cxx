@@ -129,8 +129,8 @@ void SUPERVGraph_ViewFrame::createActions()
 */
 void SUPERVGraph_ViewFrame::createToolBar()
 {
-  myActionsMap[PanId]->addTo(myToolBar);
-  myActionsMap[ResetId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[PanId] );
+  myToolBar->addAction( myActionsMap[ResetId] );
 }
 
 /*!

@@ -587,8 +587,8 @@ void
 SVTK_MainWindow
 ::createToolBar()
 {
-  myActionsMap[DumpId]->addTo(myToolBar);
-  myActionsMap[ViewTrihedronId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[DumpId] );
+  myToolBar->addAction( myActionsMap[ViewTrihedronId] );
 
   SUIT_ToolButton* aScaleBtn = new SUIT_ToolButton(myToolBar);
   aScaleBtn->AddAction(myActionsMap[FitAllId]);
@@ -599,9 +599,9 @@ SVTK_MainWindow
   aPanningBtn->AddAction(myActionsMap[PanId]);
   aPanningBtn->AddAction(myActionsMap[GlobalPanId]);
 
-  myActionsMap[ChangeRotationPointId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[ChangeRotationPointId] );
 
-  myActionsMap[RotationId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[RotationId] );
 
   SUIT_ToolButton* aViewsBtn = new SUIT_ToolButton(myToolBar);
   aViewsBtn->AddAction(myActionsMap[FrontId]);
@@ -611,11 +611,11 @@ SVTK_MainWindow
   aViewsBtn->AddAction(myActionsMap[LeftId]);
   aViewsBtn->AddAction(myActionsMap[RightId]);
 
-  myActionsMap[ResetId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[ResetId] );
 
-  myActionsMap[UpdateRate]->addTo(myToolBar);
-  myActionsMap[NonIsometric]->addTo(myToolBar);
-  myActionsMap[GraduatedAxes]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[UpdateRate] );
+  myToolBar->addAction( myActionsMap[NonIsometric] );
+  myToolBar->addAction( myActionsMap[GraduatedAxes] );
 }
 
 /*!

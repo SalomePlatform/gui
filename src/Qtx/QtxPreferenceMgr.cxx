@@ -28,13 +28,14 @@
 
 /*!
   \class QtxPreferenceItem::Updater
-  Class for incapsulation of one preference item
+  \brief Preference item updater.
+  \internal
 */
 
 class QtxPreferenceItem::Updater : public QObject
 {
-public:
   Updater();
+public:
   ~Updater();
 
   static Updater*           instance();
@@ -52,14 +53,27 @@ private:
 
 QtxPreferenceItem::Updater* QtxPreferenceItem::Updater::_Updater = 0;
 
+/*!
+  \brief Constructor.
+  \internal
+*/
 QtxPreferenceItem::Updater::Updater()
 {
 }
 
+/*!
+  \brief Destructor.
+  \internal
+*/
 QtxPreferenceItem::Updater::~Updater()
 {
 }
 
+/*!
+  \brief Get the only updater instance.
+  \internal
+  \return the only updater instance
+*/
 QtxPreferenceItem::Updater* QtxPreferenceItem::Updater::instance()
 {
   if ( !_Updater )
@@ -67,6 +81,11 @@ QtxPreferenceItem::Updater* QtxPreferenceItem::Updater::instance()
   return _Updater;
 }
 
+/*!
+  \brief Update the preference item.
+  \internal
+  \param item preference item to be updated
+*/
 void QtxPreferenceItem::Updater::updateItem( QtxPreferenceItem* item )
 {
   if ( !item || myItems.contains( item ) )
@@ -76,12 +95,22 @@ void QtxPreferenceItem::Updater::updateItem( QtxPreferenceItem* item )
   QApplication::postEvent( this, new QEvent( QEvent::User ) );
 }
 
+/*!
+  \brief Called when preference item is removed.
+  \internal
+  \param item preference item being removed
+*/
 void QtxPreferenceItem::Updater::removeItem( QtxPreferenceItem* item )
 {
   myItems.removeAll( item );
 }
 
-void QtxPreferenceItem::Updater::customEvent( QEvent* e )
+/*!
+  \brief Custom events provessing. Updates all the items.
+  \internal
+  \param e custom event (not used)
+*/
+void QtxPreferenceItem::Updater::customEvent( QEvent* /*e*/ )
 {
   QList<QtxPreferenceItem*> lst = myItems;
   for ( QList<QtxPreferenceItem*>::const_iterator it = lst.begin(); it != lst.end(); ++it )
@@ -90,12 +119,15 @@ void QtxPreferenceItem::Updater::customEvent( QEvent* e )
 
 /*!
   \class QtxPreferenceItem
-  Class for incapsulation of one preference item
+  \brief Base class for implementing of all the preference items.
+
+  To implement any specific preference item, cubclass from the 
+  QtxPreferenceItem and redefine store() and retrieve() methods.
 */
 
-
 /*!
-  Constructor
+  \brief Constructor.
+  \param parent parent preference item
 */
 QtxPreferenceItem::QtxPreferenceItem( QtxPreferenceItem* parent )
 : myParent( 0 )
@@ -106,22 +138,14 @@ QtxPreferenceItem::QtxPreferenceItem( QtxPreferenceItem* parent )
     parent->insertItem( this );
 }
 
+/*!
+  \brief Constructor.
+  \param title item title
+  \param parent parent preference item
+*/
 QtxPreferenceItem::QtxPreferenceItem( const QString& title, QtxPreferenceItem* parent )
 : myParent( 0 ),
-myTitle( title )
-{
-  myId = generateId();
-
-  if ( parent )
-    parent->insertItem( this );
-}
-
-QtxPreferenceItem::QtxPreferenceItem( const QString& title, const QString& sect,
-                                      const QString& param, QtxPreferenceItem* parent )
-: myParent( 0 ),
-myTitle( title ),
-mySection( sect ),
-myParameter( param )
+  myTitle( title )
 {
   myId = generateId();
 
@@ -130,7 +154,27 @@ myParameter( param )
 }
 
 /*!
-  Destructor
+  \brief Constructor.
+  \param title item title
+  \param sect resource file section to be associated with the item
+  \param param resource file parameter to be associated with the item
+  \param parent parent preference item
+*/
+QtxPreferenceItem::QtxPreferenceItem( const QString& title, const QString& sect,
+                                      const QString& param, QtxPreferenceItem* parent )
+: myParent( 0 ),
+  myTitle( title ),
+  mySection( sect ),
+  myParameter( param )
+{
+  myId = generateId();
+
+  if ( parent )
+    parent->insertItem( this );
+}
+
+/*!
+  \brief Destructor.
 */
 QtxPreferenceItem::~QtxPreferenceItem()
 {
@@ -145,24 +189,34 @@ QtxPreferenceItem::~QtxPreferenceItem()
 }
 
 /*!
-  \return id of item
+  \brief Get unique item identifier.
+  \return item ID
 */
 int QtxPreferenceItem::id() const
 {
   return myId;
 }
 
+/*!
+  \brief Get unique item type identifier.
+  \return item type ID
+*/
 int QtxPreferenceItem::rtti() const
 {
   return QtxPreferenceItem::RTTI();
 }
 
+/*!
+  \brief Specify unique item class identifier.
+  \return item class ID
+*/
 int QtxPreferenceItem::RTTI()
 {
   return 1;
 }
 
 /*!
+  \brief Get root preference item.
   \return root item
 */
 QtxPreferenceItem* QtxPreferenceItem::rootItem() const
@@ -174,6 +228,7 @@ QtxPreferenceItem* QtxPreferenceItem::rootItem() const
 }
 
 /*!
+  \brief Get parent preference item.
   \return parent item
 */
 QtxPreferenceItem* QtxPreferenceItem::parentItem() const
@@ -182,8 +237,12 @@ QtxPreferenceItem* QtxPreferenceItem::parentItem() const
 }
 
 /*!
-  Appends child and (if necessary) removes item from old parent
-  \param item - item to be added
+  \brief Append child preference item.
+
+  Removes (if necessary) the item from the previous parent.
+
+  \param item item to be added
+  \sa removeItem()
 */
 void QtxPreferenceItem::insertItem( QtxPreferenceItem* item )
 {
@@ -200,8 +259,9 @@ void QtxPreferenceItem::insertItem( QtxPreferenceItem* item )
 }
 
 /*!
-  Removes child
-  \param item - item to be removed
+  \brief Remove child preference item.
+  \param item item to be removed
+  \sa insertItem()
 */
 void QtxPreferenceItem::removeItem( QtxPreferenceItem* item )
 {
@@ -215,8 +275,9 @@ void QtxPreferenceItem::removeItem( QtxPreferenceItem* item )
 }
 
 /*!
-  Fills list with children items
-  \param lst - list to be filled with
+  \brief Get all child preference items.
+  \param rec recursion boolean flag
+  \return list of child items
 */
 QList<QtxPreferenceItem*> QtxPreferenceItem::childItems( const bool rec ) const
 {
@@ -230,18 +291,29 @@ QList<QtxPreferenceItem*> QtxPreferenceItem::childItems( const bool rec ) const
   return lst;
 }
 
+/*!
+  \brief Get preference item depth.
+  \return item depth
+*/
 int QtxPreferenceItem::depth() const
 {
   return parentItem() ? parentItem()->depth() + 1 : 0;
 }
 
+/*!
+  \brief Get child preference items number.
+  \return number of child items
+  \sa isEmpty()
+*/
 int QtxPreferenceItem::count() const
 {
   return myChildren.count();
 }
 
 /*!
-  \return true if there is no children of this item
+  \brief Check if the item has children.
+  \return \c true if item does not have children
+  \sa count()
 */
 bool QtxPreferenceItem::isEmpty() const
 {
@@ -249,7 +321,9 @@ bool QtxPreferenceItem::isEmpty() const
 }
 
 /*!
-  \return icon of item
+  \brief Get preference item icon.
+  \return item icon
+  \sa setIcon()
 */
 QIcon QtxPreferenceItem::icon() const
 {
@@ -257,7 +331,9 @@ QIcon QtxPreferenceItem::icon() const
 }
 
 /*!
-  \return title of item
+  \brief Get preference item title.
+  \return item title
+  \sa setTitle()
 */
 QString QtxPreferenceItem::title() const
 {
@@ -265,9 +341,10 @@ QString QtxPreferenceItem::title() const
 }
 
 /*!
-  \return assigned resource placement
-  \param sec - to return section
-  \param param - to return param name
+  \brief Get resource file settings associated to the preference item.
+  \param sec used to return resource file section name
+  \param param used to return resource file parameter name
+  \sa setResource()
 */
 void QtxPreferenceItem::resource( QString& sec, QString& param ) const
 {
@@ -276,8 +353,9 @@ void QtxPreferenceItem::resource( QString& sec, QString& param ) const
 }
 
 /*!
-  Sets item icon
-  \param ico - new item icon
+  \brief Set prefence item icon.
+  \param ico new item icon
+  \sa icon()
 */
 void QtxPreferenceItem::setIcon( const QIcon& ico )
 {
@@ -289,8 +367,9 @@ void QtxPreferenceItem::setIcon( const QIcon& ico )
 }
 
 /*!
-  Sets item title 
-  \param title - new item title
+  \brief Set preference item title .
+  \param title new item title
+  \sa title()
 */
 void QtxPreferenceItem::setTitle( const QString& title )
 {
@@ -302,9 +381,10 @@ void QtxPreferenceItem::setTitle( const QString& title )
 }
 
 /*!
-  Assigns new resource to item
-  \param sec - section
-  \param sec - param name
+  \brief Assign resource file settings to the preference item.
+  \param sec resource file section name
+  \param param resource file parameter name
+  \sa resource()
 */
 void QtxPreferenceItem::setResource( const QString& sec, const QString& param )
 {
@@ -313,7 +393,7 @@ void QtxPreferenceItem::setResource( const QString& sec, const QString& param )
 }
 
 /*!
-  Updates item (default implementation is empty)
+  \brief Update preference item.
 */
 void QtxPreferenceItem::updateContents()
 {
@@ -321,7 +401,10 @@ void QtxPreferenceItem::updateContents()
 }
 
 /*!
-  \return property value
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOption()
 */
 QVariant QtxPreferenceItem::option( const QString& name ) const
 {
@@ -329,7 +412,10 @@ QVariant QtxPreferenceItem::option( const QString& name ) const
 }
 
 /*!
-  Sets property value
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa option()
 */
 void QtxPreferenceItem::setOption( const QString& name, const QVariant& val )
 {
@@ -340,7 +426,27 @@ void QtxPreferenceItem::setOption( const QString& name, const QVariant& val )
 }
 
 /*!
-  \return value of assigned resource
+  \fn void QtxPreferenceItem::store();
+  \brief Save preference item (for example, to the resource file).
+
+  This method should be implemented in the subclasses.
+
+  \sa retrieve()
+*/
+
+/*!
+  \fn virtual void QtxPreferenceItem::retrieve();
+  \brief Restore preference item (for example, from the resource file).
+
+  This method should be implemented in the subclasses.
+
+  \sa store()
+*/
+
+/*!
+  \brief Get the value of the associated resource file setting.
+  \return associated resource file setting value
+  \sa setResourceValue()
 */
 QString QtxPreferenceItem::resourceValue() const
 {
@@ -348,8 +454,9 @@ QString QtxPreferenceItem::resourceValue() const
 }
 
 /*!
-  Sets value of assigned resource
-  \param val - new value
+  \brief Get the value of the associated resource file setting.
+  \param val new associated resource file setting value
+  \sa resourceValue()
 */
 void QtxPreferenceItem::setResourceValue( const QString& val )
 {
@@ -357,7 +464,8 @@ void QtxPreferenceItem::setResourceValue( const QString& val )
 }
 
 /*!
-  \return corresponding resource manager
+  \brief Get the resources manager.
+  \return resource manager pointer or 0 if it is not defined
 */
 QtxResourceMgr* QtxPreferenceItem::resourceMgr() const
 {
@@ -366,7 +474,8 @@ QtxResourceMgr* QtxPreferenceItem::resourceMgr() const
 }
 
 /*!
-  \return corresponding resource edit
+  \brief Get the parent preferences manager.
+  \return preferences manager or 0 if it is not defined
 */
 QtxPreferenceMgr* QtxPreferenceItem::preferenceMgr() const
 {
@@ -374,8 +483,10 @@ QtxPreferenceMgr* QtxPreferenceItem::preferenceMgr() const
 }
 
 /*!
-  \return other item
-  \param id - other item id
+  \brief Find the item by the specified identifier.
+  \param id child item ID
+  \param rec if \c true recursive search is done
+  \return child item or 0 if it is not found
 */
 QtxPreferenceItem* QtxPreferenceItem::findItem( const int id, const bool rec ) const
 {
@@ -392,8 +503,10 @@ QtxPreferenceItem* QtxPreferenceItem::findItem( const int id, const bool rec ) c
 }
 
 /*!
-  \return other item
-  \param title - other item title
+  \brief Find the item by the specified title.
+  \param title child item title
+  \param rec if \c true recursive search is done
+  \return child item or 0 if it is not found
 */
 QtxPreferenceItem* QtxPreferenceItem::findItem( const QString& title, const bool rec ) const
 {
@@ -410,9 +523,11 @@ QtxPreferenceItem* QtxPreferenceItem::findItem( const QString& title, const bool
 }
 
 /*!
-  \return other item
-  \param title - other item title
-  \param id - parent item id
+  \brief Find the item by the specified title and identifier.
+  \param title child item title
+  \param id child item ID
+  \param rec if \c true recursive search is done
+  \return child item or 0 if it is not found
 */
 QtxPreferenceItem* QtxPreferenceItem::findItem( const QString& title, const int id, const bool rec ) const
 {
@@ -430,8 +545,10 @@ QtxPreferenceItem* QtxPreferenceItem::findItem( const QString& title, const int 
 
 
 /*!
-  \return integer value of resource corresponding to item
-  \param val - default value (it is returned if there is no such resource)
+  \brief Get integer resources value corresponding to the item.
+  \param val default value (returned if there is no such resource)
+  \return integer value of the associated resource
+  \sa setInteger()
 */
 int QtxPreferenceItem::getInteger( const int val ) const
 {
@@ -440,8 +557,10 @@ int QtxPreferenceItem::getInteger( const int val ) const
 }
 
 /*!
-  \return double value of resource corresponding to item
-  \param val - default value (it is returned if there is no such resource)
+  \brief Get double resources value corresponding to the item.
+  \param val default value (returned if there is no such resource)
+  \return double value of the associated resource
+  \sa setDouble()
 */
 double QtxPreferenceItem::getDouble( const double val ) const
 {
@@ -450,8 +569,10 @@ double QtxPreferenceItem::getDouble( const double val ) const
 }
 
 /*!
-  \return boolean value of resource corresponding to item
-  \param val - default value (it is returned if there is no such resource)
+  \brief Get boolean resources value corresponding to the item.
+  \param val default value (returned if there is no such resource)
+  \return boolean value of the associated resource
+  \sa setBoolean()
 */
 bool QtxPreferenceItem::getBoolean( const bool val ) const
 {
@@ -460,8 +581,10 @@ bool QtxPreferenceItem::getBoolean( const bool val ) const
 }
 
 /*!
-  \return string value of resource corresponding to item
-  \param val - default value (it is returned if there is no such resource)
+  \brief Get string resources value corresponding to the item.
+  \param val default value (returned if there is no such resource)
+  \return string value of the associated resource
+  \sa setString()
 */
 QString QtxPreferenceItem::getString( const QString& val ) const
 {
@@ -470,8 +593,10 @@ QString QtxPreferenceItem::getString( const QString& val ) const
 }
 
 /*!
-  \return color value of resource corresponding to item
-  \param val - default value (it is returned if there is no such resource)
+  \brief Get color resources value corresponding to the item.
+  \param val default value (returned if there is no such resource)
+  \return color value of the associated resource
+  \sa setColor()
 */
 QColor QtxPreferenceItem::getColor( const QColor& val ) const
 {
@@ -480,8 +605,10 @@ QColor QtxPreferenceItem::getColor( const QColor& val ) const
 }
 
 /*!
-  \return font value of resource corresponding to item
-  \param val - default value (it is returned if there is no such resource)
+  \brief Get font resources value corresponding to the item.
+  \param val default value (returned if there is no such resource)
+  \return font value of the associated resource
+  \sa setFont()
 */
 QFont QtxPreferenceItem::getFont( const QFont& val ) const
 {
@@ -490,8 +617,9 @@ QFont QtxPreferenceItem::getFont( const QFont& val ) const
 }
 
 /*!
-  Sets value of resource
-  \param val - value
+  \brief Set integer resources value corresponding to the item.
+  \param val new value
+  \sa getInteger()
 */
 void QtxPreferenceItem::setInteger( const int val )
 {
@@ -501,8 +629,9 @@ void QtxPreferenceItem::setInteger( const int val )
 }
 
 /*!
-  Sets value of resource
-  \param val - value
+  \brief Set double resources value corresponding to the item.
+  \param val new value
+  \sa getDouble()
 */
 void QtxPreferenceItem::setDouble( const double val )
 {
@@ -512,8 +641,9 @@ void QtxPreferenceItem::setDouble( const double val )
 }
 
 /*!
-  Sets value of resource
-  \param val - value
+  \brief Set boolean resources value corresponding to the item.
+  \param val new value
+  \sa getBoolean()
 */
 void QtxPreferenceItem::setBoolean( const bool val )
 {
@@ -523,8 +653,9 @@ void QtxPreferenceItem::setBoolean( const bool val )
 }
 
 /*!
-  Sets value of resource
-  \param val - value
+  \brief Set string resources value corresponding to the item.
+  \param val new value
+  \sa getString()
 */
 void QtxPreferenceItem::setString( const QString& val )
 {
@@ -534,8 +665,9 @@ void QtxPreferenceItem::setString( const QString& val )
 }
 
 /*!
-  Sets value of resource
-  \param val - value
+  \brief Set color resources value corresponding to the item.
+  \param val new value
+  \sa getColor()
 */
 void QtxPreferenceItem::setColor( const QColor& val )
 {
@@ -545,8 +677,9 @@ void QtxPreferenceItem::setColor( const QColor& val )
 }
 
 /*!
-  Sets value of resource
-  \param val - value
+  \brief Set font resources value corresponding to the item.
+  \param val new value
+  \sa getFont()
 */
 void QtxPreferenceItem::setFont( const QFont& val )
 {
@@ -555,32 +688,88 @@ void QtxPreferenceItem::setFont( const QFont& val )
     resMgr->setValue( mySection, myParameter, val );
 }
 
-void QtxPreferenceItem::itemAdded( QtxPreferenceItem* )
+/*!
+  \brief Callback function which is called when the child
+  preference item is added.
+  
+  This function can be reimplemented in the subclasses to customize
+  child item addition operation. Base implementation does nothing.
+
+  \param item child item being added
+  \sa itemRemoved(), itemChanged()
+*/
+void QtxPreferenceItem::itemAdded( QtxPreferenceItem* /*item*/ )
 {
 }
 
-void QtxPreferenceItem::itemRemoved( QtxPreferenceItem* )
+/*!
+  \brief Callback function which is called when the child
+  preference item is removed.
+  
+  This function can be reimplemented in the subclasses to customize
+  child item removal operation. Base implementation does nothing.
+
+  \param item child item being removed
+  \sa itemAdded(), itemChanged()
+*/
+void QtxPreferenceItem::itemRemoved( QtxPreferenceItem* /*item*/ )
 {
 }
 
-void QtxPreferenceItem::itemChanged( QtxPreferenceItem* )
+/*!
+  \brief Callback function which is called when the child
+  preference item is modified.
+  
+  This function can be reimplemented in the subclasses to customize
+  child item modifying operation. Base implementation does nothing.
+
+  \param item child item being modified
+  \sa itemAdded(), itemRemoved()
+*/
+void QtxPreferenceItem::itemChanged( QtxPreferenceItem* /*item*/ )
 {
 }
 
+/*!
+  \brief Initiate item updating.
+*/
 void QtxPreferenceItem::triggerUpdate()
 {
   Updater::instance()->updateItem( this );
 }
 
-QVariant QtxPreferenceItem::optionValue( const QString& ) const
+/*!
+  \brief Get preference item option value.
+
+  This function can be reimplemented in the subclasses.
+  Base implementation does nothing.
+  
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOptionValue()
+*/
+QVariant QtxPreferenceItem::optionValue( const QString& /*name*/ ) const
 {
   return QVariant();
 }
 
-void QtxPreferenceItem::setOptionValue( const QString&, const QVariant& )
+/*!
+  \brief Set preference item option value.
+
+  This function can be reimplemented in the subclasses.
+  Base implementation does nothing.
+  
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
+void QtxPreferenceItem::setOptionValue( const QString& /*name*/, const QVariant& /*val*/ )
 {
 }
 
+/*!
+  \brief Initiate item changing call back operation.
+*/
 void QtxPreferenceItem::sendItemChanges()
 {
   if ( parentItem() )
@@ -588,7 +777,8 @@ void QtxPreferenceItem::sendItemChanges()
 }
 
 /*!
-  \return free item id
+  \brief Generate unique preference item identifier.
+  \return unique item ID
 */
 int QtxPreferenceItem::generateId()
 {
@@ -596,51 +786,53 @@ int QtxPreferenceItem::generateId()
   return _id++;
 }
 
-
-
 /*!
   \class QtxPreferenceMgr
-  Class for managing preferences items
+  \brief Class for managing preferences items.
 */
 
-
-
 /*!
-  Constructor
+  \brief Constructor.
+  \param mgr resources manager
 */
 QtxPreferenceMgr::QtxPreferenceMgr( QtxResourceMgr* mgr )
 : QtxPreferenceItem( 0 ),
-myResMgr( mgr )
+  myResMgr( mgr )
 {
 }
 
 /*!
-  Destructor
+  \brief Destructor.
 */
 QtxPreferenceMgr::~QtxPreferenceMgr()
 {
 }
 
 /*!
-  \return assigned resource manager
+  \brief Get the resources manager.
+  \return resource manager pointer or 0 if it is not defined
 */
 QtxResourceMgr* QtxPreferenceMgr::resourceMgr() const
 {
   return myResMgr;
 }
 
+/*!
+  \brief Get the parent preferences manager.
+  \return pointer to itself
+*/
 QtxPreferenceMgr* QtxPreferenceMgr::preferenceMgr() const
 {
   return (QtxPreferenceMgr*)this;
 }
 
-/*!
-  Adds new item
-  \param label - label of widget to edit preference
-  \param pId - parent item id
-  \param type - type of item
-  \param section - section of resource assigned with item
-  \param param - name of resource assigned with item
+/*
+  \brief Add new preference item.
+  \param label label of widget to edit preference item
+  \param pId parent preference item id
+  \param type preference item type
+  \param section resource file section associated to the preference item
+  \param param resource file parameter associated to the preference item
 */
 /*
 int QtxPreferenceMgr::addItem( const QString& label, const int pId, const int type,
@@ -668,9 +860,11 @@ int QtxPreferenceMgr::addItem( const QString& label, const int pId, const int ty
 */
 
 /*!
-  \return value of item property
-  \param id - item id
-  \propName - propertyName
+  \brief Get preference item option value.
+  \param id preference item ID
+  \param propName option name
+  \return property value or null QVariant if option is not set
+  \sa setOption()
 */
 QVariant QtxPreferenceMgr::option( const int id, const QString& propName ) const
 {
@@ -680,11 +874,13 @@ QVariant QtxPreferenceMgr::option( const int id, const QString& propName ) const
     propValue = i->option( propName );
   return propValue;
 }
+
 /*!
-  Sets value of item property
-  \param id - item id
-  \propName - propertyName
-  \propValue - new value of property
+  \brief Set preference item option value.
+  \param id preference item ID
+  \param propName option name
+  \param propValue new property value
+  \sa option()
 */
 void QtxPreferenceMgr::setOption( const int id, const QString& propName, const QVariant& propValue )
 {
@@ -694,7 +890,8 @@ void QtxPreferenceMgr::setOption( const int id, const QString& propName, const Q
 }
 
 /*!
-  Stores all values to resource manager
+  \brief Store all preferences item to the resource manager.
+  \sa retrieve()
 */
 void QtxPreferenceMgr::store()
 {
@@ -715,7 +912,8 @@ void QtxPreferenceMgr::store()
 }
 
 /*!
-  Retrieve all values from resource manager
+  \brief Retrieve all preference items from the resource manager.
+  \sa store()
 */
 void QtxPreferenceMgr::retrieve()
 {
@@ -725,7 +923,8 @@ void QtxPreferenceMgr::retrieve()
 }
 
 /*!
-  Stores all values to backup container
+  \brief Dumps all values to the backup container.
+  \sa fromBackup()
 */
 void QtxPreferenceMgr::toBackup()
 {
@@ -734,7 +933,8 @@ void QtxPreferenceMgr::toBackup()
 }
 
 /*!
-  Retrieve all values from backup container
+  \brief Restore all values from the backup container.
+  \sa toBackup()
 */
 void QtxPreferenceMgr::fromBackup()
 {
@@ -753,19 +953,22 @@ void QtxPreferenceMgr::fromBackup()
 }
 
 /*!
-  Updates resource edit (default implementation is empty)
+  \brief Update preferences manager.
+  
+  Base implementation does nothing.
 */
 void QtxPreferenceMgr::update()
 {
 }
 
-/*!
-  Creates item
+/*
+  \brief Create preference item.
+  \param label preference item title
+  \param type preference item type
+  \param pId parent preference item ID
   \return new item
-  \param label - text of label for new item
-  \param type - type of new item
-  \param pId - parent id
-
+*/
+/*
 QtxPreferenceItem* QtxPreferenceMgr::createItem( const QString& label, const int type, const int pId )
 {
   Item* i = 0;
@@ -786,8 +989,9 @@ QtxPreferenceItem* QtxPreferenceMgr::createItem( const QString& label, const int
 */
 
 /*!
-  \return all resources values from widgets
-  \param map - map to be filled by resources values
+  \brief Get all resources items values.
+  \param map used as container filled with the resources values (<ID>:<value>)
+  \sa setResourceValues()
 */
 void QtxPreferenceMgr::resourceValues( QMap<int, QString>& map ) const
 {
@@ -804,8 +1008,10 @@ void QtxPreferenceMgr::resourceValues( QMap<int, QString>& map ) const
 }
 
 /*!
-  \return all resources values from widgets
-  \param map - map to be filled by resources values
+  \brief Get all resources items values.
+  \param map used as container filled with the resources values
+  (<item>:<value>)
+  \sa setResourceValues()
 */
 void QtxPreferenceMgr::resourceValues( ResourceMap& map ) const
 {
@@ -822,8 +1028,9 @@ void QtxPreferenceMgr::resourceValues( ResourceMap& map ) const
 }
 
 /*!
-  Sets to widgets all resources values from map
-  \param map - map with resources values
+  \brief Set all resources items values.
+  \param map map with resources values (<ID>:<value>)
+  \sa resourceValues()
 */
 void QtxPreferenceMgr::setResourceValues( QMap<int, QString>& map ) const
 {
@@ -836,8 +1043,9 @@ void QtxPreferenceMgr::setResourceValues( QMap<int, QString>& map ) const
 }
 
 /*!
-  Sets to widgets all resources values from map
-  \param map - map with resources values
+  \brief Set all resources items values.
+  \param map map with resources values (<item>:<value>)
+  \sa resourceValues()
 */
 void QtxPreferenceMgr::setResourceValues( ResourceMap& map ) const
 {
@@ -846,11 +1054,12 @@ void QtxPreferenceMgr::setResourceValues( ResourceMap& map ) const
 }
 
 /*!
-   Compares two map of resources values and finds different ones
-   \param map1 - first map
-   \param map2 - second map
-   \param resMap - map to be filled with different values
-   \param fromFirst - if it is true, then resMap will be filled with values from first map, otherwise - from second
+  \brief Compare two maps of resources values to find differences.
+  \param map1 first map
+  \param map2 second map
+  \param resMap map to be filled with different values
+  \param fromFirst if \c true, then \a resMap will be filled with the values
+  from \a map1, otherwise - from \a map2
 */
 void QtxPreferenceMgr::differentValues( const QMap<int, QString>& map1, const QMap<int, QString>& map2,
                                         QMap<int, QString>& resMap, const bool fromFirst ) const
@@ -867,11 +1076,12 @@ void QtxPreferenceMgr::differentValues( const QMap<int, QString>& map1, const QM
 }
 
 /*!
-   Compares two map of resources values and finds different ones
-   \param map1 - first map
-   \param map2 - second map
-   \param resMap - map to be filled with different values
-   \param fromFirst - if it is true, then resMap will be filled with values from first map, otherwise - from second
+  \brief Compare two maps of resources values to find differences.
+  \param map1 first map
+  \param map2 second map
+  \param resMap map to be filled with different values
+  \param fromFirst if \c true, then \a resMap will be filled with the values
+  from \a map1, otherwise - from \a map2
 */
 void QtxPreferenceMgr::differentValues( const ResourceMap& map1, const ResourceMap& map2,
                                         ResourceMap& resMap, const bool fromFirst ) const
@@ -888,8 +1098,12 @@ void QtxPreferenceMgr::differentValues( const ResourceMap& map1, const ResourceM
 }
 
 /*!
-  Makes some activity on resource changing (called from store() method)
-  \sa store()
+  \brief Perform custom activity on resource changing.
+
+  This method is called from store() and fromBackup() methods.
+  Base implementation does nothing.
+  
+  \sa store(), fromBackup()
 */
 void QtxPreferenceMgr::changedResources( const ResourceMap& )
 {

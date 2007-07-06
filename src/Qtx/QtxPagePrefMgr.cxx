@@ -41,13 +41,18 @@
 
 /*!
   \class QtxPagePrefMgr
-  GUI implementation of QtxPreferenceMgr - manager of preferences
+  \brief GUI implementation of the QtxPreferenceMgr class: preferences manager.
 */
 
+/*!
+  \brief Constructor.
+  \param resMgr resource manager
+  \param parent parent widget
+*/
 QtxPagePrefMgr::QtxPagePrefMgr( QtxResourceMgr* resMgr, QWidget* parent )
 : QFrame( parent ),
-QtxPreferenceMgr( resMgr ),
-myInit( false )
+  QtxPreferenceMgr( resMgr ),
+  myInit( false )
 {
   myBox = new QtxGridBox( 1, Qt::Horizontal, this, 0 );
   QVBoxLayout* base = new QVBoxLayout( this );
@@ -56,10 +61,17 @@ myInit( false )
   base->addWidget( myBox );
 }
 
+/*!
+  \brief Destructor
+*/
 QtxPagePrefMgr::~QtxPagePrefMgr()
 {
 }
 
+/*!
+  \brief Get recommended size for the widget.
+  \return recommended widget size
+*/
 QSize QtxPagePrefMgr::sizeHint() const
 {
   initialize();
@@ -67,6 +79,10 @@ QSize QtxPagePrefMgr::sizeHint() const
   return QFrame::sizeHint();
 }
 
+/*!
+  \brief Get recommended minimum size for the widget.
+  \return recommended minimum widget size
+*/
 QSize QtxPagePrefMgr::minimumSizeHint() const
 {
   initialize();
@@ -74,6 +90,11 @@ QSize QtxPagePrefMgr::minimumSizeHint() const
   return QFrame::minimumSizeHint();
 }
 
+/*!
+  \brief Customize show/hide widget operation.
+  \param on if \c true the widget is being shown, otherswise 
+  it is being hidden
+*/
 void QtxPagePrefMgr::setVisible( bool on )
 {
   if ( on && !myInit )
@@ -82,6 +103,9 @@ void QtxPagePrefMgr::setVisible( bool on )
   QFrame::setVisible( on );
 }
 
+/*!
+  \brief Update widget contents.
+*/
 void QtxPagePrefMgr::updateContents()
 {
   QtxPreferenceMgr::updateContents();
@@ -98,21 +122,45 @@ void QtxPagePrefMgr::updateContents()
   }
 }
 
-void QtxPagePrefMgr::itemAdded( QtxPreferenceItem* )
+/*!
+  \brief Callback function which is called when the child
+  preference item is added.
+  \param item child item being added
+  \sa itemRemoved(), itemChanged()
+*/
+void QtxPagePrefMgr::itemAdded( QtxPreferenceItem* /*item*/ )
 {
   triggerUpdate();
 }
 
-void QtxPagePrefMgr::itemRemoved( QtxPreferenceItem* )
+/*!
+  \brief Callback function which is called when the child
+  preference item is removed.
+  \param item child item being removed
+  \sa itemAdded(), itemChanged()
+*/
+void QtxPagePrefMgr::itemRemoved( QtxPreferenceItem* /*item*/ )
 {
   triggerUpdate();
 }
 
-void QtxPagePrefMgr::itemChanged( QtxPreferenceItem* )
+/*!
+  \brief Callback function which is called when the child
+  preference item is modified.
+  \param item child item being modified
+  \sa itemAdded(), itemRemoved()
+*/
+void QtxPagePrefMgr::itemChanged( QtxPreferenceItem* /*item*/ )
 {
   triggerUpdate();
 }
 
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOptionValue()
+*/
 QVariant QtxPagePrefMgr::optionValue( const QString& name ) const
 {
   if ( name == "orientation" )
@@ -121,6 +169,12 @@ QVariant QtxPagePrefMgr::optionValue( const QString& name ) const
     return QtxPreferenceMgr::optionValue( name );
 }
 
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
 void QtxPagePrefMgr::setOptionValue( const QString& name, const QVariant& val )
 {
   if ( name == "orientation" )
@@ -132,6 +186,9 @@ void QtxPagePrefMgr::setOptionValue( const QString& name, const QVariant& val )
     QtxPreferenceMgr::setOptionValue( name, val );
 }
 
+/*!
+  \brief Perform internal initialization.
+*/
 void QtxPagePrefMgr::initialize() const
 {
   if ( myInit )
@@ -150,65 +207,133 @@ void QtxPagePrefMgr::initialize() const
 
 /*!
   \class QtxPagePrefItem
-  Base class for implementation of the preference items
+  \brief Base class for implementation of all the widget-based
+  preference items.
 */
 
+/*!
+  \brief Constructor.
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefItem::QtxPagePrefItem( const QString& title, QtxPreferenceItem* parent,
                                   const QString& sect, const QString& param )
 : QtxPreferenceItem( title, sect, param, parent ),
-myWidget( 0 )
+  myWidget( 0 )
 {
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefItem::~QtxPagePrefItem()
 {
   delete myWidget;
 }
 
+/*!
+  \brief Get unique item type identifier.
+  \return item type ID
+*/
 int QtxPagePrefItem::rtti() const
 {
   return QtxPagePrefItem::RTTI();
 }
 
+/*!
+  \brief Get preference item editor widget.
+  \return editor widget
+  \sa setWidget()
+*/
 QWidget* QtxPagePrefItem::widget() const
 {
   return myWidget;
 }
 
+/*!
+  \brief Specify unique item class identifier.
+  \return item class ID
+*/
 int QtxPagePrefItem::RTTI()
 {
   return 1000;
 }
 
+/*!
+  \brief Set preference item editor widget.
+  \param wid editor widget
+  \sa widget()
+*/
 void QtxPagePrefItem::setWidget( QWidget* wid )
 {
   myWidget = wid;
   sendItemChanges();
 }
 
-void QtxPagePrefItem::itemAdded( QtxPreferenceItem* )
+/*!
+  \brief Callback function which is called when the child
+  preference item is added.
+  \param item child item being added
+  \sa itemRemoved(), itemChanged()
+*/
+void QtxPagePrefItem::itemAdded( QtxPreferenceItem* /*item*/ )
 {
   contentChanged();
 }
 
-void QtxPagePrefItem::itemRemoved( QtxPreferenceItem* )
+/*!
+  \brief Callback function which is called when the child
+  preference item is removed.
+  \param item child item being removed
+  \sa itemAdded(), itemChanged()
+*/
+void QtxPagePrefItem::itemRemoved( QtxPreferenceItem* /*item*/ )
 {
   contentChanged();
 }
 
-void QtxPagePrefItem::itemChanged( QtxPreferenceItem* )
+/*!
+  \brief Callback function which is called when the child
+  preference item is modified.
+  \param item child item being modified
+  \sa itemAdded(), itemRemoved()
+*/
+void QtxPagePrefItem::itemChanged( QtxPreferenceItem* /*item*/ )
 {
   contentChanged();
 }
 
+/*!
+  \brief Store preference item to the resource manager.
+  
+  This method should be reimplemented in the subclasses.
+  Base implementation does nothing.
+
+  \sa retrieve()
+*/
 void QtxPagePrefItem::store()
 {
 }
 
+/*!
+  \brief Retrieve preference item from the resource manager.
+  
+  This method should be reimplemented in the subclasses.
+  Base implementation does nothing.
+
+  \sa store()
+*/
 void QtxPagePrefItem::retrieve()
 {
 }
 
+/*!
+  \brief Find all child items of the QtxPagePrefItem type.
+  \param list used to return list of child items
+  \param rec if \c true, perform recursive search
+*/
 void QtxPagePrefItem::pageChildItems( QList<QtxPagePrefItem*>& list, const bool rec ) const
 {
   QList<QtxPreferenceItem*> lst = childItems( rec );
@@ -219,6 +344,11 @@ void QtxPagePrefItem::pageChildItems( QList<QtxPagePrefItem*>& list, const bool 
   }
 }
 
+/*!
+  \brief Called when contents is changed (item is added, removed or modified).
+  
+  Triggers the item update.
+*/
 void QtxPagePrefItem::contentChanged()
 {
   triggerUpdate();
@@ -226,12 +356,21 @@ void QtxPagePrefItem::contentChanged()
 
 /*!
   \class QtxPageNamedPrefItem
-  Base class for implementation of the named preference items (items with text labels).
+  \brief Base class for implementation of the named preference items
+  (items with text labels).
+*/
+
+/*!
+  \brief Constructor.
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
 */
 QtxPageNamedPrefItem::QtxPageNamedPrefItem( const QString& title, QtxPreferenceItem* parent,
                                             const QString& sect, const QString& param )
 : QtxPagePrefItem( title, parent, sect, param ),
-myControl( 0 )
+  myControl( 0 )
 {
   QWidget* main = new QWidget();
   QHBoxLayout* base = new QHBoxLayout( main );
@@ -246,10 +385,17 @@ myControl( 0 )
   myLabel->setVisible( !title.isEmpty() );
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPageNamedPrefItem::~QtxPageNamedPrefItem()
 {
 }
 
+/*!
+  \brief Set preference title.
+  \param txt new preference title.
+*/
 void QtxPageNamedPrefItem::setTitle( const QString& txt )
 {
   QtxPagePrefItem::setTitle( txt );
@@ -259,16 +405,30 @@ void QtxPageNamedPrefItem::setTitle( const QString& txt )
     label()->setVisible( true );
 }
 
+/*!
+  \brief Get label widget corresponding to the preference item.
+  \return label widget
+*/
 QLabel* QtxPageNamedPrefItem::label() const
 {
   return myLabel;
 }
 
+/*!
+  \brief Get control widget corresponding to the preference item.
+  \return control widget
+  \sa setControl()
+*/
 QWidget* QtxPageNamedPrefItem::control() const
 {
   return myControl;
 }
 
+/*!
+  \brief Set control widget corresponding to the preference item.
+  \param wid control widget
+  \sa control()
+*/
 void QtxPageNamedPrefItem::setControl( QWidget* wid )
 {
   if ( myControl == wid )
@@ -283,12 +443,20 @@ void QtxPageNamedPrefItem::setControl( QWidget* wid )
 
 /*!
   \class QtxPagePrefListItem
+  \brief GUI implementation of the list container preference item.
 */
 
+/*!
+  \brief Constructor.
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefListItem::QtxPagePrefListItem( const QString& title, QtxPreferenceItem* parent,
                                           const QString& sect, const QString& param )
 : QtxPagePrefItem( title, parent, sect, param ),
-myFix( false )
+  myFix( false )
 {
   QSplitter* main = new QSplitter( Qt::Horizontal );
   main->setChildrenCollapsible( false );
@@ -306,15 +474,28 @@ myFix( false )
   setWidget( main );
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefListItem::~QtxPagePrefListItem()
 {
 }
 
+/*!
+  \brief Get message text which is shown if the container is empty.
+  \return message text
+  \sa setEmptyInfo()
+*/
 QString QtxPagePrefListItem::emptyInfo() const
 {
   return myInfText;
 }
 
+/*!
+  \brief Set message text which is shown if the container is empty.
+  \param new message text
+  \sa emptyInfo()
+*/
 void QtxPagePrefListItem::setEmptyInfo( const QString& inf )
 {
   if ( myInfText == inf )
@@ -325,11 +506,21 @@ void QtxPagePrefListItem::setEmptyInfo( const QString& inf )
   updateVisible();
 }
 
+/*!
+  \brief Check if the preference item widget is of fixed size.
+  \return \c true if the widget has the fixed size
+  \sa setFixedSize()
+*/
 bool QtxPagePrefListItem::isFixedSize() const
 {
   return myFix;
 }
 
+/*!
+  \brief Set the preference item widget to be of fixed size.
+  \param on if \c true, the widget will have the fixed size
+  \sa isFixedSize()
+*/
 void QtxPagePrefListItem::setFixedSize( const bool on )
 {
   if ( myFix == on )
@@ -340,11 +531,20 @@ void QtxPagePrefListItem::setFixedSize( const bool on )
   updateGeom();
 }
 
+/*!
+  \brief Update widget contents.
+*/
 void QtxPagePrefListItem::updateContents()
 {
   updateVisible();
 }
 
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOptionValue()
+*/
 QVariant QtxPagePrefListItem::optionValue( const QString& name ) const
 {
   if ( name == "fixed_size" )
@@ -355,6 +555,12 @@ QVariant QtxPagePrefListItem::optionValue( const QString& name ) const
     return QtxPagePrefItem::optionValue( name );
 }
 
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
 void QtxPagePrefListItem::setOptionValue( const QString& name, const QVariant& val )
 {
   if ( name == "fixed_size" )
@@ -371,11 +577,17 @@ void QtxPagePrefListItem::setOptionValue( const QString& name, const QVariant& v
     QtxPagePrefItem::setOptionValue( name, val );
 }
 
+/*!
+  \brief Called when the selection in the list box is changed.
+*/
 void QtxPagePrefListItem::onItemSelectionChanged()
 {
   updateState();
 }
 
+/*!
+  \brief Update information label widget.
+*/
 void QtxPagePrefListItem::updateInfo()
 {
   QString infoText;
@@ -397,6 +609,9 @@ void QtxPagePrefListItem::updateInfo()
   myInfLabel->setText( infoText );
 }
 
+/*!
+  \brief Update widget state.
+*/
 void QtxPagePrefListItem::updateState()
 {
   QtxPagePrefItem* item = selectedItem();
@@ -407,6 +622,9 @@ void QtxPagePrefListItem::updateState()
   updateInfo();
 }
 
+/*!
+  \brief Update visibile child widgets.
+*/
 void QtxPagePrefListItem::updateVisible()
 {
   QList<QtxPagePrefItem*> items;
@@ -443,12 +661,15 @@ void QtxPagePrefListItem::updateVisible()
   if ( selected() == -1 && myList->count() )
     setSelected( myList->item( 0 )->data( Qt::UserRole ).toInt() );
 
-  myList->setVisible( myList->count() > 1 );
+  //myList->setVisible( myList->count() > 1 );
 
   updateState();
   updateGeom();
 }
 
+/*!
+  \brief Update widget geometry.
+*/
 void QtxPagePrefListItem::updateGeom()
 {
   if ( myFix )
@@ -470,6 +691,11 @@ void QtxPagePrefListItem::updateGeom()
   }
 }
 
+/*!
+  \brief Get identifier of the currently selected preference item.
+  \return identifier of the currently selected item or -1 if no item is selected
+  \sa setSelected()
+*/
 int QtxPagePrefListItem::selected() const
 {
   QList<QListWidgetItem*> selList = myList->selectedItems();
@@ -480,6 +706,11 @@ int QtxPagePrefListItem::selected() const
   return v.canConvert( QVariant::Int ) ? v.toInt() : -1;
 }
 
+/*!
+  \brief Get currently selected preference item.
+  \return currently selected item or 0 if no item is selected
+  \sa setSelected()
+*/
 QtxPagePrefItem* QtxPagePrefListItem::selectedItem() const
 {
   int selId = selected();
@@ -496,6 +727,10 @@ QtxPagePrefItem* QtxPagePrefListItem::selectedItem() const
   return item;
 }
 
+/*!
+  \brief Set currently selected preference item.
+  \param id identifier of the preference item to make selected
+*/
 void QtxPagePrefListItem::setSelected( const int id )
 {
   int idx = -1;
@@ -517,8 +752,16 @@ void QtxPagePrefListItem::setSelected( const int id )
 
 /*!
   \class QtxPagePrefTabsItem
+  \brief GUI implementation of the tab widget container.
 */
 
+/*!
+  \brief Constructor.
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefTabsItem::QtxPagePrefTabsItem( const QString& title, QtxPreferenceItem* parent,
                                           const QString& sect, const QString& param )
 : QtxPagePrefItem( title, parent, sect, param )
@@ -527,45 +770,87 @@ QtxPagePrefTabsItem::QtxPagePrefTabsItem( const QString& title, QtxPreferenceIte
   setWidget( myTabs );
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefTabsItem::~QtxPagePrefTabsItem()
 {
 }
 
+/*!
+  \brief Update widget contents.
+*/
 void QtxPagePrefTabsItem::updateContents()
 {
   updateTabs();
 }
 
+/*!
+  \brief Get tabs position.
+  \return current tabs position (QTabWidget::TabPosition)
+  \sa setTabPosition()
+*/
 int QtxPagePrefTabsItem::tabPosition() const
 {
   return myTabs->tabPosition();
 }
 
+/*!
+  \brief Set tabs position.
+  \param tp new tabs position (QTabWidget::TabPosition)
+  \sa tabPosition()
+*/
 void QtxPagePrefTabsItem::setTabPosition( const int tp )
 {
   myTabs->setTabPosition( (QTabWidget::TabPosition)tp );
 }
 
+/*!
+  \brief Get tabs shape.
+  \return current tabs shape (QTabWidget::TabShape)
+  \sa setTabShape()
+*/
 int QtxPagePrefTabsItem::tabShape() const
 {
   return myTabs->tabShape();
 }
 
+/*!
+  \brief Set tabs shape.
+  \param ts new tabs shape (QTabWidget::TabShape)
+  \sa tabShape()
+*/
 void QtxPagePrefTabsItem::setTabShape( const int ts )
 {
   myTabs->setTabShape( (QTabWidget::TabShape)ts );
 }
 
+/*!
+  \brief Get tabs icon size.
+  \return current tabs icon size
+  \sa setTabIconSize()
+*/
 QSize QtxPagePrefTabsItem::tabIconSize() const
 {
   return myTabs->iconSize();
 }
 
+/*!
+  \brief Set tabs icon size.
+  \param sz new tabs icon size
+  \sa tabIconSize()
+*/
 void QtxPagePrefTabsItem::setTabIconSize( const QSize& sz )
 {
   myTabs->setIconSize( sz );
 }
 
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOptionValue()
+*/
 QVariant QtxPagePrefTabsItem::optionValue( const QString& name ) const
 {
   if ( name == "position" )
@@ -578,6 +863,12 @@ QVariant QtxPagePrefTabsItem::optionValue( const QString& name ) const
     return QtxPagePrefItem::optionValue( name );
 }
 
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
 void QtxPagePrefTabsItem::setOptionValue( const QString& name, const QVariant& val )
 {
   if ( name == "position" )
@@ -599,6 +890,9 @@ void QtxPagePrefTabsItem::setOptionValue( const QString& name, const QVariant& v
     QtxPagePrefItem::setOptionValue( name, val );
 }
 
+/*!
+  \brief Update tabs.
+*/
 void QtxPagePrefTabsItem::updateTabs()
 {
   QList<QtxPagePrefItem*> items;
@@ -646,8 +940,16 @@ void QtxPagePrefTabsItem::updateTabs()
 
 /*!
   \class QtxPagePrefFrameItem
+  \brief GUI implementation of the frame widget container.
 */
 
+/*!
+  \brief Constructor.
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefFrameItem::QtxPagePrefFrameItem( const QString& title, QtxPreferenceItem* parent,
                                             const QString& sect, const QString& param )
 : QtxPagePrefItem( title, parent, sect, param )
@@ -656,55 +958,107 @@ QtxPagePrefFrameItem::QtxPagePrefFrameItem( const QString& title, QtxPreferenceI
   setWidget( myBox );
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefFrameItem::~QtxPagePrefFrameItem()
 {
 }
 
+/*!
+  \brief Update widget contents.
+*/
 void QtxPagePrefFrameItem::updateContents()
 {
   updateFrame();
 }
 
+/*!
+  \brief Get frame margin.
+  \return current frame margin
+  \sa setMargin()
+*/
 int QtxPagePrefFrameItem::margin() const
 {
   return myBox->insideMargin();
 }
 
+/*!
+  \brief Get frame margin.
+  \param m new frame margin
+  \sa margin()
+*/
 void QtxPagePrefFrameItem::setMargin( const int m )
 {
   myBox->setInsideMargin( m );
 }
 
+/*!
+  \brief Get frame spacing.
+  \return current frame spacing
+  \sa setSpacing()
+*/
 int QtxPagePrefFrameItem::spacing() const
 {
   return myBox->insideSpacing();
 }
 
+/*!
+  \brief Set frame spacing.
+  \param s new frame spacing
+  \sa spacing()
+*/
 void QtxPagePrefFrameItem::setSpacing( const int s )
 {
   myBox->setInsideSpacing( s );
 }
 
+/*!
+  \brief Get number of frame columns.
+  \return current columns number
+  \sa setColumns()
+*/
 int QtxPagePrefFrameItem::columns() const
 {
   return myBox->columns();
 }
 
+/*!
+  \brief Set number of frame columns.
+  \param c new columns number
+  \sa columns()
+*/
 void QtxPagePrefFrameItem::setColumns( const int c )
 {
   myBox->setColumns( c );
 }
 
+/*!
+  \brief Get frame box orientation.
+  \return current frame orientation
+  \sa setOrientation()
+*/
 Qt::Orientation QtxPagePrefFrameItem::orientation() const
 {
   return myBox->orientation();
 }
 
+/*!
+  \brief Set frame box orientation.
+  \param o new frame orientation
+  \sa orientation()
+*/
 void QtxPagePrefFrameItem::setOrientation( const Qt::Orientation o )
 {
   myBox->setOrientation( o );
 }
 
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOptionValue()
+*/
 QVariant QtxPagePrefFrameItem::optionValue( const QString& name ) const
 {
   if ( name == "margin" )
@@ -719,6 +1073,12 @@ QVariant QtxPagePrefFrameItem::optionValue( const QString& name ) const
     return QtxPagePrefItem::optionValue( name );
 }
 
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
 void QtxPagePrefFrameItem::setOptionValue( const QString& name, const QVariant& val )
 {
   if ( name == "margin" )
@@ -745,6 +1105,9 @@ void QtxPagePrefFrameItem::setOptionValue( const QString& name, const QVariant& 
     QtxPagePrefItem::setOptionValue( name, val );
 }
 
+/*!
+  \brief Update frame widget.
+*/
 void QtxPagePrefFrameItem::updateFrame()
 {
   QList<QtxPagePrefItem*> items;
@@ -763,8 +1126,16 @@ void QtxPagePrefFrameItem::updateFrame()
 
 /*!
   \class QtxPagePrefGroupItem
+  \brief GUI implementation of the group widget container.
 */
 
+/*!
+  \brief Constructor.
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefGroupItem::QtxPagePrefGroupItem( const QString& title, QtxPreferenceItem* parent,
                                             const QString& sect, const QString& param )
 : QtxPagePrefItem( title, parent, sect, param )
@@ -776,6 +1147,14 @@ QtxPagePrefGroupItem::QtxPagePrefGroupItem( const QString& title, QtxPreferenceI
   setWidget( myGroup );
 }
 
+/*!
+  \brief Constructor.
+  \param cols columns number
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefGroupItem::QtxPagePrefGroupItem( const int cols, const QString& title, QtxPreferenceItem* parent,
                                             const QString& sect, const QString& param )
 : QtxPagePrefItem( title, parent, sect, param )
@@ -787,16 +1166,28 @@ QtxPagePrefGroupItem::QtxPagePrefGroupItem( const int cols, const QString& title
   setWidget( myGroup );
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefGroupItem::~QtxPagePrefGroupItem()
 {
 }
 
+/*!
+  \brief Assign resource file settings to the preference item.
+  \param sect resource file section name
+  \param param resource file parameter name
+  \sa resource()
+*/
 void QtxPagePrefGroupItem::setResource( const QString& sect, const QString& param )
 {
   QtxPagePrefItem::setResource( sect, param );
   updateState();
 }
 
+/*!
+  \brief Update widget contents.
+*/
 void QtxPagePrefGroupItem::updateContents()
 {
   myGroup->setTitle( title() );
@@ -805,68 +1196,130 @@ void QtxPagePrefGroupItem::updateContents()
   updateGroup();
 }
 
+/*!
+  \brief Get group box margin.
+  \return current group box margin
+  \sa setMargin()
+*/
 int QtxPagePrefGroupItem::margin() const
 {
   return myBox->insideMargin();
 }
 
+/*!
+  \brief Get group box margin.
+  \param m new group box margin
+  \sa margin()
+*/
 void QtxPagePrefGroupItem::setMargin( const int m )
 {
   myBox->setInsideMargin( m );
 }
 
+/*!
+  \brief Get group box spacing.
+  \return current group box spacing
+  \sa setSpacing()
+*/
 int QtxPagePrefGroupItem::spacing() const
 {
   return myBox->insideSpacing();
 }
 
+/*!
+  \brief Set group box spacing.
+  \param s new group box spacing
+  \sa spacing()
+*/
 void QtxPagePrefGroupItem::setSpacing( const int s )
 {
   myBox->setInsideSpacing( s );
 }
 
+/*!
+  \brief Get number of group box columns.
+  \return current columns number
+  \sa setColumns()
+*/
 int QtxPagePrefGroupItem::columns() const
 {
   return myBox->columns();
 }
 
+/*!
+  \brief Set number of group box columns.
+  \param c new columns number
+  \sa columns()
+*/
 void QtxPagePrefGroupItem::setColumns( const int c )
 {
   myBox->setColumns( c );
 }
 
+/*!
+  \brief Get group box orientation.
+  \return current group box orientation
+  \sa setOrientation()
+*/
 Qt::Orientation QtxPagePrefGroupItem::orientation() const
 {
   return myBox->orientation();
 }
 
+/*!
+  \brief Set group box orientation.
+  \param o new group box orientation
+  \sa orientation()
+*/
 void QtxPagePrefGroupItem::setOrientation( const Qt::Orientation o )
 {
   myBox->setOrientation( o );
 }
 
+/*!
+  \brief Get 'flat' flag of the group box widget.
+  \return \c true if the group box is flat
+*/
 bool QtxPagePrefGroupItem::isFlat() const
 {
   return myGroup->isFlat();
 }
 
+/*!
+  \brief Get 'flat' flag of the group box widget.
+  \param on if \c true the group box will be made flat
+*/
 void QtxPagePrefGroupItem::setFlat( const bool on )
 {
   myGroup->setFlat( on );
 }
 
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
 void QtxPagePrefGroupItem::store()
 {
   if ( myGroup->isCheckable() )
     setBoolean( myGroup->isChecked() );
 }
 
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
 void QtxPagePrefGroupItem::retrieve()
 {
   if ( myGroup->isCheckable() )
     myGroup->setChecked( getBoolean() );
 }
 
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOptionValue()
+*/
 QVariant QtxPagePrefGroupItem::optionValue( const QString& name ) const
 {
   if ( name == "margin" )
@@ -883,6 +1336,12 @@ QVariant QtxPagePrefGroupItem::optionValue( const QString& name ) const
     return QtxPagePrefItem::optionValue( name );
 }
 
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
 void QtxPagePrefGroupItem::setOptionValue( const QString& name, const QVariant& val )
 {
   if ( name == "margin" )
@@ -914,6 +1373,9 @@ void QtxPagePrefGroupItem::setOptionValue( const QString& name, const QVariant& 
     QtxPagePrefItem::setOptionValue( name, val );
 }
 
+/*!
+  \brief Update widget state.
+*/
 void QtxPagePrefGroupItem::updateState()
 {
   QString section, param;
@@ -921,6 +1383,9 @@ void QtxPagePrefGroupItem::updateState()
   myGroup->setCheckable( !title().isEmpty() && !section.isEmpty() && !param.isEmpty() );
 }
 
+/*!
+  \brief Update group box widget.
+*/
 void QtxPagePrefGroupItem::updateGroup()
 {
   QList<QtxPagePrefItem*> items;
@@ -939,14 +1404,33 @@ void QtxPagePrefGroupItem::updateGroup()
 
 /*!
   \class QtxPagePrefSpaceItem
+  \brief Simple spacer item which can be used in the preferences
+  editor dialog box.
 */
 
+/*!
+  \brief Constructor.
+
+  Creates spacer item with zero width and height and expanding 
+  on both directions (by height and width).
+
+  \param parent parent preference item
+*/
 QtxPagePrefSpaceItem::QtxPagePrefSpaceItem( QtxPreferenceItem* parent )
 : QtxPagePrefItem( QString(), parent )
 {
   initialize( 0, 0, 1, 1 );
 }
 
+/*!
+  \brief Constructor.
+
+  Creates spacer item with zero width and height and expanding 
+  according to the specified orientation.
+
+  \param o spacer orientation
+  \param parent parent preference item
+*/
 QtxPagePrefSpaceItem::QtxPagePrefSpaceItem( Qt::Orientation o, QtxPreferenceItem* parent )
 : QtxPagePrefItem( QString(), parent )
 {
@@ -956,21 +1440,47 @@ QtxPagePrefSpaceItem::QtxPagePrefSpaceItem( Qt::Orientation o, QtxPreferenceItem
     initialize( 0, 0, 0, 1 );
 }
 
+/*!
+  \brief Constructor.
+
+  Creates spacer item with specified width and height. The spacing
+  item is expanding horizontally if \a w <= 0 and vertically
+  if \a h <= 0.
+
+  \param w spacer width
+  \param h spacer height
+  \param parent parent preference item
+*/
 QtxPagePrefSpaceItem::QtxPagePrefSpaceItem( const int w, const int h, QtxPreferenceItem* parent )
 : QtxPagePrefItem( QString(), parent )
 {
   initialize( w, h, w > 0 ? 0 : 1, h > 0 ? 0 : 1 );
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefSpaceItem::~QtxPagePrefSpaceItem()
 {
 }
 
+/*!
+  \brief Get spacer item size for the specified direction.
+  \param o direction
+  \return size for the specified direction
+  \sa setSize()
+*/
 int QtxPagePrefSpaceItem::size( Qt::Orientation o ) const
 {
   return o == Qt::Horizontal ? widget()->minimumWidth() : widget()->minimumHeight();
 }
 
+/*!
+  \brief Set spacer item size for the specified direction.
+  \param o direction
+  \param sz new size for the specified direction
+  \sa size()
+*/
 void QtxPagePrefSpaceItem::setSize( Qt::Orientation o, const int sz )
 {
   if ( o == Qt::Horizontal )
@@ -979,12 +1489,24 @@ void QtxPagePrefSpaceItem::setSize( Qt::Orientation o, const int sz )
     widget()->setMinimumHeight( sz );
 }
 
+/*!
+  \brief Get spacer item stretch factor for the specified direction.
+  \param o direction
+  \return stretch factor for the specified direction
+  \sa setStretch()
+*/
 int QtxPagePrefSpaceItem::stretch( Qt::Orientation o ) const
 {
   QSizePolicy sp = widget()->sizePolicy();
   return o == Qt::Horizontal ? sp.horizontalStretch() : sp.verticalStretch();
 }
 
+/*!
+  \brief Set spacer item stretch factor for the specified direction.
+  \param o direction
+  \param sf new stretch factor for the specified direction
+  \sa stretch()
+*/
 void QtxPagePrefSpaceItem::setStretch( Qt::Orientation o, const int sf )
 {
   QSizePolicy sp = widget()->sizePolicy();
@@ -1002,6 +1524,12 @@ void QtxPagePrefSpaceItem::setStretch( Qt::Orientation o, const int sf )
   widget()->setSizePolicy( sp );
 }
 
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOptionValue()
+*/
 QVariant QtxPagePrefSpaceItem::optionValue( const QString& name ) const
 {
   if ( name == "horizontal_size" || name == "hsize" )
@@ -1016,6 +1544,12 @@ QVariant QtxPagePrefSpaceItem::optionValue( const QString& name ) const
     return QtxPagePrefItem::optionValue( name );
 }
 
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
 void QtxPagePrefSpaceItem::setOptionValue( const QString& name, const QVariant& val )
 {
   if ( name == "horizontal_size" || name == "hsize" )
@@ -1042,6 +1576,13 @@ void QtxPagePrefSpaceItem::setOptionValue( const QString& name, const QVariant& 
     QtxPagePrefItem::setOptionValue( name, val );
 }
 
+/*!
+  \brief Perform internal initialization.
+  \param w spacer item width
+  \param h spacer item height
+  \param ws spacer item horizontal stretch factor
+  \param hs spacer item vertical stretch factor
+*/
 void QtxPagePrefSpaceItem::initialize( const int w, const int h, const int hs, const int vs )
 {
   QSizePolicy sp;
@@ -1061,9 +1602,16 @@ void QtxPagePrefSpaceItem::initialize( const int w, const int h, const int hs, c
 
 /*!
   \class  QtxPagePrefCheckItem
-  GUI implementation of resources check item (bool).
+  \brief GUI implementation of the resources check box item (boolean).
 */
 
+/*!
+  \brief Constructor.
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefCheckItem::QtxPagePrefCheckItem( const QString& title, QtxPreferenceItem* parent,
                                             const QString& sect, const QString& param )
 
@@ -1074,10 +1622,17 @@ QtxPagePrefCheckItem::QtxPagePrefCheckItem( const QString& title, QtxPreferenceI
   setWidget( myCheck );
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefCheckItem::~QtxPagePrefCheckItem()
 {
 }
 
+/*!
+  \brief Set preference item title.
+  \param txt new preference title.
+*/
 void QtxPagePrefCheckItem::setTitle( const QString& txt )
 {
   QtxPagePrefItem::setTitle( txt );
@@ -1085,48 +1640,93 @@ void QtxPagePrefCheckItem::setTitle( const QString& txt )
   myCheck->setText( title() );
 }
                                             
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
 void QtxPagePrefCheckItem::store()
 {
   setBoolean( myCheck->isChecked() );
 }
 
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
 void QtxPagePrefCheckItem::retrieve()
 {
   myCheck->setChecked( getBoolean() );
 }
 
 /*!
-  \class  QtxPagePrefEditItem
-  GUI implementation of resources line edit item (string, integer, double).
+  \class QtxPagePrefEditItem
+  \brief GUI implementation of the resources line edit box item
+  for string, integer and double values.
 */
 
+/*!
+  \brief Constructor.
+
+  Creates preference item for string value editing.
+
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefEditItem::QtxPagePrefEditItem( const QString& title, QtxPreferenceItem* parent,
                                           const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param ),
-myType( String )
+  myType( String )
 {
   setControl( myEditor = new QLineEdit() );
   updateEditor();
 }
 
+/*!
+  \brief Constructor.
+
+  Creates preference item for editing of the value which type
+  is specified by parameter \a type.
+
+  \param type preference item input type (QtxPagePrefEditItem::InputType)
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefEditItem::QtxPagePrefEditItem( const int type, const QString& title,
-                                          QtxPreferenceItem* parent, const QString& sect, const QString& param )
+                                          QtxPreferenceItem* parent, const QString& sect, 
+					  const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param ),
-myType( type )
+  myType( type )
 {
   setControl( myEditor = new QLineEdit() );
   updateEditor();
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefEditItem::~QtxPagePrefEditItem()
 {
 }
 
+/*!
+  \brief Get edit box preference item input type.
+  \return preference item input type (QtxPagePrefEditItem::InputType)
+  \sa setInputType()
+*/
 int QtxPagePrefEditItem::inputType() const
 {
   return myType;
 }
 
+/*!
+  \brief Set edit box preference item input type.
+  \param type new preference item input type (QtxPagePrefEditItem::InputType)
+  \sa inputType()
+*/
 void QtxPagePrefEditItem::setInputType( const int type )
 {
   if ( myType == type )
@@ -1136,11 +1736,19 @@ void QtxPagePrefEditItem::setInputType( const int type )
   updateEditor();
 }
 
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
 void QtxPagePrefEditItem::store()
 {
   setString( myEditor->text() );
 }
 
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
 void QtxPagePrefEditItem::retrieve()
 {
   QString txt = getString();
@@ -1153,6 +1761,12 @@ void QtxPagePrefEditItem::retrieve()
   myEditor->setText( txt );
 }
 
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOptionValue()
+*/
 QVariant QtxPagePrefEditItem::optionValue( const QString& name ) const
 {
   if ( name == "input_type" || name == "type" )
@@ -1161,6 +1775,12 @@ QVariant QtxPagePrefEditItem::optionValue( const QString& name ) const
     return QtxPageNamedPrefItem::optionValue( name );
 }
 
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
 void QtxPagePrefEditItem::setOptionValue( const QString& name, const QVariant& val )
 {
   if ( name == "input_type" || name == "type" )
@@ -1172,6 +1792,9 @@ void QtxPagePrefEditItem::setOptionValue( const QString& name, const QVariant& v
     QtxPageNamedPrefItem::setOptionValue( name, val );
 }
 
+/*!
+  \brief Update edit box widget.
+*/
 void QtxPagePrefEditItem::updateEditor()
 {
   QValidator* val = 0;
@@ -1201,12 +1824,29 @@ void QtxPagePrefEditItem::updateEditor()
 
 /*!
   \class QtxPagePrefSelectItem
-  GUI implementation of resources selector item (enum).
+  \brief GUI implementation of the resources selector item 
+  (string, integer or double values list).
+
+  All items in the list (represented as combo box) should be specified
+  by the unique identifier which is stored to the resource file instead
+  of the value itself.
+*/
+
+/*!
+  \brief Constructor.
+  
+  Creates preference item with combo box widget which is not editable
+  (direct value entering is disabled).
+
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
 */
 QtxPagePrefSelectItem::QtxPagePrefSelectItem( const QString& title, QtxPreferenceItem* parent,
                                               const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param ),
-myType( NoInput )
+  myType( NoInput )
 {
   setControl( mySelector = new QtxComboBox() );
   mySelector->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
@@ -1214,25 +1854,50 @@ myType( NoInput )
   updateSelector();
 }
 
+/*!
+  \brief Constructor.
+  
+  Creates preference item with combo box widget which is editable
+  according to the specified input type (integer, double or string values).
+
+  \param type input type (QtxPagePrefSelectItem::InputType)
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefSelectItem::QtxPagePrefSelectItem( const int type, const QString& title, QtxPreferenceItem* parent,
                                               const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param ),
-myType( type )
+  myType( type )
 {
   setControl( mySelector = new QtxComboBox() );
   mySelector->setDuplicatesEnabled( false );
   updateSelector();
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefSelectItem::~QtxPagePrefSelectItem()
 {
 }
 
+/*!
+  \brief Get edit box preference item input type.
+  \return preference item input type (QtxPagePrefSelectItem::InputType)
+  \sa setInputType()
+*/
 int QtxPagePrefSelectItem::inputType() const
 {
   return myType;
 }
 
+/*!
+  \brief Set edit box preference item input type.
+  \param type new preference item input type (QtxPagePrefSelectItem::InputType)
+  \sa inputType()
+*/
 void QtxPagePrefSelectItem::setInputType( const int type )
 {
   if ( myType == type )
@@ -1242,6 +1907,11 @@ void QtxPagePrefSelectItem::setInputType( const int type )
   updateSelector();
 }
 
+/*!
+  \brief Get the list of the values from the selection widget.
+  \return list of values
+  \sa numbers(), setStrings()
+*/
 QStringList QtxPagePrefSelectItem::strings() const
 {
   QStringList res;
@@ -1250,6 +1920,11 @@ QStringList QtxPagePrefSelectItem::strings() const
   return res;
 }
 
+/*!
+  \brief Get the list of the values identifiers from the selection widget.
+  \return list of values IDs
+  \sa strings(), setNumbers()
+*/
 QList<int> QtxPagePrefSelectItem::numbers() const
 {
   QList<int> res;
@@ -1261,12 +1936,22 @@ QList<int> QtxPagePrefSelectItem::numbers() const
   return res;
 }
 
+/*!
+  \brief Set the list of the values to the selection widget.
+  \param lst new list of values
+  \sa strings(), setNumbers()
+*/
 void QtxPagePrefSelectItem::setStrings( const QStringList& lst )
 {
   mySelector->clear();
   mySelector->addItems( lst );
 }
 
+/*!
+  \brief Set the list of the values identifiers to the selection widget.
+  \param ids new list of values IDs
+  \sa numbers(), setStrings()
+*/
 void QtxPagePrefSelectItem::setNumbers( const QList<int>& ids )
 {
   uint i = 0;
@@ -1274,6 +1959,10 @@ void QtxPagePrefSelectItem::setNumbers( const QList<int>& ids )
     mySelector->setId( i, *it );
 }
 
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
 void QtxPagePrefSelectItem::store()
 {
   if ( mySelector->isCleared() )
@@ -1287,6 +1976,10 @@ void QtxPagePrefSelectItem::store()
     setString( mySelector->itemText( idx ) );
 }
 
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
 void QtxPagePrefSelectItem::retrieve()
 {
   QString txt = getString();
@@ -1323,6 +2016,12 @@ void QtxPagePrefSelectItem::retrieve()
   }
 }
 
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOptionValue()
+*/
 QVariant QtxPagePrefSelectItem::optionValue( const QString& name ) const
 {
   if ( name == "input_type" || name == "type" )
@@ -1341,6 +2040,12 @@ QVariant QtxPagePrefSelectItem::optionValue( const QString& name ) const
     return QtxPageNamedPrefItem::optionValue( name );
 }
 
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
 void QtxPagePrefSelectItem::setOptionValue( const QString& name, const QVariant& val )
 {
   if ( name == "input_type" || name == "type" )
@@ -1356,6 +2061,11 @@ void QtxPagePrefSelectItem::setOptionValue( const QString& name, const QVariant&
     QtxPageNamedPrefItem::setOptionValue( name, val );
 }
 
+/*!
+  \brief Set the list of the values from the resource manager.
+  \param var new values list
+  \internal
+*/
 void QtxPagePrefSelectItem::setStrings( const QVariant& var )
 {
   if ( var.type() != QVariant::StringList )
@@ -1364,6 +2074,11 @@ void QtxPagePrefSelectItem::setStrings( const QVariant& var )
   setStrings( var.toStringList() );
 }
 
+/*!
+  \brief Set the list of the values identifiers from the resource manager.
+  \param var new values IDs list
+  \internal
+*/
 void QtxPagePrefSelectItem::setNumbers( const QVariant& var )
 {
   if ( var.type() != QVariant::List )
@@ -1379,6 +2094,9 @@ void QtxPagePrefSelectItem::setNumbers( const QVariant& var )
   setNumbers( lst );
 }
 
+/*!
+  \brief Update selector widget.
+*/
 void QtxPagePrefSelectItem::updateSelector()
 {
   QValidator* val = 0;
@@ -1409,35 +2127,72 @@ void QtxPagePrefSelectItem::updateSelector()
 }
 
 /*!
-  \class  QtxPagePrefSpinItem
-  GUI implementation of resources spin box item (integer, double).
+  \class QtxPagePrefSpinItem
+  \brief GUI implementation of the resources spin box item
+  (for integer or double value).
 */
 
+/*!
+  \brief Constructor.
+
+  Creates spin box preference item for the entering integer values.
+
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefSpinItem::QtxPagePrefSpinItem( const QString& title, QtxPreferenceItem* parent,
                                           const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param ),
-myType( Integer )
+  myType( Integer )
 {
   updateSpinBox();
 }
 
+/*!
+  \brief Constructor.
+
+  Creates spin box preference item for the entering values which type
+  is specified by the parameter \a type.
+
+  \param type input type (QtxPagePrefSpinItem::InputType).
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefSpinItem::QtxPagePrefSpinItem( const int type, const QString& title,
-                                          QtxPreferenceItem* parent, const QString& sect, const QString& param )
+                                          QtxPreferenceItem* parent, const QString& sect, 
+					  const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param ),
-myType( type )
+  myType( type )
 {
   updateSpinBox();
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefSpinItem::~QtxPagePrefSpinItem()
 {
 }
 
+/*!
+  \brief Get spin box preference item input type.
+  \return preference item input type (QtxPagePrefSpinItem::InputType)
+  \sa setInputType()
+*/
 int QtxPagePrefSpinItem::inputType() const
 {
   return myType;
 }
 
+/*!
+  \brief Set spin box preference item input type.
+  \param type new preference item input type (QtxPagePrefSpinItem::InputType)
+  \sa inputType()
+*/
 void QtxPagePrefSpinItem::setInputType( const int type )
 {
   if ( myType == type )
@@ -1447,6 +2202,11 @@ void QtxPagePrefSpinItem::setInputType( const int type )
   updateSpinBox();
 }
 
+/*!
+  \brief Get spin box preference item step value.
+  \return spin box single step value
+  \sa setStep()
+*/
 QVariant QtxPagePrefSpinItem::step() const
 {
   if ( QtxIntSpinBox* isb = ::qobject_cast<QtxIntSpinBox*>( control() ) )
@@ -1457,6 +2217,11 @@ QVariant QtxPagePrefSpinItem::step() const
     return QVariant();
 }
 
+/*!
+  \brief Get spin box preference item minimum value.
+  \return spin box minimum value
+  \sa setMinimum()
+*/
 QVariant QtxPagePrefSpinItem::minimum() const
 {
   if ( QtxIntSpinBox* isb = ::qobject_cast<QtxIntSpinBox*>( control() ) )
@@ -1467,6 +2232,11 @@ QVariant QtxPagePrefSpinItem::minimum() const
     return QVariant();
 }
 
+/*!
+  \brief Get spin box preference item maximum value.
+  \return spin box maximum value
+  \sa setMaximum()
+*/
 QVariant QtxPagePrefSpinItem::maximum() const
 {
   if ( QtxIntSpinBox* isb = ::qobject_cast<QtxIntSpinBox*>( control() ) )
@@ -1477,6 +2247,11 @@ QVariant QtxPagePrefSpinItem::maximum() const
     return QVariant();
 }
 
+/*!
+  \brief Get spin box preference item prefix string.
+  \return spin box prefix string
+  \sa setPrefix()
+*/
 QString QtxPagePrefSpinItem::prefix() const
 {
   if ( QtxIntSpinBox* isb = ::qobject_cast<QtxIntSpinBox*>( control() ) )
@@ -1487,6 +2262,11 @@ QString QtxPagePrefSpinItem::prefix() const
     return QString();
 }
 
+/*!
+  \brief Get spin box preference item suffix string.
+  \return spin box suffix string
+  \sa setSuffix()
+*/
 QString QtxPagePrefSpinItem::suffix() const
 {
   if ( QtxIntSpinBox* isb = ::qobject_cast<QtxIntSpinBox*>( control() ) )
@@ -1497,6 +2277,12 @@ QString QtxPagePrefSpinItem::suffix() const
     return QString();
 }
 
+/*!
+  \brief Get spin box preference item special value text (which is shown 
+  when the spin box reaches minimum value).
+  \return spin box special value text
+  \sa setSpecialValueText()
+*/
 QString QtxPagePrefSpinItem::specialValueText() const
 {
   QAbstractSpinBox* sb = ::qobject_cast<QAbstractSpinBox*>( control() );
@@ -1506,6 +2292,11 @@ QString QtxPagePrefSpinItem::specialValueText() const
     return QString();
 }
 
+/*!
+  \brief Set spin box preference item step value.
+  \param step new spin box single step value
+  \sa step()
+*/
 void QtxPagePrefSpinItem::setStep( const QVariant& step )
 {
   if ( QtxIntSpinBox* isb = ::qobject_cast<QtxIntSpinBox*>( control() ) )
@@ -1520,6 +2311,11 @@ void QtxPagePrefSpinItem::setStep( const QVariant& step )
   }
 }
 
+/*!
+  \brief Set spin box preference item minimum value.
+  \param min new spin box minimum value
+  \sa minimum()
+*/
 void QtxPagePrefSpinItem::setMinimum( const QVariant& min )
 {
   if ( QtxIntSpinBox* isb = ::qobject_cast<QtxIntSpinBox*>( control() ) )
@@ -1534,6 +2330,11 @@ void QtxPagePrefSpinItem::setMinimum( const QVariant& min )
   }
 }
 
+/*!
+  \brief Set spin box preference item maximum value.
+  \param min new spin box maximum value
+  \sa maximum()
+*/
 void QtxPagePrefSpinItem::setMaximum( const QVariant& max )
 {
   if ( QtxIntSpinBox* isb = ::qobject_cast<QtxIntSpinBox*>( control() ) )
@@ -1548,6 +2349,11 @@ void QtxPagePrefSpinItem::setMaximum( const QVariant& max )
   }
 }
 
+/*!
+  \brief Set spin box preference item prefix string.
+  \param txt new spin box prefix string
+  \sa prefix()
+*/
 void QtxPagePrefSpinItem::setPrefix( const QString& txt )
 {
   if ( QtxIntSpinBox* isb = ::qobject_cast<QtxIntSpinBox*>( control() ) )
@@ -1556,6 +2362,11 @@ void QtxPagePrefSpinItem::setPrefix( const QString& txt )
     dsb->setPrefix( txt );
 }
 
+/*!
+  \brief Set spin box preference item suffix string.
+  \param txt new spin box suffix string
+  \sa suffix()
+*/
 void QtxPagePrefSpinItem::setSuffix( const QString& txt )
 {
   if ( QtxIntSpinBox* isb = ::qobject_cast<QtxIntSpinBox*>( control() ) )
@@ -1564,6 +2375,12 @@ void QtxPagePrefSpinItem::setSuffix( const QString& txt )
     dsb->setSuffix( txt );
 }
 
+/*!
+  \brief Set spin box preference item special value text (which is shown 
+  when the spin box reaches minimum value).
+  \param txt new spin box special value text
+  \sa specialValueText()
+*/
 void QtxPagePrefSpinItem::setSpecialValueText( const QString& txt )
 {
   QAbstractSpinBox* sb = ::qobject_cast<QAbstractSpinBox*>( control() );
@@ -1571,6 +2388,10 @@ void QtxPagePrefSpinItem::setSpecialValueText( const QString& txt )
     sb->setSpecialValueText( txt );
 }
 
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
 void QtxPagePrefSpinItem::store()
 {
   if ( QtxIntSpinBox* isb = ::qobject_cast<QtxIntSpinBox*>( control() ) )
@@ -1579,6 +2400,10 @@ void QtxPagePrefSpinItem::store()
     setDouble( dsb->value() );
 }
 
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
 void QtxPagePrefSpinItem::retrieve()
 {
   if ( QtxIntSpinBox* isb = ::qobject_cast<QtxIntSpinBox*>( control() ) )
@@ -1587,6 +2412,12 @@ void QtxPagePrefSpinItem::retrieve()
     dsb->setValue( getDouble( dsb->value() ) );
 }
 
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOptionValue()
+*/
 QVariant QtxPagePrefSpinItem::optionValue( const QString& name ) const
 {
   if ( name == "input_type" || name == "type" )
@@ -1607,6 +2438,12 @@ QVariant QtxPagePrefSpinItem::optionValue( const QString& name ) const
     return QtxPageNamedPrefItem::optionValue( name );
 }
 
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
 void QtxPagePrefSpinItem::setOptionValue( const QString& name, const QVariant& val )
 {
   if ( name == "input_type" || name == "type" )
@@ -1639,6 +2476,9 @@ void QtxPagePrefSpinItem::setOptionValue( const QString& name, const QVariant& v
     QtxPageNamedPrefItem::setOptionValue( name, val );
 }
 
+/*!
+  \brief Update spin box widget.
+*/
 void QtxPagePrefSpinItem::updateSpinBox()
 {
   QVariant val;
@@ -1683,9 +2523,18 @@ void QtxPagePrefSpinItem::updateSpinBox()
 
 /*!
   \class  QtxPagePrefTextItem
-  GUI implementation of resources text edit item (text - several strings).
+  \brief GUI implementation of the resources text box edit item
+  (for large text data).
 */
-QtxPagePrefTextItem::QtxPagePrefTextItem( QtxPreferenceItem* parent, const QString& sect, const QString& param )
+
+/*!
+  \brief Constructor.
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
+QtxPagePrefTextItem::QtxPagePrefTextItem( QtxPreferenceItem* parent, const QString& sect, 
+					  const QString& param )
 : QtxPageNamedPrefItem( QString(), parent, sect, param )
 {
   myEditor = new QTextEdit();
@@ -1694,6 +2543,13 @@ QtxPagePrefTextItem::QtxPagePrefTextItem( QtxPreferenceItem* parent, const QStri
   setControl( myEditor );
 }
 
+/*!
+  \brief Constructor.
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefTextItem::QtxPagePrefTextItem( const QString& title, QtxPreferenceItem* parent,
                                           const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param )
@@ -1704,23 +2560,42 @@ QtxPagePrefTextItem::QtxPagePrefTextItem( const QString& title, QtxPreferenceIte
   setControl( myEditor );
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefTextItem::~QtxPagePrefTextItem()
 {
 }
 
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
 void QtxPagePrefTextItem::store()
 {
   setString( myEditor->toPlainText() );
 }
 
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
 void QtxPagePrefTextItem::retrieve()
 {
   myEditor->setPlainText( getString() );
 }
 
 /*!
-  \class  QtxPagePrefColorItem
-  GUI implementation of resources color item.
+  \class QtxPagePrefColorItem
+  \brief GUI implementation of the resources color item.
+*/
+
+/*!
+  \brief Constructor.
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
 */
 QtxPagePrefColorItem::QtxPagePrefColorItem( const QString& title, QtxPreferenceItem* parent,
                                             const QString& sect, const QString& param )
@@ -1730,31 +2605,59 @@ QtxPagePrefColorItem::QtxPagePrefColorItem( const QString& title, QtxPreferenceI
   myColor->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefColorItem::~QtxPagePrefColorItem()
 {
 }
 
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
 void QtxPagePrefColorItem::store()
 {
   setColor( myColor->color() );
 }
 
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
 void QtxPagePrefColorItem::retrieve()
 {
   myColor->setColor( getColor() );
 }
 
 /*!
-  \class  QtxPagePrefFontItem
-  GUI implementation of resources font item.
+  \class QtxPagePrefFontItem
+  \brief GUI implementation of the resources font item.
+*/
+
+/*!
+  \brief Constructor.
+  \param feat font editor widget features (QtxFontEdit::Features)
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
 */
 QtxPagePrefFontItem::QtxPagePrefFontItem( const int feat, const QString& title,
-                                          QtxPreferenceItem* parent, const QString& sect, const QString& param )
+                                          QtxPreferenceItem* parent, const QString& sect, 
+					  const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param )
 {
   setControl( myFont = new QtxFontEdit( feat ) );
 }
 
+/*!
+  \brief Constructor.
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefFontItem::QtxPagePrefFontItem( const QString& title, QtxPreferenceItem* parent,
                                           const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param )
@@ -1762,30 +2665,57 @@ QtxPagePrefFontItem::QtxPagePrefFontItem( const QString& title, QtxPreferenceIte
   setControl( myFont = new QtxFontEdit() );
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefFontItem::~QtxPagePrefFontItem()
 {
 }
 
+/*!
+  \brief Get font widget features.
+  \return font widget features (ORed QtxFontEdit::Features flags)
+  \sa setFeatures()
+*/
 int QtxPagePrefFontItem::features() const
 {
   return myFont->features();
 }
 
+/*!
+  \brief Set font widget features.
+  \param f new font widget features (ORed QtxFontEdit::Features flags)
+  \sa features()
+*/
 void QtxPagePrefFontItem::setFeatures( const int f )
 {
   myFont->setFeatures( f );
 }
 
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
 void QtxPagePrefFontItem::store()
 {
   setFont( myFont->currentFont() );
 }
 
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
 void QtxPagePrefFontItem::retrieve()
 {
   myFont->setCurrentFont( getFont() );
 }
 
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOptionValue()
+*/
 QVariant QtxPagePrefFontItem::optionValue( const QString& name ) const
 {
   if ( name == "features" )
@@ -1794,6 +2724,12 @@ QVariant QtxPagePrefFontItem::optionValue( const QString& name ) const
     return QtxPageNamedPrefItem::optionValue( name );
 }
 
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
 void QtxPagePrefFontItem::setOptionValue( const QString& name, const QVariant& val )
 {
   if ( name == "features" )
@@ -1807,7 +2743,16 @@ void QtxPagePrefFontItem::setOptionValue( const QString& name, const QVariant& v
 
 /*!
   \class  QtxPagePrefPathItem
-  GUI implementation of resources path item.
+  \brief GUI implementation of the resources file/directory path item.
+*/
+
+/*!
+  \brief Constructor.
+  \param type path widget mode (Qtx::PathType )
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
 */
 QtxPagePrefPathItem::QtxPagePrefPathItem( const Qtx::PathType type, const QString& title,
                                           QtxPreferenceItem* parent, const QString& sect, const QString& param )
@@ -1816,6 +2761,13 @@ QtxPagePrefPathItem::QtxPagePrefPathItem( const Qtx::PathType type, const QStrin
   setControl( myPath = new QtxPathEdit( type ) );
 }
 
+/*!
+  \brief Constructor.
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefPathItem::QtxPagePrefPathItem( const QString& title, QtxPreferenceItem* parent,
                                           const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param )
@@ -1823,40 +2775,77 @@ QtxPagePrefPathItem::QtxPagePrefPathItem( const QString& title, QtxPreferenceIte
   setControl( myPath = new QtxPathEdit() );
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefPathItem::~QtxPagePrefPathItem()
 {
 }
 
+/*!
+  \brief Get path widget mode.
+  \return current path widget mode (Qtx::PathType)
+  \sa setPathType()
+*/
 Qtx::PathType QtxPagePrefPathItem::pathType() const
 {
   return myPath->pathType();
 }
 
+/*!
+  \brief Set path widget mode.
+  \param type new path widget mode (Qtx::PathType)
+  \sa pathType()
+*/
 void QtxPagePrefPathItem::setPathType( const Qtx::PathType type )
 {
   myPath->setPathType( type );
 }
 
+/*!
+  \brief Get currently used path widget filters.
+  \return file or directory path filters
+  \sa setPathFilter()
+*/
 QString QtxPagePrefPathItem::pathFilter() const
 {
   return myPath->pathFilter();
 }
 
+/*!
+  \brief Set path widget filters.
+  \param f new file or directory path filters
+  \sa pathFilter()
+*/
 void QtxPagePrefPathItem::setPathFilter( const QString& f )
 {
   myPath->setPathFilter( f );
 }
 
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
 void QtxPagePrefPathItem::store()
 {
   setString( myPath->path() );
 }
 
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
 void QtxPagePrefPathItem::retrieve()
 {
   myPath->setPath( getString() );
 }
 
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOptionValue()
+*/
 QVariant QtxPagePrefPathItem::optionValue( const QString& name ) const
 {
   if ( name == "path_type" )
@@ -1867,6 +2856,12 @@ QVariant QtxPagePrefPathItem::optionValue( const QString& name ) const
     return QtxPageNamedPrefItem::optionValue( name );
 }
 
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
 void QtxPagePrefPathItem::setOptionValue( const QString& name, const QVariant& val )
 {
   if ( name == "path_type" )
@@ -1884,15 +2879,31 @@ void QtxPagePrefPathItem::setOptionValue( const QString& name, const QVariant& v
 }
 
 /*!
-  \class  QtxPagePrefPathsItem
-  \brief GUI implementation of resources directory list item.
+  \class QtxPagePrefPathsItem
+  \brief GUI implementation of the resources files/directories list item.
 */
-QtxPagePrefPathsItem::QtxPagePrefPathsItem( QtxPreferenceItem* parent, const QString& sect, const QString& param )
+
+/*!
+  \brief Constructor.
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
+QtxPagePrefPathsItem::QtxPagePrefPathsItem( QtxPreferenceItem* parent, const QString& sect, 
+					    const QString& param )
 : QtxPageNamedPrefItem( QString(), parent, sect, param )
 {
   setControl( myPaths = new QtxPathListEdit() );
 }
 
+/*!
+  \brief Constructor.
+  \param type path list widget mode (Qtx::PathType)
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefPathsItem::QtxPagePrefPathsItem( const Qtx::PathType type, const QString& title,
                                             QtxPreferenceItem* parent, const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param )
@@ -1900,6 +2911,13 @@ QtxPagePrefPathsItem::QtxPagePrefPathsItem( const Qtx::PathType type, const QStr
   setControl( myPaths = new QtxPathListEdit( type ) );
 }
 
+/*!
+  \brief Constructor.
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefPathsItem::QtxPagePrefPathsItem( const QString& title, QtxPreferenceItem* parent,
                                             const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param )
@@ -1907,30 +2925,57 @@ QtxPagePrefPathsItem::QtxPagePrefPathsItem( const QString& title, QtxPreferenceI
   setControl( myPaths = new QtxPathListEdit() );
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefPathsItem::~QtxPagePrefPathsItem()
 {
 }
 
+/*!
+  \brief Get path list widget mode.
+  \return currently used path list widget mode (Qtx::PathType)
+  \sa setPathType()
+*/
 Qtx::PathType QtxPagePrefPathsItem::pathType() const
 {
   return myPaths->pathType();
 }
 
+/*!
+  \brief Set path list widget mode.
+  \param type new path list widget mode (Qtx::PathType)
+  \sa pathType()
+*/
 void QtxPagePrefPathsItem::setPathType( const Qtx::PathType type )
 {
   myPaths->setPathType( type );
 }
 
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
 void QtxPagePrefPathsItem::store()
 {
   setString( myPaths->pathList().join( ";" ) );
 }
 
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
 void QtxPagePrefPathsItem::retrieve()
 {
   myPaths->setPathList( getString().split( ";" ) );
 }
 
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOptionValue()
+*/
 QVariant QtxPagePrefPathsItem::optionValue( const QString& name ) const
 {
   if ( name == "path_type" )
@@ -1939,6 +2984,12 @@ QVariant QtxPagePrefPathsItem::optionValue( const QString& name ) const
     return QtxPageNamedPrefItem::optionValue( name );
 }
 
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
 void QtxPagePrefPathsItem::setOptionValue( const QString& name, const QVariant& val )
 {
   if ( name == "path_type" )

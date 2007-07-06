@@ -585,6 +585,7 @@ void LightApp_Application::createActions()
     }
 
     connect( myModuleAction, SIGNAL( moduleActivated( const QString& ) ), this, SLOT( onModuleActivation( const QString& ) ) );
+    modTBar->addAction( myModuleAction );
   }
 
   // New window
@@ -1767,6 +1768,9 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
 
     QStringList modNameList;
     app->modules( modNameList, false );
+    for ( QStringList::const_iterator it = modNameList.begin(); 
+	  it != modNameList.end(); ++it )
+      _prefs_->addPreference( *it );
 
     ModuleList modList;
     app->modules( modList );
@@ -1781,15 +1785,13 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
 
       if ( mod && !_prefs_->hasModule( mod->moduleName() ) )
       {
-	int modCat = _prefs_->addPreference( mod->moduleName() );
-	_prefs_->setItemProperty( modCat, "info", QString() );
+	_prefs_->addPreference( mod->moduleName() );
 	if( toCreate )
 	  mod->createPreferences();
       }
     }
-    int id = _prefs_->addPreference( "Root" );
-    _prefs_->setItemProperty( id, "info", tr( "PREFERENCES_NOT_LOADED" ) );
   }
+  _prefs_->setItemProperty( "info", tr( "PREFERENCES_NOT_LOADED" ) );
 
   connect( myPrefs, SIGNAL( preferenceChanged( QString&, QString&, QString& ) ),
            this, SLOT( onPreferenceChanged( QString&, QString&, QString& ) ) );
@@ -1811,8 +1813,10 @@ void LightApp_Application::moduleAdded( CAM_Module* mod )
   if ( myPrefs && lightMod && !myPrefs->hasModule( lightMod->moduleName() ))
   {
     int modCat = myPrefs->addPreference( mod->moduleName() );
-    myPrefs->setItemProperty( modCat, "info", QString() );
     lightMod->createPreferences();
+    QtxPreferenceItem* item = myPrefs->findItem( modCat );
+    if ( item && item->isEmpty() )
+      delete item;
   }
 }
 
@@ -1828,14 +1832,15 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   int genTab = pref->addPreference( tr( "PREF_TAB_GENERAL" ), salomeCat );
   int studyGroup = pref->addPreference( tr( "PREF_GROUP_STUDY" ), genTab );
-  pref->setItemProperty( studyGroup, "columns", 1 );
+
+  //pref->setItemProperty( "columns", 1, studyGroup );
 
   pref->addPreference( tr( "PREF_MULTI_FILE" ), studyGroup, LightApp_Preferences::Bool, "Study", "multi_file" );
   pref->addPreference( tr( "PREF_ASCII_FILE" ), studyGroup, LightApp_Preferences::Bool, "Study", "ascii_file" );
   pref->addPreference( tr( "PREF_STORE_POS" ), studyGroup, LightApp_Preferences::Bool, "Study", "store_positions" );
 
   int extgroup = pref->addPreference( tr( "PREF_GROUP_EXT_BROWSER" ), genTab );
-  pref->setItemProperty( extgroup, "columns", 1 );
+  //pref->setItemProperty( "columns", 1, extgroup );
 	QString platform;
 #ifdef WIN32
 	platform = "winapplication";
@@ -1843,14 +1848,12 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 	platform = "application";
 #endif
   int apppref = pref->addPreference( tr( "PREF_APP" ), extgroup, LightApp_Preferences::File, "ExternalBrowser", platform );
-  pref->setItemProperty( apppref, "existing", true );
-  pref->setItemProperty( apppref, "flags", QFile::ExeUser );
-  pref->setItemProperty( apppref, "readOnly", false );
+  pref->setItemProperty( "mode", QtxPagePrefPathItem::OpenFile, apppref );
 
   pref->addPreference( tr( "PREF_PARAM" ), extgroup, LightApp_Preferences::String, "ExternalBrowser", "parameters" );
 
   int pythonConsoleGroup = pref->addPreference( tr( "PREF_GROUP_PY_CONSOLE" ), genTab );
-  pref->setItemProperty( pythonConsoleGroup, "columns", 1 );
+  //pref->setItemProperty( "columns", 1, pythonConsoleGroup );
   pref->addPreference( tr( "PREF_FONT" ), pythonConsoleGroup, LightApp_Preferences::Font, "PyConsole", "font" );
 
   int viewTab = pref->addPreference( tr( "PREF_TAB_VIEWERS" ), salomeCat );
@@ -1863,28 +1866,28 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   int supervGroup = pref->addPreference( tr( "PREF_GROUP_SUPERV" ), viewTab );
 
-  pref->setItemProperty( occGroup, "columns", 1 );
-  pref->setItemProperty( vtkGroup, "columns", 1 );
-  pref->setItemProperty( plot2dGroup, "columns", 1 );
+  //pref->setItemProperty( "columns", 1, occGroup );
+  //pref->setItemProperty( "columns", 1, vtkGroup );
+  //pref->setItemProperty( "columns", 1, plot2dGroup );
 
   int occTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), occGroup,
 				   LightApp_Preferences::DblSpin, "OCCViewer", "trihedron_size" );
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), occGroup,
 		       LightApp_Preferences::Color, "OCCViewer", "background" );
 
-  pref->setItemProperty( occTS, "min", 1.0E-06 );
-  pref->setItemProperty( occTS, "max", 1000 );
+  pref->setItemProperty( "min", 1.0E-06, occTS );
+  pref->setItemProperty( "max", 1000, occTS );
 
   int isoU = pref->addPreference( tr( "PREF_ISOS_U" ), occGroup,
 				  LightApp_Preferences::IntSpin, "OCCViewer", "iso_number_u" );
   int isoV = pref->addPreference( tr( "PREF_ISOS_V" ), occGroup,
 				  LightApp_Preferences::IntSpin, "OCCViewer", "iso_number_v" );
 
-  pref->setItemProperty( isoU, "min", 0 );
-  pref->setItemProperty( isoU, "max", 100000 );
+  pref->setItemProperty( "min", 0, isoU );
+  pref->setItemProperty( "max", 100000, isoU );
 
-  pref->setItemProperty( isoV, "min", 0 );
-  pref->setItemProperty( isoV, "max", 100000 );
+  pref->setItemProperty( "min", 0, isoV );
+  pref->setItemProperty( "max", 100000, isoV );
 
   int vtkTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), vtkGroup,
 				   LightApp_Preferences::DblSpin, "VTKViewer", "trihedron_size" );
@@ -1892,8 +1895,8 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), vtkGroup,
 		       LightApp_Preferences::Color, "VTKViewer", "background" );
 
-  pref->setItemProperty( vtkTS, "min", 1.0E-06 );
-  pref->setItemProperty( vtkTS, "max", 150 );
+  pref->setItemProperty( "min", 1.0E-06, vtkTS );
+  pref->setItemProperty( "max", 150, vtkTS );
 
   pref->addPreference( tr( "PREF_SHOW_LEGEND" ), plot2dGroup,
 		       LightApp_Preferences::Bool, "Plot2d", "ShowLegend" );
@@ -1912,8 +1915,8 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   anIndexesList.append(2);
   anIndexesList.append(3);
 
-  pref->setItemProperty( legendPosition, "strings", aLegendPosList );
-  pref->setItemProperty( legendPosition, "indexes", anIndexesList );
+  pref->setItemProperty( "strings", aLegendPosList, legendPosition );
+  pref->setItemProperty( "indexes", anIndexesList, legendPosition );
 
   int curveType = pref->addPreference( tr( "PREF_CURVE_TYPE" ), plot2dGroup,
 				       LightApp_Preferences::Selector, "Plot2d", "CurveType" );
@@ -1927,14 +1930,14 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   anIndexesList.append(1);
   anIndexesList.append(2);
   
-  pref->setItemProperty( curveType, "strings", aCurveTypesList );
-  pref->setItemProperty( curveType, "indexes", anIndexesList );
+  pref->setItemProperty( "strings", aCurveTypesList, curveType );
+  pref->setItemProperty( "indexes", anIndexesList, curveType );
 
   int markerSize = pref->addPreference( tr( "PREF_MARKER_SIZE" ), plot2dGroup,
 					LightApp_Preferences::IntSpin, "Plot2d", "MarkerSize" );
 
-  pref->setItemProperty( markerSize, "min", 0 );
-  pref->setItemProperty( markerSize, "max", 100 );
+  pref->setItemProperty( "min", 0, markerSize );
+  pref->setItemProperty( "max", 100, markerSize );
   
   QStringList aScaleModesList;
   aScaleModesList.append( tr("PREF_LINEAR") );
@@ -1947,21 +1950,21 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   int horScale = pref->addPreference( tr( "PREF_HOR_AXIS_SCALE" ), plot2dGroup,
 				      LightApp_Preferences::Selector, "Plot2d", "HorScaleMode" );
 
-  pref->setItemProperty( horScale, "strings", aScaleModesList );
-  pref->setItemProperty( horScale, "indexes", anIndexesList );
+  pref->setItemProperty( "strings", aScaleModesList, horScale );
+  pref->setItemProperty( "indexes", anIndexesList, horScale );
 
   int verScale = pref->addPreference( tr( "PREF_VERT_AXIS_SCALE" ), plot2dGroup,
 				      LightApp_Preferences::Selector, "Plot2d", "VerScaleMode" );
 
-  pref->setItemProperty( verScale, "strings", aScaleModesList );
-  pref->setItemProperty( verScale, "indexes", anIndexesList );
+  pref->setItemProperty( "strings", aScaleModesList, verScale );
+  pref->setItemProperty( "indexes", anIndexesList, verScale );
 
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), plot2dGroup,
 		       LightApp_Preferences::Color, "Plot2d", "Background" );
 
   int dirTab = pref->addPreference( tr( "PREF_TAB_DIRECTORIES" ), salomeCat );
   int dirGroup = pref->addPreference( tr( "PREF_GROUP_DIRECTORIES" ), dirTab );
-  pref->setItemProperty( dirGroup, "columns", 1 );
+  //pref->setItemProperty( dirGroup, "columns", 1 );
   pref->addPreference( tr( "" ), dirGroup,
 		       LightApp_Preferences::DirList, "FileDlg", "QuickDirList" );
 

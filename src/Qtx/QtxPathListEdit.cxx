@@ -128,24 +128,39 @@ static const char* moveup_icon[] = {
 "                "
 };
 
+
 /*!
   \class QtxPathListEdit::Editor
+  \brief Path editor widget
+  \internal
 */
+
 class QtxPathListEdit::Editor : public QtxPathEdit
 {
 public:
+  /*!
+    \brief Constructor
+    \internal
+  */
   Editor( QWidget* parent = 0 ) : QtxPathEdit( parent )
   {
     layout()->setSpacing( 0 );
     lineEdit()->setFrame( false );
   }
 
+  /*!
+    \brief Destructor
+    \internal
+  */
   virtual ~Editor() {}
 };
 
 /*!
   \class QtxPathListEdit::Delegate
+  \brief Custom item delegate for the paths list widget.
+  \internal
 */
+
 class QtxPathListEdit::Delegate : public QItemDelegate
 {
 public:
@@ -164,33 +179,70 @@ private:
   QtxPathListEdit* myPathEdit;
 };
 
+/*!
+  \brief Constructor.
+  \internal
+  \param pe path list editor
+  \param parent parent widget
+*/
 QtxPathListEdit::Delegate::Delegate( QtxPathListEdit* pe, QObject* parent )
 : QItemDelegate( parent ),
-myPathEdit( pe )
+  myPathEdit( pe )
 {
 }
 
+/*!
+  \brief Destructor.
+  \internal
+*/
 QtxPathListEdit::Delegate::~Delegate()
 {
 }
 
+/*!
+  \brief Create editor widget.
+  \internal
+  \param parent parent widget
+  \param option style option
+  \param index data model index
+*/
 QWidget* QtxPathListEdit::Delegate::createEditor( QWidget* parent, const QStyleOptionViewItem& option,
                                                   const QModelIndex& index ) const
 {
   return myPathEdit->createEditor( parent );
 }
 
+/*!
+  \brief Set modified data back to the data model.
+  \internal
+  \param editor editor widget
+  \param model data model
+  \param index data model index
+*/
 void QtxPathListEdit::Delegate::setModelData( QWidget* editor, QAbstractItemModel* model,
                                               const QModelIndex& index ) const
 {
   myPathEdit->setModelData( editor, index );
 }
 
+/*!
+  \brief Set data from the data model to the editor.
+  \internal
+  \param editor editor widget
+  \param index data model index
+*/
 void QtxPathListEdit::Delegate::setEditorData( QWidget* editor, const QModelIndex& index ) const
 {
   myPathEdit->setEditorData( editor, index );
 }
 
+/*!
+  \brief Customize paint operation.
+  \internal
+  \param painter painter
+  \param option style option
+  \param index data model index
+*/
 void QtxPathListEdit::Delegate::paint( QPainter* painter, const QStyleOptionViewItem& option,
                                        const QModelIndex& index ) const
 {
@@ -209,6 +261,13 @@ void QtxPathListEdit::Delegate::paint( QPainter* painter, const QStyleOptionView
   QItemDelegate::paint( painter, option, index );
 }
 
+/*!
+  \brief Customize drawing selection focus operation.
+  \internal
+  \param painter painter
+  \param option style option
+  \param rect selection rectangle
+*/
 void QtxPathListEdit::Delegate::drawFocus( QPainter* painter, const QStyleOptionViewItem& option,
                                            const QRect& rect ) const
 {
@@ -217,37 +276,82 @@ void QtxPathListEdit::Delegate::drawFocus( QPainter* painter, const QStyleOption
 
 /*!
   \class QtxPathListEdit
+  \brief The QtxPathListEdit class represents a widget for files or 
+  directories paths list preference items editing.
+
+  The path list preference item is represented as the list box widget.
+  It provides such operations like adding new file/directory path to the
+  list, removing selected paths and modifying of already entered ones.
+
+  The widget can be used in two modes: list of files or list of directories.
+  The mode defines the type of the standard browse dialog box which is
+  invoked on the browse button clicking.
+
+  Initial path list value can be set with setPathList() method. Chosen path
+  list can be retrieved with the pathList() method. The widget mode can be set 
+  with setPathType() and retrieved with pathType() method.
+
+  In addition, it is possible to add path items to the list with the insert()
+  method, remove items with the remove() methods, clear all the widget contents
+  with the clear() method. To get the number of entered paths can be retrieved
+  with the count() method. To check if any path already exists in the paths list,
+  use contains() method.
+*/
+
+/*!
+  \brief Constructor.
+  \param type widget mode (Qtx::PathType)
+  \param parent parent widget
+  \sa pathType(), setPathType()
 */
 QtxPathListEdit::QtxPathListEdit( const Qtx::PathType type, QWidget* parent )
 : QFrame( parent ),
-myCompleter( 0 ),
-myType( type ),
-myDuplicate( false )
-{
-  initialize();
-}
-
-QtxPathListEdit::QtxPathListEdit( QWidget* parent )
-: QFrame( parent ),
-myCompleter( 0 ),
-myType( Qtx::PT_OpenFile ),
-myDuplicate( false )
+  myCompleter( 0 ),
+  myType( type ),
+  myDuplicate( false )
 {
   initialize();
 }
 
 /*!
-  Destructor
+  \brief Constructor.
+
+  Qtx::PT_OpenFile mode is used by default.
+
+  \param parent parent widget
+  \sa pathType(), setPathType()
+*/
+QtxPathListEdit::QtxPathListEdit( QWidget* parent )
+: QFrame( parent ),
+  myCompleter( 0 ),
+  myType( Qtx::PT_OpenFile ),
+  myDuplicate( false )
+{
+  initialize();
+}
+
+/*!
+  \brief Destructor.
 */
 QtxPathListEdit::~QtxPathListEdit()
 {
 }
 
+/*!
+  \brief Get widget mode.
+  \return currently used widget mode (Qtx::PathType)
+  \sa setPathType()
+*/
 Qtx::PathType QtxPathListEdit::pathType() const
 {
   return myType;
 }
 
+/*!
+  \brief Set widget mode.
+  \param t new widget mode (Qtx::PathType)
+  \sa pathType()
+*/
 void QtxPathListEdit::setPathType( const Qtx::PathType t )
 {
   if ( myType == t )
@@ -259,47 +363,87 @@ void QtxPathListEdit::setPathType( const Qtx::PathType t )
   myCompleter = 0;
 }
 
+/*!
+  \brief Get currently selected paths list.
+  \return files or directories paths list entered by the user
+  \sa setPathList()
+*/
 QStringList QtxPathListEdit::pathList() const
 {
   return myModel->stringList();
 }
 
+/*!
+  \brief Set paths list.
+  \param lst files or directories paths list
+  \sa pathList()
+*/
 void QtxPathListEdit::setPathList( const QStringList& lst )
 {
   myModel->setStringList( lst );
 }
 
+/*!
+  \brief Check if the duplication of paths is enabled.
+  \return \c true if the duplication is enabled
+*/
 bool QtxPathListEdit::isDuplicateEnabled() const
 {
   return myDuplicate;
 }
 
+/*!
+  \brief Enable/disable paths duplication.
+  \param on new flag value
+*/
 void QtxPathListEdit::setDuplicateEnabled( const bool on )
 {
   myDuplicate = on;
 }
 
+/*!
+  \brief Get number of currently entered paths.
+  \return current paths number
+*/
 int QtxPathListEdit::count() const
 {
   return myModel->rowCount();
 }
 
+/*!
+  \brief Check if the specified \a path already exists in 
+  the paths list.
+  \param path path to be checked
+  \return \c true if the path is already selected by the user 
+  or \c false otherwise
+*/
 bool QtxPathListEdit::contains( const QString& path ) const
 {
   return myModel->stringList().contains( path );
 }
 
+/*!
+  \brief Clear paths list.
+*/
 void QtxPathListEdit::clear()
 {
   myModel->removeRows( 0, myModel->rowCount() );
 }
 
+/*!
+  \brief Remove path from the paths list.
+  \param idx path index in the list
+*/
 void QtxPathListEdit::remove( const int idx )
 {
   if ( 0 <= idx && idx < myModel->rowCount() )
     myModel->removeRow( idx );
 }
 
+/*!
+  \brief Remove path from the paths list.
+  \param path path to be removed
+*/
 void QtxPathListEdit::remove( const QString& path )
 {
   QModelIndexList indexes = myModel->match( myModel->index( 0, 0 ), Qt::DisplayRole, path,
@@ -311,6 +455,15 @@ void QtxPathListEdit::remove( const QString& path )
   }
 }
 
+/*!
+  \brief Add path to the list of paths.
+
+  If the specified index is out of range, the path is added to 
+  the end of the list.
+
+  \param path path to be added
+  \param idx index in the list to which the path should be inserted.
+*/
 void QtxPathListEdit::insert( const QString& path, const int idx )
 {
   int index = idx < 0 ? myModel->rowCount() : qMin( idx, myModel->rowCount() );
@@ -318,9 +471,6 @@ void QtxPathListEdit::insert( const QString& path, const int idx )
     myModel->setData( myModel->index( index, 0 ), path, Qt::EditRole );
 }
 
-/*!
-  Validates entered path, returns true if OK
-*/
 /*
 bool QtxPathListEdit::validate( const bool quietMode )
 {
@@ -379,8 +529,12 @@ bool QtxPathListEdit::validate( const bool quietMode )
   return true;
 }
 */
+
 /*!
-  Event filter
+  \brief Customize child widget events processing.
+  \param o event receiver object
+  \param e event
+  \return \c true if the further event processing should be stopped.
 */
 bool QtxPathListEdit::eventFilter( QObject* o, QEvent* e )
 {
@@ -407,10 +561,13 @@ bool QtxPathListEdit::eventFilter( QObject* o, QEvent* e )
 }
 
 /*!
-  <Insert> button slot
-*/
+  \brief Called when <Insert> button is clicked.
 
-void QtxPathListEdit::onInsert( bool )
+  Inserts new empty line to the list and sets input focus to it.
+
+  \param on (not used)
+*/
+void QtxPathListEdit::onInsert( bool /*on*/ )
 {
   int empty = -1;
   QStringList lst = myModel->stringList();
@@ -429,7 +586,11 @@ void QtxPathListEdit::onInsert( bool )
 }
 
 /*!
-  <Delete> button slot
+  \brief Called when <Delete> button is clicked.
+
+  Removes currently selected path item.
+  
+  \param on (not used)
 */
 void QtxPathListEdit::onDelete( bool )
 {
@@ -441,7 +602,11 @@ void QtxPathListEdit::onDelete( bool )
 }
 
 /*!
-  <Move up> button slot
+  \brief Called when <Up> button is clicked.
+
+  Move currently selected path item up to one row in the paths list.
+
+  \param on (not used)
 */
 void QtxPathListEdit::onUp( bool )
 {
@@ -459,7 +624,11 @@ void QtxPathListEdit::onUp( bool )
 }
 
 /*!
-  <Move down> button slot
+  \brief Called when <Down> button is clicked.
+
+  Move currently selected path item down to one row in the paths list.
+
+  \param on (not used)
 */
 void QtxPathListEdit::onDown( bool )
 {
@@ -476,6 +645,9 @@ void QtxPathListEdit::onDown( bool )
   myList->setCurrentIndex( toIdx );
 }
 
+/*!
+  \brief Perform internal widget initialization.
+*/
 void QtxPathListEdit::initialize()
 {
   QVBoxLayout* base = new QVBoxLayout( this );
@@ -527,6 +699,11 @@ void QtxPathListEdit::initialize()
   connect( downBtn,   SIGNAL( clicked( bool ) ), this, SLOT( onDown( bool ) ) );
 }
 
+/*!
+  \brief Create editor widget.
+  \param parent parent widget for the editor
+  \return created editor widget
+*/
 QWidget* QtxPathListEdit::createEditor( QWidget* parent )
 {
   QtxPathEdit* edit = new Editor( parent );
@@ -534,6 +711,11 @@ QWidget* QtxPathListEdit::createEditor( QWidget* parent )
   return edit;
 }
 
+/*!
+  \brief Set modified data from the editor to the list widget.
+  \param editor editor widget
+  \param index data model index
+*/
 void QtxPathListEdit::setModelData( QWidget* editor, const QModelIndex& index )
 {
   QtxPathEdit* edit = ::qobject_cast<QtxPathEdit*>( editor );
@@ -551,6 +733,12 @@ void QtxPathListEdit::setModelData( QWidget* editor, const QModelIndex& index )
   myModel->setData( index, path, Qt::EditRole );
 }
 
+/*!
+  \brief Set data to the editor from the list widget when 
+  user starts path edition.
+  \param editor editor widget
+  \param index data model index
+*/
 void QtxPathListEdit::setEditorData( QWidget* editor, const QModelIndex& index )
 {
   QtxPathEdit* edit = ::qobject_cast<QtxPathEdit*>( editor );
@@ -561,6 +749,13 @@ void QtxPathListEdit::setEditorData( QWidget* editor, const QModelIndex& index )
   edit->setPath( v.toString() );
 }
 
+/*!
+  \brief Check if path is correct (exists) and optionally 
+  show the question message box.
+  \param str path to be checked
+  \param msg if \c true and path does not exist, question message box is shown
+  \return \c true if the user confirms the path adding
+*/
 bool QtxPathListEdit::checkExistance( const QString& str, const bool msg )
 {
   if ( pathType() == Qtx::PT_SaveFile )
@@ -591,6 +786,14 @@ bool QtxPathListEdit::checkExistance( const QString& str, const bool msg )
   return ok;
 }
 
+/*!
+  \brief Check if path already exists in the list and optionally
+  show the warning message box.
+  \param str path to be checked
+  \param row row corresponding to the path checked
+  \param msg if \c true and path does not exist, warning message box is shown
+  \return \c true if the user confirms the path adding
+*/
 bool QtxPathListEdit::checkDuplicate( const QString& str, const int row, const bool msg )
 {
   int cur = -1;

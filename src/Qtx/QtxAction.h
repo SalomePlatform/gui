@@ -46,10 +46,6 @@ public:
 
   virtual bool eventFilter( QObject*, QEvent* );
 
-  virtual bool addTo( QWidget* );
-  virtual bool addTo( QWidget*, const int );
-  virtual bool removeFrom( QWidget* );
-
 protected:
   virtual void addedTo( QWidget* );
   virtual void removedFrom( QWidget* );

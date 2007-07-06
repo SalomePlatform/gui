@@ -157,7 +157,7 @@ void GLViewer_ViewFrame::createActions()
 */
 void GLViewer_ViewFrame::createToolBar()
 {
-  myActionsMap[DumpId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[DumpId] );
 
   SUIT_ToolButton* aScaleBtn = new SUIT_ToolButton(myToolBar);
   aScaleBtn->AddAction(myActionsMap[FitAllId]);
@@ -169,7 +169,7 @@ void GLViewer_ViewFrame::createToolBar()
   aPanBtn->AddAction(myActionsMap[PanId]);
   aPanBtn->AddAction(myActionsMap[GlobalPanId]);
 
-  myActionsMap[ResetId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[ResetId] );
 }
 
 /*!

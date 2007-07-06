@@ -427,7 +427,7 @@ QVariant LightApp_Module::preferenceProperty( const int id, const QString& prop 
   QVariant var;
   LightApp_Preferences* pref = preferences();
   if ( pref )
-    var = pref->itemProperty( id, prop );
+    var = pref->itemProperty( prop, id );
   return var;
 }
 
@@ -436,7 +436,7 @@ void LightApp_Module::setPreferenceProperty( const int id, const QString& prop, 
 {
   LightApp_Preferences* pref = preferences();
   if ( pref )
-    pref->setItemProperty( id, prop, var );
+    pref->setItemProperty( prop, var, id );
 }
 
 /*!

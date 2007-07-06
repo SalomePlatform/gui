@@ -36,10 +36,6 @@
 class QtxResourceMgr;
 class QtxPreferenceMgr;
 
-/*!
-  \class QtxPreferenceItem
-  Class for incapsulation of one preference item
-*/
 class QTX_EXPORT QtxPreferenceItem
 {
   class Updater;
@@ -135,11 +131,6 @@ private:
   QString                   myParameter;
 };
 
-
-/*!
-  \class QtxPreferenceMgr
-  Class for managing preferences items
-*/
 class QTX_EXPORT QtxPreferenceMgr : public QtxPreferenceItem
 {
 public:

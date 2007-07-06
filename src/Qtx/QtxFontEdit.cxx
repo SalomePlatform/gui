@@ -29,29 +29,74 @@
 #include <QFontDatabase>
 #include <QFontComboBox>
 
+/*!
+  \class QtxFontEdit
+  \brief The QtxFontEdit class represents a widget for font
+  preference items editing.
+
+  The font preference item is represented as the drop-down combo box 
+  filled with the list of available fonts. Additional controls for
+  modifying font properties ('bold', 'italic', font size, etc) are also
+  available for use.
+
+  Initial font value can be set with setCurrentFont() method. Chosen font
+  can be retrieved with the currentFont() method.
+
+  Font properties can be set with the setFontSize(), setFontFamily(), 
+  setFontScripting() methods and retrieved with fontSize(), fontFamily(), 
+  fontScripting() methods.
+
+  Additional widgets for direct modyfing font properties are available
+  with use of setFeatures() method.
+*/
+
+/*!
+  \brief Constructor
+  \param feat font widget features (ORed QtxFontEdit::Features flags)
+  \param parent parent widget
+*/
 QtxFontEdit::QtxFontEdit( const int feat, QWidget* parent )
 : QFrame( parent ),
-myFeatures( feat )
+  myFeatures( feat )
 {
   initialize();
 }
 
+/*!
+  \brief Constructor
+  \param parent parent widget
+
+  All font widget features are enabled.
+*/
 QtxFontEdit::QtxFontEdit( QWidget* parent )
 : QFrame( parent ),
-myFeatures( All )
+  myFeatures( All )
 {
   initialize();
 }
 
+/*!
+  \brief Destructor
+*/
 QtxFontEdit::~QtxFontEdit()
 {
 }
 
+/*!
+  \brief Get font widget features.
+  \return font widget features (ORed QtxFontEdit::Features flags)
+  \sa setFeatures()
+*/
 int QtxFontEdit::features() const
 {
   return myFeatures;
 }
 
+/*!
+  \brief Set font widget features.
+  \param f font widget features (ORed QtxFontEdit::Features flags)
+  \sa features()
+*/
 void QtxFontEdit::setFeatures( const int f )
 {
   if ( myFeatures == f )
@@ -61,6 +106,11 @@ void QtxFontEdit::setFeatures( const int f )
   updateState();
 }
 
+/*!
+  \brief Get currently selected font.
+  \return current font
+  \sa setCurrentFont()
+*/
 QFont QtxFontEdit::currentFont() const
 {
   QFont fnt( fontFamily(), fontSize() );
@@ -73,6 +123,11 @@ QFont QtxFontEdit::currentFont() const
   return fnt;
 }
 
+/*!
+  \brief Set currently selected font.
+  \param fnt current font
+  \sa currentFont()
+*/
 void QtxFontEdit::setCurrentFont( const QFont& fnt )
 {
   setFontFamily( fnt.family() );
@@ -82,11 +137,21 @@ void QtxFontEdit::setCurrentFont( const QFont& fnt )
                     ( fnt.underline() ? Underline : 0 ) );
 }
 
+/*!
+  \brief Get selected font family name.
+  \return current font family name
+  \sa setFontFamily()
+*/
 QString QtxFontEdit::fontFamily() const
 {
   return myFamily->currentFont().family();
 }
 
+/*!
+  \brief Get selected font size.
+  \return current font size
+  \sa setFontSize()
+*/
 int QtxFontEdit::fontSize() const
 {
   bool ok;
@@ -94,6 +159,11 @@ int QtxFontEdit::fontSize() const
   return ok ? pSize : 0;
 }
 
+/*!
+  \brief Get selected font scripting.
+  \return current font scripting
+  \sa setFontScripting()
+*/
 int QtxFontEdit::fontScripting() const
 {
   return ( myB->isChecked() ? Bold : 0 ) |
@@ -101,12 +171,22 @@ int QtxFontEdit::fontScripting() const
          ( myU->isChecked() ? Underline : 0 );
 }
 
+/*!
+  \brief Set font family name.
+  \param fam new font family name
+  \sa fontFamily()
+*/
 void QtxFontEdit::setFontFamily( const QString& fam )
 {
   myFamily->setCurrentFont( QFont( fam ) );
   onFontChanged( myFamily->currentFont() );  
 }
 
+/*!
+  \brief Set font size.
+  \param fam new font size
+  \sa fontSize()
+*/
 void QtxFontEdit::setFontSize( const int s )
 {
   if ( s <= 0 )
@@ -119,6 +199,11 @@ void QtxFontEdit::setFontSize( const int s )
     mySize->setEditText( QString::number( s ) );
 }
 
+/*!
+  \brief Set font scripting.
+  \param fam new font scripting
+  \sa fontScripting()
+*/
 void QtxFontEdit::setFontScripting( const int script )
 {
   myB->setChecked( script & Bold );
@@ -126,6 +211,9 @@ void QtxFontEdit::setFontScripting( const int script )
   myU->setChecked( script & Underline );
 }
 
+/*!
+  \brief Update widget state
+*/
 void QtxFontEdit::updateState()
 {
   int feat = features();
@@ -140,7 +228,11 @@ void QtxFontEdit::updateState()
   mySize->setEditable( feat & UserSize );
 }
 
-void QtxFontEdit::onFontChanged( const QFont& )
+/*!
+  \brief Called when current font is changed.
+  \param f (not used)
+*/
+void QtxFontEdit::onFontChanged( const QFont& /*f*/ )
 {
   int s = fontSize();
   mySize->clear();
@@ -154,7 +246,11 @@ void QtxFontEdit::onFontChanged( const QFont& )
   setFontSize( s );
 }
 
-void QtxFontEdit::onPreview( bool )
+/*!
+  \brief Called when "Preview" button is clicked.
+  \param on (not used)
+*/
+void QtxFontEdit::onPreview( bool /*on*/ )
 {
   bool ok;
   QFont fnt = QFontDialog::getFont( &ok, currentFont() );
@@ -163,6 +259,9 @@ void QtxFontEdit::onPreview( bool )
     setCurrentFont( fnt );
 }
 
+/*
+  \brief Perform internal intialization.
+*/
 void QtxFontEdit::initialize()
 {
   QHBoxLayout* base = new QHBoxLayout( this );

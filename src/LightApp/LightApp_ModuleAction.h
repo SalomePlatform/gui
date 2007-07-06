@@ -63,11 +63,9 @@ public:
   void             setMode( const int );
   int              mode() const;
 
-  virtual bool     addTo( QWidget* );
-  virtual bool     removeFrom( QWidget* );
-
 protected:
   virtual void     addedTo( QWidget* );
+  virtual void     removedFrom( QWidget* );
 
 signals:
   void             moduleActivated( const QString& );

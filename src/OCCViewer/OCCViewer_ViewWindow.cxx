@@ -976,9 +976,9 @@ void OCCViewer_ViewWindow::createActions()
 */
 void OCCViewer_ViewWindow::createToolBar()
 {
-  myActionsMap[DumpId]->addTo(myToolBar);  
+  myToolBar->addAction( myActionsMap[DumpId] );
   if ( myModel->trihedronActivated() ) 
-    myActionsMap[TrihedronShowId]->addTo(myToolBar);
+    myToolBar->addAction( myActionsMap[TrihedronShowId] );
 
   SUIT_ToolButton* aScaleBtn = new SUIT_ToolButton(myToolBar, "scale");
   aScaleBtn->AddAction(myActionsMap[FitAllId]);
@@ -989,9 +989,9 @@ void OCCViewer_ViewWindow::createToolBar()
   aPanningBtn->AddAction(myActionsMap[PanId]);
   aPanningBtn->AddAction(myActionsMap[GlobalPanId]);
 
-  myActionsMap[ChangeRotationPointId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[ChangeRotationPointId] );
 
-  myActionsMap[RotationId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[RotationId] );
 
   SUIT_ToolButton* aViewsBtn = new SUIT_ToolButton(myToolBar, "projection");
   aViewsBtn->AddAction(myActionsMap[FrontId]);
@@ -1001,17 +1001,17 @@ void OCCViewer_ViewWindow::createToolBar()
   aViewsBtn->AddAction(myActionsMap[LeftId]);
   aViewsBtn->AddAction(myActionsMap[RightId]);
 
-  myActionsMap[ResetId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[ResetId] );
 
   SUIT_ToolButton* aMemBtn = new SUIT_ToolButton(myToolBar, "view");
   aMemBtn->AddAction(myActionsMap[MemId]);
   aMemBtn->AddAction(myActionsMap[RestoreId]);
 
   myToolBar->addSeparator();
-  myActionsMap[CloneId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[CloneId] );
   
   myToolBar->addSeparator();
-  myActionsMap[ClippingId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[ClippingId] );
 }
 
 /*!

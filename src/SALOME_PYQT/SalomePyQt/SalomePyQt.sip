@@ -61,7 +61,6 @@ enum PrefType {
   PT_Font, 
   PT_DirList, 
   PT_File, 
-  PT_User
 };
 
 class QtxAction : QAction

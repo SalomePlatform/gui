@@ -51,7 +51,6 @@ public:
 	virtual void setAction( QtxAction* theAction );
 	
 	bool         addTo( QWidget* theWidget );
-	bool         addTo( QWidget* theWidget, int thePos );
 
 	void         setStatusTip( const QString& theTip );
 	//@}

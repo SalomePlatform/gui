@@ -35,15 +35,18 @@ class QTX_EXPORT QtxFontEdit : public QFrame
   Q_OBJECT
 
 public:
-  typedef enum { Family    = 0x01,
-                 Size      = 0x02,
-                 UserSize  = 0x04,
-                 Bold      = 0x08,
-                 Italic    = 0x10,
-                 Underline = 0x20,
-                 Preview   = 0x40,
-                 Scripting = Bold | Italic | Underline,
-                 All = Family | Size | UserSize | Scripting | Preview } Features;
+  //! Font widget features
+  typedef enum { 
+    Family    = 0x01,                                      //!< show font family selection widget
+    Size      = 0x02,                                      //!< show font size widget
+    UserSize  = 0x04,                                      //!< allow font size direct change
+    Bold      = 0x08,                                      //!< show 'bold' widget
+    Italic    = 0x10,                                      //!< show 'italic' widget
+    Underline = 0x20,                                      //!< show 'underline' widget
+    Preview   = 0x40,                                      //!< show font preview widget
+    Scripting = Bold | Italic | Underline,                 //!< show font scripting widgets ('bold','italic','underline')
+    All = Family | Size | UserSize | Scripting | Preview   //!< show all font widgets
+  } Features;
 
 public:
   QtxFontEdit( const int, QWidget* = 0 );

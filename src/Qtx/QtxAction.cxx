@@ -142,59 +142,6 @@ bool QtxAction::eventFilter( QObject* o, QEvent* e )
 }
 
 /*!
-  \brief Add action to widget. 
-  \param w widget (menu or toolbar)
-  \return \c true if the action is added successfully and \c false otherwise.
-*/
-bool QtxAction::addTo( QWidget* w )
-{
-  if ( !w )
-    return false;
-
-  w->addAction( this );
-  return true;
-}
-
-/*!
-  \brief Add action to widget.
-
-  The function adds the action to the menu or toolbar widget at the
-  specified \a index. If \a index is negative or greater than number of
-  items in the menu/toolbar, the action is added to the end of list.
-
-  \param w widget (menu or toolbar)
-  \param index index of the action in the action list
-  \return \c true if the action is added successfully and \c false otherwise.
-*/
-bool QtxAction::addTo( QWidget* w, const int index )
-{
-  if ( !w )
-    return false;
-
-  QAction* b = 0;
-  if ( 0 <= index && index < w->actions().count() )
-    b = w->actions().at( index );
-
-  w->insertAction( b, this );
-
-  return true;
-}
-
-/*!
-  \brief Remove action from widget.
-  \param w widget (menu or toolbar)
-  \return \c true if the action is removed successfully and \c false otherwise.
-*/
-bool QtxAction::removeFrom( QWidget* w )
-{
-  if ( !w )
-    return false;
-
-  w->removeAction( this );
-  return true;
-}
-
-/*!
   \brief Called when the action is added to the widget.
 
   Base implementation does nothing. Can be redefined in the successor

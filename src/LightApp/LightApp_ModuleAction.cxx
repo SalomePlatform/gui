@@ -387,17 +387,15 @@ int LightApp_ModuleAction::mode() const
 }
 
 /*!
-  \brief Add action to the widget. 
-  \param w widget (menu or toolbar)
-  \return \c true if the action is added successfully and \c false otherwise.
-  \sa removeFrom()
+  \brief Called when the action is added to the widget.
+  \param w widget (not used)
 */
-bool LightApp_ModuleAction::addTo( QWidget* w )
+void LightApp_ModuleAction::addedTo( QWidget* w )
 {
-  bool ok = QtxAction::addTo( w );
+  w->insertAction( mySet, this );
   if ( w->inherits( "QToolBar" ) )
-    ok = ok && myCombo->addTo( w );
-  return ok && mySet->addTo( w );
+    w->insertAction( myCombo, this );
+  update();
 }
 
 /*!
@@ -406,21 +404,11 @@ bool LightApp_ModuleAction::addTo( QWidget* w )
   \return \c true if the action is removed successfully and \c false otherwise.
   \sa addTo()
 */
-bool LightApp_ModuleAction::removeFrom( QWidget* w )
+void LightApp_ModuleAction::removedFrom( QWidget* w )
 {
-  bool ok = mySet->removeFrom( w );
   if ( w->inherits( "QToolBar" ) )
-    ok = ok && myCombo->removeFrom( w );
-  return ok && QtxAction::removeFrom( w );
-}
-
-/*!
-  \brief Called when the action is added to the widget.
-  \param w widget (not used)
-*/
-void LightApp_ModuleAction::addedTo( QWidget* /*w*/ )
-{
-  update();
+    w->removeAction( myCombo );
+  w->removeAction( mySet );
 }
 
 /*!

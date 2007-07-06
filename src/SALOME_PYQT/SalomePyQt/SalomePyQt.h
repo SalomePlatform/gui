@@ -91,7 +91,6 @@ enum {
   PT_Font     = LightApp_Preferences::Font, 
   PT_DirList  = LightApp_Preferences::DirList, 
   PT_File     = LightApp_Preferences::File, 
-  PT_User     = LightApp_Preferences::User
 };
 
 class SalomePyQt

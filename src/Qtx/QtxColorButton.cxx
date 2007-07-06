@@ -35,15 +35,19 @@
   \brief The QtxColorButton class implements a widget for color
   preference items editing.
 
-  The color preference item is represented as the colored button,
-  clicking on which invokes the standard "Select color" dialog box.
+  The color preference item is represented as the colored button with
+  assocoiated popup menu whihc is called when the user presses the small 
+  arrow button near it. The popup menu allows selecting of the color
+  from the predefined set. In addition it contains the button which
+  invokes standard "Select color" dialog box.
 
-  Initial color value can be set with setColor() method. Currently
-  chosen color can be retrieved with color() method.
+  Initial color value can be set with setColor() method. Chosen color
+  can be retrieved with the color() method.
 */
 
 /*!
-  \brief 
+  \brief Constructor.
+  \param parent parent widget
 */
 QtxColorButton::QtxColorButton( QWidget* parent )
 : QToolButton( parent )
@@ -95,14 +99,19 @@ QtxColorButton::QtxColorButton( QWidget* parent )
 }
 
 /*!
-  \brief 
+  \brief Destructor.
 */
 QtxColorButton::~QtxColorButton()
 {
 }
 
 /*!
-  \brief 
+  \brief Get currently selected color.
+
+  Returns null QColor if no color is selected.
+
+  \return selected color
+  \sa setColor()
 */
 QColor QtxColorButton::color() const
 {
@@ -110,7 +119,9 @@ QColor QtxColorButton::color() const
 }
 
 /*!
-  \brief 
+  \brief Set color.
+  \param c color to be set as current
+  \sa color()
 */
 void QtxColorButton::setColor( const QColor& c )
 {
@@ -119,6 +130,12 @@ void QtxColorButton::setColor( const QColor& c )
   update();
 }
 
+/*!
+  \brief Filter events for the child widgets.
+  \param o event receiver object
+  \param e event
+  \return \c true if the event should be filtered
+*/
 bool QtxColorButton::eventFilter( QObject* o, QEvent* e )
 {
   if ( e->type() == QEvent::Leave )
@@ -126,21 +143,36 @@ bool QtxColorButton::eventFilter( QObject* o, QEvent* e )
   return QToolButton::eventFilter( o, e );
 }
 
+/*!
+  \brief Called when the popup menu is about to show.
+
+  Updates the menu and child widgets state.
+*/
 void QtxColorButton::onAboutToShow()
 {
   updateState();
 }
 
 /*!
-  \brief 
+  \brief Called when the button is clicked by the user.
+
+  Emits the signal clicked( QColor ).
+
+  \param on button state (not used)
 */
-void QtxColorButton::onClicked( bool )
+void QtxColorButton::onClicked( bool /*on*/ )
 {
   emit clicked( color() );
 }
 
 /*!
-  \brief 
+  \brief Called when any color selection button from popup menu
+  is clicked.
+
+  Changes the currently selected color and emits the signal
+  changed( QColor ).
+
+  \param on button state
 */
 void QtxColorButton::onToggled( bool on )
 {
@@ -166,7 +198,14 @@ void QtxColorButton::onToggled( bool on )
 }
 
 /*!
-  \brief 
+  \brief Called the "Other colors" child button from popup menu
+  is clicked.
+
+  Invokes standard "Select color" dialog box allowing user to select
+  custom color. If the current color is changed by the user, emits 
+  the signal changed( QColor ).
+
+  \param on (not used)
 */
 void QtxColorButton::onDialogClicked( bool )
 {
@@ -183,7 +222,8 @@ void QtxColorButton::onDialogClicked( bool )
 }
 
 /*!
-  \brief 
+  \brief Customize paint event for the widget.
+  \param e paint event
 */
 void QtxColorButton::paintEvent( QPaintEvent* e )
 {
@@ -212,7 +252,7 @@ void QtxColorButton::paintEvent( QPaintEvent* e )
 }
 
 /*!
-  \brief 
+  \brief Update widget state.
 */
 void QtxColorButton::updateState()
 {
@@ -222,7 +262,8 @@ void QtxColorButton::updateState()
 }
 
 /*!
-  \brief 
+  \brief Update child button state.
+  \param btn child button
 */
 void QtxColorButton::updateButton( QToolButton* btn )
 {
@@ -238,6 +279,11 @@ void QtxColorButton::updateButton( QToolButton* btn )
   btn->blockSignals( block );
 }
 
+/*!
+  \brief Generate (if necessary) or get the icon for the button.
+  \param c color to be used for the icon
+  \return icon pixmap for the button
+*/
 QPixmap QtxColorButton::buttonIcon( const QColor& c ) const
 {
   static QMap<int, QPixmap> pixMap;
@@ -262,7 +308,10 @@ QPixmap QtxColorButton::buttonIcon( const QColor& c ) const
 }
 
 /*!
-  \brief 
+  \brief Draw pixmap.
+  \param pd paint device
+  \param c color
+  \param m margin
 */
 void QtxColorButton::drawColor( QPaintDevice* pd, const QColor& c, const int m ) const
 {
@@ -277,7 +326,8 @@ void QtxColorButton::drawColor( QPaintDevice* pd, const QColor& c, const int m )
 }
 
 /*!
-  \brief 
+  \brief Get predefined list of colors to be used in the popup menu.
+  \return list of colors
 */
 QList<QColor> QtxColorButton::colorsList() const
 {
@@ -294,3 +344,15 @@ QList<QColor> QtxColorButton::colorsList() const
   return lst;
 }
 
+/*!
+  \fn void QtxColorButton::clicked( QColor color );
+  \brief This signal is emitted when the widget button is clicked by 
+         the user.
+  \param color current color
+*/
+
+/*!
+  \fn void QtxColorButton::changed( QColor color );
+  \brief This signal is emitted when the current color is changed.
+  \param color new current color
+*/

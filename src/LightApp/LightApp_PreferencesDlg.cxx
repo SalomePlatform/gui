@@ -50,6 +50,7 @@ myPrefs( prefs ), mySaved ( false )
 
   setFocusProxy( myPrefs );
   myPrefs->setFrameStyle( QFrame::Box | QFrame::Sunken );
+  myPrefs->show();
 
   setButtonPosition( Right, Close );
 

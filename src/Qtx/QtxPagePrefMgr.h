@@ -46,11 +46,6 @@ class QListWidget;
 class QFileDialog;
 class QStackedWidget;
 
-/*!
-  \class QtxPagePrefMgr
-  GUI implementation of QtxPreferenceMgr - manager of preferences
-*/
-
 class QTX_EXPORT QtxPagePrefMgr : public QFrame, public QtxPreferenceMgr
 {
   Q_OBJECT
@@ -88,10 +83,6 @@ private:
   bool             myInit;
 };
 
-/*!
-  \class QtxPagePrefItem
-  Base class for implementation of the preference items
-*/
 class QTX_EXPORT QtxPagePrefItem : public QtxPreferenceItem
 {
 public:
@@ -124,10 +115,6 @@ private:
   QPointer<QWidget> myWidget;
 };
 
-/*!
-  \class QtxPageNamedPrefItem
-  Base class for implementation of the named preference items (items with text labels).
-*/
 class QTX_EXPORT QtxPageNamedPrefItem : public QtxPagePrefItem
 {
 public:
@@ -148,10 +135,6 @@ private:
   QPointer<QWidget> myControl;
 };
 
-/*!
-  \class QtxPagePrefListItem
-  GUI implementation of listed container.
-*/
 class QTX_EXPORT QtxPagePrefListItem : public QObject, public QtxPagePrefItem
 {
   Q_OBJECT
@@ -195,10 +178,6 @@ private:
   QLabel*          myInfLabel;
 };
 
-/*!
-  \class QtxPagePrefTabsItem
-  GUI implementation of tab widget container.
-*/
 class QTX_EXPORT QtxPagePrefTabsItem : public QtxPagePrefItem
 {
 public:
@@ -228,10 +207,6 @@ private:
   QTabWidget*      myTabs;
 };
 
-/*!
-  \class QtxPagePrefFrameItem
-  GUI implementation of frame container.
-*/
 class QTX_EXPORT QtxPagePrefFrameItem : public QtxPagePrefItem
 {
 public:
@@ -264,10 +239,6 @@ private:
   QtxGridBox*      myBox;
 };
 
-/*!
-  \class QtxPagePrefGroupItem
-  GUI implementation of group container.
-*/
 class QTX_EXPORT QtxPagePrefGroupItem : public QtxPagePrefItem
 {
 public:
@@ -312,9 +283,6 @@ private:
   QtxGroupBox*     myGroup;
 };
 
-/*!
-  \class QtxPagePrefSpaceItem
-*/
 class QTX_EXPORT QtxPagePrefSpaceItem : public QtxPagePrefItem
 {
 public:
@@ -337,10 +305,6 @@ private:
   void             initialize( const int, const int, const int, const int );
 };
 
-/*!
-  \class  QtxPagePrefCheckItem
-  GUI implementation of resources check item (bool).
-*/
 class QTX_EXPORT QtxPagePrefCheckItem : public QtxPagePrefItem
 {
 public:
@@ -357,10 +321,6 @@ private:
   QCheckBox*       myCheck;
 };
 
-/*!
-  \class  QtxPagePrefEditItem
-  GUI implementation of resources line edit item (string, integer, double).
-*/
 class QTX_EXPORT QtxPagePrefEditItem : public QtxPageNamedPrefItem
 {
 public:
@@ -390,11 +350,6 @@ private:
   int              myType;
   QLineEdit*       myEditor;
 };
-
-/*!
-  \class QtxPagePrefSelectItem
-  GUI implementation of resources selector item (enum).
-*/
 
 class QTX_EXPORT QtxPagePrefSelectItem : public QtxPageNamedPrefItem
 {
@@ -434,10 +389,6 @@ private:
   QtxComboBox*     mySelector;
 };
 
-/*!
-  \class  QtxPagePrefSpinItem
-  GUI implementation of resources spin box item (integer, double).
-*/
 class QTX_EXPORT QtxPagePrefSpinItem : public QtxPageNamedPrefItem
 {
 public:
@@ -483,10 +434,6 @@ private:
   int              myType;
 };
 
-/*!
-  \class  QtxPagePrefTextItem
-  GUI implementation of resources text edit item (text - several strings).
-*/
 class QTX_EXPORT QtxPagePrefTextItem : public QtxPageNamedPrefItem
 {
 public:
@@ -503,10 +450,6 @@ private:
   QTextEdit*       myEditor;
 };
 
-/*!
-  \class  QtxPagePrefColorItem
-  GUI implementation of resources color item.
-*/
 class QTX_EXPORT QtxPagePrefColorItem : public QtxPageNamedPrefItem
 {
 public:
@@ -521,10 +464,6 @@ private:
   QtxColorButton*  myColor;
 };
 
-/*!
-  \class  QtxPagePrefFontItem
-  GUI implementation of resources font item.
-*/
 class QTX_EXPORT QtxPagePrefFontItem : public QObject, public QtxPageNamedPrefItem
 {
   Q_OBJECT
@@ -550,10 +489,6 @@ private:
   QtxFontEdit*     myFont;
 };
 
-/*!
-  \class  QtxPagePrefPathItem
-  GUI implementation of resources path item.
-*/
 class QTX_EXPORT QtxPagePrefPathItem : public QtxPageNamedPrefItem
 {
 public:
@@ -580,10 +515,6 @@ private:
   QtxPathEdit*     myPath;
 };
 
-/*!
-  \class  QtxPagePrefPathsItem
-  \brief GUI implementation of resources directory list item.
-*/
 class QTX_EXPORT QtxPagePrefPathsItem : public QtxPageNamedPrefItem
 {
 public:

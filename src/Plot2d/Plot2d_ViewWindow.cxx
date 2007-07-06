@@ -89,12 +89,11 @@ void Plot2d_ViewWindow::contextMenuPopup( QMenu* thePopup )
   // scaling
   QMenu* scalingPopup = new QMenu( thePopup );
   scalingPopup->addAction( myActionsMap[ PModeXLinearId ] );
-  myActionsMap[ PModeXLinearId ]->addTo( scalingPopup );
-  myActionsMap[ PModeXLogarithmicId ]->addTo( scalingPopup );
+  scalingPopup->addAction( myActionsMap[ PModeXLogarithmicId ] );
   onChangeHorMode();
   scalingPopup->addSeparator();
-  myActionsMap[ PModeYLinearId ]->addTo( scalingPopup );
-  myActionsMap[ PModeYLogarithmicId ]->addTo( scalingPopup );
+  scalingPopup->addAction( myActionsMap[ PModeYLinearId ] );
+  scalingPopup->addAction( myActionsMap[ PModeYLogarithmicId ] );
   scalingPopup->setTitle( tr( "SCALING_POPUP" ) );
   thePopup->addMenu( scalingPopup );
   onChangeVerMode();
@@ -102,16 +101,16 @@ void Plot2d_ViewWindow::contextMenuPopup( QMenu* thePopup )
   thePopup->addAction(tr("TOT_PLOT2D_FITDATA"), myViewFrame, SLOT(onFitData()));
   // curve type
   QMenu* curTypePopup = new QMenu( thePopup );
-  myActionsMap[ CurvPointsId ]->addTo( curTypePopup );
-  myActionsMap[ CurvLinesId ]->addTo( curTypePopup );
-  myActionsMap[ CurvSplinesId ]->addTo( curTypePopup );
+  scalingPopup->addAction( myActionsMap[ CurvPointsId ] );
+  scalingPopup->addAction( myActionsMap[ CurvLinesId ] );
+  scalingPopup->addAction( myActionsMap[ CurvSplinesId ] );
   curTypePopup->setTitle( tr( "CURVE_TYPE_POPUP" ) );
   thePopup->addMenu( curTypePopup );
 
   // legend
-  myActionsMap[ LegendId ]->addTo(thePopup);
+  scalingPopup->addAction( myActionsMap[ LegendId ] );
   // settings
-  myActionsMap[ CurvSettingsId ]->addTo(thePopup);
+  scalingPopup->addAction( myActionsMap[ CurvSettingsId ] );
 }
 
 /*!
@@ -303,7 +302,7 @@ void Plot2d_ViewWindow::createActions()
 */
 void Plot2d_ViewWindow::createToolBar()
 {
-  myActionsMap[DumpId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[DumpId] );
 
   SUIT_ToolButton* aScaleBtn = new SUIT_ToolButton(myToolBar);
   aScaleBtn->AddAction(myActionsMap[FitAllId]);
@@ -324,14 +323,14 @@ void Plot2d_ViewWindow::createToolBar()
   myActionsMap[CurvLinesId]->setChecked(true);
   onChangeCurveMode();
 
-  myActionsMap[HorId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[HorId] );
   onChangeHorMode();
-  myActionsMap[VerId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[VerId] );
   onChangeVerMode();
 
-  myActionsMap[LegendId]->addTo(myToolBar);
-  myActionsMap[CurvSettingsId]->addTo(myToolBar);
-  myActionsMap[CloneId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[LegendId] );
+  myToolBar->addAction( myActionsMap[CurvSettingsId] );
+  myToolBar->addAction( myActionsMap[CloneId] );
   onChangeLegendMode();
 }
 

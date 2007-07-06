@@ -290,8 +290,8 @@ void VTKViewer_ViewWindow::createActions()
 /*!Create tool bar.*/
 void VTKViewer_ViewWindow::createToolBar()
 {
-  myActionsMap[DumpId]->addTo(myToolBar);
-  myActionsMap[TrihedronShowId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[DumpId] );
+  myToolBar->addAction( myActionsMap[TrihedronShowId] );
 
   SUIT_ToolButton* aScaleBtn = new SUIT_ToolButton(myToolBar);
   aScaleBtn->AddAction(myActionsMap[FitAllId]);
@@ -302,7 +302,7 @@ void VTKViewer_ViewWindow::createToolBar()
   aPanningBtn->AddAction(myActionsMap[PanId]);
   aPanningBtn->AddAction(myActionsMap[GlobalPanId]);
 
-  myActionsMap[RotationId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[RotationId] );
 
   SUIT_ToolButton* aViewsBtn = new SUIT_ToolButton(myToolBar);
   aViewsBtn->AddAction(myActionsMap[FrontId]);
@@ -312,7 +312,7 @@ void VTKViewer_ViewWindow::createToolBar()
   aViewsBtn->AddAction(myActionsMap[LeftId]);
   aViewsBtn->AddAction(myActionsMap[RightId]);
 
-  myActionsMap[ResetId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[ResetId] );
 }
 
 /*!On front view event.*/

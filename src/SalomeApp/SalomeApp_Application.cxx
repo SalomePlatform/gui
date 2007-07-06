@@ -834,7 +834,7 @@ void SalomeApp_Application::createPreferences( LightApp_Preferences* pref )
     pref->addPreference( tr( QString().sprintf( "OBJ_BROWSER_COLUMN_%d", i ).toLatin1() ), defCols,
                          LightApp_Preferences::Bool, "ObjectBrowser", QString().sprintf( "visibility_column_%d", i ) );
   }
-  pref->setItemProperty( defCols, "columns", 1 );
+  pref->setItemProperty( "columns", 1, defCols );
 
   // adding preference to LightApp_Application handled preferences..  a bit of hacking with resources..
   int genTab = pref->addPreference( LightApp_Application::tr( "PREF_TAB_GENERAL" ), salomeCat );

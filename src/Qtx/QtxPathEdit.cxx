@@ -54,29 +54,75 @@ static const char* browse_icon[] = {
 "                "
 };
 
+/*!
+  \class QtxPathEdit
+  \brief The QtxPathEdit class represents a widget for file or directory
+  path preference items editing.
+
+  The path preference item is represented as the line edit box for the 
+  direct path editing and small button clicking on which invokes browse
+  dialog box. The widget can be used in different modes: "Open File", 
+  "Save File", "Select Directory". The mode defines the type of the
+  standard browse dialog box which is invoked on the button clicking.
+
+  Initial path value can be set with setPath() method. Chosen path
+  can be retrieved with the path() method. The widget mode can be set 
+  with setPathType() and retrieved with pathType() method.
+
+  In addition, file/direcrory filters (wildcards) can be set with the
+  setPathFilter() method and retrieved with pathFilter() method.
+*/
+
+/*!
+  \brief Constructor
+  \param type widget mode (Qtx::PathType)
+  \param parent parent widget
+  \sa pathType(), setPathType()
+*/
 QtxPathEdit::QtxPathEdit( const Qtx::PathType type, QWidget* parent )
 : QFrame( parent ),
-myType( type )
+  myType( type )
 {
   initialize();
 }
 
+/*!
+  \brief Constructor
+
+  Qtx::PT_OpenFile mode is used by default.
+
+  \param parent parent widget
+  \sa pathType(), setPathType()
+*/
 QtxPathEdit::QtxPathEdit( QWidget* parent )
 : QFrame( parent ),
-myType( Qtx::PT_OpenFile )
+  myType( Qtx::PT_OpenFile )
 {
   initialize();
 }
 
+/*!
+  \brief Destructor
+*/
 QtxPathEdit::~QtxPathEdit()
 {
 }
 
+/*!
+  \brief Get widget mode.
+  \return currently used widget mode (Qtx::PathType)
+  \sa setPathType()
+*/
 Qtx::PathType QtxPathEdit::pathType() const
 {
   return myType;
 }
 
+/*!
+  \brief Set widget mode.
+  \param type new widget mode (Qtx::PathType)
+  \sa pathType()
+*/
 void QtxPathEdit::setPathType( const Qtx::PathType type )
 {
   if ( myType == type )
@@ -86,21 +132,41 @@ void QtxPathEdit::setPathType( const Qtx::PathType type )
   updateState();
 }
 
+/*!
+  \brief Get currently selected path.
+  \return file or directory path entered by the user
+  \sa setPath()
+*/
 QString QtxPathEdit::path() const
 {
   return myPath->text();
 }
 
+/*!
+  \brief Set path.
+  \param txt file or directory path 
+  \sa path()
+*/
 void QtxPathEdit::setPath( const QString& txt )
 {
   myPath->setText( txt );
 }
 
+/*!
+  \brief Get currently used path filters.
+  \return file or directory path filters
+  \sa setPathFilter()
+*/
 QString QtxPathEdit::pathFilter() const
 {
   return myFilter;
 }
 
+/*!
+  \brief Set path filters.
+  \param f new file or directory path filters
+  \sa pathFilter()
+*/
 void QtxPathEdit::setPathFilter( const QString& f )
 {
   if ( myFilter == f )
@@ -110,7 +176,15 @@ void QtxPathEdit::setPathFilter( const QString& f )
   updateState();
 }
 
-void QtxPathEdit::onBrowse( bool )
+/*!
+  \brief Called when user clicks "Browse" button. 
+
+  Invokes standard browsng dialog box depending on the used widget mode.
+
+  \param on (not used)
+  \sa mode(), setMode()
+*/
+void QtxPathEdit::onBrowse( bool /*on*/ )
 {
   QString path;
   QString initial = QFileInfo( myPath->text() ).path();
@@ -133,11 +207,18 @@ void QtxPathEdit::onBrowse( bool )
   myPath->setFocus();
 }
 
+/*!
+  \brief Get internal line edit widget.
+  \return line edit box widget
+*/
 QLineEdit* QtxPathEdit::lineEdit() const
 {
   return myPath;
 }
 
+/*!
+  \brief Perform internal widget intialization.
+*/
 void QtxPathEdit::initialize()
 {
   QHBoxLayout* base = new QHBoxLayout( this );
@@ -158,6 +239,9 @@ void QtxPathEdit::initialize()
   updateState();
 }
 
+/*!
+  \brief Update widget state.
+*/
 void QtxPathEdit::updateState()
 {
   myPath->setCompleter( Qtx::pathCompleter( pathType(), pathFilter() ) );

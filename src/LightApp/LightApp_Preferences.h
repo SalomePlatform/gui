@@ -42,10 +42,10 @@ public:
   LightApp_Preferences( QtxResourceMgr*, QWidget* = 0 );
   virtual ~LightApp_Preferences();
 
-  int                  addPreference( const QString& label, const int pId = -1, const int = -1,
-                                      const QString& section = QString::null, const QString& param = QString::null );
-  int                  addPreference( const QString& modName, const QString& label, const int pId = -1, const int = -1,
-                                      const QString& section = QString::null, const QString& param = QString::null );
+  int                  addPreference( const QString& label,const int pId = -1, const int = Auto,
+                                      const QString& section = QString(), const QString& param = QString() );
+  int                  addPreference( const QString& modName, const QString& label, const int pId = -1, const int = Auto,
+                                      const QString& section = QString(), const QString& param = QString() );
 
   bool                 hasModule( const QString& ) const;
 

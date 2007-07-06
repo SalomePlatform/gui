@@ -72,10 +72,6 @@ QtxToolBar::Watcher::Watcher( QtxToolBar* cont )
   myState( true ),
   myEmpty( false )
 {
-/*
-  if ( myCont->mainWindow() )
-    myState = myCont->mainWindow()->appropriate( myCont );
-*/
   myCont->installEventFilter( this );
   myVisible = myCont->isVisibleTo( myCont->parentWidget() );
 
@@ -208,18 +204,14 @@ void QtxToolBar::Watcher::updateVisibility()
 
   bool vis = false;
 
-  const QObjectList& objList = myCont->children();
-  for ( QObjectList::const_iterator it = objList.begin(); it != objList.end() && !vis; ++it )
+  QList<QAction*> actList = myCont->actions();
+
+  for ( QList<QAction*>::const_iterator it = actList.begin(); it != actList.end() && !vis; ++it )
   {
-    QObject* obj = *it;
-    if ( !obj->isWidgetType() || !qstrcmp( "qt_dockwidget_internal", obj->objectName().toLatin1() ) )
+    if ( (*it)->isSeparator() )
       continue;
 
-    if ( obj->inherits( "QToolBarHandle" ) || obj->inherits( "QToolBarExtension" ) )
-      continue;
-
-    QWidget* wid = (QWidget*)*it;
-    vis = wid->isVisibleTo( wid->parentWidget() );
+    vis = (*it)->isVisible();
   }
 
   QMainWindow* mw = myCont->mainWindow();
@@ -259,7 +251,9 @@ QtxToolBar::QtxToolBar( const bool watch, const QString& label, QWidget* parent 
 {
   if ( watch )
     myWatcher = new Watcher( this );
-  setObjectName( label );
+
+  if ( QMainWindow* mw = ::qobject_cast<QMainWindow*>( parent ) )
+    mw->addToolBar( this );
 }
 
 /*!
@@ -272,7 +266,8 @@ QtxToolBar::QtxToolBar( const QString& label, QWidget* parent )
   myWatcher( 0 ),
   myStretch( false )
 {
-  setObjectName( label );
+  if ( QMainWindow* mw = ::qobject_cast<QMainWindow*>( parent ) )
+    mw->addToolBar( this );
 }
 
 /*!
@@ -288,6 +283,9 @@ QtxToolBar::QtxToolBar( const bool watch, QWidget* parent )
 {
   if ( watch )
     myWatcher = new Watcher( this );
+
+  if ( QMainWindow* mw = ::qobject_cast<QMainWindow*>( parent ) )
+    mw->addToolBar( this );
 }
 
 /*!
@@ -299,6 +297,8 @@ QtxToolBar::QtxToolBar( QWidget* parent )
   myWatcher( 0 ),
   myStretch( false )
 {
+  if ( QMainWindow* mw = ::qobject_cast<QMainWindow*>( parent ) )
+    mw->addToolBar( this );
 }
 
 /*!
@@ -306,44 +306,6 @@ QtxToolBar::QtxToolBar( QWidget* parent )
 */
 QtxToolBar::~QtxToolBar()
 {
-}
-
-/*!
-  \brief Get the recommended size for the widget.
-  \return recommended toolbar size
-*/
-QSize QtxToolBar::sizeHint() const
-{
-  QSize sz = QToolBar::sizeHint();
-/*
-  if ( place() == InDock && isStretchable() && area() )
-  {
-    if ( orientation() == Horizontal )
-      sz.setWidth( area()->width() );
-    else
-      sz.setHeight( area()->height() );
-  }
-*/
-  return sz;
-}
-
-/*!
-  \brief Get the recommended minimum size for the widget.
-  \return recommended toolbar minimum size
-*/
-QSize QtxToolBar::minimumSizeHint() const
-{
-  QSize sz = QToolBar::minimumSizeHint();
-/*
-  if ( place() == InDock && isStretchable() && area() )
-  {
-    if ( orientation() == Horizontal )
-      sz.setWidth( area()->width() );
-    else
-      sz.setHeight( area()->height() );
-  }
-*/
-  return sz;
 }
 
 /*!
@@ -377,4 +339,12 @@ QMainWindow* QtxToolBar::mainWindow() const
     wid = wid->parentWidget();
   }
   return mw;
+}
+
+bool QtxToolBar::event( QEvent* e )
+{
+  if ( e->type() == QEvent::WindowTitleChange && objectName().isEmpty() )
+    setObjectName( windowTitle() );
+
+  return QToolBar::event( e );
 }

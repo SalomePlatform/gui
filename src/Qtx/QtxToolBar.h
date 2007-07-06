@@ -39,13 +39,13 @@ public:
   QtxToolBar( QWidget* = 0 );
   virtual ~QtxToolBar();
 
-  virtual QSize sizeHint() const;
-  virtual QSize minimumSizeHint() const;
-
   QMainWindow*  mainWindow() const;
 
 public slots:
   virtual void  setVisible( bool );
+
+protected:
+  virtual bool  event( QEvent* );
 
 private:
   Watcher*      myWatcher;   //!< watcher object

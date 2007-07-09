@@ -31,12 +31,14 @@
 
 #include <QEvent>
 #include <QLayout>
+#include <QToolBox>
 #include <QLineEdit>
 #include <QTextEdit>
 #include <QCheckBox>
 #include <QSplitter>
 #include <QTabWidget>
 #include <QListWidget>
+#include <QDateTimeEdit>
 #include <QStackedWidget>
 
 /*!
@@ -120,6 +122,8 @@ void QtxPagePrefMgr::updateContents()
         item->widget()->setParent( myBox );
     }
   }
+
+  setWindowIcon( icon() );
 }
 
 /*!
@@ -751,6 +755,72 @@ void QtxPagePrefListItem::setSelected( const int id )
 }
 
 /*!
+  \class QtxPagePrefToolBoxItem
+*/
+
+QtxPagePrefToolBoxItem::QtxPagePrefToolBoxItem( const QString& title, QtxPreferenceItem* parent,
+                                                const QString& sect, const QString& param )
+: QtxPagePrefItem( title, parent, sect, param )
+{
+  setWidget( myToolBox = new QToolBox( 0 ) );
+}
+
+QtxPagePrefToolBoxItem::~QtxPagePrefToolBoxItem()
+{
+}
+
+void QtxPagePrefToolBoxItem::updateContents()
+{
+  updateToolBox();
+}
+
+void QtxPagePrefToolBoxItem::updateToolBox()
+{
+  QList<QtxPagePrefItem*> items;
+  pageChildItems( items );
+
+  QWidget* cur = myToolBox->currentWidget();
+
+  int i = 0;
+  QMap<QWidget*, int> map;
+  for ( QList<QtxPagePrefItem*>::const_iterator it = items.begin(); it != items.end(); ++it )
+  {
+    QWidget* wid = (*it)->widget();
+    if ( !wid )
+      continue;
+
+    if ( myToolBox->widget( i ) != wid )
+    {
+      if ( myToolBox->indexOf( wid ) != -1 )
+        myToolBox->removeItem( myToolBox->indexOf( wid ) );
+
+      myToolBox->insertItem( i, wid, (*it)->title() );
+    }
+    else
+      myToolBox->setItemText( i, (*it)->title() );
+
+    myToolBox->setItemIcon( i, (*it)->icon() );
+
+    i++;
+    map.insert( wid, 0 );
+  }
+
+  QList<QWidget*> del;
+  for ( int idx = 0; idx < (int)myToolBox->count(); idx++ )
+  {
+    QWidget* w = myToolBox->widget( idx );
+    if ( !map.contains( w ) )
+      del.append( w );
+  }
+
+  for ( QList<QWidget*>::const_iterator itr = del.begin(); itr != del.end(); ++itr )
+    myToolBox->removeItem( myToolBox->indexOf( *itr ) );
+
+  if ( cur )
+    myToolBox->setCurrentWidget( cur );
+}
+
+/*!
   \class QtxPagePrefTabsItem
   \brief GUI implementation of the tab widget container.
 */
@@ -766,8 +836,7 @@ QtxPagePrefTabsItem::QtxPagePrefTabsItem( const QString& title, QtxPreferenceIte
                                           const QString& sect, const QString& param )
 : QtxPagePrefItem( title, parent, sect, param )
 {
-  myTabs = new QTabWidget( 0 );
-  setWidget( myTabs );
+  setWidget( myTabs = new QTabWidget( 0 ) );
 }
 
 /*!
@@ -935,7 +1004,8 @@ void QtxPagePrefTabsItem::updateTabs()
   for ( QList<QWidget*>::const_iterator itr = del.begin(); itr != del.end(); ++itr )
     myTabs->removeTab( myTabs->indexOf( *itr ) );
 
-  myTabs->setCurrentWidget( cur );
+  if ( cur )
+    myTabs->setCurrentWidget( cur );
 }
 
 /*!
@@ -954,8 +1024,15 @@ QtxPagePrefFrameItem::QtxPagePrefFrameItem( const QString& title, QtxPreferenceI
                                             const QString& sect, const QString& param )
 : QtxPagePrefItem( title, parent, sect, param )
 {
-  myBox = new QtxGridBox( 1, Qt::Horizontal, 0, 5, 0 );
-  setWidget( myBox );
+  QWidget* main = new QWidget();
+  QVBoxLayout* base = new QVBoxLayout( main );
+  base->setMargin( 0 );
+  base->setSpacing( 0 );
+
+  base->addWidget( myBox = new QtxGridBox( 1, Qt::Horizontal, main, 5, 5 ) );
+  base->addItem( new QSpacerItem( 0, 0, QSizePolicy::Minimum, QSizePolicy::Expanding ) );
+
+  setWidget( main );
 }
 
 /*!
@@ -1053,6 +1130,27 @@ void QtxPagePrefFrameItem::setOrientation( const Qt::Orientation o )
   myBox->setOrientation( o );
 }
 
+bool QtxPagePrefFrameItem::stretch() const
+{
+  QSpacerItem* s = 0;
+  QLayout* l = widget() ? widget()->layout() : 0;
+  for ( int i = 0; l && i < l->count() && !s; i++ )
+    s = l->itemAt( i )->spacerItem();
+
+  return s ? s->expandingDirections() & Qt::Vertical : false;
+}
+
+void QtxPagePrefFrameItem::setStretch( const bool on )
+{
+  QSpacerItem* s = 0;
+  QLayout* l = widget() ? widget()->layout() : 0;
+  for ( int i = 0; l && i < l->count() && !s; i++ )
+    s = l->itemAt( i )->spacerItem();
+
+  if ( s )
+    s->changeSize( 0, 0, QSizePolicy::Minimum, on ? QSizePolicy::Expanding : QSizePolicy::Minimum );
+}
+
 /*!
   \brief Get preference item option value.
   \param name option name
@@ -1069,6 +1167,8 @@ QVariant QtxPagePrefFrameItem::optionValue( const QString& name ) const
     return columns();
   else if ( name == "orientation" )
     return orientation();
+  else if ( name == "stretch" )
+    return stretch();
   else
     return QtxPagePrefItem::optionValue( name );
 }
@@ -1100,6 +1200,11 @@ void QtxPagePrefFrameItem::setOptionValue( const QString& name, const QVariant& 
   {
     if ( val.canConvert( QVariant::Int ) )
       setOrientation( (Qt::Orientation)val.toInt() );
+  }
+  else if ( name == "stretch" )
+  {
+    if ( val.canConvert( QVariant::Bool ) )
+      setStretch( val.toBool() );
   }
   else
     QtxPagePrefItem::setOptionValue( name, val );
@@ -2879,8 +2984,8 @@ void QtxPagePrefPathItem::setOptionValue( const QString& name, const QVariant& v
 }
 
 /*!
-  \class QtxPagePrefPathsItem
-  \brief GUI implementation of the resources files/directories list item.
+  \class  QtxPagePrefPathListItem
+  \brief GUI implementation of resources directory list item.
 */
 
 /*!
@@ -2889,8 +2994,8 @@ void QtxPagePrefPathItem::setOptionValue( const QString& name, const QVariant& v
   \param sect resource file section associated with the preference item
   \param param resource file parameter associated with the preference item
 */
-QtxPagePrefPathsItem::QtxPagePrefPathsItem( QtxPreferenceItem* parent, const QString& sect, 
-					    const QString& param )
+QtxPagePrefPathListItem::QtxPagePrefPathListItem( QtxPreferenceItem* parent,
+                                                  const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( QString(), parent, sect, param )
 {
   setControl( myPaths = new QtxPathListEdit() );
@@ -2904,8 +3009,8 @@ QtxPagePrefPathsItem::QtxPagePrefPathsItem( QtxPreferenceItem* parent, const QSt
   \param sect resource file section associated with the preference item
   \param param resource file parameter associated with the preference item
 */
-QtxPagePrefPathsItem::QtxPagePrefPathsItem( const Qtx::PathType type, const QString& title,
-                                            QtxPreferenceItem* parent, const QString& sect, const QString& param )
+QtxPagePrefPathListItem::QtxPagePrefPathListItem( const Qtx::PathType type, const QString& title,
+                                                  QtxPreferenceItem* parent, const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param )
 {
   setControl( myPaths = new QtxPathListEdit( type ) );
@@ -2918,8 +3023,8 @@ QtxPagePrefPathsItem::QtxPagePrefPathsItem( const Qtx::PathType type, const QStr
   \param sect resource file section associated with the preference item
   \param param resource file parameter associated with the preference item
 */
-QtxPagePrefPathsItem::QtxPagePrefPathsItem( const QString& title, QtxPreferenceItem* parent,
-                                            const QString& sect, const QString& param )
+QtxPagePrefPathListItem::QtxPagePrefPathListItem( const QString& title, QtxPreferenceItem* parent,
+                                                  const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param )
 {
   setControl( myPaths = new QtxPathListEdit() );
@@ -2928,7 +3033,7 @@ QtxPagePrefPathsItem::QtxPagePrefPathsItem( const QString& title, QtxPreferenceI
 /*!
   \brief Destructor.
 */
-QtxPagePrefPathsItem::~QtxPagePrefPathsItem()
+QtxPagePrefPathListItem::~QtxPagePrefPathListItem()
 {
 }
 
@@ -2937,7 +3042,7 @@ QtxPagePrefPathsItem::~QtxPagePrefPathsItem()
   \return currently used path list widget mode (Qtx::PathType)
   \sa setPathType()
 */
-Qtx::PathType QtxPagePrefPathsItem::pathType() const
+Qtx::PathType QtxPagePrefPathListItem::pathType() const
 {
   return myPaths->pathType();
 }
@@ -2947,7 +3052,7 @@ Qtx::PathType QtxPagePrefPathsItem::pathType() const
   \param type new path list widget mode (Qtx::PathType)
   \sa pathType()
 */
-void QtxPagePrefPathsItem::setPathType( const Qtx::PathType type )
+void QtxPagePrefPathListItem::setPathType( const Qtx::PathType type )
 {
   myPaths->setPathType( type );
 }
@@ -2956,7 +3061,7 @@ void QtxPagePrefPathsItem::setPathType( const Qtx::PathType type )
   \brief Store preference item to the resource manager.
   \sa retrieve()
 */
-void QtxPagePrefPathsItem::store()
+void QtxPagePrefPathListItem::store()
 {
   setString( myPaths->pathList().join( ";" ) );
 }
@@ -2965,7 +3070,7 @@ void QtxPagePrefPathsItem::store()
   \brief Retrieve preference item from the resource manager.
   \sa store()
 */
-void QtxPagePrefPathsItem::retrieve()
+void QtxPagePrefPathListItem::retrieve()
 {
   myPaths->setPathList( getString().split( ";" ) );
 }
@@ -2976,7 +3081,7 @@ void QtxPagePrefPathsItem::retrieve()
   \return property value or null QVariant if option is not set
   \sa setOptionValue()
 */
-QVariant QtxPagePrefPathsItem::optionValue( const QString& name ) const
+QVariant QtxPagePrefPathListItem::optionValue( const QString& name ) const
 {
   if ( name == "path_type" )
     return pathType();
@@ -2990,7 +3095,7 @@ QVariant QtxPagePrefPathsItem::optionValue( const QString& name ) const
   \param val new property value
   \sa optionValue()
 */
-void QtxPagePrefPathsItem::setOptionValue( const QString& name, const QVariant& val )
+void QtxPagePrefPathListItem::setOptionValue( const QString& name, const QVariant& val )
 {
   if ( name == "path_type" )
   {
@@ -2999,4 +3104,213 @@ void QtxPagePrefPathsItem::setOptionValue( const QString& name, const QVariant& 
   }
   else
     QtxPageNamedPrefItem::setOptionValue( name, val );
+}
+
+/*!
+  \class  QtxPagePrefDateTimeItem
+  \brief GUI implementation of resources date/time item.
+*/
+
+QtxPagePrefDateTimeItem::QtxPagePrefDateTimeItem( const QString& title, QtxPreferenceItem* parent,
+                                                  const QString& sect, const QString& param )
+: QtxPageNamedPrefItem( title, parent, sect, param ),
+myType( DateTime )
+{
+  setControl( myDateTime = new QDateTimeEdit() );
+  myDateTime->setCalendarPopup( true );
+  myDateTime->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
+  updateDateTime();
+}
+
+QtxPagePrefDateTimeItem::QtxPagePrefDateTimeItem( const int type, const QString& title, QtxPreferenceItem* parent,
+                                                  const QString& sect, const QString& param )
+: QtxPageNamedPrefItem( title, parent, sect, param ),
+myType( type )
+{
+  setControl( myDateTime = new QDateTimeEdit() );
+  myDateTime->setCalendarPopup( true );
+  myDateTime->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
+  updateDateTime();
+}
+
+QtxPagePrefDateTimeItem::~QtxPagePrefDateTimeItem()
+{
+}
+
+int QtxPagePrefDateTimeItem::inputType() const
+{
+  return myType;
+}
+
+void QtxPagePrefDateTimeItem::setInputType( const int type )
+{
+  if ( myType == type )
+    return;
+
+  myType = type;
+  updateDateTime();
+}
+
+bool QtxPagePrefDateTimeItem::calendar() const
+{
+  return myDateTime->calendarPopup();
+}
+
+void QtxPagePrefDateTimeItem::setCalendar( const bool on )
+{
+  myDateTime->setCalendarPopup( on );
+}
+
+QDate QtxPagePrefDateTimeItem::maximumDate() const
+{
+  return myDateTime->maximumDate();
+}
+
+QTime QtxPagePrefDateTimeItem::maximumTime() const
+{
+  return myDateTime->maximumTime();
+}
+
+QDate QtxPagePrefDateTimeItem::minimumDate() const
+{
+  return myDateTime->minimumDate();
+}
+
+QTime QtxPagePrefDateTimeItem::minimumTime() const
+{
+  return myDateTime->minimumTime();
+}
+
+void QtxPagePrefDateTimeItem::setMaximumDate( const QDate& d )
+{
+  if ( d.isValid() )
+    myDateTime->setMaximumDate( d );
+  else
+    myDateTime->clearMaximumDate();
+}
+
+void QtxPagePrefDateTimeItem::setMaximumTime( const QTime& t )
+{
+  if ( t.isValid() )
+    myDateTime->setMaximumTime( t );
+  else
+    myDateTime->clearMaximumTime();
+}
+
+void QtxPagePrefDateTimeItem::setMinimumDate( const QDate& d )
+{
+  if ( d.isValid() )
+    myDateTime->setMinimumDate( d );
+  else
+    myDateTime->clearMinimumDate();
+}
+
+void QtxPagePrefDateTimeItem::setMinimumTime( const QTime& t )
+{
+  if ( t.isValid() )
+    myDateTime->setMinimumTime( t );
+  else
+    myDateTime->clearMinimumTime();
+}
+
+void QtxPagePrefDateTimeItem::store()
+{
+  QString str;
+  switch ( inputType() )
+  {
+  case Date:
+    str = myDateTime->date().toString( Qt::ISODate );
+    break;
+  case Time:
+    str = myDateTime->time().toString( Qt::ISODate );
+    break;
+  case DateTime:
+    str = myDateTime->dateTime().toString( Qt::ISODate );
+    break;
+  }
+
+  setString( str );
+}
+
+void QtxPagePrefDateTimeItem::retrieve()
+{
+  QString str = getString();
+  switch ( inputType() )
+  {
+  case Date:
+    myDateTime->setDate( QDate::fromString( str, Qt::ISODate ) );
+    break;
+  case Time:
+    myDateTime->setTime( QTime::fromString( str, Qt::ISODate ) );
+    break;
+  case DateTime:
+    myDateTime->setDateTime( QDateTime::fromString( str, Qt::ISODate ) );
+    break;
+  }
+}
+
+QVariant QtxPagePrefDateTimeItem::optionValue( const QString& name ) const
+{
+  if ( name == "input_type" || name == "type" )
+    return inputType();
+  else if ( name == "minimum_date" || name == "min_date" )
+    return minimumDate();
+  else if ( name == "maximum_date" || name == "max_date" )
+    return maximumDate();
+  else if ( name == "minimum_time" || name == "min_time" )
+    return minimumTime();
+  else if ( name == "maximum_time" || name == "max_time" )
+    return maximumTime();
+  else
+    return QtxPageNamedPrefItem::optionValue( name );
+}
+
+void QtxPagePrefDateTimeItem::setOptionValue( const QString& name, const QVariant& val )
+{
+  if ( name == "input_type" || name == "type" )
+  {
+    if ( val.canConvert( QVariant::Int ) )
+      setInputType( val.toInt() );
+  }
+  else if ( name == "minimum_date" || name == "min_date" )
+  {
+    if ( val.canConvert( QVariant::Date ) )
+      setMinimumDate( val.toDate() );
+  }
+  else if ( name == "maximum_date" || name == "max_date" )
+  {
+    if ( val.canConvert( QVariant::Date ) )
+      setMaximumDate( val.toDate() );
+  }
+  else if ( name == "minimum_time" || name == "min_time" )
+  {
+    if ( val.canConvert( QVariant::Time ) )
+      setMinimumTime( val.toTime() );
+  }
+  else if ( name == "maximum_time" || name == "max_time" )
+  {
+    if ( val.canConvert( QVariant::Time ) )
+      setMaximumTime( val.toTime() );
+  }
+  else
+    QtxPageNamedPrefItem::setOptionValue( name, val );
+}
+
+void QtxPagePrefDateTimeItem::updateDateTime()
+{
+  QString dispFmt;
+  switch ( inputType() )
+  {
+  case Date:
+    dispFmt = QDateEdit().displayFormat();
+    break;
+  case Time:
+    dispFmt = QTimeEdit().displayFormat();
+    break;
+  case DateTime:
+    dispFmt = QDateTimeEdit().displayFormat();
+    break;
+  }
+
+  myDateTime->setDisplayFormat( dispFmt );
 }

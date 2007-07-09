@@ -31,6 +31,23 @@ SUIT_PreferenceMgr::~SUIT_PreferenceMgr()
 {
 }
 
+QIcon SUIT_PreferenceMgr::itemIcon( const int id ) const
+{
+  const QtxPreferenceItem* item = 0;
+  if ( id == -1 )
+    item = this;
+  else
+    item = findItem( id, true );
+  return item ? item->icon() : QIcon();
+}
+
+void SUIT_PreferenceMgr::setItemIcon( const int id, const QIcon& ico )
+{
+  QtxPreferenceItem* item = id == -1 ? this : findItem( id, true );
+  if ( item )
+    item->setIcon( ico );
+}
+
 QVariant SUIT_PreferenceMgr::itemProperty( const QString& prop, const int id ) const
 {
   const QtxPreferenceItem* item = 0;
@@ -122,7 +139,7 @@ int SUIT_PreferenceMgr::addItem( const QString& title, const int pId,
     item = new QtxPagePrefPathItem( Qtx::PT_OpenFile, title, parent, sect, param );
     break;
   case DirList:
-    item = new QtxPagePrefPathsItem( Qtx::PT_Directory, title, parent, sect, param );
+    item = new QtxPagePrefPathListItem( Qtx::PT_Directory, title, parent, sect, param );
     break;
   }
 

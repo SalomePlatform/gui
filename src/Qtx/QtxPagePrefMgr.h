@@ -37,6 +37,7 @@ class QtxGroupBox;
 class QtxComboBox;
 class QtxColorButton;
 
+class QToolBox;
 class QLineEdit;
 class QTextEdit;
 class QCheckBox;
@@ -44,6 +45,7 @@ class QTabWidget;
 class QToolButton;
 class QListWidget;
 class QFileDialog;
+class QDateTimeEdit;
 class QStackedWidget;
 
 class QTX_EXPORT QtxPagePrefMgr : public QFrame, public QtxPreferenceMgr
@@ -178,6 +180,22 @@ private:
   QLabel*          myInfLabel;
 };
 
+class QTX_EXPORT QtxPagePrefToolBoxItem : public QtxPagePrefItem
+{
+public:
+  QtxPagePrefToolBoxItem( const QString&, QtxPreferenceItem* = 0,
+                          const QString& = QString(), const QString& = QString() );
+  virtual ~QtxPagePrefToolBoxItem();
+
+  virtual void     updateContents();
+
+private:
+  void             updateToolBox();
+
+private:
+  QToolBox*        myToolBox;
+};
+
 class QTX_EXPORT QtxPagePrefTabsItem : public QtxPagePrefItem
 {
 public:
@@ -215,6 +233,9 @@ public:
   virtual ~QtxPagePrefFrameItem();
 
   virtual void     updateContents();
+
+  bool             stretch() const;
+  void             setStretch( const bool );
 
   int              margin() const;
   void             setMargin( const int );
@@ -515,16 +536,16 @@ private:
   QtxPathEdit*     myPath;
 };
 
-class QTX_EXPORT QtxPagePrefPathsItem : public QtxPageNamedPrefItem
+class QTX_EXPORT QtxPagePrefPathListItem : public QtxPageNamedPrefItem
 {
 public:
-  QtxPagePrefPathsItem( QtxPreferenceItem* = 0,
-                        const QString& = QString(), const QString& = QString() );
-  QtxPagePrefPathsItem( const QString&, QtxPreferenceItem* = 0,
-                        const QString& = QString(), const QString& = QString() );
-  QtxPagePrefPathsItem( const Qtx::PathType, const QString&, QtxPreferenceItem* = 0,
-                        const QString& = QString(), const QString& = QString() );
-  virtual ~QtxPagePrefPathsItem();
+  QtxPagePrefPathListItem( QtxPreferenceItem* = 0,
+                           const QString& = QString(), const QString& = QString() );
+  QtxPagePrefPathListItem( const QString&, QtxPreferenceItem* = 0,
+                           const QString& = QString(), const QString& = QString() );
+  QtxPagePrefPathListItem( const Qtx::PathType, const QString&, QtxPreferenceItem* = 0,
+                           const QString& = QString(), const QString& = QString() );
+  virtual ~QtxPagePrefPathListItem();
 
   Qtx::PathType    pathType() const;
   void             setPathType( const Qtx::PathType );
@@ -538,6 +559,49 @@ protected:
 
 private:
   QtxPathListEdit* myPaths;
+};
+
+class QTX_EXPORT QtxPagePrefDateTimeItem : public QtxPageNamedPrefItem
+{
+public:
+  typedef enum { Date, Time, DateTime } InputType;
+
+public:
+  QtxPagePrefDateTimeItem( const QString&, QtxPreferenceItem* = 0,
+                           const QString& = QString(), const QString& = QString() );
+  QtxPagePrefDateTimeItem( const int, const QString&, QtxPreferenceItem* = 0,
+                           const QString& = QString(), const QString& = QString() );
+  virtual ~QtxPagePrefDateTimeItem();
+
+  int              inputType() const;
+  void             setInputType( const int );
+
+  bool             calendar() const;
+  void             setCalendar( const bool );
+
+  QDate            maximumDate() const;
+  QTime            maximumTime() const;
+  QDate            minimumDate() const;
+  QTime            minimumTime() const;
+
+  void             setMaximumDate( const QDate& );
+  void             setMaximumTime( const QTime& );
+  void             setMinimumDate( const QDate& );
+  void             setMinimumTime( const QTime& );
+
+  virtual void     store();
+  virtual void     retrieve();
+
+protected:
+  virtual QVariant optionValue( const QString& ) const;
+  virtual void     setOptionValue( const QString&, const QVariant& );
+
+private:
+  void             updateDateTime();
+
+private:
+  int              myType;
+  QDateTimeEdit*   myDateTime;
 };
 
 #endif

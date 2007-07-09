@@ -42,6 +42,9 @@ public:
   SUIT_PreferenceMgr( QtxResourceMgr*, QWidget* = 0 );
   virtual ~SUIT_PreferenceMgr();
 
+  QIcon              itemIcon( const int ) const;
+  void               setItemIcon( const int, const QIcon& );
+
   QVariant           itemProperty( const QString&, const int = -1 ) const;
   void               setItemProperty( const QString&, const QVariant&, const int = -1 );
 

@@ -392,9 +392,9 @@ int LightApp_ModuleAction::mode() const
 */
 void LightApp_ModuleAction::addedTo( QWidget* w )
 {
-  w->insertAction( mySet, this );
   if ( w->inherits( "QToolBar" ) )
-    w->insertAction( myCombo, this );
+    w->insertAction( this, myCombo );
+  w->insertAction( this, mySet );
   update();
 }
 

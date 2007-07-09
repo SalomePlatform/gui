@@ -20,19 +20,23 @@
 #define SUIT_VIEWMANAGER_H
 
 #include "SUIT.h"
-#include "SUIT_ViewWindow.h"
+
 #include "SUIT_PopupClient.h"
 
-#include <QtGui/qpixmap.h>
-#include <QtCore/qobject.h>
-#include <QtCore/qvector.h>
-#include <QtCore/qpointer.h>
+#include <QObject>
+#include <QPixmap>
+#include <QVector>
+#include <QPointer>
+
+class QMenu;
+class QMouseEvent;
+class QWheelEvent;
+class QKeyEvent;
 
 class SUIT_Study;
 class SUIT_Desktop;
 class SUIT_ViewModel;
-
-class QMenu;
+class SUIT_ViewWindow;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )

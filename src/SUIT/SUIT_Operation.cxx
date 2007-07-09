@@ -17,21 +17,9 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-/*!
-  SALOME SalomeApp
-
-  Copyright (C) 2005  CEA/DEN, EDF R&D
-
-  File   : SUIT_Operation.h
-  Author : Unknown
-  Module : SALOME
-*/
-
 #include "SUIT_Operation.h"
 
 #include "SUIT_Study.h"
-#include "SUIT_Desktop.h"
-#include "SUIT_MessageBox.h"
 #include "SUIT_Application.h"
 
 /*!
@@ -46,9 +34,9 @@
 SUIT_Operation::SUIT_Operation( SUIT_Application* app )
 : QObject(),
 myApp( app ),
+myFlags( Transaction ),
 myStudy( 0 ),
-myState( Waiting ),
-myFlags( Transaction )
+myState( Waiting )
 {
 }
 

@@ -18,7 +18,7 @@
 //
 #include "SUIT_Tools.h"
 
-#include <QtCore/qdir.h>
+#include <QDir>
 
 #include <stdio.h>
 #include <stdarg.h>

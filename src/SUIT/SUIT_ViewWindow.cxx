@@ -28,10 +28,10 @@
 #include "SUIT_Application.h"
 #include "SUIT_ViewManager.h"
 
-#include <QtGui/qmenu.h>
-#include <QtGui/qevent.h>
-#include <QtGui/qimage.h>
-#include <QtGui/qapplication.h>
+#include <QEvent>
+#include <QIcon>
+#include <QApplication>
+#include <QContextMenuEvent>
 
 /*!\class SUIT_ViewWindow
  * Class provide view window.
@@ -177,7 +177,7 @@ bool SUIT_ViewWindow::event( QEvent* e )
 	      bOk = true; // cancelled
     }
     if ( !bOk )
-      SUIT_MessageBox::error1( this, tr( "ERROR" ), tr( "ERR_CANT_DUMP_VIEW" ), tr( "BUT_OK" ) );
+      SUIT_MessageBox::critical( this, tr( "ERROR" ), tr( "ERR_CANT_DUMP_VIEW" ) );
 
     return true;
   }
@@ -210,6 +210,6 @@ QString   SUIT_ViewWindow::getVisualParameters()
   Sets visual parameters of window by its string representation
   \param parameters - string with visual parameters
 */
-void SUIT_ViewWindow::setVisualParameters( const QString& parameters )
+void SUIT_ViewWindow::setVisualParameters( const QString& /*parameters*/ )
 {
 }

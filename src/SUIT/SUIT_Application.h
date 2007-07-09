@@ -20,18 +20,20 @@
 #define SUIT_APPLICATION_H
 
 #include "SUIT.h"
-#include "SUIT_Study.h"
 
-#include <QtCore/qmap.h>
-#include <QtGui/qwidget.h>
+#include <QObject>
+#include <QMap>
 
 class QIcon;
 class QLabel;
 class QString;
 class QAction;
+class QWidget;
+
 class SUIT_Desktop;
 class SUIT_ViewModel;
 class SUIT_ResourceMgr;
+class SUIT_Study;
 
 #ifdef WIN32
 #pragma warning ( disable:4251 )
@@ -62,7 +64,7 @@ public:
 
   /*! Returns FALSE if application can not be closed (because of non saved data for example). 
       This method called by SUIT_Session whin closing of application was requested. */
-  virtual bool          isPossibleToClose();
+  virtual bool          isPossibleToClose( bool& );
 
   /*! Performs some finalization of life cycle of this application.
       For instance, the application can force its documents(s) to close. */

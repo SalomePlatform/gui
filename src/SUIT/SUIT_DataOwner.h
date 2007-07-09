@@ -21,8 +21,9 @@
 
 #include "SUIT_SmartPtr.h"
 
-#include <QtCore/qmap.h>
-#include <QtCore/qlist.h>
+#include <QMap>
+#include <QList>
+#include <QString>
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -40,9 +41,7 @@ class SUIT_EXPORT SUIT_DataOwner : public RefCount
 public:
   SUIT_DataOwner();//!< constructor
   virtual ~SUIT_DataOwner();//!< destructor
-  //! compare function
-  virtual bool isEqual( const SUIT_DataOwner& ) const = 0;
-  virtual bool isLess( const SUIT_DataOwner& ) const = 0;
+  virtual QString keyString() const = 0;//!< used for comparison
 };
 
 /*! \typedef SUIT_DataOwnerPtr

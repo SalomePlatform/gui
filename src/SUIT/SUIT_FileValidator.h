@@ -23,7 +23,8 @@
 
 #include "SUIT.h"
 
-#include <QtGui/qwidget.h>
+class QWidget;
+class QString;
 
 /*!
   \class SUIT_FileValidator

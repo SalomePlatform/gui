@@ -21,8 +21,9 @@
 
 #include "SUIT.h"
 
-#include <QtCore/qlist.h>
-#include <QtCore/qobject.h>
+#include <QList>
+
+class QObject;
 
 class SUIT_SelectionMgr;
 class SUIT_DataOwnerPtrList;
@@ -65,8 +66,8 @@ protected:
   virtual void       setSelection( const SUIT_DataOwnerPtrList& ) = 0;
 
 private:
-  bool               myBlock;
   SUIT_SelectionMgr* mySelMgr;
+  bool               myBlock;
   bool               myEnabled;
   bool               myAutoBlock;
   Destroyer*         myDestroyer;

@@ -18,14 +18,14 @@
 //
 #include "SUIT_Application.h"
 
+#include "SUIT_Study.h"
 #include "SUIT_Session.h"
 #include "SUIT_Desktop.h"
 #include "SUIT_ResourceMgr.h"
 
-#include <QtCore/qtimer.h>
-
-#include <QtGui/qlabel.h>
-#include <QtGui/qstatusbar.h>
+#include <QTimer>
+#include <QLabel>
+#include <QStatusBar>
 
 #include <QtxAction.h>
 #include <QtxActionMenuMgr.h>
@@ -67,7 +67,7 @@ SUIT_Desktop* SUIT_Application::desktop()
    \return FALSE if application can not be closed (because of non saved data for example). 
    This method called by SUIT_Session whin closing of application was requested.
 */
-bool SUIT_Application::isPossibleToClose()
+bool SUIT_Application::isPossibleToClose( bool& closePermanently )
 {
   return true;
 }
@@ -130,7 +130,7 @@ bool SUIT_Application::useFile( const QString& theFileName )
   Opens other study into active Study. If Study is empty - creates it.
   \param theName - name of study
 */
-bool SUIT_Application::useStudy( const QString& theName )
+bool SUIT_Application::useStudy( const QString& /*theName*/ )
 {
   return false;
 }
@@ -575,7 +575,7 @@ QAction* SUIT_Application::createAction( const int id, const QString& text, cons
                                          const QString& menu, const QString& tip, const int key,
                                          QObject* parent, const bool toggle, QObject* reciever, const char* member )
 {
-  QtxAction* a = new QtxAction( text, icon, menu, key, parent, 0, toggle );
+  QtxAction* a = new QtxAction( text, icon, menu, key, parent, toggle );
   a->setStatusTip( tip );
 
   if ( reciever && member )

@@ -18,10 +18,14 @@
 //
 #include "SUIT_ResourceMgr.h"
 
-#include <QtCore/qdir.h>
-#include <QtCore/qfileinfo.h>
+#include <QDir>
+#include <QFileInfo>
+#include <QApplication>
+#include <QRegExp>
 
-#include <stdlib.h>
+#ifndef WIN32
+#include <unistd.h>
+#endif
 
 /*!
     Constructor
@@ -71,15 +75,32 @@ QString SUIT_ResourceMgr::loadDoc( const QString& prefix, const QString& id ) co
 */
 QString SUIT_ResourceMgr::userFileName( const QString& appName, const bool for_load ) const
 {
-  QString pathName = QtxResourceMgr::userFileName( appName );
+  QString pathName;
+
+  QStringList arguments = QApplication::arguments();
+  // Try config file, given in arguments
+  for (int i = 1; i < arguments.count(); i++) {
+    QRegExp rx ("--resources=(.+)");
+    if ( rx.indexIn( arguments[i] ) >= 0 && rx.numCaptures() > 1 ) {
+      QString file = rx.cap(1);
+      QFileInfo fi (file);
+      pathName = fi.absoluteFilePath();
+    }
+  }
+
+  if (!pathName.isEmpty())
+    return pathName;
+
+  // QtxResourceMgr::userFileName() + '.' + version()
+  pathName = QtxResourceMgr::userFileName( appName );
 
   if ( !version().isEmpty() )
     pathName += QString( "." ) + version();
 
-  if( !QFileInfo( pathName ).exists() && for_load )
+  if ( !QFileInfo( pathName ).exists() && for_load )
   {
     QString newName = findAppropriateUserFile( pathName );
-    if( !newName.isEmpty() )
+    if ( !newName.isEmpty() )
       pathName = newName;
   }
 

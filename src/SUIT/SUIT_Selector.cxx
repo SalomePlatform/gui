@@ -20,7 +20,9 @@
 
 #include "SUIT_SelectionMgr.h"
 
-/*!\class SUIT_Selector::Detroyer
+#include <QObject>
+
+/*!\class SUIT_Selector::Destroyer
   Class provide the watching for qobject parent class of the selector.
 */
 

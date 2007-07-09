@@ -21,7 +21,7 @@
 
 #include "SUIT.h"
 
-#include <QtGui/qfiledialog.h>
+#include <QFileDialog>
 
 class QLabel;
 class QComboBox;

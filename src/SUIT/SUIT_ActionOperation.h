@@ -16,15 +16,17 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 #ifndef SUIT_ACTIONOPERATION_H
 #define SUIT_ACTIONOPERATION_H
 
 #include "SUIT_Operation.h"
 
+#include <QKeySequence>
+
 class QIcon;
 class QString;
 class QWidget;
-class QKeySequence;
 
 class QtxAction;
 
@@ -49,7 +51,6 @@ public:
 	virtual void setAction( QtxAction* theAction );
 	
 	bool         addTo( QWidget* theWidget );
-	bool         addTo( QWidget* theWidget, int thePos );
 
 	void         setStatusTip( const QString& theTip );
 	//@}

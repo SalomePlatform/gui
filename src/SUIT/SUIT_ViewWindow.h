@@ -24,9 +24,9 @@
 
 #include "SUIT.h"
 
-#include <QtGui/qmainwindow.h>
+#include <QMainWindow>
+#include <QImage>
 
-class QImage;
 class SUIT_Desktop;
 class SUIT_ViewManager;
 

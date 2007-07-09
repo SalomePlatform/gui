@@ -18,6 +18,8 @@
 //
 #include "SUIT_OverrideCursor.h"
 
+#include <QApplication>
+
 /*!Constructor. Initialize wait cursor.*/
 SUIT_OverrideCursor::SUIT_OverrideCursor()
 {

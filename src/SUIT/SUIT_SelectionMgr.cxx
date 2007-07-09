@@ -18,6 +18,9 @@
 //
 #include "SUIT_SelectionMgr.h"
 
+#include "SUIT_Selector.h"
+#include "SUIT_SelectionFilter.h"
+
 /*!\class SUIT_SelectionMgr
  * Provide selection manager. Manipulate by selection filters, modes, data owners.
  */
@@ -25,8 +28,8 @@
 /*!constructor. initialize myIterations and myIsSelChangeEnabled.*/
 SUIT_SelectionMgr::SUIT_SelectionMgr( const bool Feedback, QObject* p )
 : QObject( p ),
-myAutoDelFilter( false ),
 myIterations( Feedback ? 1 : 0 ),
+myAutoDelFilter( false ),
 myIsSelChangeEnabled( true )
 {
 }
@@ -145,9 +148,8 @@ void SUIT_SelectionMgr::selectionChanged( SUIT_Selector* sel )
   {
     for ( SelectorList::iterator it = mySelectors.begin(); it != mySelectors.end(); ++it )
     {
-      SUIT_Selector* aSel = *it;
       if ( *it != sel )
-	      (*it)->setSelected( newOwners );
+	(*it)->setSelected( newOwners );
     }
   }
   myIsSelChangeEnabled = true;

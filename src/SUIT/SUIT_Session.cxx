@@ -18,18 +18,15 @@
 //
 #include "SUIT_Session.h"
 
+#include "SUIT_Study.h"
 #include "SUIT_Tools.h"
-#include "SUIT_Desktop.h"
 #include "SUIT_MessageBox.h"
-#include "SUIT_ViewWindow.h"
-#include "SUIT_ViewManager.h"
 #include "SUIT_ExceptionHandler.h"
+#include "SUIT_ResourceMgr.h"
 
-#include <QtCore/qtextcodec.h>
-#include <QtGui/qmessagebox.h>
-#include <QtGui/qapplication.h>
+#include <QApplication>
 
-#ifdef Q_OS_WIN32
+#ifdef WIN32
 #include <windows.h>
 #else
 #include <dlfcn.h>
@@ -42,8 +39,8 @@ SUIT_Session* SUIT_Session::mySession = 0;
 SUIT_Session::SUIT_Session()
 : QObject(),
 myResMgr( 0 ),
-myHandler( 0 ),
 myActiveApp( 0 ),
+myHandler( 0 ),
 myExitStatus( FROM_GUI )
 {
   SUIT_ASSERT( !mySession )
@@ -77,7 +74,7 @@ SUIT_Session* SUIT_Session::session()
   Starts new application using "createApplication" function of loaded DLL.
 */
 
-SUIT_Application* SUIT_Session::startApplication( const QString& name, int args, char** argv )
+SUIT_Application* SUIT_Session::startApplication( const QString& name, int /*args*/, char** /*argv*/ )
 {
   AppLib libHandle = 0;
 
@@ -91,8 +88,8 @@ SUIT_Application* SUIT_Session::startApplication( const QString& name, int args,
 
   if ( !libHandle )
   {
-    SUIT_MessageBox::warn1( 0, tr( "Error" ),
-                            tr( "Can not load application library \"%1\": %2").arg( lib ).arg( lastError() ), tr( "Ok" ) );
+    SUIT_MessageBox::warning( 0, tr( "Error" ),
+                              tr( "Can not load application library \"%1\": %2").arg( lib ).arg( lastError() ) );
     return 0;
   }
 
@@ -101,7 +98,7 @@ SUIT_Application* SUIT_Session::startApplication( const QString& name, int args,
 
   APP_CREATE_FUNC crtInst = 0;
 
-#ifdef Q_OS_WIN32
+#ifdef WIN32
   crtInst = (APP_CREATE_FUNC)::GetProcAddress( (HINSTANCE)libHandle, APP_CREATE_NAME );
 #else
   crtInst = (APP_CREATE_FUNC)dlsym( libHandle, APP_CREATE_NAME );
@@ -109,8 +106,8 @@ SUIT_Application* SUIT_Session::startApplication( const QString& name, int args,
 
   if ( !crtInst )
   {
-    SUIT_MessageBox::warn1( 0, tr( "Error" ),
-                            tr( "Can not find function \"%1\": %2" ).arg( APP_CREATE_NAME ).arg( lastError() ), tr( "Ok" ) );
+    SUIT_MessageBox::warning( 0, tr( "Error" ),
+                              tr( "Can not find function \"%1\": %2" ).arg( APP_CREATE_NAME ).arg( lastError() ) );
     return 0;
   }
 
@@ -125,7 +122,7 @@ SUIT_Application* SUIT_Session::startApplication( const QString& name, int args,
   SUIT_Application* anApp = crtInst();
   if ( !anApp )
   {
-    SUIT_MessageBox::warn1( 0, tr( "Error" ), tr( "Can not create application \"%1\": %2").arg( appName ).arg( lastError() ), tr( "Ok" ) );
+    SUIT_MessageBox::warning( 0, tr( "Error" ), tr( "Can not create application \"%1\": %2").arg( appName ).arg( lastError() ) );
     return 0;
   }
 
@@ -136,7 +133,7 @@ SUIT_Application* SUIT_Session::startApplication( const QString& name, int args,
   if ( !myHandler )
   {
     APP_GET_HANDLER_FUNC crtHndlr = 0;
-#ifdef Q_OS_WIN32
+#ifdef WIN32
     crtHndlr = (APP_GET_HANDLER_FUNC)::GetProcAddress( (HINSTANCE)libHandle, APP_GET_HANDLER_NAME );
 #else
     crtHndlr = (APP_GET_HANDLER_FUNC)dlsym( libHandle, APP_GET_HANDLER_NAME );
@@ -246,7 +243,8 @@ void SUIT_Session::closeSession( int mode )
   for ( AppList::const_iterator it = apps.begin(); it != apps.end(); ++it )
   {
     SUIT_Application* app = *it;
-    if ( mode == ASK && !app->isPossibleToClose() )
+    bool closePermanently;
+    if ( mode == ASK && !app->isPossibleToClose( closePermanently ) )
       return;
     else if ( mode == SAVE )
     {
@@ -274,7 +272,7 @@ SUIT_ExceptionHandler* SUIT_Session::handler() const
 QString SUIT_Session::lastError() const
 {
   QString str;
-#ifdef Q_OS_WIN32
+#ifdef WIN32
   LPVOID lpMsgBuf;
   ::FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
                    FORMAT_MESSAGE_IGNORE_INSERTS, 0, ::GetLastError(), 0, (LPTSTR)&lpMsgBuf, 0, 0 );
@@ -300,7 +298,7 @@ SUIT_Session::AppLib SUIT_Session::loadLibrary( const QString& name, QString& li
 
   AppLib lib = 0;
   QByteArray bid = libFile.toLatin1();
-#ifdef Q_OS_WIN32
+#ifdef WIN32
 #ifdef UNICODE
   LPTSTR str = (LPTSTR)libFile.utf16();
 #else
@@ -316,7 +314,7 @@ SUIT_Session::AppLib SUIT_Session::loadLibrary( const QString& name, QString& li
 /*! \retval Return file name by application name.*/
 QString SUIT_Session::applicationName( const QString& str ) const
 {
-#ifdef Q_OS_WIN32
+#ifdef WIN32
   return SUIT_Tools::file( str, false );
 #else
   QString fileName = SUIT_Tools::file( str, false );

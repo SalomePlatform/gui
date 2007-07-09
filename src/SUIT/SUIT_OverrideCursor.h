@@ -21,9 +21,8 @@
 
 #include "SUIT.h"
 
-#include <QtCore/qlist.h>
-#include <QtGui/qcursor.h>
-#include <QtGui/qapplication.h>
+#include <QList>
+#include <QCursor>
 
 /*! \brief Class used for management cursors.*/
 class SUIT_EXPORT SUIT_OverrideCursor

@@ -20,12 +20,18 @@
 
 #include "SUIT_Accel.h"
 
-#include "SUIT_ViewModel.h"
 #include "SUIT_ViewWindow.h"
 #include "SUIT_ViewManager.h"
+#include "SUIT_ViewModel.h"
 
-#include <QtGui/qevent.h>
-#include <QtGui/qapplication.h>
+#include <QCoreApplication>
+#include <QEvent>
+#include <QKeyEvent>
+
+/*!
+  \class SUIT_Accel
+  \brief Manager of keyboard accelerator bindings.
+*/
 
 SUIT_Accel* SUIT_Accel::myself = 0;
 
@@ -99,7 +105,11 @@ int getKey( QKeyEvent* keyEvent )
   return key;
 }
 
-/*! getAccelKey() : returns key pressed if 1) event was KeyPress 2) pressed key is a registered accelerator */ 
+/*! 
+  Returns key pressed if 
+  -# event was KeyPress 
+  -# pressed key is a registered accelerator
+*/
 int SUIT_Accel::getAccelKey( QEvent *event )
 {
   if ( event && event->type() == QEvent::KeyPress ) {

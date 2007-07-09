@@ -21,6 +21,8 @@
 
 #include "SUIT_ViewModel.h"
 
+#include <SUIT_ViewWindow.h>
+
 SUIT_ViewModel::StatesMap SUIT_ViewModel::myStateMap;
 SUIT_ViewModel::ButtonsMap SUIT_ViewModel::myButtonMap;
 
@@ -59,6 +61,22 @@ SUIT_ViewModel::~SUIT_ViewModel()
 SUIT_ViewWindow* SUIT_ViewModel::createView(SUIT_Desktop* theDesktop)
 {
   return new SUIT_ViewWindow(theDesktop);
+}
+
+/*!Set view manager.
+  \param theViewManager view manager
+ */
+void SUIT_ViewModel::setViewManager(SUIT_ViewManager* theViewManager)
+{
+  myViewManager = theViewManager;
+}
+
+/*!Get view manager.
+  \return view manager
+ */
+SUIT_ViewManager* SUIT_ViewModel::getViewManager() const
+{
+  return myViewManager;
 }
 
 /*! Sets hot button

@@ -18,7 +18,7 @@
 //
 #include "SUIT_DataObjectKey.h"
 
-#include <QtCore/qobject.h>
+#include <string.h>
 
 #ifndef WIN32
 #include <typeinfo>

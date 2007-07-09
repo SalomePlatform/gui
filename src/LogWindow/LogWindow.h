@@ -20,32 +20,27 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 //  File   : LogWindow.h
-//  Author : 
-//  Module : KERNEL
+//  Author : Vadim SANDLER, Open CASCADE S.A. (vadim.sandler@opencascade.com)
+//  Module : SALOME
 
-#ifndef LogWindow_HeaderFile
-#define LogWindow_HeaderFile
+#ifndef LOGWINDOW_H
+#define LOGWINDOW_H
 
-#if defined LOGWINDOW_EXPORTS
 #if defined WIN32
-#define LOGWINDOW_EXPORT __declspec( dllexport )
+#  if defined LOGWINDOW_EXPORTS
+#    define LOGWINDOW_EXPORT __declspec( dllexport )
+#  else
+#    define LOGWINDOW_EXPORT __declspec( dllimport )
+#  endif
 #else
-#define LOGWINDOW_EXPORT
-#endif
-#else
-#if defined WIN32
-#define LOGWINDOW_EXPORT __declspec( dllimport )
-#else
-#define LOGWINDOW_EXPORT
-#endif
+#  define LOGWINDOW_EXPORT
 #endif
 
 #include <SUIT_PopupClient.h>
 
-#include <QtCore/qmap.h>
-#include <QtCore/qstringlist.h>
-
-#include <QtGui/qframe.h>
+#include <QFrame>
+#include <QMap>
+#include <QStringList>
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -54,34 +49,30 @@
 class QAction;
 class QTextEdit;
 
-/*!
-  \class LogWindow
-  Widget, showing logs message. Allows to show, to clear, to copy messages and to save then to file
-*/
 class LOGWINDOW_EXPORT LogWindow : public QFrame, public SUIT_PopupClient
 {
   Q_OBJECT
 
 public:
-  //! popup operation flags
+  //! Context popup menu actions flags
   enum
   {
-    CopyId = 0x01,
-    ClearId = 0x02,
-    SelectAllId = 0x04,
-    SaveToFileId = 0x08,
-    All = CopyId | ClearId | SelectAllId | SaveToFileId,
+    CopyId       = 0x01,                                //!< "Copy" menu action
+    ClearId      = 0x02,                                //!< "Clear" menu action
+    SelectAllId  = 0x04,                                //!< "Select All" menu action
+    SaveToFileId = 0x08,                                //!< "Save To File" menu action
+    All = CopyId | ClearId | SelectAllId | SaveToFileId //!< all menu actions
   };
 
-  //! display messages flags
+  //! Display messages flags
   enum
   {
-    DisplayNormal    = 0x00,
-    DisplayDate      = 0x01,
-    DisplayTime      = 0x02,
-    DisplaySeparator = 0x04,
-    DisplayNoColor   = 0x08,
-    DisplayDateTime  = DisplayDate | DisplayTime
+    DisplayNormal    = 0x00,                     //!< do not display extra data
+    DisplayDate      = 0x01,                     //!< display message date
+    DisplayTime      = 0x02,                     //!< display message time
+    DisplaySeparator = 0x04,                     //!< display separator between messages
+    DisplayNoColor   = 0x08,                     //!< display colored message
+    DisplayDateTime  = DisplayDate | DisplayTime //!< display date & time
   };
 
 public:
@@ -91,21 +82,22 @@ public:
   virtual             QString popupClientType() const { return QString( "LogWindow" ); }
   virtual void        contextMenuPopup( QMenu* );
 
-  virtual bool        eventFilter( QObject* o, QEvent* e );
+  virtual bool        eventFilter( QObject*, QEvent* );
 
   QString             banner() const;
   QString             separator() const;
 
-  void                setBanner( const QString& banner );
-  void                setSeparator( const QString& separator );
+  void                setBanner( const QString& );
+  void                setSeparator( const QString& );
 
-  void                putMessage( const QString& message, const int = DisplayNormal );
-  virtual void        putMessage( const QString& message, const QColor&, const int = DisplayNormal );
-  void                clear( const bool clearHistory = false );
+  void                putMessage( const QString&, const int = DisplayNormal );
+  virtual void        putMessage( const QString&, const QColor&, const int = DisplayNormal );
+  void                clear( const bool = false );
 
-  bool                saveLog( const QString& fileName );
+  bool                saveLog( const QString& );
 
-  void                setOperationsFlags( int flags );
+  void                setMenuActions( const int );
+  int                 menuActions() const;
 
 protected slots:
   void                onSaveToFile();
@@ -118,17 +110,16 @@ private:
   void                updateActions();
 
 private:
-  QTextEdit*          myView;
-  QString             myBanner;
-  QStringList         myHistory;
-  QString             mySeparator;
-  int                 myBannerSize;
-  QMap<int, QAction*> myActions;
-  int                 myOpFlags;
+  QTextEdit*          myView;           //!< internal view window
+  QString             myBanner;         //!< current banner
+  QStringList         myHistory;        //!< messages history
+  QString             mySeparator;      //!< current separator
+  int                 myBannerSize;     //!< current banner's size
+  QMap<int, QAction*> myActions;        //!< popup menu actions
 };
 
 #ifdef WIN32
 #pragma warning( default:4251 )
 #endif
 
-#endif
+#endif // LOGWINDOW_H

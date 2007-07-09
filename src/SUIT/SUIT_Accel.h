@@ -23,14 +23,10 @@
 
 #include "SUIT.h"
 
-#include <QtCore/qmap.h>
-#include <QtCore/qobject.h>
-#include <QtCore/qstring.h>
+#include <QMap>
+#include <QObject>
+#include <QString>
 
-/*!
-  \class SUIT_Accel
-  Manager of keyboard accelerator bindings
-*/
 class SUIT_EXPORT SUIT_Accel: public QObject
 {
   Q_OBJECT
@@ -63,15 +59,16 @@ protected:
 private:
   SUIT_Accel();
 
-  int getAccelKey( QEvent* ); // returns key pressed if 1) event was KeyPress 
-                              // 2) pressed key is a registered accelerator 
+  int getAccelKey( QEvent* );
 
-  typedef QMap<int, int> IdActionMap; // key - to - action_id map
-  typedef QMap<QString, IdActionMap> ViewerTypeIdActionMap; // viewer_type - to - IdActionMap
-  ViewerTypeIdActionMap myMap;
+  typedef QMap<int, int> IdActionMap; //!< maps key to action id
+  typedef QMap<QString, IdActionMap> 
+               ViewerTypeIdActionMap; //!< maps viewer type to IdActionMap
+  ViewerTypeIdActionMap myMap;        //!< viewer actions map
 
-  QMap<int, bool> myOptMap; // key - to - <not_used> map, used for optimazation.  all registered keys (accelerators)
-                            // are stored in this map.
+  //! Maps key to <not_used> flag map, used for optimization.
+  //! All registered keys (accelerators) are stored in this map.
+  QMap<int, bool> myOptMap;
 
   static SUIT_Accel* myself;
 };

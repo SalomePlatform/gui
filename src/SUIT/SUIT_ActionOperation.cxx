@@ -53,7 +53,7 @@ void SUIT_ActionOperation::setAction( const QString& text, const QIcon& icon,
 				                              const QString& menuText, QKeySequence accel,
                                       QObject* parent, bool toggle )
 {
-  setAction( new QtxAction( text, icon, menuText, accel, parent, 0, toggle ) );
+  setAction( new QtxAction( text, icon, menuText, accel, parent, toggle ) );
 }
 
 /*!Set action.
@@ -62,7 +62,7 @@ void SUIT_ActionOperation::setAction( const QString& text, const QIcon& icon,
 void SUIT_ActionOperation::setAction( const QString& text, const QString& menuText,
 				                              QKeySequence accel, QObject* parent, bool toggle )
 {
-  setAction( new QtxAction( text, menuText, accel, parent, 0, toggle ) );
+  setAction( new QtxAction( text, menuText, accel, parent, toggle ) );
 }
 
 /*!Set action.
@@ -87,18 +87,8 @@ bool SUIT_ActionOperation::addTo( QWidget* wid )
   if ( !action() )
     return false;
 
-  return action()->addTo( wid );
-}
-
-/*! Add action to widget \a wid.
- *\retval TRUE - successful, FALSE - not successful.
- */
-bool SUIT_ActionOperation::addTo( QWidget* wid, int idx )
-{
-  if ( !action() )
-    return false;
-
-  return action()->addTo( wid, idx );
+  wid->addAction( action() );
+  return true;
 }
 
 /*! Set status tip for action.

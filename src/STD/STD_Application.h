@@ -23,18 +23,20 @@
 
 #include <SUIT_Application.h>
 
-#include <SUIT_Desktop.h>
-#include <SUIT_ViewManager.h>
-
-#include <QtCore/qmap.h>
-#include <QtCore/qlist.h>
+#include <QList>
 
 class QMenu;
+class QCloseEvent;
+class QContextMenuEvent;
+
 class QToolBar;
 class QtxAction;
 class SUIT_Operation;
 class SUIT_ViewWindow;
 class SUIT_ToolWindow;
+class SUIT_Desktop;
+class SUIT_ViewManager;
+class SUIT_PopupClient;
 
 typedef QList<SUIT_ViewManager*> ViewManagerList;
 
@@ -51,13 +53,15 @@ public:
 	       ViewWindowsId, ViewToolBarsId, ViewStatusBarId, NewWindowId,
          EditCutId, EditCopyId, EditPasteId, HelpAboutId, UserID };
 
+  enum { CloseSave, CloseDiscard, CloseCancel };
+
 public:
   STD_Application();
   virtual ~STD_Application();
 
   virtual QString       applicationName() const;
 
-  virtual bool          isPossibleToClose();
+  virtual bool          isPossibleToClose( bool& );
   virtual bool          useFile( const QString& );
 
   virtual void          createEmptyStudy();
@@ -80,7 +84,7 @@ public:
 
   virtual QString       getFileFilter() const { return QString::null; }
   virtual QString       getFileName( bool open, const QString& initial, const QString& filters, 
-				     const QString& caption, QWidget* parent );
+				                             const QString& caption, QWidget* parent );
   QString               getDirectory( const QString& initial, const QString& caption, QWidget* parent );
 
   virtual void          start();
@@ -154,6 +158,9 @@ protected:
 
   virtual void          setActiveViewManager( SUIT_ViewManager* );
 
+  virtual bool          closeAction( const int, bool& );
+  virtual int           closeChoice( const QString& );
+
 private:
   ViewManagerList       myViewMgrs;
   SUIT_ViewManager*     myActiveViewMgr;
@@ -161,7 +168,6 @@ private:
 private:
   bool                  myExitConfirm;
   bool                  myEditEnabled;
-  bool                  myClosePermanently;
 };
 
 #if defined WIN32

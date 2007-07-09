@@ -16,16 +16,16 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 #ifndef SUIT_DATAOBJECT_H
 #define SUIT_DATAOBJECT_H
 
-#include <QtCore/qlist.h>
-#include <QtCore/qobject.h>
-#include <QtCore/qstring.h>
-
-#include <QtGui/qpixmap.h>
-
 #include "SUIT.h"
+
+#include <QList>
+#include <QObject>
+#include <QString>
+#include <QPixmap>
 
 class SUIT_DataObject;
 class SUIT_DataObjectKey;
@@ -108,10 +108,10 @@ public:
   void                        dump( const int indent = 2 ) const; // dump to cout
 
 private:
+  SUIT_DataObject*            myParent;
   bool                        myOpen;
   bool                        myCheck;
   Signal*                     mySignal;
-  SUIT_DataObject*            myParent;
   bool                        myAutoDel;
   DataObjectList              myChildren;
 

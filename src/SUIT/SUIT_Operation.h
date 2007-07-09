@@ -22,8 +22,8 @@
 
 #include "SUIT.h"
 
-#include <QtCore/qobject.h>
-#include <QtCore/qpointer.h>
+#include <QObject>
+#include <QPointer>
 
 class SUIT_Study;
 class SUIT_Application;

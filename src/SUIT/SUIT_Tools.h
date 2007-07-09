@@ -23,10 +23,9 @@
 
 #include <Qtx.h>
 
-#include <QtCore/qrect.h>
-#include <QtCore/qstring.h>
-
-#include <QtGui/qfont.h>
+#include <QRect>
+#include <QString>
+#include <QFont>
 
 /*!
   \class SUIT_Tools

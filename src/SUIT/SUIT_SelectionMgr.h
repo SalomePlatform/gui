@@ -19,12 +19,13 @@
 #ifndef SUIT_SELECTIONMGR_H
 #define SUIT_SELECTIONMGR_H
 
-#include "SUIT_Selector.h"
 #include "SUIT_DataOwner.h"
-#include "SUIT_SelectionFilter.h"
 
-#include <QtCore/qlist.h>
-#include <QtCore/qobject.h>
+#include <QList>
+#include <QObject>
+
+class SUIT_Selector;
+class SUIT_SelectionFilter;
 
 #ifdef WIN32
 #pragma warning ( disable : 4251 )

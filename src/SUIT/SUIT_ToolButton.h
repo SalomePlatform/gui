@@ -21,9 +21,9 @@
 
 #include "SUIT.h"
 
-#include <QtGui/qaction.h>
-#include <QtGui/qtoolbutton.h>
+#include <QToolButton>
 
+class QAction;
 class QPixmap;
 class QToolBar;
 
@@ -47,7 +47,7 @@ public:
   void SetItem(int theIndex);
 
 public slots:
-  void OnSelectAction(int theItemID);
+  void OnSelectAction( QAction* theAction );
 
 protected:
   void  mouseReleaseEvent (QMouseEvent * theEvent);
@@ -56,7 +56,6 @@ private:
   void initialize();
 
   QMenu*   myPopup;
-//  QSignal* mySignal;
   bool     myChangeItemAfterClick;
 
 };

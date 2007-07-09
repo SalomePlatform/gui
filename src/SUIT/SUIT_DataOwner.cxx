@@ -40,7 +40,7 @@ SUIT_DataOwner::~SUIT_DataOwner()
 bool operator==( const SUIT_DataOwnerPtr& p1, const SUIT_DataOwnerPtr& p2 )
 {
   if ( !p1.isNull() && !p2.isNull() )
-    return (p1->isEqual( *p2 ) && p2->isEqual( *p1 ));
+    return (p1->keyString() == p2->keyString());
   return p1.isNull() && p2.isNull();
 }
 
@@ -55,22 +55,13 @@ bool operator<( const SUIT_DataOwnerPtr& p1, const SUIT_DataOwnerPtr& p2 )
   else if ( p2.isNull() )
     return false;
 
-  //bug with acrossentry of DataOwner and DataSubOwner
-  const _typeinfo& ti1 = typeid( *(p1.operator->()) );
-  const _typeinfo& ti2 = typeid( *(p2.operator->()) );
-
-  int res = strcmp( ti1.name(), ti2.name() );
-
-  if ( !res )
-    return p1->isLess( *p2 );
-
-  return res;
+  return (p1->keyString() < p2->keyString());
 }
 
 /*!
   \class SUIT_DataOwnerPtrList 
   implements value list with unique items (uniqueness is 
-  provided by operator==())
+  provided by operator==() and operator<())
 */
 
 /*!

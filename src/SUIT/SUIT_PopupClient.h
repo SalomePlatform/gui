@@ -21,7 +21,7 @@
 
 #include "SUIT.h"
 
-#include <QtCore/qobject.h>
+#include <QObject>
 
 class QMenu;
 class QContextMenuEvent;

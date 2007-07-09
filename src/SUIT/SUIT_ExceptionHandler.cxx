@@ -20,7 +20,7 @@
 
 #include "SUIT_MessageBox.h"
 
-#include <QtGui/qapplication.h>
+#include <QApplication>
 
 /*!\class SUIT_ExceptionHandler
  * Show exception message on error handler.
@@ -53,5 +53,5 @@ void SUIT_ExceptionHandler::showMessage( const QString& title, const QString& ms
   while ( QApplication::overrideCursor() )
     QApplication::restoreOverrideCursor();
   
-  SUIT_MessageBox::error1( 0, title, msg, "OK" );
+  SUIT_MessageBox::critical( 0, title, msg );
 }

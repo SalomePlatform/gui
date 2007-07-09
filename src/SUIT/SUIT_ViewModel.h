@@ -20,14 +20,15 @@
 #define SUIT_VIEWMODEL_H
 
 #include "SUIT.h"
-#include "SUIT_Desktop.h"
-#include "SUIT_ViewWindow.h"
-#include "SUIT_ViewManager.h"
 
-#include <QtCore/qmap.h>
-#include <QtCore/qobject.h>
+#include <QObject>
+#include <QMap>
 
-#include <QtGui/qcursor.h>
+class QMenu;
+
+class SUIT_Desktop;
+class SUIT_ViewWindow;
+class SUIT_ViewManager;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -52,8 +53,8 @@ public:
 
   virtual SUIT_ViewWindow* createView( SUIT_Desktop* theDesktop );
 
-  virtual void      setViewManager(SUIT_ViewManager* theViewManager) { myViewManager = theViewManager; }
-  SUIT_ViewManager* getViewManager() const { return myViewManager; }
+  virtual void      setViewManager(SUIT_ViewManager* theViewManager);
+  SUIT_ViewManager* getViewManager() const;
 
   virtual QString   getType() const { return "SUIT_ViewModel"; }
 

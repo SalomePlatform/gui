@@ -20,15 +20,12 @@
 
 #include "SUIT_Desktop.h"
 #include "SUIT_ViewModel.h"
+#include <SUIT_ViewWindow.h>
 #include "SUIT_Study.h"
 
-#include <QtCore/qmap.h>
-#include <QtCore/qregexp.h>
-#include <QtCore/qpointer.h>
-
-#include <QtGui/qicon.h>
-#include <QtGui/qcursor.h>
-#include <QtGui/qmessagebox.h>
+#include <QMap>
+#include <QRegExp>
+#include <QIcon>
 
 #ifdef WIN32
 #include <windows.h>
@@ -89,14 +86,14 @@ void SUIT_ViewManager::setTitle( const QString& theTitle )
     return;
 
   myTitle = theTitle;
-  for ( int i = 0; i < (int)myViews.count(); i++ )
+  for ( int i = 0; i < myViews.count(); i++ )
     setViewName( myViews[i] );
 }
 
 void SUIT_ViewManager::setIcon( const QPixmap& theIcon )
 {
   myIcon = theIcon;
-  for ( int i = 0; i < (int)myViews.count(); i++ )
+  for ( int i = 0; i < myViews.count(); i++ )
     myViews[i]->setWindowIcon( QIcon( myIcon ) );
 }
 
@@ -284,7 +281,7 @@ void SUIT_ViewManager::removeView( SUIT_ViewWindow* theView )
 */
 void SUIT_ViewManager::setDestructiveClose( const bool on )
 {
-  for ( int i = 0; i < (int)myViews.count(); i++ )
+  for ( int i = 0; i < myViews.count(); i++ )
     myViews[i]->setDestructiveClose( on );
 }
 
@@ -294,7 +291,7 @@ void SUIT_ViewManager::setDestructiveClose( const bool on )
 bool SUIT_ViewManager::isVisible() const
 {
   bool res = false;
-  for ( int i = 0; i < (int)myViews.count() && !res; i++ )
+  for ( int i = 0; i < myViews.count() && !res; i++ )
     res = myViews[i]->isVisibleTo( myViews[i]->parentWidget() );
   return res;
 }
@@ -304,7 +301,7 @@ bool SUIT_ViewManager::isVisible() const
 */
 void SUIT_ViewManager::setShown( const bool on )
 {
-  for ( int i = 0; i < (int)myViews.count(); i++ )
+  for ( int i = 0; i < myViews.count(); i++ )
     myViews.at( i )->setShown( on );
 }
 
@@ -334,7 +331,7 @@ void SUIT_ViewManager::onWindowActivated(SUIT_ViewWindow* view)
 */
 void SUIT_ViewManager::closeAllViews()
 {
-  for ( int i = 0; i < (int)myViews.size(); i++ )
+  for ( int i = 0; i < myViews.size(); i++ )
     delete myViews[i];
   myViews.clear();
 }

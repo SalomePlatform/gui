@@ -21,14 +21,12 @@
 
 #include "SUIT.h"
 
-#include "SUIT_Operation.h"
+#include <QList>
+#include <QObject>
 
-#include <QtCore/qlist.h>
-#include <QtCore/qobject.h>
-
-class QDialog;
 class SUIT_DataObject;
 class SUIT_Application;
+class SUIT_Operation;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )

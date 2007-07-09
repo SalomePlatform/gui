@@ -20,8 +20,7 @@
 #ifndef SUIT_TREE_SYNC_HEADER
 #define SUIT_TREE_SYNC_HEADER
 
-#include <qptrlist.h>
-#include <qvaluelist.h>
+#include <QList>
 
 /*!
   \struct DiffItem
@@ -54,7 +53,7 @@ TrgItem synchronize( const SrcItem&, const TrgItem&, const TreeData& );
 */
 template <class SrcItem, class TrgItem, class TreeData>
 void diffSiblings( const SrcItem&, const TrgItem&,
-                   QValueList < DiffItem < SrcItem,TrgItem > >&,
+                   QList < DiffItem < SrcItem,TrgItem > >&,
                    const TreeData& );
 
 /*!
@@ -67,10 +66,10 @@ TrgItem createSubTree( const SrcItem&, const TrgItem&, const TrgItem&, const boo
   \brief find equal element in list
 */
 template <class SrcItem, class TrgItem, class TreeData>
-const typename QValueList<TrgItem>::const_iterator findEqual( const QValueList<TrgItem>& l,
-							      const typename QValueList<TrgItem>::const_iterator& first,
-							      const SrcItem& it,
-							      const TreeData& td );
+const typename QList<TrgItem>::const_iterator findEqual( const QList<TrgItem>& l,
+							 const typename QList<TrgItem>::const_iterator& first,
+							 const SrcItem& it,
+							 const TreeData& td );
 
 
 
@@ -94,8 +93,8 @@ const typename QValueList<TrgItem>::const_iterator findEqual( const QValueList<T
     ) const - creates new TrgItem
   <li> void     updateItem( const TrgItem& ) const - updates TrgItem without recreation
   <li> void     deleteItemWithChildren( const TrgItem& ) const - deletes TrgItem with all children
-  <li> void     children( const SrcItem&, QValueList<SrcItem>& ) const - fills list with children
-  <li> void     children( const TrgItem&, QValueList<TrgItem>& ) const - fills list with children
+  <li> void     children( const SrcItem&, QList<SrcItem>& ) const - fills list with children
+  <li> void     children( const TrgItem&, QList<TrgItem>& ) const - fills list with children
   <li> SrcItem  parent( const SrcItem& ) const - return parent SrcItem
   <li> TrgItem  parent( const TrgItem& ) const - return parent SrcItem
   </ul>
@@ -106,13 +105,13 @@ TrgItem synchronize( const SrcItem& r1, const TrgItem& r2, const TreeData& td )
   if( td.isEqual( r1, r2 ) )
   {
     // update items themselves
-    td.updateItem( r2 );
+    td.updateItem( r1, r2 );
 
     // iterate 'siblings' (direct children) 
-    QValueList< DiffItem< SrcItem, TrgItem > > d;
+    QList< DiffItem< SrcItem, TrgItem > > d;
     diffSiblings( r1, r2, d, td );
 
-    typename QValueList< DiffItem< SrcItem, TrgItem > >::const_iterator anIt = d.begin(), aLast = d.end();
+    typename QList< DiffItem< SrcItem, TrgItem > >::const_iterator anIt = d.begin(), aLast = d.end();
     TrgItem lastItem = td.nullTrg();
     //    TrgItem tail = td.nullTrg();
     for( ; anIt!=aLast; anIt++ )
@@ -135,7 +134,7 @@ TrgItem synchronize( const SrcItem& r1, const TrgItem& r2, const TreeData& td )
         else
 	{
 	  //to update
-	  td.updateItem( item.myTrg );
+	  td.updateItem( item.mySrc, item.myTrg );
 	  synchronize( item.mySrc, item.myTrg, td );
 	  lastItem = item.myTrg;
 	}
@@ -162,12 +161,12 @@ TrgItem synchronize( const SrcItem& r1, const TrgItem& r2, const TreeData& td )
   \param td - tree data object (provides auxiliary methods)
 */
 template <class SrcItem, class TrgItem, class TreeData>
-const typename QValueList<TrgItem>::const_iterator findEqual( const QValueList<TrgItem>& l,
-							      const typename QValueList<TrgItem>::const_iterator& first,
-							      const SrcItem& it,
-							      const TreeData& td )
+const typename QList<TrgItem>::const_iterator findEqual( const QList<TrgItem>& l,
+							 const typename QList<TrgItem>::const_iterator& first,
+							 const SrcItem& it,
+							 const TreeData& td )
 {
-  typename QValueList<TrgItem>::const_iterator cur = first, last = l.end();
+  typename QList<TrgItem>::const_iterator cur = first, last = l.end();
   for( ; cur!=last; cur++ )
     if( td.isEqual( it, *cur ) )
       return cur;
@@ -183,28 +182,28 @@ const typename QValueList<TrgItem>::const_iterator findEqual( const QValueList<T
 */
 template <class SrcItem, class TrgItem, class TreeData>
 void diffSiblings( const SrcItem& src, const TrgItem& trg,
-		   QValueList < DiffItem < SrcItem,TrgItem > >& d,
+		   QList < DiffItem < SrcItem,TrgItem > >& d,
 		   const TreeData& td )
 {
   //if( src==td.nullSrc() || trg==td.nullTrg() )
   //  return;
 
-  QValueList<SrcItem> src_ch;
-  QValueList<TrgItem> trg_ch;
+  QList<SrcItem> src_ch;
+  QList<TrgItem> trg_ch;
   td.children( src, src_ch );
   td.children( trg, trg_ch );
 
-  typename QValueList<SrcItem>::const_iterator src_it = src_ch.begin(), src_last = src_ch.end();
-  typename QValueList<TrgItem>::const_iterator cur = trg_ch.begin(), trg_last = trg_ch.end();
+  typename QList<SrcItem>::const_iterator src_it = src_ch.begin(), src_last = src_ch.end();
+  typename QList<TrgItem>::const_iterator cur = trg_ch.begin(), trg_last = trg_ch.end();
 
   for( ; src_it!=src_last; src_it++ )
   {
-    typename QValueList<TrgItem>::const_iterator f =
+    typename QList<TrgItem>::const_iterator f =
       findEqual<SrcItem, TrgItem, TreeData>( trg_ch, cur, *src_it, td );
     if( f!=trg_last )  //is found
     {
       //mark all items before found as "to be deleted"
-      for( typename QValueList<TrgItem>::const_iterator it = cur; it!=f; it++ )
+      for( typename QList<TrgItem>::const_iterator it = cur; it!=f; it++ )
       {
 	DiffItem<SrcItem,TrgItem> ndiff;
 	ndiff.mySrc = td.nullSrc();
@@ -256,9 +255,9 @@ TrgItem createSubTree( const SrcItem& src, const TrgItem& parent,
   if( nitem==td.nullTrg() )
     return nitem;
 
-  QValueList<SrcItem> ch;
+  QList<SrcItem> ch;
   td.children( src, ch );
-  typename QValueList<SrcItem>::const_iterator anIt = ch.begin(), aLast = ch.end();
+  typename QList<SrcItem>::const_iterator anIt = ch.begin(), aLast = ch.end();
   for( ; anIt!=aLast; anIt++ )
     createSubTree( *anIt, nitem, td.nullTrg(), false, td );
 

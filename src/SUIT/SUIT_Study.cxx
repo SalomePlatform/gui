@@ -32,9 +32,9 @@
 SUIT_Study::SUIT_Study( SUIT_Application* app )
 : QObject(),
 myApp( app ),
+myName( "" ),
 myIsSaved( false ),
 myIsModified( false ),
-myName( "" ),
 myBlockChangeState( false )
 {
   static int _id = 0;
@@ -110,7 +110,7 @@ bool SUIT_Study::isModified() const
 /*!
  *Close document. NOT IMPLEMENTED.
  */
-void SUIT_Study::closeDocument(bool permanently)
+void SUIT_Study::closeDocument(bool /*permanently*/)
 {
 }
 
@@ -271,11 +271,11 @@ bool SUIT_Study::start( SUIT_Operation* theOp, const bool toCheck )
 
   if ( toCheck )
   {
-    while( SUIT_Operation* anOp = blockingOperation( theOp ) )
+    while ( SUIT_Operation* anOp = blockingOperation( theOp ) )
     {
-      int anAnsw = SUIT_MessageBox::warn2( application()->desktop(),
-                                           tr( "OPERATION_LAUNCH" ), tr( "PREVIOUS_NOT_FINISHED" ),
-                                           tr( "CONTINUE" ), tr( "CANCEL" ), 0, 1, 1 );
+      int anAnsw = SUIT_MessageBox::question( application()->desktop(),
+                                              tr( "OPERATION_LAUNCH" ), tr( "PREVIOUS_NOT_FINISHED" ),
+					      tr( "CONTINUE" ), tr( "CANCEL" ) );
 
       if ( anAnsw == 1 )
         return false;
@@ -522,6 +522,6 @@ int SUIT_Study::storeState()
 /*!
  * \brief Restores the study state
 */
-void SUIT_Study::restoreState(int savePoint)
+void SUIT_Study::restoreState(int /*savePoint*/)
 {
 }

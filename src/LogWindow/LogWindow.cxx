@@ -18,28 +18,35 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
+//  File   : LogWindow.cxx
+//  Author : Vadim SANDLER, Open CASCADE S.A. (vadim.sandler@opencascade.com)
+//  Module : SALOME
 
 #include "LogWindow.h"
 
-#include <QtCore/qfile.h>
-#include <QtCore/qdatetime.h>
-#include <QtCore/qtextstream.h>
+#include <QAction>
+#include <QApplication>
+#include <QDate>
+#include <QFile>
+#include <QMenu>
+#include <QTextEdit>
+#include <QTextStream>
+#include <QTime>
+#include <QVBoxLayout>
 
-#include <QtGui/qmenu.h>
-#include <QtGui/qlayout.h>
-#include <QtGui/qaction.h>
-#include <QtGui/qtextbrowser.h>
-#include <QtGui/qapplication.h>
-
-#include <SUIT_Tools.h>
-#include <SUIT_Session.h>
 #include <SUIT_MessageBox.h>
 #include <SUIT_ResourceMgr.h>
+#include <SUIT_Session.h>
+#include <SUIT_Tools.h>
 
 #define DEFAULT_SEPARATOR "***"
 
 /*!
-  Converts rich text to plain text
+  \brief Convert rich text to plain text.
+  \internal
+  \param richText rich text string
+  \return converted plain text string
 */
 static QString plainText( const QString& richText )
 {
@@ -61,12 +68,27 @@ static QString plainText( const QString& richText )
 }
 
 /*!
-  Default constructor
+  \class LogWindow
+  \brief Widget, displaying log messages.
+
+  The log messages window provides operations like:
+  - show messages
+  - display timestamps at the message beginning
+  - color messages according to their purposes (e.g., errors/warning)
+  - clear log output
+  - copy messages to clipvoard
+  - save message log to to the text file
+*/
+
+/*!
+  \brief Constructor.
+
+  Creates new messages log window widget.
+  \param parent parent widget
 */
 LogWindow::LogWindow( QWidget* parent )
 : QFrame( parent ),
-SUIT_PopupClient(),
-myOpFlags( All )
+  SUIT_PopupClient()
 {
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
 
@@ -92,14 +114,17 @@ myOpFlags( All )
 }
 
 /*!
-  Destructor
+  \brief Destructor.
+
+  Does nothing for the moment.
 */
 LogWindow::~LogWindow()
 {
 }
 
 /*!
-  Returnss the banner (title of message log)
+  \brief Get current banner (message log window header text).
+  \return string representing the current banner
 */
 QString LogWindow::banner() const
 {
@@ -107,7 +132,8 @@ QString LogWindow::banner() const
 }
 
 /*!
-  Returnss the separator (line printing between messages)
+  \brief Get current separator (text which is printed between messages).
+  \return string representing the current separator
 */
 QString LogWindow::separator() const
 {
@@ -115,8 +141,8 @@ QString LogWindow::separator() const
 }
 
 /*!
-  Sets banner (title of message log)
-  \param banner - new title
+  \brief Set current banner (message log window header text).
+  \param banner new banner
 */
 void LogWindow::setBanner( const QString& banner )
 {
@@ -126,8 +152,8 @@ void LogWindow::setBanner( const QString& banner )
 }
 
 /*!
-  Set separator (line printing between messages)
-  \param separator - new separator
+  Set current separator (text which is printed between messages).
+  \param separator new separator
 */
 void LogWindow::setSeparator( const QString& separator )
 {
@@ -137,7 +163,13 @@ void LogWindow::setSeparator( const QString& separator )
 }
 
 /*!
-  Custom event handler
+  \brief Custom event handler.
+
+  Process context popup menu request event.
+  
+  \param o object
+  \param e event
+  \return True if the event is processed and further processing should be stopped
 */
 bool LogWindow::eventFilter( QObject* o, QEvent* e )
 {
@@ -150,9 +182,9 @@ bool LogWindow::eventFilter( QObject* o, QEvent* e )
 }
 
 /*!
-  Puts message to log window
-  \param message - text of message
-  \flags - bit flags which defines view of printed message
+  \brief Put new message to the log window.
+  \param message text of the message
+  \param flags ORed flags which define how the message should be printed
 */
 void LogWindow::putMessage( const QString& message, const int flags )
 {
@@ -160,10 +192,10 @@ void LogWindow::putMessage( const QString& message, const int flags )
 }
 
 /*!
-  Puts message to log window
-  \param message - text of message
-  \color - text color of printed message
-  \flags - bit flags which defines view of printed message
+  \brief Put new message to the log window.
+  \param message text of the message
+  \param color text color of the message
+  \param flags ORed flags which define how the message should be printed
 */
 void LogWindow::putMessage( const QString& message, const QColor& color, const int flags )
 {
@@ -208,8 +240,8 @@ void LogWindow::putMessage( const QString& message, const QColor& color, const i
 }
 
 /*!
-  Clears message log
-  \param clearHistory - if it is true, then also history is cleared
+  \brief Clear message log.
+  \param clearHistory if True, clear also the messages history
 */
 void LogWindow::clear( bool clearHistory )
 {
@@ -227,8 +259,9 @@ void LogWindow::clear( bool clearHistory )
 }
 
 /*!
-  Saves log to file
-  \param fileName - name of file
+  \brief Save messages log to the file.
+  \param fileName name of the file
+  \return \c true on success and \c false on error
 */
 bool LogWindow::saveLog( const QString& fileName )
 {
@@ -244,7 +277,7 @@ bool LogWindow::saveLog( const QString& fileName )
   stream << QTime::currentTime().toString( "hh:mm:ss" )   << endl;
   stream << "*****************************************"   << endl;
 
-  for ( int i = 0; i < (int)myHistory.count(); i++ )
+  for ( int i = 0; i < myHistory.count(); i++ )
     stream << myHistory[ i ] << endl;
 
   file.close();
@@ -252,50 +285,46 @@ bool LogWindow::saveLog( const QString& fileName )
 }
 
 /*!
-  Creates actions
+  \brief Create context popup menu actions.
 */
 void LogWindow::createActions()
 {
-  QAction* a = new QAction( tr( "&Copy" ), this );
-  a->setStatusTip( tr( "&Copy" ) );
+  QAction* a = new QAction( tr( "EDIT_COPY_CMD" ), this );
+  a->setStatusTip( tr( "EDIT_COPY_CMD" ) );
   connect( a, SIGNAL( triggered( bool ) ), SLOT( onCopy() ) );
   myActions.insert( CopyId, a );
 
-  a = new QAction( tr( "Clea&r" ), this );
-  a->setStatusTip( tr( "Clea&r" ) );
+  a = new QAction( tr( "EDIT_CLEAR_CMD" ), this );
+  a->setStatusTip( tr( "EDIT_CLEAR_CMD" ) );
   connect( a, SIGNAL( triggered( bool ) ), SLOT( onClear() ) );
   myActions.insert( ClearId, a );
 
-  a = new QAction( tr( "Select &All" ), this );
-  a->setStatusTip( tr( "Select &All" ) );
+  a = new QAction( tr( "EDIT_SELECTALL_CMD" ), this );
+  a->setStatusTip( tr( "EDIT_SELECTALL_CMD" ) );
   connect( a, SIGNAL( triggered( bool ) ), SLOT( onSelectAll() ) );
   myActions.insert( SelectAllId, a );
 
-  a = new QAction( tr( "&Save log to file..." ), this );
-  a->setStatusTip( tr( "&Save log to file..." ) );
+  a = new QAction( tr( "EDIT_SAVETOFILE_CMD" ), this );
+  a->setStatusTip( tr( "EDIT_SAVETOFILE_CMD" ) );
   connect( a, SIGNAL( triggered( bool ) ), SLOT( onSaveToFile() ) );
   myActions.insert( SaveToFileId, a );
 }
 
 /*!
-  Redefined virtual method for popup filling
+  \brief Create the context popup menu.
+
+  Fill in the popup menu with the commands.
+
+  \param menu context popup menu
 */
 void LogWindow::contextMenuPopup( QMenu* popup )
 {
-  if ( myOpFlags & CopyId )
-    popup->addAction( myActions[ CopyId ] );
-  if ( myOpFlags & ClearId )
-    popup->addAction( myActions[ ClearId ] );
-
+  popup->addAction( myActions[ CopyId ] );
+  popup->addAction( myActions[ ClearId ] );
   popup->addSeparator();
-
-  if ( myOpFlags & SelectAllId )
-    popup->addAction( myActions[ SelectAllId ] );
-
+  popup->addAction( myActions[ SelectAllId ] );
   popup->addSeparator();
-
-  if ( myOpFlags & SaveToFileId )
-    popup->addAction( myActions[ SaveToFileId ] );
+  popup->addAction( myActions[ SaveToFileId ] );
 
   Qtx::simplifySeparators( popup );
 
@@ -303,25 +332,20 @@ void LogWindow::contextMenuPopup( QMenu* popup )
 }
 
 /*!
-  Updates enable status of actions
+  \brief Update menu actions.
+
+  Update context popup menu action state.
 */
 void LogWindow::updateActions()
 {
-/*
-  int paraFrom, paraTo, indexFrom, indexTo;
-  myView->getSelection( &paraFrom, &indexFrom, &paraTo, &indexTo );
-  bool allSelected = myView->hasSelectedText() &&
-                     !paraFrom && paraTo == myView->paragraphs() - 1 &&
-                     !indexFrom && indexTo == myView->paragraphLength( paraTo );
-  myActions[ CopyId ]->setEnabled( ( myOpFlags & CopyId )&& myView->hasSelectedText() );
-  myActions[ ClearId ]->setEnabled( ( myOpFlags & ClearId ) && myView->document()->blockCount() > myBannerSize );
-  myActions[ SelectAllId ]->setEnabled( ( myOpFlags & SelectAllId ) && !allSelected );
-  myActions[ SaveToFileId ]->setEnabled( ( myOpFlags & SaveToFileId ) && myHistory.count() > 0 );
-*/
+  myActions[CopyId]->setEnabled( myView->textCursor().hasSelection() );
+  myActions[ ClearId ]->setEnabled( myView->document()->blockCount() > myBannerSize );
+  myActions[SelectAllId]->setEnabled( !myView->document()->isEmpty() );
+  myActions[ SaveToFileId ]->setEnabled( myHistory.count() > 0 );
 }
 
 /*!
-  SLOT: called if user click "Save" in popup
+  \brief Called when user selects "Save To File" command in the popup menu.
 */
 void LogWindow::onSaveToFile()
 {
@@ -341,11 +365,11 @@ void LogWindow::onSaveToFile()
   QApplication::restoreOverrideCursor();
 
   if ( !bOk )
-    SUIT_MessageBox::error1( this, tr( "Error" ), tr( "Can't save file" ), tr( "OK" ) );
+    SUIT_MessageBox::critical( this, tr( "ERR_ERROR" ), tr( "ERR_CANT_SAVE_FILE" ) );
 }
 
 /*!
-  SLOT: called if user click "Select all" in popup
+  \brief Called when user selects "Select all" command in the popup menu.
 */
 void LogWindow::onSelectAll()
 {
@@ -354,7 +378,7 @@ void LogWindow::onSelectAll()
 }
 
 /*!
-  SLOT: called if user click "Clear" in popup
+  \brief Called when user click "Clear" command in the popup menu.
 */
 void LogWindow::onClear()
 {
@@ -362,7 +386,7 @@ void LogWindow::onClear()
 }
 
 /*!
-  SLOT: called if user click "Copy" in popup
+  \brief Called when user click "Copy" command in the popup menu.
 */
 void LogWindow::onCopy()
 {
@@ -370,7 +394,39 @@ void LogWindow::onCopy()
     myView->copy();
 }
 
-void LogWindow::setOperationsFlags( int flags )
+/*!
+  \brief Set actions to be visible in the context popup menu.
+  
+  Actions, which IDs are set in \a flags parameter, will be shown in the 
+  context popup menu. Other actions will not be shown.
+
+  \param flags ORed together actions flags
+*/
+void LogWindow::setMenuActions( const int flags )
 {
-  myOpFlags = flags;
+  myActions[CopyId]->setVisible( flags & CopyId );
+  myActions[ClearId]->setVisible( flags & ClearId );
+  myActions[SelectAllId]->setVisible( flags & SelectAllId );
+  myActions[SaveToFileId]->setVisible( flags & SaveToFileId );
 }
+
+/*!
+  \brief Get menu actions which are currently visible in the context popup menu.
+  \return ORed together actions flags
+  \sa setMenuActions()
+*/
+int LogWindow::menuActions() const
+{
+  int ret = 0;
+  ret = ret | ( myActions[CopyId]->isVisible() ? CopyId : 0 );
+  ret = ret | ( myActions[ClearId]->isVisible() ? ClearId : 0 );
+  ret = ret | ( myActions[SelectAllId]->isVisible() ? SelectAllId : 0 );
+  ret = ret | ( myActions[SaveToFileId]->isVisible() ? SaveToFileId : 0 );
+  return ret;
+}
+
+/*!
+  \fn virtual QString LogWindow::popupClientType() const;
+  \brief Get popup client symbolic name, used in popup menu management system.
+  \return symbolic name
+*/

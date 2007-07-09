@@ -66,20 +66,18 @@
 
 #include "SUIT_Tools.h"   
 #include "SUIT_Session.h"
-#include "SUIT_Desktop.h"
 #include "SUIT_MessageBox.h"
 #include "SUIT_ResourceMgr.h"
 #include "SUIT_FileValidator.h"
 
-#include <QtCore/qdir.h>
-#include <QtCore/qregexp.h>
-
-#include <QtGui/qlabel.h>
-#include <QtGui/qpalette.h>
-#include <QtGui/qcombobox.h>
-#include <QtGui/qpushbutton.h>
-#include <QtGui/qgridlayout.h>
-#include <QtGui/qapplication.h>
+#include <QDir>
+#include <QEvent>
+#include <QRegExp>
+#include <QLabel>
+#include <QComboBox>
+#include <QPushButton>
+#include <QGridLayout>
+#include <QApplication>
 
 #define MIN_COMBO_SIZE 100
 
@@ -93,11 +91,11 @@ QString SUIT_FileDlg::myLastVisitedPath;
 /*! Constructor */
 SUIT_FileDlg::SUIT_FileDlg( QWidget* parent, bool open, bool showQuickDir, bool modal )
 : QFileDialog( parent ),
+myOpen( open ),
 myValidator( 0 ),
-myQuickCombo( 0 ),
-myQuickButton( 0 ),
 myQuickLab( 0 ),
-myOpen( open )//,
+myQuickCombo( 0 ),
+myQuickButton( 0 )//,
 //myAccepted( false )
 {
   setModal( modal );
@@ -145,7 +143,7 @@ myOpen( open )//,
     QStringList dirList = dirs.split( ';' );
     if ( dirList.count() > 0 )
     {
-      for ( unsigned i = 0; i < dirList.count(); i++ )
+      for ( int i = 0; i < dirList.count(); i++ )
         myQuickCombo->addItem( dirList[i] );
     }
     else
@@ -341,14 +339,8 @@ void SUIT_FileDlg::addExtension()
   if ( anExt != "." && !IGNORE_NON_MATCHING_EXTENSION )
     return;
 
-  // get selected file filter
-#if QT_VERSION < 0x030000
-  QRegExp r( QString::fromLatin1("(?[a-zA-Z0-9.*? +;#|]*)?$") );
-  int len, index = r.match( selectedFilter().stripWhiteSpace(), 0, &len );
-#else
   QRegExp r( QString::fromLatin1("\\(?[a-zA-Z0-9.*? +;#|]*\\)?$") );
   int index = r.indexIn( selectedFilter().trimmed() );
-#endif
 
   if ( index >= 0 ) {            
     // Create wildcard regular expression basing on selected filter 
@@ -356,11 +348,7 @@ void SUIT_FileDlg::addExtension()
     // Due to transformations from the filter list (*.txt *.*xx *.c++ SUIT*.* ) we 
     // will have the pattern (\.txt|\..*xx|\.c\+\+|\..*) (as we validate extension only, 
     // we remove everything except extension mask from the pattern
-#if QT_VERSION < 0x030000
-    QString wildcard = selectedFilter().mid( index, len ).trimmed();
-#else
     QString wildcard = selectedFilter().mid( index, r.matchedLength() ).trimmed();
-#endif
     // replace '|' and ';' separators by space symbol and also brackets if there are some
     wildcard.replace( QRegExp( "[\\|;|(|)]" )," " ); 
 
@@ -435,13 +423,10 @@ void SUIT_FileDlg::quickDir(const QString& dirPath)
   if ( !QDir(aPath).exists() )
   {
     aPath = QDir::homePath();
-    SUIT_MessageBox::error1(this, 
-		   tr("ERR_ERROR"),
-		   tr("ERR_DIR_NOT_EXIST").arg(dirPath), 
-		   tr("BUT_OK"));    
+    SUIT_MessageBox::critical( this, tr( "ERR_ERROR" ), tr( "ERR_DIR_NOT_EXIST" ).arg( dirPath ) );
   }
   else
-  processPath(aPath);
+    processPath( aPath );
 }
 /*!
   Called when user presses "Add" button - adds current directory to quick directory
@@ -463,7 +448,7 @@ void SUIT_FileDlg::addQuickDir()
     bool emptyAndHome = false;
     if ( dirList.count() > 0 )
     {
-      for ( unsigned i = 0; i < dirList.count(); i++ )
+      for ( int i = 0; i < dirList.count(); i++ )
       {
 	      QDir aDir( dirList[i] );
 	      if ( aDir.canonicalPath().isNull() && dirList[i] == dir.absolutePath() ||
@@ -508,7 +493,7 @@ QString SUIT_FileDlg::getFileName( QWidget* parent, const QString& initial, cons
   QString filename = fd->selectedFile();
   delete fd;
 
-  qApp->processEvents();
+  QApplication::processEvents();
 
   return filename;
 }
@@ -534,7 +519,7 @@ QStringList SUIT_FileDlg::getOpenFileNames( QWidget* parent, const QString& init
   QStringList filenames = fd->selectedFiles();
   delete fd;
 
-  qApp->processEvents();
+  QApplication::processEvents();
   return filenames;
 }
 
@@ -558,6 +543,6 @@ QString SUIT_FileDlg::getExistingDirectory( QWidget* parent, const QString& init
   QString dirname = fd->selectedFile();
   delete fd;
 
-  qApp->processEvents();
+  QApplication::processEvents();
   return dirname;
 }

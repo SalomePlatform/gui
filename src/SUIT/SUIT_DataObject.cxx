@@ -16,6 +16,7 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 #include "SUIT_DataObject.h"
 
 #include "SUIT_DataObjectKey.h"
@@ -26,9 +27,9 @@
 
 SUIT_DataObject::SUIT_DataObject( SUIT_DataObject* p )
 : myParent( 0 ),
-mySignal( 0 ),
 myOpen( false ),
 myCheck( false ),
+mySignal( 0 ),
 myAutoDel( true )
 {
   setParent( p );
@@ -493,7 +494,7 @@ SUIT_DataObjectKey* SUIT_DataObject::key() const
 void SUIT_DataObject::dump( const int indent ) const
 {
   QString strIndent = QString().fill( ' ', indent ); // indentation string 
-  printf( "%s%s\n", strIndent.toLatin1(), name().toLatin1() );
+  printf( "%s%s\n", strIndent.toLatin1().data(), name().toLatin1().data() );
   for ( DataObjectList::const_iterator it = myChildren.begin(); it != myChildren.end(); ++it )
     (*it)->dump( indent + 2 );
 }

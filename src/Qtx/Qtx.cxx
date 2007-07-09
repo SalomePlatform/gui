@@ -40,18 +40,20 @@
 
 /*!
   \class Qtx
-  \brief Set of helpful utility functions.
+  \brief A set of helpful utility functions.
 
-  The class implements set of static functions which can be used for different purpuses:
-  - define tab order for set of widgets: setTabOrder()
-  - align one widget to the other widget: alignWidget()
-  - remove extra separators from menu or toolbar: simplifySeparators()
-  - retrieve directory, file name and extension parts of the path: dir(), file(), extension()
-  - get temporary directory name: tmpDir()
-  - create and remove directory (recursively): mkDir(), rmDir()
+  The class implements a set of the static functions which can be used
+  for the different purposes:
+  - specify tab order for the set of widgets: setTabOrder()
+  - align one widget to the coordinates of the another one: alignWidget()
+  - remove extra separators from the menu or toolbar: simplifySeparators()
+  - retrieve directory, file name and extension parts of the path:
+  dir(), file(), extension()
+  - get the path to the temporary directory: tmpDir()
+  - create or remove a directory (recursively): mkDir(), rmDir()
   - convert text file from DOS to UNIX native format: dos2unix()
-  - convert picture to the gray scale: grayscale()
-  - and other
+  - convert a picture to the gray scale: grayscale()
+  - other
 */
 
 /*!
@@ -541,6 +543,23 @@ bool Qtx::dos2unix( const QString& absName )
   return QDir().rename( QString( temp ), absName );
 }
 
+/*!
+  \brief Create path completer which can be used in the widgets
+  to provide auto completions.
+
+  Create an instance of QCompleter class and returns the pointer on it.
+  The calling function is responsible to the desstroying of the created 
+  completer object.
+
+  The QCompleter class provides completions based on a item model and can be
+  used in such as QLineEdit and QComboBox. 
+  When the user starts typing a word, QCompleter suggests possible ways of 
+  completing the word, based on a word list. 
+
+  \param type path type (Qtx::PathType)
+  \param filter file/directory filters (list of wildcards, separated by ";;")
+  \return a pointer to the created completer
+*/
 QCompleter* Qtx::pathCompleter( const PathType type, const QString& filter )
 {
   QStringList extList;

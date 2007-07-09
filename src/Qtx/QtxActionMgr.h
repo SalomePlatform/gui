@@ -63,7 +63,7 @@ public:
 
   int              count() const;
   bool             isEmpty() const;
-  void             idList( QIntList& ) const;
+  QIntList         idList() const;
 
   bool             isUpdatesEnabled() const;
   virtual void     setUpdatesEnabled( const bool );

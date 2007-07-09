@@ -22,18 +22,14 @@
 #ifndef QTX_H
 #define QTX_H
 
-#if defined QTX_EXPORTS
 #if defined WIN32
-#define QTX_EXPORT _declspec( dllexport )
+#  if defined QTX_EXPORTS
+#    define QTX_EXPORT _declspec( dllexport )
+#  else
+#    define QTX_EXPORT _declspec( dllimport )
+#  endif
 #else
-#define QTX_EXPORT  
-#endif
-#else
-#if defined WIN32
-#define QTX_EXPORT _declspec( dllimport )
-#else
-#define QTX_EXPORT  
-#endif
+#  define QTX_EXPORT  
 #endif
 
 #if defined SOLARIS
@@ -85,7 +81,12 @@ public:
     AlignOutBottom       = AlignOutTop       << 2    //!< align top side of one widget to the bottom side of another widget
   } AlignmentFlags;
 
-  typedef enum { PT_OpenFile, PT_SaveFile, PT_Directory } PathType;
+  //! Path type, indicates required directory/file operation
+  typedef enum { 
+    PT_OpenFile,      //!< the file is opened
+    PT_SaveFile,      //!< the file is saved
+    PT_Directory      //!< the directory path is required
+  } PathType;
 
   static QString     toQString( const char*, const int = -1 );
   static QString     toQString( const short*, const int = -1 );

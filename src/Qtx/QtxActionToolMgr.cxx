@@ -28,21 +28,22 @@
 
 /*!
   \class QtxActionToolMgr::ToolNode
-  \internal
   \brief Represents a toolbutton inside toolbar structure.
+  \internal
 */
 
 /*!
   \fn QtxActionToolMgr::ToolNode::ToolNode()
+  \internal
   \brief Default constructor.
 */
 
 /*!
   \fn QtxActionToolMgr::ToolNode::ToolNode( const int _id )
   \brief Constructor.
+  \internal
   \param _id toolbar node ID
 */
-
 
 /*!
   \class QtxActionToolMgr
@@ -86,7 +87,7 @@ QMainWindow* QtxActionToolMgr::mainWindow() const
 /*!
   \brief Create toolbar and assign \a id to it.
 
-  If \a tid is less than 0, the ID is generated automatically.
+  If \a tid is less than 0, the identifier is generated automatically.
   If toolbar with given \a tid is already registered, the toolbar will not be created.
 
   \param title toolbar title
@@ -132,7 +133,7 @@ int QtxActionToolMgr::createToolBar( const QString& title, const int tid )
   \brief Search toolbar with given \a title owned by main window \mw. 
   \param title toolbar title
   \param mw main window
-  \return toolbar or 0 if not found
+  \return toolbar or 0 if it is not found
 */
 QToolBar* QtxActionToolMgr::find( const QString& title, QMainWindow* mw ) const
 {
@@ -317,9 +318,9 @@ int QtxActionToolMgr::prepend( const int id, const QString& title )
   \param title toolbar title
   \return action ID
 */
-int QtxActionToolMgr::prepend( QAction* a, const QString& tname )
+int QtxActionToolMgr::prepend( QAction* a, const QString& title )
 {
-  return insert( a, tname, 0 );
+  return insert( a, title, 0 );
 }
 
 /*!
@@ -358,7 +359,7 @@ void QtxActionToolMgr::remove( const int id, const QString& title )
 /*!
   \brief Get toolbar by given \a tid.
   \param tid toolbar ID
-  \return toolbar or 0 if not found
+  \return toolbar or 0 if it is not found
 */
 QToolBar* QtxActionToolMgr::toolBar( const int tid ) const
 {
@@ -371,7 +372,7 @@ QToolBar* QtxActionToolMgr::toolBar( const int tid ) const
 /*!
   \brief Get toolbar by given \a title.
   \param title toolbar title
-  \return toolbar or 0 if not found
+  \return toolbar or 0 if it is not found
 */
 QToolBar* QtxActionToolMgr::toolBar( const QString& title ) const
 {
@@ -432,7 +433,7 @@ void QtxActionToolMgr::onToolBarDestroyed()
 /*!
   \brief Search toolbar by given \a name.
   \param title toolbar title
-  \return toolbar ID or -1 if not found
+  \return toolbar ID or -1 if it is not found
 */
 int QtxActionToolMgr::find( const QString& title ) const
 {
@@ -446,7 +447,7 @@ int QtxActionToolMgr::find( const QString& title ) const
 }
 
 /*!
-  \brief Get toolbar ID.
+  \brief Get toolbar identifier.
   \param tb toolbar
   \return toolbar ID or -1 if toolbar is not registered
 */
@@ -515,7 +516,7 @@ void QtxActionToolMgr::internalUpdate()
 }
 
 /*!
-  \brief Remove extra separators from toolbar.
+  \brief Remove extra separators from the toolbar.
   \param tb toolbar
 */
 void QtxActionToolMgr::simplifySeparators( QToolBar* tb )
@@ -524,7 +525,7 @@ void QtxActionToolMgr::simplifySeparators( QToolBar* tb )
 }
 
 /*!
-  \brief Show action (in all toolbars)
+  \brief Show action (in all toolbars).
   \param id action ID
 */
 void QtxActionToolMgr::show( const int id )
@@ -533,7 +534,7 @@ void QtxActionToolMgr::show( const int id )
 }
 
 /*!
-  \brief Hide action (in all toolbars)
+  \brief Hide action (in all toolbars).
   \param id action ID
 */
 void QtxActionToolMgr::hide( const int id )
@@ -690,9 +691,7 @@ QtxActionToolMgr::ToolCreator::ToolCreator( QtxActionMgr::Reader* r,
 }
 
 /*!
-  \brief Creator destructor.
-
-  Does nothing for the moment.
+  \brief Destructor.
 */
 QtxActionToolMgr::ToolCreator::~ToolCreator()
 {

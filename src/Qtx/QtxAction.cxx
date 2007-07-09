@@ -25,6 +25,12 @@
 #include <QActionEvent>
 #include <QApplication>
 
+/*!
+  \class QtxAction::ActionNotify
+  \brief Notify event used to signalize about event adding/removing.
+  \internal
+*/
+
 class QtxAction::ActionNotify : public QEvent
 {
 public:
@@ -42,16 +48,23 @@ private:
 /*!
   \class QtxAction
   \brief Generic action class.
+
+  The class QtxAction inherits QWidgetAction class and can be used 
+  as base class when implementing any custom menu/toolbar actions.
+  It is necessary to subclass from QtxAction and redefine virtual 
+  callback methods addedTo(), removedFrom() (which are called automatically
+  when the action is added to the widget and removed from it) to customize
+  the action behavior.  
 */
 
 /*!
   \brief Constructor.
 
-  Create an action.
+  Creates an action owned by \a parent. 
+  Parameter \a toggle can be used to make the action checkable.
 
   \param parent parent object
-  \param name action name (in terms of QObject)
-  \param toggle if \c true the action is a toggle action
+  \param toggle if \c true the action will be a toggle action
 */
 QtxAction::QtxAction( QObject* parent, bool toggle )
 : QWidgetAction( parent )
@@ -64,15 +77,16 @@ QtxAction::QtxAction( QObject* parent, bool toggle )
 /*!
   \brief Constructor.
 
-  Create an action.
+  Creates an action owned by \a parent. Parameters \a text,
+  \a icon, \a menuText and \a accel specify the action's attributes.
+  Parameter \a toggle can be used to make the action checkable.
 
   \param text tooltip text
   \param icon iconset
   \param menuText menu text
   \param accel shortcut key sequence
   \param parent parent object
-  \param name action name (in terms of QObject)
-  \param toggle if \c true the action is a toggle action
+  \param toggle if \c true the action will be a toggle action
 */
 QtxAction::QtxAction( const QString& text, const QIcon& icon,
                       const QString& menuText, int accel, QObject* parent, bool toggle )
@@ -90,13 +104,14 @@ QtxAction::QtxAction( const QString& text, const QIcon& icon,
 /*!
   \brief Constructor.
 
-  Create an action.
+  Creates an action owned by \a parent. Parameters \a text,
+  \a menuText and \a accel specify the action's attributes.
+  Parameter \a toggle can be used to make the action checkable.
 
   \param text tooltip text
   \param menuText menu text
   \param accel shortcut key sequence
   \param parent parent object
-  \param name action name (in terms of QObject)
   \param toggle if \c true the action is a toggle action
 */
 QtxAction::QtxAction( const QString& text, const QString& menuText,
@@ -113,21 +128,21 @@ QtxAction::QtxAction( const QString& text, const QString& menuText,
 
 /*!
   \brief Destructor.
-  
-  Does nothing for the moment.
 */
 QtxAction::~QtxAction()
 {
 }
 
 /*!
-  \brief Event filter.
+  \brief Customize action events.
   
-  Redefined from QObject. Calls virtual methods when the action is added to 
+  Sends a notification event to the action when it is added to 
   the widget or removed from it in order to perform custom processing.
+
   \param o object
   \param e event
-  \return default implementation
+  \return \c true if further event processing should be stopped
+  \sa customEvent(), addedTo(), removedFrom()
 */
 bool QtxAction::eventFilter( QObject* o, QEvent* e )
 {
@@ -144,27 +159,39 @@ bool QtxAction::eventFilter( QObject* o, QEvent* e )
 /*!
   \brief Called when the action is added to the widget.
 
-  Base implementation does nothing. Can be redefined in the successor
-  class to customize the behavior.
+  This method can be redefined in the subclasses to customize 
+  the action behavior. Base implementation does nothing. 
 
-  \param w widget (menu or toolbar)
+  \param w widget (should be menu or toolbar)
+  \sa removedFrom()
 */
-void QtxAction::addedTo( QWidget* )
+void QtxAction::addedTo( QWidget* /*w*/ )
 {
 }
 
 /*!
   \brief Called when the action is removed from the widget.
 
-  Base implementation does nothing. Can be redefined in the successor
-  class to customize the behavior.
+  This method can be redefined in the subclasses to customize
+  the action behavior. Base implementation does nothing.
 
-  \param w widget (menu or toolbar)
+  \param w widget (should be menu or toolbar)
+  \sa addedTo()
 */
-void QtxAction::removedFrom( QWidget* )
+void QtxAction::removedFrom( QWidget* /*w*/ )
 {
 }
 
+/*!
+  \brief Process notification events.
+  
+  Calls addedTo() method when the action is added to the widget
+  and removedFrom() when it is removed from the widget
+  in order to perform custom processing.
+
+  \param e noification event
+  \sa eventFilter(), addedTo(), removedFrom()
+*/
 void QtxAction::customEvent( QEvent* e )
 {
   ActionNotify* ae = (ActionNotify*)e;

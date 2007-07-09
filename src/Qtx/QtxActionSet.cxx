@@ -58,7 +58,7 @@ QtxActionSet::~QtxActionSet()
 
 /*!
   \brief Get list of child actions.
-  \return list of assigned actions.
+  \return list of assigned actions
 */
 QList<QAction*> QtxActionSet::actions() const
 {
@@ -227,7 +227,7 @@ void QtxActionSet::onChanged()
   \brief Called when some action is activated by the user.
   \param on toggled state (not used)
 */
-void QtxActionSet::onActionTriggered( bool )
+void QtxActionSet::onActionTriggered( bool /*on*/ )
 {
   QAction* a = ::qobject_cast<QAction*>( sender() );
   if ( !a )
@@ -264,7 +264,7 @@ void QtxActionSet::removedFrom( QWidget* w )
 /*!
   \brief Get action by specified identifier.
   \param id action ID
-  \return action or 0 if not found
+  \return action or 0 if it is not found
 */
 QAction* QtxActionSet::action( int id ) const
 {
@@ -280,7 +280,7 @@ QAction* QtxActionSet::action( int id ) const
 /*!
   \brief Get action identifier for the action.
   \param a action
-  \return action ID or -1 if not found
+  \return action ID or -1 if it is not found
 */
 int QtxActionSet::actionId( QAction* a ) const
 {

@@ -41,7 +41,6 @@ class LightApp_WidgetContainer;
 class LightApp_Preferences;
 class LightApp_SelectionMgr;
 class LightApp_DataObject;
-class LightApp_ModuleAction;
 class SUIT_Study;
 class SUIT_Accel;
 class CAM_Module;
@@ -96,7 +95,7 @@ public:
          NewQxGraphViewId,
 #endif
 
-         PreferencesId, MRUId, UserID };
+         PreferencesId, MRUId, ModulesListId, UserID };
 public:
   LightApp_Application();
   virtual ~LightApp_Application();
@@ -249,7 +248,6 @@ protected:
 protected:
   LightApp_Preferences*               myPrefs;
   LightApp_SelectionMgr*              mySelMgr;
-  LightApp_ModuleAction*              myModuleAction;
   WindowMap                           myWindows;
   WindowVisibilityMap                 myWindowsVisible;
 

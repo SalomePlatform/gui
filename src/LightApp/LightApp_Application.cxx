@@ -545,14 +545,12 @@ void LightApp_Application::createActions()
   QStringList modList;
   modules( modList, false );
 
-  if( modList.count()>1 )
+  if( modList.count() > 1 )
   {
-    QToolBar* modTBar = new QtxToolBar( true, desk );
-    modTBar->setObjectName( "ModuleToolBar" );
-    modTBar->setWindowTitle( tr( "INF_TOOLBAR_MODULES" ) );
-    desktop()->addToolBar( Qt::TopToolBarArea, modTBar );
+    int modTBar = createTool( tr( "INF_TOOLBAR_MODULES" ) );
 
-    myModuleAction = new LightApp_ModuleAction( tr( "APP_NAME" ), defIcon, desk );
+    LightApp_ModuleAction* moduleAction = 
+      new LightApp_ModuleAction( tr( "APP_NAME" ), defIcon, desk );
 
     QMap<QString, QString> iconMap;
     moduleIconNames( iconMap );
@@ -581,11 +579,11 @@ void LightApp_Application::createActions()
 
       icon.fromImage( icon.toImage().scaled( iconSize, iconSize, Qt::KeepAspectRatio, Qt::SmoothTransformation ) );
       
-      myModuleAction->insertModule( *it, icon );
+      moduleAction->insertModule( *it, icon );
     }
 
-    connect( myModuleAction, SIGNAL( moduleActivated( const QString& ) ), this, SLOT( onModuleActivation( const QString& ) ) );
-    modTBar->addAction( myModuleAction );
+    connect( moduleAction, SIGNAL( moduleActivated( const QString& ) ), this, SLOT( onModuleActivation( const QString& ) ) );
+    createTool( registerAction( ModulesListId, moduleAction ), modTBar );
   }
 
   // New window
@@ -652,8 +650,11 @@ void LightApp_Application::onModuleActivation( const QString& modName )
     case 0:
     default:
       putInfo( tr("INF_CANCELLED") );
-      if ( myModuleAction )
-	myModuleAction->setActiveModule( QString() );
+      
+      LightApp_ModuleAction* moduleAction = 
+	qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
+      if ( moduleAction )
+	moduleAction->setActiveModule( QString() );
       cancelled = true;
     }
   }
@@ -2145,8 +2146,10 @@ void LightApp_Application::updateModuleActions()
   if ( activeModule() )
     modName = activeModule()->moduleName();
   
-  if ( myModuleAction )
-    myModuleAction->setActiveModule( modName );
+  LightApp_ModuleAction* moduleAction = 
+    qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
+  if ( moduleAction )
+    moduleAction->setActiveModule( modName );
 }
 
 /*!

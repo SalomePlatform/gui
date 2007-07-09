@@ -24,9 +24,8 @@
 
 #include "Qtx.h"
 
-#include <QtGui/qmainwindow.h>
+#include <QMainWindow>
 
-class QDockWindow;
 class QtxResourceMgr;
 
 class QTX_EXPORT QtxMainWindow : public QMainWindow
@@ -34,9 +33,6 @@ class QTX_EXPORT QtxMainWindow : public QMainWindow
   Q_OBJECT
 
   class Filter;
-
-  enum { WS_Normal, WS_Minimized, WS_Maximized, WS_Hidden };
-  enum { WP_Absolute, WP_Center, WP_Left, WP_Right, WP_Top = WP_Left, WP_Bottom = WP_Right };
 
 public:
   QtxMainWindow( QWidget* = 0, Qt::WindowFlags = 0 );
@@ -48,33 +44,18 @@ public:
   bool              isDockableStatusBar() const;
   void              setDockableStatusBar( const bool );
 
-  QString           saveGeometry() const;
-  void              loadGeometry( const QString& );
-
-  void              loadGeometry( QtxResourceMgr*, const QString& );
-  void              saveGeometry( QtxResourceMgr*, const QString& ) const;
-
-  virtual bool      eventFilter( QObject*, QEvent* );
-
-public slots:
-  virtual void      show();
-
-protected:
-  virtual void      customEvent( QEvent* );
+  QString           storeGeometry() const;
+  void              retrieveGeometry( const QString& );
 
 private slots:
   void              onDestroyed( QObject* );
 
 private:
   int               geometryValue( const QString&, int&, bool& ) const;
-//  int               windowState( const QString& ) const;
-//  int               windowPosition( const QString& ) const;
-//  int               relativeCoordinate( const int, const int, const int ) const;
 
 private:
-  int               myMode;
-  QToolBar*         myMenuBar;
-  QToolBar*         myStatusBar;
+  QToolBar*         myMenuBar;       //!< dockable menu bar
+  QToolBar*         myStatusBar;     //!< dockable status bar
 };
 
-#endif
+#endif // QTXMAINWINDOW_H

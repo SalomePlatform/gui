@@ -21,37 +21,72 @@
 
 #include "Qtx.h"
 
-#include <QtCore/qdir.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qfileinfo.h>
-
-#include <QtGui/qmenu.h>
-#include <QtGui/qbitmap.h>
-#include <QtGui/qwidget.h>
-#include <QtGui/qlayout.h>
-#include <QtGui/qpainter.h>
-#include <QtGui/qtoolbar.h>
-#include <QtGui/qapplication.h>
-#include <QtGui/qdesktopwidget.h>
+#include <QDir>
+#include <QMenu>
+#include <QRegExp>
+#include <QBitmap>
+#include <QWidget>
+#include <QLayout>
+#include <QPainter>
+#include <QDirModel>
+#include <QFileInfo>
+#include <QCompleter>
+#include <QApplication>
+#include <QDesktopWidget>
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
 
+/*!
+  \class Qtx
+  \brief A set of helpful utility functions.
+
+  The class implements a set of the static functions which can be used
+  for the different purposes:
+  - specify tab order for the set of widgets: setTabOrder()
+  - align one widget to the coordinates of the another one: alignWidget()
+  - remove extra separators from the menu or toolbar: simplifySeparators()
+  - retrieve directory, file name and extension parts of the path:
+  dir(), file(), extension()
+  - get the path to the temporary directory: tmpDir()
+  - create or remove a directory (recursively): mkDir(), rmDir()
+  - convert text file from DOS to UNIX native format: dos2unix()
+  - convert a picture to the gray scale: grayscale()
+  - other
+*/
+
+/*!
+  \brief Convert character array (ASCII string) to the QString.
+  \param str character array
+  \param len array length, if < 0, the array should be zero-terminated
+  \return QString object
+ */
 QString Qtx::toQString( const char* str, const int len )
 {
   return toQString( (unsigned char*)str, len );
 }
 
+/*!
+  \brief Convert integer array (UNICODE string) to the QString.
+  \param str integer array
+  \param len array length, if < 0, the array should be zero-terminated
+  \return QString object
+ */
 QString Qtx::toQString( const short* str, const int len )
 {
   return toQString( (unsigned short*)str, len );
 }
 
+/*!
+  \brief Convert character array (ASCII string) to the QString.
+  \param str character array
+  \param len array length, if < 0, the array should be zero-terminated
+  \return QString object
+ */
 QString Qtx::toQString( const unsigned char* str, const int len )
 {
   QString res;
-  int l = len;
   const unsigned char* s = str;
   while ( len < 0 || res.length() < len )
   {
@@ -64,10 +99,15 @@ QString Qtx::toQString( const unsigned char* str, const int len )
   return res;
 }
 
+/*!
+  \brief Convert integer array (UNICODE string) to the QString.
+  \param str integer array
+  \param len array length, if < 0, the array should be zero-terminated
+  \return QString object
+ */
 QString Qtx::toQString( const unsigned short* str, const int len )
 {
   QString res;
-  int l = len;
   const unsigned short* s = str;
   while ( len < 0 || res.length() < len )
   {
@@ -81,32 +121,34 @@ QString Qtx::toQString( const unsigned short* str, const int len )
 }
 
 /*!
-	Name: setTabOrder [static public]
-	Desc: Set tab order for specified list of widgets. Last parameter should be null pointer.
-*/
+  \brief Set tab order for specified list of widgets.
 
+  The function has arbitrary number of parameters, each should be
+  hovewer of QWidget* type. Last parameter should be null pointer.
+
+  \param first first widget in the sequence
+*/
 void Qtx::setTabOrder( QWidget* first, ... )
 {
   va_list wids;
-	va_start( wids, first );
+  va_start( wids, first );
 
-	QWidgetList widList;
+  QWidgetList widList;
 
-	QWidget* cur = first;
-	while ( cur )
-	{
-	  widList.append( cur );
-		cur = va_arg( wids, QWidget* );
+  QWidget* cur = first;
+  while ( cur )
+  {
+    widList.append( cur );
+    cur = va_arg( wids, QWidget* );
   }
 
-	setTabOrder( widList );
+  setTabOrder( widList );
 }
 
 /*!
-	Name: setTabOrder [static public]
-	Desc: Set tab order for specified list of widgets.
+  \brief Set tab order for specified list of widgets.
+  \param widgets list of widgets
 */
-
 void Qtx::setTabOrder( const QWidgetList& widgets )
 {
   if ( widgets.count() < 2 )
@@ -123,132 +165,81 @@ void Qtx::setTabOrder( const QWidgetList& widgets )
 }
 
 /*!
-	Name: alignWidget [static public]
-	Desc: Align widget 'src' relative to widget 'ref' acording to alignment flags.
-	      Alignment flags:
-			  Qtx::AlignLeft      - Align left side of 'src' to left side of 'ref'.
-			  Qtx::AlignRight     - Align right side of 'src' to right side of 'ref'.
-			  Qtx::AlignTop       - Align top side of 'src' to top side of 'ref'.
-			  Qtx::AlignBottom    - Align bottom side of 'src' to bottom side of 'ref'.
-			  Qtx::AlignHCenter   - Align 'src' to center of 'ref' in horizontal dimension.
-			  Qtx::AlignVCenter   - Align 'src' to center of 'ref' in vertical dimension.
-			  Qtx::AlignCenter    - Align 'src' to center of 'ref' in both dimensions.
-			  Qtx::AlignOutLeft   - Align right side of 'src' to left side of 'ref'.
-			  Qtx::AlignOutRight  - Align left side of 'src' to right side of 'ref'.
-			  Qtx::AlignOutTop    - Align bottom side of 'src' to top side of 'ref'.
-			  Qtx::AlignOutBottom - Align top side of 'src' to bottom side of 'ref'.
+  \brief Align widget \a src relative to widget \a ref acording to the 
+         alignment flags \a alignFlags.
+  \param src source widget (being aligned)
+  \param ref reference widget (source widget being aligned to)
+  \param alignFlags alignment flags (Qtx::AlignmentFlags)
 */
-
 void Qtx::alignWidget( QWidget* src, const QWidget* ref, const int alignFlags )
 {
-	if ( !src || !ref || !alignFlags )
-		return;
+  if ( !src || !ref || !alignFlags )
+    return;
 
-	QPoint srcOri = src->pos();
-	QPoint refOri = ref->pos();
-	if ( src->parentWidget() && !src->isTopLevel() )
-		srcOri = src->parentWidget()->mapToGlobal( srcOri );
-	if ( ref->parentWidget() && !ref->isTopLevel() )
-		refOri = ref->parentWidget()->mapToGlobal( refOri );
+  QPoint srcOri = src->pos();
+  QPoint refOri = ref->pos();
+  if ( src->parentWidget() && !src->isTopLevel() )
+    srcOri = src->parentWidget()->mapToGlobal( srcOri );
+  if ( ref->parentWidget() && !ref->isTopLevel() )
+    refOri = ref->parentWidget()->mapToGlobal( refOri );
 
-	int x = srcOri.x(), y = srcOri.y();
-	int refWidth = ref->frameGeometry().width(), refHei = ref->frameGeometry().height();
-	int srcWidth = src->frameGeometry().width(), srcHei = src->frameGeometry().height();
+  int x = srcOri.x(), y = srcOri.y();
+  int refWidth = ref->frameGeometry().width(), refHei = ref->frameGeometry().height();
+  int srcWidth = src->frameGeometry().width(), srcHei = src->frameGeometry().height();
 
-	if ( srcWidth <= 0 )
-		srcWidth = src->sizeHint().width();
+  if ( srcWidth <= 0 )
+    srcWidth = src->sizeHint().width();
   if ( srcHei <= 0 )
     srcHei = src->sizeHint().height();
 
-	int border = 0;
+  int border = 0;
   if ( ref->isTopLevel() && ref->isMaximized() &&
        src->isTopLevel() && !src->isMaximized() )
     border = ( src->frameGeometry().width() - src->width() ) / 2;
 
-	if ( alignFlags & Qtx::AlignLeft )
-		x = refOri.x() + border;
-	if ( alignFlags & Qtx::AlignOutLeft )
-		x = refOri.x() - srcWidth - border;
-	if ( alignFlags & Qtx::AlignRight )
-		x = refOri.x() + refWidth - srcWidth - border;
-	if ( alignFlags & Qtx::AlignOutRight )
-		x = refOri.x() + refWidth + border;
-	if ( alignFlags & Qtx::AlignTop )
-		y = refOri.y() + border;
-	if ( alignFlags & Qtx::AlignOutTop )
-		y = refOri.y() - srcHei - border;
-	if ( alignFlags & Qtx::AlignBottom )
-		y = refOri.y() + refHei - srcHei - border;
-	if ( alignFlags & Qtx::AlignOutBottom )
-		y = refOri.y() + refHei + border;
-	if ( alignFlags & Qtx::AlignHCenter )
-		x = refOri.x() + ( refWidth - srcWidth ) / 2;
-	if ( alignFlags & Qtx::AlignVCenter )
-		y = refOri.y() + ( refHei - srcHei ) / 2;
+  if ( alignFlags & Qtx::AlignLeft )
+    x = refOri.x() + border;
+  if ( alignFlags & Qtx::AlignOutLeft )
+    x = refOri.x() - srcWidth - border;
+  if ( alignFlags & Qtx::AlignRight )
+    x = refOri.x() + refWidth - srcWidth - border;
+  if ( alignFlags & Qtx::AlignOutRight )
+    x = refOri.x() + refWidth + border;
+  if ( alignFlags & Qtx::AlignTop )
+    y = refOri.y() + border;
+  if ( alignFlags & Qtx::AlignOutTop )
+    y = refOri.y() - srcHei - border;
+  if ( alignFlags & Qtx::AlignBottom )
+    y = refOri.y() + refHei - srcHei - border;
+  if ( alignFlags & Qtx::AlignOutBottom )
+    y = refOri.y() + refHei + border;
+  if ( alignFlags & Qtx::AlignHCenter )
+    x = refOri.x() + ( refWidth - srcWidth ) / 2;
+  if ( alignFlags & Qtx::AlignVCenter )
+    y = refOri.y() + ( refHei - srcHei ) / 2;
 
-	if ( src->parentWidget() && !src->isTopLevel() )
-	{
-		QPoint pos = src->parentWidget()->mapFromGlobal( QPoint( x, y ) );
-		x = pos.x();
-		y = pos.y();
-	}
-
-	QWidget* desk = QApplication::desktop();
-	if ( desk && x + srcWidth + border > desk->width() )
-		x = desk->width() - srcWidth - border;
-	if ( desk && y + srcHei + border > desk->height() )
-		y = desk->height() - srcHei - border;
-
-	x = qMax( x, 0 );
-	y = qMax( y, 0 );
-
-	src->move( x, y );
-}
-
-/*!
-	Name: simplifySeparators [static public]
-	Desc: Checks toolbar for unnecessary separators and removes them
-*/
-/*
-void Qtx::simplifySeparators( QToolBar* toolbar )
-{
-  if ( !toolbar )
-    return;
-
-  const QObjectList& objList = toolbar->children();
-
-  QObjectList delList;
-
-  bool isPrevSep = true;
-  QObject* lastVis = 0; // last visible
-  for ( QObjectList::const_iterator it = objList.begin(); it != objList.end(); ++it )
+  if ( src->parentWidget() && !src->isTopLevel() )
   {
-    QObject* obj = *it;
-    if ( !obj || !obj->isWidgetType() )
-      continue;
-    bool isSep = obj->inherits( "QToolBarSeparator" );
-    if ( !isSep && !((QWidget*)obj)->isVisibleTo( toolbar ) )
-      continue;
-    if ( isPrevSep && isSep )
-      delList.append( obj );
-    else
-    {
-      isPrevSep = isSep;
-      lastVis = obj;
-    }
+    QPoint pos = src->parentWidget()->mapFromGlobal( QPoint( x, y ) );
+    x = pos.x();
+    y = pos.y();
   }
-  // remove last visible separator
-  if ( lastVis && lastVis->inherits( "QToolBarSeparator" ) )
-      delList.append( lastVis );
 
-  for ( QObjectList::iterator itr = delList.begin(); itr != delList.end(); ++itr )
-    delete *itr;
+  QWidget* desk = QApplication::desktop();
+  if ( desk && x + srcWidth + border > desk->width() )
+    x = desk->width() - srcWidth - border;
+  if ( desk && y + srcHei + border > desk->height() )
+    y = desk->height() - srcHei - border;
+
+  x = qMax( x, 0 );
+  y = qMax( y, 0 );
+
+  src->move( x, y );
 }
-*/
 
 /*!
-	Name: simplifySeparators [static public]
-	Desc: Checks popup menu recursively for unnecessary separators and removes them
+  \brief Remove (recursively) unnecessary separators from the menu or toolbar.
+  \param wid widget, should be of QMenu* or QToolBar* class
 */
 void Qtx::simplifySeparators( QWidget* wid, const bool recursive )
 {
@@ -260,7 +251,7 @@ void Qtx::simplifySeparators( QWidget* wid, const bool recursive )
     return;
 
   QList<QAction*> toRemove;
-  for ( uint i = 1; i < items.count(); i++ )
+  for ( int i = 1; i < items.count(); i++ )
   {
     if ( items[i]->isSeparator() && items[i - 1]->isSeparator() )
       toRemove.append( items[i] );
@@ -282,8 +273,17 @@ void Qtx::simplifySeparators( QWidget* wid, const bool recursive )
 }
 
 /*!
-	Name: isParent [static public]
-	Desc: Returns 'true' if specified 'parent' is parent object of given 'child'.
+  \brief Return \c true if specified \a parent is a parent object
+         of given \a child (in terms of QObject).
+
+  This function works recursively. It means that \a true is also
+  returned if \a parent is a grand-father, grand-grand-father, etc
+  of \a child. If the same object is given as both \a parent and
+  \a child, \c true is also returned.
+
+  \param child child object
+  \param parent parent object
+  \return \c true if the \a parent is a parent of \a child
 */
 bool Qtx::isParent( QObject* child, QObject* parent )
 {
@@ -301,21 +301,32 @@ bool Qtx::isParent( QObject* child, QObject* parent )
 }
 
 /*!
-	Name: dir [static public]
-	Desc: Returns dir name or null string.
+  \brief Return directory part of the file path.
+
+  If the file path does not include directory part (the file is in the
+  current directory), null string is returned.
+
+  \param path file path
+  \param abs if true (default) \a path parameter is treated as absolute file path
+  \return directory part of the file path
 */
 QString Qtx::dir( const QString& path, const bool abs )
 {
   QDir aDir = QFileInfo( path ).dir();
   QString dirPath = abs ? aDir.absolutePath() : aDir.path();
   if ( dirPath == QString( "." ) )
-    dirPath = QString::null;
+    dirPath = QString();
   return dirPath;
 }
 
 /*!
-	Name: file [static public]
-	Desc: Returns file with or without extension.
+  \brief Return file name part of the file path.
+
+  \param path file path
+  \param withExt if true (default) complete file name (with all
+         extension except the last) is returned, otherwise only base name
+         is returned
+  \return file name part of the file path
 */
 QString Qtx::file( const QString& path, bool withExt )
 {
@@ -330,8 +341,12 @@ QString Qtx::file( const QString& path, bool withExt )
 }
 
 /*!
-	Name: extension [static public]
-	Desc: Returns the file extension only or null string.
+  \brief Return extension part of the file path.
+
+  \param path file path
+  \param full if true complete extension (all extensions, dot separated)
+         is returned, otherwise (default) only last extension is returned
+  \return extension part of the file path
 */
 QString Qtx::extension( const QString& path, const bool full )
 {
@@ -339,9 +354,15 @@ QString Qtx::extension( const QString& path, const bool full )
 }
 
 /*!
-	Name: library [static public]
-	Desc: Generate library file name.
-        Append required prefix (lib) and suffix (.dll/.so) to the library file name.
+  \brief Convert the given parameter to the platform-specific library name.
+
+  The function appends platform-specific prefix (lib) and suffix (.dll/.so)
+  to the library file name.
+  For example, if \a str = "mylib", "libmylib.so" is returned for Linux and
+  mylib.dll for Windows.
+
+  \param str short library name
+  \return full library name
 */
 QString Qtx::library( const QString& str )
 {
@@ -375,94 +396,99 @@ QString Qtx::library( const QString& str )
 }
 
 /*!
-	Name: tmpDir [static public]
-	Desc: Returns path to temporary directory.
+  \brief Get the temporary directory name.
+  \return temporary directory (platform specific)
 */
 QString Qtx::tmpDir()
 {
-	char* tmpdir = ::getenv( "TEMP" );
-	if ( !tmpdir )
-		tmpdir = ::getenv ( "TMP" );
-	if ( !tmpdir )
-	{
+  char* tmpdir = ::getenv( "TEMP" );
+  if ( !tmpdir )
+    tmpdir = ::getenv ( "TMP" );
+  if ( !tmpdir )
+  {
 #ifdef WIN32
-		tmpdir = "C:\\";
+    tmpdir = "C:\\";
 #else
-		tmpdir = "/tmp";
+    tmpdir = "/tmp";
 #endif
-	}
-	return QString( tmpdir );
+  }
+  return QString( tmpdir );
 }
 
 /*!
-	Name: mkDir [static public]
-	Desc: Creates directory with intermediate perent directories.
-		    Returns true in successfull case.
+  \brief Create directory recursively including all intermediate sub directories.
+  \return \c true if the directory is successfully created and \c false otherwise
 */
 bool Qtx::mkDir( const QString& dirPath )
 {
-	return QDir().mkpath( dirPath );
+  return QDir().mkpath( dirPath );
 }
 
 /*!
-	Name: rmDir [static public]
-	Desc: Removes directory with its subdirectories and files.
-		    Returns true in successfull case.
+  \brief Remove directory recursively including all subdirectories and files.
+  \return \c true if the directory is successfully removed and \c false otherwise
 */
 bool Qtx::rmDir( const QString& thePath )
 {
-	QFileInfo fi( thePath );
-	if ( !fi.exists() )
-		return true;
+  QFileInfo fi( thePath );
+  if ( !fi.exists() )
+    return true;
 
-	bool stat = true;
-	if ( fi.isFile() )
-		stat = QFile::remove( thePath );
-	else if ( fi.isDir() )
-	{
-		QDir aDir( thePath );
-		QFileInfoList anEntries = aDir.entryInfoList();
+  bool stat = true;
+  if ( fi.isFile() )
+    stat = QFile::remove( thePath );
+  else if ( fi.isDir() )
+  {
+    QDir aDir( thePath );
+    QFileInfoList anEntries = aDir.entryInfoList();
     for ( QFileInfoList::iterator it = anEntries.begin(); it != anEntries.end(); ++it )
-		{
+    {
       QFileInfo inf = *it;
       if ( inf.fileName() == "." || inf.fileName() == ".." )
-					continue;
+	continue;
       stat = stat && rmDir( inf.absoluteFilePath() );
-		}
-		stat = stat && aDir.rmdir( thePath );
-	}
-	return stat;
+    }
+    stat = stat && aDir.rmdir( thePath );
+  }
+  return stat;
 }
 
 /*!
-	Name: addSlash [static public]
-	Desc: Adds a slash to the end of 'path' if it is not already there.
+  \brief Add a slash (platform-specific) to the end of \a path
+         if it is not already there.
+  \param path directory path
+  \return modified path (with slash added to the end)
 */
 QString Qtx::addSlash( const QString& path )
 {
-	QString res = path;
+  QString res = path;
   if ( !res.isEmpty() && res.at( res.length() - 1 ) != QChar( '/' ) &&
-	  res.at( res.length() - 1 ) != QChar( '\\' ) )
+       res.at( res.length() - 1 ) != QChar( '\\' ) )
   res += QDir::separator();
   return res;
 }
 
 /*!
-	Name: dos2unix [static public]
-	Desc: Convert text file. Replace symbols "LF/CR" by symbol "LF".
+  \brief Convert text file from DOS format to UNIX.
+
+  The function replaces "LF/CR" symbols sequence by "LF" symbol.
+
+  \param absName file name
+  \return \c true if the file is converted successfully and \c false in
+         case of any error
 */
 bool Qtx::dos2unix( const QString& absName )
 {
   FILE* src = ::fopen( absName.toLatin1(), "rb" );
   if ( !src )
-		return false;
+    return false;
 
   /* we'll use temporary file */
   char temp[512] = { '\0' };
   QString dir = Qtx::dir( absName );
   FILE* tgt = ::fopen( strcpy( temp, ::tempnam( dir.toLatin1(), "__x" ) ), "wb" );
   if ( !tgt )
-		return false;
+    return false;
 
   /* temp -> result of conversion */
   const char CR = 0x0d;
@@ -508,7 +534,7 @@ bool Qtx::dos2unix( const QString& absName )
       break;              /* converted ok */
   }
   ::fclose( src );
-	::fclose( tgt );
+  ::fclose( tgt );
 
   /* rename temp -> src */
   if ( !QFile::remove( absName ) )
@@ -518,8 +544,60 @@ bool Qtx::dos2unix( const QString& absName )
 }
 
 /*!
-	Name: rgbSet [static public]
-	Desc: Pack the specified color into one integer RGB set.
+  \brief Create path completer which can be used in the widgets
+  to provide auto completions.
+
+  Create an instance of QCompleter class and returns the pointer on it.
+  The calling function is responsible to the desstroying of the created 
+  completer object.
+
+  The QCompleter class provides completions based on a item model and can be
+  used in such as QLineEdit and QComboBox. 
+  When the user starts typing a word, QCompleter suggests possible ways of 
+  completing the word, based on a word list. 
+
+  \param type path type (Qtx::PathType)
+  \param filter file/directory filters (list of wildcards, separated by ";;")
+  \return a pointer to the created completer
+*/
+QCompleter* Qtx::pathCompleter( const PathType type, const QString& filter )
+{
+  QStringList extList;
+  QStringList filterList = filter.split( ";;" );
+  for ( QStringList::const_iterator it = filterList.begin(); it != filterList.end(); ++it )
+  {
+    QRegExp rx( "[\\s\\w,;]*\\(?\\*\\.([\\w]+)\\)?[\\d\\s\\w]*" );
+    int index = 0;
+    while ( ( index = rx.indexIn( *it, index ) ) != -1 )
+    {
+      extList.append( QString( "*.%1" ).arg( rx.cap( 1 ) ) );
+      index += rx.matchedLength();
+    }
+  }
+
+  QDir::Filters filters = 0;
+  switch ( type )
+  {
+  case PT_OpenFile:
+  case PT_SaveFile:
+    filters = QDir::AllEntries | QDir::AllDirs | QDir::NoDotAndDotDot;
+    break;
+  case PT_Directory:
+    filters = QDir::Drives | QDir::Dirs | QDir::NoDotAndDotDot;
+    break;
+  }
+
+  QDirModel* dm = new QDirModel( extList, filters, QDir::Unsorted );
+  QCompleter* cmp = new QCompleter( dm, 0 );
+  dm->setParent( cmp );
+
+  return cmp;
+}
+
+/*!
+  \brief Pack the specified color into integer RGB set.
+  \param c unpacked color
+  \return packed color
 */
 int Qtx::rgbSet( const QColor& c )
 {
@@ -527,8 +605,11 @@ int Qtx::rgbSet( const QColor& c )
 }
 
 /*!
-	Name: rgbSet [static public]
-	Desc: Pack the specified color components into one integer RGB set.
+  \brief Pack the specified RGB color components into integer RGB set.
+  \param r red component
+  \param g green component
+  \param b blue component
+  \return packed color
 */
 int Qtx::rgbSet( const int r, const int g, const int b )
 {
@@ -536,8 +617,9 @@ int Qtx::rgbSet( const int r, const int g, const int b )
 }
 
 /*!
-	Name: rgbSet [static public]
-	Desc: Unpack the specified integer RGB set into the color.
+  \brief Unpack the specified integer RGB set to the color.
+  \param rgb packed color
+  \return unpacked color (QColor)
 */
 QColor Qtx::rgbSet( const int rgb )
 {
@@ -547,8 +629,11 @@ QColor Qtx::rgbSet( const int rgb )
 }
 
 /*!
-	Name: rgbSet [static public]
-	Desc: Unpack the specified integer RGB set into the color components.
+  \brief Unpack the specified integer RGB set to the three RGB components.
+  \param rgb packed color
+  \param r returned unpacked red component
+  \param g returned unpacked green component
+  \param b returned unpacked blue component
 */
 void Qtx::rgbSet( const int rgb, int& r, int& g, int& b )
 {
@@ -558,8 +643,11 @@ void Qtx::rgbSet( const int rgb, int& r, int& g, int& b )
 }
 
 /*!
-	Name: scaleColor [static public]
-	Desc: Returns the color specified by the index between min (blue) and max (red).
+  \brief Return the color specified by the index between min (blue) and max (red).
+  \param index color index
+  \param min required minimum hue value
+  \param max required maximum hue value
+  \return resulting color
 */
 QColor Qtx::scaleColor( const int index, const int min, const int max )
 {
@@ -567,7 +655,7 @@ QColor Qtx::scaleColor( const int index, const int min, const int max )
 
   int hue = HUE[0];
 
-	if ( min != max )
+  if ( min != max )
   {
     double aPosition = 9.0 * ( index - min ) / ( max - min );
     if ( aPosition > 0.0 )
@@ -586,10 +674,11 @@ QColor Qtx::scaleColor( const int index, const int min, const int max )
 }
 
 /*!
-	Name: scaleColors [static public]
-	Desc: Returns the 'num' number of colors from blue to red.
+  \brief Generate required number of colors aligned from blue to red.
+  \param num required number of colors
+  \param lst returned set of colors
 */
-void Qtx::scaleColors( const int num, QList<QColor>& lst )
+void Qtx::scaleColors( const int num, QColorList& lst )
 {
   lst.clear();
   for ( int i = 0; i < num; i++ )
@@ -597,8 +686,9 @@ void Qtx::scaleColors( const int num, QList<QColor>& lst )
 }
 
 /*!
-	Name: grayscale [static public]
-	Desc: Convert color image to grayscale image.
+  \brief Convert given image to the grayscale format.
+  \param img initial image
+  \return converted to the grayscale image
 */
 QImage Qtx::grayscale( const QImage& img )
 {
@@ -626,8 +716,9 @@ QImage Qtx::grayscale( const QImage& img )
 }
 
 /*!
-	Name: grayscale [static public]
-	Desc: Convert color pixmap to grayscale pixmap.
+  \brief Convert given pixmap to the grayscale format.
+  \param pix initial pixmap
+  \return converted to the grayscale pixmap
 */
 QPixmap Qtx::grayscale( const QPixmap& pix )
 {
@@ -637,8 +728,11 @@ QPixmap Qtx::grayscale( const QPixmap& pix )
 }
 
 /*!
-	Name: transparentImage [static public]
-	Desc: Create transparent image with specified width \aw, height \ah and color depth \ad.
+  \brief Create transparent image.
+  \param w required image width
+  \param h required image height
+  \param d required image depth
+  \return generated image
 */
 QImage Qtx::transparentImage( const int w, const int h, const int d )
 {
@@ -671,8 +765,11 @@ QImage Qtx::transparentImage( const int w, const int h, const int d )
 }
 
 /*!
-	Name: transparentPixmap [static public]
-	Desc: Create transparent pixmap with specified width \aw, height \ah and color depth \ad.
+  \brief Create transparent pixmap.
+  \param w required image width
+  \param h required pixmap height
+  \param d required pixmap depth
+  \return generated pixmap
 */
 QPixmap Qtx::transparentPixmap( const int w, const int h, const int d )
 {
@@ -684,10 +781,17 @@ QPixmap Qtx::transparentPixmap( const int w, const int h, const int d )
 }
 
 /*!
-	Name: composite [static public]
-	Desc: Create composite pixmap. Pixmap 'pix' draws over pixmap 'dest' with coordinates
-        specified relative upper left corner of 'dest'. If 'dest' not given then new empty
-        pixmap with appropriate size created.
+  \brief Create composite pixmap. 
+
+  Pixmap \a pix is drawn over pixmap \a dest with coordinates
+  specified relatively to the upper left corner of \a dest.
+  If \a dest is not given, the new empty pixmap with appropriate size created instead.
+
+  \param pix source pixmap
+  \param x horizontal shift
+  \param y vertical shift
+  \param dest background pixmap
+  \return resulting pixmap
 */
 QPixmap Qtx::composite( const QPixmap& pix, const int x, const int y, const QPixmap& dest )
 {

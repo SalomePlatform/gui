@@ -16,8 +16,11 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifndef QTX_LOGOMGR_H
-#define QTX_LOGOMGR_H
+// File:      QtxLogoMgr.h
+// Author:    Sergey TELKOV
+
+#ifndef QTXLOGOMGR_H
+#define QTXLOGOMGR_H
 
 #include "Qtx.h"
 
@@ -66,12 +69,12 @@ private:
   void       movies( const QString&, QList<QMovie*>& ) const;
 
 private:
-  LogoBox*   myBox;
-  LogoList   myLogos;
+  LogoBox*   myBox;         //!< widget containing logox
+  LogoList   myLogos;       //!< list of logo data
 };
 
 #ifdef WIN32
 #pragma warning( default : 4251 )
 #endif
 
-#endif
+#endif // QTXLOGOMGR_H

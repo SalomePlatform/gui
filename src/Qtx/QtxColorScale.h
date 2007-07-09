@@ -24,8 +24,8 @@
 
 #include "Qtx.h"
 
-#include <QtGui/qframe.h>
-#include <QtCore/qlist.h>
+#include <QFrame>
+#include <QList>
 
 class QTextDocument;
 
@@ -33,20 +33,39 @@ class QTextDocument;
 #pragma warning( disable:4251 )
 #endif
 
-/*!
-  \class QtxColorScale
-  Color Scale widget.
-*/
 class QTX_EXPORT QtxColorScale : public QFrame
 {
   Q_OBJECT
 
 public:
-	typedef enum { Auto, User } Mode;
-	typedef enum { None, Left, Right, Center } Position;
-	typedef enum { NoDump, TitleDump, ScaleDump, FullDump } DumpMode;
-	typedef enum { AtBorder = 0x001, Reverse = 0x002, Integer = 0x004,
-				         WrapTitle = 0x008, PreciseFormat = 0x010, Transparent = 0x020 } Flags;
+  //! Color scale color/label mode.
+  typedef enum { 
+    Auto,            //!< auto
+    User             //!< user defined
+  } Mode;
+  //! Color scale title, label position.
+  typedef enum { 
+    None,            //!< do not draw
+    Left,            //!< draw at the left
+    Right,           //!< draw at the right
+    Center           //!< draw at the center
+  } Position;
+  //! Dump mode.
+  typedef enum { 
+    NoDump,          //!< do not dump
+    TitleDump,       //!< dump title
+    ScaleDump,       //!< dump scale
+    FullDump         //!< dump all
+  } DumpMode;
+  //! Color scale flags (bitwise).
+  typedef enum { 
+    AtBorder      = 0x001, 
+    Reverse       = 0x002, 
+    Integer       = 0x004,
+    WrapTitle     = 0x008, 
+    PreciseFormat = 0x010, 
+    Transparent   = 0x020
+  } Flags;
 
 public:
   QtxColorScale( QWidget* = 0, Qt::WindowFlags = 0 );
@@ -114,34 +133,34 @@ private:
   double                getNumber( const int ) const;
   QTextDocument*        textDocument( const int ) const;
   void                  drawScale( QPainter*, const bool, const int, const int,
-								                   const int, const int, const bool, const bool, const bool ) const;
+				   const int, const int, const bool, const bool, const bool ) const;
   void                  drawScale( QPainter*, const QColor&, const bool,
-								                   const int, const int, const int, const int,
-								                   const bool, const bool, const bool ) const;
+				   const int, const int, const int, const int,
+				   const bool, const bool, const bool ) const;
   QSize                 calculateSize( const bool, const int,
-									                     const bool, const bool, const bool ) const;
+				       const bool, const bool, const bool ) const;
 
 private:
-  double                myMin;
-  double                myMax;
-  QString               myTitle;
-  QString               myFormat;
-  QString               myPrecise;
-  int                   myInterval;
-  int                   myDumpMode;
-  int                   myColorMode;
-  int                   myLabelMode;
+  double                myMin;             //!< lower limit
+  double                myMax;             //!< upper limit
+  QString               myTitle;           //!< title
+  QString               myFormat;          //!< number presentation format
+  QString               myPrecise;         //!< double values precision format
+  int                   myInterval;        //!< number of color scale intervals
+  int                   myDumpMode;        //!< dump mode (QtxColorScale::DumpMode)
+  int                   myColorMode;       //!< color mode (QtxColorScale::Mode)
+  int                   myLabelMode;       //!< label mode (QtxColorScale::Mode)
 
-  QList<QColor>         myColors;
-  QList<QString>        myLabels;
+  QList<QColor>         myColors;          //!< list of colors
+  QList<QString>        myLabels;          //!< list of labels
 
-  int                   myFlags;
-  int                   myLabelPos;
-  int                   myTitlePos;
+  int                   myFlags;           //!< color scale flags (QtxColorScale::Flags)
+  int                   myLabelPos;        //!< label position (QtxColorScale::Position)
+  int                   myTitlePos;        //!< title position (QtxColorScale::Position)
 };
 
 #ifdef WIN32
 #pragma warning( default:4251 )
 #endif
 
-#endif
+#endif  // QTXCOLORSCALE_H

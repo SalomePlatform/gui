@@ -21,18 +21,20 @@
 
 #include "QtxDialog.h"
 
-#include <QtGui/qevent.h>
-#include <QtGui/qlabel.h>
-#include <QtGui/qframe.h>
-#include <QtGui/qlayout.h>
-#include <QtGui/qtabwidget.h>
-#include <QtGui/qpushbutton.h>
-#include <QtGui/qapplication.h>
+#include <QLabel>
+#include <QLayout>
+#include <QKeyEvent>
+#include <QFrame>
+#include <QTabWidget>
+#include <QPushButton>
+#include <QApplication>
 
 /*!
-	Class: QtxDialog::Area
-	Level: Internal
+  \class QtxDialog::Area
+  \internal
+  \brief Area containing dialog box buttons.
 */
+
 class QtxDialog::Area : public QFrame
 {
 public:
@@ -59,24 +61,27 @@ private:
   void                     updateBorder();
 
 private:
-  QtxDialog*               myDlg;
-  QLabel*                  myLine;
-  bool                     myBorder;
-  int                      myPolicy;
-  QList<QAbstractButton*>  myButtons;
-  Qt::Orientation          myOrientation;
+  QtxDialog*               myDlg;          //!< parent dialog box
+  QLabel*                  myLine;         //!< border widget 
+  bool                     myBorder;       //!< "has border" flag
+  int                      myPolicy;       //!< button layout type (QtxDialog::PlacePolicy)
+  QList<QAbstractButton*>  myButtons;      //!< buttons list
+  Qt::Orientation          myOrientation;  //!< buttons orientation (Qt::Orientation)
 };
 
 /*!
-  Contructor
+  \brief Constructor.
+  \param o buttons orientation
+  \param dlg dialog box owning this area
+  \param parent parent widget
 */
 QtxDialog::Area::Area( Qt::Orientation o, QtxDialog* dlg, QWidget* parent )
 : QFrame( parent ),
-myDlg( dlg ),
-myLine( 0 ),
-myBorder( false ),
-myPolicy( Position ),
-myOrientation( o )
+  myDlg( dlg ),
+  myLine( 0 ),
+  myBorder( false ),
+  myPolicy( Position ),
+  myOrientation( o )
 {
   if ( myOrientation == Qt::Horizontal )
     setSizePolicy( QSizePolicy( QSizePolicy::Preferred, QSizePolicy::Maximum ) );
@@ -87,15 +92,16 @@ myOrientation( o )
 }
 
 /*!
-  Destructor
+  \brief Destructor.
 */
 QtxDialog::Area::~Area()
 {
 }
 
 /*!
-  Inserts button to area
-  \param b - button
+  \brief Insert button to the area.
+  \param b button to be added
+  \sa removeButton()
 */
 void QtxDialog::Area::insertButton( QAbstractButton* b )
 {
@@ -118,8 +124,9 @@ void QtxDialog::Area::insertButton( QAbstractButton* b )
 }
 
 /*!
-  Removes button from area
-  \param b - button
+  \brief Remove button from the area.
+  \param b button to be removed
+  \sa insertButton()
 */
 void QtxDialog::Area::removeButton( QAbstractButton* b )
 {
@@ -140,8 +147,9 @@ void QtxDialog::Area::removeButton( QAbstractButton* b )
 }
 
 /*!
-  \return true if area contains button
-  \param b - button
+  \brief Check if area owns the button specified.
+  \param b button to be checked
+  \return \c true if area contains button
 */
 bool QtxDialog::Area::contains( QAbstractButton* b ) const
 {
@@ -149,7 +157,9 @@ bool QtxDialog::Area::contains( QAbstractButton* b ) const
 }
 
 /*!
-  \return policy of button layouting.
+  \brief Get buttons layout policy.
+  \return policy of button layouting (Qtx::PlacePolicy)
+  \sa setPolicy()
 */
 int QtxDialog::Area::policy() const
 {
@@ -157,8 +167,8 @@ int QtxDialog::Area::policy() const
 }
 
 /*!
-  Changes policy of button layouting.
-  \param p - new policy
+  \brief Set buttons layout policy.
+  \param p new policy
 */
 void QtxDialog::Area::setPolicy( const int p )
 {
@@ -170,7 +180,9 @@ void QtxDialog::Area::setPolicy( const int p )
 }
 
 /*!
-  \return true if border enabled
+  \brief Check of the border is enabled.
+  \return \c true if border is enabled
+  \sa setBorderEnabled(), setBorderWidget()
 */
 bool QtxDialog::Area::isBorderEnabled() const
 {
@@ -178,8 +190,8 @@ bool QtxDialog::Area::isBorderEnabled() const
 }
 
 /*!
-  Enables/disable separator between main frame and button frame
-  \param on - new state
+  \brief Enable/disable border (separator between main frame and button frame)
+  \param on new state
 */
 void QtxDialog::Area::setBorderEnabled( const bool on )
 {
@@ -191,8 +203,8 @@ void QtxDialog::Area::setBorderEnabled( const bool on )
 }
 
 /*!
-  Sets label as separator between main frame and button frame
-  \param line - new separator
+  \brief Set border widget (separator between main frame and button frame).
+  \param line new separator widget
 */
 void QtxDialog::Area::setBorderWidget( QLabel* line )
 {
@@ -205,7 +217,8 @@ void QtxDialog::Area::setBorderWidget( QLabel* line )
 }
 
 /*!
-  \return const reference to list of buttons
+  \brief Get all area buttons.
+  \return const reference to the list of buttons
 */
 const QList<QAbstractButton*>& QtxDialog::Area::buttons() const
 {
@@ -213,7 +226,7 @@ const QList<QAbstractButton*>& QtxDialog::Area::buttons() const
 }
 
 /*!
-  Updates visibility of border
+  \brief Update border visibility.
 */
 void QtxDialog::Area::updateBorder()
 {
@@ -227,7 +240,7 @@ void QtxDialog::Area::updateBorder()
 }
 
 /*!
-  Installs buttons into layout
+  \brief Layout buttons in the area.
 */
 void QtxDialog::Area::layoutButtons()
 {
@@ -329,9 +342,11 @@ void QtxDialog::Area::layoutButtons()
 
 /*!
   \class QtxDialog::Border
-
-  Special label used as separator between main frame and button frame
+  \internal
+  \brief Special label used as border widget (separator
+         between main frame and button frame).
 */
+
 class QtxDialog::Border : public QLabel
 {
 public:
@@ -345,7 +360,8 @@ public:
 };
 
 /*!
-  Constructor
+  \brief Constructor.
+  \param parent parent widget
 */
 QtxDialog::Border::Border( QWidget* parent )
 : QLabel( parent )
@@ -354,15 +370,15 @@ QtxDialog::Border::Border( QWidget* parent )
 }
 
 /*!
-  Destructor
+  \brief Destructor.
 */
 QtxDialog::Border::~Border()
 {
 }
 
 /*!
-  Set line width of separator
-  \param lw - new line width
+  \brief Set separator line width.
+  \param lw new line width
 */
 void QtxDialog::Border::setLineWidth( int lw )
 {
@@ -375,7 +391,8 @@ void QtxDialog::Border::setLineWidth( int lw )
 }
 
 /*!
-  \return the recommended size for the widget
+  \brief Get recommended size for the widget.
+  \return recommended size for the widget
 */
 QSize QtxDialog::Border::sizeHint() const
 {
@@ -393,7 +410,8 @@ QSize QtxDialog::Border::sizeHint() const
 }
 
 /*!
-  \return the recommended minimum size for the widget
+  \brief Get recommended minimum size for the widget.
+  \return recommended minimum size for the widget
 */
 QSize QtxDialog::Border::minimumSizeHint() const
 {
@@ -401,12 +419,22 @@ QSize QtxDialog::Border::minimumSizeHint() const
 }
 
 /*!
-  Constructor
+  \class QtxDialog
+  \brief Generic dialog box class.
+*/
+
+/*!
+  \brief Constructor.
+
   Construct a dialog with specified parent and name.
-  \param modal define modal status of dialog (default non modal dialog created).
-  \param allowResize - if it is true then dialog can be resize by user (default non resizable dialog created).
-  \param Button flags specified control buttons for dialog (default buttons is OK, Cancel and Help).
-  \param Widget flags used as in any widget.
+  By default non-modal, non-resizable with the OK, Cancel and Help buttons
+  dialog box is created.
+
+  \param parent parent widget
+  \param modal if \c true dialog box is modal
+  \param allowResize if \c true then dialog can be resized by user
+  \param f specified control buttons for dialog box (QtxDialog::ButtonFlags)
+  \param wf dialog box flags (Qt::WindowFlags)
 */
 QtxDialog::QtxDialog( QWidget* parent, bool modal, bool allowResize, const int f, Qt::WindowFlags wf )
 : QDialog( parent, (Qt::WindowFlags)( wf | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::Dialog |
@@ -419,10 +447,10 @@ QtxDialog::QtxDialog( QWidget* parent, bool modal, bool allowResize, const int f
 	       && !( wf & Qt::WindowContextHelpButtonHint )
 #endif
 	       ) ? Qt::WindowMaximizeButtonHint : 0 ) ) ),
-myInited( false ),
-mySender( 0 ),
-myAlignment( 0 ),
-myDialogFlags( Accept | SetFocus )
+  myInited( false ),
+  mySender( 0 ),
+  myAlignment( 0 ),
+  myDialogFlags( Accept | SetFocus )
 {
   setModal( modal );
 
@@ -534,19 +562,17 @@ myDialogFlags( Accept | SetFocus )
 }
 
 /*!
-	Name: ~QtxDialog [public]
-	Desc: Destructor
+  \brief Destructor.
 */
-
 QtxDialog::~QtxDialog()
 {
 }
 
 /*!
-	Name: setButtonFlags [public]
-	Desc: Allow to set specified control button(s) into dialog.
+  \brief Add specified control button(s) to the dialog box.
+  \param f ORed buttons flags (Qtx::ButtonFlags)
+  \sa clearButtonFlags(), testButtonFlags()
 */
-
 void QtxDialog::setButtonFlags( const int f )
 {
   int old = myButtonFlags;
@@ -556,10 +582,10 @@ void QtxDialog::setButtonFlags( const int f )
 }
 
 /*!
-	Name: clearButtonFlags [public]
-	Desc: Allow to unset specified control button(s) from dialog.
+  \brief Remove specified control button(s) from the dialog box.
+  \param f ORed buttons flags (Qtx::ButtonFlags)
+  \sa setButtonFlags(), testButtonFlags()
 */
-
 void QtxDialog::clearButtonFlags( const int f )
 {
   int old = myButtonFlags;
@@ -569,68 +595,64 @@ void QtxDialog::clearButtonFlags( const int f )
 }
 
 /*!
-	Name: testButtonFlags [public]
-	Desc: Return true if specified control button is used in dialog.
+  \brief Test specified buttons.
+  \return \c true if specified control buttons are used in the dialog box
+  \sa setButtonFlags(), clearButtonFlags()
 */
-
 bool QtxDialog::testButtonFlags( const int f ) const
 {
   return ( myButtonFlags & f ) == f;
 }
 
 /*!
-	Name: setDialogFlags [public]
-	Desc: Allow to set the dialog flags.
-
-		  Following flags can be used:
-			Accept    - Allow to control dialog accepting. See also acceptData().
-			Reject    - Allow to control dialog rejecting. See also rejectData().
-			AlignOnce - Allow to align dialog only when it first time shown.
-			SetFocus  - Allow to set focus on dialog when it shown. User can use
-                  setFocusProxy() and specify own initial focus widget.
+  \brief Set specified dialog box flags.
+  \param f dialog box flags (QtxDialog::DialogFlags)
+  \sa clearDialogFlags(), testDialogFlags(), acceptData(), rejectData()
 */
-
 void QtxDialog::setDialogFlags( const int f )
 {
   myDialogFlags = myDialogFlags | f;
 }
 
 /*!
-	Name: clearDialogFlags [public]
-	Desc: Allow to clear the dialog flags. See also setDialogFlags().
+  \brief Clear specified the dialog flags.
+  \param f dialog box flags (QtxDialog::DialogFlags)
+  \sa setDialogFlags(), testDialogFlags()
 */
-
 void QtxDialog::clearDialogFlags( const int f )
 {
   myDialogFlags = myDialogFlags & ~f;
 }
 
 /*!
-	Name: testDialogFlags [public]
-	Desc: Returns true if specified dialog flag is setted (see setDialogFlags()).
+  \brief Test specified dialog flags.
+  \return \c true if specified dialog box falgs are set
+  \sa setDialogFlags(), clearDialogFlags()
 */
-
 bool QtxDialog::testDialogFlags( const int f ) const
 {
   return ( myDialogFlags & f ) == f;
 }
 
 /*!
-	Name: mainFrame [public]
-	Desc: Returns main frame of dialog. Main frame should contains all
-          elements of dialog except control buttons.
-*/
+  \brief Get dialog box main frame widget.
 
+  Main frame is an internal widget which should contains all
+  elements of dialog box except control buttons.
+
+  \return main frame widget 
+*/
 QFrame* QtxDialog::mainFrame() const
 {
   return myMainFrame;
 }
 
 /*!
-	Name: buttonPosition [public]
-	Desc: Returns position of specified button.
+  \brief Get specified control button position
+  \param id control button ID (QtxDialog::ButtonFlags)
+  \return button's position (QtxDialog::ButtonPosition) or -1 if it is not set or invalid \a id is given
+  \sa setButtonPosition()
 */
-
 int QtxDialog::buttonPosition( const int id ) const
 {
   int pos = -1;
@@ -638,13 +660,11 @@ int QtxDialog::buttonPosition( const int id ) const
     pos = myPosition[id];
   return pos;
 }
-
 /*!
-	Name: setButtonPosition [public]
-	Desc: Sets the position for specified button(s). Following positions
-		  may be used: Left, Right, Center, Top, Bottom.
+  \brief Set the specified control button(s) position.
+  \param id control button(s) ID (QtxDialog::ButtonFlags)
+  \param pos button(s) position (QtxDialog::ButtonPosition)
 */
-
 void QtxDialog::setButtonPosition( const int pos, const int id )
 {
   ButtonMap map = buttons( id );
@@ -668,10 +688,11 @@ void QtxDialog::setButtonPosition( const int pos, const int id )
 }
 
 /*!
-	Name: setPlacePosition [public]
-	Desc: Sets button position for all buttons in given place.
+  \brief Set button position for all buttons in specified \a area.
+  \param pos button(s) position (QtxDialog::ButtonPosition)
+  \param area buttons area (QtxDialog::ButtonArea)
+  \sa setButtonPosition()
 */
-
 void QtxDialog::setPlacePosition( const int pos, const int area )
 {
   if ( !myArea.contains( area ) )
@@ -695,21 +716,10 @@ void QtxDialog::setPlacePosition( const int pos, const int area )
 }
 
 /*!
-	Name: placePolicy [public]
-	Desc: Returns policy of button layouting for specified place.
-
-		  Following place may be used:
-			TopArea    - Horizontal area in the top side of dialog.
-			BottomArea - Horizontal area in the bottom side of dialog.
-			LeftArea   - Vertical area in the left side of dialog.
-			RightArea  - Vertical area in the right side of dialog.
-
-		  Following policy may be used:
-		    Position - Buttons placed according their position.
-			Expand   - Buttons fills all available space.
-			Uniform  - Buttons uniformly placed in area.
+  \brief Get buttons layouting policy for the specified \a area.
+  \param area buttons area (QtxDialog::ButtonArea)
+  \sa setPlacePolicy()
 */
-
 int QtxDialog::placePolicy( const int area ) const
 {
   int res = -1;
@@ -719,11 +729,11 @@ int QtxDialog::placePolicy( const int area ) const
 }
 
 /*!
-	Name: setPlacePolicy [public]
-	Desc: Sets the policy of button layouting for specified place.
-		  See also placePolicy().
+  \brief set buttons layouting policy for the specified \a area.
+  \param policy buttons layouting policy (QtxDialog::PlacePolicy)
+  \param area buttons area (QtxDialog::ButtonArea)
+  \sa placePolicy()
 */
-
 void QtxDialog::setPlacePolicy( const int policy, const int area )
 {
   if ( area < 0 )
@@ -736,17 +746,17 @@ void QtxDialog::setPlacePolicy( const int policy, const int area )
 }
 
 /*!
-	Name: setButtonPlace [public]
-	Desc: Move given button(s) into specified place.
+  \brief Move specified button(s) into specified area.
+  \param area buttons area (QtxDialog::ButtonArea)
+  \param id control button(s) ID (QtxDialog::ButtonFlags)
 */
-
-void QtxDialog::setButtonPlace( const int area, const int ids )
+void QtxDialog::setButtonPlace( const int area, const int id )
 {
   if ( !myArea.contains( area ) )
     return;
 
   Area* anArea = myArea[area];
-  ButtonMap map = buttons( ids );
+  ButtonMap map = buttons( id );
   QMap<Area*, int> areaMap;
   for ( AreaMap::ConstIterator aIt = myArea.begin(); aIt != myArea.end(); ++aIt )
     areaMap.insert( aIt.value(), 0 );
@@ -764,10 +774,11 @@ void QtxDialog::setButtonPlace( const int area, const int ids )
 }
 
 /*!
-	Name: isBorderEnabled [public]
-	Desc: Returns true if border is shown for specified button area.
+  \brief Check if border is enabled.
+  \param area buttons area (QtxDialog::ButtonArea)
+  \return \c true if border is enabled for specified button area.
+  \sa setBorderEnabled()
 */
-
 bool QtxDialog::isBorderEnabled( const int area ) const
 {
   bool res = false;
@@ -777,11 +788,14 @@ bool QtxDialog::isBorderEnabled( const int area ) const
 }
 
 /*!
-	Name: setBorderEnabled [public]
-	Desc: Show/hide border for specified button area. Border are
-	      line which separate main frame and control buttons.
-*/
+  \brief Show/hide border for the specified button area.
 
+  Border is a line which separate main frame and control buttons.
+
+  \param area buttons area (QtxDialog::ButtonArea)
+  \param on enable border flag
+  \sa isBorderEnabled()
+*/
 void QtxDialog::setBorderEnabled( const bool on, const int area )
 {
   if ( !myArea.contains( area ) )
@@ -800,13 +814,14 @@ void QtxDialog::setBorderEnabled( const bool on, const int area )
 }
 
 /*!
-	Name: isButtonEnabled [public]
-	Desc: Returns true if all specified button(s) is enabled.
+  \brief Get "enabled" status of the specified button(s).
+  \param id control button(s) ID (QtxDialog::ButtonFlags)
+  \return \c true if all specified buttons are enabled.
+  \sa setButtonEnabled()
 */
-
-bool QtxDialog::isButtonEnabled( const int f ) const
+bool QtxDialog::isButtonEnabled( const int id ) const
 {
-  ButtonMap map = buttons( f );
+  ButtonMap map = buttons( id );
   bool result = !map.isEmpty();
   for ( ButtonMap::Iterator it = map.begin(); it != map.end(); ++it )
     result = result && it.value()->isEnabled();
@@ -814,22 +829,24 @@ bool QtxDialog::isButtonEnabled( const int f ) const
 }
 
 /*!
-	Name: setButtonEnabled [public]
-	Desc: Enable/disable specified button(s).
+  \brief Enable/disable specified button(s).
+  \param on enable button(s) flag
+  \param id control button(s) ID (QtxDialog::ButtonFlags)
+  \sa isButtonEnabled()
 */
-
-void QtxDialog::setButtonEnabled( const bool on, const int ids )
+void QtxDialog::setButtonEnabled( const bool on, const int id )
 {
-  ButtonMap map = buttons( ids );
+  ButtonMap map = buttons( id );
   for ( ButtonMap::Iterator it = map.begin(); it != map.end(); ++it )
     it.value()->setEnabled( on );
 }
 
 /*!
-	Name: hasButtonFocus [public]
-	Desc: Retruns true if specified button has keyboard focus.
+  \brief Check if specified button has keyboard focus.
+  \param id control button ID (QtxDialog::ButtonFlags)
+  \return \c true if specified button has keyboard focus
+  \sa setButtonFocus()
 */
-
 bool QtxDialog::hasButtonFocus( const int id ) const
 {
   bool res = false;
@@ -840,10 +857,10 @@ bool QtxDialog::hasButtonFocus( const int id ) const
 }
 
 /*!
-	Name: setButtonFocus [public]
-	Desc: Sets the keyboard focus on specified button.
+  \brief Sets the keyboard focus to the specified button.
+  \param id control button ID (QtxDialog::ButtonFlags)
+  \sa hasButtonFocus()
 */
-
 void QtxDialog::setButtonFocus( const int id )
 {
   QAbstractButton* pb = button( id );
@@ -852,10 +869,11 @@ void QtxDialog::setButtonFocus( const int id )
 }
 
 /*!
-	Name: buttonText [public]
-	Desc: Return text of specified button.
+  \brief Get specified button's text.
+  \param id control button ID (QtxDialog::ButtonFlags)
+  \return button's text
+  \sa setButtonText()
 */
-
 QString QtxDialog::buttonText( const int id )
 {
   QString retval;
@@ -866,10 +884,11 @@ QString QtxDialog::buttonText( const int id )
 }
 
 /*!
-	Name: setButtonText [public]
-	Desc: Sets text to specified button.
+  \brief Set specified button's text.
+  \param id control button ID (QtxDialog::ButtonFlags)
+  \param text button's text
+  \sa buttonText()
 */
-
 void QtxDialog::setButtonText( const int id, const QString& text )
 {
   QAbstractButton* but = button( id );
@@ -881,28 +900,19 @@ void QtxDialog::setButtonText( const int id, const QString& text )
 }
 
 /*!
-	Name: setAlignment [public]
-	Desc: Sets alignment policy. Returns the previous alignment.
-		  Use the function before the first show of the dialog.
-		  If dialog flag AlignOnce is setted then align will performed
-		  only one time otherwise dialog will be aligned every time
-		  when it shown. Dialog will be aligned relative to it parent.
+  \brief Sets alignment policy.
 
-		  Following align flags may be used:
-			Qtx::AlignAuto      - Align to center of desktop (default).
-			Qtx::AlignLeft      - Align left side of dialog to left side of parent.
-			Qtx::AlignRight     - Align right side of dialog to right side of parent.
-			Qtx::AlignTop       - Align top side of dialog to top side of parent.
-			Qtx::AlignBottom    - Align bottom side of dialog to bottom side of parent.
-			Qtx::AlignHCenter   - Align dialog to center of parent in horizontal dimension.
-			Qtx::AlignVCenter   - Align dialog to center of parent in vertical dimension.
-			Qtx::AlignCenter    - Align dialog to center of parent in both dimensions.
-			Qtx::AlignOutLeft   - Align right side of dialog to left side of parent.
-			Qtx::AlignOutRight  - Align left side of dialog to right side of parent.
-			Qtx::AlignOutTop    - Align bottom side of dialog to top side of parent.
-			Qtx::AlignOutBottom - Align top side of dialog to bottom side of parent.
+  Use the function before the the dialog is first time shown.
+  If dialog flag AlignOnce is set then alignment is performed
+  only once, otherwise the dialog is aligned each time when it
+  is shown. 
+  Dialog box is aligned relatively to its parent.
+  By default, dialog box is aligned to the center of the parent 
+  widget (usually desktop or another dialog box).
+  
+  \param align alignment flag(s) (Qtx::AlignmentFlags)
+  \return previous alignment policy
 */
-
 uint QtxDialog::setAlignment( uint align )
 {
   uint oldAlign = myAlignment;
@@ -911,10 +921,8 @@ uint QtxDialog::setAlignment( uint align )
 }
 
 /*!
-	Name: update [virtual public slot]
-	Desc: Updates dialog, show selected buttons and hide unselected.
+  \brief Update dialog box.
 */
-
 void QtxDialog::update()
 {
   for ( ButtonMap::Iterator it = myButton.begin(); it != myButton.end(); ++it )
@@ -930,12 +938,16 @@ void QtxDialog::update()
 }
 
 /*!
-	Name: show [virtual public]
-	Desc: Show dialog, set keyboard focus on dialog.
+  \brief Show/hide dialog box, set keyboard focus to the dialog.
+  
+  Re-implemented from Qt.
+  
+  \param on show/hide flag
 */
-
 void QtxDialog::setVisible( bool on )
 {
+  resize( sizeHint() );
+
   QDialog::setVisible( on );
 
   if ( on )
@@ -949,10 +961,11 @@ void QtxDialog::setVisible( bool on )
 }
 
 /*!
-	Name: userButton [public]
-	Desc: Return user dialog button using specified identificator.
+  \brief Get user button by the specified \a id.
+  \param id user button ID
+  \return user button or 0 if it is not found
+  \sa insertButton(), removeButton(), userButtonIds()
 */
-
 QAbstractButton* QtxDialog::userButton( const int id ) const
 {
   QAbstractButton* b = 0;
@@ -962,10 +975,10 @@ QAbstractButton* QtxDialog::userButton( const int id ) const
 }
 
 /*!
-	Name: userButtonIds [public]
-	Desc: Return list of user dialog button identificators.
+  \brief Get all user button IDs.
+  \return list of user buttons identificators
+  \sa insertButton(), removeButton(), userButton()
 */
-
 QIntList QtxDialog::userButtonIds() const
 {
   QIntList retlist;
@@ -976,11 +989,17 @@ QIntList QtxDialog::userButtonIds() const
 }
 
 /*!
-	Name: insertButton [public]
-	Desc: Add new user dialog button. Function return identificator of
-		  newly added button in successfull case otherwise -1 will be returned.
-*/
+  \brief Add user button to the dialog box.
 
+  The button is inserted to the specified dialog box area.
+  if the button is added successfully, the unique identificator of 
+  the added button is returned, otherwise -1 is returned.
+
+  \param text text of the added button
+  \param area buttons area (QtxDialog::ButtonArea)
+  \return button ID
+  \sa removeButton(), userButton(), userButtonIds()
+*/
 int QtxDialog::insertButton( const QString& text, const int area )
 {
   if ( !myArea.contains( area ) )
@@ -1011,11 +1030,13 @@ int QtxDialog::insertButton( const QString& text, const int area )
 }
 
 /*!
-	Name: removeButton [public]
-	Desc: Remove user dialog button with specified identificator. If
-		  identificator equal -1 then method will remove all user dialog buttons.
-*/
+  \brief Remove user button.
 
+  If \c id is -1, all user buttons are removed.
+
+  \param id user button ID
+  \sa insertButton(), userButton(), userButtonIds()
+*/
 void QtxDialog::removeButton( const int id )
 {
   if ( id >= 0 )
@@ -1047,18 +1068,31 @@ void QtxDialog::removeButton( const int id )
 }
 
 /*!
-	Name: setUnits [static public]
-	Desc: Sets specified measure units in given label. Measure units close
-		  in braces. If measure units not exist then they will be added.
-		  For example:
-			1. Label contains text 'Radius'.
-			   setUnits( aLabel, "mm" )    => aLabel contains 'Radius (mm)'
-               setUnits( aLabel, "cm" )    => aLabel contains 'Radius (cm)'
-            2. Label "aLabel" contains text 'Radius ():'.
-               setUnits( aLabel, "mm" )    => aLabel contains 'Radius (mm):'
-               setUnits( aLabel, "cm" )    => aLabel contains 'Radius (cm):'
-*/
+  \brief Set measure units to the specified label.
 
+  In the dialog box label the measure units are closed in braces.
+  If measure units do not exist they will be added.
+
+  For example:
+  \code
+  // create label "Radius"
+  QLabel* aLabel = new QLabel( "Radius", mainFrame() );
+  // set measure units to "mm"
+  setUnits( aLabel, "mm" )    // => aLabel contains 'Radius (mm)'
+  // set measure units to "cm"
+  setUnits( aLabel, "cm" )    // => aLabel contains 'Radius (cm)'
+
+  // create label "Radius" with initially not set measure units
+  QLabel* aLabel = new QLabel( "Radius ():", mainFrame() );
+  // set measure units to "mm"
+  setUnits( aLabel, "mm" )    // => aLabel contains 'Radius (mm):'
+  // set measure units to "cm"
+  setUnits( aLabel, "cm" )    // => aLabel contains 'Radius (cm):'
+  \endcode
+
+  \param aLabel label widget
+  \param aUnits measure units
+*/
 void QtxDialog::setUnits( QLabel* aLabel, const QString& aUnits )
 {
   QString label = aLabel->text();
@@ -1095,32 +1129,49 @@ void QtxDialog::setUnits( QLabel* aLabel, const QString& aUnits )
 }
 
 /*!
-	Name: acceptData [virtual protected]
-	Desc: If returns true dialog will be accepted and closed. This method
-	      called if dialog flag Accept is setted.
-*/
+  \brief Check if data entered by the user is valid.
 
+  This method can be re-implemented in the successor class if it
+  requires to check user input consistency.
+  Default implementation returns \c true.
+
+  This method is called if dialog flag QtxDialog::Accept is set.
+  If this method returns \c true, then dialog will be accepted and closed.
+
+  \return \c true if user input is valid
+  \sa accept()
+*/
 bool QtxDialog::acceptData() const
 {
   return true;
 }
 
 /*!
-	Name: rejectData [virtual protected]
-	Desc: If returns true dialog will be rejected and closed. This method
-	      called if dialog flag Reject is setted.
-*/
+  \brief Check if dialog box can be cancelled.
 
+  This method can be re-implemented in the successor class if it
+  requires to check possibility to cancel dialog box safely.
+  Default implementation returns \c true.
+
+  This method is called if dialog flag QtxDialog::Reject is set.
+  If this method returns \c true, then dialog will be rejected and closed.
+
+  \return \c true if dialog box can be cancelled
+  \sa reject()
+*/
 bool QtxDialog::rejectData() const
 {
   return true;
 }
 
 /*!
-	Name: createButton [virtual protected]
-	Desc: Create new user button. Invoked from method "insertButton".
-*/
+  \brief Create new user button.
 
+  This method is invoked from method insertButton().
+
+  \param parent parent widget
+  \return new user button
+*/
 QAbstractButton* QtxDialog::createButton( QWidget* parent )
 {
   QPushButton* pb = new QPushButton( parent );
@@ -1129,11 +1180,10 @@ QAbstractButton* QtxDialog::createButton( QWidget* parent )
 }
 
 /*!
-	Name: button [protected]
-	Desc: Return pointer on control button specified by identifier.
-		  If identifier is wrong then null pointer will returned.
+  \brief Get button by the specified ID.
+  \param f control button ID (QtxDialog::ButtonFlags)
+  \return button or 0 if \a id is invalid
 */
-
 QAbstractButton* QtxDialog::button( const int f ) const
 {
   QAbstractButton* retval = 0;
@@ -1143,10 +1193,10 @@ QAbstractButton* QtxDialog::button( const int f ) const
 }
 
 /*!
-	Name: buttons [protected]
-	Desc: Return map with control dialog buttons accordance to given button flags.
+  \brief Get buttons by the specified IDs.
+  \param f control button(s) ID(s) (QtxDialog::ButtonFlags)
+  \return button map
 */
-
 QtxDialog::ButtonMap QtxDialog::buttons( const int f ) const
 {
   ButtonMap retmap;
@@ -1165,10 +1215,10 @@ QtxDialog::ButtonMap QtxDialog::buttons( const int f ) const
 }
 
 /*!
-	Name: buttonId [protected]
-	Desc: Return identifier of specified button.
+  \brief Get specified button's identifier.
+  \param b button
+  \return button ID
 */
-
 int QtxDialog::buttonId( const QAbstractButton* b ) const
 {
   int id = -1;
@@ -1179,21 +1229,23 @@ int QtxDialog::buttonId( const QAbstractButton* b ) const
 }
 
 /*!
-	Name: buttonPosition
-	Desc: Returns position of specified button. [protected]
+  \brief Get position of specified button.
+  \param b button
+  \return button position (QtxDialog::ButtonPosition)
 */
-
 int QtxDialog::buttonPosition( QAbstractButton* b ) const
 {
   return buttonPosition( buttonId( b ) );
 }
 
 /*!
-	Name: showEvent [virtual protected]
-	Desc: Aligns this dialog according the parent widget and alignment
-	      policy before the show.
-*/
+  \brief Align this dialog according to the parent widget and alignment
+         policy before the dialog box is shown.
 
+  Re-implemented from Qt.
+
+  \param e show event
+*/
 void QtxDialog::showEvent( QShowEvent* e )
 {
   if ( !testDialogFlags( AlignOnce ) || !myInited )
@@ -1202,10 +1254,12 @@ void QtxDialog::showEvent( QShowEvent* e )
 }
 
 /*!
-	Name: hideEvent [virtual protected]
-	Desc: Process all existing events when dialog is closed.
-*/
+  \brief Process all existing events when dialog box is hidden.
 
+  Re-implemented from Qt.
+
+  \param e hide event
+*/
 void QtxDialog::hideEvent( QHideEvent* e )
 {
   QApplication::instance()->processEvents();
@@ -1213,10 +1267,12 @@ void QtxDialog::hideEvent( QHideEvent* e )
 }
 
 /*!
-	Name: childEvent [virtual protected]
-	Desc: Setting up layout when size grip is added.
-*/
+  \brief Update dialog box layout when the size grip is added.
 
+  Re-implemented from Qt.
+
+  \param e child event
+*/
 void QtxDialog::childEvent( QChildEvent* e )
 {
   QDialog::childEvent( e );
@@ -1228,13 +1284,18 @@ void QtxDialog::childEvent( QChildEvent* e )
 }
 
 /*!
-	Name: keyPressEvent [virtual protected]
-	Desc: Calls reject() if key Escape is pressed.
-	      Calls accept() if key "Ctrl+Enter" is pressed.
-		  Process key "F1" and emit signal dlgHelp().
-		  Transfer key "Ctrl+(Shift+)Tab" press event to Tab Widget.
-*/
+  \brief Process key pressing event.
 
+  Re-implemented from Qt.
+
+  Call reject() if "Escape" key is pressed.
+  Call accept() if "Ctrl+Enter" key-sequence is pressed.
+  Process "F1" key and emit signal dlgHelp().
+  Transfer "Ctrl+(Shift+)Tab" key-sequence press event 
+  to the child Tab widget (if there is any).
+
+  \param e key press event
+*/
 void QtxDialog::keyPressEvent( QKeyEvent* e )
 {
   QDialog::keyPressEvent( e );
@@ -1269,22 +1330,37 @@ void QtxDialog::keyPressEvent( QKeyEvent* e )
 }
 
 /*!
-	Name: closeEvent [virtual protected]
-	Desc: Reject the dialog.
+  \brief Called when user closes dialog box.
+  
+  Call reject() method.
+  
+  \param e close event (not used)
 */
-
-void QtxDialog::closeEvent( QCloseEvent* )
+void QtxDialog::closeEvent( QCloseEvent* /*e*/ )
 {
   reject();
 }
 
 /*!
-	Name: accept [virtual protected slot]
-	Desc: Invoke function acceptData() if it needed and if acceptData() return
-		  false does nothing. Otherwise hides the dialog and sets the result code
-		  to Accepted. Emit signal according to the pressed control button.
-*/
+  \brief Accept the dialog box.
 
+  This method is used when any accept button is pressed (usually
+  "OK", "Yes", etc).
+
+  If dialog flag QtxDialog::Accept is set, this function invokes 
+  acceptData() method, which should in this case return \c true to
+  allow further processing. 
+
+  If acceptData() returns \c false, this function just returns.
+
+  If acceptData() returns \c true, the Accepted result is set
+  and signal according to the pressed control button is emitted.
+  Then the default implementation of accept() method is called
+  (which hides the dialog box and, depending on the dialog box flags,
+  can close and destroy it).
+ 
+  \sa acceptData()
+*/
 void QtxDialog::accept()
 {
   if ( !mySender )
@@ -1310,14 +1386,25 @@ void QtxDialog::accept()
 }
 
 /*!
-	Name: reject [virtual protected slot]
-	Desc: Invoke function rejectData() if it needed and if rejectData() return
-		  false does nothing. Otherwise hides the dialog and sets the result code
-		  to Rejected. Emit signal according to the pressed control button. (If
-		  dialog was closed by key Escape or by close event emit signal dlgCancel(),
-		  or dlgClose(), or dlgNo().
-*/
+  \brief Reject the dialog box.
 
+  This method is used when any reject button is pressed (usually
+  "Close", "Cancel", "No", etc).
+
+  If dialog flag QtxDialog::Reject is set, this function invokes 
+  rejectData() method, which should in this case return \c true to
+  allow further processing. 
+
+  If rejectData() returns \c false, this function just returns.
+
+  If rejectData() returns \c true, the Rejected result is set
+  and signal according to the pressed control button is emitted.
+  Then the default implementation of reject() method is called
+  (which hides the dialog box and, depending on the dialog box flags,
+  can close and destroy it).
+ 
+  \sa rejectData()
+*/
 void QtxDialog::reject()
 {
   if ( testDialogFlags( Reject ) && !rejectData() )
@@ -1343,10 +1430,8 @@ void QtxDialog::reject()
 }
 
 /*!
-	Name: reject [private]
-	Desc: Emit signal appropriate to control button.
+  \brief Emit signal correspondingly to the control button.
 */
-
 void QtxDialog::emitSignal()
 {
   QApplication::instance()->processEvents();
@@ -1376,10 +1461,11 @@ void QtxDialog::emitSignal()
 }
 
 /*!
-	Name: onAccept [private slot]
-	Desc: Process signals "clicked()" from control buttons "OK", "Yes". Invoke accept().
-*/
+  \brief This slot is called when user presses on of the buttons
+         "OK", "Yes", etc.
 
+  Call accept() method.
+*/
 void QtxDialog::onAccept()
 {
   const QObject* obj = sender();
@@ -1388,9 +1474,10 @@ void QtxDialog::onAccept()
 }
 
 /*!
-	Name: onReject [private slot]
-	Desc: Process signals "clicked()" from control buttons "Cancel", "No", "Close".
-		  Invoke reject().
+  \brief This slot is called when user presses on of the buttons
+         "Cancel", "No", "Close".
+
+  Call reject() method.
 */
 
 void QtxDialog::onReject()
@@ -1401,11 +1488,12 @@ void QtxDialog::onReject()
 }
 
 /*!
-	Name: onButton [private slot]
-	Desc: Receive signal "clicked()" from user buttons and emit signal
-		  "dlgButton( int )" with identificator of clicked user button.
+  \brief Process user button click event.
+  
+  This method is called when user presses one of custom user buttons.
+  Emits signal dlgButton(int) with identificator of the clicked user
+  button passed as parameter.
 */
-
 void QtxDialog::onButton()
 {
   int id = buttonId( (QAbstractButton*)sender() );
@@ -1414,10 +1502,9 @@ void QtxDialog::onButton()
 }
 
 /*!
-	Name: onDestroyed [private slot]
-	Desc: Remove user button if it was destroyed.
+  \brief Watch for the user button destroying.
+  \param obj button being destroyed
 */
-
 void QtxDialog::onDestroyed( QObject* obj )
 {
   QAbstractButton* b = (QAbstractButton*)obj;
@@ -1432,10 +1519,8 @@ void QtxDialog::onDestroyed( QObject* obj )
 }
 
 /*!
-	Name: onSizeGripDestroyed [private slot]
-	Desc: Setting up layout when size grip is destroyed.
+  \brief Update dialog box layout when the size grip is destroyed.
 */
-
 void QtxDialog::onSizeGripDestroyed()
 {
   if ( layout() )
@@ -1443,10 +1528,8 @@ void QtxDialog::onSizeGripDestroyed()
 }
 
 /*!
-	Name: adjustButtons [private]
-	Desc: Setting the equal with for all buttons.
+  \brief Adjust buttons (set equal size for all buttons).
 */
-
 void QtxDialog::adjustButtons()
 {
   int minWidth = 0;
@@ -1466,3 +1549,42 @@ void QtxDialog::adjustButtons()
 	(*bItr)->setMinimumWidth( minWidth );
   }
 }
+
+/*!
+  \fn void QtxDialog::dlgButton( int id )
+  \brief Emitted when the user button is clicked.
+  \param id user button identificator
+*/
+/*!
+  \fn void QtxDialog::dlgParamChanged()
+  \brief This signal can be used in successor classes to signalize about
+         some dialog parameter changing.
+*/
+/*!
+  \fn void QtxDialog::dlgHelp()
+  \brief Emitted when the "Help" button is clicked.
+*/
+/*!
+  \fn void QtxDialog::dlgApply()
+  \brief Emitted when the "Apply" button is clicked.
+*/
+/*!
+  \fn void QtxDialog::dlgOk()
+  \brief Emitted when the "OK" button is clicked.
+*/
+/*!
+  \fn void QtxDialog::dlgNo()
+  \brief Emitted when the "No" button is clicked.
+*/
+/*!
+  \fn void QtxDialog::dlgYes()
+  \brief Emitted when the "Yes" button is clicked.
+*/
+/*!
+  \fn void QtxDialog::dlgClose()
+  \brief Emitted when the "Close" button is clicked.
+*/
+/*!
+  \fn void QtxDialog::dlgCancel()
+  \brief Emitted when the "Cancel" button is clicked.
+*/

@@ -21,15 +21,14 @@
 
 #include "QtxToolBar.h"
 
-#include <QtGui/qaction.h>
-#include <QtGui/qlayout.h>
-#include <QtGui/qpixmap.h>
-#include <QtGui/qmainwindow.h>
-#include <QtGui/qapplication.h>
+#include <QAction>
+#include <QMainWindow>
+#include <QApplication>
 
 /*!
-    Class: QtxToolBar::Watcher [Internal]
-    Descr: Internal object with event filter.
+  \class QtxToolBar::Watcher
+  \internal
+  \brief Internal class which goal is to watch parent toolbar state changing.
 */
 
 class QtxToolBar::Watcher : public QObject
@@ -38,7 +37,7 @@ public:
   Watcher( QtxToolBar* );
 
   void         shown( QtxToolBar* );
-  void         hided( QtxToolBar* );
+  void         hidden( QtxToolBar* );
 
   virtual bool eventFilter( QObject*, QEvent* );
 
@@ -64,18 +63,15 @@ private:
 };
 
 /*!
-  Constructor
+  \brief Constructor.
+  \param cont toolbar to be watched
 */
 QtxToolBar::Watcher::Watcher( QtxToolBar* cont )
 : QObject( cont ),
-myCont( cont ),
-myState( true ),
-myEmpty( false )
+  myCont( cont ),
+  myState( true ),
+  myEmpty( false )
 {
-/*
-  if ( myCont->mainWindow() )
-    myState = myCont->mainWindow()->appropriate( myCont );
-*/
   myCont->installEventFilter( this );
   myVisible = myCont->isVisibleTo( myCont->parentWidget() );
 
@@ -83,7 +79,10 @@ myEmpty( false )
 }
 
 /*!
-  Custom event filter
+  \brief Custom event filter.
+  \param o event receiver object
+  \param e event sent to object
+  \return \c true if further event processing should be stopped
 */
 bool QtxToolBar::Watcher::eventFilter( QObject* o, QEvent* e )
 {
@@ -107,7 +106,8 @@ bool QtxToolBar::Watcher::eventFilter( QObject* o, QEvent* e )
 }
 
 /*!
-  Sets internal visibility state to true
+  \brief Set internal status to "shown"
+  \param tb toolbar
 */
 void QtxToolBar::Watcher::shown( QtxToolBar* tb )
 {
@@ -118,9 +118,10 @@ void QtxToolBar::Watcher::shown( QtxToolBar* tb )
 }
 
 /*!
-  Sets internal visibility state to false
+  \brief Set internal status to "hidden"
+  \param tb toolbar
 */
-void QtxToolBar::Watcher::hided( QtxToolBar* tb )
+void QtxToolBar::Watcher::hidden( QtxToolBar* tb )
 {
   if ( tb != myCont )
     return;
@@ -129,7 +130,7 @@ void QtxToolBar::Watcher::hided( QtxToolBar* tb )
 }
 
 /*!
-  Shows corresponding QtxToolBar
+  \brief Show the toolbar being watched
 */
 void QtxToolBar::Watcher::showContainer()
 {
@@ -143,7 +144,7 @@ void QtxToolBar::Watcher::showContainer()
 }
 
 /*!
-  Hides corresponding QtxToolBar
+  \brief Hide the toolbar being watched
 */
 void QtxToolBar::Watcher::hideContainer()
 {
@@ -157,7 +158,8 @@ void QtxToolBar::Watcher::hideContainer()
 }
 
 /*!
-  Event handler of custom events
+  \brief Proces custom events.
+  \param e custom event
 */
 void QtxToolBar::Watcher::customEvent( QEvent* e )
 {
@@ -165,13 +167,18 @@ void QtxToolBar::Watcher::customEvent( QEvent* e )
   {
   case Install:
     installFilters();
+    break;
   case Update:
     updateVisibility();
+    break;
+  default:
+    break;
   }
 }
 
 /*!
-  Installs event filters
+  \brief Install this object as event dilter to all children widgets
+         of the toolbar being watched.
 */
 void QtxToolBar::Watcher::installFilters()
 {
@@ -187,7 +194,8 @@ void QtxToolBar::Watcher::installFilters()
 }
 
 /*!
-  Update visibility state
+  \brief Update visibility state of all children widgets of the toolbar
+         being watched.
 */
 void QtxToolBar::Watcher::updateVisibility()
 {
@@ -196,18 +204,14 @@ void QtxToolBar::Watcher::updateVisibility()
 
   bool vis = false;
 
-  const QObjectList& objList = myCont->children();
-  for ( QObjectList::const_iterator it = objList.begin(); it != objList.end() && !vis; ++it )
+  QList<QAction*> actList = myCont->actions();
+
+  for ( QList<QAction*>::const_iterator it = actList.begin(); it != actList.end() && !vis; ++it )
   {
-    QObject* obj = *it;
-    if ( !obj->isWidgetType() || !qstrcmp( "qt_dockwidget_internal", obj->objectName().toLatin1() ) )
+    if ( (*it)->isSeparator() )
       continue;
 
-    if ( obj->inherits( "QToolBarHandle" ) || obj->inherits( "QToolBarExtension" ) )
-      continue;
-
-    QWidget* wid = (QWidget*)*it;
-    vis = wid->isVisibleTo( wid->parentWidget() );
+    vis = (*it)->isVisible();
   }
 
   QMainWindow* mw = myCont->mainWindow();
@@ -229,94 +233,84 @@ void QtxToolBar::Watcher::updateVisibility()
 }
 
 /*!
-  Constructor
+  \class QtxToolBar
+  \brief Enhanced toolbar class.
+*/
+
+/*!
+  \brief Constructor.
+  \param watch if \c true the event filter is installed to watch toolbar state changes 
+         to update it properly
+  \param label toolbar title
+  \param parent parent widget
 */
 QtxToolBar::QtxToolBar( const bool watch, const QString& label, QWidget* parent )
 : QToolBar( label, parent ),
-myWatcher( 0 ),
-myStretch( false )
+  myWatcher( 0 ),
+  myStretch( false )
 {
   if ( watch )
     myWatcher = new Watcher( this );
+
+  if ( QMainWindow* mw = ::qobject_cast<QMainWindow*>( parent ) )
+    mw->addToolBar( this );
 }
 
 /*!
-  Constructor
+  \brief Constructor.
+  \param label toolbar title
+  \param parent parent widget
 */
 QtxToolBar::QtxToolBar( const QString& label, QWidget* parent )
 : QToolBar( label, parent ),
-myWatcher( 0 ),
-myStretch( false )
+  myWatcher( 0 ),
+  myStretch( false )
 {
+  if ( QMainWindow* mw = ::qobject_cast<QMainWindow*>( parent ) )
+    mw->addToolBar( this );
 }
 
 /*!
-  Constructor
+  \brief Constructor.
+  \param watch if \c true the event filter is installed to watch toolbar state changes 
+         to update it properly
+  \param parent parent widget
 */
 QtxToolBar::QtxToolBar( const bool watch, QWidget* parent )
 : QToolBar( parent ),
-myWatcher( 0 ),
-myStretch( false )
+  myWatcher( 0 ),
+  myStretch( false )
 {
   if ( watch )
     myWatcher = new Watcher( this );
+
+  if ( QMainWindow* mw = ::qobject_cast<QMainWindow*>( parent ) )
+    mw->addToolBar( this );
 }
 
 /*!
-  Constructor
+  \brief Constructor.
+  \param parent parent widget
 */
 QtxToolBar::QtxToolBar( QWidget* parent )
 : QToolBar( parent ),
-myWatcher( 0 ),
-myStretch( false )
+  myWatcher( 0 ),
+  myStretch( false )
 {
+  if ( QMainWindow* mw = ::qobject_cast<QMainWindow*>( parent ) )
+    mw->addToolBar( this );
 }
 
 /*!
-  Destructor
+  \brief Destructor.
 */
 QtxToolBar::~QtxToolBar()
 {
 }
 
 /*!
-  \return the recommended size for the widget
-*/
-QSize QtxToolBar::sizeHint() const
-{
-  QSize sz = QToolBar::sizeHint();
-/*
-  if ( place() == InDock && isStretchable() && area() )
-  {
-    if ( orientation() == Horizontal )
-      sz.setWidth( area()->width() );
-    else
-      sz.setHeight( area()->height() );
-  }
-*/
-  return sz;
-}
-
-/*!
-  \return the recommended minimum size for the widget
-*/
-QSize QtxToolBar::minimumSizeHint() const
-{
-  QSize sz = QToolBar::minimumSizeHint();
-/*
-  if ( place() == InDock && isStretchable() && area() )
-  {
-    if ( orientation() == Horizontal )
-      sz.setWidth( area()->width() );
-    else
-      sz.setHeight( area()->height() );
-  }
-*/
-  return sz;
-}
-
-/*!
-  Shows toolbar
+  \brief Show/hide the toolbar.
+  \param on new visibility state
 */
 void QtxToolBar::setVisible( bool visible )
 {
@@ -325,14 +319,15 @@ void QtxToolBar::setVisible( bool visible )
     if ( visible )
       myWatcher->shown( this );
     else
-      myWatcher->hided( this );
+      myWatcher->hidden( this );
   }
 
   QToolBar::setVisible( visible );
 }
 
 /*!
-  Returns the main window
+  \brief Get parent main window.
+  \return main window pointer
 */
 QMainWindow* QtxToolBar::mainWindow() const
 {
@@ -344,4 +339,12 @@ QMainWindow* QtxToolBar::mainWindow() const
     wid = wid->parentWidget();
   }
   return mw;
+}
+
+bool QtxToolBar::event( QEvent* e )
+{
+  if ( e->type() == QEvent::WindowTitleChange && objectName().isEmpty() )
+    setObjectName( windowTitle() );
+
+  return QToolBar::event( e );
 }

@@ -16,19 +16,21 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File:      QtxResourceMgr.cxx
+// Author:    Alexander SOLOVYOV, Sergey TELKOV
+
 #include "QtxResourceMgr.h"
 
-#include <QtCore/qdir.h>
-#include <QtCore/qfile.h>
-#include <QtCore/qregexp.h>
-#include <QtCore/qtextstream.h>
-#include <QtCore/qtranslator.h>
-
-#include <QtGui/qpixmap.h>
-#include <QtGui/qapplication.h>
-
+#include <QDir>
+#include <QFile>
+#include <QRegExp>
+#include <QTextStream>
+#include <QTranslator>
+#include <QApplication>
 #ifndef QT_NO_DOM
-#include <QtXml/qdom.h>
+#include <QDomDocument>
+#include <QDomElement>
+#include <QDomNode>
 #endif
 
 #define EMULATE_GLOBAL_CONTEXT
@@ -36,8 +38,9 @@
 #include <stdlib.h>
 
 /*!
-  Class: QtxResourceMgr::Resources
-  Level: Internal
+  \class QtxResourceMgr::Resources
+  \internal
+  \brief Represents container for settings read from the resource file.
 */
 
 class QtxResourceMgr::Resources
@@ -84,14 +87,19 @@ private:
   typedef QMap<QString, Section> SectionMap;
 
 private:
-  QtxResourceMgr*        myMgr;
-  SectionMap             mySections;
-  QString                myFileName;
-  QMap<QString,QPixmap>  myPixmapCache;
+  QtxResourceMgr*        myMgr;             //!< resources manager
+  SectionMap             mySections;        //!< sections map
+  QString                myFileName;        //!< resources file name
+  QMap<QString,QPixmap>  myPixmapCache;     //!< pixmaps cache
 
   friend class QtxResourceMgr::Format;
 };
 
+/*!
+  \brief Constructor.
+  \param mgr parent resources manager
+  \param fileName resources file name
+*/
 QtxResourceMgr::Resources::Resources( QtxResourceMgr* mgr, const QString& fileName )
 : myMgr( mgr ),
   myFileName( fileName )
@@ -99,15 +107,19 @@ QtxResourceMgr::Resources::Resources( QtxResourceMgr* mgr, const QString& fileNa
 }
 
 /*!
-  Destructor
+  \brief Destructor.
 */
 QtxResourceMgr::Resources::~Resources()
 {
 }
 
 /*!
-  Returns name of resource file
-  This file is used to load/save operations
+  \brief Get resources file name.
+
+  This file is used to load/save operations.
+
+  \return file name
+  \sa setFile()
 */
 QString QtxResourceMgr::Resources::file() const
 {
@@ -115,8 +127,9 @@ QString QtxResourceMgr::Resources::file() const
 }
 
 /*!
-  Sets name of resource file
-  \param fn - name of file
+  \brief Set resources file name.
+  \param fn file name
+  \sa file()
 */
 void QtxResourceMgr::Resources::setFile( const QString& fn )
 {
@@ -124,14 +137,12 @@ void QtxResourceMgr::Resources::setFile( const QString& fn )
 }
 
 /*!
-  Returns string representation of parameter value
-  Returns QString::null if there is no such parameter
-
-  \param sect - name of section
-  \param name - name of parameter
-  \param subst - if it is true, then the substitution of variables
-  will be done with help of makeSubstitution method
-  \sa makeSubstitution()
+  \brief Get string representation of parameter value.
+  \param sect section name
+  \param name parameter name
+  \param subst if \c true, perform variables substitution
+  \return parameter value or null QString if there is no such parameter
+  \sa setValue(), makeSubstitution()
 */
 QString QtxResourceMgr::Resources::value( const QString& sect, const QString& name, const bool subst ) const
 {
@@ -147,11 +158,11 @@ QString QtxResourceMgr::Resources::value( const QString& sect, const QString& na
 }
 
 /*!
-  Sets value by it's string representation
-
-  \param sect - name of section
-  \param name - name of parameter
-  \param val - string value
+  \brief Set parameter value.
+  \param sect section name
+  \param name parameter name
+  \param val parameter value
+  \sa value(), makeSubstitution()
 */
 void QtxResourceMgr::Resources::setValue( const QString& sect, const QString& name, const QString& val )
 {
@@ -162,8 +173,9 @@ void QtxResourceMgr::Resources::setValue( const QString& sect, const QString& na
 }
 
 /*!
-  \return true if section exists
-  \param sect - name of section
+  \brief Check section existence.
+  \param sect section name
+  \return \c true if section exists
 */
 bool QtxResourceMgr::Resources::hasSection( const QString& sect ) const
 {
@@ -171,9 +183,10 @@ bool QtxResourceMgr::Resources::hasSection( const QString& sect ) const
 }
 
 /*!
-  \return true if parameter exists in section
-  \param sect - name of section
-  \param name - name of parameter
+  \brief Check parameter existence.
+  \param sect section name
+  \param name parameter name
+  \return \c true if parameter exists in specified section
 */
 bool QtxResourceMgr::Resources::hasValue( const QString& sect, const QString& name ) const
 {
@@ -181,8 +194,8 @@ bool QtxResourceMgr::Resources::hasValue( const QString& sect, const QString& na
 }
 
 /*!
-  Removes section from resources
-  \param sect - name of section
+  \brief Remove resourcs section.
+  \param sect secton name
 */
 void QtxResourceMgr::Resources::removeSection( const QString& sect )
 {
@@ -190,9 +203,9 @@ void QtxResourceMgr::Resources::removeSection( const QString& sect )
 }
 
 /*!
-  Removes parameter from section
-  \param sect - name of section
-  \param name - name of parameter
+  \brief Remove parameter from the section.
+  \param sect section name
+  \param name parameter name
 */
 void QtxResourceMgr::Resources::removeValue( const QString& sect, const QString& name )
 {
@@ -206,7 +219,7 @@ void QtxResourceMgr::Resources::removeValue( const QString& sect, const QString&
 }
 
 /*!
-  Removes all sections
+  \brief Remove all sections.
 */
 void QtxResourceMgr::Resources::clear()
 {
@@ -214,6 +227,7 @@ void QtxResourceMgr::Resources::clear()
 }
 
 /*!
+  \brief Get all sections names.
   \return list of section names
 */
 QStringList QtxResourceMgr::Resources::sections() const
@@ -222,8 +236,9 @@ QStringList QtxResourceMgr::Resources::sections() const
 }
 
 /*!
-  \return list of parameter names from section
-  \param sec - name of section
+  \brief Get all parameters name in specified section.
+  \param sec section name
+  \return list of settings names
 */
 QStringList QtxResourceMgr::Resources::parameters( const QString& sec ) const
 {
@@ -234,11 +249,19 @@ QStringList QtxResourceMgr::Resources::parameters( const QString& sec ) const
 }
 
 /*!
-  \return path of file from directory built by parameter
-  \return QString::null if built path doesn't exist
-  \param sec - name of section
-  \param prefix - name of parameter containing some path
-  \param name - name of file
+  \brief Get absolute path to the file which name is defined by the parameter.
+
+  The file name is defined by \a name argument, while directory name is retrieved
+  from resources parameter \a prefix of section \a sec. Both directory and file name
+  can be relative. If the directory is relative, it is calculated from the initial
+  resources file name (see file()). Directory parameter can contain environment 
+  variables, which are substituted automatically.
+
+  \param sec section name
+  \param prefix parameter containing directory name
+  \param name file name
+  \return absolute file path or null QString if file does not exist
+  \sa fileName(), file(), makeSubstitution()
 */
 QString QtxResourceMgr::Resources::path( const QString& sec, const QString& prefix, const QString& name ) const
 {
@@ -252,7 +275,8 @@ QString QtxResourceMgr::Resources::path( const QString& sec, const QString& pref
 }
 
 /*!
-  \return corresponding resource manager
+  \brief Get resource manager
+  \return resource manager pointer
 */
 QtxResourceMgr* QtxResourceMgr::Resources::resMgr() const
 {
@@ -260,7 +284,12 @@ QtxResourceMgr* QtxResourceMgr::Resources::resMgr() const
 }
 
 /*!
-  \return instance of section by it's name. Section will be created if it doesn't exist
+  \brief Get resources section by specified name.
+
+  If section does not exist it is created (empty).
+
+  \param sn section name
+  \return resources section
 */
 QtxResourceMgr::Section QtxResourceMgr::Resources::section( const QString& sn )
 {
@@ -271,7 +300,9 @@ QtxResourceMgr::Section QtxResourceMgr::Resources::section( const QString& sn )
 }
 
 /*!
-  \return instance of section by it's name. Section will be created if it doesn't exist
+  \brief Get resources section by specified name.
+  \param sn section name
+  \return resources section
 */
 const QtxResourceMgr::Section QtxResourceMgr::Resources::section( const QString& sn ) const
 {
@@ -279,10 +310,21 @@ const QtxResourceMgr::Section QtxResourceMgr::Resources::section( const QString&
 }
 
 /*!
-  \return full path of file
-  \param sect - name of section
-  \param prefix - name of parameter containing some path
-  \param name - name of file
+  \brief Get file path.
+
+  The file name is defined by \a name argument, while directory name is retrieved
+  from resources parameter \a prefix of section \a sec. Both directory and file name
+  can be relative. If the directory is relative, it is calculated from the initial
+  resources file name (see file()). Directory parameter can contain environment 
+  variables, which are substituted automatically.
+  File existence is not checked.
+
+  \param sec section name
+  \param prefix parameter containing directory name
+  \param name file name
+  \return absolute file path or null QString if \a prefix parameter
+          does not exist in section \sec
+  \sa path(), file(), makeSubstitution()
 */
 QString QtxResourceMgr::Resources::fileName( const QString& sect, const QString& prefix, const QString& name ) const
 {
@@ -309,10 +351,16 @@ QString QtxResourceMgr::Resources::fileName( const QString& sect, const QString&
 }
 
 /*!
-  \return QPixmap loaded from file
-  \param sect - name of section
-  \param prefix - name of parameter containing some path
-  \param name - name of picture file
+  \brief Load and return pixmap from external file.
+  
+  If QtxResourceMgr::isPixmapCached() is \c true then cached pixmap is returned
+  (if it is already loaded), otherwise it is loaded from file.
+  If the file name is invalid, null pixmap is returned.
+
+  \param sect section name
+  \param prefix parameter containing resources directory name
+  \param name pixmap file name
+  \return pixmap loaded from file
 */
 QPixmap QtxResourceMgr::Resources::loadPixmap( const QString& sect, const QString& prefix, const QString& name ) const
 {
@@ -331,10 +379,11 @@ QPixmap QtxResourceMgr::Resources::loadPixmap( const QString& sect, const QStrin
 }
 
 /*!
-  \return just created and loaded translator
-  \param sect - name of section
-  \param prefix - name of parameter containing some path
-  \param name - name of file
+  \brief Load translator.
+  \param sect section name
+  \param prefix parameter containing resources directory
+  \param name translation file name
+  \return just created and loaded translator or 0 in case of error
 */
 QTranslator* QtxResourceMgr::Resources::loadTranslator( const QString& sect, const QString& prefix, const QString& name ) const
 {
@@ -387,11 +436,18 @@ QTranslator* QtxResourceMgr::Resources::loadTranslator( const QString& sect, con
 }
 
 /*!
-  Finds in string variables by patterns: ${name} or $(name) or %name%
-  \return first found name or QString::null if there is no ones
-  \param str - string where the search is processed
-  \param start - integer value for returning start position of variable
-  \param len - integer value for returning length of variable
+  \brief Parse given string to retrieve environment variable.
+
+  Looks through the string for the patterns: ${name} or $(name) or %name%.
+  If string contains variable satisfying any pattern, the variable name
+  is returned, start index of the variable is returned in the \a start parameter,
+  and length of the variable is returned in the \a len parameter.
+
+  \param str string being processed
+  \param start if variable is found, this parameter contains its starting 
+         position in the \a str
+  \param len if variable is found, this parameter contains its length 
+  \return first found variable or null QString if there is no ones
 */
 QString QtxResourceMgr::Resources::environmentVariable( const QString& str, int& start, int& len ) const
 {
@@ -428,13 +484,15 @@ QString QtxResourceMgr::Resources::environmentVariable( const QString& str, int&
 }
 
 /*!
-  Substitutes variables by its' values. If variable is from enviroment,
-  it will be replaced by environment value. If it isn't, method tries to
-  find it's value among resources
-  \return new variant of string 'str'
-  \param str - string to process substitution
-  \param sect - section, in which the variables will be finding
-  \param name - name of variable which must be ignored during substitution
+  \brief Substitute variables by their values.
+
+  Environment variable is substituted by its value. For other variables resource
+  manager tries to find value among defined resources parameters.
+
+  \param str string to be processed
+  \param sect section, where variables are searched
+  \param name name of variable which must be ignored during substitution
+  \return processed string (with all substitutions made)
 */
 QString QtxResourceMgr::Resources::makeSubstitution( const QString& str, const QString& sect, const QString& name ) const
 {
@@ -476,9 +534,11 @@ QString QtxResourceMgr::Resources::makeSubstitution( const QString& str, const Q
 }
 
 /*!
-	Class: QtxResourceMgr::IniFormat
-	Level: Internal
+  \class QtxResourceMgr::IniFormat
+  \internal
+  \brief Reader/writer for .ini resources files.
 */
+
 class QtxResourceMgr::IniFormat : public Format
 {
 public:
@@ -491,7 +551,7 @@ protected:
 };
 
 /*!
-  Default constructor
+  \brief Constructor.
 */
 QtxResourceMgr::IniFormat::IniFormat()
 : Format( "ini" )
@@ -499,16 +559,17 @@ QtxResourceMgr::IniFormat::IniFormat()
 }
 
 /*!
-  Destructor
+  \brief Destructor.
 */
 QtxResourceMgr::IniFormat::~IniFormat()
 {
 }
 
 /*!
-  Loads resources from ini-file to map of sections
-  \param fname - name of resource file
-  \param secMap - map of sections
+  \brief Load resources from ini-file.
+  \param fname resources file name
+  \param secMap resources map to be filled in
+  \return \c true on success and \c false on error
 */
 bool QtxResourceMgr::IniFormat::load( const QString& fname, QMap<QString, Section>& secMap )
 {
@@ -576,9 +637,10 @@ bool QtxResourceMgr::IniFormat::load( const QString& fname, QMap<QString, Sectio
 }
 
 /*!
-  Saves map of sections to resource ini-file
-  \param fname - name of resource file
-  \param secMap - map of sections
+  \brief Save resources to the ini-file.
+  \param fname resources file name
+  \param secMap resources map
+  \return \c true on success and \c false on error
 */
 bool QtxResourceMgr::IniFormat::save( const QString& fname, const QMap<QString, Section>& secMap )
 {
@@ -606,8 +668,9 @@ bool QtxResourceMgr::IniFormat::save( const QString& fname, const QMap<QString, 
 }
 
 /*!
-	Class: QtxResourceMgr::XmlFormat
-	Level: Internal
+  \class QtxResourceMgr::XmlFormat
+  \internal
+  \brief Reader/writer for .xml resources files.
 */
 
 class QtxResourceMgr::XmlFormat : public Format
@@ -629,7 +692,7 @@ private:
 };
 
 /*!
-  Default constructor
+  \brief Constructor.
 */
 QtxResourceMgr::XmlFormat::XmlFormat()
 : Format( "xml" )
@@ -637,16 +700,17 @@ QtxResourceMgr::XmlFormat::XmlFormat()
 }
 
 /*!
-  Destructor
+  \brief Destructor.
 */
 QtxResourceMgr::XmlFormat::~XmlFormat()
 {
 }
 
 /*!
-  Loads resources from xml-file to map of sections
-  \param fname - name of resource file
-  \param secMap - map of sections
+  \brief Load resources from xml-file.
+  \param fname resources file name
+  \param secMap resources map to be filled in
+  \return \c true on success and \c false on error
 */
 bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Section>& secMap )
 {
@@ -744,9 +808,10 @@ bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Sectio
 }
 
 /*!
-  Saves map of sections to resource xml-file
-  \param fname - name of resource file
-  \param secMap - map of sections
+  \brief Save resources to the xml-file.
+  \param fname resources file name
+  \param secMap resources map
+  \return \c true on success and \c false on error
 */
 bool QtxResourceMgr::XmlFormat::save( const QString& fname, const QMap<QString, Section>& secMap )
 {
@@ -789,7 +854,8 @@ bool QtxResourceMgr::XmlFormat::save( const QString& fname, const QMap<QString, 
 }
 
 /*!
-  \return XML tag of document
+  \brief Get document tag name
+  \return XML document tag name
 */
 QString QtxResourceMgr::XmlFormat::docTag() const
 {
@@ -800,7 +866,8 @@ QString QtxResourceMgr::XmlFormat::docTag() const
 }
 
 /*!
-  \return XML tag of section
+  \brief Get section tag name
+  \return XML section tag name
 */
 QString QtxResourceMgr::XmlFormat::sectionTag() const
 {
@@ -811,7 +878,8 @@ QString QtxResourceMgr::XmlFormat::sectionTag() const
 }
 
 /*!
-  \return XML tag of parameter
+  \brief Get parameter tag name
+  \return XML parameter tag name
 */
 QString QtxResourceMgr::XmlFormat::parameterTag() const
 {
@@ -822,7 +890,8 @@ QString QtxResourceMgr::XmlFormat::parameterTag() const
 }
 
 /*!
-  \return XML attribute of parameter name
+  \brief Get parameter tag's "name" attribute name
+  \return XML parameter tag's "name" attribute name
 */
 QString QtxResourceMgr::XmlFormat::nameAttribute() const
 {
@@ -833,7 +902,8 @@ QString QtxResourceMgr::XmlFormat::nameAttribute() const
 }
 
 /*!
-  \return XML attribute of parameter value
+  \brief Get parameter tag's "value" attribute name
+  \return XML parameter tag's "value" attribute name
 */
 QString QtxResourceMgr::XmlFormat::valueAttribute() const
 {
@@ -844,13 +914,13 @@ QString QtxResourceMgr::XmlFormat::valueAttribute() const
 }
 
 /*!
-	Class: QtxResourceMgr::Format
-	Level: Public
+  \class QtxResourceMgr::Format
+  \brief Generic resources files reader/writer class.
 */
 
 /*!
-  \brief Constructs the format object with specified name.
-  \param fmt - name of the format
+  \brief Constructor.
+  \param fmt format name (for example, "xml" or "ini")
 */
 QtxResourceMgr::Format::Format( const QString& fmt )
 : myFmt( fmt )
@@ -858,14 +928,15 @@ QtxResourceMgr::Format::Format( const QString& fmt )
 }
 
 /*!
-  \brief Destructs the format object.
+  \brief Destructor
 */
 QtxResourceMgr::Format::~Format()
 {
 }
 
 /*!
-  \brief Returns the format name.
+  \brief Get the format name.
+  \return format name
 */
 QString QtxResourceMgr::Format::format() const
 {
@@ -873,7 +944,8 @@ QString QtxResourceMgr::Format::format() const
 }
 
 /*!
-  \brief Returns the string list of the format options.
+  \brief Get options names.
+  \return list of the format options
 */
 QStringList QtxResourceMgr::Format::options() const
 {
@@ -881,9 +953,12 @@ QStringList QtxResourceMgr::Format::options() const
 }
 
 /*!
-  \brief Returns the value of the option with specified name.
-         If option doesn't exist then empty string returned.
-  \param opt - name of the option
+  \brief Get the value of the option with specified name.
+
+  If option doesn't exist then null QString is returned.
+	 
+  \param opt option name
+  \return option value
 */
 QString QtxResourceMgr::Format::option( const QString& opt ) const
 {
@@ -894,9 +969,9 @@ QString QtxResourceMgr::Format::option( const QString& opt ) const
 }
 
 /*!
-  \brief Sets the value of the option with specified name.
-  \param opt - name of the option
-  \param opt - value of the option
+  \brief Set the value of the option with specified name.
+  \param opt option name
+  \param val option value
 */
 void QtxResourceMgr::Format::setOption( const QString& opt, const QString& val )
 {
@@ -904,8 +979,9 @@ void QtxResourceMgr::Format::setOption( const QString& opt, const QString& val )
 }
 
 /*!
-  \brief Perform the loading of the resources from resource file.
-  \param res - resources object which will be loaded
+  \brief Load resources from the resource file.
+  \param res resources object
+  \return \c true on success and \c false on error
 */
 bool QtxResourceMgr::Format::load( Resources* res )
 {
@@ -923,8 +999,9 @@ bool QtxResourceMgr::Format::load( Resources* res )
 }
 
 /*!
-  \brief Perform the saving of the resources into resource file.
-  \param res - resources object which will be saved
+  \brief Save resources to the resource file.
+  \param res resources object
+  \return \c true on success and \c false on error
 */
 bool QtxResourceMgr::Format::save( Resources* res )
 {
@@ -939,34 +1016,111 @@ bool QtxResourceMgr::Format::save( Resources* res )
 }
 
 /*!
-	Class: QtxResourceMgr
-	Level: Public
+  \fn virtual bool QtxResourceMgr::Format::load( const QString& fname,
+                                                 QMap<QString, Section>& secMap )
+  \brief Load resources from the specified resources file.
+
+  Should be implemented in the successors.
+
+  \param fname resources file name
+  \param secMap resources map to be filled in
+  \return \c true on success and \c false on error
 */
 
 /*!
-  \brief Constructs the resource manager object for application.
-  \param appName - name of the application which resources will be used.
-  \param resVarTemplate - template for the resource environment variable name which
-                          should point to the resource directory list.
-                          Default value is "%1Resources". Its mean that for application
-                          with name "MyApp" environment variable "MyAppResources" will
-                          be used. Template may not have the parameter '%1' substituted
-                          by application name. In this case this string will be used as
-                          is without substitution.
-  Resource environment variable should contains one or several resource directories
-  separated by symbol ';'. Resource directories list transfered into the setDirList().
-  These directories and the user home directory used for the loading application resources.
-  Each of the resource directories can contains resource file. The name of this file defined
-  by the function globalFileName(). Resource file name in the user home defined by the
-  function userFileName(). Any resource looking firstly in the user home resources then
-  resource directories used in the specified order. All setted resources always stored into
-  the resource file at the user home. Only user home resource file is saved.
-  If you want to ignore of loading of Local User Preferences, you needs setup setIngoreUserValues()
-  as true.
+ \fn virtual bool QtxResourceMgr::Format::save( const QString& fname, 
+                                                const QMap<QString, Section>& secMap )
+
+  \brief Save resources to the specified resources file.
+
+  Should be implemented in the successors.
+
+  \param fname resources file name
+  \param secMap resources map
+  \return \c true on success and \c false on error
+*/
+
+/*!
+  \class QtxResourceMgr
+  \brief Application resources manager.
+
+  This class can be used to define settings, save/load settings and 
+  application preferences to the resource file(s), load translation files
+  (internationalization mechanism), load pixmaps and other resources from
+  external files, etc.
+
+  Currently it supports .ini and .xml resources file formats. To implement
+  own resources file format, inherit from the Format class and implement virtual
+  Format::load() and Format::save() methods.
+
+  Resources manager is initialized by the (symbolic) name of the application.
+  The parameter \a resVarTemplate specifies the template for the environment
+  variable which should point to the resource directory or list of directories.
+  Environment variable  name is calculated by substitution of "%1" substring in
+  the \a resVarTemplate parameter (if it contains such substring) by the 
+  application name (\a appName).
+  By default, \a resVarTemplate is set to "%1Resources". For example, if the application name
+  is "MyApp", the environment variable "MyAppResources" will be inspected in this case.
+  
+  Resource manager can handle several global application configuration files and
+  one user configuration file. Location of global configuration files is defined
+  by the environment variable (see above) and these files are always read-only.
+  The name of the global configuration files is retrieved by calling virtual method
+  globalFileName() which can be redefined in the QtxResourceMgr class successors.
+  User configuration file always situated in the user's home directory. It's name
+  is defined by calling virtual method userFileName() which can be also redefined
+  in the QtxResourceMgr class successors. This is the only file which the preferences
+  changed by the user during the application session are written to (usually 
+  when the application closes).
+
+  Resources environment variable should contain one or several resource directories
+  (separated by ";" symbol on Windows and ":" or ";" on Linux). Each resource directory 
+  can contain application global configuration file. The user configuration file has
+  the highest priority, for the global configuration files the priority is decreasing from
+  left to right, i.e. the first directory in the directoris list, defined by the 
+  resources environment variable has higher priority. Priority has the meaning when
+  searching requested resources (application preference, pixmap file name, translation
+  file, etc).
+  Loading of the user configuration file can be omitted by calling setIgnoreUserValues() 
+  with \c true parameter.
+
+  Resources manager operates with such terms like options, sections and parameters. 
+  Parametets are named application resources, for example, application preferences like
+  integer, double, boolean or string values, pictures, font and color definitions, etc.
+  Parameters are organized inside the resources files into the named groups - sections.
+  Options are special kind of resoures which allow customizing resource files interpreting.
+  For example, by default language settings are defined in the resource file in the
+  section "language". It is possible to change this section name by setting "language" 
+  option to another value (see setOption()).
+  
+  Retrieving preferences values can be done by using one of value() methods, each returns
+  \c true if the corresponding preference is found. Another way is to use integerValue(),
+  doubleValue(), etc methods, which allow specifying default value which is used if the
+  specified preference is not found. Removing of preferences or sections can be done using
+  remove(const QString& sect) or remove(const QString& sect, const QString& name) methods.
+  To add the preference or to change exiting preference value use setValue() methods family.
+  Methods hasSection() and hasValue() can be used to check existence of section or
+  preference (in the specified section). List of all sections can be retrieved with the
+  sections() method, and list of all settings names in some specified section can be 
+  obtained with parameters() method.
+
+  Pixmaps can be loaded with the loadPixmap() methods. If the specified pixmap is not found,
+  the default one is returned. Default pixmap can be set by setDefaultPixmap().
+
+  One of the key feature of the resources manager is support of application 
+  internationalization mechanism. Translation files for the specified language can be loaded
+  with loadLanguage() method.
+*/
+
+/*!
+  \brief Constructs the resource manager.
+  \param appName application name
+  \param resVarTemplate resource environment variable pattern
 */
 QtxResourceMgr::QtxResourceMgr( const QString& appName, const QString& resVarTemplate )
 : myAppName( appName ),
   myCheckExist( true ),
+  myDefaultPix( 0 ),
   myIsPixmapCached( true ),
   myIsIgnoreUserValues( false )
 {
@@ -991,7 +1145,9 @@ QtxResourceMgr::QtxResourceMgr( const QString& appName, const QString& resVarTem
 }
 
 /*!
-  \brief Destructs the resource manager object and free allocated memory.
+  \brief Destructor.
+  
+  Destroy the resource manager and free allocated memory.
 */
 QtxResourceMgr::~QtxResourceMgr()
 {
@@ -1003,10 +1159,13 @@ QtxResourceMgr::~QtxResourceMgr()
   myResources.clear();
   for ( FormatList::iterator formIt = myFormats.begin(); formIt != myFormats.end(); ++formIt )
     delete *formIt;
+
+  delete myDefaultPix;
 }
 
 /*!
-  \brief Returns the application name.
+  \brief Get the application name.
+  \return application name
 */
 QString QtxResourceMgr::appName() const
 {
@@ -1014,9 +1173,12 @@ QString QtxResourceMgr::appName() const
 }
 
 /*!
-  \brief Returns the checking of the existance flag. If its 'true' then resource
-         will be setted into the manager only if it doesn't exist or has different
-         value that existing value.
+  \brief Get the "check existance" flag
+
+  If this flag is \c true then preference can be set (with setValue() method) 
+  only if it doesn't exist or if the value is changed.
+
+  \return \c true if "check existance" flag is set
 */
 bool QtxResourceMgr::checkExisting() const
 {
@@ -1024,8 +1186,8 @@ bool QtxResourceMgr::checkExisting() const
 }
 
 /*!
-  \brief Sets the checking of the existance flag.
-  \param on - boolean value of the flag.
+  \brief Set the "check existance" flag.
+  \param on new flag value
 */
 void QtxResourceMgr::setCheckExisting( const bool on )
 {
@@ -1033,7 +1195,13 @@ void QtxResourceMgr::setCheckExisting( const bool on )
 }
 
 /*!
-  \brief Returns the resource directories list except user home directory.
+  \brief Get the resource directories list.
+
+  Home user directory (where the user application configuration file is situated)
+  is not included. This is that directories list defined by the application
+  resources environment variable.
+
+  \return list of directories names
 */
 QStringList QtxResourceMgr::dirList() const
 {
@@ -1041,8 +1209,11 @@ QStringList QtxResourceMgr::dirList() const
 }
 
 /*!
-  \brief Initialise the manager. Prepare the resource containers and load resources.
-  \param autoLoad - if 'true' then all resources will be loaded.
+  \brief Initialise resources manager.
+
+  Prepare the resources containers and load resources (if \a autoLoad is \c true).
+
+  \param autoLoad if \c true then all resources are loaded
 */
 void QtxResourceMgr::initialize( const bool autoLoad ) const
 {
@@ -1065,7 +1236,15 @@ void QtxResourceMgr::initialize( const bool autoLoad ) const
 }
 
 /*!
-  \brief Return true if all loaded pixmaps are stored in internal map; by default: true
+  \brief Get "cached pixmaps" option value.
+
+  Resources manager allows possibility to cache loaded pixmaps that allow to
+  improve application performance. This feature is turned on by default - all 
+  loaded pixmaps are stored in the internal map. Switching of this feature on/off
+  can be done by setIsPixmapCached() method.
+
+  \return \c true if pixmap cache is turned on
+  \sa setIsPixmapCached()
 */
 bool QtxResourceMgr::isPixmapCached() const
 {
@@ -1073,8 +1252,9 @@ bool QtxResourceMgr::isPixmapCached() const
 }
 
 /*!
-  \brief Set true, if it is necessary to store all loaded pixmap in internal map
-  (it accelerates following calls of loadPixmap)
+  \brief Switch "cached pixmaps" option on/off.
+  \param on enable pixmap cache if \c true and disable it if \c false
+  \sa isPixmapCached()
 */
 void QtxResourceMgr::setIsPixmapCached( const bool on )
 {
@@ -1082,7 +1262,7 @@ void QtxResourceMgr::setIsPixmapCached( const bool on )
 }
 
 /*!
-  \brief Removes all resources from the manager.
+  \brief Remove all resources from the resources manager.
 */
 void QtxResourceMgr::clear()
 {
@@ -1091,8 +1271,12 @@ void QtxResourceMgr::clear()
 }
 
 /*!
-  Set state 'ignore user values'.
-  If it is true, then all resources loaded from user home directory is ignored
+  \brief Set "ignore user values" option value.
+  
+  If this option is \c true, then all resources loaded from user home directory are ignored.
+  
+  \param val new option value
+  \sa ignoreUserValues()
 */
 void QtxResourceMgr::setIgnoreUserValues( const bool val )
 {
@@ -1100,7 +1284,10 @@ void QtxResourceMgr::setIgnoreUserValues( const bool val )
 }
 
 /*!
-  \return state 'ignore user values'
+  \brief Get "ignore user values" option value.
+  
+  \return "ignore user values" option value
+  \sa setIgnoreUserValues()
 */
 bool QtxResourceMgr::ignoreUserValues() const
 {
@@ -1108,11 +1295,12 @@ bool QtxResourceMgr::ignoreUserValues() const
 }
 
 /*!
-  \brief Get the resource value as integer. Returns 'true' if it successfull otherwise
-         returns 'false'.
-  \param sect - Resource section name which contains resource.
-  \param name - Name of the resource.
-  \param iVal - Reference on the variable which should contains the resource output.
+  \brief Get interger parameter value.
+  \param sect section name
+  \param name parameter name
+  \param iVal parameter to return resulting integer value
+  \return \c true if parameter is found and \c false if parameter is not found
+          (in this case \a iVal value is undefined)
 */
 bool QtxResourceMgr::value( const QString& sect, const QString& name, int& iVal ) const
 {
@@ -1127,11 +1315,12 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, int& iVal 
 }
 
 /*!
-  \brief Get the resource value as double. Returns 'true' if it successfull otherwise
-         returns 'false'.
-  \param sect - Resource section name which contains resource.
-  \param name - Name of the resource.
-  \param dVal - Reference on the variable which should contains the resource output.
+  \brief Get double parameter value.
+  \param sect section name
+  \param name parameter name
+  \param dVal parameter to return resulting double value
+  \return \c true if parameter is found and \c false if parameter is not found
+          (in this case \a dVal value is undefined)
 */
 bool QtxResourceMgr::value( const QString& sect, const QString& name, double& dVal ) const
 {
@@ -1146,11 +1335,12 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, double& dV
 }
 
 /*!
-  \brief Get the resource value as boolean. Returns 'true' if it successfull otherwise
-         returns 'false'.
-  \param sect - Resource section name which contains resource.
-  \param name - Name of the resource.
-  \param bVal - Reference on the variable which should contains the resource output.
+  \brief Get boolean parameter value.
+  \param sect section name
+  \param name parameter name
+  \param bVal parameter to return resulting boolean value
+  \return \c true if parameter is found and \c false if parameter is not found
+          (in this case \a bVal value is undefined)
 */
 bool QtxResourceMgr::value( const QString& sect, const QString& name, bool& bVal ) const
 {
@@ -1180,11 +1370,12 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, bool& bVal
 }
 
 /*!
-  \brief Get the resource value as color. Returns 'true' if it successfull otherwise
-         returns 'false'.
-  \param sect - Resource section name which contains resource.
-  \param name - Name of the resource.
-  \param cVal - Reference on the variable which should contains the resource output.
+  \brief Get color parameter value.
+  \param sect section name
+  \param name parameter name
+  \param cVal parameter to return resulting color value
+  \return \c true if parameter is found and \c false if parameter is not found
+          (in this case \a cVal value is undefined)
 */
 bool QtxResourceMgr::value( const QString& sect, const QString& name, QColor& cVal ) const
 {
@@ -1228,11 +1419,12 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QColor& cV
 }
 
 /*!
-  \brief Get the resource value as font. Returns 'true' if it successfull otherwise
-         returns 'false'.
-  \param sect - Resource section name which contains resource.
-  \param name - Name of the resource.
-  \param fVal - Reference on the variable which should contains the resource output.
+  \brief Get font parameter value.
+  \param sect section name
+  \param name parameter name
+  \param fVal parameter to return resulting font value
+  \return \c true if parameter is found and \c false if parameter is not found
+          (in this case \a fVal value is undefined)
 */
 bool QtxResourceMgr::value( const QString& sect, const QString& name, QFont& fVal ) const
 {
@@ -1273,11 +1465,12 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QFont& fVa
 }
 
 /*!
-  \brief Get the resource value as byte array. Returns 'true' if it successfull otherwise
-         returns 'false'.
-  \param sect - Resource section name which contains resource.
-  \param name - Name of the resource.
-  \param baVal - Reference on the variable which should contains the resource output.
+  \brief Get byte array parameter value.
+  \param sect section name
+  \param name parameter name
+  \param baVal parameter to return resulting byte array value
+  \return \c true if parameter is found and \c false if parameter is not found
+          (in this case \a baVal value is undefined)
 */
 bool QtxResourceMgr::value( const QString& sect, const QString& name, QByteArray& baVal ) const
 {
@@ -1307,14 +1500,13 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QByteArray
 }
 
 /*!
-  \brief Get the resource value as string (native format). Returns 'true' if it
-         successfull otherwise returns 'false'.
-  \param sect  - Resource section name which contains resource.
-  \param name  - Name of the resource.
-  \param val   - Reference on the variable which should contains the resource output.
-  \param subst - If 'true' then manager substitute reference on environment variables
-                 and other resources by thier values. Default value of this parameter
-                 is 'true'
+  \brief Get string parameter value (native format).
+  \param sect section name
+  \param name parameter name
+  \param val parameter to return resulting byte array value
+  \param subst if \c true perform environment variables substitution
+  \return \c true if parameter is found and \c false if parameter is not found
+          (in this case \a val value is undefined)
 */
 bool QtxResourceMgr::value( const QString& sect, const QString& name, QString& val, const bool subst ) const
 {
@@ -1337,11 +1529,15 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QString& v
 }
 
 /*!
-  \brief Returns the integer resource value. If resource can not be found or converted
-         then specified default value will be returned.
-  \param sect  - Resource section name which contains resource.
-  \param name  - Name of the resource.
-  \param def   - Default resource value which will be used when resource not found.
+  \brief Get interger parameter value.
+
+  If the specified parameter is not found or can not be converted to the integer value,
+  the specified default value is returned instead.
+
+  \param sect section name
+  \param name parameter name
+  \param def default value
+  \return parameter value (or default value if parameter is not found)
 */
 int QtxResourceMgr::integerValue( const QString& sect, const QString& name, const int def ) const
 {
@@ -1352,11 +1548,15 @@ int QtxResourceMgr::integerValue( const QString& sect, const QString& name, cons
 }
 
 /*!
-  \brief Returns the double resource value. If resource can not be found or converted
-         then specified default value will be returned.
-  \param sect  - Resource section name which contains resource.
-  \param name  - Name of the resource.
-  \param def   - Default resource value which will be used when resource not found.
+  \brief Get double parameter value.
+
+  If the specified parameter is not found or can not be converted to the double value,
+  the specified default value is returned instead.
+
+  \param sect section name
+  \param name parameter name
+  \param def default value
+  \return parameter value (or default value if parameter is not found)
 */
 double QtxResourceMgr::doubleValue( const QString& sect, const QString& name, const double def ) const
 {
@@ -1367,11 +1567,15 @@ double QtxResourceMgr::doubleValue( const QString& sect, const QString& name, co
 }
 
 /*!
-  \brief Returns the boolean resource value. If resource can not be found or converted
-         then specified default value will be returned.
-  \param sect  - Resource section name which contains resource.
-  \param name  - Name of the resource.
-  \param def   - Default resource value which will be used when resource not found.
+  \brief Get boolean parameter value.
+
+  If the specified parameter is not found or can not be converted to the boolean value,
+  the specified default value is returned instead.
+
+  \param sect section name
+  \param name parameter name
+  \param def default value
+  \return parameter value (or default value if parameter is not found)
 */
 bool QtxResourceMgr::booleanValue( const QString& sect, const QString& name, const bool def ) const
 {
@@ -1382,11 +1586,15 @@ bool QtxResourceMgr::booleanValue( const QString& sect, const QString& name, con
 }
 
 /*!
-  \brief Returns the font resource value. If resource can not be found or converted
-         then specified default value will be returned.
-  \param sect  - Resource section name which contains resource.
-  \param name  - Name of the resource.
-  \param def   - Default resource value which will be used when resource not found.
+  \brief Get font parameter value.
+
+  If the specified parameter is not found or can not be converted to the font value,
+  the specified default value is returned instead.
+
+  \param sect section name
+  \param name parameter name
+  \param def default value
+  \return parameter value (or default value if parameter is not found)
 */
 QFont QtxResourceMgr::fontValue( const QString& sect, const QString& name, const QFont& def ) const
 {
@@ -1397,11 +1605,15 @@ QFont QtxResourceMgr::fontValue( const QString& sect, const QString& name, const
 }
 
 /*!
-  \brief Returns the color resource value. If resource can not be found or converted
-         then specified default value will be returned.
-  \param sect  - Resource section name which contains resource.
-  \param name  - Name of the resource.
-  \param def   - Default resource value which will be used when resource not found.
+  \brief Get color parameter value.
+
+  If the specified parameter is not found or can not be converted to the color value,
+  the specified default value is returned instead.
+
+  \param sect section name
+  \param name parameter name
+  \param def default value
+  \return parameter value (or default value if parameter is not found)
 */
 QColor QtxResourceMgr::colorValue( const QString& sect, const QString& name, const QColor& def ) const
 {
@@ -1412,11 +1624,14 @@ QColor QtxResourceMgr::colorValue( const QString& sect, const QString& name, con
 }
 
 /*!
-  \brief Returns the string resource value. If resource can not be found or converted
-         then specified default value will be returned.
-  \param sect  - Resource section name which contains resource.
-  \param name  - Name of the resource.
-  \param def   - Default resource value which will be used when resource not found.
+  \brief Get string parameter value.
+
+  If the specified parameter is not found, the specified default value is returned instead.
+
+  \param sect section name
+  \param name parameter name
+  \param def default value
+  \return parameter value (or default value if parameter is not found)
 */
 QString QtxResourceMgr::stringValue( const QString& sect, const QString& name, const QString& def ) const
 {
@@ -1427,11 +1642,14 @@ QString QtxResourceMgr::stringValue( const QString& sect, const QString& name, c
 }
 
 /*!
-  \brief Returns the byte array resource value. If resource can not be found or converted
-         then specified default value will be returned.
-  \param sect  - Resource section name which contains resource.
-  \param name  - Name of the resource.
-  \param def   - Default resource value which will be used when resource not found.
+  \brief Get byte array parameter value.
+
+  If the specified parameter is not found, the specified default value is returned instead.
+
+  \param sect section name
+  \param name parameter name
+  \param def default value
+  \return parameter value (or default value if parameter is not found)
 */
 QByteArray QtxResourceMgr::byteArrayValue( const QString& sect, const QString& name, const QByteArray& def ) const
 {
@@ -1442,9 +1660,10 @@ QByteArray QtxResourceMgr::byteArrayValue( const QString& sect, const QString& n
 }
 
 /*!
-  \brief Checks existance of the specified resource.
-  \param sect  - Resource section name which contains resource.
-  \param name  - Name of the resource.
+  \brief Check parameter existence.
+  \param sect section name
+  \param name parameter name
+  \return \c true if parameter exists in specified section
 */
 bool QtxResourceMgr::hasValue( const QString& sect, const QString& name ) const
 {
@@ -1458,8 +1677,9 @@ bool QtxResourceMgr::hasValue( const QString& sect, const QString& name ) const
 }
 
 /*!
-  \brief Checks existance of the specified resource section.
-  \param sect  - Resource section name which contains resource.
+  \brief Check section existence.
+  \param sect section name
+  \return \c true if section exists
 */
 bool QtxResourceMgr::hasSection( const QString& sect ) const
 {
@@ -1473,10 +1693,10 @@ bool QtxResourceMgr::hasSection( const QString& sect ) const
 }
 
 /*!
-  \brief Sets the integer resource value.
-  \param sect  - Resource section name.
-  \param name  - Name of the resource.
-  \param val   - Resource value.
+  \brief Set integer parameter value.
+  \param sect section name
+  \param name parameter name
+  \param val parameter value
 */
 void QtxResourceMgr::setValue( const QString& sect, const QString& name, int val )
 {
@@ -1488,10 +1708,10 @@ void QtxResourceMgr::setValue( const QString& sect, const QString& name, int val
 }
 
 /*!
-  \brief Sets the double resource value.
-  \param sect  - Resource section name.
-  \param name  - Name of the resource.
-  \param val   - Resource value.
+  \brief Set double parameter value.
+  \param sect section name
+  \param name parameter name
+  \param val parameter value
 */
 void QtxResourceMgr::setValue( const QString& sect, const QString& name, double val )
 {
@@ -1503,10 +1723,10 @@ void QtxResourceMgr::setValue( const QString& sect, const QString& name, double 
 }
 
 /*!
-  \brief Sets the boolean resource value.
-  \param sect  - Resource section name.
-  \param name  - Name of the resource.
-  \param val   - Resource value.
+  \brief Set boolean parameter value.
+  \param sect section name
+  \param name parameter name
+  \param val parameter value
 */
 void QtxResourceMgr::setValue( const QString& sect, const QString& name, bool val )
 {
@@ -1518,10 +1738,10 @@ void QtxResourceMgr::setValue( const QString& sect, const QString& name, bool va
 }
 
 /*!
-  \brief Sets the color resource value.
-  \param sect  - Resource section name.
-  \param name  - Name of the resource.
-  \param val   - Resource value.
+  \brief Set color parameter value.
+  \param sect section name
+  \param name parameter name
+  \param val parameter value
 */
 void QtxResourceMgr::setValue( const QString& sect, const QString& name, const QColor& val )
 {
@@ -1533,10 +1753,10 @@ void QtxResourceMgr::setValue( const QString& sect, const QString& name, const Q
 }
 
 /*!
-  \brief Sets the font resource value.
-  \param sect  - Resource section name.
-  \param name  - Name of the resource.
-  \param val   - Resource value.
+  \brief Set font parameter value.
+  \param sect section name
+  \param name parameter name
+  \param val parameter value
 */
 void QtxResourceMgr::setValue( const QString& sect, const QString& name, const QFont& val )
 {
@@ -1558,10 +1778,10 @@ void QtxResourceMgr::setValue( const QString& sect, const QString& name, const Q
 }
 
 /*!
-  \brief Sets the string resource value.
-  \param sect  - Resource section name.
-  \param name  - Name of the resource.
-  \param val   - Resource value.
+  \brief Set string parameter value.
+  \param sect section name
+  \param name parameter name
+  \param val parameter value
 */
 void QtxResourceMgr::setValue( const QString& sect, const QString& name, const QString& val )
 {
@@ -1573,10 +1793,10 @@ void QtxResourceMgr::setValue( const QString& sect, const QString& name, const Q
 }
 
 /*!
-  \brief Sets the string resource value.
-  \param sect  - Resource section name.
-  \param name  - Name of the resource.
-  \param val   - Resource value.
+  \brief Set byte array parameter value.
+  \param sect section name
+  \param name parameter name
+  \param val parameter value
 */
 void QtxResourceMgr::setValue( const QString& sect, const QString& name, const QByteArray& val )
 {
@@ -1588,16 +1808,15 @@ void QtxResourceMgr::setValue( const QString& sect, const QString& name, const Q
   QStringList lst;
   for ( int i = 0; i < val.size();  i++ )
   {
-    ::sprintf( buf, "#%02X", val.at( i ) );
+    ::sprintf( buf, "#%02X", (unsigned char)val.at( i ) );
     lst.append( QString( buf ) );
   }
-
   setResource( sect, name, lst.join( " " ) );
 }
 
 /*!
-  \brief Remove the all specified resource section.
-  \param sect  - Resource section name.
+  \brief Remove resources section.
+  \param sect section name
 */
 void QtxResourceMgr::remove( const QString& sect )
 {
@@ -1608,9 +1827,9 @@ void QtxResourceMgr::remove( const QString& sect )
 }
 
 /*!
-  \brief Remove the specified resource.
-  \param sect  - Resource section name.
-  \param name  - Name of the resource.
+  \brief Remove the specified parameter.
+  \param sect section name
+  \param name parameter name
 */
 void QtxResourceMgr::remove( const QString& sect, const QString& name )
 {
@@ -1621,7 +1840,8 @@ void QtxResourceMgr::remove( const QString& sect, const QString& name )
 }
 
 /*!
-  \brief Returns the current format which operates with resource files.
+  \brief Get current configuration files format.
+  \return configuration files format name
 */
 QString QtxResourceMgr::currentFormat() const
 {
@@ -1632,8 +1852,8 @@ QString QtxResourceMgr::currentFormat() const
 }
 
 /*!
-  \brief Sets the current format which operates with resource files.
-  \param fmt - Resource format name.
+  \brief Set current configuration files format.
+  \param fmt configuration files format name
 */
 void QtxResourceMgr::setCurrentFormat( const QString& fmt )
 {
@@ -1659,8 +1879,9 @@ void QtxResourceMgr::setCurrentFormat( const QString& fmt )
 }
 
 /*!
-  \brief Returns the resource format object by it name.
-  \param fmt - Resource format name.
+  \brief Get configuration files format by specified format name.
+  \param fmt configuration files format name
+  \return format object or 0 if format is not defined
 */
 QtxResourceMgr::Format* QtxResourceMgr::format( const QString& fmt ) const
 {
@@ -1675,8 +1896,11 @@ QtxResourceMgr::Format* QtxResourceMgr::format( const QString& fmt ) const
 }
 
 /*!
-  \brief Add the resource format to the manager. Newly added become current.
-  \param form - Resource format object.
+  \brief Install configuration files format.
+  
+  Added format becomes current.
+
+  \param form format object to be installed
 */
 void QtxResourceMgr::installFormat( QtxResourceMgr::Format* form )
 {
@@ -1685,8 +1909,8 @@ void QtxResourceMgr::installFormat( QtxResourceMgr::Format* form )
 }
 
 /*!
-  \brief Remove the resource format from the manager.
-  \param form - Resource format object.
+  \brief Remove configuration files format.
+  \param form format object to be uninstalled
 */
 void QtxResourceMgr::removeFormat( QtxResourceMgr::Format* form )
 {
@@ -1694,7 +1918,8 @@ void QtxResourceMgr::removeFormat( QtxResourceMgr::Format* form )
 }
 
 /*!
-  \brief Returns the string list of the resource format options names.
+  \brief Get resource format options names.
+  \return list of options names
 */
 QStringList QtxResourceMgr::options() const
 {
@@ -1702,9 +1927,13 @@ QStringList QtxResourceMgr::options() const
 }
 
 /*!
-  \brief Returns the string value for the specified option. If option doesn't exist
-         then empty string will be returned.
-  \param opt - Option name.
+  \brief Get the string value of the specified resources format option.
+
+  If option does not exist, null QString is returned.
+
+  \param opt option name
+  \return option value
+  \sa setOption(), options()
 */
 QString QtxResourceMgr::option( const QString& opt ) const
 {
@@ -1715,9 +1944,10 @@ QString QtxResourceMgr::option( const QString& opt ) const
 }
 
 /*!
-  \brief Sets the string value for the specified option.
-  \param opt - Option name.
-  \param val - Option value.
+  \brief Set the string value of the specified resources format option.
+  \param opt option name
+  \param val option value
+  \sa option(), options()
 */
 void QtxResourceMgr::setOption( const QString& opt, const QString& val )
 {
@@ -1725,7 +1955,9 @@ void QtxResourceMgr::setOption( const QString& opt, const QString& val )
 }
 
 /*!
-  \brief Load the all resources from the resource files.
+  \brief Load all resources from all resource files (global and user).
+  \return \c true on success and \c false on error
+  \sa save()
 */
 bool QtxResourceMgr::load()
 {
@@ -1743,7 +1975,9 @@ bool QtxResourceMgr::load()
 }
 
 /*!
-  \brief Import some file with resources
+  \brief Import resources from specified resource file.
+  \param fname resources file name
+  \return \c true on success and \c false on error
 */
 bool QtxResourceMgr::import( const QString& fname )
 {
@@ -1763,7 +1997,8 @@ bool QtxResourceMgr::import( const QString& fname )
 }
 
 /*!
-  \brief Save the changed resources in to the user resource file.
+  \brief Save all resources to the user resource files.
+  \return \c true on success and \c false on error
 */
 bool QtxResourceMgr::save()
 {
@@ -1780,7 +2015,8 @@ bool QtxResourceMgr::save()
 }
 
 /*!
-  \brief Returns the string list of the existing section names..
+  \brief Get all sections names.
+  \return list of section names
 */
 QStringList QtxResourceMgr::sections() const
 {
@@ -1802,8 +2038,9 @@ QStringList QtxResourceMgr::sections() const
 }
 
 /*!
-  \brief Returns the string list of the existing resource names in the specified section.
-  \param sec - Resource section name.
+  \brief Get all parameters name in specified section.
+  \param sec section name
+  \return list of settings names
 */
 QStringList QtxResourceMgr::parameters( const QString& sec ) const
 {
@@ -1834,11 +2071,18 @@ QStringList QtxResourceMgr::parameters( const QString& sec ) const
 }
 
 /*!
-  \return path of file from directory built by parameter
-  \return QString::null if built path doesn't exist
-  \param sec - name of section
-  \param prefix - name of parameter containing some path
-  \param name - name of file
+  \brief Get absolute path to the file which name is defined by the parameter.
+
+  The file name is defined by \a name argument, while directory name is retrieved
+  from resources parameter \a prefix of section \a sec. Both directory and file name
+  can be relative. If the directory is relative, it is calculated from the initial
+  resources file name. Directory parameter can contain environment 
+  variables, which are substituted automatically.
+
+  \param sec section name
+  \param prefix parameter containing directory name
+  \param name file name
+  \return absolute file path or null QString if file does not exist
 */
 QString QtxResourceMgr::path( const QString& sect, const QString& prefix, const QString& name ) const
 {
@@ -1849,7 +2093,13 @@ QString QtxResourceMgr::path( const QString& sect, const QString& prefix, const 
 }
 
 /*!
-  \return section corresponding to resources paths
+  \brief Get application resources section name.
+
+  By default, application resources section name is "resources" but
+  it can be changed by setting the corresponding resources manager option.
+  
+  \return section corresponding to the resources directories
+  \sa option(), setOption()
 */
 QString QtxResourceMgr::resSection() const
 {
@@ -1860,7 +2110,13 @@ QString QtxResourceMgr::resSection() const
 }
 
 /*!
-  \return section corresponding to language settings
+  \brief Get application language section name.
+
+  By default, application language section name is "language" but
+  it can be changed by setting the corresponding resources manager option.
+  
+  \return section corresponding to the application language settings
+  \sa option(), setOption()
 */
 QString QtxResourceMgr::langSection() const
 {
@@ -1871,26 +2127,44 @@ QString QtxResourceMgr::langSection() const
 }
 
 /*!
-  \return default image used when during loading the image file doesn't exist
+  \brief Get default pixmap.
+  
+  Default pixmap is used when requested pixmap resource is not found.
+
+  \return default pixmap
+  \sa setDefaultPixmap(), loadPixmap()
 */
 QPixmap QtxResourceMgr::defaultPixmap() const
 {
-  return myDefaultPix;
+  QPixmap res;
+  if ( myDefaultPix && !myDefaultPix->isNull() )
+    res = *myDefaultPix;
+  return res;
 }
 
 /*!
-  Set image as default image used when during loading the image file doesn't exist
-  \param pix - image
+  \brief Set default pixmap.
+  
+  Default pixmap is used when requested pixmap resource is not found.
+
+  \param pix default pixmap
+  \sa defaultPixmap(), loadPixmap()
 */
 void QtxResourceMgr::setDefaultPixmap( const QPixmap& pix )
 {
-  myDefaultPix = pix;
+  delete myDefaultPix;
+  if ( pix.isNull() )
+    myDefaultPix = 0;
+  else
+    myDefaultPix = new QPixmap( pix );
 }
 
 /*!
-  \return image loaded from file 
-  \param prefix - name of parameter containing some path
-  \param name - name of file
+  \brief Load pixmap resource.
+  \param prefix parameter which refers to the resources directory (directories)
+  \param name pixmap file name
+  \return pixmap loaded from the file 
+  \sa defaultPixmap(), setDefaultPixmap()
 */
 QPixmap QtxResourceMgr::loadPixmap( const QString& prefix, const QString& name ) const
 {
@@ -1898,12 +2172,14 @@ QPixmap QtxResourceMgr::loadPixmap( const QString& prefix, const QString& name )
 }
 
 /*!
-  \return image loaded from file 
-  \param prefix - name of parameter containing some path
-  \param name - name of file
-  \param useDef - indicates if it is possible to use default image returning by defaultPixmap() method.
-  If it is false, the empty pixmap will be used as default
-  \sa defaultPixmap()
+  \brief Load pixmap resource.
+  \overload
+  \param prefix parameter which refers to the resources directory (directories)
+  \param name pixmap file name
+  \param useDef if \c false, default pixmap is not returned if resource is not found,
+         in this case null pixmap is returned instead
+  \return pixmap loaded from the file 
+  \sa defaultPixmap(), setDefaultPixmap()
 */
 QPixmap QtxResourceMgr::loadPixmap( const QString& prefix, const QString& name, const bool useDef ) const
 {
@@ -1911,13 +2187,13 @@ QPixmap QtxResourceMgr::loadPixmap( const QString& prefix, const QString& name, 
 }
 
 /*!
-  Finds in all sections an existing path corresponding to 'prefix' parameter
-  and load image with name 'name' from this folder
-
-  \return image loaded from file 
-  \param prefix - name of parameter containing some path
-  \param name - name of file
-  \param defPix - default image used when file doesn't exist
+  \brief Load pixmap resource.
+  \overload
+  \param prefix parameter which refers to the resources directory (directories)
+  \param name pixmap file name
+  \param defPix default which should be used if the resource file doesn't exist
+  \return pixmap loaded from the file 
+  \sa defaultPixmap(), setDefaultPixmap()
 */
 QPixmap QtxResourceMgr::loadPixmap( const QString& prefix, const QString& name, const QPixmap& defPix ) const
 {
@@ -1932,20 +2208,25 @@ QPixmap QtxResourceMgr::loadPixmap( const QString& prefix, const QString& name, 
 }
 
 /*!
-  Loads translator for language
-  Name of translator file is constructed by list returning by option "translators" or,
-  if it is empty, by predefined pattern "%P_msg_%L.qm". It is recommended to used in translators
-  name the strings %A, %P, %L whose will be replaced by application name, prefix and language name correspondingly
+  \brief Load translation files according to the specified language.
 
-  \param pref - name of parameter containing path to translator's file.
-  If it is empty, the list of parameters from resource section ( resSection() )
-  is used.
+  Names of the translation files are calculated according to the pattern specified
+  by the "translators" option (this option is read from the section "language" of resources files).
+  By default, "%P_msg_%L.qm" pattern is used.
+  Keywords \%A, \%P, \%L in the pattern are substituted by the application name, prefix and language name
+  correspondingly.
+  For example, for prefix "SUIT" an language "en", all translation files "SUIT_msg_en.qm" are searched and
+  loaded.
 
-  \param l - name of language. If it is empty, then value of parameter "language"
-  from language section ( langSection() ) is used. If it is also empty, then
-  predefined name "en" is used
+  If prefix is empty or null string, all translation files specified in the "resources" section of resources
+  files are loaded (actually, the section is retrieved from resSection() method). 
+  If language is not specified, it is retrieved from the langSection() method, and if the latest is also empty,
+  by default "en" (English) language is used.
 
-  \sa resSection(), langSection()
+  \param pref parameter which defines translation context (for example, package name)
+  \param l language name
+
+  \sa resSection(), langSection(), loadTranslators()
 */
 void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
 {
@@ -2006,10 +2287,10 @@ void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
 }
 
 /*!
-  Loads translators by path and list of files
-
-  \param prefix - value of this parameter must contain path
-  \param translators - list of translators' files 
+  \brief Load translation files for the specified translation context.
+  \param prefix parameter which defines translation context (for example, package name)
+  \param translators list of translation files 
+  \sa loadLanguage()
 */
 void QtxResourceMgr::loadTranslators( const QString& prefix, const QStringList& translators )
 {
@@ -2037,10 +2318,10 @@ void QtxResourceMgr::loadTranslators( const QString& prefix, const QStringList& 
 }
 
 /*!
-  Loads translator by path and file name
-
-  \param prefix - value of this parameter must contain path
-  \param name - name of translator file
+  \brief Load translation file.
+  \param prefix parameter which defines translation context (for example, package name)
+  \param name translator file name
+  \sa loadLanguage(), loadTranslators()
 */
 void QtxResourceMgr::loadTranslator( const QString& prefix, const QString& name )
 {
@@ -2061,9 +2342,8 @@ void QtxResourceMgr::loadTranslator( const QString& prefix, const QString& name 
 }
 
 /*!
-  Remove all translators corresponding to prefix
-
-  \param prefix - parameter containing path
+  \brief Remove all translators corresponding to the specified translation context.
+  \param prefix parameter which defines translation context (for example, package name)
 */
 void QtxResourceMgr::removeTranslators( const QString& prefix )
 {
@@ -2080,9 +2360,9 @@ void QtxResourceMgr::removeTranslators( const QString& prefix )
 }
 
 /*!
-  Moves translators corresponding to prefix to the top of translator stack 
-
-  \param prefix - parameter containing path
+  \brief Move all translators corresponding to the specified translation context 
+         to the top of translators stack (increase their priority).
+  \param prefix parameter which defines translation context (for example, package name)
 */
 void QtxResourceMgr::raiseTranslators( const QString& prefix )
 {
@@ -2097,7 +2377,8 @@ void QtxResourceMgr::raiseTranslators( const QString& prefix )
 }
 
 /*!
-  Copies all resources to user resources, so that they will be saved in user home folder
+  \brief Copy all parameters to the user resources in order to
+         saved them lately in the user home folder.
 */
 void QtxResourceMgr::refresh()
 {
@@ -2111,7 +2392,11 @@ void QtxResourceMgr::refresh()
 }
 
 /*!
-  \brief Sets the resource directories list except user home directory and clear resources
+  \brief Set the resource directories (where global confguration files are searched).
+  
+  This function also clears all currently set resources.
+
+  \param dl directories list
 */
 void QtxResourceMgr::setDirList( const QStringList& dl )
 {
@@ -2123,10 +2408,10 @@ void QtxResourceMgr::setDirList( const QStringList& dl )
 }
 
 /*!
-  Sets resource value
-  \param sect - name of section
-  \param name - name of parameter
-  \param val - string representation of value
+  \brief Set parameter value.
+  \param sect section name
+  \param name parameter name
+  \param val parameter value
 */
 void QtxResourceMgr::setResource( const QString& sect, const QString& name, const QString& val )
 {
@@ -2137,10 +2422,22 @@ void QtxResourceMgr::setResource( const QString& sect, const QString& name, cons
 }
 
 /*!
-  \return name of resource file, which is being found in user home directory
-  \param appName - name of application
-  \param for_load - flag indicating that file will be used for loading (true) or for saving(false)
-  It makes possible to use different resource files for loading and saving
+  \brief Get user configuration file name.
+
+  This method can be redefined in the successor class to customize the user configuration file name.
+  User configuration file is always situated in the user's home directory. By default .<appName>rc
+  file is used on Linux (e.g. .MyApprc) and <appName>.<format> under Windows (e.g. MyApp.xml).
+
+  Parameter \a for_load (not used in default implementation) specifies the usage mode, i.e. if
+  user configuration file is opened for reading or writing. This allows customizing a way of application
+  resources initializing (for example, if the user configuraion file includes version number and there is
+  no file corresponding to this version in the user's home directory, it could be good idea to try 
+  the configuration file from the previous versions of the application).
+  
+  \param appName application name
+  \param for_load boolean flag indicating that file is opened for loading or saving (not used) 
+  \return user configuration file name
+  \sa globalFileName()
 */
 QString QtxResourceMgr::userFileName( const QString& appName, const bool /*for_load*/ ) const
 {
@@ -2160,7 +2457,16 @@ QString QtxResourceMgr::userFileName( const QString& appName, const bool /*for_l
 }
 
 /*!
-  \return name of resource file, which is being found in all resource directories, except user home
+  \brief Get global configuration file name.
+  
+  This method can be redefined in the successor class to customize the global configuration file name.
+  Global configuration files are searched in the directories specified by the application resources
+  environment variable (e.g. MyAppResources). By default <appName>.<format> file name is used
+  (e.g. MyApp.xml).
+
+  \param appName application name
+  \return global configuration file name
+  \sa userFileName()
 */
 QString QtxResourceMgr::globalFileName( const QString& appName ) const
 {
@@ -2168,10 +2474,13 @@ QString QtxResourceMgr::globalFileName( const QString& appName ) const
 }
 
 /*!
-  Replaced substrings by pattern %A, %B, etc by values from map
+  \brief Perform substitution of the patterns like \%A, \%B, etc by values from the map.
 
-  \param src - string to be processed
-  \param substMap - map of values for replacing
+  Used by loadLanguage().
+
+  \param src sring to be processed
+  \param substMap map of values for replacing
+  \return processed string
 */
 QString QtxResourceMgr::substMacro( const QString& src, const QMap<QChar, QString>& substMap ) const
 {

@@ -24,7 +24,6 @@
 
 #include "QtxAction.h"
 
-#include <QMap>
 #include <QStringList>
 
 class QtxResourceMgr;
@@ -37,10 +36,13 @@ class QTX_EXPORT QtxMRUAction : public QtxAction
 {
   Q_OBJECT
 
-  Q_PROPERTY( int visibleCount READ visibleCount WRITE setVisibleCount )
-
 public:
-  enum { MoveFirst, MoveLast, AddFirst, AddLast };
+  //! Items insertion policy
+  typedef enum { MoveFirst,   //!< put the specified item to the beginning
+		 MoveLast,    //!< put the specified item to the end
+		 AddFirst,    //!< if specified item doesn't exist, add it to the beginning
+		 AddLast      //!< if specified item doesn't exist, add it to the end
+  } InsertionMode;
 
 public:
   QtxMRUAction( QObject* = 0 );
@@ -68,7 +70,7 @@ public:
   virtual void loadLinks( QtxResourceMgr*, const QString&, const bool = true );
   virtual void saveLinks( QtxResourceMgr*, const QString&, const bool = true ) const;
 
-Q_SIGNALS:
+signals:
   void         activated( const QString& );
 
 private slots:
@@ -79,9 +81,9 @@ private:
   void         updateMenu();
 
 private:
-  QStringList  myLinks;
-  int          myVisCount;
-  int          myInsertMode;
+  QStringList  myLinks;        //!< most recent used items
+  int          myVisCount;     //!< number of visible MRU items
+  int          myInsertMode;   //!< items insertion policy
 };
 
 #endif

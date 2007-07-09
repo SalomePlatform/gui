@@ -16,6 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File:      QtxLogoMgr.cxx
+// Author:    Sergey TELKOV
+
 #include "QtxLogoMgr.h"
 
 #include <QLabel>
@@ -153,11 +156,11 @@ void QtxLogoMgr::LogoBox::updateContents()
   base->setMargin( 0 );
   base->setSpacing( 3 );
 
-  if ( myCornWid )
-    base->addWidget( myCornWid );
-
   for ( QList<QLabel*>::const_iterator it = myLabels.begin(); it != myLabels.end(); ++it )
     base->addWidget( *it );
+
+  if ( myCornWid )
+    base->addWidget( myCornWid );
 
   QApplication::sendPostedEvents();
 }
@@ -406,7 +409,7 @@ void QtxLogoMgr::generate()
 int QtxLogoMgr::find( const QString& id ) const
 {
   int idx = -1;
-  for ( uint i = 0; i < myLogos.count() && idx < 0; i++ )
+  for ( int i = 0; i < myLogos.count() && idx < 0; i++ )
   {
     if ( myLogos.at( i ).id == id )
       idx = i;

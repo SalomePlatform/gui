@@ -17,53 +17,40 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      QtxActionToolMgr.h
-// Author:    Alexander SOLOVYEV, Sergey TELKOV
+// Author:    Alexander SOLOVYOV, Sergey TELKOV
 
 #ifndef QTXACTIONTOOLMGR_H
 #define QTXACTIONTOOLMGR_H
 
 #include "Qtx.h"
-
-#include <QtCore/qmap.h>
-#include <QtCore/qlist.h>
-
-#include <QtGui/qaction.h>
-
 #include "QtxActionMgr.h"
+
+#include <QMap>
+#include <QList>
 
 class QToolBar;
 class QMainWindow;
+class QAction;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 
-/*!
-  \class QtxActionToolMgr
-  Allows to use set of action to automatically build set of toolbars.
-  With help of methods insert/append/remove it is possible to 
-  describe toolbars and its internal structure.
-  This manager is able to attune toolbar by removing excess separators
-*/
 class QTX_EXPORT QtxActionToolMgr : public QtxActionMgr
 {
   Q_OBJECT
 
-  /*!
-    \class ToolNode
-    Represents a toolbutton inside toolbar
-    For internal purposes only
-  */
   class ToolNode
   {
   public:
     ToolNode() : id( -1 ), visible( true ) {};
+    ToolNode( const int _id ) : id( _id ), visible( true ) {};
 
-    int       id;
-    bool      visible;
+    int       id;          //!< tool node ID
+    bool      visible;     //!< visibility status
   };
 
-  typedef QList<ToolNode> NodeList;
+  typedef QList<ToolNode> NodeList;    //!< toolbar nodes list
 
 protected:
   class ToolCreator;
@@ -132,19 +119,15 @@ private:
   void            triggerUpdate( const int );
 
 private:
-  typedef struct { NodeList nodes; QToolBar* toolBar; } ToolBarInfo;
-  typedef QMap<int, ToolBarInfo>                        ToolBarMap;
+  typedef struct { NodeList nodes; QToolBar* toolBar; } ToolBarInfo;   //!< toolbar info
+  typedef QMap<int, ToolBarInfo>                        ToolBarMap;    //!< toolbars map
 
 private:
-  ToolBarMap      myToolBars;
-  QMainWindow*    myMainWindow;
-  QMap<int,int>   myUpdateIds;
+  ToolBarMap      myToolBars;      //!< toobars map
+  QMainWindow*    myMainWindow;    //!< parent main window
+  QMap<int,int>   myUpdateIds;     //!< list of actions ID being updated
 };
 
-/*!
-  \class QtxActionToolMgr::ToolCreator
-  Allows to create automatically toolbar by data read from file
-*/
 class QtxActionToolMgr::ToolCreator : public QtxActionMgr::Creator
 {
 public:
@@ -155,7 +138,7 @@ public:
                       const ItemAttributes&, const int );
 
 private:
-  QtxActionToolMgr* myMgr;
+  QtxActionToolMgr* myMgr;         //!< toolbar manager
 };
 
 #endif

@@ -19,9 +19,12 @@
 // File:      QtxToolBar.h
 // Author:    Sergey TELKOV
 
+#ifndef QTXTOOLBAR_H
+#define QTXTOOLBAR_H
+
 #include "Qtx.h"
 
-#include <QtGui/qtoolbar.h>
+#include <QToolBar>
 
 class QTX_EXPORT QtxToolBar : public QToolBar
 {
@@ -36,15 +39,17 @@ public:
   QtxToolBar( QWidget* = 0 );
   virtual ~QtxToolBar();
 
-  virtual QSize sizeHint() const;
-  virtual QSize minimumSizeHint() const;
-
   QMainWindow*  mainWindow() const;
 
 public slots:
   virtual void  setVisible( bool );
 
+protected:
+  virtual bool  event( QEvent* );
+
 private:
-  Watcher*      myWatcher;
-  bool          myStretch;
+  Watcher*      myWatcher;   //!< watcher object
+  bool          myStretch;   //!< stretching toolbar flag (not used)
 };
+
+#endif // QTXTOOLBAR_H

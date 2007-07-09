@@ -17,298 +17,142 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File:      QtxActionMenuMgr.cxx
-// Author:    Alexander SOLOVYEV, Sergey TELKOV
+// Author:    Alexander SOLOVYOV, Sergey TELKOV
 
 #include "QtxActionMenuMgr.h"
 
 #include "QtxAction.h"
 
-#include <QtCore/qlist.h>
-#include <QtCore/qfile.h>
-
-#include <QtGui/qmenu.h>
-#include <QtGui/qwidget.h>
-#include <QtGui/qmenubar.h>
-#include <QtGui/qmainwindow.h>
-
-#include <QtXml/qdom.h>
-
-// VSR: Uncomment this #define in order to allow dynamic menus support
-// (emit signals when popup menu is pre-activated)
-// Currently this support is disabled.
-//#define ENABLE_DYNAMIC_MENU
+#include <QMenu>
+#include <QMenuBar>
+#include <QWidget>
+#include <QMainWindow>
 
 /*!
-	Service functions
-	Level: Internal
-*/
-namespace {
-/*
-  QList<int> prepareIds( const QWidget* w )
-  {
-    QList<int> l;
-    const QMenuData* md = 0;
-    if ( w->inherits( "QMenuBar" ) )
-      md = ::qt_cast<QMenuBar*>( w );
-    else if ( w->inherits( "QPopupMenu" ) )
-      md = ::qt_cast<QPopupMenu*>( w );
-    if ( md )
-    {
-      for ( uint i = 0; i < md->count(); i++ )
-	      l.append( md->idAt( i ) );
-    }
-    return l;
-  }
-
-  int getNewId( const QWidget* w, const QValueList<int>& l, bool retId = true )
-  {
-    const QMenuData* md = 0;
-    if ( w->inherits( "QMenuBar" ) )
-      md = ::qt_cast<QMenuBar*>( w );
-    else if ( w->inherits( "QPopupMenu" ) )
-      md = ::qt_cast<QPopupMenu*>( w );
-    if ( md )
-    {
-      for ( uint i = 0, j = 0; i < md->count() && j < l.count(); i++, j++ )
-	      if ( md->idAt( i ) != l[ j ] )
-          return retId ? md->idAt( i ) : i;
-      if ( md->count() > l.count() )
-        return retId ? md->idAt( md->count()-1 ) : md->count() - 1;
-    }
-    return -1;
-  }
-
-  void dumpMenu( QWidget* w, bool before )
-  {
-    if ( !w )
-      return;
-
-    QMenuData* md = 0;
-    if ( w->inherits( "QMenuBar" ) )
-      md = ::qt_cast<QMenuBar*>( w );
-    else if ( w->inherits( "QPopupMenu" ) )
-      md = ::qt_cast<QPopupMenu*>( w );
-
-    if ( !md )
-      return;
-
-    printf( ">>> start dump menu (%s) >>>\n", before ? "before" : "after" );
-    for ( uint i = 0; i < md->count(); i++ )
-      printf( "%d: %d: %s\n", i, md->idAt( i ), md->text( md->idAt( i ) ).latin1() );
-    printf( "<<< end dump menu (%s) <<<\n", before ? "before" : "after" );
-  }
-*/
-};
-
-/*!
-	Class: QtxActionMenuMgr::MenuAction
-	Level: Internal
+  \class QtxActionMenuMgr::MenuNode
+  \brief Represents a menu item inside main menu structure.
+  \internal
 */
 
-class QtxActionMenuMgr::MenuAction : public QtxAction
+class QtxActionMenuMgr::MenuNode
 {
 public:
-  MenuAction( const QString&, const QString&, QObject*, const int = -1, const bool = false );
-  virtual ~MenuAction();
-
-private:
-  int          myId;
-  bool         myEmptyEnabled;
+  MenuNode();
+  MenuNode( MenuNode*, const int, const int, const int );
+  ~MenuNode();
+  
+  MenuNode* parent;       //!< parent menu node
+  int       id;           //!< menu nodeID
+  int       idx;          //!< menu node index 
+  int       group;        //!< menu group ID
+  bool      visible;      //!< visibility status
+  NodeList  children;     //!< children menu nodes list
 };
 
 /*!
-  Constructor for menu action
-  \param text - description text
-  \param menutext - menu text
-  \param parent - parent object
-  \param id - integer identificator of action
-  \param allowEmpty - if it is true, it makes possible to add this action with empty popup to menu
+  \brief Default constructor.
+  \internal
 */
-/*
-QtxActionMenuMgr::MenuAction::MenuAction( const QString& text, const QString& menuText,
-					                                QObject* parent, const int id, const bool allowEmpty )
-: QtxAction( text, menuText, 0, parent ),
-myId( id ),
-myPopup( 0 ),
-myEmptyEnabled( allowEmpty )
+QtxActionMenuMgr::MenuNode::MenuNode()
+: parent( 0 ), id( -1 ), idx( -1 ), group( -1 ), visible( true )
 {
-  myPopup = new QMenu();
 }
-*/
+
 /*!
-  Destructor: deletes internal popup
+  \brief Constructor.
+  \internal
+  \param p parent menu node
+  \param _id menu node ID
+  \param _idx menu node index
+  \param _group menu node group ID
 */
-/*
-QtxActionMenuMgr::MenuAction::~MenuAction()
+QtxActionMenuMgr::MenuNode::MenuNode( MenuNode* p,
+				      const int _id,
+				      const int _idx,
+				      const int _group )
+: parent( p ), id( _id ), idx( _idx ), group( _group ), visible( true )
 {
-  delete myPopup;
+  if ( p )
+    p->children.append( this );
 }
-*/
+
 /*!
-  Adds action to widget, for example, to popup menu or menu bar
+  \brief Destructor.
+  \internal
 */
-/*
-bool QtxActionMenuMgr::MenuAction::addTo( QWidget* w )
+QtxActionMenuMgr::MenuNode::~MenuNode()
 {
-  if ( !w )
-    return false;  // bad widget
-
-  if ( !w->inherits( "QPopupMenu" ) && !w->inherits( "QMenuBar" ) )
-    return false;  // not allowed widget type
-
-  if ( myIds.find( w ) != myIds.end() )
-    return false;  // already added
-
-  if ( !myPopup )
-    return false;  // bad own popup menu
-
-  if ( !myEmptyEnabled && !myPopup->actions().count() )
-    return false;  // not allowed empty menu
-
-  if ( w->inherits( "QPopupMenu" )  )
-  {
-    QValueList<int> l = prepareIds( w );
-    int idx;
-    if ( QtxAction::addTo( w ) && ( idx = getNewId( w, l, false ) ) != -1 )
-    {
-      QPopupMenu* pm = (QPopupMenu*)w;
-      myIds[ w ] = pm->idAt( idx );
-      if ( myId != -1 )
-	      pm->setId( idx, myId );
-      setPopup( pm, myId != -1 ? myId : myIds[ w ], myPopup );
-    }
-  }
-  else if ( w->inherits( "QMenuBar" ) )
-  {
-    QValueList<int> l = prepareIds( w );
-    int idx;
-    if ( QtxAction::addTo( w ) && ( idx = getNewId( w, l, false ) ) != -1 )
-    {
-      QMenuBar* mb = (QMenuBar*)w;
-      myIds[ w ] = mb->idAt( idx );
-      if ( myId != -1 )
-    	  mb->setId( idx, myId );
-      setPopup( mb, myId != -1 ? myId : myIds[ w ], myPopup );
-    }
-
-  }
-  else
-    return false;
-
-  return true;
+  for ( NodeList::iterator it = children.begin(); it != children.end(); ++it )
+    delete *it;
 }
+
+/*!
+  \class QtxActionMenuMgr
+  \brief Main menu actions manager.
+
+  Menu manager allows using of set of action for automatic generating of
+  application main menu and dynamic update of its contents.
+
+  Use insert(), append() and remove() methods to create main menu.
+  Methods show(), hide() allow displaying/erasing of specified menu items.
+
+  Actions can be grouped with help of group identificator. Inside the popup
+  or main menu bar menu items are ordered by the group identifier (ascending).
+
+  Menu manager automatically optimizes the menu by removing extra separators,
+  hiding empty popup menus etc.
 */
 
 /*!
-  Removes action from widget, for example, from popup menu or menu bar
-*/
-/*
-bool QtxActionMenuMgr::MenuAction::removeFrom( QWidget* w )
-{
-  if ( !w )
-    return false;  // bad widget
-
-  if ( !w->inherits( "QPopupMenu" ) && !w->inherits( "QMenuBar" ) )
-    return false;  // not allowed widget type
-
-  if ( myIds.find( w ) == myIds.end() )
-    return false;  // not yet added
-
-  if ( w->inherits( "QPopupMenu" ) )
-  {
-    if ( myId != -1 )
-    {
-      QPopupMenu* pm = (QPopupMenu*)w;
-      int idx = pm->indexOf( myId );
-      if ( idx != -1 )
-        pm->setId( idx, myIds[ w ] );
-    }
-    myIds.remove( w );
-    return QtxAction::removeFrom( w );;
-  }
-  else if ( w->inherits( "QMenuBar" ) )
-  {
-    if ( myId != -1 )
-    {
-      QMenuBar* mb = (QMenuBar*)w;
-      int idx = mb->indexOf( myId );
-      if ( idx != -1 )
-        mb->setId( idx, myIds[ w ] );
-    }
-    myIds.remove( w );
-    return QtxAction::removeFrom( w );
-  }
-  return false;
-}
-*/
-
-/*!
-  \return internal popup of action
-*/
-/*
-QMenu* QtxActionMenuMgr::MenuAction::popup() const
-{
-  return myPopup;
-}
-*/
-
-/*!
-	Class: QtxActionMenuMgr
-	Level: Public
+  \brief Constructor.
+  \param p parent main window
 */
 QtxActionMenuMgr::QtxActionMenuMgr( QMainWindow* p )
-: QtxActionMgr( p ),
-myMenu( p ? p->menuBar() : 0 )
+: QtxActionMgr( p ), 
+  myRoot( new MenuNode() ),
+  myMenu( p ? p->menuBar() : 0 )
 {
-  myRoot.id = -1;
-  myRoot.group = -1;
-
   if ( myMenu ) {
     connect( myMenu, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
-#ifdef ENABLE_DYNAMIC_MENU
-    if ( myMenu->inherits( "QMenuBar" ) )
-      connect( myMenu, SIGNAL( highlighted( int ) ), this, SLOT( onHighlighted( int ) ) );
-#endif
   }
 }
 
 /*!
-  Constructor
+  \brief Constructor.
+  \param mw menu widget
+  \param p parent object
 */
 QtxActionMenuMgr::QtxActionMenuMgr( QWidget* mw, QObject* p )
-: QtxActionMgr( p ),
-myMenu( mw )
+: QtxActionMgr( p ), 
+  myRoot( new MenuNode() ),
+  myMenu( mw )
 {
-  myRoot.id = -1;
-  myRoot.group = -1;
-
-  if ( myMenu )
+  if ( myMenu ) {
     connect( myMenu, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
+  }
 }
 
 /*!
-  Destructor
+  \brief Destructor.
 */
 QtxActionMenuMgr::~QtxActionMenuMgr()
 {
-  for ( NodeList::iterator it = myRoot.children.begin(); it != myRoot.children.end() && myMenu; ++it )
+  for ( MenuMap::Iterator itr = myMenus.begin(); itr != myMenus.end(); ++itr )
   {
-    QAction* a = itemAction( (*it)->id );
-    if ( !a )
-      a = menuAction( (*it)->id );
-
-//    if ( a )
-//      a->removeFrom( myMenu );
+    delete itr.value()->menu();
+    delete itr.value();
   }
 
-  for ( MenuMap::Iterator itr = myMenus.begin(); itr != myMenus.end(); ++itr )
-    delete itr.value();
+  delete myRoot;
 }
 
 /*!
-  \return whether menu item corresponding to action is visible
-  \param actId - identificator of action
-  \param place - identificator of some parent action
+  \brief Check if an action with \a actId identifier is visible to
+  the parent action with \a place identifier.
+  \param actId action ID
+  \param place some parent action ID
+  \return \c true if an action is visible to the parent
+  \sa setVisible()
 */
 bool QtxActionMenuMgr::isVisible( const int actId, const int place ) const
 {
@@ -317,10 +161,11 @@ bool QtxActionMenuMgr::isVisible( const int actId, const int place ) const
 }
 
 /*!
-  Sets visible state of action
-  \param actId - identificator of action
-  \param place - identificator of some parent action
-  \param v - visibility state
+  \brief Set action's visibility flag.
+  \param actId action ID
+  \param place some parent action ID
+  \param v new visibility state
+  \sa isVisible()
 */
 void QtxActionMenuMgr::setVisible( const int actId, const int place, const bool v )
 {
@@ -330,12 +175,18 @@ void QtxActionMenuMgr::setVisible( const int actId, const int place, const bool 
 }
 
 /*!
-  Insert action as children menu item
-  \param id - identificator of action
-  \param menus - few names of parent menu items, separated by '|'. It means sequence of menu items,
-  for example "File|Edit" means File->Edit submenu. If submenu doesn't exist, it will be created.
-  \param group - group identificator
-  \param idx - index inside Qt menu
+  \brief Insert action to the menu.
+
+  Insert an action to the named menu. The \a menus parameter represents 
+  the menu name: it can be a sequence of strings, separated by '|' symbol.
+  For example, "File|Edit" means \c File->Edit submenu.
+  If submenu doesn't exist, it will be created.
+
+  \param id action ID
+  \param menus menu name
+  \param group group ID
+  \param idx menu index inside the menu group
+  \return action ID
 */
 int QtxActionMenuMgr::insert( const int id, const QString& menus, const int group, const int idx )
 {
@@ -343,12 +194,18 @@ int QtxActionMenuMgr::insert( const int id, const QString& menus, const int grou
 }
 
 /*!
-  Insert action as children menu item
-  \param a - action
-  \param menus - few names of parent menu items, separated by '|'. It means sequence of menu items,
-  for example "File|Edit" means File->Edit submenu. If submenu doesn't exist, it will be created.
-  \param group - group identificator
-  \param idx - index inside Qt menu
+  \brief Insert action to the menu.
+
+  Insert an action to the named menu. The \a menus parameter represents 
+  the menu name: it can be a sequence of strings, separated by '|' symbol.
+  For example, "File|Edit" means \c File->Edit submenu.
+  If submenu doesn't exist, it will be created.
+
+  \param a action
+  \param menus menu name
+  \param group group ID
+  \param idx menu index inside the menu group
+  \return action ID
 */
 int QtxActionMenuMgr::insert( QAction* a, const QString& menus, const int group, const int idx )
 {
@@ -356,12 +213,19 @@ int QtxActionMenuMgr::insert( QAction* a, const QString& menus, const int group,
 }
 
 /*!
-  Insert action as children menu item
-  \param id - identificator of action
-  \param menus - list of names of parent menu items, separated by |. It means sequence of menu items,
-  for example "File|Edit" means File->Edit submenu. If submenu doesn't exist, it will be created.
-  \param group - group identificator
-  \param idx - index inside Qt menu
+  \brief Insert action to the menu.
+
+  Insert an action to the named menu. The \a menus parameter represents 
+  the menu names list.
+  For example, string list consisting from two items "File" and "Edit"
+  means \c File->Edit submenu.
+  If submenu doesn't exist, it will be created.
+
+  \param id action ID
+  \param menus menu names list
+  \param group group ID
+  \param idx menu index inside the menu group
+  \return action ID
 */
 int QtxActionMenuMgr::insert( const int id, const QStringList& menus, const int group, const int idx )
 {
@@ -373,12 +237,19 @@ int QtxActionMenuMgr::insert( const int id, const QStringList& menus, const int 
 }
 
 /*!
-  Insert action as children menu item
-  \param a - action
-  \param menus - list of names of parent menu items. It means sequence of menu items,
-  for example "File|Edit" means File->Edit submenu. If submenu doesn't exist, it will be created.
-  \param group - group identificator
-  \param idx - index inside Qt menu
+  \brief Insert action to the menu.
+
+  Insert an action to the named menu. The \a menus parameter represents 
+  the menu names list.
+  For example, string list consisting from two items "File" and "Edit"
+  means \c File->Edit submenu.
+  If submenu doesn't exist, it will be created.
+
+  \param a action
+  \param menus menu names list
+  \param group group ID
+  \param idx menu index inside the menu group
+  \return action ID
 */
 int QtxActionMenuMgr::insert( QAction* a, const QStringList& menus, const int group, const int idx )
 {
@@ -390,40 +261,36 @@ int QtxActionMenuMgr::insert( QAction* a, const QStringList& menus, const int gr
 }
 
 /*!
-  Insert action as children menu item
-  \param id - identificator of action
-  \param pId - identificator of action corresponding to parent menu item
-  \param group - group identificator
-  \param idx - index inside Qt menu
+  \brief Insert action to the menu.
+  \param id action ID
+  \param pId parent menu action ID
+  \param group group ID
+  \param idx menu index inside the menu group
+  \return action ID
 */
 int QtxActionMenuMgr::insert( const int id, const int pId, const int group, const int idx )
 {
   if ( id == -1 )
     return -1;
 
-  MenuNode* pNode = pId == -1 ? &myRoot : find( pId );
+  MenuNode* pNode = pId == -1 ? myRoot : find( pId );
   if ( !pNode )
     return -1;
 
-  MenuNode* node = new MenuNode( pNode );
-  node->id = id;
-  node->idx = idx;
-  node->group = group;
-
-  pNode->children.append( node );
+  MenuNode* node = new MenuNode( pNode, id, idx, group );
 
   triggerUpdate( pNode->id, false );
-
 
   return node->id;
 }
 
 /*!
-  Insert action as children menu item
-  \param a - action
-  \param pId - identificator of action corresponding to parent menu item
-  \param group - group identificator
-  \param idx - index inside Qt menu
+  \brief Insert action to the menu.
+  \param a action
+  \param pId parent menu action ID
+  \param group group ID
+  \param idx menu index inside the menu group
+  \return action ID
 */
 int QtxActionMenuMgr::insert( QAction* a, const int pId, const int group, const int idx )
 {
@@ -431,18 +298,17 @@ int QtxActionMenuMgr::insert( QAction* a, const int pId, const int group, const 
 }
 
 /*!
-  Create and insert action as children menu item
-  \return identificator of inserted action
-  \param title - menu text of action
-  \param pId - identificator of action corresponding to parent menu item
-  \param group - group identificator
-  \param id - identificator of new action
-  \param idx - index inside Qt menu
-  \param allowEmpty - indicates, that it is possible to add this action with empty popup menu to other menu
+  \brief Create and insert menu item action to the menu.
+  \param title menu text
+  \param pId parent menu action ID
+  \param group group ID
+  \param id action ID
+  \param idx menu index inside the menu group
+  \return action ID
 */
-int QtxActionMenuMgr::insert( const QString& title, const int pId, const int group, const int id, const int idx, const bool allowEmpty )
+int QtxActionMenuMgr::insert( const QString& title, const int pId, const int group, const int id, const int idx )
 {
-  MenuNode* pNode = pId == -1 ? &myRoot : find( pId );
+  MenuNode* pNode = pId == -1 ? myRoot : find( pId );
   if ( !pNode )
     return -1;
 
@@ -462,20 +328,12 @@ int QtxActionMenuMgr::insert( const QString& title, const int pId, const int gro
   int gid = (id == -1 || eNode ) ? generateId() : id;
 
   QAction* ma = new QAction( title, this );
-  ma->setMenu( new QMenu( myMenu ) );
+  ma->setMenu( new QMenu( 0 ) );
 
   connect( ma->menu(), SIGNAL( aboutToShow() ), this, SLOT( onAboutToShow() ) );
   connect( ma->menu(), SIGNAL( aboutToHide() ), this, SLOT( onAboutToHide() ) );
-#ifdef ENABLE_DYNAMIC_MENU
-  connect( ma->menu(), SIGNAL( highlighted( int ) ), this, SLOT( onHighlighted( int ) ) );
-#endif
 
-  MenuNode* node = new MenuNode( pNode );
-  node->group = group;
-  node->idx = idx;
-  node->id = myMenus.insert( gid, ma ).key();
-
-  pNode->children.append( node );
+  MenuNode* node = new MenuNode( pNode, myMenus.insert( gid, ma ).key(), idx, group );
 
   triggerUpdate( pNode->id, false );
 
@@ -483,56 +341,66 @@ int QtxActionMenuMgr::insert( const QString& title, const int pId, const int gro
 }
 
 /*!
-  Create and insert action as children menu item
-  \return identificator of inserted action
-  \param title - menu text of action
-  \param menus - string list of parents' menu texts, separated by |
-  \param group - group identificator
-  \param id - identificator of new action
-  \param idx - index inside Qt menu
-  \param allowEmpty - indicates, that it is possible to add this action with empty popup menu to other menu
+  \brief Create and insert menu item action to the menu.
+
+  Insert an action to the named menu. The \a menus parameter represents 
+  the menu name: it can be a sequence of strings, separated by '|' symbol.
+  For example, "File|Edit" means \c File->Edit submenu.
+  If submenu doesn't exist, it will be created.
+
+  \param title menu text
+  \param menus menu name
+  \param group group ID
+  \param id action ID
+  \param idx menu index inside the menu group
+  \return action ID
 */
-int QtxActionMenuMgr::insert( const QString& title, const QString& menus, const int group, const int id, const int idx, const bool allowEmpty )
+int QtxActionMenuMgr::insert( const QString& title, const QString& menus, const int group, const int id, const int idx )
 {
-  return insert( title, menus.split( "|", QString::SkipEmptyParts ), group, id, idx, allowEmpty );
+  return insert( title, menus.split( "|", QString::SkipEmptyParts ), group, id, idx );
 }
 
 /*!
-  Create and insert action as children menu item
-  \return identificator of inserted action
-  \param title - menu text of action
-  \param menus - list of parents menu items
-  \param group - group identificator
-  \param id - identificator of new action
-  \param idx - index inside Qt menu
-  \param allowEmpty - indicates, that it is possible to add this action with empty popup menu to other menu
+  \brief Create and insert menu item action to the menu.
+
+  Insert an action to the named menu. The \a menus parameter represents 
+  the menu names list.
+  For example, string list consisting from two items "File" and "Edit"
+  means \c File->Edit submenu.
+  If submenu doesn't exist, it will be created.
+
+  \param title menu text
+  \param menus menu names list
+  \param group group ID
+  \param id action ID
+  \param idx menu index inside the menu group
+  \return action ID
 */
-int QtxActionMenuMgr::insert( const QString& title, const QStringList& menus, const int group, const int id, const int idx, const bool allowEmpty )
+int QtxActionMenuMgr::insert( const QString& title, const QStringList& menus, const int group, const int id, const int idx )
 {
   int pId = createMenu( menus, -1 );
-  return insert( title, pId, group, id, idx, allowEmpty );
+  return insert( title, pId, group, id, idx );
 }
 
 /*!
-  Create and append action as last children
-  \return identificator of inserted action
-  \param title - menu text of action
-  \param pId - id of action corresponding to parent menu item
-  \param group - group identificator
-  \param id - identificator of new action
-  \param allowEmpty - indicates, that it is possible to add this action with empty popup menu to other menu
+  \brief Create and add menu item action to the end of menu.
+  \param title menu text
+  \param pId parent menu action ID
+  \param group group ID
+  \param id action ID
+  \return action ID
 */
-int QtxActionMenuMgr::append( const QString& title, const int pId, const int group, const int id, const bool allowEmpty )
+int QtxActionMenuMgr::append( const QString& title, const int pId, const int group, const int id )
 {
-  return insert( title, pId, group, id, allowEmpty );
+  return insert( title, pId, group, id );
 }
 
 /*!
-  Create and append action as last children
-  \return identificator of inserted action
-  \param id - identificator of existing action
-  \param pId - id of action corresponding to parent menu item
-  \param group - group identificator
+  \brief Create and add menu item action to the end of menu.
+  \param id action ID
+  \param pId parent menu action ID
+  \param group group ID
+  \return action ID
 */
 int QtxActionMenuMgr::append( const int id, const int pId, const int group )
 {
@@ -540,11 +408,11 @@ int QtxActionMenuMgr::append( const int id, const int pId, const int group )
 }
 
 /*!
-  Create and append action as last children
-  \return identificator of inserted action
-  \param a - action
-  \param pId - id of action corresponding to parent menu item
-  \param group - group identificator
+  \brief Create and add menu item action to the end of menu.
+  \param a action
+  \param pId parent menu action ID
+  \param group group ID
+  \return action ID
 */
 int QtxActionMenuMgr::append( QAction* a, const int pId, const int group )
 {
@@ -552,25 +420,24 @@ int QtxActionMenuMgr::append( QAction* a, const int pId, const int group )
 }
 
 /*!
-  Create and insert action as first children
-  \return identificator of inserted action
-  \param title - menu text of action
-  \param pId - id of action corresponding to parent menu item
-  \param group - group identificator
-  \param id - identificator of new action
-  \param allowEmpty - indicates, that it is possible to add this action with empty popup menu to other menu
+  \brief Create and add menu item action to the beginning of menu.
+  \param title menu text
+  \param pId parent menu action ID
+  \param group group ID
+  \param id action ID
+  \return action ID
 */
-int QtxActionMenuMgr::prepend( const QString& title, const int pId, const int group, const int id, const bool allowEmpty )
+int QtxActionMenuMgr::prepend( const QString& title, const int pId, const int group, const int id )
 {
-  return insert( title, pId, group, id, 0, allowEmpty );
+  return insert( title, pId, group, id, 0 );
 }
 
 /*!
-  Create and insert action as last children
-  \return identificator of inserted action
-  \param id - identificator of existing action
-  \param pId - id of action corresponding to parent menu item
-  \param group - group identificator
+  \brief Create and add menu item action to the beginning of menu.
+  \param id action ID
+  \param pId parent menu action ID
+  \param group group ID
+  \return action ID
 */
 int QtxActionMenuMgr::prepend( const int id, const int pId, const int group )
 {
@@ -578,11 +445,11 @@ int QtxActionMenuMgr::prepend( const int id, const int pId, const int group )
 }
 
 /*!
-  Create and insert action as last children
-  \return identificator of inserted action
-  \param a - action
-  \param pId - id of action corresponding to parent menu item
-  \param group - group identificator
+  \brief Create and add menu item action to the beginning of menu.
+  \param a action
+  \param pId parent menu action ID
+  \param group group ID
+  \return action ID
 */
 int QtxActionMenuMgr::prepend( QAction* a, const int pId, const int group )
 {
@@ -590,8 +457,8 @@ int QtxActionMenuMgr::prepend( QAction* a, const int pId, const int group )
 }
 
 /*!
-  Removes menu item corresponding to action
-  \param id - identificator of action
+  \brief Remove menu item with given \a id.
+  \param id menu action ID
 */
 void QtxActionMenuMgr::remove( const int id )
 {
@@ -600,14 +467,14 @@ void QtxActionMenuMgr::remove( const int id )
 }
 
 /*!
-  Removes menu item
-  \param id - identificator of action
-  \param pId - identificator of action corresponding to parent menu item
-  \param group - group identificator
+  \brief Remove menu item with given \a id.
+  \param id menu action ID
+  \param pId parent menu action ID
+  \param group group ID
 */
 void QtxActionMenuMgr::remove( const int id, const int pId, const int group )
 {
-  MenuNode* pNode = pId == -1 ? &myRoot : find( pId );
+  MenuNode* pNode = pId == -1 ? myRoot : find( pId );
   if ( !pNode )
     return;
 
@@ -625,8 +492,9 @@ void QtxActionMenuMgr::remove( const int id, const int pId, const int group )
 }
 
 /*!
-  Shows menu item corresponding to action
-  \param id - identificator of action
+  \brief Show menu item with given \a id.
+  \param id menu action ID
+  \sa hide()
 */
 void QtxActionMenuMgr::show( const int id )
 {
@@ -634,8 +502,9 @@ void QtxActionMenuMgr::show( const int id )
 }
 
 /*!
-  Hides menu item corresponding to action
-  \param id - identificator of action
+  \brief Hide menu item with given \a id.
+  \param id menu action ID
+  \sa show()
 */
 void QtxActionMenuMgr::hide( const int id )
 {
@@ -643,8 +512,10 @@ void QtxActionMenuMgr::hide( const int id )
 }
 
 /*!
-  \return shown status of menu item corresponding to action
-  \param id - identificator of action
+  \brief Get visibility status for menu item with given \a id.
+  \param id menu action ID
+  \return \c true if an item is shown
+  \sa setShown()
 */
 bool QtxActionMenuMgr::isShown( const int id ) const
 {
@@ -656,9 +527,10 @@ bool QtxActionMenuMgr::isShown( const int id ) const
 }
 
 /*!
-  Sets shown status of menu item corresponding to action
-  \param id - identificator of action
-  \param on - new shown status
+  \brief Set visibility status for menu item with given \a id.
+  \param id menu action ID
+  \param on new visibility status
+  \sa isShown()
 */
 void QtxActionMenuMgr::setShown( const int id, const bool on )
 {
@@ -670,13 +542,15 @@ void QtxActionMenuMgr::setShown( const int id, const bool on )
     if ( (*it)->visible != on )
     {
       (*it)->visible = on;
-      triggerUpdate( (*it)->parent ? (*it)->parent->id : myRoot.id, false );
+      triggerUpdate( (*it)->parent ? (*it)->parent->id : myRoot->id, false );
     }
   }
 }
 
 /*!
-  Changes the specified menu title
+  \brief Change menu title for the action with given \a id.
+  \param id menu action ID
+  \param title new menu title
 */
 void QtxActionMenuMgr::change( const int id, const QString& title )
 {
@@ -685,6 +559,11 @@ void QtxActionMenuMgr::change( const int id, const QString& title )
     a->setText( title );
 }
 
+/*!
+  \brief Called when the submenu is about to show.
+  
+  Emits the signal menuAboutToShow(QMenu*).
+*/
 void QtxActionMenuMgr::onAboutToShow()
 {
   QMenu* m = ::qobject_cast<QMenu*>( sender() );
@@ -692,6 +571,11 @@ void QtxActionMenuMgr::onAboutToShow()
     emit menuAboutToShow( m );
 }
 
+/*!
+  \brief Called when the submenu is about to hide.
+  
+  Emits the signal menuAboutToHide(QMenu*).
+*/
 void QtxActionMenuMgr::onAboutToHide()
 {
   QMenu* m = ::qobject_cast<QMenu*>( sender() );
@@ -700,7 +584,11 @@ void QtxActionMenuMgr::onAboutToHide()
 }
 
 /*!
-  SLOT: called when corresponding menu is destroyed, clears internal pointer to menu
+  \brief Called when the corresponding menu object is destroyed.
+
+  Clears internal pointer to menu to disable crashes.
+  
+  \param obj (menu) object being destroyed
 */
 void QtxActionMenuMgr::onDestroyed( QObject* obj )
 {
@@ -708,39 +596,33 @@ void QtxActionMenuMgr::onDestroyed( QObject* obj )
     myMenu = 0;
 }
 
+
 /*!
-  SLOT: called when menu item is highlighted
+  \fn void QtxActionMenuMgr::menuAboutToShow( QMenu* m )
+  \brief Emitted when the menu is about to be shown.
+  \param m menu being shown
 */
-void QtxActionMenuMgr::onHighlighted( int id )
+
+/*!
+  \fn void QtxActionMenuMgr::menuAboutToHide( QMenu* m )
+  \brief Emitted when the menu is about to be hidden.
+  \param m menu being hidden
+*/
+
+/*!
+  \brief Get the menu widget.
+  \return menu widget (QMenuBar)
+*/
+QWidget* QtxActionMenuMgr::menuWidget() const
 {
-  const QObject* snd = sender();
-  int pid = 0, realId;
-  if ( myMenu && snd == myMenu )
-    pid = -1;
-  else
-  {
-    for ( MenuMap::Iterator itr = myMenus.begin(); itr != myMenus.end(); ++itr )
-    {
-      if ( itr.value()->menu() && itr.value()->menu() == snd )
-	      pid = itr.key();
-    }
-  }
-  if ( pid )
-  {
-    realId = findId( id, pid );
-    if ( realId != -1 )
-    {
-      emit menuHighlighted( pid, realId );
-      triggerUpdate( realId );
-    }
-  }
+  return myMenu;
 }
 
 /*!
-  Assignes new menu with manager
-  \param mw - new menu
+  \brief Assign new menu widget to the menu manager.
+  \param mw new menu widget
 */
-void QtxActionMenuMgr::setWidget( QWidget* mw )
+void QtxActionMenuMgr::setMenuWidget( QWidget* mw )
 {
   if ( myMenu == mw )
     return;
@@ -752,29 +634,33 @@ void QtxActionMenuMgr::setWidget( QWidget* mw )
 
   if ( myMenu )
     connect( myMenu, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
+
+  triggerUpdate( -1, true );
 }
 
 /*!
-  \return menu node by it's place description
-  \param actId - identificator of action
-  \param pId - identificator of action corresponding to start menu item
-  \param rec - recursive search
+  \brief Search menu node.
+  \param id menu action ID
+  \param pId parent menu item ID
+  \param rec if \c true perform recursive search
+  \return menu node or 0 if it is not found
 */
-QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const int actId, const int pId, const bool rec ) const
+QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const int id, const int pId, const bool rec ) const
 {
-  return find( actId, find( pId ), rec );
+  return find( id, find( pId ), rec );
 }
 
 /*!
-  \return menu node by it's place description
-  \param actId - identificator of action
-  \param startNode - start menu item
-  \param rec - recursive search
+  \brief Search menu node.
+  \param id menu action ID
+  \param startNode start menu node (if 0, search from root node)
+  \param rec if \c true perform recursive search
+  \return menu node or 0 if it is not found
 */
 QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const int id, MenuNode* startNode, const bool rec ) const
 {
   MenuNode* node = 0;
-  MenuNode* start = startNode ? startNode : (MenuNode*)&myRoot;
+  MenuNode* start = startNode ? startNode : myRoot;
   for ( NodeList::iterator it = start->children.begin(); it != start->children.end() && !node; ++it )
   {
     if ( (*it)->id == id )
@@ -786,15 +672,15 @@ QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const int id, MenuNode* star
 }
 
 /*!
-  Finds menu node
-  \return true if at least one node is found
-  \param id - identificator of action
-  \param lst - list to be filled with found nodes
-  \param startNode - start menu item
+  \brief Search recursively all menu nodes with given \a id.
+  \param id menu action ID
+  \param NodeList resulting list of menu nodes
+  \param startNode start menu node (if 0, search from root node)
+  \return \c true if at least one node is found
 */
 bool QtxActionMenuMgr::find( const int id, NodeList& lst, MenuNode* startNode ) const
 {
-  MenuNode* start = startNode ? startNode : (MenuNode*)&myRoot;
+  MenuNode* start = startNode ? startNode : myRoot;
   for ( NodeList::iterator it = start->children.begin(); it != start->children.end(); ++it )
   {
     MenuNode* node = *it;
@@ -807,11 +693,11 @@ bool QtxActionMenuMgr::find( const int id, NodeList& lst, MenuNode* startNode ) 
 }
 
 /*!
-  Finds menu node
-  \return menu node
-  \param title - menu text of searched node
-  \param pId - id of action corresponding to start menu item
-  \param rec - recursive searching
+  \brief Search menu node.
+  \param title menu item title
+  \param pId parent menu item ID
+  \param rec if \c true perform recursive search
+  \return menu node or 0 if it is not found
 */
 QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const QString& title, const int pId, const bool rec ) const
 {
@@ -819,15 +705,15 @@ QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const QString& title, const 
 }
 
 /*!
-  Finds menu node
-  \return true if at least one node is found
-  \param title - menu text of node
-  \param lst - list to be filled with found nodes
-  \param startNode - start menu item
+  \brief Search recursively all menu nodes with given \a title.
+  \param title menu item title
+  \param NodeList resulting list of menu nodes
+  \param startNode start menu node (if 0, search from root node)
+  \return \c true if at least one node is found
 */
 bool QtxActionMenuMgr::find( const QString& title, NodeList& lst, MenuNode* startNode ) const
 {
-  MenuNode* start = startNode ? startNode : (MenuNode*)&myRoot;
+  MenuNode* start = startNode ? startNode : myRoot;
   for ( NodeList::iterator it = start->children.begin(); it != start->children.end(); ++it )
   {
     QAction* a = itemAction( (*it)->id );
@@ -842,16 +728,16 @@ bool QtxActionMenuMgr::find( const QString& title, NodeList& lst, MenuNode* star
 }
 
 /*!
-  Finds menu node
-  \return menu node
-  \param title - menu text of searched node
-  \param startNode - start menu item
-  \param rec - recursive searching
+  \brief Search menu node.
+  \param title menu item title
+  \param startNode start menu node (if 0, search from root node)
+  \param rec if \c true perform recursive search
+  \return menu node or 0 if it is not found
 */
 QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const QString& title, MenuNode* startNode, const bool rec ) const
 {
   MenuNode* node = 0;
-  MenuNode* start = startNode ? startNode : (MenuNode*)&myRoot;
+  MenuNode* start = startNode ? startNode : myRoot;
   for ( NodeList::iterator it = start->children.begin(); it != start->children.end() && !node; ++it )
   {
     QAction* a = itemAction( (*it)->id );
@@ -866,14 +752,14 @@ QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const QString& title, MenuNo
 }
 
 /*!
-  Find id among children
-  \return id (>0) if on success or -1 on fail
-  \param id - id to be searched
-  \param pid - id of parent, among children of that 'id' must be searched
+  \brief Find menu item by given ID (one-level only).
+  \param id menu action ID
+  \param pid parent meun item ID
+  \return id (>0) on success or -1 if menu item is not found
 */
 int QtxActionMenuMgr::findId( const int id, const int pid ) const
 {
-  MenuNode* start = pid != -1 ? find( pid ) : (MenuNode*)&myRoot;
+  MenuNode* start = pid != -1 ? find( pid ) : myRoot;
   if ( start )
   {
     for ( NodeList::iterator it = start->children.begin(); it != start->children.end(); ++it )
@@ -886,13 +772,13 @@ int QtxActionMenuMgr::findId( const int id, const int pid ) const
 }
 
 /*!
-  Removes child
-  \param id - id of child to be removed
-  \param startNode - parent menu item
+  \brief Removes menu node (with all its children).
+  \param id menu action ID
+  \param startNode parent menu node which search starts from (if 0, search starts from root)
 */
 void QtxActionMenuMgr::removeMenu( const int id, MenuNode* startNode )
 {
-  MenuNode* start = startNode ? startNode : &myRoot;
+  MenuNode* start = startNode ? startNode : myRoot;
   for ( NodeList::iterator it = start->children.begin(); it != start->children.end(); ++it )
   {
     if ( (*it)->id == id )
@@ -903,8 +789,9 @@ void QtxActionMenuMgr::removeMenu( const int id, MenuNode* startNode )
 }
 
 /*!
-  \return menu item action by id
-  \param id - id of action
+  \brief Get action by \a id.
+  \param id action ID
+  \return action or 0 if \a id is invalid
 */
 QAction* QtxActionMenuMgr::itemAction( const int id ) const
 {
@@ -912,8 +799,9 @@ QAction* QtxActionMenuMgr::itemAction( const int id ) const
 }
 
 /*!
-  \return menu action by id
-  \param id - id of action
+  \brief Get submenu action by \a id.
+  \param id submenu ID
+  \return submenu action or 0 if action is not found
 */
 QAction* QtxActionMenuMgr::menuAction( const int id ) const
 {
@@ -926,18 +814,38 @@ QAction* QtxActionMenuMgr::menuAction( const int id ) const
 }
 
 /*!
-  Updates menu ( isUpdatesEnabled() must return true )
-  \param startNode - first menu item to be updated
-  \param rec - recursive update
-  \param updParent - update also parent item (without recursion)
-  \sa isUpdatesEnabled()
+  \brief Get submenu action by \a id.
+  \param id submenu ID
+  \return submenu action or 0 if it is not found
+*/
+int QtxActionMenuMgr::menuActionId( QAction* a ) const
+{
+  int id = -1;
+  for ( MenuMap::ConstIterator itr = myMenus.begin(); itr != myMenus.end() && id == -1; ++itr )
+  {
+    if ( itr.value() == a )
+      id = itr.key();
+  }
+  return id;
+}
+
+/*!
+  \brief Update menu.
+
+  Does nothing if update is disabled.
+
+  \param startNode start menu item to be updated
+  \param rec if \c true, perform recursive update
+  \param updParent if \c true update also parent item (without recursion)
+
+  \sa isUpdatesEnabled() and setUpdatesEnabled()
 */
 void QtxActionMenuMgr::updateMenu( MenuNode* startNode, const bool rec, const bool updParent )
 {
   if ( !isUpdatesEnabled() )
     return;
 
-  MenuNode* node = startNode ? startNode : &myRoot;
+  MenuNode* node = startNode ? startNode : myRoot;
 
   QWidget* mw = menuWidget( node );
   if ( !mw )
@@ -1010,7 +918,9 @@ void QtxActionMenuMgr::updateMenu( MenuNode* startNode, const bool rec, const bo
 }
 
 /*!
-  Updates menu (virtual variant). To be redefined for custom activity on menu updating
+  \brief Internal update.
+  
+  Customizes the menu update processing.
 */
 void QtxActionMenuMgr::internalUpdate()
 {
@@ -1022,8 +932,9 @@ void QtxActionMenuMgr::internalUpdate()
 }
 
 /*!
-  \return true if widget is non-empty menu
-  \param wid - widget to be checked
+  \brief Check if menu widget has any actions.
+  \param wid widget to be checked
+  \return \c true if widget contains action(s)
 */
 bool QtxActionMenuMgr::checkWidget( QWidget* wid ) const
 {
@@ -1034,12 +945,14 @@ bool QtxActionMenuMgr::checkWidget( QWidget* wid ) const
 }
 
 /*!
-  \return popup of menu item
-  \param node - menu item
+  \brief Get menu widget for the given \a node.
+  \param node menu node
+  \return popup menu or main menu corresponding to the menu node
+  (or 0 if it is not found)
 */
-QWidget* QtxActionMenuMgr::menuWidget( MenuNode* node) const
+QWidget* QtxActionMenuMgr::menuWidget( MenuNode* node ) const
 {
-  if ( !node || node == &myRoot )
+  if ( !node || node == myRoot )
      return myMenu;
 
   if ( !myMenus.contains( node->id ) || !myMenus[node->id] )
@@ -1049,8 +962,8 @@ QWidget* QtxActionMenuMgr::menuWidget( MenuNode* node) const
 }
 
 /*!
-  Removes excess separators of menu
-  \param wid - menu to be processed
+  \brief Remove extra separators from menu widget.
+  \param wid menu widget to be processed
 */
 void QtxActionMenuMgr::simplifySeparators( QWidget* wid )
 {
@@ -1058,9 +971,9 @@ void QtxActionMenuMgr::simplifySeparators( QWidget* wid )
 }
 
 /*!
-  Removes special symbols (&) from string
-  \param txt - string to be processed
-  \return clear variant of string
+  \brief Remove special symbols (&) from string to get clear menu title.
+  \param txt string to be processed
+  \return clear title
 */
 QString QtxActionMenuMgr::clearTitle( const QString& txt ) const
 {
@@ -1076,9 +989,10 @@ QString QtxActionMenuMgr::clearTitle( const QString& txt ) const
 }
 
 /*!
-  Creates and inserts many menu items
-  \param lst - list of menu texts
-  \param pId - id of action corresponding to parent menu item
+  \brief Create and inserts menu item recursively.
+  \param lst list of menu names
+  \param pId parent menu item ID
+  \return created menu item ID (last in the chain)
 */
 int QtxActionMenuMgr::createMenu( const QStringList& lst, const int pId )
 {
@@ -1096,10 +1010,10 @@ int QtxActionMenuMgr::createMenu( const QStringList& lst, const int pId )
 }
 
 /*!
-  Loads actions description from file
-  \param fname - name of file
-  \param r - reader of file
-  \return true on success
+  \brief Load actions description from the file.
+  \param fname file name
+  \param r action reader
+  \return \c true on success and \c false on error
 */
 bool QtxActionMenuMgr::load( const QString& fname, QtxActionMgr::Reader& r )
 {
@@ -1108,9 +1022,10 @@ bool QtxActionMenuMgr::load( const QString& fname, QtxActionMgr::Reader& r )
 }
 
 /*!
-  \return true if item has such child
-  \param title - menu text of child
-  \param pid - id of action corresponding to item
+  \brief Check if the parent menu contains menu item with given \a title.
+  \param title menu title
+  \param pid parent menu item ID
+  \return \c true if parent menu item contains such child item
 */
 bool QtxActionMenuMgr::containsMenu( const QString& title, const int pid ) const
 {
@@ -1118,9 +1033,10 @@ bool QtxActionMenuMgr::containsMenu( const QString& title, const int pid ) const
 }
 
 /*!
-  \return true if item has such child
-  \param id - id of action corresponding to child
-  \param pid - id of action corresponding to item
+  \brief Check if the parent menu contains menu item with given \a id.
+  \param id menu item ID
+  \param pid parent menu item ID
+  \return \c true if parent menu item contains such child item
 */
 bool QtxActionMenuMgr::containsMenu( const int id, const int pid ) const
 {
@@ -1128,7 +1044,23 @@ bool QtxActionMenuMgr::containsMenu( const int id, const int pid ) const
 }
 
 /*!
-  \Sets trigger for delayed update
+  \brief Get menu by the specified identifier.
+  \param id menu item ID
+  \return menu pointer or 0 if menu is not found
+*/
+QMenu* QtxActionMenuMgr::findMenu( const int id ) const
+{
+  QMenu* m = 0;
+  QAction* a = menuAction( id );
+  if ( a )
+    m = a->menu();
+  return m;
+}
+
+/*!
+  \brief Perform delayed menu update.
+  \param id menu item ID
+  \param rec if \c true, perform recursive update
 */
 void QtxActionMenuMgr::triggerUpdate( const int id, const bool rec )
 {
@@ -1141,20 +1073,23 @@ void QtxActionMenuMgr::triggerUpdate( const int id, const bool rec )
 }
 
 /*!
-  \Sets trigger for delayed update
+  \brief Called when delayed content update is performed.
+
+  Customizes the content update operation.
 */
 void QtxActionMenuMgr::updateContent()
 {
-  // Warning: For correct updating it is necessary to update the most enclosed submenu firstly
-  //          because not updated empty submenu will be skipped. Now the submenu are iterated in
-  //          ascending order their identifiers. For a submenu with automatically generated identifiers
-  //          will work correctly as the uppermost submenu have the biggest number (identifiers generated
-  //          reduction from -1). Generally when any submenu will have positive identifiers are obviously
-  //          appropriated can to work not truly. In this case it is required to improve the given method
-  //          and to add preliminary sorting a submenu on depth of an enclosure.
+  // Warning: For correct updating it is necessary to update the most enclosed submenu in first turn
+  //          because not updated empty submenu will be skipped. Now the submenus are iterated in
+  //          ascending order according to their identifiers. For a submenus with automatically generated 
+  //          identifiers this will work correctly since the uppermost submenus have the biggest number
+  //          (identifiers are generated by decrementing 1 starting from -1). In general, if any submenu
+  //          have positive identifiers this method might not work correctly. In this case it would be
+  //          necessary to improve this method and to add preliminary sorting a submenus by depth of an 
+  //          enclosure.
   for ( QMap<int, bool>::const_iterator it = myUpdateIds.constBegin(); it != myUpdateIds.constEnd(); ++it )
   {
-    MenuNode* node = it.key() == -1 ? &myRoot : find( it.key() );
+    MenuNode* node = it.key() == -1 ? myRoot : find( it.key() );
     if ( node )
       updateMenu( node, it.value() );
   }
@@ -1162,29 +1097,38 @@ void QtxActionMenuMgr::updateContent()
 }
 
 /*!
-  Constructor
-  \param r - menu reader
-  \param mgr - menu manager
+  \class QtxActionMenuMgr::MenuCreator
+  \brief Menu actions creator.
+
+  Used by Reader to create actions by reading descriptions from the file
+  and fill in the action manager with the actions.
+*/
+
+/*!
+  \brief Constructor.
+  \param r menu actions reader
+  \param mgr menu manager
 */
 QtxActionMenuMgr::MenuCreator::MenuCreator( QtxActionMgr::Reader* r, QtxActionMenuMgr* mgr )
 : QtxActionMgr::Creator( r ),
-myMgr( mgr )
+  myMgr( mgr )
 {
 }
 
 /*!
-  Destructor
+  \brief Destructor.
 */
 QtxActionMenuMgr::MenuCreator::~MenuCreator()
 {
 }
 
 /*!
-  Appends new menu items
-  \param tag - tag of item
-  \param subMenu - it has submenu
-  \param attr - list of attributes
-  \param pId - id of action corresponding to parent item
+  \brief Create and append to the action manager a new action.
+  \param tag item tag name
+  \param subMenu \c true if this item is submenu
+  \param attr attributes map
+  \param pId parent action ID
+  \return menu action ID
 */
 int QtxActionMenuMgr::MenuCreator::append( const QString& tag, const bool subMenu,
                                            const ItemAttributes& attr, const int pId )

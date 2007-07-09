@@ -19,12 +19,12 @@
 // File:      QtxDockAction.h
 // Author:    Sergey TELKOV
 
-#ifndef QTX_DOCKACTION_H
-#define QTX_DOCKACTION_H
+#ifndef QTXDOCKACTION_H
+#define QTXDOCKACTION_H
 
 #include "QtxAction.h"
 
-#include <QtCore/qlist.h>
+#include <QList>
 
 class QIcon;
 class QString;
@@ -41,7 +41,11 @@ class QTX_EXPORT QtxDockAction : public QtxAction
   Q_OBJECT
 
 public:
-  enum { ToolBar, DockWidget, Both };
+  //! Dock windows type.
+  enum { ToolBar,      //!< list toolbars only
+	 DockWidget,   //!< list dockable windows only
+	 Both          //!< list toolbars and dockable windows
+  } DockType;
 
 public:
   QtxDockAction( QMainWindow* );
@@ -54,7 +58,7 @@ public:
 
   QMainWindow* mainWindow() const;
 
-private Q_SLOTS:
+private slots:
   void         onAboutToShow();
 
 protected:
@@ -69,12 +73,12 @@ private:
   void         dockWidgets( QList<QDockWidget*>& ) const;
 
 private:
-  int          myType;
-  QMainWindow* myMain;
+  int          myType;   //!< dock action type
+  QMainWindow* myMain;   //!< parent main window
 };
 
 #ifdef WIN32
 #pragma warning( default:4251 )
 #endif
 
-#endif
+#endif // QTXDOCKACTION_H

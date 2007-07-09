@@ -24,18 +24,17 @@
 
 #include "Qtx.h"
 
-#include <QtCore/qmap.h>
-#include <QtGui/qevent.h>
-#include <QtGui/qframe.h>
-#include <QtGui/qtabbar.h>
+#include <QWidget>
+#include <QFrame>
+#include <QTabBar>
+#include <QEvent>
+#include <QMap>
 
 class QAction;
-class QTabBar;
-class QPainter;
 class QSplitter;
 class QPushButton;
-class QRubberBand;
 class QStackedWidget;
+class QRubberBand;
 
 class QtxWorkstackArea;
 class QtxWorkstackDrag;
@@ -51,13 +50,21 @@ class QTX_EXPORT QtxWorkstack : public QWidget
   Q_OBJECT
 
 public:
-  enum { SplitVertical, SplitHorizontal, Close, Rename };
+  //! Workstack actions (context menu items)
+  enum { SplitVertical    = 0x01,  //!< "Split vertically" menu item
+	 SplitHorizontal  = 0x02,  //!< "Split horizontally" menu item
+	 Close            = 0x04,  //!< "Close" menu item
+	 Rename           = 0x08,  //!< "Rename" menu item
+	 All = SplitVertical | SplitHorizontal | 
+	       Close | Rename      //!< all menu items
+  };
     
+  //! Workstack splitting type
   enum SplitType
   {
-    SPLIT_STAY, //!< given widget stays in its workarea, others are moved into a new one
-    SPLIT_AT,   //!< widgets before a given widget stays in they workarea, others are moved into a new one
-    SPLIT_MOVE  //!< given widget is moved into a new workarea, others stay in an old one
+    SplitStay,  //!< selected widget stays in current workarea, others widgets are moved into a new workarea
+    SplitAt,    //!< all widgets before selected widget stay in current workarea, other widgess are moved into a new workarea
+    SplitMove   //!< selected widget is moved into a new workarea, all other widgets stay in an old workarea
   };
 
 public:
@@ -72,8 +79,8 @@ public:
   int                 accel( const int ) const;
   void                setAccel( const int, const int );
 
-  bool                isActionEnabled( const int ) const;
-  void                setActionEnabled( const int, const bool );
+  void                setMenuActions( const int );
+  int                 menuActions() const;
 
   void                split( const int );
 
@@ -88,14 +95,14 @@ public:
   QtxWorkstack& operator<<( const QString& );
   QtxWorkstack& operator>>( QString& );
 
-Q_SIGNALS:
+signals:
   void                windowActivated( QWidget* );
 
-public Q_SLOTS:
+public slots:
   void                splitVertical();
   void                splitHorizontal();
   
-private Q_SLOTS:
+private slots:
   void                onRename();
   void                onCloseWindow();
   void                onDestroyed( QObject* );
@@ -136,13 +143,13 @@ private:
   void                setSplitter( QSplitter*, const QString&, QMap< QSplitter*, QList<int> >& );
   
 private:
-  QWidget*            myWin;
-  QtxWorkstackArea*   myArea;
-  QSplitter*          mySplit;
-  QWidget*            myWorkWin;
-  QtxWorkstackArea*   myWorkArea;
+  QWidget*            myWin;        //!< active widget
+  QtxWorkstackArea*   myArea;       //!< active workarea
+  QSplitter*          mySplit;      //!< tol-level splitter
+  QWidget*            myWorkWin;    //!< widget where popup menu is invoked (used internally)
+  QtxWorkstackArea*   myWorkArea;   //!< workarea where popup menu is invoked (used internally)
 
-  QMap<int, QAction*> myActionsMap; //!< The map of the actions. Allows to get the QAction object by the key.
+  QMap<int, QAction*> myActionsMap; //!< actions map
 
   friend class QtxWorkstackArea;
   friend class QtxWorkstackDrag;
@@ -182,15 +189,15 @@ public:
 
   int                 tabAt( const QPoint& ) const;
 
-Q_SIGNALS:
+signals:
   void                activated( QWidget* );
   void                contextMenuRequested( QWidget*, QPoint );
   void                deactivated( QtxWorkstackArea* );
 
-public Q_SLOTS:
+public slots:
   virtual void        setVisible( bool );
 
-private Q_SLOTS:
+private slots:
   void                onClose();
   void                onCurrentChanged( int );
 
@@ -198,7 +205,7 @@ private Q_SLOTS:
 
   void                onChildDestroyed( QObject* );
   void                onChildShown( QtxWorkstackChild* );
-  void                onChildHided( QtxWorkstackChild* );
+  void                onChildHidden( QtxWorkstackChild* );
   void                onChildActivated( QtxWorkstackChild* );
   void                onChildCaptionChanged( QtxWorkstackChild* );
 
@@ -211,7 +218,11 @@ protected:
   virtual void        mousePressEvent( QMouseEvent* );
 
 private:
-  enum { ActivateWidget = QEvent::User, FocusWidget, RemoveWidget };
+  //! Custom events
+  enum { ActivateWidget = QEvent::User,   //!< activate widget event
+	 FocusWidget,                     //!< focus receiving widget event
+	 RemoveWidget                     //!< widget removing event
+  };
 
 private:
   void                updateState();
@@ -244,14 +255,14 @@ private:
   typedef QMap<QWidget*, WidgetInfo>         WidgetInfoMap;
 
 private:
-  QtxWorkstackTabBar* myBar;
-  QPushButton*        myClose;
-  QStackedWidget*     myStack;
+  QtxWorkstackTabBar* myBar;     //!< workarea tab bar header
+  QPushButton*        myClose;   //!< close button
+  QStackedWidget*     myStack;   //!< widget stack
 
-  QWidgetList         myList;
-  WidgetInfoMap       myInfo;
-  ChildMap            myChild;
-  BlockMap            myBlock;
+  QWidgetList         myList;    //!< child widgets list
+  WidgetInfoMap       myInfo;    //!< widgets states mp
+  ChildMap            myChild;   //!< child widget containers map
+  BlockMap            myBlock;   //!< blocked widgets
 };
 
 class QtxWorkstackChild : public QWidget
@@ -266,20 +277,20 @@ public:
 
   virtual bool        eventFilter( QObject*, QEvent* );
 
-Q_SIGNALS:
+signals:
   void                shown( QtxWorkstackChild* );
-  void                hided( QtxWorkstackChild* );
+  void                hidden( QtxWorkstackChild* );
   void                activated( QtxWorkstackChild* );
   void                captionChanged( QtxWorkstackChild* );
 
-private Q_SLOTS:
+private slots:
   void                onDestroyed( QObject* );
 
 protected:
   virtual void        childEvent( QChildEvent* );
 
 private:
-  QWidget*            myWidget;
+  QWidget*            myWidget;   //!< child widget
 };
 
 class QtxWorkstackTabBar : public QTabBar
@@ -299,11 +310,11 @@ public:
 
   void                updateActiveState();
 
-Q_SIGNALS:
+signals:
   void                dragActiveTab();
   void                contextMenuRequested( QPoint );
 
-private Q_SLOTS:
+private slots:
   void                onCurrentChanged( int );
 
 protected:
@@ -315,8 +326,8 @@ protected:
 //  virtual void        paintLabel( QPainter*, const QRect&, QTab*, bool ) const;
 
 private:
-  int                 myId;
-  bool                myActive;
+  int                 myId;         //!< current tab page index
+  bool                myActive;     //!< "active" status
 };
 
 class QtxWorkstackDrag : public QObject
@@ -341,17 +352,17 @@ private:
   void                startDrawRect();
 
 private:
-  QtxWorkstack*       myWS;
-  QtxWorkstackChild*  myChild;
+  QtxWorkstack*       myWS;          //!< parent workstack
+  QtxWorkstackChild*  myChild;       //!< workstack child widget container
 
-  int                 myTab;
-  QtxWorkstackArea*   myArea;
-  QRubberBand*        myTabRect;
-  QRubberBand*        myAreaRect;
+  int                 myTab;         //!< workarea tab page index
+  QtxWorkstackArea*   myArea;        //!< workarea
+  QRubberBand*        myTabRect;     //!< tab bar rubber band
+  QRubberBand*        myAreaRect;    //!< workarea rubber band
 };
 
 #ifdef WIN32
 #pragma warning( default:4251 )
 #endif
 
-#endif
+#endif   // QTXWORKSTACK_H

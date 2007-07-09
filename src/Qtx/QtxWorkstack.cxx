@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -23,34 +23,1329 @@
 
 #include "QtxAction.h"
 
-#include <QtCore/qregexp.h>
-
-#include <QtGui/qmenu.h>
-#include <QtGui/qicon.h>
-#include <QtGui/qevent.h>
-#include <QtGui/qstyle.h>
-#include <QtGui/qimage.h>
-#include <QtGui/qlayout.h>
-#include <QtGui/qpixmap.h>
-#include <QtGui/qpainter.h>
-#include <QtGui/qsplitter.h>
-#include <QtGui/qrubberband.h>
-#include <QtGui/qpushbutton.h>
-#include <QtGui/qapplication.h>
-#include <QtGui/qinputdialog.h>
-#include <QtGui/qstackedwidget.h>
+#include <QRegExp>
+#include <QMenu>
+#include <QFocusEvent>
+#include <QMouseEvent>
+#include <QStyle>
+#include <QLayout>
+#include <QSplitter>
+#include <QRubberBand>
+#include <QPushButton>
+#include <QApplication>
+#include <QInputDialog>
+#include <QStackedWidget>
 
 #define DARK_COLOR_LIGHT 250
 
 /*!
-  Constructor
+  \class QtxWorkstackArea::WidgetEvent
+  \internal
+  \brief Internal class used to forward child widgets events to the workarea
+*/
+
+class QtxWorkstackArea::WidgetEvent : public QEvent
+{
+public:
+  WidgetEvent( Type t, QWidget* w = 0 ) : QEvent( t ), myWidget( w ) {};
+
+  QWidget* widget() const { return myWidget; }
+
+private:
+  QWidget* myWidget;   // event receiver widget
+};
+
+/*!
+  \class QtxWorkstackDrag
+  \internal
+  \brief Workstack drag object
+*/
+
+/*!
+  \brief Constructor.
+  \param ws parent workstack
+  \param child child widget container
+*/
+QtxWorkstackDrag::QtxWorkstackDrag( QtxWorkstack* ws, QtxWorkstackChild* child )
+: QObject( 0 ),
+  myWS( ws ),
+  myChild( child ),
+  myTab( -1 ),
+  myArea( 0 ),
+  myTabRect( 0 ),
+  myAreaRect( 0 )
+{
+  QApplication::instance()->installEventFilter( this );
+}
+
+/*!
+  \brief Destructor.
+*/
+QtxWorkstackDrag::~QtxWorkstackDrag()
+{
+  QApplication::instance()->removeEventFilter( this );
+
+  endDrawRect();
+}
+
+/*!
+  \brief Custom event filter.
+  \param o event receiver widget
+  \param e event
+  \return \c true if event should be filtered (stop further processing)
+*/
+bool QtxWorkstackDrag::eventFilter( QObject*, QEvent* e )
+{
+  switch ( e->type() )
+  {
+  case QEvent::MouseMove:
+    updateTarget( ((QMouseEvent*)e)->globalPos() );
+    break;
+  case QEvent::MouseButtonRelease:
+    drawRect();
+    endDrawRect();
+    dropWidget();
+    deleteLater();
+    break;
+  default:
+    return false;
+  }
+  return true;
+}
+
+/*!
+  \brief Detect and set dropping target widget.
+  \param p current dragging position
+*/
+void QtxWorkstackDrag::updateTarget( const QPoint& p )
+{
+  int tab = -1;
+  QtxWorkstackArea* area = detectTarget( p, tab );
+  setTarget( area, tab );
+}
+
+/*!
+  \brief Detect dropping target.
+  \param p current dragging position
+  \param tab resulting target tab page index
+  \return target workarea or 0 if there is no correct drop target
+*/
+QtxWorkstackArea* QtxWorkstackDrag::detectTarget( const QPoint& p, int& tab ) const
+{
+  if ( p.isNull() )
+    return 0;
+
+  QtxWorkstackArea* area = myWS->areaAt( p );
+  if ( area )
+    tab = area->tabAt( p );
+  return area;
+}
+
+/*!
+  \brief Set dropping target.
+  \param area new target workarea
+  \param tab target workarea's tab page index
+*/
+void QtxWorkstackDrag::setTarget( QtxWorkstackArea* area, const int tab )
+{
+  if ( !area || ( myArea == area && tab == myTab ) )
+    return;
+
+  startDrawRect();
+
+  if ( myArea )
+    drawRect();
+
+  myTab = tab;
+  myArea = area;
+
+  if ( myArea )
+    drawRect();
+}
+
+/*!
+  \brief Called when drop operation is finished.
+  
+  Inserts dropped widget to the target workarea.
+*/
+void QtxWorkstackDrag::dropWidget()
+{
+  if ( myArea )
+    myArea->insertWidget( myChild->widget(), myTab );
+}
+
+/*!
+  \brief Draw floating rectangle.
+*/
+void QtxWorkstackDrag::drawRect()
+{
+  if ( !myArea )
+    return;
+
+  QRect r = myArea->floatRect();
+  int m = 2;
+
+  r.setTop( r.top() + m + 2 );
+  r.setLeft( r.left() + m + 2 );
+  r.setRight( r.right() - m - 2 );
+  r.setBottom( r.bottom() - m - 2 );
+
+  if ( myAreaRect )
+  {
+    myAreaRect->setGeometry( r );
+    myAreaRect->setVisible( r.isValid() );
+  }
+
+  QRect tr = myArea->floatTab( myTab );
+
+  tr.setTop( tr.top() + m );
+  tr.setLeft( tr.left() + m );
+  tr.setRight( tr.right() - m );
+  tr.setBottom( tr.bottom() - m );
+
+  if ( myTabRect )
+  {
+    myTabRect->setGeometry( tr );
+    myTabRect->setVisible( tr.isValid() );
+  }
+}
+
+/*!
+  \brief Delete rubber band on the end on the dragging operation.
+*/
+void QtxWorkstackDrag::endDrawRect()
+{
+  delete myAreaRect;
+  myAreaRect = 0;
+
+  delete myTabRect;
+  myTabRect = 0;
+}
+
+/*!
+  \brief Create rubber band to be drawn on the dragging operation.
+*/
+void QtxWorkstackDrag::startDrawRect()
+{
+  if ( !myTabRect )
+    myTabRect = new QRubberBand( QRubberBand::Rectangle );
+
+  myTabRect->hide();
+
+  if ( !myAreaRect )
+    myAreaRect = new QRubberBand( QRubberBand::Rectangle );
+
+  myAreaRect->hide();
+}
+
+/*!
+  \class QtxWorkstackArea
+  \internal
+  \brief Workstack widget workarea.
+*/
+
+/*!
+  \brief Constructor.
+  \param parent parent widget
+*/
+QtxWorkstackArea::QtxWorkstackArea( QWidget* parent )
+: QFrame( parent )
+{
+  setFrameStyle( QFrame::Panel | QFrame::Sunken );
+
+  QVBoxLayout* base = new QVBoxLayout( this );
+  base->setMargin( frameWidth() );
+
+  QWidget* top = new QWidget( this );
+  base->addWidget( top );
+
+  QHBoxLayout* tl = new QHBoxLayout( top );
+  tl->setMargin( 0 );
+
+  myBar = new QtxWorkstackTabBar( top );
+  tl->addWidget( myBar, 1 );
+
+  QPushButton* close = new QPushButton( top );
+  close->setIcon( style()->standardIcon( QStyle::SP_TitleBarCloseButton ) );
+  close->setAutoDefault( true );
+  close->setFlat( true );
+  myClose = close;
+  tl->addWidget( myClose );
+
+  myStack = new QStackedWidget( this );
+
+  base->addWidget( myStack, 1 );
+
+  connect( myClose, SIGNAL( clicked() ), this, SLOT( onClose() ) );
+  connect( myBar, SIGNAL( currentChanged( int ) ), this, SLOT( onCurrentChanged( int ) ) );
+  connect( myBar, SIGNAL( dragActiveTab() ), this, SLOT( onDragActiveTab() ) );
+  connect( myBar, SIGNAL( contextMenuRequested( QPoint ) ), this, SLOT( onContextMenuRequested( QPoint ) ) );
+
+  updateState();
+
+  updateActiveState();
+
+  QApplication::instance()->installEventFilter( this );
+}
+
+/*!
+  \brief Destructor.
+*/
+QtxWorkstackArea::~QtxWorkstackArea()
+{
+  QApplication::instance()->removeEventFilter( this );
+}
+
+/*!
+  \brief Check if workarea contains visible widgets.
+  \return \c true if area is empty (all child widgets are removed or now shown)
+*/
+bool QtxWorkstackArea::isEmpty() const
+{
+  bool res = false;
+  for ( WidgetInfoMap::ConstIterator it = myInfo.begin(); it != myInfo.end() && !res; ++it )
+    res = it.value().vis;
+  return !res;
+}
+
+/*!
+  \brief Add widget to the workarea.
+  \param wid widget to be added
+  \param idx position in the area widget to be added to
+  \param f widget flags
+  \return child widget container object (or 0 if index is invalid)
+*/
+QWidget* QtxWorkstackArea::insertWidget( QWidget* wid, const int idx, Qt::WindowFlags f )
+{
+  if ( !wid )
+    return 0;
+
+  int pos = myList.indexOf( wid );
+  if ( pos != -1 && ( pos == idx || ( idx < 0 && pos == (int)myList.count() - 1 ) ) )
+    return 0;
+
+  myList.removeAll( wid );
+  pos = idx < 0 ? myList.count() : idx;
+  myList.insert( qMin( pos, (int)myList.count() ), wid );
+  if ( !myInfo.contains( wid ) )
+  {
+    QtxWorkstackChild* child = new QtxWorkstackChild( wid, myStack, f );
+    myChild.insert( wid, child );
+    myInfo.insert( wid, WidgetInfo() );
+    myInfo[wid].id = generateId();
+    myInfo[wid].vis = wid->isVisibleTo( wid->parentWidget() );
+
+    connect( child, SIGNAL( destroyed( QObject* ) ), this, SLOT( onChildDestroyed( QObject* ) ) );
+    connect( wid, SIGNAL( destroyed() ), this, SLOT( onWidgetDestroyed() ) );
+    connect( child, SIGNAL( shown( QtxWorkstackChild* ) ), this, SLOT( onChildShown( QtxWorkstackChild* ) ) );
+    connect( child, SIGNAL( hidden( QtxWorkstackChild* ) ), this, SLOT( onChildHidden( QtxWorkstackChild* ) ) );
+    connect( child, SIGNAL( activated( QtxWorkstackChild* ) ), this, SLOT( onChildActivated( QtxWorkstackChild* ) ) );
+    connect( child, SIGNAL( captionChanged( QtxWorkstackChild* ) ), this, SLOT( onChildCaptionChanged( QtxWorkstackChild* ) ) );
+  }
+
+  updateState();
+
+  setWidgetActive( wid );
+  wid->setFocus();
+
+  return myChild[wid];
+}
+
+/*!
+  \brief Create and show popup menu for the area.
+  \param p mouse pointer position at which popup menu should be shown
+*/
+void QtxWorkstackArea::onContextMenuRequested( QPoint p )
+{
+  const QtxWorkstackTabBar* bar = ::qobject_cast<const QtxWorkstackTabBar*>( sender() );
+  if ( !bar )
+    return;
+
+  QWidget* wid = 0;
+  int idx = tabAt( p );
+  if ( idx != -1 )
+    wid = widget( myBar->tabId( idx ) );
+
+  emit contextMenuRequested( wid, p );
+}
+
+/*!
+  \brief Called when area's child widget is destroyed.
+
+  Removes child widget from the area.
+*/
+void QtxWorkstackArea::onWidgetDestroyed()
+{
+  if ( sender() )
+    removeWidget( (QWidget*)sender(), false );
+}
+
+/*!
+  \brief Remove widget from workarea.
+  \param wid widget to be removed
+  \param del if \c true the widget should be also deleted
+*/
+void QtxWorkstackArea::removeWidget( QWidget* wid, const bool del )
+{
+  if ( !myList.contains( wid ) )
+    return;
+
+  if ( myBar->indexOf( widgetId( wid ) ) != -1 )
+    myBar->removeTab( myBar->indexOf( widgetId( wid ) ) );
+
+  myStack->removeWidget( child( wid ) );
+
+  myList.removeAll( wid );
+  myInfo.remove( wid );
+  myChild.remove( wid );
+
+  if ( del )
+  {
+    delete child( wid );
+    if ( myList.isEmpty() )
+      delete this;
+    else
+      updateState();
+  }
+  else
+    updateState();
+}
+
+/*!
+  \brief Get all visible child widgets.
+  \return list of visible child widgets
+*/
+QWidgetList QtxWorkstackArea::widgetList() const
+{
+  QWidgetList lst;
+  for ( QWidgetList::const_iterator it = myList.begin(); it != myList.end(); ++it )
+  {
+    if ( widgetVisibility( *it ) )
+      lst.append( *it );
+  }
+  return lst;
+}
+
+/*!
+  \brief Get active child widget.
+  \return active widget
+*/
+QWidget* QtxWorkstackArea::activeWidget() const
+{
+  return widget( myBar->tabId( myBar->currentIndex() ) );
+}
+
+/*!
+  \brief Set active widget.
+  \param wid widget to be made active
+*/
+void QtxWorkstackArea::setActiveWidget( QWidget* wid )
+{
+  myBar->setCurrentIndex( myBar->indexOf( widgetId( wid ) ) );
+}
+
+/*!
+  \brief Check if area owns the specified widget.
+  \param wid widget to be checked
+  \return \c true if area contains widget
+*/
+bool QtxWorkstackArea::contains( QWidget* wid ) const
+{
+  return myList.contains( wid );
+}
+
+/*!
+  \brief Show/hide workarea.
+  \param on new visibility state
+*/
+void QtxWorkstackArea::setVisible( bool on )
+{
+  QMap<QWidget*, bool> map;
+  for ( QWidgetList::iterator it = myList.begin(); it != myList.end(); ++it )
+  {
+    map.insert( *it, isBlocked( *it ) );
+    setBlocked( *it, true );
+  }
+
+  QFrame::setVisible( on );
+
+  for ( QWidgetList::iterator itr = myList.begin(); itr != myList.end(); ++itr )
+    setBlocked( *itr, map.contains( *itr ) ? map[*itr] : false );
+}
+
+/*!
+  \brief Check if workarea is active.
+  \return \c true if area is active
+*/
+bool QtxWorkstackArea::isActive() const
+{
+  QtxWorkstack* ws = workstack();
+  if ( !ws )
+    return false;
+
+  return ws->activeArea() == this;
+}
+
+/*!
+  \brief Update active tab bar state (active/inactive).
+*/
+void QtxWorkstackArea::updateActiveState()
+{
+  myBar->setActive( isActive() );
+}
+
+/*!
+  \brief Get parent workstack
+  \return workstack owning this workarea
+*/
+QtxWorkstack* QtxWorkstackArea::workstack() const
+{
+  QtxWorkstack* ws = 0;
+  QWidget* wid = parentWidget();
+  while ( wid && !ws )
+  {
+    if ( wid->inherits( "QtxWorkstack" ) )
+      ws = (QtxWorkstack*)wid;
+    wid = wid->parentWidget();
+  }
+  return ws;
+}
+
+/*!
+  \brief Custom event filter.
+
+  Process events from child widgets.
+
+  \param o event receiver widget
+  \param e event
+  \return \c true if event should be filtered (stop further processing)
+*/
+bool QtxWorkstackArea::eventFilter( QObject* o, QEvent* e )
+{
+  if ( o->isWidgetType() )
+  {
+    QWidget* wid = (QWidget*)o;
+    if ( e->type() == QEvent::FocusIn || e->type() == QEvent::MouseButtonPress )
+    {
+      bool ok = false;
+      while ( !ok && wid && wid != myClose )
+      {
+        ok = wid == this;
+        wid = wid->parentWidget();
+      }
+      if ( ok )
+        QApplication::postEvent( this, new WidgetEvent( (QEvent::Type)( e->type() == QEvent::FocusIn ? ActivateWidget : FocusWidget ) ) );
+    }
+  }
+  return false;
+}
+
+/*!
+  \brief Get rectangle to be drawn when highlighting drop area.
+  \return area drop rectangle
+*/
+QRect QtxWorkstackArea::floatRect() const
+{
+  QRect r = myStack->geometry();
+  return QRect( mapToGlobal( r.topLeft() ), mapToGlobal( r.bottomRight() ) );
+}
+
+/*!
+  \brief Get rectangle to be drawn when highlighting drop area on tab bar.
+  \param idx tab index
+  \return tab bar drop rectrangle
+*/
+QRect QtxWorkstackArea::floatTab( const int idx ) const
+{
+  QRect r = myBar->tabRect( idx );
+  return QRect( myBar->mapToGlobal( r.topLeft() ), r.size() );
+}
+
+/*!
+  \brief Get tab index by point.
+  \param p point
+  \return tab covering point or -1 if there is no tab covering point
+*/
+int QtxWorkstackArea::tabAt( const QPoint& pnt ) const
+{
+  int idx = -1;
+  QPoint p = myBar->mapFromGlobal( pnt );
+  for ( int i = 0; i < myBar->count() && idx == -1; i++ )
+  {
+    QRect r = myBar->tabRect( i );
+    if ( r.isValid() && r.contains( p ) )
+      idx = i;
+  }
+  return idx;
+}
+
+/*!
+  \brief Event handler for custom events.
+  \param e custom event
+*/
+void QtxWorkstackArea::customEvent( QEvent* e )
+{
+  WidgetEvent* we = (WidgetEvent*)e;
+
+  switch ( we->type() )
+  {
+  case ActivateWidget:
+    emit activated( activeWidget() );
+    break;
+  case FocusWidget:
+    if ( activeWidget() )
+    {
+      if ( !activeWidget()->focusWidget() )
+        activeWidget()->setFocus();
+      else
+      {
+        if ( activeWidget()->focusWidget()->hasFocus() )
+        {
+          QFocusEvent in( QEvent::FocusIn );
+	        QApplication::sendEvent( this, &in );
+	      }
+        else
+          activeWidget()->focusWidget()->setFocus();
+      }
+    }
+    break;
+  case RemoveWidget:
+    removeWidget( we->widget() );
+    break;
+  default:
+    break;
+  }
+}
+
+/*!
+  \brief Customize focus in event handler.
+  \param e focus in event
+*/
+void QtxWorkstackArea::focusInEvent( QFocusEvent* e )
+{
+  QFrame::focusInEvent( e );
+
+  emit activated( activeWidget() );
+}
+
+/*!
+  \brief Customize mouse press event handler.
+  \param e mouse press event
+*/
+void QtxWorkstackArea::mousePressEvent( QMouseEvent* e )
+{
+  QFrame::mousePressEvent( e );
+
+  emit activated( activeWidget() );
+}
+
+/*!
+  \brief Called when user presses "Close" button.
+*/
+void QtxWorkstackArea::onClose()
+{
+  QWidget* wid = activeWidget();
+  if ( wid )
+    wid->close();
+}
+
+/*!
+  \brief Called when user selects any tab page.
+  \param idx tab page index (not used)
+*/
+void QtxWorkstackArea::onCurrentChanged( int /*idx*/ )
+{
+  updateCurrent();
+
+  emit activated( activeWidget() );
+}
+
+/*!
+  \brief Called when user starts tab page dragging.
+*/
+void QtxWorkstackArea::onDragActiveTab()
+{
+  QtxWorkstackChild* c = child( activeWidget() );
+  if ( !c )
+    return;
+
+  new QtxWorkstackDrag( workstack(), c );
+}
+
+/*!
+  \brief Called when area's child widget container is destroyed.
+  \param obj widget container being destroyed
+*/
+void QtxWorkstackArea::onChildDestroyed( QObject* obj )
+{
+  QtxWorkstackChild* child = (QtxWorkstackChild*)obj;
+  myStack->removeWidget( child );
+
+  QWidget* wid = 0;
+  for ( ChildMap::ConstIterator it = myChild.begin(); it != myChild.end() && !wid; ++it )
+  {
+    if ( it.value() == child )
+      wid = it.key();
+  }
+
+  myChild.remove( wid );
+
+  QApplication::postEvent( this, new WidgetEvent( (QEvent::Type)RemoveWidget, wid ) );
+}
+
+/*!
+  \brief Called when child widget container is shown.
+  \param c child widget container being shown
+*/
+void QtxWorkstackArea::onChildShown( QtxWorkstackChild* c )
+{
+  setWidgetShown( c->widget(), true );
+}
+
+/*!
+  \brief Called when child widget container is hidden.
+  \param c child widget container being hidden
+*/
+void QtxWorkstackArea::onChildHidden( QtxWorkstackChild* c )
+{
+  setWidgetShown( c->widget(), false );
+}
+
+/*!
+  \brief Called when child widget container is activated.
+  \param c child widget container being activated
+*/
+void QtxWorkstackArea::onChildActivated( QtxWorkstackChild* c )
+{
+  setWidgetActive( c->widget() );
+}
+
+/*!
+  \brief Called when child widget container's title is changed.
+  \param c child widget container which title is changed
+*/
+void QtxWorkstackArea::onChildCaptionChanged( QtxWorkstackChild* c )
+{
+  updateTab( c->widget() );
+}
+
+/*!
+  \brief Update current child widget container.
+
+  Raises widget when active tab page is changed.
+*/
+void QtxWorkstackArea::updateCurrent()
+{
+  QMap<QWidget*, bool> map;
+  for ( QWidgetList::iterator it = myList.begin(); it != myList.end(); ++it )
+  {
+    map.insert( *it, isBlocked( *it ) );
+    setBlocked( *it, true );
+  }
+
+  QWidget* cur = child( widget( myBar->tabId( myBar->currentIndex() ) ) );
+  if ( cur )
+    myStack->setCurrentWidget( cur );
+
+  for ( QWidgetList::iterator itr = myList.begin(); itr != myList.end(); ++itr )
+    setBlocked( *itr, map.contains( *itr ) ? map[*itr] : false );
+}
+
+/*!
+  \brief Update tab bar.
+  \param wid tab page widget
+*/
+void QtxWorkstackArea::updateTab( QWidget* wid )
+{
+  int idx = myBar->indexOf( widgetId( wid ) );
+  if ( idx < 0 )
+    return;
+
+  myBar->setTabIcon( idx, wid->windowIcon() );
+  myBar->setTabText( idx, wid->windowTitle() );
+}
+
+/*!
+  \brief Get child widget by specified identifier.
+  \param id widget ID
+  \return widget or 0, if identifier in invalid
+*/
+QWidget* QtxWorkstackArea::widget( const int id ) const
+{
+  QWidget* wid = 0;
+  for ( WidgetInfoMap::ConstIterator it = myInfo.begin(); it != myInfo.end() && !wid; ++it )
+  {
+    if ( it.value().id == id )
+      wid = it.key();
+  }
+  return wid;
+}
+
+/*!
+  \brief Get child widget identifier.
+  \param wid widget
+  \return widget ID or -1 if widget is not found
+*/
+int QtxWorkstackArea::widgetId( QWidget* wid ) const
+{
+  int id = -1;
+  if ( myInfo.contains( wid ) )
+    id = myInfo[wid].id;
+  return id;
+}
+
+/*!
+  \brief Get child widget's visibility.
+  \param wid widget
+  \return \c true if widget is visible
+*/
+bool QtxWorkstackArea::widgetVisibility( QWidget* wid ) const
+{
+  bool res = false;
+  if ( myInfo.contains( wid ) )
+    res = myInfo[wid].vis;
+  return res;
+}
+
+/*!
+  \brief Set active child widget.
+  \param wid widget to be set active
+*/
+void QtxWorkstackArea::setWidgetActive( QWidget* wid )
+{
+  int id = widgetId( wid );
+  if ( id < 0 )
+    return;
+
+  myBar->setCurrentIndex( myBar->indexOf( id ) );
+}
+
+/*!
+  \brief Show/hide child widget.
+  \param wid widget
+  \param on new visibility state
+*/
+void QtxWorkstackArea::setWidgetShown( QWidget* wid, const bool on )
+{
+  if ( isBlocked( wid ) || !myInfo.contains( wid ) || myInfo[wid].vis == on )
+    return;
+
+  myInfo[wid].vis = on;
+  updateState();
+}
+
+/*!
+  \brief Update internal state.
+*/
+void QtxWorkstackArea::updateState()
+{
+  bool updBar = myBar->updatesEnabled();
+  bool updStk = myStack->updatesEnabled();
+  myBar->setUpdatesEnabled( false );
+  myStack->setUpdatesEnabled( false );
+
+  bool block = myBar->signalsBlocked();
+  myBar->blockSignals( true );
+
+  QWidget* prev = activeWidget();
+
+  int idx = 0;
+  for ( QWidgetList::iterator it = myList.begin(); it != myList.end(); ++it )
+  {
+    QWidget* wid = *it;
+    int id = widgetId( wid );
+
+    if ( id < 0 )
+      continue;
+
+    bool vis = widgetVisibility( wid );
+
+    int cIdx = myBar->indexOf( id );
+    if ( cIdx != -1 && ( !vis || myBar->indexOf( id ) != idx ) )
+      myBar->removeTab( cIdx );
+
+    if ( myBar->indexOf( id ) == -1 && vis )
+      myBar->setTabId( myBar->insertTab( idx, wid->windowTitle() ), id );
+
+    updateTab( wid );
+
+    bool block = isBlocked( wid );
+    setBlocked( wid, true );
+
+    QtxWorkstackChild* cont = child( wid );
+
+    if ( !vis )
+      myStack->removeWidget( cont );
+    else if ( myStack->indexOf( cont ) < 0 )
+      myStack->addWidget( cont );
+
+    if ( vis )
+      idx++;
+
+    setBlocked( wid, block );
+  }
+
+  int curId = widgetId( prev );
+  if ( myBar->indexOf( curId ) < 0 )
+  {
+    QWidget* wid = 0;
+    int pos = myList.indexOf( prev );
+    for ( int i = pos - 1; i >= 0 && !wid; i-- )
+    {
+      if ( widgetVisibility( myList.at( i ) ) )
+        wid = myList.at( i );
+    }
+
+    for ( int j = pos + 1; j < (int)myList.count() && !wid; j++ )
+    {
+      if ( widgetVisibility( myList.at( j ) ) )
+        wid = myList.at( j );
+    }
+
+    if ( wid )
+      curId = widgetId( wid );
+  }
+
+  myBar->setCurrentIndex( myBar->indexOf( curId ) );
+
+  myBar->blockSignals( block );
+
+  updateCurrent();
+
+  myBar->updateActiveState();
+
+  myBar->setUpdatesEnabled( updBar );
+  myStack->setUpdatesEnabled( updStk );
+  if ( updBar )
+    myBar->update();
+  if ( updStk )
+    myStack->update();
+
+  QResizeEvent re( myBar->size(), myBar->size() );
+  QApplication::sendEvent( myBar, &re );
+
+  if ( isEmpty() )
+  {
+    hide();
+    emit deactivated( this );
+  }
+  else
+  {
+    show();
+    if ( prev != activeWidget() )
+      emit activated( activeWidget() );
+  }
+}
+
+/*!
+  \brief Generate unique widget identifier.
+  \return first non shared widget ID
+*/
+int QtxWorkstackArea::generateId() const
+{
+  QMap<int, int> map;
+
+  for ( WidgetInfoMap::const_iterator it = myInfo.begin(); it != myInfo.end(); ++it )
+    map.insert( it.value().id, 0 );
+
+  int id = 0;
+  while ( map.contains( id ) )
+    id++;
+
+  return id;
+}
+
+/*!
+  \brief Check if the child wiget is blocked.
+  \param wid widget
+  \return \c true if the widget is blocked
+*/
+bool QtxWorkstackArea::isBlocked( QWidget* wid ) const
+{
+  return myBlock.contains( wid );
+}
+
+/*!
+  \brief Block widget.
+  \param wid widget
+  \param on new blocked state
+*/
+void QtxWorkstackArea::setBlocked( QWidget* wid, const bool on )
+{
+  if ( on )
+    myBlock.insert( wid, 0 );
+  else
+    myBlock.remove( wid );
+}
+
+/*!
+  \brief Get child widget container.
+  \param wid child widget
+  \return child widget container corresponding to the \a wid
+*/
+QtxWorkstackChild* QtxWorkstackArea::child( QWidget* wid ) const
+{
+  QtxWorkstackChild* res = 0;
+  if ( myChild.contains( wid ) )
+    res = myChild[wid];
+  return res;
+}
+
+/*!
+  \fn void QtxWorkstackArea::activated( QWidget* w )
+  \brief Emitted when child widget is activated.
+  \param w child widget being activated
+*/
+
+/*!
+  \fn void QtxWorkstackArea::contextMenuRequested( QWidget* w, QPoint p )
+  \brief Emitted when context popup menu is requested.
+  \param w child widget popup menu requested for
+  \param p point popup menu to be shown at
+*/
+
+/*!
+  \fn void QtxWorkstackArea::deactivated( QtxWorkstackArea* wa )
+  \brief Emitted when workarea is deactivated.
+  \param wa workarea being deactivated
+*/
+
+/*!
+  \class QtxWorkstackChild
+  \internal
+  \brief Workarea child widget container.
+*/
+
+/*!
+  \brief Constructor.
+  \param wid child widget
+  \param parent parent widget
+  \param f widget flags
+*/
+QtxWorkstackChild::QtxWorkstackChild( QWidget* wid, QWidget* parent, Qt::WindowFlags f )
+: QWidget( parent ),
+  myWidget( wid )
+{
+  myWidget->setParent( this, f );
+  myWidget->installEventFilter( this );
+  QVBoxLayout* base = new QVBoxLayout( this );
+  base->addWidget( myWidget );
+
+  connect( myWidget, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
+}
+
+/*!
+  \brief Destructor.
+*/
+QtxWorkstackChild::~QtxWorkstackChild()
+{
+  QApplication::instance()->removeEventFilter( this );
+
+  if ( !widget() )
+    return;
+
+  disconnect( widget(), SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
+
+  widget()->hide();
+  widget()->removeEventFilter( this );
+
+  widget()->setParent( 0 );
+}
+
+/*!
+  \brief Get child widget.
+  \return child widget
+*/
+QWidget* QtxWorkstackChild::widget() const
+{
+  return myWidget;
+}
+
+/*!
+  \brief Custom event filter.
+
+  Process events from child widgets.
+
+  \param o event receiver widget
+  \param e event
+  \return \c true if event should be filtered (stop further processing)
+*/
+bool QtxWorkstackChild::eventFilter( QObject* o, QEvent* e )
+{
+  if ( o->isWidgetType() )
+  {
+    if ( e->type() == QEvent::WindowTitleChange || e->type() == QEvent::WindowIconChange )
+      emit captionChanged( this );
+
+    if ( !e->spontaneous() && ( e->type() == QEvent::Show || e->type() == QEvent::ShowToParent ) )
+      emit shown( this );
+
+    if ( !e->spontaneous() && ( e->type() == QEvent::Hide || e->type() == QEvent::HideToParent ) )
+      emit hidden( this );
+
+    if ( e->type() == QEvent::FocusIn )
+      emit activated( this );
+  }
+  return QWidget::eventFilter( o, e );
+}
+
+/*!
+  \brief Called when child widget is destroyed.
+  \param obj child widget being destroyed
+*/
+void QtxWorkstackChild::onDestroyed( QObject* obj )
+{
+  if ( obj != widget() )
+    return;
+
+  myWidget = 0;
+  deleteLater();
+}
+
+/*!
+  \brief Customize child event handler.
+  \param e child event
+*/
+void QtxWorkstackChild::childEvent( QChildEvent* e )
+{
+  if ( e->removed() && e->child() == widget() )
+  {
+    myWidget = 0;
+    deleteLater();
+  }
+  QWidget::childEvent( e );
+}
+
+/*!
+  \fn void QtxWorkstackChild::shown( QtxWorkstackChild* w )
+  \brief Emitted when child widget is shown.
+  \param w child widget container
+*/
+
+/*!
+  \fn void QtxWorkstackChild::hidden( QtxWorkstackChild* w )
+  \brief Emitted when child widget is hidden.
+  \param w child widget container
+*/
+
+/*!
+  \fn void QtxWorkstackChild::activated( QtxWorkstackChild* w )
+  \brief Emitted when child widget is activated.
+  \param w child widget container
+*/
+
+/*!
+  \fn void QtxWorkstackChild::captionChanged( QtxWorkstackChild* w )
+  \brief Emitted when child widget's title is changed.
+  \param w child widget container
+*/
+
+/*!
+  \class QtxWorkstackTabBar
+  \internal
+  \brief Workstack tab bar widget
+*/
+
+/*!
+  \brief Constructor.
+  \param parent parent widget
+*/
+QtxWorkstackTabBar::QtxWorkstackTabBar( QWidget* parent )
+: QTabBar( parent ),
+  myId( -1 )
+{
+  setDrawBase( true );
+  setElideMode( Qt::ElideNone );
+
+  connect( this, SIGNAL( currentChanged( int ) ), this, SLOT( onCurrentChanged( int ) ) );
+}
+
+/*!
+  \brief Destructor.
+*/
+QtxWorkstackTabBar::~QtxWorkstackTabBar()
+{
+}
+
+/*!
+  \brief Get tab page identifier.
+  \param index tab page index
+  \return tab page ID or -1 if \a index is out of range
+*/
+int QtxWorkstackTabBar::tabId( const int index ) const
+{
+  QVariant v = tabData( index );
+  if ( !v.canConvert( QVariant::Int ) )
+    return -1;
+  return v.toInt();
+}
+
+/*!
+  \brief Set tab page identifier.
+  \param index tab page index
+  \param id tab page ID
+*/
+void QtxWorkstackTabBar::setTabId( const int index, const int id )
+{
+  setTabData( index, id );
+}
+
+/*!
+  \brief Get tab page index by specified identifier.
+  \param id tab page ID
+  \return tab page index or -1 if not found
+*/
+int QtxWorkstackTabBar::indexOf( const int id ) const
+{
+  int index = -1;
+  for ( int i = 0; i < (int)count() && index < 0; i++ )
+  {
+    if ( tabId( i ) == id )
+      index = i;
+  }
+  return index;
+}
+
+/*!
+  \brief Check if the tab bar is active.
+  \return \c true if tab bar is active
+*/
+bool QtxWorkstackTabBar::isActive() const
+{
+  return myActive;
+}
+
+/*!
+  \brief Set tab bar active/inactive.
+  \param on new active state
+*/
+void QtxWorkstackTabBar::setActive( const bool on )
+{
+  if ( myActive == on )
+    return;
+
+  myActive = on;
+  updateActiveState();
+}
+
+/*!
+  \brief Update tab bar according to the 'active' state.
+*/
+void QtxWorkstackTabBar::updateActiveState()
+{
+  QColor bc = palette().color( QPalette::Text );
+  QColor ac = isActive() ? palette().color( QPalette::Highlight ) : bc;
+  for ( int i = 0; i < (int)count(); i++ )
+    setTabTextColor( i, currentIndex() == i ? ac : bc );
+}
+
+/*!
+  \brief Called when current tab page is changed.
+  \param idx tab page index (not used)
+*/
+void QtxWorkstackTabBar::onCurrentChanged( int /*index*/ )
+{
+  updateActiveState();
+}
+
+/*!
+  \brief Customize mouse move event handler.
+  \param e mouse event
+*/
+void QtxWorkstackTabBar::mouseMoveEvent( QMouseEvent* e )
+{
+  if ( myId != -1 && !tabRect( indexOf( myId ) ).contains( e->pos() ) )
+  {
+    myId = -1;
+    emit dragActiveTab();
+  }
+
+  QTabBar::mouseMoveEvent( e );
+}
+
+/*!
+  \brief Customize mouse press event handler.
+  \param e mouse event
+*/
+void QtxWorkstackTabBar::mousePressEvent( QMouseEvent* e )
+{
+  QTabBar::mousePressEvent( e );
+
+  if ( e->button() == Qt::LeftButton )
+    myId = tabId( currentIndex() );
+}
+
+/*!
+  \brief Customize mouse release event handler.
+  \param e mouse event
+*/
+void QtxWorkstackTabBar::mouseReleaseEvent( QMouseEvent* e )
+{
+  QTabBar::mouseReleaseEvent( e );
+
+  myId = -1;
+
+  if ( e->button() == Qt::RightButton )
+    emit contextMenuRequested( e->globalPos() );
+}
+
+/*!
+  \brief Customize context menu event handler.
+  \param e context menu event
+*/
+void QtxWorkstackTabBar::contextMenuEvent( QContextMenuEvent* e )
+{
+  if ( e->reason() != QContextMenuEvent::Mouse )
+    emit contextMenuRequested( e->globalPos() );
+}
+
+/*
+void QtxWorkstackTabBar::paintLabel( QPainter* p, const QRect& br, QTab* t, bool has_focus ) const
+{
+  if ( currentTab() != t->identifier() )
+  {
+    QFont fnt = p->font();
+    fnt.setUnderline( false );
+    p->setFont( fnt );
+  }
+  QTabBar::paintLabel( p, br, t, has_focus );
+}
+*/
+
+/*!
+  \fn void QtxWorkstackTabBar::dragActiveTab()
+  \brief Emitted when dragging operation is started.
+*/
+
+/*!
+  \fn void QtxWorkstackTabBar::contextMenuRequested( QPoint p )
+  \brief Emitted when context popup menu is requested.
+  \param p point popup menu to be shown at
+*/
+
+/*!
+  \class QtxWorkstack
+  \brief Workstack widget.
+
+  Organizes the child widgets in the tabbed space.
+  Allows splitting the working area to arrange the child widgets in 
+  arbitrary way. Any widgets can be moved to another working area with
+  drag-n-drop operation.
+
+  This widget can be used as workspace of the application main window, 
+  for example, as kind of implementation of multi-document interface.
+*/
+
+/*!
+  \brief Constructor.
+  \param parent parent widget
 */
 QtxWorkstack::QtxWorkstack( QWidget* parent )
 : QWidget( parent ),
-myWin( 0 ),
-myArea( 0 ),
-myWorkWin( 0 ),
-myWorkArea( 0 )
+  myWin( 0 ),
+  myArea( 0 ),
+  myWorkWin( 0 ),
+  myWorkArea( 0 )
 {
   myActionsMap.insert( SplitVertical,   new QtxAction( QString(), tr( "Split vertically" ), 0, this ) );
   myActionsMap.insert( SplitHorizontal, new QtxAction( QString(), tr( "Split horizontally" ), 0, this ) );
@@ -71,14 +1366,15 @@ myWorkArea( 0 )
 }
 
 /*!
-  Destructor
+  \brief Destructor.
 */
 QtxWorkstack::~QtxWorkstack()
 {
 }
 
 /*!
-  \return list of all widgets in all areas
+  \brief Get all child widgets in all workareas.
+  \return list of widgets in all workareas
 */
 QWidgetList QtxWorkstack::windowList() const
 {
@@ -97,7 +1393,8 @@ QWidgetList QtxWorkstack::windowList() const
 }
 
 /*!
-  \return list of all widgets in active area
+  \brief Get all child widgets in the active workarea.
+  \return list of widgets in active workarea
 */
 QWidgetList QtxWorkstack::splitWindowList() const
 {
@@ -105,6 +1402,7 @@ QWidgetList QtxWorkstack::splitWindowList() const
 }
 
 /*!
+  \brief Get active widget.
   \return active widget
 */
 QWidget* QtxWorkstack::activeWindow() const
@@ -113,8 +1411,12 @@ QWidget* QtxWorkstack::activeWindow() const
 }
 
 /*!
-  Splits widgets
-  \param o - orientation (Qt::Orientation)
+  \brief Split workstack.
+
+  Splitting is possible only if there are two or more widgets in the workarea.
+  This function splits current workarea to two new ones.
+
+  \param o splitting orientation (Qt::Orientation)
 */
 void QtxWorkstack::split( const int o )
 {
@@ -163,10 +1465,14 @@ void QtxWorkstack::split( const int o )
 }
 
 /*!
- \brief Split workarea of the given widget on two parts.
- \param wid  - widget, belonging to this workstack
- \param o    - orientation of splitting (Qt::Horizontal or Qt::Vertical)
- \param type - type of splitting, see <VAR>SplitType</VAR> enumeration
+  \brief Split workarea of the given widget on two parts.
+
+  Splitting is possible only if there are two or more widgets in the workarea.
+  This function splits current workarea to two new ones.
+
+  \param wid widget belonging to the workstack
+  \param o splitting orientation type (Qt::Orientation)
+  \param type splitting type (QtxWorkstack::SplitType)
 */
 void QtxWorkstack::Split( QWidget* wid, const Qt::Orientation o, const SplitType type )
 {
@@ -177,7 +1483,7 @@ void QtxWorkstack::Split( QWidget* wid, const Qt::Orientation o, const SplitType
   QList<QtxWorkstackArea*> allAreas;
   areas(mySplit, allAreas, true);
 
-  
+
   for ( QList<QtxWorkstackArea*>::iterator it = allAreas.begin(); it != allAreas.end() && !area; ++it )
   {
     if ( (*it)->contains( wid ) )
@@ -212,7 +1518,7 @@ void QtxWorkstack::Split( QWidget* wid, const Qt::Orientation o, const SplitType
 
   switch ( type )
   {
-  case SPLIT_STAY:
+  case SplitStay:
     for ( QWidgetList::iterator itr = wids.begin(); itr != wids.end(); ++itr )
     {
       QWidget* wid_i = *itr;
@@ -223,7 +1529,7 @@ void QtxWorkstack::Split( QWidget* wid, const Qt::Orientation o, const SplitType
       }
     }
     break;
-  case SPLIT_AT:
+  case SplitAt:
     {
       QWidgetList::iterator itr = wids.begin();
       for ( ; itr != wids.end() && *itr != wid; ++itr )
@@ -236,7 +1542,7 @@ void QtxWorkstack::Split( QWidget* wid, const Qt::Orientation o, const SplitType
       }
     }
     break;
-  case SPLIT_MOVE:
+  case SplitMove:
     area->removeWidget( wid );
     newArea->insertWidget( wid );
     break;
@@ -246,17 +1552,20 @@ void QtxWorkstack::Split( QWidget* wid, const Qt::Orientation o, const SplitType
 }
 
 /*!
- \brief Move widget(s) from source workarea into target workarea
-        or just reorder widgets inside one workarea.
- \param wid1 - widget from target workarea
- \param wid2 - widget from source workarea
- \param all  - if this parameter is TRUE, all widgets from source workarea will
-               be moved into the target one, else only the \a wid2 will be moved
+ \brief Move widget(s) from the source workarea into the target workarea
+        or reorder widgets inside one workarea.
 
  Move \a wid2 in target workarea. Put it right after \a wid1.
- If value of boolean argument is TRUE, all widgets from source workarea
- will be moved together with \a wid2, source workarea will be deleted.
- If \a wid1 and \a wid2 belongs to one workarea, simple reordering will take place.
+ If \a all parameter is \c true, all widgets from source workarea
+ will be moved including \a wid2 and source workarea will be deleted then.
+
+ If \a wid1 and \a wid2 belongs to one workarea, widgets will be just reordered
+ in that workarea.
+
+ \param wid1 widget from target workarea
+ \param wid2 widget from source workarea
+ \param all  if \c true, all widgets from source workarea will
+             be moved into the target one, else only the \a wid2 will be moved
 */
 void QtxWorkstack::Attract( QWidget* wid1, QWidget* wid2, const bool all )
 {
@@ -331,6 +1640,10 @@ void QtxWorkstack::Attract( QWidget* wid1, QWidget* wid2, const bool all )
   area1->setActiveWidget( curWid );
 }
 
+/*!
+  \brief Calculate sizes of the splitter widget for the workarea.
+  \internal
+*/
 static void setSizes (QIntList& szList, const int item_ind,
                       const int new_near, const int new_this, const int new_farr)
 {
@@ -351,11 +1664,12 @@ static void setSizes (QIntList& szList, const int item_ind,
 }
 
 /*!
-* \brief Set position of the widget relatively its splitter.
-* \param wid - widget to set position of
-* \param pos - position relatively splitter. Value in range [0..1].
-*
-* Orientation of positioning will correspond to the splitter orientation.
+  \brief Set position of the widget relatively to its parent splitter.
+
+  Orientation of positioning will correspond to the splitter orientation.
+
+  \param wid widget
+  \param pos position relatively to the splitter; value in the range [0..1]
 */
 void QtxWorkstack::SetRelativePositionInSplitter( QWidget* wid, const double position )
 {
@@ -406,12 +1720,14 @@ void QtxWorkstack::SetRelativePositionInSplitter( QWidget* wid, const double pos
 }
 
 /*!
-* \brief Set position of the widget relatively the entire workstack.
-* \param wid - widget to set position of
-* \param o   - orientation of positioning (Qt::Horizontal or Qt::Vertical).
-*              If o = Qt::Horizontal, horizontal position of \a wid will be changed.
-*              If o = Qt::Vertical, vertical position of \a wid will be changed.
-* \param pos - position relatively workstack. Value in range [0..1].
+  \brief Set position of the widget relatively to the entire workstack.
+
+  If \a o is \c Qt::Horizontal, the horizontal position of \a wid will be changed.
+  If \a o is \c Qt::Vertical, the vertical position of \a wid will be changed.
+
+  \param wid widget
+  \param o   orientation of positioning (\c Qt::Horizontal or \c Qt::Vertical)
+  \param pos position relatively to the workstack; value in range [0..1]
 */
 void QtxWorkstack::SetRelativePosition( QWidget* wid, const Qt::Orientation o,
                                         const double position )
@@ -433,9 +1749,9 @@ void QtxWorkstack::SetRelativePosition( QWidget* wid, const Qt::Orientation o,
 }
 
 /*!
-* \brief Sets the action's accelerator key to accel. 
-* \param id - the key of the action in the actions map.
-* \param accel - action's accelerator key.
+  \brief Set accelerator key-combination for the action with specified \a id.
+  \param id action ID
+  \param accel action accelerator
 */
 void QtxWorkstack::setAccel( const int id, const int accel )
 {
@@ -446,9 +1762,9 @@ void QtxWorkstack::setAccel( const int id, const int accel )
 }
 
 /*!
-* \brief Returns the action's accelerator key.
-* \param id - the key of the action in the actions map.
-* \retval int  - action's accelerator key.
+  \brief Get the action's accelerator key-combination.
+  \param id action ID
+  \return action accelerator
 */
 int QtxWorkstack::accel( const int id ) const
 {
@@ -458,20 +1774,44 @@ int QtxWorkstack::accel( const int id ) const
   return res;
 }
 
-bool QtxWorkstack::isActionEnabled( const int id ) const
+/*!
+  \brief Set actions to be visible in the context popup menu.
+  
+  Actions, which IDs are set in \a flags parameter, will be shown in the 
+  context popup menu. Other actions will not be shown.
+
+  \param flags ORed together actions flags
+*/
+void QtxWorkstack::setMenuActions( const int flags )
 {
-  bool res = false;
-  if ( myActionsMap.contains( id ) )
-    res = myActionsMap[id]->isEnabled();
-  return res;
+  myActionsMap[SplitVertical]->setVisible( flags & SplitVertical );
+  myActionsMap[SplitHorizontal]->setVisible( flags & SplitHorizontal );
+  myActionsMap[Close]->setVisible( flags & Close );
+  myActionsMap[Rename]->setVisible( flags & Rename );
 }
 
-void QtxWorkstack::setActionEnabled( const int id, const bool on )
+/*!
+  \brief Set actions to be visible in the context popup menu.
+  
+  Actions, which IDs are set in \a flags parameter, will be shown in the 
+  context popup menu. Other actions will not be shown.
+
+  \param flags ORed together actions flags
+*/
+int QtxWorkstack::menuActions() const
 {
-  if ( myActionsMap.contains( id ) )
-    myActionsMap[id]->setEnabled( on );
+  int ret = 0;
+  ret = ret | ( myActionsMap[SplitVertical]->isVisible() ? SplitVertical : 0 );
+  ret = ret | ( myActionsMap[SplitHorizontal]->isVisible() ? SplitHorizontal : 0 );
+  ret = ret | ( myActionsMap[Close]->isVisible() ? Close : 0 );
+  ret = ret | ( myActionsMap[Rename]->isVisible() ? Rename : 0 );
+  return ret;
 }
 
+/*!
+  \brief Calculate sizes of the splitter widget for the workarea.
+  \internal
+*/
 static int positionSimple (QIntList& szList, const int nb, const int splitter_size,
                            const int item_ind, const int item_rel_pos,
                            const int need_pos, const int splitter_pos)
@@ -533,19 +1873,19 @@ static int positionSimple (QIntList& szList, const int nb, const int splitter_si
 }
 
 /*!
-* \brief Set position of given widget.
-* \param wid          - widget to be moved
-* \param split        - currently processed splitter (goes from more common
-*                       to more particular splitter in recursion calls)
-* \param o            - orientation of positioning
-* \param need_pos     - required position of the given widget in pixels
-*                       (from top/left side of workstack area)
-* \param splitter_pos - position of the splitter \a split
-*                       (from top/left side of workstack area)
-* \retval int - returns difference between a required and a distinguished position.
-* 
-* Internal method. Recursively calls itself.
-* Is called from <VAR>SetRelativePosition</VAR> public method.
+  \brief Set position of the widget.
+
+  Called from SetRelativePosition() public method.
+
+  \param wid   widget to be moved
+  \param split currently processed splitter (goes from more common
+               to more particular splitter in recursion calls)
+  \param o     orientation of positioning
+  \param need_pos required position of the given widget in pixels
+               (from top/left side of workstack area)
+  \param splitter_pos position of the splitter \a split
+               (from top/left side of workstack area)
+  \return difference between a required and a distinguished position
 */
 int QtxWorkstack::setPosition( QWidget* wid, QSplitter* split, const Qt::Orientation o,
                                const int need_pos, const int splitter_pos )
@@ -733,7 +2073,8 @@ int QtxWorkstack::setPosition( QWidget* wid, QSplitter* split, const Qt::Orienta
 }
 
 /*!
-  Redistributes space among widgets equally
+  \brief Redistribute space among widgets equally.
+  \param split splitter
 */
 void QtxWorkstack::distributeSpace( QSplitter* split ) const
 {
@@ -749,7 +2090,7 @@ void QtxWorkstack::distributeSpace( QSplitter* split ) const
 }
 
 /*!
-  Splits widgets vertically
+  \brief Split widgets vertically.
 */
 void QtxWorkstack::splitVertical()
 {
@@ -757,7 +2098,7 @@ void QtxWorkstack::splitVertical()
 }
 
 /*!
-  Splits widgets horizontally
+  \brief Split widgets horizontally.
 */
 void QtxWorkstack::splitHorizontal()
 {
@@ -765,7 +2106,9 @@ void QtxWorkstack::splitHorizontal()
 }
 
 /*!
-  SLOT: called if action "Rename" is activated, changes caption of widget
+  \brief Called when user activates "Rename" menu item.
+
+  Changes widget title.
 */
 void QtxWorkstack::onRename()
 {
@@ -780,7 +2123,8 @@ void QtxWorkstack::onRename()
 }
 
 /*!
-  Wraps area into new splitter
+  \brief Wrap area into the new splitter.
+  \param workarea
   \return new splitter
 */
 QSplitter* QtxWorkstack::wrapSplitter( QtxWorkstackArea* area )
@@ -798,9 +2142,7 @@ QSplitter* QtxWorkstack::wrapSplitter( QtxWorkstackArea* area )
   QIntList szList = pSplit->sizes();
 
   QSplitter* wrap = new QSplitter( 0 );
-#if defined QT_VERSION && QT_VERSION >= 0x30200
   wrap->setChildrenCollapsible( false );
-#endif
   pSplit->insertWidget( pSplit->indexOf( area ) + 1, wrap );
   wrap->setVisible( true );
   wrap->addWidget( area );
@@ -813,10 +2155,10 @@ QSplitter* QtxWorkstack::wrapSplitter( QtxWorkstackArea* area )
 }
 
 /*!
-  Reparenst and adds widget
-  \param wid - widget
-  \param pWid - parent widget
-  \param after - after widget
+  \brief Reparent and add widget.
+  \param wid widget
+  \param pWid parent widget
+  \param after widget after which \a wid should be added
 */
 void QtxWorkstack::insertWidget( QWidget* wid, QWidget* pWid, QWidget* after )
 {
@@ -853,7 +2195,7 @@ void QtxWorkstack::insertWidget( QWidget* wid, QWidget* pWid, QWidget* after )
 }
 
 /*!
-* \brief Closes the active window.
+  \brief Close active window.
 */
 void QtxWorkstack::onCloseWindow()
 {
@@ -864,8 +2206,11 @@ void QtxWorkstack::onCloseWindow()
 }
 
 /*!
-  SLOT: called on area is destroyed
-  Sets focus to neighbour area
+  \brief Called when workarea is destroyed.
+
+  Set input focus to the neighbour area.
+
+  \param obj workarea being destroyed
 */
 void QtxWorkstack::onDestroyed( QObject* obj )
 {
@@ -885,9 +2230,10 @@ void QtxWorkstack::onDestroyed( QObject* obj )
 }
 
 /*!
-  SLOT: called on window activating
+  \brief Called on window activating.
+  \param area workarea being activated (not used)
 */
-void QtxWorkstack::onWindowActivated( QWidget* )
+void QtxWorkstack::onWindowActivated( QWidget* /*area*/ )
 {
   const QObject* obj = sender();
   if ( !obj->inherits( "QtxWorkstackArea" ) )
@@ -897,7 +2243,8 @@ void QtxWorkstack::onWindowActivated( QWidget* )
 }
 
 /*!
-  SLOT: called on window deactivating
+  \brief Called on window deactivating.
+  \param area workarea being deactivated
 */
 void QtxWorkstack::onDeactivated( QtxWorkstackArea* area )
 {
@@ -922,9 +2269,9 @@ void QtxWorkstack::onDeactivated( QtxWorkstackArea* area )
 }
 
 /*!
-  Creates and shows popup menu for area
-  \param w - area
-  \param p - popup position
+  \brief Create and show popup menu for workarea.
+  \param w workarea
+  \param p popup position
 */
 void QtxWorkstack::onContextMenuRequested( QWidget* w, QPoint p )
 {
@@ -943,7 +2290,7 @@ void QtxWorkstack::onContextMenuRequested( QWidget* w, QPoint p )
   myWorkArea = anArea;
 
   QMenu* pm = new QMenu();
-  
+
   if ( lst.count() > 1 )
   {
     if ( myActionsMap[SplitVertical]->isEnabled() )
@@ -972,6 +2319,12 @@ void QtxWorkstack::onContextMenuRequested( QWidget* w, QPoint p )
   myWorkArea = 0;
 }
 
+/*!
+  \brief Add child widget.
+  \param w widget
+  \param f widget flags
+  \return child widget container
+*/
 QWidget* QtxWorkstack::addWindow( QWidget* w, Qt::WindowFlags f )
 {
   if ( !w )
@@ -981,16 +2334,18 @@ QWidget* QtxWorkstack::addWindow( QWidget* w, Qt::WindowFlags f )
 }
 
 /*!
-  Handler of custom events
+  \brief Handle custom events.
+  \param e custom event (not used)
 */
-void QtxWorkstack::customEvent( QEvent* )
+void QtxWorkstack::customEvent( QEvent* /*e*/ )
 {
   updateState();
 }
 
 /*!
-  \return splitter corresponding to area
-  \param area
+  \brief Get splitter corresponding to the workarea.
+  \param workarea
+  \return splitter corresponding to the workarea
 */
 QSplitter* QtxWorkstack::splitter( QtxWorkstackArea* area ) const
 {
@@ -1007,10 +2362,10 @@ QSplitter* QtxWorkstack::splitter( QtxWorkstackArea* area ) const
 }
 
 /*!
-  Fills list with children splitters
-  \param split - parent splitter
-  \param splitList - list to be filled with
-  \param rec - recursive search of children
+  \brief Get list of child splitters.
+  \param split parent splitter
+  \param splitList list to be filled with child splitters
+  \param rec if \c true, perform recursive search of children
 */
 void QtxWorkstack::splitters( QSplitter* split, QList<QSplitter*>& splitList, const bool rec ) const
 {
@@ -1028,10 +2383,10 @@ void QtxWorkstack::splitters( QSplitter* split, QList<QSplitter*>& splitList, co
 }
 
 /*!
-  Fills list with children areas
-  \param split - parent splitter
-  \param areaList - list to be filled with
-  \param rec - recursive search of children
+  \brief Get list of child workareas.
+  \param split parent splitter
+  \param areaList list to be filled with child workareas
+  \param rec if \c true, perform recursive search of children
 */
 void QtxWorkstack::areas( QSplitter* split, QList<QtxWorkstackArea*>& areaList, const bool rec ) const
 {
@@ -1049,7 +2404,8 @@ void QtxWorkstack::areas( QSplitter* split, QList<QtxWorkstackArea*>& areaList, 
 }
 
 /*!
-  \return active area
+  \brief Get active workarea.
+  \return active workarea
 */
 QtxWorkstackArea* QtxWorkstack::activeArea() const
 {
@@ -1057,7 +2413,12 @@ QtxWorkstackArea* QtxWorkstack::activeArea() const
 }
 
 /*!
-  \return active area or current area or create new area of there is no one
+  \brief Get target area (for which the current operation should be done).
+
+  Returns active workarea or current area (if there is no active workarea).
+  If there are no workareas, create new workarea and return it.
+
+  \return workarea
 */
 QtxWorkstackArea* QtxWorkstack::targetArea()
 {
@@ -1079,7 +2440,11 @@ QtxWorkstackArea* QtxWorkstack::targetArea()
 }
 
 /*!
-  \return current area (that has focus)
+  \brief Get current workarea.
+
+  Current workarea is that one which has input focus.
+
+  \return current area
 */
 QtxWorkstackArea* QtxWorkstack::currentArea() const
 {
@@ -1096,7 +2461,9 @@ QtxWorkstackArea* QtxWorkstack::currentArea() const
 }
 
 /*!
-  Creates new area
+  \brief Create new workarea.
+  \param parent parent widget
+  \return created workarea
 */
 QtxWorkstackArea* QtxWorkstack::createArea( QWidget* parent ) const
 {
@@ -1112,8 +2479,8 @@ QtxWorkstackArea* QtxWorkstack::createArea( QWidget* parent ) const
 }
 
 /*!
-  Sets area as active
-  \param area
+  \brief Set active workarea.
+  \param workarea
 */
 void QtxWorkstack::setActiveArea( QtxWorkstackArea* area )
 {
@@ -1139,8 +2506,9 @@ void QtxWorkstack::setActiveArea( QtxWorkstackArea* area )
 }
 
 /*!
-  \return neighbour area
-  \param area - area to search neighbour
+  \brief Get workarea which is nearest to \a area.
+  \param area area for which neighbour is searched
+  \return neighbour area (or 0 if not found)
 */
 QtxWorkstackArea* QtxWorkstack::neighbourArea( QtxWorkstackArea* area ) const
 {
@@ -1166,8 +2534,9 @@ QtxWorkstackArea* QtxWorkstack::neighbourArea( QtxWorkstackArea* area ) const
 }
 
 /*!
-  \return area covering point
-  \param p - point
+  \brief Get workarea covering point.
+  \return workarea
+  \param p point
 */
 QtxWorkstackArea* QtxWorkstack::areaAt( const QPoint& p ) const
 {
@@ -1187,7 +2556,7 @@ QtxWorkstackArea* QtxWorkstack::areaAt( const QPoint& p ) const
 }
 
 /*!
-  Update
+  \brief Update internal state.
 */
 void QtxWorkstack::updateState()
 {
@@ -1195,7 +2564,8 @@ void QtxWorkstack::updateState()
 }
 
 /*!
-  Update splitters
+  \brief Update splitter state.
+  \param split splitter to be updated
 */
 void QtxWorkstack::updateState( QSplitter* split )
 {
@@ -1237,9 +2607,9 @@ void QtxWorkstack::updateState( QSplitter* split )
 }
 
 /*!
-  Gets splitter info for debug
-  \param split - splitter
-  \param info - string to be filled with info
+  \brief Get splitter info (for debug purposes)
+  \param split splitter
+  \param info string to be filled with splitter data.
 */
 void QtxWorkstack::splitterInfo( QSplitter* split, QString& info ) const
 {
@@ -1260,7 +2630,7 @@ void QtxWorkstack::splitterInfo( QSplitter* split, QString& info ) const
     sizesStr = sizesStr.right( sizesStr.length() - 1 );
 
   info += QString( "(splitter orientation=%1 sizes=%3 " ).arg( split->orientation() ).arg( sizesStr );
-    
+
   for ( QObjectList::const_iterator it = objs.begin(); it != objs.end(); ++it )
   {
     if ( (*it)->inherits( "QSplitter" ) )
@@ -1282,9 +2652,12 @@ void QtxWorkstack::splitterInfo( QSplitter* split, QString& info ) const
   printf( (const char*)QString( info + '\n' ).toLatin1() );
 }
 
-
-//Cuts starting '(' symbol and ending '(' symbol
-void cutBrackets( QString& parameters )
+/*!
+  \brief Remove round brackets symbols from the string.
+  \internal
+  \param parameters string to be processed
+*/
+static void cutBrackets( QString& parameters )
 {
   QChar c1 = parameters[0];
   QChar c2 = parameters[int(parameters.length()-1)];
@@ -1292,12 +2665,23 @@ void cutBrackets( QString& parameters )
     parameters = parameters.mid( 1, parameters.length()-2 );
 }
 
-/*
-  for strings like "(splitter orientation=0 children=2 sizes=332:478" returns values of
-  parameters.  For example, getValue( example, "children" ) returns "2"
-  getValue( example, "sizes" ) returns "332:478"
+/*!
+  \brief Parse string to get some parameter value.
+  \internal
+
+  String \a str can contain the parameters description of kind "<param>=<value> ...".
+  For example:
+  \code
+  QString s = "splitter orientation=0 children=2 sizes=332:478";
+  QString orient_val = getValue( s, "children" ); // orient_val contains "2"
+  QString size_val   = getValue( s, "sizes" );    // val contains "332:478"
+  \endcode
+
+  \param str string to be processed
+  \param valName parameter name
+  \return parameter value (or null QStrinhg if parameter is not found)
 */
-QString getValue( const QString& str, const QString& valName )
+static QString getValue( const QString& str, const QString& valName )
 {
   int i = str.indexOf( valName );
   if ( i != -1 )
@@ -1313,10 +2697,13 @@ QString getValue( const QString& str, const QString& valName )
   return QString();
 }
 
-/*
-  checks format of splitter parameters string
+/*!
+  \brief Check format of splitter parameters string.
+  \internal
+  \param parameters splitter parameters description
+  \return \c true on success and \c false on error
 */
-bool checkFormat( const QString& parameters )
+static bool checkFormat( const QString& parameters )
 {
   QString params( parameters );
   // 1. begins and ends with brackets
@@ -1344,15 +2731,21 @@ bool checkFormat( const QString& parameters )
   return ok;
 }
 
-/*
-  Returns children of splitter in a list.  Children are separated by '(' and ')' symbols
+/*!
+  \brief Get splitter's children descriptions from the string.
+  \internal
+  
+  Child widgets descriptions are separated by '(' and ')' symbols.
+
+  \param str string to be processed
+  \return child widgets descriptions
 */
-QStringList getChildren( const QString& str )
+static QStringList getChildren( const QString& str )
 {
   QStringList lst;
   if ( !str.startsWith( "(" ) )
     return lst;
-  
+
   int i = 1,
   nOpen = 1, // count brackets: '(' increments nOpen, ')' decrements
   start = 0;
@@ -1367,7 +2760,7 @@ QStringList getChildren( const QString& str )
     else if ( str[i] == ')' )
     {
       nOpen--;
-      if ( nOpen == 0 ) 
+      if ( nOpen == 0 )
 	      lst.append( str.mid( start, i-start+1 ) );
     }
     i++;
@@ -1376,10 +2769,22 @@ QStringList getChildren( const QString& str )
   return lst;
 }
 
-// for a string like "views active='AnotherView' 'GLView' 'AnotherView'"
-// getViewName( example, 0 ) returns "GLView", 
-// getViewName( example, 1 ) -> "AnotherView", etc.
-QString getViewName( const QString& str, int i )
+/*!
+  \brief Get view name by index.
+  \internal
+
+  Example:
+  \code
+  QString s  = "views active='AnotherView' 'GLView' 'AnotherView'";
+  QString a0 = getViewName( s, 0 ); // --> a0 contains "GLView"
+  QString a1 = getViewName( s, 1 ); // --> a1 contains "AnotherView"
+  \endcode
+
+  \param str string to be processed
+  \param i index
+  \return view name
+*/
+static QString getViewName( const QString& str, int i )
 {
   QRegExp exp( "\\s'\\w+'" );
   int start = 0; // start index of view name in the string
@@ -1395,8 +2800,14 @@ QString getViewName( const QString& str, int i )
   return QString();
 }
 
-// returns widget with given name
-QWidget* getView( const QWidget* parent, const QString& aName )
+/*!
+  \brief Get child widget with specified name.
+  \internal
+  \param parent parent widget
+  \param aName child widget name
+  \return child widget or 0 if not found
+*/
+static QWidget* getView( const QWidget* parent, const QString& aName )
 {
   QWidget* view = 0;
   QList<QWidget*> l = qFindChildren<QWidget*>( parent->topLevelWidget(), aName );
@@ -1406,7 +2817,10 @@ QWidget* getView( const QWidget* parent, const QString& aName )
 }
 
 /*!
-  Installs a splitter described by given parameters string
+  \brief Setup splitter according to the specified parameters string.
+  \param splitter splitter to be set up
+  \param parameters splitter parameters description
+  \param sMap map containing resulting child splitters sizes
 */
 void QtxWorkstack::setSplitter( QSplitter* splitter, const QString& parameters, QMap<QSplitter*, QList<int> >& sMap )
 {
@@ -1437,8 +2851,8 @@ void QtxWorkstack::setSplitter( QSplitter* splitter, const QString& parameters, 
   QStringList children = ::getChildren( childrenStr );
 
   // debug output..
-  //  printf (" splitter orient=%d, sizes_count=%d, children=%d\n", orient, sizes.count(), children.count() ); 
-  //  for ( QStringList::Iterator tit = children.begin(); tit != children.end(); ++tit ) 
+  //  printf (" splitter orient=%d, sizes_count=%d, children=%d\n", orient, sizes.count(), children.count() );
+  //  for ( QStringList::Iterator tit = children.begin(); tit != children.end(); ++tit )
   //    printf ("   |-> child = [%s]\n", (*tit).latin1() );
 
   for ( it = children.begin(); it != children.end(); ++it )
@@ -1473,7 +2887,9 @@ void QtxWorkstack::setSplitter( QSplitter* splitter, const QString& parameters, 
 }
 
 /*!
-  Restore workstack's configuration stored in 'parameters' string
+  \brief Restore workstack configuration from the state description string.
+  \param parameters workstack state description
+  \return reference to this workstack
 */
 QtxWorkstack& QtxWorkstack::operator<<( const QString& parameters )
 {
@@ -1493,7 +2909,7 @@ QtxWorkstack& QtxWorkstack::operator<<( const QString& parameters )
 
   // restore splitter recursively
   QMap< QSplitter*, QList<int> > sMap;
-  setSplitter( mySplit, parameters, sMap );  
+  setSplitter( mySplit, parameters, sMap );
 
   // now mySplit may contains empty area (where all views were located before restoring)
   // in order setSize to work correctly we have to exclude this area
@@ -1515,9 +2931,9 @@ QtxWorkstack& QtxWorkstack::operator<<( const QString& parameters )
 }
 
 /*!
-  Example of string produced by operator>> :
-  "(splitter orientation=0 sizes=186:624 (views active='OCCViewer_0_0' 'OCCViewer_0_0')
-/ (views active='VTKViewer_0_0' 'VTKViewer_0_0'))"
+  \brief Dump workstack configuration to the state description string.
+  \param parameters resulting workstack state description
+  \return reference to this workstack
 */
 QtxWorkstack& QtxWorkstack::operator>>( QString& outParameters )
 {
@@ -1525,1121 +2941,8 @@ QtxWorkstack& QtxWorkstack::operator>>( QString& outParameters )
   return (*this);
 }
 
-
-class QtxWorkstackArea::WidgetEvent : public QEvent
-{
-public:
-  WidgetEvent( Type t, QWidget* w = 0 ) : QEvent( t ), myWidget( w ) {};
-
-  QWidget* widget() const { return myWidget; }
-
-private:
-  QWidget* myWidget;
-};
-
 /*!
-  Constructor
+  \fn void QtxWorkstack::windowActivated( QWidget* w )
+  \brief Emitted when the workstack's child widget \w is activated.
+  \param w widget being activated
 */
-QtxWorkstackArea::QtxWorkstackArea( QWidget* parent )
-: QFrame( parent )
-{
-  setFrameStyle( QFrame::Panel | QFrame::Sunken );
-
-  QVBoxLayout* base = new QVBoxLayout( this );
-  base->setMargin( frameWidth() );
-
-  QWidget* top = new QWidget( this );
-  base->addWidget( top );
-
-  QHBoxLayout* tl = new QHBoxLayout( top );
-  tl->setMargin( 0 );
-
-  myBar = new QtxWorkstackTabBar( top );
-  tl->addWidget( myBar, 1 );
-
-  QPushButton* close = new QPushButton( top );
-  close->setIcon( style()->standardIcon( QStyle::SP_TitleBarCloseButton ) );
-  close->setAutoDefault( true );
-  close->setFlat( true );
-  myClose = close;
-  tl->addWidget( myClose );
-
-  myStack = new QStackedWidget( this );
-
-  base->addWidget( myStack, 1 );
-
-  connect( myClose, SIGNAL( clicked() ), this, SLOT( onClose() ) );
-  connect( myBar, SIGNAL( currentChanged( int ) ), this, SLOT( onCurrentChanged( int ) ) );
-  connect( myBar, SIGNAL( dragActiveTab() ), this, SLOT( onDragActiveTab() ) );
-  connect( myBar, SIGNAL( contextMenuRequested( QPoint ) ), this, SLOT( onContextMenuRequested( QPoint ) ) );
-
-  updateState();
-
-  updateActiveState();
-
-  QApplication::instance()->installEventFilter( this );
-}
-
-/*!
-  Destructor
-*/
-QtxWorkstackArea::~QtxWorkstackArea()
-{
-  QApplication::instance()->removeEventFilter( this );
-}
-
-/*!
-  \return true if area is empty
-*/
-bool QtxWorkstackArea::isEmpty() const
-{
-  bool res = false;
-  for ( WidgetInfoMap::ConstIterator it = myInfo.begin(); it != myInfo.end() && !res; ++it )
-    res = it.value().vis;
-  return !res;
-}
-
-/*!
-  Adds widget to area
-  \param wid - widget
-  \param idx - index
-*/
-QWidget* QtxWorkstackArea::insertWidget( QWidget* wid, const int idx, Qt::WindowFlags f )
-{
-  if ( !wid )
-    return 0;
-
-  int pos = myList.indexOf( wid );
-  if ( pos != -1 && ( pos == idx || ( idx < 0 && pos == (int)myList.count() - 1 ) ) )
-    return 0;
-
-  myList.removeAll( wid );
-  pos = idx < 0 ? myList.count() : idx;
-  myList.insert( qMin( pos, (int)myList.count() ), wid );
-  if ( !myInfo.contains( wid ) )
-  {
-    QtxWorkstackChild* child = new QtxWorkstackChild( wid, myStack, f );
-    myChild.insert( wid, child );
-    myInfo.insert( wid, WidgetInfo() );
-    myInfo[wid].id = generateId();
-    myInfo[wid].vis = wid->isVisibleTo( wid->parentWidget() );
-
-    connect( child, SIGNAL( destroyed( QObject* ) ), this, SLOT( onChildDestroyed( QObject* ) ) );
-    connect( wid, SIGNAL( destroyed() ), this, SLOT( onWidgetDestroyed() ) );
-    connect( child, SIGNAL( shown( QtxWorkstackChild* ) ), this, SLOT( onChildShown( QtxWorkstackChild* ) ) );
-    connect( child, SIGNAL( hided( QtxWorkstackChild* ) ), this, SLOT( onChildHided( QtxWorkstackChild* ) ) );
-    connect( child, SIGNAL( activated( QtxWorkstackChild* ) ), this, SLOT( onChildActivated( QtxWorkstackChild* ) ) );
-    connect( child, SIGNAL( captionChanged( QtxWorkstackChild* ) ), this, SLOT( onChildCaptionChanged( QtxWorkstackChild* ) ) );
-  }
-
-  updateState();
-
-  setWidgetActive( wid );
-  wid->setFocus();
-
-  return myChild[wid];
-}
-
-/*!
-  Creates and shows popup menu for area
-  \param p - popup position
-*/
-void QtxWorkstackArea::onContextMenuRequested( QPoint p )
-{
-  const QtxWorkstackTabBar* bar = ::qobject_cast<const QtxWorkstackTabBar*>( sender() );
-  if ( !bar )
-    return;
-
-  QWidget* wid = 0;
-  int idx = tabAt( p );
-  if ( idx != -1 )
-    wid = widget( myBar->tabId( idx ) );
-
-  emit contextMenuRequested( wid, p );
-}
-
-/*!
-  SLOT: called when widget added to area is destroyed, removes widget from area
-*/
-void QtxWorkstackArea::onWidgetDestroyed()
-{
-  if ( sender() )
-    removeWidget( (QWidget*)sender(), false );
-}
-
-/*!
-  Removes widget from area
-  \param wid - widget
-  \param del - auto deleting
-*/
-void QtxWorkstackArea::removeWidget( QWidget* wid, const bool del )
-{
-  if ( !myList.contains( wid ) )
-    return;
-
-  if ( myBar->indexOf( widgetId( wid ) ) != -1 )
-    myBar->removeTab( myBar->indexOf( widgetId( wid ) ) );
-
-  myStack->removeWidget( child( wid ) );
-
-  myList.removeAll( wid );
-  myInfo.remove( wid );
-  myChild.remove( wid );
-
-  if ( del )
-  {
-    delete child( wid );
-    if ( myList.isEmpty() )
-      delete this;
-    else
-      updateState();
-  }
-  else
-    updateState();
-}
-
-/*!
-  \return list of visible widgets
-*/
-QWidgetList QtxWorkstackArea::widgetList() const
-{
-  QWidgetList lst;
-  for ( QWidgetList::const_iterator it = myList.begin(); it != myList.end(); ++it )
-  {
-    if ( widgetVisibility( *it ) )
-      lst.append( *it );
-  }
-  return lst;
-}
-
-/*!
-  \return active widget
-*/
-QWidget* QtxWorkstackArea::activeWidget() const
-{
-  return widget( myBar->tabId( myBar->currentIndex() ) );
-}
-
-/*!
-  Sets widget as active
-  \param wid - widget
-*/
-void QtxWorkstackArea::setActiveWidget( QWidget* wid )
-{
-  myBar->setCurrentIndex( myBar->indexOf( widgetId( wid ) ) );
-}
-
-/*!
-  \return true if area contains widget
-  \param wid - widget
-*/
-bool QtxWorkstackArea::contains( QWidget* wid ) const
-{
-  return myList.contains( wid );
-}
-
-/*!
-  Shows area
-*/
-void QtxWorkstackArea::setVisible( bool on )
-{
-  QMap<QWidget*, bool> map;
-  for ( QWidgetList::iterator it = myList.begin(); it != myList.end(); ++it )
-  {
-    map.insert( *it, isBlocked( *it ) );
-    setBlocked( *it, true );
-  }
-
-  QFrame::setVisible( on );
-
-  for ( QWidgetList::iterator itr = myList.begin(); itr != myList.end(); ++itr )
-    setBlocked( *itr, map.contains( *itr ) ? map[*itr] : false );
-}
-
-/*!
-  \return true if area is active
-*/
-bool QtxWorkstackArea::isActive() const
-{
-  QtxWorkstack* ws = workstack();
-  if ( !ws )
-    return false;
-
-  return ws->activeArea() == this;
-}
-
-/*!
-  Update active state of tab bar
-*/
-void QtxWorkstackArea::updateActiveState()
-{
-  myBar->setActive( isActive() );
-}
-
-/*!
-  \return corresponding workstack
-*/
-QtxWorkstack* QtxWorkstackArea::workstack() const
-{
-  QtxWorkstack* ws = 0;
-  QWidget* wid = parentWidget();
-  while ( wid && !ws )
-  {
-    if ( wid->inherits( "QtxWorkstack" ) )
-      ws = (QtxWorkstack*)wid;
-    wid = wid->parentWidget();
-  }
-  return ws;
-}
-
-/*!
-  Custom event filter
-*/
-bool QtxWorkstackArea::eventFilter( QObject* o, QEvent* e )
-{
-  if ( o->isWidgetType() )
-  {
-    QWidget* wid = (QWidget*)o;
-    if ( e->type() == QEvent::FocusIn || e->type() == QEvent::MouseButtonPress )
-    {
-      bool ok = false;
-      while ( !ok && wid && wid != myClose )
-      {
-        ok = wid == this;
-        wid = wid->parentWidget();
-      }
-      if ( ok )
-        QApplication::postEvent( this, new WidgetEvent( (QEvent::Type)( e->type() == QEvent::FocusIn ? ActivateWidget : FocusWidget ) ) );
-    }
-  }
-  return false;
-}
-
-/*!
-  \return rectangle of area in order to draw drop rectangle on area
-*/
-QRect QtxWorkstackArea::floatRect() const
-{
-  QRect r = myStack->geometry();
-  return QRect( mapToGlobal( r.topLeft() ), mapToGlobal( r.bottomRight() ) );
-}
-
-/*!
-  \return rectangle of tab in order to draw drop rectangle on tab
-  \param idx - tab index
-*/
-QRect QtxWorkstackArea::floatTab( const int idx ) const
-{
-  QRect r = myBar->tabRect( idx );
-  return QRect( myBar->mapToGlobal( r.topLeft() ), r.size() );
-}
-
-/*!
-  \return tab covering point 
-  \param p - point
-*/
-int QtxWorkstackArea::tabAt( const QPoint& pnt ) const
-{
-  int idx = -1;
-  QPoint p = myBar->mapFromGlobal( pnt );
-  for ( int i = 0; i < myBar->count() && idx == -1; i++ )
-  {
-    QRect r = myBar->tabRect( i );
-    if ( r.isValid() && r.contains( p ) )
-      idx = i;
-  }
-  return idx;
-}
-
-/*!
-  Event handler for custom events
-*/
-void QtxWorkstackArea::customEvent( QEvent* e )
-{
-  WidgetEvent* we = (WidgetEvent*)e;
-
-  switch ( we->type() )
-  {
-  case ActivateWidget:
-    emit activated( activeWidget() );
-    break;
-  case FocusWidget:
-    if ( activeWidget() )
-    {
-      if ( !activeWidget()->focusWidget() )
-        activeWidget()->setFocus();
-      else
-      {
-        if ( activeWidget()->focusWidget()->hasFocus() )
-        {
-          QFocusEvent in( QEvent::FocusIn );
-	        QApplication::sendEvent( this, &in );
-	      }
-        else
-          activeWidget()->focusWidget()->setFocus();
-      }
-    }
-    break;
-  case RemoveWidget:
-    removeWidget( we->widget() );
-    break;
-  default:
-    break;
-  }
-}
-
-/*!
-  Custom focus in event handler
-*/
-void QtxWorkstackArea::focusInEvent( QFocusEvent* e )
-{
-  QFrame::focusInEvent( e );
-
-  emit activated( activeWidget() );
-}
-
-/*!
-  Custom mouse press event handler
-*/
-void QtxWorkstackArea::mousePressEvent( QMouseEvent* e )
-{
-  QFrame::mousePressEvent( e );
-
-  emit activated( activeWidget() );
-}
-
-/*!
-  SLOT: called if button close is pressed
-*/
-void QtxWorkstackArea::onClose()
-{
-  QWidget* wid = activeWidget();
-  if ( wid )
-    wid->close();
-}
-
-/*!
-  SLOT: called if tab page is selected
-*/
-void QtxWorkstackArea::onCurrentChanged( int )
-{
-  updateCurrent();
-
-  emit activated( activeWidget() );
-}
-
-/*!
-  SLOT: called if active tab page is dragged
-*/
-void QtxWorkstackArea::onDragActiveTab()
-{
-  QtxWorkstackChild* c = child( activeWidget() );
-  if ( !c )
-    return;
-
-  new QtxWorkstackDrag( workstack(), c );
-}
-
-/*!
-  SLOT: called on child is destroyed, removes from area
-*/
-void QtxWorkstackArea::onChildDestroyed( QObject* obj )
-{
-  QtxWorkstackChild* child = (QtxWorkstackChild*)obj;
-  myStack->removeWidget( child );
-
-  QWidget* wid = 0;
-  for ( ChildMap::ConstIterator it = myChild.begin(); it != myChild.end() && !wid; ++it )
-  {
-    if ( it.value() == child )
-      wid = it.key();
-  }
-
-  myChild.remove( wid );
-
-  QApplication::postEvent( this, new WidgetEvent( (QEvent::Type)RemoveWidget, wid ) );
-}
-
-/*!
-  SLOT: called on child is shown
-*/
-void QtxWorkstackArea::onChildShown( QtxWorkstackChild* c )
-{
-  setWidgetShown( c->widget(), true );
-}
-
-/*!
-  SLOT: called on child is hidden
-*/
-void QtxWorkstackArea::onChildHided( QtxWorkstackChild* c )
-{
-  setWidgetShown( c->widget(), false );
-}
-
-/*!
-  SLOT: called on child is activated
-*/
-void QtxWorkstackArea::onChildActivated( QtxWorkstackChild* c )
-{
-  setWidgetActive( c->widget() );
-}
-
-/*!
-  SLOT: called on child caption is changed
-*/
-void QtxWorkstackArea::onChildCaptionChanged( QtxWorkstackChild* c )
-{
-  updateTab( c->widget() );
-}
-
-/*!
-  Raises widget when active tab is changed
-*/
-void QtxWorkstackArea::updateCurrent()
-{
-  QMap<QWidget*, bool> map;
-  for ( QWidgetList::iterator it = myList.begin(); it != myList.end(); ++it )
-  {
-    map.insert( *it, isBlocked( *it ) );
-    setBlocked( *it, true );
-  }
-
-  QWidget* cur = child( widget( myBar->tabId( myBar->currentIndex() ) ) );
-  if ( cur )
-    myStack->setCurrentWidget( cur );
-
-  for ( QWidgetList::iterator itr = myList.begin(); itr != myList.end(); ++itr )
-    setBlocked( *itr, map.contains( *itr ) ? map[*itr] : false );
-}
-
-/*!
-  Updates tab
-  \param wid - tab widget
-*/
-void QtxWorkstackArea::updateTab( QWidget* wid )
-{
-  int idx = myBar->indexOf( widgetId( wid ) );
-  if ( idx < 0 )
-    return;
-
-  myBar->setTabIcon( idx, wid->windowIcon() );
-  myBar->setTabText( idx, wid->windowTitle() );
-}
-
-/*!
-  \return widget
-  \param id - widget id
-*/
-QWidget* QtxWorkstackArea::widget( const int id ) const
-{
-  QWidget* wid = 0;
-  for ( WidgetInfoMap::ConstIterator it = myInfo.begin(); it != myInfo.end() && !wid; ++it )
-  {
-    if ( it.value().id == id )
-      wid = it.key();
-  }
-  return wid;
-}
-
-/*!
-  \return widget id
-  \param wid - widget
-*/
-int QtxWorkstackArea::widgetId( QWidget* wid ) const
-{
-  int id = -1;
-  if ( myInfo.contains( wid ) )
-    id = myInfo[wid].id;
-  return id;
-}
-
-/*!
-  \return true if widget is visible
-  \param wid - widget
-*/
-bool QtxWorkstackArea::widgetVisibility( QWidget* wid ) const
-{
-  bool res = false;
-  if ( myInfo.contains( wid ) )
-    res = myInfo[wid].vis;
-  return res;
-}
-
-/*!
-  Sets widget as active
-  \param wid - widget
-*/
-void QtxWorkstackArea::setWidgetActive( QWidget* wid )
-{
-  int id = widgetId( wid );
-  if ( id < 0 )
-    return;
-
-  myBar->setCurrentIndex( myBar->indexOf( id ) );
-}
-
-/*!
-  Shows/hides widget
-  \param wid - widget
-  \param on - new shown state
-*/
-void QtxWorkstackArea::setWidgetShown( QWidget* wid, const bool on )
-{
-  if ( isBlocked( wid ) || !myInfo.contains( wid ) || myInfo[wid].vis == on )
-    return;
-
-  myInfo[wid].vis = on;
-  updateState();
-}
-
-/*!
-  Update
-*/
-void QtxWorkstackArea::updateState()
-{
-  bool updBar = myBar->updatesEnabled();
-  bool updStk = myStack->updatesEnabled();
-  myBar->setUpdatesEnabled( false );
-  myStack->setUpdatesEnabled( false );
-
-  bool block = myBar->signalsBlocked();
-  myBar->blockSignals( true );
-
-  QWidget* prev = activeWidget();
-
-  int idx = 0;
-  for ( QWidgetList::iterator it = myList.begin(); it != myList.end(); ++it )
-  {
-    QWidget* wid = *it;
-    int id = widgetId( wid );
-
-    if ( id < 0 )
-      continue;
-
-    bool vis = widgetVisibility( wid );
-
-    int cIdx = myBar->indexOf( id );
-    if ( cIdx != -1 && ( !vis || myBar->indexOf( id ) != idx ) )
-      myBar->removeTab( cIdx );
-
-    if ( myBar->indexOf( id ) == -1 && vis )
-      myBar->setTabId( myBar->insertTab( idx, wid->windowTitle() ), id );
-
-    updateTab( wid );
-
-    bool block = isBlocked( wid );
-    setBlocked( wid, true );
-
-    QtxWorkstackChild* cont = child( wid );
-
-    if ( !vis )
-      myStack->removeWidget( cont );
-    else if ( myStack->indexOf( cont ) < 0 )
-      myStack->addWidget( cont );
-
-    if ( vis )
-      idx++;
-
-    setBlocked( wid, block );
-  }
-
-  int curId = widgetId( prev );
-  if ( myBar->indexOf( curId ) < 0 )
-  {
-    QWidget* wid = 0;
-    int pos = myList.indexOf( prev );
-    for ( int i = pos - 1; i >= 0 && !wid; i-- )
-    {
-      if ( widgetVisibility( myList.at( i ) ) )
-        wid = myList.at( i );
-    }
-
-    for ( int j = pos + 1; j < (int)myList.count() && !wid; j++ )
-    {
-      if ( widgetVisibility( myList.at( j ) ) )
-        wid = myList.at( j );
-    }
-
-    if ( wid )
-      curId = widgetId( wid );
-  }
-
-  myBar->setCurrentIndex( myBar->indexOf( curId ) );
-
-  myBar->blockSignals( block );
-
-  updateCurrent();
-
-  myBar->updateActiveState();
-
-  myBar->setUpdatesEnabled( updBar );
-  myStack->setUpdatesEnabled( updStk );
-  if ( updBar )
-    myBar->update();
-  if ( updStk )
-    myStack->update();
-
-  QResizeEvent re( myBar->size(), myBar->size() );
-  QApplication::sendEvent( myBar, &re );
-
-  if ( isEmpty() )
-  {
-    hide();
-    emit deactivated( this );
-  }
-  else
-  {
-    show();
-    if ( prev != activeWidget() )
-      emit activated( activeWidget() );
-  }
-}
-
-/*!
-  \return first unshared widget id
-*/
-int QtxWorkstackArea::generateId() const
-{
-  QMap<int, int> map;
-
-  for ( WidgetInfoMap::const_iterator it = myInfo.begin(); it != myInfo.end(); ++it )
-    map.insert( it.value().id, 0 );
-
-  int id = 0;
-  while ( map.contains( id ) )
-    id++;
-
-  return id;
-}
-
-/*!
-  \return true if widget is blocked
-  \param wid - widget
-*/
-bool QtxWorkstackArea::isBlocked( QWidget* wid ) const
-{
-  return myBlock.contains( wid );
-}
-
-/*!
-  Blocks widget
-  \param wid - widget
-  \param on - new blocked state
-*/
-void QtxWorkstackArea::setBlocked( QWidget* wid, const bool on )
-{
-  if ( on )
-    myBlock.insert( wid, 0 );
-  else
-    myBlock.remove( wid );
-}
-
-/*!
-  \return child corresponding to widget
-  \param wid - widget
-*/
-QtxWorkstackChild* QtxWorkstackArea::child( QWidget* wid ) const
-{
-  QtxWorkstackChild* res = 0;
-  if ( myChild.contains( wid ) )
-    res = myChild[wid];
-  return res;
-}
-
-/*!
-  Constructor
-*/
-QtxWorkstackChild::QtxWorkstackChild( QWidget* wid, QWidget* parent, Qt::WindowFlags f )
-: QWidget( parent ),
-myWidget( wid )
-{
-  myWidget->setParent( this, f );
-  myWidget->installEventFilter( this );
-  QVBoxLayout* base = new QVBoxLayout( this );
-  base->addWidget( myWidget );
-
-  connect( myWidget, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
-}
-
-/*!
-  Destructor
-*/
-QtxWorkstackChild::~QtxWorkstackChild()
-{
-  QApplication::instance()->removeEventFilter( this );
-
-  if ( !widget() )
-    return;
-
-  disconnect( widget(), SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
-
-  widget()->hide();
-  widget()->removeEventFilter( this );
-
-  widget()->setParent( 0 );
-}
-
-/*!
-  \return corresponding widget
-*/
-QWidget* QtxWorkstackChild::widget() const
-{
-  return myWidget;
-}
-
-/*!
-  Custom event filter
-*/
-bool QtxWorkstackChild::eventFilter( QObject* o, QEvent* e )
-{
-  if ( o->isWidgetType() )
-  {
-    if ( e->type() == QEvent::WindowTitleChange || e->type() == QEvent::WindowIconChange )
-      emit captionChanged( this );
-
-    if ( !e->spontaneous() && ( e->type() == QEvent::Show || e->type() == QEvent::ShowToParent ) )
-      emit shown( this );
-
-    if ( !e->spontaneous() && ( e->type() == QEvent::Hide || e->type() == QEvent::HideToParent ) )
-      emit hided( this );
-
-    if ( e->type() == QEvent::FocusIn )
-      emit activated( this );
-  }
-  return QWidget::eventFilter( o, e );
-}
-
-/*!
-  SLOT: called on object is destroyed
-*/
-void QtxWorkstackChild::onDestroyed( QObject* obj )
-{
-  if ( obj != widget() )
-    return;
-
-  myWidget = 0;
-  deleteLater();
-}
-
-/*!
-  Custom child event handler
-*/
-void QtxWorkstackChild::childEvent( QChildEvent* e )
-{
-  if ( e->removed() && e->child() == widget() )
-  {
-    myWidget = 0;
-    deleteLater();
-  }
-  QWidget::childEvent( e );
-}
-
-/*!
-  Constructor
-*/
-QtxWorkstackTabBar::QtxWorkstackTabBar( QWidget* parent )
-: QTabBar( parent ),
-myId( -1 )
-{
-  setDrawBase( true );
-  setElideMode( Qt::ElideNone );
-
-  connect( this, SIGNAL( currentChanged( int ) ), this, SLOT( onCurrentChanged( int ) ) );
-}
-
-/*!
-  Destructor
-*/
-QtxWorkstackTabBar::~QtxWorkstackTabBar()
-{
-}
-
-int QtxWorkstackTabBar::tabId( const int index ) const
-{
-  QVariant v = tabData( index );
-  if ( !v.canConvert( QVariant::Int ) )
-    return -1;
-  return v.toInt();
-}
-
-void QtxWorkstackTabBar::setTabId( const int index, const int id )
-{
-  setTabData( index, id );
-}
-
-int QtxWorkstackTabBar::indexOf( const int id ) const
-{
-  int index = -1;
-  for ( int i = 0; i < (int)count() && index < 0; i++ )
-  {
-    if ( tabId( i ) == id )
-      index = i;
-  }
-  return index;
-}
-
-/*!
-  Returns 'true' if the tab bar is active
-*/
-bool QtxWorkstackTabBar::isActive() const
-{
-  return myActive;
-}
-
-/*!
-  Sets tab bar as active or inactive
-  \param on - new active state
-*/
-void QtxWorkstackTabBar::setActive( const bool on )
-{
-  if ( myActive == on )
-    return;
-
-  myActive = on;
-  updateActiveState();
-}
-
-void QtxWorkstackTabBar::updateActiveState()
-{
-  QColor bc = palette().color( QPalette::Text );
-  QColor ac = isActive() ? palette().color( QPalette::Highlight ) : bc;
-  for ( int i = 0; i < (int)count(); i++ )
-    setTabTextColor( i, currentIndex() == i ? ac : bc );
-}
-
-void QtxWorkstackTabBar::onCurrentChanged( int )
-{
-  updateActiveState();
-}
-
-/*!
-  Custom mouse move event handler
-*/
-void QtxWorkstackTabBar::mouseMoveEvent( QMouseEvent* e )
-{
-  if ( myId != -1 && !tabRect( indexOf( myId ) ).contains( e->pos() ) )
-  {
-    myId = -1;
-    emit dragActiveTab();
-  }
-
-  QTabBar::mouseMoveEvent( e );
-}
-
-/*!
-  Custom mouse press event handler
-*/
-void QtxWorkstackTabBar::mousePressEvent( QMouseEvent* e )
-{
-  QTabBar::mousePressEvent( e );
-
-  if ( e->button() == Qt::LeftButton )
-    myId = tabId( currentIndex() );
-}
-
-/*!
-  Custom mouse release event handler
-*/
-void QtxWorkstackTabBar::mouseReleaseEvent( QMouseEvent* e )
-{
-  QTabBar::mouseReleaseEvent( e );
-
-  myId = -1;
-
-  if ( e->button() == Qt::RightButton )
-    emit contextMenuRequested( e->globalPos() );
-}
-
-/*!
-  Custom context menu event handler
-*/
-void QtxWorkstackTabBar::contextMenuEvent( QContextMenuEvent* e )
-{
-  if ( e->reason() != QContextMenuEvent::Mouse )
-    emit contextMenuRequested( e->globalPos() );
-}
-
-/*!
-  Draws label of tab bar
-*/
-/*
-void QtxWorkstackTabBar::paintLabel( QPainter* p, const QRect& br, QTab* t, bool has_focus ) const
-{
-  if ( currentTab() != t->identifier() )
-  {
-    QFont fnt = p->font();
-    fnt.setUnderline( false );
-    p->setFont( fnt );
-  }
-  QTabBar::paintLabel( p, br, t, has_focus );
-}
-*/
-
-/*!
-  Constructor
-*/
-QtxWorkstackDrag::QtxWorkstackDrag( QtxWorkstack* ws, QtxWorkstackChild* child )
-: QObject( 0 ),
-myWS( ws ),
-myChild( child ),
-myTab( -1 ),
-myArea( 0 ),
-myTabRect( 0 ),
-myAreaRect( 0 )
-{
-  QApplication::instance()->installEventFilter( this );
-}
-
-/*!
-  Destructor
-*/
-QtxWorkstackDrag::~QtxWorkstackDrag()
-{
-  QApplication::instance()->removeEventFilter( this );
-
-  endDrawRect();
-}
-
-/*!
-  Custom event filter
-*/
-bool QtxWorkstackDrag::eventFilter( QObject*, QEvent* e )
-{
-  switch ( e->type() )
-  {
-  case QEvent::MouseMove:
-    updateTarget( ((QMouseEvent*)e)->globalPos() );
-    break;
-  case QEvent::MouseButtonRelease:
-    drawRect();
-    endDrawRect();
-    dropWidget();
-    deleteLater();
-    break;
-  default:
-    return false;
-  }
-  return true;
-}
-
-/*!
-  Updates internal field with widget-target for dropping
-  \param p - current point of dragging
-*/
-void QtxWorkstackDrag::updateTarget( const QPoint& p )
-{
-  int tab = -1;
-  QtxWorkstackArea* area = detectTarget( p, tab );
-  setTarget( area, tab );
-}
-
-/*!
-  \return target area for dropping by point
-  \param p - current point of dragging
-  \param tab - index of tab to dropping
-*/
-QtxWorkstackArea* QtxWorkstackDrag::detectTarget( const QPoint& p, int& tab ) const
-{
-  if ( p.isNull() )
-    return 0;
-
-  QtxWorkstackArea* area = myWS->areaAt( p );
-  if ( area )
-    tab = area->tabAt( p );
-  return area;
-}
-
-/*!
-  Changes target area for dropping
-  \param area - new target area
-  \param tab - tab index
-*/
-void QtxWorkstackDrag::setTarget( QtxWorkstackArea* area, const int tab )
-{
-  if ( !area || ( myArea == area && tab == myTab ) )
-    return;
-
-  startDrawRect();
-
-  if ( myArea )
-    drawRect();
-
-  myTab = tab;
-  myArea = area;
-
-  if ( myArea )
-    drawRect();
-}
-
-/*!
-  Called on widget drop, inserts dropped widget to area
-*/
-void QtxWorkstackDrag::dropWidget()
-{
-  if ( myArea )
-    myArea->insertWidget( myChild->widget(), myTab );
-}
-
-/*!
-  Draws float rect
-*/
-void QtxWorkstackDrag::drawRect()
-{
-  if ( !myArea )
-    return;
-
-  QRect r = myArea->floatRect();
-  int m = 2;
-
-  r.setTop( r.top() + m + 2 );
-  r.setLeft( r.left() + m + 2 );
-  r.setRight( r.right() - m - 2 );
-  r.setBottom( r.bottom() - m - 2 );
-
-  if ( myAreaRect )
-  {
-    myAreaRect->setGeometry( r );
-    myAreaRect->setVisible( r.isValid() );
-  }
-
-  QRect tr = myArea->floatTab( myTab );
-
-  tr.setTop( tr.top() + m );
-  tr.setLeft( tr.left() + m );
-  tr.setRight( tr.right() - m );
-  tr.setBottom( tr.bottom() - m );
-
-  if ( myTabRect )
-  {
-    myTabRect->setGeometry( tr );
-    myTabRect->setVisible( tr.isValid() );
-  }
-}
-
-/*!
-  Deletes internal painter
-*/
-void QtxWorkstackDrag::endDrawRect()
-{
-  delete myAreaRect;
-  myAreaRect = 0;
-
-  delete myTabRect;
-  myTabRect = 0;
-}
-
-/*!
-  Initialize internal painter
-*/
-void QtxWorkstackDrag::startDrawRect()
-{
-  if ( !myTabRect )
-    myTabRect = new QRubberBand( QRubberBand::Rectangle );
-
-  myTabRect->hide();
-
-  if ( !myAreaRect )
-    myAreaRect = new QRubberBand( QRubberBand::Rectangle );
-
-  myAreaRect->hide();
-}

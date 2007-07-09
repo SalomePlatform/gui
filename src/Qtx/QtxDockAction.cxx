@@ -21,88 +21,101 @@
 
 #include "QtxDockAction.h"
 
-#include <QtGui/qmenu.h>
-#include <QtGui/qtoolbar.h>
-#include <QtGui/qdockwidget.h>
-#include <QtGui/qmainwindow.h>
+#include <QMenu>
+#include <QToolBar>
+#include <QDockWidget>
+#include <QMainWindow>
 
 /*!
-	Name: QtxDockAction [public]
-	Desc: Constructs an Dock action with given main window and name.
+  \class QtxDockAction
+  \brief Dockable windows & toolbars list action.
+
+  Implements the action which provides the popup menu with the list
+  of toolbars and/or dockable windows list owned by the main window.
+  This action can be used, for example, in the menu "Windows".
 */
 
+/*!
+  \brief Constructor.
+  \param mw parent main window
+*/
 QtxDockAction::QtxDockAction( QMainWindow* mw )
 : QtxAction( "Windows and Toolbars", "Windows and Toolbars", 0, mw ),
-myMain( mw ),
-myType( Both )
+  myType( Both ),
+  myMain( mw )
 {
   initialize();
 }
 
 /*!
-	Name: QtxDockAction [public]
-	Desc: This constructor creates an action with the following properties: the
-		    description text, the menu text and. It is a child of given main window
-        and named specified name.
+  \brief Constructor.
+  \param text description (tooltip) text
+  \param menuText menu text
+  \param mw parent main window
 */
-
 QtxDockAction::QtxDockAction( const QString& text, const QString& menuText, QMainWindow* mw )
 : QtxAction( text, menuText, 0, mw ),
-myMain( mw ),
-myType( Both )
+  myType( Both ),
+  myMain( mw )
 {
   initialize();
 }
 
 /*!
-	Name: QtxDockAction [public]
-	Desc: This constructor creates an action with the following properties: the
-		    description text, the menu text, the icon or iconset icon and keyboard
-        accelerator. It is a child of given main window and named specified name.
+  \brief Constructor.
+  \param text description (tooltip) text
+  \param icon action icon
+  \param menuText menu text
+  \param mw parent main window
 */
-
 QtxDockAction::QtxDockAction( const QString& text, const QIcon& icon, const QString& menuText, QMainWindow* mw )
 : QtxAction( text, icon, menuText, 0, mw ),
-myMain( mw ),
-myType( Both )
+  myType( Both ),
+  myMain( mw )
 {
   initialize();
 }
 
 /*!
-	Name: ~QtxDockAction [public]
-	Desc: Removes all added popup items.
+  \brief Desctructor
+  
+  Does nothing currently.
 */
-
 QtxDockAction::~QtxDockAction()
 {
 }
 
 /*!
-	Name: mainWindow [public]
-	Desc: Returns the main window which contains managed dock windows.
+  \brief Get parent main window.
+  \return main window pointer.
 */
-
 QMainWindow* QtxDockAction::mainWindow() const
 {
   return myMain;
 }
 
+/*!
+  \brief Get dock action type.
+  \return dock type (QtxDockAction::DockType)
+*/
 int QtxDockAction::dockType() const
 {
   return myType;
 }
 
+/*!
+  \brief Set dock action type.
+  \param type dock type (QtxDockAction::DockType)
+*/
 void QtxDockAction::setDockType( const int type )
 {
   myType = type;
 }
 
 /*!
-	Name: onAboutToShow [private slots]
-	Desc: Prepare sub popup with dock windows list when parent popup is shown.
+  \brief Prepare popup menu with dock windows list when 
+         parent popup menu is shown.
 */
-
 void QtxDockAction::onAboutToShow()
 {
   updateMenu();
@@ -110,10 +123,9 @@ void QtxDockAction::onAboutToShow()
 }
 
 /*!
-	Name: toolBars [private]
-	Desc: Returns all toolbars of the main window.
+  \brief Get all toolbars owned by parent main window.
+  \param lst returned list of all toolbars owned by main window
 */
-
 void QtxDockAction::toolBars( QList<QToolBar*>& lst ) const
 {
   lst.clear();
@@ -132,10 +144,9 @@ void QtxDockAction::toolBars( QList<QToolBar*>& lst ) const
 }
 
 /*!
-	Name: dockWidgets [private]
-	Desc: Returns all dock widgets of the main window.
+  \brief Get all dockable windows owned by parent main window.
+  \param lst returned list of all dockable windows owned by main window
 */
-
 void QtxDockAction::dockWidgets( QList<QDockWidget*>& lst ) const
 {
   lst.clear();
@@ -153,10 +164,6 @@ void QtxDockAction::dockWidgets( QList<QDockWidget*>& lst ) const
   }
 }
 
-/*!
-	Name: updateInfo [private]
-	Desc: Updates icon and caption info of dock window in the corresponded action.
-*/
 /*
 void QtxDockAction::updateInfo( QDockWindow* dw )
 {
@@ -178,12 +185,28 @@ void QtxDockAction::updateInfo( QDockWindow* dw )
 }
 */
 
+/*!
+  \brief Customize action adding to the widget operation.
+  
+  Called when the action is added to the widget.
+  Reimplemented from QtxAction class.
+
+  \param w widget this action is added to (menu or toolbar)
+*/
 void QtxDockAction::addedTo( QWidget* w )
 {
   if ( w->inherits( "QMenu" ) )
     connect( w, SIGNAL( aboutToShow() ), this, SLOT( onAboutToShow() ) );
 }
 
+/*!
+  \brief Customize action removing from the widget operation.
+  
+  Called when the action is removed from the widget.
+  Reimplemented from QtxAction class.
+
+  \param w widget this action is removed from to (menu or toolbar)
+*/
 void QtxDockAction::removedFrom( QWidget* w )
 {
   if ( w->inherits( "QMenu" ) )
@@ -191,17 +214,15 @@ void QtxDockAction::removedFrom( QWidget* w )
 }
 
 /*!
-	Name: initialize [private]
-	Desc: Initialisation of the object.
+  \brief Initialize the action.
 */
-
 void QtxDockAction::initialize()
 {
   setMenu( new QMenu( 0 ) );
 }
 
 /*!
-  Updates menu of action
+  \brief Update action child popup menu.
 */
 void QtxDockAction::updateMenu()
 {

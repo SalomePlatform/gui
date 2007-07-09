@@ -19,6 +19,9 @@
 // File:      QtxDockWidget.h
 // Author:    Sergey TELKOV
 
+#ifndef QTXDOCKWIDGET_H
+#define QTXDOCKWIDGET_H
+
 #include "Qtx.h"
 
 #include <QDockWidget>
@@ -40,10 +43,10 @@ public:
 
   Qt::Orientation orientation() const;
 
-Q_SIGNALS:
+signals:
   void            orientationChanged( Qt::Orientation );
 
-public Q_SLOTS:
+public slots:
   virtual void    setVisible( bool );
 
 protected:
@@ -53,6 +56,8 @@ private:
   void            updateState();
 
 private:
-  Watcher*        myWatcher;
-  Qt::Orientation myOrientation;
+  Watcher*        myWatcher;       //!< watcher object
+  Qt::Orientation myOrientation;   //!< dockable window orientation
 };
+
+#endif // QTXDOCKWIDGET_H

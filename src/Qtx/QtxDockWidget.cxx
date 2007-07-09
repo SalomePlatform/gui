@@ -28,16 +28,18 @@
 #include <QApplication>
 
 /*!
-  \class QtxDockWidget::Watcher [Internal]
-  Internal object with event filter.
+  \class QtxDockWidget::Watcher
+  \internal
+  \brief Internal class which goal is to watch parent dockable widget state changing.
 */
+
 class QtxDockWidget::Watcher : public QObject
 {
 public:
   Watcher( QtxDockWidget* );
 
   void           shown( QtxDockWidget* );
-  void           hided( QtxDockWidget* );
+  void           hidden( QtxDockWidget* );
 
   virtual bool   eventFilter( QObject*, QEvent* );
 
@@ -62,12 +64,13 @@ private:
 };
 
 /*!
-  Constructor
+  \brief Constructor.
+  \param cont dockable widget to be watched
 */
 QtxDockWidget::Watcher::Watcher( QtxDockWidget* cont )
 : QObject( cont ), myCont( cont ),
-myState( true ),
-myEmpty( false )
+  myState( true ),
+  myEmpty( false )
 {
   myCont->installEventFilter( this );
   myVisible = myCont->isVisibleTo( myCont->parentWidget() );
@@ -76,7 +79,10 @@ myEmpty( false )
 }
 
 /*!
-  Custom event filter
+  \brief Custom event filter.
+  \param o event receiver object
+  \param e event sent to object
+  \return \c true if further event processing should be stopped
 */
 bool QtxDockWidget::Watcher::eventFilter( QObject* o, QEvent* e )
 {
@@ -111,7 +117,8 @@ bool QtxDockWidget::Watcher::eventFilter( QObject* o, QEvent* e )
 }
 
 /*!
-  Sets internal status to shown
+  \brief Set internal status to "shown"
+  \param dw dockable widget
 */
 void QtxDockWidget::Watcher::shown( QtxDockWidget* dw )
 {
@@ -122,9 +129,10 @@ void QtxDockWidget::Watcher::shown( QtxDockWidget* dw )
 }
 
 /*!
-  Sets internal status to hidden
+  \brief Set internal status to "hidden"
+  \param dw dockable widget
 */
-void QtxDockWidget::Watcher::hided( QtxDockWidget* dw )
+void QtxDockWidget::Watcher::hidden( QtxDockWidget* dw )
 {
   if ( dw != myCont )
     return;
@@ -133,7 +141,7 @@ void QtxDockWidget::Watcher::hided( QtxDockWidget* dw )
 }
 
 /*!
-  Shows corresponding dock window
+  \brief Show the dock window being watched
 */
 void QtxDockWidget::Watcher::showContainer()
 {
@@ -147,7 +155,7 @@ void QtxDockWidget::Watcher::showContainer()
 }
 
 /*!
-  Hides corresponding dock window
+  \brief Hide the dock window being watched
 */
 void QtxDockWidget::Watcher::hideContainer()
 {
@@ -161,9 +169,10 @@ void QtxDockWidget::Watcher::hideContainer()
 }
 
 /*!
-  Event filter of custom events
+  \brief Proces custom events.
+  \param e custom event (not used)
 */
-void QtxDockWidget::Watcher::customEvent( QEvent* )
+void QtxDockWidget::Watcher::customEvent( QEvent* /*e*/ )
 {
   updateIcon();
   updateCaption();
@@ -171,7 +180,8 @@ void QtxDockWidget::Watcher::customEvent( QEvent* )
 }
 
 /*!
-  Installs this object as event filter to all widgets inside corresponding main window
+  \brief Install this object as event filter to all children widgets
+         of the dockable widget being watched.
 */
 void QtxDockWidget::Watcher::installFilters()
 {
@@ -190,7 +200,8 @@ void QtxDockWidget::Watcher::installFilters()
 }
 
 /*!
-  Updates visibility of all widgets inside corresponding main window
+  \brief Update visibility state of all children widgets of the dockable widget
+         being watched.
 */
 void QtxDockWidget::Watcher::updateVisibility()
 {
@@ -223,7 +234,7 @@ void QtxDockWidget::Watcher::updateVisibility()
 }
 
 /*!
-  Updates icon of corresponding main window
+  \brief Update the icon of dockable window being watched
 */
 void QtxDockWidget::Watcher::updateIcon()
 {
@@ -234,7 +245,7 @@ void QtxDockWidget::Watcher::updateIcon()
 }
 
 /*!
-  Updates caption of corresponding main window
+  \brief Update the title of dockable window being watched
 */
 void QtxDockWidget::Watcher::updateCaption()
 {
@@ -243,7 +254,15 @@ void QtxDockWidget::Watcher::updateCaption()
 }
 
 /*!
-  Constructor
+  \class QtxDockWidget
+  \brief Enhanced dockable widget class.
+*/
+
+/*!
+  \brief Constructor.
+  \param title dockable widget title
+  \param parent parent widget
+  \param f widget flags
 */
 QtxDockWidget::QtxDockWidget( const QString& title, QWidget* parent, Qt::WindowFlags f )
 : QDockWidget( title, parent, f ),
@@ -254,7 +273,11 @@ QtxDockWidget::QtxDockWidget( const QString& title, QWidget* parent, Qt::WindowF
 }
 
 /*!
-  Constructor
+  \brief Constructor.
+  \param watch if \c true the event filter is installed to watch wigdet state changes 
+         to update it properly
+  \param parent parent widget
+  \param f widget flags
 */
 QtxDockWidget::QtxDockWidget( const bool watch, QWidget* parent, Qt::WindowFlags f )
 : QDockWidget( parent, f ),
@@ -268,7 +291,9 @@ QtxDockWidget::QtxDockWidget( const bool watch, QWidget* parent, Qt::WindowFlags
 }
 
 /*!
-  Constructor
+  \brief Constructor.
+  \param parent parent widget
+  \param f widget flags
 */
 QtxDockWidget::QtxDockWidget( QWidget* parent, Qt::WindowFlags f )
 : QDockWidget( parent, f ),
@@ -277,14 +302,15 @@ myWatcher( 0 )
 }
 
 /*!
-  Destructor
+  \brief Destructor.
 */
 QtxDockWidget::~QtxDockWidget()
 {
 }
 
 /*!
-  \return the recommended size for the widget
+  \brief Get the recommended size for the widget.
+  \return recommended dockable widget size
 */
 QSize QtxDockWidget::sizeHint() const
 {
@@ -302,7 +328,8 @@ QSize QtxDockWidget::sizeHint() const
 }
 
 /*!
-  \return the recommended minimum size for the widget
+  \brief Get the recommended minimum size for the widget.
+  \return recommended dockable widget minimum size
 */
 QSize QtxDockWidget::minimumSizeHint() const
 {
@@ -325,7 +352,8 @@ QSize QtxDockWidget::minimumSizeHint() const
 }
 
 /*!
-  Shows/hides the window
+  \brief Show/hide the dockable window.
+  \param on new visibility state
 */
 void QtxDockWidget::setVisible( bool on )
 {
@@ -334,7 +362,7 @@ void QtxDockWidget::setVisible( bool on )
     if ( on )
       myWatcher->shown( this );
     else
-      myWatcher->hided( this );
+      myWatcher->hidden( this );
   }
 
   updateGeometry();
@@ -344,12 +372,20 @@ void QtxDockWidget::setVisible( bool on )
   QDockWidget::setVisible( on );
 }
 
+/*!
+  \brief Process resize event
+  \param e event
+*/
 void QtxDockWidget::resizeEvent( QResizeEvent* e )
 {
   QDockWidget::resizeEvent( e );
   updateState();
 }
 
+/*!
+  \brief Get dockable window orientation.
+  \return orientation type
+*/
 Qt::Orientation QtxDockWidget::orientation() const
 {
   QMainWindow* mw = 0;
@@ -383,6 +419,9 @@ Qt::Orientation QtxDockWidget::orientation() const
   return res;
 }
 
+/*!
+  \brief Update dockable window state.
+*/
 void QtxDockWidget::updateState()
 {
   Qt::Orientation o = orientation();
@@ -393,3 +432,9 @@ void QtxDockWidget::updateState()
 
   emit orientationChanged( myOrientation );
 }
+
+/*!
+  \fn QtxDockWidget::orientationChanged(Qt::Orientation o)
+  \brief Emitted when the dockable window orientation is changed.
+  \param o new window orientation
+*/

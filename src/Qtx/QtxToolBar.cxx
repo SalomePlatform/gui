@@ -91,7 +91,9 @@ bool QtxToolBar::Watcher::eventFilter( QObject* o, QEvent* e )
 
   bool updVis = ( o != myCont && ( e->type() == QEvent::Show || e->type() == QEvent::ShowToParent ||
                                    e->type() == QEvent::Hide || e->type() == QEvent::HideToParent ) ) ||
-                ( o == myCont && ( e->type() == QEvent::ChildRemoved || e->type() == QEvent::Show || e->type() == QEvent::ShowToParent ) );
+                ( o == myCont && ( e->type() == QEvent::ChildRemoved || e->type() == QEvent::Show ||
+				   e->type() == QEvent::ShowToParent || e->type() == QEvent::ActionAdded ||
+				   e->type() == QEvent::ActionRemoved ) );
 
   if ( updVis )
   {

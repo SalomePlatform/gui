@@ -2204,7 +2204,9 @@ void LightApp_Application::updateWindows()
     for ( QMap<int, int>::ConstIterator it = winMap.begin(); it != winMap.end(); ++it ) {
       getWindow( it.key() ); 
       
-      DockWidgetArea dock =  desktop()->dockWidgetArea( myWindows[it.key()] );
+      if ( !myWindows.contains( it.key() ) )
+	continue;
+      DockWidgetArea dock = desktop()->dockWidgetArea( myWindows[it.key()] );
       if ( dock != NoDockWidgetArea
 	   &&
 	   dock != (DockWidgetArea)it.value() ) {

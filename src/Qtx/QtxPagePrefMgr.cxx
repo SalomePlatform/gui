@@ -756,8 +756,16 @@ void QtxPagePrefListItem::setSelected( const int id )
 
 /*!
   \class QtxPagePrefToolBoxItem
+  \brief GUI implementation of the tool box container preference item.
 */
 
+/*!
+  \brief Constructor.
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefToolBoxItem::QtxPagePrefToolBoxItem( const QString& title, QtxPreferenceItem* parent,
                                                 const QString& sect, const QString& param )
 : QtxPagePrefItem( title, parent, sect, param )
@@ -765,15 +773,24 @@ QtxPagePrefToolBoxItem::QtxPagePrefToolBoxItem( const QString& title, QtxPrefere
   setWidget( myToolBox = new QToolBox( 0 ) );
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefToolBoxItem::~QtxPagePrefToolBoxItem()
 {
 }
 
+/*!
+  \brief Update widget contents.
+*/
 void QtxPagePrefToolBoxItem::updateContents()
 {
   updateToolBox();
 }
 
+/*!
+  \brief Update tool box widget.
+*/
 void QtxPagePrefToolBoxItem::updateToolBox()
 {
   QList<QtxPagePrefItem*> items;
@@ -1130,6 +1147,11 @@ void QtxPagePrefFrameItem::setOrientation( const Qt::Orientation o )
   myBox->setOrientation( o );
 }
 
+/*!
+  \brief Check if the frame widget stretching is enabled.
+  \return \c true if the widget is stretchable
+  \sa setStretch()
+*/
 bool QtxPagePrefFrameItem::stretch() const
 {
   QSpacerItem* s = 0;
@@ -1140,6 +1162,11 @@ bool QtxPagePrefFrameItem::stretch() const
   return s ? s->expandingDirections() & Qt::Vertical : false;
 }
 
+/*!
+  \brief Enable/disable frame widget stretching.
+  \param on new stretchable state
+  \sa stretch()
+*/
 void QtxPagePrefFrameItem::setStretch( const bool on )
 {
   QSpacerItem* s = 0;
@@ -2984,8 +3011,8 @@ void QtxPagePrefPathItem::setOptionValue( const QString& name, const QVariant& v
 }
 
 /*!
-  \class  QtxPagePrefPathListItem
-  \brief GUI implementation of resources directory list item.
+  \class QtxPagePrefPathListItem
+  \brief GUI implementation of the resources files/directories list item.
 */
 
 /*!
@@ -3111,10 +3138,20 @@ void QtxPagePrefPathListItem::setOptionValue( const QString& name, const QVarian
   \brief GUI implementation of resources date/time item.
 */
 
+/*!
+  \brief Constructor.
+
+  Creates an item to enter date and time.
+
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefDateTimeItem::QtxPagePrefDateTimeItem( const QString& title, QtxPreferenceItem* parent,
                                                   const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param ),
-myType( DateTime )
+  myType( DateTime )
 {
   setControl( myDateTime = new QDateTimeEdit() );
   myDateTime->setCalendarPopup( true );
@@ -3122,10 +3159,22 @@ myType( DateTime )
   updateDateTime();
 }
 
+/*!
+  \brief Constructor.
+
+  Creates preference item for editing of the date and/or time value:
+  the type is specified by parameter \a type.
+
+  \param type preference item input type (QtxPagePrefDateTimeItem::InputType)
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
 QtxPagePrefDateTimeItem::QtxPagePrefDateTimeItem( const int type, const QString& title, QtxPreferenceItem* parent,
                                                   const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param ),
-myType( type )
+  myType( type )
 {
   setControl( myDateTime = new QDateTimeEdit() );
   myDateTime->setCalendarPopup( true );
@@ -3133,15 +3182,28 @@ myType( type )
   updateDateTime();
 }
 
+/*!
+  \brief Destructor.
+*/
 QtxPagePrefDateTimeItem::~QtxPagePrefDateTimeItem()
 {
 }
 
+/*!
+  \brief Get date/time box preference item input type.
+  \return preference item input type (QtxPagePrefDateTimeItem::InputType)
+  \sa setInputType()
+*/
 int QtxPagePrefDateTimeItem::inputType() const
 {
   return myType;
 }
 
+/*!
+  \brief Set date/time box preference item input type.
+  \param type new preference item input type (QtxPagePrefDateTimeItem::InputType)
+  \sa inputType()
+*/
 void QtxPagePrefDateTimeItem::setInputType( const int type )
 {
   if ( myType == type )
@@ -3151,36 +3213,69 @@ void QtxPagePrefDateTimeItem::setInputType( const int type )
   updateDateTime();
 }
 
+/*!
+  \brief Check if the popup calendar menu is enabled.
+  \return \c true if calendar popup menu is enabled
+*/
 bool QtxPagePrefDateTimeItem::calendar() const
 {
   return myDateTime->calendarPopup();
 }
 
+/*!
+  \brief Enable/disable popup calendar menu.
+  \param on new flag state
+*/
 void QtxPagePrefDateTimeItem::setCalendar( const bool on )
 {
   myDateTime->setCalendarPopup( on );
 }
 
+/*!
+  \brief Get maximum date value.
+  \return maximum date value
+  \sa setMaximumDate(), minimumDate(), maximumTime(), minimumTime()
+*/
 QDate QtxPagePrefDateTimeItem::maximumDate() const
 {
   return myDateTime->maximumDate();
 }
 
+/*!
+  \brief Get maximum time value.
+  \return maximum time value
+  \sa setMaximumTime(), minimumTime(), maximumDate(), minimumDate()
+*/
 QTime QtxPagePrefDateTimeItem::maximumTime() const
 {
   return myDateTime->maximumTime();
 }
 
+/*!
+  \brief Get minimum date value.
+  \return minimum date value
+  \sa setMinimumDate(), maximumDate(), maximumTime(), minimumTime()
+*/
 QDate QtxPagePrefDateTimeItem::minimumDate() const
 {
   return myDateTime->minimumDate();
 }
 
+/*!
+  \brief Get minimum time value.
+  \return maximum time value
+  \sa setMinimumTime(), maximumTime(), maximumDate(), minimumDate()
+*/
 QTime QtxPagePrefDateTimeItem::minimumTime() const
 {
   return myDateTime->minimumTime();
 }
 
+/*!
+  \brief Set maximum date value.
+  \param d new maximum date value
+  \sa maximumDate(), minimumDate(), maximumTime(), minimumTime()
+*/
 void QtxPagePrefDateTimeItem::setMaximumDate( const QDate& d )
 {
   if ( d.isValid() )
@@ -3189,6 +3284,11 @@ void QtxPagePrefDateTimeItem::setMaximumDate( const QDate& d )
     myDateTime->clearMaximumDate();
 }
 
+/*!
+  \brief Set maximum time value.
+  \param t new maximum time value
+  \sa maximumTime(), minimumTime(), maximumDate(), minimumDate()
+*/
 void QtxPagePrefDateTimeItem::setMaximumTime( const QTime& t )
 {
   if ( t.isValid() )
@@ -3197,6 +3297,11 @@ void QtxPagePrefDateTimeItem::setMaximumTime( const QTime& t )
     myDateTime->clearMaximumTime();
 }
 
+/*!
+  \brief Set minimum date value.
+  \param d new minimum date value
+  \sa minimumDate(), maximumDate(), maximumTime(), minimumTime()
+*/
 void QtxPagePrefDateTimeItem::setMinimumDate( const QDate& d )
 {
   if ( d.isValid() )
@@ -3205,6 +3310,11 @@ void QtxPagePrefDateTimeItem::setMinimumDate( const QDate& d )
     myDateTime->clearMinimumDate();
 }
 
+/*!
+  \brief Set minimum time value.
+  \param t new minimum time value
+  \sa minimumTime(), maximumTime(), maximumDate(), minimumDate()
+*/
 void QtxPagePrefDateTimeItem::setMinimumTime( const QTime& t )
 {
   if ( t.isValid() )
@@ -3213,6 +3323,10 @@ void QtxPagePrefDateTimeItem::setMinimumTime( const QTime& t )
     myDateTime->clearMinimumTime();
 }
 
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
 void QtxPagePrefDateTimeItem::store()
 {
   QString str;
@@ -3232,6 +3346,10 @@ void QtxPagePrefDateTimeItem::store()
   setString( str );
 }
 
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
 void QtxPagePrefDateTimeItem::retrieve()
 {
   QString str = getString();
@@ -3249,6 +3367,12 @@ void QtxPagePrefDateTimeItem::retrieve()
   }
 }
 
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOptionValue()
+*/
 QVariant QtxPagePrefDateTimeItem::optionValue( const QString& name ) const
 {
   if ( name == "input_type" || name == "type" )
@@ -3265,6 +3389,12 @@ QVariant QtxPagePrefDateTimeItem::optionValue( const QString& name ) const
     return QtxPageNamedPrefItem::optionValue( name );
 }
 
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
 void QtxPagePrefDateTimeItem::setOptionValue( const QString& name, const QVariant& val )
 {
   if ( name == "input_type" || name == "type" )
@@ -3296,6 +3426,9 @@ void QtxPagePrefDateTimeItem::setOptionValue( const QString& name, const QVarian
     QtxPageNamedPrefItem::setOptionValue( name, val );
 }
 
+/*!
+  \brief Update date/time widget.
+*/
 void QtxPagePrefDateTimeItem::updateDateTime()
 {
   QString dispFmt;

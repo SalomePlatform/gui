@@ -19,9 +19,9 @@
 // 
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  File   : PyConsole_Editor.h
-//  Author : Vadim SANDLER
-//  Module : SALOME
+// File   : PyConsole_Editor.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #ifndef PYCONSOLE_EDITOR_H
 #define PYCONSOLE_EDITOR_H

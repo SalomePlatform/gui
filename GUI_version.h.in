@@ -17,9 +17,9 @@
 //
 // See http://www.salome-platform.org/
 //
-//  File   : GUI_version.h
-//  Author : Vadim SANDLER
-//  Module : SALOME
+// File   : GUI_version.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #if !defined(__GUI_VERSION_H__)
 #define __GUI_VERSION_H__

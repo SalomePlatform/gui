@@ -35,10 +35,11 @@
 #include "SUIT_ResourceMgr.h"
 #include "SUIT_MessageBox.h"
 
+#include <QtxToolBar.h>
+
 #include <QPainter>
 #include <QTime>
 #include <QImage>
-#include <QToolBar>
 #include <QMouseEvent>
 #include <QRubberBand>
 
@@ -219,9 +220,7 @@ void OCCViewer_ViewWindow::initLayout()
   setTransformRequested ( NOTHING );
   setTransformInProcess ( false );
 
-  myToolBar = new QToolBar(this);
-  //myToolBar->setCloseMode(QDockWindow::Undocked); // toolbar has "Close" (X) button only if it's undocked, but there is no such functionality in Qt4
-  myToolBar->setWindowTitle(tr("LBL_TOOLBAR_LABEL"));
+  myToolBar = new QtxToolBar( true, tr("LBL_TOOLBAR_LABEL"), this );
 
   createActions();
   createToolBar();
@@ -984,10 +983,12 @@ void OCCViewer_ViewWindow::createToolBar()
   aScaleBtn->AddAction(myActionsMap[FitAllId]);
   aScaleBtn->AddAction(myActionsMap[FitRectId]);
   aScaleBtn->AddAction(myActionsMap[ZoomId]);
+  myToolBar->addWidget( aScaleBtn );
 
   SUIT_ToolButton* aPanningBtn = new SUIT_ToolButton(myToolBar, "pan");
   aPanningBtn->AddAction(myActionsMap[PanId]);
   aPanningBtn->AddAction(myActionsMap[GlobalPanId]);
+  myToolBar->addWidget( aPanningBtn );
 
   myToolBar->addAction( myActionsMap[ChangeRotationPointId] );
 
@@ -1000,12 +1001,14 @@ void OCCViewer_ViewWindow::createToolBar()
   aViewsBtn->AddAction(myActionsMap[BottomId]);
   aViewsBtn->AddAction(myActionsMap[LeftId]);
   aViewsBtn->AddAction(myActionsMap[RightId]);
+  myToolBar->addWidget( aViewsBtn );
 
   myToolBar->addAction( myActionsMap[ResetId] );
 
   SUIT_ToolButton* aMemBtn = new SUIT_ToolButton(myToolBar, "view");
   aMemBtn->AddAction(myActionsMap[MemId]);
   aMemBtn->AddAction(myActionsMap[RestoreId]);
+  myToolBar->addWidget( aMemBtn );
 
   myToolBar->addSeparator();
   myToolBar->addAction( myActionsMap[CloneId] );

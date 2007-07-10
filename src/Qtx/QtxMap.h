@@ -16,8 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      QtxMap.h
-// Author:    Vadim SANDLER
+// File   : QtxMap.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #ifndef QTXMAP_H
 #define QTXMAP_H

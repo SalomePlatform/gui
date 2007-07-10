@@ -59,12 +59,12 @@ public:
   } DumpMode;
   //! Color scale flags (bitwise).
   typedef enum { 
-    AtBorder      = 0x001, 
-    Reverse       = 0x002, 
-    Integer       = 0x004,
-    WrapTitle     = 0x008, 
-    PreciseFormat = 0x010, 
-    Transparent   = 0x020
+    AtBorder      = 0x001,   //!< diplay values at colors boundaries
+    Reverse       = 0x002,   //!< display color scale in reverse order
+    Integer       = 0x004,   //!< round numbers to integer values
+    WrapTitle     = 0x008,   //!< wrap title to several lines
+    PreciseFormat = 0x010,   //!< autodetect decimal point precision for color scale values
+    Transparent   = 0x020    //!< transparent background (not implemented yet!)
   } Flags;
 
 public:

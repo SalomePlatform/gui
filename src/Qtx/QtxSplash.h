@@ -16,8 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      QtxSplash.h
-// Author:    Vadim SANDLER
+// File   : QtxSplash.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #ifndef QTXSPLASH_H
 #define QTXSPLASH_H

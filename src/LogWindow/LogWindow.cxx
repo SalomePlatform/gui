@@ -19,9 +19,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  File   : LogWindow.cxx
-//  Author : Vadim SANDLER, Open CASCADE S.A. (vadim.sandler@opencascade.com)
-//  Module : SALOME
+// File   : LogWindow.cxx
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #include "LogWindow.h"
 

@@ -350,40 +350,6 @@ bool STD_Application::onOpenDoc( const QString& aName )
   return res;
 }
 
-/*! \retval true, if document was loaded successful, else false.*/
-bool STD_Application::onLoadDoc( const QString& aName )
-{
-  bool res = true;
-  if ( !activeStudy() )
-  {
-    // if no study - load in current desktop
-    res = useStudy( aName );
-  }
-  else
-  {
-    // if study exists - load in new desktop. Check: is the same file is loaded?
-    SUIT_Session* aSession = SUIT_Session::session();
-    QList<SUIT_Application*> aAppList = aSession->applications();
-    bool isAlreadyOpen = false;
-    SUIT_Application* aApp = 0;
-    for ( QList<SUIT_Application*>::iterator it = aAppList.begin(); it != aAppList.end() && !isAlreadyOpen; ++it )
-    {
-      aApp = *it;
-      if ( aApp->activeStudy()->studyName() == aName )
-        isAlreadyOpen = true;
-    }
-    if ( !isAlreadyOpen )
-    {
-      aApp = startApplication( 0, 0 );
-      if ( aApp )
-        res = aApp->useStudy( aName );
-    }
-    else
-      aApp->desktop()->activateWindow();
-  }
-  return res;
-}
-
 /*!Virtual function. Not implemented here.*/
 void STD_Application::beforeCloseDoc( SUIT_Study* )
 {

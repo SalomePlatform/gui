@@ -19,8 +19,8 @@
 // 
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  File   : SALOMEGUI_Swig.hxx
-//  Author : Vadim SANDLER
+// File   : SALOMEGUI_Swig.hxx
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 //
 
 #ifndef SALOMEGUI_SWIG_HXX

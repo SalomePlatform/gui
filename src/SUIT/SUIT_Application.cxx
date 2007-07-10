@@ -127,15 +127,6 @@ bool SUIT_Application::useFile( const QString& theFileName )
 }
 
 /*!
-  Opens other study into active Study. If Study is empty - creates it.
-  \param theName - name of study
-*/
-bool SUIT_Application::useStudy( const QString& /*theName*/ )
-{
-  return false;
-}
-
-/*!
   Creates new empty Study if active Study = 0
 */
 void SUIT_Application::createEmptyStudy()

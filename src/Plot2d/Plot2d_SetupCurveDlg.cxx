@@ -16,12 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  SALOME Plot2d : implementation of desktop and GUI kernel
+// File   : Plot2d_SetupCurveDlg.cxx
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 //
-//  File   : Plot2d_SetupCurveDlg.cxx
-//  Author : Vadim SANDLER
-//  Module : SALOME
-//  $Header$
 
 #include "Plot2d_SetupCurveDlg.h"
 #include "SUIT_Tools.h"

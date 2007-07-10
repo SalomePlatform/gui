@@ -84,9 +84,6 @@ public:
   //! Opens document <theFileName> into active Study. If Study is empty - creates it.
   virtual bool          useFile( const QString& theFileName);
 
-  //! Loads document <theName> into active Study. If Study is empty - creates it.
-  virtual bool          useStudy( const QString& theName);
-
   //! Creates new empty Study if active Study = 0
   virtual void          createEmptyStudy();
 

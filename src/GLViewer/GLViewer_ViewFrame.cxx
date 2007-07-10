@@ -27,6 +27,8 @@
 #include "GLViewer_Viewer.h"
 #include "GLViewer_ViewPort2d.h"
 
+#include <QtxToolBar.h>
+
 #include <SUIT_Desktop.h>
 #include <SUIT_Session.h>
 #include <SUIT_ToolButton.h>
@@ -39,7 +41,6 @@
 #include <QHBoxLayout>
 #include <QString>
 #include <QFrame>
-#include <QToolBar>
 #include <QMouseEvent>
 #include <QKeyEvent>
 #include <QWheelEvent>
@@ -73,9 +74,8 @@ myVP( 0 )
     setBackgroundColor( Qt::white );
     layout->addWidget( vp );
 
-    myToolBar = new QToolBar(this);
-    //myToolBar->setCloseMode(QDockWindow::Undocked);
-    myToolBar->setWindowTitle(tr("LBL_TOOLBAR_LABEL"));
+    myToolBar = new QtxToolBar( true, tr("LBL_TOOLBAR_LABEL"), this );
+
     createActions();
     createToolBar();
 }
@@ -164,10 +164,12 @@ void GLViewer_ViewFrame::createToolBar()
   aScaleBtn->AddAction(myActionsMap[FitRectId]);
   aScaleBtn->AddAction(myActionsMap[FitSelectId]);
   aScaleBtn->AddAction(myActionsMap[ZoomId]);
+  myToolBar->addWidget( aScaleBtn );
 
   SUIT_ToolButton* aPanBtn = new SUIT_ToolButton(myToolBar);
   aPanBtn->AddAction(myActionsMap[PanId]);
   aPanBtn->AddAction(myActionsMap[GlobalPanId]);
+  myToolBar->addWidget( aPanBtn );
 
   myToolBar->addAction( myActionsMap[ResetId] );
 }

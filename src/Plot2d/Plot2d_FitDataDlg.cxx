@@ -16,10 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  File   : Plot2d_FitDataDlg.cxx
-//  Author : Vadim SANDLER
-//  Module : SALOME
-//  $Header$
+// File   : Plot2d_FitDataDlg.cxx
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #include "Plot2d_FitDataDlg.h"
 #include <QLabel>

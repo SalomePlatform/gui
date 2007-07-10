@@ -16,10 +16,9 @@
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
-#  File   : test_big_table.py
-#  Author : Vadim SANDLER
-#  Module : SALOME
-#  $Header$
+# File   : test_big_table.py
+# Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+#
 
 import salome
 import math

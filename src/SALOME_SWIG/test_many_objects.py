@@ -16,10 +16,9 @@
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
-#  File   : visu_many_objects.py
-#  Author : Vadim SANDLER
-#  Module : SALOME
-#  $Header$
+# File   : visu_many_objects.py
+# Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+#
 
 import salome
 import SALOMEDS

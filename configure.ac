@@ -5,11 +5,8 @@
 # Modified by : Marc Tajchman (CEA)
 # Modified by : Mikhail PONIKAROV (OCN) - autotools usage
 #
-# Created from configure.in.base
-#
 
-
-AC_INIT([Salome2 Project GUI module], [4.0.0], [gboulant@CS], [salome])
+AC_INIT([Salome2 Project GUI module], [4.0.0], [webmaster.salome@opencascade.com], [salome-gui])
 AC_CONFIG_AUX_DIR(salome_adm/unix/config_files)
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET

@@ -16,9 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  File   : LightApp_NameDlg.cxx
-//  Author : Vadim SANDLER
-//  $Header$
+// File   : LightApp_NameDlg.cxx
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #include <LightApp_NameDlg.h>
 #include <SUIT_Tools.h>

@@ -65,6 +65,9 @@ public:
          CatalogGenId, RegDisplayId, SaveGUIStateId, FileLoadId, UserID };
   enum { CloseUnload = STD_Application::CloseCancel+1 };
 
+protected:
+  enum { LoadStudyId = OpenStudyId + 1 };
+
 public:
   SalomeApp_Application();
   virtual ~SalomeApp_Application();
@@ -89,6 +92,8 @@ public:
   void                                updateSavePointDataObjects( SalomeApp_Study* );
   
   virtual bool                        isPossibleToClose( bool& );
+
+  virtual bool                        useStudy( const QString& );
 
 public slots:
   virtual bool                        onOpenDoc( const QString& );
@@ -118,6 +123,9 @@ protected:
   virtual bool                        closeAction( const int, bool& );
   virtual int                         closeChoice( const QString& );
   
+  virtual QMap<int, QString>          activateModuleActions() const;
+  virtual void                        moduleActionSelected( const int );
+
 private slots:
   void                                onDeleteInvalidReferences();
   void                                onDblClick( QListViewItem* );

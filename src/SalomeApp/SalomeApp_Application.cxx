@@ -421,18 +421,44 @@ void SalomeApp_Application::onLoadDoc()
   studyName.replace( QRegExp(":"), "/" );
 #endif
 
-  if( LightApp_Application::onLoadDoc( studyName ) ) {
+  if ( onLoadDoc( studyName ) ) {
     updateWindows();
     updateViewManagers();
     updateObjectBrowser( true );
   }
 }
 
-
 /*!SLOT. Load document with \a aName.*/
 bool SalomeApp_Application::onLoadDoc( const QString& aName )
 {
-  return LightApp_Application::onLoadDoc( aName );
+  bool res = true;
+  if ( !activeStudy() ) {
+    // if no study - load in current desktop
+    res = useStudy( aName );
+  }
+  else {
+    // if study exists - load in new desktop. Check: is the same file is loaded?
+    SUIT_Session* aSession = SUIT_Session::session();
+    QList<SUIT_Application*> aAppList = aSession->applications();
+    bool isAlreadyOpen = false;
+    SalomeApp_Application* aApp = 0;
+    for ( QList<SUIT_Application*>::iterator it = aAppList.begin(); 
+	  it != aAppList.end() && !isAlreadyOpen; ++it ) {
+      aApp = dynamic_cast<SalomeApp_Application*>( *it );
+      if ( aApp && aApp->activeStudy()->studyName() == aName )
+        isAlreadyOpen = true;
+    }
+    if ( !isAlreadyOpen ) {
+      aApp = dynamic_cast<SalomeApp_Application*>( startApplication( 0, 0 ) );
+      if ( aApp )
+        res = aApp->useStudy( aName );
+    }
+    else {
+      aApp->desktop()->activateWindow();
+    }
+  }
+
+  return res;
 }
 
 /*!SLOT. Copy objects to study maneger from selection maneger..*/
@@ -911,6 +937,45 @@ bool SalomeApp_Application::closeAction( const int choice, bool& closePermanentl
   return res;
 }
 
+/*!
+  \brief Get map of the operations which can be performed 
+  on the module activation.
+ 
+  The method should return the map of the kind \c {<id>:<name>}
+  where \c <id> is an integer identifier of the operation and
+  \c <name> is a title for the button to be added to the 
+  dialog box. After user selects the required operation by the
+  clicking the corresponding button in the dialog box, its identifier
+  is passed to the moduleActionSelected() method to process
+  the made choice.
+
+  \return map of the operations
+  \sa moduleActionSelected()
+*/
+QMap<int, QString> SalomeApp_Application::activateModuleActions() const
+{
+  QMap<int, QString> opmap = LightApp_Application::activateModuleActions();
+  opmap.insert( LoadStudyId,  tr( "ACTIVATE_MODULE_OP_LOAD" ) );
+  return opmap;
+}
+
+/*!
+  \brief Called when the used selectes required operation chosen
+  from "Activate module" dialog box.
+
+  Performs the required operation according to the user choice.
+  
+  \param id operation identifier
+  \sa activateModuleActions()
+*/
+void SalomeApp_Application::moduleActionSelected( const int id )
+{
+  if ( id == LoadStudyId )
+    onLoadDoc();
+  else
+    LightApp_Application::moduleActionSelected( id );
+}
+
 /*!Gets CORBA::ORB_var*/
 CORBA::ORB_var SalomeApp_Application::orb()
 {
@@ -1322,3 +1387,18 @@ void SalomeApp_Application::onDesktopMessage( const QString& message )
     updateObjectBrowser();
 }
 
+/*!
+  Opens other study into active Study. If Study is empty - creates it.
+  \param theName - name of study
+*/
+bool SalomeApp_Application::useStudy( const QString& theName )
+{
+  createEmptyStudy();
+  SalomeApp_Study* aStudy = dynamic_cast<SalomeApp_Study*>( activeStudy() );
+  bool res = false;
+  if (aStudy)
+    res = aStudy->loadDocument( theName );
+  updateDesktopTitle();
+  updateCommandsStatus();
+  return res;
+}

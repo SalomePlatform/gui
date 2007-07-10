@@ -410,22 +410,6 @@ bool LightApp_Application::activateModule( const QString& modName )
   return true;
 }
 
-/*!
-  Opens other study into active Study. If Study is empty - creates it.
-  \param theName - name of study
-*/
-bool LightApp_Application::useStudy(const QString& theName)
-{
-  createEmptyStudy();
-  LightApp_Study* aStudy = dynamic_cast<LightApp_Study*>(activeStudy());
-  bool res = false;
-  if (aStudy)
-    res = aStudy->loadDocument( theName );
-  updateDesktopTitle();
-  updateCommandsStatus();
-  return res;
-}
-
 /*!Gets selection manager.*/
 LightApp_SelectionMgr* LightApp_Application::selectionMgr() const
 {
@@ -633,22 +617,20 @@ void LightApp_Application::onModuleActivation( const QString& modName )
     icon = resourceMgr()->loadPixmap( "LightApp", tr( "APP_MODULE_BIG_ICO" ), false ); // default icon for any module
 
   bool cancelled = false;
+
   while ( !modName.isEmpty() && !activeStudy() && !cancelled ){
     LightApp_ModuleDlg aDlg( desktop(), modName, icon );
-    int res = aDlg.exec();
+    QMap<int, QString> opmap = activateModuleActions();
+    for ( QMap<int, QString>::ConstIterator it = opmap.begin(); it != opmap.end(); ++it )
+      aDlg.addButton( it.value(), it.key() );
 
-    switch ( res ){
-    case 1:
-      onNewDoc();
-      break;
-    case 2:
-      onOpenDoc();
-      break;
-    case 3:
-      //onLoadStudy();
-      //break;
-    case 0:
-    default:
+    int res = aDlg.exec();
+    if ( res ) {
+      // some operation is selected
+      moduleActionSelected( res );
+    }
+    else {
+      // cancelled
       putInfo( tr("INF_CANCELLED") );
       
       LightApp_ModuleAction* moduleAction = 
@@ -830,26 +812,6 @@ void LightApp_Application::onHelpAbout()
   LightApp_AboutDlg* dlg = new LightApp_AboutDlg( applicationName(), applicationVersion(), desktop() );
   dlg->exec();
   delete dlg;
-}
-
-/*!
-  SLOT: Loads document
-  \param aName - name of document
-*/
-bool LightApp_Application::onLoadDoc( const QString& aName )
-{
-  bool res = CAM_Application::onLoadDoc( aName );
-
-  /*jfa tmp:QAction* a = action( MRUId );
-  if ( a && a->inherits( "QtxMRUAction" ) )
-  {
-    QtxMRUAction* mru = (QtxMRUAction*)a;
-    if ( res )
-      mru->insert( aName );
-    else
-      mru->remove( aName );
-  }*/
-  return res;
 }
 
 /*!
@@ -1131,7 +1093,7 @@ void LightApp_Application::addWindow( QWidget* wid, const int flag, const int st
     }
 
     //myWindows[flag]->setResizeEnabled( true );
-    myWindows[flag]->setFeatures( QDockWidget::DockWidgetClosable );
+    myWindows[flag]->setFeatures( QDockWidget::AllDockWidgetFeatures );
     myWindows[flag]->setObjectName( QString( "dock_window_%1" ).arg( flag ) );
     //myWindows[flag]->setFixedExtentWidth( wid->width() );
     //myWindows[flag]->setFixedExtentHeight( wid->height() );
@@ -2125,6 +2087,52 @@ void LightApp_Application::updateDesktopTitle() {
   }
 
   desktop()->setWindowTitle( aTitle );
+}
+
+/*!
+  \brief Get map of the operations which can be performed 
+  on the module activation.
+ 
+  The method should return the map of the kind \c {<id>:<name>}
+  where \c <id> is an integer identifier of the operation and
+  \c <name> is a title for the button to be added to the 
+  dialog box. After user selects the required operation by the
+  clicking the corresponding button in the dialog box, its identifier
+  is passed to the moduleActionSelected() method to process
+  the made choice.
+
+  \return map of the operations
+  \sa moduleActionSelected()
+*/
+QMap<int, QString> LightApp_Application::activateModuleActions() const
+{
+  QMap<int, QString> opmap;
+  opmap.insert( NewStudyId,  tr( "ACTIVATE_MODULE_OP_NEW" ) );
+  opmap.insert( OpenStudyId, tr( "ACTIVATE_MODULE_OP_OPEN" ) );
+  return opmap;
+}
+
+/*!
+  \brief Called when the used selectes required operation chosen
+  from "Activate module" dialog box.
+
+  Performs the required operation according to the user choice.
+  
+  \param id operation identifier
+  \sa activateModuleActions()
+*/
+void LightApp_Application::moduleActionSelected( const int id )
+{
+  switch ( id ) {
+  case NewStudyId:
+    onNewDoc();
+    break;
+  case OpenStudyId:
+    onOpenDoc();
+    break;
+  default:
+    break;
+  }
 }
 
 /*!

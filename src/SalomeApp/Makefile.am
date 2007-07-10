@@ -98,11 +98,14 @@ libSalomeApp_la_CPPFLAGS=$(PYTHON_INCLUDES) $(QT_INCLUDES) $(QWT_INCLUDES) \
 	-I$(top_builddir)/salome_adm/unix @CORBA_CXXFLAGS@ @CORBA_INCLUDES@
 libSalomeApp_la_LDFLAGS=$(PYTHON_LIBS) $(QT_MT_LIBS) 
 libSalomeApp_la_LIBADD= $(KERNEL_LDFLAGS) -lOpUtil -lSALOMELocalTrace -lSalomeDSClient \
-	../SUIT/libsuit.la ../STD/libstd.la ../CAM/libCAM.la \ #../ObjBrowser/libObjBrowser.la \
+	../SUIT/libsuit.la ../STD/libstd.la ../CAM/libCAM.la \
 	../Prs/libSalomePrs.la ../SPlot2d/libSPlot2d.la ../GLViewer/libGLViewer.la \
 	../OCCViewer/libOCCViewer.la ../VTKViewer/libVTKViewer.la ../OBJECT/libSalomeObject.la \
 	../SVTK/libSVTK.la ../SOCC/libSOCC.la ../PyInterp/libPyInterp.la \
 	../PyConsole/libPyConsole.la ../LogWindow/libLogWindow.la \
 	../LightApp/libLightApp.la ../TOOLSGUI/libToolsGUI.la $(CAS_KERNEL)
+
+# QT 4 PORTING TODO
+#../ObjBrowser/libObjBrowser.la
 
 EXTRA_DIST+=SalomeApp_PyInterp.h

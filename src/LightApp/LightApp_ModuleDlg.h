@@ -16,49 +16,45 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  SALOME SALOMEGUI : implementation of desktop and GUI kernel
+// File   : LightApp_ModuleDlg.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 //
-//  File   : LightApp_ModuleDlg.h
-//  Author : Michael ZORIN (mzn)
-//  Module : SALOME
 
 #ifndef LIGHTAPP_MODULEDLG_H
 #define LIGHTAPP_MODULEDLG_H
 
 #include "LightApp.h"
+
 #include <QDialog> 
 #include <QPixmap>
+#include <QMap>
 
-class QFrame;
-class QLabel;
 class QPushButton;
+class QHBoxLayout;
 
-/*!
-  \class LightApp_ModuleDlg
-  Dialog allows to choose action on module activation when there is no document.
-  It is possible to create new document, to open existing or to cancel module activation
-*/
 class LIGHTAPP_EXPORT LightApp_ModuleDlg : public QDialog
 {
   Q_OBJECT
 
 public:
-  LightApp_ModuleDlg ( QWidget* parent, const QString& component, const QPixmap icon = QPixmap() ) ;
-  ~LightApp_ModuleDlg ( ) { };
+  LightApp_ModuleDlg( QWidget*, const QString&, const QPixmap& = QPixmap() ) ;
+  ~LightApp_ModuleDlg();
 
-private slots:
-  void onButtonClicked();
+  int addButton( const QString&, const int = -1);
+
+public slots:
+  void accept();
 
 private:
-    QFrame*      myComponentFrame;
-    QLabel*      myComponentLab;
-    QLabel*      myComponentIcon;
-    QLabel*      myInfoLabel;
-    QPushButton* myNewBtn;
-    QPushButton* myOpenBtn;
-    QPushButton* myLoadBtn;
-    QPushButton* myCancelBtn;
+  QPushButton* findButton( const int ) const;
+
+private:
+  typedef QMap<QPushButton*,int> ButtonMap;
+
+private:
+  ButtonMap    myButtons;
+  QHBoxLayout* myButtonLayout;
 };
 
-#endif
+#endif // LIGHTAPP_MODULEDLG_H
 

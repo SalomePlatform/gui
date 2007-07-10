@@ -16,22 +16,21 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  File   : LightApp_ModuleDlg.cxx
-//  Author : Michael Zorin (mzn)
-//  Module : LightApp
+// File   : LightApp_ModuleDlg.cxx
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #include <LightApp_ModuleDlg.h>
 
-#include <QFrame>
 #include <QLabel>
 #include <QPushButton>
 #include <QGridLayout>
+#include <QHBoxLayout>
 
-#ifndef WIN32
-using namespace std;
-#endif
-
-/*!Default icon*/
+/*!
+  \brief Pixmap used as default icon for the module.
+  \internal
+*/
 static const char* const default_icon[] = { 
 "48 48 17 1",
 ". c None",
@@ -100,129 +99,161 @@ static const char* const default_icon[] = {
 "................................................",
 "................................................"};
 
-//==============================================================================================================================
 /*!
- *  LightApp_ModuleDlg::LightApp_ModuleDlg \n
- *
- *  Constructor.
- */
-//==============================================================================================================================
-LightApp_ModuleDlg::LightApp_ModuleDlg ( QWidget * parent, const QString& component, const QPixmap icon )
-     : QDialog ( parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint )
+  \class LightApp_ModuleDlg
+  \brief A dialog box allowing to select study operation to be performed
+  on the module activating.
+
+  The dialog box is shown when the user tries to activate any module
+  while there is no opened study. The dialog box proposes user to select
+  one of the possible operations which should be done before module activating,
+  for example, create new study or open study from the file.
+  The available operations are assigned by adding the buttons with the unique
+  identifier to the dialog box. When the user clicks any operation button,
+  the dialog box sets its identifier as the return code and closes.
+
+  The typical usage of the dialog box:
+  \code
+  LightApp_ModuleDlg dlg( desktop() );
+  dlg.addButton( "New study", NewStudyId );
+  dlg.addButton( "Open study...", OpenStudyId );
+  int ret = dlg.exec();
+  switch( ret ) {
+  case NewStudyId:
+    // create new study
+    createNewStudy();
+    break;
+  case OpenStudyId:
+    // open study from the file
+    // ... show dialog box to choose the file
+    QString fileName = QFileDialog::getOpenFileName( desktop(), "Open File" );
+    if ( !fileName.isEmpty() )
+      openStudy( fileName );
+    break;
+  default:
+    // operation is cancelled
+    break;
+  }
+  \endcode
+
+  \sa addButton()
+*/
+
+/*!
+  \brief Constructor.
+  \param parent parent widget
+  \param component module name
+  \param icon module icon
+*/
+LightApp_ModuleDlg::LightApp_ModuleDlg( QWidget*       parent, 
+					const QString& component, 
+					const QPixmap& icon )
+: QDialog ( parent )
 {
-  setObjectName( "ActivateModuleDlg" );
   setModal( true );
 
-  QPixmap defaultIcon( ( const char** ) default_icon );
+  QPixmap defaultIcon( default_icon );
   setWindowTitle( tr( "CAPTION" ) );
-  setSizeGripEnabled( TRUE );
   
-  QGridLayout* ActivateModuleDlgLayout = new QGridLayout( this ); 
-  ActivateModuleDlgLayout->setMargin( 11 ); ActivateModuleDlgLayout->setSpacing( 6 );
+  // icon
+  QLabel* iconLab = new QLabel( this );
+  iconLab->setFrameStyle( QFrame::Box | QFrame::Sunken );
+  iconLab->setMinimumSize( 70, 70 );
+  iconLab->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed ) );
+  iconLab->setPixmap( !icon.isNull() ? icon : defaultIcon );
+  iconLab->setScaledContents( false );
+  iconLab->setAlignment( Qt::AlignCenter );
 
-  // Module's name and icon
-  myComponentFrame = new QFrame( this );
-  myComponentFrame->setObjectName( "myComponentFrame" );
-  myComponentFrame->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Expanding ) );
-  myComponentFrame->setMinimumHeight( 100 );
-  myComponentFrame->setFrameStyle( QFrame::Box | QFrame::Sunken );
-  
-  QGridLayout* myComponentFrameLayout = new QGridLayout( myComponentFrame ); 
-  myComponentFrameLayout->setMargin( 11 ); myComponentFrameLayout->setSpacing( 6 );
-
-  // --> icon
-  myComponentIcon = new QLabel( myComponentFrame );
-  myComponentIcon->setObjectName( "myComponentIcon" );
-  myComponentIcon->setSizePolicy( QSizePolicy( QSizePolicy::Fixed, QSizePolicy::Fixed ) );
-  myComponentIcon->setPixmap( !icon.isNull() ? icon : defaultIcon );
-  myComponentIcon->setScaledContents( false );
-  myComponentIcon->setAlignment( Qt::AlignCenter );
-  // --> name
-  myComponentLab = new QLabel( component, myComponentFrame );
-  myComponentLab->setObjectName( "myComponentLab" );
-  QFont fnt = myComponentLab->font(); fnt.setBold( TRUE ); myComponentLab->setFont( fnt ); 
-  myComponentLab->setAlignment( Qt::AlignCenter );
-
-  myComponentFrameLayout->addWidget( myComponentIcon, 0, 0 );
-  myComponentFrameLayout->addWidget( myComponentLab,  0, 1 );
-
-  // Info
-  QVBoxLayout* infoLayout = new QVBoxLayout();
-  infoLayout->setMargin( 0 ); infoLayout->setSpacing( 6 );
-  
-  // --> top line
-  QFrame* myLine1 = new QFrame( this );
-  myLine1->setObjectName( "myLine1" );
-  myLine1->setFrameStyle( QFrame::HLine | QFrame::Plain );
-  // --> info label  
-  myInfoLabel = new QLabel( tr ("ActivateComponent_DESCRIPTION"), this );
-  myInfoLabel->setObjectName( "myInfoLabel" );
-  myInfoLabel->setAlignment( Qt::AlignCenter );
-  // --> bottom line
-  QFrame*  myLine2 = new QFrame( this );
-  myLine2->setObjectName( "myLine2" );
-  myLine2->setFrameStyle( QFrame::HLine | QFrame::Plain );
-  
-  infoLayout->addStretch();
-  infoLayout->addWidget( myLine1 );
-  infoLayout->addWidget( myInfoLabel );
-  infoLayout->addWidget( myLine2 );
-  infoLayout->addStretch();
+  // info message
+  QLabel* infoLab = new QLabel( tr ( "DESCRIPTION" ).arg( component ), this );
+  infoLab->setTextFormat( Qt::RichText );
+  infoLab->setAlignment( Qt::AlignCenter );
   
   // Buttons
-  QHBoxLayout* btnLayout = new QHBoxLayout(); 
-  btnLayout->setMargin( 0 ); btnLayout->setSpacing( 6 );
-  
-  // --> New
-  myNewBtn = new QPushButton( tr( "NEW" ), this );
-  myNewBtn->setObjectName( "myNewBtn" );
-  myNewBtn->setDefault( true ); myNewBtn->setAutoDefault( true );
-  // --> Open
-  myOpenBtn = new QPushButton( tr( "OPEN" ), this );
-  myOpenBtn->setObjectName( "myOpenBtn" );
-  myOpenBtn->setAutoDefault( true );
-  // --> Load
-  myLoadBtn = new QPushButton( tr( "LOAD" ), this );
-  myLoadBtn->setObjectName( "myLoadBtn" );
-  myLoadBtn->setAutoDefault( true );
-  // --> Cancel
-  myCancelBtn = new QPushButton( tr( "CANCEL" ), this );
-  myCancelBtn->setObjectName( "myCancelBtn" );
-  myCancelBtn->setAutoDefault( true );
-  
-  btnLayout->addWidget( myNewBtn );
-  btnLayout->addWidget( myOpenBtn );
-  btnLayout->addWidget( myLoadBtn );
-  btnLayout->addStretch();
-  btnLayout->addSpacing( 70 );
-  btnLayout->addStretch();
-  btnLayout->addWidget( myCancelBtn );
+  myButtonLayout = new QHBoxLayout(); 
+  myButtonLayout->setMargin( 0 ); 
+  myButtonLayout->setSpacing( 6 );
 
-  ActivateModuleDlgLayout->addWidget( myComponentFrame, 0,    0    );
-  ActivateModuleDlgLayout->addLayout( infoLayout,       0,    1    );
-  ActivateModuleDlgLayout->addLayout( btnLayout,        1, 0, 1, 2 );
+  // <Cancel>
+  QPushButton* cancelBtn = new QPushButton( tr( "CANCEL" ), this );
+  myButtonLayout->addSpacing( 70 );
+  myButtonLayout->addStretch();
+  myButtonLayout->addWidget( cancelBtn );
+
+  QGridLayout* layout = new QGridLayout( this ); 
+  layout->setMargin( 11 );
+  layout->setSpacing( 6 );
+
+  layout->addWidget( iconLab, 0, 0 );
+  layout->addWidget( infoLab, 0, 1 );
+  layout->addLayout( myButtonLayout, 1, 0, 1, 2 );
 
   // signals and slots connections
-  connect( myNewBtn,    SIGNAL( clicked() ), this, SLOT( onButtonClicked() ) );
-  connect( myOpenBtn,   SIGNAL( clicked() ), this, SLOT( onButtonClicked() ) );
-  connect( myLoadBtn,   SIGNAL( clicked() ), this, SLOT( onButtonClicked() ) );
-  connect( myCancelBtn, SIGNAL( clicked() ), this, SLOT( reject() ) );
+  connect( cancelBtn, SIGNAL( clicked() ), this, SLOT( reject() ) );
 }
 
-//==============================================================================================================================
 /*!
- *  LightApp_ModuleDlg::onButtonClicked
- *
- *  Buttons slot
- */
-//==============================================================================================================================
-void LightApp_ModuleDlg::onButtonClicked()
+  \brief Destructor.
+*/
+LightApp_ModuleDlg::~LightApp_ModuleDlg()
+{
+}
+
+/*!
+  \brief Add operation button to the dialog box.
+
+  If the parameter \a id is equal to -1, then the 
+  button identifier is generated automatically.
+
+  \param button button text
+  \param id button identifier
+  \return button identifier
+*/
+int LightApp_ModuleDlg::addButton( const QString& button, const int id )
+{
+  static int lastId = 0;
+  int bid = id == -1 ? --lastId : id;
+
+  QPushButton* b = findButton( bid );
+  if ( b ) {
+    myButtons.remove( b );
+    delete b;
+  }
+
+  QPushButton* newButton = new QPushButton( button, this );
+
+  myButtons.insert( newButton, bid );
+  myButtonLayout->insertWidget( myButtonLayout->count()-3, newButton );
+  connect( newButton, SIGNAL( clicked() ), this, SLOT( accept() ) );
+
+  return bid;
+}
+
+/*!
+  \brief Search button with the specified identifier.
+  \param id button identifier
+  \return button or 0 if \a id is invalid
+*/
+QPushButton* LightApp_ModuleDlg::findButton( const int id ) const
+{
+  QPushButton* btn = 0;
+  for ( ButtonMap::ConstIterator it = myButtons.begin(); 
+	it != myButtons.end() && !btn; ++it ) {
+    if ( it.value() == id )
+      btn = it.key();
+  }
+  return btn;
+}
+
+/*!
+  \brief Called when any dialog button (except \c Cancel) 
+  is clicked.
+  
+  Closes the dialog and sets its result code to the identifier
+  of the button clicked by the user.
+*/
+void LightApp_ModuleDlg::accept()
 {
   QPushButton* btn = ( QPushButton* )sender();
-  if ( btn == myNewBtn )
-    done( 1 );
-  if ( btn == myOpenBtn )
-    done( 2 );
-  if ( btn == myLoadBtn )
-    done( 3 );
+  done( myButtons[ btn ] );
 }

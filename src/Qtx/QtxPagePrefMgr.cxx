@@ -1159,7 +1159,7 @@ bool QtxPagePrefFrameItem::stretch() const
   for ( int i = 0; l && i < l->count() && !s; i++ )
     s = l->itemAt( i )->spacerItem();
 
-  return s ? s->expandingDirections() & Qt::Vertical : false;
+  return s ? (bool)( s->expandingDirections() & Qt::Vertical ) : false;
 }
 
 /*!

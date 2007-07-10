@@ -313,6 +313,14 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <source>TOT_DESK_MRU</source>
         <translation>Most recently used</translation>
     </message>
+    <message>
+        <source>ACTIVATE_MODULE_OP_NEW</source>
+        <translation>&amp;New</translation>
+    </message>
+    <message>
+        <source>ACTIVATE_MODULE_OP_OPEN</source>
+        <translation>&amp;Open...</translation>
+    </message>
 </context>
 <context>
     <name>LightApp_Module</name>
@@ -368,20 +376,9 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
 <context>
     <name>LightApp_ModuleDlg</name>
     <message>
-        <source>NEW</source>
-        <translation>&amp;New</translation>
-    </message>
-    <message>
-        <source>LOAD</source>
-        <translation>&amp;Load</translation>
-    </message>
-    <message>
-        <source>OPEN</source>
-        <translation>&amp;Open</translation>
-    </message>
-    <message>
-        <source>ActivateComponent_DESCRIPTION</source>
-        <translation>Create, open or load study.</translation>
+        <source>DESCRIPTION</source>
+        <translation>You're activating module
+	&lt;b&gt;%1&lt;/b&gt;.&lt;br&gt;Please, select required action by pressing the corresponding button below.</translation>
     </message>
     <message>
         <source>CANCEL</source>

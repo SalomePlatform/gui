@@ -16,12 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  SALOME SalomeApp : implementation of desktop and GUI kernel
+// File   : LightApp_NameDlg.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 //
-//  File   : LightApp_NameDlg.h
-//  Author : Vadim SANDLER
-//  Module : SALOME
-//  $Header$
 
 #ifndef LIGHTAPP_NAMEDLG_H
 #define LIGHTAPP_NAMEDLG_H

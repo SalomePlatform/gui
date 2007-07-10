@@ -16,12 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  SALOME SalomeApp
+// File   : SalomeApp_ListView.cxx
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 //
-//  File   : SalomeApp_ListView.cxx
-//  Author : Vadim SANDLER
-//  Module : SALOME
-//  $Header$
 
 #include "SalomeApp_ListView.h"
 #include "SalomeApp_Application.h"

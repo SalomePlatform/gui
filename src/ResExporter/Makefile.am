@@ -16,10 +16,6 @@
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
-#  File   : Makefile.in
-#  Author : Vadim SANDLER (OCN)
-#  Module : SalomeApp
-#  $Header$
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 

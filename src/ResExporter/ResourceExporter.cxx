@@ -16,12 +16,11 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-/*!
- File:      ResourceExporter.cxx
- Created:   27/06/05
- Author:    Vadim SANDLER
- Copyright (C) CEA 2005
+// File    : ResourceExporter.cxx
+// Author  : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
+/*
  This tool provides command-line interface allowing to modify user preferences.
  The tool can be used by the compilation procedures in order to set default preferences for the module.
 

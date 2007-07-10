@@ -17,7 +17,7 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File   : SALOME_PYQT_PyInterp.cxx
-// Author : Vadim SANDLER, Open CASCADE SAS, vadim.sandler@opencascade.com
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 //
 
 #include "SALOME_PYQT_PyInterp.h" // this include must be first (see PyInterp_base.h)!

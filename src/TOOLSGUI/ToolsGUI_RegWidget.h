@@ -45,9 +45,9 @@ class TOOLSGUI_EXPORT ToolsGUI_RegWidget : public QMainWindow
 {
   Q_OBJECT
 
-  class ToolsGUI_HelpWindow;
-  class ToolsGUI_IntervalWindow;
-  class ToolsGUI_InfoWindow;
+  class HelpWindow;
+  class IntervalWindow;
+  class InfoWindow;
 
   ToolsGUI_RegWidget( CORBA::ORB_var& orb, QWidget* parent = 0 );
 
@@ -83,20 +83,20 @@ protected:
   void                       closeEvent( QCloseEvent* e );
    
 protected :
-  QTreeWidget*               _clients;
-  QTreeWidget*               _history;
-  QWidget*                   _parent;
-  QTabWidget*                _tabWidget;
-  QAction*                   _refresh;
-  QAction*                   _interval;
-  QAction*                   _close;
-  QTimer*                    _counter;
-  Registry::AllInfos*        _serverhistory;
-  Registry::AllInfos*        _serverclients;
-  ToolsGUI_InfoWindow*       myInfoWindow;
-  ToolsGUI_HelpWindow*       myHelpWindow;
-  ToolsGUI_IntervalWindow*   myIntervalWindow;
-  int                        myRefreshInterval;
+  QTreeWidget*         _clients;
+  QTreeWidget*         _history;
+  QWidget*             _parent;
+  QTabWidget*          _tabWidget;
+  QAction*             _refresh;
+  QAction*             _interval;
+  QAction*             _close;
+  QTimer*              _counter;
+  Registry::AllInfos*  _serverhistory;
+  Registry::AllInfos*  _serverclients;
+  InfoWindow*          myInfoWindow;
+  HelpWindow*          myHelpWindow;
+  IntervalWindow*      myIntervalWindow;
+  int                  myRefreshInterval;
 
 private:
   const Registry::Components_var _VarComponents;

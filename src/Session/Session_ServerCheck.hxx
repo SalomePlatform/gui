@@ -16,8 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      Session_ServerCheck.hxx
-// Author:    Vadim SANDLER
+// File   : Session_ServerCheck.hxx
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #if !defined(SESSION_SERVERCHECK_HXX)
 #define SESSION_SERVERCHECK_HXX

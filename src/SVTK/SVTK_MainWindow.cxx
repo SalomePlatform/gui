@@ -28,32 +28,30 @@
 
 #include "SALOME_Actor.h"
 
+#include <QImage>
+
 #include <vtkGenericRenderWindowInteractor.h>
 #include <vtkRenderer.h>
 
-#include "QtxAction.h"
+#include <QtxAction.h>
+#include <QtxToolBar.h>
 
-#include "SUIT_ToolButton.h"
-#include "SUIT_MessageBox.h"
-#include "SUIT_ViewWindow.h"
+#include <SUIT_ToolButton.h>
+#include <SUIT_MessageBox.h>
+#include <SUIT_ViewWindow.h>
+#include <SUIT_Tools.h>
+#include <SUIT_ResourceMgr.h>
 
-#include "SUIT_Tools.h"
-#include "SUIT_ResourceMgr.h"
 #include "SVTK_NonIsometricDlg.h"
 #include "SVTK_UpdateRateDlg.h"
 #include "SVTK_CubeAxesDlg.h"
 #include "SVTK_SetRotationPointDlg.h"
-
 #include "SVTK_MainWindow.h"
 #include "SVTK_Event.h"
 #include "SVTK_Renderer.h"
 #include "SVTK_RenderWindowInteractor.h"
 #include "SVTK_InteractorStyle.h"
-
 #include "SVTK_Selector.h"
-
-#include <QImage>
-#include <QToolBar>
 
 /*!
   Constructor
@@ -68,9 +66,7 @@ SVTK_MainWindow
 {
   setObjectName(theName);
 
-  myToolBar = new QToolBar(this);
-  //myToolBar->setCloseMode(QDockWindow::Undocked);
-  myToolBar->setWindowTitle(tr("LBL_TOOLBAR_LABEL"));
+  myToolBar = new QtxToolBar( true, tr("LBL_TOOLBAR_LABEL"), this );
 
   createActions(theResourceMgr);
   createToolBar();
@@ -594,10 +590,12 @@ SVTK_MainWindow
   aScaleBtn->AddAction(myActionsMap[FitAllId]);
   aScaleBtn->AddAction(myActionsMap[FitRectId]);
   aScaleBtn->AddAction(myActionsMap[ZoomId]);
+  myToolBar->addWidget( aScaleBtn );
 
   SUIT_ToolButton* aPanningBtn = new SUIT_ToolButton(myToolBar);
   aPanningBtn->AddAction(myActionsMap[PanId]);
   aPanningBtn->AddAction(myActionsMap[GlobalPanId]);
+  myToolBar->addWidget( aPanningBtn );
 
   myToolBar->addAction( myActionsMap[ChangeRotationPointId] );
 
@@ -610,6 +608,7 @@ SVTK_MainWindow
   aViewsBtn->AddAction(myActionsMap[BottomId]);
   aViewsBtn->AddAction(myActionsMap[LeftId]);
   aViewsBtn->AddAction(myActionsMap[RightId]);
+  myToolBar->addWidget( aViewsBtn );
 
   myToolBar->addAction( myActionsMap[ResetId] );
 

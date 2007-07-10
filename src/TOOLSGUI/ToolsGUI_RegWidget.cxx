@@ -300,15 +300,15 @@ static Registry::Components_var MakeRegistry( CORBA::ORB_var& orb )
 }
 
 /*!
-  \class ToolsGUI_RegWidget::ToolsGUI_InfoWindow
+  \class ToolsGUI_RegWidget::InfoWindow
   \brief Information window.
   \internal
 */
 
-class ToolsGUI_RegWidget::ToolsGUI_InfoWindow : public QMainWindow
+class ToolsGUI_RegWidget::InfoWindow : public QMainWindow
 {
 public:
-  ToolsGUI_InfoWindow( QWidget* parent );
+  InfoWindow( QWidget* parent );
 
   void setText( const QString& text );
 
@@ -324,7 +324,7 @@ private:
   \internal
   \param parent parent widget
 */
-ToolsGUI_RegWidget::ToolsGUI_InfoWindow::ToolsGUI_InfoWindow( QWidget* parent )
+ToolsGUI_RegWidget::InfoWindow::InfoWindow( QWidget* parent )
 : QMainWindow( parent )
 {
   setAttribute( Qt::WA_DeleteOnClose );
@@ -340,7 +340,7 @@ ToolsGUI_RegWidget::ToolsGUI_InfoWindow::ToolsGUI_InfoWindow( QWidget* parent )
   \internal
   \param text ionfo text
 */
-void ToolsGUI_RegWidget::ToolsGUI_InfoWindow::setText( const QString& text )
+void ToolsGUI_RegWidget::InfoWindow::setText( const QString& text )
 {
   myTextView->setText( text );
 }
@@ -350,7 +350,7 @@ void ToolsGUI_RegWidget::ToolsGUI_InfoWindow::setText( const QString& text )
   \internal
   \param e key press event
 */
-void ToolsGUI_RegWidget::ToolsGUI_InfoWindow::keyPressEvent( QKeyEvent * e )
+void ToolsGUI_RegWidget::InfoWindow::keyPressEvent( QKeyEvent * e )
 {
   QMainWindow::keyPressEvent( e );
   if ( e->key() == Qt::Key_Escape )
@@ -358,16 +358,16 @@ void ToolsGUI_RegWidget::ToolsGUI_InfoWindow::keyPressEvent( QKeyEvent * e )
 }
 
 /*!
-  \class ToolsGUI_RegWidget::ToolsGUI_HelpWindow
+  \class ToolsGUI_RegWidget::HelpWindow
   \brief Help window.
   \internal
 */
 
-class ToolsGUI_RegWidget::ToolsGUI_HelpWindow : public QMainWindow
+class ToolsGUI_RegWidget::HelpWindow : public QMainWindow
 {
 public:
-  ToolsGUI_HelpWindow( QWidget* parent );
-  ~ToolsGUI_HelpWindow();
+  HelpWindow( QWidget* parent );
+  ~HelpWindow();
 
   void setText( const QString& text );
 
@@ -380,7 +380,7 @@ private:
   \internal
   \param parent parent widget
 */
-ToolsGUI_RegWidget::ToolsGUI_HelpWindow::ToolsGUI_HelpWindow( QWidget* parent ) 
+ToolsGUI_RegWidget::HelpWindow::HelpWindow( QWidget* parent ) 
 : QMainWindow( parent )
 {
   setAttribute( Qt::WA_DeleteOnClose );
@@ -424,7 +424,7 @@ ToolsGUI_RegWidget::ToolsGUI_HelpWindow::ToolsGUI_HelpWindow( QWidget* parent )
   \brief Destructor.
   \internal
 */
-ToolsGUI_RegWidget::ToolsGUI_HelpWindow::~ToolsGUI_HelpWindow()
+ToolsGUI_RegWidget::HelpWindow::~HelpWindow()
 {
 };
 
@@ -433,22 +433,22 @@ ToolsGUI_RegWidget::ToolsGUI_HelpWindow::~ToolsGUI_HelpWindow()
   \internal
   \param text help text
 */
-void ToolsGUI_RegWidget::ToolsGUI_HelpWindow::setText( const QString& text )
+void ToolsGUI_RegWidget::HelpWindow::setText( const QString& text )
 {
   myTextView->setText( text );
 }
 
 /*!
-  \class ToolsGUI_RegWidget::ToolsGUI_IntervalWindow
+  \class ToolsGUI_RegWidget::IntervalWindow
   \brief Dialog box to enter time delay between registry window updates
   \internal
 */
 
-class ToolsGUI_RegWidget::ToolsGUI_IntervalWindow : public QDialog
+class ToolsGUI_RegWidget::IntervalWindow : public QDialog
 {
 public:
-  ToolsGUI_IntervalWindow( QWidget* parent );
-  ~ToolsGUI_IntervalWindow();
+  IntervalWindow( QWidget* parent );
+  ~IntervalWindow();
   
   QPushButton* Ok();
   QPushButton* Cancel();
@@ -467,7 +467,7 @@ private:
   \internal
   \param parent parent widget
 */
-ToolsGUI_RegWidget::ToolsGUI_IntervalWindow::ToolsGUI_IntervalWindow ( QWidget* parent )
+ToolsGUI_RegWidget::IntervalWindow::IntervalWindow ( QWidget* parent )
 : QDialog( parent )
 {
   setModal( true );
@@ -530,7 +530,7 @@ ToolsGUI_RegWidget::ToolsGUI_IntervalWindow::ToolsGUI_IntervalWindow ( QWidget* 
   \brief Destructor
   \internal
 */
-ToolsGUI_RegWidget::ToolsGUI_IntervalWindow::~ToolsGUI_IntervalWindow()
+ToolsGUI_RegWidget::IntervalWindow::~IntervalWindow()
 {
 }
 
@@ -539,7 +539,7 @@ ToolsGUI_RegWidget::ToolsGUI_IntervalWindow::~ToolsGUI_IntervalWindow()
   \internal
   \param size interval value
 */
-void ToolsGUI_RegWidget::ToolsGUI_IntervalWindow::setValue( const int size )
+void ToolsGUI_RegWidget::IntervalWindow::setValue( const int size )
 {
   mySpinBox->setValue(size);
 }
@@ -549,7 +549,7 @@ void ToolsGUI_RegWidget::ToolsGUI_IntervalWindow::setValue( const int size )
   \internal
   \return interval value
 */
-int ToolsGUI_RegWidget::ToolsGUI_IntervalWindow::getValue()
+int ToolsGUI_RegWidget::IntervalWindow::getValue()
 {
   return mySpinBox->value();
 }
@@ -559,7 +559,7 @@ int ToolsGUI_RegWidget::ToolsGUI_IntervalWindow::getValue()
   \internal
   \return a pointer to \c OK button
 */
-QPushButton* ToolsGUI_RegWidget::ToolsGUI_IntervalWindow::Ok()
+QPushButton* ToolsGUI_RegWidget::IntervalWindow::Ok()
 {
   return myButtonOk;
 }
@@ -569,7 +569,7 @@ QPushButton* ToolsGUI_RegWidget::ToolsGUI_IntervalWindow::Ok()
   \internal
   \return a pointer to \c Cancel button
 */
-QPushButton* ToolsGUI_RegWidget::ToolsGUI_IntervalWindow::Cancel()
+QPushButton* ToolsGUI_RegWidget::IntervalWindow::Cancel()
 {
   return myButtonCancel;
 }
@@ -976,7 +976,7 @@ void ToolsGUI_RegWidget::slotListeSelect()
 */
 void ToolsGUI_RegWidget::slotSelectRefresh()
 {
-  myIntervalWindow = new ToolsGUI_RegWidget::ToolsGUI_IntervalWindow(this);
+  myIntervalWindow = new ToolsGUI_RegWidget::IntervalWindow(this);
   myIntervalWindow->installEventFilter( this );
   myIntervalWindow->setValue(myRefreshInterval);
   myIntervalWindow->show();
@@ -1000,7 +1000,7 @@ void ToolsGUI_RegWidget::slotIntervalOk()
 void ToolsGUI_RegWidget::slotHelp()
 {
   if ( !myHelpWindow ) {
-    myHelpWindow  = new ToolsGUI_RegWidget::ToolsGUI_HelpWindow( this );
+    myHelpWindow  = new ToolsGUI_RegWidget::HelpWindow( this );
     myHelpWindow->installEventFilter( this );
   }
   myHelpWindow->show();
@@ -1029,7 +1029,7 @@ void ToolsGUI_RegWidget::slotClientChanged( QTreeWidgetItem* item )
   ASSERT( c_info.name!=NULL);
   
   if ( !myInfoWindow ) {
-    myInfoWindow  = new ToolsGUI_RegWidget::ToolsGUI_InfoWindow( this );
+    myInfoWindow  = new ToolsGUI_RegWidget::InfoWindow( this );
     myInfoWindow->installEventFilter( this );
   }
   QString a = tr( "More about" ) + QString( " " ) + QString( c_info.name );
@@ -1063,7 +1063,7 @@ void ToolsGUI_RegWidget::slotHistoryChanged( QTreeWidgetItem* item )
   ASSERT( c_info.name!=NULL);
   
   if ( !myInfoWindow ) {
-    myInfoWindow  = new ToolsGUI_RegWidget::ToolsGUI_InfoWindow( this );
+    myInfoWindow  = new ToolsGUI_RegWidget::InfoWindow( this );
     myInfoWindow->installEventFilter( this );
   }
   QString a = tr( "More about" ) + QString( " " ) + QString( c_info.name );

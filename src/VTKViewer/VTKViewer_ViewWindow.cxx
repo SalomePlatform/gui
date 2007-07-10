@@ -33,10 +33,11 @@
 #include "SUIT_ResourceMgr.h"
 
 #include <QImage>
-#include <QToolBar>
 
 #include <vtkRenderer.h>
 #include <vtkCamera.h>
+
+#include <QtxToolBar.h>
 
 /*! Construction*/
 VTKViewer_ViewWindow::VTKViewer_ViewWindow( SUIT_Desktop* theDesktop, 
@@ -88,9 +89,7 @@ VTKViewer_ViewWindow::VTKViewer_ViewWindow( SUIT_Desktop* theDesktop,
 
   setCentralWidget( myRenderWindow );
 
-  myToolBar = new QToolBar(this);
-  //myToolBar->setCloseMode(QDockWindow::Undocked);
-  myToolBar->setWindowTitle(tr("LBL_TOOLBAR_LABEL"));
+  myToolBar = new QtxToolBar( true, tr("LBL_TOOLBAR_LABEL"), this );
 
   createActions();
   createToolBar();
@@ -297,10 +296,12 @@ void VTKViewer_ViewWindow::createToolBar()
   aScaleBtn->AddAction(myActionsMap[FitAllId]);
   aScaleBtn->AddAction(myActionsMap[FitRectId]);
   aScaleBtn->AddAction(myActionsMap[ZoomId]);
+  myToolBar->addWidget( aScaleBtn );
 
   SUIT_ToolButton* aPanningBtn = new SUIT_ToolButton(myToolBar);
   aPanningBtn->AddAction(myActionsMap[PanId]);
   aPanningBtn->AddAction(myActionsMap[GlobalPanId]);
+  myToolBar->addWidget( aPanningBtn );
 
   myToolBar->addAction( myActionsMap[RotationId] );
 
@@ -311,6 +312,7 @@ void VTKViewer_ViewWindow::createToolBar()
   aViewsBtn->AddAction(myActionsMap[BottomId]);
   aViewsBtn->AddAction(myActionsMap[LeftId]);
   aViewsBtn->AddAction(myActionsMap[RightId]);
+  myToolBar->addWidget( aViewsBtn );
 
   myToolBar->addAction( myActionsMap[ResetId] );
 }

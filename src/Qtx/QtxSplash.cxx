@@ -116,12 +116,12 @@ private:
   splash->show();
   app.processEvents();
   // doing first step
-  splash->message("Step 1");
+  splash->setMessage("Step 1");
   splash->ress(1);
   qApp->processEvents();
   // ... perform some actions
   // doing second step
-  splash->message("Step 2");
+  splash->setMessage("Step 2");
   splash->setProgress(2);
   qApp->processEvents();
   // ... perform some actions
@@ -129,7 +129,7 @@ private:
   \endcode
 
   There is a static function QtxSplash::setStatus() which allows to put next status message
-  and progress with one call. It can substitue two calls: message() and setProgress().
+  and progress with one call. It can substitue two calls: setMessage() and setProgress().
 
   QtxSplash class provides alos a lot of functions to set-up its behavior. Set progress
   bar width with setProgressWidth() method, its position and direction with setProgressFlags().
@@ -140,6 +140,9 @@ private:
   To change the progress bar and status message transparency, use setOpacity() function.
   The methods setTextAlignment(), setTextColor() and setTextColors() can be used to change
   the attributes of the status message.
+
+  The displayed message text includes constant info and status message. The constant info
+  is set by setConstantInfo() method and status message is set by setMessage().
 */
 
 //! The only one instance of splash screen
@@ -205,7 +208,7 @@ QtxSplash* QtxSplash::splash( const QPixmap& px )
 
   \param msg progress status message
   \param progress current progress
-  \sa message(), setProgress()
+  \sa setMessage(), setProgress()
 */
 void QtxSplash::setStatus( const QString& msg, const int progress )
 {
@@ -616,8 +619,35 @@ void QtxSplash::textColors( QColor& color, QColor& shadow ) const
 }
 
 /*!
+  \brief Set constant info text to be displayed on the splash screen.
+
+  The displayed text includes constant info and status message.
+  The constant message is set by setConstantInfo() method and status
+  message is set by setMessage().
+
+  \param info constant info text
+  \sa constantInfo(), message(), setMessage()
+*/
+void QtxSplash::setConstantInfo( const QString& info )
+{
+  myInfo = info;
+  repaint();
+}
+
+/*!
+  \brief Get constant info text.
+  \return constant info text
+  \sa setConstantInfo(), message(), setMessage()
+*/
+QString QtxSplash::constantInfo() const
+{
+  return myInfo;
+}
+
+/*!
   \brief Get current status message.
   \return status message
+  \sa setMessage(), constantInfo(), setConstantInfo()
 */
 QString QtxSplash::message() const
 {
@@ -673,10 +703,11 @@ void QtxSplash::repaint()
   \param msg status message
   \param alignment message text alignment flags (Qt::Alignment)
   \param color message text color
+  \sa message(), constantInfo(), setConstantInfo()
 */
-void QtxSplash::message( const QString& msg, 
-			 int            alignment,
-			 const QColor&  color )
+void QtxSplash::setMessage( const QString& msg, 
+			    int            alignment,
+			    const QColor&  color )
 {
   myMessage   = msg;
   myAlignment = alignment;
@@ -689,8 +720,9 @@ void QtxSplash::message( const QString& msg,
   \overload
   \brief Set status message for the splash screen.
   \param msg status message
+  \sa message(), constantInfo(), setConstantInfo()
 */
-void QtxSplash::message( const QString& msg )
+void QtxSplash::setMessage( const QString& msg )
 {
   myMessage = msg;
   repaint();
@@ -720,7 +752,7 @@ void QtxSplash::drawContents( QPainter* p )
   }
 
   // draw status message
-  if ( !myMessage.isEmpty() ) {
+  if ( !fullMessage().isEmpty() ) {
     p->save();
     drawMessage( p );
     p->restore();
@@ -766,7 +798,7 @@ void QtxSplash::customEvent( QEvent* ce )
 {
   if ( ce->type() == ProgressEvent::id() ) {
     ProgressEvent* pe = (ProgressEvent*)ce;
-    pe->message().isEmpty() ? clear() : message( pe->message() );
+    pe->message().isEmpty() ? clear() : setMessage( pe->message() );
     setProgress( pe->progress() );
     QApplication::instance()->processEvents();
   }
@@ -875,8 +907,9 @@ void QtxSplash::drawMessage( QPainter* p )
   
   // ... take into account trailing '\n' symbols
   int shift = 0;
-  int i = myMessage.length() - 1;
-  while( i >= 0 && myMessage[ i-- ] == '\n' )
+  QString msg = fullMessage();
+  int i = msg.length() - 1;
+  while( i >= 0 && msg[ i-- ] == '\n' )
     shift += spacing;
   r1.setHeight( r1.height() - shift );
 
@@ -890,12 +923,12 @@ void QtxSplash::drawMessage( QPainter* p )
     if ( myAlignment & Qt::AlignRight  ) r2.setRight ( r2.right()  + 1 );
     if ( myAlignment & Qt::AlignBottom ) r2.setBottom( r2.bottom() + 1 );
     p->setPen( myShadowColor );
-    p->drawText( r2, myAlignment, myMessage );
+    p->drawText( r2, myAlignment, msg );
   }
 
   // draw foreground status text
   p->setPen( myColor );
-  p->drawText( r1, myAlignment, myMessage );
+  p->drawText( r1, myAlignment, msg );
 }
 
 /*!
@@ -921,3 +954,17 @@ void QtxSplash::setError( const int code )
   myError = code;
 }
 
+/*!
+  \brief Get full message which includes constant info and status message.
+  \return get fill message text
+  \sa constantInfo(), setConstantInfo(), message(), setMessage()
+*/
+QString QtxSplash::fullMessage() const
+{
+  QStringList info;
+  if ( !myInfo.isEmpty() )
+    info << myInfo;
+  if ( !myMessage.isEmpty() )
+    info << myMessage;
+  return info.join( "\n" );
+}

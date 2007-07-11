@@ -105,6 +105,9 @@ public:
   void              setTextColors( const QColor&, const QColor& = QColor() );
   void              textColors( QColor&, QColor& ) const;
   
+  void              setConstantInfo( const QString& info );
+  QString           constantInfo() const;
+
   QString           message() const;
   
   int               error() const;
@@ -113,10 +116,10 @@ public:
   void              repaint();
   
 public slots:
-  void              message( const QString&, 
-			     const int,
-			     const QColor& = QColor() );
-  void              message( const QString& );
+  void              setMessage( const QString&, 
+				const int,
+				const QColor& = QColor() );
+  void              setMessage( const QString& );
   void              clear();
   
 protected:
@@ -132,11 +135,13 @@ protected:
 private:
   void              drawContents();
   void              setError( const int );
+  QString           fullMessage() const;
 
 private:
   static QtxSplash* mySplash;
   
   QPixmap           myPixmap;           //!< splash pixmap
+  QString           myInfo;             //!< constant info
   QString           myMessage;          //!< current status message
   int               myAlignment;        //!< text alignment flags (Qt::Alignment)
   QColor            myColor;            //!< text color

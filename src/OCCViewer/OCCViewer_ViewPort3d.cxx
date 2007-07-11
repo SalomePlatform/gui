@@ -256,10 +256,10 @@ void OCCViewer_ViewPort3d::setBackgroundColor( const QColor& color )
 {
 	if ( !activeView().IsNull() )
 	{
-		activeView()->SetBackgroundColor( Quantity_TOC_RGB, color.red()/255.,
-                										  color.green()/255., color.blue()/255.);
-		activeView()->Update();
-    emit vpChangeBGColor( color );
+	  activeView()->SetBackgroundColor( Quantity_TOC_RGB, color.red()/255.,
+					    color.green()/255., color.blue()/255.);
+	  activeView()->Update();
+	  emit vpChangeBGColor( color );
 	}
 }
 
@@ -466,7 +466,7 @@ void OCCViewer_ViewPort3d::resizeEvent( QResizeEvent* e )
 */
 void OCCViewer_ViewPort3d::fitAll( bool keepScale, bool withZ, bool upd )
 {
-	if ( activeView().IsNull() )
+  if ( activeView().IsNull() )
     return;
 
 

@@ -68,7 +68,7 @@ SVTK_AxisWidget::SVTK_AxisWidget (QWidget* theParent)
   myIsNameVisible = new QCheckBox(tr("IS_VISIBLE"), myNameGrp);
   aVBox->addWidget(myIsNameVisible);
 
-  QHBoxLayout* aHBox = new QHBoxLayout(myNameGrp);
+  QHBoxLayout* aHBox = new QHBoxLayout;
   aHBox->setSpacing(5);
   QLabel* aLabel = new QLabel(tr("NAME"));
   aHBox->addWidget(aLabel);
@@ -77,7 +77,7 @@ SVTK_AxisWidget::SVTK_AxisWidget (QWidget* theParent)
   aLabels.append(aLabel);
   aVBox->addLayout(aHBox);
 
-  aHBox = new QHBoxLayout(myNameGrp);
+  aHBox = new QHBoxLayout;
   aHBox->setSpacing(5);
   aLabel = new QLabel(tr("FONT"));
   aHBox->addWidget(aLabel);
@@ -96,7 +96,7 @@ SVTK_AxisWidget::SVTK_AxisWidget (QWidget* theParent)
   myIsLabelsVisible = new QCheckBox(tr("IS_VISIBLE"), myLabelsGrp);
   aVBox->addWidget(myIsLabelsVisible);
 
-  aHBox = new QHBoxLayout(myLabelsGrp);
+  aHBox = new QHBoxLayout;
   aHBox->setSpacing(5);
   aLabel = new QLabel(tr("NUMBER"));
   aHBox->addWidget(aLabel);
@@ -106,7 +106,7 @@ SVTK_AxisWidget::SVTK_AxisWidget (QWidget* theParent)
   aLabels.append(aLabel);
   aVBox->addLayout(aHBox);
 
-  aHBox = new QHBoxLayout(myLabelsGrp);
+  aHBox = new QHBoxLayout;
   aHBox->setSpacing(5);
   aLabel = new QLabel(tr("OFFSET"));
   aHBox->addWidget(aLabel);
@@ -116,7 +116,7 @@ SVTK_AxisWidget::SVTK_AxisWidget (QWidget* theParent)
   aLabels.append(aLabel);
   aVBox->addLayout(aHBox);
 
-  aHBox = new QHBoxLayout(myLabelsGrp);
+  aHBox = new QHBoxLayout;
   aHBox->setSpacing(5);
   aLabel = new QLabel(tr("FONT"));
   aHBox->addWidget(aLabel);
@@ -135,7 +135,7 @@ SVTK_AxisWidget::SVTK_AxisWidget (QWidget* theParent)
   myIsTicksVisible = new QCheckBox(tr("IS_VISIBLE"), myTicksGrp);
   aVBox->addWidget(myIsTicksVisible);
 
-  aHBox = new QHBoxLayout(myTicksGrp);
+  aHBox = new QHBoxLayout;
   aHBox->setSpacing(5);
   aLabel = new QLabel(tr("LENGTH"));
   aHBox->addWidget(aLabel);

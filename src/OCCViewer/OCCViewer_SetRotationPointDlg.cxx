@@ -55,7 +55,7 @@ OCCViewer_SetRotationPointDlg::OCCViewer_SetRotationPointDlg( OCCViewer_ViewWind
   layoutDlg->setMargin(11);
 
   // Create check box "Use Bounding Box Center"
-  QHBoxLayout* aCheckBox = new QHBoxLayout(this);
+  QHBoxLayout* aCheckBox = new QHBoxLayout;
 
   myIsBBCenter = new QCheckBox(tr("USE_BBCENTER"));
   myIsBBCenter->setChecked(true);

@@ -72,7 +72,7 @@ SVTK_SetRotationPointDlg
   layoutDlg->setMargin(11);
 
   // Create check box "Use Bounding Box Center"
-  QHBoxLayout* aCheckBox = new QHBoxLayout(this);
+  QHBoxLayout* aCheckBox = new QHBoxLayout;
 
   myIsBBCenter = new QCheckBox(tr("USE_BBCENTER"));
   myIsBBCenter->setChecked(true);
@@ -81,7 +81,7 @@ SVTK_SetRotationPointDlg
 
   // Create croup button with radio buttons
   myGroupBoxSel = new QGroupBox( "", this );
-  QVBoxLayout *vbox = new QVBoxLayout;
+  QVBoxLayout *vbox = new QVBoxLayout( myGroupBoxSel );
   vbox->setMargin(11);
   vbox->addStretch(1);
   
@@ -97,8 +97,6 @@ SVTK_SetRotationPointDlg
   mySelectPoint->setCheckable(true);
   vbox->addWidget(mySelectPoint);
   connect(mySelectPoint, SIGNAL(clicked()), this, SLOT(onSelectPoint()));
-
-  myGroupBoxSel->setLayout(vbox);
 
   // Create croup box with grid layout
   myGroupBoxCoord = new QGroupBox(this);

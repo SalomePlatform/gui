@@ -689,7 +689,7 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent(QMouseEvent* theEvent)
     else
     {
       int aState = theEvent->modifiers();
-      int aButton = theEvent->button();
+      int aButton = theEvent->buttons();
       if ( aButton == Qt::LeftButton ||
 	   ( aButton == Qt::LeftButton && aState == Qt::ShiftModifier ) )	{
 	myDrawRect = myEnableDrawMode;
@@ -703,9 +703,8 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent(QMouseEvent* theEvent)
 	  }
 	}
       } 
-      else {
+      else
 	emit mouseMoving( this, theEvent ); 
-      }	
     }	
   }
 }
@@ -739,20 +738,22 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
     
   case PANGLOBAL:
     if ( theEvent->button() == Qt::LeftButton ) {
-	    myViewPort->setCenter( theEvent->x(), theEvent->y() );
+      myViewPort->setCenter( theEvent->x(), theEvent->y() );
       myViewPort->getView()->SetScale(myCurScale);
-	    resetState();
-	  }
+      resetState();
+    }
     break;
       
   case WINDOWFIT:
     if ( theEvent->button() == Qt::LeftButton ) {
-	    myCurrX = theEvent->x();
-	    myCurrY = theEvent->y();
-	    QRect rect = SUIT_Tools::makeRect(myStartX, myStartY, myCurrX, myCurrY);
-	    if ( !rect.isEmpty() ) myViewPort->fitRect(rect);
-	    resetState();
-	  }
+      myCurrX = theEvent->x();
+      myCurrY = theEvent->y();
+      drawRect();
+      QRect rect = SUIT_Tools::makeRect(myStartX, myStartY, myCurrX, myCurrY);
+      if ( !rect.isEmpty() ) myViewPort->fitRect(rect);
+      endDrawRect();
+      resetState();
+    }
     break;
   }
   
@@ -760,7 +761,6 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
   // so we must emit it BEFORE resetting the selection rectangle
   
   if ( theEvent->button() == Qt::LeftButton && myDrawRect ) {
-    myDrawRect = false;
     drawRect();
     endDrawRect();
     resetState(); 

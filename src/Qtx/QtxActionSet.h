@@ -64,19 +64,23 @@ protected:
   virtual void    addedTo( QWidget* );
   virtual void    removedFrom( QWidget* );
 
+  virtual void    actionAdded( QAction* );
+  virtual void    actionRemoved( QAction* );
+
   QAction*        action( int ) const;
   int             actionId( QAction* ) const;
   void            setActionId( QAction*, const int );
 
   virtual bool    isEmptyAction() const;
 
+  virtual void    updateAction();
+  virtual void    updateAction( QWidget* );
+
 private:
-  void            update();
-  void            update( QWidget* );
   int             generateId() const;
 
 private:
-  typedef QList<QAction*>     ActionList;
+  typedef QList<QAction*> ActionList;
 
 private:
   ActionList      mySet;      //!< actions list

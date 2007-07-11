@@ -23,36 +23,49 @@
 #if !defined(SESSION_SERVERCHECK_HXX)
 #define SESSION_SERVERCHECK_HXX
 
-#include <SALOME_Session.hxx>
+#include "SALOME_Session.hxx"
 
 #include <QThread> 
+#include <QMutex>
 
-class QMutex;
 class QWaitCondition;
 
-/*!
-  Class Session_ServerCheck : check SALOME servers
-*/
 class SESSION_EXPORT Session_ServerCheck : public QThread
 {
+  class Locker;
+
 public:
-  // constructor
   Session_ServerCheck( QMutex*, QWaitCondition* );
-  // destructor
   virtual ~Session_ServerCheck();
 
-  // thread loop
-  virtual void run() ;
+  QString         currentMessage();
+  QString         error();
+
+  int             currentStep();
+  int             totalSteps();
+
+protected:
+  virtual void    run();
 
 private:
-  QMutex*         myMutex;             // splash mutex
-  QWaitCondition* myWC;                // splash wait condition
+  void            setStep( const int );
+  void            setError( const QString& msg );
 
-  bool            myCheckCppContainer; // flag : check C++ container ?
-  bool            myCheckPyContainer;  // flag : check Python container ?
-  bool            myCheckSVContainer;  // flag : check supervision container ?
-  int             myAttempts;          // number of checks attemtps to get response from server
-  int             myDelay;             // delay between two attempts in microseconds
+private:
+  QMutex          myDataMutex;         //!< data mutex
+  QMutex*         myMutex;             //!< splash mutex
+  QWaitCondition* myWC;                //!< splash wait condition
+
+  bool            myCheckCppContainer; //!< flag : check C++ container
+  bool            myCheckPyContainer;  //!< flag : check Python container
+  bool            myCheckSVContainer;  //!< flag : check supervision container
+  int             myAttempts;          //!< number of attemtps to get response from server
+  int             myDelay;             //!< delay between attempts in microseconds
+  int             myCurrentStep;       //!< current step
+  QString         myMessage;           //!< current information message
+  QString         myError;             //!< error message
+
+  friend class Locker;
 };
 
-#endif
+#endif  // SESSION_SERVERCHECK_HXX

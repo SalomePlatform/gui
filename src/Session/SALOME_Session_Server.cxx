@@ -305,7 +305,6 @@ int main( int argc, char **argv )
   // Create Qt application instance;
   // this should be done the very first!
   SALOME_QApplication _qappl( argc, argv );
-  ASSERT( QObject::connect( &_qappl, SIGNAL( lastWindowClosed() ), &_qappl, SLOT( quit() ) ) );
 
   // Add application library path (to search style plugin etc...)
   QString path = QDir::convertSeparators( SUIT_Tools::addSlash( QString( ::getenv( "GUI_ROOT_DIR" ) ) ) + QString( "bin/salome" ) );
@@ -367,7 +366,7 @@ int main( int argc, char **argv )
 	splashInfo.replace( QRegExp( "%L" ),  QObject::tr( "ABOUT_LICENSE" ) );
 	splashInfo.replace( QRegExp( "%C" ),  QObject::tr( "ABOUT_COPYRIGHT" ) );
 	splashInfo.replace( QRegExp( "\\\\n" ), "\n" );
-	splash->message( splashInfo );
+	splash->setConstantInfo( splashInfo );
       }
       // ...set 'hide on click' flag
 #ifdef _DEBUG_
@@ -375,7 +374,7 @@ int main( int argc, char **argv )
 #endif
       // ...show splash
       splash->show();
-      qApp->processEvents();
+      QApplication::instance()->processEvents();
     }
   }
 
@@ -467,14 +466,29 @@ int main( int argc, char **argv )
       _SplashMutex.lock();
       // ...create servers checking thread
       Session_ServerCheck sc( &_SplashMutex, &_SplashStarted );
-      // ...block this thread until servers checking is finished
-      _SplashStarted.wait( &_SplashMutex );
+      // ... set initial progress
+      splash->setProgress( 0, sc.totalSteps() );
+      // start check loop 
+      while ( true ) {
+	int step    = sc.currentStep();
+	int total   = sc.totalSteps();
+	QString msg = sc.currentMessage();
+	QString err = sc.error();
+	if ( !err.isEmpty() ) {
+	  QtxSplash::error( err );
+	  QApplication::instance()->processEvents();
+	  result = -1;
+	  break;
+	}
+	QtxSplash::setStatus( msg, step );
+	QApplication::instance()->processEvents();
+	if ( step >= total )
+	  break;
+	// ...block this thread until servers checking is finished
+	_SplashStarted.wait( &_SplashMutex );
+      }
       // ...unlock mutex 'cause it is no more needed
       _SplashMutex.unlock();
-      // get servers checking thread status
-      result = splash->error();
-      QString info = splash->message().isEmpty() ? "%1" : QString( "%1\n%2" ).arg( splash->message() );
-      splash->setStatus( info.arg( "Activating desktop..." ) );
     }
 
     // Finalize embedded servers launcher 
@@ -487,6 +501,7 @@ int main( int argc, char **argv )
   if ( !result ) {
     // Launch GUI activator
     if ( isGUI ) {
+      splash->setStatus( QApplication::translate( "", "Activating desktop..." ) );
       // ...retrieve Session interface reference
       CORBA::Object_var obj = _NS->Resolve( "/Kernel/Session" );
       SALOME::Session_var session = SALOME::Session::_narrow( obj ) ;

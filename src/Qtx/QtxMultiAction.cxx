@@ -197,6 +197,7 @@ void QtxMultiAction::updateButton( QToolButton* btn )
   btn->setIcon( myCurrent ? myCurrent->icon() : QIcon() );
   btn->setText( myCurrent ? myCurrent->text() : QString() );
   btn->setToolTip( myCurrent ? myCurrent->toolTip() : QString() );
+  btn->setStatusTip( myCurrent ? myCurrent->statusTip() : QString() );
 
   QMenu* pm = btn->menu();
   if ( !pm )

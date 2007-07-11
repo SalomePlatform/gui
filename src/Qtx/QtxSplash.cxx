@@ -41,7 +41,7 @@ public:
     \param msg progress message
     \param progress current progress (for example, in %)
   */
-  ProgressEvent( const QString& msg, const int progress = 0 )
+  ProgressEvent( const QString& msg, const int progress )
     : QEvent( (QEvent::Type)id() ),
       myMessage( msg ),
       myProgress( progress )
@@ -143,6 +143,11 @@ private:
 
   The displayed message text includes constant info and status message. The constant info
   is set by setConstantInfo() method and status message is set by setMessage().
+
+  Sometimes it is useful to splay an error message above the splash screen window.
+  For example, it can be necessary if an error occurs when loading the application.
+  Method setError() can be used to show the error message and set the error code which
+  can be then retrieved with the error() function.
 */
 
 //! The only one instance of splash screen
@@ -203,8 +208,9 @@ QtxSplash* QtxSplash::splash( const QPixmap& px )
   \brief Send the status message and (optionally) current progress 
   to the splash screen.
 
-  This function can be used, for example, from an external thread
-  which checks the application loading progress.
+  If the second parameter is less than 0 (default) than it is ignored
+  and only the status message is changed. If you want to modify progress
+  also, pass positive value to the \a progress parameter explicitly.
 
   \param msg progress status message
   \param progress current progress
@@ -223,8 +229,9 @@ void QtxSplash::setStatus( const QString& msg, const int progress )
   \param error error message
   \param title message box title
   \param code error code
+  \sa error()
 */
-void QtxSplash::error( const QString& error, const QString& title, const int code )
+void QtxSplash::setError( const QString& error, const QString& title, const int code )
 {
   if ( mySplash ) {
     mySplash->setError( code );
@@ -662,6 +669,7 @@ QString QtxSplash::message() const
   If no error code has been set, 0 is returned.
 
   \return last error code
+  \sa setError()
 */
 int QtxSplash::error() const
 {
@@ -799,7 +807,8 @@ void QtxSplash::customEvent( QEvent* ce )
   if ( ce->type() == ProgressEvent::id() ) {
     ProgressEvent* pe = (ProgressEvent*)ce;
     pe->message().isEmpty() ? clear() : setMessage( pe->message() );
-    setProgress( pe->progress() );
+    if ( pe->progress() >= 0 )
+      setProgress( pe->progress() );
     QApplication::instance()->processEvents();
   }
 }

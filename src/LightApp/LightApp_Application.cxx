@@ -1667,7 +1667,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
     PyConsole_Console* pyCons = new PyConsole_Console( desktop() );
     pyCons->setWindowTitle( tr( "PYTHON_CONSOLE" ) );
     wid = pyCons;
-    //    pyCons->connectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
+    pyCons->connectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
   }
 #endif
   else if ( flag == WT_LogWindow )

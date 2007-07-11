@@ -49,6 +49,7 @@ salomeinclude_HEADERS=		\
 	QtxLogoMgr.h		\
 	QtxMainWindow.h 	\
 	QtxMap.h		\
+	QtxMultiAction.h	\
 	QtxMRUAction.h		\
 	QtxPagePrefMgr.h	\
 	QtxPathDialog.h		\
@@ -100,6 +101,7 @@ dist_libqtx_la_SOURCES=		\
 	QtxListAction.cxx	\
 	QtxLogoMgr.cxx		\
 	QtxMainWindow.cxx	\
+	QtxMultiAction.cxx	\
 	QtxMRUAction.cxx	\
 	QtxPagePrefMgr.cxx	\
 	QtxPathDialog.cxx	\
@@ -145,6 +147,7 @@ MOC_FILES=				\
 	QtxListAction_moc.cxx		\
 	QtxLogoMgr_moc.cxx		\
 	QtxMainWindow_moc.cxx		\
+	QtxMultiAction_moc.cxx		\
 	QtxMRUAction_moc.cxx		\
 	QtxPagePrefMgr_moc.cxx		\
 	QtxPathDialog_moc.cxx		\

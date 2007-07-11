@@ -377,6 +377,11 @@ void QtxActionSet::updateAction( QWidget* w )
   }
 }
 
+/*!
+  \brief Check if the action itself should be invisible
+  (only child action are shown)
+  \return \c true if the action itself should be visible
+*/
 bool QtxActionSet::isEmptyAction() const
 {
   return true;

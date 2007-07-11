@@ -61,8 +61,8 @@ public:
   
   static QtxSplash* splash( const QPixmap& = QPixmap() );
   
-  static void       setStatus( const QString&, const int = 0 );
-  static void       error( const QString&, const QString& = QString::null, const int = -1 );
+  static void       setStatus( const QString&, const int = -1 );
+  static void       setError( const QString&, const QString& = QString::null, const int = -1 );
   
   void              setPixmap( const QPixmap& );
   QPixmap           pixmap() const;

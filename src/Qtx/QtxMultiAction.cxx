@@ -16,6 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File:      QtxMultiAction.cxx
+// Author:    Sergey TELKOV
+//
 
 #include "QtxMultiAction.h"
 
@@ -27,13 +30,48 @@
 #include <QApplication>
 #include <QStyleOptionButton>
 
+/*!
+  \class QtxMultiAction::Filter
+  \brief Waches for the buttons in the popup menu 
+  to update the tool buttons state.
+  \internal
+*/
+
+class QtxMultiAction::Filter : public QObject
+{
+public:
+  //! \brief Constructor
+  Filter( QObject* parent ) : QObject( parent ) {}
+  //! \brief Destructor
+  ~Filter() {}
+  //! \brief Process events from the child tool buttons
+  bool eventFilter( QObject* o, QEvent* e )
+  {
+    if ( e->type() == QEvent::Leave ) {
+      QToolButton* tb = qobject_cast<QToolButton*>( o );
+      if ( tb )
+	tb->setDown( false );
+    }
+    return QObject::eventFilter( o, e );
+  }
+};
+
+/*!
+  \class QtxMultiAction::Button
+  \brief Custom button to be used in the toolbar.
+  \internal
+*/
+
 class QtxMultiAction::Button : public QToolButton
 {
 public:
+  //! \brief Constructor
   Button( QWidget* parent = 0 ) : QToolButton( parent ) {}
+  //! \brief Destructor
   ~Button() {};
 
 protected:
+  //! \brief Paint the button
   virtual void paintEvent( QPaintEvent* e )
   {
     QToolButton::paintEvent( e );
@@ -56,11 +94,26 @@ protected:
 };
 
 /*!
-  Constructor
+  \class QtxMultiAction
+  \brief The class QtxMultiAction implements modifiable action.
+
+  The QtxMultiAction class provides a possibility to assign a set of actions 
+  (insertAction() function). The action can be used in the toolbar (and even
+  in the menu) to show drop-down menu with the list of the assigned actions.
+
+  Initially the first action from the list becomes current and it is activated
+  when the tool button is clicked by the user. If user presses and holds the mouse
+  button at the tool button, it shows the popup menu with all the assigned actions.
+  When the user selects any action from the popup menu, it becames current.
+*/
+
+/*!
+  \brief Constructor.
+  \param parent parent object
 */
 QtxMultiAction::QtxMultiAction( QObject* parent )
 : QtxActionSet( parent ),
-myCurrent( 0 )
+  myCurrent( 0 )
 {
   setVisible( true );
   setMenu( new QMenu( 0 ) );
@@ -68,9 +121,14 @@ myCurrent( 0 )
   connect( this, SIGNAL( triggered( QAction* ) ), this, SLOT( onTriggered( QAction* ) ) );
 }
 
+/*!
+  \brief Constructor.
+  \param txt action menu text
+  \param parent parent object
+*/
 QtxMultiAction::QtxMultiAction( const QString& txt, QObject* parent )
 : QtxActionSet( parent ),
-myCurrent( 0 )
+  myCurrent( 0 )
 {
   setText( txt );
   setVisible( true );
@@ -79,9 +137,15 @@ myCurrent( 0 )
   connect( this, SIGNAL( triggered( QAction* ) ), this, SLOT( onTriggered( QAction* ) ) );
 }
 
+/*!
+  \brief Constructor.
+  \param ico action menu icon
+  \param txt action menu text
+  \param parent parent object
+*/
 QtxMultiAction::QtxMultiAction( const QIcon& ico, const QString& txt, QObject* parent )
 : QtxActionSet( parent ),
-myCurrent( 0 )
+  myCurrent( 0 )
 {
   setIcon( ico );
   setText( txt );
@@ -91,16 +155,29 @@ myCurrent( 0 )
   connect( this, SIGNAL( triggered( QAction* ) ), this, SLOT( onTriggered( QAction* ) ) );
 }
 
+/*!
+  \brief Destructor
+*/
 QtxMultiAction::~QtxMultiAction()
 {
 }
 
-void QtxMultiAction::onClicked( bool )
+/*!
+  \brief Called when the user activates the current action 
+  (for example by clicking the tool button).
+  \param on (not used)
+*/
+void QtxMultiAction::onClicked( bool /*on*/ )
 {
   if ( myCurrent )
     myCurrent->activate( QAction::Trigger );
 }
 
+/*!
+  \brief Called when user activates any action from the
+  dropdown menu.
+  \param a action being activated
+*/
 void QtxMultiAction::onTriggered( QAction* a )
 {
   if ( !a )
@@ -121,6 +198,9 @@ void QtxMultiAction::onTriggered( QAction* a )
   }
 }
 
+/*!
+  \brief Update action.
+*/
 void QtxMultiAction::updateAction()
 {
   QtxActionSet::updateAction();
@@ -130,6 +210,10 @@ void QtxMultiAction::updateAction()
     updateButton( ::qobject_cast<QToolButton*>( *it ) );
 }
 
+/*!
+  \brief Update child (popup menu) action.
+  \param w widget menu widget
+*/
 void QtxMultiAction::updateAction( QWidget* w )
 {
   if ( !w )
@@ -147,11 +231,21 @@ void QtxMultiAction::updateAction( QWidget* w )
   }
 }
 
+/*!
+  \brief Check if the action itself should be invisible
+  (only child action are shown)
+  \return \c true if the action itself should be visible
+*/
 bool QtxMultiAction::isEmptyAction() const
 {
   return false;
 }
 
+/*!
+  \brief Create widget to be displayed in the toolbar.
+  \param parent parent widget (should be toolbar)
+  \return toolbar button
+*/
 QWidget* QtxMultiAction::createWidget( QWidget* parent )
 {
   QToolBar* tb = ::qobject_cast<QToolBar*>( parent );
@@ -173,12 +267,20 @@ QWidget* QtxMultiAction::createWidget( QWidget* parent )
   return w;
 }
 
+/*!
+  \brief Called when the child action is added to this action.
+  \param a child action being added
+*/
 void QtxMultiAction::actionAdded( QAction* a )
 {
   if ( !myCurrent )
     myCurrent = a;
 }
 
+/*!
+  \brief Called when the child action is removed from this action.
+  \param a child action being removed
+*/
 void QtxMultiAction::actionRemoved( QAction* a )
 {
   if ( myCurrent != a )
@@ -189,6 +291,10 @@ void QtxMultiAction::actionRemoved( QAction* a )
   updateAction();
 }
 
+/*!
+  \brief Update toolbar button.
+  \param btn toolbar button
+*/
 void QtxMultiAction::updateButton( QToolButton* btn )
 {
   if ( !btn )
@@ -212,7 +318,7 @@ void QtxMultiAction::updateButton( QToolButton* btn )
   QVBoxLayout* vbox = new QVBoxLayout( pm );
   vbox->setMargin( 1 );
   vbox->setSpacing( 0 );
-
+  Filter* filter = new Filter( vbox );
   QList<QAction*> actList = actions();
   for ( QList<QAction*>::iterator itr = actList.begin(); itr != actList.end(); ++itr )
   {
@@ -223,12 +329,7 @@ void QtxMultiAction::updateButton( QToolButton* btn )
     b->setIconSize( btn->iconSize() );
     b->setToolButtonStyle( btn->toolButtonStyle() );
     b->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+    b->installEventFilter( filter );
     vbox->addWidget( b );
   }
-
-/*
-  QList<QAction*> actList = actions();
-  for ( QList<QAction*>::iterator itr = actList.begin(); itr != actList.end(); ++itr )
-    pm->addAction( *itr );
-*/
 }

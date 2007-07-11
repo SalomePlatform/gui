@@ -16,6 +16,10 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File:      QtxMultiAction.h
+// Author:    Sergey TELKOV
+//
+
 #ifndef QTXMULTIACTION_H
 #define QTXMULTIACTION_H
 
@@ -28,6 +32,7 @@ class QTX_EXPORT QtxMultiAction : public QtxActionSet
   Q_OBJECT
 
   class Button;
+  class Filter;
 
 public:
   QtxMultiAction( QObject* parent = 0 );
@@ -56,4 +61,4 @@ private:
   QAction*         myCurrent;
 };
 
-#endif
+#endif // QTXMULTIACTION_H

@@ -158,6 +158,8 @@ Session_ServerCheck::Session_ServerCheck( QMutex* mutex, QWaitCondition* wc )
 */
 Session_ServerCheck::~Session_ServerCheck()
 {
+  terminate();
+  while( isRunning() );
 }
 
 /*!

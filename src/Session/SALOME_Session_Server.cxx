@@ -475,7 +475,7 @@ int main( int argc, char **argv )
 	QString msg = sc.currentMessage();
 	QString err = sc.error();
 	if ( !err.isEmpty() ) {
-	  QtxSplash::error( err );
+	  QtxSplash::setError( err );
 	  QApplication::instance()->processEvents();
 	  result = -1;
 	  break;

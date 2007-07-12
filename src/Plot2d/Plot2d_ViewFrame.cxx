@@ -1380,6 +1380,9 @@ void Plot2d_ViewFrame::setFont( const QFont& font, ObjectType type, bool update)
 */
 void Plot2d_ViewFrame::setHorScaleMode( const int mode, bool update )
 {
+  if ( myXMode == mode )
+    return;
+
   // san -- Protection against QwtCurve bug in Qwt 0.4.x: 
   // it crashes if switched to X/Y logarithmic mode, when one or more points have
   // non-positive X/Y coordinate
@@ -1401,6 +1404,9 @@ void Plot2d_ViewFrame::setHorScaleMode( const int mode, bool update )
 */
 void Plot2d_ViewFrame::setVerScaleMode( const int mode, bool update )
 {
+  if ( myYMode == mode )
+    return;
+
   // san -- Protection against QwtCurve bug in Qwt 0.4.x: 
   // it crashes if switched to X/Y logarithmic mode, when one or more points have
   // non-positive X/Y coordinate

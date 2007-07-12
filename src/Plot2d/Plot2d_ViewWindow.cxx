@@ -16,18 +16,20 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// Plot2d_ViewWindow.cxx: implementation of the Plot2d_ViewWindow class.
+// File   : Plot2d_ViewWindow.cxx
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #include "Plot2d_ViewWindow.h"
 #include "Plot2d_ViewFrame.h"
 
-#include "SUIT_ViewManager.h"
-#include "SUIT_ResourceMgr.h"
-#include "SUIT_Session.h"
-#include "SUIT_ToolButton.h"
-#include "SUIT_Desktop.h"
+#include <SUIT_ViewManager.h>
+#include <SUIT_ResourceMgr.h>
+#include <SUIT_Session.h>
+#include <SUIT_Desktop.h>
 
-#include "QtxAction.h"
+#include <QtxAction.h>
+#include <QtxMultiAction.h>
 
 #include <QStatusBar>
 #include <QLayout>
@@ -36,112 +38,143 @@
 #include <QImage>
 #include <QToolBar>
 #include <QPaintEvent>
+#include <QActionGroup>
 
 /*!
-  Constructor
+  \class Plot2d_ViewWindow
+  \brief Plot2d view window.
 */
-Plot2d_ViewWindow::Plot2d_ViewWindow(SUIT_Desktop* theDesktop, Plot2d_Viewer* theModel)
-: SUIT_ViewWindow(theDesktop)
+
+/*!
+  \brief Constructor.
+  \param theDesktop parent desktop window
+  \param theModel plt2d view model
+*/
+Plot2d_ViewWindow::Plot2d_ViewWindow( SUIT_Desktop* theDesktop, Plot2d_Viewer* theModel )
+: SUIT_ViewWindow( theDesktop )
 {
   myModel = theModel;
   myDumpImage = QImage();
 
-  myViewFrame = new Plot2d_ViewFrame(this, "plotView");
-  setCentralWidget(myViewFrame);
+  myViewFrame = new Plot2d_ViewFrame( this, "plotView" );
+  setCentralWidget( myViewFrame );
 
   myToolBar = addToolBar( tr("LBL_TOOLBAR_LABEL") );
-  //myToolBar->setCloseMode(QDockWindow::Undocked); // toolbar has "Close" (X) button only if it's undocked, but there is no such functionality in Qt4
+
   createActions();
   createToolBar();
 
-  connect(myViewFrame, SIGNAL(vpModeHorChanged()), this, SLOT(onChangeHorMode()));
-  connect(myViewFrame, SIGNAL(vpModeVerChanged()), this, SLOT(onChangeVerMode()));
-  connect(myViewFrame, SIGNAL(vpCurveChanged()),   this, SLOT(onChangeCurveMode()));
-  connect(myViewFrame, SIGNAL(contextMenuRequested( QContextMenuEvent * )),
-          this,        SIGNAL(contextMenuRequested( QContextMenuEvent * )) );
+  connect( myViewFrame, SIGNAL( vpModeHorChanged() ), this, SLOT( onChangeHorMode() ) );
+  connect( myViewFrame, SIGNAL( vpModeVerChanged() ), this, SLOT( onChangeVerMode() ) );
+  connect( myViewFrame, SIGNAL( vpCurveChanged() ),   this, SLOT( onChangeCurveMode() ) );
+  connect( myViewFrame, SIGNAL( contextMenuRequested( QContextMenuEvent* ) ),
+	   this,        SIGNAL( contextMenuRequested( QContextMenuEvent* ) ) );
 
   myViewFrame->installEventFilter( this );
 }
 
 /*!
-  Destructor
+  \brief Destructor.
 */
 Plot2d_ViewWindow::~Plot2d_ViewWindow()
 {
 }
 
 /*!
-  Puts message to status bar
-  \param theMsg - message text
+  \brief Get view model.
+  \return Plot2d view model
 */
-void Plot2d_ViewWindow::putInfo(QString theMsg)
+Plot2d_Viewer* Plot2d_ViewWindow::getModel()
 {
-  QStatusBar*	aStatusBar = myDesktop->statusBar();
-  aStatusBar->showMessage(theMsg/*, 3000*/);
+  return myModel;
 }
 
 /*!
-  Fills popup menu with custom actions
- \param popup - popup menu to be filled with
+  \brief Put message to the status bar.
+  \param theMsg message text
+*/
+void Plot2d_ViewWindow::putInfo( const QString& theMsg )
+{
+  QStatusBar* aStatusBar = myDesktop->statusBar();
+  aStatusBar->showMessage( theMsg/*, 3000*/ );
+}
+
+/*!
+  \brief Get view frame window.
+  \return view frame window
+*/
+Plot2d_ViewFrame* Plot2d_ViewWindow::getViewFrame()
+{ 
+  return myViewFrame;
+}
+
+/*!
+  \brief Get view window's toolbar.
+  \return toolbar
+*/
+QToolBar* Plot2d_ViewWindow::getToolBar()
+{
+  return myToolBar;
+}
+
+/*!
+  \brief Fill popup menu with the actions,
+  \param thePopup popup menu
 */
 void Plot2d_ViewWindow::contextMenuPopup( QMenu* thePopup )
 {
   // scaling
-  QMenu* scalingPopup = new QMenu( thePopup );
+  QMenu* scalingPopup = thePopup->addMenu( tr( "SCALING_POPUP" ) );
   scalingPopup->addAction( myActionsMap[ PModeXLinearId ] );
   scalingPopup->addAction( myActionsMap[ PModeXLogarithmicId ] );
-  onChangeHorMode();
   scalingPopup->addSeparator();
   scalingPopup->addAction( myActionsMap[ PModeYLinearId ] );
   scalingPopup->addAction( myActionsMap[ PModeYLogarithmicId ] );
-  scalingPopup->setTitle( tr( "SCALING_POPUP" ) );
-  thePopup->addMenu( scalingPopup );
-  onChangeVerMode();
 
-  thePopup->addAction(tr("TOT_PLOT2D_FITDATA"), myViewFrame, SLOT(onFitData()));
+  // fit data
+  thePopup->addAction( tr( "TOT_PLOT2D_FITDATA" ), myViewFrame, SLOT( onFitData() ) );
+
   // curve type
-  QMenu* curTypePopup = new QMenu( thePopup );
-  scalingPopup->addAction( myActionsMap[ CurvPointsId ] );
-  scalingPopup->addAction( myActionsMap[ CurvLinesId ] );
-  scalingPopup->addAction( myActionsMap[ CurvSplinesId ] );
-  curTypePopup->setTitle( tr( "CURVE_TYPE_POPUP" ) );
-  thePopup->addMenu( curTypePopup );
+  QMenu* curTypePopup = thePopup->addMenu( tr( "CURVE_TYPE_POPUP" ) );
+  curTypePopup->addAction( myActionsMap[ CurvPointsId ] );
+  curTypePopup->addAction( myActionsMap[ CurvLinesId ] );
+  curTypePopup->addAction( myActionsMap[ CurvSplinesId ] );
 
   // legend
-  scalingPopup->addAction( myActionsMap[ LegendId ] );
+  thePopup->addAction( myActionsMap[ LegendId ] );
+
   // settings
-  scalingPopup->addAction( myActionsMap[ CurvSettingsId ] );
+  thePopup->addAction( myActionsMap[ CurvSettingsId ] );
 }
 
 /*!
-  Custom event filter
+  \brief Custom event filter.
+  \param watched event receiver object
+  \param e event
+  \return \c true if further event processing should be stopped
 */
-bool Plot2d_ViewWindow::eventFilter(QObject* watched, QEvent* e)
+bool Plot2d_ViewWindow::eventFilter( QObject* watched, QEvent* e )
 {
-  if (watched == myViewFrame) {
-    int aType = e->type();
-    switch(aType) {
+  if ( watched == myViewFrame ) {
+    switch( e->type() ) {
     case QEvent::MouseButtonPress:
-      emit mousePressed(this, (QMouseEvent*) e);
+      emit mousePressed( this, (QMouseEvent*)e );
       return true;
-
     case QEvent::MouseButtonRelease:
-      emit mouseReleased(this, (QMouseEvent*) e);
+      emit mouseReleased( this, (QMouseEvent*)e );
       return true;
-
     case QEvent::MouseMove:
-      emit mouseMoving(this, (QMouseEvent*) e);
+      emit mouseMoving( this, (QMouseEvent*)e );
       return true;
-
     default:
       break;
     }
   }
-  return SUIT_ViewWindow::eventFilter(watched, e);
+  return SUIT_ViewWindow::eventFilter( watched, e );
 }
 
 /*!
-  Create actions for Plot2d view window
+  \brief Create actions for the view window.
 */
 void Plot2d_ViewWindow::createActions()
 {
@@ -151,256 +184,315 @@ void Plot2d_ViewWindow::createActions()
   QtxAction* aAction;
   SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
 
-  // Dump view
-  aAction = new QtxAction(tr("MNU_DUMP_VIEW"), aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_DUMP" ) ),
-                           tr( "MNU_DUMP_VIEW" ), 0, this);
-  aAction->setStatusTip(tr("DSC_DUMP_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onDumpView()));
+  // 1. Dump View
+  aAction = new QtxAction( tr( "MNU_DUMP_VIEW" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_DUMP" ) ),
+                           tr( "MNU_DUMP_VIEW" ),
+			   0, this);
+  aAction->setStatusTip( tr( "DSC_DUMP_VIEW" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onDumpView() ) );
   myActionsMap[ DumpId ] = aAction;
 
-  // FitAll
-  aAction = new QtxAction(tr("MNU_FITALL"), aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_FIT_ALL" ) ),
-                           tr( "MNU_FITALL" ), 0, this);
-  aAction->setStatusTip(tr("DSC_FITALL"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onFitAll()));
+  // 2. Scaling operations
+
+  // 2.1. Fit All
+  aAction = new QtxAction( tr( "MNU_FITALL" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_FIT_ALL" ) ),
+                           tr( "MNU_FITALL" ),
+			   0, this);
+  aAction->setStatusTip( tr( "DSC_FITALL" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onFitAll() ) );
   myActionsMap[ FitAllId ] = aAction;
 
-  // FitRect
-  aAction = new QtxAction(tr("MNU_FITRECT"), aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_FIT_AREA" ) ),
-                           tr( "MNU_FITRECT" ), 0, this);
-  aAction->setStatusTip(tr("DSC_FITRECT"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onFitRect()));
+  // 2.2. Fit Rect
+  aAction = new QtxAction( tr( "MNU_FITRECT" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_FIT_AREA" ) ),
+                           tr( "MNU_FITRECT" ),
+			   0, this);
+  aAction->setStatusTip( tr( "DSC_FITRECT" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onFitRect() ) );
   myActionsMap[ FitRectId ] = aAction;
 
-  // Zoom
-  aAction = new QtxAction(tr("MNU_ZOOM_VIEW"), aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_ZOOM" ) ),
-                           tr( "MNU_ZOOM_VIEW" ), 0, this);
-  aAction->setStatusTip(tr("DSC_ZOOM_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onZoom()));
+  // 2.3. Zoom
+  aAction = new QtxAction( tr( "MNU_ZOOM_VIEW" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_ZOOM" ) ),
+                           tr( "MNU_ZOOM_VIEW" ),
+			   0, this);
+  aAction->setStatusTip( tr( "DSC_ZOOM_VIEW" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onZoom() ) );
   myActionsMap[ ZoomId ] = aAction;
 
-  // Panning
-  aAction = new QtxAction(tr("MNU_PAN_VIEW"), aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_PAN" ) ),
-                           tr( "MNU_PAN_VIEW" ), 0, this);
-  aAction->setStatusTip(tr("DSC_PAN_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onPanning()));
+  // 2.4. Create multi-action for scaling operations
+  QtxMultiAction* aScaleAction = new QtxMultiAction( this );
+  aScaleAction->insertAction( myActionsMap[ FitAllId  ] );
+  aScaleAction->insertAction( myActionsMap[ FitRectId ] );
+  aScaleAction->insertAction( myActionsMap[ ZoomId    ] );
+  myActionsMap[ ScaleOpId ] = aScaleAction;
+
+  // 3. Moving operations
+
+  // 3.1. Panning
+  aAction = new QtxAction( tr( "MNU_PAN_VIEW" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_PAN" ) ),
+			   tr( "MNU_PAN_VIEW" ), 
+			   0, this);
+  aAction->setStatusTip( tr( "DSC_PAN_VIEW" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onPanning() ) );
   myActionsMap[ PanId ] = aAction;
 
-  // Global Panning
-  aAction = new QtxAction(tr("MNU_GLOBALPAN_VIEW"), aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_GLOBALPAN" ) ),
-                           tr( "MNU_GLOBALPAN_VIEW" ), 0, this);
-  aAction->setStatusTip(tr("DSC_GLOBALPAN_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onGlobalPanning()));
+  // 3.2. Global Panning
+  aAction = new QtxAction( tr( "MNU_GLOBALPAN_VIEW" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_GLOBALPAN" ) ),
+                           tr( "MNU_GLOBALPAN_VIEW" ),
+			   0, this);
+  aAction->setStatusTip( tr( "DSC_GLOBALPAN_VIEW" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onGlobalPanning() ) );
   myActionsMap[ GlobalPanId ] = aAction;
 
-  // Curve type - points
-  aAction = new QtxAction(tr("TOT_PLOT2D_CURVES_POINTS"),
-                aResMgr->loadPixmap("Plot2d", tr("ICON_PLOT2D_CURVES_POINTS")),
-                tr("MEN_PLOT2D_CURVES_POINTS"), 0, this);
-  aAction->setStatusTip(tr("PRP_PLOT2D_CURVES_POINTS"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onCurves()));
-  aAction->setCheckable(true);
+  // 3.3. Create multi-action for moving operations
+  QtxMultiAction* aPanAction = new QtxMultiAction( this );
+  aPanAction->insertAction( myActionsMap[ PanId ] );
+  aPanAction->insertAction( myActionsMap[ GlobalPanId ] );
+  myActionsMap[ MoveOpId ] = aPanAction;
+
+  // 4. Curve type operations
+  
+  // 4.1. Points
+  aAction = new QtxAction( tr( "TOT_PLOT2D_CURVES_POINTS" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_CURVES_POINTS" ) ),
+			   tr( "MEN_PLOT2D_CURVES_POINTS" ),
+			   0, this );
+  aAction->setStatusTip( tr( "PRP_PLOT2D_CURVES_POINTS" ) );
+  aAction->setCheckable( true );
   myActionsMap[ CurvPointsId ] = aAction;
 
-  // Curve type - lines
-  aAction = new QtxAction(tr("TOT_PLOT2D_CURVES_LINES"),
-               aResMgr->loadPixmap("Plot2d", tr("ICON_PLOT2D_CURVES_LINES")),
-               tr("MEN_PLOT2D_CURVES_LINES"), 0, this);
-  aAction->setStatusTip(tr("PRP_PLOT2D_CURVES_LINES"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onCurves()));
-  aAction->setCheckable(true);
+  // 4.2. Lines
+  aAction = new QtxAction( tr( "TOT_PLOT2D_CURVES_LINES" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_CURVES_LINES" ) ),
+			   tr( "MEN_PLOT2D_CURVES_LINES" ),
+			   0, this );
+  aAction->setStatusTip( tr( "PRP_PLOT2D_CURVES_LINES" ) );
+  aAction->setCheckable( true );
   myActionsMap[ CurvLinesId ] = aAction;
 
-  // Curve type - splines
-  aAction = new QtxAction(tr("TOT_PLOT2D_CURVES_SPLINES"),
-                 aResMgr->loadPixmap("Plot2d", tr("ICON_PLOT2D_CURVES_SPLINES")),
-                 tr("MEN_PLOT2D_CURVES_SPLINES"), 0, this);
-  aAction->setStatusTip(tr("PRP_PLOT2D_CURVES_SPLINES"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onCurves()));
-  aAction->setCheckable(true);
+  // 4.3. Splines
+  aAction = new QtxAction( tr( "TOT_PLOT2D_CURVES_SPLINES" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_CURVES_SPLINES" ) ),
+			   tr( "MEN_PLOT2D_CURVES_SPLINES" ),
+			   0, this );
+  aAction->setStatusTip( tr( "PRP_PLOT2D_CURVES_SPLINES" ) );
+  aAction->setCheckable( true );
   myActionsMap[ CurvSplinesId ] = aAction;
 
-  // Mode for X (linear or logarithmic)
-  aAction = new QtxAction(tr("TOT_PLOT2D_MODE_LINEAR_HOR"),
-                 aResMgr->loadPixmap("Plot2d", tr("ICON_PLOT2D_MODE_LINEAR_HOR")),
-                 tr("MEN_PLOT2D_MODE_LINEAR_HOR"), 0, this);
-  aAction->setStatusTip (tr("PRP_PLOT2D_MODE_LINEAR_HOR"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onViewHorMode()));
-  myActionsMap[ HorId ] = aAction;
+  // 4.4. Create action group for curve type operations
+  QActionGroup* aCurveGroup = new QActionGroup( this );
+  aCurveGroup->addAction( myActionsMap[ CurvPointsId ] );
+  aCurveGroup->addAction( myActionsMap[ CurvLinesId ] );
+  aCurveGroup->addAction( myActionsMap[ CurvSplinesId ] );
+  connect( aCurveGroup, SIGNAL( triggered( QAction* ) ), this, SLOT( onCurves() ) );
 
-  // Mode for Y (linear or logarithmic)
-  aAction = new QtxAction(tr("TOT_PLOT2D_MODE_LINEAR_VER"),
-                 aResMgr->loadPixmap("Plot2d", tr("ICON_PLOT2D_MODE_LINEAR_VER")),
-                 tr("MEN_PLOT2D_MODE_LINEAR_VER" ), 0, this);
-  aAction->setStatusTip(tr("PRP_PLOT2D_MODE_LINEAR_VER"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onViewVerMode()));
-  myActionsMap[ VerId ] = aAction;
+  // 5. Horizontal scaling mode operations
 
-  // Legend
-  aAction = new QtxAction(tr("TOT_PLOT2D_SHOW_LEGEND"),
-                aResMgr->loadPixmap("Plot2d", tr("ICON_PLOT2D_SHOW_LEGEND")),
-                tr("MEN_PLOT2D_SHOW_LEGEND"), 0, this);
-  aAction->setStatusTip(tr("PRP_PLOT2D_SHOW_LEGEND"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onLegend()));
-  aAction->setCheckable(true);
+  // 5.1. Linear
+  aAction = new QtxAction( tr( "TOT_PLOT2D_MODE_LINEAR_HOR" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_MODE_LINEAR_HOR" ) ),
+			   tr( "MEN_PLOT2D_MODE_LINEAR_HOR" ),
+			   0, this );
+  aAction->setStatusTip( tr( "PRP_PLOT2D_MODE_LINEAR_HOR" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewHorMode() ) );
+  aAction->setCheckable( true );
+  myActionsMap[ PModeXLinearId ] = aAction;
+  
+  // 5.2. Logarithmic
+  aAction = new QtxAction( tr( "TOT_PLOT2D_MODE_LOGARITHMIC_HOR" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_MODE_LOGARITHMIC_HOR" ) ),
+			   tr( "MEN_PLOT2D_MODE_LOGARITHMIC_HOR" ),
+			   0, this );
+  aAction->setStatusTip( tr( "PRP_PLOT2D_MODE_LOGARITHMIC_HOR" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewHorMode() ) );
+  aAction->setCheckable( true );
+  myActionsMap[ PModeXLogarithmicId ] = aAction;
+
+  // 5.3. Create action group for horizontal scaling mode operations
+  QActionGroup* aHorGroup = new QActionGroup( this );
+  aHorGroup->addAction( myActionsMap[ PModeXLinearId ] );
+  aHorGroup->addAction( myActionsMap[ PModeXLogarithmicId ] );
+
+  // 6. Vertical scaling mode operations
+
+  // 6.1. Linear
+  aAction = new QtxAction( tr( "TOT_PLOT2D_MODE_LINEAR_VER" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_MODE_LINEAR_VER" ) ),
+			   tr( "MEN_PLOT2D_MODE_LINEAR_VER" ),
+			   0, this );
+  aAction->setStatusTip( tr( "PRP_PLOT2D_MODE_LINEAR_VER" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewVerMode() ) );
+  aAction->setCheckable( true );
+  myActionsMap[ PModeYLinearId ] = aAction;
+
+  // 6.2. Logarithmic
+  aAction = new QtxAction( tr( "TOT_PLOT2D_MODE_LOGARITHMIC_VER" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_MODE_LOGARITHMIC_VER" ) ),
+			   tr( "MEN_PLOT2D_MODE_LOGARITHMIC_VER" ),
+			   0, this );
+  aAction->setStatusTip( tr( "PRP_PLOT2D_MODE_LOGARITHMIC_VER" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewVerMode() ) );
+  aAction->setCheckable( true );
+  myActionsMap[ PModeYLogarithmicId ] = aAction;
+
+  // 6.3. Create action group for vertical scaling mode operations
+  QActionGroup* aVerGroup = new QActionGroup( this );
+  aVerGroup->addAction( myActionsMap[ PModeYLinearId ] );
+  aVerGroup->addAction( myActionsMap[ PModeYLogarithmicId ] );
+
+  // 7. Legend
+  aAction = new QtxAction( tr( "TOT_PLOT2D_SHOW_LEGEND" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_SHOW_LEGEND" ) ),
+			   tr( "MEN_PLOT2D_SHOW_LEGEND" ),
+			   0, this );
+  aAction->setStatusTip( tr( "PRP_PLOT2D_SHOW_LEGEND" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onLegend() ) );
+  aAction->setCheckable( true );
   myActionsMap[ LegendId ] = aAction;
 
-  // Settings
-  aAction = new QtxAction(tr( "TOT_PLOT2D_SETTINGS"),
-                aResMgr->loadPixmap("Plot2d", tr("ICON_PLOT2D_SETTINGS")),
-                tr("MEN_PLOT2D_SETTINGS"), 0, this);
-  aAction->setStatusTip(tr( "PRP_PLOT2D_SETTINGS"));
-  connect(aAction, SIGNAL(activated()), myViewFrame, SLOT(onSettings()));
+  // 8. Settings
+  aAction = new QtxAction( tr( "TOT_PLOT2D_SETTINGS" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_SETTINGS" ) ),
+			   tr( "MEN_PLOT2D_SETTINGS" ),
+			   0, this );
+  aAction->setStatusTip( tr( "PRP_PLOT2D_SETTINGS" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), myViewFrame, SLOT( onSettings() ) );
   myActionsMap[ CurvSettingsId ] = aAction;
 
-  // Clone
-  aAction = new QtxAction(tr("MNU_CLONE_VIEW"), aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_CLONE_VIEW" ) ),
-                           tr( "MNU_CLONE_VIEW" ), 0, this);
-  aAction->setStatusTip(tr("DSC_CLONE_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SIGNAL(cloneView()));
+  // 9. Clone
+  aAction = new QtxAction( tr( "MNU_CLONE_VIEW" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_CLONE_VIEW" ) ),
+                           tr( "MNU_CLONE_VIEW" ),
+			   0, this);
+  aAction->setStatusTip( tr( "DSC_CLONE_VIEW" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SIGNAL( cloneView() ) );
   myActionsMap[ CloneId ] = aAction;
 
-  /* Popup Actions */
-  /* Linear/logarithmic mode */
-  // Horizontal axis
-  aAction = new QtxAction(tr("TOT_PLOT2D_MODE_LINEAR_HOR"),
-                 aResMgr->loadPixmap("Plot2d", tr("ICON_PLOT2D_MODE_LINEAR_HOR")),
-                 tr("MEN_PLOT2D_MODE_LINEAR_HOR"), 0, this);
-  aAction->setStatusTip (tr("PRP_PLOT2D_MODE_LINEAR_HOR"));
-  aAction->setCheckable(true);
-  myActionsMap[PModeXLinearId] = aAction;
-  connect(aAction, SIGNAL(activated()), this, SLOT(onViewHorMode()));
-
-  aAction = new QtxAction(tr("TOT_PLOT2D_MODE_LOGARITHMIC_HOR"),
-              aResMgr->loadPixmap("Plot2d", tr("ICON_PLOT2D_MODE_LOGARITHMIC_HOR")),
-              tr("MEN_PLOT2D_MODE_LOGARITHMIC_HOR"), 0, this);
-  aAction->setStatusTip(tr("PRP_PLOT2D_MODE_LOGARITHMIC_HOR"));
-  aAction->setCheckable(true);
-  myActionsMap[PModeXLogarithmicId] = aAction;
-  connect(aAction, SIGNAL(activated()), this, SLOT(onViewHorMode()));
-
-  // Vertical axis
-  aAction = new QtxAction(tr("TOT_PLOT2D_MODE_LINEAR_VER"),
-                 aResMgr->loadPixmap("Plot2d", tr("ICON_PLOT2D_MODE_LINEAR_VER")),
-                 tr("MEN_PLOT2D_MODE_LINEAR_VER" ), 0, this);
-  aAction->setStatusTip(tr("PRP_PLOT2D_MODE_LINEAR_VER"));
-  aAction->setCheckable(true);
-  myActionsMap[PModeYLinearId] = aAction;
-  connect(aAction, SIGNAL(activated()), this, SLOT(onViewVerMode()));
-
-  aAction = new QtxAction(tr("TOT_PLOT2D_MODE_LOGARITHMIC_VER"),
-                 aResMgr->loadPixmap("Plot2d", tr("ICON_PLOT2D_MODE_LOGARITHMIC_VER")),
-                 tr("MEN_PLOT2D_MODE_LOGARITHMIC_VER" ), 0, this);
-  aAction->setStatusTip(tr("PRP_PLOT2D_MODE_LOGARITHMIC_VER"));
-  aAction->setCheckable(true);
-  myActionsMap[PModeYLogarithmicId] = aAction;
-  connect(aAction, SIGNAL(activated()), this, SLOT(onViewVerMode()));
-}
-
-/*!
-  Create toolbar for Plot2d view window
-*/
-void Plot2d_ViewWindow::createToolBar()
-{
-  myToolBar->addAction( myActionsMap[DumpId] );
-
-  SUIT_ToolButton* aScaleBtn = new SUIT_ToolButton(myToolBar);
-  aScaleBtn->AddAction(myActionsMap[FitAllId]);
-  aScaleBtn->AddAction(myActionsMap[FitRectId]);
-  aScaleBtn->AddAction(myActionsMap[ZoomId]);
-  myToolBar->addWidget( aScaleBtn );
-
-  SUIT_ToolButton* aPanBtn = new SUIT_ToolButton(myToolBar);
-  aPanBtn->AddAction(myActionsMap[PanId]);
-  aPanBtn->AddAction(myActionsMap[GlobalPanId]);
-  myToolBar->addWidget( aPanBtn );
-
-  myCurveBtn = new SUIT_ToolButton(myToolBar);
-  myCurveBtn->AddAction(myActionsMap[CurvPointsId]);
-  myCurveBtn->AddAction(myActionsMap[CurvLinesId]);
-  myCurveBtn->AddAction(myActionsMap[CurvSplinesId]);
-  myToolBar->addWidget( myCurveBtn );
-  myActionsMap[CurvLinesId]->setChecked(true);
+  // Set initial values
   onChangeCurveMode();
-
-  myToolBar->addAction( myActionsMap[HorId] );
   onChangeHorMode();
-  myToolBar->addAction( myActionsMap[VerId] );
   onChangeVerMode();
-
-  myToolBar->addAction( myActionsMap[LegendId] );
-  myToolBar->addAction( myActionsMap[CurvSettingsId] );
-  myToolBar->addAction( myActionsMap[CloneId] );
   onChangeLegendMode();
 }
 
 /*!
-  SLOT: called if scale mode for horizontal axis is changed
+  \brief Create toolbar for the view window.
+*/
+void Plot2d_ViewWindow::createToolBar()
+{
+  myToolBar->addAction( myActionsMap[ DumpId ] );
+  myToolBar->addAction( myActionsMap[ ScaleOpId ] );
+  myToolBar->addAction( myActionsMap[ MoveOpId ] );
+  myToolBar->addSeparator();
+  myToolBar->addAction( myActionsMap[ CurvPointsId ] );
+  myToolBar->addAction( myActionsMap[ CurvLinesId ] );
+  myToolBar->addAction( myActionsMap[ CurvSplinesId ] );
+  myToolBar->addSeparator();
+  myToolBar->addAction( myActionsMap[ PModeXLinearId ] );
+  myToolBar->addAction( myActionsMap[ PModeXLogarithmicId ] );
+  myToolBar->addSeparator();
+  myToolBar->addAction( myActionsMap[ PModeYLinearId ] );
+  myToolBar->addAction( myActionsMap[ PModeYLogarithmicId ] );
+  myToolBar->addSeparator();
+  myToolBar->addAction( myActionsMap[ LegendId ] );
+  myToolBar->addAction( myActionsMap[ CurvSettingsId ] );
+  myToolBar->addAction( myActionsMap[ CloneId ] );
+}
+
+/*!
+  \brief Get the visual parameters of the view window.
+  \return visual parameters of this view window formatted to the string
+*/
+QString Plot2d_ViewWindow::getVisualParameters()
+{
+  return myViewFrame->getVisualParameters();
+}
+
+/*!
+  \brief Restore visual parameters of the view window from the formated string
+  \param parameters view window visual parameters
+*/
+void Plot2d_ViewWindow::setVisualParameters( const QString& parameters )
+{
+  myViewFrame->setVisualParameters( parameters );
+}
+
+/*!
+  \brief Grab the view window to the internal image.
+*/
+void Plot2d_ViewWindow::RefreshDumpImage()
+{
+  QPixmap px = QPixmap::grabWindow( myViewFrame->winId() );
+  myDumpImage = px.toImage();
+}
+
+/*!
+  \brief Called when the scale mode for the horizontal axis is changed.
 */
 void Plot2d_ViewWindow::onChangeHorMode()
 {
-  bool aLinear = myViewFrame->isModeHorLinear();
-  SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
+  bool aHorLinear = myViewFrame->isModeHorLinear();
+  bool aVerLinear = myViewFrame->isModeVerLinear();
 
-  myActionsMap[PModeXLinearId]->setChecked( aLinear );
-  myActionsMap[PModeXLogarithmicId]->setChecked( !aLinear );
+  if ( aHorLinear )
+    myActionsMap[ PModeXLinearId ]->setChecked( true );
+  else
+    myActionsMap[ PModeXLogarithmicId ]->setChecked( true );
 
-  QPixmap pix = aResMgr->loadPixmap( "Plot2d", tr( aLinear ? "ICON_PLOT2D_MODE_LOGARITHMIC_HOR" :
-                                                             "ICON_PLOT2D_MODE_LINEAR_HOR" ) );
-  myActionsMap[HorId]->setIcon( pix );
-  myActionsMap[HorId]->setToolTip( tr( aLinear ? "TOT_PLOT2D_MODE_LOGARITHMIC_HOR" :
-                                                 "TOT_PLOT2D_MODE_LINEAR_HOR" ) );
-  myActionsMap[HorId]->setStatusTip( tr( aLinear ? "PRP_PLOT2D_MODE_LOGARITHMIC_HOR" :
-                                                   "PRP_PLOT2D_MODE_LINEAR_HOR" ) );
-
-  myActionsMap[GlobalPanId]->setEnabled( myViewFrame->isModeVerLinear() && myViewFrame->isModeHorLinear() );
+  myActionsMap[ GlobalPanId ]->setEnabled( aHorLinear && aVerLinear );
 }
 
 /*!
-  SLOT: called if scale mode for vertical axis is changed
+  \brief Called when the scale mode for the vertical axis is changed.
 */
 void Plot2d_ViewWindow::onChangeVerMode()
 {
-  bool aLinear = myViewFrame->isModeVerLinear();
-  SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
+  bool aHorLinear = myViewFrame->isModeHorLinear();
+  bool aVerLinear = myViewFrame->isModeVerLinear();
 
-  myActionsMap[PModeYLinearId]->setChecked( aLinear );
-  myActionsMap[PModeYLogarithmicId]->setChecked( !aLinear );
+  if ( aVerLinear )
+    myActionsMap[ PModeYLinearId ]->setChecked( true );
+  else
+    myActionsMap[ PModeYLogarithmicId ]->setChecked( true );
 
-  QPixmap pix = aResMgr->loadPixmap( "Plot2d", tr( aLinear ? "ICON_PLOT2D_MODE_LOGARITHMIC_VER" :
-                                                             "ICON_PLOT2D_MODE_LINEAR_VER" ) );
-  myActionsMap[VerId]->setIcon( pix );
-  myActionsMap[VerId]->setToolTip( tr( aLinear ? "TOT_PLOT2D_MODE_LOGARITHMIC_VER" :
-                                                 "TOT_PLOT2D_MODE_LINEAR_VER" ) );
-  myActionsMap[VerId]->setStatusTip( tr( aLinear ? "PRP_PLOT2D_MODE_LOGARITHMIC_VER" :
-                                                   "PRP_PLOT2D_MODE_LINEAR_VER" ) );
-
-  myActionsMap[GlobalPanId]->setEnabled( myViewFrame->isModeVerLinear() && myViewFrame->isModeHorLinear() );
+  myActionsMap[ GlobalPanId ]->setEnabled( aHorLinear && aVerLinear );
 }
 
 /*!
-  SLOT: called if curve type is changed
+  \brief Called when the curve type is changed.
 */
 void Plot2d_ViewWindow::onChangeCurveMode()
 {
-  int aCurveType = myViewFrame->getCurveType();
-  myCurveBtn->SetItem(aCurveType);
-
-  myActionsMap[CurvPointsId]->setChecked(aCurveType == 0);
-  myActionsMap[CurvLinesId]->setChecked(aCurveType == 1);
-  myActionsMap[CurvSplinesId]->setChecked(aCurveType == 2);
+  switch ( myViewFrame->getCurveType() ) {
+  case 0:
+    myActionsMap[ CurvPointsId ]->setChecked( true );
+    break;
+  case 1:
+    myActionsMap[ CurvLinesId ]->setChecked( true );
+    break;
+  case 2:
+    myActionsMap[ CurvSplinesId ]->setChecked( true );
+    break;
+  default:
+    break;
+  }
 }
 
 /*!
-  SLOT: called if legend mode is changed
+  \brief Called when the legend mode is changed.
 */
 void Plot2d_ViewWindow::onChangeLegendMode()
 {
-  myActionsMap[ LegendId ]->setChecked(myViewFrame->isLegendShow());
+  myActionsMap[ LegendId ]->setChecked( myViewFrame->isLegendShow() );
 }
 
 /*!
-  SLOT: called if action "Fit all" is activated
+  \brief Called when the "Fit all" action is activated.
 */
 void Plot2d_ViewWindow::onFitAll()
 {
@@ -408,7 +500,7 @@ void Plot2d_ViewWindow::onFitAll()
 }
 
 /*!
-  SLOT: called if action "Fit rect" is activated
+  \brief Called when the "Fit rect" action is activated.
 */
 void Plot2d_ViewWindow::onFitRect()
 {
@@ -416,7 +508,7 @@ void Plot2d_ViewWindow::onFitRect()
 }
 
 /*!
-  SLOT: called if action "Zoom" is activated
+  \brief Called when the "Zoom" action is activated.
 */
 void Plot2d_ViewWindow::onZoom()
 {
@@ -424,7 +516,7 @@ void Plot2d_ViewWindow::onZoom()
 }
 
 /*!
-  SLOT: called if action "Panning" is activated
+  \brief Called when the "Panning" action is activated.
 */
 void Plot2d_ViewWindow::onPanning()
 {
@@ -432,7 +524,7 @@ void Plot2d_ViewWindow::onPanning()
 }
 
 /*!
-  SLOT: called if action "Global panning" is activated
+  \brief Called when the "Global panning" action is activated.
 */
 void Plot2d_ViewWindow::onGlobalPanning()
 {
@@ -440,52 +532,45 @@ void Plot2d_ViewWindow::onGlobalPanning()
 }
 
 /*!
-  SLOT: called if action of scale mode for horizontal axis changing is activated
+  \brief Called when horizontal axis scale mode action is activated.
 */
 void Plot2d_ViewWindow::onViewHorMode()
 {
-  if (myViewFrame->isModeHorLinear())
-    myViewFrame->setHorScaleMode(1);
-  else
-    myViewFrame->setHorScaleMode(0);
+  myViewFrame->setHorScaleMode( myActionsMap[ PModeXLinearId ]->isChecked() ? 0 : 1 );
 }
 
 /*!
-  SLOT: called if action of scale mode for vertical axis changing is activated
+  \brief Called when vertical axis scale mode action is activated.
 */
 void Plot2d_ViewWindow::onViewVerMode()
 {
-  if (myViewFrame->isModeVerLinear())
-    myViewFrame->setVerScaleMode(1);
-  else
-    myViewFrame->setVerScaleMode(0);
+  myViewFrame->setVerScaleMode( myActionsMap[ PModeYLinearId ]->isChecked() ? 0 : 1 );
 }
 
 /*!
-  SLOT: called if action "Show legend" is activated
+  \brief Called when the "Show legend" action is activated.
 */
 void Plot2d_ViewWindow::onLegend()
 {
-  myViewFrame->showLegend(!myViewFrame->isLegendShow());
+  myViewFrame->showLegend( !myViewFrame->isLegendShow() );
   onChangeLegendMode();
 }
 
 /*!
-  SLOT: called if action "Change curve type" is activated
+  \brief Called when the "Change curve type" action is activated.
 */
 void Plot2d_ViewWindow::onCurves()
 {
-  QtxAction* aSender = (QtxAction*) sender();
-  if(aSender == myActionsMap[CurvPointsId])
-    myViewFrame->setCurveType(0);
-  else if(aSender == myActionsMap[CurvLinesId])
-    myViewFrame->setCurveType(1);
-  else if(aSender == myActionsMap[CurvSplinesId])
-    myViewFrame->setCurveType(2);
+  if( myActionsMap[ CurvPointsId ]->isChecked() )
+    myViewFrame->setCurveType( 0 );
+  else if ( myActionsMap[ CurvLinesId ]->isChecked() )
+    myViewFrame->setCurveType( 1 );
+  else if ( myActionsMap[ CurvSplinesId ]->isChecked() )
+    myViewFrame->setCurveType( 2 );
 }
  
 /*!
-  SLOT: called if action "Dump view" is activated
+  \brief Called when the "Dump view" action is activated.
 */
 void Plot2d_ViewWindow::onDumpView()
 {
@@ -494,25 +579,28 @@ void Plot2d_ViewWindow::onDumpView()
 }
 
 /*!
-  \return QImage, containing all scene rendering in window
+  \brief Dump the contents of the view window to the image.
+  \return image, containing all scene rendered in the window
 */
 QImage Plot2d_ViewWindow::dumpView()
 {
-  if ( getToolBar()->underMouse() || myDumpImage.isNull() )
-    {
-      QPixmap px = QPixmap::grabWindow( myViewFrame->winId() );
-      return px.toImage();
-    }
+  if ( getToolBar()->underMouse() || myDumpImage.isNull() ) {
+    QPixmap px = QPixmap::grabWindow( myViewFrame->winId() );
+    return px.toImage();
+  }
   
   return myDumpImage;
 }
 
 /*!
-  Saves scene rendering in window to file
-  \param fileName - name of file
-  \param format - string contains name of format (for example, "BMP"(default) or "JPEG", "JPG")
+  \brief Dump scene rendered in the view window to the file.
+  \param img image
+  \param fileName name of file
+  \param format image format ("BMP" [default], "JPEG", "JPG", "PNG")
 */
-bool Plot2d_ViewWindow::dumpViewToFormat( const QImage& img, const QString& fileName, const QString& format )
+bool Plot2d_ViewWindow::dumpViewToFormat( const QImage&  img,
+					  const QString& fileName, 
+					  const QString& format )
 {
   bool res = myViewFrame ? myViewFrame->print( fileName, format ) : false;
   if( !res )
@@ -522,34 +610,17 @@ bool Plot2d_ViewWindow::dumpViewToFormat( const QImage& img, const QString& file
 }
 
 /*!
-  \return filter of image files
+  \brief Get supported image files wildcards.
+  \return image files wildcards (list of wildcards, separated by ";;")
 */
 QString Plot2d_ViewWindow::filter() const
 {
-  return SUIT_ViewWindow::filter() + ";;" + tr( "POSTSCRIPT_FILES" );
+  QStringList filters = SUIT_ViewWindow::filter().split( ";;", QString::SkipEmptyParts );
+  filters << tr( "POSTSCRIPT_FILES" );
+  return filters.join( ";;" );
 }
 
 /*!
-  \return the visual parameters of this view as a formated string
- */
-QString Plot2d_ViewWindow::getVisualParameters()
-{
-  return myViewFrame->getVisualParameters();
-}
-
-/*!
-  The method restors visual parameters of this view from a formated string
+  \fn void Plot2d_ViewWindow::cloneView();
+  \brief Emitted when the "Clone View" action is activated.
 */
-void Plot2d_ViewWindow::setVisualParameters( const QString& parameters )
-{
-  myViewFrame->setVisualParameters( parameters );
-}
-
-/*!
-  \refresh QImage, containing all scene rendering in window
-*/
-void Plot2d_ViewWindow::RefreshDumpImage()
-{
-  QPixmap px = QPixmap::grabWindow( myViewFrame->winId() );
-  myDumpImage = px.toImage();
-}

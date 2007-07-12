@@ -25,12 +25,10 @@
 #include "VTKViewer_Transform.h"
 #include "VTKViewer_Utilities.h"
 
-#include "SUIT_Session.h"
-#include "SUIT_ToolButton.h"
-#include "SUIT_MessageBox.h"
-
-#include "SUIT_Tools.h"
-#include "SUIT_ResourceMgr.h"
+#include <SUIT_Session.h>
+#include <SUIT_MessageBox.h>
+#include <SUIT_Tools.h>
+#include <SUIT_ResourceMgr.h>
 
 #include <QImage>
 
@@ -38,6 +36,7 @@
 #include <vtkCamera.h>
 
 #include <QtxToolBar.h>
+#include <QtxMultiAction.h>
 
 /*! Construction*/
 VTKViewer_ViewWindow::VTKViewer_ViewWindow( SUIT_Desktop* theDesktop, 
@@ -292,27 +291,27 @@ void VTKViewer_ViewWindow::createToolBar()
   myToolBar->addAction( myActionsMap[DumpId] );
   myToolBar->addAction( myActionsMap[TrihedronShowId] );
 
-  SUIT_ToolButton* aScaleBtn = new SUIT_ToolButton(myToolBar);
-  aScaleBtn->AddAction(myActionsMap[FitAllId]);
-  aScaleBtn->AddAction(myActionsMap[FitRectId]);
-  aScaleBtn->AddAction(myActionsMap[ZoomId]);
-  myToolBar->addWidget( aScaleBtn );
+  QtxMultiAction* aScaleAction = new QtxMultiAction( this );
+  aScaleAction->insertAction( myActionsMap[FitAllId] );
+  aScaleAction->insertAction( myActionsMap[FitRectId] );
+  aScaleAction->insertAction( myActionsMap[ZoomId] );
+  myToolBar->addAction( aScaleAction );
 
-  SUIT_ToolButton* aPanningBtn = new SUIT_ToolButton(myToolBar);
-  aPanningBtn->AddAction(myActionsMap[PanId]);
-  aPanningBtn->AddAction(myActionsMap[GlobalPanId]);
-  myToolBar->addWidget( aPanningBtn );
+  QtxMultiAction* aPanningAction = new QtxMultiAction( this );
+  aPanningAction->insertAction( myActionsMap[PanId] );
+  aPanningAction->insertAction( myActionsMap[GlobalPanId] );
+  myToolBar->addAction( aPanningAction );
 
   myToolBar->addAction( myActionsMap[RotationId] );
 
-  SUIT_ToolButton* aViewsBtn = new SUIT_ToolButton(myToolBar);
-  aViewsBtn->AddAction(myActionsMap[FrontId]);
-  aViewsBtn->AddAction(myActionsMap[BackId]);
-  aViewsBtn->AddAction(myActionsMap[TopId]);
-  aViewsBtn->AddAction(myActionsMap[BottomId]);
-  aViewsBtn->AddAction(myActionsMap[LeftId]);
-  aViewsBtn->AddAction(myActionsMap[RightId]);
-  myToolBar->addWidget( aViewsBtn );
+  QtxMultiAction* aViewsAction = new QtxMultiAction(myToolBar);
+  aViewsAction->insertAction( myActionsMap[FrontId] );
+  aViewsAction->insertAction( myActionsMap[BackId] );
+  aViewsAction->insertAction( myActionsMap[TopId] );
+  aViewsAction->insertAction( myActionsMap[BottomId] );
+  aViewsAction->insertAction( myActionsMap[LeftId] );
+  aViewsAction->insertAction( myActionsMap[RightId] );
+  myToolBar->addAction( aViewsAction );
 
   myToolBar->addAction( myActionsMap[ResetId] );
 }

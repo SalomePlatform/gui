@@ -900,14 +900,14 @@ int SalomeApp_Application::closeChoice( const QString& docName )
 {
   int answer = SUIT_MessageBox::question( desktop(), tr( "APPCLOSE_CAPTION" ), tr( "APPCLOSE_DESCRIPTION" ).arg( docName ),
                                           tr ("APPCLOSE_SAVE"), tr ("APPCLOSE_CLOSE"),
-					  tr ("APPCLOSE_UNLOAD"), tr ("APPCLOSE_CANCEL"), 1 );
+					  tr ("APPCLOSE_UNLOAD"), tr ("APPCLOSE_CANCEL"), 0 );
 
   int res = CloseCancel;
-  if ( answer == 1 )
+  if ( answer == 0 )
     res = CloseSave;
-  else if ( answer == 2 )
+  else if ( answer == 1 )
     res = CloseDiscard;
-  else if ( answer == 3 )
+  else if ( answer == 2 )
     res = CloseUnload;
 
   return res;

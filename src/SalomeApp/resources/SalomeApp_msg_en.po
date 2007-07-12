@@ -249,21 +249,21 @@ msgstr "Delete"
 
 //=======================================================================================
 
-msgid "APPCLOSE_SAVE"
+msgid "SalomeApp_Application::APPCLOSE_SAVE"
 msgstr "&Save&&Close"
 
-msgid "APPCLOSE_CLOSE"
+msgid "SalomeApp_Application::APPCLOSE_CLOSE"
 msgstr "&Close w/o saving"
 
-msgid "APPCLOSE_UNLOAD"
+msgid "SalomeApp_Application::APPCLOSE_UNLOAD"
 msgstr "&Unload"
 
-msgid "APPCLOSE_CANCEL"
+msgid "SalomeApp_Application::APPCLOSE_CANCEL"
 msgstr "&Cancel"
 
-msgid "APPCLOSE_CAPTION"
+msgid "SalomeApp_Application::APPCLOSE_CAPTION"
 msgstr "Close active study"
 
-msgid "APPCLOSE_DESCRIPTION"
+msgid "SalomeApp_Application::APPCLOSE_DESCRIPTION"
 msgstr "Do you want to close or only unload the study"
 

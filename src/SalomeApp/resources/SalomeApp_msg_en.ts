@@ -49,6 +49,14 @@
         <translation>All files (*.*)</translation>
     </message>
     <message>
+        <source>APPCLOSE_UNLOAD</source>
+        <translation>&amp;Unload</translation>
+    </message>
+    <message>
+        <source>APPCLOSE_CLOSE</source>
+        <translation>&amp;Close w/o saving</translation>
+    </message>
+    <message>
         <source>MEN_WINDOWS_NEW</source>
         <translation>New window</translation>
     </message>
@@ -71,6 +79,10 @@
     <message>
         <source>MEN_DESK_REGISTRY_DISPLAY</source>
         <translation>Registry &amp;display</translation>
+    </message>
+    <message>
+        <source>APPCLOSE_SAVE</source>
+        <translation>&amp;Save&amp;&amp;Close</translation>
     </message>
     <message>
         <source>TOT_DESK_FILE_LOAD_SCRIPT</source>
@@ -134,6 +146,10 @@ Do you want to reload it ?</translation>
         <translation>PYTHON Files (*.py)</translation>
     </message>
     <message>
+        <source>APPCLOSE_DESCRIPTION</source>
+        <translation>Do you want to close or only unload the study</translation>
+    </message>
+    <message>
         <source>PRP_DESK_PROPERTIES</source>
         <translation>Edits study properties</translation>
     </message>
@@ -144,6 +160,10 @@ Do you want to reload it ?</translation>
     <message>
         <source>STUDY_LOCKED</source>
         <translation>LOCKED</translation>
+    </message>
+    <message>
+        <source>APPCLOSE_CANCEL</source>
+        <translation>&amp;Cancel</translation>
     </message>
     <message>
         <source>OBJ_BROWSER_NAME</source>
@@ -222,16 +242,16 @@ Do you want to reload it ?</translation>
         <translation>Catalog &amp;generator</translation>
     </message>
     <message>
+        <source>APPCLOSE_CAPTION</source>
+        <translation>Close active study</translation>
+    </message>
+    <message>
         <source>MEN_DESK_MRU</source>
         <translation>Most recently used</translation>
     </message>
     <message>
         <source>TOT_DESK_MRU</source>
         <translation>Most recently used</translation>
-    </message>
-    <message>
-        <source>ACTIVATE_MODULE_OP_LOAD</source>
-        <translation>Load...</translation>
     </message>
 </context>
 <context>

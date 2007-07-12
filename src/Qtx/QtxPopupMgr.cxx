@@ -290,6 +290,8 @@ void QtxPopupMgr::setSelection( QtxPopupSelection* sel )
 
   if ( mySelection )
     mySelection->setParent( this );
+  connect( mySelection, SIGNAL( destroyed( QObject* ) ), 
+	   this,        SLOT( onSelectionDestroyed( QObject* ) ) );
 
   QtxActionMgr::triggerUpdate();
 }
@@ -623,6 +625,20 @@ QVariant QtxPopupMgr::parameter( const QString& name, const int idx ) const
     }
   }
   return val;
+}
+
+/*!
+  \brief Called when selection is destroyed.
+  
+  Prevents crashes when the selection object is destroyed outside the
+  popup manager.
+
+  \param o selection object being destroyed
+*/
+void QtxPopupMgr::onSelectionDestroyed( QObject* o )
+{
+  if ( o == mySelection )
+    mySelection = 0;
 }
 
 /*!

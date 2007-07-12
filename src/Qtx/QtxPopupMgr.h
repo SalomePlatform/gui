@@ -86,6 +86,9 @@ private:
   bool               result( QtxEvalParser* p ) const;
   QVariant           parameter( const QString&, const int = -1 ) const;
 
+private slots:
+  void               onSelectionDestroyed( QObject* );
+
 private:
   typedef QMap<RuleType, QtxEvalExpr*> ExprMap;
   typedef QMap<QAction*, ExprMap>      RuleMap;

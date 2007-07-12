@@ -18,6 +18,7 @@
 //
 // File:      QtxMenu.h
 // Author:    Sergey TELKOV
+//
 
 #ifndef QTXMENU_H
 #define QTXMENU_H
@@ -35,7 +36,12 @@ class QTX_EXPORT QtxMenu : public QMenu
   class Title;
 
 public:
-  typedef enum { TitleAuto, TitleOn, TitleOff } TitleMode;
+  //! Popup menu title mode
+  typedef enum { 
+    TitleAuto,        //!< auto mode
+    TitleOn,          //!< always on (display title)
+    TitleOff          //!< always off (do not display title)
+  } TitleMode;
 
 public:
   QtxMenu( QWidget* = 0 );
@@ -67,4 +73,4 @@ private:
   QWidgetAction*         myAction;
 };
 
-#endif
+#endif // QTXMENU_H

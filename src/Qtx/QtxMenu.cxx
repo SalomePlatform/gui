@@ -18,6 +18,7 @@
 //
 // File:      QtxMenu.cxx
 // Author:    Sergey TELKOV
+//
 
 #include "QtxMenu.h"
 
@@ -31,8 +32,9 @@
 #include <QAbstractTextDocumentLayout>
 
 /*!
-    Class: QtxMenu::Title [Internal]
-    Descr: Menu item for popup title.
+  \class QtxMenu::Title
+  \brief Popup menu title item.
+  \internal
 */
 
 class QtxMenu::Title : public QWidget
@@ -63,51 +65,89 @@ private:
 };
 
 /*!
-  Constructor
+  \brief Constructor.
+  \param parent parent widget
+  \internal
 */
 QtxMenu::Title::Title( QWidget* parent )
 : QWidget( parent ),
-myAlignment( 0 )
+  myAlignment( 0 )
 {
 }
 
 /*!
-  Destructor
+  \brief Destructor.
+  \internal
 */
 QtxMenu::Title::~Title()
 {
 }
 
+/*!
+  \brief Get title icon.
+  \return title item icon
+  \internal
+*/
 QIcon QtxMenu::Title::icon() const
 {
   return myIcon;
 }
 
+/*!
+  \brief Set title icon.
+  \param ico title item icon
+  \internal
+*/
 void QtxMenu::Title::setIcon( const QIcon& ico )
 {
   myIcon = ico;
 }
 
+/*!
+  \brief Get title menu text.
+  \return menu text for the title item
+  \internal
+*/
 QString QtxMenu::Title::text() const
 {
   return myText;
 }
 
+/*!
+  \brief Set title menu text.
+  \param txt menu text to be used for the title item
+  \internal
+*/
 void QtxMenu::Title::setText( const QString& txt )
 {
   myText = txt;
 }
 
+/*!
+  \brief Get title alignment flags.
+  \return title alignment flags
+  \internal
+*/
 Qt::Alignment QtxMenu::Title::alignment() const
 {
   return myAlignment;
 }
 
+/*!
+  \brief Set title alignment flags.
+  \param a title alignment flags
+  \internal
+*/
 void QtxMenu::Title::setAlignment( const Qt::Alignment a )
 {
   myAlignment = a;
 }
 
+/*!
+  \brief Get recommended size for the title item widget.
+  \return title item widget size
+  \internal
+*/
 QSize QtxMenu::Title::sizeHint() const
 {
   int m = 5;
@@ -115,17 +155,27 @@ QSize QtxMenu::Title::sizeHint() const
   doc.setHtml( text() );
 
   QSize sz = icon().isNull() ? QSize( 0, 0 ) : icon().actualSize( QSize( 16, 16 ) );
-  sz.setWidth( 2 * m + sz.width() + doc.size().width() );
+  sz.setWidth( 2 * m + sz.width() + (int)doc.size().width() );
   sz.setHeight( 2 * m + qMax( sz.height(), (int)doc.size().height() ) );
   return sz;
 }
 
+/*!
+  \brief Get recommended minimum size for the title item widget.
+  \return title item widget minimum size
+  \internal
+*/
 QSize QtxMenu::Title::minimumSizeHint() const
 {
   return sizeHint();
 }
 
-void QtxMenu::Title::paintEvent( QPaintEvent* )
+/*!
+  \brief Paint the title item widget.
+  \param e paint event (not used)
+  \internal
+*/
+void QtxMenu::Title::paintEvent( QPaintEvent* /*e*/ )
 {
   int m = 5;
   QIcon ico = icon();
@@ -142,7 +192,7 @@ void QtxMenu::Title::paintEvent( QPaintEvent* )
   doc.setHtml( txt );
 
   QSize isz = ico.isNull() ? QSize( 0, 0 ) : ico.actualSize( QSize( 16, 16 ) );
-  QSize sz( doc.size().width(), doc.size().height() );
+  QSize sz( (int)doc.size().width(), (int)doc.size().height() );
 
   QPainter p( this );
   QAbstractTextDocumentLayout::PaintContext ctx;
@@ -182,11 +232,30 @@ void QtxMenu::Title::paintEvent( QPaintEvent* )
 }
 
 /*!
-  Constructor
+  \class QtxMenu
+  \brief The class QtxMenu represents the popup menu with the title.
+
+  The title for the popup menu can be set via setTitleText() method.
+  In addition, title item can contain the icon, which can be set using
+  setTitleIcon() method. Current title text and icon can be retrieved with
+  titleText() and titleIcon() methods.
+
+  The title text alignment flags can be changed using setTitleAlignment()
+  method and retrieved with titleAlignment() method.
+
+  By default, QtxMenu::TitleAuto mode is used. In this mode, the title item
+  is shown only if it is not empty. To show title always (even empty), pass
+  QtxMenu::TitleOn to the setTitleMode() method. To hide the title, use 
+  setTitleMode() method with QtxMenu::TitleOff parameter.
+*/
+
+/*!
+  \brief Constructor.
+  \param parent parent widget
 */
 QtxMenu::QtxMenu( QWidget* parent )
 : QMenu( parent ),
-myMode( TitleAuto )
+  myMode( TitleAuto )
 {
   myTitle = new Title( this );
   myAction = new QWidgetAction( this );
@@ -194,19 +263,24 @@ myMode( TitleAuto )
 }
 
 /*!
-  Destructor
+  \brief Destructor.
 */
 QtxMenu::~QtxMenu()
 {
 }
 
+/*!
+  \brief Get title menu text.
+  \return menu text for the title item
+*/
 QString QtxMenu::titleText() const
 {
   return myTitle->text();
 }
 
 /*!
-  \return popup menu icon
+  \brief Get title icon.
+  \return title item icon
 */
 QIcon QtxMenu::titleIcon() const
 {
@@ -214,7 +288,8 @@ QIcon QtxMenu::titleIcon() const
 }
 
 /*!
-  \return popup menu title policy
+  \brief Get title item display mode.
+  \return popup menu title display mode (QtxMenu::TitleMode)
 */
 QtxMenu::TitleMode QtxMenu::titleMode() const
 {
@@ -222,7 +297,8 @@ QtxMenu::TitleMode QtxMenu::titleMode() const
 }
 
 /*!
-  \return popup menu title alignment
+  \brief Get title alignment flags.
+  \return title alignment flags
 */
 Qt::Alignment QtxMenu::titleAlignment() const
 {
@@ -230,8 +306,8 @@ Qt::Alignment QtxMenu::titleAlignment() const
 }
 
 /*!
-  Changes title text
-  \param txt - new text
+  \brief Set title menu text.
+  \param txt menu text to be used for the title item
 */
 void QtxMenu::setTitleText( const QString& txt )
 {
@@ -244,8 +320,8 @@ void QtxMenu::setTitleText( const QString& txt )
 }
 
 /*!
-  Changes title icon
-  \param icon - new icon
+  \brief Set title icon.
+  \param ico title item icon
 */
 void QtxMenu::setTitleIcon( const QIcon& ico )
 {
@@ -255,8 +331,8 @@ void QtxMenu::setTitleIcon( const QIcon& ico )
 }
 
 /*!
-  Changes title mode
-  \param p - new policy
+  \brief Set title item display mode.
+  \param m popup menu title display mode (QtxMenu::TitleMode)
 */
 void QtxMenu::setTitleMode( const QtxMenu::TitleMode m )
 {
@@ -269,8 +345,8 @@ void QtxMenu::setTitleMode( const QtxMenu::TitleMode m )
 }
 
 /*!
-  Changes title alignment
-  \param a - new alignment
+  \brief Set title alignment flags.
+  \param a title alignment flags
 */
 void QtxMenu::setTitleAlignment( const Qt::Alignment a )
 {
@@ -283,7 +359,8 @@ void QtxMenu::setTitleAlignment( const Qt::Alignment a )
 }
 
 /*!
-  Shows/hide menu
+  \brief Customize show/hide menu operation.
+  \param on new popup menu visibility state
 */
 void QtxMenu::setVisible( bool on )
 {
@@ -297,7 +374,7 @@ void QtxMenu::setVisible( bool on )
 }
 
 /*!
-  Inserts title item to popup menu
+  \brief Insert title item to the popup menu.
 */
 void QtxMenu::insertTitle()
 {
@@ -311,7 +388,7 @@ void QtxMenu::insertTitle()
 }
 
 /*!
-  Removes title item from popup menu
+  \brief Remove title item from the popup menu.
 */
 void QtxMenu::removeTitle()
 {
@@ -320,7 +397,7 @@ void QtxMenu::removeTitle()
 }
 
 /*!
-  Updates title item
+  \brief Update title item.
 */
 void QtxMenu::updateTitle()
 {

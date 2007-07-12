@@ -49,6 +49,7 @@ salomeinclude_HEADERS=		\
 	QtxLogoMgr.h		\
 	QtxMainWindow.h 	\
 	QtxMap.h		\
+	QtxMenu.h		\
 	QtxMultiAction.h	\
 	QtxMRUAction.h		\
 	QtxPagePrefMgr.h	\
@@ -71,7 +72,6 @@ salomeinclude_HEADERS=		\
 #				\
 	QtxListBox.h		\
 	QtxListView.h		\
-	QtxPopupMenu.h		\
 	QtxTable.h
 
 # Libraries targets
@@ -101,6 +101,7 @@ dist_libqtx_la_SOURCES=		\
 	QtxListAction.cxx	\
 	QtxLogoMgr.cxx		\
 	QtxMainWindow.cxx	\
+	QtxMenu.cxx		\
 	QtxMultiAction.cxx	\
 	QtxMRUAction.cxx	\
 	QtxPagePrefMgr.cxx	\
@@ -123,7 +124,6 @@ dist_libqtx_la_SOURCES=		\
 #				\
 	QtxListBox.cxx		\
 	QtxListView.cxx		\
-	QtxPopupMenu.cxx	\
 	QtxTable.cxx
 
 #VSR: already migrated to Qt4 files
@@ -147,6 +147,7 @@ MOC_FILES=				\
 	QtxListAction_moc.cxx		\
 	QtxLogoMgr_moc.cxx		\
 	QtxMainWindow_moc.cxx		\
+	QtxMenu_moc.cxx 		\
 	QtxMultiAction_moc.cxx		\
 	QtxMRUAction_moc.cxx		\
 	QtxPagePrefMgr_moc.cxx		\
@@ -167,7 +168,6 @@ MOC_FILES=				\
 #					\
 	QtxListBox_moc.cxx		\
 	QtxListView_moc.cxx		\
-	QtxPopupMenu_moc.cxx		\
 	QtxTable_moc.cxx
 
 nodist_libqtx_la_SOURCES= $(MOC_FILES)

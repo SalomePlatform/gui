@@ -168,7 +168,7 @@ QtxMultiAction::~QtxMultiAction()
 */
 void QtxMultiAction::setActiveAction( QAction* a )
 {
-  if ( a && actions().contains( a ) && a != myCurrent ) {
+  if ( a && actions().contains( a ) && a != myCurrent && a->isEnabled() ) {
     myCurrent = a;
     updateAction();
   }
@@ -294,8 +294,8 @@ QWidget* QtxMultiAction::createWidget( QWidget* parent )
 */
 void QtxMultiAction::actionAdded( QAction* a )
 {
-  if ( !myCurrent )
-    myCurrent = a;
+  connect( a, SIGNAL( changed() ), this, SLOT( onActionChanged() ) );
+  onActionChanged();
 }
 
 /*!
@@ -304,10 +304,14 @@ void QtxMultiAction::actionAdded( QAction* a )
 */
 void QtxMultiAction::actionRemoved( QAction* a )
 {
+  disconnect( a, SIGNAL( changed() ), this, SLOT( onActionChanged() ) );
+
   if ( myCurrent != a )
     return;
 
-  myCurrent = actions().isEmpty() ? 0 : actions().first();
+  myCurrent = 0;
+
+  onActionChanged();
 
   updateAction();
 }
@@ -353,4 +357,32 @@ void QtxMultiAction::updateButton( QToolButton* btn )
     b->installEventFilter( filter );
     vbox->addWidget( b );
   }
+}
+
+/*!
+  \brief Called when any child action is enabled/disabled.
+  
+  If the current action is disabled, the multi-action switches
+  to first found enabled. If all child actions are disabled, the
+  action itself is also disabled.
+*/
+void QtxMultiAction::onActionChanged()
+{
+  if ( myCurrent && myCurrent->isEnabled() )
+    return;
+
+  QList<QAction*> alist = actions();
+  QAction* a = 0;
+  for ( QList<QAction*>::ConstIterator it = alist.begin(); it != alist.end() && !a; ++it ) {
+    if ( (*it)->isEnabled() )
+      a = *it;
+  }
+
+  if ( a )
+    myCurrent = a;
+  else
+    myCurrent = alist.isEmpty() ? 0 : alist.first();
+
+  setEnabled( myCurrent && myCurrent->isEnabled() );
+  updateAction();
 }

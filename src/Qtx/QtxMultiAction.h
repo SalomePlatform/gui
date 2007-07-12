@@ -43,9 +43,10 @@ public:
   void             setActiveAction( QAction* );
   QAction*         activeAction() const;
 
-public slots:
+private slots:
   void             onClicked( bool );
   void             onTriggered( QAction* );
+  void             onActionChanged();
 
 protected:
   virtual bool     isEmptyAction() const;

@@ -217,6 +217,10 @@ void QtxActionSet::clear()
 */
 void QtxActionSet::onChanged()
 {
+  QList<QWidget*> lst = createdWidgets();
+  for ( QList<QWidget*>::iterator it = lst.begin(); it != lst.end(); ++it )
+    (*it)->setEnabled( isEnabled() );
+
   if ( !isVisible() || !isEmptyAction() )
     return;
 

@@ -161,6 +161,10 @@ Directory with this name exist on disc. Try to use another name</translation>
         <translation>Paste</translation>
     </message>
     <message>
+        <source>MEN_DESK_VIEW_DOCKWINDOWS</source>
+        <translation>W&amp;indows</translation>
+    </message>
+    <message>
         <source>BUT_YES</source>
         <translation>&amp;Yes</translation>
     </message>
@@ -256,10 +260,6 @@ Do you want to reload it ?</translation>
     <message>
         <source>DLG_LOAD_STUDY_CAPTION</source>
         <translation>Load Study</translation>
-    </message>
-    <message>
-        <source>CLOSE_STUDY</source>
-        <translation>Close study</translation>
     </message>
     <message>
         <source>PRP_DESK_HELP_SEARCH</source>
@@ -368,10 +368,6 @@ Do you want to overwrite it ?</translation>
     <message>
         <source>TOT_DESK_FILE_OPEN</source>
         <translation>Open document</translation>
-    </message>
-    <message>
-        <source>CLOSE_QUESTION</source>
-        <translation>Document %1 modified. Do you want to save or discard the modification and close the document?</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_EXIT</source>

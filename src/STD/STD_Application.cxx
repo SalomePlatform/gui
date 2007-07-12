@@ -199,11 +199,11 @@ void STD_Application::createActions()
                 Qt::SHIFT+Qt::Key_A, desk, false, this, SLOT( onHelpAbout() ) );
 
 
-  QtxDockAction* dwa = new QtxDockAction( tr( "TOT_DOCKWINDOWS" ), tr( "MEN_DOCKWINDOWS" ), desk );
+  QtxDockAction* dwa = new QtxDockAction( tr( "TOT_DOCKWINDOWS" ), tr( "MEN_DESK_VIEW_DOCKWINDOWS" ), desk );
   dwa->setDockType( QtxDockAction::DockWidget );
   registerAction( ViewWindowsId, dwa );
 
-  QtxDockAction* tba = new QtxDockAction( tr( "TOT_TOOLBARS" ), tr( "MEN_TOOLBARS" ), desk );
+  QtxDockAction* tba = new QtxDockAction( tr( "TOT_TOOLBARS" ), tr( "MEN_DESK_VIEW_TOOLBARS" ), desk );
   tba->setDockType( QtxDockAction::ToolBar );
   registerAction( ViewToolBarsId, tba );
 

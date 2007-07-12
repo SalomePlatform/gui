@@ -255,6 +255,7 @@ QtxWorkstackArea::QtxWorkstackArea( QWidget* parent )
 
   QVBoxLayout* base = new QVBoxLayout( this );
   base->setMargin( frameWidth() );
+  base->setSpacing( 0 );
 
   QWidget* top = new QWidget( this );
   base->addWidget( top );
@@ -1029,6 +1030,7 @@ QtxWorkstackChild::QtxWorkstackChild( QWidget* wid, QWidget* parent, Qt::WindowF
   myWidget->setParent( this, f );
   myWidget->installEventFilter( this );
   QVBoxLayout* base = new QVBoxLayout( this );
+  base->setMargin( 0 );
   base->addWidget( myWidget );
 
   connect( myWidget, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );

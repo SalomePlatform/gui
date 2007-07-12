@@ -70,6 +70,9 @@ QVTK_RenderWindowInteractor
   QWidget(theParent),
   myRenderWindow(vtkRenderWindow::New())
 {
+  setAttribute( Qt::WA_PaintOnScreen );
+  //setAttribute( Qt::WA_NoSystemBackground );
+
   setObjectName(theName);
 
   setMouseTracking(true);

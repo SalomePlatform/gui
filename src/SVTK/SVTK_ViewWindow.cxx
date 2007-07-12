@@ -91,7 +91,7 @@ namespace SVTK
 SVTK_ViewWindow
 ::SVTK_ViewWindow(SUIT_Desktop* theDesktop):
   SUIT_ViewWindow(theDesktop),
-  myMainWindow(NULL),
+  myMainWindow(0),
   myView(NULL),
   myDumpImage(QImage())
 {}

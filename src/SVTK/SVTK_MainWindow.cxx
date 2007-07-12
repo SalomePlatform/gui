@@ -61,10 +61,11 @@ SVTK_MainWindow
 		  const char* theName,
 		  SUIT_ResourceMgr* theResourceMgr,
 		  SUIT_ViewWindow* theViewWindow) :
-  QMainWindow(theParent,0),
+  QMainWindow(theParent),
   myViewWindow(theViewWindow)
 {
   setObjectName(theName);
+  setWindowFlags( windowFlags() & ~Qt::Window );
 
   myToolBar = new QtxToolBar( true, tr("LBL_TOOLBAR_LABEL"), this );
 

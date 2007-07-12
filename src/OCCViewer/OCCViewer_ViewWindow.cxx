@@ -16,8 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// OCCViewer_ViewWindow.cxx: implementation of the OCCViewer_ViewWindow class.
-
+// File   : OCCViewer_ViewWindow.cxx
+// Author :
+//
 
 #include "OCCViewer_ViewWindow.h"
 #include "OCCViewer_ViewModel.h"
@@ -26,16 +27,15 @@
 #include "OCCViewer_ClippingDlg.h"
 #include "OCCViewer_SetRotationPointDlg.h"
 
-#include "SUIT_Desktop.h"
-#include "SUIT_Session.h"
-#include "SUIT_ToolButton.h"
-#include "SUIT_ViewManager.h"
-
-#include "SUIT_Tools.h"
-#include "SUIT_ResourceMgr.h"
-#include "SUIT_MessageBox.h"
+#include <SUIT_Desktop.h>
+#include <SUIT_Session.h>
+#include <SUIT_ViewManager.h>
+#include <SUIT_Tools.h>
+#include <SUIT_ResourceMgr.h>
+#include <SUIT_MessageBox.h>
 
 #include <QtxToolBar.h>
+#include <QtxMultiAction.h>
 
 #include <QPainter>
 #include <QTime>
@@ -59,7 +59,6 @@
 #include <Visual3d_View.hxx>
 #include <Graphic3d_MapOfStructure.hxx>
 #include <Graphic3d_Structure.hxx>
-
 
 const char* imageZoomCursor[] = { 
 "32 32 3 1",
@@ -177,12 +176,13 @@ const char* imageCrossCursor[] = {
 
 
 /*!
-  Constructor
-  \param theDesktop - main window of application
-  \param theModel - OCC 3D viewer
+  \brief Constructor
+  \param theDesktop main window of application
+  \param theModel OCC 3D viewer
 */
-OCCViewer_ViewWindow::OCCViewer_ViewWindow(SUIT_Desktop* theDesktop, OCCViewer_Viewer* theModel)
-: SUIT_ViewWindow(theDesktop)
+OCCViewer_ViewWindow::OCCViewer_ViewWindow( SUIT_Desktop*     theDesktop, 
+					    OCCViewer_Viewer* theModel )
+: SUIT_ViewWindow( theDesktop )
 {
   myModel = theModel;
   myRestoreFlag = 0;
@@ -202,7 +202,7 @@ OCCViewer_ViewWindow::~OCCViewer_ViewWindow()
 }
 
 /*!
-  Initialization of view window
+  \brief Internal initialization.
 */
 void OCCViewer_ViewWindow::initLayout()
 {
@@ -227,10 +227,13 @@ void OCCViewer_ViewWindow::initLayout()
 }
 
 /*!
-  \return type of operation by states of mouse and keyboard buttons
-  \param theEvent - mouse event
+  \brief Detect viewer operation according the the mouse button pressed
+  and key modifiers used.
+  \param theEvent mouse event
+  \return type of the operation
 */
-OCCViewer_ViewWindow::OperationType OCCViewer_ViewWindow::getButtonState(QMouseEvent* theEvent)
+OCCViewer_ViewWindow::OperationType 
+OCCViewer_ViewWindow::getButtonState( QMouseEvent* theEvent )
 {
   OperationType aOp = NOTHING;
   if( (theEvent->modifiers() == SUIT_ViewModel::myStateMap[SUIT_ViewModel::ZOOM]) &&
@@ -247,9 +250,12 @@ OCCViewer_ViewWindow::OperationType OCCViewer_ViewWindow::getButtonState(QMouseE
 }
 
 /*!
-  Custom event handler
+  \brief Customize event handling
+  \param watched event receiver object
+  \param e event
+  \return \c true if the event processing should be stopped
 */
-bool OCCViewer_ViewWindow::eventFilter(QObject* watched, QEvent* e)
+bool OCCViewer_ViewWindow::eventFilter( QObject* watched, QEvent* e )
 {
   if ( watched == myViewPort ) {
     int aType = e->type();
@@ -295,7 +301,7 @@ bool OCCViewer_ViewWindow::eventFilter(QObject* watched, QEvent* e)
 }
 
 /*!
-  Updates state of enable draw mode state
+  \brief Update state of enable draw mode state.
 */
 void OCCViewer_ViewWindow::updateEnabledDrawMode()
 {
@@ -304,9 +310,10 @@ void OCCViewer_ViewWindow::updateEnabledDrawMode()
 }
 
 /*!
-  Handler of mouse press event
+  \brief Handle mouse press event
+  \param theEvent mouse event
 */
-void OCCViewer_ViewWindow::vpMousePressEvent(QMouseEvent* theEvent)
+void OCCViewer_ViewWindow::vpMousePressEvent( QMouseEvent* theEvent )
 {
   myStartX = theEvent->x();
   myStartY = theEvent->y();
@@ -399,7 +406,9 @@ void OCCViewer_ViewWindow::vpMousePressEvent(QMouseEvent* theEvent)
 
 
 /*!
-  Starts zoom operation, sets corresponding cursor
+  \brief Start zooming operation.
+
+  Sets the corresponding cursor for the widget.
 */
 void OCCViewer_ViewWindow::activateZoom()
 {
@@ -416,7 +425,9 @@ void OCCViewer_ViewWindow::activateZoom()
 
 
 /*!
-  Starts panning operation, sets corresponding cursor
+  \brief Start panning operation.
+  
+  Sets the corresponding cursor for the widget.
 */
 void OCCViewer_ViewWindow::activatePanning()
 {
@@ -431,7 +442,9 @@ void OCCViewer_ViewWindow::activatePanning()
 }
 
 /*!
-  Starts rotation operation, sets corresponding cursor
+  \brief Start rotation operation
+
+  Sets the corresponding cursor for the widget.
 */
 void OCCViewer_ViewWindow::activateRotation()
 {
@@ -447,7 +460,11 @@ void OCCViewer_ViewWindow::activateRotation()
 }
 
 /*!
-  Compute the gravity center
+  \brief Compute the gravity center.
+  \param theX used to return X coordinate of the gravity center
+  \param theY used to return Y coordinate of the gravity center
+  \param theZ used to return Z coordinate of the gravity center
+  \return \c true if the gravity center is computed
 */
 bool OCCViewer_ViewWindow::computeGravityCenter( double& theX, double& theY, double& theZ )
 {
@@ -515,7 +532,7 @@ bool OCCViewer_ViewWindow::computeGravityCenter( double& theX, double& theY, dou
 }
 
 /*!
-  Set the gravity center as a rotation point
+  \brief Set the gravity center as a rotation point.
 */
 void OCCViewer_ViewWindow::activateSetRotationGravity()
 {
@@ -538,7 +555,8 @@ void OCCViewer_ViewWindow::activateSetRotationGravity()
 }
 
 /*!
-  Update gravity center in the SetRotationPointDlg
+  \brief Update gravity center in the "Set Rotation Point" dialog box.
+  \sa OCCViewer_SetRotationPointDlg class
 */
 void OCCViewer_ViewWindow::updateGravityCoords()
 {
@@ -551,9 +569,12 @@ void OCCViewer_ViewWindow::updateGravityCoords()
 }
 
 /*!
-  Set the point selected by user as a rotation point
+  \brief Set the point selected by the user as a rotation point.
+  \param theX X coordinate of the rotation point
+  \param theY Y coordinate of the rotation point
+  \param theZ Z coordinate of the rotation point
 */
-void OCCViewer_ViewWindow::activateSetRotationSelected(double theX, double theY, double theZ)
+void OCCViewer_ViewWindow::activateSetRotationSelected( double theX, double theY, double theZ )
 {
   if ( myRotationPointSelection )
   {
@@ -571,7 +592,7 @@ void OCCViewer_ViewWindow::activateSetRotationSelected(double theX, double theY,
 }
 
 /*!
-  Start the point selection process
+  \brief Start the point selection process.
 */
 void OCCViewer_ViewWindow::activateStartPointSelection()
 {
@@ -608,7 +629,9 @@ void OCCViewer_ViewWindow::activateStartPointSelection()
 }
 
 /*!
-  Starts global panning operation, sets corresponding cursor
+  \brief Start global panning operation
+
+  Sets the corresponding cursor for the widget.
 */
 void OCCViewer_ViewWindow::activateGlobalPanning()
 {
@@ -626,7 +649,9 @@ void OCCViewer_ViewWindow::activateGlobalPanning()
 }
 
 /*!
-  Starts fit operation, sets corresponding cursor
+  \brief Starts fit operation.
+
+  Sets the corresponding cursor for the widget.
 */
 void OCCViewer_ViewWindow::activateWindowFit()
 {
@@ -642,9 +667,9 @@ void OCCViewer_ViewWindow::activateWindowFit()
 }
 
 /*!
-  Stores which viewer operation is requesting
+  \brief Start delayed viewer operation.
 */
-void OCCViewer_ViewWindow::setTransformRequested ( OperationType op )
+void OCCViewer_ViewWindow::setTransformRequested( OperationType op )
 {    
   myOperation = op;
   myViewPort->setMouseTracking( myOperation == NOTHING );
@@ -652,9 +677,10 @@ void OCCViewer_ViewWindow::setTransformRequested ( OperationType op )
 
 
 /*!
-  Handler of mouse move event
+  \brief Handle mouse move event.
+  \param theEvent mouse event
 */
-void OCCViewer_ViewWindow::vpMouseMoveEvent(QMouseEvent* theEvent)
+void OCCViewer_ViewWindow::vpMouseMoveEvent( QMouseEvent* theEvent )
 {
   myCurrX = theEvent->x();
   myCurrY = theEvent->y();
@@ -710,7 +736,8 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent(QMouseEvent* theEvent)
 }
 
 /*!
-  Handler of mouse release event
+  \brief Handle mouse release event.
+  \param theEvent mouse event
 */
 void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
 {
@@ -769,7 +796,7 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
 }
 
 /*!
-  Sets the viewport to its initial state
+  \brief Reset the viewport to its initial state
   ( no transformations in process etc. )
 */
 void OCCViewer_ViewWindow::resetState()
@@ -797,7 +824,7 @@ void OCCViewer_ViewWindow::resetState()
 
 
 /*!
-  Draws rectangle by starting and current points
+  \brief Draw rubber band rectangle.
 */
 void OCCViewer_ViewWindow::drawRect()
 {
@@ -815,7 +842,7 @@ void OCCViewer_ViewWindow::drawRect()
 }
 
 /*!
-  \brief Delete rubber band on the end on the dragging operation.
+  \brief Clear rubber band rectangle on the end on the dragging operation.
 */
 void OCCViewer_ViewWindow::endDrawRect()
 {
@@ -824,7 +851,7 @@ void OCCViewer_ViewWindow::endDrawRect()
 }
 
 /*!
-  Creates actions of OCC view window
+  \brief Create actions.
 */
 void OCCViewer_ViewWindow::createActions()
 {
@@ -971,7 +998,7 @@ void OCCViewer_ViewWindow::createActions()
 }
 
 /*!
-  Creates toolbar of OCC view window
+  \brief Create toolbar.
 */
 void OCCViewer_ViewWindow::createToolBar()
 {
@@ -979,36 +1006,36 @@ void OCCViewer_ViewWindow::createToolBar()
   if ( myModel->trihedronActivated() ) 
     myToolBar->addAction( myActionsMap[TrihedronShowId] );
 
-  SUIT_ToolButton* aScaleBtn = new SUIT_ToolButton(myToolBar, "scale");
-  aScaleBtn->AddAction(myActionsMap[FitAllId]);
-  aScaleBtn->AddAction(myActionsMap[FitRectId]);
-  aScaleBtn->AddAction(myActionsMap[ZoomId]);
-  myToolBar->addWidget( aScaleBtn );
+  QtxMultiAction* aScaleAction = new QtxMultiAction( this );
+  aScaleAction->insertAction( myActionsMap[FitAllId] );
+  aScaleAction->insertAction( myActionsMap[FitRectId] );
+  aScaleAction->insertAction( myActionsMap[ZoomId] );
+  myToolBar->addAction( aScaleAction );
 
-  SUIT_ToolButton* aPanningBtn = new SUIT_ToolButton(myToolBar, "pan");
-  aPanningBtn->AddAction(myActionsMap[PanId]);
-  aPanningBtn->AddAction(myActionsMap[GlobalPanId]);
-  myToolBar->addWidget( aPanningBtn );
+  QtxMultiAction* aPanningAction = new QtxMultiAction( this );
+  aPanningAction->insertAction( myActionsMap[PanId] );
+  aPanningAction->insertAction( myActionsMap[GlobalPanId] );
+  myToolBar->addAction( aPanningAction );
 
   myToolBar->addAction( myActionsMap[ChangeRotationPointId] );
 
   myToolBar->addAction( myActionsMap[RotationId] );
 
-  SUIT_ToolButton* aViewsBtn = new SUIT_ToolButton(myToolBar, "projection");
-  aViewsBtn->AddAction(myActionsMap[FrontId]);
-  aViewsBtn->AddAction(myActionsMap[BackId]);
-  aViewsBtn->AddAction(myActionsMap[TopId]);
-  aViewsBtn->AddAction(myActionsMap[BottomId]);
-  aViewsBtn->AddAction(myActionsMap[LeftId]);
-  aViewsBtn->AddAction(myActionsMap[RightId]);
-  myToolBar->addWidget( aViewsBtn );
+  QtxMultiAction* aViewsAction = new QtxMultiAction( this );
+  aViewsAction->insertAction( myActionsMap[FrontId] );
+  aViewsAction->insertAction( myActionsMap[BackId] );
+  aViewsAction->insertAction( myActionsMap[TopId] );
+  aViewsAction->insertAction( myActionsMap[BottomId] );
+  aViewsAction->insertAction( myActionsMap[LeftId] );
+  aViewsAction->insertAction( myActionsMap[RightId] );
+  myToolBar->addAction( aViewsAction );
 
   myToolBar->addAction( myActionsMap[ResetId] );
 
-  SUIT_ToolButton* aMemBtn = new SUIT_ToolButton(myToolBar, "view");
-  aMemBtn->AddAction(myActionsMap[MemId]);
-  aMemBtn->AddAction(myActionsMap[RestoreId]);
-  myToolBar->addWidget( aMemBtn );
+  QtxMultiAction* aMemAction = new QtxMultiAction( this );
+  aMemAction->insertAction( myActionsMap[MemId] );
+  aMemAction->insertAction( myActionsMap[RestoreId] );
+  myToolBar->addAction( aMemAction );
 
   myToolBar->addSeparator();
   myToolBar->addAction( myActionsMap[CloneId] );
@@ -1018,7 +1045,7 @@ void OCCViewer_ViewWindow::createToolBar()
 }
 
 /*!
-  Processes operation fit all
+  \brief Perform 'fit all' operation.
 */
 void OCCViewer_ViewWindow::onViewFitAll()
 {
@@ -1026,7 +1053,7 @@ void OCCViewer_ViewWindow::onViewFitAll()
 }
 
 /*!
-  Processes transformation "front view"
+  \brief Perform "front view" transformation.
 */
 void OCCViewer_ViewWindow::onFrontView()
 {
@@ -1037,7 +1064,7 @@ void OCCViewer_ViewWindow::onFrontView()
 }
 
 /*!
-  Processes transformation "back view"
+  \brief Perform "back view" transformation.
 */
 void OCCViewer_ViewWindow::onBackView()
 {
@@ -1048,7 +1075,7 @@ void OCCViewer_ViewWindow::onBackView()
 }
 
 /*!
-  Processes transformation "top view"
+  \brief Perform "top view" transformation.
 */
 void OCCViewer_ViewWindow::onTopView()
 {
@@ -1059,7 +1086,7 @@ void OCCViewer_ViewWindow::onTopView()
 }
 
 /*!
-  Processes transformation "bottom view"
+  \brief Perform "bottom view" transformation.
 */
 void OCCViewer_ViewWindow::onBottomView()
 {
@@ -1070,7 +1097,7 @@ void OCCViewer_ViewWindow::onBottomView()
 }
 
 /*!
-  Processes transformation "left view"
+  \brief Perform "left view" transformation.
 */
 void OCCViewer_ViewWindow::onLeftView()
 {
@@ -1081,7 +1108,7 @@ void OCCViewer_ViewWindow::onLeftView()
 }
 
 /*!
-  Processes transformation "right view"
+  \brief Perform "right view" transformation.
 */
 void OCCViewer_ViewWindow::onRightView()
 {
@@ -1092,7 +1119,9 @@ void OCCViewer_ViewWindow::onRightView()
 }
 
 /*!
-  Processes transformation "reset view": sets default orientation of viewport camera
+  \brief Perform "reset view" transformation.
+
+  Sets default orientation of the viewport camera.
 */
 void OCCViewer_ViewWindow::onResetView()
 {
@@ -1105,7 +1134,7 @@ void OCCViewer_ViewWindow::onResetView()
 }
 
 /*!
-  Processes transformation "fit all"
+  \brief Perform "fit all" transformation.
 */
 void OCCViewer_ViewWindow::onFitAll()
 {
@@ -1114,7 +1143,8 @@ void OCCViewer_ViewWindow::onFitAll()
 }
 
 /*!
-  SLOT: called if change rotation point operation is activated
+  \brief Called if 'change rotation point' operation is activated.
+  \param on action state
 */
 void OCCViewer_ViewWindow::onSetRotationPoint( bool on )
 {
@@ -1145,7 +1175,7 @@ void OCCViewer_ViewWindow::onSetRotationPoint( bool on )
 }
 
 /*!
-  Creates one more window with same content
+   \brief Create one more window with same content.
 */
 void OCCViewer_ViewWindow::onCloneView()
 {
@@ -1154,7 +1184,11 @@ void OCCViewer_ViewWindow::onCloneView()
 }
 
 /*!
-  SLOT: called if clipping operation is activated, enables/disables of clipping plane
+  \brief called if clipping operation is activated.
+
+  Enables/disables clipping plane displaying.
+
+  \parma on action state
 */
 void OCCViewer_ViewWindow::onClipping( bool on )
 {
@@ -1184,7 +1218,7 @@ void OCCViewer_ViewWindow::onClipping( bool on )
 }
 
 /*!
-  Stores view parameters
+  \brief Store view parameters.
 */
 void OCCViewer_ViewWindow::onMemorizeView()
 {
@@ -1192,47 +1226,48 @@ void OCCViewer_ViewWindow::onMemorizeView()
 }
 
 /*!
-  Restores view parameters
+  \brief Restore view parameters.
 */
 void OCCViewer_ViewWindow::onRestoreView()
 {
-	OCCViewer_CreateRestoreViewDlg* aDlg = new OCCViewer_CreateRestoreViewDlg( centralWidget(), myModel );
-	connect( aDlg, SIGNAL( dlgOk() ), this, SLOT( setRestoreFlag() ) );
-	aDlg->exec();
-	myModel->updateViewAspects( aDlg->parameters() );
-	if( myRestoreFlag && aDlg->parameters().count() )
-		performRestoring( aDlg->currentItem() );
+  OCCViewer_CreateRestoreViewDlg* aDlg = new OCCViewer_CreateRestoreViewDlg( centralWidget(), myModel );
+  connect( aDlg, SIGNAL( dlgOk() ), this, SLOT( setRestoreFlag() ) );
+  aDlg->exec();
+  myModel->updateViewAspects( aDlg->parameters() );
+  if( myRestoreFlag && aDlg->parameters().count() )
+    performRestoring( aDlg->currentItem() );
 }
 
 /*!
-  Restores view parameters from structure viewAspect
+  \brief Restore view parameters.
+  \param anItem view parameters
 */
 void OCCViewer_ViewWindow::performRestoring( const viewAspect& anItem )
 {
-	Handle(V3d_View) aView3d = myViewPort->getView();
-
-	Standard_Boolean prev = aView3d->SetImmediateUpdate( Standard_False );
-	aView3d->SetScale( anItem.scale );
-	aView3d->SetCenter( anItem.centerX, anItem.centerY );
-	aView3d->SetTwist( anItem.twist );
-	aView3d->SetAt( anItem.atX, anItem.atY, anItem.atZ );
-	aView3d->SetImmediateUpdate( prev );
-	aView3d->SetEye( anItem.eyeX, anItem.eyeY, anItem.eyeZ );
-	aView3d->SetProj( anItem.projX, anItem.projY, anItem.projZ );
-		
-	myRestoreFlag = 0;
+  Handle(V3d_View) aView3d = myViewPort->getView();
+	
+  Standard_Boolean prev = aView3d->SetImmediateUpdate( Standard_False );
+  aView3d->SetScale( anItem.scale );
+  aView3d->SetCenter( anItem.centerX, anItem.centerY );
+  aView3d->SetTwist( anItem.twist );
+  aView3d->SetAt( anItem.atX, anItem.atY, anItem.atZ );
+  aView3d->SetImmediateUpdate( prev );
+  aView3d->SetEye( anItem.eyeX, anItem.eyeY, anItem.eyeZ );
+  aView3d->SetProj( anItem.projX, anItem.projY, anItem.projZ );
+  
+  myRestoreFlag = 0;
 }
 
 /*!
-  Sets restore flag
+  \brief Set restore flag.
 */
 void OCCViewer_ViewWindow::setRestoreFlag()
 {
-	myRestoreFlag = 1;
+  myRestoreFlag = 1;
 }
 
 /*!
-  SLOT: called when action "show/hide" trihedron is activated
+  \brief Called when action "show/hide trihedron" is activated.
 */
 void OCCViewer_ViewWindow::onTrihedronShow()
 {
@@ -1240,7 +1275,8 @@ void OCCViewer_ViewWindow::onTrihedronShow()
 }
 
 /*!
-  \return QImage, containing all scene rendering in window
+  \brief Dump view window contents to the pixmap.
+  \return pixmap containing all scene rendered in the window
 */
 QImage OCCViewer_ViewWindow::dumpView()
 {
@@ -1249,17 +1285,17 @@ QImage OCCViewer_ViewWindow::dumpView()
 }
 
 /*!
-  Sets parameters of cutting plane
-  \param on - is cutting plane enabled
-  \param x - x-position of plane point 
-  \param y - y-position of plane point 
-  \param z - z-position of plane point 
-  \param dx - x-coordinate of plane normal
-  \param dy - y-coordinate of plane normal
-  \param dz - z-coordinate of plane normal
+  \brief Set parameters of the cutting plane
+  \param on if \c true, cutting plane is enabled
+  \param x X position of plane point 
+  \param y Y position of plane point 
+  \param z Z position of plane point 
+  \param dx X coordinate of plane normal
+  \param dy Y coordinate of plane normal
+  \param dz Z coordinate of plane normal
 */
-void  OCCViewer_ViewWindow::setCuttingPlane( bool on, const double x,  const double y,  const double z,
-                				      const double dx, const double dy, const double dz )
+void OCCViewer_ViewWindow::setCuttingPlane( bool on, const double x,  const double y,  const double z,
+					    const double dx, const double dy, const double dz )
 {
   Handle(V3d_View) view = myViewPort->getView();
   if ( view.IsNull() )
@@ -1292,7 +1328,8 @@ void  OCCViewer_ViewWindow::setCuttingPlane( bool on, const double x,  const dou
 }
 
 /*!
-  \return true if there is at least one cutting plane
+  \brief Check if any cutting plane is enabled
+  \return \c true if at least one cutting plane is enabled
 */
 bool OCCViewer_ViewWindow::isCuttingPlane()
 {
@@ -1302,7 +1339,8 @@ bool OCCViewer_ViewWindow::isCuttingPlane()
 }
 
 /*!
-  The method returns the visual parameters of this view as a viewAspect object
+  \brief Get the visual parameters of the view window.
+  \return visual parameters of view window
 */
 viewAspect OCCViewer_ViewWindow::getViewParams() const
 {
@@ -1340,7 +1378,8 @@ viewAspect OCCViewer_ViewWindow::getViewParams() const
 
 
 /*!
-  The method returns the visual parameters of this view as a formated string
+  \brief Get visual parameters of this view window.
+  \return visual parameters of view window
 */
 QString OCCViewer_ViewWindow::getVisualParameters()
 {
@@ -1353,7 +1392,8 @@ QString OCCViewer_ViewWindow::getVisualParameters()
 }
 
 /*!
-  The method restors visual parameters of this view from a formated string
+  \brief Restore visual parameters of the view window.
+  \param parameters visual parameters of view window
 */
 void OCCViewer_ViewWindow::setVisualParameters( const QString& parameters )
 {
@@ -1379,17 +1419,25 @@ void OCCViewer_ViewWindow::setVisualParameters( const QString& parameters )
 }
 
 /*!
-  Custom show event handler
+  \brief Handle show event.
+ 
+  Emits Show() signal.
+  
+  \param theEvent show event
 */
-void OCCViewer_ViewWindow::showEvent( QShowEvent * theEvent ) 
+void OCCViewer_ViewWindow::showEvent( QShowEvent* theEvent ) 
 {
   emit Show( theEvent );
 }
 
 /*!
-  Custom hide event handler
+  \brief Handle hide event.
+ 
+  Emits Hide() signal.
+  
+  \param theEvent hide event
 */
-void OCCViewer_ViewWindow::hideEvent( QHideEvent * theEvent ) 
+void OCCViewer_ViewWindow::hideEvent( QHideEvent* theEvent ) 
 {
   emit Hide( theEvent );
 }

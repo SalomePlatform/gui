@@ -40,6 +40,9 @@ public:
   QtxMultiAction( const QIcon&, const QString&, QObject* parent = 0 );
   virtual ~QtxMultiAction();
 
+  void             setActiveAction( QAction* );
+  QAction*         activeAction() const;
+
 public slots:
   void             onClicked( bool );
   void             onTriggered( QAction* );

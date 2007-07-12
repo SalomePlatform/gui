@@ -34,9 +34,9 @@
 #include <vtkRenderer.h>
 
 #include <QtxAction.h>
+#include <QtxMultiAction.h>
 #include <QtxToolBar.h>
 
-#include <SUIT_ToolButton.h>
 #include <SUIT_MessageBox.h>
 #include <SUIT_ViewWindow.h>
 #include <SUIT_Tools.h>
@@ -586,29 +586,29 @@ SVTK_MainWindow
   myToolBar->addAction( myActionsMap[DumpId] );
   myToolBar->addAction( myActionsMap[ViewTrihedronId] );
 
-  SUIT_ToolButton* aScaleBtn = new SUIT_ToolButton(myToolBar);
-  aScaleBtn->AddAction(myActionsMap[FitAllId]);
-  aScaleBtn->AddAction(myActionsMap[FitRectId]);
-  aScaleBtn->AddAction(myActionsMap[ZoomId]);
-  myToolBar->addWidget( aScaleBtn );
+  QtxMultiAction* aScaleAction = new QtxMultiAction( this );
+  aScaleAction->insertAction( myActionsMap[FitAllId] );
+  aScaleAction->insertAction( myActionsMap[FitRectId] );
+  aScaleAction->insertAction( myActionsMap[ZoomId] );
+  myToolBar->addAction( aScaleAction );
 
-  SUIT_ToolButton* aPanningBtn = new SUIT_ToolButton(myToolBar);
-  aPanningBtn->AddAction(myActionsMap[PanId]);
-  aPanningBtn->AddAction(myActionsMap[GlobalPanId]);
-  myToolBar->addWidget( aPanningBtn );
+  QtxMultiAction* aPanningAction = new QtxMultiAction( this );
+  aPanningAction->insertAction( myActionsMap[PanId] );
+  aPanningAction->insertAction( myActionsMap[GlobalPanId] );
+  myToolBar->addAction( aPanningAction );
 
   myToolBar->addAction( myActionsMap[ChangeRotationPointId] );
 
   myToolBar->addAction( myActionsMap[RotationId] );
 
-  SUIT_ToolButton* aViewsBtn = new SUIT_ToolButton(myToolBar);
-  aViewsBtn->AddAction(myActionsMap[FrontId]);
-  aViewsBtn->AddAction(myActionsMap[BackId]);
-  aViewsBtn->AddAction(myActionsMap[TopId]);
-  aViewsBtn->AddAction(myActionsMap[BottomId]);
-  aViewsBtn->AddAction(myActionsMap[LeftId]);
-  aViewsBtn->AddAction(myActionsMap[RightId]);
-  myToolBar->addWidget( aViewsBtn );
+  QtxMultiAction* aViewsAction = new QtxMultiAction( this );
+  aViewsAction->insertAction( myActionsMap[FrontId] );
+  aViewsAction->insertAction( myActionsMap[BackId] );
+  aViewsAction->insertAction( myActionsMap[TopId] );
+  aViewsAction->insertAction( myActionsMap[BottomId] );
+  aViewsAction->insertAction( myActionsMap[LeftId] );
+  aViewsAction->insertAction( myActionsMap[RightId] );
+  myToolBar->addAction( aViewsAction );
 
   myToolBar->addAction( myActionsMap[ResetId] );
 

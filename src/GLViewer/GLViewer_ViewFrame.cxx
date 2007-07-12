@@ -28,10 +28,10 @@
 #include "GLViewer_ViewPort2d.h"
 
 #include <QtxToolBar.h>
+#include <QtxMultiAction.h>
 
 #include <SUIT_Desktop.h>
 #include <SUIT_Session.h>
-#include <SUIT_ToolButton.h>
 #include <SUIT_ResourceMgr.h>
 #include <SUIT_MessageBox.h>
 
@@ -159,17 +159,17 @@ void GLViewer_ViewFrame::createToolBar()
 {
   myToolBar->addAction( myActionsMap[DumpId] );
 
-  SUIT_ToolButton* aScaleBtn = new SUIT_ToolButton(myToolBar);
-  aScaleBtn->AddAction(myActionsMap[FitAllId]);
-  aScaleBtn->AddAction(myActionsMap[FitRectId]);
-  aScaleBtn->AddAction(myActionsMap[FitSelectId]);
-  aScaleBtn->AddAction(myActionsMap[ZoomId]);
-  myToolBar->addWidget( aScaleBtn );
+  QtxMultiAction* aScaleAction = new QtxMultiAction( this );
+  aScaleAction->insertAction( myActionsMap[FitAllId] );
+  aScaleAction->insertAction( myActionsMap[FitRectId] );
+  aScaleAction->insertAction( myActionsMap[FitSelectId] );
+  aScaleAction->insertAction( myActionsMap[ZoomId] );
+  myToolBar->addAction( aScaleAction );
 
-  SUIT_ToolButton* aPanBtn = new SUIT_ToolButton(myToolBar);
-  aPanBtn->AddAction(myActionsMap[PanId]);
-  aPanBtn->AddAction(myActionsMap[GlobalPanId]);
-  myToolBar->addWidget( aPanBtn );
+  QtxMultiAction* aPanAction = new QtxMultiAction( this );
+  aPanAction->insertAction( myActionsMap[PanId] );
+  aPanAction->insertAction( myActionsMap[GlobalPanId] );
+  myToolBar->addAction( aPanAction );
 
   myToolBar->addAction( myActionsMap[ResetId] );
 }

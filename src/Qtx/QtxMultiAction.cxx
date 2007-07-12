@@ -163,6 +163,27 @@ QtxMultiAction::~QtxMultiAction()
 }
 
 /*!
+  \brief Set current action.
+  \param a action to be set current
+*/
+void QtxMultiAction::setActiveAction( QAction* a )
+{
+  if ( a && actions().contains( a ) && a != myCurrent ) {
+    myCurrent = a;
+    updateAction();
+  }
+}
+
+/*!
+  \brief Get current action.
+  \return current action (0 if there is no active action)
+*/
+QAction* QtxMultiAction::activeAction() const
+{
+  return myCurrent;
+}
+
+/*!
   \brief Called when the user activates the current action 
   (for example by clicking the tool button).
   \param on (not used)

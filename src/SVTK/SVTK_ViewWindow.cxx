@@ -33,7 +33,6 @@
 #include "QtxAction.h"
 
 #include "SUIT_Session.h"
-#include "SUIT_ToolButton.h"
 #include "SUIT_MessageBox.h"
 #include "SUIT_Accel.h"
 

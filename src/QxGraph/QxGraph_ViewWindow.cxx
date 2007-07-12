@@ -27,7 +27,8 @@
 
 #include <SUIT_ResourceMgr.h>
 #include <SUIT_Session.h>
-#include <SUIT_ToolButton.h>
+
+#include <QtxMultiAction.h>
 
 //QT Include
 #include <qlayout.h>
@@ -171,16 +172,18 @@ void QxGraph_ViewWindow::createActions()
 */
 void QxGraph_ViewWindow::createToolBar()
 {
-  SUIT_ToolButton* aScaleBtn = new SUIT_ToolButton(myToolBar, "scale");
-  aScaleBtn->AddAction(myActionsMap[FitAllId]);
-  aScaleBtn->AddAction(myActionsMap[FitRectId]);
-  aScaleBtn->AddAction(myActionsMap[ZoomId]);
+  QtxMultiAction* aScaleAction = new QtxMultiAction( this );
+  aScaleAction->insertAction( myActionsMap[FitAllId] );
+  aScaleAction->insertAction( myActionsMap[FitRectId] );
+  aScaleAction->insertAction( myActionsMap[ZoomId] );
+  myToolBar->addAction( aScaleAction );
 
-  SUIT_ToolButton* aPanningBtn = new SUIT_ToolButton(myToolBar, "pan");
-  aPanningBtn->AddAction(myActionsMap[PanId]);
-  aPanningBtn->AddAction(myActionsMap[GlobalPanId]);
+  QtxMultiAction* aPanningAction = new QtxMultiAction( this );
+  aPanningAction->insertAction( myActionsMap[PanId] );
+  aPanningAction->insertAction( myActionsMap[GlobalPanId] );
+  myToolBar->addAction( aPanningAction );
 
-  myActionsMap[ResetId]->addTo(myToolBar);
+  myToolBar->addAction( myActionsMap[ResetId] );
 }
 
 /*!

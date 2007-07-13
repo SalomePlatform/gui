@@ -22,35 +22,46 @@
 
 #include "Plot2d_SetupViewDlg.h"
 
+#include <QtxColorButton.h>
+
 #include <QCheckBox>
 #include <QLineEdit>
 #include <QComboBox>
 #include <QSpinBox>
-#include <QToolButton>
-#include <QLayout>
+#include <QGridLayout>
+#include <QHBoxLayout>
 #include <QGroupBox>
 #include <QLabel>
 #include <QPushButton>
-#include <QColorDialog>
 #include <QTabWidget>
 
-#define MARGIN_SIZE          11
-#define SPACING_SIZE         6
-#define MIN_EDIT_WIDTH       200
-#define MIN_COMBO_WIDTH      100
-#define MIN_SPIN_WIDTH       70
+const int MARGIN_SIZE     = 11;
+const int SPACING_SIZE    = 6;
+const int MIN_EDIT_WIDTH  = 200;
+const int MIN_COMBO_WIDTH = 100;
+const int MIN_SPIN_WIDTH  = 70;
 
 /*!
-  Constructor
+  \class Plot2d_SetupViewDlg
+  \brief Dialog box to setup Plot2d view window.
 */
-Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bool secondAxisY )
-    : QDialog( parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint )
+
+/*!
+  \brief Constructor.
+  \param parent parent widget
+  \param showDefCheck if \c true, show "Set settings as default" check box
+  \param secondAxisY if \c true, show widgets for the second (right) vertical axis
+*/
+Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, 
+					  bool showDefCheck, 
+					  bool secondAxisY )
+: QDialog( parent ), 
+  mySecondAxisY( secondAxisY )
 {
-  setObjectName( "Plot2d_SetupViewDlg" );
   setModal( true );
-  mySecondAxisY = secondAxisY;
   setWindowTitle( tr("TLT_SETUP_PLOT2D_VIEW") );
   setSizeGripEnabled( TRUE );
+
   QGridLayout* topLayout = new QGridLayout( this ); 
   topLayout->setSpacing( SPACING_SIZE );
   topLayout->setMargin( MARGIN_SIZE );
@@ -60,25 +71,26 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   myTitleEdit  = new QLineEdit( this );
   myTitleEdit->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myTitleEdit->setMinimumWidth( MIN_EDIT_WIDTH );
+
   // curve type : points, lines, spline
   QLabel* aCurveLab = new QLabel( tr( "PLOT2D_CURVE_TYPE_LBL" ), this );
   myCurveCombo      = new QComboBox( this );
-  myCurveCombo->setEditable( false );
   myCurveCombo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myCurveCombo->setMinimumWidth( MIN_COMBO_WIDTH );
   myCurveCombo->addItem( tr( "PLOT2D_CURVE_TYPE_POINTS" ) );
   myCurveCombo->addItem( tr( "PLOT2D_CURVE_TYPE_LINES" ) );
   myCurveCombo->addItem( tr( "PLOT2D_CURVE_TYPE_SPLINE" ) );
+
   // legend
   myLegendCheck = new QCheckBox( tr( "PLOT2D_ENABLE_LEGEND" ), this );
   myLegendCombo = new QComboBox( this );
-  myCurveCombo->setEditable( false );
   myLegendCombo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myLegendCombo->setMinimumWidth( MIN_COMBO_WIDTH );
   myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_LEFT" ) );
   myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_RIGHT" ) );
   myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_TOP" ) );
   myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_BOTTOM" ) );
+
   // marker size
   QLabel* aMarkerLab  = new QLabel( tr( "PLOT2D_MARKER_SIZE_LBL" ), this );
   myMarkerSpin = new QSpinBox( this );
@@ -90,8 +102,7 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
 
   // background color
   QLabel* aBGLab  = new QLabel( tr( "PLOT2D_BACKGROUND_COLOR_LBL" ), this );
-  myBackgroundBtn = new QToolButton( this );
-  myBackgroundBtn->setMinimumWidth(20);
+  myBackgroundBtn = new QtxColorButton( this );
 
   // scale mode
   QGroupBox* aScaleGrp = new QGroupBox( tr( "PLOT2D_SCALE_TLT" ), this );
@@ -101,14 +112,13 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
 
   QLabel* xScaleLab = new QLabel( tr( "PLOT2D_SCALE_MODE_HOR" ), aScaleGrp );
   myXModeCombo = new QComboBox( aScaleGrp );
-  myCurveCombo->setEditable( false );
   myXModeCombo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myXModeCombo->setMinimumWidth( MIN_COMBO_WIDTH );
   myXModeCombo->addItem( tr( "PLOT2D_SCALE_MODE_LINEAR" ) );
   myXModeCombo->addItem( tr( "PLOT2D_SCALE_MODE_LOGARITHMIC" ) );
+
   QLabel* yScaleLab = new QLabel( tr( "PLOT2D_SCALE_MODE_VER" ), aScaleGrp );
   myYModeCombo = new QComboBox( aScaleGrp );
-  myCurveCombo->setEditable( false );
   myYModeCombo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myYModeCombo->setMinimumWidth( MIN_COMBO_WIDTH );
   myYModeCombo->addItem( tr( "PLOT2D_SCALE_MODE_LINEAR" ) );
@@ -121,13 +131,13 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
 
   // tab widget for choose properties of axis 
   QTabWidget* aTabWidget = new QTabWidget( this );
-  aTabWidget->setObjectName( "tabWidget" );
 
   // widget for parameters on Ox
   QWidget* aXWidget = new QWidget(aTabWidget);
   QGridLayout* aXLayout = new QGridLayout( aXWidget ); 
   aXLayout->setSpacing( SPACING_SIZE );
   aXLayout->setMargin( MARGIN_SIZE );
+
   // axis title
   myTitleXCheck = new QCheckBox( tr( "PLOT2D_ENABLE_HOR_TITLE" ), aXWidget );
   myTitleXEdit  = new QLineEdit( aXWidget );
@@ -135,12 +145,15 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   myTitleXEdit->setMinimumWidth( MIN_EDIT_WIDTH );
   aXLayout->addWidget( myTitleXCheck,1,    0    );
   aXLayout->addWidget( myTitleXEdit, 1, 1, 1, 3 );
+
   // grid
   QGroupBox* aGridGrpX = new QGroupBox( tr( "PLOT2D_GRID_TLT" ), aXWidget );
   QGridLayout* aGridLayoutX = new QGridLayout( aGridGrpX );
-  aGridGrpX->setLayout( aGridLayoutX );
-  aGridLayoutX->setMargin( MARGIN_SIZE ); aGridLayoutX->setSpacing( SPACING_SIZE );
+  aGridLayoutX->setMargin( MARGIN_SIZE ); 
+  aGridLayoutX->setSpacing( SPACING_SIZE );
+
   myXGridCheck      = new QCheckBox( tr( "PLOT2D_GRID_ENABLE_HOR_MAJOR" ), aGridGrpX );
+
   QLabel* aXMajLbl  = new QLabel( tr( "PLOT2D_MAX_INTERVALS" ), aGridGrpX);
   myXGridSpin       = new QSpinBox( aGridGrpX );
   myXGridSpin->setMinimum( 1 );
@@ -148,7 +161,9 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   myXGridSpin->setSingleStep( 1 );
   myXGridSpin->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myXGridSpin->setMinimumWidth( MIN_SPIN_WIDTH );
+  
   myXMinGridCheck      = new QCheckBox( tr( "PLOT2D_GRID_ENABLE_HOR_MINOR" ), aGridGrpX );
+  
   QLabel* aXMinLbl     = new QLabel( tr( "PLOT2D_MAX_INTERVALS" ), aGridGrpX);
   myXMinGridSpin       = new QSpinBox( aGridGrpX );
   myXMinGridSpin->setMinimum( 1 );
@@ -172,6 +187,7 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   QGridLayout* aYLayout = new QGridLayout( aYWidget ); 
   aYLayout->setSpacing( SPACING_SIZE );
   aYLayout->setMargin( MARGIN_SIZE );
+
   // axis title
   myTitleYCheck = new QCheckBox( tr( "PLOT2D_ENABLE_VER_TITLE" ), aYWidget );
   myTitleYEdit  = new QLineEdit( aYWidget );
@@ -179,12 +195,15 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   myTitleYEdit->setMinimumWidth( MIN_EDIT_WIDTH );
   aYLayout->addWidget( myTitleYCheck,1,    0    );
   aYLayout->addWidget( myTitleYEdit, 1, 1, 1, 3 );
+
   // grid
   QGroupBox* aGridGrpY = new QGroupBox( tr( "PLOT2D_GRID_TLT" ), aYWidget );
   QGridLayout* aGridLayoutY = new QGridLayout( aGridGrpY );
   aGridGrpY->setLayout( aGridLayoutY );
   aGridLayoutY->setMargin( MARGIN_SIZE ); aGridLayoutY->setSpacing( SPACING_SIZE );
+
   myYGridCheck      = new QCheckBox( tr( "PLOT2D_GRID_ENABLE_VER_MAJOR" ), aGridGrpY );
+
   QLabel* aYMajLbl  = new QLabel( tr( "PLOT2D_MAX_INTERVALS" ), aGridGrpY);
   myYGridSpin       = new QSpinBox( aGridGrpY );
   myYGridSpin->setMinimum( 1 );
@@ -192,7 +211,9 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   myYGridSpin->setSingleStep( 1 );
   myYGridSpin->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myYGridSpin->setMinimumWidth( MIN_SPIN_WIDTH );
+
   myYMinGridCheck      = new QCheckBox( tr( "PLOT2D_GRID_ENABLE_VER_MINOR" ), aGridGrpY );
+
   QLabel* aYMinLbl     = new QLabel( tr( "PLOT2D_MAX_INTERVALS" ), aGridGrpY);
   myYMinGridSpin       = new QSpinBox( aGridGrpY );
   myYMinGridSpin->setMinimum( 1 );
@@ -212,12 +233,13 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   aTabWidget->addTab( aYWidget, tr( "INF_AXES_Y_LEFT" ) );
 
   // if exist second axis Oy, addition new tab widget for right axis
-  if (mySecondAxisY) {
+  if ( mySecondAxisY ) {
     // widget for parameters on Oy
-    QWidget* aYWidget2 = new QWidget(aTabWidget);
+    QWidget* aYWidget2 = new QWidget( aTabWidget );
     QGridLayout* aYLayout2 = new QGridLayout( aYWidget2 );
     aYLayout2->setSpacing( SPACING_SIZE );
     aYLayout2->setMargin( MARGIN_SIZE );
+
     // axis title
     myTitleY2Check = new QCheckBox( tr( "PLOT2D_ENABLE_VER_TITLE" ), aYWidget2 );
     myTitleY2Edit  = new QLineEdit( aYWidget2 );
@@ -225,12 +247,15 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
     myTitleY2Edit->setMinimumWidth( MIN_EDIT_WIDTH );
     aYLayout2->addWidget( myTitleY2Check,1,    0    );
     aYLayout2->addWidget( myTitleY2Edit, 1, 1, 1, 3 );
+
     // grid
     QGroupBox* aGridGrpY2 = new QGroupBox( tr( "PLOT2D_GRID_TLT" ), aYWidget2 );
     QGridLayout* aGridLayoutY2 = new QGridLayout( aGridGrpY2 );
     aGridGrpY2->setLayout( aGridLayoutY2 );
     aGridLayoutY2->setMargin( MARGIN_SIZE ); aGridLayoutY2->setSpacing( SPACING_SIZE );
+
     myY2GridCheck      = new QCheckBox( tr( "PLOT2D_GRID_ENABLE_VER_MAJOR" ), aGridGrpY2 );
+
     QLabel* aY2MajLbl  = new QLabel( tr( "PLOT2D_MAX_INTERVALS" ), aGridGrpY2);
     myY2GridSpin       = new QSpinBox( aGridGrpY2 );
     myY2GridSpin->setMinimum( 1 );
@@ -238,7 +263,9 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
     myY2GridSpin->setSingleStep( 1 );
     myY2GridSpin->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
     myY2GridSpin->setMinimumWidth( MIN_SPIN_WIDTH );
+
     myY2MinGridCheck      = new QCheckBox( tr( "PLOT2D_GRID_ENABLE_VER_MINOR" ), aGridGrpY2 );
+
     QLabel* aY2MinLbl     = new QLabel( tr( "PLOT2D_MAX_INTERVALS" ), aGridGrpY2);
     myY2MinGridSpin       = new QSpinBox( aGridGrpY2 );
     myY2MinGridSpin->setMinimum( 1 );
@@ -266,9 +293,12 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
     myY2MinGridSpin  = 0;
     myY2ModeCombo    = 0;
   }
+
   aTabWidget->setCurrentIndex( 0 );
   /* "Set as default" check box */
+
   myDefCheck = new QCheckBox( tr( "PLOT2D_SET_AS_DEFAULT_CHECK" ), this );
+
   /* OK/Cancel buttons */
   myOkBtn = new QPushButton( tr( "BUT_OK" ), this );
   myOkBtn->setAutoDefault( TRUE );
@@ -306,7 +336,6 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   connect( myTitleCheck,    SIGNAL( clicked() ), this, SLOT( onMainTitleChecked() ) );
   connect( myTitleXCheck,   SIGNAL( clicked() ), this, SLOT( onXTitleChecked() ) );
   connect( myTitleYCheck,   SIGNAL( clicked() ), this, SLOT( onYTitleChecked() ) );
-  connect( myBackgroundBtn, SIGNAL( clicked() ), this, SLOT( onBackgroundClicked() ) );
   connect( myLegendCheck,   SIGNAL( clicked() ), this, SLOT( onLegendChecked() ) );
   connect( myXGridCheck,    SIGNAL( clicked() ), this, SLOT( onXGridMajorChecked() ) );
   connect( myYGridCheck,    SIGNAL( clicked() ), this, SLOT( onYGridMajorChecked() ) );
@@ -316,7 +345,7 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   connect( myOkBtn,         SIGNAL( clicked() ), this, SLOT( accept() ) );
   connect( myCancelBtn,     SIGNAL( clicked() ), this, SLOT( reject() ) );
   
-  if (mySecondAxisY) {
+  if ( mySecondAxisY ) {
     connect( myTitleY2Check,   SIGNAL( clicked() ), this, SLOT( onY2TitleChecked() ) );
     connect( myY2GridCheck,    SIGNAL( clicked() ), this, SLOT( onY2GridMajorChecked() ) );
     connect( myY2MinGridCheck, SIGNAL( clicked() ), this, SLOT( onY2GridMinorChecked() ) );
@@ -331,7 +360,7 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
   onXGridMajorChecked();
   onYGridMajorChecked();
   onXGridMinorChecked();
-  if (mySecondAxisY) {
+  if ( mySecondAxisY ) {
     onY2TitleChecked();
     onY2GridMajorChecked();
     onY2GridMinorChecked();
@@ -339,13 +368,17 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, bool showDefCheck, bo
 }
 
 /*!
-  Destructor
+  \brief Destructor.
 */
 Plot2d_SetupViewDlg::~Plot2d_SetupViewDlg()
 {
 }
+
 /*!
-  Sets main title attributes
+  \brief Set main title attributes.
+  \param enable if \c true main title is enabled
+  \param title main title
+  \sa isMainTitleEnabled(), getMainTitle()
 */
 void Plot2d_SetupViewDlg::setMainTitle( bool enable, const QString& title )
 {
@@ -354,22 +387,32 @@ void Plot2d_SetupViewDlg::setMainTitle( bool enable, const QString& title )
     myTitleEdit->setText( title );
   onMainTitleChecked();
 }
+
 /*!
-  Returns TRUE if main title is enabled
+  \brief Check if main title is enabled.
+  \return \c true if main title is enabled
+  \sa setMainTitle()
 */
 bool Plot2d_SetupViewDlg::isMainTitleEnabled()
 {
   return myTitleCheck->isChecked();
 }
+
 /*!
-  Gets main title
+  \brief Get main title.
+  \return main title
+  \sa setMainTitle()
 */
 QString Plot2d_SetupViewDlg::getMainTitle()
 {
   return myTitleEdit->text();
 }
+
 /*!
-  Sets horizontal axis title attributes
+  \brief Set horizontal axis title attributes.
+  \param enable if \c true horizontal axis title is enabled
+  \param title horizontal axis title
+  \sa isXTitleEnabled(), getXTitle()
 */
 void Plot2d_SetupViewDlg::setXTitle( bool enable, const QString& title )
 {
@@ -378,22 +421,32 @@ void Plot2d_SetupViewDlg::setXTitle( bool enable, const QString& title )
     myTitleXEdit->setText( title );
   onXTitleChecked();
 }
+
 /*!
-  Returns TRUE if horizontal axis title is enabled
+  \brief Check if main title is enabled.
+  \return \c true if horizontal axis title is enabled
+  \sa setXTitle()
 */
 bool Plot2d_SetupViewDlg::isXTitleEnabled()
 {
   return myTitleXCheck->isChecked();
 }
+
 /*!
-  Gets horizontal axis title
+  \brief Get horizontal axis title.
+  \return horizontal axis title
+  \sa setXTitle()
 */
 QString Plot2d_SetupViewDlg::getXTitle()
 {
   return myTitleXEdit->text();
 }
+
 /*!
-  Sets vertical left axis title attributes
+  \brief Set left vertical axis title attributes.
+  \param enable if \c true left vertical axis title is enabled
+  \param title left vertical axis title
+  \sa setY2Title(), isYTitleEnabled(), getYTitle()
 */
 void Plot2d_SetupViewDlg::setYTitle( bool enable, const QString& title )
 {
@@ -402,8 +455,12 @@ void Plot2d_SetupViewDlg::setYTitle( bool enable, const QString& title )
     myTitleYEdit->setText( title );
   onYTitleChecked();
 }
+
 /*!
-  Sets vertical right axis title attributes
+  \brief Set right vertical axis title attributes.
+  \param enable if \c true right vertical axis title is enabled
+  \param title right vertical axis title
+  \sa setYTitle(), isY2TitleEnabled(), getY2Title()
 */
 void Plot2d_SetupViewDlg::setY2Title( bool enable, const QString& title )
 {
@@ -412,50 +469,72 @@ void Plot2d_SetupViewDlg::setY2Title( bool enable, const QString& title )
     myTitleY2Edit->setText( title );
   onY2TitleChecked();
 }
+
 /*!
-  Returns TRUE if vertical left axis title is enabled
+  \brief Check if left vertical axis title is enabled.
+  \return \c true if right vertical axis title is enabled
+  \sa setYTitle()
 */
 bool Plot2d_SetupViewDlg::isYTitleEnabled()
 {
   return myTitleYCheck->isChecked();
 }
+
 /*!
-  Returns TRUE if vertical right axis title is enabled
+  \brief Check if right vertical axis title is enabled.
+  \return \c true if right vertical axis title is enabled
+  \sa setY2Title()
 */
 bool Plot2d_SetupViewDlg::isY2TitleEnabled()
 {
   return myTitleY2Check->isChecked();
 }
+
 /*!
-  Gets vertical left axis title
+  \brief Get left vertical axis title.
+  \return left vertical axis title
+  \sa setYTitle()
 */
 QString Plot2d_SetupViewDlg::getYTitle()
 {
   return myTitleYEdit->text();
 }
+
 /*!
-  Gets vertical right axis title
+  \brief Get right vertical axis title.
+  \return right vertical axis title
+  \sa setY2Title()
 */
 QString Plot2d_SetupViewDlg::getY2Title()
 {
   return myTitleY2Edit->text();
 }
+
 /*!
-  Sets curve type : 0 - points, 1 - lines, 2 - splines
+  \brief Set curve type.
+  \param type curve type: 0 (points), 1 (lines) or 2 (splines)
+  \sa getCurveType()
 */
 void Plot2d_SetupViewDlg::setCurveType( const int type )
 {
   myCurveCombo->setCurrentIndex( type );
 }
+
 /*!
-  Gets curve type : 0 - points, 1 - lines, 2 - splines
+  \brief Get curve type.
+  \return curve type: 0 (points), 1 (lines) or 2 (splines)
+  \sa setCurveType()
 */
 int Plot2d_SetupViewDlg::getCurveType()
 {
   return myCurveCombo->currentIndex();
 }
+
 /*!
-  Sets legend attributes : pos = 0 - left, 1 - right, 2 - top, 3 - bottom
+  \brief Set legend attribute.
+  \param if \c true legend is shown
+  \param pos legend position: 0 (left), 1 (right), 2 (top), 3 (bottom)
+  \sa isLegendEnabled(), getLegendPos()
 */
 void Plot2d_SetupViewDlg::setLegend( bool enable, int pos )
 {
@@ -463,58 +542,80 @@ void Plot2d_SetupViewDlg::setLegend( bool enable, int pos )
   myLegendCombo->setCurrentIndex( pos );
   onLegendChecked();
 }
+
 /*!
-  Returns TRUE if legend is enabled
+  \brief Check if legend is enabled.
+  \return \c true if legend is enabled
+  \sa setLegend()
 */
 bool Plot2d_SetupViewDlg::isLegendEnabled()
 {
   return myLegendCheck->isChecked();
 }
+
 /*!
-  Returns legend position
+  \brief Get legend position.
+  \return legend position: 0 (left), 1 (right), 2 (top), 3 (bottom)
+  \sa setLegend()
 */
 int Plot2d_SetupViewDlg::getLegendPos()
 {
   return myLegendCombo->currentIndex();
 }
+
 /*!
-  Sets marker size
+  \brief Set marker size.
+  \param size marker size
+  \sa getMarkerSize()
 */
 void Plot2d_SetupViewDlg::setMarkerSize( const int size )
 {
   myMarkerSpin->setValue( size );
 }
+
 /*!
-  Gets marker size
+  \brief Get marker size.
+  \return marker size
+  \sa setMarkerSize()
 */
 int Plot2d_SetupViewDlg::getMarkerSize()
 {
   return myMarkerSpin->value();
 }
+
 /*!
-  Sets background color
+  \brief Set background color.
+  \param color background color
+  \sa getBackgroundColor()
 */
 void Plot2d_SetupViewDlg::setBackgroundColor( const QColor& color )
 {
-  QPalette pal = myBackgroundBtn->palette();
-  pal.setColor( QPalette::Active, QPalette::Button, color );
-  pal.setColor( QPalette::Inactive, QPalette::Button, color );
-  
-  myBackgroundBtn->setPalette( pal );
+  myBackgroundBtn->setColor( color );
 }
+
 /*!
-  Gets background color
+  \brief Get background color.
+  \return background color
+  \sa setBackgroundColor()
 */
 QColor Plot2d_SetupViewDlg::getBackgroundColor()
 {
-  return myBackgroundBtn->palette().color( QPalette::Active, QPalette::Button );
+  return myBackgroundBtn->color();
 }
+
 /*!
-  Sets major grid parameters
+  \brief Set major grid parameters.
+  \param enableX if \c true, horizontal major grid is enabled
+  \param divX maximum number of ticks for horizontal major grid
+  \param enableY if \c true, left vertical major grid is enabled
+  \param divY maximum number of ticks for left vertical major grid
+  \param enableY2 if \c true, right vertical major grid is enabled
+  \param divY2 maximum number of ticks for right vertical major grid
+  \sa getMajorGrid()
 */
 void Plot2d_SetupViewDlg::setMajorGrid( bool enableX, const int divX,
                                         bool enableY, const int divY,
-                                        bool enableY2, const int divY2  )
+                                        bool enableY2, const int divY2 )
 {
   myXGridCheck->setChecked( enableX );
   myXGridSpin->setValue( divX );
@@ -528,12 +629,20 @@ void Plot2d_SetupViewDlg::setMajorGrid( bool enableX, const int divX,
     onY2GridMajorChecked();
   }
 }
+
 /*!
-  Gets major grid parameters
+  \brief Get major grid parameters.
+  \param enableX \c true if horizontal major grid is enabled
+  \param divX maximum number of ticks for horizontal major grid
+  \param enableY \c true if left vertical major grid is enabled
+  \param divY maximum number of ticks for left vertical major grid
+  \param enableY2 \c true if right vertical major grid is enabled
+  \param divY2 maximum number of ticks for right vertical major grid
+  \sa setMajorGrid()
 */
 void Plot2d_SetupViewDlg::getMajorGrid( bool& enableX, int& divX,
                                         bool& enableY, int& divY,
-                                        bool& enableY2, int& divY2)
+                                        bool& enableY2, int& divY2 )
 {
   enableX  = myXGridCheck->isChecked();
   divX     = myXGridSpin->value();
@@ -548,12 +657,20 @@ void Plot2d_SetupViewDlg::getMajorGrid( bool& enableX, int& divX,
     divY2    = 1;
   }
 }
+
 /*!
-  Sets minor grid parameters
+  \brief Set minor grid parameters.
+  \param enableX if \c true, horizontal minor grid is enabled
+  \param divX maximum number of ticks for horizontal minor grid
+  \param enableY if \c true, left vertical minor grid is enabled
+  \param divY maximum number of ticks for left vertical minor grid
+  \param enableY2 if \c true, right vertical minor grid is enabled
+  \param divY2 maximum number of ticks for right vertical minor grid
+  \sa getMinorGrid()
 */
 void Plot2d_SetupViewDlg::setMinorGrid( bool enableX, const int divX,
                                         bool enableY, const int divY,
-                                        bool enableY2, const int divY2)
+                                        bool enableY2, const int divY2 )
 {
   myXMinGridCheck->setChecked( enableX );
   myXMinGridSpin->setValue( divX );
@@ -567,18 +684,26 @@ void Plot2d_SetupViewDlg::setMinorGrid( bool enableX, const int divX,
     onY2GridMinorChecked();
   }
 }
+
 /*!
-  Gets minor grid parameters
+  \brief Get minor grid parameters.
+  \param enableX \c true if horizontal minor grid is enabled
+  \param divX maximum number of ticks for horizontal minor grid
+  \param enableY \c true if left vertical minor grid is enabled
+  \param divY maximum number of ticks for left vertical minor grid
+  \param enableY2 \c true if right vertical minor grid is enabled
+  \param divY2 maximum number of ticks for right vertical minor grid
+  \sa setMinorGrid()
 */
 void Plot2d_SetupViewDlg::getMinorGrid( bool& enableX, int& divX,
                                         bool& enableY, int& divY,
-                                        bool& enableY2, int& divY2)
+                                        bool& enableY2, int& divY2 )
 {
   enableX  = myXMinGridCheck->isChecked();
   divX     = myXMinGridSpin->value();
   enableY  = myYMinGridCheck->isChecked();
   divY     = myYMinGridSpin->value();
-  if (mySecondAxisY) {
+  if ( mySecondAxisY ) {
     enableY2 = myY2MinGridCheck->isChecked();
     divY2    = myY2MinGridSpin->value();
   }
@@ -587,114 +712,127 @@ void Plot2d_SetupViewDlg::getMinorGrid( bool& enableX, int& divX,
     divY2    = 1;
   }
 }
+
 /*!
-  Sets scale mode for hor. and ver. axes : 0 - linear, 1 - logarithmic
+  \brief Set scale mode for horizontal and vertical axes.
+  \param xMode horizontal axis scale mode: 0 (linear), 1 (logarithmic)
+  \param yMode vertical axis scale mode: 0 (linear), 1 (logarithmic)
+  \sa getXScaleMode(), getYScaleMode()
 */
 void Plot2d_SetupViewDlg::setScaleMode( const int xMode, const int yMode )
 {
   myXModeCombo->setCurrentIndex( xMode );
   myYModeCombo->setCurrentIndex( yMode );
 }
+
 /*!
-  Gets scale mode for hor. axis : 0 - linear, 1 - logarithmic
+  \brief Get scale mode for horizontal axis.
+  \return horizontal axis scale mode: 0 (linear), 1 (logarithmic)
+  \sa setScaleMode()
 */
-int  Plot2d_SetupViewDlg::getXScaleMode()
+int Plot2d_SetupViewDlg::getXScaleMode()
 {
   return myXModeCombo->currentIndex();
 }
+
 /*!
-  Gets scale mode for hor. axis : 0 - linear, 1 - logarithmic
+  \brief Get scale mode for vertical axis.
+  \return vertical axis scale mode: 0 (linear), 1 (logarithmic)
+  \sa setScaleMode()
 */
 int  Plot2d_SetupViewDlg::getYScaleMode()
 {
   return myYModeCombo->currentIndex();
 }
+
 /*!
-  Slot, called when user clicks "Show main title" check box
+  \brief Called when user clicks "Show main title" check box.
 */
 void Plot2d_SetupViewDlg::onMainTitleChecked()
 {
   myTitleEdit->setEnabled( myTitleCheck->isChecked() );
 }
+
 /*!
-  Slot, called when user clicks "Show horizontal axis title" check box
+  \brief Called when user clicks "Show horizontal axis title" check box.
 */
 void Plot2d_SetupViewDlg::onXTitleChecked()
 {
   myTitleXEdit->setEnabled( myTitleXCheck->isChecked() );
 }
+
 /*!
-  Slot, called when user clicks "Show vertical left axis title" check box
+  \brief Called when user clicks "Show vertical left axis title" check box.
 */
 void Plot2d_SetupViewDlg::onYTitleChecked()
 {
   myTitleYEdit->setEnabled( myTitleYCheck->isChecked() );
 }
+
 /*!
-  Slot, called when user clicks "Show vertical right axis title" check box
+  \brief Called when user clicks "Show vertical right axis title" check box.
 */
 void Plot2d_SetupViewDlg::onY2TitleChecked()
 {
   myTitleY2Edit->setEnabled( myTitleY2Check->isChecked() );
 }
+
 /*!
-  Slot, called when user clicks "Change bacground color" button
-*/
-void Plot2d_SetupViewDlg::onBackgroundClicked()
-{
-  QColor color = QColorDialog::getColor( getBackgroundColor() );
-  if ( color.isValid() ) {
-    setBackgroundColor( color );
-  }
-}
-/*!
-  Slot, called when user clicks "Show Legend" check box
+  \brief Called when user clicks "Show Legend" check box.
 */
 void Plot2d_SetupViewDlg::onLegendChecked()
 {
   myLegendCombo->setEnabled( myLegendCheck->isChecked() );
 }
+
 /*!
-  Slot, called when user clicks "Enable hor. major grid" check box
+  \brief Called when user clicks "Enable horizontal major grid" check box.
 */
 void Plot2d_SetupViewDlg::onXGridMajorChecked()
 {
   myXMinGridCheck->setEnabled( myXGridCheck->isChecked() );
 }
+
 /*!
-  Slot, called when user clicks  "Enable ver. major grid" check box
+  \brief Called when user clicks "Enable left vertical major grid" check box.
 */
 void Plot2d_SetupViewDlg::onYGridMajorChecked()
 {
   myYMinGridCheck->setEnabled( myYGridCheck->isChecked() );
 }
+
 /*!
-  Slot, called when user clicks  "Enable ver. major grid" check box
+  \brief Called when user clicks "Enable right vertical major grid" check box.
 */
 void Plot2d_SetupViewDlg::onY2GridMajorChecked()
 {
   myY2MinGridCheck->setEnabled( myY2GridCheck->isChecked() );
 }
+
 /*!
-  Slot, called when user clicks  "Enable hor. minor grid" check box
+  \brief Called when user clicks "Enable horizontal minor grid" check box.
 */
 void Plot2d_SetupViewDlg::onXGridMinorChecked()
 {
 }
+
 /*!
-  Slot, called when user clicks  "Enable ver. minor grid" check box
+  \brief Called when user clicks "Enable left vertical minor grid" check box.
 */
 void Plot2d_SetupViewDlg::onYGridMinorChecked()
 {
 }
+
 /*!
-  Slot, called when user clicks  "Enable ver. minor grid" check box
+  \brief Called when user clicks "Enable right vertical minor grid" check box.
 */
 void Plot2d_SetupViewDlg::onY2GridMinorChecked()
 {
 }
+
 /*!
-  Retursns true if "Set as default" check box is on
+  \brief Get "Set settings as default" check box value.
+  \return \c true if "Set settings as default" check box is on
 */
 bool Plot2d_SetupViewDlg::isSetAsDefault()
 {

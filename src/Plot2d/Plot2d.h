@@ -16,16 +16,86 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File   : Plot2d.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
+
+#ifndef PLOT2D_H
+#define PLOT2D_H
+
 #ifdef WIN32
-#ifdef PLOT2D_EXPORTS
-#define PLOT2D_EXPORT __declspec(dllexport)
+#  ifdef PLOT2D_EXPORTS
+#    define PLOT2D_EXPORT __declspec(dllexport)
+#  else
+#    define PLOT2D_EXPORT __declspec(dllimport)
+#  endif
 #else
-#define PLOT2D_EXPORT __declspec(dllimport)
-#endif
-#else
-#define PLOT2D_EXPORT
+#  define PLOT2D_EXPORT
 #endif
 
+#include <qwt_symbol.h>
+#include <Qt>
+
+class QPainter;
+
+namespace Plot2d
+{
+  typedef enum { None, 
+		 Circle,  
+		 Rectangle,
+		 Diamond,
+		 DTriangle,
+		 UTriangle,
+		 LTriangle,
+		 RTriangle,
+		 Cross,
+		 XCross
+  } MarkerType;
+
+  typedef enum {
+    NoPen,
+    Solid, 
+    Dash, 
+    Dot, 
+    DashDot, 
+    DashDotDot
+  } LineType;
+
+  QwtSymbol::Style         plot2qwtMarker( MarkerType );
+  MarkerType qwt2plotMarker( QwtSymbol::Style );
+
+  Qt::PenStyle             plot2qwtLine( LineType );
+  LineType                 qwt2plotLine( Qt::PenStyle );
+
+  void                     drawLine( QPainter*, const QPoint&, const QPoint&, 
+				     Qt::PenStyle = Qt::SolidLine, 
+				     const QColor& = Qt::black, int = 0 );
+  void                     drawLine( QPainter*, const QPoint&, const QPoint&, 
+				     LineType = Solid, 
+				     const QColor& = Qt::black, int = 0 );
+  void                     drawLine( QPainter*, int, int, int, int,
+				     Qt::PenStyle = Qt::SolidLine, 
+				     const QColor& = Qt::black, int = 0 );
+  void                     drawLine( QPainter*, int, int, int, int,
+				     LineType = Solid, 
+				     const QColor& = Qt::black, int = 0 );
+
+  void                     drawMarker( QPainter*, const QPoint&, const QRect&,
+				       QwtSymbol::Style = QwtSymbol::Ellipse,
+				       const QColor& = Qt::black );
+  void                     drawMarker( QPainter*, const QPoint&, const QRect&,
+				       MarkerType = Circle,
+				       const QColor& = Qt::black );
+  void                     drawMarker( QPainter*, int, int, int, int,
+				       QwtSymbol::Style = QwtSymbol::Ellipse,
+				       const QColor& = Qt::black );
+  void                     drawMarker( QPainter*, int, int, int, int,
+				       MarkerType = Circle,
+				       const QColor& = Qt::black );
+}
+
 #if defined WIN32
-#pragma warning ( disable: 4251 )
+#  pragma warning ( disable: 4251 )
 #endif
+
+#endif // PLOT2D_H

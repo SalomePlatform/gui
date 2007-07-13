@@ -527,118 +527,6 @@ QString Plot2d_ViewFrame::getInfo( const QPoint& pnt )
 }
 
 /*!
-  Converts Plot2d_Curve's marker style to Qwt marker style [ static ]
-*/
-static QwtSymbol::Style plot2qwtMarker( Plot2d_Curve::MarkerType m )
-{
-  QwtSymbol::Style ms = QwtSymbol::NoSymbol;  
-  switch ( m ) {
-  case Plot2d_Curve::Circle:
-    ms = QwtSymbol::Ellipse;   break;
-  case Plot2d_Curve::Rectangle:
-    ms = QwtSymbol::Rect;      break;
-  case Plot2d_Curve::Diamond:
-    ms = QwtSymbol::Diamond;   break;
-  case Plot2d_Curve::DTriangle:
-    ms = QwtSymbol::DTriangle; break;
-  case Plot2d_Curve::UTriangle:
-    ms = QwtSymbol::UTriangle; break;
-  case Plot2d_Curve::LTriangle: // Qwt confuses LTriangle and RTriangle :(((
-    ms = QwtSymbol::RTriangle; break;
-  case Plot2d_Curve::RTriangle: // Qwt confuses LTriangle and RTriangle :(((
-    ms = QwtSymbol::LTriangle; break;
-  case Plot2d_Curve::Cross:
-    ms = QwtSymbol::Cross;     break;
-  case Plot2d_Curve::XCross:
-    ms = QwtSymbol::XCross;    break;
-  case Plot2d_Curve::None:
-  default:
-    ms = QwtSymbol::NoSymbol;  break;
-  }
-  return ms;
-}
-
-/*!
-  Converts Qwt marker style to Plot2d_Curve's marker style [ static ]
-*/
-static Plot2d_Curve::MarkerType qwt2plotMarker( QwtSymbol::Style m )
-{
-  Plot2d_Curve::MarkerType ms = Plot2d_Curve::None;  
-  switch ( m ) {
-  case QwtSymbol::Ellipse:
-    ms = Plot2d_Curve::Circle;    break;
-  case QwtSymbol::Rect:
-    ms = Plot2d_Curve::Rectangle; break;
-  case QwtSymbol::Diamond:
-    ms = Plot2d_Curve::Diamond;   break;
-  case QwtSymbol::DTriangle:
-    ms = Plot2d_Curve::DTriangle; break;
-  case QwtSymbol::UTriangle:
-    ms = Plot2d_Curve::UTriangle; break;
-  case QwtSymbol::RTriangle: // Qwt confuses LTriangle and RTriangle :(((
-    ms = Plot2d_Curve::LTriangle; break;
-  case QwtSymbol::LTriangle: // Qwt confuses LTriangle and RTriangle :(((
-    ms = Plot2d_Curve::RTriangle; break;
-  case QwtSymbol::Cross:
-    ms = Plot2d_Curve::Cross;     break;
-  case QwtSymbol::XCross:
-    ms = Plot2d_Curve::XCross;    break;
-  case QwtSymbol::NoSymbol:
-  default:
-    ms = Plot2d_Curve::None;      break;
-  }
-  return ms;
-}
-
-/*!
-  Converts Plot2d_Curve's line style to Qwt line style [ static ]
-*/
-static Qt::PenStyle plot2qwtLine( Plot2d_Curve::LineType p )
-{
-  Qt::PenStyle ps = Qt::NoPen;
-  switch ( p ) {
-  case Plot2d_Curve::Solid:
-    ps = Qt::SolidLine;      break;
-  case Plot2d_Curve::Dash:
-    ps = Qt::DashLine;       break;
-  case Plot2d_Curve::Dot:
-    ps = Qt::DotLine;        break;
-  case Plot2d_Curve::DashDot:
-    ps = Qt::DashDotLine;    break;
-  case Plot2d_Curve::DashDotDot:
-    ps = Qt::DashDotDotLine; break;
-  case Plot2d_Curve::NoPen:
-  default:
-    ps = Qt::NoPen;          break;
-  }
-  return ps;
-}
-
-/*!
-  Converts Qwt line style to Plot2d_Curve's line style [ static ]
-*/
-static Plot2d_Curve::LineType qwt2plotLine( Qt::PenStyle p )
-{
-  Plot2d_Curve::LineType ps = Plot2d_Curve::NoPen;
-  switch ( p ) {
-  case Qt::SolidLine:
-    ps = Plot2d_Curve::Solid;      break;
-  case Qt::DashLine:
-    ps = Plot2d_Curve::Dash;       break;
-  case Qt::DotLine:
-    ps = Plot2d_Curve::Dot;        break;
-  case Qt::DashDotLine:
-    ps = Plot2d_Curve::DashDot;    break;
-  case Qt::DashDotDotLine:
-    ps = Plot2d_Curve::DashDotDot; break;
-  case Qt::NoPen:
-  default:
-    ps = Plot2d_Curve::NoPen;      break;
-  }
-  return ps;
-}
-
-/*!
   Adds curve into view
 */
 void Plot2d_ViewFrame::displayCurve( Plot2d_Curve* curve, bool update )
@@ -675,12 +563,12 @@ void Plot2d_ViewFrame::displayCurve( Plot2d_Curve* curve, bool update )
                QPen( color ), 
                QSize( myMarkerSize, myMarkerSize ) ) );
       curve->setColor( color );
-      curve->setLine( qwt2plotLine( typeLine ) );
-      curve->setMarker( qwt2plotMarker( typeMarker ) );
+      curve->setLine( Plot2d::qwt2plotLine( typeLine ) );
+      curve->setMarker( Plot2d::qwt2plotMarker( typeMarker ) );
     }
     else {
-      Qt::PenStyle     ps = plot2qwtLine( curve->getLine() );
-      QwtSymbol::Style ms = plot2qwtMarker( curve->getMarker() );
+      Qt::PenStyle     ps = Plot2d::plot2qwtLine( curve->getLine() );
+      QwtSymbol::Style ms = Plot2d::plot2qwtMarker( curve->getMarker() );
       aPCurve->setPen( QPen( curve->getColor(), curve->getLineWidth(), ps ) );
       aPCurve->setSymbol( QwtSymbol( ms, 
                QBrush( curve->getColor() ), 
@@ -758,8 +646,8 @@ void Plot2d_ViewFrame::updateCurve( Plot2d_Curve* curve, bool update )
   if ( hasPlotCurve( curve ) ) {
   QwtPlotCurve* aPCurve = getPlotCurve( curve );
     if ( !curve->isAutoAssign() ) {
-      Qt::PenStyle     ps = plot2qwtLine( curve->getLine() );
-      QwtSymbol::Style ms = plot2qwtMarker( curve->getMarker() );
+      Qt::PenStyle     ps = Plot2d::plot2qwtLine( curve->getLine() );
+      QwtSymbol::Style ms = Plot2d::plot2qwtMarker( curve->getMarker() );
       aPCurve->setPen ( QPen( curve->getColor(), curve->getLineWidth(), ps ) );
       aPCurve->setSymbol( QwtSymbol( ms, 
                QBrush( curve->getColor() ), 

@@ -16,6 +16,10 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File   : Plot2d_Curve.cxx
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
+
 #include "Plot2d_Curve.h"
 #include <QColor>
 
@@ -24,9 +28,13 @@
 */
 Plot2d_Curve::Plot2d_Curve()
 : myHorTitle( "" ), myVerTitle( "" ), 
-myHorUnits( "" ), myVerUnits( "" ), 
-myAutoAssign( true ), myColor( 0,0,0 ), myMarker( Circle ), myLine( Solid ), myLineWidth( 0 ),
-myYAxis( QwtPlot::yLeft )
+  myHorUnits( "" ), myVerUnits( "" ), 
+  myAutoAssign( true ), 
+  myColor( 0,0,0 ), 
+  myMarker( Plot2d::Circle ), 
+  myLine( Plot2d::Solid ), 
+  myLineWidth( 0 ),
+  myYAxis( QwtPlot::yLeft )
 {
 }
 
@@ -292,7 +300,7 @@ QColor Plot2d_Curve::getColor() const
 /*!
   Sets curve's marker ( and resets AutoAssign flag )
 */
-void Plot2d_Curve::setMarker( MarkerType marker )
+void Plot2d_Curve::setMarker( Plot2d::MarkerType marker )
 {
   myMarker = marker;
   myAutoAssign = false;
@@ -301,7 +309,7 @@ void Plot2d_Curve::setMarker( MarkerType marker )
 /*!
   Gets curve's marker
 */
-Plot2d_Curve::MarkerType Plot2d_Curve::getMarker() const
+Plot2d::MarkerType Plot2d_Curve::getMarker() const
 {
   return myMarker;
 }
@@ -313,7 +321,7 @@ Plot2d_Curve::MarkerType Plot2d_Curve::getMarker() const
          algorithm for diagonals. 
          For horizontal and vertical lines a line width of 0 is the same as a line width of 1.
 */
-void Plot2d_Curve::setLine( LineType line, const int lineWidth )
+void Plot2d_Curve::setLine( Plot2d::LineType line, const int lineWidth )
 {
   myLine = line;
   myLineWidth = lineWidth;
@@ -324,7 +332,7 @@ void Plot2d_Curve::setLine( LineType line, const int lineWidth )
 /*!
   Gets curve's line type
 */
-Plot2d_Curve::LineType Plot2d_Curve::getLine() const
+Plot2d::LineType Plot2d_Curve::getLine() const
 {
   return myLine;
 }

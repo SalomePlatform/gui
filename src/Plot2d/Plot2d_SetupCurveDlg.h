@@ -20,51 +20,54 @@
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 //
 
-#ifndef Plot2d_SetupCurveDlg_H
-#define Plot2d_SetupCurveDlg_H
+#ifndef PLOT2D_SETUPCURVEDLG_H
+#define PLOT2D_SETUPCURVEDLG_H
 
 #include "Plot2d.h"
 
-#include <qdialog.h>
-
-/*!
-  \class Plot2d_SetupCurveDlg
-  Dialog box for setup Plot2d curve
-*/
+#include <QDialog>
 
 class QPushButton;
 class QComboBox;
 class QSpinBox;
-class QToolButton;
+class QLabel;
+class QtxColorButton;
 
 class PLOT2D_EXPORT Plot2d_SetupCurveDlg : public QDialog
 { 
   Q_OBJECT
 
 public:
-  Plot2d_SetupCurveDlg( QWidget* parent = 0 );
+  Plot2d_SetupCurveDlg( QWidget* = 0 );
   ~Plot2d_SetupCurveDlg();
 
 public:
-  void   setLine( const int line, const int width );
-  int    getLine() const;
-  int    getLineWidth() const;
-  void   setMarker( const int marker );
-  int    getMarker() const ;
-  void   setColor( const QColor& color );
-  QColor getColor() const;
-  
-protected slots:
-  void   onColorChanged();
+  void               setLine( Plot2d::LineType, const int );
+  Plot2d::LineType   getLine() const;
+  int                getLineWidth() const;
+
+  void               setMarker( Plot2d::MarkerType );
+  Plot2d::MarkerType getMarker() const ;
+
+  void               setColor( const QColor& );
+  QColor             getColor() const;
 
 private:
-  QPushButton* myOkBtn;
-  QPushButton* myCancelBtn;
-  QComboBox*   myLineCombo;
-  QSpinBox*    myLineSpin;
-  QComboBox*   myMarkerCombo;
-  QToolButton* myColorBtn;
+  QPixmap            lineIcon( Plot2d::LineType ) const;
+  QPixmap            markerIcon( Plot2d::MarkerType ) const;
+
+private slots:
+  void               updatePreview();
+
+private:
+  QPushButton*       myOkBtn;
+  QPushButton*       myCancelBtn;
+  QComboBox*         myLineCombo;
+  QSpinBox*          myLineSpin;
+  QComboBox*         myMarkerCombo;
+  QtxColorButton*    myColorBtn;
+  QLabel*            myPreview;
 };
 
-#endif // Plot2d_SetupCurveDlg_H
+#endif // PLOT2D_SETUPCURVEDLG_H
 

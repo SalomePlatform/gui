@@ -40,6 +40,7 @@ salomeinclude_HEADERS= \
 	Plot2d_ToolTip.h
 
 dist_libPlot2d_la_SOURCES= \
+	Plot2d.cxx \
 	Plot2d_Curve.cxx \
 	Plot2d_FitDataDlg.cxx \
 	Plot2d_Prs.cxx \

@@ -135,6 +135,9 @@ SVTK_ViewWindow
     
     myView = new SVTK_View(myMainWindow);
     Initialize(myView,theModel);
+
+    anIteractor->getRenderWindow()->Render();
+    myMainWindow->onResetView();
   }
 }
 

@@ -1206,6 +1206,7 @@ SVTK_InteractorStyle
     }
   case VTK_INTERACTOR_STYLE_CAMERA_FIT:
     {
+      myOtherPoint = mousePos;
       drawRect();
       break;
     }

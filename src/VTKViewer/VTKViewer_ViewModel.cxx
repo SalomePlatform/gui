@@ -110,7 +110,7 @@ void VTKViewer_Viewer::onMousePress(SUIT_ViewWindow* vw, QMouseEvent* event)
   if ( !rwi )
     return;
 
-  switch(event->button()) {
+  switch(event->buttons()) {
   case Qt::LeftButton:
     rwi->LeftButtonPressed(event) ;
     break ;
@@ -144,7 +144,7 @@ void VTKViewer_Viewer::onMouseRelease(SUIT_ViewWindow* vw, QMouseEvent* event)
   if ( !rwi )
     return;
 
-  switch(event->button()) {
+  switch(event->buttons()) {
   case Qt::LeftButton:
     rwi->LeftButtonReleased(event) ;
     break ;

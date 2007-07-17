@@ -88,6 +88,11 @@ public:
     PT_Directory      //!< the directory path is required
   } PathType;
 
+  //! Custom data roles
+  enum { 
+    AppropriateRole = Qt::UserRole + 100   //!< can be used to return \c true if data is appropriate
+  };
+
   static QString     toQString( const char*, const int = -1 );
   static QString     toQString( const short*, const int = -1 );
   static QString     toQString( const unsigned char*, const int = -1 );

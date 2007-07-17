@@ -46,6 +46,7 @@ salomeinclude_HEADERS=		\
 	QtxGroupBox.h		\
 	QtxIntSpinBox.h		\
 	QtxListAction.h		\
+	QtxTreeView.h		\
 	QtxLogoMgr.h		\
 	QtxMainWindow.h 	\
 	QtxMap.h		\
@@ -71,7 +72,6 @@ salomeinclude_HEADERS=		\
 #VSR: not yet migrated to Qt4 files
 #				\
 	QtxListBox.h		\
-	QtxListView.h		\
 	QtxTable.h
 
 # Libraries targets
@@ -99,6 +99,7 @@ dist_libqtx_la_SOURCES=		\
 	QtxGroupBox.cxx		\
 	QtxIntSpinBox.cxx	\
 	QtxListAction.cxx	\
+	QtxTreeView.cxx		\
 	QtxLogoMgr.cxx		\
 	QtxMainWindow.cxx	\
 	QtxMenu.cxx		\
@@ -123,7 +124,6 @@ dist_libqtx_la_SOURCES=		\
 #VSR: not yet migrated to Qt4 files
 #				\
 	QtxListBox.cxx		\
-	QtxListView.cxx		\
 	QtxTable.cxx
 
 #VSR: already migrated to Qt4 files
@@ -145,6 +145,7 @@ MOC_FILES=				\
 	QtxGroupBox_moc.cxx		\
 	QtxIntSpinBox_moc.cxx		\
 	QtxListAction_moc.cxx		\
+	QtxTreeView_moc.cxx		\
 	QtxLogoMgr_moc.cxx		\
 	QtxMainWindow_moc.cxx		\
 	QtxMenu_moc.cxx 		\
@@ -167,7 +168,6 @@ MOC_FILES=				\
 #VSR: not yet migrated to Qt4 files
 #					\
 	QtxListBox_moc.cxx		\
-	QtxListView_moc.cxx		\
 	QtxTable_moc.cxx
 
 nodist_libqtx_la_SOURCES= $(MOC_FILES)

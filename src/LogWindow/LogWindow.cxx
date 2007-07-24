@@ -87,7 +87,7 @@ static QString plainText( const QString& richText )
   \param parent parent widget
 */
 LogWindow::LogWindow( QWidget* parent )
-: QFrame( parent ),
+: QWidget( parent ),
   SUIT_PopupClient()
 {
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
@@ -101,7 +101,7 @@ LogWindow::LogWindow( QWidget* parent )
   myView->viewport()->installEventFilter( this );
 
   QVBoxLayout* main = new QVBoxLayout( this );
-  main->setMargin( 5 );
+  main->setMargin( 0 );
   main->addWidget( myView );
 
   myBannerSize = 0;
@@ -178,7 +178,7 @@ bool LogWindow::eventFilter( QObject* o, QEvent* e )
     contextMenuRequest( (QContextMenuEvent*)e );
     return true;
   }
-  return QFrame::eventFilter( o, e );
+  return QWidget::eventFilter( o, e );
 }
 
 /*!

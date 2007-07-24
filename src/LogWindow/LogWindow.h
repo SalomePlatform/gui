@@ -38,7 +38,7 @@
 
 #include <SUIT_PopupClient.h>
 
-#include <QFrame>
+#include <QWidget>
 #include <QMap>
 #include <QStringList>
 
@@ -49,7 +49,7 @@
 class QAction;
 class QTextEdit;
 
-class LOGWINDOW_EXPORT LogWindow : public QFrame, public SUIT_PopupClient
+class LOGWINDOW_EXPORT LogWindow : public QWidget, public SUIT_PopupClient
 {
   Q_OBJECT
 

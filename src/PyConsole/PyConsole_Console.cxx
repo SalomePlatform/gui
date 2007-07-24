@@ -46,7 +46,7 @@
   \param interp python interpreter
 */
 PyConsole_Console::PyConsole_Console( QWidget* parent, PyConsole_Interp* interp )
-: QFrame( parent ),
+: QWidget( parent ),
   myEditor( 0 )
 {
   // create python interpreter
@@ -59,7 +59,7 @@ PyConsole_Console::PyConsole_Console( QWidget* parent, PyConsole_Interp* interp 
   
   // create editor console
   QVBoxLayout* lay = new QVBoxLayout( this );
-  lay->setMargin( 5 );
+  lay->setMargin( 0 );
   myEditor = new PyConsole_Editor( myInterp, this );
   myEditor->viewport()->installEventFilter( this );
   lay->addWidget( myEditor );
@@ -163,7 +163,7 @@ bool PyConsole_Console::eventFilter( QObject* o, QEvent* e )
     contextMenuRequest( (QContextMenuEvent*)e );
     return true;
   }
-  return QFrame::eventFilter( o, e );
+  return QWidget::eventFilter( o, e );
 }
 
 /*!

@@ -133,3 +133,54 @@ QtxTreeView::QtxTreeView( QWidget* parent )
 QtxTreeView::~QtxTreeView()
 {
 }
+
+/*!
+  \brief Expand all branches for specified number of levels.
+  
+  If \c levels < 0, all branches are expanded (the same results can
+  be achieved with expandAll() method).
+
+  \param levels number of levels to be opened
+  \sa collapseLevels(), setOpened()
+*/
+void QtxTreeView::expandLevels( const int levels )
+{
+  setOpened( rootIndex(), levels+1, true );
+}
+
+/*!
+  \brief Collapse all branches for specified number of levels.
+  
+  If \c levels < 0, all branches are collapsed (the same results can
+  be achieved with collapseAll() method).
+
+  \param levels number of levels to be collapsed
+  \sa expandLevels(), setOpened()
+*/
+void QtxTreeView::collapseLevels( const int levels )
+{
+  setOpened( rootIndex(), levels+1, false );
+}
+
+/*!
+  \brief Expand/collapse the specified item (recursively).
+  \param index model index
+  \param levels number of levels to be expanded/collapsed
+  \param open if \c true, item is expanded, otherwise it is collapsed
+  \sa expandLevels(), collapseLevels()
+*/
+void QtxTreeView::setOpened( const QModelIndex& index, const int levels, bool open )
+{
+  if ( !levels )
+    return;
+
+  if ( !index.isValid() && index != rootIndex() )
+    return;
+
+  setExpanded( index, open );
+
+  for ( int i = 0; i < model()->rowCount( index ); i++ ) {
+    QModelIndex child = model()->index( i, 0, index );
+    setOpened( child, levels-1, open );
+  }
+}

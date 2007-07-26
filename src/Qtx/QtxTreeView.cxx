@@ -35,20 +35,28 @@
 class QtxTreeView::Header : public QHeaderView
 {
 public:
-  Header( QWidget* parent = 0 );
+  Header( const bool, QWidget* = 0 );
   ~Header();
 
+  void     setSortMenuEnabled( const bool );
+  bool     sortMenuEnabled() const;
+
 protected:
-  void contextMenuEvent( QContextMenuEvent* );
+  void     contextMenuEvent( QContextMenuEvent* );
+
+private:
+  bool     myEnableSortMenu;
 };
 
 /*!
   \brief Constructor
+  \param enableSortMenu show "Sorting" menu if \c true
   \param parent parent widget
   \internal
 */
-QtxTreeView::Header::Header( QWidget* parent )
-: QHeaderView( Qt::Horizontal, parent )
+QtxTreeView::Header::Header( const bool enableSortMenu, QWidget* parent )
+: QHeaderView( Qt::Horizontal, parent ),
+  myEnableSortMenu( enableSortMenu )
 {
 }
 
@@ -58,6 +66,26 @@ QtxTreeView::Header::Header( QWidget* parent )
 */
 QtxTreeView::Header::~Header()
 {
+}
+
+/*
+  \brief Enable/disable "Sorting" popup menu command for the header.
+  \param enableSortMenu if \c true, enable "Sorting" menu command
+  \internal
+*/
+void QtxTreeView::Header::setSortMenuEnabled( const bool enableSortMenu )
+{
+  myEnableSortMenu = enableSortMenu;
+}
+
+/*
+  \brief Check if "Sorting" popup menu command for the header is enabled.
+  \return \c true if "Sorting" menu command is enabled
+  \internal
+*/
+bool QtxTreeView::Header::sortMenuEnabled() const
+{
+  return myEnableSortMenu;
 }
 
 /*!
@@ -92,10 +120,34 @@ void QtxTreeView::Header::contextMenuEvent( QContextMenuEvent* e )
       actionMap.insert( a, i );
     }
   }
+  QAction* sortAction = 0;
+  if ( count() > 0 && myEnableSortMenu ) {
+    menu.addSeparator();
+    sortAction = menu.addAction( tr( "Enable sorting" ) );
+    sortAction->setCheckable( true );
+    sortAction->setChecked( isSortIndicatorShown() );
+  }
   if ( !menu.isEmpty() ) {
+    Qtx::simplifySeparators( &menu );
     QAction* a = menu.exec( e->globalPos() );
-    if ( a && actionMap.contains( a ) ) 
+    if ( a && actionMap.contains( a ) ) {
       setSectionHidden( actionMap[ a ], !isSectionHidden( actionMap[ a ] ) );
+    }
+    else if ( a && a == sortAction ) {
+      setSortIndicatorShown( a->isChecked() );
+      setClickable( a->isChecked() );
+      QtxTreeView* view = qobject_cast<QtxTreeView*>( parent() );
+      if ( view ) {
+	if ( a->isChecked() ) {
+	  connect( this, SIGNAL( sectionClicked( int ) ), view, SLOT( onHeaderClicked( int ) ) );
+	  view->sortByColumn( sortIndicatorSection(), sortIndicatorOrder() );
+	}
+	else {
+	  disconnect( this, SIGNAL( sectionClicked( int ) ), view, SLOT( onHeaderClicked( int ) ) );
+	  view->sortByColumn( 0, Qt::AscendingOrder );
+	}
+      }
+    }
   }
   e->accept();
 }
@@ -124,7 +176,18 @@ void QtxTreeView::Header::contextMenuEvent( QContextMenuEvent* e )
 QtxTreeView::QtxTreeView( QWidget* parent )
 : QTreeView( parent )
 {
-  setHeader( new Header() );
+  setHeader( new Header( false, this ) );
+}
+
+/*!
+  \brief Constructor.
+  \param enableSortMenu show "Sorting" header menu command if \c true
+  \param parent parent widget
+*/
+QtxTreeView::QtxTreeView( const bool enableSortMenu, QWidget* parent )
+: QTreeView( parent )
+{
+  setHeader( new Header( enableSortMenu, this ) );
 }
 
 /*!
@@ -160,6 +223,36 @@ void QtxTreeView::expandLevels( const int levels )
 void QtxTreeView::collapseLevels( const int levels )
 {
   setOpened( rootIndex(), levels+1, false );
+}
+
+/*
+  \brief Enable/disable "Sorting" popup menu command for the header.
+  \param enableSortMenu if \c true, enable "Sorting" menu command
+*/
+void QtxTreeView::setSortMenuEnabled( const bool enableSortMenu )
+{
+  Header* h = dynamic_cast<Header*>( header() );
+  if ( h )
+    h->setSortMenuEnabled( enableSortMenu );
+}
+
+/*
+  \brief Check if "Sorting" popup menu command for the header is enabled.
+  \return \c true if "Sorting" menu command is enabled
+*/
+bool QtxTreeView::sortMenuEnabled() const
+{
+  Header* h = dynamic_cast<Header*>( header() );
+  return h ? h->sortMenuEnabled() : false;
+}
+
+/*
+  \brief Called when the header section is clicked.
+  \param column header column index
+*/
+void QtxTreeView::onHeaderClicked( int column )
+{
+  sortByColumn( column, header()->sortIndicatorOrder() );
 }
 
 /*!

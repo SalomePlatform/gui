@@ -39,11 +39,18 @@ class QTX_EXPORT QtxTreeView : public QTreeView
 
 public:
   QtxTreeView( QWidget* = 0 );
+  QtxTreeView( const bool, QWidget* = 0 );
   virtual ~QtxTreeView();
 
   void     expandLevels( const int );
   void     collapseLevels( const int );
 
+  void     setSortMenuEnabled( const bool );
+  bool     sortMenuEnabled() const;
+
+protected slots:
+  void     onHeaderClicked( int );
+  
 protected:
   void     setOpened( const QModelIndex&, const int, bool );
 };

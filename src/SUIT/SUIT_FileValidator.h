@@ -16,8 +16,10 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  SALOME SALOMEGUI : implementation of desktop and GUI kernel
+// File   : SUIT_FileValidator.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 //
+
 #ifndef SUIT_FILEVALIDATOR_H
 #define SUIT_FILEVALIDATOR_H
 
@@ -26,24 +28,21 @@
 class QWidget;
 class QString;
 
-/*!
-  \class SUIT_FileValidator
-  Provides functionality to check file
-*/
 class SUIT_EXPORT SUIT_FileValidator
 {
 public:
-  SUIT_FileValidator(QWidget* parent = 0);
+  SUIT_FileValidator( QWidget* = 0 );
   
-  virtual bool    canOpen( const QString& file );
-  virtual bool    canSave( const QString& file );
+  virtual bool    canOpen( const QString&, bool = true );
+  virtual bool    canSave( const QString&, bool = true );
 
-  //! Return parent widget
-  QWidget*        parent() const { return myParent; }
+  virtual bool    canReadDir( const QString&, bool = true );
+  virtual bool    canWriteDir( const QString&, bool = true );
+
+  QWidget*        parent() const;
   
- private:
-  
+private:
   QWidget*        myParent;
 };
 
-#endif
+#endif // SUIT_FILEVALIDATOR_H

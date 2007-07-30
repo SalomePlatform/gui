@@ -23,13 +23,10 @@
 
 #include "LightApp_DataModel.h"
 #include "LightApp_Study.h"
-#include "LightApp_RootObject.h"
 #include "LightApp_DataObject.h"
 #include "LightApp_Module.h"
 #include "LightApp_Application.h"
-
-// temporary commented
-//#include <OB_Browser.h>
+#include "LightApp_Browser.h"
 
 #include <SUIT_DataObject.h>
 
@@ -97,9 +94,8 @@ void LightApp_DataModel::build()
 void LightApp_DataModel::updateWidgets()
 {
   LightApp_Application* app = dynamic_cast<LightApp_Application*>( module()->application() );
-  // temporary commented
-  /*if( app )
-    app->objectBrowser()->updateTree( 0, false );*/
+  if ( app )
+    app->objectBrowser()->updateTree( 0, false );
 }
 
 /*!

@@ -36,12 +36,10 @@
 #include "LightApp_ModuleDlg.h"
 #include "LightApp_AboutDlg.h"
 #include "LightApp_ModuleAction.h"
-
+#include "LightApp_Browser.h"
 // temporary commented
 //#include "LightApp_OBFilter.h"
-
 #include "LightApp_EventFilter.h"
-
 #include "LightApp_OBSelector.h"
 #include "LightApp_SelectionMgr.h"
 #include "LightApp_DataObject.h"
@@ -64,12 +62,9 @@
 #include <QtxMRUAction.h>
 #include <QtxDockAction.h>
 #include <QtxToolBar.h>
-#include <QProcess>
+#include <QtxTreeView.h>
 
 #include <LogWindow.h>
-// temporary commented
-//#include <OB_Browser.h>
-//#include <OB_ListView.h>
 
 #ifndef DISABLE_GLVIEWER
   #include <GLViewer_Viewer.h>
@@ -138,8 +133,7 @@
 #include <QIcon>
 #include <QByteArray>
 #include <QMenu>
-
-using namespace Qt;
+#include <QProcess>
 
 #define FIRST_HELP_ID 1000000
 
@@ -224,39 +218,39 @@ LightApp_Application::LightApp_Application()
   myAccel = SUIT_Accel::getAccel();
 
 #ifndef DISABLE_OCCVIEWER
-  myAccel->setActionKey( SUIT_Accel::PanLeft,     CTRL+Key_Left,     OCCViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::PanRight,    CTRL+Key_Right,    OCCViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::PanUp,       CTRL+Key_Up,       OCCViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::PanDown,     CTRL+Key_Down,     OCCViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::ZoomIn,      CTRL+Key_Plus,     OCCViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::ZoomOut,     CTRL+Key_Minus,    OCCViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::ZoomFit,     CTRL+Key_Asterisk, OCCViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::RotateLeft,  ALT+Key_Left,      OCCViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::RotateRight, ALT+Key_Right,     OCCViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::RotateUp,    ALT+Key_Up,        OCCViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::RotateDown,  ALT+Key_Down,      OCCViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanLeft,     Qt::CTRL+Qt::Key_Left,     OCCViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanRight,    Qt::CTRL+Qt::Key_Right,    OCCViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanUp,       Qt::CTRL+Qt::Key_Up,       OCCViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanDown,     Qt::CTRL+Qt::Key_Down,     OCCViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::ZoomIn,      Qt::CTRL+Qt::Key_Plus,     OCCViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::ZoomOut,     Qt::CTRL+Qt::Key_Minus,    OCCViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::ZoomFit,     Qt::CTRL+Qt::Key_Asterisk, OCCViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::RotateLeft,  Qt::ALT+Qt::Key_Left,      OCCViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::RotateRight, Qt::ALT+Qt::Key_Right,     OCCViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::RotateUp,    Qt::ALT+Qt::Key_Up,        OCCViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::RotateDown,  Qt::ALT+Qt::Key_Down,      OCCViewer_Viewer::Type() );
 #endif
 #ifndef DISABLE_VTKVIEWER
-  myAccel->setActionKey( SUIT_Accel::PanLeft,     CTRL+Key_Left,     VTKViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::PanRight,    CTRL+Key_Right,    VTKViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::PanUp,       CTRL+Key_Up,       VTKViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::PanDown,     CTRL+Key_Down,     VTKViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::ZoomIn,      CTRL+Key_Plus,     VTKViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::ZoomOut,     CTRL+Key_Minus,    VTKViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::ZoomFit,     CTRL+Key_Asterisk, VTKViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::RotateLeft,  ALT+Key_Left,      VTKViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::RotateRight, ALT+Key_Right,     VTKViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::RotateUp,    ALT+Key_Up,        VTKViewer_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::RotateDown,  ALT+Key_Down,      VTKViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanLeft,     Qt::CTRL+Qt::Key_Left,     VTKViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanRight,    Qt::CTRL+Qt::Key_Right,    VTKViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanUp,       Qt::CTRL+Qt::Key_Up,       VTKViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanDown,     Qt::CTRL+Qt::Key_Down,     VTKViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::ZoomIn,      Qt::CTRL+Qt::Key_Plus,     VTKViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::ZoomOut,     Qt::CTRL+Qt::Key_Minus,    VTKViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::ZoomFit,     Qt::CTRL+Qt::Key_Asterisk, VTKViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::RotateLeft,  Qt::ALT+Qt::Key_Left,      VTKViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::RotateRight, Qt::ALT+Qt::Key_Right,     VTKViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::RotateUp,    Qt::ALT+Qt::Key_Up,        VTKViewer_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::RotateDown,  Qt::ALT+Qt::Key_Down,      VTKViewer_Viewer::Type() );
 #endif
 #ifndef DISABLE_PLOT2DVIEWER
-  myAccel->setActionKey( SUIT_Accel::PanLeft,     CTRL+Key_Left,     Plot2d_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::PanRight,    CTRL+Key_Right,    Plot2d_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::PanUp,       CTRL+Key_Up,       Plot2d_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::PanDown,     CTRL+Key_Down,     Plot2d_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::ZoomIn,      CTRL+Key_Plus,     Plot2d_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::ZoomOut,     CTRL+Key_Minus,    Plot2d_Viewer::Type() );
-  myAccel->setActionKey( SUIT_Accel::ZoomFit,     CTRL+Key_Asterisk, Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanLeft,     Qt::CTRL+Qt::Key_Left,     Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanRight,    Qt::CTRL+Qt::Key_Right,    Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanUp,       Qt::CTRL+Qt::Key_Up,       Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::PanDown,     Qt::CTRL+Qt::Key_Down,     Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::ZoomIn,      Qt::CTRL+Qt::Key_Plus,     Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::ZoomOut,     Qt::CTRL+Qt::Key_Minus,    Plot2d_Viewer::Type() );
+  myAccel->setActionKey( SUIT_Accel::ZoomFit,     Qt::CTRL+Qt::Key_Asterisk, Plot2d_Viewer::Type() );
 #endif
 
   connect( mySelMgr, SIGNAL( selectionChanged() ), this, SLOT( onSelection() ) );
@@ -440,7 +434,7 @@ void LightApp_Application::createActions()
   //! Preferences
   createAction( PreferencesId, tr( "TOT_DESK_PREFERENCES" ), QIcon(),
 		tr( "MEN_DESK_PREFERENCES" ), tr( "PRP_DESK_PREFERENCES" ),
-		CTRL+Key_F, desk, false, this, SLOT( onPreferences() ) );
+		Qt::CTRL+Qt::Key_F, desk, false, this, SLOT( onPreferences() ) );
 
   //! Help for modules
   int helpMenu = createMenu( tr( "MEN_DESK_HELP" ), -1, -1, 1000 );
@@ -577,24 +571,24 @@ void LightApp_Application::createActions()
 
 
 #ifndef DISABLE_GLVIEWER
-  createActionForViewer( NewGLViewId, newWinMenu, QString::number( 0 ), ALT+Key_G );
+  createActionForViewer( NewGLViewId, newWinMenu, QString::number( 0 ), Qt::ALT+Qt::Key_G );
 #endif
 #ifndef DISABLE_PLOT2DVIEWER
-  createActionForViewer( NewPlot2dId, newWinMenu, QString::number( 1 ), ALT+Key_P );
+  createActionForViewer( NewPlot2dId, newWinMenu, QString::number( 1 ), Qt::ALT+Qt::Key_P );
 #endif
 #ifndef DISABLE_OCCVIEWER
-  createActionForViewer( NewOCCViewId, newWinMenu, QString::number( 2 ), ALT+Key_O );
+  createActionForViewer( NewOCCViewId, newWinMenu, QString::number( 2 ), Qt::ALT+Qt::Key_O );
 #endif
 #ifndef DISABLE_VTKVIEWER
-  createActionForViewer( NewVTKViewId, newWinMenu, QString::number( 3 ), ALT+Key_K );
+  createActionForViewer( NewVTKViewId, newWinMenu, QString::number( 3 ), Qt::ALT+Qt::Key_K );
 #endif
 #ifndef DISABLE_QXGRAPHVIEWER
-  createActionForViewer( NewQxGraphViewId, newWinMenu, QString::number( 4 ), ALT+Key_C );
+  createActionForViewer( NewQxGraphViewId, newWinMenu, QString::number( 4 ), Qt::ALT+Qt::Key_C );
 #endif
 
 
   createAction( RenameId, tr( "TOT_RENAME" ), QIcon(), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ),
-		SHIFT+Key_R, desk, false, this, SLOT( onRenameWindow() ) );
+		Qt::SHIFT+Qt::Key_R, desk, false, this, SLOT( onRenameWindow() ) );
   createMenu( RenameId, windowMenu, -1 );
 
   int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1 );
@@ -809,9 +803,8 @@ bool LightApp_Application::onOpenDoc( const QString& aName )
 */
 void LightApp_Application::onHelpAbout()
 {
-  LightApp_AboutDlg* dlg = new LightApp_AboutDlg( applicationName(), applicationVersion(), desktop() );
-  dlg->exec();
-  delete dlg;
+  LightApp_AboutDlg dlg( applicationName(), applicationVersion(), desktop() );
+  dlg.exec();
 }
 
 /*!
@@ -1041,15 +1034,14 @@ QWidget* LightApp_Application::window( const int flag, const int studyId ) const
 {
   QWidget* wid = 0;
 
- int sId = studyId;
-  if ( sId < 0 )
-  {
+  int sId = studyId;
+  if ( sId < 0 ) {
     if ( !activeStudy() )
       return 0;
     else
       sId = activeStudy()->id();
   }
-
+  
   if ( myWindows.contains( flag ) )
     wid = myWindows[flag]->widget( sId );
 
@@ -1089,7 +1081,7 @@ void LightApp_Application::addWindow( QWidget* wid, const int flag, const int st
     myWindows.insert( flag, newWC );
     if ( winMap.contains( flag ) ) {
       //desktop()->removeDockWidget( myWindows[flag] );
-      desktop()->addDockWidget( (DockWidgetArea)winMap[flag], myWindows[flag] );
+      desktop()->addDockWidget( (Qt::DockWidgetArea)winMap[flag], myWindows[flag] );
     }
 
     //myWindows[flag]->setResizeEnabled( true );
@@ -1117,7 +1109,7 @@ void LightApp_Application::addWindow( QWidget* wid, const int flag, const int st
     f = wid->font();
 
   myWindows[flag]->insert( sId, wid );
-  wid->setFont(f);
+  wid->setFont( f );
 
   setWindowShown( flag, !myWindows[flag]->isEmpty() );
 }
@@ -1145,7 +1137,6 @@ void LightApp_Application::removeWindow( const int flag, const int studyId )
   bool anIsEmpty = !myWindows[flag]->isEmpty();
   QWidget* wid = myWindows[flag]->widget( sId );
   myWindows[flag]->remove( sId );
-  delete wid;
 
   //setWindowShown( flag, !myWindows[flag]->isEmpty() );
   setWindowShown( flag, anIsEmpty );
@@ -1206,26 +1197,17 @@ void LightApp_Application::setWindowShown( const int type, const bool on )
 /*!
   \return Object Browser
 */
-// temporary commented
-/*OB_Browser* LightApp_Application::objectBrowser()
+LightApp_Browser* LightApp_Application::objectBrowser()
 {
-  OB_Browser* ob = 0;
-  QWidget* wid = window( WT_ObjectBrowser );
-  if ( wid && wid->inherits( "OB_Browser" ) )
-    ob = (OB_Browser*)wid;
-  return ob;
-}*/
+  return qobject_cast<LightApp_Browser*>( window( WT_ObjectBrowser ) );
+}
 
 /*!
   \return Log Window
 */
 LogWindow* LightApp_Application::logWindow()
 {
-  LogWindow* lw = 0;
-  QWidget* wid = getWindow( WT_LogWindow );
-  if ( wid->inherits( "LogWindow" ) )
-    lw = (LogWindow*)wid;
-  return lw;
+  return qobject_cast<LogWindow*>( window( WT_LogWindow ) );
 }
 
 #ifndef DISABLE_PYCONSOLE
@@ -1234,11 +1216,7 @@ LogWindow* LightApp_Application::logWindow()
 */
 PyConsole_Console* LightApp_Application::pythonConsole()
 {
-  PyConsole_Console* console = 0;
-  QWidget* wid = getWindow( WT_PyConsole );
-  if ( wid->inherits( "PyConsole_Console" ) )
-    console = (PyConsole_Console*)wid;
-  return console;
+  return qobject_cast<PyConsole_Console*>( window( WT_PyConsole ) );
 }
 #endif
 
@@ -1251,10 +1229,9 @@ void LightApp_Application::updateObjectBrowser( const bool updateModels )
   // update existing data models
   if ( updateModels ) 
   {
-    // temporary commented
-    /*const bool isAutoUpdate = objectBrowser() ? objectBrowser()->isAutoUpdate() : true;
-    if( objectBrowser() )
-    objectBrowser()->setAutoUpdate( false );*/
+    const bool isAutoUpdate = objectBrowser() ? objectBrowser()->autoUpdate() : true;
+    if ( objectBrowser() )
+      objectBrowser()->setAutoUpdate( false );
 
     LightApp_Study* study = dynamic_cast<LightApp_Study*>(activeStudy());
     if ( study ) {
@@ -1268,16 +1245,14 @@ void LightApp_Application::updateObjectBrowser( const bool updateModels )
       }
     }
 
-    // temporary commented
-    /*if( objectBrowser() )
-      objectBrowser()->setAutoUpdate( isAutoUpdate );*/
+    if( objectBrowser() )
+      objectBrowser()->setAutoUpdate( isAutoUpdate );
   }
-  // temporary commented
-  /*if ( objectBrowser() )
-  {
+
+  if ( objectBrowser() ) {
     objectBrowser()->updateGeometry();
     objectBrowser()->updateTree( 0, false );
-    }*/
+  }
 }
 
 /*!
@@ -1440,16 +1415,16 @@ void LightApp_Application::onStudyCreated( SUIT_Study* theStudy )
     aRoot = theStudy->root();
     //aRoot->setName( tr( "DATA_MODELS" ) );
   }
+
   getWindow( WT_ObjectBrowser );
-  // temporary commented
-  /*if ( objectBrowser() != 0 )
-    objectBrowser()->setRootObject( aRoot );*/
+
+  if ( objectBrowser() )
+    objectBrowser()->setRoot( aRoot );
 
   activateModule( defaultModule() );
 
-  // temporary commented
-  /*if ( objectBrowser() )
-    objectBrowser()->openLevels();*/
+  if ( objectBrowser() )
+    objectBrowser()->openLevels();
 
   activateWindows();
 }
@@ -1466,16 +1441,16 @@ void LightApp_Application::onStudyOpened( SUIT_Study* theStudy )
     aRoot = theStudy->root();
     //aRoot->dump();
   }
+
   getWindow( WT_ObjectBrowser );
-  // temporary commented
-  /*if ( objectBrowser() )
-    objectBrowser()->setRootObject( aRoot );*/
+
+  if ( objectBrowser() )
+    objectBrowser()->setRoot( aRoot );
 
   activateModule( defaultModule() );
 
-  // temporary commented
-  /*if ( objectBrowser() )
-    objectBrowser()->openLevels();*/
+  if ( objectBrowser() )
+    objectBrowser()->openLevels();
 
   activateWindows();
 
@@ -1640,18 +1615,20 @@ QWidget* LightApp_Application::createWindow( const int flag )
   QWidget* wid = 0;
   if ( flag == WT_ObjectBrowser )
   {
-    // temporary commented
-    /*OB_Browser* ob = new OB_Browser( desktop() );
+    LightApp_Browser* ob = new LightApp_Browser( new LightApp_DataObject(), desktop() );
+    ob->treeView()->setSortMenuEnabled( true );
     ob->setAutoUpdate( true );
     //ob->setAutoOpenLevel( 1 ); // commented by ASV as a fix to bug IPAL10107
-    ob->setCaption( tr( "OBJECT_BROWSER" ) );
+    ob->setWindowTitle( tr( "OBJECT_BROWSER" ) );
 
+    // temporary commented
+    /*
     OB_ListView* ob_list = dynamic_cast<OB_ListView*>( const_cast<QListView*>( ob->listView() ) );
     if( ob_list )
       ob_list->setColumnMaxWidth( 0, desktop()->width()/4 );
 
     ob->setFilter( new LightApp_OBFilter( selectionMgr() ) );
-    ob->setNameTitle( tr( "OBJ_BROWSER_NAME" ) );
+    */
 
     // Create OBSelector
     new LightApp_OBSelector( ob, mySelMgr );
@@ -1659,7 +1636,6 @@ QWidget* LightApp_Application::createWindow( const int flag )
     wid = ob;
 
     ob->connectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
-    */
   }
 #ifndef DISABLE_PYCONSOLE
   else  if ( flag == WT_PyConsole )
@@ -1800,7 +1776,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   pref->addPreference( tr( "PREF_MULTI_FILE" ), studyGroup, LightApp_Preferences::Bool, "Study", "multi_file" );
   pref->addPreference( tr( "PREF_ASCII_FILE" ), studyGroup, LightApp_Preferences::Bool, "Study", "ascii_file" );
-  pref->addPreference( tr( "PREF_STORE_POS" ), studyGroup, LightApp_Preferences::Bool, "Study", "store_positions" );
+  pref->addPreference( tr( "PREF_STORE_POS" ),  studyGroup, LightApp_Preferences::Bool, "Study", "store_positions" );
 
   int extgroup = pref->addPreference( tr( "PREF_GROUP_EXT_BROWSER" ), genTab );
   //pref->setItemProperty( "columns", 1, extgroup );
@@ -2025,7 +2001,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
     if( param=="auto_size" || param=="auto_size_first" )
     {
       // temporary commented
-      /*OB_Browser* ob = objectBrowser();
+      /*LightApp_Browser* ob = objectBrowser();
       if( !ob )
 	return;
 
@@ -2206,12 +2182,12 @@ void LightApp_Application::updateWindows()
       
       if ( !myWindows.contains( it.key() ) )
 	continue;
-      DockWidgetArea dock = desktop()->dockWidgetArea( myWindows[it.key()] );
-      if ( dock != NoDockWidgetArea
+      Qt::DockWidgetArea dock = desktop()->dockWidgetArea( myWindows[it.key()] );
+      if ( dock != Qt::NoDockWidgetArea
 	   &&
-	   dock != (DockWidgetArea)it.value() ) {
+	   dock != (Qt::DockWidgetArea)it.value() ) {
 	//desktop()->removeDockWidget( myWindows[it.key()] );
-	desktop()->addDockWidget( (DockWidgetArea)it.value(), myWindows[it.key()] );
+	desktop()->addDockWidget( (Qt::DockWidgetArea)it.value(), myWindows[it.key()] );
       }
     }
 
@@ -2324,13 +2300,11 @@ void LightApp_Application::contextMenuPopup( const QString& type, QMenu* thePopu
 {
   CAM_Application::contextMenuPopup( type, thePopup, title );
 
-  // temporary commented
-  /*OB_Browser* ob = objectBrowser();
-  if ( !ob || type != ob->popupClientType() )
-  return;*/
-
-  thePopup->addSeparator();
-  thePopup->addAction( tr( "MEN_REFRESH" ), this, SLOT( onRefresh() ) );
+  LightApp_Browser* ob = objectBrowser();
+  if ( ob && type == ob->popupClientType() ) {
+    thePopup->addSeparator();
+    thePopup->addAction( tr( "MEN_REFRESH" ), this, SLOT( onRefresh() ) );
+  }
 }
 
 /*!
@@ -2339,9 +2313,9 @@ void LightApp_Application::contextMenuPopup( const QString& type, QMenu* thePopu
 void LightApp_Application::createEmptyStudy()
 {
   CAM_Application::createEmptyStudy();
-  // temporary commented
-  /*if ( objectBrowser() )
-    objectBrowser()->updateTree();*/
+
+  if ( objectBrowser() )
+    objectBrowser()->updateTree();
 }
 
 /*!
@@ -2351,9 +2325,10 @@ void LightApp_Application::createEmptyStudy()
 bool LightApp_Application::activateModule( CAM_Module* mod )
 {
   bool res = CAM_Application::activateModule( mod );
-  // temporary commented
-  /*if ( objectBrowser() )
-    objectBrowser()->updateTree();*/
+
+  if ( objectBrowser() )
+    objectBrowser()->updateTree();
+
   return res;
 }
 

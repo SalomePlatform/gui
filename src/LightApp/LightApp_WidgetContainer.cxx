@@ -16,52 +16,53 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File   : LightApp_WidgetContainer.cxx
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
+
 #include "LightApp_WidgetContainer.h"
 
-#include <QList>
 #include <QStackedWidget>
 
 /*!
-  Constructor.
+  \class LightApp_WidgetContainer
+  \brief Class which implements widget container.
+
+  This class allows to put all the child widgets in the stack widget.
+  Only one widget is visible at the moment. 
+
+  Each widget can be referred by unique number identifier passed as parameter
+  to the insert() method. Removing of the widgets from the container is done
+  via remove() method.
+
+  To raise the widget to the top (to make it visiable) use activate() method.
+  Current widget can be retrieved with active() method.
+*/
+
+/*!
+  \brief Constructor.
+  \param type widget container type
+  \param parent parent widget
 */
 LightApp_WidgetContainer::LightApp_WidgetContainer( const int type, QWidget* parent )
-  : QDockWidget( /*QDockWindow::InDock,*/ parent ),
-    myType( type )
+: QDockWidget( parent ),
+  myType( type )
 {
-  setObjectName(QString("WC_%1").arg(type));
+  setObjectName( QString( "WC_%1" ).arg( type ) );
   setWidget( myStack = new QStackedWidget( this ) );
   myStack->show();
 }
 
 /*!
-  Destructor.
+  \brief Destructor.
 */
 LightApp_WidgetContainer::~LightApp_WidgetContainer()
 {
 }
 
 /*!
-  Checks: is widget container is empty?
-*/
-bool LightApp_WidgetContainer::isEmpty() const
-{
-  const QList<QObject*> lst = myStack->children();
-  if ( lst.isEmpty() )
-    return true;
-
-  bool res = true;
-  QListIterator<QObject*> it( lst );
-  while ( it.hasNext() && res )
-  {
-    QObject* anItem = it.next();
-    if ( anItem->isWidgetType() && myStack->indexOf( (QWidget*)anItem ) != -1 )
-      res = false;
-  }
-  return res;
-}
-
-/*!
-  Gets type of widget container.
+  \brief Get the type of the widget container.
+  \return widget container type (passed as parameter to the constructor)
 */
 int LightApp_WidgetContainer::type() const
 {
@@ -69,84 +70,148 @@ int LightApp_WidgetContainer::type() const
 }
 
 /*!
-  Checks: is container contains widget with id \a id.
-*/
-bool LightApp_WidgetContainer::contains( const int id ) const
-{
-  return myStack->widget( id ) != 0;
-}
+ \brief Insert widget \a wid with identifier \a id to the container.
 
-/*!
- * Insert widget(\a wid with id \a id) to container.And return id of widget in stack.
- *\warning remove widget with id = \a id , if it was in container.
- */
+ If there is already a widget with the specified identifier it is removed.
+ 
+ \param id widget ID
+ \param wid widget being inserted
+ \return widget identifier or -1 on error
+*/
 int LightApp_WidgetContainer::insert( const int id, QWidget* wid )
 {
   if ( id == -1 || !wid )
     return -1;
 
-  if ( contains( id ) )
-    remove( id );
+  if ( widget( id ) == wid )
+    return -1;
+  
+  remove( id );
 
-  int stackId = myStack->insertWidget( id, wid );
+  myStack->addWidget( wid );
   if ( !myStack->currentWidget() )
-    myStack->setCurrentWidget( wid );
+    activate( wid );
 
-  setWindowTitle( myStack->currentWidget() ? myStack->currentWidget()->windowTitle() : QString::null );
+  myMap.insert( id, wid );
 
-  return stackId;
+  connect( wid, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
+
+  return id;
 }
 
 /*!
-  Remove widget(\a wid) from stack.
+  \brief Remove widget with the specified identifier from the container.
+  \param id widget ID
+  \param del if \c true (default) destroy the child widget
 */
-void LightApp_WidgetContainer::remove( const int id )
+void LightApp_WidgetContainer::remove( const int id, const bool del )
 {
-  remove( myStack->widget( id ) );
-
-  setWindowTitle( myStack->currentWidget() ? myStack->currentWidget()->windowTitle() : QString::null );
+  if ( myMap.contains( id ) )
+    remove( myMap[ id ], del );
 }
 
 /*!
-  Remove widget(\a wid) from stack.
+  \brief Remove specified widget from the container.
+  \param wid widget being removed
+  \param del if \c true (default) destroy the child widget
 */
-void LightApp_WidgetContainer::remove( QWidget* wid )
+void LightApp_WidgetContainer::remove( QWidget* wid, const bool del )
 {
+  if ( !wid )
+    return;
+
   myStack->removeWidget( wid );
+  QMutableMapIterator<int, QWidget*> it( myMap );
+  while ( it.hasNext() ) {
+    it.next();
+    if ( it.value() == wid ) {
+      it.remove();
+      break;
+    }
+  }
 
-  setWindowTitle( myStack->currentWidget() ? myStack->currentWidget()->windowTitle() : QString::null );
+  disconnect( wid, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
+
+  if ( del )
+    delete wid;
+
+  setWindowTitle( myStack->currentWidget() ? myStack->currentWidget()->windowTitle() : QString() );
 }
 
 /*!
-  Raise widget with id = \a id.
+  \brief Check if the container contains a widget with the 
+  specified identifier.
+  \param id widget ID
+  \return \c true if container contains a widget
+*/
+bool LightApp_WidgetContainer::contains( const int id ) const
+{
+  return myMap.contains( id );
+}
+
+/*!
+  \brief Check if the container contains specified widget.
+  \param widget widget being checked
+  \return \c true if container contains a widget
+*/
+bool LightApp_WidgetContainer::contains( QWidget* wid ) const
+{
+  bool found = false;
+  QMapIterator<int, QWidget*> it( myMap );
+  while ( it.hasNext() && !found ) {
+    it.next();
+    if ( it.value() == wid )
+      found = true;
+  }
+  return found;
+}
+
+/*!
+  \brief Check if the widget container is empty.
+  \return \c true if widget container does not have child widgets
+*/
+bool LightApp_WidgetContainer::isEmpty() const
+{
+  return myMap.count() > 0;
+}
+
+/*!
+  \brief Bring the widget with the specified identifier to the top
+  of the container.
+  \param id widget ID
 */
 void LightApp_WidgetContainer::activate( const int id )
 {
-  myStack->setCurrentIndex( id );
-
-  setWindowTitle( myStack->currentWidget() ? myStack->currentWidget()->windowTitle() : QString::null );
+  if ( myMap.contains( id ) )
+    activate( myMap[ id ] );
 }
 
 /*!
-  Raise widget (\a wid).
+  \brief Bring the specified widget to the top of the container.
+  \param wid widget to be activated
 */
 void LightApp_WidgetContainer::activate( QWidget* wid )
 {
-  myStack->setCurrentWidget( wid );
+  if ( !wid || !contains( wid ) )
+    return;
 
-  setWindowTitle( myStack->currentWidget() ? myStack->currentWidget()->windowTitle() : QString::null );
+  myStack->setCurrentWidget( wid );
+  setWindowTitle( wid ? wid->windowTitle() : QString() );
 }
 
 /*!
-  Gets widget from container list(stack) by id = \a id.
+  \brief Get widget with the specified identifier.
+  \param id widget ID
+  \return widget pointer or 0 if \a id is invalid
 */
 QWidget* LightApp_WidgetContainer::widget( const int id ) const
 {
-  return myStack->widget( id );
+  return myMap.contains( id ) ? myMap[ id ] : 0;
 }
 
 /*!
-  Gets visible widget.
+  \brief Get currently visible widget.
+  \return current widget or 0 if there is no any
 */
 QWidget* LightApp_WidgetContainer::active() const
 {
@@ -165,4 +230,20 @@ void LightApp_WidgetContainer::setVisible ( bool visible )
 {
   QDockWidget::setVisible( visible );
   emit( visibilityChanged( visible ) );
+}
+
+/*!
+  \brief Called when the child widget is destroyed.
+  \param wid widget being destroyed
+*/
+void LightApp_WidgetContainer::onDestroyed( QObject* wid )
+{
+  QMutableMapIterator<int, QWidget*> it( myMap );
+  while ( it.hasNext() ) {
+    it.next();
+    if ( it.value() == wid ) {
+      it.remove();
+      break;
+    }
+  }
 }

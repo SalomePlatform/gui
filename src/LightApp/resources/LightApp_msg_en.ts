@@ -26,6 +26,10 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <source>ABOUT_VERSION</source>
         <translation>Version %1</translation>
     </message>
+    <message>
+        <source>ENTRY_COLUMN</source>
+        <translation>Entry</translation>
+    </message>
 </context>
 <context>
     <name>LightApp_Application</name>

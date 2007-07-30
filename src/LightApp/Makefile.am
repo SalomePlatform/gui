@@ -29,6 +29,7 @@ salomeinclude_HEADERS= \
 	LightApp.h \
 	LightApp_AboutDlg.h \
 	LightApp_Application.h \
+	LightApp_Browser.h \
 	LightApp_DataModel.h \
 	LightApp_DataObject.h \
 	LightApp_DataOwner.h \
@@ -51,7 +52,6 @@ salomeinclude_HEADERS= \
 	LightApp_SwitchOp.h \
 	LightApp_Preferences.h \
 	LightApp_PreferencesDlg.h \
-	LightApp_RootObject.h \
 	LightApp_UpdateFlags.h \
 	LightApp_WidgetContainer.h
 
@@ -72,6 +72,7 @@ endif
 dist_libLightApp_la_SOURCES= \
 	LightApp_AboutDlg.cxx \
 	LightApp_Application.cxx \
+	LightApp_Browser.cxx \
 	LightApp_DataModel.cxx \
 	LightApp_DataObject.cxx \
 	LightApp_DataOwner.cxx \
@@ -113,6 +114,7 @@ endif
 MOC_FILES= \
 	LightApp_AboutDlg_moc.cxx \
 	LightApp_Application_moc.cxx \
+	LightApp_Browser_moc.cxx \
 	LightApp_DataModel_moc.cxx \
 	LightApp_Dialog_moc.cxx \
 	LightApp_OBSelector_moc.cxx \
@@ -218,8 +220,8 @@ endif
 
 libLightApp_la_LIBADD= ../SUIT/libsuit.la ../STD/libstd.la ../CAM/libCAM.la \
 	../LogWindow/libLogWindow.la $(CAS_KERNEL) \
-	../Prs/libSalomePrs.la $(HDF5_LIBS) $(KERNEL_LDFLAGS) -lSalomeHDFPersist
-#../ObjBrowser/libObjBrowser.la 
+	../Prs/libSalomePrs.la ../ObjBrowser/libObjBrowser.la \
+	$(HDF5_LIBS) $(KERNEL_LDFLAGS) -lSalomeHDFPersist
 
 if ENABLE_SALOMEOBJECT
   libLightApp_la_LIBADD+= ../OBJECT/libSalomeObject.la

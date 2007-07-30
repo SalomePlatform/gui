@@ -16,36 +16,34 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifndef LIGHTAPP_ROOTOBJECT_H
-#define LIGHTAPP_ROOTOBJECT_H
+// File   : LightApp_Browser.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+// 
+
+#ifndef LIGHTAPP_BROWSER_H
+#define LIGHTAPP_BROWSER_H
 
 #include "LightApp.h"
-#include "SUIT_DataObject.h"
+#include <OB_Browser.h>
 
-class LightApp_Study;
+class SUIT_DataObject;
 
-/*!
-  LightApp_RootObject - class to be instanciated by only one object - 
-  root object of LightApp data object tree.  This object is not shown
-  in object browser (invisible), so it has no re-definition of name(), icon(),
-  etc. methods.  The goal of this class is to provide a unified access
-  to LightApp_Study object from LightApp_DataObject instances.
-*/
-class LIGHTAPP_EXPORT LightApp_RootObject : public SUIT_DataObject
+class LIGHTAPP_EXPORT LightApp_Browser : public OB_Browser
 {
-public:
-  LightApp_RootObject( LightApp_Study* study )
-   : myStudy( study ) 
-  {}
+  Q_OBJECT
 
-  virtual ~LightApp_RootObject() {}
-    
-  void                   setStudy( LightApp_Study* study ) { myStudy = study; }
-  LightApp_Study*        study() const                     { return myStudy;  } 
-  
-private:
-  LightApp_Study*            myStudy;
+public:
+  LightApp_Browser( QWidget* = 0 );
+  LightApp_Browser( SUIT_DataObject*, QWidget* = 0 );
+
+  SUIT_DataObject* root() const;
+  void             setRoot( SUIT_DataObject* );
+
+  bool             autoUpdate() const;
+  void             setAutoUpdate( const bool );
+
+  void             updateTree( SUIT_DataObject* = 0, const bool = true );
 
 };
 
-#endif
+#endif // LIGHTAPP_BROWSER_H

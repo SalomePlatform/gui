@@ -16,33 +16,41 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File   : LightApp_DataObject.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+// 
+
 #ifndef LIGHTAPP_DATAOBJECT_H
 #define LIGHTAPP_DATAOBJECT_H
 
 #include "LightApp.h"
-
-#include "CAM_DataObject.h"
-#include "CAM_RootObject.h"
+#include <CAM_DataObject.h>
 
 class CAM_DataModel;
-
 class LightApp_Study;
 
-/*!Description : Data Object has empty entry so it's children must redefine metod entry() and return some unique string*/
-// to do : decomment virtual inheritance 
 class LIGHTAPP_EXPORT LightApp_DataObject : public virtual CAM_DataObject
 {
   class Key;
 
 public:
-  enum { CT_Value, CT_Entry, CT_IOR, CT_RefEntry };
+  //! Column index
+  enum { 
+    EntryIdx = NameIdx + 1    //!< entry column
+  };
 
 public:
   LightApp_DataObject( SUIT_DataObject* = 0 );
   virtual ~LightApp_DataObject();
 
+  virtual int                     columnCount() const;
+  virtual QString                 columnTitle( const int = NameIdx ) const;
+  virtual bool                    appropriate( const int = NameIdx ) const;
+
   virtual SUIT_DataObjectKey*     key() const;
   virtual QString                 entry() const;
+
+  virtual QString                 text( const int = NameIdx ) const;
 
   virtual SUIT_DataObject*        componentObject() const;
   virtual QString                 componentDataType() const;
@@ -52,22 +60,31 @@ protected:
   SUIT_DataObject*                myCompObject;
 };
 
-/*!
- * LightApp_ModuleObject - class for optimized access to DataModel from
- * CAM_RootObject.h.
- * In modules which will be redefine LightApp_DataObject, LightApp_ModuleObject must be children from rederined DataObject for having necessary properties and children from LightApp_ModuleObject.
- */
-
-class LIGHTAPP_EXPORT LightApp_ModuleObject : public CAM_RootObject
+class LIGHTAPP_EXPORT LightApp_ModuleObject
+: public virtual LightApp_DataObject, public CAM_ModuleObject
 {
 public:
   LightApp_ModuleObject( SUIT_DataObject* = 0 );
-  LightApp_ModuleObject ( CAM_DataModel*, SUIT_DataObject* = 0 );
+  LightApp_ModuleObject( CAM_DataModel*, SUIT_DataObject* = 0 );
 
   virtual ~LightApp_ModuleObject();
 
   virtual QString        name() const;
-  virtual void           insertChild( SUIT_DataObject*, int thePosition );
+  virtual void           insertChild( SUIT_DataObject*, int );
 };
 
-#endif
+class LIGHTAPP_EXPORT LightApp_RootObject : public virtual LightApp_DataObject
+{
+public:
+  LightApp_RootObject( LightApp_Study* );
+
+  virtual ~LightApp_RootObject();
+    
+  void                   setStudy( LightApp_Study* );
+  LightApp_Study*        study() const;
+  
+private:
+  LightApp_Study*        myStudy;
+};
+
+#endif  // LIGHTAPP_DATAOBJECT_H

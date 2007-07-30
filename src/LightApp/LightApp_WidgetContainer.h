@@ -16,19 +16,21 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File   : LightApp_WidgetContainer.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+// 
+
 #ifndef LIGHTAPP_WIDGETCONTAINER_H
 #define LIGHTAPP_WIDGETCONTAINER_H
 
 #include "LightApp.h"
 
 #include <QDockWidget>
+#include <QMap>
 
 class QWidget;
 class QStackedWidget;
 
-/*!
-  Class which privade widget container.
-*/
 class LIGHTAPP_EXPORT LightApp_WidgetContainer : public QDockWidget
 {
     Q_OBJECT
@@ -37,30 +39,34 @@ public:
   LightApp_WidgetContainer( const int, QWidget* = 0 );
   virtual ~LightApp_WidgetContainer();
 
-  bool         isEmpty() const;
+  int                 type() const;
 
-  int          type() const;
+  int                 insert( const int, QWidget* );
+  void                remove( const int, const bool = true );
+  void                remove( QWidget*, const bool = true );
+  bool                contains( const int ) const;
+  bool                contains( QWidget* ) const;
+  bool                isEmpty() const;
 
-  int          insert( const int, QWidget* );
-  void         remove( QWidget* );
-  void         remove( const int );
-  bool         contains( const int ) const;
+  void                activate( const int );
+  void                activate( QWidget* );
 
-  void         activate( QWidget* );
-  void         activate( const int );
-
-  QWidget*     active() const;
-  QWidget*     widget( const int ) const;
+  QWidget*            widget( const int ) const;
+  QWidget*            active() const;
 
 public slots:
-  virtual void setVisible ( bool );
+  virtual void        setVisible( bool );
 
 signals:
-  void visibilityChanged ( bool );
+  void                visibilityChanged( bool );
+
+private slots:
+  void                onDestroyed( QObject* );
 
 private:
-  int              myType;
-  QStackedWidget*  myStack;
+  int                 myType;
+  QStackedWidget*     myStack;
+  QMap<int, QWidget*> myMap;
 };
 
-#endif
+#endif  // LIGHTAPP_WIDGETCONTAINER_H

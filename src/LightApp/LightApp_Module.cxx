@@ -35,6 +35,7 @@
 #include "LightApp_SwitchOp.h"
 #include "LightApp_UpdateFlags.h"
 #include "LightApp_ShowHideOp.h"
+#include "LightApp_Browser.h"
 
 #include <SUIT_Study.h>
 #include <SUIT_DataObject.h>
@@ -74,9 +75,6 @@
   #include <Plot2d_ViewModel.h>
 #endif
 #endif
-
-// temporary commented
-//#include <OB_Browser.h>
 
 #include <QtxPopupMgr.h>
 
@@ -139,9 +137,8 @@ void LightApp_Module::contextMenuPopup( const QString& client, QMenu* menu, QStr
 void LightApp_Module::updateObjBrowser( bool theIsUpdateDataModel, 
 					SUIT_DataObject* theDataObject )
 {
-  // temporary commented
-  /*bool upd = getApp()->objectBrowser()->isAutoUpdate();
-  getApp()->objectBrowser()->setAutoUpdate( false );*/
+  bool upd = getApp()->objectBrowser()->autoUpdate();
+  getApp()->objectBrowser()->setAutoUpdate( false );
 
   if( theIsUpdateDataModel ){
     if( CAM_DataModel* aDataModel = dataModel() ){
@@ -156,9 +153,9 @@ void LightApp_Module::updateObjBrowser( bool theIsUpdateDataModel,
       }
     }
   }
-  // temporary commented
-  /*getApp()->objectBrowser()->setAutoUpdate( upd );
-  getApp()->objectBrowser()->updateTree( 0, false );*/
+
+  getApp()->objectBrowser()->setAutoUpdate( upd );
+  getApp()->objectBrowser()->updateTree( 0, false );
 }
 
 /*!NOT IMPLEMENTED*/
@@ -242,9 +239,10 @@ void LightApp_Module::update( const int theFlags )
       if( LightApp_DataModel* aModel = dynamic_cast<LightApp_DataModel*>( aDataModel ) )
         aModel->update( 0, dynamic_cast<LightApp_Study*>( getApp()->activeStudy() ) );
   }
-  // temporary commented
-  /*if ( theFlags & UF_ObjBrowser )
-    getApp()->objectBrowser()->updateTree( 0 );*/
+
+  if ( theFlags & UF_ObjBrowser )
+    getApp()->objectBrowser()->updateTree( 0 );
+
   if ( theFlags & UF_Controls )
     updateControls();
   if ( theFlags & UF_Viewer )

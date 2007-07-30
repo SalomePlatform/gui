@@ -23,7 +23,6 @@
 #include "LightApp_Application.h"
 #include "LightApp_DataModel.h"
 #include "LightApp_DataObject.h"
-#include "LightApp_RootObject.h"
 #include "LightApp_HDFDriver.h"
 
 #include "SUIT_ResourceMgr.h"

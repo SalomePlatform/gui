@@ -16,15 +16,19 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File   : OB_Browser.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
+
 #ifndef OB_BROWSER_H
 #define OB_BROWSER_H
 
 #include "OB.h"
 
-#include <qframe.h>
-
-#include <qmap.h>
-#include <qlistview.h>
+#include <QWidget>
+#include <QMap>
+#include <QModelIndex>
+#include <QItemSelection>
 
 #include <SUIT_DataObject.h>
 #include <SUIT_DataObjectKey.h>
@@ -34,110 +38,94 @@
 #pragma warning( disable:4251 )
 #endif
 
+class QAbstractItemModel;
 class QToolTip;
-class OB_Filter;
-class OB_ListView;
-class OB_ListItem;
+class QtxTreeView;
 
-class OB_Updater 
+class OB_EXPORT OB_Browser : public QWidget, public SUIT_PopupClient
 {
-public:
-  OB_Updater(){};
-  virtual ~OB_Updater(){};
-  virtual void update( SUIT_DataObject* theObj, OB_ListItem* theLI ) = 0;
-};
+  Q_OBJECT
 
-/*!
-  \class OB_Browser
-  Represents object browser. Allows to get/set selection, 
-  to drag-n-drop of objects, to determine item by SUIT object and 
-  vice versa
-*/
-class OB_EXPORT OB_Browser : public QFrame, public SUIT_PopupClient
-{
-	Q_OBJECT
-
-  class ToolTip;
+  // TODO: commented - to be removed or revised
+  //class ToolTip;
 
 public:
-  OB_Browser( QWidget* = 0, SUIT_DataObject* theRoot = 0 );
+  OB_Browser( QWidget* = 0, QAbstractItemModel* = 0 );
   virtual ~OB_Browser();
 
-  virtual QString   popupClientType() const { return QString( "ObjectBrowser" ); }
+  QtxTreeView*         treeView() const;
 
-  SUIT_DataObject*  getRootObject() const;
-  virtual void      setRootObject( SUIT_DataObject* theRoot = 0 );
+  virtual QString      popupClientType() const;
 
-  int               numberOfSelected() const;
+  QAbstractItemModel*  model() const;
+  void                 setModel( QAbstractItemModel* );
 
-  DataObjectList    getSelected() const;
-  void              getSelected( DataObjectList& ) const;
+  bool                 rootIsDecorated() const;
+  void                 setRootIsDecorated( const bool );
 
-  virtual void      setSelected( const SUIT_DataObject* theObject, const bool = false );
-  virtual void      setSelected( const DataObjectList& theObjLst, const bool = false );
+  int                  autoOpenLevel() const;
+  void                 setAutoOpenLevel( const int );
+  void                 openLevels( const int = -1 );
 
-  bool              isOpen( SUIT_DataObject* theObject ) const;
-  virtual void      setOpen( SUIT_DataObject* theObject, const bool theOpen = true );
+  //bool                 isShowToolTips();
+  //void                 setShowToolTips( const bool theDisplay );
 
-  bool              isAutoUpdate() const;
-  virtual void      setAutoUpdate( const bool );
+  int                  numberOfSelected() const;
+  QModelIndexList      getSelected() const;
+  const QItemSelection selection() const;
 
-  bool              isAutoDeleteObjects() const;
-  virtual void      setAutoDeleteObjects( const bool );
+  virtual void         setSelected( const QModelIndex&, const bool = false );
+  virtual void         setSelected( const QModelIndexList&, const bool = false );
 
-  virtual void      updateTree( SUIT_DataObject* = 0, const bool = false );
-  virtual void      replaceTree( SUIT_DataObject*, SUIT_DataObject* );
+  bool                 isOpen( const QModelIndex& ) const;
+  virtual void         setOpen( const QModelIndex& theObject, const bool theOpen = true );
 
-  bool              isShowToolTips();
-  void              setShowToolTips( const bool theDisplay );
+  void                 adjustWidth();
 
-  void              adjustWidth();
+  // san - To be revised or removed
+  // QTreeView::indexAt() should be used
+  //SUIT_DataObject*  dataObjectAt( const QPoint& ) const;
 
-  SUIT_DataObject*  dataObjectAt( const QPoint& ) const;
+  // san - Removed
+  //OB_Filter*          filter() const;
+  //void                setFilter( OB_Filter* );
 
-  OB_Filter*        filter() const;
-  void              setFilter( OB_Filter* );
+  // san - Removed, columns and titles are controlled by SUIT_TreeModel and SUIT_DataObject
+  //virtual int       addColumn( const QString&, const int id = -1, const int width = -1 );
+  //virtual int       addColumn( const QIconSet&, const QString&, const int id = -1, const int width = -1 );
+  //virtual void      removeColumn( const int id );
 
-  bool              rootIsDecorated() const;
-  void              setRootIsDecorated( const bool );
+  //void              setNameTitle( const QString& );
+  //virtual void      setNameTitle( const QIconSet&, const QString& );
+  //void              setColumnTitle( const int id, const QString& );
+  //virtual void      setColumnTitle( const int id, const QIconSet&, const QString& );
 
-  int               autoOpenLevel() const;
-  void              setAutoOpenLevel( const int );
-  void              openLevels( const int = -1 );
+  //QString           nameTitle() const;
+  //QString           columnTitle( const int ) const;
 
-  virtual int       addColumn( const QString&, const int id = -1, const int width = -1 );
-  virtual int       addColumn( const QIconSet&, const QString&, const int id = -1, const int width = -1 );
-  virtual void      removeColumn( const int id );
+  // san - These methods are now in QTreeView
+  //bool              isColumnVisible( const int ) const;
+  //virtual void      setColumnShown( const int, const bool );
 
-  void              setNameTitle( const QString& );
-  virtual void      setNameTitle( const QIconSet&, const QString& );
-  void              setColumnTitle( const int id, const QString& );
-  virtual void      setColumnTitle( const int id, const QIconSet&, const QString& );
+  // TODO: QTreeView::resizeColumnToContents() can be used instead
+  //virtual void      setWidthMode( QListView::WidthMode );
 
-  QString           nameTitle() const;
-  QString           columnTitle( const int ) const;
+  // san - removed
+  // QValueList<int>   columns() const;
 
-  bool              isColumnVisible( const int ) const;
-  virtual void      setColumnShown( const int, const bool );
+  //bool              appropriateColumn( const int ) const;
+  //virtual void      setAppropriateColumn( const int, const bool );
 
-  virtual void      setWidthMode( QListView::WidthMode );
+  //virtual bool      eventFilter(QObject* watched, QEvent* e);
 
-  QValueList<int>   columns() const;
-
-  bool              appropriateColumn( const int ) const;
-  virtual void      setAppropriateColumn( const int, const bool );
-
-  virtual bool      eventFilter(QObject* watched, QEvent* e);
-
-  QListView*        listView() const;
-
-  virtual void      contextMenuPopup( QPopupMenu* );
+  virtual void      contextMenuPopup( QMenu* );
 
   void              setModified();
   unsigned long     getModifiedTime() { return myModifiedTime; }
   
-  OB_Updater*       getUpdater() const;
-  virtual void      setUpdater( OB_Updater* theUpdate = 0 );
+  // san - moved to SUIT_TreeModel
+  //OB_Updater*       getUpdater() const;
+  //virtual void      setUpdater( OB_Updater* theUpdate = 0 );
 
 signals:
   void              selectionChanged();
@@ -145,72 +133,63 @@ signals:
   void              dropped( DataObjectList, SUIT_DataObject*, int );
 
 private slots:
-  void              onExpand();
-  void              onColumnVisible( int );
-  void              onDestroyed( SUIT_DataObject* );
-  void              onDoubleClicked ( QListViewItem* );
-  void              onDropped( QPtrList<QListViewItem>, QListViewItem*, int );
+  //void              onExpand();
+  //void              onColumnVisible( int );
+  //void              onDestroyed( SUIT_DataObject* );
+  //void              onDoubleClicked ( QListViewItem* );
+  //void              onDropped( QPtrList<QListViewItem>, QListViewItem*, int );
 
 protected:
-  void              adjustWidth( QListViewItem* );
-  virtual void      updateView( SUIT_DataObject* = 0 );
-  virtual void      updateText();
+  //void              adjustWidth( QListViewItem* );
+  //virtual void      updateView( SUIT_DataObject* = 0 );
+  //virtual void      updateText();
 
   virtual void      keyPressEvent( QKeyEvent* );
 
-  SUIT_DataObject*  dataObject( const QListViewItem* ) const;
-  QListViewItem*    listViewItem( const SUIT_DataObject* ) const;
+private:
+  //typedef QMap<SUIT_DataObject*, QListViewItem*> ItemMap;
+  //typedef SUIT_DataObjectKeyHandle               DataObjectKey;
+  //typedef QMap<SUIT_DataObject*, int>            DataObjectMap;
+  //typedef QMap<DataObjectKey, int>               DataObjectKeyMap;
 
 private:
-  typedef QMap<SUIT_DataObject*, QListViewItem*> ItemMap;
-  typedef SUIT_DataObjectKeyHandle               DataObjectKey;
-  typedef QMap<SUIT_DataObject*, int>            DataObjectMap;
-  typedef QMap<DataObjectKey, int>               DataObjectKeyMap;
+  //void              expand( QListViewItem* );
+  //bool              hasClosed( QListViewItem* ) const;
+
+  //void              autoOpenBranches();
+  //void              openBranch( QListViewItem*, const int );
+
+  //void              removeReferences( QListViewItem* );
+  //void              removeConnections( SUIT_DataObject* );
+  //void              createConnections( SUIT_DataObject* );
+  //void              removeObject( SUIT_DataObject*, const bool = true );
+
+  //void              updateText( QListViewItem* );
+  //bool              needToUpdateTexts( QListViewItem* ) const;
+
+  //DataObjectKey     objectKey( QListViewItem* ) const;
+  //DataObjectKey     objectKey( SUIT_DataObject* ) const;
+
+  //QListViewItem*    createTree( const SUIT_DataObject*, QListViewItem*, QListViewItem* = 0, const bool = false );
+  //QListViewItem*    createItem( const SUIT_DataObject*, QListViewItem*, QListViewItem* = 0, const bool = false );
+
+  //SUIT_DataObject*  storeState( DataObjectMap&, DataObjectMap&,
+  //                              DataObjectKeyMap&, DataObjectKeyMap&, DataObjectKey& ) const;
+  //void              restoreState( const DataObjectMap&, const DataObjectMap&, const SUIT_DataObject*,
+  //                                const DataObjectKeyMap&, const DataObjectKeyMap&, const DataObjectKey& );
 
 private:
-  void              expand( QListViewItem* );
-  bool              hasClosed( QListViewItem* ) const;
+  QtxTreeView*        myView;
+  // TODO: decide what to do with tooltip
+  //QToolTip*           myTooltip;
+  //QMap<int, int>      myColumnIds;
+  // TODO: decide what to do with tooltip
+  //bool                myShowToolTips;
+  int                 myAutoOpenLevel;
+  unsigned long       myModifiedTime;
 
-  void              autoOpenBranches();
-  void              openBranch( QListViewItem*, const int );
-
-  void              removeReferences( QListViewItem* );
-  void              removeConnections( SUIT_DataObject* );
-  void              createConnections( SUIT_DataObject* );
-  void              removeObject( SUIT_DataObject*, const bool = true );
-
-  void              updateText( QListViewItem* );
-  bool              needToUpdateTexts( QListViewItem* ) const;
-
-  DataObjectKey     objectKey( QListViewItem* ) const;
-  DataObjectKey     objectKey( SUIT_DataObject* ) const;
-
-  QListViewItem*    createTree( const SUIT_DataObject*, QListViewItem*, QListViewItem* = 0, const bool = false );
-  QListViewItem*    createItem( const SUIT_DataObject*, QListViewItem*, QListViewItem* = 0, const bool = false );
-
-  SUIT_DataObject*  storeState( DataObjectMap&, DataObjectMap&,
-                                DataObjectKeyMap&, DataObjectKeyMap&, DataObjectKey& ) const;
-  void              restoreState( const DataObjectMap&, const DataObjectMap&, const SUIT_DataObject*,
-                                  const DataObjectKeyMap&, const DataObjectKeyMap&, const DataObjectKey& );
-
-private:
-  friend class OB_BrowserSync;
-
-  OB_ListView*      myView;
-  SUIT_DataObject*  myRoot;
-  ItemMap           myItems;
-  QToolTip*         myTooltip;
-  OB_Updater*       myUpdater;
-  QMap<int, int>    myColumnIds;
-  bool              myAutoUpdate;
-  bool              myAutoDelObjs;
-  bool              myShowToolTips;
-  bool              myRootDecorated;
-  int               myAutoOpenLevel;
-
-  friend class OB_Browser::ToolTip;
-
-  unsigned long     myModifiedTime;
+  // TODO: decide what to do with tooltip
+  //friend class OB_Browser::ToolTip;
 };
 
-#endif
+#endif  // OB_BROWSER_H

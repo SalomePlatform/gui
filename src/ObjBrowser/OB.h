@@ -19,19 +19,15 @@
 #ifndef OB_H
 #define OB_H
 
-#if defined OB_EXPORTS
 #if defined WIN32
-#define OB_EXPORT __declspec( dllexport )
-#else
-#define OB_EXPORT
-#endif
-#else
-#if defined WIN32
-#define OB_EXPORT __declspec( dllimport )
-#else
-#define OB_EXPORT
-#endif
-#endif
+#  if defined OB_EXPORTS
+#    define OB_EXPORT __declspec( dllexport )
+#  else
+#    define OB_EXPORT __declspec( dllimport )
+#  endif
+#else    // WIN32
+#  define OB_EXPORT
+#endif   // WIN32
 
 #if defined SOLARIS
 #define bool  int

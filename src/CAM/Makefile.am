@@ -31,16 +31,14 @@ salomeinclude_HEADERS= \
 	CAM_DataModel.h \
 	CAM_DataObject.h \
 	CAM_Module.h \
-	CAM_Study.h \
-	CAM_RootObject.h
+	CAM_Study.h
 
 dist_libCAM_la_SOURCES= \
 	CAM_Application.cxx \
 	CAM_DataModel.cxx \
 	CAM_DataObject.cxx \
 	CAM_Module.cxx \
-	CAM_Study.cxx \
-	CAM_RootObject.cxx
+	CAM_Study.cxx
 
 MOC_FILES= \
 	CAM_Application_moc.cxx \

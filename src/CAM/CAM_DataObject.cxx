@@ -23,7 +23,7 @@
 
 /*!
   \class CAM_DataObject
-  \brief CAM-based implementation of data object.
+  \brief CAM-based implementation of the data object.
   
   In addition to base implementation provides integration
   with CAM_DataModel.
@@ -53,26 +53,90 @@ CAM_DataObject::~CAM_DataObject()
 */
 CAM_Module* CAM_DataObject::module() const
 { 
-  CAM_Module* mod = 0;
-
-  CAM_DataModel* data = dataModel();
-  if ( data )
-    mod = data->module();
-
-  return mod;
+  CAM_DataModel* dm = dataModel();
+  return dm ? dm->module() : 0;
 }
 
 /*!
   \brief Get CAM data model.
   \return data model or 0 if it is not set
-  \sa CAM_RootObject class
+  \sa CAM_ModuleObject class
 */
 CAM_DataModel* CAM_DataObject::dataModel() const
 {
   CAM_DataObject* parentObj = dynamic_cast<CAM_DataObject*>( parent() );
+  return parentObj ? parentObj->dataModel() : 0;
+}
 
-  if ( !parentObj )
-    return 0;
+/*!
+  \class CAM_ModuleObject
+  \brief CAM data model root object.
+  
+  This class is intended for optimized access to CAM_DataModel instance
+  from CAM_DataObject instances.
 
-  return parentObj->dataModel();
+  To take advantage of this class in a specific application, 
+  custom data model root object class should be derived from both CAM_ModuleObject
+  and application-specific DataObject implementation using virtual inheritance.
+*/
+
+/*!
+  \brief Constructor.
+  \param parent parent data object
+*/
+CAM_ModuleObject::CAM_ModuleObject( SUIT_DataObject* parent )
+: CAM_DataObject( parent ),
+  myDataModel( 0 )
+{
+}
+
+/*!
+  \brief Constructor.
+  \param data data model
+  \param parent parent data object
+*/
+CAM_ModuleObject::CAM_ModuleObject( CAM_DataModel* data, SUIT_DataObject* parent )
+: CAM_DataObject( parent ),
+  myDataModel( data )
+{
+}
+
+/*!
+  \brief Destructor.
+
+  Does nothing.
+*/
+CAM_ModuleObject::~CAM_ModuleObject()
+{
+}
+
+/*!
+  \brief Get root object name.
+
+  If the data model is set, this method returns module name.
+  Otherwise returns empty string.
+
+  \return root object name
+*/
+QString CAM_ModuleObject::name() const
+{
+  return myDataModel ? myDataModel->module()->moduleName() : QString();
+}
+
+/*!
+  \brief Get data model.
+  \return data model pointer or 0 if it is not set
+*/
+CAM_DataModel* CAM_ModuleObject::dataModel() const
+{
+  return myDataModel;
+}
+
+/*!
+  \brief Set data model.
+  \param dm data model
+*/
+void CAM_ModuleObject::setDataModel( CAM_DataModel* dm )
+{
+  myDataModel = dm;
 }

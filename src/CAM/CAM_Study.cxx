@@ -20,7 +20,6 @@
 
 #include "CAM_DataModel.h"
 #include "CAM_DataObject.h"
-#include "CAM_RootObject.h"
 #include "CAM_Module.h"
 
 /*!
@@ -120,7 +119,7 @@ bool CAM_Study::removeDataModel( const CAM_DataModel* dm )
   if ( !dm )
     return true;
 
-  CAM_RootObject* aModelRoot = dynamic_cast<CAM_RootObject*>( dm->root() );
+  CAM_ModuleObject* aModelRoot = dynamic_cast<CAM_ModuleObject*>( dm->root() );
   if ( aModelRoot )
     aModelRoot->setDataModel( 0 );
 

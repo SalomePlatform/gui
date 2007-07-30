@@ -36,6 +36,22 @@ public:
   virtual CAM_DataModel* dataModel() const;
 };
 
+class CAM_EXPORT CAM_ModuleObject : public virtual CAM_DataObject
+{
+public:
+  CAM_ModuleObject( SUIT_DataObject* = 0 );
+  CAM_ModuleObject( CAM_DataModel*, SUIT_DataObject* = 0 );
+  virtual ~CAM_ModuleObject();
+
+  virtual QString        name() const;
+
+  virtual CAM_DataModel* dataModel() const;
+  virtual void           setDataModel( CAM_DataModel* );
+
+private:
+  CAM_DataModel*         myDataModel; 
+};
+
 #endif
 
 #if _MSC_VER > 1000

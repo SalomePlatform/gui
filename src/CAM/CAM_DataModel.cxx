@@ -90,12 +90,14 @@ void CAM_DataModel::setRoot( const CAM_DataObject* newRoot )
     return;
 
   if ( myRoot )
-    myRoot->disconnect( this, SLOT( onDestroyed( SUIT_DataObject* ) ) );
+    myRoot->disconnect( SIGNAL( destroyed( SUIT_DataObject* ) ), 
+			this, SLOT( onDestroyed( SUIT_DataObject* ) ) );
 
   myRoot = (CAM_DataObject*)newRoot;
 
   if ( myRoot )
-    myRoot->connect( this, SLOT( onDestroyed( SUIT_DataObject* ) ) );
+    myRoot->connect( SIGNAL( destroyed( SUIT_DataObject* ) ), 
+		     this, SLOT( onDestroyed( SUIT_DataObject* ) ) );
 
   emit rootChanged( this );
 }

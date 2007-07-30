@@ -18,14 +18,12 @@ HEADERS += CAM_Application.h
 HEADERS += CAM_DataModel.h
 HEADERS += CAM_DataObject.h
 HEADERS += CAM_Module.h
-HEADERS += CAM_RootObject.h
 HEADERS += CAM_Study.h
 
 SOURCES  = CAM_Application.cxx
 SOURCES += CAM_DataModel.cxx
 SOURCES += CAM_DataObject.cxx
 SOURCES += CAM_Module.cxx
-SOURCES += CAM_RootObject.cxx
 SOURCES += CAM_Study.cxx
 
 TRANSLATIONS = resources/CAM_images.ts \

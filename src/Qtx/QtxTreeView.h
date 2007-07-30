@@ -53,6 +53,14 @@ protected slots:
   
 protected:
   void     setOpened( const QModelIndex&, const int, bool );
+
+signals:
+  void     sortingEnabled( bool );
+
+private:
+  void     emitSortingEnabled( bool );
+
+  friend class QtxTreeView::Header;
 };
 
 #ifdef WIN32

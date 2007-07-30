@@ -222,6 +222,10 @@
         <translation>Color:</translation>
     </message>
     <message>
+        <source>CURVE_PREVIEW_LAB</source>
+        <translation>Preview:</translation>
+    </message>
+    <message>
         <source>DIAMOND_MARKER_LBL</source>
         <translation>Diamond</translation>
     </message>

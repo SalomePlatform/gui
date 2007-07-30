@@ -138,6 +138,7 @@ void QtxTreeView::Header::contextMenuEvent( QContextMenuEvent* e )
       setClickable( a->isChecked() );
       QtxTreeView* view = qobject_cast<QtxTreeView*>( parent() );
       if ( view ) {
+	view->emitSortingEnabled( a->isChecked() );
 	if ( a->isChecked() ) {
 	  connect( this, SIGNAL( sectionClicked( int ) ), view, SLOT( onHeaderClicked( int ) ) );
 	  view->sortByColumn( sortIndicatorSection(), sortIndicatorOrder() );
@@ -276,4 +277,13 @@ void QtxTreeView::setOpened( const QModelIndex& index, const int levels, bool op
     QModelIndex child = model()->index( i, 0, index );
     setOpened( child, levels-1, open );
   }
+}
+
+/*!
+  \brief Emit sortingEnabled(bool) signal.
+  \param enabled "enable sorting" flag state
+*/
+void QtxTreeView::emitSortingEnabled( bool enabled )
+{
+  emit( sortingEnabled( enabled ) );
 }

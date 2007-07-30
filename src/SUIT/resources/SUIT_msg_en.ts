@@ -99,6 +99,10 @@ Do you want to overwrite it?</translation>
         <source>MEN_DESK_WINDOW_TILE</source>
         <translation>&amp;Tile</translation>
     </message>
+    <message>
+        <source>NAME_COLUMN</source>
+        <translation>Name</translation>
+    </message>
 </context>
 <context>
     <name>SUIT_Study</name>

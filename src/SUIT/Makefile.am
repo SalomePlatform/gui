@@ -52,6 +52,7 @@ salomeinclude_HEADERS=			\
 	SUIT_Study.h			\
 	SUIT_Tools.h			\
 	SUIT_TreeSync.h			\
+	SUIT_TreeModel.h		\
 	SUIT_ViewManager.h		\
 	SUIT_ViewModel.h		\
 	SUIT_ViewWindow.h
@@ -80,6 +81,7 @@ dist_libsuit_la_SOURCES=		\
 	SUIT_Session.cxx		\
 	SUIT_Study.cxx			\
 	SUIT_Tools.cxx			\
+	SUIT_TreeModel.cxx		\
 	SUIT_ViewManager.cxx		\
 	SUIT_ViewModel.cxx		\
 	SUIT_ViewWindow.cxx
@@ -98,6 +100,7 @@ MOC_FILES=				\
 	SUIT_Selector_moc.cxx		\
 	SUIT_Session_moc.cxx		\
 	SUIT_Study_moc.cxx		\
+	SUIT_TreeModel_moc.cxx		\
 	SUIT_ViewManager_moc.cxx	\
 	SUIT_ViewModel_moc.cxx		\
 	SUIT_ViewWindow_moc.cxx

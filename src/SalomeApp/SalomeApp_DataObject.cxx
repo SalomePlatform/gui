@@ -16,10 +16,13 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File   : SalomeApp_DataObject.cxx
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
+
 #include "SalomeApp_DataObject.h"
 
 #include "SalomeApp_Study.h"
-#include "LightApp_RootObject.h"
 
 #include <CAM_DataObject.h>
 
@@ -27,101 +30,143 @@
 #include <SUIT_ResourceMgr.h>
 
 #include <QObject>
+#include <QVariant>
 
-/*!Constructor. Initialize by \a parent*/
+/*!
+  \class SalomeApp_DataObject
+  \brief Implementation of the data object for use in CORBA-based
+  SALOME modules.
+*/
+
+/*!
+  \brief Constructor. 
+  \param parent parent data object
+*/
 SalomeApp_DataObject::SalomeApp_DataObject( SUIT_DataObject* parent )
-: LightApp_DataObject( parent ),
-  CAM_DataObject( parent ),
-  myEntry( "" ),
-  myName( "" )
+: CAM_DataObject( parent ),
+  LightApp_DataObject( parent )
 {
 }
 
-/*!Constructor. Initialize by \a parent and SObject*/
-SalomeApp_DataObject::SalomeApp_DataObject( const _PTR(SObject)& sobj, SUIT_DataObject* parent )
-: LightApp_DataObject( parent ),
-  CAM_DataObject( parent ),
-  myName( "" )
+/*!
+  \brief Constructor. 
+  \param sobj SALOMEDS object
+  \param parent parent data object
+*/
+SalomeApp_DataObject::SalomeApp_DataObject( const _PTR(SObject)& sobj, 
+					    SUIT_DataObject* parent )
+: CAM_DataObject( parent ),
+  LightApp_DataObject( parent )
 {
   myObject = sobj;
-  myEntry = myObject->GetID().c_str();
 }
 
-/*!Destructor. Do nothing.*/
+/*!
+  \brief Destructor.
+*/
 SalomeApp_DataObject::~SalomeApp_DataObject()
 {
 }
 
-/*!Gets object ID.
- *\retval QString
- */
-QString SalomeApp_DataObject::entry() const
+/*!
+  \brief Get the number of the columns provided by the data tree.
+  \return number of the columns
+*/
+int SalomeApp_DataObject::columnCount() const
 {
- if ( myObject )
-    return myObject->GetID().c_str();
-  return QString::null;
-  //return myEntry;
+  // add "Value", "IOR", and "Reference Entry" columns
+  return LightApp_DataObject::columnCount() + 3;
 }
 
-/*!Gets name of object.*/
+/*!
+  \brief Get column title.
+  \param index column index
+  \return title of the specified column
+*/
+QString SalomeApp_DataObject::columnTitle( const int index ) const
+{
+  // add "Value", "IOR", and "Reference Entry" columns
+  switch ( index ) {
+  case ValueIdx:
+    return QObject::tr( "VALUE_COLUMN" ) ;
+  case IORIdx:
+    return QObject::tr( "IOR_COLUMN" ) ;
+  case RefEntryIdx:
+    return QObject::tr( "REFENTRY_COLUMN" ) ;
+  default:
+    break;
+  }
+  return LightApp_DataObject::columnTitle( index );
+}
+
+/*!
+  \brief Check if the column should appear in the tree view header popup menu
+  (to show/hide the column).
+  \param index column index
+  \return \c true if the column can be shown/hidden
+*/
+bool SalomeApp_DataObject::appropriate( const int index ) const
+{
+  // add "Value", "IOR", and "Reference Entry" columns
+  return index > EntryIdx && index <= RefEntryIdx ? true : 
+    LightApp_DataObject::appropriate( index );
+}
+
+/*!
+  \brief Get data object name.
+  \return object name
+*/
 QString SalomeApp_DataObject::name() const
 {
-  //if ( myName.isEmpty() )
-  {
-    QString str;
-    if ( myObject )
-      str = myObject->GetName().c_str();
-
-    if ( str.isEmpty() )
-    {
-      _PTR(SObject) refObj = referencedObject();
-      if ( refObj )
-        str = refObj->GetName().c_str();
-    }
-
-    if ( isReference() )
-      {
-        if ( !(QString(referencedObject()->GetName().c_str()).isEmpty()) )
-	  str = QString( "* " ) + str;
-        else
-	  str = QString( "<Invalid Reference>" );
-      }
-    SalomeApp_DataObject* that = (SalomeApp_DataObject*)this;
-    that->myName = str;
+  QString str;
+  if ( myObject )
+    str = myObject->GetName().c_str();
+  
+  if ( str.isEmpty() ) {
+    _PTR(SObject) refObj = referencedObject();
+    if ( refObj )
+      str = refObj->GetName().c_str();
   }
-  return myName;
+  
+  if ( isReference() ) {
+    if ( !(QString(referencedObject()->GetName().c_str()).isEmpty()) )
+      str = QString( "* " ) + str;
+    else
+      str = QString( "<Invalid Reference>" );
+  }
+  return str;
 }
 
-/*!Gets icon picture of object.*/
-QPixmap SalomeApp_DataObject::icon() const
+/*!
+  \brief Get object string identifier.
+  \return object ID
+*/
+QString SalomeApp_DataObject::entry() const
 {
-  _PTR(GenericAttribute) anAttr;
-  if ( myObject && myObject->FindAttribute( anAttr, "AttributePixMap" ) ){
-    _PTR(AttributePixMap) aPixAttr ( anAttr );
-    if ( aPixAttr->HasPixMap() ){
-      QString pixmapName = QObject::tr( aPixAttr->GetPixMap().c_str() );
-      LightApp_RootObject* aRoot = dynamic_cast<LightApp_RootObject*>( root() );
-      if ( aRoot && aRoot->study() ) {
-	SUIT_ResourceMgr* mgr = aRoot->study()->application()->resourceMgr();
-	return mgr->loadPixmap( componentDataType(), pixmapName, false ); 
-      }
-    }
-  }
-  return QPixmap();
+  return entry( myObject );
 }
 
-/*!Gets text value for one of entity:
- *\li Value           (id = SalomeApp_DataObject::CT_Value)
- *\li Entry           (id = SalomeApp_DataObject::CT_Entry)
- *\li IOR             (id = SalomeApp_DataObject::CT_IOR)
- *\li Reference entry (id = SalomeApp_DataObject::CT_RefEntry)
- */
-QString SalomeApp_DataObject::text( const int id ) const
+/*!
+  \brief Get object text data for the specified column.
+
+  This method returns the data according to the specufied column \a index:
+  - NameIdx     : object name (by calling name() method)
+  - EntryIdx    : object entry (by calling entry() method)
+  - ValueIdx    : object value
+  - IORIdx      : object IOR
+  - RefEntryIdx : object reference entry
+
+  \param index column index
+  \return object text data
+*/
+QString SalomeApp_DataObject::text( const int index ) const
 {
   QString txt;
-  switch ( id )
+
+  // add "Value", "IOR", and "Reference Entry" columns
+  switch ( index )
   {
-  case CT_Value:
+  case ValueIdx:
 #ifndef WIN32
     if ( componentObject() != this )
 #else
@@ -131,84 +176,122 @@ QString SalomeApp_DataObject::text( const int id ) const
       if ( txt.isEmpty() )
 	txt = value( referencedObject() );
     break;
-  case CT_Entry:
-    txt = entry( object() );
-    break;
-  case CT_IOR:
+  case IORIdx:
     txt = ior( referencedObject() );
     break;
-  case CT_RefEntry:
+  case RefEntryIdx:
     if ( isReference() )
       txt = entry( referencedObject() );
+    break;
+  default:
+    txt = LightApp_DataObject::text( index );
     break;
   }
   return txt;
 }
 
-/*!Get color value for one of entity:
- *\li Text color
- *\li Highlight color
- *\li Higlighted text color
- */
-QColor SalomeApp_DataObject::color( const ColorRole cr ) const
+/*!
+  \brief Get data object icon for the specified column.
+  \param index column index
+  \return object icon for the specified column
+*/
+QPixmap SalomeApp_DataObject::icon( const int index ) const
 {
-  QColor clr;
-  switch ( cr )
+  // we display icon only for the first (NameIdx) column
+  if ( index == NameIdx ) {
+    _PTR(GenericAttribute) anAttr;
+    if ( myObject && myObject->FindAttribute( anAttr, "AttributePixMap" ) ){
+      _PTR(AttributePixMap) aPixAttr ( anAttr );
+      if ( aPixAttr->HasPixMap() ) {
+	QString pixmapName = QObject::tr( aPixAttr->GetPixMap().c_str() );
+	LightApp_RootObject* aRoot = dynamic_cast<LightApp_RootObject*>( root() );
+	if ( aRoot && aRoot->study() ) {
+	  SUIT_ResourceMgr* mgr = aRoot->study()->application()->resourceMgr();
+	  return mgr->loadPixmap( componentDataType(), pixmapName, false ); 
+	}
+      }
+    }
+  }
+  return LightApp_DataObject::icon( index );
+}
+
+/*!
+  \brief Get data object color for the specified column.
+  \param role color role
+  \param index column index (not used)
+  \return object color for the specified column
+*/
+QColor SalomeApp_DataObject::color( const ColorRole role, const int index ) const
+{
+  // we ignore parameter <index> in order to use the same colors for 
+  // all columns
+  QColor c;
+  switch ( role )
   {
   case Text:
-    if ( isReference() )
-      {
-	if ( !(QString(referencedObject()->GetName().c_str()).isEmpty()) )
-	  clr = QColor( 255, 0, 0 );
-	else
-	  clr = QColor( 200, 200, 200 );
-      }
-    else if ( myObject )
-    {
+  case Foreground:
+    // text color (not selected item)
+    if ( isReference() ) {
+      if ( !(QString(referencedObject()->GetName().c_str()).isEmpty()) )
+	c = QColor( 255, 0, 0 );      // valid reference (red)
+      else
+	c = QColor( 200, 200, 200 );  // invalid reference (grayed)
+    }
+    else if ( myObject ) {
+      // get color atrtribute value
       _PTR(GenericAttribute) anAttr;
-      if ( myObject->FindAttribute( anAttr, "AttributeTextColor" ) )
-      {
+      if ( myObject->FindAttribute( anAttr, "AttributeTextColor" ) ) {
 	_PTR(AttributeTextColor) aColAttr = anAttr;
-	clr = QColor( (int)aColAttr->TextColor().R, (int)aColAttr->TextColor().G, (int)aColAttr->TextColor().B );
+	c = QColor( (int)aColAttr->TextColor().R, (int)aColAttr->TextColor().G, (int)aColAttr->TextColor().B );
       }
     }
     break;
   case Highlight:
-    if ( isReference() )
-      {
-	if ( !(QString(referencedObject()->GetName().c_str()).isEmpty()) )
-	  clr = QColor( 255, 0, 0 );
-	else
-	  clr = QColor( 200, 200, 200 );
-      }
-    else if ( myObject )
-    {
+    // background color for the highlighted item
+    if ( isReference() ) {
+      if ( !(QString(referencedObject()->GetName().c_str()).isEmpty()) )
+	c = QColor( 255, 0, 0 );      // valid reference (red)
+      else
+	c = QColor( 200, 200, 200 );  // invalid reference (grayed)
+    }
+    else if ( myObject ) {
+      // get color atrtribute value
       _PTR(GenericAttribute) anAttr;
-      if( myObject->FindAttribute ( anAttr, "AttributeTextHighlightColor") )
-      {
+      if( myObject->FindAttribute ( anAttr, "AttributeTextHighlightColor") ) {
         _PTR(AttributeTextHighlightColor) aHighColAttr = anAttr;
-	clr = QColor( (int)(aHighColAttr->TextHighlightColor().R), 
-		      (int)(aHighColAttr->TextHighlightColor().G), 
-		      (int)(aHighColAttr->TextHighlightColor().B));
+	c = QColor( (int)(aHighColAttr->TextHighlightColor().R), 
+		    (int)(aHighColAttr->TextHighlightColor().G), 
+		    (int)(aHighColAttr->TextHighlightColor().B));
       }
     }
     break;
   case HighlightedText:
+    // text color for the highlighted item
     if ( isReference() )
-      clr = QColor( 255, 255, 255 );
+      c = QColor( 255, 255, 255 );   // white
     break;
   }
-  return clr;
+  if ( !c.isValid() )
+    c = LightApp_DataObject::color( role, index );
+  return c;
 }
 
-/*!Gets tooltip.*/
-QString SalomeApp_DataObject::toolTip() const
+/*!
+  \brief Get data object tooltip for the specified column.
+  \param index column index (not used)
+  \return object tooltip for the specified column
+*/
+QString SalomeApp_DataObject::toolTip( const int /*index*/ ) const
 {
-  //return object()->Name();
+  // we ignore parameter <index> in order to use the same tooltip for 
+  // all columns
   return QString( "Object \'%1\', module \'%2\', ID=%3" ).arg( name() ).arg( componentDataType() ).arg( entry() );
 }
 
-/*!Get component type.*/
+/*!
+  \brief Get component type.
+  \return component type
+*/
 QString SalomeApp_DataObject::componentDataType() const
 {
   //  if ( myCompDataType.isEmpty() ) {
@@ -225,13 +308,19 @@ QString SalomeApp_DataObject::componentDataType() const
   return myCompDataType;
 }
 
-/*!Gets object.*/
+/*!
+  \brief Get SALOMEDS object.
+  \return SALOMEDS object
+*/
 _PTR(SObject) SalomeApp_DataObject::object() const
 {
   return myObject;
 }
 
-/*!Checks: Is object reference.*/
+/*!
+  \brief Check if the data object is a reference.
+  \return \c true if this data object actually refers to another one
+*/
 bool SalomeApp_DataObject::isReference() const
 {
   bool isRef = false;
@@ -243,7 +332,10 @@ bool SalomeApp_DataObject::isReference() const
   return isRef;
 }
 
-/*!Gets reference object.*/
+/*!
+  \brief Get the object referenced by this one.
+  \return referenced object
+*/
 _PTR(SObject) SalomeApp_DataObject::referencedObject() const
 {
   _PTR(SObject) refObj;
@@ -254,7 +346,80 @@ _PTR(SObject) SalomeApp_DataObject::referencedObject() const
   return obj;
 }
 
-/*!Gets IOR*/
+/*!
+  \brief Check if the specified column supports custom sorting.
+  \param index column index
+  \return \c true if column sorting should be customized
+  \sa compare()
+*/
+bool SalomeApp_DataObject::customSorting( const int index ) const
+{
+  // perform custom sorting for the "Entry" and "Reference Entry" columns
+  return index == EntryIdx || index == RefEntryIdx ? true 
+    : LightApp_DataObject::customSorting( index );
+}
+
+/*!
+  \brief Compares data from two items for sorting purposes.
+
+  This method is called only for those columns for which customSorting()
+  method returns \c true.
+
+  \param left first data to compare
+  \param right second data to compare
+  \param index column index
+  \return result of the comparison
+  \sa customSorting()
+*/
+bool SalomeApp_DataObject::compare( const QVariant& left, const QVariant& right, 
+				    const int index ) const
+{
+  if ( index == EntryIdx || index == RefEntryIdx ) {
+    // perform custom sorting for the "Entry" and "Reference Entry" columns
+    QString leftStr  = left.toString();
+    QString rightStr = right.toString();
+    QStringList idsLeft  = leftStr.split( ":", QString::SkipEmptyParts );
+    QStringList idsRight = rightStr.split( ":", QString::SkipEmptyParts );
+    if ( idsLeft.count() > 1 || idsRight.count() > 1 ) {
+      bool result = true;
+      bool calculated = false;
+      for ( int i = 0; i < idsLeft.count() || i < idsRight.count(); i++ ) {
+	bool okLeft = true, okRight = true;
+	int lid = 0, rid = 0;
+	if ( i < idsLeft.count() )
+	  lid = idsLeft[i].toInt( &okLeft );
+	if ( i < idsRight.count() )
+	  rid = idsRight[i].toInt( &okRight );
+	if ( okLeft && okRight ) {
+	  // both seem to be correct integer ID
+	  return lid < rid;
+	}
+	else if ( okLeft || okRight ) {
+	  // objects with correct (int) ID have higher priority
+	  return okLeft;
+	}
+	else {
+	  // both not integer ID
+	  int r = QString::localeAwareCompare( idsLeft[i], idsRight[i] ); 
+	  if ( !calculated && r != 0 ) {
+	    result = r < 0;
+	    calculated = true;
+	  }
+	}
+      }
+      // we should reach this if the entries are exactly equal
+      return result; 
+    }
+    return QString::localeAwareCompare( leftStr, rightStr ) < 0;
+  }
+  return LightApp_DataObject::compare( left, right, index );
+}
+
+/*!
+  \brief Get data object IOR.
+  \param obj data object
+  \return data object IOR or null string if IOR is empty
+*/
 QString SalomeApp_DataObject::ior( const _PTR(SObject)& obj ) const
 {
   QString txt;
@@ -274,7 +439,11 @@ QString SalomeApp_DataObject::ior( const _PTR(SObject)& obj ) const
   return txt;
 }
 
-/*!Gets Entry*/
+/*!
+  \brief Get data object entry identifier.
+  \param obj data object
+  \return data object entry identifier or empty object does not have entry
+*/
 QString SalomeApp_DataObject::entry( const _PTR(SObject)& obj ) const
 {
   QString txt;
@@ -286,11 +455,16 @@ QString SalomeApp_DataObject::entry( const _PTR(SObject)& obj ) const
   return txt;
 }
 
-/*!Value*/
+/*!
+  \brief Get data object value.
+  \param obj data object
+  \return data object value or empty string if there is no 
+  value associated to the object
+*/
 QString SalomeApp_DataObject::value( const _PTR(SObject)& obj ) const
 {
   if ( !obj )
-    return QString::null;
+    return QString();
 
   QString val;
   _PTR(GenericAttribute) attr;
@@ -325,7 +499,7 @@ QString SalomeApp_DataObject::value( const _PTR(SObject)& obj ) const
       val += QString( " " );
     val += QString( "[%1,%2]" ).arg( tableAttr->GetNbRows() ).arg( tableAttr->GetNbColumns() );
   }
-  else if ( obj->FindAttribute( attr, "AttributeComment") )
+  else if ( obj->FindAttribute( attr, "AttributeComment" ) )
   {
     _PTR(AttributeComment) comm = attr;
     std::string str = comm->Value();
@@ -335,89 +509,266 @@ QString SalomeApp_DataObject::value( const _PTR(SObject)& obj ) const
   return val;
 }
 
+/*!
+  \class SalomeApp_ModuleObject
+  \brief This class is used for optimized access to the SALOMEDS-based 
+  data model from SalomeApp_DataObject class instances.
+  \sa CAM_ModuleObject class
+*/
 
-
-
-
-/*!Constructor.Initialize by \a parent.*/
+/*!
+  \brief Constructor.
+  \param parent parent data object
+*/
 SalomeApp_ModuleObject::SalomeApp_ModuleObject( SUIT_DataObject* parent )
-: SalomeApp_DataObject( parent ),
-  CAM_RootObject( parent ),
-  CAM_DataObject( parent )
+: CAM_DataObject( parent ),
+  LightApp_DataObject( parent ),
+  SalomeApp_DataObject( parent ),
+  CAM_ModuleObject( parent )
 {
 }
 
-/*!Constructor.Initialize by \a parent and SObject.*/
-SalomeApp_ModuleObject::SalomeApp_ModuleObject( const _PTR(SObject)& sobj, SUIT_DataObject* parent )
-: SalomeApp_DataObject( sobj, parent ),
-  CAM_RootObject( 0, parent ),
-  CAM_DataObject( parent )
+/*!
+  \brief Constructor.
+  \param sobj SALOMEDS object
+  \param parent parent data object
+*/
+SalomeApp_ModuleObject::SalomeApp_ModuleObject( const _PTR(SObject)& sobj, 
+						SUIT_DataObject* parent )
+: CAM_DataObject( parent ),
+  LightApp_DataObject( parent ),
+  SalomeApp_DataObject( sobj, parent ),
+  CAM_ModuleObject( parent )
 {
 }
 
-/*!Constructor.Initialize by \a parent and CAM_DataModel.*/
-SalomeApp_ModuleObject::SalomeApp_ModuleObject( CAM_DataModel* dm, const _PTR(SObject)& sobj, SUIT_DataObject* parent )
-: SalomeApp_DataObject( sobj, parent ),
-  CAM_RootObject( dm, parent ),
-  CAM_DataObject( parent )
+/*!
+  \brief Constructor.
+  \param dm data model
+  \param sobj SALOMEDS object
+  \param parent parent data object
+*/
+SalomeApp_ModuleObject::SalomeApp_ModuleObject( CAM_DataModel* dm, 
+						const _PTR(SObject)& sobj, 
+						SUIT_DataObject* parent )
+: CAM_DataObject( parent ),
+  LightApp_DataObject( parent ),
+  SalomeApp_DataObject( sobj, parent ),
+  CAM_ModuleObject( dm, parent )
 {
 }
 
-/*!Destructor. Do nothing.*/
+/*!
+  \brief Destructor.
+*/
 SalomeApp_ModuleObject::~SalomeApp_ModuleObject()
 {
 }
 
-/*!Returns module name */
+/*!
+  \brief Get module name.
+  \return module name
+*/
 QString SalomeApp_ModuleObject::name() const
 {
   return SalomeApp_DataObject::name();
 }
 
+/*!
+  \class SalomeApp_RootObject
+  \brief Root data object for the CORBA-based SALOME application.
 
+  This class is to be instanciated by only one object - the root object
+  of the SalomeApp data object tree. This object is not shown in the object browser.
+  The goal of this class is to provide a unified access to SalomeApp_Study
+  object from SalomeApp_DataObject instances.
+*/
 
-
-/*!Constructor.Initialize by \a parent.*/
-SalomeApp_SavePointObject::SalomeApp_SavePointObject( SUIT_DataObject* _parent, const int id, SalomeApp_Study* study )
-  : LightApp_DataObject( _parent ), CAM_DataObject( _parent ), // IMPORTANT TO CALL ALL VIRTUAL CONSTRUCTORS!
-    myId( id ),
-    myStudy( study )
+/*!
+  \brief Constructor.
+  \param study pointer to the study
+*/
+SalomeApp_RootObject::SalomeApp_RootObject( LightApp_Study* study )
+: CAM_DataObject( 0 ),
+  LightApp_DataObject( 0 ),
+  SalomeApp_DataObject( 0 ),
+  LightApp_RootObject( study )
 {
 }
 
-/*!Destructor. Do nothing.*/
+/*!
+  \brief Destructor.
+*/
+SalomeApp_RootObject::~SalomeApp_RootObject()
+{
+}
+
+/*!
+  \brief Get data object name.
+  \return object name
+*/
+QString SalomeApp_RootObject::name() const
+{
+  return LightApp_RootObject::name();
+}
+ 
+/*!
+  \brief Get object string identifier.
+  \return object ID
+*/
+QString SalomeApp_RootObject::entry() const
+{
+  return LightApp_RootObject::entry();
+}
+
+/*!
+  \brief Get object text data for the specified column.
+  \param index column index
+  \return object text data
+*/
+QString SalomeApp_RootObject::text( const int index ) const
+{
+  return LightApp_RootObject::text( index );
+}
+
+/*!
+  \brief Get data object icon for the specified column.
+  \param index column index
+  \return object icon for the specified column
+*/
+QPixmap SalomeApp_RootObject::icon( const int index ) const
+{
+  return LightApp_RootObject::icon( index );
+}
+
+/*!
+  \brief Get data object color for the specified column.
+  \param role color role
+  \param index column index (not used)
+  \return object color for the specified column
+*/
+QColor SalomeApp_RootObject::color( const ColorRole role, const int index ) const
+{
+  return LightApp_RootObject::color( role, index );
+}
+
+/*!
+  \brief Get data object tooltip for the specified column.
+  \param index column index (not used)
+  \return object tooltip for the specified column
+*/
+QString SalomeApp_RootObject::toolTip( const int index ) const
+{
+  return LightApp_RootObject::toolTip( index );
+}
+
+/*!
+  \class SalomeApp_SavePointObject
+  \brief Represents persistent visual_state object.
+
+  Save point objects are stored in the data model, but NOT in SObjects
+  structure, so they are handled separately using this special class
+*/
+
+/*!
+  \brief Constructor.
+  \param parent parent data object
+  \param id save point ID
+  \param study study
+*/
+SalomeApp_SavePointObject::SalomeApp_SavePointObject( SUIT_DataObject* parent, 
+						      const int id, 
+						      SalomeApp_Study* study )
+: LightApp_DataObject( parent ), 
+  CAM_DataObject( parent ),
+  myId( id ),
+  myStudy( study )
+{
+}
+
+/*!
+  \brief Destructor.
+*/
 SalomeApp_SavePointObject::~SalomeApp_SavePointObject()
 {
 }
 
-/*!Returns save points ID */
+/*!
+  \brief Get save point unique identifier.
+  \return save point ID
+*/
 int SalomeApp_SavePointObject::getId() const
 {
   return myId;
 }
 
-/*!Returns "invalid" entry, which does not correspond to any object in data structure
-  but indicates that it is a save point object  */
+/*!
+  \brief Get object string identifier.
+  \return object ID
+*/
 QString SalomeApp_SavePointObject::entry() const
 {
   return QObject::tr( "SAVE_POINT_DEF_NAME" ) + QString::number( myId );
 }
 
-/*!Returns displayed name of object */
+/*!
+  \brief Get data object name.
+  \return object name
+*/
 QString SalomeApp_SavePointObject::name() const
 {
   return myStudy->getNameOfSavePoint( myId );
 }
 
-/*!Gets icon picture of object.*/
-QPixmap SalomeApp_SavePointObject::icon() const
+/*!
+  \brief Get data object icon for the specified column.
+  \param index column index
+  \return object icon for the specified column
+*/
+QPixmap SalomeApp_SavePointObject::icon( const int /*index*/ ) const
 {
   return QPixmap();
 }
 
-/*!Gets tooltip.*/
-QString SalomeApp_SavePointObject::toolTip() const
+/*!
+  \brief Get data object tooltip for the specified column.
+  \param index column index (not used)
+  \return object tooltip for the specified column
+*/
+QString SalomeApp_SavePointObject::toolTip( const int /*index*/ ) const
 {
   return QObject::tr( "SAVE_POINT_OBJECT_TOOLTIP" ).arg( name() );
 }
 
+/*!
+  \class SalomeApp_SavePointRootObject
+  \brief Represents parent object for visual_state objects.
+*/
+
+/*!
+  \brief Constructor.
+  \param parent parent object
+*/
+SalomeApp_SavePointRootObject::SalomeApp_SavePointRootObject( SUIT_DataObject* parent )
+: SUIT_DataObject( parent )
+{
+}
+
+/*!
+  \brief Get data object name.
+  \return object name
+*/
+QString SalomeApp_SavePointRootObject::name() const
+{
+  return QObject::tr( "SAVE_POINT_ROOT_NAME" ); 
+}
+
+/*!
+  \brief Get data object tooltip for the specified column.
+  \param index column index (not used)
+  \return object tooltip for the specified column
+*/
+QString SalomeApp_SavePointRootObject::toolTip( const int /*index*/ ) const
+{
+  return QObject::tr( "SAVE_POINT_ROOT_TOOLTIP" ); 
+}

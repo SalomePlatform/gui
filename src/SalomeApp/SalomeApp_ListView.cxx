@@ -38,10 +38,6 @@
 #include <TColStd_ListIteratorOfListOfInteger.hxx>
 #include <TColStd_ListIteratorOfListOfReal.hxx>
 
-using namespace std;
-
-using namespace Qt;
-
 /*!
   Used for resizing editing widget
 */
@@ -935,7 +931,7 @@ QLineEdit(parent)
 */
 void SalomeApp_EditBox::keyPressEvent( QKeyEvent *e )
 {
-  if ( e->key() == Key_Escape )
+  if ( e->key() == Qt::Key_Escape )
     emit escapePressed();
   else
     QLineEdit::keyPressEvent( e );
@@ -1324,10 +1320,10 @@ void SalomeApp_EntityEdit::setValidator(const QValidator* theValidator)
 */
 void SalomeApp_EntityEdit::keyPressEvent( QKeyEvent * e)
 {
-  if ( (e->key() == Key_Enter ||
-        e->key() == Key_Return ) )
+  if ( (e->key() == Qt::Key_Enter ||
+        e->key() == Qt::Key_Return ) )
     onApply();
-  else if (e->key() == Key_Escape)
+  else if (e->key() == Qt::Key_Escape)
     onCancel();
 }
 

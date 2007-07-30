@@ -821,13 +821,15 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
     connect( ob->listView(), SIGNAL( doubleClicked( QListViewItem* ) ), this, SLOT( onDblClick( QListViewItem* ) ) );*/
     bool autoSize = resMgr->booleanValue( "ObjectBrowser", "auto_size", false ),
          autoSizeFirst = resMgr->booleanValue( "ObjectBrowser", "auto_size_first", true );
-    for ( int i = SalomeApp_DataObject::CT_Value; i <= SalomeApp_DataObject::CT_RefEntry; i++ )
+    // temporary commented
+    /*
+    for ( int i = SalomeApp_DataObject::ValueIdx; i <= SalomeApp_DataObject::RefEntryIdx; i++ )
     {
-      // temporary commented
-      /*ob->addColumn( tr( QString().sprintf( "OBJ_BROWSER_COLUMN_%d", i ) ), i );
+      ob->addColumn( tr( QString().sprintf( "OBJ_BROWSER_COLUMN_%d", i ) ), i );
       ob->setColumnShown( i, resMgr->booleanValue( "ObjectBrowser",
-                                                    QString().sprintf( "visibility_column_%d", i ), true ) );*/
+                                                    QString().sprintf( "visibility_column_%d", i ), true ) );
     }
+    */
     // temporary commented
     /*ob->setWidthMode( autoSize ? QListView::Maximum : QListView::Manual );
     ob->listView()->setColumnWidthMode( 0, autoSizeFirst ? QListView::Maximum : QListView::Manual );
@@ -855,7 +857,7 @@ void SalomeApp_Application::createPreferences( LightApp_Preferences* pref )
   int salomeCat = pref->addPreference( tr( "PREF_CATEGORY_SALOME" ) );
   int obTab = pref->addPreference( tr( "PREF_TAB_OBJBROWSER" ), salomeCat );
   int defCols = pref->addPreference( tr( "PREF_GROUP_DEF_COLUMNS" ), obTab );
-  for ( int i = SalomeApp_DataObject::CT_Value; i <= SalomeApp_DataObject::CT_RefEntry; i++ )
+  for ( int i = SalomeApp_DataObject::ValueIdx; i <= SalomeApp_DataObject::RefEntryIdx; i++ )
   {
     pref->addPreference( tr( QString().sprintf( "OBJ_BROWSER_COLUMN_%d", i ).toLatin1() ), defCols,
                          LightApp_Preferences::Bool, "ObjectBrowser", QString().sprintf( "visibility_column_%d", i ) );

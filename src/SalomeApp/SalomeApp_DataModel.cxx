@@ -27,8 +27,6 @@
 #include "SalomeApp_Module.h"
 #include "SalomeApp_Application.h"
 
-#include "LightApp_RootObject.h"
-
 #include <CAM_DataObject.h>
 
 #include <SUIT_TreeSync.h>
@@ -49,16 +47,18 @@ class SalomeApp_DataModelSync
 public:
   SalomeApp_DataModelSync( _PTR( Study ), SUIT_DataObject* );
 
-  suitPtr  createItem( const kerPtr&, const suitPtr&, const suitPtr&, const bool ) const;
-  void     deleteItemWithChildren( const suitPtr& ) const;
-  bool     isEqual( const kerPtr&, const suitPtr& ) const;
-  kerPtr   nullSrc() const;
-  suitPtr  nullTrg() const;
-  void     children( const kerPtr&, QList<kerPtr>& ) const;
-  void     children( const suitPtr&, QList<suitPtr>& ) const;
-  suitPtr  parent( const suitPtr& ) const;
-  bool     isCorrect( const kerPtr& ) const;
-  void     updateItem( const kerPtr&, const suitPtr& ) const;
+  bool           isEqual( const kerPtr&, const suitPtr& ) const;
+  kerPtr         nullSrc() const;
+  suitPtr        nullTrg() const;
+  suitPtr        createItem( const kerPtr&, const suitPtr&, const suitPtr& ) const;
+  void           updateItem( const kerPtr&, const suitPtr& ) const;
+  void           deleteItemWithChildren( const suitPtr& ) const;
+  QList<kerPtr>  children( const kerPtr& ) const;
+  QList<suitPtr> children( const suitPtr& ) const;
+  suitPtr        parent( const suitPtr& ) const;
+
+private:
+  bool           isCorrect( const kerPtr& ) const;
 
 private:
   _PTR( Study )     myStudy;
@@ -101,8 +101,7 @@ bool SalomeApp_DataModelSync::isCorrect( const kerPtr& so ) const
 */
 suitPtr SalomeApp_DataModelSync::createItem( const kerPtr& so,
 					     const suitPtr& parent,
-					     const suitPtr& after,
-					     const bool prepend ) const
+					     const suitPtr& after ) const
 {
   if( !isCorrect( so ) )
     return 0;
@@ -110,23 +109,13 @@ suitPtr SalomeApp_DataModelSync::createItem( const kerPtr& so,
   _PTR(SComponent) aSComp( so );
   suitPtr nitem = aSComp ? new SalomeApp_ModuleObject( aSComp, 0 ) :
                            new SalomeApp_DataObject( so, 0 );
-  if( parent )
-    if( after )
-    {
-      DataObjectList ch;
-      parent->children( ch );
-      int pos = ch.indexOf( after );
-      if( pos>=0 )
-	parent->insertChild( nitem, pos+1 );
-      else
-	parent->appendChild( nitem );
-    }
-    else if( prepend )
-      parent->insertChild( nitem, 0 );
-    else // append
-      parent->appendChild( nitem );
-  else if( myRoot )
+  if( parent ) {
+    int pos = after ? parent->childPos( after ) : 0;
+    parent->insertChild( nitem, pos+1 );
+  }
+  else if( myRoot ) {
     myRoot->appendChild( nitem );
+  }
   return nitem;
 }
 
@@ -176,7 +165,7 @@ kerPtr SalomeApp_DataModelSync::nullSrc() const
 */
 suitPtr SalomeApp_DataModelSync::nullTrg() const
 {
-  return suitPtr( 0 );
+  return 0;
 }
 
 /*!
@@ -184,12 +173,14 @@ suitPtr SalomeApp_DataModelSync::nullTrg() const
   \param obj - kernel object
   \param ch - list to be filled
 */
-void SalomeApp_DataModelSync::children( const kerPtr& obj, QList<kerPtr>& ch ) const
+QList<kerPtr> SalomeApp_DataModelSync::children( const kerPtr& obj ) const
 {
-  ch.clear();
+  QList<kerPtr> ch;
+
   _PTR(ChildIterator) it ( myStudy->NewChildIterator( obj ) );
   for( ; it->More(); it->Next() )
     ch.append( it->Value() );
+  return ch;
 }
 
 /*!
@@ -197,17 +188,12 @@ void SalomeApp_DataModelSync::children( const kerPtr& obj, QList<kerPtr>& ch ) c
   \param p - SUIT object
   \param ch - list to be filled
 */
-void SalomeApp_DataModelSync::children( const suitPtr& p, QList<suitPtr>& ch ) const
+QList<suitPtr> SalomeApp_DataModelSync::children( const suitPtr& p ) const
 {
-  DataObjectList l;
-  if( p )
-  {
-    p->children( l );
-    ch.clear();
-    QListIterator<suitPtr> it( ch );
-    while ( it.hasNext() )
-      ch.append( it.next() );
-  }
+  QList<suitPtr> ch;
+  if ( p )
+    ch = p->children();
+  return ch;
 }
 
 /*!

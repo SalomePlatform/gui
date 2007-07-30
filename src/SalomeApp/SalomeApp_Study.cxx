@@ -19,12 +19,11 @@
 #include "SalomeApp_Study.h"
 
 #include "SalomeApp_Module.h"
+#include "SalomeApp_DataObject.h"
 #include "SalomeApp_DataModel.h"
 #include "SalomeApp_Application.h"
 #include "SalomeApp_Engine_i.hxx"
 #include "SalomeApp_VisualState.h"
-
-#include "LightApp_RootObject.h"
 
 // temporary commented
 //#include <OB_Browser.h>
@@ -93,7 +92,7 @@ bool SalomeApp_Study::createDocument( const QString& theStr )
   setStudyName( aName );
 
   // create myRoot
-  setRoot( new LightApp_RootObject( this ) );
+  setRoot( new SalomeApp_RootObject( this ) );
 
   bool aRet = CAM_Study::createDocument( theStr );
   emit created( this );
@@ -116,7 +115,7 @@ bool SalomeApp_Study::openDocument( const QString& theFileName )
 
   setStudyDS( study );
 
-  setRoot( new LightApp_RootObject( this ) ); // create myRoot
+  setRoot( new SalomeApp_RootObject( this ) ); // create myRoot
 
   // update loaded data models: call open() and update() on them.
   ModelList dm_s;
@@ -160,7 +159,7 @@ bool SalomeApp_Study::loadDocument( const QString& theStudyName )
 
   setStudyDS( study );
 
-  setRoot( new LightApp_RootObject( this ) ); // create myRoot
+  setRoot( new SalomeApp_RootObject( this ) ); // create myRoot
 
   //SRN: BugID IPAL9021, put there the same code as in a method openDocument
 

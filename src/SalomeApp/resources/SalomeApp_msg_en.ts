@@ -41,6 +41,18 @@
         <source>SAVE_POINT_DEF_NAME</source>
         <translation>GUI state: </translation>
     </message>
+    <message>
+        <source>VALUE_COLUMN</source>
+        <translation>Value</translation>
+    </message>
+    <message>
+        <source>IOR_COLUMN</source>
+        <translation>IOR</translation>
+    </message>
+    <message>
+        <source>REFENTRY_COLUMN</source>
+        <translation>Ref.Entry</translation>
+    </message>
 </context>
 <context>
     <name>SalomeApp_Application</name>

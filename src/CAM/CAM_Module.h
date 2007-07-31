@@ -55,12 +55,11 @@ public:
 
   QString                name() const;
   QString                moduleName() const;
-  QPixmap                moduleIcon() const;
+  virtual QPixmap        moduleIcon() const;
+  virtual QString        iconName() const;
 
   CAM_DataModel*         dataModel() const;
   CAM_Application*       application() const;
-
-  virtual QString        iconName() const;
 
   virtual void           contextMenuPopup( const QString&, QMenu*, QString& ) {};
   virtual void           updateCommandsStatus() {};
@@ -96,7 +95,6 @@ protected:
 
   void                   setName( const QString& );
   virtual void           setModuleName( const QString& );
-  virtual void           setModuleIcon( const QPixmap& );
 
   QtxActionMenuMgr*      menuMgr() const;
   QtxActionToolMgr*      toolMgr() const;

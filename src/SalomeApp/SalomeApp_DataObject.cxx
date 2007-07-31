@@ -575,6 +575,26 @@ QString SalomeApp_ModuleObject::name() const
 }
 
 /*!
+  \brief Get data object icon for the specified column.
+  \param index column index
+  \return object icon for the specified column
+*/
+QPixmap SalomeApp_ModuleObject::icon( const int index ) const
+{
+  return CAM_ModuleObject::icon( index );
+}
+
+/*!
+  \brief Get data object tooltip for the specified column.
+  \param index column index
+  \return object tooltip for the specified column
+*/
+QString SalomeApp_ModuleObject::toolTip( const int index ) const
+{
+  return CAM_ModuleObject::toolTip( index );
+}
+
+/*!
   \class SalomeApp_RootObject
   \brief Root data object for the CORBA-based SALOME application.
 

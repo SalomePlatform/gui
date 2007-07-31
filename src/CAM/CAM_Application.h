@@ -62,6 +62,7 @@ public:
 
   QString             moduleName( const QString& ) const;
   QString             moduleTitle( const QString& ) const;
+  QString             moduleIcon( const QString& ) const;
 
   virtual void        createEmptyStudy();
 
@@ -81,8 +82,8 @@ private:
   void                readModuleList();
 
 private:
-  typedef struct { QString name, title, internal; } ModuleInfo;
-  typedef QList<ModuleInfo>                         ModuleInfoList;
+  typedef struct { QString name, title, internal, icon; } ModuleInfo;
+  typedef QList<ModuleInfo> ModuleInfoList;
 
 private:
   CAM_Module*         myModule;        //!< active module

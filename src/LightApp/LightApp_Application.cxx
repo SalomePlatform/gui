@@ -59,6 +59,7 @@
 #include <SUIT_Accel.h>
 #include <SUIT_MessageBox.h>
 
+#include <Qtx.h>
 #include <QtxMRUAction.h>
 #include <QtxDockAction.h>
 #include <QtxToolBar.h>
@@ -555,7 +556,7 @@ void LightApp_Application::createActions()
 	printf( "****************************************************************\n" );
       }
 
-      icon.fromImage( icon.toImage().scaled( iconSize, iconSize, Qt::KeepAspectRatio, Qt::SmoothTransformation ) );
+      icon = Qtx::scaleIcon( icon, iconSize );
       
       moduleAction->insertModule( *it, icon );
     }

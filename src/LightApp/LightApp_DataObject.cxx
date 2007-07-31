@@ -271,6 +271,26 @@ QString LightApp_ModuleObject::name() const
 }
 
 /*!
+  \brief Get data object icon for the specified column.
+  \param index column index
+  \return object icon for the specified column
+*/
+QPixmap LightApp_ModuleObject::icon( const int index ) const
+{
+  return CAM_ModuleObject::icon( index );
+}
+
+/*!
+  \brief Get data object tooltip for the specified column.
+  \param index column index
+  \return object tooltip for the specified column
+*/
+QString LightApp_ModuleObject::toolTip( const int index ) const
+{
+  return CAM_ModuleObject::toolTip( index );
+}
+
+/*!
   \brief Insert new child object to the children list at specified position.
   
   Adds component in the study for this module object if it is not done yet.

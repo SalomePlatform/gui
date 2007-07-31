@@ -44,6 +44,8 @@ public:
   virtual ~CAM_ModuleObject();
 
   virtual QString        name() const;
+  QPixmap                icon( const int = NameIdx ) const;
+  QString                toolTip( const int = NameIdx ) const;
 
   virtual CAM_DataModel* dataModel() const;
   virtual void           setDataModel( CAM_DataModel* );

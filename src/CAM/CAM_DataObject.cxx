@@ -21,6 +21,8 @@
 #include "CAM_Module.h"
 #include "CAM_DataModel.h"
 
+#include <Qtx.h>
+
 /*!
   \class CAM_DataObject
   \brief CAM-based implementation of the data object.
@@ -121,6 +123,44 @@ CAM_ModuleObject::~CAM_ModuleObject()
 QString CAM_ModuleObject::name() const
 {
   return myDataModel ? myDataModel->module()->moduleName() : QString();
+}
+
+/*!
+  \brief Get data object icon for the specified column.
+
+  The parameter \a index specifies the column number
+  (to display, for example, in the tree view widget).
+
+  \param index column index
+  \return object icon for the specified column
+*/
+QPixmap CAM_ModuleObject::icon( const int index ) const
+{
+  QPixmap p;
+  // show icon only for the "Name" column
+  if ( index == NameIdx && dataModel() && dataModel()->module() )
+    p = dataModel()->module()->moduleIcon();
+  if ( !p.isNull() )
+    p = Qtx::scaleIcon( p, 16 );
+  return p;
+}
+
+/*!
+  \brief Get data object tooltip for the specified column.
+
+  The parameter \a index specifies the column number
+  (to display, for example, in the tree view widget).
+
+  \param index column index
+  \return object tooltip for the specified column
+*/
+QString CAM_ModuleObject::toolTip( const int /*index*/ ) const
+{
+  // show the same tooltip for all columns
+  QString tip;
+  if ( dataModel() && dataModel()->module() )
+    tip = QObject::tr( "MODULE_ROOT_OBJECT_TOOLTIP" ).arg( dataModel()->module()->moduleName() );
+  return tip;
 }
 
 /*!

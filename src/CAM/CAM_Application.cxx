@@ -486,6 +486,22 @@ QString CAM_Application::moduleTitle( const QString& name ) const
 }
 
 /*!
+  \brief Get module icon name.
+  \param name module name
+  \return module icon or null QString if module is not found
+*/
+QString CAM_Application::moduleIcon( const QString& name ) const
+{
+  QString res;
+  for ( ModuleInfoList::const_iterator it = myInfoList.begin(); it != myInfoList.end() && res.isNull(); ++it )
+  {
+    if ( (*it).name == name )
+      res = (*it).icon;
+  }
+  return res;
+}
+
+/*!
   \brief Get module library name by its title (user name).
   \param title module title (user name)
   \param full if \c true, return full library name, otherwise return its internal name
@@ -566,6 +582,8 @@ void CAM_Application::readModuleList()
 	continue;
       }
 
+    QString modIcon = resMgr->stringValue( *it, "icon", QString::null );
+
     QString modLibrary = resMgr->stringValue( *it, "library", QString::null ).trimmed();
     if ( !modLibrary.isEmpty() )
     {
@@ -590,6 +608,7 @@ void CAM_Application::readModuleList()
     inf.name = modName;
     inf.title = modTitle;
     inf.internal = modLibrary;
+    inf.icon = modIcon;
     myInfoList.append( inf );
   }
 

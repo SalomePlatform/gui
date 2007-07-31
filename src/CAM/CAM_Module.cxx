@@ -28,35 +28,7 @@
 
 #include <SUIT_Desktop.h>
 #include <SUIT_Session.h>
-
-/*! Default module icon data set */
-static const char* ModuleIcon[] = {
-"20 20 2 1",
-" 	c None",
-".	c #000000",
-"                    ",
-"                    ",
-"                    ",
-" .................. ",
-" .                . ",
-" .                . ",
-" .                . ",
-" .                . ",
-" .                . ",
-" .                . ",
-" .                . ",
-" .                . ",
-" .................. ",
-"    .     .     .   ",
-"    .     .     .   ",
-"   ...   ...   ...  ",
-"  .. .. .. .. .. .. ",
-"  .   . .   . .   . ",
-"  .. .. .. .. .. .. ",
-"   ...   ...   ...  "};
-
-/*! Default module icon pixmap */
-QPixmap MYPixmap( ModuleIcon );
+#include <SUIT_ResourceMgr.h>
 
 /*! 
   \class CAM_Module
@@ -73,7 +45,6 @@ QPixmap MYPixmap( ModuleIcon );
 CAM_Module::CAM_Module()
 : QObject(),
   myApp( 0 ),
-  myIcon( MYPixmap ),
   myDataModel( 0 )
 {
 }
@@ -89,7 +60,6 @@ CAM_Module::CAM_Module( const QString& name )
 : QObject(),
   myApp( 0 ),
   myName( name ),
-  myIcon( MYPixmap ),
   myDataModel( 0 )
 {
 }
@@ -132,10 +102,17 @@ void CAM_Module::initialize( CAM_Application* app )
 /*!
   \brief Get module icon.
   \return module icon pixmap
-  \sa setModuleIcon(), iconName()
+  \sa iconName()
 */
 QPixmap CAM_Module::moduleIcon() const
 {
+  if ( myIcon.isNull() ) {
+    QString iname = iconName();
+    if ( !iname.isEmpty() ) {
+      CAM_Module* that = (CAM_Module*)this;
+      that->myIcon = application()->resourceMgr()->loadPixmap( name(), iname, false );
+    }
+  }
   return myIcon;
 }
 
@@ -146,11 +123,11 @@ QPixmap CAM_Module::moduleIcon() const
   Default implementation returns empty string.
 
   \return module icon's name.
-  \sa moduleIcon(), setModuleIcon()
+  \sa moduleIcon()
 */
 QString CAM_Module::iconName() const
 {
-  return "";
+  return application()->moduleIcon( name() );
 }
 
 /*!
@@ -348,16 +325,6 @@ void CAM_Module::setName( const QString& name )
 void CAM_Module::setModuleName( const QString& name )
 {
   myName = name;
-}
-
-/*!
-  \brief Set module icon.
-  \param icon new module icon
-  \sa moduleIcon(), iconName()
-*/
-void CAM_Module::setModuleIcon( const QPixmap& icon )
-{
-  myIcon = icon;
 }
 
 /*! 

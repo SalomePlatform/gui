@@ -70,6 +70,9 @@ public:
   virtual ~LightApp_ModuleObject();
 
   virtual QString        name() const;
+  QPixmap                icon( const int = NameIdx ) const;
+  QString                toolTip( const int = NameIdx ) const;
+
   virtual void           insertChild( SUIT_DataObject*, int );
 };
 

@@ -129,6 +129,7 @@ public:
   static QColor      scaleColor( const int, const int, const int );
   static void        scaleColors( const int, QColorList& );
 
+  static QPixmap     scaleIcon( const QPixmap&, const unsigned, const unsigned = 0 );
   static QImage      grayscale( const QImage& );
   static QPixmap     grayscale( const QPixmap& );
   static QImage      transparentImage( const int, const int, const int = -1 );

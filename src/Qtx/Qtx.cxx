@@ -686,6 +686,28 @@ void Qtx::scaleColors( const int num, QColorList& lst )
 }
 
 /*!
+  \brief Scale the pixmap to the required size.
+
+  If \h is 0 (default) the value of \a w is used instead (to create
+  square pixmap).
+
+  \param icon pixmap to be resized
+  \param w required pixmap width
+  \param h required pixmap height
+  \return scaled pixmap
+*/
+QPixmap Qtx::scaleIcon( const QPixmap& icon, const unsigned w, const unsigned h )
+{
+  QPixmap p;
+  int aw = w, ah = h <= 0 ? w : h;
+  if ( p.isNull() || aw <= 0 || ah <= 0 || aw == icon.width() && ah == icon.height() )
+    p = icon;
+  else
+    p = icon.fromImage( icon.toImage().scaled( aw, ah, Qt::KeepAspectRatio, Qt::SmoothTransformation ) );
+  return p;
+}
+
+/*!
   \brief Convert given image to the grayscale format.
   \param img initial image
   \return converted to the grayscale image

@@ -700,7 +700,7 @@ QPixmap Qtx::scaleIcon( const QPixmap& icon, const unsigned w, const unsigned h 
 {
   QPixmap p;
   int aw = w, ah = h <= 0 ? w : h;
-  if ( p.isNull() || aw <= 0 || ah <= 0 || aw == icon.width() && ah == icon.height() )
+  if ( icon.isNull() || aw <= 0 || ah <= 0 || aw == icon.width() && ah == icon.height() )
     p = icon;
   else
     p = icon.fromImage( icon.toImage().scaled( aw, ah, Qt::KeepAspectRatio, Qt::SmoothTransformation ) );

@@ -21,9 +21,12 @@
 // 
 
 #include "LightApp_Browser.h"
+
 #include <SUIT_DataObject.h>
 #include <SUIT_TreeModel.h>
 #include <QtxTreeView.h>
+
+#include <QShortcut>
 
 /*!
   \class LightApp_Browser
@@ -37,7 +40,7 @@
 LightApp_Browser::LightApp_Browser( QWidget* parent )
 : OB_Browser( parent )
 {
-  setModel( new SUIT_ProxyModel( this ) );
+  init( 0 );
 }
 
 /*!
@@ -48,9 +51,7 @@ LightApp_Browser::LightApp_Browser( QWidget* parent )
 LightApp_Browser::LightApp_Browser( SUIT_DataObject* root, QWidget* parent )
 : OB_Browser( parent )
 {
-  setModel( new SUIT_ProxyModel( root, this ) );
-  connect( treeView(), SIGNAL( sortingEnabled(bool ) ), 
-	   model(), SLOT( setSortingEnabled( bool ) ) );
+  init( root );
 }
 
 /*!
@@ -115,3 +116,53 @@ void LightApp_Browser::updateTree( SUIT_DataObject* obj, const bool autoOpen )
     openLevels();
   }
 }
+
+/*!
+  \brief Get current key accelerator used for the 
+  object browser update operation.
+  \return current key accelerator
+  \sa setUpdateKey(), requestUpdate()
+*/
+int LightApp_Browser::updateKey() const
+{
+  return myShortcut->key();
+}
+
+/*!
+  \brief Assign the key accelerator to be used for the 
+  object browser update operation.
+
+  By default, \c [F5] key is assigned for the update operation.
+  To disable the accelerator, pass 0 to this method.
+
+  \param key new key accelerator
+  \sa updateKey(), requestUpdate()
+*/
+void LightApp_Browser::setUpdateKey( const int key )
+{
+  myShortcut->setKey( key );
+}
+
+/*!
+  \brief Initialize object browser.
+  \param root root data object
+*/
+void LightApp_Browser::init( SUIT_DataObject* root )
+{
+  setModel( new SUIT_ProxyModel( root, this ) );
+  setItemDelegate( qobject_cast<SUIT_ProxyModel*>( model() )->delegate() );
+  connect( treeView(), SIGNAL( sortingEnabled(bool ) ), 
+	   model(), SLOT( setSortingEnabled( bool ) ) );
+  myShortcut = new QShortcut( Qt::Key_F5, this, SIGNAL( requestUpdate() ), SIGNAL( requestUpdate() ) );
+}
+
+/*!
+  \fn void LightApp_Browser::requestUpdate();
+  \brief The signal is emitted when the key accelerator
+  assigned for the update operation is pressed by the user.
+
+  By default, \c [F5] key is assigned for the update operation.
+  The key accelerator can be changed with the setUpdateKey() method.
+
+  \sa updateKey(), setUpdateKey()
+*/

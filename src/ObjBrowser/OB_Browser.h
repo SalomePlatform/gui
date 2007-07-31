@@ -39,6 +39,7 @@
 #endif
 
 class QAbstractItemModel;
+class QAbstractItemDelegate;
 class QToolTip;
 class QtxTreeView;
 
@@ -53,34 +54,37 @@ public:
   OB_Browser( QWidget* = 0, QAbstractItemModel* = 0 );
   virtual ~OB_Browser();
 
-  QtxTreeView*         treeView() const;
+  QtxTreeView*           treeView() const;
 
-  virtual QString      popupClientType() const;
+  virtual QString        popupClientType() const;
 
-  QAbstractItemModel*  model() const;
-  void                 setModel( QAbstractItemModel* );
+  QAbstractItemModel*    model() const;
+  void                   setModel( QAbstractItemModel* );
 
-  bool                 rootIsDecorated() const;
-  void                 setRootIsDecorated( const bool );
+  QAbstractItemDelegate* itemDelegate() const;
+  void                   setItemDelegate( QAbstractItemDelegate* );
 
-  int                  autoOpenLevel() const;
-  void                 setAutoOpenLevel( const int );
-  void                 openLevels( const int = -1 );
+  bool                   rootIsDecorated() const;
+  void                   setRootIsDecorated( const bool );
+
+  int                    autoOpenLevel() const;
+  void                   setAutoOpenLevel( const int );
+  void                   openLevels( const int = -1 );
 
   //bool                 isShowToolTips();
   //void                 setShowToolTips( const bool theDisplay );
 
-  int                  numberOfSelected() const;
-  QModelIndexList      getSelected() const;
-  const QItemSelection selection() const;
+  int                    numberOfSelected() const;
+  QModelIndexList        getSelected() const;
+  const QItemSelection   selection() const;
 
-  virtual void         setSelected( const QModelIndex&, const bool = false );
-  virtual void         setSelected( const QModelIndexList&, const bool = false );
+  virtual void           setSelected( const QModelIndex&, const bool = false );
+  virtual void           setSelected( const QModelIndexList&, const bool = false );
 
-  bool                 isOpen( const QModelIndex& ) const;
-  virtual void         setOpen( const QModelIndex& theObject, const bool theOpen = true );
+  bool                   isOpen( const QModelIndex& ) const;
+  virtual void           setOpen( const QModelIndex& theObject, const bool theOpen = true );
 
-  void                 adjustWidth();
+  void                   adjustWidth();
 
   // san - To be revised or removed
   // QTreeView::indexAt() should be used
@@ -116,24 +120,22 @@ public:
   //bool              appropriateColumn( const int ) const;
   //virtual void      setAppropriateColumn( const int, const bool );
 
-  //virtual bool      eventFilter(QObject* watched, QEvent* e);
+  virtual void           contextMenuPopup( QMenu* );
 
-  virtual void      contextMenuPopup( QMenu* );
-
-  void              setModified();
-  unsigned long     getModifiedTime() { return myModifiedTime; }
+  void                   setModified();
+  unsigned long          getModifiedTime() { return myModifiedTime; }
   
   // san - moved to SUIT_TreeModel
   //OB_Updater*       getUpdater() const;
   //virtual void      setUpdater( OB_Updater* theUpdate = 0 );
 
 signals:
-  void              selectionChanged();
-  void              doubleClicked( SUIT_DataObject* );
-  void              dropped( DataObjectList, SUIT_DataObject*, int );
+  void                   selectionChanged();
+  void                   doubleClicked( SUIT_DataObject* );
+  void                   dropped( DataObjectList, SUIT_DataObject*, int );
 
 private slots:
-  //void              onExpand();
+  void                   onExpand();
   //void              onColumnVisible( int );
   //void              onDestroyed( SUIT_DataObject* );
   //void              onDoubleClicked ( QListViewItem* );
@@ -144,7 +146,7 @@ protected:
   //virtual void      updateView( SUIT_DataObject* = 0 );
   //virtual void      updateText();
 
-  virtual void      keyPressEvent( QKeyEvent* );
+  virtual void           contextMenuEvent( QContextMenuEvent* );
 
 private:
   //typedef QMap<SUIT_DataObject*, QListViewItem*> ItemMap;
@@ -153,8 +155,7 @@ private:
   //typedef QMap<DataObjectKey, int>               DataObjectKeyMap;
 
 private:
-  //void              expand( QListViewItem* );
-  //bool              hasClosed( QListViewItem* ) const;
+  bool                   hasCollased( const QModelIndex& ) const;
 
   //void              autoOpenBranches();
   //void              openBranch( QListViewItem*, const int );
@@ -179,14 +180,14 @@ private:
   //                                const DataObjectKeyMap&, const DataObjectKeyMap&, const DataObjectKey& );
 
 private:
-  QtxTreeView*        myView;
+  QtxTreeView*           myView;
   // TODO: decide what to do with tooltip
   //QToolTip*           myTooltip;
   //QMap<int, int>      myColumnIds;
   // TODO: decide what to do with tooltip
   //bool                myShowToolTips;
-  int                 myAutoOpenLevel;
-  unsigned long       myModifiedTime;
+  int                    myAutoOpenLevel;
+  unsigned long          myModifiedTime;
 
   // TODO: decide what to do with tooltip
   //friend class OB_Browser::ToolTip;

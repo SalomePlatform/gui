@@ -27,6 +27,7 @@
 #include <OB_Browser.h>
 
 class SUIT_DataObject;
+class QShortcut;
 
 class LIGHTAPP_EXPORT LightApp_Browser : public OB_Browser
 {
@@ -44,6 +45,17 @@ public:
 
   void             updateTree( SUIT_DataObject* = 0, const bool = true );
 
+  int              updateKey() const;
+  void             setUpdateKey( const int );
+
+private:
+  void             init( SUIT_DataObject* );
+
+signals:
+  void             requestUpdate();
+
+private:
+  QShortcut*       myShortcut;
 };
 
 #endif // LIGHTAPP_BROWSER_H

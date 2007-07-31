@@ -1621,6 +1621,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
     ob->setAutoUpdate( true );
     //ob->setAutoOpenLevel( 1 ); // commented by ASV as a fix to bug IPAL10107
     ob->setWindowTitle( tr( "OBJECT_BROWSER" ) );
+    connect( ob, SIGNAL( requestUpdate() ), this, SLOT( onRefresh() ) );
 
     // temporary commented
     /*

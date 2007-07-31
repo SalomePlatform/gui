@@ -30,10 +30,12 @@
 //#include <SUIT_DataObjectIterator.h>
 
 #include <QAction>
+#include <QMenu>
 #include <QItemSelection>
-#include <QLinkedList>
 #include <QKeyEvent>
 #include <QVBoxLayout>
+#include <QAbstractItemModel>
+#include <QAbstractItemDelegate>
 
 #include <time.h>
 
@@ -204,6 +206,28 @@ void OB_Browser::setModel( QAbstractItemModel* model )
 }
 
 /*!
+  \brief Get current item delegate.
+  \return currently used item delegate
+  \sa setItemDelegate()
+*/
+QAbstractItemDelegate* OB_Browser::itemDelegate() const
+{
+  return treeView() ? treeView()->itemDelegate() : 0;
+}
+
+/*!
+  \brief Set item delegate.
+  \param d custom item delegate
+  \sa itemDelegate()
+*/
+void OB_Browser::setItemDelegate( QAbstractItemDelegate* d )
+{
+  if ( treeView() )
+    treeView()->setItemDelegate( d );
+}
+
+
+/*!
   \brief Check if controls for expanding and collapsing top-level items are shown.
   \return \c true if top-level items are decorated
   \sa setRootIsDecorated()
@@ -268,7 +292,7 @@ bool OB_Browser::isShowToolTips()
 {
   return myShowToolTips;
 }
-
+*/
 /*!
   Sets new value of state "are tooltips shown"
   \param theDisplay - new value
@@ -893,7 +917,7 @@ void OB_Browser::removeReferences( QListViewItem* item )
     i = i->nextSibling();
   }
 }
-
+*/
 /*!
   Connects all children to SLOT onDestroyed
 */
@@ -1054,30 +1078,31 @@ OB_Browser::DataObjectKey OB_Browser::objectKey( SUIT_DataObject* obj ) const
   return DataObjectKey( obj->key() );
 }
 */
-/*!
-  Custom key press event handler, updates tree by F5
-*/
-void OB_Browser::keyPressEvent( QKeyEvent* e )
-{
-  if ( e->key() == Qt::Key_F5 )
-    //updateTree( 0, false );
-    update();
 
-  QWidget::keyPressEvent( e );
+/*!
+  \brief Process context menu request event.
+  \param e context menu event
+*/
+void OB_Browser::contextMenuEvent( QContextMenuEvent* e )
+{
+  contextMenuRequest( e );
 }
 
 /*!
-  SLOT: called if action "Expand all" is activated
+  \brief Called when "Expand all" popup menu command is activated.
+  
+  Expands all selected items recursively.
 */
-/* TODO: to be revised
 void OB_Browser::onExpand()
 {
-  DataObjectList selected;
-  getSelected( selected );
-  for ( DataObjectListIterator itr( selected ); itr.current(); ++itr )
-    expand( listViewItem( itr.current() ) );
+  QModelIndexList indexes = treeView()->selectionModel()->selectedIndexes();
+  QModelIndex index;
+
+  foreach ( index, indexes ) {
+    treeView()->expandAll( index );
+  }
 }
-*/
+
 /*!
   SLOT: called if action "Show/hide column" is activated by popup
 */
@@ -1180,73 +1205,26 @@ void OB_Browser::updateText( QListViewItem* item )
 }
 */
 /*!
-  Custom event filter
-*/
-/*
-bool OB_Browser::eventFilter( QObject* o, QEvent* e )
-{
-  if ( o == myView && e->type() == QEvent::ContextMenu )
-  {
-    QContextMenuEvent* ce = (QContextMenuEvent*)e;
-    if ( ce->reason() != QContextMenuEvent::Mouse )
-      contextMenuRequest( ce );
-    return true;
-  }
-  if ( o == myView->viewport() && e->type() == QEvent::MouseButtonRelease )
-  {
-    QMouseEvent* me = (QMouseEvent*)e;
-    if ( me->button() == RightButton )
-    {
-      QContextMenuEvent ce( QContextMenuEvent::Mouse, me->pos(), me->globalPos(), me->state() );
-      contextMenuRequest( &ce );
-      return true;
-    }
-  }
-
-  return QWidget::eventFilter( o, e );
-}
-*/
-/*!
   Adds custom actions to popup
   \param menu - popup menu
 */
 void OB_Browser::contextMenuPopup( QMenu* menu )
 {
-/*  QValueList<int> cols;
-  for ( QMap<int, int>::ConstIterator it = myColumnIds.begin(); it != myColumnIds.end(); ++it )
-  {
-    if ( appropriateColumn( it.key() ) )
-      cols.append( it.key() );
-  }
+  menu->addSeparator();
 
-  uint num = menu->count();
-  menu->setCheckable( true );
-  for ( QValueList<int>::const_iterator iter = cols.begin(); iter != cols.end(); ++iter )
-  {
-    QString name = columnTitle( *iter );
-    if ( name.isEmpty() )
-      continue;
-
-    int id = menu->insertItem( name, this, SLOT( onColumnVisible( int ) ) );
-    menu->setItemChecked( id, isColumnVisible( *iter ) );
-    menu->setItemParameter( id, *iter );
-  }
-  if ( menu->count() != num )
-    menu->insertSeparator();
-
-  DataObjectList selected;
-  getSelected( selected );
+  QModelIndexList indexes = treeView()->selectionModel()->selectedIndexes();
 
   bool closed = false;
-  for ( DataObjectListIterator itr( selected ); itr.current() && !closed; ++itr )
-    closed = hasClosed( listViewItem( itr.current() ) );
+  
+  for ( QModelIndexList::Iterator it = indexes.begin(); 
+	it != indexes.end() && !closed; ++it ) {
+    closed = hasCollased( *it );
+  }
 
   if ( closed )
-  {
-    menu->insertItem( tr( "MEN_EXPAND_ALL" ), this, SLOT( onExpand() ) );
-    menu->insertSeparator();
-  }
-*/
+    menu->addAction( tr( "MEN_EXPAND_ALL" ), this, SLOT( onExpand() ) );
+
+  menu->addSeparator();
 }
 
 /*!
@@ -1266,22 +1244,23 @@ void OB_Browser::expand( QListViewItem* item )
 /*!
   \return true if item or one of it's children isn't opened
 */
-/* TODO: to be revised
-bool OB_Browser::hasClosed( QListViewItem* item ) const
+bool OB_Browser::hasCollased( const QModelIndex& index ) const
 {
-  if ( !item )
-    return false;
+  bool result = false;
 
-  if ( item->childCount() && !item->isOpen() )
-    return true;
-
-  bool has = false;
-  for ( QListViewItem* child = item->firstChild(); child && !has; child = child->nextSibling() )
-    has = hasClosed( child );
-
-  return has;
+  if ( index.isValid() ) {
+    bool hasChildren = treeView()->model()->hasChildren( index );
+    result = hasChildren && !treeView()->isExpanded( index );
+    if ( !result && hasChildren ) {
+      int rows = treeView()->model()->rowCount( index );
+      for ( int i = 0; i < rows && !result; i ++ ) {
+	QModelIndex child = treeView()->model()->index( i, 0, index );
+	result = hasCollased( child );
+      }
+    }
+  }
+  return result;
 }
-*/
 /*!
   Removes SUIT object
   \param obj - SUIT object to be removed

@@ -226,6 +226,26 @@ void QtxTreeView::collapseLevels( const int levels )
   setOpened( rootIndex(), levels+1, false );
 }
 
+/*!
+  \brief Expand the branch specifed by the \index and all its
+  children recursively.
+  \param index model index to be expanded
+*/
+void QtxTreeView::expandAll( const QModelIndex& index )
+{
+  setOpened( index, -1, true );
+}
+
+/*!
+  \brief Collapse the branch specifed by the \index and all its
+  children recursively.
+  \param index model index to be collapsed
+*/
+void QtxTreeView::collapseAll( const QModelIndex& index )
+{
+  setOpened( index, -1, false );
+}
+
 /*
   \brief Enable/disable "Sorting" popup menu command for the header.
   \param enableSortMenu if \c true, enable "Sorting" menu command

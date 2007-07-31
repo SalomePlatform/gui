@@ -45,6 +45,9 @@ public:
   void     expandLevels( const int );
   void     collapseLevels( const int );
 
+  void     expandAll( const QModelIndex& );
+  void     collapseAll( const QModelIndex& );
+
   void     setSortMenuEnabled( const bool );
   bool     sortMenuEnabled() const;
 

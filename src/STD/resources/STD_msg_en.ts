@@ -349,11 +349,6 @@ Do you want to overwrite it?</translation>
         <translation>Toggles standard toolbar on/off</translation>
     </message>
     <message>
-        <source>QUE_DOC_FILEEXISTS</source>
-        <translation>The file %1 already exists.
-Do you want to overwrite it ?</translation>
-    </message>
-    <message>
         <source>TOT_DESK_FILE_SAVE</source>
         <translation>Save document</translation>
     </message>

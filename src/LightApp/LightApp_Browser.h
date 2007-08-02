@@ -25,8 +25,8 @@
 
 #include "LightApp.h"
 #include <OB_Browser.h>
+#include <SUIT_DataObject.h>
 
-class SUIT_DataObject;
 class QShortcut;
 
 class LIGHTAPP_EXPORT LightApp_Browser : public OB_Browser
@@ -47,6 +47,12 @@ public:
 
   int              updateKey() const;
   void             setUpdateKey( const int );
+
+  DataObjectList   getSelected() const;
+  void             getSelected( DataObjectList& ) const;
+
+  void             setSelected( const SUIT_DataObject*, const bool = false );
+  void             setSelected( const DataObjectList&, const bool = false );
 
 private:
   void             init( SUIT_DataObject* );

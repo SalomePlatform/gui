@@ -144,6 +144,80 @@ void LightApp_Browser::setUpdateKey( const int key )
 }
 
 /*!
+  \brief Get list of selected data objects.
+  \return list of the currently selected data objects
+*/
+DataObjectList LightApp_Browser::getSelected() const
+{
+  DataObjectList lst;
+  getSelected( lst );
+  return lst;
+}
+
+/*!
+  \brief Get list of selected data objects.
+  \overload
+  \param lst list to be filled with the currently selected data objects
+*/
+void LightApp_Browser::getSelected( DataObjectList& lst ) const
+{
+  lst.clear();
+
+  SUIT_ProxyModel* m = qobject_cast<SUIT_ProxyModel*>( model() );
+
+  if ( m ) {
+    QModelIndexList sel = selectedIndexes();
+    QModelIndex idx;
+  
+    foreach( idx, sel ) {
+      SUIT_DataObject* obj = m->object( idx );
+      if ( obj )
+	lst.append( obj );
+    }
+  }
+}
+
+/*!
+  \brief Set selected object.
+  \param obj data object to set selected
+  \param append if \c true, the object is added to the current selection;
+  otherwise the previous selection is first cleared
+*/
+void LightApp_Browser::setSelected( const SUIT_DataObject* obj, const bool append )
+{
+  SUIT_ProxyModel* m = qobject_cast<SUIT_ProxyModel*>( model() );
+
+  if ( m ) {
+    QModelIndex index = m->index( obj );
+    if ( index.isValid() )
+      select( index, true, append );
+  }
+}
+
+/*!
+  \brief Set list of selected data objects.
+  \param lst list of the data object to set selected
+  \param append if \c true, the objects are added to the current selection;
+  otherwise the previous selection is first cleared
+*/
+void LightApp_Browser::setSelected( const DataObjectList& lst, const bool append )
+{
+  SUIT_ProxyModel* m = qobject_cast<SUIT_ProxyModel*>( model() );
+
+  if ( m ) {
+    QModelIndexList indexes;
+    SUIT_DataObject* obj;
+
+    foreach( obj, lst ) {
+      QModelIndex index = m->index( obj );
+      if ( index.isValid() )
+	indexes.append( index );
+    }
+    select( indexes, true, append ); // if !indexes.isEmpty() ???
+  }
+}
+
+/*!
   \brief Initialize object browser.
   \param root root data object
 */

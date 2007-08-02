@@ -2305,7 +2305,9 @@ void LightApp_Application::contextMenuPopup( const QString& type, QMenu* thePopu
   LightApp_Browser* ob = objectBrowser();
   if ( ob && type == ob->popupClientType() ) {
     thePopup->addSeparator();
-    thePopup->addAction( tr( "MEN_REFRESH" ), this, SLOT( onRefresh() ) );
+    QAction* a = thePopup->addAction( tr( "MEN_REFRESH" ), this, SLOT( onRefresh() ) );
+    if ( ob->updateKey() )
+      a->setShortcut( ob->updateKey() );
   }
 }
 

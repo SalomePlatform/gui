@@ -16,6 +16,10 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File   : LightApp_OBSelector.h
+// Author :
+// 
+
 #ifndef LIGHTAPP_OBSELECTOR_H
 #define LIGHTAPP_OBSELECTOR_H
 
@@ -26,46 +30,39 @@
 
 #include <QObject>
 
-class OB_Browser;
+class LightApp_Browser;
 class LightApp_DataObject;
 
-/*!
-  \class LightApp_OBSelector
-  Custom selector to get/set selection from object browser
-*/
 class LIGHTAPP_EXPORT LightApp_OBSelector : public QObject, public SUIT_Selector
 {
   Q_OBJECT
 
 public:
-  LightApp_OBSelector( OB_Browser*, SUIT_SelectionMgr* );
+  LightApp_OBSelector( LightApp_Browser*, SUIT_SelectionMgr* );
   virtual ~LightApp_OBSelector();
 
-  OB_Browser*  browser() const;
+  LightApp_Browser*  browser() const;
 
-  /*!Return "ObjectBrowser"*/
-  virtual QString type() const { return "ObjectBrowser"; }
+  virtual QString    type() const;
 
-  void         setModified();
-  unsigned long getModifiedTime() { return myModifiedTime; }
+  unsigned long      getModifiedTime() const;
+  void               setModified();
 
 private slots:
-  void         onSelectionChanged();
+  void               onSelectionChanged();
 
 protected:
-  virtual void getSelection( SUIT_DataOwnerPtrList& ) const;
-  virtual void setSelection( const SUIT_DataOwnerPtrList& );
+  virtual void       getSelection( SUIT_DataOwnerPtrList& ) const;
+  virtual void       setSelection( const SUIT_DataOwnerPtrList& );
 
 private:
-  void         fillEntries( QMap<QString, LightApp_DataObject*>& );
+  void               fillEntries( QMap<QString, LightApp_DataObject*>& );
 
 private:
-  OB_Browser*  myBrowser;
-  SUIT_DataOwnerPtrList  mySelectedList;
-
+  LightApp_Browser*                   myBrowser;
+  SUIT_DataOwnerPtrList               mySelectedList;
   QMap<QString, LightApp_DataObject*> myEntries;
-
-  unsigned long myModifiedTime;
+  unsigned long                       myModifiedTime;
 };
 
 #endif

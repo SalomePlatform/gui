@@ -76,8 +76,8 @@ public:
   QModelIndexList        selectedIndexes() const;
   const QItemSelection   selection() const;
 
-  virtual void           select( const QModelIndex&, const bool = false );
-  virtual void           select( const QModelIndexList&, const bool = false );
+  virtual void           select( const QModelIndex&, const bool, const bool = true );
+  virtual void           select( const QModelIndexList&, const bool, const bool = true );
 
   bool                   isOpen( const QModelIndex& ) const;
   virtual void           setOpen( const QModelIndex& theObject, const bool theOpen = true );

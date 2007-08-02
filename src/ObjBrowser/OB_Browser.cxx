@@ -339,13 +339,18 @@ const QItemSelection OB_Browser::selection() const
   \brief Select/deselect specified model index.
   \param index model index to be selected/deselected
   \param on if \c true, the index will be selected, otherwise - deselected
+  \param keepSelection if \c true (default) the previous selection is kept, 
+  otherwise it is first cleared
 */
-void OB_Browser::select( const QModelIndex& index, const bool on )
+void OB_Browser::select( const QModelIndex& index, const bool on, const bool keepSelection )
 {
   if ( myView->selectionModel() ) {
-    myView->selectionModel()->select( index, on ? 
-				      QItemSelectionModel::Select   | QItemSelectionModel::Rows :
-				      QItemSelectionModel::Deselect | QItemSelectionModel::Rows );
+    QItemSelectionModel::SelectionFlags f = on ? QItemSelectionModel::Select : QItemSelectionModel::Deselect;
+    f = f | QItemSelectionModel::Rows;
+    if ( !keepSelection )
+      f = f | QItemSelectionModel::Clear;
+
+    myView->selectionModel()->select( index, f );
   }
 }
 
@@ -354,14 +359,18 @@ void OB_Browser::select( const QModelIndex& index, const bool on )
   \param indexes model indices to be selected/deselected
   \param on if \c true, the indices will be selected, otherwise - deselected
 */
-void OB_Browser::select( const QModelIndexList& indexes, const bool on )
+void OB_Browser::select( const QModelIndexList& indexes, const bool on, const bool keepSelection )
 {
   bool blocked = myView->signalsBlocked();
   myView->blockSignals( true );
 
   QModelIndex idx;
-  foreach( idx, indexes )
-    select( idx, on );
+  bool first = true;
+
+  foreach( idx, indexes ) {
+    select( idx, on, first ? keepSelection : true );
+    first = false;
+  }
 
   myView->blockSignals( blocked );
   emit( selectionChanged() );

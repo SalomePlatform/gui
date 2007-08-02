@@ -149,6 +149,4 @@ void LightApp_ShowHideOp::startOperation()
   }
   d->UpdateViewer();
   commit();
-
-  delete sel;
 }

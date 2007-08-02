@@ -110,17 +110,17 @@ void OB_Browser::ToolTip::maybeTip( const QPoint& pos )
 
 /*!
   \class OB_Browser
-  Implements public API of an object browser that can be used to display arbitrary 
-  application data in a hierarchical form. It is based on Qt4 model/view
-  architecture. By default, object browser displays contents of SUIT_TreeModel, 
-  which simply maps tree of data objects to a tree of model indices needed for QTreeView.
-  However, an arbitrary model derived from QAbstractItemModel can be specified instead.
-  For example, some SUIT-based application might not like using SUIT_DataObject class, 
-  and in such a case it should provide its own implementation of a data model.
-  
-  Allows to get/set selection, 
-  to drag-n-drop of objects, to determine item by SUIT object and 
-  vice versa
+  \brief Object browser widget which can be used to handle tree-like data model.
+
+  The class OB_Browser implements public API of an object browser widget
+  that can be used to display arbitrary application data in a hierarchical form.
+  It is based on Qt4 model/view architecture. 
+
+  Object browser can be used with conjuction of any custom item model inherited
+  from QAbstractItemModel class (see Qt 4 reference manual).
+
+  The class provides a functionality get/modify selection, drag-n-drop of the
+  objects, etc.
 */
 
 /*!
@@ -135,8 +135,7 @@ OB_Browser::OB_Browser( QWidget* parent, QAbstractItemModel* model )
   myView = new QtxTreeView( this );
   myView->setRootIsDecorated( true );
   myView->setSelectionMode( QAbstractItemView::ExtendedSelection );
-  myView->installEventFilter( this );
-  myView->viewport()->installEventFilter( this );
+  myView->setAllColumnsShowFocus( true );
 
   QVBoxLayout* main = new QVBoxLayout( this );
   main->addWidget( myView );
@@ -150,11 +149,13 @@ OB_Browser::OB_Browser( QWidget* parent, QAbstractItemModel* model )
   // and QTreeView needs some setup
   //connect( myView, SIGNAL( dropped( QPtrList<QListViewItem>, QListViewItem*, int ) ),
   //         this, SLOT( onDropped( QPtrList<QListViewItem>, QListViewItem*, int ) ) );
-  connect( myView, SIGNAL( selectionChanged() ), this, SIGNAL( selectionChanged() ) );
+  setModel( model );
+
+  connect( myView, SIGNAL( selectionChanged() ),
+	   this,   SIGNAL( selectionChanged() ) );
   connect( myView, SIGNAL( doubleClicked( QListViewItem* ) ),
            this, SLOT( onDoubleClicked( QListViewItem* ) ) );
 
-  setModel( model );
 }
 
 /*!
@@ -167,7 +168,8 @@ OB_Browser::~OB_Browser()
 }
 
 /*!
-  \return tree view of object browser
+  \brief Get tree view widget.
+  \return tree view widget of the object browser
 */
 QtxTreeView* OB_Browser::treeView() const
 {
@@ -206,26 +208,24 @@ void OB_Browser::setModel( QAbstractItemModel* model )
 }
 
 /*!
-  \brief Get current item delegate.
+  \brief Get current item delegate (items renderer).
   \return currently used item delegate
   \sa setItemDelegate()
 */
 QAbstractItemDelegate* OB_Browser::itemDelegate() const
 {
-  return treeView() ? treeView()->itemDelegate() : 0;
+  return myView->itemDelegate();
 }
 
 /*!
-  \brief Set item delegate.
+  \brief Set item delegate (items renderer).
   \param d custom item delegate
   \sa itemDelegate()
 */
 void OB_Browser::setItemDelegate( QAbstractItemDelegate* d )
 {
-  if ( treeView() )
-    treeView()->setItemDelegate( d );
+  myView->setItemDelegate( d );
 }
-
 
 /*!
   \brief Check if controls for expanding and collapsing top-level items are shown.
@@ -281,7 +281,7 @@ void OB_Browser::setAutoOpenLevel( const int levels )
 */
 void OB_Browser::openLevels( const int levels )
 {
-  treeView()->expandLevels( levels < 0 ? autoOpenLevel() : levels );
+  myView->expandLevels( levels < 0 ? autoOpenLevel() : levels );
 }
 
 /*!
@@ -305,79 +305,21 @@ void OB_Browser::setShowToolTips( const bool theDisplay )
 */
 
 /*!
-  \return root SUIT object of browser
-*/
-/* TODO: removed
-SUIT_DataObject* OB_Browser::getRootObject() const
-{
-  return myRoot;
-}
-*/
-/*!
-  Sets new root SUIT object of browser
-  \param theRoot - new root object
-*/
-/* TODO: removed
-void OB_Browser::setRootObject( SUIT_DataObject* theRoot )
-{
-  DataObjectKey curKey;
-  DataObjectMap selObjs, openObjs;
-  DataObjectKeyMap selKeys, openKeys;
-
-  int selNum = numberOfSelected();
-
-  SUIT_DataObject* curObj = 0;
-  if ( theRoot )
-    curObj = storeState( selObjs, openObjs, selKeys, openKeys, curKey );
-
-  removeConnections( myRoot );
-  if ( myRoot != theRoot && isAutoDeleteObjects() )
-    delete myRoot;
-
-  myRoot = theRoot;
-
-  createConnections( myRoot );
-
-  if ( myRoot )
-    updateView( myRoot );
-  else if ( listView() )
-  {
-    myItems.clear();
-    listView()->clear();
-  }
-
-  restoreState( selObjs, openObjs, curObj, selKeys, openKeys, curKey );
-
-  autoOpenBranches();
-
-  setModified();
-
-  if ( selNum != numberOfSelected() )
-    emit selectionChanged();
-}
-*/
-/*!
   \brief Get number of selected items.
   \return number of selected items
 */
 int OB_Browser::numberOfSelected() const
 {
-  int count = 0;
-  if ( treeView() && treeView()->selectionModel() )
-     count = treeView()->selectionModel()->selectedIndexes().count();
-  return count;
+  return myView->selectionModel() ? myView->selectionModel()->selectedIndexes().count() : 0;
 }
 
 /*!
   \brief Get all selected items.
   \return unsorted list of selected indexes with no duplicates
 */
-QModelIndexList OB_Browser::getSelected() const
+QModelIndexList OB_Browser::selectedIndexes() const
 {
-  QModelIndexList selected = QModelIndexList();
-  if ( treeView() && treeView()->selectionModel() )
-    selected = treeView()->selectionModel()->selectedIndexes();
-  return selected;
+  return myView->selectionModel() ? myView->selectionModel()->selectedIndexes() : QModelIndexList();
 }
 
 /*!
@@ -388,118 +330,71 @@ const QItemSelection OB_Browser::selection() const
 {
   static QItemSelection emptySel;
   QItemSelection sel = emptySel;
-  if ( treeView() && treeView()->selectionModel() )
-    sel = treeView()->selectionModel()->selection();
+  if ( myView->selectionModel() )
+    sel = myView->selectionModel()->selection();
   return sel;
 }
 
 /*!
-  \brief Set selected objects.
-  \param theObject - new selected object
-  \param append - if it is true, then other selected objects are left as selected,
-  otherwise only 'theObject' will be selected
+  \brief Select/deselect specified model index.
+  \param index model index to be selected/deselected
+  \param on if \c true, the index will be selected, otherwise - deselected
 */
-void OB_Browser::setSelected( const QModelIndex& theObject, const bool )
+void OB_Browser::select( const QModelIndex& index, const bool on )
 {
-  /*
-  DataObjectList lst;
-  lst.append( theObject );
-  setSelected( lst, append );
-  */
+  if ( myView->selectionModel() ) {
+    myView->selectionModel()->select( index, on ? 
+				      QItemSelectionModel::Select   | QItemSelectionModel::Rows :
+				      QItemSelectionModel::Deselect | QItemSelectionModel::Rows );
+  }
 }
 
 /*!
-  Sets selected objects
-  \param theObjLst - new selected objects
-  \param append - if it is true, then other selected objects are left as selected,
-  otherwise only 'theObjLst' will be selected
+  \brief Select/deselect specified model indices.
+  \param indexes model indices to be selected/deselected
+  \param on if \c true, the indices will be selected, otherwise - deselected
 */
-void OB_Browser::setSelected( const QModelIndexList& theObjLst, const bool )
+void OB_Browser::select( const QModelIndexList& indexes, const bool on )
 {
-  /*
-  QListView* lv = listView();
+  bool blocked = myView->signalsBlocked();
+  myView->blockSignals( true );
 
-  if ( !lv )
-    return;
+  QModelIndex idx;
+  foreach( idx, indexes )
+    select( idx, on );
 
-  bool changed = false;
-  bool block = lv->signalsBlocked();
-  lv->blockSignals( true );
-
-  QMap<QListViewItem*, int> map;
-  for ( DataObjectListIterator itr( theObjLst ); itr.current(); ++itr )
-    map.insert( listViewItem( itr.current() ), 0 );
-
-  for ( QListViewItemIterator it( lv ); it.current(); ++it )
-  {
-    QListViewItem* item = it.current();
-    if ( map.contains( item ) && !lv->isSelected( item ) )
-    {
-      changed = true;
-      lv->setSelected( item, true );
-    }
-    if ( !append && !map.contains( item ) && lv->isSelected( item ) )
-    {
-      changed = true;
-      lv->setSelected( item, false );
-    }
-  }
-
-  lv->blockSignals( block );
-
-  if ( changed )
-  {
-    int count = 0;
-    QListViewItem* sel = 0;
-    QListViewItem* cur = lv->currentItem();
-    for ( QListViewItemIterator iter( lv ); iter.current() && !sel; ++iter, count++ )
-    {
-      if ( iter.current()->isSelected() && cur == iter.current() )
-        sel = iter.current();
-    }
-
-    for ( QListViewItemIterator itr( lv ); itr.current() && !sel; ++itr )
-    {
-      if ( itr.current()->isSelected() )
-	      sel = itr.current();
-    }
-
-    if ( sel )
-      lv->setCurrentItem( sel );
-
-    if ( sel && count == 1 )
-      lv->ensureItemVisible( sel );
-
-    emit selectionChanged();
-  }
-  */
+  myView->blockSignals( blocked );
+  emit( selectionChanged() );
 }
 
 /*!
-  \return true if item corresponding to object is opened
-  \param index - object to be checked
+  \brief Check if specified model index is expanded or collapsed.
+  \param index model index
+  \return \c true if model index is expanded
+  \sa setOpen()
 */
 bool OB_Browser::isOpen( const QModelIndex& index ) const
 {
-  return treeView()->isExpanded( index );
+  return index.isValid() && model() && model()->hasChildren( index ) && myView->isExpanded( index );
 }
 
 /*!
-  Sets opened state of item
-  \param index - object corresponding to item
-  \param open - new opened state
+  \brief Expand/collapse the specified model index.
+  \param index model index
+  \param open if \c true, the index will be expanded, otherwse - collapsed
+  \sa isOpen()
 */
 void OB_Browser::setOpen( const QModelIndex& index, const bool open )
 {
-  treeView()->setExpanded( index, open );
+  myView->setExpanded( index, open );  // hasChildren() ???
 }
 
 /*!
-  Adjusts width by root item
+  \brief Adjust first column width to its contents.
 */
 void OB_Browser::adjustWidth()
 {
-  treeView()->resizeColumnToContents( 0 );
+  myView->resizeColumnToContents( 0 );
 }
 
 /*!
@@ -538,187 +433,6 @@ void OB_Browser::setFilter( OB_Filter* f )
 }
 */
 /*!
-  Adds new column to list view
-  \param label - title of column
-  \param id - id of column
-  \param width - width of column
-*/
-/* TODO: removed
-int OB_Browser::addColumn( const QString& label, const int id, const int width )
-{
-  return addColumn( QIconSet(), label, id, width );
-}
-*/
-/*!
-  Adds new column to list view
-  \param icon - icon of column
-  \param label - title of column
-  \param id - id of column
-  \param width - width of column
-*/
-/* TODO: removed
-int OB_Browser::addColumn( const QIconSet& icon, const QString& label, const int id, const int width )
-{
-  QListView* lv = listView();
-  if ( !lv )
-    return -1;
-
-  int theId = id;
-  if ( theId < 0 )
-  {
-    while ( myColumnIds.contains( theId ) )
-      theId++;
-  }
-
-  if ( myColumnIds.contains( theId ) )
-    return -1; // can not reuse id
-
-  int sec = -1;
-  if ( icon.isNull() )
-    sec = lv->addColumn( label, width );
-  else
-    sec = lv->addColumn( icon, label, width );
-
-  if ( sec == -1 )
-    return -1;
-
-  myColumnIds.insert( theId, sec );
-  updateText();
-
-  return theId;
-}
-*/
-/*!
-  Removes column
-  \param id - id of column
-*/
-/* TODO: removed
-void OB_Browser::removeColumn( const int id )
-{
-  QListView* lv = listView();
-  if ( !lv || !myColumnIds.contains( id ) )
-    return;
-
-  int sec = myColumnIds[id];
-  lv->removeColumn( sec );
-
-  // update map of column indeces
-  myColumnIds.remove( id );
-  for ( QMap<int, int>::iterator it = myColumnIds.begin(); it != myColumnIds.end(); ++it )
-  {
-    if ( it.key() > id )
-      it.data()--;
-  }
-  updateText();
-}
-*/
-/*!
-  Sets title of first column (name column)
-  \param label - new title
-*/
-/* TODO: removed
-void OB_Browser::setNameTitle( const QString& label )
-{
-  setNameTitle( QIconSet(), label );
-}
-*/
-/*!
-  Sets title and icon of first column (name column)
-  \param icon - new icon
-  \param label - new title
-*/
-/* TODO: removed
-void OB_Browser::setNameTitle( const QIconSet& icon, const QString& label )
-{
-  QListView* lv = listView();
-  if ( !lv )
-    return;
-
-  if ( icon.isNull() )
-    lv->setColumnText( 0, label );
-  else
-    lv->setColumnText( 0, icon, label );
-}
-*/
-/*!
-  Sets title of column
-  \param id - column id
-  \param label - new column title
-*/
-/* TODO: removed
-void OB_Browser::setColumnTitle( const int id, const QString& label )
-{
-  setColumnTitle( id, QIconSet(), label );
-}
-*/
-/*!
-  Sets title and icon of column
-  \param id - column id
-  \param icon - new column icon
-  \param label - new column title
-*/
-/* TODO: removed
-void OB_Browser::setColumnTitle( const int id, const QIconSet& icon, const QString& label )
-{
-  QListView* lv = listView();
-  if ( !lv || !myColumnIds.contains( id ) )
-    return;
-
-  if ( icon.isNull() )
-    lv->setColumnText( myColumnIds[id], label );
-  else
-    lv->setColumnText( myColumnIds[id], icon, label );
-}
-*/
-/*!
-  \return title of first column (name column)
-*/
-/* TODO: removed
-QString OB_Browser::nameTitle() const
-{
-  return myView->columnText( 0 );
-}
-*/
-/*!
-  \return title of first column (name column)
-  \param id - column id
-*/
-/* TODO: removed
-QString OB_Browser::columnTitle( const int id ) const
-{
-  QString txt;
-  if ( myColumnIds.contains( id ) )
-    txt = myView->columnText( myColumnIds[id] );
-  return txt;
-}
-*/
-/*!
-  \return true if column is visible
-  \param id - column id
-*/
-/* TODO: removed
-bool OB_Browser::isColumnVisible( const int id ) const
-{
-  return myColumnIds.contains( id ) && myView->isShown( myColumnIds[id] );
-}
-*/
-/*!
-  Sets visibility of column
-  \param id - column id
-  \param on - new visibility state
-*/
-/* TODO: removed
-void OB_Browser::setColumnShown( const int id, const bool on )
-{
-  if ( !myColumnIds.contains( id ) )
-    return;
-
-  myView->setShown( myColumnIds[id], on );
-  if( !on )
-    myView->setColumnWidthMode( myColumnIds[id], QListView::Manual );
-}
-*/
-/*!
   Sets global width mode
   \param mode - new width mode
 */
@@ -728,45 +442,6 @@ void OB_Browser::setWidthMode( QListView::WidthMode mode )
   for ( int i = 0, n = myView->columns(); i < n; i++ )
     if( mode!=QListView::Maximum || myView->columnWidth( i )>0 )
       myView->setColumnWidthMode( i, mode );
-}
-*/
-/*!
-  \return list of columns ids
-*/
-/* TODO: to be revised or removed
-QValueList<int> OB_Browser::columns() const
-{
-  QValueList<int> lst;
-  for ( QMap<int, int>::ConstIterator it = myColumnIds.begin(); it != myColumnIds.end(); ++it )
-    lst.append( it.key() );
-  return lst;
-}
-*/
-/*!
-  \return true if it is possible to show/hide column by popup
-  \param id - column id
-*/
-/* TODO: removed
-bool OB_Browser::appropriateColumn( const int id ) const
-{
-  bool res = false;
-  if ( myColumnIds.contains( id ) )
-    res = myView->appropriate( myColumnIds[id] );
-  return res;
-}
-*/
-/*!
-  Sets "appropriate state": is it possible to show/hide column by popup
-  \param id - column id
-  \param on - new state
-*/
-/* TODO: removed
-void OB_Browser::setAppropriateColumn( const int id, const bool on )
-{
-  if ( !myColumnIds.contains( id ) )
-    return;
-
-  myView->setAppropriate( myColumnIds[id], on );
 }
 */
 /*!
@@ -849,37 +524,6 @@ void OB_Browser::replaceTree( SUIT_DataObject* src, SUIT_DataObject* trg )
     emit selectionChanged();
 }
 */
-/*!
-  Updates view
-  \param startObj - start object
-*/
-/* TODO: removed
-void OB_Browser::updateView( SUIT_DataObject* startObj )
-{
-  QListView* lv = listView();
-  if ( !lv )
-    return;
-
-  if ( !startObj || startObj->root() != getRootObject() )
-    return;
-
-  //qDebug( "updateView:" );
-  //startObj->dump();
-
-  if ( startObj == myRoot )
-  {
-    OB_BrowserSync sync( this );
-    synchronize<ObjPtr,ItemPtr,OB_BrowserSync>( myRoot, 0, sync );
-  }
-  else
-  {
-    OB_BrowserSync sync( this );
-    OB_ListItem* startItem = dynamic_cast<OB_ListItem*>( listViewItem( startObj ) );
-    synchronize<ObjPtr,ItemPtr,OB_BrowserSync>( startObj, startItem, sync );
-  }
-}
-*/
-
 /*!
   Adjusts width by item
   \param item
@@ -1089,29 +733,52 @@ void OB_Browser::contextMenuEvent( QContextMenuEvent* e )
 }
 
 /*!
+  \brief Get the time of the latest updating.
+  \return latest updating time
+*/
+unsigned long OB_Browser::getModifiedTime() const
+{ 
+  return myModifiedTime; 
+}
+
+/*!
+  \brief Update the time of the latest updating.
+*/
+void OB_Browser::setModified()
+{
+  myModifiedTime = clock();
+}
+
+/*!
   \brief Called when "Expand all" popup menu command is activated.
   
   Expands all selected items recursively.
 */
-void OB_Browser::onExpand()
+void OB_Browser::onExpandAll()
 {
-  QModelIndexList indexes = treeView()->selectionModel()->selectedIndexes();
+  QModelIndexList indexes = selectedIndexes();
   QModelIndex index;
 
   foreach ( index, indexes ) {
-    treeView()->expandAll( index );
+    myView->expandAll( index );
   }
 }
 
 /*!
-  SLOT: called if action "Show/hide column" is activated by popup
+  \brief Called when "Collapse all" popup menu command is activated.
+  
+  Collapse all selected items recursively.
 */
-/* TODO: removed
-void OB_Browser::onColumnVisible( int id )
+void OB_Browser::onCollapseAll()
 {
-  setColumnShown( id, !isColumnVisible( id ) );
+  QModelIndexList indexes = selectedIndexes();
+  QModelIndex index;
+
+  foreach ( index, indexes ) {
+    myView->collapseAll( index );
+  }
 }
-*/
+
 /*!
   SLOT: called if SUIT object is destroyed
 */
@@ -1204,25 +871,33 @@ void OB_Browser::updateText( QListViewItem* item )
     item->setText( it.data(), obj->text( it.key() ) );
 }
 */
+
 /*!
-  Adds custom actions to popup
-  \param menu - popup menu
+  \brief Add custom actions to the popup menu.
+  \param menu popup menu
 */
 void OB_Browser::contextMenuPopup( QMenu* menu )
 {
   menu->addSeparator();
 
-  QModelIndexList indexes = treeView()->selectionModel()->selectedIndexes();
+  QModelIndexList indexes = selectedIndexes();
 
-  bool closed = false;
+  bool closed = false, opened = false;
   
   for ( QModelIndexList::Iterator it = indexes.begin(); 
 	it != indexes.end() && !closed; ++it ) {
     closed = hasCollased( *it );
   }
 
+  for ( QModelIndexList::Iterator it = indexes.begin(); 
+	it != indexes.end() && !opened; ++it ) {
+    opened = hasExpanded( *it );
+  }
+
   if ( closed )
-    menu->addAction( tr( "MEN_EXPAND_ALL" ), this, SLOT( onExpand() ) );
+    menu->addAction( tr( "MEN_EXPAND_ALL" ), this, SLOT( onExpandAll() ) );
+  if ( opened )
+    menu->addAction( tr( "MEN_COLLAPSE_ALL" ), this, SLOT( onCollapseAll() ) );
 
   menu->addSeparator();
 }
@@ -1242,25 +917,49 @@ void OB_Browser::expand( QListViewItem* item )
 }
 */
 /*!
-  \return true if item or one of it's children isn't opened
+  \brief Check if model index is collapsed or has collapsed children.
+  \return \c true if item or one of its children is collapsed
 */
 bool OB_Browser::hasCollased( const QModelIndex& index ) const
 {
   bool result = false;
 
-  if ( index.isValid() ) {
-    bool hasChildren = treeView()->model()->hasChildren( index );
-    result = hasChildren && !treeView()->isExpanded( index );
+  if ( index.isValid() && model() ) {
+    bool hasChildren = model()->hasChildren( index );
+    result = hasChildren && !myView->isExpanded( index );
     if ( !result && hasChildren ) {
-      int rows = treeView()->model()->rowCount( index );
+      int rows = model()->rowCount( index );
       for ( int i = 0; i < rows && !result; i ++ ) {
-	QModelIndex child = treeView()->model()->index( i, 0, index );
+	QModelIndex child = model()->index( i, 0, index );
 	result = hasCollased( child );
       }
     }
   }
   return result;
 }
+
+/*!
+  \brief Check if model index is expanded or has expanded children.
+  \return \c true if item or one of its children is expanded
+*/
+bool OB_Browser::hasExpanded( const QModelIndex& index ) const
+{
+  bool result = false;
+
+  if ( index.isValid() && model() ) {
+    bool hasChildren = model()->hasChildren( index );
+    result = hasChildren && myView->isExpanded( index );
+    if ( !result && hasChildren ) {
+      int rows = model()->rowCount( index );
+      for ( int i = 0; i < rows && !result; i ++ ) {
+	QModelIndex child = model()->index( i, 0, index );
+	result = hasExpanded( child );
+      }
+    }
+  }
+  return result;
+}
+
 /*!
   Removes SUIT object
   \param obj - SUIT object to be removed
@@ -1346,10 +1045,8 @@ void OB_Browser::onDoubleClicked( QListViewItem* item )
     emit doubleClicked( dataObject( item ) );
 }
 */
+
 /*!
-  Stores time of last modification
+  \fn void OB_Browser::selectionChanged();
+  \brief Emitted when selection is changed in the Object Browser.
 */
-void OB_Browser::setModified()
-{
-  myModifiedTime = clock();
-}

@@ -58,7 +58,6 @@ LightApp_Selection::LightApp_Selection( const QString& client, LightApp_Selectio
     while ( it.hasNext() )
     {
       SUIT_Selector* selector = it.next();
-      qDebug( selector->type().toLatin1().constData() );
       if( selector->type()!=client )
       {
 	mgr->selected( cur_sel, selector->type() );

@@ -25,14 +25,12 @@
 
 #include "OB.h"
 
+#include <SUIT_PopupClient.h>
+
 #include <QWidget>
 #include <QMap>
 #include <QModelIndex>
 #include <QItemSelection>
-
-#include <SUIT_DataObject.h>
-#include <SUIT_DataObjectKey.h>
-#include <SUIT_PopupClient.h>
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -75,11 +73,11 @@ public:
   //void                 setShowToolTips( const bool theDisplay );
 
   int                    numberOfSelected() const;
-  QModelIndexList        getSelected() const;
+  QModelIndexList        selectedIndexes() const;
   const QItemSelection   selection() const;
 
-  virtual void           setSelected( const QModelIndex&, const bool = false );
-  virtual void           setSelected( const QModelIndexList&, const bool = false );
+  virtual void           select( const QModelIndex&, const bool = false );
+  virtual void           select( const QModelIndexList&, const bool = false );
 
   bool                   isOpen( const QModelIndex& ) const;
   virtual void           setOpen( const QModelIndex& theObject, const bool theOpen = true );
@@ -94,36 +92,13 @@ public:
   //OB_Filter*          filter() const;
   //void                setFilter( OB_Filter* );
 
-  // san - Removed, columns and titles are controlled by SUIT_TreeModel and SUIT_DataObject
-  //virtual int       addColumn( const QString&, const int id = -1, const int width = -1 );
-  //virtual int       addColumn( const QIconSet&, const QString&, const int id = -1, const int width = -1 );
-  //virtual void      removeColumn( const int id );
-
-  //void              setNameTitle( const QString& );
-  //virtual void      setNameTitle( const QIconSet&, const QString& );
-  //void              setColumnTitle( const int id, const QString& );
-  //virtual void      setColumnTitle( const int id, const QIconSet&, const QString& );
-
-  //QString           nameTitle() const;
-  //QString           columnTitle( const int ) const;
-
-  // san - These methods are now in QTreeView
-  //bool              isColumnVisible( const int ) const;
-  //virtual void      setColumnShown( const int, const bool );
-
   // TODO: QTreeView::resizeColumnToContents() can be used instead
   //virtual void      setWidthMode( QListView::WidthMode );
 
-  // san - removed
-  // QValueList<int>   columns() const;
-
-  //bool              appropriateColumn( const int ) const;
-  //virtual void      setAppropriateColumn( const int, const bool );
-
   virtual void           contextMenuPopup( QMenu* );
 
+  unsigned long          getModifiedTime() const;
   void                   setModified();
-  unsigned long          getModifiedTime() { return myModifiedTime; }
   
   // san - moved to SUIT_TreeModel
   //OB_Updater*       getUpdater() const;
@@ -131,19 +106,18 @@ public:
 
 signals:
   void                   selectionChanged();
-  void                   doubleClicked( SUIT_DataObject* );
-  void                   dropped( DataObjectList, SUIT_DataObject*, int );
+  //void                   doubleClicked( SUIT_DataObject* );
+  //void                   dropped( DataObjectList, SUIT_DataObject*, int );
 
 private slots:
-  void                   onExpand();
-  //void              onColumnVisible( int );
+  void                   onExpandAll();
+  void                   onCollapseAll();
   //void              onDestroyed( SUIT_DataObject* );
   //void              onDoubleClicked ( QListViewItem* );
   //void              onDropped( QPtrList<QListViewItem>, QListViewItem*, int );
-
+  
 protected:
   //void              adjustWidth( QListViewItem* );
-  //virtual void      updateView( SUIT_DataObject* = 0 );
   //virtual void      updateText();
 
   virtual void           contextMenuEvent( QContextMenuEvent* );
@@ -156,6 +130,7 @@ private:
 
 private:
   bool                   hasCollased( const QModelIndex& ) const;
+  bool                   hasExpanded( const QModelIndex& ) const;
 
   //void              autoOpenBranches();
   //void              openBranch( QListViewItem*, const int );

@@ -53,12 +53,14 @@ public:
 
 protected slots:
   void     onHeaderClicked( int );
+  void     selectionChanged( const QItemSelection&, const QItemSelection& );
   
 protected:
   void     setOpened( const QModelIndex&, const int, bool );
 
 signals:
   void     sortingEnabled( bool );
+  void     selectionChanged();
 
 private:
   void     emitSortingEnabled( bool );

@@ -277,6 +277,21 @@ void QtxTreeView::onHeaderClicked( int column )
 }
 
 /*!
+  \brief Called when the selection is changed.
+  
+  Emits selectionChanged() signal.
+  
+  \param selected new selection
+  \param deselected previous selection
+*/
+void QtxTreeView::selectionChanged( const QItemSelection& selected, 
+				    const QItemSelection& deselected )
+{
+  QTreeView::selectionChanged( selected, deselected );
+  emit( selectionChanged() );
+}
+
+/*!
   \brief Expand/collapse the specified item (recursively).
   \param index model index
   \param levels number of levels to be expanded/collapsed
@@ -298,6 +313,17 @@ void QtxTreeView::setOpened( const QModelIndex& index, const int levels, bool op
     setOpened( child, levels-1, open );
   }
 }
+
+/*!
+  \fn QtxTreeView::sortingEnabled( bool on );
+  \brief Emitted when "Sorting" commans is enabled/disabled from the popup menu.
+  \param on \c true if sorting is enabled and \c false otherwise
+*/
+
+/*!
+  \fn QtxTreeView::selectionChanged();
+  \brief Emitted when selection is changed in the tree view.
+*/
 
 /*!
   \brief Emit sortingEnabled(bool) signal.

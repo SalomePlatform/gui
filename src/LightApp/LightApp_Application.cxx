@@ -46,6 +46,9 @@
 
 #include <SALOME_Event.h>
 
+#include <Style_Model.h>
+#include <Style_Salome.h>
+
 #include <CAM_Module.h>
 #include <CAM_DataModel.h>
 #include <CAM_Study.h>
@@ -1922,6 +1925,60 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 		       "ObjectBrowser", "auto_size_first" );
   pref->addPreference( tr( "PREF_AUTO_SIZE" ), objSetGroup, LightApp_Preferences::Bool,
 		       "ObjectBrowser", "auto_size" );
+
+  // theme values
+  Style_Model* aSModel = 0;
+  QStyle* style = qApp->style();
+  if ( style ) {
+    Style_Salome* aSStyle = qobject_cast<Style_Salome*>( style );
+    if ( aSStyle )
+      aSModel = aSStyle->getModel();
+  }
+  if ( !aSModel )
+    return;
+
+  QString aSection = aSModel->sectionName();
+  int themaTab = pref->addPreference( aSection, salomeCat );
+  QtxResourceMgr* aResMgr = pref->resourceMgr();
+  aSModel->initFromResource( aResMgr );
+
+  QList<int> aGrpLst = aSModel->getGroups();
+  QList<int>::iterator anIt = aGrpLst.begin(), anEnd = aGrpLst.end();
+  QList<int> aPropLst;
+  QList<int>::iterator aPropIt, aPropEnd;
+  int aGrpId, aPropId, aPrefId;
+  for( ; anIt != anEnd; ++anIt ) {
+    aGrpId = *anIt;
+    int themaGroup = pref->addPreference( aSModel->getGroupTitle( aGrpId ), themaTab );
+    pref->setItemProperty( "columns", aSModel->getGroupNbColumns( aGrpId ), themaGroup );
+    aPropLst = aSModel->getGroupProps( aGrpId );
+    for( aPropIt = aPropLst.begin(), aPropEnd = aPropLst.end(); aPropIt != aPropEnd; ++aPropIt ) {
+      aPropId = *aPropIt;
+      Style_Model::PropType aType = aSModel->getPropType( aPropId );
+      LightApp_Preferences::PrefItemType aPType = LightApp_Preferences::Auto;
+      switch( aType ) {
+        case Style_Model::Bool:     aPType = LightApp_Preferences::Bool; break;
+        case Style_Model::Color:    aPType = LightApp_Preferences::Color; break;
+        case Style_Model::String:   aPType = LightApp_Preferences::String; break;
+        case Style_Model::IntSpin:  aPType = LightApp_Preferences::IntSpin; break;
+        case Style_Model::DblSpin:  aPType = LightApp_Preferences::DblSpin; break;
+        case Style_Model::Selector: aPType = LightApp_Preferences::Selector; break;
+        case Style_Model::Font:     aPType = LightApp_Preferences::Font; break;
+        default: break;
+      }
+      aPrefId = pref->addPreference( aSModel->getPropTitle( aPropId ), themaGroup,
+                                     aPType, aSection, aSModel->getPropName( aPropId ) );
+      aSModel->getValueTo( aResMgr, aPropId, true );//set default values into resource
+      if ( aPType == LightApp_Preferences::Selector ) {
+        QStringList lst;
+        QList<QVariant> ids;
+        aSModel->getSelector( aPropId, lst, ids );
+        pref->setItemProperty( "strings", lst, aPrefId );
+        pref->setItemProperty( "indexes", ids, aPrefId );
+      }
+    }
+  }
+  pref->retrieve();
 }
 
 /*!
@@ -2033,6 +2090,19 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 	pythonConsole()->setFont( resMgr->fontValue( "PyConsole", "font" ) );
   }
 #endif
+  QStyle* style = qApp->style();
+  if ( style ) {
+    Style_Salome* aSStyle = qobject_cast<Style_Salome*>( style );
+    if ( aSStyle ) {
+      Style_Model* aSModel = aSStyle->getModel();
+      if ( sec==aSModel->sectionName() ) {
+        bool retrieve = aSModel->updateFromResource( resMgr, param );
+        if ( retrieve && _prefs_ )
+          _prefs_->retrieve();
+        aSStyle->polish(qApp);
+      }
+    }
+  }
 }
 
 /*!

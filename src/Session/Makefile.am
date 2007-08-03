@@ -50,12 +50,14 @@ libSalomeSession_la_CPPFLAGS= $(QT_MT_INCLUDES) $(PYTHON_INCLUDES) \
 	$(HDF5_INCLUDES) $(BOOST_CPPFLAGS) @KERNEL_CXXFLAGS@ $(CAS_CPPFLAGS) \
 	@CORBA_CXXFLAGS@ @CORBA_INCLUDES@ \
 	-I$(top_builddir)/salome_adm/unix -I$(top_builddir)/idl \
-	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../Event
+	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../Event \
+	-I$(srcdir)/../Style
 
 libSalomeSession_la_LDFLAGS= $(QT_MT_LIBS) $(KERNEL_LDFLAGS) -lSalomeNS \
 	-lSalomeLifeCycleCORBA -lOpUtil -lSALOMELocalTrace -lSalomeCatalog \
 	-lSalomeDSClient $(CAS_KERNEL) -lwith_loggerTraceCollector \
-	../SUIT/libsuit.la ../Event/libEvent.la ../../idl/libSalomeIDLGUI.la
+	../SUIT/libsuit.la ../Event/libEvent.la ../../idl/libSalomeIDLGUI.la \
+	../Style/libSalomeStyle.la
 
 # Executable
 bin_PROGRAMS= SALOME_Session_Server

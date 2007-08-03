@@ -25,17 +25,20 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 # Libraries targets
 lib_LTLIBRARIES = libSalomeStyle.la
 
-libSalomeStyle_la_SOURCES = SalomeStyle.cxx
+salomeinclude_HEADERS= \
+	Style.h \
+	Style_Tools.h \
+	Style_Model.h \
+	Style_Salome.h
 
-libSalomeStyle_la_CPPFLAGS=$(QT_INCLUDES)
+dist_libSalomeStyle_la_SOURCES= \
+	Style_Tools.cxx \
+	Style_Model.cxx \
+	Style_Salome.cxx
 
-libSalomeStyle_la_LDFLAGS=$(QT_MT_LIBS)
+libSalomeStyle_la_CPPFLAGS=$(QT_INCLUDES) \
+	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT 
 
-EXTRA_DIST+=SalomeStyle.h
+libSalomeStyle_la_LDFLAGS=$(QT_MT_LIBS) \
+	../Qtx/libqtx.la ../SUIT/libsuit.la
 
-install-exec-hook:
-	mkdir -p $(bindir)/styles
-	(cd $(bindir)/styles; ln -sf ../../../lib@LIB_LOCATION_SUFFIX@/salome/libSalomeStyle.so libSalomeStyle.so;)
-
-uninstall-hook:
-	rm -f $(bindir)/styles/libSalomeStyle.so

@@ -50,6 +50,8 @@
 #include "Session_ServerCheck.hxx"
 
 #include <QtxSplash.h>
+#include <Style_Salome.h>
+#include <Style_Model.h>
 #include "SUIT_Tools.h"
 #include "SUIT_Session.h"
 #include "SUIT_Application.h"
@@ -309,9 +311,6 @@ int main( int argc, char **argv )
   // Add application library path (to search style plugin etc...)
   QString path = QDir::convertSeparators( SUIT_Tools::addSlash( QString( ::getenv( "GUI_ROOT_DIR" ) ) ) + QString( "bin/salome" ) );
   _qappl.addLibraryPath( path );
-  
-  // Set SALOME style to the application
-  _qappl.setStyle( "salome" );
 
   bool isGUI    = isFound( "GUI",    argc, argv );
   bool isSplash = isFound( "SPLASH", argc, argv );
@@ -530,6 +529,11 @@ int main( int argc, char **argv )
       SUIT_Application* aGUIApp = aGUISession->startApplication( "SalomeApp", 0, 0 );
       if ( aGUIApp )
       {
+        // Set SALOME style to the application
+        Style_Salome* aStyle = new Style_Salome();
+        aStyle->getModel()->initFromResource( aGUIApp->resourceMgr() );
+        _qappl.setStyle( aStyle );
+
 	if ( !isFound( "noexcepthandler", argc, argv ) )
 	  _qappl.setHandler( aGUISession->handler() ); // after loading SalomeApp application
 	                                               // aGUISession contains SalomeApp_ExceptionHandler

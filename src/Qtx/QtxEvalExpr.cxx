@@ -266,8 +266,8 @@ void QtxEvalParser::insertOperationSet( QtxEvalSet* set, const int idx )
   if ( mySets.contains( set ) )
     return;
 
-  int index = idx < 0 ? mySets.count() - 1 : idx;
-  index = qMin( index, mySets.count() - 1 );
+  int index = idx < 0 ? mySets.count() : idx;
+  index = qMin( index, mySets.count() );
   mySets.insert( index, set );
 }
 

@@ -737,7 +737,7 @@ QString QtxPopupSelection::equalityParam() const
 */
 QString QtxPopupSelection::selCountParam() const
 {
-  QString str = option( "equality" );
+  QString str = option( "selcount" );
   if ( str.isEmpty() )
     str = "selcount";
   return str;
@@ -751,7 +751,7 @@ QString QtxPopupSelection::selCountParam() const
 
 /*!
   \fn QVariant QtxPopupSelection::parameter( const int idx, const QString& name ) const;
-  \brief Get number of the selected objects.
+  \brief Get value of the parameter which is of list type
   \param idx parameter index
   \param name parameter name
   \return parameter value

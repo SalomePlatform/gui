@@ -540,6 +540,7 @@ void QtxPagePrefListItem::setFixedSize( const bool on )
 */
 void QtxPagePrefListItem::updateContents()
 {
+  QtxPagePrefItem::updateContents();
   updateVisible();
 }
 
@@ -785,6 +786,7 @@ QtxPagePrefToolBoxItem::~QtxPagePrefToolBoxItem()
 */
 void QtxPagePrefToolBoxItem::updateContents()
 {
+  QtxPagePrefItem::updateContents();
   updateToolBox();
 }
 
@@ -868,6 +870,7 @@ QtxPagePrefTabsItem::~QtxPagePrefTabsItem()
 */
 void QtxPagePrefTabsItem::updateContents()
 {
+  QtxPagePrefItem::updateContents();
   updateTabs();
 }
 
@@ -1064,6 +1067,7 @@ QtxPagePrefFrameItem::~QtxPagePrefFrameItem()
 */
 void QtxPagePrefFrameItem::updateContents()
 {
+  QtxPagePrefItem::updateContents();
   updateFrame();
 }
 
@@ -1322,6 +1326,7 @@ void QtxPagePrefGroupItem::setResource( const QString& sect, const QString& para
 */
 void QtxPagePrefGroupItem::updateContents()
 {
+  QtxPagePrefItem::updateContents();
   myGroup->setTitle( title() );
 
   updateState();

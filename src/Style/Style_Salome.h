@@ -16,16 +16,16 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      Style_Salome.h
-// Author:    Natalia Ermolaeva
+// File   : Style_Salome.h
+// Author : Natalia Ermolaeva, Open CASCADE S.A.S.
+//
 
-#ifndef STYLE_SALOME_HEADER
-#define STYLE_SALOME_HEADER
+#ifndef STYLE_SALOME_H
+#define STYLE_SALOME_H
 
-#include <Style.h>
+#include "Style.h"
 
 #include <QWindowsStyle>
-#include <QStylePlugin>
 #include <QMap>
 
 class Style_Model;
@@ -39,55 +39,56 @@ class QVariant;
 
 class STYLE_SALOME_EXPORT Style_Salome : public QWindowsStyle
 {
+  Q_OBJECT
 public:
   Style_Salome();
   virtual ~Style_Salome();
 
-  Style_Model* getModel() { return myModel; }
+  Style_Model*    getModel() const;
 
-  void         updateSettings( QApplication* app );
+  void            updateSettings( QApplication* );
 
-  virtual void polish( QApplication* app );
-  virtual void polish( QWidget *widget );
-  virtual void unpolish( QWidget *widget );
-  virtual void drawComplexControl( ComplexControl, const QStyleOptionComplex*,
-                                   QPainter*, const QWidget* = 0 ) const;
-
-  virtual void drawControl( ControlElement, const QStyleOption*, QPainter*, const QWidget* ) const;
-  virtual void drawPrimitive( PrimitiveElement, const QStyleOption*,
-                                   QPainter*, const QWidget* = 0 ) const;
-  virtual int pixelMetric ( PixelMetric metric, const QStyleOption* opt = 0,
-                            const QWidget* w = 0 ) const;
-  virtual QSize sizeFromContents ( ContentsType ct, const QStyleOption* opt,
-                                   const QSize& contentsSize, const QWidget* w = 0 ) const;
-  virtual QPixmap standardPixmap(StandardPixmap stPixmap, const QStyleOption *opt,
-                         const QWidget *widget = 0) const;
-  virtual int styleHint ( StyleHint hint, const QStyleOption * option = 0,
-                          const QWidget * widget = 0, QStyleHintReturn * returnData = 0 ) const;
-  virtual QRect subControlRect( ComplexControl, const QStyleOptionComplex*,
-                                SubControl, const QWidget* = 0 ) const;
-  virtual QRect subElementRect( SubElement, const QStyleOption*, const QWidget* = 0 ) const;
-
-private:
-  void          updatePaletteColors();
-  void          updateAllWidgets( QApplication* app );
-  bool          hasHover() const;
-  void          drawHoverRect( QPainter* p, const QRect& r, const double rad, const int type,
-                               const bool border  ) const;
-  void          drawHandle( QPainter* p, const QRect& r, bool horiz, bool isRect = true ) const;
-  void          drawBackground( QPainter* p, const QRect& r, const bool fill,
-                                const bool grad = false, const bool horiz = true ) const;
-  void          drawBorder( QPainter* p, const QRect& r, bool horiz ) const;
-
-  QColor        getColor( int id ) const;
-  double        getDblValue( int id ) const;
-  int           getIntValue( int id ) const;
-  bool          getBoolValue( int id ) const;
-  QString       getStringValue( int id ) const;
-  QString       titleText( const QString&, const int, const int, QFont& f ) const;
+  virtual void    polish( QApplication* );
+  virtual void    polish( QWidget* );
+  virtual void    unpolish( QWidget* );
+  virtual void    drawComplexControl( ComplexControl, const QStyleOptionComplex*,
+				      QPainter*, const QWidget* = 0 ) const;
+  
+  virtual void    drawControl( ControlElement, const QStyleOption*, QPainter*, const QWidget* ) const;
+  virtual void    drawPrimitive( PrimitiveElement, const QStyleOption*,
+				 QPainter*, const QWidget* = 0 ) const;
+  virtual int     pixelMetric( PixelMetric, const QStyleOption* = 0,
+			       const QWidget* = 0 ) const;
+  virtual QSize   sizeFromContents ( ContentsType, const QStyleOption*,
+				     const QSize&, const QWidget* = 0 ) const;
+  virtual QPixmap standardPixmap( StandardPixmap, const QStyleOption*,
+				  const QWidget* = 0) const;
+  virtual int     styleHint( StyleHint, const QStyleOption* = 0,
+			     const QWidget* = 0, QStyleHintReturn* = 0 ) const;
+  virtual QRect   subControlRect( ComplexControl, const QStyleOptionComplex*,
+				  SubControl, const QWidget* = 0 ) const;
+  virtual QRect   subElementRect( SubElement, const QStyleOption*, const QWidget* = 0 ) const;
 
 private:
-  Style_Model*  myModel;
+  void            updatePaletteColors();
+  void            updateAllWidgets( QApplication* );
+  bool            hasHover() const;
+  void            drawHoverRect( QPainter*, const QRect&, const double, const int,
+				 const bool ) const;
+  void            drawHandle( QPainter*, const QRect&, bool, bool = true ) const;
+  void            drawBackground( QPainter*, const QRect&, const bool,
+				  const bool = false, const bool = true ) const;
+  void            drawBorder( QPainter*, const QRect&, bool ) const;
+
+  QColor          getColor( int ) const;
+  double          getDblValue( int ) const;
+  int             getIntValue( int ) const;
+  bool            getBoolValue( int ) const;
+  QString         getStringValue( int ) const;
+  QString         titleText( const QString&, const int, const int, QFont& ) const;
+
+private:
+  Style_Model*    myModel;
 };
 
-#endif
+#endif // STYLE_SALOME_H

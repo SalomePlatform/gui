@@ -36,9 +36,13 @@ dist_libSalomeStyle_la_SOURCES= \
 	Style_Model.cxx \
 	Style_Salome.cxx
 
+MOC_FILES= \
+	Style_Salome_moc.cxx
+nodist_libSalomeStyle_la_SOURCES= $(MOC_FILES)
+
 libSalomeStyle_la_CPPFLAGS=$(QT_INCLUDES) \
-	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT 
+	-I$(srcdir)/../Qtx
 
 libSalomeStyle_la_LDFLAGS=$(QT_MT_LIBS) \
-	../Qtx/libqtx.la ../SUIT/libsuit.la
+	../Qtx/libqtx.la
 

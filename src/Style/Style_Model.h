@@ -16,13 +16,14 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      Style_Model.h
-// Author:    Natalia Ermolaeva
+// File   : Style_Model.h
+// Author : Natalia Ermolaeva, Open CASCADE S.A.S.
+//
 
-#ifndef STYLE_MODEL_HEADER
-#define STYLE_MODEL_HEADER
+#ifndef STYLE_MODEL_H
+#define STYLE_MODEL_H
 
-#include <Style.h>
+#include "Style.h"
 
 #include <QMap>
 #include <QString>
@@ -40,7 +41,7 @@ public:
   Style_Model();
   virtual ~Style_Model();
 
-  static QString sectionName() { return "Theme"; }
+  static QString sectionName();
 
   typedef enum { grp_style, grp_color, grp_col_values, grp_lines, grp_font, grp_value } Groups;
 
@@ -66,41 +67,42 @@ public:
                  edit_rad, btn_rad, slider_rad, slider_increase,
                  hor_handle_delta, ver_handle_delta, split_handle_len,
                  dock_wdg_sep_extent } Properties;
+
   typedef enum { None, Bool, Color, String, IntSpin, DblSpin, Selector, Font } PropType;
 
   void           reset();
-  void           setDefaults( QApplication* app );
-  void           initFromResource( QtxResourceMgr* theResMgr );
-  bool           updateFromResource( QtxResourceMgr* theResMgr, QString thePropName );
+  void           setDefaults( QApplication* );
+  void           initFromResource( QtxResourceMgr* );
+  bool           updateFromResource( QtxResourceMgr*, const QString& );
 
-  void           getValueTo( QtxResourceMgr* theResMgr, int theId, bool theIsDef );
-  void           setValueFrom( QtxResourceMgr* theResMgr, int theId );
+  void           getValueTo( QtxResourceMgr*, int, bool );
+  void           setValueFrom( QtxResourceMgr*, int );
 
-  void           setPredefinedStyle( int theType );
+  void           setPredefinedStyle( int );
 
-  double         getDblValue( int theId, const bool theIsDef = false ) const;
-  int            getIntValue( int theId, const bool theIsDef = false ) const;
-  bool           getBoolValue( int theId, const bool theIsDef = false ) const;
-  QColor         getColorValue( int theId, const bool theIsDef = false ) const;
-  QString        getStringValue( int theId, const bool theIsDef = false ) const;
-  QFont          getFontValue( int theId, const bool theIsDef = false ) const;
+  double         getDblValue( int, const bool = false ) const;
+  int            getIntValue( int, const bool = false ) const;
+  bool           getBoolValue( int, const bool = false ) const;
+  QColor         getColorValue( int, const bool = false ) const;
+  QString        getStringValue( int, const bool = false ) const;
+  QFont          getFontValue( int, const bool = false ) const;
 
-  QList<int>     getGroups();
-  QString        getGroupTitle( int theId );
-  int            getGroupNbColumns( int theId );
-  QList<int>     getGroupProps( int theId );
-  QString        getPropTitle( int theId );
-  PropType       getPropType( int theId );
-  QString        getPropName( int theId );
-  void           getSelector( int theId, QStringList& theLst, QList<QVariant>& theIds );
+  QList<int>     getGroups() const;
+  QString        getGroupTitle( int ) const;
+  int            getGroupNbColumns( int ) const;
+  QList<int>     getGroupProps( int ) const;
+  QString        getPropTitle( int ) const;
+  PropType       getPropType( int ) const;
+  QString        getPropName( int ) const;
+  void           getSelector( int, QStringList&, QList<QVariant>& ) const;
 
 private:
-  void           setDefValue( Properties theId, QVariant theValue );
-  void           setValue( Properties theId, QVariant theValue );
+  void           setDefValue( Properties, const QVariant& );
+  void           setValue( Properties, const QVariant& );
 
-  void           fillValue( Properties theId, QString theName, QString theTitle,
-                            Groups theGroupId, PropType theType = Color ); 
-  void           fillGroup( Groups theId, QString theTitle, int theNbCols );
+  void           fillValue( Properties, const QString&, const QString&,
+                            Groups, PropType = Color ); 
+  void           fillGroup( Groups, const QString&, int );
 
 private:
   typedef struct {
@@ -126,4 +128,4 @@ private:
   QStringList  myLines;
 };
 
-#endif
+#endif // STYLE_MODEL_H

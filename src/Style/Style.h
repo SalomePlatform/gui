@@ -16,21 +16,21 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      Style.h
-// Created:   July, 2007
-// Author:    OCC team
+// File   : Style.h
+// Author : Natalia Ermolaeva, Open CASCADE S.A.S.
+//
 
-#if defined STYLE_SALOME_EXPORTS
+#ifndef STYLE_H
+#define STYLE_H
+
 #if defined WIN32
-#define STYLE_SALOME_EXPORT _declspec( dllexport )
+#  if defined STYLE_SALOME_EXPORTS
+#    define STYLE_SALOME_EXPORT _declspec( dllexport )
+#  else
+#    define STYLE_SALOME_EXPORT _declspec( dllimport )
+#  endif
 #else
-#define STYLE_SALOME_EXPORT  
-#endif
-#else
-#if defined WIN32
-#define STYLE_SALOME_EXPORT _declspec( dllimport )
-#else
-#define STYLE_SALOME_EXPORT  
-#endif
+#  define STYLE_SALOME_EXPORT  
 #endif
 
+#endif // STYLE_H

@@ -161,7 +161,7 @@ nodist_salomeres_DATA= \
 libLightApp_la_CPPFLAGS=$(PYTHON_INCLUDES) $(QT_INCLUDES) $(CAS_CPPFLAGS) \
 	$(HDF5_INCLUDES) @KERNEL_CXXFLAGS@ -I$(srcdir)/../SUIT -I$(srcdir)/../STD \
 	-I$(srcdir)/../CAM -I$(srcdir)/../ObjBrowser -I$(srcdir)/../LogWindow \
-	-I$(srcdir)/../Prs -I$(srcdir)/../Qtx -I$(srcdir)/../Event  -I$(srcdir)/../Style
+	-I$(srcdir)/../Prs -I$(srcdir)/../Qtx -I$(srcdir)/../Event -I$(srcdir)/../Style
 libLightApp_la_LDFLAGS=$(QT_MT_LIBS)
 
 if ENABLE_VTKVIEWER
@@ -220,7 +220,7 @@ endif
 
 libLightApp_la_LIBADD= ../SUIT/libsuit.la ../STD/libstd.la ../CAM/libCAM.la \
 	../LogWindow/libLogWindow.la $(CAS_KERNEL) \
-	../Prs/libSalomePrs.la ../ObjBrowser/libObjBrowser.la \
+	../Prs/libSalomePrs.la ../ObjBrowser/libObjBrowser.la ../Style/libSalomeStyle.la \
 	$(HDF5_LIBS) $(KERNEL_LDFLAGS) -lSalomeHDFPersist
 
 if ENABLE_SALOMEOBJECT

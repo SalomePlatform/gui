@@ -28,6 +28,8 @@
 #include <SUIT_Session.h>
 //#include <SUIT_Desktop.h>
 #include <SUIT_ResourceMgr.h>
+#include <Style_Salome.h>
+#include <Style_Model.h>
 
 // TODO
 //#include <QtxSplash.h>
@@ -224,6 +226,10 @@ int main( int args, char* argv[] )
     SUIT_Application* theApp = aSession->startApplication( argList.first() );
     if ( theApp )
     {
+      Style_Salome* aStyle = new Style_Salome();
+      aStyle->getModel()->initFromResource( theApp->resourceMgr() );
+      app.setStyle( aStyle );
+	
       if ( !noExceptHandling )
         app.setHandler( aSession->handler() );
 

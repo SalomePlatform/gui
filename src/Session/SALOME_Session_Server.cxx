@@ -26,9 +26,9 @@
 // Module : SALOME
 
 #include <Container_init_python.hxx>
-#include "Utils_ORB_INIT.hxx"
-#include "Utils_SINGLETON.hxx"
-#include "SALOME_NamingService.hxx"
+#include <Utils_ORB_INIT.hxx>
+#include <Utils_SINGLETON.hxx>
+#include <SALOME_NamingService.hxx>
 
 #include <QDir>
 #include <QFile>
@@ -37,9 +37,9 @@
 #include <QWaitCondition>
 #include <QRegExp>
 
-#include "Utils_SALOME_Exception.hxx"
-#include "Utils_CorbaException.hxx"
-#include "SALOME_Event.h"
+#include <Utils_SALOME_Exception.hxx>
+#include <Utils_CorbaException.hxx>
+#include <SALOME_Event.h>
 
 #include <SALOMEconfig.h>
 #include CORBA_SERVER_HEADER(SALOME_Session)
@@ -52,12 +52,12 @@
 #include <QtxSplash.h>
 #include <Style_Salome.h>
 #include <Style_Model.h>
-#include "SUIT_Tools.h"
-#include "SUIT_Session.h"
-#include "SUIT_Application.h"
-#include "SUIT_Desktop.h"
-#include "SUIT_ResourceMgr.h"
-#include "SUIT_ExceptionHandler.h"
+#include <SUIT_Tools.h>
+#include <SUIT_Session.h>
+#include <SUIT_Application.h>
+#include <SUIT_Desktop.h>
+#include <SUIT_ResourceMgr.h>
+#include <SUIT_ExceptionHandler.h>
 
 /*! - read arguments, define list of server to launch with their arguments.
  * - wait for naming service

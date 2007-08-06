@@ -24,10 +24,7 @@
 #  Module : SALOME
 # $Header$
 
-# VSR: this is the original packages list
-#SUBDIRS = Qtx Style DDS QDS SUIT STD CAF CAM SUITApp LogWindow ObjBrowser Prs
-# VSR: already migrated to Qt4 packages
-SUBDIRS = Qtx DDS QDS SUIT SUITApp STD CAF CAM LogWindow Prs ObjBrowser
+SUBDIRS = Qtx Style DDS QDS SUIT SUITApp STD CAF CAM LogWindow Prs ObjBrowser
 
 if ENABLE_SALOMEOBJECT
   SUBDIRS += OBJECT
@@ -64,7 +61,7 @@ endif
 if ENABLE_QXGRAPHVIEWER
   SUBDIRS += QxGraph
 endif
-SUBDIRS += Event Style LightApp ResExporter
+SUBDIRS += Event LightApp ResExporter
 
 if GUI_ENABLE_CORBA
   SUBDIRS += TOOLSGUI SalomeApp Session SALOME_SWIG SALOME_PY SALOME_PYQT

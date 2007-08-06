@@ -1732,6 +1732,9 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
 	_prefs_->addPreference( mod->moduleName() );
 	if( toCreate )
 	  mod->createPreferences();
+	QtxPreferenceItem* item = _prefs_->findItem( mod->moduleName(), true );
+	if ( item && item->isEmpty() )
+	  delete item;
       }
     }
   }
@@ -1758,8 +1761,8 @@ void LightApp_Application::moduleAdded( CAM_Module* mod )
   {
     int modCat = myPrefs->addPreference( mod->moduleName() );
     lightMod->createPreferences();
-    QtxPreferenceItem* item = myPrefs->findItem( modCat );
-    if ( item && item->isEmpty() )
+    QtxPreferenceItem* item = myPrefs->findItem( mod->moduleName(), true );
+    if ( item && item->isEmpty() ) 
       delete item;
   }
 }

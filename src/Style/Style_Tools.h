@@ -16,13 +16,14 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      Style_Tools.h
-// Author:    Natalia Ermolaeva
+// File   : Style_Tools.h
+// Author : Natalia Ermolaeva, Open CASCADE S.A.S.
+//
 
-#ifndef STYLE_TOOLS_HEADER
-#define STYLE_TOOLS_HEADER
+#ifndef STYLE_TOOLS_H
+#define STYLE_TOOLS_H
 
-#include <Style.h>
+#include "Style.h"
 #include <QPainterPath>
 #include <QRect>
 #include <QColor>
@@ -40,50 +41,50 @@ public:
                  BottomLeft  = 0x00000020,
                  BottomRight = 0x00000040
                  } RoundType;
+
   typedef enum { WholePath, BottomPath, TopPath } ShadowType;
 
   typedef enum { SlUp, SlDown, SlLeft, SlRight, SlNone } SliderType;
 
-  static QPainterPath painterPath( const QRect& r );
-  static QPainterPath substractPath( const QPainterPath& fromPath, const QPainterPath& path );
+  static QPainterPath painterPath( const QRect& );
+  static QPainterPath substractPath( const QPainterPath&, const QPainterPath& );
 
-  static QPainterPath roundRect( const QRect& r, const double rad, int type = 0,
-                                 int shType = 0 );
+  static QPainterPath roundRect( const QRect&, const double, int = 0, int = 0 );
 
-  static void         roundRect( QPainter* p, const QRect& r, const double rad, const int type,
-                                 const QColor& c1, const QColor& c2, bool fill = true,
-                                 bool antial = true );
-  static void         shadowRect( QPainter* p, const QRect& r, const double rad,
-                                  const double marg, const int shad, int type,
-                                  const QColor& light, const QColor& dark, const QColor& border_top,
-                                  const QColor& border_bot, const bool antialize, const bool isButton,
-                                  const bool btnOn = false, const bool fill = true );
-  static void         shadowCheck( QPainter* p, const QRect& r, const double rad, const int type,
-                                   const QColor& light, const QColor& dark,
-                                   const QColor& border_top, const QColor& border_bot );
-  static void         arrowRect( QPainter* p, const QRect& re, const QColor& frame,
-                                 const QColor& gr1, const QColor& gr2 );
-  static void         fillRect( QPainter* p, const QRect& re, const QColor& _c1,
-                                const QColor& _c2, const int alpha = 255 );
-  static void         drawArrow( QStyle::PrimitiveElement type, QPainter* p, const QRect& r,
-                                 const QColor& pen, const QColor& brush );
-  static QPainterPath tabRect( QPainter* p, const QRect& r, const int position, const double rad,
-                               const double delta, const QColor& light, const QColor& dark,
-                               const QColor& border_top, const QColor& border_bot,
-                               const bool selected, const bool isLast, const bool isHover,
-                               const bool focusRect = false, const bool draw = true );
-  static void         drawFocus( QPainter* p, const QRect& aRect, const double rad, const int type,
-                                 const QColor& border );
-  static void         drawFocus( QPainter* p, const QPainterPath& path, const QColor& border,
-                                 const bool& line = true );
-  static void         drawSlider( QPainter* p, const QRect& r, const double rad,
-                                  SliderType type, const QColor& light, const QColor& dark,
-                                  const QColor& border_top, const QColor& border_bot );
-  static void         highlightRect( QPainter* p, const QRect& rect, const double rad, const int type,
-                                     const double marg, const QColor& center, const QColor& out_center,
-                                     const QColor& border );
-  static int          getMinDelta( const QRect& rect, QSize size, const int defDelta );
-  static int          getMaxRect( const QRect& rect, const int defRect );
+  static void         roundRect( QPainter*, const QRect&, const double, const int,
+                                 const QColor&, const QColor&, bool = true, bool = true );
+
+  static void         shadowRect( QPainter*, const QRect&, const double,
+                                  const double, const int, int,
+                                  const QColor&, const QColor&, const QColor&,
+                                  const QColor&, const bool, const bool,
+                                  const bool = false, const bool = true );
+  static void         shadowCheck( QPainter*, const QRect&, const double, const int,
+                                   const QColor&, const QColor&,
+                                   const QColor&, const QColor& );
+  static void         arrowRect( QPainter*, const QRect&, const QColor&,
+                                 const QColor&, const QColor& );
+  static void         fillRect( QPainter*, const QRect&, const QColor&,
+                                const QColor&, const int = 255 );
+  static void         drawArrow( QStyle::PrimitiveElement, QPainter*, const QRect&,
+                                 const QColor&, const QColor& );
+  static QPainterPath tabRect( QPainter*, const QRect&, const int, const double,
+                               const double, const QColor&, const QColor&,
+                               const QColor&, const QColor&,
+                               const bool, const bool, const bool,
+                               const bool = false, const bool = true );
+  static void         drawFocus( QPainter*, const QRect&, const double, const int,
+                                 const QColor& );
+  static void         drawFocus( QPainter*, const QPainterPath&, const QColor&,
+                                 const bool = true );
+  static void         drawSlider( QPainter*, const QRect&, const double,
+                                  SliderType, const QColor&, const QColor&,
+                                  const QColor&, const QColor& );
+  static void         highlightRect( QPainter*, const QRect&, const double, const int,
+                                     const double, const QColor&, const QColor&,
+                                     const QColor& );
+  static int          getMinDelta( const QRect&, const QSize&, const int );
+  static int          getMaxRect( const QRect&, const int );
 };
 
-#endif
+#endif // STYLE_TOOLS_H

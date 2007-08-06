@@ -16,12 +16,13 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      Style_Salome.cxx
-// Author:    Natalia Ermolaeva
+// File   : Style_Salome.cxx
+// Author : Natalia Ermolaeva, Open CASCADE S.A.S.
+//
 
-#include <Style_Salome.h>
-#include <Style_Tools.h>
-#include <Style_Model.h>
+#include "Style_Salome.h"
+#include "Style_Tools.h"
+#include "Style_Model.h"
 
 #include <QApplication>
 #include <QPainter>
@@ -168,6 +169,11 @@ Style_Salome::Style_Salome()
 
 Style_Salome::~Style_Salome()
 {
+}
+
+Style_Model* Style_Salome::getModel() const
+{
+  return myModel;
 }
 
 void Style_Salome::updateSettings( QApplication* app )

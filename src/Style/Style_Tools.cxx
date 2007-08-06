@@ -16,10 +16,11 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      Style_Tools.cxx
-// Author:    Natalia Ermolaeva
+// File   : Style_Tools.cxx
+// Author : Natalia Ermolaeva, Open CASCADE S.A.S.
+//
 
-#include <Style_Tools.h>
+#include "Style_Tools.h"
 
 #include <QPainter>
 #include <QPainterPath>
@@ -471,7 +472,7 @@ void Style_Tools::drawFocus( QPainter* p, const QRect& aRect, const double rad, 
 }
 
 void Style_Tools::drawFocus( QPainter* p, const QPainterPath& path, const QColor& border,
-                             const bool& line )
+                             const bool line )
 {
   QPen oldPen = p->pen();
   QPen aPen = oldPen;
@@ -587,27 +588,19 @@ void Style_Tools::highlightRect( QPainter* p, const QRect& rect, const double ra
   p->strokePath( path, border );
 }
 
-int Style_Tools::getMinDelta( const QRect& rect, QSize size, const int defDelta )
+int Style_Tools::getMinDelta( const QRect& rect, const QSize& size, const int defDelta )
 {
   int aDelta = defDelta;
-  int height = rect.height(), width = rect.width();
-  int aTmpDelta = (height - size.rheight())/2;
-  if ( aTmpDelta < aDelta )
-    aDelta = aTmpDelta;
-  aTmpDelta = (width - size.width())/2;
-  if ( aTmpDelta < aDelta )
-    aDelta = aTmpDelta;
+  aDelta = qMin( aDelta, ( rect.height() - size.height() ) / 2 );
+  aDelta = qMin( aDelta, ( rect.width()  - size.width() )  / 2 );
   return aDelta;
 }
 
 int Style_Tools::getMaxRect( const QRect& rect, const int defRect )
 {
   int aRect = defRect;
-  int height2 = (int)rect.height()/2, width2 = (int)rect.width()/2;
-  if ( aRect > height2 )
-    aRect = height2;
-  if ( aRect > width2 )
-    aRect = width2;
+  aRect = qMin( aRect, rect.height() / 2 );
+  aRect = qMin( aRect, rect.width()  / 2 );
   return aRect;
 }
 

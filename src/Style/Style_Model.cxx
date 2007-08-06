@@ -16,10 +16,11 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      Style_Model.cxx
-// Author:    Natalia Ermolaeva
+// File   : Style_Model.cxx
+// Author : Natalia Ermolaeva, Open CASCADE S.A.S.
+//
 
-#include <Style_Model.h>
+#include "Style_Model.h"
 #include <QtxResourceMgr.h>
 
 #include <QColor>
@@ -100,6 +101,11 @@ Style_Model::Style_Model()
 
 Style_Model::~Style_Model()
 {
+}
+
+QString Style_Model::sectionName()
+{
+  return "Theme"; 
 }
 
 void Style_Model::reset()
@@ -186,7 +192,7 @@ void Style_Model::initFromResource( QtxResourceMgr* theResMgr )
     setPredefinedStyle( getIntValue( defined_style ) );
 }
 
-bool Style_Model::updateFromResource( QtxResourceMgr* theResMgr, QString thePropName )
+bool Style_Model::updateFromResource( QtxResourceMgr* theResMgr, const QString& thePropName )
 {
   bool retrieve = false;
   if ( !theResMgr )
@@ -475,29 +481,25 @@ QFont Style_Model::getFontValue( int theId, const bool theIsDef ) const
   return aFont;
 }
 
-QList<int> Style_Model::getGroups()
+QList<int> Style_Model::getGroups() const
 {
-  QList<int> values;
-  StringMap::iterator anIt = myGroups.begin(), anEnd = myGroups.end();
-  for ( ; anIt != anEnd; ++anIt )
-    values.append( anIt.key() );
-  return values;
+  return myGroups.keys();
 }
 
-QString Style_Model::getGroupTitle( int theId )
+QString Style_Model::getGroupTitle( int theId ) const
 {
   return myGroups.contains( theId ) ? myGroups[theId].myTitle : "";
 }
 
-int Style_Model::getGroupNbColumns( int theId )
+int Style_Model::getGroupNbColumns( int theId ) const
 {
   return myGroups.contains( theId ) ? myGroups[theId].myNbColumns : 1;
 }
 
-QList<int> Style_Model::getGroupProps( int theId )
+QList<int> Style_Model::getGroupProps( int theId ) const
 {
   QList<int> values;
-  ValuesMap::iterator anIt = myValues.begin(), anEnd = myValues.end();
+  ValuesMap::const_iterator anIt = myValues.begin(), anEnd = myValues.end();
   for ( ; anIt != anEnd; ++anIt )
     if ( anIt.value().myGroupId == theId )
       values.append( anIt.key() );
@@ -505,22 +507,22 @@ QList<int> Style_Model::getGroupProps( int theId )
 
 }
 
-QString Style_Model::getPropTitle( int theId )
+QString Style_Model::getPropTitle( int theId ) const
 {
   return myValues.contains( theId ) ? myValues[theId].myTitle : ""; 
 }
 
-Style_Model::PropType Style_Model::getPropType( int theId )
+Style_Model::PropType Style_Model::getPropType( int theId ) const
 {
   return myValues.contains( theId ) ? myValues[theId].myType : None; 
 }
 
-QString Style_Model::getPropName( int theId )
+QString Style_Model::getPropName( int theId ) const
 {
   return myValues.contains( theId ) ? myValues[theId].myName : ""; 
 }
 
-void Style_Model::getSelector( int theId, QStringList& theLst, QList<QVariant>& theIds )
+void Style_Model::getSelector( int theId, QStringList& theLst, QList<QVariant>& theIds ) const
 {
   theLst.clear();
   theIds.clear();
@@ -535,19 +537,19 @@ void Style_Model::getSelector( int theId, QStringList& theLst, QList<QVariant>& 
     theIds.append( QVariant( i++ ) );
 }
 
-void Style_Model::setDefValue( Properties theId, QVariant theValue )
+void Style_Model::setDefValue( Properties theId, const QVariant& theValue )
 {
   myValues[theId].myDefValue = theValue;
   setValue( theId, theValue );
 }
 
-void Style_Model::setValue( Properties theId, QVariant theValue )
+void Style_Model::setValue( Properties theId, const QVariant& theValue )
 {
   myValues[theId].myValue = theValue;
 }
 
-void Style_Model::fillValue( Properties theId, QString theName,
-                              QString theTitle, Groups theGroupId, PropType theType )
+void Style_Model::fillValue( Properties theId, const QString& theName,
+			     const QString& theTitle, Groups theGroupId, PropType theType )
 {
   StyleValue aValue;
   aValue.myName = theName;
@@ -559,7 +561,7 @@ void Style_Model::fillValue( Properties theId, QString theName,
   myValues[theId] = aValue;
 }
 
-void Style_Model::fillGroup( Groups theId, QString theTitle, int theNbCols )
+void Style_Model::fillGroup( Groups theId, const QString& theTitle, int theNbCols )
 {
   GroupValue aValue;
   aValue.myTitle = theTitle;

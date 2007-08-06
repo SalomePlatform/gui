@@ -25,10 +25,10 @@
 #define LIGHTAPP_MODULE_H
 
 #include "LightApp.h"
+#include "LightApp_Preferences.h"
 #include <CAM_Module.h>
 
 class LightApp_Application;
-class LightApp_Preferences;
 class LightApp_Selection;
 class LightApp_Operation;
 class LightApp_SwitchOp;
@@ -114,7 +114,7 @@ protected:
   virtual CAM_DataModel*              createDataModel();
 
   int                                 addPreference( const QString& label );
-  int                                 addPreference( const QString& label, const int pId, const int = -1,
+  int                                 addPreference( const QString& label, const int pId, const int = LightApp_Preferences::Auto,
 				                     const QString& section = QString::null,
 				                     const QString& param = QString::null );
   QVariant                            preferenceProperty( const int, const QString& ) const;

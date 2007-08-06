@@ -31,10 +31,11 @@
 #include <QLayout>
 #include <QSplitter>
 #include <QRubberBand>
-#include <QPushButton>
 #include <QApplication>
 #include <QInputDialog>
 #include <QStackedWidget>
+#include <QPainter>
+#include <QStyleOption>
 
 #define DARK_COLOR_LIGHT 250
 
@@ -238,6 +239,67 @@ void QtxWorkstackDrag::startDrawRect()
   myAreaRect->hide();
 }
 
+
+QtxWorkstackAreaTitleButton::QtxWorkstackAreaTitleButton(QWidget *widget)
+: QAbstractButton(widget)
+{
+ setFocusPolicy(Qt::NoFocus);
+}
+
+QSize QtxWorkstackAreaTitleButton::sizeHint() const
+{
+  ensurePolished();
+  int dim = 0;
+  if( !icon().isNull() ) {
+    const QPixmap pm = icon().pixmap( style()->pixelMetric( QStyle::PM_SmallIconSize ),
+                                      QIcon::Normal );
+    dim = qMax(pm.width(), pm.height());
+  }
+  return QSize( dim + 4, dim + 4 );
+}
+void QtxWorkstackAreaTitleButton::enterEvent( QEvent *event )
+{
+  if ( isEnabled() )
+    update();
+  QAbstractButton::enterEvent( event );
+}
+
+void QtxWorkstackAreaTitleButton::leaveEvent( QEvent *event )
+{
+  if( isEnabled() )
+    update();
+  QAbstractButton::leaveEvent( event );
+}
+
+void QtxWorkstackAreaTitleButton::paintEvent( QPaintEvent* )
+{
+  QPainter p(this);
+
+  QRect r = rect();
+  QStyleOption opt;
+  opt.init(this);
+  opt.state |= QStyle::State_AutoRaise;
+  if (isEnabled() && underMouse() && !isChecked() && !isDown())
+    opt.state |= QStyle::State_Raised;
+  if (isChecked())
+    opt.state |= QStyle::State_On;
+  if (isDown())
+    opt.state |= QStyle::State_Sunken;
+  style()->drawPrimitive(QStyle::PE_PanelButtonTool, &opt, &p, this);
+
+  int shiftHorizontal = opt.state & QStyle::State_Sunken ? style()->pixelMetric(QStyle::PM_ButtonShiftHorizontal, &opt, this) : 0;
+  int shiftVertical = opt.state & QStyle::State_Sunken ? style()->pixelMetric(QStyle::PM_ButtonShiftVertical, &opt, this) : 0;
+
+  r.adjust(2, 2, -2, -2);
+  r.translate(shiftHorizontal, shiftVertical);
+
+  QPixmap pm = icon().pixmap( style()->pixelMetric( QStyle::PM_SmallIconSize ), isEnabled() ?
+                              underMouse() ? QIcon::Active : QIcon::Normal
+                                           : QIcon::Disabled,
+                              isDown() ? QIcon::On : QIcon::Off);
+  style()->drawItemPixmap(&p, r, Qt::AlignCenter, pm);
+}
+
 /*!
   \class QtxWorkstackArea
   \internal
@@ -266,10 +328,8 @@ QtxWorkstackArea::QtxWorkstackArea( QWidget* parent )
   myBar = new QtxWorkstackTabBar( top );
   tl->addWidget( myBar, 1 );
 
-  QPushButton* close = new QPushButton( top );
+  QtxWorkstackAreaTitleButton* close = new QtxWorkstackAreaTitleButton( top );
   close->setIcon( style()->standardIcon( QStyle::SP_TitleBarCloseButton ) );
-  close->setAutoDefault( true );
-  close->setFlat( true );
   myClose = close;
   tl->addWidget( myClose );
 

@@ -179,7 +179,7 @@ void Style_Model::setDefaults( QApplication* app )
 void Style_Model::initFromResource( QtxResourceMgr* theResMgr )
 {
   ValuesMap::iterator anIt = myValues.begin(), anEnd = myValues.end();
-  for ( ; anIt != anEnd; anIt++ )
+  for ( ; anIt != anEnd; ++anIt )
     setValueFrom( theResMgr, anIt.key() );
 
   if ( getBoolValue( is_defined_style ) )
@@ -193,7 +193,7 @@ bool Style_Model::updateFromResource( QtxResourceMgr* theResMgr, QString theProp
     return retrieve;
   ValuesMap::iterator anIt = myValues.begin(), anEnd = myValues.end();
   int anId = -1;
-  for ( ; anIt != anEnd && anId == -1; anIt++ )
+  for ( ; anIt != anEnd && anId == -1; ++anIt )
     if ( anIt.value().myName == thePropName )
       anId = anIt.key();
   if ( anId == -1 )
@@ -205,7 +205,7 @@ bool Style_Model::updateFromResource( QtxResourceMgr* theResMgr, QString theProp
     setPredefinedStyle( getIntValue( defined_style ) );
     retrieve = true;
     // update for resources all datas
-    for ( anIt = myValues.begin(); anIt != anEnd; anIt++ ) {
+    for ( anIt = myValues.begin(); anIt != anEnd; ++anIt ) {
       if ( anIt.key() != anId )
         getValueTo( theResMgr, anIt.key(), false );
     }

@@ -29,10 +29,10 @@
 #include <QTabBar>
 #include <QEvent>
 #include <QMap>
+#include <QAbstractButton>
 
 class QAction;
 class QSplitter;
-class QPushButton;
 class QStackedWidget;
 class QRubberBand;
 
@@ -155,6 +155,25 @@ private:
   friend class QtxWorkstackDrag;
 };
 
+/*
+  Tool window title
+*/
+class QtxWorkstackAreaTitleButton : public QAbstractButton
+{
+  Q_OBJECT
+
+public:
+  QtxWorkstackAreaTitleButton(QWidget *widget);
+
+  QSize sizeHint() const;
+  inline QSize minimumSizeHint() const
+  { return sizeHint(); }
+
+  void enterEvent(QEvent *event);
+  void leaveEvent(QEvent *event);
+  void paintEvent(QPaintEvent *event);
+};
+
 class QtxWorkstackArea : public QFrame
 {
   Q_OBJECT
@@ -256,7 +275,7 @@ private:
 
 private:
   QtxWorkstackTabBar* myBar;     //!< workarea tab bar header
-  QPushButton*        myClose;   //!< close button
+  QAbstractButton*    myClose;   //!< close button
   QStackedWidget*     myStack;   //!< widget stack
 
   QWidgetList         myList;    //!< child widgets list

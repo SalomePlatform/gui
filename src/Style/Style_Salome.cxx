@@ -1269,8 +1269,9 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
       }
     case PE_PanelButtonTool : {
       if ( w && ( opt->state & State_Enabled ) && 
-           ( qobject_cast<QToolBar*>( w->parentWidget() ) ) ||
-             ( w->inherits("QDockWidgetTitleButton") ) ) {
+           ( ( qobject_cast<QToolBar*>( w->parentWidget() ) ) ||
+	     ( w->inherits("QDockWidgetTitleButton") ) ||
+             ( w->inherits("QtxWorkstackAreaTitleButton") ) ) ) {
         bool aStateOn = opt->state & (State_Sunken | State_On);
         bool aHighWdg = hasHover() && !getBoolValue( Style_Model::auto_raising_wdg ) &&
                         getBoolValue( Style_Model::highlight_wdg );

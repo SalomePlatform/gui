@@ -228,6 +228,8 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
   
   SVTK_Selector* GetSelector();
 
+  int   CurrentState() const { return State; }
+
   protected:
   SVTK_InteractorStyle();
   ~SVTK_InteractorStyle();

@@ -221,7 +221,6 @@ class SVTK_EXPORT SVTK_RenderWindowInteractor: public QVTK_RenderWindowInteracto
   virtual void wheelEvent( QWheelEvent* );
   virtual void keyPressEvent( QKeyEvent* );
   virtual void keyReleaseEvent( QKeyEvent* );
-  virtual void contextMenuEvent( QContextMenuEvent * e );
 
   void
   SetRenderer(SVTK_Renderer *theRenderer);

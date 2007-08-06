@@ -41,6 +41,7 @@
 #include "VTKViewer_Algorithm.h"
 #include "SVTK_Functor.h"
 
+#include "SUIT_Tools.h"
 #include "SALOME_Actor.h"
 
 #include <vtkObjectFactory.h>
@@ -1503,7 +1504,7 @@ SVTK_InteractorStyle
   }
   myRectBand->hide();
 
-  QRect aRect(myPoint, myOtherPoint);
+  QRect aRect = SUIT_Tools::makeRect(myPoint.x(), myPoint.y(), myOtherPoint.x(), myOtherPoint.y());
   myRectBand->setGeometry( aRect );
   myRectBand->setVisible( aRect.isValid() );
 }

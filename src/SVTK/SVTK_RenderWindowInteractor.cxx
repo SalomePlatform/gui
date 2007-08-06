@@ -711,8 +711,22 @@ void
 SVTK_RenderWindowInteractor
 ::mouseReleaseEvent( QMouseEvent *event )
 {
+  bool aRightBtn = event->button() == Qt::RightButton;
+  bool isOperation = false;
+  if( aRightBtn && GetInteractorStyle()) {
+    SVTK_InteractorStyle* style = dynamic_cast<SVTK_InteractorStyle*>( GetInteractorStyle() );
+    if ( style )
+      isOperation = style->CurrentState() != VTK_INTERACTOR_STYLE_CAMERA_NONE;
+  }
+
   QVTK_RenderWindowInteractor::mouseReleaseEvent(event);
 
+  if ( aRightBtn && !isOperation && !( event->modifiers() & Qt::ControlModifier ) &&
+       !( event->modifiers() & Qt::ShiftModifier ) ) {
+    QContextMenuEvent aEvent( QContextMenuEvent::Mouse,
+                              event->pos(), event->globalPos() );
+    emit contextMenuRequested( &aEvent );
+  }
   if(GENERATE_SUIT_EVENTS)
     emit MouseButtonReleased( event );
 }
@@ -776,13 +790,3 @@ SVTK_RenderWindowInteractor
     emit KeyReleased( event );
 }
 
-/*!
-  Custom context menu event handler
-*/
-void
-SVTK_RenderWindowInteractor
-::contextMenuEvent( QContextMenuEvent* event )
-{
-  if( !( event->modifiers() & Qt::KeyboardModifierMask ) )
-    emit contextMenuRequested( event );
-}

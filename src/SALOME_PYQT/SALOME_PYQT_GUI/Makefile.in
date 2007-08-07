@@ -25,6 +25,9 @@ top_builddir=../../..
 srcdir=@srcdir@
 VPATH=.:@srcdir@:@top_srcdir@/idl
 
+#make top_builddir absolute path, else there is a wrong path in .la file (-L../../../lib/salome)
+top_builddir=$(shell (cd ../../..;pwd))
+
 @COMMENCE@
 
 # small trick for Mandrake-10.1: PyQt 3.13 does not support Qt 3.3.3

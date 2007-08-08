@@ -2374,8 +2374,8 @@ bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
   if ( !isLibFound )
     {
       printf( "****************************************************************\n" );
-      printf( "*    Warning: library %s cannot be found\n", moduleTitle.latin1() );
-      printf( "*    Module will not be available\n" );
+      printf( "*    Warning: library %s cannot be found\n", lib.latin1() );
+      printf( "*    Module %s will not be available in GUI mode\n", moduleTitle.latin1() );
       printf( "****************************************************************\n" );
     }
   else if ( !isPythonModule )

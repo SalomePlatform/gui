@@ -79,7 +79,7 @@ Style_Model::Style_Model()
   fillValue( lines_clr,     "lines-color",   "Color",      grp_lines, Color );
 
   // grp_font group
-  fillValue( font_value,    "app-font", "Application font", grp_font, Font );
+  fillValue( font_value,    "app-font", "App Font", grp_font, Font );
   // grp_values group
   fillValue( all_antialized, "all-antialized", "All borders antialized", grp_value, Bool );
   fillValue( auto_raising_wdg, "is-raising-widget", "Auto raising widget", grp_value, Bool );

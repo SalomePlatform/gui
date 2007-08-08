@@ -260,7 +260,8 @@ void Style_Tools::drawArrow( QStyle::PrimitiveElement type, QPainter* p, const Q
   QPainterPath arrow1;
   int x = r.x(), y = r.y(), w = r.right()-x, h = r.bottom()-y;
   int x11 = 0, x12 = 0, y11 = 0, y12 = 0;
-  int deltaX = (int)(w/4.), deltaY = (int)(h/4.);
+  int aDelta = qMin( (int)(w/3.5), (int)(h/3.5) );
+  int deltaX = aDelta, deltaY = aDelta;
   QLineF line( 0, 0, 1, 0 );
   int xc = r.center().x(), yc = r.center().y();
   p->translate( xc, yc );
@@ -269,7 +270,6 @@ void Style_Tools::drawArrow( QStyle::PrimitiveElement type, QPainter* p, const Q
     case QStyle::PE_IndicatorArrowDown:
       correct = true;
     case QStyle::PE_IndicatorArrowUp: {
-      deltaX = (int)(w/3.5), deltaY = (int)(w/3.5);
       int widthArr2 = (int)(deltaX/3.);
       if ( correct )
         deltaY = -deltaY; // change arrow direction
@@ -290,7 +290,6 @@ void Style_Tools::drawArrow( QStyle::PrimitiveElement type, QPainter* p, const Q
     case QStyle::PE_IndicatorArrowLeft: // to change
       correct = true;
     case QStyle::PE_IndicatorArrowRight: {
-      deltaX = (int)(w/3.5), deltaY = (int)(w/3.5);
       int widthArr2 = (int)(deltaX/3.);
       if ( correct )
         deltaX = -deltaX; // change arrow direction
@@ -309,9 +308,7 @@ void Style_Tools::drawArrow( QStyle::PrimitiveElement type, QPainter* p, const Q
     case QStyle::PE_IndicatorSpinDown:
       correct = true;
     case QStyle::PE_IndicatorSpinUp: {
-      deltaY = (int)(w/3.5);
-      deltaX = (int)(w/3.5);
-      int aDelta = (int)(deltaY/2);
+      aDelta = (int)(deltaY/2);
       if ( correct ) {
         aDelta = (int)(-aDelta/2);
         deltaY = -deltaY;

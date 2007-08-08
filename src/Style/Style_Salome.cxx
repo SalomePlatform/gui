@@ -228,8 +228,7 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
     case CC_SpinBox:
       if (const QStyleOptionSpinBox *spin = qstyleoption_cast<const QStyleOptionSpinBox *>(opt)) {
         bool hover = hasHover() && (opt->state & State_Enabled) && (opt->state & State_MouseOver);
-        QRect optr = opt->rect, arUp =   subControlRect( cc, spin, SC_SpinBoxUp, w ),
-                                arDown = subControlRect( cc, spin, SC_SpinBoxDown, w );
+        QRect optr = opt->rect, arUp =   subControlRect( cc, spin, SC_SpinBoxUp, w );
         optr.setWidth( arUp.x()-optr.x()+1 );
         double aRad = getDblValue( Style_Model::edit_rad );
         bool antialized = getBoolValue( Style_Model::all_antialized );
@@ -1166,6 +1165,35 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
                        aBrdBotCol, getBoolValue( Style_Model::all_antialized ), true, aStateOn );
       break;
     }
+    case CE_ComboBoxLabel:
+      if (const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(opt)) {
+        QRect editRect = subControlRect(CC_ComboBox, cb, SC_ComboBoxEditField, w);
+        p->save();
+        p->setClipRect(editRect);
+        if (!cb->currentIcon.isNull()) {
+          QIcon::Mode mode = cb->state & State_Enabled ? QIcon::Normal
+                                                       : QIcon::Disabled;
+          QPixmap pixmap = cb->currentIcon.pixmap(cb->iconSize, mode);
+          QRect iconRect(editRect);
+          iconRect.setWidth(cb->iconSize.width() + 4);
+          iconRect = alignedRect(QApplication::layoutDirection(),
+                                 Qt::AlignLeft | Qt::AlignVCenter,
+                                 iconRect.size(), editRect);
+	  // Here's absent filling of pixmap on basic color for editable comboBox
+          drawItemPixmap(p, iconRect, Qt::AlignCenter, pixmap);
+
+          if (cb->direction == Qt::RightToLeft)
+            editRect.translate(-4 - cb->iconSize.width(), 0);
+          else
+            editRect.translate(cb->iconSize.width() + 4, 0);
+        }
+        if (!cb->currentText.isEmpty() && !cb->editable) {
+          drawItemText(p, editRect.adjusted(1, 0, -1, 0), Qt::AlignLeft | Qt::AlignVCenter, cb->palette,
+                       cb->state & State_Enabled, cb->currentText);
+        }
+        p->restore();
+      }
+      break;
     case CE_ScrollBarSubLine:
     case CE_ScrollBarAddLine: {
         bool aStateOn = opt->state & ( State_Sunken | State_On );
@@ -1800,13 +1828,14 @@ QRect Style_Salome::subControlRect( ComplexControl cc, const QStyleOptionComplex
     case CC_SpinBox: {
       int x = res.x(), w = res.width(), h = res.height();
       if ( sc==SC_SpinBoxUp || sc==SC_SpinBoxDown ) {
-        res.setX( x-2*h+w );
-        res.setWidth( 2*h );
+        QRect frame_r = QWindowsStyle::subControlRect( cc, opt, SC_SpinBoxFrame, wid );
+        h = frame_r.height();
+        res.setX( x+w-h );
+        res.setWidth( h );
       }
       else if ( sc==QStyle::SC_SpinBoxEditField ) {
-        QRect old_r = QWindowsStyle::subControlRect( cc, opt, SC_SpinBoxUp, wid );
-        res.setWidth( w-h+old_r.width()-2 );
-        res.setTopLeft( QPoint( res.x()+aHalfRect-1, res.y() - SHADOW ) );
+        res.setWidth( w-h );
+        res.setTopLeft( QPoint( res.x()+aHalfRect, res.y()-SHADOW ) );
       }
       break;
     }
@@ -1815,12 +1844,11 @@ QRect Style_Salome::subControlRect( ComplexControl cc, const QStyleOptionComplex
         res = cb->rect;
         int x = res.x(), w = res.width(), h = res.height();
         if ( sc==SC_ComboBoxArrow ) {
-          res.setX( x-h+w );
+          res.setX( x+w-h );
           res.setWidth( h );
         }
         else if ( sc==QStyle::SC_ComboBoxEditField ) {
-          QRect old_r = QWindowsStyle::subControlRect( cc, opt, SC_ComboBoxArrow, wid );
-          res.setWidth( w - h+old_r.width()-2 );
+          res.setWidth( w-h );
           res.setTopLeft( QPoint( res.x()+aHalfRect, res.y()-SHADOW ) );
         }
       }
@@ -1894,10 +1922,10 @@ QRect Style_Salome::subElementRect( SubElement se, const QStyleOption* opt,
     case SE_ProgressBarGroove:
       return opt->rect;
   }
-  if( hasHover() ) {
-    if( qobject_cast<const QRadioButton*>(wid) ||
-        qobject_cast<const QCheckBox*>(wid) )
-      res = res.adjusted(0, 0, 2, 0);
+  if( qobject_cast<const QRadioButton*>(wid) ||
+      qobject_cast<const QCheckBox*>(wid) ) {
+      if( hasHover() )
+        res = res.adjusted(0, 0, 2, 0);
   }
   return res;
 }

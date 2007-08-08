@@ -72,8 +72,8 @@ void QtxEvalExpr::intialize( const bool stdSets, const QString& expr )
   if ( stdSets )
   {
     myParser->setAutoDeleteOperationSets( true );
-    myParser->insertOperationSet( new QtxEvalSetArithmetic() );
     myParser->insertOperationSet( new QtxEvalSetLogic() );
+    myParser->insertOperationSet( new QtxEvalSetArithmetic() );
     myParser->insertOperationSet( new QtxEvalSetString() );
     myParser->insertOperationSet( new QtxEvalSetMath() );
     myParser->insertOperationSet( new QtxEvalSetSets() );
@@ -1181,7 +1181,7 @@ int QtxEvalParser::priority( const QString& op, bool isBin ) const
   for ( SetList::const_iterator it = mySets.begin(); it != mySets.end() && priority <= 0; ++it, i++ )
     priority = (*it)->priority( op, isBin );
 
-  return priority > 0 ? priority + i * 10 : 0;
+  return priority > 0 ? priority + i * 50 : 0;
 }
 
 /*!
@@ -1761,8 +1761,8 @@ int QtxEvalSetLogic::priority( const QString& op, bool isBin ) const
 QtxEvalExpr::Error QtxEvalSetLogic::calculate( const QString& op, QVariant& v1, QVariant& v2 ) const
 {
   QtxEvalExpr::Error err = QtxEvalExpr::OK;
-  bool val1 = booleanValue( v1 );
-  bool val2 = booleanValue( v2 );
+  int val1 = intValue( v1 );
+  int val2 = intValue( v2 );
   if ( v1.isValid() && v2.isValid() )
   {
     if ( op == "and" || op == "&&" )
@@ -1783,26 +1783,27 @@ QtxEvalExpr::Error QtxEvalSetLogic::calculate( const QString& op, QVariant& v1, 
 }
 
 /*!
-  \brief Convert value to the boolean.
+  \brief Convert value to the integer.
+
+  Note: the value is converted to the integer (not boolean) in order
+  to compare integer numbers correctly.
+
   \param v value being converted
   \return converted value
 */
-bool QtxEvalSetLogic::booleanValue( const QVariant& v ) const
+int QtxEvalSetLogic::intValue( const QVariant& v ) const
 {
-  bool res = false;
+  int res = 0;
   switch ( v.type() )
   {
   case QVariant::Bool:
-    res = v.toBool();
+    res = v.toBool() ? 1 : 0;
     break;
   case QVariant::Int:
-    res = v.toInt() != 0;
-    break;
   case QVariant::UInt:
-    res = v.toUInt() != 0;
+    res = v.toInt();
     break;
   default:
-    res = false;
     break;
   }
   return res;

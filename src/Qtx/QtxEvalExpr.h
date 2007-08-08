@@ -247,7 +247,7 @@ public:
   virtual QString            name() const;
 
 private:
-  bool                       booleanValue( const QVariant& v ) const;
+  int                        intValue( const QVariant& v ) const;
 };
 
 class QTX_EXPORT QtxEvalSetMath : public QtxEvalSetBase

@@ -387,7 +387,7 @@ void OCCViewer_ViewWindow::vpMousePressEvent( QMouseEvent* theEvent )
 	  if ( mySetRotationPointDlg ) mySetRotationPointDlg->toggleChange();
 	  ic->CloseAllContexts();
 	  myOperation = NOTHING; 
-	  setCursor( myCursor );
+	  myViewPort->setCursor( myCursor );
 	  myCursorIsHand = false;
 	  myRotationPointSelection = false;
 	}
@@ -419,7 +419,7 @@ void OCCViewer_ViewWindow::activateZoom()
     QPixmap zoomPixmap (imageZoomCursor);
     QCursor zoomCursor (zoomPixmap);
     setTransformRequested ( ZOOMVIEW );		
-    setCursor( zoomCursor );
+    myViewPort->setCursor( zoomCursor );
   }
 }
 
@@ -437,7 +437,7 @@ void OCCViewer_ViewWindow::activatePanning()
   if ( myOperation != PANVIEW ) {
     QCursor panCursor (Qt::SizeAllCursor);
     setTransformRequested ( PANVIEW );
-    setCursor( panCursor );
+    myViewPort->setCursor( panCursor );
   }
 }
 
@@ -455,7 +455,7 @@ void OCCViewer_ViewWindow::activateRotation()
     QPixmap rotatePixmap (imageRotateCursor);
     QCursor rotCursor (rotatePixmap);
     setTransformRequested ( ROTATE );
-    setCursor( rotCursor );	
+    myViewPort->setCursor( rotCursor );	
   }
 }
 
@@ -541,7 +541,7 @@ void OCCViewer_ViewWindow::activateSetRotationGravity()
     Handle(AIS_InteractiveContext) ic = myModel->getAISContext();
     ic->CloseAllContexts();
     myOperation = NOTHING; 
-    setCursor( myCursor );
+    myViewPort->setCursor( myCursor );
     myCursorIsHand = false;
     myRotationPointSelection = false;
   }
@@ -581,7 +581,7 @@ void OCCViewer_ViewWindow::activateSetRotationSelected( double theX, double theY
     Handle(AIS_InteractiveContext) ic = myModel->getAISContext();
     ic->CloseAllContexts();
     myOperation = NOTHING; 
-    setCursor( myCursor );
+    myViewPort->setCursor( myCursor );
     myCursorIsHand = false;
     myRotationPointSelection = false;
   }
@@ -623,7 +623,7 @@ void OCCViewer_ViewWindow::activateStartPointSelection()
     QCursor handCursor (Qt::PointingHandCursor);
     myCursorIsHand = true;		
     myCursor = cursor();
-    setCursor( handCursor );
+    myViewPort->setCursor( handCursor );
   }
   myRotationPointSelection = true;
 }
@@ -644,7 +644,7 @@ void OCCViewer_ViewWindow::activateGlobalPanning()
     myCursor = cursor();	        // save old cursor 
     myViewPort->fitAll(); // fits view before selecting a new scene center 
     setTransformRequested( PANGLOBAL );
-    setCursor( glPanCursor );
+    myViewPort->setCursor( glPanCursor );
   }
 }
 
@@ -661,7 +661,7 @@ void OCCViewer_ViewWindow::activateWindowFit()
   if ( myOperation != WINDOWFIT ) {
     QCursor handCursor (Qt::PointingHandCursor);
     setTransformRequested ( WINDOWFIT );		
-    setCursor ( handCursor );
+    myViewPort->setCursor ( handCursor );
     myCursorIsHand = true;
   }
 }
@@ -725,7 +725,7 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent( QMouseEvent* theEvent )
 	    QCursor handCursor (Qt::PointingHandCursor);
 	    myCursorIsHand = true;		
 	    myCursor = cursor();
-	    setCursor( handCursor );
+	    myViewPort->setCursor( handCursor );
 	  }
 	}
       } 
@@ -806,12 +806,12 @@ void OCCViewer_ViewWindow::resetState()
   if ( myRotationPointSelection )
   {
     QCursor handCursor (Qt::PointingHandCursor);
-    setCursor( handCursor );
+    myViewPort->setCursor( handCursor );
   }
   else
   { 
     if ( transformRequested() || myCursorIsHand ) 
-      setCursor( myCursor );
+      myViewPort->setCursor( myCursor );
     myCursorIsHand = false;
   }
   

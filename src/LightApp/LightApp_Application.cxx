@@ -61,6 +61,7 @@
 #include <SUIT_Tools.h>
 #include <SUIT_Accel.h>
 #include <SUIT_MessageBox.h>
+#include <SUIT_ViewWindow.h>
 
 #include <Qtx.h>
 #include <QtxMRUAction.h>

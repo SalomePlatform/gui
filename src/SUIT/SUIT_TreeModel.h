@@ -40,14 +40,6 @@
 class SUIT_DataObject;
 class SUIT_TreeModel;
 
-class SUIT_EXPORT SUIT_TreeUpdater 
-{
-public:
-  SUIT_TreeUpdater( SUIT_TreeModel* ) {};
-  virtual ~SUIT_TreeUpdater() {};
-  virtual void update( SUIT_DataObject* theObj ) = 0;
-};
-
 class SUIT_EXPORT SUIT_TreeModel : public QAbstractItemModel
 {
   Q_OBJECT
@@ -107,9 +99,6 @@ public:
   bool                   autoUpdate() const;
   void                   setAutoUpdate( const bool );
 
-  SUIT_TreeUpdater*      updater() const;
-  void                   setUpdater( SUIT_TreeUpdater* );
-
   virtual bool           customSorting( const int ) const;
   virtual bool           lessThan( const QModelIndex& left, const QModelIndex& right ) const;
 
@@ -145,7 +134,6 @@ private:
   ItemMap                myItems;
   bool                   myAutoDeleteTree;
   bool                   myAutoUpdate;
-  SUIT_TreeUpdater*      myUpdater;
 
   friend class SUIT_TreeModel::TreeSync;
 };
@@ -171,10 +159,7 @@ public:
 
   bool                   autoUpdate() const;
   void                   setAutoUpdate( const bool );
-
-  SUIT_TreeUpdater*      updater() const;
-  void                   setUpdater( SUIT_TreeUpdater* );
-  
+ 
   bool                   isSortingEnabled() const;
 
   QAbstractItemDelegate* delegate() const;

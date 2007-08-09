@@ -282,8 +282,8 @@ SUIT_TreeModel::ItemPtr SUIT_TreeModel::TreeSync::createItem( const ObjPtr&  obj
   ItemPtr item = myModel ? myModel->createItem( obj, parent, after ) : 0;
 
   // Additional actions that can't be performed by the model, e.g. expanded state
-  if( item && myModel->updater() )
-    myModel->updater()->update( obj );
+  if( item )
+    obj->update();
   return item;
 }
 
@@ -295,13 +295,10 @@ SUIT_TreeModel::ItemPtr SUIT_TreeModel::TreeSync::createItem( const ObjPtr&  obj
 */
 void SUIT_TreeModel::TreeSync::updateItem( const ObjPtr& obj, const ItemPtr& item ) const
 {
+  if( obj )
+    obj->update();
   if ( item && needUpdate( item ) ) 
     myModel->updateItem( item );
-
-  // SUIT_TreeUpdater class performs additional update of a tree view,
-  // since the view is not available from inside a model
-  if( obj && myModel->updater() )
-    myModel->updater()->update( obj );
 }
 
 /*!
@@ -417,8 +414,7 @@ SUIT_TreeModel::SUIT_TreeModel( QObject* parent )
   myRoot( 0 ),
   myRootItem( 0 ),
   myAutoDeleteTree( false ),
-  myAutoUpdate( true ),
-  myUpdater( 0 )
+  myAutoUpdate( true )
 {
   initialize();
 }
@@ -433,8 +429,7 @@ SUIT_TreeModel::SUIT_TreeModel( SUIT_DataObject* root, QObject* parent )
   myRoot( root ),
   myRootItem( 0 ),
   myAutoDeleteTree( false ),
-  myAutoUpdate( true ),
-  myUpdater( 0 )
+  myAutoUpdate( true )
 {
   initialize();
 }
@@ -452,7 +447,6 @@ SUIT_TreeModel::~SUIT_TreeModel()
     delete myRoot;
   }
 
-  delete myUpdater;
   delete myRootItem;
 }
 
@@ -847,28 +841,6 @@ void SUIT_TreeModel::setAutoUpdate( const bool on )
   }
 }
 
-/*!
-  \brief Get tree updater.
-  \return current tree updater or 0 if it is not set
-*/
-SUIT_TreeUpdater* SUIT_TreeModel::updater() const
-{
-  return myUpdater;
-}
-
-/*!
-  \brief Set tree updater.
-  \param upd new tree updater
-*/
-void SUIT_TreeModel::setUpdater( SUIT_TreeUpdater* upd )
-{
-  if ( myUpdater )
-    delete myUpdater;
-
-  myUpdater = upd;
-
-  updateTree();
-}
 
 /*!
   \brief Check if the specified column supports custom sorting.
@@ -1092,10 +1064,7 @@ void SUIT_TreeModel::removeItem( SUIT_TreeModel::TreeItem* item )
   int row = item->position();
   
   beginRemoveRows( parentIdx, row, row );
-  
   myItems.remove( obj );
-
-  endRemoveRows();
 
   if ( obj == root() )
     setRoot( 0 );
@@ -1103,6 +1072,8 @@ void SUIT_TreeModel::removeItem( SUIT_TreeModel::TreeItem* item )
     item->parent()->removeChild( item );
 
   delete item;
+
+  endRemoveRows();
 }
 
 /*!
@@ -1269,25 +1240,6 @@ void SUIT_ProxyModel::setAutoUpdate( const bool on )
 {
   if ( treeModel() )
     treeModel()->setAutoUpdate( on );
-}
-
-/*!
-  \brief Get tree updater.
-  \return current tree updater or 0 if it is not set
-*/
-SUIT_TreeUpdater* SUIT_ProxyModel::updater() const
-{
-  return treeModel() ? treeModel()->updater() : 0;
-}
-
-/*!
-  \brief Set tree updater.
-  \param upd new tree updater
-*/
-void SUIT_ProxyModel::setUpdater( SUIT_TreeUpdater* upd )
-{
-  if ( treeModel() )
-    treeModel()->setUpdater( upd );
 }
 
 /*!

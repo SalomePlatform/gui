@@ -1915,6 +1915,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "" ), dirGroup,
 		       LightApp_Preferences::DirList, "FileDlg", "QuickDirList" );
 
+  pref->setItemProperty( "columns", 2, supervGroup );
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), supervGroup,
 		       LightApp_Preferences::Color, "SUPERVGraph", "Background" );
   pref->addPreference( tr( "PREF_SUPERV_TITLE_COLOR" ), supervGroup,
@@ -1924,6 +1925,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   int obTab = pref->addPreference( tr( "PREF_TAB_OBJBROWSER" ), salomeCat );
   int objSetGroup = pref->addPreference( tr( "PREF_OBJ_BROWSER_SETTINGS" ), obTab );
+  pref->setItemProperty( "columns", 2, objSetGroup );
   pref->addPreference( tr( "PREF_AUTO_SIZE_FIRST" ), objSetGroup, LightApp_Preferences::Bool,
 		       "ObjectBrowser", "auto_size_first" );
   pref->addPreference( tr( "PREF_AUTO_SIZE" ), objSetGroup, LightApp_Preferences::Bool,
@@ -1945,39 +1947,46 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   QtxResourceMgr* aResMgr = pref->resourceMgr();
   aSModel->initFromResource( aResMgr );
 
-  QList<int> aGrpLst = aSModel->getGroups();
-  QList<int>::iterator anIt = aGrpLst.begin(), anEnd = aGrpLst.end();
-  QList<int> aPropLst;
-  QList<int>::iterator aPropIt, aPropEnd;
+  QList<int> aTabLst = aSModel->getTabs();
+  QList<int>::iterator aTabIt = aTabLst.begin(), aTabEnd = aTabLst.end();
+  QList<int> aGrpLst, aPropLst;
+  QList<int>::iterator anIt, anEnd, aPropIt, aPropEnd;
   int aGrpId, aPropId, aPrefId;
-  for( ; anIt != anEnd; ++anIt ) {
-    aGrpId = *anIt;
-    int themaGroup = pref->addPreference( aSModel->getGroupTitle( aGrpId ), themaTab );
-    pref->setItemProperty( "columns", aSModel->getGroupNbColumns( aGrpId ), themaGroup );
-    aPropLst = aSModel->getGroupProps( aGrpId );
-    for( aPropIt = aPropLst.begin(), aPropEnd = aPropLst.end(); aPropIt != aPropEnd; ++aPropIt ) {
-      aPropId = *aPropIt;
-      Style_Model::PropType aType = aSModel->getPropType( aPropId );
-      LightApp_Preferences::PrefItemType aPType = LightApp_Preferences::Auto;
-      switch( aType ) {
-        case Style_Model::Bool:     aPType = LightApp_Preferences::Bool; break;
-        case Style_Model::Color:    aPType = LightApp_Preferences::Color; break;
-        case Style_Model::String:   aPType = LightApp_Preferences::String; break;
-        case Style_Model::IntSpin:  aPType = LightApp_Preferences::IntSpin; break;
-        case Style_Model::DblSpin:  aPType = LightApp_Preferences::DblSpin; break;
-        case Style_Model::Selector: aPType = LightApp_Preferences::Selector; break;
-        case Style_Model::Font:     aPType = LightApp_Preferences::Font; break;
-        default: break;
-      }
-      aPrefId = pref->addPreference( aSModel->getPropTitle( aPropId ), themaGroup,
-                                     aPType, aSection, aSModel->getPropName( aPropId ) );
-      aSModel->getValueTo( aResMgr, aPropId, true );//set default values into resource
-      if ( aPType == LightApp_Preferences::Selector ) {
-        QStringList lst;
-        QList<QVariant> ids;
-        aSModel->getSelector( aPropId, lst, ids );
-        pref->setItemProperty( "strings", lst, aPrefId );
-        pref->setItemProperty( "indexes", ids, aPrefId );
+  int themaSubTab = pref->addPreference( "ThemeTabs", themaTab,
+                                         SUIT_PreferenceMgr::Tab );
+  for ( ; aTabIt != aTabEnd; ++aTabIt ) {
+    QList<int> aGrpLst = aSModel->getGroups( *aTabIt );
+    int themaSubSubTab = pref->addPreference( aSModel->getTabTitle( *aTabIt ), themaSubTab,
+					   SUIT_PreferenceMgr::Frame );
+    for( anIt = aGrpLst.begin(), anEnd = aGrpLst.end(); anIt != anEnd; ++anIt ) {
+      aGrpId = *anIt;
+      int themaGroup = pref->addPreference( aSModel->getGroupTitle( aGrpId ), themaSubSubTab, SUIT_PreferenceMgr::GroupBox );
+      pref->setItemProperty( "columns", aSModel->getGroupNbColumns( aGrpId ), themaGroup );
+      aPropLst = aSModel->getGroupProps( aGrpId );
+      for( aPropIt = aPropLst.begin(), aPropEnd = aPropLst.end(); aPropIt != aPropEnd; ++aPropIt ) {
+        aPropId = *aPropIt;
+        Style_Model::PropType aType = aSModel->getPropType( aPropId );
+        LightApp_Preferences::PrefItemType aPType = LightApp_Preferences::Auto;
+        switch( aType ) {
+          case Style_Model::Bool:     aPType = LightApp_Preferences::Bool; break;
+          case Style_Model::Color:    aPType = LightApp_Preferences::Color; break;
+          case Style_Model::String:   aPType = LightApp_Preferences::String; break;
+          case Style_Model::IntSpin:  aPType = LightApp_Preferences::IntSpin; break;
+          case Style_Model::DblSpin:  aPType = LightApp_Preferences::DblSpin; break;
+          case Style_Model::Selector: aPType = LightApp_Preferences::Selector; break;
+          case Style_Model::Font:     aPType = LightApp_Preferences::Font; break;
+          default: break;
+        }
+        aPrefId = pref->addPreference( aSModel->getPropTitle( aPropId ), themaGroup,
+                                       aPType, aSection, aSModel->getPropName( aPropId ) );
+        aSModel->getValueTo( aResMgr, aPropId, true );//set default values into resource
+        if ( aPType == LightApp_Preferences::Selector ) {
+          QStringList lst;
+          QList<QVariant> ids;
+          aSModel->getSelector( aPropId, lst, ids );
+          pref->setItemProperty( "strings", lst, aPrefId );
+          pref->setItemProperty( "indexes", ids, aPrefId );
+        }
       }
     }
   }

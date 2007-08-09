@@ -43,8 +43,9 @@ public:
 
   static QString sectionName();
 
+  typedef enum { tab_color, tab_value } Tabs;
   typedef enum { grp_style, grp_color, grp_col_values, grp_lines, grp_font, grp_value } Groups;
-
+  typedef enum { None, Bool, Color, String, IntSpin, DblSpin, Selector, Font } PropType;
   typedef enum { // grp_style
                  is_defined_style, defined_style, 
                  // grp colors
@@ -68,8 +69,6 @@ public:
                  hor_handle_delta, ver_handle_delta, split_handle_len,
                  dock_wdg_sep_extent } Properties;
 
-  typedef enum { None, Bool, Color, String, IntSpin, DblSpin, Selector, Font } PropType;
-
   void           reset();
   void           setDefaults( QApplication* );
   void           initFromResource( QtxResourceMgr* );
@@ -87,7 +86,9 @@ public:
   QString        getStringValue( int, const bool = false ) const;
   QFont          getFontValue( int, const bool = false ) const;
 
-  QList<int>     getGroups() const;
+  QList<int>     getTabs() const;
+  QString        getTabTitle( int ) const;
+  QList<int>     getGroups( int ) const;
   QString        getGroupTitle( int ) const;
   int            getGroupNbColumns( int ) const;
   QList<int>     getGroupProps( int ) const;
@@ -102,7 +103,7 @@ private:
 
   void           fillValue( Properties, const QString&, const QString&,
                             Groups, PropType = Color ); 
-  void           fillGroup( Groups, const QString&, int );
+  void           fillGroup( Groups, Tabs, const QString&, int );
 
 private:
   typedef struct {
@@ -115,17 +116,20 @@ private:
   } StyleValue;
 
   typedef struct {
+    Tabs      myTabType;
     QString   myTitle;
     int       myNbColumns;
   } GroupValue;
 
   typedef QMap<int, StyleValue> ValuesMap;
-  typedef QMap<int, GroupValue> StringMap;
-  ValuesMap    myValues;
-  StringMap    myGroups;
+  typedef QMap<int, GroupValue> GroupMap;
+  typedef QMap<int, QString> StringMap;
+  ValuesMap   myValues;
+  GroupMap    myGroups;
+  StringMap   myTabs;
 
-  QStringList  myPStyles;
-  QStringList  myLines;
+  QStringList myPStyles;
+  QStringList myLines;
 };
 
 #endif // STYLE_MODEL_H

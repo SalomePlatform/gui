@@ -79,7 +79,7 @@ Style_Model::Style_Model()
   fillValue( lines_clr,     "lines-color",   "Color",      grp_lines, Color );
 
   // grp_font group
-  fillValue( font_value,    "app-font", "App Font", grp_font, Font );
+  fillValue( font_value,    "app-font", "Font", grp_font, Font );
   // grp_values group
   fillValue( all_antialized, "all-antialized", "All borders antialized", grp_value, Bool );
   fillValue( auto_raising_wdg, "is-raising-widget", "Auto raising widget", grp_value, Bool );
@@ -88,15 +88,18 @@ Style_Model::Style_Model()
   fillValue( slider_rad,    "slider-rad", "Rounding of slider", grp_value, DblSpin );
   fillValue( hor_handle_delta, "hor-hadle-delta", "Hor spacinig of handle ", grp_value, DblSpin );
   fillValue( ver_handle_delta, "ver-handle-delta", "Ver spacing of handle", grp_value, DblSpin );
-  fillValue( split_handle_len, "split-handle-len", "Lenght of splitter handle", grp_value, DblSpin );
+  fillValue( split_handle_len, "split-handle-len", "Length of splitter handle", grp_value, DblSpin );
   fillValue( dock_wdg_sep_extent,  "dock-widget-sep-extent", "DockWidget separator extent", grp_value, DblSpin );
 
-  fillGroup( grp_style, "Predefined style", 2 );
-  fillGroup( grp_color, "Colors", 3 );
-  fillGroup( grp_col_values, "ColorValues", 2 );
-  fillGroup( grp_lines, "Lines", 3 );
-  fillGroup( grp_font, "Application font", 1 );
-  fillGroup( grp_value, "Values", 2 );
+  fillGroup( grp_style,      tab_value, "Predefined style", 2 );
+  fillGroup( grp_color,      tab_color, "Colors", 3 );
+  fillGroup( grp_col_values, tab_color, "ColorValues", 2 );
+  fillGroup( grp_lines,      tab_value, "Lines", 3 );
+  fillGroup( grp_font,       tab_value, "Font", 1 );
+  fillGroup( grp_value,      tab_value, "Values", 2 );
+
+  myTabs[tab_color] = QString( "Colors" );
+  myTabs[tab_value] = QString( "Values" );
 }
 
 Style_Model::~Style_Model()
@@ -188,6 +191,7 @@ void Style_Model::initFromResource( QtxResourceMgr* theResMgr )
   for ( ; anIt != anEnd; ++anIt )
     setValueFrom( theResMgr, anIt.key() );
 
+  //setValue( is_defined_style, QVariant( false ) );
   if ( getBoolValue( is_defined_style ) )
     setPredefinedStyle( getIntValue( defined_style ) );
 }
@@ -481,9 +485,24 @@ QFont Style_Model::getFontValue( int theId, const bool theIsDef ) const
   return aFont;
 }
 
-QList<int> Style_Model::getGroups() const
+QList<int> Style_Model::getTabs() const
 {
-  return myGroups.keys();
+  return myTabs.keys();
+}
+
+QString Style_Model::getTabTitle( int theId ) const
+{
+  return myTabs.contains( theId ) ? myTabs[theId] : "";
+}
+
+QList<int> Style_Model::getGroups( int theId ) const
+{
+  QList<int> groups;
+  GroupMap::const_iterator anIt = myGroups.begin(), anEnd = myGroups.end();
+  for ( ; anIt != anEnd; ++anIt )
+    if ( anIt.value().myTabType == theId )
+      groups.append( anIt.key() );
+  return groups;
 }
 
 QString Style_Model::getGroupTitle( int theId ) const
@@ -504,7 +523,6 @@ QList<int> Style_Model::getGroupProps( int theId ) const
     if ( anIt.value().myGroupId == theId )
       values.append( anIt.key() );
   return values;
-
 }
 
 QString Style_Model::getPropTitle( int theId ) const
@@ -561,9 +579,10 @@ void Style_Model::fillValue( Properties theId, const QString& theName,
   myValues[theId] = aValue;
 }
 
-void Style_Model::fillGroup( Groups theId, const QString& theTitle, int theNbCols )
+void Style_Model::fillGroup( Groups theId, Tabs theTab, const QString& theTitle, int theNbCols )
 {
   GroupValue aValue;
+  aValue.myTabType = theTab;
   aValue.myTitle = theTitle;
   aValue.myNbColumns = theNbCols;
 

@@ -371,7 +371,7 @@ bool QtxEvalParser::prepare( const QString& expr, Postfix& post )
   while ( pos < len && error() == QtxEvalExpr::OK )
   {
     PostfixItem item;
-    while ( expr[pos].isSpace() && pos < len )
+    while ( pos < len && expr[pos].isSpace() )
       pos++;
     if ( pos >= len )
       break;

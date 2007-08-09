@@ -120,6 +120,7 @@ public:
   virtual bool                isOpen() const;
   virtual void                setOpen( const bool );
 
+  virtual void                update();
   virtual bool                customSorting( const int = NameIdx ) const;
   virtual bool                compare( const QVariant&, const QVariant&, 
 				       const int = NameIdx ) const;

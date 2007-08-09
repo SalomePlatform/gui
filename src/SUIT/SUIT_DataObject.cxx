@@ -935,6 +935,13 @@ void SUIT_DataObject::Signal::deleteLater( SUIT_DataObject* object )
 }
 
 /*!
+  \brief Updates necessary internal fields of data object
+*/
+void SUIT_DataObject::update()
+{
+}
+
+/*!
   \fn void SUIT_DataObject::Signal::created( SUIT_DataObject* object );
   \brief Emitted when data object is created.
   \param object data object being created

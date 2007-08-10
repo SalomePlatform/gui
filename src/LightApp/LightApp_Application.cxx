@@ -1814,9 +1814,9 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   int supervGroup = pref->addPreference( tr( "PREF_GROUP_SUPERV" ), viewTab );
 
-  //pref->setItemProperty( "columns", 1, occGroup );
-  //pref->setItemProperty( "columns", 1, vtkGroup );
-  //pref->setItemProperty( "columns", 1, plot2dGroup );
+  pref->setItemProperty( "columns", 2, occGroup );
+  pref->setItemProperty( "columns", 2, vtkGroup );
+  pref->setItemProperty( "columns", 2, plot2dGroup );
 
   int occTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), occGroup,
 				   LightApp_Preferences::DblSpin, "OCCViewer", "trihedron_size" );
@@ -1839,9 +1839,9 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   int vtkTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), vtkGroup,
 				   LightApp_Preferences::DblSpin, "VTKViewer", "trihedron_size" );
-  pref->addPreference( tr( "PREF_RELATIVE_SIZE" ), vtkGroup, LightApp_Preferences::Bool, "VTKViewer", "relative_size" );
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), vtkGroup,
 		       LightApp_Preferences::Color, "VTKViewer", "background" );
+  pref->addPreference( tr( "PREF_RELATIVE_SIZE" ), vtkGroup, LightApp_Preferences::Bool, "VTKViewer", "relative_size" );
 
   pref->setItemProperty( "min", 1.0E-06, vtkTS );
   pref->setItemProperty( "max", 150, vtkTS );

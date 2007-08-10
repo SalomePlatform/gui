@@ -43,11 +43,11 @@ public:
 
   static QString sectionName();
 
-  typedef enum { tab_color, tab_value } Tabs;
+  typedef enum { tab_value, tab_color } Tabs;
   typedef enum { grp_style, grp_color, grp_col_values, grp_lines, grp_font, grp_value } Groups;
   typedef enum { None, Bool, Color, String, IntSpin, DblSpin, Selector, Font } PropType;
   typedef enum { // grp_style
-                 is_defined_style, defined_style, 
+                 defined_style, 
                  // grp colors
                  bg_clr, pal_base_clr, header_clr,
                  pal_text_clr, pal_btext_clr, pal_wtext_clr,
@@ -55,19 +55,18 @@ public:
                  checked_clr, pointer_clr, tbl_grline_clr,
                  ttip_is_change, ttip_bg_clr, ttip_text_clr,
                  highlight_wdg, high_wdg_clr, high_brd_wdg_clr,
-                 pal_high_clr, pal_high_text_clr,
+                 auto_raising_wdg, pal_high_clr, pal_high_text_clr,
                  // grp_col_values
                  fld_light_clr, fld_dark_clr, pal_light_clr, pal_dark_clr,
                  border_top_clr, border_bot_clr, border_tab_top_clr, border_tab_bot_clr,
                  // grp_lines 
-                 is_lines, lines_type, lines_clr,
+                 is_lines, lines_type, lines_clr, lines_transp,
                  // grp_font
                  font_value,
                  // grp_values
-                 all_antialized, auto_raising_wdg,
-                 edit_rad, btn_rad, slider_rad, slider_increase,
-                 hor_handle_delta, ver_handle_delta, split_handle_len,
-                 dock_wdg_sep_extent } Properties;
+                 edit_rad, btn_rad, frame_rad, slider_rad,
+                 hor_handle_delta, ver_handle_delta,
+                 split_handle_len, slider_increase, all_antialized } Properties;
 
   void           reset();
   void           setDefaults( QApplication* );

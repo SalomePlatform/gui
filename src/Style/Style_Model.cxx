@@ -31,7 +31,6 @@
 Style_Model::Style_Model()
 {
   // grp_style group
-  fillValue( is_defined_style, "is-defined-style", "Predefined Style", grp_style, Bool );
   fillValue( defined_style,    "defined-style",    "Style:", grp_style, Selector );
   myPStyles<<"Default"<<"Steel-blue"<<"Dark-green";
   // grp_colors group
@@ -59,6 +58,7 @@ Style_Model::Style_Model()
   fillValue( high_wdg_clr,   "highlight-widget-color", "Widget center", grp_color );
   fillValue( high_brd_wdg_clr, "highligh-brd-widget-color", "Widget border", grp_color );
 
+  fillValue( auto_raising_wdg, "is-raising-widget", "Auto raising widget", grp_color, Bool );
   fillValue( pal_high_clr,   "highlight-color", "Highlight", grp_color );
   fillValue( pal_high_text_clr, "highlight-text-color", "Highlight text", grp_color );
   // grp_col_values group
@@ -77,24 +77,25 @@ Style_Model::Style_Model()
   fillValue( lines_type,     "lines-type",   "Type",       grp_lines, Selector );
   myLines<<"Horizontal"<<"Incline";
   fillValue( lines_clr,     "lines-color",   "Color",      grp_lines, Color );
+  fillValue( lines_transp,  "lines-transp",  "Transparency", grp_lines, DblSpin );
 
   // grp_font group
   fillValue( font_value,    "app-font", "Font", grp_font, Font );
   // grp_values group
-  fillValue( all_antialized, "all-antialized", "All borders antialized", grp_value, Bool );
-  fillValue( auto_raising_wdg, "is-raising-widget", "Auto raising widget", grp_value, Bool );
   fillValue( edit_rad,      "edit-rad", "Rounding of edit", grp_value, DblSpin );
   fillValue( btn_rad,       "button-rad", "Rounding of button", grp_value, DblSpin );
+  fillValue( frame_rad,     "frame-rad", "Rounding of frame", grp_value, DblSpin ); 
   fillValue( slider_rad,    "slider-rad", "Rounding of slider", grp_value, DblSpin );
   fillValue( hor_handle_delta, "hor-hadle-delta", "Hor spacinig of handle ", grp_value, DblSpin );
   fillValue( ver_handle_delta, "ver-handle-delta", "Ver spacing of handle", grp_value, DblSpin );
   fillValue( split_handle_len, "split-handle-len", "Length of splitter handle", grp_value, DblSpin );
-  fillValue( dock_wdg_sep_extent,  "dock-widget-sep-extent", "DockWidget separator extent", grp_value, DblSpin );
+  fillValue( slider_increase, "slider-increase", "Slider increase", grp_value, IntSpin );
+  fillValue( all_antialized, "all-antialized", "All borders antialized", grp_value, Bool );
 
-  fillGroup( grp_style,      tab_value, "Predefined style", 2 );
+  fillGroup( grp_style,      tab_value, "Predefined style", 1 );
   fillGroup( grp_color,      tab_color, "Colors", 3 );
   fillGroup( grp_col_values, tab_color, "ColorValues", 2 );
-  fillGroup( grp_lines,      tab_value, "Lines", 3 );
+  fillGroup( grp_lines,      tab_value, "Lines", 2 );
   fillGroup( grp_font,       tab_value, "Font", 1 );
   fillGroup( grp_value,      tab_value, "Values", 2 );
 
@@ -123,7 +124,6 @@ void Style_Model::reset()
 
 void Style_Model::setDefaults( QApplication* app )
 {
-  setDefValue( is_defined_style, QVariant( true ) );
   setDefValue( defined_style,    QVariant( 0 ) );
 
   QPalette aPal = app->palette();
@@ -175,6 +175,7 @@ void Style_Model::setDefaults( QApplication* app )
   setDefValue( slider_rad,     QVariant( 0 ) );
   setDefValue( edit_rad,       QVariant( 0 ) );
   setDefValue( btn_rad,        QVariant( 0 ) );
+  setDefValue( frame_rad,      QVariant( 0 ) );
   setDefValue( slider_increase,QVariant( 2 ) );
   setDefValue( all_antialized, QVariant( false ) );
   setDefValue( highlight_wdg,   QVariant( false ) );
@@ -182,7 +183,6 @@ void Style_Model::setDefaults( QApplication* app )
   setDefValue( hor_handle_delta, QVariant( 3 ) );
   setDefValue( ver_handle_delta, QVariant( 3 ) );
   setDefValue( split_handle_len, QVariant( 20 ) );
-  setDefValue( dock_wdg_sep_extent,  QVariant( 8 ) );
 }
 
 void Style_Model::initFromResource( QtxResourceMgr* theResMgr )
@@ -190,10 +190,6 @@ void Style_Model::initFromResource( QtxResourceMgr* theResMgr )
   ValuesMap::iterator anIt = myValues.begin(), anEnd = myValues.end();
   for ( ; anIt != anEnd; ++anIt )
     setValueFrom( theResMgr, anIt.key() );
-
-  //setValue( is_defined_style, QVariant( false ) );
-  if ( getBoolValue( is_defined_style ) )
-    setPredefinedStyle( getIntValue( defined_style ) );
 }
 
 bool Style_Model::updateFromResource( QtxResourceMgr* theResMgr, const QString& thePropName )
@@ -210,8 +206,7 @@ bool Style_Model::updateFromResource( QtxResourceMgr* theResMgr, const QString& 
     return retrieve;
   setValueFrom( theResMgr, anId );
 
-  if ( ( anId == is_defined_style || anId == defined_style )
-        && getBoolValue( is_defined_style ) ) {
+  if ( anId == defined_style ) {
     setPredefinedStyle( getIntValue( defined_style ) );
     retrieve = true;
     // update for resources all datas
@@ -336,6 +331,7 @@ void Style_Model::setPredefinedStyle( int theType )
       setValue( slider_rad,    QVariant( 3 ) );
       setValue( edit_rad,      QVariant( 6 ) );
       setValue( btn_rad,       QVariant( 10 ) );
+      setValue( frame_rad,     QVariant( 10 ) );
       setValue( slider_increase, QVariant( 5 ) );
       setValue( all_antialized, QVariant( false ) ); // true
 
@@ -379,6 +375,7 @@ void Style_Model::setPredefinedStyle( int theType )
 
       setValue( slider_rad,    QVariant( 3 ) );
       setValue( edit_rad,      QVariant( 6 ) );
+      setValue( frame_rad,       QVariant( 10 ) );
       setValue( btn_rad,       QVariant( 10 ) );
       setValue( slider_increase, QVariant( 6 ) );
       setValue( all_antialized, QVariant( false ) );

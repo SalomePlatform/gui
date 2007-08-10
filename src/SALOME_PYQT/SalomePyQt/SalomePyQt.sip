@@ -135,8 +135,8 @@ public:
   static QtxAction*        createSeparator() /ReleaseGIL/ ;
 
   static QtxAction*        createAction( const int, const QString&, 
-	                                 const QString& = QString::null, const QString& = QString::null, 
-					 const QString& = QString::null, const int = 0, const bool = false ) /ReleaseGIL/ ;
+	                                 const QString& = QString(), const QString& = QString(), 
+					 const QString& = QString(), const int = 0, const bool = false ) /ReleaseGIL/ ;
 
   static QtxAction*        action( const int ) /ReleaseGIL/ ;
   static int               actionId( const QtxAction* ) /ReleaseGIL/ ;
@@ -166,8 +166,8 @@ public:
   static int               addPreference( const QString& ) /ReleaseGIL/ ;
   static int               addPreference( const QString&,
                                           const int, const int = -1,
-                                          const QString& = QString::null,
-				          const QString& = QString::null ) /ReleaseGIL/ ;
+                                          const QString& = QString(),
+				          const QString& = QString() ) /ReleaseGIL/ ;
   static QVariant          preferenceProperty( const int, const QString& ) /ReleaseGIL/ ;
   static void              setPreferenceProperty( const int, 
                                                   const QString&,

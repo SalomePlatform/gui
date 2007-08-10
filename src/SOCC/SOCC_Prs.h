@@ -52,6 +52,9 @@ public:
   void AddObject( const Handle(AIS_InteractiveObject)& obj );
   // Add interactive object
 
+  void Clear();
+  // Remove all interactive objects
+
   bool IsNull() const;
   // Reimplemented from SALOME_Prs
 

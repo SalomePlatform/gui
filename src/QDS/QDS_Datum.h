@@ -41,7 +41,7 @@ class QDS_EXPORT QDS_Datum : public QObject, public QDS
   class Wrapper;
 
 public:
-  QDS_Datum( const QString&, QWidget* = 0, const int = All, const QString& = QString::null );
+  QDS_Datum( const QString&, QWidget* = 0, const int = All, const QString& = QString() );
   virtual ~QDS_Datum();
 
   QString                   id() const;
@@ -93,8 +93,8 @@ public:
   void                      setFocus();
 
   virtual bool              isValid( const bool = true, 
-                                     const QString& = QString::null,
-                                     const QString& = QString::null ) const;
+                                     const QString& = QString(),
+                                     const QString& = QString() ) const;
   virtual QValidator*       validator( const bool = false ) const;
 
   void                      addTo( QVBoxLayout* );

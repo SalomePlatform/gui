@@ -71,7 +71,7 @@ QString QDS::toQString( const TCollection_ExtendedString& src )
 QString QDS::toQString( const Handle(TCollection_HAsciiString)& src )
 {
   if ( src.IsNull() )
-    return QString::null;
+    return QString();
   else
     return toQString( src->String() );
 }
@@ -84,7 +84,7 @@ QString QDS::toQString( const Handle(TCollection_HAsciiString)& src )
 QString QDS::toQString( const Handle(TCollection_HExtendedString)& src )
 {
   if ( src.IsNull() )
-    return QString::null;
+    return QString();
   else
     return toQString( src->String() );
 }

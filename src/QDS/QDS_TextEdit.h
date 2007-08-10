@@ -28,7 +28,7 @@ class QDS_EXPORT QDS_TextEdit : public QDS_Datum
   Q_OBJECT
 
 public:
-  QDS_TextEdit( const QString&, QWidget* = 0, const int = All, const QString& = QString::null );
+  QDS_TextEdit( const QString&, QWidget* = 0, const int = All, const QString& = QString() );
   virtual ~QDS_TextEdit();
 
 signals:

@@ -1199,22 +1199,22 @@ void Plot2d_ViewFrame::setTitle( bool enabled, const QString& title,
     case MainTitle:
       myTitleEnabled = enabled;
       myTitle = title;
-      myPlot->setTitle( myTitleEnabled ? myTitle : QString::null );
+      myPlot->setTitle( myTitleEnabled ? myTitle : QString() );
       break;
     case XTitle:
       myXTitleEnabled = enabled;
       myXTitle = title;
-      myPlot->setAxisTitle( QwtPlot::xBottom, myXTitleEnabled ? myXTitle : QString::null );
+      myPlot->setAxisTitle( QwtPlot::xBottom, myXTitleEnabled ? myXTitle : QString() );
       break;
     case YTitle:
       myYTitleEnabled = enabled;
       myYTitle = title;
-      myPlot->setAxisTitle( QwtPlot::yLeft, myYTitleEnabled ? myYTitle : QString::null );
+      myPlot->setAxisTitle( QwtPlot::yLeft, myYTitleEnabled ? myYTitle : QString() );
       break;
     case Y2Title:
       myY2TitleEnabled = enabled;
       myY2Title = title;
-      myPlot->setAxisTitle( QwtPlot::yRight, myY2TitleEnabled ? myY2Title : QString::null );
+      myPlot->setAxisTitle( QwtPlot::yRight, myY2TitleEnabled ? myY2Title : QString() );
       break;
   }
   if ( update )

@@ -59,13 +59,13 @@ static QString salomeVersion()
 
   QFile vf( path );
   if ( !vf.open( QIODevice::ReadOnly ) )
-    return QString::null;
+    return QString();
 
   QString line( vf.readLine( 1024 ) );
   vf.close();
 
   if ( line.isEmpty() )
-    return QString::null;
+    return QString();
 
   while ( !line.isEmpty() && line.at( line.length() - 1 ) == QChar( '\n' ) )
     line.remove( line.length() - 1, 1 );

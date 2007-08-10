@@ -28,7 +28,7 @@ class QDS_EXPORT QDS_SpinBox : public QDS_Datum
   Q_OBJECT
 
 public:
-  QDS_SpinBox( const QString&, QWidget* = 0, const int = All, const QString& = QString::null );
+  QDS_SpinBox( const QString&, QWidget* = 0, const int = All, const QString& = QString() );
   virtual ~QDS_SpinBox();
 
   int              step() const;

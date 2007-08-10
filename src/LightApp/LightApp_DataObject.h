@@ -55,6 +55,10 @@ public:
   virtual SUIT_DataObject*        componentObject() const;
   virtual QString                 componentDataType() const;
 
+  virtual bool                    customSorting( const int = NameIdx ) const;
+  virtual bool                    compare( const QVariant&, const QVariant&,
+					   const int = NameIdx ) const;
+
 protected:
   QString                         myCompDataType;
   SUIT_DataObject*                myCompObject;

@@ -73,6 +73,14 @@ void SOCC_Prs::AddObject( const Handle(AIS_InteractiveObject)& obj )
 }
 
 /*!
+  Remove all interactive objects
+*/
+void SOCC_Prs::Clear()
+{
+  myObjects.Clear();
+}
+
+/*!
   \return 0 if list of the interactive objects is empty [ Reimplemented from SALOME_Prs ]
 */
 bool SOCC_Prs::IsNull() const 

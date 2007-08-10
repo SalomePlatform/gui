@@ -44,7 +44,7 @@ public:
   void            setName( const QString& name );
   QString         name();
     
-  static QString  getName( QWidget* parent = 0, const QString& oldName = QString::null );
+  static QString  getName( QWidget* parent = 0, const QString& oldName = QString() );
     
 protected slots:
   void accept();

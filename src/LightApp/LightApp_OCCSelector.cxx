@@ -133,7 +133,7 @@ void LightApp_OCCSelector::setSelection( const SUIT_DataOwnerPtrList& aList )
 QString LightApp_OCCSelector::entry( const Handle(AIS_InteractiveObject)& anAIS ) const
 {
   if ( anAIS.IsNull() || !anAIS->HasOwner() )
-    return QString::null;
+    return QString();
 
   QString res;
 

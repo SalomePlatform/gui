@@ -374,45 +374,9 @@ bool SalomeApp_DataObject::customSorting( const int index ) const
 bool SalomeApp_DataObject::compare( const QVariant& left, const QVariant& right, 
 				    const int index ) const
 {
-  if ( index == EntryIdx || index == RefEntryIdx ) {
-    // perform custom sorting for the "Entry" and "Reference Entry" columns
-    QString leftStr  = left.toString();
-    QString rightStr = right.toString();
-    QStringList idsLeft  = leftStr.split( ":", QString::SkipEmptyParts );
-    QStringList idsRight = rightStr.split( ":", QString::SkipEmptyParts );
-    if ( idsLeft.count() > 1 || idsRight.count() > 1 ) {
-      bool result = true;
-      bool calculated = false;
-      for ( int i = 0; i < idsLeft.count() || i < idsRight.count(); i++ ) {
-	bool okLeft = true, okRight = true;
-	int lid = 0, rid = 0;
-	if ( i < idsLeft.count() )
-	  lid = idsLeft[i].toInt( &okLeft );
-	if ( i < idsRight.count() )
-	  rid = idsRight[i].toInt( &okRight );
-	if ( okLeft && okRight ) {
-	  // both seem to be correct integer ID
-	  return lid < rid;
-	}
-	else if ( okLeft || okRight ) {
-	  // objects with correct (int) ID have higher priority
-	  return okLeft;
-	}
-	else {
-	  // both not integer ID
-	  int r = QString::localeAwareCompare( idsLeft[i], idsRight[i] ); 
-	  if ( !calculated && r != 0 ) {
-	    result = r < 0;
-	    calculated = true;
-	  }
-	}
-      }
-      // we should reach this if the entries are exactly equal
-      return result; 
-    }
-    return QString::localeAwareCompare( leftStr, rightStr ) < 0;
-  }
-  return LightApp_DataObject::compare( left, right, index );
+  // use the same custom sorting for the "Reference Entry" column as for the
+  // "Entry" column (call base implementation)
+  return LightApp_DataObject::compare( left, right, index == RefEntryIdx ? EntryIdx : index );
 }
 
 /*!

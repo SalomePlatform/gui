@@ -33,7 +33,7 @@ protected:
   class Editor;
 
 public:
-  QDS_LineEdit( const QString&, QWidget* = 0, const int = All, const QString& = QString::null );
+  QDS_LineEdit( const QString&, QWidget* = 0, const int = All, const QString& = QString() );
   virtual ~QDS_LineEdit();
 
   virtual void         deselect();

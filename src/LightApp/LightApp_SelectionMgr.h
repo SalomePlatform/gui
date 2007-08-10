@@ -56,7 +56,7 @@ public:
   typedef NCollection_DataMap< Handle(SALOME_InteractiveObject), TColStd_IndexedMapOfInteger > MapIOOfMapOfInteger;
   typedef NCollection_DataMap< TCollection_AsciiString, TColStd_IndexedMapOfInteger > MapEntryOfMapOfInteger;
 
-  void                   selectedObjects( SALOME_ListIO&, const QString& = QString::null, const bool = true ) const;
+  void                   selectedObjects( SALOME_ListIO&, const QString& = QString(), const bool = true ) const;
   void                   setSelectedObjects( const SALOME_ListIO&, const bool = false );
 
   void                   GetIndexes( const Handle(SALOME_InteractiveObject)& IObject, 
@@ -74,7 +74,7 @@ public:
 
   void                   selectedSubOwners( MapEntryOfMapOfInteger& theMap );
 #else
-  void                   selectedObjects( QStringList&, const QString& = QString::null, const bool = true ) const;
+  void                   selectedObjects( QStringList&, const QString& = QString(), const bool = true ) const;
 #endif
 
 signals:

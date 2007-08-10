@@ -181,7 +181,7 @@ QVariant LightApp_Selection::parameter( const QString& p ) const
   else if ( p == "activeModule" )
   {
     LightApp_Application* app = dynamic_cast<LightApp_Application*>( myStudy->application() );
-    QString mod_name = app ? QString( app->activeModule()->name() ) : QString::null;
+    QString mod_name = app ? QString( app->activeModule()->name() ) : QString();
     //cout << "activeModule : " << mod_name.latin1() << endl;
     if( !mod_name.isEmpty() )
       return mod_name;
@@ -190,11 +190,7 @@ QVariant LightApp_Selection::parameter( const QString& p ) const
   }
   else if ( p == "isActiveView" )  return QVariant( (bool)activeVW() );
   else if ( p == "activeView" )    return QVariant( activeViewType() );
-#ifndef WIN32
   else                             return QtxPopupSelection::parameter( p );
-#else
-  else                             return QtxPopupSelection::parameter( p ); //Selection::parameter( p ); //?
-#endif
 }
 
 /*!
@@ -236,7 +232,7 @@ QString LightApp_Selection::activeViewType() const
     if ( vm )
       return vm->getType();
   }
-  return QString::null;
+  return QString();
 }
 
 /*!

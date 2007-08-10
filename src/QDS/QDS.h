@@ -63,10 +63,10 @@ public:
   static bool                       load( const QString& );
 
   static QString                    unitSystemLabel( const QString&,
-                                                     const QString& = QString::null );
-  static QString                    activeUnitSystem( const QString& = QString::null );
+                                                     const QString& = QString() );
+  static QString                    activeUnitSystem( const QString& = QString() );
   static void                       setActiveUnitSystem( const QString&,
-                                                         const QString& = QString::null );
+                                                         const QString& = QString() );
 
   static QString                    toQString( const TCollection_AsciiString& );
   static QString                    toQString( const TCollection_ExtendedString& );

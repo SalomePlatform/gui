@@ -28,7 +28,7 @@ class QDS_EXPORT QDS_CheckBox : public QDS_Datum
   Q_OBJECT
 
 public:
-  QDS_CheckBox( const QString&, QWidget* = 0, const int = All, const QString& = QString::null );
+  QDS_CheckBox( const QString&, QWidget* = 0, const int = All, const QString& = QString() );
   virtual ~QDS_CheckBox();
 
   bool                 isChecked() const;

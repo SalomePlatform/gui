@@ -127,14 +127,14 @@ QString salomeVersion()
 
   QFile vf( path );
   if ( !vf.open( QIODevice::ReadOnly ) )
-    return QString::null;
+    return QString();
 
   QString line( vf.readLine( 1024 ) );
 
   vf.close();
 
   if ( line.isEmpty() )
-    return QString::null;
+    return QString();
 
   while ( !line.isEmpty() && line.at( line.length() - 1 ) == QChar( '\n' ) )
     line.remove( line.length() - 1, 1 );
@@ -219,8 +219,8 @@ public:
   static QString myExtAppVersion;
 };
 
-QString SALOME_ResourceMgr::myExtAppName    = QString::null;
-QString SALOME_ResourceMgr::myExtAppVersion = QString::null;
+QString SALOME_ResourceMgr::myExtAppName    = QString();
+QString SALOME_ResourceMgr::myExtAppVersion = QString();
 
 class SALOME_Session : public SUIT_Session
 {
@@ -321,57 +321,20 @@ int main( int argc, char **argv )
     SUIT_ResourceMgr resMgr( "SalomeApp", QString( "%1Config" ) );
     resMgr.setCurrentFormat( "xml" );
     resMgr.loadLanguage( "LightApp", "en" );
-    // ...get splash preferences
-    QString splashIcon, splashInfo, splashTextColors, splashProgressColors;
-    resMgr.value( "splash", "image",           splashIcon );
-    resMgr.value( "splash", "info",            splashInfo, false );
-    resMgr.value( "splash", "text_colors",     splashTextColors );
-    resMgr.value( "splash", "progress_colors", splashProgressColors );
-    QPixmap px( splashIcon );
-    if ( px.isNull() ) // try to get splash pixmap from resources
-      px = resMgr.loadPixmap( "LightApp", QObject::tr( "ABOUT_SPLASH" ) );
-    if ( !px.isNull() ) {
-      // ...set splash pixmap
-      splash = QtxSplash::splash( px );
-      // ...set splash text colors
-      if ( !splashTextColors.isEmpty() ) {
-	QStringList colors = splashTextColors.split( "|", QString::SkipEmptyParts );
-	QColor c1, c2;
-	if ( colors.count() > 0 ) c1 = QColor( colors[0] );
-	if ( colors.count() > 1 ) c2 = QColor( colors[1] );
-	splash->setTextColors( c1, c2 );
-      }
-      else {
-	splash->setTextColors( Qt::white, Qt::black );
-      }
-      // ...set splash progress colors
-      if ( !splashProgressColors.isEmpty() ) {
-	QStringList colors = splashProgressColors.split( "|", QString::SkipEmptyParts );
-	QColor c1, c2;
-	QtxSplash::GradientType gradType = QtxSplash::Vertical;
-	if ( colors.count() > 0 ) c1 = QColor( colors[0] );
-	if ( colors.count() > 1 ) c2 = QColor( colors[1] );
-	if ( colors.count() > 2 ) gradType = QtxSplash::GradientType( colors[2].toInt() );
-	splash->setProgressColors( c1, c2, gradType );
-      }
-      // ...set splash text font
-      QFont f = splash->font();
-      f.setBold( true );
-      splash->setFont( f );
-      // ...show splash initial status
-      if ( !splashInfo.isEmpty() ) {
-	splashInfo.replace( QRegExp( "%A" ),  QObject::tr( "APP_NAME" ) );
-	splashInfo.replace( QRegExp( "%V" ),  QObject::tr( "ABOUT_VERSION" ).arg( salomeVersion() ) );
-	splashInfo.replace( QRegExp( "%L" ),  QObject::tr( "ABOUT_LICENSE" ) );
-	splashInfo.replace( QRegExp( "%C" ),  QObject::tr( "ABOUT_COPYRIGHT" ) );
-	splashInfo.replace( QRegExp( "\\\\n" ), "\n" );
-	splash->setConstantInfo( splashInfo );
-      }
-      // ...set 'hide on click' flag
-#ifdef _DEBUG_
-      splash->setHideOnClick( true );
-#endif
-      // ...show splash
+    //
+    splash = QtxSplash::splash( QPixmap() );
+    splash->readSettings( &resMgr );
+    if ( splash->pixmap().isNull() )
+      splash->setPixmap( resMgr.loadPixmap( "LightApp", QObject::tr( "ABOUT_SPLASH" ) ) );
+    if ( splash->pixmap().isNull() ) {
+      delete splash;
+      splash = 0;
+    }
+    else {
+      splash->setOption( "%A", QObject::tr( "APP_NAME" ) );
+      splash->setOption( "%V", QObject::tr( "ABOUT_VERSION" ).arg( salomeVersion() ) );
+      splash->setOption( "%L", QObject::tr( "ABOUT_LICENSE" ) );
+      splash->setOption( "%C", QObject::tr( "ABOUT_COPYRIGHT" ) );
       splash->show();
       QApplication::instance()->processEvents();
     }
@@ -500,7 +463,8 @@ int main( int argc, char **argv )
   if ( !result ) {
     // Launch GUI activator
     if ( isGUI ) {
-      splash->setStatus( QApplication::translate( "", "Activating desktop..." ) );
+      if ( splash )
+	splash->setStatus( QApplication::translate( "", "Activating desktop..." ) );
       // ...retrieve Session interface reference
       CORBA::Object_var obj = _NS->Resolve( "/Kernel/Session" );
       SALOME::Session_var session = SALOME::Session::_narrow( obj ) ;
@@ -545,8 +509,7 @@ int main( int argc, char **argv )
 	  
 	result = _qappl.exec();
 	
-	if ( splash )
-	  delete splash;
+	delete splash;
 	splash = 0;
 
 	if ( result == SUIT_Session::FROM_GUI ) // desktop is closed by user from GUI

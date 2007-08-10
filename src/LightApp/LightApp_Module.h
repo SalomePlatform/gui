@@ -115,8 +115,8 @@ protected:
 
   int                                 addPreference( const QString& label );
   int                                 addPreference( const QString& label, const int pId, const int = LightApp_Preferences::Auto,
-				                     const QString& section = QString::null,
-				                     const QString& param = QString::null );
+				                     const QString& section = QString(),
+				                     const QString& param = QString() );
   QVariant                            preferenceProperty( const int, const QString& ) const;
   void                                setPreferenceProperty( const int, const QString&, const QVariant& );
 

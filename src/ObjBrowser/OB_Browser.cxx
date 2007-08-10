@@ -358,6 +358,8 @@ void OB_Browser::select( const QModelIndex& index, const bool on, const bool kee
   \brief Select/deselect specified model indices.
   \param indexes model indices to be selected/deselected
   \param on if \c true, the indices will be selected, otherwise - deselected
+  \param keepSelection if \c true (default) the previous selection is kept, 
+  otherwise it is first cleared
 */
 void OB_Browser::select( const QModelIndexList& indexes, const bool on, const bool keepSelection )
 {
@@ -367,9 +369,14 @@ void OB_Browser::select( const QModelIndexList& indexes, const bool on, const bo
   QModelIndex idx;
   bool first = true;
 
-  foreach( idx, indexes ) {
-    select( idx, on, first ? keepSelection : true );
-    first = false;
+  if ( !indexes.isEmpty() ) {
+    foreach( idx, indexes ) {
+      select( idx, on, first ? keepSelection : true );
+      first = false;
+    }
+  }
+  else if ( !keepSelection ) {
+    myView->clearSelection();
   }
 
   myView->blockSignals( blocked );

@@ -27,6 +27,8 @@
 #include <CAM_Module.h>
 #include <SUIT_DataObjectKey.h>
 
+#include <QVariant>
+
 /*!
   \class LightApp_DataObject::Key
   \brief Represents unique data object key for the LightApp_DataObject
@@ -223,6 +225,75 @@ QString LightApp_DataObject::componentDataType() const
     }
   }
   return myCompDataType;
+}
+
+/*!
+  \brief Check if the specified column supports custom sorting.
+  \param index column index
+  \return \c true if column sorting should be customized
+  \sa compare()
+*/
+bool LightApp_DataObject::customSorting( const int index ) const
+{
+  // perform custom sorting for the "Entry" column
+  return index == EntryIdx ? true 
+    : CAM_DataObject::customSorting( index );
+}
+
+/*!
+  \brief Compares data from two items for sorting purposes.
+
+  This method is called only for those columns for which customSorting()
+  method returns \c true.
+
+  \param left first data to compare
+  \param right second data to compare
+  \param index column index
+  \return result of the comparison
+  \sa customSorting()
+*/
+bool LightApp_DataObject::compare( const QVariant& left, const QVariant& right, 
+				   const int index ) const
+{
+  if ( index == EntryIdx ) {
+    // perform custom sorting for the "Entry" column
+    QString leftStr  = left.toString();
+    QString rightStr = right.toString();
+    QStringList idsLeft  = leftStr.split( ":", QString::SkipEmptyParts );
+    QStringList idsRight = rightStr.split( ":", QString::SkipEmptyParts );
+    if ( idsLeft.count() > 1 || idsRight.count() > 1 ) {
+      bool result = true;
+      bool calculated = false;
+      for ( int i = 0; i < idsLeft.count() || i < idsRight.count(); i++ ) {
+	bool okLeft = true, okRight = true;
+	int lid = 0, rid = 0;
+	if ( i < idsLeft.count() )
+	  lid = idsLeft[i].toInt( &okLeft );
+	if ( i < idsRight.count() )
+	  rid = idsRight[i].toInt( &okRight );
+	if ( okLeft && okRight ) {
+	  // both seem to be correct integer ID
+	  return lid < rid;
+	}
+	else if ( okLeft || okRight ) {
+	  // objects with correct (int) ID have higher priority
+	  return okLeft;
+	}
+	else {
+	  // both not integer ID
+	  int r = QString::localeAwareCompare( idsLeft[i], idsRight[i] ); 
+	  if ( !calculated && r != 0 ) {
+	    result = r < 0;
+	    calculated = true;
+	  }
+	}
+      }
+      // we should reach this if the entries are exactly equal
+      return result; 
+    }
+    return QString::localeAwareCompare( leftStr, rightStr ) < 0;
+  }
+  return CAM_DataObject::compare( left, right, index );
 }
 
 /*!

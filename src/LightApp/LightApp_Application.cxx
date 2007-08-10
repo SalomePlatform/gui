@@ -2366,7 +2366,7 @@ void LightApp_Application::moduleIconNames( QMap<QString, QString>& iconMap ) co
   {
     QString modName = *it;
     QString modIntr = moduleName( modName );
-    QString modIcon = resMgr->stringValue( modIntr, "icon", QString::null );
+    QString modIcon = resMgr->stringValue( modIntr, "icon", QString() );
 
     if ( modIcon.isEmpty() )
       continue;

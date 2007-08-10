@@ -92,7 +92,7 @@ LogWindow::LogWindow( QWidget* parent )
 {
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
 
-  QString fntSet = resMgr ? resMgr->stringValue( "Log Window", "font", QString::null ) : QString::null;
+  QString fntSet = resMgr ? resMgr->stringValue( "Log Window", "font", QString() ) : QString();
 
   setFont( SUIT_Tools::stringToFont( fntSet ) );
 
@@ -354,7 +354,7 @@ void LogWindow::onSaveToFile()
     return;
 
   // call application-specific "Save file" dialog box
-  QString aName = app->getFileName( false, QString::null, QString( "*.log" ), QString::null, 0 );
+  QString aName = app->getFileName( false, QString(), QString( "*.log" ), QString(), 0 );
   if ( aName.isNull() )
     return;
 

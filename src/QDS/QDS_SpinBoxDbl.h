@@ -28,7 +28,7 @@ class QDS_EXPORT QDS_SpinBoxDbl : public QDS_Datum
   Q_OBJECT
 
 public:
-  QDS_SpinBoxDbl( const QString&, QWidget* = 0, const int = All, const QString& = QString::null );
+  QDS_SpinBoxDbl( const QString&, QWidget* = 0, const int = All, const QString& = QString() );
   virtual ~QDS_SpinBoxDbl();
 
   double            step() const;

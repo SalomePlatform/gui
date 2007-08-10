@@ -236,7 +236,7 @@ void LightApp_Dialog::clearSelection( const int id )
     myObjects[ id ].myTypes.clear();
     myObjects[ id ].myNames.clear();
     
-    myObjects[ id ].myEdit->setText( QString::null );
+    myObjects[ id ].myEdit->setText( QString() );
     emit selectionChanged( id );
   }
 }
@@ -716,7 +716,7 @@ QString LightApp_Dialog::selectionDescription( const QStringList& names, const T
     return "LightApp_Dialog::selectionDescription(): Error!!!";
     
   if( names.isEmpty() )
-    return QString::null;
+    return QString();
     
   switch( ni )
   {
@@ -739,7 +739,7 @@ QString LightApp_Dialog::selectionDescription( const QStringList& names, const T
       return countOfTypes( types );
       break;
   };
-  return QString::null;
+  return QString();
 }
 
 /*!

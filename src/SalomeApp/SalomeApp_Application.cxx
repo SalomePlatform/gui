@@ -586,7 +586,7 @@ void SalomeApp_Application::onDeleteInvalidReferences()
 {
   SALOME_ListIO aList;
   LightApp_SelectionMgr* mgr = selectionMgr();
-  mgr->selectedObjects( aList, QString::null, false );
+  mgr->selectedObjects( aList, QString(), false );
 
   if( aList.IsEmpty() )
     return;
@@ -1057,7 +1057,7 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QMenu* thePop
   // Get selected objects
   SALOME_ListIO aList;
   LightApp_SelectionMgr* mgr = selectionMgr();
-  mgr->selectedObjects( aList, QString::null, false );
+  mgr->selectedObjects( aList, QString(), false );
 
   // add GUI state commands: restore, rename
   if ( aList.Extent() == 1 && aList.First()->hasEntry() && 

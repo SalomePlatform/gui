@@ -1339,7 +1339,7 @@ void QDS_Datum::unitSystemChanged( const QString& unitSystem )
       labText = unitText;
     else if ( !unitText.isEmpty() )
       labText = QString( "%1 (%2)" ).arg( labText ).arg( unitText );
-    unitText = QString::null;
+    unitText = QString();
   }
 
   if ( labelWidget() )
@@ -1683,7 +1683,7 @@ QString QDS_Datum::canonicalFormat( const QString& fmt )
 QString QDS_Datum::canonicalFormat( const QString& fmt, QString& flags )
 {
   QString newFmt = fmt;
-  flags = QString::null;
+  flags = QString();
 
   QRegExp rx( "^(%[0-9]*.?[0-9]*)([a-z,A-Z]+)[g|c|d|i|o|u|x|e|f|n|p|s|X|E|G]$" );
   if ( rx.indexIn( newFmt ) >= 0 )
@@ -1720,7 +1720,7 @@ QString QDS_Datum::units( const QString& id )
 */
 QString QDS_Datum::prefix() const
 {
-  return QString::null;
+  return QString();
 }
 
 /*!
@@ -1729,7 +1729,7 @@ QString QDS_Datum::prefix() const
 */
 QString QDS_Datum::suffix() const
 {
-  return QString::null;
+  return QString();
 }
 
 /*!
@@ -1777,7 +1777,7 @@ QString QDS_Datum::maxValue() const
 */
 void QDS_Datum::invalidateCache()
 {
-  myTargetValue = QString::null;
+  myTargetValue = QString();
 }
 
 /*!

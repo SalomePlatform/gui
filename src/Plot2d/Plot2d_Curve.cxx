@@ -219,7 +219,7 @@ void Plot2d_Curve::setData( const double* hData, const double* vData, long size,
   clearAllPoints();
   QStringList::const_iterator anIt = lst.begin(), aLast = lst.end(); 
   for( long i = 0; i < size; i++, anIt++ )
-    addPoint( hData[i], vData[i], anIt==aLast ? QString::null : *anIt );
+    addPoint( hData[i], vData[i], anIt==aLast ? QString() : *anIt );
 }
 
 /*!
@@ -412,7 +412,7 @@ void Plot2d_Curve::setText( const int ind, const QString& txt )
 QString Plot2d_Curve::text( const int ind ) const
 {
   if( ind<0 || ind>=myPoints.count() )
-    return QString::null;
+    return QString();
   else
     return myPoints[ind].text;
 }

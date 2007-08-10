@@ -113,8 +113,8 @@ public:
   int                        addGlobalPreference( const QString& );
   int                        addPreference( const QString& );
   int                        addPreference( const QString&, const int, const int = -1,
-					    const QString& = QString::null,
-					    const QString& = QString::null );
+					    const QString& = QString(),
+					    const QString& = QString() );
   QVariant                   preferenceProperty( const int, const QString& ) const;
   void                       setPreferenceProperty( const int, const QString&, 
 						    const QVariant& );

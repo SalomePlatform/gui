@@ -125,11 +125,11 @@ public:
 
   static int               createMenu( const QString&, const int = -1,
 				       const int = -1, const int = -1, const int = -1 );
-  static int               createMenu( const QString&, const QString& = QString::null, 
+  static int               createMenu( const QString&, const QString& = QString(), 
 				       const int = -1, const int = -1, const int = -1 );
   static int               createMenu( const int,      const int = -1,
 				       const int = -1, const int = -1 );
-  static int               createMenu( const int,      const QString& = QString::null, 
+  static int               createMenu( const int,      const QString& = QString(), 
 				       const int = -1, const int = -1 );
   static int               createMenu( QtxAction*,     const int,      const int = -1, 
 	                               const int = -1, const int = -1 );
@@ -139,8 +139,8 @@ public:
   static QtxAction*        createSeparator();
 
   static QtxAction*        createAction( const int, const QString&,
-					 const QString& = QString::null, const QString& = QString::null, 
-					 const QString& = QString::null, const int = 0, const bool = false );
+					 const QString& = QString(), const QString& = QString(), 
+					 const QString& = QString(), const int = 0, const bool = false );
 
   static QtxAction*        action( const int );
   static int               actionId( const QtxAction* );
@@ -169,8 +169,8 @@ public:
   static int               addPreference( const QString& );
   static int               addPreference( const QString&,
                                           const int, const int = -1,
-                                          const QString& = QString::null,
-				          const QString& = QString::null );
+                                          const QString& = QString(),
+				          const QString& = QString() );
   static QVariant          preferenceProperty( const int, const QString& );
   static void              setPreferenceProperty( const int, 
                                                   const QString&,

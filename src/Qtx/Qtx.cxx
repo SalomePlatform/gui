@@ -1126,11 +1126,12 @@ bool Qtx::stringToLinearGradient( const QString& str, QLinearGradient& gradient 
       // spread type
       if ( vals.count() > 5 )
       {
-	if ( vals[ 5 ] == "pad" || vals[ 5 ] == "0" )
+	QString spread = vals[ 5 ].trimmed().toLower();
+	if ( spread == "pad" || spread == "0" )
 	  gradient.setSpread( QGradient::PadSpread );
-	else if ( vals[ 5 ] == "repeat" || vals[ 5 ] == "2" )
+	else if ( spread == "repeat" || spread == "2" )
 	  gradient.setSpread( QGradient::RepeatSpread );
-	else if ( vals[ 5 ] == "reflect" || vals[ 5 ] == "1" )
+	else if ( spread == "reflect" || spread == "1" )
 	  gradient.setSpread( QGradient::ReflectSpread );
       }
       // stop points
@@ -1179,11 +1180,12 @@ bool Qtx::stringToRadialGradient( const QString& str, QRadialGradient& gradient 
       // spread type
       if ( vals.count() > 6 )
       {
-	if ( vals[ 6 ] == "pad" || vals[ 6 ] == "0" )
+	QString spread = vals[ 6 ].trimmed().toLower();
+	if ( spread == "pad" || spread == "0" )
 	  gradient.setSpread( QGradient::PadSpread );
-	else if ( vals[ 6 ] == "repeat" || vals[ 6 ] == "2" )
+	else if ( spread == "repeat" || spread == "2" )
 	  gradient.setSpread( QGradient::RepeatSpread );
-	else if ( vals[ 6 ] == "reflect" || vals[ 6 ] == "1" )
+	else if ( spread == "reflect" || spread == "1" )
 	  gradient.setSpread( QGradient::ReflectSpread );
       }
       // stop points
@@ -1230,11 +1232,12 @@ bool Qtx::stringToConicalGradient( const QString& str, QConicalGradient& gradien
       // spread type
       if ( vals.count() > 4 )
       {
-	if ( vals[ 4 ] == "pad" || vals[ 4 ] == "0" )
+	QString spread = vals[ 4 ].trimmed().toLower();
+	if ( spread == "pad" || spread == "0" )
 	  gradient.setSpread( QGradient::PadSpread );
-	else if ( vals[ 4 ] == "repeat" || vals[ 4 ] == "2" )
+	else if ( spread == "repeat" || spread == "2" )
 	  gradient.setSpread( QGradient::RepeatSpread );
-	else if ( vals[ 4 ] == "reflect" || vals[ 4 ] == "1" )
+	else if ( spread == "reflect" || spread == "1" )
 	  gradient.setSpread( QGradient::ReflectSpread );
       }
       // stop points

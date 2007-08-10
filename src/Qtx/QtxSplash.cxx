@@ -782,9 +782,30 @@ void QtxSplash::readSettings( QtxResourceMgr* resMgr, const QString& section )
   }
 
   // progress bar position and direction
-  int pf;
+  QString pf;
   if ( resMgr->value( resSection, "progress_flags", pf ) ) {
-    setProgressFlags( pf );
+    bool bOk;
+    int fl = pf.toInt( &bOk );
+    if ( !bOk ) {
+      fl = 0;
+      QStringList opts = pf.split( QRegExp( "," ), QString::SkipEmptyParts );
+      for ( int i = 0; i < opts.count(); i++ ) {
+	QString opt = opts[i].trimmed().toLower();
+	if ( opt == "left" )
+	  fl = fl | LeftSide;
+	else if ( opt == "right" )
+	  fl = fl | RightSide;
+	else if ( opt == "top" )
+	  fl = fl | TopSide;
+	else if ( opt == "bottom" )
+	  fl = fl | BottomSide;
+	else if ( opt == "left_to_right" )
+	  fl = fl | LeftToRight;
+	else if ( opt == "right_to_left" )
+	  fl = fl | RightToLeft;
+      }
+    }
+    setProgressFlags( fl );
   }
   
   // opacity
@@ -800,9 +821,34 @@ void QtxSplash::readSettings( QtxResourceMgr* resMgr, const QString& section )
   }
 
   // text alignment
-  int al;
+  QString al;
   if ( resMgr->value( resSection, "alignment", al ) ) {
-    setTextAlignment( al );
+    bool bOk;
+    int fl = al.toInt( &bOk );
+    if ( !bOk ) {
+      fl = 0;
+      QStringList opts = al.split( QRegExp( "," ), QString::SkipEmptyParts );
+      for ( int i = 0; i < opts.count(); i++ ) {
+	QString opt = opts[i].trimmed().toLower();
+	if ( opt == "left" )
+	  fl = fl | Qt::AlignLeft;
+	else if ( opt == "right" )
+	  fl = fl | Qt::AlignRight;
+	else if ( opt == "top" )
+	  fl = fl | Qt::AlignTop;
+	else if ( opt == "bottom" )
+	  fl = fl | Qt::AlignBottom;
+	else if ( opt == "hcenter" )
+	  fl = fl | Qt::AlignHCenter;
+	else if ( opt == "vcenter" )
+	  fl = fl | Qt::AlignVCenter;
+	else if ( opt == "justify" )
+	  fl = fl | Qt::AlignJustify;
+	else if ( opt == "center" )
+	  fl = fl | Qt::AlignCenter;
+      }
+    }
+    setTextAlignment( fl );
   }
 
   // progress color(s)
@@ -821,11 +867,19 @@ void QtxSplash::readSettings( QtxResourceMgr* resMgr, const QString& section )
     if ( colors.count() > 0 ) c1 = QColor( colors[0] );
     if ( colors.count() > 1 ) c2 = QColor( colors[1] );
     int gt;
-    bool bOk;
     if ( colors.count() > 2 ) {
+      bool bOk;
       gt = colors[2].toInt( &bOk );
-      if ( bOk && gt >= QtxSplash::Horizontal && gt <= QtxSplash::Vertical )
-	gradType = (QtxSplash::GradientType)gt;
+      if ( bOk ) {
+	if ( gt >= QtxSplash::Horizontal && gt <= QtxSplash::Vertical )
+	  gradType = (QtxSplash::GradientType)gt;
+      }
+      else {
+	if ( colors[2].toLower() == "horizontal" )
+	  gradType = QtxSplash::Horizontal;
+	else if ( colors[2].toLower() == "vertical" )
+	  gradType = QtxSplash::Vertical;
+      }
     }
     setProgressColors( c1, c2, gradType );
   }

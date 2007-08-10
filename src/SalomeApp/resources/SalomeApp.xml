@@ -23,10 +23,18 @@
   </section>
   <section name="splash" >
     <!-- Splash screen settings -->
-    <parameter name="image"           value="${GUI_ROOT_DIR}/share/salome/resources/gui/icon_about.png" />
-    <parameter name="info"            value="%V" />
-    <parameter name="text_colors"     value="#543AA9|#FFFFFF" />
-    <parameter name="progress_colors" value="#0A4E5F|#B2EFED|1" />
+    <parameter name="image"             value="${GUI_ROOT_DIR}/share/salome/resources/gui/icon_about.png" />
+    <parameter name="constant_info"     value="%A [ %V ]" />
+    <parameter name="text_colors"       value="#5A81BF|#20408F" />
+    <parameter name="hide_on_click"     value="no" />
+    <parameter name="margin"            value="10" />
+    <parameter name="progress_width"    value="20" />
+    <parameter name="progress_flags"    value="bottom,left_to_right" />
+    <parameter name="opacity"           value="0.70" />
+    <parameter name="font"              value="Helvetica,12,bold" />
+    <parameter name="alignment"         value="top,left" />
+    <parameter name="progress_gradient" value="linear|0.3|0.0|1.0|1.0|reflect|0.0|red|0.2|blue|0.5|yellow|0.6|black|1.0|white" />
+    <parameter name="progress_colors"   value="#20408F|#5A81BF|vertical" />
   </section>
   <section name="resources">
     <!-- Resource directories (resource manager)-->

@@ -76,20 +76,22 @@ protected:
   {
     QToolButton::paintEvent( e );
 
-    int s = 4;
-    int m = 2;
+    int s = 10;
+    int m = -2;
     int w = width();
     int h = height();
 
     QStyleOptionButton opt;
     opt.initFrom( this );
+    QRect rect = opt.rect;
+    int x = rect.x(), y = rect.y();
     if ( isDown() )
-      opt.rect = QRect( w - s - m, h - s - m, s, s );
+      opt.rect = QRect( x + w - s - m, y + h - s - m, s, s );
     else
-      opt.rect = QRect( w - s - m - 1, h - s - m - 1, s, s );
+      opt.rect = QRect( x + w - s - m - 1, y + h - s - m - 1, s, s );
 
     QPainter p( this );
-    style()->drawPrimitive( QStyle::PE_IndicatorArrowDown, &opt, &p );
+    style()->drawPrimitive( QStyle::PE_IndicatorSpinDown, &opt, &p );
   }
 };
 

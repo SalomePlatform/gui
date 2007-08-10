@@ -28,10 +28,13 @@
 #include <QWidget>
 #include <QPixmap>
 #include <QLinearGradient>
+#include <QMap>
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
+
+class QtxResourceMgr;
 
 class QTX_EXPORT QtxSplash : public QWidget
 {
@@ -62,7 +65,7 @@ public:
   static QtxSplash* splash( const QPixmap& = QPixmap() );
   
   static void       setStatus( const QString&, const int = -1 );
-  static void       setError( const QString&, const QString& = QString::null, const int = -1 );
+  static void       setError( const QString&, const QString& = QString(), const int = -1 );
   
   void              setPixmap( const QPixmap& );
   QPixmap           pixmap() const;
@@ -108,6 +111,9 @@ public:
   void              setConstantInfo( const QString& info );
   QString           constantInfo() const;
 
+  void              setOption( const QString&, const QString& );
+  QString           option( const QString& ) const;
+
   QString           message() const;
   
   int               error() const;
@@ -115,6 +121,8 @@ public:
   void              finish( QWidget* );
   void              repaint();
   
+  void              readSettings( QtxResourceMgr*, const QString& = QString() );
+
 public slots:
   void              setMessage( const QString&, 
 				const int,
@@ -138,6 +146,9 @@ private:
   QString           fullMessage() const;
 
 private:
+  typedef QMap<QString, QString> OptMap;
+      
+private:
   static QtxSplash* mySplash;
   
   QPixmap           myPixmap;           //!< splash pixmap
@@ -159,6 +170,7 @@ private:
   double            myOpacity;          //!< progress bar / status message opacity
   int               myError;            //!< error code
   bool              myGradientUsed;     //!< 'use custom gradient color scale' flag
+  OptMap            myOptions;          //!< constant info options
 };
 
 #endif

@@ -302,7 +302,7 @@ bool STD_Application::onNewDoc( const QString& name )
 void STD_Application::onOpenDoc()
 {
   // It is preferrable to use OS-specific file dialog box here !!!
-  QString aName = getFileName( true, QString::null, getFileFilter(), QString::null, 0 );
+  QString aName = getFileName( true, QString(), getFileFilter(), QString(), 0 );
   if ( aName.isNull() )
     return;
 
@@ -499,7 +499,7 @@ bool STD_Application::onSaveAsDoc()
   bool isOk = false;
   while ( !isOk )
   {
-    QString aName = getFileName( false, study->studyName(), getFileFilter(), QString::null, 0 );
+    QString aName = getFileName( false, study->studyName(), getFileFilter(), QString(), 0 );
     if ( aName.isNull() )
       return false;
 
@@ -815,7 +815,7 @@ QString STD_Application::getFileName( bool open, const QString& initial, const Q
 						   SUIT_MessageBox::Yes | SUIT_MessageBox::No | SUIT_MessageBox::Cancel, SUIT_MessageBox::Yes );
 	  if ( aAnswer == SUIT_MessageBox::Cancel )
           {     // cancelled
-            aName = QString::null;
+            aName = QString();
 	    isOk = true;
           }
 	  else if ( aAnswer == SUIT_MessageBox::No ) // not save to this file

@@ -29,12 +29,12 @@
 #include <QTabBar>
 #include <QEvent>
 #include <QMap>
-#include <QAbstractButton>
 
 class QAction;
 class QSplitter;
 class QStackedWidget;
 class QRubberBand;
+class QAbstractButton;
 
 class QtxWorkstackArea;
 class QtxWorkstackDrag;
@@ -153,25 +153,6 @@ private:
 
   friend class QtxWorkstackArea;
   friend class QtxWorkstackDrag;
-};
-
-/*
-  Tool window title
-*/
-class QtxWorkstackAreaTitleButton : public QAbstractButton
-{
-  Q_OBJECT
-
-public:
-  QtxWorkstackAreaTitleButton(QWidget *widget);
-
-  QSize sizeHint() const;
-  inline QSize minimumSizeHint() const
-  { return sizeHint(); }
-
-  void enterEvent(QEvent *event);
-  void leaveEvent(QEvent *event);
-  void paintEvent(QPaintEvent *event);
 };
 
 class QtxWorkstackArea : public QFrame

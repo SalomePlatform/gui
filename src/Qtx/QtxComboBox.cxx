@@ -187,7 +187,7 @@ void QtxComboBox::paintClear( QPaintEvent* e )
   setUpdatesEnabled( false );
     
   setItemIcon( curIndex, QIcon() );
-  setItemText( curIndex, QString::null );
+  setItemText( curIndex, QString() );
 
   QComboBox::paintEvent( e );
     

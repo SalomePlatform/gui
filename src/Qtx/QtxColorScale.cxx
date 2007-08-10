@@ -269,7 +269,7 @@ void QtxColorScale::setRange( const double min, const double max )
   myMin = min;
   myMax = max;
   
-  myPrecise = QString::null;
+  myPrecise = QString();
 
   if ( colorMode() == Auto || labelMode() == Auto )
     updateScale();
@@ -299,7 +299,7 @@ void QtxColorScale::setFormat( const QString& format )
     return;
 
   myFormat = format;
-  myPrecise = QString::null;
+  myPrecise = QString();
   if ( colorMode() == Auto )
     updateScale();
 }
@@ -314,7 +314,7 @@ void QtxColorScale::setIntervalsNumber( const int num )
     return;
   
   myInterval = num;
-  myPrecise = QString::null;
+  myPrecise = QString();
   
   updateScale();
 }

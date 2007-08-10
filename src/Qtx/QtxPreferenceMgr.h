@@ -94,7 +94,7 @@ protected:
   bool                      getBoolean( const bool = false ) const;
   QColor                    getColor( const QColor& = QColor() ) const;
   QFont                     getFont( const QFont& = QFont() ) const;
-  QString                   getString( const QString& = QString::null ) const;
+  QString                   getString( const QString& = QString() ) const;
 
   void                      setInteger( const int );
   void                      setDouble( const double );

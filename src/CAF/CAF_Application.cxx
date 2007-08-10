@@ -105,7 +105,7 @@ Handle( TDocStd_Application ) CAF_Application::stdApp() const
 QString CAF_Application::getFileFilter() const
 {
   if ( stdApp().IsNull() )
-    return QString::null;
+    return QString();
 
   TColStd_SequenceOfExtendedString formats;
   stdApp()->Formats( formats );
@@ -135,7 +135,7 @@ QString CAF_Application::getFileFilter() const
   }
 
   if ( wildCards.isEmpty() )
-    return QString::null;
+    return QString();
 
   QStringList filters;
   for ( QMap<QString, QStringList>::ConstIterator it = wildCards.begin(); it != wildCards.end(); ++it )

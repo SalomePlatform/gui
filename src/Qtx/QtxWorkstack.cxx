@@ -34,6 +34,7 @@
 #include <QApplication>
 #include <QInputDialog>
 #include <QStackedWidget>
+#include <QAbstractButton>
 #include <QPainter>
 #include <QStyleOption>
 
@@ -240,64 +241,119 @@ void QtxWorkstackDrag::startDrawRect()
 }
 
 
-QtxWorkstackAreaTitleButton::QtxWorkstackAreaTitleButton(QWidget *widget)
-: QAbstractButton(widget)
+/*
+  \class CloseButton
+  \brief Workstack area close button.
+  \internal
+*/
+class CloseButton : public QAbstractButton
 {
- setFocusPolicy(Qt::NoFocus);
+public:
+  CloseButton( QWidget* );
+
+  QSize        sizeHint() const;
+  QSize        minimumSizeHint() const;
+
+  void enterEvent( QEvent* );
+  void leaveEvent( QEvent* );
+  void paintEvent( QPaintEvent* );
+};
+
+/*!
+  \brief Constructor
+  \internal
+  \param parent parent widget
+*/
+CloseButton::CloseButton( QWidget* parent )
+: QAbstractButton( parent )
+{
+ setFocusPolicy( Qt::NoFocus );
 }
 
-QSize QtxWorkstackAreaTitleButton::sizeHint() const
+/*!
+  \brief Get appropriate size for the button.
+  \internal
+  \return size value
+*/
+QSize CloseButton::sizeHint() const
 {
   ensurePolished();
   int dim = 0;
-  if( !icon().isNull() ) {
+  if( !icon().isNull() ) 
+  {
     const QPixmap pm = icon().pixmap( style()->pixelMetric( QStyle::PM_SmallIconSize ),
                                       QIcon::Normal );
-    dim = qMax(pm.width(), pm.height());
+    dim = qMax( pm.width(), pm.height() );
   }
   return QSize( dim + 4, dim + 4 );
 }
-void QtxWorkstackAreaTitleButton::enterEvent( QEvent *event )
+
+/*!
+  \brief Get minimum appropriate size for the button.
+  \internal
+  \return minimum size value
+*/
+QSize CloseButton::minimumSizeHint() const
+{ 
+  return sizeHint(); 
+}
+
+/*!
+  \brief Process mouse enter event.
+  \internal
+  \param event mouse enter event
+*/
+void CloseButton::enterEvent( QEvent *event )
 {
   if ( isEnabled() )
     update();
   QAbstractButton::enterEvent( event );
 }
 
-void QtxWorkstackAreaTitleButton::leaveEvent( QEvent *event )
+/*!
+  \brief Process mouse leave event.
+  \internal
+  \param event mouse leave event
+*/
+void CloseButton::leaveEvent( QEvent *event )
 {
   if( isEnabled() )
     update();
   QAbstractButton::leaveEvent( event );
 }
 
-void QtxWorkstackAreaTitleButton::paintEvent( QPaintEvent* )
+/*!
+  \brief Process paint event.
+  \internal
+  \param event paint event
+*/
+void CloseButton::paintEvent( QPaintEvent* )
 {
-  QPainter p(this);
+  QPainter p( this );
 
   QRect r = rect();
   QStyleOption opt;
-  opt.init(this);
+  opt.init( this );
   opt.state |= QStyle::State_AutoRaise;
-  if (isEnabled() && underMouse() && !isChecked() && !isDown())
+  if ( isEnabled() && underMouse() && !isChecked() && !isDown() )
     opt.state |= QStyle::State_Raised;
-  if (isChecked())
+  if ( isChecked() )
     opt.state |= QStyle::State_On;
-  if (isDown())
+  if ( isDown() )
     opt.state |= QStyle::State_Sunken;
-  style()->drawPrimitive(QStyle::PE_PanelButtonTool, &opt, &p, this);
+  style()->drawPrimitive( QStyle::PE_PanelButtonTool, &opt, &p, this );
 
-  int shiftHorizontal = opt.state & QStyle::State_Sunken ? style()->pixelMetric(QStyle::PM_ButtonShiftHorizontal, &opt, this) : 0;
-  int shiftVertical = opt.state & QStyle::State_Sunken ? style()->pixelMetric(QStyle::PM_ButtonShiftVertical, &opt, this) : 0;
+  int shiftHorizontal = opt.state & QStyle::State_Sunken ? style()->pixelMetric( QStyle::PM_ButtonShiftHorizontal, &opt, this ) : 0;
+  int shiftVertical = opt.state & QStyle::State_Sunken ? style()->pixelMetric( QStyle::PM_ButtonShiftVertical, &opt, this ) : 0;
 
-  r.adjust(2, 2, -2, -2);
-  r.translate(shiftHorizontal, shiftVertical);
+  r.adjust( 2, 2, -2, -2 );
+  r.translate( shiftHorizontal, shiftVertical );
 
   QPixmap pm = icon().pixmap( style()->pixelMetric( QStyle::PM_SmallIconSize ), isEnabled() ?
                               underMouse() ? QIcon::Active : QIcon::Normal
-                                           : QIcon::Disabled,
-                              isDown() ? QIcon::On : QIcon::Off);
-  style()->drawItemPixmap(&p, r, Qt::AlignCenter, pm);
+			      : QIcon::Disabled,
+                              isDown() ? QIcon::On : QIcon::Off );
+  style()->drawItemPixmap( &p, r, Qt::AlignCenter, pm );
 }
 
 /*!
@@ -328,7 +384,7 @@ QtxWorkstackArea::QtxWorkstackArea( QWidget* parent )
   myBar = new QtxWorkstackTabBar( top );
   tl->addWidget( myBar, 1 );
 
-  QtxWorkstackAreaTitleButton* close = new QtxWorkstackAreaTitleButton( top );
+  CloseButton* close = new CloseButton( top );
   close->setIcon( style()->standardIcon( QStyle::SP_TitleBarCloseButton ) );
   myClose = close;
   tl->addWidget( myClose );

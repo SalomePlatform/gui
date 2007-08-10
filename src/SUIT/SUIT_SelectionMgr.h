@@ -40,14 +40,14 @@ public:
   virtual ~SUIT_SelectionMgr();
 
   void            clearSelected();
-  virtual void    selected( SUIT_DataOwnerPtrList&, const QString& = QString::null ) const;
+  virtual void    selected( SUIT_DataOwnerPtrList&, const QString& = QString() ) const;
   virtual void    setSelected( const SUIT_DataOwnerPtrList&, const bool = false );
 
   void            selectors( QList<SUIT_Selector*>& ) const;
   void            selectors( const QString&, QList<SUIT_Selector*>& ) const;
 
 
-  void            setEnabled( const bool, const QString& = QString::null );
+  void            setEnabled( const bool, const QString& = QString() );
 
 
   bool            hasSelectionMode( const int ) const;

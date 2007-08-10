@@ -118,7 +118,7 @@ public:
 protected:
   static int     intValue( const ItemAttributes&, const QString&, const int );
   static QString strValue( const ItemAttributes&, const QString&,
-			   const QString& = QString::null );
+			   const QString& = QString() );
 private:
   QtxActionMgr::Reader*  myReader;  //!< actions reader
 };
@@ -130,7 +130,7 @@ public:
   virtual ~Reader();
 
   QStringList    options() const;
-  QString        option( const QString&, const QString& = QString::null ) const;
+  QString        option( const QString&, const QString& = QString() ) const;
   void           setOption( const QString&, const QString& );
 
   virtual bool   read( const QString&, Creator& ) const = 0;

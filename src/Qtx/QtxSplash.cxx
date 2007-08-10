@@ -21,6 +21,7 @@
 //
 
 #include "QtxSplash.h"
+#include "QtxResourceMgr.h"
 
 #include <QApplication>
 #include <QPainter>
@@ -652,6 +653,42 @@ QString QtxSplash::constantInfo() const
 }
 
 /*!
+  \brief Set constant information option value.
+
+  The option is a part of the constant information text,
+  which is replaced at the time of the displaying.
+
+  The following options are supported:
+  - %A - could be used as application name
+  - %V - could be used as application version
+  - %L - could be used as application license information
+  - %C - could be used as application copyright information
+
+  \param name option name
+  \param option value
+  \sa option()
+*/
+void QtxSplash::setOption( const QString& name, const QString& value )
+{
+  myOptions[ name ] = value;
+  repaint();
+}
+
+/*!
+  \brief Get constant information option value.
+  \param name option name
+  \return option value or empty string if option is not set
+  \sa setOption()
+*/
+QString QtxSplash::option( const QString& name ) const
+{
+  QString val;
+  if ( myOptions.contains( name ) )
+    val = myOptions[ name ];
+  return val;
+}
+
+/*!
   \brief Get current status message.
   \return status message
   \sa setMessage(), constantInfo(), setConstantInfo()
@@ -706,6 +743,115 @@ void QtxSplash::repaint()
 }
 
 /*!
+  \brief Read splash settings from the resources manager.
+  \param resMgr resources manager
+  \param section resources file section name (if empty, the default name is used).
+*/
+void QtxSplash::readSettings( QtxResourceMgr* resMgr, const QString& section )
+{
+  QString resSection = section.isEmpty() ? "splash" : section;
+  
+  // pixmap
+  QString pxname;
+  if ( resMgr->value( resSection, "image", pxname ) ) {
+    QPixmap px( pxname );
+    if ( !px.isNull() )
+      setPixmap( px );
+  }
+
+  // hide-on-click
+#ifdef _DEBUG_
+  setHideOnClick( true );
+#else
+  bool bHide;
+  if ( resMgr->value( resSection, "hide_on_click", bHide ) ) {
+    setHideOnClick( bHide );
+  }
+#endif
+
+  // margin
+  int m;
+  if ( resMgr->value( resSection, "margin", m ) ) {
+    setMargin( m );
+  }
+
+  // progress bar width
+  int pw;
+  if ( resMgr->value( resSection, "progress_width", pw ) ) {
+    setProgressWidth( pw );
+  }
+
+  // progress bar position and direction
+  int pf;
+  if ( resMgr->value( resSection, "progress_flags", pf ) ) {
+    setProgressFlags( pf );
+  }
+  
+  // opacity
+  double op;
+  if ( resMgr->value( resSection, "opacity", op ) ) {
+    setOpacity( op );
+  }
+
+  // font
+  QFont f;
+  if ( resMgr->value( resSection, "font", f ) ) {
+    setFont( f );
+  }
+
+  // text alignment
+  int al;
+  if ( resMgr->value( resSection, "alignment", al ) ) {
+    setTextAlignment( al );
+  }
+
+  // progress color(s)
+  QString pc;
+  QLinearGradient grad;
+  if ( resMgr->value( resSection, "progress_gradient", grad ) ) {
+    // gradient-colored progress bar
+    setProgressGradient( grad );
+  }
+  else if ( resMgr->value( resSection, "progress_color",  pc ) || 
+	    resMgr->value( resSection, "progress_colors", pc ) ) {
+    // one/two-colored progress bar
+    QStringList colors = pc.split( "|", QString::SkipEmptyParts );
+    QColor c1, c2;
+    QtxSplash::GradientType gradType = QtxSplash::Vertical;
+    if ( colors.count() > 0 ) c1 = QColor( colors[0] );
+    if ( colors.count() > 1 ) c2 = QColor( colors[1] );
+    int gt;
+    bool bOk;
+    if ( colors.count() > 2 ) {
+      gt = colors[2].toInt( &bOk );
+      if ( bOk && gt >= QtxSplash::Horizontal && gt <= QtxSplash::Vertical )
+	gradType = (QtxSplash::GradientType)gt;
+    }
+    setProgressColors( c1, c2, gradType );
+  }
+
+  // text color(s)
+  QString tc;
+  if ( resMgr->value( resSection, "text_color",  tc ) || 
+       resMgr->value( resSection, "text_colors", tc ) ) {
+    QStringList colors = tc.split( "|", QString::SkipEmptyParts );
+    QColor c1, c2;
+    if ( colors.count() > 0 )
+      c1 = QColor( colors[0] );
+    if ( colors.count() > 1 )
+      c2 = QColor( colors[1] );
+    setTextColors( c1, c2 );
+  }
+
+  // const info
+  QString cinfo;
+  if ( resMgr->value( resSection, "constant_info", cinfo, false ) ||
+       resMgr->value( resSection, "info", cinfo, false ) ) {
+    setConstantInfo( cinfo.split( "|", QString::KeepEmptyParts ).join( "\n" ) );
+  }
+}
+
+/*!
   \brief Set status message for the splash screen and define its color 
   and aligment flags.
   \param msg status message
@@ -742,7 +888,7 @@ void QtxSplash::setMessage( const QString& msg )
 */
 void QtxSplash::clear()
 {
-  myMessage = QString::null;
+  myMessage.clear();
   repaint();
 }
 
@@ -971,8 +1117,15 @@ void QtxSplash::setError( const int code )
 QString QtxSplash::fullMessage() const
 {
   QStringList info;
-  if ( !myInfo.isEmpty() )
-    info << myInfo;
+
+  QString cinfo = myInfo;
+  cinfo = cinfo.replace( QRegExp( "%A" ), option( "%A" ) );
+  cinfo = cinfo.replace( QRegExp( "%V" ), option( "%V" ) );
+  cinfo = cinfo.replace( QRegExp( "%L" ), option( "%L" ) );
+  cinfo = cinfo.replace( QRegExp( "%C" ), option( "%C" ) );
+
+  if ( !cinfo.isEmpty() )
+    info << cinfo;
   if ( !myMessage.isEmpty() )
     info << myMessage;
   return info.join( "\n" );

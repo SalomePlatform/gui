@@ -140,7 +140,7 @@ protected:
   virtual bool      openTransaction();
   virtual bool      abortTransaction();
   virtual bool      hasTransaction() const;
-  virtual bool      commitTransaction( const QString& = QString::null );
+  virtual bool      commitTransaction( const QString& = QString() );
 
   void              setExecStatus( const int );
 

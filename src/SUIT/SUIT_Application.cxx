@@ -94,7 +94,7 @@ SUIT_Study* SUIT_Application::activeStudy() const
 */
 QString SUIT_Application::applicationVersion() const
 {
-  return QString::null;
+  return QString();
 }
 
 /*!
@@ -195,7 +195,7 @@ void SUIT_Application::onInfoClear()
   bool changed = !myStatusLabel->text().isEmpty();
   myStatusLabel->clear();
   if ( changed )
-    emit infoChanged( QString::null );
+    emit infoChanged( QString() );
 }
 
 /*!

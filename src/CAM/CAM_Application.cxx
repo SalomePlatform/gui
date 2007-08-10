@@ -562,7 +562,7 @@ void CAM_Application::readModuleList()
     }
   }
   if ( modList.isEmpty() ) {
-    QString mods = resMgr->stringValue( "launch", "modules", QString::null );
+    QString mods = resMgr->stringValue( "launch", "modules", QString() );
     modList = mods.split( ",", QString::SkipEmptyParts );
   }
 
@@ -572,7 +572,7 @@ void CAM_Application::readModuleList()
     if ( modName.isEmpty() )
       continue;
 
-    QString modTitle = resMgr->stringValue( *it, "name", QString::null );
+    QString modTitle = resMgr->stringValue( *it, "name", QString() );
     if ( modTitle.isEmpty() )
       {
 	printf( "****************************************************************\n" );
@@ -582,9 +582,9 @@ void CAM_Application::readModuleList()
 	continue;
       }
 
-    QString modIcon = resMgr->stringValue( *it, "icon", QString::null );
+    QString modIcon = resMgr->stringValue( *it, "icon", QString() );
 
-    QString modLibrary = resMgr->stringValue( *it, "library", QString::null ).trimmed();
+    QString modLibrary = resMgr->stringValue( *it, "library", QString() ).trimmed();
     if ( !modLibrary.isEmpty() )
     {
       modLibrary = SUIT_Tools::file( modLibrary.trimmed() );

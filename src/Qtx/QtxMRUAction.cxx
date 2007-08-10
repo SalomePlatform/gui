@@ -261,7 +261,7 @@ void QtxMRUAction::loadLinks( QtxResourceMgr* resMgr, const QString& section, co
     if ( !(*it).startsWith( itemPrefix ) )
       continue;
 
-    QString link = resMgr->stringValue( section, *it, QString::null );
+    QString link = resMgr->stringValue( section, *it, QString() );
     if ( link.isEmpty() || map.contains( link ) )
       continue;
 
@@ -299,7 +299,7 @@ void QtxMRUAction::saveLinks( QtxResourceMgr* resMgr, const QString& section, co
     if ( !(*it).startsWith( itemPrefix ) )
       continue;
 
-    QString link = resMgr->stringValue( section, *it, QString::null );
+    QString link = resMgr->stringValue( section, *it, QString() );
     if ( !link.isEmpty() && !map.contains( link ) )
     {
       lst.append( link );

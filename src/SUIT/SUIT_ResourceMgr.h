@@ -26,7 +26,7 @@
 class SUIT_EXPORT SUIT_ResourceMgr : public QtxResourceMgr
 {
 public:
-  SUIT_ResourceMgr( const QString&, const QString& = QString::null );
+  SUIT_ResourceMgr( const QString&, const QString& = QString() );
   virtual ~SUIT_ResourceMgr();
 
   virtual QString version() const;

@@ -47,6 +47,9 @@
 class QObject;
 class QWidget;
 class QCompleter;
+class QLinearGradient;
+class QRadialGradient;
+class QConicalGradient;
 
 typedef QList<int>    QIntList;       //!< list of int values
 typedef QList<short>  QShortList;     //!< list of short int values
@@ -135,6 +138,16 @@ public:
   static QImage      transparentImage( const int, const int, const int = -1 );
   static QPixmap     transparentPixmap( const int, const int, const int = -1 );
   static QPixmap     composite( const QPixmap&, const int, const int, const QPixmap& = QPixmap() );
+
+  static QString     colorToString( const QColor& );
+  static bool        stringToColor( const QString&, QColor& );
+
+  static QString     gradientToString( const QLinearGradient& );
+  static QString     gradientToString( const QRadialGradient& );
+  static QString     gradientToString( const QConicalGradient& );
+  static bool        stringToLinearGradient( const QString&, QLinearGradient& );
+  static bool        stringToRadialGradient( const QString&, QRadialGradient& );
+  static bool        stringToConicalGradient( const QString&, QConicalGradient& );
 };
 
 #endif

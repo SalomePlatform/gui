@@ -1754,9 +1754,6 @@ int Style_Salome::pixelMetric( PixelMetric metric, const QStyleOption* opt,
     case PM_DockWidgetTitleMargin:
       aRes = 2;
     break;
-    case PM_ToolBarIconSize:
-      aRes = pixelMetric(PM_SmallIconSize, opt, w);
-    break;
     case PM_SplitterWidth:
       aRes = 6;
     break;

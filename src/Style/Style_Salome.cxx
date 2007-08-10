@@ -535,7 +535,7 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
           QRect aRect = subControlRect( cc, opt, SC_GroupBoxFrame, w);
           QColor aBrdTopCol = getColor( Style_Model::border_tab_top_clr ),
                  aBrdBotCol = getColor( Style_Model::border_tab_bot_clr );
-          Style_Tools::shadowRect( p, aRect, getDblValue( Style_Model::edit_rad ), 0.,
+          Style_Tools::shadowRect( p, aRect, getDblValue( Style_Model::frame_rad ), 0.,
                                    SHADOW, Style_Tools::All,
                                    getColor( Style_Model::fld_light_clr ),
                                    getColor( Style_Model::fld_dark_clr ), aBrdTopCol,
@@ -735,7 +735,7 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
             aDarkColor = getColor( Style_Model::high_brd_wdg_clr );
           }
           Style_Tools::tabRect( p, tabRect, (int)tab->shape,
-                                getDblValue( Style_Model::edit_rad ),
+                                getDblValue( Style_Model::frame_rad ),
                                 DELTA_H_TAB, aColor, aDarkColor,
                                 aBrdTopCol, aBrdBotCol, isSelected, isLast, isHover );
           p->restore();
@@ -1176,9 +1176,17 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
           QPixmap pixmap = cb->currentIcon.pixmap(cb->iconSize, mode);
           QRect iconRect(editRect);
           iconRect.setWidth(cb->iconSize.width() + 4);
+          QRect alignRect = editRect;
+          if ( cb->editable ) {
+            int aHalfRect = (int)Style_Tools::getMaxRect( iconRect, 
+                               (int)getDblValue( Style_Model::edit_rad )/2 );
+            alignRect.setLeft( alignRect.left() + aHalfRect );
+            alignRect.setRight( alignRect.right() - aHalfRect );
+          }
           iconRect = alignedRect(QApplication::layoutDirection(),
                                  Qt::AlignLeft | Qt::AlignVCenter,
-                                 iconRect.size(), editRect);
+                                 iconRect.size(), alignRect);
+ 
 	  // Here's absent filling of pixmap on basic color for editable comboBox
           drawItemPixmap(p, iconRect, Qt::AlignCenter, pixmap);
 
@@ -1276,7 +1284,6 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
     drawBackground( p, r, true, true, horiz );
     p->setRenderHint( QPainter::Antialiasing, false );
     drawBorder( p, r, horiz );
-      //QWindowsStyle::drawControl( ce, opt, p, w );
     break;
   }
   default:
@@ -1334,7 +1341,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
                aBrdBotCol = getColor( Style_Model::border_tab_bot_clr );
         bool isHover = hasHover() && (opt->state & State_Enabled) && (opt->state & State_MouseOver);
         Style_Tools::tabRect( p, opt->rect, (int)tabBar->shape(),
-                              getDblValue( Style_Model::edit_rad ), DELTA_H_TAB,
+                              getDblValue( Style_Model::frame_rad ), DELTA_H_TAB,
                               pal.color( QPalette::Window ),
                               getColor( Style_Model::border_bot_clr ),
                               aBrdTopCol, aBrdBotCol, false, false, isHover, true );
@@ -1442,6 +1449,8 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         QColor aColor = getColor( Style_Model::pointer_clr );
         if ( !(opt->state & State_Enabled ) )
           aColor = opt->palette.mid().color();
+        if ( opt->state & State_Selected )
+          aColor = opt->palette.highlightedText().color();
 
         p->setPen( QPen( aColor ) );
         p->drawLines(lines, 11);
@@ -1535,20 +1544,29 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
           break;
       }
       if ( pe == PE_FrameLineEdit ) {
-        QColor aBrdTopCol = getColor( Style_Model::border_top_clr ),
+	QColor aBrdTopCol = getColor( Style_Model::border_top_clr ),
                aBrdBotCol = getColor( Style_Model::border_bot_clr );
         bool hover = hasHover() && (opt->state & State_Enabled) && (opt->state & State_MouseOver);
         double aRad = getDblValue(Style_Model::edit_rad);
         if ( hover )
           drawHoverRect(p, opt->rect, aRad, Style_Tools::All, true);
-        else
+        else {
           Style_Tools::shadowRect( p, opt->rect, aRad, LINE_GR_MARGIN, SHADOW,
                                    Style_Tools::All, getColor( Style_Model::fld_light_clr ),
                                    getColor( Style_Model::fld_dark_clr ), aBrdTopCol, aBrdBotCol,
                                    getBoolValue( Style_Model::all_antialized ), false );
+        }
       }
-      else
-        QWindowsStyle::drawPrimitive( pe, opt, p, w );
+      else {
+        if (const QStyleOptionFrame *panel = qstyleoption_cast<const QStyleOptionFrame *>(opt)) {
+          QRect rect = panel->rect.adjusted( panel->lineWidth,  panel->lineWidth,
+                                             -panel->lineWidth, -panel->lineWidth);
+          if (panel->lineWidth > 0) // QLineEdit
+            drawPrimitive( PE_FrameLineEdit, panel, p, w );
+          else // not QLineEdit
+            p->fillRect(rect, panel->palette.brush(QPalette::Base));
+         }
+      }
       break;
     }
     case PE_FrameTabWidget: {
@@ -1564,7 +1582,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
           aRoundType = aRoundType | Style_Tools::TopRight;
         QColor aBrdTopCol = getColor( Style_Model::border_tab_top_clr ),
                aBrdBotCol = getColor( Style_Model::border_tab_bot_clr );
-        Style_Tools::shadowRect( p, opt->rect, getDblValue( Style_Model::edit_rad ),
+        Style_Tools::shadowRect( p, opt->rect, getDblValue( Style_Model::frame_rad ),
                                  0., SHADOW, aRoundType,
                                  getColor( Style_Model::fld_light_clr ),
                                  getColor( Style_Model::pal_dark_clr ),
@@ -1616,7 +1634,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         bool isHover = hasHover() && (opt->state & State_Enabled) &&
                                      (opt->state & State_MouseOver);
         QPainterPath aSelPath = Style_Tools::tabRect( p, aSelRect, (int)tbb->shape,
-                            getDblValue( Style_Model::edit_rad ), DELTA_H_TAB, aColor, aColor,
+                            getDblValue( Style_Model::frame_rad ), DELTA_H_TAB, aColor, aColor,
                             aColor, aColor, isSelected, isLast, isHover, false, false );
         if ( !aSelPath.isEmpty() )
           aSelRect = aSelPath.controlPointRect().toRect();
@@ -1730,10 +1748,8 @@ int Style_Salome::pixelMetric( PixelMetric metric, const QStyleOption* opt,
     case PM_DockWidgetFrameWidth:
       aRes = 1;
     break;
-    case PM_DockWidgetSeparatorExtent: {
-      int aValue = (int)getDblValue( Style_Model::dock_wdg_sep_extent );
-      aRes = aValue >= 0 ? aValue : 6;
-    }
+    case PM_DockWidgetSeparatorExtent:
+      aRes = 8;
     break;
     case PM_DockWidgetTitleMargin:
       aRes = 2;
@@ -1776,7 +1792,20 @@ QSize Style_Salome::sizeFromContents( ContentsType ct, const QStyleOption* opt,
         sz.setHeight( sz.height() + aValue );
         break;
       }
-    default:
+      case CT_ComboBox:
+        if (const QStyleOptionComboBox *cmb = qstyleoption_cast<const QStyleOptionComboBox *>(opt)) {
+          QRect res = QRect( 0, 0, sz.width(), sz.height() );
+          int aHalfRect = (int)Style_Tools::getMaxRect( res, 
+                             (int)getDblValue( Style_Model::edit_rad )/2 ); // left value
+          QRect old_arrow = QWindowsStyle::subControlRect( CC_ComboBox, cmb,
+                                                           SC_ComboBoxArrow, w );
+          int aDelta = res.height() - old_arrow.width(); // right value
+          if ( cmb->editable )
+            aDelta += aHalfRect; // for right of line edit internal
+          sz.setWidth( res.width() + aDelta + aHalfRect );
+        }
+	break;
+      default:
       break;
   }
   return sz;
@@ -1822,7 +1851,6 @@ int Style_Salome::styleHint( StyleHint hint, const QStyleOption* opt, const QWid
 QRect Style_Salome::subControlRect( ComplexControl cc, const QStyleOptionComplex* opt,
                                    SubControl sc, const QWidget* wid ) const
 {
-  int aHalfRect = (int)getDblValue( Style_Model::edit_rad )/2;
   QRect res = QWindowsStyle::subControlRect( cc, opt, sc, wid );
   switch ( cc ) {
     case CC_SpinBox: {
@@ -1835,21 +1863,29 @@ QRect Style_Salome::subControlRect( ComplexControl cc, const QStyleOptionComplex
       }
       else if ( sc==QStyle::SC_SpinBoxEditField ) {
         res.setWidth( w-h );
-        res.setTopLeft( QPoint( res.x()+aHalfRect, res.y()-SHADOW ) );
+        res.setTopLeft( QPoint( res.x(), res.y()-SHADOW ) );
       }
       break;
     }
     case CC_ComboBox: {
       if (const QStyleOptionComboBox *cb = qstyleoption_cast<const QStyleOptionComboBox *>(opt)) {
         res = cb->rect;
+        int aHalfRect = (int)Style_Tools::getMaxRect( res, (int)getDblValue( Style_Model::edit_rad )/2 );
         int x = res.x(), w = res.width(), h = res.height();
-        if ( sc==SC_ComboBoxArrow ) {
-          res.setX( x+w-h );
-          res.setWidth( h );
-        }
-        else if ( sc==QStyle::SC_ComboBoxEditField ) {
-          res.setWidth( w-h );
-          res.setTopLeft( QPoint( res.x()+aHalfRect, res.y()-SHADOW ) );
+        switch( sc ) {
+          case SC_ComboBoxEditField: {
+            res.setWidth( w-h );
+            int aX = res.x();
+            if ( !cb->editable )
+              aX += aHalfRect;
+            res.setTopLeft( QPoint( aX, res.y()-SHADOW ) );
+            break;
+          }
+          case SC_ComboBoxArrow: {
+            res.setX( x+w-h );
+            res.setWidth( h );
+            break;
+          }
         }
       }
       break;
@@ -1900,8 +1936,8 @@ QRect Style_Salome::subControlRect( ComplexControl cc, const QStyleOptionComplex
 QRect Style_Salome::subElementRect( SubElement se, const QStyleOption* opt,
                                    const QWidget* wid ) const
 {
-  int aHalfRect = (int)getDblValue( Style_Model::edit_rad )/2;
   QRect res = QWindowsStyle::subElementRect( se, opt, wid );
+  int aHalfRect = (int)Style_Tools::getMaxRect( res, (int)getDblValue( Style_Model::edit_rad )/2 );
   int w = res.width(), h = res.height();
   switch ( se ) {
     case SE_ComboBoxFocusRect: {
@@ -2061,8 +2097,8 @@ void Style_Salome::drawHandle( QPainter* p, const QRect& r, bool horiz, bool isR
     return;
   int c_hor = (int)(r.width()/d_hor)-1;
   int c_ver = (int)(r.height()/d_ver)-1;
-  //if ( c_hor <= 0 || c_ver <= 0 )
-  //  return;
+  if ( c_hor+1 <= 0 || c_ver+1 <= 0 )
+    return;
   // correction for delta value
   d_hor = r.width()/(c_hor+1);
   d_ver = r.height()/(c_ver+1);
@@ -2111,26 +2147,30 @@ void Style_Salome::drawBackground( QPainter* p, const QRect& r, const bool fill,
   if ( !getBoolValue( Style_Model::is_lines ) )
     return;
   QColor c = getColor( Style_Model::lines_clr );
-  c.setAlpha( 40 );
+  int anAlpha = (int)( 255*( 1 - getDblValue( Style_Model::lines_transp )/100 ) ); 
+
+  c.setAlpha( anAlpha );
   p->setPen( c );
   p->setRenderHint( QPainter::Antialiasing );
   int aLines = getIntValue( Style_Model::lines_type );
-  if ( aLines == 0 ) {
+  int x = r.x(), y = r.y(), left = r.left(), top = r.top();
+  int w = r.width(), h = r.height();
+  QVector<QLine> lines;
+  if ( aLines == 0 ) { // horizontal lines
     const int d = 3;
-    int w = r.width();
-    int h = r.height();
     for( int i=0; i<=h; i+=d )
-      p->drawLine( r.x(), r.y()+i, w, r.y()+i );
+      lines.append( QLine( x, y+i, w, r.y()+i ) );
   }
   else if ( aLines == 1 ) {
     const int d = 5;
-    int w = r.width()/d*d;
-    int h = r.height()/d*d;
+    w = w/d*d;
+    h = h/d*d;
     for( int i=0; i<=w; i+=d )
-      p->drawLine( r.x()+i, r.y(), r.x(), r.y()+i );
+      lines.append( QLine( x+i, y, x, y+i ) );
     for( int i=0; i<h; i+=d )
-      p->drawLine( r.left()+w-i, r.top()+h, r.left()+w, r.top()+h-i );
+      lines.append( QLine( left+w-i, top+h, left+w, top+h-i ) );
   }
+  p->drawLines( lines );
 }
 
 void Style_Salome::drawBorder( QPainter* p, const QRect& r, bool horiz ) const 

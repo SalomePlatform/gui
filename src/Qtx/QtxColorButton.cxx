@@ -128,6 +128,7 @@ void QtxColorButton::setColor( const QColor& c )
   myColors.insert( this, c );
   updateState();
   update();
+  updateButton( this );
 }
 
 /*!

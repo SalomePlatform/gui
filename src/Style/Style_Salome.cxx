@@ -165,6 +165,10 @@ Style_Salome::Style_Salome()
 {
   myModel = new Style_Model();
   myModel->setDefaults( qApp );
+
+  QPalette ttipPal = QToolTip::palette(); // from current system
+  myTTipWnd = ttipPal.color( QPalette::Window );
+  myTTipText = ttipPal.color( QPalette::Text );
 }
 
 Style_Salome::~Style_Salome()
@@ -2016,21 +2020,28 @@ void Style_Salome::updatePaletteColors()
   aPal.setColor(QPalette::Disabled, QPalette::Highlight, aPal.highlight().color() );
   aPal.setColor(QPalette::Disabled, QPalette::HighlightedText, aPal.highlightedText().color() );
   aPal.setColor(QPalette::Disabled, QPalette::Base, bg);
-
   QApplication::setPalette( aPal );
 
-  if ( getBoolValue( Style_Model::ttip_is_change ) ) {
-    QPalette tiplabel  = aPal;
-    if ( getColor( Style_Model::ttip_bg_clr ).isValid() ) {
-      QColor aColor = getColor( Style_Model::ttip_bg_clr );
-      tiplabel.setColor(QPalette::All, QPalette::Button, aColor);
-      tiplabel.setColor(QPalette::All, QPalette::Window, aColor);
+  QColor aWndCol = myTTipWnd,
+         aTextCol = myTTipText;
+  if( getBoolValue( Style_Model::ttip_is_change ) ) {
+    if ( getColor( Style_Model::ttip_bg_clr ).isValid() )
+      aWndCol = getColor( Style_Model::ttip_bg_clr );
+    if ( getColor( Style_Model::ttip_text_clr ).isValid() )
+      aTextCol  = getColor( Style_Model::ttip_text_clr );
+  }
+  QPalette tiplabel  = QToolTip::palette();
+  bool isChangeWnd = aWndCol != tiplabel.color( QPalette::Window ),
+       isChangeTxt = aTextCol != tiplabel.color( QPalette::Text );
+  if ( isChangeWnd || isChangeTxt ) {
+    if ( isChangeWnd ) {
+      tiplabel.setColor(QPalette::Window, aWndCol);
+      tiplabel.setColor(QPalette::Button, aWndCol);
     }
-    if ( getColor( Style_Model::ttip_text_clr ).isValid() ) {
-      QColor aColor = getColor( Style_Model::ttip_text_clr );
-      tiplabel.setColor(QPalette::All, QPalette::Text, aColor);
-      tiplabel.setColor(QPalette::All, QPalette::WindowText, aColor);
-      tiplabel.setColor(QPalette::All, QPalette::ButtonText, aColor);
+    if ( isChangeTxt ) {
+      tiplabel.setColor(QPalette::Text, aTextCol);
+      tiplabel.setColor(QPalette::WindowText, aTextCol);
+      tiplabel.setColor(QPalette::ButtonText, aTextCol);
     }
     const QColor fg = tiplabel.foreground().color(), btn = tiplabel.button().color();
     QColor disabled((fg.red()+btn.red())/2,(fg.green()+btn.green())/2,

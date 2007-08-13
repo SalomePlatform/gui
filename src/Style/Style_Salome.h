@@ -89,6 +89,7 @@ private:
 
 private:
   Style_Model*    myModel;
+  QColor          myTTipWnd, myTTipText;
 };
 
 #endif // STYLE_SALOME_H

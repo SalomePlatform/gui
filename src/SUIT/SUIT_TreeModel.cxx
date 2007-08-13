@@ -536,6 +536,7 @@ QVariant SUIT_TreeModel::data( const QModelIndex& index, int role ) const
       c = obj->color( SUIT_DataObject::Background, index.column() );
       if ( !c.isValid() ) // default value
 	c = QApplication::palette().color( QPalette::Base );
+      c.setAlpha( 0 );
       val = c; 
       break;
     case ForegroundRole:
@@ -1367,8 +1368,11 @@ void SUIT_ItemDelegate::paint( QPainter* painter,
     // Note: we check into account only custom roles; other roles are process
     //       correctly by the QItemDelegate class
     QVariant val = index.data( SUIT_TreeModel::BaseColorRole );
-    if ( val.isValid() && val.value<QColor>().isValid() )
+    if ( val.isValid() && val.value<QColor>().isValid() ) {
+      QColor aBase = val.value<QColor>();
+      aBase.setAlpha( 0 );
       opt.palette.setBrush( QPalette::Base, val.value<QColor>() );
+    }
     val = index.data( SUIT_TreeModel::TextColorRole );
     if ( val.isValid() && val.value<QColor>().isValid() )
       opt.palette.setBrush( QPalette::Text, val.value<QColor>() );

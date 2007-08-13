@@ -235,17 +235,17 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
         QColor aBrdTopCol = getColor( Style_Model::border_top_clr ),
                aBrdBotCol = getColor( Style_Model::border_bot_clr );
         if ( hover )
-          drawHoverRect(p, optr, aRad, Style_Tools::Left, true);
+          drawHoverRect(p, optr, opt->palette.color( QPalette::Window ), aRad, Style_Tools::Left, true);
         else
           Style_Tools::shadowRect( p, optr, aRad, LINE_GR_MARGIN, SHADOW, Style_Tools::Left,
                                    getColor( Style_Model::fld_light_clr ),
                                    getColor( Style_Model::fld_dark_clr ), aBrdTopCol,
                                    aBrdBotCol, antialized, false );
         QRect aBtnRect = QRect( QPoint( arUp.x(), optr.y() ), QPoint( arUp.right(), optr.bottom() ) );
-        QColor aBtnCol = getColor( Style_Model::button_clr );
+        QColor aBtnCol = opt->palette.color( QPalette::Button );
         bool aStateOn = opt->state & ( State_Sunken | State_On );
         if ( hover )
-          drawHoverRect(p, aBtnRect, aRad, Style_Tools::Right, true);
+          drawHoverRect(p, aBtnRect, opt->palette.color( QPalette::Window ), aRad, Style_Tools::Right, true);
         else
           Style_Tools::shadowRect( p, aBtnRect, aRad, 0.0, SHADOW, Style_Tools::Right,
                                   aBtnCol.light( BUT_PERCENT_COL ), aBtnCol.dark( BUT_PERCENT_COL ),
@@ -315,7 +315,7 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
         QColor aBrdTopCol = getColor( Style_Model::border_top_clr ),
                aBrdBotCol = getColor( Style_Model::border_bot_clr );
         if ( hover )
-          drawHoverRect(p, optr, aRad, Style_Tools::Left, true);
+          drawHoverRect(p, optr, opt->palette.color( QPalette::Window ), aRad, Style_Tools::Left, true);
         else
           Style_Tools::shadowRect( p, optr, aRad, LINE_GR_MARGIN, SHADOW, Style_Tools::Left,
                                    getColor( Style_Model::fld_light_clr ),
@@ -323,10 +323,10 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
                                    aBrdBotCol, antialized, false );
         if (cmb->subControls & SC_ComboBoxArrow) {
           State flags = State_None;
-          QColor aBtnCol = getColor( Style_Model::button_clr );
+          QColor aBtnCol = opt->palette.color( QPalette::Button );
           bool aStateOn = opt->state & ( State_Sunken | State_On );
           if ( hover )
-            drawHoverRect(p, ar, aRad, Style_Tools::Right, true);
+            drawHoverRect(p, ar, opt->palette.color( QPalette::Window ), aRad, Style_Tools::Right, true);
           else
             Style_Tools::shadowRect( p, ar, aRad, 0.0, SHADOW, Style_Tools::Right,
                                      aBtnCol.light( BUT_PERCENT_COL ), aBtnCol.dark( BUT_PERCENT_COL ),
@@ -364,8 +364,8 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
             if( hasHover() && (slider->state & State_Enabled) &&
                          (slider->state & State_MouseOver) ) {
 	      QRect moderated = w->rect();
-                drawHoverRect(p, moderated, getDblValue( Style_Model::btn_rad ),
-                              Style_Tools::All, false);
+                drawHoverRect(p, moderated, opt->palette.color( QPalette::Window ),
+                              getDblValue( Style_Model::btn_rad ), Style_Tools::All, false);
             }
 
             if ((slider->subControls & SC_SliderGroove) && groove.isValid()) {
@@ -447,7 +447,7 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
         if ( !toolbutton->icon.isNull() )
           aMinDelta = Style_Tools::getMinDelta( toolbutton->rect, toolbutton->iconSize, aMinDelta );
         bool aStateOn = opt->state & ( State_Sunken | State_On );
-        QColor aBtnCol = getColor( Style_Model::button_clr ),
+        QColor aBtnCol = opt->palette.color( QPalette::Button ),
                top    = aBtnCol.light( BUT_PERCENT_COL ),
                bottom = aBtnCol.dark( BUT_PERCENT_COL );
         bool isMenuBtn = toolbutton->features == QStyleOptionToolButton::Menu;
@@ -464,7 +464,7 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
             Style_Tools::shadowRect( p, aRect, aMinDelta, -1, SHADOW, aType, bottom, top, aBrdTopCol,
                                      aBrdBotCol, antialized, true, aStateOn );
           else if ( isHighWdg && hover && !aStateOn )
-            drawHoverRect( p, aRect, aMinDelta, aType, true );
+            drawHoverRect( p, aRect, opt->palette.color( QPalette::Window ), aMinDelta, aType, true );
           else
             Style_Tools::shadowRect( p, aRect, aMinDelta, -1, SHADOW, aType, top, bottom,
                                      aBrdTopCol, aBrdBotCol, antialized, true, aStateOn );
@@ -481,7 +481,7 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
             Style_Tools::shadowRect( p, aRect, aMinDelta, -1, SHADOW, aType, bottom, top,
                                      aBrdTopCol, aBrdBotCol, antialized, true, aStateOn );
           else if ( isHighWdg && hover && !aStateOn )
-            drawHoverRect( p, aRect, aMinDelta, aType, true );
+            drawHoverRect( p, aRect, opt->palette.color( QPalette::Window ), aMinDelta, aType, true );
           else
             Style_Tools::shadowRect( p, aRect, aMinDelta, -1, SHADOW, aType, top, bottom,
                                      aBrdTopCol, aBrdBotCol, antialized, true, aStateOn );
@@ -549,8 +549,8 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
           int alignment = int(groupBox->textAlignment);
           if (!styleHint(QStyle::SH_UnderlineShortcut, opt, w))
             alignment |= Qt::TextHideMnemonic;
-          QColor aColor = getColor( Style_Model::bg_clr );
-          Style_Tools::arrowRect( p, textRect, getColor( Style_Model::pal_dark_clr ),
+          QColor aColor = opt->palette.color( QPalette::Window );
+          Style_Tools::arrowRect( p, textRect, opt->palette.color( QPalette::Dark ),
                                  aColor.dark(BUT_PERCENT_COL), aColor );
           drawItemText(p, textRect,  Qt::TextShowMnemonic | Qt::AlignHCenter | alignment,
                        pal, groupBox->state & State_Enabled, groupBox->text,
@@ -606,7 +606,7 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
         bool enabled = opt->state & State_Enabled;
         bool hover = hasHover() && enabled && ( opt->state & State_MouseOver );
 
-        QColor aBtnCol = getColor( Style_Model::button_clr );
+        QColor aBtnCol = opt->palette.color( QPalette::Button );
         QColor top = aBtnCol.light( BUT_PERCENT_COL ),
 	       bottom = aBtnCol.dark( BUT_PERCENT_COL );
         QColor aBrdTopCol = getColor( Style_Model::border_top_clr ),
@@ -617,7 +617,7 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
           Style_Tools::shadowRect( p, r, aRad, -1, SHADOW, Style_Tools::All, bottom, top,
                                    aBrdTopCol, aBrdBotCol, antialized, true, aStateOn );
         else if ( isHighWdg && hover && !aStateOn )
-          drawHoverRect( p, r, aRad, Style_Tools::All, true );
+          drawHoverRect( p, r, opt->palette.color( QPalette::Window ), aRad, Style_Tools::All, true );
 	else
           Style_Tools::shadowRect( p, r, aRad, -1, SHADOW, Style_Tools::All, top, bottom,
                                    aBrdTopCol, aBrdBotCol, antialized, true, aStateOn );
@@ -627,14 +627,14 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
         if (const QStyleOptionDockWidget *dwOpt = qstyleoption_cast<const QStyleOptionDockWidget *>(opt)) {
           bool floating = false;
           int menuOffset = 0; //used to center text when floated
-          QColor inactiveCaptionTextColor = getColor( Style_Model::pal_high_text_clr );
+          QColor inactiveCaptionTextColor = opt->palette.color( QPalette::HighlightedText );
           const QDockWidget *dockWidget = qobject_cast<const QDockWidget *>(w);
           //Titlebar gradient
           if (dockWidget) {
             if ( dockWidget->isFloating() && dwOpt->movable) {
               floating = true;
-              QColor top = getColor( Style_Model::pal_high_clr ).light();
-              QColor bottom = getColor( Style_Model::pal_high_clr );
+              QColor top = opt->palette.color( QPalette::Highlight ).light();
+              QColor bottom = opt->palette.color( QPalette::Highlight );
               menuOffset = 2;
               QBrush fillBrush(bottom);
               if (top != bottom) {
@@ -649,8 +649,8 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
             }
             else {
               QRect r = dwOpt->rect.adjusted(0, 0, -1, -1); 
-              QColor bottom = getColor( Style_Model::bg_clr ),
-		top =    bottom.dark( BUT_PERCENT_COL );
+              QColor bottom = opt->palette.color( QPalette::Window ),
+                     top =    bottom.dark( BUT_PERCENT_COL );
               QRect aRect = dwOpt->rect;
               QLinearGradient gr( aRect.x(), aRect.y(), aRect.x(), aRect.y()+aRect.height() );
               gr.setColorAt( 0.0, top );
@@ -722,7 +722,7 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
           // line under selected tab bar object
           bool isSelected = opt->state & State_Selected;
           bool isLast = tab->position == QStyleOptionTab::End;
-	  QColor aColor = getColor( Style_Model::bg_clr ),
+	  QColor aColor = opt->palette.color( QPalette::Window ),
                  aDarkColor = aColor.dark( BUT_PERCENT_ON );
           QColor aBrdTopCol = getColor( Style_Model::border_tab_top_clr ),
                  aBrdBotCol = getColor( Style_Model::border_tab_bot_clr );
@@ -767,18 +767,18 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
     case CE_MenuBarItem:
       if (const QStyleOptionMenuItem *mbi = qstyleoption_cast<const QStyleOptionMenuItem *>(opt)) {
         if ( w )
-          drawBackground( p, w->rect(), true, true, true );
+          drawBackground( p, w->rect(), opt->palette.color( QPalette::Window ), true, true, true );
         bool active = mbi->state & State_Selected;
         bool hasFocus = mbi->state & State_HasFocus;
         bool down = mbi->state & State_Sunken;
         QStyleOptionMenuItem newMbi = *mbi;
         if (active || hasFocus) {
-          QBrush b( getColor( Style_Model::bg_clr ) );
+          QBrush b( opt->palette.color( QPalette::Window ) );
           if (active && down)
             p->setBrushOrigin(p->brushOrigin() + QPoint(1, 1));
           if ( active && hasFocus) {
             bool aStateOn = opt->state & (State_Sunken | State_On);
-            QColor aBtnCol = getColor( Style_Model::bg_clr ),
+            QColor aBtnCol = opt->palette.color( QPalette::Window ),
                    top =    aBtnCol.light( BUT_PERCENT_ON ),
                    bottom = aBtnCol.dark( BUT_PERCENT_ON );
             QColor aBrdTopCol = getColor( Style_Model::border_top_clr ),
@@ -787,7 +787,7 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
                             getBoolValue( Style_Model::highlight_wdg );
             if ( !aStateOn && aHighWdg && (opt->state & State_Enabled) &&
                  (opt->state & State_Selected) )
-              drawHoverRect(p, opt->rect, 0, Style_Tools::All, true);
+              drawHoverRect(p, opt->rect, opt->palette.color( QPalette::Window ), 0, Style_Tools::All, true);
             else {
               Style_Tools::shadowRect( p, opt->rect, 0, 0., SHADOW, Style_Tools::All, top, bottom,
                                    aBrdTopCol, aBrdBotCol,
@@ -804,10 +804,10 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
         break;
       }
     case CE_MenuBarEmptyArea:
-      drawBackground( p, opt->rect, true, true, true );
+      drawBackground( p, opt->rect, opt->palette.color( QPalette::Window ), true, true, true );
       break;
     case CE_ProgressBarGroove: {
-      QColor aBgColor = getColor( Style_Model::bg_clr ),
+      QColor aBgColor = opt->palette.color( QPalette::Window ),
 	top =    aBgColor.light( BUT_PERCENT_ON ),
         bottom = aBgColor.dark( BUT_PERCENT_ON );
       QColor aBrdTopCol = getColor( Style_Model::border_top_clr ),
@@ -1024,7 +1024,7 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
         // windows always has a check column, regardless whether we have an icon or not
         int checkcol = qMax(menuitem->maxIconWidth, 20);
 
-        QColor aBgColor = getColor( Style_Model::bg_clr );
+        QColor aBgColor = opt->palette.color( QPalette::Window );
         double aMargin = LINE_GR_MARGIN;
         QLinearGradient gr(x,y,menuitem->rect.right(),y);
         gr.setColorAt( 0.0, aBgColor );
@@ -1205,7 +1205,7 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
     case CE_ScrollBarSubLine:
     case CE_ScrollBarAddLine: {
         bool aStateOn = opt->state & ( State_Sunken | State_On );
-        QColor aBtnCol = getColor( Style_Model::button_clr );
+        QColor aBtnCol = opt->palette.color( QPalette::Button );
         QColor top =    aBtnCol.light( BUT_PERCENT_COL ),
                bottom = aBtnCol.dark( BUT_PERCENT_COL );
         QColor aBrdTopCol = getColor( Style_Model::border_top_clr ),
@@ -1235,7 +1235,7 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
         bool horiz = scrollbar->orientation == Qt::Horizontal;
         double aRad = getDblValue( Style_Model::btn_rad );
         if ( hasHover() && enabled && (opt->state & State_MouseOver) )
-         drawHoverRect(p, opt->rect, aRad, Style_Tools::All, false);
+         drawHoverRect(p, opt->rect, opt->palette.color( QPalette::Window ), aRad, Style_Tools::All, false);
         else {
           QColor aColor = getColor( Style_Model::slider_clr );
           if ( !enabled )
@@ -1281,7 +1281,7 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
   case CE_ToolBar: {
     QRect r = w->rect();
     bool horiz = opt->state & State_Horizontal;
-    drawBackground( p, r, true, true, horiz );
+    drawBackground( p, r, opt->palette.color( QPalette::Window ), true, true, horiz );
     p->setRenderHint( QPainter::Antialiasing, false );
     drawBorder( p, r, horiz );
     break;
@@ -1299,7 +1299,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
   switch ( pe ) {
     case PE_FrameMenu:
       if (qstyleoption_cast<const QStyleOptionFrame *>(opt)) {
-        QColor aBtnCol = getColor( Style_Model::bg_clr ),
+        QColor aBtnCol = opt->palette.color( QPalette::Window ),
                top =    aBtnCol.light( BUT_PERCENT_ON ),
                bottom = aBtnCol.dark( BUT_PERCENT_ON );
         QColor aBrdTopCol = getColor( Style_Model::border_top_clr ),
@@ -1318,9 +1318,9 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
                         getBoolValue( Style_Model::highlight_wdg );
         if ( !aStateOn && aHighWdg && (opt->state & State_Enabled) &&
              (opt->state & State_MouseOver) )
-          drawHoverRect(p, opt->rect, 0, Style_Tools::All, true);
+          drawHoverRect(p, opt->rect, opt->palette.color( QPalette::Window ), 0, Style_Tools::All, true);
         else {
-          QColor aBtnCol = getColor( Style_Model::bg_clr );
+          QColor aBtnCol = opt->palette.color( QPalette::Window );
           QColor aBrdTopCol = getColor( Style_Model::border_tab_top_clr ),
                  aBrdBotCol = getColor( Style_Model::border_tab_bot_clr );
           QColor top =    aBtnCol.light( BUT_PERCENT_COL ),
@@ -1361,7 +1361,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
       QColor pen, brush;
       if ( opt->state & State_Enabled ) {
         pen = getColor( Style_Model::pointer_clr );
-	brush = getColor( Style_Model::button_clr );
+	brush = opt->palette.color( QPalette::Button );
         if ( ( opt->state & State_Sunken ) && (opt->state & State_Enabled ) )
           rect.moveTo( rect.x()+1, rect.y()+1 );
       } else {
@@ -1373,21 +1373,21 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
     }
     case PE_IndicatorCheckBox: {
       if ( hasHover() && (opt->state & State_Enabled) && (opt->state & State_MouseOver) )
-        drawHoverRect(p, w->rect(), getDblValue( Style_Model::edit_rad ),
+        drawHoverRect(p, w->rect(), opt->palette.color( QPalette::Window ), getDblValue( Style_Model::edit_rad ),
                       Style_Tools::All, false);
       QBrush fill;
       if (opt->state & State_NoChange)
-        fill = QBrush( getColor( Style_Model::pal_base_clr ), Qt::Dense4Pattern);
+        fill = QBrush( opt->palette.color( QPalette::Base ), Qt::Dense4Pattern);
       else if (opt->state & ( State_Sunken | !State_Enabled ) )
-        fill = getColor( Style_Model::bg_clr );
+        fill = opt->palette.color( QPalette::Window );
       else if (opt->state & State_Enabled) {
         if (!(opt->state & State_Off) )
           fill = QBrush( getColor( Style_Model::checked_clr ) );
         else
-          fill = QBrush( getColor( Style_Model::pal_base_clr ) );
+          fill = QBrush( opt->palette.color( QPalette::Base ) );
       }
       else
-        fill = getColor( Style_Model::bg_clr );
+        fill = opt->palette.color( QPalette::Window );
       p->save();
       doRestore = true;
       QColor color = fill.color();
@@ -1427,7 +1427,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
                   && opt->state & State_Selected ? opt->palette.highlightedText().color()
                   : opt->palette.text().color());
         if (opt->state & State_NoChange)
-          p->setBrush( getColor( Style_Model::button_clr ) );
+          p->setBrush( opt->palette.color( QPalette::Button ) );
         p->drawRect(opt->rect.x() + 1, opt->rect.y() + 1, 11, 11);
       }
       if (!(opt->state & State_Off)) {
@@ -1462,7 +1462,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
     }
     case PE_IndicatorRadioButton: {
       if ( hasHover() && (opt->state & State_Enabled) && (opt->state & State_MouseOver) )
-        drawHoverRect(p, w->rect(), getDblValue( Style_Model::btn_rad ),
+        drawHoverRect(p, w->rect(), opt->palette.color( QPalette::Window ), getDblValue( Style_Model::btn_rad ),
                       Style_Tools::All, false);
 #define PTSARRLEN(x) sizeof(x)/(sizeof(QPoint))
       static const QPoint pts_border[] = {              // border line
@@ -1488,12 +1488,12 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
       p->translate(ir.x(), ir.y());
 
       if ( down || !enabled ) {
-        QColor fillColor = getColor( Style_Model::bg_clr );
+        QColor fillColor = opt->palette.color( QPalette::Window );
         p->setPen( fillColor );
         p->setBrush( fillColor );
       }
       else {
-        QColor fillColor =  getColor( Style_Model::pal_base_clr );
+        QColor fillColor =  opt->palette.color( QPalette::Base );
         if ( enabled && on )
            fillColor = getColor( Style_Model::checked_clr );
         QLinearGradient gr( 3, 3, 8, 8 );
@@ -1549,7 +1549,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         bool hover = hasHover() && (opt->state & State_Enabled) && (opt->state & State_MouseOver);
         double aRad = getDblValue(Style_Model::edit_rad);
         if ( hover )
-          drawHoverRect(p, opt->rect, aRad, Style_Tools::All, true);
+          drawHoverRect(p, opt->rect, opt->palette.color( QPalette::Window ), aRad, Style_Tools::All, true);
         else {
           Style_Tools::shadowRect( p, opt->rect, aRad, LINE_GR_MARGIN, SHADOW,
                                    Style_Tools::All, getColor( Style_Model::fld_light_clr ),
@@ -1585,7 +1585,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         Style_Tools::shadowRect( p, opt->rect, getDblValue( Style_Model::frame_rad ),
                                  0., SHADOW, aRoundType,
                                  getColor( Style_Model::fld_light_clr ),
-                                 getColor( Style_Model::pal_dark_clr ),
+                                 opt->palette.color( QPalette::Dark ),
                                  aBrdTopCol, aBrdBotCol, false, false, false, false );
         break;
       }
@@ -1595,8 +1595,9 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
       QRect r = opt->rect;
       bool horiz = opt->state & State_Horizontal;
       QLinearGradient gr( r.x(), r.y(), horiz ? r.x() : r.right(), horiz ? r.bottom() : r.y() );
-      gr.setColorAt( 0.0, getColor( Style_Model::bg_clr ).light( BUT_PERCENT_ON ) );
-      gr.setColorAt( 1.0, getColor( Style_Model::bg_clr ) );
+      QColor aBgCol = opt->palette.color( QPalette::Window );
+      gr.setColorAt( 0.0, aBgCol.light( BUT_PERCENT_ON ) );
+      gr.setColorAt( 1.0, aBgCol );
       p->fillRect( r, gr );
       QRect aRect = QRect( r.x(), r.y(), r.width(), r.height() );
       drawHandle( p, r, horiz, false );
@@ -1609,7 +1610,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         break;
       if( w->parent() && !qobject_cast<QMenuBar*>((QWidget*)w) )
          break;
-      drawBackground( p, w->rect(), false );
+      drawBackground( p, w->rect(), opt->palette.color( QPalette::Window ), false );
       break;
     }
     case PE_FrameTabBarBase:
@@ -1628,7 +1629,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         bool isLast = false;
         if ( tabBar )
           isLast = tabBar->currentIndex() == tabBar->count() -1;
-        QColor aColor = getColor( Style_Model::bg_clr );
+        QColor aColor = opt->palette.color( QPalette::Window );
         QColor aBrdTopCol = getColor( Style_Model::border_tab_top_clr ),
                aBrdBotCol = getColor( Style_Model::border_tab_bot_clr );
         bool isHover = hasHover() && (opt->state & State_Enabled) &&
@@ -1684,7 +1685,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
       drawBorder( p, r, opt->state & State_Horizontal );
       bool hover = hasHover() && (opt->state & State_Enabled) && (opt->state & State_MouseOver);
       if ( hover )
-          drawHoverRect(p, r, 0, Style_Tools::All, false);
+          drawHoverRect(p, r, opt->palette.color( QPalette::Window ), 0, Style_Tools::All, false);
       bool horiz = r.width() > r.height();
       int aLen = (int)getDblValue( Style_Model::split_handle_len );
       if ( horiz )
@@ -1707,10 +1708,11 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
             r = QRect( r.x(), r.y()+aHeight, r.width(), r.height()-aHeight );
           }
         }
-        QPalette aPal = QApplication::palette();
+        QPalette aPal = aWdg->palette();
         double aMarg = LINE_GR_MARGIN;
         QColor base = getColor( Style_Model::pal_base_clr ),
-               light = base,
+	       light = base,
+               light_alt = base.dark(110),//AlternateBase color
                dark  = getColor( Style_Model::fld_dark_clr );
         light.setAlpha( 0 );
         QLinearGradient gr_h(r.x(), r.y(), r.right(), r.y());
@@ -1726,6 +1728,12 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         p->fillRect( r, gr_h );
         p->fillRect( r, gr_v );
         aPal.setBrush( QPalette::Base, QBrush( light ) );
+
+        QLinearGradient gr_alt(r.x(), r.y(), r.right(), r.y());
+        gr_alt.setColorAt( 0.0, dark );
+        gr_alt.setColorAt( (aMarg)*2/3/r.width(), light_alt );
+        gr_alt.setColorAt( 1.0, light_alt );
+        aPal.setBrush( QPalette::AlternateBase, QBrush( gr_alt ) );
         aWdg->setPalette( aPal );
       }
       QWindowsStyle::drawPrimitive( pe, opt, p, w );
@@ -1976,6 +1984,7 @@ void Style_Salome::updatePaletteColors()
   //aPal.setColor( QPalette::BrightText, );
   aPal.setColor( QPalette::ButtonText, getColor( Style_Model::pal_btext_clr ) );
   aPal.setColor( QPalette::Base, getColor( Style_Model::pal_base_clr ) );
+  aPal.setColor( QPalette::AlternateBase,getColor( Style_Model::pal_base_clr ).dark( 110 )  );
   aPal.setColor( QPalette::Window, getColor( Style_Model::bg_clr ) );
   //aPal.setColor( QPalette::Shadow, );
   aPal.setColor( QPalette::Highlight, getColor( Style_Model::pal_high_clr ) );
@@ -2058,8 +2067,8 @@ bool Style_Salome::hasHover() const
          getBoolValue( Style_Model::highlight_wdg );
 }
 
-void Style_Salome::drawHoverRect( QPainter* p, const QRect& r, const double rad, const int type,
-                                 const bool border ) const
+void Style_Salome::drawHoverRect( QPainter* p, const QRect& r, const QColor& bgCol, const double rad,
+                                  const int type, const bool border ) const
 {
   if ( !hasHover() )
     return;
@@ -2069,7 +2078,7 @@ void Style_Salome::drawHoverRect( QPainter* p, const QRect& r, const double rad,
          aCol, aBrdCol;
   double aMargin = HIGH_WDG_MARGIN;
   if  ( isAutoRaising ) {
-    aCol = getColor( Style_Model::bg_clr );
+    aCol = bgCol;
     aBrdCol = aCol.dark(BUT_PERCENT_ON);
     if ( !border )
       aBorder = aCol;
@@ -2127,17 +2136,16 @@ void Style_Salome::drawHandle( QPainter* p, const QRect& r, bool horiz, bool isR
   }
 }
 
-void Style_Salome::drawBackground( QPainter* p, const QRect& r, const bool fill,
-                                  const bool grad, const bool horiz ) const
+void Style_Salome::drawBackground( QPainter* p, const QRect& r, const QColor& bgCol,
+                                   const bool fill, const bool grad, const bool horiz ) const
 {
-  QColor aBgColor = getColor( Style_Model::bg_clr );
   if ( fill ) {
     if ( !grad )
-      p->fillRect( r, aBgColor );
+      p->fillRect( r, bgCol );
     else {
       QLinearGradient gr( r.x(), r.y(), horiz ? r.x() : r.right(), horiz ? r.bottom() : r.y() );
-      gr.setColorAt( 0.0, aBgColor.light( BUT_PERCENT_ON ) );
-      gr.setColorAt( 1.0, aBgColor );
+      gr.setColorAt( 0.0, bgCol.light( BUT_PERCENT_ON ) );
+      gr.setColorAt( 1.0, bgCol );
       p->fillRect( r, gr );
     }
   }

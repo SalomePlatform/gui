@@ -73,10 +73,10 @@ private:
   void            updatePaletteColors();
   void            updateAllWidgets( QApplication* );
   bool            hasHover() const;
-  void            drawHoverRect( QPainter*, const QRect&, const double, const int,
-				 const bool ) const;
+  void            drawHoverRect( QPainter*, const QRect&, const QColor&, const double,
+                                 const int, const bool ) const;
   void            drawHandle( QPainter*, const QRect&, bool, bool = true ) const;
-  void            drawBackground( QPainter*, const QRect&, const bool,
+  void            drawBackground( QPainter*, const QRect&, const QColor&, const bool,
 				  const bool = false, const bool = true ) const;
   void            drawBorder( QPainter*, const QRect&, bool ) const;
 

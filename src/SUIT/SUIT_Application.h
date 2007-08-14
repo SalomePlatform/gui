@@ -104,6 +104,9 @@ public:
   //! Invokes application-specific "Select Directory" dialog and returns the selected directory name.
   virtual QString getDirectory( const QString& initial, const QString& caption, QWidget* parent ) = 0;
 
+  //! Perform required actions on the application, just registed in the session
+  virtual void Registered() { myIsInitiallyRegistered = true; };
+
 signals:
   void                  applicationClosed( SUIT_Application* );
   void                  activated( SUIT_Application* );
@@ -153,6 +156,9 @@ protected:
 
 protected slots:
   virtual void          onDesktopActivated();
+
+protected:
+  bool        myIsInitiallyRegistered; //<! false before the first application registration in the session
 
 private:
   SUIT_Study*           myStudy;

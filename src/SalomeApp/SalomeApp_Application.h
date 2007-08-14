@@ -94,6 +94,8 @@ public:
   SUIT_ViewManager*                   newViewManager(const QString&);
   void                                updateSavePointDataObjects( SalomeApp_Study* );
 
+  virtual void Registered();
+
 public slots:
   virtual bool                        onOpenDoc( const QString& );
   virtual void                        onLoadDoc();

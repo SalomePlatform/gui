@@ -37,6 +37,7 @@
 #include <qdragobject.h>
 #include <qapplication.h>
 #include <qpopupmenu.h>
+#include <qfontmetrics.h>
 
 using namespace std;
 
@@ -138,7 +139,43 @@ void PythonConsole_PyEditor::setText(QString s)
 {
   int para=paragraphs()-1;
   int col=paragraphLength(para);
-  insertAt(s,para,col);
+
+  // Limit length of the string because exception may occur if string too long (NPAL16033)
+  // Exception occurs if  one of paragraphs of the input string "s" is too long.  Now long 
+  // paragraph is limited with threshold numbers of characters and finished by " ..." string. 
+  // Note that first paragraph of the string is checked only because it is enough for bug fixing. 
+  // If it will be insufficient for other cases then more complicated check should be implemented.
+  // At present it is not done because of possible performance problem.
+
+  static int threshold = 50000;
+  long strLength = s.length();
+  if ( col + strLength <= threshold || s.find( '\n' ) < threshold )
+    insertAt(s,para,col);
+  else
+  {
+    if ( col >= threshold )
+    {
+      if ( text( para ).right( 5 )  != QString( " ...\n" ) )
+        insertAt(" ...\n",para,col);
+    }
+    else
+    {
+      long n = threshold - col; 
+      s.truncate( n );
+      if ( n >= 5 )
+      {
+        s.at( n - 5 ) = QChar( ' ' );
+        s.at( n - 4 ) = QChar( '.' );
+        s.at( n - 3 ) = QChar( '.' );
+        s.at( n - 2 ) = QChar( '.' );
+        s.at( n - 1 ) = QChar( '\n' );
+      }
+      else 
+        s = " ...\n";
+      insertAt(s,para,col);
+    }
+  }
+
   int n = paragraphs()-1;  
   setCursorPosition( n, paragraphLength(n)); 
 }
@@ -159,9 +196,12 @@ void PythonConsole_PyEditor::exec( const QString& command )
   _currentPrompt = READY_PROMPT;
   _buf.truncate(0);
   _isInHistory = false;
-  setText( "\n" + _currentPrompt); 
-  setText( command + "\n" ); 
-  handleReturn();
+  setText( "\n" + _currentPrompt);
+  // PAL15963 (Problem with option -u (--execute) of runSalome).
+  // Let events creating a study end before script execution starts
+  setText( command /*+ "\n"*/ );
+  //handleReturn();
+  qApp->postEvent( this, new QKeyEvent(QEvent::KeyPress,Key_Return,13,Qt::NoButton ));
 }
 
 void PythonConsole_PyEditor::execAndWait( const QString& command )
@@ -377,21 +417,22 @@ void PythonConsole_PyEditor::keyPressEvent( QKeyEvent* e )
       else if ( ctrlPressed ) {
 	moveCursor( QTextEdit::MoveUp, false );
       }
-      else { 
-	QString histLine = _currentPrompt;
-	if ( ! _isInHistory ) {
-	  _isInHistory = true;
-	  _currentCommand = text( endLine ).remove( 0, PROMPT_SIZE );
-	  _currentCommand.truncate( _currentCommand.length() - 1 );
-	}
-	QString previousCommand = myInterp->getPrevious();
-	if ( previousCommand.compare( BEGIN_HISTORY_PY ) != 0 )
-  {
-    removeParagraph( endLine );
-	  histLine.append( previousCommand );
-    append( histLine );
-	}
-	moveCursor( QTextEdit::MoveEnd, false );
+      else {
+        QString histLine = _currentPrompt;
+        if ( ! _isInHistory ) {
+          _isInHistory = true;
+          _currentCommand = text( endLine ).remove( 0, PROMPT_SIZE );
+          _currentCommand.truncate( _currentCommand.length() - 1 );
+        }
+        QString previousCommand = myInterp->getPrevious();
+        if ( previousCommand.compare( BEGIN_HISTORY_PY ) != 0 )
+        {
+          removeParagraph( endLine );
+          histLine.append( previousCommand );
+          append( histLine );
+        }
+        moveCursor( QTextEdit::MoveEnd, false );
+        scrollViewAfterHistoryUsing( previousCommand ); // NPAL16035
       }
       break;
     }
@@ -429,6 +470,7 @@ void PythonConsole_PyEditor::keyPressEvent( QKeyEvent* e )
 	  }
 	}
 	moveCursor( QTextEdit::MoveEnd, false );
+        scrollViewAfterHistoryUsing( nextCommand ); // NPAL16035
       }
       break;
     }
@@ -761,4 +803,37 @@ QPopupMenu* PythonConsole_PyEditor::createPopupMenu( const QPoint& pos )
   }
 
   return popup;
+}
+
+/*!
+  Scrolls view after use of history (Up/Down keys)to the left position if length
+  of command less than visible width of the view
+*/
+void PythonConsole_PyEditor::scrollViewAfterHistoryUsing( const QString& command )
+{
+  if ( !command.isEmpty() )
+  {
+    if ( command == QString( BEGIN_HISTORY_PY ) )
+    {
+      ensureCursorVisible();
+      return;
+    }
+
+    QFontMetrics aFM( currentFont() );
+    int aCommandLength = aFM.width( command ) + aFM.width( READY_PROMPT ) + 5;
+    int aVisibleWidth = visibleWidth();
+    QScrollBar* aBar = horizontalScrollBar();
+    if ( aBar )
+    {
+      if ( aCommandLength <= aVisibleWidth )
+        aBar->setValue( aBar->minValue() );
+      else  if ( aVisibleWidth > 0 )
+      {
+        double aRatio = aCommandLength / contentsWidth();
+        double aPos = ( aBar->maxValue() - aBar->minValue() ) * aRatio;
+        aBar->setValue( (int)aPos );
+        ensureCursorVisible();
+      }
+    }
+  }
 }

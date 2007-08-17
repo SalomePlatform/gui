@@ -728,6 +728,15 @@ std::string SalomeApp_Study::getVisualComponentName()
 }
 
 /*!
+ * \brief Restores the study state
+ */
+void SalomeApp_Study::restoreState(int savePoint)
+{
+  SalomeApp_VisualState((SalomeApp_Application*)application()).restoreState(savePoint);
+}
+
+
+/*!
   Slot: called on change of a root of a data model. Redefined from CAM_Study
 */
 void SalomeApp_Study::updateModelRoot( const CAM_DataModel* dm )

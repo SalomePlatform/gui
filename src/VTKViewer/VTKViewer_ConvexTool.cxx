@@ -47,6 +47,9 @@
 #include <vtkCell.h>
 #include <vtkPlane.h>
 #include <vtkMath.h>
+#include <vtkCellArray.h>
+#include <vtkTriangle.h>
+#include <vtkOrderedTriangulator.h>
 
 #ifdef _DEBUG_
 static int DEBUG_TRIA_EXECUTE = 0;
@@ -517,8 +520,15 @@ VTKViewer_Triangulator
 */
 VTKViewer_OrderedTriangulator
 ::VTKViewer_OrderedTriangulator():
-  myCell(vtkGenericCell::New())
-{}
+  myCell(vtkGenericCell::New()),
+  myBoundaryTris(vtkCellArray::New()),
+  myTriangle(vtkTriangle::New()),
+  myTriangulator(vtkOrderedTriangulator::New())
+{
+  myBoundaryTris->Allocate(100);
+  myTriangulator->PreSortedOff();
+  //myTriangulator->UseTemplatesOn();
+}
 
 /*!
   Destructor
@@ -527,6 +537,9 @@ VTKViewer_OrderedTriangulator
 ::~VTKViewer_OrderedTriangulator()
 {
   myCell->Delete();
+  myBoundaryTris->Delete();
+  myTriangle->Delete();
+  myTriangulator->Delete();
 }
 
 vtkPoints*
@@ -534,6 +547,39 @@ VTKViewer_OrderedTriangulator
 ::InitPoints()
 {
   myInput->GetCell(myCellId,myCell);
+
+  int numPts = myCell->GetNumberOfPoints();
+  if ( numPts > 0 )
+  {
+    myTriangulator->InitTriangulation(0.0,1.0, 0.0,1.0, 0.0,1.0, numPts);
+
+    vtkFloatingPointType x[3], p[3];
+    vtkIdType ptId;
+    vtkFloatingPointType *bounds = myCell->GetBounds();
+
+    // Inject cell points into triangulation
+    for (int i=0; i<numPts; i++)
+    {
+      myCell->Points->GetPoint(i, x);
+      for (int j=0; j<3; j++)
+        p[j] = (x[j] - bounds[2*j]) / (bounds[2*j+1] - bounds[2*j]);
+      ptId = myCell->PointIds->GetId(i);
+      //    myTriangulator->InsertPoint(ptId, x, x, 0);
+      myTriangulator->InsertPoint(ptId, x, p, 0);
+    }//for all points
+
+
+//     if ( myCell->IsPrimaryCell() ) //use templates if topology is fixed
+//     {
+//       int numEdges=myCell->GetNumberOfEdges();
+//       myTriangulator->TemplateTriangulate(myCell->GetCellType(),
+//                                           numPts,numEdges);
+//     }
+//     else //use ordered triangulator
+    {
+      myTriangulator->Triangulate();
+    }
+  }
   return myInput->GetPoints();
 }
 
@@ -562,14 +608,31 @@ vtkIdType
 VTKViewer_OrderedTriangulator
 ::GetNumFaces()
 {
-  return myCell->GetNumberOfFaces();
+  myBoundaryTris->Reset();
+  myTriangulator->AddTriangles(myBoundaryTris);
+  return myBoundaryTris->GetNumberOfCells();
+  //return myCell->GetNumberOfFaces();
 }
 
 vtkCell*
 VTKViewer_OrderedTriangulator
 ::GetFace(vtkIdType theFaceId)
 {
-  return myCell->GetFace(theFaceId);
+  int numCells = myBoundaryTris->GetNumberOfCells();
+  if ( theFaceId < 0 || theFaceId >=numCells ) {return NULL;}
+
+  vtkIdType *cells = myBoundaryTris->GetPointer();
+
+  // Each triangle has three points plus number of points
+  vtkIdType *cptr = cells + 4*theFaceId;
+  for (int i=0; i<3; i++)
+  {
+    myTriangle->PointIds->SetId(i,cptr[i+1]);
+    myTriangle->Points->SetPoint(i,myCell->Points->GetPoint(cptr[i+1]));
+  }
+
+  return myTriangle;
+  //return myCell->GetFace(theFaceId);
 }
 
 void 

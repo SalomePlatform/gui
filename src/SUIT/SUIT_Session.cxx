@@ -326,9 +326,11 @@ SUIT_ResourceMgr* SUIT_Session::createResourceMgr( const QString& appName ) cons
 /*!
   Slot, called on activation of some application's desktop
 */
-void SUIT_Session::onApplicationActivated( SUIT_Application* app ) 
+void SUIT_Session::onApplicationActivated( SUIT_Application* app )
 {
   myActiveApp = app;
+  if (app)
+    app->Registered();
 }
 
 /*!

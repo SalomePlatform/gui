@@ -55,13 +55,17 @@ protected:
   virtual void keyPressEvent (QKeyEvent* event);
   virtual void mousePressEvent (QMouseEvent* event);
   virtual void customEvent (QCustomEvent* event);
-  
+
 public slots:
   void handleReturn();
   void onPyInterpChanged( PyInterp_base* );
 
   virtual QPopupMenu* createPopupMenu( const QPoint& );
-  
+
+private:
+
+  void scrollViewAfterHistoryUsing( const QString& command );
+
 private:
   QString        _buf;
   QString        _currentCommand;

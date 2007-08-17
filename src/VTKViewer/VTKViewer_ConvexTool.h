@@ -36,6 +36,9 @@ class vtkCellData;
 class vtkPoints;
 class vtkIdList;
 class vtkCell;
+class vtkCellArray;
+class vtkTriangle;
+class vtkOrderedTriangulator;
 
 class VTKVIEWER_EXPORT VTKViewer_Triangulator
 {
@@ -111,7 +114,10 @@ class VTKVIEWER_EXPORT VTKViewer_OrderedTriangulator : public VTKViewer_Triangul
   ~VTKViewer_OrderedTriangulator();
 
  protected:
-  vtkGenericCell *myCell;
+  vtkGenericCell         *myCell;
+  vtkCellArray           *myBoundaryTris;
+  vtkTriangle            *myTriangle;
+  vtkOrderedTriangulator *myTriangulator;
 
   virtual
   vtkPoints* 

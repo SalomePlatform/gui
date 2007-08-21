@@ -42,6 +42,9 @@ MOC_FILES=				\
 
 nodist_libPyConsole_la_SOURCES= $(MOC_FILES)
 
+nodist_salomeres_DATA= \
+	PyConsole_msg_en.qm
+
 libPyConsole_la_CPPFLAGS= $(PYTHON_INCLUDES) $(QT_INCLUDES) \
 	-I$(srcdir)/../PyInterp -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 

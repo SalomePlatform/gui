@@ -47,8 +47,8 @@
 
 #include <QtxMRUAction.h>
 
+#include <LightApp_Browser.h>
 // temporary commented
-//#include <OB_Browser.h>
 //#include <OB_ListItem.h>
 
 #include <PyConsole_Console.h>
@@ -815,25 +815,33 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
 
   if ( flag == WT_ObjectBrowser )
   {
-    // temporary commented
-    /*OB_Browser* ob = (OB_Browser*)wid;
-    ob->setUpdater( new SalomeApp_Updater() );
-    connect( ob->listView(), SIGNAL( doubleClicked( QListViewItem* ) ), this, SLOT( onDblClick( QListViewItem* ) ) );*/
-    bool autoSize = resMgr->booleanValue( "ObjectBrowser", "auto_size", false ),
-         autoSizeFirst = resMgr->booleanValue( "ObjectBrowser", "auto_size_first", true );
-    // temporary commented
-    /*
-    for ( int i = SalomeApp_DataObject::ValueIdx; i <= SalomeApp_DataObject::RefEntryIdx; i++ )
-    {
+    LightApp_Browser* ob = qobject_cast<LightApp_Browser*>( wid );
+    if ( ob ) { 
+      // temporary commented
+      //ob->setUpdater( new SalomeApp_Updater() );
+
+      // temporary commented
+      //connect( ob->listView(), SIGNAL( doubleClicked( QListViewItem* ) ), this, SLOT( onDblClick( QListViewItem* ) ) );*/
+
+      bool autoSize      = resMgr->booleanValue( "ObjectBrowser", "auto_size", false );
+      bool autoSizeFirst = resMgr->booleanValue( "ObjectBrowser", "auto_size_first", true );
+      // temporary commented
+      /*
+      for ( int i = SalomeApp_DataObject::ValueIdx; i <= SalomeApp_DataObject::RefEntryIdx; i++ )
+      {
       ob->addColumn( tr( QString().sprintf( "OBJ_BROWSER_COLUMN_%d", i ) ), i );
       ob->setColumnShown( i, resMgr->booleanValue( "ObjectBrowser",
                                                     QString().sprintf( "visibility_column_%d", i ), true ) );
+      }
+      */
+
+      // temporary commented
+      /*
+	ob->setWidthMode( autoSize ? QListView::Maximum : QListView::Manual );
+	ob->listView()->setColumnWidthMode( 0, autoSizeFirst ? QListView::Maximum : QListView::Manual );
+	ob->resize( desktop()->width()/3, ob->height() );
+      */
     }
-    */
-    // temporary commented
-    /*ob->setWidthMode( autoSize ? QListView::Maximum : QListView::Manual );
-    ob->listView()->setColumnWidthMode( 0, autoSizeFirst ? QListView::Maximum : QListView::Manual );
-    ob->resize( desktop()->width()/3, ob->height() );*/
   }
   else if ( flag == WT_PyConsole )
   {
@@ -841,7 +849,7 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
     pyCons->setWindowTitle( tr( "PYTHON_CONSOLE" ) );
     wid = pyCons;
     pyCons->resize( pyCons->width(), desktop()->height()/4 );
-    //pyCons->connectPopupRequest(this, SLOT(onConnectPopupRequest(SUIT_PopupClient*, QContextMenuEvent*)));
+    pyCons->connectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
   }
   return wid;
 }

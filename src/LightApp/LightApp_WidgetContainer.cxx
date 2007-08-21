@@ -96,6 +96,8 @@ int LightApp_WidgetContainer::insert( const int id, QWidget* wid )
 
   connect( wid, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
 
+  updateTitle();
+
   return id;
 }
 
@@ -135,7 +137,7 @@ void LightApp_WidgetContainer::remove( QWidget* wid, const bool del )
   if ( del )
     delete wid;
 
-  setWindowTitle( myStack->currentWidget() ? myStack->currentWidget()->windowTitle() : QString() );
+  updateTitle();
 }
 
 /*!
@@ -196,7 +198,8 @@ void LightApp_WidgetContainer::activate( QWidget* wid )
     return;
 
   myStack->setCurrentWidget( wid );
-  setWindowTitle( wid ? wid->windowTitle() : QString() );
+
+  updateTitle();
 }
 
 /*!
@@ -229,6 +232,9 @@ QWidget* LightApp_WidgetContainer::active() const
 void LightApp_WidgetContainer::setVisible ( bool visible )
 {
   QDockWidget::setVisible( visible );
+
+  updateTitle();
+
   emit( visibilityChanged( visible ) );
 }
 
@@ -246,4 +252,13 @@ void LightApp_WidgetContainer::onDestroyed( QObject* wid )
       break;
     }
   }
+}
+
+/*!
+  \brief Update widget container title according 
+  to the active child widget.
+*/
+void LightApp_WidgetContainer::updateTitle()
+{
+  setWindowTitle( myStack->currentWidget() ? myStack->currentWidget()->windowTitle() : QString() );
 }

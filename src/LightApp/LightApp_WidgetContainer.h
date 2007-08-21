@@ -64,6 +64,9 @@ private slots:
   void                onDestroyed( QObject* );
 
 private:
+ void                 updateTitle();
+ 
+private:
   int                 myType;
   QStackedWidget*     myStack;
   QMap<int, QWidget*> myMap;

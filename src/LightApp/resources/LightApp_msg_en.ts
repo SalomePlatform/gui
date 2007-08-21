@@ -325,6 +325,10 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <source>ACTIVATE_MODULE_OP_OPEN</source>
         <translation>&amp;Open...</translation>
     </message>
+    <message>
+        <source>PYTHON_CONSOLE</source>
+        <translation>Python Console</translation>
+    </message>
 </context>
 <context>
     <name>LightApp_Module</name>

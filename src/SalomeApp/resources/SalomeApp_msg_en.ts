@@ -265,6 +265,10 @@ Do you want to reload it ?</translation>
         <source>TOT_DESK_MRU</source>
         <translation>Most recently used</translation>
     </message>
+    <message>
+        <source>ACTIVATE_MODULE_OP_LOAD</source>
+        <translation>&amp;Load...</translation>
+    </message>
 </context>
 <context>
     <name>SalomeApp_StudyPropertiesDlg</name>

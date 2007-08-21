@@ -3,87 +3,87 @@
     <name>@default</name>
     <message>
         <source>ICON_OCCVIEWER_VIEW_GLOBALPAN</source>
-        <translation>view_glpan.png</translation>
+        <translation>occ_view_glpan.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_CLIPPING_PRESSED</source>
-        <translation>view_clipping_pressed.png</translation>
+        <translation>occ_view_clipping_pressed.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_VIEW_FITAREA</source>
-        <translation>view_fitarea.png</translation>
+        <translation>occ_view_fitarea.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_CLONE_VIEW</source>
-        <translation>view_clone.png</translation>
+        <translation>occ_view_clone.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_PRESETS_VIEW</source>
-        <translation>view_presets.png</translation>
+        <translation>occ_view_presets.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_VIEW_TOP</source>
-        <translation>view_top.png</translation>
+        <translation>occ_view_top.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_VIEW_PAN</source>
-        <translation>view_pan.png</translation>
+        <translation>occ_view_pan.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_SHOOT_VIEW</source>
-        <translation>view_shoot.png</translation>
+        <translation>occ_view_shoot.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_VIEW_ROTATION_POINT</source>
-        <translation>view_rotation_point.png</translation>
+        <translation>occ_view_rotation_point.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_VIEW_DUMP</source>
-        <translation>view_camera_dump.png</translation>
+        <translation>occ_view_camera_dump.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_VIEW_BACK</source>
-        <translation>view_back.png</translation>
+        <translation>occ_view_back.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_VIEW_ZOOM</source>
-        <translation>view_zoom.png</translation>
+        <translation>occ_view_zoom.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_VIEW_LEFT</source>
-        <translation>view_left.png</translation>
+        <translation>occ_view_left.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_VIEW_FITALL</source>
-        <translation>view_fitall.png</translation>
+        <translation>occ_view_fitall.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_VIEW_BOTTOM</source>
-        <translation>view_bottom.png</translation>
+        <translation>occ_view_bottom.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_VIEW_ROTATE</source>
-        <translation>view_rotate.png</translation>
+        <translation>occ_view_rotate.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_VIEW_FRONT</source>
-        <translation>view_front.png</translation>
+        <translation>occ_view_front.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_VIEW_RESET</source>
-        <translation>view_reset.png</translation>
+        <translation>occ_view_reset.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_VIEW_RIGHT</source>
-        <translation>view_right.png</translation>
+        <translation>occ_view_right.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_CLIPPING</source>
-        <translation>view_clipping.png</translation>
+        <translation>occ_view_clipping.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_VIEW_TRIHEDRON</source>
-        <translation>view_triedre.png</translation>
+        <translation>occ_view_triedre.png</translation>
     </message>
 </context>
 </TS>

@@ -63,27 +63,27 @@ MOC_FILES= \
 nodist_libOCCViewer_la_SOURCES= $(MOC_FILES)
 
 dist_salomeres_DATA = \
-	resources/view_back.png \
-	resources/view_bottom.png \
-	resources/view_camera_dump.png \
-	resources/view_clone.png \
-	resources/view_clipping.png \
-	resources/view_clipping_pressed.png \
-	resources/view_fitall.png \
-	resources/view_fitarea.png \
-	resources/view_front.png \
-	resources/view_glpan.png \
-	resources/view_left.png \
-	resources/view_pan.png \
-	resources/view_presets.png \
-	resources/view_reset.png \
-	resources/view_right.png \
-	resources/view_rotate.png \
-	resources/view_shoot.png \
-	resources/view_top.png \
-	resources/view_triedre.png \
-	resources/view_zoom.png \
-	resources/view_rotation_point.png
+	resources/occ_view_back.png \
+	resources/occ_view_bottom.png \
+	resources/occ_view_camera_dump.png \
+	resources/occ_view_clone.png \
+	resources/occ_view_clipping.png \
+	resources/occ_view_clipping_pressed.png \
+	resources/occ_view_fitall.png \
+	resources/occ_view_fitarea.png \
+	resources/occ_view_front.png \
+	resources/occ_view_glpan.png \
+	resources/occ_view_left.png \
+	resources/occ_view_pan.png \
+	resources/occ_view_presets.png \
+	resources/occ_view_reset.png \
+	resources/occ_view_right.png \
+	resources/occ_view_rotate.png \
+	resources/occ_view_shoot.png \
+	resources/occ_view_top.png \
+	resources/occ_view_triedre.png \
+	resources/occ_view_zoom.png \
+	resources/occ_view_rotation_point.png
 
 nodist_salomeres_DATA = \
 	OCCViewer_images.qm \

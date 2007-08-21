@@ -2,16 +2,20 @@
 <context>
     <name>@default</name>
     <message>
-        <source>ICON_GRADUATED_AXES</source>
-        <translation>view_graduated_axes.png</translation>
+        <source>ICON_SVTK_ROTATION_POINT</source>
+        <translation>vtk_view_rotation_point.png</translation>
+    </message>
+    <message>
+        <source>ICON_SVTK_GRADUATED_AXES</source>
+        <translation>vtk_view_graduated_axes.png</translation>
     </message>
     <message>
         <source>ICON_SVTK_SCALING</source>
-        <translation>view_scaling.png</translation>
+        <translation>vtk_view_scaling.png</translation>
     </message>
     <message>
-        <source>ICON_UPDATE_RATE</source>
-        <translation>view_update_rate.png</translation>
+        <source>ICON_SVTK_UPDATE_RATE</source>
+        <translation>vtk_view_update_rate.png</translation>
     </message>
 </context>
 </TS>

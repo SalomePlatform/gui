@@ -100,6 +100,12 @@ MOC_FILES= \
 	SVTK_SetRotationPointDlg_moc.cxx
 nodist_libSVTK_la_SOURCES= $(MOC_FILES)
 
+dist_salomeres_DATA=\
+	resources/vtk_view_graduated_axes.png \
+	resources/vtk_view_scaling.png \
+	resources/vtk_view_update_rate.png \
+	resources/vtk_view_rotation_point.png
+
 nodist_salomeres_DATA= \
 	SVTK_msg_en.qm \
 	SVTK_images.qm

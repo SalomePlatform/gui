@@ -471,7 +471,7 @@ SVTK_MainWindow
 
   // Change rotation point
   anAction = new QtxAction(tr("MNU_CHANGINGROTATIONPOINT_VIEW"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_ROTATION_POINT" ) ),
+			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_ROTATION_POINT" ) ),
 			   tr( "MNU_CHANGINGROTATIONPOINT_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_CHANGINGROTATIONPOINT_VIEW"));
   anAction->setCheckable(true);
@@ -556,7 +556,7 @@ SVTK_MainWindow
 
   // onGraduatedAxes: Manage graduated axes params
   anAction = new QtxAction(tr("MNU_SVTK_GRADUATED_AXES"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_GRADUATED_AXES" ) ),
+			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_GRADUATED_AXES" ) ),
 			   tr( "MNU_SVTK_GRADUATED_AXES" ), 0, this);
   anAction->setStatusTip(tr("DSC_SVTK_GRADUATED_AXES"));
   anAction->setCheckable(true);
@@ -565,7 +565,7 @@ SVTK_MainWindow
 
   // onGraduatedAxes: Manage graduated axes params
   anAction = new QtxAction(tr("MNU_SVTK_UPDATE_RATE"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_UPDATE_RATE" ) ),
+			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_UPDATE_RATE" ) ),
 			   tr( "MNU_SVTK_UPDATE_RATE" ), 0, this);
   anAction->setStatusTip(tr("DSC_SVTK_UPDATE_RATE"));
   anAction->setCheckable(true);

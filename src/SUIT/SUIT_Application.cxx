@@ -25,6 +25,7 @@
 #include <qlabel.h>
 #include <qtimer.h>
 #include <qstatusbar.h>
+#include <qapplication.h>
 
 #include <QtxAction.h>
 #include <QtxActionMenuMgr.h>
@@ -37,8 +38,7 @@ SUIT_Application::SUIT_Application()
   : QObject( 0 ),
     myStudy( 0 ),
     myDesktop( 0 ),
-    myStatusLabel( 0 ),
-    myIsInitiallyRegistered( false )
+    myStatusLabel( 0 )
 {
 }
 
@@ -222,8 +222,10 @@ void SUIT_Application::setDesktop( SUIT_Desktop* desk )
 
   delete myDesktop;
   myDesktop = desk;
-  if ( myDesktop )
+  if ( myDesktop ) {
     connect( myDesktop, SIGNAL( activated() ), this, SLOT( onDesktopActivated() ) );
+    QApplication::postEvent(myDesktop, new QEvent(QEvent::WindowActivate));
+  }
 }
 
 /*!

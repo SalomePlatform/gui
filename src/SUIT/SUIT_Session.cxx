@@ -325,8 +325,6 @@ SUIT_ResourceMgr* SUIT_Session::createResourceMgr( const QString& appName ) cons
 void SUIT_Session::onApplicationActivated( SUIT_Application* app ) 
 {
   myActiveApp = app;
-  if (app)
-    app->Registered();
 }
 
 /*!

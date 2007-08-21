@@ -31,6 +31,15 @@ if ( ! $?LightAppConfig )    setenv LightAppConfig ${GUI_ROOT_DIR}/share/salome/
 if ( ! $?LightAppResources ) setenv LightAppResources ${GUI_ROOT_DIR}/share/salome/resources/gui
 
 ###
+# default settings 
+###
+
+if (! ($?PATH) ) setenv PATH
+if (! ($?LD_LIBRARY_PATH) ) setenv LD_LIBRARY_PATH
+if (! ($?PYTHONPATH) ) setenv PYTHONPATH
+if (! ($?SALOMEPATH) ) setenv SALOMEPATH
+
+###
 # process --modules=... command line option (get list of modules)
 ###
 
@@ -67,19 +76,69 @@ end
 # set additional environment
 ###
 
+set python_version=`python -c "import sys; print sys.version[:3]"`
+
+set MY_PATH=""
+set MY_LD_LIBRARY_PATH=""
+set MY_PYTHONPATH=""
+
 foreach mod ( $mods )
     if ( "$arg" != "X" ) then
 	set root_dir=`printenv ${mod}_ROOT_DIR`
 	if ( "$root_dir" != "" ) then
 	    set mod_lower=`echo $mod | tr "A-Z" "a-z"`
-	    setenv PATH ${root_dir}/bin/salome:${PATH}
-	    setenv LD_LIBRARY_PATH ${root_dir}/lib/salome:${LD_LIBRARY_PATH}
+	    if ( -d ${root_dir}/bin/salome ) then
+		if ( "${MY_PATH}" == "" ) then
+		    set MY_PATH=${root_dir}/bin/salome
+		else
+		    set MY_PATH=${MY_PATH}:${root_dir}/bin/salome
+		endif
+	    endif
+	    if ( -d ${root_dir}/lib/salome ) then
+		if ( "${MY_LD_LIBRARY_PATH}" == "" ) then
+		    set MY_LD_LIBRARY_PATH=${root_dir}/lib/salome
+		else
+		    set MY_LD_LIBRARY_PATH=${MY_LD_LIBRARY_PATH}:${root_dir}/lib/salome
+		endif
+	    endif
+	    if ( "${python_version}" != "" ) then
+		if ( -d ${root_dir}/bin/salome ) then
+		    if ( "${MY_PYTHONPATH}" == "" ) then
+			set MY_PYTHONPATH=${root_dir}/bin/salome
+		    else
+			set MY_PYTHONPATH=${MY_PYTHONPATH}:${root_dir}/bin/salome
+		    endif
+		endif
+		if ( -d ${root_dir}/lib/salome ) then
+		    if ( "${MY_PYTHONPATH}" == "" ) then
+			set MY_PYTHONPATH=${root_dir}/lib/salome
+		    else
+			set MY_PYTHONPATH=${MY_PYTHONPATH}:${root_dir}/lib/salome
+		    endif
+		endif
+		if ( -d ${root_dir}/lib/python${python_version}/site-packages/salome ) then 
+		    if ( "${MY_PYTHONPATH}" == "" ) then
+			set MY_PYTHONPATH=${root_dir}/lib/python${python_version}/site-packages/salome
+		    else
+			set MY_PYTHONPATH=${MY_PYTHONPATH}:${root_dir}/lib/python${python_version}/site-packages/salome
+		    endif
+		endif
+	    endif
 	    if ( "$mod" != "KERNEL" && "$mod" != "GUI" ) then
 		setenv LightAppConfig ${LightAppConfig}:${root_dir}/share/salome/resources/${mod_lower}
+	    endif
+	    if ( "${SALOMEPATH}" == "" ) then
+		setenv SALOMEPATH ${root_dir}
+	    else
+		setenv SALOMEPATH ${SALOMEPATH}:${root_dir}
 	    endif
 	endif
     endif
 end
+
+if ( "${MY_PATH}" != "" ) setenv PATH ${MY_PATH}:${PATH}
+if ( "${MY_LD_LIBRARY_PATH}" != "" ) setenv LD_LIBRARY_PATH ${MY_LD_LIBRARY_PATH}:${LD_LIBRARY_PATH}
+if ( "${PYTHONPATH}" != "" ) setenv PYTHONPATH ${MY_PYTHONPATH}:${PYTHONPATH}
 
 ###
 # start application

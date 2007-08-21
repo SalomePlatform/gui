@@ -68,19 +68,75 @@ done
 # set additional environment
 ###
 
+python_version=`python -c "import sys; print sys.version[:3]" 2>/dev/null`
+
+MY_PATH=""
+MY_LD_LIBRARY_PATH=""
+MY_PYTHONPATH=""
+
 for mod in $mods ; do
     if [ "$arg" != "X" ] ; then
 	root_dir=`printenv ${mod}_ROOT_DIR`
 	if [ "$root_dir" != "" ] ; then
 	    mod_lower=`echo $mod | tr "A-Z" "a-z"`
-	    export PATH=${root_dir}/bin/salome:${PATH}
-	    export LD_LIBRARY_PATH=${root_dir}/lib/salome:${LD_LIBRARY_PATH}
+	    if [ -d ${root_dir}/bin/salome ] ; then
+		if [ "${MY_PATH}" == "" ] ; then
+		    MY_PATH=${root_dir}/bin/salome
+		else
+		    MY_PATH=${MY_PATH}:${root_dir}/bin/salome
+		fi
+	    fi
+	    if [ -d ${root_dir}/lib/salome ] ; then
+		if [ "${MY_LD_LIBRARY_PATH}" == "" ] ; then
+		    MY_LD_LIBRARY_PATH=${root_dir}/lib/salome
+		else
+		    MY_LD_LIBRARY_PATH=${MY_LD_LIBRARY_PATH}:${root_dir}/lib/salome
+		fi
+	    fi
+	    if [ "${python_version}" != "" ] ; then
+		if [ -d ${root_dir}/bin/salome ] ; then
+		    if [ "${MY_PYTHONPATH}" == "" ] ; then
+			MY_PYTHONPATH=${root_dir}/bin/salome
+		    else
+			MY_PYTHONPATH=${MY_PYTHONPATH}:${root_dir}/bin/salome
+		    fi
+		fi
+		if [ -d ${root_dir}/lib/salome ] ; then
+		    if [ "${MY_PYTHONPATH}" == "" ] ; then
+			MY_PYTHONPATH=${root_dir}/lib/salome
+		    else
+			MY_PYTHONPATH=${MY_PYTHONPATH}:${root_dir}/lib/salome
+		    fi
+		fi
+		if [ -d ${root_dir}/lib/python${python_version}/site-packages/salome ] ; then 
+		    if [ "${MY_PYTHONPATH}" == "" ] ; then
+			MY_PYTHONPATH=${root_dir}/lib/python${python_version}/site-packages/salome
+		    else
+			MY_PYTHONPATH=${MY_PYTHONPATH}:${root_dir}/lib/python${python_version}/site-packages/salome
+		    fi
+		fi
+	    fi
 	    if [ "$mod" != "KERNEL" ] && [ "$mod" != "GUI" ] ; then
 		export LightAppConfig=${LightAppConfig}:${root_dir}/share/salome/resources/${mod_lower}
+	    fi
+	    if [ "${SALOMEPATH}" == "" ] ; then
+		export SALOMEPATH=${root_dir}
+	    else
+		export SALOMEPATH=${SALOMEPATH}:${root_dir}
 	    fi
 	fi
     fi
 done
+
+if [ "${MY_PATH}" != "" ] ; then
+    export PATH=${MY_PATH}:${PATH}
+fi
+if [ "${MY_LD_LIBRARY_PATH}" != "" ] ; then
+    export LD_LIBRARY_PATH=${MY_LD_LIBRARY_PATH}:${LD_LIBRARY_PATH}
+fi
+if [ "${PYTHONPATH}" != "" ] ; then
+    export PYTHONPATH=${MY_PYTHONPATH}:${PYTHONPATH}
+fi
 
 ###
 # start application

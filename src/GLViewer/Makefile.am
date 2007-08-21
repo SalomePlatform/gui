@@ -93,17 +93,17 @@ MOC_FILES= \
 nodist_libGLViewer_la_SOURCES= $(MOC_FILES)
 
 dist_salomeres_DATA= \
-	resources/cursor_rotate.png \
-	resources/cursor_sketch.png \
-	resources/cursor_zoom.png \
-	resources/view_dump.png \
-	resources/view_fitall.png \
-	resources/view_fitarea.png \
-	resources/view_fitselect.png \
-	resources/view_glpan.png \
-	resources/view_pan.png \
-	resources/view_reset.png \
-	resources/view_zoom.png
+	resources/gl_cursor_rotate.png \
+	resources/gl_cursor_sketch.png \
+	resources/gl_cursor_zoom.png \
+	resources/gl_view_dump.png \
+	resources/gl_view_fitall.png \
+	resources/gl_view_fitarea.png \
+	resources/gl_view_fitselect.png \
+	resources/gl_view_glpan.png \
+	resources/gl_view_pan.png \
+	resources/gl_view_reset.png \
+	resources/gl_view_zoom.png
 
 nodist_salomeres_DATA= \
 	GLViewer_images.qm \

@@ -168,15 +168,6 @@ OB_Browser::~OB_Browser()
 }
 
 /*!
-  \brief Get tree view widget.
-  \return tree view widget of the object browser
-*/
-QtxTreeView* OB_Browser::treeView() const
-{
-  return myView;
-}
-
-/*!
   \brief Get popup menu client type.
   \return popup client type
 */
@@ -246,6 +237,27 @@ void OB_Browser::setRootIsDecorated( const bool decor )
 {
   if ( decor != rootIsDecorated() )
     myView->setRootIsDecorated( decor );
+}
+
+/*
+  \brief Check if "Sorting" popup menu command for the header is enabled.
+  \return \c true if "Sorting" menu command is enabled
+  \sa setSortMenuEnabled()
+*/
+bool OB_Browser::sortMenuEnabled() const
+{
+  return myView->sortMenuEnabled();
+}
+
+/*
+  \brief Enable/disable "Sorting" popup menu command for the header.
+  \param enableSortMenu if \c true, enable "Sorting" menu command
+  \sa sortMenuEnabled()
+*/
+void OB_Browser::setSortMenuEnabled( const bool enabled )
+{
+  if ( enabled != sortMenuEnabled() )
+    myView->setSortMenuEnabled( enabled );
 }
 
 /*!
@@ -738,6 +750,15 @@ OB_Browser::DataObjectKey OB_Browser::objectKey( SUIT_DataObject* obj ) const
   return DataObjectKey( obj->key() );
 }
 */
+
+/*!
+  \brief Get tree view widget.
+  \return tree view widget of the object browser
+*/
+QtxTreeView* OB_Browser::treeView() const
+{
+  return myView;
+}
 
 /*!
   \brief Process context menu request event.

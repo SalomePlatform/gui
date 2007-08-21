@@ -570,7 +570,7 @@ void QtxListAction::ListFrame::removePostedEvens( QObject* o, int type )
   \param parent parent object
 */
 QtxListAction::QtxListAction( QObject* parent )
-: QWidgetAction( parent ),
+: QtxAction( parent ),
   myFrame( 0 )
 {
   initialize();
@@ -585,13 +585,9 @@ QtxListAction::QtxListAction( QObject* parent )
 */
 QtxListAction::QtxListAction( const QIcon& icon, const QString& menuText, 
 			      int accel, QObject* parent )
-: QWidgetAction( parent ),
+: QtxAction( menuText, icon, menuText, accel, parent ),
   myFrame( 0 )
 {
-  setIcon( icon );
-  setText( menuText );
-  setShortcut( accel );
-
   initialize();
 }
 
@@ -602,12 +598,9 @@ QtxListAction::QtxListAction( const QIcon& icon, const QString& menuText,
   \param parent parent object
 */
 QtxListAction::QtxListAction( const QString& menuText, int accel, QObject* parent )
-: QWidgetAction( parent ),
+: QtxAction( menuText, menuText, accel, parent ),
   myFrame( 0 )
 {
-  setText( menuText );
-  setShortcut( accel );
-
   initialize();
 }
 
@@ -620,13 +613,9 @@ QtxListAction::QtxListAction( const QString& menuText, int accel, QObject* paren
 */
 QtxListAction::QtxListAction( const QString& text, const QString& menuText, 
 			      int accel, QObject* parent )
-: QWidgetAction( parent ),
+: QtxAction( text, menuText, accel, parent ),
   myFrame( 0 )
 {
-  setText( menuText );
-  setShortcut( accel );
-  setToolTip( text );
-
   initialize();
 }
 
@@ -640,14 +629,9 @@ QtxListAction::QtxListAction( const QString& text, const QString& menuText,
 */
 QtxListAction::QtxListAction( const QString& text, const QIcon& icon, 
 			      const QString& menuText, int accel, QObject* parent )
-: QWidgetAction( parent ),
+: QtxAction( text, icon, menuText, accel, parent ),
   myFrame( 0 )
 {
-  setIcon( icon );
-  setText( menuText );
-  setShortcut( accel );
-  setToolTip( text );
-
   initialize();
 }
 

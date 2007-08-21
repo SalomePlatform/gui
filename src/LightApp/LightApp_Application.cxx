@@ -1621,7 +1621,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
   if ( flag == WT_ObjectBrowser )
   {
     LightApp_Browser* ob = new LightApp_Browser( new LightApp_DataObject(), desktop() );
-    ob->treeView()->setSortMenuEnabled( true );
+    ob->setSortMenuEnabled( true );
     ob->setAutoUpdate( true );
     //ob->setAutoOpenLevel( 1 ); // commented by ASV as a fix to bug IPAL10107
     ob->setWindowTitle( tr( "OBJECT_BROWSER" ) );

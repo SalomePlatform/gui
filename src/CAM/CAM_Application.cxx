@@ -549,18 +549,41 @@ void CAM_Application::readModuleList()
 
   QStringList modList;
 
-  QStringList args = QApplication::arguments();
+  QString args = QApplication::arguments().join( " " );
 
-  QRegExp rx("--modules\\s+\\(\\s*(.*)\\s*\\)");
-  rx.setMinimal( true );
-  if ( rx.indexIn( args.join(" ") ) >= 0 && rx.numCaptures() > 0 ) {
-    QString modules = rx.cap(1);
-    QStringList mods = modules.split( ":", QString::SkipEmptyParts );
+  QRegExp rx1("--modules=([\\w,]*)");
+  rx1.setMinimal( false );
+  QRegExp rx2("--modules\\s+\\(\\s*(.*)\\s*\\)");
+  rx2.setMinimal( true );
+  int pos = 0;
+  while ( 1 ) {
+    QString modules;
+    int pos1 = rx1.indexIn( args, pos );
+    int pos2 = rx2.indexIn( args, pos );
+    if ( pos1 != -1 && pos2 != -1 ) {
+      modules = pos1 < pos2 ? rx1.cap( 1 ) : rx2.cap(1);
+      pos = pos1 < pos2 ? pos1 + rx1.matchedLength() : pos2 + rx2.matchedLength();
+    }
+    else if ( pos1 != -1 ) {
+      modules = rx1.cap( 1 );
+      pos = pos1 + rx1.matchedLength();
+    }
+    else if ( pos2 != -1 ) {
+      modules = rx2.cap( 1 );
+      pos = pos2 + rx2.matchedLength();
+    }
+    else {
+      break;
+    }
+
+    modList.clear();
+    QStringList mods = modules.split( QRegExp( "[:|,\\s]" ), QString::SkipEmptyParts );
     for ( int i = 0; i < mods.count(); i++ ) {
       if ( !mods[i].trimmed().isEmpty() )
 	modList.append( mods[i].trimmed() );
     }
   }
+
   if ( modList.isEmpty() ) {
     QString mods = resMgr->stringValue( "launch", "modules", QString() );
     modList = mods.split( ",", QString::SkipEmptyParts );
@@ -569,18 +592,22 @@ void CAM_Application::readModuleList()
   for ( QStringList::const_iterator it = modList.begin(); it != modList.end(); ++it )
   {
     QString modName = (*it).trimmed();
+
     if ( modName.isEmpty() )
-      continue;
+      continue;  // empty module name
+
+    if ( !moduleTitle( modName ).isEmpty() )
+      continue;  // already added
 
     QString modTitle = resMgr->stringValue( *it, "name", QString() );
     if ( modTitle.isEmpty() )
-      {
-	printf( "****************************************************************\n" );
-	printf( "*    Warning: %s not found in resources.\n", (*it).toLatin1().data() );
-	printf( "*    Module will not be available\n" );
-	printf( "****************************************************************\n" );
-	continue;
-      }
+    {
+      printf( "****************************************************************\n" );
+      printf( "*    Warning: %s not found in resources.\n", (*it).toLatin1().data() );
+      printf( "*    Module will not be available\n" );
+      printf( "****************************************************************\n" );
+      continue;
+    }
 
     QString modIcon = resMgr->stringValue( *it, "icon", QString() );
 

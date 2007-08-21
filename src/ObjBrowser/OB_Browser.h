@@ -52,8 +52,6 @@ public:
   OB_Browser( QWidget* = 0, QAbstractItemModel* = 0 );
   virtual ~OB_Browser();
 
-  QtxTreeView*           treeView() const;
-
   virtual QString        popupClientType() const;
 
   QAbstractItemModel*    model() const;
@@ -64,6 +62,9 @@ public:
 
   bool                   rootIsDecorated() const;
   void                   setRootIsDecorated( const bool );
+
+  bool                   sortMenuEnabled() const;
+  void                   setSortMenuEnabled( const bool );
 
   int                    autoOpenLevel() const;
   void                   setAutoOpenLevel( const int );
@@ -119,6 +120,7 @@ private slots:
 protected:
   //void              adjustWidth( QListViewItem* );
   //virtual void      updateText();
+  QtxTreeView*           treeView() const;
 
   virtual void           contextMenuEvent( QContextMenuEvent* );
 

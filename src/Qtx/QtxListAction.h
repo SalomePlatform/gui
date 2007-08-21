@@ -23,15 +23,14 @@
 #define QTXLISTACTION_H
 
 #include "Qtx.h"
-
+#include "QtxAction.h"
 #include <QStringList>
-#include <QWidgetAction>
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
 
-class QTX_EXPORT QtxListAction : public QWidgetAction
+class QTX_EXPORT QtxListAction : public QtxAction
 {
   Q_OBJECT
 

@@ -43,7 +43,6 @@
     <parameter name="LightApp"     value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
     <parameter name="SVTK"         value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
     <parameter name="ToolsGUI"     value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
-    <parameter name="LIGHT"        value="${LIGHT_ROOT_DIR}/share/salome/resources/light"/>
   </section>
   <section name="desktop" >
     <!-- Default GUI desktop state, position, size -->
@@ -53,11 +52,6 @@
     <parameter name="pos_y"  value="center"/>
     <parameter name="width"  value="800"/>
     <parameter name="height" value="600"/>
-  </section>
-  <section name="LIGHT">
-    <!-- LIGHT module settings -->
-    <parameter name="name"       value="Light"/>
-    <parameter name="icon"       value="LIGHT.png"/>
   </section>
   <section name="PyConsole">
     <!-- Python console preferences -->

@@ -230,6 +230,7 @@ void QtxTreeView::collapseLevels( const int levels )
   \brief Expand the branch specifed by the \index and all its
   children recursively.
   \param index model index to be expanded
+  \sa collapseAll()
 */
 void QtxTreeView::expandAll( const QModelIndex& index )
 {
@@ -240,6 +241,7 @@ void QtxTreeView::expandAll( const QModelIndex& index )
   \brief Collapse the branch specifed by the \index and all its
   children recursively.
   \param index model index to be collapsed
+  \sa expandAll()
 */
 void QtxTreeView::collapseAll( const QModelIndex& index )
 {
@@ -249,6 +251,7 @@ void QtxTreeView::collapseAll( const QModelIndex& index )
 /*
   \brief Enable/disable "Sorting" popup menu command for the header.
   \param enableSortMenu if \c true, enable "Sorting" menu command
+  \sa sortMenuEnabled()
 */
 void QtxTreeView::setSortMenuEnabled( const bool enableSortMenu )
 {
@@ -260,6 +263,7 @@ void QtxTreeView::setSortMenuEnabled( const bool enableSortMenu )
 /*
   \brief Check if "Sorting" popup menu command for the header is enabled.
   \return \c true if "Sorting" menu command is enabled
+  \sa setSortMenuEnabled()
 */
 bool QtxTreeView::sortMenuEnabled() const
 {

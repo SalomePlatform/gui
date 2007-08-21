@@ -24,7 +24,7 @@
 
 #include <QtxComboBox.h>
 #include <QtxActionSet.h>
-#include <QHBoxLayout>
+#include <QVBoxLayout>
 
 /*!
   \class LightApp_ModuleAction::ActionSet
@@ -161,9 +161,10 @@ QWidget* LightApp_ModuleAction::ComboAction::createWidget( QWidget* parent )
     return 0;
 
   QWidget* dumb = new QWidget( parent );
-  QHBoxLayout* l = new QHBoxLayout( dumb );l->setSpacing(0);l->setMargin(0);
+  QVBoxLayout* l = new QVBoxLayout( dumb );
+  l->setSpacing( 0 ); l->setMargin( 0 );
   QtxComboBox* cb = new QtxComboBox( dumb );
-  cb->setSizePolicy( QSizePolicy::Preferred, QSizePolicy::Preferred );
+  cb->setSizeAdjustPolicy( QComboBox::AdjustToContents );
   cb->setFocusPolicy( Qt::NoFocus );
   l->addWidget( cb );
 

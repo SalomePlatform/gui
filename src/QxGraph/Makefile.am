@@ -50,12 +50,12 @@ MOC_FILES= \
 nodist_libQxGraph_la_SOURCES= $(MOC_FILES)
 
 dist_salomeres_DATA= \
-	resources/view_fitall.png \
-	resources/view_fitarea.png \
-	resources/view_glpan.png \
-	resources/view_pan.png \
-	resources/view_reset.png \
-	resources/view_zoom.png
+	resources/qx_view_fitall.png \
+	resources/qx_view_fitarea.png \
+	resources/qx_view_glpan.png \
+	resources/qx_view_pan.png \
+	resources/qx_view_reset.png \
+	resources/qx_view_zoom.png
 
 nodist_salomeres_DATA= \
 	QxGraph_images.qm \

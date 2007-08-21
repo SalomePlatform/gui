@@ -41,8 +41,8 @@ MOC_FILES= \
 nodist_libSUPERVGraph_la_SOURCES= $(MOC_FILES)
 
 dist_salomeres_DATA= \
-	resources/view_pan.png \
-	resources/view_reset.png
+	resources/superv_view_pan.png \
+	resources/superv_view_reset.png
 
 nodist_salomeres_DATA= \
 	SUPERVGraph_images.qm \

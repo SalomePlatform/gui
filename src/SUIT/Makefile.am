@@ -107,13 +107,7 @@ MOC_FILES=				\
 
 nodist_libsuit_la_SOURCES=$(MOC_FILES)
 
-dist_salomeres_DATA =			\
-	resources/cascade.png		\
-	resources/htile.png		\
-	resources/vtile.png
-
 nodist_salomeres_DATA =			\
-	SUIT_images.qm			\
 	SUIT_msg_en.qm
 
 libsuit_la_CPPFLAGS=$(QT_INCLUDES) -I$(srcdir)/../Qtx

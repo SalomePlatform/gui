@@ -47,22 +47,22 @@ MOC_FILES=				\
 nodist_libstd_la_SOURCES= $(MOC_FILES)
 
 dist_salomeres_DATA=			\
-	resources/config		\
-	resources/cut.png		\
-	resources/copy.png		\
+	resources/cascade.png		\
 	resources/close.png		\
-	resources/cursor_rotate.png	\
-	resources/cursor_zoom.png	\
+	resources/copy.png		\
+	resources/cut.png		\
+	resources/delete.png		\
 	resources/help.png		\
+	resources/htile.png		\
 	resources/new.png		\
 	resources/open.png		\
-	resources/print.png		\
 	resources/paste.png		\
+	resources/print.png		\
 	resources/redo.png		\
 	resources/reset.png		\
 	resources/save.png		\
-	resources/undo_arrow.png	\
 	resources/undo.png		\
+	resources/vtile.png		\
 	resources/std.ini
 
 nodist_salomeres_DATA=	\

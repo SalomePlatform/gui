@@ -34,10 +34,6 @@
         <translation>copy.png</translation>
     </message>
     <message>
-        <source>ICON_APP_DEFAULTICON</source>
-        <translation>default.png</translation>
-    </message>
-    <message>
         <source>ICON_FILE_SAVE</source>
         <translation>save.png</translation>
     </message>
@@ -50,20 +46,20 @@
         <translation>htile.png</translation>
     </message>
     <message>
-        <source>ICON_APP_EDIT_REDO</source>
+        <source>ICON_EDIT_REDO</source>
         <translation>redo.png</translation>
     </message>
     <message>
-        <source>ICON_APP_EDIT_UNDO</source>
+        <source>ICON_EDIT_UNDO</source>
         <translation>undo.png</translation>
+    </message>
+    <message>
+        <source>ICON_EDIT_DELETE</source>
+        <translation>delete.png</translation>
     </message>
     <message>
         <source>ICON_DESK_WINDOW_VSPLIT</source>
         <translation>vtile.png</translation>
-    </message>
-    <message>
-        <source>ICON_DESK_DEFAULTICON</source>
-        <translation>default.png</translation>
     </message>
     <message>
         <source>ICON_DESK_WINDOW_HTILE</source>
@@ -80,17 +76,6 @@
     <message>
         <source>ICON_FILE_CLOSE</source>
         <translation>close.png</translation>
-    </message>
-</context>
-<context>
-    <name>SUIT_ViewPort</name>
-    <message>
-        <source>ICON_CURSOR_ZOOM</source>
-        <translation>cursor_zoom.png</translation>
-    </message>
-    <message>
-        <source>ICON_CURSOR_ROTATE</source>
-        <translation>cursor_rotate.png</translation>
     </message>
 </context>
 </TS>

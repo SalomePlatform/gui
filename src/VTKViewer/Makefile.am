@@ -77,21 +77,21 @@ MOC_FILES= \
 nodist_libVTKViewer_la_SOURCES= $(MOC_FILES)
 
 dist_salomeres_DATA=\
-	resources/view_back.png \
-	resources/view_bottom.png \
-	resources/view_camera_dump.png \
-	resources/view_fitall.png \
-	resources/view_fitarea.png \
-	resources/view_front.png \
-	resources/view_glpan.png \
-	resources/view_left.png \
-	resources/view_pan.png \
-	resources/view_reset.png \
-	resources/view_right.png \
-	resources/view_rotate.png \
-	resources/view_top.png \
-	resources/view_triedre.png \
-	resources/view_zoom.png
+	resources/vtk_view_back.png \
+	resources/vtk_view_bottom.png \
+	resources/vtk_view_camera_dump.png \
+	resources/vtk_view_fitall.png \
+	resources/vtk_view_fitarea.png \
+	resources/vtk_view_front.png \
+	resources/vtk_view_glpan.png \
+	resources/vtk_view_left.png \
+	resources/vtk_view_pan.png \
+	resources/vtk_view_reset.png \
+	resources/vtk_view_right.png \
+	resources/vtk_view_rotate.png \
+	resources/vtk_view_top.png \
+	resources/vtk_view_triedre.png \
+	resources/vtk_view_zoom.png
 
 nodist_salomeres_DATA= \
 	VTKViewer_images.qm \

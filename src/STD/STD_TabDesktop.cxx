@@ -56,6 +56,16 @@ myWorkstackAction( 0 )
   myWorkstack->setAccel( QtxWorkstack::SplitHorizontal, Qt::SHIFT + Qt::Key_H );
   myWorkstack->setAccel( QtxWorkstack::Close,           Qt::SHIFT + Qt::Key_C );
 
+  SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+  if ( resMgr ) {
+    myWorkstack->setIcon( QtxWorkstack::SplitVertical,   
+			  resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_HSPLIT" ) ) );
+    myWorkstack->setIcon( QtxWorkstack::SplitHorizontal,
+			  resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_VSPLIT" ) ) );
+    myWorkstack->setIcon( QtxWorkstack::Close,
+			  resMgr->loadPixmap( "STD", tr( "ICON_FILE_CLOSE" ) ));
+  }
+
   connect( myWorkstack, SIGNAL( windowActivated( QWidget* ) ),
            this, SLOT( onWindowActivated( QWidget* ) ) );
 
@@ -190,12 +200,14 @@ void STD_TabDesktop::createActions()
                               resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_HSPLIT" ) ) );
   myWorkstackAction->setText( QtxWorkstackAction::SplitHorizontal, tr( "MEN_DESK_WINDOW_HSPLIT" ) );
   myWorkstackAction->setStatusTip( QtxWorkstackAction::SplitHorizontal, tr( "PRP_DESK_WINDOW_HSPLIT" ) );
+  myWorkstackAction->setAccel( QtxWorkstackAction::SplitHorizontal, Qt::SHIFT + Qt::Key_H );
 
   // Split Vertical
   myWorkstackAction->setIcon( QtxWorkstackAction::SplitVertical,
                               resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_VSPLIT" ) ) );
   myWorkstackAction->setText( QtxWorkstackAction::SplitVertical, tr( "MEN_DESK_WINDOW_VSPLIT" ) );
   myWorkstackAction->setStatusTip( QtxWorkstackAction::SplitVertical, tr( "PRP_DESK_WINDOW_VSPLIT" ) );
+  myWorkstackAction->setAccel( QtxWorkstackAction::SplitVertical,   Qt::SHIFT + Qt::Key_V );
 
   QtxActionMenuMgr* mMgr = menuMgr();
   if ( !mMgr )

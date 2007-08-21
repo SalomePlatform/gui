@@ -1893,6 +1893,35 @@ int QtxWorkstack::accel( const int id ) const
 }
 
 /*!
+  \brief Get icon for the specified action.
+
+  If \a id is invalid, null icon is returned.
+
+  \param id menu action ID
+  \return menu item icon
+*/
+QIcon QtxWorkstack::icon( const int id ) const
+{
+  QIcon ico;
+  if ( myActionsMap.contains( id ) )
+    ico = myActionsMap[id]->icon();
+  return ico;
+}
+
+/*!
+  \brief Set menu item icon for the specified action.
+  \param id menu action ID
+  \param ico new menu item icon
+*/
+void QtxWorkstack::setIcon( const int id, const QIcon& icon )
+{
+  if ( !myActionsMap.contains( id ) )
+    return;
+
+  myActionsMap[id]->setIcon( icon );
+}
+
+/*!
   \brief Set actions to be visible in the context popup menu.
   
   Actions, which IDs are set in \a flags parameter, will be shown in the 

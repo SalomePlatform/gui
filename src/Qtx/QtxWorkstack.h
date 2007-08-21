@@ -79,6 +79,9 @@ public:
   int                 accel( const int ) const;
   void                setAccel( const int, const int );
 
+  QIcon               icon( const int ) const;
+  void                setIcon( const int, const QIcon& );
+
   void                setMenuActions( const int );
   int                 menuActions() const;
 

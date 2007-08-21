@@ -84,18 +84,14 @@ dist_salomeres_DATA=\
 	resources/view_fitarea.png \
 	resources/view_front.png \
 	resources/view_glpan.png \
-	resources/view_graduated_axes.png \
 	resources/view_left.png \
 	resources/view_pan.png \
 	resources/view_reset.png \
 	resources/view_right.png \
 	resources/view_rotate.png \
-	resources/view_scaling.png \
 	resources/view_top.png \
 	resources/view_triedre.png \
-	resources/view_update_rate.png \
-	resources/view_zoom.png \
-	resources/view_rotation_point.png
+	resources/view_zoom.png
 
 nodist_salomeres_DATA= \
 	VTKViewer_images.qm \

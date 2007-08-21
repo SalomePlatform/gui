@@ -241,8 +241,11 @@ void SUIT_Application::setDesktop( SUIT_Desktop* desk )
 
   delete myDesktop;
   myDesktop = desk;
-  if ( myDesktop )
+  if ( myDesktop ) {
     connect( myDesktop, SIGNAL( activated() ), this, SLOT( onDesktopActivated() ) );
+    // Force desktop activation (NPAL16628)
+    QApplication::postEvent(myDesktop, new QEvent(QEvent::WindowActivate));
+  }
 }
 
 /*!

@@ -103,7 +103,8 @@ libSalomeApp_la_LIBADD= $(KERNEL_LDFLAGS) -lOpUtil -lSALOMELocalTrace -lSalomeDS
 	../OCCViewer/libOCCViewer.la ../VTKViewer/libVTKViewer.la ../OBJECT/libSalomeObject.la \
 	../SVTK/libSVTK.la ../SOCC/libSOCC.la ../PyInterp/libPyInterp.la \
 	../PyConsole/libPyConsole.la ../LogWindow/libLogWindow.la \
-	../LightApp/libLightApp.la ../TOOLSGUI/libToolsGUI.la $(CAS_KERNEL)
+	../LightApp/libLightApp.la ../TOOLSGUI/libToolsGUI.la ../Session/libSalomeSession.la \
+	$(CAS_KERNEL)
 
 # QT 4 PORTING TODO
 #../ObjBrowser/libObjBrowser.la

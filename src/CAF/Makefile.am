@@ -44,12 +44,7 @@ MOC_FILES= \
 	CAF_Study_moc.cxx
 nodist_libcaf_la_SOURCES= $(MOC_FILES)
 
-dist_salomeres_DATA = \
-	resources/redo.png \
-	resources/undo.png
-
 nodist_salomeres_DATA = \
-	CAF_images.qm \
 	CAF_msg_en.qm
 
 libcaf_la_CPPFLAGS=$(QT_INCLUDES) $(CAS_CPPFLAGS) -I$(srcdir)/../STD -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx

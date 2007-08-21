@@ -1105,7 +1105,7 @@ myCancelBtn(0)
 
     QPixmap anIcon;
     if( mgr )
-      anIcon = mgr->loadPixmap( "STD", tr( "ICON_APPLY" ), false );
+      anIcon = mgr->loadPixmap( "SalomeApp", tr( "ICON_APPLY" ), false );
 
     myApplyBtn->setIcon(anIcon);
     myApplyBtn->setEnabled(false);
@@ -1120,7 +1120,7 @@ myCancelBtn(0)
     myCancelBtn = new QToolButton(this);
     QPixmap anIcon;
     if( mgr )
-      anIcon = mgr->loadPixmap( "STD", tr( "ICON_CANCEL" ), false );
+      anIcon = mgr->loadPixmap( "SalomeApp", tr( "ICON_CANCEL" ), false );
     myCancelBtn->setIcon(anIcon);
     myCancelBtn->setEnabled(false);
     myCancelBtn->setSizePolicy(QSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed));

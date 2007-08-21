@@ -50,7 +50,6 @@ nodist_libToolsGUI_la_SOURCES= $(MOC_FILES)
 
 # .po files to transform in .qm
 nodist_salomeres_DATA= \
-	ToolsGUI_icons.qm \
 	ToolsGUI_msg_en.qm
 
 libToolsGUI_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) $(BOOST_CPPFLAGS) \

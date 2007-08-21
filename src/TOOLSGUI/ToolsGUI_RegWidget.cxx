@@ -60,132 +60,6 @@ typedef int PIXELS;
 #define SPACING_SIZE      6
 #define MIN_SPIN_WIDTH  100 
 
-static const char* SEPARATOR = ":";
-
-/*!
-  \brief Add system-dependant slash to the end of path.
-  \internal
-  \param path path string to be extended by the slash
-  \return modified path string
-*/
-static QString addSlash( const QString& path )
-{
-  return Qtx::addSlash( path );
-}
-
-/*!
-  \brief Find file.
-  \internal
-
-  The search of the file is done in the following order:
-  - ${HOME}/.salome/resources directory
-  - ${SALOME_SITE_DIR}/share/${SALOME_SITE_NAME}/resources
-    (SALOME_SITE_NAME defaults to the "salome")
-  - ${KERNEL_ROOT_DIR}/share/salome/resources/kernel directory
-  - ${GUI_ROOT_DIR}/share/salome/resources/gui directory
-  - ${CSF_SalomeResources} directory (it can be directory list, 
-    separated by ":" symbol)
-
-  \param filename file name
-  \return file path if it is found or null string otherwise
-*/
-static QString findFile( QString filename )
-{
-  QString dir;
-  char* cenv;
-  
-  // Try ${HOME}/.salome/resources directory
-  cenv = getenv( "HOME" );
-  if ( cenv ) {
-    dir.sprintf( "%s", cenv );
-    if ( !dir.isEmpty() ) {
-      dir = addSlash(dir) ;
-      dir = dir + ".salome" ;
-      dir = addSlash(dir) ;
-      dir = dir + "resources" ;
-      dir = addSlash(dir) ;
-      QFileInfo fileInfo( dir + filename );
-      if ( fileInfo.isFile() && fileInfo.exists() )
-	return fileInfo.filePath();
-    }
-  }
-  // Try ${SALOME_SITE_DIR}/share/salome/resources directory
-  cenv = getenv( "SALOME_SITE_DIR" );
-  if ( cenv ) {
-    dir.sprintf( "%s", cenv );
-    if ( !dir.isEmpty() ) {
-      dir = addSlash(dir) ;
-      dir = dir + "share" ;
-      dir = addSlash(dir) ;
-      cenv = getenv("SALOME_SITE_NAME");
-      if (cenv)  dir = dir + cenv;
-      else       dir = dir + "salome" ;
-      dir = addSlash(dir) ;
-      dir = dir + "resources" ;
-      dir = addSlash(dir) ;
-      QFileInfo fileInfo( dir + filename );
-      if ( fileInfo.isFile() && fileInfo.exists() )
-	return fileInfo.filePath();
-    }
-  }
-  // Try ${KERNEL_ROOT_DIR}/share/salome/resources/kernel directory
-  cenv = getenv( "KERNEL_ROOT_DIR" );
-  if ( cenv ) {
-    dir.sprintf( "%s", cenv );
-    if ( !dir.isEmpty() ) {
-      dir = addSlash(dir) ;
-      dir = dir + "share" ;
-      dir = addSlash(dir) ;
-      dir = dir + "salome" ;
-      dir = addSlash(dir) ;
-      dir = dir + "resources" ;
-      dir = addSlash(dir) ;
-      dir = dir + "kernel" ;
-      dir = addSlash(dir) ;
-      QFileInfo fileInfo( dir + filename );
-      if ( fileInfo.isFile() && fileInfo.exists() )
-	return fileInfo.filePath();
-    }
-  }
-
-  // Try ${GUI_ROOT_DIR}/share/salome/resources/gui directory
-  cenv = getenv( "GUI_ROOT_DIR" );
-  if ( cenv ) {
-    dir.sprintf( "%s", cenv );
-    if ( !dir.isEmpty() ) {
-      dir = addSlash(dir) ;
-      dir = dir + "share" ;
-      dir = addSlash(dir) ;
-      dir = dir + "salome" ;
-      dir = addSlash(dir) ;
-      dir = dir + "resources" ;
-      dir = addSlash(dir) ;
-      dir = dir + "gui" ;
-      dir = addSlash(dir) ;
-      QFileInfo fileInfo( dir + filename );
-      if ( fileInfo.isFile() && fileInfo.exists() )
-	return fileInfo.filePath();
-    }
-  }
-
-  // Try CSF_SalomeResources env.var directory ( or directory list )
-  cenv = getenv( "CSF_SalomeResources" );
-  if ( cenv ) {
-  dir.sprintf( "%s", cenv );
-  if ( !dir.isEmpty() )
-  {
-    QStringList dirList = dir.split( SEPARATOR, QString::SkipEmptyParts ); // skip empty entries
-    for ( int i = 0; i < (int)dirList.count(); i++ )
-    {
-	    QFileInfo fileInfo( addSlash( dirList[ i ] ) + filename );
-	    if ( fileInfo.isFile() && fileInfo.exists() )
-	      return fileInfo.filePath();
-      }
-    }
-  }
-  return filename;
-}
-
 #define BOLD( text ) ( QString( "<b>" ) + QString( text ) + QString( "</b>" ) )
 
 static const char* const time_data[] = { 
@@ -626,11 +500,8 @@ ToolsGUI_RegWidget::ToolsGUI_RegWidget( CORBA::ORB_var& orb, QWidget* parent )
 {
   setAttribute( Qt::WA_DeleteOnClose );
 
-  QString aFile = findFile("default.png");
-
-  QPixmap pm ( aFile );
-  if ( !pm.isNull() )
-    setWindowIcon( pm );
+  if ( parent )
+    setWindowIcon( parent->windowIcon() );
 
   // pixmap for buttons
   QPixmap image_refresh ( ( const char** ) refresh_data );

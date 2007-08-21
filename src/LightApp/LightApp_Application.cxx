@@ -460,7 +460,8 @@ void LightApp_Application::createActions()
     root = Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") +
                           Qtx::addSlash("salome") + Qtx::addSlash("gui") +  Qtx::addSlash("GUI") );
     if ( QFileInfo( root + aFileName ).exists() ) {
-      a = createAction( id, tr( QString("GUI Help").toLatin1().constData() ), QIcon(),
+      a = createAction( id, tr( QString("GUI Help").toLatin1().constData() ), 
+			resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false ),
 			tr( QString("GUI Help").toLatin1().constData() ),
 			tr( QString("GUI Help").toLatin1().constData() ),
 			0, desk, false, this, SLOT( onHelpContentsModule() ) );
@@ -475,7 +476,8 @@ void LightApp_Application::createActions()
     root = Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") + 
 			  Qtx::addSlash("salome") );
     if ( QFileInfo( root + aFN ).exists() ) {
-      a = createAction( id, tr( QString("KERNEL Help").toLatin1().constData() ), QIcon(),
+      a = createAction( id, tr( QString("KERNEL Help").toLatin1().constData() ), 
+			resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false ),
 			tr( QString("KERNEL Help").toLatin1().constData() ),
 			tr( QString("KERNEL Help").toLatin1().constData() ),
 			0, desk, false, this, SLOT( onHelpContentsModule() ) );
@@ -499,7 +501,8 @@ void LightApp_Application::createActions()
                             Qtx::addSlash("salome") + Qtx::addSlash("gui") +  Qtx::addSlash(modName) );
       if ( QFileInfo( root + aFileName ).exists() ) {
 
-	QAction* a = createAction( id, tr( (moduleTitle(modName) + QString(" Help")).toLatin1().constData() ), QIcon(),
+	QAction* a = createAction( id, tr( (moduleTitle(modName) + QString(" Help")).toLatin1().constData() ),
+				   resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false ),
 				   tr( (moduleTitle(modName) + QString(" Help")).toLatin1().constData() ),
 				   tr( (moduleTitle(modName) + QString(" Help")).toLatin1().constData() ),
 				   0, desk, false, this, SLOT( onHelpContentsModule() ) );

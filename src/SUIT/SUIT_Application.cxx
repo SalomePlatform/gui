@@ -25,6 +25,7 @@
 #include <qlabel.h>
 #include <qtimer.h>
 #include <qstatusbar.h>
+#include <qapplication.h>
 
 #include <QtxAction.h>
 #include <QtxActionMenuMgr.h>

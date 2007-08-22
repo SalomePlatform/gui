@@ -533,7 +533,7 @@ void LightApp_Application::createActions()
 
   if( modList.count() > 1 )
   {
-    int modTBar = createTool( tr( "INF_TOOLBAR_MODULES" ) );
+    QtxToolBar* modTBar = new QtxToolBar( true, tr( "INF_TOOLBAR_MODULES" ), desk );
 
     LightApp_ModuleAction* moduleAction = 
       new LightApp_ModuleAction( tr( "APP_NAME" ), defIcon, desk );
@@ -569,7 +569,8 @@ void LightApp_Application::createActions()
     }
 
     connect( moduleAction, SIGNAL( moduleActivated( const QString& ) ), this, SLOT( onModuleActivation( const QString& ) ) );
-    createTool( registerAction( ModulesListId, moduleAction ), modTBar );
+    registerAction( ModulesListId, moduleAction );
+    modTBar->addAction( moduleAction );
   }
 
   // New window

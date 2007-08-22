@@ -6,7 +6,7 @@
 # Modified by : Mikhail PONIKAROV (OCN) - autotools usage
 #
 
-AC_INIT([Salome2 Project GUI module], [4.0.0], [webmaster.salome@opencascade.com], [salome])
+AC_INIT([Salome2 Project GUI module], [5.0.0], [webmaster.salome@opencascade.com], [salome])
 AC_CONFIG_AUX_DIR(salome_adm/unix/config_files)
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET

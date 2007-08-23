@@ -1382,7 +1382,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
       QBrush fill;
       if (opt->state & State_NoChange)
         fill = QBrush( opt->palette.color( QPalette::Base ), Qt::Dense4Pattern);
-      else if (opt->state & ( State_Sunken | !State_Enabled ) )
+      else if (opt->state & ( State_Sunken | ~State_Enabled ) )
         fill = opt->palette.color( QPalette::Window );
       else if (opt->state & State_Enabled) {
         if (!(opt->state & State_Off) )

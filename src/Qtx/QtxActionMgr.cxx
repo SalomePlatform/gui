@@ -40,7 +40,7 @@ static qtx_actionlist qtx_separator_actions;
 void qtxSeparatorActionCleanup()
 {
   for ( qtx_actionlist::iterator it = qtx_separator_actions.begin(); it != qtx_separator_actions.end(); ++it )
-    delete *it;
+    delete (QAction*)(*it);
 }
 
 /*!

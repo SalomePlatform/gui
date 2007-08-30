@@ -51,6 +51,7 @@ public:
 
   virtual bool        isSaved()  const;
   virtual bool        isModified() const;
+  virtual void        Modified();
 
   virtual void        addComponent   ( const CAM_DataModel* dm);
 

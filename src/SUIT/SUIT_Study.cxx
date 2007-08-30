@@ -201,6 +201,15 @@ void SUIT_Study::setIsModified( const bool on )
 }
 
 /*!
+  Set study modified to \a on.
+ */
+void SUIT_Study::Modified()
+{
+  setIsModified( TRUE );
+  sendChangesNotification();
+}
+
+/*!
   Set root object.
  */
 void SUIT_Study::setRoot( SUIT_DataObject* obj )

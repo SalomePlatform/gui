@@ -50,6 +50,7 @@ public:
 
   virtual bool      isSaved()  const;
   virtual bool      isModified() const;
+  virtual void      Modified();
 
   virtual void      createDocument();
   virtual void      closeDocument( bool = true );

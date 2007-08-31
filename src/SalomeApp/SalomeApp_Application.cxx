@@ -154,16 +154,11 @@ void SalomeApp_Application::start()
   LightApp_Application::start();
 
   SalomeApp_EventFilter::Init();
-}
 
-/*!Just registered in the session*/
-void SalomeApp_Application::Registered()
-{
-  if (!myIsInitiallyRegistered)
-  {
-    myIsInitiallyRegistered = true;
+  static bool isFirst = true;
+  if ( isFirst ) {
+    isFirst = false;
 
-    // execute python scripts
     QString hdffile;
     QStringList pyfiles;
 

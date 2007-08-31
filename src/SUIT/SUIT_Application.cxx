@@ -38,8 +38,7 @@ SUIT_Application::SUIT_Application()
   : QObject( 0 ),
     myStudy( 0 ),
     myDesktop( 0 ),
-    myStatusLabel( 0 ),
-    myIsInitiallyRegistered( false )
+    myStatusLabel( 0 )
 {
 }
 

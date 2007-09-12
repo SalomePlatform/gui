@@ -547,7 +547,7 @@ VTKViewer_OrderedTriangulator
   int numPts = myCell->GetNumberOfPoints();
   if ( numPts > 0 )
   {
-    myTriangulator->InitTriangulation(0.0,1.0, 0.0,1.0, 0.0,1.0, numPts);
+    myTriangulator->InitTriangulation(0.0, 1.0, 0.0, 1.0, 0.0, 1.0, numPts);
 
     vtkFloatingPointType x[3], p[3];
     vtkIdType ptId;
@@ -624,7 +624,7 @@ VTKViewer_OrderedTriangulator
   for (int i=0; i<3; i++)
   {
     myTriangle->PointIds->SetId(i,cptr[i+1]);
-    myTriangle->Points->SetPoint(i,myCell->Points->GetPoint(cptr[i+1]));
+    myTriangle->Points->SetPoint(i,myInput->GetPoints()->GetPoint(cptr[i+1]));
   }
 
   return myTriangle;

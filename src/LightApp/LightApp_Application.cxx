@@ -59,6 +59,7 @@
 #include <QtxMRUAction.h>
 #include <QtxDockAction.h>
 #include <QtxToolBar.h>
+#include <qprocess.h>
 
 #include <LogWindow.h>
 #include <OB_Browser.h>
@@ -923,20 +924,22 @@ public:
 #else
       myHelpFile("file:" + theHelpFile + theContext),
 #endif
-      myStatus(0),
+      myStatus(false),
       myLApp( app )
 {
 };
 
   virtual void run()
   {
-    QString aCommand;
-
     if ( !myApp.isEmpty())
       {
-	aCommand.sprintf("%s %s %s",myApp.latin1(),myParams.latin1(),myHelpFile.latin1());
-	myStatus = system(aCommand);
-	if(myStatus != 0)
+	QProcess* proc = new QProcess();
+	proc->addArgument( myApp );
+	if (!myParams.isEmpty()) proc->addArgument( myParams );
+	proc->addArgument( myHelpFile );
+	myStatus = proc->start();
+
+	if(!myStatus)
 	  {
 	    QCustomEvent* ce2000 = new QCustomEvent( 2000 );
 	    QString* msg = new QString( QObject::tr("EXTERNAL_BROWSER_CANNOT_SHOW_PAGE").arg(myApp).arg(myHelpFile) );
@@ -950,7 +953,7 @@ private:
   QString myApp;
   QString myParams;
   QString myHelpFile;
-  int myStatus;
+  bool myStatus;
   LightApp_Application* myLApp;
 };
 

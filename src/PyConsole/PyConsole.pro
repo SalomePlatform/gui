@@ -5,7 +5,7 @@ MOC_DIR = ../../moc
 OBJECTS_DIR = ../../$(CONFIG_ID)/obj/$$TARGET
 
 INCLUDEPATH += ../../include $$(PYTHONINC)
-unix:LIBS  += -L../../$(CONFIG_ID)/lib -L$$(PYTHONLIB) -lpython2.3 -lSUIT -lPyInterp
+unix:LIBS  += -L../../$(CONFIG_ID)/lib -L$$(PYTHONLIB) -lpython2.5 -lSUIT -lPyInterp
 win32:LIBS += /LIBPATH:$$(PYTHONLIB) ../../lib/pyinterp.lib ../../lib/suit.lib
 
 CONFIG -= debug release debug_and_release

@@ -1,7 +1,8 @@
 TEMPLATE = lib
-DESTDIR = ../../lib
+
+DESTDIR = ../../$(CONFIG_ID)/lib
 MOC_DIR = ../../moc
-OBJECTS_DIR = ../../obj/$$TARGET
+OBJECTS_DIR = ../../$(CONFIG_ID)/obj/$$TARGET
 
 QT += xml
 CONFIG -= debug release debug_and_release

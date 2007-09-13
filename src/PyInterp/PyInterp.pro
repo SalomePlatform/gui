@@ -1,7 +1,8 @@
 TEMPLATE = lib
-DESTDIR = ../../lib
+
+DESTDIR = ../../$(CONFIG_ID)/lib
 MOC_DIR = ../../moc
-OBJECTS_DIR = ../../obj/$$TARGET
+OBJECTS_DIR = ../../$(CONFIG_ID)/obj/$$TARGET
 
 INCLUDEPATH += ../../include $$(PYTHONINC)
 unix:LIBS  += -L$$(PYTHONLIB) -lpython2.3

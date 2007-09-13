@@ -1,11 +1,12 @@
 TEMPLATE = lib
-DESTDIR = ../../lib
+
+DESTDIR = ../../$(CONFIG_ID)/lib
 MOC_DIR = ../../moc
-OBJECTS_DIR = ../../obj/$$TARGET
+OBJECTS_DIR = ../../$(CONFIG_ID)/obj/$$TARGET
 
 INCLUDEPATH = ../../include
 win32:LIBS += ../../lib/suit.lib ../../lib/qtx.lib
-unix:LIBS += -L../../lib -lSUIT -lQtx
+unix:LIBS += -L../../$(CONFIG_ID)/lib -lSUIT -lQtx
 
 CONFIG -= debug release debug_and_release
 CONFIG += qt thread debug dll shared

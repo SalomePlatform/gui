@@ -733,9 +733,10 @@ SVTK_ViewWindow
 void
 SVTK_ViewWindow
 ::SetSelectionTolerance(const double& theTolNodes, 
-			const double& theTolItems)
+			const double& theTolItems,
+			const double& theTolObjects)
 {
-  myView->SetSelectionTolerance(theTolNodes,theTolItems);
+  myView->SetSelectionTolerance(theTolNodes,theTolItems, theTolObjects);
 }
 
 int convertAction( const int accelAction )

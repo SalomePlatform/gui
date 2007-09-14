@@ -41,6 +41,11 @@
 
 class SALOME_Actor;
 
+class SVTK_SelectionEvent;
+
+class vtkRenderer;
+
+
 //! Define an abstract interface for selection in SVTK package
 /*!
   The class implements selection functionality through storing corresponding
@@ -204,6 +209,15 @@ public:
   virtual
   void 
   EndPickCallback() = 0;
+
+  //----------------------------------------------------------------------------
+  virtual
+  SALOME_Actor*
+  Pick(const SVTK_SelectionEvent* theEvent, vtkRenderer* theRenderer) const =0;
+
+  virtual
+  void
+  SetTolerance(const double& theTolerance) = 0;
 };
 
 

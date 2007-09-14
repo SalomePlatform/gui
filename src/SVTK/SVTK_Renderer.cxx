@@ -81,8 +81,6 @@ SVTK_Renderer
   myDevice->Delete();
   myTransform->Delete();
 
-  SetSelectionTolerance();
-
   myPointPicker->Delete();
   myCellPicker->Delete();
 
@@ -225,6 +223,7 @@ SVTK_Renderer
 {
   myInteractor = theInteractor;
   mySelector = theSelector;
+  SetSelectionTolerance();
 }
 
 /*!
@@ -348,13 +347,16 @@ SVTK_Renderer
 void
 SVTK_Renderer
 ::SetSelectionTolerance(const double& theTolNodes, 
-			const double& theTolCell)
+			const double& theTolCell,
+			const double& theTolObjects)
 {
   myPointPicker->SetTolerance( theTolNodes );
   myCellPicker->SetTolerance( theTolCell );
 
   myPointRectPicker->SetTolerance( theTolNodes );
   myCellRectPicker->SetTolerance( theTolCell );
+
+  mySelector->SetTolerance( theTolObjects );
 }
 
 

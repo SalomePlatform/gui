@@ -243,7 +243,8 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
   virtual
   void
   SetSelectionTolerance(const double& theTolNodes = 0.025, 
-			const double& theTolCell = 0.001);
+			const double& theTolCell = 0.001,
+			const double& theTolObjects = 0.025);
 
   //! Methods to save/restore visual parameters of a view (pan, zoom, etc.)
   virtual 

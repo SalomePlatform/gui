@@ -48,7 +48,6 @@
 #include <vtkCommand.h>
 #include <vtkCamera.h>
 #include <vtkRenderer.h>
-#include <vtkPicker.h>
 #include <vtkPointPicker.h>
 #include <vtkRenderWindow.h>
 #include <vtkRenderWindowInteractor.h>
@@ -82,26 +81,6 @@ namespace
     theInteractor->GetEventPosition(theX,theY);
     theY = theInteractor->GetSize()[1] - theY - 1;
   }
-
-  //==================================================================
-  // function : GetFirstSALOMEActor
-  // purpose  :
-  //==================================================================
-  struct THaveIO
-  {
-    bool
-    operator()(SALOME_Actor* theActor)
-    {
-      return theActor->hasIO();
-    }
-  };
-
-  inline
-  SALOME_Actor* 
-  GetFirstSALOMEActor(vtkPicker *thePicker)
-  {
-    return VTK::Find<SALOME_Actor>(thePicker->GetActors(),THaveIO());
-  }
 }
 
 
@@ -114,7 +93,6 @@ vtkStandardNewMacro(SVTK_InteractorStyle);
 SVTK_InteractorStyle
 ::SVTK_InteractorStyle():
   mySelectionEvent(new SVTK_SelectionEvent()),
-  myPicker(vtkPicker::New()),
   myPointPicker(vtkPointPicker::New()),
   myLastHighlitedActor(NULL),
   myLastPreHighlitedActor(NULL),
@@ -122,7 +100,6 @@ SVTK_InteractorStyle
   myControllerOnKeyDown(SVTK_ControllerOnKeyDown::New()),
   myHighlightRotationPointActor(SVTK_Actor::New())
 {
-  myPicker->Delete();
   myPointPicker->Delete();
 
   myPointPicker->SetTolerance(0.025);
@@ -516,11 +493,10 @@ SVTK_InteractorStyle
     else if ( myCurrRotationPointType == SVTK::StartPointSelection )
     {
       SVTK_SelectionEvent* aSelectionEvent = GetSelectionEventFlipY();
-      myPicker->Pick(aSelectionEvent->myX, 
-		     aSelectionEvent->myY, 
-		     0.0, 
-		     GetCurrentRenderer());
-      if ( SALOME_Actor* anActor = GetFirstSALOMEActor(myPicker.GetPointer()) )
+
+      SALOME_Actor* anActor = GetSelector()->Pick(aSelectionEvent, GetCurrentRenderer());
+      
+      if ( anActor )
       {
 	myPointPicker->Pick( aSelectionEvent->myX,
 			     aSelectionEvent->myY, 
@@ -1097,12 +1073,8 @@ SVTK_InteractorStyle
           this->FindPokedRenderer(aSelectionEvent->myX, aSelectionEvent->myY);
 	  Interactor->StartPickCallback();
 
-          myPicker->Pick(aSelectionEvent->myX, 
-			 aSelectionEvent->myY, 
-			 0.0, 
-			 GetCurrentRenderer());
-	  //
-	  SALOME_Actor* anActor = GetFirstSALOMEActor(myPicker.GetPointer());
+	  SALOME_Actor* anActor = GetSelector()->Pick(aSelectionEvent, GetCurrentRenderer());
+	  
 	  aSelectionEvent->myIsRectangle = false;
 
 	  if(!myShiftState)
@@ -1234,13 +1206,8 @@ SVTK_InteractorStyle
 
   bool anIsChanged = false;
 
-  myPicker->Pick(aSelectionEvent->myX, 
-		 aSelectionEvent->myY, 
-		 0.0, 
-		 GetCurrentRenderer());
+  SALOME_Actor *anActor = GetSelector()->Pick(aSelectionEvent, GetCurrentRenderer());
   
-  SALOME_Actor *anActor = GetFirstSALOMEActor(myPicker.GetPointer());
-
   if ( myCurrRotationPointType == SVTK::StartPointSelection )
   {
     myHighlightRotationPointActor->SetVisibility( false );

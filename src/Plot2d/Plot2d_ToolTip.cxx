@@ -23,7 +23,9 @@
 #include <Plot2d_ViewFrame.h>
 #include <Plot2d_Curve.h>
 
-#include <qfontmetrics.h>
+#include <QFontMetrics>
+#include <QEvent>
+#include <QMouseEvent>
 
 #include <qwt_plot.h>
 #include <qwt_plot_canvas.h>
@@ -46,23 +48,19 @@ Plot2d_ToolTip::~Plot2d_ToolTip()
 
 void Plot2d_ToolTip::onToolTip( QPoint p, QString& str, QFont& f, QRect& txtRect, QRect& rect )
 {
-  int curInd, pInd, dist;
-  double x, y;
-  curInd = myPlot->closestCurve( p.x(), p.y(), dist, x, y, pInd );
+  int pInd;
+  double dist;
 
-  if( dist>maxDist )
-    return;
-  
-  Plot2d_Curve* c = myFrame->getCurves().find( curInd );
-  if( !c )
+  Plot2d_Curve* c = myPlot->getClosestCurve( p, dist, pInd );
+  if( !c || dist>maxDist )
     return;
 
   str = c->text( pInd );
-  if( !str )
+  if( str.isEmpty() )
     return;
 
   QFontMetrics m( f );
-  QStringList lst = QStringList::split( "\n", str );
+  QStringList lst = str.split( "\n", QString::SkipEmptyParts );
   QStringList::const_iterator anIt = lst.begin(), aLast = lst.end();
   int w = 0, h = 0;
   for( ; anIt!=aLast; anIt++ )
@@ -86,7 +84,7 @@ bool Plot2d_ToolTip::eventFilter( QObject* o, QEvent* e )
   if( e && e->type() == QEvent::MouseMove )
   {
     QMouseEvent* me = ( QMouseEvent* )e;
-    if( me->state()==0 )
+    if( me->modifiers()==0 )
       return true;
   }
   return res;

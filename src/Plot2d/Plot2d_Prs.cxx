@@ -33,18 +33,16 @@
   Default constructor
 */
 Plot2d_Prs::Plot2d_Prs( bool theDelete )
-: mySecondY( false)
+: mySecondY( false), myIsAutoDel( theDelete )
 {
-  setAutoDel(theDelete);
 }
 
 /*!
   Standard constructor
 */
 Plot2d_Prs::Plot2d_Prs( const Plot2d_Curve* obj, bool theDelete )
-: mySecondY( false)
+: mySecondY( false), myIsAutoDel( theDelete )
 {
-  setAutoDel(theDelete);
   AddObject( obj ); 
 }
 
@@ -53,6 +51,8 @@ Plot2d_Prs::Plot2d_Prs( const Plot2d_Curve* obj, bool theDelete )
 */
 Plot2d_Prs::~Plot2d_Prs()
 { 
+  if ( myIsAutoDel )
+    qDeleteAll( myCurves );
 }
 
 /*!
@@ -95,5 +95,5 @@ bool Plot2d_Prs::isSecondY() const
 */
 void Plot2d_Prs::setAutoDel(bool theDel)
 {
-  myCurves.setAutoDelete(theDel);
+  myIsAutoDel = theDel;
 }

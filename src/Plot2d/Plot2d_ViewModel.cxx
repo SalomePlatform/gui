@@ -24,7 +24,9 @@
 #include "Plot2d_ViewFrame.h"
 #include "Plot2d_Prs.h"
 
-#include <qpopupmenu.h>
+#include <QMenu>
+#include <QToolBar>
+#include <QVector>
 
 /*!
   Constructor
@@ -61,20 +63,22 @@ SUIT_ViewWindow* Plot2d_Viewer::createView(SUIT_Desktop* theDesktop)
   Adds custom items to popup menu
   \param thePopup - popup menu
 */
-void Plot2d_Viewer::contextMenuPopup(QPopupMenu* thePopup)
+void Plot2d_Viewer::contextMenuPopup(QMenu* thePopup)
 {
   Plot2d_ViewWindow* aView = (Plot2d_ViewWindow*)(myViewManager->getActiveView());
   if ( aView )
     aView->contextMenuPopup(thePopup);
 
-  if (thePopup->count() > 0) thePopup->insertSeparator();
-  thePopup->insertItem( tr( "MNU_DUMP_VIEW" ),                this, SLOT(onDumpView()));
-  thePopup->insertItem( tr( "MEN_PLOT2D_CHANGE_BACKGROUND" ), this, SLOT(onChangeBgColor()));
+  if (!thePopup->isEmpty())
+    thePopup->addSeparator();
+  thePopup->addAction( tr( "MNU_DUMP_VIEW" ),                this, SLOT(onDumpView()));
+  thePopup->addAction( tr( "MEN_PLOT2D_CHANGE_BACKGROUND" ), this, SLOT(onChangeBgColor()));
 
   if ( aView ) {
     if ( !aView->getToolBar()->isVisible() ) {
-      if (thePopup->count() > 0) thePopup->insertSeparator();
-        thePopup->insertItem("Show toolbar", this, SLOT(onShowToolbar()));
+      if (!thePopup->isEmpty())
+        thePopup->addSeparator();
+      thePopup->addAction("Show toolbar", this, SLOT(onShowToolbar()));
     }
     aView->RefreshDumpImage();
   }
@@ -98,7 +102,7 @@ void Plot2d_Viewer::setPrs(Plot2d_Prs* thePrs)
 void Plot2d_Viewer::update()
 {
   SUIT_ViewManager* aMgr = getViewManager();
-  QPtrVector<SUIT_ViewWindow> aViews = aMgr->getViews();
+  QVector<SUIT_ViewWindow*> aViews = aMgr->getViews();
   unsigned int aSize = aViews.size();
   for (uint i = 0; i < aSize; i++) {
     Plot2d_ViewWindow* aView = (Plot2d_ViewWindow*)aViews[i];
@@ -113,7 +117,7 @@ void Plot2d_Viewer::update()
 void Plot2d_Viewer::clearPrs()
 {
   SUIT_ViewManager* aMgr = getViewManager();
-  QPtrVector<SUIT_ViewWindow> aViews = aMgr->getViews();
+  QVector<SUIT_ViewWindow*> aViews = aMgr->getViews();
   unsigned int aSize = aViews.size();
   for (uint i = 0; i < aSize; i++) {
     Plot2d_ViewWindow* aView = (Plot2d_ViewWindow*)aViews[i];

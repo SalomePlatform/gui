@@ -36,11 +36,10 @@ public:
   Plot2d_ToolTip( Plot2d_ViewFrame*, Plot2d_Plot2d* );
   virtual ~Plot2d_ToolTip();
 
+  virtual bool eventFilter( QObject*, QEvent* );
+
 public slots:
   void onToolTip( QPoint, QString&, QFont&, QRect&, QRect& );
-
-protected:
-  virtual bool eventFilter( QObject*, QEvent* );
 
 private:
   Plot2d_ViewFrame* myFrame;

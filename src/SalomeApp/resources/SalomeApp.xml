@@ -10,6 +10,7 @@
     <parameter name="xterm"      value="no"/>
     <parameter name="portkill"   value="no"/>
     <parameter name="killall"    value="no"/>
+    <parameter name="pinter "    value="no"/>
     <parameter name="noexcepthandler"  value="no"/>
     <parameter name="modules"    value="GEOM,SMESH,VISU,SUPERV,MED,COMPONENT,PYCALCULATOR"/>
     <parameter name="pyModules"  value=""/>

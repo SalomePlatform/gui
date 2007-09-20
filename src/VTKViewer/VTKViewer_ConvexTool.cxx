@@ -108,6 +108,8 @@ VTKViewer_Triangulator
 	     vtkIdType theCellId)
 {
   myPoints->Reset();
+  myPoints->Modified(); // the VTK bug
+
   vtkIdType aNumPts;
   theInput->GetCellPoints(theCellId, aNumPts, myPointIds); 
   if ( aNumPts > 0 ) {
@@ -231,7 +233,7 @@ VTKViewer_Triangulator
 
   static vtkFloatingPointType EPS = 1.0E-2;
   vtkFloatingPointType aDistEps = aCellLength/3.0 * EPS;
-  if(DEBUG_TRIA_EXECUTE) cout<<"\taCellLength = "<<aCellLength<<"; aDistEps = "<<aDistEps<<"\n";
+  if(DEBUG_TRIA_EXECUTE) cout<<"\taNumFaces = "<<aNumFaces<<"; aCellLength = "<<aCellLength<<"; aDistEps = "<<aDistEps<<"\n";
 
   // To initialize set of points that belong to the cell
   typedef std::set<vtkIdType> TPointIds;
@@ -397,9 +399,9 @@ VTKViewer_Triangulator
 	    aCenter[0] += aPntCoord[0];
 	    aCenter[1] += aPntCoord[1];
 	    aCenter[2] += aPntCoord[2];
-	    if(DEBUG_TRIA_EXECUTE) cout  << "Added = TRUE" << endl;
+	    if(DEBUG_TRIA_EXECUTE) cout  << "; Added = TRUE" << endl;
 	  } else {
-	    if(DEBUG_TRIA_EXECUTE) cout  << "Added = FALSE" << endl;
+	    if(DEBUG_TRIA_EXECUTE) cout  << "; Added = FALSE" << endl;
 	  }
 	}
 	int aNbPoints = aPointIds.size();

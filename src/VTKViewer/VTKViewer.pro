@@ -1,8 +1,8 @@
 TEMPLATE = lib
 
-DESTDIR = ../../${CONFIG_ID}/lib
+DESTDIR = ../../$(CONFIG_ID)/lib
 MOC_DIR = ../../moc
-OBJECTS_DIR = ../../${CONFIG_ID}/obj/$$TARGET
+OBJECTS_DIR = ../../$(CONFIG_ID)/obj/$$TARGET
 
 VTKHOME = $$(VTKHOME)
 VTK_INCLUDES = $${VTKHOME}/include/vtk
@@ -15,7 +15,7 @@ CAS_CPPFLAGS = $${CASROOT}/inc
 CAS_KERNEL = -L$${CASROOT}/Linux/lib -lTKernel
 
 INCLUDEPATH += ../../include $${VTK_INCLUDES} $${CAS_CPPFLAGS} ../Qtx ../SUIT
-LIBS += -L../../${CONFIG_ID}/lib -lqtx -lsuit $${VTK_LIBS} $${CAS_KERNEL}
+LIBS += -L../../$(CONFIG_ID)/lib -lQtx -lSUIT $${VTK_LIBS} $${CAS_KERNEL}
 
 CONFIG -= debug release debug_and_release
 CONFIG += qt thread debug dll shared

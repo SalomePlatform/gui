@@ -21,6 +21,8 @@
 
 #include "QtxActionSet.h"
 
+#include <QApplication>
+
 /*!
   \class QtxActionSet
   \brief An action class which is represented in the menu bar (or toolbar) as
@@ -45,8 +47,6 @@ QtxActionSet::QtxActionSet( QObject* parent )
   connect( this, SIGNAL( changed() ), this, SLOT( onChanged() ) );
 
   setVisible( false );
-
-  update();
 }
 
 /*!
@@ -103,7 +103,7 @@ void QtxActionSet::insertActions( const QList<QAction*>& lst, const int index )
     connect( a, SIGNAL( triggered( bool ) ), this, SLOT( onActionTriggered( bool ) ) );
   }
 
-  update();
+  updateAction();
 }
 
 /*!
@@ -130,7 +130,9 @@ int QtxActionSet::insertAction( QAction* a, const int id, const int index )
 
   connect( a, SIGNAL( triggered( bool ) ), this, SLOT( onActionTriggered( bool ) ) );
 
-  update();
+  actionAdded( a );
+
+  updateAction();
 
   return ident;
 }
@@ -179,6 +181,7 @@ void QtxActionSet::removeAction( QAction* a )
     return;
 
   mySet.removeAll( a );
+  actionRemoved( a );
   delete a;
 }
 
@@ -204,7 +207,7 @@ void QtxActionSet::clear()
   qDeleteAll( mySet );
   mySet.clear();
 
-  update();
+  updateAction();
 }
 
 /*!
@@ -214,6 +217,10 @@ void QtxActionSet::clear()
 */
 void QtxActionSet::onChanged()
 {
+  QList<QWidget*> lst = createdWidgets();
+  for ( QList<QWidget*>::iterator it = lst.begin(); it != lst.end(); ++it )
+    (*it)->setEnabled( isEnabled() );
+
   if ( !isVisible() || !isEmptyAction() )
     return;
 
@@ -247,7 +254,7 @@ void QtxActionSet::addedTo( QWidget* w )
 {
   QtxAction::addedTo( w );
 
-  update( w );
+  updateAction( w );
 }
 
 /*!
@@ -258,7 +265,7 @@ void QtxActionSet::removedFrom( QWidget* w )
 {
   QtxAction::removedFrom( w );
 
-  update( w );
+  updateAction( w );
 }
 
 /*!
@@ -304,6 +311,20 @@ void QtxActionSet::setActionId( QAction* a, const int id )
 }
 
 /*!
+  \brief Notify that action was added
+*/
+void QtxActionSet::actionAdded( QAction* )
+{
+}
+
+/*!
+  \brief Notify that action was removed
+*/
+void QtxActionSet::actionRemoved( QAction* )
+{
+}
+
+/*!
   \brief Getneration unique action identifier
   \return generation action ID
 */
@@ -323,18 +344,18 @@ int QtxActionSet::generateId() const
 /*!
   \brief Update action set.
 */
-void QtxActionSet::update()
+void QtxActionSet::updateAction()
 {
   QList<QWidget*> lst = associatedWidgets();
   for ( QList<QWidget*>::iterator it = lst.begin(); it != lst.end(); ++it )
-    update( *it );
+    updateAction( *it );
 }
 
 /*!
   \brief Update action set for the specified widget.
   \param w a widget this action is added to
 */
-void QtxActionSet::update( QWidget* w )
+void QtxActionSet::updateAction( QWidget* w )
 {
   if ( !w )
     return;
@@ -342,16 +363,29 @@ void QtxActionSet::update( QWidget* w )
   for ( ActionList::iterator it = mySet.begin(); it != mySet.end(); ++it )
     w->removeAction( *it );
 
-  if ( !associatedWidgets().contains( w ) )
-    return;
-
+  QAction* first = 0;
   for ( int i = 0; i < mySet.count(); i++ )
   {
     QAction* a = mySet.at( i );
+    if ( !first )
+      first = a;
     w->insertAction( this, a );
+  }
+  if ( first )
+  {
+    QApplication::instance()->removeEventFilter( this );
+
+    w->insertAction( first, this );
+
+    QApplication::instance()->installEventFilter( this );
   }
 }
 
+/*!
+  \brief Check if the action itself should be invisible
+  (only child action are shown)
+  \return \c true if the action itself should be visible
+*/
 bool QtxActionSet::isEmptyAction() const
 {
   return true;

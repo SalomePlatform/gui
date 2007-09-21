@@ -1,0 +1,94 @@
+<document>
+  <section name="launch">
+    <!-- SALOME launching parameters -->
+    <parameter name="gui"        value="yes"/>
+    <parameter name="splash"     value="yes"/>
+    <parameter name="file"       value="no"/>
+    <parameter name="key"        value="no"/>
+    <parameter name="interp"     value="no"/>
+    <parameter name="modules"    value="LIGHT"/>
+  </section>
+  <section name="language">
+    <!-- Language settings (resource manager)-->
+    <parameter name="language"    value="en"/>
+    <parameter name="translators" value="%P_msg_%L.qm|%P_icons.qm|%P_images.qm"/>
+  </section>
+  <section name="splash" >
+    <!-- Splash screen settings -->
+    <parameter name="image"             value="${GUI_ROOT_DIR}/share/salome/resources/gui/icon_about.png" />
+    <parameter name="constant_info"     value="%A [ %V ]" />
+    <parameter name="text_colors"       value="#5A81BF|#20408F" />
+    <parameter name="hide_on_click"     value="no" />
+    <parameter name="margin"            value="10" />
+    <parameter name="progress_width"    value="20" />
+    <parameter name="progress_flags"    value="bottom,left_to_right" />
+    <parameter name="opacity"           value="0.70" />
+    <parameter name="font"              value="Helvetica,12,bold" />
+    <parameter name="alignment"         value="top,left" />
+    <parameter name="progress_gradient" value="linear|0.3|0.0|1.0|1.0|reflect|0.0|red|0.2|blue|0.5|yellow|0.6|black|1.0|white" />
+    <parameter name="progress_colors"   value="#20408F|#5A81BF|vertical" />
+  </section>
+  <section name="resources">
+    <!-- Resource directories (resource manager)-->
+    <parameter name="SUIT"         value="${GUI_ROOT_DIR}/resources"/>
+    <parameter name="STD"          value="${GUI_ROOT_DIR}/resources"/>
+    <parameter name="Plot2d"       value="${GUI_ROOT_DIR}/resources"/>
+    <parameter name="TableViewer"  value="${GUI_ROOT_DIR}/resources"/>
+    <parameter name="VTKViewer"    value="${GUI_ROOT_DIR}/resources"/>
+    <parameter name="OB"           value="${GUI_ROOT_DIR}/resources"/>
+  </section>
+  <section name="desktop" >
+    <!-- Default GUI desktop state, position, size -->
+    <parameter name="geometry"  value="(800%)x(800%) (+400%) (+400%) :(full)"/>
+    <parameter name="state"  value="normal"/>
+    <parameter name="pos_x"  value="center"/>
+    <parameter name="pos_y"  value="center"/>
+    <parameter name="width"  value="800"/>
+    <parameter name="height" value="600"/>
+  </section>
+  <section name="LIGHT">
+    <!-- LIGHT module settings -->
+    <parameter name="name"       value="Light"/>
+    <parameter name="icon"       value="LIGHT.png"/>
+  </section>
+  <section name="PyConsole">
+    <!-- Python console preferences -->
+    <parameter name="font"                value="Helvetic,12" />
+    <parameter name="additional_families" value="Helvetic;Helvetica;Helvetica[Adobe];Times;Times[Adobe];Sans Serif;Serif;Monospace;Lucida"/>
+  </section>
+  <section name="FileDlg">
+    <!-- "Open/Save File" dialog box preferences-->
+    <parameter name="QuickDirList" value=""/>
+  </section>
+  <section name="Study">
+    <!-- General study settings -->
+    <parameter name="store_positions" value="true" />
+  </section>
+  <section name="OCCViewer" >
+    <!-- OCC viewer preferences -->
+    <parameter name="background"     value="35, 136, 145" />
+    <parameter name="iso_number_u"   value="1" />
+    <parameter name="iso_number_v"   value="1" />
+    <parameter name="trihedron_size" value="100" />
+ </section>
+ <section name="VTKViewer" >
+    <!-- OCC viewer preferences -->
+    <parameter name="background"     value="0, 0, 0"/>
+    <parameter name="trihedron_size" value="100" />
+ </section>
+ <section name="Plot2d" >
+    <!-- Plot2d viewer preferences -->
+    <parameter name="Background"   value="255, 255, 255" />
+    <parameter name="CurveType"    value="1" />
+    <parameter name="HorScaleMode" value="0" />
+    <parameter name="LegendPos"    value="1" />
+    <parameter name="MarkerSize"   value="9" />
+    <parameter name="ShowLegend"   value="true" />
+    <parameter name="VerScaleMode" value="0" />
+  </section>
+  <section name="SUPERVGraph" >
+    <!-- Supervision viewer preferences -->
+    <parameter name="Background" value="144, 208, 211" />
+    <parameter name="Title"      value="63, 213, 255"  />
+  </section>
+</document>

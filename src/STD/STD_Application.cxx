@@ -28,6 +28,12 @@
 #include <SUIT_ViewManager.h>
 #include <SUIT_ResourceMgr.h>
 
+#include <TableViewer_ViewModel.h>
+#include <TableViewer_ViewManager.h>
+
+#include <VTKViewer_ViewModel.h>
+#include <VTKViewer_ViewManager.h>
+
 #include <QtxDockAction.h>
 #include <QtxActionMenuMgr.h>
 #include <QtxActionToolMgr.h>
@@ -52,6 +58,8 @@ STD_Application::STD_Application()
   myEditEnabled( true )
 {
   setDesktop( new STD_MDIDesktop() );
+  myTableMgr = 0;
+  myVTKMgr = 0;
 }
 
 /*!Destructor.*/
@@ -185,6 +193,16 @@ void STD_Application::createActions()
                 tr( "MEN_DESK_EDIT_PASTE" ), tr( "PRP_DESK_EDIT_PASTE" ),
                 Qt::CTRL+Qt::Key_V, desk, false, this, SLOT( onPaste() ) );
 
+  createAction( TableViewId, tr( "Table view" ),
+                resMgr->loadPixmap( "STD", tr( "ICON_EDIT_COPY" ) ),
+                tr( "Table view" ), tr( "Table view" ),
+                Qt::CTRL+Qt::Key_T, desk, false, this, SLOT( onTableView() ) );
+
+  createAction( VTKViewId, tr( "VTK view" ),
+                resMgr->loadPixmap( "STD", tr( "ICON_EDIT_COPY" ) ),
+                tr( "VTK view" ), tr( "VTK view" ),
+                Qt::CTRL+Qt::Key_V, desk, false, this, SLOT( onVTKView() ) );
+
   QAction* a = createAction( ViewStatusBarId, tr( "TOT_DESK_VIEW_STATUSBAR" ),
                              QIcon(), tr( "MEN_DESK_VIEW_STATUSBAR" ),
                              tr( "PRP_DESK_VIEW_STATUSBAR" ), Qt::SHIFT+Qt::Key_S, desk, true );
@@ -229,6 +247,8 @@ void STD_Application::createActions()
 
   createMenu( EditCopyId,  editMenu );
   createMenu( EditPasteId, editMenu );
+  createMenu( TableViewId, editMenu );
+  createMenu( VTKViewId, editMenu );
   createMenu( separator(), editMenu );
 
   createMenu( ViewToolBarsId,  viewMenu, 0 );
@@ -253,6 +273,8 @@ void STD_Application::createActions()
   createTool( separator(), stdTBar );
   createTool( EditCopyId, stdTBar );
   createTool( EditPasteId, stdTBar );
+  createTool( TableViewId, stdTBar );
+  createTool( VTKViewId, stdTBar );
 }
 
 /*!Opens new application*/
@@ -574,6 +596,28 @@ void STD_Application::onCopy()
 /*!Virtual slot. Not implemented here.*/
 void STD_Application::onPaste()
 {
+}
+
+void STD_Application::onTableView()
+{
+  if  ( !myTableMgr ) {
+    if ( !activeStudy() )
+      createEmptyStudy();
+    myTableMgr = new TableViewer_ViewManager( activeStudy(), desktop() );
+    TableViewer_Viewer* vm = new TableViewer_Viewer();
+    myTableMgr->setViewModel( vm );
+  }
+  myTableMgr->createView();
+}
+
+void STD_Application::onVTKView()
+{
+  if  ( !myVTKMgr ) {
+    if ( !activeStudy() )
+      createEmptyStudy();
+    myVTKMgr = new VTKViewer_ViewManager( activeStudy(), desktop() );
+  }
+  myVTKMgr->createView();
 }
 
 /*!Sets \a theEnable for menu manager and for tool manager.*/

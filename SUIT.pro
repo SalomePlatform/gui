@@ -4,7 +4,11 @@ CONFIG += ordered
 SUBDIRS = src/Qtx \
           src/SUIT \
           src/SUITApp \
-          src/STD \
           src/LogWindow \
           src/PyInterp \
-          src/PyConsole
+          src/PyConsole \
+	  src/Plot2d \
+	  src/VTKViewer \
+	  src/HTMLService \
+	  src/TableViewer \
+          src/STD

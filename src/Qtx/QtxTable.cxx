@@ -1181,7 +1181,9 @@ void QtxTable::setHeaderData( const Qt::Orientation o, const int section, const 
   else
     anItem = verticalHeaderItem( section );
   if ( !anItem ) {
+    QVariant aValue = headerData( o, section );
     anItem = new QTableWidgetItem();
+    anItem->setData( Qt::DisplayRole, aValue );
     if ( o == Qt::Horizontal )
       setHorizontalHeaderItem( section, anItem );
     else

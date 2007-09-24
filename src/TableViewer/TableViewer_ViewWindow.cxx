@@ -63,13 +63,12 @@ TableViewer_ViewWindow::TableViewer_ViewWindow( SUIT_Desktop* theDesktop,
   myTable->setCellBackground( 1, 1, Qt::red );
   myTable->setCellForeground( 1, 1, Qt::blue );
   QFont aFont = myTable->font();
-  aFont.setBold( true );
+  aFont.setItalic( true );
   myTable->setCellFont( 1, 1, aFont );
   myTable->setCellFont( 0, 0, aFont );
 
   aFont.setUnderline( true );
   myTable->setCellFont( 0, 1, aFont );
-
 
   myTable->setCellBackground( 2, 2, myTable->cellBackground( 1, 1 ) );
   myTable->setCellForeground( 2, 2, myTable->cellForeground( 1, 1 ) );
@@ -79,8 +78,10 @@ TableViewer_ViewWindow::TableViewer_ViewWindow( SUIT_Desktop* theDesktop,
 
   myTable->setHeaderData( Qt::Horizontal, 1, "Caption");
   myTable->setHeaderBackground( Qt::Horizontal, 1, Qt::green );
-  myTable->setHeaderFont(Qt::Vertical, 2, aFont );
   myTable->setHeaderFont(Qt::Horizontal, 0, aFont );
+
+  myTable->setHeaderFont(Qt::Vertical, 4, myTable->headerFont( Qt::Horizontal, 0 ) );
+  //backgroundColor( HorizontalHeader, 1, 1 ) );
 }
 
 /*!
@@ -186,10 +187,10 @@ int TableViewer_ViewWindow::fontFlags( const ContentType type, const int row, co
   QFont aFont = myTable->font();
   switch ( type ) {
     case VerticalHeader:
-      aFont = myTable->headerFont( Qt::Horizontal, row );
+      aFont = myTable->headerFont( Qt::Vertical, row );
       break;
     case HorizontalHeader:
-      aFont = myTable->headerFont( Qt::Vertical, col );
+      aFont = myTable->headerFont( Qt::Horizontal, col );
       break;
     case Cells:
       aFont = myTable->cellFont( row, col );
@@ -239,7 +240,7 @@ QColor TableViewer_ViewWindow::backgroundColor( const ContentType type, const in
     case VerticalHeader:
     case HorizontalHeader: {
       bool aHor = type == HorizontalHeader;
-      aColor = myTable->headerForeground( aHor ? Qt::Horizontal : Qt::Vertical,
+      aColor = myTable->headerBackground( aHor ? Qt::Horizontal : Qt::Vertical,
                                           aHor ? col : row );
       }
       break;

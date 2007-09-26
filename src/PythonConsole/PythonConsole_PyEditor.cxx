@@ -38,6 +38,7 @@
 #include <qapplication.h>
 #include <qpopupmenu.h>
 #include <qfontmetrics.h>
+#include <iostream>
 
 using namespace std;
 
@@ -59,7 +60,7 @@ static QString DOTS_PROMPT  = "... ";
 class ExecCommand : public PyInterp_LockRequest
 {
 public:
-  ExecCommand(PyInterp_base* theInterp, const char* theCommand,
+  ExecCommand(PyInterp_base* theInterp, const QString& theCommand,
               PythonConsole_PyEditor* theListener, bool sync = false)
     : PyInterp_LockRequest( theInterp, theListener, sync ),
       myCommand( theCommand ), myState( PyInterp_Event::OK )
@@ -67,22 +68,17 @@ public:
 
 protected:
   virtual void execute(){
-    if(myCommand != ""){
+    if( !myCommand.stripWhiteSpace().isEmpty() ) {
 //      if(MYDEBUG) MESSAGE("*** ExecCommand::execute() started");
       SUIT_Session::SetPythonExecuted(true); // disable GUI user actions
       int ret = getInterp()->run( myCommand.latin1() );
       SUIT_Session::SetPythonExecuted(false); // enable GUI user actions
 //      if(MYDEBUG) MESSAGE("ExecCommand::execute() - myInterp = "<<getInterp()<<"; myCommand = '"<<myCommand.latin1()<<"' - "<<ret);
-      if(ret < 0)
+      if( ret < 0 )
 	myState = PyInterp_Event::ERROR;
-      else if(ret > 0)
+      else if( ret > 0 )
 	myState = PyInterp_Event::INCOMPLETE;
-      myError  = getInterp()->getverr().c_str();
-      myOutput = getInterp()->getvout().c_str();
 //      if(MYDEBUG) MESSAGE("*** ExecCommand::execute() finished");
-    }else{
-      myError = "";
-      myOutput = "";
     }
   }
 
@@ -91,15 +87,26 @@ protected:
     return new PyInterp_Event( myState, (PyInterp_Request*)this );    
   }
 
-public:
-  QString myError;
-  QString myOutput;
-
 private:
   QString myCommand;
   int myState;
 };
 
+#define PRINT_EVENT 65432
+
+class PrintEvent : public QCustomEvent
+{
+public:
+  PrintEvent( const char* c ) : QCustomEvent( PRINT_EVENT ), myText( c ) {}
+  QString text() const { return myText; }
+private:
+  QString myText;
+};
+
+void staticCallback( void* data, char* c )
+{
+  QApplication::postEvent( (PythonConsole_PyEditor*)data, new PrintEvent( c ) ); 
+}
 
 /*!
     Constructor
@@ -116,7 +123,11 @@ PythonConsole_PyEditor::PythonConsole_PyEditor(PyInterp_base* theInterp, QWidget
   setUndoRedoEnabled( false );
 
   _currentPrompt = READY_PROMPT;
-  setWordWrap(NoWrap);
+  setWordWrap( WidgetWidth );
+  setWrapPolicy( Anywhere );
+
+  theInterp->setvoutcb( staticCallback, this );
+  theInterp->setverrcb( staticCallback, this );
 
   connect(this,SIGNAL(returnPressed()),this,SLOT(handleReturn()) );
 
@@ -228,7 +239,7 @@ void PythonConsole_PyEditor::handleReturn()
   
   // Post a request to execute Python command
   // Editor will be informed via a custom event that execution has been completed
-  PyInterp_Dispatcher::Get()->Exec( new ExecCommand( myInterp, _buf.latin1(), this ) );
+  PyInterp_Dispatcher::Get()->Exec( new ExecCommand( myInterp, _buf, this ) );
 }
 
 /*!
@@ -703,22 +714,21 @@ void PythonConsole_PyEditor::keyPressEvent( QKeyEvent* e )
 void PythonConsole_PyEditor::customEvent(QCustomEvent* e)
 {
   switch( e->type() ) {
+  case PRINT_EVENT:
+    {
+      PrintEvent* pe=(PrintEvent*)e;
+      setText( pe->text() );
+      return;
+    }
   case PyInterp_Event::OK:
   case PyInterp_Event::ERROR:
     {
-      PyInterp_Event* pe = dynamic_cast<PyInterp_Event*>( e );
-      if ( pe ){
-	ExecCommand* ec = dynamic_cast<ExecCommand*>( pe->GetRequest() );
-	if ( ec ){
-	  // The next line has appeared dangerous in case if
-	  // Python command execution has produced very large output.
-	  // A more clever approach is needed...
-	  setText(ec->myOutput);
-	  setText(ec->myError);
-	}
-      }
       _buf.truncate(0);
       _currentPrompt = READY_PROMPT;
+      QString txt = text( paragraphs()-1 );
+      txt.truncate( txt.length()-1 );
+      if ( !txt.isEmpty() )
+	setText("\n");
       setText(_currentPrompt);
       viewport()->unsetCursor();
       if( myIsInLoop )
@@ -729,6 +739,10 @@ void PythonConsole_PyEditor::customEvent(QCustomEvent* e)
     {
       _buf.append("\n");
       _currentPrompt = DOTS_PROMPT;
+      QString txt = text( paragraphs()-1 );
+      txt.truncate( txt.length()-1 );
+      if ( !txt.isEmpty() )
+	setText("\n");
       setText(_currentPrompt);
       viewport()->unsetCursor();
       if( myIsInLoop )

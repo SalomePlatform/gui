@@ -76,8 +76,7 @@ PythonConsole_PyInterp::~PythonConsole_PyInterp()
 bool PythonConsole_PyInterp::initState()
 {
   /*
-   * The GIL is acquired and will be held on initState output
-   * It is the caller responsability to release the lock if needed
+   * The GIL is acquired on input and released on output
    */
     /*PyEval_AcquireLock();
 #ifdef WNT 

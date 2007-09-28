@@ -1236,7 +1236,7 @@ QFont QtxTable::cellFont( const int row, const int col ) const
 
 QColor QtxTable::cellForeground( const int row, const int col ) const
 {
-  QColor res;
+  QColor res = Qt::black;
   QTableWidgetItem* anItem = item( row, col );
   if ( anItem && anItem->foreground().style() != Qt::NoBrush )
     res = anItem->foreground().color();
@@ -1245,7 +1245,7 @@ QColor QtxTable::cellForeground( const int row, const int col ) const
 
 QColor QtxTable::cellBackground( const int row, const int col ) const
 {
-  QColor res;
+  QColor res = Qt::white;
   QTableWidgetItem* anItem = item( row, col );
   if ( anItem && anItem->background().style() != Qt::NoBrush )
     res = anItem->background().color();
@@ -1287,6 +1287,46 @@ void QtxTable::setCellBackground( const int row, const int col, const QColor& c 
   QTableWidgetItem* anItem = getItem( row, col );
   if ( anItem )
     anItem->setBackground( c );
+}
+
+/*!
+  Return item from cell 
+  \param row - table row
+  \param col - table column
+  \param created - if item not exit and create=true, it will be created
+*/
+QTableWidgetItem* QtxTable::getItem( const int row, const int col, const bool created )
+{
+  QTableWidgetItem* anItem = item( row, col );
+  if ( !anItem && created && row < rowCount() && col < columnCount() ) {
+    anItem = new QTableWidgetItem();
+    setItem( row, col, anItem );
+  }
+  return anItem;
+}
+
+QModelIndexList QtxTable::getSelectedIndexes()
+{
+  return selectedIndexes();
+}
+
+bool QtxTable::indexPosition( const QModelIndex& theIndex, int& theRow,
+                              int& theCol ) const
+{
+  theRow = -1;
+  theCol = -1;
+  QAbstractTableModel* aModel = ::qobject_cast<QAbstractTableModel*>
+                                ( model() );
+  if ( aModel ) {
+    for ( int i = 0, aNbCols = columnCount(); i < aNbCols; i++ )
+      for ( int j = 0, aNbRows = rowCount(); j < aNbRows; j++ )
+        if ( aModel->index( j, i ) == theIndex ) {
+          theRow = i;
+          theCol = j;
+          break;
+        }
+  }
+  return theRow != -1 && theCol != -1;
 }
 
 /*void QtxTable::paintCell( QPainter* p, int row, int col, const QRect& cr,
@@ -1386,23 +1426,6 @@ void QtxTable::resizeEvent( QResizeEvent* e )
 
   //updateGeometries();
 }
-
-/*!
-  Return item from cell 
-  \param row - table row
-  \param col - table column
-  \param created - if item not exit and create=true, it will be created
-*/
-QTableWidgetItem* QtxTable::getItem( const int row, const int col, const bool created )
-{
-  QTableWidgetItem* anItem = item( row, col );
-  if ( !anItem && created && row < rowCount() && col < columnCount() ) {
-    anItem = new QTableWidgetItem();
-    setItem( row, col, anItem );
-  }
-  return anItem;
-}
-
 
 /*!
   Starts edition of header

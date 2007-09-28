@@ -29,6 +29,7 @@
 #include <QTableWidget>
 #include <QHeaderView>
 #include <QIcon>
+#include <QModelIndex>
 //#include <qvariant.h>
 //#include <qptrvector.h>
 
@@ -101,7 +102,11 @@ public:
   void             setCellFont( const int, const int, const QFont& );
   void             setCellForeground( const int, const int, const QColor& );
   void             setCellBackground( const int, const int, const QColor& );
-  void             setCellIcont( const int, const int, QIcon& );
+  void             setCellIcon( const int, const int, QIcon& );
+
+  virtual QTableWidgetItem* getItem( const int, const int, const bool = true );
+  QModelIndexList getSelectedIndexes();
+  bool             indexPosition( const QModelIndex&, int&, int& ) const;
 
   //virtual void     paintCell( QPainter*, int, int, const QRect&, bool, const QColorGroup& );
 
@@ -151,8 +156,6 @@ protected:
 
   QHeaderView*     header( Qt::Orientation o ) const;
   virtual QRect    headerSectionRect( QHeaderView*, const int, int* = 0 ) const;
-
-  QTableWidgetItem* getItem( const int, const int, const bool = true );
 
 private:
   typedef QMap<QHeaderView*, bool>  HeaderState;

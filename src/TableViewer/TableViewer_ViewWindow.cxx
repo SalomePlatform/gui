@@ -38,6 +38,8 @@
 #include <QPixmap>
 #include <QApplication>
 #include <QFont>
+#include <QItemSelection>
+#include <QItemSelectionModel>
 
 /*!
   Constructor
@@ -48,6 +50,8 @@ TableViewer_ViewWindow::TableViewer_ViewWindow( SUIT_Desktop* theDesktop,
 {
   myModel = theModel;
   myTable = new QtxTable( this );
+  connect( myTable->selectionModel(), SIGNAL( selectionChanged( const QItemSelection&,
+           const QItemSelection& ) ), this, SLOT( selectionChanged() ) );
 
   //myTable->setReadOnly( true );
   setCentralWidget( myTable );
@@ -113,6 +117,10 @@ void TableViewer_ViewWindow::createActions()
                 resMgr->loadPixmap( "STD", tr( "ICON_EDIT_COPY" ) ),
                 tr( "TIP_COPY" ), tr( "PRP_COPY" ) );
 
+  createAction( PasteId, tr( "MEN_PASTE" ),
+                resMgr->loadPixmap( "STD", tr( "ICON_EDIT_PASTE" ) ),
+                tr( "TIP_PASTE" ), tr( "PRP_PASTE" ) );
+
   createAction( PrintId, tr( "MEN_PRINT" ),
                 resMgr->loadPixmap( "STD", tr( "ICON_PRINT" ) ),
                 tr( "TIP_PRINT" ), tr( "PRP_PRINT" ) );
@@ -176,14 +184,13 @@ QString TableViewer_ViewWindow::text( const ContentType type, const int row, con
   return aTxt;
 }
 
-QString TableViewer_ViewWindow::image( const ContentType type, const int row, const int col ) const
+QString TableViewer_ViewWindow::image( const ContentType, const int, const int ) const
 {
   return "";
 }
 
-int TableViewer_ViewWindow::fontFlags( const ContentType type, const int row, const int col ) const
+QFont TableViewer_ViewWindow::font( const ContentType type, const int row, const int col ) const
 {
-  int aFlags = 0;
   QFont aFont = myTable->font();
   switch ( type ) {
     case VerticalHeader:
@@ -198,6 +205,13 @@ int TableViewer_ViewWindow::fontFlags( const ContentType type, const int row, co
     default:
       break;
   }
+  return aFont;
+}
+
+int TableViewer_ViewWindow::fontFlags( const ContentType type, const int row, const int col ) const
+{
+  int aFlags = 0;
+  QFont aFont = font( type, row, col );
   if ( aFont.bold() )
     aFlags |= HTMLService_HTMLText::Bold;
   if ( aFont.italic() )
@@ -206,7 +220,7 @@ int TableViewer_ViewWindow::fontFlags( const ContentType type, const int row, co
     aFlags |= HTMLService_HTMLText::Underline;
   if ( aFont.strikeOut() )
     aFlags |= HTMLService_HTMLText::StrikeOut;
-  //Subscript
+  // 'Subscript' type is absent for export in HTML file
 
   return aFlags;
 }
@@ -257,6 +271,7 @@ void TableViewer_ViewWindow::createToolBar()
 {
   myToolBar->addAction( myActionsMap[DumpId] );
   myToolBar->addAction( myActionsMap[CopyId] );
+  myToolBar->addAction( myActionsMap[PasteId] );
   myToolBar->addAction( myActionsMap[PrintId] );
   myToolBar->addAction( myActionsMap[ExportId] );
 }
@@ -269,6 +284,14 @@ void TableViewer_ViewWindow::actionActivated( const int id )
       break;
     case ExportId:
       exportData();
+      break;
+    case CopyId:
+      copyData();
+      break;
+    case PasteId:
+      pasteData();
+      break;
+    default:
       break;
   }
 }
@@ -291,6 +314,13 @@ QtxAction* TableViewer_ViewWindow::createAction( const int id, const QString& me
   a->setStatusTip( status );
   registerAction( id, a );
   return a;
+}
+
+void TableViewer_ViewWindow::selectionChanged()
+{
+  bool anEnable = myTable->getSelectedIndexes().count() > 0;
+  myActionsMap[CopyId]->setEnabled( anEnable );
+  myActionsMap[PasteId]->setEnabled( anEnable & myCopyLst.count() > 0 );
 }
 
 void TableViewer_ViewWindow::onActivated()
@@ -353,6 +383,80 @@ void TableViewer_ViewWindow::exportData()
   QApplication::restoreOverrideCursor();
 }
 
+void TableViewer_ViewWindow::copyData()
+{
+  QModelIndexList anItems = myTable->getSelectedIndexes();
+  if ( anItems.count() <= 0 )
+    return;
+  int aLeftCol = myTable->columnCount(), aTopRow = myTable->rowCount();
+  QModelIndexList::const_iterator anIt = anItems.begin(), aLast = anItems.end();
+  int aRow, aCol;
+  for ( ; anIt != aLast; ++anIt ) {
+    aRow = (*anIt).row();
+    aCol = (*anIt).column();
+    if ( !canPaste( aRow, aCol, "" ) )
+      continue;
+    if ( aCol < aLeftCol )
+      aLeftCol = aCol;
+    if ( aRow < aTopRow )
+      aTopRow = aRow;
+  }
+  myCopyLst.clear();
+  TableDataItem aCopyItem;
+  for ( anIt = anItems.begin(); anIt != aLast; ++anIt ) {
+    aRow = (*anIt).row();
+    aCol = (*anIt).column();
+    if ( !canCopy( aRow, aCol ) )
+      continue;
+    aCopyItem.myRow = aRow-aTopRow;
+    aCopyItem.myCol = aCol-aLeftCol;
+    aCopyItem.myText = text( Cells, aRow, aCol );
+    aCopyItem.myBgCol = backgroundColor( Cells, aRow, aCol );
+    aCopyItem.myFgCol = foregroundColor( Cells, aRow, aCol );
+    aCopyItem.myFont = font( Cells, aRow, aCol );
+    myCopyLst.append( aCopyItem );
+  }
+}
+
+void TableViewer_ViewWindow::pasteData()
+{
+  QModelIndexList anItems = myTable->getSelectedIndexes();
+  if ( anItems.count() <= 0 || myCopyLst.count() <= 0 )
+    return;
+  int aLeftCol = myTable->columnCount(), aTopRow = myTable->rowCount();
+  QModelIndexList::const_iterator anIt = anItems.begin(), aLast = anItems.end();
+  QTableWidgetItem* anItem;
+  int aCol, aRow;
+  for ( ; anIt != aLast; ++anIt ) {
+    aRow = (*anIt).row();
+    aCol = (*anIt).column();
+    if ( !canPaste( aRow, aCol, "" ) )
+      continue;
+    if ( aCol < aLeftCol )
+      aLeftCol = aCol;
+    if ( aRow < aTopRow )
+      aTopRow = aRow;
+  }
+  QList<TableDataItem>::const_iterator aCopyIt = myCopyLst.begin(),
+                                       aCopyLast = myCopyLst.end();
+  //int aCol, aRow;
+  TableDataItem aCopyItem;
+  for ( ; aCopyIt != aCopyLast; aCopyIt++ ) {
+    aCopyItem = *aCopyIt;
+    aCol = aCopyItem.myCol+aLeftCol;
+    aRow = aCopyItem.myRow+aTopRow;
+    if ( !canPaste( aRow, aCol, aCopyItem.myText ) )
+      continue;
+    anItem = myTable->getItem( aRow, aCol, true );
+    anItem->setText( aCopyItem.myText );
+    if ( aCopyItem.myBgCol.isValid() )
+      anItem->setBackground( aCopyItem.myBgCol );
+    if ( aCopyItem.myFgCol.isValid() )
+      anItem->setForeground( aCopyItem.myFgCol );    
+    anItem->setFont( aCopyItem.myFont );
+  }
+}
+
 void TableViewer_ViewWindow::exportTableData( Handle(HTMLService_HTMLTable)& table,
                                               const ContentType type,
                                               const int rowOffset, const int colOffset )
@@ -399,4 +503,15 @@ void TableViewer_ViewWindow::exportTableData( Handle(HTMLService_HTMLTable)& tab
       cell->SetFontFlags( fontFlags( type, r, c ) );
     }
   }
+}
+
+bool TableViewer_ViewWindow::canCopy( const int theRow, const int theCol )
+{
+  return true;
+}
+
+bool TableViewer_ViewWindow::canPaste( const int theRow, const int theCol, const QString& )
+{
+  return theRow < myTable->rowCount() && theRow >= 0 &&
+         theCol < myTable->columnCount() & theCol >= 0;
 }

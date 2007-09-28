@@ -30,8 +30,11 @@ class SUIT_ViewWindow;
 class SUIT_Desktop;
 class Handle(HTMLService_HTMLTable);
 class QImage;
+class QFont;
 class QtxTable;
 class QToolBar;
+class QTableWidgetItem;
+class QItemSelection;
 
 class TABLEVIEWER_EXPORT TableViewer_ViewWindow: public SUIT_ViewWindow
 {
@@ -48,7 +51,7 @@ public:
 
 protected:
   typedef enum { VerticalHeader, HorizontalHeader, Cells } ContentType;
-  typedef enum { DumpId, CopyId, PrintId, ExportId, Custom } ActionId;
+  typedef enum { DumpId, CopyId, PasteId, PrintId, ExportId, Custom } ActionId;
   typedef QMap<int, QtxAction*> ActionsMap;
 
   virtual void        createActions();
@@ -56,6 +59,8 @@ protected:
   virtual void        actionActivated( const int );
   virtual void        exportTableData( Handle(HTMLService_HTMLTable)&,
                                        const ContentType, const int, const int );
+  virtual bool        canCopy( const int, const int );
+  virtual bool        canPaste( const int, const int, const QString& );
 
   void                registerAction( const int, QtxAction* );
   QtxAction*          createAction( const int, const QString&, const QPixmap&, const QString&,
@@ -66,15 +71,29 @@ protected:
 
   QString             text( const ContentType, const int, const int ) const;
   QString             image( const ContentType, const int, const int ) const;
+  QFont               font( const ContentType, const int, const int ) const;
   int                 fontFlags( const ContentType, const int, const int ) const;
   QColor              foregroundColor( const ContentType, const int, const int ) const;
   QColor              backgroundColor( const ContentType, const int, const int ) const;
+
+protected slots:
+  virtual void selectionChanged();
 
 private slots:
   void                onActivated();
 
 private:
   void                exportData();
+  void                copyData();
+  void                pasteData();
+  typedef struct {
+    QString myText;
+    QColor  myBgCol;
+    QColor  myFgCol;
+    QFont   myFont;
+    int     myRow;
+    int     myCol;
+  } TableDataItem;
 
 protected:
   TableViewer_Viewer* myModel;
@@ -83,6 +102,7 @@ protected:
 private:
   QtxTable*           myTable;
   QToolBar*           myToolBar;
+  QList<TableDataItem> myCopyLst;
 };
 
 #endif // !defined(TABLEVIEWER_VIEWWINDOW_H)

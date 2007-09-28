@@ -196,7 +196,7 @@ void SalomeApp_Application::start()
 	    PythonConsole* pyConsole = pythonConsole();
 	    if ( pyConsole ) {
               QString extension = fi.extension( false ).lower();
-              if ( extension == "py" && fi.exists() ) {
+              if ( fi.exists() ) {
                 // execute python script
                 QString command = QString( "execfile(\"%1\")" ).arg( fi.absFilePath() );
                 pyConsole->exec( command );
@@ -204,7 +204,8 @@ void SalomeApp_Application::start()
               else {
                 // import python module
                 QString command = QString( "import %1" ).arg( pyfiles[j] );
-                //QString command = QString( "import %1" ).arg( fi.baseName( true ) );
+		if ( extension == "py" )
+		  command = QString( "import %1" ).arg( fi.baseName( true ) );
                 pyConsole->exec( command );
               }
             }

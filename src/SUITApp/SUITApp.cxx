@@ -28,23 +28,23 @@
 #include <SUIT_Session.h>
 #include <SUIT_Desktop.h>
 #include <SUIT_ResourceMgr.h>
-
-// TODO
-//#include <QtxSplash.h>
+#include <Style_Salome.h>
+#include <Style_Model.h>
+#include <QtxSplash.h>
 
 #ifdef SUIT_ENABLE_PYTHON
 #include <Python.h>
 #endif
 
-#include <QtCore/qdir.h>
-#include <QtCore/qfile.h>
-#include <QtCore/qregexp.h>
-#include <QtCore/qstring.h>
-#include <QtCore/qstringlist.h>
+#include <QDir>
+#include <QFile>
+#include <QRegExp>
+#include <QString>
+#include <QStringList>
 
 #include <stdlib.h>
 
-QString salomeVersion()
+static QString salomeVersion()
 {
   QString path( ::getenv( "GUI_ROOT_DIR" ) );
   if ( !path.isEmpty() )
@@ -54,13 +54,13 @@ QString salomeVersion()
 
   QFile vf( path );
   if ( !vf.open( QFile::ReadOnly ) )
-    return QString::null;
+    return QString();
 
   QString line = vf.readLine( 1024 );
   vf.close();
 
   if ( line.isEmpty() )
-    return QString::null;
+    return QString();
 
   while ( !line.isEmpty() && line.at( line.length() - 1 ) == QChar( '\n' ) )
     line.remove( line.length() - 1, 1 );
@@ -73,6 +73,29 @@ QString salomeVersion()
   return ver;
 }
 
+static void MessageOutput( QtMsgType type, const char* msg )
+{
+  switch ( type )
+  {
+  case QtDebugMsg:
+#ifdef _DEBUG_
+    printf( "Debug: %s\n", msg );
+#endif
+    break;
+  case QtWarningMsg:
+#ifdef _DEBUG_
+    printf( "Warning: %s\n", msg );
+#endif
+    break;
+  case QtFatalMsg:
+#ifdef _DEBUG_
+    printf( "Fatal: %s\n", msg );
+#endif
+    break;
+  default:
+    break;
+  }
+}
 
 /* XPM */
 static const char* pixmap_not_found_xpm[] = {
@@ -138,6 +161,8 @@ int main( int args, char* argv[] )
   PySys_SetArgv( args, argv );
 #endif
 
+  qInstallMsgHandler( MessageOutput );
+
   QStringList argList;
   bool noExceptHandling = false;
   bool iniFormat        = false;
@@ -160,80 +185,55 @@ int main( int args, char* argv[] )
   if ( !argList.isEmpty() )
   {
     SUITApp_Session* aSession = new SUITApp_Session( iniFormat );
-    // TODO
-/*
     QtxSplash* splash = 0;
-    if ( !noSplash )
+    if ( !noSplash ) 
     {
       SUIT_ResourceMgr* resMgr = aSession->createResourceMgr( argList.first() );
       if ( resMgr )
       {
-	      resMgr->loadLanguage();
-	      QString splashIcon, splashInfo, splashTextColors;
-	      resMgr->value( "splash", "image",       splashIcon );
-	      resMgr->value( "splash", "info",        splashInfo, false );
-	      resMgr->value( "splash", "text_colors", splashTextColors );
-	      QString appName    = QObject::tr( "APP_NAME" ).stripWhiteSpace();
-	      QString appVersion = QObject::tr( "APP_VERSION" ).stripWhiteSpace();
-	      if ( appVersion == "APP_VERSION" )
-        {
-	        if ( appName == "APP_NAME" || appName.toLower() == "salome" )
-	          appVersion = salomeVersion();
-	        else
-	          appVersion = "";
-	      }
-	      QPixmap px( splashIcon );
-	      if ( !px.isNull() )
-        {
-	        splash = QtxSplash::splash( px );
-	        if ( !splashTextColors.isEmpty() )
-          {
-	          QStringList colors = QStringList::split( "|", splashTextColors );
-	          QColor c1, c2;
-	          if ( colors.count() > 0 )
-              c1 = QColor( colors[0] );
-	          if ( colors.count() > 1 )
-              c2 = QColor( colors[1] );
-	          splash->setTextColors( c1, c2 );
-	        }
-	        else
-          {
-	          splash->setTextColors( Qt::white, Qt::black );
-	        }
-#ifdef _DEBUG_
-	        splash->setHideOnClick( true );
-#endif
-	        QFont f = splash->font();
-	        f.setBold( true );
-	        splash->setFont( f );
-	        if ( !splashInfo.isEmpty() )
-          {
-	          splashInfo.replace( QRegExp( "%A" ),  appName );
-	          splashInfo.replace( QRegExp( "%V" ),  QObject::tr( "ABOUT_VERSION" ).arg( appVersion ) );
-	          splashInfo.replace( QRegExp( "%L" ),  QObject::tr( "ABOUT_LICENSE" ) );
-	          splashInfo.replace( QRegExp( "%C" ),  QObject::tr( "ABOUT_COPYRIGHT" ) );
-	          splashInfo.replace( QRegExp( "\\\\n" ), "\n" );
-	          splash->message( splashInfo );
-	        }
-	        splash->show();
-          QApplication::instance()->processEvents();
-	      }
+	resMgr->loadLanguage();
+
+	splash = QtxSplash::splash( QPixmap() );
+	splash->readSettings( resMgr );
+	if ( splash->pixmap().isNull() ) {
+	  delete splash;
+	  splash = 0;
+	}
+	else {
+	  QString appName    = QObject::tr( "APP_NAME" ).trimmed();
+	  QString appVersion = QObject::tr( "APP_VERSION" ).trimmed();
+	  if ( appVersion == "APP_VERSION" )
+	  {
+	    if ( appName == "APP_NAME" || appName.toLower() == "salome" )
+	      appVersion = salomeVersion();
+	    else
+	      appVersion = "";
+	  }
+	  splash->setOption( "%A", appName );
+	  splash->setOption( "%V", QObject::tr( "ABOUT_VERSION" ).arg( appVersion ) );
+	  splash->setOption( "%L", QObject::tr( "ABOUT_LICENSE" ) );
+	  splash->setOption( "%C", QObject::tr( "ABOUT_COPYRIGHT" ) );
+	  splash->show();
+	  QApplication::instance()->processEvents();
+	}
       }
     }
-*/
+
     SUIT_Application* theApp = aSession->startApplication( argList.first() );
     if ( theApp )
     {
+      Style_Salome* aStyle = new Style_Salome();
+      aStyle->getModel()->initFromResource( theApp->resourceMgr() );
+      app.setStyle( aStyle );
+	
       if ( !noExceptHandling )
         app.setHandler( aSession->handler() );
 
-// TODO
-//      if ( splash )
-//	      splash->finish( theApp->desktop() );
+      if ( splash )
+	splash->finish( theApp->desktop() );
 
       result = app.exec();
-// TODO
-//      delete splash;
+      delete splash;
     }
     delete aSession;
   }

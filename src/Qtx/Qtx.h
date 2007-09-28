@@ -47,6 +47,9 @@
 class QObject;
 class QWidget;
 class QCompleter;
+class QLinearGradient;
+class QRadialGradient;
+class QConicalGradient;
 
 typedef QList<int>    QIntList;       //!< list of int values
 typedef QList<short>  QShortList;     //!< list of short int values
@@ -88,6 +91,11 @@ public:
     PT_Directory      //!< the directory path is required
   } PathType;
 
+  //! Custom data roles
+  enum { 
+    AppropriateRole = Qt::UserRole + 100   //!< can be used to return \c true if data is appropriate
+  };
+
   static QString     toQString( const char*, const int = -1 );
   static QString     toQString( const short*, const int = -1 );
   static QString     toQString( const unsigned char*, const int = -1 );
@@ -124,11 +132,22 @@ public:
   static QColor      scaleColor( const int, const int, const int );
   static void        scaleColors( const int, QColorList& );
 
+  static QPixmap     scaleIcon( const QPixmap&, const unsigned, const unsigned = 0 );
   static QImage      grayscale( const QImage& );
   static QPixmap     grayscale( const QPixmap& );
   static QImage      transparentImage( const int, const int, const int = -1 );
   static QPixmap     transparentPixmap( const int, const int, const int = -1 );
   static QPixmap     composite( const QPixmap&, const int, const int, const QPixmap& = QPixmap() );
+
+  static QString     colorToString( const QColor& );
+  static bool        stringToColor( const QString&, QColor& );
+
+  static QString     gradientToString( const QLinearGradient& );
+  static QString     gradientToString( const QRadialGradient& );
+  static QString     gradientToString( const QConicalGradient& );
+  static bool        stringToLinearGradient( const QString&, QLinearGradient& );
+  static bool        stringToRadialGradient( const QString&, QRadialGradient& );
+  static bool        stringToConicalGradient( const QString&, QConicalGradient& );
 };
 
 #endif

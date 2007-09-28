@@ -35,6 +35,9 @@
 #include <QPixmap>
 #include <QByteArray>
 #include <QStringList>
+#include <QLinearGradient>
+#include <QRadialGradient>
+#include <QConicalGradient>
 
 class QTranslator;
 
@@ -58,101 +61,110 @@ public:
 #endif
 
 public:
-  QtxResourceMgr( const QString&, const QString& = QString::null );
+  QtxResourceMgr( const QString&, const QString& = QString() );
   virtual ~QtxResourceMgr();
 
-  QString         appName() const;
-  QStringList     dirList() const;
+  QString          appName() const;
+  QStringList      dirList() const;
 
-  bool            checkExisting() const;
-  virtual void    setCheckExisting( const bool );
+  bool             checkExisting() const;
+  virtual void     setCheckExisting( const bool );
 
-  bool            isPixmapCached() const;
-  void            setIsPixmapCached( const bool );
+  bool             isPixmapCached() const;
+  void             setIsPixmapCached( const bool );
 
-  void            clear();
+  void             clear();
 
-  void            setIgnoreUserValues( const bool = true );
-  bool            ignoreUserValues() const;
+  void             setIgnoreUserValues( const bool = true );
+  bool             ignoreUserValues() const;
 
-  bool            value( const QString&, const QString&, int& ) const;
-  bool            value( const QString&, const QString&, double& ) const;
-  bool            value( const QString&, const QString&, bool& ) const;
-  bool            value( const QString&, const QString&, QColor& ) const;
-  bool            value( const QString&, const QString&, QFont& ) const;  
-  bool            value( const QString&, const QString&, QByteArray& ) const;  
-  bool            value( const QString&, const QString&, QString&, const bool = true ) const;
+  bool             value( const QString&, const QString&, int& ) const;
+  bool             value( const QString&, const QString&, double& ) const;
+  bool             value( const QString&, const QString&, bool& ) const;
+  bool             value( const QString&, const QString&, QColor& ) const;
+  bool             value( const QString&, const QString&, QFont& ) const;  
+  bool             value( const QString&, const QString&, QByteArray& ) const;  
+  bool             value( const QString&, const QString&, QLinearGradient& ) const;  
+  bool             value( const QString&, const QString&, QRadialGradient& ) const;  
+  bool             value( const QString&, const QString&, QConicalGradient& ) const;  
+  bool             value( const QString&, const QString&, QString&, const bool = true ) const;
 
-  int             integerValue( const QString&, const QString&, const int = 0 ) const;
-  double          doubleValue( const QString&, const QString&, const double = 0 ) const;
-  bool            booleanValue( const QString&, const QString&, const bool = false ) const;
-  QFont           fontValue( const QString&, const QString&, const QFont& = QFont() ) const;
-  QColor          colorValue( const QString&, const QString&, const QColor& = QColor() ) const;
-  QString         stringValue( const QString&, const QString&, const QString& = QString::null ) const;
-  QByteArray      byteArrayValue( const QString&, const QString&, const QByteArray& = QByteArray() ) const;
+  int              integerValue( const QString&, const QString&, const int = 0 ) const;
+  double           doubleValue( const QString&, const QString&, const double = 0 ) const;
+  bool             booleanValue( const QString&, const QString&, const bool = false ) const;
+  QFont            fontValue( const QString&, const QString&, const QFont& = QFont() ) const;
+  QColor           colorValue( const QString&, const QString&, const QColor& = QColor() ) const;
+  QString          stringValue( const QString&, const QString&, const QString& = QString() ) const;
+  QByteArray       byteArrayValue( const QString&, const QString&, const QByteArray& = QByteArray() ) const;
+  QLinearGradient  linearGradientValue( const QString&, const QString&, const QLinearGradient& = QLinearGradient() ) const;
+  QRadialGradient  radialGradientValue( const QString&, const QString&, const QRadialGradient& = QRadialGradient() ) const;
+  QConicalGradient conicalGradientValue( const QString&, const QString&, const QConicalGradient& = QConicalGradient() ) const;
 
-  bool            hasSection( const QString& ) const;
-  bool            hasValue( const QString&, const QString& ) const;
+  bool             hasSection( const QString& ) const;
+  bool             hasValue( const QString&, const QString& ) const;
 
-  void            setValue( const QString&, const QString&, const int );
-  void            setValue( const QString&, const QString&, const double );
-  void            setValue( const QString&, const QString&, const bool );
-  void            setValue( const QString&, const QString&, const QFont& );
-  void            setValue( const QString&, const QString&, const QColor& );
-  void            setValue( const QString&, const QString&, const QString& );
-  void            setValue( const QString&, const QString&, const QByteArray& );
+  void             setValue( const QString&, const QString&, const int );
+  void             setValue( const QString&, const QString&, const double );
+  void             setValue( const QString&, const QString&, const bool );
+  void             setValue( const QString&, const QString&, const QFont& );
+  void             setValue( const QString&, const QString&, const QColor& );
+  void             setValue( const QString&, const QString&, const QString& );
+  void             setValue( const QString&, const QString&, const QByteArray& );
+  void             setValue( const QString&, const QString&, const QLinearGradient& );
+  void             setValue( const QString&, const QString&, const QRadialGradient& );
+  void             setValue( const QString&, const QString&, const QConicalGradient& );
 
-  void            remove( const QString& );
-  void            remove( const QString&, const QString& );
+  void             remove( const QString& );
+  void             remove( const QString&, const QString& );
 
-  QString         currentFormat() const;
-  void            setCurrentFormat( const QString& );
+  QString          currentFormat() const;
+  void             setCurrentFormat( const QString& );
 
-  Format*         format( const QString& ) const;
-  void            installFormat( Format* );
-  void            removeFormat( Format* );
+  Format*          format( const QString& ) const;
+  void             installFormat( Format* );
+  void             removeFormat( Format* );
 
-  QStringList     options() const;
-  QString         option( const QString& ) const;
-  void            setOption( const QString&, const QString& );
+  QStringList      options() const;
+  QString          option( const QString& ) const;
+  void             setOption( const QString&, const QString& );
 
-  QPixmap         defaultPixmap() const;
-  virtual void    setDefaultPixmap( const QPixmap& );
+  QPixmap          defaultPixmap() const;
+  virtual void     setDefaultPixmap( const QPixmap& );
 
-  QString         resSection() const;
-  QString         langSection() const;
+  QString          resSection() const;
+  QString          langSection() const;
 
-  QPixmap         loadPixmap( const QString&, const QString& ) const;
-  QPixmap         loadPixmap( const QString&, const QString&, const bool ) const;
-  QPixmap         loadPixmap( const QString&, const QString&, const QPixmap& ) const;
-  void            loadLanguage( const QString& = QString::null, const QString& = QString::null );
+  QPixmap          loadPixmap( const QString&, const QString& ) const;
+  QPixmap          loadPixmap( const QString&, const QString&, const bool ) const;
+  QPixmap          loadPixmap( const QString&, const QString&, const QPixmap& ) const;
+  void             loadLanguage( const QString& = QString(), const QString& = QString() );
 
-  void            raiseTranslators( const QString& );
-  void            removeTranslators( const QString& );
-  void            loadTranslator( const QString&, const QString& );
-  void            loadTranslators( const QString&, const QStringList& );
+  void             raiseTranslators( const QString& );
+  void             removeTranslators( const QString& );
+  void             loadTranslator( const QString&, const QString& );
+  void             loadTranslators( const QString&, const QStringList& );
 
-  QString         path( const QString&, const QString&, const QString& ) const;
+  QString          path( const QString&, const QString&, const QString& ) const;
 
-  bool            load();
-  bool            import( const QString& );
-  bool            save();
+  bool             load();
+  bool             import( const QString& );
+  bool             save();
 
-  QStringList     sections() const;
-  QStringList     parameters( const QString& ) const;
+  QStringList      sections() const;
+  QStringList      parameters( const QString& ) const;
 
-  void            refresh();
+  void             refresh();
 
 protected:
-  virtual void    setDirList( const QStringList& );
-  virtual void    setResource( const QString&, const QString&, const QString& );
+  virtual void     setDirList( const QStringList& );
+  virtual void     setResource( const QString&, const QString&, const QString& );
 
-  virtual QString userFileName( const QString&, const bool = true ) const;
-  virtual QString globalFileName( const QString& ) const;
+  virtual QString  userFileName( const QString&, const bool = true ) const;
+  virtual QString  globalFileName( const QString& ) const;
 
 private:
-  void            initialize( const bool = true ) const;
-  QString         substMacro( const QString&, const QMap<QChar, QString>& ) const;
+  void             initialize( const bool = true ) const;
+  QString          substMacro( const QString&, const QMap<QChar, QString>& ) const;
 
 private:
   typedef QList<Resources*>        ResList;
@@ -162,17 +174,17 @@ private:
   typedef QMap<QString, TransList> TransListMap;
 
 private:
-  QString         myAppName;                 //!< application name
-  QStringList     myDirList;                 //!< list of resources directories
-  FormatList      myFormats;                 //!< list of formats
-  OptionsMap      myOptions;                 //!< options map
-  ResList         myResources;               //!< resources list
-  bool            myCheckExist;              //!< "check existance" flag
-  TransListMap    myTranslator;              //!< map of loaded translators
-  QPixmap*        myDefaultPix;              //!< default icon
-  bool            myIsPixmapCached;          //!< "cached pixmaps" flag
+  QString          myAppName;                 //!< application name
+  QStringList      myDirList;                 //!< list of resources directories
+  FormatList       myFormats;                 //!< list of formats
+  OptionsMap       myOptions;                 //!< options map
+  ResList          myResources;               //!< resources list
+  bool             myCheckExist;              //!< "check existance" flag
+  TransListMap     myTranslator;              //!< map of loaded translators
+  QPixmap*         myDefaultPix;              //!< default icon
+  bool             myIsPixmapCached;          //!< "cached pixmaps" flag
 
-  bool            myIsIgnoreUserValues;      //!< "ignore user values" flag
+  bool             myIsIgnoreUserValues;      //!< "ignore user values" flag
 
   friend class QtxResourceMgr::Format;
 };

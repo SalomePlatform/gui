@@ -33,6 +33,9 @@
 #include <QCompleter>
 #include <QApplication>
 #include <QDesktopWidget>
+#include <QLinearGradient>
+#include <QRadialGradient>
+#include <QConicalGradient>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -686,6 +689,28 @@ void Qtx::scaleColors( const int num, QColorList& lst )
 }
 
 /*!
+  \brief Scale the pixmap to the required size.
+
+  If \h is 0 (default) the value of \a w is used instead (to create
+  square pixmap).
+
+  \param icon pixmap to be resized
+  \param w required pixmap width
+  \param h required pixmap height
+  \return scaled pixmap
+*/
+QPixmap Qtx::scaleIcon( const QPixmap& icon, const unsigned w, const unsigned h )
+{
+  QPixmap p;
+  int aw = w, ah = h <= 0 ? w : h;
+  if ( icon.isNull() || aw <= 0 || ah <= 0 || aw == icon.width() && ah == icon.height() )
+    p = icon;
+  else
+    p = icon.fromImage( icon.toImage().scaled( aw, ah, Qt::KeepAspectRatio, Qt::SmoothTransformation ) );
+  return p;
+}
+
+/*!
   \brief Convert given image to the grayscale format.
   \param img initial image
   \return converted to the grayscale image
@@ -856,4 +881,380 @@ QPixmap Qtx::composite( const QPixmap& pix, const int x, const int y, const QPix
   res.setMask( bmp );
 
   return res;
+}
+
+/*!
+  \brief Convert color to the string representation.
+  
+  The resulting string is in the one of two possible formats
+  (\c RR, \c GG, \c BB and \c AA value represent red, green, blue
+  and alpha components of the color):
+  - if color has alpha channel : "#RR,#GG,#BB,#AA"
+  - if color does not have alpha channel : "#RRGGBB" 
+
+  If color is invalid, null string is returned.
+
+  Backward conversion can be done with stringToColor() method.
+
+  \param color color to be converted
+  \return string representation of the color
+
+  \sa stringToColor()
+*/
+QString Qtx::colorToString( const QColor& color )
+{
+  QString str;
+  if ( color.isValid() )
+  {
+    if ( color.alpha() != 255 )
+    {
+      QStringList vals;
+      vals << QString( "#%1" ).arg( color.red(),   0, 16 );
+      vals << QString( "#%1" ).arg( color.green(), 0, 16 );
+      vals << QString( "#%1" ).arg( color.blue(),  0, 16 );
+      vals << QString( "#%1" ).arg( color.alpha(), 0, 16 );
+      str = vals.join( "," );
+    }
+    else
+    {
+      str = color.name();
+    }
+  }
+  return str;
+}
+
+/*!
+  \brief Create color from the string representation.
+  
+  The parameter \a str must be in the one of following formats
+  (\c RR, \c GG, \c BB and \c AA value represent red, green, blue
+  and alpha components of the color):
+  - "#RR,#GG,#BB[,#AA]" or "#RR #GG #BB[ #AA]" (\c RR, \c GG, \c BB
+  and optional \c AA values represent red, green, blue and alpha
+  components of the color in hexadecimal form)
+  - "RR,GG,BB[,AA]" or "RR GG BB[ AA]" (\c RR, \c GG, \c BB
+  and optional \c AA values represent red, green, blue and alpha
+  components of the color in decimal form)
+  - #RRGGBB" - (\c RR, \c GG and \c BB values represent red, green and blue
+  components of the color in hexadecimal form)
+  - an integer value representing packed color components (see rgbSet())
+  - a name from the list of colors defined in the list of SVG color keyword names
+  provided by the World Wide Web Consortium; for example, "steelblue" or "gainsboro".
+
+  Backward conversion can be done with colorToString() method.
+
+  \param str string representation of the color
+  \param color resulting color value
+  \return \c true if the conversion is successful and \c false otherwise
+
+  \sa colorToString(), rgbSet()
+*/
+bool Qtx::stringToColor( const QString& str, QColor& color )
+{
+  bool res = true;
+  QStringList vals = str.split( QRegExp( "[\\s|,]" ), QString::SkipEmptyParts );
+
+  QIntList nums;
+  for ( QStringList::const_iterator it = vals.begin(); it != vals.end() && res; ++it )
+  {
+    int num = 0;
+    if ( (*it).startsWith( "#" ) )
+      num = (*it).mid( 1 ).toInt( &res, 16 );
+    else
+      num = (*it).toInt( &res, 10 );
+    if ( res )
+      nums.append( num );
+  }
+
+  res = res && nums.count() >= 3;
+  if ( res )
+    color.setRgb( nums[0], nums[1], nums[2] );
+
+  if ( !res )
+  {
+    int pack = str.toInt( &res );
+    if ( res )
+      color = Qtx::rgbSet( pack );
+  }
+
+  if ( !res )
+  {
+    color = QColor( str );
+    res = color.isValid();
+  }
+
+  return res;
+}
+
+/*!
+  \brief Dump linear gradient to the string description.
+  \param gradient linear gradient to be converted
+  \return string representation of the linear gradient
+  \sa stringToLinearGradient()
+*/
+QString Qtx::gradientToString( const QLinearGradient& gradient )
+{
+  QStringList data;
+  data << "linear";
+  data << QString::number( gradient.start().x() );
+  data << QString::number( gradient.start().y() );
+  data << QString::number( gradient.finalStop().x() );
+  data << QString::number( gradient.finalStop().y() );
+  switch( gradient.spread() ) 
+  {
+  case QGradient::PadSpread:
+    data << "pad";
+    break;
+  case QGradient::RepeatSpread:
+    data << "repeat";
+    break;
+  case QGradient::ReflectSpread:
+    data << "reflect";
+    break;
+  default:
+    break;
+  }
+  QGradientStops stops = gradient.stops();
+  QGradientStop stop;
+  foreach ( stop, stops ) 
+  {
+    data << QString::number( stop.first );
+    data << colorToString( stop.second );
+  }
+  return data.join( "|" );
+}
+
+/*!
+  \brief Dump radial gradient to the string description.
+  \param gradient radial gradient to be converted
+  \return string representation of the radial gradient
+  \sa stringToRadialGradient()
+*/
+QString Qtx::gradientToString( const QRadialGradient& gradient )
+{
+  QStringList data;
+  data << "radial";
+  data << QString::number( gradient.center().x() );
+  data << QString::number( gradient.center().y() );
+  data << QString::number( gradient.radius() );
+  data << QString::number( gradient.focalPoint().x() );
+  data << QString::number( gradient.focalPoint().y() );
+  switch( gradient.spread() ) 
+  {
+  case QGradient::PadSpread:
+    data << "pad";
+    break;
+  case QGradient::RepeatSpread:
+    data << "repeat";
+    break;
+  case QGradient::ReflectSpread:
+    data << "reflect";
+    break;
+  default:
+    break;
+  }
+  QGradientStops stops = gradient.stops();
+  QGradientStop stop;
+  foreach ( stop, stops ) 
+  {
+    data << QString::number( stop.first );
+    data << colorToString( stop.second );
+  }
+  return data.join( "|" );
+}
+
+/*!
+  \brief Dump conical gradient to the string description.
+  \param gradient conical gradient to be converted
+  \return string representation of the conical gradient
+  \sa stringToConicalGradient()
+*/
+QString Qtx::gradientToString( const QConicalGradient& gradient )
+{
+  QStringList data;
+  data << "conical";
+  data << QString::number( gradient.center().x() );
+  data << QString::number( gradient.center().y() );
+  data << QString::number( gradient.angle() );
+  switch( gradient.spread() ) 
+  {
+  case QGradient::PadSpread:
+    data << "pad";
+    break;
+  case QGradient::RepeatSpread:
+    data << "repeat";
+    break;
+  case QGradient::ReflectSpread:
+    data << "reflect";
+    break;
+  default:
+    break;
+  }
+  QGradientStops stops = gradient.stops();
+  QGradientStop stop;
+  foreach ( stop, stops ) 
+  {
+    data << QString::number( stop.first );
+    data << colorToString( stop.second );
+  }
+  return data.join( "|" );
+}
+
+/*!
+  \brief Create linear gradient from its string representation.
+  \param str string representation of the linear gradient
+  \param gradient resulting linear gradient object
+  \return \c true if the conversion is successful and \c false otherwise
+  \sa gradientToString()
+*/
+bool Qtx::stringToLinearGradient( const QString& str, QLinearGradient& gradient )
+{
+  bool success = false;
+  QStringList vals = str.split( "|", QString::SkipEmptyParts );
+  if ( vals.count() > 4 && ( vals[0] == "linear" || vals[0] == "lg" ) )
+  {
+    // start and end points 
+    double x1, y1, x2, y2;
+    bool bOk1, bOk2, bOk3, bOk4;
+    x1 = vals[1].toDouble( &bOk1 );
+    y1 = vals[2].toDouble( &bOk2 );
+    x2 = vals[3].toDouble( &bOk3 );
+    y2 = vals[4].toDouble( &bOk4 );
+    if ( bOk1 && bOk2 && bOk3 && bOk4 )
+    {
+      gradient = QLinearGradient( x1, y1, x2, y2 );
+      // spread type
+      if ( vals.count() > 5 )
+      {
+	QString spread = vals[ 5 ].trimmed().toLower();
+	if ( spread == "pad" || spread == "0" )
+	  gradient.setSpread( QGradient::PadSpread );
+	else if ( spread == "repeat" || spread == "2" )
+	  gradient.setSpread( QGradient::RepeatSpread );
+	else if ( spread == "reflect" || spread == "1" )
+	  gradient.setSpread( QGradient::ReflectSpread );
+      }
+      // stop points
+      QGradientStops stops;
+      for ( int i = 6; i < vals.count(); i+=2 )
+      {
+	bool bOk5, bOk6 = false;
+	QColor c;
+	double stop = vals[i].toDouble( &bOk5 );
+	if ( i+1 < vals.count() )
+	  bOk6 = stringToColor( vals[ i+1 ], c );
+	if ( bOk5 && stop >= 0.0 && stop <= 1.0 && bOk6 && c.isValid() )
+	  stops.append( QGradientStop( stop, c ) );
+      }
+      gradient.setStops( stops );
+      success = true;
+    }
+  }
+  return success;
+}
+
+/*!
+  \brief Create radial gradient from its string representation.
+  \param str string representation of the radial gradient
+  \param gradient resulting radial gradient object
+  \return \c true if the conversion is successful and \c false otherwise
+  \sa gradientToString()
+*/
+bool Qtx::stringToRadialGradient( const QString& str, QRadialGradient& gradient )
+{
+  bool success = false;
+  QStringList vals = str.split( "|", QString::SkipEmptyParts );
+  if ( vals.count() > 5 && vals[0] == "radial" || vals[0] == "rg" ) 
+  {
+    // center, radius and focal point
+    double cx, cy, r, fx, fy;
+    bool bOk1, bOk2, bOk3, bOk4, bOk5;
+    cx = vals[1].toDouble( &bOk1 );
+    cy = vals[2].toDouble( &bOk2 );
+    r  = vals[3].toDouble( &bOk3 );
+    fx = vals[4].toDouble( &bOk4 );
+    fy = vals[5].toDouble( &bOk5 );
+    if ( bOk1 && bOk2 && bOk3 && bOk4 && bOk5 )
+    {
+      gradient = QRadialGradient( cx, cy, r, fx, fy );
+      // spread type
+      if ( vals.count() > 6 )
+      {
+	QString spread = vals[ 6 ].trimmed().toLower();
+	if ( spread == "pad" || spread == "0" )
+	  gradient.setSpread( QGradient::PadSpread );
+	else if ( spread == "repeat" || spread == "2" )
+	  gradient.setSpread( QGradient::RepeatSpread );
+	else if ( spread == "reflect" || spread == "1" )
+	  gradient.setSpread( QGradient::ReflectSpread );
+      }
+      // stop points
+      QGradientStops stops;
+      for ( int i = 7; i < vals.count(); i+=2 )
+      {
+	bool bOk7, bOk8 = false;
+	QColor c;
+	double stop = vals[i].toDouble( &bOk7 );
+	if ( i+1 < vals.count() )
+	  bOk8 = stringToColor( vals[ i+1 ], c );
+	if ( bOk7 && stop >= 0.0 && stop <= 1.0 && bOk8 && c.isValid() )
+	  stops.append( QGradientStop( stop, c ) );
+      }
+      gradient.setStops( stops );
+      success = true;
+    }
+  }
+  return success;
+}
+
+/*!
+  \brief Create conical gradient from its string representation.
+  \param str string representation of the conical gradient
+  \param gradient resulting conical gradient object
+  \return \c true if the conversion is successful and \c false otherwise
+  \sa gradientToString()
+*/
+bool Qtx::stringToConicalGradient( const QString& str, QConicalGradient& gradient )
+{
+  bool success = false;
+  QStringList vals = str.split( "|", QString::SkipEmptyParts );
+  if ( vals.count() > 3 && vals[0] == "conical" || vals[0] == "cg" ) 
+  {
+    // center and angle
+    double cx, cy, a;
+    bool bOk1, bOk2, bOk3;
+    cx = vals[1].toDouble( &bOk1 );
+    cy = vals[2].toDouble( &bOk2 );
+    a = vals[3].toDouble( &bOk3 );
+    if ( bOk1 && bOk2 && bOk3 )
+    {
+      gradient = QConicalGradient( cx, cy, a );
+      // spread type
+      if ( vals.count() > 4 )
+      {
+	QString spread = vals[ 4 ].trimmed().toLower();
+	if ( spread == "pad" || spread == "0" )
+	  gradient.setSpread( QGradient::PadSpread );
+	else if ( spread == "repeat" || spread == "2" )
+	  gradient.setSpread( QGradient::RepeatSpread );
+	else if ( spread == "reflect" || spread == "1" )
+	  gradient.setSpread( QGradient::ReflectSpread );
+      }
+      // stop points
+      QGradientStops stops;
+      for ( int i = 5; i < vals.count(); i+=2 )
+      {
+	bool bOk4, bOk5 = false;
+	QColor c;
+	double stop = vals[i].toDouble( &bOk4 );
+	if ( i+1 < vals.count() )
+	  bOk5 = stringToColor( vals[ i+1 ], c );
+	if ( bOk4 && stop >= 0.0 && stop <= 1.0 && bOk5 && c.isValid() )
+	  stops.append( QGradientStop( stop, c ) );
+      }
+      gradient.setStops( stops );
+      success = true;
+    }
+  }
+  return success;
 }

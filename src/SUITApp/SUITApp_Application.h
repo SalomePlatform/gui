@@ -19,7 +19,7 @@
 #ifndef SUITAPP_APPLICATION_H
 #define SUITAPP_APPLICATION_H
 
-#include <QtGui/qapplication.h>
+#include <QApplication>
 
 class SUIT_ExceptionHandler;
 

@@ -16,10 +16,12 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      QtxSplash.cxx
-// Author:    Vadim SANDLER
+// File   : QtxSplash.cxx
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #include "QtxSplash.h"
+#include "QtxResourceMgr.h"
 
 #include <QApplication>
 #include <QPainter>
@@ -40,7 +42,7 @@ public:
     \param msg progress message
     \param progress current progress (for example, in %)
   */
-  ProgressEvent( const QString& msg, const int progress = 0 )
+  ProgressEvent( const QString& msg, const int progress )
     : QEvent( (QEvent::Type)id() ),
       myMessage( msg ),
       myProgress( progress )
@@ -115,12 +117,12 @@ private:
   splash->show();
   app.processEvents();
   // doing first step
-  splash->message("Step 1");
+  splash->setMessage("Step 1");
   splash->ress(1);
   qApp->processEvents();
   // ... perform some actions
   // doing second step
-  splash->message("Step 2");
+  splash->setMessage("Step 2");
   splash->setProgress(2);
   qApp->processEvents();
   // ... perform some actions
@@ -128,7 +130,7 @@ private:
   \endcode
 
   There is a static function QtxSplash::setStatus() which allows to put next status message
-  and progress with one call. It can substitue two calls: message() and setProgress().
+  and progress with one call. It can substitue two calls: setMessage() and setProgress().
 
   QtxSplash class provides alos a lot of functions to set-up its behavior. Set progress
   bar width with setProgressWidth() method, its position and direction with setProgressFlags().
@@ -139,6 +141,14 @@ private:
   To change the progress bar and status message transparency, use setOpacity() function.
   The methods setTextAlignment(), setTextColor() and setTextColors() can be used to change
   the attributes of the status message.
+
+  The displayed message text includes constant info and status message. The constant info
+  is set by setConstantInfo() method and status message is set by setMessage().
+
+  Sometimes it is useful to splay an error message above the splash screen window.
+  For example, it can be necessary if an error occurs when loading the application.
+  Method setError() can be used to show the error message and set the error code which
+  can be then retrieved with the error() function.
 */
 
 //! The only one instance of splash screen
@@ -199,12 +209,13 @@ QtxSplash* QtxSplash::splash( const QPixmap& px )
   \brief Send the status message and (optionally) current progress 
   to the splash screen.
 
-  This function can be used, for example, from an external thread
-  which checks the application loading progress.
+  If the second parameter is less than 0 (default) than it is ignored
+  and only the status message is changed. If you want to modify progress
+  also, pass positive value to the \a progress parameter explicitly.
 
   \param msg progress status message
   \param progress current progress
-  \sa message(), setProgress()
+  \sa setMessage(), setProgress()
 */
 void QtxSplash::setStatus( const QString& msg, const int progress )
 {
@@ -219,8 +230,9 @@ void QtxSplash::setStatus( const QString& msg, const int progress )
   \param error error message
   \param title message box title
   \param code error code
+  \sa error()
 */
-void QtxSplash::error( const QString& error, const QString& title, const int code )
+void QtxSplash::setError( const QString& error, const QString& title, const int code )
 {
   if ( mySplash ) {
     mySplash->setError( code );
@@ -615,8 +627,71 @@ void QtxSplash::textColors( QColor& color, QColor& shadow ) const
 }
 
 /*!
+  \brief Set constant info text to be displayed on the splash screen.
+
+  The displayed text includes constant info and status message.
+  The constant message is set by setConstantInfo() method and status
+  message is set by setMessage().
+
+  \param info constant info text
+  \sa constantInfo(), message(), setMessage()
+*/
+void QtxSplash::setConstantInfo( const QString& info )
+{
+  myInfo = info;
+  repaint();
+}
+
+/*!
+  \brief Get constant info text.
+  \return constant info text
+  \sa setConstantInfo(), message(), setMessage()
+*/
+QString QtxSplash::constantInfo() const
+{
+  return myInfo;
+}
+
+/*!
+  \brief Set constant information option value.
+
+  The option is a part of the constant information text,
+  which is replaced at the time of the displaying.
+
+  The following options are supported:
+  - %A - could be used as application name
+  - %V - could be used as application version
+  - %L - could be used as application license information
+  - %C - could be used as application copyright information
+
+  \param name option name
+  \param option value
+  \sa option()
+*/
+void QtxSplash::setOption( const QString& name, const QString& value )
+{
+  myOptions[ name ] = value;
+  repaint();
+}
+
+/*!
+  \brief Get constant information option value.
+  \param name option name
+  \return option value or empty string if option is not set
+  \sa setOption()
+*/
+QString QtxSplash::option( const QString& name ) const
+{
+  QString val;
+  if ( myOptions.contains( name ) )
+    val = myOptions[ name ];
+  return val;
+}
+
+/*!
   \brief Get current status message.
   \return status message
+  \sa setMessage(), constantInfo(), setConstantInfo()
 */
 QString QtxSplash::message() const
 {
@@ -631,6 +706,7 @@ QString QtxSplash::message() const
   If no error code has been set, 0 is returned.
 
   \return last error code
+  \sa setError()
 */
 int QtxSplash::error() const
 {
@@ -667,15 +743,179 @@ void QtxSplash::repaint()
 }
 
 /*!
+  \brief Read splash settings from the resources manager.
+  \param resMgr resources manager
+  \param section resources file section name (if empty, the default name is used).
+*/
+void QtxSplash::readSettings( QtxResourceMgr* resMgr, const QString& section )
+{
+  QString resSection = section.isEmpty() ? "splash" : section;
+  
+  // pixmap
+  QString pxname;
+  if ( resMgr->value( resSection, "image", pxname ) ) {
+    QPixmap px( pxname );
+    if ( !px.isNull() )
+      setPixmap( px );
+  }
+
+  // hide-on-click
+#ifdef _DEBUG_
+  setHideOnClick( true );
+#else
+  bool bHide;
+  if ( resMgr->value( resSection, "hide_on_click", bHide ) ) {
+    setHideOnClick( bHide );
+  }
+#endif
+
+  // margin
+  int m;
+  if ( resMgr->value( resSection, "margin", m ) ) {
+    setMargin( m );
+  }
+
+  // progress bar width
+  int pw;
+  if ( resMgr->value( resSection, "progress_width", pw ) ) {
+    setProgressWidth( pw );
+  }
+
+  // progress bar position and direction
+  QString pf;
+  if ( resMgr->value( resSection, "progress_flags", pf ) ) {
+    bool bOk;
+    int fl = pf.toInt( &bOk );
+    if ( !bOk ) {
+      fl = 0;
+      QStringList opts = pf.split( QRegExp( "," ), QString::SkipEmptyParts );
+      for ( int i = 0; i < opts.count(); i++ ) {
+	QString opt = opts[i].trimmed().toLower();
+	if ( opt == "left" )
+	  fl = fl | LeftSide;
+	else if ( opt == "right" )
+	  fl = fl | RightSide;
+	else if ( opt == "top" )
+	  fl = fl | TopSide;
+	else if ( opt == "bottom" )
+	  fl = fl | BottomSide;
+	else if ( opt == "left_to_right" )
+	  fl = fl | LeftToRight;
+	else if ( opt == "right_to_left" )
+	  fl = fl | RightToLeft;
+      }
+    }
+    setProgressFlags( fl );
+  }
+  
+  // opacity
+  double op;
+  if ( resMgr->value( resSection, "opacity", op ) ) {
+    setOpacity( op );
+  }
+
+  // font
+  QFont f;
+  if ( resMgr->value( resSection, "font", f ) ) {
+    setFont( f );
+  }
+
+  // text alignment
+  QString al;
+  if ( resMgr->value( resSection, "alignment", al ) ) {
+    bool bOk;
+    int fl = al.toInt( &bOk );
+    if ( !bOk ) {
+      fl = 0;
+      QStringList opts = al.split( QRegExp( "," ), QString::SkipEmptyParts );
+      for ( int i = 0; i < opts.count(); i++ ) {
+	QString opt = opts[i].trimmed().toLower();
+	if ( opt == "left" )
+	  fl = fl | Qt::AlignLeft;
+	else if ( opt == "right" )
+	  fl = fl | Qt::AlignRight;
+	else if ( opt == "top" )
+	  fl = fl | Qt::AlignTop;
+	else if ( opt == "bottom" )
+	  fl = fl | Qt::AlignBottom;
+	else if ( opt == "hcenter" )
+	  fl = fl | Qt::AlignHCenter;
+	else if ( opt == "vcenter" )
+	  fl = fl | Qt::AlignVCenter;
+	else if ( opt == "justify" )
+	  fl = fl | Qt::AlignJustify;
+	else if ( opt == "center" )
+	  fl = fl | Qt::AlignCenter;
+      }
+    }
+    setTextAlignment( fl );
+  }
+
+  // progress color(s)
+  QString pc;
+  QLinearGradient grad;
+  if ( resMgr->value( resSection, "progress_gradient", grad ) ) {
+    // gradient-colored progress bar
+    setProgressGradient( grad );
+  }
+  else if ( resMgr->value( resSection, "progress_color",  pc ) || 
+	    resMgr->value( resSection, "progress_colors", pc ) ) {
+    // one/two-colored progress bar
+    QStringList colors = pc.split( "|", QString::SkipEmptyParts );
+    QColor c1, c2;
+    QtxSplash::GradientType gradType = QtxSplash::Vertical;
+    if ( colors.count() > 0 ) c1 = QColor( colors[0] );
+    if ( colors.count() > 1 ) c2 = QColor( colors[1] );
+    int gt;
+    if ( colors.count() > 2 ) {
+      bool bOk;
+      gt = colors[2].toInt( &bOk );
+      if ( bOk ) {
+	if ( gt >= QtxSplash::Horizontal && gt <= QtxSplash::Vertical )
+	  gradType = (QtxSplash::GradientType)gt;
+      }
+      else {
+	if ( colors[2].toLower() == "horizontal" )
+	  gradType = QtxSplash::Horizontal;
+	else if ( colors[2].toLower() == "vertical" )
+	  gradType = QtxSplash::Vertical;
+      }
+    }
+    setProgressColors( c1, c2, gradType );
+  }
+
+  // text color(s)
+  QString tc;
+  if ( resMgr->value( resSection, "text_color",  tc ) || 
+       resMgr->value( resSection, "text_colors", tc ) ) {
+    QStringList colors = tc.split( "|", QString::SkipEmptyParts );
+    QColor c1, c2;
+    if ( colors.count() > 0 )
+      c1 = QColor( colors[0] );
+    if ( colors.count() > 1 )
+      c2 = QColor( colors[1] );
+    setTextColors( c1, c2 );
+  }
+
+  // const info
+  QString cinfo;
+  if ( resMgr->value( resSection, "constant_info", cinfo, false ) ||
+       resMgr->value( resSection, "info", cinfo, false ) ) {
+    setConstantInfo( cinfo.split( "|", QString::KeepEmptyParts ).join( "\n" ) );
+  }
+}
+
+/*!
   \brief Set status message for the splash screen and define its color 
   and aligment flags.
   \param msg status message
   \param alignment message text alignment flags (Qt::Alignment)
   \param color message text color
+  \sa message(), constantInfo(), setConstantInfo()
 */
-void QtxSplash::message( const QString& msg, 
-			 int            alignment,
-			 const QColor&  color )
+void QtxSplash::setMessage( const QString& msg, 
+			    int            alignment,
+			    const QColor&  color )
 {
   myMessage   = msg;
   myAlignment = alignment;
@@ -688,8 +928,9 @@ void QtxSplash::message( const QString& msg,
   \overload
   \brief Set status message for the splash screen.
   \param msg status message
+  \sa message(), constantInfo(), setConstantInfo()
 */
-void QtxSplash::message( const QString& msg )
+void QtxSplash::setMessage( const QString& msg )
 {
   myMessage = msg;
   repaint();
@@ -701,7 +942,7 @@ void QtxSplash::message( const QString& msg )
 */
 void QtxSplash::clear()
 {
-  myMessage = QString::null;
+  myMessage.clear();
   repaint();
 }
 
@@ -719,7 +960,7 @@ void QtxSplash::drawContents( QPainter* p )
   }
 
   // draw status message
-  if ( !myMessage.isEmpty() ) {
+  if ( !fullMessage().isEmpty() ) {
     p->save();
     drawMessage( p );
     p->restore();
@@ -765,8 +1006,9 @@ void QtxSplash::customEvent( QEvent* ce )
 {
   if ( ce->type() == ProgressEvent::id() ) {
     ProgressEvent* pe = (ProgressEvent*)ce;
-    pe->message().isEmpty() ? clear() : message( pe->message() );
-    setProgress( pe->progress() );
+    pe->message().isEmpty() ? clear() : setMessage( pe->message() );
+    if ( pe->progress() >= 0 )
+      setProgress( pe->progress() );
     QApplication::instance()->processEvents();
   }
 }
@@ -874,8 +1116,9 @@ void QtxSplash::drawMessage( QPainter* p )
   
   // ... take into account trailing '\n' symbols
   int shift = 0;
-  int i = myMessage.length() - 1;
-  while( i >= 0 && myMessage[ i-- ] == '\n' )
+  QString msg = fullMessage();
+  int i = msg.length() - 1;
+  while( i >= 0 && msg[ i-- ] == '\n' )
     shift += spacing;
   r1.setHeight( r1.height() - shift );
 
@@ -889,12 +1132,12 @@ void QtxSplash::drawMessage( QPainter* p )
     if ( myAlignment & Qt::AlignRight  ) r2.setRight ( r2.right()  + 1 );
     if ( myAlignment & Qt::AlignBottom ) r2.setBottom( r2.bottom() + 1 );
     p->setPen( myShadowColor );
-    p->drawText( r2, myAlignment, myMessage );
+    p->drawText( r2, myAlignment, msg );
   }
 
   // draw foreground status text
   p->setPen( myColor );
-  p->drawText( r1, myAlignment, myMessage );
+  p->drawText( r1, myAlignment, msg );
 }
 
 /*!
@@ -920,3 +1163,24 @@ void QtxSplash::setError( const int code )
   myError = code;
 }
 
+/*!
+  \brief Get full message which includes constant info and status message.
+  \return get fill message text
+  \sa constantInfo(), setConstantInfo(), message(), setMessage()
+*/
+QString QtxSplash::fullMessage() const
+{
+  QStringList info;
+
+  QString cinfo = myInfo;
+  cinfo = cinfo.replace( QRegExp( "%A" ), option( "%A" ) );
+  cinfo = cinfo.replace( QRegExp( "%V" ), option( "%V" ) );
+  cinfo = cinfo.replace( QRegExp( "%L" ), option( "%L" ) );
+  cinfo = cinfo.replace( QRegExp( "%C" ), option( "%C" ) );
+
+  if ( !cinfo.isEmpty() )
+    info << cinfo;
+  if ( !myMessage.isEmpty() )
+    info << myMessage;
+  return info.join( "\n" );
+}

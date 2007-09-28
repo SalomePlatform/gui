@@ -19,12 +19,10 @@
 #include "SUITApp_Application.h"
 
 #include <SUIT_Tools.h>
-#include <SUIT_MessageBox.h>
 #include <SUIT_ExceptionHandler.h>
 
-#include <QtCore/qdir.h>
-#include <QtCore/qfileinfo.h>
-#include <QtCore/qtranslator.h>
+#include <QDir>
+#include <QTranslator>
 
 #ifdef WIN32
 #include <windows.h>

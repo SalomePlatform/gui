@@ -16,8 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:      QtxSplash.h
-// Author:    Vadim SANDLER
+// File   : QtxSplash.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #ifndef QTXSPLASH_H
 #define QTXSPLASH_H
@@ -27,10 +28,13 @@
 #include <QWidget>
 #include <QPixmap>
 #include <QLinearGradient>
+#include <QMap>
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
+
+class QtxResourceMgr;
 
 class QTX_EXPORT QtxSplash : public QWidget
 {
@@ -60,8 +64,8 @@ public:
   
   static QtxSplash* splash( const QPixmap& = QPixmap() );
   
-  static void       setStatus( const QString&, const int = 0 );
-  static void       error( const QString&, const QString& = QString::null, const int = -1 );
+  static void       setStatus( const QString&, const int = -1 );
+  static void       setError( const QString&, const QString& = QString(), const int = -1 );
   
   void              setPixmap( const QPixmap& );
   QPixmap           pixmap() const;
@@ -104,6 +108,12 @@ public:
   void              setTextColors( const QColor&, const QColor& = QColor() );
   void              textColors( QColor&, QColor& ) const;
   
+  void              setConstantInfo( const QString& info );
+  QString           constantInfo() const;
+
+  void              setOption( const QString&, const QString& );
+  QString           option( const QString& ) const;
+
   QString           message() const;
   
   int               error() const;
@@ -111,11 +121,13 @@ public:
   void              finish( QWidget* );
   void              repaint();
   
+  void              readSettings( QtxResourceMgr*, const QString& = QString() );
+
 public slots:
-  void              message( const QString&, 
-			     const int,
-			     const QColor& = QColor() );
-  void              message( const QString& );
+  void              setMessage( const QString&, 
+				const int,
+				const QColor& = QColor() );
+  void              setMessage( const QString& );
   void              clear();
   
 protected:
@@ -131,11 +143,16 @@ protected:
 private:
   void              drawContents();
   void              setError( const int );
+  QString           fullMessage() const;
 
+private:
+  typedef QMap<QString, QString> OptMap;
+      
 private:
   static QtxSplash* mySplash;
   
   QPixmap           myPixmap;           //!< splash pixmap
+  QString           myInfo;             //!< constant info
   QString           myMessage;          //!< current status message
   int               myAlignment;        //!< text alignment flags (Qt::Alignment)
   QColor            myColor;            //!< text color
@@ -153,6 +170,7 @@ private:
   double            myOpacity;          //!< progress bar / status message opacity
   int               myError;            //!< error code
   bool              myGradientUsed;     //!< 'use custom gradient color scale' flag
+  OptMap            myOptions;          //!< constant info options
 };
 
 #endif

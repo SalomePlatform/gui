@@ -269,7 +269,7 @@ QString QtxResourceMgr::Resources::path( const QString& sec, const QString& pref
   if ( !filePath.isEmpty() )
   {
     if ( !QFileInfo( filePath ).exists() )
-      filePath = QString::null;
+      filePath = QString();
   }
   return filePath;
 }
@@ -451,7 +451,7 @@ QTranslator* QtxResourceMgr::Resources::loadTranslator( const QString& sect, con
 */
 QString QtxResourceMgr::Resources::environmentVariable( const QString& str, int& start, int& len ) const
 {
-  QString varName = QString::null;
+  QString varName;
   len = 0;
 
   QRegExp rx( "(^\\$\\{|[^\\$]\\$\\{)([a-zA-Z]+[a-zA-Z0-9_]*)(\\})|(^\\$\\(|[^\\$]\\$\\()([a-zA-Z]+[a-zA-Z0-9_]*)(\\))|(^\\$|[^\\$]\\$)([a-zA-Z]+[a-zA-Z0-9_]*)|(^%|[^%]%)([a-zA-Z]+[a-zA-Z0-9_]*)(%[^%]|%$)" );
@@ -1383,39 +1383,7 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QColor& cV
   if ( !value( sect, name, val, true ) )
     return false;
 
-  bool res = true;
-  QStringList vals = val.split( QRegExp( "[\\s|,]" ), QString::SkipEmptyParts );
-
-  QIntList nums;
-  for ( QStringList::const_iterator it = vals.begin(); it != vals.end() && res; ++it )
-  {
-    int num = 0;
-    if ( (*it).startsWith( "#" ) )
-      num = (*it).mid( 1 ).toInt( &res, 16 );
-    else
-      num = (*it).toInt( &res, 10 );
-    if ( res )
-      nums.append( num );
-  }
-
-  res = res && nums.count() >= 3;
-  if ( res )
-    cVal.setRgb( nums[0], nums[1], nums[2] );
-
-  if ( !res )
-  {
-    int pack = val.toInt( &res );
-    if ( res )
-      cVal = Qtx::rgbSet( pack );
-  }
-
-  if ( !res )
-  {
-    cVal = QColor( val );
-    res = cVal.isValid();
-  }
-
-  return res;
+  return Qtx::stringToColor( val, cVal );
 }
 
 /*!
@@ -1497,6 +1465,57 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QByteArray
     baVal.append( (char)num );
   }
   return !baVal.isEmpty();
+}
+
+/*!
+  \brief Get linear gradient parameter value.
+  \param sect section name
+  \param name parameter name
+  \param gVal parameter to return resulting linear gradient value value
+  \return \c true if parameter is found and \c false if parameter is not found
+          (in this case \a gVal value is undefined)
+*/
+bool QtxResourceMgr::value( const QString& sect, const QString& name, QLinearGradient& gVal ) const
+{
+  QString val;
+  if ( !value( sect, name, val, true ) )
+    return false;
+
+  return Qtx::stringToLinearGradient( val, gVal );
+}
+
+/*!
+  \brief Get radial gradient parameter value.
+  \param sect section name
+  \param name parameter name
+  \param gVal parameter to return resulting radial gradient value value
+  \return \c true if parameter is found and \c false if parameter is not found
+          (in this case \a gVal value is undefined)
+*/
+bool QtxResourceMgr::value( const QString& sect, const QString& name, QRadialGradient& gVal ) const
+{
+  QString val;
+  if ( !value( sect, name, val, true ) )
+    return false;
+
+  return Qtx::stringToRadialGradient( val, gVal );
+}
+
+/*!
+  \brief Get conical gradient parameter value.
+  \param sect section name
+  \param name parameter name
+  \param gVal parameter to return resulting conical gradient value value
+  \return \c true if parameter is found and \c false if parameter is not found
+          (in this case \a gVal value is undefined)
+*/
+bool QtxResourceMgr::value( const QString& sect, const QString& name, QConicalGradient& gVal ) const
+{
+  QString val;
+  if ( !value( sect, name, val, true ) )
+    return false;
+
+  return Qtx::stringToConicalGradient( val, gVal );
 }
 
 /*!
@@ -1660,6 +1679,60 @@ QByteArray QtxResourceMgr::byteArrayValue( const QString& sect, const QString& n
 }
 
 /*!
+  \brief Get linear gradient parameter value.
+
+  If the specified parameter is not found, the specified default value is returned instead.
+
+  \param sect section name
+  \param name parameter name
+  \param def default value
+  \return parameter value (or default value if parameter is not found)
+*/
+QLinearGradient QtxResourceMgr::linearGradientValue( const QString& sect, const QString& name, const QLinearGradient& def ) const
+{
+  QLinearGradient val;
+  if ( !value( sect, name, val ) )
+    val = def;
+  return val;
+}
+
+/*!
+  \brief Get radial gradient parameter value.
+
+  If the specified parameter is not found, the specified default value is returned instead.
+
+  \param sect section name
+  \param name parameter name
+  \param def default value
+  \return parameter value (or default value if parameter is not found)
+*/
+QRadialGradient QtxResourceMgr::radialGradientValue( const QString& sect, const QString& name, const QRadialGradient& def ) const
+{
+  QRadialGradient val;
+  if ( !value( sect, name, val ) )
+    val = def;
+  return val;
+}
+
+/*!
+  \brief Get conical gradient parameter value.
+
+  If the specified parameter is not found, the specified default value is returned instead.
+
+  \param sect section name
+  \param name parameter name
+  \param def default value
+  \return parameter value (or default value if parameter is not found)
+*/
+QConicalGradient QtxResourceMgr::conicalGradientValue( const QString& sect, const QString& name, const QConicalGradient& def ) const
+{
+  QConicalGradient val;
+  if ( !value( sect, name, val ) )
+    val = def;
+  return val;
+}
+
+/*!
   \brief Check parameter existence.
   \param sect section name
   \param name parameter name
@@ -1749,7 +1822,7 @@ void QtxResourceMgr::setValue( const QString& sect, const QString& name, const Q
   if ( checkExisting() && value( sect, name, res ) && res == val )
     return;
 
-  setResource( sect, name, val.isValid() ? val.name() : QString() );
+  setResource( sect, name, Qtx::colorToString( val ) );
 }
 
 /*!
@@ -1812,6 +1885,51 @@ void QtxResourceMgr::setValue( const QString& sect, const QString& name, const Q
     lst.append( QString( buf ) );
   }
   setResource( sect, name, lst.join( " " ) );
+}
+
+/*!
+  \brief Set linear gradient parameter value.
+  \param sect section name
+  \param name parameter name
+  \param val parameter value
+*/
+void QtxResourceMgr::setValue( const QString& sect, const QString& name, const QLinearGradient& val )
+{
+  QLinearGradient res;
+  if ( checkExisting() && value( sect, name, res ) && res == val )
+    return;
+
+  setResource( sect, name, Qtx::gradientToString( val ) );
+}
+
+/*!
+  \brief Set radial gradient parameter value.
+  \param sect section name
+  \param name parameter name
+  \param val parameter value
+*/
+void QtxResourceMgr::setValue( const QString& sect, const QString& name, const QRadialGradient& val )
+{
+  QRadialGradient res;
+  if ( checkExisting() && value( sect, name, res ) && res == val )
+    return;
+
+  setResource( sect, name, Qtx::gradientToString( val ) );
+}
+
+/*!
+  \brief Set conical gradient parameter value.
+  \param sect section name
+  \param name parameter name
+  \param val parameter value
+*/
+void QtxResourceMgr::setValue( const QString& sect, const QString& name, const QConicalGradient& val )
+{
+  QConicalGradient res;
+  if ( checkExisting() && value( sect, name, res ) && res == val )
+    return;
+
+  setResource( sect, name, Qtx::gradientToString( val ) );
 }
 
 /*!

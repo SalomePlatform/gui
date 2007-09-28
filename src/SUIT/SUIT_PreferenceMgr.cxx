@@ -69,22 +69,22 @@ int SUIT_PreferenceMgr::addItem( const QString& title, const int pId,
                                  const SUIT_PreferenceMgr::PrefItemType type,
                                  const QString& sect, const QString& param )
 {
-  QtxPreferenceItem* item = findItem( title, true );
+  QtxPreferenceItem* parent = pId == -1 ? this : findItem( pId, true );
+
+  if ( !parent )
+    return -1;
+
+  QtxPreferenceItem* item = parent->findItem( title, true );
+
   if ( item )
     return item->id();
 
-  QtxPreferenceItem* parent = 0;
   if ( pId == -1 )
   {
     if ( !myRoot )
       myRoot = new QtxPagePrefListItem( QString( "root" ), this );
     parent = myRoot;
   }
-  else
-    parent = findItem( pId, true );
-
-  if ( !parent )
-    return -1;
 
   switch( type )
   {
@@ -131,6 +131,12 @@ int SUIT_PreferenceMgr::addItem( const QString& title, const int pId,
     break;
   case GroupBox:
     item = new QtxPagePrefGroupItem( title, parent, sect, param );
+    break;
+  case Tab:
+    item = new QtxPagePrefTabsItem( title, parent, sect, param );
+    break;
+  case Frame:
+    item = new QtxPagePrefFrameItem( title, parent, sect, param );
     break;
   case Font:
     item = new QtxPagePrefFontItem( title, parent, sect, param );

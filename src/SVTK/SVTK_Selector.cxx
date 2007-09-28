@@ -44,13 +44,13 @@
 */
 inline
 SALOME_Actor* 
-GetFirstSALOMEActor(vtkActorCollection* theCollection)
+GetLastSALOMEActor(vtkActorCollection* theCollection)
 {
   if (theCollection) {
     for (int i = theCollection->GetNumberOfItems() - 1; i >= 0; i--) {
-      SALOME_Actor* anActor = dynamic_cast<SALOME_Actor*>(theCollection->GetItemAsObject(i));
-      if (anActor)
-	return anActor;
+      if (SALOME_Actor* anActor = dynamic_cast<SALOME_Actor*>(theCollection->GetItemAsObject(i)))
+	if (anActor->hasIO())
+	  return anActor;
     }
   }
   return NULL;
@@ -554,7 +554,7 @@ SVTK_SelectorDef
 		     theRenderer);
   
   vtkActorCollection* aListActors = myCellPicker->GetActors();
-  SALOME_Actor* anActor = GetFirstSALOMEActor(aListActors);
+  SALOME_Actor* anActor = GetLastSALOMEActor(aListActors);
   
   if (! anActor) {
     myPicker->Pick(theEvent->myX,
@@ -562,7 +562,7 @@ SVTK_SelectorDef
 		   0.0,
 		   theRenderer);
     aListActors = myPicker->GetActors();
-    anActor = GetFirstSALOMEActor(aListActors);
+    anActor = GetLastSALOMEActor(aListActors);
   }
   
   return anActor;

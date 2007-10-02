@@ -161,6 +161,10 @@ Directory with this name exist on disc. Try to use another name</translation>
         <translation>Paste</translation>
     </message>
     <message>
+        <source>MEN_DOCKWINDOWS</source>
+        <translation>W&amp;indows</translation>
+    </message>
+    <message>
         <source>BUT_YES</source>
         <translation>&amp;Yes</translation>
     </message>
@@ -238,7 +242,7 @@ Do you want to reload it ?</translation>
         <translation>About...</translation>
     </message>
     <message>
-        <source>MEN_DESK_VIEW_TOOLBARS</source>
+        <source>MEN_TOOLBARS</source>
         <translation>T&amp;oolbars</translation>
     </message>
     <message>

@@ -37,8 +37,6 @@ class SUIT_ToolWindow;
 class SUIT_Desktop;
 class SUIT_ViewManager;
 class SUIT_PopupClient;
-class TableViewer_ViewManager;
-class VTKViewer_ViewManager;
 
 typedef QList<SUIT_ViewManager*> ViewManagerList;
 
@@ -53,8 +51,7 @@ class STD_EXPORT STD_Application : public SUIT_Application
 public:
   enum { FileNewId, FileOpenId, FileCloseId, FileSaveId, FileSaveAsId, FileExitId,
 	       ViewWindowsId, ViewToolBarsId, ViewStatusBarId, NewWindowId,
-         EditCutId, EditCopyId, EditPasteId, HelpAboutId,
-         TableViewId, VTKViewId, UserID };
+         EditCutId, EditCopyId, EditPasteId, HelpAboutId, UserID };
 
   enum { CloseSave, CloseDiscard, CloseCancel };
 
@@ -124,8 +121,6 @@ public slots:
 
   virtual void          onCopy();
   virtual void          onPaste();
-  virtual void          onTableView();
-  virtual void          onVTKView();
 
   virtual void          onViewStatusBar( bool );
 
@@ -173,8 +168,6 @@ private:
 private:
   bool                  myExitConfirm;
   bool                  myEditEnabled;
-  TableViewer_ViewManager* myTableMgr;
-  VTKViewer_ViewManager*   myVTKMgr;
 };
 
 #if defined WIN32

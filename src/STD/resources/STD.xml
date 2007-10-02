@@ -15,7 +15,7 @@
   </section>
   <section name="splash" >
     <!-- Splash screen settings -->
-    <parameter name="image"             value="${GUI_ROOT_DIR}/share/salome/resources/gui/icon_about.png" />
+    <parameter name="image"             value="" />
     <parameter name="constant_info"     value="%A [ %V ]" />
     <parameter name="text_colors"       value="#5A81BF|#20408F" />
     <parameter name="hide_on_click"     value="no" />
@@ -30,12 +30,12 @@
   </section>
   <section name="resources">
     <!-- Resource directories (resource manager)-->
-    <parameter name="SUIT"         value="${GUI_ROOT_DIR}/resources"/>
-    <parameter name="STD"          value="${GUI_ROOT_DIR}/resources"/>
-    <parameter name="Plot2d"       value="${GUI_ROOT_DIR}/resources"/>
-    <parameter name="TableViewer"  value="${GUI_ROOT_DIR}/resources"/>
-    <parameter name="VTKViewer"    value="${GUI_ROOT_DIR}/resources"/>
-    <parameter name="OB"           value="${GUI_ROOT_DIR}/resources"/>
+    <parameter name="SUIT"         value="${SUIT_DIR}/resources"/>
+    <parameter name="STD"          value="${SUIT_DIR}/resources"/>
+    <parameter name="Plot2d"       value="${SUIT_DIR}/resources"/>
+    <parameter name="TableViewer"  value="${SUIT_DIR}/resources"/>
+    <parameter name="VTKViewer"    value="${SUIT_DIR}/resources"/>
+    <parameter name="OB"           value="${SUIT_DIR}/resources"/>
   </section>
   <section name="desktop" >
     <!-- Default GUI desktop state, position, size -->

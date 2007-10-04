@@ -16,6 +16,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File   : SUIT_DataObject.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #ifndef SUIT_DATAOBJECT_H
 #define SUIT_DATAOBJECT_H
@@ -26,6 +29,7 @@
 #include <QObject>
 #include <QString>
 #include <QPixmap>
+#include <QFont>
 
 class SUIT_DataObject;
 class SUIT_DataObjectKey;
@@ -36,18 +40,25 @@ typedef QList<SUIT_DataObject*> DataObjectList;
 #pragma warning( disable:4251 )
 #endif
 
-/*!
-  \class SUIT_DataObject
-  Data Object represents uniform data tree structure recommended to use in SUIT-based applications
-  Many of standard classes (DataModel,ObjectBrowser) deal with SUIT_DataObjects
-*/
 class SUIT_EXPORT SUIT_DataObject  
 {
 public:
   class Signal;
 
-  typedef enum { None, RadioButton, CheckBox } CheckType;
-  typedef enum { Text, Base, Foreground, Background, Highlight, HighlightedText } ColorRole;
+  //! Color role
+  typedef enum { 
+    Text,              //!< editor foreground (text) color
+    Base,              //!< editor background color
+    Foreground,        //!< foreground (text) color
+    Background,        //!< background color
+    Highlight,         //!< highlight background color
+    HighlightedText    //!< highlighted foreground (text) color
+  } ColorRole;
+
+  //! Column index
+  enum { 
+    NameIdx            //!< name column
+  };
 
   SUIT_DataObject( SUIT_DataObject* = 0 );
   virtual ~SUIT_DataObject();
@@ -56,10 +67,16 @@ public:
   SUIT_DataObject*            lastChild() const;
   SUIT_DataObject*            firstChild() const;
 
+  virtual int                 columnCount() const;
+  virtual QString             columnTitle( const int = NameIdx ) const;
+  virtual QPixmap             columnIcon( const int = NameIdx ) const;
+  virtual bool                appropriate( const int = NameIdx ) const;
+
   int                         childCount() const;
   int                         childPos( const SUIT_DataObject* ) const;
   SUIT_DataObject*            childObject( const int ) const;
   int                         level() const;
+  int                         position() const;
 
   SUIT_DataObject*            nextBrother() const;
   SUIT_DataObject*            prevBrother() const;
@@ -71,81 +88,96 @@ public:
   virtual DataObjectList      children( const bool = false );
   
   void                        appendChild( SUIT_DataObject* );
-  virtual void                removeChild( SUIT_DataObject* );
-  virtual void                insertChild( SUIT_DataObject*, int thePosition );
+  virtual void                insertChild( SUIT_DataObject*, int );
+  virtual void                removeChild( SUIT_DataObject*, const bool = false );
   bool                        replaceChild( SUIT_DataObject*, SUIT_DataObject*, const bool = false );
 
   void                        reparentChildren( const SUIT_DataObject* );
 
-  virtual QString             text( const int ) const;
-  virtual QColor              color( const ColorRole ) const;
-
-  virtual QString             name() const;
-  virtual QPixmap             icon() const;
-  virtual QString             toolTip() const;
-
   virtual SUIT_DataObject*    parent() const;
   virtual void                setParent( SUIT_DataObject* );
+
+  virtual QString             name() const;
+  virtual QString             text( const int = NameIdx ) const;
+  virtual QPixmap             icon( const int = NameIdx ) const;
+  virtual QColor              color( const ColorRole, const int = NameIdx ) const;
+  virtual QString             toolTip( const int = NameIdx ) const;
+  virtual QString             statusTip( const int = NameIdx ) const;
+  virtual QString             whatsThis( const int = NameIdx ) const;
+  virtual QFont               font( const int = NameIdx ) const;
+  virtual int                 alignment( const int = NameIdx ) const;
 
   virtual bool                isDragable() const;
   virtual bool                isDropAccepted( SUIT_DataObject* obj );
 
-  virtual CheckType           checkType() const;
+  virtual bool                isEnabled() const;
+  virtual bool                isSelectable() const;
+  virtual bool                isCheckable( const int = NameIdx ) const;
 
-  virtual bool                isOn() const;
-  virtual void                setOn( const bool );
+  virtual bool                isOn( const int = NameIdx ) const;
+  virtual void                setOn( const bool, const int = NameIdx );
 
   virtual bool                isOpen() const;
   virtual void                setOpen( const bool );
 
+  virtual void                update();
+  virtual bool                customSorting( const int = NameIdx ) const;
+  virtual bool                compare( const QVariant&, const QVariant&, 
+				       const int = NameIdx ) const;
+
   virtual SUIT_DataObjectKey* key() const;
 
-  bool                        connect( QObject*, const char* );
-  bool                        disconnect( QObject*, const char* );
+  static Signal*              signal();
+  static bool                 connect( const char*, QObject*, const char* );
+  static bool                 disconnect( const char*, QObject*, const char* );
 
   void                        deleteLater();
-  
+
   void                        dump( const int indent = 2 ) const; // dump to cout
 
 private:
   SUIT_DataObject*            myParent;
   bool                        myOpen;
   bool                        myCheck;
-  Signal*                     mySignal;
   bool                        myAutoDel;
   DataObjectList              myChildren;
+
+  static Signal*              mySignal;
 
   friend class SUIT_DataObject::Signal;
   friend class SUIT_DataObjectIterator;
 };
 
-/*!
-  \class SUIT_DataObject::Signal
-  Auxiliary class providing functionality to use signals of data object state change
-  SUIT_DataObject cannot have signals, because it isn't QObject, but
-  methods connect/disconnect of SUIT_DataObject with help of this it is possible
-  to emulate Qt signal processing
-*/
-class SUIT_DataObject::Signal : public QObject
+class SUIT_EXPORT SUIT_DataObject::Signal : public QObject
 {
   Q_OBJECT
 
 public:
-  Signal( SUIT_DataObject* );
+  Signal();
   virtual ~Signal();
 
-  void                        emitSignal();
-  void                        setOwner( SUIT_DataObject* o );
+private:
+  void emitCreated( SUIT_DataObject* );
+  void emitDestroyed( SUIT_DataObject* );
+  void emitInserted( SUIT_DataObject*, SUIT_DataObject* );
+  void emitRemoved( SUIT_DataObject*, SUIT_DataObject* );
+
+  void deleteLater( SUIT_DataObject* );
 
 signals:
-  void                        destroyed( SUIT_DataObject* );
+  void created( SUIT_DataObject* );
+  void destroyed( SUIT_DataObject* );
+  void inserted( SUIT_DataObject*, SUIT_DataObject* );
+  void removed( SUIT_DataObject*, SUIT_DataObject* );
+
+  friend class SUIT_DataObject;
 
 private:
-  SUIT_DataObject*            myOwner;
+  DataObjectList myDelLaterObjects;
 };
 
 #ifdef WIN32
 #pragma warning( default:4251 )
 #endif
 
-#endif
+#endif  // SUIT_DATAOBJECT_H

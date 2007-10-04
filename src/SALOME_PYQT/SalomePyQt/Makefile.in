@@ -28,20 +28,6 @@ VPATH=.:@srcdir@:@top_srcdir@/idl
 
 @COMMENCE@
 
-# small trick for Mandrake-10.1: PyQt 3.13 does not support Qt 3.3.3
-ifeq ($(QT_VERS),Qt_3_3_3)
-QT_VERS = Qt_3_3_0
-endif
-ifeq ($(QT_VERS),Qt_3_3_4)
-QT_VERS = Qt_3_3_0
-endif
-ifeq ($(QT_VERS),Qt_3_3_6)
-QT_VERS = Qt_3_3_0
-endif
-ifeq ($(QT_VERS),Qt_3_3_7)
-QT_VERS = Qt_3_3_0
-endif
-
 # Sip flags
 SIP_FLAGS = -t WS_X11 -t $(QT_VERS) $(PYQT_SIPFLAGS) -s ".cc" -c . -I $(PYQT_SIPS)
 

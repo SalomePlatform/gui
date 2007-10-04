@@ -116,7 +116,7 @@ libSVTK_la_CPPFLAGS= \
 
 libSVTK_la_LDFLAGS= \
 	$(QT_MT_LIBS) \
-	$(OCC_LIBS) \
+	$(CAS_KERNEL) $(CAS_VIEWER) \
 	$(QWT_LIBS) \
 	$(VTK_LIBS)
 

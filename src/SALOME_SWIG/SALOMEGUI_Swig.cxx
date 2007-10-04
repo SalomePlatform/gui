@@ -201,60 +201,41 @@ const char* SALOMEGUI_Swig::getActiveStudyName()
   return result.empty() ? NULL : result.c_str();
 }
 
-/*!
-  SALOMEGUI_Swig::getComponentName
-  Returns the name of the component by its user name.
-*/
-class TGetModulCatalogEvent: public SALOME_Event {
+class TGetComponentNameEvent: public SALOME_Event
+{
 public:
-  typedef CORBA::Object_var TResult;
+  typedef QString TResult;
   TResult myResult;
-  TGetModulCatalogEvent() : myResult(CORBA::Object::_nil()) {}
-  virtual void Execute() {
-    if (SalomeApp_Application* anApp = getApplication())
-      myResult = anApp->namingService()->Resolve("/Kernel/ModulCatalog");
+  QString myName;
+  bool    myIsUserName;
+  TGetComponentNameEvent( const QString& name, bool isUserName )
+    : myName( name ), myIsUserName( isUserName ) {}
+  virtual void Execute()
+  {
+    if ( SalomeApp_Application* app = getApplication() ) {
+      myResult = myIsUserName ? app->moduleTitle( myName ) : app->moduleName( myName );
+    }
   }
 };
 
 /*!
+  SALOMEGUI_Swig::getComponentName
   \return the name of the component by its user name.
 */
 const char* SALOMEGUI_Swig::getComponentName( const char* componentUserName )
 {
-  CORBA::Object_var anObject = ProcessEvent(new TGetModulCatalogEvent());
-  if (!CORBA::is_nil(anObject)) {
-    SALOME_ModuleCatalog::ModuleCatalog_var aCatalogue =
-      SALOME_ModuleCatalog::ModuleCatalog::_narrow( anObject );
-    SALOME_ModuleCatalog::ListOfIAPP_Affich_var aModules = aCatalogue->GetComponentIconeList();
-    for ( unsigned int ind = 0; ind < aModules->length(); ind++ ) {
-      CORBA::String_var aModuleName     = aModules[ ind ].modulename;
-      CORBA::String_var aModuleUserName = aModules[ ind ].moduleusername;
-      if ( strcmp(componentUserName, aModuleUserName.in()) == 0 )
-        return aModuleName._retn();
-    }
-  }
-  return 0;
+  QString result = ProcessEvent( new TGetComponentNameEvent( componentUserName, false ) );
+  return result.isEmpty() ? 0 : strdup( result.latin1() );
 }
 
 /*!
   SALOMEGUI_Swig::getComponentUserName
-  Returns the user name of the component by its name.
+  \return the user name of the component by its name.
 */
 const char* SALOMEGUI_Swig::getComponentUserName( const char* componentName )
 {
-  CORBA::Object_var anObject = ProcessEvent(new TGetModulCatalogEvent());
-  if (!CORBA::is_nil(anObject)) {
-    SALOME_ModuleCatalog::ModuleCatalog_var aCatalogue =
-      SALOME_ModuleCatalog::ModuleCatalog::_narrow( anObject );
-    SALOME_ModuleCatalog::ListOfIAPP_Affich_var aModules = aCatalogue->GetComponentIconeList();
-    for ( unsigned int ind = 0; ind < aModules->length(); ind++ ) {
-      CORBA::String_var aModuleName     = aModules[ ind ].modulename;
-      CORBA::String_var aModuleUserName = aModules[ ind ].moduleusername;
-      if ( strcmp(componentName, aModuleName.in()) == 0 )
-        return aModuleUserName._retn();
-    }
-  }
-  return 0;
+  QString result = ProcessEvent( new TGetComponentNameEvent( componentName, true ) );
+  return result.isEmpty() ? 0 : strdup( result.latin1() );
 }
 
 /*!

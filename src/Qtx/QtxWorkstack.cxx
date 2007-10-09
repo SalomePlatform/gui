@@ -31,10 +31,12 @@
 #include <QLayout>
 #include <QSplitter>
 #include <QRubberBand>
-#include <QPushButton>
 #include <QApplication>
 #include <QInputDialog>
 #include <QStackedWidget>
+#include <QAbstractButton>
+#include <QPainter>
+#include <QStyleOption>
 
 #define DARK_COLOR_LIGHT 250
 
@@ -238,6 +240,122 @@ void QtxWorkstackDrag::startDrawRect()
   myAreaRect->hide();
 }
 
+
+/*
+  \class CloseButton
+  \brief Workstack area close button.
+  \internal
+*/
+class CloseButton : public QAbstractButton
+{
+public:
+  CloseButton( QWidget* );
+
+  QSize        sizeHint() const;
+  QSize        minimumSizeHint() const;
+
+  void enterEvent( QEvent* );
+  void leaveEvent( QEvent* );
+  void paintEvent( QPaintEvent* );
+};
+
+/*!
+  \brief Constructor
+  \internal
+  \param parent parent widget
+*/
+CloseButton::CloseButton( QWidget* parent )
+: QAbstractButton( parent )
+{
+ setFocusPolicy( Qt::NoFocus );
+}
+
+/*!
+  \brief Get appropriate size for the button.
+  \internal
+  \return size value
+*/
+QSize CloseButton::sizeHint() const
+{
+  ensurePolished();
+  int dim = 0;
+  if( !icon().isNull() ) 
+  {
+    const QPixmap pm = icon().pixmap( style()->pixelMetric( QStyle::PM_SmallIconSize ),
+                                      QIcon::Normal );
+    dim = qMax( pm.width(), pm.height() );
+  }
+  return QSize( dim + 4, dim + 4 );
+}
+
+/*!
+  \brief Get minimum appropriate size for the button.
+  \internal
+  \return minimum size value
+*/
+QSize CloseButton::minimumSizeHint() const
+{ 
+  return sizeHint(); 
+}
+
+/*!
+  \brief Process mouse enter event.
+  \internal
+  \param event mouse enter event
+*/
+void CloseButton::enterEvent( QEvent *event )
+{
+  if ( isEnabled() )
+    update();
+  QAbstractButton::enterEvent( event );
+}
+
+/*!
+  \brief Process mouse leave event.
+  \internal
+  \param event mouse leave event
+*/
+void CloseButton::leaveEvent( QEvent *event )
+{
+  if( isEnabled() )
+    update();
+  QAbstractButton::leaveEvent( event );
+}
+
+/*!
+  \brief Process paint event.
+  \internal
+  \param event paint event
+*/
+void CloseButton::paintEvent( QPaintEvent* )
+{
+  QPainter p( this );
+
+  QRect r = rect();
+  QStyleOption opt;
+  opt.init( this );
+  opt.state |= QStyle::State_AutoRaise;
+  if ( isEnabled() && underMouse() && !isChecked() && !isDown() )
+    opt.state |= QStyle::State_Raised;
+  if ( isChecked() )
+    opt.state |= QStyle::State_On;
+  if ( isDown() )
+    opt.state |= QStyle::State_Sunken;
+  style()->drawPrimitive( QStyle::PE_PanelButtonTool, &opt, &p, this );
+
+  int shiftHorizontal = opt.state & QStyle::State_Sunken ? style()->pixelMetric( QStyle::PM_ButtonShiftHorizontal, &opt, this ) : 0;
+  int shiftVertical = opt.state & QStyle::State_Sunken ? style()->pixelMetric( QStyle::PM_ButtonShiftVertical, &opt, this ) : 0;
+
+  r.adjust( 2, 2, -2, -2 );
+  r.translate( shiftHorizontal, shiftVertical );
+
+  QPixmap pm = icon().pixmap( style()->pixelMetric( QStyle::PM_SmallIconSize ), isEnabled() ?
+                              underMouse() ? QIcon::Active : QIcon::Normal
+			      : QIcon::Disabled,
+                              isDown() ? QIcon::On : QIcon::Off );
+  style()->drawItemPixmap( &p, r, Qt::AlignCenter, pm );
+}
+
 /*!
   \class QtxWorkstackArea
   \internal
@@ -255,6 +373,7 @@ QtxWorkstackArea::QtxWorkstackArea( QWidget* parent )
 
   QVBoxLayout* base = new QVBoxLayout( this );
   base->setMargin( frameWidth() );
+  base->setSpacing( 0 );
 
   QWidget* top = new QWidget( this );
   base->addWidget( top );
@@ -265,10 +384,8 @@ QtxWorkstackArea::QtxWorkstackArea( QWidget* parent )
   myBar = new QtxWorkstackTabBar( top );
   tl->addWidget( myBar, 1 );
 
-  QPushButton* close = new QPushButton( top );
+  CloseButton* close = new CloseButton( top );
   close->setIcon( style()->standardIcon( QStyle::SP_TitleBarCloseButton ) );
-  close->setAutoDefault( true );
-  close->setFlat( true );
   myClose = close;
   tl->addWidget( myClose );
 
@@ -1029,6 +1146,7 @@ QtxWorkstackChild::QtxWorkstackChild( QWidget* wid, QWidget* parent, Qt::WindowF
   myWidget->setParent( this, f );
   myWidget->installEventFilter( this );
   QVBoxLayout* base = new QVBoxLayout( this );
+  base->setMargin( 0 );
   base->addWidget( myWidget );
 
   connect( myWidget, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
@@ -1772,6 +1890,35 @@ int QtxWorkstack::accel( const int id ) const
   if ( myActionsMap.contains( id ) )
     res = myActionsMap[id]->shortcut();
   return res;
+}
+
+/*!
+  \brief Get icon for the specified action.
+
+  If \a id is invalid, null icon is returned.
+
+  \param id menu action ID
+  \return menu item icon
+*/
+QIcon QtxWorkstack::icon( const int id ) const
+{
+  QIcon ico;
+  if ( myActionsMap.contains( id ) )
+    ico = myActionsMap[id]->icon();
+  return ico;
+}
+
+/*!
+  \brief Set menu item icon for the specified action.
+  \param id menu action ID
+  \param ico new menu item icon
+*/
+void QtxWorkstack::setIcon( const int id, const QIcon& icon )
+{
+  if ( !myActionsMap.contains( id ) )
+    return;
+
+  myActionsMap[id]->setIcon( icon );
 }
 
 /*!

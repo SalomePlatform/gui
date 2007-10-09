@@ -32,9 +32,9 @@
 
 class QAction;
 class QSplitter;
-class QPushButton;
 class QStackedWidget;
 class QRubberBand;
+class QAbstractButton;
 
 class QtxWorkstackArea;
 class QtxWorkstackDrag;
@@ -78,6 +78,9 @@ public:
 
   int                 accel( const int ) const;
   void                setAccel( const int, const int );
+
+  QIcon               icon( const int ) const;
+  void                setIcon( const int, const QIcon& );
 
   void                setMenuActions( const int );
   int                 menuActions() const;
@@ -256,7 +259,7 @@ private:
 
 private:
   QtxWorkstackTabBar* myBar;     //!< workarea tab bar header
-  QPushButton*        myClose;   //!< close button
+  QAbstractButton*    myClose;   //!< close button
   QStackedWidget*     myStack;   //!< widget stack
 
   QWidgetList         myList;    //!< child widgets list

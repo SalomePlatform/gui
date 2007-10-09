@@ -29,6 +29,7 @@
 #include <QTabBar>
 #include <QEvent>
 #include <QMap>
+#include <QAbstractButton>
 
 class QAction;
 class QSplitter;
@@ -156,6 +157,20 @@ private:
 
   friend class QtxWorkstackArea;
   friend class QtxWorkstackDrag;
+};
+
+class QtxWorkstackAreaTitleButton : public QAbstractButton
+{
+  Q_OBJECT
+public:
+  QtxWorkstackAreaTitleButton( QWidget* );
+
+  QSize        sizeHint() const;
+  QSize        minimumSizeHint() const;
+
+  void enterEvent( QEvent* );
+  void leaveEvent( QEvent* );
+  void paintEvent( QPaintEvent* );
 };
 
 class QtxWorkstackArea : public QFrame

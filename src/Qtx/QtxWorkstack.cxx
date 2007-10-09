@@ -240,31 +240,18 @@ void QtxWorkstackDrag::startDrawRect()
   myAreaRect->hide();
 }
 
-
 /*
-  \class CloseButton
+  \class QtxWorkstackAreaTitleButton
   \brief Workstack area close button.
   \internal
 */
-class CloseButton : public QAbstractButton
-{
-public:
-  CloseButton( QWidget* );
-
-  QSize        sizeHint() const;
-  QSize        minimumSizeHint() const;
-
-  void enterEvent( QEvent* );
-  void leaveEvent( QEvent* );
-  void paintEvent( QPaintEvent* );
-};
 
 /*!
   \brief Constructor
   \internal
   \param parent parent widget
 */
-CloseButton::CloseButton( QWidget* parent )
+QtxWorkstackAreaTitleButton::QtxWorkstackAreaTitleButton( QWidget* parent )
 : QAbstractButton( parent )
 {
  setFocusPolicy( Qt::NoFocus );
@@ -275,7 +262,7 @@ CloseButton::CloseButton( QWidget* parent )
   \internal
   \return size value
 */
-QSize CloseButton::sizeHint() const
+QSize QtxWorkstackAreaTitleButton::sizeHint() const
 {
   ensurePolished();
   int dim = 0;
@@ -293,7 +280,7 @@ QSize CloseButton::sizeHint() const
   \internal
   \return minimum size value
 */
-QSize CloseButton::minimumSizeHint() const
+QSize QtxWorkstackAreaTitleButton::minimumSizeHint() const
 { 
   return sizeHint(); 
 }
@@ -303,7 +290,7 @@ QSize CloseButton::minimumSizeHint() const
   \internal
   \param event mouse enter event
 */
-void CloseButton::enterEvent( QEvent *event )
+void QtxWorkstackAreaTitleButton::enterEvent( QEvent *event )
 {
   if ( isEnabled() )
     update();
@@ -315,7 +302,7 @@ void CloseButton::enterEvent( QEvent *event )
   \internal
   \param event mouse leave event
 */
-void CloseButton::leaveEvent( QEvent *event )
+void QtxWorkstackAreaTitleButton::leaveEvent( QEvent *event )
 {
   if( isEnabled() )
     update();
@@ -327,7 +314,7 @@ void CloseButton::leaveEvent( QEvent *event )
   \internal
   \param event paint event
 */
-void CloseButton::paintEvent( QPaintEvent* )
+void QtxWorkstackAreaTitleButton::paintEvent( QPaintEvent* )
 {
   QPainter p( this );
 
@@ -384,7 +371,7 @@ QtxWorkstackArea::QtxWorkstackArea( QWidget* parent )
   myBar = new QtxWorkstackTabBar( top );
   tl->addWidget( myBar, 1 );
 
-  CloseButton* close = new CloseButton( top );
+  QtxWorkstackAreaTitleButton* close = new QtxWorkstackAreaTitleButton( top );
   close->setIcon( style()->standardIcon( QStyle::SP_TitleBarCloseButton ) );
   myClose = close;
   tl->addWidget( myClose );

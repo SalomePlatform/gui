@@ -606,6 +606,7 @@ AC_OUTPUT([ \
   ./doc/Makefile \
   ./doc/salome/Makefile \
   ./doc/salome/gui/Makefile \
+  ./doc/salome/gui/GUI/doxyfile \
   ./doc/salome/tui/Makefile \
   ./doc/salome/tui/GUI/doxyfile \
   ./src/Makefile \

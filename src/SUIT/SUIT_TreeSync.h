@@ -151,14 +151,14 @@ TrgItem synchronize( const SrcItem& r1, const TrgItem& r2, const TreeData& td )
   }
   else {
     TrgItem new_r2 = td.nullTrg();
-    if ( r1 != td.nullSrc() ) {
+    /*if ( r1 != td.nullSrc() ) {
       // add new item (recursively)
       new_r2 = createSubTree( r1, td.parent( r2 ), r2, td );
     }
     if ( r2 != td.nullTrg() ) {
       // delete old one (if it is not null)
       td.deleteItemWithChildren( r2 );
-    }
+    }*/
     return new_r2;
   }
 }

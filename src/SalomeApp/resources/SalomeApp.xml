@@ -26,8 +26,8 @@
     <!-- Splash screen settings -->
     <parameter name="image"           value="${GUI_ROOT_DIR}/share/salome/resources/gui/icon_about.png" />
     <parameter name="info"            value="%V" />
-    <parameter name="text_colors"     value="#543AA9|#FFFFFF" />
-    <parameter name="progress_colors" value="#0A4E5F|#B2EFED|1" />
+    <parameter name="text_colors"     value="#FFFFFF" />
+    <parameter name="progress_colors" value="#3b3e5d|#d14949|0" />
   </section>
   <section name="resources">
     <!-- Resource directories (resource manager)-->

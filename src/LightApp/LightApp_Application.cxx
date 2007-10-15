@@ -460,7 +460,7 @@ void LightApp_Application::createActions()
   int id = LightApp_Application::UserID + FIRST_HELP_ID;
   // help for KERNEL and GUI
   QCString dir;
-  QString aFileName = "index.htm";
+  QString aFileName = "index.html";
   QString root;
   QAction* a;
   if (dir = getenv("GUI_ROOT_DIR")) {
@@ -477,10 +477,9 @@ void LightApp_Application::createActions()
     }
   }
   if (dir = getenv("KERNEL_ROOT_DIR")) {
-    QString aFN = "index.html";
     root = Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") + 
 			  Qtx::addSlash("salome") );
-    if ( QFileInfo( root + aFN ).exists() ) {
+    if ( QFileInfo( root + aFileName ).exists() ) {
       a = createAction( id, tr( QString("KERNEL Help") ), QIconSet(),
 			tr( QString("KERNEL Help") ),
 			tr( QString("KERNEL Help") ),
@@ -994,15 +993,14 @@ void LightApp_Application::onHelpContentsModule()
   const QAction* obj = (QAction*) sender();
 
   QString aComponentName = obj->name();
-  QString aFileName = "index.htm";
-  QString aFileNameKernel = "index.html";
+  QString aFileName = "index.html";
 
   QCString dir = getenv( aComponentName + "_ROOT_DIR");
   QString homeDir = !aComponentName.compare(QString("KERNEL")) ? 
     Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") + Qtx::addSlash("salome") ) : 
     Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") + Qtx::addSlash("salome") + Qtx::addSlash("gui") +  Qtx::addSlash(aComponentName) );
   
-  QString helpFile = QFileInfo( homeDir + (!aComponentName.compare(QString("KERNEL")) ? aFileNameKernel : aFileName) ).absFilePath();
+  QString helpFile = QFileInfo( homeDir + aFileName ).absFilePath();
   SUIT_ResourceMgr* resMgr = resourceMgr();
 	QString platform;
 #ifdef WIN32

@@ -62,6 +62,7 @@ TableViewer_ViewWindow::TableViewer_ViewWindow( SUIT_Desktop* theDesktop,
   createToolBar();
 
   // fill table
+  /*
   myTable->setColumnCount(3);
   myTable->setRowCount(5);
   myTable->setCellBackground( 1, 1, Qt::red );
@@ -86,6 +87,7 @@ TableViewer_ViewWindow::TableViewer_ViewWindow( SUIT_Desktop* theDesktop,
 
   myTable->setHeaderFont(Qt::Vertical, 4, myTable->headerFont( Qt::Horizontal, 0 ) );
   //backgroundColor( HorizontalHeader, 1, 1 ) );
+  */
 }
 
 /*!

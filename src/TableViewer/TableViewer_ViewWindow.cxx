@@ -49,17 +49,7 @@ TableViewer_ViewWindow::TableViewer_ViewWindow( SUIT_Desktop* theDesktop,
 :SUIT_ViewWindow( theDesktop )
 {
   myModel = theModel;
-  myTable = new QtxTable( this );
-  connect( myTable->selectionModel(), SIGNAL( selectionChanged( const QItemSelection&,
-           const QItemSelection& ) ), this, SLOT( selectionChanged() ) );
-
-  //myTable->setReadOnly( true );
-  setCentralWidget( myTable );
-
   myToolBar = new QtxToolBar( true, tr("LBL_TOOLBAR_LABEL"), this );
-
-  createActions();
-  createToolBar();
 
   // fill table
   /*
@@ -100,6 +90,19 @@ TableViewer_ViewWindow::~TableViewer_ViewWindow()
 QtxTable* TableViewer_ViewWindow::table() const
 {
   return myTable;
+}
+
+
+/*!
+  Internal initialization
+*/
+void TableViewer_ViewWindow::initLayout()
+{
+  myTable = createTable();
+  setCentralWidget( myTable );
+
+  createActions();
+  createToolBar();
 }
 
 QImage TableViewer_ViewWindow::dumpView()
@@ -516,4 +519,13 @@ bool TableViewer_ViewWindow::canPaste( const int theRow, const int theCol, const
 {
   return theRow < myTable->rowCount() && theRow >= 0 &&
          theCol < myTable->columnCount() & theCol >= 0;
+}
+
+QtxTable* TableViewer_ViewWindow::createTable()
+{
+  QtxTable* aTable = new QtxTable( this );
+  connect( aTable->selectionModel(), SIGNAL( selectionChanged(
+                       const QItemSelection&, const QItemSelection& ) ),
+           this, SLOT( selectionChanged() ) );
+  return aTable;
 }

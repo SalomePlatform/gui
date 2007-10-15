@@ -47,6 +47,7 @@ public:
   QtxTable*           table() const;
   QToolBar*           getToolBar() { return myToolBar; }
 
+  virtual void        initLayout();
   virtual QImage      dumpView();
 
 protected:
@@ -62,6 +63,7 @@ protected:
   virtual bool        canCopy( const int, const int );
   virtual bool        canPaste( const int, const int, const QString& );
 
+  virtual QtxTable*   createTable();
   void                registerAction( const int, QtxAction* );
   QtxAction*          createAction( const int, const QString&, const QPixmap&, const QString&,
                                     const QString&, const int = 0, QObject* = 0 );

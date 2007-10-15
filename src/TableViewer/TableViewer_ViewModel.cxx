@@ -45,9 +45,18 @@ TableViewer_Viewer::~TableViewer_Viewer()
 SUIT_ViewWindow* TableViewer_Viewer::createView( SUIT_Desktop* theDesktop )
 {
   TableViewer_ViewWindow* vw = new TableViewer_ViewWindow( theDesktop, this );
-  QtxTable* tbl = vw->table();
-  if ( tbl && getViewManager() )
-    tbl->viewport()->installEventFilter( getViewManager() );
+  initView( vw );
   return vw;
 }
 
+/*!
+  Start initialization of view window
+  \param theVW - view window to be initialized
+*/
+void TableViewer_Viewer::initView( TableViewer_ViewWindow* theVW )
+{
+  theVW->initLayout();
+  QtxTable* tbl = theVW->table();
+  //if ( tbl && getViewManager() )
+  //  tbl->viewport()->installEventFilter( getViewManager() );
+}

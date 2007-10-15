@@ -22,6 +22,7 @@
 #include "TableViewer.h"
 #include "SUIT_ViewModel.h"
 
+class TableViewer_ViewWindow;
 class SUIT_ViewWindow;
 class SUIT_Desktop;
 class QString;
@@ -37,7 +38,10 @@ public:
   ~TableViewer_Viewer();
 
   virtual SUIT_ViewWindow* createView(SUIT_Desktop* theDesktop);
-  virtual QString getType() const { return Type(); }
+  virtual QString          getType() const { return Type(); }
+protected:
+  void                     initView( TableViewer_ViewWindow* );
+
 };
 
 #endif // !defined(TABLEVIEWER_VIEWMODEL_H)

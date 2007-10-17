@@ -212,23 +212,26 @@ void LightApp_SelectionMgr::GetIndexes( const QString& theEntry, TColStd_Indexed
 /*!
   Add or remove interactive objects from selection manager.
 */
-bool LightApp_SelectionMgr::AddOrRemoveIndex( const Handle(SALOME_InteractiveObject)& IObject, 
-					       const TColStd_MapOfInteger& theIndexes, 
-					       bool modeShift)
+//bool LightApp_SelectionMgr::AddOrRemoveIndex( const Handle(SALOME_InteractiveObject)& IObject,
+void LightApp_SelectionMgr::AddOrRemoveIndex( const Handle(SALOME_InteractiveObject)& IObject,
+                                              const TColStd_MapOfInteger& theIndexes,
+                                              bool modeShift)
 {
   SUIT_DataOwnerPtrList remainsOwners;
-  
+
   SUIT_DataOwnerPtrList aList;
   selected( aList );
+
+  QString ioEntry (IObject->getEntry());
 
   if ( !modeShift ) {
     for ( SUIT_DataOwnerPtrList::const_iterator itr = aList.begin(); itr != aList.end(); ++itr )
     {
       const LightApp_DataOwner* owner = dynamic_cast<const LightApp_DataOwner*>( (*itr).operator->() );
-      if ( owner ) 
+      if ( owner )
       {
-	if ( owner->entry() != QString(IObject->getEntry()) ) 
-	{	  
+	if ( owner->entry() != ioEntry )
+	{
 	  const LightApp_DataSubOwner* subOwner = dynamic_cast<const LightApp_DataSubOwner*>( owner );
 	  if ( subOwner )
 	    remainsOwners.append( new LightApp_DataSubOwner( subOwner->entry(), subOwner->index() ) );
@@ -244,17 +247,17 @@ bool LightApp_SelectionMgr::AddOrRemoveIndex( const Handle(SALOME_InteractiveObj
   TColStd_MapIteratorOfMapOfInteger It;
   It.Initialize(theIndexes);
   for(;It.More();It.Next())
-    remainsOwners.append( new LightApp_DataSubOwner( QString(IObject->getEntry()), It.Key() ) );
-  
+    remainsOwners.append( new LightApp_DataSubOwner( ioEntry, It.Key() ) );
+
   bool append = false;
   setSelected( remainsOwners, append );
 
   emit currentSelectionChanged();
 
-  TColStd_IndexedMapOfInteger anIndexes;
-  GetIndexes( IObject, anIndexes );
-  return !anIndexes.IsEmpty();
-
+  // Bug 17269: To avoid calling of selected(aList)
+  //TColStd_IndexedMapOfInteger anIndexes;
+  //GetIndexes( IObject, anIndexes );
+  //return !anIndexes.IsEmpty();
 }
 
 /*!
@@ -316,14 +319,25 @@ void LightApp_SelectionMgr::selectedSubOwners( MapEntryOfMapOfInteger& theMap )
 
   for ( SUIT_DataOwnerPtrList::const_iterator itr = aList.begin(); itr != aList.end(); ++itr )
   {
-    const LightApp_DataSubOwner* subOwner = dynamic_cast<const LightApp_DataSubOwner*>( (*itr).operator->() );
+    const LightApp_DataSubOwner* subOwner =
+      dynamic_cast<const LightApp_DataSubOwner*>( (*itr).operator->() );
     if ( subOwner ) 
     {
       if ( !theMap.contains( subOwner->entry() ) )
       {
 	anIndexes.Clear();
-	GetIndexes( subOwner->entry(), anIndexes );
-	theMap.insert( subOwner->entry(), anIndexes );
+	//Bug 17269: GetIndexes( subOwner->entry(), anIndexes );
+        //Bug 17269: To avoid multiple calling of selected(aList)
+        for ( SUIT_DataOwnerPtrList::const_iterator itr2 = itr; itr2 != aList.end(); ++itr2 )
+        {
+          const LightApp_DataSubOwner* subOwner2 =
+            dynamic_cast<const LightApp_DataSubOwner*>( (*itr2).operator->() );
+          if ( subOwner2 )
+            if ( subOwner2->entry() == subOwner->entry() )
+              anIndexes.Add( subOwner2->index() );
+        }
+        //
+        theMap.insert( subOwner->entry(), anIndexes );
       }
     }
   }

@@ -52,7 +52,7 @@ protected:
   virtual void      getSelection( SUIT_DataOwnerPtrList& ) const;
   virtual void      setSelection( const SUIT_DataOwnerPtrList& );
 
-  inline QString    entry( const Handle_AIS_InteractiveObject& ) const;
+  QString           entry( const Handle_AIS_InteractiveObject& ) const;
 
   SUIT_DataOwnerPtrList mySelectedExternals;
 

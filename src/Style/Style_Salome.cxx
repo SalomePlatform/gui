@@ -1425,15 +1425,13 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         p->save();
         doRestore = true;
       }
-      if (pe == PE_Q3CheckListIndicator || pe == PE_IndicatorViewItemCheck) {
-        const QStyleOptionViewItem *itemViewOpt = qstyleoption_cast<const QStyleOptionViewItem *>(opt);
-        p->setPen(itemViewOpt && itemViewOpt->showDecorationSelected
-                  && opt->state & State_Selected ? opt->palette.highlightedText().color()
-                  : opt->palette.text().color());
-        if (opt->state & State_NoChange)
-          p->setBrush( opt->palette.color( QPalette::Button ) );
-        p->drawRect(opt->rect.x() + 1, opt->rect.y() + 1, 11, 11);
-      }
+      const QStyleOptionViewItem *itemViewOpt = qstyleoption_cast<const QStyleOptionViewItem *>(opt);
+      p->setPen(itemViewOpt && itemViewOpt->showDecorationSelected
+		&& opt->state & State_Selected ? opt->palette.highlightedText().color()
+		: opt->palette.text().color());
+      if (opt->state & State_NoChange)
+	p->setBrush( opt->palette.color( QPalette::Button ) );
+      p->drawRect(opt->rect.x() + 1, opt->rect.y() + 1, 11, 11);
       if (!(opt->state & State_Off)) {
         QLineF lines[11];
         int i, xx, yy;
@@ -1453,7 +1451,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         QColor aColor = getColor( Style_Model::pointer_clr );
         if ( !(opt->state & State_Enabled ) )
           aColor = opt->palette.mid().color();
-        if ( opt->state & State_Selected )
+        if ( opt->state & State_Selected && itemViewOpt && itemViewOpt->showDecorationSelected )
           aColor = opt->palette.highlightedText().color();
 
         p->setPen( QPen( aColor ) );

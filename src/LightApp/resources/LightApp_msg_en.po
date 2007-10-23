@@ -291,22 +291,22 @@ msgstr "Import"
 
 //=======================================================================================
 
-msgid "LightApp_Module::TOP_DISPLAY"
+msgid "LightApp_Module::TOP_SHOW"
 msgstr "Display"
 
-msgid "LightApp_Module::MEN_DISPLAY"
+msgid "LightApp_Module::MEN_SHOW"
 msgstr "Display"
 
-msgid "LightApp_Module::STB_DISPLAY"
+msgid "LightApp_Module::STB_SHOW"
 msgstr "Display"
 
-msgid "LightApp_Module::TOP_ERASE"
+msgid "LightApp_Module::TOP_HIDE"
 msgstr "Erase"
 
-msgid "LightApp_Module::MEN_ERASE"
+msgid "LightApp_Module::MEN_HIDE"
 msgstr "Erase"
 
-msgid "LightApp_Module::STB_ERASE"
+msgid "LightApp_Module::STB_HIDE"
 msgstr "Erase"
 
 msgid "LightApp_Module::TOP_DISPLAY_ONLY"

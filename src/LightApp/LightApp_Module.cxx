@@ -317,9 +317,9 @@ QtxPopupMgr* LightApp_Module::popupMgr()
     SUIT_Desktop* d = application()->desktop();
     
     QAction 
-      *disp = createAction( -1, tr( "TOP_DISPLAY" ), p, tr( "MEN_DISPLAY" ), tr( "STB_DISPLAY" ),
+      *disp = createAction( -1, tr( "TOP_SHOW" ), p, tr( "MEN_SHOW" ), tr( "STB_SHOW" ),
 			    0, d, false, this, SLOT( onShowHide() ) ),
-      *erase = createAction( -1, tr( "TOP_ERASE" ), p, tr( "MEN_ERASE" ), tr( "STB_ERASE" ),
+      *erase = createAction( -1, tr( "TOP_HIDE" ), p, tr( "MEN_HIDE" ), tr( "STB_HIDE" ),
 			     0, d, false, this, SLOT( onShowHide() ) ),
       *dispOnly = createAction( -1, tr( "TOP_DISPLAY_ONLY" ), p, tr( "MEN_DISPLAY_ONLY" ), tr( "STB_DISPLAY_ONLY" ),
 			        0, d, false, this, SLOT( onShowHide() ) ),

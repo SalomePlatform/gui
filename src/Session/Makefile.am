@@ -67,7 +67,7 @@ SALOME_Session_Server_CPPFLAGS= $(libSalomeSession_la_CPPFLAGS)
 SALOME_Session_Server_LDADD= $(libSalomeSession_la_LDFLAGS) $(OMNIORB_LIBS) \
 	$(HDF5_LIBS) -lSalomeContainer -lSalomeResourcesManager -lTOOLSDS \
 	-lSalomeHDFPersist -lSalomeDSImpl -lSalomeGenericObj -lRegistry \
-	-lSalomeNotification -lSALOMEBasics ../Qtx/libqtx.la \
+	-lSalomeNotification -lSALOMEBasics -lSalomeLauncher ../Qtx/libqtx.la \
 	$(top_builddir)/idl/libSalomeIDLGUI.la \
 	libSalomeSession.la
 

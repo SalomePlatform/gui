@@ -1566,6 +1566,10 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         }
       }
       else {
+        drawPrimitive( PE_FrameLineEdit, opt, p, w );
+       /*
+        // fillRect()'s not correct working with basic color
+        // for ListWidget in edit QListWidgetItem mode
         if (const QStyleOptionFrame *panel = qstyleoption_cast<const QStyleOptionFrame *>(opt)) {
           QRect rect = panel->rect.adjusted( panel->lineWidth,  panel->lineWidth,
                                              -panel->lineWidth, -panel->lineWidth);
@@ -1574,6 +1578,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
           else // not QLineEdit
             p->fillRect(rect, panel->palette.brush(QPalette::Base));
          }
+       */
       }
       break;
     }
@@ -1719,7 +1724,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         QPalette aPal = aWdg->palette();
         double aMarg = LINE_GR_MARGIN;
         QColor base = getColor( Style_Model::pal_base_clr ),
-	       light = base,
+               light = base,
                light_alt = base.dark(110),//AlternateBase color
                dark  = getColor( Style_Model::fld_dark_clr );
         light.setAlpha( 0 );

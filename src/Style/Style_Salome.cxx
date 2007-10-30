@@ -1158,6 +1158,9 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
           }
         }
       break;
+    case CE_ToolBoxTab:
+      QCommonStyle::drawControl( ce, opt, p, w );
+      break;
     case CE_HeaderSection: {
       bool aStateOn = opt->state & State_On;
       QColor aColor = getColor( Style_Model::header_clr );
@@ -1291,7 +1294,8 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
     break;
   }
   default:
-      QWindowsStyle::drawControl( ce, opt, p, w );
+    QWindowsStyle::drawControl( ce, opt, p, w );
+    break;
   }
 }
 

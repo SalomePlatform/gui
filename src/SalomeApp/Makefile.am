@@ -92,6 +92,7 @@ libSalomeApp_la_CPPFLAGS=$(PYTHON_INCLUDES) $(QT_INCLUDES) $(QWT_INCLUDES) \
 	-I$(srcdir)/../PythonConsole -I$(srcdir)/../TOOLSGUI \
 	-I$(srcdir)/../PyInterp -I$(srcdir)/../Session -I$(top_builddir)/idl \
 	-I$(srcdir)/../Event \
+	-I$(srcidr)/../CASCatch \
 	-I$(top_builddir)/salome_adm/unix @CORBA_CXXFLAGS@ @CORBA_INCLUDES@ @LIBXML_INCLUDES@
 libSalomeApp_la_LDFLAGS=$(PYTHON_LIBS) $(QT_MT_LIBS) 
 libSalomeApp_la_LIBADD= $(KERNEL_LDFLAGS) -lOpUtil -lSALOMELocalTrace -lSalomeDSClient \
@@ -100,6 +101,6 @@ libSalomeApp_la_LIBADD= $(KERNEL_LDFLAGS) -lOpUtil -lSALOMELocalTrace -lSalomeDS
 	../OCCViewer/libOCCViewer.la ../VTKViewer/libVTKViewer.la ../OBJECT/libSalomeObject.la \
 	../SVTK/libSVTK.la ../SOCC/libSOCC.la ../PyInterp/libPyInterp.la \
 	../PythonConsole/libPythonConsole.la ../LogWindow/libLogWindow.la \
-	../LightApp/libLightApp.la ../TOOLSGUI/libToolsGUI.la $(CAS_KERNEL)
+	../LightApp/libLightApp.la ../TOOLSGUI/libToolsGUI.la ../CASCatch/libCASCatch.la $(CAS_KERNEL)
 
 EXTRA_DIST+=SalomeApp_PyInterp.h

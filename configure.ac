@@ -618,6 +618,7 @@ AC_OUTPUT([ \
   ./doc/salome/tui/Makefile \
   ./doc/salome/tui/GUI/doxyfile \
   ./src/Makefile \
+  ./src/CASCatch/Makefile \
   ./src/Qtx/Makefile \
   ./src/Style/Makefile \
   ./src/DDS/Makefile \

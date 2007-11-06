@@ -314,3 +314,5 @@ msgstr "Current Update Rate, FPS"
 msgid "SVTK_UpdateRateDlg::NUMBER_CELLS"
 msgstr "Number of Cells, -"
 
+msgid "SVTK_IMAGE_FILES"
+msgstr "Images Files (*.bmp *.png *.jpg *.jpeg *.pdf *.ps *.eps)""

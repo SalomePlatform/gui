@@ -129,6 +129,7 @@ void OCCViewer_Viewer::initView( OCCViewer_ViewWindow* view )
 {
   if ( view ) {
     view->initLayout();
+    view->initSketchers();
     
     OCCViewer_ViewPort3d* vp3d = view->getViewPort();
     if ( vp3d )

@@ -22,6 +22,8 @@
 #include "OCCViewer_ViewWindow.h"
 #include "OCCViewer_ViewModel.h"
 #include "OCCViewer_ViewPort3d.h"
+#include "OCCViewer_ViewManager.h"
+#include "OCCViewer_ViewSketcher.h"
 #include "OCCViewer_CreateRestoreViewDlg.h"
 #include "OCCViewer_ClippingDlg.h"
 #include "OCCViewer_SetRotationPointDlg.h"
@@ -46,6 +48,7 @@
 #include <V3d_Plane.hxx>
 #include <gp_Dir.hxx>
 #include <gp_Pln.hxx>
+#include <TColgp_Array1OfPnt2d.hxx>
 
 #include <AIS_ListIteratorOfListOfInteractive.hxx>
 #include <AIS_Shape.hxx>
@@ -59,6 +62,7 @@
 #include <Graphic3d_MapOfStructure.hxx>
 #include <Graphic3d_Structure.hxx>
 
+static QEvent* l_mbPressEvent = 0;
 
 const char* imageZoomCursor[] = { 
 "32 32 3 1",
@@ -189,6 +193,9 @@ OCCViewer_ViewWindow::OCCViewer_ViewWindow(SUIT_Desktop* theDesktop, OCCViewer_V
   updateEnabledDrawMode();
   myClippingDlg = 0;
   mySetRotationPointDlg = 0;
+
+  mypSketcher = 0;
+  myCurSketch = -1;
 }
 
 /*!
@@ -387,6 +394,11 @@ void OCCViewer_ViewWindow::vpMousePressEvent(QMouseEvent* theEvent)
   }
   if ( transformRequested() ) 
     setTransformInProcess( true );		 
+
+  /* we may need it for sketching... */
+  if ( l_mbPressEvent )
+    delete l_mbPressEvent;
+  l_mbPressEvent = new QMouseEvent( *theEvent );
 }
 
 
@@ -681,9 +693,8 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent(QMouseEvent* theEvent)
     else
     {
       int aState = theEvent->state();
-      //int aButton = theEvent->button();
       if ( aState == Qt::LeftButton ||
-	   aState == ( Qt::LeftButton | Qt::ShiftButton) )	{
+	   aState == ( Qt::LeftButton | Qt::ShiftButton) ) {
 	myDrawRect = myEnableDrawMode;
 	if ( myDrawRect ) {
 	  drawRect();
@@ -695,6 +706,32 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent(QMouseEvent* theEvent)
 	  }
 	}
       } 
+      else if ( aState == Qt::RightButton || 
+		aState == ( Qt::RightButton | Qt::ShiftButton ) ) {
+	OCCViewer_ViewSketcher* sketcher = 0;
+	for ( OCCViewer_ViewSketcher* sk = mySketchers.first();
+	      sk && !sketcher; sk = mySketchers.next() )
+	{
+	  if( sk->isDefault() && sk->sketchButton() & ( aState & Qt::MouseButtonMask ) )
+	    sketcher = sk;
+	}
+	if ( sketcher && myCurSketch == -1 )
+	{
+	  activateSketching( sketcher->type() );
+	  if ( mypSketcher )
+	  {
+	    myCurSketch = mypSketcher->sketchButton();
+
+	    if ( l_mbPressEvent )
+	    {
+	      QApplication::sendEvent( getViewPort(), l_mbPressEvent );
+	      delete l_mbPressEvent;
+	      l_mbPressEvent = 0;
+	    }
+	    QApplication::sendEvent( getViewPort(), theEvent );
+	  }
+	}
+      }
       else {
 	emit mouseMoving( this, theEvent ); 
       }	
@@ -710,13 +747,24 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
   switch ( myOperation ) {
   case NOTHING:
     {
-      emit mouseReleased(this, theEvent);
-      if(theEvent->button() == RightButton)
+      int prevState = myCurSketch;
+      if(theEvent->state() == RightButton)
       {
-        QContextMenuEvent aEvent( QContextMenuEvent::Mouse,
-                                  theEvent->pos(), theEvent->globalPos(),
-                                  theEvent->state() );
-        emit contextMenuRequested( &aEvent );
+	for ( OCCViewer_ViewSketcher* sk = mySketchers.first();
+	      sk && myCurSketch != -1; sk = mySketchers.next() )
+	{
+	  if( ( sk->sketchButton() & theEvent->state() ) && sk->sketchButton() == myCurSketch )
+	    myCurSketch = -1;
+	}
+      }
+
+      emit mouseReleased(this, theEvent);
+      if(theEvent->button() == RightButton && prevState == -1)
+      {
+	QContextMenuEvent aEvent( QContextMenuEvent::Mouse,
+				  theEvent->pos(), theEvent->globalPos(),
+				  theEvent->state() );
+	emit contextMenuRequested( &aEvent );
       }
     }
     break;
@@ -757,6 +805,12 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
     drawRect();
     resetState(); 
     myViewPort->update();
+  }
+
+  if ( l_mbPressEvent )
+  {
+    delete l_mbPressEvent;
+    l_mbPressEvent = 0;
   }
 }
 
@@ -1374,3 +1428,138 @@ void OCCViewer_ViewWindow::hideEvent( QHideEvent * theEvent )
   emit Hide( theEvent );
 }
 
+
+/*!
+    Creates default sketcher. [ virtual protected ]
+*/
+OCCViewer_ViewSketcher* OCCViewer_ViewWindow::createSketcher( int type )
+{
+  if ( type == Rect )
+    return new OCCViewer_RectSketcher( this, type );
+  if ( type == Polygon )
+    return new OCCViewer_PolygonSketcher( this, type );
+  return 0;
+}
+
+void OCCViewer_ViewWindow::initSketchers()
+{
+  if ( mySketchers.isEmpty() )
+  {
+    mySketchers.append( createSketcher( Rect ) );
+    mySketchers.append( createSketcher( Polygon ) );
+  }
+}
+
+OCCViewer_ViewSketcher* OCCViewer_ViewWindow::getSketcher( const int typ )
+{
+  OCCViewer_ViewSketcher* sketcher = 0;
+  for ( OCCViewer_ViewSketcher* sk = mySketchers.first();
+        sk && !sketcher; sk = mySketchers.next() )
+  {
+    if ( sk->type() == typ )
+      sketcher = sk;
+  }
+  return sketcher;
+}
+
+/*!
+    Handles requests for sketching in the active view. [ virtual public ]
+*/
+void OCCViewer_ViewWindow::activateSketching( int type )
+{
+  OCCViewer_ViewPort3d* vp = getViewPort();
+  if ( !vp )
+    return;
+
+  if ( !vp->isSketchingEnabled() )
+    return;
+
+  /* Finish current sketching */
+  if ( type == NoSketching )
+  {
+    if ( mypSketcher )
+    {
+      onSketchingFinished();
+      mypSketcher->deactivate();
+      mypSketcher = 0;
+    }
+  }
+  /* Activate new sketching */
+  else
+  {
+    activateSketching( NoSketching );  /* concurrency not suported */
+    mypSketcher = getSketcher( type );
+    if ( mypSketcher )
+    {
+      mypSketcher->activate();
+      onSketchingStarted();
+    }
+  }
+}
+
+/*!
+    Unhilights detected entities. [ virtual protected ]
+*/
+void OCCViewer_ViewWindow::onSketchingStarted()
+{
+}
+
+/*!
+    Selection by rectangle or polygon. [ virtual protected ]
+*/
+void OCCViewer_ViewWindow::onSketchingFinished()
+{
+  if ( mypSketcher && mypSketcher->result() == OCCViewer_ViewSketcher::Accept )
+  {
+    Handle(AIS_InteractiveContext) ic = myModel->getAISContext();
+    bool append = bool( mypSketcher->buttonState() & Qt::ShiftButton );
+    switch( mypSketcher->type() )
+    {
+    case Rect:
+      {
+	QRect* aRect = (QRect*)mypSketcher->data();
+	if( aRect )
+	{
+	  int aLeft = aRect->left();
+	  int aRight = aRect->right();
+	  int aTop = aRect->top();
+	  int aBottom = aRect->bottom();
+
+	  if( append )
+	    ic->ShiftSelect( aLeft, aBottom, aRight, aTop, getViewPort()->getView(), Standard_False );
+	  else
+	    ic->Select( aLeft, aBottom, aRight, aTop, getViewPort()->getView(), Standard_False );
+	}
+      }
+      break;
+    case Polygon:
+      {
+        QPointArray* aPolygon = (QPointArray*)mypSketcher->data();
+        if( aPolygon )
+        {
+	  int size = aPolygon->size();
+	  TColgp_Array1OfPnt2d anArray( 1, size );
+
+	  QPointArray::Iterator it = aPolygon->begin();
+	  QPointArray::Iterator itEnd = aPolygon->end();
+	  for( int index = 1; it != itEnd; ++it, index++ )
+	  {
+	    QPoint aPoint = *it;
+	    anArray.SetValue( index, gp_Pnt2d( aPoint.x(), aPoint.y() ) );
+	  }
+
+	  if( append )
+	    ic->ShiftSelect( anArray, getViewPort()->getView(), Standard_False );
+	  else
+	    ic->Select( anArray, getViewPort()->getView(), Standard_False );
+        }
+      }
+      break;
+    default:
+      break;
+    }
+
+    OCCViewer_ViewManager* aViewMgr = ( OCCViewer_ViewManager* )getViewManager();
+    aViewMgr->getOCCViewer()->performSelectionChanged();
+  }
+}

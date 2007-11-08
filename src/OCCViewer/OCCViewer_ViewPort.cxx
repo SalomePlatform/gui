@@ -196,7 +196,7 @@ void OCCViewer_ViewPort::initialize()
 {
   myPopupActions.setAutoDelete( true );
   myPaintersRedrawing = false;
-  myEnableSketching = false;
+  myEnableSketching = true;
   myEnableTransform = true;
   
   setMouseTracking( true );

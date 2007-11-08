@@ -30,6 +30,7 @@
 
 class SUIT_Desktop;
 class OCCViewer_ViewPort3d;
+class OCCViewer_ViewSketcher;
 
 class OCCViewer_ClippingDlg;
 class OCCViewer_SetRotationPointDlg;
@@ -48,6 +49,8 @@ public:
                       FRONTVIEW, BACKVIEW, TOPVIEW, BOTTOMVIEW, LEFTVIEW, RIGHTVIEW };
 
   enum RotationPointType{ GRAVITY, SELECTED };
+
+  enum SketchingType { NoSketching, Rect, Polygon };
 
   OCCViewer_ViewWindow(SUIT_Desktop* theDesktop, OCCViewer_Viewer* theModel);
 	virtual ~OCCViewer_ViewWindow() {};
@@ -71,6 +74,11 @@ public:
 
   virtual QString   getVisualParameters();
   virtual void      setVisualParameters( const QString& parameters );
+
+  virtual void            initSketchers();
+  OCCViewer_ViewSketcher* getSketcher( const int );
+
+  void                    activateSketching( int );
  
 public slots:
   void onFrontView();
@@ -144,6 +152,16 @@ protected:
   viewAspect getViewParams() const;
 
   bool computeGravityCenter( double& theX, double& theY, double& theZ );
+
+  virtual void                          onSketchingStarted();
+  virtual void                          onSketchingFinished();
+
+  virtual OCCViewer_ViewSketcher*       createSketcher( int );
+
+  OCCViewer_ViewSketcher*               mypSketcher;
+  QList<OCCViewer_ViewSketcher>         mySketchers;
+
+  int                                   myCurSketch;
 
   OperationType         myOperation;
   OCCViewer_Viewer*     myModel;

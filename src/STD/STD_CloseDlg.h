@@ -20,6 +20,7 @@
 #define STD_CloseDlg_H
 
 #include <qdialog.h> 
+#include <qcheckbox.h> 
 
 /*! \class QDialog
  * \brief For more information see <a href="http://doc.trolltech.com">QT documentation</a>.
@@ -56,6 +57,24 @@ private:
    * \brief Private, stores a dialog button 4
    */
   QPushButton* m_pb4;
+};
+
+/*!\class STD_ExitDlg
+ * \brief Describes a dialog box shown on question about quit application
+ */
+class STD_ExitDlg: public QDialog
+{
+  Q_OBJECT
+
+public:
+  STD_ExitDlg ( QWidget * parent = 0, bool modal = FALSE, WFlags f = 0 ) ;
+  ~STD_ExitDlg ( ) { };
+
+  bool isServersShutdown();
+
+private:
+  QCheckBox* myServersShutdown;
+
 };
 
 #endif

@@ -31,6 +31,11 @@
 #include "SALOME_NamingService.hxx"
 #include "SALOMETraceCollector.hxx"
 
+#include "SALOME_ModuleCatalog_impl.hxx"
+#include "OpUtil.hxx"
+#include "RegistryService.hxx"
+#include "ConnectionManager_i.hxx"
+
 #include <iostream>
 #ifndef WNT
 #include <unistd.h>
@@ -303,6 +308,73 @@ bool isFound( const char* str, int argc, char** argv )
   return false;
 }
 
+// shutdown standalone servers
+void shutdownServers( SALOME_NamingService* theNS )
+{
+  // get each Container from NamingService => shutdown it
+  // (the order is inverse to the order of servers initialization)
+  
+  CORBA::Object_var objS = theNS->Resolve("/Kernel/Session");
+  SALOME::Session_var session = SALOME::Session::_narrow(objS);
+  if (!CORBA::is_nil(session)) {
+    session->ping();
+    
+    string hostname = GetHostname();
+    string containerName = "/Containers/" + hostname;
+    
+    // 1) SuperVisionContainer
+    string containerNameSV = containerName + "/SuperVisionContainer";
+    CORBA::Object_var objSV = theNS->Resolve(containerNameSV.c_str());
+    Engines::Container_var SVcontainer = Engines::Container::_narrow(objSV) ;
+    if ( !CORBA::is_nil(SVcontainer) && ( session->getPID() != SVcontainer->getPID() ) )
+      SVcontainer->Shutdown();
+    
+    // 2) FactoryServerPy
+    string containerNameFSP = containerName + "/FactoryServerPy";
+    CORBA::Object_var objFSP = theNS->Resolve(containerNameFSP.c_str());
+    Engines::Container_var FSPcontainer = Engines::Container::_narrow(objFSP) ;
+    if ( !CORBA::is_nil(FSPcontainer) && ( session->getPID() != FSPcontainer->getPID() ) )
+      FSPcontainer->Shutdown();
+    
+    // 3) FactoryServer
+    string containerNameFS = containerName + "/FactoryServer";
+    CORBA::Object_var objFS = theNS->Resolve(containerNameFS.c_str());
+    Engines::Container_var FScontainer = Engines::Container::_narrow(objFS) ;
+    if ( !CORBA::is_nil(FScontainer) && ( session->getPID() != FScontainer->getPID() ) )
+      FScontainer->Shutdown();
+    
+    // 4) ContainerManager
+    CORBA::Object_var objCM=theNS->Resolve("/ContainerManager");
+    Engines::ContainerManager_var contMan=Engines::ContainerManager::_narrow(objCM);
+    if ( !CORBA::is_nil(contMan) && ( session->getPID() != contMan->getPID() ) )
+      contMan->ShutdownWithExit();
+
+    // 5) ConnectionManager
+    CORBA::Object_var objCnM=theNS->Resolve("/ConnectionManager");
+    Engines::ConnectionManager_var connMan=Engines::ConnectionManager::_narrow(objCnM);
+    if ( !CORBA::is_nil(connMan) && ( session->getPID() != connMan->getPID() ) )
+      connMan->ShutdownWithExit();
+    
+    // 6) SALOMEDS
+    CORBA::Object_var objSDS = theNS->Resolve("/myStudyManager");
+    SALOMEDS::StudyManager_var studyManager = SALOMEDS::StudyManager::_narrow(objSDS) ;
+    if ( !CORBA::is_nil(studyManager) && ( session->getPID() != studyManager->getPID() ) )
+      studyManager->ShutdownWithExit();
+    
+    // 7) ModuleCatalog
+    CORBA::Object_var objMC=theNS->Resolve("/Kernel/ModulCatalog");
+    SALOME_ModuleCatalog::ModuleCatalog_var catalog = SALOME_ModuleCatalog::ModuleCatalog::_narrow(objMC);
+    if ( !CORBA::is_nil(catalog) && ( session->getPID() != catalog->getPID() ) )
+      catalog->ShutdownWithExit();
+    
+    // 8) Registry
+    CORBA::Object_var objR = theNS->Resolve("/Registry");
+    Registry::Components_var registry = Registry::Components::_narrow(objR);
+    if ( !CORBA::is_nil(registry) && ( session->getPID() != registry->getPID() ) )
+      registry->end();
+  }
+}
+
 // ---------------------------- MAIN -----------------------
 int main( int argc, char **argv )
 {
@@ -537,8 +609,11 @@ int main( int argc, char **argv )
 	  delete splash;
 	splash = 0;
 
-	if ( result == SUIT_Session::FROM_GUI ) // desktop is closed by user from GUI
+	if ( result == SUIT_Session::FROM_GUI ) { // desktop is closed by user from GUI
+	  if ( aGUISession->isServersShutdown() )
+	    shutdownServers( _NS );
 	  break;
+	}
       }
 
       delete aGUISession;

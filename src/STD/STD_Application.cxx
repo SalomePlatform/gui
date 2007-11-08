@@ -514,10 +514,12 @@ bool STD_Application::onSaveAsDoc()
 /*!Closing session.*/
 void STD_Application::onExit()
 {
-  int aAnswer = SUIT_MessageBox::info2( desktop(), tr( "INF_DESK_EXIT" ), tr( "QUE_DESK_EXIT" ),
-                                        tr( "BUT_OK" ), tr( "BUT_CANCEL" ), 1, 2, 2 );
-  if ( aAnswer == 1 )
+  STD_ExitDlg* dlg = new STD_ExitDlg(desktop());
+  if( dlg->exec() == QDialog::Accepted ) {
+    SUIT_Session::session()->serversShutdown(dlg->isServersShutdown());
+    delete dlg;
     SUIT_Session::session()->closeSession();
+  }
 }
 
 /*!Virtual slot. Not implemented here.*/

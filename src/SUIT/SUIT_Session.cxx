@@ -47,7 +47,8 @@ SUIT_Session::SUIT_Session()
 myResMgr( 0 ),
 myHandler( 0 ),
 myActiveApp( 0 ),
-myExitStatus( FROM_GUI )
+myExitStatus( FROM_GUI ),
+myServersShutdown ( true )
 {
   SUIT_ASSERT( !mySession )
 
@@ -258,6 +259,23 @@ void SUIT_Session::closeSession( int mode )
 
     app->closeApplication();
   }
+}
+
+/*!
+  Set a flag to shutdown or not standalone servers at exit of application.
+*/
+void SUIT_Session::serversShutdown( bool theVal ) 
+{
+  myServersShutdown = theVal;
+}
+
+/*!
+  \retval Return TRUE, if standalone servers will be shutdown at exit of application,
+                 FALSE otherwise.
+*/
+bool SUIT_Session::isServersShutdown() const
+{
+  return myServersShutdown;
 }
 
 /*! \retval return myHandler*/

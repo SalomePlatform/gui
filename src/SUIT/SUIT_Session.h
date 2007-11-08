@@ -71,6 +71,8 @@ public:
   SUIT_ResourceMgr*            resourceMgr() const;
 
   void                         closeSession( int mode = ASK );
+  void                         serversShutdown( bool theVal );
+  bool                         isServersShutdown() const;
 
   SUIT_ExceptionHandler*       handler() const;
 
@@ -108,6 +110,7 @@ private:
   static SUIT_Session*         mySession;
 
   int                          myExitStatus;
+  bool                         myServersShutdown;
 };
 
 #endif

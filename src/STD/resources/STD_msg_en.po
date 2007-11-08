@@ -23,7 +23,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: example-Qt-message-extraction\n"
 "POT-Creation-Date: 1999-02-23 15:38+0200\n"
-"PO-Revision-Date: 1999-02-23 15:38+0200\n"
+"PO-Revision-Date: 2007-11-07 18:43+0300\n"
 "Last-Translator: \n"
 "Content-Type: text/plain; charset=iso-8859-1\n"
 
@@ -192,7 +192,7 @@ msgid "PRP_DESK_VIEW_STDTOOLBAR"
 msgstr "Toggles standard toolbar on/off"
 
 msgid "QUE_DESK_EXIT"
-msgstr "Do you really want to quit ?"
+msgstr "Are you sure you want to quit SALOME?"
 
 msgid "TOT_DESK_FILE_NEW"
 msgstr "New document"
@@ -373,6 +373,9 @@ msgstr "Load Study"
 
 msgid "MEN_STUDIES_CHOICE"
 msgstr "Choose existent study."
+
+msgid "SHUTDOWN_SERVERS"
+msgstr "Shutdown standalone servers"
 
  
 

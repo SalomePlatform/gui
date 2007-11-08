@@ -18,8 +18,6 @@
 //
 #include "QxGraph_ViewManager.h"
 
-int QxGraph_ViewManager::myMaxId = 0;
-
 /*!
   Constructor
 */
@@ -28,7 +26,6 @@ QxGraph_ViewManager::QxGraph_ViewManager( SUIT_Study* theStudy,
 					  SUIT_ViewModel* theViewModel )
   : SUIT_ViewManager( theStudy, theDesktop, theViewModel )
 {
-  myId = ++myMaxId;
 }
 
 /*!

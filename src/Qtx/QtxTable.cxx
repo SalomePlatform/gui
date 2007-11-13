@@ -1262,6 +1262,15 @@ QIcon QtxTable::cellIcon( const int row, const int col ) const
   return res;
 }
 
+void QtxTable::setCellData( const int row, const int col, const QVariant& val )
+{
+  if ( !val.isValid() )
+    return;
+  QTableWidgetItem* anItem = getItem( row, col );
+  if ( anItem )
+    anItem->setData( Qt::DisplayRole, val );
+}
+
 void QtxTable::setCellFont( const int row, const int col, const QFont& f )
 {
   QTableWidgetItem* anItem = getItem( row, col );
@@ -1289,6 +1298,12 @@ void QtxTable::setCellBackground( const int row, const int col, const QColor& c 
     anItem->setBackground( c );
 }
 
+void QtxTable::setCellIcon( const int row, const int col, QIcon& icon )
+{
+  QTableWidgetItem* anItem = getItem( row, col );
+  if ( anItem )
+    anItem->setIcon( icon );
+}
 /*!
   Return item from cell 
   \param row - table row

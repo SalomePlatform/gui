@@ -142,13 +142,17 @@ namespace
 	      vtkIdType theInputDataSetID,
 	      const VTKViewer_AppendFilter::TVectorIds& theRanges)
   {
-    theInputID = theInputDataSetID = -1;
-
     vtkIdType aNbInputs = theRanges.size();
-    if(theInputDataSetID < 0 || theInputDataSetID >= aNbInputs)
+    if ( theInputDataSetID < 0 || theInputDataSetID >= aNbInputs )
       return -1;
     
-    vtkIdType aStartId = theRanges[theInputDataSetID];
+    if ( theInputDataSetID == 0 )
+      return theInputID;
+
+    vtkIdType aStartId = theRanges[theInputDataSetID - 1];
+    if ( theInputID < 0 || theInputID > theRanges[theInputDataSetID] - aStartId )
+      return -1;
+	
     return aStartId + theInputID;
   }
 }
@@ -168,11 +172,8 @@ VTKViewer_AppendFilter
 vtkIdType 
 VTKViewer_AppendFilter
 ::GetCellOutputID(vtkIdType theInputID,
-		   vtkIdType theInputDataSetID)
+		  vtkIdType theInputDataSetID)
 {
-  if(GetSharedPointsDataSet())
-    return theInputID;
-
   return GetOutputID(theInputID,theInputDataSetID,myCellRanges);
 }
 

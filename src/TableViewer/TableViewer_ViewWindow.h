@@ -80,8 +80,6 @@ protected:
 
 protected slots:
   virtual void selectionChanged();
-
-private slots:
   void                onActivated();
 
 private:

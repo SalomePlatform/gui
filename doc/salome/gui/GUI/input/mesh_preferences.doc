@@ -31,6 +31,8 @@ presentation mode as default.</li>
 <ul>
 <li>If you toggle <b>Automatically create groups for MED export</b> checkbox,
 this operation will be carried out automatically.</li>
+<li>If you toggle <b>Automatic renumbering</b> checkbox, the exported
+mesh will be renumbered automatically</li>
 </ul>
 </ul>
 

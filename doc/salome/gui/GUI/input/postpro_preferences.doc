@@ -111,11 +111,16 @@ structure of the study and can be visualized in a XY plot.</li>
 <ul>
 <li><b>Sweeping preferences</b></li>
 <ul>
+<li><b>Mode of the Sweeping</b> - allows to choose between Linear,
+Cosinusoidal and sinusoidal sweeping.</li>
 <li><b>Time step</b> - in this menu you can set the time of
 representation of one step.</li>
 <li><b>Number of cycles</b> - in this menu you can define the number
 of times this animation will be repeated.</li>
-<li><b>Number of steps</b> - in this menu you can define the number of steps, which will compose the whole animation.</li>
+<li><b>Number of steps</b> - in this menu you can define the number of
+steps, which will compose the whole animation.</li>
+<li><b>Parameter varies</b> - allows to choose the range for the
+parameter: from 0 to Pi or from Pi to -Pi.</li>  
 </ul>
 </ul>
 
@@ -147,6 +152,25 @@ Browser.</li>
 </ul>
 </ul>
 
+<br><h2>3D Cache</h2>
+
+\image.html pref40.png
+
+<ul>
+<li><b>3D Cache Preferences</b> - allow to define the mode of usage
+and the size of the 3D Cache, which enables to save in RAM and quickly
+restore the states of field animation.</li>
+<ul>
+<li><b>Memory Mode</b> - allows to define the mode of usage
+of the 3D Cache: <b>Minimal</b> actually disables the Cache,
+<b>Limited</b> Cache size depends on the current system
+configuration.</li>
+<li><b>Memory Limit</b> - allows to define the maximum size of the 3D
+Cache</li> 
+</ul>
+</ul>
+  
+
 <br><h2>Gauss Points Preferences</h2>
 
 \image html pref34.png
@@ -165,7 +189,7 @@ pixels.</li>
 pixels) which defines the shape of the point sprite used for
 rendering.</li>
 <li><b>Alpha Channel Texture (16*16)</b> - path to the <b>Alpha
-Channel Texture</b> which defines the transparency of the point
+Channel Texture</b> which defines the texture of the point
 sprite.</li>
 <li><b>Alpha Channel Threshold</b> - defines the level of transparency
 ranging from 0 to 1.</li>

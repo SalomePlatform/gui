@@ -53,9 +53,10 @@ button.
 
 <em>To save the current layout of the GUI:</em>
 \par
-From the main menu select <b>File > Save GUI State</b>. The GUI state is
-published in Object Browser in the folder GUI states and can be at any
-time \b Restored, \b Renamed or \b Deleted.  This operation saves and allows to
+From the main menu select <b>File > Save VISU State</b>. The current
+state of the graphic interface is published in Object Browser in the
+folder GUI states and can be at any time \b Restored, \b Renamed or \b
+Deleted. This operation saves and allows to
 restore almost all GUI settings: names, position, zooming and panning
 of viewers  and all displayed objects (in Post-Pro module only).
 

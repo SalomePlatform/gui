@@ -20,7 +20,7 @@ configurable.
 <li>\b GUI : provides visual representation: basic widgets, viewers
 etc. Third party modules optionally can have GUI, but in any case they always connected with KERNEL.
 <li>\b Geometry :  facilitates construction and optimization of geometrical models using a wide range of  CAD functions. 
-<li>\b Mesh :  generates meshes on geometrical models previously created or imported by the GEOM component.
+<li>\b Mesh :  generates meshes on geometrical models previously created or imported by the Geometry component.
 <li>\b Supervisor :  provides tools for construction of graphs and execution of calculations. 
 <li>\b Post-Pro :  performs data visualization.
 <li>\b MED :  allows to work with MED files.

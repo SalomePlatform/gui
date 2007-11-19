@@ -217,6 +217,7 @@ protected slots:
 private slots:
   void                                onSelection();
   void                                onRefresh();
+  void                                onFind();
   void                                onPreferences();
   void                                onMRUActivated( QString );
   void                                onPreferenceChanged( QString&, QString&, QString& );

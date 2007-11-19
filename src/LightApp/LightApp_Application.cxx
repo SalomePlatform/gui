@@ -64,6 +64,7 @@
 #include <LogWindow.h>
 #include <OB_Browser.h>
 #include <OB_ListView.h>
+#include <OB_ObjSearch.h>
 
 #ifndef DISABLE_GLVIEWER
   #include <GLViewer_Viewer.h>
@@ -1668,6 +1669,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
   if ( flag == WT_ObjectBrowser )
   {
     OB_Browser* ob = new OB_Browser( desktop() );
+    ob->setSearch( new OB_ObjSearch( ob ) );
     ob->setAutoUpdate( true );
     //ob->setAutoOpenLevel( 1 ); // commented by ASV as a fix to bug IPAL10107
     ob->setCaption( tr( "OBJECT_BROWSER" ) );
@@ -2322,6 +2324,7 @@ void LightApp_Application::contextMenuPopup( const QString& type, QPopupMenu* th
 
   thePopup->insertSeparator();
   thePopup->insertItem( tr( "MEN_REFRESH" ), this, SLOT( onRefresh() ) );
+  thePopup->insertItem( tr( "MEN_FIND" ), this, SLOT( onFind() ) );
 }
 
 /*!
@@ -2556,4 +2559,9 @@ bool LightApp_Application::checkDataObject(LightApp_DataObject* theObj)
     }
 
   return false;
+}
+
+void LightApp_Application::onFind()
+{
+  objectBrowser()->enableSearch( true );
 }

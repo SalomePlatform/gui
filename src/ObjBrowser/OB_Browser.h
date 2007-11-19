@@ -38,6 +38,8 @@ class QToolTip;
 class OB_Filter;
 class OB_ListView;
 class OB_ListItem;
+class OB_ObjSearch;
+class OB_FindDlg;
 
 class OB_Updater 
 {
@@ -139,6 +141,10 @@ public:
   OB_Updater*       getUpdater() const;
   virtual void      setUpdater( OB_Updater* theUpdate = 0 );
 
+  OB_ObjSearch*     getSearch() const;
+  void              setSearch( OB_ObjSearch* );
+  void              enableSearch( const bool );
+
 signals:
   void              selectionChanged();
   void              doubleClicked( SUIT_DataObject* );
@@ -207,6 +213,7 @@ private:
   bool              myShowToolTips;
   bool              myRootDecorated;
   int               myAutoOpenLevel;
+  OB_FindDlg       *myFindDlg;
 
   friend class OB_Browser::ToolTip;
 

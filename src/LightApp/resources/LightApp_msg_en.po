@@ -254,6 +254,9 @@ msgstr "Quick directory list"
 msgid "LightApp_Application::MEN_REFRESH"
 msgstr "Refresh"
 
+msgid "LightApp_Application::MEN_FIND"
+msgstr "Find"
+
 msgid "LightApp_Application::PREF_GROUP_SUPERV"
 msgstr "Graph Supervisor"
 

@@ -30,17 +30,22 @@ salomeinclude_HEADERS=\
 	OB_Browser.h \
 	OB_ListItem.h \
 	OB_ListView.h \
-	OB_Filter.h
+	OB_Filter.h \
+	OB_FindDlg.h \
+	OB_ObjSearch.h
 
 dist_libObjBrowser_la_SOURCES= \
 	OB_Browser.cxx \
 	OB_ListItem.cxx \
 	OB_ListView.cxx \
-	OB_Filter.cxx
+	OB_Filter.cxx \
+	OB_FindDlg.cxx \
+	OB_ObjSearch.cxx
 
 MOC_FILES= \
 	OB_Browser_moc.cxx \
-	OB_ListView_moc.cxx
+	OB_ListView_moc.cxx \
+	OB_FindDlg_moc.cxx
 nodist_libObjBrowser_la_SOURCES= $(MOC_FILES)
 
 nodist_salomeres_DATA = OB_msg_en.qm

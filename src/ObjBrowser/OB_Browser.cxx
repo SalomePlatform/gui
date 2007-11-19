@@ -21,6 +21,7 @@
 #include "OB_Filter.h"
 #include "OB_ListItem.h"
 #include "OB_ListView.h"
+#include "OB_FindDlg.h"
 
 #include <SUIT_DataObjectIterator.h>
 #include <SUIT_TreeSync.h>
@@ -306,8 +307,12 @@ myRootDecorated( true )
   myView->installEventFilter( this );
   myView->viewport()->installEventFilter( this );
 
+  myFindDlg = new OB_FindDlg( this );
+  myFindDlg->hide();
+
   QVBoxLayout* main = new QVBoxLayout( this );
-  main->addWidget( myView );
+  main->addWidget( myView, 1 );
+  main->addWidget( myFindDlg, 0 );
 
   myShowToolTips = true;
   myTooltip = new ToolTip( this, myView->viewport() );
@@ -1651,3 +1656,17 @@ void OB_Browser::setModified()
   myModifiedTime = clock();
 }
 
+OB_ObjSearch* OB_Browser::getSearch() const
+{
+  return myFindDlg->getSearch();
+}
+
+void OB_Browser::setSearch( OB_ObjSearch* s )
+{
+  myFindDlg->setSearch( s );
+}
+
+void OB_Browser::enableSearch( const bool on )
+{
+  myFindDlg->setShown( on );
+}

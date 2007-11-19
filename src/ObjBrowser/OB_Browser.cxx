@@ -21,6 +21,7 @@
 //
 
 #include "OB_Browser.h"
+#include "OB_FindDlg.h"
 
 //#include "OB_Filter.h"
 //#include "OB_ListItem.h"
@@ -137,8 +138,12 @@ OB_Browser::OB_Browser( QWidget* parent, QAbstractItemModel* model )
   myView->setSelectionMode( QAbstractItemView::ExtendedSelection );
   myView->setAllColumnsShowFocus( true );
 
+  myFindDlg = new OB_FindDlg( this );
+  myFindDlg->hide();
+  
   QVBoxLayout* main = new QVBoxLayout( this );
   main->addWidget( myView );
+  main->addWidget( myFindDlg );
   main->setMargin( 0 );
 
   // TODO: decide what to do with tooltip
@@ -817,6 +822,16 @@ void OB_Browser::onCollapseAll()
 }
 
 /*!
+  \brief Called when "Find" popup menu command is activated.
+  
+  Activates the find properties frame
+*/
+void OB_Browser::onFind()
+{
+  myFindDlg->show();
+}
+
+/*!
   SLOT: called if SUIT object is destroyed
 */
 /* TODO: moved to SUIT_TreeModel
@@ -935,6 +950,9 @@ void OB_Browser::contextMenuPopup( QMenu* menu )
     menu->addAction( tr( "MEN_EXPAND_ALL" ), this, SLOT( onExpandAll() ) );
   if ( opened )
     menu->addAction( tr( "MEN_COLLAPSE_ALL" ), this, SLOT( onCollapseAll() ) );
+
+  menu->addSeparator();
+  menu->addAction( tr( "MEN_FIND" ), this, SLOT( onFind() ) );
 
   menu->addSeparator();
 }

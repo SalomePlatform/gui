@@ -9,5 +9,28 @@
         <source>MEN_COLLAPSE_ALL</source>
         <translation>Collapse All</translation>
     </message>
+    <message>
+        <source>MEN_FIND</source>
+        <translation>Find</translation>
+    </message>
+</context>
+<context>
+    <name>OB_FindDlg</name>
+    <message>
+        <source>FIND</source>
+        <translation>Find</translation>
+    </message>
+    <message>
+        <source>CLOSE</source>
+        <translation>Close</translation>
+    </message>
+    <message>
+        <source>CASE_SENSITIVE</source>
+        <translation>Case sensitive</translation>
+    </message>
+    <message>
+        <source>IS_REG_EXP</source>
+        <translation>Regular expression</translation>
+    </message>
 </context>
 </TS>

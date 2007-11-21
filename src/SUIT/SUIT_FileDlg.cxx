@@ -272,6 +272,13 @@ void SUIT_FileDlg::accept()
 
     if ( acceptData() )
     {
+      // NDS: needs to fill string mySelected file
+      QString fn;
+      QStringList lst = QFileDialog::selectedFiles();
+      if ( !lst.isEmpty() )
+        fn = lst.first();
+      mySelectedFile = fn;
+      // end NDS
       myLastVisitedPath = directory().path();
       QFileDialog::accept();        
 //      myAccepted = true;

@@ -911,8 +911,8 @@ void SUIT_TreeModel::updateTree( SUIT_DataObject* obj )
   if ( !obj )
     obj = root();
 
-  //else if ( obj->root() != root() )
-  //  return;
+  else if ( obj->root() != root() )
+    return;
 
   synchronize<ObjPtr,ItemPtr,SUIT_TreeModel::TreeSync>( obj, 
 							treeItem( obj ), 

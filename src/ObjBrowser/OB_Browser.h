@@ -40,6 +40,7 @@ class QAbstractItemModel;
 class QAbstractItemDelegate;
 class QToolTip;
 class QtxTreeView;
+class OB_FindDlg;
 
 class OB_EXPORT OB_Browser : public QWidget, public SUIT_PopupClient
 {
@@ -105,6 +106,8 @@ public:
   //OB_Updater*       getUpdater() const;
   //virtual void      setUpdater( OB_Updater* theUpdate = 0 );
 
+  QtxTreeView*           treeView() const;
+
 signals:
   void                   selectionChanged();
   //void                   doubleClicked( SUIT_DataObject* );
@@ -113,6 +116,7 @@ signals:
 private slots:
   void                   onExpandAll();
   void                   onCollapseAll();
+  void                   onFind();
   //void              onDestroyed( SUIT_DataObject* );
   //void              onDoubleClicked ( QListViewItem* );
   //void              onDropped( QPtrList<QListViewItem>, QListViewItem*, int );
@@ -120,7 +124,6 @@ private slots:
 protected:
   //void              adjustWidth( QListViewItem* );
   //virtual void      updateText();
-  QtxTreeView*           treeView() const;
 
   virtual void           contextMenuEvent( QContextMenuEvent* );
 
@@ -158,6 +161,7 @@ private:
 
 private:
   QtxTreeView*           myView;
+  OB_FindDlg*            myFindDlg;
   // TODO: decide what to do with tooltip
   //QToolTip*           myTooltip;
   //QMap<int, int>      myColumnIds;

@@ -636,3 +636,12 @@ void SUIT_Application::onDesktopActivated()
 {
   emit activated( this );
 }
+
+/*!
+  SLOT: is used for Help browsing
+*/
+
+void SUIT_Application::onHelpContextModule (const QString& /*theComponentName*/,
+                                            const QString& /*theFileName*/)
+{
+}

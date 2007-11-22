@@ -116,6 +116,7 @@ signals:
 
 public slots:
   virtual void          updateCommandsStatus();
+  virtual void          onHelpContextModule( const QString&, const QString& );
 
 private slots:
   void                  onInfoClear();

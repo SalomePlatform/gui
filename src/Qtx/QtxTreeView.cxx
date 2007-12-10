@@ -41,11 +41,15 @@ public:
   void     setSortMenuEnabled( const bool );
   bool     sortMenuEnabled() const;
 
+  void     addMenuAction( QAction* );
+
 protected:
   void     contextMenuEvent( QContextMenuEvent* );
 
 private:
-  bool     myEnableSortMenu;
+  typedef QMap<int, QAction*> ActionsMap;
+  bool       myEnableSortMenu;
+  ActionsMap myActions;
 };
 
 /*!
@@ -88,6 +92,21 @@ bool QtxTreeView::Header::sortMenuEnabled() const
   return myEnableSortMenu;
 }
 
+/*
+  \brief Appends action to header popup menu.
+  \param action the action
+  \internal
+*/
+void QtxTreeView::Header::addMenuAction( QAction* action )
+{
+  bool aFind = false;
+  ActionsMap::const_iterator anIt = myActions.begin(), aLast = myActions.end();
+  for ( ; anIt != aLast && !aFind; anIt++ )
+    aFind = anIt.value() == action;
+  if ( !aFind )
+    myActions[myActions.size()] = action;
+}
+
 /*!
   \brief Customize context menu event.
   \internal
@@ -126,6 +145,12 @@ void QtxTreeView::Header::contextMenuEvent( QContextMenuEvent* e )
     sortAction = menu.addAction( tr( "Enable sorting" ) );
     sortAction->setCheckable( true );
     sortAction->setChecked( isSortIndicatorShown() );
+  }
+  if ( myActions.size() > 0 ) {
+    menu.addSeparator();
+    ActionsMap::const_iterator anIt = myActions.begin(), aLast = myActions.end();
+    for ( ; anIt != aLast; anIt++ )
+      menu.addAction( anIt.value() );
   }
   if ( !menu.isEmpty() ) {
     Qtx::simplifySeparators( &menu );
@@ -269,6 +294,17 @@ bool QtxTreeView::sortMenuEnabled() const
 {
   Header* h = dynamic_cast<Header*>( header() );
   return h ? h->sortMenuEnabled() : false;
+}
+
+/*
+  \brief Appends header menu action.
+  \param action the action
+*/
+void QtxTreeView::addHeaderMenuAction( QAction* action )
+{
+  Header* h = dynamic_cast<Header*>( header() );
+  if ( h )
+    h->addMenuAction( action );
 }
 
 /*

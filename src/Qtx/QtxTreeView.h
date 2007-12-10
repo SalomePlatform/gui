@@ -51,6 +51,8 @@ public:
   void     setSortMenuEnabled( const bool );
   bool     sortMenuEnabled() const;
 
+  void     addHeaderMenuAction( QAction* );
+
 protected slots:
   void     onHeaderClicked( int );
   void     selectionChanged( const QItemSelection&, const QItemSelection& );

@@ -31,6 +31,9 @@
 
 #include "SALOME_Actor.h"
 
+#include "SUIT_Session.h"
+#include "SUIT_ResourceMgr.h"
+
 #include <TColStd_MapIteratorOfMapOfInteger.hxx>
 #include <TColStd_IndexedMapOfInteger.hxx>
 
@@ -548,15 +551,24 @@ SALOME_Actor*
 SVTK_SelectorDef
 ::Pick(const SVTK_SelectionEvent* theEvent, vtkRenderer* theRenderer) const
 {
-  myCellPicker->Pick(theEvent->myX,
-		     theEvent->myY, 
-		     0.0,
-		     theRenderer);
+  bool anAdvancedSelectionAlgorithm = true;
+  SUIT_ResourceMgr* aResourceMgr = SUIT_Session::session()->resourceMgr();
+  if ( aResourceMgr )
+    anAdvancedSelectionAlgorithm = aResourceMgr->booleanValue( "VTKViewer", "selection_algorithm", true );
+
+  SALOME_Actor* anActor = NULL;
+  vtkActorCollection* aListActors = NULL;
+  if ( anAdvancedSelectionAlgorithm ) {
+    myCellPicker->Pick(theEvent->myX,
+		       theEvent->myY, 
+		       0.0,
+		       theRenderer);
   
-  vtkActorCollection* aListActors = myCellPicker->GetActors();
-  SALOME_Actor* anActor = GetLastSALOMEActor(aListActors);
-  
-  if (! anActor) {
+    aListActors = myCellPicker->GetActors();
+    anActor = GetLastSALOMEActor(aListActors);
+  }
+
+  if ( !anActor ) {
     myPicker->Pick(theEvent->myX,
 		   theEvent->myY, 
 		   0.0,

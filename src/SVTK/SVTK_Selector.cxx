@@ -554,7 +554,7 @@ SVTK_SelectorDef
   bool anAdvancedSelectionAlgorithm = true;
   SUIT_ResourceMgr* aResourceMgr = SUIT_Session::session()->resourceMgr();
   if ( aResourceMgr )
-    anAdvancedSelectionAlgorithm = aResourceMgr->booleanValue( "VTKViewer", "selection_algorithm", true );
+    anAdvancedSelectionAlgorithm = aResourceMgr->booleanValue( "VTKViewer", "use_advanced_selection_algorithm", true );
 
   SALOME_Actor* anActor = NULL;
   vtkActorCollection* aListActors = NULL;

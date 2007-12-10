@@ -90,6 +90,7 @@
     <parameter name="background"     value="0, 0, 0" />
     <parameter name="trihedron_size" value="105" />
     <parameter name="relative_size"  value="true" />
+    <parameter name="use_advanced_selection_algorithm" value="true" />
  </section>
  <section name="Plot2d" >
     <!-- Plot2d viewer preferences -->

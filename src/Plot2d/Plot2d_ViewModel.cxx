@@ -53,10 +53,11 @@ Plot2d_Viewer::~Plot2d_Viewer()
 */
 SUIT_ViewWindow* Plot2d_Viewer::createView(SUIT_Desktop* theDesktop)
 {
-  Plot2d_ViewWindow* aPlot2dView = new Plot2d_ViewWindow(theDesktop, this);
+  Plot2d_ViewWindow* aView = new Plot2d_ViewWindow(theDesktop, this);
+  aView->initLayout();
   if (myPrs)
-    aPlot2dView->getViewFrame()->Display(myPrs);
-  return aPlot2dView;
+    aView->getViewFrame()->Display(myPrs);
+  return aView;
 }
 
 /*!

@@ -55,7 +55,20 @@ Plot2d_ViewWindow::Plot2d_ViewWindow( SUIT_Desktop* theDesktop, Plot2d_Viewer* t
 {
   myModel = theModel;
   myDumpImage = QImage();
+}
 
+/*!
+  \brief Destructor.
+*/
+Plot2d_ViewWindow::~Plot2d_ViewWindow()
+{
+}
+
+/*!
+  \brief Internal initialization.
+*/
+void Plot2d_ViewWindow::initLayout()
+{
   myViewFrame = new Plot2d_ViewFrame( this, "plotView" );
   setCentralWidget( myViewFrame );
 
@@ -71,13 +84,6 @@ Plot2d_ViewWindow::Plot2d_ViewWindow( SUIT_Desktop* theDesktop, Plot2d_Viewer* t
 	   this,        SIGNAL( contextMenuRequested( QContextMenuEvent* ) ) );
 
   myViewFrame->installEventFilter( this );
-}
-
-/*!
-  \brief Destructor.
-*/
-Plot2d_ViewWindow::~Plot2d_ViewWindow()
-{
 }
 
 /*!

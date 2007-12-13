@@ -52,6 +52,7 @@ public:
   void              putInfo( const QString&);
   Plot2d_ViewFrame* getViewFrame();
   QToolBar*         getToolBar();
+  virtual void      initLayout();
   void              contextMenuPopup( QMenu* );
 
   virtual bool      eventFilter( QObject*, QEvent* );
@@ -106,7 +107,7 @@ protected:
 signals:
   void              cloneView();
 
-private:
+protected:
   Plot2d_Viewer*    myModel;
   Plot2d_ViewFrame* myViewFrame;
   QToolBar*         myToolBar;

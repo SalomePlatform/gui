@@ -52,8 +52,8 @@ public:
   QWidget* getViewWidget();
 
   /* display */
-  void    DisplayAll();
-  void    EraseAll();
+  virtual void DisplayAll();
+  virtual void EraseAll();
   void    Repaint();
 
   void    Display( const Plot2d_Prs* );

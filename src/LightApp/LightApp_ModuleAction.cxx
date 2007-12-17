@@ -167,6 +167,7 @@ QWidget* LightApp_ModuleAction::ComboAction::createWidget( QWidget* parent )
   cb->setSizeAdjustPolicy( QComboBox::AdjustToContents );
   cb->setFocusPolicy( Qt::NoFocus );
   l->addWidget( cb );
+  l->addSpacing( 3 );
 
   connect( cb, SIGNAL( activatedId( int ) ), this, SIGNAL( activatedId( int ) ) );
 

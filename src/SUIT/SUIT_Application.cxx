@@ -67,7 +67,7 @@ SUIT_Desktop* SUIT_Application::desktop()
    \return FALSE if application can not be closed (because of non saved data for example). 
    This method called by SUIT_Session whin closing of application was requested.
 */
-bool SUIT_Application::isPossibleToClose( bool& closePermanently )
+bool SUIT_Application::isPossibleToClose( bool& )
 {
   return true;
 }
@@ -546,6 +546,16 @@ int SUIT_Application::actionId( const QAction* a ) const
       id = it.key();
   }
   return id;
+}
+
+QList<QAction*> SUIT_Application::actions() const
+{
+  return myActionMap.values();
+}
+
+QList<int> SUIT_Application::actionIds() const
+{
+  return myActionMap.keys();
 }
 
 /*!

@@ -149,6 +149,10 @@ protected:
   static QAction*       separator();
   QAction*              action( const int ) const;
   int                   actionId( const QAction* ) const;
+
+  QList<QAction*>       actions() const;
+  QList<int>            actionIds() const;
+
   int                   registerAction( const int, QAction* );
   QAction*              createAction( const int, const QString&, const QIcon&, const QString&,
                                       const QString&, const int, QObject* = 0,

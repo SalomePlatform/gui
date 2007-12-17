@@ -130,7 +130,8 @@ void QtxPreferenceItem::Updater::customEvent( QEvent* /*e*/ )
   \param parent parent preference item
 */
 QtxPreferenceItem::QtxPreferenceItem( QtxPreferenceItem* parent )
-: myParent( 0 )
+: myParent( 0 ),
+myEval( true )
 {
   myId = generateId();
 
@@ -425,6 +426,16 @@ void QtxPreferenceItem::setOption( const QString& name, const QVariant& val )
     sendItemChanges();
 }
 
+bool QtxPreferenceItem::isEvaluateValues() const
+{
+  return myEval;
+}
+
+void QtxPreferenceItem::setEvaluateValues( const bool on )
+{
+  myEval = on;
+}
+
 /*!
   \fn void QtxPreferenceItem::store();
   \brief Save preference item (for example, to the resource file).
@@ -588,8 +599,11 @@ bool QtxPreferenceItem::getBoolean( const bool val ) const
 */
 QString QtxPreferenceItem::getString( const QString& val ) const
 {
+  QString res = val;
   QtxResourceMgr* resMgr = resourceMgr();
-  return resMgr ? resMgr->stringValue( mySection, myParameter, val ) : val;
+  if ( resMgr )
+    resMgr->value( mySection, myParameter, res, isEvaluateValues() );
+  return res;
 }
 
 /*!
@@ -748,9 +762,12 @@ void QtxPreferenceItem::triggerUpdate()
   \return property value or null QVariant if option is not set
   \sa setOptionValue()
 */
-QVariant QtxPreferenceItem::optionValue( const QString& /*name*/ ) const
+QVariant QtxPreferenceItem::optionValue( const QString& name ) const
 {
-  return QVariant();
+  QVariant val;
+  if ( name == "eval" || name == "evaluation" || name == "subst" || name == "substitution" )
+    val = isEvaluateValues();
+  return val;
 }
 
 /*!
@@ -763,8 +780,13 @@ QVariant QtxPreferenceItem::optionValue( const QString& /*name*/ ) const
   \param val new property value
   \sa optionValue()
 */
-void QtxPreferenceItem::setOptionValue( const QString& /*name*/, const QVariant& /*val*/ )
+void QtxPreferenceItem::setOptionValue( const QString& name, const QVariant& val )
 {
+  if ( name == "eval" || name == "evaluation" || name == "subst" || name == "substitution" )
+  {
+    if ( val.canConvert( QVariant::Bool ) )
+      setEvaluateValues( val.toBool() );
+  }
 }
 
 /*!

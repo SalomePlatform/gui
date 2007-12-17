@@ -1027,9 +1027,9 @@ bool QtxActionMenuMgr::load( const QString& fname, QtxActionMgr::Reader& r )
   \param pid parent menu item ID
   \return \c true if parent menu item contains such child item
 */
-bool QtxActionMenuMgr::containsMenu( const QString& title, const int pid ) const
+bool QtxActionMenuMgr::containsMenu( const QString& title, const int pid, const bool rec ) const
 {
-  return (bool)find( title, pid, false );
+  return (bool)find( title, pid, rec );
 }
 
 /*!
@@ -1038,9 +1038,9 @@ bool QtxActionMenuMgr::containsMenu( const QString& title, const int pid ) const
   \param pid parent menu item ID
   \return \c true if parent menu item contains such child item
 */
-bool QtxActionMenuMgr::containsMenu( const int id, const int pid ) const
+bool QtxActionMenuMgr::containsMenu( const int id, const int pid, const bool rec ) const
 {
-  return (bool)find( id, pid, false );
+  return (bool)find( id, pid, rec );
 }
 
 /*!

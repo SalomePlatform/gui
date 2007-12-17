@@ -90,8 +90,8 @@ public:
 
   virtual bool load( const QString&, QtxActionMgr::Reader& );
 
-  bool         containsMenu( const QString&, const int ) const;
-  bool         containsMenu( const int, const int ) const;
+  bool         containsMenu( const QString&, const int, const bool = false ) const;
+  bool         containsMenu( const int, const int, const bool = false ) const;
 
   QMenu*       findMenu( const int ) const;
 

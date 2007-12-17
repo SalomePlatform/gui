@@ -73,6 +73,9 @@ public:
   QVariant                  option( const QString& ) const;
   void                      setOption( const QString&, const QVariant& );
 
+  bool                      isEvaluateValues() const;
+  void                      setEvaluateValues( const bool );
+
   virtual void              store() = 0;
   virtual void              retrieve() = 0;
 
@@ -125,6 +128,7 @@ private:
   QtxPreferenceItem*        myParent;
   ItemList                  myChildren;
 
+  bool                      myEval;
   QIcon                     myIcon;
   QString                   myTitle;
   QString                   mySection;

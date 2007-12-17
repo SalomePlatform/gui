@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -31,10 +31,12 @@
 #include "LightApp.h"
 #include <CAM_Application.h>
 
+#include <QPointer>
+
 class LogWindow;
 class LightApp_Browser;
 #ifndef DISABLE_PYCONSOLE
-  class PyConsole_Console;
+class PyConsole_Console;
 #endif
 class LightApp_WidgetContainer;
 class LightApp_Preferences;
@@ -47,6 +49,7 @@ class CAM_Module;
 class QString;
 class QWidget;
 class QStringList;
+class QDockWidget;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -61,7 +64,7 @@ class LIGHTAPP_EXPORT LightApp_Application : public CAM_Application
   Q_OBJECT
 
 public:
-  typedef enum { WT_ObjectBrowser, 
+  typedef enum { WT_ObjectBrowser,
 #ifndef DISABLE_PYCONSOLE
                  WT_PyConsole,
 #endif
@@ -110,11 +113,11 @@ public:
   virtual bool                        activateModule( const QString& );
 
   LightApp_SelectionMgr*              selectionMgr() const;
-  
+
   LogWindow*                          logWindow();
   LightApp_Browser*                   objectBrowser();
 #ifndef DISABLE_PYCONSOLE
-  PyConsole_Console*                  pythonConsole(); 
+  PyConsole_Console*                  pythonConsole();
 #endif
 
   virtual void                        updateObjectBrowser( const bool = true );
@@ -123,10 +126,10 @@ public:
 
   virtual QString                     getFileFilter() const;
 
-  virtual QString                     getFileName( bool open, const QString& initial, const QString& filters, 
+  virtual QString                     getFileName( bool open, const QString& initial, const QString& filters,
 						   const QString& caption, QWidget* parent );
   virtual QString                     getDirectory( const QString& initial, const QString& caption, QWidget* parent );
-  virtual QStringList                 getOpenFileNames( const QString& initial, const QString& filters, 
+  virtual QStringList                 getOpenFileNames( const QString& initial, const QString& filters,
 							const QString& caption, QWidget* parent );
 
   void                                updateActions();
@@ -137,12 +140,10 @@ public:
   virtual SUIT_ViewManager*           createViewManager( const QString& vmType );
 
   QWidget*                            getWindow( const int, const int = -1 );
-  QWidget*                            window( const int, const int = -1 ) const;
-  void                                addWindow( QWidget*, const int, const int = -1 );
-  void                                removeWindow( const int, const int = -1 );
-
-  bool                                isWindowVisible( const int ) const;
-  void                                setWindowShown( const int, const bool );
+  QWidget*                            dockWindow( const int ) const;
+  void                                removeDockWindow( const int );
+  void                                insertDockWindow( const int, QWidget* );
+  void                                placeDockWindow( const int, Qt::DockWidgetArea );
 
   virtual void                        start();
 
@@ -157,7 +158,7 @@ public:
   static int                          studyId();
 
   virtual bool                        event( QEvent* );
-  
+
   virtual bool                        checkDataObject( LightApp_DataObject* theObj );
 
 signals:
@@ -197,7 +198,10 @@ protected:
   LightApp_Preferences*               preferences( const bool ) const;
   virtual void                        createPreferences( LightApp_Preferences* );
   virtual void                        preferencesChanged( const QString&, const QString& );
+
+  virtual void                        loadPreferences();
   virtual void                        savePreferences();
+
   virtual void                        updateDesktopTitle();
 
   virtual QMap<int, QString>          activateModuleActions() const;
@@ -224,15 +228,14 @@ private slots:
   void                                onMRUActivated( QString );
   void                                onPreferenceChanged( QString&, QString&, QString& );
   void                                onRenameWindow();
-  void                                onVisibilityChanged( bool );
 
 protected:
   void                                updateWindows();
   void                                updateViewManagers();
   void                                updateModuleActions();
 
-  void                                loadWindowsGeometry();
-  void                                saveWindowsGeometry();
+  void                                loadDockWindowsState();
+  void                                saveDockWindowsState();
 
   void                                updatePreference( const QString&, const QString&, const QString& );
 
@@ -241,18 +244,25 @@ protected:
   void                                currentViewManagers( QStringList& ) const;
   void                                moduleIconNames( QMap<QString, QString>& ) const;
 
-  void                                activateWindows();
   bool                                isLibExists( const QString& ) const;
 
+  QDockWidget*                        windowDock( QWidget* ) const;
+  QByteArray                          dockWindowsState( const QMap<QString, bool>&, const QMap<QString, bool>& ) const;
+  void                                dockWindowsState( const QByteArray&, QMap<QString, bool>&, QMap<QString, bool>& ) const;
+
 protected:
-  typedef QMap<int, LightApp_WidgetContainer*> WindowMap;
-  typedef QMap<int, bool>                      WindowVisibilityMap;
+  typedef QPointer<QWidget>         WinPtr;
+  typedef QMap<int, WinPtr>         WinMap;
+  typedef QMap<QString, QByteArray> WinVis;
+  typedef QMap<QString, QByteArray> WinGeom;
 
 protected:
   LightApp_Preferences*               myPrefs;
   LightApp_SelectionMgr*              mySelMgr;
-  WindowMap                           myWindows;
-  WindowVisibilityMap                 myWindowsVisible;
+
+  WinMap                              myWin;
+  WinVis                              myWinVis;
+  WinGeom                             myWinGeom;
 
   SUIT_Accel*                         myAccel;
 

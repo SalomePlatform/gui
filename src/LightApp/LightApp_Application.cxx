@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -64,10 +64,12 @@
 #include <SUIT_ViewWindow.h>
 
 #include <Qtx.h>
-#include <QtxMRUAction.h>
-#include <QtxDockAction.h>
 #include <QtxToolBar.h>
 #include <QtxTreeView.h>
+#include <QtxMRUAction.h>
+#include <QtxDockAction.h>
+#include <QtxDockWidget.h>
+#include <QtxActionToolMgr.h>
 
 #include <LogWindow.h>
 
@@ -146,6 +148,9 @@
   #include <SALOME_InteractiveObject.hxx>
   #include <SALOME_ListIO.hxx>
 #endif
+
+#define ToolBarMarker    0
+#define DockWidgetMarker 1
 
 static const char* imageEmptyIcon[] = {
 "20 20 1 1",
@@ -263,14 +268,14 @@ LightApp_Application::LightApp_Application()
   // Set existing font for the python console in resources
   if( !aResMgr->hasValue( "PyConsole", "font" ) )
     return;
-  
+
   QFont f = aResMgr->fontValue( "PyConsole", "font" );
   QFontDatabase fdb;
   QStringList famdb = fdb.families();
-  
+
   if ( famdb.contains(f.family()) || !aResMgr->hasValue( "PyConsole", "additional_families" ) )
     return;
-  
+
   QStringList anAddFamilies = aResMgr->stringValue( "PyConsole", "additional_families" ).split( ";", QString::SkipEmptyParts );
   QString aFamily;
   for ( QStringList::Iterator it = anAddFamilies.begin(); it != anAddFamilies.end(); ++it )
@@ -299,15 +304,9 @@ LightApp_Application::~LightApp_Application()
 /*!Start application.*/
 void LightApp_Application::start()
 {
-  if ( desktop() ) {
+  if ( desktop() )
     desktop()->retrieveGeometry( resourceMgr()->stringValue( "desktop", "geometry", "(800%)x(800%) (+400%) (+400%) :(full)" ) );
-    //desktop()->retrieveGeometry( SUIT_Session::session()->resourceMgr()->stringValue( "desktop", "state", "normal" ));
-    //desktop()->retrieveGeometry( SUIT_Session::session()->resourceMgr()->stringValue( "desktop", "pos_x", "center" ));
-    //desktop()->retrieveGeometry( SUIT_Session::session()->resourceMgr()->stringValue( "desktop", "pos_y", "center" ));
-    //desktop()->retrieveGeometry( SUIT_Session::session()->resourceMgr()->stringValue( "desktop", "widht", "800" ));
-    //desktop()->retrieveGeometry( SUIT_Session::session()->resourceMgr()->stringValue( "desktop", "height", "800" ));
-  }
-  
+
   CAM_Application::start();
 
   updateWindows();
@@ -362,7 +361,7 @@ QString LightApp_Application::applicationVersion() const
       }
     }
   }
-  return _app_version;  
+  return _app_version;
 }
 
 /*!Load module by \a name.*/
@@ -390,15 +389,15 @@ bool LightApp_Application::activateModule( const QString& modName )
   if ( actName == modName )
     return true;
 
-  putInfo( tr( "ACTIVATING_MODULE" ).arg( modName ) );  
+  putInfo( tr( "ACTIVATING_MODULE" ).arg( modName ) );
 
-  saveWindowsGeometry();
+  saveDockWindowsState();
 
   bool status = CAM_Application::activateModule( modName );
 
   updateModuleActions();
 
-  putInfo( "" );  
+  putInfo( "" );
 
   if ( !status )
     return false;
@@ -460,7 +459,7 @@ void LightApp_Application::createActions()
     root = Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") +
                           Qtx::addSlash("salome") + Qtx::addSlash("gui") +  Qtx::addSlash("GUI") );
     if ( QFileInfo( root + aFileName ).exists() ) {
-      a = createAction( id, tr( QString("GUI Help").toLatin1().constData() ), 
+      a = createAction( id, tr( QString("GUI Help").toLatin1().constData() ),
 			resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false ),
 			tr( QString("GUI Help").toLatin1().constData() ),
 			tr( QString("GUI Help").toLatin1().constData() ),
@@ -473,10 +472,10 @@ void LightApp_Application::createActions()
   dir = getenv("KERNEL_ROOT_DIR");
   if ( !dir.isEmpty() ) {
     QString aFN = "index.html";
-    root = Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") + 
+    root = Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") +
 			  Qtx::addSlash("salome") );
     if ( QFileInfo( root + aFN ).exists() ) {
-      a = createAction( id, tr( QString("KERNEL Help").toLatin1().constData() ), 
+      a = createAction( id, tr( QString("KERNEL Help").toLatin1().constData() ),
 			resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false ),
 			tr( QString("KERNEL Help").toLatin1().constData() ),
 			tr( QString("KERNEL Help").toLatin1().constData() ),
@@ -494,10 +493,10 @@ void LightApp_Application::createActions()
       continue;
 
     QString modName = moduleName( *it );
-    
+
     dir = getenv( (modName + "_ROOT_DIR").toLatin1().constData() );
     if ( !dir.isEmpty() ) {
-      root = Qtx::addSlash( Qtx::addSlash(dir) +  Qtx::addSlash("share") + Qtx::addSlash("doc") + 
+      root = Qtx::addSlash( Qtx::addSlash(dir) +  Qtx::addSlash("share") + Qtx::addSlash("doc") +
                             Qtx::addSlash("salome") + Qtx::addSlash("gui") +  Qtx::addSlash(modName) );
       if ( QFileInfo( root + aFileName ).exists() ) {
 
@@ -531,11 +530,9 @@ void LightApp_Application::createActions()
   QStringList modList;
   modules( modList, false );
 
-  if( modList.count() > 1 )
+  if ( modList.count() > 1 )
   {
-    QtxToolBar* modTBar = new QtxToolBar( true, tr( "INF_TOOLBAR_MODULES" ), desk );
-
-    LightApp_ModuleAction* moduleAction = 
+    LightApp_ModuleAction* moduleAction =
       new LightApp_ModuleAction( tr( "APP_NAME" ), defIcon, desk );
 
     QMap<QString, QString> iconMap;
@@ -547,7 +544,7 @@ void LightApp_Application::createActions()
     {
       if ( !isLibExists( *it ) )
         continue;
-    
+
       QString iconName;
       if ( iconMap.contains( *it ) )
         iconName = iconMap[*it];
@@ -564,13 +561,12 @@ void LightApp_Application::createActions()
       }
 
       icon = Qtx::scaleIcon( icon, iconSize );
-      
+
       moduleAction->insertModule( *it, icon );
     }
 
     connect( moduleAction, SIGNAL( moduleActivated( const QString& ) ), this, SLOT( onModuleActivation( const QString& ) ) );
     registerAction( ModulesListId, moduleAction );
-    modTBar->addAction( moduleAction );
   }
 
   // New window
@@ -595,7 +591,6 @@ void LightApp_Application::createActions()
   createActionForViewer( NewQxGraphViewId, newWinMenu, QString::number( 4 ), Qt::ALT+Qt::Key_C );
 #endif
 
-
   createAction( RenameId, tr( "TOT_RENAME" ), QIcon(), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ),
 		Qt::SHIFT+Qt::Key_R, desk, false, this, SLOT( onRenameWindow() ) );
   createMenu( RenameId, windowMenu, -1 );
@@ -607,6 +602,9 @@ void LightApp_Application::createActions()
   createMenu( separator(), fileMenu, -1, 100, -1 );
   createMenu( MRUId, fileMenu, 100, -1 );
   createMenu( separator(), fileMenu, -1, 100, -1 );
+
+  int modTBar = createTool( tr( "INF_TOOLBAR_MODULES" ) );
+  createTool( ModulesListId, modTBar );
 }
 
 /*!On module activation action.*/
@@ -635,8 +633,8 @@ void LightApp_Application::onModuleActivation( const QString& modName )
     else {
       // cancelled
       putInfo( tr("INF_CANCELLED") );
-      
-      LightApp_ModuleAction* moduleAction = 
+
+      LightApp_ModuleAction* moduleAction =
 	qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
       if ( moduleAction )
 	moduleAction->setActiveModule( QString() );
@@ -707,7 +705,7 @@ void LightApp_Application::onNewDoc()
 {
   SUIT_Study* study = activeStudy();
 
-  saveWindowsGeometry();
+  saveDockWindowsState();
 
   CAM_Application::onNewDoc();
 
@@ -724,7 +722,7 @@ void LightApp_Application::onNewDoc()
 void LightApp_Application::onOpenDoc()
 {
   SUIT_Study* study = activeStudy();
-  saveWindowsGeometry();
+  saveDockWindowsState();
 
   CAM_Application::onOpenDoc();
 
@@ -835,8 +833,6 @@ void LightApp_Application::onSelection()
 void LightApp_Application::setActiveStudy( SUIT_Study* study )
 {
   CAM_Application::setActiveStudy( study );
-
-  activateWindows();
 }
 
 /*!
@@ -885,15 +881,15 @@ void LightApp_Application::updateCommandsStatus()
 class RunBrowser: public QThread
 {
 public:
-  RunBrowser( LightApp_Application* app, 
-	      const QString&        theApp, 
-	      const QString&        theParams, 
-	      const QString&        theHelpFile, 
+  RunBrowser( LightApp_Application* app,
+	      const QString&        theApp,
+	      const QString&        theParams,
+	      const QString&        theHelpFile,
 	      const QString&        theContext = QString() )
-    : myApp( theApp ), 
-      myParams( theParams ), 
+    : myApp( theApp ),
+      myParams( theParams ),
 #ifdef WIN32
-      myHelpFile( "file://" + theHelpFile ), 
+      myHelpFile( "file://" + theHelpFile ),
 #else
       myHelpFile( "file:" + theHelpFile ),
 #endif
@@ -912,7 +908,7 @@ public:
 
       QProcess* proc = new QProcess();
       //myStatus = system(aCommand);
-      
+
       //if(myStatus != 0)
       proc->start( aCommand );
       if ( proc->waitForStarted() ) {
@@ -945,10 +941,10 @@ void LightApp_Application::onHelpContentsModule()
   QString aFileNameKernel = "index.html";
 
   QString dir = getenv( (aComponentName + "_ROOT_DIR").toLatin1().constData() );
-  QString homeDir = !aComponentName.compare(QString("KERNEL")) ? 
-    Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") + Qtx::addSlash("salome") ) : 
+  QString homeDir = !aComponentName.compare(QString("KERNEL")) ?
+    Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") + Qtx::addSlash("salome") ) :
     Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") + Qtx::addSlash("salome") + Qtx::addSlash("gui") +  Qtx::addSlash(aComponentName) );
-  
+
   QString helpFile = QFileInfo( homeDir + (!aComponentName.compare(QString("KERNEL")) ? aFileNameKernel : aFileName) ).absoluteFilePath();
   SUIT_ResourceMgr* resMgr = resourceMgr();
 	QString platform;
@@ -959,9 +955,9 @@ void LightApp_Application::onHelpContentsModule()
 #endif
 	QString anApp = resMgr->stringValue("ExternalBrowser", platform);
 #ifdef WIN32
-	QString quote("\""); 
-	anApp.prepend( quote ); 
-	anApp.append( quote ); 
+	QString quote("\"");
+	anApp.prepend( quote );
+	anApp.append( quote );
 #endif
   QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 
@@ -981,18 +977,18 @@ void LightApp_Application::onHelpContentsModule()
 /*!
   SLOT: Displays help contents for choosen dialog
 */
-void LightApp_Application::onHelpContextModule( const QString& theComponentName, 
-						const QString& theFileName, 
+void LightApp_Application::onHelpContextModule( const QString& theComponentName,
+						const QString& theFileName,
 						const QString& theContext )
 {
   QString homeDir = "";
   if ( !theComponentName.isEmpty() ) {
     QString dir = getenv( ( theComponentName + "_ROOT_DIR" ).toLatin1().constData() );
     if ( !dir.isEmpty() )
-      homeDir = Qtx::addSlash( Qtx::addSlash( dir )      + 
-			       Qtx::addSlash( "share" )  + 
-			       Qtx::addSlash( "doc" )    + 
-			       Qtx::addSlash( "salome" ) + 
+      homeDir = Qtx::addSlash( Qtx::addSlash( dir )      +
+			       Qtx::addSlash( "share" )  +
+			       Qtx::addSlash( "doc" )    +
+			       Qtx::addSlash( "salome" ) +
 			       Qtx::addSlash( "gui" )    +
 			       Qtx::addSlash( theComponentName ) );
   }
@@ -1007,9 +1003,9 @@ void LightApp_Application::onHelpContextModule( const QString& theComponentName,
 #endif
 	QString anApp = resMgr->stringValue("ExternalBrowser", platform);
 #ifdef WIN32
-	QString quote("\""); 
-	anApp.prepend( quote ); 
-	anApp.append( quote ); 
+	QString quote("\"");
+	anApp.prepend( quote );
+	anApp.append( quote );
 #endif
   QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 
@@ -1034,36 +1030,13 @@ void LightApp_Application::onSelectionChanged()
 }
 
 /*!
-  \return window by key
-  \param flag - key for window
-  \param studyId - study id
-  Flag used how identificator of window in windows list.
-*/
-QWidget* LightApp_Application::window( const int flag, const int studyId ) const
-{
-  QWidget* wid = 0;
-
-  int sId = studyId;
-  if ( sId < 0 ) {
-    if ( !activeStudy() )
-      return 0;
-    else
-      sId = activeStudy()->id();
-  }
-  
-  if ( myWindows.contains( flag ) )
-    wid = myWindows[flag]->widget( sId );
-
-  return wid;
-}
-
-/*!
   Adds window to application.
   \param wid - QWidget
   \param flag - key for window
   \param studyId - study id
   Flag used how identificator of window in windows list.
 */
+/*
 void LightApp_Application::addWindow( QWidget* wid, const int flag, const int studyId )
 {
   if ( !wid )
@@ -1085,7 +1058,7 @@ void LightApp_Application::addWindow( QWidget* wid, const int flag, const int st
 
     LightApp_WidgetContainer* newWC = new LightApp_WidgetContainer( flag, desktop() );
     connect( newWC, SIGNAL(  destroyed ( QObject* ) ), this, SLOT( onWCDestroyed( QObject* ) ) );
-    // asv: connecting a slot for storing visibility flag of a window 
+    // asv: connecting a slot for storing visibility flag of a window
     connect( newWC, SIGNAL( visibilityChanged ( bool ) ), SLOT( onVisibilityChanged( bool ) ) );
     myWindows.insert( flag, newWC );
     if ( winMap.contains( flag ) ) {
@@ -1122,33 +1095,73 @@ void LightApp_Application::addWindow( QWidget* wid, const int flag, const int st
 
   setWindowShown( flag, !myWindows[flag]->isEmpty() );
 }
-
-/*!
-  Removes window from application.
-  \param flag - key for window
-  \param studyId - study id
-  Flag used how identificator of window in windows list.
 */
-void LightApp_Application::removeWindow( const int flag, const int studyId )
+
+QWidget* LightApp_Application::dockWindow( const int id ) const
 {
-  if ( !myWindows.contains( flag ) )
+  QWidget* wid = 0;
+  if ( myWin.contains( id ) )
+    wid = myWin[id];
+  return wid;
+}
+
+QDockWidget* LightApp_Application::windowDock( QWidget* wid ) const
+{
+  if ( !wid )
+    return 0;
+
+  QDockWidget* dock = 0;
+  QWidget* w = wid->parentWidget();
+  while ( w && !dock )
+  {
+    dock = ::qobject_cast<QDockWidget*>( w );
+    w = w->parentWidget();
+  }
+  return dock;
+}
+
+void LightApp_Application::insertDockWindow( const int id, QWidget* wid )
+{
+  if ( !wid )
     return;
 
-  int sId = studyId;
-  if ( sId < 0 )
-  {
-    if ( !activeStudy() )
-      return;
-    else
-      sId = activeStudy()->id();
-  }
+  if ( wid != dockWindow( id ) )
+    removeDockWindow( id );
 
-  bool anIsEmpty = !myWindows[flag]->isEmpty();
-  QWidget* wid = myWindows[flag]->widget( sId );
-  myWindows[flag]->remove( sId );
+  myWin.insert( id, wid );
 
-  //setWindowShown( flag, !myWindows[flag]->isEmpty() );
-  setWindowShown( flag, anIsEmpty );
+  QtxDockWidget* dock = new QtxDockWidget( true, desktop() );
+  connect( dock, SIGNAL(  destroyed( QObject* ) ), this, SLOT( onWCDestroyed( QObject* ) ) );
+
+  dock->setFeatures( QDockWidget::AllDockWidgetFeatures );
+  dock->setObjectName( QString( "window_%1" ).arg( id ) );
+  dock->setWidget( wid );
+  dock->show();
+}
+
+void LightApp_Application::removeDockWindow( const int id )
+{
+  QWidget* wid = dockWindow( id );
+  if ( !wid )
+    return;
+
+  myWin.remove( id );
+
+  QDockWidget* dock = windowDock( wid );
+  if ( !dock )
+    return;
+
+  dock->setWidget( 0 );
+  wid->setParent( 0 );
+  wid->setVisible( false );
+  delete dock;
+}
+
+void LightApp_Application::placeDockWindow( const int id, Qt::DockWidgetArea place )
+{
+  QDockWidget* dock = windowDock( dockWindow( id ) );
+  if ( dock && desktop() )
+    desktop()->addDockWidget( place, dock );
 }
 
 /*!
@@ -1157,50 +1170,18 @@ void LightApp_Application::removeWindow( const int flag, const int studyId )
   \param studyId - study id
   Flag used how identificator of window in windows list.
 */
-QWidget* LightApp_Application::getWindow( const int flag, const int studyId )
+QWidget* LightApp_Application::getWindow( const int flag, const int )
 {
-  QWidget* wid = window( flag, studyId );
+  QWidget* wid = dockWindow( flag );
   if ( !wid )
-    addWindow( wid = createWindow( flag ), flag, studyId );
+    insertDockWindow( flag, wid = createWindow( flag ) );
+
+  QMap<int, int> winMap;
+  currentWindows( winMap );
+  if ( winMap.contains( flag ) )
+    placeDockWindow( flag, (Qt::DockWidgetArea)winMap[flag] );
 
   return wid;
-}
-
-/*!
-  \return is window visible
-  \param type - flag of window
-*/
-bool LightApp_Application::isWindowVisible( const int type ) const
-{
-  bool res = false;
-  if ( myWindows.contains( type ) )
-  {
-    //SUIT_Desktop* desk = ((LightApp_Application*)this)->desktop();
-    //res = desk && desk->appropriate( myWindows[type] );
-    res = myWindows[type]->isVisible();
-  }
-  return res;
-}
-
-/*!
-  Sets window show or hide.
-  \param type - window identificator.
-  \param on   - true/false (window show/hide)
-*/
-void LightApp_Application::setWindowShown( const int type, const bool on )
-{
-  if ( !desktop() || !myWindows.contains( type ) )
-    return;
-
-  QDockWidget* dw = myWindows[type];
-  //desktop()->setAppropriate( dw, on );
-  if( on )
-    dw->show();
-  else if( dw->isVisible() )
-  {
-    dw->hide();
-    myWindowsVisible[ type ] = true;
-  }
 }
 
 /*!
@@ -1208,7 +1189,7 @@ void LightApp_Application::setWindowShown( const int type, const bool on )
 */
 LightApp_Browser* LightApp_Application::objectBrowser()
 {
-  return qobject_cast<LightApp_Browser*>( window( WT_ObjectBrowser ) );
+  return qobject_cast<LightApp_Browser*>( dockWindow( WT_ObjectBrowser ) );
 }
 
 /*!
@@ -1216,7 +1197,7 @@ LightApp_Browser* LightApp_Application::objectBrowser()
 */
 LogWindow* LightApp_Application::logWindow()
 {
-  return qobject_cast<LogWindow*>( window( WT_LogWindow ) );
+  return qobject_cast<LogWindow*>( dockWindow( WT_LogWindow ) );
 }
 
 #ifndef DISABLE_PYCONSOLE
@@ -1225,7 +1206,7 @@ LogWindow* LightApp_Application::logWindow()
 */
 PyConsole_Console* LightApp_Application::pythonConsole()
 {
-  return qobject_cast<PyConsole_Console*>( window( WT_PyConsole ) );
+  return qobject_cast<PyConsole_Console*>( dockWindow( WT_PyConsole ) );
 }
 #endif
 
@@ -1236,7 +1217,7 @@ PyConsole_Console* LightApp_Application::pythonConsole()
 void LightApp_Application::updateObjectBrowser( const bool updateModels )
 {
   // update existing data models
-  if ( updateModels ) 
+  if ( updateModels )
   {
     const bool isAutoUpdate = objectBrowser() ? objectBrowser()->autoUpdate() : true;
     if ( objectBrowser() )
@@ -1324,7 +1305,7 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
 #else
     vm = new Plot2d_Viewer();
 #endif
-    viewMgr->setViewModel( vm  );// custom view model, which extends SALOME_View interface 
+    viewMgr->setViewModel( vm  );// custom view model, which extends SALOME_View interface
     Plot2d_ViewWindow* wnd = dynamic_cast<Plot2d_ViewWindow*>( viewMgr->getActiveView() );
     if( wnd )
     {
@@ -1427,6 +1408,8 @@ void LightApp_Application::onStudyCreated( SUIT_Study* theStudy )
 
   getWindow( WT_ObjectBrowser );
 
+  loadDockWindowsState();
+
   if ( objectBrowser() )
     objectBrowser()->setRoot( aRoot );
 
@@ -1434,8 +1417,6 @@ void LightApp_Application::onStudyCreated( SUIT_Study* theStudy )
 
   if ( objectBrowser() )
     objectBrowser()->openLevels();
-
-  activateWindows();
 }
 
 /*!
@@ -1453,6 +1434,8 @@ void LightApp_Application::onStudyOpened( SUIT_Study* theStudy )
 
   getWindow( WT_ObjectBrowser );
 
+  loadDockWindowsState();
+
   if ( objectBrowser() )
     objectBrowser()->setRoot( aRoot );
 
@@ -1460,8 +1443,6 @@ void LightApp_Application::onStudyOpened( SUIT_Study* theStudy )
 
   if ( objectBrowser() )
     objectBrowser()->openLevels();
-
-  activateWindows();
 
   emit studyOpened();
 }
@@ -1482,9 +1463,6 @@ void LightApp_Application::onStudyClosed( SUIT_Study* s )
   emit studyClosed();
 
   activateModule( "" );
-
-  for ( WindowMap::ConstIterator itr = myWindows.begin(); s && itr != myWindows.end(); ++itr )
-    removeWindow( itr.key(), s->id() );
 }
 
 /*!Protected SLOT.On desktop activated.*/
@@ -1509,7 +1487,7 @@ QString LightApp_Application::getFileFilter() const
 /*!
   Shows file dialog and return user selected file name
 */
-QString LightApp_Application::getFileName( bool open, const QString& initial, const QString& filters, 
+QString LightApp_Application::getFileName( bool open, const QString& initial, const QString& filters,
                                            const QString& caption, QWidget* parent )
 {
   if ( !parent )
@@ -1527,7 +1505,7 @@ QString LightApp_Application::getDirectory( const QString& initial, const QStrin
 }
 
 /*! Get open file names*/
-QStringList LightApp_Application::getOpenFileNames( const QString& initial, const QString& filters, 
+QStringList LightApp_Application::getOpenFileNames( const QString& initial, const QString& filters,
                                                     const QString& caption, QWidget* parent )
 {
   if ( !parent )
@@ -1671,7 +1649,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
   Adds to map \a aMap.
  */
 void LightApp_Application::defaultWindows( QMap<int, int>& aMap ) const
-{  
+{
   aMap.insert( WT_ObjectBrowser, Qt::LeftDockWidgetArea );
 #ifndef DISABLE_PYCONSOLE
   aMap.insert( WT_PyConsole, Qt::BottomDockWidgetArea );
@@ -1717,7 +1695,7 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
 
     QStringList modNameList;
     app->modules( modNameList, false );
-    for ( QStringList::const_iterator it = modNameList.begin(); 
+    for ( QStringList::const_iterator it = modNameList.begin();
 	  it != modNameList.end(); ++it )
       _prefs_->addPreference( *it );
 
@@ -1764,10 +1742,10 @@ void LightApp_Application::moduleAdded( CAM_Module* mod )
 
   if ( myPrefs && lightMod && !myPrefs->hasModule( lightMod->moduleName() ))
   {
-    int modCat = myPrefs->addPreference( mod->moduleName() );
+    myPrefs->addPreference( mod->moduleName() );
     lightMod->createPreferences();
     QtxPreferenceItem* item = myPrefs->findItem( mod->moduleName(), true );
-    if ( item && item->isEmpty() ) 
+    if ( item && item->isEmpty() )
       delete item;
   }
 }
@@ -1881,7 +1859,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   anIndexesList.append(0);
   anIndexesList.append(1);
   anIndexesList.append(2);
-  
+
   pref->setItemProperty( "strings", aCurveTypesList, curveType );
   pref->setItemProperty( "indexes", anIndexesList, curveType );
 
@@ -1890,11 +1868,11 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   pref->setItemProperty( "min", 0, markerSize );
   pref->setItemProperty( "max", 100, markerSize );
-  
+
   QStringList aScaleModesList;
   aScaleModesList.append( tr("PREF_LINEAR") );
   aScaleModesList.append( tr("PREF_LOGARITHMIC") );
-  
+
   anIndexesList.clear();
   anIndexesList.append(0);
   anIndexesList.append(1);
@@ -2094,7 +2072,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
   }
 
   if( sec=="Study" )
-  { 
+  {
     if( param=="store_positions" )
       updateWindows();
   }
@@ -2123,18 +2101,58 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 }
 
 /*!
+  Loads preferences
+*/
+void LightApp_Application::loadPreferences()
+{
+  CAM_Application::loadPreferences();
+
+  SUIT_ResourceMgr* aResMgr = resourceMgr();
+
+  if ( !aResMgr )
+    return;
+
+  myWinGeom.clear();
+  QStringList mods = aResMgr->parameters( "windows_geometry" );
+  for ( QStringList::const_iterator it = mods.begin(); it != mods.end(); ++it )
+  {
+    QByteArray arr;
+    if ( aResMgr->value( "windows_geometry", *it, arr ) )
+      myWinGeom.insert( *it, arr );
+  }
+
+  myWinVis.clear();
+  mods = aResMgr->parameters( "windows_visibility" );
+  for ( QStringList::const_iterator itr = mods.begin(); itr != mods.end(); ++itr )
+  {
+    QByteArray arr;
+    if ( aResMgr->value( "windows_visibility", *itr, arr ) )
+      myWinVis.insert( *itr, arr );
+  }
+}
+
+/*!
   Saves preferences
 */
 void LightApp_Application::savePreferences()
 {
-  saveWindowsGeometry();
-  
-  if ( resourceMgr() )
-    {
-      if ( desktop() )
-	resourceMgr()->setValue( "desktop", "geometry", desktop()->storeGeometry() );
-      resourceMgr()->save();
-    }
+  CAM_Application::savePreferences();
+
+  saveDockWindowsState();
+
+  if ( !resourceMgr() )
+    return;
+
+  for ( WinGeom::const_iterator it = myWinGeom.begin(); it != myWinGeom.end(); ++it )
+    resourceMgr()->setValue( "windows_geometry", it.key(), it.value() );
+
+  for ( WinVis::const_iterator itr = myWinVis.begin(); itr != myWinVis.end(); ++itr )
+    resourceMgr()->setValue( "windows_visibility", itr.key(), itr.value() );
+
+  if ( desktop() )
+    resourceMgr()->setValue( "desktop", "geometry", desktop()->storeGeometry() );
+
+  resourceMgr()->save();
 }
 
 /*!
@@ -2155,12 +2173,12 @@ void LightApp_Application::updateDesktopTitle() {
 }
 
 /*!
-  \brief Get map of the operations which can be performed 
+  \brief Get map of the operations which can be performed
   on the module activation.
- 
+
   The method should return the map of the kind \c {<id>:<name>}
   where \c <id> is an integer identifier of the operation and
-  \c <name> is a title for the button to be added to the 
+  \c <name> is a title for the button to be added to the
   dialog box. After user selects the required operation by the
   clicking the corresponding button in the dialog box, its identifier
   is passed to the moduleActionSelected() method to process
@@ -2182,7 +2200,7 @@ QMap<int, QString> LightApp_Application::activateModuleActions() const
   from "Activate module" dialog box.
 
   Performs the required operation according to the user choice.
-  
+
   \param id operation identifier
   \sa activateModuleActions()
 */
@@ -2218,8 +2236,8 @@ void LightApp_Application::updateModuleActions()
   QString modName;
   if ( activeModule() )
     modName = activeModule()->moduleName();
-  
-  LightApp_ModuleAction* moduleAction = 
+
+  LightApp_ModuleAction* moduleAction =
     qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
   if ( moduleAction )
     moduleAction->setActiveModule( modName );
@@ -2265,35 +2283,22 @@ void LightApp_Application::updateWindows()
   QMap<int, int> winMap;
   currentWindows( winMap );
 
-  if ( activeStudy() ) {
-    for ( QMap<int, int>::ConstIterator it = winMap.begin(); it != winMap.end(); ++it ) {
-      getWindow( it.key() ); 
-      
-      if ( !myWindows.contains( it.key() ) )
-	continue;
-      Qt::DockWidgetArea dock = desktop()->dockWidgetArea( myWindows[it.key()] );
-      if ( dock != Qt::NoDockWidgetArea
-	   &&
-	   dock != (Qt::DockWidgetArea)it.value() ) {
-	//desktop()->removeDockWidget( myWindows[it.key()] );
-	desktop()->addDockWidget( (Qt::DockWidgetArea)it.value(), myWindows[it.key()] );
-      }
+  if ( activeStudy() )
+  {
+    for ( QMap<int, int>::ConstIterator it = winMap.begin(); it != winMap.end(); ++it )
+    {
+      if ( !dockWindow( it.key() ) )
+	getWindow( it.key() );
     }
-
-    loadWindowsGeometry();
   }
 
-  // setWindowShown should be done even if no study is active (open). in this case all open windows
-  // will be hidden, which is neccessary in this case.
-  for ( WindowMap::ConstIterator itr = myWindows.begin(); itr != myWindows.end(); ++itr ) {
-    
-    if ( myWindowsVisible.contains( itr.key() ) && 
-	 !myWindowsVisible[ itr.key() ] )
-      continue;
-
-    if ( itr.value() ) 
-      setWindowShown( itr.key(), !itr.value()->isEmpty() && winMap.contains( itr.key() ) );
+  for ( WinMap::ConstIterator it = myWin.begin(); it != myWin.end(); ++it )
+  {
+    QWidget* wid = it.value();
+    wid->setVisible( activeStudy() && winMap.contains( it.key() ) );
   }
+
+  loadDockWindowsState();
 }
 
 /*!
@@ -2311,7 +2316,7 @@ void LightApp_Application::updateViewManagers()
 /*!
   Loads windows geometry
 */
-void LightApp_Application::loadWindowsGeometry()
+void LightApp_Application::loadDockWindowsState()
 {
   bool store = resourceMgr()->booleanValue( "Study", "store_positions", true );
   if( !store )
@@ -2321,13 +2326,36 @@ void LightApp_Application::loadWindowsGeometry()
   if ( activeModule() )
     modName = activeModule()->name();
 
-  desktop()->restoreState( resourceMgr()->stringValue( "windows_geometry", modName ).toLatin1() );
+  if ( myWinGeom.contains( modName ) )
+    desktop()->restoreState( myWinGeom[modName] );
+
+  if ( !myWinVis.contains( modName ) )
+    return;
+
+  QMap<QString, bool> tbMap, dwMap;
+  dockWindowsState( myWinVis[modName], tbMap, dwMap );
+
+  QList<QToolBar*> tbList = qFindChildren<QToolBar*>( desktop() );
+  for ( QList<QToolBar*>::iterator tit = tbList.begin(); tit != tbList.end(); ++tit )
+  {
+    QToolBar* tb = *tit;
+    if ( tbMap.contains( tb->objectName() ) )
+      tb->setVisible( tbMap[tb->objectName()] );
+  }
+
+  QList<QDockWidget*> dwList = qFindChildren<QDockWidget*>( desktop() );
+  for ( QList<QDockWidget*>::iterator dit = dwList.begin(); dit != dwList.end(); ++dit )
+  {
+    QDockWidget* dw = *dit;
+    if ( dwMap.contains( dw->objectName() ) )
+      dw->setVisible( dwMap[dw->objectName()] );
+  }
 }
 
 /*!
   Saves windows geometry
 */
-void LightApp_Application::saveWindowsGeometry()
+void LightApp_Application::saveDockWindowsState()
 {
   bool store = resourceMgr()->booleanValue( "Study", "store_positions", true );
   if( !store )
@@ -2337,18 +2365,94 @@ void LightApp_Application::saveWindowsGeometry()
   if ( activeModule() )
     modName = activeModule()->name();
 
-  resourceMgr()->setValue( "windows_geometry", modName, desktop()->saveState() );
+  myWinGeom.insert( modName, desktop()->saveState() );
+
+  QByteArray visArr;
+  if ( myWinVis.contains( modName ) )
+    visArr = myWinVis[modName];
+
+  QMap<QString, bool> tbMap, dwMap;
+  dockWindowsState( visArr, tbMap, dwMap );
+
+  QList<QToolBar*> tbList = qFindChildren<QToolBar*>( desktop() );
+  for ( QList<QToolBar*>::iterator it = tbList.begin(); it != tbList.end(); ++it )
+  {
+    QToolBar* tb = *it;
+    tbMap.insert( tb->objectName(), tb->toggleViewAction()->isChecked() );
+  }
+
+  QList<QDockWidget*> dwList = qFindChildren<QDockWidget*>( desktop() );
+  for ( QList<QDockWidget*>::iterator it = dwList.begin(); it != dwList.end(); ++it )
+  {
+    QDockWidget* wid = *it;
+    dwMap.insert( wid->objectName(), wid->toggleViewAction()->isChecked() );
+  }
+
+  visArr = dockWindowsState( tbMap, dwMap );
+
+  myWinVis.insert( modName, visArr );
 }
 
-/*!
-  Activates windows
-*/
-void LightApp_Application::activateWindows()
+QByteArray LightApp_Application::dockWindowsState( const QMap<QString, bool>& tb, const QMap<QString, bool>& dw ) const
 {
-  if ( activeStudy() )
+  QByteArray visArr;
+  QDataStream stream( &visArr, QIODevice::WriteOnly );
+
+  stream << (uchar)ToolBarMarker;
+  stream << tb.size();
+  for ( QMap<QString, bool>::const_iterator tit = tb.begin(); tit != tb.end(); ++tit )
   {
-    for ( WindowMap::Iterator itr = myWindows.begin(); itr != myWindows.end(); ++itr )
-      itr.value()->activate( activeStudy()->id() );
+    stream << tit.key();
+    stream << (uchar)( tit.value() ? 1 : 0 );
+  }
+
+  stream << (uchar)DockWidgetMarker;
+  stream << dw.size();
+  for ( QMap<QString, bool>::const_iterator wit = dw.begin(); wit != dw.end(); ++wit )
+  {
+    stream << wit.key();
+    stream << (uchar)( wit.value() ? 1 : 0 );
+  }
+
+  return visArr;
+}
+
+void LightApp_Application::dockWindowsState( const QByteArray& arr, QMap<QString, bool>& tb, QMap<QString, bool>& dw ) const
+{
+  tb.clear();
+  dw.clear();
+
+  QByteArray visArr = arr;
+  QDataStream stream( &visArr, QIODevice::ReadOnly );
+
+  uchar marker;
+  stream >> marker;
+  if ( marker != ToolBarMarker )
+    return;
+
+  int lines;
+  stream >> lines;
+  for ( int i = 0; i < lines; ++i )
+  {
+    QString objectName;
+    stream >> objectName;
+    uchar shown;
+    stream >> shown;
+    tb.insert( objectName, shown );
+  }
+
+  stream >> marker;
+  if ( marker != DockWidgetMarker )
+    return;
+
+  stream >> lines;
+  for ( int j = 0; j < lines; ++j )
+  {
+    QString objectName;
+    stream >> objectName;
+    uchar shown;
+    stream >> shown;
+    dw.insert( objectName, shown );
   }
 }
 
@@ -2437,13 +2541,13 @@ SUIT_Accel* LightApp_Application::accel() const
 void LightApp_Application::onWCDestroyed( QObject* ob )
 {
   // remove destroyed widget container from windows map
-  for ( WindowMap::ConstIterator itr = myWindows.begin(); itr != myWindows.end(); ++itr )
+  for ( WinMap::ConstIterator itr = myWin.begin(); itr != myWin.end(); ++itr )
   {
     if ( itr.value() != ob )
       continue;
 
     int key = itr.key();
-    myWindows.remove( key );
+    myWin.remove( key );
     break;
   }
 }
@@ -2497,7 +2601,7 @@ bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
     return false;
 
   QString lib = moduleLibrary( moduleTitle );
-  
+
   //abd: changed libSalomePyQtGUI to SalomePyQtGUI for WIN32
   bool isPythonModule = lib.contains("SalomePyQtGUI");
 
@@ -2513,14 +2617,14 @@ bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
   for( ; anIt!=aLast; anIt++ )
   {
     QFileInfo inf( Qtx::addSlash( *anIt ) + lib );
-    
+
     if( inf.exists() )
       {
 	isLibFound = true;
 	break;
       }
   }
-  
+
   if ( !isLibFound )
     {
       printf( "****************************************************************\n" );
@@ -2548,17 +2652,17 @@ bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
 	{
 	  QFileInfo inf( Qtx::addSlash( *anIt ) + pylib );
 	  QFileInfo infgui( Qtx::addSlash( *anIt ) + pylibgui );
-    
+
 	  if( !isPyLib && inf.exists() )
 	    isPyLib = true;
-	  
+
 	  if( !isPyGuiLib && infgui.exists() )
 	    isPyGuiLib = true;
-	  
+
 	  if ( isPyLib && isPyGuiLib && isLibFound)
 	    return true;
 	}
-      
+
       printf( "****************************************************************\n" );
       printf( "*    Warning: python library for %s cannot be found:\n", moduleTitle.toLatin1().constData() );
       if (!isPyLib)
@@ -2588,19 +2692,6 @@ void LightApp_Application::setDefaultStudyName( const QString& theName )
   }
 }
 
-/*! slot, called on show/hide of a dock window */
-void LightApp_Application::onVisibilityChanged( bool visible )
-{
-  const QObject* win = sender();
- 
-  for ( WindowMap::ConstIterator itr = myWindows.begin(); itr != myWindows.end(); ++itr )
-    if ( itr.value() == win ) 
-    {
-      myWindowsVisible[ itr.key() ] = visible;
-      return;
-    }
-}
-
 /*!
   Custom event handler
 */
@@ -2627,8 +2718,8 @@ bool LightApp_Application::checkDataObject(LightApp_DataObject* theObj)
 {
   if (theObj)
     {
-      bool isSuitable =	!theObj->entry().isEmpty() && 
-	                !theObj->componentDataType().isEmpty() && 
+      bool isSuitable =	!theObj->entry().isEmpty() &&
+	                !theObj->componentDataType().isEmpty() &&
 	                !theObj->name().isEmpty();
       return isSuitable;
     }

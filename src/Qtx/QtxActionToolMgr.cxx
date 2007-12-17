@@ -594,8 +594,8 @@ bool QtxActionToolMgr::isVisible( const int id, const int tid ) const
     return false;
 
   bool vis = false;
-  const NodeList& lst = myToolBars[tid].nodes;
-  for ( NodeList::const_iterator it = lst.begin(); it != lst.end() && !vis; ++it )
+  const ToolBarInfo& inf = myToolBars[tid];
+  for ( NodeList::const_iterator it = inf.nodes.begin(); it != inf.nodes.end() && !vis; ++it )
   {
     const ToolNode& node = *it;
     if ( node.id == id )

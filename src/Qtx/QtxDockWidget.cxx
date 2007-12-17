@@ -43,6 +43,9 @@ public:
 
   virtual bool   eventFilter( QObject*, QEvent* );
 
+  bool           isEmpty() const;
+  bool           isVisible() const;
+
 protected:
   virtual void   customEvent( QEvent* );
 
@@ -56,11 +59,13 @@ private:
   void           updateCaption();
   void           updateVisibility();
 
+  void           setEmpty( const bool );
+  void           setVisible( const bool );
+
 private:
   QtxDockWidget* myCont;
   bool           myState;
   bool           myEmpty;
-  bool           myVisible;
 };
 
 /*!
@@ -73,7 +78,6 @@ QtxDockWidget::Watcher::Watcher( QtxDockWidget* cont )
   myEmpty( false )
 {
   myCont->installEventFilter( this );
-  myVisible = myCont->isVisibleTo( myCont->parentWidget() );
 
   installFilters();
 }
@@ -125,7 +129,7 @@ void QtxDockWidget::Watcher::shown( QtxDockWidget* dw )
   if ( dw != myCont )
     return;
 
-  myVisible = true;
+  setVisible( true );
 }
 
 /*!
@@ -137,7 +141,36 @@ void QtxDockWidget::Watcher::hidden( QtxDockWidget* dw )
   if ( dw != myCont )
     return;
 
-  myVisible = false;
+  setVisible( false );
+}
+
+bool QtxDockWidget::Watcher::isEmpty() const
+{
+  return myEmpty;
+}
+
+bool QtxDockWidget::Watcher::isVisible() const
+{
+  bool vis = false;
+  if ( myCont && myCont->toggleViewAction() )
+    vis = myCont->toggleViewAction()->isChecked();
+  return vis;
+}
+
+void QtxDockWidget::Watcher::setEmpty( const bool on )
+{
+  myEmpty = on;
+}
+
+void QtxDockWidget::Watcher::setVisible( const bool on )
+{
+  if ( !myCont || !myCont->toggleViewAction() )
+    return;
+
+  bool block = myCont->toggleViewAction()->signalsBlocked();
+  myCont->toggleViewAction()->blockSignals( true );
+  myCont->toggleViewAction()->setChecked( on );
+  myCont->toggleViewAction()->blockSignals( block );
 }
 
 /*!
@@ -148,10 +181,14 @@ void QtxDockWidget::Watcher::showContainer()
   if ( !myCont )
     return;
 
+  bool vis = isVisible();
+
   QtxDockWidget* cont = myCont;
   myCont = 0;
   cont->show();
   myCont = cont;
+
+  setVisible( vis );
 }
 
 /*!
@@ -162,10 +199,14 @@ void QtxDockWidget::Watcher::hideContainer()
   if ( !myCont )
     return;
 
+  bool vis = isVisible();
+
   QtxDockWidget* cont = myCont;
   myCont = 0;
   cont->hide();
   myCont = cont;
+
+  setVisible( vis );
 }
 
 /*!
@@ -216,10 +257,12 @@ void QtxDockWidget::Watcher::updateVisibility()
   for ( int i = 0; i < (int)l->count() && !vis; i++ )
     vis = l->itemAt( i ) && l->itemAt( i )->widget() && l->itemAt( i )->widget()->isVisibleTo( myCont );
 
-  if ( myEmpty == vis )
+  bool empty = isEmpty();
+  if ( empty == vis )
   {
-    myEmpty = !vis;
-    if ( !myEmpty )
+    empty = !vis;
+    setEmpty( empty );
+    if ( !empty )
       myCont->toggleViewAction()->setVisible( myState );
     else
     {
@@ -228,7 +271,7 @@ void QtxDockWidget::Watcher::updateVisibility()
     }
   }
 
-  vis = !myEmpty && myVisible;
+  vis = !empty && isVisible();
   if ( vis != myCont->isVisibleTo( myCont->parentWidget() ) )
     vis ? showContainer() : hideContainer();
 }
@@ -357,6 +400,12 @@ QSize QtxDockWidget::minimumSizeHint() const
 */
 void QtxDockWidget::setVisible( bool on )
 {
+  updateGeometry();
+  if ( widget() )
+    widget()->updateGeometry();
+
+  QDockWidget::setVisible( on && ( myWatcher ? !myWatcher->isEmpty() : true )  );
+
   if ( myWatcher )
   {
     if ( on )
@@ -364,12 +413,6 @@ void QtxDockWidget::setVisible( bool on )
     else
       myWatcher->hidden( this );
   }
-
-  updateGeometry();
-  if ( widget() )
-    widget()->updateGeometry();
-
-  QDockWidget::setVisible( on );
 }
 
 /*!

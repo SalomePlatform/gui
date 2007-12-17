@@ -22,6 +22,7 @@
 #include "QtxAction.h"
 
 #include <QEvent>
+#include <QPointer>
 #include <QActionEvent>
 #include <QApplication>
 
@@ -37,12 +38,12 @@ public:
   ActionNotify( bool add, QWidget* wid ) : QEvent( QEvent::User ), myAdd( add ), myWidget( wid ) {};
   ~ActionNotify() {};
 
-  bool     isAdded() const { return myAdd; }
-  QWidget* widget() const { return myWidget; }
+  bool              isAdded() const { return myAdd; }
+  QWidget*          widget() const { return myWidget; }
 
 private:
-  bool     myAdd;
-  QWidget* myWidget;
+  bool              myAdd;
+  QPointer<QWidget> myWidget;
 };
 
 /*!
@@ -195,6 +196,9 @@ void QtxAction::removedFrom( QWidget* /*w*/ )
 void QtxAction::customEvent( QEvent* e )
 {
   ActionNotify* ae = (ActionNotify*)e;
+  if ( !ae->widget() )
+    return;
+
   if ( ae->isAdded() )
     addedTo( ae->widget() );
   else

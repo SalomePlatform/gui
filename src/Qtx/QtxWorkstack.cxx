@@ -1195,10 +1195,10 @@ bool QtxWorkstackChild::eventFilter( QObject* o, QEvent* e )
     if ( e->type() == QEvent::WindowTitleChange || e->type() == QEvent::WindowIconChange )
       emit captionChanged( this );
 
-    if ( !e->spontaneous() && ( e->type() == QEvent::Show || e->type() == QEvent::ShowToParent ) )
+    if ( !e->spontaneous() && e->type() == QEvent::ShowToParent )
       emit shown( this );
 
-    if ( !e->spontaneous() && ( e->type() == QEvent::Hide || e->type() == QEvent::HideToParent ) )
+    if ( !e->spontaneous() && e->type() == QEvent::HideToParent )
       emit hidden( this );
 
     if ( e->type() == QEvent::FocusIn )

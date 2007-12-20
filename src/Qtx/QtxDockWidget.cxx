@@ -66,6 +66,7 @@ private:
   QtxDockWidget* myCont;
   bool           myState;
   bool           myEmpty;
+  bool           myBlock;
 };
 
 /*!
@@ -75,7 +76,8 @@ private:
 QtxDockWidget::Watcher::Watcher( QtxDockWidget* cont )
 : QObject( cont ), myCont( cont ),
   myState( true ),
-  myEmpty( false )
+  myEmpty( false ),
+  myBlock( false )
 {
   myCont->installEventFilter( this );
 
@@ -281,10 +283,12 @@ void QtxDockWidget::Watcher::updateVisibility()
 */
 void QtxDockWidget::Watcher::updateIcon()
 {
-  if ( !myCont || !myCont->widget() )
+  if ( !myCont || !myCont->widget() || myBlock )
     return;
 
+  myBlock = true;
   myCont->setWindowIcon( myCont->widget()->windowIcon() );
+  myBlock = false;
 }
 
 /*!
@@ -317,7 +321,7 @@ QtxDockWidget::QtxDockWidget( const QString& title, QWidget* parent, Qt::WindowF
 
 /*!
   \brief Constructor.
-  \param watch if \c true the event filter is installed to watch wigdet state changes 
+  \param watch if \c true the event filter is installed to watch wigdet state changes
          to update it properly
   \param parent parent widget
   \param f widget flags
@@ -358,15 +362,7 @@ QtxDockWidget::~QtxDockWidget()
 QSize QtxDockWidget::sizeHint() const
 {
   QSize sz = QDockWidget::sizeHint();
-/*
-  if ( place() == InDock && isStretchable() && area() )
-  {
-    if ( orientation() == Horizontal )
-      sz.setWidth( area()->width() );
-    else
-      sz.setHeight( area()->height() );
-  }
-*/
+
   return sz;
 }
 
@@ -377,20 +373,7 @@ QSize QtxDockWidget::sizeHint() const
 QSize QtxDockWidget::minimumSizeHint() const
 {
   QSize sz = QDockWidget::minimumSizeHint();
-/*
-  if ( orientation() == Horizontal )
-	  sz = QSize( 0, QDockWidget::minimumSizeHint().height() );
-  else
-    sz = QSize( QDockWidget::minimumSizeHint().width(), 0 );
 
-  if ( place() == InDock && isStretchable() && area() )
-  {
-    if ( orientation() == Horizontal )
-      sz.setWidth( area()->width() );
-    else
-      sz.setHeight( area()->height() );
-  }
-*/
   return sz;
 }
 

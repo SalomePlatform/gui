@@ -24,7 +24,7 @@
 #  Module : SALOME
 # $Header$
 
-SUBDIRS = Qtx Style DDS QDS SUIT SUITApp STD CAF CAM LogWindow Prs ObjBrowser
+SUBDIRS = Qtx Style DDS QDS ObjBrowser SUIT SUITApp STD CAF CAM LogWindow Prs
 
 if ENABLE_SALOMEOBJECT
   SUBDIRS += OBJECT

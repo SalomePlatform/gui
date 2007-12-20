@@ -30,6 +30,7 @@ salomeinclude_HEADERS=			\
 	SUIT_Accel.h			\
 	SUIT_ActionOperation.h		\
 	SUIT_Application.h		\
+	SUIT_DataBrowser.h		\
 	SUIT_DataObject.h		\
 	SUIT_DataObjectIterator.h	\
 	SUIT_DataObjectKey.h		\
@@ -61,6 +62,7 @@ dist_libsuit_la_SOURCES=		\
 	SUIT_Accel.cxx			\
 	SUIT_ActionOperation.cxx	\
 	SUIT_Application.cxx		\
+	SUIT_DataBrowser.cxx		\
 	SUIT_DataObject.cxx		\
 	SUIT_DataObjectIterator.cxx	\
 	SUIT_DataObjectKey.cxx		\
@@ -90,6 +92,7 @@ MOC_FILES=				\
 	SUIT_Accel_moc.cxx		\
 	SUIT_ActionOperation_moc.cxx	\
 	SUIT_Application_moc.cxx	\
+	SUIT_DataBrowser_moc.cxx	\
 	SUIT_DataObject_moc.cxx		\
 	SUIT_Desktop_moc.cxx		\
 	SUIT_FileDlg_moc.cxx		\
@@ -110,6 +113,6 @@ nodist_libsuit_la_SOURCES=$(MOC_FILES)
 nodist_salomeres_DATA =			\
 	SUIT_msg_en.qm
 
-libsuit_la_CPPFLAGS=$(QT_INCLUDES) -I$(srcdir)/../Qtx
+libsuit_la_CPPFLAGS=$(QT_INCLUDES) -I$(srcdir)/../Qtx -I$(srcdir)/../ObjBrowser
 libsuit_la_LDFLAGS=$(QT_MT_LIBS)
-libsuit_la_LIBADD=../Qtx/libqtx.la
+libsuit_la_LIBADD=../Qtx/libqtx.la ../ObjBrowser/libObjBrowser.la

@@ -173,15 +173,6 @@ OB_Browser::~OB_Browser()
 }
 
 /*!
-  \brief Get popup menu client type.
-  \return popup client type
-*/
-QString OB_Browser::popupClientType() const
-{
-  return "ObjectBrowser";
-}
-
-/*!
   \brief Get data model.
   \return data model
   \sa setModel()
@@ -771,7 +762,15 @@ QtxTreeView* OB_Browser::treeView() const
 */
 void OB_Browser::contextMenuEvent( QContextMenuEvent* e )
 {
-  contextMenuRequest( e );
+  QMenu* popup = new QMenu();
+  
+  createPopupMenu( popup );
+
+  Qtx::simplifySeparators( popup );
+
+  if ( !popup->actions().isEmpty() )
+    popup->exec( e->globalPos() );
+  delete popup;
 }
 
 /*!
@@ -928,7 +927,7 @@ void OB_Browser::updateText( QListViewItem* item )
   \brief Add custom actions to the popup menu.
   \param menu popup menu
 */
-void OB_Browser::contextMenuPopup( QMenu* menu )
+void OB_Browser::createPopupMenu( QMenu* menu )
 {
   menu->addSeparator();
 

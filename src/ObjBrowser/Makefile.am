@@ -53,7 +53,7 @@ nodist_libObjBrowser_la_SOURCES= $(MOC_FILES)
 
 nodist_salomeres_DATA = OB_msg_en.qm
 
-libObjBrowser_la_CPPFLAGS=$(QT_INCLUDES) -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
+libObjBrowser_la_CPPFLAGS=$(QT_INCLUDES) -I$(srcdir)/../Qtx
 
 libObjBrowser_la_LDFLAGS=$(QT_MT_LIBS)
-libObjBrowser_la_LIBADD= ../Qtx/libqtx.la ../SUIT/libsuit.la
+libObjBrowser_la_LIBADD= ../Qtx/libqtx.la

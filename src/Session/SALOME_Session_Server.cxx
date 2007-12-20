@@ -39,6 +39,8 @@
 #include <iostream>
 #ifndef WNT
 #include <unistd.h>
+#include <iostream.h>
+#include <string.h>
 #endif
 
 #include <qdir.h>
@@ -372,6 +374,28 @@ void shutdownServers( SALOME_NamingService* theNS )
     Registry::Components_var registry = Registry::Components::_narrow(objR);
     if ( !CORBA::is_nil(registry) && ( session->getPID() != registry->getPID() ) )
       registry->end();
+    
+    // 9) Kill OmniNames
+    QString fileName( ::getenv ("OMNIORB_CONFIG") );
+    QString portNumber;
+    if ( !fileName.isEmpty() ) {
+      QFile aFile( fileName );
+      if ( aFile.open(IO_ReadOnly) ) {
+	QRegExp re("InitRef = .*:([0-9]+)$");
+	QTextStream stream ( &aFile );
+	while ( !stream.atEnd() ) {
+	  QString textLine = stream.readLine();
+	  if ( re.search( textLine ) > -1 )
+	    portNumber = re.cap(1);
+	}
+	aFile.close();
+      }
+    }
+    if ( !portNumber.isEmpty() ) {
+      QString cmd = QString( "ps -eo pid,command | grep -v grep | grep -E \"omniNames.*%1\" | awk '{cmd=sprintf(\"kill -9 %s\",$1); system(cmd)}'" ).arg( portNumber );
+      system ( cmd.latin1() );
+    } 
+
   }
 }
 

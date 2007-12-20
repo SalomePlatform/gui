@@ -29,7 +29,6 @@ salomeinclude_HEADERS= \
 	LightApp.h \
 	LightApp_AboutDlg.h \
 	LightApp_Application.h \
-	LightApp_Browser.h \
 	LightApp_DataModel.h \
 	LightApp_DataObject.h \
 	LightApp_DataOwner.h \
@@ -52,8 +51,7 @@ salomeinclude_HEADERS= \
 	LightApp_SwitchOp.h \
 	LightApp_Preferences.h \
 	LightApp_PreferencesDlg.h \
-	LightApp_UpdateFlags.h \
-	LightApp_WidgetContainer.h
+	LightApp_UpdateFlags.h
 
 #	LightApp_OBFilter.h
 
@@ -72,7 +70,6 @@ endif
 dist_libLightApp_la_SOURCES= \
 	LightApp_AboutDlg.cxx \
 	LightApp_Application.cxx \
-	LightApp_Browser.cxx \
 	LightApp_DataModel.cxx \
 	LightApp_DataObject.cxx \
 	LightApp_DataOwner.cxx \
@@ -94,8 +91,7 @@ dist_libLightApp_la_SOURCES= \
 	LightApp_Study.cxx \
 	LightApp_SwitchOp.cxx \
 	LightApp_Preferences.cxx \
-	LightApp_PreferencesDlg.cxx \
-	LightApp_WidgetContainer.cxx
+	LightApp_PreferencesDlg.cxx
 
 #	LightApp_OBFilter.cxx
 
@@ -114,7 +110,6 @@ endif
 MOC_FILES= \
 	LightApp_AboutDlg_moc.cxx \
 	LightApp_Application_moc.cxx \
-	LightApp_Browser_moc.cxx \
 	LightApp_DataModel_moc.cxx \
 	LightApp_Dialog_moc.cxx \
 	LightApp_OBSelector_moc.cxx \
@@ -128,8 +123,7 @@ MOC_FILES= \
 	LightApp_Study_moc.cxx \
 	LightApp_SwitchOp_moc.cxx \
 	LightApp_Preferences_moc.cxx \
-	LightApp_PreferencesDlg_moc.cxx \
-	LightApp_WidgetContainer_moc.cxx
+	LightApp_PreferencesDlg_moc.cxx
 
 if ENABLE_VTKVIEWER
 if ENABLE_SALOMEOBJECT

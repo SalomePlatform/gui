@@ -71,4 +71,4 @@ $(libdir)/SalomePyQt.so:
 	(cd $(libdir); ln -s libSalomePyQt.so SalomePyQt.so;)
 
 mostlyclean-local:
-	rm sip*
+	rm -f sip*

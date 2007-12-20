@@ -22,40 +22,36 @@
 // Copyright (C) CEA 2004
 
 #include "SalomeApp_PyInterp.h" // WARNING! This include must be the first!
-
 #include "SalomeApp_Application.h"
-
 #include "SalomeApp_Study.h"
 #include "SalomeApp_DataModel.h"
 #include "SalomeApp_DataObject.h"
 #include "SalomeApp_EventFilter.h"
 #include "SalomeApp_VisualState.h"
-
 #include "SalomeApp_StudyPropertiesDlg.h"
 #include "SalomeApp_LoadStudiesDlg.h"
 
-#include "LightApp_Application.h"
-#include "LightApp_Preferences.h"
-#include "LightApp_SelectionMgr.h"
-#include "LightApp_NameDlg.h"
+#include <LightApp_Application.h>
+#include <LightApp_Preferences.h>
+#include <LightApp_SelectionMgr.h>
+#include <LightApp_NameDlg.h>
 
-#include "CAM_Module.h"
+#include <CAM_Module.h>
 
 #include <SUIT_Tools.h>
 #include <SUIT_Session.h>
 #include <SUIT_Desktop.h>
+#include <SUIT_DataBrowser.h>
+#include <SUIT_FileDlg.h>
+#include <SUIT_MessageBox.h>
+#include <SUIT_ResourceMgr.h>
 
 #include <QtxMRUAction.h>
 
-#include <LightApp_Browser.h>
 // temporary commented
 //#include <OB_ListItem.h>
 
 #include <PyConsole_Console.h>
-
-#include <SUIT_FileDlg.h>
-#include <SUIT_MessageBox.h>
-#include <SUIT_ResourceMgr.h>
 
 #include <Utils_ORB_INIT.hxx>
 #include <Utils_SINGLETON.hxx>
@@ -71,13 +67,13 @@
 #include <QGridLayout>
 #include <QMenu>
 
-#include "SALOMEDSClient_ClientFactory.hxx"
+#include <SALOMEDSClient_ClientFactory.hxx>
 
-#include "SALOME_ListIteratorOfListIO.hxx"
-#include "SALOME_ListIO.hxx"
+#include <SALOME_ListIteratorOfListIO.hxx>
+#include <SALOME_ListIO.hxx>
 
-#include "ToolsGUI_CatalogGeneratorDlg.h"
-#include "ToolsGUI_RegWidget.h"
+#include <ToolsGUI_CatalogGeneratorDlg.h>
+#include <ToolsGUI_RegWidget.h>
 
 #include <vector>
 
@@ -815,7 +811,7 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
 
   if ( flag == WT_ObjectBrowser )
   {
-    LightApp_Browser* ob = qobject_cast<LightApp_Browser*>( wid );
+    SUIT_DataBrowser* ob = qobject_cast<SUIT_DataBrowser*>( wid );
     if ( ob ) { 
       // temporary commented
       //ob->setUpdater( new SalomeApp_Updater() );

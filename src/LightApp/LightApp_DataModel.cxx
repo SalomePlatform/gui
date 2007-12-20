@@ -26,8 +26,8 @@
 #include "LightApp_DataObject.h"
 #include "LightApp_Module.h"
 #include "LightApp_Application.h"
-#include "LightApp_Browser.h"
 
+#include <SUIT_DataBrowser.h>
 #include <SUIT_DataObject.h>
 
 /*!

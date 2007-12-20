@@ -48,8 +48,11 @@
 
 #include "sipAPISalomePyQtGUI.h"
 
+#include <sip.h>
+#if SIP_VERSION < 0x040700
 #include "sipQtGuiQWidget.h"
 #include "sipQtGuiQMenu.h"
+#endif
 
 /*!
   \brief Default name of the module, replaced at the moment

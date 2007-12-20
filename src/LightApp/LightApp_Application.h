@@ -34,7 +34,6 @@
 #include <QPointer>
 
 class LogWindow;
-class LightApp_Browser;
 #ifndef DISABLE_PYCONSOLE
 class PyConsole_Console;
 #endif
@@ -42,6 +41,7 @@ class LightApp_WidgetContainer;
 class LightApp_Preferences;
 class LightApp_SelectionMgr;
 class LightApp_DataObject;
+class SUIT_DataBrowser;
 class SUIT_Study;
 class SUIT_Accel;
 class CAM_Module;
@@ -115,7 +115,7 @@ public:
   LightApp_SelectionMgr*              selectionMgr() const;
 
   LogWindow*                          logWindow();
-  LightApp_Browser*                   objectBrowser();
+  SUIT_DataBrowser*                   objectBrowser();
 #ifndef DISABLE_PYCONSOLE
   PyConsole_Console*                  pythonConsole();
 #endif

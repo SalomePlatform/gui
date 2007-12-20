@@ -25,7 +25,7 @@
 #include "LightApp_DataOwner.h"
 #include "LightApp_DataObject.h"
 #include "LightApp_Application.h"
-#include "LightApp_Browser.h"
+#include <SUIT_DataBrowser.h>
 #include <SUIT_Session.h>
 #include <SUIT_DataObjectIterator.h>
 #include <QTime>
@@ -41,7 +41,7 @@
   \param ob object browser
   \param mgr selection manager
 */
-LightApp_OBSelector::LightApp_OBSelector( LightApp_Browser* ob, SUIT_SelectionMgr* mgr )
+LightApp_OBSelector::LightApp_OBSelector( SUIT_DataBrowser* ob, SUIT_SelectionMgr* mgr )
 : SUIT_Selector( mgr, ob ),
   myBrowser( ob )
 {
@@ -62,7 +62,7 @@ LightApp_OBSelector::~LightApp_OBSelector()
   \brief Get object browser.
   \return a pointer to the object browser
 */
-LightApp_Browser* LightApp_OBSelector::browser() const
+SUIT_DataBrowser* LightApp_OBSelector::browser() const
 {
   return myBrowser;
 }

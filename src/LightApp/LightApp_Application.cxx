@@ -27,7 +27,6 @@
 #endif
 
 #include "LightApp_Application.h"
-#include "LightApp_WidgetContainer.h"
 #include "LightApp_Module.h"
 #include "LightApp_DataModel.h"
 #include "LightApp_Study.h"
@@ -36,7 +35,6 @@
 #include "LightApp_ModuleDlg.h"
 #include "LightApp_AboutDlg.h"
 #include "LightApp_ModuleAction.h"
-#include "LightApp_Browser.h"
 // temporary commented
 //#include "LightApp_OBFilter.h"
 #include "LightApp_EventFilter.h"
@@ -54,6 +52,7 @@
 #include <CAM_Study.h>
 #include <STD_TabDesktop.h>
 
+#include <SUIT_DataBrowser.h>
 #include <SUIT_Session.h>
 #include <SUIT_Study.h>
 #include <SUIT_FileDlg.h>
@@ -1187,9 +1186,9 @@ QWidget* LightApp_Application::getWindow( const int flag, const int )
 /*!
   \return Object Browser
 */
-LightApp_Browser* LightApp_Application::objectBrowser()
+SUIT_DataBrowser* LightApp_Application::objectBrowser()
 {
-  return qobject_cast<LightApp_Browser*>( dockWindow( WT_ObjectBrowser ) );
+  return qobject_cast<SUIT_DataBrowser*>( dockWindow( WT_ObjectBrowser ) );
 }
 
 /*!
@@ -1602,7 +1601,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
   QWidget* wid = 0;
   if ( flag == WT_ObjectBrowser )
   {
-    LightApp_Browser* ob = new LightApp_Browser( new LightApp_DataObject(), desktop() );
+    SUIT_DataBrowser* ob = new SUIT_DataBrowser( new LightApp_DataObject(), desktop() );
     ob->setSortMenuEnabled( true );
     ob->setAutoUpdate( true );
     //ob->setAutoOpenLevel( 1 ); // commented by ASV as a fix to bug IPAL10107
@@ -2055,7 +2054,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
     if( param=="auto_size" || param=="auto_size_first" )
     {
       // temporary commented
-      /*LightApp_Browser* ob = objectBrowser();
+      /*SUIT_DataBrowser* ob = objectBrowser();
       if( !ob )
 	return;
 
@@ -2493,7 +2492,7 @@ void LightApp_Application::contextMenuPopup( const QString& type, QMenu* thePopu
 {
   CAM_Application::contextMenuPopup( type, thePopup, title );
 
-  LightApp_Browser* ob = objectBrowser();
+  SUIT_DataBrowser* ob = objectBrowser();
   if ( ob && type == ob->popupClientType() ) {
     thePopup->addSeparator();
     QAction* a = thePopup->addAction( tr( "MEN_REFRESH" ), this, SLOT( onRefresh() ) );

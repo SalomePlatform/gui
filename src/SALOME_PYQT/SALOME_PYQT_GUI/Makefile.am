@@ -67,3 +67,6 @@ $(SIP_SRC): $(SIP_FILES)
 $(dist_libSalomePyQtGUI_la_SOURCES): $(SIP_SRC)
 
 ###################################
+
+mostlyclean-local:
+	rm -f sip*

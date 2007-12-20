@@ -35,8 +35,8 @@
 #include "LightApp_SwitchOp.h"
 #include "LightApp_UpdateFlags.h"
 #include "LightApp_ShowHideOp.h"
-#include "LightApp_Browser.h"
 
+#include <SUIT_DataBrowser.h>
 #include <SUIT_Study.h>
 #include <SUIT_DataObject.h>
 #include <SUIT_Operation.h>

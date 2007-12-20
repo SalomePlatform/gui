@@ -30,7 +30,7 @@
 
 #include <QObject>
 
-class LightApp_Browser;
+class SUIT_DataBrowser;
 class LightApp_DataObject;
 
 class LIGHTAPP_EXPORT LightApp_OBSelector : public QObject, public SUIT_Selector
@@ -38,10 +38,10 @@ class LIGHTAPP_EXPORT LightApp_OBSelector : public QObject, public SUIT_Selector
   Q_OBJECT
 
 public:
-  LightApp_OBSelector( LightApp_Browser*, SUIT_SelectionMgr* );
+  LightApp_OBSelector( SUIT_DataBrowser*, SUIT_SelectionMgr* );
   virtual ~LightApp_OBSelector();
 
-  LightApp_Browser*  browser() const;
+  SUIT_DataBrowser*  browser() const;
 
   virtual QString    type() const;
 
@@ -59,7 +59,7 @@ private:
   void               fillEntries( QMap<QString, LightApp_DataObject*>& );
 
 private:
-  LightApp_Browser*                   myBrowser;
+  SUIT_DataBrowser*                   myBrowser;
   SUIT_DataOwnerPtrList               mySelectedList;
   QMap<QString, LightApp_DataObject*> myEntries;
   unsigned long                       myModifiedTime;

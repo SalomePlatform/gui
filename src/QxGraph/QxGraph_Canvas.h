@@ -38,13 +38,18 @@ class QXGRAPH_EXPORT QxGraph_Canvas : public QCanvas {
   QxGraph_Canvas(SUIT_ResourceMgr*);
   virtual ~QxGraph_Canvas();
 
-  void addView(QCanvasView* theView);
+  virtual void addView(QCanvasView* theView);
+  virtual void removeView(QCanvasView*);
 
   QPtrList<QxGraph_Prs> getPrsList() const { return myPrsList; }
   QxGraph_Prs*          getPrs(int theIndex = 0);
   void                  addPrs(QxGraph_Prs* thePrs) { myPrsList.append(thePrs); }
 
- private:
+  virtual void removeItem( QCanvasItem* );
+
+private:
+
+  QValueList< QCanvasView* > myViews;
   QPtrList<QxGraph_Prs> myPrsList;
 
 };

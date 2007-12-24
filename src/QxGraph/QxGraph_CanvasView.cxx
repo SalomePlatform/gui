@@ -365,6 +365,35 @@ void QxGraph_CanvasView::contentsMouseMoveEvent(QMouseEvent* theEvent)
   }
 }
 
+/*!
+  This method is called by QxGraph_Canvas when item is removed. 
+  QxGraph_CanvasView updates its own data accordingly
+*/
+void QxGraph_CanvasView::itemRemoved( QCanvasItem* theItem )
+{
+  if ( myCurrentItem == theItem )
+    myCurrentItem = 0;
+
+  QxGraph_ActiveItem* anActiveItem = dynamic_cast<QxGraph_ActiveItem*>( theItem );
+  if ( anActiveItem )
+  {
+    if ( myHilightedItem == anActiveItem )
+      myHilightedItem = 0;
+    if ( mySelectedItem == anActiveItem )
+      mySelectedItem = 0;
+  }
+}
+
+void QxGraph_CanvasView::setSelectedItem( QxGraph_ActiveItem* theItem )
+{
+  mySelectedItem = theItem;
+}
+
+QxGraph_ActiveItem* QxGraph_CanvasView::getSelectedItem() const
+{
+  return mySelectedItem;
+}
+
 void QxGraph_CanvasView::contentsMouseReleaseEvent(QMouseEvent* theEvent)
 {
   QPoint aPoint = inverseWorldMatrix().map(theEvent->pos());
@@ -678,3 +707,6 @@ void QxGraph_ToolTip::maybeTip(const QPoint& theMousePos) {
       }
   }
 }
+
+
+

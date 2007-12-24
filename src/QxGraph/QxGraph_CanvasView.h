@@ -53,6 +53,11 @@ class QXGRAPH_EXPORT QxGraph_CanvasView : public QCanvasView {
   void activateGlobalPanning();
   void activateReset();
 
+  void itemRemoved( QCanvasItem* );
+
+  void setSelectedItem( QxGraph_ActiveItem* theItem );
+  QxGraph_ActiveItem* getSelectedItem() const;
+
  public slots:
   void onTimeout();
    //void changeBackground();

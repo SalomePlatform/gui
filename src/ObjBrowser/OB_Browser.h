@@ -39,7 +39,7 @@ class QAbstractItemDelegate;
 class QToolTip;
 class QMenu;
 class QtxTreeView;
-class OB_FindDlg;
+class QtxSearchTool;
 
 class OB_EXPORT OB_Browser : public QWidget
 {
@@ -64,6 +64,10 @@ public:
   bool                   sortMenuEnabled() const;
   void                   setSortMenuEnabled( const bool );
 
+  QtxSearchTool*         searchTool() const;
+  bool                   isSearchToolEnabled() const;
+  void                   setSearchToolEnabled( const bool );
+  
   int                    autoOpenLevel() const;
   void                   setAutoOpenLevel( const int );
   void                   openLevels( const int = -1 );
@@ -111,7 +115,6 @@ signals:
 private slots:
   void                   onExpandAll();
   void                   onCollapseAll();
-  void                   onFind();
   //void              onDestroyed( SUIT_DataObject* );
   //void              onDoubleClicked ( QListViewItem* );
   //void              onDropped( QPtrList<QListViewItem>, QListViewItem*, int );
@@ -157,7 +160,7 @@ private:
 
 private:
   QtxTreeView*           myView;
-  OB_FindDlg*            myFindDlg;
+  QtxSearchTool*         mySearchTool;
   // TODO: decide what to do with tooltip
   //QToolTip*           myTooltip;
   //QMap<int, int>      myColumnIds;

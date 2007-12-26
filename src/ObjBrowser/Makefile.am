@@ -27,16 +27,14 @@ lib_LTLIBRARIES = libObjBrowser.la
 
 salomeinclude_HEADERS=		\
 	OB.h			\
-	OB_Browser.h \
-	OB_FindDlg.h
+	OB_Browser.h
 
 #	OB_ListItem.h \
 	OB_ListView.h
 	OB_Filter.h
 
 dist_libObjBrowser_la_SOURCES=	\
-	OB_Browser.cxx \
-	OB_FindDlg.cxx
+	OB_Browser.cxx
 
 #	OB_ListView.cxx
 	OB_ListItem.cxx \
@@ -44,8 +42,7 @@ dist_libObjBrowser_la_SOURCES=	\
 	OB_Filter.cxx
 
 MOC_FILES=			\
-	OB_Browser_moc.cxx \
-	OB_FindDlg_moc.cxx
+	OB_Browser_moc.cxx
 
 #	OB_ListView_moc.cxx
 

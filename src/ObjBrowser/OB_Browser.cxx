@@ -21,13 +21,13 @@
 //
 
 #include "OB_Browser.h"
-#include "OB_FindDlg.h"
 
 //#include "OB_Filter.h"
 //#include "OB_ListItem.h"
 //#include "OB_ListView.h"
 
 #include <QtxTreeView.h>
+#include <QtxSearchTool.h>
 //#include <SUIT_DataObjectIterator.h>
 
 #include <QAction>
@@ -138,13 +138,16 @@ OB_Browser::OB_Browser( QWidget* parent, QAbstractItemModel* model )
   myView->setSelectionMode( QAbstractItemView::ExtendedSelection );
   myView->setAllColumnsShowFocus( true );
 
-  myFindDlg = new OB_FindDlg( this );
-  myFindDlg->hide();
+  mySearchTool = new QtxSearchTool( this, myView );
+  mySearchTool->setFrameStyle( QFrame::NoFrame | QFrame::Plain );
+  mySearchTool->setActivators( QtxSearchTool::StandardKey | QtxSearchTool::SlashKey );
+  mySearchTool->setSearcher( new QtxTreeViewSearcher( myView ) );
   
   QVBoxLayout* main = new QVBoxLayout( this );
   main->addWidget( myView );
-  main->addWidget( myFindDlg );
+  main->addWidget( mySearchTool );
   main->setMargin( 0 );
+  main->setSpacing( 3 );
 
   // TODO: decide what to do with tooltip
   //myShowToolTips = true;
@@ -254,6 +257,41 @@ void OB_Browser::setSortMenuEnabled( const bool enabled )
 {
   if ( enabled != sortMenuEnabled() )
     myView->setSortMenuEnabled( enabled );
+}
+
+/*!
+  \brief Get search tool widget.
+  \return search tool widget
+  \sa isSearchToolEnabled(), setSearchToolEnabled()
+*/
+QtxSearchTool* OB_Browser::searchTool() const
+{
+  return mySearchTool;
+}
+
+/*!
+  \brief Check if search tool is enabled.
+  \return \c true if search tool is enabled
+  \sa setSearchToolEnabled(), searchTool()
+*/
+bool OB_Browser::isSearchToolEnabled() const
+{
+  return mySearchTool->isEnabled();
+}
+
+/*!
+  \brief Enable/disable search tool.
+  \param enable pass \c true to enable search tool
+  \sa isSearchToolEnabled(), searchTool()
+*/
+void OB_Browser::setSearchToolEnabled( const bool enable )
+{
+  if ( mySearchTool->isEnabled() == enable )
+    return;
+
+  mySearchTool->setEnabled( enable );
+  if ( !mySearchTool->isEnabled() )
+    mySearchTool->hide();
 }
 
 /*!
@@ -821,16 +859,6 @@ void OB_Browser::onCollapseAll()
 }
 
 /*!
-  \brief Called when "Find" popup menu command is activated.
-  
-  Activates the find properties frame
-*/
-void OB_Browser::onFind()
-{
-  myFindDlg->show();
-}
-
-/*!
   SLOT: called if SUIT object is destroyed
 */
 /* TODO: moved to SUIT_TreeModel
@@ -950,10 +978,11 @@ void OB_Browser::createPopupMenu( QMenu* menu )
   if ( opened )
     menu->addAction( tr( "MEN_COLLAPSE_ALL" ), this, SLOT( onCollapseAll() ) );
 
-  menu->addSeparator();
-  menu->addAction( tr( "MEN_FIND" ), this, SLOT( onFind() ) );
-
-  menu->addSeparator();
+  if ( isSearchToolEnabled() ) {
+    menu->addSeparator();
+    menu->addAction( tr( "MEN_FIND" ), searchTool(), SLOT( find() ) );
+    menu->addSeparator();
+  }
 }
 
 /*!

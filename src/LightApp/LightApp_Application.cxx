@@ -437,7 +437,7 @@ void LightApp_Application::createActions()
   //! Preferences
   createAction( PreferencesId, tr( "TOT_DESK_PREFERENCES" ), QIcon(),
 		tr( "MEN_DESK_PREFERENCES" ), tr( "PRP_DESK_PREFERENCES" ),
-		Qt::CTRL+Qt::Key_F, desk, false, this, SLOT( onPreferences() ) );
+		0, desk, false, this, SLOT( onPreferences() ) );
 
   //! Help for modules
   int helpMenu = createMenu( tr( "MEN_DESK_HELP" ), -1, -1, 1000 );

@@ -546,7 +546,8 @@ void Plot2d_ViewFrame::displayCurve( Plot2d_Curve* curve, bool update )
     updateCurve( curve, update );
   }
   else {
-    QwtPlotCurve* aPCurve = new QwtPlotCurve( curve->getVerTitle() );
+    QwtPlotCurve* aPCurve = new QwtPlotCurve( !curve->getName().isEmpty() ?
+                                 curve->getName() : curve->getVerTitle() );
     aPCurve->attach( myPlot );
     //myPlot->setCurveYAxis(curveKey, curve->getYAxis());
 
@@ -655,7 +656,8 @@ void Plot2d_ViewFrame::updateCurve( Plot2d_Curve* curve, bool update )
                QSize( myMarkerSize, myMarkerSize ) ) );
       aPCurve->setData( curve->horData(), curve->verData(), curve->nbPoints() );
     }
-    aPCurve->setTitle( curve->getVerTitle() );
+    aPCurve->setTitle( !curve->getName().isEmpty() ? curve->getName() :
+                                                     curve->getVerTitle() );
     aPCurve->setVisible( true );
     if ( update )
       myPlot->replot();
@@ -707,7 +709,8 @@ void Plot2d_ViewFrame::updateLegend( const Plot2d_Prs* prs )
   for (; it != aCurves.end(); ++it ) {
     aCurve = *it;
     if ( hasPlotCurve( aCurve ) )
-      getPlotCurve( aCurve )->setTitle( aCurve->getVerTitle() );
+      getPlotCurve( aCurve )->setTitle( !aCurve->getName().isEmpty() ?
+                            aCurve->getName() : aCurve->getVerTitle() );
   }
 }
 

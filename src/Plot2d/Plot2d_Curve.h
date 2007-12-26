@@ -59,6 +59,9 @@ public:
   void               setVerUnits( const QString& );
   QString            getVerUnits() const;
 
+  void               setName( const QString& );
+  QString            getName() const;
+
   void               addPoint( double, double, const QString& = QString() );
   void               insertPoint( int, double, double, const QString& = QString() );
   void               deletePoint( int );
@@ -104,6 +107,7 @@ protected:
   QString            myVerTitle;
   QString            myHorUnits;
   QString            myVerUnits;
+  QString            myName;
   QColor             myColor;
   Plot2d::MarkerType myMarker;
   Plot2d::LineType   myLine;

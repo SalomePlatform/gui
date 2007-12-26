@@ -29,6 +29,7 @@
 Plot2d_Curve::Plot2d_Curve()
 : myHorTitle( "" ), myVerTitle( "" ), 
   myHorUnits( "" ), myVerUnits( "" ), 
+  myName( "" ),
   myAutoAssign( true ), 
   myColor( 0,0,0 ), 
   myMarker( Plot2d::Circle ), 
@@ -55,6 +56,7 @@ Plot2d_Curve::Plot2d_Curve( const Plot2d_Curve& curve )
   myVerTitle   = curve.getVerTitle();
   myHorUnits   = curve.getHorUnits();
   myVerUnits   = curve.getVerUnits();
+  myName       = curve.getName();
   myColor      = curve.getColor();
   myMarker     = curve.getMarker();
   myLine       = curve.getLine();
@@ -72,6 +74,7 @@ Plot2d_Curve& Plot2d_Curve::operator=( const Plot2d_Curve& curve )
   myVerTitle   = curve.getVerTitle();
   myHorUnits   = curve.getHorUnits();
   myVerUnits   = curve.getVerUnits();
+  myName       = curve.getName();
   myColor      = curve.getColor();
   myMarker     = curve.getMarker();
   myLine       = curve.getLine();
@@ -150,6 +153,21 @@ void Plot2d_Curve::setVerUnits( const QString& units )
 QString Plot2d_Curve::getVerUnits() const
 {
   return myVerUnits;
+}
+
+/*!
+  Sets curve's name
+ */
+void Plot2d_Curve::setName( const QString& theName )
+{
+  myName = theName;
+}
+/*!
+  Gets curve's name
+ */
+QString Plot2d_Curve::getName() const
+{
+  return myName;
 }
 
 /*!

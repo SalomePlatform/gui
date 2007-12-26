@@ -60,6 +60,7 @@ salomeinclude_HEADERS=		\
 	QtxPopupMgr.h		\
 	QtxPreferenceMgr.h	\
 	QtxResourceMgr.h	\
+	QtxSearchTool.h		\
 	QtxSplash.h		\
 	QtxToolBar.h		\
 	QtxToolTip.h		\
@@ -112,6 +113,7 @@ dist_libqtx_la_SOURCES=		\
 	QtxPopupMgr.cxx		\
 	QtxPreferenceMgr.cxx	\
 	QtxResourceMgr.cxx	\
+	QtxSearchTool.cxx	\
 	QtxSplash.cxx		\
 	QtxToolBar.cxx		\
 	QtxToolTip.cxx		\
@@ -156,6 +158,7 @@ MOC_FILES=				\
 	QtxPathEdit_moc.cxx		\
 	QtxPathListEdit_moc.cxx		\
 	QtxPopupMgr_moc.cxx		\
+	QtxSearchTool_moc.cxx		\
 	QtxSplash_moc.cxx		\
 	QtxToolBar_moc.cxx		\
 	QtxToolTip_moc.cxx		\

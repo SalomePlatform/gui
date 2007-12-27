@@ -34,8 +34,9 @@ usr_docs:
 docs: usr_docs
 
 clean-local:
-	rm -fr `ls | grep -v "Makefile"`
-	rm -fr GUI
+	cd ./GUI; \
+	rm -fr `ls | grep -v "doxyfile"`
+	rm -fr `ls | grep -vE "Makefile|GUI"`
 
 install-data-local: usr_docs
 	mkdir -p $(docdir)/gui
@@ -48,4 +49,5 @@ uninstall-local:
 docguidir=$(docdir)/gui/GUI
 
 nodist_docgui_DATA= GUI/doxyfile
+GUI/doxyfile: GUI/doxyfile.in
 EXTRA_DIST+= GUI/doxyfile.in

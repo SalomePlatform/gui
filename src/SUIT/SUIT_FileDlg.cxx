@@ -259,12 +259,13 @@ bool SUIT_FileDlg::addWidgets( QWidget* l, QWidget* w, QWidget* b )
   QGridLayout* grid = ::qobject_cast<QGridLayout*>( layout() );
   if ( grid ) {
     int row = grid->rowCount();
+    int columns = grid->columnCount();
     if ( l ) 
       grid->addWidget( l, row, 0 );
     if ( w )
-      grid->addWidget( w, row, 1, 1, 3 );
+      grid->addWidget( w, row, 1, 1, columns-2 );
     if ( b )
-      grid->addWidget( b, row, 5 );
+      grid->addWidget( b, row, columns-1 );
     return true;
   }
   return false;

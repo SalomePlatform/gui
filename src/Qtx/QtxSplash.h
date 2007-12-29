@@ -85,7 +85,10 @@ public:
   
   void              setProgressWidth( const int );
   int               progressWidth() const; 
-  
+
+  void              setPercentageVisible( const bool );
+  bool              percentageVisible() const;
+
   void              setProgressFlags( const int );
   int               progressFlags() const;
   
@@ -170,6 +173,7 @@ private:
   double            myOpacity;          //!< progress bar / status message opacity
   int               myError;            //!< error code
   bool              myGradientUsed;     //!< 'use custom gradient color scale' flag
+  bool              myShowPercent;      //!< 'show percentage' flag
   OptMap            myOptions;          //!< constant info options
 };
 

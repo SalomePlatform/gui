@@ -136,7 +136,8 @@ private:
   bar width with setProgressWidth() method, its position and direction with setProgressFlags().
   It can be single-colored or gradient-colored. Use setProgressColors() method for this. 
   You can even set your own gradient scale with QLinearGradient and use it for the progress
-  bar coloring: setProgressGradient().
+  bar coloring: setProgressGradient(). In addition, it is possible to enable/disable displaying
+  of the progress percentage with setPercentageVisible() method.
 
   To change the progress bar and status message transparency, use setOpacity() function.
   The methods setTextAlignment(), setTextColor() and setTextColors() can be used to change
@@ -173,7 +174,8 @@ QtxSplash::QtxSplash( const QPixmap& pixmap )
   myMargin( 5 ),
   myOpacity( 1.0 ),
   myError( 0 ),
-  myGradientUsed( false )
+  myGradientUsed( false ),
+  myShowPercent( true )
 {
   setAttribute( Qt::WA_DeleteOnClose, true );
   setPixmap( pixmap );
@@ -408,6 +410,27 @@ void QtxSplash::setProgressWidth( const int width )
 int QtxSplash::progressWidth() const
 {
   return myProgressWidth;
+}
+
+/*!
+  \brief Enable/disable displaying progress percentage.
+  \param enable if \c true, percentage will be displayed
+  \sa percentageVisible()
+*/
+void QtxSplash::setPercentageVisible( const bool enable )
+{
+  myShowPercent = enable;
+  repaint();
+}
+
+/*!
+  \brief Check if the progress percentage is displayed.
+  \return \c true if percentage displaying is enabled
+  \sa setPercentageVisible()
+*/
+bool QtxSplash::percentageVisible() const
+{
+  return myShowPercent;
 }
 
 /*!
@@ -884,6 +907,12 @@ void QtxSplash::readSettings( QtxResourceMgr* resMgr, const QString& section )
     setProgressColors( c1, c2, gradType );
   }
 
+  // show percents
+  bool bPercent;
+  if ( resMgr->value( resSection, "show_percents", bPercent ) ) {
+    setPercentageVisible( bPercent );
+  }
+
   // text color(s)
   QString tc;
   if ( resMgr->value( resSection, "text_color",  tc ) || 
@@ -1071,10 +1100,8 @@ void QtxSplash::drawProgressBar( QPainter* p )
     lg.setColorAt( 0, myStartColor );
     lg.setColorAt( 1, myEndColor.isValid() ? myEndColor : myStartColor );
   }
+
   p->setOpacity( myOpacity );
-  p->setClipRect( cr );
-  p->fillRect( r, lg ); 
-  p->setClipping( false );
 
   // draw progress bar outline rectangle
   p->setPen( palette().color( QPalette::Dark ) );
@@ -1083,6 +1110,27 @@ void QtxSplash::drawProgressBar( QPainter* p )
   p->setPen( palette().color( QPalette::Light ) );
   p->drawLine( r.left(), r.bottom(), r.right(), r.bottom() );
   p->drawLine( r.right(), r.top(), r.right(), r.bottom() );
+
+  r.setCoords( r.left()+1, r.top()+1, r.right()-1, r.bottom()-1 );
+  p->setClipRect( cr );
+  p->fillRect( r, lg );
+  p->setClipping( false );
+
+  if ( myShowPercent ) {
+    int percent = ( int )( ( myProgress > 0 ? myProgress : 0 ) * 100 / myTotal );
+    QFont f = font();
+    f.setPixelSize( r.height() - 4 );
+    p->setFont( f );
+    // draw shadow status text
+    if ( myShadowColor.isValid() ) {
+      QRect rs = r;
+      rs.moveTopLeft( rs.topLeft() + QPoint( 1,1 ) );
+      p->setPen( myShadowColor );
+      p->drawText( rs, Qt::AlignCenter, QString( "%1%" ).arg( percent ) );
+    }
+    p->setPen( myColor );
+    p->drawText( r, Qt::AlignCenter, QString( "%1%" ).arg( percent ) );
+  }
 }
 
 /*!

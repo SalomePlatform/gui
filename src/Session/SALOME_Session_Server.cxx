@@ -322,34 +322,40 @@ void shutdownServers( SALOME_NamingService* theNS )
     session->ping();
     
     string hostname = GetHostname();
-    string containerName = "/Containers/" + hostname;
+    //string containerName = "/Containers/" + hostname;
     
     // 1) SuperVisionContainer
-    string containerNameSV = containerName + "/SuperVisionContainer";
-    CORBA::Object_var objSV = theNS->Resolve(containerNameSV.c_str());
-    Engines::Container_var SVcontainer = Engines::Container::_narrow(objSV) ;
-    if ( !CORBA::is_nil(SVcontainer) && ( session->getPID() != SVcontainer->getPID() ) )
-      SVcontainer->Shutdown();
+    //string containerNameSV = containerName + "/SuperVisionContainer";
+    //CORBA::Object_var objSV = theNS->Resolve(containerNameSV.c_str());
+    //Engines::Container_var SVcontainer = Engines::Container::_narrow(objSV) ;
+    //if ( !CORBA::is_nil(SVcontainer) && ( session->getPID() != SVcontainer->getPID() ) )
+    //  SVcontainer->Shutdown();
     
     // 2) FactoryServerPy
-    string containerNameFSP = containerName + "/FactoryServerPy";
-    CORBA::Object_var objFSP = theNS->Resolve(containerNameFSP.c_str());
-    Engines::Container_var FSPcontainer = Engines::Container::_narrow(objFSP) ;
-    if ( !CORBA::is_nil(FSPcontainer) && ( session->getPID() != FSPcontainer->getPID() ) )
-      FSPcontainer->Shutdown();
+    //string containerNameFSP = containerName + "/FactoryServerPy";
+    //CORBA::Object_var objFSP = theNS->Resolve(containerNameFSP.c_str());
+    //Engines::Container_var FSPcontainer = Engines::Container::_narrow(objFSP) ;
+    //if ( !CORBA::is_nil(FSPcontainer) && ( session->getPID() != FSPcontainer->getPID() ) )
+    //  FSPcontainer->Shutdown();
     
     // 3) FactoryServer
-    string containerNameFS = containerName + "/FactoryServer";
-    CORBA::Object_var objFS = theNS->Resolve(containerNameFS.c_str());
-    Engines::Container_var FScontainer = Engines::Container::_narrow(objFS) ;
-    if ( !CORBA::is_nil(FScontainer) && ( session->getPID() != FScontainer->getPID() ) )
-      FScontainer->Shutdown();
+    //string containerNameFS = containerName + "/FactoryServer";
+    //CORBA::Object_var objFS = theNS->Resolve(containerNameFS.c_str());
+    //Engines::Container_var FScontainer = Engines::Container::_narrow(objFS) ;
+    //if ( !CORBA::is_nil(FScontainer) && ( session->getPID() != FScontainer->getPID() ) )
+    //  FScontainer->Shutdown();
     
     // 4) ContainerManager
-    CORBA::Object_var objCM=theNS->Resolve("/ContainerManager");
-    Engines::ContainerManager_var contMan=Engines::ContainerManager::_narrow(objCM);
-    if ( !CORBA::is_nil(contMan) && ( session->getPID() != contMan->getPID() ) )
-      contMan->ShutdownWithExit();
+    //CORBA::Object_var objCM=theNS->Resolve("/ContainerManager");
+    //Engines::ContainerManager_var contMan=Engines::ContainerManager::_narrow(objCM);
+    //if ( !CORBA::is_nil(contMan) && ( session->getPID() != contMan->getPID() ) )
+    //  contMan->ShutdownWithExit();
+
+    // 4) SalomeLauncher
+    CORBA::Object_var objSL = theNS->Resolve("/SalomeLauncher");
+    Engines::SalomeLauncher_var launcher = Engines::SalomeLauncher::_narrow(objSL);
+    if (!CORBA::is_nil(launcher) && (session->getPID() != launcher->getPID()))
+      launcher->Shutdown();
 
     // 5) ConnectionManager
     CORBA::Object_var objCnM=theNS->Resolve("/ConnectionManager");

@@ -17,16 +17,18 @@
     <!-- Splash screen settings -->
     <parameter name="image"             value="${GUI_ROOT_DIR}/share/salome/resources/gui/icon_about.png" />
     <parameter name="constant_info"     value="%A [ %V ]" />
-    <parameter name="text_colors"       value="#EEEEFF|#555555" />
+    <parameter name="text_colors"       value="#eeeeff|#555555" />
     <parameter name="hide_on_click"     value="no" />
+    <parameter name="show_progress"     value="yes" />
+    <parameter name="show_message"      value="yes" />
+    <parameter name="show_percents"     value="yes" />
     <parameter name="margin"            value="40" />
     <parameter name="progress_width"    value="20" />
     <parameter name="progress_flags"    value="bottom,left_to_right" />
     <parameter name="opacity"           value="0.70" />
     <parameter name="font"              value="Tahoma,12,normal" />
     <parameter name="alignment"         value="top,left" />
-    <parameter name="progress_gradient" value="linear|0.0|0.0|1.0|1.0|reflect|0.0|#747964|1.0|#c5d4e3" />
-    <parameter name="progress_colors"   value="#20408F|#5A81BF|vertical" />
+    <parameter name="progress_colors"   value="#3b3e5d|#d14949|v" />
   </section>
   <section name="resources">
     <!-- Resource directories (resource manager)-->

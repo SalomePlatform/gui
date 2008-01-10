@@ -1036,9 +1036,9 @@ QString Qtx::gradientToString( const QRadialGradient& gradient )
   data << "radial";
   data << QString::number( gradient.center().x() );
   data << QString::number( gradient.center().y() );
-  data << QString::number( gradient.radius() );
   data << QString::number( gradient.focalPoint().x() );
   data << QString::number( gradient.focalPoint().y() );
+  data << QString::number( gradient.radius() );
   switch( gradient.spread() ) 
   {
   case QGradient::PadSpread:
@@ -1171,9 +1171,9 @@ bool Qtx::stringToRadialGradient( const QString& str, QRadialGradient& gradient 
     bool bOk1, bOk2, bOk3, bOk4, bOk5;
     cx = vals[1].toDouble( &bOk1 );
     cy = vals[2].toDouble( &bOk2 );
-    r  = vals[3].toDouble( &bOk3 );
-    fx = vals[4].toDouble( &bOk4 );
-    fy = vals[5].toDouble( &bOk5 );
+    fx = vals[3].toDouble( &bOk4 );
+    fy = vals[4].toDouble( &bOk5 );
+    r  = vals[5].toDouble( &bOk3 );
     if ( bOk1 && bOk2 && bOk3 && bOk4 && bOk5 )
     {
       gradient = QRadialGradient( cx, cy, r, fx, fy );

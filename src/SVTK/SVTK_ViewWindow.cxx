@@ -470,10 +470,6 @@ SVTK_ViewWindow
 ::setBackgroundColor( const QColor& color )
 {
   myMainWindow->SetBackgroundColor( color );
-
-  QPalette palette;
-  palette.setColor(backgroundRole(), color);
-  setPalette(palette);
 }
 
 /*!

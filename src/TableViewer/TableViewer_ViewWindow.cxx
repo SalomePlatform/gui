@@ -307,7 +307,7 @@ void TableViewer_ViewWindow::registerAction( const int id, QtxAction* a )
     return;
 
   myActionsMap.insert( id, a );
-  connect( a, SIGNAL( activated() ), this, SLOT( onActivated() ) );
+  connect( a, SIGNAL( triggered() ), this, SLOT( onActivated() ) );
 }
 
 QtxAction* TableViewer_ViewWindow::createAction( const int id, const QString& menu, const QPixmap& ico,

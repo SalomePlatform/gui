@@ -1213,16 +1213,17 @@ QStringList QtxResourceMgr::dirList() const
 
   Prepare the resources containers and load resources (if \a autoLoad is \c true).
 
-  \param autoLoad if \c true then all resources are loaded
+  \param autoLoad if \c true (default) then all resources are loaded
+  \param loadUser if \c true (default) then user settings are also loaded
 */
-void QtxResourceMgr::initialize( const bool autoLoad ) const
+void QtxResourceMgr::initialize( const bool autoLoad, const bool loadUser ) const
 {
   if ( !myResources.isEmpty() )
     return;
 
   QtxResourceMgr* that = (QtxResourceMgr*)this;
 
-  if ( !userFileName( appName() ).isEmpty() )
+  if ( loadUser && !userFileName( appName() ).isEmpty() )
     that->myResources.append( new Resources( that, userFileName( appName() ) ) );
 
   for ( QStringList::const_iterator it = myDirList.begin(); it != myDirList.end(); ++it )
@@ -2348,7 +2349,36 @@ QPixmap QtxResourceMgr::loadPixmap( const QString& prefix, const QString& name, 
 */
 void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
 {
-  initialize();
+  loadLanguage( true, pref, l );
+}
+
+/*!
+  \brief Load translation files according to the specified language.
+
+  Names of the translation files are calculated according to the pattern specified
+  by the "translators" option (this option is read from the section "language" of resources files).
+  By default, "%P_msg_%L.qm" pattern is used.
+  Keywords \%A, \%P, \%L in the pattern are substituted by the application name, prefix and language name
+  correspondingly.
+  For example, for prefix "SUIT" an language "en", all translation files "SUIT_msg_en.qm" are searched and
+  loaded.
+
+  If prefix is empty or null string, all translation files specified in the "resources" section of resources
+  files are loaded (actually, the section is retrieved from resSection() method). 
+  If language is not specified, it is retrieved from the langSection() method, and if the latest is also empty,
+  by default "en" (English) language is used.
+  By default, settings from the user preferences file are also loaded (if user resource file is valid, 
+  see userFileName()). To avoid loading user settings, pass \c false as first parameter.
+
+  \param loadUser if \c true then user settings are also loaded
+  \param pref parameter which defines translation context (for example, package name)
+  \param l language name
+
+  \sa resSection(), langSection(), loadTranslators()
+*/
+void QtxResourceMgr::loadLanguage( const bool loadUser, const QString& pref, const QString& l )
+{
+  initialize( true, loadUser );
 
   QMap<QChar, QString> substMap;
   substMap.insert( 'A', appName() );

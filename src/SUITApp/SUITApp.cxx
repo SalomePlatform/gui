@@ -191,7 +191,7 @@ int main( int args, char* argv[] )
       SUIT_ResourceMgr* resMgr = aSession->createResourceMgr( argList.first() );
       if ( resMgr )
       {
-	resMgr->loadLanguage();
+	resMgr->loadLanguage( false );
 
 	splash = QtxSplash::splash( QPixmap() );
 	splash->readSettings( resMgr );

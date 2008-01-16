@@ -179,7 +179,7 @@ public:
 protected:
   QString userFileName( const QString& appName, const bool for_load ) const
   { 
-    if ( version().isNull()  ) return ""; 
+    if ( version().isEmpty()  ) return ""; 
     return SUIT_ResourceMgr::userFileName( myExtAppName, for_load );
   }
 
@@ -315,12 +315,14 @@ int main( int argc, char **argv )
   bool isGUI    = isFound( "GUI",    argc, argv );
   bool isSplash = isFound( "SPLASH", argc, argv );
   // Show splash screen (only if both the "GUI" and "SPLASH" parameters are set)
+  // Note, that user preferences are not taken into account for splash settings -
+  // it is a property of the application!
   QtxSplash* splash = 0;
   if ( isGUI && isSplash ) {
     // ...create resource manager
     SUIT_ResourceMgr resMgr( "SalomeApp", QString( "%1Config" ) );
     resMgr.setCurrentFormat( "xml" );
-    resMgr.loadLanguage( "LightApp", "en" );
+    resMgr.loadLanguage( false, "LightApp", "en" );
     //
     splash = QtxSplash::splash( QPixmap() );
     splash->readSettings( &resMgr );

@@ -45,8 +45,11 @@
 #endif
 #include "sipAPISalomePyQtGUI.h"
 
+#include <sip.h>
+#if SIP_VERSION < 0x040700
 #include "sipqtQWidget.h"
 #include "sipqtQPopupMenu.h"
+#endif
 
 #include <CORBA.h>
 

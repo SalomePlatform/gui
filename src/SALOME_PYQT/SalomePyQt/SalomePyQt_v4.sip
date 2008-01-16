@@ -11,6 +11,10 @@
 
 %Import qtmod.sip
 
+%ExportedHeaderCode
+#include <SalomePyQt.h>
+%End
+
 class SALOME_Selection : QObject
 {
 %TypeHeaderCode
@@ -28,6 +32,8 @@ private:
 signals:
   void currentSelectionChanged();
 };
+
+//%ExportedHeaderCode
 
 enum MenuName {
   File        = 1,
@@ -63,12 +69,13 @@ enum PrefType {
   PT_User
 };
 
+//%End
+
 class QtxAction : QAction
 {
 %TypeHeaderCode
 #include <QtxAction.h>
 %End
-
 private:
   QtxAction(const QtxAction &);
 };
@@ -169,3 +176,4 @@ public:
   static void              message( const QString&, bool = true ) /ReleaseGIL/ ;
   static void              clearMessages() /ReleaseGIL/ ;
 };
+

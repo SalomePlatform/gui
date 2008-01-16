@@ -50,6 +50,10 @@ else
            SIP_VERS=v4_new ;;
          4.5*)
            SIP_VERS=v4_new ;;
+	 4.6*)
+           SIP_VERS=v4_new ;;
+	 4.7*)
+           SIP_VERS=v4_new ;;
          *)
            AC_MSG_RESULT(sip version $version not supported)
            SIP_VERS=unsupported ;;

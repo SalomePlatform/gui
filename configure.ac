@@ -311,7 +311,6 @@ echo testing VTK
 echo ---------------------------------------------
 echo
 
-OPTIONS_VTK
 CHECK_VTK
 
 echo

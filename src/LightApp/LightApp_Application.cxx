@@ -655,20 +655,16 @@ void LightApp_Application::onModuleActivation( QAction* a )
   bool cancelled = false;
   while ( !modName.isEmpty() && !activeStudy() && !cancelled ){
     LightApp_ModuleDlg aDlg( desktop(), modName, icon );
-    int res = aDlg.exec();
+    QMap<int, QString> opmap = activateModuleActions();
+    for ( QMap<int, QString>::ConstIterator it = opmap.begin(); it != opmap.end(); ++it )
+      aDlg.addButton( it.data(), it.key() );
 
-    switch ( res ){
-    case 1:
-      onNewDoc();
-      break;
-    case 2:
-      onOpenDoc();
-      break;
-    case 3:
-      //onLoadStudy();
-      //break;
-    case 0:
-    default:
+    int res = aDlg.exec();
+    if ( res != QDialog::Rejected ) {
+      // some operation is selected
+      moduleActionSelected( res );
+    }
+    else {
       putInfo( tr("INF_CANCELLED") );
       myActions[QString()]->setOn( true );
       cancelled = true;
@@ -2108,6 +2104,39 @@ void LightApp_Application::updateDesktopTitle() {
   desktop()->setCaption( aTitle );
 }
 
+/*!
+  \brief Get module activation actions
+  \return map <action_id><action_name> where
+  - action_id is unique non-zero action identifier
+  - action_name is action title
+  \sa moduleActionSelected()
+*/
+QMap<int, QString> LightApp_Application::activateModuleActions() const
+{
+  QMap<int, QString> opmap;
+  opmap.insert( NewStudyId,  tr( "ACTIVATE_MODULE_OP_NEW" ) );
+  opmap.insert( OpenStudyId, tr( "ACTIVATE_MODULE_OP_OPEN" ) );
+  return opmap;
+}
+
+/*!
+  \brief Process module activation action.
+  \param id action identifier
+  \sa activateModuleActions()
+*/
+void LightApp_Application::moduleActionSelected( const int id )
+{
+  switch ( id ) {
+  case NewStudyId:
+    onNewDoc();
+    break;
+  case OpenStudyId:
+    onOpenDoc();
+    break;
+  default:
+    break;
+  }
+}
 /*!
   Updates windows after close document
 */

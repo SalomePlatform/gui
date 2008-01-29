@@ -335,24 +335,18 @@ msgstr "Hide all"
 msgid "LightApp_ModuleDlg::CAPTION"
 msgstr "Activate module"
 
-msgid "LightApp_ModuleDlg::NEW"
-msgstr "&New"
-
-msgid "LightApp_ModuleDlg::OPEN"
-msgstr "&Open"
-
-msgid "LightApp_ModuleDlg::LOAD"
-msgstr "&Load"
-
-msgid "LightApp_ModuleDlg::CANCEL"
-msgstr "&Cancel"
-
-msgid "LightApp_ModuleDlg::ActivateComponent_DESCRIPTION"
-msgstr "Create, open or load study."
+msgid "LightApp_ModuleDlg::DESCRIPTION"
+msgstr "You're activating module <b>%1</b>.<br>Please, select required action by pressing the corresponding button below."
 
 msgid "LightApp_NameDlg::TLT_RENAME"
 msgstr "Rename"
 
 msgid "LightApp_NameDlg::NAME_LBL"
 msgstr "Name: "
+
+msgid "LightApp_Application::ACTIVATE_MODULE_OP_OPEN"
+msgstr "&Open..."
+
+msgid "LightApp_Application::ACTIVATE_MODULE_OP_NEW"
+msgstr "&New"
 

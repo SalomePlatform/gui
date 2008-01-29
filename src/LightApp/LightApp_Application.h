@@ -96,6 +96,10 @@ public:
 #endif
 
          PreferencesId, MRUId, UserID };
+
+protected:
+  enum { NewStudyId = 1, OpenStudyId };
+
 public:
   LightApp_Application();
   virtual ~LightApp_Application();
@@ -200,6 +204,9 @@ protected:
   virtual void                        savePreferences();
   virtual void                        updateDesktopTitle();
   
+  virtual QMap<int, QString>          activateModuleActions() const;
+  virtual void                        moduleActionSelected( const int );
+
 protected slots:
   virtual void                        onDesktopActivated();
 

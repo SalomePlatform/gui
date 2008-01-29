@@ -27,7 +27,8 @@
     <parameter name="image"           value="${GUI_ROOT_DIR}/share/salome/resources/gui/icon_about.png" />
     <parameter name="info"            value="%V" />
     <parameter name="text_colors"     value="#FFFFFF" />
-    <parameter name="progress_colors" value="#3b3e5d|#d14949|0" />
+    <parameter name="progress_colors" value="#c33232|#d1d1d1|0" />
+    <parameter name="margin"          value="26" />
   </section>
   <section name="resources">
     <!-- Resource directories (resource manager)-->

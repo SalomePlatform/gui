@@ -30,6 +30,7 @@
 #include "SalomeApp_DataObject.h"
 #include "SalomeApp_EventFilter.h"
 #include "SalomeApp_VisualState.h"
+#include "SalomeApp_ExitDlg.h"
 
 #include "SalomeApp_StudyPropertiesDlg.h"
 
@@ -43,6 +44,7 @@
 
 #include <SUIT_Tools.h>
 #include <SUIT_Session.h>
+#include <SUIT_MsgDlg.h>
 
 #include <QtxMRUAction.h>
 
@@ -68,6 +70,7 @@
 #include <qcheckbox.h>
 #include <qpushbutton.h>
 #include <qlabel.h>
+#include <qmessagebox.h>
 
 #include "SALOMEDSClient_ClientFactory.hxx"
 #include "SALOMEDSClient_IParameters.hxx"
@@ -429,6 +432,23 @@ void SalomeApp_Application::onLoadDoc()
   }
 }
 
+/*!
+  \brief Close application.
+*/
+void SalomeApp_Application::onExit()
+{
+  bool killServers = false;
+  bool result = true;
+
+  if ( exitConfirmation() ) {
+    SalomeApp_ExitDlg dlg( desktop() );
+    result = dlg.exec() == QDialog::Accepted;
+    killServers = dlg.isServersShutdown();
+  }
+  
+  if ( result )
+    SUIT_Session::session()->closeSession( SUIT_Session::ASK, killServers );
+}
 
 /*!SLOT. Load document with \a aName.*/
 bool SalomeApp_Application::onLoadDoc( const QString& aName )
@@ -847,6 +867,80 @@ void SalomeApp_Application::updateDesktopTitle() {
   }
 
   desktop()->setCaption( aTitle );
+}
+
+/*!
+  \brief Show dialog box to propose possible user actions when study is closed.
+  \param docName study name
+  \return chosen action ID
+  \sa closeAction()
+*/
+int SalomeApp_Application::closeChoice( const QString& docName )
+{
+  SUIT_MsgDlg dlg( desktop(), tr( "APPCLOSE_CAPTION" ), tr ( "APPCLOSE_DESCRIPTION" ),
+                   QMessageBox::standardIcon( QMessageBox::Information ) );
+  dlg.addButton( tr ( "APPCLOSE_SAVE" ),   CloseSave );
+  dlg.addButton( tr ( "APPCLOSE_CLOSE" ),  CloseDiscard );
+  dlg.addButton( tr ( "APPCLOSE_UNLOAD" ), CloseUnload );
+
+  return dlg.exec();
+}
+
+/*!
+  \brief Process user actions selected from the dialog box when study is closed.
+  \param choice chosen action ID
+  \param closePermanently "forced study closing" flag
+  \return operation status
+  \sa closeChoice()
+*/
+bool SalomeApp_Application::closeAction( const int choice, bool& closePermanently )
+{
+  bool res = true;
+  switch( choice )
+  {
+  case CloseSave:
+    if ( activeStudy()->isSaved() )
+      onSaveDoc();
+    else if ( !onSaveAsDoc() )
+      res = false;
+    break;
+  case CloseDiscard:
+    break;
+  case CloseUnload:
+    closePermanently = false;
+    break;
+  case CloseCancel:
+  default:
+    res = false;
+  }
+  return res;
+}
+
+/*!
+  \brief Get module activation actions
+  \return map <action_id><action_name> where
+  - action_id is unique non-zero action identifier
+  - action_name is action title
+  \sa moduleActionSelected()
+*/
+QMap<int, QString> SalomeApp_Application::activateModuleActions() const
+{
+  QMap<int, QString> opmap = LightApp_Application::activateModuleActions();
+  opmap.insert( LoadStudyId,  tr( "ACTIVATE_MODULE_OP_LOAD" ) );
+  return opmap;
+}
+
+/*!
+  \brief Process module activation action.
+  \param id action identifier
+  \sa activateModuleActions()
+*/
+void SalomeApp_Application::moduleActionSelected( const int id )
+{
+  if ( id == LoadStudyId )
+    onLoadDoc();
+  else
+    LightApp_Application::moduleActionSelected( id );
 }
 
 /*!Gets CORBA::ORB_var*/

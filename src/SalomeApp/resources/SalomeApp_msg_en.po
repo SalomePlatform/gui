@@ -246,3 +246,24 @@ msgstr "Rename"
 
 msgid "SalomeApp_Application::MEN_DELETE_VS"
 msgstr "Delete"
+
+msgid "SalomeApp_Application::APPCLOSE_CAPTION"
+msgstr "Close study"
+
+msgid "SalomeApp_Application::APPCLOSE_DESCRIPTION"
+msgstr "Do you want to save or unload study before closing?"
+
+msgid "SalomeApp_Application::APPCLOSE_CLOSE"
+msgstr "&Close w/o saving"
+
+msgid "SalomeApp_Application::APPCLOSE_SAVE"
+msgstr "&Save && Close"
+
+msgid "SalomeApp_Application::APPCLOSE_UNLOAD"
+msgstr "&Unload"
+
+msgid "SalomeApp_ExitDlg::SHUTDOWN_SERVERS"
+msgstr "Shutdown standalone servers"
+
+msgid "SalomeApp_Application::ACTIVATE_MODULE_OP_LOAD"
+msgstr "&Load..."

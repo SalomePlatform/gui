@@ -46,7 +46,8 @@ salomeinclude_HEADERS= \
 	SalomeApp_TypeFilter.h \
 	SalomeApp_StudyPropertiesDlg.h \
 	SalomeApp_CheckFileDlg.h \
-	SalomeApp_VisualState.h
+	SalomeApp_VisualState.h \
+	SalomeApp_ExitDlg.h
 
 dist_libSalomeApp_la_SOURCES= \
 	SalomeApp_Module.cxx \
@@ -64,7 +65,8 @@ dist_libSalomeApp_la_SOURCES= \
 	SalomeApp_StudyPropertiesDlg.cxx \
 	SalomeApp_ListView.cxx \
 	SalomeApp_CheckFileDlg.cxx \
-	SalomeApp_VisualState.cxx
+	SalomeApp_VisualState.cxx \
+	SalomeApp_ExitDlg.cxx
 
 MOC_FILES= \
 	SalomeApp_Application_moc.cxx \
@@ -73,7 +75,9 @@ MOC_FILES= \
 	SalomeApp_Study_moc.cxx \
 	SalomeApp_StudyPropertiesDlg_moc.cxx \
 	SalomeApp_ListView_moc.cxx \
-	SalomeApp_CheckFileDlg_moc.cxx
+	SalomeApp_CheckFileDlg_moc.cxx \
+	SalomeApp_ExitDlg_moc.cxx
+
 nodist_libSalomeApp_la_SOURCES= $(MOC_FILES)
 
 dist_salomeres_DATA= \

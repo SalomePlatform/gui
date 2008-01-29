@@ -71,6 +71,10 @@ public:
   enum { DumpStudyId = LightApp_Application::UserID, LoadScriptId, PropertiesId,
          CatalogGenId, RegDisplayId, SaveGUIStateId, FileLoadId, UserID };
 
+protected:
+  enum { CloseUnload = CloseDiscard + 1 };
+  enum { LoadStudyId = OpenStudyId  + 1 };
+
 public:
   SalomeApp_Application();
   virtual ~SalomeApp_Application();
@@ -98,6 +102,7 @@ public slots:
   virtual bool                        onOpenDoc( const QString& );
   virtual void                        onLoadDoc();
   virtual bool                        onLoadDoc( const QString& );
+  virtual void                        onExit();
   virtual void                        onCopy();
   virtual void                        onPaste();
   void                                onSaveGUIState();// called from VISU
@@ -119,6 +124,12 @@ protected:
   virtual void                        createPreferences( LightApp_Preferences* );
   virtual void                        updateDesktopTitle();
   
+  virtual bool                        closeAction( const int, bool& );
+  virtual int                         closeChoice( const QString& );
+
+  virtual QMap<int, QString>          activateModuleActions() const;
+  virtual void                        moduleActionSelected( const int );
+
 private slots:
   void                                onDeleteInvalidReferences();
   void                                onDblClick( QListViewItem* );

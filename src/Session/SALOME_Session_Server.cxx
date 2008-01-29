@@ -644,8 +644,8 @@ int main( int argc, char **argv )
 	  delete splash;
 	splash = 0;
 
-	if ( result == SUIT_Session::FROM_GUI ) { // desktop is closed by user from GUI
-	  if ( aGUISession->isServersShutdown() )
+	if ( result == SUIT_Session::NORMAL ) { // desktop is closed by user from GUI
+	  if ( aGUISession->exitFlags() )
 	    shutdownServers( _NS );
 	  break;
 	}

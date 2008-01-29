@@ -20,8 +20,6 @@
 
 #include "STD_MDIDesktop.h"
 
-#include "STD_CloseDlg.h"
-
 #include <SUIT_Tools.h>
 #include <SUIT_Desktop.h>
 #include <SUIT_Session.h>
@@ -29,6 +27,7 @@
 #include <SUIT_Operation.h>
 #include <SUIT_MessageBox.h>
 #include <SUIT_ResourceMgr.h>
+#include <SUIT_MsgDlg.h>
 
 #include <QtxDockAction.h>
 #include <QtxActionMenuMgr.h>
@@ -41,6 +40,7 @@
 #include <qstatusbar.h>
 #include <qfiledialog.h>
 #include <qapplication.h>
+#include <qmessagebox.h>
 
 #include <iostream>
 
@@ -53,8 +53,9 @@ extern "C" STD_EXPORT SUIT_Application* createApplication()
 /*!Constructor.*/
 STD_Application::STD_Application()
 : SUIT_Application(),
-myEditEnabled( true ),
-myActiveViewMgr( 0 )
+  myActiveViewMgr( 0 ),
+  myExitConfirm( true ),
+  myEditEnabled( true )
 {
   STD_MDIDesktop* desk = new STD_MDIDesktop();
 
@@ -65,6 +66,18 @@ myActiveViewMgr( 0 )
 STD_Application::~STD_Application()
 {
   clearViewManagers();
+}
+
+/*! \retval requirement of exit confirmation*/
+bool STD_Application::exitConfirmation() const
+{
+  return myExitConfirm;
+}
+
+/*! Set the requirement of exit confirmation*/
+void STD_Application::setExitConfirmation( const bool on )
+{
+  myExitConfirm = on;
 }
 
 /*! \retval QString "StdApplication"*/
@@ -117,7 +130,8 @@ void STD_Application::onDesktopClosing( SUIT_Desktop*, QCloseEvent* e )
     return;
   }
 
-  if ( !isPossibleToClose() )
+  bool closePermanently;
+  if ( !isPossibleToClose( closePermanently ) )
   {
     e->ignore();
     return;
@@ -363,7 +377,9 @@ void STD_Application::afterCloseDoc()
 /*!Close document, if it's possible.*/
 void STD_Application::onCloseDoc( bool ask )
 {
-  if ( ask && !isPossibleToClose() )
+  bool closePermanently = true;
+
+  if ( ask && !isPossibleToClose( closePermanently ) )
     return;
 
   SUIT_Study* study = activeStudy();
@@ -371,7 +387,7 @@ void STD_Application::onCloseDoc( bool ask )
   beforeCloseDoc( study );
 
   if ( study )
-    study->closeDocument(myClosePermanently);
+    study->closeDocument( closePermanently );
 
   clearViewManagers();
 
@@ -405,40 +421,62 @@ void STD_Application::onCloseDoc( bool ask )
 /*!Check the application on closing.
  * \retval true if possible, else false
  */
-bool STD_Application::isPossibleToClose()
+bool STD_Application::isPossibleToClose( bool& closePermanently )
 {
-  myClosePermanently = true; //SRN: BugID: IPAL9021
   if ( activeStudy() )
   {
     activeStudy()->abortAllOperations();
     if ( activeStudy()->isModified() )
     {
       QString sName = activeStudy()->studyName().stripWhiteSpace();
-      QString msg = sName.isEmpty() ? tr( "INF_DOC_MODIFIED" ) : tr ( "INF_DOCUMENT_MODIFIED" ).arg( sName );
-
-      //SRN: BugID: IPAL9021: Begin
-      STD_CloseDlg dlg(desktop());
-      switch( dlg.exec() )
-      {
-      case 1:
-        if ( activeStudy()->isSaved() )
-          onSaveDoc();
-        else if ( !onSaveAsDoc() )
-          return false;
-        break;
-      case 2:
-        break;
-      case 3:
-	      myClosePermanently = false;
-        break;
-      case 4:
-      default:
-        return false;
-      }
-     //SRN: BugID: IPAL9021: End
+      return closeAction( closeChoice( sName ), closePermanently );
     }
   }
   return true;
+}
+
+/*!
+  \brief Show dialog box to propose possible user actions when study is closed.
+  \param docName study name
+  \return chosen action ID
+  \sa closeAction()
+*/
+int STD_Application::closeChoice( const QString& docName )
+{
+  SUIT_MsgDlg dlg( desktop(), tr( "CLOSE_DLG_CAPTION" ), tr ( "CLOSE_DLG_DESCRIPTION" ),
+		   QMessageBox::standardIcon( QMessageBox::Information ) );
+  dlg.addButton( tr ( "CLOSE_DLG_SAVE_CLOSE" ), CloseSave );
+  dlg.addButton( tr ( "CLOSE_DLG_CLOSE" ), CloseDiscard );
+
+  return dlg.exec();
+}
+
+/*!
+  \brief Process user actions selected from the dialog box when study is closed.
+  \param choice chosen action ID
+  \param closePermanently "forced study closing" flag
+  \return operation status
+  \sa closeChoice()
+*/
+bool STD_Application::closeAction( const int choice, bool& closePermanently )
+{
+  bool res = true;
+  switch( choice )
+  {
+  case CloseSave:
+    if ( activeStudy()->isSaved() )
+      onSaveDoc();
+    else if ( !onSaveAsDoc() )
+      res = false;
+    break;
+  case CloseDiscard:
+    break;
+  case CloseCancel:
+  default:
+    res = false;
+  }
+
+  return res;
 }
 
 /*!Save document if all ok, else error message.*/
@@ -514,10 +552,12 @@ bool STD_Application::onSaveAsDoc()
 /*!Closing session.*/
 void STD_Application::onExit()
 {
-  STD_ExitDlg* dlg = new STD_ExitDlg(desktop());
-  if( dlg->exec() == QDialog::Accepted ) {
-    SUIT_Session::session()->serversShutdown(dlg->isServersShutdown());
-    delete dlg;
+  if ( !exitConfirmation() || 
+       SUIT_MessageBox::info2( desktop(), 
+			       tr( "INF_DESK_EXIT" ), 
+			       tr( "QUE_DESK_EXIT" ),
+			       tr( "BUT_OK" ),
+			       tr( "BUT_CANCEL" ), 1, 2, 2 ) == 1 ) {
     SUIT_Session::session()->closeSession();
   }
 }

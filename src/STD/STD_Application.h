@@ -52,7 +52,7 @@ public:
 
   virtual QString       applicationName() const;
 
-  virtual bool          isPossibleToClose();
+  virtual bool          isPossibleToClose( bool& );
   virtual bool          useFile( const QString& );
 
   virtual void          createEmptyStudy();
@@ -83,6 +83,9 @@ public:
   virtual void          closeApplication();
 
   virtual void          contextMenuPopup( const QString&, QPopupMenu*, QString& ) {}
+
+  bool                  exitConfirmation() const;
+  void                  setExitConfirmation( const bool );
 
 signals:
   /*!emit that view manager added*/
@@ -133,6 +136,8 @@ protected:
 	  UserID
        };
  
+  enum { CloseCancel, CloseSave, CloseDiscard };
+
 protected:
   virtual void          createActions();
   virtual void          updateDesktopTitle();
@@ -152,13 +157,16 @@ protected:
 
   virtual void          setActiveViewManager( SUIT_ViewManager* );
 
+  virtual bool          closeAction( const int, bool& );
+  virtual int           closeChoice( const QString& );
+
 private:
   ViewManagerList       myViewMgrs;
   SUIT_ViewManager*     myActiveViewMgr;
 
 private:
+  bool                  myExitConfirm;
   bool                  myEditEnabled;
-  bool                  myClosePermanently;
 };
 
 #if defined WIN32

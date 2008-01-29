@@ -31,7 +31,6 @@ salomeinclude_HEADERS= \
 	STD_MDIDesktop.h \
 	STD_SDIDesktop.h \
 	STD_TabDesktop.h \
-	STD_CloseDlg.h \
 	STD_LoadStudiesDlg.h
 
 dist_libstd_la_SOURCES=\
@@ -39,7 +38,6 @@ dist_libstd_la_SOURCES=\
 	STD_MDIDesktop.cxx \
 	STD_SDIDesktop.cxx \
 	STD_TabDesktop.cxx \
-	STD_CloseDlg.cxx \
 	STD_LoadStudiesDlg.cxx
 
 MOC_FILES= \
@@ -47,8 +45,8 @@ MOC_FILES= \
 	STD_MDIDesktop_moc.cxx \
 	STD_SDIDesktop_moc.cxx \
 	STD_TabDesktop_moc.cxx \
-	STD_CloseDlg_moc.cxx \
 	STD_LoadStudiesDlg_moc.cxx
+
 nodist_libstd_la_SOURCES= $(MOC_FILES)
 
 dist_salomeres_DATA=\

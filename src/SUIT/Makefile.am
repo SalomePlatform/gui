@@ -39,6 +39,7 @@ salomeinclude_HEADERS= \
 	SUIT_FileDlg.h \
 	SUIT_FileValidator.h \
 	SUIT_MessageBox.h \
+	SUIT_MsgDlg.h \
 	SUIT_Operation.h \
 	SUIT_OverrideCursor.h \
 	SUIT_ParserSettings.h \
@@ -70,6 +71,7 @@ dist_libsuit_la_SOURCES= \
 	SUIT_FileDlg.cxx \
 	SUIT_FileValidator.cxx \
 	SUIT_MessageBox.cxx \
+	SUIT_MsgDlg.cxx \
 	SUIT_Operation.cxx \
 	SUIT_OverrideCursor.cxx \
 	SUIT_ParserSettings.cxx \
@@ -93,6 +95,7 @@ MOC_FILES= \
 	SUIT_DataObject_moc.cxx \
 	SUIT_Desktop_moc.cxx \
 	SUIT_FileDlg_moc.cxx \
+	SUIT_MsgDlg_moc.cxx \
 	SUIT_Operation_moc.cxx \
 	SUIT_PopupClient_moc.cxx \
 	SUIT_Session_moc.cxx \

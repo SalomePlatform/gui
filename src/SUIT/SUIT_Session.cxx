@@ -47,8 +47,8 @@ SUIT_Session::SUIT_Session()
 myResMgr( 0 ),
 myHandler( 0 ),
 myActiveApp( 0 ),
-myExitStatus( FROM_GUI ),
-myServersShutdown ( true )
+myExitStatus( NORMAL ),
+myExitFlags ( 0 )
 {
   SUIT_ASSERT( !mySession )
 
@@ -238,12 +238,13 @@ void SUIT_Session::onApplicationClosed( SUIT_Application* theApp )
 /*!
   Destroys session by closing all applications.
 */
-void SUIT_Session::closeSession( int mode )
+void SUIT_Session::closeSession( int mode, int flags )
 {
   while ( !myAppList.isEmpty() )
   {
     SUIT_Application* app = myAppList.getFirst();
-    if ( mode == ASK && !app->isPossibleToClose() )
+    bool closePermanently;
+    if ( mode == ASK && !app->isPossibleToClose( closePermanently ) )
       return;
     else if ( mode == SAVE )
     {
@@ -253,29 +254,26 @@ void SUIT_Session::closeSession( int mode )
     }
     else if ( mode == DONT_SAVE )
     {
-      myExitStatus = FROM_CORBA_SESSION;
-      //....
+      myExitStatus = FORCED;
     }
 
     app->closeApplication();
   }
+  myExitFlags = flags;
 }
 
 /*!
-  Set a flag to shutdown or not standalone servers at exit of application.
-*/
-void SUIT_Session::serversShutdown( bool theVal ) 
-{
-  myServersShutdown = theVal;
-}
+  Get session exit flags.
 
-/*!
-  \retval Return TRUE, if standalone servers will be shutdown at exit of application,
-                 FALSE otherwise.
+  By default, exit flags are set to 0. You can use pass any flags to the
+  closeSession() method if you need to process them later on application
+  quiting.
+
+  \return exit flags
 */
-bool SUIT_Session::isServersShutdown() const
+int SUIT_Session::exitFlags() const
 {
-  return myServersShutdown;
+  return myExitFlags;
 }
 
 /*! \retval return myHandler*/

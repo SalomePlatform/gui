@@ -63,7 +63,7 @@ public:
 
   /*! Returns FALSE if application can not be closed (because of non saved data for example). 
       This method called by SUIT_Session whin closing of application was requested. */
-  virtual bool          isPossibleToClose();
+  virtual bool          isPossibleToClose( bool& );
 
   /*! Performs some finalization of life cycle of this application.
       For instance, the application can force its documents(s) to close. */

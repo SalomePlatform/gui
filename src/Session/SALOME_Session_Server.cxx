@@ -433,19 +433,22 @@ int main( int argc, char **argv )
     resMgr.setCurrentFormat( "xml" );
     resMgr.loadLanguage( "LightApp", "en" );
     // ...get splash preferences
-    QString splashIcon, splashInfo, splashTextColors, splashProgressColors;
-    resMgr.value( "splash", "image",           splashIcon );
-    resMgr.value( "splash", "info",            splashInfo, false );
-    resMgr.value( "splash", "text_colors",     splashTextColors );
-    resMgr.value( "splash", "progress_colors", splashProgressColors );
+    QString splashIcon;
+    resMgr.value( "splash", "image", splashIcon );
     QPixmap px( splashIcon );
     if ( px.isNull() ) // try to get splash pixmap from resources
       px = resMgr.loadPixmap( "LightApp", QObject::tr( "ABOUT_SPLASH" ) );
     if ( !px.isNull() ) {
       // ...set splash pixmap
       splash = QtxSplash::splash( px );
+      // ... set margin
+      int splashMargin;
+      if ( resMgr.value( "splash", "margin", splashMargin ) && splashMargin > 0 ) {
+	splash->setMargin( splashMargin );
+      }
       // ...set splash text colors
-      if ( !splashTextColors.isEmpty() ) {
+      QString splashTextColors;
+      if ( resMgr.value( "splash", "text_colors", splashTextColors ) && !splashTextColors.isEmpty() ) {
 	QStringList colors = QStringList::split( "|", splashTextColors );
 	QColor c1, c2;
 	if ( colors.count() > 0 ) c1 = QColor( colors[0] );
@@ -456,7 +459,8 @@ int main( int argc, char **argv )
 	splash->setTextColors( Qt::white, Qt::black );
       }
       // ...set splash progress colors
-      if ( !splashProgressColors.isEmpty() ) {
+      QString splashProgressColors;
+      if ( resMgr.value( "splash", "progress_colors", splashProgressColors ) && !splashProgressColors.isEmpty() ) {
 	QStringList colors = QStringList::split( "|", splashProgressColors );
 	QColor c1, c2;
 	int gradType = QtxSplash::Vertical;
@@ -470,7 +474,8 @@ int main( int argc, char **argv )
       f.setBold( true );
       splash->setFont( f );
       // ...show splash initial status
-      if ( !splashInfo.isEmpty() ) {
+      QString splashInfo;
+      if ( resMgr.value( "splash", "info", splashInfo, false ) && !splashInfo.isEmpty() ) {
 	splashInfo.replace( QRegExp( "%A" ),  QObject::tr( "APP_NAME" ) );
 	splashInfo.replace( QRegExp( "%V" ),  QObject::tr( "ABOUT_VERSION" ).arg( salomeVersion() ) );
 	splashInfo.replace( QRegExp( "%L" ),  QObject::tr( "ABOUT_LICENSE" ) );

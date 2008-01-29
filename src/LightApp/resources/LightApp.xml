@@ -18,6 +18,7 @@
     <parameter name="image"       value="${GUI_ROOT_DIR}/share/salome/resources/gui/icon_about.png" />
     <parameter name="info"        value="%A : %V" />
     <parameter name="text_colors" value="#FFFFFF" />
+    <parameter name="margin"      value="10" />
   </section>
   <section name="resources">
     <!-- Resource directories (resource manager)-->

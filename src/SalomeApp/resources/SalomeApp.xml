@@ -53,10 +53,12 @@
     <!-- As a result, both variants are acceptable. -->
     <parameter name="NETGENPlugin" value="${NETGENPLUGIN_ROOT_DIR}/share/salome/resources/netgenplugin"/>
     <parameter name="GHS3DPlugin"  value="${GHS3DPLUGIN_ROOT_DIR}/share/salome/resources/ghs3dplugin"/>
+    <parameter name="BLSURFPlugin" value="${BLSURFPLUGIN_ROOT_DIR}/share/salome/resources"/>
+    <parameter name="HexoticPLUGIN" value="${HexoticPLUGIN_ROOT_DIR}/share/salome/resources"/>
   </section>
   <section name="SMESH">
     <!-- Default SMESH module plugins -->
-    <parameter name="plugins" value="NETGENPlugin,GHS3DPlugin"/>
+    <parameter name="plugins" value="NETGENPlugin,GHS3DPlugin,BLSURFPlugin,HexoticPLUGIN"/>
   </section>
   <section name="desktop" >
     <!-- Default GUI desktop state, position, size -->

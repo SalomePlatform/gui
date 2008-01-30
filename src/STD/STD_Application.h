@@ -50,12 +50,10 @@ class STD_EXPORT STD_Application : public SUIT_Application
 
 public:
   enum { FileNewId, FileOpenId, FileCloseId, FileSaveId, FileSaveAsId, FileExitId,
-	       ViewWindowsId, ViewToolBarsId, ViewStatusBarId, NewWindowId,
+	 ViewWindowsId, ViewToolBarsId, ViewStatusBarId, NewWindowId,
          EditCutId, EditCopyId, EditPasteId, HelpAboutId, UserID };
 
-  enum { CloseSave, CloseDiscard, CloseCancel };
-
-public:
+ public:
   STD_Application();
   virtual ~STD_Application();
 
@@ -136,6 +134,8 @@ protected:
           MenuEditId = 3,
           MenuHelpId = 7
        };
+
+  enum { CloseCancel, CloseSave, CloseDiscard };
 
 protected:
   virtual void          createActions();

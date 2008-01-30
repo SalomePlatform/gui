@@ -450,7 +450,7 @@ void LightApp_Application::createActions()
   int id = LightApp_Application::UserID + FIRST_HELP_ID;
   // help for KERNEL and GUI
   QString dir;//QByteArray dir;
-  QString aFileName = "index.htm";
+  QString aFileName = "index.html";
   QString root;
   QAction* a;
   dir = getenv("GUI_ROOT_DIR");
@@ -470,10 +470,9 @@ void LightApp_Application::createActions()
   }
   dir = getenv("KERNEL_ROOT_DIR");
   if ( !dir.isEmpty() ) {
-    QString aFN = "index.html";
     root = Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") +
 			  Qtx::addSlash("salome") );
-    if ( QFileInfo( root + aFN ).exists() ) {
+    if ( QFileInfo( root + aFileName ).exists() ) {
       a = createAction( id, tr( QString("KERNEL Help").toLatin1().constData() ),
 			resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false ),
 			tr( QString("KERNEL Help").toLatin1().constData() ),
@@ -906,13 +905,11 @@ public:
 	aCommand += "#" + myContext;
 
       QProcess* proc = new QProcess();
-      //myStatus = system(aCommand);
 
-      //if(myStatus != 0)
       proc->start( aCommand );
       if ( proc->waitForStarted() ) {
 	SALOME_CustomEvent* ce2000 = new SALOME_CustomEvent( 2000 );
-	QString* msg = new QString( QObject::tr("EXTERNAL_BROWSER_CANNOT_SHOW_PAGE").arg(myApp).arg(myHelpFile) );
+	QString* msg = new QString( QObject::tr( "EXTERNAL_BROWSER_CANNOT_SHOW_PAGE" ).arg( myApp, myHelpFile ) );
 	ce2000->setData( msg );
 	QApplication::postEvent( myLApp, ce2000 );
       }
@@ -936,15 +933,14 @@ void LightApp_Application::onHelpContentsModule()
   const QAction* obj = (QAction*) sender();
 
   QString aComponentName = obj->objectName();
-  QString aFileName = "index.htm";
-  QString aFileNameKernel = "index.html";
+  QString aFileName = "index.html";
 
   QString dir = getenv( (aComponentName + "_ROOT_DIR").toLatin1().constData() );
   QString homeDir = !aComponentName.compare(QString("KERNEL")) ?
     Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") + Qtx::addSlash("salome") ) :
     Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") + Qtx::addSlash("salome") + Qtx::addSlash("gui") +  Qtx::addSlash(aComponentName) );
 
-  QString helpFile = QFileInfo( homeDir + (!aComponentName.compare(QString("KERNEL")) ? aFileNameKernel : aFileName) ).absoluteFilePath();
+  QString helpFile = QFileInfo( homeDir + aFileName ).absoluteFilePath();
   SUIT_ResourceMgr* resMgr = resourceMgr();
 	QString platform;
 #ifdef WIN32
@@ -2627,8 +2623,9 @@ bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
   if ( !isLibFound )
     {
       printf( "****************************************************************\n" );
-      printf( "*    Warning: library %s cannot be found\n", moduleTitle.toLatin1().constData() );
+      printf( "*    Warning: library %s cannot be found\n", lib.toLatin1().constData() );
       printf( "*    Module will not be available\n" );
+      printf( "*    Module %s will not be available in GUI mode\n", moduleTitle.toLatin1().constData() );
       printf( "****************************************************************\n" );
     }
   else if ( !isPythonModule )

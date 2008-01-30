@@ -33,7 +33,7 @@
 
 #include <CORBA.h>
 
-#include <SALOMEconfig.h>
+//#include <SALOMEconfig.h>
 //#include CORBA_CLIENT_HEADER(SALOMEDS)
 #include <SALOME_NamingService.hxx>
 
@@ -63,9 +63,9 @@ public:
   enum { MenuToolsId = 5 };
   enum { DumpStudyId = LightApp_Application::UserID, LoadScriptId, PropertiesId,
          CatalogGenId, RegDisplayId, SaveGUIStateId, FileLoadId, UserID };
-  enum { CloseUnload = STD_Application::CloseCancel+1 };
 
 protected:
+  enum { CloseUnload = CloseDiscard + 1 };
   enum { LoadStudyId = OpenStudyId + 1 };
 
 public:
@@ -99,6 +99,7 @@ public slots:
   virtual bool                        onOpenDoc( const QString& );
   virtual void                        onLoadDoc();
   virtual bool                        onLoadDoc( const QString& );
+  virtual void                        onExit();
   virtual void                        onCopy();
   virtual void                        onPaste();
   void                                onSaveGUIState();// called from VISU

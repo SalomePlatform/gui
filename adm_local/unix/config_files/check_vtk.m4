@@ -27,11 +27,11 @@ dnl  Adds the --with-vtk=path and --with-vtk-version configure options
 dnl
 AC_DEFUN([OPTIONS_VTK], [
   AC_ARG_WITH([vtk],
-              [AC_HELP_STRING([--with-vtk], [The prefix where VTK is installed (default is /usr/local)])],
+              [AC_HELP_STRING([--with-vtk], [The prefix where VTK is installed (default "" means taking from environment variable)])],
               [with_vtk=$withval], [with_vtk=""])
 
   AC_ARG_WITH([vtk-version],
-              [AC_HELP_STRING([--with-vtk-version], [VTK include directory name is vtk-suffix, e.g. vtk-5.0/. What is the suffix? (Default -5.0)])],
+              [AC_HELP_STRING([--with-vtk-version], [VTK include directory name is vtk-suffix, e.g. vtk-5.0/. What is the suffix? (Default "yes" means taking from environment variable)])],
               [vtk_suffix=$withval], [vtk_suffix="yes"])
 ])
 
@@ -45,6 +45,8 @@ AC_REQUIRE([AC_PROG_CXX])dnl
 AC_REQUIRE([AC_PROG_CPP])dnl
 AC_REQUIRE([AC_PROG_CXXCPP])dnl
 AC_REQUIRE([AC_LINKER_OPTIONS])dnl
+
+AC_REQUIRE([OPTIONS_VTK])dnl
 
 AC_CHECKING(for VTK)
 
@@ -88,6 +90,9 @@ LOCAL_LIBS="-lvtkCommon -lvtkGraphics -lvtkImaging -lvtkFiltering -lvtkIO -lvtkR
 TRY_LINK_LIBS="-lvtkCommon $OGL_LIBS $LXLIB -lX11 -lXt"
 
 dnl VTK version suffix
+if test -z $vtk_suffix ; then
+  vtk_suffix="yes"
+fi
 if test "x$vtk_suffix" == "xno" ; then
   dnl in case user wrote --with-vtk-version=no, use empty suffix
   vtk_suffix=""
@@ -102,6 +107,9 @@ else
 fi
 
 dnl VTK install dir
+if test -z $with_vtk ; then
+  with_vtk=""
+fi
 if test "x$with_vtk" = "xyes" ; then
   dnl in case user wrote --with-vtk=yes
   with_vtk=""

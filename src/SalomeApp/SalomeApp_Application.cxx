@@ -30,6 +30,7 @@
 #include "SalomeApp_VisualState.h"
 #include "SalomeApp_StudyPropertiesDlg.h"
 #include "SalomeApp_LoadStudiesDlg.h"
+#include "SalomeApp_ExitDlg.h"
 
 #include <LightApp_Application.h>
 #include <LightApp_Preferences.h>
@@ -193,7 +194,7 @@ void SalomeApp_Application::start()
 	    PyConsole_Console* pyConsole = pythonConsole();
 	    if ( pyConsole ) {
               QString extension = fi.suffix().toLower();
-              if ( extension == "py" && fi.exists() ) {
+              if ( fi.exists() ) {
                 // execute python script
                 QString command = QString( "execfile(\"%1\")" ).arg( fi.absoluteFilePath() );
                 pyConsole->exec( command );
@@ -201,7 +202,8 @@ void SalomeApp_Application::start()
               else {
                 // import python module
                 QString command = QString( "import %1" ).arg( pyfiles[j] );
-                //QString command = QString( "import %1" ).arg( fi.baseName( true ) );
+		if ( extension == "py" )
+		  command = QString( "import %1" ).arg( fi.completeBaseName() );
                 pyConsole->exec( command );
               }
             }
@@ -376,6 +378,24 @@ bool SalomeApp_Application::onOpenDoc( const QString& aName )
       mru->remove( aName );
   }
   return res;
+}
+
+/*!
+  \brief Close application.
+*/
+void SalomeApp_Application::onExit()
+{
+  bool killServers = false;
+  bool result = true;
+
+  if ( exitConfirmation() ) {
+    SalomeApp_ExitDlg dlg( desktop() );
+    result = dlg.exec() == QDialog::Accepted;
+    killServers = dlg.isServersShutdown();
+  }
+  
+  if ( result )
+    SUIT_Session::session()->closeSession( SUIT_Session::ASK, killServers );
 }
 
 /*!SLOT. Load document.*/

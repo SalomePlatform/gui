@@ -108,6 +108,10 @@ signals:
   void                  activated( SUIT_Application* );
   void                  infoChanged( QString );
 
+public slots:
+  virtual void          updateCommandsStatus();
+  virtual void          onHelpContextModule( const QString&, const QString&, const QString& = QString() );
+
 private slots:
   void                  onInfoClear();
 

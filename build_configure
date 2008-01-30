@@ -25,22 +25,22 @@ cd ${CONF_DIR}
 ABS_CONF_DIR=`pwd`
 
 mkdir -p salome_adm/unix/config_files
-cp -f ${KERNEL_ROOT_DIR}/salome_adm/unix/config_files/* salome_adm/unix/config_files
-cp -f ${KERNEL_ROOT_DIR}/salome_adm/unix/pythonbe.py salome_adm/unix
+#cp -f ${KERNEL_ROOT_DIR}/salome_adm/unix/config_files/* salome_adm/unix/config_files
+#cp -f ${KERNEL_ROOT_DIR}/salome_adm/unix/pythonbe.py salome_adm/unix
 
 # remove KERNEL deprecated configure files
-for deprecated in ac_cc_warnings.m4 ac_cxx_partial_specialization.m4 \
-  check_mico.m4 config.guess ltmain.sh ac_cxx_bool.m4 ltconfig \
-  ac_cxx_typename.m4 check_pthreads.m4 config.sub libtool.m4 ac_cxx_mutable.m4
-do
-  rm  salome_adm/unix/config_files/${deprecated}
-done
+#for deprecated in ac_cc_warnings.m4 ac_cxx_partial_specialization.m4 \
+#  check_mico.m4 config.guess ltmain.sh ac_cxx_bool.m4 ltconfig \
+#  ac_cxx_typename.m4 check_pthreads.m4 config.sub libtool.m4 ac_cxx_mutable.m4
+#do
+#  rm  salome_adm/unix/config_files/${deprecated}
+#done
 
 # remove KERNEL CVS directories in subdirectory salome_adm
-for deprecated in CVS unix/CVS unix/config_files/CVS
-do
-  rm -rf salome_adm/${deprecated}
-done
+#for deprecated in CVS unix/CVS unix/config_files/CVS
+#do
+#  rm -rf salome_adm/${deprecated}
+#done
 
 cp -f ${KERNEL_ROOT_DIR}/salome_adm/unix/SALOMEconfig.h.in salome_adm/unix
 
@@ -53,7 +53,8 @@ cp -f ${KERNEL_ROOT_DIR}/salome_adm/unix/SALOMEconfig.h.in salome_adm/unix
 #   autom4te.cache (directory)
 echo "====================================================== aclocal"
 
-aclocal -I adm_local/unix/config_files -I salome_adm/unix/config_files  || exit 1
+aclocal -I adm_local/unix/config_files \
+        -I ${KERNEL_ROOT_DIR}/salome_adm/unix/config_files || exit 1
 
 # ____________________________________________________________________
 # libtoolize creates some configuration files (ltmain.sh,

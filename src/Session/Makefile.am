@@ -51,7 +51,7 @@ libSalomeSession_la_CPPFLAGS= $(QT_MT_INCLUDES) $(PYTHON_INCLUDES) \
 	@CORBA_CXXFLAGS@ @CORBA_INCLUDES@ \
 	-I$(top_builddir)/salome_adm/unix -I$(top_builddir)/idl \
 	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../Event \
-	-I$(srcdir)/../Style
+	-I$(srcdir)/../Style @LIBXML_INCLUDES@
 
 libSalomeSession_la_LDFLAGS= $(QT_MT_LIBS) $(KERNEL_LDFLAGS) -lSalomeNS \
 	-lSalomeLifeCycleCORBA -lOpUtil -lSALOMELocalTrace -lSalomeCatalog \
@@ -68,7 +68,7 @@ SALOME_Session_Server_CPPFLAGS= $(libSalomeSession_la_CPPFLAGS)
 SALOME_Session_Server_LDADD= $(libSalomeSession_la_LDFLAGS) $(OMNIORB_LIBS) \
 	$(HDF5_LIBS) -lSalomeContainer -lSalomeResourcesManager -lTOOLSDS \
 	-lSalomeHDFPersist -lSalomeDSImpl -lSalomeGenericObj -lRegistry \
-	-lSalomeNotification -lSALOMEBasics ../Qtx/libqtx.la \
+	-lSalomeNotification -lSALOMEBasics -lSalomeLauncher ../Qtx/libqtx.la \
 	$(top_builddir)/idl/libSalomeIDLGUI.la \
 	libSalomeSession.la
 

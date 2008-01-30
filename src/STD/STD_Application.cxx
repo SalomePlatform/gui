@@ -589,6 +589,8 @@ void STD_Application::updateDesktopTitle()
 /*!Update commands status.*/
 void STD_Application::updateCommandsStatus()
 {
+  SUIT_Application::updateCommandsStatus();
+
   bool aHasStudy = activeStudy() != 0;
   bool aIsNeedToSave = false;
   if ( aHasStudy )

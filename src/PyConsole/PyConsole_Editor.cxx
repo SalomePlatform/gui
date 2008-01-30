@@ -115,8 +115,10 @@ static QString DOTS_PROMPT  = "... ";
 
 /*!
   \class ExecCommand
-  \brief Python command execution request [internal].
- */
+  \brief Python command execution request.
+  \internal
+*/
+
 class ExecCommand : public PyInterp_LockRequest
 {
 public:
@@ -148,17 +150,10 @@ protected:
     {
       int ret = getInterp()->run( myCommand.toLatin1() );
       if ( ret < 0 )
-	      myState = PyInterp_Event::ERROR;
+	myState = PyInterp_Event::ERROR;
       else if ( ret > 0 )
-	      myState = PyInterp_Event::INCOMPLETE;
-      myError  = getInterp()->getverr().c_str();
-      myOutput = getInterp()->getvout().c_str();
+	myState = PyInterp_Event::INCOMPLETE;
     } 
-    else
-    {
-      myError = "";
-      myOutput = "";
-    }
   }
 
   /*!
@@ -170,14 +165,41 @@ protected:
     return new PyInterp_Event( myState, (PyInterp_Request*)this );    
   }
 
-public:
-  QString myError;     //!< Python command error message
-  QString myOutput;    //!< Python command output log
-
 private:
   QString myCommand;   //!< Python command
   int     myState;     //!< Python command execution status
 };
+
+/*!
+  \class PrintEvent
+  \brief Python command output backend event.
+  \internal
+*/
+
+#define PRINT_EVENT 65432
+
+class PrintEvent : public QEvent
+{
+public:
+  /*!
+    \brief Constructor
+    \param c message text (python trace)
+  */
+  PrintEvent( const char* c ) : QEvent( (QEvent::Type)PRINT_EVENT ), myText( c ) {}
+  /*!
+    \brief Get message
+    \return message text (python trace)
+  */
+  QString text() const { return myText; }
+
+private:
+  QString myText; //!< Event message (python trace)
+};
+
+void staticCallback( void* data, char* c )
+{
+  QApplication::postEvent( (PyConsole_Editor*)data, new PrintEvent( c ) ); 
+}
 
 /*!
   \brief Constructor. 
@@ -200,9 +222,12 @@ PyConsole_Editor::PyConsole_Editor( PyConsole_Interp* theInterp,
   setUndoRedoEnabled( false );
 
   myPrompt = READY_PROMPT;
-  setLineWrapMode( QTextEdit::NoWrap );
-  setWordWrapMode( QTextOption::NoWrap );
+  setLineWrapMode( QTextEdit::WidgetWidth );
+  setWordWrapMode( QTextOption::WrapAnywhere );
   setAcceptRichText( false );
+
+  theInterp->setvoutcb( staticCallback, this );
+  theInterp->setverrcb( staticCallback, this );
 
   // san - This is necessary for troubleless initialization
   onPyInterpChanged( theInterp );
@@ -870,25 +895,23 @@ void PyConsole_Editor::customEvent( QEvent* event )
 {
   switch( event->type() )
   {
+  case PRINT_EVENT:
+    {
+      PrintEvent* pe=(PrintEvent*)event;
+      addText( pe->text() );
+      return;
+    }
   case PyInterp_Event::OK:
   case PyInterp_Event::ERROR:
   {
-    PyInterp_Event* pe = dynamic_cast<PyInterp_Event*>( event );
-    if ( pe )
-    {
-      ExecCommand* ec = dynamic_cast<ExecCommand*>( pe->GetRequest() );
-      if ( ec )
-      {
-	// The next line has appeared dangerous in case if
-	// Python command execution has produced very large output.
-	// A more clever approach is needed...
-	// print python output
-	addText( ec->myOutput, true );
-	addText( ec->myError );
-      }
-    }
     // clear command buffer
     myCommandBuffer.truncate( 0 );
+    // add caret return line if necessary
+    QTextBlock par = document()->end().previous();
+    QString txt = par.text();
+    txt.truncate( txt.length() - 1 );
+    if ( !txt.isEmpty() )
+      addText( "", true );
     // set "ready" prompt
     myPrompt = READY_PROMPT;
     addText( myPrompt );
@@ -903,6 +926,12 @@ void PyConsole_Editor::customEvent( QEvent* event )
   {
     // extend command buffer (multi-line command)
     myCommandBuffer.append( "\n" );
+    // add caret return line if necessary
+    QTextBlock par = document()->end().previous();
+    QString txt = par.text();
+    txt.truncate( txt.length() - 1 );
+    if ( !txt.isEmpty() )
+      addText( "", true );
     // set "dot" prompt
     myPrompt = DOTS_PROMPT;
     addText( myPrompt, true );

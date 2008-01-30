@@ -27,7 +27,7 @@
 #include "SALOMEGUI_Swig.hxx"
 %}
 
-%include "pointer.i"
+%include "cpointer.i"
 
 /* Exception handler for all functions */
 %exception {

@@ -58,9 +58,10 @@ LightApp_Selection::LightApp_Selection( const QString& client, LightApp_Selectio
     while ( it.hasNext() )
     {
       SUIT_Selector* selector = it.next();
-      if( selector->type()!=client )
+      if( selector->type() != client && selector->isEnabled() )
       {
-	mgr->selected( cur_sel, selector->type() );
+	//mgr->selected( cur_sel, selector->type() );
+        selector->selected( cur_sel );
 	SUIT_DataOwnerPtrList::const_iterator aLIt = cur_sel.begin(), aLLast = cur_sel.end();
 	for( ; aLIt!=aLLast; aLIt++ )
 	  sel.append( *aLIt ); //check entry and don't append if such entry is in list already

@@ -50,6 +50,7 @@ public:
 
   virtual bool        isSaved()  const;
   virtual bool        isModified() const;
+  virtual void        Modified();
 
   virtual void        addComponent   ( const CAM_DataModel* dm);
 
@@ -71,6 +72,8 @@ public:
   QString             getNameOfSavePoint(int savePoint);
   void                setNameOfSavePoint(int savePoint, const QString& nameOfSavePoint);
   virtual std::string getVisualComponentName();
+
+  virtual void        restoreState(int savePoint);
 
 protected:
   virtual void        saveModuleData ( QString theModuleName, QStringList theListOfFiles );

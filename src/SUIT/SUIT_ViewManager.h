@@ -77,6 +77,8 @@ public:
   virtual void     setShown( const bool );
   virtual void     setDestructiveClose( const bool );
 
+  int              getId() const;
+
 public slots:
   void             createView();
   void             closeAllViews();

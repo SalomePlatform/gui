@@ -7,7 +7,7 @@
     </message>
     <message>
         <source>ABOUT_COPYRIGHT</source>
-        <translation>Copyright (C) 2003-2006 OPEN CASCADE, EADS/CCR, LIP6,
+        <translation>Copyright (C) 2003-2008 OPEN CASCADE, EADS/CCR, LIP6,
 CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translation>
     </message>
     <message>
@@ -199,6 +199,10 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
     </message>
     <message>
         <source>NEW_WINDOW_3</source>
+        <translation>&amp;QxGraph view</translation>
+    </message>
+    <message>
+        <source>NEW_WINDOW_4</source>
         <translation>VT&amp;K view</translation>
     </message>
     <message>
@@ -333,52 +337,52 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
 <context>
     <name>LightApp_Module</name>
     <message>
-        <source>MEN_ERASE</source>
-        <translation>Erase</translation>
+        <source>MEN_HIDE</source>
+        <translation>Hide</translation>
     </message>
     <message>
         <source>TOP_DISPLAY_ONLY</source>
-        <translation>Display only</translation>
+        <translation>Show only</translation>
     </message>
     <message>
         <source>STB_DISPLAY_ONLY</source>
-        <translation>Display only</translation>
+        <translation>Show only</translation>
     </message>
     <message>
         <source>MEN_DISPLAY_ONLY</source>
-        <translation>Display only</translation>
+        <translation>Show only</translation>
     </message>
     <message>
-        <source>TOP_ERASE</source>
-        <translation>Erase</translation>
+        <source>TOP_HIDE</source>
+        <translation>HIde</translation>
     </message>
     <message>
         <source>MEN_ERASE_ALL</source>
-        <translation>Erase all</translation>
+        <translation>Hide all</translation>
     </message>
     <message>
-        <source>STB_ERASE</source>
-        <translation>Erase</translation>
+        <source>STB_HIDE</source>
+        <translation>Hide</translation>
     </message>
     <message>
-        <source>STB_DISPLAY</source>
-        <translation>Display</translation>
+        <source>STB_SHOW</source>
+        <translation>Show</translation>
     </message>
     <message>
-        <source>TOP_DISPLAY</source>
-        <translation>Display</translation>
+        <source>TOP_SHOW</source>
+        <translation>Show</translation>
     </message>
     <message>
-        <source>MEN_DISPLAY</source>
-        <translation>Display</translation>
+        <source>MEN_SHOW</source>
+        <translation>Show</translation>
     </message>
     <message>
         <source>STB_ERASE_ALL</source>
-        <translation>Erase all</translation>
+        <translation>Hide all</translation>
     </message>
     <message>
         <source>TOP_ERASE_ALL</source>
-        <translation>Erase all</translation>
+        <translation>Hide all</translation>
     </message>
 </context>
 <context>

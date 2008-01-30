@@ -771,6 +771,8 @@ VTKViewer_GeometryFilter
     {
     delete [] cellVis;
     }
+
+  return 0;
 }
 
 

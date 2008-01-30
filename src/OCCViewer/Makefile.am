@@ -31,6 +31,7 @@ salomeinclude_HEADERS= \
 	OCCViewer_ViewModel.h \
 	OCCViewer_ViewPort3d.h \
 	OCCViewer_ViewPort.h \
+	OCCViewer_ViewSketcher.h \
 	OCCViewer_ViewWindow.h \
 	OCCViewer_VService.h \
 	OCCViewer_CreateRestoreViewDlg.h \
@@ -44,6 +45,7 @@ dist_libOCCViewer_la_SOURCES= \
 	OCCViewer_ViewModel.cxx \
 	OCCViewer_ViewPort3d.cxx \
 	OCCViewer_ViewPort.cxx \
+	OCCViewer_ViewSketcher.cxx \
 	OCCViewer_ViewWindow.cxx \
 	OCCViewer_VService.cxx \
 	OCCViewer_CreateRestoreViewDlg.cxx \
@@ -55,6 +57,7 @@ MOC_FILES= \
 	OCCViewer_ViewModel_moc.cxx \
 	OCCViewer_ViewPort3d_moc.cxx \
 	OCCViewer_ViewPort_moc.cxx \
+	OCCViewer_ViewSketcher_moc.cxx \
 	OCCViewer_ViewWindow_moc.cxx \
 	OCCViewer_ViewManager_moc.cxx \
 	OCCViewer_CreateRestoreViewDlg_moc.cxx \

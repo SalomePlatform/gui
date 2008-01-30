@@ -38,6 +38,8 @@ public:
   ~PyLockWrapper();
 };
 
+typedef void PyOutChanged(void* data,char * c);
+
 class PYINTERP_EXPORT PyInterp_Interp
 {
 public:
@@ -57,8 +59,8 @@ public:
   PyLockWrapper GetLockWrapper();
 
   std::string getbanner(); 
-  std::string getverr();
-  std::string getvout();  
+  void setverrcb(PyOutChanged*,void*);
+  void setvoutcb(PyOutChanged*,void*);
 
   const char * getPrevious();
   const char * getNext();    
@@ -102,5 +104,13 @@ public:
     return *this;
   }
 };
+
+typedef struct {
+  PyObject_HEAD
+  int softspace;
+  PyOutChanged* _cb;
+  void* _data;
+  bool _iscerr;
+} PyStdOut;
 
 #endif // PYINTERP_INTERP_H

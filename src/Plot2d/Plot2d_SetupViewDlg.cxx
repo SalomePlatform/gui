@@ -22,6 +22,8 @@
 
 #include "Plot2d_SetupViewDlg.h"
 
+#include <SUIT_Session.h>
+#include <SUIT_Application.h>
 #include <QtxColorButton.h>
 
 #include <QCheckBox>
@@ -305,10 +307,13 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent,
   myOkBtn->setDefault( TRUE );
   myCancelBtn = new QPushButton( tr( "BUT_CANCEL" ), this );
   myCancelBtn->setAutoDefault( TRUE );
+  myHelpBtn = new QPushButton( tr( "BUT_HELP" ), this );
+  myHelpBtn->setAutoDefault( TRUE );
   QHBoxLayout* btnLayout = new QHBoxLayout;
   btnLayout->addWidget( myOkBtn );
   btnLayout->addStretch();
   btnLayout->addWidget( myCancelBtn );
+  btnLayout->addWidget( myHelpBtn );
   
   // layout widgets
   topLayout->addWidget( myTitleCheck,  0,    0    );
@@ -344,6 +349,7 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent,
 
   connect( myOkBtn,         SIGNAL( clicked() ), this, SLOT( accept() ) );
   connect( myCancelBtn,     SIGNAL( clicked() ), this, SLOT( reject() ) );
+  connect( myHelpBtn,       SIGNAL( clicked() ), this, SLOT( onHelp() ) );
   
   if ( mySecondAxisY ) {
     connect( myTitleY2Check,   SIGNAL( clicked() ), this, SLOT( onY2TitleChecked() ) );
@@ -837,4 +843,14 @@ void Plot2d_SetupViewDlg::onY2GridMinorChecked()
 bool Plot2d_SetupViewDlg::isSetAsDefault()
 {
   return myDefCheck->isChecked();
+}
+
+/*!
+  Slot, called when user clicks "Help" button
+*/
+void Plot2d_SetupViewDlg::onHelp()
+{
+  SUIT_Application* app = SUIT_Session::session()->activeApplication();
+  if ( app )
+    app->onHelpContextModule( "GUI", "plot2d_viewer_page.html", "settings" );
 }

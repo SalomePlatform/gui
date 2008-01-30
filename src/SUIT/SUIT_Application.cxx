@@ -26,6 +26,7 @@
 #include <QTimer>
 #include <QLabel>
 #include <QStatusBar>
+#include <QApplication>
 
 #include <QtxAction.h>
 #include <QtxActionMenuMgr.h>
@@ -36,9 +37,9 @@
 */
 SUIT_Application::SUIT_Application()
 : QObject( 0 ),
-myStudy( 0 ),
-myDesktop( 0 ),
-myStatusLabel( 0 )
+  myStudy( 0 ),
+  myDesktop( 0 ),
+  myStatusLabel( 0 )
 {
   if ( SUIT_Session::session() )
     SUIT_Session::session()->insertApplication( this );
@@ -49,8 +50,9 @@ myStatusLabel( 0 )
 */
 SUIT_Application::~SUIT_Application() 
 {
-  delete myStudy;
-  myStudy = 0;
+  SUIT_Study* s = myStudy;
+  setActiveStudy( 0 );
+  delete s;
 
   setDesktop( 0 );
 }
@@ -199,6 +201,13 @@ void SUIT_Application::onInfoClear()
 }
 
 /*!
+  Update status of the registerd actions
+*/
+void SUIT_Application::updateCommandsStatus()
+{
+}
+
+/*!
   Initialize with application arguments
   \param argc - number of application arguments
   \param argv - array of application arguments
@@ -234,8 +243,11 @@ void SUIT_Application::setDesktop( SUIT_Desktop* desk )
 
   delete myDesktop;
   myDesktop = desk;
-  if ( myDesktop )
+  if ( myDesktop ) {
     connect( myDesktop, SIGNAL( activated() ), this, SLOT( onDesktopActivated() ) );
+    // Force desktop activation (NPAL16628)
+    QApplication::postEvent(myDesktop, new QEvent(QEvent::WindowActivate));
+  }
 }
 
 /*!
@@ -257,6 +269,13 @@ void SUIT_Application::setActiveStudy( SUIT_Study* study )
   if ( myStudy == study )
     return;
 
+  if ( myStudy )
+    disconnect( myStudy, SIGNAL( studyModified( SUIT_Study* ) ), 
+		this, SLOT( updateCommandsStatus() ) );
+  if ( study )
+    connect( study, SIGNAL( studyModified( SUIT_Study* ) ), 
+	     this, SLOT( updateCommandsStatus() ) );
+	    
   myStudy = study;
 }
 
@@ -630,4 +649,13 @@ QAction* SUIT_Application::separator()
 void SUIT_Application::onDesktopActivated()
 {
   emit activated( this );
+}
+
+/*!
+  SLOT: is used for Help browsing
+*/
+void SUIT_Application::onHelpContextModule( const QString& /*theComponentName*/,
+                                            const QString& /*theFileName*/,
+					    const QString& /*theContext*/ )
+{
 }

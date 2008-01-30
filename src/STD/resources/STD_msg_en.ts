@@ -63,7 +63,7 @@
     </message>
     <message>
         <source>QUE_DESK_EXIT</source>
-        <translation>Do you really want to quit ?</translation>
+        <translation>Are you sure you want to quit?</translation>
     </message>
     <message>
         <source>INF_INFO</source>
@@ -454,6 +454,14 @@ Try to use another file name.</translation>
         <source>INF_DOCUMENT_MODIFIED</source>
         <translation>Document &quot;%1&quot; has been modified.
 Do you want to save changes?</translation>
+    </message>
+    <message>
+        <source>CLOSE_STUDY</source>
+        <translation>Close active study</translation>
+    </message>
+    <message>
+        <source>CLOSE_QUESTION</source>
+        <translation>Do you want to save study before closing?</translation>
     </message>
 </context>
 </TS>

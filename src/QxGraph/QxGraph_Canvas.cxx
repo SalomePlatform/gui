@@ -27,6 +27,7 @@
 #include <SUIT_ResourceMgr.h>
 
 #include <qobjectlist.h>
+#include <QxGraph_CanvasView.h>
 
 /*!
   Constructor
@@ -67,8 +68,33 @@ QxGraph_Canvas::~QxGraph_Canvas()
 */
 void QxGraph_Canvas::addView(QCanvasView* theView)
 {
+  myViews.append( theView );
   QCanvas::addView(theView);
-  theView->setPaletteBackgroundColor(backgroundColor().light(120));
+  theView->setPaletteBackgroundColor(backgroundColor().light(120)); 
+}
+
+/*!
+  Remove view
+*/
+void QxGraph_Canvas::removeView( QCanvasView* theView )
+{
+  myViews.remove( theView );
+}
+
+/*!
+  Remove item
+*/
+void QxGraph_Canvas::removeItem( QCanvasItem* theItem )
+{
+  QValueList< QCanvasView* >::iterator anIter;
+  for ( anIter = myViews.begin(); anIter != myViews.end(); ++anIter )
+  {
+    QxGraph_CanvasView* aView = dynamic_cast<QxGraph_CanvasView*>( *anIter );
+    if ( aView )
+      aView->itemRemoved( theItem );
+  }
+
+  QCanvas::removeItem( theItem );
 }
 
 /*!

@@ -200,7 +200,7 @@ OCCViewer_ViewPort::~OCCViewer_ViewPort()
 void OCCViewer_ViewPort::initialize()
 {
   myPaintersRedrawing = false;
-  myEnableSketching = false;
+  myEnableSketching = true;
   myEnableTransform = true;
   
   setMouseTracking( true );

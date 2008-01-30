@@ -99,8 +99,7 @@ public:
          PreferencesId, MRUId, ModulesListId, UserID };
 
 protected:
-  enum { NewStudyId = 1,
-	 OpenStudyId };
+  enum { NewStudyId = 1, OpenStudyId };
 
 public:
   LightApp_Application();

@@ -94,7 +94,7 @@
     </message>
     <message>
         <source>APPCLOSE_SAVE</source>
-        <translation>&amp;Save&amp;&amp;Close</translation>
+        <translation>&amp;Save &amp;&amp; Close</translation>
     </message>
     <message>
         <source>TOT_DESK_FILE_LOAD_SCRIPT</source>
@@ -159,7 +159,7 @@ Do you want to reload it ?</translation>
     </message>
     <message>
         <source>APPCLOSE_DESCRIPTION</source>
-        <translation>Do you want to close or only unload the study</translation>
+        <translation>Do you want to close or unload study before closing?</translation>
     </message>
     <message>
         <source>PRP_DESK_PROPERTIES</source>
@@ -315,6 +315,13 @@ Do you want to reload it ?</translation>
     <message>
         <source>TLT_STUDY_PROPERTIES</source>
         <translation>Study Properties</translation>
+    </message>
+</context>
+<context>
+    <name>SalomeApp_ExitDlg</name>
+    <message>
+        <source>SHUTDOWN_SERVERS</source>
+        <translation>Shutdown standalone servers</translation>
     </message>
 </context>
 </TS>

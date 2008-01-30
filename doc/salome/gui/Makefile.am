@@ -24,15 +24,19 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 EXTRA_DIST+=GUI
 
+doxygen=@DOXYGEN@
+
 usr_docs:
-	cp -fr $(srcdir)/GUI ./
-	-find $(PWD) -name CVS -prune -exec rm -rf {} \;
+	cd ./GUI; \
+	echo "Running doxygen in directory: "`pwd`; \
+	$(doxygen) ./doxyfile;
 
 docs: usr_docs
 
 clean-local:
-	rm -fr `ls | grep -v "Makefile"`
-	rm -fr GUI
+	cd ./GUI; \
+	rm -fr `ls | grep -v "doxyfile"`
+	rm -fr `ls | grep -vE "Makefile|GUI"`
 
 install-data-local: usr_docs
 	mkdir -p $(docdir)/gui
@@ -41,3 +45,9 @@ install-data-local: usr_docs
 
 uninstall-local:
 	rm -rf $(docdir)/gui/GUI
+
+docguidir=$(docdir)/gui/GUI
+
+nodist_docgui_DATA= GUI/doxyfile
+GUI/doxyfile: GUI/doxyfile.in
+EXTRA_DIST+= GUI/doxyfile.in

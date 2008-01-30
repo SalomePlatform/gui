@@ -306,6 +306,16 @@ bool SalomeApp_Study::isModified() const
 }
 
 /*!
+  Set study modified to \a on.
+ */
+void SalomeApp_Study::Modified()
+{
+  if(_PTR(Study) aStudy = studyDS())
+    aStudy->Modified();
+  LightApp_Study::Modified();
+}
+
+/*!
   \return if data model is saved
 */
 bool SalomeApp_Study::isSaved() const
@@ -724,6 +734,15 @@ std::string SalomeApp_Study::getVisualComponentName()
 {
   return "Interface Applicative";
 }
+
+/*!
+ * \brief Restores the study state
+ */
+void SalomeApp_Study::restoreState(int savePoint)
+{
+  SalomeApp_VisualState((SalomeApp_Application*)application()).restoreState(savePoint);
+}
+
 
 /*!
   Slot: called on change of a root of a data model. Redefined from CAM_Study

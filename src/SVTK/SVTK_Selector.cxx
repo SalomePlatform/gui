@@ -37,6 +37,27 @@
 #include <TColStd_IndexedMapOfInteger.hxx>
 
 #include <vtkCallbackCommand.h>
+#include <vtkActorCollection.h>
+#include <vtkCellPicker.h>
+
+
+/*!
+  Find first SALOME_Actor from the end of actors collection
+*/
+inline
+SALOME_Actor* 
+GetLastSALOMEActor(vtkActorCollection* theCollection)
+{
+  if (theCollection) {
+    for (int i = theCollection->GetNumberOfItems() - 1; i >= 0; i--) {
+      if (SALOME_Actor* anActor = dynamic_cast<SALOME_Actor*>(theCollection->GetItemAsObject(i)))
+	if (anActor->hasIO())
+	  return anActor;
+    }
+  }
+  return NULL;
+}
+
 
 /*!
   \return new SVTK_Selector
@@ -52,9 +73,14 @@ SVTK_Selector
   Default constructor
 */
 SVTK_SelectorDef
-::SVTK_SelectorDef()
+::SVTK_SelectorDef():
+  myPicker(vtkPicker::New()),
+  myCellPicker(vtkCellPicker::New())
 {
   mySelectionMode = ActorSelection;
+
+  myPicker->Delete();
+  myCellPicker->Delete();
 }
 
 /*!
@@ -517,3 +543,34 @@ SVTK_SelectorDef
   return Handle(VTKViewer_Filter)();
 }
 
+SALOME_Actor*
+SVTK_SelectorDef
+::Pick(const SVTK_SelectionEvent* theEvent, vtkRenderer* theRenderer) const
+{
+  myCellPicker->Pick(theEvent->myX,
+		     theEvent->myY, 
+		     0.0,
+		     theRenderer);
+  
+  vtkActorCollection* aListActors = myCellPicker->GetActors();
+  SALOME_Actor* anActor = GetLastSALOMEActor(aListActors);
+  
+  if (! anActor) {
+    myPicker->Pick(theEvent->myX,
+		   theEvent->myY, 
+		   0.0,
+		   theRenderer);
+    aListActors = myPicker->GetActors();
+    anActor = GetLastSALOMEActor(aListActors);
+  }
+  
+  return anActor;
+}
+
+void
+SVTK_SelectorDef
+::SetTolerance(const double& theTolerance) 
+{
+  myPicker->SetTolerance(theTolerance); 	
+  myCellPicker->SetTolerance(theTolerance);
+}

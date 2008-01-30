@@ -304,7 +304,6 @@ echo testing VTK
 echo ---------------------------------------------
 echo
 
-OPTIONS_VTK
 CHECK_VTK
 
 echo
@@ -489,6 +488,14 @@ CHECK_CPPUNIT
 
 echo
 echo ---------------------------------------------
+echo Testing libxml2
+echo ---------------------------------------------
+echo
+
+CHECK_LIBXML
+
+echo
+echo ---------------------------------------------
 echo Summary
 echo ---------------------------------------------
 echo
@@ -502,7 +509,7 @@ fi
 
 if test "$GUI_DISABLE_CORBA" != "yes"; then
 variables="cc_ok lex_yacc_ok python_ok swig_ok threads_ok OpenGL_ok qt_ok vtk_ok hdf5_ok
-omniORB_ok boost_ok occ_ok sip_ok pyqt_ok qwt_ok doxygen_ok graphviz_ok Kernel_ok"
+omniORB_ok boost_ok occ_ok sip_ok pyqt_ok qwt_ok doxygen_ok graphviz_ok libxml_ok Kernel_ok"
 else
 variables="cc_ok lex_yacc_ok python_ok threads_ok OpenGL_ok qt_ok vtk_ok hdf5_ok boost_ok
 occ_ok sip_ok pyqt_ok qwt_ok doxygen_ok graphviz_ok Kernel_ok"
@@ -602,9 +609,11 @@ AC_OUTPUT([ \
   ./doc/Makefile \
   ./doc/salome/Makefile \
   ./doc/salome/gui/Makefile \
+  ./doc/salome/gui/GUI/doxyfile \
   ./doc/salome/tui/Makefile \
   ./doc/salome/tui/GUI/doxyfile \
   ./src/Makefile \
+  ./src/CASCatch/Makefile \
   ./src/Qtx/Makefile \
   ./src/Style/Makefile \
   ./src/DDS/Makefile \

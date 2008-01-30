@@ -29,16 +29,17 @@
 #include <vtkPointPicker.h>
 #include <vtkCellPicker.h>
 #include <vtkAxisActor2D.h>
+#include <vtkGL2PSExporter.h>
 
 #include "QtxAction.h"
 
 #include "SUIT_Session.h"
 #include "SUIT_MessageBox.h"
 #include "SUIT_Accel.h"
-
 #include "SUIT_Tools.h"
 #include "SUIT_ResourceMgr.h"
 #include "SUIT_Accel.h"
+#include "SUIT_OverrideCursor.h"
 
 #include "VTKViewer_Utilities.h"
 
@@ -719,6 +720,45 @@ SVTK_ViewWindow
   return myDumpImage;
 }
 
+QString SVTK_ViewWindow::filter() const
+{
+  return tr( "SVTK_IMAGE_FILES" );
+}
+
+bool SVTK_ViewWindow::dumpViewToFormat( const QImage& img, const QString& fileName, const QString& format )
+{
+  if ( format != "PS" && format != "EPS" && format != "PDF" )
+    return SUIT_ViewWindow::dumpViewToFormat( img, fileName, format );
+
+  SUIT_OverrideCursor wc;
+
+  vtkGL2PSExporter *anExporter = vtkGL2PSExporter::New();
+  anExporter->SetRenderWindow(getRenderWindow());
+
+  if ( format == "PS" ) {
+    anExporter->SetFileFormatToPS();
+    anExporter->CompressOff();
+  }
+
+  if ( format == "EPS" ) {
+    anExporter->SetFileFormatToEPS();
+    anExporter->CompressOff();
+  }
+
+  if ( format == "PDF" ) {
+    anExporter->SetFileFormatToPDF();
+  }
+
+  QString aFilePrefix(fileName);
+  QString anExtension(SUIT_Tools::extension(fileName));
+  aFilePrefix.truncate(aFilePrefix.length() - 1 - anExtension.length());
+  anExporter->SetFilePrefix(aFilePrefix.toLatin1().data());
+  anExporter->Write();
+  anExporter->Delete();
+
+  return true;
+}
+
 /*!
   \refresh QImage, containing all scene rendering in window
 */
@@ -759,9 +799,10 @@ SVTK_ViewWindow
 void
 SVTK_ViewWindow
 ::SetSelectionTolerance(const double& theTolNodes, 
-			const double& theTolItems)
+			const double& theTolItems,
+			const double& theTolObjects)
 {
-  myView->SetSelectionTolerance(theTolNodes,theTolItems);
+  myView->SetSelectionTolerance(theTolNodes, theTolItems, theTolObjects);
 }
 
 /*!

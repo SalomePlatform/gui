@@ -47,7 +47,8 @@ salomeinclude_HEADERS= \
 	SalomeApp_TypeFilter.h \
 	SalomeApp_StudyPropertiesDlg.h \
 	SalomeApp_CheckFileDlg.h \
-	SalomeApp_VisualState.h
+	SalomeApp_VisualState.h \
+	SalomeApp_ExitDlg.h
 
 dist_libSalomeApp_la_SOURCES= \
 	SalomeApp_Module.cxx \
@@ -66,7 +67,8 @@ dist_libSalomeApp_la_SOURCES= \
 	SalomeApp_StudyPropertiesDlg.cxx \
 	SalomeApp_ListView.cxx \
 	SalomeApp_CheckFileDlg.cxx \
-	SalomeApp_VisualState.cxx
+	SalomeApp_VisualState.cxx \
+	SalomeApp_ExitDlg.cxx
 
 MOC_FILES= \
 	SalomeApp_Application_moc.cxx \
@@ -76,7 +78,9 @@ MOC_FILES= \
 	SalomeApp_Study_moc.cxx \
 	SalomeApp_StudyPropertiesDlg_moc.cxx \
 	SalomeApp_ListView_moc.cxx \
-	SalomeApp_CheckFileDlg_moc.cxx
+	SalomeApp_CheckFileDlg_moc.cxx \
+	SalomeApp_ExitDlg_moc.cxx
+
 nodist_libSalomeApp_la_SOURCES= $(MOC_FILES)
 
 dist_salomeres_DATA= \
@@ -95,18 +99,16 @@ libSalomeApp_la_CPPFLAGS=$(PYTHON_INCLUDES) $(QT_INCLUDES) $(QWT_INCLUDES) \
 	-I$(srcdir)/../PyConsole -I$(srcdir)/../TOOLSGUI \
 	-I$(srcdir)/../PyInterp -I$(srcdir)/../Session -I$(top_builddir)/idl \
 	-I$(srcdir)/../Event \
-	-I$(top_builddir)/salome_adm/unix @CORBA_CXXFLAGS@ @CORBA_INCLUDES@
+	-I$(srcdir)/../CASCatch \
+	-I$(top_builddir)/salome_adm/unix @CORBA_CXXFLAGS@ @CORBA_INCLUDES@ @LIBXML_INCLUDES@
 libSalomeApp_la_LDFLAGS=$(PYTHON_LIBS) $(QT_MT_LIBS) 
 libSalomeApp_la_LIBADD= $(KERNEL_LDFLAGS) -lOpUtil -lSALOMELocalTrace -lSalomeDSClient \
-	../SUIT/libsuit.la ../STD/libstd.la ../CAM/libCAM.la \
+	../SUIT/libsuit.la ../STD/libstd.la ../CAM/libCAM.la ../ObjBrowser/libObjBrowser.la \
 	../Prs/libSalomePrs.la ../SPlot2d/libSPlot2d.la ../GLViewer/libGLViewer.la \
 	../OCCViewer/libOCCViewer.la ../VTKViewer/libVTKViewer.la ../OBJECT/libSalomeObject.la \
 	../SVTK/libSVTK.la ../SOCC/libSOCC.la ../PyInterp/libPyInterp.la \
 	../PyConsole/libPyConsole.la ../LogWindow/libLogWindow.la \
 	../LightApp/libLightApp.la ../TOOLSGUI/libToolsGUI.la ../Session/libSalomeSession.la \
-	$(CAS_KERNEL)
-
-# QT 4 PORTING TODO
-#../ObjBrowser/libObjBrowser.la
+	../CASCatch/libCASCatch.la $(CAS_KERNEL)
 
 EXTRA_DIST+=SalomeApp_PyInterp.h

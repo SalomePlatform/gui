@@ -96,7 +96,7 @@ void Session_ServerLauncher::run()
   _ServerLaunch->wakeAll();
 
   // run ORB
-  _orb->run(); // this thread waits, during omniORB process events
+  //_orb->run(); // No need to call orb->run() : it waits on a lock. Qt is already waiting in the mainloop.
 }
 
 /*! 

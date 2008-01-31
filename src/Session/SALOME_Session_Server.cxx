@@ -310,6 +310,33 @@ bool isFound( const char* str, int argc, char** argv )
   return false;
 }
 
+void killOmniNames( )
+{
+    QString fileName( ::getenv ("OMNIORB_CONFIG") );
+    QString portNumber;
+    if ( !fileName.isEmpty() ) 
+    {
+      QFile aFile( fileName );
+      if ( aFile.open(IO_ReadOnly) ) {
+        QRegExp re("InitRef = .*:([0-9]+)$");
+        QTextStream stream ( &aFile );
+        while ( !stream.atEnd() ) {
+          QString textLine = stream.readLine();
+          if ( re.search( textLine ) > -1 )
+            portNumber = re.cap(1);
+        }
+        aFile.close();
+      }
+    }
+
+    if ( !portNumber.isEmpty() ) 
+    {
+      QString cmd ;
+      cmd = QString( "ps -eo pid,command | grep -v grep | grep -E \"omniNames.*%1\" | awk '{cmd=sprintf(\"kill -9 %s\",$1); system(cmd)}'" ).arg( portNumber );
+      system ( cmd.latin1() );
+    }
+}
+
 // shutdown standalone servers
 void shutdownServers( SALOME_NamingService* theNS )
 {
@@ -367,40 +394,22 @@ void shutdownServers( SALOME_NamingService* theNS )
     CORBA::Object_var objSDS = theNS->Resolve("/myStudyManager");
     SALOMEDS::StudyManager_var studyManager = SALOMEDS::StudyManager::_narrow(objSDS) ;
     if ( !CORBA::is_nil(studyManager) && ( session->getPID() != studyManager->getPID() ) )
-      studyManager->ShutdownWithExit();
+      studyManager->Shutdown();
     
     // 7) ModuleCatalog
     CORBA::Object_var objMC=theNS->Resolve("/Kernel/ModulCatalog");
     SALOME_ModuleCatalog::ModuleCatalog_var catalog = SALOME_ModuleCatalog::ModuleCatalog::_narrow(objMC);
     if ( !CORBA::is_nil(catalog) && ( session->getPID() != catalog->getPID() ) )
-      catalog->ShutdownWithExit();
+      catalog->shutdown();
     
     // 8) Registry
     CORBA::Object_var objR = theNS->Resolve("/Registry");
     Registry::Components_var registry = Registry::Components::_narrow(objR);
     if ( !CORBA::is_nil(registry) && ( session->getPID() != registry->getPID() ) )
-      registry->end();
+      registry->Shutdown();
     
     // 9) Kill OmniNames
-    QString fileName( ::getenv ("OMNIORB_CONFIG") );
-    QString portNumber;
-    if ( !fileName.isEmpty() ) {
-      QFile aFile( fileName );
-      if ( aFile.open(IO_ReadOnly) ) {
-	QRegExp re("InitRef = .*:([0-9]+)$");
-	QTextStream stream ( &aFile );
-	while ( !stream.atEnd() ) {
-	  QString textLine = stream.readLine();
-	  if ( re.search( textLine ) > -1 )
-	    portNumber = re.cap(1);
-	}
-	aFile.close();
-      }
-    }
-    if ( !portNumber.isEmpty() ) {
-      QString cmd = QString( "ps -eo pid,command | grep -v grep | grep -E \"omniNames.*%1\" | awk '{cmd=sprintf(\"kill -9 %s\",$1); system(cmd)}'" ).arg( portNumber );
-      system ( cmd.latin1() );
-    } 
+    //killOmniNames();
 
   }
 }
@@ -670,8 +679,19 @@ int main( int argc, char **argv )
   delete myServerLauncher;
   delete _NS;
 
-  LocalTraceBufferPool *bp1 = LocalTraceBufferPool::instance();
-  LocalTraceBufferPool::deleteInstance(bp1);
+  PyGILState_STATE gstate = PyGILState_Ensure();
+  Py_Finalize();
+
+  try 
+    {
+      orb->destroy();
+    }
+  catch(...) 
+    {
+      std::cerr << "Caught unexpected exception on destroy : ignored !!" << std::endl;
+    }
+
+  killOmniNames();
 
   return result;
 }

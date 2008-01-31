@@ -75,6 +75,7 @@ class QXGRAPH_EXPORT QxGraph_CanvasView : public QCanvasView {
   QCanvasItem*      myCurrentItem;
   QPoint            myPoint;
   QPoint            myGlobalPoint;
+  bool              myMovingDone;
   
   // for control toolbar actions
   OperationType     myOperation;

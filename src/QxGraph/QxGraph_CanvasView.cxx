@@ -112,7 +112,8 @@ QxGraph_CanvasView::QxGraph_CanvasView(QxGraph_Canvas* theCanvas, QxGraph_ViewWi
   QCanvasView(theCanvas, theViewWindow, 0, Qt::WRepaintNoErase),
   myCurrentItem(0),
   myHilightedItem(0),
-  mySelectedItem(0)
+  mySelectedItem(0),
+  myMovingDone(false)
 {
   printf("Construct QxGraph_CanvasView\n");
   setName("QxGraph_CanvasView");
@@ -155,6 +156,11 @@ void QxGraph_CanvasView::contentsMousePressEvent(QMouseEvent* theEvent)
 
   if ( myOperation == PANGLOBAL )
   { // Global panning
+    return;
+  }
+
+  if ( myOperation == WINDOWFIT )
+  { // Fit area
     return;
   }
 
@@ -226,11 +232,13 @@ void QxGraph_CanvasView::contentsMouseMoveEvent(QMouseEvent* theEvent)
     //draw new selected rectangle
     QPen pen(Qt::black,1,Qt::SolidLine);
     aRect1->setPen(pen);
-    aRect1->setZ(3);
+    aRect1->setZ(1E+6);
     aRect1->show();
 
     mySelectedRect = aRect1;
     canvas()->update();
+
+    return;
   }
 
   if ( myOperation == ZOOMVIEW )
@@ -261,6 +269,7 @@ void QxGraph_CanvasView::contentsMouseMoveEvent(QMouseEvent* theEvent)
     if ( anActItem && anActItem->isResizing() )
     { // to resize items on canvas view
       anActItem->resize(aPoint);
+      myMovingDone = true;
       return;
     }
 
@@ -274,9 +283,10 @@ void QxGraph_CanvasView::contentsMouseMoveEvent(QMouseEvent* theEvent)
     }
     myCurrentItem->moveBy(aPoint.x() - myPoint.x(), 
 			  aPoint.y() - myPoint.y());
+    myMovingDone = true;
     myPoint = aPoint;
     canvas()->update();
-    
+
     // scroll contents if mouse is outside
     QRect r(contentsX(), contentsY(), visibleWidth(), visibleHeight());
     if (!r.contains(theEvent->pos())) {
@@ -525,7 +535,7 @@ void QxGraph_CanvasView::contentsMouseReleaseEvent(QMouseEvent* theEvent)
     }
   }
 
-  if ( theEvent->button() == LeftButton )
+  if ( theEvent->button() == LeftButton && !myMovingDone )
   {
     // Selection mechanism
     QCanvasItemList aList = canvas()->collisions(aPoint);
@@ -553,6 +563,8 @@ void QxGraph_CanvasView::contentsMouseReleaseEvent(QMouseEvent* theEvent)
       }
     }
   }
+
+  myMovingDone = false;
 }
 
 void QxGraph_CanvasView::contentsMouseDoubleClickEvent(QMouseEvent* theEvent)

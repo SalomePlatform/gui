@@ -71,7 +71,7 @@ QVTK_RenderWindowInteractor
   myRenderWindow(vtkRenderWindow::New())
 {
   setAttribute( Qt::WA_PaintOnScreen );
-  //setAttribute( Qt::WA_NoSystemBackground );
+  setAttribute( Qt::WA_NoSystemBackground );
 
   setObjectName(theName);
 

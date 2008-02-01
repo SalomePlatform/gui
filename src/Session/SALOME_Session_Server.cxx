@@ -611,7 +611,6 @@ int main( int argc, char **argv )
 	  
 	result = _qappl.exec();
 	
-	delete splash;
 	splash = 0;
 
 	if ( result == SUIT_Session::NORMAL ) { // desktop is closed by user from GUI

@@ -112,4 +112,4 @@ nodist_salomeres_DATA= \
 libGLViewer_la_CPPFLAGS=$(QT_INCLUDES) $(CAS_CPPFLAGS) -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 libGLViewer_la_LDFLAGS=$(QT_MT_LIBS) $(CAS_KERNEL)
 
-libGLViewer_la_LIBADD= ../SUIT/libsuit.la -L/usr/X11R6/lib@LIB_LOCATION_SUFFIX@ -lGLU
+libGLViewer_la_LIBADD= ../SUIT/libsuit.la

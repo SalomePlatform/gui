@@ -2290,10 +2290,16 @@ void LightApp_Application::updateWindows()
   for ( WinMap::ConstIterator it = myWin.begin(); it != myWin.end(); ++it )
   {
     QWidget* wid = it.value();
-    wid->setVisible( activeStudy() && winMap.contains( it.key() ) );
+    if ( activeStudy() )
+      wid->setVisible( winMap.contains( it.key() ) );
+    else
+      delete wid;
   }
 
-  loadDockWindowsState();
+  if ( activeStudy() )
+    loadDockWindowsState();
+  else
+    myWin.clear();
 }
 
 /*!
@@ -2313,6 +2319,9 @@ void LightApp_Application::updateViewManagers()
 */
 void LightApp_Application::loadDockWindowsState()
 {
+  if ( !desktop() )
+    return;
+
   bool store = resourceMgr()->booleanValue( "Study", "store_positions", true );
   if( !store )
     return;
@@ -2334,6 +2343,11 @@ void LightApp_Application::loadDockWindowsState()
   for ( QList<QToolBar*>::iterator tit = tbList.begin(); tit != tbList.end(); ++tit )
   {
     QToolBar* tb = *tit;
+
+    QObject* po = Qtx::findParent( tb, "QMainWindow" );
+    if ( po != desktop() )
+      continue;
+
     if ( tbMap.contains( tb->objectName() ) )
       tb->setVisible( tbMap[tb->objectName()] );
   }
@@ -2342,6 +2356,11 @@ void LightApp_Application::loadDockWindowsState()
   for ( QList<QDockWidget*>::iterator dit = dwList.begin(); dit != dwList.end(); ++dit )
   {
     QDockWidget* dw = *dit;
+
+    QObject* po = Qtx::findParent( dw, "QMainWindow" );
+    if ( po != desktop() )
+      continue;
+
     if ( dwMap.contains( dw->objectName() ) )
       dw->setVisible( dwMap[dw->objectName()] );
   }
@@ -2352,6 +2371,9 @@ void LightApp_Application::loadDockWindowsState()
 */
 void LightApp_Application::saveDockWindowsState()
 {
+  if ( !desktop() )
+    return;
+
   bool store = resourceMgr()->booleanValue( "Study", "store_positions", true );
   if( !store )
     return;

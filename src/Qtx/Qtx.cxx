@@ -304,6 +304,33 @@ bool Qtx::isParent( QObject* child, QObject* parent )
 }
 
 /*!
+  \brief Find the parent object of class specified by \a className (in terms of QObject).
+
+  \param obj current object
+  \param className class name of the parent
+  \return parent object or null pointer if the parent not found
+*/
+QObject* Qtx::findParent( QObject* obj, const char* className )
+{
+  if ( !obj )
+    return 0;
+
+  if ( !className || !strlen( className ) )
+    return obj->parent();
+
+  QObject* res = 0;
+  QObject* p = obj->parent();
+  while ( p && !res )
+  {
+    if ( p->inherits( className ) )
+      res = p;
+    p = p->parent();
+  }
+
+  return res;
+}
+
+/*!
   \brief Return directory part of the file path.
 
   If the file path does not include directory part (the file is in the

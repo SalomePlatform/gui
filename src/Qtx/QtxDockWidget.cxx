@@ -47,6 +47,8 @@ public:
   bool           isVisible() const;
 
 protected:
+  enum { Update = QEvent::User, Remove };
+
   virtual void   customEvent( QEvent* );
 
 private:
@@ -96,7 +98,7 @@ bool QtxDockWidget::Watcher::eventFilter( QObject* o, QEvent* e )
                         e->type() == QEvent::Hide || e->type() == QEvent::HideToParent ) )
   {
     installFilters();
-    QApplication::postEvent( this, new QEvent( QEvent::User ) );
+    QApplication::postEvent( this, new QEvent( (QEvent::Type)Update ) );
   }
 
   if ( o == myCont && e->type() == QEvent::ChildAdded )
@@ -105,7 +107,7 @@ bool QtxDockWidget::Watcher::eventFilter( QObject* o, QEvent* e )
     if ( ce->child()->isWidgetType() )
       ce->child()->installEventFilter( this );
 
-    QApplication::postEvent( this, new QEvent( QEvent::User ) );
+    QApplication::postEvent( this, new QEvent( (QEvent::Type)Update ) );
   }
 
   if ( o != myCont && e->type() == QEvent::WindowIconChange )
@@ -115,9 +117,13 @@ bool QtxDockWidget::Watcher::eventFilter( QObject* o, QEvent* e )
     updateCaption();
 
   if ( ( o != myCont && ( e->type() == QEvent::Hide || e->type() == QEvent::HideToParent ) ) ||
-       ( o == myCont && ( e->type() == QEvent::ChildRemoved ) ) ||
        ( e->type() == QEvent::Show || e->type() == QEvent::ShowToParent ) )
     updateVisibility();
+
+  if ( o == myCont && e->type() == QEvent::ChildRemoved )
+  {
+    QApplication::postEvent( this, new QEvent( (QEvent::Type)Remove ) );
+  }
 
   return false;
 }
@@ -215,11 +221,19 @@ void QtxDockWidget::Watcher::hideContainer()
   \brief Proces custom events.
   \param e custom event (not used)
 */
-void QtxDockWidget::Watcher::customEvent( QEvent* /*e*/ )
+void QtxDockWidget::Watcher::customEvent( QEvent* e )
 {
-  updateIcon();
-  updateCaption();
-  updateVisibility();
+  if ( e->type() == Update )
+  {
+    updateIcon();
+    updateCaption();
+    updateVisibility();
+  }
+  else if ( myCont && e->type() == Remove && !myCont->widget() )
+  {
+    myCont->deleteLater();
+    myCont = 0;
+  }
 }
 
 /*!
@@ -251,13 +265,18 @@ void QtxDockWidget::Watcher::updateVisibility()
   if ( !myCont )
     return;
 
-  QLayout* l = myCont->layout();
-  if ( !l )
-    return;
-
   bool vis = false;
-  for ( int i = 0; i < (int)l->count() && !vis; i++ )
-    vis = l->itemAt( i ) && l->itemAt( i )->widget() && l->itemAt( i )->widget()->isVisibleTo( myCont );
+  if ( myCont->widget() )
+    vis = myCont->widget()->isVisibleTo( myCont );
+  else
+  {
+    QLayout* l = myCont->layout();
+    if ( l )
+    {
+      for ( int i = 0; i < (int)l->count() && !vis; i++ )
+	vis = l->itemAt( i ) && l->itemAt( i )->widget() && l->itemAt( i )->widget()->isVisibleTo( myCont );
+    }
+  }
 
   bool empty = isEmpty();
   if ( empty == vis )

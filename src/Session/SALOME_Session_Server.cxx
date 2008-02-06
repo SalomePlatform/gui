@@ -310,7 +310,7 @@ bool isFound( const char* str, int argc, char** argv )
   return false;
 }
 
-void killOmniNames( )
+void killOmniNames()
 {
     QString fileName( ::getenv ("OMNIORB_CONFIG") );
     QString portNumber;
@@ -335,6 +335,23 @@ void killOmniNames( )
       cmd = QString( "ps -eo pid,command | grep -v grep | grep -E \"omniNames.*%1\" | awk '{cmd=sprintf(\"kill -9 %s\",$1); system(cmd)}'" ).arg( portNumber );
       system ( cmd.latin1() );
     }
+
+    /////////////////// NPAL 18309  (Kill Notifd) ////////////////////////////
+    if ( !portNumber.isEmpty() ) 
+    {
+      QString cmd = QString("import pickle, os; ");
+      cmd += QString("from killSalomeWithPort import getPiDict; ");
+      cmd += QString("filedict=getPiDict(%1); ").arg(portNumber);
+      cmd += QString("f=open(filedict, 'r'); ");
+      cmd += QString("pids=pickle.load(f); ");
+      cmd += QString("m={}; ");
+      cmd += QString("[ m.update(i) for i in pids ]; ");
+      cmd += QString("pids=filter(lambda a: 'notifd' in m[a], m.keys()); ");
+      cmd += QString("[ os.kill(pid, 9) for pid in pids ]; ");
+      cmd = QString("python -c \"%1\"").arg(cmd);
+      system( cmd.latin1() );
+    }
+
 }
 
 // shutdown standalone servers
@@ -410,7 +427,6 @@ void shutdownServers( SALOME_NamingService* theNS )
     
     // 9) Kill OmniNames
     //killOmniNames();
-
   }
 }
 
@@ -607,6 +623,7 @@ int main( int argc, char **argv )
     _GUIMutex.unlock();
   }
 
+  bool shutdown = false;
   if ( !result ) {
     // Launch GUI activator
     if ( isGUI ) {
@@ -654,8 +671,7 @@ int main( int argc, char **argv )
 	splash = 0;
 
 	if ( result == SUIT_Session::NORMAL ) { // desktop is closed by user from GUI
-	  if ( aGUISession->exitFlags() )
-	    shutdownServers( _NS );
+	  shutdown = aGUISession->exitFlags();
 	  break;
 	}
       }
@@ -671,6 +687,11 @@ int main( int argc, char **argv )
   // unlock Session mutex
   _SessionMutex.unlock();
   
+  if ( shutdown ) {
+    shutdownServers( _NS );
+    killOmniNames();
+  }
+
   if ( myServerLauncher )
     myServerLauncher->KillAll(); // kill embedded servers
 
@@ -691,7 +712,8 @@ int main( int argc, char **argv )
       std::cerr << "Caught unexpected exception on destroy : ignored !!" << std::endl;
     }
 
-  killOmniNames();
+  //  if ( shutdown )
+  //    killOmniNames();
 
   return result;
 }

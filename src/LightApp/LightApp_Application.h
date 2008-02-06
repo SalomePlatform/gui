@@ -236,6 +236,9 @@ protected:
   void                                loadDockWindowsState();
   void                                saveDockWindowsState();
 
+  virtual void                        studyOpened( SUIT_Study* );
+  virtual void                        studyCreated( SUIT_Study* );
+
   void                                updatePreference( const QString&, const QString&, const QString& );
 
   QString                             defaultModule() const;

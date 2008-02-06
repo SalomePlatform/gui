@@ -706,12 +706,6 @@ void LightApp_Application::onNewDoc()
   saveDockWindowsState();
 
   CAM_Application::onNewDoc();
-
-  if ( !study ) // new study will be create in THIS application
-  {
-    updateWindows();
-    updateViewManagers();
-  }
 }
 
 /*!
@@ -1467,6 +1461,22 @@ void LightApp_Application::onDesktopActivated()
   LightApp_Module* aModule = dynamic_cast<LightApp_Module*>(activeModule());
   if(aModule)
     aModule->studyActivated();
+}
+
+void LightApp_Application::studyOpened( SUIT_Study* s )
+{
+  CAM_Application::studyOpened( s );
+
+  updateWindows();
+  updateViewManagers();
+}
+
+void LightApp_Application::studyCreated( SUIT_Study* s )
+{
+  CAM_Application::studyCreated( s );
+
+  updateWindows();
+  updateViewManagers();
 }
 
 /*!Gets file filter.

@@ -725,7 +725,8 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
           QRect tabRect = opt->rect;
           // line under selected tab bar object
           bool isSelected = opt->state & State_Selected;
-          bool isLast = tab->position == QStyleOptionTab::End;
+          bool isLast = tab->position == QStyleOptionTab::End ||
+                        tab->position == QStyleOptionTab::OnlyOneTab;
 	  QColor aColor = opt->palette.color( QPalette::Window ),
                  aDarkColor = aColor.dark( BUT_PERCENT_ON );
           QColor aBrdTopCol = getColor( Style_Model::border_tab_top_clr ),
@@ -749,7 +750,8 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
       }
     case CE_TabBarTabLabel:
       if (const QStyleOptionTab *tab = qstyleoption_cast<const QStyleOptionTab *>(opt)) {
-      	if ( tab->position == QStyleOptionTab::End ) {
+      	if ( tab->position == QStyleOptionTab::End ||
+             tab->position == QStyleOptionTab::OnlyOneTab ) {
           QRect oldRect = opt->rect;
           int aDelta = 0;
           if ( tab->shape == QTabBar::RoundedNorth || tab->shape == QTabBar::RoundedSouth ) {
@@ -1791,7 +1793,8 @@ QSize Style_Salome::sizeFromContents( ContentsType ct, const QStyleOption* opt,
   switch (ct) {
     case CT_TabBarTab:
       if (const QStyleOptionTab *tab = qstyleoption_cast<const QStyleOptionTab *>(opt)) {
-        if ( tab->position == QStyleOptionTab::End ) {
+        if ( tab->position == QStyleOptionTab::End ||
+             tab->position == QStyleOptionTab::OnlyOneTab ) {
           if ( tab->shape == QTabBar::RoundedNorth || tab->shape == QTabBar::RoundedSouth ) {
             int aDelta = (int)(opt->rect.height()*DELTA_H_TAB/2);
             sz.setWidth( sz.width() + aDelta );

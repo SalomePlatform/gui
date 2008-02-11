@@ -1207,7 +1207,7 @@ SVTK_InteractorStyle
 ::onCursorMove(QPoint mousePos) 
 {
   // processing highlighting
-  SVTK_SelectionEvent* aSelectionEvent = GetSelectionEventFlipY();
+   SVTK_SelectionEvent* aSelectionEvent = GetSelectionEventFlipY();
   this->FindPokedRenderer(aSelectionEvent->myX,aSelectionEvent->myY);
 
   bool anIsChanged = false;
@@ -1218,13 +1218,7 @@ SVTK_InteractorStyle
   {
     myHighlightRotationPointActor->SetVisibility( false );
 
-    SALOME_Actor *anCurrActor;
-    if ( anActor ) anCurrActor = anActor;
-    else if ( myLastPreHighlitedActor.GetPointer() 
-	      && 
-	      myLastPreHighlitedActor.GetPointer() != anActor )
-      anCurrActor = myLastPreHighlitedActor.GetPointer();
-    if ( anCurrActor )
+    if ( anActor )
     {
       myPointPicker->Pick( aSelectionEvent->myX, aSelectionEvent->myY, 0.0, GetCurrentRenderer() );
       int aVtkId = myPointPicker->GetPointId();

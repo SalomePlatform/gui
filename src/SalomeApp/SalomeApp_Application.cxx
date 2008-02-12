@@ -742,8 +742,19 @@ void SalomeApp_Application::onDumpStudy( )
   fd->setFilters( aFilters );
   fd->myPublishChk->setChecked( true );
   fd->mySaveGUIChk->setChecked( true );
-  fd->exec();
-  QString aFileName = fd->selectedFile();
+  QString aFileName;
+  while (1) {
+    fd->exec();
+    fd->raise();
+    aFileName = fd->selectedFile();
+    if ( aFileName.isEmpty() )
+      break;
+    if ( aFileName.indexOf( QRegExp("[-!?#*&]") ) == -1 )
+      break;
+    SUIT_MessageBox::warning( desktop(),
+			      tr( "WRN_WARNING" ),
+			      tr( "WRN_FILE_NAME_BAD" ) );
+  }
   bool toPublish = fd->myPublishChk->isChecked();
   bool toSaveGUI = fd->mySaveGUIChk->isChecked();
   delete fd;

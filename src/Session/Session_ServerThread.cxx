@@ -193,9 +193,10 @@ void Session_ServerThread::ActivateModuleCatalog(int argc,
     
     // Tell the POA that the objects are ready to accept requests.
     
-    _root_poa->activate_object (Catalogue_i);
+    PortableServer::ObjectId_var id = _root_poa->activate_object (Catalogue_i);
+    Catalogue_i->_remove_ref();
     
-    CORBA::Object_ptr myCata = Catalogue_i->_this();
+    CORBA::Object_var myCata = Catalogue_i->_this();
     _NS->Register(myCata ,"/Kernel/ModulCatalog");
   }
   catch(CORBA::SystemException&) {
@@ -396,10 +397,11 @@ void Session_ServerThread::ActivateEngine(int /*argc*/, char ** /*argv*/)
   try {
     MESSAGE("SalomeApp_Engine thread started");
     SalomeApp_Engine_i* anEngine = new SalomeApp_Engine_i();
-    /*PortableServer::ObjectId_var id = */_root_poa->activate_object( anEngine );
+    PortableServer::ObjectId_var id =_root_poa->activate_object( anEngine );
     MESSAGE("poa->activate_object( SalomeApp_Engine )");
 
     CORBA::Object_var obj = anEngine->_this();
+    anEngine->_remove_ref();
     _NS->Register( obj ,"/SalomeAppEngine");
   }
   catch (CORBA::SystemException&) {
@@ -454,6 +456,7 @@ void Session_SessionThread::ActivateSession(int argc,
     
     CORBA::Object_var obj = mySALOME_Session->_this();
     CORBA::String_var sior(_orb->object_to_string(obj));
+    mySALOME_Session->_remove_ref();
     
     mySALOME_Session->NSregister();
   }

@@ -58,6 +58,9 @@ class QXGRAPH_EXPORT QxGraph_CanvasView : public QCanvasView {
   void setSelectedItem( QxGraph_ActiveItem* theItem );
   QxGraph_ActiveItem* getSelectedItem() const;
 
+ signals:
+  void viewOperationDone();
+
  public slots:
   void onTimeout();
    //void changeBackground();
@@ -75,6 +78,8 @@ class QXGRAPH_EXPORT QxGraph_CanvasView : public QCanvasView {
   QCanvasItem*      myCurrentItem;
   QPoint            myPoint;
   QPoint            myGlobalPoint;
+  bool              myMovingDone;
+  QPoint            myCenter;
   
   // for control toolbar actions
   OperationType     myOperation;

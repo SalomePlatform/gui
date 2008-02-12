@@ -112,7 +112,9 @@ QxGraph_CanvasView::QxGraph_CanvasView(QxGraph_Canvas* theCanvas, QxGraph_ViewWi
   QCanvasView(theCanvas, theViewWindow, 0, Qt::WRepaintNoErase),
   myCurrentItem(0),
   myHilightedItem(0),
-  mySelectedItem(0)
+  mySelectedItem(0),
+  myMovingDone(false),
+  myCenter(0,0)
 {
   printf("Construct QxGraph_CanvasView\n");
   setName("QxGraph_CanvasView");
@@ -158,6 +160,11 @@ void QxGraph_CanvasView::contentsMousePressEvent(QMouseEvent* theEvent)
     return;
   }
 
+  if ( myOperation == WINDOWFIT )
+  { // Fit area
+    return;
+  }
+
   if ( theEvent->button() == Qt::LeftButton && theEvent->state() == Qt::ControlButton
        || 
        myOperation == ZOOMVIEW )
@@ -168,6 +175,11 @@ void QxGraph_CanvasView::contentsMousePressEvent(QMouseEvent* theEvent)
       QPixmap zoomPixmap (imageZoomCursor);
       QCursor zoomCursor (zoomPixmap);
       setCursor(zoomCursor);
+
+      // the center of the view before zooming
+      int aXVCenter = viewport()->width()/2;
+      int aYVCenter = viewport()->height()/2;
+      myCenter = viewportToContents(QPoint(aXVCenter,aYVCenter));
     }
     return;
   }
@@ -207,6 +219,7 @@ void QxGraph_CanvasView::contentsMouseMoveEvent(QMouseEvent* theEvent)
     scrollBy(myGlobalPoint.x() - aGlobalPoint.x(),
 	     myGlobalPoint.y() - aGlobalPoint.y());
     myGlobalPoint = aGlobalPoint;
+    myMovingDone = true;
     return;
   }
 
@@ -226,32 +239,52 @@ void QxGraph_CanvasView::contentsMouseMoveEvent(QMouseEvent* theEvent)
     //draw new selected rectangle
     QPen pen(Qt::black,1,Qt::SolidLine);
     aRect1->setPen(pen);
-    aRect1->setZ(3);
+    aRect1->setZ(1E+6);
     aRect1->show();
 
     mySelectedRect = aRect1;
     canvas()->update();
+
+    return;
   }
 
   if ( myOperation == ZOOMVIEW )
   { // Zoom
+    QCanvasItemList aList = canvas()->allItems();
+    for (QCanvasItemList::Iterator it = aList.begin(); it != aList.end(); ++it)
+      (*it)->hide();
+
+    int aXContCenter = myCenter.x();
+    int aYContCenter = myCenter.y();
+    
     QWMatrix m = worldMatrix();
 
     double dx = aGlobalPoint.x() - myGlobalPoint.x();
     double s = 1. + fabs(dx)*( (m.m11() < 1) ? m.m11() : 1. )/70.;
     if (dx < 0) s = 1./s;
     
+    int aXContCenterScaled = aXContCenter*s;
+    int aYContCenterScaled = aYContCenter*s;
+    
     m.scale(s, s);
     setWorldMatrix(m);
 
+    center(aXContCenterScaled,aYContCenterScaled);
+
+    myCenter.setX(aXContCenterScaled);
+    myCenter.setY(aYContCenterScaled);
+
     // remember the canvas view's current transformation matrix in all canvas items
-    QCanvasItemList aList = canvas()->allItems();
+    aList = canvas()->allItems();
     for (QCanvasItemList::Iterator it = aList.begin(); it != aList.end(); ++it) {
       QxGraph_ActiveItem* anActItem = dynamic_cast<QxGraph_ActiveItem*>( *it );
       if ( anActItem ) anActItem->setTMatrix(m);
+      (*it)->show();
     }
     	
     myGlobalPoint = aGlobalPoint;
+    myMovingDone = true;
+
     return;
   }
 
@@ -261,6 +294,7 @@ void QxGraph_CanvasView::contentsMouseMoveEvent(QMouseEvent* theEvent)
     if ( anActItem && anActItem->isResizing() )
     { // to resize items on canvas view
       anActItem->resize(aPoint);
+      myMovingDone = true;
       return;
     }
 
@@ -274,9 +308,10 @@ void QxGraph_CanvasView::contentsMouseMoveEvent(QMouseEvent* theEvent)
     }
     myCurrentItem->moveBy(aPoint.x() - myPoint.x(), 
 			  aPoint.y() - myPoint.y());
+    myMovingDone = true;
     myPoint = aPoint;
     canvas()->update();
-    
+
     // scroll contents if mouse is outside
     QRect r(contentsX(), contentsY(), visibleWidth(), visibleHeight());
     if (!r.contains(theEvent->pos())) {
@@ -419,6 +454,8 @@ void QxGraph_CanvasView::contentsMouseReleaseEvent(QMouseEvent* theEvent)
     myOperation = NOTHING;
     viewport()->setMouseTracking(true);
     setCursor(myCursor);
+
+    emit viewOperationDone();
   }
 
   if ( myOperation == PANGLOBAL )
@@ -426,6 +463,8 @@ void QxGraph_CanvasView::contentsMouseReleaseEvent(QMouseEvent* theEvent)
     myOperation = NOTHING;
     center( theEvent->x(), theEvent->y() );
     setCursor(myCursor);
+
+    emit viewOperationDone();
   }
 
   if ( myOperation == WINDOWFIT )
@@ -467,6 +506,8 @@ void QxGraph_CanvasView::contentsMouseReleaseEvent(QMouseEvent* theEvent)
     
     viewport()->setMouseTracking(true);
     setCursor(myCursor);
+
+    emit viewOperationDone();
   }
 
   if ( myOperation == ZOOMVIEW )
@@ -474,6 +515,8 @@ void QxGraph_CanvasView::contentsMouseReleaseEvent(QMouseEvent* theEvent)
     myOperation = NOTHING;
     viewport()->setMouseTracking(true);
     setCursor(myCursor);
+
+    emit viewOperationDone();
   }
 
   if ( theEvent->button() == RightButton )
@@ -525,7 +568,7 @@ void QxGraph_CanvasView::contentsMouseReleaseEvent(QMouseEvent* theEvent)
     }
   }
 
-  if ( theEvent->button() == LeftButton )
+  if ( theEvent->button() == LeftButton && !myMovingDone )
   {
     // Selection mechanism
     QCanvasItemList aList = canvas()->collisions(aPoint);
@@ -553,6 +596,8 @@ void QxGraph_CanvasView::contentsMouseReleaseEvent(QMouseEvent* theEvent)
       }
     }
   }
+
+  myMovingDone = false;
 }
 
 void QxGraph_CanvasView::contentsMouseDoubleClickEvent(QMouseEvent* theEvent)
@@ -606,6 +651,8 @@ void QxGraph_CanvasView::activateFitAll()
   
   canvas()->update();
   //myOperation = NOTHING;
+
+  emit viewOperationDone();
 }
 
 void QxGraph_CanvasView::activateFitRect()
@@ -660,6 +707,8 @@ void QxGraph_CanvasView::activateReset()
   }
 
   //myOperation = NOTHING;
+
+  emit viewOperationDone();
 }
 
 void QxGraph_CanvasView::onTimeout() 

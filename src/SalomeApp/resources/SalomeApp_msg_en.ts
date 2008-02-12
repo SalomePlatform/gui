@@ -269,6 +269,10 @@ Do you want to reload it ?</translation>
         <source>ACTIVATE_MODULE_OP_LOAD</source>
         <translation>&amp;Load...</translation>
     </message>
+    <message>
+        <source>WRN_FILE_NAME_BAD</source>
+        <translation>Please enter correct file name</translation>
+    </message>
 </context>
 <context>
     <name>SalomeApp_StudyPropertiesDlg</name>

@@ -66,6 +66,7 @@ SALOME_Session_i::SALOME_Session_i(int argc,
   _poa = PortableServer::POA::_duplicate(poa) ;
   _GUIMutex = GUIMutex;
   _GUILauncher = GUILauncher;
+  _NS = new SALOME_NamingService(_orb);
   //MESSAGE("constructor end");
 }
 
@@ -89,6 +90,7 @@ Engines::Component_ptr SALOME_Session_i::GetComponent(const char* theLibraryName
 */
 SALOME_Session_i::~SALOME_Session_i()
 {
+  delete _NS;
   //MESSAGE("destructor end");
 }
 
@@ -98,10 +100,10 @@ SALOME_Session_i::~SALOME_Session_i()
 */
 void SALOME_Session_i::NSregister()
 {
-  SALOME::Session_ptr pSession = SALOME::Session::_narrow(_this());
+  CORBA::Object_var obref=_this();
+  SALOME::Session_var pSession = SALOME::Session::_narrow(obref);
   try
     {
-      _NS = new SALOME_NamingService(_orb);
       _NS->Register(pSession, "/Kernel/Session");
     }
   catch (ServiceUnreachable&)

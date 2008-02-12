@@ -232,13 +232,13 @@ void SalomeApp_VisualState::restoreState(int savePoint)
 
     //Resize the views, set their captions and apply visual parameters.
     QVector<SUIT_ViewWindow*> views = vm->getViews();  
-    for (int i = 0, j = 0; i<viewCount; i++, j++) {
+    for (int i = 0, j = 0; i<viewCount; i++, j+=2) {
       viewWin = views[i];
       if ( !viewWin ) 
 	continue;
 
       // wait untill the window is really shown.  This step fixes MANY bugs..
-      while ( !viewWin->isVisible() )
+      while ( !vm->isVisible() )
 	qApp->processEvents();
       
       viewWin->setWindowTitle(ip->getValue(viewerEntry, j).c_str());

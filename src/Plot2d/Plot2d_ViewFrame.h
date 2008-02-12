@@ -131,6 +131,8 @@ public:
   void    incrementalPan ( const int incrX, const int incrY );
   void    incrementalZoom( const int incrX, const int incrY );
 
+  Plot2d_Plot2d* getPlot() const;
+
 protected:
   int     testOperation( const QMouseEvent& );
   void    readPreferences();

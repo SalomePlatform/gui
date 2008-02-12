@@ -13,5 +13,9 @@
         <source>ICON_UPDATE_RATE</source>
         <translation>view_update_rate.png</translation>
     </message>
+    <message>
+        <source>ICON_PRINT_VIEW</source>
+        <translation>view_print.png</translation>
+    </message>
 </context>
 </TS>

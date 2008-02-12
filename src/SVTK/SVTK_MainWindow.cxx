@@ -29,6 +29,10 @@
 #include "SALOME_Actor.h"
 
 #include <QImage>
+#include <QPainter>
+#include <QPrinter>
+#include <QPrintDialog>
+#include <QApplication>
 
 #include <vtkGenericRenderWindowInteractor.h>
 #include <vtkRenderer.h>
@@ -426,7 +430,7 @@ SVTK_MainWindow
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_DUMP" ) ),
 			   tr( "MNU_DUMP_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_DUMP_VIEW"));
-  connect(anAction, SIGNAL( triggered( bool ) ), myViewWindow, SLOT(onDumpView()));
+  connect(anAction, SIGNAL(activated()), myViewWindow, SLOT(onDumpView()));
   myActionsMap[ DumpId ] = anAction;
 
   // FitAll
@@ -434,7 +438,7 @@ SVTK_MainWindow
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_FITALL" ) ),
 			   tr( "MNU_FITALL" ), 0, this);
   anAction->setStatusTip(tr("DSC_FITALL"));
-  connect(anAction, SIGNAL(triggered( bool )), this, SLOT(onFitAll()));
+  connect(anAction, SIGNAL(activated()), this, SLOT(onFitAll()));
   myActionsMap[ FitAllId ] = anAction;
 
   // FitRect
@@ -442,7 +446,7 @@ SVTK_MainWindow
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_FITAREA" ) ),
 			   tr( "MNU_FITRECT" ), 0, this);
   anAction->setStatusTip(tr("DSC_FITRECT"));
-  connect(anAction, SIGNAL(triggered( bool )), this, SLOT(activateWindowFit()));
+  connect(anAction, SIGNAL(activated()), this, SLOT(activateWindowFit()));
   myActionsMap[ FitRectId ] = anAction;
 
   // Zoom
@@ -450,7 +454,7 @@ SVTK_MainWindow
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_ZOOM" ) ),
 			   tr( "MNU_ZOOM_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_ZOOM_VIEW"));
-  connect(anAction, SIGNAL(triggered( bool )), this, SLOT(activateZoom()));
+  connect(anAction, SIGNAL(activated()), this, SLOT(activateZoom()));
   myActionsMap[ ZoomId ] = anAction;
 
   // Panning
@@ -458,7 +462,7 @@ SVTK_MainWindow
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_PAN" ) ),
 			   tr( "MNU_PAN_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_PAN_VIEW"));
-  connect(anAction, SIGNAL(triggered( bool )), this, SLOT(activatePanning()));
+  connect(anAction, SIGNAL(activated()), this, SLOT(activatePanning()));
   myActionsMap[ PanId ] = anAction;
 
   // Global Panning
@@ -466,7 +470,7 @@ SVTK_MainWindow
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_GLOBALPAN" ) ),
 			   tr( "MNU_GLOBALPAN_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_GLOBALPAN_VIEW"));
-  connect(anAction, SIGNAL(triggered( bool )), this, SLOT(activateGlobalPanning()));
+  connect(anAction, SIGNAL(activated()), this, SLOT(activateGlobalPanning()));
   myActionsMap[ GlobalPanId ] = anAction;
 
   // Change rotation point
@@ -483,7 +487,7 @@ SVTK_MainWindow
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_ROTATE" ) ),
 			   tr( "MNU_ROTATE_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_ROTATE_VIEW"));
-  connect(anAction, SIGNAL(triggered( bool )), this, SLOT(activateRotation()));
+  connect(anAction, SIGNAL(activated()), this, SLOT(activateRotation()));
   myActionsMap[ RotationId ] = anAction;
 
   // Projections
@@ -491,42 +495,42 @@ SVTK_MainWindow
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_FRONT" ) ),
 			   tr( "MNU_FRONT_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_FRONT_VIEW"));
-  connect(anAction, SIGNAL(triggered( bool )), this, SLOT(onFrontView()));
+  connect(anAction, SIGNAL(activated()), this, SLOT(onFrontView()));
   myActionsMap[ FrontId ] = anAction;
 
   anAction = new QtxAction(tr("MNU_BACK_VIEW"), 
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_BACK" ) ),
 			   tr( "MNU_BACK_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_BACK_VIEW"));
-  connect(anAction, SIGNAL(triggered( bool )), this, SLOT(onBackView()));
+  connect(anAction, SIGNAL(activated()), this, SLOT(onBackView()));
   myActionsMap[ BackId ] = anAction;
 
   anAction = new QtxAction(tr("MNU_TOP_VIEW"), 
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_TOP" ) ),
 			   tr( "MNU_TOP_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_TOP_VIEW"));
-  connect(anAction, SIGNAL(triggered( bool )), this, SLOT(onTopView()));
+  connect(anAction, SIGNAL(activated()), this, SLOT(onTopView()));
   myActionsMap[ TopId ] = anAction;
 
   anAction = new QtxAction(tr("MNU_BOTTOM_VIEW"), 
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_BOTTOM" ) ),
 			   tr( "MNU_BOTTOM_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_BOTTOM_VIEW"));
-  connect(anAction, SIGNAL(triggered( bool )), this, SLOT(onBottomView()));
+  connect(anAction, SIGNAL(activated()), this, SLOT(onBottomView()));
   myActionsMap[ BottomId ] = anAction;
 
   anAction = new QtxAction(tr("MNU_LEFT_VIEW"), 
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_LEFT" ) ),
 			   tr( "MNU_LEFT_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_LEFT_VIEW"));
-  connect(anAction, SIGNAL(triggered( bool )), this, SLOT(onLeftView()));
+  connect(anAction, SIGNAL(activated()), this, SLOT(onLeftView()));
   myActionsMap[ LeftId ] = anAction;
 
   anAction = new QtxAction(tr("MNU_RIGHT_VIEW"), 
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_RIGHT" ) ),
 			   tr( "MNU_RIGHT_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_RIGHT_VIEW"));
-  connect(anAction, SIGNAL(triggered( bool )), this, SLOT(onRightView()));
+  connect(anAction, SIGNAL(activated()), this, SLOT(onRightView()));
   myActionsMap[ RightId ] = anAction;
 
   // Reset
@@ -534,7 +538,7 @@ SVTK_MainWindow
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_RESET" ) ),
 			   tr( "MNU_RESET_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_RESET_VIEW"));
-  connect(anAction, SIGNAL(triggered( bool )), this, SLOT(onResetView()));
+  connect(anAction, SIGNAL(activated()), this, SLOT(onResetView()));
   myActionsMap[ ResetId ] = anAction;
 
   // onViewTrihedron: Shows - Hides Trihedron
@@ -542,7 +546,7 @@ SVTK_MainWindow
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_TRIHEDRON" ) ),
 			   tr( "MNU_SHOW_TRIHEDRON" ), 0, this);
   anAction->setStatusTip(tr("DSC_SHOW_TRIHEDRON"));
-  connect(anAction, SIGNAL(triggered( bool )), this, SLOT(onViewTrihedron()));
+  connect(anAction, SIGNAL(activated()), this, SLOT(onViewTrihedron()));
   myActionsMap[ ViewTrihedronId ] = anAction;
 
   // onNonIsometric: Manage non-isometric params
@@ -571,6 +575,14 @@ SVTK_MainWindow
   anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onUpdateRate(bool)));
   myActionsMap[ UpdateRate ] = anAction;
+
+  // print view
+  anAction = new QtxAction(tr("MNU_PRINT_VIEW"), 
+			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_PRINT_VIEW" ) ),
+			   tr( "MNU_PRINT_VIEW" ), 0, this);
+  anAction->setStatusTip(tr("DSC_PRINT_VIEW"));
+  connect(anAction, SIGNAL(activated()), this, SLOT(onPrintView()));
+  myActionsMap[ PrintId ] = anAction;
 }
 
 #if defined(WIN32) && !defined(_DEBUG)
@@ -616,6 +628,7 @@ SVTK_MainWindow
   myToolBar->addAction( myActionsMap[UpdateRate] );
   myToolBar->addAction( myActionsMap[NonIsometric] );
   myToolBar->addAction( myActionsMap[GraduatedAxes] );
+  myToolBar->addAction( myActionsMap[PrintId] );
 }
 
 /*!
@@ -901,3 +914,104 @@ SVTK_MainWindow
   QPixmap px = QPixmap::grabWindow( GetInteractor()->winId() );
   return px.toImage();
 }
+
+/*!
+  \brief Called when the "Print view" action is activated.
+*/
+void SVTK_MainWindow::onPrintView()
+{
+  QImage img = dumpView();
+  if ( img.isNull() )
+    return;
+
+  // stored settings for further starts
+  static QString aPrinterName;
+  static int anOrientation = -1;
+
+  QPrinter aPrinter;
+
+  // restore settinds from previous launching
+
+  // printer name
+  if ( !aPrinterName.isEmpty() )
+    aPrinter.setPrinterName( aPrinterName );
+  else 
+  {
+    // Nothing to do for the first printing. aPrinter contains default printer name by default
+  }
+
+  if ( anOrientation >= 0 )
+    aPrinter.setOrientation( (QPrinter::Orientation)anOrientation );
+  else
+    aPrinter.setOrientation( QPrinter::Landscape );
+
+
+  QPrintDialog printDlg( &aPrinter, this );
+  printDlg.setPrintRange( QAbstractPrintDialog::AllPages );
+  if ( printDlg.exec() != QDialog::Accepted ) 
+    return;
+
+  // store printer settings for further starts
+  aPrinterName = aPrinter.printerName();
+  anOrientation = aPrinter.orientation();
+
+  int W, H;
+  QPainter aPainter;
+
+  // work arround for printing on real printer
+  if ( aPrinter.outputFileName().isEmpty() && aPrinter.orientation() == QPrinter::Landscape )
+  {
+    aPrinter.setFullPage( true );
+    // set paper orientation and rotate painter
+    aPrinter.setOrientation( QPrinter::Portrait );
+
+    W = aPrinter.height();
+    H = aPrinter.width();
+
+    int wBorder = aPrinter.paperRect().height() - W;
+    int hBorder = aPrinter.paperRect().width() - H;
+
+    aPainter.begin( &aPrinter );
+    aPainter.translate( QPoint( H + hBorder, wBorder ) );
+    aPainter.rotate( 90 );
+  }
+  else 
+  {
+    aPrinter.setFullPage( false );
+    aPainter.begin( &aPrinter );
+    W = aPrinter.width();
+    H = aPrinter.height();
+  }
+
+  if ( img.width() > W || img.height() > H )
+    img = img.scaled( W, H, Qt::KeepAspectRatio, Qt::SmoothTransformation );
+
+  // place image in the center of page
+  int offsetW = ( W - img.width() ) / 2;
+  int offsetH = ( H - img.height() ) / 2;
+    
+  aPainter.drawImage( offsetW, offsetH, img );
+
+  aPainter.end();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

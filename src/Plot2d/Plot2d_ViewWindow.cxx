@@ -39,6 +39,11 @@
 #include <QToolBar>
 #include <QPaintEvent>
 #include <QActionGroup>
+#include <QPainter>
+#include <QPrinter>
+#include <QPrintDialog>
+
+#include <qwt_plot_curve.h>
 
 /*!
   \class Plot2d_ViewWindow
@@ -379,6 +384,15 @@ void Plot2d_ViewWindow::createActions()
   connect( aAction, SIGNAL( triggered( bool ) ), this, SIGNAL( cloneView() ) );
   myActionsMap[ CloneId ] = aAction;
 
+  // 10. Print 
+  aAction = new QtxAction( tr( "MNU_PRINT_VIEW" ),
+			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_PRINT" ) ),
+                           tr( "MNU_PRINT_VIEW" ),
+			   0, this);
+  aAction->setStatusTip( tr( "DSC_PRINT_VIEW" ) );
+  connect( aAction, SIGNAL( activated() ), this, SLOT( onPrintView() ) );
+  myActionsMap[ PrintId ] = aAction;
+
   // Set initial values
   onChangeCurveMode();
   onChangeHorMode();
@@ -408,6 +422,7 @@ void Plot2d_ViewWindow::createToolBar()
   myToolBar->addAction( myActionsMap[ LegendId ] );
   myToolBar->addAction( myActionsMap[ CurvSettingsId ] );
   myToolBar->addAction( myActionsMap[ CloneId ] );
+  myToolBar->addAction( myActionsMap[ PrintId ] );
 }
 
 /*!
@@ -627,6 +642,147 @@ QString Plot2d_ViewWindow::filter() const
 }
 
 /*!
+  \brief Called when the "Print view" action is activated.
+*/
+void Plot2d_ViewWindow::onPrintView()
+{
+  if ( !myViewFrame )
+    return;
+
+  Plot2d_Plot2d* aPlot = myViewFrame->getPlot();
+  if ( !aPlot )
+    return;
+
+  // stored settings for further starts
+  static QString aPrinterName;
+  static int aColorMode = -1;
+  static int anOrientation = -1;
+
+  QPrinter aPrinter;
+
+  // restore settinds from previous launching
+
+  // printer name
+  if ( !aPrinterName.isEmpty() )
+    aPrinter.setPrinterName( aPrinterName );
+  else 
+  {
+    // Nothing to do for the first printing. aPrinter contains default printer name by default
+  }
+
+  // color mode
+  if ( aColorMode >= 0 )
+    aPrinter.setColorMode( (QPrinter::ColorMode)aColorMode );
+  else 
+  {
+    // Black-and-wight printers are often used
+    aPrinter.setColorMode( QPrinter::GrayScale );
+  }
+
+  if ( anOrientation >= 0 )
+    aPrinter.setOrientation( (QPrinter::Orientation)anOrientation );
+  else
+    aPrinter.setOrientation( QPrinter::Landscape );
+
+  QPrintDialog printDlg( &aPrinter, this );
+  printDlg.setPrintRange( QAbstractPrintDialog::AllPages );
+  if ( printDlg.exec() != QDialog::Accepted ) 
+    return;
+
+  // store printer settings for further starts
+  aPrinterName = aPrinter.printerName();
+  aColorMode = aPrinter.colorMode();
+  anOrientation = aPrinter.orientation();
+  
+  int W, H;
+  QPainter aPainter;
+
+  bool needColorCorrection = aPrinter.colorMode() == QPrinter::GrayScale;
+
+  // work arround for printing on real printer
+  if ( aPrinter.outputFileName().isEmpty() && aPrinter.orientation() == QPrinter::Landscape )
+  {
+    aPrinter.setFullPage( false );
+    // set paper orientation and rotate painter
+    aPrinter.setOrientation( QPrinter::Portrait );
+
+    W = aPrinter.height();
+    H = aPrinter.width();
+
+    aPainter.begin( &aPrinter );
+    aPainter.translate( QPoint( H, 0 ) );
+    aPainter.rotate( 90 );
+  }
+  else 
+  {
+    aPrinter.setFullPage( false );
+    aPainter.begin( &aPrinter );
+    W = aPrinter.width();
+    H = aPrinter.height();
+  }
+
+  QMap< QwtPlotCurve*, QPen > aCurvToPen;
+  QMap< QwtPlotCurve*, QwtSymbol > aCurvToSymbol;
+
+  if ( needColorCorrection )
+  {
+    // Iterate through, store temporary their parameters and assign 
+    // parameters proper for printing
+
+    CurveDict& aCurveDict = aPlot->getCurves();
+    CurveDict::iterator it;
+    for ( it = aCurveDict.begin(); it != aCurveDict.end(); it++ ) 
+    {
+      QwtPlotCurve* aCurve = it.key();
+      if ( !aCurve )
+        continue;
+
+      // pen
+      QPen aPen = aCurve->pen();
+      aCurvToPen[ aCurve ] = aPen;
+
+      aPen.setColor( QColor( 0, 0, 0 ) );
+      aPen.setWidthF( 1.5 );
+
+      aCurve->setPen( aPen );
+
+      // symbol
+      QwtSymbol aSymbol = aCurve->symbol();
+      aCurvToSymbol[ aCurve ] = aSymbol;
+      aPen = aSymbol.pen();
+      aPen.setColor( QColor( 0, 0, 0 ) );
+      aPen.setWidthF( 1.5 );
+      aSymbol.setPen( aPen );
+
+      aCurve->setSymbol( aSymbol );
+    }
+  }
+
+  aPlot->print( &aPainter, QRect( 0, 0, W, H ) );
+  aPainter.end();
+
+  // restore old pens and symbols
+  if ( needColorCorrection && !aCurvToPen.isEmpty() )
+  {
+    CurveDict& aCurveDict = aPlot->getCurves();
+    CurveDict::iterator it;
+    for ( it = aCurveDict.begin(); it != aCurveDict.end(); it++ ) 
+    {
+      QwtPlotCurve* aCurve = it.key();
+      if ( !aCurve || 
+           !aCurvToPen.contains( aCurve ) ||
+           !aCurvToSymbol.contains( aCurve ) )
+        continue;
+
+      aCurve->setPen( aCurvToPen[ aCurve ] );
+      aCurve->setSymbol( aCurvToSymbol[ aCurve ] );
+    }
+  }
+}
+
+/*!
   \fn void Plot2d_ViewWindow::cloneView();
   \brief Emitted when the "Clone View" action is activated.
 */
+
+

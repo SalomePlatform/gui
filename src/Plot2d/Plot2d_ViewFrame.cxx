@@ -2121,3 +2121,13 @@ void Plot2d_ViewFrame::customEvent( QEvent* ce )
   if ( ce->type() == FITALL_EVENT )
     fitAll();
 }
+
+/*!
+  Gets plot
+*/
+Plot2d_Plot2d* Plot2d_ViewFrame::getPlot() const
+{
+  return myPlot;
+}
+
+

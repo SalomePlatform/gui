@@ -234,6 +234,8 @@ public:
   void onAdjustTrihedron();
   void onAdjustCubeAxes();
 
+  void onPrintView();
+
  public:
   QImage dumpView();
 
@@ -250,7 +252,7 @@ public:
   enum { DumpId, FitAllId, FitRectId, ZoomId, PanId, GlobalPanId, 
 	 ChangeRotationPointId, RotationId,
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, 
-	 ViewTrihedronId, NonIsometric, GraduatedAxes, UpdateRate};
+	 ViewTrihedronId, NonIsometric, GraduatedAxes, UpdateRate, PrintId };
   typedef QMap<int, QtxAction*> TActionsMap;
 
   SUIT_ViewWindow* myViewWindow;

@@ -265,6 +265,14 @@
         <source>MNU_SVTK_UPDATE_RATE</source>
         <translation>Update rate</translation>
     </message>
+    <message>
+        <source>MNU_PRINT_VIEW</source>
+        <translation>Print view</translation>
+    </message>
+    <message>
+        <source>DSC_PRINT_VIEW</source>
+        <translation>Print view</translation>
+    </message>
 </context>
 <context>
     <name>SVTK_NonIsometricDlg</name>

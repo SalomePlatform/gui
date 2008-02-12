@@ -80,8 +80,9 @@ public slots:
   void              onViewVerMode();
   void              onLegend();
   void              onCurves();
-
+  
   void              onDumpView();
+  void              onPrintView();
 
 protected:
   enum { DumpId, 
@@ -92,7 +93,8 @@ protected:
 	 CurvPointsId, CurvLinesId, CurvSplinesId, 
 	 LegendId,
 	 CurvSettingsId,
-	 CloneId };
+	 CloneId,
+         PrintId };
 
   typedef QMap<int, QtxAction*> ActionsMap;
   ActionsMap        myActionsMap;

@@ -65,5 +65,9 @@
         <source>ICON_PLOT2D_SHOW_LEGEND</source>
         <translation>plot2d_legend.png</translation>
     </message>
+    <message>
+        <source>ICON_PLOT2D_PRINT</source>
+        <translation>plot2d_print.png</translation>
+    </message>
 </context>
 </TS>

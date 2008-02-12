@@ -38,6 +38,10 @@
         <translation>Clone View</translation>
     </message>
     <message>
+        <source>MNU_PRINT_VIEW</source>
+        <translation>Print View</translation>
+    </message>
+    <message>
         <source>POSTSCRIPT_FILES</source>
         <translation>PostScript files (*.ps)</translation>
     </message>
@@ -136,6 +140,10 @@
     <message>
         <source>DSC_CLONE_VIEW</source>
         <translation>Create new OCC viewer for the active scene</translation>
+    </message>
+    <message>
+        <source>DSC_PRINT_VIEW</source>
+        <translation>Print active view</translation>
     </message>
     <message>
         <source>DASH_LINE_LBL</source>

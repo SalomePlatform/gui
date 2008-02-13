@@ -266,6 +266,14 @@
         <translation>Update rate</translation>
     </message>
     <message>
+        <source>MNU_SVTK_TEXT_REGION</source>
+        <translation>Text Zone</translation>
+    </message>
+    <message>
+        <source>DSC_SVTK_TEXT_REGION</source>
+        <translation>Text Zone</translation>
+    </message>
+    <message>
         <source>MNU_PRINT_VIEW</source>
         <translation>Print view</translation>
     </message>
@@ -342,6 +350,33 @@
     <message>
         <source>DLG_TITLE</source>
         <translation>Set Rotation Point</translation>
+    </message>
+</context>
+<context>
+    <name>SVTK_TextRegionDlg</name>
+    <message>
+        <source>DLG_TITLE</source>
+        <translation>Text Zone</translation>
+    </message>
+    <message>
+        <source>TEXT_PROPERTIES</source>
+        <translation>Properties</translation>
+    </message>
+    <message>
+        <source>AUTO_APPLY</source>
+        <translation>Auto Apply</translation>
+    </message>
+    <message>
+        <source>OK</source>
+        <translation>OK</translation>
+    </message>
+    <message>
+        <source>APPLY</source>
+        <translation>Apply</translation>
+    </message>
+    <message>
+        <source>CLOSE</source>
+        <translation>Close</translation>
     </message>
 </context>
 <context>

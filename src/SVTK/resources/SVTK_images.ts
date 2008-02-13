@@ -14,6 +14,10 @@
         <translation>view_update_rate.png</translation>
     </message>
     <message>
+        <source>ICON_TEXT_REGION</source>
+        <translation>view_text.png</translation>
+    </message>
+    <message>
         <source>ICON_PRINT_VIEW</source>
         <translation>view_print.png</translation>
     </message>

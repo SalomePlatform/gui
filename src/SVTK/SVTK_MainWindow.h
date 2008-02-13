@@ -48,6 +48,7 @@ class SVTK_UpdateRateDlg;
 class SVTK_CubeAxesActor2D;
 class SVTK_CubeAxesDlg;
 class SVTK_SetRotationPointDlg;
+class SVTK_TextRegionDlg;
 
 class VTKViewer_Trihedron;
 class VTKViewer_Actor;
@@ -231,6 +232,8 @@ public:
   void onNonIsometric(bool theIsActivate);
   void onGraduatedAxes(bool theIsActivate);
 
+  void onTextRegion();
+
   void onAdjustTrihedron();
   void onAdjustCubeAxes();
 
@@ -252,7 +255,8 @@ public:
   enum { DumpId, FitAllId, FitRectId, ZoomId, PanId, GlobalPanId, 
 	 ChangeRotationPointId, RotationId,
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, 
-	 ViewTrihedronId, NonIsometric, GraduatedAxes, UpdateRate, PrintId };
+	 ViewTrihedronId, NonIsometric, GraduatedAxes, UpdateRate,
+         TextRegion, PrintId };
   typedef QMap<int, QtxAction*> TActionsMap;
 
   SUIT_ViewWindow* myViewWindow;
@@ -261,6 +265,7 @@ public:
   SVTK_UpdateRateDlg* myUpdateRateDlg;
   SVTK_CubeAxesDlg* myCubeAxesDlg;
   SVTK_SetRotationPointDlg* mySetRotationPointDlg;
+  SVTK_TextRegionDlg* myTextRegionDlg;
 
   vtkSmartPointer<vtkObject> myEventDispatcher;
   TActionsMap myActionsMap;  

@@ -34,9 +34,6 @@
 #include <QPrintDialog>
 #include <QApplication>
 
-#include <vtkGenericRenderWindowInteractor.h>
-#include <vtkRenderer.h>
-
 #include <QtxAction.h>
 #include <QtxMultiAction.h>
 #include <QtxToolBar.h>
@@ -50,12 +47,18 @@
 #include "SVTK_UpdateRateDlg.h"
 #include "SVTK_CubeAxesDlg.h"
 #include "SVTK_SetRotationPointDlg.h"
+
+#include "SVTK_TextRegionDlg.h"
+
 #include "SVTK_MainWindow.h"
 #include "SVTK_Event.h"
 #include "SVTK_Renderer.h"
 #include "SVTK_RenderWindowInteractor.h"
 #include "SVTK_InteractorStyle.h"
 #include "SVTK_Selector.h"
+
+#include <vtkGenericRenderWindowInteractor.h>
+#include <vtkRenderer.h>
 
 /*!
   Constructor
@@ -94,10 +97,12 @@ SVTK_MainWindow
   myInteractor->setFocus();
   setFocusProxy(myInteractor);
 
-  myUpdateRateDlg = new SVTK_UpdateRateDlg(myActionsMap[UpdateRate],this,"SVTK_UpdateRateDlg");
-  myNonIsometricDlg = new SVTK_NonIsometricDlg(myActionsMap[NonIsometric],this,"SVTK_NonIsometricDlg");
-  myCubeAxesDlg = new SVTK_CubeAxesDlg(myActionsMap[GraduatedAxes],this,"SVTK_CubeAxesDlg");
-  mySetRotationPointDlg = new SVTK_SetRotationPointDlg(myActionsMap[ChangeRotationPointId],this,"SVTK_SetRotationPointDlg");
+  myUpdateRateDlg = new SVTK_UpdateRateDlg(myActionsMap[UpdateRate], this, "SVTK_UpdateRateDlg");
+  myNonIsometricDlg = new SVTK_NonIsometricDlg(myActionsMap[NonIsometric], this," SVTK_NonIsometricDlg");
+  myCubeAxesDlg = new SVTK_CubeAxesDlg(myActionsMap[GraduatedAxes], this, "SVTK_CubeAxesDlg");
+  mySetRotationPointDlg = new SVTK_SetRotationPointDlg(myActionsMap[ChangeRotationPointId], this, "SVTK_SetRotationPointDlg");
+  myTextRegionDlg = new SVTK_TextRegionDlg(myActionsMap[TextRegion], this, "SVTK_TextRegionDlg");
+
 }
 
 /*!
@@ -576,6 +581,14 @@ SVTK_MainWindow
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onUpdateRate(bool)));
   myActionsMap[ UpdateRate ] = anAction;
 
+  // onTextRegion: Create Text Region
+  anAction = new QtxAction(tr("MNU_SVTK_TEXT_REGION"), 
+			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_TEXT_REGION" ) ),
+			   tr( "MNU_SVTK_TEXT_REGION" ), 0, this);
+  anAction->setStatusTip(tr("DSC_SVTK_TEXT_REGION"));
+  connect(anAction, SIGNAL(activated()), this, SLOT(onTextRegion()));
+  myActionsMap[ TextRegion ] = anAction;
+
   // print view
   anAction = new QtxAction(tr("MNU_PRINT_VIEW"), 
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_PRINT_VIEW" ) ),
@@ -628,6 +641,7 @@ SVTK_MainWindow
   myToolBar->addAction( myActionsMap[UpdateRate] );
   myToolBar->addAction( myActionsMap[NonIsometric] );
   myToolBar->addAction( myActionsMap[GraduatedAxes] );
+  myToolBar->addAction( myActionsMap[TextRegion] );
   myToolBar->addAction( myActionsMap[PrintId] );
 }
 
@@ -855,6 +869,13 @@ SVTK_MainWindow
 {
   GetRenderer()->OnViewCubeAxes();
   Repaint();
+}
+
+void
+SVTK_MainWindow
+::onTextRegion()
+{
+  myTextRegionDlg->PublishNew(GetInteractor());
 }
 
 void

@@ -56,6 +56,9 @@ public:
 
   void          GetData( QColor&, int&, bool&, bool&, bool& ) const;
 
+signals:
+ void           Modified();
+
 private slots:
   void          onColor();
 

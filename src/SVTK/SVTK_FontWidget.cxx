@@ -68,6 +68,10 @@ SVTK_FontWidget::SVTK_FontWidget( QWidget* theParent )
   this->setLayout(aHBLayout);
 
   connect( myColorBtn, SIGNAL( clicked() ), SLOT( onColor() ) );
+  connect( myFamily, SIGNAL( activated(int) ), SIGNAL( Modified() ) );
+  connect( myBold, SIGNAL( toggled(bool) ), SIGNAL( Modified() ) );
+  connect( myItalic, SIGNAL( toggled(bool) ), SIGNAL( Modified() ) );
+  connect( myShadow, SIGNAL( toggled(bool) ), SIGNAL( Modified() ) );
 }
 
 /*!
@@ -92,8 +96,10 @@ QColor SVTK_FontWidget::GetColor() const
 void SVTK_FontWidget::onColor()
 {
   QColor aColor = QColorDialog::getColor( GetColor(), this );
-  if ( aColor.isValid() )
+  if ( aColor.isValid() ) {
     SetColor( aColor );
+    emit Modified();
+  }
 }
 
 void SVTK_FontWidget::SetData( const QColor& theColor,

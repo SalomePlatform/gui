@@ -77,6 +77,8 @@ QtxToolBar::Watcher::Watcher( QtxToolBar* cont )
   myState( true ),
   myEmpty( false )
 {
+  setVisible( myCont->isVisibleTo( myCont->parentWidget() ) );
+
   myCont->installEventFilter( this );
 
   installFilters();

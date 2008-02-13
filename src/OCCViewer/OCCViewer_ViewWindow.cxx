@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -66,7 +66,7 @@
 
 static QEvent* l_mbPressEvent = 0;
 
-const char* imageZoomCursor[] = { 
+const char* imageZoomCursor[] = {
 "32 32 3 1",
 ". c None",
 "a c #000000",
@@ -104,7 +104,7 @@ const char* imageZoomCursor[] = {
 "................................",
 "................................"};
 
-const char* imageRotateCursor[] = { 
+const char* imageRotateCursor[] = {
 "32 32 3 1",
 ". c None",
 "a c #000000",
@@ -142,7 +142,7 @@ const char* imageRotateCursor[] = {
 "................................",
 "................................"};
 
-const char* imageCrossCursor[] = { 
+const char* imageCrossCursor[] = {
   "32 32 3 1",
   ". c None",
   "a c #000000",
@@ -186,7 +186,7 @@ const char* imageCrossCursor[] = {
   \param theDesktop main window of application
   \param theModel OCC 3D viewer
 */
-OCCViewer_ViewWindow::OCCViewer_ViewWindow( SUIT_Desktop*     theDesktop, 
+OCCViewer_ViewWindow::OCCViewer_ViewWindow( SUIT_Desktop*     theDesktop,
 					    OCCViewer_Viewer* theModel )
 : SUIT_ViewWindow( theDesktop )
 {
@@ -230,7 +230,7 @@ void OCCViewer_ViewWindow::initLayout()
   setTransformRequested ( NOTHING );
   setTransformInProcess ( false );
 
-  myToolBar = new QtxToolBar( true, tr("LBL_TOOLBAR_LABEL"), this );
+  myToolBar = new QtxToolBar( true, tr( "LBL_TOOLBAR_LABEL" ), this );
 
   createActions();
   createToolBar();
@@ -242,14 +242,14 @@ void OCCViewer_ViewWindow::initLayout()
   \param theEvent mouse event
   \return type of the operation
 */
-OCCViewer_ViewWindow::OperationType 
+OCCViewer_ViewWindow::OperationType
 OCCViewer_ViewWindow::getButtonState( QMouseEvent* theEvent )
 {
   OperationType aOp = NOTHING;
   if( (theEvent->modifiers() == SUIT_ViewModel::myStateMap[SUIT_ViewModel::ZOOM]) &&
       (theEvent->button() == SUIT_ViewModel::myButtonMap[SUIT_ViewModel::ZOOM]) )
     aOp = ZOOMVIEW;
-  else if( (theEvent->modifiers() == SUIT_ViewModel::myStateMap[SUIT_ViewModel::PAN]) && 
+  else if( (theEvent->modifiers() == SUIT_ViewModel::myStateMap[SUIT_ViewModel::PAN]) &&
            (theEvent->button() == SUIT_ViewModel::myButtonMap[SUIT_ViewModel::PAN]) )
     aOp = PANVIEW;
   else if( (theEvent->modifiers()  == SUIT_ViewModel::myStateMap[SUIT_ViewModel::ROTATE]) &&
@@ -290,7 +290,7 @@ bool OCCViewer_ViewWindow::eventFilter( QObject* watched, QEvent* e )
       {
         QWheelEvent* aEvent = (QWheelEvent*) e;
         double aDelta = aEvent->delta();
-        double aScale = (aDelta < 0) ? 100./(-aDelta) : aDelta/100.; 
+        double aScale = (aDelta < 0) ? 100./(-aDelta) : aDelta/100.;
         myViewPort->getView()->SetZoom(aScale);
       }
       return true;
@@ -331,18 +331,18 @@ void OCCViewer_ViewWindow::vpMousePressEvent( QMouseEvent* theEvent )
   case WINDOWFIT:
     if ( theEvent->button() == Qt::LeftButton )
       emit vpTransformationStarted ( WINDOWFIT );
-    break;    
-   
+    break;
+
   case PANGLOBAL:
     if ( theEvent->button() == Qt::LeftButton )
       emit vpTransformationStarted ( PANGLOBAL );
-    break;    
-    
+    break;
+
   case ZOOMVIEW:
     if ( theEvent->button() == Qt::LeftButton )
       emit vpTransformationStarted ( ZOOMVIEW );
     break;
-    
+
   case PANVIEW:
     if ( theEvent->button() == Qt::LeftButton )
       emit vpTransformationStarted ( PANVIEW );
@@ -354,7 +354,7 @@ void OCCViewer_ViewWindow::vpMousePressEvent( QMouseEvent* theEvent )
 	    emit vpTransformationStarted ( ROTATE );
 	  }
     break;
-      
+
   default:
   /*  Try to activate a transformation */
     switch ( getButtonState(theEvent) ) {
@@ -380,14 +380,14 @@ void OCCViewer_ViewWindow::vpMousePressEvent( QMouseEvent* theEvent )
 	    TopoDS_Shape aShape = ic->SelectedShape();
 	    if ( !aShape.IsNull() && aShape.ShapeType() == TopAbs_VERTEX )
 	    {
-	      gp_Pnt aPnt = BRep_Tool::Pnt( TopoDS::Vertex( ic->SelectedShape() ) ); 
+	      gp_Pnt aPnt = BRep_Tool::Pnt( TopoDS::Vertex( ic->SelectedShape() ) );
 	      if ( mySetRotationPointDlg )
 	      {
 		myRotationPointSelection = false;
 		mySetRotationPointDlg->setCoords(aPnt.X(), aPnt.Y(), aPnt.Z());
 	      }
-	    }	 
-	    else 
+	    }
+	    else
 	    {
 	      myCurrPointType = myPrevPointType;
 	      break;
@@ -396,7 +396,7 @@ void OCCViewer_ViewWindow::vpMousePressEvent( QMouseEvent* theEvent )
 	  if ( ic->NbSelected() == 0 ) myCurrPointType = myPrevPointType;
 	  if ( mySetRotationPointDlg ) mySetRotationPointDlg->toggleChange();
 	  ic->CloseAllContexts();
-	  myOperation = NOTHING; 
+	  myOperation = NOTHING;
 	  myViewPort->setCursor( myCursor );
 	  myCursorIsHand = false;
 	  myRotationPointSelection = false;
@@ -407,11 +407,11 @@ void OCCViewer_ViewWindow::vpMousePressEvent( QMouseEvent* theEvent )
       break;
     }
     /* notify that we start a transformation */
-    if ( transformRequested() ) 
+    if ( transformRequested() )
 	    emit vpTransformationStarted ( myOperation );
   }
-  if ( transformRequested() ) 
-    setTransformInProcess( true );		 
+  if ( transformRequested() )
+    setTransformInProcess( true );
 
   /* we may need it for sketching... */
   if ( l_mbPressEvent )
@@ -429,11 +429,11 @@ void OCCViewer_ViewWindow::activateZoom()
 {
   if ( !transformRequested() && !myCursorIsHand )
     myCursor = cursor();	        /* save old cursor */
-  
+
   if ( myOperation != ZOOMVIEW ) {
     QPixmap zoomPixmap (imageZoomCursor);
     QCursor zoomCursor (zoomPixmap);
-    setTransformRequested ( ZOOMVIEW );		
+    setTransformRequested ( ZOOMVIEW );
     myViewPort->setCursor( zoomCursor );
   }
 }
@@ -441,14 +441,14 @@ void OCCViewer_ViewWindow::activateZoom()
 
 /*!
   \brief Start panning operation.
-  
+
   Sets the corresponding cursor for the widget.
 */
 void OCCViewer_ViewWindow::activatePanning()
 {
   if ( !transformRequested() && !myCursorIsHand )
-    myCursor = cursor();	        // save old cursor 
-  
+    myCursor = cursor();	        // save old cursor
+
   if ( myOperation != PANVIEW ) {
     QCursor panCursor (Qt::SizeAllCursor);
     setTransformRequested ( PANVIEW );
@@ -464,13 +464,13 @@ void OCCViewer_ViewWindow::activatePanning()
 void OCCViewer_ViewWindow::activateRotation()
 {
   if ( !transformRequested() && !myCursorIsHand )
-    myCursor = cursor();	        // save old cursor 
-  
+    myCursor = cursor();	        // save old cursor
+
   if ( myOperation != ROTATE ) {
     QPixmap rotatePixmap (imageRotateCursor);
     QCursor rotCursor (rotatePixmap);
     setTransformRequested ( ROTATE );
-    myViewPort->setCursor( rotCursor );	
+    myViewPort->setCursor( rotCursor );
   }
 }
 
@@ -489,10 +489,10 @@ bool OCCViewer_ViewWindow::computeGravityCenter( double& theX, double& theY, dou
   Standard_Real Umin,Vmin,Umax,Vmax ;
   Standard_Integer Nstruct,Npoint ;
   Graphic3d_MapOfStructure MySetOfStructures;
-  
+
   aView->DisplayedStructures (MySetOfStructures);
   Nstruct = MySetOfStructures.Extent() ;
-  
+
   Graphic3d_MapIteratorOfMapOfStructure MyIterator(MySetOfStructures) ;
   aView->ViewMapping().WindowLimit(Umin,Vmin,Umax,Vmax) ;
   Npoint = 0 ; theX = theY = theZ = 0. ;
@@ -500,11 +500,11 @@ bool OCCViewer_ViewWindow::computeGravityCenter( double& theX, double& theY, dou
     if (!(MyIterator.Key())->IsEmpty()) {
       (MyIterator.Key())->MinMaxValues(Xmin,Ymin,Zmin,
                                          Xmax,Ymax,Zmax) ;
-    
+
       Standard_Real LIM = ShortRealLast() -1.;
-      if (!    (fabs(Xmin) > LIM || fabs(Ymin) > LIM || fabs(Zmin) > LIM 
+      if (!    (fabs(Xmin) > LIM || fabs(Ymin) > LIM || fabs(Zmin) > LIM
                 ||  fabs(Xmax) > LIM || fabs(Ymax) > LIM || fabs(Zmax) > LIM )) {
-        
+
         aView->Projects(Xmin,Ymin,Zmin,U,V,W) ;
         if( U >= Umin && U <= Umax && V >= Vmin && V <= Vmax ) {
           Npoint++ ; theX += Xmin ; theY += Ymin ; theZ += Zmin ;
@@ -555,7 +555,7 @@ void OCCViewer_ViewWindow::activateSetRotationGravity()
   {
     Handle(AIS_InteractiveContext) ic = myModel->getAISContext();
     ic->CloseAllContexts();
-    myOperation = NOTHING; 
+    myOperation = NOTHING;
     myViewPort->setCursor( myCursor );
     myCursorIsHand = false;
     myRotationPointSelection = false;
@@ -595,7 +595,7 @@ void OCCViewer_ViewWindow::activateSetRotationSelected( double theX, double theY
   {
     Handle(AIS_InteractiveContext) ic = myModel->getAISContext();
     ic->CloseAllContexts();
-    myOperation = NOTHING; 
+    myOperation = NOTHING;
     myViewPort->setCursor( myCursor );
     myCursorIsHand = false;
     myRotationPointSelection = false;
@@ -621,7 +621,7 @@ void OCCViewer_ViewWindow::activateStartPointSelection()
 
   AIS_ListOfInteractive aList;
   ic->DisplayedObjects( aList );
-  for ( AIS_ListIteratorOfListOfInteractive it( aList ); it.More(); it.Next() ) 
+  for ( AIS_ListIteratorOfListOfInteractive it( aList ); it.More(); it.Next() )
   {
     Handle(AIS_InteractiveObject) anObj = it.Value();
     if ( !anObj.IsNull() && anObj->HasPresentation() &&
@@ -630,13 +630,13 @@ void OCCViewer_ViewWindow::activateStartPointSelection()
       ic->Load(anObj,-1);
       ic->Activate(anObj,AIS_Shape::SelectionMode(TopAbs_VERTEX));
      }
-  }  
+  }
   // activate selection <------
 
   if ( !myCursorIsHand )
   {
     QCursor handCursor (Qt::PointingHandCursor);
-    myCursorIsHand = true;		
+    myCursorIsHand = true;
     myCursor = cursor();
     myViewPort->setCursor( handCursor );
   }
@@ -656,8 +656,8 @@ void OCCViewer_ViewWindow::activateGlobalPanning()
     QCursor glPanCursor (globalPanPixmap);
     myCurScale = aView3d->Scale();
     aView3d->FitAll(0.01, false);
-    myCursor = cursor();	        // save old cursor 
-    myViewPort->fitAll(); // fits view before selecting a new scene center 
+    myCursor = cursor();	        // save old cursor
+    myViewPort->fitAll(); // fits view before selecting a new scene center
     setTransformRequested( PANGLOBAL );
     myViewPort->setCursor( glPanCursor );
   }
@@ -675,7 +675,7 @@ void OCCViewer_ViewWindow::activateWindowFit()
 
   if ( myOperation != WINDOWFIT ) {
     QCursor handCursor (Qt::PointingHandCursor);
-    setTransformRequested ( WINDOWFIT );		
+    setTransformRequested ( WINDOWFIT );
     myViewPort->setCursor ( handCursor );
     myCursorIsHand = true;
   }
@@ -685,7 +685,7 @@ void OCCViewer_ViewWindow::activateWindowFit()
   \brief Start delayed viewer operation.
 */
 void OCCViewer_ViewWindow::setTransformRequested( OperationType op )
-{    
+{
   myOperation = op;
   myViewPort->setMouseTracking( myOperation == NOTHING );
 }
@@ -703,30 +703,30 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent( QMouseEvent* theEvent )
   case ROTATE:
     myViewPort->rotate(myCurrX, myCurrY, myCurrPointType, mySelectedPoint);
     break;
-    
+
   case ZOOMVIEW:
     myViewPort->zoom(myStartX, myStartY, myCurrX, myCurrY);
     myStartX = myCurrX;
     myStartY = myCurrY;
     break;
-    
+
   case PANVIEW:
     myViewPort->pan(myCurrX - myStartX, myStartY - myCurrY);
     myStartX = myCurrX;
     myStartY = myCurrY;
     break;
-    
+
 /*    case WINDOWFIT:
     myDrawRect = true;
     repaint();
     break;
-*/      
+*/
   case PANGLOBAL:
     break;
-    
+
   default:
     if ( myRotationPointSelection )
-      emit mouseMoving( this, theEvent ); 
+      emit mouseMoving( this, theEvent );
     else
     {
       int aState = theEvent->modifiers();
@@ -738,13 +738,13 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent( QMouseEvent* theEvent )
 	  drawRect();
 	  if ( !myCursorIsHand )	{   // we are going to sketch a rectangle
 	    QCursor handCursor (Qt::PointingHandCursor);
-	    myCursorIsHand = true;		
+	    myCursorIsHand = true;
 	    myCursor = cursor();
 	    myViewPort->setCursor( handCursor );
 	  }
 	}
-      } 
-      else if ( aButton == Qt::RightButton || 
+      }
+      else if ( aButton == Qt::RightButton ||
 		aButton == Qt::RightButton && aState == Qt::ShiftModifier ) {
 	OCCViewer_ViewSketcher* sketcher = 0;
 	QList<OCCViewer_ViewSketcher*>::Iterator it;
@@ -772,8 +772,8 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent( QMouseEvent* theEvent )
 	}
       }
       else
-	emit mouseMoving( this, theEvent ); 
-    }	
+	emit mouseMoving( this, theEvent );
+    }
   }
 }
 
@@ -811,12 +811,12 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
     myViewPort->endRotation();
     resetState();
     break;
-    
+
   case PANVIEW:
   case ZOOMVIEW:
     resetState();
     break;
-    
+
   case PANGLOBAL:
     if ( theEvent->button() == Qt::LeftButton ) {
       myViewPort->setCenter( theEvent->x(), theEvent->y() );
@@ -824,7 +824,7 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
       resetState();
     }
     break;
-      
+
   case WINDOWFIT:
     if ( theEvent->button() == Qt::LeftButton ) {
       myCurrX = theEvent->x();
@@ -837,14 +837,14 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
     }
     break;
   }
-  
+
   // NOTE: viewer 3D detects a rectangle of selection using this event
   // so we must emit it BEFORE resetting the selection rectangle
-  
+
   if ( theEvent->button() == Qt::LeftButton && myDrawRect ) {
     drawRect();
     endDrawRect();
-    resetState(); 
+    resetState();
     myViewPort->update();
   }
 
@@ -862,24 +862,24 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
 void OCCViewer_ViewWindow::resetState()
 {
   myDrawRect = false;
-  
+
   if ( myRotationPointSelection )
   {
     QCursor handCursor (Qt::PointingHandCursor);
     myViewPort->setCursor( handCursor );
   }
   else
-  { 
-    if ( transformRequested() || myCursorIsHand ) 
+  {
+    if ( transformRequested() || myCursorIsHand )
       myViewPort->setCursor( myCursor );
     myCursorIsHand = false;
   }
-  
-  if ( transformRequested() ) 
+
+  if ( transformRequested() )
     emit vpTransformationFinished (myOperation);
-  
-  setTransformInProcess( false );		
-  setTransformRequested( NOTHING );	
+
+  setTransformInProcess( false );
+  setTransformRequested( NOTHING );
 }
 
 
@@ -916,9 +916,9 @@ void OCCViewer_ViewWindow::endDrawRect()
 void OCCViewer_ViewWindow::createActions()
 {
   if (!myActionsMap.isEmpty()) return;
-  
+
   SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
-  
+
   QtxAction* aAction;
 
   // Dump view
@@ -1063,7 +1063,7 @@ void OCCViewer_ViewWindow::createActions()
 void OCCViewer_ViewWindow::createToolBar()
 {
   myToolBar->addAction( myActionsMap[DumpId] );
-  if ( myModel->trihedronActivated() ) 
+  if ( myModel->trihedronActivated() )
     myToolBar->addAction( myActionsMap[TrihedronShowId] );
 
   QtxMultiAction* aScaleAction = new QtxMultiAction( this );
@@ -1099,7 +1099,7 @@ void OCCViewer_ViewWindow::createToolBar()
 
   myToolBar->addSeparator();
   myToolBar->addAction( myActionsMap[CloneId] );
-  
+
   myToolBar->addSeparator();
   myToolBar->addAction( myActionsMap[ClippingId] );
 }
@@ -1219,7 +1219,7 @@ void OCCViewer_ViewWindow::onSetRotationPoint( bool on )
       if ( !mySetRotationPointDlg->isVisible() )
       {
 	if ( mySetRotationPointDlg->IsFirstShown() )
-	{ 
+	{
 	  Standard_Real Xcenter, Ycenter, Zcenter;
 	  if ( computeGravityCenter( Xcenter, Ycenter, Zcenter ) )
 	    mySetRotationPointDlg->setCoords( Xcenter, Ycenter, Zcenter );
@@ -1257,7 +1257,7 @@ void OCCViewer_ViewWindow::onClipping( bool on )
     myActionsMap[ ClippingId ]->setIcon(aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_CLIPPING_PRESSED" )));
   else
     myActionsMap[ ClippingId ]->setIcon(aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_CLIPPING" )));
-  
+
   if ( on )
     {
       if ( !myClippingDlg )
@@ -1305,7 +1305,7 @@ void OCCViewer_ViewWindow::onRestoreView()
 void OCCViewer_ViewWindow::performRestoring( const viewAspect& anItem )
 {
   Handle(V3d_View) aView3d = myViewPort->getView();
-	
+
   Standard_Boolean prev = aView3d->SetImmediateUpdate( Standard_False );
   aView3d->SetScale( anItem.scale );
   aView3d->SetCenter( anItem.centerX, anItem.centerY );
@@ -1314,7 +1314,7 @@ void OCCViewer_ViewWindow::performRestoring( const viewAspect& anItem )
   aView3d->SetImmediateUpdate( prev );
   aView3d->SetEye( anItem.eyeX, anItem.eyeY, anItem.eyeZ );
   aView3d->SetProj( anItem.projX, anItem.projY, anItem.projZ );
-  
+
   myRestoreFlag = 0;
 }
 
@@ -1347,9 +1347,9 @@ QImage OCCViewer_ViewWindow::dumpView()
 /*!
   \brief Set parameters of the cutting plane
   \param on if \c true, cutting plane is enabled
-  \param x X position of plane point 
-  \param y Y position of plane point 
-  \param z Z position of plane point 
+  \param x X position of plane point
+  \param y Y position of plane point
+  \param z Z position of plane point
   \param dx X coordinate of plane normal
   \param dy Y coordinate of plane normal
   \param dz Z coordinate of plane normal
@@ -1363,7 +1363,7 @@ void OCCViewer_ViewWindow::setCuttingPlane( bool on, const double x,  const doub
 
   if ( on ) {
     Handle(V3d_Viewer) viewer = myViewPort->getViewer();
-    
+
     // try to use already existing plane or create a new one
     Handle(V3d_Plane) clipPlane;
     view->InitActivePlanes();
@@ -1371,18 +1371,18 @@ void OCCViewer_ViewWindow::setCuttingPlane( bool on, const double x,  const doub
       clipPlane = view->ActivePlane();
     else
       clipPlane = new V3d_Plane( viewer );
-    
+
     // set new a,b,c,d values for the plane
     gp_Pln pln( gp_Pnt( x, y, z ), gp_Dir( dx, dy, dz ) );
     double a, b, c, d;
     pln.Coefficients( a, b, c, d );
     clipPlane->SetPlane( a, b, c, d );
-    
+
     view->SetPlaneOn( clipPlane );
-  } 
+  }
   else
     view->SetPlaneOff();
-  
+
   view->Update();
   view->Redraw();
 }
@@ -1480,24 +1480,24 @@ void OCCViewer_ViewWindow::setVisualParameters( const QString& parameters )
 
 /*!
   \brief Handle show event.
- 
+
   Emits Show() signal.
-  
+
   \param theEvent show event
 */
-void OCCViewer_ViewWindow::showEvent( QShowEvent* theEvent ) 
+void OCCViewer_ViewWindow::showEvent( QShowEvent* theEvent )
 {
   emit Show( theEvent );
 }
 
 /*!
   \brief Handle hide event.
- 
+
   Emits Hide() signal.
-  
+
   \param theEvent hide event
 */
-void OCCViewer_ViewWindow::hideEvent( QHideEvent* theEvent ) 
+void OCCViewer_ViewWindow::hideEvent( QHideEvent* theEvent )
 {
   emit Hide( theEvent );
 }

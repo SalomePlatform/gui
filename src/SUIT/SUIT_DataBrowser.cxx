@@ -255,7 +255,10 @@ void SUIT_DataBrowser::contextMenuEvent( QContextMenuEvent* e )
 */
 void SUIT_DataBrowser::init( SUIT_DataObject* root )
 {
-  setModel( new SUIT_ProxyModel( root, this ) );
+  SUIT_ProxyModel* m = new SUIT_ProxyModel( root, this );
+  connect( m, SIGNAL( modelUpdated() ), this, SLOT( onModelUpdated() ) );
+  
+  setModel( m );
   setItemDelegate( qobject_cast<SUIT_ProxyModel*>( model() )->delegate() );
   connect( treeView(), SIGNAL( sortingEnabled(bool ) ), 
 	   model(), SLOT( setSortingEnabled( bool ) ) );
@@ -272,3 +275,13 @@ void SUIT_DataBrowser::init( SUIT_DataObject* root )
 
   \sa updateKey(), setUpdateKey()
 */
+
+
+
+/*!
+  \brief Update internal modification time just after data model update
+*/
+void SUIT_DataBrowser::onModelUpdated()
+{
+  setModified();
+}

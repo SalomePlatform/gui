@@ -69,6 +69,9 @@ private:
 signals:
   void             requestUpdate();
 
+private slots:
+  void             onModelUpdated();
+
 private:
   QShortcut*       myShortcut;
 };

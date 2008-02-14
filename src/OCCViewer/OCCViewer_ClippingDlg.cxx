@@ -26,6 +26,7 @@
 #include "SUIT_ViewManager.h"
 #include "OCCViewer_ViewWindow.h"
 #include "OCCViewer_ViewPort3d.h"
+#include "OCCViewer_ViewModel.h"
 
 #include <V3d_View.hxx>
 #include <Geom_Plane.hxx>

@@ -25,10 +25,11 @@
 #include "SUIT.h"
 
 #include <QMainWindow>
-#include <QImage>
 
 class SUIT_Desktop;
 class SUIT_ViewManager;
+class QtxActionToolMgr;
+class QImage;
 
 class SUIT_EXPORT SUIT_ViewWindow: public QMainWindow 
 {
@@ -51,6 +52,8 @@ public:
   virtual void      setVisualParameters( const QString& parameters );
 
   void              setDestructiveClose( const bool );
+
+  QtxActionToolMgr* toolMgr() const;
 
 public slots:
   virtual void      onDumpView();
@@ -75,6 +78,9 @@ protected:
 
   SUIT_Desktop*     myDesktop;
   SUIT_ViewManager* myManager;
+
+private:
+  QtxActionToolMgr* myToolMgr;
 };
 
 #endif // !defined(AFX_SUIT_VIEWWINDOW_H__82C3D51A_6F10_45B0_BCFE_3CB3EF596A4D__INCLUDED_)

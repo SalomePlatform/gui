@@ -27,6 +27,7 @@
 #include "SUIT_MessageBox.h"
 #include "SUIT_Application.h"
 #include "SUIT_ViewManager.h"
+#include "QtxActionToolMgr.h"
 
 #include <QEvent>
 #include <QIcon>
@@ -49,6 +50,8 @@ SUIT_ViewWindow::SUIT_ViewWindow( SUIT_Desktop* theDesktop )
   setWindowIcon( myDesktop->windowIcon() );
 
   setAttribute( Qt::WA_DeleteOnClose );
+  
+  myToolMgr = new QtxActionToolMgr( this );
 }
 
 /*! Destructor.*/
@@ -212,4 +215,12 @@ QString   SUIT_ViewWindow::getVisualParameters()
 */
 void SUIT_ViewWindow::setVisualParameters( const QString& /*parameters*/ )
 {
+}
+
+/*!
+  \return associated tool bar manager
+*/
+QtxActionToolMgr* SUIT_ViewWindow::toolMgr() const
+{
+  return myToolMgr;
 }

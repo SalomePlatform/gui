@@ -27,6 +27,8 @@
 #include "SUIT_Desktop.h"
 #include "SUIT_Session.h"
 
+#include "QtxActionToolMgr.h"
+
 #include <QPainter>
 #include <QApplication>
 #include <QColorDialog>
@@ -296,8 +298,12 @@ void OCCViewer_Viewer::contextMenuPopup(QMenu* thePopup)
   thePopup->addSeparator();
 
   OCCViewer_ViewWindow* aView = (OCCViewer_ViewWindow*)(myViewManager->getActiveView());
-  if ( aView && !aView->getToolBar()->isVisible() )
-    thePopup->addAction( tr( "MEN_SHOW_TOOLBAR" ), this, SLOT( onShowToolbar() ) );
+
+  //Support of several toolbars in the popup menu
+  QList<QToolBar*> lst = qFindChildren<QToolBar*>( aView );
+  QList<QToolBar*>::const_iterator it = lst.begin(), last = lst.end();
+  for( ; it!=last; it++ )
+    thePopup->addAction( (*it)->toggleViewAction() );
 }
 
 /*!
@@ -326,15 +332,6 @@ void OCCViewer_Viewer::onChangeBgColor()
   QColor selColor = QColorDialog::getColor( aColorActive, aView);
   if ( selColor.isValid() )
     aViewPort3d->setBackgroundColor(selColor);
-}
-
-/*!
-  SLOT: called when popup item "Show toolbar" is activated, shows toolbar of active view window
-*/
-void OCCViewer_Viewer::onShowToolbar() {
-  OCCViewer_ViewWindow* aView = (OCCViewer_ViewWindow*)(myViewManager->getActiveView());
-  if ( aView )
-    aView->getToolBar()->show();    
 }
 
 /*!

@@ -36,7 +36,7 @@
 #include <SUIT_ResourceMgr.h>
 #include <SUIT_MessageBox.h>
 
-#include <QtxToolBar.h>
+#include <QtxActionToolMgr.h>
 #include <QtxMultiAction.h>
 
 #include <QPainter>
@@ -229,8 +229,6 @@ void OCCViewer_ViewWindow::initLayout()
 
   setTransformRequested ( NOTHING );
   setTransformInProcess ( false );
-
-  myToolBar = new QtxToolBar( true, tr( "LBL_TOOLBAR_LABEL" ), this );
 
   createActions();
   createToolBar();
@@ -915,8 +913,9 @@ void OCCViewer_ViewWindow::endDrawRect()
 */
 void OCCViewer_ViewWindow::createActions()
 {
-  if (!myActionsMap.isEmpty()) return;
-
+  if( !toolMgr()->isEmpty() )
+    return;
+  
   SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
 
   QtxAction* aAction;
@@ -926,42 +925,42 @@ void OCCViewer_ViewWindow::createActions()
                            tr( "MNU_DUMP_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_DUMP_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onDumpView()));
-	myActionsMap[ DumpId ] = aAction;
+  toolMgr()->registerAction( aAction, DumpId );
 
   // FitAll
   aAction = new QtxAction(tr("MNU_FITALL"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_FITALL" ) ),
                            tr( "MNU_FITALL" ), 0, this);
   aAction->setStatusTip(tr("DSC_FITALL"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onFitAll()));
-	myActionsMap[ FitAllId ] = aAction;
+  toolMgr()->registerAction( aAction, FitAllId );
 
   // FitRect
   aAction = new QtxAction(tr("MNU_FITRECT"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_FITAREA" ) ),
                            tr( "MNU_FITRECT" ), 0, this);
   aAction->setStatusTip(tr("DSC_FITRECT"));
   connect(aAction, SIGNAL(activated()), this, SLOT(activateWindowFit()));
-	myActionsMap[ FitRectId ] = aAction;
-
+  toolMgr()->registerAction( aAction, FitRectId );
+  
   // Zoom
   aAction = new QtxAction(tr("MNU_ZOOM_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_ZOOM" ) ),
                            tr( "MNU_ZOOM_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_ZOOM_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(activateZoom()));
-	myActionsMap[ ZoomId ] = aAction;
+  toolMgr()->registerAction( aAction, ZoomId );
 
   // Panning
   aAction = new QtxAction(tr("MNU_PAN_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_PAN" ) ),
                            tr( "MNU_PAN_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_PAN_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(activatePanning()));
-	myActionsMap[ PanId ] = aAction;
+  toolMgr()->registerAction( aAction, PanId );
 
   // Global Panning
   aAction = new QtxAction(tr("MNU_GLOBALPAN_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_GLOBALPAN" ) ),
                            tr( "MNU_GLOBALPAN_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_GLOBALPAN_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(activateGlobalPanning()));
-  myActionsMap[ GlobalPanId ] = aAction;
+  toolMgr()->registerAction( aAction, GlobalPanId );
 
   // Rotation Point
   mySetRotationPointAction = new QtxAction(tr("MNU_CHANGINGROTATIONPOINT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_ROTATION_POINT" ) ),
@@ -969,91 +968,91 @@ void OCCViewer_ViewWindow::createActions()
   mySetRotationPointAction->setStatusTip(tr("DSC_CHANGINGROTATIONPOINT_VIEW"));
   mySetRotationPointAction->setCheckable( true );
   connect(mySetRotationPointAction, SIGNAL(toggled( bool )), this, SLOT(onSetRotationPoint( bool )));
-  myActionsMap[ ChangeRotationPointId ] = mySetRotationPointAction;
+  toolMgr()->registerAction( mySetRotationPointAction, ChangeRotationPointId );
 
   // Rotation
   aAction = new QtxAction(tr("MNU_ROTATE_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_ROTATE" ) ),
                            tr( "MNU_ROTATE_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_ROTATE_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(activateRotation()));
-	myActionsMap[ RotationId ] = aAction;
+  toolMgr()->registerAction( aAction, RotationId );
 
   // Projections
   aAction = new QtxAction(tr("MNU_FRONT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_FRONT" ) ),
                            tr( "MNU_FRONT_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_FRONT_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onFrontView()));
-	myActionsMap[ FrontId ] = aAction;
+  toolMgr()->registerAction( aAction, FrontId );
 
   aAction = new QtxAction(tr("MNU_BACK_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_BACK" ) ),
                            tr( "MNU_BACK_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_BACK_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onBackView()));
-	myActionsMap[ BackId ] = aAction;
+  toolMgr()->registerAction( aAction, BackId );
 
   aAction = new QtxAction(tr("MNU_TOP_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_TOP" ) ),
                            tr( "MNU_TOP_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_TOP_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onTopView()));
-	myActionsMap[ TopId ] = aAction;
+  toolMgr()->registerAction( aAction, TopId );
 
   aAction = new QtxAction(tr("MNU_BOTTOM_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_BOTTOM" ) ),
                            tr( "MNU_BOTTOM_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_BOTTOM_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onBottomView()));
-	myActionsMap[ BottomId ] = aAction;
+  toolMgr()->registerAction( aAction, BottomId );
 
   aAction = new QtxAction(tr("MNU_LEFT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_LEFT" ) ),
                            tr( "MNU_LEFT_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_LEFT_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onLeftView()));
-	myActionsMap[ LeftId ] = aAction;
+  toolMgr()->registerAction( aAction, LeftId );
 
   aAction = new QtxAction(tr("MNU_RIGHT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_RIGHT" ) ),
                            tr( "MNU_RIGHT_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_RIGHT_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onRightView()));
-	myActionsMap[ RightId ] = aAction;
+  toolMgr()->registerAction( aAction, RightId );
 
   // Reset
   aAction = new QtxAction(tr("MNU_RESET_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_RESET" ) ),
                            tr( "MNU_RESET_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_RESET_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onResetView()));
-	myActionsMap[ ResetId ] = aAction;
+  toolMgr()->registerAction( aAction, ResetId );
 
   // Reset
   aAction = new QtxAction(tr("MNU_CLONE_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_CLONE_VIEW" ) ),
                            tr( "MNU_CLONE_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_CLONE_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onCloneView()));
-	myActionsMap[ CloneId ] = aAction;
+  toolMgr()->registerAction( aAction, CloneId );
 
   myClippingAction = new QtxAction(tr("MNU_CLIPPING"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_CLIPPING" ) ),
                            tr( "MNU_CLIPPING" ), 0, this);
   myClippingAction->setStatusTip(tr("DSC_CLIPPING"));
   myClippingAction->setCheckable( true );
   connect(myClippingAction, SIGNAL(toggled( bool )), this, SLOT(onClipping( bool )));
-  myActionsMap[ ClippingId ] = myClippingAction;
+  toolMgr()->registerAction( myClippingAction, CloneId );
 
   aAction = new QtxAction(tr("MNU_SHOOT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_SHOOT_VIEW" ) ),
                            tr( "MNU_SHOOT_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_SHOOT_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onMemorizeView()));
-	myActionsMap[ MemId ] = aAction;
+  toolMgr()->registerAction( aAction, MemId );
 
   aAction = new QtxAction(tr("MNU_PRESETS_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_PRESETS_VIEW" ) ),
                            tr( "MNU_PRESETS_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_PRESETS_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onRestoreView()));
-	myActionsMap[ RestoreId ] = aAction;
+  toolMgr()->registerAction( aAction, RestoreId );
 
   if (myModel->trihedronActivated()) {
     aAction = new QtxAction(tr("MNU_SHOW_TRIHEDRE"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_TRIHEDRON" ) ),
                              tr( "MNU_SHOW_TRIHEDRE" ), 0, this);
     aAction->setStatusTip(tr("DSC_SHOW_TRIHEDRE"));
     connect(aAction, SIGNAL(activated()), this, SLOT(onTrihedronShow()));
-	  myActionsMap[ TrihedronShowId ] = aAction;
+    toolMgr()->registerAction( aAction, TrihedronShowId );
   }
 }
 
@@ -1062,46 +1061,47 @@ void OCCViewer_ViewWindow::createActions()
 */
 void OCCViewer_ViewWindow::createToolBar()
 {
-  myToolBar->addAction( myActionsMap[DumpId] );
-  if ( myModel->trihedronActivated() )
-    myToolBar->addAction( myActionsMap[TrihedronShowId] );
+  int tid = toolMgr()->createToolBar( tr( "LBL_TOOLBAR_LABEL" ) );
+
+  toolMgr()->append( DumpId, tid );
+  if( myModel->trihedronActivated() ) 
+    toolMgr()->append( TrihedronShowId, tid );
 
   QtxMultiAction* aScaleAction = new QtxMultiAction( this );
-  aScaleAction->insertAction( myActionsMap[FitAllId] );
-  aScaleAction->insertAction( myActionsMap[FitRectId] );
-  aScaleAction->insertAction( myActionsMap[ZoomId] );
-  myToolBar->addAction( aScaleAction );
+  aScaleAction->insertAction( toolMgr()->action( FitAllId ) );
+  aScaleAction->insertAction( toolMgr()->action( FitRectId ) );
+  aScaleAction->insertAction( toolMgr()->action( ZoomId ) );
+  toolMgr()->append( aScaleAction, tid );
 
   QtxMultiAction* aPanningAction = new QtxMultiAction( this );
-  aPanningAction->insertAction( myActionsMap[PanId] );
-  aPanningAction->insertAction( myActionsMap[GlobalPanId] );
-  myToolBar->addAction( aPanningAction );
+  aPanningAction->insertAction( toolMgr()->action( PanId ) );
+  aPanningAction->insertAction( toolMgr()->action( GlobalPanId ) );
+  toolMgr()->append( aPanningAction, tid );
 
-  myToolBar->addAction( myActionsMap[ChangeRotationPointId] );
-
-  myToolBar->addAction( myActionsMap[RotationId] );
+  toolMgr()->append( ChangeRotationPointId, tid );
+  toolMgr()->append( RotationId, tid );
 
   QtxMultiAction* aViewsAction = new QtxMultiAction( this );
-  aViewsAction->insertAction( myActionsMap[FrontId] );
-  aViewsAction->insertAction( myActionsMap[BackId] );
-  aViewsAction->insertAction( myActionsMap[TopId] );
-  aViewsAction->insertAction( myActionsMap[BottomId] );
-  aViewsAction->insertAction( myActionsMap[LeftId] );
-  aViewsAction->insertAction( myActionsMap[RightId] );
-  myToolBar->addAction( aViewsAction );
+  aViewsAction->insertAction( toolMgr()->action( FrontId ) );
+  aViewsAction->insertAction( toolMgr()->action( BackId ) );
+  aViewsAction->insertAction( toolMgr()->action( TopId ) );
+  aViewsAction->insertAction( toolMgr()->action( BottomId ) );
+  aViewsAction->insertAction( toolMgr()->action( LeftId ) );
+  aViewsAction->insertAction( toolMgr()->action( RightId ) );
+  toolMgr()->append( aViewsAction, tid );
 
-  myToolBar->addAction( myActionsMap[ResetId] );
+  toolMgr()->append( ResetId, tid );
 
   QtxMultiAction* aMemAction = new QtxMultiAction( this );
-  aMemAction->insertAction( myActionsMap[MemId] );
-  aMemAction->insertAction( myActionsMap[RestoreId] );
-  myToolBar->addAction( aMemAction );
+  aMemAction->insertAction( toolMgr()->action( MemId ) );
+  aMemAction->insertAction( toolMgr()->action( RestoreId ) );
+  toolMgr()->append( aMemAction, tid );
 
-  myToolBar->addSeparator();
-  myToolBar->addAction( myActionsMap[CloneId] );
-
-  myToolBar->addSeparator();
-  myToolBar->addAction( myActionsMap[ClippingId] );
+  toolMgr()->append( toolMgr()->separator(), tid );
+  toolMgr()->append( CloneId, tid );
+  
+  toolMgr()->append( toolMgr()->separator(), tid );
+  toolMgr()->append( ClippingId, tid );
 }
 
 /*!
@@ -1253,11 +1253,11 @@ void OCCViewer_ViewWindow::onCloneView()
 void OCCViewer_ViewWindow::onClipping( bool on )
 {
   SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
-  if ( on )
+  /*if ( on )
     myActionsMap[ ClippingId ]->setIcon(aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_CLIPPING_PRESSED" )));
   else
     myActionsMap[ ClippingId ]->setIcon(aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_CLIPPING" )));
-
+  */
   if ( on )
     {
       if ( !myClippingDlg )
@@ -1637,4 +1637,24 @@ void OCCViewer_ViewWindow::onSketchingFinished()
     OCCViewer_ViewManager* aViewMgr = ( OCCViewer_ViewManager* )getViewManager();
     aViewMgr->getOCCViewer()->performSelectionChanged();
   }
+}
+
+OCCViewer_ViewPort3d* OCCViewer_ViewWindow::getViewPort()
+{
+  return myViewPort;
+}
+
+bool OCCViewer_ViewWindow::transformRequested() const
+{
+  return ( myOperation != NOTHING );
+}
+
+bool OCCViewer_ViewWindow::transformInProcess() const
+{
+  return myEventStarted;
+}
+
+void OCCViewer_ViewWindow::setTransformInProcess( bool bOn )
+{
+  myEventStarted = bOn;
 }

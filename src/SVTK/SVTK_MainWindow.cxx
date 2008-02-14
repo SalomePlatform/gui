@@ -36,6 +36,7 @@
 #include <QtxAction.h>
 #include <QtxMultiAction.h>
 #include <QtxToolBar.h>
+#include <QtxActionToolMgr.h>
 
 #include <SUIT_MessageBox.h>
 #include <SUIT_ViewWindow.h>
@@ -67,7 +68,7 @@ SVTK_MainWindow
   setObjectName(theName);
   setWindowFlags( windowFlags() & ~Qt::Window );
 
-  myToolBar = new QtxToolBar( true, tr("LBL_TOOLBAR_LABEL"), this );
+  myToolBar = myViewWindow->toolMgr()->createToolBar( tr("LBL_TOOLBAR_LABEL"), -1, this );
 
   createActions(theResourceMgr);
   createToolBar();
@@ -90,10 +91,11 @@ SVTK_MainWindow
   myInteractor->setFocus();
   setFocusProxy(myInteractor);
 
-  myUpdateRateDlg = new SVTK_UpdateRateDlg(myActionsMap[UpdateRate],this,"SVTK_UpdateRateDlg");
-  myNonIsometricDlg = new SVTK_NonIsometricDlg(myActionsMap[NonIsometric],this,"SVTK_NonIsometricDlg");
-  myCubeAxesDlg = new SVTK_CubeAxesDlg(myActionsMap[GraduatedAxes],this,"SVTK_CubeAxesDlg");
-  mySetRotationPointDlg = new SVTK_SetRotationPointDlg(myActionsMap[ChangeRotationPointId],this,"SVTK_SetRotationPointDlg");
+  myUpdateRateDlg = new SVTK_UpdateRateDlg( action( UpdateRate ), this, "SVTK_UpdateRateDlg" );
+  myNonIsometricDlg = new SVTK_NonIsometricDlg( action( NonIsometric ), this, "SVTK_NonIsometricDlg" );
+  myCubeAxesDlg = new SVTK_CubeAxesDlg( action( GraduatedAxes ), this, "SVTK_CubeAxesDlg" );
+  mySetRotationPointDlg = new SVTK_SetRotationPointDlg
+    ( action( ChangeRotationPointId ), this, "SVTK_SetRotationPointDlg" );
 }
 
 /*!
@@ -395,7 +397,7 @@ QToolBar*
 SVTK_MainWindow
 ::getToolBar()
 {
-  return myToolBar;
+  return myViewWindow->toolMgr()->toolBar( myToolBar );
 }
 
 void
@@ -416,10 +418,8 @@ void
 SVTK_MainWindow
 ::createActions(SUIT_ResourceMgr* theResourceMgr)
 {
-  if(!myActionsMap.isEmpty()) 
-    return;
-  
   QtxAction* anAction;
+  QtxActionToolMgr* mgr = myViewWindow->toolMgr();
 
   // Dump view
   anAction = new QtxAction(tr("MNU_DUMP_VIEW"), 
@@ -427,7 +427,7 @@ SVTK_MainWindow
 			   tr( "MNU_DUMP_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_DUMP_VIEW"));
   connect(anAction, SIGNAL(activated()), myViewWindow, SLOT(onDumpView()));
-  myActionsMap[ DumpId ] = anAction;
+  mgr->registerAction( anAction, DumpId );
 
   // FitAll
   anAction = new QtxAction(tr("MNU_FITALL"), 
@@ -435,7 +435,7 @@ SVTK_MainWindow
 			   tr( "MNU_FITALL" ), 0, this);
   anAction->setStatusTip(tr("DSC_FITALL"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onFitAll()));
-  myActionsMap[ FitAllId ] = anAction;
+  mgr->registerAction( anAction, FitAllId );
 
   // FitRect
   anAction = new QtxAction(tr("MNU_FITRECT"), 
@@ -443,7 +443,7 @@ SVTK_MainWindow
 			   tr( "MNU_FITRECT" ), 0, this);
   anAction->setStatusTip(tr("DSC_FITRECT"));
   connect(anAction, SIGNAL(activated()), this, SLOT(activateWindowFit()));
-  myActionsMap[ FitRectId ] = anAction;
+  mgr->registerAction( anAction, FitRectId );
 
   // Zoom
   anAction = new QtxAction(tr("MNU_ZOOM_VIEW"), 
@@ -451,7 +451,7 @@ SVTK_MainWindow
 			   tr( "MNU_ZOOM_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_ZOOM_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(activateZoom()));
-  myActionsMap[ ZoomId ] = anAction;
+  mgr->registerAction( anAction, ZoomId );
 
   // Panning
   anAction = new QtxAction(tr("MNU_PAN_VIEW"), 
@@ -459,7 +459,7 @@ SVTK_MainWindow
 			   tr( "MNU_PAN_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_PAN_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(activatePanning()));
-  myActionsMap[ PanId ] = anAction;
+  mgr->registerAction( anAction, PanId );
 
   // Global Panning
   anAction = new QtxAction(tr("MNU_GLOBALPAN_VIEW"), 
@@ -467,7 +467,7 @@ SVTK_MainWindow
 			   tr( "MNU_GLOBALPAN_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_GLOBALPAN_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(activateGlobalPanning()));
-  myActionsMap[ GlobalPanId ] = anAction;
+  mgr->registerAction( anAction, GlobalPanId );
 
   // Change rotation point
   anAction = new QtxAction(tr("MNU_CHANGINGROTATIONPOINT_VIEW"), 
@@ -476,7 +476,7 @@ SVTK_MainWindow
   anAction->setStatusTip(tr("DSC_CHANGINGROTATIONPOINT_VIEW"));
   anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onChangeRotationPoint(bool)));
-  myActionsMap[ ChangeRotationPointId ] = anAction;
+  mgr->registerAction( anAction, ChangeRotationPointId );
 
   // Rotation
   anAction = new QtxAction(tr("MNU_ROTATE_VIEW"), 
@@ -484,7 +484,7 @@ SVTK_MainWindow
 			   tr( "MNU_ROTATE_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_ROTATE_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(activateRotation()));
-  myActionsMap[ RotationId ] = anAction;
+  mgr->registerAction( anAction, RotationId );
 
   // Projections
   anAction = new QtxAction(tr("MNU_FRONT_VIEW"), 
@@ -492,42 +492,42 @@ SVTK_MainWindow
 			   tr( "MNU_FRONT_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_FRONT_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onFrontView()));
-  myActionsMap[ FrontId ] = anAction;
+  mgr->registerAction( anAction, FrontId );
 
   anAction = new QtxAction(tr("MNU_BACK_VIEW"), 
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_BACK" ) ),
 			   tr( "MNU_BACK_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_BACK_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onBackView()));
-  myActionsMap[ BackId ] = anAction;
+  mgr->registerAction( anAction, BackId );
 
   anAction = new QtxAction(tr("MNU_TOP_VIEW"), 
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_TOP" ) ),
 			   tr( "MNU_TOP_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_TOP_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onTopView()));
-  myActionsMap[ TopId ] = anAction;
+  mgr->registerAction( anAction, TopId );
 
   anAction = new QtxAction(tr("MNU_BOTTOM_VIEW"), 
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_BOTTOM" ) ),
 			   tr( "MNU_BOTTOM_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_BOTTOM_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onBottomView()));
-  myActionsMap[ BottomId ] = anAction;
+  mgr->registerAction( anAction, BottomId );
 
   anAction = new QtxAction(tr("MNU_LEFT_VIEW"), 
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_LEFT" ) ),
 			   tr( "MNU_LEFT_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_LEFT_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onLeftView()));
-  myActionsMap[ LeftId ] = anAction;
+  mgr->registerAction( anAction, LeftId );
 
   anAction = new QtxAction(tr("MNU_RIGHT_VIEW"), 
 			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_RIGHT" ) ),
 			   tr( "MNU_RIGHT_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_RIGHT_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onRightView()));
-  myActionsMap[ RightId ] = anAction;
+  mgr->registerAction( anAction, RightId );
 
   // Reset
   anAction = new QtxAction(tr("MNU_RESET_VIEW"), 
@@ -535,7 +535,7 @@ SVTK_MainWindow
 			   tr( "MNU_RESET_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_RESET_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onResetView()));
-  myActionsMap[ ResetId ] = anAction;
+  mgr->registerAction( anAction, ResetId );
 
   // onViewTrihedron: Shows - Hides Trihedron
   anAction = new QtxAction(tr("MNU_SHOW_TRIHEDRON"), 
@@ -543,7 +543,7 @@ SVTK_MainWindow
 			   tr( "MNU_SHOW_TRIHEDRON" ), 0, this);
   anAction->setStatusTip(tr("DSC_SHOW_TRIHEDRON"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onViewTrihedron()));
-  myActionsMap[ ViewTrihedronId ] = anAction;
+  mgr->registerAction( anAction, ViewTrihedronId );
 
   // onNonIsometric: Manage non-isometric params
   anAction = new QtxAction(tr("MNU_SVTK_SCALING"), 
@@ -552,7 +552,7 @@ SVTK_MainWindow
   anAction->setStatusTip(tr("DSC_SVTK_SCALING"));
   anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onNonIsometric(bool)));
-  myActionsMap[ NonIsometric ] = anAction;
+  mgr->registerAction( anAction, NonIsometric );
 
   // onGraduatedAxes: Manage graduated axes params
   anAction = new QtxAction(tr("MNU_SVTK_GRADUATED_AXES"), 
@@ -561,7 +561,7 @@ SVTK_MainWindow
   anAction->setStatusTip(tr("DSC_SVTK_GRADUATED_AXES"));
   anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onGraduatedAxes(bool)));
-  myActionsMap[ GraduatedAxes ] = anAction;
+  mgr->registerAction( anAction, GraduatedAxes );
 
   // onGraduatedAxes: Manage graduated axes params
   anAction = new QtxAction(tr("MNU_SVTK_UPDATE_RATE"), 
@@ -570,7 +570,7 @@ SVTK_MainWindow
   anAction->setStatusTip(tr("DSC_SVTK_UPDATE_RATE"));
   anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onUpdateRate(bool)));
-  myActionsMap[ UpdateRate ] = anAction;
+  mgr->registerAction( anAction, UpdateRate );
 }
 
 #if defined(WIN32) && !defined(_DEBUG)
@@ -584,38 +584,40 @@ void
 SVTK_MainWindow
 ::createToolBar()
 {
-  myToolBar->addAction( myActionsMap[DumpId] );
-  myToolBar->addAction( myActionsMap[ViewTrihedronId] );
+  QtxActionToolMgr* mgr = myViewWindow->toolMgr();
+  
+  mgr->append( DumpId, myToolBar );
+  mgr->append( ViewTrihedronId, myToolBar );
 
   QtxMultiAction* aScaleAction = new QtxMultiAction( this );
-  aScaleAction->insertAction( myActionsMap[FitAllId] );
-  aScaleAction->insertAction( myActionsMap[FitRectId] );
-  aScaleAction->insertAction( myActionsMap[ZoomId] );
-  myToolBar->addAction( aScaleAction );
+  aScaleAction->insertAction( action( FitAllId ) );
+  aScaleAction->insertAction( action( FitRectId ) );
+  aScaleAction->insertAction( action( ZoomId ) );
+  mgr->append( aScaleAction, myToolBar );
 
   QtxMultiAction* aPanningAction = new QtxMultiAction( this );
-  aPanningAction->insertAction( myActionsMap[PanId] );
-  aPanningAction->insertAction( myActionsMap[GlobalPanId] );
-  myToolBar->addAction( aPanningAction );
+  aPanningAction->insertAction( action( PanId ) );
+  aPanningAction->insertAction( action( GlobalPanId ) );
+  mgr->append( aPanningAction, myToolBar );
 
-  myToolBar->addAction( myActionsMap[ChangeRotationPointId] );
+  mgr->append( ChangeRotationPointId, myToolBar );
 
-  myToolBar->addAction( myActionsMap[RotationId] );
+  mgr->append( RotationId, myToolBar );
 
   QtxMultiAction* aViewsAction = new QtxMultiAction( this );
-  aViewsAction->insertAction( myActionsMap[FrontId] );
-  aViewsAction->insertAction( myActionsMap[BackId] );
-  aViewsAction->insertAction( myActionsMap[TopId] );
-  aViewsAction->insertAction( myActionsMap[BottomId] );
-  aViewsAction->insertAction( myActionsMap[LeftId] );
-  aViewsAction->insertAction( myActionsMap[RightId] );
-  myToolBar->addAction( aViewsAction );
+  aViewsAction->insertAction( action( FrontId ) );
+  aViewsAction->insertAction( action( BackId ) );
+  aViewsAction->insertAction( action( TopId ) );
+  aViewsAction->insertAction( action( BottomId ) );
+  aViewsAction->insertAction( action( LeftId ) );
+  aViewsAction->insertAction( action( RightId ) );
+  mgr->append( aViewsAction, myToolBar );
 
-  myToolBar->addAction( myActionsMap[ResetId] );
+  mgr->append( ResetId, myToolBar );
 
-  myToolBar->addAction( myActionsMap[UpdateRate] );
-  myToolBar->addAction( myActionsMap[NonIsometric] );
-  myToolBar->addAction( myActionsMap[GraduatedAxes] );
+  mgr->append( UpdateRate, myToolBar );
+  mgr->append( NonIsometric, myToolBar );
+  mgr->append( GraduatedAxes, myToolBar );
 }
 
 /*!
@@ -900,4 +902,12 @@ SVTK_MainWindow
 {
   QPixmap px = QPixmap::grabWindow( GetInteractor()->winId() );
   return px.toImage();
+}
+
+/*!
+  \return action by it's id
+*/
+QtxAction* SVTK_MainWindow::action( int id ) const
+{
+  return dynamic_cast<QtxAction*>( myViewWindow->toolMgr()->action( id ) );
 }

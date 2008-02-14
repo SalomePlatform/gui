@@ -26,18 +26,17 @@
 #include "SVTK.h"
 #include "SVTK_Selection.h"
 
-#include <vtkSmartPointer.h>
-
 #include <QMainWindow>
-#include <QMap>
 
-class QtxAction;
+#include <vtkSmartPointer.h>
 
 class vtkObject;
 class vtkRenderer;
 class vtkRenderWindow;
 class vtkInteractorStyle;
 class vtkRenderWindowInteractor;
+
+class QtxAction;
 
 class SUIT_ResourceMgr;
 class SUIT_ViewWindow;
@@ -48,13 +47,11 @@ class SVTK_UpdateRateDlg;
 class SVTK_CubeAxesActor2D;
 class SVTK_CubeAxesDlg;
 class SVTK_SetRotationPointDlg;
-
-class VTKViewer_Trihedron;
-class VTKViewer_Actor;
-
 class SVTK_Renderer;
 class SVTK_Selector;
 
+class VTKViewer_Trihedron;
+class VTKViewer_Actor;
 
 //! The class is a container for #SVTK_RenderWindowInteractor.
 /*!
@@ -247,11 +244,12 @@ public:
   void
   SetEventDispatcher(vtkObject* theDispatcher);
 
+  QtxAction* action( int ) const;
+
   enum { DumpId, FitAllId, FitRectId, ZoomId, PanId, GlobalPanId, 
 	 ChangeRotationPointId, RotationId,
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, 
 	 ViewTrihedronId, NonIsometric, GraduatedAxes, UpdateRate};
-  typedef QMap<int, QtxAction*> TActionsMap;
 
   SUIT_ViewWindow* myViewWindow;
 
@@ -261,8 +259,7 @@ public:
   SVTK_SetRotationPointDlg* mySetRotationPointDlg;
 
   vtkSmartPointer<vtkObject> myEventDispatcher;
-  TActionsMap myActionsMap;  
-  QToolBar* myToolBar;
+  int myToolBar;
 
   SVTK_RenderWindowInteractor* myInteractor;
 };

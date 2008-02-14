@@ -29,6 +29,7 @@
 
 #include <QtxToolBar.h>
 #include <QtxMultiAction.h>
+#include <QtxActionToolMgr.h>
 
 #include <SUIT_Desktop.h>
 #include <SUIT_Session.h>
@@ -74,8 +75,6 @@ myVP( 0 )
     setBackgroundColor( Qt::white );
     layout->addWidget( vp );
 
-    myToolBar = new QtxToolBar( true, tr("LBL_TOOLBAR_LABEL"), this );
-
     createActions();
     createToolBar();
 }
@@ -92,7 +91,6 @@ GLViewer_ViewFrame::~GLViewer_ViewFrame()
 */
 void GLViewer_ViewFrame::createActions()
 {
-  if (!myActionsMap.isEmpty()) return;
   SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
   QtxAction* aAction;
 
@@ -101,55 +99,55 @@ void GLViewer_ViewFrame::createActions()
 			  tr( "MNU_DUMP_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_DUMP_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewDump()));
-  myActionsMap[ DumpId ] = aAction;
+  toolMgr()->registerAction( aAction, DumpId );
 
   // FitAll
   aAction = new QtxAction(tr("MNU_FITALL"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_FITALL" ) ),
 			  tr( "MNU_FITALL" ), 0, this);
   aAction->setStatusTip(tr("DSC_FITALL"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewFitAll()));
-  myActionsMap[ FitAllId ] = aAction;
+  toolMgr()->registerAction( aAction, FitAllId );
 
   // FitRect
   aAction = new QtxAction(tr("MNU_FITRECT"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_FITAREA" ) ),
 			  tr( "MNU_FITRECT" ), 0, this);
   aAction->setStatusTip(tr("DSC_FITRECT"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewFitArea()));
-  myActionsMap[ FitRectId ] = aAction;
+  toolMgr()->registerAction( aAction, FitRectId );
 
   // FitSelect
   aAction = new QtxAction(tr("MNU_FITSELECT"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_FITSELECT" ) ),
 			  tr( "MNU_FITSELECT" ), 0, this);
   aAction->setStatusTip(tr("DSC_FITSELECT"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewFitSelect()));
-  myActionsMap[ FitSelectId ] = aAction;
+  toolMgr()->registerAction( aAction, FitSelectId );
 
   // Zoom
   aAction = new QtxAction(tr("MNU_ZOOM_VIEW"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_ZOOM" ) ),
 			  tr( "MNU_ZOOM_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_ZOOM_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewZoom()));
-  myActionsMap[ ZoomId ] = aAction;
+  toolMgr()->registerAction( aAction, ZoomId );
 
   // Panning
   aAction = new QtxAction(tr("MNU_PAN_VIEW"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_PAN" ) ),
 			  tr( "MNU_PAN_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_PAN_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewPan()));
-  myActionsMap[ PanId ] = aAction;
+  toolMgr()->registerAction( aAction, PanId );
 
   // Global Panning
   aAction = new QtxAction(tr("MNU_GLOBALPAN_VIEW"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_GLOBALPAN" ) ),
 			  tr( "MNU_GLOBALPAN_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_GLOBALPAN_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewGlobalPan()));
-  myActionsMap[ GlobalPanId ] = aAction;
+  toolMgr()->registerAction( aAction, GlobalPanId );
 
   aAction = new QtxAction(tr("MNU_RESET_VIEW"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_RESET" ) ),
 			  tr( "MNU_RESET_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_RESET_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewReset()));
-  myActionsMap[ ResetId ] = aAction;
+  toolMgr()->registerAction( aAction, ResetId );
 }
 
 /*!
@@ -157,21 +155,22 @@ void GLViewer_ViewFrame::createActions()
 */
 void GLViewer_ViewFrame::createToolBar()
 {
-  myToolBar->addAction( myActionsMap[DumpId] );
+  int tid = toolMgr()->createToolBar( tr("LBL_TOOLBAR_LABEL") );
+  toolMgr()->append( DumpId, tid );
 
   QtxMultiAction* aScaleAction = new QtxMultiAction( this );
-  aScaleAction->insertAction( myActionsMap[FitAllId] );
-  aScaleAction->insertAction( myActionsMap[FitRectId] );
-  aScaleAction->insertAction( myActionsMap[FitSelectId] );
-  aScaleAction->insertAction( myActionsMap[ZoomId] );
-  myToolBar->addAction( aScaleAction );
+  aScaleAction->insertAction( toolMgr()->action( FitAllId ) );
+  aScaleAction->insertAction( toolMgr()->action( FitRectId ) );
+  aScaleAction->insertAction( toolMgr()->action( FitSelectId ) );
+  aScaleAction->insertAction( toolMgr()->action( ZoomId ) );
+  toolMgr()->append( aScaleAction, tid );
 
   QtxMultiAction* aPanAction = new QtxMultiAction( this );
-  aPanAction->insertAction( myActionsMap[PanId] );
-  aPanAction->insertAction( myActionsMap[GlobalPanId] );
-  myToolBar->addAction( aPanAction );
+  aPanAction->insertAction( toolMgr()->action( PanId ) );
+  aPanAction->insertAction( toolMgr()->action( GlobalPanId ) );
+  toolMgr()->append( aPanAction, tid );
 
-  myToolBar->addAction( myActionsMap[ResetId] );
+  toolMgr()->append( toolMgr()->action( ResetId ), tid );
 }
 
 /*!

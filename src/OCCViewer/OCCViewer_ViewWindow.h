@@ -19,23 +19,19 @@
 #ifndef OCCVIEWER_VIEWWINDOW_H
 #define OCCVIEWER_VIEWWINDOW_H
 
-#include "OCCViewer_ViewModel.h"
-
+#include "OCCViewer.h"
 #include "SUIT_ViewWindow.h"
-
-#include "QtxAction.h"
-
-#include <QCursor>
-#include <QList>
+#include <gp_Pnt.hxx>
 
 class QRubberBand;
-
 class SUIT_Desktop;
 class OCCViewer_ViewPort3d;
 class OCCViewer_ViewSketcher;
-
 class OCCViewer_ClippingDlg;
 class OCCViewer_SetRotationPointDlg;
+class OCCViewer_Viewer;
+class viewAspect;
+class QtxAction;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -46,6 +42,11 @@ class OCCVIEWER_EXPORT OCCViewer_ViewWindow : public SUIT_ViewWindow
   Q_OBJECT
 
 public:
+  enum { DumpId, FitAllId, FitRectId, ZoomId, PanId, GlobalPanId,
+	 ChangeRotationPointId, RotationId,
+         FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, CloneId, ClippingId, MemId, RestoreId,
+         TrihedronShowId };
+
   enum OperationType{ NOTHING, PANVIEW, ZOOMVIEW, ROTATE, 
 		      PANGLOBAL, WINDOWFIT, FITALLVIEW, RESETVIEW,
                       FRONTVIEW, BACKVIEW, TOPVIEW, BOTTOMVIEW, LEFTVIEW, RIGHTVIEW };
@@ -57,11 +58,9 @@ public:
   OCCViewer_ViewWindow(SUIT_Desktop* theDesktop, OCCViewer_Viewer* theModel);
   virtual ~OCCViewer_ViewWindow();
 
-  OCCViewer_ViewPort3d* getViewPort() { return myViewPort; }
+  OCCViewer_ViewPort3d* getViewPort();
 
   bool eventFilter(QObject* watched, QEvent* e);
-
-  QToolBar* getToolBar() { return myToolBar; }
 
   void performRestoring( const viewAspect& );
   
@@ -122,22 +121,15 @@ signals:
   void Hide( QHideEvent * );
 
 protected:
-  enum { DumpId, FitAllId, FitRectId, ZoomId, PanId, GlobalPanId,
-	 ChangeRotationPointId, RotationId,
-         FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, CloneId, ClippingId, MemId, RestoreId,
-         TrihedronShowId };
-
-  typedef QMap<int, QtxAction*> ActionsMap;
-
   QImage dumpView();
 
   /* Transformation selected but not started yet */
-  bool transformRequested() const { return ( myOperation != NOTHING ); }
-  void setTransformRequested ( OperationType op );
+  bool transformRequested() const;
+  void setTransformRequested ( OperationType );
 
   /* Transformation is selected and already started */
-  bool		transformInProcess() const { return myEventStarted; }
-  void		setTransformInProcess( bool bOn ) { myEventStarted = bOn; }
+  bool		transformInProcess() const;
+  void		setTransformInProcess( bool );
 
   void vpMousePressEvent(QMouseEvent* theEvent);
   void vpMouseReleaseEvent(QMouseEvent* theEvent);
@@ -189,9 +181,6 @@ protected:
   bool		        myPaintersRedrawing;  // set to draw with external painters 
  
   QCursor	        myCursor;
-
-  QToolBar*  myToolBar;
-  ActionsMap myActionsMap;
 
   double myCurScale;
 

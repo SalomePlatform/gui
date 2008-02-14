@@ -51,6 +51,10 @@ class GLVIEWER_API GLViewer_ViewFrame: public SUIT_ViewWindow
   Q_OBJECT
     
 public:
+  //! Actions ID
+  enum { DumpId, FitAllId, FitRectId, FitSelectId, ZoomId, PanId, GlobalPanId, ResetId };
+
+public:
   GLViewer_ViewFrame( SUIT_Desktop* , GLViewer_Viewer* );
   ~GLViewer_ViewFrame();
   
@@ -109,15 +113,6 @@ private slots:
 private:
   void           createActions();
   void           createToolBar();
-  
-private:
-  //! Actions ID
-  enum { DumpId, FitAllId, FitRectId, FitSelectId, ZoomId, PanId, GlobalPanId, ResetId };
-  typedef QMap<int, QtxAction*> ActionsMap;
-  
-private:
-  ActionsMap       myActionsMap;
-  QToolBar*        myToolBar;
 };
 
 

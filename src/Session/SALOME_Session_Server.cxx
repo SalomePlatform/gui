@@ -687,10 +687,8 @@ int main( int argc, char **argv )
   // unlock Session mutex
   _SessionMutex.unlock();
   
-  if ( shutdown ) {
+  if ( shutdown )
     shutdownServers( _NS );
-    killOmniNames();
-  }
 
   if ( myServerLauncher )
     myServerLauncher->KillAll(); // kill embedded servers
@@ -712,8 +710,8 @@ int main( int argc, char **argv )
       std::cerr << "Caught unexpected exception on destroy : ignored !!" << std::endl;
     }
 
-  //  if ( shutdown )
-  //    killOmniNames();
+  if ( shutdown )
+    killOmniNames();
 
   return result;
 }

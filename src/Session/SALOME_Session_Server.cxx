@@ -707,7 +707,13 @@ int main( int argc, char **argv )
     }
   catch(...) 
     {
-      std::cerr << "Caught unexpected exception on destroy : ignored !!" << std::endl;
+      //////////////////////////////////////////////////////////////
+      // VSR: silently skip exception:
+      // CORBA.BAD_INV_ORDER.BAD_INV_ORDER_ORBHasShutdown 
+      // exception is raised when orb->destroy() is called and
+      // cpp continer is launched in the embedded mode
+      //////////////////////////////////////////////////////////////
+      // std::cerr << "Caught unexpected exception on destroy : ignored !!" << std::endl;
     }
 
   if ( shutdown )

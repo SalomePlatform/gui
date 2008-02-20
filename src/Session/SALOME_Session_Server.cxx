@@ -348,7 +348,8 @@ void killOmniNames()
       cmd += QString("[ m.update(i) for i in pids ]; ");
       cmd += QString("pids=filter(lambda a: 'notifd' in m[a], m.keys()); ");
       cmd += QString("[ os.kill(pid, 9) for pid in pids ]; ");
-      cmd = QString("python -c \"%1\"").arg(cmd);
+      cmd += QString("os.remove(filedict); ");
+      cmd  = QString("python -c \"%1\" > /dev/null").arg(cmd);
       system( cmd.latin1() );
     }
 

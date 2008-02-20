@@ -108,6 +108,16 @@ bool PythonConsole_PyInterp::initState()
    * will have the same __builtin__ module
    */
  
+  if(!builtinmodule) // PAL18041: deepcopy function don't work in Salome
+  {
+    //builtinmodule is static member of PyInterp class
+    //If it is not NULL (initialized to the builtin module of the main interpreter
+    //all the sub interpreters will have the same builtin
+    //_interp is a static member and is the main interpreter
+    //The first time we initialized it to the builtin of main interpreter
+    builtinmodule=PyDict_GetItemString(_interp->modules, "__builtin__");
+  }
+
   if(builtinmodule)
     { 
     PyObject *m = PyImport_GetModuleDict();

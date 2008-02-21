@@ -20,6 +20,7 @@
 #define OCCVIEWER_VIEWWINDOW_H
 
 #include "OCCViewer_ViewModel.h"
+#include "OCCViewer_ViewSketcher.h"
 
 #include "SUIT_ViewWindow.h"
 
@@ -30,7 +31,6 @@
 
 class SUIT_Desktop;
 class OCCViewer_ViewPort3d;
-class OCCViewer_ViewSketcher;
 
 class OCCViewer_ClippingDlg;
 class OCCViewer_SetRotationPointDlg;

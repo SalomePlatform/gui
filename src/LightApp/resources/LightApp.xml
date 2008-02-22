@@ -49,12 +49,7 @@
   </section>
   <section name="desktop" >
     <!-- Default GUI desktop state, position, size -->
-    <parameter name="geometry"  value="(800%)x(800%) (+400%) (+400%) :(full)"/>
-    <parameter name="state"  value="normal"/>
-    <parameter name="pos_x"  value="center"/>
-    <parameter name="pos_y"  value="center"/>
-    <parameter name="width"  value="800"/>
-    <parameter name="height" value="600"/>
+    <parameter name="geometry"  value="80%x80%+10%+10%"/>
   </section>
   <section name="PyConsole">
     <!-- Python console preferences -->

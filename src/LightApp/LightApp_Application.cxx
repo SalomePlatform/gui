@@ -303,9 +303,6 @@ LightApp_Application::~LightApp_Application()
 /*!Start application.*/
 void LightApp_Application::start()
 {
-  if ( desktop() )
-    desktop()->retrieveGeometry( resourceMgr()->stringValue( "desktop", "geometry", "(800%)x(800%) (+400%) (+400%) :(full)" ) );
-
   CAM_Application::start();
 
   updateWindows();
@@ -701,8 +698,6 @@ void LightApp_Application::onNewWindow()
 */
 void LightApp_Application::onNewDoc()
 {
-  SUIT_Study* study = activeStudy();
-
   saveDockWindowsState();
 
   CAM_Application::onNewDoc();
@@ -2134,6 +2129,9 @@ void LightApp_Application::loadPreferences()
     if ( aResMgr->value( "windows_visibility", *itr, arr ) )
       myWinVis.insert( *itr, arr );
   }
+
+  if ( desktop() )
+    desktop()->retrieveGeometry( aResMgr->stringValue( "desktop", "geometry" ) );
 }
 
 /*!

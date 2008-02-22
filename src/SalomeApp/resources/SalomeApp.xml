@@ -72,12 +72,8 @@
   </section>
   <section name="desktop" >
     <!-- Default GUI desktop state, position, size -->
-    <parameter name="state"  value="normal"/>
-    <parameter name="pos_x"  value="center"/>
-    <parameter name="pos_y"  value="center"/>
-    <parameter name="width"  value="800"/>
-    <parameter name="height" value="600"/>
-  </section>
+    <parameter name="geometry"  value="80%%x80%%+10%%+10%%"/>
+ </section>
   <section name="ObjectBrowser" >
     <!-- Object Browser preferences -->
     <parameter name="auto_size"           value="false" />

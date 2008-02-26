@@ -3,6 +3,7 @@ CONFIG += ordered
 
 SUBDIRS = src/Qtx \
           src/Style \
+	  src/ObjBrowser \
           src/SUIT \
           src/SUITApp \
           src/LogWindow \
@@ -12,7 +13,6 @@ SUBDIRS = src/Qtx \
 	  src/VTKViewer \
 	  src/HTMLService \
 	  src/TableViewer \
-	  src/ObjBrowser \
 	  src/OBJECT \
 	  src/Prs \
 	  src/SVTK \

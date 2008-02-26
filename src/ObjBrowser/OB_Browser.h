@@ -25,8 +25,6 @@
 
 #include "OB.h"
 
-#include <SUIT_PopupClient.h>
-
 #include <QWidget>
 #include <QMap>
 #include <QModelIndex>
@@ -39,10 +37,11 @@
 class QAbstractItemModel;
 class QAbstractItemDelegate;
 class QToolTip;
+class QMenu;
 class QtxTreeView;
-class OB_FindDlg;
+class QtxSearchTool;
 
-class OB_EXPORT OB_Browser : public QWidget, public SUIT_PopupClient
+class OB_EXPORT OB_Browser : public QWidget
 {
   Q_OBJECT
 
@@ -52,8 +51,6 @@ class OB_EXPORT OB_Browser : public QWidget, public SUIT_PopupClient
 public:
   OB_Browser( QWidget* = 0, QAbstractItemModel* = 0 );
   virtual ~OB_Browser();
-
-  virtual QString        popupClientType() const;
 
   QAbstractItemModel*    model() const;
   void                   setModel( QAbstractItemModel* );
@@ -67,6 +64,10 @@ public:
   bool                   sortMenuEnabled() const;
   void                   setSortMenuEnabled( const bool );
 
+  QtxSearchTool*         searchTool() const;
+  bool                   isSearchToolEnabled() const;
+  void                   setSearchToolEnabled( const bool );
+  
   int                    autoOpenLevel() const;
   void                   setAutoOpenLevel( const int );
   void                   openLevels( const int = -1 );
@@ -97,8 +98,6 @@ public:
   // TODO: QTreeView::resizeColumnToContents() can be used instead
   //virtual void      setWidthMode( QListView::WidthMode );
 
-  virtual void           contextMenuPopup( QMenu* );
-
   unsigned long          getModifiedTime() const;
   void                   setModified();
   
@@ -116,7 +115,6 @@ signals:
 private slots:
   void                   onExpandAll();
   void                   onCollapseAll();
-  void                   onFind();
   //void              onDestroyed( SUIT_DataObject* );
   //void              onDoubleClicked ( QListViewItem* );
   //void              onDropped( QPtrList<QListViewItem>, QListViewItem*, int );
@@ -126,6 +124,7 @@ protected:
   //virtual void      updateText();
 
   virtual void           contextMenuEvent( QContextMenuEvent* );
+  virtual void           createPopupMenu( QMenu* );
 
 private:
   //typedef QMap<SUIT_DataObject*, QListViewItem*> ItemMap;
@@ -161,7 +160,7 @@ private:
 
 private:
   QtxTreeView*           myView;
-  OB_FindDlg*            myFindDlg;
+  QtxSearchTool*         mySearchTool;
   // TODO: decide what to do with tooltip
   //QToolTip*           myTooltip;
   //QMap<int, int>      myColumnIds;

@@ -4,8 +4,8 @@ DESTDIR = ../../$(CONFIG_ID)/lib
 MOC_DIR = ../../moc
 OBJECTS_DIR = ../../$(CONFIG_ID)/obj/$$TARGET
 
-INCLUDEPATH += ../../include ../Qtx ../SUIT
-LIBS += -L../../$(CONFIG_ID)/lib -lQtx -lSUIT
+INCLUDEPATH += ../../include ../Qtx
+LIBS += -L../../$(CONFIG_ID)/lib -lQtx
 
 CONFIG -= debug release debug_and_release
 CONFIG += qt thread debug dll shared

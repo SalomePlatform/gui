@@ -59,7 +59,6 @@ Plot2d_ViewWindow::Plot2d_ViewWindow( SUIT_Desktop* theDesktop, Plot2d_Viewer* t
 : SUIT_ViewWindow( theDesktop )
 {
   myModel = theModel;
-  myDumpImage = QImage();
 }
 
 /*!
@@ -444,15 +443,6 @@ void Plot2d_ViewWindow::setVisualParameters( const QString& parameters )
 }
 
 /*!
-  \brief Grab the view window to the internal image.
-*/
-void Plot2d_ViewWindow::RefreshDumpImage()
-{
-  QPixmap px = QPixmap::grabWindow( myViewFrame->winId() );
-  myDumpImage = px.toImage();
-}
-
-/*!
   \brief Called when the scale mode for the horizontal axis is changed.
 */
 void Plot2d_ViewWindow::onChangeHorMode()
@@ -605,12 +595,8 @@ void Plot2d_ViewWindow::onDumpView()
 */
 QImage Plot2d_ViewWindow::dumpView()
 {
-  if ( getToolBar()->underMouse() || myDumpImage.isNull() ) {
-    QPixmap px = QPixmap::grabWindow( myViewFrame->winId() );
-    return px.toImage();
-  }
-  
-  return myDumpImage;
+  QPixmap px = QPixmap::grabWidget( myViewFrame );
+  return px.toImage();
 }
 
 /*!

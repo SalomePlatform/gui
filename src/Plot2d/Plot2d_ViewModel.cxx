@@ -81,7 +81,6 @@ void Plot2d_Viewer::contextMenuPopup(QMenu* thePopup)
         thePopup->addSeparator();
       thePopup->addAction("Show toolbar", this, SLOT(onShowToolbar()));
     }
-    aView->RefreshDumpImage();
   }
 }
 

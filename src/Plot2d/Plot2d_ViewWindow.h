@@ -62,8 +62,6 @@ public:
 
   virtual QString   getVisualParameters();
   virtual void      setVisualParameters( const QString& );
-  
-  virtual void      RefreshDumpImage();
 
 public slots:
   void              onChangeHorMode();

@@ -161,8 +161,8 @@ OB_Browser::OB_Browser( QWidget* parent, QAbstractItemModel* model )
 
   connect( myView, SIGNAL( selectionChanged() ),
 	   this,   SIGNAL( selectionChanged() ) );
-  connect( myView, SIGNAL( doubleClicked( QListViewItem* ) ),
-           this, SLOT( onDoubleClicked( QListViewItem* ) ) );
+  //connect( myView, SIGNAL( doubleClicked( QListViewItem* ) ),
+  //         this, SLOT( onDoubleClicked( QListViewItem* ) ) );
 
 }
 

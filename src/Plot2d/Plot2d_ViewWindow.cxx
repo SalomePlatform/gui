@@ -225,7 +225,7 @@ void Plot2d_ViewWindow::createActions()
   aScaleAction->insertAction( mgr->action( FitAllId  ) );
   aScaleAction->insertAction( mgr->action( FitRectId ) );
   aScaleAction->insertAction( mgr->action( ZoomId    ) );
-  mgr->registerAction( aAction, ScaleOpId );
+  mgr->registerAction( aScaleAction, ScaleOpId );
 
   // 3. Moving operations
 
@@ -251,7 +251,7 @@ void Plot2d_ViewWindow::createActions()
   QtxMultiAction* aPanAction = new QtxMultiAction( this );
   aPanAction->insertAction( mgr->action( PanId ) );
   aPanAction->insertAction( mgr->action( GlobalPanId ) );
-  mgr->registerAction( aAction, MoveOpId );
+  mgr->registerAction( aPanAction, MoveOpId );
 
   // 4. Curve type operations
   

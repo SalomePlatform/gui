@@ -52,7 +52,7 @@ if test -z $QWTHOME; then
           QWT_INCLUDES=$QWTHOME"/include"
         fi
         if test ! -f $QWT_INCLUDES/qwt.h ; then
-          QWT_INCLUDES=/usr/lib/qt3/include/qwt
+          QWT_INCLUDES=/usr/lib/qt4/include/qwt
         fi
      fi
   fi

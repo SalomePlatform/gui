@@ -33,10 +33,9 @@
 const int maxDist = 3, tip_margin = 10;
 
 
-Plot2d_ToolTip::Plot2d_ToolTip( Plot2d_ViewFrame* frame, Plot2d_Plot2d* plot )
-: QtxToolTip( plot->canvas() ),
-  myFrame( frame ),
-  myPlot( plot )
+Plot2d_ToolTip::Plot2d_ToolTip( Plot2d_ViewFrame* frame )
+: QtxToolTip( frame->getPlotCanvas() ),
+  myFrame( frame )
 {
   connect( this, SIGNAL( maybeTip( QPoint, QString&, QFont&, QRect&, QRect& ) ),
 	   this, SLOT( onToolTip( QPoint, QString&, QFont&, QRect&, QRect& ) ) );
@@ -51,7 +50,7 @@ void Plot2d_ToolTip::onToolTip( QPoint p, QString& str, QFont& f, QRect& txtRect
   int pInd;
   double dist;
 
-  Plot2d_Curve* c = myPlot->getClosestCurve( p, dist, pInd );
+  Plot2d_Curve* c = myFrame->getClosestCurve( p, dist, pInd );
   if( !c || dist>maxDist )
     return;
 

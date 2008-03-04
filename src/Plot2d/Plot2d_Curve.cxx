@@ -21,28 +21,20 @@
 //
 
 #include "Plot2d_Curve.h"
-#include <QColor>
+
+#define DEFAULT_LINE_WIDTH     0     // (default) line width
+#define DEFAULT_MARKER_SIZE    9     // default marker size
 
 /*!
   Constructor
 */
 Plot2d_Curve::Plot2d_Curve()
-: myHorTitle( "" ), myVerTitle( "" ), 
-  myHorUnits( "" ), myVerUnits( "" ), 
-  myName( "" ),
-  myAutoAssign( true ), 
-  myColor( 0,0,0 ), 
+: Plot2d_Object(),
+  myColor( 0,0,0 ),
+  myMarkerSize( 0 ), 
   myMarker( Plot2d::Circle ), 
   myLine( Plot2d::Solid ), 
-  myLineWidth( 0 ),
-  myYAxis( QwtPlot::yLeft )
-{
-}
-
-/*!
-  Destructor
-*/
-Plot2d_Curve::~Plot2d_Curve()
+  myLineWidth( 0 )
 {
 }
 
@@ -50,18 +42,12 @@ Plot2d_Curve::~Plot2d_Curve()
   Copy constructor. Makes deep copy of data.
 */
 Plot2d_Curve::Plot2d_Curve( const Plot2d_Curve& curve )
+: Plot2d_Object( curve )
 {
-  myAutoAssign = curve.isAutoAssign();
-  myHorTitle   = curve.getHorTitle();
-  myVerTitle   = curve.getVerTitle();
-  myHorUnits   = curve.getHorUnits();
-  myVerUnits   = curve.getVerUnits();
-  myName       = curve.getName();
   myColor      = curve.getColor();
   myMarker     = curve.getMarker();
   myLine       = curve.getLine();
   myLineWidth  = curve.getLineWidth();
-  myPoints     = curve.getPointList();
 }
 
 /*!
@@ -83,219 +69,59 @@ Plot2d_Curve& Plot2d_Curve::operator=( const Plot2d_Curve& curve )
   return *this;
 }
 
-/*!
-  \return title of table
-*/
-QString Plot2d_Curve::getTableTitle() const
-{
-  return QString();
-}
-
-/*!
-  Sets curve's horizontal title
-*/
-void Plot2d_Curve::setHorTitle( const QString& title )
-{
-  myHorTitle = title;
-}
-
-/*!
-  Gets curve's horizontal title
-*/
-QString Plot2d_Curve::getHorTitle() const
-{
-  return myHorTitle;
-}
-
-/*!
-  Sets curve's vertical title
-*/
-void Plot2d_Curve::setVerTitle( const QString& title )
-{
-  myVerTitle = title;
-}
-
-/*!
-  Gets curve's vertical title
-*/
-QString Plot2d_Curve::getVerTitle() const
-{
-  return myVerTitle;
-}
-
-/*!
-  Sets curve's horizontal units
-*/
-void Plot2d_Curve::setHorUnits( const QString& units )
-{
-  myHorUnits = units;
-}
-
-/*!
-  Gets curve's horizontal units
-*/
-QString Plot2d_Curve::getHorUnits() const
-{
-  return myHorUnits;
-}
-
-/*!
-  Sets curve's vertical units
-*/
-void Plot2d_Curve::setVerUnits( const QString& units )
-{
-  myVerUnits = units;
-}
-
-/*!
-  Gets curve's vertical units
-*/
-QString Plot2d_Curve::getVerUnits() const
-{
-  return myVerUnits;
-}
-
-/*!
-  Sets curve's name
+/**
+ *
  */
-void Plot2d_Curve::setName( const QString& theName )
+int Plot2d_Curve::rtti()
 {
-  myName = theName;
+  return QwtPlotItem::Rtti_PlotCurve;
 }
+
 /*!
-  Gets curve's name
+  Displays curve in the given plot.
+*/
+QwtPlotItem* Plot2d_Curve::createPlotItem()
+{
+  QwtPlotCurve* aCurve = new QwtPlotCurve();
+  updatePlotItem( aCurve );
+  return aCurve;
+}
+
+/**
+ * Auto fill parameters of object by plot view
  */
-QString Plot2d_Curve::getName() const
+void Plot2d_Curve::autoFill( const QwtPlot* thePlot )
 {
-  return myName;
+  QwtSymbol::Style typeMarker;
+  QColor           color;
+  Qt::PenStyle     typeLine;
+  getNextMarker( thePlot, typeMarker, color, typeLine );
+
+  setColor( color );
+  setLine( Plot2d::qwt2plotLine( typeLine ), DEFAULT_LINE_WIDTH );
+  setMarker( Plot2d::qwt2plotMarker( typeMarker ) );
 }
 
 /*!
-  Adds one point for curve.
-*/
-void Plot2d_Curve::addPoint(double theX, double theY, const QString& txt )
+ * Updates curve fields
+ */
+void Plot2d_Curve::updatePlotItem( QwtPlotItem* theItem )
 {
-  Plot2d_Point aPoint;
-  aPoint.x = theX;
-  aPoint.y = theY;
-  aPoint.text = txt;
-  myPoints.append(aPoint);
-}
+  if ( theItem->rtti() != rtti() )
+    return;
+  QwtPlotCurve* aCurve = dynamic_cast<QwtPlotCurve*>( theItem );
+  if ( !aCurve )
+    return;
 
-/*!
-  Insert one point for curve on some position.
-*/
-void Plot2d_Curve::insertPoint(int thePos, double theX, double theY, const QString& txt)
-{
-  Plot2d_Point aPoint;
-  aPoint.x = theX;
-  aPoint.y = theY;
-  aPoint.text = txt;
+  Qt::PenStyle     ps = Plot2d::plot2qwtLine( getLine() );
+  QwtSymbol::Style ms = Plot2d::plot2qwtMarker( getMarker() );
 
-  QList<Plot2d_Point>::iterator aIt;
-  int aCurrent = 0;
-  for(aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt) {
-    if (thePos == aCurrent) {
-      myPoints.insert(aIt, aPoint);
-      return;
-    }
-    aCurrent++;  
-  }
-  myPoints.append(aPoint);
-}
-
-/*!
-  Delete one point for curve on some position.
-*/
-void Plot2d_Curve::deletePoint(int thePos)
-{
-  if ( thePos >= 0 && thePos < myPoints.count() )
-    myPoints.removeAt( thePos );
-}
-
-/*!
-  Remove all points for curve.
-*/
-void Plot2d_Curve::clearAllPoints()
-{
-  myPoints.clear();
-}
-
-/*!
-  Gets curve's data : abscissas of points
-*/
-pointList Plot2d_Curve::getPointList() const
-{
-  return myPoints;
-}
-
-/*!
-  Sets curve's data. 
-*/
-void Plot2d_Curve::setData( const double* hData, const double* vData, long size, const QStringList& lst )
-{
-  clearAllPoints();
-  QStringList::const_iterator anIt = lst.begin(), aLast = lst.end(); 
-  for( long i = 0; i < size; i++, anIt++ )
-    addPoint( hData[i], vData[i], anIt==aLast ? QString() : *anIt );
-}
-
-/*!
-  Gets curve's data : abscissas of points
-*/
-double* Plot2d_Curve::horData() const
-{
-  int aNPoints = nbPoints();
-  double* aX = new double[aNPoints];
-  for (int i = 0; i < aNPoints; i++) {
-    aX[i] = myPoints[i].x;
-  }
-  return aX;
-}
-
-/*!
-  Gets curve's data : ordinates of points
-*/
-double* Plot2d_Curve::verData() const
-{
-  int aNPoints = nbPoints();
-  double* aY = new double[aNPoints];
-  for (int i = 0; i < aNPoints; i++) {
-    aY[i] = myPoints[i].y;
-  }
-  return aY;
-}
-
-/*!
-  Gets curve's data : number of points
-*/
-int Plot2d_Curve::nbPoints() const
-{
-  return myPoints.count();
-}
-
-/*!
-  Returns true if curve has no data
-*/
-bool Plot2d_Curve::isEmpty() const
-{
-  return myPoints.isEmpty();
-}
-
-/*!
-  Sets curve's AutoAssign flag - in this case attributes will be set automatically
-*/
-void Plot2d_Curve::setAutoAssign( bool on )
-{
-  myAutoAssign = on;
-}
-
-/*!
-  Gets curve's AutoAssign flag state
-*/
-bool Plot2d_Curve::isAutoAssign() const
-{
-  return myAutoAssign;
+  aCurve->setPen( QPen( getColor(), getLineWidth(), ps ) );
+  aCurve->setSymbol( QwtSymbol( ms, QBrush( getColor() ), 
+                                 QPen( getColor() ), 
+                                 QSize( myMarkerSize, myMarkerSize ) ) );
+  aCurve->setData( horData(), verData(), nbPoints() );
+  aCurve->setTitle( !getName().isEmpty() ? getName() : getVerTitle() );
 }
 
 /*!
@@ -316,6 +142,14 @@ QColor Plot2d_Curve::getColor() const
 }
 
 /*!
+  Sets new marker size
+*/
+void Plot2d_Curve::setMarkerSize( const int theSize )
+{
+  myMarkerSize = theSize;
+}
+
+/*!
   Sets curve's marker ( and resets AutoAssign flag )
 */
 void Plot2d_Curve::setMarker( Plot2d::MarkerType marker )
@@ -331,7 +165,6 @@ Plot2d::MarkerType Plot2d_Curve::getMarker() const
 {
   return myMarker;
 }
-
 /*!
   Sets curve's line type and width ( and resets AutoAssign flag )
   NOTE : A line width of 0 will produce a 1 pixel wide line using a fast algorithm for diagonals. 
@@ -364,73 +197,117 @@ int Plot2d_Curve::getLineWidth() const
 }
 
 /*!
-  Sets curve's y axis
+  Gets new unique marker for item if possible
 */
-void Plot2d_Curve::setYAxis(QwtPlot::Axis theYAxis)
+const int  MAX_ATTEMPTS   = 10;
+void Plot2d_Curve::getNextMarker( const QwtPlot* thePlot, QwtSymbol::Style& typeMarker,
+                                  QColor& color, Qt::PenStyle& typeLine ) 
 {
-  if(theYAxis == QwtPlot::yLeft || theYAxis == QwtPlot::yRight)
-    myYAxis = theYAxis;
-}
+  bool bOk = false;
+  int cnt = 1;
+  while ( !bOk ) {
+    int aRed    = (int)( 256.0 * rand() / RAND_MAX);  // generate random color
+    int aGreen  = (int)( 256.0 * rand() / RAND_MAX);  // ...
+    int aBlue   = (int)( 256.0 * rand() / RAND_MAX);  // ...
+    int aMarker = (int)( 9.0 * rand() / RAND_MAX) + 1;// 9 markers types( not including empty )
+    int aLine   = (int)( 5.0 * rand() / RAND_MAX) + 1;// 5 line types ( not including empty )
 
-/*!
-  Gets curve's y axis
-*/
-QwtPlot::Axis Plot2d_Curve::getYAxis() const
-{
-  return myYAxis;
-}
+    typeMarker = ( QwtSymbol::Style )aMarker;
+    color      = QColor( aRed, aGreen, aBlue );
+    typeLine   = ( Qt::PenStyle )aLine;
 
-/*!
-  Gets curve's minimal abscissa
-*/
-double Plot2d_Curve::getMinX() const
-{
-  QList<Plot2d_Point>::const_iterator aIt;
-  double aMinX = 1e150;
-  //int aCurrent = 0;
-  for(aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt) {
-    if ( (*aIt).x < aMinX )
-      aMinX = (*aIt).x;
+    cnt++;
+    if ( cnt == MAX_ATTEMPTS )
+      bOk = true;
+    else
+      bOk = !existMarker( thePlot, typeMarker, color, typeLine );
   }
-  return aMinX;
-}
+/*
+  static int aMarker = -1;
+  static int aColor  = -1;
+  static int aLine   = -1;
 
-/*!
-  Gets curve's minimal ordinate
-*/
-double Plot2d_Curve::getMinY() const
-{
-  QList<Plot2d_Point>::const_iterator aIt;
-  double aMinY = 1e150;
-  //int aCurrent = 0;
-  for(aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt) {
-    if ( (*aIt).y < aMinY )
-      aMinY = (*aIt).y;
+  if ( myColors.isEmpty() ) {
+    // creating colors list
+    myColors.append( Qt::white );
+    myColors.append( Qt::blue );
+    myColors.append( Qt::gray );
+    myColors.append( Qt::darkGreen );
+    myColors.append( Qt::magenta );
+    myColors.append( Qt::darkGray );
+    myColors.append( Qt::red );
+    myColors.append( Qt::darkBlue );
+    myColors.append( Qt::darkYellow );
+    myColors.append( Qt::cyan );
+    myColors.append( Qt::darkRed );
+    myColors.append( Qt::darkCyan );
+    myColors.append( Qt::yellow );
+    myColors.append( Qt::darkMagenta );
+    myColors.append( Qt::green );
+    myColors.append( Qt::black );
   }
-  return aMinY;
-}
 
-/*!
-  Changes text assigned to point of curve
-  \param ind -- index of point
-  \param txt -- new text
-*/
-void Plot2d_Curve::setText( const int ind, const QString& txt )
-{
-  if( ind<0 || ind>=myPoints.count() )
+  int nbMarkers = 11;                   // QwtSymbol supports 11 marker types
+  int nbLines   = 6;                    // Qt supports 6 line types
+  int nbColors  = myColors.count();     // number of default colors supported
+
+  aMarker = ( aMarker + 1 ) % nbMarkers;  
+  if ( aMarker == QwtSymbol::None || aMarker == QwtSymbol::Triangle ) aMarker++;
+  aColor  = ( aColor  + 1 ) % nbColors;
+  aLine   = ( aLine   + 1 ) % nbLines;    
+  if ( aLine == Qt::NoPen ) aLine++;             
+
+  typeMarker = ( QwtSymbol::Style )aMarker;
+  color      = myColors[ aColor ];
+  typeLine   = ( Qt::PenStyle )aLine;
+  if ( !existMarker( thePlot, typeMarker, color, typeLine ) )
     return;
 
-  myPoints[ind].text = txt;
+  int i, j, k;
+  for ( i = 0; i < nbMarkers; i++ ) {
+    aMarker = ( aMarker + 1 ) % nbMarkers;
+    if ( aMarker == QwtSymbol::None || aMarker == QwtSymbol::Triangle ) aMarker++;
+    for ( j = 0; j < nbColors; j++ ) {
+      aColor  = ( aColor  + 1 ) % nbColors;
+      for ( k = 0; k < nbLines; k++ ) {
+        aLine = ( aLine + 1 ) % nbLines;
+  if ( aLine == Qt::NoPen ) aLine++;             
+        if ( !existMarker( ( QwtSymbol::Style )aMarker, aColor, ( Qt::PenStyle )aLine ) ) {
+          typeMarker = ( QwtSymbol::Style )aMarker;
+          color      = myColors[ aColor ];
+          typeLine   = ( Qt::PenStyle )aLine;
+          return;
+        }
+      }
+    }
+  }
+*/
 }
 
 /*!
-  \return text assigned to point
-  \param ind -- index of point
+  Checks if marker belongs to any enitity
 */
-QString Plot2d_Curve::text( const int ind ) const
+bool Plot2d_Curve::existMarker( const QwtPlot* thePlot, const QwtSymbol::Style typeMarker,
+                                 const QColor& color, const Qt::PenStyle typeLine ) 
 {
-  if( ind<0 || ind>=myPoints.count() )
-    return QString();
-  else
-    return myPoints[ind].text;
+  QColor aColor = thePlot->palette().color( QPalette::Background );
+  if ( closeColors( color, aColor ) )
+      return true;
+  QwtPlotItemList anItems = thePlot->itemList();
+  QwtPlotItemIterator anIt = anItems.begin(), aLast = anItems.end();
+  QwtPlotItem* anItem;
+  for( ; anIt != aLast; anIt++ ) {
+    anItem = *anIt;
+    if( anItem && anItem->rtti() == rtti() ) {
+      QwtPlotCurve* crv = dynamic_cast<QwtPlotCurve*>( anItem );
+      if ( crv ) {
+        QwtSymbol::Style aStyle = crv->symbol().style();
+        QColor           aColor = crv->pen().color();
+        Qt::PenStyle     aLine  = crv->pen().style();
+        if ( aStyle == typeMarker && closeColors( aColor,color ) && aLine == typeLine )
+          return true;
+      }
+    }
+  }
+  return false;
 }

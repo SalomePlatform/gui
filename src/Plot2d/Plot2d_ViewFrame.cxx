@@ -61,7 +61,7 @@
 
 #include <qwt_legend.h>
 
-#define DEFAULT_LINE_WIDTH     0     // (default) line width
+//#define DEFAULT_LINE_WIDTH     0     // (default) line width
 #define DEFAULT_MARKER_SIZE    9     // default marker size
 #define MIN_RECT_SIZE          11    // min sensibility area size
 
@@ -153,8 +153,8 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
        myCurveType( 1 ), 
        myShowLegend( true ), myLegendPos( 1 ),
        myMarkerSize( DEFAULT_MARKER_SIZE ),
-       myTitle( "" ), myXTitle( "" ), myYTitle( "" ), myY2Title( "" ),
        myBackground( Qt::white ),
+       myTitle( "" ), myXTitle( "" ), myYTitle( "" ), myY2Title( "" ),
        myTitleEnabled( true ), myXTitleEnabled( true ),
        myYTitleEnabled( true ), myY2TitleEnabled (true),
        myXGridMajorEnabled( true ), myYGridMajorEnabled( true ), myY2GridMajorEnabled( true ), 
@@ -167,7 +167,7 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
   /* Plot 2d View */
   QVBoxLayout* aLayout = new QVBoxLayout( this ); 
   myPlot = new Plot2d_Plot2d( this );
-  new Plot2d_ToolTip( this, myPlot );
+  new Plot2d_ToolTip( this );
 
   aLayout->addWidget( myPlot );
 
@@ -229,10 +229,10 @@ QWidget* Plot2d_ViewFrame::getViewWidget()
 */
 void Plot2d_ViewFrame::DisplayAll()
 {
-  QList<Plot2d_Curve*> clist;
-  getCurves( clist );
-  for ( int i = 0; i < (int)clist.count(); i++ ) {
-    updateCurve( clist.at( i ), false );
+  QList<Plot2d_Object*> olist;
+  getObjects( olist );
+  for ( int i = 0; i < (int)olist.count(); i++ ) {
+    updateObject( olist.at( i ), false );
   }
   myPlot->replot();
 }
@@ -242,7 +242,7 @@ void Plot2d_ViewFrame::DisplayAll()
 void Plot2d_ViewFrame::EraseAll() 
 {
   myPlot->clear();
-  myPlot->getCurves().clear();
+  myObjects.clear();
   myPlot->replot();
 }
 /*!
@@ -270,8 +270,8 @@ void Plot2d_ViewFrame::Display( const Plot2d_Prs* prs )
   }
 
   // display all curves from presentation
-  curveList aCurves = prs->getCurves();
-  displayCurves( aCurves );
+  objectList anObjects = prs->getObjects();
+  displayObjects( anObjects );
   setXGrid( myXGridMajorEnabled, myXGridMaxMajor, myXGridMinorEnabled, myXGridMaxMinor, true );
   setYGrid( myYGridMajorEnabled, myYGridMaxMajor, myYGridMinorEnabled, myYGridMaxMinor,
             myY2GridMajorEnabled, myY2GridMaxMajor, myY2GridMinorEnabled, myY2GridMaxMinor, true );
@@ -286,8 +286,8 @@ void Plot2d_ViewFrame::Erase( const Plot2d_Prs* prs, const bool )
     return;
 
   // erase all curves from presentation
-  curveList aCurves = prs->getCurves();
-  eraseCurves( aCurves );
+  objectList anObjects = prs->getObjects();
+  eraseObjects( anObjects );
 }
 
 bool Plot2d_ViewFrame::eventFilter( QObject* watched, QEvent* e )
@@ -531,57 +531,7 @@ QString Plot2d_ViewFrame::getInfo( const QPoint& pnt )
 */
 void Plot2d_ViewFrame::displayCurve( Plot2d_Curve* curve, bool update )
 {
-  if ( !curve )
-    return;
-
-  // san -- Protection against QwtCurve bug in Qwt 0.4.x: 
-  // it crashes if switched to X/Y logarithmic mode, when one or more points have
-  // non-positive X/Y coordinate
-  if ( myXMode && curve->getMinX() <= 0. )
-    setHorScaleMode( 0, false );
-  if ( myYMode && curve->getMinY() <= 0. )
-    setVerScaleMode( 0, false );
-
-  if ( hasPlotCurve( curve ) ) {
-    updateCurve( curve, update );
-  }
-  else {
-    QwtPlotCurve* aPCurve = new QwtPlotCurve( !curve->getName().isEmpty() ?
-                                 curve->getName() : curve->getVerTitle() );
-    aPCurve->attach( myPlot );
-    //myPlot->setCurveYAxis(curveKey, curve->getYAxis());
-
-    myPlot->getCurves().insert( aPCurve, curve );
-    if ( curve->isAutoAssign() ) {
-      QwtSymbol::Style typeMarker;
-      QColor           color;
-      Qt::PenStyle     typeLine;
-
-      myPlot->getNextMarker( typeMarker, color, typeLine );
-      aPCurve->setPen( QPen( color, DEFAULT_LINE_WIDTH, typeLine ) );
-      aPCurve->setSymbol( QwtSymbol( typeMarker, 
-               QBrush( color ), 
-               QPen( color ), 
-               QSize( myMarkerSize, myMarkerSize ) ) );
-      curve->setColor( color );
-      curve->setLine( Plot2d::qwt2plotLine( typeLine ) );
-      curve->setMarker( Plot2d::qwt2plotMarker( typeMarker ) );
-    }
-    else {
-      Qt::PenStyle     ps = Plot2d::plot2qwtLine( curve->getLine() );
-      QwtSymbol::Style ms = Plot2d::plot2qwtMarker( curve->getMarker() );
-      aPCurve->setPen( QPen( curve->getColor(), curve->getLineWidth(), ps ) );
-      aPCurve->setSymbol( QwtSymbol( ms, 
-               QBrush( curve->getColor() ), 
-               QPen( curve->getColor() ), 
-               QSize( myMarkerSize, myMarkerSize ) ) );
-    }
-    setCurveType( aPCurve, myCurveType );
-    aPCurve->setData( curve->horData(), curve->verData(), curve->nbPoints() );
-  }
-  updateTitles();
-  if ( update )
-    myPlot->replot();
+  displayObject( curve, update );
 }
 
 /*!
@@ -589,18 +539,12 @@ void Plot2d_ViewFrame::displayCurve( Plot2d_Curve* curve, bool update )
 */
 void Plot2d_ViewFrame::displayCurves( const curveList& curves, bool update )
 {
-  //myPlot->setUpdatesEnabled( false ); // call this function deprecate update of legend
+  objectList olist;
   QList<Plot2d_Curve*>::const_iterator it = curves.begin();
-  Plot2d_Curve* aCurve;
-  for (; it != curves.end(); ++it ) {
-    aCurve = *it;
-    displayCurve( aCurve, false );
-  }
-  fitAll();
-  //myPlot->setUpdatesEnabled( true );
-// update legend
-  if ( update )
-    myPlot->replot();
+  for ( ; it != curves.end(); it++ )
+    olist.append( *it );
+
+  displayObjects( olist, update );
 }
 
 /*!
@@ -608,17 +552,7 @@ void Plot2d_ViewFrame::displayCurves( const curveList& curves, bool update )
 */
 void Plot2d_ViewFrame::eraseCurve( Plot2d_Curve* curve, bool update )
 {
-  if ( !curve )
-    return;
-  if ( hasPlotCurve( curve ) ) {
-    QwtPlotCurve* aPCurve = getPlotCurve( curve );
-    aPCurve->hide();
-    aPCurve->detach();
-    myPlot->getCurves().remove( aPCurve );
-    updateTitles();
-    if ( update )
-      myPlot->replot();
-  }
+  eraseObject( curve, update );
 }
 
 /*!
@@ -626,15 +560,12 @@ void Plot2d_ViewFrame::eraseCurve( Plot2d_Curve* curve, bool update )
 */
 void Plot2d_ViewFrame::eraseCurves( const curveList& curves, bool update )
 {
+  objectList olist;
   QList<Plot2d_Curve*>::const_iterator it = curves.begin();
-  Plot2d_Curve* aCurve;
-  for (; it != curves.end(); ++it ) {
-    aCurve = *it;
-    eraseCurve( aCurve, false );
-  }
-//  fitAll();
-  if ( update )
-    myPlot->replot();
+  for ( ; it != curves.end(); it++ )
+    olist.append( *it );
+
+  eraseObjects( olist, update );
 }
 
 /*!
@@ -642,26 +573,7 @@ void Plot2d_ViewFrame::eraseCurves( const curveList& curves, bool update )
 */
 void Plot2d_ViewFrame::updateCurve( Plot2d_Curve* curve, bool update )
 {
-  if ( !curve )
-    return;
-  if ( hasPlotCurve( curve ) ) {
-  QwtPlotCurve* aPCurve = getPlotCurve( curve );
-    if ( !curve->isAutoAssign() ) {
-      Qt::PenStyle     ps = Plot2d::plot2qwtLine( curve->getLine() );
-      QwtSymbol::Style ms = Plot2d::plot2qwtMarker( curve->getMarker() );
-      aPCurve->setPen ( QPen( curve->getColor(), curve->getLineWidth(), ps ) );
-      aPCurve->setSymbol( QwtSymbol( ms, 
-               QBrush( curve->getColor() ), 
-               QPen( curve->getColor() ), 
-               QSize( myMarkerSize, myMarkerSize ) ) );
-      aPCurve->setData( curve->horData(), curve->verData(), curve->nbPoints() );
-    }
-    aPCurve->setTitle( !curve->getName().isEmpty() ? curve->getName() :
-                                                     curve->getVerTitle() );
-    aPCurve->setVisible( true );
-    if ( update )
-      myPlot->replot();
-  }
+  updateObject( curve, update );
 }
 
 /*!
@@ -671,15 +583,152 @@ int Plot2d_ViewFrame::getCurves( curveList& clist )
 {
   clist.clear();
 
-  CurveDict::iterator it = myPlot->getCurves().begin();
-  for ( ; it != myPlot->getCurves().end(); it++ )
+  CurveDict aCurves = getCurves();
+  CurveDict::iterator it = aCurves.begin();
+  for ( ; it != aCurves.end(); it++ )
     clist.append( it.value() );
   return clist.count();
 }
 
-const CurveDict& Plot2d_ViewFrame::getCurves()
+/*!
+  Gets lsit of displayed curves
+*/
+int Plot2d_ViewFrame::getObjects( objectList& olist )
 {
-  return myPlot->getCurves();
+  olist.clear();
+
+  ObjectDict::iterator it = myObjects.begin();
+  for ( ; it != myObjects.end(); it++ )
+    olist.append( it.value() );
+  return olist.count();
+}
+
+CurveDict Plot2d_ViewFrame::getCurves()
+{
+  ObjectDict::iterator it = myObjects.begin(), aLast = myObjects.end();
+  CurveDict aCurves;
+  QwtPlotItem* anItem;
+  for ( ; it != aLast; it++ ) {
+    anItem = it.key();
+    if ( anItem && anItem->rtti() == QwtPlotItem::Rtti_PlotCurve ) {
+      QwtPlotCurve* aPCurve = dynamic_cast<QwtPlotCurve*>( anItem );
+      Plot2d_Curve* aCurve = dynamic_cast<Plot2d_Curve*>( it.value() );
+      if ( aPCurve && aCurve )
+        aCurves.insert( aPCurve, aCurve );
+    }
+  }
+  return aCurves;
+}
+
+/*!
+  Adds object into view
+*/
+void Plot2d_ViewFrame::displayObject( Plot2d_Object* object, bool update )
+{
+  if ( !object )
+    return;
+  // san -- Protection against QwtObject bug in Qwt 0.4.x: 
+  // it crashes if switched to X/Y logarithmic mode, when one or more points have
+  // non-positive X/Y coordinate
+  if ( myXMode && object->getMinX() <= 0. )
+    setHorScaleMode( 0, false );
+  if ( myYMode && object->getMinY() <= 0. )
+    setVerScaleMode( 0, false );
+
+  if ( hasPlotObject( object ) ) {
+    updateObject( object, update );
+  }
+  else {
+    if ( object->isAutoAssign() )
+      object->autoFill( myPlot );
+    QwtPlotItem* anItem = object->createPlotItem();
+    anItem->attach( myPlot );
+    myObjects.insert( anItem, object );
+    //myPlot->setCurveYAxis(curveKey, curve->getYAxis());
+
+    if ( object->rtti() == QwtPlotItem::Rtti_PlotCurve ) {
+      Plot2d_Curve* aCurve = dynamic_cast<Plot2d_Curve*>( object );
+      if ( aCurve ) {
+        aCurve->setMarkerSize( myMarkerSize );
+        aCurve->updatePlotItem( anItem );
+        setCurveType( getPlotCurve( aCurve ), myCurveType );
+      }
+    }
+  }
+  updateTitles();
+  if ( update )
+    myPlot->replot();
+}
+
+/*!
+  Adds objects into view
+*/
+void Plot2d_ViewFrame::displayObjects( const objectList& objects, bool update )
+{
+  //myPlot->setUpdatesEnabled( false ); // call this function deprecate update of legend
+  QList<Plot2d_Object*>::const_iterator it = objects.begin();
+  Plot2d_Object* anObject;
+  for (; it != objects.end(); ++it ) {
+    anObject = *it;
+    displayObject( anObject, false );
+  }
+  fitAll();
+  //myPlot->setUpdatesEnabled( true );
+// update legend
+  if ( update )
+    myPlot->replot();
+}
+
+/*!
+  Erases object
+*/
+void Plot2d_ViewFrame::eraseObject( Plot2d_Object* object, bool update )
+{
+  if ( !object )
+    return;
+  if ( hasPlotObject( object ) ) {
+    QwtPlotItem* anObject = getPlotObject( object );
+    anObject->hide();
+    anObject->detach();
+    myObjects.remove( anObject );
+    updateTitles();
+    if ( update )
+      myPlot->replot();
+  }
+}
+
+/*!
+  Erases objects
+*/
+void Plot2d_ViewFrame::eraseObjects( const objectList& objects, bool update )
+{
+  QList<Plot2d_Object*>::const_iterator it = objects.begin();
+  Plot2d_Object* anObject;
+  for (; it != objects.end(); ++it ) {
+    anObject = *it;
+    eraseObject( anObject, false );
+  }
+//  fitAll();
+  if ( update )
+    myPlot->replot();
+}
+
+/*!
+  Updates objects attributes
+*/
+void Plot2d_ViewFrame::updateObject( Plot2d_Object* object, bool update )
+{
+  if ( !object )
+    return;
+  if ( hasPlotObject( object ) ) {
+    QwtPlotItem* anItem = getPlotObject( object );
+    if ( !anItem )
+      return;
+    object->updatePlotItem( anItem );
+    anItem->setVisible( true );
+    if ( update )
+      myPlot->replot();
+  }
 }
 
 /*!
@@ -687,9 +736,17 @@ const CurveDict& Plot2d_ViewFrame::getCurves()
 */
 bool Plot2d_ViewFrame::isVisible( Plot2d_Curve* curve )
 {
-  if(curve) {
-    if ( hasPlotCurve( curve ) ) {
-      return getPlotCurve( curve )->isVisible();
+  return isVisible( dynamic_cast<Plot2d_Object*>( curve ) );
+}
+
+/*!
+  Returns true if the curve is visible
+*/
+bool Plot2d_ViewFrame::isVisible( Plot2d_Object* object )
+{
+  if ( object ) {
+    if ( hasPlotObject( object ) ) {
+      return getPlotObject( object )->isVisible();
     }
   }
   return false;
@@ -702,15 +759,14 @@ void Plot2d_ViewFrame::updateLegend( const Plot2d_Prs* prs )
 {
   if ( !prs || prs->IsNull() )
     return;
-  curveList aCurves = prs->getCurves();
 
-  QList<Plot2d_Curve*>::iterator it = aCurves.begin();
-  Plot2d_Curve* aCurve;
-  for (; it != aCurves.end(); ++it ) {
-    aCurve = *it;
-    if ( hasPlotCurve( aCurve ) )
-      getPlotCurve( aCurve )->setTitle( !aCurve->getName().isEmpty() ?
-                            aCurve->getName() : aCurve->getVerTitle() );
+  ObjectDict::iterator it = myObjects.begin();
+  Plot2d_Object* anObj;
+  for (; it != myObjects.end(); ++it ) {
+    anObj = *it;
+    if ( hasPlotObject( anObj ) )
+      getPlotObject( anObj )->setTitle( !anObj->getName().isEmpty() ?
+                            anObj->getName() : anObj->getVerTitle() );
   }
 }
 
@@ -866,7 +922,7 @@ void Plot2d_ViewFrame::onSettings()
     QwtSymbol::Style typeMarker;
     QColor           color;
     Qt::PenStyle     typeLine;
-    myPlot->getNextMarker( typeMarker, color, typeLine );
+    ///myPlot->getNextMarker( typeMarker, color, typeLine );
     if ( mars.contains(typeMarker) )
       mars[ typeMarker ] = mars[ typeMarker ]+1;
     else
@@ -998,8 +1054,9 @@ void Plot2d_ViewFrame::onChangeBackground()
 void Plot2d_ViewFrame::setCurveType( int curveType, bool update )
 {
   myCurveType = curveType;
-  CurveDict::iterator it = myPlot->getCurves().begin();
-  for ( ; it != myPlot->getCurves().end(); it++ ) {
+  CurveDict aCurves = getCurves();
+  CurveDict::iterator it = aCurves.begin();
+  for ( ; it != aCurves.end(); it++ ) {
     QwtPlotCurve* crv = it.key();
     if ( crv )
       setCurveType( crv, myCurveType );
@@ -1015,9 +1072,19 @@ void Plot2d_ViewFrame::setCurveType( int curveType, bool update )
   \param title - new title
 */
 void Plot2d_ViewFrame::setCurveTitle( Plot2d_Curve* curve, const QString& title ) 
+{
+  setObjectTitle( curve, title );
+}
+
+/*!
+  Sets object title
+  \param object - object id
+  \param title - new title
+*/
+void Plot2d_ViewFrame::setObjectTitle( Plot2d_Object* object, const QString& title ) 
 { 
-  if ( curve && hasPlotCurve( curve ) )
-    getPlotCurve( curve )->setTitle( title );
+  if ( object && hasPlotObject( object ) )
+    getPlotObject( object )->setTitle( title );
 }   
 
 /*!
@@ -1072,8 +1139,9 @@ void Plot2d_ViewFrame::setMarkerSize( const int size, bool update )
   if ( myMarkerSize != size )
   {
     myMarkerSize = size;
-    CurveDict::iterator it = myPlot->getCurves().begin();
-    for ( ; it != myPlot->getCurves().end(); it++ ) {
+    CurveDict aCurves = getCurves();
+    CurveDict::iterator it = aCurves.begin();
+    for ( ; it != aCurves.end(); it++ ) {
       QwtPlotCurve* crv = it.key();
       if ( crv )
       {
@@ -1219,6 +1287,8 @@ void Plot2d_ViewFrame::setTitle( bool enabled, const QString& title,
       myY2Title = title;
       myPlot->setAxisTitle( QwtPlot::yRight, myY2TitleEnabled ? myY2Title : QString() );
       break;
+    default:
+      break;
   }
   if ( update )
     myPlot->replot();
@@ -1238,6 +1308,8 @@ QString Plot2d_ViewFrame::getTitle( ObjectType type ) const
       title = myYTitle;  break;
     case Y2Title:
       title = myY2Title; break;
+    default:
+      break;
   }
   return title;
 }
@@ -1441,8 +1513,9 @@ void Plot2d_ViewFrame::wheelEvent(QWheelEvent* event)
 */
 QwtPlotCurve* Plot2d_ViewFrame::getPlotCurve( Plot2d_Curve* curve )
 {
-  CurveDict::iterator it = myPlot->getCurves().begin();
-  for ( ; it != myPlot->getCurves().end(); it++ ) {
+  CurveDict aCurves = getCurves();
+  CurveDict::iterator it = aCurves.begin();
+  for ( ; it != aCurves.end(); it++ ) {
     if ( it.value() == curve )
       return it.key();
   }
@@ -1453,9 +1526,35 @@ QwtPlotCurve* Plot2d_ViewFrame::getPlotCurve( Plot2d_Curve* curve )
 */
 bool Plot2d_ViewFrame::hasPlotCurve( Plot2d_Curve* curve )
 {
-  CurveDict::iterator it = myPlot->getCurves().begin();
-  for ( ; it != myPlot->getCurves().end(); it++ ) {
+  CurveDict aCurves = getCurves();
+  CurveDict::iterator it = aCurves.begin();
+  for ( ; it != aCurves.end(); it++ ) {
     if ( it.value() == curve )
+      return true;
+  }
+  return false;
+}
+
+/*!
+  Returns qwt plot curve if it is existed in map of curves and 0 otherwise
+*/
+QwtPlotItem* Plot2d_ViewFrame::getPlotObject( Plot2d_Object* object )
+{
+  ObjectDict::iterator it = myObjects.begin();
+  for ( ; it != myObjects.end(); it++ ) {
+    if ( it.value() == object )
+      return it.key();
+  }
+  return 0;
+}
+/*!
+  Returns true if qwt plot curve is existed in map of curves and false otherwise
+*/
+bool Plot2d_ViewFrame::hasPlotObject( Plot2d_Object* object )
+{
+  ObjectDict::iterator it = myObjects.begin();
+  for ( ; it != myObjects.end(); it++ ) {
+    if ( it.value() == object )
       return true;
   }
   return false;
@@ -1551,8 +1650,8 @@ void Plot2d_ViewFrame::onViewGlobalPan()
 bool Plot2d_ViewFrame::isXLogEnabled() const
 {
   bool allPositive = true;
-  CurveDict::const_iterator it = myPlot->getCurves().begin();
-  for ( ; allPositive && it != myPlot->getCurves().end(); it++ )
+  ObjectDict::const_iterator it = myObjects.begin();
+  for ( ; allPositive && it != myObjects.end(); it++ )
     allPositive = ( it.value()->getMinX() > 0. );
   return allPositive;
 }
@@ -1563,8 +1662,8 @@ bool Plot2d_ViewFrame::isXLogEnabled() const
 bool Plot2d_ViewFrame::isYLogEnabled() const
 {
   bool allPositive = true;
-  CurveDict::const_iterator it = myPlot->getCurves().begin();
-  for ( ; allPositive && it != myPlot->getCurves().end(); it++ )
+  ObjectDict::const_iterator it = myObjects.begin();
+  for ( ; allPositive && it != myObjects.end(); it++ )
     allPositive = ( it.value()->getMinY() > 0. );
   return allPositive;
 }
@@ -1642,106 +1741,6 @@ void Plot2d_Plot2d::replot()
 }
 
 /*!
-  Checks if two colors are close to each other [ static ]
-  uses COLOR_DISTANCE variable as max tolerance for comparing of colors
-*/
-const long COLOR_DISTANCE = 100;
-const int  MAX_ATTEMPTS   = 10;
-static bool closeColors( const QColor& color1, const QColor& color2 )
-{
-  long tol = abs( color2.red()   - color1.red() ) + 
-             abs( color2.green() - color1.green() ) +
-       abs( color2.blue()  - color1.blue() );
-
-  return ( tol <= COLOR_DISTANCE );
-}
-/*!
-  Gets new unique marker for item if possible
-*/
-void Plot2d_Plot2d::getNextMarker( QwtSymbol::Style& typeMarker, QColor& color, Qt::PenStyle& typeLine ) 
-{
-  bool bOk = false;
-  int cnt = 1;
-  while ( !bOk ) {
-    int aRed    = (int)( 256.0 * rand() / RAND_MAX);    // generate random color
-    int aGreen  = (int)( 256.0 * rand() / RAND_MAX);    // ...
-    int aBlue   = (int)( 256.0 * rand() / RAND_MAX);    // ...
-    int aMarker = (int)( 9.0 * rand() / RAND_MAX) + 1;  // 9 markers types ( not including empty )
-    int aLine   = (int)( 5.0 * rand() / RAND_MAX) + 1;  // 5 line types ( not including empty )
-
-    typeMarker = ( QwtSymbol::Style )aMarker;
-    color      = QColor( aRed, aGreen, aBlue );
-    typeLine   = ( Qt::PenStyle )aLine;
-
-    cnt++;
-    if ( cnt == MAX_ATTEMPTS )
-      bOk = true;
-    else
-      bOk = !existMarker( typeMarker, color, typeLine );
-  }
-/*
-  static int aMarker = -1;
-  static int aColor  = -1;
-  static int aLine   = -1;
-
-  if ( myColors.isEmpty() ) {
-    // creating colors list
-    myColors.append( Qt::white );
-    myColors.append( Qt::blue );
-    myColors.append( Qt::gray );
-    myColors.append( Qt::darkGreen );
-    myColors.append( Qt::magenta );
-    myColors.append( Qt::darkGray );
-    myColors.append( Qt::red );
-    myColors.append( Qt::darkBlue );
-    myColors.append( Qt::darkYellow );
-    myColors.append( Qt::cyan );
-    myColors.append( Qt::darkRed );
-    myColors.append( Qt::darkCyan );
-    myColors.append( Qt::yellow );
-    myColors.append( Qt::darkMagenta );
-    myColors.append( Qt::green );
-    myColors.append( Qt::black );
-  }
-
-  int nbMarkers = 11;                   // QwtSymbol supports 11 marker types
-  int nbLines   = 6;                    // Qt supports 6 line types
-  int nbColors  = myColors.count();     // number of default colors supported
-
-  aMarker = ( aMarker + 1 ) % nbMarkers;  
-  if ( aMarker == QwtSymbol::None || aMarker == QwtSymbol::Triangle ) aMarker++;
-  aColor  = ( aColor  + 1 ) % nbColors;
-  aLine   = ( aLine   + 1 ) % nbLines;    
-  if ( aLine == Qt::NoPen ) aLine++;             
-
-  typeMarker = ( QwtSymbol::Style )aMarker;
-  color      = myColors[ aColor ];
-  typeLine   = ( Qt::PenStyle )aLine;
-  if ( !existMarker( typeMarker, color, typeLine ) )
-    return;
-
-  int i, j, k;
-  for ( i = 0; i < nbMarkers; i++ ) {
-    aMarker = ( aMarker + 1 ) % nbMarkers;
-    if ( aMarker == QwtSymbol::None || aMarker == QwtSymbol::Triangle ) aMarker++;
-    for ( j = 0; j < nbColors; j++ ) {
-      aColor  = ( aColor  + 1 ) % nbColors;
-      for ( k = 0; k < nbLines; k++ ) {
-        aLine = ( aLine + 1 ) % nbLines;
-  if ( aLine == Qt::NoPen ) aLine++;             
-        if ( !existMarker( ( QwtSymbol::Style )aMarker, aColor, ( Qt::PenStyle )aLine ) ) {
-          typeMarker = ( QwtSymbol::Style )aMarker;
-          color      = myColors[ aColor ];
-          typeLine   = ( Qt::PenStyle )aLine;
-          return;
-        }
-      }
-    }
-  }
-*/
-}
-
-/*!
   \return the default layout behavior of the widget
 */
 QSizePolicy Plot2d_Plot2d::sizePolicy() const
@@ -1778,48 +1777,6 @@ void Plot2d_Plot2d::defaultPicker()
 void Plot2d_Plot2d::setPickerMousePattern( int button, int state )
 {
   myPlotZoomer->setMousePattern( QwtEventPattern::MouseSelect1, button, state );
-}
-
-/*!
-  return closest curve if it exist, else 0
-*/
-Plot2d_Curve* Plot2d_Plot2d::getClosestCurve( QPoint p, double& distance, int& index )
-{
-  CurveDict::iterator it = getCurves().begin();
-  QwtPlotCurve* aCurve;
-  for ( ; it != getCurves().end(); it++ ) {
-    aCurve = it.key();
-    if ( !aCurve )
-      continue;
-    index = aCurve->closestPoint( p, &distance );
-    if ( index > -1 )
-      return it.value();
-  }
-  return 0;
-}
-
-/*!
-  Checks if marker belongs to any enitity
-*/
-bool Plot2d_Plot2d::existMarker( const QwtSymbol::Style typeMarker, const QColor& color, const Qt::PenStyle typeLine ) 
-{
-  QColor aColor = palette().color( QPalette::Background );
-  if ( closeColors( color, aColor ) )
-      return true;
-
-  CurveDict::iterator it = myCurves.begin();
-  for ( ; it != myCurves.end(); it++ ) {
-    QwtPlotCurve* crv = it.key();
-    if ( crv ) {
-      QwtSymbol::Style aStyle = crv->symbol().style();
-      QColor           aColor = crv->pen().color();
-      Qt::PenStyle     aLine  = crv->pen().style();
-//      if ( aStyle == typeMarker && aColor == color && aLine == typeLine )
-      if ( aStyle == typeMarker && closeColors( aColor,color ) && aLine == typeLine )
-        return true;
-    }
-  }
-  return false;
 }
 
 /*!
@@ -1886,8 +1843,7 @@ void Plot2d_ViewFrame::copyPreferences( Plot2d_ViewFrame* vf )
 #define BRACKETIZE(x) QString( "[ " ) + x + QString( " ]" )
 void Plot2d_ViewFrame::updateTitles() 
 {
-  CurveDict::iterator it = myPlot->getCurves().begin();
-  //QIntDictIterator<Plot2d_Curve> it( myCurves );
+  ObjectDict::iterator it = myObjects.begin();
   QStringList aXTitles;
   QStringList aYTitles;
   QStringList aXUnits;
@@ -1895,14 +1851,14 @@ void Plot2d_ViewFrame::updateTitles()
   QStringList aTables;
   int i = 0;
 
-  Plot2d_Curve* aCurve;
-  for ( ; it != myPlot->getCurves().end(); it++ ) {
+  Plot2d_Object* anObject;
+  for ( ; it != myObjects.end(); it++ ) {
     // collect titles and units from all curves...
-    aCurve = it.value();
-    QString xTitle = aCurve->getHorTitle().trimmed();
-    QString yTitle = aCurve->getVerTitle().trimmed();
-    QString xUnits = aCurve->getHorUnits().trimmed();
-    QString yUnits = aCurve->getVerUnits().trimmed();
+    anObject = it.value();
+    QString xTitle = anObject->getHorTitle().trimmed();
+    QString yTitle = anObject->getVerTitle().trimmed();
+    QString xUnits = anObject->getHorUnits().trimmed();
+    QString yUnits = anObject->getVerUnits().trimmed();
     
     aYTitles.append( yTitle );
     if ( !aXTitles.contains( xTitle ) )
@@ -1912,7 +1868,7 @@ void Plot2d_ViewFrame::updateTitles()
     if ( !aYUnits.contains( yUnits ) )
       aYUnits.append( yUnits );
 
-    QString aName = aCurve->getTableTitle();
+    QString aName = anObject->getTableTitle();
     if( !aName.isEmpty() && !aTables.contains( aName ) )
       aTables.append( aName );
     ++i;
@@ -1972,6 +1928,15 @@ bool Plot2d_ViewFrame::print( const QString& file, const QString& format ) const
   }
   return res;
 #endif
+}
+
+/**
+ * Print Plot2d window
+ */
+void Plot2d_ViewFrame::printPlot( QPainter* p, const QRect& rect,
+                                  const QwtPlotPrintFilter& filter ) const
+{
+  myPlot->print( p, rect, filter );
 }
 
 /*!
@@ -2061,6 +2026,34 @@ void Plot2d_ViewFrame::incrementalZoom( const int incrX, const int incrY ) {
   myPlot->replot();
 }
 
+/**
+ *
+ */
+QwtPlotCanvas* Plot2d_ViewFrame::getPlotCanvas()
+{
+  return myPlot ? myPlot->canvas() : 0;
+}
+
+/*!
+  return closest curve if it exist, else 0
+*/
+Plot2d_Curve* Plot2d_ViewFrame::getClosestCurve( QPoint p, double& distance,
+                                                 int& index )
+{
+  CurveDict aCurves = getCurves();
+  CurveDict::iterator it = aCurves.begin();
+  QwtPlotCurve* aCurve;
+  for ( ; it != aCurves.end(); it++ ) {
+    aCurve = it.key();
+    if ( !aCurve )
+      continue;
+    index = aCurve->closestPoint( p, &distance );
+    if ( index > -1 )
+      return it.value();
+  }
+  return 0;
+}
+
 #define INCREMENT_FOR_OP 10
 
 /*!
@@ -2121,13 +2114,3 @@ void Plot2d_ViewFrame::customEvent( QEvent* ce )
   if ( ce->type() == FITALL_EVENT )
     fitAll();
 }
-
-/*!
-  Gets plot
-*/
-Plot2d_Plot2d* Plot2d_ViewFrame::getPlot() const
-{
-  return myPlot;
-}
-
-

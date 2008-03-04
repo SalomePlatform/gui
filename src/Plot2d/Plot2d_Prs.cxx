@@ -40,7 +40,7 @@ Plot2d_Prs::Plot2d_Prs( bool theDelete )
 /*!
   Standard constructor
 */
-Plot2d_Prs::Plot2d_Prs( const Plot2d_Curve* obj, bool theDelete )
+Plot2d_Prs::Plot2d_Prs( const Plot2d_Object* obj, bool theDelete )
 : mySecondY( false), myIsAutoDel( theDelete )
 {
   AddObject( obj ); 
@@ -52,7 +52,7 @@ Plot2d_Prs::Plot2d_Prs( const Plot2d_Curve* obj, bool theDelete )
 Plot2d_Prs::~Plot2d_Prs()
 { 
   if ( myIsAutoDel )
-    qDeleteAll( myCurves );
+    qDeleteAll( myObjects );
 }
 
 /*!
@@ -60,15 +60,35 @@ Plot2d_Prs::~Plot2d_Prs()
 */
 curveList Plot2d_Prs::getCurves() const
 {
-  return myCurves;
+  curveList aCurves;
+
+  QList<Plot2d_Object*>::const_iterator it = myObjects.begin();
+  Plot2d_Object* anObj;
+  Plot2d_Curve* aCurve;
+  for ( ; it != myObjects.end(); ++it ) {
+    anObj = *it;
+    if ( anObj && anObj->rtti() == QwtPlotItem::Rtti_PlotCurve ) {
+      aCurve = dynamic_cast<Plot2d_Curve*>( anObj );
+      aCurves.append( aCurve );
+    }
+  }
+  return aCurves;
+}
+
+/*!
+  Get objects list
+*/
+objectList Plot2d_Prs::getObjects() const
+{
+  return myObjects;
 }
 
 /*!
   Add curve
 */
-void Plot2d_Prs::AddObject( const Plot2d_Curve* obj )
+void Plot2d_Prs::AddObject( const Plot2d_Object* obj )
 {
-  myCurves.append((Plot2d_Curve*)obj);
+  myObjects.append((Plot2d_Object*)obj);
 
   if (obj->getYAxis() == QwtPlot::yRight)
     mySecondY = true;
@@ -79,7 +99,7 @@ void Plot2d_Prs::AddObject( const Plot2d_Curve* obj )
 */
 bool Plot2d_Prs::IsNull() const 
 { 
-  return myCurves.isEmpty();
+  return myObjects.isEmpty();
 }
 
 /*!

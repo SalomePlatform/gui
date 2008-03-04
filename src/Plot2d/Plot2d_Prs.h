@@ -21,27 +21,29 @@
 
 #include "Plot2d.h"
 #include "Plot2d_Curve.h"
+#include "Plot2d_Object.h"
 
 class PLOT2D_EXPORT Plot2d_Prs
 {
 public:
   Plot2d_Prs( bool theDelete = false );
-  Plot2d_Prs( const Plot2d_Curve* obj, bool theDelete = false );
+  Plot2d_Prs( const Plot2d_Object* obj, bool theDelete = false );
   ~Plot2d_Prs();
 
-  curveList getCurves() const;
-  void AddObject( const Plot2d_Curve* obj );
+  curveList  getCurves() const; // obsolete
+  objectList getObjects() const;
+  void       AddObject( const Plot2d_Object* obj );
 
-  bool IsNull() const;
+  bool       IsNull() const;
 
-  bool isSecondY() const;
+  bool       isSecondY() const;
 
-  void setAutoDel(bool theDel);
+  void       setAutoDel(bool theDel);
 
 protected:
-  curveList myCurves;
-  bool      mySecondY;
-  bool      myIsAutoDel;
+  objectList myObjects;
+  bool       mySecondY;
+  bool       myIsAutoDel;
 };
 
 #endif

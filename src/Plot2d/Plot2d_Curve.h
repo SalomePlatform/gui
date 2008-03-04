@@ -24,66 +24,28 @@
 #define PLOT2D_CURVE_H
 
 #include "Plot2d.h"
+#include <Plot2d_Object.h>
 
-#include <QList>
-#include <qwt_plot.h>
+#include <qwt_plot_curve.h>
 
-class QColor;
-
-typedef struct
-{
-  double x;
-  double y;
-  QString text;
-} Plot2d_Point;
-
-typedef QList<Plot2d_Point> pointList;
-
-class PLOT2D_EXPORT Plot2d_Curve
+class PLOT2D_EXPORT Plot2d_Curve : public Plot2d_Object
 {
 public:
   Plot2d_Curve();
-  virtual ~Plot2d_Curve();
   Plot2d_Curve( const Plot2d_Curve& );
+
+  virtual ~Plot2d_Curve() {};
   Plot2d_Curve& operator= ( const Plot2d_Curve& );
 
-  virtual QString    getTableTitle() const;
-  
-  void               setHorTitle( const QString& );
-  QString            getHorTitle() const;
-  void               setVerTitle( const QString& );
-  QString            getVerTitle() const;
-
-  void               setHorUnits( const QString& );
-  QString            getHorUnits() const;
-  void               setVerUnits( const QString& );
-  QString            getVerUnits() const;
-
-  void               setName( const QString& );
-  QString            getName() const;
-
-  void               addPoint( double, double, const QString& = QString() );
-  void               insertPoint( int, double, double, const QString& = QString() );
-  void               deletePoint( int );
-  void               clearAllPoints();
-  pointList          getPointList() const;
-
-  void               setData( const double*, const double*, 
-			      long, const QStringList& = QStringList() );
-  double*            horData() const;
-  double*            verData() const;
-
-  void               setText( const int, const QString& );
-  QString            text( const int ) const;
-
-  int                nbPoints() const;
-  bool               isEmpty() const;
-
-  void               setAutoAssign( bool );
-  bool               isAutoAssign() const;
+  virtual int        rtti();
+  virtual QwtPlotItem* createPlotItem();
+  virtual void       autoFill( const QwtPlot* );
+  virtual void       updatePlotItem( QwtPlotItem* );
 
   void               setColor( const QColor& );
   QColor             getColor() const;
+
+  void               setMarkerSize( const int );
 
   void               setMarker( Plot2d::MarkerType );
   Plot2d::MarkerType getMarker() const;
@@ -92,29 +54,18 @@ public:
   Plot2d::LineType   getLine() const;
   int                getLineWidth() const;
 
-  void               setYAxis( QwtPlot::Axis );
-  QwtPlot::Axis      getYAxis() const;
-
-  // Protection against QwtCurve::drawLines() bug in Qwt 0.4.x: 
-  // it crashes if switched to X/Y logarithmic mode, when one or more points have
-  // non-positive X/Y coordinate
-  double             getMinX() const;
-  double             getMinY() const;
+protected:
+  void               getNextMarker( const QwtPlot*, QwtSymbol::Style&,
+                                    QColor&, Qt::PenStyle& );
+  bool               existMarker( const QwtPlot*, const QwtSymbol::Style,
+                                  const QColor&, const Qt::PenStyle );
 
 protected:
-  bool               myAutoAssign;
-  QString            myHorTitle;
-  QString            myVerTitle;
-  QString            myHorUnits;
-  QString            myVerUnits;
-  QString            myName;
   QColor             myColor;
+  int                myMarkerSize;
   Plot2d::MarkerType myMarker;
   Plot2d::LineType   myLine;
   int                myLineWidth;
-  QwtPlot::Axis      myYAxis;
-
-  pointList          myPoints;
 };
 
 typedef QList<Plot2d_Curve*> curveList;

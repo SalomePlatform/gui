@@ -635,10 +635,6 @@ void Plot2d_ViewWindow::onPrintView()
   if ( !myViewFrame )
     return;
 
-  Plot2d_Plot2d* aPlot = myViewFrame->getPlot();
-  if ( !aPlot )
-    return;
-
   // stored settings for further starts
   static QString aPrinterName;
   static int aColorMode = -1;
@@ -715,7 +711,7 @@ void Plot2d_ViewWindow::onPrintView()
     // Iterate through, store temporary their parameters and assign 
     // parameters proper for printing
 
-    CurveDict& aCurveDict = aPlot->getCurves();
+    CurveDict aCurveDict = myViewFrame->getCurves();
     CurveDict::iterator it;
     for ( it = aCurveDict.begin(); it != aCurveDict.end(); it++ ) 
     {
@@ -744,13 +740,13 @@ void Plot2d_ViewWindow::onPrintView()
     }
   }
 
-  aPlot->print( &aPainter, QRect( 0, 0, W, H ) );
+  myViewFrame->printPlot( &aPainter, QRect( 0, 0, W, H ) );
   aPainter.end();
 
   // restore old pens and symbols
   if ( needColorCorrection && !aCurvToPen.isEmpty() )
   {
-    CurveDict& aCurveDict = aPlot->getCurves();
+    CurveDict aCurveDict = myViewFrame->getCurves();
     CurveDict::iterator it;
     for ( it = aCurveDict.begin(); it != aCurveDict.end(); it++ ) 
     {

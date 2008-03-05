@@ -2029,8 +2029,7 @@ void SALOME_PYQT_Module::XmlHandler::insertPopupItems( QDomNode& parentNode, QMe
 						    label,                  // menu text
 						    tooltip,                // status-bar text
 						    QKeySequence( accel ),  // keyboard accelerator
-						    toggle,                 // toogled action
-						    menu );                 // menu should be parent 
+						    toggle );               // toogled action
 	  QAction* before = ( pos >= 0 && pos < actions.count() ) ? actions[ pos ] : 0;
 	  menu->insertAction( before, action );
 	}

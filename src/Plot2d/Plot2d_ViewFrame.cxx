@@ -261,12 +261,14 @@ void Plot2d_ViewFrame::Display( const Plot2d_Prs* prs )
     return;
 
   if (prs->isSecondY()) {
-    myPlot->enableAxis(QwtPlot::yRight, true);
-    mySecondY = true;
+    setEnableAxis( QwtPlot::yRight, true );
+    //myPlot->enableAxis(QwtPlot::yRight, true);
+    //mySecondY = true;
   }
   else {
-    myPlot->enableAxis(QwtPlot::yRight, false);
-    mySecondY = false;
+    setEnableAxis( QwtPlot::yRight, false );
+    //myPlot->enableAxis(QwtPlot::yRight, false);
+    //mySecondY = false;
   }
 
   // display all curves from presentation
@@ -1666,6 +1668,18 @@ bool Plot2d_ViewFrame::isYLogEnabled() const
   for ( ; allPositive && it != myObjects.end(); it++ )
     allPositive = ( it.value()->getMinY() > 0. );
   return allPositive;
+}
+
+/**
+ *
+ */
+void Plot2d_ViewFrame::setEnableAxis( const QwtPlot::Axis& theAxis, const bool& isEnable )
+{
+  if ( myPlot->axisEnabled( theAxis ) == isEnable )
+    return;
+  myPlot->enableAxis( theAxis, isEnable );
+  if ( theAxis == QwtPlot::yRight )
+    mySecondY = isEnable;
 }
 
 class Plot2d_QwtPlotZoomer : public QwtPlotZoomer

@@ -139,6 +139,7 @@ public:
   // non-positive X/Y coordinate
   bool    isXLogEnabled() const;
   bool    isYLogEnabled() const;
+  void    setEnableAxis( const QwtPlot::Axis&, const bool& );
 
   virtual bool print( const QString& file, const QString& format ) const;
   void     printPlot( QPainter* p, const QRect& rect,

@@ -456,8 +456,8 @@ void VTKViewer_ViewWindow::onAdjustTrihedron(){
                      (bnd[5]-bnd[4])*(bnd[5]-bnd[4]));
     }else{
       aLength = bnd[1]-bnd[0];
-      aLength = max((bnd[3]-bnd[2]),aLength);
-      aLength = max((bnd[5]-bnd[4]),aLength);
+      aLength = qMax((bnd[3]-bnd[2]),aLength);
+      aLength = qMax((bnd[5]-bnd[4]),aLength);
     }
    
     static vtkFloatingPointType aSizeInPercents = 105;

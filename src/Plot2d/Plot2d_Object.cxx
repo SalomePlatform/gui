@@ -30,7 +30,7 @@ Plot2d_Object::Plot2d_Object()
   myHorTitle( "" ), myVerTitle( "" ),
   myHorUnits( "" ), myVerUnits( "" ),
   myName( "" ),
-  myYAxis( QwtPlot::yLeft )
+  myYAxis( QwtPlot::yLeft ), myXAxis( QwtPlot::xBottom )
 {
 }
 
@@ -77,6 +77,15 @@ void Plot2d_Object::updatePlotItem( QwtPlotItem* theItem )
 {
   if ( theItem->rtti() != rtti() )
     return;
+
+  if ( theItem->yAxis() != getYAxis() || theItem->xAxis() != getXAxis() ) {
+    theItem->setAxis( getXAxis(), getYAxis() );
+
+    QwtPlot* aPlot = theItem->plot();
+    theItem->detach();
+    theItem->attach( aPlot );
+  }
+  theItem->setTitle( !getName().isEmpty() ? getName() : getVerTitle() );
 }
 
 /**
@@ -326,6 +335,23 @@ void Plot2d_Object::setYAxis(QwtPlot::Axis theYAxis)
 QwtPlot::Axis Plot2d_Object::getYAxis() const
 {
   return myYAxis;
+}
+
+/*!
+  Sets object's x axis
+*/
+void Plot2d_Object::setXAxis(QwtPlot::Axis theXAxis)
+{
+  if(theXAxis == QwtPlot::xBottom || theXAxis == QwtPlot::xTop)
+    myXAxis = theXAxis;
+}
+
+/*!
+  Gets object's x axis
+*/
+QwtPlot::Axis Plot2d_Object::getXAxis() const
+{
+  return myXAxis;
 }
 
 /*!

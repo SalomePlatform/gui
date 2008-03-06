@@ -89,6 +89,8 @@ public:
 
   void               setYAxis( QwtPlot::Axis );
   QwtPlot::Axis      getYAxis() const;
+  void               setXAxis( QwtPlot::Axis );
+  QwtPlot::Axis      getXAxis() const;
 
   // Protection against QwtObject::drawLines() bug in Qwt 0.4.x: 
   // it crashes if switched to X/Y logarithmic mode, when one or more points have
@@ -106,6 +108,7 @@ protected:
   QString            myVerUnits;
   QString            myName;
   QwtPlot::Axis      myYAxis;
+  QwtPlot::Axis      myXAxis;
 
   pointList          myPoints;
 };

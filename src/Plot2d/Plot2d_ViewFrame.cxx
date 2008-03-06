@@ -241,7 +241,14 @@ void Plot2d_ViewFrame::DisplayAll()
 */
 void Plot2d_ViewFrame::EraseAll() 
 {
-  myPlot->clear();
+  // method clear in version of Qwt5.x detached only Curve or Marker items,
+  // but we want clear also another items
+  // myPlot->clear();
+  // clear all items from plot view
+  objectList anObjects;
+  getObjects( anObjects );
+  eraseObjects( anObjects, true );
+
   myObjects.clear();
   myPlot->replot();
 }
@@ -1860,8 +1867,10 @@ void Plot2d_ViewFrame::updateTitles()
   ObjectDict::iterator it = myObjects.begin();
   QStringList aXTitles;
   QStringList aYTitles;
+  QStringList aY2Titles;
   QStringList aXUnits;
   QStringList aYUnits;
+  QStringList aY2Units;
   QStringList aTables;
   int i = 0;
 
@@ -1874,13 +1883,22 @@ void Plot2d_ViewFrame::updateTitles()
     QString xUnits = anObject->getHorUnits().trimmed();
     QString yUnits = anObject->getVerUnits().trimmed();
     
-    aYTitles.append( yTitle );
+    if ( anObject->getYAxis() == QwtPlot::yLeft ) {
+      if ( !aYTitles.contains( yTitle ) )
+        aYTitles.append( yTitle );
+      if ( !aYUnits.contains( yUnits ) )
+        aYUnits.append( yUnits );
+    }
+    else {
+      if ( !aY2Titles.contains( yTitle ) )
+        aY2Titles.append( yTitle );
+      if ( !aY2Units.contains( yUnits ) )
+        aY2Units.append( yUnits );
+    }
     if ( !aXTitles.contains( xTitle ) )
       aXTitles.append( xTitle );
     if ( !aXUnits.contains( xUnits ) )
       aXUnits.append( xUnits );
-    if ( !aYUnits.contains( yUnits ) )
-      aYUnits.append( yUnits );
 
     QString aName = anObject->getTableTitle();
     if( !aName.isEmpty() && !aTables.contains( aName ) )
@@ -1888,16 +1906,20 @@ void Plot2d_ViewFrame::updateTitles()
     ++i;
   }
   // ... and update plot 2d view
-  QString xUnits, yUnits;
+  QString xUnits, yUnits, y2Units;
   if ( aXUnits.count() == 1 && !aXUnits[0].isEmpty() )
     xUnits = BRACKETIZE( aXUnits[0] );
   if ( aYUnits.count() == 1 && !aYUnits[0].isEmpty())
     yUnits = BRACKETIZE( aYUnits[0] );
-  QString xTitle, yTitle;
+  if ( aY2Units.count() == 1 && !aY2Units[0].isEmpty())
+    y2Units = BRACKETIZE( aY2Units[0] );
+  QString xTitle, yTitle, y2Title;
   if ( aXTitles.count() == 1 && aXUnits.count() == 1 )
     xTitle = aXTitles[0];
   if ( aYTitles.count() == 1 )
     yTitle = aYTitles[0];
+  if ( mySecondY && aY2Titles.count() == 1 )
+    y2Title = aY2Titles[0];
 
   if ( !xTitle.isEmpty() && !xUnits.isEmpty() )
     xTitle += " ";
@@ -1906,6 +1928,8 @@ void Plot2d_ViewFrame::updateTitles()
 
   setTitle( myXTitleEnabled, xTitle + xUnits, XTitle, true );
   setTitle( myYTitleEnabled, yTitle + yUnits, YTitle, true );
+  if ( mySecondY )
+    setTitle( myY2TitleEnabled, y2Title + y2Units, Y2Title, true );
   setTitle( true, aTables.join("; "), MainTitle, true );
 }
 

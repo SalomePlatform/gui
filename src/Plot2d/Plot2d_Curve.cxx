@@ -113,6 +113,7 @@ void Plot2d_Curve::updatePlotItem( QwtPlotItem* theItem )
   if ( !aCurve )
     return;
 
+  Plot2d_Object::updatePlotItem( theItem );
   Qt::PenStyle     ps = Plot2d::plot2qwtLine( getLine() );
   QwtSymbol::Style ms = Plot2d::plot2qwtMarker( getMarker() );
 
@@ -121,7 +122,6 @@ void Plot2d_Curve::updatePlotItem( QwtPlotItem* theItem )
                                  QPen( getColor() ), 
                                  QSize( myMarkerSize, myMarkerSize ) ) );
   aCurve->setData( horData(), verData(), nbPoints() );
-  aCurve->setTitle( !getName().isEmpty() ? getName() : getVerTitle() );
 }
 
 /*!

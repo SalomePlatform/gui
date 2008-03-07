@@ -248,6 +248,8 @@ void QDS_ComboBox::setValues( const QValueList<int>& ids, const QStringList& nam
 
   myUserIds = ids;
   myUserNames = names;
+
+  unitSystemChanged( "" );
 }
 
 /*!

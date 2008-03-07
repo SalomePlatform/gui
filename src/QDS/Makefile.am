@@ -31,8 +31,10 @@ salomeinclude_HEADERS= QDS.h \
 	QDS_ComboBox.h \
 	QDS_Datum.h \
 	QDS_LineEdit.h \
+	QDS_RadioBox.h \
 	QDS_SpinBox.h \
 	QDS_SpinBoxDbl.h \
+	QDS_Table.h \
 	QDS_TextEdit.h \
 	QDS_Validator.h
 
@@ -42,8 +44,10 @@ dist_libQDS_la_SOURCES= \
 	QDS_ComboBox.cxx \
 	QDS_Datum.cxx \
 	QDS_LineEdit.cxx \
+	QDS_RadioBox.cxx \
 	QDS_SpinBox.cxx \
 	QDS_SpinBoxDbl.cxx \
+	QDS_Table.cxx \
 	QDS_TextEdit.cxx \
 	QDS_Validator.cxx
  
@@ -52,8 +56,10 @@ MOC_FILES= \
 	QDS_ComboBox_moc.cxx \
 	QDS_Datum_moc.cxx \
 	QDS_LineEdit_moc.cxx \
+	QDS_RadioBox_moc.cxx \
 	QDS_SpinBox_moc.cxx \
 	QDS_SpinBoxDbl_moc.cxx \
+	QDS_Table_moc.cxx \
 	QDS_TextEdit_moc.cxx
 nodist_libQDS_la_SOURCES= $(MOC_FILES)
 

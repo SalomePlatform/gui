@@ -26,10 +26,21 @@
 #include <qtimer.h>
 #include <qstatusbar.h>
 #include <qapplication.h>
+#include <qsize.h>
 
 #include <QtxAction.h>
 #include <QtxActionMenuMgr.h>
 #include <QtxActionToolMgr.h>
+
+
+class StatusLabel : public QLabel
+{
+public:
+  StatusLabel(QWidget* parent) : QLabel (parent) {};
+
+  QSize StatusLabel::minimumSizeHint () const  { return QSize (0, 0); }
+};
+
 
 /*!
   Default constructor
@@ -176,7 +187,7 @@ void SUIT_Application::putInfo( const QString& msg, const int msec )
 
   if ( !myStatusLabel )
   {
-    myStatusLabel = new QLabel( desktop()->statusBar() );
+    myStatusLabel = new StatusLabel( desktop()->statusBar() );
     desktop()->statusBar()->addWidget( myStatusLabel, 1 );
     myStatusLabel->show();
   }
@@ -184,6 +195,7 @@ void SUIT_Application::putInfo( const QString& msg, const int msec )
   QString prev = myStatusLabel->text();
 
   myStatusLabel->setText( msg );
+
   if ( msec != -1 )
     QTimer::singleShot( msec <= 0 ? DEFAULT_MESSAGE_DELAY : msec, this, SLOT( onInfoClear() ) );
 

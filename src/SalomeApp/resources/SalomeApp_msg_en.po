@@ -221,7 +221,7 @@ msgstr "Publish in study"
 msgid "SalomeApp_Application::WRN_DUMP_STUDY_FAILED"
 msgstr "Dump study failed"
 
-msgid "SalomeApp_Application::WRN_FILE_NAME_BAD"
+msgid "WRN_FILE_NAME_BAD"
 msgstr "Please enter correct file name. Special chars are not allowed."
 
 msgid "SAVE_POINT_OBJECT_TOOLTIP"

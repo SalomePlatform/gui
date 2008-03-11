@@ -121,9 +121,9 @@ bool SalomeApp_Study::openDocument( const QString& theFileName )
   ModelList dm_s;
   dataModels( dm_s );
   QListIterator<CAM_DataModel*> it( dm_s );
-  while ( it.hasNext() )
+  while ( it.hasNext() ) 
     openDataModel( studyName(), it.next() );
-
+  
   // this will build a SUIT_DataObject-s tree under myRoot member field
   // passing "false" in order NOT to rebuild existing data models' trees - it was done in previous step
   // but tree that corresponds to not-loaded data models will be updated any way. 
@@ -141,6 +141,7 @@ bool SalomeApp_Study::openDocument( const QString& theFileName )
       SalomeApp_VisualState( (SalomeApp_Application*)application() ).restoreState( savePoints[savePoints.size()-1] );
   }
 
+  ((SalomeApp_Application*)application())->updateObjectBrowser( true ); 
   return res;
 }
 
@@ -187,7 +188,6 @@ bool SalomeApp_Study::loadDocument( const QString& theStudyName )
   }
 
   //SRN: BugID IPAL9021: End
-
   return res;
 }
 

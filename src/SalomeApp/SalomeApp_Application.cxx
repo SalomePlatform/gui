@@ -54,6 +54,7 @@
 #include <PythonConsole_PyConsole.h>
 
 #include <SUIT_FileDlg.h>
+#include <SUIT_FileValidator.h>
 #include <SUIT_MessageBox.h>
 #include <SUIT_ResourceMgr.h>
 #include <SUIT_ActionOperation.h>
@@ -687,6 +688,27 @@ public:
   QCheckBox* mySaveGUIChk;
 };
 
+class DumpStudyFileValidator : public SUIT_FileValidator
+{
+ public:
+  DumpStudyFileValidator( QWidget* parent) : SUIT_FileValidator ( parent ) {};
+  virtual ~DumpStudyFileValidator() {};
+  virtual bool canSave( const QString& file );
+};
+
+bool DumpStudyFileValidator::canSave(const QString& file)
+{
+  // if file name is not correct...
+  if ( file.find( QRegExp("[-!?#*&]") ) != -1 ) {
+    SUIT_MessageBox::error1 ( parent(),
+			      QObject::tr("WRN_WARNING"),
+			      QObject::tr("WRN_FILE_NAME_BAD"),
+			      QObject::tr("BUT_OK") );
+    return false;
+  }
+  return SUIT_FileValidator::canSave( file );
+}
+
 /*!Private SLOT. On dump study.*/
 void SalomeApp_Application::onDumpStudy( )
 {
@@ -697,35 +719,17 @@ void SalomeApp_Application::onDumpStudy( )
   QStringList aFilters;
   aFilters.append( tr( "PYTHON_FILES_FILTER" ) );
 
-  DumpStudyFileDlg* fd = new DumpStudyFileDlg( desktop() );
-  fd->setCaption( tr( "TOT_DESK_FILE_DUMP_STUDY" ) );
-  fd->setFilters( aFilters );
-  fd->myPublishChk->setChecked( true );
-  fd->mySaveGUIChk->setChecked( true );
-  QString aFileName;
-  while (1) {
-    fd->exec();
-    fd->raise();
-    aFileName = fd->selectedFile();
-    if (!aFileName.isEmpty()) {
-      if ( (aFileName.find('-', 0) == -1) && (aFileName.find('!', 0) == -1) && (aFileName.find('?', 0) == -1) &&
-	   (aFileName.find('#', 0) == -1) && (aFileName.find('*', 0) == -1) && (aFileName.find('&', 0) == -1)) {
-	break;
-      }
-      else {
-      SUIT_MessageBox::warn1 ( desktop(),
-			       QObject::tr("WRN_WARNING"),
-			       tr("WRN_FILE_NAME_BAD"),
-			       QObject::tr("BUT_OK") );
-      }
-    }
-    else {
-      break;
-    }
-  }
-  bool toPublish = fd->myPublishChk->isChecked();
-  bool toSaveGUI = fd->mySaveGUIChk->isChecked();
-  delete fd;
+  DumpStudyFileDlg fd( desktop() );
+  fd.setValidator(new DumpStudyFileValidator ( &fd ) );
+  fd.setCaption( tr( "TOT_DESK_FILE_DUMP_STUDY" ) );
+  fd.setFilters( aFilters );
+  fd.myPublishChk->setChecked( true );
+  fd.mySaveGUIChk->setChecked( true );
+  fd.exec();
+  QString aFileName = fd.selectedFile();
+
+  bool toPublish = fd.myPublishChk->isChecked();
+  bool toSaveGUI = fd.mySaveGUIChk->isChecked();
 
   if ( !aFileName.isEmpty() ) {
     QFileInfo aFileInfo(aFileName);

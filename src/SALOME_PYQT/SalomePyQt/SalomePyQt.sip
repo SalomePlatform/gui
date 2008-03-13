@@ -103,8 +103,8 @@ public:
   static int               createTool( const QString& );
   static int               createTool( const int,  const int,      int = -1 );
   static int               createTool( const int,  const QString&, int = -1 );
-  static int               createTool( QtxAction*, const int,      int = -1, int = -1 );
-  static int               createTool( QtxAction*, const QString&, int = -1, int = -1 );
+  static int               createTool( QAction*, const int,      int = -1, int = -1 );
+  static int               createTool( QAction*, const QString&, int = -1, int = -1 );
 
   static int               createMenu( const QString&, const int,
 				       int = -1, int = -1, int = -1 );
@@ -114,19 +114,21 @@ public:
 				       int = -1,       int = -1 );
   static int               createMenu( const int,      const QString&, 
 				       int = -1,       int = -1 );
-  static int               createMenu( QtxAction*,     const int,      int = -1, 
+  static int               createMenu( QAction*,     const int,      int = -1, 
 	                               int = -1,       int = -1 );
-  static int               createMenu( QtxAction*,     const QString&, int = -1, 
+  static int               createMenu( QAction*,     const QString&, int = -1, 
 	                               int = -1,       int = -1 );
 
-  static QtxAction*        createSeparator();
+  static QAction*          createSeparator();
 
-  static QtxAction*        createAction( const int, const QString&, 
+  static QAction*          createAction( const int, const QString&, 
 	                                 const QString& = QString::null, const QString& = QString::null, 
 					 const QString& = QString::null, int = 0, bool = false );
 
-  static QtxAction*        action( const int );
-  static int               actionId( const QtxAction* );
+  static QActionGroup*     createActionGroup(const int, const bool = true);
+
+  static QAction*          action( const int );
+  static int               actionId( const QAction* );
 
   static bool              clearMenu( int = 0, int = 0,
 				      bool = true  );

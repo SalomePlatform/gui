@@ -110,8 +110,8 @@ public:
   static int               createTool( const QString& ) /ReleaseGIL/ ;
   static int               createTool( const int,  const int,      const int = -1 ) /ReleaseGIL/ ;
   static int               createTool( const int,  const QString&, const int = -1 ) /ReleaseGIL/ ;
-  static int               createTool( QtxAction*, const int,      const int = -1, const int = -1 ) /ReleaseGIL/ ;
-  static int               createTool( QtxAction*, const QString&, const int = -1, const int = -1 ) /ReleaseGIL/ ;
+  static int               createTool( QAction*, const int,      const int = -1, const int = -1 ) /ReleaseGIL/ ;
+  static int               createTool( QAction*, const QString&, const int = -1, const int = -1 ) /ReleaseGIL/ ;
 
   static int               createMenu( const QString&, const int,
 				       const int = -1, const int = -1, const int = -1 ) /ReleaseGIL/ ;
@@ -121,18 +121,20 @@ public:
 				       const int = -1, const int = -1 ) /ReleaseGIL/ ;
   static int               createMenu( const int,      const QString&, 
 				       const int = -1, const int = -1 ) /ReleaseGIL/ ;
-  static int               createMenu( QtxAction*,     const int,      const int = -1, 
+  static int               createMenu( QAction*,     const int,      const int = -1, 
 	                               const int = -1, const int = -1 ) /ReleaseGIL/ ;
-  static int               createMenu( QtxAction*,     const QString&, const int = -1, 
+  static int               createMenu( QAction*,     const QString&, const int = -1, 
 	                               const int = -1, const int = -1 ) /ReleaseGIL/ ;
-  static QtxAction*        createSeparator() /ReleaseGIL/ ;
+  static QAction*          createSeparator() /ReleaseGIL/ ;
 
-  static QtxAction*        createAction( const int, const QString&, 
+  static QAction*          createAction( const int, const QString&, 
 	                                 const QString& = QString::null, const QString& = QString::null, 
 					 const QString& = QString::null, const int = 0, const bool = false ) /ReleaseGIL/ ;
 
-  static QtxAction*        action( const int ) /ReleaseGIL/ ;
-  static int               actionId( const QtxAction* ) /ReleaseGIL/ ;
+  static QActionGroup*     createActionGroup(const int, const bool = true) /ReleaseGIL/ ;
+
+  static QAction*          action( const int ) /ReleaseGIL/ ;
+  static int               actionId( const QAction* ) /ReleaseGIL/ ;
 
   static bool              clearMenu( const int = 0, const int = 0,
 				      const bool = true ) /ReleaseGIL/ ;

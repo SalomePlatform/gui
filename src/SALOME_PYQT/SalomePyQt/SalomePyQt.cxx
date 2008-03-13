@@ -26,6 +26,7 @@
 #include <qpopupmenu.h>
 #include <qimage.h>
 #include <qstringlist.h>
+#include <qaction.h>
 
 #include "SALOME_Event.hxx"
 
@@ -38,10 +39,24 @@
 #include "SalomeApp_Study.h"
 #include "LightApp_SelectionMgr.h"
 #include "OB_Browser.h"
-#include "QtxAction.h"
+//#include "QtxAction.h"
 #include "LogWindow.h"
 
 using namespace std;
+
+
+/*!
+ * Macro declaring Execute() method calling a method of SALOME_PYQT_Module
+ */
+#define EXEC_PYQT_MODULE_CALL(meth_call)                                  \
+virtual void Execute() {                                                  \
+  if ( SalomeApp_Application* anApp = getApplication() ) {                \
+    SALOME_PYQT_Module* module = SALOME_PYQT_Module::getInitModule();     \
+    if ( !module )                                                        \
+      module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );\
+    if ( module )                                                         \
+      myResult = (TResult)module->meth_call;                              \
+  }}
 
 /*!
   \return active application object [ static ]
@@ -1113,9 +1128,9 @@ public:
     : myCase( 1 ), myId( id ), myTbId( tBar ), myIndex( idx ) {}
   CrTool( const int id, const QString& tBar, const int idx )
     : myCase( 2 ), myId( id ), myTbName( tBar ), myIndex( idx ) {}
-  CrTool( QtxAction* action, const int tbId, const int id, const int idx )
+  CrTool( QAction* action, const int tbId, const int id, const int idx )
     : myCase( 3 ), myAction( action ), myTbId( tbId ), myId( id ), myIndex( idx ) {}
-  CrTool( QtxAction* action, const QString& tBar, const int id, const int idx )
+  CrTool( QAction* action, const QString& tBar, const int id, const int idx )
     : myCase( 4 ), myAction( action ), myTbName( tBar ), myId( id ), myIndex( idx ) {}
 
   int execute( SALOME_PYQT_Module* module ) const
@@ -1140,7 +1155,7 @@ private:
    int        myCase;
    QString    myTbName;
    int        myTbId;
-   QtxAction* myAction;
+   QAction* myAction;
    int        myId;
    int        myIndex;
 };
@@ -1182,13 +1197,13 @@ int SalomePyQt::createTool( const int id, const QString& tBar, const int idx )
 }
 /*! add action with id and index to the existing tollbar
 */
-int SalomePyQt::createTool( QtxAction* a, const int tBar, const int id, const int idx )
+int SalomePyQt::createTool( QAction* a, const int tBar, const int id, const int idx )
 {
   return ProcessEvent( new TCreateToolEvent( CrTool( a, tBar, id, idx ) ) );
 }
 /*! add action with id and index to the existing tollbar
 */
-int SalomePyQt::createTool( QtxAction* a, const QString& tBar, const int id, const int idx )
+int SalomePyQt::createTool( QAction* a, const QString& tBar, const int id, const int idx )
 {
   return ProcessEvent( new TCreateToolEvent( CrTool( a, tBar, id, idx ) ) );
 }
@@ -1215,9 +1230,9 @@ public:
     : myCase( 2 ), myId( id ), myMenuId( menu ), myGroup( group ), myIndex( idx ) {}
   CrMenu( const int id, const QString& menu, const int group, const int idx ) 
     : myCase( 3 ), myId( id ), myMenuName( menu ), myGroup( group ), myIndex( idx ) {}
-  CrMenu( QtxAction* action, const int menu, const int id, const int group, const int idx ) 
+  CrMenu( QAction* action, const int menu, const int id, const int group, const int idx ) 
     : myCase( 4 ), myAction( action ), myMenuId( menu ), myId( id ), myGroup( group ), myIndex( idx ) {}
-  CrMenu( QtxAction* action, const QString& menu, const int id, const int group, const int idx ) 
+  CrMenu( QAction* action, const QString& menu, const int id, const int group, const int idx ) 
     : myCase( 5 ), myAction( action ), myMenuName( menu ), myId( id ), myGroup( group ), myIndex( idx ) {}
 
   int execute( SALOME_PYQT_Module* module ) const
@@ -1246,7 +1261,7 @@ private:
    int        myMenuId;
    QString    mySubMenuName;
    int        myGroup;
-   QtxAction* myAction;
+   QAction* myAction;
    int        myId;
    int        myIndex;
 };
@@ -1286,12 +1301,12 @@ int SalomePyQt::createMenu( const int id, const QString& menu, const int group, 
   return ProcessEvent( new TCreateMenuEvent( CrMenu( id, menu, group, idx ) ) );
 }
 
-int SalomePyQt::createMenu( QtxAction* a, const int menu, const int id, const int group, const int idx )
+int SalomePyQt::createMenu( QAction* a, const int menu, const int id, const int group, const int idx )
 {
   return ProcessEvent( new TCreateMenuEvent( CrMenu( a, menu, id, group, idx ) ) );
 }
 
-int SalomePyQt::createMenu( QtxAction* a, const QString& menu, const int id, const int group, const int idx )
+int SalomePyQt::createMenu( QAction* a, const QString& menu, const int id, const int group, const int idx )
 {
   return ProcessEvent( new TCreateMenuEvent( CrMenu( a, menu, id, group, idx ) ) );
 }
@@ -1302,21 +1317,13 @@ int SalomePyQt::createMenu( QtxAction* a, const QString& menu, const int id, con
 */
 class TCreateSepEvent: public SALOME_Event {
 public:
-  typedef QtxAction* TResult;
+  typedef QAction* TResult;
   TResult myResult;
   TCreateSepEvent() 
     : myResult( 0 ) {}
-  virtual void Execute() {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
-      SALOME_PYQT_Module* module = SALOME_PYQT_Module::getInitModule();
-      if ( !module )
-        module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );
-      if ( module )
-        myResult = (QtxAction*)module->createSeparator();
-    }
-  }
+  EXEC_PYQT_MODULE_CALL(createSeparator());
 };
-QtxAction* SalomePyQt::createSeparator()
+QAction* SalomePyQt::createSeparator()
 {
   return ProcessEvent( new TCreateSepEvent() );
 }
@@ -1334,7 +1341,7 @@ QtxAction* SalomePyQt::createSeparator()
 */
 class TCreateActionEvent: public SALOME_Event {
 public:
-  typedef QtxAction* TResult;
+  typedef QAction* TResult;
   TResult myResult;
   int     myId;
   QString myMenuText;
@@ -1347,21 +1354,33 @@ public:
 		      const QString& statusText, const QString& icon, const int key, const bool toggle ) 
     : myResult( 0 ), myId( id ), myMenuText( menuText ), myTipText( tipText ),
       myStatusText( statusText ), myIcon( icon ), myKey( key ), myToggle( toggle ) {}
-  virtual void Execute() {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
-      SALOME_PYQT_Module* module = SALOME_PYQT_Module::getInitModule();
-      if ( !module )
-        module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );
-      if ( module )
-        myResult = (QtxAction*)module->createAction( myId, myTipText, myIcon, myMenuText, myStatusText, myKey, myToggle );
-    }
-  }
+  EXEC_PYQT_MODULE_CALL(createAction( myId, myTipText, myIcon, myMenuText, myStatusText, myKey, myToggle ));
 };
-QtxAction* SalomePyQt::createAction( const int id,           const QString& menuText, 
+QAction* SalomePyQt::createAction( const int id,           const QString& menuText, 
 				     const QString& tipText, const QString& statusText, 
 				     const QString& icon,    const int key, const bool toggle )
 {
   return ProcessEvent( new TCreateActionEvent( id, menuText, tipText, statusText, icon, key, toggle ) );
+}
+
+/*!
+  SalomePyQt::createActionGroup
+  Create an action group which can be then used in the menu or toolbar:
+  - id         : the unique id action to be registered to;
+  - toggle     : if true the action group does exclusive toggling
+*/
+struct TcreateActionGroupEvent: public SALOME_Event {
+  typedef QActionGroup* TResult;
+  TResult myResult;
+  int     myId;
+  bool    myExclusive;
+  TcreateActionGroupEvent(const int id, const bool exclusive):myId(id),myExclusive(exclusive) {}
+  EXEC_PYQT_MODULE_CALL( createActionGroup( myId, myExclusive ));
+};
+
+QActionGroup* SalomePyQt::createActionGroup(const int id, const bool exclusive)
+{
+  return ProcessEvent( new TcreateActionGroupEvent(id, exclusive));
 }
 
 /*!
@@ -1370,22 +1389,14 @@ QtxAction* SalomePyQt::createAction( const int id,           const QString& menu
 */
 class TActionEvent: public SALOME_Event {
 public:
-  typedef QtxAction* TResult;
+  typedef QAction* TResult;
   TResult myResult;
   int     myId;
   TActionEvent( const int id )
     : myResult( 0 ), myId( id ) {}
-  virtual void Execute() {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
-      SALOME_PYQT_Module* module = SALOME_PYQT_Module::getInitModule();
-      if ( !module )
-        module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );
-      if ( module )
-        myResult = (QtxAction*)module->action( myId );
-    }
-  }
+  EXEC_PYQT_MODULE_CALL(action( myId ));
 };
-QtxAction* SalomePyQt::action( const int id )
+QAction* SalomePyQt::action( const int id )
 {
   return ProcessEvent( new TActionEvent( id ) );
 }
@@ -1398,20 +1409,12 @@ class TActionIdEvent: public SALOME_Event {
 public:
   typedef  int TResult;
   TResult  myResult;
-  const QtxAction* myAction;
-  TActionIdEvent( const QtxAction* action )
+  const QAction* myAction;
+  TActionIdEvent( const QAction* action )
     : myResult( -1 ), myAction( action ) {}
-  virtual void Execute() {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
-      SALOME_PYQT_Module* module = SALOME_PYQT_Module::getInitModule();
-      if ( !module )
-        module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );
-      if ( module )
-        myResult = module->actionId( myAction );
-    }
-  }
+  EXEC_PYQT_MODULE_CALL(actionId( myAction ));
 };
-int SalomePyQt::actionId( const QtxAction* a )
+int SalomePyQt::actionId( const QAction* a )
 {
   return ProcessEvent( new TActionIdEvent( a ) );
 }
@@ -1429,15 +1432,7 @@ public:
   bool     myRemoveActions;
   TClearMenuEvent( const int id, const int menu, const bool removeActions )
     : myResult( false ), myId( id ), myMenu( menu ), myRemoveActions( removeActions ) {}
-  virtual void Execute() {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
-      SALOME_PYQT_Module* module = SALOME_PYQT_Module::getInitModule();
-      if ( !module )
-        module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );
-      if ( module )
-        myResult = module->clearMenu( myId, myMenu, myRemoveActions );
-    }
-  }
+  EXEC_PYQT_MODULE_CALL(clearMenu( myId, myMenu, myRemoveActions ));
 };
 bool SalomePyQt::clearMenu( const int id, const int menu, const bool removeActions )
 {
@@ -1455,15 +1450,7 @@ public:
   QString myLabel;
   TAddGlobalPrefEvent( const QString& label )
     : myResult( -1 ), myLabel( label ) {}
-  virtual void Execute() {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
-      SALOME_PYQT_Module* module = SALOME_PYQT_Module::getInitModule();
-      if ( !module )
-        module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );
-      if ( module )
-	myResult = module->addGlobalPreference( myLabel );
-    }
-  }
+  EXEC_PYQT_MODULE_CALL(addGlobalPreference( myLabel ));
 };
 int SalomePyQt::addGlobalPreference( const QString& label )
 {
@@ -1481,15 +1468,7 @@ public:
   QString myLabel;
   TAddPrefEvent( const QString& label )
     : myResult( -1 ), myLabel( label ) {}
-  virtual void Execute() {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
-      SALOME_PYQT_Module* module = SALOME_PYQT_Module::getInitModule();
-      if ( !module )
-        module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );
-      if ( module )
-	myResult = module->addPreference( myLabel );
-    }
-  }
+  EXEC_PYQT_MODULE_CALL(addPreference( myLabel ));
 };
 int SalomePyQt::addPreference( const QString& label )
 {
@@ -1516,15 +1495,7 @@ public:
     : myResult( -1 ),
       myLabel( label ), myPId( pId ), myType( type ), 
       mySection( section ), myParam ( param ) {}
-  virtual void Execute() {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
-      SALOME_PYQT_Module* module = SALOME_PYQT_Module::getInitModule();
-      if ( !module )
-        module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );
-      if ( module )
-	myResult = module->addPreference( myLabel, myPId, myType, mySection, myParam );
-    }
-  }
+  EXEC_PYQT_MODULE_CALL(addPreference( myLabel, myPId, myType, mySection, myParam ));
 };
 int SalomePyQt::addPreference( const QString& label, const int pId, const int type,
 			       const QString& section, const QString& param )
@@ -1547,15 +1518,7 @@ public:
   { 
     myResult = QVariant();
   }
-  virtual void Execute() {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
-      SALOME_PYQT_Module* module = SALOME_PYQT_Module::getInitModule();
-      if ( !module )
-        module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );
-      if ( module )
-	myResult = module->preferenceProperty( myId, myProp );
-    }
-  }
+  EXEC_PYQT_MODULE_CALL(preferenceProperty( myId, myProp ));
 };
 QVariant SalomePyQt::preferenceProperty( const int id, const QString& prop )
 {

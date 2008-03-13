@@ -1432,6 +1432,16 @@ QAction* SALOME_PYQT_Module::createAction( const int id, const QString& text, co
   return a;
 }
 
+QActionGroup* SALOME_PYQT_Module::createActionGroup(const int id, const bool exclusive)
+{
+  QAction* a = action( id );
+  if ( !a || !a->inherits("QActionGroup")) {
+    a = new QActionGroup(0,0,exclusive);
+    SalomeApp_Module::registerAction( id, a );
+  }
+  return (QActionGroup*)a;
+}
+
 /*! 
  * Load icon from resource file
  */

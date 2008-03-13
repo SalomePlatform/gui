@@ -150,6 +150,8 @@ public:
   int                    actionId( const QAction* ) const;
   QAction*               createAction( const int, const QString&, const QString&, const QString&,
                                        const QString&, const int, const bool = false );
+  QActionGroup*          createActionGroup(const int id, const bool exclusive);
+
   /* load icon from resource file */
   QIconSet               loadIcon( const QString& fileName );
 

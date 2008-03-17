@@ -2357,7 +2357,7 @@ void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
   By default, "%P_msg_%L.qm" pattern is used.
   Keywords \%A, \%P, \%L in the pattern are substituted by the application name, prefix and language name
   correspondingly.
-  For example, for prefix "SUIT" an language "en", all translation files "SUIT_msg_en.qm" are searched and
+  For example, for prefix "SUIT" and language "en", all translation files "SUIT_msg_en.qm" are searched and
   loaded.
 
   If prefix is empty or null string, all translation files specified in the "resources" section of resources

@@ -1298,7 +1298,7 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
 }
 
 void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
-                                 QPainter* p, const QWidget* w ) const
+				  QPainter* p, const QWidget* w ) const
 {
   const QPalette& pal = opt->palette;
   bool doRestore = false;
@@ -1707,7 +1707,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         if ( qobject_cast<QTreeView*>(aWdg) ) {
           QTreeView* trView = qobject_cast<QTreeView*>(aWdg);
           QHeaderView* aHeader = trView->header();
-          if ( aHeader ) {
+          if ( aHeader && aHeader->isVisible() ) {
             int aHeight = aHeader->contentsRect().height();
             r = QRect( r.x(), r.y()+aHeight, r.width(), r.height()-aHeight );
           }
@@ -1718,7 +1718,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
 	       light = base,
                light_alt = base.dark(110),//AlternateBase color
                dark  = getColor( Style_Model::fld_dark_clr );
-        light.setAlpha( 0 );
+        //light.setAlpha( 0 ); // VSR commented: IPAL19262
         QLinearGradient gr_h(r.x(), r.y(), r.right(), r.y());
         gr_h.setColorAt( 0.0, dark );
         gr_h.setColorAt( aMarg / r.width(), light );

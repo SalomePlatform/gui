@@ -143,7 +143,9 @@ void LightApp_Dialog::setObjectShown( const int id, const bool shown )
 */
 bool LightApp_Dialog::isObjectShown( const int id ) const
 {
-  return myObjects.contains( id ) && myObjects[ id ].myEdit->isVisible();
+  return myObjects.contains( id ) &&
+         ( myObjects[ id ].myEdit->isVisible() ||
+	   myObjects[ id ].myEdit->isVisibleTo( myObjects[ id ].myEdit->parentWidget() ) );
 }
 
 /*!

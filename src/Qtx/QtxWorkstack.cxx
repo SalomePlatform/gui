@@ -2778,13 +2778,14 @@ void QtxWorkstack::splitterInfo( QSplitter* split, QString& info ) const
 
   info += QString( "(splitter orientation=%1 sizes=%3 " ).arg( split->orientation() ).arg( sizesStr );
 
-  for ( QObjectList::const_iterator it = objs.begin(); it != objs.end(); ++it )
+  for( int index = 0, count = split->count(); index < count; index++ )
   {
-    if ( (*it)->inherits( "QSplitter" ) )
-	    splitterInfo( (QSplitter*)*it, info );
-    else if ( (*it)->inherits( "QtxWorkstackArea" ) )
+    QObject* obj = split->widget( index );
+    if ( obj->inherits( "QSplitter" ) )
+	    splitterInfo( (QSplitter*)obj, info );
+    else if ( obj->inherits( "QtxWorkstackArea" ) )
     {
-	    QtxWorkstackArea* area = (QtxWorkstackArea*)*it;
+	    QtxWorkstackArea* area = (QtxWorkstackArea*)obj;
 	    if ( area->isEmpty() )
 	      continue;
 	    info += QString( "(views active='%1'" ).arg( area->activeWidget()->objectName() );

@@ -69,6 +69,7 @@ private:
   bool           myState;
   bool           myEmpty;
   bool           myBlock;
+  bool           myShown;
 };
 
 /*!
@@ -84,6 +85,8 @@ QtxDockWidget::Watcher::Watcher( QtxDockWidget* cont )
   myCont->installEventFilter( this );
 
   installFilters();
+
+  myShown = myCont->isVisibleTo( myCont->parentWidget() );
 }
 
 /*!
@@ -98,7 +101,6 @@ bool QtxDockWidget::Watcher::eventFilter( QObject* o, QEvent* e )
                         e->type() == QEvent::Hide || e->type() == QEvent::HideToParent ) )
   {
     installFilters();
-    QApplication::postEvent( this, new QEvent( (QEvent::Type)Update ) );
   }
 
   if ( o == myCont && e->type() == QEvent::ChildAdded )
@@ -116,8 +118,7 @@ bool QtxDockWidget::Watcher::eventFilter( QObject* o, QEvent* e )
   if ( o != myCont && e->type() == QEvent::WindowTitleChange )
     updateCaption();
 
-  if ( ( o != myCont && ( e->type() == QEvent::Hide || e->type() == QEvent::HideToParent ) ) ||
-       ( e->type() == QEvent::Show || e->type() == QEvent::ShowToParent ) )
+  if ( o != myCont && ( e->type() == QEvent::HideToParent || e->type() == QEvent::ShowToParent ) )
     updateVisibility();
 
   if ( o == myCont && e->type() == QEvent::ChildRemoved )
@@ -159,10 +160,7 @@ bool QtxDockWidget::Watcher::isEmpty() const
 
 bool QtxDockWidget::Watcher::isVisible() const
 {
-  bool vis = false;
-  if ( myCont && myCont->toggleViewAction() )
-    vis = myCont->toggleViewAction()->isChecked();
-  return vis;
+  return myShown;
 }
 
 void QtxDockWidget::Watcher::setEmpty( const bool on )
@@ -172,13 +170,7 @@ void QtxDockWidget::Watcher::setEmpty( const bool on )
 
 void QtxDockWidget::Watcher::setVisible( const bool on )
 {
-  if ( !myCont || !myCont->toggleViewAction() )
-    return;
-
-  bool block = myCont->toggleViewAction()->signalsBlocked();
-  myCont->toggleViewAction()->blockSignals( true );
-  myCont->toggleViewAction()->setChecked( on );
-  myCont->toggleViewAction()->blockSignals( block );
+  myShown = on;
 }
 
 /*!

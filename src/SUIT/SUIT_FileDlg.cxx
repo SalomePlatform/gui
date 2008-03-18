@@ -278,9 +278,15 @@ bool SUIT_FileDlg::addWidgets( QWidget* l, QWidget* w, QWidget* b )
 QStringList SUIT_FileDlg::selectedFiles() const
 {
   QStringList files = QFileDialog::selectedFiles();
-  QMutableListIterator<QString> it( files );
-  while ( it.hasNext() )
-    it.setValue( addExtension( it.next() ) );
+  if ( fileMode() != DirectoryOnly && fileMode() != Directory ) {
+    QMutableListIterator<QString> it( files );
+    while ( it.hasNext() ) {
+      QString f = it.next();
+      QFileInfo finfo( f );
+      if ( !finfo.isDir() )
+	it.setValue( addExtension( f ) );
+    }
+  }
   return files;
 }
 

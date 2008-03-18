@@ -1306,16 +1306,27 @@ bool QtxTreeViewSearcher::findLast( const QString& text, QtxSearchTool* st )
 */
 QModelIndexList QtxTreeViewSearcher::findItems( const QString& text, QtxSearchTool* st )
 {
+  QString s = text;
+
   Qt::MatchFlags fl = Qt::MatchRecursive;
 
   if ( st->isCaseSensitive() )
     fl = fl | Qt::MatchCaseSensitive;
-  fl = fl | ( st->isRegExpSearch() ? Qt::MatchRegExp : Qt::MatchContains );
+  if ( st->isRegExpSearch() ) {
+    fl = fl | Qt::MatchRegExp;
+    if ( !s.startsWith( "^" ) && !s.startsWith( ".*" ) )
+      s.prepend( ".*" );
+    if ( !s.endsWith( "$" ) && !s.endsWith( ".*" ) )
+      s.append( ".*" );
+  }
+  else {
+    fl = fl | Qt::MatchContains;
+  }
 
   if ( myView->model() )
     return myView->model()->match( myView->model()->index( 0, myColumn ),
 				   Qt::DisplayRole, 
-				   text, -1, fl );
+				   s, -1, fl );
   return QModelIndexList();
 }
 

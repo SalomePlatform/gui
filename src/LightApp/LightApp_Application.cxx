@@ -896,7 +896,7 @@ public:
       QProcess* proc = new QProcess();
 
       proc->start( aCommand );
-      if ( proc->waitForStarted() ) {
+      if ( !proc->waitForStarted() ) {
 	SALOME_CustomEvent* ce2000 = new SALOME_CustomEvent( 2000 );
 	QString* msg = new QString( QObject::tr( "EXTERNAL_BROWSER_CANNOT_SHOW_PAGE" ).arg( myApp, myHelpFile ) );
 	ce2000->setData( msg );

@@ -42,7 +42,7 @@ const int DUMP_EVENT = QEvent::User + 123;
 
 /*! Constructor.*/
 SUIT_ViewWindow::SUIT_ViewWindow( SUIT_Desktop* theDesktop )
-: QMainWindow( theDesktop )
+: QMainWindow( theDesktop ), myManager( 0 )
 {
   myDesktop = theDesktop;
 

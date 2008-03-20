@@ -1033,7 +1033,7 @@ void OCCViewer_ViewWindow::createActions()
   myClippingAction->setStatusTip(tr("DSC_CLIPPING"));
   myClippingAction->setCheckable( true );
   connect(myClippingAction, SIGNAL(toggled( bool )), this, SLOT(onClipping( bool )));
-  toolMgr()->registerAction( myClippingAction, CloneId );
+  toolMgr()->registerAction( myClippingAction, ClippingId );
 
   aAction = new QtxAction(tr("MNU_SHOOT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_SHOOT_VIEW" ) ),
                            tr( "MNU_SHOOT_VIEW" ), 0, this);

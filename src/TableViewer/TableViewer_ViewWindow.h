@@ -50,6 +50,11 @@ public:
   virtual void        initLayout();
   virtual QImage      dumpView();
 
+  void                exportData();
+  void                exportData( const QString& );
+  void                copyData();
+  void                pasteData();
+
 protected:
   typedef enum { VerticalHeader, HorizontalHeader, Cells } ContentType;
   typedef enum { DumpId, CopyId, PasteId, PrintId, ExportId, Custom } ActionId;
@@ -83,9 +88,6 @@ protected slots:
   void                onActivated();
 
 private:
-  void                exportData();
-  void                copyData();
-  void                pasteData();
   typedef struct {
     QString myText;
     QColor  myBgCol;

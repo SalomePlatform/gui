@@ -356,6 +356,11 @@ void TableViewer_ViewWindow::exportData()
   if ( fileName.isEmpty() )
     return;
 
+  exportData( fileName );
+}
+
+void TableViewer_ViewWindow::exportData( const QString& theFileName )
+{
   QApplication::setOverrideCursor( Qt::WaitCursor );
 
   int rows = numRows( Cells );
@@ -365,8 +370,8 @@ void TableViewer_ViewWindow::exportData()
 
   Handle(HTMLService_HTMLTable) table = new HTMLService_HTMLTable( rows + horOffset,
                                                                    cols + verOffset );
-  QString title = getViewManager()->getTitle();
-  SUIT_ViewWindow* anActiveWnd = getViewManager()->getActiveView();
+  QString title = getViewManager() ? getViewManager()->getTitle() : "";
+  SUIT_ViewWindow* anActiveWnd = getViewManager() ? getViewManager()->getActiveView() : 0;
   if ( anActiveWnd )
     title = anActiveWnd->windowTitle();
 
@@ -383,7 +388,7 @@ void TableViewer_ViewWindow::exportData()
     ltCell->SetHeaderCell( true );
     ltCell->SetBackgroundColor( Quantity_NOC_GRAY );
   }
-  table->GenerateFile( TableViewer_Tool::ToExtString( fileName ), true );
+  table->GenerateFile( TableViewer_Tool::ToExtString( theFileName ), true );
 
   QApplication::restoreOverrideCursor();
 }

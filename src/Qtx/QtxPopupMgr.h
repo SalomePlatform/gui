@@ -66,6 +66,9 @@ public:
   void               setRule( QAction*, const QString&, const RuleType = VisibleRule );
   void               setRule( const int, const QString&, const RuleType = VisibleRule );
 
+  bool               hasRule( QAction*, const RuleType = VisibleRule ) const;
+  bool               hasRule( const int, const RuleType = VisibleRule ) const;
+
   QtxPopupSelection* selection() const;
   void               setSelection( QtxPopupSelection* );
 

@@ -367,6 +367,26 @@ int QtxPopupMgr::insertAction( QAction* a, const int pId, const QString& rule, c
 }
 
 /*!
+  \return true if action has rule of given type
+  \param a - action
+  \param t - rule type
+*/
+bool QtxPopupMgr::hasRule( QAction* a, const RuleType t ) const
+{
+  return a ? expression( a, t, false ) : false;
+}
+
+/*!
+  \return true if action with given id has rule of given type
+  \param id - action id
+  \param t - rule type
+*/
+bool QtxPopupMgr::hasRule( const int id, const RuleType t ) const
+{
+  return hasRule( action( id ), t );
+}
+
+/*!
   \brief Get rule of type \a type for the action \a a.
   \param a action
   \param ruleType rule type (QtxPopupMgr::RuleType)
@@ -528,7 +548,7 @@ bool QtxPopupMgr::isSatisfied( QAction* act, const RuleType ruleType ) const
 */
 bool QtxPopupMgr::isVisible( const int id, const int place ) const
 {
-  return QtxActionMenuMgr::isVisible( id, place ) && isSatisfied( action( id ) );
+  return QtxActionMenuMgr::isVisible( id, place ) && ( !hasRule( id ) || isSatisfied( action( id ) ) );
 }
 
 /*!

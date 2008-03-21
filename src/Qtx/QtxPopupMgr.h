@@ -66,6 +66,9 @@ public:
   void               setRule( QAction*, const QString&, const RuleType = VisibleRule );
   void               setRule( const int, const QString&, const RuleType = VisibleRule );
 
+  bool               hasRule( QAction*, const RuleType = VisibleRule ) const;
+  bool               hasRule( const int, const RuleType = VisibleRule ) const;
+
   QtxPopupSelection* selection() const;
   void               setSelection( QtxPopupSelection* );
 
@@ -85,6 +88,9 @@ protected:
 private:
   bool               result( QtxEvalParser* p ) const;
   QVariant           parameter( const QString&, const int = -1 ) const;
+
+private slots:
+  void               onSelectionDestroyed( QObject* );
 
 private:
   typedef QMap<RuleType, QtxEvalExpr*> ExprMap;

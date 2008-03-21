@@ -290,6 +290,8 @@ void QtxPopupMgr::setSelection( QtxPopupSelection* sel )
 
   if ( mySelection )
     mySelection->setParent( this );
+  connect( mySelection, SIGNAL( destroyed( QObject* ) ), 
+	   this,        SLOT( onSelectionDestroyed( QObject* ) ) );
 
   QtxActionMgr::triggerUpdate();
 }
@@ -362,6 +364,26 @@ int QtxPopupMgr::insertAction( QAction* a, const int pId, const QString& rule, c
   int res = QtxActionMenuMgr::insert( a, pId, -1 );
   setRule( a, rule, ruleType );
   return res;
+}
+
+/*!
+  \return true if action has rule of given type
+  \param a - action
+  \param t - rule type
+*/
+bool QtxPopupMgr::hasRule( QAction* a, const RuleType t ) const
+{
+  return a ? expression( a, t, false ) : false;
+}
+
+/*!
+  \return true if action with given id has rule of given type
+  \param id - action id
+  \param t - rule type
+*/
+bool QtxPopupMgr::hasRule( const int id, const RuleType t ) const
+{
+  return hasRule( action( id ), t );
 }
 
 /*!
@@ -526,7 +548,7 @@ bool QtxPopupMgr::isSatisfied( QAction* act, const RuleType ruleType ) const
 */
 bool QtxPopupMgr::isVisible( const int id, const int place ) const
 {
-  return QtxActionMenuMgr::isVisible( id, place ) && isSatisfied( action( id ) );
+  return QtxActionMenuMgr::isVisible( id, place ) && ( !hasRule( id ) || isSatisfied( action( id ) ) );
 }
 
 /*!
@@ -626,6 +648,20 @@ QVariant QtxPopupMgr::parameter( const QString& name, const int idx ) const
 }
 
 /*!
+  \brief Called when selection is destroyed.
+  
+  Prevents crashes when the selection object is destroyed outside the
+  popup manager.
+
+  \param o selection object being destroyed
+*/
+void QtxPopupMgr::onSelectionDestroyed( QObject* o )
+{
+  if ( o == mySelection )
+    mySelection = 0;
+}
+
+/*!
   \class QtxPopupSelection
   \brief This class is a part of the popup menu management system. 
 
@@ -721,7 +757,7 @@ QString QtxPopupSelection::equalityParam() const
 */
 QString QtxPopupSelection::selCountParam() const
 {
-  QString str = option( "equality" );
+  QString str = option( "selcount" );
   if ( str.isEmpty() )
     str = "selcount";
   return str;
@@ -735,7 +771,7 @@ QString QtxPopupSelection::selCountParam() const
 
 /*!
   \fn QVariant QtxPopupSelection::parameter( const int idx, const QString& name ) const;
-  \brief Get number of the selected objects.
+  \brief Get value of the parameter which is of list type
   \param idx parameter index
   \param name parameter name
   \return parameter value

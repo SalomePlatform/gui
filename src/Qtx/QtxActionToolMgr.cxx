@@ -102,8 +102,10 @@ int QtxActionToolMgr::createToolBar( const QString& title, const int tid, QMainW
   int tbId = -1;
   for ( ToolBarMap::ConstIterator it = myToolBars.begin(); it != myToolBars.end() && tbId == -1; ++it )
   {
-    if ( it.value().toolBar->windowTitle().toLower() == title.toLower() )
-      tbId = it.key();
+    // NKV - BUG IPAL19144 - search by toolbar title is done below via find() function
+    // if ( it.value().toolBar->windowTitle().toLower() == title.toLower() )
+    //   tbId = it.key();
+    if (it.key() == tid) tbId = it.key();
   }
 
   if ( tbId != -1 )

@@ -40,7 +40,7 @@ public:
   LightApp_PreferencesDlg( LightApp_Preferences*, QWidget* = 0 );
   virtual ~LightApp_PreferencesDlg();
 
-  virtual void          show();
+  virtual void          setVisible(bool visible);
   virtual void          accept();
   virtual void          reject();
 

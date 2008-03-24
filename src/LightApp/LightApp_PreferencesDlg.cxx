@@ -81,13 +81,15 @@ LightApp_PreferencesDlg::~LightApp_PreferencesDlg()
   myPrefs = 0;
 }
 
-/*!Show dialog.*/
-void LightApp_PreferencesDlg::show()
+/*!Show/hide dialog.*/
+void LightApp_PreferencesDlg::setVisible(bool visible)
 {
-  myPrefs->retrieve();
-  myPrefs->toBackup();
-
-  QtxDialog::show();
+  if ( visible ) {
+    myPrefs->retrieve();
+    myPrefs->toBackup();
+  }
+  
+  QtxDialog::setVisible(visible);
 }
 
 /*!Store preferences on accept.*/

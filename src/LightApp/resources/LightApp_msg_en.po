@@ -350,3 +350,5 @@ msgstr "&Open..."
 msgid "LightApp_Application::ACTIVATE_MODULE_OP_NEW"
 msgstr "&New"
 
+msgid "LightApp_Application::ERR_DOC_NOT_EXISTS"
+msgstr "Can not open %1.\n File does not exist"

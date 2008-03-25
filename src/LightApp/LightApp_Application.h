@@ -133,7 +133,7 @@ public:
 							const QString& caption, QWidget* parent );
 
   void                                updateActions();
-
+  
   SUIT_ViewManager*                   getViewManager( const QString&, const bool );
   virtual void                        addViewManager( SUIT_ViewManager* );
   virtual void                        removeViewManager( SUIT_ViewManager* );
@@ -162,6 +162,10 @@ public:
   virtual bool                        event( QEvent* );
   
   virtual bool                        checkDataObject( LightApp_DataObject* theObj );
+  
+  virtual void                        updateMRUStudies();
+  virtual void                        addMRUStudy( const QString& studyName );
+  virtual void                        removeMRUStudy( const QString& studyName );
 
 signals:
   void                                studyOpened();

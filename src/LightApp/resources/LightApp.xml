@@ -59,6 +59,10 @@
     <!-- "Open/Save File" dialog box preferences-->
     <parameter name="QuickDirList" value=""/>
   </section>
+  <section name="MaxMRU" >
+    <!-- Max number of "Most recently used" studies-->
+    <parameter name="MaxValue" value="7"/>
+  </section>
   <section name="Study">
     <!-- General study settings -->
     <parameter name="store_positions" value="true" />
@@ -89,5 +93,9 @@
     <!-- Supervision viewer preferences -->
     <parameter name="Background" value="144, 208, 211" />
     <parameter name="Title"      value="63, 213, 255"  />
+  </section>
+  <section name="RecentStudies" >
+    <parameter name="MaxRecentStudies"  value="10"/>
+    <parameter name="RecentStudiesList" value=""  />
   </section>
 </document>

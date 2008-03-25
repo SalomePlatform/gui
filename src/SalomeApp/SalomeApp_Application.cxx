@@ -369,8 +369,7 @@ bool SalomeApp_Application::onOpenDoc( const QString& aName )
 
   if (toOpen)
     res = CAM_Application::onOpenDoc( aName );
-
-  QAction* a = action( MRUId );
+  /*  QAction* a = action( MRUId );
   if ( a && a->inherits( "QtxMRUAction" ) )
   {
     QtxMRUAction* mru = (QtxMRUAction*)a;
@@ -378,8 +377,11 @@ bool SalomeApp_Application::onOpenDoc( const QString& aName )
       mru->insert( aName );
     else
       mru->remove( aName );
-  }
+      }*/
+  if(res)
+    addMRUStudy(aName);
   return res;
+
 }
 
 /*!SLOT. Load document.*/

@@ -516,8 +516,12 @@ void LightApp_Application::createActions()
   }
 
   //! MRU
+  int maxMostRecentlyStudies = resMgr->integerValue("MaxMRU", "MaxValue", 5);
   QtxMRUAction* mru = new QtxMRUAction( tr( "TOT_DESK_MRU" ), tr( "MEN_DESK_MRU" ), desk );
+  mru->setVisibleCount(maxMostRecentlyStudies);
+  mru->setInsertMode(QtxMRUAction::AddFirst);
   connect( mru, SIGNAL( activated( QString ) ), this, SLOT( onMRUActivated( QString ) ) );
+  mru->loadLinks(resMgr, "MostRecentlyStudies");
   registerAction( MRUId, mru );
 
   // default icon for neutral point ('SALOME' module)
@@ -628,11 +632,10 @@ void LightApp_Application::createActions()
   createMenu( PreferencesId, fileMenu, 15, -1 );
   createMenu( separator(), fileMenu, -1, 15, -1 );
 
-  /*
   createMenu( separator(), fileMenu, -1, 100, -1 );
   createMenu( MRUId, fileMenu, 100, -1 );
   createMenu( separator(), fileMenu, -1, 100, -1 );
-  */
+  
 }
 
 /*!On module activation action.*/
@@ -821,16 +824,8 @@ bool LightApp_Application::onOpenDoc( const QString& aName )
   }
 
   bool res = CAM_Application::onOpenDoc( aName );
-
-  QAction* a = action( MRUId );
-  if ( a && a->inherits( "QtxMRUAction" ) )
-  {
-    QtxMRUAction* mru = (QtxMRUAction*)a;
-    if ( res )
-      mru->insert( aName );
-    else
-      mru->remove( aName );
-  }
+  if(res)
+    addMRUStudy(aName);
   return res;
 }
 
@@ -885,6 +880,61 @@ void LightApp_Application::setActiveStudy( SUIT_Study* study )
   CAM_Application::setActiveStudy( study );
 
   activateWindows();
+}
+
+/*!
+  Remove items from the "File -> Most recently used" sub menu
+*/
+void LightApp_Application::removeMRUStudy( const QString& studyName ){
+  QAction* a = action( MRUId );
+  SUIT_ResourceMgr* resMgr = resourceMgr();
+  if ( a && a->inherits( "QtxMRUAction" ) && resMgr ) {
+    QtxMRUAction* mru = (QtxMRUAction*)a;
+    mru->remove( studyName );    
+    mru->saveLinks(resMgr, "MostRecentlyStudies");      
+    SUIT_Session* aSession = SUIT_Session::session();
+    QPtrList<SUIT_Application> aAppList = aSession->applications();
+    LightApp_Application* theApp = 0;
+    for ( QPtrListIterator<SUIT_Application> it( aAppList ); it.current() ; ++it ) {
+      theApp = (LightApp_Application*)it.current();
+      if(theApp)
+        theApp->updateMRUStudies();
+    }
+  }
+}
+
+/*!
+  Add items in the "File -> Most recently used" sub menu
+*/
+void LightApp_Application::addMRUStudy(const QString& studyName){
+  QAction* a = action( MRUId );
+  SUIT_ResourceMgr* resMgr = resourceMgr();
+  if ( a && a->inherits( "QtxMRUAction" ) && !studyName.isNull() && resMgr) {
+    QtxMRUAction* mru = (QtxMRUAction*)a;
+    mru->insert( studyName );
+    mru->saveLinks(resMgr, "MostRecentlyStudies",false);
+    
+    SUIT_Session* aSession = SUIT_Session::session();
+    QPtrList<SUIT_Application> aAppList = aSession->applications();
+    LightApp_Application* theApp = 0;
+    for ( QPtrListIterator<SUIT_Application> it( aAppList ); it.current() ; ++it ) {
+      theApp = (LightApp_Application*)it.current();
+      if(theApp)
+        theApp->updateMRUStudies();
+    }  
+  }
+}
+
+/*!
+  Update items in the "File -> Most recently used" sub menu
+*/
+void LightApp_Application::updateMRUStudies(){
+  QAction* a = action( MRUId );
+  SUIT_ResourceMgr* resMgr = resourceMgr();
+  if ( a && a->inherits( "QtxMRUAction" ) && resMgr) {
+    QtxMRUAction* mru = (QtxMRUAction*)a;
+    mru->loadLinks(resMgr, "MostRecentlyStudies");
+  }
 }
 
 /*!
@@ -1507,9 +1557,13 @@ void LightApp_Application::onStudyOpened( SUIT_Study* theStudy )
 }
 
 /*!Protected SLOT. On study saved.*/
-void LightApp_Application::onStudySaved( SUIT_Study* )
+void LightApp_Application::onStudySaved( SUIT_Study* s )
 {
   emit studySaved();
+  if( s ){
+    QString aStudyName = s->studyName();
+    addMRUStudy( aStudyName );
+  }
 }
 
 /*!Protected SLOT. On study closed.*/
@@ -1622,7 +1676,21 @@ void LightApp_Application::onPreferenceChanged( QString& modName, QString& secti
 /*!Private SLOT. On open document with name \a aName.*/
 void LightApp_Application::onMRUActivated( QString aName )
 {
-  onOpenDoc( aName );
+  if ( aName.isNull() )
+    return;
+  
+  QFile aFile(aName);
+  if(!aFile.exists()) {
+    // displaying a message box as SUIT_Validator in case file can't be open
+    SUIT_MessageBox::error1( desktop(),
+                             tr( "ERR_ERROR" ),
+                             tr( "ERR_DOC_NOT_EXISTS" ).arg( aName ),
+                             tr( "BUT_OK" ) );
+    removeMRUStudy(aName);
+  }
+  else {
+    onOpenDoc( aName );
+  }
 }
 
 /*!Remove all windows from study.*/

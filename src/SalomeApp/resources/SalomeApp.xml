@@ -111,6 +111,10 @@
     <parameter name="Title"      value="63, 213, 255"  />
     <parameter name="NodeBody"   value="255, 249, 147" />
   </section>
+  <section name="MaxMRU" >
+    <!-- Max number of "Most recently used" studies-->
+    <parameter name="MaxValue" value="7"/>
+  </section> 
   <section name="QxGraph" >
     <!-- QxGraph viewer preferences -->
     <parameter name="Background" value="144, 208, 211" />

@@ -662,6 +662,9 @@ void SalomeApp_Application::onDumpStudy( )
 
   if ( !aFileName.isEmpty() ) {
     QFileInfo aFileInfo(aFileName);
+    if( aFileInfo.isDir() ) // IPAL19257
+      return;
+
     int savePoint;
     _PTR(AttributeParameter) ap;
     _PTR(IParameters) ip = ClientFactory::getIParameters(ap);

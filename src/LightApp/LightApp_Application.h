@@ -199,6 +199,8 @@ protected slots:
 
   void                                onWCDestroyed( QObject* );
 
+  void                                onMRUActivated( const QString& );
+
 private slots:
   void                                onSelection();
   void                                onRefresh();

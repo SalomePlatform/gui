@@ -509,7 +509,7 @@ void LightApp_Application::createActions()
 
   //! MRU
   static QtxMRUAction* mru = new QtxMRUAction( tr( "TOT_DESK_MRU" ), tr( "MEN_DESK_MRU" ), 0 );
-  connect( mru, SIGNAL( activated( const QString& ) ), this, SLOT( onOpenDoc( const QString& ) ) );
+  connect( mru, SIGNAL( activated( const QString& ) ), this, SLOT( onMRUActivated( const QString& ) ) );
   registerAction( MRUId, mru );
 
   // default icon for neutral point ('SALOME' module)
@@ -2586,6 +2586,13 @@ void LightApp_Application::onWCDestroyed( QObject* ob )
     myWin.remove( key );
     break;
   }
+}
+
+void LightApp_Application::onMRUActivated( const QString& name )
+{
+  SUIT_Session* s = SUIT_Session::session();
+  if ( s && s->activeApplication() == this )
+    onOpenDoc( name );
 }
 
 /*!

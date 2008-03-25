@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -81,7 +81,7 @@ public:
   void                  viewManagers( const QString&, ViewManagerList& ) const;
 
   virtual QString       getFileFilter() const { return QString(); }
-  virtual QString       getFileName( bool open, const QString& initial, const QString& filters, 
+  virtual QString       getFileName( bool open, const QString& initial, const QString& filters,
 				                             const QString& caption, QWidget* parent );
   QString               getDirectory( const QString& initial, const QString& caption, QWidget* parent );
 
@@ -135,6 +135,7 @@ protected:
           MenuHelpId = 7
        };
 
+  enum { OpenCancel, OpenNew, OpenExist };
   enum { CloseCancel, CloseSave, CloseDiscard };
 
 protected:
@@ -156,8 +157,11 @@ protected:
 
   virtual void          setActiveViewManager( SUIT_ViewManager* );
 
-  virtual bool          closeAction( const int, bool& );
+  virtual int           openChoice( const QString& );
+  virtual bool          openAction( const int, const QString& );
+
   virtual int           closeChoice( const QString& );
+  virtual bool          closeAction( const int, bool& );
 
 private:
   ViewManagerList       myViewMgrs;

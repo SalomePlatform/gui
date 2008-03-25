@@ -314,37 +314,8 @@ bool STD_Application::onOpenDoc( const QString& aName )
 {
   QApplication::setOverrideCursor( Qt::WaitCursor );
 
-  bool res = true;
-  if ( !activeStudy() )
-  {
-    // if no study - open in current desktop
-    res = useFile( aName );
-  }
-  else
-  {
-    // if study exists - open in new desktop. Check: is the same file is opened?
-    SUIT_Session* aSession = SUIT_Session::session();
-    QList<SUIT_Application*> aAppList = aSession->applications();
-    bool isAlreadyOpen = false;
-    SUIT_Application* aApp = 0;
-    for ( QList<SUIT_Application*>::iterator it = aAppList.begin(); it != aAppList.end() && !isAlreadyOpen; ++it )
-    {
-      aApp = *it;
-      if ( aApp->activeStudy()->studyName() == aName )
-        isAlreadyOpen = true;
-    }
-    if ( !isAlreadyOpen )
-    {
-      aApp = startApplication( 0, 0 );
-      if ( aApp )
-        res = aApp->useFile( aName );
-      if ( !res )
-        aApp->closeApplication();
-    }
-    else
-      aApp->desktop()->activateWindow();
-  }
-
+  bool res = openAction( openChoice( aName ), aName );
+  
   QApplication::restoreOverrideCursor();
 
   return res;
@@ -448,6 +419,58 @@ bool STD_Application::closeAction( const int choice, bool& closePermanently )
   case CloseDiscard:
     break;
   case CloseCancel:
+  default:
+    res = false;
+  }
+
+  return res;
+}
+
+int STD_Application::openChoice( const QString& aName )
+{
+  SUIT_Session* aSession = SUIT_Session::session();
+
+  bool isAlreadyOpen = false;
+  QList<SUIT_Application*> aAppList = aSession->applications();
+  for ( QList<SUIT_Application*>::iterator it = aAppList.begin(); it != aAppList.end() && !isAlreadyOpen; ++it )
+    isAlreadyOpen = (*it)->activeStudy() && (*it)->activeStudy()->studyName() == aName;
+  return isAlreadyOpen ? OpenExist : OpenNew;
+}
+
+bool STD_Application::openAction( const int choice, const QString& aName )
+{
+  bool res = true;
+  switch ( choice )
+  {
+  case OpenExist:
+    {
+      SUIT_Application* aApp = 0;
+      SUIT_Session* aSession = SUIT_Session::session();
+      QList<SUIT_Application*> aAppList = aSession->applications();
+      for ( QList<SUIT_Application*>::iterator it = aAppList.begin(); it != aAppList.end() && !aApp; ++it )
+      {
+	if ( (*it)->activeStudy() && (*it)->activeStudy()->studyName() == aName )
+	  aApp = *it;
+      }
+      if ( aApp )
+	aApp->desktop()->activateWindow();
+      else
+	res = false;
+    }
+    break;
+  case OpenNew:
+    if ( !activeStudy() )
+      res = useFile( aName );
+    else
+    {
+      SUIT_Application* aApp = startApplication( 0, 0 );
+      if ( aApp )
+	res = aApp->useFile( aName );
+      if ( !res )
+	aApp->closeApplication();
+    }
+    break;
+  case OpenCancel:
   default:
     res = false;
   }

@@ -729,7 +729,7 @@ QString SUIT_FileDlg::getFileName( QWidget* parent, const QString& initial,
 {            
   SUIT_FileDlg fd( parent, open, showQuickDir, true );    
 
-  fd.setFileMode( ExistingFile );
+  fd.setFileMode( open ? ExistingFile : AnyFile );
 
   if ( filters.isEmpty() )
     fd.setFilter( tr( "ALL_FILES_FILTER" ) ); // All files (*)

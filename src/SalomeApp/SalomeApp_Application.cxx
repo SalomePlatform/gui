@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -96,7 +96,7 @@ void SalomeApp_Updater::update( SUIT_DataObject* theObj, OB_ListItem* theItem )
   SalomeApp_DataObject* SAObj = dynamic_cast<SalomeApp_DataObject*>( theObj );
   if( !SAObj )
     return;
-  
+
   _PTR(SObject) SObj = SAObj->object();
   if( !SObj )
     return;
@@ -109,14 +109,14 @@ void SalomeApp_Updater::update( SUIT_DataObject* theObj, OB_ListItem* theItem )
     theItem->setSelectable( aAttrSel->IsSelectable() );
   }
   // Expandable
-  if ( SObj->FindAttribute(anAttr, "AttributeExpandable") ) 
+  if ( SObj->FindAttribute(anAttr, "AttributeExpandable") )
   {
     _PTR(AttributeExpandable) aAttrExpand = anAttr;
     theItem->setExpandable( aAttrExpand->IsExpandable() );
   }
   // Opened
   //this attribute is not supported in the version of SALOME 3.x
-  //if ( SObj->FindAttribute(anAttr, "AttributeOpened") ) 
+  //if ( SObj->FindAttribute(anAttr, "AttributeOpened") )
   //{
   //  _PTR(AttributeOpened) aAttrOpen = anAttr;
   //  theItem->setOpen( aAttrOpen->IsOpened() );
@@ -133,7 +133,7 @@ extern "C" SALOMEAPP_EXPORT SUIT_Application* createApplication()
 SalomeApp_Application::SalomeApp_Application()
 : LightApp_Application()
 {
-  connect( desktop(), SIGNAL( message( const QString& ) ), 
+  connect( desktop(), SIGNAL( message( const QString& ) ),
 	   this,      SLOT( onDesktopMessage( const QString& ) ) );
 }
 
@@ -220,18 +220,18 @@ void SalomeApp_Application::createActions()
   LightApp_Application::createActions();
 
   SUIT_Desktop* desk = desktop();
-  
+
   //! Save GUI state
   // "Save GUI State" command is moved to VISU module
   //  createAction( SaveGUIStateId, tr( "TOT_DESK_FILE_SAVE_GUI_STATE" ), QIcon(),
   //  		tr( "MEN_DESK_FILE_SAVE_GUI_STATE" ), tr( "PRP_DESK_FILE_SAVE_GUI_STATE" ),
   //  		0, desk, false, this, SLOT( onSaveGUIState() ) );
-  
+
   //! Dump study
   createAction( DumpStudyId, tr( "TOT_DESK_FILE_DUMP_STUDY" ), QIcon(),
 		tr( "MEN_DESK_FILE_DUMP_STUDY" ), tr( "PRP_DESK_FILE_DUMP_STUDY" ),
 		Qt::CTRL+Qt::Key_D, desk, false, this, SLOT( onDumpStudy() ) );
-    
+
   //! Load script
   createAction( LoadScriptId, tr( "TOT_DESK_FILE_LOAD_SCRIPT" ), QIcon(),
 		tr( "MEN_DESK_FILE_LOAD_SCRIPT" ), tr( "PRP_DESK_FILE_LOAD_SCRIPT" ),
@@ -262,9 +262,9 @@ void SalomeApp_Application::createActions()
 
   int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1 );
 
-  // "Save GUI State" command is renamed to "Save VISU State" and 
+  // "Save GUI State" command is renamed to "Save VISU State" and
   // creation of menu item is moved to VISU
-  //  createMenu( SaveGUIStateId, fileMenu, 10, -1 ); 
+  //  createMenu( SaveGUIStateId, fileMenu, 10, -1 );
 
   createMenu( FileLoadId,   fileMenu, 0 );  //SRN: BugID IPAL9021, add a menu item "Load"
 
@@ -281,105 +281,6 @@ void SalomeApp_Application::createActions()
   createMenu( separator(), toolsMenu, -1, 15, -1 );
 }
 
-/*! Purpose : SLOT. Open new document with \a aName.*/
-bool SalomeApp_Application::onOpenDoc( const QString& aName )
-{
-  bool res = false, toOpen = true, isAlreadyOpen = false;
-
-  // Look among opened studies
-  if (activeStudy()) { // at least one study is opened
-    SUIT_Session* aSession = SUIT_Session::session();
-    QList<SUIT_Application*> aAppList = aSession->applications();
-    QListIterator<SUIT_Application*> it (aAppList);
-    SUIT_Application* aApp = 0;
-    // iterate on all applications
-    while ( it.hasNext() && !isAlreadyOpen ) {
-      aApp = it.next();
-
-      if (aApp && aApp->activeStudy()->studyName() == aName) {
-        isAlreadyOpen = true; // Already opened, ask user what to do
-
-        // The document ... is already open.
-        // Do you want to reload it?
-        int aAnswer = SUIT_MessageBox::question(desktop(), tr("WRN_WARNING"),
-						tr("QUE_DOC_ALREADYOPEN").arg(aName),
-						SUIT_MessageBox::Yes | SUIT_MessageBox::No,
-						SUIT_MessageBox::No);
-        if (aAnswer == SUIT_MessageBox::Yes) { // reload
-          if (activeStudy()->studyName() == aName && aAppList.count() > 1) {
-            // Opened in THIS (active) application.
-            STD_Application* app1 = (STD_Application*)aAppList.at(0);
-            STD_Application* app2 = (STD_Application*)aAppList.at(1);
-            if (!app1 || !app2) {
-              // Error
-              return false;
-            }
-            if (app1->activeStudy()->studyName() == aName) {
-              // app1 is this application, we need another one
-              app1 = app2;
-            }
-            // Close document of this application. This application will be destroyed.
-            onCloseDoc(/*ask = */false);
-            // Open the file with another application, as this one will be destroyed.
-            return app1->onOpenDoc(aName);
-          } else {
-            // Opened in another application.
-            STD_Application* app = (STD_Application*)aApp;
-            if (app)
-              app->onCloseDoc(/*ask = */false);
-          }
-        } else { // do not reload
-          // OK, the study will not be reloaded, but we call
-          // CAM_Application::onOpenDoc( aName ) all the same.
-          // It will activate a desktop of the study <aName>.
-        }
-      }
-    }
-  }
-
-  // Look among unloaded studies
-  if (!isAlreadyOpen) {
-    std::vector<std::string> List = studyMgr()->GetOpenStudies();
-
-    QString studyName;
-    for (unsigned int ind = 0; ind < List.size() && !isAlreadyOpen; ind++) {
-      studyName = List[ind].c_str();
-      if (aName == studyName) {
-        // Already exists unloaded, ask user what to do
-        isAlreadyOpen = true;
-
-        // The document ... already exists in the study manager.
-        // Do you want to reload it?
-        int aAnswer = SUIT_MessageBox::question(desktop(), tr("WRN_WARNING"),
-						tr("QUE_DOC_ALREADYEXIST").arg(aName),
-						SUIT_MessageBox::Yes | SUIT_MessageBox::No,
-						SUIT_MessageBox::No);
-        if (aAnswer == SUIT_MessageBox::Yes) {
-          _PTR(Study) aStudy = studyMgr()->GetStudyByName(aName.toStdString());
-          if (aStudy)
-            studyMgr()->Close(aStudy);
-        } else {
-          toOpen = false;
-        }
-      }
-    }
-  }
-
-  if (toOpen)
-    res = CAM_Application::onOpenDoc( aName );
-
-  QAction* a = action( MRUId );
-  if ( a && a->inherits( "QtxMRUAction" ) )
-  {
-    QtxMRUAction* mru = (QtxMRUAction*)a;
-    if ( res )
-      mru->insert( aName );
-    else
-      mru->remove( aName );
-  }
-  return res;
-}
-
 /*!
   \brief Close application.
 */
@@ -393,7 +294,7 @@ void SalomeApp_Application::onExit()
     result = dlg.exec() == QDialog::Accepted;
     killServers = dlg.isServersShutdown();
   }
-  
+
   if ( result )
     SUIT_Session::session()->closeSession( SUIT_Session::ASK, killServers );
 }
@@ -417,13 +318,13 @@ void SalomeApp_Application::onLoadDoc()
      QListIterator<SUIT_Application*> it( aAppList );
      while ( it.hasNext() && !isAlreadyOpen ) {
        SUIT_Application* aApp = it.next();
-       if( !aApp || !aApp->activeStudy() ) 
+       if( !aApp || !aApp->activeStudy() )
 	 continue;
-       if ( aApp->activeStudy()->studyName() == studyName ) 
+       if ( aApp->activeStudy()->studyName() == studyName )
 	 isAlreadyOpen = true;
      }
 
-     if ( !isAlreadyOpen ) 
+     if ( !isAlreadyOpen )
        unloadedStudies << studyName;
   }
 
@@ -432,7 +333,7 @@ void SalomeApp_Application::onLoadDoc()
     return;
 
 #ifndef WIN32
-  // this code replaces marker of windows drive and path become invalid therefore 
+  // this code replaces marker of windows drive and path become invalid therefore
   // defines placed there
   studyName.replace( QRegExp(":"), "/" );
 #endif
@@ -458,7 +359,7 @@ bool SalomeApp_Application::onLoadDoc( const QString& aName )
     QList<SUIT_Application*> aAppList = aSession->applications();
     bool isAlreadyOpen = false;
     SalomeApp_Application* aApp = 0;
-    for ( QList<SUIT_Application*>::iterator it = aAppList.begin(); 
+    for ( QList<SUIT_Application*>::iterator it = aAppList.begin();
 	  it != aAppList.end() && !isAlreadyOpen; ++it ) {
       aApp = dynamic_cast<SalomeApp_Application*>( *it );
       if ( aApp && aApp->activeStudy()->studyName() == aName )
@@ -483,10 +384,10 @@ void SalomeApp_Application::onCopy()
   SALOME_ListIO list;
   LightApp_SelectionMgr* mgr = selectionMgr();
   mgr->selectedObjects(list);
-  
+
   SalomeApp_Study* study = dynamic_cast<SalomeApp_Study*>(activeStudy());
   if(study == NULL) return;
-  
+
   _PTR(Study) stdDS = study->studyDS();
   if(!stdDS) return;
 
@@ -551,14 +452,14 @@ void SalomeApp_Application::onCloseDoc( bool ask )
   SalomeApp_Study* study = dynamic_cast<SalomeApp_Study*>(activeStudy());
 
   if (study != NULL) {
-    _PTR(Study) stdDS = study->studyDS(); 
+    _PTR(Study) stdDS = study->studyDS();
     if(stdDS && stdDS->IsStudyLocked()) {
       if ( SUIT_MessageBox::question( desktop(),
 				      QObject::tr( "WRN_WARNING" ),
 				      QObject::tr( "CLOSE_LOCKED_STUDY" ),
 				      SUIT_MessageBox::Yes | SUIT_MessageBox::No,
 				      SUIT_MessageBox::No) == SUIT_MessageBox::No ) return;
-	
+
     }
   }
 
@@ -693,13 +594,13 @@ void SalomeApp_Application::updateCommandsStatus()
 
 /*!
   \class DumpStudyFileDlg
-  Private class used in Dump Study operation.  Consists 2 check boxes: 
+  Private class used in Dump Study operation.  Consists 2 check boxes:
   "Publish in study" and "Save GUI parameters"
 */
 class DumpStudyFileDlg : public SUIT_FileDlg
 {
 public:
-  DumpStudyFileDlg( QWidget* parent ) : SUIT_FileDlg( parent, false, true, true ) 
+  DumpStudyFileDlg( QWidget* parent ) : SUIT_FileDlg( parent, false, true, true )
   {
     QGridLayout* grid = ::qobject_cast<QGridLayout*>( layout() );
     if ( grid )
@@ -707,20 +608,20 @@ public:
       QWidget *hB = new QWidget( this );
       myPublishChk = new QCheckBox( tr("PUBLISH_IN_STUDY") );
       mySaveGUIChk = new QCheckBox( tr("SAVE_GUI_STATE") );
-      
+
       QHBoxLayout *layout = new QHBoxLayout;
       layout->addWidget(myPublishChk);
       layout->addWidget(mySaveGUIChk);
       hB->setLayout(layout);
-      
-      QPushButton* pb = new QPushButton(this);      
+
+      QPushButton* pb = new QPushButton(this);
 
       int row = grid->rowCount();
       grid->addWidget( new QLabel("", this), row, 0 );
       grid->addWidget( hB, row, 1, 1, 3 );
       grid->addWidget( pb, row, 5 );
-      
-      pb->hide();    
+
+      pb->hide();
     }
   }
   QCheckBox* myPublishChk;
@@ -767,11 +668,11 @@ void SalomeApp_Application::onDumpStudy( )
     if(ip->isDumpPython(appStudy->studyDS())) ip->setDumpPython(appStudy->studyDS()); //Unset DumpPython flag.
     if ( toSaveGUI ) { //SRN: Store a visual state of the study at the save point for DumpStudy method
       ip->setDumpPython(appStudy->studyDS());
-      savePoint = SalomeApp_VisualState( this ).storeState(); //SRN: create a temporary save point      
+      savePoint = SalomeApp_VisualState( this ).storeState(); //SRN: create a temporary save point
     }
-    bool res = aStudy->DumpStudy( aFileInfo.absolutePath().toStdString(), 
+    bool res = aStudy->DumpStudy( aFileInfo.absolutePath().toStdString(),
 				  aFileInfo.baseName().toStdString(), toPublish);
-    if ( toSaveGUI ) 
+    if ( toSaveGUI )
       appStudy->removeSavePoint(savePoint); //SRN: remove the created temporary save point.
     if ( !res )
       SUIT_MessageBox::warning( desktop(),
@@ -843,7 +744,7 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
   if ( flag == WT_ObjectBrowser )
   {
     SUIT_DataBrowser* ob = qobject_cast<SUIT_DataBrowser*>( wid );
-    if ( ob ) { 
+    if ( ob ) {
       // temporary commented
       //ob->setUpdater( new SalomeApp_Updater() );
 
@@ -974,13 +875,66 @@ bool SalomeApp_Application::closeAction( const int choice, bool& closePermanentl
   return res;
 }
 
+int SalomeApp_Application::openChoice( const QString& aName )
+{
+  int choice = LightApp_Application::openChoice( aName );
+
+  if ( choice == OpenNew ) // The document isn't already open.
+  {
+    bool exist = false;
+    std::vector<std::string> lst = studyMgr()->GetOpenStudies();
+    for ( uint i = 0; i < lst.size() && !exist; i++ )
+    {
+      if ( aName == QString( lst[i].c_str() ) )
+        exist = true;
+    }
+
+    // The document already exists in the study manager.
+    // Do you want to reload it?
+    if ( exist )
+    {
+      int answer = SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "QUE_DOC_ALREADYEXIST" ).arg( aName ),
+					      SUIT_MessageBox::Yes | SUIT_MessageBox::No, SUIT_MessageBox::No );
+      if ( answer == SUIT_MessageBox::Yes )
+	choice = OpenRefresh;
+      else
+	choice = OpenCancel;
+    }
+  }
+
+  return choice;
+}
+
+bool SalomeApp_Application::openAction( const int aChoice, const QString& aName )
+{
+  bool res = false;
+  int choice = aChoice;
+  switch ( choice )
+  {
+  case OpenRefresh:
+    {
+      _PTR(Study) aStudy = studyMgr()->GetStudyByName( aName.toStdString() );
+      if ( aStudy )
+      {
+	studyMgr()->Close( aStudy );
+	choice = OpenNew;
+      }
+    }
+  default:
+    res = LightApp_Application::openAction( choice, aName );
+    break;
+  }
+
+  return res;
+}
+
 /*!
-  \brief Get map of the operations which can be performed 
+  \brief Get map of the operations which can be performed
   on the module activation.
- 
+
   The method should return the map of the kind \c {<id>:<name>}
   where \c <id> is an integer identifier of the operation and
-  \c <name> is a title for the button to be added to the 
+  \c <name> is a title for the button to be added to the
   dialog box. After user selects the required operation by the
   clicking the corresponding button in the dialog box, its identifier
   is passed to the moduleActionSelected() method to process
@@ -1001,7 +955,7 @@ QMap<int, QString> SalomeApp_Application::activateModuleActions() const
   from "Activate module" dialog box.
 
   Performs the required operation according to the user choice.
-  
+
   \param id operation identifier
   \sa activateModuleActions()
 */
@@ -1095,7 +1049,7 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QMenu* thePop
   mgr->selectedObjects( aList, QString(), false );
 
   // add GUI state commands: restore, rename
-  if ( aList.Extent() == 1 && aList.First()->hasEntry() && 
+  if ( aList.Extent() == 1 && aList.First()->hasEntry() &&
        QString( aList.First()->getEntry() ).startsWith( tr( "SAVE_POINT_DEF_NAME" ) ) ) {
     thePopup->addSeparator();
     thePopup->addAction( tr( "MEN_RESTORE_VS" ), this, SLOT( onRestoreGUIState() ) );
@@ -1163,7 +1117,7 @@ void SalomeApp_Application::updateObjectBrowser( const bool updateModels )
     _PTR(Study) stdDS = study->studyDS();
     if( stdDS )
     {
-      for ( _PTR(SComponentIterator) it ( stdDS->NewComponentIterator() ); it->More(); it->Next() ) 
+      for ( _PTR(SComponentIterator) it ( stdDS->NewComponentIterator() ); it->More(); it->Next() )
       {
 	_PTR(SComponent) aComponent ( it->Value() );
 
@@ -1279,8 +1233,8 @@ int getSelectedSavePoint( const LightApp_SelectionMgr* selMgr )
 void SalomeApp_Application::onRestoreGUIState()
 {
   int savePoint = ::getSelectedSavePoint( selectionMgr() );
-  if ( savePoint == -1 ) 
-    return;  
+  if ( savePoint == -1 )
+    return;
   SalomeApp_VisualState( this ).restoreState( savePoint );
 }
 
@@ -1288,10 +1242,10 @@ void SalomeApp_Application::onRestoreGUIState()
 void SalomeApp_Application::onRenameGUIState()
 {
   int savePoint = ::getSelectedSavePoint( selectionMgr() );
-  if ( savePoint == -1 ) 
-    return;  
+  if ( savePoint == -1 )
+    return;
   SalomeApp_Study* study = dynamic_cast<SalomeApp_Study*>( activeStudy() );
-  if ( !study ) 
+  if ( !study )
     return;
 
   QString newName = LightApp_NameDlg::getName( desktop(), study->getNameOfSavePoint( savePoint ) );
@@ -1308,12 +1262,12 @@ void SalomeApp_Application::onRenameGUIState()
 void SalomeApp_Application::onDeleteGUIState()
 {
   int savePoint = ::getSelectedSavePoint( selectionMgr() );
-  if ( savePoint == -1 ) 
-    return;  
-  SalomeApp_Study* study = dynamic_cast<SalomeApp_Study*>( activeStudy() );
-  if ( !study ) 
+  if ( savePoint == -1 )
     return;
-  
+  SalomeApp_Study* study = dynamic_cast<SalomeApp_Study*>( activeStudy() );
+  if ( !study )
+    return;
+
   study->removeSavePoint( savePoint );
   updateSavePointDataObjects( study );
 }
@@ -1353,8 +1307,8 @@ void SalomeApp_Application::updateSavePointDataObjects( SalomeApp_Study* study )
 
   // find GUI states root object
   SUIT_DataObject* guiRootObj = 0;
-  DataObjectList ch; 
-  study->root()->children( ch ); 
+  DataObjectList ch;
+  study->root()->children( ch );
   DataObjectList::const_iterator it = ch.begin(), last = ch.end();
   for ( ; it != last ; ++it ) {
     if ( dynamic_cast<SalomeApp_SavePointRootObject*>( *it ) ) {
@@ -1385,8 +1339,8 @@ void SalomeApp_Application::updateSavePointDataObjects( SalomeApp_Study* study )
 
   // store data objects in a map id-to-DataObject
   QMap<int,SalomeApp_SavePointObject*> mapDO;
-  ch.clear(); 
-  guiRootObj->children( ch ); 
+  ch.clear();
+  guiRootObj->children( ch );
   for( it = ch.begin(), last = ch.end(); it != last ; ++it ) {
     SalomeApp_SavePointObject* dobj = dynamic_cast<SalomeApp_SavePointObject*>( *it );
     if ( dobj )
@@ -1394,7 +1348,7 @@ void SalomeApp_Application::updateSavePointDataObjects( SalomeApp_Study* study )
   }
 
   // iterate new save points.  if DataObject with such ID not found in map - create DataObject
-  // if in the map - remove it from map.  
+  // if in the map - remove it from map.
   for ( int i = 0; i < savePoints.size(); i++ )
     if ( !mapDO.contains( savePoints[i] ) )
       new SalomeApp_SavePointObject( guiRootObj, savePoints[i], study );
@@ -1419,7 +1373,7 @@ bool SalomeApp_Application::checkDataObject(LightApp_DataObject* theObj)
 void SalomeApp_Application::onDesktopMessage( const QString& message )
 {
   // update object browser
-  if ( message.toLower() == "updateobjectbrowser" || 
+  if ( message.toLower() == "updateobjectbrowser" ||
        message.toLower() == "updateobjbrowser" )
     updateObjectBrowser();
 }

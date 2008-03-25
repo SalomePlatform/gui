@@ -74,29 +74,8 @@ public:
 
   enum { MenuWindowId = 6 };
 
-  enum { RenameId = CAM_Application::UserID,
-
-#ifndef DISABLE_GLVIEWER
-         NewGLViewId ,
-#endif
-
-#ifndef DISABLE_PLOT2DVIEWER
-         NewPlot2dId,
-#endif
-
-#ifndef DISABLE_OCCVIEWER
-         NewOCCViewId,
-#endif
-
-#ifndef DISABLE_VTKVIEWER
-         NewVTKViewId,
-#endif
-
-#ifndef DISABLE_QXGRAPHVIEWER
-         NewQxGraphViewId,
-#endif
-
-         PreferencesId, MRUId, ModulesListId, UserID };
+  enum { RenameId = CAM_Application::UserID, PreferencesId, MRUId, ModulesListId,
+         NewGLViewId, NewPlot2dId, NewOCCViewId, NewVTKViewId, NewQxGraphViewId, UserID };
 
 protected:
   enum { NewStudyId = 1, OpenStudyId };
@@ -224,7 +203,6 @@ private slots:
   void                                onSelection();
   void                                onRefresh();
   void                                onPreferences();
-  void                                onMRUActivated( QString );
   void                                onPreferenceChanged( QString&, QString&, QString& );
   void                                onRenameWindow();
 
@@ -252,11 +230,16 @@ protected:
   QByteArray                          dockWindowsState( const QMap<QString, bool>&, const QMap<QString, bool>& ) const;
   void                                dockWindowsState( const QByteArray&, QMap<QString, bool>&, QMap<QString, bool>& ) const;
 
+  virtual int                         openChoice( const QString& );
+  virtual bool                        openAction( const int, const QString& );
+
 protected:
   typedef QPointer<QWidget>         WinPtr;
   typedef QMap<int, WinPtr>         WinMap;
   typedef QMap<QString, QByteArray> WinVis;
   typedef QMap<QString, QByteArray> WinGeom;
+
+  enum { OpenReload = CAM_Application::OpenExist + 1 };
 
 protected:
   LightApp_Preferences*               myPrefs;

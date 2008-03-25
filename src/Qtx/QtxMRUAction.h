@@ -44,6 +44,11 @@ public:
 		 AddLast      //!< if specified item doesn't exist, add it to the end
   } InsertionMode;
 
+  typedef enum { LinkAuto,    //!< put the full path of link into the menu if link file names of severals link are same
+		 LinkShort,   //!< put the only file name of link into the menu
+		 LinkFull     //!< put the full path of link into the menu
+  } LinkType;
+
 public:
   QtxMRUAction( QObject* = 0 );
   QtxMRUAction( const QString&, const QString&, QObject* = 0 );
@@ -52,6 +57,9 @@ public:
 
   int          insertMode() const;
   void         setInsertMode( const int );
+
+  int          linkType() const;
+  void         setLinkType( const int );
 
   int          count() const;
   bool         isEmpty() const;
@@ -83,6 +91,7 @@ private:
 private:
   QStringList  myLinks;        //!< most recent used items
   int          myVisCount;     //!< number of visible MRU items
+  int          myLinkType;     //!< type of link names in menu
   int          myInsertMode;   //!< items insertion policy
 };
 

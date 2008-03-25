@@ -508,8 +508,8 @@ void LightApp_Application::createActions()
   }
 
   //! MRU
-  QtxMRUAction* mru = new QtxMRUAction( tr( "TOT_DESK_MRU" ), tr( "MEN_DESK_MRU" ), desk );
-  connect( mru, SIGNAL( activated( QString ) ), this, SLOT( onMRUActivated( QString ) ) );
+  static QtxMRUAction* mru = new QtxMRUAction( tr( "TOT_DESK_MRU" ), tr( "MEN_DESK_MRU" ), 0 );
+  connect( mru, SIGNAL( activated( const QString& ) ), this, SLOT( onOpenDoc( const QString& ) ) );
   registerAction( MRUId, mru );
 
   // default icon for neutral point ('SALOME' module)
@@ -726,6 +726,7 @@ void LightApp_Application::onOpenDoc()
 */
 bool LightApp_Application::onOpenDoc( const QString& aName )
 {
+#ifdef SWITCH_OFF
   bool isAlreadyOpen = false;
 
   // Look among opened studies
@@ -777,13 +778,13 @@ bool LightApp_Application::onOpenDoc( const QString& aName )
       }
     }
   }
+#endif
 
   bool res = CAM_Application::onOpenDoc( aName );
 
-  QAction* a = action( MRUId );
-  if ( a && a->inherits( "QtxMRUAction" ) )
+  QtxMRUAction* mru = ::qobject_cast<QtxMRUAction*>( action( MRUId ) );
+  if ( mru )
   {
-    QtxMRUAction* mru = (QtxMRUAction*)a;
     if ( res )
       mru->insert( aName );
     else
@@ -1557,12 +1558,6 @@ void LightApp_Application::onPreferenceChanged( QString& modName, QString& secti
   emit preferenceChanged( modName, section, param );
 }
 
-/*!Private SLOT. On open document with name \a aName.*/
-void LightApp_Application::onMRUActivated( QString aName )
-{
-  onOpenDoc( aName );
-}
-
 /*!Remove all windows from study.*/
 void LightApp_Application::beforeCloseDoc( SUIT_Study* s )
 {
@@ -2112,6 +2107,15 @@ void LightApp_Application::loadPreferences()
   if ( !aResMgr )
     return;
 
+  static bool mru_load = true;
+  if ( mru_load )
+  {
+    QtxMRUAction* mru = ::qobject_cast<QtxMRUAction*>( action( MRUId ) );
+    if ( mru )
+      mru->loadLinks( aResMgr, "MRU" );
+    mru_load = false;
+  }
+
   myWinGeom.clear();
   QStringList mods = aResMgr->parameters( "windows_geometry" );
   for ( QStringList::const_iterator it = mods.begin(); it != mods.end(); ++it )
@@ -2143,25 +2147,32 @@ void LightApp_Application::savePreferences()
 
   saveDockWindowsState();
 
-  if ( !resourceMgr() )
+  SUIT_ResourceMgr* aResMgr = resourceMgr();
+
+  if ( !aResMgr )
     return;
 
+  QtxMRUAction* mru = ::qobject_cast<QtxMRUAction*>( action( MRUId ) );
+  if ( mru )
+    mru->saveLinks( aResMgr, "MRU" );
+
   for ( WinGeom::const_iterator it = myWinGeom.begin(); it != myWinGeom.end(); ++it )
-    resourceMgr()->setValue( "windows_geometry", it.key(), it.value() );
+    aResMgr->setValue( "windows_geometry", it.key(), it.value() );
 
   for ( WinVis::const_iterator itr = myWinVis.begin(); itr != myWinVis.end(); ++itr )
-    resourceMgr()->setValue( "windows_visibility", itr.key(), itr.value() );
+    aResMgr->setValue( "windows_visibility", itr.key(), itr.value() );
 
   if ( desktop() )
-    resourceMgr()->setValue( "desktop", "geometry", desktop()->storeGeometry() );
+    aResMgr->setValue( "desktop", "geometry", desktop()->storeGeometry() );
 
-  resourceMgr()->save();
+  aResMgr->save();
 }
 
 /*!
   Updates desktop title
 */
-void LightApp_Application::updateDesktopTitle() {
+void LightApp_Application::updateDesktopTitle()
+{
   QString aTitle = applicationName();
   QString aVer = applicationVersion();
   if ( !aVer.isEmpty() )
@@ -2751,4 +2762,56 @@ bool LightApp_Application::checkDataObject(LightApp_DataObject* theObj)
     }
 
   return false;
+}
+
+int LightApp_Application::openChoice( const QString& aName )
+{
+  int choice = CAM_Application::openChoice( aName );
+
+  if ( choice == OpenExist ) // The document is already open.
+  {
+    // Do you want to reload it?
+    if ( SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "QUE_DOC_ALREADYOPEN" ).arg( aName ),
+				    SUIT_MessageBox::Yes | SUIT_MessageBox::No, SUIT_MessageBox::No ) == SUIT_MessageBox::Yes )
+      choice = OpenReload;
+  }
+
+  return choice;
+}
+
+bool LightApp_Application::openAction( const int choice, const QString& aName )
+{
+  bool res = false;
+  switch ( choice )
+  {
+  case OpenReload:
+    {
+      STD_Application* app = 0;
+      SUIT_Session* session = SUIT_Session::session();
+      QList<SUIT_Application*> appList = session->applications();
+      for ( QList<SUIT_Application*>::iterator it = appList.begin(); it != appList.end() && !app; ++it )
+      {
+	if ( (*it)->activeStudy() && (*it)->activeStudy()->studyName() == aName )
+	  app = ::qobject_cast<STD_Application*>( *it );
+      }
+
+      if ( app )
+      {
+	app->onCloseDoc( false );
+	appList = session->applications();
+	STD_Application* other = 0;
+	for ( QList<SUIT_Application*>::iterator it = appList.begin(); it != appList.end() && !other; ++it )
+	  other = ::qobject_cast<STD_Application*>( *it );
+
+	if ( other )
+	  res = other->onOpenDoc( aName );
+      }
+    }
+    break;
+  default:
+    res = CAM_Application::openAction( choice, aName );
+    break;
+  }
+
+  return res;
 }

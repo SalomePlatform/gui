@@ -1240,7 +1240,7 @@ void OCCViewer_ViewWindow::onSetRotationPoint( bool on )
 void OCCViewer_ViewWindow::onCloneView()
 {
   SUIT_ViewWindow* vw = myManager->createViewWindow();
-  vw->show();
+  //vw->show();
 }
 
 /*!

@@ -49,7 +49,7 @@ class GLViewer_ViewPort;
 class GLVIEWER_API GLViewer_ViewFrame: public SUIT_ViewWindow
 {
   Q_OBJECT
-    
+
 public:
   //! Actions ID
   enum { DumpId, FitAllId, FitRectId, FitSelectId, ZoomId, PanId, GlobalPanId, ResetId };
@@ -57,59 +57,60 @@ public:
 public:
   GLViewer_ViewFrame( SUIT_Desktop* , GLViewer_Viewer* );
   ~GLViewer_ViewFrame();
-  
-public:  
+
+public:
   void                    setViewer( GLViewer_Viewer* );
   GLViewer_Viewer*        getViewer() const;
-  
+
   void                    setViewPort( GLViewer_ViewPort* );
   GLViewer_ViewPort*      getViewPort() const;
-  
+
   void                    setBackgroundColor( const QColor& );
   QColor                  backgroundColor() const;
-  
+
   QSize                   sizeHint() const;
-  
+
   virtual void            onUpdate( int );
 
   virtual QString         getVisualParameters();
-  virtual void            setVisualParameters( const QString& parameters );  
-  
+  virtual void            setVisualParameters( const QString& parameters );
+
+  virtual QImage          dumpView();
+
 signals:
   void                    vfDrawExternal( QPainter* );
   void                    vfViewClosing( QCloseEvent* );
-  
+
 protected:
   GLViewer_Viewer*        myViewer;
   GLViewer_ViewPort*      myVP;
-  
+
 public:
-  //ViewType       getTypeView() const { return VIEW_GL; }; 
+  //ViewType       getTypeView() const { return VIEW_GL; };
   QWidget*       getViewWidget() { return ( QWidget* )getViewPort(); };
-  
+
 protected slots:
-  void           onViewDump();
   void           onViewPan();
   void           onViewZoom();
   void           onViewFitAll();
   void           onViewFitArea();
   void           onViewFitSelect();
-  void           onViewGlobalPan(); 
+  void           onViewGlobalPan();
   void           onViewRotate();
   void           onViewReset();
-  void           onViewFront() {}; 
-  void           onViewBack() {}; 
-  void           onViewRight() {}; 
-  void           onViewLeft() {};     
+  void           onViewFront() {};
+  void           onViewBack() {};
+  void           onViewRight() {};
+  void           onViewLeft() {};
   void           onViewBottom() {};
   void           onViewTop() {};
-  void           onViewTrihedron() {}; 
-  
+  void           onViewTrihedron() {};
+
 private slots:
   void           keyEvent( QKeyEvent* );
   void           mouseEvent( QMouseEvent* );
   void           wheelEvent( QWheelEvent* );
-  
+
 private:
   void           createActions();
   void           createToolBar();

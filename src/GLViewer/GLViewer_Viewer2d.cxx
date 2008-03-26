@@ -31,7 +31,6 @@
 #include "GLViewer_Context.h"
 #include "GLViewer_Drawer.h"
 #include "GLViewer_Selector2d.h"
-//#include "GLViewer_Sketcher.h"
 #include "GLViewer_ViewPort2d.h"
 
 #include "SUIT_Desktop.h"
@@ -39,11 +38,11 @@
 #include "SUIT_ViewManager.h"
 
 #include <QMenu>
-#include <QPolygon>
-#include <QColorDialog>
 #include <QRect>
 #include <QFile>
+#include <QPolygon>
 #include <QMouseEvent>
+#include <QColorDialog>
 
 /*!
   Constructor
@@ -52,15 +51,13 @@
 GLViewer_Viewer2d::GLViewer_Viewer2d( const QString& title) :
 GLViewer_Viewer( title )
 {
-    myGLContext = new GLViewer_Context( this );
+  myGLContext = new GLViewer_Context( this );
 
-    //myGLSketcher = new GLViewer_Sketcher( this );
+  createSelector();
 
-    createSelector();
+  mySelMode = GLViewer_Viewer::Multiple;
 
-    mySelMode = GLViewer_Viewer::Multiple;
-
-    myDrawers.clear();
+  myDrawers.clear();
 }
 
 /*!

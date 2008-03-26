@@ -60,17 +60,14 @@ GLViewer_ViewFrame::GLViewer_ViewFrame( SUIT_Desktop* d, GLViewer_Viewer* vw )
 myViewer( vw ),
 myVP( 0 )
 {
-    QFrame* client = new QFrame( this );    
+    QFrame* client = new QFrame( this );
     setCentralWidget( client );
 
     QBoxLayout* layout = new QHBoxLayout( client );
-    layout->setMargin(1);
-    layout->setSpacing(1);
+    layout->setMargin( 0 );
+    layout->setSpacing( 0 );
 
     GLViewer_ViewPort2d* vp = new GLViewer_ViewPort2d( client, this );
-    //vp->turnGrid( true );
-    //vp->turnCompass( true );
-    //vp->enablePopup( false );
     setViewPort( vp );
     setBackgroundColor( Qt::white );
     layout->addWidget( vp );
@@ -98,7 +95,7 @@ void GLViewer_ViewFrame::createActions()
   aAction = new QtxAction(tr("MNU_DUMP_VIEW"), aResMgr->loadPixmap( "GLViewer", tr( "ICON_GL_DUMP" ) ),
 			  tr( "MNU_DUMP_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_DUMP_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onViewDump()));
+  connect(aAction, SIGNAL(activated()), this, SLOT(onDumpView()));
   toolMgr()->registerAction( aAction, DumpId );
 
   // FitAll
@@ -270,189 +267,16 @@ void GLViewer_ViewFrame::onUpdate( int )
 /*!
   SLOT: called on dump view operation is activated, stores scene to raster file
 */
-void GLViewer_ViewFrame::onViewDump()
+
+QImage GLViewer_ViewFrame::dumpView()
 {
-    GLViewer_Widget* aWidget = ((GLViewer_ViewPort2d*)myVP)->getGLWidget();
-    int width, height;
-    width = aWidget->width();
-    height = aWidget->height();
-    
-    int imageSize = width*height*3;
-    unsigned char* imageBits = NULL;
+  QImage img;
 
-    int reserve_bytes = width % 4; //32 bits platform
-    imageSize = (width+reserve_bytes)*height*3;
-    imageBits = new unsigned char[imageSize];
+  GLViewer_Widget* aWidget = ((GLViewer_ViewPort2d*)myVP)->getGLWidget();
+  if ( aWidget )
+    img = aWidget->grabFrameBuffer();
 
-    
-#ifdef WIN32
-
-    int num;
-    HBITMAP hBmp;
-    HDC hdc_old, hdc;
-    HGLRC hglrc_old, hglrc;
-
-    BITMAPINFO bi;
-
-    hglrc_old = wglGetCurrentContext();
-    hdc_old = wglGetCurrentDC();
-
-    hdc = CreateCompatibleDC( hdc_old );
-    if( !hdc )
-    {
-        cout << "Can't create compatible DC. Last Error Code: " << GetLastError() << endl;
-        return;
-    }
-
-    int sizeBmi = Standard_Integer( sizeof(BITMAPINFO) + sizeof(RGBQUAD)*3 );
-    PBITMAPINFO pBmi = (PBITMAPINFO)( new char[sizeBmi] );
-    ZeroMemory( pBmi, sizeBmi );
-
-    pBmi->bmiHeader.biSize        = sizeof( BITMAPINFOHEADER ); //sizeBmi
-    pBmi->bmiHeader.biWidth       = width;
-    pBmi->bmiHeader.biHeight      = height;
-    pBmi->bmiHeader.biPlanes      = 1;
-    pBmi->bmiHeader.biBitCount    = 24;
-    pBmi->bmiHeader.biCompression = BI_RGB;
-
-    LPVOID ppvBits;
-    hBmp = CreateDIBSection ( hdc, pBmi, DIB_RGB_COLORS, &ppvBits, NULL, 0 );
-    SelectObject ( hdc, hBmp );
-    delete[] pBmi;
-
-    PIXELFORMATDESCRIPTOR pfd;
-    ZeroMemory( &pfd, sizeof( PIXELFORMATDESCRIPTOR ) );
-    pfd.nSize      = sizeof( PIXELFORMATDESCRIPTOR );
-    pfd.nVersion   = 1;
-    pfd.dwFlags    = PFD_SUPPORT_OPENGL | PFD_DRAW_TO_BITMAP;
-    pfd.iPixelType = PFD_TYPE_RGBA;
-    pfd.cColorBits = 24;
-    pfd.cDepthBits = 32;
-    pfd.iLayerType = PFD_MAIN_PLANE;
-
-    int iPf = ChoosePixelFormat( hdc, &pfd);    
-    if( iPf == 0 )
-    {
-        if ( !DescribePixelFormat ( hdc, iPf, sizeof(PIXELFORMATDESCRIPTOR), &pfd ) )
-        {
-            cout << "Can't describe Pixel Format. Last Error Code: " << GetLastError() << endl;
-        }
-    }
-    if ( !SetPixelFormat(hdc, iPf, &pfd) )
-    {
-        cout << "Can't set Pixel Format. Last Error Code: " << GetLastError() << endl;
-    }
-
-    hglrc = wglCreateContext( hdc );
-    if( !hglrc )
-    {
-        cout << "Can't create new GL Context. Last Error Code: " << GetLastError() << endl;
-        return;
-    }
-    if( !wglMakeCurrent( hdc, hglrc) )
-    {
-        cout << "Can't make current new context!" << endl;
-        return;
-    }
-    
-    glViewport( 0, 0, width, height );
-
-    glMatrixMode( GL_PROJECTION );
-    glLoadIdentity();
-    GLfloat w_c = width / 2., h_c = height / 2.; 
-
-    gluOrtho2D( -w_c, w_c, -h_c, h_c ); 
-
-    glMatrixMode( GL_MODELVIEW );
-    glLoadIdentity();
-
-    //set background
-    QColor aColor = ((GLViewer_ViewPort2d*)myVP)->backgroundColor();
-    glClearColor( ( GLfloat )aColor.red() / 255,
-                  ( GLfloat )aColor.green() / 255,
-                  ( GLfloat )aColor.blue() / 255,
-                  1.0 );
-
-    aWidget->exportRepaint();
-
-      memset(&bi, 0, sizeof(BITMAPINFOHEADER));
-    bi.bmiHeader.biSize        = sizeof(BITMAPINFOHEADER);
-    bi.bmiHeader.biPlanes      = 1;
-    bi.bmiHeader.biBitCount    = 24;
-    bi.bmiHeader.biHeight      = -height;
-    bi.bmiHeader.biWidth       = width;
-    bi.bmiHeader.biCompression = BI_RGB;
-
-    num = GetDIBits(hdc, hBmp, 0, height, imageBits, &bi, DIB_RGB_COLORS);
-
-    wglMakeCurrent( hdc_old, hglrc_old );
-    wglDeleteContext( hglrc );
-    
-
-#else //XWindows
-#endif
-
-    unsigned int* aPix = NULL;
-    QImage  anImage( width, height, QImage::Format_RGB32 );
-    for( int i = 0; i < height; i++ )
-    {
-        memset( anImage.scanLine( i ), 0, sizeof(unsigned int)*width );
-        unsigned char* pos;
-        for( int j = 0; j < width; j++ )
-        {
-            pos = imageBits + i*width*3 + j*3 + reserve_bytes*i;
-            aPix = (unsigned int*)anImage.scanLine(i)+j;
-            *aPix = qRgb( *pos, *(pos+1), *(pos+2) );
-        }
-    }
-
-    delete [] imageBits;
-
-    QString aFilter( "*.bmp\n*.png" );
-
-    QFileDialog aFileDlg( this, tr( "DUMP_VIEW_SAVE_FILE_DLG_CAPTION" ), QDir::current().absolutePath(), aFilter );
-    aFileDlg.setFileMode( QFileDialog::AnyFile );
-
-    if( !aFileDlg.exec() )
-        return;
-
-    QStringList files = aFileDlg.selectedFiles();
-    QString aFileName;
-    if ( !files.isEmpty() ) aFileName = files[0];
-
-    QString aFileExt = aFileDlg.selectedFilter();
-
-    if( aFileName.isEmpty() )
-    {
-        SUIT_MessageBox::critical( this,
-				   tr( "DUMP_VIEW_ERROR_DLG_CAPTION" ),
-				   tr( "DUMP_VIEW_ERROR_DLG_TEXT" ) );
-    }
-
-    QString aSaveOp = "BMP";
-    QString aTypedFileExt = QFileInfo( aFileName ).suffix().toLower();
-
-    if( aFileExt == "*.bmp" )
-    {
-        if( aTypedFileExt.isEmpty() )
-            aFileName += ".bmp";
-        aSaveOp = "BMP";
-    }
-    else if( aFileExt == "*.png" )
-        if( aTypedFileExt.isEmpty() )
-            aFileName += ".png";
-        aSaveOp = "PNG";
-
-//#ifdef WIN32
-//    if( !anImage.save( aFileName, aSaveOp ) )
-//#else
-    if( !aWidget->grabFrameBuffer().save( aFileName, aSaveOp.toLatin1().constData() ) )
-//#endif
-    {
-      SUIT_MessageBox::critical( this,
-				 tr( "DUMP_VIEW_ERROR_DLG_CAPTION" ),
-				 tr( "DUMP_VIEW_ERROR_DLG_TEXT" ) );
-    }
+  return img;
 }
 
 /*!
@@ -483,7 +307,7 @@ void GLViewer_ViewFrame::onViewFitAll()
   Start fit area
 */
 void GLViewer_ViewFrame::onViewFitArea()
-{ 
+{
     myViewer->activateTransform( GLViewer_Viewer::FitRect );
 }
 
@@ -491,7 +315,7 @@ void GLViewer_ViewFrame::onViewFitArea()
   Start fit selected
 */
 void GLViewer_ViewFrame::onViewFitSelect()
-{ 
+{
     myViewer->activateTransform( GLViewer_Viewer::FitSelect );
 }
 
@@ -499,7 +323,7 @@ void GLViewer_ViewFrame::onViewFitSelect()
   Start global panning
 */
 void GLViewer_ViewFrame::onViewGlobalPan()
-{ 
+{
     myViewer->activateTransform( GLViewer_Viewer::PanGlobal );
 }
 
@@ -507,7 +331,7 @@ void GLViewer_ViewFrame::onViewGlobalPan()
   Start rotating
 */
 void GLViewer_ViewFrame::onViewRotate()
-{ 
+{
     //myViewer->activateTransform( GLViewer_Viewer::Rotate );
 }
 
@@ -515,11 +339,11 @@ void GLViewer_ViewFrame::onViewRotate()
   Start reset default view aspects
 */
 void GLViewer_ViewFrame::onViewReset()
-{ 
+{
     myViewer->activateTransform( GLViewer_Viewer::Reset );
 }
- 
-/*! 
+
+/*!
   Dispatches mouse events
 */
 void GLViewer_ViewFrame::mouseEvent( QMouseEvent* e )

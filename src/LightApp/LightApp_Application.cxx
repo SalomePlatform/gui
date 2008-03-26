@@ -1433,8 +1433,12 @@ void LightApp_Application::onStudyOpened( SUIT_Study* theStudy )
 }
 
 /*!Protected SLOT. On study saved.*/
-void LightApp_Application::onStudySaved( SUIT_Study* )
+void LightApp_Application::onStudySaved( SUIT_Study* s )
 {
+  QtxMRUAction* mru = ::qobject_cast<QtxMRUAction*>( action( MRUId ) );
+  if ( mru && s )
+      mru->insert( s->studyName() );
+
   emit studySaved();
 }
 

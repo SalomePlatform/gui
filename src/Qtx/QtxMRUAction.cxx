@@ -389,7 +389,7 @@ void QtxMRUAction::updateMenu()
     }
   }
 
-  int i = 0;
+  int i = 1;
   for ( QStringList::const_iterator it = links.begin(); it != links.end(); ++it, i++ )
   {
     QString linkName;

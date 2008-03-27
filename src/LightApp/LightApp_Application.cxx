@@ -69,6 +69,7 @@
 #include <QtxDockAction.h>
 #include <QtxDockWidget.h>
 #include <QtxActionToolMgr.h>
+#include <QtxSearchTool.h>
 
 #include <LogWindow.h>
 
@@ -1599,11 +1600,17 @@ SUIT_Study* LightApp_Application::createNewStudy()
 QWidget* LightApp_Application::createWindow( const int flag )
 {
   QWidget* wid = 0;
+
+  SUIT_ResourceMgr* resMgr = resourceMgr();
+
   if ( flag == WT_ObjectBrowser )
   {
     SUIT_DataBrowser* ob = new SUIT_DataBrowser( new LightApp_DataObject(), desktop() );
     ob->setSortMenuEnabled( true );
     ob->setAutoUpdate( true );
+    if ( resMgr->hasValue( "ObjectBrowser", "auto_hide_search_tool" ) )
+      ob->searchTool()->enableAutoHide( resMgr->booleanValue( "ObjectBrowser", "auto_hide_search_tool" ) );
+
     //ob->setAutoOpenLevel( 1 ); // commented by ASV as a fix to bug IPAL10107
     ob->setWindowTitle( tr( "OBJECT_BROWSER" ) );
     connect( ob, SIGNAL( requestUpdate() ), this, SLOT( onRefresh() ) );
@@ -1906,6 +1913,10 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 //		       LightApp_Preferences::Color, "SUPERVGraph", "Ctrl" );
 
   int obTab = pref->addPreference( tr( "PREF_TAB_OBJBROWSER" ), salomeCat );
+  int stGroup = pref->addPreference( tr( "PREF_OBJ_BROWSER_SEARCH_TOOL" ), obTab );
+  pref->addPreference( tr( "PREF_AUTO_HIDE_SEARCH_TOOL" ), stGroup, LightApp_Preferences::Bool,
+		       "ObjectBrowser", "auto_hide_search_tool" );
+
   int objSetGroup = pref->addPreference( tr( "PREF_OBJ_BROWSER_SETTINGS" ), obTab );
   pref->setItemProperty( "columns", 2, objSetGroup );
   pref->addPreference( tr( "PREF_AUTO_SIZE_FIRST" ), objSetGroup, LightApp_Preferences::Bool,
@@ -2067,6 +2078,10 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 	  if( ob->listView()->columnWidth( i )>0 )
 	    ob->listView()->adjustColumn( i );
 	    updateObjectBrowser( false );*/
+    }
+    else if ( param == "auto_hide_search_tool" )
+    {
+      objectBrowser()->searchTool()->enableAutoHide( resMgr->booleanValue( "ObjectBrowser", "auto_hide_search_tool" ) );
     }
   }
 

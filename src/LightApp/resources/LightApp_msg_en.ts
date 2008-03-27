@@ -138,6 +138,14 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>Spline</translation>
     </message>
     <message>
+        <source>PREF_OBJ_BROWSER_SEARCH_TOOL</source>
+        <translation>Search Tool</translation>
+    </message>
+    <message>
+        <source>PREF_AUTO_HIDE_SEARCH_TOOL</source>
+        <translation>Enable auto-hiding</translation>
+    </message>
+    <message>
         <source>PREF_OBJ_BROWSER_SETTINGS</source>
         <translation>Object browser settings</translation>
     </message>

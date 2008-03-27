@@ -50,7 +50,7 @@ SUIT_ViewWindow::SUIT_ViewWindow( SUIT_Desktop* theDesktop )
   setWindowIcon( myDesktop->windowIcon() );
 
   setAttribute( Qt::WA_DeleteOnClose );
-  
+
   myToolMgr = new QtxActionToolMgr( this );
 }
 
@@ -135,8 +135,15 @@ void SUIT_ViewWindow::closeEvent( QCloseEvent* e )
 
 /*! Context menu requested for event \a e.
 */
-void SUIT_ViewWindow::contextMenuEvent ( QContextMenuEvent * e )
+void SUIT_ViewWindow::contextMenuEvent( QContextMenuEvent* e )
 {
+  e->ignore();
+
+  QMainWindow::contextMenuEvent( e );
+
+  if ( e->isAccepted() )
+    return;
+
   if ( e->reason() != QContextMenuEvent::Mouse )
     emit contextMenuRequested( e );
 }

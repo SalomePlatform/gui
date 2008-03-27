@@ -126,6 +126,7 @@ private slots:
 
 private:
   void                init();
+  bool                focused() const;
   void                clearShortcuts();
   void                initShortcuts( const QList<QKeySequence>& );
   void                updateShortcuts();

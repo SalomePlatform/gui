@@ -1127,14 +1127,11 @@ void SalomeApp_Application::updateObjectBrowser( const bool updateModels )
 	if ( aComponent->ComponentDataType() == "Interface Applicative" )
 	  continue; // skip the magic "Interface Applicative" component
 
-	// temporary commented
-	/*OB_Browser* ob = static_cast<OB_Browser*>( getWindow( WT_ObjectBrowser ));
-	const bool isAutoUpdate = ob->isAutoUpdate();
-	ob->setAutoUpdate( false );*/
+        getWindow( WT_ObjectBrowser );
+	const bool isAutoUpdate = objectBrowser()->autoUpdate();
+	objectBrowser()->setAutoUpdate( false );
 	SalomeApp_DataModel::synchronize( aComponent, study );
-	// temporary commented
-	/*ob->setAutoUpdate( isAutoUpdate );*/
-        //SalomeApp_DataModel::BuildTree( aComponent, study->root(), study, /*skipExisitng=*/true );
+	objectBrowser()->setAutoUpdate( isAutoUpdate );
       }
     }
   }

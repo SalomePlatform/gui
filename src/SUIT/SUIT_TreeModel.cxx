@@ -144,7 +144,7 @@ SUIT_TreeModel::TreeItem* SUIT_TreeModel::TreeItem::parent() const
 */
 int SUIT_TreeModel::TreeItem::position() const
 {
-  return myParent->myChildren.indexOf( (TreeItem*)this );
+  return myParent ? myParent->myChildren.indexOf( (TreeItem*)this ) : -1;
 }
 
 /*!

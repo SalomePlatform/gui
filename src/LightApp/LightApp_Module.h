@@ -88,7 +88,7 @@ public:
   virtual void                        studyActivated() {};
 
   virtual LightApp_Displayer*         displayer();
-  virtual LightApp_Selection*         createSelection( const QString&, LightApp_SelectionMgr* ) const;
+  virtual LightApp_Selection*         createSelection() const;
 
 public slots:
   virtual bool                        activateModule( SUIT_Study* );

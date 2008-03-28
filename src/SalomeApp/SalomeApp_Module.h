@@ -58,7 +58,7 @@ public:
 
   virtual void                        storeVisualParameters(int savePoint);
   virtual void                        restoreVisualParameters(int savePoint);
-  virtual LightApp_Selection*         createSelection( const QString&, LightApp_SelectionMgr* ) const;
+  virtual LightApp_Selection*         createSelection() const;
 
 protected:
   virtual CAM_DataModel*              createDataModel();

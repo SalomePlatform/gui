@@ -35,8 +35,22 @@
 /*!
   Constructor
 */
-LightApp_Selection::LightApp_Selection( const QString& client, LightApp_SelectionMgr* mgr )
+LightApp_Selection::LightApp_Selection()
 : myStudy( 0 )
+{
+}
+
+/*!
+  Destructor.
+*/
+LightApp_Selection::~LightApp_Selection()
+{
+}
+
+/*!
+  Initialization.
+*/
+void LightApp_Selection::init( const QString& client, LightApp_SelectionMgr* mgr)
 {
   myPopupClient = client;
   
@@ -90,13 +104,6 @@ LightApp_Selection::LightApp_Selection( const QString& client, LightApp_Selectio
       }
     }
   }
-}
-
-/*!
-  Destructor.
-*/
-LightApp_Selection::~LightApp_Selection()
-{
 }
 
 QString LightApp_Selection::referencedToEntry( const QString& entry ) const

@@ -124,7 +124,8 @@ void LightApp_Module::viewManagers( QStringList& ) const
 /*!Context menu popup.*/
 void LightApp_Module::contextMenuPopup( const QString& client, QMenu* menu, QString& /*title*/ )
 {
-  LightApp_Selection* sel = createSelection( client, getApp()->selectionMgr() );
+  LightApp_Selection* sel = createSelection();
+  sel->init( client, getApp()->selectionMgr() );
   popupMgr()->setSelection( sel );
   popupMgr()->setMenu( menu );
   popupMgr()->updateMenu();
@@ -290,9 +291,9 @@ CAM_DataModel* LightApp_Module::createDataModel()
 }
 
 /*!Create and return instance of LightApp_Selection.*/
-LightApp_Selection* LightApp_Module::createSelection( const QString& client, LightApp_SelectionMgr* mgr ) const
+LightApp_Selection* LightApp_Module::createSelection() const
 {
-  return new LightApp_Selection( client, mgr );
+  return new LightApp_Selection();
 }
 
 /*!NOT IMPLEMENTED*/

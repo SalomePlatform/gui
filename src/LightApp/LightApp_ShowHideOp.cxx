@@ -65,10 +65,11 @@ void LightApp_ShowHideOp::startOperation()
   if( !mod )
     return;
 
-  LightApp_Selection* sel = mod->createSelection( "", mgr );
+  LightApp_Selection* sel = mod->createSelection();
   if( !sel )
     return;
 
+  sel->init( "", mgr );
   if( sel->count()==0 && myActionType!=ERASE_ALL )
   {
     abort();

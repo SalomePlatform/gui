@@ -47,9 +47,10 @@ class SUIT_ViewWindow;
 class LIGHTAPP_EXPORT LightApp_Selection : public QtxPopupSelection
 {
 public:
-  LightApp_Selection( const QString&, LightApp_SelectionMgr* );
+  LightApp_Selection();
   virtual ~LightApp_Selection();
 
+  virtual void                   init( const QString&, LightApp_SelectionMgr* );
   virtual void                   processOwner( const LightApp_DataOwner* );
 
   virtual int                    count() const;

@@ -65,9 +65,9 @@ CAM_DataModel* SalomeApp_Module::createDataModel()
 }
 
 /*!Create and return instance of LightApp_Selection.*/
-LightApp_Selection* SalomeApp_Module::createSelection( const QString& client, LightApp_SelectionMgr* mgr ) const
+LightApp_Selection* SalomeApp_Module::createSelection() const
 {
-  return LightApp_Module::createSelection( client, mgr );
+  return LightApp_Module::createSelection();
 }
 
 /*!

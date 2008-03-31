@@ -980,7 +980,7 @@ void OB_Browser::createPopupMenu( QMenu* menu )
 
   if ( isSearchToolEnabled() ) {
     menu->addSeparator();
-    menu->addAction( tr( "MEN_FIND" ), searchTool(), SLOT( find() ) );
+    menu->addAction( tr( "MEN_FIND" ), searchTool(), SLOT( find() ), QKeySequence(Qt::CTRL + Qt::Key_F) );
     menu->addSeparator();
   }
 }

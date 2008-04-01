@@ -23,6 +23,7 @@
 #include "SUIT_ViewManager.h"
 
 class SUIT_Desktop;
+class SUIT_PreferenceMgr;
 class Plot2d_Viewer;
 class Plot2d_ViewFrame;
 
@@ -35,6 +36,8 @@ public:
   ~Plot2d_ViewManager();
 
   Plot2d_Viewer*     getPlot2dModel() const;
+
+  static int         fillPreferences( SUIT_PreferenceMgr*, const int );
 
 protected:
   bool         insertView(SUIT_ViewWindow* theView);

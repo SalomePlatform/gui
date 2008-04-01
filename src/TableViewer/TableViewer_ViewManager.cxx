@@ -22,6 +22,8 @@
 
 #include <SUIT_Study.h>
 #include <SUIT_Desktop.h>
+#include <SUIT_PreferenceMgr.h>
+#include <SUIT_ResourceMgr.h>
 
 /*!
   Constructor
@@ -87,3 +89,21 @@ void TableViewer_ViewManager::createView()
     emit cloneView( clonedWnd->getViewFrame(), newWnd->getViewFrame() );
 }
 */
+
+/*!
+  Fills preference manager for viewer
+*/
+int TableViewer_ViewManager::fillPreferences( SUIT_PreferenceMgr* thePrefMgr, const int theId )
+{
+  int aGrpId = thePrefMgr->addItem( tr( "PREF_GROUP_TABLEVIEWER" ), theId,
+                                        SUIT_PreferenceMgr::GroupBox );
+  return aGrpId;
+}
+
+/**
+ * Fills values from resources
+ */
+void TableViewer_ViewManager::fillFrom( SUIT_ResourceMgr* theMgr )
+{
+
+}

@@ -23,6 +23,8 @@
 #include "SVTK.h"
 
 class SUIT_Desktop;
+class SUIT_PreferenceMgr;
+class SUIT_ResourceMgr;
 
 //! Extend SUIT_ViewManager to deal with SVTK_Viewer
 class SVTK_EXPORT SVTK_ViewManager : public SUIT_ViewManager
@@ -37,6 +39,9 @@ public:
   virtual ~SVTK_ViewManager();
 
   SUIT_Desktop* getDesktop();
+
+  static int  fillPreferences( SUIT_PreferenceMgr*, const int );
+  void        fillFrom( SUIT_ResourceMgr* );
 };
 
 #endif

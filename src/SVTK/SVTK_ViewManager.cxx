@@ -21,6 +21,9 @@
 
 #include <VTKViewer_ViewManager.h>
 
+#include <SUIT_PreferenceMgr.h>
+#include <SUIT_ResourceMgr.h>
+
 /*!
   Constructor
 */
@@ -43,4 +46,41 @@ SVTK_ViewManager::~SVTK_ViewManager()
 SUIT_Desktop* SVTK_ViewManager::getDesktop()
 {
   return myDesktop;
+}
+
+/*!
+  Fills preference manager for viewer
+*/
+int SVTK_ViewManager::fillPreferences( SUIT_PreferenceMgr* thePrefMgr, const int theId )
+{
+  int aGrpId = thePrefMgr->addItem( tr( "PREF_GROUP_VTKVIEWER" ), theId,
+                                    SUIT_PreferenceMgr::GroupBox );
+
+  int vtkTS = thePrefMgr->addItem( tr( "PREF_TRIHEDRON_SIZE" ), aGrpId,
+                                   SUIT_PreferenceMgr::DblSpin, "VTKViewer", "trihedron_size" );
+  thePrefMgr->addItem( tr( "PREF_RELATIVE_SIZE" ), aGrpId, SUIT_PreferenceMgr::Bool,
+                       "VTKViewer", "relative_size" );
+  thePrefMgr->addItem( tr( "PREF_VIEWER_BACKGROUND" ), aGrpId,
+                       SUIT_PreferenceMgr::Color, "VTKViewer", "background" );
+
+  thePrefMgr->setItemProperty( "min", 1.0E-06, vtkTS );
+  thePrefMgr->setItemProperty( "max", 150, vtkTS );
+
+  return aGrpId;
+}
+
+/**
+ * Fills values from resources
+ */
+void SVTK_ViewManager::fillFrom( SUIT_ResourceMgr* theMgr )
+{
+  SVTK_Viewer* aModel = dynamic_cast<SVTK_Viewer*>( getViewModel() );
+  if ( !aModel )
+    return;
+
+  aModel->setBackgroundColor( theMgr->colorValue( "VTKViewer", "background",
+                                                  aModel->backgroundColor() ) );
+  aModel->setTrihedronSize(
+     theMgr->doubleValue( "VTKViewer", "trihedron_size", aModel->trihedronSize() ),
+     theMgr->booleanValue( "VTKViewer", "relative_size", aModel->trihedronRelative() ) );
 }

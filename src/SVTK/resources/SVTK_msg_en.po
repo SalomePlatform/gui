@@ -149,6 +149,15 @@ msgstr "Change background..."
 msgid "SVTK_ViewManager::VTK_VIEW_TITLE"
 msgstr "VTK scene:%1 - viewer:%2"
 
+msgid "SVTK_ViewManager::PREF_TRIHEDRON_SIZE"
+msgstr "Trihedron size"
+
+msgid "SVTK_ViewManager::PREF_VIEWER_BACKGROUND"
+msgstr "Background color"
+
+msgid "SVTK_ViewManager::PREF_RELATIVE_SIZE"
+msgstr "Relative size"
+
 msgid "MNU_SHOW_TRIHEDRON"
 msgstr "Show/Hide trihedron"
 

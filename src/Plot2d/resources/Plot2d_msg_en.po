@@ -409,3 +409,55 @@ msgstr "PostScript files (*.ps)"
 
 msgid "Plot2d_ViewManager::PLOT2D_VIEW_TITLE"
 msgstr "Plot2d scene:%M - viewer:%V"
+
+msgid "Plot2d_ViewManager::PREF_GROUP_PLOT2DVIEWER"
+msgstr "Plot2d Viewer"
+
+msgid "Plot2d_ViewManager::PREF_SHOW_LEGEND"
+msgstr "Show legend"
+
+msgid "Plot2d_ViewManager::PREF_LEGEND_POSITION"
+msgstr "Legend position:"
+
+msgid "Plot2d_ViewManager::PREF_LEFT"
+msgstr "Left"
+
+msgid "Plot2d_ViewManager::PREF_RIGHT"
+msgstr "Right"
+
+msgid "Plot2d_ViewManager::PREF_TOP"
+msgstr "Top"
+
+msgid "Plot2d_ViewManager::PREF_BOTTOM<"
+msgstr "Bottom"
+
+msgid "Plot2d_ViewManager::PREF_CURVE_TYPE"
+msgstr "Curve type:"
+
+msgid "Plot2d_ViewManager::PREF_POINTS"
+msgstr "Points"
+
+msgid "Plot2d_ViewManager::PREF_LINES"
+msgstr "Lines"
+
+msgid "Plot2d_ViewManager::PREF_SPLINE"
+msgstr "Spline"
+
+msgid "Plot2d_ViewManager::PREF_MARKER_SIZE"
+msgstr "Marker size:"
+
+msgid "Plot2d_ViewManager::PREF_LINEAR"
+msgstr "Linear"
+
+msgid "Plot2d_ViewManager::PREF_LOGARITHMIC"
+msgstr "Logarithmic"
+
+msgid "Plot2d_ViewManager::PREF_HOR_AXIS_SCALE"
+msgstr "Horizontal axis scale:"
+
+msgid "Plot2d_ViewManager::PREF_VERT_AXIS_SCALE"
+msgstr "Vertical axis scale:"
+
+msgid "Plot2d_ViewManager::PREF_VIEWER_BACKGROUND"
+msgstr "Background color"
+

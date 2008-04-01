@@ -509,5 +509,73 @@ Logarithmic scale for ordinate axis is not allowed.</translation>
         <source>PLOT2D_VIEW_TITLE</source>
         <translation>Plot2d scene:%M - viewer:%V</translation>
     </message>
+    <message>
+        <source>PREF_GROUP_PLOT2DVIEWER</source>
+        <translation>Plot2d Viewer</translation>
+    </message>
+    <message>
+        <source>PREF_SHOW_LEGEND</source>
+        <translation>Show legend</translation>
+    </message>
+    <message>
+        <source>PREF_LEGEND_POSITION</source>
+        <translation>Legend position:</translation>
+    </message>
+    <message>
+        <source>PREF_LEFT</source>
+        <translation>Left</translation>
+    </message>
+    <message>
+        <source>PREF_RIGHT</source>
+        <translation>Right</translation>
+    </message>
+    <message>
+        <source>PREF_TOP</source>
+        <translation>Top</translation>
+    </message>
+    <message>
+        <source>PREF_BOTTOM</source>
+        <translation>Bottom</translation>
+    </message>
+    <message>
+        <source>PREF_CURVE_TYPE</source>
+        <translation>Curve type:</translation>
+    </message>
+    <message>
+        <source>PREF_POINTS</source>
+        <translation>Points</translation>
+    </message>
+    <message>
+        <source>PREF_LINES</source>
+        <translation>Lines</translation>
+    </message>
+    <message>
+        <source>PREF_SPLINE</source>
+        <translation>Spline</translation>
+    </message>
+    <message>
+        <source>PREF_MARKER_SIZE</source>
+        <translation>Marker size:</translation>
+    </message>
+    <message>
+        <source>PREF_LINEAR</source>
+        <translation>Linear</translation>
+    </message>
+    <message>
+        <source>PREF_LOGARITHMIC</source>
+        <translation>Logarithmic</translation>
+    </message>
+    <message>
+        <source>PREF_HOR_AXIS_SCALE</source>
+        <translation>Horizontal axis scale:</translation>
+    </message>
+    <message>
+        <source>PREF_VERT_AXIS_SCALE</source>
+        <translation>Vertical axis scale:</translation>
+    </message>
+    <message>
+        <source>PREF_VIEWER_BACKGROUND</source>
+        <translation>Background color</translation>
+    </message>
 </context>
 </TS>

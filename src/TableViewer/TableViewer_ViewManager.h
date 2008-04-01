@@ -24,6 +24,8 @@
 
 class SUIT_Study;
 class SUIT_Desktop;
+class SUIT_PreferenceMgr;
+class SUIT_ResourceMgr;
 class TableViewer_Viewer;
 class TableViewer_ViewFrame;
 
@@ -36,6 +38,10 @@ public:
   ~TableViewer_ViewManager();
 
   TableViewer_Viewer*     getTableModel() const;
+
+  static int   fillPreferences( SUIT_PreferenceMgr*, const int );
+  void         fillFrom( SUIT_ResourceMgr* );
+
 
 //protected:
 //  bool         insertView(SUIT_ViewWindow* theView);

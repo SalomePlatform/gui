@@ -20,6 +20,9 @@
 #include "Plot2d_ViewModel.h"
 #include "Plot2d_ViewWindow.h"
 
+#include "SUIT_PreferenceMgr.h"
+#include "SUIT_ResourceMgr.h"
+
 /*!
   Constructor
 */
@@ -82,4 +85,79 @@ void Plot2d_ViewManager::onCloneView()
   
   if( newWnd && clonedWnd )
     emit cloneView( clonedWnd->getViewFrame(), newWnd->getViewFrame() );
+}
+
+/*!
+  Fills preference manager for viewer
+*/
+int Plot2d_ViewManager::fillPreferences( SUIT_PreferenceMgr* thePrefMgr, const int theId )
+{
+  int aGrpId = thePrefMgr->addItem( tr( "PREF_GROUP_PLOT2DVIEWER" ), theId,
+                                        SUIT_PreferenceMgr::GroupBox );
+
+  thePrefMgr->addItem( tr( "PREF_SHOW_LEGEND" ), aGrpId,
+                     SUIT_PreferenceMgr::Bool, "Plot2d", "ShowLegend" );
+
+  int legendPosition = thePrefMgr->addItem( tr( "PREF_LEGEND_POSITION" ), aGrpId,
+                                          SUIT_PreferenceMgr::Selector, "Plot2d", "LegendPos" );
+  QStringList aLegendPosList;
+  aLegendPosList.append( tr("PREF_LEFT") );
+  aLegendPosList.append( tr("PREF_RIGHT") );
+  aLegendPosList.append( tr("PREF_TOP") );
+  aLegendPosList.append( tr("PREF_BOTTOM") );
+
+  QList<QVariant> anIndexesList;
+  anIndexesList.append(0);
+  anIndexesList.append(1);
+  anIndexesList.append(2);
+  anIndexesList.append(3);
+
+  thePrefMgr->setItemProperty( "strings", aLegendPosList, legendPosition );
+  thePrefMgr->setItemProperty( "indexes", anIndexesList, legendPosition );
+
+  int curveType = thePrefMgr->addItem( tr( "PREF_CURVE_TYPE" ), aGrpId,
+                                     SUIT_PreferenceMgr::Selector, "Plot2d", "CurveType" );
+  QStringList aCurveTypesList;
+  aCurveTypesList.append( tr("PREF_POINTS") );
+  aCurveTypesList.append( tr("PREF_LINES") );
+  aCurveTypesList.append( tr("PREF_SPLINE") );
+
+  anIndexesList.clear();
+  anIndexesList.append(0);
+  anIndexesList.append(1);
+  anIndexesList.append(2);
+
+  thePrefMgr->setItemProperty( "strings", aCurveTypesList, curveType );
+  thePrefMgr->setItemProperty( "indexes", anIndexesList, curveType );
+
+  int markerSize = thePrefMgr->addItem( tr( "PREF_MARKER_SIZE" ), aGrpId,
+                                      SUIT_PreferenceMgr::IntSpin, "Plot2d", "MarkerSize" );
+
+  thePrefMgr->setItemProperty( "min", 0, markerSize );
+  thePrefMgr->setItemProperty( "max", 100, markerSize );
+
+  QStringList aScaleModesList;
+  aScaleModesList.append( tr("PREF_LINEAR") );
+  aScaleModesList.append( tr("PREF_LOGARITHMIC") );
+
+  anIndexesList.clear();
+  anIndexesList.append(0);
+  anIndexesList.append(1);
+
+  int horScale = thePrefMgr->addItem( tr( "PREF_HOR_AXIS_SCALE" ), aGrpId,
+                                    SUIT_PreferenceMgr::Selector, "Plot2d", "HorScaleMode" );
+
+  thePrefMgr->setItemProperty( "strings", aScaleModesList, horScale );
+  thePrefMgr->setItemProperty( "indexes", anIndexesList, horScale );
+
+  int verScale = thePrefMgr->addItem( tr( "PREF_VERT_AXIS_SCALE" ), aGrpId,
+                                    SUIT_PreferenceMgr::Selector, "Plot2d", "VerScaleMode" );
+
+  thePrefMgr->setItemProperty( "strings", aScaleModesList, verScale );
+  thePrefMgr->setItemProperty( "indexes", anIndexesList, verScale );
+
+  thePrefMgr->addItem( tr( "PREF_VIEWER_BACKGROUND" ), aGrpId,
+                     SUIT_PreferenceMgr::Color, "Plot2d", "Background" );
+
+  return aGrpId;
 }

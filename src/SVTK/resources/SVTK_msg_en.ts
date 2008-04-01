@@ -416,6 +416,22 @@
         <source>VTK_VIEW_TITLE</source>
         <translation>VTK scene:%1 - viewer:%2</translation>
     </message>
+    <message>
+        <source>PREF_GROUP_VTKVIEWER</source>
+        <translation>VTK Viewer 3d</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_SIZE</source>
+        <translation>Trihedron size</translation>
+    </message>
+    <message>
+        <source>PREF_VIEWER_BACKGROUND</source>
+        <translation>Background color</translation>
+    </message>
+    <message>
+        <source>PREF_RELATIVE_SIZE</source>
+        <translation>Relative size</translation>
+    </message>
 </context>
 <context>
     <name>SVTK_Viewer</name>

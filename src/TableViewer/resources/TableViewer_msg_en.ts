@@ -2,10 +2,6 @@
 <context>
     <name>@default</name>
     <message>
-        <source>TABLE_VIEWER_VIEW_TITLE</source>
-        <translation>TableViewer scene:%M - viewer %V</translation>
-    </message>
-    <message>
         <source>LBL_TOOLBAR_LABEL</source>
         <translation>View operations</translation>
     </message>
@@ -76,6 +72,17 @@
     <message>
         <source>EXPORT_TABLE</source>
         <translation>Export table to file</translation>
+    </message>
+</context>
+<context>
+    <name>TableViewer_ViewManager</name>
+    <message>
+        <source>TABLE_VIEWER_VIEW_TITLE</source>
+        <translation>TableViewer scene:%M - viewer %V</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_TABLEVIEWER</source>
+        <translation>Table Viewer</translation>
     </message>
 </context>
 </TS>

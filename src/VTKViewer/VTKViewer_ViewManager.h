@@ -24,6 +24,8 @@
 #include <SUIT_ViewManager.h>
 
 class SUIT_Desktop;
+class SUIT_PreferenceMgr;
+class SUIT_ResourceMgr;
 
 /*!View manager.*/
 class VTKVIEWER_EXPORT VTKViewer_ViewManager : public SUIT_ViewManager
@@ -33,6 +35,9 @@ class VTKVIEWER_EXPORT VTKViewer_ViewManager : public SUIT_ViewManager
 public:
   VTKViewer_ViewManager( SUIT_Study* study, SUIT_Desktop* );
   virtual ~VTKViewer_ViewManager();
+
+  static int  fillPreferences( SUIT_PreferenceMgr*, const int );
+  void        fillFrom( SUIT_ResourceMgr* );
 };
 
 #endif

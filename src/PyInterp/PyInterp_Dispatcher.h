@@ -69,10 +69,11 @@ protected:
 
   virtual void    processEvent( QObject* );
 
-private:
-  void            process();
   QObject*        listener() const { return myListener; }
   void            setListener( QObject* );
+
+private:
+  void            process();
 
 private:
   QMutex          myMutex;

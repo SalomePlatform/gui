@@ -113,6 +113,8 @@ static QString READY_PROMPT = ">>> ";
 static QString DOTS_PROMPT  = "... ";
 #define PROMPT_SIZE myPrompt.length()
 
+#define PRINT_EVENT 65432
+
 /*!
   \class ExecCommand
   \brief Python command execution request.
@@ -162,6 +164,8 @@ protected:
   */
   virtual QEvent* createEvent() const
   {
+    if ( IsSync() )
+      QCoreApplication::sendPostedEvents( listener(), PRINT_EVENT );
     return new PyInterp_Event( myState, (PyInterp_Request*)this );    
   }
 
@@ -175,8 +179,6 @@ private:
   \brief Python command output backend event.
   \internal
 */
-
-#define PRINT_EVENT 65432
 
 class PrintEvent : public QEvent
 {
@@ -377,6 +379,9 @@ void PyConsole_Editor::handleReturn()
   // add command to the history
   if ( !cmd.trimmed().isEmpty() )
     myHistory.push_back( cmd );
+
+  // IPAL19397
+  addText( "", true ); 
   
   // set read-only mode
   setReadOnly( true );
@@ -910,8 +915,9 @@ void PyConsole_Editor::customEvent( QEvent* event )
     QTextBlock par = document()->end().previous();
     QString txt = par.text();
     txt.truncate( txt.length() - 1 );
-    if ( !txt.isEmpty() )
-      addText( "", true );
+    // IPAL19397 : addText moved to handleReturn() method
+    //if ( !txt.isEmpty() )
+    //  addText( "", true );
     // set "ready" prompt
     myPrompt = READY_PROMPT;
     addText( myPrompt );
@@ -930,11 +936,12 @@ void PyConsole_Editor::customEvent( QEvent* event )
     QTextBlock par = document()->end().previous();
     QString txt = par.text();
     txt.truncate( txt.length() - 1 );
-    if ( !txt.isEmpty() )
-      addText( "", true );
+    // IPAL19397 : addText moved to handleReturn() method
+    //if ( !txt.isEmpty() )
+    //  addText( "", true );
     // set "dot" prompt
     myPrompt = DOTS_PROMPT;
-    addText( myPrompt, true );
+    addText( myPrompt/*, true*/ ); // IPAL19397
     // unset busy cursor
     unsetCursor();
     // stop event loop (if running)

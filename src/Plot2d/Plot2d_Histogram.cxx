@@ -180,9 +180,9 @@ bool Plot2d_Histogram::existColor( const QwtPlot* thePlot, const QColor& theColo
     if ( !anItem )
       continue;
     if( anItem->rtti() == rtti() ) {
-      Plot2d_Histogram* anItem = dynamic_cast<Plot2d_Histogram*>
-                                              ( anItem );
-      if ( anItem && aColor == anItem->getColor() )
+      Plot2d_HistogramItem* aHItem = dynamic_cast<Plot2d_HistogramItem*>
+                                                  ( anItem );
+      if ( aHItem && aColor == aHItem->color() )
         return true;
     }
     else if ( anItem->rtti() == QwtPlotItem::Rtti_PlotCurve ) {

@@ -33,6 +33,7 @@ class SUIT_Desktop;
 class OCCViewer_ViewPort3d;
 
 class OCCViewer_ClippingDlg;
+class OCCViewer_AxialScaleDlg;
 class OCCViewer_SetRotationPointDlg;
 
 #ifdef WIN32
@@ -98,6 +99,7 @@ public slots:
   void onSetRotationPoint( bool on );
   void onCloneView();
   void onClipping( bool on );
+  void onAxialScale();
   void onMemorizeView();
   void onRestoreView();
   void onTrihedronShow();
@@ -123,7 +125,7 @@ protected:
   enum { DumpId, FitAllId, FitRectId, ZoomId, PanId, GlobalPanId,
 	 ChangeRotationPointId, RotationId,
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, CloneId, ClippingId, MemId, RestoreId,
-         TrihedronShowId };
+         TrihedronShowId, AxialScaleId };
 
   typedef QMap<int, QtxAction*> ActionsMap;
 
@@ -196,6 +198,8 @@ protected:
 private:
   OCCViewer_ClippingDlg* myClippingDlg;
   QtxAction* myClippingAction;
+
+  OCCViewer_AxialScaleDlg* myScalingDlg;
 
   OCCViewer_SetRotationPointDlg* mySetRotationPointDlg;
   QtxAction* mySetRotationPointAction;

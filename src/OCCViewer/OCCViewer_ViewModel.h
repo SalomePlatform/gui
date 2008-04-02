@@ -52,6 +52,9 @@ public:
 	double     eyeY;
 	double     eyeZ;
 	QString    name;
+        double   scaleX;
+        double   scaleY;
+        double   scaleZ;
 };
 
 typedef QValueList<viewAspect> viewAspectList;

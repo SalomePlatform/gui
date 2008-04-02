@@ -153,6 +153,7 @@ void OCCViewer_CreateRestoreViewDlg::changeImage( QListBoxItem* curItem )
 		aView3d->SetAt( myCurrentItem.atX, myCurrentItem.atY, myCurrentItem.atZ );
 		aView3d->SetImmediateUpdate( prev );
 		aView3d->SetEye( myCurrentItem.eyeX, myCurrentItem.eyeY, myCurrentItem.eyeZ );
+		aView3d->SetAxialScale( myCurrentItem.scaleX, myCurrentItem.scaleY, myCurrentItem.scaleZ );
 	 }
 }
 

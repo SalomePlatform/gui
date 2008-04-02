@@ -27,6 +27,7 @@
 #include "OCCViewer_CreateRestoreViewDlg.h"
 #include "OCCViewer_ClippingDlg.h"
 #include "OCCViewer_SetRotationPointDlg.h"
+#include "OCCViewer_AxialScaleDlg.h"
 
 #include "SUIT_Desktop.h"
 #include "SUIT_Session.h"
@@ -192,6 +193,7 @@ OCCViewer_ViewWindow::OCCViewer_ViewWindow(SUIT_Desktop* theDesktop, OCCViewer_V
   myEnableDrawMode = false;
   updateEnabledDrawMode();
   myClippingDlg = 0;
+  myScalingDlg = 0;
   mySetRotationPointDlg = 0;
 
   mypSketcher = 0;
@@ -1006,6 +1008,13 @@ void OCCViewer_ViewWindow::createActions()
     connect(aAction, SIGNAL(activated()), this, SLOT(onTrihedronShow()));
 	  myActionsMap[ TrihedronShowId ] = aAction;
   }
+
+  // Scale
+  aAction = new QtxAction(tr("MNU_SCALING"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_SCALING" ) ),
+                           tr( "MNU_SCALING" ), 0, this);
+  aAction->setStatusTip(tr("DSC_SCALING"));
+  connect(aAction, SIGNAL(activated()), this, SLOT(onAxialScale()));
+  myActionsMap[ AxialScaleId ] = aAction;
 }
 
 /*!
@@ -1049,6 +1058,7 @@ void OCCViewer_ViewWindow::createToolBar()
   
   myToolBar->addSeparator();
   myActionsMap[ClippingId]->addTo(myToolBar);
+  myActionsMap[AxialScaleId]->addTo(myToolBar);
 }
 
 /*!
@@ -1218,6 +1228,20 @@ void OCCViewer_ViewWindow::onClipping( bool on )
 }
 
 /*!
+  Creates one more window with same content
+*/
+void OCCViewer_ViewWindow::onAxialScale()
+{
+  if ( !myScalingDlg )
+    {
+      myScalingDlg = new OCCViewer_AxialScaleDlg( this, myDesktop );
+    }
+
+  if ( !myScalingDlg->isShown() )
+    myScalingDlg->show();
+}
+
+/*!
   Stores view parameters
 */
 void OCCViewer_ViewWindow::onMemorizeView()
@@ -1253,6 +1277,7 @@ void OCCViewer_ViewWindow::performRestoring( const viewAspect& anItem )
 	aView3d->SetImmediateUpdate( prev );
 	aView3d->SetEye( anItem.eyeX, anItem.eyeY, anItem.eyeZ );
 	aView3d->SetProj( anItem.projX, anItem.projY, anItem.projZ );
+	aView3d->SetAxialScale( anItem.scaleX, anItem.scaleY, anItem.scaleZ );
 		
 	myRestoreFlag = 0;
 }
@@ -1342,6 +1367,7 @@ viewAspect OCCViewer_ViewWindow::getViewParams() const
 {
   double centerX, centerY, projX, projY, projZ, twist;
   double atX, atY, atZ, eyeX, eyeY, eyeZ;
+  Standard_Real aScaleX, aScaleY, aScaleZ;
 
   Handle(V3d_View) aView3d = myViewPort->getView();
 
@@ -1350,6 +1376,8 @@ viewAspect OCCViewer_ViewWindow::getViewParams() const
   aView3d->At( atX, atY, atZ );
   aView3d->Eye( eyeX, eyeY, eyeZ );
   twist = aView3d->Twist();
+
+  aView3d->AxialScale(aScaleX,aScaleY,aScaleZ);
 
   QString aName = QTime::currentTime().toString() + QString::fromLatin1( " h:m:s" );
 
@@ -1368,6 +1396,9 @@ viewAspect OCCViewer_ViewWindow::getViewParams() const
   params.eyeY     = eyeY;
   params.eyeZ     = eyeZ;
   params.name	  = aName;
+  params.scaleX   = aScaleX;
+  params.scaleY   = aScaleY;
+  params.scaleZ   = aScaleZ;
 
   return params;
 }
@@ -1380,9 +1411,10 @@ QString OCCViewer_ViewWindow::getVisualParameters()
 {
   viewAspect params = getViewParams();
   QString retStr;
-  retStr.sprintf( "%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e", params.scale,
+  retStr.sprintf( "%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e", params.scale,
 		  params.centerX, params.centerY, params.projX, params.projY, params.projZ, params.twist,
-		  params.atX, params.atY, params.atZ, params.eyeX, params.eyeY, params.eyeZ );
+		  params.atX, params.atY, params.atZ, params.eyeX, params.eyeY, params.eyeZ,
+		  params.scaleX, params.scaleY, params.scaleZ );
   return retStr;
 }
 
@@ -1392,7 +1424,7 @@ QString OCCViewer_ViewWindow::getVisualParameters()
 void OCCViewer_ViewWindow::setVisualParameters( const QString& parameters )
 {
   QStringList paramsLst = QStringList::split( '*', parameters, true );
-  if ( paramsLst.size() == 13 ) {
+  if ( paramsLst.size() >= 13 ) {
     viewAspect params;
     params.scale    = paramsLst[0].toDouble();
     params.centerX  = paramsLst[1].toDouble();
@@ -1407,6 +1439,15 @@ void OCCViewer_ViewWindow::setVisualParameters( const QString& parameters )
     params.eyeX     = paramsLst[10].toDouble();
     params.eyeY     = paramsLst[11].toDouble();
     params.eyeZ     = paramsLst[12].toDouble();
+    if(paramsLst.size() == 16) {
+      params.scaleX    = paramsLst[13].toDouble();
+      params.scaleY    = paramsLst[14].toDouble();
+      params.scaleZ    = paramsLst[15].toDouble();
+    } else {
+      params.scaleX    = 1.;
+      params.scaleY    = 1.;
+      params.scaleZ    = 1.;
+    }
 
     performRestoring( params );
   }

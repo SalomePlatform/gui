@@ -95,5 +95,6 @@ msgstr "view_shoot.png"
 msgid "ICON_OCCVIEWER_PRESETS_VIEW"
 msgstr "view_presets.png"
 
-
+msgid "ICON_OCCVIEWER_SCALING"
+msgstr "view_scaling.png"
 

@@ -625,7 +625,7 @@ void LightApp_Application::createActions()
 
 
   createAction( RenameId, tr( "TOT_RENAME" ), QIconSet(), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ),
-		SHIFT+Key_R, desk, false, this, SLOT( onRenameWindow() ) );
+		CTRL+SHIFT+Key_R, desk, false, this, SLOT( onRenameWindow() ) );
   createMenu( RenameId, windowMenu, -1 );
 
   int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1 );

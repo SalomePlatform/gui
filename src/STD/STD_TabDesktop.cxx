@@ -51,9 +51,9 @@ myWorkstackAction( 0 )
   // But the workstack must occupy as much space as possible -- set Expanding for it.
   myWorkstack->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 
-  myWorkstack->setAccel(QtxWorkstack::SplitVertical,   SHIFT + Key_V);
-  myWorkstack->setAccel(QtxWorkstack::SplitHorizontal, SHIFT + Key_H);
-  myWorkstack->setAccel(QtxWorkstack::Close,           SHIFT + Key_C);
+  myWorkstack->setAccel(QtxWorkstack::SplitVertical,   CTRL + SHIFT + Key_V);
+  myWorkstack->setAccel(QtxWorkstack::SplitHorizontal, CTRL + SHIFT + Key_H);
+  myWorkstack->setAccel(QtxWorkstack::Close,           CTRL + SHIFT + Key_C);
 
   connect( myWorkstack, SIGNAL( windowActivated( QWidget* ) ),
            this, SLOT( onWindowActivated( QWidget* ) ) );

@@ -65,6 +65,8 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
   virtual
   ~SVTK_ViewWindow();
   
+  virtual QImage dumpView();
+
   //! To initialize #SVTK_ViewWindow instance
   virtual
   void
@@ -350,7 +352,9 @@ protected:
   void
   doSetVisualParameters( const QString& );
 
-  QImage dumpView();
+  virtual QString filter() const;
+  virtual bool dumpViewToFormat( const QImage& img, const QString& fileName, const QString& format );
+  
   virtual bool action( const int );
   
   SVTK_View* myView;

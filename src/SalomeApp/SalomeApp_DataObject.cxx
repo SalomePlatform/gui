@@ -545,7 +545,7 @@ QString SalomeApp_ModuleObject::name() const
 */
 QPixmap SalomeApp_ModuleObject::icon( const int index ) const
 {
-  return CAM_ModuleObject::icon( index );
+  return SalomeApp_DataObject::icon( index );
 }
 
 /*!
@@ -555,7 +555,7 @@ QPixmap SalomeApp_ModuleObject::icon( const int index ) const
 */
 QString SalomeApp_ModuleObject::toolTip( const int index ) const
 {
-  return CAM_ModuleObject::toolTip( index );
+  return SalomeApp_DataObject::toolTip( index );
 }
 
 /*!

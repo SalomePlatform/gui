@@ -727,63 +727,11 @@ void LightApp_Application::onOpenDoc()
 */
 bool LightApp_Application::onOpenDoc( const QString& aName )
 {
-#ifdef SWITCH_OFF
-  bool isAlreadyOpen = false;
-
-  // Look among opened studies
-  if (activeStudy()) { // at least one study is opened
-    SUIT_Session* aSession = SUIT_Session::session();
-    QList<SUIT_Application*> aAppList = aSession->applications();
-    QListIterator<SUIT_Application*> it (aAppList);
-    SUIT_Application* aApp = 0;
-    // iterate on all applications
-    while ( it.hasNext() && !isAlreadyOpen ) {
-      if ( !(aApp = it.next()) ) break;
-      if (aApp->activeStudy()->studyName() == aName) {
-        isAlreadyOpen = true; // Already opened, ask user what to do
-
-        // The document ... is already open.
-        // Do you want to reload it?
-        int aAnswer = SUIT_MessageBox::question(desktop(), tr("WRN_WARNING"),
-						tr("QUE_DOC_ALREADYOPEN").arg(aName),
-						SUIT_MessageBox::Yes | SUIT_MessageBox::No,
-						SUIT_MessageBox::No );
-        if (aAnswer == SUIT_MessageBox::Yes) { // reload
-          if (activeStudy()->studyName() == aName && aAppList.count() > 1) {
-            // Opened in THIS (active) application.
-            STD_Application* app1 = (STD_Application*)aAppList.at(0);
-            STD_Application* app2 = (STD_Application*)aAppList.at(1);
-            if (!app1 || !app2) {
-              // Error
-              return false;
-            }
-            if (app1->activeStudy()->studyName() == aName) {
-              // app1 is this application, we need another one
-              app1 = app2;
-            }
-            // Close document of this application. This application will be destroyed.
-            onCloseDoc(/*ask = */false);
-            // Open the file with another application, as this one will be destroyed.
-            return app1->onOpenDoc(aName);
-          } else {
-            // Opened in another application.
-            STD_Application* app = (STD_Application*)aApp;
-            if (app)
-              app->onCloseDoc(/*ask = */false);
-          }
-        } else { // do not reload
-          // OK, the study will not be reloaded, but we call
-          // CAM_Application::onOpenDoc( aName ) all the same.
-          // It will activate a desktop of the study <aName>.
-        }
-      }
-    }
-  }
-#endif
+  // We should take mru action first because this application instance can be deleted later.
+  QtxMRUAction* mru = ::qobject_cast<QtxMRUAction*>( action( MRUId ) );
 
   bool res = CAM_Application::onOpenDoc( aName );
 
-  QtxMRUAction* mru = ::qobject_cast<QtxMRUAction*>( action( MRUId ) );
   if ( mru )
   {
     if ( res )

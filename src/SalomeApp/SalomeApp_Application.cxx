@@ -800,10 +800,10 @@ void SalomeApp_Application::createPreferences( LightApp_Preferences* pref )
   int salomeCat = pref->addPreference( tr( "PREF_CATEGORY_SALOME" ) );
   int obTab = pref->addPreference( tr( "PREF_TAB_OBJBROWSER" ), salomeCat );
   int defCols = pref->addPreference( tr( "PREF_GROUP_DEF_COLUMNS" ), obTab );
-  for ( int i = SalomeApp_DataObject::ValueIdx; i <= SalomeApp_DataObject::RefEntryIdx; i++ )
+  for ( int i = SalomeApp_DataObject::EntryIdx; i <= SalomeApp_DataObject::RefEntryIdx; i++ )
   {
-    pref->addPreference( tr( QString().sprintf( "OBJ_BROWSER_COLUMN_%d", i ).toLatin1() ), defCols,
-                         LightApp_Preferences::Bool, "ObjectBrowser", QString().sprintf( "visibility_column_%d", i ) );
+    pref->addPreference( tr( QString().sprintf( "OBJ_BROWSER_COLUMN_%d", i-1 ).toLatin1() ), defCols,
+                         LightApp_Preferences::Bool, "ObjectBrowser", QString().sprintf( "visibility_column_%d", i-1 ) );
   }
   pref->setItemProperty( "columns", 1, defCols );
 

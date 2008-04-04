@@ -60,6 +60,9 @@ public:
 
   virtual void     contextMenuPopup( QMenu* );
 
+  void             setAutoSizeFirstColumn( const bool on );
+  void             setAutoSizeColumns( const bool on );
+
 protected:
   virtual void     contextMenuEvent( QContextMenuEvent* );
 
@@ -74,6 +77,9 @@ private slots:
 
 private:
   QShortcut*       myShortcut;
+
+  bool             myAutoSizeFirstColumn;
+  bool             myAutoSizeColumns;
 };
 
 #endif // SUIT_BROWSER_H

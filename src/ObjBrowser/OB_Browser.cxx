@@ -37,6 +37,7 @@
 #include <QVBoxLayout>
 #include <QAbstractItemModel>
 #include <QAbstractItemDelegate>
+#include <QHeaderView>
 
 #include <time.h>
 
@@ -457,6 +458,25 @@ void OB_Browser::setOpen( const QModelIndex& index, const bool open )
 void OB_Browser::adjustWidth()
 {
   myView->resizeColumnToContents( 0 );
+}
+
+/*!
+  \brief Adjust first column width to its contents.
+*/
+void OB_Browser::adjustFirstColumnWidth()
+{
+  myView->resizeColumnToContents( 0 );
+}
+
+/*!
+  \brief Adjust all columns width to its contents except the first column.
+*/
+void OB_Browser::adjustColumnsWidth()
+{
+  for ( int aCol = 1; aCol < myView->header()->count(); aCol++ ) {
+    if ( myView->columnWidth( aCol ) > 0 )
+      myView->resizeColumnToContents( aCol );
+  }
 }
 
 /*!

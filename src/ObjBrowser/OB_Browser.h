@@ -86,6 +86,8 @@ public:
   virtual void           setOpen( const QModelIndex& theObject, const bool theOpen = true );
 
   void                   adjustWidth();
+  void                   adjustFirstColumnWidth();
+  void                   adjustColumnsWidth();
 
   // san - To be revised or removed
   // QTreeView::indexAt() should be used

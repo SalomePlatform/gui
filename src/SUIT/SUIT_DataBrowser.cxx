@@ -128,6 +128,11 @@ void SUIT_DataBrowser::updateTree( SUIT_DataObject* obj, const bool autoOpen )
   if ( m ) {
     m->updateTree( obj );
     openLevels();
+
+    if (myAutoSizeFirstColumn)
+      adjustFirstColumnWidth();
+    if (myAutoSizeColumns)
+      adjustColumnsWidth();
   }
 }
 
@@ -263,6 +268,9 @@ void SUIT_DataBrowser::init( SUIT_DataObject* root )
   connect( treeView(), SIGNAL( sortingEnabled(bool ) ), 
 	   model(), SLOT( setSortingEnabled( bool ) ) );
   myShortcut = new QShortcut( Qt::Key_F5, this, SIGNAL( requestUpdate() ), SIGNAL( requestUpdate() ) );
+
+  myAutoSizeFirstColumn = true;
+  myAutoSizeColumns = false;
 }
 
 /*!
@@ -284,4 +292,32 @@ void SUIT_DataBrowser::init( SUIT_DataObject* root )
 void SUIT_DataBrowser::onModelUpdated()
 {
   setModified();
+}
+
+/*!
+  \brief Set 'auto-size first column' flag value.
+
+  If this flag is set to \c true (by default), the first column width is resized
+  to its contents.
+
+  \param on 'auto-size first column' flag value
+  \sa setAutoSizeColumns()
+*/
+void SUIT_DataBrowser::setAutoSizeFirstColumn( const bool on )
+{
+  myAutoSizeFirstColumn = on;
+}
+
+/*!
+  \brief Set 'auto-size columns' flag value.
+
+  If this flag is set to \c true (by default is false), columns width except 
+  the first column is resized to its contents.
+
+  \param on 'auto-size columns' flag value
+  \sa setAutoSizeFirstColumn()
+*/
+void SUIT_DataBrowser::setAutoSizeColumns( const bool on )
+{
+  myAutoSizeColumns = on;
 }

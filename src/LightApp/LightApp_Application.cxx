@@ -2012,20 +2012,20 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
   {
     if( param=="auto_size" || param=="auto_size_first" )
     {
-      // temporary commented
-      /*SUIT_DataBrowser* ob = objectBrowser();
+      SUIT_DataBrowser* ob = objectBrowser();
       if( !ob )
 	return;
 
       bool autoSize = resMgr->booleanValue( "ObjectBrowser", "auto_size", false ),
            autoSizeFirst = resMgr->booleanValue( "ObjectBrowser", "auto_size_first", true );
-      ob->setWidthMode( autoSize ? QListView::Maximum : QListView::Manual );
-      ob->listView()->setColumnWidthMode( 0, autoSizeFirst ? QListView::Maximum : QListView::Manual );
-      if( autoSize )
-	for( int i=1; i<ob->listView()->columns(); i++ )
-	  if( ob->listView()->columnWidth( i )>0 )
-	    ob->listView()->adjustColumn( i );
-	    updateObjectBrowser( false );*/
+      
+      ob->setAutoSizeFirstColumn(autoSizeFirst);
+      ob->setAutoSizeColumns(autoSize);
+
+      if ( autoSizeFirst )
+	ob->adjustFirstColumnWidth();
+      if ( autoSize )
+	ob->adjustColumnsWidth();
     }
     else if ( param == "auto_hide_search_tool" )
     {

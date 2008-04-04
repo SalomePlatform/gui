@@ -827,7 +827,9 @@ SVTK_ViewWindow
 // 76 values for graduated axes, so both numbers are processed.
 const int nNormalParams = 13;   // number of view windows parameters excluding graduated axes params
 const int nGradAxisParams = 25; // number of parameters of ONE graduated axis (X, Y, or Z)
-const int nAllParams = nNormalParams + 3*nGradAxisParams + 1; // number of all visual parameters
+const int nNormalGradAxisParams = nNormalParams + 3*nGradAxisParams + 1; // number of visual parameters with graduated axes
+const int nBgColorParams = 4; // number of parameters of BgColor ("BgColor",Red,Gree,Blue)
+const int nNormalBgColorParams = nNormalGradAxisParams + nBgColorParams; // number of visual parameters with background color
 
 /*! The method returns visual parameters of a graduated axis actor (x,y,z axis of graduated axes)
  */
@@ -987,6 +989,13 @@ SVTK_ViewWindow
     retStr += ::getGradAxisVisualParams( gradAxesActor->GetZAxisActor2D() );
   }
 
+  QColor bgColor=backgroundColor();
+
+  retStr += QString("* BgColor ");
+  retStr += QString( "*%1" ).arg(bgColor.red());
+  retStr += QString( "*%1" ).arg(bgColor.green());
+  retStr += QString( "*%1" ).arg(bgColor.blue());
+
   return retStr;
 }
 
@@ -1042,7 +1051,7 @@ SVTK_ViewWindow
 
     // apply graduated axes parameters
     SVTK_CubeAxesActor2D* gradAxesActor = GetCubeAxes();
-    if ( gradAxesActor && paramsLst.size() == nAllParams ) {
+    if ( gradAxesActor && paramsLst.size() >= nNormalGradAxisParams ) {
       
       int i = nNormalParams+1, j = i + nGradAxisParams - 1;
       ::setGradAxisVisualParams( gradAxesActor->GetXAxisActor2D(), parameters.section( '*', i, j ) ); 
@@ -1055,6 +1064,13 @@ SVTK_ViewWindow
 	gradAxesActor->VisibilityOn();
       else
 	gradAxesActor->VisibilityOff();
+    }
+    if(paramsLst.size() >= nNormalBgColorParams) {
+       QColor bgColor(paramsLst[nNormalBgColorParams-3].toInt(),
+		      paramsLst[nNormalBgColorParams-2].toInt(),
+		      paramsLst[nNormalBgColorParams-1].toInt()
+		      );
+      setBackgroundColor(bgColor);
     }
   }
 }

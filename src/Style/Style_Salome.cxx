@@ -278,7 +278,7 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
           pe = (spin->buttonSymbols == QAbstractSpinBox::PlusMinus ? PE_IndicatorSpinPlus
                : PE_IndicatorSpinUp);
           copy.rect = aBtnRect;
-          drawPrimitive(PE_IndicatorSpinUp, &copy, p, w);
+          drawPrimitive(pe, &copy, p, w);
         }
         if (spin->subControls & SC_SpinBoxDown) {
           copy.subControls = SC_SpinBoxDown;
@@ -1362,7 +1362,9 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
     case PE_IndicatorArrowUp:
     case PE_IndicatorArrowDown:
     case PE_IndicatorSpinUp:
-    case PE_IndicatorSpinDown: {
+    case PE_IndicatorSpinDown:
+    case PE_IndicatorSpinPlus:
+    case PE_IndicatorSpinMinus: {
       QRect rect = opt->rect;
       QColor pen, brush;
       if ( opt->state & State_Enabled ) {
@@ -1374,7 +1376,10 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         pen = opt->palette.mid().color();
 	brush = pen;
       }
-      Style_Tools::drawArrow( pe, p, rect, pen, brush );
+      if ( pe == PE_IndicatorSpinPlus || pe == PE_IndicatorSpinMinus )
+	Style_Tools::drawSign( pe, p, rect, pen, brush );
+      else
+	Style_Tools::drawArrow( pe, p, rect, pen, brush );
       break;
     }
     case PE_IndicatorCheckBox: {

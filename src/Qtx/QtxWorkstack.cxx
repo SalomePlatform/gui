@@ -38,6 +38,9 @@
 #include <QPainter>
 #include <QStyleOption>
 
+#include <QTextStream>
+#include <iostream>
+
 #define DARK_COLOR_LIGHT 250
 
 /*!
@@ -2749,8 +2752,11 @@ void QtxWorkstack::splitterInfo( QSplitter* split, QString& info ) const
 {
   if ( !split )
     return;
-
-  const QObjectList& objs = split->children();
+  //const QObjectList& objs = split->children();
+  QObjectList objs;
+  for(int si = 0; si < split->count(); si++) {
+    objs.append((QObject*)split->widget(si));
+  }
 
   QString sizesStr;
   QList<int> sizes = split->sizes();

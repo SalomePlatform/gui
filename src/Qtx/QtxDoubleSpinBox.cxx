@@ -123,7 +123,31 @@ void QtxDoubleSpinBox::setCleared( const bool on )
 */
 QString QtxDoubleSpinBox::textFromValue( double val ) const
 {
-  return myCleared ? QString() : QDoubleSpinBox::textFromValue( val );
+  return removeTrailingZeroes( myCleared ? QString() : QDoubleSpinBox::textFromValue( val ) );
+}
+
+/*!
+  \brief Return string without excess zeros in start and in end
+*/
+QString QtxDoubleSpinBox::removeTrailingZeroes( const QString& src ) const
+{
+  QString delim( "." );
+
+  int idx = src.lastIndexOf( delim );
+  if ( idx == -1 )
+    return src;
+
+  QString iPart = src.left( idx );
+  QString fPart = src.mid( idx + 1 );
+
+  while ( !fPart.isEmpty() && fPart.at( fPart.length() - 1 ) == '0' )
+    fPart.remove( fPart.length() - 1, 1 );
+
+  QString res = iPart;
+  if ( !fPart.isEmpty() )
+    res += delim + fPart;
+
+  return res;
 }
 
 /*!

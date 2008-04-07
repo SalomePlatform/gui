@@ -45,6 +45,8 @@ private slots:
 
 protected:
   virtual QString textFromValue( double ) const;
+  
+  QString         removeTrailingZeroes( const QString& ) const;
 
 private:
   bool            myCleared;

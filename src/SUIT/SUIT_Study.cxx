@@ -246,8 +246,9 @@ SUIT_Operation* SUIT_Study::blockingOperation( SUIT_Operation* theOp ) const
     return 0;
 
   Operations tmpOps( myOperations );
-  for ( Operations::const_iterator it = tmpOps.end(); it != tmpOps.begin(); --it )
+  for ( Operations::const_iterator it = tmpOps.end(); it != tmpOps.begin(); )
   {
+    it--;
     SUIT_Operation* anOp = *it;
     if ( anOp != 0 && anOp!= theOp && !anOp->isValid( theOp ) )
       return anOp;

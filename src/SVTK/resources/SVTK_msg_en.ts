@@ -149,6 +149,10 @@
         <source>DSC_BACK_VIEW</source>
         <translation>Back View</translation>
     </message>
+    <message>
+        <source>SVTK_IMAGE_FILES</source>
+        <translation>Images Files (*.bmp *.png *.jpg *.jpeg *.pdf *.ps *.eps)</translation>
+    </message>
 </context>
 <context>
     <name>SVTK_AxisWidget</name>

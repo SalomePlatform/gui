@@ -52,6 +52,8 @@ public:
 
   void                exportData();
   void                exportData( const QString& );
+  Handle(HTMLService_HTMLTable) exportTableData();
+
   void                copyData();
   void                pasteData();
 

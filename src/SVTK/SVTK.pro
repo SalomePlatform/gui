@@ -11,7 +11,7 @@ CAS_CPPFLAGS = $${CASROOT}/inc
 
 OCC_LIBS = 
 
-INCLUDEPATH += ../../include $${CAS_CPPFLAGS} $$(VTKINC) ../Qtx ../SUIT ../OBJECT ../Prs ../VTKViewer
+INCLUDEPATH += ../../include $${CAS_CPPFLAGS} $$(VTKINC) $$(BOOSTINC) ../Qtx ../SUIT ../OBJECT ../Prs ../VTKViewer
 LIBS += -L../../$(CONFIG_ID)/lib -lQtx -lSUIT -lOBJECT -lPrs -lVTKViewer $${OCC_LIBS} $${VTK_LIBS}
 
 CONFIG -= debug release debug_and_release

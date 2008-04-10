@@ -56,6 +56,7 @@ public:
 
   void                copyData();
   void                pasteData();
+  bool                canPasteData();
 
 protected:
   typedef enum { VerticalHeader, HorizontalHeader, Cells } ContentType;
@@ -86,10 +87,10 @@ protected:
   QColor              backgroundColor( const ContentType, const int, const int ) const;
 
 protected slots:
-  virtual void selectionChanged();
+  virtual void        selectionChanged();
   void                onActivated();
 
-private:
+public:
   typedef struct {
     QString myText;
     QColor  myBgCol;

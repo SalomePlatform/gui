@@ -473,6 +473,43 @@ void TableViewer_ViewWindow::pasteData()
   }
 }
 
+/**
+ *
+ */
+bool TableViewer_ViewWindow::canPasteData()
+{
+  QModelIndexList anItems = myTable->getSelectedIndexes();
+  if ( anItems.count() <= 0 || myCopyLst.count() <= 0 )
+    return false;
+
+  bool aCanPaste = true;
+  int aLeftCol = myTable->columnCount(), aTopRow = myTable->rowCount();
+  QModelIndexList::const_iterator anIt = anItems.begin(), aLast = anItems.end();
+  QTableWidgetItem* anItem;
+  int aCol, aRow;
+  for ( ; anIt != aLast; ++anIt ) {
+    aRow = (*anIt).row();
+    aCol = (*anIt).column();
+    if ( !canPaste( aRow, aCol, "" ) )
+      continue;
+    if ( aCol < aLeftCol )
+      aLeftCol = aCol;
+    if ( aRow < aTopRow )
+      aTopRow = aRow;
+  }
+  QList<TableDataItem>::const_iterator aCopyIt = myCopyLst.begin(),
+                                       aCopyLast = myCopyLst.end();
+  //int aCol, aRow;
+  TableDataItem aCopyItem;
+  for ( ; aCopyIt != aCopyLast && aCanPaste; aCopyIt++ ) {
+    aCopyItem = *aCopyIt;
+    aCol = aCopyItem.myCol+aLeftCol;
+    aRow = aCopyItem.myRow+aTopRow;
+    aCanPaste = canPaste( aRow, aCol, aCopyItem.myText );
+  }
+  return aCanPaste;
+}
+
 void TableViewer_ViewWindow::exportTableData( Handle(HTMLService_HTMLTable)& table,
                                               const ContentType type,
                                               const int rowOffset, const int colOffset )

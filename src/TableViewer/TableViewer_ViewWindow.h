@@ -102,11 +102,11 @@ private:
 protected:
   TableViewer_Viewer* myModel;
   ActionsMap          myActionsMap;
+  QList<TableDataItem> myCopyLst;
 
 private:
   QtxTable*           myTable;
   QToolBar*           myToolBar;
-  QList<TableDataItem> myCopyLst;
 };
 
 #endif // !defined(TABLEVIEWER_VIEWWINDOW_H)

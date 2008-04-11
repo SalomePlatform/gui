@@ -377,12 +377,19 @@ QtxPageNamedPrefItem::QtxPageNamedPrefItem( const QString& title, QtxPreferenceI
   myControl( 0 )
 {
   QWidget* main = new QWidget();
-  QHBoxLayout* base = new QHBoxLayout( main );
-  base->setMargin( 0 );
-  base->setSpacing( 5 );
 
-  myLabel = new QLabel( title, main );
-  base->addWidget( myLabel );
+  QtxPagePrefGroupItem* aGroup = dynamic_cast<QtxPagePrefGroupItem*>(parent);
+  if ( !aGroup )
+  {
+    QHBoxLayout* base = new QHBoxLayout( main );
+    base->setMargin( 0 );
+    base->setSpacing( 5 );
+
+    myLabel = new QLabel( title, main );
+    base->addWidget( myLabel );
+  }
+  else
+    myLabel = new QLabel( title, aGroup->gridBox() );
 
   setWidget( main );
 
@@ -442,7 +449,11 @@ void QtxPageNamedPrefItem::setControl( QWidget* wid )
   myControl = wid;
 
   if ( myControl )
-    widget()->layout()->addWidget( myControl );
+  {
+    QtxPagePrefGroupItem* aGroup = dynamic_cast<QtxPagePrefGroupItem*>(parentItem());
+    if ( !aGroup ) widget()->layout()->addWidget( myControl );
+    else myControl->setParent( aGroup->gridBox() );
+  }
 }
 
 /*!
@@ -1439,6 +1450,14 @@ void QtxPagePrefGroupItem::store()
 {
   if ( myGroup->isCheckable() )
     setBoolean( myGroup->isChecked() );
+}
+
+/*!
+  \brief Return widget contained grid layout of this group.
+*/
+QtxGridBox* QtxPagePrefGroupItem::gridBox() const
+{
+  return myBox;
 }
 
 /*!
@@ -2738,7 +2757,9 @@ QtxPagePrefColorItem::QtxPagePrefColorItem( const QString& title, QtxPreferenceI
                                             const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param )
 {
-  setControl( myColor = new QtxColorButton() );
+  QtxPagePrefGroupItem* aGroup = dynamic_cast<QtxPagePrefGroupItem*>( parent );
+
+  setControl( myColor = new QtxColorButton( aGroup ? aGroup->gridBox() : 0 ) );
   myColor->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
 }
 

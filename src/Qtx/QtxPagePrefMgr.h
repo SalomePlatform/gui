@@ -291,6 +291,8 @@ public:
   virtual void     store();
   virtual void     retrieve();
 
+  QtxGridBox*      gridBox() const;
+
 protected:
   virtual QVariant optionValue( const QString& ) const;
   virtual void     setOptionValue( const QString&, const QVariant& );

@@ -1724,7 +1724,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "PREF_STORE_POS" ),  studyGroup, LightApp_Preferences::Bool, "Study", "store_positions" );
 
   int extgroup = pref->addPreference( tr( "PREF_GROUP_EXT_BROWSER" ), genTab );
-  //pref->setItemProperty( "columns", 1, extgroup );
+  pref->setItemProperty( "columns", 2, extgroup );
 	QString platform;
 #ifdef WIN32
 	platform = "winapplication";
@@ -1737,8 +1737,12 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "PREF_PARAM" ), extgroup, LightApp_Preferences::String, "ExternalBrowser", "parameters" );
 
   int pythonConsoleGroup = pref->addPreference( tr( "PREF_GROUP_PY_CONSOLE" ), genTab );
-  //pref->setItemProperty( "columns", 1, pythonConsoleGroup );
+  pref->setItemProperty( "columns", 2, pythonConsoleGroup );
   pref->addPreference( tr( "PREF_FONT" ), pythonConsoleGroup, LightApp_Preferences::Font, "PyConsole", "font" );
+
+  int SalomeStyleGroup = pref->addPreference( tr( "PREF_GROUP_STYLE" ), genTab );
+  pref->addPreference( tr( "PREF_USE_SALOME_STYLE" ), SalomeStyleGroup, LightApp_Preferences::Bool, "Style", "use_salome_style" );
+  if ( resourceMgr() ) resourceMgr()->booleanValue( "Style", "use_salome_style", true );
 
   int viewTab = pref->addPreference( tr( "PREF_TAB_VIEWERS" ), salomeCat );
 
@@ -1750,9 +1754,9 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   int supervGroup = pref->addPreference( tr( "PREF_GROUP_SUPERV" ), viewTab );
 
-  pref->setItemProperty( "columns", 2, occGroup );
-  pref->setItemProperty( "columns", 2, vtkGroup );
-  pref->setItemProperty( "columns", 2, plot2dGroup );
+  pref->setItemProperty( "columns", 4, occGroup );
+  pref->setItemProperty( "columns", 4, vtkGroup );
+  pref->setItemProperty( "columns", 4, plot2dGroup );
 
   int occTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), occGroup,
 				   LightApp_Preferences::DblSpin, "OCCViewer", "trihedron_size" );
@@ -1852,7 +1856,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "" ), dirGroup,
 		       LightApp_Preferences::DirList, "FileDlg", "QuickDirList" );
 
-  pref->setItemProperty( "columns", 2, supervGroup );
+  pref->setItemProperty( "columns", 4, supervGroup );
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), supervGroup,
 		       LightApp_Preferences::Color, "SUPERVGraph", "Background" );
   pref->addPreference( tr( "PREF_SUPERV_TITLE_COLOR" ), supervGroup,
@@ -1902,7 +1906,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
     for( anIt = aGrpLst.begin(), anEnd = aGrpLst.end(); anIt != anEnd; ++anIt ) {
       aGrpId = *anIt;
       int themaGroup = pref->addPreference( aSModel->getGroupTitle( aGrpId ), themaSubSubTab, SUIT_PreferenceMgr::GroupBox );
-      pref->setItemProperty( "columns", aSModel->getGroupNbColumns( aGrpId ), themaGroup );
+      pref->setItemProperty( "columns", aSModel->getGroupNbColumns( aGrpId )*2, themaGroup );
       aPropLst = aSModel->getGroupProps( aGrpId );
       for( aPropIt = aPropLst.begin(), aPropEnd = aPropLst.end(); aPropIt != aPropEnd; ++aPropIt ) {
         aPropId = *aPropIt;
@@ -2047,17 +2051,37 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 	pythonConsole()->setFont( resMgr->fontValue( "PyConsole", "font" ) );
   }
 #endif
-  QStyle* style = qApp->style();
-  if ( style ) {
-    Style_Salome* aSStyle = qobject_cast<Style_Salome*>( style );
-    if ( aSStyle ) {
-      Style_Model* aSModel = aSStyle->getModel();
-      if ( sec==aSModel->sectionName() ) {
-        bool retrieve = aSModel->updateFromResource( resMgr, param );
-        if ( retrieve && _prefs_ )
-          _prefs_->retrieve();
-        aSStyle->polish(qApp);
+
+  Style_Salome* aSStyle = 0;
+  if ( QStyle* style = qApp->style() ) aSStyle = qobject_cast<Style_Salome*>( style );
+
+  if( sec=="Style" )
+  {
+    if( param=="use_salome_style" )
+    {
+      if ( resMgr->booleanValue( "Style", "use_salome_style", true ) )
+      {	
+	if ( !aSStyle )
+	{  
+	  aSStyle = new Style_Salome();
+	  aSStyle->getModel()->initFromResource( resMgr );
+	  qApp->setStyle( aSStyle );
+	}
       }
+      else if ( aSStyle )
+      {
+	qApp->setStyle( new QWindowsStyle );
+      }
+    }
+  }
+
+  if ( aSStyle ) {
+    Style_Model* aSModel = aSStyle->getModel();
+    if ( sec==aSModel->sectionName() ) {
+      bool retrieve = aSModel->updateFromResource( resMgr, param );
+      if ( retrieve && _prefs_ )
+	_prefs_->retrieve();
+      aSStyle->polish(qApp);
     }
   }
 }

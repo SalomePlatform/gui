@@ -4,12 +4,11 @@ DESTDIR = ../../$(CONFIG_ID)/lib
 MOC_DIR = ../../moc
 OBJECTS_DIR = ../../$(CONFIG_ID)/obj/$$TARGET
 
-CASROOT = $$(CASROOT)
-CAS_CPPFLAGS = $${CASROOT}/inc
+CAS_CPPFLAGS = $(CASINC)
 
-CAS_KERNEL = -L$${CASROOT}/Linux/lib -lTKernel
+CAS_KERNEL = -L$(CASLIB) -lTKernel
 
-CAS_VIEWER = -L$${CASROOT}/Linux/lib -lTKV3d -lTKService
+CAS_VIEWER = -L$(CASLIB) -lTKV3d -lTKService
 
 INCLUDEPATH += ../../include  $${CAS_CPPFLAGS}
 LIBS += -L../../$(CONFIG_ID)/lib $${CAS_KERNEL} $${CAS_VIEWER}

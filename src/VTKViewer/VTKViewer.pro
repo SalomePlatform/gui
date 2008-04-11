@@ -6,10 +6,9 @@ OBJECTS_DIR = ../../$(CONFIG_ID)/obj/$$TARGET
 
 VTK_LIBS = -L$$(VTKLIB) -lvtkCommon -lvtkGraphics -lvtkImaging -lvtkFiltering -lvtkIO -lvtkRendering -lvtkHybrid -lvtkParallel -lvtkWidgets   -lGL -L/usr/X11R6/lib -lGLU -L/usr/X11R6/lib -lX11 -lXt
 
-CASROOT = $$(CASROOT)
-CAS_CPPFLAGS = $${CASROOT}/inc
+CAS_CPPFLAGS = $(CASINC)
 
-CAS_KERNEL = -L$${CASROOT}/Linux/lib -lTKernel
+CAS_KERNEL = -L$(CASLIB) -lTKernel
 
 INCLUDEPATH += ../../include $$(VTKINC) $${CAS_CPPFLAGS} ../Qtx ../SUIT
 LIBS += -L../../$(CONFIG_ID)/lib -lQtx -lSUIT $${VTK_LIBS} $${CAS_KERNEL}
@@ -74,8 +73,8 @@ unix:GUIResources = ../../resources
 win32:GUIResources = ..\\..\\resources
 
 lrelease.name = LRELASE ${QMAKE_FILE_IN}
-unix:lrelease.commands = $(QTDIR)/$(CONFIG_ID)/bin/lrelease ${QMAKE_FILE_NAME} -qm $${GUIResources}/${QMAKE_FILE_BASE}.qm
-win32:lrelease.commands = $(QTDIR)\\$(CONFIG_ID)\\bin\\lrelease ${QMAKE_FILE_NAME} -qm $${GUIResources}\\${QMAKE_FILE_BASE}.qm
+unix:lrelease.commands = $(QTDIR)/bin/lrelease ${QMAKE_FILE_NAME} -qm $${GUIResources}/${QMAKE_FILE_BASE}.qm
+win32:lrelease.commands = $(QTDIR)\\bin\\lrelease ${QMAKE_FILE_NAME} -qm $${GUIResources}\\${QMAKE_FILE_BASE}.qm
 unix:lrelease.output = $${GUIResources}/${QMAKE_FILE_BASE}.qm
 win32:lrelease.output = $${GUIResources}\\${QMAKE_FILE_BASE}.qm
 lrelease.input = TRANSLATIONS

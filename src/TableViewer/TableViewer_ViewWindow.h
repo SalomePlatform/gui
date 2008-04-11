@@ -52,7 +52,7 @@ public:
 
   void                exportData();
   void                exportData( const QString& );
-  Handle(HTMLService_HTMLTable) exportTableData();
+  Handle(HTMLService_HTMLTable) exportToHTML();
 
   void                copyData();
   void                pasteData();
@@ -113,4 +113,3 @@ private:
 };
 
 #endif // !defined(TABLEVIEWER_VIEWWINDOW_H)
-

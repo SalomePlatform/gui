@@ -4,13 +4,9 @@ DESTDIR = ../../$(CONFIG_ID)/lib
 MOC_DIR = ../../moc
 OBJECTS_DIR = ../../$(CONFIG_ID)/obj/$$TARGET
 
-QWTHOME=$$(QWTHOME)
-QWTINC=$${QWTHOME}/includes
-QWTLIB=$${QWTHOME}/lib
-
-INCLUDEPATH += ../../include $${QWTINC} $$(PYTHONINC)
+INCLUDEPATH += ../../include $$(QWTINC) $$(PYTHONINC)
 INCLUDEPATH += ../Qtx ../SUIT
-unix:LIBS  += -L$${QWTLIB} -lqwt
+unix:LIBS  += -L$$(QWTLIB) -lqwt
 win32:LIBS += /LIBPATH:$$(QWTLIB)
 LIBS += -L../../$(CONFIG_ID)/lib -lQtx -lSUIT
 
@@ -31,8 +27,8 @@ unix:GUIResources = ../../resources
 win32:GUIResources = ..\\..\\resources
 
 lrelease.name = LRELASE ${QMAKE_FILE_IN}
-unix:lrelease.commands = $(QTDIR)/$(CONFIG_ID)/bin/lrelease ${QMAKE_FILE_NAME} -qm $${GUIResources}/${QMAKE_FILE_BASE}.qm
-win32:lrelease.commands = $(QTDIR)\\$(CONFIG_ID)\\bin\\lrelease ${QMAKE_FILE_NAME} -qm $${GUIResources}\\${QMAKE_FILE_BASE}.qm
+unix:lrelease.commands = $(QTDIR)/bin/lrelease ${QMAKE_FILE_NAME} -qm $${GUIResources}/${QMAKE_FILE_BASE}.qm
+win32:lrelease.commands = $(QTDIR)\\bin\\lrelease ${QMAKE_FILE_NAME} -qm $${GUIResources}\\${QMAKE_FILE_BASE}.qm
 unix:lrelease.output = $${GUIResources}/${QMAKE_FILE_BASE}.qm
 win32:lrelease.output = $${GUIResources}\\${QMAKE_FILE_BASE}.qm
 lrelease.input = TRANSLATIONS

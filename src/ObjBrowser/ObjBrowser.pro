@@ -23,8 +23,8 @@ unix:GUIResources = ../../resources
 win32:GUIResources = ..\\..\\resources
 
 lrelease.name = LRELASE ${QMAKE_FILE_IN}
-unix:lrelease.commands = $(QTDIR)/$(CONFIG_ID)/bin/lrelease ${QMAKE_FILE_NAME} -qm $${GUIResources}/${QMAKE_FILE_BASE}.qm
-win32:lrelease.commands = $(QTDIR)\\$(CONFIG_ID)\\bin\\lrelease ${QMAKE_FILE_NAME} -qm $${GUIResources}\\${QMAKE_FILE_BASE}.qm
+unix:lrelease.commands = $(QTDIR)/bin/lrelease ${QMAKE_FILE_NAME} -qm $${GUIResources}/${QMAKE_FILE_BASE}.qm
+win32:lrelease.commands = $(QTDIR)\\bin\\lrelease ${QMAKE_FILE_NAME} -qm $${GUIResources}\\${QMAKE_FILE_BASE}.qm
 unix:lrelease.output = $${GUIResources}/${QMAKE_FILE_BASE}.qm
 win32:lrelease.output = $${GUIResources}\\${QMAKE_FILE_BASE}.qm
 lrelease.input = TRANSLATIONS

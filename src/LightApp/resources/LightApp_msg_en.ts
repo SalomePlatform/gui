@@ -158,6 +158,14 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>Python console properties</translation>
     </message>
     <message>
+        <source>PREF_GROUP_STYLE</source>
+        <translation>Salome style</translation>
+    </message>
+    <message>
+        <source>PREF_USE_SALOME_STYLE</source>
+        <translation>Use Salome style</translation>
+    </message>
+    <message>
         <source>PREF_MARKER_SIZE</source>
         <translation>Marker size:</translation>
     </message>

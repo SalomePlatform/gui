@@ -186,9 +186,9 @@ int main( int args, char* argv[] )
   {
     SUITApp_Session* aSession = new SUITApp_Session( iniFormat );
     QtxSplash* splash = 0;
+    SUIT_ResourceMgr* resMgr = aSession->createResourceMgr( argList.first() );
     if ( !noSplash ) 
     {
-      SUIT_ResourceMgr* resMgr = aSession->createResourceMgr( argList.first() );
       if ( resMgr )
       {
 	resMgr->loadLanguage( false );
@@ -222,9 +222,12 @@ int main( int args, char* argv[] )
     SUIT_Application* theApp = aSession->startApplication( argList.first() );
     if ( theApp )
     {
-      Style_Salome* aStyle = new Style_Salome();
-      aStyle->getModel()->initFromResource( theApp->resourceMgr() );
-      app.setStyle( aStyle );
+      if ( resMgr && resMgr->booleanValue( "Style", "use_salome_style", true ) )
+      {
+	Style_Salome* aStyle = new Style_Salome();
+	aStyle->getModel()->initFromResource( theApp->resourceMgr() );
+	app.setStyle( aStyle );
+      }
 	
       if ( !noExceptHandling )
         app.setHandler( aSession->handler() );

@@ -622,9 +622,13 @@ int main( int argc, char **argv )
       if ( aGUIApp )
       {
         // Set SALOME style to the application
-        Style_Salome* aStyle = new Style_Salome();
-        aStyle->getModel()->initFromResource( aGUIApp->resourceMgr() );
-        _qappl.setStyle( aStyle );
+	SUIT_ResourceMgr resMgr( "SalomeApp", QString( "%1Config" ) );
+	if ( bool isSSUse = resMgr.booleanValue( "Style", "use_salome_style", true ) )
+	{
+	  Style_Salome* aStyle = new Style_Salome();
+	  aStyle->getModel()->initFromResource( aGUIApp->resourceMgr() );
+	  _qappl.setStyle( aStyle );
+	}
 
 	if ( !isFound( "noexcepthandler", argc, argv ) )
 	  _qappl.setHandler( aGUISession->handler() ); // after loading SalomeApp application

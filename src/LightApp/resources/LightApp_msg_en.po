@@ -162,6 +162,12 @@ msgstr "Python console properties"
 msgid "LightApp_Application::PREF_FONT"
 msgstr "Font"
 
+msgid "LightApp_Application::PREF_GROUP_STYLE"
+msgstr "Salome style"
+
+msgid "LightApp_Application::PREF_USE_SALOME_STYLE"
+msgstr "Use Salome style"
+
 msgid "LightApp_Application::PREF_TAB_OBJBROWSER"
 msgstr "Object browser"
 

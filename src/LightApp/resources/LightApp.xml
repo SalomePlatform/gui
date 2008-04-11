@@ -56,6 +56,10 @@
     <parameter name="font"                value="Helvetic,12" />
     <parameter name="additional_families" value="Helvetic;Helvetica;Helvetica[Adobe];Times;Times[Adobe];Sans Serif;Serif;Monospace;Lucida"/>
   </section>
+  <section name="Style">
+    <!-- Style and theme preferences -->
+    <parameter name="use_salome_style" value="true" />
+  </section>
   <section name="ObjectBrowser" >
     <!-- Object Browser preferences -->
     <parameter name="auto_hide_search_tool" value="true" />

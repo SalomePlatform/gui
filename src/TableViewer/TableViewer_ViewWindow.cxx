@@ -107,7 +107,8 @@ void TableViewer_ViewWindow::initLayout()
 
 QImage TableViewer_ViewWindow::dumpView()
 {
-  return QPixmap::grabWindow( table()->winId() ).toImage();
+  return QPixmap::grabWidget( table() ).toImage();
+  //return QPixmap::grabWindow( table()->winId() ).toImage();
 }
 
 void TableViewer_ViewWindow::createActions()
@@ -295,6 +296,9 @@ void TableViewer_ViewWindow::actionActivated( const int id )
       break;
     case PasteId:
       pasteData();
+      break;
+    case PrintId:
+      printData();
       break;
     default:
       break;
@@ -485,7 +489,6 @@ bool TableViewer_ViewWindow::canPasteData()
   bool aCanPaste = true;
   int aLeftCol = myTable->columnCount(), aTopRow = myTable->rowCount();
   QModelIndexList::const_iterator anIt = anItems.begin(), aLast = anItems.end();
-  QTableWidgetItem* anItem;
   int aCol, aRow;
   for ( ; anIt != aLast; ++anIt ) {
     aRow = (*anIt).row();
@@ -508,6 +511,12 @@ bool TableViewer_ViewWindow::canPasteData()
     aCanPaste = canPaste( aRow, aCol, aCopyItem.myText );
   }
   return aCanPaste;
+}
+
+void TableViewer_ViewWindow::printData()
+{
+  QImage img = dumpView();
+  printImage( img, this );
 }
 
 void TableViewer_ViewWindow::exportTableData( Handle(HTMLService_HTMLTable)& table,

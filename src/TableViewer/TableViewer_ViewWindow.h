@@ -58,6 +58,8 @@ public:
   void                pasteData();
   bool                canPasteData();
 
+  void                printData();
+
 protected:
   typedef enum { VerticalHeader, HorizontalHeader, Cells } ContentType;
   typedef enum { DumpId, CopyId, PasteId, PrintId, ExportId, Custom } ActionId;

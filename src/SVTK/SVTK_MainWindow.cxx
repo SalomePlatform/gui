@@ -942,78 +942,8 @@ SVTK_MainWindow
 void SVTK_MainWindow::onPrintView()
 {
   QImage img = dumpView();
-  if ( img.isNull() )
-    return;
-
-  // stored settings for further starts
-  static QString aPrinterName;
-  static int anOrientation = -1;
-
-  QPrinter aPrinter;
-
-  // restore settinds from previous launching
-
-  // printer name
-  if ( !aPrinterName.isEmpty() )
-    aPrinter.setPrinterName( aPrinterName );
-  else 
-  {
-    // Nothing to do for the first printing. aPrinter contains default printer name by default
-  }
-
-  if ( anOrientation >= 0 )
-    aPrinter.setOrientation( (QPrinter::Orientation)anOrientation );
-  else
-    aPrinter.setOrientation( QPrinter::Landscape );
-
-
-  QPrintDialog printDlg( &aPrinter, this );
-  printDlg.setPrintRange( QAbstractPrintDialog::AllPages );
-  if ( printDlg.exec() != QDialog::Accepted ) 
-    return;
-
-  // store printer settings for further starts
-  aPrinterName = aPrinter.printerName();
-  anOrientation = aPrinter.orientation();
-
-  int W, H;
-  QPainter aPainter;
-
-  // work arround for printing on real printer
-  if ( aPrinter.outputFileName().isEmpty() && aPrinter.orientation() == QPrinter::Landscape )
-  {
-    aPrinter.setFullPage( true );
-    // set paper orientation and rotate painter
-    aPrinter.setOrientation( QPrinter::Portrait );
-
-    W = aPrinter.height();
-    H = aPrinter.width();
-
-    int wBorder = aPrinter.paperRect().height() - W;
-    int hBorder = aPrinter.paperRect().width() - H;
-
-    aPainter.begin( &aPrinter );
-    aPainter.translate( QPoint( H + hBorder, wBorder ) );
-    aPainter.rotate( 90 );
-  }
-  else 
-  {
-    aPrinter.setFullPage( false );
-    aPainter.begin( &aPrinter );
-    W = aPrinter.width();
-    H = aPrinter.height();
-  }
-
-  if ( img.width() > W || img.height() > H )
-    img = img.scaled( W, H, Qt::KeepAspectRatio, Qt::SmoothTransformation );
-
-  // place image in the center of page
-  int offsetW = ( W - img.width() ) / 2;
-  int offsetH = ( H - img.height() ) / 2;
-    
-  aPainter.drawImage( offsetW, offsetH, img );
-
-  aPainter.end();
+  if ( myViewWindow )
+    myViewWindow->printImage( img, this );
 }
 
 

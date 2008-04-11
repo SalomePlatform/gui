@@ -44,6 +44,7 @@ public:
 
   virtual QImage    dumpView();
   bool              dumpViewToFormat( const QString& fileName, const QString& format );
+  virtual void      printImage( const QImage&, QWidget* );
 
   bool              onAccelAction( int );
 

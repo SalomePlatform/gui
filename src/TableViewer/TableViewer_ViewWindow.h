@@ -78,8 +78,8 @@ protected:
   QtxAction*          createAction( const int, const QString&, const QPixmap&, const QString&,
                                     const QString&, const int = 0, QObject* = 0 );
 
-  int                 numRows( const ContentType ) const;
-  int                 numCols( const ContentType ) const;
+  virtual int         numRows( const ContentType ) const;
+  virtual int         numCols( const ContentType ) const;
 
   QString             text( const ContentType, const int, const int ) const;
   QString             image( const ContentType, const int, const int ) const;

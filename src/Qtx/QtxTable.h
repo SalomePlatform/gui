@@ -79,18 +79,18 @@ public:
   int              numHeaders( const Qt::Orientation ) const;
   void             setNumHeaders( const Qt::Orientation, const int );
 
-  QVariant         headerData( const Qt::Orientation, const int, const int = Qt::DisplayRole ) const;
-  QFont            headerFont( const Qt::Orientation, const int ) const;
-  QColor           headerForeground( const Qt::Orientation, const int ) const;
-  QColor           headerBackground( const Qt::Orientation, const int ) const;
-  QIcon            headerIcon( const Qt::Orientation, const int ) const;
+  virtual QVariant headerData( const Qt::Orientation, const int, const int = Qt::DisplayRole ) const;
+  virtual QFont    headerFont( const Qt::Orientation, const int ) const;
+  virtual QColor   headerForeground( const Qt::Orientation, const int ) const;
+  virtual QColor   headerBackground( const Qt::Orientation, const int ) const;
+  virtual QIcon    headerIcon( const Qt::Orientation, const int ) const;
 
-  void             setHeaderData( const Qt::Orientation, const int, const QVariant&,
+  virtual void     setHeaderData( const Qt::Orientation, const int, const QVariant&,
                                   const int = Qt::DisplayRole );
-  void             setHeaderFont( const Qt::Orientation, const int, const QFont& );
-  void             setHeaderForeground( const Qt::Orientation, const int, const QColor& );
-  void             setHeaderBackground( const Qt::Orientation, const int, const QColor& );
-  void             setHeaderIcon( const Qt::Orientation, const int, const QIcon& );
+  virtual void     setHeaderFont( const Qt::Orientation, const int, const QFont& );
+  virtual void     setHeaderForeground( const Qt::Orientation, const int, const QColor& );
+  virtual void     setHeaderBackground( const Qt::Orientation, const int, const QColor& );
+  virtual void     setHeaderIcon( const Qt::Orientation, const int, const QIcon& );
 
   QVariant         cellData( const int, const int ) const;
   QFont            cellFont( const int, const int ) const;

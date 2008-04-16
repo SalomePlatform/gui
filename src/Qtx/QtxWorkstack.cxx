@@ -38,9 +38,6 @@
 #include <QPainter>
 #include <QStyleOption>
 
-#include <QTextStream>
-#include <iostream>
-
 #define DARK_COLOR_LIGHT 250
 
 /*!
@@ -243,18 +240,31 @@ void QtxWorkstackDrag::startDrawRect()
   myAreaRect->hide();
 }
 
+
 /*
-  \class QtxWorkstackAreaTitleButton
+  \class CloseButton
   \brief Workstack area close button.
   \internal
 */
+class CloseButton : public QAbstractButton
+{
+public:
+  CloseButton( QWidget* );
+
+  QSize        sizeHint() const;
+  QSize        minimumSizeHint() const;
+
+  void enterEvent( QEvent* );
+  void leaveEvent( QEvent* );
+  void paintEvent( QPaintEvent* );
+};
 
 /*!
   \brief Constructor
   \internal
   \param parent parent widget
 */
-QtxWorkstackAreaTitleButton::QtxWorkstackAreaTitleButton( QWidget* parent )
+CloseButton::CloseButton( QWidget* parent )
 : QAbstractButton( parent )
 {
  setFocusPolicy( Qt::NoFocus );
@@ -265,7 +275,7 @@ QtxWorkstackAreaTitleButton::QtxWorkstackAreaTitleButton( QWidget* parent )
   \internal
   \return size value
 */
-QSize QtxWorkstackAreaTitleButton::sizeHint() const
+QSize CloseButton::sizeHint() const
 {
   ensurePolished();
   int dim = 0;
@@ -283,7 +293,7 @@ QSize QtxWorkstackAreaTitleButton::sizeHint() const
   \internal
   \return minimum size value
 */
-QSize QtxWorkstackAreaTitleButton::minimumSizeHint() const
+QSize CloseButton::minimumSizeHint() const
 { 
   return sizeHint(); 
 }
@@ -293,7 +303,7 @@ QSize QtxWorkstackAreaTitleButton::minimumSizeHint() const
   \internal
   \param event mouse enter event
 */
-void QtxWorkstackAreaTitleButton::enterEvent( QEvent *event )
+void CloseButton::enterEvent( QEvent *event )
 {
   if ( isEnabled() )
     update();
@@ -305,7 +315,7 @@ void QtxWorkstackAreaTitleButton::enterEvent( QEvent *event )
   \internal
   \param event mouse leave event
 */
-void QtxWorkstackAreaTitleButton::leaveEvent( QEvent *event )
+void CloseButton::leaveEvent( QEvent *event )
 {
   if( isEnabled() )
     update();
@@ -317,7 +327,7 @@ void QtxWorkstackAreaTitleButton::leaveEvent( QEvent *event )
   \internal
   \param event paint event
 */
-void QtxWorkstackAreaTitleButton::paintEvent( QPaintEvent* )
+void CloseButton::paintEvent( QPaintEvent* )
 {
   QPainter p( this );
 
@@ -374,7 +384,7 @@ QtxWorkstackArea::QtxWorkstackArea( QWidget* parent )
   myBar = new QtxWorkstackTabBar( top );
   tl->addWidget( myBar, 1 );
 
-  QtxWorkstackAreaTitleButton* close = new QtxWorkstackAreaTitleButton( top );
+  CloseButton* close = new CloseButton( top );
   close->setIcon( style()->standardIcon( QStyle::SP_TitleBarCloseButton ) );
   myClose = close;
   tl->addWidget( myClose );
@@ -401,6 +411,15 @@ QtxWorkstackArea::QtxWorkstackArea( QWidget* parent )
 QtxWorkstackArea::~QtxWorkstackArea()
 {
   QApplication::instance()->removeEventFilter( this );
+}
+
+/*!
+  \brief Check if workarea contains any widgets.
+  \return \c true if area is null (havn't any child widgets)
+*/
+bool QtxWorkstackArea::isNull() const
+{
+  return myList.isEmpty();
 }
 
 /*!
@@ -507,13 +526,10 @@ void QtxWorkstackArea::removeWidget( QWidget* wid, const bool del )
   myChild.remove( wid );
 
   if ( del )
-  {
     delete child( wid );
-    if ( myList.isEmpty() )
-      delete this;
-    else
-      updateState();
-  }
+
+  if ( isNull() )
+    deleteLater();
   else
     updateState();
 }
@@ -1185,10 +1201,10 @@ bool QtxWorkstackChild::eventFilter( QObject* o, QEvent* e )
     if ( e->type() == QEvent::WindowTitleChange || e->type() == QEvent::WindowIconChange )
       emit captionChanged( this );
 
-    if ( !e->spontaneous() && ( e->type() == QEvent::Show || e->type() == QEvent::ShowToParent ) )
+    if ( !e->spontaneous() && e->type() == QEvent::ShowToParent )
       emit shown( this );
 
-    if ( !e->spontaneous() && ( e->type() == QEvent::Hide || e->type() == QEvent::HideToParent ) )
+    if ( !e->spontaneous() && e->type() == QEvent::HideToParent )
       emit hidden( this );
 
     if ( e->type() == QEvent::FocusIn )
@@ -2752,11 +2768,8 @@ void QtxWorkstack::splitterInfo( QSplitter* split, QString& info ) const
 {
   if ( !split )
     return;
-  //const QObjectList& objs = split->children();
-  QObjectList objs;
-  for(int si = 0; si < split->count(); si++) {
-    objs.append((QObject*)split->widget(si));
-  }
+
+  const QObjectList& objs = split->children();
 
   QString sizesStr;
   QList<int> sizes = split->sizes();
@@ -2771,13 +2784,14 @@ void QtxWorkstack::splitterInfo( QSplitter* split, QString& info ) const
 
   info += QString( "(splitter orientation=%1 sizes=%3 " ).arg( split->orientation() ).arg( sizesStr );
 
-  for ( QObjectList::const_iterator it = objs.begin(); it != objs.end(); ++it )
+  for( int index = 0, count = split->count(); index < count; index++ )
   {
-    if ( (*it)->inherits( "QSplitter" ) )
-	    splitterInfo( (QSplitter*)*it, info );
-    else if ( (*it)->inherits( "QtxWorkstackArea" ) )
+    QObject* obj = split->widget( index );
+    if ( obj->inherits( "QSplitter" ) )
+	    splitterInfo( (QSplitter*)obj, info );
+    else if ( obj->inherits( "QtxWorkstackArea" ) )
     {
-	    QtxWorkstackArea* area = (QtxWorkstackArea*)*it;
+	    QtxWorkstackArea* area = (QtxWorkstackArea*)obj;
 	    if ( area->isEmpty() )
 	      continue;
 	    info += QString( "(views active='%1'" ).arg( area->activeWidget()->objectName() );

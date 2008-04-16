@@ -414,6 +414,15 @@ QtxWorkstackArea::~QtxWorkstackArea()
 }
 
 /*!
+  \brief Check if workarea contains any widgets.
+  \return \c true if area is null (havn't any child widgets)
+*/
+bool QtxWorkstackArea::isNull() const
+{
+  return myList.isEmpty();
+}
+
+/*!
   \brief Check if workarea contains visible widgets.
   \return \c true if area is empty (all child widgets are removed or now shown)
 */
@@ -517,13 +526,10 @@ void QtxWorkstackArea::removeWidget( QWidget* wid, const bool del )
   myChild.remove( wid );
 
   if ( del )
-  {
     delete child( wid );
-    if ( myList.isEmpty() )
-      delete this;
-    else
-      updateState();
-  }
+
+  if ( isNull() )
+    deleteLater();
   else
     updateState();
 }

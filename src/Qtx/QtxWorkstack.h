@@ -168,6 +168,7 @@ public:
   QtxWorkstackArea( QWidget* );
   virtual ~QtxWorkstackArea();
 
+  bool                isNull() const;
   bool                isEmpty() const;
 
   QWidget*            insertWidget( QWidget*, const int = -1, Qt::WindowFlags = 0 );

@@ -35,11 +35,15 @@
 #include "LightApp_SwitchOp.h"
 #include "LightApp_UpdateFlags.h"
 #include "LightApp_ShowHideOp.h"
+#include "LightApp_SelectionMgr.h"
 
 #include "SUIT_Operation.h"
 #include <SUIT_Study.h>
 #include <SUIT_DataObject.h>
 #include <SUIT_ResourceMgr.h>
+
+#include <SALOME_ListIO.hxx>
+#include <SALOME_ListIteratorOfListIO.hxx>
 
 #ifndef DISABLE_VTKVIEWER
 #ifndef DISABLE_SALOMEOBJECT
@@ -160,10 +164,38 @@ void LightApp_Module::selectionChanged()
 {
 }
 
+/*! \brief If return false, selection will be cleared at module activation
+ */
+bool LightApp_Module::isSelectionCompatible()
+{
+  // return true if selected objects belong to this module
+  bool isCompatible = true;
+  SALOME_ListIO selected;
+  if ( LightApp_SelectionMgr *Sel = getApp()->selectionMgr() )
+    Sel->selectedObjects( selected );
+
+  LightApp_Study* aStudy = dynamic_cast<LightApp_Study*>( getApp()->activeStudy() );
+  LightApp_DataObject* aRoot = dynamic_cast<LightApp_DataObject*>( dataModel()->root() );
+  if ( aStudy && aRoot ) {
+    // my data type
+    QString moduleDataType = aRoot->componentDataType();
+    // check data type of selection
+    SALOME_ListIteratorOfListIO It( selected );
+    for ( ; isCompatible && It.More(); It.Next()) {
+      Handle(SALOME_InteractiveObject)& io = It.Value();
+      isCompatible = ( aStudy->componentDataType( io->getEntry() ) == moduleDataType );
+    }
+  }
+  return isCompatible;
+}
+
 /*!Activate module.*/
 bool LightApp_Module::activateModule( SUIT_Study* study )
 {
   bool res = CAM_Module::activateModule( study );
+
+  if ( !isSelectionCompatible() )// PAL19290, PAL18352
+    getApp()->selectionMgr()->clearSelected();
 
   if ( res && application() && application()->resourceMgr() )
     application()->resourceMgr()->raiseTranslators( name() );

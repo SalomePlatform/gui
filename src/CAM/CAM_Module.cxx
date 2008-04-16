@@ -135,6 +135,13 @@ CAM_Application* CAM_Module::application() const
   return myApp;
 }
 
+/*! \brief If return false, selection will be cleared at module activation
+ */
+bool CAM_Module::isSelectionCompatible()
+{
+  return false;
+}
+
 /*!Public slot
  * \retval true.
  */

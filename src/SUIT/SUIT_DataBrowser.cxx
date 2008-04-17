@@ -246,55 +246,6 @@ void SUIT_DataBrowser::contextMenuPopup( QMenu* menu )
 }
 
 /*!
-  \brief Process context menu request event.
-  \param e context menu event
-*/
-void SUIT_DataBrowser::contextMenuEvent( QContextMenuEvent* e )
-{
-  contextMenuRequest( e );
-}
-
-/*!
-  \brief Initialize object browser.
-  \param root root data object
-*/
-void SUIT_DataBrowser::init( SUIT_DataObject* root )
-{
-  SUIT_ProxyModel* m = new SUIT_ProxyModel( root, this );
-  connect( m, SIGNAL( modelUpdated() ), this, SLOT( onModelUpdated() ) );
-  
-  setModel( m );
-  setItemDelegate( qobject_cast<SUIT_ProxyModel*>( model() )->delegate() );
-  connect( treeView(), SIGNAL( sortingEnabled(bool ) ), 
-	   model(), SLOT( setSortingEnabled( bool ) ) );
-  myShortcut = new QShortcut( Qt::Key_F5, this, SIGNAL( requestUpdate() ), SIGNAL( requestUpdate() ) );
-
-  myAutoSizeFirstColumn = true;
-  myAutoSizeColumns = false;
-}
-
-/*!
-  \fn void SUIT_DataBrowser::requestUpdate();
-  \brief The signal is emitted when the key accelerator
-  assigned for the update operation is pressed by the user.
-
-  By default, \c [F5] key is assigned for the update operation.
-  The key accelerator can be changed with the setUpdateKey() method.
-
-  \sa updateKey(), setUpdateKey()
-*/
-
-
-
-/*!
-  \brief Update internal modification time just after data model update
-*/
-void SUIT_DataBrowser::onModelUpdated()
-{
-  setModified();
-}
-
-/*!
   \brief Set 'auto-size first column' flag value.
 
   If this flag is set to \c true (by default), the first column width is resized
@@ -320,4 +271,79 @@ void SUIT_DataBrowser::setAutoSizeFirstColumn( const bool on )
 void SUIT_DataBrowser::setAutoSizeColumns( const bool on )
 {
   myAutoSizeColumns = on;
+}
+
+/*!
+  \brief Process context menu request event.
+  \param e context menu event
+*/
+void SUIT_DataBrowser::contextMenuEvent( QContextMenuEvent* e )
+{
+  contextMenuRequest( e );
+}
+
+/*!
+  \brief Initialize object browser.
+  \param root root data object
+*/
+void SUIT_DataBrowser::init( SUIT_DataObject* root )
+{
+  SUIT_ProxyModel* m = new SUIT_ProxyModel( root, this );
+  connect( m, SIGNAL( modelUpdated() ), this, SLOT( onModelUpdated() ) );
+  
+  setModel( m );
+  setItemDelegate( qobject_cast<SUIT_ProxyModel*>( model() )->delegate() );
+  connect( treeView(), SIGNAL( sortingEnabled( bool ) ), 
+	   model(),    SLOT( setSortingEnabled( bool ) ) );
+  connect( treeView(), SIGNAL( doubleClicked( const QModelIndex& ) ), 
+	   this,       SLOT( onDblClicked( const QModelIndex& ) ) );
+  myShortcut = new QShortcut( Qt::Key_F5, this, SIGNAL( requestUpdate() ), SIGNAL( requestUpdate() ) );
+
+  myAutoSizeFirstColumn = true;
+  myAutoSizeColumns = false;
+}
+
+/*!
+  \fn void SUIT_DataBrowser::requestUpdate();
+  \brief The signal is emitted when the key accelerator
+  assigned for the update operation is pressed by the user.
+
+  By default, \c [F5] key is assigned for the update operation.
+  The key accelerator can be changed with the setUpdateKey() method.
+
+  \sa updateKey(), setUpdateKey()
+*/
+
+/*!
+  \fn void SUIT_DataBrowser::doubleClicked( SUIT_DataObject* o );
+  \brief This signal is emitted when a mouse button is double-clicked.
+
+  The data object the mouse was double-clicked on is specified by \a o.
+  The signal is only emitted when the object is valid.
+
+  \param o data object which is double-clicked
+*/
+
+/*!
+  \brief Update internal modification time just after data model update
+*/
+void SUIT_DataBrowser::onModelUpdated()
+{
+  setModified();
+}
+
+/*!
+  \brief Called when item is double-clicked in the tree view
+  \internal
+  
+  Emits signal doubleClicked( SUIT_DataObject* );
+*/
+void SUIT_DataBrowser::onDblClicked( const QModelIndex& index )
+{
+  SUIT_ProxyModel* m = qobject_cast<SUIT_ProxyModel*>( model() );
+
+  if ( m ) {
+    SUIT_DataObject* obj = m->object( index );
+    if ( obj ) emit( doubleClicked( obj ) );
+  }
 }

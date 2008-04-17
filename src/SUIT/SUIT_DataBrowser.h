@@ -71,9 +71,11 @@ private:
 
 signals:
   void             requestUpdate();
+  void             doubleClicked( SUIT_DataObject* );
 
 private slots:
   void             onModelUpdated();
+  void             onDblClicked( const QModelIndex& );
 
 private:
   QShortcut*       myShortcut;

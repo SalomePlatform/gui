@@ -110,6 +110,10 @@ public:
   bool                isRegExpSearch() const;
   bool                isSearchWrapped() const;
 
+  void                setCaseSensitive( bool );
+  void                setRegExpSearch( bool );
+  void                setSearchWrapped( bool );
+
   virtual bool        event( QEvent* );
   virtual bool        eventFilter( QObject*, QEvent* );
 
@@ -186,6 +190,9 @@ public:
   virtual bool           findFirst( const QString&, QtxSearchTool* );
   virtual bool           findLast( const QString&, QtxSearchTool* );
 
+protected:
+  virtual Qt::MatchFlags matchFlags( QtxSearchTool* ) const;
+  
 private:
   QModelIndexList        findItems( const QString&, QtxSearchTool* );
   QModelIndex            findNearest( const QModelIndex&, const QModelIndexList&, bool );

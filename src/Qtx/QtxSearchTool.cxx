@@ -584,6 +584,7 @@ void QtxSearchTool::enableAutoHide( bool enable )
 
   \return \c true if case sensitive search is performed
   \sa isRegExpSearch(), isSearchWrapped(), setControls()
+  \sa setCaseSensitive(), setRegExpSearch(), setSearchWrapped()
 */
 bool QtxSearchTool::isCaseSensitive() const
 {
@@ -598,6 +599,7 @@ bool QtxSearchTool::isCaseSensitive() const
 
   \return \c true if regular expression search is performed
   \sa isCaseSensitive(), isSearchWrapped(), setControls()
+  \sa setCaseSensitive(), setRegExpSearch(), setSearchWrapped()
 */
 bool QtxSearchTool::isRegExpSearch() const
 {
@@ -612,10 +614,47 @@ bool QtxSearchTool::isRegExpSearch() const
 
   \return \c true if search wrapping is enabled
   \sa isCaseSensitive(), isRegExpSearch(), setControls()
+  \sa setCaseSensitive(), setRegExpSearch(), setSearchWrapped()
 */
 bool QtxSearchTool::isSearchWrapped() const
 {
   return myControls & Wrap && myWrap->isChecked();
+}
+
+/*!
+  \brief Set 'case sensitive search' option value.
+  \param on new option state
+  \sa setRegExpSearch(), setSearchWrapped(), setControls()
+  \sa isCaseSensitive(), isRegExpSearch(), isSearchWrapped()
+*/
+void QtxSearchTool::setCaseSensitive( bool on )
+{
+  if ( myControls & Case )
+    myIsCaseSens->setChecked( on );
+}
+
+/*!
+  \brief Set 'regular expression search' option value.
+  \param on new option state
+  \sa setCaseSensitive(), setSearchWrapped(), setControls()
+  \sa isCaseSensitive(), isRegExpSearch(), isSearchWrapped()
+*/
+void QtxSearchTool::setRegExpSearch( bool on )
+{
+  if ( myControls & RegExp )
+    myIsRegExp->setChecked( on );
+}
+
+/*!
+  \brief Set 'search wrapping' option value.
+  \param on new option state
+  \sa setCaseSensitive(), setRegExpSearch(), setControls()
+  \sa isCaseSensitive(), isRegExpSearch(), isSearchWrapped()
+*/
+void QtxSearchTool::setSearchWrapped( bool on )
+{
+  if ( myControls & Wrap )
+    myWrap->setChecked( on );
 }
 
 /*!
@@ -1328,6 +1367,24 @@ bool QtxTreeViewSearcher::findLast( const QString& text, QtxSearchTool* st )
 }
 
 /*!
+  \brief Get match flags to be used by the searcher.
+  \param st search tool widget
+*/
+Qt::MatchFlags QtxTreeViewSearcher::matchFlags( QtxSearchTool* st ) const
+{
+  Qt::MatchFlags fl = Qt::MatchRecursive;
+
+  if ( st->isCaseSensitive() )
+    fl = fl | Qt::MatchCaseSensitive;
+  if ( st->isRegExpSearch() )
+    fl = fl | Qt::MatchRegExp;
+  else
+    fl = fl | Qt::MatchContains;
+
+  return fl;
+}
+
+/*!
   \brief Find all appropriate items.
   \internal
   \param text text to be found
@@ -1337,19 +1394,12 @@ QModelIndexList QtxTreeViewSearcher::findItems( const QString& text, QtxSearchTo
 {
   QString s = text;
 
-  Qt::MatchFlags fl = Qt::MatchRecursive;
-
-  if ( st->isCaseSensitive() )
-    fl = fl | Qt::MatchCaseSensitive;
-  if ( st->isRegExpSearch() ) {
-    fl = fl | Qt::MatchRegExp;
+  Qt::MatchFlags fl = matchFlags( st );
+  if ( fl & Qt::MatchRegExp ) {
     if ( !s.startsWith( "^" ) && !s.startsWith( ".*" ) )
       s.prepend( ".*" );
     if ( !s.endsWith( "$" ) && !s.endsWith( ".*" ) )
       s.append( ".*" );
-  }
-  else {
-    fl = fl | Qt::MatchContains;
   }
 
   if ( myView->model() )

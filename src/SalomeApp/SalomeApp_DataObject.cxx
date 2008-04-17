@@ -106,11 +106,19 @@ QPixmap SalomeApp_DataObject::icon() const
   if ( myObject && myObject->FindAttribute( anAttr, "AttributePixMap" ) ){
     _PTR(AttributePixMap) aPixAttr ( anAttr );
     if ( aPixAttr->HasPixMap() ){
-      QString pixmapName = QObject::tr( aPixAttr->GetPixMap().c_str() );
+      QString componentType = componentDataType();
+      QString pixmapID      = aPixAttr->GetPixMap().c_str();
+      // select a plugin within a component
+      QStringList plugin_pixmap = QStringList::split(QString("::"), pixmapID);
+      if ( plugin_pixmap.size() == 2 ) {
+        componentType = plugin_pixmap.front();
+        pixmapID      = plugin_pixmap.back();
+      }
+      QString pixmapName = QObject::tr( pixmapID );
       LightApp_RootObject* aRoot = dynamic_cast<LightApp_RootObject*>( root() );
       if ( aRoot && aRoot->study() ) {
 	SUIT_ResourceMgr* mgr = aRoot->study()->application()->resourceMgr();
-	return mgr->loadPixmap( componentDataType(), pixmapName, false ); 
+	return mgr->loadPixmap( componentType, pixmapName, false ); 
       }
     }
   }

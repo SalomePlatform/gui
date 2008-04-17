@@ -30,7 +30,7 @@ AC_LANG_CPLUSPLUS
 AC_ARG_WITH(opengl,
   [AC_HELP_STRING([--with-opengl=DIR],[root directory path of OpenGL installation])],
   [opengl_dir="$withval"], 
-  [dirs="/usr/lib${LIB_LOCATION_SUFFIX} /usr/local/lib${LIB_LOCATION_SUFFIX} /opt/graphics/OpenGL/lib${LIB_LOCATION_SUFFIX} /usr/openwin/lib${LIB_LOCATION_SUFFIX} /usr/X11R6/lib${LIB_LOCATION_SUFFIX}"])dnl
+  [dirs="/usr/lib64 /usr/lib /usr/local/lib64 /usr/local/lib /opt/graphics/OpenGL/lib64 /opt/graphics/OpenGL/lib /usr/openwin/lib64 /usr/openwin/lib /usr/X11R6/lib64 /usr/X11R6/lib"])dnl
 
 AC_CHECKING(for OpenGL)
 AC_CHECKING(for OpenGL headers)
@@ -107,7 +107,7 @@ if test "x${OpenGL_headers_ok}" = "xyes" ; then
   for idir in $dirs; do
     if test -r "${idir}/libGL.so"; then
       AC_MSG_RESULT(in ${idir})
-      if test "x${idir}" = "x/usr/lib${LIB_LOCATION_SUFFIX}" ; then
+      if test "x${idir}" = "x/usr/lib64" -o "x${idir}" = "x/usr/lib" ; then
         GL_LIB_PATH=""
       else
         GL_LIB_PATH="-L${idir}"
@@ -117,7 +117,7 @@ if test "x${OpenGL_headers_ok}" = "xyes" ; then
     # under IRIX ?
     if test -r "${idir}/libGL.sl"; then
       AC_MSG_RESULT(in ${idir})
-      if test "x${idir}" = "x/usr/lib${LIB_LOCATION_SUFFIX}" ; then
+      if test "x${idir}" = "x/usr/lib64" -o "x${idir}" = "x/usr/lib" ; then
         GL_LIB_PATH=""
       else
         GL_LIB_PATH="-L${idir}"
@@ -144,7 +144,7 @@ if test "x${OpenGL_libs_ok}" = "xyes" ; then
   for idir in $dirs; do
     if test -r "${idir}/libGLU.so"; then
       AC_MSG_RESULT(in ${idir})
-      if test "x${idir}" = "x/usr/lib${LIB_LOCATION_SUFFIX}" ; then
+      if test "x${idir}" = "x/usr/lib64" -o "x${idir}" = "x/usr/lib" ; then
         GLU_LIB_PATH=""
       else
         GLU_LIB_PATH="-L${idir}"
@@ -154,7 +154,7 @@ if test "x${OpenGL_libs_ok}" = "xyes" ; then
     # under IRIX ?
     if test -r "${idir}/libGLU.sl"; then
       AC_MSG_RESULT(in ${idir})
-      if test "x${idir}" = "x/usr/lib${LIB_LOCATION_SUFFIX}" ; then
+      if test "x${idir}" = "x/usr/lib64" -o "x${idir}" = "x/usr/lib" ; then
         GLU_LIB_PATH=""
       else
         GLU_LIB_PATH="-L${idir}"

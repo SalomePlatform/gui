@@ -38,11 +38,14 @@ dist_libSalomeStyle_la_SOURCES= \
 
 MOC_FILES= \
 	Style_Salome_moc.cxx
-nodist_libSalomeStyle_la_SOURCES= $(MOC_FILES)
+
+QRC_FILES= \
+	qrc_Style.cxx
+
+nodist_libSalomeStyle_la_SOURCES= $(MOC_FILES) $(QRC_FILES)
 
 libSalomeStyle_la_CPPFLAGS=$(QT_INCLUDES) \
 	-I$(srcdir)/../Qtx
 
 libSalomeStyle_la_LDFLAGS=$(QT_MT_LIBS) \
 	../Qtx/libqtx.la
-

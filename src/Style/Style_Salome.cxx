@@ -163,6 +163,8 @@ static const char* const minimize_xpm[] = {
 Style_Salome::Style_Salome()
   : QWindowsStyle()
 {
+  Q_INIT_RESOURCE(Style);
+
   myModel = new Style_Model();
   myModel->setDefaults( qApp );
 
@@ -1842,6 +1844,26 @@ QPixmap Style_Salome::standardPixmap(StandardPixmap stPixmap, const QStyleOption
   default:
     return QWindowsStyle::standardPixmap( stPixmap, opt, w );
   }
+}
+
+QIcon Style_Salome::standardIconImplementation( StandardPixmap standardIcon, 
+						const QStyleOption* opt,
+						const QWidget* widget ) const
+{
+  switch ( standardIcon )
+  {
+  case SP_MessageBoxInformation:
+    return QPixmap( ":/images/information.png" );
+  case SP_MessageBoxWarning:
+    return QPixmap( ":/images/warning.png" );
+  case SP_MessageBoxCritical:
+    return QPixmap( ":/images/critical.png" );
+  case SP_MessageBoxQuestion:
+    return QPixmap( ":/images/question.png" );
+  default:
+    break;
+  }
+  return QWindowsStyle::standardIconImplementation( standardIcon, opt, widget );
 }
 
 int Style_Salome::styleHint( StyleHint hint, const QStyleOption* opt, const QWidget* widget,

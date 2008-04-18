@@ -69,6 +69,10 @@ public:
 				  SubControl, const QWidget* = 0 ) const;
   virtual QRect   subElementRect( SubElement, const QStyleOption*, const QWidget* = 0 ) const;
 
+protected slots:
+  QIcon standardIconImplementation( StandardPixmap, const QStyleOption* = 0,
+				    const QWidget* = 0 ) const;
+
 private:
   void            updatePaletteColors();
   void            updateAllWidgets( QApplication* );

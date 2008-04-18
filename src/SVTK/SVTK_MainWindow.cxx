@@ -30,8 +30,6 @@
 
 #include <QImage>
 #include <QPainter>
-#include <QPrinter>
-#include <QPrintDialog>
 #include <QApplication>
 
 #include <QtxAction.h>

@@ -28,6 +28,8 @@
 #include "SUIT_Application.h"
 #include "SUIT_ViewManager.h"
 
+#include "Qtx.h"
+
 #include <QEvent>
 #include <QIcon>
 #include <QApplication>
@@ -226,6 +228,16 @@ void SUIT_ViewWindow::printImage( const QImage& theImage, QWidget* theWidget )
 {
   if ( theImage.isNull() )
     return;
+
+#ifndef WIN32
+#if QT_VERSION < 0x040303
+  if ( !Qtx::hasAnyPrinters() ) {
+    SUIT_MessageBox::warning( this, tr( "WRN_WARNING" ),
+                              tr( "WRN_NO_PRINTERS" ) );
+    return;
+  }
+#endif
+#endif
 
   // stored settings for further starts
   static QString aPrinterName;

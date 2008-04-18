@@ -27,7 +27,9 @@
 #include <SUIT_ResourceMgr.h>
 #include <SUIT_Session.h>
 #include <SUIT_Desktop.h>
+#include <SUIT_MessageBox.h>
 
+#include <Qtx.h>
 #include <QtxAction.h>
 #include <QtxMultiAction.h>
 
@@ -634,6 +636,16 @@ void Plot2d_ViewWindow::onPrintView()
 {
   if ( !myViewFrame )
     return;
+
+#ifndef WIN32
+#if QT_VERSION < 0x040303
+  if ( !Qtx::hasAnyPrinters() ) {
+    SUIT_MessageBox::warning( this, tr( "WRN_WARNING" ),
+                              tr( "WRN_NO_PRINTERS" ) );
+    return;
+  }
+#endif
+#endif
 
   // stored settings for further starts
   static QString aPrinterName;

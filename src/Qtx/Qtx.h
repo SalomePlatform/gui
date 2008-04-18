@@ -148,6 +148,8 @@ public:
   static bool        stringToLinearGradient( const QString&, QLinearGradient& );
   static bool        stringToRadialGradient( const QString&, QRadialGradient& );
   static bool        stringToConicalGradient( const QString&, QConicalGradient& );
+
+  static bool        hasAnyPrinters();
 };
 
 #endif

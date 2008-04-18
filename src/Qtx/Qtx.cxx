@@ -1258,3 +1258,35 @@ bool Qtx::stringToConicalGradient( const QString& str, QConicalGradient& gradien
   }
   return success;
 }
+
+/**
+ * Cheque for existing any system printers
+ */
+
+#ifndef WIN32
+#if QT_VERSION < 0x040303
+#include <QLibrary>
+#include <cups/cups.h>
+
+typedef int (*CupsGetDests)(cups_dest_t **dests);
+static CupsGetDests _cupsGetDests = 0;
+#endif
+#endif
+bool Qtx::hasAnyPrinters()
+{
+  bool aRes = true;
+#ifndef WIN32
+#if QT_VERSION < 0x040303
+  QLibrary aCupsLib( QString( "cups" ) );
+  if ( !aCupsLib.load() )
+    aRes = false;
+  else {
+    cups_dest_t *printers;
+    _cupsGetDests = (CupsGetDests) aCupsLib.resolve("cupsGetDests");
+    int prnCount = _cupsGetDests(&printers);
+    aRes = prnCount > 0;
+  }
+#endif
+#endif
+  return aRes;
+}

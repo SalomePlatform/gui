@@ -96,6 +96,10 @@ Do you want to overwrite it?</translation>
         <source>NAME_COLUMN</source>
         <translation>Name</translation>
     </message>
+    <message>
+        <source>WRN_NO_PRINTERS</source>
+        <translation>You have no printers.</translation>
+    </message>
 </context>
 <context>
     <name>SUIT_Study</name>

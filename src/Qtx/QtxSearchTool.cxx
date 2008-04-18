@@ -190,6 +190,7 @@ const char* const close_xpm[] = {
 "                "};
 
 const char* highlightColor = "#FF6666";
+const int DefaultAutoHideDelay = 10000;
 
 /*!
   \brief Wrap specified widget by another dumb widget.
@@ -219,15 +220,15 @@ static QWidget* wrapWidget( QWidget* parent, QWidget* w )
   text to be searched and set of buttons, like "Find Next", "Find Previous", etc.
   In addition, the search modifiers like "Case sensitive search", "Wrap search"
   are provided.
-  
+
   Actually the class QtxSearchTool does not perform a serach itself - it is only
   the generic widget. To use this widget, you have to install a searcher depending
-  on your needs. This should be a successor of the class QtxSearchTool::Searcher - 
+  on your needs. This should be a successor of the class QtxSearchTool::Searcher -
   it is the class which will perform actual search of the data in your widget
   according to the widget type.
 
   For the current moment, only one standard searcher is implemented: it is the
-  class QtxTreeViewSearcher, which can be used to search the text data in the 
+  class QtxTreeViewSearcher, which can be used to search the text data in the
   tree view widget (QTreeView). See this class for more details.
 
   The usual usage of the searcher widget is the following:
@@ -239,20 +240,20 @@ static QWidget* wrapWidget( QWidget* parent, QWidget* w )
   \endcode
 
   Note, that controls to be displayed by the search tool widget are passed as
-  ORed flags to the widget's constructor. At any time, the available controls 
+  ORed flags to the widget's constructor. At any time, the available controls
   can be set/get with setControls() and controls() methods.
-  By default, all widgets are displayed (see also QtxSearchTool::Controls 
+  By default, all widgets are displayed (see also QtxSearchTool::Controls
   enumeration).
 
-  The class QtxSearchTool also provides a way to add custom widgets - 
+  The class QtxSearchTool also provides a way to add custom widgets -
   these widgets are displayed at the bottom area of the tool box. Use
   method addCustomWidget() to add custom widget to the search tool box.
   Your searcher class can use custom widgets to perform advanced search.
 
-  The class supports different ways of the activation, all of them can be 
-  switched on/off with setActivators() method. See QtxSearchTool::Activator 
+  The class supports different ways of the activation, all of them can be
+  switched on/off with setActivators() method. See QtxSearchTool::Activator
   enumeration for more details.
-  By default, all methods are switched on: default hot key is <Ctrl><S> and 
+  By default, all methods are switched on: default hot key is <Ctrl><S> and
   standard key bindings are the platform dependent keyboard shortcuts.
   Shortcuts can be assigned with the setShortcuts() methods.
 */
@@ -327,14 +328,14 @@ QWidget* QtxSearchTool::watchedWidget() const
 
 /*!
   \brief Set watched widget.
-  
+
   Watched widget is that one for which shortcut bindings are set.
   When this widget has focus and any hot key binbding is pressed by the user,
   the search tool box is activated. The same occurs if slash key is pressed and
   QtxSearchTool::SlashKey activator is enabled. If the QtxSearchTool::PrintKey
   activator is enabled, the tool box is activated if any printed key is pressed
   by the user.
-  
+
   \param watched a widget to be watched by the search tool
   \sa watchedWidget(), activators(), setActivators()
 */
@@ -367,8 +368,8 @@ QtxSearchTool::Searcher* QtxSearchTool::searcher() const
 
 /*!
   \brief Assign searcher.
-  
-  Note: the search tool takes ownership to the searcher 
+
+  Note: the search tool takes ownership to the searcher
   and destroys it when deleted.
 
   \param s searcher to be used (QtxSearchTool::Searcher)
@@ -499,7 +500,7 @@ int QtxSearchTool::addCustomWidget( QWidget* w, int id )
   w->setParent( this );
   vbox->addWidget( w );
   myWidgets.insert( wid, w );
-  
+
   return wid;
 }
 
@@ -512,7 +513,7 @@ int QtxSearchTool::addCustomWidget( QWidget* w, int id )
 QWidget* QtxSearchTool::customWidget( int id ) const
 {
   QWidget* w = 0;
-  if ( myWidgets.contains( id ) ) 
+  if ( myWidgets.contains( id ) )
     w = myWidgets[ id ];
   return w;
 }
@@ -540,7 +541,7 @@ int QtxSearchTool::customWidgetId( QWidget* w ) const
 
   By default, the search tool widget is automatically hidden
   after 10 seconds of idle (only if watched widget has input focus).
-  
+
   \return \c true if auto-hide option is set
   \sa enableAutoHide()
 */
@@ -554,7 +555,7 @@ bool QtxSearchTool::isAutoHideEnabled() const
 
   By default, the search tool widget is automatically hidden
   after 10 seconds of idle (only if watched widget has input focus).
-  
+
   \param enable new option state
   \sa isAutoHideEnabled()
 */
@@ -566,23 +567,24 @@ void QtxSearchTool::enableAutoHide( bool enable )
 
   if ( myAutoHideEnabled )
   {
-    if ( isVisible() && !myData->hasFocus() )
+    if ( isVisible() && !focused() )
       myAutoHideTimer->start();
   }
   else
   {
-    myAutoHideTimer->stop(); 
+    myAutoHideTimer->stop();
   }
 }
 
 /*!
   \brief Get 'case sensitive search' option value.
-  
+
   This method returns \c true if 'case sensitive search' control
   is enabled and switched on.
 
   \return \c true if case sensitive search is performed
   \sa isRegExpSearch(), isSearchWrapped(), setControls()
+  \sa setCaseSensitive(), setRegExpSearch(), setSearchWrapped()
 */
 bool QtxSearchTool::isCaseSensitive() const
 {
@@ -591,12 +593,13 @@ bool QtxSearchTool::isCaseSensitive() const
 
 /*!
   \brief Get 'regular expression search' option value.
-  
+
   This method returns \c true if 'regular expression search' control
   is enabled and switched on.
 
   \return \c true if regular expression search is performed
   \sa isCaseSensitive(), isSearchWrapped(), setControls()
+  \sa setCaseSensitive(), setRegExpSearch(), setSearchWrapped()
 */
 bool QtxSearchTool::isRegExpSearch() const
 {
@@ -605,16 +608,53 @@ bool QtxSearchTool::isRegExpSearch() const
 
 /*!
   \brief Get 'search wrapping' option value.
-  
+
   This method returns \c true if 'wrap search' control
   is enabled and switched on.
 
   \return \c true if search wrapping is enabled
   \sa isCaseSensitive(), isRegExpSearch(), setControls()
+  \sa setCaseSensitive(), setRegExpSearch(), setSearchWrapped()
 */
 bool QtxSearchTool::isSearchWrapped() const
 {
   return myControls & Wrap && myWrap->isChecked();
+}
+
+/*!
+  \brief Set 'case sensitive search' option value.
+  \param on new option state
+  \sa setRegExpSearch(), setSearchWrapped(), setControls()
+  \sa isCaseSensitive(), isRegExpSearch(), isSearchWrapped()
+*/
+void QtxSearchTool::setCaseSensitive( bool on )
+{
+  if ( myControls & Case )
+    myIsCaseSens->setChecked( on );
+}
+
+/*!
+  \brief Set 'regular expression search' option value.
+  \param on new option state
+  \sa setCaseSensitive(), setSearchWrapped(), setControls()
+  \sa isCaseSensitive(), isRegExpSearch(), isSearchWrapped()
+*/
+void QtxSearchTool::setRegExpSearch( bool on )
+{
+  if ( myControls & RegExp )
+    myIsRegExp->setChecked( on );
+}
+
+/*!
+  \brief Set 'search wrapping' option value.
+  \param on new option state
+  \sa setCaseSensitive(), setRegExpSearch(), setControls()
+  \sa isCaseSensitive(), isRegExpSearch(), isSearchWrapped()
+*/
+void QtxSearchTool::setSearchWrapped( bool on )
+{
+  if ( myControls & Wrap )
+    myWrap->setChecked( on );
 }
 
 /*!
@@ -649,60 +689,71 @@ bool QtxSearchTool::event( QEvent* e )
 */
 bool QtxSearchTool::eventFilter( QObject* o, QEvent* e )
 {
-  if ( myWatched && o == myWatched && e->type() == QEvent::KeyPress )
+  switch ( e->type() ) 
   {
-    QKeyEvent* ke = (QKeyEvent*)e;
-    int key = ke->key();
-    QString ttf = myData->text();
-    QString text = ke->text();
-
-    if ( isVisible() )
+  case QEvent::KeyPress:
+    if ( myWatched && o == myWatched )
     {
-      switch ( key )
+      QKeyEvent* ke = (QKeyEvent*)e;
+      int key = ke->key();
+      QString ttf = myData->text();
+      QString text = ke->text();
+      
+      if ( isVisible() )
       {
-      case Qt::Key_Escape:
-	hide();
-	return true;
-      case Qt::Key_Backspace:
-	ttf.chop( 1 );
-	break;
-      case Qt::Key_Return:
-      case Qt::Key_Enter:
-	findNext();
-	return true;
-      default:
-	if ( text.isEmpty() || !text[0].isPrint() )
-	  return QFrame::eventFilter( o, e );
-	ttf += text;
+        switch ( key )
+        {
+        case Qt::Key_Escape:
+          hide();
+          return true;
+        case Qt::Key_Backspace:
+          ttf.chop( 1 );
+          break;
+        case Qt::Key_Return:
+        case Qt::Key_Enter:
+          findNext();
+          return true;
+        default:
+          if ( text.isEmpty() || !text[0].isPrint() )
+            return QFrame::eventFilter( o, e );
+          ttf += text;
+        }
       }
+      else
+      {
+        if ( text.isEmpty() || ! isEnabled() || !text[0].isPrint() )
+          return QFrame::eventFilter( o, e );
+
+        if ( text.startsWith( '/' ) && myActivators & SlashKey )
+        {
+          myData->clear();
+          find();
+          return true;
+        }
+        else if ( !( myActivators & PrintKey ) )
+        {
+          return QFrame::eventFilter( o, e );
+        }
+        
+        ttf = text;
+        show();
+      }
+      myData->setText( ttf );
+      find( ttf );
     }
-    else
+    break; // case QEvent::KeyPress
+  case QEvent::FocusIn:
+  case QEvent::FocusOut:
+    if ( focused() )
     {
-      if ( text.isEmpty() || ! isEnabled() || !text[0].isPrint() )
-	return QFrame::eventFilter( o, e );
-
-      if ( text.startsWith( '/' ) && myActivators & SlashKey )
-      {
-	myData->clear();
-	find();
-	return true;
-      }
-      else if ( !( myActivators & PrintKey ) )
-      {
-	return QFrame::eventFilter( o, e );
-      }
-
-      ttf = text;
-      show();
-    }
-    myData->setText( ttf );
-    find( ttf );
-  }
-  if ( o == myData )
-  { 
-    if ( e->type() == QEvent::FocusIn && myAutoHideTimer->isActive() ) 
       myAutoHideTimer->stop();
-  } 
+    }
+    else if ( isVisible() && isAutoHideEnabled() )
+    {
+      myAutoHideTimer->start();
+    }
+    break;
+  }
   return QFrame::eventFilter( o, e );
 }
 
@@ -772,9 +823,9 @@ void QtxSearchTool::find( const QString& what, int where )
     show();
 
   QPalette p = myData->palette();
-  p.setColor( QPalette::Active, 
-	      QPalette::Base, 
-	      QApplication::palette( myData ).color( QPalette::Active, 
+  p.setColor( QPalette::Active,
+	      QPalette::Base,
+	      QApplication::palette( myData ).color( QPalette::Active,
 						     QPalette::Base ) );
 
   bool found = true;
@@ -799,7 +850,7 @@ void QtxSearchTool::find( const QString& what, int where )
   if ( !found )
     p.setColor( QPalette::Active, QPalette::Base, QColor( highlightColor ) );
 
-  if ( !myData->hasFocus() && myAutoHideEnabled )
+  if ( !focused() && myAutoHideEnabled )
     myAutoHideTimer->start();
 
   myData->setPalette( p );
@@ -856,42 +907,59 @@ void QtxSearchTool::init()
   myToFirst->setAutoRaise( true );
   myBtnWidget_layout->addWidget( wrapWidget( myBtnWidget, myToFirst ), 0 );
   connect( myToFirst, SIGNAL( clicked() ), this, SLOT( findFirst() ) );
+  myToFirst->installEventFilter( this );
 
   myPrev = new QToolButton( myBtnWidget );
   myPrev->setIcon( QIcon( prev_xpm ) );
   myPrev->setAutoRaise( true );
   myBtnWidget_layout->addWidget( wrapWidget( myBtnWidget, myPrev ), 0 );
   connect( myPrev, SIGNAL( clicked() ), this, SLOT( findPrevious() ) );
+  myPrev->installEventFilter( this );
 
   myNext = new QToolButton( myBtnWidget );
   myNext->setIcon( QIcon( next_xpm ) );
   myNext->setAutoRaise( true );
   myBtnWidget_layout->addWidget( wrapWidget( myBtnWidget, myNext ), 0 );
   connect( myNext, SIGNAL( clicked() ), this, SLOT( findNext() ) );
+  myNext->installEventFilter( this );
 
   myToLast = new QToolButton( myBtnWidget );
   myToLast->setIcon( QIcon( last_xpm ) );
   myToLast->setAutoRaise( true );
   myBtnWidget_layout->addWidget( wrapWidget( myBtnWidget, myToLast ), 0 );
   connect( myToLast, SIGNAL( clicked() ), this, SLOT( findLast() ) );
+  myToLast->installEventFilter( this );
 
   myIsCaseSens = new QCheckBox( tr( "Case sensitive" ), myModWidget );
   myModWidget_layout->addWidget( wrapWidget( myBtnWidget, myIsCaseSens ) );
   connect( myIsCaseSens, SIGNAL( stateChanged( int ) ), this, SLOT( modifierSwitched() ) );
+  myIsCaseSens->installEventFilter( this );
 
   myIsRegExp = new QCheckBox( tr( "Regular expression" ), myModWidget );
   myModWidget_layout->addWidget( wrapWidget( myBtnWidget, myIsRegExp ) );
   connect( myIsRegExp, SIGNAL( stateChanged( int ) ), this, SLOT( modifierSwitched() ) );
+  myIsRegExp->installEventFilter( this );
 
   myWrap = new QCheckBox( tr( "Wrap search" ), myModWidget );
   myModWidget_layout->addWidget( wrapWidget( myBtnWidget, myWrap ) );
   connect( myWrap, SIGNAL( stateChanged( int ) ), this, SLOT( modifierSwitched() ) );
+  myWrap->installEventFilter( this );
 
   setWatchedWidget( myWatched );
 
   setShortcuts( QKeySequence( "Ctrl+S" ) );
   setActivators( Any );
   updateControls();
+}
+
+/*!
+  \brief Check if any child widget has input focus.
+  \internal
+  \return \c true if any child widget has input focus
+*/
+bool QtxSearchTool::focused() const
+{
+  return isVisible() && isAncestorOf( QApplication::focusWidget() );
 }
 
 /*!
@@ -949,7 +1017,7 @@ void QtxSearchTool::initShortcuts( const QList<QKeySequence>& accels )
   }
 
   myAutoHideTimer = new QTimer( this );
-  myAutoHideTimer->setInterval( 10000 );
+  myAutoHideTimer->setInterval( DefaultAutoHideDelay );
   myAutoHideTimer->setSingleShot( true );
   connect( myAutoHideTimer, SIGNAL( timeout() ), this, SLOT( hide() ) );
 
@@ -968,7 +1036,7 @@ void QtxSearchTool::updateShortcuts()
   ShortcutList::Iterator it;
   for ( it = myShortcuts.begin(), i = 0; it != myShortcuts.end(); ++it, i++ )
   {
-    (*it)->setEnabled( isEnabled() && ( i < 3 && myActivators & StandardKey || 
+    (*it)->setEnabled( isEnabled() && ( i < 3 && myActivators & StandardKey ||
 					i > 2 && myActivators & HotKey ) );
   }
 }
@@ -988,7 +1056,7 @@ void QtxSearchTool::updateControls()
   myIsCaseSens->parentWidget()->setVisible( myControls & Case );
   myIsRegExp->parentWidget()->setVisible( myControls & RegExp );
   myWrap->parentWidget()->setVisible( myControls & Wrap );
-  
+
   myBtnWidget->setVisible( myControls & Standard );
   myModWidget->setVisible( myControls & Modifiers );
 }
@@ -999,9 +1067,9 @@ void QtxSearchTool::updateControls()
 
   Searcher is generic class which is used by the search tool to perform
   widget-dependant search.
-  
+
   To implement a searcher for some widget, just inherit from QtxSearchTool::Searcher
-  and override pure virtual methods find(), findNext(), findPrevious(), 
+  and override pure virtual methods find(), findNext(), findPrevious(),
   findFirst() and findLast()
 */
 
@@ -1063,7 +1131,7 @@ QtxSearchTool::Searcher::~Searcher()
   \class QtxTreeViewSearcher
   \brief A QTreeView class based searcher.
 
-  The class QtxTreeViewSearcher can be used to find the items in the 
+  The class QtxTreeViewSearcher can be used to find the items in the
   QTreeView widget.
 
   The column for which data should be searched can be get/set with the
@@ -1093,7 +1161,7 @@ QtxTreeViewSearcher::~QtxTreeViewSearcher()
   \brief Get column for which search is performed.
   \return column number
   \sa setSearchColumn()
-*/ 
+*/
 int QtxTreeViewSearcher::searchColumn() const
 {
   return myColumn;
@@ -1103,7 +1171,7 @@ int QtxTreeViewSearcher::searchColumn() const
   \brief Set column for which search should be performed.
   \param column column number
   \sa searchColumn()
-*/ 
+*/
 void QtxTreeViewSearcher::setSearchColumn( int column )
 {
   myColumn = column;
@@ -1119,8 +1187,8 @@ bool QtxTreeViewSearcher::find( const QString& text, QtxSearchTool* st )
 {
   if ( !myView )
     return false;
-  
-  const QModelIndexList& l = myView->selectionModel() ? 
+
+  const QModelIndexList& l = myView->selectionModel() ?
     myView->selectionModel()->selectedIndexes() : QModelIndexList();
 
   QModelIndex current;
@@ -1151,7 +1219,7 @@ bool QtxTreeViewSearcher::find( const QString& text, QtxSearchTool* st )
       showItem( next );
       return true;
     }
-    
+
     if ( wrapSearch )
     {
       showItem( found.first() );
@@ -1172,8 +1240,8 @@ bool QtxTreeViewSearcher::findNext( const QString& text, QtxSearchTool* st )
 {
   if ( !myView )
     return false;
-  
-  const QModelIndexList& l = myView->selectionModel() ? 
+
+  const QModelIndexList& l = myView->selectionModel() ?
     myView->selectionModel()->selectedIndexes() : QModelIndexList();
 
   QModelIndex current;
@@ -1200,7 +1268,7 @@ bool QtxTreeViewSearcher::findNext( const QString& text, QtxSearchTool* st )
       showItem( next );
       return true;
     }
-    
+
     if ( wrapSearch )
     {
       showItem( found.first() );
@@ -1221,8 +1289,8 @@ bool QtxTreeViewSearcher::findPrevious( const QString& text, QtxSearchTool* st )
 {
   if ( !myView )
     return false;
-  
-  const QModelIndexList& l = myView->selectionModel() ? 
+
+  const QModelIndexList& l = myView->selectionModel() ?
     myView->selectionModel()->selectedIndexes() : QModelIndexList();
 
   QModelIndex current;
@@ -1249,7 +1317,7 @@ bool QtxTreeViewSearcher::findPrevious( const QString& text, QtxSearchTool* st )
       showItem( next );
       return true;
     }
-    
+
     if ( wrapSearch )
     {
       showItem( found.last() );
@@ -1299,6 +1367,24 @@ bool QtxTreeViewSearcher::findLast( const QString& text, QtxSearchTool* st )
 }
 
 /*!
+  \brief Get match flags to be used by the searcher.
+  \param st search tool widget
+*/
+Qt::MatchFlags QtxTreeViewSearcher::matchFlags( QtxSearchTool* st ) const
+{
+  Qt::MatchFlags fl = Qt::MatchRecursive;
+
+  if ( st->isCaseSensitive() )
+    fl = fl | Qt::MatchCaseSensitive;
+  if ( st->isRegExpSearch() )
+    fl = fl | Qt::MatchRegExp;
+  else
+    fl = fl | Qt::MatchContains;
+
+  return fl;
+}
+
+/*!
   \brief Find all appropriate items.
   \internal
   \param text text to be found
@@ -1306,16 +1392,20 @@ bool QtxTreeViewSearcher::findLast( const QString& text, QtxSearchTool* st )
 */
 QModelIndexList QtxTreeViewSearcher::findItems( const QString& text, QtxSearchTool* st )
 {
-  Qt::MatchFlags fl = Qt::MatchRecursive;
+  QString s = text;
 
-  if ( st->isCaseSensitive() )
-    fl = fl | Qt::MatchCaseSensitive;
-  fl = fl | ( st->isRegExpSearch() ? Qt::MatchRegExp : Qt::MatchContains );
+  Qt::MatchFlags fl = matchFlags( st );
+  if ( fl & Qt::MatchRegExp ) {
+    if ( !s.startsWith( "^" ) && !s.startsWith( ".*" ) )
+      s.prepend( ".*" );
+    if ( !s.endsWith( "$" ) && !s.endsWith( ".*" ) )
+      s.append( ".*" );
+  }
 
   if ( myView->model() )
     return myView->model()->match( myView->model()->index( 0, myColumn ),
-				   Qt::DisplayRole, 
-				   text, -1, fl );
+				   Qt::DisplayRole,
+				   s, -1, fl );
   return QModelIndexList();
 }
 
@@ -1327,7 +1417,7 @@ QModelIndexList QtxTreeViewSearcher::findItems( const QString& text, QtxSearchTo
   \param direction if \c true find next appropriate item, otherwise find privious
   appropriate item
 */
-QModelIndex QtxTreeViewSearcher::findNearest( const QModelIndex& index, 
+QModelIndex QtxTreeViewSearcher::findNearest( const QModelIndex& index,
 					      const QModelIndexList& lst,
 					      bool direction )
 {
@@ -1364,7 +1454,7 @@ void QtxTreeViewSearcher::showItem( const QModelIndex& index )
 {
   if ( myView && index.isValid() && myView->selectionModel() )
   {
-    QItemSelectionModel::SelectionFlags f = 
+    QItemSelectionModel::SelectionFlags f =
       QItemSelectionModel::Select | QItemSelectionModel::Rows | QItemSelectionModel::Clear;
     myView->selectionModel()->select( index, f );
     myView->scrollTo( index );
@@ -1399,7 +1489,7 @@ QString QtxTreeViewSearcher::getId( const QModelIndex& index )
   \return 0 if items are equal, negative value if left item is less than right one
   and positive value otherwise
 */
-int QtxTreeViewSearcher::compareIndices( const QModelIndex& left, 
+int QtxTreeViewSearcher::compareIndices( const QModelIndex& left,
 					 const QModelIndex& right )
 {
   QString leftId = getId( left );
@@ -1415,6 +1505,6 @@ int QtxTreeViewSearcher::compareIndices( const QModelIndex& left,
     if ( lid != rid )
       return lid - rid;
   }
-  return idsLeft.count() < idsRight.count() ? -1 : 
+  return idsLeft.count() < idsRight.count() ? -1 :
     ( idsLeft.count() == idsRight.count() ? 0 : 1 );
 }

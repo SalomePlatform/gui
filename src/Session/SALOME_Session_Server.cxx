@@ -623,6 +623,8 @@ int main( int argc, char **argv )
       {
         // Set SALOME style to the application
 	SUIT_ResourceMgr resMgr( "SalomeApp", QString( "%1Config" ) );
+	resMgr.setCurrentFormat( "xml" );
+	resMgr.loadLanguage( false, "LightApp", "en" );
 	if ( bool isSSUse = resMgr.booleanValue( "Style", "use_salome_style", true ) )
 	{
 	  Style_Salome* aStyle = new Style_Salome();

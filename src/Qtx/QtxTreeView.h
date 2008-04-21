@@ -53,6 +53,7 @@ public:
 
 protected slots:
   void     onHeaderClicked( int );
+  void     rowsAboutToBeRemoved( const QModelIndex&, int, int );
   void     selectionChanged( const QItemSelection&, const QItemSelection& );
   
 protected:

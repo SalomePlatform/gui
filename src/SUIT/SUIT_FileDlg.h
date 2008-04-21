@@ -54,6 +54,8 @@ public:
   QStringList         selectedFiles() const;
   QString             selectedFile() const;
 
+  void selectFile( const QString& );
+
   static QString      getLastVisitedDirectory();
 
   static QString      getFileName( QWidget*, 

@@ -637,7 +637,7 @@ void Plot2d_ViewWindow::onPrintView()
   if ( !myViewFrame )
     return;
 
-#ifndef WIN32
+#if !defined(WIN32) && !defined(QT_NO_CUPS)
 #if QT_VERSION < 0x040303
   if ( !Qtx::hasAnyPrinters() ) {
     SUIT_MessageBox::warning( this, tr( "WRN_WARNING" ),

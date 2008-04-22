@@ -1263,7 +1263,7 @@ bool Qtx::stringToConicalGradient( const QString& str, QConicalGradient& gradien
  * Cheque for existing any system printers
  */
 
-#ifndef WIN32
+#if !defined(WIN32) && !defined(QT_NO_CUPS)
 #if QT_VERSION < 0x040303
 #include <QLibrary>
 #include <cups/cups.h>
@@ -1275,7 +1275,7 @@ static CupsGetDests _cupsGetDests = 0;
 bool Qtx::hasAnyPrinters()
 {
   bool aRes = true;
-#ifndef WIN32
+#if !defined(WIN32) && !defined(QT_NO_CUPS)
 #if QT_VERSION < 0x040303
   QLibrary aCupsLib( QString( "cups" ) );
   if ( !aCupsLib.load() )

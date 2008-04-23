@@ -187,11 +187,11 @@ Do you want to reload it ?</translation>
     </message>
     <message>
         <source>OBJ_BROWSER_COLUMN_0</source>
-        <translation>Value</translation>
+        <translation>Entry</translation>
     </message>
     <message>
         <source>OBJ_BROWSER_COLUMN_1</source>
-        <translation>Entry</translation>
+        <translation>Value</translation>
     </message>
     <message>
         <source>OBJ_BROWSER_COLUMN_2</source>

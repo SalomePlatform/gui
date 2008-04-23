@@ -107,6 +107,7 @@ public slots:
   void                                onSaveGUIState();// called from VISU
 
 protected slots:
+  void                                onStudyCreated( SUIT_Study* );
   void                                onStudySaved( SUIT_Study* );
   void                                onStudyOpened( SUIT_Study* );
   void                                onDesktopMessage( const QString& );
@@ -130,6 +131,8 @@ protected:
 
   virtual QMap<int, QString>          activateModuleActions() const;
   virtual void                        moduleActionSelected( const int );
+
+  void                                objectBrowserColumnsVisibility();
 
 private slots:
   void                                onDeleteInvalidReferences();

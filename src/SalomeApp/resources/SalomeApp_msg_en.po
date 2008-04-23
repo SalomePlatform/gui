@@ -155,10 +155,10 @@ msgid "SalomeApp_Application::OBJ_BROWSER_NAME"
 msgstr "Object"
 
 msgid "SalomeApp_Application::OBJ_BROWSER_COLUMN_0"
-msgstr "Value"
+msgstr "Entry"
 
 msgid "SalomeApp_Application::OBJ_BROWSER_COLUMN_1"
-msgstr "Entry"
+msgstr "Value"
 
 msgid "SalomeApp_Application::OBJ_BROWSER_COLUMN_2"
 msgstr "IOR"

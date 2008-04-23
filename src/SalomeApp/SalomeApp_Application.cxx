@@ -48,6 +48,7 @@
 #include <SUIT_ResourceMgr.h>
 
 #include <QtxMRUAction.h>
+#include <QtxTreeView.h>
 
 // temporary commented
 //#include <OB_ListItem.h>
@@ -1276,6 +1277,14 @@ void SalomeApp_Application::onDeleteGUIState()
   updateSavePointDataObjects( study );
 }
 
+/*!Called on New study operation*/
+void SalomeApp_Application::onStudyCreated( SUIT_Study* study )
+{
+  LightApp_Application::onStudyCreated( study );
+
+  objectBrowserColumnsVisibility();
+}
+
 /*!Called on Save study operation*/
 void SalomeApp_Application::onStudySaved( SUIT_Study* study )
 {
@@ -1292,6 +1301,8 @@ void SalomeApp_Application::onStudySaved( SUIT_Study* study )
 void SalomeApp_Application::onStudyOpened( SUIT_Study* study )
 {
   LightApp_Application::onStudyOpened( study );
+
+  objectBrowserColumnsVisibility();
 
   // temporary commented
   /*if ( objectBrowser() ) {
@@ -1396,4 +1407,15 @@ bool SalomeApp_Application::useStudy( const QString& theName )
   updateDesktopTitle();
   updateCommandsStatus();
   return res;
+}
+
+/*! Show/hide object browser colums according to preferences */
+void SalomeApp_Application::objectBrowserColumnsVisibility()
+{
+  if ( objectBrowser() )
+    for ( int i = SalomeApp_DataObject::EntryIdx; i <= SalomeApp_DataObject::RefEntryIdx; i++ )
+      objectBrowser()->treeView()->setColumnHidden( i, 
+						    !(resourceMgr()->booleanValue( "ObjectBrowser",
+										   QString().sprintf( "visibility_column_%d", i-1 ), 
+										   true )) );
 }

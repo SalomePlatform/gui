@@ -83,8 +83,8 @@
     <parameter name="auto_hide_search_tool" value="true" />
     <parameter name="auto_size"             value="false" />
     <parameter name="auto_size_first"       value="true"  />
-    <parameter name="visibility_column_0"   value="true"  />
-    <parameter name="visibility_column_1"   value="false" />
+    <parameter name="visibility_column_0"   value="false"  />
+    <parameter name="visibility_column_1"   value="true" />
     <parameter name="visibility_column_2"   value="false" />
     <parameter name="visibility_column_3"   value="false" />
   </section>

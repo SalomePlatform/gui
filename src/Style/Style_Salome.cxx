@@ -443,7 +443,9 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
         button = subControlRect(cc, toolbutton, SC_ToolButton, w);
         menuArea = subControlRect(cc, toolbutton, SC_ToolButtonMenu, w);
 
-        if (w && qobject_cast<QToolBar *>(w->parentWidget())) {
+        if (w && ( qobject_cast<QToolBar *>(w->parentWidget() ) || 
+		   toolbutton->state & State_AutoRaise && !( toolbutton->state & State_MouseOver ) )
+	    ) {
           QWindowsStyle::drawComplexControl( cc, opt, p, w );
           return;
         }
@@ -1562,14 +1564,13 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
           drawHoverRect(p, opt->rect, opt->palette.color( QPalette::Window ), aRad, Style_Tools::All, true);
         else {
           Style_Tools::shadowRect( p, opt->rect, aRad, LINE_GR_MARGIN, SHADOW,
-                                   Style_Tools::All, getColor( Style_Model::fld_light_clr ),
+                                   Style_Tools::All, opt->palette.color( QPalette::Base ), //, getColor( Style_Model::fld_light_clr ),
                                    getColor( Style_Model::fld_dark_clr ), aBrdTopCol, aBrdBotCol,
                                    getBoolValue( Style_Model::all_antialized ), false );
         }
       }
       else {
-        drawPrimitive( PE_FrameLineEdit, opt, p, w );
-       /*
+        //drawPrimitive( PE_FrameLineEdit, opt, p, w );
         // fillRect()'s not correct working with basic color
         // for ListWidget in edit QListWidgetItem mode
         if (const QStyleOptionFrame *panel = qstyleoption_cast<const QStyleOptionFrame *>(opt)) {
@@ -1580,7 +1581,6 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
           else // not QLineEdit
             p->fillRect(rect, panel->palette.brush(QPalette::Base));
          }
-       */
       }
       break;
     }

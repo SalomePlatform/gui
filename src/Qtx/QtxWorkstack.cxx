@@ -713,6 +713,7 @@ void QtxWorkstackArea::customEvent( QEvent* e )
   switch ( we->type() )
   {
   case ActivateWidget:
+    myBar->updateActiveState();
     emit activated( activeWidget() );
     break;
   case FocusWidget:
@@ -725,10 +726,12 @@ void QtxWorkstackArea::customEvent( QEvent* e )
         if ( activeWidget()->focusWidget()->hasFocus() )
         {
           QFocusEvent in( QEvent::FocusIn );
-	        QApplication::sendEvent( this, &in );
-	      }
-        else
+	  QApplication::sendEvent( this, &in );
+	}
+        else {
           activeWidget()->focusWidget()->setFocus();
+	  myBar->updateActiveState();
+	}
       }
     }
     break;
@@ -747,6 +750,8 @@ void QtxWorkstackArea::customEvent( QEvent* e )
 void QtxWorkstackArea::focusInEvent( QFocusEvent* e )
 {
   QFrame::focusInEvent( e );
+
+  myBar->updateActiveState();
 
   emit activated( activeWidget() );
 }
@@ -1421,6 +1426,15 @@ void QtxWorkstackTabBar::contextMenuEvent( QContextMenuEvent* e )
 {
   if ( e->reason() != QContextMenuEvent::Mouse )
     emit contextMenuRequested( e->globalPos() );
+}
+
+/*!
+  \brief Process widget change state events (style, palette, enable state changing, etc).
+  \param e change event (not used)
+*/
+void QtxWorkstackTabBar::changeEvent( QEvent* /*e*/ )
+{
+  updateActiveState();
 }
 
 /*

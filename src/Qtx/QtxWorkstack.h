@@ -326,6 +326,7 @@ protected:
   virtual void        mousePressEvent( QMouseEvent* );
   virtual void        mouseReleaseEvent( QMouseEvent* );
   virtual void        contextMenuEvent( QContextMenuEvent* );
+  virtual void        changeEvent( QEvent* );
 
 //  virtual void        paintLabel( QPainter*, const QRect&, QTab*, bool ) const;
 

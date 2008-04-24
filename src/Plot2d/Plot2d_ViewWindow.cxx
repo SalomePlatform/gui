@@ -391,7 +391,7 @@ void Plot2d_ViewWindow::createActions()
                            tr( "MNU_PRINT_VIEW" ),
 			   0, this);
   aAction->setStatusTip( tr( "DSC_PRINT_VIEW" ) );
-  connect( aAction, SIGNAL( activated() ), this, SLOT( onPrintView() ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onPrintView() ) );
   myActionsMap[ PrintId ] = aAction;
 
   // Set initial values

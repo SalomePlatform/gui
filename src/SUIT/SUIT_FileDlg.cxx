@@ -553,3 +553,18 @@ QString SUIT_FileDlg::getExistingDirectory( QWidget* parent, const QString& init
   QApplication::processEvents();
   return dirname;
 }
+
+/*!
+  \brief Selects current file
+
+  This version of selectFile() methods works similar to Qt version 3.x:
+  it selects the given file as current and it changes the current file dialog's directory
+  to the directory of the file
+  
+  \param f - new current file name 
+*/
+void SUIT_FileDlg::selectFile( const QString& f )
+{
+  QFileDialog::selectFile( f );
+  setDirectory( QFileInfo( f ).absoluteDir() );
+}

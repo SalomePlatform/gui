@@ -43,6 +43,8 @@ public:
   bool                isOpenDlg()    const;    
   QString             selectedFile() const;
 
+  void                selectFile( const QString& );
+
   void                setValidator( SUIT_FileValidator* );
 
   static QString      getFileName( QWidget* parent, const QString& initial, const QStringList& filters, 

@@ -338,6 +338,77 @@ void Style_Tools::drawArrow( QStyle::PrimitiveElement type, QPainter* p, const Q
   p->restore();
 }
 
+void Style_Tools::drawSign( QStyle::PrimitiveElement type, QPainter* p, const QRect& r,
+			    const QColor& pen, const QColor& brush )
+{
+  p->save();
+  QPainterPath sign;
+  int x = r.x(), y = r.y(), w = r.right()-x, h = r.bottom()-y;
+  int x11 = 0, x12 = 0, y11 = 0, y12 = 0;
+  int aDelta = qMin( (int)(w/3.5), (int)(h/3.5) );
+  int deltaX = aDelta, deltaY = aDelta;
+  QLineF line( 0, 0, 1, 0 );
+  int xc = r.center().x(), yc = r.center().y();
+  p->translate( xc, yc );
+  bool correct = false;
+  switch( type ) {
+    case QStyle::PE_IndicatorSpinMinus:
+      correct = true;
+    case QStyle::PE_IndicatorSpinPlus: {
+      aDelta = (int)(deltaY/2);
+      if ( correct ) {
+        aDelta = -aDelta;
+        deltaY = -deltaY;
+      }
+      if ( correct ) 
+	sign.moveTo(  deltaY/2,   -aDelta/2-(deltaY/2-aDelta/3) );
+      else {
+	sign.moveTo(  aDelta/3,   -aDelta/2 );
+	sign.lineTo(  aDelta/3,   -aDelta/2-(deltaY/2-aDelta/3) );
+	sign.lineTo(  deltaY/2,   -aDelta/2-(deltaY/2-aDelta/3) );
+      }
+      
+      sign.lineTo(    deltaY/2,   -aDelta/2-(deltaY/2-aDelta/3)-2*aDelta/3 );
+      
+      if ( !correct ) {
+	sign.lineTo(  aDelta/3,   -aDelta/2-(deltaY/2-aDelta/3)-2*aDelta/3 );
+	sign.lineTo(  aDelta/3,   -aDelta/2-deltaY );
+	sign.lineTo( -aDelta/3,   -aDelta/2-deltaY );
+	sign.lineTo( -aDelta/3,   -aDelta/2-(deltaY/2-aDelta/3)-2*aDelta/3 );
+      }
+      
+      sign.lineTo(   -deltaY/2,   -aDelta/2-(deltaY/2-aDelta/3)-2*aDelta/3 );
+      sign.lineTo(   -deltaY/2,   -aDelta/2-(deltaY/2-aDelta/3) );
+
+      if ( correct ) 
+	sign.lineTo(  deltaY/2,   -aDelta/2-(deltaY/2-aDelta/3) );
+      else {
+	sign.lineTo( -aDelta/3,   -aDelta/2-(deltaY/2-aDelta/3) );
+	sign.lineTo( -aDelta/3,   -aDelta/2 );
+	sign.lineTo(  aDelta/3,   -aDelta/2);
+      }
+
+      if ( correct )
+        deltaX = -deltaX;
+      x11 = -deltaX, y11 = -deltaY, x12 = deltaX, y12 = 0;
+      break;
+    }
+    default:
+      p->restore();
+      return;
+  }
+  p->setPen( pen );
+  p->setBrush( brush );
+
+  QLinearGradient gr( x11, y11, x12, y12 );
+  gr.setColorAt( 0.0, pen );                // grayer
+  gr.setColorAt( 1.0, brush);               // lighter
+  p->fillPath( sign, gr );
+  p->strokePath( sign, QPen( pen, Qt::SolidLine ) );
+
+  p->restore();
+}
+
 QPainterPath Style_Tools::tabRect( QPainter* p, const QRect& r, const int position, const double rad,
                                    const double delta, const QColor& light, const QColor& dark,
                                    const QColor& border_top, const QColor& border_bot,

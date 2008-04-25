@@ -163,6 +163,8 @@ static const char* const minimize_xpm[] = {
 Style_Salome::Style_Salome()
   : QWindowsStyle()
 {
+  //Q_INIT_RESOURCE(Style);
+
   myModel = new Style_Model();
   myModel->setDefaults( qApp );
 
@@ -278,7 +280,7 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
           pe = (spin->buttonSymbols == QAbstractSpinBox::PlusMinus ? PE_IndicatorSpinPlus
                : PE_IndicatorSpinUp);
           copy.rect = aBtnRect;
-          drawPrimitive(PE_IndicatorSpinUp, &copy, p, w);
+          drawPrimitive(pe, &copy, p, w);
         }
         if (spin->subControls & SC_SpinBoxDown) {
           copy.subControls = SC_SpinBoxDown;
@@ -1162,9 +1164,6 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
           }
         }
       break;
-    case CE_ToolBoxTab:
-      QCommonStyle::drawControl( ce, opt, p, w );
-      break;
     case CE_HeaderSection: {
       bool aStateOn = opt->state & State_On;
       QColor aColor = getColor( Style_Model::header_clr );
@@ -1298,13 +1297,12 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
     break;
   }
   default:
-    QWindowsStyle::drawControl( ce, opt, p, w );
-    break;
+      QWindowsStyle::drawControl( ce, opt, p, w );
   }
 }
 
 void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
-                                 QPainter* p, const QWidget* w ) const
+				  QPainter* p, const QWidget* w ) const
 {
   const QPalette& pal = opt->palette;
   bool doRestore = false;
@@ -1368,7 +1366,9 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
     case PE_IndicatorArrowUp:
     case PE_IndicatorArrowDown:
     case PE_IndicatorSpinUp:
-    case PE_IndicatorSpinDown: {
+    case PE_IndicatorSpinDown:
+    case PE_IndicatorSpinPlus:
+    case PE_IndicatorSpinMinus: {
       QRect rect = opt->rect;
       QColor pen, brush;
       if ( opt->state & State_Enabled ) {
@@ -1380,7 +1380,10 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         pen = opt->palette.mid().color();
 	brush = pen;
       }
-      Style_Tools::drawArrow( pe, p, rect, pen, brush );
+      if ( pe == PE_IndicatorSpinPlus || pe == PE_IndicatorSpinMinus )
+	Style_Tools::drawSign( pe, p, rect, pen, brush );
+      else
+	Style_Tools::drawArrow( pe, p, rect, pen, brush );
       break;
     }
     case PE_IndicatorCheckBox: {
@@ -1390,7 +1393,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
       QBrush fill;
       if (opt->state & State_NoChange)
         fill = QBrush( opt->palette.color( QPalette::Base ), Qt::Dense4Pattern);
-      else if (opt->state & ( State_Sunken | !State_Enabled ) )
+      else if (opt->state & ( State_Sunken | ~State_Enabled ) )
         fill = opt->palette.color( QPalette::Window );
       else if (opt->state & State_Enabled) {
         if (!(opt->state & State_Off) )
@@ -1433,15 +1436,13 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         p->save();
         doRestore = true;
       }
-      if (pe == PE_Q3CheckListIndicator || pe == PE_IndicatorViewItemCheck) {
-        const QStyleOptionViewItem *itemViewOpt = qstyleoption_cast<const QStyleOptionViewItem *>(opt);
-        p->setPen(itemViewOpt && itemViewOpt->showDecorationSelected
-                  && opt->state & State_Selected ? opt->palette.highlightedText().color()
-                  : opt->palette.text().color());
-        if (opt->state & State_NoChange)
-          p->setBrush( opt->palette.color( QPalette::Button ) );
-        p->drawRect(opt->rect.x() + 1, opt->rect.y() + 1, 11, 11);
-      }
+      const QStyleOptionViewItem *itemViewOpt = qstyleoption_cast<const QStyleOptionViewItem *>(opt);
+      p->setPen(itemViewOpt && itemViewOpt->showDecorationSelected
+		&& opt->state & State_Selected ? opt->palette.highlightedText().color()
+		: opt->palette.text().color());
+      if (opt->state & State_NoChange)
+	p->setBrush( opt->palette.color( QPalette::Button ) );
+      p->drawRect(opt->rect.x() + 1, opt->rect.y() + 1, 11, 11);
       if (!(opt->state & State_Off)) {
         QLineF lines[11];
         int i, xx, yy;
@@ -1461,7 +1462,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         QColor aColor = getColor( Style_Model::pointer_clr );
         if ( !(opt->state & State_Enabled ) )
           aColor = opt->palette.mid().color();
-        if ( opt->state & State_Selected )
+        if ( opt->state & State_Selected && itemViewOpt && itemViewOpt->showDecorationSelected )
           aColor = opt->palette.highlightedText().color();
 
         p->setPen( QPen( aColor ) );
@@ -1564,15 +1565,12 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
           drawHoverRect(p, opt->rect, opt->palette.color( QPalette::Window ), aRad, Style_Tools::All, true);
         else {
           Style_Tools::shadowRect( p, opt->rect, aRad, LINE_GR_MARGIN, SHADOW,
-                                   Style_Tools::All, opt->palette.color( QPalette::Base ), //, getColor( Style_Model::fld_light_clr ),
+                                   Style_Tools::All, opt->palette.color( QPalette::Base ), // getColor( Style_Model::fld_light_clr ),
                                    getColor( Style_Model::fld_dark_clr ), aBrdTopCol, aBrdBotCol,
                                    getBoolValue( Style_Model::all_antialized ), false );
         }
       }
       else {
-        //drawPrimitive( PE_FrameLineEdit, opt, p, w );
-        // fillRect()'s not correct working with basic color
-        // for ListWidget in edit QListWidgetItem mode
         if (const QStyleOptionFrame *panel = qstyleoption_cast<const QStyleOptionFrame *>(opt)) {
           QRect rect = panel->rect.adjusted( panel->lineWidth,  panel->lineWidth,
                                              -panel->lineWidth, -panel->lineWidth);
@@ -1718,7 +1716,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         if ( qobject_cast<QTreeView*>(aWdg) ) {
           QTreeView* trView = qobject_cast<QTreeView*>(aWdg);
           QHeaderView* aHeader = trView->header();
-          if ( aHeader ) {
+          if ( aHeader && aHeader->isVisible() ) {
             int aHeight = aHeader->contentsRect().height();
             r = QRect( r.x(), r.y()+aHeight, r.width(), r.height()-aHeight );
           }
@@ -1726,10 +1724,10 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         QPalette aPal = aWdg->palette();
         double aMarg = LINE_GR_MARGIN;
         QColor base = getColor( Style_Model::pal_base_clr ),
-               light = base,
+	       light = base,
                light_alt = base.dark(110),//AlternateBase color
                dark  = getColor( Style_Model::fld_dark_clr );
-        light.setAlpha( 0 );
+        //light.setAlpha( 0 ); // VSR commented: IPAL19262
         QLinearGradient gr_h(r.x(), r.y(), r.right(), r.y());
         gr_h.setColorAt( 0.0, dark );
         gr_h.setColorAt( aMarg / r.width(), light );
@@ -1849,6 +1847,28 @@ QPixmap Style_Salome::standardPixmap(StandardPixmap stPixmap, const QStyleOption
   default:
     return QWindowsStyle::standardPixmap( stPixmap, opt, w );
   }
+}
+
+QIcon Style_Salome::standardIconImplementation( StandardPixmap standardIcon, 
+						const QStyleOption* opt,
+						const QWidget* widget ) const
+{
+  /*
+  switch ( standardIcon )
+  {
+  case SP_MessageBoxInformation:
+    return QPixmap( ":/images/information.png" );
+  case SP_MessageBoxWarning:
+    return QPixmap( ":/images/warning.png" );
+  case SP_MessageBoxCritical:
+    return QPixmap( ":/images/critical.png" );
+  case SP_MessageBoxQuestion:
+    return QPixmap( ":/images/question.png" );
+  default:
+    break;
+  }
+  */
+  return QWindowsStyle::standardIconImplementation( standardIcon, opt, widget );
 }
 
 int Style_Salome::styleHint( StyleHint hint, const QStyleOption* opt, const QWidget* widget,

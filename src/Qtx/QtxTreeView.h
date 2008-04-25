@@ -59,10 +59,14 @@ protected slots:
   
 protected:
   void     setOpened( const QModelIndex&, const int, bool );
+  virtual void drawRow( QPainter*, const QStyleOptionViewItem&,
+                        const QModelIndex& ) const;
+  void     drawRow( const QModelIndex& );
 
 signals:
   void     sortingEnabled( bool );
   void     selectionChanged();
+  void     drawedRow( const QModelIndex& );
 
 private:
   void     emitSortingEnabled( bool );

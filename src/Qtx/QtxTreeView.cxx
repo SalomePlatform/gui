@@ -331,6 +331,20 @@ void QtxTreeView::selectionChanged( const QItemSelection& selected,
   emit( selectionChanged() );
 }
 
+void QtxTreeView::drawRow( QPainter* painter, const QStyleOptionViewItem& option,
+                           const QModelIndex& index ) const
+{
+  QTreeView::drawRow( painter, option, index );
+
+  QtxTreeView* aThis = (QtxTreeView*)this;
+  aThis->drawRow( index );
+}
+
+void QtxTreeView::drawRow( const QModelIndex& index )
+{
+  emit drawedRow( index );
+}
+
 /*!
   \brief Expand/collapse the specified item (recursively).
   \param index model index

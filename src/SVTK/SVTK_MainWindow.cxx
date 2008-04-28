@@ -42,6 +42,7 @@
 #include <SUIT_ViewWindow.h>
 #include <SUIT_Tools.h>
 #include <SUIT_ResourceMgr.h>
+#include <SUIT_Session.h>
 
 #include "SVTK_NonIsometricDlg.h"
 #include "SVTK_UpdateRateDlg.h"
@@ -67,11 +68,6 @@ SVTK_MainWindow
 {
   setObjectName(theName);
   setWindowFlags( windowFlags() & ~Qt::Window );
-
-  myToolBar = myViewWindow->toolMgr()->createToolBar( tr("LBL_TOOLBAR_LABEL"), -1, this );
-
-  createActions(theResourceMgr);
-  createToolBar();
 }
 
 /*!
@@ -81,6 +77,11 @@ void
 SVTK_MainWindow
 ::Initialize(SVTK_RenderWindowInteractor* theInteractor)
 {
+  myToolBar = toolMgr()->createToolBar( tr("LBL_TOOLBAR_LABEL"), -1, this );
+
+  createActions( SUIT_Session::session()->activeApplication()->resourceMgr() );
+  createToolBar();
+
   myInteractor = theInteractor;
   SetEventDispatcher(myInteractor->GetDevice());
 
@@ -104,6 +105,14 @@ SVTK_MainWindow
 SVTK_MainWindow
 ::~SVTK_MainWindow()
 {
+}
+
+/*!
+  \return assigned tool manager
+*/
+QtxActionToolMgr* SVTK_MainWindow::toolMgr() const
+{
+  return myViewWindow->toolMgr();
 }
 
 /*!
@@ -397,7 +406,7 @@ QToolBar*
 SVTK_MainWindow
 ::getToolBar()
 {
-  return myViewWindow->toolMgr()->toolBar( myToolBar );
+  return toolMgr()->toolBar( myToolBar );
 }
 
 void
@@ -419,7 +428,7 @@ SVTK_MainWindow
 ::createActions(SUIT_ResourceMgr* theResourceMgr)
 {
   QtxAction* anAction;
-  QtxActionToolMgr* mgr = myViewWindow->toolMgr();
+  QtxActionToolMgr* mgr = toolMgr();
 
   // Dump view
   anAction = new QtxAction(tr("MNU_DUMP_VIEW"), 
@@ -584,7 +593,7 @@ void
 SVTK_MainWindow
 ::createToolBar()
 {
-  QtxActionToolMgr* mgr = myViewWindow->toolMgr();
+  QtxActionToolMgr* mgr = toolMgr();
   
   mgr->append( DumpId, myToolBar );
   mgr->append( ViewTrihedronId, myToolBar );
@@ -909,5 +918,5 @@ SVTK_MainWindow
 */
 QtxAction* SVTK_MainWindow::action( int id ) const
 {
-  return dynamic_cast<QtxAction*>( myViewWindow->toolMgr()->action( id ) );
+  return dynamic_cast<QtxAction*>( toolMgr()->action( id ) );
 }

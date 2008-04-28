@@ -37,6 +37,7 @@ class vtkInteractorStyle;
 class vtkRenderWindowInteractor;
 
 class QtxAction;
+class QtxActionToolMgr;
 
 class SUIT_ResourceMgr;
 class SUIT_ViewWindow;
@@ -235,6 +236,8 @@ public:
   QImage dumpView();
 
  protected:  
+  virtual QtxActionToolMgr* toolMgr() const;
+
   void
   createActions(SUIT_ResourceMgr* theResourceMgr);
 

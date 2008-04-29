@@ -349,7 +349,6 @@ void STD_Application::onCloseDoc( bool ask )
   clearViewManagers();
 
   setActiveStudy( 0 );
-  delete study;
 
   int aNbStudies = 0;
   QList<SUIT_Application*> apps = SUIT_Session::session()->applications();
@@ -366,6 +365,9 @@ void STD_Application::onCloseDoc( bool ask )
     updateDesktopTitle();
     updateCommandsStatus();
   }
+
+  // IPAL19532: deleting study should be performed after calling setDesktop(0)
+  delete study;
 
   afterCloseDoc();
 

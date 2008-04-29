@@ -773,7 +773,11 @@ void SalomeApp_Application::onLoadScript( )
   filtersList.append(tr("PYTHON_FILES_FILTER"));
   filtersList.append(tr("ALL_FILES_FILTER"));
   
-  QString aFile = SUIT_FileDlg::getFileName( desktop(), QDir::currentDirPath(), filtersList, tr( "TOT_DESK_FILE_LOAD_SCRIPT" ), true, true );
+  QString anInitialPath = "";
+  if ( SUIT_FileDlg::getLastVisitedPath().isEmpty() )
+    anInitialPath = QDir::currentDirPath();
+
+  QString aFile = SUIT_FileDlg::getFileName( desktop(), anInitialPath, filtersList, tr( "TOT_DESK_FILE_LOAD_SCRIPT" ), true, true );
 
   if ( !aFile.isEmpty() )
   {

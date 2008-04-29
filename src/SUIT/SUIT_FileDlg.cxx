@@ -523,6 +523,14 @@ QString SUIT_FileDlg::getExistingDirectory( QWidget*       parent,
 }
 
 /*!
+  Returns the last visited path. [ static ]
+*/
+QString SUIT_FileDlg::getLastVisitedPath()
+{
+  return myLastVisitedPath;
+}
+
+/*!
   QFileDialog::dirPath() has a bug on Linux Debian (1 level up from correct
   directory is returned).  This function fixes the bug. 
 */

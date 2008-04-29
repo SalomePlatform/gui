@@ -57,6 +57,8 @@ public:
   static QString      getExistingDirectory( QWidget* parent, const QString& initial,
                                             const QString& caption, const bool showQuickDir = true );
 
+  static QString      getLastVisitedPath();
+
 public slots:
   void                polish();
 

@@ -37,6 +37,7 @@
 #include <QStyleOptionButton>
 #include <QStyleOptionTab>
 #include <QStyleOptionToolButton>
+#include <QStyleOptionFocusRect>
 #include <QStyleOption>
 #include <QSize>
 #include <QToolBar>
@@ -765,7 +766,8 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
           QRect tabRect = opt->rect;
           // line under selected tab bar object
           bool isSelected = opt->state & State_Selected;
-          bool isLast = tab->position == QStyleOptionTab::End;
+          bool isLast = tab->position == QStyleOptionTab::End ||
+                        tab->position == QStyleOptionTab::OnlyOneTab;
 	  QColor aColor = opt->palette.color( QPalette::Window ),
                  aDarkColor = aColor.dark( BUT_PERCENT_ON );
           QColor aBrdTopCol = getColor( Style_Model::border_tab_top_clr ),
@@ -789,7 +791,8 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
       }
     case CE_TabBarTabLabel:
       if (const QStyleOptionTab *tab = qstyleoption_cast<const QStyleOptionTab *>(opt)) {
-      	if ( tab->position == QStyleOptionTab::End ) {
+      	if ( tab->position == QStyleOptionTab::End ||
+             tab->position == QStyleOptionTab::OnlyOneTab ) {
           QRect oldRect = opt->rect;
           int aDelta = 0;
           if ( tab->shape == QTabBar::RoundedNorth || tab->shape == QTabBar::RoundedSouth ) {
@@ -1198,6 +1201,11 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
           }
         }
       break;
+      /*
+    case CE_ToolBoxTab:
+      QCommonStyle::drawControl( ce, opt, p, w );
+      break;
+      */
     case CE_HeaderSection: {
       bool aStateOn = opt->state & State_On;
       QColor aColor = getColor( Style_Model::header_clr );
@@ -1331,7 +1339,8 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
     break;
   }
   default:
-      QWindowsStyle::drawControl( ce, opt, p, w );
+    QWindowsStyle::drawControl( ce, opt, p, w );
+    break;
   }
 }
 
@@ -1394,10 +1403,10 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
                               pal.color( QPalette::Window ),
                               getColor( Style_Model::border_bot_clr ),
                               aBrdTopCol, aBrdBotCol, false, false, isHover, true );
-        break;
       }
-      else
-        QWindowsStyle::drawPrimitive( pe, opt, p, w );
+      else {
+	QWindowsStyle::drawPrimitive( pe, opt, p, w );
+      }
       break;
     }
     case PE_IndicatorArrowRight:
@@ -1501,7 +1510,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         QColor aColor = getColor( Style_Model::pointer_clr );
         if ( !(opt->state & State_Enabled ) )
           aColor = opt->palette.mid().color();
-        if ( opt->state & State_Selected && itemViewOpt && itemViewOpt->showDecorationSelected )
+	if ( opt->state & State_Selected && itemViewOpt && itemViewOpt->showDecorationSelected )
           aColor = opt->palette.highlightedText().color();
 
         p->setPen( QPen( aColor ) );
@@ -1604,7 +1613,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
           drawHoverRect(p, opt->rect, opt->palette.color( QPalette::Window ), aRad, Style_Tools::All, true);
         else {
           Style_Tools::shadowRect( p, opt->rect, aRad, LINE_GR_MARGIN, SHADOW,
-                                   Style_Tools::All, opt->palette.color( QPalette::Base ), // getColor( Style_Model::fld_light_clr ),
+				   Style_Tools::All, opt->palette.color( QPalette::Base ), // getColor( Style_Model::fld_light_clr ),
                                    getColor( Style_Model::fld_dark_clr ), aBrdTopCol, aBrdBotCol,
                                    getBoolValue( Style_Model::all_antialized ), false );
         }
@@ -1613,11 +1622,14 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         if (const QStyleOptionFrame *panel = qstyleoption_cast<const QStyleOptionFrame *>(opt)) {
           QRect rect = panel->rect.adjusted( panel->lineWidth,  panel->lineWidth,
                                              -panel->lineWidth, -panel->lineWidth);
-          if (panel->lineWidth > 0) // QLineEdit
+	  if ( w->inherits("QLineEdit") && panel->lineWidth > 0 ) {
             drawPrimitive( PE_FrameLineEdit, panel, p, w );
-          else // not QLineEdit
-            p->fillRect(rect, panel->palette.brush(QPalette::Base));
-         }
+	  }
+          else {
+	    QColor c = panel->palette.color(QPalette::Base); c.setAlpha(255);
+            p->fillRect( rect, c ); // panel->palette.brush(QPalette::Base)
+	  }
+	}
       }
       break;
     }
@@ -1766,7 +1778,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
 	       light = base,
                light_alt = base.dark(110),//AlternateBase color
                dark  = getColor( Style_Model::fld_dark_clr );
-        //light.setAlpha( 0 ); // VSR commented: IPAL19262
+        light.setAlpha( 0 ); // VSR commented: IPAL19262
         QLinearGradient gr_h(r.x(), r.y(), r.right(), r.y());
         gr_h.setColorAt( 0.0, dark );
         gr_h.setColorAt( aMarg / r.width(), light );
@@ -1778,7 +1790,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         // draw frame
         p->fillRect( r, base );
         p->fillRect( r, gr_h );
-        p->fillRect( r, gr_v );
+	p->fillRect( r, gr_v );
         aPal.setBrush( QPalette::Base, QBrush( light ) );
 
         QLinearGradient gr_alt(r.x(), r.y(), r.right(), r.y());
@@ -1838,7 +1850,8 @@ QSize Style_Salome::sizeFromContents( ContentsType ct, const QStyleOption* opt,
   switch (ct) {
     case CT_TabBarTab:
       if (const QStyleOptionTab *tab = qstyleoption_cast<const QStyleOptionTab *>(opt)) {
-        if ( tab->position == QStyleOptionTab::End ) {
+        if ( tab->position == QStyleOptionTab::End ||
+             tab->position == QStyleOptionTab::OnlyOneTab ) {
           if ( tab->shape == QTabBar::RoundedNorth || tab->shape == QTabBar::RoundedSouth ) {
             int aDelta = (int)(opt->rect.height()*DELTA_H_TAB/2);
             sz.setWidth( sz.width() + aDelta );
@@ -2087,7 +2100,9 @@ void Style_Salome::updatePaletteColors()
   aPal.setColor( QPalette::AlternateBase,   getColor( Style_Model::pal_base_clr ).dark( 110 )  );
   aPal.setColor( QPalette::Window,          getColor( Style_Model::bg_clr ) );
   //aPal.setColor( QPalette::Shadow, ??? );
-  aPal.setColor( QPalette::Highlight,       getColor( Style_Model::pal_high_clr ) );
+  QColor hc = getColor( Style_Model::pal_high_clr );
+  hc.setAlpha(100);
+  aPal.setColor( QPalette::Highlight,       hc );
   aPal.setColor( QPalette::HighlightedText, getColor( Style_Model::pal_high_text_clr ) );
   //aPal.setColor( QPalette::Link, ??? );
   //aPal.setColor( QPalette::LinkVisited, ??? );
@@ -2096,7 +2111,9 @@ void Style_Salome::updatePaletteColors()
   if (aPal.midlight() == aPal.button())
     aPal.setColor(QPalette::Inactive, QPalette::Midlight, aPal.color(QPalette::Active, QPalette::Button).light(110));
   if (aPal.window() != aPal.base()) {
-    aPal.setColor(QPalette::Inactive, QPalette::Highlight,       aPal.color(QPalette::Inactive, QPalette::Window));
+    QColor hc1 = aPal.color(QPalette::Inactive, QPalette::Window);
+    hc1.setAlpha(100);
+    aPal.setColor(QPalette::Inactive, QPalette::Highlight,       hc1);
     aPal.setColor(QPalette::Inactive, QPalette::HighlightedText, aPal.color(QPalette::Inactive, QPalette::Text));
   }
 

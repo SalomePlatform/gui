@@ -131,7 +131,7 @@ QString QtxDoubleSpinBox::textFromValue( double val ) const
 */
 QString QtxDoubleSpinBox::removeTrailingZeroes( const QString& src ) const
 {
-  QString delim( "." );
+  QString delim( QLocale().decimalPoint() );
 
   int idx = src.lastIndexOf( delim );
   if ( idx == -1 )

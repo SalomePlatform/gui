@@ -626,6 +626,7 @@ QtxListAction::QtxListAction( const QString& text, const QString& menuText,
   setText( menuText );
   setShortcut( accel );
   setToolTip( text );
+  setStatusTip( text );
 
   initialize();
 }
@@ -647,6 +648,7 @@ QtxListAction::QtxListAction( const QString& text, const QIcon& icon,
   setText( menuText );
   setShortcut( accel );
   setToolTip( text );
+  setStatusTip( text );
 
   initialize();
 }
@@ -814,6 +816,7 @@ QWidget* QtxListAction::createWidget( QWidget* parent )
   tb->setMenu( myFrame );
   tb->setEnabled( isEnabled() && !names().isEmpty() );
   tb->setToolTip( toolTip() );
+  tb->setStatusTip( statusTip() );
   connect( tb, SIGNAL( clicked( bool ) ), this, SLOT( onSingle( bool ) ) );
 
   return tb;
@@ -877,6 +880,7 @@ void QtxListAction::onChanged()
       tb->setText( text() );
       tb->setIcon( icon() );
       tb->setToolTip( toolTip() );
+      tb->setStatusTip( statusTip() );
     }
   }
 }

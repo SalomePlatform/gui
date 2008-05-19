@@ -1944,6 +1944,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "PREF_RELATIVE_SIZE" ), vtkGroup, LightApp_Preferences::Bool, "VTKViewer", "relative_size" );
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), vtkGroup,
 		       LightApp_Preferences::Color, "VTKViewer", "background" );
+  pref->addPreference( tr( "PREF_USE_ADVANCED_SELECTION_ALGORITHM" ), vtkGroup, LightApp_Preferences::Bool, "VTKViewer", "use_advanced_selection_algorithm" );
 
   pref->setItemProperty( vtkTS, "min", 1.0E-06 );
   pref->setItemProperty( vtkTS, "max", 150 );

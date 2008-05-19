@@ -183,6 +183,9 @@ msgstr "VTK Viewer 3d"
 msgid "LightApp_Application::PREF_VIEWER_BACKGROUND"
 msgstr "Background color"
 
+msgid "LightApp_Application::PREF_USE_ADVANCED_SELECTION_ALGORITHM"
+msgstr "Use Advanced Selection Algorithm"
+
 msgid "LightApp_Application::PREF_TRIHEDRON_SIZE"
 msgstr "Trihedron size"
 

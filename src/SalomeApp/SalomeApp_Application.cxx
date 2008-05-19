@@ -700,8 +700,10 @@ class DumpStudyFileValidator : public SUIT_FileValidator
 
 bool DumpStudyFileValidator::canSave(const QString& file)
 {
-  // if file name is not correct...
-  if ( file.find( QRegExp("[-!?#*&]") ) != -1 ) {
+  QFileInfo fi( file );
+  QString name = fi.fileName(); 
+  
+  if ( name.find( QRegExp("[-!?#*&]") ) != -1 ) {
     SUIT_MessageBox::error1 ( parent(),
 			      QObject::tr("WRN_WARNING"),
 			      QObject::tr("WRN_FILE_NAME_BAD"),

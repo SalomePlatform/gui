@@ -12,7 +12,7 @@
     <parameter name="killall"    value="no"/>
     <parameter name="pinter"     value="no"/>
     <parameter name="noexcepthandler"  value="no"/>
-    <parameter name="modules"    value="GEOM,SMESH,VISU,SUPERV,MED,COMPONENT,PYCALCULATOR"/>
+    <parameter name="modules"    value="GEOM,SMESH,VISU,SUPERV,MED,COMPONENT,PYCALCULATOR,FILTER"/>
     <parameter name="pyModules"  value=""/>
     <parameter name="embedded"   value="SalomeAppEngine,study,cppContainer,registry,moduleCatalog"/>
     <parameter name="standalone" value="pyContainer,supervContainer"/>
@@ -55,10 +55,11 @@
     <parameter name="GHS3DPlugin"  value="${GHS3DPLUGIN_ROOT_DIR}/share/salome/resources/ghs3dplugin"/>
     <parameter name="BLSURFPlugin" value="${BLSURFPLUGIN_ROOT_DIR}/share/salome/resources"/>
     <parameter name="HexoticPLUGIN" value="${HexoticPLUGIN_ROOT_DIR}/share/salome/resources"/>
+    <parameter name="GHS3DPRLPlugin" value="${GHS3DPRLPLUGIN_ROOT_DIR}/share/salome/resources"/>
   </section>
   <section name="SMESH">
     <!-- Default SMESH module plugins -->
-    <parameter name="plugins" value="NETGENPlugin,GHS3DPlugin,BLSURFPlugin,HexoticPLUGIN"/>
+    <parameter name="plugins" value="NETGENPlugin,GHS3DPlugin,GHS3DPRLPlugin,HexoticPLUGIN,BLSURFPlugin"/>
   </section>
   <section name="desktop" >
     <!-- Default GUI desktop state, position, size -->

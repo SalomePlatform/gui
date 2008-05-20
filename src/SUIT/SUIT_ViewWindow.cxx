@@ -215,3 +215,11 @@ QString   SUIT_ViewWindow::getVisualParameters()
 void SUIT_ViewWindow::setVisualParameters( const QString& parameters )
 {
 }
+
+/*!
+  \return window unique identifier  
+*/
+int SUIT_ViewWindow::getId() const
+{
+  return (int)this;
+}

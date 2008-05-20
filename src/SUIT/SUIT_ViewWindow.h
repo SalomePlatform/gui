@@ -55,6 +55,8 @@ public:
   virtual void      setVisualParameters( const QString& parameters );
 
   void              setDestructiveClose( const bool );
+  
+  int               getId() const;
 
 public slots:
   virtual void      onDumpView();

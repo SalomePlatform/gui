@@ -72,6 +72,7 @@ COMMON_CPP_FLAGS=$(QT_INCLUDES) $(SIP_INCLUDES) $(PYTHON_INCLUDES) \
 	-I$(srcdir)/../../Qtx -I$(srcdir)/../../SalomeApp -I$(srcdir)/../../Event \
 	-I$(srcdir)/../../SalomeSession -I$(srcdir)/../../LogWindow \
 	-I$(srcdir)/../../VTKViewer -I$(srcdir)/../../TOOLSGUI \
+	-I$(srcdir)/../../OCCViewer -I$(srcdir)/../../Plot2d \
 	-I$(srcdir)/../SALOME_PYQT_GUI -I$(srcdir)/../../PyInterp \
 	-I$(srcdir)/../../LightApp -I$(srcdir)/../../ObjBrowser \
 	-I$(srcdir)/../../OBJECT \
@@ -82,7 +83,8 @@ COMMON_LIBS=$(PYTHON_LIBS) $(SIP_LIBS) $(PYQT_LIBS) $(VTK_LIBS) \
 	../../Qtx/libqtx.la ../../SalomeApp/libSalomeApp.la ../../Event/libEvent.la \
 	../../Session/libSalomeSession.la ../../LogWindow/libLogWindow.la \
 	../../VTKViewer/libVTKViewer.la ../../TOOLSGUI/libToolsGUI.la \
-	../SALOME_PYQT_GUI/libSalomePyQtGUI.la
+	../SALOME_PYQT_GUI/libSalomePyQtGUI.la ../../OCCViewer/libOCCViewer.la \
+	../../Plot2d/libPlot2d.la
 
 if IS_SIP_V4
 

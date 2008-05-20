@@ -63,7 +63,7 @@ public:
   QtxWorkstack( QWidget* = 0 );
   virtual ~QtxWorkstack();
 
-  QWidgetList         windowList() const;
+  QWidgetList         windowList( QWidget* = 0 ) const;
   QWidgetList         splitWindowList() const;
 
   QWidget*            activeWindow() const;
@@ -72,6 +72,8 @@ public:
   void                setAccel( const int, const int );
 
   void                split( const int );
+  bool                move( QWidget* wid, QWidget* wid_to, const bool before );
+  void                stack();
 
   // STV: Useless function. wid->setFocus() should be used instead.
   // void OnTop( QWidget* wid);
@@ -113,6 +115,7 @@ private:
   void                insertWidget( QWidget*, QWidget*, QWidget* );
 
   QtxWorkstackArea*   areaAt( const QPoint& ) const;
+  QtxWorkstackArea*   wgArea( QWidget* ) const;
 
   QtxWorkstackArea*   targetArea();
   QtxWorkstackArea*   activeArea() const;

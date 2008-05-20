@@ -74,12 +74,23 @@ QtxWorkstack::~QtxWorkstack()
 }
 
 /*!
-  \return list of all widgets in all areas
+  \brief Gets list of all widgets in all areas or in specified area which given 
+         widget belong to
+  \param wid widget specifying area if it is equal to null when widgets of all 
+         areas are retuned
+  \return list of widgets
 */
-QWidgetList QtxWorkstack::windowList() const
+QWidgetList QtxWorkstack::windowList( QWidget* wid ) const
 {
   QPtrList<QtxWorkstackArea> lst;
-  areas( mySplit, lst, true );
+  if ( !wid )
+    areas( mySplit, lst, true );
+  else 
+  {
+    QtxWorkstackArea* area = wgArea( wid );
+    if ( area )
+      lst.append( area );
+  }
 
   QWidgetList widList;
   for ( QPtrListIterator<QtxWorkstackArea> it( lst ); it.current(); ++it )
@@ -1522,6 +1533,100 @@ QtxWorkstack& QtxWorkstack::operator>>( QString& outParameters )
   return (*this);
 }
 
+/*!
+  \brief Gets area containing given widget
+  \param wid widget
+  \return pointer to QtxWorkstackArea* object
+*/
+QtxWorkstackArea* QtxWorkstack::wgArea( QWidget* wid ) const
+{
+  QtxWorkstackArea* resArea = 0;
+
+  QPtrList<QtxWorkstackArea> areaList;
+  areas( mySplit, areaList, true );
+
+  QtxWorkstackArea* area;
+  for ( area = areaList.first(); area; area = areaList.next() )
+  {
+    if ( area->contains( wid ) )
+    {
+      resArea = area;
+      break;
+    }
+  }
+
+  return resArea;
+}
+
+/*!
+  \brief Moves the first widget to the same area which the second widget belongs to
+  \param wid widget to be moved
+  \param wid_to widget specified the destination area
+  \param before specifies whether the first widget has to be moved before or after 
+         the second widget
+  \return TRUE if operation is completed successfully, FALSE otherwise 
+*/
+bool QtxWorkstack::move( QWidget* wid, QWidget* wid_to, const bool before )
+{
+  if ( wid && wid_to )
+  {
+    QtxWorkstackArea* area_src = wgArea( wid );
+    QtxWorkstackArea* area_to = wgArea( wid_to );
+    if ( area_src && area_to )
+    {
+      // find index of the second widget
+      QWidgetList wgList = area_to->widgetList();
+      QWidget* it;
+      int idx = 0;
+      for ( it = wgList.first(); it; it = wgList.next(), idx++ )
+      {
+        if ( it == wid_to )
+          break;
+      }
+
+      if ( idx < (int)wgList.count() ) // paranoidal check
+      {
+        if ( !before )
+          idx++;
+        area_src->removeWidget( wid, true );
+        area_to->insertWidget( wid, idx );
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+/*!
+  \brief Group all windows in one area
+  \return TRUE if operation is completed successfully, FALSE otherwise 
+*/
+void QtxWorkstack::stack()
+{
+  QWidgetList wgList = windowList();
+  if ( !wgList.count() )
+    return; // nothing to do
+
+  QWidget* it;
+  QtxWorkstackArea* area_to = 0;
+  for ( it = wgList.first(); it; it = wgList.next() )
+  {
+    QtxWorkstackArea* area_src = 0;
+    if ( !area_to )
+    {
+      area_to = wgArea( it );
+      area_src = area_to;
+    }
+    else 
+      area_src = wgArea( it );
+
+    if ( area_src != area_to )
+    {
+      area_src->removeWidget( it, true );
+      area_to->insertWidget( it, -1 );
+    }
+  }
+}
 
 /*!
   Constructor

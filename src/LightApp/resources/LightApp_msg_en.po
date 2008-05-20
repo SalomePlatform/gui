@@ -275,6 +275,33 @@ msgstr "Auto size for other columns"
 msgid "LightApp_Application::PREF_AUTO_SIZE_FIRST"
 msgstr "Auto size for first column"
 
+msgid "LightApp_Application::TOT_CLOSE"
+msgstr "Close"
+
+msgid "LightApp_Application::MEN_DESK_CLOSE"
+msgstr "&Close"
+
+msgid "LightApp_Application::PRP_CLOSE"
+msgstr "Close active window"
+
+msgid "LightApp_Application::TOT_CLOSE_ALL"
+msgstr "Close all"
+
+msgid "LightApp_Application::MEN_DESK_CLOSE_ALL"
+msgstr "Close all"
+
+msgid "LightApp_Application::PRP_CLOSE_ALL"
+msgstr "Close all windows"
+
+msgid "LightApp_Application::TOT_GROUP_ALL"
+msgstr "Group all"
+
+msgid "LightApp_Application::MEN_DESK_GROUP_ALL"
+msgstr "&Group all"
+
+msgid "LightApp_Application::PRP_GROUP_ALL"
+msgstr "Group all windows"
+
 //=======================================================================================
 
 msgid "LightApp_PreferencesDlg::CAPTION"

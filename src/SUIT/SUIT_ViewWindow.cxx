@@ -221,5 +221,5 @@ void SUIT_ViewWindow::setVisualParameters( const QString& parameters )
 */
 int SUIT_ViewWindow::getId() const
 {
-  return (int)this;
+  return int(long(this));
 }

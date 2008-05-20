@@ -74,6 +74,7 @@ public:
   enum { MenuWindowId = 6 };
 
   enum { RenameId = CAM_Application::UserID,
+         CloseId, CloseAllId, GroupAllId,
 
 #ifndef DISABLE_GLVIEWER
          NewGLViewId ,
@@ -233,6 +234,9 @@ private slots:
   void                                onMRUActivated( QString );
   void                                onPreferenceChanged( QString&, QString&, QString& );
   void                                onRenameWindow();
+  void                                onCloseWindow();
+  void                                onCloseAllWindow();
+  void                                onGroupAllWindow();
   void                                onVisibilityChanged( bool );
 
 protected:

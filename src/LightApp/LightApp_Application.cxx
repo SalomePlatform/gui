@@ -604,8 +604,20 @@ void LightApp_Application::createActions()
   // New window
   int windowMenu = createMenu( tr( "MEN_DESK_WINDOW" ), -1, MenuWindowId, 100 );
   int newWinMenu = createMenu( tr( "MEN_DESK_NEWWINDOW" ), windowMenu, -1, 0 );
-  createMenu( separator(), windowMenu, -1, 1 );
 
+  createAction( CloseId, tr( "TOT_CLOSE" ), QIconSet(), tr( "MEN_DESK_CLOSE" ), tr( "PRP_CLOSE" ),
+                SHIFT+Key_C, desk, false, this, SLOT( onCloseWindow() ) );
+  createMenu( CloseId, windowMenu, 0, -1 );
+
+  createAction( CloseAllId, tr( "TOT_CLOSE_ALL" ), QIconSet(), tr( "MEN_DESK_CLOSE_ALL" ), tr( "PRP_CLOSE_ALL" ),
+                0, desk, false, this, SLOT( onCloseAllWindow() ) );
+  createMenu( CloseAllId, windowMenu, 0, -1 );
+
+  createAction( GroupAllId, tr( "TOT_GROUP_ALL" ), QIconSet(), tr( "MEN_DESK_GROUP_ALL" ), tr( "PRP_GROUP_ALL" ),
+                0, desk, false, this, SLOT( onGroupAllWindow() ) );
+  createMenu( GroupAllId, windowMenu, 0, -1 );
+
+  createMenu( separator(), windowMenu, -1, 0 );
 
 #ifndef DISABLE_GLVIEWER
   createActionForViewer( NewGLViewId, newWinMenu, QString::number( 0 ), ALT+Key_G );
@@ -2509,6 +2521,53 @@ void LightApp_Application::onRenameWindow()
   QString name = QInputDialog::getText( tr( "TOT_RENAME" ), tr( "PRP_RENAME" ), QLineEdit::Normal, w->caption(), &ok, w );
   if( ok && !name.isEmpty() )
     w->setCaption( name );
+}
+
+/*!
+  Closes active window of desktop
+*/
+void LightApp_Application::onCloseWindow()
+{
+  if( !desktop() )
+    return;
+
+  QWidget* w = desktop()->activeWindow();
+  if( !w )
+    return;
+
+  w->close();
+}
+
+/*!
+  Closes all windows of desktop
+*/
+void LightApp_Application::onCloseAllWindow()
+{
+  STD_TabDesktop* desk = dynamic_cast<STD_TabDesktop*>( desktop() );
+  if( !desk )
+    return;
+
+  QPtrList<SUIT_ViewWindow> wndList = desk->windows();
+  SUIT_ViewWindow* it;
+  for ( it = wndList.first(); it; it = wndList.next() )
+  {
+    if ( it )  
+      it->close();
+  }
+}
+
+/*!
+  Groups all windows of desktop
+*/
+void LightApp_Application::onGroupAllWindow()
+{
+  STD_TabDesktop* desk = dynamic_cast<STD_TabDesktop*>( desktop() );
+  if( !desk )
+    return;
+
+  QtxWorkstack* wgStack = desk->workstack();
+  if ( wgStack )
+    wgStack->stack();
 }
 
 /*!

@@ -23,7 +23,8 @@
 #include "SALOME_PYQT_GUI.h"
 
 #include "SALOME_PYQT_PyInterp.h" // this include must be first (see PyInterp_base.h)!
-#include "SalomeApp_Module.h"
+#include "SalomeApp_Module.h" 
+#include "SUIT_ViewWindow.h"
 #include <map>
 #include <qaction.h>
 #include <qptrlist.h>
@@ -159,8 +160,8 @@ public:
   int                    addGlobalPreference( const QString& );
   int                    addPreference( const QString& );
   int                    addPreference( const QString&, const int, const int = -1,
-					const QString& = QString::null,
-					const QString& = QString::null );
+                                        const QString& = QString::null,
+                                        const QString& = QString::null );
   QVariant               preferenceProperty( const int, const QString& ) const;
   void                   setPreferenceProperty( const int, const QString&, const QVariant& );
 
@@ -179,6 +180,11 @@ public slots:
 
   /* Preferences changing (application) */
   void            preferenceChanged( const QString&, const QString&, const QString& );
+  
+  /* Slots connecting and disconnecting window signals*/
+  void            onActiveViewChanged( SUIT_ViewWindow* );
+  void            onViewClosed( SUIT_ViewWindow* );
+  void            onViewCloned( SUIT_ViewWindow* );
 
   /******************************
    * Internal methods
@@ -233,6 +239,12 @@ private:
 
   /* preferences changing */
   void            prefChanged( const QString&, const QString& );
+  
+  /* window signals connectors*/
+  void           activeViewChanged( const SUIT_ViewWindow* );
+  void           viewClosed( const SUIT_ViewWindow* );
+  void           viewCloned( const SUIT_ViewWindow* );
+  void           connectView( const SUIT_ViewWindow* );
 
   friend class SALOME_PYQT_XmlHandler;
 };

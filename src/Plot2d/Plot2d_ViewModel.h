@@ -48,6 +48,9 @@ public:
   void         update();
   void         clearPrs();
   void         setAutoDel(bool theDel);
+  
+signals:
+  void viewCloned( SUIT_ViewWindow* );
 
 protected slots:
   void onChangeBgColor();

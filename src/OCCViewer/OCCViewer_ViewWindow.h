@@ -116,7 +116,7 @@ public slots:
 signals:
   void vpTransformationStarted(OCCViewer_ViewWindow::OperationType type);
   void vpTransformationFinished(OCCViewer_ViewWindow::OperationType type);
-  void cloneView();
+  void viewCloned( SUIT_ViewWindow* );
 
   void Show( QShowEvent * );
   void Hide( QHideEvent * );

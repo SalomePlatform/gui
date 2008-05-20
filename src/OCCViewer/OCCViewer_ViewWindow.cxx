@@ -1195,6 +1195,7 @@ void OCCViewer_ViewWindow::onCloneView()
 {
   SUIT_ViewWindow* vw = myManager->createViewWindow();
   vw->show();
+  emit viewCloned( vw );
 }
 
 /*!

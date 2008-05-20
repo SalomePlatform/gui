@@ -41,6 +41,11 @@
 #include "OB_Browser.h"
 //#include "QtxAction.h"
 #include "LogWindow.h"
+#include <STD_TabDesktop.h>
+#include <OCCViewer_ViewWindow.h>
+#include <QtxWorkstack.h>
+#include <Plot2d_ViewManager.h>
+#include <Plot2d_ViewWindow.h>
 
 using namespace std;
 
@@ -1654,3 +1659,856 @@ void SalomePyQt::clearMessages()
   };
   ProcessVoidEvent( new TEvent() );
 }
+
+/*!
+  \brief Gets window with specified identifier 
+  \param id window identifier 
+  \return pointer on the window
+*/
+static SUIT_ViewWindow* getWnd( const int id )
+{
+  SUIT_ViewWindow* resWnd = 0;
+
+  SalomeApp_Application* app  = getApplication();
+  if ( app )
+  {
+    STD_TabDesktop* tabDesk = dynamic_cast<STD_TabDesktop*>( app->desktop() );
+    if ( tabDesk )
+    {
+      QPtrList<SUIT_ViewWindow> list = tabDesk->windows();
+      SUIT_ViewWindow* wnd;
+      for ( wnd = list.first(); wnd; wnd = list.next() )
+      {
+        if ( id == wnd->getId() )
+        {
+          resWnd = wnd;
+          break;
+        }
+      }
+    }
+  }
+
+  return resWnd;
+}
+
+//=============================================================================
+
+/*!
+  \class TGetViews
+  \brief Gets list of integer identifiers of all the currently opened views
+*/
+class TGetViews: public SALOME_Event
+{
+public:
+  typedef QValueList<int> TResult;
+  TResult myResult;
+
+public:
+  /*!
+    \brief Constructor.
+  */
+  TGetViews() 
+  {
+  }
+  /*!
+    \brief Gets list of integer identifiers of all the currently opened views
+  */
+  virtual void Execute() 
+  {
+    myResult.clear();
+    SalomeApp_Application* app  = getApplication();
+    if ( app )
+    {
+      STD_TabDesktop* tabDesk = dynamic_cast<STD_TabDesktop*>( app->desktop() );
+      if ( tabDesk )
+      {
+        QPtrList<SUIT_ViewWindow> list = tabDesk->windows();
+        SUIT_ViewWindow* wnd;
+        for ( wnd = list.first(); wnd; wnd = list.next() )
+          myResult.append( wnd->getId() );
+      }
+    }
+  }
+};
+
+
+/*!
+  \brief Gets list of integer identifiers of all the currently opened views
+  \return list of integer identifiers of all the currently opened views
+*/
+QValueList<int> SalomePyQt::getViews()
+{
+  return ProcessEvent( new TGetViews() );
+}
+
+//=============================================================================
+
+/*!
+  \class TGetActiveView
+  \brief Gets integer identifier of the currently active view
+*/
+class TGetActiveView: public SALOME_Event
+{
+public:
+  typedef int TResult;
+  TResult myResult;
+
+public:
+  /*!
+    \brief Constructor.
+  */
+  TGetActiveView()
+  : myResult( -1 )
+  {
+  }
+  /*!
+    \brief Gets list of integer identifiers of all the currently opened views
+  */
+  virtual void Execute() 
+  {
+    SalomeApp_Application* app = getApplication();
+    if ( app )
+    {
+      SUIT_ViewManager* viewMgr = app->activeViewManager();
+      if ( viewMgr )
+      {
+        SUIT_ViewWindow* wnd = viewMgr->getActiveView();
+        if ( wnd )
+          myResult = wnd->getId();
+      }
+    }
+  }
+};
+
+
+/*!
+  \brief Gets integer identifier of the currently active view
+  \return integer identifier of the currently active view
+*/
+int SalomePyQt::getActiveView()
+{
+  return ProcessEvent( new TGetActiveView() );
+}
+
+//=============================================================================
+
+/*!
+  \class TGetViewType
+  \brief Gets string, which is the view type, e.g. "OCCViewer"
+*/
+class TGetViewType: public SALOME_Event
+{
+public:
+  typedef QString TResult;
+  TResult myResult;
+  int myWndId;
+
+public:
+  /*!
+    \brief Constructor.
+    \param id window identifier
+  */
+  TGetViewType( const int id )
+  : myWndId( id )
+  {
+  }
+  /*!
+    \brief Gets string, which is the view type, e.g. "OCCViewer"
+  */
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+    {
+      SUIT_ViewManager* viewMgr = wnd->getViewManager();
+      if ( viewMgr )
+        myResult = viewMgr->getType();
+    }
+  }
+};
+
+/*!                      
+  \brief Gets string, which is the view type, e.g. "OCCViewer"
+  \param id window identifier
+  \return string, which is the view type, e.g. "OCCViewer"
+*/ 
+QString SalomePyQt::getViewType( const int id )
+{
+  return ProcessEvent( new TGetViewType( id ) );
+}
+
+//=============================================================================
+
+/*!
+  \class TSetViewTitle
+  \brief Changes view caption  
+*/
+class TSetViewTitle: public SALOME_Event
+{
+public:
+  typedef bool TResult;
+  TResult myResult;
+  int myWndId;
+  QString myTitle;
+  
+public:
+  /*!
+    \brief Constructor.
+    \param id window identifier
+    \param title new window title
+  */
+  TSetViewTitle( const int id, const QString& title )
+  : myResult( false ),
+    myWndId( id ),
+    myTitle( title )
+  {
+  }
+  /*!
+    \brief Changes view caption  
+  */
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+    {
+      wnd->setCaption( myTitle );
+      myResult = true;
+    }
+  }
+};
+
+/*!
+  \brief Changes view caption  
+  \param id window identifier
+  \param title new window title
+  \return TRUE if operation is completed successfully, FALSE otherwise 
+*/
+bool SalomePyQt::setViewTitle( const int id, const QString& title )
+{
+  return ProcessEvent( new TSetViewTitle( id, title ) );
+}
+
+//=============================================================================
+
+/*!
+  \class TGetViewTitle
+  \brief Gets view caption  
+*/
+class TGetViewTitle: public SALOME_Event
+{
+public:
+  typedef QString TResult;
+  TResult myResult;
+  int myWndId;
+
+public:
+  /*!
+    \brief Constructor.
+    \param id window identifier
+  */
+  TGetViewTitle( const int id )
+  : myWndId( id )
+  {
+  }
+  /*!
+    \brief Gets view caption  
+  */
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+      myResult = wnd->caption();
+  }
+};
+
+/*!
+  \brief Gets view caption  
+  \param id window identifier
+  \return view caption  
+*/
+QString SalomePyQt::getViewTitle( const int id )
+{
+  return ProcessEvent( new TGetViewTitle( id ) );
+}
+
+//=============================================================================
+
+/*!
+  \class TFindViews
+  \brief Gets list of integer identifiers of all the 
+         currently opened views of the specified type
+*/
+class TFindViews: public SALOME_Event
+{
+public:
+  typedef QValueList<int> TResult;
+  TResult myResult;
+  QString myType;
+
+public:
+  /*!
+    \brief Constructor.
+    \param type viewer type
+  */
+  TFindViews( const QString& type )
+  : myType( type )
+  {
+  }
+  /*!
+    \brief Gets list of integer identifiers of all the 
+           currently opened views of the specified type
+  */
+  virtual void Execute() 
+  {
+    myResult.clear();
+    SalomeApp_Application* app  = getApplication();
+    if ( app )
+    {
+      ViewManagerList vmList;
+      app->viewManagers( myType, vmList );
+      SUIT_ViewManager* viewMgr;
+      for ( viewMgr = vmList.first(); viewMgr; viewMgr = vmList.next() )
+      {
+        QPtrVector<SUIT_ViewWindow> vec = viewMgr->getViews();
+        for ( int i = 0, n = vec.size(); i < n; i++ )
+        {
+          SUIT_ViewWindow* wnd = vec[ i ];
+          if ( wnd )
+            myResult.append( wnd->getId() );
+        }
+      }
+    }
+  }
+};
+
+/*!
+  \brief Gets list of integer identifiers of all the 
+         currently opened views of the specified type
+  \param type viewer type
+  \return list of integer identifiers 
+*/
+QValueList<int> SalomePyQt::findViews( const QString& type )
+{
+  return ProcessEvent( new TFindViews( type ) );
+}
+
+//=============================================================================
+
+/*!
+  \class TActivateView
+  \brief Activates view
+*/
+class TActivateView: public SALOME_Event
+{
+public:
+  typedef bool TResult;
+  TResult myResult;
+  int myWndId;
+  
+public:
+  /*!
+    \brief Constructor
+    \param id window identifier
+  */
+  TActivateView( const int id )
+  : myResult( false ),
+    myWndId( id )
+  {
+  }
+  /*!
+    \brief Activates view
+  */
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+    {
+      wnd->setFocus();
+      myResult = true;
+    }
+  }
+};
+
+/*!
+  \brief Activates view
+  \param id window identifier
+  \return TRUE if operation is completed successfully, FALSE otherwise 
+*/
+bool SalomePyQt::activateView( const int id )
+{
+  return ProcessEvent( new TActivateView( id ) );
+}
+
+//=============================================================================
+
+/*!
+  \class TCreateView
+  \brief Creates new view and activate it
+*/
+class TCreateView: public SALOME_Event
+{
+public:
+  typedef int TResult;
+  TResult myResult;
+  QString myType;
+  
+public:
+  /*!
+    \brief Constructor.
+    \param type viewer type
+  */
+  TCreateView( const QString& theType )
+  : myResult( -1 ),
+    myType( theType )
+  {
+  }
+  /*!
+    \brief Creates new view and activate it
+  */
+  virtual void Execute() 
+  {
+    SalomeApp_Application* app  = getApplication();
+    if ( app )
+    {
+      SUIT_ViewManager* viewMgr = app->createViewManager( myType );
+      if ( viewMgr )
+      {
+        SUIT_ViewWindow* wnd = viewMgr->getActiveView();
+        if ( wnd )
+          myResult = wnd->getId();
+      }
+    }
+  }
+};
+
+/*!
+  \brief Creates new view and activate it
+  \param type viewer type
+  \return integer identifier of created vieew (or -1 if view could not be created)
+*/
+int SalomePyQt::createView( const QString& type )
+{
+  return ProcessEvent( new TCreateView( type ) );
+}
+
+//=============================================================================
+
+/*!
+  \class TCloseView
+  \brief Closes view
+*/
+class TCloseView: public SALOME_Event
+{
+public:
+  typedef bool TResult;
+  TResult myResult;
+  int myWndId;
+  
+public:
+  /*!
+    \brief Constructor.
+    \param id window identifier
+  */
+  TCloseView( const int id )
+  : myResult( false ),
+    myWndId( id )
+  {
+  }
+  /*!
+    \brief Closes view
+  */
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+    {
+      SUIT_ViewManager* viewMgr = wnd->getViewManager();
+      if ( viewMgr )
+      {
+        wnd->close();
+        myResult = true;
+      }
+    }
+  }
+};
+
+/*!
+  \brief Closes view
+  \param id window identifier
+  \return TRUE if operation is completed successfully, FALSE otherwise 
+*/
+bool SalomePyQt::closeView( const int id )
+{
+  return ProcessEvent( new TCloseView( id ) );
+}
+
+//=============================================================================
+
+/*!
+  \class TCloneView
+  \brief Clones view (if this operation is supported for specified view type)
+*/
+class TCloneView: public SALOME_Event
+{
+public:
+  typedef int TResult;
+  TResult myResult;
+  int myWndId;
+  
+public:
+  /*!
+    \brief Constructor.
+    \param id window identifier
+  */
+  TCloneView( const int id )
+  : myResult( -1 ),
+    myWndId( id )
+  {
+  }
+  /*!
+    \brief Clones view (if this operation is supported for specified view type)
+  */
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+    {
+      SUIT_ViewManager* viewMgr = wnd->getViewManager();
+      if ( viewMgr )
+      {
+        if ( wnd->inherits( "OCCViewer_ViewWindow" ) )
+        {
+          OCCViewer_ViewWindow* occView = (OCCViewer_ViewWindow*)( wnd );
+          occView->onCloneView();
+
+          wnd = viewMgr->getActiveView();
+          if ( wnd )
+            myResult = wnd->getId();
+        }
+        else if ( wnd->inherits( "Plot2d_ViewWindow" ) ) 
+        {
+          Plot2d_ViewManager* viewMgr2d = dynamic_cast<Plot2d_ViewManager*>( viewMgr );
+          Plot2d_ViewWindow* srcWnd2d = dynamic_cast<Plot2d_ViewWindow*>( wnd );
+          if ( viewMgr2d && srcWnd2d )
+          {
+            Plot2d_ViewWindow* resWnd = viewMgr2d->cloneView( srcWnd2d );
+            myResult = resWnd->getId();
+          }
+        }
+      }
+    }
+  }
+};
+
+/*!
+  \brief Clones view (if this operation is supported for specified view type)
+  \param id window identifier
+  \return integer identifier of the cloned view or -1 or operation could not be performed
+*/
+int SalomePyQt::cloneView( const int id )
+{
+  return ProcessEvent( new TCloneView( id ) );
+}
+
+//=============================================================================
+
+/*!
+  \class TIsViewVisible
+  \brief Clones view (if this operation is supported for specified view type)
+*/
+class TIsViewVisible: public SALOME_Event
+{
+public:
+  typedef bool TResult;
+  TResult myResult;
+  int myWndId;
+  
+public:
+  /*!
+    \brief Constructor.
+    \param id window identifier
+  */
+  TIsViewVisible( const int id )
+  : myResult( false ),
+    myWndId( id )
+  {
+  }
+  /*!
+    \brief Clones view (if this operation is supported for specified view type)
+  */
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+    {
+      QWidget* p = wnd->parentWidget();
+      myResult = ( p && p->isVisibleTo( p->parentWidget() ) );
+    }
+  }
+};
+
+/*!
+  \brief Verifies whether view is visible ( i.e. it is on the top of the views stack)
+  \param id window identifier
+  \return TRUE if view is visible, FALSE otherwise 
+*/
+bool SalomePyQt::isViewVisible( const int id )
+{
+  return ProcessEvent( new TIsViewVisible( id ) );
+}
+
+//=============================================================================
+
+/*!
+  \class TGroupAllViews
+  \brief Groups all views to the single tab area
+*/
+class TGroupAllViews: public SALOME_Event
+{
+public:
+  typedef bool TResult;
+  TResult myResult;
+public:
+  /*!
+  \brief Constructor.
+  */
+  TGroupAllViews()
+    : myResult( false )
+  {
+  }
+  /*!
+  \brief Groups all views to the single tab area
+  */
+  virtual void Execute() 
+  {
+    SalomeApp_Application* app  = getApplication();
+    if ( app )
+    {
+      STD_TabDesktop* tabDesk = dynamic_cast<STD_TabDesktop*>( app->desktop() );
+      if ( tabDesk )
+      {
+        QtxWorkstack* wStack = tabDesk->workstack();
+        if ( wStack )
+        {
+          wStack->stack();
+          myResult = true;
+        }
+      }
+    }
+  }
+};
+  
+/*!
+  \brief Groups all views to the single tab area
+  \return TRUE if operation is completed successfully, FALSE otherwise 
+*/
+bool SalomePyQt::groupAllViews()
+{
+  return ProcessEvent( new TGroupAllViews() );
+}
+
+//=============================================================================
+
+/*!
+  \class TSplitView
+  \brief Splits tab area to which view with identifier belongs to
+*/
+class TSplitView: public SALOME_Event
+{
+public:
+  typedef bool TResult;
+  TResult myResult;
+  int myWndId;
+  Orientation myOri;
+  Action myAction;
+  
+public:
+  /*!
+    \brief Constructor.
+    \param id window identifier
+    \param ori orientation of split operation
+    \param action action to be performed
+  */
+  TSplitView( const int id, 
+              const Orientation ori, 
+              const Action action )
+  : myResult( false ),
+    myWndId( id ),
+    myOri( ori ),
+    myAction( action )
+  {
+  }
+  /*!
+  \brief Splits tab area to which view with identifier belongs to
+  */
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+    {
+      // activate view
+      // wnd->setFocus(); ???
+
+      // split workstack
+      if ( getApplication() )
+      {
+        STD_TabDesktop* desk = 
+          dynamic_cast<STD_TabDesktop*>( getApplication()->desktop() );
+        if ( desk )
+        {
+          QtxWorkstack* wStack = desk->workstack();
+          if ( wStack )
+          {
+            Qt::Orientation qtOri = 
+              ( myOri == Horizontal ) ? Qt::Horizontal : Qt::Vertical;
+
+            QtxWorkstack::SplitType sType;
+            if ( myAction == MoveWidget )
+              sType = QtxWorkstack::SPLIT_MOVE;
+            else if ( myAction == LeaveWidget )
+              sType = QtxWorkstack::SPLIT_STAY;
+            else 
+              sType = QtxWorkstack::SPLIT_AT;
+
+            wStack->Split( wnd, qtOri, sType );
+            myResult = true;
+          }
+        }
+      }
+    }
+  }
+};
+
+/*!
+  \brief Splits tab area to which view with identifier belongs to
+  \param id window identifier
+  \param ori orientation of split operation
+  \param action action to be performed
+  \return TRUE if operation is completed successfully, FALSE otherwise 
+*/
+bool SalomePyQt::splitView( const int id, const Orientation ori, const Action action )
+{
+  return ProcessEvent( new TSplitView( id, ori, action ) );
+}
+
+//=============================================================================
+
+/*!
+  \class TMoveView
+  \brief Moves view with the first identifier to the same area which 
+         another view with the second identifier belongs to
+*/
+class TMoveView: public SALOME_Event
+{
+public:
+  typedef bool TResult;
+  TResult myResult;
+  int myWndId;
+  int myWndToId;
+  bool myIsBefore;
+  
+public:
+  /*!
+    \brief Constructor.
+    \param id source window identifier
+    \param id_to destination window identifier  
+  */
+  TMoveView( const int id, const int id_to, const bool before )
+  : myResult( false ),
+    myWndId( id ),
+    myWndToId( id_to ),
+    myIsBefore( before )
+  {
+  }
+  /*!
+    \brief Closes view
+    */
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    SUIT_ViewWindow* wnd_to = getWnd( myWndToId );
+    if ( wnd && wnd_to )
+    {
+      QtxWorkstack* wStack = dynamic_cast<STD_TabDesktop*>( 
+        getApplication()->desktop() )->workstack();
+      if ( wStack )
+        myResult = wStack->move( wnd, wnd_to, myIsBefore );
+    }
+  }
+};
+
+/*!
+  \brief Moves view with the first identifier to the same area which 
+         another view with the second identifier belongs to
+  \param id source window identifier
+  \param id_to destination window identifier  
+  param before specifies whether the first viewt has to be moved before or after 
+        the second view
+  \return TRUE if operation is completed successfully, FALSE otherwise 
+*/
+bool SalomePyQt::moveView( const int id, const int id_to, const bool before )
+{
+  return ProcessEvent( new TMoveView( id, id_to, before ) );
+}
+
+//=============================================================================
+
+/*!
+  \class TNeighbourViews
+  \brief Gets list of views identifiers that belongs to the same area as 
+         specified view (excluding it)
+*/
+class TNeighbourViews: public SALOME_Event
+{
+public:
+  typedef QValueList<int> TResult;
+  TResult myResult;
+  int myWndId;
+
+public:
+  /*!
+    \brief Constructor.
+    \param id window identifier
+  */
+  TNeighbourViews( const int id )
+  : myWndId( id )
+  {
+  }
+  /*!
+    \brief Gets list of views identifiers that belongs to the same area as 
+           specified view (excluding it)
+  */
+  virtual void Execute() 
+  {
+    myResult.clear();
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+    {
+      QtxWorkstack* wStack = dynamic_cast<STD_TabDesktop*>( 
+        getApplication()->desktop() )->workstack();
+      if ( wStack )
+      {
+        QWidgetList wgList = wStack->windowList( wnd );
+        QWidget* it;
+        for ( it = wgList.first(); it; it = wgList.next() )
+        {
+          SUIT_ViewWindow* tmpWnd = dynamic_cast<SUIT_ViewWindow*>( it );
+          if ( tmpWnd && tmpWnd != wnd )
+            myResult.append( tmpWnd->getId() );
+        }
+      }
+    }
+  }
+};
+
+/*!
+  \brief Gets list of views identifiers that belongs to the same area as 
+         specified view (excluding it)
+  \param id window identifier
+  \return list of views identifiers
+*/
+QValueList<int> SalomePyQt::neighbourViews( const int id )
+{
+  return ProcessEvent( new TNeighbourViews( id ) );
+}
+

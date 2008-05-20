@@ -63,6 +63,18 @@ enum PrefType {
   PT_User
 };
 
+enum Orientation {
+  Horizontal = 0, 
+  Vertical   = 1  
+};
+
+enum Action {
+  MoveWidget   = 0, 
+  LeaveWidget  = 1, 
+  SplitAt      = 2  
+};
+
+
 class QtxAction : QAction
 {
 %TypeHeaderCode
@@ -170,4 +182,21 @@ public:
 
   static void              message( const QString&, bool = true );
   static void              clearMessages();
+
+  static QValueList<int>   getViews();
+  static int               getActiveView();
+  static QString           getViewType( const int );
+  static bool              setViewTitle( const int, const QString& );
+  static QString           getViewTitle( const int );
+  static QValueList<int>   findViews( const QString& );
+  static bool              activateView( const int );
+  static int               createView( const QString& );
+  static bool              closeView( const int );
+  static int               cloneView( const int );
+  static bool              isViewVisible( const int id );
+  
+  static bool              groupAllViews();
+  static bool              splitView( const int, Orientation, Action );
+  static bool              moveView( const int, const int, const bool );
+  static QValueList<int>   neighbourViews( const int );  
 };

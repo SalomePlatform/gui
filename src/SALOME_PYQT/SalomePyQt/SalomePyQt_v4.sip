@@ -69,6 +69,17 @@ enum PrefType {
   PT_User
 };
 
+enum Orientation {
+  Horizontal = 0, 
+  Vertical   = 1  
+};
+
+enum Action {
+  MoveWidget   = 0, 
+  LeaveWidget  = 1, 
+  SplitAt      = 2  
+};
+
 //%End
 
 class QtxAction : QAction
@@ -177,5 +188,22 @@ public:
 
   static void              message( const QString&, bool = true ) /ReleaseGIL/ ;
   static void              clearMessages() /ReleaseGIL/ ;
+  
+  static QValueList<int>   getViews() /ReleaseGIL/ ;
+  static int               getActiveView() /ReleaseGIL/ ;
+  static QString           getViewType( const int ) /ReleaseGIL/ ;
+  static bool              setViewTitle( const int, const QString& ) /ReleaseGIL/ ;
+  static QString           getViewTitle( const int ) /ReleaseGIL/ ;
+  static QValueList<int>   findViews( const QString& ) /ReleaseGIL/ ;
+  static bool              activateView( const int ) /ReleaseGIL/ ;
+  static int               createView( const QString& ) /ReleaseGIL/ ;
+  static bool              closeView( const int ) /ReleaseGIL/ ;
+  static int               cloneView( const int ) /ReleaseGIL/ ;
+  static bool              isViewVisible( const int id ) /ReleaseGIL/ ;
+  
+  static bool              groupAllViews() /ReleaseGIL/ ;
+  static bool              splitView( const int, Orientation, Action ) /ReleaseGIL/ ;
+  static bool              moveView( const int, const int, const bool ) /ReleaseGIL/ ;
+  static QValueList<int>   neighbourViews( const int ) /ReleaseGIL/ ;
 };
 

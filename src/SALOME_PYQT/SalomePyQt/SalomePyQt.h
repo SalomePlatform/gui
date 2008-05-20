@@ -26,6 +26,7 @@
 
 #include <LightApp_Application.h>
 #include <LightApp_Preferences.h>
+#include <STD_TabDesktop.h>
 
 class LightApp_SelectionMgr;
 class SalomeApp_Application;
@@ -90,6 +91,19 @@ enum {
   PT_DirList  = LightApp_Preferences::DirList, 
   PT_File     = LightApp_Preferences::File, 
   PT_User     = LightApp_Preferences::User
+};
+
+//! Orientation
+enum Orientation {
+  Horizontal = 0, //!< Horizontal orientation 
+  Vertical   = 1  //!< Vertical orientation
+};
+
+//! Action of splitting corresponding to QtxWorkstack::SplitType enumeration
+enum Action {
+  MoveWidget   = 0, //!< move specified widget to the new area, other views stay in the previous area
+  LeaveWidget  = 1, //!< specified widget stays in the old area, all other views are moved to the new area
+  SplitAt      = 2  //!< the view area is splitted in such a way, that specified view and all views which follow it, are moved to the new area
 };
 
 class SalomePyQt
@@ -185,6 +199,24 @@ public:
 
   static void              message( const QString&, bool = true );
   static void              clearMessages();
+  
+  static QValueList<int>   getViews();
+  static int               getActiveView();
+  static QString           getViewType( const int );
+  static bool              setViewTitle( const int, const QString& );
+  static QString           getViewTitle( const int );
+  static QValueList<int>   findViews( const QString& );
+  static bool              activateView( const int );
+  static int               createView( const QString& );
+  static bool              closeView( const int );
+  static int               cloneView( const int );
+  static bool              isViewVisible( const int id );
+  
+  static bool              groupAllViews();
+  static bool              splitView( const int, const Orientation, const Action );
+  static bool              moveView( const int, const int, const bool );
+  static QValueList<int>   neighbourViews( const int );
+
 };
 
 #endif // SALOME_PYQT_H

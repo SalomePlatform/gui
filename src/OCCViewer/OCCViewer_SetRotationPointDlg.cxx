@@ -276,3 +276,13 @@ OCCViewer_SetRotationPointDlg
 {
   hide();
 }
+
+/*!
+  Custom handling of close event: toggle action
+*/
+void
+OCCViewer_SetRotationPointDlg::closeEvent( QCloseEvent* e )
+{
+  myAction->setOn( false );
+  QDialog::closeEvent( e );
+}

@@ -129,6 +129,8 @@ button:
 resizing for the first column.</li>
 <li><b>Auto size for other columns</b> - this checkbox enables
 automatic resizing for the other columns.</li>
+<li><b>Resize columns after expanding an item</b> - this checkbox enables
+resizing columns on expanding an object browser item.</li>
 </ul>
 </ul>
 

@@ -757,9 +757,11 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
 
       bool autoSize      = resMgr->booleanValue( "ObjectBrowser", "auto_size", false );
       bool autoSizeFirst = resMgr->booleanValue( "ObjectBrowser", "auto_size_first", true );
+      bool resizeOnExpandItem = resMgr->booleanValue( "ObjectBrowser", "resize_on_expand_item", true );
 
       ob->setAutoSizeFirstColumn(autoSizeFirst);
       ob->setAutoSizeColumns(autoSize);
+      ob->setResizeOnExpandItem(resizeOnExpandItem);
 
       // temporary commented
       /*

@@ -283,6 +283,19 @@ void SUIT_DataBrowser::contextMenuEvent( QContextMenuEvent* e )
 }
 
 /*!
+  \brief Set 'resize on expand item' flag value.
+
+  If this flag is set to \c true (by default is false), after
+  expanding an item columns will be resized to its contents.
+
+  \param on 'resize on expand item' flag value
+*/
+void SUIT_DataBrowser::setResizeOnExpandItem( const bool on )
+{
+  myResizeOnExpandItem = on;
+}
+
+/*!
   \brief Initialize object browser.
   \param root root data object
 */
@@ -297,10 +310,13 @@ void SUIT_DataBrowser::init( SUIT_DataObject* root )
 	   model(),    SLOT( setSortingEnabled( bool ) ) );
   connect( treeView(), SIGNAL( doubleClicked( const QModelIndex& ) ), 
 	   this,       SLOT( onDblClicked( const QModelIndex& ) ) );
+  connect( treeView(), SIGNAL( expanded( const QModelIndex& ) ), 
+	   this,       SLOT( onExpanded( const QModelIndex& ) ) );
   myShortcut = new QShortcut( Qt::Key_F5, this, SIGNAL( requestUpdate() ), SIGNAL( requestUpdate() ) );
 
   myAutoSizeFirstColumn = true;
   myAutoSizeColumns = false;
+  myResizeOnExpandItem = false;
 }
 
 /*!
@@ -347,3 +363,16 @@ void SUIT_DataBrowser::onDblClicked( const QModelIndex& index )
     if ( obj ) emit( doubleClicked( obj ) );
   }
 }
+
+/*!
+  \brief Called when item specified by index is expanded.
+  \internal
+*/
+void SUIT_DataBrowser::onExpanded( const QModelIndex& index )
+{
+  if (myResizeOnExpandItem) {
+    adjustFirstColumnWidth();
+    adjustColumnsWidth();
+  }
+}
+

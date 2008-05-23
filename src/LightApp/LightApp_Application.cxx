@@ -1875,6 +1875,8 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 		       "ObjectBrowser", "auto_size_first" );
   pref->addPreference( tr( "PREF_AUTO_SIZE" ), objSetGroup, LightApp_Preferences::Bool,
 		       "ObjectBrowser", "auto_size" );
+  pref->addPreference( tr( "PREF_RESIZE_ON_EXPAND_ITEM" ), objSetGroup, LightApp_Preferences::Bool,
+		       "ObjectBrowser", "resize_on_expand_item" );
 
   // theme values
   Style_Model* aSModel = 0;
@@ -2014,26 +2016,28 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 
   if( sec=="ObjectBrowser" )
   {
-    if( param=="auto_size" || param=="auto_size_first" )
-    {
-      SUIT_DataBrowser* ob = objectBrowser();
-      if( !ob )
-	return;
+    SUIT_DataBrowser* ob = objectBrowser();
+    if( !ob )
+      return;
 
-      bool autoSize = resMgr->booleanValue( "ObjectBrowser", "auto_size", false ),
-           autoSizeFirst = resMgr->booleanValue( "ObjectBrowser", "auto_size_first", true );
-      
+    if ( param=="auto_size_first" ) {
+      bool autoSizeFirst = resMgr->booleanValue( "ObjectBrowser", "auto_size_first", true );
       ob->setAutoSizeFirstColumn(autoSizeFirst);
-      ob->setAutoSizeColumns(autoSize);
-
       if ( autoSizeFirst )
 	ob->adjustFirstColumnWidth();
+    }
+    else if( param=="auto_size" ) {
+      bool autoSize = resMgr->booleanValue( "ObjectBrowser", "auto_size", false );
+      ob->setAutoSizeColumns(autoSize);
       if ( autoSize )
 	ob->adjustColumnsWidth();
     }
-    else if ( param == "auto_hide_search_tool" )
-    {
-      objectBrowser()->searchTool()->enableAutoHide( resMgr->booleanValue( "ObjectBrowser", "auto_hide_search_tool" ) );
+    else if ( param=="resize_on_expand_item" ) {
+      bool resizeOnExpandItem = resMgr->booleanValue( "ObjectBrowser", "resize_on_expand_item", false );
+      ob->setResizeOnExpandItem(resizeOnExpandItem);
+    }
+    else if ( param == "auto_hide_search_tool" ) {
+      ob->searchTool()->enableAutoHide( resMgr->booleanValue( "ObjectBrowser", "auto_hide_search_tool" ) );
     }
   }
 

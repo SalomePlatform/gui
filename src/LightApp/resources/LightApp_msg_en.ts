@@ -190,6 +190,10 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>Auto size for first column</translation>
     </message>
     <message>
+        <source>PREF_RESIZE_ON_EXPAND_ITEM</source>
+        <translation>Resize columns after expanding an item</translation>
+    </message>
+    <message>
         <source>PREF_GROUP_SUPERV</source>
         <translation>Graph Supervisor</translation>
     </message>

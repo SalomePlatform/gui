@@ -62,6 +62,7 @@ public:
 
   void             setAutoSizeFirstColumn( const bool on );
   void             setAutoSizeColumns( const bool on );
+  void             setResizeOnExpandItem( const bool on );
 
 protected:
   virtual void     contextMenuEvent( QContextMenuEvent* );
@@ -76,12 +77,14 @@ signals:
 private slots:
   void             onModelUpdated();
   void             onDblClicked( const QModelIndex& );
+  void             onExpanded( const QModelIndex& );
 
 private:
   QShortcut*       myShortcut;
 
   bool             myAutoSizeFirstColumn;
   bool             myAutoSizeColumns;
+  bool             myResizeOnExpandItem;
 };
 
 #endif // SUIT_BROWSER_H

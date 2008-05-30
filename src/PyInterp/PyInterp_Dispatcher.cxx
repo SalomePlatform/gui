@@ -62,7 +62,7 @@ void PyInterp_Request::Destroy( PyInterp_Request* request )
 
 QEvent* PyInterp_Request::createEvent() const
 {
-  return new PyInterp_Event( PyInterp_Event::NOTIFY, (PyInterp_Request*)this );
+  return new PyInterp_Event( PyInterp_Event::ES_NOTIFY, (PyInterp_Request*)this );
 }
 
 void PyInterp_Request::processEvent( QObject* o )

@@ -191,7 +191,7 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
     </message>
     <message>
         <source>PREF_RESIZE_ON_EXPAND_ITEM</source>
-        <translation>Resize columns after expanding an item</translation>
+        <translation>Resize columns on expand item</translation>
     </message>
     <message>
         <source>PREF_GROUP_SUPERV</source>

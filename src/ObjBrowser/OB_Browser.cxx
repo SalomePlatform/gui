@@ -457,7 +457,7 @@ void OB_Browser::setOpen( const QModelIndex& index, const bool open )
 */
 void OB_Browser::adjustWidth()
 {
-  myView->resizeColumnToContents( 0 );
+  myView->resizeColumnToEncloseContents( 0 );
 }
 
 /*!
@@ -465,7 +465,7 @@ void OB_Browser::adjustWidth()
 */
 void OB_Browser::adjustFirstColumnWidth()
 {
-  myView->resizeColumnToContents( 0 );
+  myView->resizeColumnToEncloseContents( 0 );
 }
 
 /*!
@@ -475,7 +475,7 @@ void OB_Browser::adjustColumnsWidth()
 {
   for ( int aCol = 1; aCol < myView->header()->count(); aCol++ ) {
     if ( myView->columnWidth( aCol ) > 0 )
-      myView->resizeColumnToContents( aCol );
+      myView->resizeColumnToEncloseContents( aCol );
   }
 }
 

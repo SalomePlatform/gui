@@ -51,6 +51,8 @@ public:
   void     setSortMenuEnabled( const bool );
   bool     sortMenuEnabled() const;
 
+  void     resizeColumnToEncloseContents( int );
+
 protected slots:
   void     onHeaderClicked( int );
   void     rowsAboutToBeRemoved( const QModelIndex&, int, int );

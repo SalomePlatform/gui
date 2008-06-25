@@ -254,31 +254,28 @@ msgstr "Z axis"
 msgid "SVTK_CubeAxesDlg::IS_VISIBLE"
 msgstr "Is visible"
 
-msgid "SVTK_AxisWidget::AXIS_NAME"
+msgid "SVTK_CubeAxesDlg::AXIS_NAME"
 msgstr "Axis name"
 
-msgid "SVTK_AxisWidget::IS_VISIBLE"
-msgstr "Is visible"
-
-msgid "SVTK_AxisWidget::NAME"
+msgid "SVTK_CubeAxesDlg::NAME"
 msgstr "Name"
 
-msgid "SVTK_AxisWidget::FONT"
+msgid "SVTK_CubeAxesDlg::FONT"
 msgstr "Font"
 
-msgid "SVTK_AxisWidget::LABELS"
+msgid "SVTK_CubeAxesDlg::LABELS"
 msgstr "Labels"
 
-msgid "SVTK_AxisWidget::NUMBER"
+msgid "SVTK_CubeAxesDlg::NUMBER"
 msgstr "Number"
 
-msgid "SVTK_AxisWidget::OFFSET"
+msgid "SVTK_CubeAxesDlg::OFFSET"
 msgstr "Offset"
 
-msgid "SVTK_AxisWidget::TICK_MARKS"
+msgid "SVTK_CubeAxesDlg::TICK_MARKS"
 msgstr "Tick marks"
 
-msgid "SVTK_AxisWidget::LENGTH"
+msgid "SVTK_CubeAxesDlg::LENGTH"
 msgstr "Length"
 
 msgid "SVTK_MainWindow::MNU_SVTK_GRADUATED_AXES"

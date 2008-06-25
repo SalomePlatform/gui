@@ -32,21 +32,11 @@
 #include <qframe.h>
 
 class QWidget;
-class QFrame;
 class QPushButton;
 class QTabWidget;
 class QCheckBox;
-class QLineEdit;
-class QGroupBox;
-
 class QtxAction;
-class QtxIntSpinBox;
-
-class vtkAxisActor2D;
 class SVTK_CubeAxesActor2D;
-
-class SVTK_FontWidget;
-class SVTK_AxisWidget;
 class SVTK_MainWindow;
 
 /*!
@@ -56,6 +46,8 @@ class SVTK_MainWindow;
 class SVTK_CubeAxesDlg : public SVTK_DialogBase
 {
   Q_OBJECT
+
+  class AxisWidget;
 
 public:
                   SVTK_CubeAxesDlg(QtxAction* theAction,
@@ -85,56 +77,7 @@ private:
   QPushButton*    myOkBtn;
   QPushButton*    myApplyBtn;
   QPushButton*    myCloseBtn;
-  SVTK_AxisWidget* myAxes[ 3 ];
-};
-
-/*!
- * Class       : SVTK_AxisWidget
- * Description : Tab of dialog
- */
-class SVTK_AxisWidget : public QFrame
-{
-  Q_OBJECT
-
-public:
-                  SVTK_AxisWidget( QWidget* );
-                  ~SVTK_AxisWidget();
-
-  void            UseName( const bool );
-  void            SetName( const QString& );
-  void            SetNameFont( const QColor&, const int, const bool, const bool, const bool );
-  bool            ReadData( vtkAxisActor2D* );
-  bool            Apply( vtkAxisActor2D* );
-
-private slots:
-  void            onNameChecked();
-  void            onLabelsChecked();
-  void            onTicksChecked();
-
-private:
-  void            updateControlState();
-  void            setEnabled( QGroupBox*, const bool );
-
-private:
-  // name
-  QGroupBox*      myNameGrp;
-  QCheckBox*      myIsNameVisible;
-  QLineEdit*      myAxisName;
-  SVTK_FontWidget* myNameFont;
-
-  // labels
-  QGroupBox*      myLabelsGrp;
-  QCheckBox*      myIsLabelsVisible;
-  QtxIntSpinBox*  myLabelNumber;
-  QtxIntSpinBox*  myLabelOffset;
-  SVTK_FontWidget* myLabelsFont;
-
-  // tick marks
-  QGroupBox*      myTicksGrp;
-  QCheckBox*      myIsTicksVisible;
-  QtxIntSpinBox*  myTickLength;
-
-  friend class SVTK_CubeAxesDlg;
+  AxisWidget*     myAxes[ 3 ];
 };
 
 #endif

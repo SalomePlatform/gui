@@ -37,8 +37,12 @@
 #include <AIS_ListIteratorOfListOfInteractive.hxx>
 
 #include <Geom_Axis2Placement.hxx>
+#include <Prs3d_Drawer.hxx>
 #include <Prs3d_DatumAspect.hxx>
 #include <Prs3d_LineAspect.hxx>
+#include <Prs3d_LengthAspect.hxx>
+#include <Prs3d_AngleAspect.hxx>
+#include <Prs3d_TextAspect.hxx>
 
 /*!
   Constructor
@@ -66,6 +70,15 @@ myBgColor( Qt::black )
   // display isoline on planar faces (box for ex.)
   myAISContext->IsoOnPlane( true );
 
+  double h = QApplication::desktop()->screenGeometry( QApplication::desktop()->primaryScreen() ).height() / 300. ;
+  Handle(Prs3d_Drawer) drawer = myAISContext->DefaultDrawer();
+  Handle(Prs3d_TextAspect) ta = drawer->TextAspect();
+  ta->SetHeight(100); // VSR: workaround for CAS.CADE bug (is it really needed ???)
+  ta->SetHeight(h);
+  drawer->SetTextAspect(ta);
+  drawer->AngleAspect()->SetTextAspect(ta);
+  drawer->LengthAspect()->SetTextAspect(ta);
+  
   clearViewAspects();
 
   /* create trihedron */

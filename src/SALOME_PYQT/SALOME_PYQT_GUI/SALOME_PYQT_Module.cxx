@@ -112,6 +112,7 @@ public:
 		      const QString& context,
 		      const QString& parent,
 		      const QString& object );
+  void activateMenus( bool );
 
 protected:
   void createToolBar   ( QDomNode&   parentNode );
@@ -125,7 +126,7 @@ protected:
 private:
   SALOME_PYQT_Module* myModule;
   QDomDocument        myDoc;
-  QStringList         myMenuItems;
+  QList<int>          myMenuItems;
 };
 
 //
@@ -376,6 +377,7 @@ bool SALOME_PYQT_Module::activateModule( SUIT_Study* theStudy )
     return false;
 
   // activate menus, toolbars, etc
+  if ( myXmlHandler ) myXmlHandler->activateMenus( true );
   setMenuShown( true );
   setToolShown( true );
 
@@ -429,10 +431,6 @@ bool SALOME_PYQT_Module::deactivateModule( SUIT_Study* theStudy )
   disconnect( getApp(), SIGNAL( preferenceChanged( const QString&, const QString&, const QString& ) ),
 	      this,     SLOT(   preferenceChanged( const QString&, const QString&, const QString& ) ) );
 
-  // deactivate menus, toolbars, etc
-  setMenuShown( false );
-  setToolShown( false );
-
   // perform internal deactivation
   // DeactivateReq: request class for internal deactivate() operation
   class DeactivateReq : public PyInterp_LockRequest
@@ -458,6 +456,11 @@ bool SALOME_PYQT_Module::deactivateModule( SUIT_Study* theStudy )
 
   // post request
   PyInterp_Dispatcher::Get()->Exec( new DeactivateReq( myInterp, theStudy, this ) );
+
+  // deactivate menus, toolbars, etc
+  if ( myXmlHandler ) myXmlHandler->activateMenus( false );
+  setMenuShown( false );
+  setToolShown( false );
 
   // call base implementation
   return SalomeApp_Module::deactivateModule( theStudy );
@@ -930,7 +933,7 @@ void SALOME_PYQT_Module::activate( SUIT_Study* theStudy )
       // detect return status
       myLastActivateStatus = PyObject_IsTrue( res1 );
     }
-  }
+  } 
 }
 
 /*!
@@ -1850,6 +1853,21 @@ void SALOME_PYQT_Module::XmlHandler::createPopup( QMenu*         menu,
 }
 
 /*!
+  \brief Activate menus
+  \internal
+  \param enable if \c true menus are activated, otherwise menus are deactivated
+*/
+void SALOME_PYQT_Module::XmlHandler::activateMenus( bool enable )
+{
+  if ( !myModule )
+    return;
+
+  QtxActionMenuMgr* mgr = myModule->menuMgr();
+  int id;
+  foreach( id, myMenuItems ) mgr->setEmptyEnabled( id, enable );
+}
+
+/*!
   \brief Create main menu item and insert actions to it.
   \internal
   \param parentNode XML node with menu description
@@ -1862,7 +1880,7 @@ void SALOME_PYQT_Module::XmlHandler::createMenu( QDomNode& parentNode,
 {
   if ( !myModule || parentNode.isNull() )
     return;
-
+  
   QDomElement parentElement = parentNode.toElement();
   if ( !parentElement.isNull() ) {
     QString plabel = attribute( parentElement, "label-id" );
@@ -1879,6 +1897,7 @@ void SALOME_PYQT_Module::XmlHandler::createMenu( QDomNode& parentNode,
 				     pid,            // ID
 				     group,          // group ID
 				     ppos );         // position
+      myMenuItems.append( menuId );
       QDomNode node = parentNode.firstChild();
       while ( !node.isNull() ) {
 	if ( node.isElement() ) {

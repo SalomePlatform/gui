@@ -317,34 +317,40 @@ public:
     SalomeApp_Application* anApp = getApplication();
     if ( anApp && !myMenuName.isEmpty() ) {
       QtxActionMenuMgr* mgr = anApp->desktop()->menuMgr();
-      SALOME_PYQT_Module* module = getActiveModule();
-      int id = -1;
-      if ( module )
-	id = module->createMenu( myMenuName, -1, -1, -1, -1 );
-      else
-	id = mgr->insert( myMenuName, -1, -1, -1, -1 );
-      myResult = mgr->findMenu( id );
+      myResult = mgr->findMenu( myMenuName, -1, false ); // search only top menu
     }
   }
 };
+
+static QString getMenuName( const QString& menuId )
+{
+  QStringList contexts;
+  contexts << "SalomeApp_Application" << "LightApp_Application" << "STD_TabDesktop" <<
+    "STD_MDIDesktop" << "STD_Application" << "SUIT_Application" << "";
+  QString menuName = menuId;
+  for ( int i = 0; i < contexts.count() && menuName == menuId; i++ )
+    menuName = QApplication::translate( contexts[i].toLatin1().data(), menuId.toLatin1().data() );
+  return menuName;
+}
+
 QMenu* SalomePyQt::getPopupMenu( const MenuName menu )
 {
   QString menuName;
   switch( menu ) {
   case File:
-    menuName = QApplication::translate( "", "MEN_DESK_FILE" );        break;
+    menuName = getMenuName( "MEN_DESK_FILE" );        break;
   case View:
-    menuName = QApplication::translate( "", "MEN_DESK_VIEW" );        break;
+    menuName = getMenuName( "MEN_DESK_VIEW" );        break;
   case Edit:
-    menuName = QApplication::translate( "", "MEN_DESK_EDIT" );        break;
+    menuName = getMenuName( "MEN_DESK_EDIT" );        break;
   case Preferences:
-    menuName = QApplication::translate( "", "MEN_DESK_PREFERENCES" ); break;
+    menuName = getMenuName( "MEN_DESK_PREFERENCES" ); break;
   case Tools:
-    menuName = QApplication::translate( "", "MEN_DESK_TOOLS" );       break;
+    menuName = getMenuName( "MEN_DESK_TOOLS" );       break;
   case Window:
-    menuName = QApplication::translate( "", "MEN_DESK_WINDOW" );      break;
+    menuName = getMenuName( "MEN_DESK_WINDOW" );      break;
   case Help:
-    menuName = QApplication::translate( "", "MEN_DESK_HELP" );        break;
+    menuName = getMenuName( "MEN_DESK_HELP" );        break;
   }
   return ProcessEvent( new TGetPopupMenuEvent( menuName ) );
 }

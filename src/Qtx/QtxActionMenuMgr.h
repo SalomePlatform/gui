@@ -94,6 +94,10 @@ public:
   bool         containsMenu( const int, const int, const bool = false ) const;
 
   QMenu*       findMenu( const int ) const;
+  QMenu*       findMenu( const QString&, const int, const bool = false ) const;
+
+  bool         isEmptyEnabled( const int ) const;
+  void         setEmptyEnabled( const int, const bool );
 
 private slots:
   void         onAboutToShow();
@@ -126,6 +130,7 @@ protected:
   virtual void updateContent();
 
 private:
+  bool         ownAction( QAction*, MenuNode* ) const;
   bool         checkWidget( QWidget* ) const;
   QWidget*     menuWidget( MenuNode* ) const;
   void         simplifySeparators( QWidget* );

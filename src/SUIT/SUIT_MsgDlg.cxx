@@ -160,6 +160,9 @@ int SUIT_MsgDlg::addButton( const QString& btext, const int id )
   QPushButton* newButton = new QPushButton( btext, this );
 
   myButtonLayout->insertWidget( myButtons.count(), newButton );
+
+  if ( myButtons.empty() ) newButton->setDefault(true);
+
   myButtons.insert( newButton, bid );
   connect( newButton, SIGNAL( clicked() ), this, SLOT( accept() ) );
 

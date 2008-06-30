@@ -59,9 +59,9 @@ myWorkstackAction( 0 )
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
   if ( resMgr ) {
     myWorkstack->setIcon( QtxWorkstack::SplitVertical,   
-			  resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_HSPLIT" ) ) );
-    myWorkstack->setIcon( QtxWorkstack::SplitHorizontal,
 			  resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_VSPLIT" ) ) );
+    myWorkstack->setIcon( QtxWorkstack::SplitHorizontal,
+			  resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_HSPLIT" ) ) );
     myWorkstack->setIcon( QtxWorkstack::Close,
 			  resMgr->loadPixmap( "STD", tr( "ICON_FILE_CLOSE" ) ));
   }

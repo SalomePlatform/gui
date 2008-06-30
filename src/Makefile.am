@@ -24,7 +24,7 @@
 #  Module : SALOME
 # $Header$
 
-SUBDIRS = CASCatch Qtx Style DDS QDS ObjBrowser SUIT SUITApp STD CAF CAM LogWindow Prs
+SUBDIRS = CASCatch Qtx Style DDS QDS ObjBrowser SUIT SUITApp STD CAF CAM LogWindow Prs Event
 
 if ENABLE_SALOMEOBJECT
   SUBDIRS += OBJECT
@@ -61,7 +61,7 @@ endif
 if ENABLE_QXGRAPHVIEWER
   SUBDIRS += QxGraph
 endif
-SUBDIRS += Event LightApp ResExporter
+SUBDIRS += LightApp ResExporter
 
 if GUI_ENABLE_CORBA
   SUBDIRS += TOOLSGUI Session SalomeApp SALOME_SWIG SALOME_PY SALOME_PYQT

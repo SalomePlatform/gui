@@ -39,5 +39,6 @@ dist_libPyInterp_la_SOURCES=	\
 MOC_FILES= PyInterp_Watcher_moc.cxx
 nodist_libPyInterp_la_SOURCES= $(MOC_FILES)
 
-libPyInterp_la_CPPFLAGS= $(PYTHON_INCLUDES) $(QT_INCLUDES)
-libPyInterp_la_LDFLAGS= $(PYTHON_LIBS) $(QT_MT_LIBS)
+libPyInterp_la_CPPFLAGS= $(PYTHON_INCLUDES) $(QT_INCLUDES) \
+	-I$(srcdir)/../Event
+libPyInterp_la_LDFLAGS= $(PYTHON_LIBS) $(QT_MT_LIBS) ../Event/libEvent.la

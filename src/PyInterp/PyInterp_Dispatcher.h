@@ -35,10 +35,12 @@ class QObject;
 class PyInterp_Interp;
 class PyInterp_Watcher;
 class PyInterp_Dispatcher;
+class PyInterp_ExecuteEvent;
 
 class PYINTERP_EXPORT PyInterp_Request
 {
   friend class PyInterp_Dispatcher;
+  friend class PyInterp_ExecuteEvent;
 
   PyInterp_Request();
   PyInterp_Request( const PyInterp_Request& );

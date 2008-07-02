@@ -481,19 +481,19 @@ QStringList SUIT_FileDlg::getOpenFileNames( QWidget*            parent,
 					    bool                showQuickDir, 
 					    SUIT_FileValidator* validator )
 {            
-  SUIT_FileDlg* fd = new SUIT_FileDlg( parent, true, showQuickDir, true );    
-  fd->setMode( ExistingFiles );     
+  SUIT_FileDlg fd( parent, true, showQuickDir, true );    
+  fd.setMode( ExistingFiles );     
   if ( !caption.isEmpty() )
-    fd->setCaption( caption );
+    fd.setCaption( caption );
   if ( !initial.isEmpty() ) { 
-    fd->processPath( initial ); // VSR 24/03/03 check for existing of directory has been added to avoid QFileDialog's bug
+    fd.processPath( initial ); // VSR 24/03/03 check for existing of directory has been added to avoid QFileDialog's bug
   }
-  fd->setFilters( filters );        
+  fd.setFilters( filters );        
   if ( validator )
-    fd->setValidator( validator );
-  fd->exec();
-  QStringList filenames = fd->selectedFiles();
-  delete fd;
+    fd.setValidator( validator );
+  QStringList filenames;
+  if ( fd.exec() )
+    filenames = fd.selectedFiles();
   qApp->processEvents();
   return filenames;
 }

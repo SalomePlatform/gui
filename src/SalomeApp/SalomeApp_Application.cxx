@@ -36,6 +36,7 @@
 #include <LightApp_Preferences.h>
 #include <LightApp_SelectionMgr.h>
 #include <LightApp_NameDlg.h>
+#include <LightApp_DataOwner.h>
 
 #include <CAM_Module.h>
 
@@ -46,6 +47,7 @@
 #include <SUIT_FileDlg.h>
 #include <SUIT_MessageBox.h>
 #include <SUIT_ResourceMgr.h>
+#include <SUIT_TreeModel.h>
 
 #include <QtxMRUAction.h>
 #include <QtxTreeView.h>
@@ -752,8 +754,7 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
       // temporary commented
       //ob->setUpdater( new SalomeApp_Updater() );
 
-      // temporary commented
-      //connect( ob->listView(), SIGNAL( doubleClicked( QListViewItem* ) ), this, SLOT( onDblClick( QListViewItem* ) ) );*/
+      connect( ob, SIGNAL( doubleClicked( SUIT_DataObject* ) ), this, SLOT( onDblClick( SUIT_DataObject* ) ) );
 
       bool autoSize      = resMgr->booleanValue( "ObjectBrowser", "auto_size", false );
       bool autoSizeFirst = resMgr->booleanValue( "ObjectBrowser", "auto_size_first", true );
@@ -1168,47 +1169,31 @@ void SalomeApp_Application::onRegDisplay()
 }
 
 /*!find original object by double click on item */
-void SalomeApp_Application::onDblClick( QListViewItem* it )
+void SalomeApp_Application::onDblClick( SUIT_DataObject* theObj )
 {
-  // temporary commented
-  /*OB_ListItem* item = dynamic_cast<OB_ListItem*>( it );
+  SalomeApp_DataObject* obj = dynamic_cast<SalomeApp_DataObject*>( theObj );
   SalomeApp_Study* study = dynamic_cast<SalomeApp_Study*>( activeStudy() );
 
-  if( study && item )
+  if( study && obj )
   {
-    SalomeApp_DataObject* obj = dynamic_cast<SalomeApp_DataObject*>( item->dataObject() );
-    if( !obj )
-      return;
-
     QString entry = obj->entry();
-    _PTR(SObject) sobj = study->studyDS()->FindObjectID( entry.latin1() ), ref;
+    _PTR(SObject) sobj = study->studyDS()->FindObjectID( entry.toStdString() ), ref;
 
     if( sobj && sobj->ReferencedObject( ref ) )
     {
       entry = ref->GetID().c_str();
-      QListViewItemIterator anIt( item->listView() );
-      for( ; anIt.current(); anIt++ )
-      {
-	OB_ListItem* item = dynamic_cast<OB_ListItem*>( anIt.current() );
-	if( !item )
-	  continue;
+      
+      SUIT_DataOwnerPtrList aList;
+      aList.append( new LightApp_DataOwner( entry ) );
+      selectionMgr()->setSelected( aList, false );
 
-	SalomeApp_DataObject* original = dynamic_cast<SalomeApp_DataObject*>( item->dataObject() );
-	if( original->entry()!=entry )
-	  continue;
-
-	OB_Browser* br = objectBrowser();
-	br->setSelected( original );
-	SUIT_DataObject* p = original->parent();
-	while( p )
-	{
-	  br->setOpen( p );
-	  p = p->parent();
-	}
-	break;
-      }
+      SUIT_DataBrowser* ob = objectBrowser();
+      
+      QModelIndexList aSelectedIndexes = ob->selectedIndexes();
+      if ( !aSelectedIndexes.isEmpty() )
+	ob->treeView()->scrollTo( aSelectedIndexes.first() );
     }
-  }*/
+  }
 }
 
 /*!

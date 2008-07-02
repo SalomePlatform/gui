@@ -41,10 +41,10 @@
 
 class LightApp_Preferences;
 class SalomeApp_Study;
+class SUIT_DataObject;
 
 class SALOME_LifeCycleCORBA;
 
-class QListViewItem;//? waiting for object browser porting
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -136,7 +136,7 @@ protected:
 
 private slots:
   void                                onDeleteInvalidReferences();
-  void                                onDblClick( QListViewItem* );
+  void                                onDblClick( SUIT_DataObject* );
   void                                onProperties();
   void                                onDumpStudy();
   void                                onLoadScript();

@@ -596,7 +596,7 @@ int main( int argc, char **argv )
 
   try 
     {
-      orb->destroy();
+      orb->shutdown(0);
     }
   catch(...) 
     {

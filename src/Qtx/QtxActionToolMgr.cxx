@@ -502,6 +502,11 @@ void QtxActionToolMgr::updateToolBar( const int tid )
   }
 
   simplifySeparators( tb );
+  
+  // fix of 19921 -->
+  if ( !tb->isVisible() )
+    tb->adjustSize();
+  // fix of 19921 <--
 }
 
 /*!

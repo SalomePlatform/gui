@@ -126,13 +126,13 @@ msgid "OCCViewer_SetRotationPointDlg::LBL_SELECTPOINT"
 msgstr "Select Point from View"
 
 msgid "OCCViewer_SetRotationPointDlg::LBL_X"
-msgstr "X :"
+msgstr "X:"
 
 msgid "OCCViewer_SetRotationPointDlg::LBL_Y"
-msgstr "Y :"
+msgstr "Y:"
 
 msgid "OCCViewer_SetRotationPointDlg::LBL_Z"
-msgstr "Z :"
+msgstr "Z:"
 
 msgid "MNU_CHANGINGROTATIONPOINT_VIEW"
 msgstr "Change Rotation Point"

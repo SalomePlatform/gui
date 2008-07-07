@@ -174,13 +174,13 @@ msgid "SVTK_NonIsometricDlg::DLG_TITLE"
 msgstr "Scaling"
 
 msgid "SVTK_NonIsometricDlg::LBL_X"
-msgstr "X :"
+msgstr "X:"
 
 msgid "SVTK_NonIsometricDlg::LBL_Y"
-msgstr "Y :"
+msgstr "Y:"
 
 msgid "SVTK_NonIsometricDlg::LBL_Z"
-msgstr "Z :"
+msgstr "Z:"
 
 msgid "SVTK_MainWindow::MNU_SVTK_SCALING"
 msgstr "Scaling"
@@ -210,13 +210,13 @@ msgid "SVTK_SetRotationPointDlg::LBL_SELECTED_POINT"
 msgstr "Selected point"
 
 msgid "SVTK_SetRotationPointDlg::LBL_X"
-msgstr "X :"
+msgstr "X:"
 
 msgid "SVTK_SetRotationPointDlg::LBL_Y"
-msgstr "Y :"
+msgstr "Y:"
 
 msgid "SVTK_SetRotationPointDlg::LBL_Z"
-msgstr "Z :"
+msgstr "Z:"
 
 msgid "SVTK_SetRotationPointDlg::RBUTTONGROUP_TITLE"
 msgstr "The rotation point type"

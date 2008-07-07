@@ -66,6 +66,8 @@
 #include <OB_ListView.h>
 #include <OB_ObjSearch.h>
 
+#include "utilities.h"
+
 #ifndef DISABLE_GLVIEWER
   #include <GLViewer_Viewer.h>
   #include <GLViewer_ViewManager.h>
@@ -583,9 +585,9 @@ void LightApp_Application::createActions()
       if ( icon.isNull() )
       {
 	icon = modIcon;
-	printf( "****************************************************************\n" );
-	printf( "*    Icon for %s not found. Using the default one.\n", (*it).latin1() );
-	printf( "****************************************************************\n" );
+	INFOS ( "****************************************************************" << std::endl
+	     << "*    Icon for " << (*it).latin1() << " not found. Using the default one." << std::endl
+	     << "****************************************************************" << std::endl );
       }
 
       icon.convertFromImage( icon.convertToImage().smoothScale( iconSize, iconSize, QImage::ScaleMin ) );
@@ -2606,10 +2608,10 @@ bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
   
   if ( !isLibFound )
     {
-      printf( "****************************************************************\n" );
-      printf( "*    Warning: library %s cannot be found\n", lib.latin1() );
-      printf( "*    Module %s will not be available in GUI mode\n", moduleTitle.latin1() );
-      printf( "****************************************************************\n" );
+      INFOS( "****************************************************************" << std::endl
+          << "*    Warning: library " << lib.latin1() << " cannot be found" << std::endl
+          << "*    Module " << moduleTitle.latin1() << " will not be available in GUI mode" << std::endl
+          << "****************************************************************" << std::endl );
     }
   else if ( !isPythonModule )
     return true;

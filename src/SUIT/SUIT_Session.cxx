@@ -230,7 +230,7 @@ void SUIT_Session::onApplicationClosed( SUIT_Application* theApp )
 
   if ( myAppList.isEmpty() )
   {
-    printf( "Calling QApplication::exit() with exit code = %d\n", myExitStatus );
+    //printf( "Calling QApplication::exit() with exit code = %d\n", myExitStatus );
     qApp->exit( myExitStatus );
   }
 }

@@ -469,8 +469,8 @@ void QDS_RadioBox::updateRadioBox()
   if ( curId != bg->checkedId() )
   {
     onParamChanged();
-    emit paramChanged();
     QString str = getString();
+    emit paramChanged();
     emit paramChanged( str );
   }
 }

@@ -341,7 +341,8 @@ void killOmniNames()
       cmd += QString("[ m.update(i) for i in pids ]; ");
       cmd += QString("pids=filter(lambda a: 'notifd' in m[a], m.keys()); ");
       cmd += QString("[ os.kill(pid, 9) for pid in pids ]; ");
-      cmd = QString("python -c \"%1\"").arg(cmd);
+      cmd += QString("os.remove(filedict); ");
+      cmd  = QString("python -c \"%1\" > /dev/null").arg(cmd);
       system( cmd.toLatin1().data() );
     }
 
@@ -662,10 +663,8 @@ int main( int argc, char **argv )
   // unlock Session mutex
   _SessionMutex.unlock();
   
-  if ( shutdown ) {
+  if ( shutdown )
     shutdownServers( _NS );
-    killOmniNames();
-  }
 
   if ( myServerLauncher )
     myServerLauncher->KillAll(); // kill embedded servers
@@ -682,11 +681,17 @@ int main( int argc, char **argv )
     orb->destroy();
   }
   catch (...) {
-    std::cerr << "Caught unexpected exception on destroy : ignored !!" << std::endl;
+    //////////////////////////////////////////////////////////////
+    // VSR: silently skip exception:
+    // CORBA.BAD_INV_ORDER.BAD_INV_ORDER_ORBHasShutdown 
+    // exception is raised when orb->destroy() is called and
+    // cpp continer is launched in the embedded mode
+    //////////////////////////////////////////////////////////////
+    // std::cerr << "Caught unexpected exception on destroy : ignored !!" << std::endl;
   }
 
-  //  if ( shutdown )
-  //    killOmniNames();
+  if ( shutdown )
+    killOmniNames();
 
   return result;
 }

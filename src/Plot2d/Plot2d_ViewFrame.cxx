@@ -229,7 +229,7 @@ QWidget* Plot2d_ViewFrame::getViewWidget()
 */
 void Plot2d_ViewFrame::DisplayAll()
 {
-  QList<Plot2d_Curve*> clist;
+  curveList clist;
   getCurves( clist );
   for ( int i = 0; i < (int)clist.count(); i++ ) {
     updateCurve( clist.at( i ), false );
@@ -589,7 +589,7 @@ void Plot2d_ViewFrame::displayCurve( Plot2d_Curve* curve, bool update )
 void Plot2d_ViewFrame::displayCurves( const curveList& curves, bool update )
 {
   //myPlot->setUpdatesEnabled( false ); // call this function deprecate update of legend
-  QList<Plot2d_Curve*>::const_iterator it = curves.begin();
+  curveList::const_iterator it = curves.begin();
   Plot2d_Curve* aCurve;
   for (; it != curves.end(); ++it ) {
     aCurve = *it;
@@ -625,7 +625,7 @@ void Plot2d_ViewFrame::eraseCurve( Plot2d_Curve* curve, bool update )
 */
 void Plot2d_ViewFrame::eraseCurves( const curveList& curves, bool update )
 {
-  QList<Plot2d_Curve*>::const_iterator it = curves.begin();
+  curveList::const_iterator it = curves.begin();
   Plot2d_Curve* aCurve;
   for (; it != curves.end(); ++it ) {
     aCurve = *it;
@@ -702,7 +702,7 @@ void Plot2d_ViewFrame::updateLegend( const Plot2d_Prs* prs )
     return;
   curveList aCurves = prs->getCurves();
 
-  QList<Plot2d_Curve*>::iterator it = aCurves.begin();
+  curveList::iterator it = aCurves.begin();
   Plot2d_Curve* aCurve;
   for (; it != aCurves.end(); ++it ) {
     aCurve = *it;

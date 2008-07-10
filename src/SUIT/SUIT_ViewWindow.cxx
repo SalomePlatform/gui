@@ -231,3 +231,11 @@ QtxActionToolMgr* SUIT_ViewWindow::toolMgr() const
 {
   return myToolMgr;
 }
+
+/*!
+  \return window unique identifier  
+*/
+int SUIT_ViewWindow::getId() const
+{
+  return int(long(this));
+}

@@ -33,6 +33,7 @@
 #include <OpUtil.hxx>
 #include <RegistryService.hxx>
 #include <ConnectionManager_i.hxx>
+#include <SALOME_LifeCycleCORBA.hxx>
 
 #include <QDir>
 #include <QFile>
@@ -305,123 +306,14 @@ bool isFound( const char* str, int argc, char** argv )
 
 void killOmniNames()
 {
-    QString fileName( ::getenv ("OMNIORB_CONFIG") );
-    QString portNumber;
-    if ( !fileName.isEmpty() ) 
-    {
-      QFile aFile( fileName );
-      if ( aFile.open(QIODevice::ReadOnly) ) {
-        QRegExp re("InitRef = .*:([0-9]+)$");
-        QTextStream stream ( &aFile );
-        while ( !stream.atEnd() ) {
-          QString textLine = stream.readLine();
-          if ( re.indexIn( textLine ) > -1 )
-            portNumber = re.cap(1);
-        }
-        aFile.close();
-      }
-    }
-
-    if ( !portNumber.isEmpty() ) 
-    {
-      QString cmd ;
-      cmd = QString( "ps -eo pid,command | grep -v grep | grep -E \"omniNames.*%1\" | awk '{cmd=sprintf(\"kill -9 %s\",$1); system(cmd)}'" ).arg( portNumber );
-      system ( cmd.toLatin1().data() );
-    }
-
-    /////////////////// NPAL 18309  (Kill Notifd) ////////////////////////////
-    if ( !portNumber.isEmpty() ) 
-    {
-      QString cmd = QString("import pickle, os; ");
-      cmd += QString("from killSalomeWithPort import getPiDict; ");
-      cmd += QString("filedict=getPiDict(%1); ").arg(portNumber);
-      cmd += QString("f=open(filedict, 'r'); ");
-      cmd += QString("pids=pickle.load(f); ");
-      cmd += QString("m={}; ");
-      cmd += QString("[ m.update(i) for i in pids ]; ");
-      cmd += QString("pids=filter(lambda a: 'notifd' in m[a], m.keys()); ");
-      cmd += QString("[ os.kill(pid, 9) for pid in pids ]; ");
-      cmd += QString("os.remove(filedict); ");
-      cmd  = QString("python -c \"%1\" > /dev/null").arg(cmd);
-      system( cmd.toLatin1().data() );
-    }
-
+  SALOME_LifeCycleCORBA::killOmniNames();
 }
 
 // shutdown standalone servers
 void shutdownServers( SALOME_NamingService* theNS )
 {
-  // get each Container from NamingService => shutdown it
-  // (the order is inverse to the order of servers initialization)
-  
-  CORBA::Object_var objS = theNS->Resolve("/Kernel/Session");
-  SALOME::Session_var session = SALOME::Session::_narrow(objS);
-  if (!CORBA::is_nil(session)) {
-    session->ping();
-    
-    string hostname = GetHostname();
-    //string containerName = "/Containers/" + hostname;
-    
-    // 1) SuperVisionContainer
-    //string containerNameSV = containerName + "/SuperVisionContainer";
-    //CORBA::Object_var objSV = theNS->Resolve(containerNameSV.c_str());
-    //Engines::Container_var SVcontainer = Engines::Container::_narrow(objSV) ;
-    //if ( !CORBA::is_nil(SVcontainer) && ( session->getPID() != SVcontainer->getPID() ) )
-    //  SVcontainer->Shutdown();
-    
-    // 2) FactoryServerPy
-    //string containerNameFSP = containerName + "/FactoryServerPy";
-    //CORBA::Object_var objFSP = theNS->Resolve(containerNameFSP.c_str());
-    //Engines::Container_var FSPcontainer = Engines::Container::_narrow(objFSP) ;
-    //if ( !CORBA::is_nil(FSPcontainer) && ( session->getPID() != FSPcontainer->getPID() ) )
-    //  FSPcontainer->Shutdown();
-    
-    // 3) FactoryServer
-    //string containerNameFS = containerName + "/FactoryServer";
-    //CORBA::Object_var objFS = theNS->Resolve(containerNameFS.c_str());
-    //Engines::Container_var FScontainer = Engines::Container::_narrow(objFS) ;
-    //if ( !CORBA::is_nil(FScontainer) && ( session->getPID() != FScontainer->getPID() ) )
-    //  FScontainer->Shutdown();
-    
-    // 4) ContainerManager
-    //CORBA::Object_var objCM=theNS->Resolve("/ContainerManager");
-    //Engines::ContainerManager_var contMan=Engines::ContainerManager::_narrow(objCM);
-    //if ( !CORBA::is_nil(contMan) && ( session->getPID() != contMan->getPID() ) )
-    //  contMan->ShutdownWithExit();
-
-    // 4) SalomeLauncher
-    CORBA::Object_var objSL = theNS->Resolve("/SalomeLauncher");
-    Engines::SalomeLauncher_var launcher = Engines::SalomeLauncher::_narrow(objSL);
-    if (!CORBA::is_nil(launcher) && (session->getPID() != launcher->getPID()))
-      launcher->Shutdown();
-
-    // 5) ConnectionManager
-    CORBA::Object_var objCnM=theNS->Resolve("/ConnectionManager");
-    Engines::ConnectionManager_var connMan=Engines::ConnectionManager::_narrow(objCnM);
-    if ( !CORBA::is_nil(connMan) && ( session->getPID() != connMan->getPID() ) )
-      connMan->ShutdownWithExit();
-    
-    // 6) SALOMEDS
-    CORBA::Object_var objSDS = theNS->Resolve("/myStudyManager");
-    SALOMEDS::StudyManager_var studyManager = SALOMEDS::StudyManager::_narrow(objSDS) ;
-    if ( !CORBA::is_nil(studyManager) && ( session->getPID() != studyManager->getPID() ) )
-      studyManager->Shutdown();
-    
-    // 7) ModuleCatalog
-    CORBA::Object_var objMC=theNS->Resolve("/Kernel/ModulCatalog");
-    SALOME_ModuleCatalog::ModuleCatalog_var catalog = SALOME_ModuleCatalog::ModuleCatalog::_narrow(objMC);
-    if ( !CORBA::is_nil(catalog) && ( session->getPID() != catalog->getPID() ) )
-      catalog->shutdown();
-    
-    // 8) Registry
-    CORBA::Object_var objR = theNS->Resolve("/Registry");
-    Registry::Components_var registry = Registry::Components::_narrow(objR);
-    if ( !CORBA::is_nil(registry) && ( session->getPID() != registry->getPID() ) )
-      registry->Shutdown();
-    
-    // 9) Kill OmniNames
-    //killOmniNames();
-  }
+  SALOME_LifeCycleCORBA lcc(theNS);
+  lcc.shutdownServers();
 }
 
 // ---------------------------- MAIN -----------------------
@@ -678,7 +570,7 @@ int main( int argc, char **argv )
   Py_Finalize();
 
   try  {
-    orb->destroy();
+    orb->shutdown(0);
   }
   catch (...) {
     //////////////////////////////////////////////////////////////

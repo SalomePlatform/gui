@@ -353,6 +353,51 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <source>PYTHON_CONSOLE</source>
         <translation>Python Console</translation>
     </message>
+    <message>
+        <source>PREF_USE_ADVANCED_SELECTION_ALGORITHM</source>
+        <translation>Use Advanced Selection Algorithm</translation>
+    </message>
+    <message>
+        <source>TOT_CLOSE</source>
+        <translation>Close</translation>
+    </message>
+    <message>
+        <source>MEN_DESK_CLOSE</source>
+        <translation>&amp;Close</translation>
+    </message>
+    <message>
+        <source>PRP_CLOSE</source>
+        <translation>Close active window</translation>
+    </message>
+    <message>
+        <source>TOT_CLOSE_ALL</source>
+        <translation>Close all</translation>
+    </message>
+    <message>
+        <source>MEN_DESK_CLOSE_ALL</source>
+        <translation>Close all</translation>
+    </message>
+    <message>
+        <source>PRP_CLOSE_ALL</source>
+        <translation>Close all windows</translation>
+    </message>
+    <message>
+        <source>TOT_GROUP_ALL</source>
+        <translation>Group all</translation>
+    </message>
+    <message>
+        <source>MEN_DESK_GROUP_ALL</source>
+        <translation>&amp;Group all</translation>
+    </message>
+    <message>
+        <source>PRP_GROUP_ALL</source>
+        <translation>Group all windows</translation>
+    </message>
+    <message>
+        <source>ERR_DOC_NOT_EXISTS</source>
+        <translation>Can not open %1.
+File does not exist</translation>
+    </message>
 </context>
 <context>
     <name>LightApp_Module</name>

@@ -179,6 +179,14 @@ CAM_Application* CAM_Module::application() const
 }
 
 /*!
+  \brief If return false, selection will be cleared at module activation
+*/
+bool CAM_Module::isSelectionCompatible()
+{
+  return false;
+}
+
+/*!
   \brief Activate module.
 
   This method is called when the user activates module.

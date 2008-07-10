@@ -132,6 +132,8 @@ protected:
 
   virtual void                        updateControls();
 
+  virtual bool                        isSelectionCompatible();
+
 private:
   typedef QMap<int,LightApp_Operation*> MapOfOperation;
 

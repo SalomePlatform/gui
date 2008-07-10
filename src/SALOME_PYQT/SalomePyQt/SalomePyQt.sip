@@ -80,6 +80,17 @@ enum PrefType {
   PT_File, 
 };
 
+enum Orientation {
+  Horizontal = 0, 
+  Vertical   = 1  
+};
+
+enum Action {
+  MoveWidget   = 0, 
+  LeaveWidget  = 1, 
+  SplitAt      = 2  
+};
+
 class QtxAction : QAction
 {
 %TypeHeaderCode
@@ -121,8 +132,8 @@ public:
   static int               createTool( const QString& ) /ReleaseGIL/ ;
   static int               createTool( const int,  const int,      const int = -1 ) /ReleaseGIL/ ;
   static int               createTool( const int,  const QString&, const int = -1 ) /ReleaseGIL/ ;
-  static int               createTool( QtxAction*, const int,      const int = -1, const int = -1 ) /ReleaseGIL/ ;
-  static int               createTool( QtxAction*, const QString&, const int = -1, const int = -1 ) /ReleaseGIL/ ;
+  static int               createTool( QAction*,   const int,      const int = -1, const int = -1 ) /ReleaseGIL/ ;
+  static int               createTool( QAction*,   const QString&, const int = -1, const int = -1 ) /ReleaseGIL/ ;
 
   static int               createMenu( const QString&, const int,
 				       const int = -1, const int = -1, const int = -1 ) /ReleaseGIL/ ;
@@ -132,18 +143,20 @@ public:
 				       const int = -1, const int = -1 ) /ReleaseGIL/ ;
   static int               createMenu( const int,      const QString&, 
 				       const int = -1, const int = -1 ) /ReleaseGIL/ ;
-  static int               createMenu( QtxAction*,     const int,      const int = -1, 
+  static int               createMenu( QAction*,       const int,      const int = -1, 
 	                               const int = -1, const int = -1 ) /ReleaseGIL/ ;
-  static int               createMenu( QtxAction*,     const QString&, const int = -1, 
+  static int               createMenu( QAction*,       const QString&, const int = -1, 
 	                               const int = -1, const int = -1 ) /ReleaseGIL/ ;
-  static QtxAction*        createSeparator() /ReleaseGIL/ ;
+  static QAction*          createSeparator() /ReleaseGIL/ ;
 
-  static QtxAction*        createAction( const int, const QString&, 
+  static QAction*          createAction( const int, const QString&, 
 	                                 const QString& = QString(), const QString& = QString(), 
 					 const QString& = QString(), const int = 0, const bool = false ) /ReleaseGIL/ ;
 
-  static QtxAction*        action( const int ) /ReleaseGIL/ ;
-  static int               actionId( const QtxAction* ) /ReleaseGIL/ ;
+  //static QActionGroup*     createActionGroup( const int, const bool = true ) /ReleaseGIL/ ;
+
+  static QAction*          action( const int ) /ReleaseGIL/ ;
+  static int               actionId( const QAction* ) /ReleaseGIL/ ;
 
   static void              addSetting    ( const QString&, const QString&, const double ) /ReleaseGIL/ ;
   static void              addSetting    ( const QString&, const QString&, const int /Constrained/ ) /ReleaseGIL/ ;
@@ -183,4 +196,21 @@ public:
 
   static void              message( const QString&, bool = true ) /ReleaseGIL/ ;
   static void              clearMessages() /ReleaseGIL/ ;
+  
+  static QList<int>        getViews() /ReleaseGIL/ ;
+  static int               getActiveView() /ReleaseGIL/ ;
+  static QString           getViewType( const int ) /ReleaseGIL/ ;
+  static bool              setViewTitle( const int, const QString& ) /ReleaseGIL/ ;
+  static QString           getViewTitle( const int ) /ReleaseGIL/ ;
+  static QList<int>        findViews( const QString& ) /ReleaseGIL/ ;
+  static bool              activateView( const int ) /ReleaseGIL/ ;
+  static int               createView( const QString& ) /ReleaseGIL/ ;
+  static bool              closeView( const int ) /ReleaseGIL/ ;
+  static int               cloneView( const int ) /ReleaseGIL/ ;
+  static bool              isViewVisible( const int id ) /ReleaseGIL/ ;
+  
+  static bool              groupAllViews() /ReleaseGIL/ ;
+  static bool              splitView( const int, Orientation, Action ) /ReleaseGIL/ ;
+  static bool              moveView( const int, const int, const bool ) /ReleaseGIL/ ;
+  static QList<int>        neighbourViews( const int ) /ReleaseGIL/ ;
 };

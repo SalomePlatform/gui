@@ -45,11 +45,11 @@
 #include <SUIT_Desktop.h>
 #include <SUIT_DataBrowser.h>
 #include <SUIT_FileDlg.h>
+#include <SUIT_FileValidator.h>
 #include <SUIT_MessageBox.h>
 #include <SUIT_ResourceMgr.h>
 #include <SUIT_TreeModel.h>
 
-#include <QtxMRUAction.h>
 #include <QtxTreeView.h>
 
 // temporary commented
@@ -631,6 +631,28 @@ public:
   QCheckBox* mySaveGUIChk;
 };
 
+class DumpStudyFileValidator : public SUIT_FileValidator
+{
+ public:
+  DumpStudyFileValidator( QWidget* parent) : SUIT_FileValidator ( parent ) {};
+  virtual ~DumpStudyFileValidator() {};
+  virtual bool canSave( const QString& file );
+};
+
+bool DumpStudyFileValidator::canSave(const QString& file)
+{
+  QFileInfo fi( file );
+  QString name = fi.fileName(); 
+  
+  if ( name.indexOf( QRegExp("[-!?#*&]") ) >= 0 ) {
+    SUIT_MessageBox::critical( parent(),
+			       QObject::tr("WRN_WARNING"),
+			       QObject::tr("WRN_FILE_NAME_BAD") );
+    return false;
+  }
+  return SUIT_FileValidator::canSave( file );
+}
+
 /*!Private SLOT. On dump study.*/
 void SalomeApp_Application::onDumpStudy( )
 {
@@ -641,49 +663,41 @@ void SalomeApp_Application::onDumpStudy( )
   QStringList aFilters;
   aFilters.append( tr( "PYTHON_FILES_FILTER" ) );
 
-  DumpStudyFileDlg* fd = new DumpStudyFileDlg( desktop() );
-  fd->setWindowTitle( tr( "TOT_DESK_FILE_DUMP_STUDY" ) );
-  fd->setFilters( aFilters );
-  fd->myPublishChk->setChecked( true );
-  fd->mySaveGUIChk->setChecked( true );
-  QString aFileName;
-  while (1) {
-    fd->exec();
-    fd->raise();
-    aFileName = fd->selectedFile();
-    if ( aFileName.isEmpty() )
-      break;
-    if ( aFileName.indexOf( QRegExp("[-!?#*&]") ) == -1 )
-      break;
-    SUIT_MessageBox::warning( desktop(),
-			      tr( "WRN_WARNING" ),
-			      tr( "WRN_FILE_NAME_BAD" ) );
-  }
-  bool toPublish = fd->myPublishChk->isChecked();
-  bool toSaveGUI = fd->mySaveGUIChk->isChecked();
-  delete fd;
+  DumpStudyFileDlg fd( desktop() );
+  fd.setValidator( new DumpStudyFileValidator( &fd ) );
+  fd.setWindowTitle( tr( "TOT_DESK_FILE_DUMP_STUDY" ) );
+  fd.setFilters( aFilters );
+  fd.myPublishChk->setChecked( true );
+  fd.mySaveGUIChk->setChecked( true );
+  if ( fd.exec() == QDialog::Accepted )
+  {
+    QString aFileName = fd.selectedFile();
+    
+    bool toPublish = fd.myPublishChk->isChecked();
+    bool toSaveGUI = fd.mySaveGUIChk->isChecked();
+    
+    if ( !aFileName.isEmpty() ) {
+      QFileInfo aFileInfo(aFileName);
+      if( aFileInfo.isDir() ) // IPAL19257
+	return;
 
-  if ( !aFileName.isEmpty() ) {
-    QFileInfo aFileInfo(aFileName);
-    if( aFileInfo.isDir() ) // IPAL19257
-      return;
-
-    int savePoint;
-    _PTR(AttributeParameter) ap;
-    _PTR(IParameters) ip = ClientFactory::getIParameters(ap);
-    if(ip->isDumpPython(appStudy->studyDS())) ip->setDumpPython(appStudy->studyDS()); //Unset DumpPython flag.
-    if ( toSaveGUI ) { //SRN: Store a visual state of the study at the save point for DumpStudy method
-      ip->setDumpPython(appStudy->studyDS());
-      savePoint = SalomeApp_VisualState( this ).storeState(); //SRN: create a temporary save point
+      int savePoint;
+      _PTR(AttributeParameter) ap;
+      _PTR(IParameters) ip = ClientFactory::getIParameters(ap);
+      if(ip->isDumpPython(appStudy->studyDS())) ip->setDumpPython(appStudy->studyDS()); //Unset DumpPython flag.
+      if ( toSaveGUI ) { //SRN: Store a visual state of the study at the save point for DumpStudy method
+	ip->setDumpPython(appStudy->studyDS());
+	savePoint = SalomeApp_VisualState( this ).storeState(); //SRN: create a temporary save point
+      }
+      bool res = aStudy->DumpStudy( aFileInfo.absolutePath().toStdString(),
+				    aFileInfo.baseName().toStdString(), toPublish);
+      if ( toSaveGUI )
+	appStudy->removeSavePoint(savePoint); //SRN: remove the created temporary save point.
+      if ( !res )
+	SUIT_MessageBox::warning( desktop(),
+				  QObject::tr("WRN_WARNING"),
+				  tr("WRN_DUMP_STUDY_FAILED") );
     }
-    bool res = aStudy->DumpStudy( aFileInfo.absolutePath().toStdString(),
-				  aFileInfo.baseName().toStdString(), toPublish);
-    if ( toSaveGUI )
-      appStudy->removeSavePoint(savePoint); //SRN: remove the created temporary save point.
-    if ( !res )
-      SUIT_MessageBox::warning( desktop(),
-				QObject::tr("WRN_WARNING"),
-				tr("WRN_DUMP_STUDY_FAILED") );
   }
 }
 
@@ -704,8 +718,12 @@ void SalomeApp_Application::onLoadScript( )
   QStringList filtersList;
   filtersList.append(tr("PYTHON_FILES_FILTER"));
   filtersList.append(tr("ALL_FILES_FILTER"));
+  
+  QString anInitialPath = "";
+  if ( SUIT_FileDlg::getLastVisitedPath().isEmpty() )
+    anInitialPath = QDir::currentPath();
 
-  QString aFile = SUIT_FileDlg::getFileName( desktop(), "", filtersList, tr( "TOT_DESK_FILE_LOAD_SCRIPT" ), true, true );
+  QString aFile = SUIT_FileDlg::getFileName( desktop(), anInitialPath, filtersList, tr( "TOT_DESK_FILE_LOAD_SCRIPT" ), true, true );
 
   if ( !aFile.isEmpty() )
   {

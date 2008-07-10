@@ -27,10 +27,23 @@
 #include <QLabel>
 #include <QStatusBar>
 #include <QApplication>
+#include <QSize>
 
 #include <QtxAction.h>
 #include <QtxActionMenuMgr.h>
 #include <QtxActionToolMgr.h>
+
+/*!
+  \class StatusLabel
+  \brief Status bar customization label. Used to workaroubd desktop resizing bug.
+  \internal
+*/
+class StatusLabel : public QLabel
+{
+public:
+  StatusLabel( QWidget* parent ) : QLabel( parent ) {}
+  QSize minimumSizeHint () const { return QSize( 0, 0 ); }
+};
 
 /*!
   Default constructor
@@ -171,7 +184,7 @@ void SUIT_Application::putInfo( const QString& msg, const int msec )
 
   if ( !myStatusLabel )
   {
-    myStatusLabel = new QLabel( desktop()->statusBar() );
+    myStatusLabel = new StatusLabel( desktop()->statusBar() );
     desktop()->statusBar()->addWidget( myStatusLabel, 1 );
     myStatusLabel->show();
   }

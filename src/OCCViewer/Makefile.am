@@ -37,6 +37,7 @@ salomeinclude_HEADERS= \
 	OCCViewer_CreateRestoreViewDlg.h \
 	OCCViewer.h \
 	OCCViewer_ClippingDlg.h \
+	OCCViewer_AxialScaleDlg.h \
 	OCCViewer_SetRotationPointDlg.h
 
 dist_libOCCViewer_la_SOURCES= \
@@ -50,7 +51,8 @@ dist_libOCCViewer_la_SOURCES= \
 	OCCViewer_VService.cxx \
 	OCCViewer_CreateRestoreViewDlg.cxx \
 	OCCViewer_SetRotationPointDlg.cxx \
-	OCCViewer_ClippingDlg.cxx
+	OCCViewer_ClippingDlg.cxx \
+	OCCViewer_AxialScaleDlg.cxx
 
 MOC_FILES= \
 	OCCViewer_AISSelector_moc.cxx \
@@ -62,7 +64,8 @@ MOC_FILES= \
 	OCCViewer_ViewManager_moc.cxx \
 	OCCViewer_CreateRestoreViewDlg_moc.cxx \
 	OCCViewer_SetRotationPointDlg_moc.cxx \
-	OCCViewer_ClippingDlg_moc.cxx
+	OCCViewer_ClippingDlg_moc.cxx \
+	OCCViewer_AxialScaleDlg_moc.cxx
 nodist_libOCCViewer_la_SOURCES= $(MOC_FILES)
 
 dist_salomeres_DATA = \
@@ -72,6 +75,7 @@ dist_salomeres_DATA = \
 	resources/occ_view_clone.png \
 	resources/occ_view_clipping.png \
 	resources/occ_view_clipping_pressed.png \
+	resources/occ_view_scaling.png \
 	resources/occ_view_fitall.png \
 	resources/occ_view_fitarea.png \
 	resources/occ_view_front.png \

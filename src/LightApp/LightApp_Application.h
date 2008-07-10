@@ -74,7 +74,9 @@ public:
 
   enum { MenuWindowId = 6 };
 
-  enum { RenameId = CAM_Application::UserID, PreferencesId, MRUId, ModulesListId,
+  enum { RenameId = CAM_Application::UserID,         
+	 CloseId, CloseAllId, GroupAllId,
+	 PreferencesId, MRUId, ModulesListId,
          NewGLViewId, NewPlot2dId, NewOCCViewId, NewVTKViewId, NewQxGraphViewId, UserID };
 
 protected:
@@ -207,6 +209,9 @@ private slots:
   void                                onPreferences();
   void                                onPreferenceChanged( QString&, QString&, QString& );
   void                                onRenameWindow();
+  void                                onCloseWindow();
+  void                                onCloseAllWindow();
+  void                                onGroupAllWindow();
 
 protected:
   void                                updateWindows();

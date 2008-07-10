@@ -35,7 +35,8 @@ class SalomeApp_Application;
 class QMenuBar;
 class QMenu;
 class QWidget;
-class QtxAction;
+class QAction;
+class QActionGroup;
 
 class SALOME_Selection : public QObject
 {
@@ -93,6 +94,19 @@ enum {
   PT_File     = LightApp_Preferences::File, 
 };
 
+//! Orientation
+enum Orientation {
+  Horizontal = 0, //!< Horizontal orientation 
+  Vertical   = 1  //!< Vertical orientation
+};
+
+//! Action of splitting corresponding to QtxWorkstack::SplitType enumeration
+enum Action {
+  MoveWidget   = 0, //!< move specified widget to the new area, other views stay in the previous area
+  LeaveWidget  = 1, //!< specified widget stays in the old area, all other views are moved to the new area
+  SplitAt      = 2  //!< the view area is splitted in such a way, that specified view and all views which follow it, are moved to the new area
+};
+
 class SalomePyQt
 {
 public:
@@ -120,8 +134,8 @@ public:
   static int               createTool( const QString& );
   static int               createTool( const int,  const int,      const int = -1 );
   static int               createTool( const int,  const QString&, const int = -1 );
-  static int               createTool( QtxAction*, const int,      const int = -1, const int = -1 );
-  static int               createTool( QtxAction*, const QString&, const int = -1, const int = -1 );
+  static int               createTool( QAction*, const int,      const int = -1, const int = -1 );
+  static int               createTool( QAction*, const QString&, const int = -1, const int = -1 );
 
   static int               createMenu( const QString&, const int = -1,
 				       const int = -1, const int = -1, const int = -1 );
@@ -131,19 +145,21 @@ public:
 				       const int = -1, const int = -1 );
   static int               createMenu( const int,      const QString& = QString(), 
 				       const int = -1, const int = -1 );
-  static int               createMenu( QtxAction*,     const int,      const int = -1, 
+  static int               createMenu( QAction*,     const int,      const int = -1, 
 	                               const int = -1, const int = -1 );
-  static int               createMenu( QtxAction*,     const QString&, const int = -1, 
+  static int               createMenu( QAction*,     const QString&, const int = -1, 
 	                               const int = -1, const int = -1 );
 
-  static QtxAction*        createSeparator();
+  static QAction*          createSeparator();
 
-  static QtxAction*        createAction( const int, const QString&,
+  static QAction*          createAction( const int, const QString&,
 					 const QString& = QString(), const QString& = QString(), 
 					 const QString& = QString(), const int = 0, const bool = false );
+  
+  //  static QActionGroup*     createActionGroup( const int, const bool = true );
 
-  static QtxAction*        action( const int );
-  static int               actionId( const QtxAction* );
+  static QAction*          action( const int );
+  static int               actionId( const QAction* );
 
   static void              addSetting    ( const QString&, const QString&, const double );
   static void              addSetting    ( const QString&, const QString&, const int );
@@ -182,6 +198,23 @@ public:
 
   static void              message( const QString&, bool = true );
   static void              clearMessages();
+  
+  static QList<int>        getViews();
+  static int               getActiveView();
+  static QString           getViewType( const int );
+  static bool              setViewTitle( const int, const QString& );
+  static QString           getViewTitle( const int );
+  static QList<int>        findViews( const QString& );
+  static bool              activateView( const int );
+  static int               createView( const QString& );
+  static bool              closeView( const int );
+  static int               cloneView( const int );
+  static bool              isViewVisible( const int id );
+  
+  static bool              groupAllViews();
+  static bool              splitView( const int, const Orientation, const Action );
+  static bool              moveView( const int, const int, const bool );
+  static QList<int>        neighbourViews( const int );
 };
 
 #endif // SALOME_PYQT_H

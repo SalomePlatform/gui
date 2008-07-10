@@ -37,7 +37,9 @@
 #include CORBA_CLIENT_HEADER(SALOME_Component)
 
 class SALOME_PYQT_PyInterp;
+class SUIT_ViewWindow;
 class QAction;
+class QActionGroup;
 class QMenu;
 
 class SALOME_PYQT_EXPORT SALOME_PYQT_Module: public SalomeApp_Module
@@ -107,6 +109,8 @@ public:
   QAction*                   createAction( const int, const QString&, const QString&, 
 					   const QString&, const QString&, const int, 
 					   const bool = false, QObject* = 0 );
+  //  QActionGroup*              createActionGroup( const int, const bool );
+
 
   QIcon                      loadIcon( const QString& fileName );
 
@@ -127,6 +131,10 @@ public slots:
 						const QString& );
   void                       onGUIEvent();
 
+  void                       onActiveViewChanged( SUIT_ViewWindow* );
+  void                       onViewClosed( SUIT_ViewWindow* );
+  void                       onViewCloned( SUIT_ViewWindow* );
+
 protected:
   Engines::Component_var     getEngine() const;
 
@@ -145,6 +153,11 @@ private:
   void                       initInterp  ( int );
   void                       importModule();
   void                       setWorkSpace();
+  
+  void                       activeViewChanged( const SUIT_ViewWindow* );
+  void                       viewClosed( const SUIT_ViewWindow* );
+  void                       viewCloned( const SUIT_ViewWindow* );
+  void                       connectView( const SUIT_ViewWindow* );
 
   friend class XmlHandler;
 };

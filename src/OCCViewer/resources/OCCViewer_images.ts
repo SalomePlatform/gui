@@ -85,5 +85,9 @@
         <source>ICON_OCCVIEWER_VIEW_TRIHEDRON</source>
         <translation>occ_view_triedre.png</translation>
     </message>
+    <message>
+        <source>ICON_OCCVIEWER_SCALING</source>
+        <translation>occ_view_scaling.png</translation>
+    </message>
 </context>
 </TS>

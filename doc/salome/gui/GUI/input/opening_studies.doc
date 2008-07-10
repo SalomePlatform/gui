@@ -21,6 +21,10 @@ created and unloaded and click \b Ok button:
 
 \image html loadstudy2.png
 
+\par
+Alternatively, it is possible to select <b>File > Most Recently Used > </b> to select a study from the list.
+
+
 \n\b Tip:  After opening an existing study, you will see its structure
 in the \ref using_object_browser_page "Object Browser". It will contain the objects created with the
 help of different components during the previous study session. If you

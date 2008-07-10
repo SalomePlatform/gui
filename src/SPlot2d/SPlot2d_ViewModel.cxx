@@ -370,7 +370,8 @@ SPlot2d_Curve* SPlot2d_Viewer::getCurveByIO( const Handle(SALOME_InteractiveObje
 */
 void SPlot2d_Viewer::onCloneView( Plot2d_ViewFrame* clonedVF, Plot2d_ViewFrame* newVF )
 {
-  if( !clonedVF || !newVF )
+  // this code is moved on the level of base class
+  /*if( !clonedVF || !newVF )
     return;
 
   // 1) Copy all properties of view
@@ -387,7 +388,9 @@ void SPlot2d_Viewer::onCloneView( Plot2d_ViewFrame* clonedVF, Plot2d_ViewFrame* 
     if( aCurve && clonedVF->isVisible( aCurve ) )
       newVF->displayCurve( aCurve, false );
   }
-  newVF->Repaint();
+  newVF->Repaint();*/
+  
+  Plot2d_Viewer::onCloneView( clonedVF, newVF );
 }
 
 /*!

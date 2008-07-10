@@ -6,9 +6,12 @@ AC_REQUIRE([AC_LINKER_OPTIONS])dnl
 
 AC_CHECKING(for qwt)
 
+AC_LANG_SAVE
+AC_LANG_CPLUSPLUS
+
 qwt_ok=yes
 
-dnl were is qwt ?
+dnl where is qwt ?
 
 AC_ARG_WITH(qwt,
     [  --with-qwt=DIR     directory path to QWT installation ],
@@ -18,47 +21,49 @@ AC_ARG_WITH(qwt,
 
 AC_ARG_WITH(qwt_inc,
     [  --with-qwt_inc=DIR   directory path to QWT includes ],
-    [QWT_INCLUDES="$withval"
+    [QWT_INCDIR="$withval"
       AC_MSG_RESULT("select $withval as path to QWT includes")
     ])
 
 if test -z $QWTHOME; then
   AC_MSG_RESULT(QWTHOME not defined)
-  exits_ok=no	
-  if test "x$exits_ok" = "xno"; then
+  exist_ok=no	
+  if test "x$exist_ok" = "xno"; then
      for d in /usr/local /usr ; do
-        AC_CHECK_FILE(${d}/lib${LIB_LOCATION_SUFFIX}/libqwt.so,exits_ok=yes,exits_ok=no)
-        if test "x$exits_ok" = "xyes"; then
+        AC_CHECK_FILE(${d}/lib${LIB_LOCATION_SUFFIX}/libqwt.so,exist_ok=yes,exist_ok=no)
+        if test "x$exist_ok" = "xyes"; then
            QWTHOME=$d
            AC_MSG_RESULT(libqwt.so detected in $d/lib)
         fi
      done
   fi
-  if test "x$exits_ok" = "xno"; then
+  if test "x$exist_ok" = "xno"; then
      for d in `echo $LD_LIBRARY_PATH | sed -e "s/:/ /g"` ; do
         if test -f $d/libqwt.so ; then
            AC_MSG_RESULT(libqwt.so detected in $d)
            QWTHOME=$d
            QWTHOME=`echo ${QWTHOME} | sed -e "s,[[^/]]*$,,;s,/$,,;s,^$,.,"`
-           exits_ok=yes
+           exist_ok=yes
            break
         fi
      done
   fi
-  if test "x$exits_ok" = "xyes"; then
-     if test -z $QWT_INCLUDES; then
-        QWT_INCLUDES=$QWTHOME"/include/qwt"
-        if test ! -f $QWT_INCLUDES/qwt.h ; then
-          QWT_INCLUDES=$QWTHOME"/include"
+  if test "x$exist_ok" = "xyes"; then
+     if test -z $QWT_INCDIR; then
+        QWT_INCDIR=$QWTHOME"/include/qwt"
+        if test ! -f $QWT_INCDIR/qwt.h ; then
+          QWT_INCDIR=$QWTHOME"/include"
         fi
-        if test ! -f $QWT_INCLUDES/qwt.h ; then
-          QWT_INCLUDES=/usr/lib/qt4/include/qwt
+        if test ! -f $QWT_INCDIR/qwt.h ; then
+          QWT_INCDIR=/usr/lib/qt4/include/qwt
         fi
      fi
+  else
+     qwt_ok=no
   fi
 else
-  if test -z $QWT_INCLUDES; then
-     QWT_INCLUDES="$QWTHOME/include"
+  if test -z $QWT_INCDIR; then
+     QWT_INCDIR="$QWTHOME/include"
   fi   	
 fi
 
@@ -67,92 +72,80 @@ if test "x$qwt_ok" = xno -o ! -d "$QWTHOME" ; then
   AC_MSG_WARN(qwt not found)
   qwt_ok=no
 else
-   AC_LANG_SAVE
-   AC_LANG_CPLUSPLUS
-   CPPFLAGS_old=$CPPFLAGS
-   CPPFLAGS="$CPPFLAGS -I$QWT_INCLUDES"
-   CPPFLAGS="$CPPFLAGS $QT_INCLUDES"
+  CPPFLAGS_old=$CPPFLAGS
+  CPPFLAGS="$CPPFLAGS $QT_INCLUDES -I$QWT_INCDIR"
 
-   AC_CHECK_HEADER(qwt.h,qwt_ok=yes,qwt_ok=no) 
+  AC_CHECK_HEADER(qwt.h,qwt_ok=yes,qwt_ok=no) 
+  CPPFLAGS=$CPPFLAGS_old
 
-   CPPFLAGS=$CPPFLAGS_old
+  AC_MSG_CHECKING(include of qwt headers)
 
-   if test "x$qwt_ok" = xno ; then
-     AC_MSG_RESULT(no)
-     AC_MSG_WARN(qwt not found)
+  if test "x$qwt_ok" = xno ; then
+    AC_MSG_RESULT(no)
+    AC_MSG_WARN(qwt not found)
   else
-     qwt_ok=yes
+    AC_MSG_RESULT(yes)
+    QWT_INCLUDES=-I$QWT_INCDIR
   fi
 
-#
-# test Qwt libraries
-#
-if  test "x$qwt_ok" = "xyes"
-then
-  AC_MSG_CHECKING(linking qwt library)
-  LIBS_old=$LIBS
-  if test "x$QTDIR" = "x/usr"
-  then
-    QT_LIB_DIR=""
-  else
-    QT_LIB_DIR="-L$QTDIR/lib${LIB_LOCATION_SUFFIX}"
-  fi
-  LIBS="$LIBS $QT_LIB_DIR -lQtCore -lQtGui"
+  #
+  # test Qwt libraries
+  #
+  if test "x$qwt_ok" = "xyes" ; then
+    AC_MSG_CHECKING(linking qwt library)
 
-  if test "x$QWTHOME" = "x/usr"
-  then
-    LIBS="$LIBS -lqwt"
-  else
-    LIBS="$LIBS -L$QWTHOME/lib -lqwt"
-  fi
-
-  CXXFLAGS_old=$CXXFLAGS
-  CXXFLAGS="$CXXFLAGS $QT_INCLUDES -I$QWT_INCLUDES"
-
-  AC_CACHE_VAL(salome_cv_lib_qwt,[
-    AC_TRY_LINK(
-#include <QApplication>
-#include <qwt_plot.h>
-,   int n;
-    char **s;
-    QApplication a(n, s);
-    QwtPlot p;
-    p.resize( 600, 400 );
-    p.show();
-    a.exec();,
-    eval "salome_cv_lib_qwt=yes",eval "salome_cv_lib_qwt=no")
-  ])
-  qwt_ok="$salome_cv_lib_qwt"
-
-  if  test "x$qwt_ok" = "xno"
-  then
-    AC_MSG_RESULT(unable to link with qwt library)
-    AC_MSG_RESULT(QWTHOME environment variable may be wrong)
-  else
-    QWT_INCLUDES="-I$QWT_INCLUDES"
-    if test "x$QWTHOME" = "x/usr"
-    then
-      QWT_LIBS=" -lqwt"
+    LIBS_old=$LIBS
+    LIBS="$LIBS $QT_LIBS"
+    if test "x$QWTHOME" = "x/usr" ; then
+      LIBS="$LIBS -lqwt"
     else
-      QWT_LIBS="-L$QWTHOME/lib -lqwt"
+      LIBS="$LIBS -L$QWTHOME/lib -lqwt"
     fi
 
-    AC_SUBST(QWT_INCLUDES)
-    AC_SUBST(QWT_LIBS)
+    CXXFLAGS_old=$CXXFLAGS
+    CXXFLAGS="$CXXFLAGS $QT_INCLUDES $QWT_INCLUDES"
 
-    AC_MSG_RESULT(yes)
+    AC_CACHE_VAL(salome_cv_lib_qwt,[
+      AC_TRY_LINK(
+#include <QApplication>
+#include <qwt_plot.h>
+,     int n;
+      char **s;
+      QApplication a(n, s);
+      QwtPlot p;
+      p.resize( 600, 400 );
+      p.show();
+      a.exec();,
+      eval "salome_cv_lib_qwt=yes",eval "salome_cv_lib_qwt=no")
+    ])
+    qwt_ok="$salome_cv_lib_qwt"
+
+    if  test "x$qwt_ok" = "xno" ; then
+      AC_MSG_RESULT(unable to link with qwt library)
+      AC_MSG_RESULT(QWTHOME environment variable may be wrong)
+    else
+      AC_MSG_RESULT(yes)
+      if test "x$QWTHOME" = "x/usr" ; then
+        QWT_LIBS=" -lqwt"
+      else
+        QWT_LIBS="-L$QWTHOME/lib -lqwt"
+      fi
+    fi
+
+    LIBS=$LIBS_old
+    CXXFLAGS=$CXXFLAGS_old
   fi
-
-  LIBS=$LIBS_old
-  CXXFLAGS=$CXXFLAGS_old
-
 fi
 
+AC_SUBST(QWT_INCLUDES)
+AC_SUBST(QWT_LIBS)
 
-  AC_LANG_RESTORE
+AC_LANG_RESTORE
 
-fi
+AC_MSG_RESULT(for qwt: $qwt_ok)
 
+# Save cache
+AC_CACHE_SAVE
 
 ])dnl
 dnl

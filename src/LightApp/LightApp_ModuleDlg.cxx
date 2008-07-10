@@ -222,6 +222,8 @@ int LightApp_ModuleDlg::addButton( const QString& button, const int id )
 
   QPushButton* newButton = new QPushButton( button, this );
 
+  if ( myButtons.empty() ) newButton->setDefault( true );
+
   myButtons.insert( newButton, bid );
   myButtonLayout->insertWidget( myButtonLayout->count()-3, newButton );
   connect( newButton, SIGNAL( clicked() ), this, SLOT( accept() ) );

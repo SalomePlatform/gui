@@ -70,6 +70,7 @@
 #include <QtxDockWidget.h>
 #include <QtxActionToolMgr.h>
 #include <QtxSearchTool.h>
+#include <QtxWorkstack.h>
 
 #include <LogWindow.h>
 
@@ -141,6 +142,8 @@
 #include <QByteArray>
 #include <QMenu>
 #include <QProcess>
+
+#include <utilities.h>
 
 #define FIRST_HELP_ID 1000000
 
@@ -418,9 +421,9 @@ void LightApp_Application::createActionForViewer( const int id,
                                                   const int accel )
 {
   QAction* a = createAction( id, tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() ), QIcon(),
-			       tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() ),
-			       tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() ),
-			       accel, desktop(), false, this, SLOT( onNewWindow() ) );
+			     tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() ),
+			     tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() ),
+			     accel, desktop(), false, this, SLOT( onNewWindow() ) );
   createMenu( a, parentId, -1 );
 }
 
@@ -551,9 +554,9 @@ void LightApp_Application::createActions()
       if ( icon.isNull() )
       {
 	icon = modIcon;
-	printf( "****************************************************************\n" );
-	printf( "*    Icon for %s not found. Using the default one.\n", (*it).toLatin1().constData() );
-	printf( "****************************************************************\n" );
+	INFOS ( "****************************************************************" << std::endl
+	     << "*    Icon for " << (*it).toLatin1().constData() << " not found. Using the default one." << std::endl
+	     << "****************************************************************" << std::endl );
       }
 
       icon = Qtx::scaleIcon( icon, iconSize );
@@ -568,8 +571,18 @@ void LightApp_Application::createActions()
   // New window
   int windowMenu = createMenu( tr( "MEN_DESK_WINDOW" ), -1, MenuWindowId, 100 );
   int newWinMenu = createMenu( tr( "MEN_DESK_NEWWINDOW" ), windowMenu, -1, 0 );
-  createMenu( separator(), windowMenu, -1, 1 );
 
+  createAction( CloseId, tr( "TOT_CLOSE" ), QIcon(), tr( "MEN_DESK_CLOSE" ), tr( "PRP_CLOSE" ),
+                Qt::SHIFT+Qt::Key_C, desk, false, this, SLOT( onCloseWindow() ) );
+  createAction( CloseAllId, tr( "TOT_CLOSE_ALL" ), QIcon(), tr( "MEN_DESK_CLOSE_ALL" ), tr( "PRP_CLOSE_ALL" ),
+                0, desk, false, this, SLOT( onCloseAllWindow() ) );
+  createAction( GroupAllId, tr( "TOT_GROUP_ALL" ), QIcon(), tr( "MEN_DESK_GROUP_ALL" ), tr( "PRP_GROUP_ALL" ),
+                0, desk, false, this, SLOT( onGroupAllWindow() ) );
+
+  createMenu( CloseId,     windowMenu, 0, -1 );
+  createMenu( CloseAllId,  windowMenu, 0, -1 );
+  createMenu( GroupAllId,  windowMenu, 0, -1 );
+  createMenu( separator(), windowMenu, -1, 0 );
 
 #ifndef DISABLE_GLVIEWER
   createActionForViewer( NewGLViewId, newWinMenu, QString::number( 0 ), Qt::ALT+Qt::Key_G );
@@ -1782,6 +1795,8 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), vtkGroup,
 		       LightApp_Preferences::Color, "VTKViewer", "background" );
   pref->addPreference( tr( "PREF_RELATIVE_SIZE" ), vtkGroup, LightApp_Preferences::Bool, "VTKViewer", "relative_size" );
+  pref->addPreference( tr( "PREF_USE_ADVANCED_SELECTION_ALGORITHM" ), vtkGroup, 
+		       LightApp_Preferences::Bool, "VTKViewer", "use_advanced_selection_algorithm" );
 
   pref->setItemProperty( "min", 1.0E-06, vtkTS );
   pref->setItemProperty( "max", 150, vtkTS );
@@ -2106,8 +2121,10 @@ void LightApp_Application::loadPreferences()
   if ( mru_load )
   {
     QtxMRUAction* mru = ::qobject_cast<QtxMRUAction*>( action( MRUId ) );
-    if ( mru )
+    if ( mru ) {
+      mru->setVisibleCount( aResMgr->integerValue( "MRU", "max_count", 5 ) );
       mru->loadLinks( aResMgr, "MRU" );
+    }
     mru_load = false;
   }
 
@@ -2630,6 +2647,53 @@ void LightApp_Application::onRenameWindow()
 }
 
 /*!
+  Closes active window of desktop
+*/
+void LightApp_Application::onCloseWindow()
+{
+  if( !desktop() )
+    return;
+
+  QWidget* w = desktop()->activeWindow();
+  if( !w )
+    return;
+
+  w->close();
+}
+
+/*!
+  Closes all windows of desktop
+*/
+void LightApp_Application::onCloseAllWindow()
+{
+  STD_TabDesktop* desk = dynamic_cast<STD_TabDesktop*>( desktop() );
+  if( !desk )
+    return;
+
+  QList<SUIT_ViewWindow*> wndList = desk->windows();
+  SUIT_ViewWindow* wnd;
+  foreach( wnd, wndList )
+  {
+    if ( wnd )  
+      wnd->close();
+  }
+}
+
+/*!
+  Groups all windows of desktop
+*/
+void LightApp_Application::onGroupAllWindow()
+{
+  STD_TabDesktop* desk = dynamic_cast<STD_TabDesktop*>( desktop() );
+  if( !desk )
+    return;
+
+  QtxWorkstack* wgStack = desk->workstack();
+  if ( wgStack )
+    wgStack->stack();
+}
+
+/*!
   \return if the library of module exists
   \param moduleTitle - title of module
 */
@@ -2665,11 +2729,10 @@ bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
 
   if ( !isLibFound )
     {
-      printf( "****************************************************************\n" );
-      printf( "*    Warning: library %s cannot be found\n", lib.toLatin1().constData() );
-      printf( "*    Module will not be available\n" );
-      printf( "*    Module %s will not be available in GUI mode\n", moduleTitle.toLatin1().constData() );
-      printf( "****************************************************************\n" );
+      INFOS( "****************************************************************" << std::endl
+          << "*    Warning: library " << lib.toLatin1().constData() << " cannot be found" << std::endl
+          << "*    Module " << moduleTitle.toLatin1().constData() << " will not be available in GUI mode" << std::endl
+          << "****************************************************************" << std::endl );
     }
   else if ( !isPythonModule )
     return true;

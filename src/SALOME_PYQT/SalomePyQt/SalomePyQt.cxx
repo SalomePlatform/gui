@@ -28,21 +28,27 @@
 #include <QMenu>
 #include <QImage>
 #include <QStringList>
+#include <QAction>
 
 #include <SALOME_Event.h>
 
-#include <QtxAction.h>
+//#include <QtxAction.h>
 #include <QtxActionMenuMgr.h>
+#include <QtxWorkstack.h>
 #include <SUIT_Session.h>
 #include <SUIT_Desktop.h>
 #include <SUIT_ResourceMgr.h>
 #include <SUIT_Tools.h>
 #include <SUIT_ViewManager.h>
 #include <SUIT_ViewWindow.h>
+#include <STD_TabDesktop.h>
 #include <SalomeApp_Application.h>
 #include <SalomeApp_Study.h>
 #include <LightApp_SelectionMgr.h>
 #include <LogWindow.h>
+#include <OCCViewer_ViewWindow.h>
+#include <Plot2d_ViewManager.h>
+#include <Plot2d_ViewWindow.h>
 
 /*!
   \brief Get the currently active application.
@@ -1344,9 +1350,9 @@ public:
     : myCase( 1 ), myId( id ), myTbId( tBar ), myIndex( idx ) {}
   CrTool( const int id, const QString& tBar, const int idx )
     : myCase( 2 ), myId( id ), myTbName( tBar ), myIndex( idx ) {}
-  CrTool( QtxAction* action, const int tbId, const int id, const int idx )
+  CrTool( QAction* action, const int tbId, const int id, const int idx )
     : myCase( 3 ), myAction( action ), myTbId( tbId ), myId( id ), myIndex( idx ) {}
-  CrTool( QtxAction* action, const QString& tBar, const int id, const int idx )
+  CrTool( QAction* action, const QString& tBar, const int id, const int idx )
     : myCase( 4 ), myAction( action ), myTbName( tBar ), myId( id ), myIndex( idx ) {}
 
   int execute( SALOME_PYQT_Module* module ) const
@@ -1371,7 +1377,7 @@ private:
    int        myCase;
    QString    myTbName;
    int        myTbId;
-   QtxAction* myAction;
+   QAction*   myAction;
    int        myId;
    int        myIndex;
 };
@@ -1434,7 +1440,7 @@ int SalomePyQt::createTool( const int id, const QString& tBar, const int idx )
   \param idx required index in the toolbar
   \return action ID or -1 if action could not be added
 */
-int SalomePyQt::createTool( QtxAction* a, const int tBar, const int id, const int idx )
+int SalomePyQt::createTool( QAction* a, const int tBar, const int id, const int idx )
 {
   return ProcessEvent( new TCreateToolEvent( CrTool( a, tBar, id, idx ) ) );
 }
@@ -1447,7 +1453,7 @@ int SalomePyQt::createTool( QtxAction* a, const int tBar, const int id, const in
   \param idx required index in the toolbar
   \return action ID or -1 if action could not be added
 */
-int SalomePyQt::createTool( QtxAction* a, const QString& tBar, const int id, const int idx )
+int SalomePyQt::createTool( QAction* a, const QString& tBar, const int id, const int idx )
 {
   return ProcessEvent( new TCreateToolEvent( CrTool( a, tBar, id, idx ) ) );
 }
@@ -1463,9 +1469,9 @@ public:
     : myCase( 2 ), myId( id ), myMenuId( menu ), myGroup( group ), myIndex( idx ) {}
   CrMenu( const int id, const QString& menu, const int group, const int idx ) 
     : myCase( 3 ), myId( id ), myMenuName( menu ), myGroup( group ), myIndex( idx ) {}
-  CrMenu( QtxAction* action, const int menu, const int id, const int group, const int idx ) 
+  CrMenu( QAction* action, const int menu, const int id, const int group, const int idx ) 
     : myCase( 4 ), myAction( action ), myMenuId( menu ), myId( id ), myGroup( group ), myIndex( idx ) {}
-  CrMenu( QtxAction* action, const QString& menu, const int id, const int group, const int idx ) 
+  CrMenu( QAction* action, const QString& menu, const int id, const int group, const int idx ) 
     : myCase( 5 ), myAction( action ), myMenuName( menu ), myId( id ), myGroup( group ), myIndex( idx ) {}
 
   int execute( SALOME_PYQT_Module* module ) const
@@ -1494,7 +1500,7 @@ private:
    int        myMenuId;
    QString    mySubMenuName;
    int        myGroup;
-   QtxAction* myAction;
+   QAction*   myAction;
    int        myId;
    int        myIndex;
 };
@@ -1577,7 +1583,7 @@ int SalomePyQt::createMenu( const int id, const QString& menu, const int group, 
   \param idx required index in the menu
   \return action ID or -1 if action could not be added
 */
-int SalomePyQt::createMenu( QtxAction* a, const int menu, const int id, const int group, const int idx )
+int SalomePyQt::createMenu( QAction* a, const int menu, const int id, const int group, const int idx )
 {
   return ProcessEvent( new TCreateMenuEvent( CrMenu( a, menu, id, group, idx ) ) );
 }
@@ -1590,13 +1596,13 @@ int SalomePyQt::createMenu( QtxAction* a, const int menu, const int id, const in
   \param idx required index in the menu
   \return action ID or -1 if action could not be added
 */
-int SalomePyQt::createMenu( QtxAction* a, const QString& menu, const int id, const int group, const int idx )
+int SalomePyQt::createMenu( QAction* a, const QString& menu, const int id, const int group, const int idx )
 {
   return ProcessEvent( new TCreateMenuEvent( CrMenu( a, menu, id, group, idx ) ) );
 }
 
 /*!
-  \fn QtxAction* SalomePyQt::createSeparator();
+  \fn QAction* SalomePyQt::createSeparator();
   \brief Create separator action which can be used in the menu or toolbar.
   \return new separator action
 */
@@ -1604,7 +1610,7 @@ int SalomePyQt::createMenu( QtxAction* a, const QString& menu, const int id, con
 class TCreateSepEvent: public SALOME_Event 
 {
 public:
-  typedef QtxAction* TResult;
+  typedef QAction* TResult;
   TResult myResult;
   TCreateSepEvent() 
     : myResult( 0 ) {}
@@ -1612,16 +1618,16 @@ public:
   {
     SALOME_PYQT_Module* module = getActiveModule();
     if ( module )
-      myResult = (QtxAction*)module->separator();
+      myResult = (QAction*)module->separator();
   }
 };
-QtxAction* SalomePyQt::createSeparator()
+QAction* SalomePyQt::createSeparator()
 {
   return ProcessEvent( new TCreateSepEvent() );
 }
 
 /*!
-  \fn QtxAction* SalomePyQt::createAction( const int      id,
+  \fn QAction* SalomePyQt::createAction( const int      id,
                                            const QString& menuText, 
 					   const QString& tipText, 
 					   const QString& statusText, 
@@ -1641,7 +1647,7 @@ QtxAction* SalomePyQt::createSeparator()
 class TCreateActionEvent: public SALOME_Event 
 {
 public:
-  typedef QtxAction* TResult;
+  typedef QAction* TResult;
   TResult myResult;
   int     myId;
   QString myMenuText;
@@ -1658,10 +1664,10 @@ public:
   {
     SALOME_PYQT_Module* module = getActiveModule();
     if ( module )
-      myResult = (QtxAction*)module->createAction( myId, myTipText, myIcon, myMenuText, myStatusText, myKey, myToggle );
+      myResult = (QAction*)module->createAction( myId, myTipText, myIcon, myMenuText, myStatusText, myKey, myToggle );
   }
 };
-QtxAction* SalomePyQt::createAction( const int id,           const QString& menuText, 
+QAction* SalomePyQt::createAction( const int id,           const QString& menuText, 
 				     const QString& tipText, const QString& statusText, 
 				     const QString& icon,    const int key, const bool toggle )
 {
@@ -1669,7 +1675,33 @@ QtxAction* SalomePyQt::createAction( const int id,           const QString& menu
 }
 
 /*!
-  \fn QtxAction* SalomePyQt::action( const int id )
+  \fn QActionGroup* SalomePyQt::createActionGroup( const int id, const bool exclusive )
+  \brief Create an action group which can be then used in the menu or toolbar
+  \param id         : the unique id action group to be registered to
+  \param exclusive  : if \c true the action group does exclusive toggling
+*/
+/*
+struct TcreateActionGroupEvent: public SALOME_Event {
+  typedef QActionGroup* TResult;
+  TResult myResult;
+  int     myId;
+  bool    myExclusive;
+  TcreateActionGroupEvent( const int id, const bool exclusive )
+    : myId( id ), myExclusive( exclusive ) {}
+  virtual void Execute()
+  {
+    SALOME_PYQT_Module* module = getActiveModule();
+    if ( module )
+      myResult = (QAction*)module->createActionGroup( myId, myExclusive );
+  }
+};
+QActionGroup* SalomePyQt::createActionGroup(const int id, const bool exclusive)
+{
+  return ProcessEvent( new TcreateActionGroupEvent( id, exclusive ) );
+}
+*/
+/*!
+  \fn QAction* SalomePyQt::action( const int id )
   \brief Get action by specified identifier.
   \return action or 0 if action is not registered
 */
@@ -1677,7 +1709,7 @@ QtxAction* SalomePyQt::createAction( const int id,           const QString& menu
 class TActionEvent: public SALOME_Event 
 {
 public:
-  typedef QtxAction* TResult;
+  typedef QAction* TResult;
   TResult myResult;
   int     myId;
   TActionEvent( const int id )
@@ -1686,16 +1718,16 @@ public:
   {
     SALOME_PYQT_Module* module = getActiveModule();
     if ( module )
-      myResult = (QtxAction*)module->action( myId );
+      myResult = (QAction*)module->action( myId );
   }
 };
-QtxAction* SalomePyQt::action( const int id )
+QAction* SalomePyQt::action( const int id )
 {
   return ProcessEvent( new TActionEvent( id ) );
 }
 
 /*!
-  \fn int SalomePyQt::actionId( const QtxAction* a );
+  \fn int SalomePyQt::actionId( const QAction* a );
   \brief Get an action identifier. 
   \return action ID or -1 if action is not registered
 */
@@ -1705,8 +1737,8 @@ class TActionIdEvent: public SALOME_Event
 public:
   typedef  int TResult;
   TResult  myResult;
-  const QtxAction* myAction;
-  TActionIdEvent( const QtxAction* action )
+  const QAction* myAction;
+  TActionIdEvent( const QAction* action )
     : myResult( -1 ), myAction( action ) {}
   virtual void Execute()
   {
@@ -1715,7 +1747,7 @@ public:
       myResult = module->actionId( myAction );
   }
 };
-int SalomePyQt::actionId( const QtxAction* a )
+int SalomePyQt::actionId( const QAction* a )
 {
   return ProcessEvent( new TActionIdEvent( a ) );
 }
@@ -1876,7 +1908,7 @@ void SalomePyQt::setPreferenceProperty( const int id,
 /*!
   \brief Add the property value to the list of values.
 
-  This method allows creating properties which are QValueList<QVariant>
+  This method allows creating properties which are QList<QVariant>
   - there is no way to pass such values directly to QVariant parameter with PyQt.
 
   \param id preferences identifier
@@ -1978,4 +2010,611 @@ void SalomePyQt::clearMessages()
     }
   };
   ProcessVoidEvent( new TEvent() );
+}
+
+/*!
+  \brief Gets window with specified identifier 
+  \internal
+  \param id window identifier 
+  \return pointer on the window
+*/
+static SUIT_ViewWindow* getWnd( const int id )
+{
+  SUIT_ViewWindow* resWnd = 0;
+
+  SalomeApp_Application* app  = getApplication();
+  if ( app )
+  {
+    STD_TabDesktop* tabDesk = dynamic_cast<STD_TabDesktop*>( app->desktop() );
+    if ( tabDesk )
+    {
+      QList<SUIT_ViewWindow*> wndlist = tabDesk->windows();
+      SUIT_ViewWindow* wnd;
+      foreach ( wnd, wndlist )
+      {
+        if ( id == wnd->getId() )
+        {
+          resWnd = wnd;
+          break;
+        }
+      }
+    }
+  }
+
+  return resWnd;
+}
+
+/*!
+  \fn QList<int> SalomePyQt::getViews()
+  \brief Get list of integer identifiers of all the currently opened views
+  \return list of integer identifiers of all the currently opened views
+*/
+
+class TGetViews: public SALOME_Event
+{
+public:
+  typedef QList<int> TResult;
+  TResult myResult;
+  TGetViews() {}
+  virtual void Execute() 
+  {
+    myResult.clear();
+    SalomeApp_Application* app  = getApplication();
+    if ( app )
+    {
+      STD_TabDesktop* tabDesk = dynamic_cast<STD_TabDesktop*>( app->desktop() );
+      if ( tabDesk )
+      {
+        QList<SUIT_ViewWindow*> wndlist = tabDesk->windows();
+        SUIT_ViewWindow* wnd;
+        foreach ( wnd, wndlist )
+          myResult.append( wnd->getId() );
+      }
+    }
+  }
+};
+QList<int> SalomePyQt::getViews()
+{
+  return ProcessEvent( new TGetViews() );
+}
+
+/*!
+  \fn int SalomePyQt::getActiveView()
+  \brief Get integer identifier of the currently active view
+  \return integer identifier of the currently active view
+*/
+
+class TGetActiveView: public SALOME_Event
+{
+public:
+  typedef int TResult;
+  TResult myResult;
+  TGetActiveView()
+    : myResult( -1 ) {}
+  virtual void Execute() 
+  {
+    SalomeApp_Application* app = getApplication();
+    if ( app )
+    {
+      SUIT_ViewManager* viewMgr = app->activeViewManager();
+      if ( viewMgr )
+      {
+        SUIT_ViewWindow* wnd = viewMgr->getActiveView();
+        if ( wnd )
+          myResult = wnd->getId();
+      }
+    }
+  }
+};
+int SalomePyQt::getActiveView()
+{
+  return ProcessEvent( new TGetActiveView() );
+}
+
+/*!                      
+  \fn QString SalomePyQt::getViewType( const int id )
+  \brief Get type of the specified view, e.g. "OCCViewer"
+  \param id window identifier
+  \return view type
+*/ 
+
+class TGetViewType: public SALOME_Event
+{
+public:
+  typedef QString TResult;
+  TResult myResult;
+  int myWndId;
+  TGetViewType( const int id )
+    : myWndId( id ) {}
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+    {
+      SUIT_ViewManager* viewMgr = wnd->getViewManager();
+      if ( viewMgr )
+        myResult = viewMgr->getType();
+    }
+  }
+};
+QString SalomePyQt::getViewType( const int id )
+{
+  return ProcessEvent( new TGetViewType( id ) );
+}
+
+/*!
+  \fn bool SalomePyQt::setViewTitle( const int id, const QString& title )
+  \brief Change view caption  
+  \param id window identifier
+  \param title new window title
+  \return \c true if operation is completed successfully and \c false otherwise 
+*/
+
+class TSetViewTitle: public SALOME_Event
+{
+public:
+  typedef bool TResult;
+  TResult myResult;
+  int myWndId;
+  QString myTitle;
+  TSetViewTitle( const int id, const QString& title )
+    : myResult( false ),
+      myWndId( id ),
+      myTitle( title ) {}
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+    {
+      wnd->setWindowTitle( myTitle );
+      myResult = true;
+    }
+  }
+};
+bool SalomePyQt::setViewTitle( const int id, const QString& title )
+{
+  return ProcessEvent( new TSetViewTitle( id, title ) );
+}
+
+
+/*!
+  \fn QString SalomePyQt::getViewTitle( const int id )
+  \brief Get view caption  
+  \param id window identifier
+  \return view caption  
+*/
+
+class TGetViewTitle: public SALOME_Event
+{
+public:
+  typedef QString TResult;
+  TResult myResult;
+  int myWndId;
+  TGetViewTitle( const int id )
+    : myWndId( id ) {}
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+      myResult = wnd->windowTitle();
+  }
+};
+QString SalomePyQt::getViewTitle( const int id )
+{
+  return ProcessEvent( new TGetViewTitle( id ) );
+}
+
+/*!
+  \fn QList<int> SalomePyQt::findViews( const QString& type )
+  \brief Get list of integer identifiers of all the 
+         currently opened views of the specified type
+  \param type viewer type
+  \return list of integer identifiers 
+*/
+
+class TFindViews: public SALOME_Event
+{
+public:
+  typedef QList<int> TResult;
+  TResult myResult;
+  QString myType;
+  TFindViews( const QString& type )
+    : myType( type ) {}
+  virtual void Execute() 
+  {
+    myResult.clear();
+    SalomeApp_Application* app  = getApplication();
+    if ( app )
+    {
+      ViewManagerList vmList;
+      app->viewManagers( myType, vmList );
+      SUIT_ViewManager* viewMgr;
+      foreach ( viewMgr, vmList )
+      {
+        QVector<SUIT_ViewWindow*> vec = viewMgr->getViews();
+        for ( int i = 0, n = vec.size(); i < n; i++ )
+        {
+          SUIT_ViewWindow* wnd = vec[ i ];
+          if ( wnd )
+            myResult.append( wnd->getId() );
+        }
+      }
+    }
+  }
+};
+QList<int> SalomePyQt::findViews( const QString& type )
+{
+  return ProcessEvent( new TFindViews( type ) );
+}
+
+/*!
+  \fn bool SalomePyQt::activateView( const int id )
+  \brief Activate view
+  \param id window identifier
+  \return \c true if operation is completed successfully and \c false otherwise 
+*/
+
+class TActivateView: public SALOME_Event
+{
+public:
+  typedef bool TResult;
+  TResult myResult;
+  int myWndId;
+  TActivateView( const int id )
+    : myResult( false ),
+      myWndId( id ) {}
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+    {
+      wnd->setFocus();
+      myResult = true;
+    }
+  }
+};
+bool SalomePyQt::activateView( const int id )
+{
+  return ProcessEvent( new TActivateView( id ) );
+}
+
+/*!
+  \fn int SalomePyQt::createView( const QString& type )
+  \brief Create new view and activate it
+  \param type viewer type
+  \return integer identifier of created view (or -1 if view could not be created)
+*/
+
+class TCreateView: public SALOME_Event
+{
+public:
+  typedef int TResult;
+  TResult myResult;
+  QString myType;
+  TCreateView( const QString& theType )
+    : myResult( -1 ),
+      myType( theType ) {}
+  virtual void Execute() 
+  {
+    SalomeApp_Application* app  = getApplication();
+    if ( app )
+    {
+      SUIT_ViewManager* viewMgr = app->createViewManager( myType );
+      if ( viewMgr )
+      {
+        SUIT_ViewWindow* wnd = viewMgr->getActiveView();
+        if ( wnd )
+          myResult = wnd->getId();
+      }
+    }
+  }
+};
+int SalomePyQt::createView( const QString& type )
+{
+  return ProcessEvent( new TCreateView( type ) );
+}
+
+/*!
+  \fn bool SalomePyQt::closeView( const int id )
+  \brief Close view
+  \param id window identifier
+  \return \c true if operation is completed successfully and \c false otherwise 
+*/
+
+class TCloseView: public SALOME_Event
+{
+public:
+  typedef bool TResult;
+  TResult myResult;
+  int myWndId;
+  TCloseView( const int id )
+    : myResult( false ),
+      myWndId( id ) {}
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+    {
+      SUIT_ViewManager* viewMgr = wnd->getViewManager();
+      if ( viewMgr )
+      {
+        wnd->close();
+        myResult = true;
+      }
+    }
+  }
+};
+bool SalomePyQt::closeView( const int id )
+{
+  return ProcessEvent( new TCloseView( id ) );
+}
+
+/*!
+  \fn int SalomePyQt::cloneView( const int id )
+  \brief Clone view (if this operation is supported for specified view type)
+  \param id window identifier
+  \return integer identifier of the cloned view or -1 or operation could not be performed
+*/
+
+class TCloneView: public SALOME_Event
+{
+public:
+  typedef int TResult;
+  TResult myResult;
+  int myWndId;
+  TCloneView( const int id )
+    : myResult( -1 ),
+      myWndId( id ) {}
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+    {
+      SUIT_ViewManager* viewMgr = wnd->getViewManager();
+      if ( viewMgr )
+      {
+        if ( wnd->inherits( "OCCViewer_ViewWindow" ) )
+        {
+          OCCViewer_ViewWindow* occView = (OCCViewer_ViewWindow*)( wnd );
+          occView->onCloneView();
+
+          wnd = viewMgr->getActiveView();
+          if ( wnd )
+            myResult = wnd->getId();
+        }
+        else if ( wnd->inherits( "Plot2d_ViewWindow" ) ) 
+        {
+          Plot2d_ViewManager* viewMgr2d = dynamic_cast<Plot2d_ViewManager*>( viewMgr );
+          Plot2d_ViewWindow* srcWnd2d = dynamic_cast<Plot2d_ViewWindow*>( wnd );
+          if ( viewMgr2d && srcWnd2d )
+          {
+            Plot2d_ViewWindow* resWnd = viewMgr2d->cloneView( srcWnd2d );
+            myResult = resWnd->getId();
+          }
+        }
+      }
+    }
+  }
+};
+int SalomePyQt::cloneView( const int id )
+{
+  return ProcessEvent( new TCloneView( id ) );
+}
+
+/*!
+  \fn bool SalomePyQt::isViewVisible( const int id )
+  \brief Check whether view is visible ( i.e. it is on the top of the views stack)
+  \param id window identifier
+  \return \c true if view is visible and \c false otherwise 
+*/
+
+class TIsViewVisible: public SALOME_Event
+{
+public:
+  typedef bool TResult;
+  TResult myResult;
+  int myWndId;
+  TIsViewVisible( const int id )
+    : myResult( false ),
+      myWndId( id ) {}
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+    {
+      QWidget* p = wnd->parentWidget();
+      myResult = ( p && p->isVisibleTo( p->parentWidget() ) );
+    }
+  }
+};
+bool SalomePyQt::isViewVisible( const int id )
+{
+  return ProcessEvent( new TIsViewVisible( id ) );
+}
+  
+/*!
+  \fn bool SalomePyQt::groupAllViews()
+  \brief Group all views to the single tab area
+  \return \c true if operation is completed successfully and \c false otherwise 
+*/
+
+class TGroupAllViews: public SALOME_Event
+{
+public:
+  typedef bool TResult;
+  TResult myResult;
+  TGroupAllViews()
+    : myResult( false ) {}
+  virtual void Execute() 
+  {
+    SalomeApp_Application* app  = getApplication();
+    if ( app )
+    {
+      STD_TabDesktop* tabDesk = dynamic_cast<STD_TabDesktop*>( app->desktop() );
+      if ( tabDesk )
+      {
+        QtxWorkstack* wStack = tabDesk->workstack();
+        if ( wStack )
+        {
+          wStack->stack();
+          myResult = true;
+        }
+      }
+    }
+  }
+};
+bool SalomePyQt::groupAllViews()
+{
+  return ProcessEvent( new TGroupAllViews() );
+}
+
+/*!
+  \fn bool SalomePyQt::splitView( const int id, const Orientation ori, const Action action )
+  \brief Split tab area to which view with identifier belongs to
+  \param id window identifier
+  \param ori orientation of split operation
+  \param action action to be performed
+  \return \c true if operation is completed successfully \c false otherwise 
+*/
+
+class TSplitView: public SALOME_Event
+{
+public:
+  typedef bool TResult;
+  TResult myResult;
+  int myWndId;
+  Orientation myOri;
+  Action myAction;
+  TSplitView( const int id, 
+              const Orientation ori, 
+              const Action action )
+    : myResult( false ),
+      myWndId( id ),
+      myOri( ori ),
+      myAction( action ) {}
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+    {
+      // activate view
+      // wnd->setFocus(); ???
+
+      // split workstack
+      if ( getApplication() )
+      {
+        STD_TabDesktop* desk = 
+          dynamic_cast<STD_TabDesktop*>( getApplication()->desktop() );
+        if ( desk )
+        {
+          QtxWorkstack* wStack = desk->workstack();
+          if ( wStack )
+          {
+            Qt::Orientation qtOri = 
+              ( myOri == Horizontal ) ? Qt::Horizontal : Qt::Vertical;
+
+            QtxWorkstack::SplitType sType;
+            if ( myAction == MoveWidget )
+              sType = QtxWorkstack::SplitMove;
+            else if ( myAction == LeaveWidget )
+              sType = QtxWorkstack::SplitStay;
+            else 
+              sType = QtxWorkstack::SplitAt;
+
+            wStack->Split( wnd, qtOri, sType );
+            myResult = true;
+          }
+        }
+      }
+    }
+  }
+};
+bool SalomePyQt::splitView( const int id, const Orientation ori, const Action action )
+{
+  return ProcessEvent( new TSplitView( id, ori, action ) );
+}
+
+/*!
+  \fn bool SalomePyQt::moveView( const int id, const int id_to, const bool before )
+  \brief Move view with the first identifier to the same area which 
+         another view with the second identifier belongs to
+  \param id source window identifier
+  \param id_to destination window identifier  
+  param before specifies whether the first viewt has to be moved before or after 
+        the second view
+  \return \c true if operation is completed successfully and \c false otherwise 
+*/
+
+class TMoveView: public SALOME_Event
+{
+public:
+  typedef bool TResult;
+  TResult myResult;
+  int myWndId;
+  int myWndToId;
+  bool myIsBefore;
+  TMoveView( const int id, const int id_to, const bool before )
+    : myResult( false ),
+    myWndId( id ),
+    myWndToId( id_to ),
+    myIsBefore( before ) {}
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    SUIT_ViewWindow* wnd_to = getWnd( myWndToId );
+    if ( wnd && wnd_to )
+    {
+      QtxWorkstack* wStack = dynamic_cast<STD_TabDesktop*>( 
+        getApplication()->desktop() )->workstack();
+      if ( wStack )
+        myResult = wStack->move( wnd, wnd_to, myIsBefore );
+    }
+  }
+};
+bool SalomePyQt::moveView( const int id, const int id_to, const bool before )
+{
+  return ProcessEvent( new TMoveView( id, id_to, before ) );
+}
+
+/*!
+  \fn QList<int> SalomePyQt::neighbourViews( const int id )
+  \brief Get list of views identifiers that belongs to the same area as 
+         specified view (excluding it)
+  \param id window identifier
+  \return list of views identifiers
+*/
+
+class TNeighbourViews: public SALOME_Event
+{
+public:
+  typedef QList<int> TResult;
+  TResult myResult;
+  int myWndId;
+  TNeighbourViews( const int id )
+    : myWndId( id ) {}
+  virtual void Execute() 
+  {
+    myResult.clear();
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+    {
+      QtxWorkstack* wStack = dynamic_cast<STD_TabDesktop*>( 
+        getApplication()->desktop() )->workstack();
+      if ( wStack )
+      {
+        QWidgetList wgList = wStack->windowList( wnd );
+        QWidget* wg;
+        foreach ( wg, wgList )
+        {
+          SUIT_ViewWindow* tmpWnd = dynamic_cast<SUIT_ViewWindow*>( wg );
+          if ( tmpWnd && tmpWnd != wnd )
+            myResult.append( tmpWnd->getId() );
+        }
+      }
+    }
+  }
+};
+QList<int> SalomePyQt::neighbourViews( const int id )
+{
+  return ProcessEvent( new TNeighbourViews( id ) );
 }

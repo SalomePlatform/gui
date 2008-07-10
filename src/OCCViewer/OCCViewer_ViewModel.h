@@ -54,6 +54,9 @@ public:
 	double     eyeX;
 	double     eyeY;
 	double     eyeZ;
+        double   scaleX;
+        double   scaleY;
+        double   scaleZ;
 	QString    name;
 };
 

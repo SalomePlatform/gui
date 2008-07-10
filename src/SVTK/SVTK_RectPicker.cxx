@@ -261,7 +261,7 @@ namespace
     // and handle the transformation ourselves.
     vtkMatrix4x4 *aMatrix = vtkMatrix4x4::New();
     aMatrix->DeepCopy(theRenderer->GetActiveCamera()->
-		      GetCompositePerspectiveTransformMatrix(1,0,1));
+		      GetCompositePerspectiveTransformMatrix( theRenderer->GetTiledAspectRatio(), 0, 1 ) );
 
     for(vtkIdType aCellId = 0; aCellId < aNumCells; aCellId++){
       vtkCell* aCell = theInput->GetCell(aCellId);

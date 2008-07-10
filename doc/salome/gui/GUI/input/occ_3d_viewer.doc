@@ -14,7 +14,7 @@ Toolbar. Buttons marked with small downward triangles have extended
 functionality which can be accessed by locking on them with left mouse
 button.
 
-\image html image95.gif "Viewer Toolbar"
+\image html occviewer_toolbar.png "Viewer Toolbar"
 
 <hr>
 \image html image77.gif
@@ -105,7 +105,6 @@ objects in the scene.</center>
 (clipping planes) of geometrical objects.</center>
 
 \image html clipping.png
-
 <ul>
 <li><b>Base point</b> - allows to define the coordinates of the base
 point for the clipping plane.</li>
@@ -121,5 +120,19 @@ and which will remain after clipping.</li>
 <li><b>Preview</b> - allows to see the results of clipping in the
 viewer.</li>
 </ul>
+<hr>
+\image html occviewer_axialscale.png
+\n <center><b>Scaling</b> - represents objects deformed (stretched or
+stuffed) along the axes of coordinates.</center>
+
+<b>Note!</b> OCC Viewer features a special <b>Polyline Selection</b> mechanism, which allows selecting an arbitraty part of the graphic area using a polygon frame, instead of the usual selection with a rectangular frame.
+
+To produce a Polyline Selection, lock the right mouse button and draw the first side of the polygon, then change the direction by clicking  the left mouse button add draw another side, etc. The whole selection frame is drawn with the locked right mouse button. 
+   
+\image html polyselection1.png
+
+As a result, only the nodes within the frame are selected.
+
+\image html polyselection2.png
 
 */

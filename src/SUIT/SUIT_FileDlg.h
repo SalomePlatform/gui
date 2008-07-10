@@ -92,6 +92,8 @@ public:
 					    const bool = true,
 					    SUIT_FileValidator* = 0 );
 
+  static QString      getLastVisitedPath();
+
 protected:
   virtual bool        event( QEvent* );
   QLineEdit*          lineEdit() const;

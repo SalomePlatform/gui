@@ -2,6 +2,10 @@
 <context>
     <name>@default</name>
     <message>
+        <source>WRN_FILE_NAME_BAD</source>
+        <translation>Please enter correct file name. Special characters are not allowed.</translation>
+    </message>
+    <message>
         <source>CLOSE_LOCKED_STUDY</source>
         <translation>Close locked study?</translation>
     </message>
@@ -268,10 +272,6 @@ Do you want to reload it ?</translation>
     <message>
         <source>ACTIVATE_MODULE_OP_LOAD</source>
         <translation>&amp;Load...</translation>
-    </message>
-    <message>
-        <source>WRN_FILE_NAME_BAD</source>
-        <translation>Please enter correct file name</translation>
     </message>
 </context>
 <context>

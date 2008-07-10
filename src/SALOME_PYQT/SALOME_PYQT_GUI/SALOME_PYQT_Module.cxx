@@ -25,6 +25,10 @@
 #include <PyInterp_Dispatcher.h>
 
 #include <SUIT_ResourceMgr.h>
+#include <SUIT_Desktop.h>
+#include <SUIT_ViewModel.h>
+#include <SUIT_ViewWindow.h>
+#include <SUIT_ViewManager.h>
 #include <STD_MDIDesktop.h>
 #include <STD_TabDesktop.h>
 #include <LightApp_Preferences.h>
@@ -45,6 +49,8 @@
 #include <QDomElement>
 #include <QMenuBar>
 #include <QMenu>
+#include <QAction>
+#include <QActionGroup>
 
 #include "sipAPISalomePyQtGUI.h"
 
@@ -934,6 +940,26 @@ void SALOME_PYQT_Module::activate( SUIT_Study* theStudy )
       myLastActivateStatus = PyObject_IsTrue( res1 );
     }
   } 
+  
+  // Connect the SUIT_Desktop signal windowActivated() to this->onActiveViewChanged()
+  SUIT_Desktop* aDesk = theStudy->application()->desktop();
+  if ( aDesk )
+  {
+    connect( aDesk, SIGNAL( windowActivated( SUIT_ViewWindow* ) ),
+	     this,  SLOT( onActiveViewChanged( SUIT_ViewWindow* ) ) );
+    // If a active window exists send activeViewChanged
+    // If a getActiveView() in SalomePyQt available we no longer need this 
+    SUIT_ViewWindow* aView = aDesk->activeWindow();
+    if ( aView ) 
+      activeViewChanged( aView );
+    
+    // get all view currently opened in the study and connect their signals  to 
+    // the corresponding slots of the class.
+    QList<SUIT_ViewWindow*> wndList = aDesk->windows();
+    SUIT_ViewWindow* wnd;
+    foreach ( wnd, wndList )
+      connectView( wnd );
+  }
 }
 
 /*!
@@ -1007,6 +1033,14 @@ void SALOME_PYQT_Module::deactivate( SUIT_Study* theStudy )
     if( !res ) {
       PyErr_Print();
     }
+  }
+  
+  // Disconnect the SUIT_Desktop signal windowActivated()
+  SUIT_Desktop* aDesk = theStudy->application()->desktop();
+  if ( aDesk )
+  {
+    disconnect( aDesk, SIGNAL( windowActivated( SUIT_ViewWindow* ) ),
+                this,  SLOT( onActiveViewChanged( SUIT_ViewWindow* ) ) );      
   }
 }
 
@@ -1620,6 +1654,33 @@ QAction* SALOME_PYQT_Module::createAction( const int id, const QString& text, co
   return a;
 }
 
+/*!
+  \brief Create new action group.
+  
+  If the action with specified identifier already registered
+  it is not created, but its attributes are only modified.
+
+  \param id action ID
+  \param text tooltip text
+  \param icon icon
+  \param menu menu text
+  \param tip status tip
+  \param key keyboard shortcut
+  \param toggle \c true for checkable action
+  \return created action
+*/
+/*
+QActionGroup* SALOME_PYQT_Module::createActionGroup(const int id, const bool exclusive)
+{
+  QActionGroup* a = action( id );
+  if ( !a || !a->inherits( "QActionGroup" ) ) {
+    a = new QActionGroup( this );
+    SalomeApp_Module::registerAction( id, a );
+  }
+  a->setExclusive( exclusive );
+  return (QActionGroup*)a;
+}
+*/
 /*! 
   \brief Load icon from resource file.
   \param fileName icon file name
@@ -1702,6 +1763,186 @@ void SALOME_PYQT_Module::setPreferenceProperty( const int id,
 						const QVariant& var )
 {
   SalomeApp_Module::setPreferenceProperty( id, prop, var );
+}
+
+
+/*!
+  \brief Signal handler windowActivated(SUIT_ViewWindow*) of SUIT_Desktop
+  \param pview view being activated
+*/
+void SALOME_PYQT_Module::onActiveViewChanged( SUIT_ViewWindow* pview )
+{
+  class ActiveViewChange : public PyInterp_LockRequest
+  {
+  public:
+    ActiveViewChange( PyInterp_Interp* _py_interp, SALOME_PYQT_Module* _obj, const SUIT_ViewWindow* _pview )
+      : PyInterp_LockRequest( _py_interp, 0, true ),
+        myObj(_obj),myView(_pview) {}
+
+  protected:
+    virtual void execute()
+    {
+      myObj->activeViewChanged( myView );
+    }
+
+  private:
+    SALOME_PYQT_Module* myObj;
+    const SUIT_ViewWindow * myView;
+  };
+  
+  PyInterp_Dispatcher::Get()->Exec( new ActiveViewChange( myInterp, this, pview ) ); 
+}
+
+/*!
+  \brief Processes the view changing, calls Python module's activeViewChanged() method 
+  \param pview view being activated
+*/
+void SALOME_PYQT_Module::activeViewChanged( const SUIT_ViewWindow* pview )
+{
+  if ( !myInterp || !myModule ) 
+    return;
+  
+  // Do not use SUIT_ViewWindow::closing() signal here. View manager reacts on 
+  // this signal and deletes view. So our slot does not works if it is connected 
+  // on this signal. SUIT_ViewManager::deleteView(SUIT_ViewWindow*) is used here
+  
+  connectView( pview );
+
+  if ( PyObject_HasAttrString( myModule, "activeViewChanged" ) ) 
+  {
+    if ( !pview ) 
+      return;   
+
+    PyObjWrapper res( PyObject_CallMethod( myModule, "activeViewChanged", "i" , pview->getId() ) );
+    if( !res )
+      PyErr_Print();
+  }
+}
+
+/*!
+  \brief Signal handler cloneView() of OCCViewer_ViewWindow
+  \param pview view being cloned
+*/
+void SALOME_PYQT_Module::onViewCloned( SUIT_ViewWindow* pview )
+{
+  class ViewClone : public PyInterp_LockRequest
+  {
+  public:
+    ViewClone( PyInterp_Interp* _py_interp, SALOME_PYQT_Module* _obj, const SUIT_ViewWindow* _pview )
+      : PyInterp_LockRequest( _py_interp, 0, true ),
+        myObj(_obj), myView(_pview) {}
+
+  protected:
+    virtual void execute()
+    {
+      myObj->viewCloned( myView );
+    }
+
+  private:
+    SALOME_PYQT_Module* myObj;    
+    const SUIT_ViewWindow* myView;
+  };
+  
+  PyInterp_Dispatcher::Get()->Exec( new ViewClone( myInterp, this, pview ) );
+}
+
+/*!
+  \brief Processes the view cloning, calls Python module's activeViewCloned() method
+  \param pview view being cloned
+*/
+void SALOME_PYQT_Module::viewCloned( const SUIT_ViewWindow* pview )
+{
+  if ( !myInterp || !myModule || !pview ) 
+    return;  
+
+  if ( PyObject_HasAttrString( myModule, "viewCloned" ) ) 
+  {
+    PyObjWrapper res( PyObject_CallMethod( myModule, "viewCloned", "i", pview->getId() ) );
+    if( !res )
+      PyErr_Print();
+  }
+}
+
+/*!
+  \brief Signal handler closing(SUIT_ViewWindow*) of a view
+  \param pview view being closed
+*/
+void SALOME_PYQT_Module::onViewClosed( SUIT_ViewWindow* pview )
+{
+  class ViewClose : public PyInterp_LockRequest
+  {
+  public:
+    ViewClose( PyInterp_Interp* _py_interp, SALOME_PYQT_Module* _obj, const SUIT_ViewWindow* _pview )
+      : PyInterp_LockRequest( _py_interp, 0, true ),
+        myObj(_obj),myView(_pview) {}
+
+  protected:
+    virtual void execute()
+    {
+      myObj->viewClosed( myView );
+    }
+
+  private:
+    SALOME_PYQT_Module* myObj;
+    const SUIT_ViewWindow * myView;    
+  };
+
+  PyInterp_Dispatcher::Get()->Exec( new ViewClose( myInterp, this, pview ) );
+}
+
+/*!
+  \brief Processes the view closing, calls Python module's viewClosed() method
+  \param pview view being closed
+*/
+void SALOME_PYQT_Module::viewClosed( const SUIT_ViewWindow* pview )
+{
+  if ( !myInterp || !myModule ) 
+    return;  
+
+  if ( PyObject_HasAttrString( myModule, "viewClosed" ) ) 
+  {
+    PyObjWrapper res( PyObject_CallMethod( myModule, "viewClosed", "i", pview->getId() ) );
+    if ( !res )
+    {
+      PyErr_Print();
+    }
+  }
+}
+
+/*!
+  \brief Connects or disconnects signals about activating and cloning view on the module slots
+  \param pview view which is connected/disconnected
+*/
+void SALOME_PYQT_Module::connectView( const SUIT_ViewWindow* pview )
+{
+  SUIT_ViewManager* viewMgr = pview->getViewManager();
+  SUIT_ViewModel* viewModel = viewMgr ? viewMgr->getViewModel() : 0;
+      
+  if ( viewMgr )
+  {
+    disconnect( viewMgr, SIGNAL( deleteView( SUIT_ViewWindow* ) ),
+               this, SLOT( onViewClosed( SUIT_ViewWindow* ) ) );
+  
+    connect( viewMgr, SIGNAL( deleteView( SUIT_ViewWindow* ) ),
+             this, SLOT( onViewClosed( SUIT_ViewWindow* ) ) );
+  }
+  
+  // Connect cloneView() signal of an OCC View
+  if ( pview->inherits( "OCCViewer_ViewWindow" ) )
+  {
+    disconnect( pview, SIGNAL( viewCloned( SUIT_ViewWindow* ) ), 
+                this, SLOT( onViewCloned( SUIT_ViewWindow* ) ) );
+    connect( pview, SIGNAL( viewCloned( SUIT_ViewWindow* ) ), 
+             this, SLOT( onViewCloned( SUIT_ViewWindow* ) ) );
+  }
+  // Connect cloneView() signal of Plot2d View manager
+  else if ( viewModel && viewModel->inherits( "Plot2d_Viewer" ) )
+  {
+    disconnect( viewModel, SIGNAL( viewCloned( SUIT_ViewWindow* ) ), 
+                this, SLOT( onViewCloned( SUIT_ViewWindow* ) ) );
+    connect( viewModel, SIGNAL( viewCloned( SUIT_ViewWindow* ) ), 
+             this, SLOT( onViewCloned( SUIT_ViewWindow* ) ) );
+  }
 }
 
 /*!

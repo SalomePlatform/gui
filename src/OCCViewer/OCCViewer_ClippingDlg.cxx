@@ -267,8 +267,7 @@ void OCCViewer_ClippingDlg::closeEvent( QCloseEvent* e )
   if ( !aView3d.IsNull() && !myClippingPlane.IsNull() )
     aView3d->SetPlaneOn( myClippingPlane );
   
-  if (!myView->isCuttingPlane())
-    myAction->setChecked( false );
+  myAction->setChecked( false );
   
   QDialog::closeEvent( e );
 }
@@ -308,8 +307,7 @@ void OCCViewer_ClippingDlg::ClickOnClose()
   if ( !aView3d.IsNull() && !myClippingPlane.IsNull() )
     aView3d->SetPlaneOn( myClippingPlane );
 
-  if (!myView->isCuttingPlane())
-    myAction->setChecked( false );
+  myAction->setChecked( false );
   
   reject();
 }

@@ -201,6 +201,14 @@
         <source>DSC_BACK_VIEW</source>
         <translation>Back View</translation>
     </message>
+    <message>
+        <source>DSC_SCALING</source>
+        <translation>Change scale of axes</translation>
+    </message>
+    <message>
+        <source>MNU_SCALING</source>
+        <translation>Scaling</translation>
+    </message>
 </context>
 <context>
     <name>OCCViewer_CreateRestoreViewDlg</name>
@@ -213,15 +221,15 @@
     <name>OCCViewer_SetRotationPointDlg</name>
     <message>
         <source>LBL_X</source>
-        <translation>X :</translation>
+        <translation>X:</translation>
     </message>
     <message>
         <source>LBL_Y</source>
-        <translation>Y :</translation>
+        <translation>Y:</translation>
     </message>
     <message>
         <source>LBL_Z</source>
-        <translation>Z :</translation>
+        <translation>Z:</translation>
     </message>
     <message>
         <source>USE_BBCENTER</source>
@@ -260,6 +268,25 @@
     <message>
         <source>MEN_CHANGE_BACKGROUD</source>
         <translation>Change background...</translation>
+    </message>
+</context>
+<context>
+    <name>OCCViewer_AxialScaleDlg</name>
+    <message>
+        <source>DLG_SCALING</source>
+        <translation>Axes scaling</translation>
+    </message>
+    <message>
+        <source>LBL_X</source>
+        <translation>X:</translation>
+    </message>
+    <message>
+        <source>LBL_Y</source>
+        <translation>Y:</translation>
+    </message>
+    <message>
+        <source>LBL_Z</source>
+        <translation>Z:</translation>
     </message>
 </context>
 </TS>

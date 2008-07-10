@@ -72,14 +72,29 @@ void Plot2d_ViewManager::createView()
 */
 void Plot2d_ViewManager::onCloneView()
 {
+  if( sender() && sender()->inherits( "Plot2d_ViewWindow" ) )
+  {
+    Plot2d_ViewWindow* srcWnd = ( Plot2d_ViewWindow* )sender();
+    cloneView( srcWnd );
+  }
+}
+
+/*!
+  \brief Creates clone of source window
+  \param srcWnd source window
+  \return Pointer on the new window
+  \sa onCloneView()
+*/
+Plot2d_ViewWindow* Plot2d_ViewManager::cloneView( Plot2d_ViewWindow* srcWnd )
+{
   SUIT_ViewWindow* vw = createViewWindow();
 
-  Plot2d_ViewWindow  *newWnd = 0, *clonedWnd = 0;
+  Plot2d_ViewWindow* newWnd = 0;
   if( vw && vw->inherits( "Plot2d_ViewWindow" ) )
     newWnd = ( Plot2d_ViewWindow* )vw;
-  if( sender() && sender()->inherits( "Plot2d_ViewWindow" ) )
-    clonedWnd = ( Plot2d_ViewWindow* )sender();
   
-  if( newWnd && clonedWnd )
-    emit cloneView( clonedWnd->getViewFrame(), newWnd->getViewFrame() );
+  if( newWnd && srcWnd )
+    emit cloneView( srcWnd->getViewFrame(), newWnd->getViewFrame() );
+
+  return newWnd;
 }

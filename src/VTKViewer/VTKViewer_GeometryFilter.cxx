@@ -772,7 +772,7 @@ VTKViewer_GeometryFilter
     delete [] cellVis;
     }
 
-  return 0;
+  return 1;
 }
 
 

@@ -955,6 +955,15 @@ QString SUIT_FileDlg::getExistingDirectory( QWidget* parent, const QString& init
 }
 
 /*!
+  \brief Get last visited path
+  \return last visited path
+*/
+QString SUIT_FileDlg::getLastVisitedPath()
+{
+  return myLastVisitedPath;
+}
+
+/*!
   \brief Selects current file
 
   This version of selectFile() methods works similar to Qt version 3.x:

@@ -76,6 +76,9 @@ protected slots:
 
   void onViewShow();
   void onViewHide();
+
+protected:
+  void closeEvent( QCloseEvent* );
 };
 
 #endif // OCCVIEWER_SETROTATIONPOINTDLG_H

@@ -124,7 +124,8 @@ int QtxActionToolMgr::createToolBar( const QString& title, const int tid, QMainW
     //mainWindow()->addToolBar( tb );
     tb->setWindowTitle( title );
     tb->setObjectName( title );
-  }
+    tb->setToolTip( title );
+   }
 
   tInfo.toolBar = tb;
   connect( tInfo.toolBar, SIGNAL( destroyed() ), this, SLOT( onToolBarDestroyed() ) );

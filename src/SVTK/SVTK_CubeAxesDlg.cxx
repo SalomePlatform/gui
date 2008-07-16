@@ -176,7 +176,7 @@ SVTK_CubeAxesDlg::AxisWidget::AxisWidget (QWidget* theParent)
   // Layout
 
   QVBoxLayout* aLay = new QVBoxLayout(this);
-  aLay->setMargin(0);
+  aLay->setMargin(5);
   aLay->setSpacing(5);
   aLay->addWidget(myNameGrp);
   aLay->addWidget(myLabelsGrp);
@@ -411,8 +411,6 @@ QWidget* SVTK_CubeAxesDlg::createMainFrame(QWidget* theParent)
   myTabWg->addTab(myAxes[ 0 ], tr("X_AXIS"));
   myTabWg->addTab(myAxes[ 1 ], tr("Y_AXIS"));
   myTabWg->addTab(myAxes[ 2 ], tr("Z_AXIS"));
-
-  myTabWg->setContentsMargins(5,5,5,5);
 
   myIsVisible = new QCheckBox(tr("IS_VISIBLE"), aFrame);
 

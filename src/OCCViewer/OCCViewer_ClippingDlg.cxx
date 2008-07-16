@@ -80,11 +80,10 @@ OCCViewer_ClippingDlg::OCCViewer_ClippingDlg( OCCViewer_ViewWindow* view, QWidge
   GroupPointLayout->setMargin( 11 );
   
   // Controls
-  const double min = -1e+16;
-  const double max =  1e+16;
+  const double min = -1e+7;
+  const double max =  1e+7;
   const double step = 5;
-  const int precision = -6; // PAL12789. Minus is for using 'g' double->string conversion specifier,
-  //                          see QtxDoubleSpinBox::mapValueToText( double v )
+  const int precision = 3;
 
   TextLabelX = new QLabel( GroupPoint );
   TextLabelX->setObjectName( "TextLabelX" );

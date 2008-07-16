@@ -123,6 +123,8 @@ OCCViewer_AxialScaleDlg::OCCViewer_AxialScaleDlg( OCCViewer_ViewWindow* view, QW
   connect( m_bReset,  SIGNAL( clicked() ), this, SLOT( reset() ) );
 
   connect( view,      SIGNAL( Hide( QHideEvent* ) ), this, SLOT( hide() ) );
+
+  resize( minimumSizeHint() );
 }
 
 /*!

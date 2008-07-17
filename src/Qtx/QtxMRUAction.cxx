@@ -38,6 +38,7 @@
 QtxMRUAction::QtxMRUAction( QObject* parent )
 : QtxAction( "Most Recently Used", "Most Recently Used", 0, parent ),
   myVisCount( 5 ),
+  myHistoryCount( -1 ),
   myLinkType( LinkAuto ),
   myInsertMode( MoveFirst )
 {
@@ -54,6 +55,7 @@ QtxMRUAction::QtxMRUAction( QObject* parent )
 QtxMRUAction::QtxMRUAction( const QString& text, const QString& menuText, QObject* parent )
 : QtxAction( text, menuText, 0, parent ),
   myVisCount( 5 ),
+  myHistoryCount( -1 ),
   myLinkType( LinkAuto ),
   myInsertMode( MoveFirst )
 {
@@ -72,6 +74,7 @@ QtxMRUAction::QtxMRUAction( const QString& text, const QIcon& icon,
                             const QString& menuText, QObject* parent )
 : QtxAction( text, icon, menuText, 0, parent ),
   myVisCount( 5 ),
+  myHistoryCount( -1 ),
   myLinkType( LinkAuto ),
   myInsertMode( MoveFirst )
 {
@@ -170,6 +173,32 @@ void QtxMRUAction::setVisibleCount( int num )
 }
 
 /*!
+  \brief Get number of totally stored MRU items.
+  \return number of MRU items stored in the preferences
+  \sa setHistoryCount(), saveLinks(), loadLinks()
+*/
+int QtxMRUAction::historyCount() const
+{
+  return myHistoryCount;
+}
+
+/*!
+  \brief Set number of totally stored MRU items.
+
+  This option allows setting number of MRU items to be stored
+  in the preferences file.
+
+  If \a num < 0, then number of stored MRU items is not limited.
+
+  \return number of MRU items stored in the preferences
+  \sa historyCount(), saveLinks(), loadLinks()
+*/
+void QtxMRUAction::setHistoryCount( const int num )
+{
+  myHistoryCount = num;
+}
+
+/*!
   \brief Insert MRU item.
 
   The item is inserted according to the current insertion policy.
@@ -221,6 +250,14 @@ void QtxMRUAction::remove( const int idx )
 void QtxMRUAction::remove( const QString& link )
 {
   myLinks.removeAll( link );
+}
+
+/*!
+  \brief Remove all MRU items.
+*/
+void QtxMRUAction::clear()
+{
+  myLinks.clear();
 }
 
 /*!
@@ -302,8 +339,16 @@ void QtxMRUAction::saveLinks( QtxResourceMgr* resMgr, const QString& section, co
   if ( !resMgr || section.isEmpty() )
     return;
 
-  if ( clear )
-    resMgr->remove( section );
+  QString itemPrefix( "item_" );
+
+  if ( clear ) {
+    QStringList items = resMgr->parameters( section );
+    for ( QStringList::const_iterator it = items.begin(); it != items.end(); ++it )
+    {
+      if ( (*it).startsWith( itemPrefix ) )
+	resMgr->remove( section, *it );
+    }
+  }
 
   QStringList lst;
   QMap<QString, int> map;
@@ -313,7 +358,6 @@ void QtxMRUAction::saveLinks( QtxResourceMgr* resMgr, const QString& section, co
     map.insert( *itr, 0 );
   }
 
-  QString itemPrefix( "item_" );
   QStringList items = resMgr->parameters( section );
   for ( QStringList::const_iterator it = items.begin(); it != items.end(); ++it )
   {
@@ -331,7 +375,9 @@ void QtxMRUAction::saveLinks( QtxResourceMgr* resMgr, const QString& section, co
   }
 
   int counter = 0;
-  for ( QStringList::const_iterator iter = lst.begin(); iter != lst.end(); ++iter, counter++ )
+  for ( QStringList::const_iterator iter = lst.begin(); 
+	iter != lst.end() && ( myHistoryCount < 0 || counter < myHistoryCount );
+	++iter, counter++ )
     resMgr->setValue( section, itemPrefix + QString().sprintf( "%03d", counter ), *iter );
 }
 

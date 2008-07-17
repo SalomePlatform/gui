@@ -67,6 +67,9 @@ public:
   int          visibleCount() const;
   void         setVisibleCount( const int );
 
+  int          historyCount() const;
+  void         setHistoryCount( const int );
+
   void         remove( const int );
   void         remove( const QString& );
   void         insert( const QString& );
@@ -77,6 +80,9 @@ public:
 
   virtual void loadLinks( QtxResourceMgr*, const QString&, const bool = true );
   virtual void saveLinks( QtxResourceMgr*, const QString&, const bool = true ) const;
+
+public slots:
+  void         clear();
 
 signals:
   void         activated( const QString& );
@@ -91,6 +97,7 @@ private:
 private:
   QStringList  myLinks;        //!< most recent used items
   int          myVisCount;     //!< number of visible MRU items
+  int          myHistoryCount; //!< number of stored MRU items
   int          myLinkType;     //!< type of link names in menu
   int          myInsertMode;   //!< items insertion policy
 };

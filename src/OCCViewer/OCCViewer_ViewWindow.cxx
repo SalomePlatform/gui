@@ -731,8 +731,7 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent( QMouseEvent* theEvent )
     {
       int aState = theEvent->modifiers();
       int aButton = theEvent->buttons();
-      if ( aButton == Qt::LeftButton ||
-	   ( aButton == Qt::LeftButton && aState == Qt::ShiftModifier ) )	{
+      if ( aButton == Qt::LeftButton && ( aState == Qt::NoModifier || Qt::ShiftModifier ) ) {
 	myDrawRect = myEnableDrawMode;
 	if ( myDrawRect ) {
 	  drawRect();
@@ -744,8 +743,7 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent( QMouseEvent* theEvent )
 	  }
 	}
       }
-      else if ( aButton == Qt::RightButton ||
-		aButton == Qt::RightButton && aState == Qt::ShiftModifier ) {
+      else if ( aButton == Qt::RightButton && ( aState == Qt::NoModifier || Qt::ShiftModifier ) ) {
 	OCCViewer_ViewSketcher* sketcher = 0;
 	QList<OCCViewer_ViewSketcher*>::Iterator it;
 	for ( it = mySketchers.begin(); it != mySketchers.end() && !sketcher; ++it )

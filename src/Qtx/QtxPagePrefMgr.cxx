@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -38,6 +38,7 @@
 #include <QSplitter>
 #include <QTabWidget>
 #include <QListWidget>
+#include <QApplication>
 #include <QDateTimeEdit>
 #include <QStackedWidget>
 
@@ -58,7 +59,7 @@ QtxPagePrefMgr::QtxPagePrefMgr( QtxResourceMgr* resMgr, QWidget* parent )
 {
   myBox = new QtxGridBox( 1, Qt::Horizontal, this, 0 );
   QVBoxLayout* base = new QVBoxLayout( this );
-  base->setMargin( 0 );
+  base->setMargin( 5 );
   base->setSpacing( 0 );
   base->addWidget( myBox );
 }
@@ -76,8 +77,6 @@ QtxPagePrefMgr::~QtxPagePrefMgr()
 */
 QSize QtxPagePrefMgr::sizeHint() const
 {
-  initialize();
-
   return QFrame::sizeHint();
 }
 
@@ -87,20 +86,20 @@ QSize QtxPagePrefMgr::sizeHint() const
 */
 QSize QtxPagePrefMgr::minimumSizeHint() const
 {
-  initialize();
-
   return QFrame::minimumSizeHint();
 }
 
 /*!
   \brief Customize show/hide widget operation.
-  \param on if \c true the widget is being shown, otherswise 
+  \param on if \c true the widget is being shown, otherswise
   it is being hidden
 */
 void QtxPagePrefMgr::setVisible( bool on )
 {
-  if ( on && !myInit )
-    updateContents();
+  if ( on )
+    initialize();
+
+  QApplication::instance()->processEvents();
 
   QFrame::setVisible( on );
 }
@@ -115,12 +114,9 @@ void QtxPagePrefMgr::updateContents()
   QList<QtxPreferenceItem*> lst = childItems();
   for ( QList<QtxPreferenceItem*>::const_iterator it = lst.begin(); it != lst.end(); ++it )
   {
-    if ( (*it)->rtti() == QtxPagePrefItem::RTTI() )
-    {
-      QtxPagePrefItem* item = (QtxPagePrefItem*)(*it);
-      if ( item->widget() && item->widget()->parent() != myBox )
-        item->widget()->setParent( myBox );
-    }
+    QtxPagePrefItem* item = dynamic_cast<QtxPagePrefItem*>( *it );
+    if ( item && item->widget() && item->widget()->parent() != myBox )
+      item->widget()->setParent( myBox );
   }
 
   setWindowIcon( icon() );
@@ -195,18 +191,25 @@ void QtxPagePrefMgr::setOptionValue( const QString& name, const QVariant& val )
 */
 void QtxPagePrefMgr::initialize() const
 {
-  if ( myInit )
-    return;
+  //  if ( myInit )
+  //    return;
 
   QtxPagePrefMgr* that = (QtxPagePrefMgr*)this;
-    
-  that->updateContents();
+  that->initialize( that );
 
-  QList<QtxPreferenceItem*> lst = childItems( true );
+  //  that->myInit = true;
+}
+
+void QtxPagePrefMgr::initialize( QtxPreferenceItem* item )
+{
+  if ( !item )
+    return;
+
+  QList<QtxPreferenceItem*> lst = item->childItems( false );
   for ( QList<QtxPreferenceItem*>::iterator it = lst.begin(); it != lst.end(); ++it )
-    (*it)->updateContents();
+    initialize( *it );
 
-  that->myInit = true;
+  updateContents();
 }
 
 /*!
@@ -214,6 +217,41 @@ void QtxPagePrefMgr::initialize() const
   \brief Base class for implementation of all the widget-based
   preference items.
 */
+
+class QtxPagePrefItem::Listener : public QObject
+{
+public:
+  Listener( QtxPagePrefItem* );
+  virtual ~Listener();
+
+  virtual bool eventFilter( QObject*, QEvent* );
+
+private:
+  QtxPagePrefItem* myItem;
+};
+
+QtxPagePrefItem::Listener::Listener( QtxPagePrefItem* item )
+: QObject( 0 ),
+  myItem( item )
+{
+}
+
+QtxPagePrefItem::Listener::~Listener()
+{
+}
+
+bool QtxPagePrefItem::Listener::eventFilter( QObject* o, QEvent* e )
+{
+  if ( !myItem || myItem->widget() != o )
+    return false;
+
+  if ( e->type() == QEvent::Show || e->type() == QEvent::ShowToParent )
+    myItem->widgetShown();
+  if ( e->type() == QEvent::Hide || e->type() == QEvent::HideToParent )
+    myItem->widgetHided();
+
+  return false;
+}
 
 /*!
   \brief Constructor.
@@ -225,7 +263,8 @@ void QtxPagePrefMgr::initialize() const
 QtxPagePrefItem::QtxPagePrefItem( const QString& title, QtxPreferenceItem* parent,
                                   const QString& sect, const QString& param )
 : QtxPreferenceItem( title, sect, param, parent ),
-  myWidget( 0 )
+  myWidget( 0 ),
+  myListener( 0 )
 {
 }
 
@@ -235,15 +274,7 @@ QtxPagePrefItem::QtxPagePrefItem( const QString& title, QtxPreferenceItem* paren
 QtxPagePrefItem::~QtxPagePrefItem()
 {
   delete myWidget;
-}
-
-/*!
-  \brief Get unique item type identifier.
-  \return item type ID
-*/
-int QtxPagePrefItem::rtti() const
-{
-  return QtxPagePrefItem::RTTI();
+  delete myListener;
 }
 
 /*!
@@ -257,22 +288,24 @@ QWidget* QtxPagePrefItem::widget() const
 }
 
 /*!
-  \brief Specify unique item class identifier.
-  \return item class ID
-*/
-int QtxPagePrefItem::RTTI()
-{
-  return 1000;
-}
-
-/*!
   \brief Set preference item editor widget.
   \param wid editor widget
   \sa widget()
 */
 void QtxPagePrefItem::setWidget( QWidget* wid )
 {
+  if ( myWidget && myListener )
+    myWidget->removeEventFilter( myListener );
+
   myWidget = wid;
+
+  if ( myWidget )
+  {
+    if ( !myListener )
+      myListener = new Listener( this );
+    myWidget->installEventFilter( myListener );
+  }
+
   sendItemChanges();
 }
 
@@ -311,7 +344,7 @@ void QtxPagePrefItem::itemChanged( QtxPreferenceItem* /*item*/ )
 
 /*!
   \brief Store preference item to the resource manager.
-  
+
   This method should be reimplemented in the subclasses.
   Base implementation does nothing.
 
@@ -323,7 +356,7 @@ void QtxPagePrefItem::store()
 
 /*!
   \brief Retrieve preference item from the resource manager.
-  
+
   This method should be reimplemented in the subclasses.
   Base implementation does nothing.
 
@@ -331,6 +364,29 @@ void QtxPagePrefItem::store()
 */
 void QtxPagePrefItem::retrieve()
 {
+}
+
+/*!
+  \brief Invoked when preference item widget is shown.
+*/
+void QtxPagePrefItem::widgetShown()
+{
+}
+
+/*!
+  \brief Invoked when preference item widget is hided.
+*/
+void QtxPagePrefItem::widgetHided()
+{
+}
+
+void QtxPagePrefItem::ensureVisible( QtxPreferenceItem* i )
+{
+  QtxPreferenceItem::ensureVisible();
+
+  QtxPagePrefItem* item = dynamic_cast<QtxPagePrefItem*>( i );
+  if ( item && item->widget() )
+    item->widget()->setVisible( true );
 }
 
 /*!
@@ -343,14 +399,15 @@ void QtxPagePrefItem::pageChildItems( QList<QtxPagePrefItem*>& list, const bool 
   QList<QtxPreferenceItem*> lst = childItems( rec );
   for ( QList<QtxPreferenceItem*>::const_iterator it = lst.begin(); it != lst.end(); ++it )
   {
-    if ( (*it)->rtti() == QtxPagePrefItem::RTTI() )
-      list.append( (QtxPagePrefItem*)*it );
+    QtxPagePrefItem* item = dynamic_cast<QtxPagePrefItem*>( *it );
+    if ( item )
+      list.append( item );
   }
 }
 
 /*!
   \brief Called when contents is changed (item is added, removed or modified).
-  
+
   Triggers the item update.
 */
 void QtxPagePrefItem::contentChanged()
@@ -378,18 +435,18 @@ QtxPageNamedPrefItem::QtxPageNamedPrefItem( const QString& title, QtxPreferenceI
 {
   QWidget* main = new QWidget();
 
-  QtxPagePrefGroupItem* aGroup = dynamic_cast<QtxPagePrefGroupItem*>(parent);
-  if ( !aGroup )
-  {
+  //  QtxPagePrefGroupItem* aGroup = 0;//dynamic_cast<QtxPagePrefGroupItem*>(parent);
+  //  if ( !aGroup )
+  //  {
     QHBoxLayout* base = new QHBoxLayout( main );
     base->setMargin( 0 );
     base->setSpacing( 5 );
 
     myLabel = new QLabel( title, main );
     base->addWidget( myLabel );
-  }
-  else
-    myLabel = new QLabel( title, aGroup->gridBox() );
+    //  }
+    //  else
+    //    myLabel = new QLabel( title, aGroup->gridBox() );
 
   setWidget( main );
 
@@ -450,9 +507,41 @@ void QtxPageNamedPrefItem::setControl( QWidget* wid )
 
   if ( myControl )
   {
-    QtxPagePrefGroupItem* aGroup = dynamic_cast<QtxPagePrefGroupItem*>(parentItem());
-    if ( !aGroup ) widget()->layout()->addWidget( myControl );
-    else myControl->setParent( aGroup->gridBox() );
+    //    QtxPagePrefGroupItem* aGroup = 0;//dynamic_cast<QtxPagePrefGroupItem*>(parentItem());
+    //    if ( !aGroup )
+      widget()->layout()->addWidget( myControl );
+      //    else myControl->setParent( aGroup->gridBox() );
+  }
+}
+
+void QtxPageNamedPrefItem::adjustLabels( QtxPagePrefItem* parent )
+{
+  if ( !parent )
+    return;
+
+  QList<QtxPreferenceItem*> childList = parent->childItems();
+
+  QList<QtxPageNamedPrefItem*> namedItems;
+  for ( QList<QtxPreferenceItem*>::iterator it = childList.begin(); it != childList.end(); ++it )
+  {
+    QtxPageNamedPrefItem* item = dynamic_cast<QtxPageNamedPrefItem*>( *it );
+    if ( item )
+      namedItems.append( item );
+  }
+
+  int sz = 0;
+  for ( QList<QtxPageNamedPrefItem*>::iterator it1 = namedItems.begin(); it1 != namedItems.end(); ++it1 )
+  {
+    QtxPageNamedPrefItem* item = *it1;
+    if ( item->label() )
+      sz = qMax( sz, item->label()->sizeHint().width() );
+  }
+
+  for ( QList<QtxPageNamedPrefItem*>::iterator it2 = namedItems.begin(); it2 != namedItems.end(); ++it2 )
+  {
+    QtxPageNamedPrefItem* item = *it2;
+    if ( item->label() )
+      item->label()->setMinimumWidth( sz );
   }
 }
 
@@ -591,6 +680,22 @@ void QtxPagePrefListItem::setOptionValue( const QString& name, const QVariant& v
   }
   else
     QtxPagePrefItem::setOptionValue( name, val );
+}
+
+void QtxPagePrefListItem::widgetShown()
+{
+  updateState();
+}
+
+void QtxPagePrefListItem::ensureVisible( QtxPreferenceItem* i )
+{
+  if ( !i )
+    return;
+
+  QtxPreferenceItem::ensureVisible( i );
+
+  setSelected( i->id() );
+  updateState();
 }
 
 /*!
@@ -850,6 +955,18 @@ void QtxPagePrefToolBoxItem::updateToolBox()
     myToolBox->setCurrentWidget( cur );
 }
 
+void QtxPagePrefToolBoxItem::ensureVisible( QtxPreferenceItem* i )
+{
+  if ( !i )
+    return;
+
+  QtxPreferenceItem::ensureVisible( i );
+
+  QtxPagePrefItem* item = dynamic_cast<QtxPagePrefItem*>( i );
+  if ( item && item->widget() )
+    myToolBox->setCurrentWidget( item->widget() );
+}
+
 /*!
   \class QtxPagePrefTabsItem
   \brief GUI implementation of the tab widget container.
@@ -990,6 +1107,18 @@ void QtxPagePrefTabsItem::setOptionValue( const QString& name, const QVariant& v
     QtxPagePrefItem::setOptionValue( name, val );
 }
 
+void QtxPagePrefTabsItem::ensureVisible( QtxPreferenceItem* i )
+{
+  if ( !i )
+    return;
+
+  QtxPreferenceItem::ensureVisible( i );
+
+  QtxPagePrefItem* item = dynamic_cast<QtxPagePrefItem*>( i );
+  if ( item && item->widget() )
+    myTabs->setCurrentWidget( item->widget() );
+}
+
 /*!
   \brief Update tabs.
 */
@@ -1079,7 +1208,10 @@ QtxPagePrefFrameItem::~QtxPagePrefFrameItem()
 void QtxPagePrefFrameItem::updateContents()
 {
   QtxPagePrefItem::updateContents();
+
   updateFrame();
+
+  QtxPageNamedPrefItem::adjustLabels( this );
 }
 
 /*!
@@ -1252,6 +1384,13 @@ void QtxPagePrefFrameItem::setOptionValue( const QString& name, const QVariant& 
     QtxPagePrefItem::setOptionValue( name, val );
 }
 
+void QtxPagePrefFrameItem::widgetShown()
+{
+  QtxPagePrefItem::widgetShown();
+
+  QtxPageNamedPrefItem::adjustLabels( this );
+}
+
 /*!
   \brief Update frame widget.
 */
@@ -1292,6 +1431,8 @@ QtxPagePrefGroupItem::QtxPagePrefGroupItem( const QString& title, QtxPreferenceI
   myGroup->setWidget( myBox );
 
   setWidget( myGroup );
+
+  updateState();
 }
 
 /*!
@@ -1311,6 +1452,8 @@ QtxPagePrefGroupItem::QtxPagePrefGroupItem( const int cols, const QString& title
   myGroup->setWidget( myBox );
 
   setWidget( myGroup );
+
+  updateState();
 }
 
 /*!
@@ -1338,10 +1481,13 @@ void QtxPagePrefGroupItem::setResource( const QString& sect, const QString& para
 void QtxPagePrefGroupItem::updateContents()
 {
   QtxPagePrefItem::updateContents();
+
   myGroup->setTitle( title() );
 
   updateState();
   updateGroup();
+
+  QtxPageNamedPrefItem::adjustLabels( this );
 }
 
 /*!
@@ -1529,6 +1675,13 @@ void QtxPagePrefGroupItem::setOptionValue( const QString& name, const QVariant& 
     QtxPagePrefItem::setOptionValue( name, val );
 }
 
+void QtxPagePrefGroupItem::widgetShown()
+{
+  QtxPagePrefItem::widgetShown();
+
+  QtxPageNamedPrefItem::adjustLabels( this );
+}
+
 /*!
   \brief Update widget state.
 */
@@ -1567,7 +1720,7 @@ void QtxPagePrefGroupItem::updateGroup()
 /*!
   \brief Constructor.
 
-  Creates spacer item with zero width and height and expanding 
+  Creates spacer item with zero width and height and expanding
   on both directions (by height and width).
 
   \param parent parent preference item
@@ -1581,7 +1734,7 @@ QtxPagePrefSpaceItem::QtxPagePrefSpaceItem( QtxPreferenceItem* parent )
 /*!
   \brief Constructor.
 
-  Creates spacer item with zero width and height and expanding 
+  Creates spacer item with zero width and height and expanding
   according to the specified orientation.
 
   \param o spacer orientation
@@ -1676,7 +1829,7 @@ void QtxPagePrefSpaceItem::setStretch( Qt::Orientation o, const int sf )
     sp.setVerticalStretch( sf );
     sp.setVerticalPolicy( sf > 0 ? QSizePolicy::Expanding : QSizePolicy::Fixed );
   }
-    
+
   widget()->setSizePolicy( sp );
 }
 
@@ -1744,7 +1897,7 @@ void QtxPagePrefSpaceItem::initialize( const int w, const int h, const int hs, c
   QSizePolicy sp;
   sp.setHorizontalPolicy( hs > 0 ? QSizePolicy::Expanding : QSizePolicy::Fixed );
   sp.setVerticalPolicy( vs > 0 ? QSizePolicy::Expanding : QSizePolicy::Fixed );
-  
+
   sp.setHorizontalStretch( hs );
   sp.setVerticalStretch( vs );
 
@@ -1752,7 +1905,7 @@ void QtxPagePrefSpaceItem::initialize( const int w, const int h, const int hs, c
   wid->setSizePolicy( sp );
 
   wid->setMinimumSize( w, h );
-  
+
   setWidget( wid );
 }
 
@@ -1795,7 +1948,7 @@ void QtxPagePrefCheckItem::setTitle( const QString& txt )
 
   myCheck->setText( title() );
 }
-                                            
+
 /*!
   \brief Store preference item to the resource manager.
   \sa retrieve()
@@ -1852,7 +2005,7 @@ QtxPagePrefEditItem::QtxPagePrefEditItem( const QString& title, QtxPreferenceIte
   \param param resource file parameter associated with the preference item
 */
 QtxPagePrefEditItem::QtxPagePrefEditItem( const int type, const QString& title,
-                                          QtxPreferenceItem* parent, const QString& sect, 
+                                          QtxPreferenceItem* parent, const QString& sect,
 					  const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param ),
   myType( type )
@@ -1980,7 +2133,7 @@ void QtxPagePrefEditItem::updateEditor()
 
 /*!
   \class QtxPagePrefSelectItem
-  \brief GUI implementation of the resources selector item 
+  \brief GUI implementation of the resources selector item
   (string, integer or double values list).
 
   All items in the list (represented as combo box) should be specified
@@ -1990,7 +2143,7 @@ void QtxPagePrefEditItem::updateEditor()
 
 /*!
   \brief Constructor.
-  
+
   Creates preference item with combo box widget which is not editable
   (direct value entering is disabled).
 
@@ -2012,7 +2165,7 @@ QtxPagePrefSelectItem::QtxPagePrefSelectItem( const QString& title, QtxPreferenc
 
 /*!
   \brief Constructor.
-  
+
   Creates preference item with combo box widget which is editable
   according to the specified input type (integer, double or string values).
 
@@ -2319,7 +2472,7 @@ QtxPagePrefSpinItem::QtxPagePrefSpinItem( const QString& title, QtxPreferenceIte
   \param param resource file parameter associated with the preference item
 */
 QtxPagePrefSpinItem::QtxPagePrefSpinItem( const int type, const QString& title,
-                                          QtxPreferenceItem* parent, const QString& sect, 
+                                          QtxPreferenceItem* parent, const QString& sect,
 					  const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param ),
   myType( type )
@@ -2434,7 +2587,7 @@ QString QtxPagePrefSpinItem::suffix() const
 }
 
 /*!
-  \brief Get spin box preference item special value text (which is shown 
+  \brief Get spin box preference item special value text (which is shown
   when the spin box reaches minimum value).
   \return spin box special value text
   \sa setSpecialValueText()
@@ -2532,7 +2685,7 @@ void QtxPagePrefSpinItem::setSuffix( const QString& txt )
 }
 
 /*!
-  \brief Set spin box preference item special value text (which is shown 
+  \brief Set spin box preference item special value text (which is shown
   when the spin box reaches minimum value).
   \param txt new spin box special value text
   \sa specialValueText()
@@ -2689,7 +2842,7 @@ void QtxPagePrefSpinItem::updateSpinBox()
   \param sect resource file section associated with the preference item
   \param param resource file parameter associated with the preference item
 */
-QtxPagePrefTextItem::QtxPagePrefTextItem( QtxPreferenceItem* parent, const QString& sect, 
+QtxPagePrefTextItem::QtxPagePrefTextItem( QtxPreferenceItem* parent, const QString& sect,
 					  const QString& param )
 : QtxPageNamedPrefItem( QString(), parent, sect, param )
 {
@@ -2757,9 +2910,10 @@ QtxPagePrefColorItem::QtxPagePrefColorItem( const QString& title, QtxPreferenceI
                                             const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param )
 {
-  QtxPagePrefGroupItem* aGroup = dynamic_cast<QtxPagePrefGroupItem*>( parent );
+  //  QtxPagePrefGroupItem* aGroup 0; //= dynamic_cast<QtxPagePrefGroupItem*>( parent );
 
-  setControl( myColor = new QtxColorButton( aGroup ? aGroup->gridBox() : 0 ) );
+  //  setControl( myColor = new QtxColorButton( aGroup ? aGroup->gridBox() : 0 ) );
+  setControl( myColor = new QtxColorButton( 0 ) );
   myColor->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
 }
 
@@ -2802,7 +2956,7 @@ void QtxPagePrefColorItem::retrieve()
   \param param resource file parameter associated with the preference item
 */
 QtxPagePrefFontItem::QtxPagePrefFontItem( const int feat, const QString& title,
-                                          QtxPreferenceItem* parent, const QString& sect, 
+                                          QtxPreferenceItem* parent, const QString& sect,
 					  const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param )
 {

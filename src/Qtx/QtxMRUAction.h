@@ -67,6 +67,9 @@ public:
   int          visibleCount() const;
   void         setVisibleCount( const int );
 
+  bool         isClearPossible() const;
+  void         setClearPossible( const bool );
+
   int          historyCount() const;
   void         setHistoryCount( const int );
 
@@ -90,12 +93,14 @@ signals:
 private slots:
   void         onActivated();
   void         onAboutToShow();
+  void         onCleared( bool );
 
 private:
   void         updateMenu();
 
 private:
   QStringList  myLinks;        //!< most recent used items
+  QAction*     myClear;        //!< clear item
   int          myVisCount;     //!< number of visible MRU items
   int          myHistoryCount; //!< number of stored MRU items
   int          myLinkType;     //!< type of link names in menu

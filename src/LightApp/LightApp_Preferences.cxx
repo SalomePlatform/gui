@@ -68,6 +68,14 @@ bool LightApp_Preferences::hasModule( const QString& mod ) const
   return res;
 }
 
+void LightApp_Preferences::activateModule( const QString& mod ) const
+{
+  QtxPreferenceItem* item = findItem( mod, true );
+
+  if ( item && item->depth() < 3 )
+    item->ensureVisible();
+}
+
 /*!Do nothing.*/
 void LightApp_Preferences::onHelp()
 {

@@ -1499,6 +1499,8 @@ void LightApp_Application::onPreferences()
   if ( !prefDlg )
     return;
 
+  preferences()->activateModule( activeModule() ? activeModule()->moduleName() : tr( "PREF_CATEGORY_SALOME" ) );
+
   if ( ( prefDlg->exec() == QDialog::Accepted || prefDlg->isSaved() ) &&  resourceMgr() ) {
     if ( desktop() )
       resourceMgr()->setValue( "desktop", "geometry", desktop()->storeGeometry() );
@@ -1730,19 +1732,18 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   int genTab = pref->addPreference( tr( "PREF_TAB_GENERAL" ), salomeCat );
   int studyGroup = pref->addPreference( tr( "PREF_GROUP_STUDY" ), genTab );
 
-  //pref->setItemProperty( "columns", 1, studyGroup );
+  pref->setItemProperty( "columns", 2, studyGroup );
 
   pref->addPreference( tr( "PREF_MULTI_FILE" ), studyGroup, LightApp_Preferences::Bool, "Study", "multi_file" );
   pref->addPreference( tr( "PREF_ASCII_FILE" ), studyGroup, LightApp_Preferences::Bool, "Study", "ascii_file" );
   pref->addPreference( tr( "PREF_STORE_POS" ),  studyGroup, LightApp_Preferences::Bool, "Study", "store_positions" );
 
   int extgroup = pref->addPreference( tr( "PREF_GROUP_EXT_BROWSER" ), genTab );
-  pref->setItemProperty( "columns", 2, extgroup );
-	QString platform;
+  QString platform;
 #ifdef WIN32
-	platform = "winapplication";
+  platform = "winapplication";
 #else
-	platform = "application";
+  platform = "application";
 #endif
   int apppref = pref->addPreference( tr( "PREF_APP" ), extgroup, LightApp_Preferences::File, "ExternalBrowser", platform );
   pref->setItemProperty( "mode", Qtx::PT_OpenFile, apppref );
@@ -1750,12 +1751,12 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "PREF_PARAM" ), extgroup, LightApp_Preferences::String, "ExternalBrowser", "parameters" );
 
   int pythonConsoleGroup = pref->addPreference( tr( "PREF_GROUP_PY_CONSOLE" ), genTab );
-  pref->setItemProperty( "columns", 2, pythonConsoleGroup );
   pref->addPreference( tr( "PREF_FONT" ), pythonConsoleGroup, LightApp_Preferences::Font, "PyConsole", "font" );
 
   int SalomeStyleGroup = pref->addPreference( tr( "PREF_GROUP_STYLE" ), genTab );
   pref->addPreference( tr( "PREF_USE_SALOME_STYLE" ), SalomeStyleGroup, LightApp_Preferences::Bool, "Style", "use_salome_style" );
-  if ( resourceMgr() ) resourceMgr()->booleanValue( "Style", "use_salome_style", true );
+  if ( resourceMgr() )
+    resourceMgr()->booleanValue( "Style", "use_salome_style", true );
 
   int viewTab = pref->addPreference( tr( "PREF_TAB_VIEWERS" ), salomeCat );
 
@@ -1767,26 +1768,26 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   int supervGroup = pref->addPreference( tr( "PREF_GROUP_SUPERV" ), viewTab );
 
-  pref->setItemProperty( "columns", 4, occGroup );
-  pref->setItemProperty( "columns", 4, vtkGroup );
-  pref->setItemProperty( "columns", 4, plot2dGroup );
+  pref->setItemProperty( "columns", 2, occGroup );
+  pref->setItemProperty( "columns", 2, vtkGroup );
+  pref->setItemProperty( "columns", 2, plot2dGroup );
 
   int occTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), occGroup,
 				   LightApp_Preferences::DblSpin, "OCCViewer", "trihedron_size" );
-  pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), occGroup,
-		       LightApp_Preferences::Color, "OCCViewer", "background" );
-
   pref->setItemProperty( "min", 1.0E-06, occTS );
   pref->setItemProperty( "max", 1000, occTS );
 
+
   int isoU = pref->addPreference( tr( "PREF_ISOS_U" ), occGroup,
 				  LightApp_Preferences::IntSpin, "OCCViewer", "iso_number_u" );
-  int isoV = pref->addPreference( tr( "PREF_ISOS_V" ), occGroup,
-				  LightApp_Preferences::IntSpin, "OCCViewer", "iso_number_v" );
-
   pref->setItemProperty( "min", 0, isoU );
   pref->setItemProperty( "max", 100000, isoU );
 
+  pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), occGroup,
+		       LightApp_Preferences::Color, "OCCViewer", "background" );
+
+  int isoV = pref->addPreference( tr( "PREF_ISOS_V" ), occGroup,
+				  LightApp_Preferences::IntSpin, "OCCViewer", "iso_number_v" );
   pref->setItemProperty( "min", 0, isoV );
   pref->setItemProperty( "max", 100000, isoV );
 
@@ -1867,7 +1868,6 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   int dirTab = pref->addPreference( tr( "PREF_TAB_DIRECTORIES" ), salomeCat );
   int dirGroup = pref->addPreference( tr( "PREF_GROUP_DIRECTORIES" ), dirTab );
-  //pref->setItemProperty( dirGroup, "columns", 1 );
   pref->addPreference( tr( "" ), dirGroup,
 		       LightApp_Preferences::DirList, "FileDlg", "QuickDirList" );
 
@@ -1923,7 +1923,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
     for( anIt = aGrpLst.begin(), anEnd = aGrpLst.end(); anIt != anEnd; ++anIt ) {
       aGrpId = *anIt;
       int themaGroup = pref->addPreference( aSModel->getGroupTitle( aGrpId ), themaSubSubTab, SUIT_PreferenceMgr::GroupBox );
-      pref->setItemProperty( "columns", aSModel->getGroupNbColumns( aGrpId )*2, themaGroup );
+      pref->setItemProperty( "columns", aSModel->getGroupNbColumns( aGrpId ), themaGroup );
       aPropLst = aSModel->getGroupProps( aGrpId );
       for( aPropIt = aPropLst.begin(), aPropEnd = aPropLst.end(); aPropIt != aPropEnd; ++aPropIt ) {
         aPropId = *aPropIt;
@@ -1942,7 +1942,8 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
         aPrefId = pref->addPreference( aSModel->getPropTitle( aPropId ), themaGroup,
                                        aPType, aSection, aSModel->getPropName( aPropId ) );
         aSModel->getValueTo( aResMgr, aPropId, true );//set default values into resource
-        if ( aPType == LightApp_Preferences::Selector ) {
+        if ( aPType == LightApp_Preferences::Selector )
+	{
           QStringList lst;
           QList<QVariant> ids;
           aSModel->getSelector( aPropId, lst, ids );
@@ -2032,16 +2033,17 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
   if( sec=="ObjectBrowser" )
   {
     SUIT_DataBrowser* ob = objectBrowser();
-    if( !ob )
+    if ( !ob )
       return;
 
-    if ( param=="auto_size_first" ) {
+    if ( param=="auto_size_first" )
+    {
       bool autoSizeFirst = resMgr->booleanValue( "ObjectBrowser", "auto_size_first", true );
-      ob->setAutoSizeFirstColumn(autoSizeFirst);
+      ob->setAutoSizeFirstColumn( autoSizeFirst );
       if ( autoSizeFirst )
 	ob->adjustFirstColumnWidth();
     }
-    else if( param=="auto_size" ) {
+    else if ( param=="auto_size" ) {
       bool autoSize = resMgr->booleanValue( "ObjectBrowser", "auto_size", false );
       ob->setAutoSizeColumns(autoSize);
       if ( autoSize )
@@ -2079,9 +2081,9 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
     if( param=="use_salome_style" )
     {
       if ( resMgr->booleanValue( "Style", "use_salome_style", true ) )
-      {	
+      {
 	if ( !aSStyle )
-	{  
+	{
 	  aSStyle = new Style_Salome();
 	  aSStyle->getModel()->initFromResource( resMgr );
 	  qApp->setStyle( aSStyle );

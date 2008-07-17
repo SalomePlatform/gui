@@ -23,22 +23,20 @@
 
 #include "QtxAction.h"
 
-#include <QRegExp>
 #include <QMenu>
+#include <QStyle>
+#include <QRegExp>
+#include <QLayout>
+#include <QPainter>
+#include <QSplitter>
 #include <QFocusEvent>
 #include <QMouseEvent>
-#include <QStyle>
-#include <QLayout>
-#include <QSplitter>
 #include <QRubberBand>
 #include <QApplication>
+#include <QStyleOption>
 #include <QInputDialog>
 #include <QStackedWidget>
 #include <QAbstractButton>
-#include <QPainter>
-#include <QStyleOption>
-
-#define DARK_COLOR_LIGHT 250
 
 /*!
   \class QtxWorkstackArea::WidgetEvent
@@ -1494,6 +1492,13 @@ QtxWorkstack::QtxWorkstack( QWidget* parent )
   connect( myActionsMap[SplitHorizontal], SIGNAL( triggered( bool ) ), this, SLOT( splitHorizontal() ) );
   connect( myActionsMap[Close], SIGNAL( triggered( bool ) ), this, SLOT( onCloseWindow() ) );
   connect( myActionsMap[Rename], SIGNAL( triggered( bool ) ), this, SLOT( onRename() ) );
+
+  // Action shortcut will work when action added in any widget.
+  for ( QMap<int, QAction*>::iterator it = myActionsMap.begin(); it != myActionsMap.end(); ++it )
+  {
+    addAction( it.value() );
+    it.value()->setShortcutContext( Qt::ApplicationShortcut );
+  }
 
   QVBoxLayout* base = new QVBoxLayout( this );
   base->setMargin( 0 );

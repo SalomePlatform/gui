@@ -36,14 +36,19 @@
   \param parent parent object
 */
 QtxMRUAction::QtxMRUAction( QObject* parent )
-: QtxAction( "Most Recently Used", "Most Recently Used", 0, parent ),
+: QtxAction( tr( "Most Recently Used" ), tr( "Most Recently Used" ), 0, parent ),
   myVisCount( 5 ),
   myHistoryCount( -1 ),
   myLinkType( LinkAuto ),
   myInsertMode( MoveFirst )
 {
+  myClear = new QAction( tr( "Clear" ), this );
+  myClear->setVisible( false );
+
   setMenu( new QMenu( 0 ) );
+
   connect( menu(), SIGNAL( aboutToShow() ), this, SLOT( onAboutToShow() ) );
+  connect( myClear, SIGNAL( triggered( bool ) ), this, SLOT( onCleared( bool ) ) );
 }
 
 /*!
@@ -59,8 +64,12 @@ QtxMRUAction::QtxMRUAction( const QString& text, const QString& menuText, QObjec
   myLinkType( LinkAuto ),
   myInsertMode( MoveFirst )
 {
+  myClear = new QAction( tr( "Clear" ), this );
+  myClear->setVisible( false );
+
   setMenu( new QMenu( 0 ) );
   connect( menu(), SIGNAL( aboutToShow() ), this, SLOT( onAboutToShow() ) );
+  connect( myClear, SIGNAL( triggered( bool ) ), this, SLOT( onCleared( bool ) ) );
 }
 
 /*!
@@ -78,8 +87,12 @@ QtxMRUAction::QtxMRUAction( const QString& text, const QIcon& icon,
   myLinkType( LinkAuto ),
   myInsertMode( MoveFirst )
 {
+  myClear = new QAction( tr( "Clear" ), this );
+  myClear->setVisible( false );
+
   setMenu( new QMenu( 0 ) );
   connect( menu(), SIGNAL( aboutToShow() ), this, SLOT( onAboutToShow() ) );
+  connect( myClear, SIGNAL( triggered( bool ) ), this, SLOT( onCleared( bool ) ) );
 }
 
 /*!
@@ -170,6 +183,22 @@ void QtxMRUAction::setVisibleCount( int num )
     return;
 
   myVisCount = num;
+}
+
+/*!
+  \brief Return visible status of the menu item which clear all MRU items.
+*/
+bool QtxMRUAction::isClearPossible() const
+{
+  return myClear->isVisible();
+}
+
+/*!
+  \brief Set visible the menu item which clear all MRU items.
+*/
+void QtxMRUAction::setClearPossible( const bool on )
+{
+  myClear->setVisible( on );
 }
 
 /*!
@@ -375,7 +404,7 @@ void QtxMRUAction::saveLinks( QtxResourceMgr* resMgr, const QString& section, co
   }
 
   int counter = 0;
-  for ( QStringList::const_iterator iter = lst.begin(); 
+  for ( QStringList::const_iterator iter = lst.begin();
 	iter != lst.end() && ( myHistoryCount < 0 || counter < myHistoryCount );
 	++iter, counter++ )
     resMgr->setValue( section, itemPrefix + QString().sprintf( "%03d", counter ), *iter );
@@ -406,6 +435,11 @@ void QtxMRUAction::onActivated()
   QString link = a->data().toString();
   if ( !link.isEmpty() && myLinks.contains( link ) )
     emit activated( link );
+}
+
+void QtxMRUAction::onCleared( bool )
+{
+  clear();
 }
 
 /*!
@@ -463,6 +497,13 @@ void QtxMRUAction::updateMenu()
 
   if ( pm->isEmpty() )
     pm->addAction( tr( "<Empty>" ) )->setEnabled( false );
+
+  if ( isClearPossible() )
+  {
+    pm->addSeparator();
+    pm->addAction( myClear );
+    myClear->setEnabled( !pm->isEmpty() );
+  }
 }
 
 /*!

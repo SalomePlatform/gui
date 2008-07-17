@@ -392,6 +392,11 @@ void QtxActionMgr::triggerUpdate()
   if ( !isUpdatesEnabled() )
     return;
 
+  // STV: debug code
+  updateContent();
+  return;
+  // STV: debug code
+
   if ( !myUpdTimer )
   {
     myUpdTimer = new QTimer( this );

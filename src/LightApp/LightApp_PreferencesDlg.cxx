@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -40,13 +40,9 @@ myPrefs( prefs ), mySaved ( false )
   setWindowTitle( tr( "CAPTION" ) );
 
   QVBoxLayout* main = new QVBoxLayout( mainFrame() );
-  main->setMargin( 5 );
+  main->setMargin( 0 );
   main->setSpacing( 5 );
   main->addWidget( myPrefs );
-
-  //  myPrefs->setParent( vbox );
-  //  myPrefs->move( QPoint( 0, 0 ) );
-  //  myPrefs->show();
 
   setFocusProxy( myPrefs );
   myPrefs->setFrameStyle( QFrame::Box | QFrame::Sunken );
@@ -88,7 +84,7 @@ void LightApp_PreferencesDlg::setVisible(bool visible)
     myPrefs->retrieve();
     myPrefs->toBackup();
   }
-  
+
   QtxDialog::setVisible(visible);
 }
 
@@ -118,13 +114,13 @@ void LightApp_PreferencesDlg::onHelp()
 void LightApp_PreferencesDlg::onApply()
 {
   myPrefs->store();
-  
+
   // Fix for Bug PAL11197: Restoring the corrected values from resource manager.
   // (Correcting in VisuGUI.cxx and SMESHGUI.cxx in methods
   // ::preferencesChanged( const QString& sect, const QString& name ))
   myPrefs->retrieve();
   //
-  
+
   myPrefs->toBackup();
   mySaved = true;
 }
@@ -132,17 +128,17 @@ void LightApp_PreferencesDlg::onApply()
 /*! Restore default preferences*/
 void LightApp_PreferencesDlg::onDefault()
 {
-  if( SUIT_MessageBox::Ok == SUIT_MessageBox::question( this, tr( "WARNING" ), tr( "DEFAULT_QUESTION" ), 
+  if( SUIT_MessageBox::Ok == SUIT_MessageBox::question( this, tr( "WARNING" ), tr( "DEFAULT_QUESTION" ),
 							SUIT_MessageBox::Ok | SUIT_MessageBox::Cancel,
 							SUIT_MessageBox::Ok ) )
     {
       if ( myPrefs && myPrefs->resourceMgr() )
 	{
           bool prev = myPrefs->resourceMgr()->ignoreUserValues();
-	  myPrefs->resourceMgr()->setIgnoreUserValues( true ); 
+	  myPrefs->resourceMgr()->setIgnoreUserValues( true );
 	  myPrefs->retrieve();
           myPrefs->resourceMgr()->setIgnoreUserValues( prev );
-	}      
+	}
     }
 }
 
@@ -157,7 +153,7 @@ void LightApp_PreferencesDlg::onImportPref()
   dlg.setObjectName( "" );
   //dlg.setShowHiddenFiles( true );
   dlg.exec();
-  
+
   QStringList files = dlg.selectedFiles();
   if ( files.isEmpty() )
     return;

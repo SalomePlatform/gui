@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -89,6 +89,8 @@ public:
   virtual QtxResourceMgr*   resourceMgr() const;
   virtual QtxPreferenceMgr* preferenceMgr() const;
 
+  void                      ensureVisible();
+
   static int                RTTI();
 
 protected:
@@ -103,12 +105,14 @@ protected:
   void                      setDouble( const double );
   void                      setBoolean( const bool );
   void                      setColor( const QColor& );
-  void                      setFont( const QFont& );  
+  void                      setFont( const QFont& );
   void                      setString( const QString& );
 
   virtual void              itemAdded( QtxPreferenceItem* );
   virtual void              itemRemoved( QtxPreferenceItem* );
   virtual void              itemChanged( QtxPreferenceItem* );
+
+  virtual void              ensureVisible( QtxPreferenceItem* );
 
   void                      sendItemChanges();
 
@@ -163,7 +167,7 @@ protected:
 
   void                      setResourceValues( QMap<int, QString>& ) const;
   void                      setResourceValues( ResourceMap& ) const;
-  
+
   void                      differentValues( const QMap<int, QString>&, const QMap<int, QString>&,
                                              QMap<int, QString>&, const bool fromFirst = false ) const;
   void                      differentValues( const ResourceMap&, const ResourceMap&,

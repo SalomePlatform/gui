@@ -751,7 +751,7 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent( QMouseEvent* theEvent )
 	for ( it = mySketchers.begin(); it != mySketchers.end() && !sketcher; ++it )
 	{
 	  OCCViewer_ViewSketcher* sk = (*it);
-	  if( sk->isDefault() && sk->sketchButton() & ( aState & Qt::MouseButtonMask ) )
+	  if( sk->isDefault() && sk->sketchButton() == aButton )
 	    sketcher = sk;
 	}
 	if ( sketcher && myCurSketch == -1 )

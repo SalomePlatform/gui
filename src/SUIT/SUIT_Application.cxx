@@ -42,7 +42,7 @@ class StatusLabel : public QLabel
 {
 public:
   StatusLabel( QWidget* parent ) : QLabel( parent ) {}
-  QSize minimumSizeHint () const { return QSize( 0, 0 ); }
+  QSize minimumSizeHint () const { return QSize( 0, QLabel::minimumSizeHint().height() ); }
 };
 
 /*!

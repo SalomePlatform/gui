@@ -3144,12 +3144,11 @@ QtxWorkstackArea* QtxWorkstack::wgArea( QWidget* wid ) const
   QList<QtxWorkstackArea*> areaList;
   areas( mySplit, areaList, true );
 
-  QtxWorkstackArea* area;
   QList<QtxWorkstackArea*>::ConstIterator it;
   for ( it = areaList.begin(); it != areaList.end() && !resArea; ++it )
   {
     if ( (*it)->contains( wid ) )
-      resArea = area;
+      resArea = *it;
   }
 
   return resArea;

@@ -366,34 +366,6 @@ SPlot2d_Curve* SPlot2d_Viewer::getCurveByIO( const Handle(SALOME_InteractiveObje
 }
 
 /*!
-  SLOT: called when action "Clone view" is activated
-*/
-void SPlot2d_Viewer::onCloneView( Plot2d_ViewFrame* clonedVF, Plot2d_ViewFrame* newVF )
-{
-  // this code is moved on the level of base class
-  /*if( !clonedVF || !newVF )
-    return;
-
-  // 1) Copy all properties of view
-
-  newVF->copyPreferences( clonedVF );
-
-  // 2) Display all curves displayed in cloned view
-
-  CurveDict aCurves = clonedVF->getCurves();
-  CurveDict::Iterator anIt = aCurves.begin();
-  for( ; anIt != aCurves.end(); ++anIt )
-  {
-    SPlot2d_Curve* aCurve = dynamic_cast<SPlot2d_Curve*>( anIt.value() );
-    if( aCurve && clonedVF->isVisible( aCurve ) )
-      newVF->displayCurve( aCurve, false );
-  }
-  newVF->Repaint();*/
-  
-  Plot2d_Viewer::onCloneView( clonedVF, newVF );
-}
-
-/*!
   create SPlot2d_ViewWindow
 */
 SUIT_ViewWindow* SPlot2d_Viewer::createView( SUIT_Desktop* theDesktop )

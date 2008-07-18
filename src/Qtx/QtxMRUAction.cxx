@@ -456,12 +456,13 @@ void QtxMRUAction::updateMenu()
   QStringList links;
   QMap<QString, int> map;
   int count = visibleCount() < 0 ? myLinks.count() : visibleCount();
-  for ( QStringList::const_iterator it = myLinks.begin(); it != myLinks.end() && count > 0; ++it, count-- )
+  int i = insertMode() == AddLast || insertMode() == MoveLast ? qMax( 0, myLinks.count()-count ) : 0;
+  for ( ; i < myLinks.count() && count > 0; ++i, count-- )
   {
-    links.append( *it );
+    links.append( myLinks[i] );
     if ( linkType() == LinkAuto )
     {
-      QString shortName = Qtx::file( *it );
+      QString shortName = Qtx::file( myLinks[i] );
       if ( map.contains( shortName ) )
 	map[shortName]++;
       else
@@ -469,7 +470,7 @@ void QtxMRUAction::updateMenu()
     }
   }
 
-  int i = 1;
+  i = 1;
   for ( QStringList::const_iterator it = links.begin(); it != links.end(); ++it, i++ )
   {
     QString linkName;

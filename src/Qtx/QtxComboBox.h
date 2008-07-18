@@ -35,14 +35,15 @@ class QTX_EXPORT QtxComboBox : public QComboBox
 {
   Q_OBJECT
 
+  class Model;
+  class ClearEvent;
+
 public:
   QtxComboBox( QWidget* = 0 );
   virtual ~QtxComboBox();
 
   bool         isCleared() const;
   void         setCleared( const bool );
-
-  virtual void setCurrentIndex( int );
 
   int          currentId() const;
   void         setCurrentId( int );
@@ -55,18 +56,18 @@ public:
 
 signals:
   void         activatedId( int );
-  void         highlightedId( int );
 
 private slots:
   void         onActivated( int );
-  void         onActivated( const QString& );
+  void         onCurrentChanged( int );
 
 protected:
   virtual void paintEvent( QPaintEvent* );
+  virtual void childEvent( QChildEvent* );
+  virtual void customEvent( QEvent* );
 
 private:
   void         resetClear();
-  void         paintClear( QPaintEvent* );
 
 private:
   enum { IdRole = Qt::UserRole + 10 };

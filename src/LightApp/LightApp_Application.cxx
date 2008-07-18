@@ -1727,6 +1727,9 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   if ( !pref )
     return;
 
+  QStringList     aValuesList;
+  QList<QVariant> anIndicesList;
+
   int salomeCat = pref->addPreference( tr( "PREF_CATEGORY_SALOME" ) );
 
   int genTab = pref->addPreference( tr( "PREF_TAB_GENERAL" ), salomeCat );
@@ -1807,35 +1810,23 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   int legendPosition = pref->addPreference( tr( "PREF_LEGEND_POSITION" ), plot2dGroup,
 					    LightApp_Preferences::Selector, "Plot2d", "LegendPos" );
-  QStringList aLegendPosList;
-  aLegendPosList.append( tr("PREF_LEFT") );
-  aLegendPosList.append( tr("PREF_RIGHT") );
-  aLegendPosList.append( tr("PREF_TOP") );
-  aLegendPosList.append( tr("PREF_BOTTOM") );
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList   << tr("PREF_LEFT") << tr("PREF_RIGHT") << tr("PREF_TOP") << tr("PREF_BOTTOM");
+  anIndicesList << 0               << 1                << 2              << 3                ;
 
-  QList<QVariant> anIndexesList;
-  anIndexesList.append(0);
-  anIndexesList.append(1);
-  anIndexesList.append(2);
-  anIndexesList.append(3);
-
-  pref->setItemProperty( "strings", aLegendPosList, legendPosition );
-  pref->setItemProperty( "indexes", anIndexesList, legendPosition );
+  pref->setItemProperty( "strings", aValuesList,   legendPosition );
+  pref->setItemProperty( "indexes", anIndicesList, legendPosition );
 
   int curveType = pref->addPreference( tr( "PREF_CURVE_TYPE" ), plot2dGroup,
 				       LightApp_Preferences::Selector, "Plot2d", "CurveType" );
-  QStringList aCurveTypesList;
-  aCurveTypesList.append( tr("PREF_POINTS") );
-  aCurveTypesList.append( tr("PREF_LINES") );
-  aCurveTypesList.append( tr("PREF_SPLINE") );
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList   << tr("PREF_POINTS") << tr("PREF_LINES") << tr("PREF_SPLINE");
+  anIndicesList << 0                 << 1                << 2                ;
 
-  anIndexesList.clear();
-  anIndexesList.append(0);
-  anIndexesList.append(1);
-  anIndexesList.append(2);
-
-  pref->setItemProperty( "strings", aCurveTypesList, curveType );
-  pref->setItemProperty( "indexes", anIndexesList, curveType );
+  pref->setItemProperty( "strings", aValuesList,   curveType );
+  pref->setItemProperty( "indexes", anIndicesList, curveType );
 
   int markerSize = pref->addPreference( tr( "PREF_MARKER_SIZE" ), plot2dGroup,
 					LightApp_Preferences::IntSpin, "Plot2d", "MarkerSize" );
@@ -1843,25 +1834,22 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "min", 0, markerSize );
   pref->setItemProperty( "max", 100, markerSize );
 
-  QStringList aScaleModesList;
-  aScaleModesList.append( tr("PREF_LINEAR") );
-  aScaleModesList.append( tr("PREF_LOGARITHMIC") );
-
-  anIndexesList.clear();
-  anIndexesList.append(0);
-  anIndexesList.append(1);
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList   << tr("PREF_LINEAR") << tr("PREF_LOGARITHMIC");
+  anIndicesList << 0                 << 1                     ;
 
   int horScale = pref->addPreference( tr( "PREF_HOR_AXIS_SCALE" ), plot2dGroup,
 				      LightApp_Preferences::Selector, "Plot2d", "HorScaleMode" );
 
-  pref->setItemProperty( "strings", aScaleModesList, horScale );
-  pref->setItemProperty( "indexes", anIndexesList, horScale );
+  pref->setItemProperty( "strings", aValuesList,   horScale );
+  pref->setItemProperty( "indexes", anIndicesList, horScale );
 
   int verScale = pref->addPreference( tr( "PREF_VERT_AXIS_SCALE" ), plot2dGroup,
 				      LightApp_Preferences::Selector, "Plot2d", "VerScaleMode" );
 
-  pref->setItemProperty( "strings", aScaleModesList, verScale );
-  pref->setItemProperty( "indexes", anIndexesList, verScale );
+  pref->setItemProperty( "strings", aValuesList,   verScale );
+  pref->setItemProperty( "indexes", anIndicesList, verScale );
 
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), plot2dGroup,
 		       LightApp_Preferences::Color, "Plot2d", "Background" );
@@ -1892,6 +1880,22 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 		       "ObjectBrowser", "auto_size" );
   pref->addPreference( tr( "PREF_RESIZE_ON_EXPAND_ITEM" ), objSetGroup, LightApp_Preferences::Bool,
 		       "ObjectBrowser", "resize_on_expand_item" );
+
+  // MRU preferences
+  int mruGroup = pref->addPreference( tr( "PREF_GROUP_MRU" ), genTab, LightApp_Preferences::Auto, "MRU", "show_mru" );
+  pref->setItemProperty( "columns", 4, mruGroup );
+  int mruVisCount = pref->addPreference( tr( "PREF_MRU_VISIBLE_COUNT" ), mruGroup, LightApp_Preferences::IntSpin,
+					 "MRU", "visible_count" );
+  pref->setItemProperty( "min", 0,   mruVisCount );
+  pref->setItemProperty( "max", 100, mruVisCount );
+  int mruLinkType = pref->addPreference( tr( "PREF_MRU_LINK_TYPE" ), mruGroup, LightApp_Preferences::Selector,
+					 "MRU", "link_type" );
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList   << tr("PREF_MRU_LINK_AUTO") << tr("PREF_MRU_LINK_SHORT") << tr("PREF_MRU_LINK_FULL");
+  anIndicesList << 0                        << 1                         << 2                       ;
+  pref->setItemProperty( "strings", aValuesList,   mruLinkType );
+  pref->setItemProperty( "indexes", anIndicesList, mruLinkType );
 
   // theme values
   Style_Model* aSModel = 0;
@@ -1944,11 +1948,11 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
         aSModel->getValueTo( aResMgr, aPropId, true );//set default values into resource
         if ( aPType == LightApp_Preferences::Selector )
 	{
-          QStringList lst;
-          QList<QVariant> ids;
-          aSModel->getSelector( aPropId, lst, ids );
-          pref->setItemProperty( "strings", lst, aPrefId );
-          pref->setItemProperty( "indexes", ids, aPrefId );
+	  aValuesList.clear();
+	  anIndicesList.clear();
+          aSModel->getSelector( aPropId, aValuesList, anIndicesList );
+          pref->setItemProperty( "strings", aValuesList,   aPrefId );
+          pref->setItemProperty( "indexes", anIndicesList, aPrefId );
         }
       }
     }
@@ -2096,6 +2100,25 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
     }
   }
 
+  if( sec=="MRU" )
+  {
+    QtxMRUAction* mru = ::qobject_cast<QtxMRUAction*>( action( MRUId ) );
+    if ( mru ) {
+      if ( param == "visible_count" )
+	mru->setVisibleCount( resMgr->integerValue( "MRU", "visible_count", 5 ) );    // 5 MRU items by default
+      else if ( param == "max_count" )
+	mru->setHistoryCount( resMgr->integerValue( "MRU", "max_count", -1 ) );       // unlimited history by default
+      else if ( param == "insert_mode" )
+	mru->setInsertMode( resMgr->integerValue( "MRU", "insert_mode", 0 ) );        // QtxMRUAction::MoveFirst by default
+      else if ( param == "link_type" )
+	mru->setLinkType( resMgr->integerValue( "MRU", "link_type", 0 ) );            // QtxMRUAction::LinkAuto by default
+      else if ( param == "show_clear" )
+	mru->setClearPossible( resMgr->booleanValue( "MRU", "show_clear", false ) );  // do not show "Clear" item by default
+      else if ( param == "show_mru" )
+	mru->setVisible( resMgr->booleanValue( "MRU", "show_mru", false ) );          // do not show MRU menu item by default
+    }
+  }
+
   if ( aSStyle ) {
     Style_Model* aSModel = aSStyle->getModel();
     if ( sec==aSModel->sectionName() ) {
@@ -2124,7 +2147,12 @@ void LightApp_Application::loadPreferences()
   {
     QtxMRUAction* mru = ::qobject_cast<QtxMRUAction*>( action( MRUId ) );
     if ( mru ) {
-      mru->setVisibleCount( aResMgr->integerValue( "MRU", "max_count", 5 ) );
+      mru->setVisible( aResMgr->booleanValue( "MRU", "show_mru", false ) );         // do not show MRU menu item by default
+      mru->setVisibleCount( aResMgr->integerValue( "MRU", "visible_count", 5 ) );   // 5 MRU items by default
+      mru->setHistoryCount( aResMgr->integerValue( "MRU", "max_count", -1 ) );      // unlimited history by default
+      mru->setInsertMode( aResMgr->integerValue( "MRU", "insert_mode", 0 ) );       // QtxMRUAction::MoveFirst by default
+      mru->setLinkType( aResMgr->integerValue( "MRU", "link_type", 0 ) );           // QtxMRUAction::LinkAuto by default
+      mru->setClearPossible( aResMgr->booleanValue( "MRU", "show_clear", false ) ); // do not show "Clear" item by default
       mru->loadLinks( aResMgr, "MRU" );
     }
     mru_load = false;

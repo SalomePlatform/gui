@@ -73,7 +73,7 @@ class OCCVIEWER_EXPORT OCCViewer_Viewer: public SUIT_ViewModel
 public:
   static QString Type() { return "OCCViewer"; }
 
-  OCCViewer_Viewer( bool DisplayTrihedron = true );
+  OCCViewer_Viewer( bool DisplayTrihedron = true, bool DisplayStaticTrihedron = true );
   virtual ~OCCViewer_Viewer();
 
   void update();

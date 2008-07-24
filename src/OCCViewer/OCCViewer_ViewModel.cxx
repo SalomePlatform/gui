@@ -55,7 +55,7 @@
   Constructor
   \param DisplayTrihedron - is trihedron displayed
 */
-OCCViewer_Viewer::OCCViewer_Viewer( bool DisplayTrihedron )
+OCCViewer_Viewer::OCCViewer_Viewer( bool DisplayTrihedron, bool DisplayStaticTrihedron )
 : SUIT_ViewModel(),
 myBgColor( Qt::black )
 {
@@ -109,6 +109,33 @@ myBgColor( Qt::black )
 
     myAISContext->Display(myTrihedron);
     myAISContext->Deactivate(myTrihedron);
+  }
+
+  /* create static trihedron (16551: EDF PAL 501) */
+  if( DisplayStaticTrihedron )
+  {
+    Handle(Geom_Axis2Placement) anAxis = new Geom_Axis2Placement(gp::XOY());
+    Handle(AIS_Trihedron) aStaticTrihedron = new AIS_Trihedron(anAxis);
+    aStaticTrihedron->SetInfiniteState( Standard_True );
+
+    Quantity_Color Col(193/255., 205/255., 193/255., Quantity_TOC_RGB);
+    aStaticTrihedron->SetArrowColor( Col.Name() );
+    aStaticTrihedron->SetSize(100);
+    Handle(AIS_Drawer) drawer = aStaticTrihedron->Attributes();
+    if (drawer->HasDatumAspect()) {
+      Handle(Prs3d_DatumAspect) daspect = drawer->DatumAspect();
+      daspect->FirstAxisAspect()->SetColor(Quantity_Color(1.0, 0.0, 0.0, Quantity_TOC_RGB));
+      daspect->FirstAxisAspect()->SetWidth(2);
+      daspect->SecondAxisAspect()->SetColor(Quantity_Color(0.0, 1.0, 0.0, Quantity_TOC_RGB));
+      daspect->SecondAxisAspect()->SetWidth(2);
+      daspect->ThirdAxisAspect()->SetColor(Quantity_Color(0.0, 0.0, 1.0, Quantity_TOC_RGB));
+      daspect->ThirdAxisAspect()->SetWidth(2);
+    }
+ 
+    myAISContext->Display(aStaticTrihedron);
+    myAISContext->Deactivate(aStaticTrihedron);
+
+    aStaticTrihedron->SetTransformPersistence(Graphic3d_TMF_TriedronPers, gp_Pnt( -1, -1, 200 ));
   }
 
   // selection

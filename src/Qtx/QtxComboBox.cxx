@@ -130,7 +130,6 @@ QtxComboBox::QtxComboBox( QWidget* parent )
   myCleared( false )
 {
   connect( this, SIGNAL( activated( int ) ),            this, SLOT( onActivated( int ) ) );
-  connect( this, SIGNAL( activated( const QString& ) ), this, SLOT( onActivated( const QString& ) ) );
   connect( this, SIGNAL( currentIndexChanged( int ) ),  this, SLOT( onCurrentChanged( int ) ) );
   setModel( new Model( this ) );
 }
@@ -205,9 +204,11 @@ void QtxComboBox::setId( const int index, const int id )
 void QtxComboBox::paintEvent( QPaintEvent* e )
 {
   Model* m = dynamic_cast<Model*>( model() );
-  m->setCleared( myCleared );
+  if ( m )
+    m->setCleared( myCleared );
   QComboBox::paintEvent( e );
-  m->setCleared( false );
+  if ( m )
+    m->setCleared( false );
 }
 
 /*!
@@ -216,7 +217,7 @@ void QtxComboBox::paintEvent( QPaintEvent* e )
 */
 void QtxComboBox::childEvent( QChildEvent* e )
 {
-  if ( e->added() || e->polished() && qobject_cast<QLineEdit*>( e->child() ) )
+  if ( ( e->added() || e->polished() ) && qobject_cast<QLineEdit*>( e->child() ) )
     QApplication::postEvent( this, new ClearEvent() );
 }
 

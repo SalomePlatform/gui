@@ -85,7 +85,8 @@ void QtxComboBox::Model::setCleared( const bool isClear )
 */
 QVariant QtxComboBox::Model::data( const QModelIndex& index, int role ) const
 {
-  return myCleared ? QVariant() : QStandardItemModel::data( index, role );
+  return ( myCleared && ( role == Qt::DisplayRole || role == Qt::DecorationRole ) ) ?
+    QVariant() : QStandardItemModel::data( index, role );
 }
 
 /*!

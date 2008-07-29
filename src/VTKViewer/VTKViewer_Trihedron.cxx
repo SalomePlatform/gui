@@ -80,8 +80,12 @@ void VTKViewer_UnScaledActor::Render(vtkRenderer *theRenderer)
     vtkFloatingPointType aLength = aDataSet->GetLength();
     vtkFloatingPointType aPrecision = 1.0E-3;
     vtkFloatingPointType anOldScale = GetScale()[0];
-    vtkFloatingPointType aScale = mySize*aWorldDiag/aWinDiag/aLength*sqrt(vtkFloatingPointType(aSize[0])/vtkFloatingPointType(aSize[1]));
-    if(aScale != 0.0 && fabs(aScale - anOldScale)/aScale > aPrecision){
+    vtkFloatingPointType aScale;
+    if (aSize[1] > aSize[0])
+      aScale = mySize*aWorldDiag/aWinDiag/aLength*sqrt(vtkFloatingPointType(aSize[0])/vtkFloatingPointType(aSize[1]));
+    else
+      aScale = mySize*aWorldDiag/aWinDiag/aLength*sqrt(vtkFloatingPointType(aSize[1])/vtkFloatingPointType(aSize[0]));
+    if(aScale != 0.0&& fabs(aScale - anOldScale)/aScale > aPrecision){
       SetScale(aScale);
     }
   }

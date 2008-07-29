@@ -398,6 +398,54 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>Can not open %1.
 File does not exist</translation>
     </message>
+    <message>
+        <source>PREF_GROUP_MRU</source>
+        <translation>Show MRU items</translation>
+    </message>
+    <message>
+        <source>PREF_MRU_VISIBLE_COUNT</source>
+        <translation>Number of MRU items</translation>
+    </message>
+    <message>
+        <source>PREF_MRU_INSERT_MODE</source>
+        <translation>Insert mode</translation>
+    </message>
+    <message>
+        <source>PREF_MRU_MOVE_FIRST</source>
+        <translation>Move to the beginning</translation>
+    </message>
+    <message>
+        <source>PREF_MRU_MOVE_LAST</source>
+        <translation>Move to the end</translation>
+    </message>
+    <message>
+        <source>PREF_MRU_ADD_FIRST</source>
+        <translation>Add to the beginning</translation>
+    </message>
+    <message>
+        <source>PREF_MRU_ADD_LAST</source>
+        <translation>Add to the end</translation>
+    </message>
+    <message>
+        <source>PREF_MRU_LINK_TYPE</source>
+        <translation>Link type</translation>
+    </message>
+    <message>
+        <source>PREF_MRU_LINK_AUTO</source>
+        <translation>Auto</translation>
+    </message>
+    <message>
+        <source>PREF_MRU_LINK_SHORT</source>
+        <translation>Short</translation>
+    </message>
+    <message>
+        <source>PREF_MRU_LINK_FULL</source>
+        <translation>Full</translation>
+    </message>
+    <message>
+        <source></source>
+        <translation></translation>
+    </message>
 </context>
 <context>
     <name>LightApp_Module</name>

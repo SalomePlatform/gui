@@ -38,9 +38,11 @@ salomeinclude_HEADERS= \
 	OCCViewer.h \
 	OCCViewer_ClippingDlg.h \
 	OCCViewer_AxialScaleDlg.h \
-	OCCViewer_SetRotationPointDlg.h
+	OCCViewer_SetRotationPointDlg.h \
+	OCCViewer_Trihedron.h
 
 dist_libOCCViewer_la_SOURCES= \
+	OCCViewer.cxx \
 	OCCViewer_AISSelector.cxx \
 	OCCViewer_ViewManager.cxx \
 	OCCViewer_ViewModel.cxx \
@@ -52,7 +54,8 @@ dist_libOCCViewer_la_SOURCES= \
 	OCCViewer_CreateRestoreViewDlg.cxx \
 	OCCViewer_SetRotationPointDlg.cxx \
 	OCCViewer_ClippingDlg.cxx \
-	OCCViewer_AxialScaleDlg.cxx
+	OCCViewer_AxialScaleDlg.cxx \
+	OCCViewer_Trihedron.cxx
 
 MOC_FILES= \
 	OCCViewer_AISSelector_moc.cxx \
@@ -99,5 +102,5 @@ nodist_salomeres_DATA = \
 libOCCViewer_la_CPPFLAGS=$(QT_INCLUDES) $(OGL_INCLUDES) $(CAS_CPPFLAGS) \
 	-I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 
-libOCCViewer_la_LDFLAGS=$(OGL_LIBS) $(QT_MT_LIBS) $(CAS_KERNEL) $(CAS_VIEWER)
+libOCCViewer_la_LDFLAGS=$(OGL_LIBS) $(QT_MT_LIBS) $(CAS_KERNEL) $(CAS_VIEWER) -lTKOpenGl
 libOCCViewer_la_LIBADD=../Qtx/libqtx.la ../SUIT/libsuit.la

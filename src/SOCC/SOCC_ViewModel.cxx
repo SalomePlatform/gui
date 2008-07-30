@@ -21,6 +21,8 @@
 #include "SOCC_Prs.h"
 #include "SOCC_ViewWindow.h"
 
+#include "OCCViewer_Trihedron.h"
+
 #include "SUIT_Session.h"
 #include "SUIT_ResourceMgr.h"
 //#include "SUIT_Application.h"
@@ -502,7 +504,8 @@ void SOCC_Viewer::EraseAll( const bool forced )
   ic->DisplayedObjects( aList );
   AIS_ListIteratorOfListOfInteractive anIter( aList );
   for ( ; anIter.More(); anIter.Next() ) {
-    if ( isTrihedronDisplayed && anIter.Value()->DynamicType() == STANDARD_TYPE( AIS_Trihedron ) )
+    if ( isTrihedronDisplayed && anIter.Value()->DynamicType() == STANDARD_TYPE( AIS_Trihedron ) ||
+	 anIter.Value()->DynamicType() == STANDARD_TYPE( OCCViewer_Trihedron ))
       continue;
 
     // erase an object

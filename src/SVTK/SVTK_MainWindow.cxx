@@ -57,6 +57,7 @@
 
 #include <vtkGenericRenderWindowInteractor.h>
 #include <vtkRenderer.h>
+#include <vtkRenderWindow.h>
 
 /*!
   Constructor
@@ -930,8 +931,19 @@ QImage
 SVTK_MainWindow
 ::dumpView()
 {
-  QPixmap px = QPixmap::grabWindow( GetInteractor()->winId() );
-  return px.toImage();
+  vtkRenderWindow* aWindow = GetInteractor()->getRenderWindow();
+  int* aSize = aWindow->GetSize();
+  int aWidth = aSize[0];
+  int aHeight = aSize[1];
+  
+  unsigned char *aData = 
+    aWindow->GetRGBACharPixelData( 0, 0, aWidth-1, aHeight-1, 0 );
+  
+  QImage anImage( aData, aWidth, aHeight, QImage::Format_ARGB32 );
+
+  anImage = anImage.rgbSwapped();
+  anImage = anImage.mirrored();
+  return anImage;
 }
 
 /*!

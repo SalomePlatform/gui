@@ -34,6 +34,18 @@ this operation will be carried out automatically.</li>
 <li>If you toggle <b>Automatic renumbering</b> checkbox, the exported
 mesh will be renumbered automatically</li>
 </ul>
+<li><b>Mesh computation</b></li>
+<ul>
+<li><b>Show a computation result notification</b> combobox allows to
+select the notification mode about a mesh computation result.
+There are 3 possible modes:</li>
+<ul>
+<li><b>Never</b> - do not show the result dialog at all;</li>
+<li><b>Errors only</b> - the result dialog will be shown if there were
+some errors during a mesh computation;</li>
+<li><b>Always</b> - show the result dialog after each mesh
+computation. This is a default mode.</li>
+</ul>
 </ul>
 
 <h2>Mesh Preferences</h2>

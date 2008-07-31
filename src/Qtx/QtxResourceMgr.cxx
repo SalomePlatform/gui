@@ -20,20 +20,18 @@
 // Author:    Alexander SOLOVYOV, Sergey TELKOV
 
 #include "QtxResourceMgr.h"
+#include "QtxTranslator.h"
 
 #include <QDir>
 #include <QFile>
 #include <QRegExp>
 #include <QTextStream>
-#include <QTranslator>
 #include <QApplication>
 #ifndef QT_NO_DOM
 #include <QDomDocument>
 #include <QDomElement>
 #include <QDomNode>
 #endif
-
-#define EMULATE_GLOBAL_CONTEXT
 
 #include <stdlib.h>
 
@@ -387,47 +385,9 @@ QPixmap QtxResourceMgr::Resources::loadPixmap( const QString& sect, const QStrin
 */
 QTranslator* QtxResourceMgr::Resources::loadTranslator( const QString& sect, const QString& prefix, const QString& name ) const
 {
-  QTranslator* trans = new QTranslator( 0 );
+  QTranslator* trans = new QtxTranslator( 0 );
   QString fname = fileName( sect, prefix, name );
-#ifdef EMULATE_GLOBAL_CONTEXT
-  char* buf = 0;
-  QFile file( fname );
-  int len = file.size();
-  if ( len )
-  {
-    buf = new char[len];
-    if ( !file.open( QIODevice::ReadOnly ) || len != (int)file.read( buf, len ) )
-    {
-      delete buf;
-      buf = 0;
-    }
-    file.close();
-  }
-  if ( buf )
-  {
-    char* pattern = "@default";
-    size_t pl = strlen( pattern );
-    for ( size_t i = 0; i < len - pl; i++ )
-    {
-      char* cur = buf + i;
-      if ( !strncmp( cur, pattern, pl ) )
-      {
-        *cur = '\0';
-        i += pl - 1;
-      }
-    }
-
-    if ( !trans->load( (uchar*)buf, len ) )
-    {
-      delete buf;
-      buf = 0;
-    }
-  }
-
-  if ( !buf )
-#else
   if ( !trans->load( Qtx::file( fname, false ), Qtx::dir( fname ) ) )
-#endif
   {
     delete trans;
     trans = 0;

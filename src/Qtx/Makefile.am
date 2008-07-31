@@ -64,6 +64,7 @@ salomeinclude_HEADERS=		\
 	QtxSplash.h		\
 	QtxToolBar.h		\
 	QtxToolTip.h		\
+	QtxTranslator.h		\
 	QtxValidator.h		\
 	QtxWorkspace.h		\
 	QtxWorkspaceAction.h	\
@@ -117,6 +118,7 @@ dist_libqtx_la_SOURCES=		\
 	QtxSplash.cxx		\
 	QtxToolBar.cxx		\
 	QtxToolTip.cxx		\
+	QtxTranslator.cxx	\
 	QtxValidator.cxx	\
 	QtxWorkspace.cxx	\
 	QtxWorkspaceAction.cxx	\

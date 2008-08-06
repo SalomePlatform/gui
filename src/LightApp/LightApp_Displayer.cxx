@@ -56,12 +56,11 @@ LightApp_Displayer::~LightApp_Displayer()
 */
 void LightApp_Displayer::Display( const QString& entry, const bool updateViewer, SALOME_View* theViewFrame )
 {
-  SALOME_View* vf = theViewFrame ? theViewFrame : GetActiveView();
-  if ( vf )
+  SALOME_Prs* prs = buildPresentation( entry, theViewFrame );
+  if ( prs )
   {
-    SALOME_Prs* prs = buildPresentation( entry, vf );
-
-    if ( prs )
+    SALOME_View* vf = theViewFrame ? theViewFrame : GetActiveView();
+    if ( vf )
     {
       vf->BeforeDisplay( this );
       vf->Display( prs );

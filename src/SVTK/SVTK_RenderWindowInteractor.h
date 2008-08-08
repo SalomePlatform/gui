@@ -122,7 +122,7 @@ class SVTK_EXPORT QVTK_RenderWindowInteractor: public QWidget
 
   //! To handle native events (from such devices as SpaceMouse)
 #ifdef WIN32
-  virtual bool winEvent( MSG* );
+  virtual bool winEvent( MSG*, long* );
 #else
   virtual bool x11Event( XEvent *e );
 #endif

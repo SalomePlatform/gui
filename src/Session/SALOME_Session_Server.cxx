@@ -65,6 +65,8 @@
 #include <SUIT_ResourceMgr.h>
 #include <SUIT_ExceptionHandler.h>
 
+#include <Standard_Version.hxx>
+
 /*! - read arguments, define list of server to launch with their arguments.
  * - wait for naming service
  * - create and run a thread for launch of all servers

@@ -69,7 +69,7 @@ public:
   CORBA::Long GetActiveStudyId();
 
   void ping(){};
-  CORBA::Long getPID() { return (CORBA::Long)getpid(); };
+  CORBA::Long getPID();
 
   //! Restors a visual state of the study at theSavePoint
   bool restoreVisualState(CORBA::Long theSavePoint);

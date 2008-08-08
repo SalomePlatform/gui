@@ -67,6 +67,10 @@
 
 static QEvent* l_mbPressEvent = 0;
 
+#ifdef WIN32
+# include <QWindowsStyle>
+#endif
+
 const char* imageZoomCursor[] = {
 "32 32 3 1",
 ". c None",
@@ -888,6 +892,9 @@ void OCCViewer_ViewWindow::drawRect()
 {
   if ( !myRectBand ) {
     myRectBand = new QRubberBand( QRubberBand::Rectangle, myViewPort );
+#ifdef WIN32
+    myRectBand->setStyle(new QWindowsStyle);
+#endif
     QPalette palette;
     palette.setColor(myRectBand->foregroundRole(), Qt::white);
     myRectBand->setPalette(palette);

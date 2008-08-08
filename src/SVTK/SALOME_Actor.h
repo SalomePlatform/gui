@@ -54,8 +54,8 @@ class SVTK_Actor;
 class SVTK_RectPicker;
 class SVTK_InteractorStyle;
 
-extern int SALOME_POINT_SIZE;
-extern int SALOME_LINE_WIDTH;
+SVTK_EXPORT extern int SALOME_POINT_SIZE;
+SVTK_EXPORT extern int SALOME_LINE_WIDTH;
 
 #ifdef WIN32
 #pragma warning ( disable:4251 )

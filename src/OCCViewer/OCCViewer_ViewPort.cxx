@@ -34,11 +34,11 @@
 #include <QColorDialog>
 #include <QColormap>
 #include <QCoreApplication>
-#include <QX11Info>
 
 #include <stdlib.h>
 
 #if !defined WNT
+#include <QX11Info>
 #include <GL/glx.h>
 #include <X11/Xlib.h>
 #include <X11/Xutil.h>

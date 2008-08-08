@@ -34,17 +34,20 @@
 #include "SALOME_Event.h"
 
 #include "SUIT_Session.h"
-//#include "SUIT_Application.h"
 #include "SUIT_Desktop.h"
 #include "SUIT_Study.h"
 
-//#include <QApplication>
 #include <QMutex>
 #include <QWaitCondition>
 
 // Open CASCADE Includes
 #include <OSD_SharedLibrary.hxx>
 #include <OSD_Function.hxx>
+
+#ifdef WNT
+# include <process.h>
+#endif
+
 
 using namespace std;
 
@@ -201,6 +204,15 @@ CORBA::Long SALOME_Session_i::GetActiveStudyId()
       aStudyId = SUIT_Session::session()->activeApplication()->activeStudy()->id();
   }
   return aStudyId;
+}
+
+CORBA::Long SALOME_Session_i::getPID() {
+  return (CORBA::Long)
+#ifndef WNT
+    getpid();
+#else
+    _getpid();
+#endif
 }
 
 bool SALOME_Session_i::restoreVisualState(CORBA::Long theSavePoint)

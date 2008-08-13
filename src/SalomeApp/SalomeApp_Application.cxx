@@ -636,10 +636,10 @@ class DumpStudyFileValidator : public SUIT_FileValidator
  public:
   DumpStudyFileValidator( QWidget* parent) : SUIT_FileValidator ( parent ) {};
   virtual ~DumpStudyFileValidator() {};
-  virtual bool canSave( const QString& file );
+  virtual bool canSave( const QString& file, bool permissions );
 };
 
-bool DumpStudyFileValidator::canSave(const QString& file)
+bool DumpStudyFileValidator::canSave(const QString& file, bool permissions)
 {
   QFileInfo fi( file );
   QString name = fi.fileName(); 
@@ -650,7 +650,7 @@ bool DumpStudyFileValidator::canSave(const QString& file)
 			       QObject::tr("WRN_FILE_NAME_BAD") );
     return false;
   }
-  return SUIT_FileValidator::canSave( file );
+  return SUIT_FileValidator::canSave( file, permissions);
 }
 
 /*!Private SLOT. On dump study.*/

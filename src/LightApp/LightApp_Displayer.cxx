@@ -236,7 +236,7 @@ bool LightApp_Displayer::canBeDisplayed( const QString& entry ) const
       if( SUIT_ViewManager* vman = sApp->activeViewManager() )
 	if( SUIT_ViewModel* vmod = vman->getViewModel() )
 	  viewerType = vmod->getType();
-  return !viewerType.isNull() && canBeDisplayed( entry, viewerType );
+  return canBeDisplayed( entry, viewerType );
 }
 
 /*!

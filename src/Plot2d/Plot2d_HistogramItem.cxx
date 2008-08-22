@@ -437,7 +437,7 @@ void Plot2d_HistogramItem::drawRectAndLowers( QPainter* thePainter,
 {
   QRect aRect = theRect;
   // theRect has inversed coordinates on Y axis. The top of the rect is bottom in standard QRect coordinates, and it bottom is the top.
-  if ( m_bCrossed && theOr == Qt::Horizontal )
+  if ( m_bCrossed )//&& theOr == Qt::Horizontal )
     aRect.setTop( getCrossedTop( theRect ) );
 
   drawBar( thePainter, Qt::Horizontal, aRect );

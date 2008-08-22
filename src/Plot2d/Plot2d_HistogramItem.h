@@ -87,11 +87,11 @@ public:
   void         setCrossItems( const bool& theCross ) { m_bCrossed = theCross; }
   bool         isCrossItems() const { return m_bCrossed; }
 
-private:
+protected:
   void         drawRectAndLowers( QPainter* , Qt::Orientation, const QRect& ) const;
   int          getCrossedTop( const QRect& ) const;
 
-private:
+protected:
   QList<QRect> m_BarItems;
   bool         m_bCrossed;
 };

@@ -25,6 +25,7 @@
 #include "Qtx.h"
 
 #include <QDoubleSpinBox>
+#include <QValidator>
 
 class QTX_EXPORT QtxDoubleSpinBox : public QDoubleSpinBox
 {
@@ -38,7 +39,13 @@ public:
   bool            isCleared() const;
   virtual void    setCleared( const bool );
 
+  int             getPrecision() const ;
+  void            setPrecision( const int );
+
   virtual void    stepBy( int );
+
+  virtual double  valueFromText(const QString &text) const;
+  virtual QValidator::State validate( QString& str, int& pos ) const;
 
 private slots:
   virtual void    onTextChanged( const QString& );
@@ -50,6 +57,7 @@ protected:
 
 private:
   bool            myCleared;
+  int             myPrecision;
 };
 
 #endif

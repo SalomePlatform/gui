@@ -22,6 +22,7 @@
 #include "QtxDoubleSpinBox.h"
 
 #include <QLineEdit>
+#include <QDoubleValidator>
 
 /*!
   \class QtxDoubleSpinBox
@@ -57,10 +58,56 @@
 */
 QtxDoubleSpinBox::QtxDoubleSpinBox( QWidget* parent )
 : QDoubleSpinBox( parent ),
-  myCleared( false )
+  myCleared( false ),
+  myPrecision(0)
 {
   connect( lineEdit(), SIGNAL( textChanged( const QString& ) ), 
 	   this, SLOT( onTextChanged( const QString& ) ) );
+}
+
+QValidator::State QtxDoubleSpinBox::validate( QString& str, int& pos ) const
+{
+  if (myPrecision >= 0)
+    return QDoubleSpinBox::validate(str, pos);
+
+  QString pref = this->prefix();
+  QString suff = this->suffix();
+  uint overhead = pref.length() + suff.length();
+  QValidator::State state = QValidator::Invalid;
+
+  QDoubleValidator v (NULL);
+
+  if ( overhead == 0 )
+    state = v.validate( str, pos );
+  else
+    {
+      if ( str.length() >= overhead && str.startsWith( pref ) &&
+	   str.right( suff.length() ) == suff )
+	{
+	  QString core = str.mid( pref.length(), str.length() - overhead );
+	  int corePos = pos - pref.length();
+	  state = v.validate( core, corePos );
+	  pos = corePos + pref.length();
+	  str.replace( pref.length(), str.length() - overhead, core );
+	}
+      else
+	{
+	  state = v.validate( str, pos );
+	  if ( state == QValidator::Invalid )
+	    {
+	      QString special = this->specialValueText().trimmed();
+	      QString candidate = str.trimmed();
+	      if ( special.startsWith( candidate ) )
+		{
+		  if ( candidate.length() == special.length() )
+		    state = QValidator::Acceptable;
+		  else
+		    state = QValidator::Intermediate;
+		}
+	    }
+	}
+    }
+  return state;
 }
 
 /*!
@@ -77,7 +124,8 @@ QtxDoubleSpinBox::QtxDoubleSpinBox( QWidget* parent )
 */
 QtxDoubleSpinBox::QtxDoubleSpinBox( double min, double max, double step, QWidget* parent )
 : QDoubleSpinBox( parent ),
-  myCleared( false )
+  myCleared( false ),
+  myPrecision( 0 )
 {
   setMinimum( min );
   setMaximum( max );
@@ -116,14 +164,33 @@ void QtxDoubleSpinBox::setCleared( const bool on )
   setSpecialValueText( specialValueText() );
 }
 
-/*!
-  \brief Convert value to the text.
-  \param val value being converted
-  \return string containing the converted value
-*/
+void QtxDoubleSpinBox::setPrecision( const int prec )
+{
+  int newPrec = qMax( prec, 0 );
+  int oldPrec = qMax( myPrecision, 0 );
+  myPrecision = prec;
+  if ( newPrec != oldPrec )
+    update();
+}
+
+int QtxDoubleSpinBox::getPrecision() const
+{
+  return myPrecision;
+}
+
+double QtxDoubleSpinBox::valueFromText(const QString &text) const
+{
+  if (myPrecision < 0)
+    return text.toDouble();
+
+  return QDoubleSpinBox::valueFromText(text);
+}
+
 QString QtxDoubleSpinBox::textFromValue( double val ) const
 {
-  return removeTrailingZeroes( myCleared ? QString() : QDoubleSpinBox::textFromValue( val ) );
+  QString s;
+  s.setNum( val, myPrecision >= 0 ? 'f' : 'g', myPrecision == 0 ? 6 : qAbs( myPrecision ) );
+  return removeTrailingZeroes( s );
 }
 
 /*!

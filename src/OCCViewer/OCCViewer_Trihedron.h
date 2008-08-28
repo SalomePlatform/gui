@@ -25,13 +25,11 @@
 #include <Graphic3d_CBounds.hxx>
 #include <Standard_DefineHandle.hxx>
 
-#include <GL/gl.h>
-
 /*!
  * \class OCCViewer_Trihedron
  * The class for the presentation of the UserDraw object. 
 */
-class OCCVIEWER_EXPORT OCCViewer_Trihedron : public AIS_InteractiveObject
+class OCCViewer_Trihedron : public AIS_InteractiveObject
 {
 public:
   OCCViewer_Trihedron( const PrsMgr_TypeOfPresentation3d = PrsMgr_TOP_AllView );
@@ -51,7 +49,7 @@ public:
   DEFINE_STANDARD_RTTI( OCCViewer_Trihedron )
 
 private:
-  GLuint                 myTextList;
+  unsigned int           myTextList;
 };
 
 DEFINE_STANDARD_HANDLE( OCCViewer_Trihedron, AIS_InteractiveObject )

@@ -17,7 +17,14 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#include <OCCViewer_Trihedron.h>
+#ifdef WIN32
+#include <windows.h>
+#endif
+
+#include <GL/gl.h>
+
+#include "OCCViewer_Trihedron.h"
+
 
 #include <SUIT_ResourceMgr.h>
 #include <SUIT_Session.h>
@@ -29,9 +36,12 @@
 #include <Prs3d_Root.hxx>
 #include <PrsMgr_PresentationManager3d.hxx>
 
-#ifndef WNT
-#include <GL/glx.h>
+
+#ifndef WIN32
+# include <GL/glx.h>
 #endif
+
+
 
 #define PI   3.14159265359
 
@@ -103,7 +113,7 @@ GLuint generateTextList()
   GLuint aList = glGenLists( 256 );
 
 #ifdef WIN32
-  HGLRC hglrc = ::wglGetCurrentContext();
+  HGLRC hglrc = wglGetCurrentContext();
   if( hglrc )
   {
     HDC hdc = ::wglGetCurrentDC();

@@ -26,9 +26,11 @@
 
 #include <QObject>
 
+#ifndef DISABLE_OCCVIEWER
 #include <OCCViewer_ViewModel.h>
 
 class Handle_AIS_InteractiveObject;
+#endif
 
 /*!
   \class LightApp_OCCSelector
@@ -39,12 +41,18 @@ class LIGHTAPP_EXPORT LightApp_OCCSelector : public QObject, public SUIT_Selecto
   Q_OBJECT
 
 public:
+#ifndef DISABLE_OCCVIEWER
   LightApp_OCCSelector( OCCViewer_Viewer*, SUIT_SelectionMgr* );
+#else
+  LightApp_OCCSelector( SUIT_SelectionMgr* );
+#endif
   virtual ~LightApp_OCCSelector();
 
+#ifndef DISABLE_OCCVIEWER
   OCCViewer_Viewer* viewer() const;
 
   virtual QString   type() const { return OCCViewer_Viewer::Type(); }
+#endif
 
 private slots:
   virtual void      onSelectionChanged();
@@ -54,12 +62,16 @@ protected:
   virtual void      getSelection( SUIT_DataOwnerPtrList& ) const;
   virtual void      setSelection( const SUIT_DataOwnerPtrList& );
 
+#ifndef DISABLE_OCCVIEWER
   QString           entry( const Handle_AIS_InteractiveObject& ) const;
+#endif
 
   SUIT_DataOwnerPtrList mySelectedExternals;
 
 private:
+#ifndef DISABLE_OCCVIEWER
   OCCViewer_Viewer*     myViewer;
+#endif
 };
 
 #endif

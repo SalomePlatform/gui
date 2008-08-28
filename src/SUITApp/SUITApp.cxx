@@ -166,7 +166,7 @@ int main( int args, char* argv[] )
   PySys_SetArgv( args, argv );
 #endif
 
-  qInstallMsgHandler( MessageOutput );
+  //qInstallMsgHandler( MessageOutput );
 
   QStringList argList;
   bool noExceptHandling = false;

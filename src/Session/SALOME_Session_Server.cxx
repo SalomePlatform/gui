@@ -321,13 +321,6 @@ void shutdownServers( SALOME_NamingService* theNS )
 // ---------------------------- MAIN -----------------------
 int main( int argc, char **argv )
 {
-  bool temp = true;  
-  while(temp)
-  {
-    //INFOS( "Waiting for debug attach" );
-    cout << "Waiting for debug attach" << endl;
-  }
-
   // Install Qt debug messages handler
   qInstallMsgHandler( MessageOutput );
   

@@ -16,38 +16,24 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#if !defined ( _PYTHONCONSOLE_H )
-#define _PYTHONCONSOLE_H
+// File   : PyConsole.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
+
+#if !defined ( PYCONSOLE_H )
+#define PYCONSOLE_H
 
 // ========================================================
 // set dllexport type for Win platform 
 #ifdef WIN32
-
-#ifdef PYCONSOLE_EXPORTS
-#define PYCONSOLE_EXPORT __declspec(dllexport)
-#else
-#define PYCONSOLE_EXPORT __declspec(dllimport)
-#endif
-
+#  ifdef PYCONSOLE_EXPORTS
+#    define PYCONSOLE_EXPORT __declspec(dllexport)
+#  else
+#    define PYCONSOLE_EXPORT __declspec(dllimport)
+#  endif
 #else   // WIN32
-
-#define PYCONSOLE_EXPORT
-
+#  define PYCONSOLE_EXPORT
 #endif  // WIN32
-
-// ========================================================
-// little trick - we do not have debug python libraries
-#ifdef _DEBUG
-
-#undef _DEBUG
-//#include <Python.h>
-#define _DEBUG
-
-#else  // _DEBUG
-
-//#include <Python.h>
-
-#endif // _DEBUG
 
 // ========================================================
 // avoid warning messages
@@ -56,4 +42,4 @@
 #pragma warning (disable : 4251)
 #endif
 
-#endif // _PYTHONCONSOLE_H
+#endif // PYCONSOLE_H

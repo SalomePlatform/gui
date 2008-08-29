@@ -16,14 +16,18 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifndef _PYINTERP_WATCHER_H_
-#define _PYINTERP_WATCHER_H_
+//  File   : PyInterp_Watcher.h
+//  Author : Sergey Anikin, OCC
+//  Module : SALOME
 
-#include "PyInterp.h"
+#ifndef PYINTERP_WATCHER_H
+#define PYINTERP_WATCHER_H
+
+#include "PyInterp.h"   // !!! WARNING !!! THIS INCLUDE MUST BE THE VERY FIRST !!!
 
 #include "PyInterp_Dispatcher.h"
 
-#include <QtCore/qobject.h>
+#include <QObject>
 
 // Private class that keeps track of destructions of request listeners
 class PYINTERP_EXPORT PyInterp_Watcher : public QObject
@@ -38,4 +42,4 @@ public slots:
   void onDestroyed( QObject* o ) { PyInterp_Dispatcher::Get()->objectDestroyed( o ); }
 };
 
-#endif // _PYINTERP_WATCHER_H_
+#endif // PYINTERP_WATCHER_H

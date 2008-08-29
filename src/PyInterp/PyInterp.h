@@ -16,38 +16,40 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#if !defined ( _PYINTERP_H )
-#define _PYINTERP_H
+// File   : PyInterp.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
+
+#if !defined ( PYINTERP_H )
+#define PYINTERP_H
 
 // ========================================================
 // set dllexport type for Win platform 
 #ifdef WIN32
-
-#ifdef PYINTERP_EXPORTS
-#define PYINTERP_EXPORT __declspec(dllexport)
-#else
-#define PYINTERP_EXPORT __declspec(dllimport)
-#endif
-
+# ifdef PYINTERP_EXPORTS
+#  define PYINTERP_EXPORT __declspec(dllexport)
+# else
+#  define PYINTERP_EXPORT __declspec(dllimport)
+# endif
 #else   // WIN32
-
-#define PYINTERP_EXPORT
-
+# define PYINTERP_EXPORT
 #endif  // WIN32
 
 // ========================================================
-// little trick - we do not have debug python libraries
+// little trick - if we do not have debug python libraries
 #ifdef _DEBUG
-
-#undef _DEBUG
-#include <Python.h>
-#define _DEBUG
-
-#else  // _DEBUG
+ #ifndef HAVE_DEBUG_PYTHON
+  #undef _DEBUG
+ #endif
+#endif
 
 #include <Python.h>
 
-#endif // _DEBUG
+#ifdef _DEBUG
+ #ifndef HAVE_DEBUG_PYTHON
+  #define _DEBUG
+ #endif
+#endif
 
 // ========================================================
 // avoid warning messages
@@ -56,4 +58,4 @@
 #pragma warning (disable : 4251)
 #endif
 
-#endif // _PYINTERP_H
+#endif // PYINTERP_H

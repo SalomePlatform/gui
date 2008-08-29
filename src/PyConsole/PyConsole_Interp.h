@@ -28,9 +28,9 @@
 
 #include "PyConsole.h"
 
-#include <PyInterp_base.h> // this include must be first (see PyInterp_base.h)!
+#include <PyInterp_Interp.h>   /// !!! WARNING !!! THIS INCLUDE MUST BE VERY FIRST !!!
 
-class PYCONSOLE_EXPORT PyConsole_Interp : public PyInterp_base
+class PYCONSOLE_EXPORT PyConsole_Interp : public PyInterp_Interp
 {
 public:
   PyConsole_Interp();
@@ -41,4 +41,4 @@ protected:
   virtual bool initContext();  
 };
 
-#endif
+#endif // PYCONSOLE_INTERP_H

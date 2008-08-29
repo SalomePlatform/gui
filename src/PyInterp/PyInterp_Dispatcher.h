@@ -16,27 +16,23 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  SALOME SALOMEGUI : implementation of desktop and GUI kernel
-//
 //  File   : PyInterp_Dispatcher.h
 //  Author : Sergey Anikin, OCC
 //  Module : SALOME
 
-#ifndef _PYINTERP_DISPATCHER_H_
-#define _PYINTERP_DISPATCHER_H_
+#ifndef PYINTERP_DISPATCHER_H
+#define PYINTERP_DISPATCHER_H
 
-#include "PyInterp.h"
+#include "PyInterp.h"   // !!! WARNING !!! THIS INCLUDE MUST BE THE VERY FIRST !!!
 
-#include <QtCore/qmutex.h>
-#include <QtCore/qthread.h>
-
-#include <QtGui/qevent.h>
-
-#include <list>
+#include <QMutex>
+#include <QThread>
+#include <QEvent>
+#include <QQueue>
 
 class QObject;
 
-class PyInterp_base;
+class PyInterp_Interp;
 class PyInterp_Watcher;
 class PyInterp_Dispatcher;
 
@@ -73,10 +69,11 @@ protected:
 
   virtual void    processEvent( QObject* );
 
-private:
-  void            process();
   QObject*        listener() const { return myListener; }
   void            setListener( QObject* );
+
+private:
+  void            process();
 
 private:
   QMutex          myMutex;
@@ -87,16 +84,16 @@ private:
 class PYINTERP_EXPORT PyInterp_LockRequest : public PyInterp_Request
 {
 public:
-  PyInterp_LockRequest( PyInterp_base* interp, QObject* listener = 0, bool sync = false )
+  PyInterp_LockRequest( PyInterp_Interp* interp, QObject* listener = 0, bool sync = false )
     : PyInterp_Request( listener, sync ), myInterp( interp ) {}
 
 protected:
-  PyInterp_base*  getInterp() const { return myInterp; }
+  PyInterp_Interp*  getInterp() const { return myInterp; }
 
-  virtual void    safeExecute();
+  virtual void      safeExecute();
 
 private:
-  PyInterp_base*  myInterp;
+  PyInterp_Interp*  myInterp;
 };
 
 class PYINTERP_EXPORT PyInterp_Event : public QEvent
@@ -139,7 +136,7 @@ private:
 private:
   typedef PyInterp_Request*   RequestPtr;
 
-  std::list<RequestPtr>       myQueue;
+  QQueue<RequestPtr>          myQueue;
   QMutex                      myQueueMutex;
   PyInterp_Watcher*           myWatcher;
 
@@ -148,4 +145,4 @@ private:
   friend class PyInterp_Watcher;
 };
 
-#endif
+#endif // PYINTERP_DISPATCHER_H

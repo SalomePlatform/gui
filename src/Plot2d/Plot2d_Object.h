@@ -28,12 +28,12 @@
 #include <QList>
 #include <qwt_plot.h>
 
-typedef struct
+struct PLOT2D_EXPORT Plot2d_Point
 {
   double x;
   double y;
   QString text;
-} Plot2d_Point;
+};
 
 typedef QList<Plot2d_Point> pointList;
 

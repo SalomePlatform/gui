@@ -30,21 +30,32 @@
   \brief Python interpreter to be embedded to the SALOME study's GUI.
 
   Python interpreter is created one per SALOME study.
-  Calls initialize method defined in the base class, which calls redefined 
-  virtual methods initState() & initContext().
+
+  Call initialize method defined in the base class PyInterp_Interp,
+  to intialize interpreter after instance creation.
+
+  The method initialize() calls virtuals methods
+  - initPython()  to initialize global Python interpreter
+  - initState()   to initialize embedded interpreter state
+  - initContext() to initialize interpreter internal context
+  - initRun()     to prepare interpreter for running commands
 
   /EDF-CCAR/
   When SALOME uses multi Python interpreter feature, 
   every study has its own interpreter and thread state (_tstate = Py_NewInterpreter()).
-  This is fine because every study has its own modules (sys.modules) stdout and stderr.<br>
+  This is fine because every study has its own modules (sys.modules) stdout and stderr.
+
   <b>But</b> some Python modules must be imported only once. In multi interpreter 
   context Python modules (*.py) are imported several times.
-  For example, the pyqt module must be imported only once because 
+  For example, the PyQt module must be imported only once because 
   it registers classes in a C module.
+
   It's quite the same with omniorb modules (internals and generated with omniidl).
+
   This problem is handled with "shared modules" defined in salome_shared_modules.py.
   These "shared modules" are imported only once and only copied in all 
-  the other interpreters.<br>
+  the other interpreters.
+
   <b>But</b> it's not the only problem. Every interpreter has its own 
   __builtin__ module. That's fine but if we have copied some modules 
   and imported others problems may arise with operations that are not allowed
@@ -52,14 +63,12 @@
   have identical __builtin__ module.
 */
 
-using namespace std;
-
 /*!
   \brief Constructor.
 
   Creates new python interpreter.
 */
-PyConsole_Interp::PyConsole_Interp(): PyInterp_base()
+PyConsole_Interp::PyConsole_Interp(): PyInterp_Interp()
 {
 }
 
@@ -74,32 +83,15 @@ PyConsole_Interp::~PyConsole_Interp()
  
 /*!
   \brief Initialize internal Python interpreter state.
+  \return \c true on success
 */
 bool PyConsole_Interp::initState()
 {
   // The GIL is acquired and will be held on initState output
   // It is the caller responsability to release the lock if needed
-
-/* LLS
   PyEval_AcquireLock();
   _tstate = Py_NewInterpreter(); // create an interpreter and save current state
-  PySys_SetArgv(PyInterp_base::_argc,PyInterp_base::_argv); // initialize sys.argv
-*/
-
-  PyEval_AcquireLock();
-#ifdef WIN32 
-  _tstate = PyGILState_GetThisThreadState();
-  // if no thread state defined
-  if ( _tstate )
-    PyThreadState_Swap(_tstate);
-  else
-#endif
-  {
-    _tstate = Py_NewInterpreter(); // create an interpreter and save current state
-    PySys_SetArgv(PyInterp_base::_argc,PyInterp_base::_argv); // initialize sys.argv
-    //if(MYDEBUG) MESSAGE("PythonConsole_PyInterp::initState - this = "<<this<<"; _tstate = "<<_tstate);
-  }
-
+  PySys_SetArgv(PyInterp_Interp::_argc,PyInterp_Interp::_argv); // initialize sys.argv
   
   //If builtinmodule has been initialized all the sub interpreters
   // will have the same __builtin__ module
@@ -119,6 +111,8 @@ bool PyConsole_Interp::initState()
   The GIL is assumed to be held.
   It is the caller responsability caller to acquire the GIL.
   It will still be held on initContext() exit.
+
+  \return \c true on success
 */
 bool PyConsole_Interp::initContext()
 {

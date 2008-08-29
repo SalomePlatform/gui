@@ -19,28 +19,27 @@
 // 
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  File   : PyConsole_Editor.h
-//  Author : Vadim SANDLER
-//  Module : SALOME
+// File   : PyConsole_Editor.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #ifndef PYCONSOLE_EDITOR_H
 #define PYCONSOLE_EDITOR_H
 
-#include "PyConsole_Interp.h" // this include must be first (see PyInterp_base.h)!
+#include "PyConsole.h"
 
-#include <QtGui/qtextedit.h>
+#include <QTextEdit>
 
-class QMenu;
-class QEventLoop;
 class PyConsole_Interp;
 class PyInterp_Request;
+class QEventLoop;
 
 class PYCONSOLE_EXPORT PyConsole_Editor : public QTextEdit
 {
   Q_OBJECT;
 
 public:
-  PyConsole_Editor( PyInterp_base* theInterp, QWidget *theParent = 0 );
+  PyConsole_Editor( PyConsole_Interp* theInterp, QWidget *theParent = 0 );
   ~PyConsole_Editor();
   
   virtual void   addText( const QString& str, const bool newBlock = false ); 
@@ -59,26 +58,26 @@ protected:
   virtual void   customEvent( QEvent* event);
 
   virtual PyInterp_Request* createRequest( const QString& );
-  
+
 public slots:
   void           cut();
   void           paste();
   void           clear();
   void           handleReturn();
-  void           onPyInterpChanged( PyInterp_base* );
+  void           onPyInterpChanged( PyConsole_Interp* );
   
 private:
-  PyInterp_base* myInterp;           //!< python interpreter
+  PyConsole_Interp* myInterp;           //!< python interpreter
 
-  QString        myCommandBuffer;    //!< python comman buffer
-  QString        myCurrentCommand;   //!< currently being printed command
-  QString        myPrompt;           //!< current command line prompt
-  int            myCmdInHistory;     //!< current history command index
-  QStringList    myHistory;          //!< commands history buffer
-  QEventLoop*    myEventLoop;        //!< internal event loop
-  QString        myBanner;           //!< current banner
-  QStringList    myQueue;            //!< python commands queue
-  bool           myIsSync;
+  QString           myCommandBuffer;    //!< python comman buffer
+  QString           myCurrentCommand;   //!< currently being printed command
+  QString           myPrompt;           //!< current command line prompt
+  int               myCmdInHistory;     //!< current history command index
+  QStringList       myHistory;          //!< commands history buffer
+  QEventLoop*       myEventLoop;        //!< internal event loop
+  QString           myBanner;           //!< current banner
+  QStringList       myQueue;            //!< python commands queue
+  bool              myIsSync;           //!< synchronous mode flag
 };
 
-#endif
+#endif // PYCONSOLE_EDITOR_H

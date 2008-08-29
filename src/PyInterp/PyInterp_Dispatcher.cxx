@@ -16,20 +16,16 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  SALOME SALOMEGUI : implementation of desktop and GUI kernel
-//
 //  File   : PyInterp_Dispatcher.cxx
 //  Author : Sergey ANIKIN, OCC
 //  Module : GUI
-//  $Header$
 
-
-#include "PyInterp_base.h"
+#include "PyInterp_Dispatcher.h"   // !!! WARNING !!! THIS INCLUDE MUST BE THE VERY FIRST !!!
+#include "PyInterp_Interp.h"
 #include "PyInterp_Watcher.h"
-#include "PyInterp_Dispatcher.h"
 
-#include <QtCore/qobject.h>
-#include <QtCore/qcoreapplication.h>
+#include <QObject>
+#include <QCoreApplication>
 
 using namespace std;
 
@@ -126,8 +122,9 @@ PyInterp_Dispatcher::~PyInterp_Dispatcher()
   // Clear the request queue
   myQueueMutex.lock();
 
-  for ( std::list<PyInterp_Request*>::iterator it = myQueue.begin(); it != myQueue.end(); ++it )
-    PyInterp_Request::Destroy( *it );
+  QListIterator<RequestPtr> it( myQueue );
+  while ( it.hasNext() )
+    PyInterp_Request::Destroy( it.next() );
   myQueue.clear();
 
   myQueueMutex.unlock();
@@ -155,7 +152,7 @@ void PyInterp_Dispatcher::Exec( PyInterp_Request* theRequest )
   else // asynchronous processing
   {
     myQueueMutex.lock();
-    myQueue.push_back( theRequest );
+    myQueue.enqueue( theRequest );
     if ( theRequest->listener() )
       QObject::connect( theRequest->listener(), SIGNAL( destroyed( QObject* ) ), myWatcher, SLOT( onDestroyed( QObject* ) ) );
     myQueueMutex.unlock();  
@@ -175,7 +172,7 @@ void PyInterp_Dispatcher::run()
 
   while( myQueue.size() ) {
 //    MESSAGE("*** PyInterp_Dispatcher::run(): next request taken from the queue")
-    aRequest = myQueue.front();
+    aRequest = myQueue.head();
 
     // let other threads append their requests to the end of the queue
     myQueueMutex.unlock();
@@ -187,8 +184,8 @@ void PyInterp_Dispatcher::run()
     // prepare for removal of the first request in the queue
     myQueueMutex.lock();
     // IMPORTANT: the first item could have been removed by objectDestroyed() --> we have to check it
-    if ( myQueue.front() == aRequest ) // It's still here --> remove it
-      myQueue.pop_front();
+    if ( myQueue.head() == aRequest ) // It's still here --> remove it
+      myQueue.dequeue();
 
 //    MESSAGE("*** PyInterp_Dispatcher::run(): request processed")
   }
@@ -207,12 +204,14 @@ void PyInterp_Dispatcher::objectDestroyed( const QObject* o )
   // prepare for modification of the queue
   myQueueMutex.lock();
 
-  for ( std::list<RequestPtr>::iterator it = myQueue.begin(); it != myQueue.end(); ++it )
+  QMutableListIterator<RequestPtr> it( myQueue );
+  while ( it.hasNext() )
   {
-    if ( o == (*it)->listener() )
+    RequestPtr r = it.next();
+    if ( o == r->listener() )
     {
-      (*it)->setListener( 0 ); // to prevent event posting
-      it = myQueue.erase( it );
+      r->setListener( 0 ); // to prevent event posting
+      it.remove();
     }
   }
 

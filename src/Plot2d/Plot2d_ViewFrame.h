@@ -225,6 +225,7 @@ class Plot2d_Plot2d : public QwtPlot
   Q_OBJECT
 public:
   Plot2d_Plot2d( QWidget* parent );
+  virtual ~Plot2d_Plot2d() {};
 
   void       setLogScale( int axisId, bool log10 );
 

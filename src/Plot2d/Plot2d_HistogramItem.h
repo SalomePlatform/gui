@@ -66,7 +66,6 @@ protected:
 protected:
   void init();
 
-  class PrivateData;
   PrivateData* m_pData;
 };
 

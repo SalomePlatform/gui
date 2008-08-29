@@ -16,65 +16,69 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  File   : PythonConsole_PyConsole.h
-//  Author : Vadim SANDLER
-//  Module : SALOME
+// File   : PyConsole_Console.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #ifndef PYCONSOLE_CONSOLE_H
 #define PYCONSOLE_CONSOLE_H
 
 #include "PyConsole.h"
 
-#include <QtCore/qmap.h>
-#include <QtGui/qframe.h>
-
 #include <SUIT_PopupClient.h>
+#include <QWidget>
+#include <QMap>
 
-class PyInterp_base;
+class PyConsole_Interp;
 class PyConsole_Editor;
 
-class PYCONSOLE_EXPORT PythonConsole : public QFrame, public SUIT_PopupClient
+class PYCONSOLE_EXPORT PyConsole_Console : public QWidget, public SUIT_PopupClient
 {
   Q_OBJECT
 
 public:
+  //! Context popup menu actions flags
   enum
   {
-    CopyId = 0x01,
-    PasteId = 0x02,
-    ClearId = 0x04,
-    SelectAllId = 0x08,
-    All = CopyId | PasteId | ClearId | SelectAllId
+    CopyId      = 0x01,                            //!< "Copy" menu action
+    PasteId     = 0x02,                            //!< "Paste" menu action
+    ClearId     = 0x04,                            //!< "Clear" menu action
+    SelectAllId = 0x08,                            //!< "Select All" menu action
+    All = CopyId | PasteId | ClearId | SelectAllId //!< all menu actions
   };
 
 public:
-  PythonConsole( QWidget* parent, PyInterp_base* interp = 0 );
-  virtual ~PythonConsole();
+  PyConsole_Console( QWidget* parent, PyConsole_Interp* interp = 0 );
+  virtual ~PyConsole_Console();
 
   //! \brief Get python interperter
-  PyInterp_base* getInterp() { return myInterp; } 
-  QFont          font() const;
-  virtual void   setFont( const QFont& );
+  PyConsole_Interp*   getInterp() { return myInterp; } 
+  QFont               font() const;
+  virtual void        setFont( const QFont& );
 
-  bool           isSync() const;
-  void           setIsSync( const bool );
+  bool                isSync() const;
+  void                setIsSync( const bool );
 
-  void           exec( const QString& command );
-  void           execAndWait( const QString& command );
+  void                exec( const QString& );
+  void                execAndWait( const QString& );
 
-  virtual bool   eventFilter( QObject* o, QEvent* e );
+  virtual bool        eventFilter( QObject*, QEvent* );
 
-  virtual QString popupClientType() const { return QString( "PyConsole" ); }
-  virtual void    contextMenuPopup( QMenu* );
+  //! \brief Get popup client symbolic name
+  virtual QString     popupClientType() const { return QString( "PyConsole" ); }
+  virtual void        contextMenuPopup( QMenu* );
+
+  void                setMenuActions( const int );
+  int                 menuActions() const;
 
 private:
   void                createActions();
   void                updateActions();
 
 private:
-  PyInterp_base*      myInterp;    //!< python interpreter
+  PyConsole_Interp*   myInterp;    //!< python interpreter
   PyConsole_Editor*   myEditor;    //!< python console editor widget
-  QMap<int, QAction*> myActions;
+  QMap<int, QAction*> myActions;   //!< menu actions list
 };
 
-#endif
+#endif // PYCONSOLE_CONSOLE_H

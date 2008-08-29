@@ -19,9 +19,9 @@
 // 
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  File   : PyConsole_Editor.cxx
-//  Author : Vadim SANDLER
-//  Module : SALOME
+// File   : PyConsole_Editor.cxx
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 /*!
   \class PyConsole_Editor
@@ -92,32 +92,35 @@
   - the same for drag-n-drop of multiline text
 */
 
-#include "PyConsole_Editor.h" // this include must be first (see PyInterp_base.h)!
-
+#include "PyConsole_Interp.h"   // !!! WARNING !!! THIS INCLUDE MUST BE THE VERY FIRST !!!
+#include "PyConsole_Editor.h"
 #include <PyInterp_Dispatcher.h>
 
 #include <SUIT_Tools.h>
-#include <SUIT_Session.h>
 
-#include <QtGui/qmenu.h>
-#include <QtGui/qevent.h>
-#include <QtGui/qclipboard.h>
-#include <QtGui/qscrollbar.h>
-#include <QtGui/qtextobject.h>
-#include <QtGui/qtextcursor.h>
-#include <QtGui/qapplication.h>
-#include <QtGui/qtextdocument.h>
-
-using namespace std;
+#include <QApplication>
+#include <QClipboard>
+#include <QDropEvent>
+#include <QEvent>
+#include <QKeyEvent>
+#include <QMouseEvent>
+#include <QScrollBar>
+#include <QTextBlock>
+#include <QTextCursor>
+#include <QTextDocument>
 
 static QString READY_PROMPT = ">>> ";
 static QString DOTS_PROMPT  = "... ";
 #define PROMPT_SIZE myPrompt.length()
 
+#define PRINT_EVENT 65432
+
 /*!
   \class ExecCommand
-  \brief Python command execution request [internal].
- */
+  \brief Python command execution request.
+  \internal
+*/
+
 class ExecCommand : public PyInterp_LockRequest
 {
 public:
@@ -130,7 +133,7 @@ public:
     \param theListener widget to get the notification messages
     \param sync        if True the request is processed synchronously 
   */
-  ExecCommand( PyInterp_base*          theInterp, 
+  ExecCommand( PyInterp_Interp*        theInterp, 
 	       const QString&          theCommand,
 	       PyConsole_Editor*       theListener, 
 	       bool                    sync = false )
@@ -147,21 +150,12 @@ protected:
   {
     if ( myCommand != "" )
     {
-//      SUIT_Session::SetPythonExecuted( true ); // disable GUI user actions
       int ret = getInterp()->run( myCommand.toLatin1() );
-//      SUIT_Session::SetPythonExecuted(false); // enable GUI user actions
       if ( ret < 0 )
-	      myState = PyInterp_Event::ERROR;
+	myState = PyInterp_Event::ERROR;
       else if ( ret > 0 )
-	      myState = PyInterp_Event::INCOMPLETE;
-      myError  = getInterp()->getverr().c_str();
-      myOutput = getInterp()->getvout().c_str();
+	myState = PyInterp_Event::INCOMPLETE;
     } 
-    else
-    {
-      myError = "";
-      myOutput = "";
-    }
   }
 
   /*!
@@ -170,17 +164,44 @@ protected:
   */
   virtual QEvent* createEvent() const
   {
+    if ( IsSync() )
+      QCoreApplication::sendPostedEvents( listener(), PRINT_EVENT );
     return new PyInterp_Event( myState, (PyInterp_Request*)this );    
   }
-
-public:
-  QString myError;     //!< Python command error message
-  QString myOutput;    //!< Python command output log
 
 private:
   QString myCommand;   //!< Python command
   int     myState;     //!< Python command execution status
 };
+
+/*!
+  \class PrintEvent
+  \brief Python command output backend event.
+  \internal
+*/
+
+class PrintEvent : public QEvent
+{
+public:
+  /*!
+    \brief Constructor
+    \param c message text (python trace)
+  */
+  PrintEvent( const char* c ) : QEvent( (QEvent::Type)PRINT_EVENT ), myText( c ) {}
+  /*!
+    \brief Get message
+    \return message text (python trace)
+  */
+  QString text() const { return myText; }
+
+private:
+  QString myText; //!< Event message (python trace)
+};
+
+void staticCallback( void* data, char* c )
+{
+  QApplication::postEvent( (PyConsole_Editor*)data, new PrintEvent( c ) ); 
+}
 
 /*!
   \brief Constructor. 
@@ -189,8 +210,8 @@ private:
   \param theInterp python interper
   \param theParent parent widget
 */
-PyConsole_Editor::PyConsole_Editor( PyInterp_base* theInterp, 
-				    QWidget*       theParent )
+PyConsole_Editor::PyConsole_Editor( PyConsole_Interp* theInterp, 
+				    QWidget*          theParent )
 : QTextEdit( theParent ),
   myInterp( 0 ),
   myCmdInHistory( -1 ),
@@ -203,9 +224,12 @@ PyConsole_Editor::PyConsole_Editor( PyInterp_base* theInterp,
   setUndoRedoEnabled( false );
 
   myPrompt = READY_PROMPT;
-  setLineWrapMode( QTextEdit::NoWrap );
-  setWordWrapMode( QTextOption::NoWrap );
+  setLineWrapMode( QTextEdit::WidgetWidth );
+  setWordWrapMode( QTextOption::WrapAnywhere );
   setAcceptRichText( false );
+
+  theInterp->setvoutcb( staticCallback, this );
+  theInterp->setverrcb( staticCallback, this );
 
   // san - This is necessary for troubleless initialization
   onPyInterpChanged( theInterp );
@@ -220,14 +244,30 @@ PyConsole_Editor::~PyConsole_Editor()
 {
 }
 
+/*!
+  \brief Get synchronous mode flag value.
+  
+  \sa setIsSync()
+  \return True if python console works in synchronous mode
+*/
 bool PyConsole_Editor::isSync() const
 {
   return myIsSync;
 }
 
-void PyConsole_Editor::setIsSync( const bool s )
+/*!
+  \brief Set synchronous mode flag value.
+
+  In synhronous mode the Python commands are executed in the GUI thread
+  and the GUI is blocked until the command is finished. In the asynchronous
+  mode each Python command is executed in the separate thread that does not
+  block the main GUI loop.
+
+  \param on synhronous mode flag
+*/
+void PyConsole_Editor::setIsSync( const bool on )
 {
-  myIsSync = s;
+  myIsSync = on;
 }
 
 /*!
@@ -236,7 +276,7 @@ void PyConsole_Editor::setIsSync( const bool s )
   \param newBlock if True, then the string is printed on a new line
 */
 void PyConsole_Editor::addText( const QString& str, 
-				      const bool     newBlock )
+				const bool     newBlock )
 {
   moveCursor( QTextCursor::End );
   if ( newBlock )
@@ -288,14 +328,20 @@ void PyConsole_Editor::exec( const QString& command )
   PyInterp_Dispatcher::Get()->Exec( createRequest( cmd ) );
 }
 
-PyInterp_Request* PyConsole_Editor::createRequest( const QString& cmd )
+/*!
+  \brief Create request to the python dispatcher for the command execution.
+
+  \param command python command to be executed
+ */
+PyInterp_Request* PyConsole_Editor::createRequest( const QString& command )
 {
-  return new ExecCommand( myInterp, cmd, this, isSync() );
+  return new ExecCommand( myInterp, command, this, isSync() );
 }
 
 /*!
   \brief Execute command in the python interpreter
   and wait until it is finished.
+
   \param command python command to be executed
  */
 void PyConsole_Editor::execAndWait( const QString& command )
@@ -333,6 +379,9 @@ void PyConsole_Editor::handleReturn()
   // add command to the history
   if ( !cmd.trimmed().isEmpty() )
     myHistory.push_back( cmd );
+
+  // IPAL19397
+  addText( "", true ); 
   
   // set read-only mode
   setReadOnly( true );
@@ -566,7 +615,7 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
 	  moveCursor( QTextCursor::End );
 	  moveCursor( QTextCursor::StartOfBlock, QTextCursor::KeepAnchor );
 	  textCursor().removeSelectedText();
-	  addText( myPrompt + ( nextCommand != TOP_HISTORY_PY ? nextCommand : myCurrentCommand ) ); 
+	  addText( myPrompt + nextCommand );
 	  // move cursor to the end
 	  moveCursor( QTextCursor::End );
 	}
@@ -851,25 +900,24 @@ void PyConsole_Editor::customEvent( QEvent* event )
 {
   switch( event->type() )
   {
+  case PRINT_EVENT:
+    {
+      PrintEvent* pe=(PrintEvent*)event;
+      addText( pe->text() );
+      return;
+    }
   case PyInterp_Event::OK:
   case PyInterp_Event::ERROR:
   {
-    PyInterp_Event* pe = dynamic_cast<PyInterp_Event*>( event );
-    if ( pe )
-    {
-      ExecCommand* ec = dynamic_cast<ExecCommand*>( pe->GetRequest() );
-      if ( ec )
-      {
-	// The next line has appeared dangerous in case if
-	// Python command execution has produced very large output.
-	// A more clever approach is needed...
-	// print python output
-	addText( ec->myOutput, true );
-	addText( ec->myError );
-      }
-    }
     // clear command buffer
     myCommandBuffer.truncate( 0 );
+    // add caret return line if necessary
+    QTextBlock par = document()->end().previous();
+    QString txt = par.text();
+    txt.truncate( txt.length() - 1 );
+    // IPAL19397 : addText moved to handleReturn() method
+    //if ( !txt.isEmpty() )
+    //  addText( "", true );
     // set "ready" prompt
     myPrompt = READY_PROMPT;
     addText( myPrompt );
@@ -884,9 +932,16 @@ void PyConsole_Editor::customEvent( QEvent* event )
   {
     // extend command buffer (multi-line command)
     myCommandBuffer.append( "\n" );
+    // add caret return line if necessary
+    QTextBlock par = document()->end().previous();
+    QString txt = par.text();
+    txt.truncate( txt.length() - 1 );
+    // IPAL19397 : addText moved to handleReturn() method
+    //if ( !txt.isEmpty() )
+    //  addText( "", true );
     // set "dot" prompt
     myPrompt = DOTS_PROMPT;
-    addText( myPrompt, true );
+    addText( myPrompt/*, true*/ ); // IPAL19397
     // unset busy cursor
     unsetCursor();
     // stop event loop (if running)
@@ -918,7 +973,7 @@ void PyConsole_Editor::customEvent( QEvent* event )
   Perform initialization actions if the interpreter is changed.
   \param interp python interpreter is being set
 */
-void PyConsole_Editor::onPyInterpChanged( PyInterp_base* interp )
+void PyConsole_Editor::onPyInterpChanged( PyConsole_Interp* interp )
 {
   if ( myInterp != interp 
        // Force read-only state and wait cursor when myInterp is NULL

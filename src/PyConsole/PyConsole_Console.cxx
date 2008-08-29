@@ -16,30 +16,27 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  File   : PythonConsole_PyConcole.cxx
-//  Author : Vadim SANDLER
-//  Module : SALOME
+// File   : PyConsole_Console.cxx
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 /*!
-  \class PythonConsole
+  \class PyConsole_Console
   \brief Python console widget.
 */  
 
-#include <Python.h>
-
+#include "PyConsole_Interp.h"   /// !!! WARNING !!! THIS INCLUDE MUST BE VERY FIRST !!!
 #include "PyConsole_Console.h"
 #include "PyConsole_Editor.h"
 
-#include <PyInterp_base.h>
+#include <Qtx.h>
 
-#include <QtGui/qmenu.h>
-#include <QtGui/qevent.h>
-#include <QtGui/qaction.h>
-#include <QtGui/qlayout.h>
-#include <QtGui/qclipboard.h>
-#include <QtGui/qapplication.h>
-
-using namespace std;
+#include <QAction>
+#include <QApplication>
+#include <QClipboard>
+#include <QEvent>
+#include <QMenu>
+#include <QVBoxLayout>
 
 /*!
   \brief Constructor.
@@ -48,9 +45,9 @@ using namespace std;
   \param parent parent widget
   \param interp python interpreter
 */
-PythonConsole::PythonConsole( QWidget* parent, PyInterp_base* interp )
-: QFrame( parent ),
-myEditor( 0 )
+PyConsole_Console::PyConsole_Console( QWidget* parent, PyConsole_Interp* interp )
+: QWidget( parent ),
+  myEditor( 0 )
 {
   // create python interpreter
   myInterp = interp;
@@ -62,7 +59,7 @@ myEditor( 0 )
   
   // create editor console
   QVBoxLayout* lay = new QVBoxLayout( this );
-  lay->setMargin( 5 );
+  lay->setMargin( 0 );
   myEditor = new PyConsole_Editor( myInterp, this );
   myEditor->viewport()->installEventFilter( this );
   lay->addWidget( myEditor );
@@ -75,15 +72,15 @@ myEditor( 0 )
 
   Does nothing for the moment.
 */
-PythonConsole::~PythonConsole()
+PyConsole_Console::~PyConsole_Console()
 {
 }
 
 /*!
   \brief Execute python command in the interpreter.
-  \param command - string with command and arguments
+  \param command string with command and arguments
 */
-void PythonConsole::exec( const QString& command )
+void PyConsole_Console::exec( const QString& command )
 {
   if ( myEditor )
     myEditor->exec( command );
@@ -94,29 +91,45 @@ void PythonConsole::exec( const QString& command )
          and wait until it is finished.
   
   Block execution of main application until the python command is executed.
-  \param command - string with command and arguments
+  \param command string with command and arguments
 */
-void PythonConsole::execAndWait( const QString& command )
+void PyConsole_Console::execAndWait( const QString& command )
 {
   if ( myEditor )
     myEditor->execAndWait( command );
 }
 
-bool PythonConsole::isSync() const
+/*!
+  \brief Get synchronous mode flag value.
+  
+  \sa setIsSync()
+  \return True if python console works in synchronous mode
+*/
+bool PyConsole_Console::isSync() const
 {
   return myEditor->isSync();
 }
 
-void PythonConsole::setIsSync( const bool s )
+/*!
+  \brief Set synchronous mode flag value.
+
+  In synhronous mode the Python commands are executed in the GUI thread
+  and the GUI is blocked until the command is finished. In the asynchronous
+  mode each Python command is executed in the separate thread that does not
+  block the main GUI loop.
+
+  \param on synhronous mode flag
+*/
+void PyConsole_Console::setIsSync( const bool on )
 {
-  myEditor->setIsSync( s );
+  myEditor->setIsSync( on );
 }
 
 /*!
   \brief Change the python console's font.
-  \param f - new font
+  \param f new font
 */
-void PythonConsole::setFont( const QFont& f )
+void PyConsole_Console::setFont( const QFont& f )
 {
   if( myEditor )
     myEditor->setFont( f );
@@ -126,7 +139,7 @@ void PythonConsole::setFont( const QFont& f )
   \brief Get python console font.
   \return current python console's font
 */
-QFont PythonConsole::font() const
+QFont PyConsole_Console::font() const
 {
   QFont res;
   if( myEditor )
@@ -135,60 +148,112 @@ QFont PythonConsole::font() const
 }
 
 /*!
-  Custom event handler
+  \brief Event handler.
+
+  Handles context menu request event.
+
+  \param o object
+  \param e event
+  \return True if the event is processed and further processing should be stopped
 */
-bool PythonConsole::eventFilter( QObject* o, QEvent* e )
+bool PyConsole_Console::eventFilter( QObject* o, QEvent* e )
 {
   if ( o == myEditor->viewport() && e->type() == QEvent::ContextMenu )
   {
     contextMenuRequest( (QContextMenuEvent*)e );
     return true;
   }
-  return QFrame::eventFilter( o, e );
+  return QWidget::eventFilter( o, e );
 }
 
 /*!
-  \brief Process context popup menu event.
+  \brief Create the context popup menu.
 
-  Show popup menu which includes standard copy/paste operations.
-  \param event context menu event
+  Fill in the popup menu with the commands.
+
+  \param menu context popup menu
 */
-void PythonConsole::contextMenuPopup( QMenu* menu )
+void PyConsole_Console::contextMenuPopup( QMenu* menu )
 {
   if ( myEditor->isReadOnly() )
     return;
 
-  updateActions();
-
   menu->addAction( myActions[CopyId] );
   menu->addAction( myActions[PasteId] );
   menu->addAction( myActions[ClearId] );
-
   menu->addSeparator();
-
   menu->addAction( myActions[SelectAllId] );
+
+  Qtx::simplifySeparators( menu );
+
+  updateActions();
 }
 
-void PythonConsole::createActions()
+/*!
+  \brief Set actions to be visible in the context popup menu.
+  
+  Actions, which IDs are set in \a flags parameter, will be shown in the 
+  context popup menu. Other actions will not be shown.
+
+  \param flags ORed together actions flags
+*/
+void PyConsole_Console::setMenuActions( const int flags )
 {
-  QAction* copyAction = new QAction( tr( "EDIT_COPY_CMD" ), this );
-  connect( copyAction, SIGNAL( triggered( bool ) ), myEditor, SLOT( copy() ) );
-  myActions.insert( CopyId, copyAction );
-
-  QAction* pasteAction = new QAction( tr( "EDIT_PASTE_CMD" ), this );
-  connect( pasteAction, SIGNAL( triggered( bool ) ), myEditor, SLOT( paste() ) );
-  myActions.insert( PasteId, pasteAction );
-
-  QAction* clearAction = new QAction( tr( "EDIT_CLEAR_CMD" ), this );
-  connect( clearAction, SIGNAL( triggered( bool ) ), myEditor, SLOT( clear() ) );
-  myActions.insert( ClearId, clearAction );
-
-  QAction* selAllAction = new QAction( tr( "EDIT_SELECTALL_CMD" ), this );
-  connect( selAllAction, SIGNAL( triggered( bool ) ), myEditor, SLOT( selectAll() ) );
-  myActions.insert( SelectAllId, selAllAction );
+  myActions[CopyId]->setVisible( flags & CopyId );
+  myActions[PasteId]->setVisible( flags & PasteId );
+  myActions[ClearId]->setVisible( flags & ClearId );
+  myActions[SelectAllId]->setVisible( flags & SelectAllId );
 }
 
-void PythonConsole::updateActions()
+/*!
+  \brief Get menu actions which are currently visible in the context popup menu.
+  \return ORed together actions flags
+  \sa setMenuActions()
+*/
+int PyConsole_Console::menuActions() const
+{
+  int ret = 0;
+  ret = ret | ( myActions[CopyId]->isVisible() ? CopyId : 0 );
+  ret = ret | ( myActions[PasteId]->isVisible() ? PasteId : 0 );
+  ret = ret | ( myActions[ClearId]->isVisible() ? ClearId : 0 );
+  ret = ret | ( myActions[SelectAllId]->isVisible() ? SelectAllId : 0 );
+  return ret;
+}
+
+/*!
+  \brief Create menu actions.
+
+  Create context popup menu actions.
+*/
+void PyConsole_Console::createActions()
+{
+  QAction* a = new QAction( tr( "EDIT_COPY_CMD" ), this );
+  a->setStatusTip( tr( "EDIT_COPY_CMD" ) );
+  connect( a, SIGNAL( triggered( bool ) ), myEditor, SLOT( copy() ) );
+  myActions.insert( CopyId, a );
+
+  a = new QAction( tr( "EDIT_PASTE_CMD" ), this );
+  a->setStatusTip( tr( "EDIT_PASTE_CMD" ) );
+  connect( a, SIGNAL( triggered( bool ) ), myEditor, SLOT( paste() ) );
+  myActions.insert( PasteId, a );
+
+  a = new QAction( tr( "EDIT_CLEAR_CMD" ), this );
+  a->setStatusTip( tr( "EDIT_CLEAR_CMD" ) );
+  connect( a, SIGNAL( triggered( bool ) ), myEditor, SLOT( clear() ) );
+  myActions.insert( ClearId, a );
+
+  a = new QAction( tr( "EDIT_SELECTALL_CMD" ), this );
+  a->setStatusTip( tr( "EDIT_SELECTALL_CMD" ) );
+  connect( a, SIGNAL( triggered( bool ) ), myEditor, SLOT( selectAll() ) );
+  myActions.insert( SelectAllId, a );
+}
+
+/*!
+  \brief Update menu actions.
+
+  Update context popup menu action state.
+*/
+void PyConsole_Console::updateActions()
 {
   myActions[CopyId]->setEnabled( myEditor->textCursor().hasSelection() );
   myActions[PasteId]->setEnabled( !myEditor->isReadOnly() && !QApplication::clipboard()->text().isEmpty() );

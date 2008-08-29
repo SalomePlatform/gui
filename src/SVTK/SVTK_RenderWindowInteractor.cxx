@@ -37,7 +37,10 @@
 // QT Includes
 // Put Qt includes before the X11 includes which #define the symbol None
 // (see SVTK_SpaceMouse.h) to avoid the compilation error.
+#ifndef WIN32
 #include <QX11Info>
+#endif
+
 #include <QMouseEvent>
 
 #include "SVTK_SpaceMouse.h" 
@@ -414,10 +417,10 @@ QVTK_RenderWindowInteractor
 /*!
   To handle native Win32 events (from such devices as SpaceMouse)
 */
-bool QVTK_RenderWindowInteractor::winEvent( MSG* msg )
+bool QVTK_RenderWindowInteractor::winEvent( MSG* msg, long* result )
 {
   // TODO: Implement event handling for SpaceMouse
-  return QWidget::winEvent( msg );
+  return QWidget::winEvent( msg, result );
 }
 
 #else
@@ -435,7 +438,7 @@ QVTK_RenderWindowInteractor
     if ( aSpaceMouse->isSpaceMouseOn() && xEvent->type == ClientMessage )
     {
       SVTK_SpaceMouse::MoveEvent anEvent;
-      int type = aSpaceMouse->translateEvent( QX11Info::display(), xEvent, &anEvent, 1.0, 1.0 );
+	  int type = aSpaceMouse->translateEvent( QX11Info::display(), xEvent, &anEvent, 1.0, 1.0 );
       switch ( type )
       {
       case SVTK_SpaceMouse::SpaceMouseMove:

@@ -208,7 +208,7 @@ static void ChangeValues(vtkFloatingPointType* aArray1,
 #ifndef WIN32
     for(int i=0;i<2; i++){
 #else
-    for(i=0;i<2; i++){
+    for(int i=0;i<2; i++){
 #endif
       tmp = aRange1[i]; aRange1[i] = aRange2[i]; aRange2[i] = tmp;
     }

@@ -329,7 +329,7 @@ void TableViewer_ViewWindow::selectionChanged()
 {
   bool anEnable = myTable->getSelectedIndexes().count() > 0;
   myActionsMap[CopyId]->setEnabled( anEnable );
-  myActionsMap[PasteId]->setEnabled( anEnable & myCopyLst.count() > 0 );
+  myActionsMap[PasteId]->setEnabled( anEnable && myCopyLst.count() > 0 );
 }
 
 void TableViewer_ViewWindow::onActivated()

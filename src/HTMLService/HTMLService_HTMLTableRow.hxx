@@ -17,7 +17,7 @@
   Class HTMLService_HTMLTableRow. Generator of the HTML Table row text.
 */
 
-class HTMLSERVICE_EXPORT HTMLService_HTMLTableRow : public HTMLService_HTML
+class HTMLService_HTMLTableRow : public HTMLService_HTML
 {
 public:
   Standard_EXPORT HTMLService_HTMLTableRow( const Standard_Integer = 0 );

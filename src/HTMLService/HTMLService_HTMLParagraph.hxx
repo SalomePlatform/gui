@@ -13,7 +13,7 @@
   Class HTMLService_HTMLParagraph. Generator of the HTML paragraph text.
 */
 
-class HTMLSERVICE_EXPORT HTMLService_HTMLParagraph : public HTMLService_HTMLText
+class HTMLService_HTMLParagraph : public HTMLService_HTMLText
 {
 public:
   Standard_EXPORT HTMLService_HTMLParagraph();

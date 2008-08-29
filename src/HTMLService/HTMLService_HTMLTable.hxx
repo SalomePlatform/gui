@@ -19,7 +19,7 @@
   Class HTMLService_HTMLTable. Generator of the HTML Table text.
 */
 
-class HTMLSERVICE_EXPORT HTMLService_HTMLTable : public HTMLService_HTML
+class HTMLService_HTMLTable : public HTMLService_HTML
 {
 public:
   Standard_EXPORT HTMLService_HTMLTable( const Standard_Integer = 0, const Standard_Integer = 0 );

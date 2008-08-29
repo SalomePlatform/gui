@@ -15,7 +15,7 @@
   Class HTMLService_HTMLImage. Generator of the HTML image.
 */
 
-class HTMLSERVICE_EXPORT HTMLService_HTMLImage : public HTMLService_HTML
+class HTMLService_HTMLImage : public HTMLService_HTML
 {
 public:
   enum { SP_Unknown, SP_File, SP_HTTP, SP_FTP } SourceProtocol;

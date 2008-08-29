@@ -15,7 +15,7 @@
   Class HTMLService_HTMLTableCell. Generator of the HTML Table cell text.
 */
 
-class HTMLSERVICE_EXPORT HTMLService_HTMLTableCell : public HTMLService_HTMLParagraph
+class HTMLService_HTMLTableCell : public HTMLService_HTMLParagraph
 {
 public:
   Standard_EXPORT HTMLService_HTMLTableCell();

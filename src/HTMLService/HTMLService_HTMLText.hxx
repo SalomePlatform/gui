@@ -15,7 +15,7 @@
   Class HTMLService_HTMLText. Generator of the simple HTML text.
 */
 
-class HTMLSERVICE_EXPORT HTMLService_HTMLText : public HTMLService_HTML
+class HTMLService_HTMLText : public HTMLService_HTML
 {
 public:
   enum { Normal = 0x00, Bold = 0x01, Italic = 0x02, Underline = 0x04,

@@ -23,7 +23,7 @@ typedef NCollection_Sequence<TCollection_ExtendedString> SequenceOfHTMLLine;
   Class HTMLService_HTML. Base class for HTML generation.
 */
 
-class HTMLSERVICE_EXPORT HTMLService_HTML : public MMgt_TShared
+class HTMLService_HTML : public MMgt_TShared
 {
 public:
   enum { Left = 0x01, Right = 0x02, Center = 0x04,

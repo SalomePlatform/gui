@@ -1,4 +1,5 @@
-TEMPLATE = lib
+unix:TEMPLATE = lib
+win32:TEMPLATE = vclib
 
 DESTDIR = ../../$(CONFIG_ID)/lib
 MOC_DIR = ../../moc
@@ -31,7 +32,7 @@ win32:GUIResources = ..\\..\\resources
 
 lrelease.name = LRELASE ${QMAKE_FILE_IN}
 unix:lrelease.commands = $(QTDIR)/bin/lrelease ${QMAKE_FILE_NAME} -qm $${GUIResources}/${QMAKE_FILE_BASE}.qm
-win32:lrelease.commands = $(QTDIR)\\bin\\lrelease ${QMAKE_FILE_NAME} -qm $${GUIResources}\\${QMAKE_FILE_BASE}.qm
+win32:lrelease.commands = $(QTDIR)\\bin\\lrelease ${QMAKE_FILE_IN} -qm $${GUIResources}\\${QMAKE_FILE_BASE}.qm
 unix:lrelease.output = $${GUIResources}/${QMAKE_FILE_BASE}.qm
 win32:lrelease.output = $${GUIResources}\\${QMAKE_FILE_BASE}.qm
 lrelease.input = TRANSLATIONS

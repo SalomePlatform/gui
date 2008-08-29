@@ -1,5 +1,9 @@
-TEMPLATE = subdirs
+unix:TEMPLATE = subdirs
+win32:TEMPLATE = vcsubdirs
+
 CONFIG += ordered
+
+win32:CONFIG += embed_manifest_exe
 
 SUBDIRS = src/Qtx \
           src/Style \

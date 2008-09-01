@@ -123,6 +123,7 @@ public:
   virtual void          hide();
 
 protected:
+  virtual void          paintEvent( QPaintEvent* );
   virtual void          drawContents( QPainter* );
 
 private:

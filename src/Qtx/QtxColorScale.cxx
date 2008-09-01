@@ -699,6 +699,17 @@ void QtxColorScale::hide()
 }
 
 /*!
+  \brief Paint widget
+  \param e paint event
+*/
+void QtxColorScale::paintEvent( QPaintEvent* e )
+{
+  QPainter p( this );
+  drawFrame( &p );
+  drawContents( &p );
+}
+
+/*!
   \brief Draw color scale (reimplemented from QFrame).
   \param p painter
 */

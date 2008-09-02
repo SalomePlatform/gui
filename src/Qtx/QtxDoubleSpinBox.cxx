@@ -65,51 +65,6 @@ QtxDoubleSpinBox::QtxDoubleSpinBox( QWidget* parent )
 	   this, SLOT( onTextChanged( const QString& ) ) );
 }
 
-QValidator::State QtxDoubleSpinBox::validate( QString& str, int& pos ) const
-{
-  if (myPrecision >= 0)
-    return QDoubleSpinBox::validate(str, pos);
-
-  QString pref = this->prefix();
-  QString suff = this->suffix();
-  uint overhead = pref.length() + suff.length();
-  QValidator::State state = QValidator::Invalid;
-
-  QDoubleValidator v (NULL);
-
-  if ( overhead == 0 )
-    state = v.validate( str, pos );
-  else
-    {
-      if ( str.length() >= overhead && str.startsWith( pref ) &&
-	   str.right( suff.length() ) == suff )
-	{
-	  QString core = str.mid( pref.length(), str.length() - overhead );
-	  int corePos = pos - pref.length();
-	  state = v.validate( core, corePos );
-	  pos = corePos + pref.length();
-	  str.replace( pref.length(), str.length() - overhead, core );
-	}
-      else
-	{
-	  state = v.validate( str, pos );
-	  if ( state == QValidator::Invalid )
-	    {
-	      QString special = this->specialValueText().trimmed();
-	      QString candidate = str.trimmed();
-	      if ( special.startsWith( candidate ) )
-		{
-		  if ( candidate.length() == special.length() )
-		    state = QValidator::Acceptable;
-		  else
-		    state = QValidator::Intermediate;
-		}
-	    }
-	}
-    }
-  return state;
-}
-
 /*!
   \brief Constructor.
 
@@ -136,6 +91,32 @@ QtxDoubleSpinBox::QtxDoubleSpinBox( double min, double max, double step, QWidget
 }
 
 /*!
+  \brief Constructor.
+
+  Constructs a spin box with specified minimum, maximum and step value.
+  The precision is set to 2 decimal places. 
+  The value is initially set to the minimum value.
+
+  \param min spin box minimum possible value
+  \param max spin box maximum possible value
+  \param step spin box increment/decrement value
+  \param parent parent object
+*/
+QtxDoubleSpinBox::QtxDoubleSpinBox( double min, double max, double step, int prec, int dec, QWidget* parent )
+: QDoubleSpinBox( parent ),
+  myCleared( false ),
+  myPrecision( prec )
+{
+  setDecimals( dec );
+  setMinimum( min );
+  setMaximum( max );
+  setSingleStep( step );
+
+  connect( lineEdit(), SIGNAL( textChanged( const QString& ) ), 
+	   this, SLOT( onTextChanged( const QString& ) ) );
+}
+
+/*!
   \brief Destructor.
 */
 QtxDoubleSpinBox::~QtxDoubleSpinBox()
@@ -145,6 +126,7 @@ QtxDoubleSpinBox::~QtxDoubleSpinBox()
 /*!
   \brief Check if spin box is in the "cleared" state.
   \return \c true if spin box is cleared
+  \sa setCleared()
 */
 bool QtxDoubleSpinBox::isCleared() const
 {
@@ -154,6 +136,7 @@ bool QtxDoubleSpinBox::isCleared() const
 /*!
   \brief Change "cleared" status of the spin box.
   \param on new "cleared" status
+  \sa isCleared()
 */
 void QtxDoubleSpinBox::setCleared( const bool on )
 {
@@ -164,6 +147,15 @@ void QtxDoubleSpinBox::setCleared( const bool on )
   setSpecialValueText( specialValueText() );
 }
 
+/*!
+  \brief Set precision of the spin box
+  
+  If precision value is less than 0, the 'g' format is used for value output,
+  otherwise 'f' format is used.
+
+  \param prec new precision value.
+  \sa precision()
+*/
 void QtxDoubleSpinBox::setPrecision( const int prec )
 {
   int newPrec = qMax( prec, 0 );
@@ -173,12 +165,23 @@ void QtxDoubleSpinBox::setPrecision( const int prec )
     update();
 }
 
+/*!
+  \brief Get precision value of the spin box
+  \return current prevision value
+  \sa setPrecision()
+*/
 int QtxDoubleSpinBox::getPrecision() const
 {
   return myPrecision;
 }
 
-double QtxDoubleSpinBox::valueFromText(const QString &text) const
+/*!
+  \brief Interpret text entered by the user as a value.
+  \param text text entered by the user
+  \return mapped value
+  \sa textFromValue()
+*/
+double QtxDoubleSpinBox::valueFromText( const QString& text ) const
 {
   if (myPrecision < 0)
     return text.toDouble();
@@ -186,6 +189,14 @@ double QtxDoubleSpinBox::valueFromText(const QString &text) const
   return QDoubleSpinBox::valueFromText(text);
 }
 
+/*!
+  \brief This function is used by the spin box whenever it needs to display
+  the given value.
+
+  \param val spin box value
+  \return text representation of the value
+  \sa valueFromText()
+*/
 QString QtxDoubleSpinBox::textFromValue( double val ) const
 {
   QString s;
@@ -194,7 +205,9 @@ QString QtxDoubleSpinBox::textFromValue( double val ) const
 }
 
 /*!
-  \brief Return string without excess zeros in start and in end
+  \brief Return source string with removed leading and trailing zeros.
+  \param str source string
+  \return resulting string
 */
 QString QtxDoubleSpinBox::removeTrailingZeroes( const QString& src ) const
 {
@@ -231,6 +244,61 @@ void QtxDoubleSpinBox::stepBy( int steps )
   myCleared = false;
 
   QDoubleSpinBox::stepBy( steps );
+}
+
+/*!
+  \brief This function is used to determine whether input is valid.
+  \param str currently entered value
+  \param pos cursor position in the string
+  \return validating operation result
+*/
+QValidator::State QtxDoubleSpinBox::validate( QString& str, int& pos ) const
+{
+  if (myPrecision >= 0)
+    return QDoubleSpinBox::validate(str, pos);
+
+  QString pref = this->prefix();
+  QString suff = this->suffix();
+  uint overhead = pref.length() + suff.length();
+  QValidator::State state = QValidator::Invalid;
+
+  QDoubleValidator v (NULL);
+  v.setDecimals( decimals() );
+  v.setBottom( minimum() );
+  v.setTop( maximum() );
+  v.setNotation( QDoubleValidator::ScientificNotation );
+
+  if ( overhead == 0 )
+    state = v.validate( str, pos );
+  else
+    {
+      if ( str.length() >= overhead && str.startsWith( pref ) &&
+	   str.right( suff.length() ) == suff )
+	{
+	  QString core = str.mid( pref.length(), str.length() - overhead );
+	  int corePos = pos - pref.length();
+	  state = v.validate( core, corePos );
+	  pos = corePos + pref.length();
+	  str.replace( pref.length(), str.length() - overhead, core );
+	}
+      else
+	{
+	  state = v.validate( str, pos );
+	  if ( state == QValidator::Invalid )
+	    {
+	      QString special = this->specialValueText().trimmed();
+	      QString candidate = str.trimmed();
+	      if ( special.startsWith( candidate ) )
+		{
+		  if ( candidate.length() == special.length() )
+		    state = QValidator::Acceptable;
+		  else
+		    state = QValidator::Intermediate;
+		}
+	    }
+	}
+    }
+  return state;
 }
 
 /*!

@@ -199,8 +199,7 @@ double QtxDoubleSpinBox::valueFromText( const QString& text ) const
 */
 QString QtxDoubleSpinBox::textFromValue( double val ) const
 {
-  QString s;
-  s.setNum( val, myPrecision >= 0 ? 'f' : 'g', myPrecision == 0 ? 6 : qAbs( myPrecision ) );
+  QString s = QLocale().toString( val, myPrecision >= 0 ? 'f' : 'g', myPrecision == 0 ? 6 : qAbs( myPrecision ) );
   return removeTrailingZeroes( s );
 }
 

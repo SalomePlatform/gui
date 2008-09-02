@@ -60,6 +60,7 @@ salomeinclude_HEADERS=		\
 	QtxPopupMgr.h		\
 	QtxPreferenceMgr.h	\
 	QtxResourceMgr.h	\
+	QtxRubberBand.h         \
 	QtxSearchTool.h		\
 	QtxSplash.h		\
 	QtxToolBar.h		\
@@ -114,6 +115,7 @@ dist_libqtx_la_SOURCES=		\
 	QtxPopupMgr.cxx		\
 	QtxPreferenceMgr.cxx	\
 	QtxResourceMgr.cxx	\
+	QtxRubberBand.cxx       \
 	QtxSearchTool.cxx	\
 	QtxSplash.cxx		\
 	QtxToolBar.cxx		\

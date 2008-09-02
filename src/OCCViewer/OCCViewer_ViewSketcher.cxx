@@ -21,6 +21,8 @@
 #include "OCCViewer_ViewWindow.h"
 #include "OCCViewer_ViewPort3d.h"
 
+#include "QtxRubberBand.h"
+
 #include <QApplication>
 #include <QPainter>
 #include <QPolygon>
@@ -201,8 +203,13 @@ void OCCViewer_ViewSketcher::setSketchButton( int b )
 *****************************************************************/
 
 OCCViewer_RectSketcher::OCCViewer_RectSketcher( OCCViewer_ViewWindow* vw, int typ )
-: OCCViewer_ViewSketcher( vw, typ )
+  : OCCViewer_ViewSketcher( vw, typ )
 {
+  if ( vw )
+    {
+      OCCViewer_ViewPort3d* avp = mypViewWindow->getViewPort();
+      mypRectRB = new QtxRectRubberBand( avp );
+    }
 }
 
 OCCViewer_RectSketcher::~OCCViewer_RectSketcher()
@@ -219,6 +226,7 @@ void OCCViewer_RectSketcher::onDeactivate()
 {
   delete (QRect*)mypData;
   mypData = 0;
+  mypRectRB->clearGeometry();
 }
 
 bool OCCViewer_RectSketcher::onKey( QKeyEvent* e )
@@ -251,22 +259,35 @@ void OCCViewer_RectSketcher::onMouse( QMouseEvent* e )
 
 void OCCViewer_RectSketcher::onSketch( SketchState state )
 {
-  OCCViewer_ViewPort3d* avp = mypViewWindow->getViewPort();
+  //OCCViewer_ViewPort3d* avp = mypViewWindow->getViewPort();
 
-  QRect* sketchRect = (QRect*)data();
-  if ( myButtonState & sketchButton() )
-  {
-    QRect rect( qMin( myStart.x(), myCurr.x() ), qMin( myStart.y(), myCurr.y() ),
-                qAbs( myStart.x() - myCurr.x() ), qAbs( myStart.y() - myCurr.y() ) );
-    QPainter p( avp );
-    p.setPen( Qt::white );
-    p.setCompositionMode( QPainter::CompositionMode_Xor );
-    if ( state != Debut && !sketchRect->isEmpty() )
-      p.drawRect( *sketchRect );
-    *sketchRect = rect;
-    if ( !rect.isEmpty() && state != Fin )
-      p.drawRect( *sketchRect );
-  }
+  if ( mypRectRB )
+    {      
+      QRect* sketchRect = (QRect*)data();
+      if ( myButtonState & sketchButton() )
+        {   
+          QRect rect = QRect( myStart, myCurr ).normalized();
+          /*QRect rect( qMin( myStart.x(), myCurr.x() ), qMin( myStart.y(), myCurr.y() ),
+                      qAbs( myStart.x() - myCurr.x() ), qAbs( myStart.y() - myCurr.y() ) );
+          QPainter p( avp );
+          p.setPen( Qt::white );
+          p.setCompositionMode( QPainter::CompositionMode_Xor );
+          */
+          
+          //if ( state != Debut && !sketchRect->isEmpty() )
+          //  p.drawRect( *sketchRect );
+
+          *sketchRect = rect;
+          if ( !rect.isEmpty() && state != Fin )
+            {
+              //p.drawRect( *sketchRect );            
+              mypRectRB->initGeometry( rect );
+              mypRectRB->show();
+            }          
+          else
+            mypRectRB->hide();
+        }
+    }
 
   if ( state == Fin )
   {
@@ -284,16 +305,21 @@ OCCViewer_PolygonSketcher::OCCViewer_PolygonSketcher( OCCViewer_ViewWindow* vw, 
 : OCCViewer_ViewSketcher( vw, typ ),
   myDbl           ( false ),
   myToler         ( 5, 5 ),
-  mypPoints        ( 0L ),
+  //mypPoints        ( 0L ),
   myAddButton     ( 0 ),
   myDelButton     ( 0 )
 {
   mySketchButton = Qt::RightButton;
+  if ( vw )
+    {
+      OCCViewer_ViewPort3d* avp = mypViewWindow->getViewPort();
+      mypPolyRB = new QtxPolyRubberBand( avp );
+    }
 }
 
 OCCViewer_PolygonSketcher::~OCCViewer_PolygonSketcher()
 {
-  delete mypPoints;
+  //delete mypPoints;
   delete (QPolygon*)mypData;
 }
 
@@ -301,7 +327,7 @@ void OCCViewer_PolygonSketcher::onActivate()
 {
   myDbl = false;
   mypData = new QPolygon( 0 );
-  mypPoints = new QPolygon( 0 );
+  //mypPoints = new QPolygon( 0 );
 
   switch ( sketchButton() )
   {
@@ -323,10 +349,13 @@ void OCCViewer_PolygonSketcher::onActivate()
 
 void OCCViewer_PolygonSketcher::onDeactivate()
 {
-  delete mypPoints;
-  mypPoints = 0;
+  //delete mypPoints;
+  //mypPoints = 0;
   delete (QPolygon*)mypData;
   mypData = 0;
+
+  if ( mypPolyRB )
+    mypPolyRB->clearGeometry();  
 }
 
 bool OCCViewer_PolygonSketcher::onKey( QKeyEvent* e )
@@ -436,10 +465,10 @@ void OCCViewer_PolygonSketcher::onMouse( QMouseEvent* e )
 
 void OCCViewer_PolygonSketcher::onSketch( SketchState state )
 {
-  OCCViewer_ViewPort3d* avp = mypViewWindow->getViewPort();
+  //OCCViewer_ViewPort3d* avp = mypViewWindow->getViewPort();
 
   QPolygon* points = (QPolygon*)data();
-  QPainter p( avp );
+  /*QPainter p( avp );
   p.setPen( Qt::white );
   p.setCompositionMode( QPainter::CompositionMode_Xor );
   if ( state != Debut )
@@ -453,10 +482,32 @@ void OCCViewer_PolygonSketcher::onSketch( SketchState state )
     mypPoints->setPoint( points->count(), myCurr );
     if ( state != Fin )
       p.drawPolyline( *mypPoints );
-  }
+      }*/
+  if ( mypPolyRB )
+    {
+      mypPolyRB->setUpdatesEnabled ( false );
+      if ( !mypPolyRB->isVisible() )
+        mypPolyRB->show();
+      //if ( state != Debut )
+      //  mypPolyRB->repaint();
 
+      if ( state != Fin && points->count() )
+        mypPolyRB->initGeometry( QPolygon(*points) << myCurr );
+      //mypPolyRB->addNode( myCurr );
+
+      //if ( state != Fin )
+      //  mypPolyRB->repaint();
+      mypPolyRB->setUpdatesEnabled ( true );
+      //mypPolyRB->repaint();
+    }
+      
   if ( state == Fin )
   {
+    if ( mypPolyRB )
+      {
+        mypPolyRB->clearGeometry();
+        mypPolyRB->hide();
+      }
     QApplication::syncX();
     mypViewWindow->activateSketching( OCCViewer_ViewWindow::NoSketching );
   }

@@ -23,7 +23,7 @@
 #include "SUIT_ViewWindow.h"
 #include <gp_Pnt.hxx>
 
-class QRubberBand;
+class QtxRectRubberBand;
 class SUIT_Desktop;
 class OCCViewer_ViewPort3d;
 class OCCViewer_ViewSketcher;
@@ -195,7 +195,7 @@ private:
   OCCViewer_SetRotationPointDlg* mySetRotationPointDlg;
   QtxAction* mySetRotationPointAction;
 
-  QRubberBand* myRectBand; //!< selection rectangle rubber band
+  QtxRectRubberBand* myRectBand; //!< selection rectangle rubber band
 };
 
 #ifdef WIN32

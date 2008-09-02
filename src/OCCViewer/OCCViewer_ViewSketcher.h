@@ -30,6 +30,9 @@ class QKeyEvent;
 class QMouseEvent;
 class QPolygon;
 
+class QtxRectRubberBand;
+class QtxPolyRubberBand;
+
 #ifdef WNT
 #pragma warning ( disable:4251 )
 #endif
@@ -102,6 +105,8 @@ protected:
   virtual void                 onSketch( SketchState );
   virtual void                 onActivate();
   virtual void                 onDeactivate();
+ private:
+  QtxRectRubberBand*           mypRectRB;
 };
 
 /*!
@@ -132,6 +137,8 @@ private:
   QPolygon*                    mypPoints;
   int                          myAddButton;
   int                          myDelButton;
+  
+  QtxPolyRubberBand*           mypPolyRB;
 };
 
 #ifdef WNT

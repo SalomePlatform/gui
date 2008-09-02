@@ -39,12 +39,12 @@
 
 #include <QtxActionToolMgr.h>
 #include <QtxMultiAction.h>
+#include <QtxRubberBand.h>
 
 #include <QPainter>
 #include <QTime>
 #include <QImage>
 #include <QMouseEvent>
-#include <QRubberBand>
 #include <QApplication>
 
 #include <V3d_Plane.hxx>
@@ -891,19 +891,29 @@ void OCCViewer_ViewWindow::resetState()
 void OCCViewer_ViewWindow::drawRect()
 {
   if ( !myRectBand ) {
-    myRectBand = new QRubberBand( QRubberBand::Rectangle, myViewPort );
-#ifdef WIN32
-    myRectBand->setStyle(new QWindowsStyle);
-#endif
-    QPalette palette;
-    palette.setColor(myRectBand->foregroundRole(), Qt::white);
-    myRectBand->setPalette(palette);
+    myRectBand = new QtxRectRubberBand( myViewPort );
+    //QPalette palette;
+    //palette.setColor(myRectBand->foregroundRole(), Qt::white);
+    //myRectBand->setPalette(palette);
   }
-  myRectBand->hide();
-
+  //myRectBand->hide();
+  
+  myRectBand->setUpdatesEnabled ( false );
   QRect aRect = SUIT_Tools::makeRect(myStartX, myStartY, myCurrX, myCurrY);
-  myRectBand->setGeometry( aRect );
-  myRectBand->setVisible( aRect.isValid() );
+  myRectBand->initGeometry( aRect );
+
+  if ( !myRectBand->isVisible() )
+    myRectBand->show();
+
+  myRectBand->setUpdatesEnabled ( true );
+  //myRectBand->repaint();
+
+  //myRectBand->setVisible( aRect.isValid() );
+  //if ( myRectBand->isVisible() )
+  //  myRectBand->repaint();
+  //else
+  //  myRectBand->show();
+  //myRectBand->repaint();
 }
 
 /*!
@@ -911,8 +921,13 @@ void OCCViewer_ViewWindow::drawRect()
 */
 void OCCViewer_ViewWindow::endDrawRect()
 {
-  delete myRectBand;
-  myRectBand = 0;
+  //delete myRectBand;
+  //myRectBand = 0;
+  if ( myRectBand )
+    {
+      myRectBand->clearGeometry();
+      myRectBand->hide();
+    }
 }
 
 /*!

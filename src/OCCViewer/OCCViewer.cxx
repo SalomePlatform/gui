@@ -26,7 +26,7 @@ void OCCViewer_Init();
 
 extern "C"
 {
-#ifdef WNT /* disable MS VC++ warning on C-style function returning C++ object */
+#ifdef WIN32 /* disable MS VC++ warning on C-style function returning C++ object */
 #pragma warning(push)
 #pragma warning(disable:4190)
 #endif
@@ -36,7 +36,7 @@ extern "C"
     Handle( OpenGl_GraphicDriver ) aDriver = new OpenGl_GraphicDriver( AShrName );
     return aDriver;
   }
-#ifdef WNT
+#ifdef WIN32
 #pragma warning(pop)
 #endif
 

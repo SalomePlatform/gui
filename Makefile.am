@@ -39,9 +39,9 @@ DISTCLEANFILES = a.out aclocal.m4 configure
 
 salomeinclude_DATA = GUI_version.h
 
-EXTRA_DIST += \
-	build_configure \
-	clean_configure \
+EXTRA_DIST +=		\
+	build_configure	\
+	clean_configure	\
 	LICENCE
 
 dist-hook:

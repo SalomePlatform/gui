@@ -45,14 +45,20 @@ docdir             = $(datadir)/doc/salome
 qrc_%.cxx: %.qrc
 	$(QRCC) $< -o $@ -name $(*F)
 
+# qt forms files generation (uic)
+ui_%.h: %.ui
+	$(UIC) -o $@ $<
+
 # extra distributed files
-EXTRA_DIST = $(MOC_FILES:%_moc.cxx=%.h) $(QRC_FILES:qrc_%.cxx=%.qrc) $(nodist_salomeres_DATA:%.qm=resources/%.ts)
+EXTRA_DIST = $(MOC_FILES:%_moc.cxx=%.h) $(QRC_FILES:qrc_%.cxx=%.qrc) \
+             $(UIC_FILES:ui_%.h=%.ui) $(nodist_salomeres_DATA:%.qm=resources/%.ts)
 
 # customize clean operation
 mostlyclean-local:
 	rm -f @builddir@/*_moc.cxx
 	rm -f @builddir@/*.qm
 	rm -f @builddir@/qrc_*.cxx
+	rm -f @builddir@/ui_*.h
 
 # tests
 tests: unittest

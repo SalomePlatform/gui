@@ -23,28 +23,28 @@
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-lib_LTLIBRARIES=libSOCC.la
+lib_LTLIBRARIES = libSOCC.la
 
-salomeinclude_HEADERS= \
-	SOCC.h \
-	SOCC_ViewModel.h \
-	SOCC_Prs.h \
+salomeinclude_HEADERS =		\
+	SOCC.h			\
+	SOCC_ViewModel.h	\
+	SOCC_Prs.h		\
 	SOCC_ViewWindow.h
 
-dist_libSOCC_la_SOURCES= \
-	SOCC_ViewModel.cxx \
-	SOCC_Prs.cxx \
+dist_libSOCC_la_SOURCES =	\
+	SOCC_ViewModel.cxx	\
+	SOCC_Prs.cxx		\
 	SOCC_ViewWindow.cxx
 
-MOC_FILES= \
-	SOCC_ViewModel_moc.cxx \
+MOC_FILES = 			\
+	SOCC_ViewModel_moc.cxx	\
 	SOCC_ViewWindow_moc.cxx
-nodist_libSOCC_la_SOURCES= $(MOC_FILES)
+nodist_libSOCC_la_SOURCES = $(MOC_FILES)
 
-libSOCC_la_CPPFLAGS=$(QT_INCLUDES) $(CAS_CPPFLAGS) $(BOOST_CPPFLAGS) \
-	-I$(srcdir)/../SUIT -I$(srcdir)/../OBJECT -I$(srcdir)/../Prs \
-	-I$(srcdir)/../OCCViewer -I$(srcdir)/../Qtx
+libSOCC_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) $(BOOST_CPPFLAGS)			\
+	              -I$(srcdir)/../SUIT -I$(srcdir)/../OBJECT -I$(srcdir)/../Prs	\
+	              -I$(srcdir)/../OCCViewer -I$(srcdir)/../Qtx
 
-libSOCC_la_LDFLAGS=$(QT_MT_LIBS)
-libSOCC_la_LIBADD=../Qtx/libqtx.la ../SUIT/libsuit.la ../OBJECT/libSalomeObject.la \
-	          ../Prs/libSalomePrs.la ../OCCViewer/libOCCViewer.la
+libSOCC_la_LDFLAGS  = $(QT_MT_LIBS)
+libSOCC_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la ../OBJECT/libSalomeObject.la	\
+	              ../Prs/libSalomePrs.la ../OCCViewer/libOCCViewer.la

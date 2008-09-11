@@ -2,7 +2,7 @@
 # Project related configuration options
 #---------------------------------------------------------------------------
 PROJECT_NAME      = "GUI Module Reference Manual v.@VERSION@"
-OUTPUT_DIRECTORY  = ./
+OUTPUT_DIRECTORY  = GUI
 CREATE_SUBDIRS	  = NO
 OUTPUT_LANGUAGE   = English
 TAB_SIZE          = 5
@@ -24,7 +24,7 @@ IMAGE_PATH        = @srcdir@/images
 #HTML related options
 #---------------------------------------------------------------------------
 GENERATE_HTML     = YES
-HTML_OUTPUT       = ./
+HTML_OUTPUT       = .
 HTML_HEADER       = @srcdir@/static/header.html
 HTML_FOOTER       = @srcdir@/static/footer.html
 #HTML_STYLESHEET  = @srcdir@/static/doxygen.css

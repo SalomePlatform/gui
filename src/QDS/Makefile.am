@@ -28,7 +28,7 @@ lib_LTLIBRARIES = libQDS.la
 # header files 
 
 #MKR: already migrated to Qt4 files
-salomeinclude_HEADERS= 		\
+salomeinclude_HEADERS =		\
 	QDS.h            	\
 	QDS_CheckBox.h 		\
 	QDS_ComboBox.h 		\
@@ -45,7 +45,7 @@ salomeinclude_HEADERS= 		\
 	QDS_Table.h
 
 #MKR: already migrated to Qt4 files
-dist_libQDS_la_SOURCES= 	\
+dist_libQDS_la_SOURCES = 	\
 	QDS.cxx 		\
 	QDS_CheckBox.cxx 	\
 	QDS_ComboBox.cxx 	\
@@ -62,28 +62,27 @@ dist_libQDS_la_SOURCES= 	\
 	QDS_Table.cxx
 
 #MKR: already migrated to Qt4 files
-MOC_FILES= \
-	QDS_CheckBox_moc.cxx \
-	QDS_ComboBox_moc.cxx \
-	QDS_Datum_moc.cxx \
-	QDS_LineEdit_moc.cxx \
-	QDS_SpinBox_moc.cxx \
-	QDS_SpinBoxDbl_moc.cxx \
-	QDS_TextEdit_moc.cxx \
+MOC_FILES =			\
+	QDS_CheckBox_moc.cxx	\
+	QDS_ComboBox_moc.cxx	\
+	QDS_Datum_moc.cxx	\
+	QDS_LineEdit_moc.cxx	\
+	QDS_SpinBox_moc.cxx	\
+	QDS_SpinBoxDbl_moc.cxx	\
+	QDS_TextEdit_moc.cxx	\
 	QDS_RadioBox_moc.cxx
 
 #MKR: not yet migrated to Qt4 files
 #				\
 	QDS_Table_moc.cxx
 
-nodist_libQDS_la_SOURCES= $(MOC_FILES)
+nodist_libQDS_la_SOURCES = $(MOC_FILES)
 
-# may be neccessary for the external projects or future improvements
-EXTRA_DIST+= QDS_RadioBox.cxx QDS_RadioBox.h resources/QDS_msg_en.po
+nodist_salomeres_DATA = QDS_msg_en.qm
 
-libQDS_la_CPPFLAGS=$(QT_INCLUDES) $(CAS_CPPFLAGS) \
+libQDS_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) \
                    -I$(srcdir)/../Qtx -I$(srcdir)/../DDS
 
-libQDS_la_LDFLAGS=$(QT_MT_LIBS) $(CAS_KERNEL)
-libQDS_la_LIBADD=../DDS/libDDS.la ../Qtx/libqtx.la
+libQDS_la_LDFLAGS  = $(QT_MT_LIBS) $(CAS_KERNEL)
+libQDS_la_LIBADD   = ../DDS/libDDS.la ../Qtx/libqtx.la
 

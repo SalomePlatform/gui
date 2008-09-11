@@ -22,30 +22,32 @@
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
+EXTRA_DIST += images
+
 # Libraries targets
 lib_LTLIBRARIES = libSalomeStyle.la
 
-salomeinclude_HEADERS= \
-	Style.h \
-	Style_Tools.h \
-	Style_Model.h \
+salomeinclude_HEADERS =	\
+	Style.h		\
+	Style_Tools.h	\
+	Style_Model.h	\
 	Style_Salome.h
 
-dist_libSalomeStyle_la_SOURCES= \
-	Style_Tools.cxx \
-	Style_Model.cxx \
+dist_libSalomeStyle_la_SOURCES =	\
+	Style_Tools.cxx			\
+	Style_Model.cxx			\
 	Style_Salome.cxx
 
-MOC_FILES= \
+MOC_FILES = \
 	Style_Salome_moc.cxx
 
-QRC_FILES= \
+QRC_FILES = \
 	qrc_Style.cxx
 
-nodist_libSalomeStyle_la_SOURCES= $(MOC_FILES) $(QRC_FILES)
+nodist_libSalomeStyle_la_SOURCES = $(MOC_FILES) $(QRC_FILES)
 
-libSalomeStyle_la_CPPFLAGS=$(QT_INCLUDES) \
+libSalomeStyle_la_CPPFLAGS = $(QT_INCLUDES)	\
 	-I$(srcdir)/../Qtx
 
-libSalomeStyle_la_LDFLAGS=$(QT_MT_LIBS) \
+libSalomeStyle_la_LDFLAGS  = $(QT_MT_LIBS)	\
 	../Qtx/libqtx.la

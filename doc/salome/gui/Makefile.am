@@ -22,32 +22,20 @@
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-EXTRA_DIST+=GUI
+EXTRA_DIST += images input static
 
-doxygen=@DOXYGEN@
-
-usr_docs:
-	cd ./GUI; \
+usr_docs: doxyfile
 	echo "Running doxygen in directory: "`pwd`; \
-	$(doxygen) ./doxyfile;
+	$(DOXYGEN) $<
 
 docs: usr_docs
 
 clean-local:
-	cd ./GUI; \
-	rm -fr `ls | grep -v "doxyfile"`
-	rm -fr `ls | grep -vE "Makefile|GUI"`
+	-rm -fr GUI doxygen.bak
 
 install-data-local: usr_docs
-	mkdir -p $(docdir)/gui
-	cp -rf GUI $(docdir)/gui
-	-find $(PWD) -name CVS -prune -exec rm -rf {} \;
+	$(INSTALL) -d $(DESTDIR)$(docdir)/gui
+	cp -rp GUI $(DESTDIR)$(docdir)/gui
 
 uninstall-local:
-	rm -rf $(docdir)/gui/GUI
-
-docguidir=$(docdir)/gui/GUI
-
-nodist_docgui_DATA= GUI/doxyfile
-GUI/doxyfile: GUI/doxyfile.in
-EXTRA_DIST+= GUI/doxyfile.in
+	rm -rf $(DESTDIR)$(docdir)/gui

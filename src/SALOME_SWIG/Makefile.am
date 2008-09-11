@@ -44,46 +44,43 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 #
 # The file libSALOME_Swig.py will be installed in the
 # <prefix>/lib/python<version>/site-package/salome folder.
-# The library libSALOME_Swigcmodule.so will be installed in 
+# The library _libSALOME_Swig.so will be installed in 
 # the <prefix>/lib/salome folder.
 #
-
-# this option puts it to dist
-#BUILT_SOURCES = swig_wrap.cpp
 
 SWIG_FLAGS    = @SWIG_FLAGS@ -I$(srcdir)
 SWIG_SOURCES  = libSALOME_Swig.i
 
-nodist_pkgpython_DATA = libSALOME_Swig.py
+nodist_salomepython_PYTHON = libSALOME_Swig.py
 libSALOME_Swig.py: swig_wrap.cpp
 
 # library
-lib_LTLIBRARIES = libSALOME_Swigcmodule.la
-libSALOME_Swigcmodule_la_SOURCES  = $(BUILT_SOURCES) $(SWIG_SOURCES) SALOMEGUI_Swig.cxx
-nodist_libSALOME_Swigcmodule_la_SOURCES = swig_wrap.cpp
-salomeinclude_HEADERS= SALOMEGUI_Swig.hxx SALOMEGUI_Swig.i
+lib_LTLIBRARIES = _libSALOME_Swig.la
+_libSALOME_Swig_la_SOURCES = $(SWIG_SOURCES) SALOMEGUI_Swig.cxx
+nodist__libSALOME_Swig_la_SOURCES = swig_wrap.cpp
+salomeinclude_HEADERS = $(SWIG_SOURCES) SALOMEGUI_Swig.hxx SALOMEGUI_Swig.i
 
-libSALOME_Swigcmodule_la_CPPFLAGS =\
-	$(QT_INCLUDES) $(QWT_INCLUDES) $(PYTHON_INCLUDES) $(CAS_CPPFLAGS) $(VTK_INCLUDES) \
-	$(OGL_INCLUDES) $(BOOST_CPPFLAGS) -DHAVE_CONFIG_H @KERNEL_CXXFLAGS@ \
-	-I$(top_builddir)/salome_adm/unix -I$(top_builddir)/idl \
-	-I$(srcdir)/../SalomeApp -I$(srcdir)/../Qtx -I$(srcdir)/../SUIT \
-	-I$(srcdir)/../ObjBrowser -I$(srcdir)/../LightApp -I$(srcdir)/../SOCC \
-	-I$(srcdir)/../SVTK -I$(srcdir)/../Event -I$(srcdir)/../OBJECT \
-	-I$(srcdir)/../CAM -I$(srcdir)/../STD -I$(srcdir)/../OCCViewer \
-	-I$(srcdir)/../Prs -I$(srcdir)/../VTKViewer -I$(srcdir)/../SPlot2d \
-	-I$(srcdir)/../Plot2d \
+_libSALOME_Swig_la_CPPFLAGS = \
+	$(QT_INCLUDES) $(QWT_INCLUDES) $(PYTHON_INCLUDES) $(CAS_CPPFLAGS) $(VTK_INCLUDES)	\
+	$(OGL_INCLUDES) $(BOOST_CPPFLAGS) -DHAVE_CONFIG_H @KERNEL_CXXFLAGS@			\
+	-I$(top_builddir)/salome_adm/unix -I$(top_builddir)/idl					\
+	-I$(srcdir)/../SalomeApp -I$(srcdir)/../Qtx -I$(srcdir)/../SUIT				\
+	-I$(srcdir)/../ObjBrowser -I$(srcdir)/../LightApp -I$(srcdir)/../SOCC			\
+	-I$(srcdir)/../SVTK -I$(srcdir)/../Event -I$(srcdir)/../OBJECT				\
+	-I$(srcdir)/../CAM -I$(srcdir)/../STD -I$(srcdir)/../OCCViewer				\
+	-I$(srcdir)/../Prs -I$(srcdir)/../VTKViewer -I$(srcdir)/../SPlot2d			\
+	-I$(srcdir)/../Plot2d									\
 	@CORBA_CXXFLAGS@ @CORBA_INCLUDES@
 
-libSALOME_Swigcmodule_la_LDFLAGS  = -module
-libSALOME_Swigcmodule_la_LIBADD   = \
-	../SalomeApp/libSalomeApp.la \
+_libSALOME_Swig_la_LDFLAGS  = -module
+_libSALOME_Swig_la_LIBADD   =		\
+	../SalomeApp/libSalomeApp.la	\
 	@PYTHON_LIBS@
 
 swig_wrap.cpp : $(SWIG_SOURCES)
 	$(SWIG) $(SWIG_FLAGS) -o $@ $<
 
-CLEANFILES = swig_wrap.cpp
+CLEANFILES = swig_wrap.cpp libSALOME_Swig.py
 
 #
 # ===============================================================
@@ -92,25 +89,15 @@ CLEANFILES = swig_wrap.cpp
 #
 
 # Scripts to be installed.
-dist_salomescript_DATA= \
-	examplevtk1.py \
-	test_table.py \
-	test_big_table.py \
-	test_many_objects.py \
-	test_remove_ref.py \
-	libSALOME_Swig.py
+dist_salomescript_DATA =	\
+	examplevtk1.py		\
+	test_table.py		\
+	test_big_table.py	\
+	test_many_objects.py	\
+	test_remove_ref.py
 
-nodist_salomescript_DATA= \
-	supervisionexample.py \
+nodist_salomescript_DATA =		\
+	supervisionexample.py		\
 	supervisiongeomexample.py
 
-EXTRA_DIST+= \
-	supervisionexample.py.in \
-	supervisiongeomexample.py.in
-
-sharedpkgpython_PYTHON= SALOMEGUI_shared_modules.py
-
-install-exec-hook: $(libdir)/_libSALOME_Swig.so
-
-$(libdir)/_libSALOME_Swig.so:
-	(cd $(libdir); ln -sf libSALOME_Swigcmodule.so _libSALOME_Swig.so;)
+sharedpkgpython_PYTHON = SALOMEGUI_shared_modules.py

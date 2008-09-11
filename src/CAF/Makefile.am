@@ -25,29 +25,29 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libcaf.la
 
-salomeinclude_HEADERS= \
-	CAF.h \
-	CAF_Application.h \
-	CAF_Operation.h \
-	CAF_Study.h \
+salomeinclude_HEADERS =		\
+	CAF.h			\
+	CAF_Application.h	\
+	CAF_Operation.h		\
+	CAF_Study.h		\
 	CAF_Tools.h
 
-dist_libcaf_la_SOURCES= \
-	CAF_Application.cxx \
-	CAF_Operation.cxx \
-	CAF_Study.cxx \
+dist_libcaf_la_SOURCES =	\
+	CAF_Application.cxx	\
+	CAF_Operation.cxx	\
+	CAF_Study.cxx		\
 	CAF_Tools.cxx 		
 
-MOC_FILES= \
-	CAF_Application_moc.cxx \
-	CAF_Operation_moc.cxx \
+MOC_FILES =			\
+	CAF_Application_moc.cxx	\
+	CAF_Operation_moc.cxx	\
 	CAF_Study_moc.cxx
-nodist_libcaf_la_SOURCES= $(MOC_FILES)
+nodist_libcaf_la_SOURCES = $(MOC_FILES)
 
 nodist_salomeres_DATA = \
 	CAF_msg_en.qm
 
-libcaf_la_CPPFLAGS=$(QT_INCLUDES) $(CAS_CPPFLAGS) -I$(srcdir)/../STD -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
-libcaf_la_LDFLAGS=$(QT_MT_LIBS) $(CAS_OCAF) $(CAS_OCAFVIS)
-libcaf_la_LIBADD=../Qtx/libqtx.la ../SUIT/libsuit.la ../STD/libstd.la
+libcaf_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) -I$(srcdir)/../STD -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
+libcaf_la_LDFLAGS  = $(QT_MT_LIBS) $(CAS_OCAF) $(CAS_OCAFVIS)
+libcaf_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la ../STD/libstd.la
 

@@ -24,4 +24,4 @@
 # $Header$
 #
 
-SUBDIRS= salome
+SUBDIRS = salome

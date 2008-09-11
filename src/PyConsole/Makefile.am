@@ -25,28 +25,28 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libPyConsole.la
 
-salomeinclude_HEADERS=		\
+salomeinclude_HEADERS =		\
 	PyConsole.h		\
 	PyConsole_Console.h	\
 	PyConsole_Editor.h	\
 	PyConsole_Interp.h
 
-dist_libPyConsole_la_SOURCES=	\
+dist_libPyConsole_la_SOURCES =	\
 	PyConsole_Console.cxx	\
 	PyConsole_Editor.cxx	\
 	PyConsole_Interp.cxx		
 
-MOC_FILES=				\
+MOC_FILES =				\
 	PyConsole_Editor_moc.cxx	\
 	PyConsole_Console_moc.cxx
 
-nodist_libPyConsole_la_SOURCES= $(MOC_FILES)
+nodist_libPyConsole_la_SOURCES = $(MOC_FILES)
 
-nodist_salomeres_DATA= \
+nodist_salomeres_DATA = \
 	PyConsole_msg_en.qm
 
-libPyConsole_la_CPPFLAGS= $(PYTHON_INCLUDES) $(QT_INCLUDES) \
+libPyConsole_la_CPPFLAGS = $(PYTHON_INCLUDES) $(QT_INCLUDES) \
 	-I$(srcdir)/../PyInterp -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 
-libPyConsole_la_LDFLAGS= $(PYTHON_LIBS) $(QT_MT_LIBS)
-libPyConsole_la_LIBADD=../Qtx/libqtx.la ../SUIT/libsuit.la ../PyInterp/libPyInterp.la
+libPyConsole_la_LDFLAGS  = $(PYTHON_LIBS) $(QT_MT_LIBS)
+libPyConsole_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la ../PyInterp/libPyInterp.la

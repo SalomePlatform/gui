@@ -30,13 +30,13 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libEvent.la 
 
-salomeinclude_HEADERS= \
-	Event.h \
+salomeinclude_HEADERS =	\
+	Event.h		\
 	SALOME_Event.h 
 
 dist_libEvent_la_SOURCES = SALOME_Event.cxx 
 
-libEvent_la_CPPFLAGS=$(QT_INCLUDES)
-libEvent_la_LDFLAGS=$(QT_MT_LIBS)
+libEvent_la_CPPFLAGS = $(QT_INCLUDES)
+libEvent_la_LDFLAGS  = $(QT_MT_LIBS)
 
 

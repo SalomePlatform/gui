@@ -66,3 +66,7 @@ SUBDIRS += LightApp ResExporter
 if GUI_ENABLE_CORBA
   SUBDIRS += TOOLSGUI Session SalomeApp SALOME_SWIG SALOME_PY SALOME_PYQT
 endif
+
+DIST_SUBDIRS = CASCatch Qtx Style DDS QDS ObjBrowser SUIT SUITApp STD CAF CAM LogWindow Prs Event \
+               OBJECT GLViewer VTKViewer SVTK OCCViewer SOCC PyInterp PyConsole Plot2d SPlot2d SUPERVGraph \
+               QxGraph LightApp ResExporter TOOLSGUI Session SalomeApp SALOME_SWIG SALOME_PY SALOME_PYQT

@@ -30,49 +30,45 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libSalomeSession.la
 
-salomeinclude_HEADERS= \
-	Session_Session_i.hxx \
-	Session_ServerLauncher.hxx \
-	Session_ServerThread.hxx \
-	Session_ServerCheck.hxx \
+salomeinclude_HEADERS =			\
+	Session_Session_i.hxx		\
+	SALOME_Session.hxx		\
+	Session_ServerLauncher.hxx	\
+	Session_ServerThread.hxx	\
+	Session_ServerCheck.hxx		\
 	SalomeApp_Engine_i.hxx
 
 # Libraries targets
 
-dist_libSalomeSession_la_SOURCES= \
-	Session_Session_i.cxx \
-	Session_ServerThread.cxx \
-	Session_ServerLauncher.cxx \
-	Session_ServerCheck.cxx \
+dist_libSalomeSession_la_SOURCES =	\
+	Session_Session_i.cxx		\
+	Session_ServerThread.cxx	\
+	Session_ServerLauncher.cxx	\
+	Session_ServerCheck.cxx		\
 	SalomeApp_Engine_i.cxx
 
-libSalomeSession_la_CPPFLAGS= $(QT_MT_INCLUDES) $(PYTHON_INCLUDES) \
-	$(HDF5_INCLUDES) $(BOOST_CPPFLAGS) @KERNEL_CXXFLAGS@ $(CAS_CPPFLAGS) \
-	@CORBA_CXXFLAGS@ @CORBA_INCLUDES@ \
-	-I$(top_builddir)/salome_adm/unix -I$(top_builddir)/idl \
-	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../Event \
+libSalomeSession_la_CPPFLAGS = $(QT_MT_INCLUDES) $(PYTHON_INCLUDES)		\
+	$(HDF5_INCLUDES) $(BOOST_CPPFLAGS) @KERNEL_CXXFLAGS@ $(CAS_CPPFLAGS)	\
+	@CORBA_CXXFLAGS@ @CORBA_INCLUDES@					\
+	-I$(top_builddir)/salome_adm/unix -I$(top_builddir)/idl			\
+	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../Event		\
 	-I$(srcdir)/../Style @LIBXML_INCLUDES@
 
-libSalomeSession_la_LDFLAGS= $(QT_MT_LIBS) $(KERNEL_LDFLAGS) -lSalomeNS \
-	-lSalomeLifeCycleCORBA -lOpUtil -lSALOMELocalTrace -lSalomeCatalog \
-	-lSalomeDSClient $(CAS_KERNEL) -lwith_loggerTraceCollector \
-	../SUIT/libsuit.la ../Event/libEvent.la ../../idl/libSalomeIDLGUI.la \
+libSalomeSession_la_LDFLAGS = $(QT_MT_LIBS) $(KERNEL_LDFLAGS) -lSalomeNS	\
+	-lSalomeLifeCycleCORBA -lOpUtil -lSALOMELocalTrace -lSalomeCatalog	\
+	-lSalomeDSClient $(CAS_KERNEL) -lwith_loggerTraceCollector		\
+	../SUIT/libsuit.la ../Event/libEvent.la ../../idl/libSalomeIDLGUI.la	\
 	../Style/libSalomeStyle.la
 
 # Executable
-bin_PROGRAMS= SALOME_Session_Server
+bin_PROGRAMS = SALOME_Session_Server
 
-dist_SALOME_Session_Server_SOURCES= SALOME_Session_Server.cxx
+dist_SALOME_Session_Server_SOURCES = SALOME_Session_Server.cxx
 
-SALOME_Session_Server_CPPFLAGS= $(libSalomeSession_la_CPPFLAGS)
-SALOME_Session_Server_LDADD= $(libSalomeSession_la_LDFLAGS) $(OMNIORB_LIBS) \
-	$(HDF5_LIBS) -lSalomeContainer -lSalomeResourcesManager -lTOOLSDS \
-	-lSalomeHDFPersist -lSalomeDSImpl -lSalomeGenericObj -lRegistry \
-	-lSalomeNotification -lSALOMEBasics -lSalomeLauncher ../Qtx/libqtx.la \
-	$(top_builddir)/idl/libSalomeIDLGUI.la \
+SALOME_Session_Server_CPPFLAGS = $(libSalomeSession_la_CPPFLAGS)
+SALOME_Session_Server_LDADD    = $(libSalomeSession_la_LDFLAGS) $(OMNIORB_LIBS)	\
+	$(HDF5_LIBS) -lSalomeContainer -lSalomeResourcesManager -lTOOLSDS	\
+	-lSalomeHDFPersist -lSalomeDSImpl -lSalomeGenericObj -lRegistry		\
+	-lSalomeNotification -lSALOMEBasics -lSalomeLauncher ../Qtx/libqtx.la	\
+	$(top_builddir)/idl/libSalomeIDLGUI.la					\
 	libSalomeSession.la
-
-lib-hook:
-	ln -sf $(top_builddir)/bin/salome/styles styles
-
-# ../SalomeApp/libSalomeApp.la

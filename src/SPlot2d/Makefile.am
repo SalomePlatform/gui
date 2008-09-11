@@ -21,28 +21,28 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libSPlot2d.la
 
-salomeinclude_HEADERS = \
-	SPlot2d.h \
-	SPlot2d_Curve.h \
-	SPlot2d_Prs.h \
-	SPlot2d_ViewModel.h \
+salomeinclude_HEADERS =		\
+	SPlot2d.h		\
+	SPlot2d_Curve.h		\
+	SPlot2d_Prs.h		\
+	SPlot2d_ViewModel.h	\
 	SPlot2d_ViewWindow.h
 
-dist_libSPlot2d_la_SOURCES = \
-	SPlot2d_Curve.cxx \
-	SPlot2d_Prs.cxx \
-	SPlot2d_ViewModel.cxx \
+dist_libSPlot2d_la_SOURCES =	\
+	SPlot2d_Curve.cxx	\
+	SPlot2d_Prs.cxx		\
+	SPlot2d_ViewModel.cxx	\
 	SPlot2d_ViewWindow.cxx
 
-MOC_FILES = \
-	SPlot2d_ViewModel_moc.cxx \
+MOC_FILES =				\
+	SPlot2d_ViewModel_moc.cxx	\
 	SPlot2d_ViewWindow_moc.cxx
 nodist_libSPlot2d_la_SOURCES = $(MOC_FILES)
 
-libSPlot2d_la_CPPFLAGS=$(QT_INCLUDES) $(CAS_CPPFLAGS) $(QWT_INCLUDES) $(BOOST_CPPFLAGS) \
-	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../Plot2d -I$(srcdir)/../Prs \
-	-I$(srcdir)/../OBJECT
-libSPlot2d_la_LDFLAGS=$(QT_MT_LIBS) $(QWT_LIBS) ../SUIT/libsuit.la ../Plot2d/libPlot2d.la ../Prs/libSalomePrs.la
+libSPlot2d_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) $(QWT_INCLUDES) $(BOOST_CPPFLAGS)	\
+	                 -I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../Plot2d		\
+	                 -I$(srcdir)/../Prs -I$(srcdir)/../OBJECT
+libSPlot2d_la_LDFLAGS  = $(QT_MT_LIBS) $(QWT_LIBS) ../SUIT/libsuit.la ../Plot2d/libPlot2d.la ../Prs/libSalomePrs.la
 
 
 

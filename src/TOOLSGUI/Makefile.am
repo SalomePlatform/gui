@@ -30,31 +30,29 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libToolsGUI.la
 
-salomeinclude_HEADERS= \
-	ToolsGUI.h \
-	ToolsGUI_RegWidget.h \
+salomeinclude_HEADERS =			\
+	ToolsGUI.h			\
+	ToolsGUI_RegWidget.h		\
 	ToolsGUI_CatalogGeneratorDlg.h
 
-dist_libToolsGUI_la_SOURCES= \
-	ToolsGUI_CatalogGeneratorDlg.cxx \
-	ToolsGUI_RegWidget.cxx \
+dist_libToolsGUI_la_SOURCES =			\
+	ToolsGUI_CatalogGeneratorDlg.cxx	\
+	ToolsGUI_RegWidget.cxx			\
 	ToolsGUI.cxx
 
-EXTRA_DIST+=
-
-MOC_FILES= \
-	ToolsGUI_CatalogGeneratorDlg_moc.cxx \
+MOC_FILES =					\
+	ToolsGUI_CatalogGeneratorDlg_moc.cxx	\
 	ToolsGUI_RegWidget_moc.cxx
 
-nodist_libToolsGUI_la_SOURCES= $(MOC_FILES)
+nodist_libToolsGUI_la_SOURCES = $(MOC_FILES)
 
 # .po files to transform in .qm
-nodist_salomeres_DATA= \
+nodist_salomeres_DATA =		\
 	ToolsGUI_msg_en.qm
 
-libToolsGUI_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) $(BOOST_CPPFLAGS) \
-	@KERNEL_CXXFLAGS@ @CORBA_CXXFLAGS@ @CORBA_INCLUDES@ \
-	-I$(top_builddir)/salome_adm/unix -I$(top_builddir)/idl \
+libToolsGUI_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) $(BOOST_CPPFLAGS)	\
+	@KERNEL_CXXFLAGS@ @CORBA_CXXFLAGS@ @CORBA_INCLUDES@			\
+	-I$(top_builddir)/salome_adm/unix -I$(top_builddir)/idl			\
 	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT
-libToolsGUI_la_LDFLAGS = $(QT_MT_LIBS) ../SUIT/libsuit.la $(CAS_KERNEL) $(KERNEL_LDFLAGS) \
+libToolsGUI_la_LDFLAGS  = $(QT_MT_LIBS) ../SUIT/libsuit.la $(CAS_KERNEL) $(KERNEL_LDFLAGS) \
 	-lSalomeNS -lOpUtil $(top_builddir)/idl/libSalomeIDLGUI.so

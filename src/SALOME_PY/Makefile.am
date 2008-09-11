@@ -28,10 +28,10 @@
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-lib_LTLIBRARIES= libSalomePy.la
-dist_libSalomePy_la_SOURCES= SalomePy.cxx
+lib_LTLIBRARIES = libSalomePy.la
+dist_libSalomePy_la_SOURCES = SalomePy.cxx
 
-libSalomePy_la_CPPFLAGS=$(QT_INCLUDES) $(PYTHON_INCLUDES) $(VTK_INCLUDES) \
+libSalomePy_la_CPPFLAGS = $(QT_INCLUDES) $(PYTHON_INCLUDES) $(VTK_INCLUDES) \
 	$(OGL_INCLUDES) $(CAS_CXXFLAGS) $(BOOST_CPPFLAGS) @KERNEL_CXXFLAGS@ \
 	-DHAVE_CONFIG_H -I$(srcdir)/../SalomeApp -I$(srcdir)/../LightApp \
 	-I$(srcdir)/../Event -I$(srcdir)/../Session -I$(srcdir)/../SVTK \
@@ -39,6 +39,6 @@ libSalomePy_la_CPPFLAGS=$(QT_INCLUDES) $(PYTHON_INCLUDES) $(VTK_INCLUDES) \
 	-I$(srcdir)/../STD -I$(srcdir)/../VTKViewer -I$(srcdir)/../OBJECT \
 	@CAS_CPPFLAGS@ \
 	-I$(top_builddir)/salome_adm/unix @CORBA_CXXFLAGS@ @CORBA_INCLUDES@
-libSalomePy_la_LDFLAGS=$(PYTHON_LIBS) $(QT_MT_LIBS) $(VTK_LIBS) $(OGL_LIBS) \
+libSalomePy_la_LDFLAGS = $(PYTHON_LIBS) $(QT_MT_LIBS) $(VTK_LIBS) $(OGL_LIBS) \
 	../SalomeApp/libSalomeApp.la \
 	-lvtkCommonPythonD -lvtkGraphicsPythonD -lvtkImagingPythonD

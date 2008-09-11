@@ -25,16 +25,18 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libLogWindow.la
 
-salomeinclude_HEADERS= LogWindow.h
+salomeinclude_HEADERS = LogWindow.h
 
-dist_libLogWindow_la_SOURCES= LogWindow.cxx		
+dist_libLogWindow_la_SOURCES = LogWindow.cxx		
 
-MOC_FILES= LogWindow_moc.cxx
+MOC_FILES = LogWindow_moc.cxx
 nodist_libLogWindow_la_SOURCES = $(MOC_FILES)
 
-libLogWindow_la_CPPFLAGS=$(QT_INCLUDES) -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
+nodist_salomeres_DATA = \
+	LogWindow_msg_en.qm
 
-libLogWindow_la_LDFLAGS=$(QT_MT_LIBS)
-libLogWindow_la_LIBADD=../Qtx/libqtx.la ../SUIT/libsuit.la
+libLogWindow_la_CPPFLAGS = $(QT_INCLUDES) -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
+libLogWindow_la_LDFLAGS  = $(QT_MT_LIBS)
+libLogWindow_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la
 
 

@@ -27,18 +27,18 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libPyInterp.la
 
-salomeinclude_HEADERS=		\
+salomeinclude_HEADERS =		\
 	PyInterp.h		\
 	PyInterp_Interp.h	\
 	PyInterp_Dispatcher.h
 
-dist_libPyInterp_la_SOURCES=	\
+dist_libPyInterp_la_SOURCES =	\
 	PyInterp_Interp.cxx	\
 	PyInterp_Dispatcher.cxx
 
-MOC_FILES= PyInterp_Watcher_moc.cxx
-nodist_libPyInterp_la_SOURCES= $(MOC_FILES)
+MOC_FILES = PyInterp_Watcher_moc.cxx
+nodist_libPyInterp_la_SOURCES = $(MOC_FILES)
 
-libPyInterp_la_CPPFLAGS= $(PYTHON_INCLUDES) $(QT_INCLUDES) \
+libPyInterp_la_CPPFLAGS = $(PYTHON_INCLUDES) $(QT_INCLUDES) \
 	-I$(srcdir)/../Event
-libPyInterp_la_LDFLAGS= $(PYTHON_LIBS) $(QT_MT_LIBS) ../Event/libEvent.la
+libPyInterp_la_LDFLAGS  = $(PYTHON_LIBS) $(QT_MT_LIBS) ../Event/libEvent.la

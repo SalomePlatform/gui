@@ -27,21 +27,21 @@
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-lib_LTLIBRARIES= libSalomeAppTest.la
+lib_LTLIBRARIES = libSalomeAppTest.la
 
-salomeinclude_HEADERS= SalomeAppTest.hxx
+salomeinclude_HEADERS = SalomeAppTest.hxx
 
-dist_libSalomeAppTest_la_SOURCES= SalomeAppTest.cxx
+dist_libSalomeAppTest_la_SOURCES = SalomeAppTest.cxx
 
-libSalomeAppTest_la_CXXFLAGS= @CPPUNIT_INCLUDES@ $(KERNEL_CXXFLAGS)
-libSalomeAppTest_la_LIBADD= @CPPUNIT_LIBS@
+libSalomeAppTest_la_CXXFLAGS = @CPPUNIT_INCLUDES@ $(KERNEL_CXXFLAGS)
+libSalomeAppTest_la_LIBADD   = @CPPUNIT_LIBS@
 
-bin_PROGRAMS= TestSalomeApp
+bin_PROGRAMS = TestSalomeApp
 
-TestSalomeApp_SOURCES= TestSalomeApp.cxx
+TestSalomeApp_SOURCES = TestSalomeApp.cxx
 
-TestSalomeApp_CXXFLAGS= $(libSalomeAppTest_la_CXXFLAGS)
-TestSalomeApp_LDADD= $(libSalomeAppTest_la_LIBADD) libSalomeAppTest.la
+TestSalomeApp_CXXFLAGS = $(libSalomeAppTest_la_CXXFLAGS)
+TestSalomeApp_LDADD    = $(libSalomeAppTest_la_LIBADD) libSalomeAppTest.la
 
 dist_salomescript_PYTHON = TestSalomeApp.py
 UNIT_TEST_PROG = TestSalomeApp

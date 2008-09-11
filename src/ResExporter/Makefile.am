@@ -19,11 +19,10 @@
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-bin_PROGRAMS= ResourceExporter
+bin_PROGRAMS = ResourceExporter
 
-dist_ResourceExporter_SOURCES=ResourceExporter.cxx
+dist_ResourceExporter_SOURCES = ResourceExporter.cxx
 
-ResourceExporter_CPPFLAGS= $(QT_INCLUDES) -I$(srcdir)/../Qtx -I$(srcdir)/../SUIT
-
-ResourceExporter_LDFLAGS= $(QT_MT_LIBS) 
-ResourceExporter_LDADD= ../SUIT/libsuit.la ../Qtx/libqtx.la
+ResourceExporter_CPPFLAGS = $(QT_INCLUDES) -I$(srcdir)/../Qtx -I$(srcdir)/../SUIT
+ResourceExporter_LDFLAGS  = $(QT_MT_LIBS) 
+ResourceExporter_LDADD    = ../SUIT/libsuit.la ../Qtx/libqtx.la

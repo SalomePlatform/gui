@@ -38,9 +38,9 @@ dist_libDDS_la_SOURCES = 	\
 	DDS_Dictionary.cxx	\
 	DDS_KeyWords.cxx
 
-libDDS_la_CPPFLAGS=$(CAS_CPPFLAGS)
+libDDS_la_CPPFLAGS = $(CAS_CPPFLAGS)
 
-libDDS_la_LDFLAGS= $(CAS_KERNEL) $(CAS_OCAF)
+libDDS_la_LDFLAGS  = $(CAS_KERNEL) $(CAS_OCAF)
 
 
 

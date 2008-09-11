@@ -21,46 +21,46 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libQxGraph.la
 
-salomeinclude_HEADERS= \
-	QxGraph_ActiveItem.h \
-	QxGraph_Prs.h \
-	QxGraph_Canvas.h \
-	QxGraph_CanvasView.h \
-	QxGraph_ViewWindow.h \
-	QxGraph_ViewManager.h \
-	QxGraph_ViewModel.h \
-	QxGraph_Def.h \
+salomeinclude_HEADERS =		\
+	QxGraph_ActiveItem.h	\
+	QxGraph_Prs.h		\
+	QxGraph_Canvas.h	\
+	QxGraph_CanvasView.h	\
+	QxGraph_ViewWindow.h	\
+	QxGraph_ViewManager.h	\
+	QxGraph_ViewModel.h	\
+	QxGraph_Def.h		\
 	QxGraph.h
 
-dist_libQxGraph_la_SOURCES= \
-	QxGraph_Prs.cxx \
-	QxGraph_Canvas.cxx \
-	QxGraph_CanvasView.cxx \
-	QxGraph_ViewWindow.cxx \
-	QxGraph_ViewManager.cxx \
+dist_libQxGraph_la_SOURCES =	\
+	QxGraph_Prs.cxx		\
+	QxGraph_Canvas.cxx	\
+	QxGraph_CanvasView.cxx	\
+	QxGraph_ViewWindow.cxx	\
+	QxGraph_ViewManager.cxx	\
 	QxGraph_ViewModel.cxx
 
-MOC_FILES= \
-	QxGraph_Canvas_moc.cxx \
-	QxGraph_CanvasView_moc.cxx \
-	QxGraph_ViewWindow_moc.cxx \
-	QxGraph_ViewManager_moc.cxx \
+MOC_FILES =				\
+	QxGraph_Canvas_moc.cxx		\
+	QxGraph_CanvasView_moc.cxx	\
+	QxGraph_ViewWindow_moc.cxx	\
+	QxGraph_ViewManager_moc.cxx	\
 	QxGraph_ViewModel_moc.cxx
 
-nodist_libQxGraph_la_SOURCES= $(MOC_FILES)
+nodist_libQxGraph_la_SOURCES = $(MOC_FILES)
 
-dist_salomeres_DATA= \
-	resources/qx_view_fitall.png \
-	resources/qx_view_fitarea.png \
-	resources/qx_view_glpan.png \
-	resources/qx_view_pan.png \
-	resources/qx_view_reset.png \
+dist_salomeres_DATA =			\
+	resources/qx_view_fitall.png	\
+	resources/qx_view_fitarea.png	\
+	resources/qx_view_glpan.png	\
+	resources/qx_view_pan.png	\
+	resources/qx_view_reset.png	\
 	resources/qx_view_zoom.png
 
-nodist_salomeres_DATA= \
-	QxGraph_images.qm \
+nodist_salomeres_DATA =		\
+	QxGraph_images.qm	\
 	QxGraph_msg_en.qm  
 
-libQxGraph_la_CPPFLAGS=$(QT_INCLUDES) $(CAS_CPPFLAGS) $(PYTHON_INCLUDES) $(BOOST_CPPFLAGS) \
-	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT
-libQxGraph_la_LDFLAGS=$(QT_MT_LIBS) ../SUIT/libsuit.la
+libQxGraph_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) $(PYTHON_INCLUDES) $(BOOST_CPPFLAGS) \
+	                 -I$(srcdir)/../Qtx -I$(srcdir)/../SUIT
+libQxGraph_la_LDFLAGS  = $(QT_MT_LIBS) ../SUIT/libsuit.la

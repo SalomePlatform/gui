@@ -26,12 +26,6 @@
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 #
-# ===============================================================
-# Files to be installed
-# ===============================================================
-#
-
-#
 # add resource files here ...
 #
-dist_salomeres_DATA=
+dist_salomeres_DATA =

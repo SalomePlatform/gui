@@ -25,7 +25,7 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libsuit.la
 
-salomeinclude_HEADERS=			\
+salomeinclude_HEADERS =			\
 	SUIT.h				\
 	SUIT_Accel.h			\
 	SUIT_ActionOperation.h		\
@@ -59,7 +59,7 @@ salomeinclude_HEADERS=			\
 	SUIT_ViewModel.h		\
 	SUIT_ViewWindow.h
 
-dist_libsuit_la_SOURCES=		\
+dist_libsuit_la_SOURCES =		\
 	SUIT_Accel.cxx			\
 	SUIT_ActionOperation.cxx	\
 	SUIT_Application.cxx		\
@@ -90,7 +90,7 @@ dist_libsuit_la_SOURCES=		\
 	SUIT_ViewModel.cxx		\
 	SUIT_ViewWindow.cxx
 
-MOC_FILES=				\
+MOC_FILES =				\
 	SUIT_Accel_moc.cxx		\
 	SUIT_ActionOperation_moc.cxx	\
 	SUIT_Application_moc.cxx	\
@@ -111,11 +111,11 @@ MOC_FILES=				\
 	SUIT_ViewModel_moc.cxx		\
 	SUIT_ViewWindow_moc.cxx
 
-nodist_libsuit_la_SOURCES=$(MOC_FILES)
+nodist_libsuit_la_SOURCES = $(MOC_FILES)
 
 nodist_salomeres_DATA =			\
 	SUIT_msg_en.qm
 
-libsuit_la_CPPFLAGS=$(QT_INCLUDES) -I$(srcdir)/../Qtx -I$(srcdir)/../ObjBrowser
-libsuit_la_LDFLAGS=$(QT_MT_LIBS)
-libsuit_la_LIBADD=../Qtx/libqtx.la ../ObjBrowser/libObjBrowser.la
+libsuit_la_CPPFLAGS = $(QT_INCLUDES) -I$(srcdir)/../Qtx -I$(srcdir)/../ObjBrowser
+libsuit_la_LDFLAGS  = $(QT_MT_LIBS)
+libsuit_la_LIBADD   = ../Qtx/libqtx.la ../ObjBrowser/libObjBrowser.la

@@ -37,9 +37,9 @@ DIST_SUBDIRS = idl adm_local resources src doc bin
 
 DISTCLEANFILES = a.out aclocal.m4 configure
 
-salomeinclude_DATA=GUI_version.h
+salomeinclude_DATA = GUI_version.h
 
-EXTRA_DIST+= \
+EXTRA_DIST += \
 	build_configure \
 	clean_configure \
 	LICENCE
@@ -50,7 +50,7 @@ dist-hook:
 usr_docs:
 	(cd doc && $(MAKE) $(AM_MAKEFLAGS) usr_docs)
 
-docs:usr_docs
+docs: usr_docs
 
 dev_docs:
 	(cd doc && $(MAKE) $(AM_MAKEFLAGS) dev_docs)

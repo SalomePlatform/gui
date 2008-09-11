@@ -25,32 +25,24 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libObjBrowser.la
 
-salomeinclude_HEADERS=		\
+salomeinclude_HEADERS =		\
 	OB.h			\
 	OB_Browser.h
 
-#	OB_ListItem.h \
-	OB_ListView.h
-	OB_Filter.h
+#	OB_Filter.h
 
-dist_libObjBrowser_la_SOURCES=	\
+dist_libObjBrowser_la_SOURCES =	\
 	OB_Browser.cxx
 
-#	OB_ListView.cxx
-	OB_ListItem.cxx \
-	OB_ListView.cxx \
-	OB_Filter.cxx
+#	OB_Filter.cxx
 
-MOC_FILES=			\
+MOC_FILES =			\
 	OB_Browser_moc.cxx
 
-#	OB_ListView_moc.cxx
-
-nodist_libObjBrowser_la_SOURCES= $(MOC_FILES)
+nodist_libObjBrowser_la_SOURCES = $(MOC_FILES)
 
 nodist_salomeres_DATA = OB_msg_en.qm
 
-libObjBrowser_la_CPPFLAGS=$(QT_INCLUDES) -I$(srcdir)/../Qtx
-
-libObjBrowser_la_LDFLAGS=$(QT_MT_LIBS)
-libObjBrowser_la_LIBADD= ../Qtx/libqtx.la
+libObjBrowser_la_CPPFLAGS = $(QT_INCLUDES) -I$(srcdir)/../Qtx
+libObjBrowser_la_LDFLAGS  = $(QT_MT_LIBS)
+libObjBrowser_la_LIBADD   = ../Qtx/libqtx.la

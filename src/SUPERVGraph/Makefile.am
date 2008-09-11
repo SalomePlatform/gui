@@ -21,33 +21,33 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libSUPERVGraph.la
 
-salomeinclude_HEADERS= \
-	SUPERVGraph_ViewFrame.h \
-	SUPERVGraph_ViewManager.h \
-	SUPERVGraph_ViewModel.h \
+salomeinclude_HEADERS =			\
+	SUPERVGraph_ViewFrame.h		\
+	SUPERVGraph_ViewManager.h	\
+	SUPERVGraph_ViewModel.h		\
 	SUPERVGraph.h
 
-dist_libSUPERVGraph_la_SOURCES= \
-	SUPERVGraph.cxx \
-	SUPERVGraph_ViewFrame.cxx \
-	SUPERVGraph_ViewManager.cxx \
+dist_libSUPERVGraph_la_SOURCES = 	\
+	SUPERVGraph.cxx			\
+	SUPERVGraph_ViewFrame.cxx	\
+	SUPERVGraph_ViewManager.cxx	\
 	SUPERVGraph_ViewModel.cxx 
 
-MOC_FILES= \
-	SUPERVGraph_moc.cxx \
-	SUPERVGraph_ViewFrame_moc.cxx \
-	SUPERVGraph_ViewManager_moc.cxx \
+MOC_FILES = 				\
+	SUPERVGraph_moc.cxx		\
+	SUPERVGraph_ViewFrame_moc.cxx	\
+	SUPERVGraph_ViewManager_moc.cxx	\
 	SUPERVGraph_ViewModel_moc.cxx 
-nodist_libSUPERVGraph_la_SOURCES= $(MOC_FILES)
+nodist_libSUPERVGraph_la_SOURCES = $(MOC_FILES)
 
-dist_salomeres_DATA= \
-	resources/superv_view_pan.png \
+dist_salomeres_DATA =			\
+	resources/superv_view_pan.png	\
 	resources/superv_view_reset.png
 
-nodist_salomeres_DATA= \
-	SUPERVGraph_images.qm \
+nodist_salomeres_DATA =		\
+	SUPERVGraph_images.qm	\
 	SUPERVGraph_msg_en.qm  
 
-libSUPERVGraph_la_CPPFLAGS=$(QT_INCLUDES) $(CAS_CPPFLAGS) $(PYTHON_INCLUDES) $(BOOST_CPPFLAGS) \
-	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../OBJECT
-libSUPERVGraph_la_LDFLAGS=$(QT_MT_LIBS) ../SUIT/libsuit.la
+libSUPERVGraph_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) $(PYTHON_INCLUDES) $(BOOST_CPPFLAGS) \
+	                     -I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../OBJECT
+libSUPERVGraph_la_LDFLAGS  = $(QT_MT_LIBS) ../SUIT/libsuit.la

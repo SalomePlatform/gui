@@ -25,82 +25,82 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libOCCViewer.la
 
-salomeinclude_HEADERS= \
-	OCCViewer_AISSelector.h \
-	OCCViewer_ViewManager.h \
-	OCCViewer_ViewModel.h \
-	OCCViewer_ViewPort3d.h \
-	OCCViewer_ViewPort.h \
-	OCCViewer_ViewSketcher.h \
-	OCCViewer_ViewWindow.h \
-	OCCViewer_VService.h \
-	OCCViewer_CreateRestoreViewDlg.h \
-	OCCViewer.h \
-	OCCViewer_ClippingDlg.h \
-	OCCViewer_AxialScaleDlg.h \
-	OCCViewer_SetRotationPointDlg.h \
+salomeinclude_HEADERS =				\
+	OCCViewer_AISSelector.h			\
+	OCCViewer_ViewManager.h			\
+	OCCViewer_ViewModel.h			\
+	OCCViewer_ViewPort3d.h			\
+	OCCViewer_ViewPort.h			\
+	OCCViewer_ViewSketcher.h		\
+	OCCViewer_ViewWindow.h			\
+	OCCViewer_VService.h			\
+	OCCViewer_CreateRestoreViewDlg.h	\
+	OCCViewer.h				\
+	OCCViewer_ClippingDlg.h			\
+	OCCViewer_AxialScaleDlg.h		\
+	OCCViewer_SetRotationPointDlg.h		\
 	OCCViewer_Trihedron.h
 
-dist_libOCCViewer_la_SOURCES= \
-	OCCViewer.cxx \
-	OCCViewer_AISSelector.cxx \
-	OCCViewer_ViewManager.cxx \
-	OCCViewer_ViewModel.cxx \
-	OCCViewer_ViewPort3d.cxx \
-	OCCViewer_ViewPort.cxx \
-	OCCViewer_ViewSketcher.cxx \
-	OCCViewer_ViewWindow.cxx \
-	OCCViewer_VService.cxx \
-	OCCViewer_CreateRestoreViewDlg.cxx \
-	OCCViewer_SetRotationPointDlg.cxx \
-	OCCViewer_ClippingDlg.cxx \
-	OCCViewer_AxialScaleDlg.cxx \
+dist_libOCCViewer_la_SOURCES =			\
+	OCCViewer.cxx				\
+	OCCViewer_AISSelector.cxx		\
+	OCCViewer_ViewManager.cxx		\
+	OCCViewer_ViewModel.cxx			\
+	OCCViewer_ViewPort3d.cxx		\
+	OCCViewer_ViewPort.cxx			\
+	OCCViewer_ViewSketcher.cxx		\
+	OCCViewer_ViewWindow.cxx		\
+	OCCViewer_VService.cxx			\
+	OCCViewer_CreateRestoreViewDlg.cxx	\
+	OCCViewer_SetRotationPointDlg.cxx	\
+	OCCViewer_ClippingDlg.cxx		\
+	OCCViewer_AxialScaleDlg.cxx		\
 	OCCViewer_Trihedron.cxx
 
-MOC_FILES= \
-	OCCViewer_AISSelector_moc.cxx \
-	OCCViewer_ViewModel_moc.cxx \
-	OCCViewer_ViewPort3d_moc.cxx \
-	OCCViewer_ViewPort_moc.cxx \
-	OCCViewer_ViewSketcher_moc.cxx \
-	OCCViewer_ViewWindow_moc.cxx \
-	OCCViewer_ViewManager_moc.cxx \
-	OCCViewer_CreateRestoreViewDlg_moc.cxx \
-	OCCViewer_SetRotationPointDlg_moc.cxx \
-	OCCViewer_ClippingDlg_moc.cxx \
+MOC_FILES =					\
+	OCCViewer_AISSelector_moc.cxx		\
+	OCCViewer_ViewModel_moc.cxx		\
+	OCCViewer_ViewPort3d_moc.cxx		\
+	OCCViewer_ViewPort_moc.cxx		\
+	OCCViewer_ViewSketcher_moc.cxx		\
+	OCCViewer_ViewWindow_moc.cxx		\
+	OCCViewer_ViewManager_moc.cxx		\
+	OCCViewer_CreateRestoreViewDlg_moc.cxx	\
+	OCCViewer_SetRotationPointDlg_moc.cxx	\
+	OCCViewer_ClippingDlg_moc.cxx		\
 	OCCViewer_AxialScaleDlg_moc.cxx
-nodist_libOCCViewer_la_SOURCES= $(MOC_FILES)
+nodist_libOCCViewer_la_SOURCES = $(MOC_FILES)
 
-dist_salomeres_DATA = \
-	resources/occ_view_back.png \
-	resources/occ_view_bottom.png \
-	resources/occ_view_camera_dump.png \
-	resources/occ_view_clone.png \
-	resources/occ_view_clipping.png \
-	resources/occ_view_clipping_pressed.png \
-	resources/occ_view_scaling.png \
-	resources/occ_view_fitall.png \
-	resources/occ_view_fitarea.png \
-	resources/occ_view_front.png \
-	resources/occ_view_glpan.png \
-	resources/occ_view_left.png \
-	resources/occ_view_pan.png \
-	resources/occ_view_presets.png \
-	resources/occ_view_reset.png \
-	resources/occ_view_right.png \
-	resources/occ_view_rotate.png \
-	resources/occ_view_shoot.png \
-	resources/occ_view_top.png \
-	resources/occ_view_triedre.png \
-	resources/occ_view_zoom.png \
+dist_salomeres_DATA =				\
+	resources/occ_view_back.png		\
+	resources/occ_view_bottom.png		\
+	resources/occ_view_camera_dump.png	\
+	resources/occ_view_clone.png		\
+	resources/occ_view_clipping.png		\
+	resources/occ_view_clipping_pressed.png	\
+	resources/occ_view_scaling.png		\
+	resources/occ_view_fitall.png		\
+	resources/occ_view_fitarea.png		\
+	resources/occ_view_front.png		\
+	resources/occ_view_glpan.png		\
+	resources/occ_view_left.png		\
+	resources/occ_view_pan.png		\
+	resources/occ_view_presets.png		\
+	resources/occ_view_reset.png		\
+	resources/occ_view_right.png		\
+	resources/occ_view_rotate.png		\
+	resources/occ_view_shoot.png		\
+	resources/occ_view_top.png		\
+	resources/occ_view_triedre.png		\
+	resources/occ_view_zoom.png		\
 	resources/occ_view_rotation_point.png
 
-nodist_salomeres_DATA = \
-	OCCViewer_images.qm \
+nodist_salomeres_DATA =		\
+	OCCViewer_images.qm	\
 	OCCViewer_msg_en.qm 
 
-libOCCViewer_la_CPPFLAGS=$(QT_INCLUDES) $(OGL_INCLUDES) $(CAS_CPPFLAGS) \
+libOCCViewer_la_CPPFLAGS = $(QT_INCLUDES) $(OGL_INCLUDES) $(CAS_CPPFLAGS) \
 	-I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 
-libOCCViewer_la_LDFLAGS=$(OGL_LIBS) $(QT_MT_LIBS) $(CAS_KERNEL) $(CAS_VIEWER) -lTKOpenGl
-libOCCViewer_la_LIBADD=../Qtx/libqtx.la ../SUIT/libsuit.la
+libOCCViewer_la_LDFLAGS  = $(OGL_LIBS) $(QT_MT_LIBS) $(CAS_KERNEL) $(CAS_VIEWER) -lTKOpenGl
+libOCCViewer_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la

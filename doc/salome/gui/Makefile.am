@@ -38,4 +38,4 @@ install-data-local: usr_docs
 	cp -rp GUI $(DESTDIR)$(docdir)/gui
 
 uninstall-local:
-	rm -rf $(DESTDIR)$(docdir)/gui
+	rm -rf $(DESTDIR)$(docdir)/gui/GUI

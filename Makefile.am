@@ -25,6 +25,9 @@
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
+ACLOCAL_AMFLAGS = -I adm_local/unix/config_files \
+                  -I ${KERNEL_ROOT_DIR}/salome_adm/unix/config_files
+
 if GUI_ENABLE_CORBA
     IDLDIR = idl
 else !GUI_ENABLE_CORBA

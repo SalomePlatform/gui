@@ -38,4 +38,4 @@ install-data-local:
 	fi;
 
 uninstall-local:
-	rm -rf $(docdir)/tui
+	rm -rf $(docdir)/tui/GUI

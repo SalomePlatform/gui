@@ -56,7 +56,7 @@ private:
 /*!\var myMessage
  * \brief stores an exception message
  */   
-Standard_CString myMessage;
+Standard_Character* myMessage;
 
 };
 

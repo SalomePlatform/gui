@@ -51,7 +51,6 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 SWIG_FLAGS    = @SWIG_FLAGS@ -I$(srcdir)
 SWIG_SOURCES  = libSALOME_Swig.i
 
-nodist_salomepython_PYTHON = libSALOME_Swig.py
 libSALOME_Swig.py: swig_wrap.cpp
 
 # library
@@ -97,6 +96,7 @@ dist_salomescript_DATA =	\
 	test_remove_ref.py
 
 nodist_salomescript_DATA =		\
+	libSALOME_Swig.py		\
 	supervisionexample.py		\
 	supervisiongeomexample.py
 

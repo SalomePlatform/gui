@@ -819,9 +819,11 @@ bool SUIT_TreeModel::autoUpdate() const
   automatically when data tree is changed.
 
   \param on 'auto-update tree' flag value
+  \param updateImmediately  if \c true, the tree is updated immediately;
+  otherwise the tree must be updated manually
   \sa autoUpdate(), updateTree()
 */
-void SUIT_TreeModel::setAutoUpdate( const bool on )
+void SUIT_TreeModel::setAutoUpdate( const bool on, const bool updateImmediately )
 {
   if ( myAutoUpdate == on )
     return;
@@ -838,7 +840,8 @@ void SUIT_TreeModel::setAutoUpdate( const bool on )
     SUIT_DataObject::connect( SIGNAL( removed( SUIT_DataObject*, SUIT_DataObject* ) ),
 			      this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
 
-    updateTree();
+    if ( updateImmediately )
+      updateTree();
   }
 }
 
@@ -1235,12 +1238,14 @@ bool SUIT_ProxyModel::autoUpdate() const
   automatically when data tree is changed.
 
   \param on 'auto-update tree' flag value
+  \param updateImmediately  if \c true, the tree is updated immediately;
+  otherwise the tree must be updated manually
   \sa autoUpdate(), updateTree()
 */
-void SUIT_ProxyModel::setAutoUpdate( const bool on )
+void SUIT_ProxyModel::setAutoUpdate( const bool on, const bool updateImmediately )
 {
   if ( treeModel() )
-    treeModel()->setAutoUpdate( on );
+    treeModel()->setAutoUpdate( on, updateImmediately );
 }
 
 /*!

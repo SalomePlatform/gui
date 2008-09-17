@@ -107,13 +107,15 @@ bool SUIT_DataBrowser::autoUpdate() const
   automatically when data tree is changed.
 
   \param on 'auto-update tree' flag value
+  \param updateImmediately  if \c true, the tree is updated immediately;
+  otherwise the tree must be updated manually
   \sa autoUpdate(), updateTree()
 */
-void SUIT_DataBrowser::setAutoUpdate( const bool on )
+void SUIT_DataBrowser::setAutoUpdate( const bool on, const bool updateImmediately )
 {
   SUIT_ProxyModel* m = qobject_cast<SUIT_ProxyModel*>( model() );
   if ( m ) 
-    m->setAutoUpdate( on );
+    m->setAutoUpdate( on, updateImmediately );
 }
 
 /*!

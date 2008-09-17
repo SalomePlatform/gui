@@ -45,7 +45,7 @@ public:
   void             setRoot( SUIT_DataObject* );
 
   bool             autoUpdate() const;
-  void             setAutoUpdate( const bool );
+  void             setAutoUpdate( const bool, const bool = true );
 
   void             updateTree( SUIT_DataObject* = 0, const bool = true );
 

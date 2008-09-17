@@ -97,7 +97,7 @@ public:
   void                   setAutoDeleteTree( const bool );
 
   bool                   autoUpdate() const;
-  void                   setAutoUpdate( const bool );
+  void                   setAutoUpdate( const bool, const bool = true );
 
   virtual bool           customSorting( const int ) const;
   virtual bool           lessThan( const QModelIndex& left, const QModelIndex& right ) const;
@@ -158,7 +158,7 @@ public:
   void                   setAutoDeleteTree( const bool );
 
   bool                   autoUpdate() const;
-  void                   setAutoUpdate( const bool );
+  void                   setAutoUpdate( const bool, const bool = true );
  
   bool                   isSortingEnabled() const;
 

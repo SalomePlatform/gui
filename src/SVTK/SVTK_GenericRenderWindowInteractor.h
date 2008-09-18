@@ -122,7 +122,7 @@ class SVTK_EXPORT SVTK_GenericRenderWindowInteractor: public QVTK_GenericRenderW
   SVTK_GenericRenderWindowInteractor();
   ~SVTK_GenericRenderWindowInteractor();
 
-  vtkSmartPointer<SVTK_Selector> mySelector; //!< Keeps a pointer to SVTK_Selector
+  SVTK_Selector* mySelector; //!< Keeps a pointer to SVTK_Selector
   QWidget* myRenderWidget; //!< Keeps a pointer to QWidget, where vtkRenderWindow maps to.
 };
 

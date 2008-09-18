@@ -48,7 +48,7 @@ AS_IF([test "x$with_testrecorder" != xno || test "$with_testrecorder" != "no"],[
   fi
   
   if test "x$TESTRECORDER_HOME" != "x"; then
-    TESTRECORDER_INCLUDES="-I$TESTRECORDER_HOME"
+    TESTRECORDER_INCLUDES="-I$TESTRECORDER_HOME/include"
     TESTRECORDER_LIBS="-L$TESTRECORDER_HOME/lib -lTestRecorder"
   
     CPPFLAGS_old="$CPPFLAGS"

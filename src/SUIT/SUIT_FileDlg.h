@@ -16,81 +16,108 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifndef SUIT_FILEDIALOG_H
-#define SUIT_FILEDIALOG_H
+// File   : SUIT_FileDlg.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
+
+#ifndef SUIT_FILEDLG_H
+#define SUIT_FILEDLG_H
 
 #include "SUIT.h"
 
 #include <QFileDialog>
 
 class QLabel;
+class QLineEdit;
 class QComboBox;
 class QPushButton;
 class SUIT_FileValidator;
 
-/*! \class QFileDialog
- *  For more information see <a href="http://doc.trolltech.com">QT documentation</a>.
-*/
 class SUIT_EXPORT SUIT_FileDlg : public QFileDialog
 {
   Q_OBJECT
 
 public:
-  SUIT_FileDlg( QWidget*, bool open, bool showQuickDir = true, bool modal = true );
+  SUIT_FileDlg( QWidget*, bool, bool = true, bool = true );
   virtual ~SUIT_FileDlg();
 
-public:    
   bool                isOpenDlg()    const;    
-  QString             selectedFile() const;
+  
+  bool                checkPermissions() const;
+  void                setCheckPermissions( const bool );
 
-  void                selectFile( const QString& );
-
+  SUIT_FileValidator* validator() const;
   void                setValidator( SUIT_FileValidator* );
 
-  static QString      getFileName( QWidget* parent, const QString& initial, const QStringList& filters, 
-				   const QString& caption, const bool open, const bool showQuickDir = true,
-                                   SUIT_FileValidator* validator = 0 );
-  static QStringList  getOpenFileNames( QWidget* parent, const QString& initial, const QStringList& filters, 
-				        const QString& caption, bool showQuickDir = true, 
-				        SUIT_FileValidator* validator = 0 );
-  static QString      getExistingDirectory( QWidget* parent, const QString& initial,
-                                            const QString& caption, const bool showQuickDir = true );
+  bool                addWidgets( QWidget*, QWidget*, QWidget* );
 
-private:
-  void                polish();
-  bool                acceptData();
-  void                addExtension();
-  bool                processPath( const QString& path );
+  QStringList         selectedFiles() const;
+  QString             selectedFile() const;
 
-protected slots:
-  void                accept();        
-  void                reject(); 
-  void                quickDir( const QString& );
-  void                addQuickDir();
+  void selectFile( const QString& );
+
+  static QString      getLastVisitedDirectory();
+
+  static QString      getFileName( QWidget*, 
+				   const QString&, 
+				   const QStringList&, 
+				   const QString& = QString(), 
+				   const bool = true, 
+				   const bool = true,
+                                   SUIT_FileValidator* = 0 );
+  static QString      getFileName( QWidget*, 
+				   const QString&, 
+				   const QString&,
+				   const QString& = QString(), 
+				   const bool = true,
+				   const bool = true,
+                                   SUIT_FileValidator* = 0 );
+
+  static QStringList  getOpenFileNames( QWidget*, 
+					const QString&,
+					const QStringList&, 
+				        const QString& = QString(),
+					const bool = true, 
+				        SUIT_FileValidator* = 0 );
+  static QStringList  getOpenFileNames( QWidget*, 
+					const QString&,
+					const QString&, 
+				        const QString& = QString(),
+					const bool = true, 
+				        SUIT_FileValidator* = 0 );
+
+  static QString      getExistingDirectory( QWidget*, 
+					    const QString&,
+                                            const QString& = QString(), 
+					    const bool = true,
+					    SUIT_FileValidator* = 0 );
+
+  static QString      getLastVisitedPath();
 
 protected:
   virtual bool        event( QEvent* );
+  QLineEdit*          lineEdit() const;
+  virtual bool        acceptData();
+  QString             addExtension( const QString& ) const;
+  bool                processPath( const QString& );
+  void                addFilter( const QString& );
+  static bool         hasWildCards( const QString& );
 
-protected:
-  bool                myOpen;             //!< open/save selector
-  QString             mySelectedFile;     //!< selected filename
+protected slots:
+  void                accept();        
+  void                quickDir( const QString& );
+  void                addQuickDir();
+
+private:
+  void                polish();
+
+private:
   SUIT_FileValidator* myValidator;        //!< file validator
   QLabel*             myQuickLab;         //!< quick dir combo box
   QComboBox*          myQuickCombo;       //!< quick dir combo box
   QPushButton*        myQuickButton;      //!< quick dir add button
-  
-  /*! \var myAccepted
-   * \brief flag is used to warkaround the Qt 2.2.2
-   * \bug accept() method is called twice if user presses 'Enter' key 
-   * in file name editor while file name is not acceptable by acceptData()
-   * (e.g. permission denied)
-   */
-//  bool                myAccepted;
-  /*! ASL: this bug can be fixed with help of call setDefault( false ) 
-   *       and setAutoDefault( false ) methods for all QPushButtons of this dialog
-   */
-
+  bool                myCheckPermissions; //!< check permissions option
   static QString      myLastVisitedPath;  //!< last visited path
 };
 
-#endif
+#endif  // SUIT_FILEDLG_H

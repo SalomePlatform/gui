@@ -354,6 +354,8 @@ echo
 
 CHECK_QWT
 
+CHECK_TESTRECORDER
+
 echo
 echo ---------------------------------------------
 echo Testing PyConsole
@@ -522,7 +524,7 @@ do
 done
 
 echo "---Optional:"
-variables="cppunit_ok"
+variables="cppunit_ok TESTRECORDER_ok"
 
 for var in $variables
 do
@@ -556,6 +558,7 @@ AM_CONDITIONAL(ENABLE_OCCVIEWER, [test "$DISABLE_OCCVIEWER" = no])
 AM_CONDITIONAL(ENABLE_VTKVIEWER, [test "$DISABLE_VTKVIEWER" = no])
 AM_CONDITIONAL(ENABLE_SALOMEOBJECT, [test "$DISABLE_SALOMEOBJECT" = no])
 AM_CONDITIONAL(ENABLE_QXGRAPHVIEWER, [test "$DISABLE_QXGRAPHVIEWER" = no])
+AM_CONDITIONAL(ENABLE_TESTRECORDER, [test "$DISABLE_TESTRECORDER" = no])
 
 echo
 echo ---------------------------------------------

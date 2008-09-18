@@ -35,6 +35,10 @@
 #include <ConnectionManager_i.hxx>
 #include <SALOME_LifeCycleCORBA.hxx>
 
+#ifndef DISABLE_TESTRECORDER
+  #include <TestApplication.h>
+#endif
+
 #include <QDir>
 #include <QFile>
 #include <QApplication>
@@ -245,10 +249,18 @@ protected:
   }
 };
 
-class SALOME_QApplication : public QApplication
+#ifndef DISABLE_TESTRECORDER
+  class SALOME_QApplication : public TestApplication
+#else
+  class SALOME_QApplication : public QApplication
+#endif
 {
 public:
+#ifndef DISABLE_TESTRECORDER
+  SALOME_QApplication( int& argc, char** argv ) : TestApplication( argc, argv ), myHandler ( 0 ) {}
+#else
   SALOME_QApplication( int& argc, char** argv ) : QApplication( argc, argv ), myHandler ( 0 ) {}
+#endif
 
   virtual bool notify( QObject* receiver, QEvent* e )
   {
@@ -266,8 +278,13 @@ public:
     }
 #endif
 
+#ifndef DISABLE_TESTRECORDER
+    return myHandler ? myHandler->handle( receiver, e ) :
+      TestApplication::notify( receiver, e );
+#else
     return myHandler ? myHandler->handle( receiver, e ) :
       QApplication::notify( receiver, e );
+#endif
   }
   SUIT_ExceptionHandler* handler() const { return myHandler; }
   void setHandler( SUIT_ExceptionHandler* h ) { myHandler = h; }

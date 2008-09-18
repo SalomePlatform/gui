@@ -20,6 +20,10 @@
 
 #include "SUIT_MessageBox.h"
 
+#ifndef DISABLE_TESTRECORDER
+  #include <TestApplication.h>
+#endif
+
 #include <QApplication>
 
 /*!\class SUIT_ExceptionHandler
@@ -39,7 +43,12 @@ bool SUIT_ExceptionHandler::handle( QObject* o, QEvent* e )
 */
 bool SUIT_ExceptionHandler::internalHandle( QObject* o, QEvent* e )
 {
+#ifndef DISABLE_TESTRECORDER
+  TestApplication* aTApp = qobject_cast<TestApplication*>(qApp);
+  return aTApp ? aTApp->TestApplication::notify( o, e ) : false;
+#else
   return qApp ? qApp->QApplication::notify( o, e ) : false;
+#endif
 }
 
 /*!

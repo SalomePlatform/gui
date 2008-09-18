@@ -42,7 +42,18 @@ nodist_salomeres_DATA = SUITApp_msg_en.qm
 libSUITApp_la_CPPFLAGS = $(QT_INCLUDES) $(PYTHON_INCLUDES) \
                          -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx -I$(srcdir)/../Style
 
+if ENABLE_TESTRECORDER
+  libSUITApp_la_CPPFLAGS+= $(TESTRECORDER_INCLUDES)
+else !ENABLE_TESTRECORDER
+  libSUITApp_la_CPPFLAGS+= -DDISABLE_TESTRECORDER
+endif
+
 libSUITApp_la_LDFLAGS  = $(QT_MT_LIBS) 
+
+if ENABLE_TESTRECORDER
+  libSUITApp_la_LDFLAGS+= $(TESTRECORDER_LIBS)
+endif
+
 libSUITApp_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la ../Style/libSalomeStyle.la
 
 if ENABLE_PYCONSOLE
@@ -57,4 +68,14 @@ dist_SUITApp_SOURCES = SUITApp.cxx
 SUITApp_CPPFLAGS = $(QT_INCLUDES) $(PYTHON_INCLUDES) \
                    -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx -I$(srcdir)/../Style
 
+if ENABLE_TESTRECORDER
+  SUITApp_CPPFLAGS+= $(TESTRECORDER_INCLUDES)
+else !ENABLE_TESTRECORDER
+  SUITApp_CPPFLAGS+= -DDISABLE_TESTRECORDER
+endif
+
 SUITApp_LDADD    = libSUITApp.la  ../Qtx/libqtx.la ../SUIT/libsuit.la ../Style/libSalomeStyle.la
+
+if ENABLE_TESTRECORDER
+  SUITApp_LDADD+= $(TESTRECORDER_LIBS)
+endif

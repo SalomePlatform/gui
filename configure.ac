@@ -524,7 +524,7 @@ do
 done
 
 echo "---Optional:"
-variables="cppunit_ok TESTRECORDER_ok"
+variables="cppunit_ok TestRecorder_ok"
 
 for var in $variables
 do

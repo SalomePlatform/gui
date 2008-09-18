@@ -19,11 +19,19 @@
 #ifndef SUITAPP_APPLICATION_H
 #define SUITAPP_APPLICATION_H
 
-#include <QApplication>
+#ifndef DISABLE_TESTRECORDER
+  #include <TestApplication.h>
+#else
+  #include <QApplication>
+#endif
 
 class SUIT_ExceptionHandler;
 
-class SUITApp_Application : public QApplication
+#ifndef DISABLE_TESTRECORDER
+  class SUITApp_Application : public TestApplication
+#else
+  class SUITApp_Application : public QApplication
+#endif
 {
   Q_OBJECT
 

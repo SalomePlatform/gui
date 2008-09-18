@@ -54,11 +54,21 @@ libSalomeSession_la_CPPFLAGS = $(QT_MT_INCLUDES) $(PYTHON_INCLUDES)		\
 	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../Event		\
 	-I$(srcdir)/../Style @LIBXML_INCLUDES@
 
+if ENABLE_TESTRECORDER
+  libSalomeSession_la_CPPFLAGS+= $(TESTRECORDER_INCLUDES)
+else !ENABLE_TESTRECORDER
+  libSalomeSession_la_CPPFLAGS+= -DDISABLE_TESTRECORDER
+endif
+
 libSalomeSession_la_LDFLAGS = $(QT_MT_LIBS) $(KERNEL_LDFLAGS) -lSalomeNS	\
 	-lSalomeLifeCycleCORBA -lOpUtil -lSALOMELocalTrace -lSalomeCatalog	\
 	-lSalomeDSClient $(CAS_KERNEL) -lwith_loggerTraceCollector		\
 	../SUIT/libsuit.la ../Event/libEvent.la ../../idl/libSalomeIDLGUI.la	\
 	../Style/libSalomeStyle.la
+
+if ENABLE_TESTRECORDER
+  libSalomeSession_la_LDFLAGS+= $(TESTRECORDER_LIBS)
+endif
 
 # Executable
 bin_PROGRAMS = SALOME_Session_Server
@@ -72,3 +82,7 @@ SALOME_Session_Server_LDADD    = $(libSalomeSession_la_LDFLAGS) $(OMNIORB_LIBS)	
 	-lSalomeNotification -lSALOMEBasics -lSalomeLauncher ../Qtx/libqtx.la	\
 	$(top_builddir)/idl/libSalomeIDLGUI.la					\
 	libSalomeSession.la
+
+if ENABLE_TESTRECORDER
+  SALOME_Session_Server_LDADD+= $(TESTRECORDER_LIBS)
+endif

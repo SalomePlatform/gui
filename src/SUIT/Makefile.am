@@ -117,5 +117,17 @@ nodist_salomeres_DATA =			\
 	SUIT_msg_en.qm
 
 libsuit_la_CPPFLAGS = $(QT_INCLUDES) -I$(srcdir)/../Qtx -I$(srcdir)/../ObjBrowser
+
+if ENABLE_TESTRECORDER
+  libsuit_la_CPPFLAGS+= $(TESTRECORDER_INCLUDES)
+else !ENABLE_TESTRECORDER
+  libsuit_la_CPPFLAGS+= -DDISABLE_TESTRECORDER
+endif
+
 libsuit_la_LDFLAGS  = $(QT_MT_LIBS)
+
+if ENABLE_TESTRECORDER
+  libsuit_la_LDFLAGS+= $(TESTRECORDER_LIBS)
+endif
+
 libsuit_la_LIBADD   = ../Qtx/libqtx.la ../ObjBrowser/libObjBrowser.la

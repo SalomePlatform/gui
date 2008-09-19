@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -121,7 +121,7 @@ void QtxPreferenceItem::Updater::customEvent( QEvent* /*e*/ )
   \class QtxPreferenceItem
   \brief Base class for implementing of all the preference items.
 
-  To implement any specific preference item, cubclass from the 
+  To implement any specific preference item, cubclass from the
   QtxPreferenceItem and redefine store() and retrieve() methods.
 */
 
@@ -554,6 +554,11 @@ QtxPreferenceItem* QtxPreferenceItem::findItem( const QString& title, const int 
   return item;
 }
 
+void QtxPreferenceItem::ensureVisible()
+{
+  if ( parentItem() )
+    parentItem()->ensureVisible( this );
+}
 
 /*!
   \brief Get integer resources value corresponding to the item.
@@ -705,7 +710,7 @@ void QtxPreferenceItem::setFont( const QFont& val )
 /*!
   \brief Callback function which is called when the child
   preference item is added.
-  
+
   This function can be reimplemented in the subclasses to customize
   child item addition operation. Base implementation does nothing.
 
@@ -719,7 +724,7 @@ void QtxPreferenceItem::itemAdded( QtxPreferenceItem* /*item*/ )
 /*!
   \brief Callback function which is called when the child
   preference item is removed.
-  
+
   This function can be reimplemented in the subclasses to customize
   child item removal operation. Base implementation does nothing.
 
@@ -733,15 +738,20 @@ void QtxPreferenceItem::itemRemoved( QtxPreferenceItem* /*item*/ )
 /*!
   \brief Callback function which is called when the child
   preference item is modified.
-  
+
   This function can be reimplemented in the subclasses to customize
   child item modifying operation. Base implementation does nothing.
 
   \param item child item being modified
   \sa itemAdded(), itemRemoved()
 */
-void QtxPreferenceItem::itemChanged( QtxPreferenceItem* /*item*/ )
+void QtxPreferenceItem::itemChanged( QtxPreferenceItem* )
 {
+}
+
+void QtxPreferenceItem::ensureVisible( QtxPreferenceItem* )
+{
+  ensureVisible();
 }
 
 /*!
@@ -757,7 +767,7 @@ void QtxPreferenceItem::triggerUpdate()
 
   This function can be reimplemented in the subclasses.
   Base implementation does nothing.
-  
+
   \param name option name
   \return property value or null QVariant if option is not set
   \sa setOptionValue()
@@ -775,7 +785,7 @@ QVariant QtxPreferenceItem::optionValue( const QString& name ) const
 
   This function can be reimplemented in the subclasses.
   Base implementation does nothing.
-  
+
   \param name option name
   \param val new property value
   \sa optionValue()
@@ -847,39 +857,6 @@ QtxPreferenceMgr* QtxPreferenceMgr::preferenceMgr() const
 {
   return (QtxPreferenceMgr*)this;
 }
-
-/*
-  \brief Add new preference item.
-  \param label label of widget to edit preference item
-  \param pId parent preference item id
-  \param type preference item type
-  \param section resource file section associated to the preference item
-  \param param resource file parameter associated to the preference item
-*/
-/*
-int QtxPreferenceMgr::addItem( const QString& label, const int pId, const int type,
-                               const QString& section, const QString& param )
-{
-  Item* i = createItem( label, type, pId );
-  if ( !i )
-    return -1;
-
-  if ( !myItems.contains( i->id() ) )
-  {
-    myItems.insert( i->id(), i );
-
-    i->setTitle( label );
-    i->setResource( section, param );
-
-    if ( !i->parentItem() && !myChildren.contains( i ) )
-      myChildren.append( i );
-
-    itemAdded( i );
-  }
-
-  return i->id();
-}
-*/
 
 /*!
   \brief Get preference item option value.
@@ -976,39 +953,12 @@ void QtxPreferenceMgr::fromBackup()
 
 /*!
   \brief Update preferences manager.
-  
+
   Base implementation does nothing.
 */
 void QtxPreferenceMgr::update()
 {
 }
-
-/*
-  \brief Create preference item.
-  \param label preference item title
-  \param type preference item type
-  \param pId parent preference item ID
-  \return new item
-*/
-/*
-QtxPreferenceItem* QtxPreferenceMgr::createItem( const QString& label, const int type, const int pId )
-{
-  Item* i = 0;
-  if ( pId < 0 )
-    i = createItem( label, type );
-  else
-  {
-    Item* pItem = item( pId );
-    if ( pItem )
-    {
-      i = pItem->createItem( label, type );
-      pItem->insertChild( i );
-    }
-  }
-
-  return i;
-}
-*/
 
 /*!
   \brief Get all resources items values.
@@ -1124,7 +1074,7 @@ void QtxPreferenceMgr::differentValues( const ResourceMap& map1, const ResourceM
 
   This method is called from store() and fromBackup() methods.
   Base implementation does nothing.
-  
+
   \sa store(), fromBackup()
 */
 void QtxPreferenceMgr::changedResources( const ResourceMap& )

@@ -44,6 +44,11 @@ public:
 		 AddLast      //!< if specified item doesn't exist, add it to the end
   } InsertionMode;
 
+  typedef enum { LinkAuto,    //!< put the full path of link into the menu if link file names of severals link are same
+		 LinkShort,   //!< put the only file name of link into the menu
+		 LinkFull     //!< put the full path of link into the menu
+  } LinkType;
+
 public:
   QtxMRUAction( QObject* = 0 );
   QtxMRUAction( const QString&, const QString&, QObject* = 0 );
@@ -53,11 +58,20 @@ public:
   int          insertMode() const;
   void         setInsertMode( const int );
 
+  int          linkType() const;
+  void         setLinkType( const int );
+
   int          count() const;
   bool         isEmpty() const;
 
   int          visibleCount() const;
   void         setVisibleCount( const int );
+
+  bool         isClearPossible() const;
+  void         setClearPossible( const bool );
+
+  int          historyCount() const;
+  void         setHistoryCount( const int );
 
   void         remove( const int );
   void         remove( const QString& );
@@ -70,19 +84,26 @@ public:
   virtual void loadLinks( QtxResourceMgr*, const QString&, const bool = true );
   virtual void saveLinks( QtxResourceMgr*, const QString&, const bool = true ) const;
 
+public slots:
+  void         clear();
+
 signals:
   void         activated( const QString& );
 
 private slots:
   void         onActivated();
   void         onAboutToShow();
+  void         onCleared( bool );
 
 private:
   void         updateMenu();
 
 private:
   QStringList  myLinks;        //!< most recent used items
+  QAction*     myClear;        //!< clear item
   int          myVisCount;     //!< number of visible MRU items
+  int          myHistoryCount; //!< number of stored MRU items
+  int          myLinkType;     //!< type of link names in menu
   int          myInsertMode;   //!< items insertion policy
 };
 

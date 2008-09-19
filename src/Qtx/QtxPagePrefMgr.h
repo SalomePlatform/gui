@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -79,6 +79,7 @@ protected:
 
 private:
   void             initialize() const;
+  void             initialize( QtxPreferenceItem* );
 
 private:
   QtxGridBox*      myBox;
@@ -87,16 +88,14 @@ private:
 
 class QTX_EXPORT QtxPagePrefItem : public QtxPreferenceItem
 {
+  class Listener;
+
 public:
   QtxPagePrefItem( const QString&, QtxPreferenceItem* = 0,
                    const QString& = QString(), const QString& = QString() );
   virtual ~QtxPagePrefItem();
 
-  virtual int       rtti() const;
-
   QWidget*          widget() const;
-
-  static int        RTTI();
 
 protected:
   void              setWidget( QWidget* );
@@ -110,11 +109,17 @@ protected:
   virtual void      store();
   virtual void      retrieve();
 
+  virtual void      widgetShown();
+  virtual void      widgetHided();
+
+  virtual void      ensureVisible( QtxPreferenceItem* );
+
 private:
   virtual void      contentChanged();
 
 private:
   QPointer<QWidget> myWidget;
+  Listener*         myListener;
 };
 
 class QTX_EXPORT QtxPageNamedPrefItem : public QtxPagePrefItem
@@ -125,6 +130,8 @@ public:
   virtual ~QtxPageNamedPrefItem();
 
   virtual void      setTitle( const QString& );
+
+  static void       adjustLabels( QtxPagePrefItem* );
 
 protected:
   QLabel*           label() const;
@@ -160,6 +167,9 @@ private slots:
 protected:
   virtual QVariant optionValue( const QString& ) const;
   virtual void     setOptionValue( const QString&, const QVariant& );
+  virtual void     ensureVisible( QtxPreferenceItem* );
+
+  virtual void     widgetShown();
 
 private:
   void             updateInfo();
@@ -189,6 +199,9 @@ public:
 
   virtual void     updateContents();
 
+protected:
+  virtual void     ensureVisible( QtxPreferenceItem* );
+
 private:
   void             updateToolBox();
 
@@ -217,6 +230,7 @@ public:
 protected:
   virtual QVariant optionValue( const QString& ) const;
   virtual void     setOptionValue( const QString&, const QVariant& );
+  virtual void     ensureVisible( QtxPreferenceItem* );
 
 private:
   void             updateTabs();
@@ -252,6 +266,8 @@ public:
 protected:
   virtual QVariant optionValue( const QString& ) const;
   virtual void     setOptionValue( const QString&, const QVariant& );
+
+  virtual void     widgetShown();
 
 private:
   void             updateFrame();
@@ -291,9 +307,13 @@ public:
   virtual void     store();
   virtual void     retrieve();
 
+  QtxGridBox*      gridBox() const;
+
 protected:
   virtual QVariant optionValue( const QString& ) const;
   virtual void     setOptionValue( const QString&, const QVariant& );
+
+  virtual void     widgetShown();
 
 private:
   void             updateState();
@@ -531,7 +551,7 @@ public:
 protected:
   virtual QVariant optionValue( const QString& ) const;
   virtual void     setOptionValue( const QString&, const QVariant& );
-  
+
 private:
   QtxPathEdit*     myPath;
 };

@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -36,12 +36,19 @@
   \param parent parent object
 */
 QtxMRUAction::QtxMRUAction( QObject* parent )
-: QtxAction( "Most Recently Used", "Most Recently Used", 0, parent ),
+: QtxAction( tr( "Most Recently Used" ), tr( "Most Recently Used" ), 0, parent ),
   myVisCount( 5 ),
+  myHistoryCount( -1 ),
+  myLinkType( LinkAuto ),
   myInsertMode( MoveFirst )
 {
+  myClear = new QAction( tr( "Clear" ), this );
+  myClear->setVisible( false );
+
   setMenu( new QMenu( 0 ) );
+
   connect( menu(), SIGNAL( aboutToShow() ), this, SLOT( onAboutToShow() ) );
+  connect( myClear, SIGNAL( triggered( bool ) ), this, SLOT( onCleared( bool ) ) );
 }
 
 /*!
@@ -53,10 +60,16 @@ QtxMRUAction::QtxMRUAction( QObject* parent )
 QtxMRUAction::QtxMRUAction( const QString& text, const QString& menuText, QObject* parent )
 : QtxAction( text, menuText, 0, parent ),
   myVisCount( 5 ),
+  myHistoryCount( -1 ),
+  myLinkType( LinkAuto ),
   myInsertMode( MoveFirst )
 {
+  myClear = new QAction( tr( "Clear" ), this );
+  myClear->setVisible( false );
+
   setMenu( new QMenu( 0 ) );
   connect( menu(), SIGNAL( aboutToShow() ), this, SLOT( onAboutToShow() ) );
+  connect( myClear, SIGNAL( triggered( bool ) ), this, SLOT( onCleared( bool ) ) );
 }
 
 /*!
@@ -69,11 +82,17 @@ QtxMRUAction::QtxMRUAction( const QString& text, const QString& menuText, QObjec
 QtxMRUAction::QtxMRUAction( const QString& text, const QIcon& icon,
                             const QString& menuText, QObject* parent )
 : QtxAction( text, icon, menuText, 0, parent ),
-myVisCount( 5 ),
-myInsertMode( MoveFirst )
+  myVisCount( 5 ),
+  myHistoryCount( -1 ),
+  myLinkType( LinkAuto ),
+  myInsertMode( MoveFirst )
 {
+  myClear = new QAction( tr( "Clear" ), this );
+  myClear->setVisible( false );
+
   setMenu( new QMenu( 0 ) );
   connect( menu(), SIGNAL( aboutToShow() ), this, SLOT( onAboutToShow() ) );
+  connect( myClear, SIGNAL( triggered( bool ) ), this, SLOT( onCleared( bool ) ) );
 }
 
 /*!
@@ -100,6 +119,24 @@ int QtxMRUAction::insertMode() const
 void QtxMRUAction::setInsertMode( const int mode )
 {
   myInsertMode = mode;
+}
+
+/*!
+  \brief Get the type of link menu name.
+  \return link type (QtxMRUAction::LinkType)
+*/
+int QtxMRUAction::linkType() const
+{
+  return myLinkType;
+}
+
+/*!
+  \brief Set the type of link menu name.
+  \param link type (QtxMRUAction::LinkType)
+*/
+void QtxMRUAction::setLinkType( const int type )
+{
+  myLinkType = type;
 }
 
 /*!
@@ -132,7 +169,7 @@ int QtxMRUAction::visibleCount() const
 
 /*!
   \brief Set number of visible MRU items.
-  
+
   This method sets the maximum number of MRU items
   to be displayed in the popup menu (5 by default).
 
@@ -146,6 +183,48 @@ void QtxMRUAction::setVisibleCount( int num )
     return;
 
   myVisCount = num;
+}
+
+/*!
+  \brief Return visible status of the menu item which clear all MRU items.
+*/
+bool QtxMRUAction::isClearPossible() const
+{
+  return myClear->isVisible();
+}
+
+/*!
+  \brief Set visible the menu item which clear all MRU items.
+*/
+void QtxMRUAction::setClearPossible( const bool on )
+{
+  myClear->setVisible( on );
+}
+
+/*!
+  \brief Get number of totally stored MRU items.
+  \return number of MRU items stored in the preferences
+  \sa setHistoryCount(), saveLinks(), loadLinks()
+*/
+int QtxMRUAction::historyCount() const
+{
+  return myHistoryCount;
+}
+
+/*!
+  \brief Set number of totally stored MRU items.
+
+  This option allows setting number of MRU items to be stored
+  in the preferences file.
+
+  If \a num < 0, then number of stored MRU items is not limited.
+
+  \return number of MRU items stored in the preferences
+  \sa historyCount(), saveLinks(), loadLinks()
+*/
+void QtxMRUAction::setHistoryCount( const int num )
+{
+  myHistoryCount = num;
 }
 
 /*!
@@ -200,6 +279,14 @@ void QtxMRUAction::remove( const int idx )
 void QtxMRUAction::remove( const QString& link )
 {
   myLinks.removeAll( link );
+}
+
+/*!
+  \brief Remove all MRU items.
+*/
+void QtxMRUAction::clear()
+{
+  myLinks.clear();
 }
 
 /*!
@@ -261,7 +348,7 @@ void QtxMRUAction::loadLinks( QtxResourceMgr* resMgr, const QString& section, co
     if ( !(*it).startsWith( itemPrefix ) )
       continue;
 
-    QString link = resMgr->stringValue( section, *it, QString::null );
+    QString link = resMgr->stringValue( section, *it, QString() );
     if ( link.isEmpty() || map.contains( link ) )
       continue;
 
@@ -281,8 +368,16 @@ void QtxMRUAction::saveLinks( QtxResourceMgr* resMgr, const QString& section, co
   if ( !resMgr || section.isEmpty() )
     return;
 
-  if ( clear )
-    resMgr->remove( section );
+  QString itemPrefix( "item_" );
+
+  if ( clear ) {
+    QStringList items = resMgr->parameters( section );
+    for ( QStringList::const_iterator it = items.begin(); it != items.end(); ++it )
+    {
+      if ( (*it).startsWith( itemPrefix ) )
+	resMgr->remove( section, *it );
+    }
+  }
 
   QStringList lst;
   QMap<QString, int> map;
@@ -292,14 +387,13 @@ void QtxMRUAction::saveLinks( QtxResourceMgr* resMgr, const QString& section, co
     map.insert( *itr, 0 );
   }
 
-  QString itemPrefix( "item_" );
   QStringList items = resMgr->parameters( section );
   for ( QStringList::const_iterator it = items.begin(); it != items.end(); ++it )
   {
     if ( !(*it).startsWith( itemPrefix ) )
       continue;
 
-    QString link = resMgr->stringValue( section, *it, QString::null );
+    QString link = resMgr->stringValue( section, *it, QString() );
     if ( !link.isEmpty() && !map.contains( link ) )
     {
       lst.append( link );
@@ -310,13 +404,15 @@ void QtxMRUAction::saveLinks( QtxResourceMgr* resMgr, const QString& section, co
   }
 
   int counter = 0;
-  for ( QStringList::const_iterator iter = lst.begin(); iter != lst.end(); ++iter, counter++ )
+  for ( QStringList::const_iterator iter = lst.begin();
+	iter != lst.end() && ( myHistoryCount < 0 || counter < myHistoryCount );
+	++iter, counter++ )
     resMgr->setValue( section, itemPrefix + QString().sprintf( "%03d", counter ), *iter );
 }
 
 /*!
   \brief Prepare MRU items popup menu.
-  
+
   This method is called when the parent menu is shown.
   Enables or disables sub menu item according to the number of MRU items.
 */
@@ -336,9 +432,14 @@ void QtxMRUAction::onActivated()
   if ( !a )
     return;
 
-  QString link = a->text();
+  QString link = a->data().toString();
   if ( !link.isEmpty() && myLinks.contains( link ) )
     emit activated( link );
+}
+
+void QtxMRUAction::onCleared( bool )
+{
+  clear();
 }
 
 /*!
@@ -352,9 +453,58 @@ void QtxMRUAction::updateMenu()
 
   pm->clear();
 
+  QStringList links;
+  QMap<QString, int> map;
   int count = visibleCount() < 0 ? myLinks.count() : visibleCount();
-  for ( QStringList::const_iterator it = myLinks.begin(); it != myLinks.end() && count > 0; ++it, count-- )
-    pm->addAction( *it, this, SLOT( onActivated() ) );
+  int i = insertMode() == AddLast || insertMode() == MoveLast ? qMax( 0, myLinks.count()-count ) : 0;
+  for ( ; i < myLinks.count() && count > 0; ++i, count-- )
+  {
+    links.append( myLinks[i] );
+    if ( linkType() == LinkAuto )
+    {
+      QString shortName = Qtx::file( myLinks[i] );
+      if ( map.contains( shortName ) )
+	map[shortName]++;
+      else
+	map.insert( shortName, 0 );
+    }
+  }
+
+  i = 1;
+  for ( QStringList::const_iterator it = links.begin(); it != links.end(); ++it, i++ )
+  {
+    QString linkName;
+    switch( linkType() )
+    {
+    case LinkAuto:
+      linkName = Qtx::file( *it );
+      if ( map.contains( linkName ) && map[linkName] )
+	linkName = *it;
+      break;
+    case LinkShort:
+      linkName = Qtx::file( *it );
+      break;
+    case LinkFull:
+    default:
+      linkName = *it;
+      break;
+    }
+
+    if ( links.count() < 10 )
+      linkName = QString( "&%1 %2" ).arg( i ).arg( linkName );
+
+    pm->addAction( linkName, this, SLOT( onActivated() ) )->setData( *it );
+  }
+
+  if ( pm->isEmpty() )
+    pm->addAction( tr( "<Empty>" ) )->setEnabled( false );
+
+  if ( isClearPossible() )
+  {
+    pm->addSeparator();
+    pm->addAction( myClear );
+    myClear->setEnabled( !pm->isEmpty() );
+  }
 }
 
 /*!

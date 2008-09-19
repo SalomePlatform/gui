@@ -25,9 +25,11 @@
 
 #include "SalomeApp.h"
 
+#include <QObject>
+
 class SalomeApp_Application;
 
-class SALOMEAPP_EXPORT SalomeApp_VisualState
+class SALOMEAPP_EXPORT SalomeApp_VisualState: public QObject
 {
 public:
   SalomeApp_VisualState( SalomeApp_Application* );
@@ -35,6 +37,9 @@ public:
 
   virtual int            storeState();
   virtual void           restoreState( int savePoint );
+
+private:
+   virtual bool eventFilter( QObject* o, QEvent* e );
 
 protected:
   SalomeApp_Application* myApp;

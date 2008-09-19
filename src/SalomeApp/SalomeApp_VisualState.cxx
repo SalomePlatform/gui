@@ -43,7 +43,8 @@
   Constructor.
 */
 SalomeApp_VisualState::SalomeApp_VisualState( SalomeApp_Application* app )
-  : myApp( app )
+  : QObject(),
+    myApp( app )
 {
 }  
 
@@ -192,6 +193,8 @@ void SalomeApp_VisualState::restoreState(int savePoint)
   _PTR(AttributeParameter) ap = study->studyDS()->GetCommonParameters( study->getVisualComponentName(), savePoint );
   _PTR(IParameters) ip = ClientFactory::getIParameters(ap);
 
+  qApp->installEventFilter( this );
+
   //Remove all already existent veiwers and their views
   ViewManagerList lst;
   myApp->viewManagers( lst );
@@ -206,7 +209,7 @@ void SalomeApp_VisualState::restoreState(int savePoint)
 
   // parameters of view windows are stored in a map for restoring after restoring of the workstack
   QMap<SUIT_ViewWindow*, QString> viewersParameters;
-
+  
   for ( int i = 0; i < nbViewers; i++ ) {
     std::string viewerEntry = ip->getValue( "AP_VIEWERS_LIST", i );
     std::vector<std::string> veiewerParams = ip->parseValue(viewerEntry,'_');
@@ -303,6 +306,8 @@ void SalomeApp_VisualState::restoreState(int savePoint)
     if ( activeViewName == mapIt.key()->objectName().toStdString() )
       mapIt.key()->setFocus();
   }
+
+  qApp->removeEventFilter( this );
   
   //  for ( it.toFirst(); it.current(); ++it ) {
   //    int view_count = it.current()->getViewsCount();
@@ -321,4 +326,22 @@ void SalomeApp_VisualState::restoreState(int savePoint)
   //	views[i]->setFocus();
   //    }
   //  }
+}
+
+/*!
+  Custom event filter
+*/
+bool SalomeApp_VisualState::eventFilter( QObject* o, QEvent* e )
+{
+  // eat keyboard and mouse events
+  QEvent::Type aType = e->type();
+  if ( aType == QEvent::MouseButtonDblClick ||
+       aType == QEvent::MouseButtonPress ||
+       aType == QEvent::MouseButtonRelease ||
+       aType == QEvent::MouseMove ||
+       aType == QEvent::KeyPress ||
+       aType == QEvent::KeyRelease )
+    return true;
+  
+  return QObject::eventFilter( o, e );
 }

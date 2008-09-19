@@ -49,7 +49,7 @@ public:
 
   bool                 hasModule( const QString& ) const;
 
-  void                 activateModule( const QString& ) const;
+  void                 activateItem( const QString& ) const;
 
 protected:
   void                 changedResources( const ResourceMap& );

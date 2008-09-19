@@ -89,6 +89,7 @@ public:
   virtual QtxResourceMgr*   resourceMgr() const;
   virtual QtxPreferenceMgr* preferenceMgr() const;
 
+  virtual void              activate();
   void                      ensureVisible();
 
   static int                RTTI();

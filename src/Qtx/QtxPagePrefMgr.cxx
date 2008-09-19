@@ -277,6 +277,14 @@ QtxPagePrefItem::~QtxPagePrefItem()
   delete myListener;
 }
 
+void QtxPagePrefItem::activate()
+{
+  QtxPreferenceItem::activate();
+
+  if ( widget() )
+    widget()->setFocus();
+}
+
 /*!
   \brief Get preference item editor widget.
   \return editor widget
@@ -509,7 +517,8 @@ void QtxPageNamedPrefItem::setControl( QWidget* wid )
   {
     //    QtxPagePrefGroupItem* aGroup = 0;//dynamic_cast<QtxPagePrefGroupItem*>(parentItem());
     //    if ( !aGroup )
-      widget()->layout()->addWidget( myControl );
+    widget()->layout()->addWidget( myControl );
+    widget()->setFocusProxy( myControl );
       //    else myControl->setParent( aGroup->gridBox() );
   }
 }

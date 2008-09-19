@@ -74,7 +74,7 @@ public:
 
   enum { MenuWindowId = 6 };
 
-  enum { RenameId = CAM_Application::UserID,         
+  enum { RenameId = CAM_Application::UserID,
 	 CloseId, CloseAllId, GroupAllId,
 	 PreferencesId, MRUId, ModulesListId,
          NewGLViewId, NewPlot2dId, NewOCCViewId, NewVTKViewId, NewQxGraphViewId, UserID };
@@ -239,6 +239,8 @@ protected:
 
   virtual int                         openChoice( const QString& );
   virtual bool                        openAction( const int, const QString& );
+
+  void                                showPreferences( const QString& = QString() );
 
 protected:
   typedef QPointer<QWidget>         WinPtr;

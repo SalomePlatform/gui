@@ -908,16 +908,18 @@ void LightApp_Application::onHelpContentsModule()
 #endif
   QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 
-  if (!anApp.isEmpty()) {
+  if ( !anApp.isEmpty() )
+  {
     RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile );
     rs->start();
   }
-  else {
-    if( SUIT_MessageBox::question(desktop(), tr("WRN_WARNING"),
-				  tr("DEFINE_EXTERNAL_BROWSER"),
-				  SUIT_MessageBox::Yes | SUIT_MessageBox::No,
-				  SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
-      onPreferences();
+  else
+  {
+    if ( SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "DEFINE_EXTERNAL_BROWSER" ),
+				    SUIT_MessageBox::Yes | SUIT_MessageBox::No,
+				    SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
+
+      showPreferences( tr( "PREF_APP" ) );
   }
 }
 
@@ -956,16 +958,17 @@ void LightApp_Application::onHelpContextModule( const QString& theComponentName,
 #endif
   QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 
-  if (!anApp.isEmpty()) {
+  if ( !anApp.isEmpty() )
+  {
     RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile, theContext );
     rs->start();
   }
-  else {
-    if( SUIT_MessageBox::question(desktop(), tr("WRN_WARNING"),
-				  tr("DEFINE_EXTERNAL_BROWSER"),
-				  SUIT_MessageBox::Yes | SUIT_MessageBox::No,
-				  SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
-      onPreferences();
+  else
+  {
+    if ( SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "DEFINE_EXTERNAL_BROWSER" ),
+				    SUIT_MessageBox::Yes | SUIT_MessageBox::No,
+				    SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
+      showPreferences( tr( "PREF_APP" ) );
   }
 }
 
@@ -1490,6 +1493,12 @@ void LightApp_Application::onRefresh()
 /*!Private SLOT. On preferences.*/
 void LightApp_Application::onPreferences()
 {
+  showPreferences( activeModule() ? activeModule()->moduleName() : tr( "PREF_CATEGORY_SALOME" ) );
+}
+
+/*!Private SLOT. On preferences.*/
+void LightApp_Application::showPreferences( const QString& itemText )
+{
   QApplication::setOverrideCursor( Qt::WaitCursor );
 
   LightApp_PreferencesDlg* prefDlg = new LightApp_PreferencesDlg( preferences( true ), desktop());
@@ -1499,9 +1508,10 @@ void LightApp_Application::onPreferences()
   if ( !prefDlg )
     return;
 
-  preferences()->activateModule( activeModule() ? activeModule()->moduleName() : tr( "PREF_CATEGORY_SALOME" ) );
+  preferences()->activateItem( itemText );
 
-  if ( ( prefDlg->exec() == QDialog::Accepted || prefDlg->isSaved() ) &&  resourceMgr() ) {
+  if ( ( prefDlg->exec() == QDialog::Accepted || prefDlg->isSaved() ) &&  resourceMgr() )
+  {
     if ( desktop() )
       resourceMgr()->setValue( "desktop", "geometry", desktop()->storeGeometry() );
     resourceMgr()->save();
@@ -1799,7 +1809,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), vtkGroup,
 		       LightApp_Preferences::Color, "VTKViewer", "background" );
   pref->addPreference( tr( "PREF_RELATIVE_SIZE" ), vtkGroup, LightApp_Preferences::Bool, "VTKViewer", "relative_size" );
-  pref->addPreference( tr( "PREF_USE_ADVANCED_SELECTION_ALGORITHM" ), vtkGroup, 
+  pref->addPreference( tr( "PREF_USE_ADVANCED_SELECTION_ALGORITHM" ), vtkGroup,
 		       LightApp_Preferences::Bool, "VTKViewer", "use_advanced_selection_algorithm" );
 
   pref->setItemProperty( "min", 1.0E-06, vtkTS );
@@ -2704,7 +2714,7 @@ void LightApp_Application::onCloseAllWindow()
   SUIT_ViewWindow* wnd;
   foreach( wnd, wndList )
   {
-    if ( wnd )  
+    if ( wnd )
       wnd->close();
   }
 }

@@ -29,6 +29,7 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 salomeinclude_HEADERS =		\
 	Qtx.h			\
 	QtxAction.h		\
+	QtxActionGroup.h	\
 	QtxActionMenuMgr.h	\
 	QtxActionMgr.h		\
 	QtxActionSet.h		\
@@ -85,6 +86,7 @@ lib_LTLIBRARIES = libqtx.la
 dist_libqtx_la_SOURCES =	\
 	Qtx.cxx			\
 	QtxAction.cxx		\
+	QtxActionGroup.cxx	\
 	QtxActionMenuMgr.cxx	\
 	QtxActionMgr.cxx	\
 	QtxActionSet.cxx	\
@@ -135,6 +137,7 @@ dist_libqtx_la_SOURCES =	\
 #VSR: already migrated to Qt4 files
 MOC_FILES =				\
 	QtxAction_moc.cxx		\
+	QtxActionGroup_moc.cxx		\
 	QtxActionMenuMgr_moc.cxx	\
 	QtxActionMgr_moc.cxx		\
 	QtxActionSet_moc.cxx		\

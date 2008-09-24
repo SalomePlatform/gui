@@ -29,6 +29,7 @@
 #endif
 
 class QtxComboBox;
+class QActionGroup;
 
 class QTX_EXPORT QtxActionGroup : public QtxActionSet
 {
@@ -40,19 +41,19 @@ public:
   virtual ~QtxActionGroup();
 
   bool             isExclusive() const;
-  void             setExclusive( const bool );
-
   bool             usesDropDown() const;
-  void             setUsesDropDown( const bool );
 
   void             add( QAction* );
+
+public slots:
+  void             setExclusive( const bool );
+  void             setUsesDropDown( const bool );
 
 signals:
   void             selected( QAction* );
 
 private slots:
   void             onActivated( int );
-  void             onTriggered( QAction* );
 
 protected:
   virtual void     updateAction( QWidget* );
@@ -61,6 +62,8 @@ protected:
   virtual QWidget* createWidget( QWidget* );
 
   virtual bool     isEmptyAction() const;
+  virtual void     actionAdded( QAction* );
+  virtual void     actionRemoved( QAction* );
 
 private:
   void             updateType();
@@ -68,7 +71,7 @@ private:
 
 private:
   bool             myDropDown;
-  bool             myExclusive;
+  QActionGroup*    myActionGroup;
 };
 
 #ifdef WIN32

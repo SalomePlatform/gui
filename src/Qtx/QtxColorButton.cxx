@@ -230,9 +230,6 @@ void QtxColorButton::paintEvent( QPaintEvent* e )
 {
   QToolButton::paintEvent( e );
 
-  if ( !color().isValid() )
-    return;
-
   QStyleOptionToolButton opt;
   opt.initFrom( this );
   opt.text = text();
@@ -245,7 +242,15 @@ void QtxColorButton::paintEvent( QPaintEvent* e )
 
   QPixmap pix( r.size() );
   pix.fill( palette().color( backgroundRole() ) );
-  drawColor( &pix, color() );
+
+  if ( color().isValid() )
+    drawColor( &pix, color() );
+  else {
+    QPainter pixp( &pix );
+    pixp.drawRect( 2, 2, pix.width() - 4, pix.height() - 4 );
+    pixp.fillRect( 3, 3, pix.width() - 6, pix.height() - 6, QBrush( Qt::BDiagPattern ) );
+    pixp.end();
+  }
 
   QPainter p( this );
   p.drawPixmap( r, pix );

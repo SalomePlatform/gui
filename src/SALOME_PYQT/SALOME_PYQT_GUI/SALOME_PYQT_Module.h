@@ -116,7 +116,7 @@ public:
 
   int                        addGlobalPreference( const QString& );
   int                        addPreference( const QString& );
-  int                        addPreference( const QString&, const int, const int = -1,
+  int                        addPreference( const QString&, const int, const int = LightApp_Preferences::Auto,
 					    const QString& = QString(),
 					    const QString& = QString() );
   QVariant                   preferenceProperty( const int, const QString& ) const;

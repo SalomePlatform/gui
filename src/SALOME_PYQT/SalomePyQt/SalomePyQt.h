@@ -36,7 +36,7 @@ class QMenuBar;
 class QMenu;
 class QWidget;
 class QAction;
-class QActionGroup;
+class QtxActionGroup;
 
 class SALOME_Selection : public QObject
 {
@@ -79,6 +79,7 @@ enum {
 };
 
 enum { 
+  PT_Auto     = LightApp_Preferences::Auto,
   PT_Space    = LightApp_Preferences::Space,
   PT_Bool     = LightApp_Preferences::Bool, 
   PT_Color    = LightApp_Preferences::Color,
@@ -89,6 +90,8 @@ enum {
   PT_Double   = LightApp_Preferences::Double, 
   PT_Integer  = LightApp_Preferences::Integer, 
   PT_GroupBox = LightApp_Preferences::GroupBox, 
+  PT_Tab      = LightApp_Preferences::Tab, 
+  PT_Frame    = LightApp_Preferences::Frame, 
   PT_Font     = LightApp_Preferences::Font, 
   PT_DirList  = LightApp_Preferences::DirList, 
   PT_File     = LightApp_Preferences::File, 
@@ -156,7 +159,7 @@ public:
 					 const QString& = QString(), const QString& = QString(), 
 					 const QString& = QString(), const int = 0, const bool = false );
   
-  //  static QActionGroup*     createActionGroup( const int, const bool = true );
+  static QtxActionGroup*   createActionGroup( const int, const bool = true );
 
   static QAction*          action( const int );
   static int               actionId( const QAction* );
@@ -184,7 +187,7 @@ public:
   static int               addGlobalPreference( const QString& );
   static int               addPreference( const QString& );
   static int               addPreference( const QString&,
-                                          const int, const int = -1,
+                                          const int, const int = PT_Auto,
                                           const QString& = QString(),
 				          const QString& = QString() );
   static QVariant          preferenceProperty( const int, const QString& );

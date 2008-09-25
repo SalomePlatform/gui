@@ -62,7 +62,7 @@ QtxActionGroup::QtxActionGroup( QObject* parent )
   setMenu( new QMenu( 0 ) );
   myActionGroup = new QActionGroup( this );
 
-  connect( myActionGroup, SIGNAL( triggered( QAction* ) ), this, SIGNAL( selected( QAction* ) ) );
+  connect( myActionGroup, SIGNAL( triggered( QAction* ) ), this, SLOT( onTriggered( QAction* ) ) );
 }
 
 /*!
@@ -185,6 +185,26 @@ void QtxActionGroup::onActivated( int id )
     if ( cb && cb != s )
       cb->setCurrentId( id );
   }
+}
+
+/*!
+  \brief Called when some action owned by this action group is activated by the user
+  \param a action being activated
+*/
+void QtxActionGroup::onTriggered( QAction* a )
+{
+  int id = actionId( a );
+  if ( id != -1 ) {
+    QList<QWidget*> lst = createdWidgets();
+    for ( QList<QWidget*>::iterator it = lst.begin(); it != lst.end(); ++it )
+    {
+      QtxComboBox* cb = ::qobject_cast<QtxComboBox*>( *it );
+      if ( cb )
+	cb->setCurrentId( id );
+    }
+  }
+  
+  emit selected( a );
 }
 
 /*!

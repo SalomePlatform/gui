@@ -27,6 +27,8 @@ SIP_SRC = sipAPISalomePyQt.h			\
 	  sipSalomePyQtSalomePyQt.cc		\
 	  sipSalomePyQtSALOME_Selection.cc	\
 	  sipSalomePyQtQtxAction.cc		\
+	  sipSalomePyQtQtxActionGroup.cc	\
+	  sipSalomePyQtQtxActionSet.cc		\
 	  sipSalomePyQtcmodule.cc
 
 # Sip definition file

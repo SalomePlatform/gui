@@ -32,8 +32,8 @@
 
 #include <SALOME_Event.h>
 
-//#include <QtxAction.h>
 #include <QtxActionMenuMgr.h>
+#include <QtxActionGroup.h>
 #include <QtxWorkstack.h>
 #include <SUIT_Session.h>
 #include <SUIT_Desktop.h>
@@ -1675,14 +1675,14 @@ QAction* SalomePyQt::createAction( const int id,           const QString& menuTe
 }
 
 /*!
-  \fn QActionGroup* SalomePyQt::createActionGroup( const int id, const bool exclusive )
+  \fn QtxActionGroup* SalomePyQt::createActionGroup( const int id, const bool exclusive )
   \brief Create an action group which can be then used in the menu or toolbar
   \param id         : the unique id action group to be registered to
   \param exclusive  : if \c true the action group does exclusive toggling
 */
-/*
+
 struct TcreateActionGroupEvent: public SALOME_Event {
-  typedef QActionGroup* TResult;
+  typedef QtxActionGroup* TResult;
   TResult myResult;
   int     myId;
   bool    myExclusive;
@@ -1692,14 +1692,14 @@ struct TcreateActionGroupEvent: public SALOME_Event {
   {
     SALOME_PYQT_Module* module = getActiveModule();
     if ( module )
-      myResult = (QAction*)module->createActionGroup( myId, myExclusive );
+      myResult = module->createActionGroup( myId, myExclusive );
   }
 };
-QActionGroup* SalomePyQt::createActionGroup(const int id, const bool exclusive)
+QtxActionGroup* SalomePyQt::createActionGroup(const int id, const bool exclusive)
 {
   return ProcessEvent( new TcreateActionGroupEvent( id, exclusive ) );
 }
-*/
+
 /*!
   \fn QAction* SalomePyQt::action( const int id )
   \brief Get action by specified identifier.

@@ -26,6 +26,9 @@
 %Import QtXmlmod.sip
 
 %ExportedHeaderCode
+#include <QtxAction.h>
+#include <QtxActionSet.h>
+#include <QtxActionGroup.h>
 #include <SalomePyQt.h>
 %End
 
@@ -65,6 +68,7 @@ enum WindowType {
 };
 
 enum PrefType { 
+  PT_Auto,
   PT_Space,
   PT_Bool, 
   PT_Color,
@@ -75,6 +79,8 @@ enum PrefType {
   PT_Double, 
   PT_Integer, 
   PT_GroupBox, 
+  PT_Tab, 
+  PT_Frame, 
   PT_Font, 
   PT_DirList, 
   PT_File, 
@@ -91,14 +97,100 @@ enum Action {
   SplitAt      = 2  
 };
 
-class QtxAction : QAction
+class QtxAction : QWidgetAction
 {
 %TypeHeaderCode
 #include <QtxAction.h>
 %End
 
+%ConvertToSubClassCode
+    if ( qobject_cast<QtxAction*>( sipCpp ) )
+      sipClass = sipClass_QtxAction;
+    else
+      sipClass = NULL;
+%End
+
+public:
+  explicit QtxAction( QObject* /TransferThis/ = 0, bool = false );
+  QtxAction( const QString&, const QString&, int, QObject* /TransferThis/, bool = false );
+  QtxAction( const QString&, const QIcon&, const QString&, int, QObject* /TransferThis/, bool = false );
+  virtual ~QtxAction();
+
 private:
-  QtxAction(const QtxAction &);
+  QtxAction( const QtxAction& );
+};
+
+class QtxActionSet : QtxAction
+{
+%TypeHeaderCode
+#include <QtxActionSet.h>
+%End
+
+%ConvertToSubClassCode
+    if ( qobject_cast<QtxActionSet*>( sipCpp ) )
+      sipClass = sipClass_QtxActionSet;
+    else
+      sipClass = NULL;
+%End
+
+public:
+  explicit QtxActionSet( QObject* /TransferThis/ = 0 );
+  virtual ~QtxActionSet();
+
+  QList<QAction*> actions() const;
+  void            setActions( const QList<QAction*>& );
+
+  void            insertActions( const QList<QAction*>&, const int = -1 );
+
+  int             insertAction( QAction*, const int id = -1, const int = -1 );
+  int             insertAction( const QString&, const int id = -1, const int = -1 );
+  int             insertAction( const QString&, const QIcon&, const int id = -1, const int = -1 );
+
+  void            removeAction( QAction* );
+  void            removeAction( const int );
+
+  void            clear();
+
+signals:
+  void            triggered( int );
+  void            triggered( QAction* );
+
+private:
+  QtxActionSet( const QtxActionSet& );
+};
+
+class QtxActionGroup : QtxActionSet
+{
+%TypeHeaderCode
+#include <QtxActionGroup.h>
+%End
+
+%ConvertToSubClassCode
+    if ( qobject_cast<QtxActionGroup*>( sipCpp ) )
+      sipClass = sipClass_QtxActionGroup;
+    else
+      sipClass = NULL;
+%End
+
+public:
+  explicit QtxActionGroup( QObject* /TransferThis/ = 0 );
+  QtxActionGroup( QObject* /TransferThis/, const bool );
+  virtual ~QtxActionGroup();
+
+  bool isExclusive() const;
+  bool usesDropDown() const;
+
+  void add( QAction* );
+
+public slots:
+  void setExclusive( const bool );
+  void setUsesDropDown( const bool );
+
+signals:
+  void selected( QAction* );
+
+private:
+  QtxActionGroup( const QtxActionGroup& );
 };
 
 class SalomePyQt
@@ -153,7 +245,7 @@ public:
 	                                 const QString& = QString(), const QString& = QString(), 
 					 const QString& = QString(), const int = 0, const bool = false ) /ReleaseGIL/ ;
 
-  //static QActionGroup*     createActionGroup( const int, const bool = true ) /ReleaseGIL/ ;
+  static QtxActionGroup*   createActionGroup( const int, const bool = true ) /ReleaseGIL/ ;
 
   static QAction*          action( const int ) /ReleaseGIL/ ;
   static int               actionId( const QAction* ) /ReleaseGIL/ ;
@@ -182,7 +274,7 @@ public:
   static int               addGlobalPreference( const QString& ) /ReleaseGIL/ ;
   static int               addPreference( const QString& ) /ReleaseGIL/ ;
   static int               addPreference( const QString&,
-                                          const int, const int = -1,
+                                          const int, const int = PT_Auto,
                                           const QString& = QString(),
 				          const QString& = QString() ) /ReleaseGIL/ ;
   static QVariant          preferenceProperty( const int, const QString& ) /ReleaseGIL/ ;

@@ -54,6 +54,7 @@ signals:
 
 private slots:
   void             onActivated( int );
+  void             onTriggered( QAction* );
 
 protected:
   virtual void     updateAction( QWidget* );

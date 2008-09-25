@@ -37,6 +37,7 @@
 
 #include <QtxWorkstack.h>
 #include <QtxWorkspace.h>
+#include <QtxActionGroup.h>
 #include <QtxActionMenuMgr.h>
 #include <QtxActionToolMgr.h>
 
@@ -50,7 +51,6 @@
 #include <QMenuBar>
 #include <QMenu>
 #include <QAction>
-#include <QActionGroup>
 
 #include "sipAPISalomePyQtGUI.h"
 
@@ -1669,18 +1669,17 @@ QAction* SALOME_PYQT_Module::createAction( const int id, const QString& text, co
   \param toggle \c true for checkable action
   \return created action
 */
-/*
-QActionGroup* SALOME_PYQT_Module::createActionGroup(const int id, const bool exclusive)
+QtxActionGroup* SALOME_PYQT_Module::createActionGroup(const int id, const bool exclusive)
 {
-  QActionGroup* a = action( id );
-  if ( !a || !a->inherits( "QActionGroup" ) ) {
-    a = new QActionGroup( this );
+  QtxActionGroup* a = qobject_cast<QtxActionGroup*>( action( id ) );
+  if ( !a ) {
+    a = new QtxActionGroup( this );
     SalomeApp_Module::registerAction( id, a );
   }
   a->setExclusive( exclusive );
-  return (QActionGroup*)a;
+  return a;
 }
-*/
+
 /*! 
   \brief Load icon from resource file.
   \param fileName icon file name

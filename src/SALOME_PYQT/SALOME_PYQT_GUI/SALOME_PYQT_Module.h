@@ -39,7 +39,7 @@
 class SALOME_PYQT_PyInterp;
 class SUIT_ViewWindow;
 class QAction;
-class QActionGroup;
+class QtxActionGroup;
 class QMenu;
 
 class SALOME_PYQT_EXPORT SALOME_PYQT_Module: public SalomeApp_Module
@@ -109,7 +109,7 @@ public:
   QAction*                   createAction( const int, const QString&, const QString&, 
 					   const QString&, const QString&, const int, 
 					   const bool = false, QObject* = 0 );
-  //  QActionGroup*              createActionGroup( const int, const bool );
+  QtxActionGroup*            createActionGroup( const int, const bool );
 
 
   QIcon                      loadIcon( const QString& fileName );

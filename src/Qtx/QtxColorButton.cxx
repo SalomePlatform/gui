@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -36,7 +36,7 @@
   preference items editing.
 
   The color preference item is represented as the colored button with
-  assocoiated popup menu whihc is called when the user presses the small 
+  assocoiated popup menu whihc is called when the user presses the small
   arrow button near it. The popup menu allows selecting of the color
   from the predefined set. In addition it contains the button which
   invokes standard "Select color" dialog box.
@@ -73,8 +73,8 @@ QtxColorButton::QtxColorButton( QWidget* parent )
       btn->setAutoRaise( true );
       btn->setCheckable( true );
       myColors.insert( btn, c );
-      grid->addWidget( btn, y, x );
-      
+      grid->addWidget( btn, y + 1, x );
+
       btn->installEventFilter( this );
 
       connect( btn, SIGNAL( clicked( bool ) ), this, SLOT( onToggled( bool ) ) );
@@ -82,6 +82,13 @@ QtxColorButton::QtxColorButton( QWidget* parent )
       updateButton( btn );
     }
   }
+
+  myAutoButton = new QToolButton( pm );
+  myAutoButton->setText( tr( "Auto" ) );
+  myAutoButton->setAutoRaise( true );
+  myAutoButton->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
+  grid->addWidget( myAutoButton, 0, 0, 1, grid->columnCount() );
+  connect( myAutoButton, SIGNAL( clicked( bool ) ), this, SLOT( onAutoClicked( bool ) ) );
 
   QToolButton* other = new QToolButton( pm );
   other->setText( tr( "Other colors..." ) );
@@ -96,6 +103,8 @@ QtxColorButton::QtxColorButton( QWidget* parent )
 
   connect( this, SIGNAL( clicked( bool ) ), this, SLOT( onClicked( bool ) ) );
   connect( pm,   SIGNAL( aboutToShow() ),   this, SLOT( onAboutToShow() ) );
+
+//   myAutoButton->setVisible( false );
 }
 
 /*!
@@ -132,6 +141,41 @@ void QtxColorButton::setColor( const QColor& c )
 }
 
 /*!
+  \brief Returns the status of "auto" color button in popup widget.
+  \return \c true if the "auto" button is enabled
+*/
+bool QtxColorButton::isAutoEnabled() const
+{
+  return myAutoButton->isVisibleTo( myAutoButton->parentWidget() );
+}
+
+/*!
+  \brief Enable/disable the "auto" color button in popup widget.
+  \param on enable/disable state
+*/
+void QtxColorButton::setAutoEnabled( bool on )
+{
+  myAutoButton->setVisible( on );
+}
+
+/*!
+  \brief Returns text of the "auto" color button in popup widget.
+*/
+QString QtxColorButton::autoText() const
+{
+  return myAutoButton->text();
+}
+
+/*!
+  \brief Sets text of the "auto" color button in popup widget.
+  \param txt new button text
+*/
+void QtxColorButton::setAutoText( const QString& txt )
+{
+  myAutoButton->setText( txt );
+}
+
+/*!
   \brief Filter events for the child widgets.
   \param o event receiver object
   \param e event
@@ -140,7 +184,7 @@ void QtxColorButton::setColor( const QColor& c )
 bool QtxColorButton::eventFilter( QObject* o, QEvent* e )
 {
   if ( e->type() == QEvent::Leave )
-    updateButton( qobject_cast<QToolButton*>( o ) );
+    updateButton( ::qobject_cast<QToolButton*>( o ) );
   return QToolButton::eventFilter( o, e );
 }
 
@@ -161,7 +205,7 @@ void QtxColorButton::onAboutToShow()
 
   \param on button state (not used)
 */
-void QtxColorButton::onClicked( bool /*on*/ )
+void QtxColorButton::onClicked( bool )
 {
   emit clicked( color() );
 }
@@ -199,11 +243,24 @@ void QtxColorButton::onToggled( bool on )
 }
 
 /*!
+  \brief Called the "Auto" child button from popup menu
+  is clicked.
+
+  Sets the undefined (auto) color as current.
+
+  \param on (not used)
+*/
+void QtxColorButton::onAutoClicked( bool )
+{
+  setColor( QColor() );
+}
+
+/*!
   \brief Called the "Other colors" child button from popup menu
   is clicked.
 
   Invokes standard "Select color" dialog box allowing user to select
-  custom color. If the current color is changed by the user, emits 
+  custom color. If the current color is changed by the user, emits
   the signal changed( QColor ).
 
   \param on (not used)
@@ -352,7 +409,7 @@ QList<QColor> QtxColorButton::colorsList() const
 
 /*!
   \fn void QtxColorButton::clicked( QColor color );
-  \brief This signal is emitted when the widget button is clicked by 
+  \brief This signal is emitted when the widget button is clicked by
          the user.
   \param color current color
 */

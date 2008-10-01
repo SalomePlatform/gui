@@ -104,7 +104,7 @@ QtxColorButton::QtxColorButton( QWidget* parent )
   connect( this, SIGNAL( clicked( bool ) ), this, SLOT( onClicked( bool ) ) );
   connect( pm,   SIGNAL( aboutToShow() ),   this, SLOT( onAboutToShow() ) );
 
-//   myAutoButton->setVisible( false );
+  myAutoButton->setVisible( false );
 }
 
 /*!
@@ -252,6 +252,9 @@ void QtxColorButton::onToggled( bool on )
 */
 void QtxColorButton::onAutoClicked( bool )
 {
+  if ( menu() )
+    menu()->hide();
+
   setColor( QColor() );
 }
 

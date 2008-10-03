@@ -2847,7 +2847,7 @@ bool LightApp_Application::event( QEvent* e )
 				  d ? *d : "",
 				  SUIT_MessageBox::Yes | SUIT_MessageBox::No,
 				  SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
-       onPreferences();
+      showPreferences( tr( "PREF_APP" ) );
     if( d )
       delete d;
     return true;

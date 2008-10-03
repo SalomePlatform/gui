@@ -37,9 +37,7 @@
 #include "SALOME_NamingService.hxx"
 #include <qthread.h>
 
-using namespace std;
-
-void WaitForServerReadiness(string serverName);
+void WaitForServerReadiness(std::string serverName);
 
 
 class SESSION_EXPORT Session_ServerThread

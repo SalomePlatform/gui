@@ -29,6 +29,7 @@
 #include "SalomeApp_Engine_i.hxx"
 
 #include "SALOMEDS_Tool.hxx"
+#include "Basics_DirUtils.hxx"
 
 #include "utilities.h"
 
@@ -113,7 +114,7 @@ CORBA::Boolean SalomeApp_Engine_i::Load (SALOMEDS::SComponent_ptr theComponent,
   const int studyId = theComponent->GetStudy()->StudyId();
 
   // Create a temporary directory for the component's data files
-  std::string aTmpDir = isMultiFile ? theURL : SALOMEDS_Tool::GetTmpDir();
+  std::string aTmpDir = isMultiFile ? theURL : Kernel_Utils::GetTmpDirByEnv("SALOME_TMP_DIR");
 
   // Convert the byte stream theStream to a files and place them in the tmp directory.
   // The files and temporary directory must be deleted by the component loading procedure.

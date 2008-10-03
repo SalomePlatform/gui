@@ -510,7 +510,7 @@ bool InquireServersQThread::pingServer(int iteration, QString& errMessage)
 	      break;
 	    case 6:
 	      {
-		string hostname = GetHostname();
+		string hostname = Kernel_Utils::GetHostname();
 		string containerName = "/Containers/";
 		containerName += hostname;
 		containerName += "/FactoryServer";
@@ -528,7 +528,7 @@ bool InquireServersQThread::pingServer(int iteration, QString& errMessage)
 	      break;
 	    case 7:
 	      {
-		string hostname = GetHostname();
+		string hostname = Kernel_Utils::GetHostname();
 		string containerName = "/Containers/";
 		containerName += hostname;
 		containerName += "/FactoryServerPy";
@@ -546,7 +546,7 @@ bool InquireServersQThread::pingServer(int iteration, QString& errMessage)
 	      break;
 	    case 8:
 	      {
-		string hostname = GetHostname();
+		string hostname = Kernel_Utils::GetHostname();
 		string containerName = "/Containers/";
 		containerName += hostname;
 		containerName += "/SuperVisionContainer";

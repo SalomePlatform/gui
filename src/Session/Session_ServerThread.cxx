@@ -44,7 +44,7 @@
 #include "Utils_ORB_INIT.hxx"
 #include "Utils_SINGLETON.hxx"
 #include "Utils_SALOME_Exception.hxx"
-#include "OpUtil.hxx"
+#include "Basics_Utils.hxx"
 #include "NamingService_WaitForServerReadiness.hxx"
 #include "utilities.h"
 
@@ -153,7 +153,7 @@ void Session_ServerThread::Init()
             {
               NamingService_WaitForServerReadiness(_NS,"/myStudyManager");
               string containerName = "/Containers/";
-              containerName = containerName + GetHostname();
+              containerName = containerName + Kernel_Utils::GetHostname();
               containerName = containerName + "/FactoryServer";
               NamingService_WaitForServerReadiness(_NS,containerName);
               ActivateSession(_argc, _argv);

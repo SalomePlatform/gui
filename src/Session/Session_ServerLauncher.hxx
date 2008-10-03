@@ -40,8 +40,6 @@
 #include <qthread.h>
 #include <qwaitcondition.h>
 
-using namespace std;
-
 class SESSION_EXPORT ServArg
   {
   public:
@@ -78,16 +76,15 @@ protected:
 private:
   int _argc;
   char ** _argv;
-  CORBA::ORB_var              _orb;
-  PortableServer::POA_var     _root_poa;
-  QMutex*                     _GUIMutex;
-  QWaitCondition*             _ServerLaunch;
-  QMutex*                     _SessionMutex;
-  QWaitCondition*             _SessionStarted;
-  list<ServArg>               _argServToLaunch;
-  vector<string>              _argCopy;
-  list<Session_ServerThread*> _serverThreads;
+  CORBA::ORB_var			_orb;
+  PortableServer::POA_var		_root_poa;
+  QMutex*                     		_GUIMutex;
+  QWaitCondition*             		_ServerLaunch;
+  QMutex*                    		_SessionMutex;
+  QWaitCondition*        	   	_SessionStarted;
+  std::list<ServArg>	           	_argServToLaunch;
+  std::vector<std::string>         	_argCopy;
+  std::list<Session_ServerThread*> 	_serverThreads;
 };
 
 #endif
-

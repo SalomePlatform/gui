@@ -44,6 +44,11 @@
 #include <OSD_LoadMode.hxx>
 #include <OSD_Function.hxx>
 
+#ifdef WNT
+# include <process.h>
+#endif
+
+
 using namespace std;
 
 /*!
@@ -199,6 +204,15 @@ CORBA::Long SALOME_Session_i::GetActiveStudyId()
       aStudyId = SUIT_Session::session()->activeApplication()->activeStudy()->id();
   }
   return aStudyId;
+}
+
+CORBA::Long SALOME_Session_i::getPID() {
+  return (CORBA::Long)
+#ifndef WNT
+    getpid();
+#else
+    _getpid();
+#endif
 }
 
 bool SALOME_Session_i::restoreVisualState(CORBA::Long theSavePoint)

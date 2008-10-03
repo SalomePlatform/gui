@@ -28,10 +28,6 @@
 # include <qpushbutton.h>
 # include <qspinbox.h>
 
-#ifndef WNT
-using namespace std;
-#endif
-
 class ToolsGUI_IntervalWindow : public QDialog
 {
   Q_OBJECT

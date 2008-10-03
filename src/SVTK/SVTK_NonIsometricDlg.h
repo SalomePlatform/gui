@@ -31,7 +31,7 @@
 
 #include "SVTK_DialogBase.h"
 
-class SVTK_MainWindow;
+class SVTK_ViewWindow;
 
 class QtxDoubleSpinBox;
 class QtxAction;
@@ -45,7 +45,7 @@ class SVTK_NonIsometricDlg : public SVTK_DialogBase
 
 public:
   SVTK_NonIsometricDlg(QtxAction* theAction,
-		       SVTK_MainWindow* theParent,
+		       SVTK_ViewWindow* theParent,
 		       const char* theName);
 
   ~SVTK_NonIsometricDlg();
@@ -53,7 +53,7 @@ public:
   void Update();
 
 protected:
-  SVTK_MainWindow *m_MainWindow;
+  SVTK_ViewWindow *m_MainWindow;
 
   QtxDoubleSpinBox* m_sbXcoeff;
   QtxDoubleSpinBox* m_sbYcoeff;

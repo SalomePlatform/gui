@@ -25,19 +25,21 @@
 #include <vtkActorCollection.h>
 
 //#include "SUIT_Session.h"
-#include "SUIT_ViewModel.h"
-#include "SUIT_ViewManager.h"
-
 #include "SVTK_Selection.h"
 #include "SVTK_ViewModel.h"
 #include "SVTK_ViewWindow.h"
 #include "SVTK_View.h"
-#include "SVTK_MainWindow.h"
+//#include "SVTK_MainWindow.h"
 #include "SVTK_Prs.h"
 
 #include "VTKViewer_ViewModel.h"
 
+#include "SUIT_ViewModel.h"
+#include "SUIT_ViewManager.h"
+
 #include <SALOME_Actor.h>
+
+#include <QtxActionToolMgr.h>
 
 // in order NOT TO link with SalomeApp, here the code returns SALOMEDS_Study.
 // SalomeApp_Study::studyDS() does it as well, but -- here it is retrieved from 
@@ -68,6 +70,13 @@ SVTK_Viewer::SVTK_Viewer()
 {
   myTrihedronSize = 105;
   myTrihedronRelative = true;
+  myIncrementSpeed = 10;
+  myIncrementMode = 0;
+  myProjMode = 0;
+  myStyle = 0;
+  mySpaceBtn[0] = 1;
+  mySpaceBtn[1] = 2;
+  mySpaceBtn[2] = 9;
 }
 
 /*!
@@ -80,9 +89,7 @@ SVTK_Viewer::~SVTK_Viewer()
 /*!
   \return background color
 */
-QColor
-SVTK_Viewer
-::backgroundColor() const
+QColor SVTK_Viewer::backgroundColor() const
 {
   return myBgColor;
 }
@@ -91,9 +98,7 @@ SVTK_Viewer
   Changes background color
   \param theColor - new background color
 */
-void
-SVTK_Viewer
-::setBackgroundColor( const QColor& theColor )
+void SVTK_Viewer::setBackgroundColor( const QColor& theColor )
 {
   if ( !theColor.isValid() )
     return;
@@ -113,15 +118,22 @@ SVTK_Viewer
 /*!Create new instance of view window on desktop \a theDesktop.
  *\retval SUIT_ViewWindow* - created view window pointer.
  */
-SUIT_ViewWindow*
-SVTK_Viewer::
-createView( SUIT_Desktop* theDesktop )
+SUIT_ViewWindow* SVTK_Viewer::createView( SUIT_Desktop* theDesktop )
 {
   TViewWindow* aViewWindow = new TViewWindow(theDesktop);
   aViewWindow->Initialize(this);
 
   aViewWindow->setBackgroundColor( backgroundColor() );
   aViewWindow->SetTrihedronSize( trihedronSize(), trihedronRelative() );
+  aViewWindow->SetProjectionMode( projectionMode() );
+  aViewWindow->SetInteractionStyle( interactionStyle() );
+  aViewWindow->SetIncrementalSpeed( incrementalSpeed(), incrementalSpeedMode() );
+  aViewWindow->SetSpacemouseButtons( spacemouseBtn(1), spacemouseBtn(2), spacemouseBtn(3) );
+
+  connect(aViewWindow, SIGNAL( actorAdded(VTKViewer_Actor*) ), 
+	  this,  SLOT(onActorAdded(VTKViewer_Actor*)));
+  connect(aViewWindow, SIGNAL( actorRemoved(VTKViewer_Actor*) ), 
+	  this,  SLOT(onActorRemoved(VTKViewer_Actor*)));
 
   return aViewWindow;
 }
@@ -162,6 +174,129 @@ void SVTK_Viewer::setTrihedronSize( const vtkFloatingPointType theSize, const bo
   }
 }
 
+
+/*!
+  \return projection mode
+*/
+int SVTK_Viewer::projectionMode() const
+{
+  return myProjMode;
+}
+
+
+/*!
+  Sets projection mode: 0 - orthogonal, 1 - perspective projection
+  \param theMode - new projection mode
+*/
+void SVTK_Viewer::setProjectionMode( const int theMode )
+{
+  if ( myProjMode != theMode ) {
+    myProjMode = theMode;
+
+    if (SUIT_ViewManager* aViewManager = getViewManager()) {
+      QVector<SUIT_ViewWindow*> aViews = aViewManager->getViews();
+      for ( uint i = 0; i < aViews.count(); i++ )
+      {
+	if ( TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at( i )) )
+	  aView->SetProjectionMode( theMode );
+      }
+    }
+  }
+}
+
+/*!
+  \return interaction style
+*/
+int SVTK_Viewer::interactionStyle() const
+{
+  return myStyle;
+}
+
+/*!
+  Sets interaction style: 0 - standard, 1 - keyboard free interaction
+  \param theStyle - new interaction style
+*/
+void SVTK_Viewer::setInteractionStyle( const int theStyle )
+{
+  myStyle = theStyle;
+  
+  if (SUIT_ViewManager* aViewManager = getViewManager()) {
+    QVector<SUIT_ViewWindow*> aViews = aViewManager->getViews();
+    for ( uint i = 0; i < aViews.count(); i++ )
+    {
+      if ( TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at( i )) )
+	aView->SetInteractionStyle( theStyle );
+    }
+  }
+}
+
+/*!
+  \return incremental speed value
+*/
+int SVTK_Viewer::incrementalSpeed() const
+{
+  return myIncrementSpeed;
+}
+
+/*!
+  \return modification mode of the incremental speed 
+*/
+int SVTK_Viewer::incrementalSpeedMode() const
+{
+  return myIncrementMode;
+}
+
+/*!
+  Set the incremental speed value and modification mode
+  \param theValue - new value
+  \param theMode - new mode: 0 - arithmetic, 1 - geometrical progression
+*/
+void SVTK_Viewer::setIncrementalSpeed( const int theValue, const int theMode )
+{
+  myIncrementSpeed = theValue;
+  myIncrementMode = theMode;
+
+  if (SUIT_ViewManager* aViewManager = getViewManager()) {
+    QVector<SUIT_ViewWindow*> aViews = aViewManager->getViews();
+    for ( uint i = 0; i < aViews.count(); i++ )
+    {
+      if ( TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at( i )) )
+	aView->SetIncrementalSpeed( theValue, theMode );
+    }
+  }
+}
+
+/*!
+  \return spacemouse button assigned to the specified function
+  \param theIndex - function by number (from 1 to 3)
+*/
+int SVTK_Viewer::spacemouseBtn( const int theIndex ) const
+{
+  if ( theIndex < 1 || theIndex > 3 ) 
+    return -1;
+  return mySpaceBtn[theIndex-1];
+}
+
+/*!
+  Set the spacemouse buttons
+  \param theBtn1, theBtn2, theBtn3 - new buttons
+*/
+void SVTK_Viewer::setSpacemouseButtons( const int theBtn1, const int theBtn2, const int theBtn3 )
+{
+  mySpaceBtn[0] = theBtn1;
+  mySpaceBtn[1] = theBtn2;
+  mySpaceBtn[2] = theBtn3;
+
+  if (SUIT_ViewManager* aViewManager = getViewManager()) {
+    QVector<SUIT_ViewWindow*> aViews = aViewManager->getViews();
+    for ( uint i = 0; i < aViews.count(); i++ )
+    {
+      if ( TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at( i )) )
+	aView->SetSpacemouseButtons( theBtn1, theBtn2, theBtn3 );
+    }
+  }
+}
+
 /*!
   Sets new view manager
   \param theViewManager - new view manager
@@ -186,9 +321,7 @@ void SVTK_Viewer::setViewManager(SUIT_ViewManager* theViewManager)
 /*!
   Builds popup for vtk viewer
 */
-void
-SVTK_Viewer
-::contextMenuPopup( QMenu* thePopup )
+void SVTK_Viewer::contextMenuPopup( QMenu* thePopup )
 {
   thePopup->addAction( VTKViewer_Viewer::tr( "MEN_DUMP_VIEW" ), this, SLOT( onDumpView() ) );
   thePopup->addAction( VTKViewer_Viewer::tr( "MEN_CHANGE_BACKGROUD" ), this, SLOT( onChangeBgColor() ) );
@@ -208,34 +341,26 @@ SVTK_Viewer
 /*!
   SLOT: called on mouse button press, empty implementation
 */
-void 
-SVTK_Viewer
-::onMousePress(SUIT_ViewWindow* vw, QMouseEvent* event)
+void SVTK_Viewer::onMousePress(SUIT_ViewWindow* vw, QMouseEvent* event)
 {}
 
 /*!
   SLOT: called on mouse move, empty implementation
 */
-void 
-SVTK_Viewer
-::onMouseMove(SUIT_ViewWindow* vw, QMouseEvent* event)
+void SVTK_Viewer::onMouseMove(SUIT_ViewWindow* vw, QMouseEvent* event)
 {}
 
 /*!
   SLOT: called on mouse button release, empty implementation
 */
-void 
-SVTK_Viewer
-::onMouseRelease(SUIT_ViewWindow* vw, QMouseEvent* event)
+void SVTK_Viewer::onMouseRelease(SUIT_ViewWindow* vw, QMouseEvent* event)
 {}
 
 /*!
   Enables/disables selection
   \param isEnabled - new state
 */
-void 
-SVTK_Viewer
-::enableSelection(bool isEnabled)
+void SVTK_Viewer::enableSelection(bool isEnabled)
 {
   mySelectionEnabled = isEnabled;
   //!! To be done for view windows
@@ -245,9 +370,7 @@ SVTK_Viewer
   Enables/disables selection of many object
   \param isEnabled - new state
 */
-void
-SVTK_Viewer
-::enableMultiselection(bool isEnable)
+void SVTK_Viewer::enableMultiselection(bool isEnable)
 {
   myMultiSelectionEnabled = isEnable;
   //!! To be done for view windows
@@ -256,9 +379,7 @@ SVTK_Viewer
 /*!
   SLOT: called on dump view operation is activated, stores scene to raster file
 */
-void
-SVTK_Viewer
-::onDumpView()
+void SVTK_Viewer::onDumpView()
 {
   if(SUIT_ViewWindow* aView = myViewManager->getActiveView())
     aView->onDumpView();
@@ -267,9 +388,7 @@ SVTK_Viewer
 /*!
   SLOT: called if background color is to be changed changed, passes new color to view port
 */
-void
-SVTK_Viewer
-::onChangeBgColor()
+void SVTK_Viewer::onChangeBgColor()
 {
   if(SUIT_ViewWindow* aView = myViewManager->getActiveView()){
     QColor aColor = QColorDialog::getColor( backgroundColor(), aView);
@@ -281,9 +400,7 @@ SVTK_Viewer
   Display presentation
   \param prs - presentation
 */
-void
-SVTK_Viewer
-::Display( const SALOME_VTKPrs* prs )
+void SVTK_Viewer::Display( const SALOME_VTKPrs* prs )
 {
   // try do downcast object
   if(const SVTK_Prs* aPrs = dynamic_cast<const SVTK_Prs*>( prs )){
@@ -330,9 +447,7 @@ SVTK_Viewer
   \param prs - presentation
   \param forced - removes object from view
 */
-void
-SVTK_Viewer
-::Erase( const SALOME_VTKPrs* prs, const bool forced )
+void SVTK_Viewer::Erase( const SALOME_VTKPrs* prs, const bool forced )
 {
   // try do downcast object
   if(const SVTK_Prs* aPrs = dynamic_cast<const SVTK_Prs*>( prs )){
@@ -374,9 +489,7 @@ SVTK_Viewer
   Erase all presentations
   \param forced - removes all objects from view
 */
-void
-SVTK_Viewer
-::EraseAll( const bool forced )
+void SVTK_Viewer::EraseAll( const bool forced )
 {
   // Temporarily commented to avoid awful dependecy on SALOMEDS
   // TODO: better mechanism of storing display/erse status in a study
@@ -422,9 +535,7 @@ SVTK_Viewer
   Create presentation corresponding to the entry
   \param entry - entry
 */
-SALOME_Prs* 
-SVTK_Viewer
-::CreatePrs( const char* entry )
+SALOME_Prs* SVTK_Viewer::CreatePrs( const char* entry )
 {
   SVTK_Prs* prs = new SVTK_Prs();
   if ( entry ) {
@@ -448,9 +559,7 @@ SVTK_Viewer
 /*!
   Auxiliary method called before displaying of objects
 */
-void
-SVTK_Viewer
-::BeforeDisplay( SALOME_Displayer* d )
+void SVTK_Viewer::BeforeDisplay( SALOME_Displayer* d )
 {
   d->BeforeDisplay( this, SALOME_VTKViewType() );
 }
@@ -458,8 +567,7 @@ SVTK_Viewer
 /*!
   Auxiliary method called after displaying of objects
 */
-void
-SVTK_Viewer::AfterDisplay( SALOME_Displayer* d )
+void SVTK_Viewer::AfterDisplay( SALOME_Displayer* d )
 {
   d->AfterDisplay( this, SALOME_VTKViewType() );
 }
@@ -468,9 +576,7 @@ SVTK_Viewer::AfterDisplay( SALOME_Displayer* d )
   \return true if object is displayed in viewer
   \param obj - object to be checked
 */
-bool
-SVTK_Viewer
-::isVisible( const Handle(SALOME_InteractiveObject)& io )
+bool SVTK_Viewer::isVisible( const Handle(SALOME_InteractiveObject)& io )
 {
   QVector<SUIT_ViewWindow*> aViews = myViewManager->getViews();
   for(int i = 0, iEnd = aViews.size(); i < iEnd; i++)
@@ -486,9 +592,7 @@ SVTK_Viewer
 /*!
   Updates current viewer
 */
-void 
-SVTK_Viewer
-::Repaint()
+void SVTK_Viewer::Repaint()
 {
 //  if (theUpdateTrihedron) onAdjustTrihedron();
   QVector<SUIT_ViewWindow*> aViews = myViewManager->getViews();
@@ -496,4 +600,15 @@ SVTK_Viewer
     if(TViewWindow* aViewWindow = dynamic_cast<TViewWindow*>(aViews.at(i)))
       if(SVTK_View* aView = aViewWindow->getView())
 	aView->Repaint();
+}
+ 
+
+void SVTK_Viewer::onActorAdded(VTKViewer_Actor* theActor)
+{
+  emit actorAdded((SVTK_ViewWindow*)sender(), theActor);
+}
+
+void SVTK_Viewer::onActorRemoved(VTKViewer_Actor* theActor)
+{
+  emit actorRemoved((SVTK_ViewWindow*)sender(), theActor);
 }

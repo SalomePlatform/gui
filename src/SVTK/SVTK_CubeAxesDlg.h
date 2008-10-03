@@ -36,7 +36,10 @@ class QCheckBox;
 
 class QtxAction;
 class SVTK_CubeAxesActor2D;
-class SVTK_MainWindow;
+
+class SVTK_FontWidget;
+class SVTK_AxisWidget;
+class SVTK_ViewWindow;
 
 /*!
  * Class       : SVTK_CubeAxesDlg
@@ -50,7 +53,7 @@ class SVTK_CubeAxesDlg : public SVTK_DialogBase
 
 public:
                   SVTK_CubeAxesDlg(QtxAction* theAction,
-				   SVTK_MainWindow* theParent,
+				   SVTK_ViewWindow* theParent,
 				   const char* theName);
   virtual         ~SVTK_CubeAxesDlg();
 
@@ -67,7 +70,7 @@ private:
   bool            isValid() const;
 
 private:
-  SVTK_MainWindow *myMainWindow;
+  SVTK_ViewWindow *myMainWindow;
   SVTK_CubeAxesActor2D* myActor;
 
   QTabWidget*     myTabWg;

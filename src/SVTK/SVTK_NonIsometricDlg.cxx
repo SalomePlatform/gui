@@ -27,7 +27,7 @@
 //  $Header$
 
 #include "SVTK_NonIsometricDlg.h"
-#include "SVTK_MainWindow.h"
+#include "SVTK_ViewWindow.h"
 #include "SVTK_Renderer.h"
 
 #include "QtxDoubleSpinBox.h"
@@ -45,7 +45,7 @@ using namespace std;
 */
 SVTK_NonIsometricDlg
 ::SVTK_NonIsometricDlg(QtxAction* theAction,
-		       SVTK_MainWindow* theParent,
+		       SVTK_ViewWindow* theParent,
 		       const char* theName):
   SVTK_DialogBase(theAction,
 		  theParent, 

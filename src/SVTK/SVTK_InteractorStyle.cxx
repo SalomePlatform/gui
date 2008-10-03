@@ -69,11 +69,9 @@ using namespace std;
 
 namespace
 {
-  inline 
-  void
-  GetEventPosition(vtkRenderWindowInteractor* theInteractor,
-		   int& theX, 
-		   int& theY)
+  inline void GetEventPosition(vtkRenderWindowInteractor* theInteractor,
+			       int& theX, 
+			       int& theY)
   {
     theInteractor->GetEventPosition(theX,theY);
     theY = theInteractor->GetSize()[1] - theY - 1;
@@ -87,15 +85,14 @@ vtkStandardNewMacro(SVTK_InteractorStyle);
 /*!
   Constructor
 */
-SVTK_InteractorStyle
-::SVTK_InteractorStyle():
+SVTK_InteractorStyle::SVTK_InteractorStyle():
   mySelectionEvent(new SVTK_SelectionEvent()),
   myPointPicker(vtkPointPicker::New()),
   myLastHighlitedActor(NULL),
   myLastPreHighlitedActor(NULL),
   myControllerIncrement(SVTK_ControllerIncrement::New()),
   myControllerOnKeyDown(SVTK_ControllerOnKeyDown::New()),
-  myHighlightRotationPointActor(SVTK_Actor::New()),
+  myHighlightSelectionPointActor(SVTK_Actor::New()),
   myRectBand(0)
 {
   myPointPicker->Delete();
@@ -123,14 +120,17 @@ SVTK_InteractorStyle
   myCurrRotationPointType = SVTK::SetRotateGravity;
   myPrevRotationPointType = myCurrRotationPointType;
 
-  myHighlightRotationPointActor->Delete();
-  myHighlightRotationPointActor->Initialize();
-  myHighlightRotationPointActor->PickableOff();
-  myHighlightRotationPointActor->SetVisibility( false );
+  myCurrFocalPointType = SVTK::SetFocalPointSelected;
+  myPrevFocalPointType = myCurrFocalPointType;
+
+  myHighlightSelectionPointActor->Delete();
+  myHighlightSelectionPointActor->Initialize();
+  myHighlightSelectionPointActor->PickableOff();
+  myHighlightSelectionPointActor->SetVisibility( false );
   
-  myHighlightRotationPointActor->GetProperty()->SetPointSize(SALOME_POINT_SIZE+2);
-  myHighlightRotationPointActor->GetProperty()->SetLineWidth(SALOME_LINE_WIDTH+2);
-  myHighlightRotationPointActor->GetProperty()->SetRepresentationToPoints();
+  myHighlightSelectionPointActor->GetProperty()->SetPointSize(SALOME_POINT_SIZE+2);
+  myHighlightSelectionPointActor->GetProperty()->SetLineWidth(SALOME_LINE_WIDTH+2);
+  myHighlightSelectionPointActor->GetProperty()->SetRepresentationToPoints();
 
   myBBFirstCheck = true;
 }
@@ -138,8 +138,7 @@ SVTK_InteractorStyle
 /*!
   Destructor
 */
-SVTK_InteractorStyle
-::~SVTK_InteractorStyle() 
+SVTK_InteractorStyle::~SVTK_InteractorStyle() 
 {
   endDrawRect();
 }
@@ -147,9 +146,7 @@ SVTK_InteractorStyle
 /*!
   \return widget for rendering
 */
-QWidget*
-SVTK_InteractorStyle
-::GetRenderWidget()
+QWidget* SVTK_InteractorStyle::GetRenderWidget()
 {
   return myInteractor->GetRenderWidget();
 }
@@ -157,9 +154,7 @@ SVTK_InteractorStyle
 /*!
   \return selector
 */
-SVTK_Selector*
-SVTK_InteractorStyle
-::GetSelector() 
+SVTK_Selector* SVTK_InteractorStyle::GetSelector() 
 {
   return myInteractor->GetSelector();
 }
@@ -167,9 +162,7 @@ SVTK_InteractorStyle
 /*!
   Generate special SVTK_SelectionEvent
 */
-SVTK_SelectionEvent*
-SVTK_InteractorStyle
-::GetSelectionEvent()
+SVTK_SelectionEvent* SVTK_InteractorStyle::GetSelectionEvent()
 {
   mySelectionEvent->mySelectionMode = GetSelector()->SelectionMode();
 
@@ -187,9 +180,7 @@ SVTK_InteractorStyle
 /*!
   Generate special SVTK_SelectionEvent with flipped Y coordinate
 */
-SVTK_SelectionEvent*
-SVTK_InteractorStyle
-::GetSelectionEventFlipY()
+SVTK_SelectionEvent* SVTK_InteractorStyle::GetSelectionEventFlipY()
 {
   mySelectionEvent->mySelectionMode = GetSelector()->SelectionMode();
 
@@ -204,9 +195,7 @@ SVTK_InteractorStyle
   return mySelectionEvent.get();
 }
 
-void
-SVTK_InteractorStyle
-::RotateXY(int dx, int dy)
+void SVTK_InteractorStyle::RotateXY(int dx, int dy)
 {
   /*   if(GetCurrentRenderer() == NULL)
     return;
@@ -283,18 +272,13 @@ SVTK_InteractorStyle
   this->Render();
 }
 
-void
-SVTK_InteractorStyle
-::PanXY(int x, int y, int oldX, int oldY)
+void SVTK_InteractorStyle::PanXY(int x, int y, int oldX, int oldY)
 {
   TranslateView(x, y, oldX, oldY);   
   this->Render();
 }
 
-
-void 
-SVTK_InteractorStyle
-::DollyXY(int dx, int dy)
+void SVTK_InteractorStyle::DollyXY(int dx, int dy)
 {
   if (GetCurrentRenderer() == NULL) 
     return;
@@ -308,16 +292,14 @@ SVTK_InteractorStyle
   if (aCam->GetParallelProjection())
     aCam->SetParallelScale(aCam->GetParallelScale()/zoomFactor);
   else{
-    aCam->Dolly(zoomFactor);
+    aCam->Dolly(zoomFactor); // Move camera in/out along projection direction
     GetCurrentRenderer()->ResetCameraClippingRange(); 
   }
 
   this->Render();
 }
 
-void 
-SVTK_InteractorStyle
-::SpinXY(int x, int y, int oldX, int oldY)
+void SVTK_InteractorStyle::SpinXY(int x, int y, int oldX, int oldY)
 {
   vtkCamera *cam;
 
@@ -343,9 +325,7 @@ SVTK_InteractorStyle
 /*!
   To reset reset view
 */
-void
-SVTK_InteractorStyle
-::OnConfigure() 
+void SVTK_InteractorStyle::OnConfigure() 
 {
   this->FindPokedRenderer(0,0);
   this->GetCurrentRenderer()->InvokeEvent(vtkCommand::ConfigureEvent,NULL);
@@ -354,9 +334,7 @@ SVTK_InteractorStyle
 /*!
   To handle mouse move event
 */
-void
-SVTK_InteractorStyle
-::OnMouseMove() 
+void SVTK_InteractorStyle::OnMouseMove() 
 {
   int x, y;
   GetEventPosition( this->Interactor, x, y );
@@ -368,9 +346,7 @@ SVTK_InteractorStyle
 /*!
   To handle left mouse button down event (reimplemented from vtkInteractorStyle)
 */
-void
-SVTK_InteractorStyle
-::OnLeftButtonDown()
+void SVTK_InteractorStyle::OnLeftButtonDown()
 {
   int x, y;
   GetEventPosition( this->Interactor, x, y );
@@ -382,9 +358,7 @@ SVTK_InteractorStyle
 /*!
   To handle left mouse button up event (reimplemented from vtkInteractorStyle)
 */
-void
-SVTK_InteractorStyle
-::OnLeftButtonUp()
+void SVTK_InteractorStyle::OnLeftButtonUp()
 {
   int x, y;
   GetEventPosition( this->Interactor, x, y );
@@ -396,9 +370,7 @@ SVTK_InteractorStyle
 /*!
   To handle middle mouse button down event (reimplemented from vtkInteractorStyle)
 */
-void
-SVTK_InteractorStyle
-::OnMiddleButtonDown() 
+void SVTK_InteractorStyle::OnMiddleButtonDown() 
 {
   int x, y;
   GetEventPosition( this->Interactor, x, y );
@@ -410,9 +382,7 @@ SVTK_InteractorStyle
 /*!
   To handle middle mouse button up event (reimplemented from vtkInteractorStyle)
 */
-void
-SVTK_InteractorStyle
-::OnMiddleButtonUp()
+void SVTK_InteractorStyle::OnMiddleButtonUp()
 {
   int x, y;
   GetEventPosition( this->Interactor, x, y );
@@ -424,9 +394,7 @@ SVTK_InteractorStyle
 /*!
   To handle right mouse button down event (reimplemented from vtkInteractorStyle)
 */
-void
-SVTK_InteractorStyle
-::OnRightButtonDown() 
+void SVTK_InteractorStyle::OnRightButtonDown() 
 {
   int x, y;
   GetEventPosition( this->Interactor, x, y );
@@ -438,9 +406,7 @@ SVTK_InteractorStyle
 /*!
   To handle right mouse button up event (reimplemented from vtkInteractorStyle)
 */
-void
-SVTK_InteractorStyle
-::OnRightButtonUp()
+void SVTK_InteractorStyle::OnRightButtonUp()
 {
   int x, y;
   GetEventPosition( this->Interactor, x, y );
@@ -452,11 +418,9 @@ SVTK_InteractorStyle
 /*!
   To handle mouse move event
 */
-void
-SVTK_InteractorStyle
-::OnMouseMove(int vtkNotUsed(ctrl), 
-	      int shift,
-	      int x, int y) 
+void SVTK_InteractorStyle::OnMouseMove(int vtkNotUsed(ctrl), 
+				       int shift,
+				       int x, int y) 
 {
   myShiftState = shift;
   if (State != VTK_INTERACTOR_STYLE_CAMERA_NONE)
@@ -468,10 +432,8 @@ SVTK_InteractorStyle
 /*!
   To handle left mouse button down event (reimplemented from vtkInteractorStyle)
 */
-void
-SVTK_InteractorStyle
-::OnLeftButtonDown(int ctrl, int shift, 
-		   int x, int y) 
+void SVTK_InteractorStyle::OnLeftButtonDown(int ctrl, int shift, 
+					    int x, int y) 
 {
   this->FindPokedRenderer(x, y);
   if(GetCurrentRenderer() == NULL)
@@ -489,7 +451,8 @@ SVTK_InteractorStyle
   } else {
     if (ctrl)
       startOperation(VTK_INTERACTOR_STYLE_CAMERA_ZOOM);
-    else if ( myCurrRotationPointType == SVTK::StartPointSelection )
+    else if ( myCurrRotationPointType == SVTK::StartPointSelection ||
+	      myCurrFocalPointType == SVTK::StartFocalPointSelection )
     {
       SVTK_SelectionEvent* aSelectionEvent = GetSelectionEventFlipY();
 
@@ -507,28 +470,50 @@ SVTK_InteractorStyle
 	  int anObjId = anActor->GetNodeObjId( aVtkId );
 	  vtkFloatingPointType* aCoords = anActor->GetNodeCoord(anObjId);
 	  
-	  myCurrRotationPointType = SVTK::SetRotateSelected;
+	  if (myCurrRotationPointType == SVTK::StartPointSelection) {
+	    myCurrRotationPointType = SVTK::SetRotateSelected;
 	  
-	  // invoke event for update coordinates in SVTK_SetRotationPointDlg
-	  InvokeEvent(SVTK::RotationPointChanged,(void*)aCoords);
+	    // invoke event for update coordinates in SVTK_SetRotationPointDlg
+	    InvokeEvent(SVTK::RotationPointChanged,(void*)aCoords);
+	  }
+	  else if (myCurrFocalPointType == SVTK::StartFocalPointSelection) {
+	    myCurrFocalPointType = SVTK::SetFocalPointSelected;
+	  
+	    // invoke event for update coordinates in SVTK_ViewParameterDlg
+	    InvokeEvent(SVTK::FocalPointChanged,(void*)aCoords);
+	  }
 	}
 	else
 	{
-	  // invoke event with no data (for SVTK_SetRotationPointDlg)
-	  InvokeEvent(SVTK::RotationPointChanged,0);
-	  myCurrRotationPointType = myPrevRotationPointType;
+	  if (myCurrRotationPointType == SVTK::StartPointSelection) {
+	    // invoke event with no data (for SVTK_SetRotationPointDlg)
+	    InvokeEvent(SVTK::RotationPointChanged,0);
+	    myCurrRotationPointType = myPrevRotationPointType;
+	  }
+	  else if (myCurrFocalPointType == SVTK::StartFocalPointSelection) {
+	    // invoke event with no data (for SVTK_ViewParameterDlg)
+	    InvokeEvent(SVTK::FocalPointChanged,0);
+	    myCurrFocalPointType = myPrevFocalPointType;
+	  }
 	}
       }
       else
       {
-	// invoke event with no data (for SVTK_SetRotationPointDlg)
-	InvokeEvent(SVTK::RotationPointChanged,0);
-	myCurrRotationPointType = myPrevRotationPointType;
+	if (myCurrRotationPointType == SVTK::StartPointSelection) {
+	  // invoke event with no data (for SVTK_SetRotationPointDlg)
+	  InvokeEvent(SVTK::RotationPointChanged,0);
+	  myCurrRotationPointType = myPrevRotationPointType;
+	}
+	else if (myCurrFocalPointType == SVTK::StartFocalPointSelection) {
+	  // invoke event with no data (for SVTK_ViewParameterDlg)
+	  InvokeEvent(SVTK::FocalPointChanged,0);
+	  myCurrFocalPointType = myPrevFocalPointType;
+	}
       }
     
-      myHighlightRotationPointActor->SetVisibility( false );
+      myHighlightSelectionPointActor->SetVisibility( false );
       if(GetCurrentRenderer() != NULL)
-	GetCurrentRenderer()->RemoveActor( myHighlightRotationPointActor.GetPointer() );
+	GetCurrentRenderer()->RemoveActor( myHighlightSelectionPointActor.GetPointer() );
 
       GetRenderWidget()->setCursor(myDefCursor); 
     }
@@ -542,12 +527,10 @@ SVTK_InteractorStyle
 /*!
   To handle left mouse button up event (reimplemented from vtkInteractorStyle)
 */
-void
-SVTK_InteractorStyle
-::OnLeftButtonUp(int vtkNotUsed(ctrl),
-		 int shift, 
-		 int vtkNotUsed(x),
-		 int vtkNotUsed(y))
+void SVTK_InteractorStyle::OnLeftButtonUp(int vtkNotUsed(ctrl),
+					  int shift, 
+					  int vtkNotUsed(x),
+					  int vtkNotUsed(y))
 {
   myShiftState = shift;
   // finishing current viewer operation
@@ -560,11 +543,9 @@ SVTK_InteractorStyle
 /*!
   To handle middle mouse button down event (reimplemented from vtkInteractorStyle)
 */
-void
-SVTK_InteractorStyle
-::OnMiddleButtonDown(int ctrl,
-		     int shift, 
-		     int x, int y) 
+void SVTK_InteractorStyle::OnMiddleButtonDown(int ctrl,
+					      int shift, 
+					      int x, int y) 
 {
   this->FindPokedRenderer(x, y);
   if(GetCurrentRenderer() == NULL)
@@ -590,12 +571,10 @@ SVTK_InteractorStyle
 /*!
   To handle middle mouse button up event (reimplemented from vtkInteractorStyle)
 */
-void
-SVTK_InteractorStyle
-::OnMiddleButtonUp(int vtkNotUsed(ctrl),
-		   int shift, 
-		   int vtkNotUsed(x),
-		   int vtkNotUsed(y))
+void SVTK_InteractorStyle::OnMiddleButtonUp(int vtkNotUsed(ctrl),
+					    int shift, 
+					    int vtkNotUsed(x),
+					    int vtkNotUsed(y))
 {
   myShiftState = shift;
   // finishing current viewer operation
@@ -609,11 +588,9 @@ SVTK_InteractorStyle
 /*!
   To handle right mouse button down event (reimplemented from vtkInteractorStyle)
 */
-void
-SVTK_InteractorStyle
-::OnRightButtonDown(int ctrl,
-		    int shift, 
-		    int x, int y) 
+void SVTK_InteractorStyle::OnRightButtonDown(int ctrl,
+					     int shift, 
+					     int x, int y) 
 {
   this->FindPokedRenderer(x, y);
   if(GetCurrentRenderer() == NULL)
@@ -638,12 +615,10 @@ SVTK_InteractorStyle
 /*!
   To handle right mouse button up event (reimplemented from vtkInteractorStyle)
 */
-void
-SVTK_InteractorStyle
-::OnRightButtonUp(int vtkNotUsed(ctrl),
-		  int shift, 
-		  int vtkNotUsed(x),
-		  int vtkNotUsed(y))
+void SVTK_InteractorStyle::OnRightButtonUp(int vtkNotUsed(ctrl),
+					   int shift, 
+					   int vtkNotUsed(x),
+					   int vtkNotUsed(y))
 {
   myShiftState = shift;
   // finishing current viewer operation
@@ -734,9 +709,7 @@ const char* imageRotateCursor[] = {
 /*!
   loads cursors for viewer operations - zoom, pan, etc...
 */
-void
-SVTK_InteractorStyle
-::loadCursors()
+void SVTK_InteractorStyle::loadCursors()
 {
   myDefCursor       = QCursor(Qt::ArrowCursor);
   myHandCursor      = QCursor(Qt::PointingHandCursor);
@@ -752,9 +725,7 @@ SVTK_InteractorStyle
 /*!
   Starts Zoom operation (e.g. through menu command)
 */
-void
-SVTK_InteractorStyle
-::startZoom()
+void SVTK_InteractorStyle::startZoom()
 {
   if (State != VTK_INTERACTOR_STYLE_CAMERA_NONE)
   {
@@ -769,9 +740,7 @@ SVTK_InteractorStyle
 /*!
   Starts Pan operation (e.g. through menu command)
 */
-void
-SVTK_InteractorStyle
-::startPan()
+void SVTK_InteractorStyle::startPan()
 {
   if (State != VTK_INTERACTOR_STYLE_CAMERA_NONE)
   {
@@ -785,9 +754,7 @@ SVTK_InteractorStyle
 /*!
   Starts Rotate operation (e.g. through menu command)
 */
-void 
-SVTK_InteractorStyle
-::startRotate()
+void SVTK_InteractorStyle::startRotate()
 {
   if (State != VTK_INTERACTOR_STYLE_CAMERA_NONE)
   {
@@ -801,19 +768,36 @@ SVTK_InteractorStyle
 /*!
   Set rotation point selected by user
 */
-void 
-SVTK_InteractorStyle
-::startPointSelection()
+void SVTK_InteractorStyle::startPointSelection()
 {
   myCurrRotationPointType = SVTK::StartPointSelection;
 
   if(GetCurrentRenderer() != NULL) {
-    GetCurrentRenderer()->AddActor( myHighlightRotationPointActor.GetPointer() );
+    GetCurrentRenderer()->AddActor( myHighlightSelectionPointActor.GetPointer() );
     vtkFloatingPointType aColor[3];
     GetCurrentRenderer()->GetBackground( aColor );
-    myHighlightRotationPointActor->GetProperty()->SetColor(1. - aColor[0],
-							   1. - aColor[1],
-							   1. - aColor[2]);
+    myHighlightSelectionPointActor->GetProperty()->SetColor(1. - aColor[0],
+							    1. - aColor[1],
+							    1. - aColor[2]);
+  }
+
+  setCursor(VTK_INTERACTOR_STYLE_CAMERA_NONE);
+}
+
+/*!
+  Set focal point selected by user
+*/
+void SVTK_InteractorStyle::startFocalPointSelection()
+{
+  myCurrFocalPointType = SVTK::StartFocalPointSelection;
+
+  if(GetCurrentRenderer() != NULL) {
+    GetCurrentRenderer()->AddActor( myHighlightSelectionPointActor.GetPointer() );
+    vtkFloatingPointType aColor[3];
+    GetCurrentRenderer()->GetBackground( aColor );
+    myHighlightSelectionPointActor->GetProperty()->SetColor(1. - aColor[0],
+							    1. - aColor[1],
+							    1. - aColor[2]);
   }
 
   setCursor(VTK_INTERACTOR_STYLE_CAMERA_NONE);
@@ -822,9 +806,7 @@ SVTK_InteractorStyle
 /*! 
   Starts Spin operation (e.g. through menu command)
 */
-void
-SVTK_InteractorStyle
-::startSpin()
+void SVTK_InteractorStyle::startSpin()
 {
   if (State != VTK_INTERACTOR_STYLE_CAMERA_NONE)
   {
@@ -840,9 +822,7 @@ SVTK_InteractorStyle
 /*!
   Starts Fit Area operation (e.g. through menu command)
 */
-void
-SVTK_InteractorStyle
-::startFitArea()
+void SVTK_InteractorStyle::startFitArea()
 {
   if (State != VTK_INTERACTOR_STYLE_CAMERA_NONE)
   {
@@ -857,9 +837,7 @@ SVTK_InteractorStyle
 /*!
   Starts Global Panning operation (e.g. through menu command)
 */
-void
-SVTK_InteractorStyle
-::startGlobalPan()
+void SVTK_InteractorStyle::startGlobalPan()
 {
   if (State != VTK_INTERACTOR_STYLE_CAMERA_NONE)
   {
@@ -881,12 +859,10 @@ SVTK_InteractorStyle
 /*!
   Fits viewer contents to rect
 */
-void
-SVTK_InteractorStyle
-::fitRect(const int left, 
-	  const int top, 
-	  const int right, 
-	  const int bottom)
+void SVTK_InteractorStyle::fitRect(const int left, 
+				   const int top, 
+				   const int right, 
+				   const int bottom)
 {
   if (GetCurrentRenderer() == NULL) 
     return;
@@ -919,9 +895,7 @@ SVTK_InteractorStyle
 /*!
   Starts viewer operation (!internal usage!)
 */
-void
-SVTK_InteractorStyle
-::startOperation(int operation)
+void SVTK_InteractorStyle::startOperation(int operation)
 {
   switch(operation)
   { 
@@ -951,9 +925,7 @@ SVTK_InteractorStyle
 /*!
   Sets proper cursor for window when viewer operation is activated
 */
-void
-SVTK_InteractorStyle
-::setCursor(const int operation)
+void SVTK_InteractorStyle::setCursor(const int operation)
 {
   if (!GetRenderWidget()) return;
   switch (operation)
@@ -985,7 +957,8 @@ SVTK_InteractorStyle
       break;
     case VTK_INTERACTOR_STYLE_CAMERA_NONE:
     default:
-      if ( myCurrRotationPointType == SVTK::StartPointSelection )
+      if ( myCurrRotationPointType == SVTK::StartPointSelection ||
+	   myCurrFocalPointType == SVTK::StartFocalPointSelection )
 	GetRenderWidget()->setCursor(myHandCursor);
       else
 	GetRenderWidget()->setCursor(myDefCursor); 
@@ -998,9 +971,7 @@ SVTK_InteractorStyle
 /*!
   Called when viewer operation started (!put necessary initialization here!)
 */
-void
-SVTK_InteractorStyle
-::onStartOperation()
+void SVTK_InteractorStyle::onStartOperation()
 {
   if (!GetRenderWidget()) 
     return;
@@ -1029,9 +1000,7 @@ SVTK_InteractorStyle
 /*!
   Called when viewer operation finished (!put necessary post-processing here!)
 */
-void
-SVTK_InteractorStyle
-::onFinishOperation() 
+void SVTK_InteractorStyle::onFinishOperation() 
 {
   if (!GetRenderWidget()) 
     return;
@@ -1082,8 +1051,8 @@ SVTK_InteractorStyle
 	      {
 		if(myLastHighlitedActor.GetPointer() && myLastHighlitedActor.GetPointer() != anActor)
 		  myLastHighlitedActor->Highlight( this, aSelectionEvent, false );
-		myLastHighlitedActor = anActor;
 	      }
+	    myLastHighlitedActor = anActor;
 	  } 
 	else 
 	  {
@@ -1137,9 +1106,7 @@ SVTK_InteractorStyle
 /*!
   Called during viewer operation when user moves mouse (!put necessary processing here!)
 */
-void
-SVTK_InteractorStyle
-::onOperation(QPoint mousePos) 
+void SVTK_InteractorStyle::onOperation(QPoint mousePos) 
 {
   if (!GetRenderWidget()) 
     return;
@@ -1191,9 +1158,7 @@ SVTK_InteractorStyle
   Called when user moves mouse inside viewer window and there is no active viewer operation 
   (!put necessary processing here!)
 */
-void
-SVTK_InteractorStyle
-::onCursorMove(QPoint mousePos) 
+void SVTK_InteractorStyle::onCursorMove(QPoint mousePos) 
 {
   // processing highlighting
   SVTK_SelectionEvent* aSelectionEvent = GetSelectionEventFlipY();
@@ -1203,9 +1168,10 @@ SVTK_InteractorStyle
 
   SALOME_Actor *anActor = GetSelector()->Pick(aSelectionEvent, GetCurrentRenderer());
 
-  if ( myCurrRotationPointType == SVTK::StartPointSelection )
+  if ( myCurrRotationPointType == SVTK::StartPointSelection ||
+       myCurrFocalPointType == SVTK::StartFocalPointSelection )
   {
-    myHighlightRotationPointActor->SetVisibility( false );
+    myHighlightSelectionPointActor->SetVisibility( false );
 
     if ( anActor )
     {
@@ -1216,9 +1182,9 @@ SVTK_InteractorStyle
 
 	TColStd_IndexedMapOfInteger aMapIndex;
 	aMapIndex.Add( anObjId );
-	myHighlightRotationPointActor->MapPoints( anActor, aMapIndex );
+	myHighlightSelectionPointActor->MapPoints( anActor, aMapIndex );
 
-	myHighlightRotationPointActor->SetVisibility( true );
+	myHighlightSelectionPointActor->SetVisibility( true );
 	anIsChanged = true;
       }
     }
@@ -1242,9 +1208,7 @@ SVTK_InteractorStyle
 /*!
   Called on finsh GlobalPan operation 
 */
-void
-SVTK_InteractorStyle
-::Place(const int theX, const int theY) 
+void SVTK_InteractorStyle::Place(const int theX, const int theY) 
 {
   if (GetCurrentRenderer() == NULL)
     return;
@@ -1269,9 +1233,7 @@ SVTK_InteractorStyle
 /*!
   Translates view from Point to Point
 */
-void
-SVTK_InteractorStyle
-::TranslateView(int toX, int toY, int fromX, int fromY)
+void SVTK_InteractorStyle::TranslateView(int toX, int toY, int fromX, int fromY)
 {
   vtkCamera *cam = GetCurrentRenderer()->GetActiveCamera();
   double viewFocus[4], focalDepth, viewPoint[3];
@@ -1302,23 +1264,17 @@ SVTK_InteractorStyle
 		   motionVector[2] + viewPoint[2]);
 }
 
-void
-SVTK_InteractorStyle
-::IncrementalPan( const int incrX, const int incrY )
+void SVTK_InteractorStyle::IncrementalPan( const int incrX, const int incrY )
 {
   this->PanXY( incrX, incrY, 0, 0 );
 }
 
-void
-SVTK_InteractorStyle
-::IncrementalZoom( const int incr )
+void SVTK_InteractorStyle::IncrementalZoom( const int incr )
 {
   this->DollyXY( incr, incr );
 }
 
-void
-SVTK_InteractorStyle
-::IncrementalRotate( const int incrX, const int incrY )
+void SVTK_InteractorStyle::IncrementalRotate( const int incrX, const int incrY )
 {
   this->RotateXY( incrX, -incrY );
 }
@@ -1326,9 +1282,7 @@ SVTK_InteractorStyle
 /*!
   Redefined in order to add an observer (callback) for custorm event (space mouse event)
 */
-void
-SVTK_InteractorStyle
-::SetInteractor( vtkRenderWindowInteractor* theInteractor )
+void SVTK_InteractorStyle::SetInteractor( vtkRenderWindowInteractor* theInteractor )
 {
   // register EventCallbackCommand as observer of standard events (keypress, mousemove, etc)
   Superclass::SetInteractor( theInteractor );
@@ -1367,15 +1321,17 @@ SVTK_InteractorStyle
     theInteractor->AddObserver( SVTK::StartPointSelection, EventCallbackCommand, Priority );
 
     theInteractor->AddObserver( SVTK::ChangeRotationPoint, EventCallbackCommand, Priority );
+
+    theInteractor->AddObserver( SVTK::SetFocalPointGravity, EventCallbackCommand, Priority );
+    theInteractor->AddObserver( SVTK::StartFocalPointSelection, EventCallbackCommand, Priority );
+    theInteractor->AddObserver( SVTK::SetFocalPointSelected, EventCallbackCommand, Priority );
   }
 }
 
 /*!
   To implement cached rendering
 */
-void
-SVTK_InteractorStyle
-::OnTimer() 
+void SVTK_InteractorStyle::OnTimer() 
 {
   //vtkInteractorStyle::OnTimer();
   this->Interactor->Render();
@@ -1408,16 +1364,12 @@ SVTK_InteractorStyle
 /*!
   To invoke #vtkRenderWindowInteractor::CreateTimer
 */
-void
-SVTK_InteractorStyle
-::Render() 
+void SVTK_InteractorStyle::Render() 
 {
   this->Interactor->CreateTimer(VTKI_TIMER_FIRST);
 }
 
-void
-SVTK_InteractorStyle
-::onSpaceMouseMove( double* data )
+void SVTK_InteractorStyle::onSpaceMouseMove( double* data )
 {
   // general things, do SetCurrentRenderer() within FindPokedRenderer() 
   int x, y;
@@ -1430,9 +1382,7 @@ SVTK_InteractorStyle
   IncrementalRotate( (int)data[3], 0  );   // 5. tilt the control forward/backward = rotate around X axis (Z axis of local coordinate system of space mouse)
 }
 
-void
-SVTK_InteractorStyle
-::onSpaceMouseButton( int button )
+void SVTK_InteractorStyle::onSpaceMouseButton( int button )
 {
   if( mySMDecreaseSpeedBtn == button ) {   
     ControllerIncrement()->Decrease();
@@ -1444,9 +1394,7 @@ SVTK_InteractorStyle
     DominantCombinedSwitch();
 }
 
-void
-SVTK_InteractorStyle
-::DominantCombinedSwitch()
+void SVTK_InteractorStyle::DominantCombinedSwitch()
 {
   printf( "\n--DominantCombinedSwitch() NOT IMPLEMENTED--\n" );
 }
@@ -1454,9 +1402,7 @@ SVTK_InteractorStyle
 /*!
   Draws rectangle by starting and current points
 */
-void
-SVTK_InteractorStyle
-::drawRect()
+void SVTK_InteractorStyle::drawRect()
 {
   if ( !myRectBand ) {
     myRectBand = new QRubberBand( QRubberBand::Rectangle, GetRenderWidget() );
@@ -1474,9 +1420,7 @@ SVTK_InteractorStyle
 /*!
   \brief Delete rubber band on the end on the dragging operation.
 */
-void
-SVTK_InteractorStyle
-::endDrawRect()
+void SVTK_InteractorStyle::endDrawRect()
 {
   if ( myRectBand ) myRectBand->hide();
 
@@ -1487,12 +1431,10 @@ SVTK_InteractorStyle
 /*!
   Main process event method (reimplemented from #vtkInteractorStyle)
 */
-void
-SVTK_InteractorStyle
-::ProcessEvents( vtkObject* object,
-		 unsigned long event,
-		 void* clientData, 
-		 void* callData )
+void SVTK_InteractorStyle::ProcessEvents( vtkObject* object,
+					  unsigned long event,
+					  void* clientData, 
+					  void* callData )
 {
   if ( clientData ) {
     vtkObject* anObject = reinterpret_cast<vtkObject*>( clientData );
@@ -1577,9 +1519,9 @@ SVTK_InteractorStyle
       case SVTK::SetRotateGravity:
 	if ( self->myCurrRotationPointType == SVTK::StartPointSelection )
 	{
-	  self->myHighlightRotationPointActor->SetVisibility( false );
+	  self->myHighlightSelectionPointActor->SetVisibility( false );
 	  if( self->GetCurrentRenderer() != NULL )
-	    self->GetCurrentRenderer()->RemoveActor( self->myHighlightRotationPointActor.GetPointer() );
+	    self->GetCurrentRenderer()->RemoveActor( self->myHighlightSelectionPointActor.GetPointer() );
 	  self->GetRenderWidget()->setCursor(self->myDefCursor); 
 	}
 	self->myPrevRotationPointType = self->myCurrRotationPointType;
@@ -1595,9 +1537,9 @@ SVTK_InteractorStyle
       case SVTK::ChangeRotationPoint:
 	if ( self->myCurrRotationPointType == SVTK::StartPointSelection )
 	{
-	  self->myHighlightRotationPointActor->SetVisibility( false );
+	  self->myHighlightSelectionPointActor->SetVisibility( false );
 	  if( self->GetCurrentRenderer() != NULL )
-	    self->GetCurrentRenderer()->RemoveActor( self->myHighlightRotationPointActor.GetPointer() );
+	    self->GetCurrentRenderer()->RemoveActor( self->myHighlightSelectionPointActor.GetPointer() );
 	  self->GetRenderWidget()->setCursor(self->myDefCursor); 
 	}
 	self->myPrevRotationPointType = self->myCurrRotationPointType;
@@ -1606,6 +1548,36 @@ SVTK_InteractorStyle
 	self->myRotationPointX = aSelectedPoint[0];
 	self->myRotationPointY = aSelectedPoint[1];
 	self->myRotationPointZ = aSelectedPoint[2];
+	return;
+
+      case SVTK::SetFocalPointGravity:
+	if ( self->myCurrFocalPointType == SVTK::StartPointSelection )
+	{
+	  self->myHighlightSelectionPointActor->SetVisibility( false );
+	  if( self->GetCurrentRenderer() != NULL )
+	    self->GetCurrentRenderer()->RemoveActor( self->myHighlightSelectionPointActor.GetPointer() );
+	  self->GetRenderWidget()->setCursor(self->myDefCursor); 
+	}
+	self->myCurrFocalPointType = SVTK::SetFocalPointGravity;
+	if ( ComputeBBCenter(self->GetCurrentRenderer(),aCenter) ) {
+	  // invoke event for update coordinates in SVTK_ViewParameterDlg
+	  self->InvokeEvent(SVTK::FocalPointChanged,(void*)aCenter);
+	}
+	return;
+      case SVTK::StartFocalPointSelection:
+	self->startFocalPointSelection();
+	return;
+
+      case SVTK::SetFocalPointSelected:
+	if ( self->myCurrFocalPointType == SVTK::StartFocalPointSelection )
+	{
+	  self->myHighlightSelectionPointActor->SetVisibility( false );
+	  if( self->GetCurrentRenderer() != NULL )
+	    self->GetCurrentRenderer()->RemoveActor( self->myHighlightSelectionPointActor.GetPointer() );
+	  self->GetRenderWidget()->setCursor(self->myDefCursor); 
+	}
+	self->myPrevFocalPointType = self->myCurrFocalPointType;
+	self->myCurrFocalPointType = SVTK::SetFocalPointSelected;
 	return;
       }
     }
@@ -1619,6 +1591,11 @@ SVTK_InteractorStyle
 */
 void SVTK_InteractorStyle::OnChar()
 {
+  char key = GetInteractor()->GetKeyCode();
+  switch ( key ) {
+  case '+': ControllerIncrement()->Increase(); break;
+  case '-': ControllerIncrement()->Decrease(); break;
+  }
 }
 
 /*!
@@ -1665,11 +1642,27 @@ SVTK_ControllerOnKeyDown* SVTK_InteractorStyle::ControllerOnKeyDown()
 }
 
 /*!
-  To get current increment controller
+  To set current increment controller
 */
 void SVTK_InteractorStyle::SetControllerIncrement(SVTK_ControllerIncrement* theController)
 {
   myControllerIncrement=theController;
+}
+
+/*!
+  To modify current increment controller
+*/
+void SVTK_InteractorStyle::SetIncrementSpeed(const int theValue, const int theMode)
+{
+  SVTK_ControllerIncrement* c = 0;
+  switch (theMode) {
+  case 0: c = SVTK_ControllerIncrement::New(); break;
+  case 1: c = SVTK_GeomControllerIncrement::New(); break;
+  }
+  c->SetStartValue(theValue);
+
+  SetControllerIncrement(c);
+  c->Delete();
 }
 
 /*!
@@ -1705,6 +1698,27 @@ int SVTK_ControllerIncrement::Decrease()
 {
   if (myIncrement>1){
     --myIncrement;
+  }
+  return myIncrement;
+}
+
+vtkStandardNewMacro(SVTK_GeomControllerIncrement);
+SVTK_GeomControllerIncrement::SVTK_GeomControllerIncrement()
+{
+}
+SVTK_GeomControllerIncrement::~SVTK_GeomControllerIncrement()
+{
+}
+int SVTK_GeomControllerIncrement::Increase()
+{
+  myIncrement*=2;
+  return myIncrement;
+}
+int SVTK_GeomControllerIncrement::Decrease()
+{
+  myIncrement/=2;
+  if (myIncrement<1){
+    myIncrement=1;
   }
   return myIncrement;
 }

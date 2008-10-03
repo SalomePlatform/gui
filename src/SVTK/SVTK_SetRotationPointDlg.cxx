@@ -27,7 +27,7 @@
 //  $Header$
 
 #include "SVTK_SetRotationPointDlg.h"
-#include "SVTK_MainWindow.h"
+#include "SVTK_ViewWindow.h"
 #include "SVTK_RenderWindowInteractor.h"
 #include "SVTK_Event.h"
 #include "SVTK_InteractorStyle.h"
@@ -53,7 +53,7 @@ using namespace std;
 */
 SVTK_SetRotationPointDlg
 ::SVTK_SetRotationPointDlg(QtxAction* theAction,
-			   SVTK_MainWindow* theParent,
+			   SVTK_ViewWindow* theParent,
 			   const char* theName):
   SVTK_DialogBase(theAction,
 		  theParent, 

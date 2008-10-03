@@ -30,7 +30,7 @@
 
 #include "SVTK_View.h"
 #include "SVTK_Renderer.h"
-#include "SVTK_MainWindow.h"
+#include "SVTK_ViewWindow.h"
 #include "SVTK_RenderWindowInteractor.h"
 #include "SALOME_ListIteratorOfListIO.hxx"
 
@@ -44,7 +44,7 @@
   Constructor
 */
 SVTK_SignalHandler
-::SVTK_SignalHandler(SVTK_MainWindow* theMainWindow):
+::SVTK_SignalHandler(SVTK_ViewWindow* theMainWindow):
   QObject(theMainWindow),
   myMainWindow(theMainWindow)
 {
@@ -79,7 +79,7 @@ SVTK_SignalHandler
 /*!
   \return corresponding svtk main window
 */
-SVTK_MainWindow*
+SVTK_ViewWindow*
 SVTK_SignalHandler
 ::GetMainWindow()
 {
@@ -88,7 +88,7 @@ SVTK_SignalHandler
 
 
 /*!
-  Redirect the request to #SVTK_MainWindow::Repaint (just for flexibility)
+  Redirect the request to #SVTK_ViewWindow::Repaint (just for flexibility)
 */
 void
 SVTK_SignalHandler
@@ -98,7 +98,7 @@ SVTK_SignalHandler
 }
 
 /*!
-  Redirect the request to #SVTK_MainWindow::GetRenderer (just for flexibility)
+  Redirect the request to #SVTK_ViewWindow::GetRenderer (just for flexibility)
 */
 SVTK_Renderer* 
 SVTK_SignalHandler
@@ -108,7 +108,7 @@ SVTK_SignalHandler
 }
 
 /*!
-  Redirect the request to #SVTK_MainWindow::getRenderer (just for flexibility)
+  Redirect the request to #SVTK_ViewWindow::getRenderer (just for flexibility)
 */
 vtkRenderer* 
 SVTK_SignalHandler
@@ -164,7 +164,7 @@ SVTK_SignalHandler
   Constructor
 */
 SVTK_View
-::SVTK_View(SVTK_MainWindow* theMainWindow) :
+::SVTK_View(SVTK_ViewWindow* theMainWindow) :
   SVTK_SignalHandler(theMainWindow)
 {
 }

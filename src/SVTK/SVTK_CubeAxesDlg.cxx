@@ -27,7 +27,7 @@
 
 #include "SVTK_CubeAxesDlg.h"
 
-#include "SVTK_MainWindow.h"
+#include "SVTK_ViewWindow.h"
 #include "SVTK_FontWidget.h"
 
 #include "SVTK_CubeAxesActor2D.h"
@@ -376,7 +376,7 @@ bool SVTK_CubeAxesDlg::AxisWidget::Apply(vtkAxisActor2D* theActor)
   Constructor
 */
 SVTK_CubeAxesDlg::SVTK_CubeAxesDlg(QtxAction* theAction,
-				   SVTK_MainWindow* theParent,
+				   SVTK_ViewWindow* theParent,
 				   const char* theName):
   SVTK_DialogBase(theAction,
 		  theParent, 

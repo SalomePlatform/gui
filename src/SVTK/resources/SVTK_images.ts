@@ -17,5 +17,37 @@
         <source>ICON_SVTK_UPDATE_RATE</source>
         <translation>vtk_view_update_rate.png</translation>
     </message>
+    <message>
+        <source>ICON_SVTK_VIEW_PARAMETERS</source>
+        <translation>vtk_view_parameters.png</translation>
+    </message>
+    <message>
+        <source>ICON_SVTK_VIEW_PARALLEL</source>
+        <translation>vtk_view_parallel.png</translation>
+    </message>
+    <message>
+        <source>ICON_SVTK_VIEW_PERSPECTIVE</source>
+        <translation>vtk_view_perspective.png</translation>
+    </message>
+    <message>
+        <source>ICON_SVTK_STYLE_SWITCH</source>
+        <translation>vtk_view_style_switch.png</translation>
+    </message>
+    <message>
+        <source>ICON_SVTK_RECORDING_START</source>
+        <translation>vtk_view_recording_start.png</translation>
+    </message>
+    <message>
+        <source>ICON_SVTK_RECORDING_PLAY</source>
+        <translation>vtk_view_recording_play.png</translation>
+    </message>
+    <message>
+        <source>ICON_SVTK_RECORDING_PAUSE</source>
+        <translation>vtk_view_recording_pause.png</translation>
+    </message>
+    <message>
+        <source>ICON_SVTK_RECORDING_STOP</source>
+        <translation>vtk_view_recording_stop.png</translation>
+    </message>
 </context>
 </TS>

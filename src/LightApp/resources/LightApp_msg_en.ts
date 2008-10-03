@@ -82,6 +82,138 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>Store positions of windows</translation>
     </message>
     <message>
+        <source>PREF_PROJECTION_MODE</source>
+        <translation>Projection mode:</translation>
+    </message>
+    <message>
+        <source>PREF_ORTHOGRAPHIC</source>
+        <translation>Orthogonal</translation>
+    </message>
+    <message>
+        <source>PREF_PERSPECTIVE</source>
+        <translation>Perspective</translation>
+    </message>
+    <message>
+        <source>PREF_NAVIGATION</source>
+        <translation>Navigation:</translation>
+    </message>
+    <message>
+        <source>PREF_STANDARD_STYLE</source>
+        <translation>Salome standard controls</translation>
+    </message>
+    <message>
+        <source>PREF_KEYFREE_STYLE</source>
+        <translation>Keyboard free style</translation>
+    </message>
+    <message>
+        <source>PREF_INCREMENTAL_SPEED</source>
+        <translation>Speed increment:</translation>
+    </message>
+    <message>
+        <source>PREF_INCREMENTAL_SPEED_MODE</source>
+        <translation>Modification mode:</translation>
+    </message>
+    <message>
+        <source>PREF_ARITHMETIC</source>
+        <translation>Arithmetic progression</translation>
+    </message>
+    <message>
+        <source>PREF_GEOMETRICAL</source>
+        <translation>Geometrical progression</translation>
+    </message>
+    <message>
+        <source>PREF_FRAME_SPACEMOUSE</source>
+        <translation>Spacemouse</translation>
+    </message>
+    <message>
+        <source>PREF_SPACEMOUSE_FUNC_1</source>
+        <translation>Decrease speed increment</translation>
+    </message>
+    <message>
+        <source>PREF_SPACEMOUSE_FUNC_2</source>
+        <translation>Increase speed increment</translation>
+    </message>
+    <message>
+        <source>PREF_SPACEMOUSE_FUNC_3</source>
+        <translation>Dominant / combined switch</translation>
+    </message>
+    <message>
+        <source>PREF_SPACEMOUSE_BTN_1</source>
+        <translation>Button 1</translation>
+    </message>
+    <message>
+        <source>PREF_SPACEMOUSE_BTN_2</source>
+        <translation>Button 2</translation>
+    </message>
+    <message>
+        <source>PREF_SPACEMOUSE_BTN_3</source>
+        <translation>Button 3</translation>
+    </message>
+    <message>
+        <source>PREF_SPACEMOUSE_BTN_4</source>
+        <translation>Button 4</translation>
+    </message>
+    <message>
+        <source>PREF_SPACEMOUSE_BTN_5</source>
+        <translation>Button 5</translation>
+    </message>
+    <message>
+        <source>PREF_SPACEMOUSE_BTN_6</source>
+        <translation>Button 6</translation>
+    </message>
+    <message>
+        <source>PREF_SPACEMOUSE_BTN_7</source>
+        <translation>Button 7</translation>
+    </message>
+    <message>
+        <source>PREF_SPACEMOUSE_BTN_8</source>
+        <translation>Button 8</translation>
+    </message>
+    <message>
+        <source>PREF_SPACEMOUSE_BTN_*</source>
+        <translation>Button *</translation>
+    </message>
+    <message>
+        <source>PREF_SPACEMOUSE_BTN_10</source>
+        <translation>Button 10</translation>
+    </message>
+    <message>
+        <source>PREF_SPACEMOUSE_BTN_11</source>
+        <translation>Button 11</translation>
+    </message>
+    <message>
+        <source>PREF_FRAME_RECORDING</source>
+        <translation>AVI Recording</translation>
+    </message>
+    <message>
+        <source>PREF_ALL_DISLPAYED_FRAMES</source>
+        <translation>Recording all displayed frames</translation>
+    </message>
+    <message>
+        <source>PREF_FPS</source>
+        <translation>FPS</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_TTL</source>
+        <translation>Settings</translation>
+    </message>
+    <message>
+        <source>PREF_PROGRESSIVE</source>
+        <translation>Progressive</translation>
+    </message>
+    <message>
+        <source>PREF_QUALITY</source>
+        <translation>Quality</translation>
+    </message>
+    <message>
+        <source>PREF_RECORDING_MODE</source>
+        <translation>Mode</translation>
+    </message>
+    <message>
+        <source>PREF_SKIPPED_FRAMES</source>
+        <translation>Recording at a given FPS</translation>
+    </message>
+    <message>
         <source>PREF_BOTTOM</source>
         <translation>Bottom</translation>
     </message>

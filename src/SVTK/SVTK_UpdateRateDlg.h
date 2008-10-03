@@ -33,7 +33,7 @@
 
 #include <vtkSmartPointer.h>
 
-class SVTK_MainWindow;
+class SVTK_ViewWindow;
 class SVTK_RenderWindowInteractor;
 
 class QtxDoubleSpinBox;
@@ -52,7 +52,7 @@ class SVTK_UpdateRateDlg : public SVTK_DialogBase
 
 public:
   SVTK_UpdateRateDlg(QtxAction* theAction,
-		     SVTK_MainWindow* theParent,
+		     SVTK_ViewWindow* theParent,
 		     const char* theName);
 
   ~SVTK_UpdateRateDlg();

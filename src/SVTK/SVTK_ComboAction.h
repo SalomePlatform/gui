@@ -21,39 +21,46 @@
 //
 //
 //
-//  File   :
-//  Author :
-//  Module :
-//  $Header$
+//  File   : 
+//  Author : 
+//  Module : SALOME
+//  $Header:
+
+#ifndef SVTK_COMBOACTION_H
+#define SVTK_COMBOACTION_H
 
 #include "SVTK.h"
-#include "SVTK_Prs.h"
-#include "SVTK_Actor.h"
-#include "SALOME_Actor.h"
-#include "SVTK_RectPicker.h"
-#include "SVTK_DeviceActor.h"
-#include "SVTK_CubeAxesActor2D.h"
-#include "SVTK_Functor.h"
-#include "SVTK_View.h"
-//#include "SVTK_MainWindow.h"
-#include "SVTK_NonIsometricDlg.h"
-#include "SVTK_CubeAxesDlg.h"
-#include "SVTK_FontWidget.h"
-#include "SVTK_ViewModel.h"
-#include "SVTK_ViewWindow.h"
-#include "SVTK_Renderer.h"
-#include "SVTK_InteractorStyle.h"
-#include "SVTK_RenderWindowInteractor.h"
-#include "SVTK_GenericRenderWindowInteractor.h"
-#include "SVTK_Selector.h"
-#include "SVTK_Selection.h"
-#include "SVTK_SelectionEvent.h"
-#include "SVTK_SpaceMouse.h"
-#include "SVTK_Event.h"
-#include "SVTK_ViewModelBase.h"
 
-int
-main(int argc, char** argv)
+#include <QWidgetAction>
+
+class QComboBox;
+class SVTK_EXPORT SVTK_ComboAction : public QWidgetAction
 {
-  return 0;
-}
+  Q_OBJECT
+
+public:
+  SVTK_ComboAction( QObject* = 0 );
+  SVTK_ComboAction( const QString&, QObject* = 0 );
+  virtual ~SVTK_ComboAction();
+
+  void insertItem( const QIcon&, const int = -1  );
+  void clear();
+
+  void setCurrentIndex( const int );
+  int  currentIndex() const;
+
+signals:
+  void triggered( int );
+
+protected:
+  virtual QWidget* createWidget( QWidget* );
+
+  virtual void update();
+  virtual void updateCombo( QComboBox* );
+
+private:
+  QList<QIcon> myIcons;
+  int myCurId;
+};
+
+#endif // SVTK_COMBOACTION_H

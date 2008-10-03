@@ -62,12 +62,17 @@ namespace SVTK
     StartFitArea,
 
     SetRotateGravity,
-    StartPointSelection,
     SetRotateSelected,
+    StartPointSelection,
     
     BBCenterChanged,
     RotationPointChanged,
     ChangeRotationPoint,
+
+    SetFocalPointGravity,
+    SetFocalPointSelected,
+    StartFocalPointSelection,
+    FocalPointChanged,
         
     LastEvent
   };

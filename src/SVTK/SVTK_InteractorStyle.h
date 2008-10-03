@@ -49,10 +49,10 @@
 #endif
 
 //
-//! Control the value of increment  in SALOME way.
+//! Control the value of increment  in arithmetic progression mode.
 /*!
   This class controls of value of increment,
-  for pan/rotate/zoom operations in SALOME way
+  for pan/rotate/zoom operations in arithmetic progression mode
 */
 class SVTK_EXPORT SVTK_ControllerIncrement : public vtkObject{
  public:
@@ -78,6 +78,30 @@ class SVTK_EXPORT SVTK_ControllerIncrement : public vtkObject{
  private:
   SVTK_ControllerIncrement(const SVTK_ControllerIncrement&);//Not implemented
   void operator=(const SVTK_ControllerIncrement&);          //Not implemented
+};
+
+//
+//! Control the value of increment  in geometric progression mode.
+/*!
+  This class controls of value of increment,
+  for pan/rotate/zoom operations in geometric progression mode.
+*/
+class SVTK_EXPORT SVTK_GeomControllerIncrement : public SVTK_ControllerIncrement{
+ public:
+  vtkTypeMacro(SVTK_GeomControllerIncrement, SVTK_ControllerIncrement);
+  static SVTK_GeomControllerIncrement* New();
+
+  //! Increace the increment value by add 1
+  virtual int Increase();
+
+  //! Decreace the increment value by subtract 1
+  virtual int Decrease();
+ protected:
+  SVTK_GeomControllerIncrement();
+  virtual ~SVTK_GeomControllerIncrement();
+ private:
+  SVTK_GeomControllerIncrement(const SVTK_GeomControllerIncrement&);//Not implemented
+  void operator=(const SVTK_GeomControllerIncrement&);              //Not implemented
 };
 //
 //! Control the behaviour of KeyDown event in SALOME way.
@@ -138,77 +162,52 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
   
 
   //! Generate special #SVTK_SelectionEvent
-  virtual
-  SVTK_SelectionEvent*
-  GetSelectionEvent();
+  virtual SVTK_SelectionEvent* GetSelectionEvent();
 
   //! Generate special #SVTK_SelectionEvent with flipped Y coordinate
-  virtual
-  SVTK_SelectionEvent*
-  GetSelectionEventFlipY();
+  virtual SVTK_SelectionEvent* GetSelectionEventFlipY();
 
   //! Redefined in order to add an observer (callback) for custom event (space mouse event)
-  virtual
-  void
-  SetInteractor( vtkRenderWindowInteractor* );
+  virtual void SetInteractor( vtkRenderWindowInteractor* );
 
   //! To invoke #vtkRenderWindowInteractor::CreateTimer
-  virtual 
-  void
-  Render();
+  virtual void Render();
 
   //! To implement cached rendering
-  virtual
-  void
-  OnTimer();
+  virtual void OnTimer();
 
   //! To reset reset view
-  virtual
-  void
-  OnConfigure();
+  virtual void OnConfigure();
 
   //! To handle mouse move event
-  virtual 
-  void
-  OnMouseMove();
+  virtual void OnMouseMove();
 
   //! To handle left mouse button down event (reimplemented from #vtkInteractorStyle)
-  virtual
-  void
-  OnLeftButtonDown();
+  virtual void OnLeftButtonDown();
 
   //! To handle left mouse button up event (reimplemented from #vtkInteractorStyle)
-  virtual
-  void
-  OnLeftButtonUp();
+  virtual void OnLeftButtonUp();
 
   //! To handle middle mouse button down event (reimplemented from #vtkInteractorStyle)
-  virtual
-  void
-  OnMiddleButtonDown();
+  virtual void OnMiddleButtonDown();
 
   //! To handle middle mouse button up event (reimplemented from #vtkInteractorStyle)
-  virtual
-  void
-  OnMiddleButtonUp();
+  virtual void OnMiddleButtonUp();
 
   //! To handle right mouse button down event (reimplemented from #vtkInteractorStyle)
-  virtual
-  void
-  OnRightButtonDown();
+  virtual void OnRightButtonDown();
 
   //! To handle right mouse button up event (reimplemented from #vtkInteractorStyle)
-  virtual
-  void
-  OnRightButtonUp();
+  virtual void OnRightButtonUp();
 
   //! To handle keyboard event (reimplemented from #vtkInteractorStyle)
-  virtual
-  void
-  OnChar();
+  virtual void OnChar();
 
   //! To set current increment controller 
   void SetControllerIncrement(SVTK_ControllerIncrement*);
+
+  //! To modify current increment controller 
+  void SetIncrementSpeed(const int, const int = 0);
 
   //! To get current increment controller 
   SVTK_ControllerIncrement* ControllerIncrement();
@@ -283,6 +282,7 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
   void startSpin();
 
   void startPointSelection();
+  void startFocalPointSelection();
 
  protected:
   void loadCursors();
@@ -336,11 +336,14 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
   unsigned long                   myCurrRotationPointType;
   unsigned long                   myPrevRotationPointType;
 
+  unsigned long                   myCurrFocalPointType;
+  unsigned long                   myPrevFocalPointType;
+
   double                          myRotationPointX;
   double                          myRotationPointY;
   double                          myRotationPointZ;
 
-  vtkSmartPointer<SVTK_Actor>     myHighlightRotationPointActor;
+  vtkSmartPointer<SVTK_Actor>     myHighlightSelectionPointActor;
   vtkSmartPointer<vtkPointPicker> myPointPicker;
   
   vtkFloatingPointType            myBBCenter[3];

@@ -26,10 +26,12 @@
 #include "SALOME_InteractiveObject.hxx"
 
 #include <QColor>
+#include <QMap>
 
 class QMouseEvent;
 
 class SVTK_ViewWindow;
+class VTKViewer_Actor;
 
 //! Extends two interfaces #SVTK_ViewModelBase and #SALOME_View 
 class SVTK_EXPORT SVTK_Viewer : public SVTK_ViewModelBase, public SALOME_View 
@@ -72,6 +74,33 @@ public:
   //! Set size of trihedron of the viewer (see #SVTK_Renderer::SetTrihedronSize)
   void setTrihedronSize( const vtkFloatingPointType, const bool = true );
 
+  //! Gets projection mode
+  int projectionMode() const;
+
+  //! Sets projection mode
+  void setProjectionMode( const int );
+
+  //! Gets interaction style
+  int interactionStyle() const;
+
+  //! Sets interaction style
+  void setInteractionStyle( const int );
+
+  //! Get incremental speed (see #SVTK_InteractorStyle::ControllerIncrement)
+  int incrementalSpeed() const;
+
+  //! Returns modification mode of incremental speed (see #SVTK_InteractorStyle::ControllerIncrement)
+  int incrementalSpeedMode() const;
+
+  //! Set the incremental speed for view operation (see #SVTK_InteractorStyle::ControllerIncrement)
+  void setIncrementalSpeed( const int, const int = 0 );
+
+  //! Gets spacemouse button for specified function
+  int spacemouseBtn( const int ) const;
+
+  //! Sets spacemouse buttons
+  void setSpacemouseButtons( const int, const int, const int );
+
 public:
   void enableSelection(bool isEnabled);
   bool isSelectionEnabled() const { return mySelectionEnabled; }
@@ -107,6 +136,10 @@ public:
   //! See #SALOME_View::Repaint()
   virtual void Repaint();
 
+ signals:
+  void actorAdded(SVTK_ViewWindow*, VTKViewer_Actor*);
+  void actorRemoved(SVTK_ViewWindow*, VTKViewer_Actor*);
+
 protected slots:
   void onMousePress(SUIT_ViewWindow*, QMouseEvent*);
   void onMouseMove(SUIT_ViewWindow*, QMouseEvent*);
@@ -115,12 +148,23 @@ protected slots:
   void onDumpView();
   void onChangeBgColor();
 
+  void onActorAdded(VTKViewer_Actor*);
+  void onActorRemoved(VTKViewer_Actor*);
+
 private:
+  void updateToolBars();
+
+
   QColor myBgColor;
   vtkFloatingPointType myTrihedronSize;
   bool   myTrihedronRelative;
   bool   mySelectionEnabled;
   bool   myMultiSelectionEnabled;
+  int    myIncrementSpeed;
+  int    myIncrementMode;
+  int    myProjMode;
+  int    myStyle;
+  int    mySpaceBtn[3];
 };
 
 #endif

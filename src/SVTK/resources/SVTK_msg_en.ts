@@ -153,6 +153,30 @@
         <source>SVTK_IMAGE_FILES</source>
         <translation>Images Files (*.bmp *.png *.jpg *.jpeg *.pdf *.ps *.eps)</translation>
     </message>
+    <message>
+        <source>MNU_VIEWPARAMETERS_VIEW</source>
+        <translation>Change View Parameters</translation>
+    </message>
+    <message>
+        <source>DSC_VIEWPARAMETERS_VIEW</source>
+        <translation>Change the parameters of the view</translation>
+    </message>
+    <message>
+        <source>MNU_SVTK_PROJECTION_MODE</source>
+        <translation>Projection Mode</translation>
+    </message>
+    <message>
+        <source>DSC_SVTK_PROJECTION_MODE</source>
+        <translation>Set orthogonal or perspective projection of the view</translation>
+    </message>
+    <message>
+        <source>DSC_SVTK_STYLE_SWITCH</source>
+        <translation>Interactiion style switch</translation>
+    </message>
+    <message>
+        <source>MNU_SVTK_STYLE_SWITCH</source>
+        <translation>Interaction Style Switch</translation>
+    </message>
 </context>
 <context>
     <name>SVTK_CubeAxesDlg</name>
@@ -237,7 +261,7 @@
     </message>
 </context>
 <context>
-    <name>SVTK_MainWindow</name>
+    <name>SVTK_ViewWindow</name>
     <message>
         <source>DSC_SVTK_UPDATE_RATE</source>
         <translation>Update rate</translation>
@@ -262,6 +286,47 @@
         <source>MNU_SVTK_UPDATE_RATE</source>
         <translation>Update rate</translation>
     </message>
+    <message>
+        <source>DSC_SVTK_RECORDING_START</source>
+        <translation>Start recording</translation>
+    </message>
+    <message>
+        <source>MNU_SVTK_RECORDING_START</source>
+        <translation>Start recording</translation>
+    </message>
+    <message>
+        <source>DSC_SVTK_RECORDING_PLAY</source>
+        <translation>Play recording</translation>
+    </message>
+    <message>
+        <source>MNU_SVTK_RECORDING_PLAY</source>
+        <translation>Play recording</translation>
+    </message>
+    <message>
+        <source>DSC_SVTK_RECORDING_PAUSE</source>
+        <translation>Pause recording</translation>
+    </message>
+    <message>
+        <source>MNU_SVTK_RECORDING_PAUSE</source>
+        <translation>Pause recording</translation>
+    </message>
+    <message>
+        <source>DSC_SVTK_RECORDING_STOP</source>
+        <translation>Stop recording</translation>
+    </message>
+    <message>
+        <source>MNU_SVTK_RECORDING_STOP</source>
+        <translation>Stop recording</translation>
+    </message>
+    <message>
+        <source>LBL_TOOLBAR_RECORD_LABEL</source>
+        <translation>Recording Operations</translation>
+    </message>
+    <message>
+        <source>MSG_NO_AVI_MAKER</source>
+        <translation>Tool jpeg2yuv, necessary for AVI recording, is not available.
+Please, refer to the documentation.</translation>
+    </message>
 </context>
 <context>
     <name>SVTK_NonIsometricDlg</name>
@@ -284,6 +349,65 @@
     <message>
         <source>DLG_TITLE</source>
         <translation>Scaling</translation>
+    </message>
+</context>
+<context>
+    <name>SVTK_RecorderDlg</name>
+    <message>
+        <source>ALL_DISLPAYED_FRAMES</source>
+        <translation>Recording all displayed frames</translation>
+    </message>
+    <message>
+        <source>CLOSE</source>
+        <translation>Close</translation>
+    </message>
+    <message>
+        <source>DLG_RECORDER_TITLE</source>
+        <translation>Recorder</translation>
+    </message>
+    <message>
+        <source>FILE_NAME</source>
+        <translation>Save to file : </translation>
+    </message>
+    <message>
+        <source>FLT_ALL_FILES</source>
+        <translation>All Files (*.*)</translation>
+    </message>
+    <message>
+        <source>FLT_AVI_FILES</source>
+        <translation>AVI Files (*.avi)</translation>
+    </message>
+    <message>
+        <source>FPS</source>
+        <translation>FPS : </translation>
+    </message>
+    <message>
+        <source>HELP</source>
+        <translation>Help</translation>
+    </message>
+    <message>
+        <source>PROGRESSIVE</source>
+        <translation>Progressive</translation>
+    </message>
+    <message>
+        <source>QUALITY</source>
+        <translation>Quality : </translation>
+    </message>
+    <message>
+        <source>RECORDING_MODE</source>
+        <translation>Mode : </translation>
+    </message>
+    <message>
+        <source>SETTINGS</source>
+        <translation>Settings</translation>
+    </message>
+    <message>
+        <source>SKIPPED_FRAMES</source>
+        <translation>Recording at a given FPS</translation>
+    </message>
+    <message>
+        <source>START</source>
+        <translation>Start</translation>
     </message>
 </context>
 <context>
@@ -331,6 +455,105 @@
     <message>
         <source>DLG_TITLE</source>
         <translation>Set Rotation Point</translation>
+    </message>
+</context>
+<context>
+    <name>SVTK_ViewParameterDlg</name>
+    <message>
+        <source>LBL_X</source>
+        <translation>X :</translation>
+    </message>
+    <message>
+        <source>LBL_Y</source>
+        <translation>Y :</translation>
+    </message>
+    <message>
+        <source>LBL_Z</source>
+        <translation>Z :</translation>
+    </message>
+    <message>
+        <source>LBL_DX</source>
+        <translation>DX :</translation>
+    </message>
+    <message>
+        <source>LBL_DY</source>
+        <translation>DY :</translation>
+    </message>
+    <message>
+        <source>LBL_DZ</source>
+        <translation>DZ :</translation>
+    </message>
+    <message>
+        <source>PROJECTION_MODE</source>
+        <translation>Projection Mode</translation>
+    </message>
+    <message>
+        <source>ORTHOGONAL_MODE</source>
+        <translation>Orthogonal</translation>
+    </message>
+    <message>
+        <source>PERSPECTIVE_MODE</source>
+        <translation>Perspective</translation>
+    </message>
+    <message>
+        <source>USE_BBCENTER</source>
+        <translation>Use Bounding Box Center</translation>
+    </message>
+    <message>
+        <source>LBL_TOBBCENTER</source>
+        <translation>Set to Bounding Box Center</translation>
+    </message>
+      <message>
+        <source>LBL_TOORIGIN</source>
+        <translation>Set to Origin</translation>
+    </message>
+  <message>
+        <source>LBL_SELECTPOINT</source>
+        <translation>Select Point from View</translation>
+    </message>
+    <message>
+        <source>FOCAL_POINT</source>
+        <translation>Focal Point</translation>
+    </message>
+    <message>
+        <source>CAMERA_POSITION</source>
+        <translation>Camera Position</translation>
+    </message>
+    <message>
+        <source>WORLD_COORDINATES</source>
+        <translation>World Coordinates</translation>
+    </message>
+    <message>
+        <source>FOCAL_RELATIVE</source>
+        <translation>Relative to Focal Point</translation>
+    </message>
+    <message>
+        <source>PROJECTION_DIRECTION</source>
+        <translation>Projection Direction :</translation>
+    </message>
+    <message>
+        <source>FOCAL_DISTANCE</source>
+        <translation>Focal Distance :</translation>
+    </message>
+    <message>
+        <source>VIEW_UP_DIRECTION</source>
+        <translation>View Up Direction :</translation>
+    </message>
+    <message>
+        <source>ZOOMING</source>
+        <translation>Zooming</translation>
+    </message>
+    <message>
+        <source>LBL_SCALE</source>
+        <translation>Scale</translation>
+    </message>
+    <message>
+        <source>LBL_VIEW_ANGLE</source>
+        <translation>View Angle</translation>
+    </message>
+    <message>
+        <source>DLG_TITLE</source>
+        <translation>View Parameters</translation>
     </message>
 </context>
 <context>

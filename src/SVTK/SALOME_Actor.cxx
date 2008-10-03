@@ -419,7 +419,7 @@ SALOME_Actor
 {
   if ( !GetPickable() )
     return false;
-
+      
   vtkRenderer *aRenderer = theInteractorStyle->GetCurrentRenderer();
   //
   myPreHighlightActor->SetVisibility( false );

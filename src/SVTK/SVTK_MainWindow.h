@@ -48,8 +48,11 @@ class SVTK_UpdateRateDlg;
 class SVTK_CubeAxesActor2D;
 class SVTK_CubeAxesDlg;
 class SVTK_SetRotationPointDlg;
+class SVTK_ViewParameterDlg;
 class SVTK_Renderer;
 class SVTK_Selector;
+class SVTK_KeyFreeInteractorStyle;
+class SVTK_Recorder;
 
 class VTKViewer_Trihedron;
 class VTKViewer_Actor;
@@ -70,124 +73,99 @@ public:
 		  SUIT_ViewWindow* theViewWindow);
   
   //! To initialize the class
-  virtual
-  void
-  Initialize(SVTK_RenderWindowInteractor* theInteractor);
+  virtual void Initialize(SVTK_RenderWindowInteractor* theInteractor);
 
-  virtual
-  ~SVTK_MainWindow();
+  virtual ~SVTK_MainWindow();
 
   //----------------------------------------------------------------------------
   //! Get used #SVTK_RenderWindowInteractor
-  SVTK_RenderWindowInteractor*
-  GetInteractor();
+  SVTK_RenderWindowInteractor* GetInteractor();
 
   //! Get used #vtkRenderWindowInteractor (obsolete)
-  vtkRenderWindowInteractor*
-  getInteractor();
+  vtkRenderWindowInteractor* getInteractor();
 
   //! Get used #vtkRenderWindow (obsolete)
-  vtkRenderWindow*
-  getRenderWindow();
+  vtkRenderWindow* getRenderWindow();
 
   //! To repaint the view
-  void
-  Repaint(bool theUpdateTrihedron = true);
+  void Repaint(bool theUpdateTrihedron = true);
 
   //! To invoke a VTK event on #SVTK_RenderWindowInteractor instance
-  void
-  InvokeEvent(unsigned long theEvent, void* theCallData);
+  void InvokeEvent(unsigned long theEvent, void* theCallData);
 
   //----------------------------------------------------------------------------
   //! Redirect the request to #SVTK_RenderWindowInteractor::GetInteractorStyle
-  vtkInteractorStyle* 
-  GetInteractorStyle();
+  vtkInteractorStyle* GetInteractorStyle();
 
   //! Redirect the request to #SVTK_RenderWindowInteractor::PushInteractorStyle
-  void
-  PushInteractorStyle(vtkInteractorStyle* theStyle);
+  void PushInteractorStyle(vtkInteractorStyle* theStyle);
 
   //! Redirect the request to #SVTK_RenderWindowInteractor::PopInteractorStyle
-  void
-  PopInteractorStyle();
+  void PopInteractorStyle();
 
   //----------------------------------------------------------------------------
   //! Redirect the request to #SVTK_RenderWindowInteractor::GetSelector
-  SVTK_Selector* 
-  GetSelector();
+  SVTK_Selector* GetSelector();
 
   //! Redirect the request to #SVTK_RenderWindowInteractor::SelectionMode
-  Selection_Mode
-  SelectionMode();
+  Selection_Mode SelectionMode();
 
   //! Redirect the request to #SVTK_RenderWindowInteractor::SetSelectionMode
-  void 
-  SetSelectionMode(Selection_Mode theMode);
+  void SetSelectionMode(Selection_Mode theMode);
 
   //----------------------------------------------------------------------------
   //! Redirect the request to #SVTK_RenderWindowInteractor::GetRenderer
-  SVTK_Renderer* 
-  GetRenderer();
+  SVTK_Renderer* GetRenderer();
 
   //! Redirect the request to #SVTK_RenderWindowInteractor::getRenderer
-  vtkRenderer* 
-  getRenderer();
+  vtkRenderer* getRenderer();
 
   //! Set background color to the view
-  void
-  SetBackgroundColor(const QColor& theColor);
+  void SetBackgroundColor(const QColor& theColor);
 
   //! Get background color of the view
-  QColor 
-  BackgroundColor();
+  QColor BackgroundColor();
 
   //! Redirect the request to #SVTK_Renderer::SetScale
-  void
-  SetScale(double theScale[3]);
+  void SetScale(double theScale[3]);
 
   //! Redirect the request to #SVTK_Renderer::GetScale
-  void
-  GetScale(double theScale[3]);
+  void GetScale(double theScale[3]);
 
   //! Redirect the request to #SVTK_Renderer::AddActor
-  virtual
-  void 
-  AddActor(VTKViewer_Actor* theActor, 
-	   bool theIsUpdate = false);
+  virtual void AddActor(VTKViewer_Actor* theActor, 
+			bool theIsUpdate = false);
 
   //! Redirect the request to #SVTK_Renderer::RemoveActor
-  virtual
-  void 
-  RemoveActor(VTKViewer_Actor* theActor, 
-	      bool theIsUpdate = false);
+  virtual void RemoveActor(VTKViewer_Actor* theActor, 
+			   bool theIsUpdate = false);
+
+  //! Redirect the request to #SVTK_InteractorStyle::SetIncrementalSpeed
+  void SetIncrementalSpeed( const int, const int = 0 );
+
+  //! Redirect the request to #SVTK_InteractorStyle::SetIncrementalSpeed
+  void SetSMButtons( const int, const int, const int );
 
   //! Redirect the request to #SVTK_Renderer::GetTrihedronSize
-  vtkFloatingPointType  
-  GetTrihedronSize();
+  vtkFloatingPointType GetTrihedronSize();
 
   //! Redirect the request to #SVTK_Renderer::SetTrihedronSize
-  void
-  SetTrihedronSize(const vtkFloatingPointType theSize, const bool theRelative = true);
+  void SetTrihedronSize(const vtkFloatingPointType theSize, const bool theRelative = true);
 
   //! Redirect the request to #SVTK_Renderer::AdjustActors
-  void 
-  AdjustActors();
+  void AdjustActors();
 
   //! Redirect the request to #SVTK_Renderer::IsTrihedronDisplayed
-  bool
-  IsTrihedronDisplayed();
+  bool IsTrihedronDisplayed();
  
   //! Redirect the request to #SVTK_Renderer::IsCubeAxesDisplayed
-  bool
-  IsCubeAxesDisplayed();
+  bool IsCubeAxesDisplayed();
 
   //! Redirect the request to #SVTK_Renderer::GetTrihedron
-  VTKViewer_Trihedron* 
-  GetTrihedron();
+  VTKViewer_Trihedron* GetTrihedron();
 
   //! Redirect the request to #SVTK_Renderer::GetCubeAxes
-  SVTK_CubeAxesActor2D*
-  GetCubeAxes();
+  SVTK_CubeAxesActor2D* GetCubeAxes();
 
   //----------------------------------------------------------------------------
   QToolBar* getToolBar();
@@ -222,6 +200,14 @@ public:
   void onResetView();     
   void onFitAll();
 
+  void onViewParameters(bool theIsActivate);
+
+  void activateProjectionMode(int);
+
+  void activateSetFocalPointGravity();
+  void activateSetFocalPointSelected();
+  void activateStartFocalPointSelection();
+
   void onViewTrihedron(); 
   void onViewCubeAxes();
 
@@ -232,27 +218,35 @@ public:
   void onAdjustTrihedron();
   void onAdjustCubeAxes();
 
+  void onProjectionMode(int mode);
+
+  void onSwitchInteractionStyle(bool theOn);
+
+  void onStartRecording();
+  void onPlayRecording();
+  void onPauseRecording();
+  void onStopRecording();
+
  public:
   QImage dumpView();
 
  protected:  
   virtual QtxActionToolMgr* toolMgr() const;
 
-  void
-  createActions(SUIT_ResourceMgr* theResourceMgr);
+  void createActions(SUIT_ResourceMgr* theResourceMgr);
 
-  void
-  createToolBar();
+  void createToolBar();
 
-  void
-  SetEventDispatcher(vtkObject* theDispatcher);
+  void SetEventDispatcher(vtkObject* theDispatcher);
 
   QtxAction* action( int ) const;
 
   enum { DumpId, FitAllId, FitRectId, ZoomId, PanId, GlobalPanId, 
 	 ChangeRotationPointId, RotationId,
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, 
-	 ViewTrihedronId, NonIsometric, GraduatedAxes, UpdateRate};
+	 ViewTrihedronId, NonIsometric, GraduatedAxes, UpdateRate,
+	 ProjectionModeId, ViewParametersId, SwitchInteractionStyleId,
+	 StartRecordingId, PlayRecordingId, PauseRecordingId, StopRecordingId };
 
   SUIT_ViewWindow* myViewWindow;
 
@@ -260,11 +254,23 @@ public:
   SVTK_UpdateRateDlg* myUpdateRateDlg;
   SVTK_CubeAxesDlg* myCubeAxesDlg;
   SVTK_SetRotationPointDlg* mySetRotationPointDlg;
+  SVTK_ViewParameterDlg* myViewParameterDlg;
 
   vtkSmartPointer<vtkObject> myEventDispatcher;
   int myToolBar;
+  int myRecordingToolBar;
 
   SVTK_RenderWindowInteractor* myInteractor;
+  vtkSmartPointer<SVTK_KeyFreeInteractorStyle> myKeyFreeInteractorStyle;
+
+  QSize myPreRecordingMinSize;
+  QSize myPreRecordingMaxSize;
+
+  SVTK_Recorder* myRecorder;
+  QtxAction* myStartAction;
+  QtxAction* myPlayAction;
+  QtxAction* myPauseAction;
+  QtxAction* myStopAction;
 };
 
 #ifdef WIN32

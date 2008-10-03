@@ -44,6 +44,7 @@ class VTKViewer_GeometryFilter;
 class vtkCell;
 class vtkDataSet;
 class vtkShrinkFilter;
+class vtkFeatureEdges;
 class vtkDataSetMapper;
 class vtkPassThroughFilter;
 
@@ -148,6 +149,54 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
   UnShrink(); 
   //@}
 
+  /** @name For feature edges management purpose */
+  //@{
+  virtual
+  bool
+  IsFeatureEdgesAllowed();
+
+  virtual
+  void
+  SetFeatureEdgesAllowed(bool theIsFeatureEdgesAllowed);
+
+  virtual
+  bool
+  IsFeatureEdgesEnabled();
+
+  virtual
+  void
+  SetFeatureEdgesEnabled(bool theIsFeatureEdgesEnabled);
+
+  virtual
+  vtkFloatingPointType
+  GetFeatureEdgesAngle();
+
+  virtual
+  void
+  SetFeatureEdgesAngle(vtkFloatingPointType theAngle); 
+
+  virtual
+  void
+  GetFeatureEdgesFlags(bool& theIsFeatureEdges,
+		       bool& theIsBoundaryEdges,
+		       bool& theIsManifoldEdges,
+		       bool& theIsNonManifoldEdges);
+  virtual
+  void
+  SetFeatureEdgesFlags(bool theIsFeatureEdges,
+		       bool theIsBoundaryEdges,
+		       bool theIsManifoldEdges,
+		       bool theIsNonManifoldEdges);
+
+  virtual
+  bool
+  GetFeatureEdgesColoring();
+
+  virtual
+  void
+  SetFeatureEdgesColoring(bool theIsColoring);
+  //@}
+
   /** @name For representation mamnagement purpose */
   virtual
   void 
@@ -190,11 +239,15 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
   VTKViewer_TransformFilter *myTransformFilter;
   std::vector<vtkPassThroughFilter*> myPassFilter;
   vtkShrinkFilter* myShrinkFilter;
+  vtkFeatureEdges* myFeatureEdges;
   vtkDataSetMapper* myMapper;
 
   bool myIsShrinkable;
   bool myIsShrunk;
   
+  bool myIsFeatureEdgesAllowed;
+  bool myIsFeatureEdgesEnabled;
+
   bool myIsResolveCoincidentTopology;
   vtkFloatingPointType myPolygonOffsetFactor;
   vtkFloatingPointType myPolygonOffsetUnits;

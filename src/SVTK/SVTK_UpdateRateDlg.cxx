@@ -28,7 +28,7 @@
 
 #include "SVTK_UpdateRateDlg.h"
 
-#include "SVTK_MainWindow.h"
+#include "SVTK_ViewWindow.h"
 #include "SVTK_RenderWindowInteractor.h"
 #include "VTKViewer_Algorithm.h"
 #include "SALOME_Actor.h"
@@ -165,7 +165,7 @@ namespace
 */
 SVTK_UpdateRateDlg
 ::SVTK_UpdateRateDlg(QtxAction* theAction,
-		     SVTK_MainWindow* theParent,
+		     SVTK_ViewWindow* theParent,
 		     const char* theName):
   SVTK_DialogBase(theAction,
 		  theParent, 

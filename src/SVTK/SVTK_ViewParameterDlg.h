@@ -24,16 +24,17 @@
 //  File   : 
 //  Author : 
 //  Module : SALOME
-//  $Header$
+//  $Header:
 
-#ifndef SVTK_SETROTATIONPOINTDLG_H
-#define SVTK_SETROTATIONPOINTDLG_H
+#ifndef SVTK_VIEWPARAMETERDLG_H
+#define SVTK_VIEWPARAMETERDLG_H
 
 #include "SVTK.h"
 
 #include "SVTK_DialogBase.h"
 
 #include <vtkSmartPointer.h>
+#include <vtkTimeStamp.h>
 
 class SVTK_ViewWindow;
 class SVTK_RenderWindowInteractor;
@@ -42,43 +43,75 @@ class QtxAction;
 
 class QLineEdit;
 class QPushButton;
-class QGroupBox;
+class QFrame;
 class QCheckBox;
+class QButtonGroup;
 
 class vtkCallbackCommand;
 class vtkObject;
 
-class SVTK_EXPORT SVTK_SetRotationPointDlg : public SVTK_DialogBase
+class SVTK_EXPORT SVTK_ViewParameterDlg : public SVTK_DialogBase
 {
   Q_OBJECT;
 
 public:
-  SVTK_SetRotationPointDlg(QtxAction* theAction,
-			   SVTK_ViewWindow* theParent,
-			   const char* theName);
+  SVTK_ViewParameterDlg(QtxAction* theAction,
+			SVTK_ViewWindow* theParent,
+			const char* theName);
 
-  ~SVTK_SetRotationPointDlg();
+  ~SVTK_ViewParameterDlg();
   
   void addObserver();
-  bool IsFirstShown();
   
 protected:
   SVTK_ViewWindow *myMainWindow;
   SVTK_RenderWindowInteractor* myRWInteractor;
   bool myIsObserverAdded;
+  bool myBusy;
   
-  QCheckBox*    myIsBBCenter;
+  QButtonGroup* myProjectionMode;
 
-  QGroupBox   * myGroupBoxSel;
+  QPushButton*  myToBBCenter;
   QPushButton*  myToOrigin;
   QPushButton*  mySelectPoint;
 
-  QGroupBox* myGroupBoxCoord;
-  QLineEdit* myX;
-  QLineEdit* myY;
-  QLineEdit* myZ;
+  QFrame*       myFocalCoords;
+  QLineEdit*    myFocalX;
+  QLineEdit*    myFocalY;
+  QLineEdit*    myFocalZ;
+  
+  QButtonGroup* myCameraPositionMode;
 
-  void setEnabled(QGroupBox* theGrp, const bool theState);
+  QFrame*       myCameraCoords;
+  QLineEdit*    myCameraX;
+  QLineEdit*    myCameraY;
+  QLineEdit*    myCameraZ;
+
+  QFrame*       myProjDirection;
+  QLineEdit*    myProjDirX;
+  QLineEdit*    myProjDirY;
+  QLineEdit*    myProjDirZ;
+
+  QLineEdit*    myDistance;
+
+  QFrame*       myViewDirection;
+  QLineEdit*    myViewDirX;
+  QLineEdit*    myViewDirY;
+  QLineEdit*    myViewDirZ;
+
+  QFrame*       myScaleBox;
+  QLineEdit*    myScale;
+
+  QFrame*       myViewAngleBox;
+  QLineEdit*    myViewAngle;
+
+  void setEnabled(QFrame* theWidget, const bool theState);
+  bool computePoint(const double start[3], const double dir[3], 
+		    const double dist, double result[3]);
+  void updateProjection();
+  void updateCoordinates();
+
+  void updateData();
 
   //----------------------------------------------------------------------------
   // Priority at which events are processed
@@ -86,6 +119,9 @@ protected:
 
   // Used to process events
   vtkSmartPointer<vtkCallbackCommand> myEventCallbackCommand;
+
+  // Used to update camera
+  vtkTimeStamp myCameraMTime;
 
   // Description:
   // Main process event method
@@ -95,15 +131,23 @@ protected:
                             void* calldata);
 
 protected slots:
-  void onBBCenterChecked();
+  void onProjectionModeChanged(int);
+  void onPositionModeChanged(int);
   
+  void onToBBCenter();
   void onToOrigin();
   void onSelectPoint();
 
-  void onCoordChanged();
+  void onFocalCoordChanged();
+  void onCameraCoordChanged();
+  void onDirectionChanged();
+  void onDistanceChanged();
+  void onViewDirectionChanged();
+
+  void onZoomChanged();
 
   void onClickClose();
 
 };
 
-#endif // SVTK_SETROTATIONPOINTDLG_H
+#endif // SVTK_VIEWPARAMETERDLG_H

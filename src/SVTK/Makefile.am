@@ -25,87 +25,110 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libSVTK.la
 
-salomeinclude_HEADERS =				\
-	SVTK.h					\
-	SVTK_Prs.h				\
-	SVTK_Actor.h				\
-	SALOME_Actor.h				\
-	SVTK_RectPicker.h			\
-	SVTK_DeviceActor.h			\
-	SVTK_DialogBase.h			\
-	SVTK_FontWidget.h			\
-	SVTK_CubeAxesActor2D.h			\
-	SVTK_Functor.h 				\
-	SVTK_MainWindow.h			\
-	SVTK_View.h				\
-	SVTK_ViewManager.h			\
-	SVTK_ViewModel.h			\
-	SVTK_ViewWindow.h			\
-	SVTK_Renderer.h				\
-	SVTK_InteractorStyle.h			\
-	SVTK_RenderWindowInteractor.h		\
-	SVTK_GenericRenderWindowInteractor.h	\
-	SVTK_Selector.h				\
-	SVTK_Selection.h			\
-	SVTK_SelectionEvent.h			\
-	SVTK_SpaceMouse.h			\
-	SVTK_Event.h				\
-	SVTK_ViewModelBase.h			\
-	SVTK_SetRotationPointDlg.h		\
-	SVTK_Extension.h
+salomeinclude_HEADERS= \
+	SVTK.h \
+	SVTK_Prs.h \
+	SVTK_Actor.h \
+	SALOME_Actor.h \
+	SVTK_RectPicker.h \
+	SVTK_DeviceActor.h \
+	SVTK_DialogBase.h \
+	SVTK_FontWidget.h \
+	SVTK_CubeAxesActor2D.h \
+	SVTK_Functor.h \
+	SVTK_View.h \
+	SVTK_ViewManager.h \
+	SVTK_ViewModel.h \
+	SVTK_ViewWindow.h \
+	SVTK_Renderer.h \
+	SVTK_InteractorStyle.h \
+	SVTK_KeyFreeInteractorStyle.h \
+	SVTK_RenderWindowInteractor.h \
+	SVTK_GenericRenderWindowInteractor.h \
+	SVTK_Selector.h \
+	SVTK_Selection.h \
+	SVTK_SelectionEvent.h \
+	SVTK_SpaceMouse.h \
+	SVTK_Event.h \
+	SVTK_ViewModelBase.h \
+	SVTK_SetRotationPointDlg.h \
+	SVTK_ViewParameterDlg.h \
+	SVTK_ComboAction.h \
+	SVTK_Extension.h \
+	SVTK_Recorder.h \
+	SVTK_RecorderDlg.h \
+	SVTK_ImageWriter.h \
+	SVTK_ImageWriterMgr.h
 
-dist_libSVTK_la_SOURCES =			\
-	SVTK_Prs.cxx				\
-	SVTK_Actor.cxx				\
-	SALOME_Actor.cxx			\
-	SVTK_RectPicker.cxx			\
-	SVTK_DeviceActor.cxx			\
-	SVTK_CubeAxesActor2D.cxx		\
-	SVTK_NonIsometricDlg.cxx		\
-	SVTK_UpdateRateDlg.cxx			\
-	SVTK_CubeAxesDlg.cxx			\
-	SVTK_DialogBase.cxx			\
-	SVTK_FontWidget.cxx			\
-	SVTK_Trihedron.cxx			\
-	SVTK_MainWindow.cxx			\
-	SVTK_View.cxx				\
-	SVTK_ViewManager.cxx			\
-	SVTK_ViewModel.cxx			\
-	SVTK_Renderer.cxx			\
-	SVTK_ViewWindow.cxx			\
-	SVTK_InteractorStyle.cxx		\
-	SVTK_RenderWindowInteractor.cxx		\
-	SVTK_GenericRenderWindowInteractor.cxx	\
-	SVTK_SpaceMouse.cxx			\
-	SVTK_Selector.cxx			\
-	SVTK_SetRotationPointDlg.cxx		\
-	SVTK_Extension.cxx
+dist_libSVTK_la_SOURCES= \
+	SVTK_Prs.cxx \
+	SVTK_Actor.cxx \
+	SALOME_Actor.cxx \
+	SVTK_RectPicker.cxx \
+	SVTK_DeviceActor.cxx \
+	SVTK_CubeAxesActor2D.cxx \
+	SVTK_NonIsometricDlg.cxx \
+	SVTK_UpdateRateDlg.cxx \
+	SVTK_CubeAxesDlg.cxx \
+	SVTK_DialogBase.cxx \
+	SVTK_FontWidget.cxx \
+	SVTK_Trihedron.cxx \
+	SVTK_View.cxx \
+	SVTK_ViewManager.cxx \
+	SVTK_ViewModel.cxx \
+	SVTK_Renderer.cxx \
+	SVTK_ViewWindow.cxx \
+	SVTK_InteractorStyle.cxx \
+	SVTK_KeyFreeInteractorStyle.cxx \
+	SVTK_RenderWindowInteractor.cxx \
+	SVTK_GenericRenderWindowInteractor.cxx \
+	SVTK_SpaceMouse.cxx \
+	SVTK_Selector.cxx \
+	SVTK_SetRotationPointDlg.cxx \
+	SVTK_ViewParameterDlg.cxx \
+	SVTK_ComboAction.cxx \
+	SVTK_Extension.cxx \
+	SVTK_Recorder.cxx \
+	SVTK_RecorderDlg.cxx \
+	SVTK_ImageWriter.cxx \
+	SVTK_ImageWriterMgr.cxx
+
 
 # internal headers
 EXTRA_DIST += SVTK_SelectorDef.h SVTK_Trihedron.h
 
-MOC_FILES =						\
-	SVTK_GenericRenderWindowInteractor_moc.cxx	\
-	SVTK_RenderWindowInteractor_moc.cxx		\
-	SVTK_NonIsometricDlg_moc.cxx			\
-	SVTK_UpdateRateDlg_moc.cxx			\
-	SVTK_CubeAxesDlg_moc.cxx			\
-	SVTK_FontWidget_moc.cxx				\
-	SVTK_DialogBase_moc.cxx				\
-	SVTK_ViewModelBase_moc.cxx			\
-	SVTK_ViewManager_moc.cxx			\
-	SVTK_ViewWindow_moc.cxx				\
-	SVTK_MainWindow_moc.cxx				\
-	SVTK_ViewModel_moc.cxx				\
-	SVTK_View_moc.cxx				\
-	SVTK_SetRotationPointDlg_moc.cxx
-nodist_libSVTK_la_SOURCES = $(MOC_FILES)
+MOC_FILES= \
+	SVTK_GenericRenderWindowInteractor_moc.cxx \
+	SVTK_RenderWindowInteractor_moc.cxx \
+	SVTK_NonIsometricDlg_moc.cxx \
+	SVTK_UpdateRateDlg_moc.cxx \
+	SVTK_CubeAxesDlg_moc.cxx \
+	SVTK_FontWidget_moc.cxx \
+	SVTK_DialogBase_moc.cxx \
+	SVTK_ViewModelBase_moc.cxx \
+	SVTK_ViewManager_moc.cxx \
+	SVTK_ViewWindow_moc.cxx \
+	SVTK_ViewModel_moc.cxx \
+	SVTK_View_moc.cxx \
+	SVTK_SetRotationPointDlg_moc.cxx \
+	SVTK_ViewParameterDlg_moc.cxx \
+	SVTK_ComboAction_moc.cxx \
+	SVTK_RecorderDlg_moc.cxx
+nodist_libSVTK_la_SOURCES= $(MOC_FILES)
 
-dist_salomeres_DATA =				\
-	resources/vtk_view_graduated_axes.png	\
-	resources/vtk_view_scaling.png		\
-	resources/vtk_view_update_rate.png	\
-	resources/vtk_view_rotation_point.png
+dist_salomeres_DATA=\
+	resources/vtk_view_graduated_axes.png \
+	resources/vtk_view_scaling.png \
+	resources/vtk_view_update_rate.png \
+	resources/vtk_view_rotation_point.png \
+	resources/vtk_view_parallel.png \
+	resources/vtk_view_perspective.png \
+	resources/vtk_view_parameters.png \
+	resources/vtk_view_style_switch.png \
+	resources/vtk_view_recording_start.png \
+	resources/vtk_view_recording_play.png \
+	resources/vtk_view_recording_pause.png \
+	resources/vtk_view_recording_stop.png
 
 nodist_salomeres_DATA =	\
 	SVTK_msg_en.qm	\

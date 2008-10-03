@@ -1869,6 +1869,7 @@ void QtxWorkstack::SetRelativePositionInSplitter( QWidget* wid, const double pos
   int nb = szList.count();
 
   int new_prev = int( splitter_size * position / item_ind );
+  if (nb == item_ind) return;
   int new_next = int( splitter_size * ( 1.0 - position ) / ( nb - item_ind ) );
   setSizes( szList, item_ind, new_prev, new_next, new_next );
   split->setSizes( szList );

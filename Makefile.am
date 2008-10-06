@@ -25,6 +25,9 @@
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
+ACLOCAL_AMFLAGS = -I adm_local/unix/config_files \
+                  -I ${KERNEL_ROOT_DIR}/salome_adm/unix/config_files
+
 if GUI_ENABLE_CORBA
     IDLDIR = idl
 else !GUI_ENABLE_CORBA
@@ -37,11 +40,11 @@ DIST_SUBDIRS = idl adm_local resources src doc bin
 
 DISTCLEANFILES = a.out aclocal.m4 configure
 
-salomeinclude_DATA=GUI_version.h
+salomeinclude_DATA = GUI_version.h
 
-EXTRA_DIST+= \
-	build_configure \
-	clean_configure \
+EXTRA_DIST +=		\
+	build_configure	\
+	clean_configure	\
 	LICENCE
 
 dist-hook:
@@ -50,7 +53,7 @@ dist-hook:
 usr_docs:
 	(cd doc && $(MAKE) $(AM_MAKEFLAGS) usr_docs)
 
-docs:usr_docs
+docs: usr_docs
 
 dev_docs:
 	(cd doc && $(MAKE) $(AM_MAKEFLAGS) dev_docs)

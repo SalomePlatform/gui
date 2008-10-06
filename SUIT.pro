@@ -11,6 +11,7 @@ SUBDIRS = src/Qtx \
           src/SUIT \
           src/SUITApp \
           src/LogWindow \
+          src/Event \
           src/PyInterp \
           src/PyConsole \
 	  src/Plot2d \

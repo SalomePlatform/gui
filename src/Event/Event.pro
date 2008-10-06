@@ -1,8 +1,8 @@
 TEMPLATE = lib
 TARGET = Event
-DESTDIR = ../../lib
+DESTDIR = ../../$(CONFIG_ID)/lib
 MOC_DIR = ../../moc
-OBJECTS_DIR = ../../obj/$$TARGET
+OBJECTS_DIR = ../../$(CONFIG_ID)/obj/$$TARGET
 
 INCLUDEPATH += ../../include
 LIBS += 

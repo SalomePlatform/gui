@@ -178,6 +178,7 @@ QtxTreeView::QtxTreeView( QWidget* parent )
 : QTreeView( parent )
 {
   setHeader( new Header( false, this ) );
+  header()->setMovable( true );
 }
 
 /*!
@@ -189,6 +190,7 @@ QtxTreeView::QtxTreeView( const bool enableSortMenu, QWidget* parent )
 : QTreeView( parent )
 {
   setHeader( new Header( enableSortMenu, this ) );
+  header()->setMovable( true );
 }
 
 /*!

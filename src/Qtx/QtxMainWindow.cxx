@@ -238,7 +238,7 @@ QString QtxMainWindow::storeGeometry() const
   else
     y = QString( "+%1" ).arg( frame.top() );
 
-  QString geom = QString( "%1x%2%3%4" ).arg( frame.width() ).arg( frame.height() ).arg( x ).arg( y );
+  QString geom = QString( "%1x%2%3%4" ).arg( width() ).arg( height() ).arg( x ).arg( y );
 
   QString state;
   switch ( windowState() )
@@ -339,7 +339,9 @@ void QtxMainWindow::retrieveGeometry( const QString& str )
       state = Qt::WindowFullScreen;
   }
 
-  setGeometry( rect );
+  resize( rect.size() );
+  move( rect.topLeft() );
+
   if ( state != Qt::WindowNoState )
     setWindowState( state );
 }

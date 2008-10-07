@@ -23,22 +23,20 @@
 
 #include "QtxAction.h"
 
-#include <QRegExp>
 #include <QMenu>
+#include <QStyle>
+#include <QRegExp>
+#include <QLayout>
+#include <QPainter>
+#include <QSplitter>
 #include <QFocusEvent>
 #include <QMouseEvent>
-#include <QStyle>
-#include <QLayout>
-#include <QSplitter>
 #include <QRubberBand>
 #include <QApplication>
+#include <QStyleOption>
 #include <QInputDialog>
 #include <QStackedWidget>
 #include <QAbstractButton>
-#include <QPainter>
-#include <QStyleOption>
-
-#define DARK_COLOR_LIGHT 250
 
 /*!
   \class QtxWorkstackArea::WidgetEvent
@@ -1495,6 +1493,13 @@ QtxWorkstack::QtxWorkstack( QWidget* parent )
   connect( myActionsMap[Close], SIGNAL( triggered( bool ) ), this, SLOT( onCloseWindow() ) );
   connect( myActionsMap[Rename], SIGNAL( triggered( bool ) ), this, SLOT( onRename() ) );
 
+  // Action shortcut will work when action added in any widget.
+  for ( QMap<int, QAction*>::iterator it = myActionsMap.begin(); it != myActionsMap.end(); ++it )
+  {
+    addAction( it.value() );
+    it.value()->setShortcutContext( Qt::ApplicationShortcut );
+  }
+
   QVBoxLayout* base = new QVBoxLayout( this );
   base->setMargin( 0 );
 
@@ -1511,13 +1516,25 @@ QtxWorkstack::~QtxWorkstack()
 }
 
 /*!
-  \brief Get all child widgets in all workareas.
-  \return list of widgets in all workareas
+  \brief Get list of all widgets in all areas or in specified area which given 
+         widget belongs to
+  \param wid widget specifying area if it is equal to null when widgets of all 
+         areas are retuned
+  \return list of widgets
 */
-QWidgetList QtxWorkstack::windowList() const
+QWidgetList QtxWorkstack::windowList( QWidget* wid ) const
 {
   QList<QtxWorkstackArea*> lst;
-  areas( mySplit, lst, true );
+  if ( !wid )
+  {
+    areas( mySplit, lst, true );
+  }
+  else 
+  {
+    QtxWorkstackArea* area = wgArea( wid );
+    if ( area )
+      lst.append( area );
+  }
 
   QWidgetList widList;
   for ( QList<QtxWorkstackArea*>::iterator it = lst.begin(); it != lst.end(); ++it )
@@ -2783,7 +2800,7 @@ void QtxWorkstack::splitterInfo( QSplitter* split, QString& info ) const
   if ( !split )
     return;
 
-  const QObjectList& objs = split->children();
+  /*const QObjectList& objs = */split->children(); // VSR: is it needed ???
 
   QString sizesStr;
   QList<int> sizes = split->sizes();
@@ -3114,3 +3131,95 @@ QtxWorkstack& QtxWorkstack::operator>>( QString& outParameters )
   \brief Emitted when the workstack's child widget \w is activated.
   \param w widget being activated
 */
+
+/*!
+  \brief Gets area containing given widget
+  \param wid widget
+  \return pointer to QtxWorkstackArea* object
+*/
+QtxWorkstackArea* QtxWorkstack::wgArea( QWidget* wid ) const
+{
+  QtxWorkstackArea* resArea = 0;
+
+  QList<QtxWorkstackArea*> areaList;
+  areas( mySplit, areaList, true );
+
+  QList<QtxWorkstackArea*>::ConstIterator it;
+  for ( it = areaList.begin(); it != areaList.end() && !resArea; ++it )
+  {
+    if ( (*it)->contains( wid ) )
+      resArea = *it;
+  }
+
+  return resArea;
+}
+
+/*!
+  \brief Moves the first widget to the same area which the second widget belongs to
+  \param wid widget to be moved
+  \param wid_to widget specified the destination area
+  \param before specifies whether the first widget has to be moved before or after 
+         the second widget
+  \return TRUE if operation is completed successfully, FALSE otherwise 
+*/
+bool QtxWorkstack::move( QWidget* wid, QWidget* wid_to, const bool before )
+{
+  if ( wid && wid_to )
+  {
+    QtxWorkstackArea* area_src = wgArea( wid );
+    QtxWorkstackArea* area_to = wgArea( wid_to );
+    if ( area_src && area_to )
+    {
+      // find index of the second widget
+      QWidgetList wgList = area_to->widgetList();
+      QWidgetList::ConstIterator it;
+      int idx = 0;
+      for ( it = wgList.begin(); it != wgList.begin(); ++it, idx++ )
+      {
+        if ( *it == wid_to )
+          break;
+      }
+
+      if ( idx < wgList.count() ) // paranoidal check
+      {
+        if ( !before )
+          idx++;
+        area_src->removeWidget( wid, true );
+        area_to->insertWidget( wid, idx );
+        return true;
+      }
+    }
+  }
+  return false;
+}
+
+/*!
+  \brief Group all windows in one area
+  \return TRUE if operation is completed successfully, FALSE otherwise 
+*/
+void QtxWorkstack::stack()
+{
+  QWidgetList wgList = windowList();
+  if ( !wgList.count() )
+    return; // nothing to do
+
+  QtxWorkstackArea* area_to = 0;
+  QWidgetList::ConstIterator it;
+  for ( it = wgList.begin(); it != wgList.end(); ++it )
+  {
+    QtxWorkstackArea* area_src = 0;
+    if ( !area_to )
+    {
+      area_to = wgArea( *it );
+      area_src = area_to;
+    }
+    else 
+      area_src = wgArea( *it );
+
+    if ( area_src != area_to )
+    {
+      area_src->removeWidget( *it, true );
+      area_to->insertWidget( *it, -1 );
+    }
+  }
+}

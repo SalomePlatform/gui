@@ -94,7 +94,7 @@ private:
   QStringList        prepareFilters( const QString& ) const;
 	bool               hasVisibleChildren( QWidget* ) const;
   QStringList        filterWildCards( const QString& ) const;
-  QString            autoExtension( const QString&, const QString& = QString::null ) const;
+  QString            autoExtension( const QString&, const QString& = QString() ) const;
 
 protected:
   enum { OpenFile, SaveFile, OpenDir, SaveDir, NewDir };

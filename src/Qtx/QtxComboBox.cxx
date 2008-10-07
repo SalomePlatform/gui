@@ -21,7 +21,96 @@
 
 #include "QtxComboBox.h"
 
+#include <QStandardItemModel>
 #include <QLineEdit>
+#include <QEvent>
+#include <QApplication>
+
+/*!
+  \class QtxComboBox::Model
+  \brief Internal view model, used to process 'cleared' state of the combo box.
+  \internal
+*/
+class QtxComboBox::Model : public QStandardItemModel
+{
+public:
+  Model( QObject* parent = 0 );
+  ~Model();
+  void setCleared( const bool );
+
+  QVariant data( const QModelIndex&, int = Qt::DisplayRole ) const;
+
+private:
+  bool   myCleared;
+};
+
+/*!
+  \brief Constructor
+  \internal
+  \param parent parent object
+*/
+QtxComboBox::Model::Model( QObject* parent )
+  : QStandardItemModel( 0, 1, parent ),
+    myCleared( false )
+{
+}
+
+/*!
+  \brief Destructor
+  \internal
+*/
+QtxComboBox::Model::~Model()
+{
+}
+
+/*!
+  \brief Set 'cleared' state
+  \param isClear new 'cleared' state
+  \internal
+*/
+void QtxComboBox::Model::setCleared( const bool isClear )
+{
+  if ( myCleared == isClear )
+    return;
+  
+  myCleared = isClear;
+}
+
+/*!
+  \brief Get model data.
+  \param index model index
+  \param role data role
+  \return data of role \a role for the \a index
+  \internal
+*/
+QVariant QtxComboBox::Model::data( const QModelIndex& index, int role ) const
+{
+  return ( myCleared && ( role == Qt::DisplayRole || role == Qt::DecorationRole ) ) ?
+    QVariant() : QStandardItemModel::data( index, role );
+}
+
+/*!
+  \class QtxComboBox::ClearEvent
+  \brief Custom event, used to process 'cleared' state of the combo box
+  in the editable mode.
+  \internal
+*/
+
+#define CLEAR_EVENT QEvent::Type( QEvent::User + 123 )
+
+class QtxComboBox::ClearEvent : public QEvent
+{
+public:
+  ClearEvent();
+};
+
+/*!
+  \brief Constructor
+  \internal
+*/
+QtxComboBox::ClearEvent::ClearEvent() : QEvent( CLEAR_EVENT )
+{
+}
 
 /*!
   \class QtxComboBox
@@ -41,8 +130,9 @@ QtxComboBox::QtxComboBox( QWidget* parent )
 : QComboBox( parent ),
   myCleared( false )
 {
-  connect( this, SIGNAL( activated( int ) ), this, SLOT( onActivated( int ) ) );
-  connect( this, SIGNAL( activated( const QString& ) ), this, SLOT( onActivated( const QString& ) ) );
+  connect( this, SIGNAL( activated( int ) ),            this, SLOT( onActivated( int ) ) );
+  connect( this, SIGNAL( currentIndexChanged( int ) ),  this, SLOT( onCurrentChanged( int ) ) );
+  setModel( new Model( this ) );
 }
 
 /*!
@@ -73,32 +163,11 @@ void QtxComboBox::setCleared( const bool isClear )
     return;
     
   myCleared = isClear;
-    
-  if ( isEditable() )
-  {
-    if ( myCleared )
-      lineEdit()->setText( "" );
-    else
-      lineEdit()->setText( itemText( currentIndex() ) );
-  }
-    
+
+  if ( lineEdit() )
+    lineEdit()->setText( myCleared ? QString( "" ) : itemText( currentIndex() ) );
+
   update();
-}
-
-/*!
-  \brief Set current item.
-
-  Does nothing if the item index is out of range.
-
-  \param idx item index
-*/
-void QtxComboBox::setCurrentIndex( int idx )
-{
-  if ( idx < 0 || idx >= count() )
-    return;
-    
-  myCleared = false;
-  QComboBox::setCurrentIndex( idx );
 }
 
 /*!
@@ -135,10 +204,32 @@ void QtxComboBox::setId( const int index, const int id )
 */
 void QtxComboBox::paintEvent( QPaintEvent* e )
 {
-  if ( !count() || !myCleared || isEditable() )
-    QComboBox::paintEvent( e );
-  else
-    paintClear( e );
+  Model* m = dynamic_cast<Model*>( model() );
+  if ( m )
+    m->setCleared( myCleared );
+  QComboBox::paintEvent( e );
+  if ( m )
+    m->setCleared( false );
+}
+
+/*!
+  \brief Customize child addition/removal event
+  \param e child event
+*/
+void QtxComboBox::childEvent( QChildEvent* e )
+{
+  if ( ( e->added() || e->polished() ) && qobject_cast<QLineEdit*>( e->child() ) )
+    QApplication::postEvent( this, new ClearEvent() );
+}
+
+/*!
+  \brief Process custom events
+  \param e custom event
+*/
+void QtxComboBox::customEvent( QEvent* e )
+{
+  if ( e->type() == CLEAR_EVENT && lineEdit() && myCleared )
+    lineEdit()->setText( "" );
 }
 
 /*!
@@ -148,17 +239,17 @@ void QtxComboBox::paintEvent( QPaintEvent* e )
 void QtxComboBox::onActivated( int idx )
 {
   resetClear();
-
   emit activatedId( id( idx ) );
 }
 
 /*!
-  \brief Called when any item is activated by the user.
-  \param txt activated item text (not used)
+  \brief Called when current item is chaned (by the user or programmatically).
+  \param idx item being set current
 */
-void QtxComboBox::onActivated( const QString& /*txt*/ )
+void QtxComboBox::onCurrentChanged( int idx )
 {
-  resetClear();
+  if ( idx != -1 )
+    resetClear();
 }
 
 /*!
@@ -171,30 +262,6 @@ void QtxComboBox::resetClear()
   
   myCleared = false;
   update();
-}
-
-/*!
-  \brief Draw combobox in the "cleared" state.
-  \param e paint event
-*/
-void QtxComboBox::paintClear( QPaintEvent* e )
-{
-  int curIndex = currentIndex();
-  QString curText = itemText( curIndex );
-  QIcon curIcon = itemIcon( curIndex );
-    
-  bool upd = updatesEnabled();
-  setUpdatesEnabled( false );
-    
-  setItemIcon( curIndex, QIcon() );
-  setItemText( curIndex, QString::null );
-
-  QComboBox::paintEvent( e );
-    
-  setItemText( curIndex, curText );
-  setItemIcon( curIndex, curIcon );
-    
-  setUpdatesEnabled( upd );
 }
 
 /*!
@@ -240,11 +307,5 @@ bool QtxComboBox::hasId( const int idx ) const
 /*!
   \fn void QtxComboBox::activatedId( int id )
   \brief Emitted when the item with identificator \a id is activated.
-  \param id item ID
-*/
-
-/*!
-  \fn void QtxComboBox::highlightedId( int id )
-  \brief Emitted when the item with identificator \a id is highlighted.
   \param id item ID
 */

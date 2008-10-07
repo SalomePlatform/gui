@@ -41,6 +41,9 @@ public:
 
   virtual bool eventFilter( QObject*, QEvent* );
 
+  bool           isEmpty() const;
+  bool           isVisible() const;
+
 protected:
   virtual void customEvent( QEvent* );
 
@@ -55,11 +58,13 @@ private:
 
   void         updateVisibility();
 
+  void         setEmpty( const bool );
+  void         setVisible( const bool );
+
 private:
   QtxToolBar*  myCont;
   bool         myState;
   bool         myEmpty;
-  bool         myVisible;
 };
 
 /*!
@@ -72,8 +77,9 @@ QtxToolBar::Watcher::Watcher( QtxToolBar* cont )
   myState( true ),
   myEmpty( false )
 {
+  setVisible( myCont->isVisibleTo( myCont->parentWidget() ) );
+
   myCont->installEventFilter( this );
-  myVisible = myCont->isVisibleTo( myCont->parentWidget() );
 
   installFilters();
 }
@@ -116,7 +122,7 @@ void QtxToolBar::Watcher::shown( QtxToolBar* tb )
   if ( tb != myCont )
     return;
 
-  myVisible = true;
+  setVisible( true );
 }
 
 /*!
@@ -128,7 +134,36 @@ void QtxToolBar::Watcher::hidden( QtxToolBar* tb )
   if ( tb != myCont )
     return;
 
-  myVisible = false;
+  setVisible( false );
+}
+
+bool QtxToolBar::Watcher::isEmpty() const
+{
+  return myEmpty;
+}
+
+bool QtxToolBar::Watcher::isVisible() const
+{
+  bool vis = false;
+  if ( myCont && myCont->toggleViewAction() )
+    vis = myCont->toggleViewAction()->isChecked();
+  return vis;
+}
+
+void QtxToolBar::Watcher::setEmpty( const bool on )
+{
+  myEmpty = on;
+}
+
+void QtxToolBar::Watcher::setVisible( const bool on )
+{
+  if ( !myCont || !myCont->toggleViewAction() )
+    return;
+
+  bool block = myCont->toggleViewAction()->signalsBlocked();
+  myCont->toggleViewAction()->blockSignals( true );
+  myCont->toggleViewAction()->setChecked( on );
+  myCont->toggleViewAction()->blockSignals( block );
 }
 
 /*!
@@ -139,10 +174,14 @@ void QtxToolBar::Watcher::showContainer()
   if ( !myCont )
     return;
 
+  bool vis = isVisible();
+
   QtxToolBar* cont = myCont;
   myCont = 0;
   cont->show();
   myCont = cont;
+
+  setVisible( vis );
 }
 
 /*!
@@ -153,10 +192,14 @@ void QtxToolBar::Watcher::hideContainer()
   if ( !myCont )
     return;
 
+  bool vis = isVisible();
+
   QtxToolBar* cont = myCont;
   myCont = 0;
   cont->hide();
   myCont = cont;
+
+  setVisible( vis );
 }
 
 /*!
@@ -205,9 +248,7 @@ void QtxToolBar::Watcher::updateVisibility()
     return;
 
   bool vis = false;
-
   QList<QAction*> actList = myCont->actions();
-
   for ( QList<QAction*>::const_iterator it = actList.begin(); it != actList.end() && !vis; ++it )
   {
     if ( (*it)->isSeparator() )
@@ -217,10 +258,12 @@ void QtxToolBar::Watcher::updateVisibility()
   }
 
   QMainWindow* mw = myCont->mainWindow();
-  if ( mw && myEmpty == vis )
+  bool empty = isEmpty();
+  if ( mw && empty == vis )
   {
-    myEmpty = !vis;
-    if ( !myEmpty )
+    empty = !vis;
+    setEmpty( empty );
+    if ( !empty )
       myCont->toggleViewAction()->setVisible( myState );
     else
     {
@@ -229,7 +272,7 @@ void QtxToolBar::Watcher::updateVisibility()
     }
   }
 
-  vis = !myEmpty && myVisible;
+  vis = !empty && isVisible();
   if ( vis != myCont->isVisibleTo( myCont->parentWidget() ) )
     vis ? showContainer() : hideContainer();
 }

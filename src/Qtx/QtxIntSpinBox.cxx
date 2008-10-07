@@ -57,6 +57,7 @@ QtxIntSpinBox::QtxIntSpinBox( QWidget* parent )
 : QSpinBox( parent ),
   myCleared( false )
 {
+  setCorrectionMode( QSpinBox::CorrectToNearestValue );
   connect( lineEdit(), SIGNAL( textChanged( const QString& ) ), 
 	   this, SLOT( onTextChanged( const QString& ) ) );
 }
@@ -79,6 +80,7 @@ QtxIntSpinBox::QtxIntSpinBox( int min, int max, int step, QWidget* parent )
   setMinimum( min );
   setMaximum( max );
   setSingleStep( step );
+  setCorrectionMode( QSpinBox::CorrectToNearestValue );
 
   connect( lineEdit(), SIGNAL( textChanged( const QString& ) ), 
 	   this, SLOT( onTextChanged( const QString& ) ) );

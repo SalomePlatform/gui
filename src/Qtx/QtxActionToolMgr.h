@@ -61,7 +61,7 @@ public:
 
   QMainWindow*    mainWindow() const;
 
-  int             createToolBar( const QString&, int = -1 );
+  int             createToolBar( const QString&, int = -1, QMainWindow* = 0 );
   void            removeToolBar( const QString& );
   void            removeToolBar( const int );
 
@@ -101,11 +101,12 @@ public:
 
   virtual bool    load( const QString&, QtxActionMgr::Reader& );
 
+  int             find( QToolBar* ) const;
+
 protected slots:
   void            onToolBarDestroyed();
 
 protected:
-  int             find( QToolBar* ) const;  
   int             find( const QString& ) const;
   QToolBar*       find( const QString&, QMainWindow* ) const;
 

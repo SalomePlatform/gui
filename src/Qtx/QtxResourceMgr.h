@@ -138,6 +138,7 @@ public:
   QPixmap          loadPixmap( const QString&, const QString&, const bool ) const;
   QPixmap          loadPixmap( const QString&, const QString&, const QPixmap& ) const;
   void             loadLanguage( const QString& = QString(), const QString& = QString() );
+  void             loadLanguage( const bool, const QString& = QString(), const QString& = QString() );
 
   void             raiseTranslators( const QString& );
   void             removeTranslators( const QString& );
@@ -163,7 +164,7 @@ protected:
   virtual QString  globalFileName( const QString& ) const;
 
 private:
-  void             initialize( const bool = true ) const;
+  void             initialize( const bool = true, const bool = true ) const;
   QString          substMacro( const QString&, const QMap<QChar, QString>& ) const;
 
 private:

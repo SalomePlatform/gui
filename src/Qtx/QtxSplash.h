@@ -27,7 +27,7 @@
 
 #include <QWidget>
 #include <QPixmap>
-#include <QLinearGradient>
+#include <QGradient>
 #include <QMap>
 
 #ifdef WIN32
@@ -44,12 +44,6 @@ private:
   QtxSplash( const QPixmap& );
 
 public:
-  //! Gradient type
-  typedef enum { 
-    Horizontal, //!< horizontal
-    Vertical    //!< vertical
-  } GradientType;
-  
   //! Progress bar position and direction
   typedef enum {
     LeftSide     = 0x0001,      //!< progress bar is displayed at the left side
@@ -72,7 +66,16 @@ public:
   
   void              setHideOnClick( const bool );
   bool              hideOnClick() const;
-  
+
+  void              setProgressVisible( const bool );
+  bool              progressVisible() const;
+
+  void              setMessageVisible( const bool );
+  bool              messageVisible() const;
+
+  void              setPercentageVisible( const bool );
+  bool              percentageVisible() const;
+
   void              setTotalSteps( const int );
   int               totalSteps() const;
   
@@ -85,17 +88,15 @@ public:
   
   void              setProgressWidth( const int );
   int               progressWidth() const; 
-  
+
   void              setProgressFlags( const int );
   int               progressFlags() const;
   
   void              setProgressColors( const QColor&, 
 				       const QColor& = QColor(),
-				       const GradientType = Vertical );
-  GradientType      progressColors( QColor&, QColor& ) const;
-  
-  void              setProgressGradient( const QLinearGradient& );
-  QLinearGradient   progressGradient() const;
+				       const Qt::Orientation = Qt::Vertical );
+  void              setProgressColors( const QGradient& );
+  const QGradient*  progressColors() const;
   
   void              setOpacity( const double );
   double            opacity() const;
@@ -103,8 +104,6 @@ public:
   void              setTextAlignment( const int );
   int               textAlignment() const;
   
-  void              setTextColor( const QColor& );
-  QColor            textColor() const;
   void              setTextColors( const QColor&, const QColor& = QColor() );
   void              textColors( QColor&, QColor& ) const;
   
@@ -160,17 +159,16 @@ private:
   bool              myHideOnClick;      //!< 'hide on click' flag
   int               myProgress;         //!< current progress
   int               myTotal;            //!< total progress steps
-  QColor            myStartColor;       //!< progress bar gradient starting color
-  QColor            myEndColor;         //!< progress bar gradient ending color
-  GradientType      myGradientType;     //!< progress bar gradient direction
-  QLinearGradient   myGradient;         //!< progress bar custom gradient
+  QGradient         myGradient;         //!< progress bar custom gradient
   int               myProgressWidth;    //!< progress bar width
   int               myProgressFlags;    //!< progress bar flags (QtxSplash::ProgressBarFlags)
   int               myMargin;           //!< margin (for progress bar and status message)
   double            myOpacity;          //!< progress bar / status message opacity
   int               myError;            //!< error code
-  bool              myGradientUsed;     //!< 'use custom gradient color scale' flag
   OptMap            myOptions;          //!< constant info options
+  bool              myShowProgress;     //!< 'show progress bar' flag
+  bool              myShowMessage;      //!< 'show status message' flag
+  bool              myShowPercent;      //!< 'show percentage' flag
 };
 
 #endif

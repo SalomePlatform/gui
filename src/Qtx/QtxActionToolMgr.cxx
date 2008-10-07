@@ -92,23 +92,26 @@ QMainWindow* QtxActionToolMgr::mainWindow() const
 
   \param title toolbar title
   \param tid requested toolbar ID
+  \param mw parent main window; if it is null, the tool manager's main window is used
   \return id of created/found toolbar
 */
-int QtxActionToolMgr::createToolBar( const QString& title, const int tid )
+int QtxActionToolMgr::createToolBar( const QString& title, const int tid, QMainWindow* mw )
 {
   static int _toolBarId = -1;
 
   int tbId = -1;
   for ( ToolBarMap::ConstIterator it = myToolBars.begin(); it != myToolBars.end() && tbId == -1; ++it )
   {
-    if ( it.value().toolBar->windowTitle().toLower() == title.toLower() )
+    if( it.value().toolBar->windowTitle().toLower() == title.toLower() &&
+        ( !mw || it.value().toolBar->parent()==mw ) )
       tbId = it.key();
   }
 
   if ( tbId != -1 )
     return tbId;
 
-  QToolBar* tb = find( title, mainWindow() );
+  QMainWindow* tbw = mw ? mw : mainWindow();
+  QToolBar* tb = find( title, tbw );
 
   tbId = tid < 0 ? --_toolBarId : tid;
 
@@ -117,11 +120,12 @@ int QtxActionToolMgr::createToolBar( const QString& title, const int tid )
 
   if ( !tb )
   {
-    tb = new QtxToolBar( true, mainWindow() );
-    mainWindow()->addToolBar( tb );
+    tb = new QtxToolBar( true, tbw );
+    //mainWindow()->addToolBar( tb );
     tb->setWindowTitle( title );
     tb->setObjectName( title );
-  }
+    tb->setToolTip( title );
+   }
 
   tInfo.toolBar = tb;
   connect( tInfo.toolBar, SIGNAL( destroyed() ), this, SLOT( onToolBarDestroyed() ) );
@@ -499,6 +503,11 @@ void QtxActionToolMgr::updateToolBar( const int tid )
   }
 
   simplifySeparators( tb );
+  
+  // fix of 19921 -->
+  if ( !tb->isVisible() )
+    tb->adjustSize();
+  // fix of 19921 <--
 }
 
 /*!

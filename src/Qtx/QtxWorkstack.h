@@ -71,7 +71,7 @@ public:
   QtxWorkstack( QWidget* = 0 );
   virtual ~QtxWorkstack();
 
-  QWidgetList         windowList() const;
+  QWidgetList         windowList( QWidget* = 0 ) const;
   QWidgetList         splitWindowList() const;
 
   QWidget*            activeWindow() const;
@@ -86,6 +86,8 @@ public:
   int                 menuActions() const;
 
   void                split( const int );
+  bool                move( QWidget* wid, QWidget* wid_to, const bool before );
+  void                stack();
 
   QWidget*            addWindow( QWidget*, Qt::WindowFlags = 0 );
 
@@ -125,6 +127,7 @@ private:
   void                insertWidget( QWidget*, QWidget*, QWidget* );
 
   QtxWorkstackArea*   areaAt( const QPoint& ) const;
+  QtxWorkstackArea*   wgArea( QWidget* ) const;
 
   QtxWorkstackArea*   targetArea();
   QtxWorkstackArea*   activeArea() const;

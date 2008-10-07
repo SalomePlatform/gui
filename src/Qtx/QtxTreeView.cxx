@@ -42,13 +42,12 @@ public:
   bool     sortMenuEnabled() const;
 
   void     addMenuAction( QAction* );
-
 protected:
   void     contextMenuEvent( QContextMenuEvent* );
 
 private:
   typedef QMap<int, QAction*> ActionsMap;
-  bool       myEnableSortMenu;
+  bool     myEnableSortMenu;
   ActionsMap myActions;
 };
 
@@ -307,6 +306,26 @@ void QtxTreeView::addHeaderMenuAction( QAction* action )
     h->addMenuAction( action );
 }
 
+/*!
+  \brief Resizes the given column in order to enclose its contents.
+  The size will be changed only if it is smaller than the size of
+  contents.
+  \param column number of column
+*/
+void QtxTreeView::resizeColumnToEncloseContents( int column )
+{
+  if (column < 0 || column >= header()->count())
+    return;
+
+  int contentsSizeHint = sizeHintForColumn(column);
+  int headerSizeHint = header()->isHidden() ? 0 : header()->sectionSizeHint(column);
+  int sizeHint = qMax(contentsSizeHint, headerSizeHint);
+
+  int currentSize = columnWidth( column );
+  if (currentSize < sizeHint)
+    setColumnWidth( column, sizeHint );
+}
+
 /*
   \brief Called when the header section is clicked.
   \param column header column index
@@ -343,6 +362,18 @@ void QtxTreeView::drawRow( QPainter* painter, const QStyleOptionViewItem& option
 void QtxTreeView::drawRow( const QModelIndex& index )
 {
   emit drawedRow( index );
+}
+
+/*!
+  \brief Called when rows are about to be removed.
+  \param parent model index
+  \param start first row to remove
+  \param end last row to remove
+*/
+void QtxTreeView::rowsAboutToBeRemoved( const QModelIndex& parent, int start, int end )
+{
+  setCurrentIndex( QModelIndex() );
+  QTreeView::rowsAboutToBeRemoved( parent, start, end );
 }
 
 /*!

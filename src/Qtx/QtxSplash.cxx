@@ -70,20 +70,25 @@ private:
 
 /*!
   \class QtxSplash
-  \brief The QtxSplash widget provides a splash screen that can be shown during application startup..
+  \brief The QtxSplash widget provides a splash screen that can be shown
+  during application startup.
 
-  A splash screen is a widget that is usually displayed when an application is being started. 
-  Splash screens are often used for applications that have long start up times to provide 
-  the user with feedback that the application is loading.
+  A splash screen is a widget that is usually displayed when an application
+  is being started. 
+  Splash screens are often used for applications that have long start up times
+  to provide the user with feedback that the application is loading.
 
-  Only one instance of the QtxSplash widget can be created. To access to the splash screen widget,
-  use static method QtxSplash::splash(), which creates and instance of the QtxSplash widget if
-  necessary and returns pointer to it. You should not destroy yhis instance - it is done automatically
-  after application main window is shown. Just use methods finish() to make splash screen wait untill 
-  main window is shown.
+  Only one instance of the QtxSplash widget can be created. To access the splash
+  screen widget, use static method QtxSplash::splash(), which creates an
+  instance of the QtxSplash widget (if it is not yet creaed) and returns a
+  pointer to it.
+  You should not destroy this instance - it is done automatically after
+  application main window is shown. Just use methods finish() to make splash
+  screen wait untill main window is shown.
 
-  The splash screen appears in the center of the screen. The most common usage is to show a splash 
-  screen before the main widget is displayed on the screen. 
+  The splash screen appears in the center of the screen. 
+  The most common usage is to show a splash screen before the main widget
+  is displayed on the screen. 
   For example,
   \code
   int main(int argc, char *argv[])
@@ -101,54 +106,71 @@ private:
   }
   \endcode
   
-  The user can hide the splash screen by clicking on it with the mouse. Since the splash screen is 
-  typically displayed before the event loop has started running, it is necessary to periodically call 
+  The user can hide the splash screen by clicking on it with the mouse.
+  Since the splash screen is typically displayed before the event loop
+  has started running, it is necessary to periodically call
   QApplication::processEvents() to receive the mouse clicks.
-  This feature can be switched off by using method setHideOnClick() with \c false parameter.
+  To activate the possibility of hiding the splash screen on the mouse
+  click, use setHideOnClick() method passing \c true as parameter.
+  By default, this feature is switched off.
 
-  It is sometimes useful to update the splash screen with messages and/or progress information, 
-  for example, announcing connections established or modules loaded as the application starts up.
-  QtxSplash class provides the functionality to show status messages and(or) progress bar.
+  It is sometimes useful to update the splash screen with any status messages
+  and/or progress information, for example, announcing connections established
+  or modules loaded as the application starts up.
+  QtxSplash class provides the functionality to show status messages
+  and(or) progress bar.
 
   \code
   QPixmap pixmap(":/splash.png");
   QtxSplash* splash = QtxSplash::splash(pixmap);
-  splash->setProgress(0, 5);
+  splash->setProgress(0, 5); // progress from 0 to 5
   splash->show();
   app.processEvents();
   // doing first step
   splash->setMessage("Step 1");
-  splash->ress(1);
+  splash->setProgress(1); // progress is 20%
   qApp->processEvents();
   // ... perform some actions
   // doing second step
   splash->setMessage("Step 2");
-  splash->setProgress(2);
+  splash->setProgress(2); // progress is 40%
   qApp->processEvents();
   // ... perform some actions
   ... et cetera
   \endcode
 
-  There is a static function QtxSplash::setStatus() which allows to put next status message
-  and progress with one call. It can substitue two calls: setMessage() and setProgress().
+  There is a static function QtxSplash::setStatus() which allows to put the
+  next status message and current progress with one call.
+  It can substitue two calls: setMessage() and setProgress().
 
-  QtxSplash class provides alos a lot of functions to set-up its behavior. Set progress
-  bar width with setProgressWidth() method, its position and direction with setProgressFlags().
-  It can be single-colored or gradient-colored. Use setProgressColors() method for this. 
-  You can even set your own gradient scale with QLinearGradient and use it for the progress
-  bar coloring: setProgressGradient().
+  QtxSplash class provides also a lot of functions to customize its behavior.
+  Set progress bar width with setProgressWidth() method, its position and
+  direction with setProgressFlags().
+  It can be single-colored or gradient-colored. Use setProgressColors() methods
+  for this. You can even set your own gradient scale with QLinearGradient, 
+  QRadialGradient or QConicalGradient and use it for the progress
+  bar coloring. In addition, it is possible to enable/disable displaying
+  of the progress percentage with setPercentageVisible() method.
 
-  To change the progress bar and status message transparency, use setOpacity() function.
-  The methods setTextAlignment(), setTextColor() and setTextColors() can be used to change
-  the attributes of the status message.
+  Displaying of the progress bar and status messages can be switched on/off with
+  setProgressVisible() and setMessageVisible() methods.
 
-  The displayed message text includes constant info and status message. The constant info
-  is set by setConstantInfo() method and status message is set by setMessage().
+  To change the progress bar and status message transparency, use
+  setOpacity() function. The methods setTextAlignment() and setTextColors()
+  can be used to change the attributes of the status messages.
 
-  Sometimes it is useful to splay an error message above the splash screen window.
-  For example, it can be necessary if an error occurs when loading the application.
-  Method setError() can be used to show the error message and set the error code which
-  can be then retrieved with the error() function.
+  The displayed message text can include constant info and status message.
+  The constant info is set by setConstantInfo() method and status message
+  is set by setMessage().
+
+  Sometimes it is useful to display an error message above the splash screen
+  window. For example, it can be necessary if an error occurs when loading
+  the application. Method setError() can be used to show the error message
+  and set the error code which can be then retrieved with the error() function.
+
+  There is one more helpful feature. The QtxSplash class can read all the
+  settings from the resource file with help of resource manager 
+  (QtxResourceMgr class). Refer to the method readSettings() for more details.
 */
 
 //! The only one instance of splash screen
@@ -156,8 +178,11 @@ QtxSplash* QtxSplash::mySplash = 0;
 
 /*!
   \brief Constructor.
-  \brief Construct a splash screen that will display the \a pixmap.
+  
+  Construct a splash screen that will display the \a pixmap.
+  
   \param pixmap splash screen pixmap
+  \sa setPixmap(), pixmap()
 */
 QtxSplash::QtxSplash( const QPixmap& pixmap )
 : QWidget( 0, Qt::SplashScreen | Qt::WindowStaysOnTopHint ),
@@ -166,14 +191,14 @@ QtxSplash::QtxSplash( const QPixmap& pixmap )
   myHideOnClick( false ),
   myProgress( 0 ),
   myTotal( 0 ),
-  myStartColor( Qt::red ),
-  myGradientType( Vertical ),
   myProgressWidth( 10 ),
   myProgressFlags( BottomSide | LeftToRight ),
   myMargin( 5 ),
   myOpacity( 1.0 ),
   myError( 0 ),
-  myGradientUsed( false )
+  myShowPercent( true ),
+  myShowProgress( true ),
+  myShowMessage( true )
 {
   setAttribute( Qt::WA_DeleteOnClose, true );
   setPixmap( pixmap );
@@ -195,6 +220,7 @@ QtxSplash::~QtxSplash()
 
   \param px splash screen pixmap
   \return splash screen widget
+  \sa setPixmap(), pixmap()
 */
 QtxSplash* QtxSplash::splash( const QPixmap& px )
 {
@@ -314,6 +340,69 @@ bool QtxSplash::hideOnClick() const
 }
 
 /*!
+  \brief Enable/disable displaying of the progress bar.
+  \param on if \c true, progress bar will be enabled
+  \sa progressVisible(), setMessageVisible()
+*/
+void QtxSplash::setProgressVisible( const bool on )
+{
+  myShowProgress = on;
+  repaint();
+}
+
+/*!
+  \brief Check if the progress bar is displayed.
+  \return \c true if progress bar is enabled
+  \sa setProgressVisible()
+*/
+bool QtxSplash::progressVisible() const
+{
+  return myShowProgress;
+}
+
+/*!
+  \brief Enable/disable displaying of the status message.
+  \param on if \c true, status message will be enabled
+  \sa messageVisible(), setProgressVisible()
+*/
+void QtxSplash::setMessageVisible( const bool on )
+{
+  myShowMessage = on;
+  repaint();
+}
+
+/*!
+  \brief Check if the status message is displayed.
+  \return \c true if status message is enabled
+  \sa setMessageVisible()
+*/
+bool QtxSplash::messageVisible() const
+{
+  return myShowMessage;
+}
+
+/*!
+  \brief Enable/disable displaying progress percentage.
+  \param enable if \c true, percentage will be displayed
+  \sa percentageVisible()
+*/
+void QtxSplash::setPercentageVisible( const bool enable )
+{
+  myShowPercent = enable;
+  repaint();
+}
+
+/*!
+  \brief Check if the progress percentage is displayed.
+  \return \c true if percentage displaying is enabled
+  \sa setPercentageVisible()
+*/
+bool QtxSplash::percentageVisible() const
+{
+  return myShowPercent;
+}
+
+/*!
   \brief Set total progress steps to \a total.
   \param total total number of progress steps
   \sa totalSteps(), setProgress(), progress()
@@ -369,7 +458,11 @@ void QtxSplash::setProgress( const int progress, const int total )
 }
 
 /*!
-  \brief Set margin (a border width).
+  \brief Set splash window margin (a border width).
+
+  Note, that margin is used only for drawing the progress bar and status 
+  messages.
+
   \param margin new margin width
   \sa margin()
 */
@@ -380,7 +473,7 @@ void QtxSplash::setMargin( const int margin )
 }
 
 /*!
-  \brief Get margin (a border width).
+  \brief Get splash window margin (a border width).
   \return current margin width
   \sa setMargin()
 */
@@ -414,7 +507,7 @@ int QtxSplash::progressWidth() const
   \brief Set progress bar position and direction.
 
   By default, progress bar is displayed at the bottom side and
-  shows progress from left to right.
+  shows progress from left to right but this behaviour can be changed.
 
   \param flags ORed progress bar flags (QtxSplash::ProgressBarFlags)
   \sa progressFlags()
@@ -442,54 +535,57 @@ int QtxSplash::progressFlags() const
 /*!
   \brief Set progress bar colors.
 
-  If the colors differ the gradient color bar is drawn.
+  If the colors differ the two-colored gradient bar is drawn.
   
   If the \a endColor is not valid, \a startColor is used instead
-  (no gradient coloring).
+  (i.e. simple, one-colored progress bar is drawn).
   
-  The parameter \a gradientType defines the type of gradient 
+  The parameter \a orientation defines the type of gradient 
   to be drawn - horizontal or vertical. Default is vertical.
 
-  Note, that methods setProgressGradient() and setProgressColors() are
-  alternative. Only the latest used is taken into account.
-
   \param startColor start gradient color (or mono-color)
   \param endColor end gradient color
-  \param gradientType gradient type (QtxSplash::GradientType)
-  \sa progressColors(), setProgressGradient()
+  \param orientation gradient type (Qt::Orientation)
+  \sa progressColors()
 */
-void QtxSplash::setProgressColors( const QColor&      startColor, 
-				   const QColor&      endColor,
-                                   const GradientType gradientType )
+void QtxSplash::setProgressColors( const QColor&         startColor, 
+				   const QColor&         endColor,
+                                   const Qt::Orientation orientation )
 {
-  if ( startColor.isValid() )
-    myStartColor = startColor;
-  myEndColor     = endColor;
-  myGradientType = gradientType;
-  myGradientUsed = false;
-  repaint();
+  if ( !startColor.isValid() )
+    return;
+
+  QLinearGradient l;
+  if ( orientation == Qt::Vertical ) {
+    l.setStart( 0., 0. );
+    l.setFinalStop( 0., 1. );
+  }
+  else {
+    l.setStart( 0., 0. );
+    l.setFinalStop( 1., 0. );
+  }
+  l.setColorAt( 0., startColor );
+  l.setColorAt( 1., endColor.isValid() ? endColor : startColor );
+
+  setProgressColors( l );
 }
 
 /*!
-  \brief Get progress colors and gradient type.
-  \param startColor start gradient color (or mono-color)
-  \param endColor end gradient color
-  \return gradient type (QtxSplash::GradientType)
-  \sa setProgressColors()
-*/
-QtxSplash::GradientType QtxSplash::progressColors( QColor& startColor, 
-						   QColor& endColor ) const
-{
-  startColor = myStartColor;
-  endColor   = myEndColor;
-  return myGradientType;
-}
+  \brief Set progress bar colors.
 
-/*!
-  \brief Set custom progress bar colors.
+  Use this method to display multi-colored gradient progress bar.
+  You have to use QLinearGradient, QRadialGradient or QConicalGradient
+  classes to define the gradient.
 
-  The gradient start and final stops are scaled to the actual progress
-  bar size. For example:
+  Note, that progress bar coordinates can be defined in absolute or
+  relative mode.
+  In absolute mode the actual coordinates of the gradient key points
+  (like start and final point for linear gradient, center and focal point
+  for radial gradient, etc) are calculated from the top-left progress bar's corner.
+  In relative mode you have to use values from 0 to 1 (including) to define
+  the key points positions.
+  
+  For example:
   \code
   QLinearGradient lg(0.5, 0, 1, 1);
   lg.setColorAt(0.2, Qt::blue);
@@ -498,31 +594,26 @@ QtxSplash::GradientType QtxSplash::progressColors( QColor& startColor,
   splash->setProgressGradient(lg);
   \endcode
   The above code creates linear gradient, which sets start stop to the
-  center of the progress bar; the final stop is always in the end of
-  the progress bar. The color scale (blue to red) is changed by the 
-  progress bar diagonal.
-
-  Note, that methods setProgressGradient() and setProgressColors() are
-  alternative. Only the latest used is taken into account.
+  center of the progress bar; the final stop is assigned to its right-bottom corner.
+  The color scale (blue to red) is changed by the progress bar diagonal.
 
   \param gradient color gradient to be used for progress bar coloring
-  \sa progressGradient(), setProgressColors()
+  \sa progressColors()
 */
-void QtxSplash::setProgressGradient( const QLinearGradient& gradient )
+void QtxSplash::setProgressColors( const QGradient& gradient )
 {
   myGradient = gradient;
-  myGradientUsed = true;
   repaint();
 }
 
 /*!
   \brief Get custom progress bar colors.
   \return color gradient used for progress bar coloring
-  \sa setProgressGradient()
+  \sa setProgressColors()
 */
-QLinearGradient QtxSplash::progressGradient() const
+const QGradient* QtxSplash::progressColors() const
 {
-  return myGradient;
+  return &myGradient;
 }
 
 /*!
@@ -575,50 +666,32 @@ int QtxSplash::textAlignment() const
 }
 
 /*!
-  \brief Set message text color.
+  \brief Set message text colors.
 
-  Default message color is white.
-  
-  \param color message text color
-  \sa setTextColors()
-*/
-void QtxSplash::setTextColor( const QColor& color )
-{
-  if ( myColor.isValid() )
-    myColor = color;
-  myShadowColor = QColor();
-  repaint();
-}
+  If \a shadow parameter is invalid color, the simple one-colored
+  text is drawn. Otherwise, second parameter is used to draw the text
+  shadow.
 
-/*!
-  \brief Get message text color.
-  \return color message text color
-  \sa setTextColor()
-*/
-QColor QtxSplash::textColor() const
-{
-  return myColor;
-}
-
-/*!
-  \brief Set message text color and text shadow color.
   \param color message text color
   \param shadow message text shadow color
-  \sa textColors(), textColor(), setTextColor()
+  \sa textColors()
 */
 void QtxSplash::setTextColors( const QColor& color, const QColor& shadow )
 {
-  if ( myColor.isValid() )
-    myColor = color;
+  if ( !myColor.isValid() )
+    return;
+
+  myColor = color;
   myShadowColor = shadow;
+
   repaint();
 }
 
 /*!
-  \brief Get message text color and text shadow color.
+  \brief Get message text colors.
   \param color message text color
   \param shadow message text shadow color
-  \sa setTextColors(), textColor(), setTextColor()
+  \sa setTextColors()
 */
 void QtxSplash::textColors( QColor& color, QColor& shadow ) const
 {
@@ -634,7 +707,7 @@ void QtxSplash::textColors( QColor& color, QColor& shadow ) const
   message is set by setMessage().
 
   \param info constant info text
-  \sa constantInfo(), message(), setMessage()
+  \sa constantInfo(), message(), setMessage(), option(), setOption()
 */
 void QtxSplash::setConstantInfo( const QString& info )
 {
@@ -659,14 +732,22 @@ QString QtxSplash::constantInfo() const
   which is replaced at the time of the displaying.
 
   The following options are supported:
-  - %A - could be used as application name
-  - %V - could be used as application version
-  - %L - could be used as application license information
-  - %C - could be used as application copyright information
+  - \c \%A - could be used as application name
+  - \c \%V - could be used as application version
+  - \c \%L - could be used as application license information
+  - \c \%C - could be used as application copyright information
 
+  For example,
+  \code
+  splash->setContantInfo("%A [%V]\n%C");
+  splash->setOption("%A", "MyApplication" );
+  splash->setOption("%V", "Version 1.0" );
+  splash->setOption("%C", "Copyright (C) MyCompany 2008" );
+  \endcode
+  
   \param name option name
   \param option value
-  \sa option()
+  \sa option(), setConstantInfo(), constantInfo()
 */
 void QtxSplash::setOption( const QString& name, const QString& value )
 {
@@ -678,7 +759,7 @@ void QtxSplash::setOption( const QString& name, const QString& value )
   \brief Get constant information option value.
   \param name option name
   \return option value or empty string if option is not set
-  \sa setOption()
+  \sa setOption(), setConstantInfo(), constantInfo()
 */
 QString QtxSplash::option( const QString& name ) const
 {
@@ -701,8 +782,8 @@ QString QtxSplash::message() const
 /*!
   \brief Get error code.
 
-  This function returns error code, set previoiusly with 
-  error(const QString&, const QString&, const int) method.
+  This function returns error code, set previously with 
+  setError() method.
   If no error code has been set, 0 is returned.
 
   \return last error code
@@ -744,12 +825,33 @@ void QtxSplash::repaint()
 
 /*!
   \brief Read splash settings from the resources manager.
+  
+  This method can be used to setup the splash screen look-n-feel.
+  By default, "splash" section of the resources file is used, but you can
+  use any other section.
+  All the splash screen parameters can be defined via resources file:
+  - \c "image" : splash screen image, see setPixmap()
+  - \c "margin" : splash window margin, see setMargin()
+  - \c "show_progress" : show progress bar flag, see setProgressVisible()
+  - \c "show_message" : show status messages flag, see setMessageVisible()
+  - \c "show_percents" : show progress percentage flag, see setPercentageVisible()
+  - \c "progress_width" : progress bar width(), see setProgressWidth()
+  - \c "progress_flags" : progress bar position and direction, see setProgressFlags()
+  - \c "constant_info" : status messages constant info, see setConstantInfo()
+  - \c "text_colors" : status messages color(s), see setTextColors()
+  - \c "progress_colors" : progress bar color(s), see setProgressColors()
+  - \c "opacity" : progress bar and status messages opacity, see setOpacity()
+  - \c "font" : status messages font
+  - \c "alignment" : status messages alignment flags, see setTextAlignment()
+  - \c "hide_on_click" : hide-on-click flag, see setHideOnClick()
+
   \param resMgr resources manager
-  \param section resources file section name (if empty, the default name is used).
+  \param section resources file section name (if empty, the default "splash"
+  section is used).
 */
 void QtxSplash::readSettings( QtxResourceMgr* resMgr, const QString& section )
 {
-  QString resSection = section.isEmpty() ? "splash" : section;
+  QString resSection = section.isEmpty() ? QString( "splash" ) : section;
   
   // pixmap
   QString pxname;
@@ -769,6 +871,18 @@ void QtxSplash::readSettings( QtxResourceMgr* resMgr, const QString& section )
   }
 #endif
 
+  // enable progress bar
+  bool bShowProgress;
+  if ( resMgr->value( resSection, "show_progress", bShowProgress ) ) {
+    setProgressVisible( bShowProgress );
+  }
+  
+  // enable status message
+  bool bShowMessage;
+  if ( resMgr->value( resSection, "show_message", bShowMessage ) ) {
+    setMessageVisible( bShowMessage );
+  }
+  
   // margin
   int m;
   if ( resMgr->value( resSection, "margin", m ) ) {
@@ -850,20 +964,32 @@ void QtxSplash::readSettings( QtxResourceMgr* resMgr, const QString& section )
     }
     setTextAlignment( fl );
   }
-
   // progress color(s)
   QString pc;
-  QLinearGradient grad;
-  if ( resMgr->value( resSection, "progress_gradient", grad ) ) {
-    // gradient-colored progress bar
-    setProgressGradient( grad );
+  QLinearGradient  lgrad;
+  QRadialGradient  rgrad;
+  QConicalGradient cgrad;
+  if ( resMgr->value( resSection, "progress_color",  lgrad ) || 
+       resMgr->value( resSection, "progress_colors", lgrad ) ) {
+    // linear gradient-colored progress bar
+    setProgressColors( lgrad );
+  }
+  else if ( resMgr->value( resSection, "progress_color",  rgrad ) || 
+	    resMgr->value( resSection, "progress_colors", rgrad ) ) {
+    // radial gradient-colored progress bar
+    setProgressColors( rgrad );
+  }
+  else if ( resMgr->value( resSection, "progress_color",  cgrad ) || 
+	    resMgr->value( resSection, "progress_colors", cgrad ) ) {
+    // conical gradient-colored progress bar
+    setProgressColors( cgrad );
   }
   else if ( resMgr->value( resSection, "progress_color",  pc ) || 
 	    resMgr->value( resSection, "progress_colors", pc ) ) {
     // one/two-colored progress bar
     QStringList colors = pc.split( "|", QString::SkipEmptyParts );
     QColor c1, c2;
-    QtxSplash::GradientType gradType = QtxSplash::Vertical;
+    Qt::Orientation o = Qt::Vertical;
     if ( colors.count() > 0 ) c1 = QColor( colors[0] );
     if ( colors.count() > 1 ) c2 = QColor( colors[1] );
     int gt;
@@ -871,17 +997,20 @@ void QtxSplash::readSettings( QtxResourceMgr* resMgr, const QString& section )
       bool bOk;
       gt = colors[2].toInt( &bOk );
       if ( bOk ) {
-	if ( gt >= QtxSplash::Horizontal && gt <= QtxSplash::Vertical )
-	  gradType = (QtxSplash::GradientType)gt;
+	if ( gt == 0 )
+	  o = Qt::Horizontal;
       }
       else {
-	if ( colors[2].toLower() == "horizontal" )
-	  gradType = QtxSplash::Horizontal;
-	else if ( colors[2].toLower() == "vertical" )
-	  gradType = QtxSplash::Vertical;
+	if ( colors[2].toLower().startsWith( "h" ) )
+	  o = Qt::Horizontal;
       }
     }
-    setProgressColors( c1, c2, gradType );
+    setProgressColors( c1, c2, o );
+  }
+  // show percents
+  bool bPercent;
+  if ( resMgr->value( resSection, "show_percents", bPercent ) ) {
+    setPercentageVisible( bPercent );
   }
 
   // text color(s)
@@ -938,7 +1067,10 @@ void QtxSplash::setMessage( const QString& msg )
 
 /*!
   \brief Remove the message being displayed on the splash screen.
-  \sa message()
+
+  This is equivalent to setMessage("");
+
+  \sa message(), setMessage()
 */
 void QtxSplash::clear()
 {
@@ -948,19 +1080,19 @@ void QtxSplash::clear()
 
 /*!
   \brief Draw the contents of the splash screen.
-  \param painter painter
+  \param p painter
 */
 void QtxSplash::drawContents( QPainter* p )
 {
   // draw progress bar
-  if ( myTotal > 0 ) {
+  if ( myTotal > 0 && progressVisible() ) {
     p->save();
     drawProgressBar( p );
     p->restore();
   }
 
   // draw status message
-  if ( !fullMessage().isEmpty() ) {
+  if ( !fullMessage().isEmpty() && messageVisible() ) {
     p->save();
     drawMessage( p );
     p->restore();
@@ -1014,8 +1146,39 @@ void QtxSplash::customEvent( QEvent* ce )
 }
 
 /*!
+  \brief Check if the gradient is defined in the relative coordinates [static].
+  \internal
+  \return \c true if gradient is defined in the relative coordinates
+*/
+static bool checkGradient( const QGradient* g )
+{
+#define BOUNDED( a, min, max ) ( a >= min && a <= max )
+  if ( g->type() == QGradient::LinearGradient ) {
+    const QLinearGradient* lg = static_cast<const QLinearGradient*>( g );
+    return BOUNDED( lg->start().x(), 0.0, 1.0 ) && 
+           BOUNDED( lg->start().y(), 0.0, 1.0 ) && 
+           BOUNDED( lg->finalStop().x(), 0.0, 1.0 ) && 
+           BOUNDED( lg->finalStop().y(), 0.0, 1.0 );
+  }
+  if ( g->type() == QGradient::RadialGradient ) {
+    const QRadialGradient* rg = static_cast<const QRadialGradient*>( g );
+    return BOUNDED( rg->center().x(), 0.0, 1.0 ) && 
+           BOUNDED( rg->center().y(), 0.0, 1.0 ) && 
+           BOUNDED( rg->focalPoint().x(), 0.0, 1.0 ) && 
+           BOUNDED( rg->focalPoint().y(), 0.0, 1.0 ); // && BOUNDED( rg->radius(), 0.0, 1.0 );
+  }
+  if ( g->type() == QGradient::ConicalGradient ) {
+    const QConicalGradient* cg = static_cast<const QConicalGradient*>( g );
+    return BOUNDED( cg->center().x(), 0.0, 1.0 ) && 
+           BOUNDED( cg->center().y(), 0.0, 1.0 );
+  }
+  return false;
+}
+
+/*!
   \brief Draw progress bar.
   \param p painter
+  \sa drawMessage()
 */
 void QtxSplash::drawProgressBar( QPainter* p )
 {
@@ -1046,35 +1209,90 @@ void QtxSplash::drawProgressBar( QPainter* p )
     if ( myProgressFlags & RightToLeft)
       cr.translate( 0, r.height() - cr.height() );
   }
-  int x1, x2, y1, y2;
-  if ( myGradientType == Horizontal ) {
-    x1 = r.left(); x2 = r.right(); y1 = y2 = 0;
+  QBrush b;
+  switch ( progressColors()->type() ) {
+    case QGradient::LinearGradient:
+    {
+      QLinearGradient lg;
+      const QLinearGradient* other = static_cast<const QLinearGradient*>( progressColors() );
+      if ( checkGradient( other ) ) {
+	// gradient is defined in relative coordinates [0.0 - 1.0]
+	lg.setStart( r.left() + r.width()  * other->start().x(), 
+		     r.top()  + r.height() * other->start().y() );
+	lg.setFinalStop( r.left() + r.width()  * other->finalStop().x(), 
+			 r.top()  + r.height() * other->finalStop().y() );
+      }
+      else {
+	// gradient is defined in absolute coordinates
+	// according to its dimensions
+	lg.setStart( r.topLeft() + other->start() );
+	lg.setFinalStop( r.topLeft() + other->finalStop() );
+      }
+      
+      lg.setStops( other->stops() );
+      lg.setSpread( other->spread() );
+      
+      b = QBrush( lg );
+      
+      break;
+    } // case QGradient::LinearGradient
+    case QGradient::RadialGradient:
+    {
+      QRadialGradient rg;
+      const QRadialGradient* other = static_cast<const QRadialGradient*>( progressColors() );
+      if ( checkGradient( other ) ) {
+	// gradient is defined in relative coordinates [0.0 - 1.0]
+	rg.setCenter( r.left() + r.width()  * other->center().x(),
+		      r.top()  + r.height() * other->center().y() );
+	rg.setFocalPoint( r.left() + r.width()  * other->focalPoint().x(),
+			  r.top()  + r.height() * other->focalPoint().y() );
+      }
+      else {
+	// gradient is defined in absolute coordinates
+	// according to its dimensions
+	rg.setCenter( r.topLeft() + other->center() );
+	rg.setFocalPoint( r.topLeft() + other->focalPoint() );
+      }
+      
+      // only width is taken into account for the radius in relative mode
+      rg.setRadius( other->radius() > 1.0 ? other->radius() : r.width() * other->radius() );
+      
+      rg.setStops( other->stops() );
+      rg.setSpread( other->spread() );
+      
+      b = QBrush( rg );
+      
+      break;
+    } // case QGradient::RadialGradient
+    case QGradient::ConicalGradient:
+    {
+      QConicalGradient cg;
+      const QConicalGradient* other = static_cast<const QConicalGradient*>( progressColors() );
+      if ( checkGradient( other ) ) {
+	// gradient is defined in relative coordinates [0.0 - 1.0]
+	cg.setCenter( r.left() + r.width()  * other->center().x(),
+		      r.top()  + r.height() * other->center().y() );
+      }
+      else {
+	// gradient is defined in absolute coordinates
+	// according to its dimensions
+	cg.setCenter( r.topLeft() + other->center() );
+      }
+
+      cg.setAngle( other->angle() );
+      cg.setStops( other->stops() );
+      cg.setSpread( other->spread() );
+      
+      b = QBrush( cg );
+      
+      break;
+    } // case QGradient::RadialGradient
+  default:
+    b = QBrush( Qt::red ); // default is simple red-colored progress bar
+    break;
   }
-  else {
-    x1 = x2 = 0; y1 = r.top(); y2 = r.bottom();
-  }
-  QLinearGradient lg;
-  if ( myGradientUsed ) {
-    QPointF start = myGradient.start();
-    QPointF final = myGradient.finalStop();
-    qreal xd = final.x() - start.x();
-    qreal yd = final.y() - start.y();
-    lg.setStart( xd != 0 ? r.left() + r.width() * start.x() / xd : 0, 
-                 yd != 0 ? r.top() + r.height() * start.y() / yd : 0 );
-    lg.setFinalStop( xd != 0 ? r.right() : 0, yd != 0 ? r.bottom() : 0 );
-    lg.setStops( myGradient.stops() );
-    lg.setSpread( myGradient.spread() );
-  }
-  else {
-    lg.setStart( x1, y1 );
-    lg.setFinalStop( x2, y2 );
-    lg.setColorAt( 0, myStartColor );
-    lg.setColorAt( 1, myEndColor.isValid() ? myEndColor : myStartColor );
-  }
+  
   p->setOpacity( myOpacity );
-  p->setClipRect( cr );
-  p->fillRect( r, lg ); 
-  p->setClipping( false );
 
   // draw progress bar outline rectangle
   p->setPen( palette().color( QPalette::Dark ) );
@@ -1083,18 +1301,40 @@ void QtxSplash::drawProgressBar( QPainter* p )
   p->setPen( palette().color( QPalette::Light ) );
   p->drawLine( r.left(), r.bottom(), r.right(), r.bottom() );
   p->drawLine( r.right(), r.top(), r.right(), r.bottom() );
+
+  r.setCoords( r.left()+1, r.top()+1, r.right()-1, r.bottom()-1 );
+  p->setClipRect( cr );
+  p->fillRect( r, b );
+  p->setClipping( false );
+
+  if ( myShowPercent ) {
+    int percent = ( int )( ( myProgress > 0 ? myProgress : 0 ) * 100 / myTotal );
+    QFont f = font();
+    f.setPixelSize( r.height() - 4 );
+    p->setFont( f );
+    // draw shadow status text
+    if ( myShadowColor.isValid() ) {
+      QRect rs = r;
+      rs.moveTopLeft( rs.topLeft() + QPoint( 1,1 ) );
+      p->setPen( myShadowColor );
+      p->drawText( rs, Qt::AlignCenter, QString( "%1%" ).arg( percent ) );
+    }
+    p->setPen( myColor );
+    p->drawText( r, Qt::AlignCenter, QString( "%1%" ).arg( percent ) );
+  }
 }
 
 /*!
   \brief Draw status message.
   \param p painter
+  \sa drawProgressBar()
 */
 void QtxSplash::drawMessage( QPainter* p )
 {
   // get rect, margin, progress bar width
   QRect r = rect();
   int m   = margin();
-  int pw  = progressWidth();
+  int pw  = progressVisible() ? progressWidth() : 0;
 
   // calculate drawing rect
   QFontMetrics f( font() );
@@ -1142,6 +1382,7 @@ void QtxSplash::drawMessage( QPainter* p )
 
 /*!
   \brief Draw the splash screen window contents.
+  \internal
 */
 void QtxSplash::drawContents()
 {
@@ -1157,6 +1398,7 @@ void QtxSplash::drawContents()
 /*!
   \brief Sets error code.
   \param code error code
+  \internal
 */
 void QtxSplash::setError( const int code )
 {
@@ -1167,6 +1409,7 @@ void QtxSplash::setError( const int code )
   \brief Get full message which includes constant info and status message.
   \return get fill message text
   \sa constantInfo(), setConstantInfo(), message(), setMessage()
+  \internal
 */
 QString QtxSplash::fullMessage() const
 {

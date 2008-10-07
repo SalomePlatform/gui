@@ -39,13 +39,10 @@ bool operator<( const QVariant& v1, const QVariant& v2 )
     {
     case QVariant::Int:
       return v1.toInt() < v2.toInt();
-      break;      
     case QVariant::Double:
       return v1.toDouble() < v2.toDouble();
-      break;      
     case QVariant::String:
       return v1.toString() < v2.toString();
-      break;      
     case QVariant::StringList:
     case QVariant::List:
     {
@@ -58,15 +55,12 @@ bool operator<( const QVariant& v1, const QVariant& v2 )
 	  return (*anIt1)<(*anIt2);
       }
       return anIt1 == aLast1 && anIt2 != aLast2;
-      break;      
     }
     default:
       return v1.toString() < v2.toString();
-      break;      
     }
   }
-  else
-    return t1 < t2;
+  return t1 < t2;
 }
 
 /*!

@@ -122,7 +122,8 @@ class SVTK_EXPORT SVTK_Renderer : public vtkObject
   //! Setup requested tolerance for the picking
   void
   SetSelectionTolerance(const double& theTolNodes = 0.025, 
-			const double& theTolCell = 0.001);
+			const double& theTolCell = 0.001,
+			const double& theTolObjects = 0.025);
 
   //----------------------------------------------------------------------------
   //! Adjust all intenal actors (trihedron and graduated rules) to the scene

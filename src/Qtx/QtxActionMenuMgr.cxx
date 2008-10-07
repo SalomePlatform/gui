@@ -46,6 +46,7 @@ public:
   int       idx;          //!< menu node index 
   int       group;        //!< menu group ID
   bool      visible;      //!< visibility status
+  int       emptyEnabled; //!< enable empty menu flag
   NodeList  children;     //!< children menu nodes list
 };
 
@@ -54,7 +55,7 @@ public:
   \internal
 */
 QtxActionMenuMgr::MenuNode::MenuNode()
-: parent( 0 ), id( -1 ), idx( -1 ), group( -1 ), visible( true )
+  : parent( 0 ), id( -1 ), idx( -1 ), group( -1 ), visible( true ), emptyEnabled( 0 )
 {
 }
 
@@ -70,7 +71,7 @@ QtxActionMenuMgr::MenuNode::MenuNode( MenuNode* p,
 				      const int _id,
 				      const int _idx,
 				      const int _group )
-: parent( p ), id( _id ), idx( _idx ), group( _group ), visible( true )
+: parent( p ), id( _id ), idx( _idx ), group( _group ), visible( true ), emptyEnabled( 0 )
 {
   if ( p )
     p->children.append( this );
@@ -139,8 +140,9 @@ QtxActionMenuMgr::~QtxActionMenuMgr()
 {
   for ( MenuMap::Iterator itr = myMenus.begin(); itr != myMenus.end(); ++itr )
   {
-    delete itr.value()->menu();
-    delete itr.value();
+    QPointer<QAction> a = itr.value();
+    delete a->menu();
+    delete a;
   }
 
   delete myRoot;
@@ -327,8 +329,9 @@ int QtxActionMenuMgr::insert( const QString& title, const int pId, const int gro
 
   int gid = (id == -1 || eNode ) ? generateId() : id;
 
-  QAction* ma = new QAction( title, this );
-  ma->setMenu( new QMenu( 0 ) );
+  QMenu* menu = new QMenu( 0 );
+  QAction* ma = menu->menuAction();
+  ma->setText( title );
 
   connect( ma->menu(), SIGNAL( aboutToShow() ), this, SLOT( onAboutToShow() ) );
   connect( ma->menu(), SIGNAL( aboutToHide() ), this, SLOT( onAboutToHide() ) );
@@ -853,17 +856,40 @@ void QtxActionMenuMgr::updateMenu( MenuNode* startNode, const bool rec, const bo
 
   bool filled = checkWidget( mw );
 
-  for ( NodeList::iterator it1 = node->children.begin(); it1 != node->children.end(); ++it1 )
+  // first remove all own actions and collect foreign ones
+  QMap< QAction*, QList<QAction*> > foreign;
+  QAction* a;
+  QAction* preva = 0;
+  QListIterator<QAction*> ait( mw->actions() ); ait.toBack();
+  while ( ait.hasPrevious() )
   {
-    QAction* a = itemAction( (*it1)->id );
-    if ( !a )
-      a = menuAction( (*it1)->id );
-
-    mw->removeAction( a );
-//    if ( a )
-//      a->removeFrom( mw );
+    a = ait.previous();
+    if ( ownAction( a, node ) )
+    {
+      preva = a;
+      mw->removeAction( a );     // remove own actions
+    }
+    else
+    {
+      foreign[preva].prepend(a); // do not yet remove foreign actions
+    }
   }
+  // now only foreign actions should stay in the menu, thus remove them also
+  QMap< QAction*, QList<QAction*> >::Iterator formapit;
+  for( formapit = foreign.begin(); formapit != foreign.end(); ++formapit )
+  {
+    QMutableListIterator<QAction*> foralit( formapit.value() );
+    while ( foralit.hasNext() )
+    {
+      a = foralit.next();
+      if ( !mw->actions().contains( a ) )
+	foralit.remove();
+    }
+  }
+  QList<QAction*> alist = mw->actions();
+  foreach( a, alist ) mw->removeAction( a );
 
+  // collect all registered menus by group id
   QMap<int, NodeList> idMap;
   for ( NodeList::iterator it2 = node->children.begin(); it2 != node->children.end(); ++it2 )
   {
@@ -881,6 +907,7 @@ void QtxActionMenuMgr::updateMenu( MenuNode* startNode, const bool rec, const bo
   groups.removeAll( -1 );
   groups.append( -1 );
 
+  // rebuild menu: 1. add all registered actions
   for ( QIntList::const_iterator gIt = groups.begin(); gIt != groups.end(); ++gIt )
   {
     if ( !idMap.contains( *gIt ) )
@@ -890,6 +917,7 @@ void QtxActionMenuMgr::updateMenu( MenuNode* startNode, const bool rec, const bo
     for ( NodeList::const_iterator iter = lst.begin(); iter != lst.end(); ++iter )
     {
       MenuNode* node = *iter;
+      if ( !node ) continue;
 
       if ( rec )
         updateMenu( node, rec, false );
@@ -905,14 +933,24 @@ void QtxActionMenuMgr::updateMenu( MenuNode* startNode, const bool rec, const bo
         isMenu = true;
         a = menuAction( node->id );
       }
+      if ( !a ) continue;
 
-      if ( !isMenu || !a->menu()->isEmpty() )
+      if ( !isMenu || !a->menu()->isEmpty() || node->emptyEnabled > 0 )
         mw->addAction( a );
     }
   }
 
+  // rebuild menu: 2. insert back all foreign actions
+  for( formapit = foreign.begin(); formapit != foreign.end(); ++formapit ) {
+    preva = formapit.key();
+    foreach( a, formapit.value() )
+      mw->insertAction( preva, a );
+  }
+  
+  // remove extra separators
   simplifySeparators( mw );
 
+  // update parent menu if necessary
   if ( updParent && node->parent && filled != checkWidget( mw ) )
     updateMenu( node->parent, false );
 }
@@ -929,6 +967,24 @@ void QtxActionMenuMgr::internalUpdate()
 
   updateMenu();
   myUpdateIds.clear();
+}
+
+/*!
+  \brief Check if action belongs to the menu manager
+  \internal
+  \param a action being checked
+  \param node parent menu node
+  \return \c true if action belongs to the menu \a node
+*/
+bool QtxActionMenuMgr::ownAction( QAction* a, MenuNode* node ) const
+{
+  for ( NodeList::const_iterator iter = node->children.begin(); iter != node->children.end(); ++iter )
+  {
+    QAction* mya = itemAction( (*iter)->id );
+    if ( !mya ) mya = menuAction( (*iter)->id );
+    if ( mya && mya == a ) return true;
+  }
+  return false;
 }
 
 /*!
@@ -1027,9 +1083,9 @@ bool QtxActionMenuMgr::load( const QString& fname, QtxActionMgr::Reader& r )
   \param pid parent menu item ID
   \return \c true if parent menu item contains such child item
 */
-bool QtxActionMenuMgr::containsMenu( const QString& title, const int pid ) const
+bool QtxActionMenuMgr::containsMenu( const QString& title, const int pid, const bool rec ) const
 {
-  return (bool)find( title, pid, false );
+  return (bool)find( title, pid, rec );
 }
 
 /*!
@@ -1038,9 +1094,9 @@ bool QtxActionMenuMgr::containsMenu( const QString& title, const int pid ) const
   \param pid parent menu item ID
   \return \c true if parent menu item contains such child item
 */
-bool QtxActionMenuMgr::containsMenu( const int id, const int pid ) const
+bool QtxActionMenuMgr::containsMenu( const int id, const int pid, const bool rec ) const
 {
-  return (bool)find( id, pid, false );
+  return (bool)find( id, pid, rec );
 }
 
 /*!
@@ -1055,6 +1111,56 @@ QMenu* QtxActionMenuMgr::findMenu( const int id ) const
   if ( a )
     m = a->menu();
   return m;
+}
+
+/*!
+  \brief Get menu by the title.
+  \param title menu text
+  \param pid parent menu item ID (to start search)
+  \param rec if \c true, perform recursive update
+  \return menu pointer or 0 if menu is not found
+*/
+QMenu* QtxActionMenuMgr::findMenu( const QString& title, const int pid, const bool rec ) const
+{
+  QMenu* m = 0;
+  MenuNode* node = find( title, pid, rec );
+  if ( node )
+  {
+    QAction* a = menuAction( node->id );
+    if ( a )
+      m = a->menu();
+  }
+  return m;
+}
+
+/*!
+  \brief Check if empty menu is enabled
+  \param id menu item ID
+  \return \c true if empty menu is enabled
+*/
+bool QtxActionMenuMgr::isEmptyEnabled( const int id ) const
+{
+  MenuNode* node = find( id );
+  if ( node && menuAction( id ) )
+    return node->emptyEnabled > 0;
+  
+  return false;
+}
+
+/*!
+  \brief Enable/disable empty menu
+  \param id menu item ID
+  \param enable if \c true, empty menu will be enabled, otherwise empty menu will be disabled
+*/
+void QtxActionMenuMgr::setEmptyEnabled( const int id, const bool enable )
+{
+  MenuNode* node = find( id );
+  if ( node && menuAction( id ) ) {
+    int old = node->emptyEnabled;
+    node->emptyEnabled += enable ? 1 : -1;
+    if ( old <= 0 && enable || old > 0 && !enable ) // update menu only if enabled state has been changed
+      updateMenu( node, true, true );
+  }
 }
 
 /*!

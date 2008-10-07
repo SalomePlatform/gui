@@ -52,7 +52,7 @@ void qtxSeparatorActionCleanup()
   \internal
 */
 
-class QtxActionMgr::SeparatorAction : public QtxAction
+class QtxActionMgr::SeparatorAction : public QAction
 {
 public:
   SeparatorAction( QObject* = 0 );
@@ -65,7 +65,7 @@ public:
   \param parent parent object
 */
 QtxActionMgr::SeparatorAction::SeparatorAction( QObject* parent )
-: QtxAction( parent )
+: QAction( parent )
 {
   setSeparator( true );
 }

@@ -304,6 +304,33 @@ bool Qtx::isParent( QObject* child, QObject* parent )
 }
 
 /*!
+  \brief Find the parent object of class specified by \a className (in terms of QObject).
+
+  \param obj current object
+  \param className class name of the parent
+  \return parent object or null pointer if the parent not found
+*/
+QObject* Qtx::findParent( QObject* obj, const char* className )
+{
+  if ( !obj )
+    return 0;
+
+  if ( !className || !strlen( className ) )
+    return obj->parent();
+
+  QObject* res = 0;
+  QObject* p = obj->parent();
+  while ( p && !res )
+  {
+    if ( p->inherits( className ) )
+      res = p;
+    p = p->parent();
+  }
+
+  return res;
+}
+
+/*!
   \brief Return directory part of the file path.
 
   If the file path does not include directory part (the file is in the
@@ -1036,9 +1063,9 @@ QString Qtx::gradientToString( const QRadialGradient& gradient )
   data << "radial";
   data << QString::number( gradient.center().x() );
   data << QString::number( gradient.center().y() );
-  data << QString::number( gradient.radius() );
   data << QString::number( gradient.focalPoint().x() );
   data << QString::number( gradient.focalPoint().y() );
+  data << QString::number( gradient.radius() );
   switch( gradient.spread() ) 
   {
   case QGradient::PadSpread:
@@ -1171,9 +1198,9 @@ bool Qtx::stringToRadialGradient( const QString& str, QRadialGradient& gradient 
     bool bOk1, bOk2, bOk3, bOk4, bOk5;
     cx = vals[1].toDouble( &bOk1 );
     cy = vals[2].toDouble( &bOk2 );
-    r  = vals[3].toDouble( &bOk3 );
-    fx = vals[4].toDouble( &bOk4 );
-    fy = vals[5].toDouble( &bOk5 );
+    fx = vals[3].toDouble( &bOk4 );
+    fy = vals[4].toDouble( &bOk5 );
+    r  = vals[5].toDouble( &bOk3 );
     if ( bOk1 && bOk2 && bOk3 && bOk4 && bOk5 )
     {
       gradient = QRadialGradient( cx, cy, r, fx, fy );
@@ -1277,7 +1304,7 @@ bool Qtx::hasAnyPrinters()
   bool aRes = true;
 #if !defined(WIN32) && !defined(QT_NO_CUPS)
 #if QT_VERSION < 0x040303
-  QLibrary aCupsLib( QString( "cups" ) );
+  QLibrary aCupsLib( QString( "cups" ), 2 );
   if ( !aCupsLib.load() )
     aRes = false;
   else {

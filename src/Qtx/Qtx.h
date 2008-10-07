@@ -108,6 +108,7 @@ public:
   static void        simplifySeparators( QWidget*, const bool = true );
 
   static bool        isParent( QObject*, QObject* );
+  static QObject*    findParent( QObject*, const char* );
 
   static QString     dir( const QString&, const bool = true );
   static QString     file( const QString&, const bool = true );

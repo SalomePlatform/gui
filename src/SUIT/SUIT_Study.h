@@ -48,6 +48,7 @@ public:
 
   virtual bool      isSaved()  const;
   virtual bool      isModified() const;
+  virtual void      Modified();
 
   virtual void      closeDocument( bool = true );
   virtual bool      openDocument( const QString& );
@@ -73,7 +74,6 @@ public:
   bool              suspend( SUIT_Operation* );
   bool              resume( SUIT_Operation* );
 
-  virtual int       storeState();
   virtual void      restoreState(int savePoint);
 
 signals:
@@ -85,15 +85,15 @@ protected:
   virtual void      setRoot( SUIT_DataObject* );
   virtual void      setStudyName( const QString& );
 
-	virtual void      operationStarted( SUIT_Operation* );
-	virtual void      operationAborted( SUIT_Operation* );
-	virtual void      operationStopped( SUIT_Operation* );
-	virtual void      operationCommited( SUIT_Operation* );
+  virtual void      operationStarted( SUIT_Operation* );
+  virtual void      operationAborted( SUIT_Operation* );
+  virtual void      operationStopped( SUIT_Operation* );
+  virtual void      operationCommited( SUIT_Operation* );
 
   virtual bool      openTransaction();
   virtual bool      abortTransaction();
   virtual bool      hasTransaction() const;
-  virtual bool      commitTransaction( const QString& = QString::null );
+  virtual bool      commitTransaction( const QString& = QString() );
 
 private:
   typedef QList<SUIT_Operation*> Operations;

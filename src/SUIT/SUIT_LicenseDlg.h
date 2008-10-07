@@ -15,32 +15,37 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
-#ifndef SUIT_RESOURCEMGR_H
-#define SUIT_RESOURCEMGR_H
+
+#ifndef SUIT_LICENSEDLG_H
+#define SUIT_LICENSEDLG_H
 
 #include "SUIT.h"
 
-#include <QtxResourceMgr.h>
+#include <QDialog>
+class QTextEdit;
 
-class SUIT_EXPORT SUIT_ResourceMgr : public QtxResourceMgr
+#ifdef WIN32
+#pragma warning( disable:4251 )
+#endif
+
+class SUIT_EXPORT SUIT_LicenseDlg :public QDialog
 {
+  Q_OBJECT
 public:
-  SUIT_ResourceMgr( const QString&, const QString& = QString() );
-  virtual ~SUIT_ResourceMgr();
+  SUIT_LicenseDlg( bool firstShow = true, QWidget* = 0, const char* = 0, bool = true );
+  virtual ~SUIT_LicenseDlg();
 
-  virtual QString version() const;
-  void            setVersion( const QString& );
-
-  QString         loadDoc( const QString&, const QString& ) const;
-
-protected:
-  virtual QString userFileName( const QString&, const bool = true ) const;
-  virtual QString findAppropriateUserFile( const QString& ) const;
-  virtual int     userFileId( const QString& ) const;
+private slots:
+    void             onAgree();
+    void             onCancel();
+    void             onPrint();
 
 private:
-  QString         myVersion;
+    QTextEdit* myTextEdit; 
 };
+
+#ifdef WIN32
+#pragma warning( default:4251 )
+#endif
 
 #endif

@@ -165,6 +165,12 @@ SUIT_ViewWindow* SUIT_ViewManager::createViewWindow()
   return aView;
 }
 
+/*! Get identifier */
+int SUIT_ViewManager::getId() const
+{
+  return myId;
+}
+
 /*!Create view window.*/
 void SUIT_ViewManager::createView()
 {

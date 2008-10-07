@@ -84,9 +84,6 @@ public:
   //! Opens document <theFileName> into active Study. If Study is empty - creates it.
   virtual bool          useFile( const QString& theFileName);
 
-  //! Loads document <theName> into active Study. If Study is empty - creates it.
-  virtual bool          useStudy( const QString& theName);
-
   //! Creates new empty Study if active Study = 0
   virtual void          createEmptyStudy();
 
@@ -110,6 +107,10 @@ signals:
   void                  applicationClosed( SUIT_Application* );
   void                  activated( SUIT_Application* );
   void                  infoChanged( QString );
+
+public slots:
+  virtual void          updateCommandsStatus();
+  virtual void          onHelpContextModule( const QString&, const QString&, const QString& = QString() );
 
 private slots:
   void                  onInfoClear();
@@ -152,6 +153,10 @@ protected:
   static QAction*       separator();
   QAction*              action( const int ) const;
   int                   actionId( const QAction* ) const;
+
+  QList<QAction*>       actions() const;
+  QList<int>            actionIds() const;
+
   int                   registerAction( const int, QAction* );
   QAction*              createAction( const int, const QString&, const QIcon&, const QString&,
                                       const QString&, const int, QObject* = 0,

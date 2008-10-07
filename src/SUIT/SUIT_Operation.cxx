@@ -154,7 +154,7 @@ bool SUIT_Operation::testFlags( const int f ) const
 */
 QString SUIT_Operation::operationName() const
 {
-  return QString::null;
+  return QString();
 }
 
 /*!

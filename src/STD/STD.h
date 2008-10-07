@@ -19,18 +19,14 @@
 #ifndef STD_H
 #define STD_H
 
-#if defined STD_EXPORTS
 #if defined WIN32
-#define STD_EXPORT		__declspec( dllexport )
+#  if defined STD_EXPORTS
+#    define STD_EXPORT  __declspec( dllexport )
+#  else
+#    define STD_EXPORT  __declspec( dllimport )
+#  endif
 #else
-#define STD_EXPORT
-#endif
-#else
-#if defined WIN32
-#define STD_EXPORT		__declspec( dllimport )
-#else
-#define STD_EXPORT
-#endif
+#  define STD_EXPORT
 #endif
 
 #if defined SOLARIS

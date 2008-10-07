@@ -26,19 +26,33 @@
 #include <QTimer>
 #include <QLabel>
 #include <QStatusBar>
+#include <QApplication>
+#include <QSize>
 
 #include <QtxAction.h>
 #include <QtxActionMenuMgr.h>
 #include <QtxActionToolMgr.h>
 
 /*!
+  \class StatusLabel
+  \brief Status bar customization label. Used to workaroubd desktop resizing bug.
+  \internal
+*/
+class StatusLabel : public QLabel
+{
+public:
+  StatusLabel( QWidget* parent ) : QLabel( parent ) {}
+  QSize minimumSizeHint () const { return QSize( 0, QLabel::minimumSizeHint().height() ); }
+};
+
+/*!
   Default constructor
 */
 SUIT_Application::SUIT_Application()
 : QObject( 0 ),
-myStudy( 0 ),
-myDesktop( 0 ),
-myStatusLabel( 0 )
+  myStudy( 0 ),
+  myDesktop( 0 ),
+  myStatusLabel( 0 )
 {
   if ( SUIT_Session::session() )
     SUIT_Session::session()->insertApplication( this );
@@ -49,8 +63,9 @@ myStatusLabel( 0 )
 */
 SUIT_Application::~SUIT_Application() 
 {
-  delete myStudy;
-  myStudy = 0;
+  SUIT_Study* s = myStudy;
+  setActiveStudy( 0 );
+  delete s;
 
   setDesktop( 0 );
 }
@@ -67,7 +82,7 @@ SUIT_Desktop* SUIT_Application::desktop()
    \return FALSE if application can not be closed (because of non saved data for example). 
    This method called by SUIT_Session whin closing of application was requested.
 */
-bool SUIT_Application::isPossibleToClose( bool& closePermanently )
+bool SUIT_Application::isPossibleToClose( bool& )
 {
   return true;
 }
@@ -94,7 +109,7 @@ SUIT_Study* SUIT_Application::activeStudy() const
 */
 QString SUIT_Application::applicationVersion() const
 {
-  return QString::null;
+  return QString();
 }
 
 /*!
@@ -124,15 +139,6 @@ bool SUIT_Application::useFile( const QString& theFileName )
   }
 
   return status;
-}
-
-/*!
-  Opens other study into active Study. If Study is empty - creates it.
-  \param theName - name of study
-*/
-bool SUIT_Application::useStudy( const QString& /*theName*/ )
-{
-  return false;
 }
 
 /*!
@@ -178,7 +184,7 @@ void SUIT_Application::putInfo( const QString& msg, const int msec )
 
   if ( !myStatusLabel )
   {
-    myStatusLabel = new QLabel( desktop()->statusBar() );
+    myStatusLabel = new StatusLabel( desktop()->statusBar() );
     desktop()->statusBar()->addWidget( myStatusLabel, 1 );
     myStatusLabel->show();
   }
@@ -204,7 +210,14 @@ void SUIT_Application::onInfoClear()
   bool changed = !myStatusLabel->text().isEmpty();
   myStatusLabel->clear();
   if ( changed )
-    emit infoChanged( QString::null );
+    emit infoChanged( QString() );
+}
+
+/*!
+  Update status of the registerd actions
+*/
+void SUIT_Application::updateCommandsStatus()
+{
 }
 
 /*!
@@ -243,8 +256,11 @@ void SUIT_Application::setDesktop( SUIT_Desktop* desk )
 
   delete myDesktop;
   myDesktop = desk;
-  if ( myDesktop )
+  if ( myDesktop ) {
     connect( myDesktop, SIGNAL( activated() ), this, SLOT( onDesktopActivated() ) );
+    // Force desktop activation (NPAL16628)
+    QApplication::postEvent(myDesktop, new QEvent(QEvent::WindowActivate));
+  }
 }
 
 /*!
@@ -266,6 +282,13 @@ void SUIT_Application::setActiveStudy( SUIT_Study* study )
   if ( myStudy == study )
     return;
 
+  if ( myStudy )
+    disconnect( myStudy, SIGNAL( studyModified( SUIT_Study* ) ), 
+		this, SLOT( updateCommandsStatus() ) );
+  if ( study )
+    connect( study, SIGNAL( studyModified( SUIT_Study* ) ), 
+	     this, SLOT( updateCommandsStatus() ) );
+	    
   myStudy = study;
 }
 
@@ -557,6 +580,16 @@ int SUIT_Application::actionId( const QAction* a ) const
   return id;
 }
 
+QList<QAction*> SUIT_Application::actions() const
+{
+  return myActionMap.values();
+}
+
+QList<int> SUIT_Application::actionIds() const
+{
+  return myActionMap.keys();
+}
+
 /*!
   Creates action and registers it both in menu manager and tool manager
   \return new instance of action
@@ -629,4 +662,13 @@ QAction* SUIT_Application::separator()
 void SUIT_Application::onDesktopActivated()
 {
   emit activated( this );
+}
+
+/*!
+  SLOT: is used for Help browsing
+*/
+void SUIT_Application::onHelpContextModule( const QString& /*theComponentName*/,
+                                            const QString& /*theFileName*/,
+					    const QString& /*theContext*/ )
+{
 }

@@ -199,6 +199,15 @@ void SUIT_Study::setIsModified( const bool on )
 }
 
 /*!
+  Set study modified to \a on.
+ */
+void SUIT_Study::Modified()
+{
+  setIsModified( true );
+  sendChangesNotification();
+}
+
+/*!
   Set root object.
  */
 void SUIT_Study::setRoot( SUIT_DataObject* obj )
@@ -237,8 +246,9 @@ SUIT_Operation* SUIT_Study::blockingOperation( SUIT_Operation* theOp ) const
     return 0;
 
   Operations tmpOps( myOperations );
-  for ( Operations::const_iterator it = tmpOps.end(); it != tmpOps.begin(); --it )
+  for ( Operations::const_iterator it = tmpOps.end(); it != tmpOps.begin(); )
   {
+    it--;
     SUIT_Operation* anOp = *it;
     if ( anOp != 0 && anOp!= theOp && !anOp->isValid( theOp ) )
       return anOp;
@@ -512,16 +522,8 @@ bool SUIT_Study::hasTransaction() const
 }
 
 /*!
- * \brief Stores the study state
-*/
-int SUIT_Study::storeState()
-{
-  return -1;
-}
- 
-/*!
- * \brief Restores the study state
-*/
+ * \brief Restores the study state.
+ */
 void SUIT_Study::restoreState(int /*savePoint*/)
 {
 }

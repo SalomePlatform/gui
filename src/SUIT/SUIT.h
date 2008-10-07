@@ -16,21 +16,21 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+// File   : SUIT.h
+// Author : 
+// 
+
 #ifndef SUIT_H
 #define SUIT_H
 
-#if defined SUIT_EXPORTS
 #if defined WIN32
-#define SUIT_EXPORT __declspec( dllexport )
+#  if defined SUIT_EXPORTS
+#    define SUIT_EXPORT __declspec( dllexport )
+#  else
+#    define SUIT_EXPORT __declspec( dllimport )
+#  endif
 #else
-#define SUIT_EXPORT
-#endif
-#else
-#if defined WIN32
-#define SUIT_EXPORT __declspec( dllimport )
-#else
-#define SUIT_EXPORT
-#endif
+#  define SUIT_EXPORT
 #endif
 
 #if defined SOLARIS
@@ -52,4 +52,4 @@
 #define SUIT_ASSERT(x)
 #endif
 
-#endif
+#endif  // SUIT_H

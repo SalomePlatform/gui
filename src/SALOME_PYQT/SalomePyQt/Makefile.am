@@ -59,7 +59,7 @@ MOC_H     = sipSalomePyQtProxySalomePyQt.h
 endif
 endif
 
-EXTRA_DIST+= SalomePyQt.sip SalomePyQt_v4.sip
+EXTRA_DIST+= SalomePyQt.sip SalomePyQt_v4.sip SalomePyQt_v4_win32.sip
 
 # Libraries targets
 MOC_FILES= SalomePyQt_moc.cxx

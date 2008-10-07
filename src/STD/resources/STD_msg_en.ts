@@ -63,7 +63,7 @@
     </message>
     <message>
         <source>QUE_DESK_EXIT</source>
-        <translation>Do you really want to quit ?</translation>
+        <translation>Are you sure you want to quit?</translation>
     </message>
     <message>
         <source>INF_INFO</source>
@@ -161,7 +161,7 @@ Directory with this name exist on disc. Try to use another name</translation>
         <translation>Paste</translation>
     </message>
     <message>
-        <source>MEN_DOCKWINDOWS</source>
+        <source>MEN_DESK_VIEW_DOCKWINDOWS</source>
         <translation>W&amp;indows</translation>
     </message>
     <message>
@@ -242,7 +242,7 @@ Do you want to reload it ?</translation>
         <translation>About...</translation>
     </message>
     <message>
-        <source>MEN_TOOLBARS</source>
+        <source>MEN_DESK_VIEW_TOOLBARS</source>
         <translation>T&amp;oolbars</translation>
     </message>
     <message>
@@ -260,10 +260,6 @@ Do you want to reload it ?</translation>
     <message>
         <source>DLG_LOAD_STUDY_CAPTION</source>
         <translation>Load Study</translation>
-    </message>
-    <message>
-        <source>CLOSE_STUDY</source>
-        <translation>Close study</translation>
     </message>
     <message>
         <source>PRP_DESK_HELP_SEARCH</source>
@@ -353,11 +349,6 @@ Do you want to overwrite it?</translation>
         <translation>Toggles standard toolbar on/off</translation>
     </message>
     <message>
-        <source>QUE_DOC_FILEEXISTS</source>
-        <translation>The file %1 already exists.
-Do you want to overwrite it ?</translation>
-    </message>
-    <message>
         <source>TOT_DESK_FILE_SAVE</source>
         <translation>Save document</translation>
     </message>
@@ -372,10 +363,6 @@ Do you want to overwrite it ?</translation>
     <message>
         <source>TOT_DESK_FILE_OPEN</source>
         <translation>Open document</translation>
-    </message>
-    <message>
-        <source>CLOSE_QUESTION</source>
-        <translation>Document %1 modified. Do you want to save or discard the modification and close the document?</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_EXIT</source>
@@ -467,6 +454,14 @@ Try to use another file name.</translation>
         <source>INF_DOCUMENT_MODIFIED</source>
         <translation>Document &quot;%1&quot; has been modified.
 Do you want to save changes?</translation>
+    </message>
+    <message>
+        <source>CLOSE_STUDY</source>
+        <translation>Close active study</translation>
+    </message>
+    <message>
+        <source>CLOSE_QUESTION</source>
+        <translation>Do you want to save study before closing?</translation>
     </message>
 </context>
 </TS>

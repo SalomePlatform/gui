@@ -138,7 +138,7 @@ public:
 	       PyConsole_Editor*       theListener, 
 	       bool                    sync = false )
     : PyInterp_LockRequest( theInterp, theListener, sync ),
-      myCommand( theCommand ), myState( PyInterp_Event::OK )
+      myCommand( theCommand ), myState( PyInterp_Event::ES_OK )
   {}
 
 protected:
@@ -152,9 +152,9 @@ protected:
     {
       int ret = getInterp()->run( myCommand.toLatin1() );
       if ( ret < 0 )
-	myState = PyInterp_Event::ERROR;
+	myState = PyInterp_Event::ES_ERROR;
       else if ( ret > 0 )
-	myState = PyInterp_Event::INCOMPLETE;
+	myState = PyInterp_Event::ES_INCOMPLETE;
     } 
   }
 
@@ -906,8 +906,8 @@ void PyConsole_Editor::customEvent( QEvent* event )
       addText( pe->text() );
       return;
     }
-  case PyInterp_Event::OK:
-  case PyInterp_Event::ERROR:
+  case PyInterp_Event::ES_OK:
+  case PyInterp_Event::ES_ERROR:
   {
     // clear command buffer
     myCommandBuffer.truncate( 0 );
@@ -928,7 +928,7 @@ void PyConsole_Editor::customEvent( QEvent* event )
       myEventLoop->exit();
     break;
   }
-  case PyInterp_Event::INCOMPLETE:
+  case PyInterp_Event::ES_INCOMPLETE:
   {
     // extend command buffer (multi-line command)
     myCommandBuffer.append( "\n" );
@@ -958,7 +958,7 @@ void PyConsole_Editor::customEvent( QEvent* event )
   // unset history browsing mode
   myCmdInHistory = -1;
 
-  if ( (int)event->type() == (int)PyInterp_Event::OK && myQueue.count() > 0 )
+  if ( (int)event->type() == (int)PyInterp_Event::ES_OK && myQueue.count() > 0 )
   {
     // process the next sheduled command from the queue (if there is any)
     QString nextcmd = myQueue[0];

@@ -19,9 +19,9 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  File   : LogWindow.cxx
-//  Author : Vadim SANDLER, Open CASCADE S.A. (vadim.sandler@opencascade.com)
-//  Module : SALOME
+// File   : LogWindow.cxx
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #include "LogWindow.h"
 
@@ -87,12 +87,12 @@ static QString plainText( const QString& richText )
   \param parent parent widget
 */
 LogWindow::LogWindow( QWidget* parent )
-: QFrame( parent ),
+: QWidget( parent ),
   SUIT_PopupClient()
 {
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
 
-  QString fntSet = resMgr ? resMgr->stringValue( "Log Window", "font", QString::null ) : QString::null;
+  QString fntSet = resMgr ? resMgr->stringValue( "Log Window", "font", QString() ) : QString();
 
   setFont( SUIT_Tools::stringToFont( fntSet ) );
 
@@ -101,7 +101,7 @@ LogWindow::LogWindow( QWidget* parent )
   myView->viewport()->installEventFilter( this );
 
   QVBoxLayout* main = new QVBoxLayout( this );
-  main->setMargin( 5 );
+  main->setMargin( 0 );
   main->addWidget( myView );
 
   myBannerSize = 0;
@@ -178,7 +178,7 @@ bool LogWindow::eventFilter( QObject* o, QEvent* e )
     contextMenuRequest( (QContextMenuEvent*)e );
     return true;
   }
-  return QFrame::eventFilter( o, e );
+  return QWidget::eventFilter( o, e );
 }
 
 /*!
@@ -354,7 +354,7 @@ void LogWindow::onSaveToFile()
     return;
 
   // call application-specific "Save file" dialog box
-  QString aName = app->getFileName( false, QString::null, QString( "*.log" ), QString::null, 0 );
+  QString aName = app->getFileName( false, QString(), QString( "*.log" ), QString(), 0 );
   if ( aName.isNull() )
     return;
 

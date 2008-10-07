@@ -45,6 +45,17 @@ class PLOT2D_EXPORT Plot2d_ViewWindow : public SUIT_ViewWindow
   Q_OBJECT
 
 public:
+  enum { DumpId, 
+	 ScaleOpId, FitAllId, FitRectId, ZoomId,
+	 MoveOpId, PanId, GlobalPanId,
+	 PModeXLinearId, PModeXLogarithmicId, 
+         PModeYLinearId, PModeYLogarithmicId,
+	 CurvPointsId, CurvLinesId, CurvSplinesId, 
+	 LegendId,
+	 CurvSettingsId,
+	 CloneId, PrintId };
+
+public:
   Plot2d_ViewWindow( SUIT_Desktop*, Plot2d_Viewer* );
   virtual ~Plot2d_ViewWindow();
 
@@ -78,24 +89,9 @@ public slots:
   void              onViewVerMode();
   void              onLegend();
   void              onCurves();
-  
+
   void              onDumpView();
   void              onPrintView();
-
-protected:
-  enum { DumpId, 
-	 ScaleOpId, FitAllId, FitRectId, ZoomId,
-	 MoveOpId, PanId, GlobalPanId,
-	 PModeXLinearId, PModeXLogarithmicId, 
-         PModeYLinearId, PModeYLogarithmicId,
-	 CurvPointsId, CurvLinesId, CurvSplinesId, 
-	 LegendId,
-	 CurvSettingsId,
-	 CloneId,
-         PrintId };
-
-  typedef QMap<int, QtxAction*> ActionsMap;
-  ActionsMap        myActionsMap;
 
 protected:
   virtual QImage    dumpView();
@@ -110,8 +106,7 @@ signals:
 protected:
   Plot2d_Viewer*    myModel;
   Plot2d_ViewFrame* myViewFrame;
-  QToolBar*         myToolBar;
-  QImage            myDumpImage;
+  int               myToolBar;
 };
 
 #ifdef WIN32

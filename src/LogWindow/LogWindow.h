@@ -19,9 +19,9 @@
 // 
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  File   : LogWindow.h
-//  Author : Vadim SANDLER, Open CASCADE S.A. (vadim.sandler@opencascade.com)
-//  Module : SALOME
+// File   : LogWindow.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
 #ifndef LOGWINDOW_H
 #define LOGWINDOW_H
@@ -38,7 +38,7 @@
 
 #include <SUIT_PopupClient.h>
 
-#include <QFrame>
+#include <QWidget>
 #include <QMap>
 #include <QStringList>
 
@@ -49,7 +49,7 @@
 class QAction;
 class QTextEdit;
 
-class LOGWINDOW_EXPORT LogWindow : public QFrame, public SUIT_PopupClient
+class LOGWINDOW_EXPORT LogWindow : public QWidget, public SUIT_PopupClient
 {
   Q_OBJECT
 

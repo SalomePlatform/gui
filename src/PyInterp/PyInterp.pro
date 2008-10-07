@@ -8,8 +8,8 @@ MOC_DIR = ../../moc
 OBJECTS_DIR = ../../$(CONFIG_ID)/obj/$$TARGET
 
 INCLUDEPATH += ../../include $$(PYTHONINC)
-unix:LIBS  += -L$$(PYTHONLIB) -lpython2.5
-win32:LIBS  += -L$$(PYTHONLIB) -lpython25_d
+unix:LIBS  += -L$$(PYTHONLIB) -lpython2.5 -L../../$(CONFIG_ID)/lib -lEvent
+win32:LIBS += -L$$(PYTHONLIB) -lpython25_d
 win32:LIBS *= -L$(QTLIB)
 win32:INCLUDEPATH *= $(QTINC) $(QTINC)\QtCore $(QTINC)\QtGui $(QTINC)\QtXml
 

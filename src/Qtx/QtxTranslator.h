@@ -16,42 +16,20 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifndef PLOT2D_VIEWMANAGER_H
-#define PLOT2D_VIEWMANAGER_H
+// File:      QtxTranslator.h
+// Author:    Alexander SOLOVYOV
 
-#include "Plot2d.h"
-#include "SUIT_ViewManager.h"
+#ifndef QTXTRANSLATOR_H
+#define QTXTRANSLATOR_H
 
-class SUIT_Desktop;
-class SUIT_PreferenceMgr;
-class Plot2d_ViewWindow;
-class Plot2d_Viewer;
-class Plot2d_ViewFrame;
+#include <QTranslator>
 
-class PLOT2D_EXPORT Plot2d_ViewManager : public SUIT_ViewManager
+class QtxTranslator : public QTranslator
 {
-  Q_OBJECT
-
 public:
-  Plot2d_ViewManager( SUIT_Study*, SUIT_Desktop* );
-  ~Plot2d_ViewManager();
-
-  Plot2d_Viewer*     getPlot2dModel() const;
-  Plot2d_ViewWindow* cloneView( Plot2d_ViewWindow* srcWnd );
-
-  static int         fillPreferences( SUIT_PreferenceMgr*, const int );
-
-protected:
-  bool         insertView(SUIT_ViewWindow* theView);
-
-public slots:
-  void         createView();
-
-protected slots:
-  void         onCloneView();
-
-signals:
-  void cloneView( Plot2d_ViewFrame*, Plot2d_ViewFrame* );
+  QtxTranslator( QObject* parent = 0 );
+  ~QtxTranslator();
+  virtual QString translate( const char*, const char*, const char* = 0 ) const;
 };
 
 #endif

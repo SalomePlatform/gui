@@ -32,6 +32,7 @@
 #include <Qtx.h>
 #include <QtxAction.h>
 #include <QtxMultiAction.h>
+#include <QtxActionToolMgr.h>
 
 #include <QStatusBar>
 #include <QLayout>
@@ -77,8 +78,6 @@ void Plot2d_ViewWindow::initLayout()
 {
   myViewFrame = new Plot2d_ViewFrame( this, "plotView" );
   setCentralWidget( myViewFrame );
-
-  myToolBar = addToolBar( tr("LBL_TOOLBAR_LABEL") );
 
   createActions();
   createToolBar();
@@ -126,7 +125,7 @@ Plot2d_ViewFrame* Plot2d_ViewWindow::getViewFrame()
 */
 QToolBar* Plot2d_ViewWindow::getToolBar()
 {
-  return myToolBar;
+  return toolMgr()->toolBar( myToolBar );
 }
 
 /*!
@@ -135,28 +134,29 @@ QToolBar* Plot2d_ViewWindow::getToolBar()
 */
 void Plot2d_ViewWindow::contextMenuPopup( QMenu* thePopup )
 {
+  QtxActionToolMgr* mgr = toolMgr();
   // scaling
   QMenu* scalingPopup = thePopup->addMenu( tr( "SCALING_POPUP" ) );
-  scalingPopup->addAction( myActionsMap[ PModeXLinearId ] );
-  scalingPopup->addAction( myActionsMap[ PModeXLogarithmicId ] );
+  scalingPopup->addAction( mgr->action( PModeXLinearId ) );
+  scalingPopup->addAction( mgr->action( PModeXLogarithmicId ) );
   scalingPopup->addSeparator();
-  scalingPopup->addAction( myActionsMap[ PModeYLinearId ] );
-  scalingPopup->addAction( myActionsMap[ PModeYLogarithmicId ] );
+  scalingPopup->addAction( mgr->action( PModeYLinearId ) );
+  scalingPopup->addAction( mgr->action( PModeYLogarithmicId ) );
 
   // fit data
   thePopup->addAction( tr( "TOT_PLOT2D_FITDATA" ), myViewFrame, SLOT( onFitData() ) );
 
   // curve type
   QMenu* curTypePopup = thePopup->addMenu( tr( "CURVE_TYPE_POPUP" ) );
-  curTypePopup->addAction( myActionsMap[ CurvPointsId ] );
-  curTypePopup->addAction( myActionsMap[ CurvLinesId ] );
-  curTypePopup->addAction( myActionsMap[ CurvSplinesId ] );
+  curTypePopup->addAction( mgr->action( CurvPointsId ) );
+  curTypePopup->addAction( mgr->action( CurvLinesId ) );
+  curTypePopup->addAction( mgr->action( CurvSplinesId ) );
 
   // legend
-  thePopup->addAction( myActionsMap[ LegendId ] );
+  thePopup->addAction( mgr->action( LegendId ) );
 
   // settings
-  thePopup->addAction( myActionsMap[ CurvSettingsId ] );
+  thePopup->addAction( mgr->action( CurvSettingsId ) );
 }
 
 /*!
@@ -190,9 +190,7 @@ bool Plot2d_ViewWindow::eventFilter( QObject* watched, QEvent* e )
 */
 void Plot2d_ViewWindow::createActions()
 {
-  if ( !myActionsMap.isEmpty() )
-    return;
-
+  QtxActionToolMgr* mgr = toolMgr();
   QtxAction* aAction;
   SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
 
@@ -203,7 +201,7 @@ void Plot2d_ViewWindow::createActions()
 			   0, this);
   aAction->setStatusTip( tr( "DSC_DUMP_VIEW" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onDumpView() ) );
-  myActionsMap[ DumpId ] = aAction;
+  mgr->registerAction( aAction, DumpId );
 
   // 2. Scaling operations
 
@@ -214,7 +212,7 @@ void Plot2d_ViewWindow::createActions()
 			   0, this);
   aAction->setStatusTip( tr( "DSC_FITALL" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onFitAll() ) );
-  myActionsMap[ FitAllId ] = aAction;
+  mgr->registerAction( aAction, FitAllId );
 
   // 2.2. Fit Rect
   aAction = new QtxAction( tr( "MNU_FITRECT" ),
@@ -223,7 +221,7 @@ void Plot2d_ViewWindow::createActions()
 			   0, this);
   aAction->setStatusTip( tr( "DSC_FITRECT" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onFitRect() ) );
-  myActionsMap[ FitRectId ] = aAction;
+  mgr->registerAction( aAction, FitRectId );
 
   // 2.3. Zoom
   aAction = new QtxAction( tr( "MNU_ZOOM_VIEW" ),
@@ -232,14 +230,14 @@ void Plot2d_ViewWindow::createActions()
 			   0, this);
   aAction->setStatusTip( tr( "DSC_ZOOM_VIEW" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onZoom() ) );
-  myActionsMap[ ZoomId ] = aAction;
+  mgr->registerAction( aAction, ZoomId );
 
   // 2.4. Create multi-action for scaling operations
   QtxMultiAction* aScaleAction = new QtxMultiAction( this );
-  aScaleAction->insertAction( myActionsMap[ FitAllId  ] );
-  aScaleAction->insertAction( myActionsMap[ FitRectId ] );
-  aScaleAction->insertAction( myActionsMap[ ZoomId    ] );
-  myActionsMap[ ScaleOpId ] = aScaleAction;
+  aScaleAction->insertAction( mgr->action( FitAllId  ) );
+  aScaleAction->insertAction( mgr->action( FitRectId ) );
+  aScaleAction->insertAction( mgr->action( ZoomId    ) );
+  mgr->registerAction( aScaleAction, ScaleOpId );
 
   // 3. Moving operations
 
@@ -250,7 +248,7 @@ void Plot2d_ViewWindow::createActions()
 			   0, this);
   aAction->setStatusTip( tr( "DSC_PAN_VIEW" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onPanning() ) );
-  myActionsMap[ PanId ] = aAction;
+  mgr->registerAction( aAction, PanId );
 
   // 3.2. Global Panning
   aAction = new QtxAction( tr( "MNU_GLOBALPAN_VIEW" ),
@@ -259,13 +257,13 @@ void Plot2d_ViewWindow::createActions()
 			   0, this);
   aAction->setStatusTip( tr( "DSC_GLOBALPAN_VIEW" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onGlobalPanning() ) );
-  myActionsMap[ GlobalPanId ] = aAction;
+  mgr->registerAction( aAction, GlobalPanId );
 
   // 3.3. Create multi-action for moving operations
   QtxMultiAction* aPanAction = new QtxMultiAction( this );
-  aPanAction->insertAction( myActionsMap[ PanId ] );
-  aPanAction->insertAction( myActionsMap[ GlobalPanId ] );
-  myActionsMap[ MoveOpId ] = aPanAction;
+  aPanAction->insertAction( mgr->action( PanId ) );
+  aPanAction->insertAction( mgr->action( GlobalPanId ) );
+  mgr->registerAction( aPanAction, MoveOpId );
 
   // 4. Curve type operations
   
@@ -276,7 +274,7 @@ void Plot2d_ViewWindow::createActions()
 			   0, this );
   aAction->setStatusTip( tr( "PRP_PLOT2D_CURVES_POINTS" ) );
   aAction->setCheckable( true );
-  myActionsMap[ CurvPointsId ] = aAction;
+  mgr->registerAction( aAction, CurvPointsId );
 
   // 4.2. Lines
   aAction = new QtxAction( tr( "TOT_PLOT2D_CURVES_LINES" ),
@@ -285,7 +283,7 @@ void Plot2d_ViewWindow::createActions()
 			   0, this );
   aAction->setStatusTip( tr( "PRP_PLOT2D_CURVES_LINES" ) );
   aAction->setCheckable( true );
-  myActionsMap[ CurvLinesId ] = aAction;
+  mgr->registerAction( aAction, CurvLinesId );
 
   // 4.3. Splines
   aAction = new QtxAction( tr( "TOT_PLOT2D_CURVES_SPLINES" ),
@@ -294,13 +292,13 @@ void Plot2d_ViewWindow::createActions()
 			   0, this );
   aAction->setStatusTip( tr( "PRP_PLOT2D_CURVES_SPLINES" ) );
   aAction->setCheckable( true );
-  myActionsMap[ CurvSplinesId ] = aAction;
+  mgr->registerAction( aAction, CurvSplinesId );
 
   // 4.4. Create action group for curve type operations
   QActionGroup* aCurveGroup = new QActionGroup( this );
-  aCurveGroup->addAction( myActionsMap[ CurvPointsId ] );
-  aCurveGroup->addAction( myActionsMap[ CurvLinesId ] );
-  aCurveGroup->addAction( myActionsMap[ CurvSplinesId ] );
+  aCurveGroup->addAction( mgr->action( CurvPointsId ) );
+  aCurveGroup->addAction( mgr->action( CurvLinesId ) );
+  aCurveGroup->addAction( mgr->action( CurvSplinesId ) );
   connect( aCurveGroup, SIGNAL( triggered( QAction* ) ), this, SLOT( onCurves() ) );
 
   // 5. Horizontal scaling mode operations
@@ -313,7 +311,7 @@ void Plot2d_ViewWindow::createActions()
   aAction->setStatusTip( tr( "PRP_PLOT2D_MODE_LINEAR_HOR" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewHorMode() ) );
   aAction->setCheckable( true );
-  myActionsMap[ PModeXLinearId ] = aAction;
+  mgr->registerAction( aAction, PModeXLinearId );
   
   // 5.2. Logarithmic
   aAction = new QtxAction( tr( "TOT_PLOT2D_MODE_LOGARITHMIC_HOR" ),
@@ -323,12 +321,12 @@ void Plot2d_ViewWindow::createActions()
   aAction->setStatusTip( tr( "PRP_PLOT2D_MODE_LOGARITHMIC_HOR" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewHorMode() ) );
   aAction->setCheckable( true );
-  myActionsMap[ PModeXLogarithmicId ] = aAction;
+  mgr->registerAction( aAction, PModeXLogarithmicId );
 
   // 5.3. Create action group for horizontal scaling mode operations
   QActionGroup* aHorGroup = new QActionGroup( this );
-  aHorGroup->addAction( myActionsMap[ PModeXLinearId ] );
-  aHorGroup->addAction( myActionsMap[ PModeXLogarithmicId ] );
+  aHorGroup->addAction( mgr->action( PModeXLinearId ) );
+  aHorGroup->addAction( mgr->action( PModeXLogarithmicId ) );
 
   // 6. Vertical scaling mode operations
 
@@ -340,7 +338,7 @@ void Plot2d_ViewWindow::createActions()
   aAction->setStatusTip( tr( "PRP_PLOT2D_MODE_LINEAR_VER" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewVerMode() ) );
   aAction->setCheckable( true );
-  myActionsMap[ PModeYLinearId ] = aAction;
+  mgr->registerAction( aAction, PModeYLinearId );
 
   // 6.2. Logarithmic
   aAction = new QtxAction( tr( "TOT_PLOT2D_MODE_LOGARITHMIC_VER" ),
@@ -350,12 +348,12 @@ void Plot2d_ViewWindow::createActions()
   aAction->setStatusTip( tr( "PRP_PLOT2D_MODE_LOGARITHMIC_VER" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewVerMode() ) );
   aAction->setCheckable( true );
-  myActionsMap[ PModeYLogarithmicId ] = aAction;
+  mgr->registerAction( aAction, PModeYLogarithmicId );
 
   // 6.3. Create action group for vertical scaling mode operations
   QActionGroup* aVerGroup = new QActionGroup( this );
-  aVerGroup->addAction( myActionsMap[ PModeYLinearId ] );
-  aVerGroup->addAction( myActionsMap[ PModeYLogarithmicId ] );
+  aVerGroup->addAction( mgr->action( PModeYLinearId ) );
+  aVerGroup->addAction( mgr->action( PModeYLogarithmicId ) );
 
   // 7. Legend
   aAction = new QtxAction( tr( "TOT_PLOT2D_SHOW_LEGEND" ),
@@ -365,7 +363,7 @@ void Plot2d_ViewWindow::createActions()
   aAction->setStatusTip( tr( "PRP_PLOT2D_SHOW_LEGEND" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onLegend() ) );
   aAction->setCheckable( true );
-  myActionsMap[ LegendId ] = aAction;
+  mgr->registerAction( aAction, LegendId );
 
   // 8. Settings
   aAction = new QtxAction( tr( "TOT_PLOT2D_SETTINGS" ),
@@ -374,7 +372,7 @@ void Plot2d_ViewWindow::createActions()
 			   0, this );
   aAction->setStatusTip( tr( "PRP_PLOT2D_SETTINGS" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), myViewFrame, SLOT( onSettings() ) );
-  myActionsMap[ CurvSettingsId ] = aAction;
+  mgr->registerAction( aAction, CurvSettingsId );
 
   // 9. Clone
   aAction = new QtxAction( tr( "MNU_CLONE_VIEW" ),
@@ -383,7 +381,7 @@ void Plot2d_ViewWindow::createActions()
 			   0, this);
   aAction->setStatusTip( tr( "DSC_CLONE_VIEW" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SIGNAL( cloneView() ) );
-  myActionsMap[ CloneId ] = aAction;
+  mgr->registerAction( aAction, CloneId );
 
   // 10. Print 
   aAction = new QtxAction( tr( "MNU_PRINT_VIEW" ),
@@ -392,7 +390,7 @@ void Plot2d_ViewWindow::createActions()
 			   0, this);
   aAction->setStatusTip( tr( "DSC_PRINT_VIEW" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onPrintView() ) );
-  myActionsMap[ PrintId ] = aAction;
+  mgr->registerAction( aAction, PrintId );
 
   // Set initial values
   onChangeCurveMode();
@@ -406,24 +404,26 @@ void Plot2d_ViewWindow::createActions()
 */
 void Plot2d_ViewWindow::createToolBar()
 {
-  myToolBar->addAction( myActionsMap[ DumpId ] );
-  myToolBar->addAction( myActionsMap[ ScaleOpId ] );
-  myToolBar->addAction( myActionsMap[ MoveOpId ] );
-  myToolBar->addSeparator();
-  myToolBar->addAction( myActionsMap[ CurvPointsId ] );
-  myToolBar->addAction( myActionsMap[ CurvLinesId ] );
-  myToolBar->addAction( myActionsMap[ CurvSplinesId ] );
-  myToolBar->addSeparator();
-  myToolBar->addAction( myActionsMap[ PModeXLinearId ] );
-  myToolBar->addAction( myActionsMap[ PModeXLogarithmicId ] );
-  myToolBar->addSeparator();
-  myToolBar->addAction( myActionsMap[ PModeYLinearId ] );
-  myToolBar->addAction( myActionsMap[ PModeYLogarithmicId ] );
-  myToolBar->addSeparator();
-  myToolBar->addAction( myActionsMap[ LegendId ] );
-  myToolBar->addAction( myActionsMap[ CurvSettingsId ] );
-  myToolBar->addAction( myActionsMap[ CloneId ] );
-  myToolBar->addAction( myActionsMap[ PrintId ] );
+  QtxActionToolMgr* mgr = toolMgr();
+  myToolBar = mgr->createToolBar( tr( "LBL_TOOLBAR_LABEL" ) );
+  mgr->append( DumpId, myToolBar );
+  mgr->append( ScaleOpId, myToolBar );
+  mgr->append( MoveOpId, myToolBar );
+  mgr->append( toolMgr()->separator(), myToolBar );
+  mgr->append( CurvPointsId, myToolBar );
+  mgr->append( CurvLinesId, myToolBar );
+  mgr->append( CurvSplinesId, myToolBar );
+  mgr->append( toolMgr()->separator(), myToolBar );
+  mgr->append( PModeXLinearId, myToolBar );
+  mgr->append( PModeXLogarithmicId, myToolBar );
+  mgr->append( toolMgr()->separator(), myToolBar );
+  mgr->append( PModeYLinearId, myToolBar );
+  mgr->append( PModeYLogarithmicId, myToolBar );
+  mgr->append( toolMgr()->separator(), myToolBar );
+  mgr->append( LegendId, myToolBar );
+  mgr->append( CurvSettingsId, myToolBar );
+  mgr->append( CloneId, myToolBar );
+  mgr->append( PrintId, myToolBar );
 }
 
 /*!
@@ -453,11 +453,11 @@ void Plot2d_ViewWindow::onChangeHorMode()
   bool aVerLinear = myViewFrame->isModeVerLinear();
 
   if ( aHorLinear )
-    myActionsMap[ PModeXLinearId ]->setChecked( true );
+    toolMgr()->action( PModeXLinearId )->setChecked( true );
   else
-    myActionsMap[ PModeXLogarithmicId ]->setChecked( true );
+    toolMgr()->action( PModeXLogarithmicId )->setChecked( true );
 
-  myActionsMap[ GlobalPanId ]->setEnabled( aHorLinear && aVerLinear );
+  toolMgr()->action( GlobalPanId )->setEnabled( aHorLinear && aVerLinear );
 }
 
 /*!
@@ -469,11 +469,11 @@ void Plot2d_ViewWindow::onChangeVerMode()
   bool aVerLinear = myViewFrame->isModeVerLinear();
 
   if ( aVerLinear )
-    myActionsMap[ PModeYLinearId ]->setChecked( true );
+    toolMgr()->action( PModeYLinearId )->setChecked( true );
   else
-    myActionsMap[ PModeYLogarithmicId ]->setChecked( true );
+    toolMgr()->action( PModeYLogarithmicId )->setChecked( true );
 
-  myActionsMap[ GlobalPanId ]->setEnabled( aHorLinear && aVerLinear );
+  toolMgr()->action( GlobalPanId )->setEnabled( aHorLinear && aVerLinear );
 }
 
 /*!
@@ -483,13 +483,13 @@ void Plot2d_ViewWindow::onChangeCurveMode()
 {
   switch ( myViewFrame->getCurveType() ) {
   case 0:
-    myActionsMap[ CurvPointsId ]->setChecked( true );
+    toolMgr()->action( CurvPointsId )->setChecked( true );
     break;
   case 1:
-    myActionsMap[ CurvLinesId ]->setChecked( true );
+    toolMgr()->action( CurvLinesId )->setChecked( true );
     break;
   case 2:
-    myActionsMap[ CurvSplinesId ]->setChecked( true );
+    toolMgr()->action( CurvSplinesId )->setChecked( true );
     break;
   default:
     break;
@@ -501,7 +501,7 @@ void Plot2d_ViewWindow::onChangeCurveMode()
 */
 void Plot2d_ViewWindow::onChangeLegendMode()
 {
-  myActionsMap[ LegendId ]->setChecked( myViewFrame->isLegendShow() );
+  toolMgr()->action( LegendId )->setChecked( myViewFrame->isLegendShow() );
 }
 
 /*!
@@ -549,7 +549,7 @@ void Plot2d_ViewWindow::onGlobalPanning()
 */
 void Plot2d_ViewWindow::onViewHorMode()
 {
-  myViewFrame->setHorScaleMode( myActionsMap[ PModeXLinearId ]->isChecked() ? 0 : 1 );
+  myViewFrame->setHorScaleMode( toolMgr()->action( PModeXLinearId )->isChecked() ? 0 : 1 );
 }
 
 /*!
@@ -557,7 +557,7 @@ void Plot2d_ViewWindow::onViewHorMode()
 */
 void Plot2d_ViewWindow::onViewVerMode()
 {
-  myViewFrame->setVerScaleMode( myActionsMap[ PModeYLinearId ]->isChecked() ? 0 : 1 );
+  myViewFrame->setVerScaleMode( toolMgr()->action( PModeYLinearId )->isChecked() ? 0 : 1 );
 }
 
 /*!
@@ -574,11 +574,11 @@ void Plot2d_ViewWindow::onLegend()
 */
 void Plot2d_ViewWindow::onCurves()
 {
-  if( myActionsMap[ CurvPointsId ]->isChecked() )
+  if( toolMgr()->action( CurvPointsId )->isChecked() )
     myViewFrame->setCurveType( 0 );
-  else if ( myActionsMap[ CurvLinesId ]->isChecked() )
+  else if ( toolMgr()->action( CurvLinesId )->isChecked() )
     myViewFrame->setCurveType( 1 );
-  else if ( myActionsMap[ CurvSplinesId ]->isChecked() )
+  else if ( toolMgr()->action( CurvSplinesId )->isChecked() )
     myViewFrame->setCurveType( 2 );
 }
  
@@ -778,5 +778,3 @@ void Plot2d_ViewWindow::onPrintView()
   \fn void Plot2d_ViewWindow::cloneView();
   \brief Emitted when the "Clone View" action is activated.
 */
-
-

@@ -23,9 +23,22 @@
 #include "PyInterp_Dispatcher.h"   // !!! WARNING !!! THIS INCLUDE MUST BE THE VERY FIRST !!!
 #include "PyInterp_Interp.h"
 #include "PyInterp_Watcher.h"
+#include <SALOME_Event.h>
 
 #include <QObject>
 #include <QCoreApplication>
+
+class PyInterp_ExecuteEvent: public SALOME_Event
+{
+public:
+  PyInterp_Request* myRequest;
+  PyInterp_ExecuteEvent( PyInterp_Request* r )
+    : myRequest( r ) {}
+  virtual void Execute()
+  {
+    myRequest->execute();
+  }
+};
 
 using namespace std;
 
@@ -49,7 +62,7 @@ void PyInterp_Request::process()
 
 void PyInterp_Request::safeExecute()
 {
-  execute();
+  ProcessVoidEvent( new PyInterp_ExecuteEvent( this ) );
 }
 
 void PyInterp_Request::Destroy( PyInterp_Request* request )
@@ -62,7 +75,7 @@ void PyInterp_Request::Destroy( PyInterp_Request* request )
 
 QEvent* PyInterp_Request::createEvent() const
 {
-  return new PyInterp_Event( PyInterp_Event::NOTIFY, (PyInterp_Request*)this );
+  return new PyInterp_Event( PyInterp_Event::ES_NOTIFY, (PyInterp_Request*)this );
 }
 
 void PyInterp_Request::processEvent( QObject* o )
@@ -94,7 +107,7 @@ void PyInterp_LockRequest::safeExecute()
 {
   if ( getInterp() ){
     PyLockWrapper aLock = getInterp()->GetLockWrapper();
-    execute();
+    ProcessVoidEvent( new PyInterp_ExecuteEvent( this ) );
   }
 }
 

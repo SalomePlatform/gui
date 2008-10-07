@@ -48,11 +48,14 @@ public:
   void         update();
   void         clearPrs();
   void         setAutoDel(bool theDel);
+  
+signals:
+  void         viewCloned( SUIT_ViewWindow* );
 
 protected slots:
-  void onChangeBgColor();
-  void onDumpView();
-  void onShowToolbar();
+  void         onChangeBgColor();
+  void         onDumpView();
+  void         onShowToolbar();
   virtual void onCloneView( Plot2d_ViewFrame*, Plot2d_ViewFrame* );
 
 private:

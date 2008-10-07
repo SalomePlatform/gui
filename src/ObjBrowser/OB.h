@@ -19,19 +19,16 @@
 #ifndef OB_H
 #define OB_H
 
-#if defined OB_EXPORTS
-#if defined WNT
-#define OB_EXPORT __declspec( dllexport )
+#ifdef WIN32
+# ifdef OB_EXPORTS
+#  define OB_EXPORT __declspec( dllexport )
+# else
+#  define OB_EXPORT __declspec( dllimport )
+# endif
 #else
-#define OB_EXPORT
+# define OB_EXPORT
 #endif
-#else
-#if defined WNT
-#define OB_EXPORT __declspec( dllimport )
-#else
-#define OB_EXPORT
-#endif
-#endif
+
 
 #if defined SOLARIS
 #define bool  int
@@ -39,7 +36,7 @@
 #define true  1
 #endif
 
-#if defined WNT
+#if defined WIN32
 #pragma warning ( disable: 4251 )
 #endif
 

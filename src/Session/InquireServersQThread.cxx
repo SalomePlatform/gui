@@ -50,7 +50,7 @@
 #include "Utils_SINGLETON.hxx"
 #include "SALOME_NamingService.hxx"
 #include "utilities.h"
-#include "OpUtil.hxx"
+#include "Basics_Utils.hxx"
 
 using namespace std;
 

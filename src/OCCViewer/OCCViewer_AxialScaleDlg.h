@@ -32,7 +32,7 @@ class QPushButton;
   \class OCCViewer_AxialScaleDlg
   \brief Dialog allowing to assign parameters of axes scaling
 */
-class OCCViewer_AxialScaleDlg : public QDialog
+class OCCVIEWER_EXPORT OCCViewer_AxialScaleDlg : public QDialog
 {
     Q_OBJECT
     

@@ -20,11 +20,8 @@
 
 #include <SUIT_ViewWindow.h>
 
-#include <QtGui/qframe.h>
-#include <QtGui/qlayout.h>
-#include <QtGui/qmenubar.h>
-
-#include <QtGui/qlabel.h>
+#include <QFrame>
+#include <QVBoxLayout>
 
 /*!Constructor. Create instance of QVBox*/
 STD_SDIDesktop::STD_SDIDesktop()

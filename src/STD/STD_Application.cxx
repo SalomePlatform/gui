@@ -199,11 +199,11 @@ void STD_Application::createActions()
                 Qt::SHIFT+Qt::Key_A, desk, false, this, SLOT( onHelpAbout() ) );
 
 
-  QtxDockAction* dwa = new QtxDockAction( tr( "TOT_DOCKWINDOWS" ), tr( "MEN_DOCKWINDOWS" ), desk );
+  QtxDockAction* dwa = new QtxDockAction( tr( "TOT_DOCKWINDOWS" ), tr( "MEN_DESK_VIEW_DOCKWINDOWS" ), desk );
   dwa->setDockType( QtxDockAction::DockWidget );
   registerAction( ViewWindowsId, dwa );
 
-  QtxDockAction* tba = new QtxDockAction( tr( "TOT_TOOLBARS" ), tr( "MEN_TOOLBARS" ), desk );
+  QtxDockAction* tba = new QtxDockAction( tr( "TOT_TOOLBARS" ), tr( "MEN_DESK_VIEW_TOOLBARS" ), desk );
   tba->setDockType( QtxDockAction::ToolBar );
   registerAction( ViewToolBarsId, tba );
 
@@ -302,7 +302,7 @@ bool STD_Application::onNewDoc( const QString& name )
 void STD_Application::onOpenDoc()
 {
   // It is preferrable to use OS-specific file dialog box here !!!
-  QString aName = getFileName( true, QString::null, getFileFilter(), QString::null, 0 );
+  QString aName = getFileName( true, QString(), getFileFilter(), QString(), 0 );
   if ( aName.isNull() )
     return;
 
@@ -314,73 +314,10 @@ bool STD_Application::onOpenDoc( const QString& aName )
 {
   QApplication::setOverrideCursor( Qt::WaitCursor );
 
-  bool res = true;
-  if ( !activeStudy() )
-  {
-    // if no study - open in current desktop
-    res = useFile( aName );
-  }
-  else
-  {
-    // if study exists - open in new desktop. Check: is the same file is opened?
-    SUIT_Session* aSession = SUIT_Session::session();
-    QList<SUIT_Application*> aAppList = aSession->applications();
-    bool isAlreadyOpen = false;
-    SUIT_Application* aApp = 0;
-    for ( QList<SUIT_Application*>::iterator it = aAppList.begin(); it != aAppList.end() && !isAlreadyOpen; ++it )
-    {
-      aApp = *it;
-      if ( aApp->activeStudy()->studyName() == aName )
-        isAlreadyOpen = true;
-    }
-    if ( !isAlreadyOpen )
-    {
-      aApp = startApplication( 0, 0 );
-      if ( aApp )
-        res = aApp->useFile( aName );
-      if ( !res )
-        aApp->closeApplication();
-    }
-    else
-      aApp->desktop()->activateWindow();
-  }
-
+  bool res = openAction( openChoice( aName ), aName );
+  
   QApplication::restoreOverrideCursor();
 
-  return res;
-}
-
-/*! \retval true, if document was loaded successful, else false.*/
-bool STD_Application::onLoadDoc( const QString& aName )
-{
-  bool res = true;
-  if ( !activeStudy() )
-  {
-    // if no study - load in current desktop
-    res = useStudy( aName );
-  }
-  else
-  {
-    // if study exists - load in new desktop. Check: is the same file is loaded?
-    SUIT_Session* aSession = SUIT_Session::session();
-    QList<SUIT_Application*> aAppList = aSession->applications();
-    bool isAlreadyOpen = false;
-    SUIT_Application* aApp = 0;
-    for ( QList<SUIT_Application*>::iterator it = aAppList.begin(); it != aAppList.end() && !isAlreadyOpen; ++it )
-    {
-      aApp = *it;
-      if ( aApp->activeStudy()->studyName() == aName )
-        isAlreadyOpen = true;
-    }
-    if ( !isAlreadyOpen )
-    {
-      aApp = startApplication( 0, 0 );
-      if ( aApp )
-        res = aApp->useStudy( aName );
-    }
-    else
-      aApp->desktop()->activateWindow();
-  }
   return res;
 }
 
@@ -412,7 +349,6 @@ void STD_Application::onCloseDoc( bool ask )
   clearViewManagers();
 
   setActiveStudy( 0 );
-  delete study;
 
   int aNbStudies = 0;
   QList<SUIT_Application*> apps = SUIT_Session::session()->applications();
@@ -429,6 +365,9 @@ void STD_Application::onCloseDoc( bool ask )
     updateDesktopTitle();
     updateCommandsStatus();
   }
+
+  // IPAL19532: deleting study should be performed after calling setDesktop(0)
+  delete study;
 
   afterCloseDoc();
 
@@ -489,6 +428,58 @@ bool STD_Application::closeAction( const int choice, bool& closePermanently )
   return res;
 }
 
+int STD_Application::openChoice( const QString& aName )
+{
+  SUIT_Session* aSession = SUIT_Session::session();
+
+  bool isAlreadyOpen = false;
+  QList<SUIT_Application*> aAppList = aSession->applications();
+  for ( QList<SUIT_Application*>::iterator it = aAppList.begin(); it != aAppList.end() && !isAlreadyOpen; ++it )
+    isAlreadyOpen = (*it)->activeStudy() && (*it)->activeStudy()->studyName() == aName;
+  return isAlreadyOpen ? OpenExist : OpenNew;
+}
+
+bool STD_Application::openAction( const int choice, const QString& aName )
+{
+  bool res = true;
+  switch ( choice )
+  {
+  case OpenExist:
+    {
+      SUIT_Application* aApp = 0;
+      SUIT_Session* aSession = SUIT_Session::session();
+      QList<SUIT_Application*> aAppList = aSession->applications();
+      for ( QList<SUIT_Application*>::iterator it = aAppList.begin(); it != aAppList.end() && !aApp; ++it )
+      {
+	if ( (*it)->activeStudy() && (*it)->activeStudy()->studyName() == aName )
+	  aApp = *it;
+      }
+      if ( aApp )
+	aApp->desktop()->activateWindow();
+      else
+	res = false;
+    }
+    break;
+  case OpenNew:
+    if ( !activeStudy() )
+      res = useFile( aName );
+    else
+    {
+      SUIT_Application* aApp = startApplication( 0, 0 );
+      if ( aApp )
+	res = aApp->useFile( aName );
+      if ( !res )
+	aApp->closeApplication();
+    }
+    break;
+  case OpenCancel:
+  default:
+    res = false;
+  }
+
+  return res;
+}
+
 /*!Save document if all ok, else error message.*/
 void STD_Application::onSaveDoc()
 {
@@ -533,7 +524,7 @@ bool STD_Application::onSaveAsDoc()
   bool isOk = false;
   while ( !isOk )
   {
-    QString aName = getFileName( false, study->studyName(), getFileFilter(), QString::null, 0 );
+    QString aName = getFileName( false, study->studyName(), getFileFilter(), QString(), 0 );
     if ( aName.isNull() )
       return false;
 
@@ -623,6 +614,8 @@ void STD_Application::updateDesktopTitle()
 /*!Update commands status.*/
 void STD_Application::updateCommandsStatus()
 {
+  SUIT_Application::updateCommandsStatus();
+
   bool aHasStudy = activeStudy() != 0;
   bool aIsNeedToSave = false;
   if ( aHasStudy )
@@ -849,7 +842,7 @@ QString STD_Application::getFileName( bool open, const QString& initial, const Q
 						   SUIT_MessageBox::Yes | SUIT_MessageBox::No | SUIT_MessageBox::Cancel, SUIT_MessageBox::Yes );
 	  if ( aAnswer == SUIT_MessageBox::Cancel )
           {     // cancelled
-            aName = QString::null;
+            aName = QString();
 	    isOk = true;
           }
 	  else if ( aAnswer == SUIT_MessageBox::No ) // not save to this file

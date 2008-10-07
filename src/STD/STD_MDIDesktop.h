@@ -23,10 +23,8 @@
 
 #include <SUIT_Desktop.h>
 
-class QtxAction;
-class QPopupMenu;
-class QWorkspace;
-//class QtxWorkspaceAction;
+class QtxWorkspace;
+class QtxWorkspaceAction;
 
 #if defined WIN32
 #pragma warning( disable: 4251 )
@@ -36,10 +34,7 @@ class STD_EXPORT STD_MDIDesktop: public SUIT_Desktop
 {
   Q_OBJECT
 
-  class Workspace;
-
 public:
-  enum { MenuWindowId = 6 };
   enum { Cascade, Tile, HTile, VTile };
 
 public:
@@ -54,7 +49,7 @@ public:
   void                     setWindowOperations( const int, ... );
   void                     setWindowOperations( const QList<int>& );
 
-  QWorkspace*              workspace() const;
+  QtxWorkspace*            workspace() const;
 
 private slots:
   void                     onWindowActivated( QWidget* );
@@ -67,8 +62,8 @@ private:
   int                      operationFlag( const int ) const;
 
 private:
-  QWorkspace*              myWorkspace;
-//  QtxWorkspaceAction*      myWorkspaceAction;
+  QtxWorkspace*            myWorkspace;
+  QtxWorkspaceAction*      myWorkspaceAction;
 };
 
 #if defined WIN32

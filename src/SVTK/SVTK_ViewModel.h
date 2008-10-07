@@ -113,7 +113,6 @@ protected slots:
   void onMouseRelease(SUIT_ViewWindow*, QMouseEvent*);
 
   void onDumpView();
-  void onShowToolbar();
   void onChangeBgColor();
 
 private:

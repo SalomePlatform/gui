@@ -196,9 +196,11 @@ SVTK_Viewer
   thePopup->addSeparator();
 
   if(TViewWindow* aView = dynamic_cast<TViewWindow*>(myViewManager->getActiveView())){
-    if ( !aView->getMainWindow()->getToolBar()->isVisible() ){
-      thePopup->addAction( VTKViewer_Viewer::tr( "MEN_SHOW_TOOLBAR" ), this, SLOT( onShowToolbar() ) );
-    }
+    //Support of several toolbars in the popup menu
+    QList<QToolBar*> lst = qFindChildren<QToolBar*>( aView );
+    QList<QToolBar*>::const_iterator it = lst.begin(), last = lst.end();
+    for( ; it!=last; it++ )
+      thePopup->addAction( (*it)->toggleViewAction() );
     aView->RefreshDumpImage();
   }
 }
@@ -272,21 +274,6 @@ SVTK_Viewer
   if(SUIT_ViewWindow* aView = myViewManager->getActiveView()){
     QColor aColor = QColorDialog::getColor( backgroundColor(), aView);
     setBackgroundColor(aColor);
-  }
-}
-
-/*!
-  SLOT: called when popup item "Show toolbar" is activated, shows toolbar of active view window
-*/
-void
-SVTK_Viewer
-::onShowToolbar() 
-{
-  QVector<SUIT_ViewWindow*> aViews = myViewManager->getViews();
-  for(int i = 0, iEnd = aViews.size(); i < iEnd; i++){
-    if(TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at(i))){
-      aView->getMainWindow()->getToolBar()->show();
-    }
   }
 }
 

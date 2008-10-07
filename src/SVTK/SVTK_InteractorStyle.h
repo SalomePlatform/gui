@@ -102,7 +102,6 @@ class SVTK_EXPORT SVTK_ControllerOnKeyDown : public vtkObject{
   void operator=(const SVTK_ControllerOnKeyDown&);          //Not implemented
 };
 
-class vtkPicker;
 class vtkPointPicker;
 
 class SALOME_Actor;
@@ -333,8 +332,6 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
   vtkSmartPointer<SVTK_GenericRenderWindowInteractor> myInteractor;
 
   PSelectionEvent mySelectionEvent;
-
-  vtkSmartPointer<vtkPicker> myPicker;
 
   unsigned long                   myCurrRotationPointType;
   unsigned long                   myPrevRotationPointType;

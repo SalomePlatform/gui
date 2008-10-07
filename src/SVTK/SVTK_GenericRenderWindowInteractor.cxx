@@ -134,7 +134,7 @@ SVTK_Selector*
 SVTK_GenericRenderWindowInteractor
 ::GetSelector()
 {
-  return mySelector.GetPointer();
+  return mySelector;
 }
 
 /*!

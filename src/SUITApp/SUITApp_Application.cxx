@@ -35,7 +35,11 @@
   Constructor
 */
 SUITApp_Application::SUITApp_Application( int& argc, char** argv, SUIT_ExceptionHandler* hand )
-: QApplication( argc, argv ),
+#ifndef DISABLE_TESTRECORDER
+  : TestApplication( argc, argv ),
+#else
+  : QApplication( argc, argv ),
+#endif
 myExceptHandler( hand )
 {
   QString path = SUIT_Tools::dir( argv[0] ) + QDir::separator() + "../../resources";
@@ -52,7 +56,11 @@ myExceptHandler( hand )
   Constructor
 */
 SUITApp_Application::SUITApp_Application( int& argc, char** argv, Type type, SUIT_ExceptionHandler* hand )
-: QApplication( argc, argv, type ),
+#ifndef DISABLE_TESTRECORDER
+  : TestApplication( argc, argv ),
+#else
+  : QApplication( argc, argv, type ),
+#endif
 myExceptHandler( hand )
 {
     QTranslator* strTbl = new QTranslator( 0 );
@@ -69,7 +77,11 @@ myExceptHandler( hand )
 bool SUITApp_Application::notify( QObject* receiver, QEvent* e )
 {
   return myExceptHandler ? myExceptHandler->handle( receiver, e ) :
+#ifndef DISABLE_TESTRECORDER
+                           TestApplication::notify( receiver, e );
+#else
                            QApplication::notify( receiver, e );
+#endif
 }
 
 /*!

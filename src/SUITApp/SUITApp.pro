@@ -18,6 +18,7 @@ CONFIG -= debug release debug_and_release
 CONFIG += qt thread debug dll shared
 
 win32:DEFINES += WNT WIN32
+DEFINES += DISABLE_TESTRECORDER
 
 HEADERS = *.h
 

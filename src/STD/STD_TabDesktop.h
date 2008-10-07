@@ -23,11 +23,8 @@
 
 #include <SUIT_Desktop.h>
 
-class QtxAction;
-class QPopupMenu;
-class QWorkspace;
 class QtxWorkstack;
-//class QtxWorkstackAction;
+class QtxWorkstackAction;
 
 #if defined WIN32
 #pragma warning( disable: 4251 )
@@ -38,8 +35,7 @@ class STD_EXPORT STD_TabDesktop: public SUIT_Desktop
   Q_OBJECT
 
 public:
-  enum { MenuWindowId = 6 };
-  enum { VSplit, HSplit };
+  enum { SplitVertical, SplitHorizontal };
 
 public:
   STD_TabDesktop();
@@ -67,7 +63,7 @@ private:
 
 private:
   QtxWorkstack*            myWorkstack;
-//  QtxWorkstackAction*      myWorkstackAction;
+  QtxWorkstackAction*      myWorkstackAction;
 };
 
 #if defined WIN32

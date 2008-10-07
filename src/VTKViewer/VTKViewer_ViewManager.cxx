@@ -19,9 +19,6 @@
 #include "VTKViewer_ViewManager.h"
 #include "VTKViewer_ViewModel.h"
 
-#include <SUIT_PreferenceMgr.h>
-#include <SUIT_ResourceMgr.h>
-
 /*!Constructor.Initialize SIUT_ViewManager by \a study and \a theDesktop.
  * Create new instance of VTKViewer_Viewer and set view model by it.
  */
@@ -35,38 +32,4 @@ VTKViewer_ViewManager::VTKViewer_ViewManager( SUIT_Study* study, SUIT_Desktop* t
 VTKViewer_ViewManager::~VTKViewer_ViewManager()
 {
   /*!Do nothing.*/
-}
-
-/*!
-  Fills preference manager for viewer
-*/
-int VTKViewer_ViewManager::fillPreferences( SUIT_PreferenceMgr* thePrefMgr, const int theId )
-{
-  int aGrpId = thePrefMgr->addItem( tr( "PREF_GROUP_VTKVIEWER" ), theId,
-                                    SUIT_PreferenceMgr::GroupBox );
-
-  int vtkTS = thePrefMgr->addItem( tr( "PREF_TRIHEDRON_SIZE" ), aGrpId,
-                                   SUIT_PreferenceMgr::DblSpin, "VTKViewer", "trihedron_size" );
-  thePrefMgr->addItem( tr( "PREF_RELATIVE_SIZE" ), aGrpId, SUIT_PreferenceMgr::Bool,
-                       "VTKViewer", "relative_size" );
-  thePrefMgr->addItem( tr( "PREF_VIEWER_BACKGROUND" ), aGrpId,
-                       SUIT_PreferenceMgr::Color, "VTKViewer", "background" );
-
-  thePrefMgr->setItemProperty( "min", 1.0E-06, vtkTS );
-  thePrefMgr->setItemProperty( "max", 150, vtkTS );
-
-  return aGrpId;
-}
-
-/**
- * Fills values from resources
- */
-void VTKViewer_ViewManager::fillFrom( SUIT_ResourceMgr* theMgr )
-{
-  VTKViewer_Viewer* aModel = dynamic_cast<VTKViewer_Viewer*>( getViewModel() );
-  if ( !aModel )
-    return;
-
-  aModel->setBackgroundColor( theMgr->colorValue( "VTKViewer", "background",
-                                                  aModel->backgroundColor() ) );
 }

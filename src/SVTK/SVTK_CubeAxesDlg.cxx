@@ -48,29 +48,60 @@
 #include <vtkTextProperty.h>
 
 /*!
- * Class       : AxisWg
- * Description : Tab of dialog
- */
+  \class SVTK_CubeAxesDlg::AxisWidget
+  \brief Axis tab widget of the "Graduated axis" dialog box
+  \internal
+*/
+
+class SVTK_CubeAxesDlg::AxisWidget : public QFrame
+{
+public:
+  AxisWidget( QWidget* );
+  ~AxisWidget();
+
+  void             UseName( const bool );
+  void             SetName( const QString& );
+  void             SetNameFont( const QColor&, const int, const bool, const bool, const bool );
+  bool             ReadData( vtkAxisActor2D* );
+  bool             Apply( vtkAxisActor2D* );
+
+private:
+  // name
+  QGroupBox*       myNameGrp;
+  QLineEdit*       myAxisName;
+  SVTK_FontWidget* myNameFont;
+
+  // labels
+  QGroupBox*       myLabelsGrp;
+  QtxIntSpinBox*   myLabelNumber;
+  QtxIntSpinBox*   myLabelOffset;
+  SVTK_FontWidget* myLabelsFont;
+
+  // tick marks
+  QGroupBox*       myTicksGrp;
+  QtxIntSpinBox*   myTickLength;
+
+  friend class SVTK_CubeAxesDlg;
+};
 
 /*!
   Constructor
 */
-SVTK_AxisWidget::SVTK_AxisWidget (QWidget* theParent)
+SVTK_CubeAxesDlg::AxisWidget::AxisWidget (QWidget* theParent)
 :  QFrame(theParent)
 {
   QList< QLabel* > aLabels;
 
   // "Name" grp
 
-  myNameGrp = new QGroupBox(tr("AXIS_NAME"), this);
+  myNameGrp = new QGroupBox(SVTK_CubeAxesDlg::tr("AXIS_NAME"), this);
+  myNameGrp->setCheckable( true );
+
   QVBoxLayout* aVBox = new QVBoxLayout;
   
-  myIsNameVisible = new QCheckBox(tr("IS_VISIBLE"), myNameGrp);
-  aVBox->addWidget(myIsNameVisible);
-
   QHBoxLayout* aHBox = new QHBoxLayout;
   aHBox->setSpacing(5);
-  QLabel* aLabel = new QLabel(tr("NAME"));
+  QLabel* aLabel = new QLabel(SVTK_CubeAxesDlg::tr("NAME"));
   aHBox->addWidget(aLabel);
   myAxisName = new QLineEdit;
   aHBox->addWidget(myAxisName);
@@ -79,7 +110,7 @@ SVTK_AxisWidget::SVTK_AxisWidget (QWidget* theParent)
 
   aHBox = new QHBoxLayout;
   aHBox->setSpacing(5);
-  aLabel = new QLabel(tr("FONT"));
+  aLabel = new QLabel(SVTK_CubeAxesDlg::tr("FONT"));
   aHBox->addWidget(aLabel);
   myNameFont = new SVTK_FontWidget(myNameGrp);
   aHBox->addWidget(myNameFont);
@@ -90,35 +121,32 @@ SVTK_AxisWidget::SVTK_AxisWidget (QWidget* theParent)
 
   // "Labels" grp
 
-  myLabelsGrp = new QGroupBox(tr("LABELS"), this);
-  aVBox = new QVBoxLayout;
+  myLabelsGrp = new QGroupBox(SVTK_CubeAxesDlg::tr("LABELS"), this);
+  myLabelsGrp->setCheckable( true );
 
-  myIsLabelsVisible = new QCheckBox(tr("IS_VISIBLE"), myLabelsGrp);
-  aVBox->addWidget(myIsLabelsVisible);
+  aVBox = new QVBoxLayout;
 
   aHBox = new QHBoxLayout;
   aHBox->setSpacing(5);
-  aLabel = new QLabel(tr("NUMBER"));
+  aLabel = new QLabel(SVTK_CubeAxesDlg::tr("NUMBER"));
   aHBox->addWidget(aLabel);
   myLabelNumber = new QtxIntSpinBox(0,25,1,myLabelsGrp);
-  myLabelNumber->setObjectName("SpinBoxLabelNumber");
   aHBox->addWidget(myLabelNumber);
   aLabels.append(aLabel);
   aVBox->addLayout(aHBox);
 
   aHBox = new QHBoxLayout;
   aHBox->setSpacing(5);
-  aLabel = new QLabel(tr("OFFSET"));
+  aLabel = new QLabel(SVTK_CubeAxesDlg::tr("OFFSET"));
   aHBox->addWidget(aLabel);
   myLabelOffset = new QtxIntSpinBox(0,100,1,myLabelsGrp);
-  myLabelOffset->setObjectName("SpinBoxLabellOffset");
   aHBox->addWidget(myLabelOffset);
   aLabels.append(aLabel);
   aVBox->addLayout(aHBox);
 
   aHBox = new QHBoxLayout;
   aHBox->setSpacing(5);
-  aLabel = new QLabel(tr("FONT"));
+  aLabel = new QLabel(SVTK_CubeAxesDlg::tr("FONT"));
   aHBox->addWidget(aLabel);
   myLabelsFont = new SVTK_FontWidget(myLabelsGrp);
   aHBox->addWidget(myLabelsFont);
@@ -129,18 +157,16 @@ SVTK_AxisWidget::SVTK_AxisWidget (QWidget* theParent)
 
   // "Tick marks" grp
 
-  myTicksGrp = new QGroupBox(tr("TICK_MARKS"), this);
-  aVBox = new QVBoxLayout;
+  myTicksGrp = new QGroupBox(SVTK_CubeAxesDlg::tr("TICK_MARKS"), this);
+  myTicksGrp->setCheckable( true );
 
-  myIsTicksVisible = new QCheckBox(tr("IS_VISIBLE"), myTicksGrp);
-  aVBox->addWidget(myIsTicksVisible);
+  aVBox = new QVBoxLayout;
 
   aHBox = new QHBoxLayout;
   aHBox->setSpacing(5);
-  aLabel = new QLabel(tr("LENGTH"));
+  aLabel = new QLabel(SVTK_CubeAxesDlg::tr("LENGTH"));
   aHBox->addWidget(aLabel);
   myTickLength = new QtxIntSpinBox(0,100,1,myTicksGrp);
-  myTickLength->setObjectName("SpinBoxTickLength");
   aHBox->addWidget(myTickLength);
   aLabels.append(aLabel);
   aVBox->addLayout(aHBox);
@@ -150,17 +176,16 @@ SVTK_AxisWidget::SVTK_AxisWidget (QWidget* theParent)
   // Layout
 
   QVBoxLayout* aLay = new QVBoxLayout(this);
-  aLay->setMargin(0);
+  aLay->setMargin(5);
   aLay->setSpacing(5);
   aLay->addWidget(myNameGrp);
   aLay->addWidget(myLabelsGrp);
   aLay->addWidget(myTicksGrp);
 
   // init
-  myIsNameVisible->setChecked(true);
-  myIsLabelsVisible->setChecked(true);
-  myIsTicksVisible->setChecked(true);
-  updateControlState();
+  myNameGrp->setChecked( true );
+  myLabelsGrp->setChecked( true );
+  myTicksGrp->setChecked( true );
 
   // Adjust label widths
   QList< QLabel* >::iterator anIter;
@@ -169,74 +194,35 @@ SVTK_AxisWidget::SVTK_AxisWidget (QWidget* theParent)
     aMaxWidth = qMax(aMaxWidth, (*anIter)->sizeHint().width());
   for (anIter = aLabels.begin(); anIter != aLabels.end(); anIter++)
     (*anIter)->setFixedWidth(aMaxWidth);
-
-  // connect signals and slots
-  connect(myIsNameVisible, SIGNAL(stateChanged(int)), SLOT(onNameChecked()));
-  connect(myIsLabelsVisible, SIGNAL(stateChanged(int)), SLOT(onLabelsChecked()));
-  connect(myIsTicksVisible, SIGNAL(stateChanged(int)), SLOT(onTicksChecked()));
 }
 
 /*!
   Destructor
 */
-SVTK_AxisWidget::~SVTK_AxisWidget()
+SVTK_CubeAxesDlg::AxisWidget::~AxisWidget()
 {
 }
 
-void SVTK_AxisWidget::updateControlState()
+void SVTK_CubeAxesDlg::AxisWidget::UseName(const bool toUse)
 {
-  onNameChecked();
-  onLabelsChecked();
-  onTicksChecked();
+  myNameGrp->setChecked(toUse);
 }
 
-void SVTK_AxisWidget::setEnabled(QGroupBox* theGrp, const bool theState)
-{
-  QObjectList aChildren(theGrp->children());
-  QObject* anObj;
-  for(int i = 0; i < aChildren.size(); i++)
-  {
-    anObj = aChildren.at(i);
-    if (anObj !=0 && anObj->inherits("QHBoxLayout"))
-      ((QHBoxLayout*)anObj)->setEnabled(theState);
-  }
-}
-
-void SVTK_AxisWidget::onLabelsChecked()
-{
-  setEnabled(myLabelsGrp, myIsLabelsVisible->isChecked());
-}
-
-void SVTK_AxisWidget::onTicksChecked()
-{
-  setEnabled(myTicksGrp, myIsTicksVisible->isChecked());
-}
-
-void SVTK_AxisWidget::onNameChecked()
-{
-  setEnabled(myNameGrp, myIsNameVisible->isChecked());
-}
-
-void SVTK_AxisWidget::UseName(const bool toUse)
-{
-  myIsNameVisible->setChecked(toUse);
-}
-
-void SVTK_AxisWidget::SetName(const QString& theName)
+void SVTK_CubeAxesDlg::AxisWidget::SetName(const QString& theName)
 {
   myAxisName->setText(theName);
 }
 
-void SVTK_AxisWidget::SetNameFont(const QColor& theColor,
-                                  const int theFont,
-                                  const bool theIsBold,
-                                  const bool theIsItalic,
-                                  const bool theIsShadow)
+void SVTK_CubeAxesDlg::AxisWidget::SetNameFont(const QColor& theColor,
+					       const int theFont,
+					       const bool theIsBold,
+					       const bool theIsItalic,
+					       const bool theIsShadow)
 {
   myNameFont->SetData(theColor, theFont, theIsBold, theIsItalic, theIsShadow);
 }
 
-bool SVTK_AxisWidget::ReadData(vtkAxisActor2D* theActor)
+bool SVTK_CubeAxesDlg::AxisWidget::ReadData(vtkAxisActor2D* theActor)
 {
   if (theActor == 0)
     return false;
@@ -264,7 +250,7 @@ bool SVTK_AxisWidget::ReadData(vtkAxisActor2D* theActor)
     isTitleShadow = aTitleProp->GetShadow() ? true : false;
   }
 
-  myIsNameVisible->setChecked(useName);
+  myNameGrp->setChecked(useName);
   myAxisName->setText(aTitle);
   myNameFont->SetData(aTitleColor, aTitleFontFamily, isTitleBold, isTitleItalic, isTitleShadow);
 
@@ -292,7 +278,7 @@ bool SVTK_AxisWidget::ReadData(vtkAxisActor2D* theActor)
     isLabelsShadow = aLabelsProp->GetShadow() ? true : false;
   }
 
-  myIsLabelsVisible->setChecked(useLabels);
+  myLabelsGrp->setChecked(useLabels);
   myLabelNumber->setValue(nbLabels);
   myLabelOffset->setValue(anOffset);
   myLabelsFont->SetData(aLabelsColor, aLabelsFontFamily, isLabelsBold, isLabelsItalic, isLabelsShadow);
@@ -301,20 +287,20 @@ bool SVTK_AxisWidget::ReadData(vtkAxisActor2D* theActor)
   bool useTickMarks = theActor->GetTickVisibility();
   int aTickLength = theActor->GetTickLength();
 
-  myIsTicksVisible->setChecked(useTickMarks);
+  myTicksGrp->setChecked(useTickMarks);
   myTickLength->setValue(aTickLength);
 
   return true;
 }
 
-bool SVTK_AxisWidget::Apply(vtkAxisActor2D* theActor)
+bool SVTK_CubeAxesDlg::AxisWidget::Apply(vtkAxisActor2D* theActor)
 {
    if (theActor == 0)
     return false;
 
   // Name
 
-  theActor->SetTitleVisibility(myIsNameVisible->isChecked() ? 1 : 0);
+  theActor->SetTitleVisibility(myNameGrp->isChecked() ? 1 : 0);
   theActor->SetTitle(myAxisName->text().toLatin1());
 
   QColor aTitleColor(255, 255, 255);
@@ -341,7 +327,7 @@ bool SVTK_AxisWidget::Apply(vtkAxisActor2D* theActor)
 
   // Labels
 
-  theActor->SetLabelVisibility(myIsLabelsVisible->isChecked() ? 1 : 0);
+  theActor->SetLabelVisibility(myLabelsGrp->isChecked() ? 1 : 0);
 
   int nbLabels = myLabelNumber->value();
   theActor->SetNumberOfLabels(nbLabels);
@@ -374,7 +360,7 @@ bool SVTK_AxisWidget::Apply(vtkAxisActor2D* theActor)
 
 
   // Tick marks
-  theActor->SetTickVisibility(myIsTicksVisible->isChecked());
+  theActor->SetTickVisibility(myTicksGrp->isChecked());
   int aTickLength = myTickLength->value();
   theActor->SetTickLength(aTickLength);
 
@@ -418,15 +404,13 @@ QWidget* SVTK_CubeAxesDlg::createMainFrame(QWidget* theParent)
 
   myTabWg = new QTabWidget(aFrame);
 
-  myAxes[ 0 ] = new SVTK_AxisWidget(myTabWg);
-  myAxes[ 1 ] = new SVTK_AxisWidget(myTabWg);
-  myAxes[ 2 ] = new SVTK_AxisWidget(myTabWg);
+  myAxes[ 0 ] = new AxisWidget(myTabWg);
+  myAxes[ 1 ] = new AxisWidget(myTabWg);
+  myAxes[ 2 ] = new AxisWidget(myTabWg);
 
   myTabWg->addTab(myAxes[ 0 ], tr("X_AXIS"));
   myTabWg->addTab(myAxes[ 1 ], tr("Y_AXIS"));
   myTabWg->addTab(myAxes[ 2 ], tr("Z_AXIS"));
-
-  myTabWg->setContentsMargins(5,5,5,5);
 
   myIsVisible = new QCheckBox(tr("IS_VISIBLE"), aFrame);
 

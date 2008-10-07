@@ -22,21 +22,20 @@
 #include <SUIT_ViewWindow.h>
 #include <SUIT_ResourceMgr.h>
 
-#include <QtxAction.h>
 #include <QtxWorkstack.h>
 #include <QtxActionMenuMgr.h>
-//#include <QtxWorkstackAction.h>
+#include <QtxWorkstackAction.h>
 
-#include <QtGui/qframe.h>
-#include <QtGui/qlayout.h>
+#include <QFrame>
+#include <QVBoxLayout>
 
 #include <stdarg.h>
 
 /*!Constructor.Create new instances of QVBox and QtxWorkstack.*/
 STD_TabDesktop::STD_TabDesktop()
 : SUIT_Desktop(),
-myWorkstack( 0 )//,
-//myWorkstackAction( 0 )
+myWorkstack( 0 ),
+myWorkstackAction( 0 )
 {
   QFrame* base = new QFrame( this );
   base->setFrameStyle( QFrame::Panel | QFrame::Sunken );
@@ -57,18 +56,32 @@ myWorkstack( 0 )//,
   myWorkstack->setAccel( QtxWorkstack::SplitHorizontal, Qt::SHIFT + Qt::Key_H );
   myWorkstack->setAccel( QtxWorkstack::Close,           Qt::SHIFT + Qt::Key_C );
 
+  SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+  if ( resMgr ) {
+    myWorkstack->setIcon( QtxWorkstack::SplitVertical,   
+			  resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_VSPLIT" ) ) );
+    myWorkstack->setIcon( QtxWorkstack::SplitHorizontal,
+			  resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_HSPLIT" ) ) );
+    myWorkstack->setIcon( QtxWorkstack::Close,
+			  resMgr->loadPixmap( "STD", tr( "ICON_FILE_CLOSE" ) ));
+  }
+
   connect( myWorkstack, SIGNAL( windowActivated( QWidget* ) ),
            this, SLOT( onWindowActivated( QWidget* ) ) );
 
   createActions();
 }
 
-/*!Destructor.*/
+/*!
+  Destructor.
+*/
 STD_TabDesktop::~STD_TabDesktop()
 {
 }
 
-/*!\retval SUIT_ViewWindow - return const active window.*/
+/*!
+  \retval SUIT_ViewWindow - return const active window.
+*/
 SUIT_ViewWindow* STD_TabDesktop::activeWindow() const
 {
   SUIT_ViewWindow* wnd = 0;
@@ -80,7 +93,9 @@ SUIT_ViewWindow* STD_TabDesktop::activeWindow() const
   return wnd;
 }
 
-/*!\retval QPtrList<SUIT_ViewWindow> - return const active window list.*/
+/*!
+  \retval QPtrList<SUIT_ViewWindow> - return const active window list.
+*/
 QList<SUIT_ViewWindow*> STD_TabDesktop::windows() const
 {
   QList<SUIT_ViewWindow*> winList;
@@ -95,7 +110,9 @@ QList<SUIT_ViewWindow*> STD_TabDesktop::windows() const
   return winList;
 }
 
-/*! insert new widget into desktop.*/
+/*!
+  Insert new widget into desktop.
+*/
 void STD_TabDesktop::addWindow( QWidget* w )
 {
   if ( !w || !workstack() )
@@ -104,13 +121,17 @@ void STD_TabDesktop::addWindow( QWidget* w )
   workstack()->addWindow( w );
 }
 
-/*!Call method perform for operation \a type.*/
+/*!
+  Call method perform for operation \a type.
+*/
 void STD_TabDesktop::windowOperation( const int type )
 {
-//  myWorkstackAction->perform( operationFlag( type ) );
+  myWorkstackAction->perform( operationFlag( type ) );
 }
 
-/*!Sets window operations by \a first ... parameters.*/
+/*!
+  Sets window operations by \a first ... parameters.
+*/
 void STD_TabDesktop::setWindowOperations( const int first, ... )
 {
   va_list ints;
@@ -128,7 +149,9 @@ void STD_TabDesktop::setWindowOperations( const int first, ... )
 	setWindowOperations( typeList );
 }
 
-/*!Sets window operations by variable \a opList - operation list.*/
+/*!
+  Sets window operations by variable \a opList - operation list.
+*/
 void STD_TabDesktop::setWindowOperations( const QList<int>& opList )
 {
   int flags = 0;
@@ -139,23 +162,28 @@ void STD_TabDesktop::setWindowOperations( const QList<int>& opList )
 //  myWorkstackAction->setItems( flags );
 }
 
-/*!\retval QtxWorkstack pointer - QT work stack.*/
+/*!
+  \retval QtxWorkstack pointer - Qt work stack.
+*/
 QtxWorkstack* STD_TabDesktop::workstack() const
 {
   return myWorkstack;
 }
 
-/*!Emit window activated.*/
+/*!
+  Emit window activated.
+*/
 void STD_TabDesktop::onWindowActivated( QWidget* w )
 {
   if ( w && w->inherits( "SUIT_ViewWindow" ) )
     emit windowActivated( (SUIT_ViewWindow*)w );
 }
 
-/*!Create actions for window.*/
+/*!
+  Create actions for window.
+*/
 void STD_TabDesktop::createActions()
 {
-/*
   if ( myWorkstackAction )
     return;
 
@@ -165,44 +193,46 @@ void STD_TabDesktop::createActions()
 
   myWorkstackAction = new QtxWorkstackAction( workstack(), this );
 
-  myWorkstackAction->setItems( QtxWorkstackAction::Split | QtxWorkstackAction::Windows );
+  myWorkstackAction->setMenuActions( QtxWorkstackAction::Split | QtxWorkstackAction::Windows );
 
   // Split Horizontal
-  myWorkstackAction->setIconSet( QtxWorkstackAction::HSplit,
-                                 resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_HSPLIT" ) ) );
-  myWorkstackAction->setMenuText( QtxWorkstackAction::HSplit, tr( "MEN_DESK_WINDOW_HSPLIT" ) );
-  myWorkstackAction->setStatusTip( QtxWorkstackAction::HSplit, tr( "PRP_DESK_WINDOW_HSPLIT" ) );
+  myWorkstackAction->setIcon( QtxWorkstackAction::SplitHorizontal,
+                              resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_HSPLIT" ) ) );
+  myWorkstackAction->setText( QtxWorkstackAction::SplitHorizontal, tr( "MEN_DESK_WINDOW_HSPLIT" ) );
+  myWorkstackAction->setStatusTip( QtxWorkstackAction::SplitHorizontal, tr( "PRP_DESK_WINDOW_HSPLIT" ) );
+  myWorkstackAction->setAccel( QtxWorkstackAction::SplitHorizontal, Qt::SHIFT + Qt::Key_H );
 
   // Split Vertical
-  myWorkstackAction->setIconSet( QtxWorkstackAction::VSplit,
-                                 resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_VSPLIT" ) ) );
-  myWorkstackAction->setMenuText( QtxWorkstackAction::VSplit, tr( "MEN_DESK_WINDOW_VSPLIT" ) );
-  myWorkstackAction->setStatusTip( QtxWorkstackAction::VSplit, tr( "PRP_DESK_WINDOW_VSPLIT" ) );
+  myWorkstackAction->setIcon( QtxWorkstackAction::SplitVertical,
+                              resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_VSPLIT" ) ) );
+  myWorkstackAction->setText( QtxWorkstackAction::SplitVertical, tr( "MEN_DESK_WINDOW_VSPLIT" ) );
+  myWorkstackAction->setStatusTip( QtxWorkstackAction::SplitVertical, tr( "PRP_DESK_WINDOW_VSPLIT" ) );
+  myWorkstackAction->setAccel( QtxWorkstackAction::SplitVertical,   Qt::SHIFT + Qt::Key_V );
 
   QtxActionMenuMgr* mMgr = menuMgr();
   if ( !mMgr )
     return;
 
-  int winMenuId = mMgr->insert( tr( "MEN_DESK_WINDOW" ), -1, 100, MenuWindowId );
+  int winMenuId = mMgr->insert( tr( "MEN_DESK_WINDOW" ), -1, 100 );
   mMgr->insert( myWorkstackAction, winMenuId, -1 );
   mMgr->insert( QtxActionMenuMgr::separator(), winMenuId, -1 );
-*/
 }
 
-/*!Convert STD_TabDesktop enumerations to QtxWorkstackAction*/
+/*!
+  Convert STD_TabDesktop enumerations to QtxWorkstackAction
+*/
 int STD_TabDesktop::operationFlag( const int type ) const
 {
   int res = 0;
-/*
   switch ( type )
   {
-  case VSplit:
-    res = QtxWorkstackAction::VSplit;
+  case SplitVertical:
+    res = QtxWorkstackAction::SplitVertical;
     break;
-  case HSplit:
-    res = QtxWorkstackAction::HSplit;
+  case SplitHorizontal:
+    res = QtxWorkstackAction::SplitHorizontal;
     break;
   }
-*/
+
   return res;
 }

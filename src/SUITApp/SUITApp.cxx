@@ -32,6 +32,7 @@
 #include <Style_Model.h>
 #include <QtxSplash.h>
 
+#include <SUIT_LicenseDlg.h>
 #ifdef SUIT_ENABLE_PYTHON
 #include <Python.h>
 #endif
@@ -43,6 +44,10 @@
 #include <QStringList>
 
 #include <stdlib.h>
+
+#ifdef WIN32
+#include <UserEnv.h>
+#endif
 
 static QString salomeVersion()
 {
@@ -161,12 +166,13 @@ int main( int args, char* argv[] )
   PySys_SetArgv( args, argv );
 #endif
 
-  qInstallMsgHandler( MessageOutput );
+  //qInstallMsgHandler( MessageOutput );
 
   QStringList argList;
   bool noExceptHandling = false;
   bool iniFormat        = false;
   bool noSplash         = false;
+  bool useLicense       = false;
   for ( int i = 1; i < args /*&& !noExceptHandling*/; i++ )
   {
     if ( !strcmp( argv[i], "--noexcepthandling" ) )
@@ -175,23 +181,51 @@ int main( int args, char* argv[] )
       iniFormat = true;
     else if ( !strcmp( argv[i], "--nosplash") )
       noSplash = true;
-    else
+	else if ( !strcmp( argv[i], "--uselicense" ) )
+      useLicense = true;
+	else
       argList.append( QString( argv[i] ) );
   }
 
   SUITApp_Application app( args, argv );
 
   int result = -1;
+
+  if ( useLicense ) {
+    QString env;
+
+#ifdef WIN32
+    DWORD aLen=1024;
+    char aStr[1024];
+    HANDLE aToken=0;
+    HANDLE hProcess = GetCurrentProcess();
+    OpenProcessToken(hProcess,TOKEN_QUERY,&aToken);
+    if( GetUserProfileDirectory( aToken, aStr, &aLen ) )
+      env = aStr;
+
+#else
+    if ( ::getenv( "HOME" ) )
+      env = ::getenv( "HOME" );
+#endif
+ 
+    QFile file( env + "/ReadLicense.log" ); // Read the text from a file    
+    if( !file.exists() ) {
+      SUIT_LicenseDlg aLicense;
+      if ( aLicense.exec() != QDialog::Accepted ) 
+        return result;
+    }
+  }
+
   if ( !argList.isEmpty() )
   {
     SUITApp_Session* aSession = new SUITApp_Session( iniFormat );
     QtxSplash* splash = 0;
+    SUIT_ResourceMgr* resMgr = aSession->createResourceMgr( argList.first() );
     if ( !noSplash ) 
     {
-      SUIT_ResourceMgr* resMgr = aSession->createResourceMgr( argList.first() );
       if ( resMgr )
       {
-	resMgr->loadLanguage();
+	resMgr->loadLanguage( false );
 
 	splash = QtxSplash::splash( QPixmap() );
 	splash->readSettings( resMgr );
@@ -222,9 +256,12 @@ int main( int args, char* argv[] )
     SUIT_Application* theApp = aSession->startApplication( argList.first() );
     if ( theApp )
     {
-      Style_Salome* aStyle = new Style_Salome();
-      aStyle->getModel()->initFromResource( theApp->resourceMgr() );
-      app.setStyle( aStyle );
+      if ( resMgr && resMgr->booleanValue( "Style", "use_salome_style", true ) )
+      {
+	Style_Salome* aStyle = new Style_Salome();
+	aStyle->getModel()->initFromResource( theApp->resourceMgr() );
+	app.setStyle( aStyle );
+      }
 	
       if ( !noExceptHandling )
         app.setHandler( aSession->handler() );

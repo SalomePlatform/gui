@@ -47,6 +47,9 @@
 #include <vtkCell.h>
 #include <vtkPlane.h>
 #include <vtkMath.h>
+#include <vtkCellArray.h>
+#include <vtkTriangle.h>
+#include <vtkOrderedTriangulator.h>
 
 #ifdef _DEBUG_
 static int DEBUG_TRIA_EXECUTE = 0;
@@ -81,31 +84,117 @@ namespace
   typedef std::vector<TPolygon> TPolygons;
 }
 
-/*!
-  Constructor
-*/
+
+//----------------------------------------------------------------------------
 VTKViewer_Triangulator
 ::VTKViewer_Triangulator():
-  myInput(NULL),
-  myCellId(-1),
-  myShowInside(-1),
-  myAllVisible(-1),
-  myCellsVisibility(NULL),
-  myCellIds(vtkIdList::New())
+  myCellIds(vtkIdList::New()),
+  myFaceIds(vtkIdList::New()),
+  myPoints(vtkPoints::New()),
+  myPointIds(NULL)
 {}
 
 
-/*!
-  Destructor
-*/
+//----------------------------------------------------------------------------
 VTKViewer_Triangulator
 ::~VTKViewer_Triangulator()
 {
   myCellIds->Delete();
+  myFaceIds->Delete();
+  myPoints->Delete();
 }
 
 
+//----------------------------------------------------------------------------
+vtkPoints*
+VTKViewer_Triangulator
+::InitPoints(vtkUnstructuredGrid *theInput,
+	     vtkIdType theCellId)
+{
+  myPoints->Reset();
+  myPoints->Modified(); // the VTK bug
 
+  vtkIdType aNumPts;
+  theInput->GetCellPoints(theCellId, aNumPts, myPointIds); 
+  if ( aNumPts > 0 ) {
+    vtkFloatingPointType anAbsoluteCoord[3];
+    myPoints->SetNumberOfPoints(aNumPts);
+    vtkPoints *anInputPoints = theInput->GetPoints();
+    for (int aPntId = 0; aPntId < aNumPts; aPntId++) {
+      anInputPoints->GetPoint(myPointIds[aPntId], anAbsoluteCoord);
+      myPoints->SetPoint(aPntId, anAbsoluteCoord);
+    }
+  }
+
+  return myPoints;
+}
+
+
+//----------------------------------------------------------------------------
+vtkIdType 
+VTKViewer_Triangulator
+::GetNbOfPoints()
+{
+  return myPoints->GetNumberOfPoints();
+}
+
+
+//----------------------------------------------------------------------------
+vtkIdType 
+VTKViewer_Triangulator
+::GetPointId(vtkIdType thePointId)
+{
+  return thePointId;
+}
+
+
+//----------------------------------------------------------------------------
+vtkFloatingPointType 
+VTKViewer_Triangulator
+::GetCellLength()
+{
+  vtkFloatingPointType aBounds[6];
+  myPoints->GetBounds(aBounds);
+
+  vtkFloatingPointType aCoordDiff[3];
+  aCoordDiff[0] = (aBounds[1] - aBounds[0]);
+  aCoordDiff[1] = (aBounds[3] - aBounds[2]);
+  aCoordDiff[2] = (aBounds[5] - aBounds[4]);
+
+  return sqrt(aCoordDiff[0]*aCoordDiff[0] + 
+	      aCoordDiff[1]*aCoordDiff[1] + 
+	      aCoordDiff[2]*aCoordDiff[2]);
+}
+
+
+//----------------------------------------------------------------------------
+void 
+VTKViewer_Triangulator
+::GetCellNeighbors(vtkUnstructuredGrid *theInput,
+		   vtkIdType theCellId,
+		   vtkCell* theFace,
+		   vtkIdList* theCellIds)
+{
+  myFaceIds->Reset();
+  vtkIdList *anIdList = theFace->PointIds;  
+  myFaceIds->InsertNextId(myPointIds[anIdList->GetId(0)]);
+  myFaceIds->InsertNextId(myPointIds[anIdList->GetId(1)]);
+  myFaceIds->InsertNextId(myPointIds[anIdList->GetId(2)]);
+
+  theInput->GetCellNeighbors(theCellId, myFaceIds, theCellIds);
+}
+
+
+//----------------------------------------------------------------------------
+vtkIdType 
+VTKViewer_Triangulator
+::GetConnectivity(vtkIdType thePntId)
+{
+  return myPointIds[thePntId];
+}
+
+
+//----------------------------------------------------------------------------
 bool 
 VTKViewer_Triangulator
 ::Execute(vtkUnstructuredGrid *theInput,
@@ -120,13 +209,7 @@ VTKViewer_Triangulator
 	  std::vector<vtkIdType>& theVTK2ObjIds,
 	  bool theIsCheckConvex)
 {
-  myInput = theInput;
-  myCellId = theCellId;
-  myShowInside = theShowInside;
-  myAllVisible = theAllVisible;
-  myCellsVisibility = theCellsVisibility;
-
-  vtkPoints *aPoints = InitPoints();
+  vtkPoints *aPoints = InitPoints(theInput, theCellId);
   vtkIdType aNumPts = GetNbOfPoints();
   if(DEBUG_TRIA_EXECUTE) cout<<"Triangulator - aNumPts = "<<aNumPts<<"\n";
 
@@ -154,7 +237,7 @@ VTKViewer_Triangulator
 
   static vtkFloatingPointType EPS = 1.0E-2;
   vtkFloatingPointType aDistEps = aCellLength/3.0 * EPS;
-  if(DEBUG_TRIA_EXECUTE) cout<<"\taCellLength = "<<aCellLength<<"; aDistEps = "<<aDistEps<<"\n";
+  if(DEBUG_TRIA_EXECUTE) cout<<"\taNumFaces = "<<aNumFaces<<"; aCellLength = "<<aCellLength<<"; aDistEps = "<<aDistEps<<"\n";
 
   // To initialize set of points that belong to the cell
   typedef std::set<vtkIdType> TPointIds;
@@ -172,9 +255,9 @@ VTKViewer_Triangulator
   for (int aFaceId = 0; aFaceId < aNumFaces; aFaceId++) {
     vtkCell* aFace = GetFace(aFaceId);
     
-    GetCellNeighbors(theCellId, aFace, myCellIds);
-    if((!myAllVisible && !myCellsVisibility[myCellIds->GetId(0)]) || 
-       myCellIds->GetNumberOfIds() <= 0 || myShowInside)
+    GetCellNeighbors(theInput, theCellId, aFace, myCellIds);
+    if((!theAllVisible && !theCellsVisibility[myCellIds->GetId(0)]) || 
+       myCellIds->GetNumberOfIds() <= 0 || theShowInside)
     {
       TPointIds aPointIds;
       vtkIdList *anIdList = aFace->PointIds;  
@@ -320,9 +403,9 @@ VTKViewer_Triangulator
 	    aCenter[0] += aPntCoord[0];
 	    aCenter[1] += aPntCoord[1];
 	    aCenter[2] += aPntCoord[2];
-	    if(DEBUG_TRIA_EXECUTE) cout  << "Added = TRUE" << endl;
+	    if(DEBUG_TRIA_EXECUTE) cout  << "; Added = TRUE" << endl;
 	  } else {
-	    if(DEBUG_TRIA_EXECUTE) cout  << "Added = FALSE" << endl;
+	    if(DEBUG_TRIA_EXECUTE) cout  << "; Added = FALSE" << endl;
 	  }
 	}
 	int aNbPoints = aPointIds.size();
@@ -512,171 +595,144 @@ VTKViewer_Triangulator
   return true;
 }
 
-/*!
-  Constructor
-*/
+
+//----------------------------------------------------------------------------
 VTKViewer_OrderedTriangulator
 ::VTKViewer_OrderedTriangulator():
-  myCell(vtkGenericCell::New())
-{}
+  myTriangulator(vtkOrderedTriangulator::New()),
+  myBoundaryTris(vtkCellArray::New()),
+  myTriangle(vtkTriangle::New())
+{
+  myBoundaryTris->Allocate(VTK_CELL_SIZE);
+  myTriangulator->PreSortedOff();
+}
 
-/*!
-  Destructor
-*/
+
+//----------------------------------------------------------------------------
 VTKViewer_OrderedTriangulator
 ::~VTKViewer_OrderedTriangulator()
 {
-  myCell->Delete();
+  myTriangle->Delete();
+  myBoundaryTris->Delete();
+  myTriangulator->Delete();
 }
 
+
+//----------------------------------------------------------------------------
 vtkPoints*
 VTKViewer_OrderedTriangulator
-::InitPoints()
+::InitPoints(vtkUnstructuredGrid *theInput,
+	     vtkIdType theCellId)
 {
-  myInput->GetCell(myCellId,myCell);
-  return myInput->GetPoints();
+  myBoundaryTris->Reset();
+
+  vtkPoints* aPoints = VTKViewer_Triangulator::InitPoints(theInput, theCellId);
+  vtkIdType aNumPts = myPoints->GetNumberOfPoints();
+  if ( aNumPts > 0 ) {
+    myTriangulator->InitTriangulation(0.0, 1.0, 0.0, 1.0, 0.0, 1.0, aNumPts);
+
+    vtkFloatingPointType aBounds[6];
+    myPoints->GetBounds(aBounds);
+
+    vtkFloatingPointType anAbsoluteCoord[3];
+    vtkFloatingPointType aParamentrucCoord[3];
+    for (int aPntId = 0; aPntId < aNumPts; aPntId++) {
+      myPoints->GetPoint(aPntId, anAbsoluteCoord);
+      aParamentrucCoord[0] = (anAbsoluteCoord[0] - aBounds[0]) / (aBounds[1] - aBounds[0]);
+      aParamentrucCoord[1] = (anAbsoluteCoord[1] - aBounds[2]) / (aBounds[3] - aBounds[2]);
+      aParamentrucCoord[2] = (anAbsoluteCoord[2] - aBounds[4]) / (aBounds[5] - aBounds[4]);
+      myTriangulator->InsertPoint(aPntId, anAbsoluteCoord, aParamentrucCoord, 0);
+    }
+
+    myTriangulator->Triangulate();
+    myTriangulator->AddTriangles(myBoundaryTris);
+  }
+
+  return aPoints;
 }
 
-vtkIdType 
-VTKViewer_OrderedTriangulator
-::GetNbOfPoints()
-{
-  return myCell->GetNumberOfPoints();
-}
 
-vtkIdType 
-VTKViewer_OrderedTriangulator
-::GetPointId(vtkIdType thePointId)
-{
-  return myCell->GetPointId(thePointId);
-}
-
-vtkFloatingPointType 
-VTKViewer_OrderedTriangulator
-::GetCellLength()
-{
-  return sqrt(myCell->GetLength2());
-}
-
+//----------------------------------------------------------------------------
 vtkIdType 
 VTKViewer_OrderedTriangulator
 ::GetNumFaces()
 {
-  return myCell->GetNumberOfFaces();
+  return myBoundaryTris->GetNumberOfCells();
 }
 
+
+//----------------------------------------------------------------------------
 vtkCell*
 VTKViewer_OrderedTriangulator
 ::GetFace(vtkIdType theFaceId)
 {
-  return myCell->GetFace(theFaceId);
+  vtkIdType aNumCells = myBoundaryTris->GetNumberOfCells();
+  if ( theFaceId < 0 || theFaceId >= aNumCells ) 
+    return NULL;
+
+  vtkIdType *aCells = myBoundaryTris->GetPointer();
+
+  // Each triangle has three points plus number of points
+  vtkIdType *aCellPtr = aCells + 4*theFaceId;
+  
+  myTriangle->PointIds->SetId(0, aCellPtr[1]);
+  myTriangle->Points->SetPoint(0, myPoints->GetPoint(aCellPtr[1]));
+
+  myTriangle->PointIds->SetId(1, aCellPtr[2]);
+  myTriangle->Points->SetPoint(1, myPoints->GetPoint(aCellPtr[2]));
+
+  myTriangle->PointIds->SetId(2, aCellPtr[3]);
+  myTriangle->Points->SetPoint(2, myPoints->GetPoint(aCellPtr[3]));
+
+  return myTriangle;
 }
 
-void 
-VTKViewer_OrderedTriangulator
-::GetCellNeighbors(vtkIdType theCellId,
-		   vtkCell* theFace,
-		   vtkIdList* theCellIds)
-{
-  vtkIdList *anIdList = theFace->PointIds;  
-  myInput->GetCellNeighbors(theCellId, anIdList, theCellIds);
-}
 
-vtkIdType 
-VTKViewer_OrderedTriangulator
-::GetConnectivity(vtkIdType thePntId)
-{
-  return thePntId;
-}
-
-/*!
-  Constructor
-*/
+//----------------------------------------------------------------------------
 VTKViewer_DelaunayTriangulator
 ::VTKViewer_DelaunayTriangulator():
   myUnstructuredGrid(vtkUnstructuredGrid::New()),
   myGeometryFilter(vtkGeometryFilter::New()),
   myDelaunay3D(vtkDelaunay3D::New()),
-  myFaceIds(vtkIdList::New()),
-  myPoints(vtkPoints::New()),
-  myPolyData(NULL),
-  myPointIds(NULL)
+  myPolyData(NULL)
 {
+  myUnstructuredGrid->Initialize();
+  myUnstructuredGrid->Allocate();
+  myUnstructuredGrid->SetPoints(myPoints);
+
   myDelaunay3D->SetInput(myUnstructuredGrid);
   myGeometryFilter->SetInput(myDelaunay3D->GetOutput());
+  myPolyData = myGeometryFilter->GetOutput();
 }
 
 
-
-/*!
-  Destructor
-*/
+//----------------------------------------------------------------------------
 VTKViewer_DelaunayTriangulator
 ::~VTKViewer_DelaunayTriangulator()
 {
   myUnstructuredGrid->Delete();
   myGeometryFilter->Delete();
   myDelaunay3D->Delete();
-  myFaceIds->Delete();
-  myPoints->Delete();
 }
 
 
+//----------------------------------------------------------------------------
 vtkPoints* 
 VTKViewer_DelaunayTriangulator
-::InitPoints()
+::InitPoints(vtkUnstructuredGrid *theInput,
+	     vtkIdType theCellId)
 {
-  myPoints->Reset();
-  myUnstructuredGrid->Initialize();
-  myUnstructuredGrid->Allocate();
-  myUnstructuredGrid->SetPoints(myPoints);
-
-  vtkIdType aNumPts;
-  myInput->GetCellPoints(myCellId,aNumPts,myPointIds); 
-  
-  if ( aNumPts < myPoints->GetNumberOfPoints() )
-    myPoints->Reset();
-  
-  {
-    vtkFloatingPointType aPntCoord[3];
-    myPoints->SetNumberOfPoints(aNumPts);
-    vtkPoints *anInputPoints = myInput->GetPoints();
-    for (int aPntId = 0; aPntId < aNumPts; aPntId++) {
-      anInputPoints->GetPoint(myPointIds[aPntId],aPntCoord);
-      myPoints->SetPoint(aPntId,aPntCoord);
-    }
-  }
+  vtkPoints* aPoints = VTKViewer_Triangulator::InitPoints(theInput, theCellId);
 
   myPoints->Modified();
   myUnstructuredGrid->Modified();
-
   myGeometryFilter->Update();
-  myPolyData = myGeometryFilter->GetOutput();
   
-  return myPoints;
+  return aPoints;
 }
 
-vtkIdType 
-VTKViewer_DelaunayTriangulator
-::GetNbOfPoints()
-{
-  return myPoints->GetNumberOfPoints();
-}
 
-vtkIdType 
-VTKViewer_DelaunayTriangulator
-::GetPointId(vtkIdType thePointId)
-{
-  return thePointId;
-}
-
-vtkFloatingPointType 
-VTKViewer_DelaunayTriangulator
-::GetCellLength()
-{
-  return myPolyData->GetLength();
-}
-
+//----------------------------------------------------------------------------
 vtkIdType 
 VTKViewer_DelaunayTriangulator
 ::GetNumFaces()
@@ -684,32 +740,11 @@ VTKViewer_DelaunayTriangulator
   return myPolyData->GetNumberOfCells();
 }
 
+
+//----------------------------------------------------------------------------
 vtkCell*
 VTKViewer_DelaunayTriangulator
 ::GetFace(vtkIdType theFaceId)
 {
   return myPolyData->GetCell(theFaceId);
-}
-
-void 
-VTKViewer_DelaunayTriangulator
-::GetCellNeighbors(vtkIdType theCellId,
-		   vtkCell* theFace,
-		   vtkIdList* theCellIds)
-{
-  myFaceIds->Reset();
-  vtkIdList *anIdList = theFace->PointIds;  
-  myFaceIds->InsertNextId(myPointIds[anIdList->GetId(0)]);
-  myFaceIds->InsertNextId(myPointIds[anIdList->GetId(1)]);
-  myFaceIds->InsertNextId(myPointIds[anIdList->GetId(2)]);
-
-  myInput->GetCellNeighbors(theCellId, myFaceIds, theCellIds);
-}
-
-
-vtkIdType 
-VTKViewer_DelaunayTriangulator
-::GetConnectivity(vtkIdType thePntId)
-{
-  return myPointIds[thePntId];
 }

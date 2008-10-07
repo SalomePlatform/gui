@@ -474,6 +474,7 @@ VTKViewer_GeometryFilter
         case VTK_QUADRATIC_QUAD:
         case VTK_QUADRATIC_TETRA:
         case VTK_QUADRATIC_HEXAHEDRON:
+        case VTK_QUADRATIC_WEDGE:
 	  if(!myIsWireframeMode){
 	    input->GetCell(cellId,cell);
 	    vtkIdList *pts = vtkIdList::New();  
@@ -650,6 +651,82 @@ VTKViewer_GeometryFilter
 
 	      break;
 	    }
+            case VTK_QUADRATIC_WEDGE: {
+              aCellType = VTK_POLYGON;
+	      numFacePts = 6;
+              //---------------------------------------------------------------
+              //Face 1
+	      aNewPts[0] = pts[0];
+	      aNewPts[1] = pts[6];
+	      aNewPts[2] = pts[1];
+	      aNewPts[3] = pts[7];
+	      aNewPts[4] = pts[2];
+	      aNewPts[5] = pts[8];
+              newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
+	      if(myStoreMapping)
+		myVTK2ObjIds.push_back(cellId);
+              outputCD->CopyData(cd,cellId,newCellId);
+              
+              //---------------------------------------------------------------
+              //Face 2
+              aNewPts[0] = pts[3];
+	      aNewPts[1] = pts[9];
+	      aNewPts[2] = pts[4];
+	      aNewPts[3] = pts[10];
+	      aNewPts[4] = pts[5];
+	      aNewPts[5] = pts[11];
+              newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
+	      if(myStoreMapping)
+		myVTK2ObjIds.push_back(cellId);
+              outputCD->CopyData(cd,cellId,newCellId);
+              
+              //---------------------------------------------------------------
+              //Face 3
+              numFacePts = 8;
+              aNewPts[0] = pts[0];
+	      aNewPts[1] = pts[8];
+	      aNewPts[2] = pts[2];
+	      aNewPts[3] = pts[14];
+	      aNewPts[4] = pts[5];
+	      aNewPts[5] = pts[11];
+	      aNewPts[6] = pts[3];
+	      aNewPts[7] = pts[12];
+              newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
+	      if(myStoreMapping)
+		myVTK2ObjIds.push_back(cellId);
+              outputCD->CopyData(cd,cellId,newCellId);
+
+              //---------------------------------------------------------------
+              //Face 4
+              aNewPts[0] = pts[1];
+	      aNewPts[1] = pts[13];
+	      aNewPts[2] = pts[4];
+	      aNewPts[3] = pts[10];
+	      aNewPts[4] = pts[5];
+	      aNewPts[5] = pts[14];
+	      aNewPts[6] = pts[2];
+	      aNewPts[7] = pts[7];
+              newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
+	      if(myStoreMapping)
+		myVTK2ObjIds.push_back(cellId);
+              outputCD->CopyData(cd,cellId,newCellId);
+
+              //---------------------------------------------------------------
+              //Face 5
+              aNewPts[0] = pts[0];
+	      aNewPts[1] = pts[12];
+	      aNewPts[2] = pts[3];
+	      aNewPts[3] = pts[9];
+	      aNewPts[4] = pts[4];
+	      aNewPts[5] = pts[13];
+              aNewPts[6] = pts[1];
+              aNewPts[7] = pts[6];
+              newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
+	      if(myStoreMapping)
+		myVTK2ObjIds.push_back(cellId);
+              outputCD->CopyData(cd,cellId,newCellId);
+              break;
+            }
 	    case VTK_QUADRATIC_HEXAHEDRON: {
 	      aCellType = VTK_POLYGON;
 	      numFacePts = 8;
@@ -771,6 +848,8 @@ VTKViewer_GeometryFilter
     {
     delete [] cellVis;
     }
+
+  return 1;
 }
 
 

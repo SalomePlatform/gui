@@ -3,67 +3,63 @@
     <name>@default</name>
     <message>
         <source>ICON_VTKVIEWER_VIEW_GLOBALPAN</source>
-        <translation>view_glpan.png</translation>
+        <translation>vtk_view_glpan.png</translation>
     </message>
     <message>
         <source>ICON_VTKVIEWER_VIEW_FITAREA</source>
-        <translation>view_fitarea.png</translation>
+        <translation>vtk_view_fitarea.png</translation>
     </message>
     <message>
         <source>ICON_VTKVIEWER_VIEW_FRONT</source>
-        <translation>view_front.png</translation>
+        <translation>vtk_view_front.png</translation>
     </message>
     <message>
         <source>ICON_VTKVIEWER_VIEW_RESET</source>
-        <translation>view_reset.png</translation>
+        <translation>vtk_view_reset.png</translation>
     </message>
     <message>
         <source>ICON_VTKVIEWER_VIEW_RIGHT</source>
-        <translation>view_right.png</translation>
+        <translation>vtk_view_right.png</translation>
     </message>
     <message>
         <source>ICON_VTKVIEWER_VIEW_FITALL</source>
-        <translation>view_fitall.png</translation>
+        <translation>vtk_view_fitall.png</translation>
     </message>
     <message>
         <source>ICON_VTKVIEWER_VIEW_BOTTOM</source>
-        <translation>view_bottom.png</translation>
+        <translation>vtk_view_bottom.png</translation>
     </message>
     <message>
         <source>ICON_VTKVIEWER_VIEW_TOP</source>
-        <translation>view_top.png</translation>
+        <translation>vtk_view_top.png</translation>
     </message>
     <message>
         <source>ICON_VTKVIEWER_VIEW_PAN</source>
-        <translation>view_pan.png</translation>
+        <translation>vtk_view_pan.png</translation>
     </message>
     <message>
         <source>ICON_VTKVIEWER_VIEW_ROTATE</source>
-        <translation>view_rotate.png</translation>
-    </message>
-    <message>
-        <source>ICON_VTKVIEWER_VIEW_ROTATION_POINT</source>
-        <translation>view_rotation_point.png</translation>
+        <translation>vtk_view_rotate.png</translation>
     </message>
     <message>
         <source>ICON_VTKVIEWER_VIEW_DUMP</source>
-        <translation>view_camera_dump.png</translation>
+        <translation>vtk_view_camera_dump.png</translation>
     </message>
     <message>
         <source>ICON_VTKVIEWER_VIEW_BACK</source>
-        <translation>view_back.png</translation>
+        <translation>vtk_view_back.png</translation>
     </message>
     <message>
         <source>ICON_VTKVIEWER_VIEW_ZOOM</source>
-        <translation>view_zoom.png</translation>
+        <translation>vtk_view_zoom.png</translation>
     </message>
     <message>
         <source>ICON_VTKVIEWER_VIEW_LEFT</source>
-        <translation>view_left.png</translation>
+        <translation>vtk_view_left.png</translation>
     </message>
     <message>
         <source>ICON_VTKVIEWER_VIEW_TRIHEDRON</source>
-        <translation>view_triedre.png</translation>
+        <translation>vtk_view_triedre.png</translation>
     </message>
 </context>
 </TS>

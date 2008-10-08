@@ -61,10 +61,6 @@ SVTK_EXPORT extern int SALOME_LINE_WIDTH;
 #pragma warning ( disable:4251 )
 #endif
 
-#ifdef WIN32
-#pragma warning ( disable:4251 )
-#endif
-
 //! The class is a basic one for all SALOME VTK presentation.
 /*!
   It provide highlight and prehighlight capabilites,

@@ -27,7 +27,6 @@
 #include "SVTK_Selection.h"
 
 #include <QMainWindow>
-#include <QMap>
 
 #include <vtkSmartPointer.h>
 
@@ -259,7 +258,7 @@ public:
 	 ChangeRotationPointId, RotationId,
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, 
 	 ViewTrihedronId, NonIsometric, GraduatedAxes, UpdateRate,
-         TextRegion, PrintId };
+	 TextRegion, PrintId };
 
   SUIT_ViewWindow* myViewWindow;
 

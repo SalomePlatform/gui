@@ -155,7 +155,27 @@
     </message>
 </context>
 <context>
-    <name>SVTK_AxisWidget</name>
+    <name>SVTK_CubeAxesDlg</name>
+    <message>
+        <source>X_AXIS</source>
+        <translation>X axis</translation>
+    </message>
+    <message>
+        <source>Y_AXIS</source>
+        <translation>Y axis</translation>
+    </message>
+    <message>
+        <source>Z_AXIS</source>
+        <translation>Z axis</translation>
+    </message>
+    <message>
+        <source>CAPTION</source>
+        <translation>Graduated axes</translation>
+    </message>
+    <message>
+        <source>IS_VISIBLE</source>
+        <translation>Is visible</translation>
+    </message>
     <message>
         <source>FONT</source>
         <translation>Font</translation>
@@ -185,35 +205,8 @@
         <translation>Offset</translation>
     </message>
     <message>
-        <source>IS_VISIBLE</source>
-        <translation>Is visible</translation>
-    </message>
-    <message>
         <source>AXIS_NAME</source>
         <translation>Axis name</translation>
-    </message>
-</context>
-<context>
-    <name>SVTK_CubeAxesDlg</name>
-    <message>
-        <source>X_AXIS</source>
-        <translation>X axis</translation>
-    </message>
-    <message>
-        <source>Y_AXIS</source>
-        <translation>Y axis</translation>
-    </message>
-    <message>
-        <source>Z_AXIS</source>
-        <translation>Z axis</translation>
-    </message>
-    <message>
-        <source>CAPTION</source>
-        <translation>Graduated axes</translation>
-    </message>
-    <message>
-        <source>IS_VISIBLE</source>
-        <translation>Is visible</translation>
     </message>
 </context>
 <context>
@@ -290,15 +283,15 @@
     <name>SVTK_NonIsometricDlg</name>
     <message>
         <source>LBL_X</source>
-        <translation>X :</translation>
+        <translation>X:</translation>
     </message>
     <message>
         <source>LBL_Y</source>
-        <translation>Y :</translation>
+        <translation>Y:</translation>
     </message>
     <message>
         <source>LBL_Z</source>
-        <translation>Z :</translation>
+        <translation>Z:</translation>
     </message>
     <message>
         <source>MEN_SCALING</source>
@@ -313,15 +306,15 @@
     <name>SVTK_SetRotationPointDlg</name>
     <message>
         <source>LBL_X</source>
-        <translation>X :</translation>
+        <translation>X:</translation>
     </message>
     <message>
         <source>LBL_Y</source>
-        <translation>Y :</translation>
+        <translation>Y:</translation>
     </message>
     <message>
         <source>LBL_Z</source>
-        <translation>Z :</translation>
+        <translation>Z:</translation>
     </message>
     <message>
         <source>LBL_CENTER_OF_BOUNDING_BOX</source>

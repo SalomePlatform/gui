@@ -1510,12 +1510,12 @@ void QtxTable::endHeaderEdit( const bool accept )
   if ( !isHeaderEditing() )
     return;
 
-  QString oldTxt = myEditedHeader ? myEditedHeader->label( myEditedSection ) : QString::null;
+  QString oldTxt = myEditedHeader ? myEditedHeader->label( myEditedSection ) : QString();
 
   if ( accept && myEditedHeader )
     setHeaderContentFromEditor( myEditedHeader, myEditedSection, myHeaderEditor );
 
-  QString newTxt = myEditedHeader ? myEditedHeader->label( myEditedSection ) : QString::null;
+  QString newTxt = myEditedHeader ? myEditedHeader->label( myEditedSection ) : QString();
 
   int sec = myEditedSection;
   QHeaderView* hdr = myEditedHeader;

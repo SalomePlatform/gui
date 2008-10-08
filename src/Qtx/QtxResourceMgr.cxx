@@ -33,8 +33,6 @@
 #include <QDomNode>
 #endif
 
-#define EMULATE_GLOBAL_CONTEXT
-
 #include <stdlib.h>
 
 /*!

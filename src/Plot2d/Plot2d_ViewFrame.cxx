@@ -190,8 +190,6 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
 
   if (mySecondY)
     setTitle( myY2TitleEnabled, myY2Title, Y2Title, false );
-  setHorScaleMode( myXMode, false );
-  setVerScaleMode( myYMode, false );
   setBackgroundColor( myBackground );
   setLegendPos( myLegendPos );
   showLegend( myShowLegend, false );
@@ -374,11 +372,13 @@ void Plot2d_ViewFrame::readPreferences()
   if ( mySecondY )
     myY2GridMaxMinor = resMgr->integerValue( "Plot2d", "VerMinorGridMax", myY2GridMaxMinor );
 
-  myXMode = resMgr->integerValue( "Plot2d", "HorScaleMode", myXMode );
-  myXMode = qMax( 0, qMin( 1, myXMode ) );
+  int newXMode = resMgr->integerValue( "Plot2d", "HorScaleMode", myXMode );
+  newXMode = qMax( 0, qMin( 1, newXMode ) );
+  setHorScaleMode( newXMode, false );
 
-  myYMode = resMgr->integerValue( "Plot2d", "VerScaleMode", myYMode );
-  myYMode = qMax( 0, qMin( 1, myYMode ) );
+  int newYMode = resMgr->integerValue( "Plot2d", "VerScaleMode", myYMode );
+  newYMode = qMax( 0, qMin( 1, newYMode ) );
+  setVerScaleMode( newYMode, false );
 }
 
 /*!

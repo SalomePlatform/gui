@@ -119,4 +119,7 @@ ICONS   = resources/*.png
 includes.files = $$HEADERS
 includes.path = ../../include
 
-INSTALLS += includes
+resources.files = $$ICONS
+resources.path = ../../resources
+
+INSTALLS += includes resources

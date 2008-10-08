@@ -22,8 +22,7 @@ HEADERS = *.h
 
 SOURCES = *.cxx
 
-TRANSLATIONS = resources/SUIT_images.ts \
-               resources/SUIT_msg_en.ts
+TRANSLATIONS = resources/SUIT_msg_en.ts
 
 unix:GUIResources = ../../resources
 win32:GUIResources = ..\\..\\resources

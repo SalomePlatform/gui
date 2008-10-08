@@ -753,6 +753,8 @@ bool QtxSearchTool::eventFilter( QObject* o, QEvent* e )
       myAutoHideTimer->start();
     }
     break;
+  default:
+    break;
   }
   return QFrame::eventFilter( o, e );
 }

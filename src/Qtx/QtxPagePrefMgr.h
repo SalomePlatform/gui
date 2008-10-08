@@ -97,6 +97,8 @@ public:
 
   QWidget*          widget() const;
 
+  virtual void      activate();
+
 protected:
   void              setWidget( QWidget* );
 

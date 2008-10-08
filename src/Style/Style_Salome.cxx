@@ -37,6 +37,7 @@
 #include <QStyleOptionButton>
 #include <QStyleOptionTab>
 #include <QStyleOptionToolButton>
+#include <QStyleOptionFocusRect>
 #include <QStyleOption>
 #include <QSize>
 #include <QToolBar>
@@ -159,6 +160,17 @@ static const char* const minimize_xpm[] = {
 "............"
 };
 
+///////////////////////////////////////////////////////////
+// FOR debug purposes only!!!
+//
+const int DEBUG_LEVEL = 0;
+
+static bool checkDebugLevel( int level )
+{
+  return DEBUG_LEVEL == level;
+}
+//
+///////////////////////////////////////////////////////////
 
 Style_Salome::Style_Salome()
   : QWindowsStyle()
@@ -192,12 +204,22 @@ void Style_Salome::updateSettings( QApplication* app )
 
 void Style_Salome::polish ( QApplication* app )
 {
+  if ( checkDebugLevel(1) ) {
+    QWindowsStyle::polish( app );
+    return;
+  }
+
   QWindowsStyle::polish( app );
   updateSettings( app );
 }
 
 void Style_Salome::polish ( QWidget* w )
 {
+  if ( checkDebugLevel(2) ) {
+    QWindowsStyle::polish( w );
+    return;
+  }
+
   if ( !w )
     return;
   if ( w && hasHover() ) {
@@ -214,6 +236,11 @@ void Style_Salome::polish ( QWidget* w )
 
 void Style_Salome::unpolish( QWidget* w )
 {
+  if ( checkDebugLevel(3) ) {
+    QWindowsStyle::unpolish( w );
+    return;
+  }
+
   if ( w && hasHover() ) {
     if ( qobject_cast<QPushButton*>(w) || qobject_cast<QToolButton*>(w)||
          qobject_cast<QCheckBox*>(w) || qobject_cast<QRadioButton*>(w) ||
@@ -227,8 +254,13 @@ void Style_Salome::unpolish( QWidget* w )
 }
 
 void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComplex* opt,
-                                      QPainter* p, const QWidget* w ) const
+				       QPainter* p, const QWidget* w ) const
 {
+  if ( checkDebugLevel(4) ) {
+    QWindowsStyle::drawComplexControl( cc, opt, p, w );
+    return;
+  }
+
   const QPalette& pal = w->palette();
   switch( cc ) {
     case CC_SpinBox:
@@ -591,6 +623,11 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
 void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
                                QPainter* p, const QWidget* w ) const
 {
+  if ( checkDebugLevel(5) ) {
+    QWindowsStyle::drawControl( ce, opt, p, w );
+    return;
+  }
+
   switch ( ce ) {
     case CE_PushButton:
       if (const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(opt)) {
@@ -1164,6 +1201,11 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
           }
         }
       break;
+      /*
+    case CE_ToolBoxTab:
+      QCommonStyle::drawControl( ce, opt, p, w );
+      break;
+      */
     case CE_HeaderSection: {
       bool aStateOn = opt->state & State_On;
       QColor aColor = getColor( Style_Model::header_clr );
@@ -1297,13 +1339,19 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
     break;
   }
   default:
-      QWindowsStyle::drawControl( ce, opt, p, w );
+    QWindowsStyle::drawControl( ce, opt, p, w );
+    break;
   }
 }
 
 void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
 				  QPainter* p, const QWidget* w ) const
 {
+  if ( checkDebugLevel(6) ) {
+    QWindowsStyle::drawPrimitive( pe, opt, p, w );
+    return;
+  }
+
   const QPalette& pal = opt->palette;
   bool doRestore = false;
   switch ( pe ) {
@@ -1355,10 +1403,10 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
                               pal.color( QPalette::Window ),
                               getColor( Style_Model::border_bot_clr ),
                               aBrdTopCol, aBrdBotCol, false, false, isHover, true );
-        break;
       }
-      else
-        QWindowsStyle::drawPrimitive( pe, opt, p, w );
+      else {
+	QWindowsStyle::drawPrimitive( pe, opt, p, w );
+      }
       break;
     }
     case PE_IndicatorArrowRight:
@@ -1462,7 +1510,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         QColor aColor = getColor( Style_Model::pointer_clr );
         if ( !(opt->state & State_Enabled ) )
           aColor = opt->palette.mid().color();
-        if ( opt->state & State_Selected && itemViewOpt && itemViewOpt->showDecorationSelected )
+	if ( opt->state & State_Selected && itemViewOpt && itemViewOpt->showDecorationSelected )
           aColor = opt->palette.highlightedText().color();
 
         p->setPen( QPen( aColor ) );
@@ -1565,7 +1613,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
           drawHoverRect(p, opt->rect, opt->palette.color( QPalette::Window ), aRad, Style_Tools::All, true);
         else {
           Style_Tools::shadowRect( p, opt->rect, aRad, LINE_GR_MARGIN, SHADOW,
-                                   Style_Tools::All, opt->palette.color( QPalette::Base ), // getColor( Style_Model::fld_light_clr ),
+				   Style_Tools::All, opt->palette.color( QPalette::Base ), // getColor( Style_Model::fld_light_clr ),
                                    getColor( Style_Model::fld_dark_clr ), aBrdTopCol, aBrdBotCol,
                                    getBoolValue( Style_Model::all_antialized ), false );
         }
@@ -1574,11 +1622,14 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         if (const QStyleOptionFrame *panel = qstyleoption_cast<const QStyleOptionFrame *>(opt)) {
           QRect rect = panel->rect.adjusted( panel->lineWidth,  panel->lineWidth,
                                              -panel->lineWidth, -panel->lineWidth);
-          if (panel->lineWidth > 0) // QLineEdit
+	  if ( w->inherits("QLineEdit") && panel->lineWidth > 0 ) {
             drawPrimitive( PE_FrameLineEdit, panel, p, w );
-          else // not QLineEdit
-            p->fillRect(rect, panel->palette.brush(QPalette::Base));
-         }
+	  }
+          else {
+	    QColor c = panel->palette.color(QPalette::Base); c.setAlpha(255);
+            p->fillRect( rect, c ); // panel->palette.brush(QPalette::Base)
+	  }
+	}
       }
       break;
     }
@@ -1727,7 +1778,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
 	       light = base,
                light_alt = base.dark(110),//AlternateBase color
                dark  = getColor( Style_Model::fld_dark_clr );
-        //light.setAlpha( 0 ); // VSR commented: IPAL19262
+        light.setAlpha( 0 ); // VSR commented: IPAL19262
         QLinearGradient gr_h(r.x(), r.y(), r.right(), r.y());
         gr_h.setColorAt( 0.0, dark );
         gr_h.setColorAt( aMarg / r.width(), light );
@@ -1739,7 +1790,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         // draw frame
         p->fillRect( r, base );
         p->fillRect( r, gr_h );
-        p->fillRect( r, gr_v );
+	p->fillRect( r, gr_v );
         aPal.setBrush( QPalette::Base, QBrush( light ) );
 
         QLinearGradient gr_alt(r.x(), r.y(), r.right(), r.y());
@@ -1760,6 +1811,10 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
 int Style_Salome::pixelMetric( PixelMetric metric, const QStyleOption* opt,
                               const QWidget* w ) const
 {
+  if ( checkDebugLevel(7) ) {
+    return QWindowsStyle::pixelMetric( metric, opt, w );
+  }
+
   int aRes = QWindowsStyle::pixelMetric( metric, opt, w );
   switch( metric ) {
     case PM_SliderLength: {
@@ -1787,6 +1842,10 @@ int Style_Salome::pixelMetric( PixelMetric metric, const QStyleOption* opt,
 QSize Style_Salome::sizeFromContents( ContentsType ct, const QStyleOption* opt,
                                       const QSize& contentsSize, const QWidget* w ) const
 {
+  if ( checkDebugLevel(8) ) {
+    return QWindowsStyle::sizeFromContents( ct, opt,contentsSize, w );
+  }
+
   QSize sz = QWindowsStyle::sizeFromContents( ct, opt, contentsSize, w );
   switch (ct) {
     case CT_TabBarTab:
@@ -1833,6 +1892,10 @@ QSize Style_Salome::sizeFromContents( ContentsType ct, const QStyleOption* opt,
 QPixmap Style_Salome::standardPixmap(StandardPixmap stPixmap, const QStyleOption *opt,
                                      const QWidget *w) const
 {
+  if ( checkDebugLevel(9) ) {
+    return QWindowsStyle::standardPixmap( stPixmap, opt, w );
+  }
+
   switch ( stPixmap )
   {
   case SP_DockWidgetCloseButton:
@@ -1853,6 +1916,9 @@ QIcon Style_Salome::standardIconImplementation( StandardPixmap standardIcon,
 						const QStyleOption* opt,
 						const QWidget* widget ) const
 {
+  if ( checkDebugLevel(10) ) {
+    return QWindowsStyle::standardIconImplementation( standardIcon, opt, widget );
+  }
   /*
   switch ( standardIcon )
   {
@@ -1874,6 +1940,10 @@ QIcon Style_Salome::standardIconImplementation( StandardPixmap standardIcon,
 int Style_Salome::styleHint( StyleHint hint, const QStyleOption* opt, const QWidget* widget,
                             QStyleHintReturn* returnData ) const
 {
+  if ( checkDebugLevel(11) ) {
+    return QWindowsStyle::styleHint( hint, opt, widget, returnData );
+  }
+
   int aRes = QWindowsStyle::styleHint( hint, opt, widget, returnData );
   switch( hint ) {
     case SH_Table_GridLineColor: {
@@ -1890,8 +1960,12 @@ int Style_Salome::styleHint( StyleHint hint, const QStyleOption* opt, const QWid
 }
 
 QRect Style_Salome::subControlRect( ComplexControl cc, const QStyleOptionComplex* opt,
-                                   SubControl sc, const QWidget* wid ) const
+				    SubControl sc, const QWidget* wid ) const
 {
+  if ( checkDebugLevel(12) ) {
+    return QWindowsStyle::subControlRect( cc, opt, sc, wid );
+  }
+
   QRect res = QWindowsStyle::subControlRect( cc, opt, sc, wid );
   switch ( cc ) {
     case CC_SpinBox: {
@@ -1977,6 +2051,10 @@ QRect Style_Salome::subControlRect( ComplexControl cc, const QStyleOptionComplex
 QRect Style_Salome::subElementRect( SubElement se, const QStyleOption* opt,
                                    const QWidget* wid ) const
 {
+  if ( checkDebugLevel(13) ) {
+    return QWindowsStyle::subElementRect( se, opt, wid );
+  }
+
   QRect res = QWindowsStyle::subElementRect( se, opt, wid );
   int aHalfRect = (int)Style_Tools::getMaxRect( res, (int)getDblValue( Style_Model::edit_rad )/2 );
   int w = res.width(), h = res.height();
@@ -2010,48 +2088,48 @@ QRect Style_Salome::subElementRect( SubElement se, const QStyleOption* opt,
 void Style_Salome::updatePaletteColors()
 {
   QPalette aPal = QApplication::palette();
-  aPal.setColor( QPalette::WindowText, getColor( Style_Model::pal_wtext_clr ) );
-  aPal.setColor( QPalette::Button, getColor( Style_Model::button_clr ) );
-  aPal.setColor( QPalette::Light, getColor( Style_Model::pal_light_clr ) );
-  aPal.setColor( QPalette::Midlight, getColor( Style_Model::pal_light_clr ).light(115) );
-  aPal.setColor( QPalette::Dark, getColor( Style_Model::pal_dark_clr ) );
-  aPal.setColor( QPalette::Mid, aPal.button().color().dark(150) );
-  aPal.setColor( QPalette::Text, getColor( Style_Model::pal_text_clr ) );
-  //aPal.setColor( QPalette::BrightText, );
-  aPal.setColor( QPalette::ButtonText, getColor( Style_Model::pal_btext_clr ) );
-  aPal.setColor( QPalette::Base, getColor( Style_Model::pal_base_clr ) );
-  aPal.setColor( QPalette::AlternateBase,getColor( Style_Model::pal_base_clr ).dark( 110 )  );
-  aPal.setColor( QPalette::Window, getColor( Style_Model::bg_clr ) );
-  //aPal.setColor( QPalette::Shadow, );
-  aPal.setColor( QPalette::Highlight, getColor( Style_Model::pal_high_clr ) );
+  aPal.setColor( QPalette::WindowText,      getColor( Style_Model::pal_wtext_clr ) );
+  aPal.setColor( QPalette::Button,          getColor( Style_Model::button_clr ) );
+  aPal.setColor( QPalette::Light,           getColor( Style_Model::pal_light_clr ) );
+  aPal.setColor( QPalette::Midlight,        getColor( Style_Model::pal_light_clr ).light(115) );
+  aPal.setColor( QPalette::Dark,            getColor( Style_Model::pal_dark_clr ) );
+  aPal.setColor( QPalette::Mid,             aPal.color( QPalette::Active, QPalette::Button ).dark(150) );
+  aPal.setColor( QPalette::Text,            getColor( Style_Model::pal_text_clr ) );
+  //aPal.setColor( QPalette::BrightText, ??? );
+  aPal.setColor( QPalette::ButtonText,      getColor( Style_Model::pal_btext_clr ) );
+  aPal.setColor( QPalette::Base,            getColor( Style_Model::pal_base_clr ) );
+  aPal.setColor( QPalette::AlternateBase,   getColor( Style_Model::pal_base_clr ).dark( 110 )  );
+  aPal.setColor( QPalette::Window,          getColor( Style_Model::bg_clr ) );
+  //aPal.setColor( QPalette::Shadow, ??? );
+  QColor hc = getColor( Style_Model::pal_high_clr );
+  hc.setAlpha(100);
+  aPal.setColor( QPalette::Highlight,       hc );
   aPal.setColor( QPalette::HighlightedText, getColor( Style_Model::pal_high_text_clr ) );
-  //aPal.setColor( QPalette::Link, Qt::blue );
-  //aPal.setColor( QPalette::LinkVisited, Qt::magenta );
+  //aPal.setColor( QPalette::Link, ??? );
+  //aPal.setColor( QPalette::LinkVisited, ??? );
 
-  // dependence colors
-  aPal.setColor(QPalette::Inactive, QPalette::Button, aPal.button().color());
-  aPal.setColor(QPalette::Inactive, QPalette::Window, aPal.background().color());
-  aPal.setColor(QPalette::Inactive, QPalette::Light, aPal.light().color());
-  aPal.setColor(QPalette::Inactive, QPalette::Dark, aPal.dark().color());
+  // dependant colors
   if (aPal.midlight() == aPal.button())
-    aPal.setColor(QPalette::Midlight, aPal.button().color().light(110));
-  if (aPal.background() != aPal.base()) {
-    aPal.setColor(QPalette::Inactive, QPalette::Highlight, aPal.color(QPalette::Inactive, QPalette::Window));
+    aPal.setColor(QPalette::Inactive, QPalette::Midlight, aPal.color(QPalette::Active, QPalette::Button).light(110));
+  if (aPal.window() != aPal.base()) {
+    QColor hc1 = aPal.color(QPalette::Inactive, QPalette::Window);
+    hc1.setAlpha(100);
+    aPal.setColor(QPalette::Inactive, QPalette::Highlight,       hc1);
     aPal.setColor(QPalette::Inactive, QPalette::HighlightedText, aPal.color(QPalette::Inactive, QPalette::Text));
   }
 
-  const QColor bg = aPal.background().color();
-  const QColor fg = aPal.foreground().color(), btn = aPal.button().color();
+  const QColor bg  = aPal.window().color();
+  const QColor fg  = aPal.windowText().color();
+  const QColor btn = aPal.button().color();
+
   QColor disabled((fg.red()+btn.red())/2,(fg.green()+btn.green())/2,
                   (fg.blue()+btn.blue())/2);
-  aPal.setColorGroup(QPalette::Disabled, aPal.foreground(), aPal.button(), aPal.light(),
-      aPal.dark(), aPal.mid(), aPal.text(), aPal.brightText(), aPal.base(), aPal.background() );
-  aPal.setColor(QPalette::Disabled, QPalette::WindowText, disabled);
-  aPal.setColor(QPalette::Disabled, QPalette::Text, disabled);
-  aPal.setColor(QPalette::Disabled, QPalette::ButtonText, disabled);
-  aPal.setColor(QPalette::Disabled, QPalette::Highlight, aPal.highlight().color() );
-  aPal.setColor(QPalette::Disabled, QPalette::HighlightedText, aPal.highlightedText().color() );
-  aPal.setColor(QPalette::Disabled, QPalette::Base, bg);
+
+  aPal.setColor(QPalette::Disabled, QPalette::WindowText,      disabled);
+  aPal.setColor(QPalette::Disabled, QPalette::Text,            disabled);
+  aPal.setColor(QPalette::Disabled, QPalette::ButtonText,      disabled);
+  aPal.setColor(QPalette::Disabled, QPalette::Base,            bg);
+
   QApplication::setPalette( aPal );
 
   QColor aWndCol = myTTipWnd,
@@ -2095,7 +2173,7 @@ void Style_Salome::updateAllWidgets( QApplication* app )
   for (QWidgetList::ConstIterator it2 = all.constBegin(); it2 != all.constEnd(); ++it2) {
     w = *it2;
     if (w->windowType() != Qt::Desktop && w->testAttribute(Qt::WA_WState_Polished)
-        && !w->testAttribute(Qt::WA_SetStyle)) {
+	&& !w->testAttribute(Qt::WA_SetStyle)) {
       QEvent e(QEvent::StyleChange);
       QApplication::sendEvent(w, &e);
       polish( w );

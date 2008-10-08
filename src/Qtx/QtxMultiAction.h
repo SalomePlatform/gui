@@ -31,6 +31,7 @@ class QTX_EXPORT QtxMultiAction : public QtxActionSet
 {
   Q_OBJECT
 
+  class Menu;
   class Button;
   class Filter;
 

@@ -554,6 +554,10 @@ QtxPreferenceItem* QtxPreferenceItem::findItem( const QString& title, const int 
   return item;
 }
 
+void QtxPreferenceItem::activate()
+{
+}
+
 void QtxPreferenceItem::ensureVisible()
 {
   if ( parentItem() )

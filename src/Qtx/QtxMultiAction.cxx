@@ -26,6 +26,7 @@
 #include <QLayout>
 #include <QToolBar>
 #include <QPainter>
+#include <QHelpEvent>
 #include <QToolButton>
 #include <QApplication>
 #include <QStyleOptionButton>
@@ -53,6 +54,57 @@ public:
 	tb->setDown( false );
     }
     return QObject::eventFilter( o, e );
+  }
+};
+
+/*!
+  \class QtxMultiAction::Menu
+  \brief Custom menu to be used with the toolbuttons as drop down list.
+  \internal
+*/
+
+class QtxMultiAction::Menu : public QMenu
+{
+public:
+  //! \brief Constructor
+  Menu( QWidget* parent = 0 ) : QMenu( parent ) {}
+  //! \brief Destructor
+  ~Menu() {};
+
+protected:
+  //! \brief Paint the button
+  virtual bool event( QEvent* e )
+  {
+    bool res = false;
+    switch ( e->type() )
+    {
+    case QEvent::ToolTip:
+    case QEvent::WhatsThis:
+    case QEvent::QueryWhatsThis:
+      {
+        QHelpEvent* help = static_cast<QHelpEvent*>( e );
+        QWidget* w = QApplication::widgetAt( help->globalPos() );
+        if ( w && Qtx::isParent( w, this ) )
+        {
+          QHelpEvent he( help->type(), w->mapFromGlobal( help->globalPos() ), help->globalPos() );
+          QApplication::sendEvent( w, &he );
+          res = true;
+        }
+      }
+      break;
+    case QEvent::StatusTip:
+    case QEvent::WhatsThisClicked:
+      if ( parentWidget() )
+      {
+        QApplication::sendEvent( parentWidget(), e );
+        res = true;
+      }
+      break;
+    default:
+      res = QMenu::event( e );
+      break;
+    }
+    return res;
   }
 };
 
@@ -170,7 +222,8 @@ QtxMultiAction::~QtxMultiAction()
 */
 void QtxMultiAction::setActiveAction( QAction* a )
 {
-  if ( a && actions().contains( a ) && a != myCurrent && a->isEnabled() ) {
+  if ( a && actions().contains( a ) && a != myCurrent && a->isEnabled() )
+  {
     myCurrent = a;
     updateAction();
   }
@@ -276,7 +329,8 @@ QWidget* QtxMultiAction::createWidget( QWidget* parent )
     return 0;
 
   QToolButton* w = new Button( tb );
-  w->setMenu( new QMenu( w ) );
+  w->setMenu( new Menu( w ) );
+  w->setMouseTracking( true );
   w->setFocusPolicy( Qt::NoFocus );
   w->setIconSize( tb->iconSize() );
   w->setToolButtonStyle( tb->toolButtonStyle() );
@@ -352,6 +406,7 @@ void QtxMultiAction::updateButton( QToolButton* btn )
     QToolButton* b = new QToolButton( pm );
     b->setDefaultAction( *itr );
     b->setToolTip( (*itr)->toolTip() );
+    b->setStatusTip( (*itr)->statusTip() );
     b->setAutoRaise( true );
     b->setIconSize( btn->iconSize() );
     b->setToolButtonStyle( btn->toolButtonStyle() );

@@ -516,7 +516,7 @@ bool QtxPathListEdit::validate( const bool quietMode )
 	  if ( !quietMode && QMessageBox::information(this, 
 						      tr("Warning"),
 						      tr("%1\n\nThe directory doesn't exist.\nAdd directory anyway?").arg(dir.absPath()),
-						      tr("Yes"), tr("No"), QString::null, 1, 1) == 1) {
+						      tr("Yes"), tr("No"), QString(), 1, 1) == 1) {
 	    myEdit->setFocus();
             return false;
 	  }

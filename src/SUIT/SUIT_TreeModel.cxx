@@ -144,7 +144,7 @@ SUIT_TreeModel::TreeItem* SUIT_TreeModel::TreeItem::parent() const
 */
 int SUIT_TreeModel::TreeItem::position() const
 {
-  return myParent->myChildren.indexOf( (TreeItem*)this );
+  return myParent ? myParent->myChildren.indexOf( (TreeItem*)this ) : -1;
 }
 
 /*!
@@ -482,6 +482,7 @@ void SUIT_TreeModel::setRoot( SUIT_DataObject* r )
 
   //initialize();
   reset();
+  emit modelUpdated();
 }
 
 /*!
@@ -920,6 +921,7 @@ void SUIT_TreeModel::updateTree( SUIT_DataObject* obj )
   synchronize<ObjPtr,ItemPtr,SUIT_TreeModel::TreeSync>( obj, 
 							treeItem( obj ), 
 							SUIT_TreeModel::TreeSync( this ) );
+  emit modelUpdated();
 }
 
 /*!
@@ -1120,7 +1122,9 @@ SUIT_ProxyModel::SUIT_ProxyModel( QObject* parent )
 : QSortFilterProxyModel( parent ),
   mySortingEnabled( true )
 {
-  setSourceModel( new SUIT_TreeModel( this ) );
+  SUIT_TreeModel* model = new SUIT_TreeModel( this );
+  connect( model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
+  setSourceModel( model );
 }
 
 /*!
@@ -1132,7 +1136,9 @@ SUIT_ProxyModel::SUIT_ProxyModel( SUIT_DataObject* root, QObject* parent )
 : QSortFilterProxyModel( parent ),
   mySortingEnabled( true )
 {
-  setSourceModel( new SUIT_TreeModel( root, this ) );
+  SUIT_TreeModel* model = new SUIT_TreeModel( root, this );
+  connect( model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
+  setSourceModel( model );
 }
 
 /*!
@@ -1144,6 +1150,7 @@ SUIT_ProxyModel::SUIT_ProxyModel( SUIT_TreeModel* model, QObject* parent )
 : QSortFilterProxyModel( parent ),
   mySortingEnabled( true )
 {
+  connect( model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
   setSourceModel( model );
 }
 

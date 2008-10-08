@@ -130,6 +130,11 @@ void SUIT_DataBrowser::updateTree( SUIT_DataObject* obj, const bool autoOpen )
   if ( m ) {
     m->updateTree( obj );
     openLevels();
+
+    if (myAutoSizeFirstColumn)
+      adjustFirstColumnWidth();
+    if (myAutoSizeColumns)
+      adjustColumnsWidth();
   }
 }
 
@@ -243,6 +248,34 @@ void SUIT_DataBrowser::contextMenuPopup( QMenu* menu )
 }
 
 /*!
+  \brief Set 'auto-size first column' flag value.
+
+  If this flag is set to \c true (by default), the first column width is resized
+  to its contents.
+
+  \param on 'auto-size first column' flag value
+  \sa setAutoSizeColumns()
+*/
+void SUIT_DataBrowser::setAutoSizeFirstColumn( const bool on )
+{
+  myAutoSizeFirstColumn = on;
+}
+
+/*!
+  \brief Set 'auto-size columns' flag value.
+
+  If this flag is set to \c true (by default is false), columns width except 
+  the first column is resized to its contents.
+
+  \param on 'auto-size columns' flag value
+  \sa setAutoSizeFirstColumn()
+*/
+void SUIT_DataBrowser::setAutoSizeColumns( const bool on )
+{
+  myAutoSizeColumns = on;
+}
+
+/*!
   \brief Process context menu request event.
   \param e context menu event
 */
@@ -252,16 +285,40 @@ void SUIT_DataBrowser::contextMenuEvent( QContextMenuEvent* e )
 }
 
 /*!
+  \brief Set 'resize on expand item' flag value.
+
+  If this flag is set to \c true (by default is false), after
+  expanding an item columns will be resized to its contents.
+
+  \param on 'resize on expand item' flag value
+*/
+void SUIT_DataBrowser::setResizeOnExpandItem( const bool on )
+{
+  myResizeOnExpandItem = on;
+}
+
+/*!
   \brief Initialize object browser.
   \param root root data object
 */
 void SUIT_DataBrowser::init( SUIT_DataObject* root )
 {
-  setModel( new SUIT_ProxyModel( root, this ) );
+  SUIT_ProxyModel* m = new SUIT_ProxyModel( root, this );
+  connect( m, SIGNAL( modelUpdated() ), this, SLOT( onModelUpdated() ) );
+  
+  setModel( m );
   setItemDelegate( qobject_cast<SUIT_ProxyModel*>( model() )->delegate() );
-  connect( treeView(), SIGNAL( sortingEnabled(bool ) ), 
-	   model(), SLOT( setSortingEnabled( bool ) ) );
+  connect( treeView(), SIGNAL( sortingEnabled( bool ) ), 
+	   model(),    SLOT( setSortingEnabled( bool ) ) );
+  connect( treeView(), SIGNAL( doubleClicked( const QModelIndex& ) ), 
+	   this,       SLOT( onDblClicked( const QModelIndex& ) ) );
+  connect( treeView(), SIGNAL( expanded( const QModelIndex& ) ), 
+	   this,       SLOT( onExpanded( const QModelIndex& ) ) );
   myShortcut = new QShortcut( Qt::Key_F5, this, SIGNAL( requestUpdate() ), SIGNAL( requestUpdate() ) );
+
+  myAutoSizeFirstColumn = true;
+  myAutoSizeColumns = false;
+  myResizeOnExpandItem = false;
 }
 
 /*!
@@ -274,3 +331,50 @@ void SUIT_DataBrowser::init( SUIT_DataObject* root )
 
   \sa updateKey(), setUpdateKey()
 */
+
+/*!
+  \fn void SUIT_DataBrowser::doubleClicked( SUIT_DataObject* o );
+  \brief This signal is emitted when a mouse button is double-clicked.
+
+  The data object the mouse was double-clicked on is specified by \a o.
+  The signal is only emitted when the object is valid.
+
+  \param o data object which is double-clicked
+*/
+
+/*!
+  \brief Update internal modification time just after data model update
+*/
+void SUIT_DataBrowser::onModelUpdated()
+{
+  setModified();
+}
+
+/*!
+  \brief Called when item is double-clicked in the tree view
+  \internal
+  
+  Emits signal doubleClicked( SUIT_DataObject* );
+*/
+void SUIT_DataBrowser::onDblClicked( const QModelIndex& index )
+{
+  SUIT_ProxyModel* m = qobject_cast<SUIT_ProxyModel*>( model() );
+
+  if ( m ) {
+    SUIT_DataObject* obj = m->object( index );
+    if ( obj ) emit( doubleClicked( obj ) );
+  }
+}
+
+/*!
+  \brief Called when item specified by index is expanded.
+  \internal
+*/
+void SUIT_DataBrowser::onExpanded( const QModelIndex& index )
+{
+  if (myResizeOnExpandItem) {
+    adjustFirstColumnWidth();
+    adjustColumnsWidth();
+  }
+}
+

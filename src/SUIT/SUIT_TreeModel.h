@@ -108,6 +108,9 @@ public slots:
   virtual void           updateTree( const QModelIndex& );
   virtual void           updateTree( SUIT_DataObject* = 0 );
 
+signals:
+  void modelUpdated();
+
 private:
   void                   initialize();
 
@@ -168,6 +171,9 @@ public slots:
   virtual void           updateTree( const QModelIndex& );
   virtual void           updateTree( SUIT_DataObject* = 0 );
   void                   setSortingEnabled( bool );
+
+signals:
+  void modelUpdated();
 
 protected:
   virtual bool           lessThan( const QModelIndex&, const QModelIndex& ) const;

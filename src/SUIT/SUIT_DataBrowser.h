@@ -60,6 +60,10 @@ public:
 
   virtual void     contextMenuPopup( QMenu* );
 
+  void             setAutoSizeFirstColumn( const bool on );
+  void             setAutoSizeColumns( const bool on );
+  void             setResizeOnExpandItem( const bool on );
+
 protected:
   virtual void     contextMenuEvent( QContextMenuEvent* );
 
@@ -68,9 +72,19 @@ private:
 
 signals:
   void             requestUpdate();
+  void             doubleClicked( SUIT_DataObject* );
+
+private slots:
+  void             onModelUpdated();
+  void             onDblClicked( const QModelIndex& );
+  void             onExpanded( const QModelIndex& );
 
 private:
   QShortcut*       myShortcut;
+
+  bool             myAutoSizeFirstColumn;
+  bool             myAutoSizeColumns;
+  bool             myResizeOnExpandItem;
 };
 
 #endif // SUIT_BROWSER_H

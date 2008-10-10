@@ -150,9 +150,17 @@ bool QtxAction::eventFilter( QObject* o, QEvent* e )
   if ( o && o->isWidgetType() )
   {
     if ( e->type() == QEvent::ActionAdded && ((QActionEvent*)e)->action() == this )
-      QApplication::postEvent( this, new ActionNotify( true, (QWidget*)o ) );
+    {
+      addedTo( (QWidget*)o );
+      //ActionNotify a( true, (QWidget*)o );
+      //QApplication::sendEvent( this, &a );
+    }
     if ( e->type() == QEvent::ActionRemoved && ((QActionEvent*)e)->action() == this )
-      QApplication::postEvent( this, new ActionNotify( false, (QWidget*)o ) );
+    {
+      removedFrom( (QWidget*)o );
+      //ActionNotify a( false, (QWidget*)o );
+      //QApplication::sendEvent( this, &a );
+    }
   }
   return QWidgetAction::eventFilter( o, e );
 }

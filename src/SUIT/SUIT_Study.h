@@ -23,6 +23,7 @@
 
 #include <QList>
 #include <QObject>
+#include <QListIterator>
 
 class SUIT_DataObject;
 class SUIT_Application;

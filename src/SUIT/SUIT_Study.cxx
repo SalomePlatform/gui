@@ -425,9 +425,12 @@ void SUIT_Study::stop( SUIT_Operation* theOp )
 
   // get last operation which can be resumed
   SUIT_Operation* aResultOp = 0;
-  for ( Operations::iterator it = myOperations.end(); it != myOperations.begin(); --it )
+
+  QListIterator<SUIT_Operation*> it (myOperations);
+  it.toBack();
+  while( it.hasPrevious() )
   {
-    SUIT_Operation* anOp = *it;
+    SUIT_Operation* anOp = it.previous();
     if ( anOp && anOp != theOp && blockingOperation( anOp ) == 0 )
     {
       aResultOp = anOp;

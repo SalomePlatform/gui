@@ -31,10 +31,10 @@
 #include <TCollection_BasicMap.hxx>
 #endif
 #ifndef _Handle_SALOME_InteractiveObject_HeaderFile
-#include <Handle_SALOME_InteractiveObject.hxx>
+#include "Handle_SALOME_InteractiveObject.hxx"
 #endif
 #ifndef _Handle_SALOME_DataMapNodeOfDataMapOfIOMapOfInteger_HeaderFile
-#include <Handle_SALOME_DataMapNodeOfDataMapOfIOMapOfInteger.hxx>
+#include "Handle_SALOME_DataMapNodeOfDataMapOfIOMapOfInteger.hxx"
 #endif
 #ifndef _Standard_Integer_HeaderFile
 #include <Standard_Integer.hxx>

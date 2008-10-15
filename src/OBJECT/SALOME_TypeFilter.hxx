@@ -31,7 +31,7 @@
 #include <Standard.hxx>
 #endif
 #ifndef _Handle_SALOME_TypeFilter_HeaderFile
-#include <Handle_SALOME_TypeFilter.hxx>
+#include "Handle_SALOME_TypeFilter.hxx"
 #endif
 
 #ifndef _Standard_CString_HeaderFile

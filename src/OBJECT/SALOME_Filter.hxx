@@ -31,7 +31,7 @@
 #include <Standard.hxx>
 #endif
 #ifndef _Handle_SALOME_Filter_HeaderFile
-#include <Handle_SALOME_Filter.hxx>
+#include "Handle_SALOME_Filter.hxx"
 #endif
 
 #ifndef _MMgt_TShared_HeaderFile
@@ -41,7 +41,7 @@
 #include <Standard_Boolean.hxx>
 #endif
 #ifndef _Handle_SALOME_InteractiveObject_HeaderFile
-#include <Handle_SALOME_InteractiveObject.hxx>
+#include "Handle_SALOME_InteractiveObject.hxx"
 #endif
 
 class SALOME_Filter : public MMgt_TShared {

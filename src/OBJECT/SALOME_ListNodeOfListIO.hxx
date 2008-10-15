@@ -31,11 +31,11 @@
 #include <Standard.hxx>
 #endif
 #ifndef _Handle_SALOME_ListNodeOfListIO_HeaderFile
-#include <Handle_SALOME_ListNodeOfListIO.hxx>
+#include "Handle_SALOME_ListNodeOfListIO.hxx"
 #endif
 
 #ifndef _Handle_SALOME_InteractiveObject_HeaderFile
-#include <Handle_SALOME_InteractiveObject.hxx>
+#include "Handle_SALOME_InteractiveObject.hxx"
 #endif
 #ifndef _TCollection_MapNode_HeaderFile
 #include <TCollection_MapNode.hxx>

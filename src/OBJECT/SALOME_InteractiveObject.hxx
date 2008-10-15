@@ -31,7 +31,7 @@
 #include <Standard.hxx>
 #endif
 #ifndef _Handle_SALOME_InteractiveObject_HeaderFile
-#include <Handle_SALOME_InteractiveObject.hxx>
+#include "Handle_SALOME_InteractiveObject.hxx"
 #endif
 
 #ifndef _Standard_CString_HeaderFile

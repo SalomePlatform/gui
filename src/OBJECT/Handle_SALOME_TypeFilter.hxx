@@ -35,7 +35,7 @@
 #endif
 
 #ifndef _Handle_SALOME_Filter_HeaderFile
-#include <Handle_SALOME_Filter.hxx>
+#include "Handle_SALOME_Filter.hxx"
 #endif
 
 class Standard_Transient;

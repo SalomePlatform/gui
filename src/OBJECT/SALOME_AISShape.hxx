@@ -31,7 +31,7 @@
 #include <Standard.hxx>
 #endif
 #ifndef _Handle_SALOME_AISShape_HeaderFile
-#include <Handle_SALOME_AISShape.hxx>
+#include "Handle_SALOME_AISShape.hxx"
 #endif
 
 #ifndef _Standard_CString_HeaderFile

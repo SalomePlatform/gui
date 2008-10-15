@@ -31,7 +31,7 @@
 #include <Standard.hxx>
 #endif
 #ifndef _Handle_SALOME_AISObject_HeaderFile
-#include <Handle_SALOME_AISObject.hxx>
+#include "Handle_SALOME_AISObject.hxx"
 #endif
 
 #ifndef _AIS_InteractiveObject_HeaderFile

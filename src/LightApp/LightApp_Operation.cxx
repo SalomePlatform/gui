@@ -20,11 +20,11 @@
 //  Author : Sergey LITONIN
 //  Module : LightApp
 
-#include <LightApp_Operation.h>
-#include <LightApp_Module.h>
-#include <LightApp_Application.h>
-#include <LightApp_SelectionMgr.h>
-#include <LightApp_Dialog.h>
+#include "LightApp_Operation.h"
+#include "LightApp_Module.h"
+#include "LightApp_Application.h"
+#include "LightApp_SelectionMgr.h"
+#include "LightApp_Dialog.h"
 
 #include <SUIT_Desktop.h>
 #include <SUIT_Study.h>

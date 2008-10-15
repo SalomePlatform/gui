@@ -19,8 +19,8 @@
 #ifndef LIGHTAPP_STUDY_H
 #define LIGHTAPP_STUDY_H
 
-#include <LightApp.h>
-#include <LightApp_Driver.h>
+#include "LightApp.h"
+#include "LightApp_Driver.h"
 
 #include <CAM_Study.h>
 

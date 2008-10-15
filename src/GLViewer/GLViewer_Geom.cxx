@@ -20,7 +20,7 @@
 //
 
 //#include <GLViewerAfx.h>
-#include <GLViewer_Geom.h>
+#include "GLViewer_Geom.h"
 
 #define FAR_POINT 1e10  // Value used as a "very distant" co-ordinate
 #define TOLERANCE 1e-3

@@ -19,8 +19,8 @@
 #ifndef LIGHTAPP_HDFDRIVER_H
 #define LIGHTAPP_HDFDRIVER_H
 
-#include <LightApp.h>
-#include <LightApp_Driver.h>
+#include "LightApp.h"
+#include "LightApp_Driver.h"
 
 #ifdef WIN32
 #pragma warning( disable:4251 )

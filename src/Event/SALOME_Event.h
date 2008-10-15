@@ -25,7 +25,7 @@
 #ifndef SALOME_EVENT_H
 #define SALOME_EVENT_H
 
-#include <Event.h>
+#include "Event.h"
 
 #include <QEvent>
 

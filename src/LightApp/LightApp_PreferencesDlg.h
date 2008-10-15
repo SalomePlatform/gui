@@ -22,7 +22,7 @@
 #ifndef LIGHTAPP_PREFERENCESDLG_H
 #define LIGHTAPP_PREFERENCESDLG_H
 
-#include <LightApp.h>
+#include "LightApp.h"
 
 #include <QtxDialog.h>
 

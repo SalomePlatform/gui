@@ -22,7 +22,7 @@
 #ifndef CAF_TOOLS_H
 #define CAF_TOOLS_H
 
-#include <CAF.h>
+#include "CAF.h"
 
 #include <SUIT_Tools.h>
 

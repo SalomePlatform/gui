@@ -19,7 +19,7 @@
 // File:      LightApp_Dialog.cxx
 // Author:    Alexander SOLOVYOV
 
-#include <LightApp_Dialog.h>
+#include "LightApp_Dialog.h"
 #include <SUIT_Session.h>
 #include <SUIT_ResourceMgr.h>
 

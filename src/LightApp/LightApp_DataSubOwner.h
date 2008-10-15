@@ -20,8 +20,8 @@
 #ifndef LIGHTAPP_DATASUBOWNER_H
 #define LIGHTAPP_DATASUBOWNER_H
 
-#include <LightApp.h>
-#include <LightApp_DataOwner.h>
+#include "LightApp.h"
+#include "LightApp_DataOwner.h"
 
 /*!
   Class provide sub owner.

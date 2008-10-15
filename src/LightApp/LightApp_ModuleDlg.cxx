@@ -20,7 +20,7 @@
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 //
 
-#include <LightApp_ModuleDlg.h>
+#include "LightApp_ModuleDlg.h"
 
 #include <QLabel>
 #include <QPushButton>

@@ -19,7 +19,7 @@
 #ifndef LIGHTAPP_DRIVER_H
 #define LIGHTAPP_DRIVER_H
 
-#include <LightApp.h>
+#include "LightApp.h"
 
 #include "string"
 #include "vector"

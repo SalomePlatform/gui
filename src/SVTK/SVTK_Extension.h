@@ -24,7 +24,7 @@
   Functions of loading OpenGL extensions.
 */
 
-#include <SVTK.h>
+#include "SVTK.h"
 
 namespace SVTK
 {

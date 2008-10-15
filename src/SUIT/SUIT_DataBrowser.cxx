@@ -21,7 +21,7 @@
 // 
 
 #include "SUIT_DataBrowser.h"
-#include <SUIT_TreeModel.h>
+#include "SUIT_TreeModel.h"
 #include <QtxTreeView.h>
 
 #include <QShortcut>

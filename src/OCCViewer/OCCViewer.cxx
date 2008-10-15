@@ -17,7 +17,7 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#include <OCCViewer_Trihedron.h>
+#include "OCCViewer_Trihedron.h"
 
 #include <Graphic3d_CBounds.hxx>
 #include <OpenGl_GraphicDriver.hxx>

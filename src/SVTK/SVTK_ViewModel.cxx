@@ -37,7 +37,7 @@
 #include "SUIT_ViewModel.h"
 #include "SUIT_ViewManager.h"
 
-#include <SALOME_Actor.h>
+#include "SALOME_Actor.h"
 
 #include <QtxActionToolMgr.h>
 

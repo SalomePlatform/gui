@@ -19,7 +19,7 @@
 #ifndef OCCVIEWER_TRIHEDRON_H
 #define OCCVIEWER_TRIHEDRON_H
 
-#include <OCCViewer.h>
+#include "OCCViewer.h"
 
 #include <AIS_InteractiveObject.hxx>
 #include <Graphic3d_CBounds.hxx>

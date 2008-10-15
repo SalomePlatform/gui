@@ -19,7 +19,7 @@
 #ifndef SALOMEAPP_CHECKFILEDIALOG_H
 #define SALOMEAPP_CHECKFILEDIALOG_H
 
-#include <SalomeApp.h>
+#include "SalomeApp.h"
 
 #include <SUIT_FileDlg.h>
 

@@ -20,8 +20,7 @@
 #define SUIT_SESSION_H
 
 #include "SUIT.h"
-
-#include <SUIT_Application.h>
+#include "SUIT_Application.h"
 
 #include <QList>
 #include <QObject>

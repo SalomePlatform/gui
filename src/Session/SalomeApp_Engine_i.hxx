@@ -29,7 +29,7 @@
 #ifndef _SALOMEAPP_ENGINE_I_HXX_
 #define _SALOMEAPP_ENGINE_I_HXX_
 
-#include <SALOME_Session.hxx>
+#include "SALOME_Session.hxx"
 
 #include "SALOME_Component_i.hxx"
 

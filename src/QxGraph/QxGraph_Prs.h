@@ -19,7 +19,7 @@
 #ifndef QXGRAPH_PRS_H
 #define QXGRAPH_PRS_H
 
-#include <QxGraph.h>
+#include "QxGraph.h"
 
 #include <qcanvas.h>
 #include <map>

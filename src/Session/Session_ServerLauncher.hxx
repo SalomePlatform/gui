@@ -29,7 +29,7 @@
 #ifndef _SESSION_SERVERLAUNCHER_HXX_
 #define _SESSION_SERVERLAUNCHER_HXX_
 
-#include <SALOME_Session.hxx>
+#include "SALOME_Session.hxx"
 
 #include <CORBA.h> 
 #include <list>

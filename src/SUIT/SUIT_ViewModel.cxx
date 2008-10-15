@@ -20,8 +20,7 @@
 //
 
 #include "SUIT_ViewModel.h"
-
-#include <SUIT_ViewWindow.h>
+#include "SUIT_ViewWindow.h"
 
 SUIT_ViewModel::StatesMap SUIT_ViewModel::myStateMap;
 SUIT_ViewModel::ButtonsMap SUIT_ViewModel::myButtonMap;

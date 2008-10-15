@@ -29,7 +29,7 @@
 #ifndef _SESSION_SESSION_I_HXX_
 #define _SESSION_SESSION_I_HXX_
 
-#include <SALOME_Session.hxx>
+#include "SALOME_Session.hxx"
 
 #include <SALOMEconfig.h>
 #include CORBA_SERVER_HEADER(SALOME_Component)

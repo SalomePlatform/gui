@@ -20,7 +20,7 @@
 
 #include "SUIT_Desktop.h"
 #include "SUIT_ViewModel.h"
-#include <SUIT_ViewWindow.h>
+#include "SUIT_ViewWindow.h"
 #include "SUIT_Study.h"
 
 #include <QMap>

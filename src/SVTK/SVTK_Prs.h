@@ -29,7 +29,7 @@
 #ifndef SVTK_Prs_H
 #define SVTK_Prs_H
 
-#include <SVTK.h>
+#include "SVTK.h"
 #include "SALOME_Prs.h"
 
 class vtkActorCollection;

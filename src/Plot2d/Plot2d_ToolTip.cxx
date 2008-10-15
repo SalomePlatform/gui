@@ -19,9 +19,9 @@
 // File:      Plot2d_ToolTip.cxx
 // Author:    Alexandre SOLOVYOV
 
-#include <Plot2d_ToolTip.h>
-#include <Plot2d_ViewFrame.h>
-#include <Plot2d_Curve.h>
+#include "Plot2d_ToolTip.h"
+#include "Plot2d_ViewFrame.h"
+#include "Plot2d_Curve.h"
 
 #include <QFontMetrics>
 #include <QEvent>

@@ -47,7 +47,7 @@ MOC_FILES = SalomePyQt_moc.cxx
 COMMON_CPP_FLAGS = $(QT_INCLUDES) $(QWT_INCLUDES) $(SIP_INCLUDES) $(PYTHON_INCLUDES)	\
 	$(CAS_CPPFLAGS) $(VTK_INCLUDES) $(OGL_INCLUDES) $(BOOST_CPPFLAGS)		\
 	-DHAVE_CONFIG_H @KERNEL_CXXFLAGS@ -I$(top_builddir)/salomeadn/unix		\
-	-I$(top_builddir)/idl								\
+	-I$(srcdir) -I$(top_builddir)/idl						\
 	-I$(srcdir)/../../SUIT -I$(srcdir)/../../CAM -I$(srcdir)/../../STD		\
 	-I$(srcdir)/../../Qtx -I$(srcdir)/../../SalomeApp -I$(srcdir)/../../Event	\
 	-I$(srcdir)/../../SalomeSession -I$(srcdir)/../../LogWindow			\

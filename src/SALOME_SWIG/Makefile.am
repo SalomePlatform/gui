@@ -62,7 +62,7 @@ salomeinclude_HEADERS = $(SWIG_SOURCES) SALOMEGUI_Swig.hxx SALOMEGUI_Swig.i
 _libSALOME_Swig_la_CPPFLAGS = \
 	$(QT_INCLUDES) $(QWT_INCLUDES) $(PYTHON_INCLUDES) $(CAS_CPPFLAGS) $(VTK_INCLUDES)	\
 	$(OGL_INCLUDES) $(BOOST_CPPFLAGS) -DHAVE_CONFIG_H @KERNEL_CXXFLAGS@			\
-	-I$(top_builddir)/salome_adm/unix -I$(top_builddir)/idl					\
+	-I$(top_builddir)/salome_adm/unix -I$(top_builddir)/idl -I$(srcdir) 			\
 	-I$(srcdir)/../SalomeApp -I$(srcdir)/../Qtx -I$(srcdir)/../SUIT				\
 	-I$(srcdir)/../ObjBrowser -I$(srcdir)/../LightApp -I$(srcdir)/../SOCC			\
 	-I$(srcdir)/../SVTK -I$(srcdir)/../Event -I$(srcdir)/../OBJECT				\

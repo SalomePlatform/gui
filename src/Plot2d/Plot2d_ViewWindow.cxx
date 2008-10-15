@@ -385,7 +385,7 @@ void Plot2d_ViewWindow::createActions()
 
   // 10. Print 
   aAction = new QtxAction( tr( "MNU_PRINT_VIEW" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_PRINT" ) ),
+			   aResMgr->loadPixmap( "STD", tr( "ICON_PRINT" ) ),
                            tr( "MNU_PRINT_VIEW" ),
 			   0, this);
   aAction->setStatusTip( tr( "DSC_PRINT_VIEW" ) );

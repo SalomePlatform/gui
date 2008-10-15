@@ -595,7 +595,7 @@ SVTK_MainWindow
 
   // print view
   anAction = new QtxAction(tr("MNU_PRINT_VIEW"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_PRINT_VIEW" ) ),
+			   theResourceMgr->loadPixmap( "STD", tr( "ICON_PRINT" ) ),
 			   tr( "MNU_PRINT_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_PRINT_VIEW"));
   connect(anAction, SIGNAL(triggered(bool)), this, SLOT(onPrintView()));

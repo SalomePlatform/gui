@@ -130,6 +130,7 @@ if test "x$pyqt_ok" == "xyes" ; then
     TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib${LIB_LOCATION_SUFFIX} /usr/lib${LIB_LOCATION_SUFFIX}/python${PYTHON_VERSION}/site-packages"
     TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib${LIB_LOCATION_SUFFIX}/python${PYTHON_VERSION}/site-packages/PyQt4"
     TEST_SIPS_DIRS="${TEST_SIPS_DIRS} /usr/share/sip"
+    TEST_SIPS_DIRS="${TEST_SIPS_DIRS} /usr/share/sip/PyQt4"
 
     dnl check PyQt libs
     pyqt_ok=no

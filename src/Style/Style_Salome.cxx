@@ -60,6 +60,8 @@
 #include <QSlider>
 #include <QMainWindow>
 
+#include <limits.h>
+
 #define SHADOW          1
 #define LINE_GR_MARGIN  10
 #define HIGH_WDG_MARGIN 10

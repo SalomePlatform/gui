@@ -31,10 +31,7 @@
 
 #include <set>
 #include <map>
-
-#ifdef WIN32
 #include <algorithm>
-#endif
 
 #include <vtkUnstructuredGrid.h>
 #include <vtkGeometryFilter.h>

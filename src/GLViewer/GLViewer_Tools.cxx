@@ -27,6 +27,7 @@
 #include <GL/gl.h>
 
 #include <iostream>
+#include <string.h>
 
 /*!
   Constructor

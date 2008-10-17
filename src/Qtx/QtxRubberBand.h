@@ -27,8 +27,10 @@
 
 #include <QWidget>
 
-class QTX_EXPORT QtxAbstractRubberBand: public QWidget
+class QTX_EXPORT QtxAbstractRubberBand : public QWidget
 {
+  Q_OBJECT
+
 protected:
   QtxAbstractRubberBand( QWidget* );
 
@@ -57,8 +59,9 @@ protected:
 
 class QTX_EXPORT QtxRectRubberBand: public QtxAbstractRubberBand
 {
-public:
+  Q_OBJECT
 
+public:
   QtxRectRubberBand( QWidget* );
   virtual ~QtxRectRubberBand();
 
@@ -71,8 +74,9 @@ public:
 
 class QTX_EXPORT QtxPolyRubberBand: public QtxAbstractRubberBand
 {
-public:
+  Q_OBJECT
 
+public:
   QtxPolyRubberBand( QWidget* );
   virtual ~QtxPolyRubberBand();
 

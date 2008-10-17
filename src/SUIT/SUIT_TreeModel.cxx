@@ -25,6 +25,31 @@
 #include "SUIT_DataObject.h"
 
 #include <QApplication>
+#include <QHash>
+
+SUIT_AbstractModel::SUIT_AbstractModel()
+{
+}
+
+SUIT_AbstractModel::operator const QAbstractItemModel*() const
+{
+  return dynamic_cast<const QAbstractItemModel*>( this );
+}
+
+SUIT_AbstractModel::operator QAbstractItemModel*()
+{
+  return dynamic_cast<QAbstractItemModel*>( this );
+}
+
+SUIT_AbstractModel::operator const QObject*() const
+{
+  return dynamic_cast<const QObject*>( this );
+}
+
+
+
+
+
 
 /*!
   \class SUIT_TreeModel::TreeItem
@@ -451,6 +476,140 @@ SUIT_TreeModel::~SUIT_TreeModel()
 }
 
 /*!
+  \brief Register new column in the model
+  \param group_id - unique data object group identificator
+  \param name - translated column name
+  \param custom_id - custom column id that should be passed into method SUIT_DataObject::data()
+ */
+void SUIT_TreeModel::registerColumn( const int group_id, const QString& name, const int custom_id )
+{
+  bool found = false;
+  for( int i=0, n=myColumns.size(); i<n && !found; i++ )
+    if( name==myColumns[i].myName )
+	{
+	  myColumns[i].myIds.insert( group_id, custom_id );
+	  found = true;
+	}
+  if( !found )
+  {
+	ColumnInfo inf;
+	inf.myName = name;
+	inf.myIds.insert( group_id, custom_id );
+	inf.myAppropriate = Qtx::Shown;
+	int n = myColumns.size();
+	myColumns.resize( n+1 );
+	myColumns[n] = inf;
+	reset();
+  }
+}
+
+/*!
+  \brief Remove column from the model
+
+  Please take into account that column is removed only for given group_id, it means
+  that information of data objects with such group_id won't be shown.
+  If there is not any registered group_id for this column after removing, the column will be hidden
+  otherwise it continue to be shown
+
+  \param group_id - unique data object identificator allowing the classification of objects 
+  \param name - translated column name
+ */
+void SUIT_TreeModel::unregisterColumn( const int group_id, const QString& name )
+{
+  for( int i=0, n=myColumns.size(); i<n; i++ )
+    if( myColumns[i].myName==name )
+	{
+	  myColumns[i].myIds.remove( group_id );
+	  if( myColumns[i].myIds.isEmpty() )
+	  {
+	    myColumns.remove( i );
+		reset();
+	  }
+	  break;
+    }
+}
+
+/*!
+  \brief Change column icon.
+
+  \param name - column name
+  \param icon - new icon of the specified column
+*/
+void SUIT_TreeModel::setColumnIcon( const QString& name, const QPixmap& icon )
+{
+  for( int i=0, n=myColumns.size(); i<n; i++ )
+    if( myColumns[i].myName==name )
+	{
+	  myColumns[i].myIcon = icon;
+	  break;
+	}
+}
+
+/*!
+  \brief Get column icon.
+
+  \param name - column name
+  \return icon of the specified column
+*/
+QPixmap SUIT_TreeModel::columnIcon( const QString& name ) const
+{
+  QPixmap res;
+  for( int i=0, n=myColumns.size(); i<n; i++ )
+    if( myColumns[i].myName==name )
+	{
+	  res = myColumns[i].myIcon;
+	  break;
+	}
+  return res;
+}
+
+/*!
+  \brief Change appropriate status
+  
+  Appropriate status determines if the column should appear in the tree view header popup menu
+  (to show/hide the column).
+
+  If appropriate status is not specified yet, the \c Shown value is taken,
+  it means that column should be always visible.
+
+  \param name - column name
+  \param appr - new appropriate status
+*/
+void SUIT_TreeModel::setAppropriate( const QString& name, const Qtx::Appropriate appr )
+{
+  for( int i=0, n=myColumns.size(); i<n; i++ )
+    if( myColumns[i].myName==name )
+	{
+	  myColumns[i].myAppropriate = appr;
+	  emit headerDataChanged( Qt::Horizontal, i, i );
+	  break;
+	}
+}
+
+/*!
+  \brief Check if the column should appear in the tree view header popup menu
+  (to show/hide the column).
+
+  Default implementation (if appropriate status is not specified yet)
+  returns \c Shown, it means that column should be always visible.
+
+  \param name - column name
+  \return appropriate status
+*/
+Qtx::Appropriate SUIT_TreeModel::appropriate( const QString& name ) const
+{
+  Qtx::Appropriate appr = Qtx::Shown;
+  for( int i=0, n=myColumns.size(); i<n; i++ )
+    if( myColumns[i].myName==name )
+	{
+	  appr = myColumns[i].myAppropriate;
+	  break;
+	}
+  return appr;
+}
+
+
+/*!
   \brief Get data tree root object.
   \return data tree root
   \sa setRoot()
@@ -502,84 +661,98 @@ QVariant SUIT_TreeModel::data( const QModelIndex& index, int role ) const
   QColor c;
   QVariant val;
 
-  if ( obj ) {
-    switch ( role ) {
+  int obj_group_id = obj->groupId();
+  const ColumnInfo& inf = myColumns[index.column()];
+
+  int id = -1;
+  if( inf.myIds.contains( 0 ) )
+    id = inf.myIds[0];
+  if( inf.myIds.contains( obj_group_id ) )
+    id = inf.myIds[obj_group_id];
+
+  if( id<0 )
+    return QVariant();
+
+  if ( obj )
+  {
+    switch ( role )
+	{
     case DisplayRole:
       // data object text for the specified column
-      val = obj->text( index.column() ); 
+      val = obj->text( id ); 
       break;
     case DecorationRole:
       // data object icon for the specified column
-      val = obj->icon( index.column() ); 
+      val = obj->icon( id ); 
       break;
     case ToolTipRole:
       // data object tooltip for the specified column
-      val = obj->toolTip( index.column() ); 
+      val = obj->toolTip( id ); 
       break;
     case StatusTipRole:
       // data object status tip for the specified column
-      val = obj->statusTip( index.column() ); 
+      val = obj->statusTip( id ); 
       break;
     case WhatsThisRole:
       // data object what's this info for the specified column
-      val = obj->whatsThis( index.column() ); 
+      val = obj->whatsThis( id ); 
       break;
     case FontRole:
       // data object font for the specified column
-      val = obj->font( index.column() ); 
+      val = obj->font( id ); 
       break;
     case TextAlignmentRole:
       // data object text alignment for the specified column
-      val = obj->alignment( index.column() ); 
+      val = obj->alignment( id ); 
       break;
     case BackgroundRole:
       // data background color for the specified column
-      c = obj->color( SUIT_DataObject::Background, index.column() );
-      if ( !c.isValid() ) // default value
-	c = QApplication::palette().color( QPalette::Base );
+      c = obj->color( SUIT_DataObject::Background, id );
+      if( !c.isValid() ) // default value
+	    c = QApplication::palette().color( QPalette::Base );
       c.setAlpha( 0 );
       val = c; 
       break;
     case ForegroundRole:
       // data foreground (text) color for the specified column
-      c = obj->color( SUIT_DataObject::Foreground, index.column() );
-      if ( !c.isValid() ) // default value
-	c = QApplication::palette().color( QPalette::Foreground );
+      c = obj->color( SUIT_DataObject::Foreground, id );
+      if( !c.isValid() ) // default value
+	    c = QApplication::palette().color( QPalette::Foreground );
       val = c; 
       break;
     case BaseColorRole:
       // editor background color for the specified column
-      c = obj->color( SUIT_DataObject::Base, index.column() );
-      if ( !c.isValid() ) // default value
-	c = QApplication::palette().color( QPalette::Base );
+      c = obj->color( SUIT_DataObject::Base, id );
+      if( !c.isValid() ) // default value
+	    c = QApplication::palette().color( QPalette::Base );
       val = c; 
       break;
     case TextColorRole:
       // editor foreground (text) color for the specified column
-      c = obj->color( SUIT_DataObject::Text, index.column() );
-      if ( !c.isValid() ) // default value
-	c = QApplication::palette().color( QPalette::Text );
+      c = obj->color( SUIT_DataObject::Text, id );
+      if( !c.isValid() ) // default value
+	    c = QApplication::palette().color( QPalette::Text );
       val = c; 
       break;
     case HighlightRole:
       // adta object highlighted background color for the specified column
-      c = obj->color( SUIT_DataObject::Highlight, index.column() );
-      if ( !c.isValid() ) // default value
-	c = QApplication::palette().color( QPalette::Highlight );
+      c = obj->color( SUIT_DataObject::Highlight, id );
+      if( !c.isValid() ) // default value
+	    c = QApplication::palette().color( QPalette::Highlight );
       val = c; 
       break;
     case HighlightedTextRole:
       // data object highlighted foreground (text) color for the specified column
-      c = obj->color( SUIT_DataObject::HighlightedText, index.column() );
-      if ( !c.isValid() ) // default value
-	c = QApplication::palette().color( QPalette::HighlightedText );
+      c = obj->color( SUIT_DataObject::HighlightedText, id );
+      if( !c.isValid() ) // default value
+	    c = QApplication::palette().color( QPalette::HighlightedText );
       val = c; 
       break;
     case CheckStateRole:
       // data object checked state for the specified column
       // NOTE! three-state check is not supported currently
-      if ( obj->isCheckable( index.column() ) )
-	val = obj->isOn( index.column() ) ? Qt::Checked : Qt::Unchecked; 
+      if( obj->isCheckable( id ) )
+	    val = obj->isOn( id ) ? Qt::Checked : Qt::Unchecked; 
       break;
     case SizeHintRole:
       // data size hint
@@ -660,24 +833,25 @@ Qt::ItemFlags SUIT_TreeModel::flags( const QModelIndex& index ) const
   \param role data role
   \return header data
 */
-QVariant SUIT_TreeModel::headerData( int column, Qt::Orientation orientation,
-				     int role ) const
+QVariant SUIT_TreeModel::headerData( int column, Qt::Orientation orientation, int role ) const
 {
   QVariant d;
   // NOTE! only horizontal header is supported
-  if ( root() && orientation == Qt::Horizontal ) {
-    switch ( role ) {
+  if ( root() && orientation == Qt::Horizontal )
+  {
+    switch ( role )
+	{
     case DisplayRole:
       // column title
-      d = root()->columnTitle( column );
+      d = myColumns[column].myName;
       break;
     case DecorationRole:
       // column icon
-      d = root()->columnIcon( column );
+      d = myColumns[column].myIcon;
       break;
     case AppropriateRole:
       // appropriate flag (can column be hidden via context popup menu)
-      d = root()->appropriate( column );
+      d = myColumns[column].myAppropriate;
       break;
     default:
       break;
@@ -696,13 +870,21 @@ QVariant SUIT_TreeModel::headerData( int column, Qt::Orientation orientation,
 QModelIndex SUIT_TreeModel::index( int row, int column, 
 				   const QModelIndex& parent ) const
 {
-  if ( hasIndex( row, column, parent ) ) {
+  if( hasIndex( row, column, parent ) )
+  {
     TreeItem* parentItem = treeItem( parent );
-    if ( parentItem ) {
+    QString pname;
+    if( parentItem && parentItem->dataObject() )
+      pname = parentItem->dataObject()->name();
+    if( parentItem )
+    {
       TreeItem* childItem = parentItem->child( row );
-      if ( childItem )
+      if( childItem )
+      {
+        QString cname = childItem->dataObject()->name();
 	return createIndex( row, column, childItem );
     }
+  }
   }
   return QModelIndex();
 }
@@ -734,7 +916,7 @@ QModelIndex SUIT_TreeModel::parent( const QModelIndex& index ) const
 */
 int SUIT_TreeModel::columnCount( const QModelIndex& /*parent*/ ) const
 {
-  return root() ? root()->columnCount() : 0;
+  return myColumns.size();
 }
 
 /*!
@@ -942,6 +1124,7 @@ void SUIT_TreeModel::initialize()
   if ( !myRootItem )
     myRootItem = new TreeItem( 0 );
 
+  registerColumn( 0, QObject::tr( "NAME_COLUMN" ), SUIT_DataObject::NameId );
   updateTree();
 }
 
@@ -1039,7 +1222,7 @@ void SUIT_TreeModel::updateItem( SUIT_TreeModel::TreeItem* item )
   
   // update all columns corresponding to the given data object
   QModelIndex firstIdx = index( obj, 0 );
-  QModelIndex lastIdx  = index( obj, obj->columnCount() - 1 );
+  QModelIndex lastIdx  = index( obj, columnCount() - 1 );
   emit dataChanged( firstIdx, lastIdx );
 }
 
@@ -1143,12 +1326,12 @@ SUIT_ProxyModel::SUIT_ProxyModel( SUIT_DataObject* root, QObject* parent )
   \param model tree model
   \param parent parent object
 */
-SUIT_ProxyModel::SUIT_ProxyModel( SUIT_TreeModel* model, QObject* parent )
+SUIT_ProxyModel::SUIT_ProxyModel( SUIT_AbstractModel* model, QObject* parent )
 : QSortFilterProxyModel( parent ),
   mySortingEnabled( true )
 {
-  connect( model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
-  setSourceModel( model );
+  connect( *model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
+  setSourceModel( *model );
 }
 
 /*!
@@ -1319,6 +1502,17 @@ bool SUIT_ProxyModel::lessThan( const QModelIndex& left, const QModelIndex& righ
 }
 
 /*!
+  \brief Check if the specified column supports custom sorting.
+  \param column column index on which data is being sorted
+  \return \c true if column requires custom sorting
+  \sa lessThan()
+*/
+bool SUIT_ProxyModel::customSorting( const int column ) const
+{
+  return treeModel() ? treeModel()->customSorting( column ) : false;
+}
+
+/*!
   \brief Enable/disable sorting.
   \param enabled new flag state
   \sa isSortingEnabled()
@@ -1333,10 +1527,100 @@ void SUIT_ProxyModel::setSortingEnabled( bool enabled )
   \brief Get tree model.
   \return tree model
 */
-SUIT_TreeModel* SUIT_ProxyModel::treeModel() const
+SUIT_AbstractModel* SUIT_ProxyModel::treeModel() const
 {
-  return dynamic_cast<SUIT_TreeModel*>( sourceModel() );
+  return dynamic_cast<SUIT_AbstractModel*>( sourceModel() );
 }
+
+/*!
+  \brief Register new column in the model
+  \param group_id - unique data object identificator allowing the classification of objects 
+  \param name - translated column name
+  \param custom_id - custom column id that should be passed into method SUIT_DataObject::data()
+ */
+void SUIT_ProxyModel::registerColumn( const int group_id, const QString& name, const int custom_id )
+{
+  if( treeModel() )
+    treeModel()->registerColumn( group_id, name, custom_id );
+}
+
+/*!
+  \brief Remove column from the model
+
+  Please take into account that column is removed only for given group_id, it means
+  that information of data objects with such group_id won't be shown.
+  If there is not any registered group_id for this column after removing, the column will be hidden
+  otherwise it continue to be shown
+
+  \param group_id - unique data object identificator allowing the classification of objects 
+  \param name - translated column name
+ */
+void SUIT_ProxyModel::unregisterColumn( const int group_id, const QString& name )
+{
+  if( treeModel() )
+    treeModel()->unregisterColumn( group_id, name );
+}
+
+/*!
+  \brief Change column icon.
+
+  \param name - column name
+  \param icon - new icon of the specified column
+*/
+void SUIT_ProxyModel::setColumnIcon( const QString& name, const QPixmap& icon )
+{
+  if( treeModel() )
+    treeModel()->setColumnIcon( name, icon );
+}
+
+/*!
+  \brief Get column icon.
+
+  \param name - column name
+  \return icon of the specified column
+*/
+QPixmap SUIT_ProxyModel::columnIcon( const QString& name ) const
+{
+  return treeModel() ? treeModel()->columnIcon( name ) : QPixmap();
+}
+
+/*!
+  \brief Change appropriate status
+  
+  Appropriate status determines if the column should appear in the tree view header popup menu
+  (to show/hide the column).
+
+  If appropriate status is not specified yet, the \c Shown value is taken,
+  it means that column should be always visible.
+
+  \param name - column name
+  \param appr - new appropriate status
+*/
+void SUIT_ProxyModel::setAppropriate( const QString& name, const Qtx::Appropriate appr )
+{
+  if( treeModel() )
+    treeModel()->setAppropriate( name, appr );
+}
+
+/*!
+  \brief Check if the column should appear in the tree view header popup menu
+  (to show/hide the column).
+
+  Default implementation (if appropriate status is not specified yet)
+  returns \c Shown, it means that column should be always visible.
+
+  \param name - column name
+  \return appropriate status
+*/
+Qtx::Appropriate SUIT_ProxyModel::appropriate( const QString& name ) const
+{
+  return treeModel() ? treeModel()->appropriate( name ) : Qtx::Shown;
+}
+
+
+
+
+
 
 /*!
   \class SUIT_ItemDelegate

@@ -165,6 +165,7 @@ MOC_FILES =				\
 	QtxPathEdit_moc.cxx		\
 	QtxPathListEdit_moc.cxx		\
 	QtxPopupMgr_moc.cxx		\
+	QtxRubberBand_moc.cxx           \
 	QtxSearchTool_moc.cxx		\
 	QtxSplash_moc.cxx		\
 	QtxToolBar_moc.cxx		\

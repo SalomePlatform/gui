@@ -55,9 +55,10 @@ public:
     HighlightedText    //!< highlighted foreground (text) color
   } ColorRole;
 
-  //! Column index
-  enum { 
-    NameIdx            //!< name column
+  //! Column id
+  enum
+  { 
+    NameId            //!< name column
   };
 
   SUIT_DataObject( SUIT_DataObject* = 0 );
@@ -66,11 +67,6 @@ public:
   SUIT_DataObject*            root() const;
   SUIT_DataObject*            lastChild() const;
   SUIT_DataObject*            firstChild() const;
-
-  virtual int                 columnCount() const;
-  virtual QString             columnTitle( const int = NameIdx ) const;
-  virtual QPixmap             columnIcon( const int = NameIdx ) const;
-  virtual bool                appropriate( const int = NameIdx ) const;
 
   int                         childCount() const;
   int                         childPos( const SUIT_DataObject* ) const;
@@ -98,34 +94,34 @@ public:
   virtual void                setParent( SUIT_DataObject* );
 
   virtual QString             name() const;
-  virtual QString             text( const int = NameIdx ) const;
-  virtual QPixmap             icon( const int = NameIdx ) const;
-  virtual QColor              color( const ColorRole, const int = NameIdx ) const;
-  virtual QString             toolTip( const int = NameIdx ) const;
-  virtual QString             statusTip( const int = NameIdx ) const;
-  virtual QString             whatsThis( const int = NameIdx ) const;
-  virtual QFont               font( const int = NameIdx ) const;
-  virtual int                 alignment( const int = NameIdx ) const;
+  virtual QString             text( const int = NameId ) const;
+  virtual QPixmap             icon( const int = NameId ) const;
+  virtual QColor              color( const ColorRole, const int = NameId ) const;
+  virtual QString             toolTip( const int = NameId ) const;
+  virtual QString             statusTip( const int = NameId ) const;
+  virtual QString             whatsThis( const int = NameId ) const;
+  virtual QFont               font( const int = NameId ) const;
+  virtual int                 alignment( const int = NameId ) const;
 
   virtual bool                isDragable() const;
   virtual bool                isDropAccepted( SUIT_DataObject* obj );
 
   virtual bool                isEnabled() const;
   virtual bool                isSelectable() const;
-  virtual bool                isCheckable( const int = NameIdx ) const;
+  virtual bool                isCheckable( const int = NameId ) const;
 
-  virtual bool                isOn( const int = NameIdx ) const;
-  virtual void                setOn( const bool, const int = NameIdx );
+  virtual bool                isOn( const int = NameId ) const;
+  virtual void                setOn( const bool, const int = NameId );
 
   virtual bool                isOpen() const;
   virtual void                setOpen( const bool );
 
   virtual void                update();
-  virtual bool                customSorting( const int = NameIdx ) const;
-  virtual bool                compare( const QVariant&, const QVariant&, 
-				       const int = NameIdx ) const;
+  virtual bool                customSorting( const int = NameId ) const;
+  virtual bool                compare( const QVariant&, const QVariant&, const int = NameId ) const;
 
   virtual SUIT_DataObjectKey* key() const;
+  virtual int groupId() const;
 
   static Signal*              signal();
   static bool                 connect( const char*, QObject*, const char* );

@@ -95,6 +95,7 @@ public:
   virtual bool                        isPossibleToClose( bool& );
 
   virtual bool                        useStudy( const QString& );
+  virtual void                        updateDesktopTitle();
 
 public slots:
   virtual void                        onLoadDoc();
@@ -121,7 +122,6 @@ protected:
   virtual void                        onSelectionChanged();
 
   virtual void                        createPreferences( LightApp_Preferences* );
-  virtual void                        updateDesktopTitle();
 
   virtual bool                        closeAction( const int, bool& );
   virtual int                         closeChoice( const QString& );

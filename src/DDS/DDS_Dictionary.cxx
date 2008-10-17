@@ -587,3 +587,18 @@ Standard_Real DDS_Dictionary::FromSI( const Standard_Real theValue, const Standa
 
   return aRetValue;
 }
+
+/*!
+  \brief Fill given string container \a seq with keys belonging to group with name \a theComponent
+  \param theComponent name of group whose keys should be stored in the container
+  \param seq returned string container with keys belonging to group; it is not cleared before filling
+*/
+void DDS_Dictionary::GetKeys( const TCollection_AsciiString& theComponent, TColStd_SequenceOfAsciiString& seq ) const
+{
+  Handle( DDS_DicGroup ) aDicGroup;
+  if( myGroupMap.Contains( theComponent ) )
+    aDicGroup = myGroupMap.FindFromKey( theComponent );
+
+  if( !aDicGroup.IsNull() )
+    aDicGroup->GetKeys( seq );
+}

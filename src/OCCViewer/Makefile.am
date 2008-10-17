@@ -55,7 +55,8 @@ dist_libOCCViewer_la_SOURCES =			\
 	OCCViewer_SetRotationPointDlg.cxx	\
 	OCCViewer_ClippingDlg.cxx		\
 	OCCViewer_AxialScaleDlg.cxx		\
-	OCCViewer_Trihedron.cxx
+	OCCViewer_Trihedron.cxx			\
+	OCCViewer_ToolTip.cxx
 
 MOC_FILES =					\
 	OCCViewer_AISSelector_moc.cxx		\
@@ -68,7 +69,9 @@ MOC_FILES =					\
 	OCCViewer_CreateRestoreViewDlg_moc.cxx	\
 	OCCViewer_SetRotationPointDlg_moc.cxx	\
 	OCCViewer_ClippingDlg_moc.cxx		\
-	OCCViewer_AxialScaleDlg_moc.cxx
+	OCCViewer_AxialScaleDlg_moc.cxx		\
+	OCCViewer_ToolTip_moc.cxx
+	
 nodist_libOCCViewer_la_SOURCES = $(MOC_FILES)
 
 dist_salomeres_DATA =				\

@@ -112,8 +112,9 @@ void QtxTreeView::Header::contextMenuEvent( QContextMenuEvent* e )
       else if ( qVariantCanConvert<QPixmap>( iconData ) )
 	icon = qVariantValue<QPixmap>( iconData );
     }
-    if ( ( !lab.isEmpty() || !icon.isNull() ) && 
-	 appropriate.isValid() ? appropriate.toBool() : true ) {
+    if( ( !lab.isEmpty() || !icon.isNull() ) && 
+	    appropriate.isValid() ? appropriate.toInt()==Qtx::Toggled : true )
+	{
       QAction* a = menu.addAction( icon, lab );
       a->setCheckable( true );
       a->setChecked( !isSectionHidden( i ) );
@@ -152,6 +153,7 @@ void QtxTreeView::Header::contextMenuEvent( QContextMenuEvent* e )
   }
   e->accept();
 }
+
 
 /*!
   \class QtxTreeView
@@ -370,4 +372,24 @@ void QtxTreeView::setOpened( const QModelIndex& index, const int levels, bool op
 void QtxTreeView::emitSortingEnabled( bool enabled )
 {
   emit( sortingEnabled( enabled ) );
+}
+
+void QtxTreeView::setModel( QAbstractItemModel* m )
+{
+  if( model() )
+	disconnect( model(), SIGNAL( headerDataChanged( Qt::Orientation, int, int ) ),
+                this, SLOT( onAppropriate( Qt::Orientation, int, int ) ) );
+  QTreeView::setModel( m );
+  connect( model(), SIGNAL( headerDataChanged( Qt::Orientation, int, int ) ),
+           this, SLOT( onAppropriate( Qt::Orientation, int, int ) ) );
+}
+
+void QtxTreeView::onAppropriate( Qt::Orientation orient, int first, int last )
+{
+  if( orient==Qt::Horizontal )
+    for( int i=first; i<=last; i++ )
+	{
+	  int appr = model()->headerData( i, orient, Qtx::AppropriateRole ).toInt();
+	  header()->setSectionHidden( i, appr==Qtx::Hidden );
+	}
 }

@@ -141,6 +141,8 @@ public:
 
   virtual bool                        checkDataObject( LightApp_DataObject* theObj );
 
+  virtual void                        updateDesktopTitle();
+
 signals:
   void                                studyOpened();
   void                                studySaved();
@@ -181,8 +183,6 @@ protected:
 
   virtual void                        loadPreferences();
   virtual void                        savePreferences();
-
-  virtual void                        updateDesktopTitle();
 
   virtual QMap<int, QString>          activateModuleActions() const;
   virtual void                        moduleActionSelected( const int );

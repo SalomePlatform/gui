@@ -774,6 +774,22 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
 
       connect( ob, SIGNAL( doubleClicked( SUIT_DataObject* ) ), this, SLOT( onDblClick( SUIT_DataObject* ) ) );
 
+      QString
+        ValueCol = QObject::tr( "VALUE_COLUMN" ),
+        IORCol = QObject::tr( "IOR_COLUMN" ),
+        RefCol = QObject::tr( "REFENTRY_COLUMN" ),
+        EntryCol = QObject::tr( "ENTRY_COLUMN" );
+
+      SUIT_AbstractModel* treeModel = dynamic_cast<SUIT_AbstractModel*>( ob->model() );
+      treeModel->registerColumn( 0, EntryCol, SalomeApp_DataObject::EntryId );
+      treeModel->registerColumn( 0, ValueCol, SalomeApp_DataObject::ValueId );
+      treeModel->registerColumn( 0, IORCol, SalomeApp_DataObject::IORId );
+      treeModel->registerColumn( 0, RefCol, SalomeApp_DataObject::RefEntryId );
+      treeModel->setAppropriate( EntryCol, Qtx::Toggled );
+      treeModel->setAppropriate( ValueCol, Qtx::Toggled );
+      treeModel->setAppropriate( IORCol, Qtx::Toggled );
+      treeModel->setAppropriate( RefCol, Qtx::Toggled );
+
       bool autoSize      = resMgr->booleanValue( "ObjectBrowser", "auto_size", false );
       bool autoSizeFirst = resMgr->booleanValue( "ObjectBrowser", "auto_size_first", true );
       bool resizeOnExpandItem = resMgr->booleanValue( "ObjectBrowser", "resize_on_expand_item", true );
@@ -822,10 +838,10 @@ void SalomeApp_Application::createPreferences( LightApp_Preferences* pref )
   int salomeCat = pref->addPreference( tr( "PREF_CATEGORY_SALOME" ) );
   int obTab = pref->addPreference( tr( "PREF_TAB_OBJBROWSER" ), salomeCat );
   int defCols = pref->addPreference( tr( "PREF_GROUP_DEF_COLUMNS" ), obTab );
-  for ( int i = SalomeApp_DataObject::EntryIdx; i <= SalomeApp_DataObject::RefEntryIdx; i++ )
+  for ( int i = SalomeApp_DataObject::EntryId; i <= SalomeApp_DataObject::RefEntryId; i++ )
   {
     pref->addPreference( tr( QString().sprintf( "OBJ_BROWSER_COLUMN_%d", i-1 ).toLatin1() ), defCols,
-                         LightApp_Preferences::Bool, "ObjectBrowser", QString().sprintf( "visibility_column_%d", i-1 ) );
+                         LightApp_Preferences::Bool, "ObjectBrowser", QString().sprintf( "visibility_column_id_%d", i ) );
   }
   pref->setItemProperty( "orientation", Qt::Vertical, defCols );
 
@@ -1418,9 +1434,9 @@ bool SalomeApp_Application::useStudy( const QString& theName )
 void SalomeApp_Application::objectBrowserColumnsVisibility()
 {
   if ( objectBrowser() )
-    for ( int i = SalomeApp_DataObject::EntryIdx; i <= SalomeApp_DataObject::RefEntryIdx; i++ )
-      objectBrowser()->treeView()->setColumnHidden( i, 
-						    !(resourceMgr()->booleanValue( "ObjectBrowser",
-										   QString().sprintf( "visibility_column_%d", i-1 ), 
-										   true )) );
+    for ( int i = SalomeApp_DataObject::EntryId; i <= SalomeApp_DataObject::RefEntryId; i++ )
+    {
+      bool shown = resourceMgr()->booleanValue( "ObjectBrowser", QString( "visibility_column_id_%1" ).arg( i ), true );
+      objectBrowser()->treeView()->setColumnHidden( i, !shown );
+    }
 }

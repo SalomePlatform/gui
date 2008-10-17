@@ -34,6 +34,7 @@
 class LightApp_Module;
 class LightApp_Study;
 class LightApp_DataObject;
+class SUIT_DataBrowser;
 
 /*!
   Description : Base class of data model
@@ -58,6 +59,10 @@ public:
 
   LightApp_Module*                    getModule() const;
 
+  int  groupId() const;
+  void registerColumn( SUIT_DataBrowser*, const QString&, const int );
+  void unregisterColumn( SUIT_DataBrowser*, const QString& );
+
 signals:
   void                                opened();
   void                                saved();
@@ -67,6 +72,9 @@ protected:
   LightApp_Study*                     getStudy() const;
   virtual void                        build();
   virtual void                        updateWidgets();
+
+private:
+  int myGroupId;
 };
 
 #endif 

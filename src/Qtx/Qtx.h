@@ -96,6 +96,12 @@ public:
     AppropriateRole = Qt::UserRole + 100   //!< can be used to return \c true if data is appropriate
   };
 
+  typedef enum {
+	Shown,   //!< column should be always visible
+	Hidden,  //!< column should be always hidden
+	Toggled  //!< it should be possible to show/hide the column with help of popup menu
+  } Appropriate;  //!< appropriate status
+
   static QString     toQString( const char*, const int = -1 );
   static QString     toQString( const short*, const int = -1 );
   static QString     toQString( const unsigned char*, const int = -1 );

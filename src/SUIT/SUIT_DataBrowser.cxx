@@ -308,6 +308,8 @@ void SUIT_DataBrowser::init( SUIT_DataObject* root )
   setItemDelegate( qobject_cast<SUIT_ProxyModel*>( model() )->delegate() );
   connect( treeView(), SIGNAL( sortingEnabled( bool ) ), 
 	   model(),    SLOT( setSortingEnabled( bool ) ) );
+  connect( treeView(), SIGNAL( clicked( const QModelIndex& ) ), 
+	   this,       SLOT( onClicked( const QModelIndex& ) ) );
   connect( treeView(), SIGNAL( doubleClicked( const QModelIndex& ) ), 
 	   this,       SLOT( onDblClicked( const QModelIndex& ) ) );
   connect( treeView(), SIGNAL( expanded( const QModelIndex& ) ), 
@@ -331,6 +333,16 @@ void SUIT_DataBrowser::init( SUIT_DataObject* root )
 */
 
 /*!
+  \fn void SUIT_DataBrowser::clicked( SUIT_DataObject* o );
+  \brief This signal is emitted when a mouse button is clicked.
+
+  The data object the mouse was clicked on is specified by \a o.
+  The signal is only emitted when the object is valid.
+
+  \param o data object which is clicked
+*/
+
+/*!
   \fn void SUIT_DataBrowser::doubleClicked( SUIT_DataObject* o );
   \brief This signal is emitted when a mouse button is double-clicked.
 
@@ -346,6 +358,22 @@ void SUIT_DataBrowser::init( SUIT_DataObject* root )
 void SUIT_DataBrowser::onModelUpdated()
 {
   setModified();
+}
+
+/*!
+  \brief Called when item is clicked in the tree view
+  \internal
+  
+  Emits signal clicked( SUIT_DataObject* );
+*/
+void SUIT_DataBrowser::onClicked( const QModelIndex& index )
+{
+  SUIT_ProxyModel* m = qobject_cast<SUIT_ProxyModel*>( model() );
+
+  if ( m ) {
+    SUIT_DataObject* obj = m->object( index );
+    if ( obj ) emit( clicked( obj ) );
+  }
 }
 
 /*!

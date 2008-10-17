@@ -170,7 +170,8 @@ void QDS_SpinBox::unitSystemChanged( const QString& system )
 
     sb->setSuffix( suffix() );
     sb->setPrefix( prefix() );
-    sb->setMinimum( minValue().toInt() );
-    sb->setMaximum( maxValue().toInt() );
+    sb->setMinimum( minValue().isEmpty() ? -INT_MAX : minValue().toInt() );
+    sb->setMaximum( maxValue().isEmpty() ? INT_MAX : maxValue().toInt() );
+
   }
 }

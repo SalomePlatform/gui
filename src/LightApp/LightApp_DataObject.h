@@ -34,30 +34,26 @@ class LIGHTAPP_EXPORT LightApp_DataObject : public virtual CAM_DataObject
   class Key;
 
 public:
-  //! Column index
+  //! Column id
   enum { 
-    EntryIdx = NameIdx + 1    //!< entry column
+    EntryId = NameId + 1    //!< entry column
   };
 
 public:
   LightApp_DataObject( SUIT_DataObject* = 0 );
   virtual ~LightApp_DataObject();
 
-  virtual int                     columnCount() const;
-  virtual QString                 columnTitle( const int = NameIdx ) const;
-  virtual bool                    appropriate( const int = NameIdx ) const;
-
   virtual SUIT_DataObjectKey*     key() const;
   virtual QString                 entry() const;
 
-  virtual QString                 text( const int = NameIdx ) const;
+  virtual QString                 text( const int = NameId ) const;
 
   virtual SUIT_DataObject*        componentObject() const;
   virtual QString                 componentDataType() const;
 
-  virtual bool                    customSorting( const int = NameIdx ) const;
-  virtual bool                    compare( const QVariant&, const QVariant&,
-					   const int = NameIdx ) const;
+  virtual bool                    customSorting( const int = NameId ) const;
+  virtual bool                    compare( const QVariant&, const QVariant&, const int = NameId ) const;
+  virtual int                     groupId() const;
 
 protected:
   QString                         myCompDataType;
@@ -74,8 +70,8 @@ public:
   virtual ~LightApp_ModuleObject();
 
   virtual QString        name() const;
-  QPixmap                icon( const int = NameIdx ) const;
-  QString                toolTip( const int = NameIdx ) const;
+  QPixmap                icon( const int = NameId ) const;
+  QString                toolTip( const int = NameId ) const;
 
   virtual void           insertChild( SUIT_DataObject*, int );
 };

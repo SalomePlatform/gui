@@ -1282,10 +1282,11 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
   {
     viewMgr = new OCCViewer_ViewManager( activeStudy(), desktop() );
     OCCViewer_Viewer* vm;
+	bool staticTrihedron = resMgr->booleanValue( "OCCViewer", "static_trihedron", true );
 #ifndef DISABLE_SALOMEOBJECT
     vm = new SOCC_Viewer();
 #else
-    vm = new OCCViewer_Viewer();
+    vm = new OCCViewer_Viewer( true, staticTrihedron );
 #endif
     vm->setBackgroundColor( resMgr->colorValue( "OCCViewer", "background", vm->backgroundColor() ) );
     vm->setTrihedronSize( resMgr->doubleValue( "OCCViewer", "trihedron_size", vm->trihedronSize() ) );

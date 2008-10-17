@@ -37,16 +37,19 @@
 #include "LightApp_ShowHideOp.h"
 #include "LightApp_SelectionMgr.h"
 
-#include <SUIT_DataBrowser.h>
 #include <SUIT_Study.h>
 #include <SUIT_DataObject.h>
+#include <SUIT_DataBrowser.h>
 #include <SUIT_Operation.h>
 #include <SUIT_ViewManager.h>
 #include <SUIT_ResourceMgr.h>
 #include <SUIT_Desktop.h>
+#include <SUIT_TreeModel.h>
 
+#ifndef DISABLE_SALOMEOBJECT
 #include <SALOME_ListIO.hxx>
 #include <SALOME_ListIteratorOfListIO.hxx>
+#endif
 
 #ifndef DISABLE_VTKVIEWER
 #ifndef DISABLE_SALOMEOBJECT
@@ -85,6 +88,7 @@
 #include <QVariant>
 #include <QString>
 #include <QStringList>
+
 
 /*!Constructor.*/
 LightApp_Module::LightApp_Module( const QString& name )
@@ -173,6 +177,7 @@ bool LightApp_Module::isSelectionCompatible()
 {
   // return true if selected objects belong to this module
   bool isCompatible = true;
+#ifndef DISABLE_SALOMEOBJECT
   SALOME_ListIO selected;
   if ( LightApp_SelectionMgr *Sel = getApp()->selectionMgr() )
     Sel->selectedObjects( selected );
@@ -189,6 +194,7 @@ bool LightApp_Module::isSelectionCompatible()
       isCompatible = ( aStudy->componentDataType( io->getEntry() ) == moduleDataType );
     }
   }
+#endif
   return isCompatible;
 }
 
@@ -211,6 +217,14 @@ bool LightApp_Module::activateModule( SUIT_Study* study )
   if ( mySwitchOp == 0 )
     mySwitchOp = new LightApp_SwitchOp( this );
 
+  QString EntryCol = QObject::tr( "ENTRY_COLUMN" );
+  LightApp_DataModel* m = dynamic_cast<LightApp_DataModel*>( dataModel() );
+  if( m )
+  {
+    SUIT_AbstractModel* treeModel = dynamic_cast<SUIT_AbstractModel*>( getApp()->objectBrowser()->model() );
+    m->registerColumn( getApp()->objectBrowser(), EntryCol, LightApp_DataObject::EntryId );
+    treeModel->setAppropriate( EntryCol, Qtx::Toggled );
+  }
   return res;
 }
 
@@ -231,7 +245,16 @@ bool LightApp_Module::deactivateModule( SUIT_Study* study )
     anIt.value()->abort();
   }
 
-  return CAM_Module::activateModule( study );
+  QString EntryCol = QObject::tr( "ENTRY_COLUMN" );
+  LightApp_DataModel* m = dynamic_cast<LightApp_DataModel*>( dataModel() );
+  if( m )
+  {
+    SUIT_AbstractModel* treeModel = dynamic_cast<SUIT_AbstractModel*>( getApp()->objectBrowser()->model() );
+
+    treeModel->setAppropriate( EntryCol, Qtx::Shown );
+    m->unregisterColumn( getApp()->objectBrowser(), EntryCol );
+  }
+  return CAM_Module::deactivateModule( study );
 }
 
 /*!NOT IMPLEMENTED*/
@@ -319,7 +342,7 @@ void LightApp_Module::updateControls()
 /*!Create new instance of data model and return it.*/
 CAM_DataModel* LightApp_Module::createDataModel()
 {
-  return new LightApp_DataModel(this);
+  return new LightApp_DataModel( this );
 }
 
 /*!Create and return instance of LightApp_Selection.*/
@@ -599,4 +622,15 @@ void LightApp_Module::onViewManagerAdded( SUIT_ViewManager* )
 */
 void LightApp_Module::onViewManagerRemoved( SUIT_ViewManager* )
 {
+}
+
+/*!
+  \brief Returns instance of operation by its id; if there is no operation
+  corresponding to this id, null pointer is returned
+  \param id - operation id 
+  \return operation instance
+*/
+LightApp_Operation* LightApp_Module::operation( const int id ) const
+{
+  return myOperations.contains( id ) ? myOperations[id] : 0;
 }

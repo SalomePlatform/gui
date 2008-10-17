@@ -128,17 +128,16 @@ QString CAM_ModuleObject::name() const
 /*!
   \brief Get data object icon for the specified column.
 
-  The parameter \a index specifies the column number
-  (to display, for example, in the tree view widget).
+  The parameter \a id specifies the column identificator
 
-  \param index column index
+  \param id column id
   \return object icon for the specified column
 */
-QPixmap CAM_ModuleObject::icon( const int index ) const
+QPixmap CAM_ModuleObject::icon( const int id ) const
 {
   QPixmap p;
   // show icon only for the "Name" column
-  if ( index == NameIdx && dataModel() && dataModel()->module() )
+  if ( id == NameId && dataModel() && dataModel()->module() )
     p = dataModel()->module()->moduleIcon();
   if ( !p.isNull() )
     p = Qtx::scaleIcon( p, 16 );
@@ -148,13 +147,12 @@ QPixmap CAM_ModuleObject::icon( const int index ) const
 /*!
   \brief Get data object tooltip for the specified column.
 
-  The parameter \a index specifies the column number
-  (to display, for example, in the tree view widget).
+  The parameter \a id specifies the column identificator
 
-  \param index column index
+  \param id column id
   \return object tooltip for the specified column
 */
-QString CAM_ModuleObject::toolTip( const int /*index*/ ) const
+QString CAM_ModuleObject::toolTip( const int /*id*/ ) const
 {
   // show the same tooltip for all columns
   QString tip;

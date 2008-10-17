@@ -53,10 +53,13 @@ public:
 
   void     resizeColumnToEncloseContents( int );
 
+  virtual void setModel( QAbstractItemModel* );
+
 protected slots:
   void     onHeaderClicked( int );
   void     rowsAboutToBeRemoved( const QModelIndex&, int, int );
   void     selectionChanged( const QItemSelection&, const QItemSelection& );
+  void     onAppropriate( Qt::Orientation, int, int );
   
 protected:
   void     setOpened( const QModelIndex&, const int, bool );

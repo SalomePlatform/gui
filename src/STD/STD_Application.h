@@ -49,9 +49,12 @@ class STD_EXPORT STD_Application : public SUIT_Application
   Q_OBJECT
 
 public:
-  enum { FileNewId, FileOpenId, FileCloseId, FileSaveId, FileSaveAsId, FileExitId,
-	 ViewWindowsId, ViewToolBarsId, ViewStatusBarId, NewWindowId,
-         EditCutId, EditCopyId, EditPasteId, HelpAboutId, UserID };
+  enum { MenuFileId, FileNewId, FileOpenId, FileCloseId, FileSaveId, FileSaveAsId, FileExitId,
+         MenuViewId, ViewWindowsId, ViewToolBarsId, ViewStatusBarId, NewWindowId,
+         MenuEditId, EditCutId, EditCopyId, EditPasteId,
+         MenuHelpId, HelpAboutId,
+         UserID
+  };
 
  public:
   STD_Application();
@@ -94,6 +97,8 @@ public:
   bool                  exitConfirmation() const;
   void                  setExitConfirmation( const bool );
 
+  virtual void          updateDesktopTitle();
+
 signals:
   /*!emit that view manager added*/
   void                  viewManagerAdded( SUIT_ViewManager* );
@@ -129,18 +134,11 @@ private slots:
   virtual void          onViewManagerActivated( SUIT_ViewManager* );
 
 protected:
-  enum {  MenuFileId = 1,
-          MenuViewId = 2,
-          MenuEditId = 3,
-          MenuHelpId = 7
-       };
-
   enum { OpenCancel, OpenNew, OpenExist };
   enum { CloseCancel, CloseSave, CloseDiscard };
 
 protected:
   virtual void          createActions();
-  virtual void          updateDesktopTitle();
   virtual void          updateCommandsStatus();
 
   virtual void          setDesktop( SUIT_Desktop* );

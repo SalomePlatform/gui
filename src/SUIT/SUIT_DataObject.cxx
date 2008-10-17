@@ -113,64 +113,6 @@ SUIT_DataObject* SUIT_DataObject::lastChild() const
 }
 
 /*!
-  \brief Get the number of the columns provided by the data tree.
-
-  This method can be re-implemented in the subclasses.
-  Default implementation returns 1 ("Name" column) only.
-
-  \return number of the columns
-*/
-int SUIT_DataObject::columnCount() const
-{
-  return 1;  // one column ("Name") is provided by default
-}
-
-/*!
-  \brief Get column title.
-
-  This method can be re-implemented in the subclasses.
-  Default implementation returns the title for the first column ("Name") only.
-
-  \param index column index
-  \return title of the specified column
-*/
-QString SUIT_DataObject::columnTitle( const int index ) const
-{
-  if ( index == NameIdx )
-    return QObject::tr( "NAME_COLUMN" );  // one column ("Name") is provided by default
-  return QString();
-}
-
-/*!
-  \brief Get column icon.
-
-  This method can be re-implemented in the subclasses.
-  Default implementation returns null pixmap.
-
-  \param index column index
-  \return icon of the specified column
-*/
-QPixmap SUIT_DataObject::columnIcon( const int /*index*/ ) const
-{
-  return QPixmap();
-}
-
-/*!
-  \brief Check if the column should appear in the tree view header popup menu
-  (to show/hide the column).
-
-  Default implementation returns \c false because 'Name' column should be
-  always visible.
-
-  \param index column index
-  \return \c true if the column can be shown/hidden
-*/
-bool SUIT_DataObject::appropriate( const int /*index*/ ) const
-{
-  return false;
-}
-
-/*!
   \brief Get the number of the child objects.
   \return number of the children
 */
@@ -448,15 +390,15 @@ QString SUIT_DataObject::name() const
   This method can be re-implemented in the subclasses.
   Default implementation returns null string.
 
-  Column with \a index = 0 (NameIdx) is supposed to be used
+  Column with \a id = 0 (NameId) is supposed to be used
   to get the object name (as it does the default implementation).
 
-  \param index column index
+  \param id column id
   \return object text data
 */
-QString SUIT_DataObject::text( const int index ) const
+QString SUIT_DataObject::text( const int id ) const
 {
-  return index == NameIdx ? name() : QString();
+  return id == NameId ? name() : QString();
 }
 
 /*!
@@ -465,13 +407,12 @@ QString SUIT_DataObject::text( const int index ) const
   This method can be re-implemented in the subclasses.
   Default implementation returns null pixmap.
 
-  The parameter \a index specifies the column number
-  (to display, for example, in the tree view widget).
+  The parameter \a id specifies the column identificator
 
-  \param index column index
+  \param id column id
   \return object icon for the specified column
 */
-QPixmap SUIT_DataObject::icon( const int /*index*/ ) const
+QPixmap SUIT_DataObject::icon( const int /*id*/ ) const
 {
   return QPixmap();
 }
@@ -482,14 +423,13 @@ QPixmap SUIT_DataObject::icon( const int /*index*/ ) const
   This method can be re-implemented in the subclasses.
   Default implementation returns null color.
 
-  The parameter \a index specifies the column number
-  (to display, for example, in the tree view widget).
+  The parameter \a id specifies the column identificator
 
   \param role color role
-  \param index column index
+  \param id column id
   \return object color for the specified column
 */
-QColor SUIT_DataObject::color( const ColorRole /*role*/, const int /*index*/ ) const
+QColor SUIT_DataObject::color( const ColorRole /*role*/, const int /*id*/ ) const
 {
   return QColor();
 }
@@ -500,13 +440,13 @@ QColor SUIT_DataObject::color( const ColorRole /*role*/, const int /*index*/ ) c
   This method can be re-implemented in the subclasses.
   Default implementation returns null string.
 
-  The parameter \a index specifies the column number
+  The parameter \a id specifies the column identificator
   (to display, for example, in the tree view widget).
 
-  \param index column index
+  \param id column id
   \return object tooltip for the specified column
 */
-QString SUIT_DataObject::toolTip( const int /*index*/ ) const
+QString SUIT_DataObject::toolTip( const int /*id*/ ) const
 {
   return QString();
 }
@@ -517,13 +457,12 @@ QString SUIT_DataObject::toolTip( const int /*index*/ ) const
   This method can be re-implemented in the subclasses.
   Default implementation returns null string.
 
-  The parameter \a index specifies the column number
-  (to display, for example, in the tree view widget).
+  The parameter \a id specifies the column identificator
 
-  \param index column index
+  \param id column id
   \return object status tip for the specified column
 */
-QString SUIT_DataObject::statusTip( const int /*index*/ ) const
+QString SUIT_DataObject::statusTip( const int /*id*/ ) const
 {
   return QString();
 }
@@ -535,13 +474,12 @@ QString SUIT_DataObject::statusTip( const int /*index*/ ) const
   This method can be re-implemented in the subclasses.
   Default implementation returns null string.
 
-  The parameter \a index specifies the column number
-  (to display, for example, in the tree view widget).
+  The parameter \a id specifies the column identificator
 
-  \param index column index
+  \param id column id
   \return object "what's this" information for the specified column
 */
-QString SUIT_DataObject::whatsThis( const int /*index*/ ) const
+QString SUIT_DataObject::whatsThis( const int /*id*/ ) const
 {
   return QString();
 }
@@ -552,13 +490,12 @@ QString SUIT_DataObject::whatsThis( const int /*index*/ ) const
   This method can be re-implemented in the subclasses.
   Default implementation returns application default font.
 
-  The parameter \a index specifies the column number
-  (to display, for example, in the tree view widget).
+  The parameter \a id specifies the column identificator
 
-  \param index column index
+  \param id column id
   \return object font for the specified column
 */
-QFont SUIT_DataObject::font( const int /*index*/ ) const
+QFont SUIT_DataObject::font( const int /*id*/ ) const
 {
   return QFont();
 }
@@ -570,13 +507,13 @@ QFont SUIT_DataObject::font( const int /*index*/ ) const
   Default implementation returns default alignment which
   is Qt:AlignLeft.
 
-  The parameter \a index specifies the column number
+  The parameter \a id specifies the column identificator
   (to display, for example, in the tree view widget).
 
-  \param index column index
+  \param id column id
   \return object text alignment flags for the specified column
 */
-int SUIT_DataObject::alignment( const int /*index*/ ) const
+int SUIT_DataObject::alignment( const int /*id*/ ) const
 {
   return Qt::AlignLeft;
 }
@@ -642,11 +579,11 @@ bool SUIT_DataObject::isSelectable() const
   This method can be re-implemented in the subclasses.
   Default implementation returns \c false (all objects are not checkable).
 
-  \param index column index
+  \param id column id
   \return \c true if the item can be checked or unchecked by the user
   \sa isOn(), setOn()
 */
-bool SUIT_DataObject::isCheckable( const int /*index*/ ) const
+bool SUIT_DataObject::isCheckable( const int /*id*/ ) const
 {
   return false;
 }
@@ -658,13 +595,13 @@ bool SUIT_DataObject::isCheckable( const int /*index*/ ) const
   Default implementation supports the checked state for the first
   ("Name") column only.
 
-  \param index column index
+  \param id column id
   \return checked state of the object for the specified column
   \sa setOn(), isCheckable()
 */
-bool SUIT_DataObject::isOn( const int index ) const
+bool SUIT_DataObject::isOn( const int id ) const
 {
-  return index == NameIdx && myCheck;
+  return id == NameId && myCheck;
 }
 
 /*!
@@ -675,12 +612,12 @@ bool SUIT_DataObject::isOn( const int index ) const
   ("Name") column only.
 
   \param on new checked state of the object for the specified column
-  \param index column index
+  \param id column id
   \sa isOn(), isCheckable()
 */
-void SUIT_DataObject::setOn( const bool on, const int index )
+void SUIT_DataObject::setOn( const bool on, const int id )
 {
-  if ( index == NameIdx )
+  if( id == NameId )
     myCheck = on;
 }
 
@@ -711,11 +648,11 @@ void SUIT_DataObject::setOpen( const bool on )
   Default implementation returns false ("Name" column does not require
   custom sorting).
 
-  \param index column index
+  \param id column id
   \return \c true if column sorting should be customized
   \sa compare()
 */
-bool SUIT_DataObject::customSorting( const int /*index*/ ) const
+bool SUIT_DataObject::customSorting( const int /*id*/ ) const
 {
   return false;
 }
@@ -732,12 +669,12 @@ bool SUIT_DataObject::customSorting( const int /*index*/ ) const
 
   \param left first data to compare
   \param right second data to compare
-  \param index column index
+  \param id column id
   \return result of the comparison
   \sa customSorting()
 */
 bool SUIT_DataObject::compare( const QVariant& /*left*/, const QVariant& /*right*/,
-			       const int /*index*/ ) const
+			       const int /*id*/ ) const
 {
   return false;
 }
@@ -939,6 +876,21 @@ void SUIT_DataObject::Signal::deleteLater( SUIT_DataObject* object )
 */
 void SUIT_DataObject::update()
 {
+}
+
+/*!
+  \brief return unique group identificator
+
+  Groups of data objects are used for column information search.
+  Each column of data model has one or several registered group id
+  If object has the same group id as one of registered, the information
+  will be shown; the custom id of column will be passed into data() method
+  in order to identify column from point of view of data object
+
+ */
+int SUIT_DataObject::groupId() const
+{
+  return 0;
 }
 
 /*!

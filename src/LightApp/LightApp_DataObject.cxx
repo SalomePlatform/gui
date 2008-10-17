@@ -22,8 +22,8 @@
 
 #include "LightApp_DataObject.h"
 #include "LightApp_Study.h"
+#include "LightApp_DataModel.h"
 
-#include <CAM_DataModel.h>
 #include <CAM_Module.h>
 #include <SUIT_DataObjectKey.h>
 
@@ -115,38 +115,10 @@ LightApp_DataObject::~LightApp_DataObject()
 {
 }
 
-/*!
-  \brief Get the number of the columns provided by the data tree.
-  \return number of the columns
-*/
-int LightApp_DataObject::columnCount() const
+int LightApp_DataObject::groupId() const
 {
-  // add "Entry" column
-  return CAM_DataObject::columnCount() + 1;
-}
-
-/*!
-  \brief Get column title.
-  \param index column index
-  \return title of the specified column
-*/
-QString LightApp_DataObject::columnTitle( const int index ) const
-{
-  // add "Entry" column
-  return index == EntryIdx ? QObject::tr( "ENTRY_COLUMN" ) 
-                           : CAM_DataObject::columnTitle( index );
-}
-
-/*!
-  \brief Check if the column should appear in the tree view header popup menu
-  (to show/hide the column).
-  \param index column index
-  \return \c true if the column can be shown/hidden
-*/
-bool LightApp_DataObject::appropriate( const int index ) const
-{
-  // add "Entry" column
-  return index == EntryIdx ? true : CAM_DataObject::appropriate( index );
+  LightApp_DataModel* m = dynamic_cast<LightApp_DataModel*>( dataModel() );
+  return m ? m->groupId() : CAM_DataObject::groupId();
 }
 
 /*!
@@ -175,18 +147,17 @@ SUIT_DataObjectKey* LightApp_DataObject::key() const
 /*!
   \brief Get object text data for the specified column.
 
-  Column with \a index = 0 (NameIdx) is supposed to be used
+  Column with \a id = 0 (NameId) is supposed to be used
   to get the object name.
-  Column with \a index = 1 (EntryIdx) is supposed to be used
+  Column with \a id = 1 (EntryId) is supposed to be used
   to get the object entry.
 
-  \param index column index
+  \param id column id
   \return object text data
 */
-QString LightApp_DataObject::text( const int index ) const
+QString LightApp_DataObject::text( const int id ) const
 {
-  // add "Entry" column
-  return index == EntryIdx ? entry() : CAM_DataObject::text( index );
+  return id == EntryId ? entry() : CAM_DataObject::text( id );
 }
 
 /*!
@@ -229,15 +200,14 @@ QString LightApp_DataObject::componentDataType() const
 
 /*!
   \brief Check if the specified column supports custom sorting.
-  \param index column index
+  \param id column id
   \return \c true if column sorting should be customized
   \sa compare()
 */
-bool LightApp_DataObject::customSorting( const int index ) const
+bool LightApp_DataObject::customSorting( const int id ) const
 {
   // perform custom sorting for the "Entry" column
-  return index == EntryIdx ? true 
-    : CAM_DataObject::customSorting( index );
+  return id == EntryId ? true : CAM_DataObject::customSorting( id );
 }
 
 /*!
@@ -248,14 +218,14 @@ bool LightApp_DataObject::customSorting( const int index ) const
 
   \param left first data to compare
   \param right second data to compare
-  \param index column index
+  \param id column id
   \return result of the comparison
   \sa customSorting()
 */
-bool LightApp_DataObject::compare( const QVariant& left, const QVariant& right, 
-				   const int index ) const
+bool LightApp_DataObject::compare( const QVariant& left, const QVariant& right, const int id ) const
 {
-  if ( index == EntryIdx ) {
+  if ( id == EntryId )
+  {
     // perform custom sorting for the "Entry" column
     QString leftStr  = left.toString();
     QString rightStr = right.toString();
@@ -293,7 +263,7 @@ bool LightApp_DataObject::compare( const QVariant& left, const QVariant& right,
     }
     return QString::localeAwareCompare( leftStr, rightStr ) < 0;
   }
-  return CAM_DataObject::compare( left, right, index );
+  return CAM_DataObject::compare( left, right, id );
 }
 
 /*!
@@ -343,22 +313,22 @@ QString LightApp_ModuleObject::name() const
 
 /*!
   \brief Get data object icon for the specified column.
-  \param index column index
+  \param id column id
   \return object icon for the specified column
 */
-QPixmap LightApp_ModuleObject::icon( const int index ) const
+QPixmap LightApp_ModuleObject::icon( const int id ) const
 {
-  return CAM_ModuleObject::icon( index );
+  return CAM_ModuleObject::icon( id );
 }
 
 /*!
   \brief Get data object tooltip for the specified column.
-  \param index column index
+  \param id column id
   \return object tooltip for the specified column
 */
-QString LightApp_ModuleObject::toolTip( const int index ) const
+QString LightApp_ModuleObject::toolTip( const int id ) const
 {
-  return CAM_ModuleObject::toolTip( index );
+  return CAM_ModuleObject::toolTip( id );
 }
 
 /*!

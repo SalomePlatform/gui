@@ -37,6 +37,8 @@ public:
 
   // Return instance of data dictionary. Create instance if it is NULL.
 
+  Standard_EXPORT void                           GetKeys( const TCollection_AsciiString&, TColStd_SequenceOfAsciiString& ) const;
+
   Standard_EXPORT Handle(DDS_DicItem)            GetDicItem( const TCollection_AsciiString& ) const;
   Standard_EXPORT Handle(DDS_DicItem)            GetDicItem( const TCollection_AsciiString&,
                                                              const TCollection_AsciiString& ) const;

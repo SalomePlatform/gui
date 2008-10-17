@@ -639,10 +639,10 @@ int SUIT_Application::registerAction( const int id, QAction* a )
   myActionMap.insert( ident, a );
 
   if ( desktop() && desktop()->menuMgr() )
-    desktop()->menuMgr()->registerAction( a );
+    desktop()->menuMgr()->registerAction( a, id );
 
   if ( desktop() && desktop()->toolMgr() )
-    desktop()->toolMgr()->registerAction( a );
+    desktop()->toolMgr()->registerAction( a, id );
 
   return ident;
 }

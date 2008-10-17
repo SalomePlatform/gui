@@ -25,8 +25,6 @@
 
 #include <UnitsAPI.hxx>
 
-#include <TColStd_SequenceOfAsciiString.hxx>
-
 #include <Standard_Failure.hxx>
 #include <Standard_ErrorHandler.hxx>
 
@@ -153,6 +151,8 @@ void DDS_DicGroup::FillDataMap( const LDOM_Element& theComponentData, const LDOM
 
       if ( !myUnitSystem.IsBound( aName ) )
         myUnitSystem.Bind( aName, aLabel );
+
+
     }
   }
 
@@ -183,6 +183,16 @@ void DDS_DicGroup::FillDataMap( const LDOM_Element& theComponentData, const LDOM
     aDicItem->myComponent = this;
     aDicItem->FillDataMap( anID, aQuantity, theComponentData, theDocElement, unitSystems );
     myDataMap.Add( anID, aDicItem );
+
+    bool exist = false;
+    for( int i=1, n=myKeys.Length(); i<=n && !exist; i++ )
+      if( myKeys.Value( i )==anID )
+      {
+        cout << "Doubled key:" << anID << endl;
+        exist = true;
+      }
+    if( !exist )
+      myKeys.Append( anID );
   }
 }
 
@@ -202,4 +212,13 @@ Handle_DDS_DicItem DDS_DicGroup::GetDicItem( const TCollection_AsciiString& theI
     aDicItem = myDataMap.FindFromKey( theID );
 
   return aDicItem;
+}
+
+/*!
+  \brief Return all keys of the group
+  \param seq - string container to be filled with keys
+*/
+void DDS_DicGroup::GetKeys( TColStd_SequenceOfAsciiString& seq ) const
+{
+  seq = myKeys;
 }

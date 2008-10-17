@@ -18,20 +18,15 @@
 //
 #include "QDS_Datum.h"
 
-#include "QDS_Validator.h"
-
-#include <DDS_Dictionary.h>
-
+#include <QLayout>
+#include <QVariant>
 #include <QTimer>
-#include <QLabel>
-#include <QWidget>
-#include <QHBoxLayout>
-#include <QVBoxLayout>
-#include <QGridLayout>
-#include <QMessageBox>
 #include <QEvent>
+#include <QMessageBox>
+#include <QApplication>
 
-#include <TColStd_SequenceOfAsciiString.hxx>
+#include <QDS_Validator.h>
+#include <DDS_Dictionary.h>
 
 /*!
   \class QDS_Datum::Wrapper
@@ -45,15 +40,14 @@ public:
   Wrapper( QWidget* = 0 );
   virtual ~Wrapper();
 
-  QWidget*      widget() const;
-  void          setWidget( QWidget* );
+  QWidget* widget() const;
+  void     setWidget( QWidget* );
 
   virtual void  setGeometry( int x, int y, int w, int h );
   virtual void  setSizePolicy( QSizePolicy );
 
 private:
-  QWidget*      myWid;
-  QHBoxLayout*  myBase;
+  QWidget* myWid;
 };
 
 /*!
@@ -64,9 +58,9 @@ QDS_Datum::Wrapper::Wrapper( QWidget* parent )
 : QWidget( parent ),
   myWid( 0 )
 {
-  //QHBoxLayout* base = new QHBoxLayout( this );
-  //base->setAutoAdd( true );
-  myBase = new QHBoxLayout( this );
+  setLayout( new QHBoxLayout() );
+  layout()->setSpacing( 0 );
+  layout()->setMargin( 0 );
   setFocusPolicy( Qt::StrongFocus );
 }
 
@@ -92,20 +86,15 @@ QWidget* QDS_Datum::Wrapper::widget() const
 */
 void QDS_Datum::Wrapper::setWidget( QWidget* wid )
 {
-  if ( myWid == wid )
+  if ( myWid == wid || !wid )
     return;
 
+  wid->setParent( this );
+  QHBoxLayout* hl = qobject_cast<QHBoxLayout*>( layout() );
+  if( myWid )
+    hl->removeWidget( myWid );
+  hl->addWidget( wid );
   myWid = wid;
-
-  if ( !myWid )
-    return;
-
-  if ( myWid->parent() != this ) {
-    myWid->setParent( this );
-    myWid->move( QPoint( 0, 0 ) );
-    myWid->hide();
-    myBase->addWidget( myWid );
-  }
 
   setTabOrder( this, myWid );
   setFocusProxy( myWid );
@@ -211,7 +200,8 @@ QDS_Datum::QDS_Datum( const QString& id, QWidget* parent, const int flags, const
   myUnits( 0 ),
   myControl( 0 ),
   myFlags( flags ),
-  myInitialised( false )
+  myInitialised( false ),
+  myTr( false )
 {
   if ( myFlags & Label )
     myWrapper.insert( Label, new Wrapper( parent ) );
@@ -297,6 +287,44 @@ int QDS_Datum::type() const
 }
 
 /*!
+  \brief Return state of custom translation.
+  \return true if custom translation is enabled
+*/
+bool QDS_Datum::isCustomTr() const
+{
+  return myTr;
+}
+
+/*!
+  \brief Change state of custom translation.
+
+  Custom translation means that text labels of datums are translated
+  with help of standard Qt mechanism of internationalization. In this
+  case special records should be placed into *.ts files under context "QDS".
+  For example, if label has name "myLabel", the corresponding translation
+  should be written:
+  <context>
+    <name>QDS</name>
+    <message>
+        <source>myLabel</source>
+        <translation>myLabel translation</translation>
+    </message>
+    ...
+
+  If custom translation mechanism is deactivated, then labels will be shown
+  with text got from xml data dictionary file
+
+  By default, the custom translation is deactivated
+
+  \param on - if it is true, custom translation is activated, otherwise, deactivated 
+*/
+void QDS_Datum::enableCustomTr( const bool on )
+{
+  myTr = on;
+  labelWidget()->setText( label() );
+}
+
+/*!
   \brief Get the datum label text.
   \return label text
 */
@@ -306,11 +334,19 @@ QString QDS_Datum::label() const
 
   QString labStr;
   if ( !myDicItem.IsNull() )
+  {
     labStr = toQString( myDicItem->GetLabel() );
-
+    if( labStr.isNull() )
+      labStr = toQString( myDicItem->GetId() );
+  }
+  if( myTr )
+  {
+    QString dest = QApplication::translate( "QDS", labStr.toLatin1().constData() );
+    if( labStr != dest )
+      labStr = dest;
+  }
   if ( flags() & NotAccel )
     labStr = removeAccel( labStr );
-
   return labStr;
 }
 
@@ -942,7 +978,7 @@ bool QDS_Datum::isValid( const bool msgBox, const QString& extMsg, const QString
       info += QString( "\n" ) + extMsg;
 
     QString msg;
-    for ( uint i = 0; i < info.length(); i++ )
+    for ( int i = 0; i < info.length(); i++ )
       if ( info.at( i ) == '\n' )
         msg += QString( "<br>" );
       else

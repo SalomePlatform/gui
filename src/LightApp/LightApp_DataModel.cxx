@@ -27,6 +27,7 @@
 #include "LightApp_Module.h"
 #include "LightApp_Application.h"
 
+#include <SUIT_TreeModel.h>
 #include <SUIT_DataBrowser.h>
 #include <SUIT_DataObject.h>
 
@@ -36,6 +37,9 @@
 LightApp_DataModel::LightApp_DataModel( CAM_Module* theModule )
 : CAM_DataModel( theModule )
 {
+  myGroupId = 0;
+  if( module() )
+	myGroupId = qHash( module()->name() );
 }
 
 /*!
@@ -168,4 +172,37 @@ bool LightApp_DataModel::isModified() const
 bool LightApp_DataModel::isSaved() const
 {
   return true;
+}
+
+/*!
+  \return data model group id used for custom columns creation
+*/
+int LightApp_DataModel::groupId() const
+{
+  return myGroupId;
+}
+
+/*!
+  Register custom column in the object browser
+  \param browser - object browser where new column should be created
+  \param name - translated column name
+  \param custom_id - custom column identificator passed into data object's methods text(), icon() etc
+*/
+void LightApp_DataModel::registerColumn( SUIT_DataBrowser* browser, const QString& name, const int custom_id )
+{
+  SUIT_AbstractModel* m = dynamic_cast<SUIT_AbstractModel*>( browser ? browser->model() : 0 );
+  if( m )
+    m->registerColumn( groupId(), name, custom_id );
+}
+
+/*!
+  Remove registered custom column from the object browser
+  \param browser - object browser where new column should be created
+  \param name - translated column name
+*/
+void LightApp_DataModel::unregisterColumn( SUIT_DataBrowser* browser, const QString& name )
+{
+  SUIT_AbstractModel* m = dynamic_cast<SUIT_AbstractModel*>( browser ? browser->model() : 0 );
+  if( m )
+	m->unregisterColumn( groupId(), name );
 }

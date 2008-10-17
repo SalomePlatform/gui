@@ -40,7 +40,40 @@
 class SUIT_DataObject;
 class SUIT_TreeModel;
 
-class SUIT_EXPORT SUIT_TreeModel : public QAbstractItemModel
+class SUIT_EXPORT SUIT_AbstractModel
+{
+public:
+  SUIT_AbstractModel();
+
+  operator const QAbstractItemModel*() const;
+  operator QAbstractItemModel*();
+  operator const QObject*() const;
+
+  virtual SUIT_DataObject* root() const = 0;
+  virtual void             setRoot( SUIT_DataObject* ) = 0;
+  virtual SUIT_DataObject* object( const QModelIndex& = QModelIndex() ) const = 0;
+  virtual QModelIndex      index( const SUIT_DataObject*, int = 0 ) const = 0;
+  virtual bool             autoDeleteTree() const = 0;
+  virtual void             setAutoDeleteTree( const bool ) = 0;
+  virtual bool             autoUpdate() const = 0;
+  virtual void             setAutoUpdate( const bool ) = 0;
+  virtual QAbstractItemDelegate* delegate() const = 0;
+  virtual bool             customSorting( const int ) const = 0;
+  virtual bool             lessThan( const QModelIndex& left, const QModelIndex& right ) const = 0;
+
+  virtual void             updateTree( const QModelIndex& ) = 0;
+  virtual void             updateTree( SUIT_DataObject* = 0 ) = 0;
+
+  virtual void             registerColumn( const int group_id, const QString& name, const int custom_id ) = 0;
+  virtual void             unregisterColumn( const int group_id, const QString& name ) = 0;
+  virtual void             setColumnIcon( const QString& name, const QPixmap& icon ) = 0;
+  virtual QPixmap          columnIcon( const QString& name ) const = 0;
+  virtual void             setAppropriate( const QString& name, const Qtx::Appropriate appr ) = 0;
+  virtual Qtx::Appropriate appropriate( const QString& name ) const = 0;
+};
+
+
+class SUIT_EXPORT SUIT_TreeModel : public QAbstractItemModel, public SUIT_AbstractModel
 {
   Q_OBJECT
 
@@ -87,8 +120,14 @@ public:
   virtual QModelIndex    index( int, int, const QModelIndex& = QModelIndex() ) const;
   virtual QModelIndex    parent( const QModelIndex& ) const;
 
-  virtual int            columnCount( const QModelIndex& = QModelIndex() ) const;
-  virtual int            rowCount( const QModelIndex& = QModelIndex() ) const;
+  virtual int              columnCount( const QModelIndex& = QModelIndex() ) const;
+  virtual int              rowCount( const QModelIndex& = QModelIndex() ) const;
+  virtual void             registerColumn( const int group_id, const QString& name, const int custom_id );
+  virtual void             unregisterColumn( const int group_id, const QString& name );
+  virtual void             setColumnIcon( const QString& name, const QPixmap& icon );
+  virtual QPixmap          columnIcon( const QString& name ) const;
+  virtual void             setAppropriate( const QString& name, const Qtx::Appropriate appr );
+  virtual Qtx::Appropriate appropriate( const QString& name ) const;
 
   SUIT_DataObject*       object( const QModelIndex& = QModelIndex() ) const;
   QModelIndex            index( const SUIT_DataObject*, int = 0 ) const;
@@ -119,9 +158,7 @@ private:
   TreeItem*              treeItem( const SUIT_DataObject* ) const;
   SUIT_DataObject*       object( const TreeItem* ) const;
 
-  TreeItem*              createItem( SUIT_DataObject*,
-				     TreeItem* = 0, 
-				     TreeItem* = 0 );
+  TreeItem*              createItem( SUIT_DataObject*, TreeItem* = 0, TreeItem* = 0 );
   void                   updateItem( TreeItem* );
   void                   removeItem( TreeItem* );
 
@@ -131,24 +168,33 @@ private slots:
 
 private:
   typedef QMap<SUIT_DataObject*, TreeItem*> ItemMap;
+  typedef struct
+  {
+    QString myName;
+	QMap<int,int> myIds;
+	QPixmap myIcon;
+	Qtx::Appropriate myAppropriate;
+
+  } ColumnInfo;
   
-  SUIT_DataObject*       myRoot;
-  TreeItem*              myRootItem;
-  ItemMap                myItems;
-  bool                   myAutoDeleteTree;
-  bool                   myAutoUpdate;
+  SUIT_DataObject*    myRoot;
+  TreeItem*           myRootItem;
+  ItemMap             myItems;
+  bool                myAutoDeleteTree;
+  bool                myAutoUpdate;
+  QVector<ColumnInfo> myColumns;
 
   friend class SUIT_TreeModel::TreeSync;
 };
 
-class SUIT_EXPORT SUIT_ProxyModel : public QSortFilterProxyModel
+class SUIT_EXPORT SUIT_ProxyModel : public QSortFilterProxyModel, public SUIT_AbstractModel
 {
   Q_OBJECT
 
 public:
   SUIT_ProxyModel( QObject* = 0 );
   SUIT_ProxyModel( SUIT_DataObject*, QObject* = 0 );
-  SUIT_ProxyModel( SUIT_TreeModel*, QObject* = 0 );
+  SUIT_ProxyModel( SUIT_AbstractModel*, QObject* = 0 );
   ~SUIT_ProxyModel();
 
   SUIT_DataObject*       root() const;
@@ -164,6 +210,15 @@ public:
   void                   setAutoUpdate( const bool );
  
   bool                   isSortingEnabled() const;
+  bool                   customSorting( const int ) const;
+
+  virtual bool             lessThan( const QModelIndex&, const QModelIndex& ) const;
+  virtual void             registerColumn( const int group_id, const QString& name, const int custom_id );
+  virtual void             unregisterColumn( const int group_id, const QString& name );
+  virtual void             setColumnIcon( const QString& name, const QPixmap& icon );
+  virtual QPixmap          columnIcon( const QString& name ) const;
+  virtual void             setAppropriate( const QString& name, const Qtx::Appropriate appr );
+  virtual Qtx::Appropriate appropriate( const QString& name ) const;
 
   QAbstractItemDelegate* delegate() const;
 
@@ -176,10 +231,7 @@ signals:
   void modelUpdated();
 
 protected:
-  virtual bool           lessThan( const QModelIndex&, const QModelIndex& ) const;
-
-private:
-  SUIT_TreeModel*        treeModel() const;
+  SUIT_AbstractModel*    treeModel() const;
 
 private:
   bool                   mySortingEnabled;

@@ -335,12 +335,9 @@ void QDS_ComboBox::reset()
   int id = -1;
   QString aDefValue = defaultValue();
   if ( !aDefValue.isEmpty() )
-    id = aDefValue.toInt();
-
-  if ( id == -1 )
-    id = getId( 0 );
-
-  setIntegerValue( id );
+    setString( aDefValue );
+  else
+    setIntegerValue( getId( 0 ) );
 }
 
 /*!
@@ -599,9 +596,9 @@ void QDS_ComboBox::updateComboBox()
     if ( cb )
     {
       if ( myIcons.contains( id ) )
-        cb->insertItem( -1, QIcon(myIcons[id]), myValue[id] );
+        cb->addItem( QIcon(myIcons[id]), myValue[id] );
       else
-        cb->insertItem( -1, myValue[id] );
+        cb->addItem( myValue[id] );
     }
   }
 

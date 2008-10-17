@@ -24,13 +24,10 @@
 #include "DDS_DicItem.h"
 
 #include <MMgt_TShared.hxx>
-
-#include <TCollection_AsciiString.hxx>
-
+#include <TColStd_SequenceOfAsciiString.hxx>
 #include <NCollection_List.hxx>
 
 class LDOM_Element;
-class TColStd_SequenceOfAsciiString;
 
 DEFINE_STANDARD_HANDLE(DDS_DicGroup, MMgt_TShared)
 
@@ -40,6 +37,7 @@ public:
   DDS_DicGroup( const TCollection_AsciiString& );
 
   TCollection_AsciiString                    GetName() const;
+  Standard_EXPORT void                       GetKeys( TColStd_SequenceOfAsciiString& ) const;
 
   Standard_EXPORT Handle(DDS_DicItem)        GetDicItem( const TCollection_AsciiString& ) const;
 
@@ -65,6 +63,7 @@ private:
   DDS_IndexedDataMapOfDicItems               myDataMap;
   UnitSystemMap                              myUnitSystem;
   TCollection_AsciiString                    myActiveSystem;
+  TColStd_SequenceOfAsciiString              myKeys;
 
   friend class DDS_Dictionary;
 

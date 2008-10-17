@@ -72,10 +72,12 @@ private:
 
 signals:
   void             requestUpdate();
+  void             clicked( SUIT_DataObject* );
   void             doubleClicked( SUIT_DataObject* );
 
 private slots:
   void             onModelUpdated();
+  void             onClicked( const QModelIndex& );
   void             onDblClicked( const QModelIndex& );
   void             onExpanded( const QModelIndex& );
 

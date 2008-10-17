@@ -69,50 +69,6 @@ SalomeApp_DataObject::~SalomeApp_DataObject()
 }
 
 /*!
-  \brief Get the number of the columns provided by the data tree.
-  \return number of the columns
-*/
-int SalomeApp_DataObject::columnCount() const
-{
-  // add "Value", "IOR", and "Reference Entry" columns
-  return LightApp_DataObject::columnCount() + 3;
-}
-
-/*!
-  \brief Get column title.
-  \param index column index
-  \return title of the specified column
-*/
-QString SalomeApp_DataObject::columnTitle( const int index ) const
-{
-  // add "Value", "IOR", and "Reference Entry" columns
-  switch ( index ) {
-  case ValueIdx:
-    return QObject::tr( "VALUE_COLUMN" ) ;
-  case IORIdx:
-    return QObject::tr( "IOR_COLUMN" ) ;
-  case RefEntryIdx:
-    return QObject::tr( "REFENTRY_COLUMN" ) ;
-  default:
-    break;
-  }
-  return LightApp_DataObject::columnTitle( index );
-}
-
-/*!
-  \brief Check if the column should appear in the tree view header popup menu
-  (to show/hide the column).
-  \param index column index
-  \return \c true if the column can be shown/hidden
-*/
-bool SalomeApp_DataObject::appropriate( const int index ) const
-{
-  // add "Value", "IOR", and "Reference Entry" columns
-  return index > EntryIdx && index <= RefEntryIdx ? true : 
-    LightApp_DataObject::appropriate( index );
-}
-
-/*!
   \brief Get data object name.
   \return object name
 */
@@ -149,24 +105,24 @@ QString SalomeApp_DataObject::entry() const
 /*!
   \brief Get object text data for the specified column.
 
-  This method returns the data according to the specufied column \a index:
-  - NameIdx     : object name (by calling name() method)
-  - EntryIdx    : object entry (by calling entry() method)
-  - ValueIdx    : object value
-  - IORIdx      : object IOR
-  - RefEntryIdx : object reference entry
+  This method returns the data according to the specufied column \a id:
+  - NameId     : object name (by calling name() method)
+  - EntryId    : object entry (by calling entry() method)
+  - ValueId    : object value
+  - IORId      : object IOR
+  - RefEntryId : object reference entry
 
-  \param index column index
+  \param id column id
   \return object text data
 */
-QString SalomeApp_DataObject::text( const int index ) const
+QString SalomeApp_DataObject::text( const int id ) const
 {
   QString txt;
 
   // add "Value", "IOR", and "Reference Entry" columns
-  switch ( index )
+  switch ( id )
   {
-  case ValueIdx:
+  case ValueId:
 #ifndef WIN32
     if ( componentObject() != this )
 #else
@@ -176,15 +132,15 @@ QString SalomeApp_DataObject::text( const int index ) const
       if ( txt.isEmpty() )
 	txt = value( referencedObject() );
     break;
-  case IORIdx:
+  case IORId:
     txt = ior( referencedObject() );
     break;
-  case RefEntryIdx:
+  case RefEntryId :
     if ( isReference() )
       txt = entry( referencedObject() );
     break;
   default:
-    txt = LightApp_DataObject::text( index );
+    txt = LightApp_DataObject::text( id );
     break;
   }
   return txt;
@@ -192,13 +148,13 @@ QString SalomeApp_DataObject::text( const int index ) const
 
 /*!
   \brief Get data object icon for the specified column.
-  \param index column index
+  \param id column id
   \return object icon for the specified column
 */
-QPixmap SalomeApp_DataObject::icon( const int index ) const
+QPixmap SalomeApp_DataObject::icon( const int id ) const
 {
-  // we display icon only for the first (NameIdx) column
-  if ( index == NameIdx ) {
+  // we display icon only for the first (NameId ) column
+  if ( id == NameId ) {
     _PTR(GenericAttribute) anAttr;
     if ( myObject && myObject->FindAttribute( anAttr, "AttributePixMap" ) ){
       _PTR(AttributePixMap) aPixAttr ( anAttr );
@@ -220,18 +176,18 @@ QPixmap SalomeApp_DataObject::icon( const int index ) const
       }
     }
   }
-  return LightApp_DataObject::icon( index );
+  return LightApp_DataObject::icon( id );
 }
 
 /*!
   \brief Get data object color for the specified column.
   \param role color role
-  \param index column index (not used)
+  \param id column id (not used)
   \return object color for the specified column
 */
-QColor SalomeApp_DataObject::color( const ColorRole role, const int index ) const
+QColor SalomeApp_DataObject::color( const ColorRole role, const int id ) const
 {
-  // we ignore parameter <index> in order to use the same colors for 
+  // we ignore parameter <id> in order to use the same colors for 
   // all columns
   QColor c;
   switch ( role )
@@ -280,18 +236,18 @@ QColor SalomeApp_DataObject::color( const ColorRole role, const int index ) cons
     break;
   }
   if ( !c.isValid() )
-    c = LightApp_DataObject::color( role, index );
+    c = LightApp_DataObject::color( role, id );
   return c;
 }
 
 /*!
   \brief Get data object tooltip for the specified column.
-  \param index column index (not used)
+  \param id column id (not used)
   \return object tooltip for the specified column
 */
-QString SalomeApp_DataObject::toolTip( const int /*index*/ ) const
+QString SalomeApp_DataObject::toolTip( const int /*id*/ ) const
 {
-  // we ignore parameter <index> in order to use the same tooltip for 
+  // we ignore parameter <id> in order to use the same tooltip for 
   // all columns
   return QString( "Object \'%1\', module \'%2\', ID=%3" ).arg( name() ).arg( componentDataType() ).arg( entry() );
 }
@@ -356,15 +312,15 @@ _PTR(SObject) SalomeApp_DataObject::referencedObject() const
 
 /*!
   \brief Check if the specified column supports custom sorting.
-  \param index column index
+  \param id column id
   \return \c true if column sorting should be customized
   \sa compare()
 */
-bool SalomeApp_DataObject::customSorting( const int index ) const
+bool SalomeApp_DataObject::customSorting( const int id ) const
 {
   // perform custom sorting for the "Entry" and "Reference Entry" columns
-  return index == EntryIdx || index == RefEntryIdx ? true 
-    : LightApp_DataObject::customSorting( index );
+  return id == EntryId  || id == RefEntryId  ? true 
+    : LightApp_DataObject::customSorting( id );
 }
 
 /*!
@@ -375,16 +331,15 @@ bool SalomeApp_DataObject::customSorting( const int index ) const
 
   \param left first data to compare
   \param right second data to compare
-  \param index column index
+  \param id column id
   \return result of the comparison
   \sa customSorting()
 */
-bool SalomeApp_DataObject::compare( const QVariant& left, const QVariant& right, 
-				    const int index ) const
+bool SalomeApp_DataObject::compare( const QVariant& left, const QVariant& right, const int id ) const
 {
   // use the same custom sorting for the "Reference Entry" column as for the
   // "Entry" column (call base implementation)
-  return LightApp_DataObject::compare( left, right, index == RefEntryIdx ? EntryIdx : index );
+  return LightApp_DataObject::compare( left, right, id == RefEntryId ? EntryId : id );
 }
 
 /*!
@@ -548,22 +503,22 @@ QString SalomeApp_ModuleObject::name() const
 
 /*!
   \brief Get data object icon for the specified column.
-  \param index column index
+  \param id column id
   \return object icon for the specified column
 */
-QPixmap SalomeApp_ModuleObject::icon( const int index ) const
+QPixmap SalomeApp_ModuleObject::icon( const int id ) const
 {
-  return SalomeApp_DataObject::icon( index );
+  return SalomeApp_DataObject::icon( id );
 }
 
 /*!
   \brief Get data object tooltip for the specified column.
-  \param index column index
+  \param id column id
   \return object tooltip for the specified column
 */
-QString SalomeApp_ModuleObject::toolTip( const int index ) const
+QString SalomeApp_ModuleObject::toolTip( const int id ) const
 {
-  return SalomeApp_DataObject::toolTip( index );
+  return SalomeApp_DataObject::toolTip( id );
 }
 
 /*!
@@ -615,43 +570,43 @@ QString SalomeApp_RootObject::entry() const
 
 /*!
   \brief Get object text data for the specified column.
-  \param index column index
+  \param id column id
   \return object text data
 */
-QString SalomeApp_RootObject::text( const int index ) const
+QString SalomeApp_RootObject::text( const int id ) const
 {
-  return LightApp_RootObject::text( index );
+  return LightApp_RootObject::text( id );
 }
 
 /*!
   \brief Get data object icon for the specified column.
-  \param index column index
+  \param id column id
   \return object icon for the specified column
 */
-QPixmap SalomeApp_RootObject::icon( const int index ) const
+QPixmap SalomeApp_RootObject::icon( const int id ) const
 {
-  return LightApp_RootObject::icon( index );
+  return LightApp_RootObject::icon( id );
 }
 
 /*!
   \brief Get data object color for the specified column.
   \param role color role
-  \param index column index (not used)
+  \param id column id (not used)
   \return object color for the specified column
 */
-QColor SalomeApp_RootObject::color( const ColorRole role, const int index ) const
+QColor SalomeApp_RootObject::color( const ColorRole role, const int id ) const
 {
-  return LightApp_RootObject::color( role, index );
+  return LightApp_RootObject::color( role, id );
 }
 
 /*!
   \brief Get data object tooltip for the specified column.
-  \param index column index (not used)
+  \param id column id (not used)
   \return object tooltip for the specified column
 */
-QString SalomeApp_RootObject::toolTip( const int index ) const
+QString SalomeApp_RootObject::toolTip( const int id ) const
 {
-  return LightApp_RootObject::toolTip( index );
+  return LightApp_RootObject::toolTip( id );
 }
 
 /*!
@@ -714,20 +669,20 @@ QString SalomeApp_SavePointObject::name() const
 
 /*!
   \brief Get data object icon for the specified column.
-  \param index column index
+  \param id column id
   \return object icon for the specified column
 */
-QPixmap SalomeApp_SavePointObject::icon( const int /*index*/ ) const
+QPixmap SalomeApp_SavePointObject::icon( const int /*id*/ ) const
 {
   return QPixmap();
 }
 
 /*!
   \brief Get data object tooltip for the specified column.
-  \param index column index (not used)
+  \param id column id (not used)
   \return object tooltip for the specified column
 */
-QString SalomeApp_SavePointObject::toolTip( const int /*index*/ ) const
+QString SalomeApp_SavePointObject::toolTip( const int /*id*/ ) const
 {
   return QObject::tr( "SAVE_POINT_OBJECT_TOOLTIP" ).arg( name() );
 }
@@ -757,10 +712,10 @@ QString SalomeApp_SavePointRootObject::name() const
 
 /*!
   \brief Get data object tooltip for the specified column.
-  \param index column index (not used)
+  \param id column id (not used)
   \return object tooltip for the specified column
 */
-QString SalomeApp_SavePointRootObject::toolTip( const int /*index*/ ) const
+QString SalomeApp_SavePointRootObject::toolTip( const int /*id*/ ) const
 {
   return QObject::tr( "SAVE_POINT_ROOT_TOOLTIP" ); 
 }

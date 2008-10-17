@@ -20,19 +20,18 @@
 #define QDS_DATUM_H
 
 #include "QDS.h"
-
-#include <QString>
-#include <QVariant>
 #include <QPointer>
+#include <QMap>
+#include <QLabel>
+
+class QHBoxLayout;
+class QVBoxLayout;
+class QGridLayout;
+class QValidator;
 
 #include <DDS_DicItem.h>
 
-class QLabel;
 class QWidget;
-class QValidator;
-class QVBoxLayout;
-class QHBoxLayout;
-class QGridLayout;
 
 class QDS_EXPORT QDS_Datum : public QObject, public QDS
 {
@@ -115,6 +114,9 @@ public:
 
   operator QWidget*() const;
 
+  bool isCustomTr() const;
+  void enableCustomTr( const bool );
+
 signals:
   void                      paramChanged();
   void                      paramChanged( QString& );
@@ -196,7 +198,7 @@ private:
   QString                   mySourceValue;
   QString                   myTargetValue;
 
-  bool                      myInitialised;
+  bool                      myInitialised, myTr;
 
   friend class QDS;
 };

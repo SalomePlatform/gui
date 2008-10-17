@@ -76,8 +76,8 @@ OCCViewer_CreateRestoreViewDlg::OCCViewer_CreateRestoreViewDlg( QWidget* aWin, O
     myListBox->insertItem( 0, "No Items" );
   }
 
-  connect( myListBox, SIGNAL( itemClicked( QListBoxItem* ) ), this, SLOT( changeImage( QListBoxItem* ) ) );
-  connect( myListBox, SIGNAL( itemChanged( QListBoxItem* ) ), this, SLOT( editItemText( QListBoxItem* ) ) );
+  connect( myListBox, SIGNAL( itemClicked( QListWidgetItem* ) ), this, SLOT( changeImage( QListWidgetItem* ) ) );
+  connect( myListBox, SIGNAL( itemChanged( QListWidgetItem* ) ), this, SLOT( editItemText( QListWidgetItem* ) ) );
 	
   aLayout->addWidget( myListBox );
   aLayout->addWidget( myCurViewPort, 30 );

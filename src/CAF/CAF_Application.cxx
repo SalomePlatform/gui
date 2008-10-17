@@ -177,8 +177,8 @@ void CAF_Application::createActions()
   editUndo->setComment( tr( "INF_APP_UNDOACTIONS" ) );
   editRedo->setComment( tr( "INF_APP_REDOACTIONS" ) );
 
-  connect( editUndo, SIGNAL( activated( int ) ), this, SLOT( onUndo( int ) ) );
-  connect( editRedo, SIGNAL( activated( int ) ), this, SLOT( onRedo( int ) ) );
+  connect( editUndo, SIGNAL( triggered( int ) ), this, SLOT( onUndo( int ) ) );
+  connect( editRedo, SIGNAL( triggered( int ) ), this, SLOT( onRedo( int ) ) );
 
   int editMenu = createMenu( tr( "MEN_DESK_EDIT" ), -1, -1, 10 );
 

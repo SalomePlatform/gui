@@ -946,42 +946,42 @@ void OCCViewer_ViewWindow::createActions()
   aAction = new QtxAction(tr("MNU_DUMP_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_DUMP" ) ),
                            tr( "MNU_DUMP_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_DUMP_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onDumpView()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onDumpView()));
   toolMgr()->registerAction( aAction, DumpId );
 
   // FitAll
   aAction = new QtxAction(tr("MNU_FITALL"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_FITALL" ) ),
                            tr( "MNU_FITALL" ), 0, this);
   aAction->setStatusTip(tr("DSC_FITALL"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onFitAll()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onFitAll()));
   toolMgr()->registerAction( aAction, FitAllId );
 
   // FitRect
   aAction = new QtxAction(tr("MNU_FITRECT"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_FITAREA" ) ),
                            tr( "MNU_FITRECT" ), 0, this);
   aAction->setStatusTip(tr("DSC_FITRECT"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(activateWindowFit()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(activateWindowFit()));
   toolMgr()->registerAction( aAction, FitRectId );
   
   // Zoom
   aAction = new QtxAction(tr("MNU_ZOOM_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_ZOOM" ) ),
                            tr( "MNU_ZOOM_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_ZOOM_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(activateZoom()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(activateZoom()));
   toolMgr()->registerAction( aAction, ZoomId );
 
   // Panning
   aAction = new QtxAction(tr("MNU_PAN_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_PAN" ) ),
                            tr( "MNU_PAN_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_PAN_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(activatePanning()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(activatePanning()));
   toolMgr()->registerAction( aAction, PanId );
 
   // Global Panning
   aAction = new QtxAction(tr("MNU_GLOBALPAN_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_GLOBALPAN" ) ),
                            tr( "MNU_GLOBALPAN_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_GLOBALPAN_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(activateGlobalPanning()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(activateGlobalPanning()));
   toolMgr()->registerAction( aAction, GlobalPanId );
 
   // Rotation Point
@@ -996,58 +996,58 @@ void OCCViewer_ViewWindow::createActions()
   aAction = new QtxAction(tr("MNU_ROTATE_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_ROTATE" ) ),
                            tr( "MNU_ROTATE_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_ROTATE_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(activateRotation()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(activateRotation()));
   toolMgr()->registerAction( aAction, RotationId );
 
   // Projections
   aAction = new QtxAction(tr("MNU_FRONT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_FRONT" ) ),
                            tr( "MNU_FRONT_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_FRONT_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onFrontView()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onFrontView()));
   toolMgr()->registerAction( aAction, FrontId );
 
   aAction = new QtxAction(tr("MNU_BACK_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_BACK" ) ),
                            tr( "MNU_BACK_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_BACK_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onBackView()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onBackView()));
   toolMgr()->registerAction( aAction, BackId );
 
   aAction = new QtxAction(tr("MNU_TOP_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_TOP" ) ),
                            tr( "MNU_TOP_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_TOP_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onTopView()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onTopView()));
   toolMgr()->registerAction( aAction, TopId );
 
   aAction = new QtxAction(tr("MNU_BOTTOM_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_BOTTOM" ) ),
                            tr( "MNU_BOTTOM_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_BOTTOM_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onBottomView()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onBottomView()));
   toolMgr()->registerAction( aAction, BottomId );
 
   aAction = new QtxAction(tr("MNU_LEFT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_LEFT" ) ),
                            tr( "MNU_LEFT_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_LEFT_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onLeftView()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onLeftView()));
   toolMgr()->registerAction( aAction, LeftId );
 
   aAction = new QtxAction(tr("MNU_RIGHT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_RIGHT" ) ),
                            tr( "MNU_RIGHT_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_RIGHT_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onRightView()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onRightView()));
   toolMgr()->registerAction( aAction, RightId );
 
   // Reset
   aAction = new QtxAction(tr("MNU_RESET_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_RESET" ) ),
                            tr( "MNU_RESET_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_RESET_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onResetView()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onResetView()));
   toolMgr()->registerAction( aAction, ResetId );
 
   // Reset
   aAction = new QtxAction(tr("MNU_CLONE_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_CLONE_VIEW" ) ),
                            tr( "MNU_CLONE_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_CLONE_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onCloneView()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onCloneView()));
   toolMgr()->registerAction( aAction, CloneId );
 
   myClippingAction = new QtxAction(tr("MNU_CLIPPING"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_CLIPPING" ) ),
@@ -1060,20 +1060,20 @@ void OCCViewer_ViewWindow::createActions()
   aAction = new QtxAction(tr("MNU_SHOOT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_SHOOT_VIEW" ) ),
                            tr( "MNU_SHOOT_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_SHOOT_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onMemorizeView()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onMemorizeView()));
   toolMgr()->registerAction( aAction, MemId );
 
   aAction = new QtxAction(tr("MNU_PRESETS_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_PRESETS_VIEW" ) ),
                            tr( "MNU_PRESETS_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_PRESETS_VIEW"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onRestoreView()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onRestoreView()));
   toolMgr()->registerAction( aAction, RestoreId );
 
   if (myModel->trihedronActivated()) {
     aAction = new QtxAction(tr("MNU_SHOW_TRIHEDRE"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_TRIHEDRON" ) ),
                              tr( "MNU_SHOW_TRIHEDRE" ), 0, this);
     aAction->setStatusTip(tr("DSC_SHOW_TRIHEDRE"));
-    connect(aAction, SIGNAL(activated()), this, SLOT(onTrihedronShow()));
+    connect(aAction, SIGNAL(triggered()), this, SLOT(onTrihedronShow()));
     toolMgr()->registerAction( aAction, TrihedronShowId );
   }
 
@@ -1081,7 +1081,7 @@ void OCCViewer_ViewWindow::createActions()
   aAction = new QtxAction(tr("MNU_SCALING"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_SCALING" ) ),
                            tr( "MNU_SCALING" ), 0, this);
   aAction->setStatusTip(tr("DSC_SCALING"));
-  connect(aAction, SIGNAL(activated()), this, SLOT(onAxialScale()));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onAxialScale()));
   toolMgr()->registerAction( aAction, AxialScaleId );
 }
 

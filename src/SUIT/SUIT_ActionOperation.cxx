@@ -76,7 +76,7 @@ void SUIT_ActionOperation::setAction( QtxAction* a )
   myAction = a;
 
   myAction->setEnabled( application()->activeStudy() );
-  connect( myAction, SIGNAL( activated() ), SLOT( start() ) );
+  connect( myAction, SIGNAL( triggered() ), SLOT( start() ) );
 }
 
 /*! Add action to widget \a wid.

@@ -1180,18 +1180,17 @@ void QtxTable::setHeaderData( const Qt::Orientation o, const int section, const 
     anItem = horizontalHeaderItem( section );
   else
     anItem = verticalHeaderItem( section );
-  if ( !anItem ) {
-    QVariant aValue = headerData( o, section );
+
+  if ( anItem )
+    anItem->setData( Qt::DisplayRole, var );
+  else {
     anItem = new QTableWidgetItem();
-    anItem->setData( Qt::DisplayRole, aValue );
+    anItem->setData( Qt::DisplayRole, var );
     if ( o == Qt::Horizontal )
       setHorizontalHeaderItem( section, anItem );
     else
       setVerticalHeaderItem( section, anItem );
   }
-
-  if ( model() )
-    model()->setHeaderData( section, o, var, role );
 }
 
 void QtxTable::setHeaderFont( const Qt::Orientation o, const int section, const QFont& font )
@@ -1368,7 +1367,7 @@ bool QtxTable::indexPosition( const QModelIndex& theIndex, int& theRow,
 void QtxTable::clear( const bool withHeaders )
 {
   if ( withHeaders )
-    clear();
+    QTableWidget::clear();
   else
     clearContents();
 

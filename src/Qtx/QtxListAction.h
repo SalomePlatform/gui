@@ -67,7 +67,7 @@ public:
   void             setCharsNumber( const int );
 
 signals:
-  void             activated( int );
+  void             triggered( int );
 
 private slots:
   void             onChanged();

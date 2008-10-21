@@ -150,7 +150,6 @@ public slots:
   void    onSettings();
   void    onFitData();
   void    onChangeBackground();
-
   void    onPanLeft();
   void    onPanRight();
   void    onPanUp();
@@ -169,6 +168,7 @@ signals:
   void    vpModeVerChanged();
   void    vpCurveChanged();
   void    contextMenuRequested( QContextMenuEvent *e );
+  void    legendClicked( QwtPlotItem* );
 
 protected:
   Plot2d_Plot2d* myPlot;

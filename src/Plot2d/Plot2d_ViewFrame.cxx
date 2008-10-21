@@ -171,9 +171,9 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
 
   aLayout->addWidget( myPlot );
 
-//  createActions();
-  //connect( myPlot, SIGNAL( legendClicked( long ) ),
-  //   this,   SLOT( onLegendClicked( long ) ) );
+  //  createActions();
+  connect( myPlot, SIGNAL( legendClicked( QwtPlotItem* ) ), 
+	   this, SIGNAL( legendClicked( QwtPlotItem* ) ) );
 
   /* Initial Setup - get from the preferences */
   readPreferences();
@@ -1029,6 +1029,7 @@ void Plot2d_ViewFrame::showLegend( bool show, bool update )
       legend = new QwtLegend( myPlot );
       legend->setFrameStyle( QFrame::Box | QFrame::Sunken );
     }
+    legend->setItemMode( QwtLegend::ClickableItem );
     myPlot->insertLegend( legend );
     setLegendPos( myLegendPos );
   }

@@ -21,6 +21,7 @@
 
 #include "Plot2d.h"
 #include "SUIT_ViewModel.h"
+#include "qwt_plot.h"
 
 class SUIT_ViewWindow;
 class SUIT_Desktop;
@@ -57,6 +58,7 @@ protected slots:
   void         onDumpView();
   void         onShowToolbar();
   virtual void onCloneView( Plot2d_ViewFrame*, Plot2d_ViewFrame* );
+  virtual void onLegendClicked( QwtPlotItem* );
 
 private:
   Plot2d_Prs* myPrs;

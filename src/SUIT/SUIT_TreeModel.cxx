@@ -880,11 +880,8 @@ QModelIndex SUIT_TreeModel::index( int row, int column,
     {
       TreeItem* childItem = parentItem->child( row );
       if( childItem )
-      {
-        QString cname = childItem->dataObject()->name();
 	return createIndex( row, column, childItem );
     }
-  }
   }
   return QModelIndex();
 }

@@ -28,7 +28,10 @@
 #include "SUIT_Session.h"
 #include "SUIT_Application.h"
 
-//#include "utilities.h"
+#include "LightApp_SelectionMgr.h"
+#include "LightApp_Application.h"
+#include "SALOME_ListIO.hxx"
+
 #include "qapplication.h"
 #include <qtoolbar.h>
 #include <qtoolbutton.h>
@@ -383,6 +386,33 @@ void SPlot2d_Viewer::onCloneView( Plot2d_ViewFrame* clonedVF, Plot2d_ViewFrame* 
   newVF->Repaint();*/
   
   Plot2d_Viewer::onCloneView( clonedVF, newVF );
+}
+
+/*!
+  SLOT: called when action "Legend Clicked" is activated.
+  override "onLegendClicked" method from Plot2d_ViewModel.
+*/
+void SPlot2d_Viewer::onLegendClicked( long key )
+{
+  Plot2d_ViewFrame* aViewFrame = getActiveViewFrame();
+  if(aViewFrame == NULL) return;
+
+  QIntDict<Plot2d_Curve> aCurves = aViewFrame->getCurves();
+
+  Plot2d_Curve*  aCurve = aCurves.find( key );
+  SPlot2d_Curve* aSCurve = dynamic_cast<SPlot2d_Curve*>(aCurve); 
+
+  if(aSCurve && aSCurve->hasIO()) {
+    LightApp_Application* anApp = dynamic_cast< LightApp_Application* >( SUIT_Session::session()->activeApplication() );
+    if ( anApp ) {
+      LightApp_SelectionMgr* aSelectionMgr = anApp->selectionMgr();
+      if (aSelectionMgr) {
+	SALOME_ListIO aListIO;
+	aListIO.Append( aSCurve->getIO() );
+	aSelectionMgr->setSelectedObjects( aListIO, false );
+      }
+    }
+  }
 }
 
 /*!

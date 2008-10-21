@@ -19,6 +19,7 @@
 #include "Plot2d_ViewManager.h"
 #include "Plot2d_ViewModel.h"
 #include "Plot2d_ViewWindow.h"
+#include "Plot2d_ViewFrame.h"
 
 /*!
   Constructor
@@ -55,6 +56,10 @@ bool Plot2d_ViewManager::insertView( SUIT_ViewWindow* theView )
   {
     Plot2d_ViewWindow* view = (Plot2d_ViewWindow*)theView;
     connect( view, SIGNAL( cloneView() ), this, SLOT( onCloneView() ) );
+
+    Plot2d_ViewFrame* aViewFrame = view->getViewFrame();
+    Plot2d_Viewer* aViewer = getPlot2dModel();
+    connect( aViewFrame, SIGNAL( legendClicked( long ) ), aViewer, SLOT( onLegendClicked( long ) ) );
   }
   return res;
 }

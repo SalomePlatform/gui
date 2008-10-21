@@ -162,6 +162,7 @@ signals:
   void    vpModeVerChanged();
   void    vpCurveChanged();
   void    contextMenuRequested( QContextMenuEvent *e );
+  void    legendClicked(long key);
 
 protected:
   Plot2d_Plot2d* myPlot;

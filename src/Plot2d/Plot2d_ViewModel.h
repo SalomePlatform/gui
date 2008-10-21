@@ -57,6 +57,7 @@ protected slots:
   void onDumpView();
   void onShowToolbar();
   virtual void onCloneView( Plot2d_ViewFrame*, Plot2d_ViewFrame* );
+  virtual void onLegendClicked( QwtPlotItem* plotItem );
 
 private:
   Plot2d_Prs* myPrs;

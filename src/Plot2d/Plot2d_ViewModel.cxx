@@ -204,6 +204,13 @@ void Plot2d_Viewer::onCloneView( Plot2d_ViewFrame* clonedVF, Plot2d_ViewFrame* n
   }
 }
 
+/*
+  SLOT: called when clicked item in the legend from Plot2d_ViewManager
+ */
+void Plot2d_Viewer::onLegendClicked( long key )
+{
+}
+
 /*!
   Sets view manager
   \param mgr - new view manager

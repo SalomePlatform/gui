@@ -168,8 +168,8 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
      this,   SLOT( plotMousePressed( const QMouseEvent& ) ) );
   connect( myPlot, SIGNAL( plotMouseReleased( const QMouseEvent& ) ),
      this,   SLOT( plotMouseReleased( const QMouseEvent& ) ) );
-  //connect( myPlot, SIGNAL( legendClicked( long ) ),
-  //   this,   SLOT( onLegendClicked( long ) ) );
+  connect( myPlot, SIGNAL( legendClicked( long ) ),
+     this, SIGNAL( legendClicked( long ) ) );
 
   /* Initial Setup - get from the preferences */
   readPreferences();
@@ -1134,6 +1134,7 @@ void Plot2d_ViewFrame::setLegendPos( int pos )
     break;
   }
 }
+
 
 /*!
   Sets new marker size

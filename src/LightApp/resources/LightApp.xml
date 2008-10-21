@@ -101,7 +101,7 @@
     <parameter name="relative_size"  value="true" />
     <parameter name="use_advanced_selection_algorithm" value="true" />
     <parameter name="navigation_mode" value="0" />
-    <parameter name="speed_value" val ue="10" />
+    <parameter name="speed_value" value="10" />
     <parameter name="speed_mode" value="0" />
     <parameter name="spacemouse_func1_btn" value="1" />
     <parameter name="spacemouse_func2_btn" value="2" />

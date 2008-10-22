@@ -1596,7 +1596,13 @@ QAction* SALOME_PYQT_Module::separator()
 */
 QAction* SALOME_PYQT_Module::action( const int id ) const
 {
-  return SalomeApp_Module::action( id );
+  QAction* a = SalomeApp_Module::action( id );
+  if ( !a ) {
+    // try menu
+    QMenu* m = menuMgr()->findMenu( id );
+    if ( m ) a = m->menuAction();
+  }
+  return a;
 }
 
 /*!

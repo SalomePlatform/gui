@@ -377,11 +377,12 @@ void QtxTreeView::emitSortingEnabled( bool enabled )
 void QtxTreeView::setModel( QAbstractItemModel* m )
 {
   if( model() )
-	disconnect( model(), SIGNAL( headerDataChanged( Qt::Orientation, int, int ) ),
+    disconnect( model(), SIGNAL( headerDataChanged( Qt::Orientation, int, int ) ),
                 this, SLOT( onAppropriate( Qt::Orientation, int, int ) ) );
   QTreeView::setModel( m );
-  connect( model(), SIGNAL( headerDataChanged( Qt::Orientation, int, int ) ),
-           this, SLOT( onAppropriate( Qt::Orientation, int, int ) ) );
+  if ( model() )
+    connect( model(), SIGNAL( headerDataChanged( Qt::Orientation, int, int ) ),
+	     this, SLOT( onAppropriate( Qt::Orientation, int, int ) ) );
 }
 
 void QtxTreeView::onAppropriate( Qt::Orientation orient, int first, int last )

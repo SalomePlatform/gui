@@ -78,6 +78,9 @@ public:
 
 protected slots:
   virtual void onLegendClicked( QwtPlotItem* plotItem );
+
+signals:
+  void legendSelected( const QString& );
 };
 
 

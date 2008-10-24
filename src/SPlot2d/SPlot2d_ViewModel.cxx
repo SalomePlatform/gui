@@ -29,8 +29,6 @@
 #include "SUIT_Application.h"
 #include "SUIT_ViewManager.h"
 
-#include "LightApp_SelectionMgr.h"
-#include "LightApp_Application.h"
 #include "SALOME_ListIO.hxx"
 
 #include <QApplication>
@@ -400,14 +398,7 @@ void SPlot2d_Viewer::onLegendClicked( QwtPlotItem* plotItem )
   }
   // Highlight curve in Object Browser
   if(aSCurve && aSCurve->hasIO()) {
-    LightApp_Application* anApp = dynamic_cast< LightApp_Application* >( SUIT_Session::session()->activeApplication() );
-    if ( anApp ) {
-      LightApp_SelectionMgr* aSelectionMgr = anApp->selectionMgr();
-      if (aSelectionMgr) {
-	SALOME_ListIO aListIO;
-	aListIO.Append( aSCurve->getIO() );
-	aSelectionMgr->setSelectedObjects( aListIO, false );
-      }
-    }
+    QString anEntry = aSCurve->getIO()->getEntry();
+    emit legendSelected( anEntry );
   }
 }

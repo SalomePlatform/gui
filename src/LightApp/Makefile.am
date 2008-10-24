@@ -66,6 +66,9 @@ endif
 if ENABLE_GLVIEWER
   salomeinclude_HEADERS += LightApp_GLSelector.h
 endif
+if ENABLE_PLOT2DVIEWER
+  salomeinclude_HEADERS += LightApp_Plot2dSelector.h
+endif
 
 dist_libLightApp_la_SOURCES =		\
 	LightApp_AboutDlg.cxx		\
@@ -106,6 +109,9 @@ endif
 if ENABLE_GLVIEWER
   dist_libLightApp_la_SOURCES += LightApp_GLSelector.cxx
 endif
+if ENABLE_PLOT2DVIEWER
+  dist_libLightApp_la_SOURCES += LightApp_Plot2dSelector.cxx
+endif
 
 MOC_FILES =				\
 	LightApp_AboutDlg_moc.cxx	\
@@ -135,6 +141,9 @@ if ENABLE_OCCVIEWER
 endif
 if ENABLE_GLVIEWER
   MOC_FILES += LightApp_GLSelector_moc.cxx
+endif
+if ENABLE_PLOT2DVIEWER
+  MOC_FILES += LightApp_Plot2dSelector_moc.cxx
 endif
 nodist_libLightApp_la_SOURCES = $(MOC_FILES)
 

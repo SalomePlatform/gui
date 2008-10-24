@@ -28,8 +28,6 @@
 #include "SUIT_Session.h"
 #include "SUIT_Application.h"
 
-#include "LightApp_SelectionMgr.h"
-#include "LightApp_Application.h"
 #include "SALOME_ListIO.hxx"
 
 #include "qapplication.h"
@@ -403,15 +401,8 @@ void SPlot2d_Viewer::onLegendClicked( long key )
   SPlot2d_Curve* aSCurve = dynamic_cast<SPlot2d_Curve*>(aCurve); 
 
   if(aSCurve && aSCurve->hasIO()) {
-    LightApp_Application* anApp = dynamic_cast< LightApp_Application* >( SUIT_Session::session()->activeApplication() );
-    if ( anApp ) {
-      LightApp_SelectionMgr* aSelectionMgr = anApp->selectionMgr();
-      if (aSelectionMgr) {
-	SALOME_ListIO aListIO;
-	aListIO.Append( aSCurve->getIO() );
-	aSelectionMgr->setSelectedObjects( aListIO, false );
-      }
-    }
+    QString anEntry = aSCurve->getIO()->getEntry();
+    emit legendSelected( anEntry );
   }
 }
 

@@ -79,6 +79,9 @@ public:
 protected slots:
   virtual void onCloneView( Plot2d_ViewFrame*, Plot2d_ViewFrame* );
   virtual void onLegendClicked( long key );
+
+signals:
+  void legendSelected( const QString& );
 };
 
 

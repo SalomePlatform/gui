@@ -77,6 +77,7 @@
 #ifndef DISABLE_PLOT2DVIEWER
   #include <Plot2d_ViewManager.h>
   #include <Plot2d_ViewModel.h>
+  #include "LightApp_Plot2dSelector.h"
 #ifndef DISABLE_SALOMEOBJECT
   #include <SPlot2d_ViewModel.h>
 #else
@@ -1428,7 +1429,9 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
     viewMgr = new Plot2d_ViewManager( activeStudy(), desktop() );
     Plot2d_Viewer* vm;
 #ifndef DISABLE_SALOMEOBJECT
-    vm = new SPlot2d_Viewer();
+    SPlot2d_Viewer* v = new SPlot2d_Viewer();
+    vm = v;
+    new LightApp_Plot2dSelector( v, mySelMgr );
 #else
     vm = new Plot2d_Viewer();
 #endif

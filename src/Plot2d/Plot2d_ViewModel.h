@@ -28,7 +28,6 @@ class Plot2d_ViewFrame;
 class Plot2d_Prs;
 class QString;
 class QPopupMenu;
-class QwtPlotItem;
 
 class PLOT2D_EXPORT Plot2d_Viewer: public SUIT_ViewModel
 {
@@ -58,7 +57,7 @@ protected slots:
   void onDumpView();
   void onShowToolbar();
   virtual void onCloneView( Plot2d_ViewFrame*, Plot2d_ViewFrame* );
-  virtual void onLegendClicked( long key/*QwtPlotItem* plotItem*/ );
+  virtual void onLegendClicked( long );
 
 private:
   Plot2d_Prs* myPrs;

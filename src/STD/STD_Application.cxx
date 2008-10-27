@@ -275,8 +275,9 @@ bool STD_Application::onNewDoc( const QString& name )
       studyCreated( activeStudy() );
     else
     {
-      delete activeStudy();
+      SUIT_Study* st = activeStudy();
       setActiveStudy( 0 );
+      delete st;
     }
   }
   else

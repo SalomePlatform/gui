@@ -1,6 +1,8 @@
 unix:TEMPLATE = lib
 win32:TEMPLATE = vclib
 
+include(../Common.pro)
+
 win32:QMAKE_MOC=$(QTDIR)\bin\moc.exe
 
 DESTDIR = ../../$(CONFIG_ID)/lib
@@ -20,9 +22,6 @@ LIBS += -L../../$(CONFIG_ID)/lib -lQtx -lSUIT -lOBJECT -lPrs -lVTKViewer $${OCC_
 win32: LIBS += -lTKernel
 win32:LIBS *= -L$(QTLIB)
 win32:INCLUDEPATH *= $(QTINC) $(QTINC)\QtCore $(QTINC)\QtGui $(QTINC)\QtXml
-
-CONFIG -= debug release debug_and_release
-CONFIG += qt thread debug dll shared
 
 win32:DEFINES += WNT WIN32 
 DEFINES += SVTK_EXPORTS $(CASDEFINES) OCC_VERSION_MAJOR=6 OCC_VERSION_MINOR=1 OCC_VERSION_MAINTENANCE=1 LIN LINTEL CSFDB No_exception HAVE_CONFIG_H HAVE_LIMITS_H HAVE_WOK_CONFIG_H OCC_CONVERT_SIGNALS

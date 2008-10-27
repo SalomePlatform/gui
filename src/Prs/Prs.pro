@@ -1,6 +1,8 @@
 unix:TEMPLATE = lib
 win32:TEMPLATE = vclib
 
+include(../Common.pro)
+
 win32:QMAKE_MOC=$(QTDIR)\bin\moc.exe
 
 DESTDIR = ../../$(CONFIG_ID)/lib
@@ -9,9 +11,6 @@ OBJECTS_DIR = ../../$(CONFIG_ID)/obj/$$TARGET
 
 win32:LIBS *= -L$(QTLIB)
 win32:INCLUDEPATH *= $(QTINC) $(QTINC)\QtCore $(QTINC)\QtGui $(QTINC)\QtXml
-
-CONFIG -= debug release debug_and_release
-CONFIG += qt thread debug dll shared
 
 win32:DEFINES += WNT WIN32
 DEFINES += PRS_EXPORTS

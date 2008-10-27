@@ -1,6 +1,8 @@
 win32:TEMPLATE = vclib
 unix:TEMPLATE = lib
 
+include(../Common.pro)
+
 CONFIG += embed_manifest_exe
 
 win32:QMAKE_MOC=$(QTDIR)\bin\moc.exe
@@ -13,8 +15,6 @@ win32:LIBS *= -L$(QTLIB)
 win32:INCLUDEPATH *= $(QTINC) $(QTINC)\QtCore $(QTINC)\QtGui $(QTINC)\QtXml
 
 QT += xml
-CONFIG -= debug release debug_and_release
-CONFIG += qt thread debug dll shared
 
 win32:DEFINES += WNT WIN32
 DEFINES += QTX_EXPORTS

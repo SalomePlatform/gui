@@ -1,6 +1,8 @@
 unix:TEMPLATE = lib
 win32:TEMPLATE = vclib
 
+include(../Common.pro)
+
 win32:QMAKE_MOC=$(QTDIR)\bin\moc.exe
 
 DESTDIR = ../../$(CONFIG_ID)/lib
@@ -11,9 +13,6 @@ INCLUDEPATH = ../../include
 LIBS += -L../../$(CONFIG_ID)/lib -lSUIT -lQtx
 win32:LIBS *= -L$(QTLIB)
 win32:INCLUDEPATH *= $(QTINC) $(QTINC)\QtCore $(QTINC)\QtGui $(QTINC)\QtXml
-
-CONFIG -= debug release debug_and_release
-CONFIG += qt thread debug dll shared
 
 win32:DEFINES += WNT WIN32
 DEFINES += LOGWINDOW_EXPORTS

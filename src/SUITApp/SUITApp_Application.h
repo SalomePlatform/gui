@@ -19,7 +19,7 @@
 #ifndef SUITAPP_APPLICATION_H
 #define SUITAPP_APPLICATION_H
 
-#ifndef DISABLE_TESTRECORDER
+#ifdef ENABLE_TESTRECORDER
   #include <TestApplication.h>
 #else
   #include <QApplication>
@@ -27,7 +27,7 @@
 
 class SUIT_ExceptionHandler;
 
-#ifndef DISABLE_TESTRECORDER
+#ifdef ENABLE_TESTRECORDER
   class SUITApp_Application : public TestApplication
 #else
   class SUITApp_Application : public QApplication

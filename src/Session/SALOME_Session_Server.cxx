@@ -35,7 +35,7 @@
 #include <ConnectionManager_i.hxx>
 #include <SALOME_LifeCycleCORBA.hxx>
 
-#ifndef DISABLE_TESTRECORDER
+#ifdef ENABLE_TESTRECORDER
   #include <TestApplication.h>
 #endif
 
@@ -249,14 +249,14 @@ protected:
   }
 };
 
-#ifndef DISABLE_TESTRECORDER
+#ifdef ENABLE_TESTRECORDER
   class SALOME_QApplication : public TestApplication
 #else
   class SALOME_QApplication : public QApplication
 #endif
 {
 public:
-#ifndef DISABLE_TESTRECORDER
+#ifdef ENABLE_TESTRECORDER
   SALOME_QApplication( int& argc, char** argv ) : TestApplication( argc, argv ), myHandler ( 0 ) {}
 #else
   SALOME_QApplication( int& argc, char** argv ) : QApplication( argc, argv ), myHandler ( 0 ) {}
@@ -278,7 +278,7 @@ public:
     }
 #endif
 
-#ifndef DISABLE_TESTRECORDER
+#ifdef ENABLE_TESTRECORDER
     return myHandler ? myHandler->handle( receiver, e ) :
       TestApplication::notify( receiver, e );
 #else

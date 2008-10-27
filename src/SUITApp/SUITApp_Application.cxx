@@ -35,7 +35,7 @@
   Constructor
 */
 SUITApp_Application::SUITApp_Application( int& argc, char** argv, SUIT_ExceptionHandler* hand )
-#ifndef DISABLE_TESTRECORDER
+#ifdef ENABLE_TESTRECORDER
   : TestApplication( argc, argv ),
 #else
   : QApplication( argc, argv ),
@@ -56,7 +56,7 @@ myExceptHandler( hand )
   Constructor
 */
 SUITApp_Application::SUITApp_Application( int& argc, char** argv, Type type, SUIT_ExceptionHandler* hand )
-#ifndef DISABLE_TESTRECORDER
+#ifdef ENABLE_TESTRECORDER
   : TestApplication( argc, argv ),
 #else
   : QApplication( argc, argv, type ),
@@ -77,7 +77,7 @@ myExceptHandler( hand )
 bool SUITApp_Application::notify( QObject* receiver, QEvent* e )
 {
   return myExceptHandler ? myExceptHandler->handle( receiver, e ) :
-#ifndef DISABLE_TESTRECORDER
+#ifdef ENABLE_TESTRECORDER
                            TestApplication::notify( receiver, e );
 #else
                            QApplication::notify( receiver, e );

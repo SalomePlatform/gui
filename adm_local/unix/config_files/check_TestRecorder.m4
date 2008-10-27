@@ -1,6 +1,6 @@
 #
 # Check existence of Test recorder sources and libraries.
-# Set DISABLE_TESTRECORDER to yes|no
+# Set ENABLE_TESTRECORDER to yes|no
 #
 # Author : Margarita KARPUNINA (OCN, 2008)
 #
@@ -31,7 +31,7 @@ AS_IF([test "x$with_testrecorder" != xno || test "$with_testrecorder" != "no"],[
   
   TESTRECORDER_INCLUDES=""
   TESTRECORDER_LIBS=""
-  DISABLE_TESTRECORDER="yes"
+  ENABLE_TESTRECORDER="no"
   
   TestRecorder_ok=no
 
@@ -88,7 +88,7 @@ AS_IF([test "x$with_testrecorder" != xno || test "$with_testrecorder" != "no"],[
     AC_MSG_WARN(TestRecorder is not found or not properly installed)
   else
     AC_MSG_RESULT(for TestRecorder: yes)
-    DISABLE_TESTRECORDER="no"
+    ENABLE_TESTRECORDER="yes"
   fi
   
   AC_SUBST(TESTRECORDER_INCLUDES)

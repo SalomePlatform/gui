@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1">
 <context>
-    <name>PythonConsole</name>
+    <name>PyConsole_Console</name>
     <message>
         <location filename="PyConsole_Editor.cxx" line="411"/>
         <source>EDIT_COPY_CMD</source>

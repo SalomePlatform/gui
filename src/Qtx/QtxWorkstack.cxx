@@ -1050,6 +1050,8 @@ void QtxWorkstackArea::updateState()
   QResizeEvent re( myBar->size(), myBar->size() );
   QApplication::sendEvent( myBar, &re );
 
+  myBar->updateGeometry();
+
   if ( isEmpty() )
   {
     hide();

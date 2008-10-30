@@ -309,6 +309,13 @@ SVTK_Renderer
 {
   myTransform->SetMatrixScale( theScale[0], theScale[1], theScale[2] );
   AdjustActors();
+
+  vtkActorCollection* anActors = GetDevice()->GetActors();
+  anActors->InitTraversal();
+  while(vtkActor* anAct = anActors->GetNextActor())
+    if(SALOME_Actor* anActor = dynamic_cast<SALOME_Actor*>(anAct))
+      if(anActor->isHighlighted() && !anActor->IsInfinitive())
+	anActor->highlight(true);
 }
 
 /*!

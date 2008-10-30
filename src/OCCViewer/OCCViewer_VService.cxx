@@ -32,6 +32,7 @@
 #include <WNT_GraphicDevice.hxx>
 #include <WNT_GraphicDevice.hxx>
 #include <WNT_WDriver.hxx>
+#include <InterfaceGraphic_WNT.hxx>
 #else
 #include <Xw_Window.hxx>
 #include <Graphic3d_GraphicDevice.hxx>
@@ -89,6 +90,8 @@ void OCCViewer_VService::SetWindow( const Handle(V3d_View)& view,
 #ifdef WNT
   Handle(WNT_Window) w =
       new WNT_Window( Handle(Graphic3d_WNTGraphicDevice)::DownCast(view->Viewer()->Device()), hiwin, lowin );
+  // Prevent flicker
+  w->SetFlags( WDF_NOERASEBKGRND );
 #else
   Handle(Xw_Window) w =
       new Xw_Window( Handle(Graphic3d_GraphicDevice)::DownCast(view->Viewer()->Device()), hiwin, lowin, quality );

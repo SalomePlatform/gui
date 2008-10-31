@@ -165,7 +165,7 @@ void SUIT_LicenseDlg::onPrint()
     QFont aFooterFont = aBodyFont;
 
     // calculate margin
-    QPaintDevice* aMetrics(aPainter.device());
+    QPaintDevice* aMetrics = aPainter.device();
     int aDpiY = aMetrics->logicalDpiY();
     int aMargin = (int) ( (2/2.54)*aDpiY ); // 2 cm margins
 

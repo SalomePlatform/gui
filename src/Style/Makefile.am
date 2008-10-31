@@ -29,22 +29,25 @@ lib_LTLIBRARIES = libSalomeStyle.la
 
 salomeinclude_HEADERS =		\
 	Style.h			\
-	Style_Tools.h		\
-	Style_Model.h		\
 	Style_PrefDlg.h		\
-	Style_ResourceMgr.h	\
 	Style_Salome.h
 
-dist_libSalomeStyle_la_SOURCES =	\
-	Style_Tools.cxx			\
-	Style_Model.cxx			\
-	Style_PrefDlg.cxx		\
-	Style_ResourceMgr.cxx		\
-	Style_Salome.cxx
+dist_libSalomeStyle_la_SOURCES =\
+	Style.h			\
+	Style_Model.h		\
+	Style_PrefDlg.h		\
+	Style_Salome.h		\
+	Style_Tools.h		\
+	Style_ResourceMgr.h	\
+	Style_Model.cxx		\
+	Style_PrefDlg.cxx	\
+	Style_ResourceMgr.cxx	\
+	Style_Salome.cxx	\
+	Style_Tools.cxx
 
 MOC_FILES = \
-	Style_Salome_moc.cxx		\
-	Style_PrefDlg_moc.cxx
+	Style_PrefDlg_moc.cxx	\
+	Style_Salome_moc.cxx
 
 QRC_FILES = \
 	qrc_Style.cxx

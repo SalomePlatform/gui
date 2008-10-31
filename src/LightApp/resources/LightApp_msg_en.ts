@@ -34,6 +34,18 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
 <context>
     <name>LightApp_Application</name>
     <message>
+        <source>MEN_DESK_THEME</source>
+        <translation>Theme</translation>
+    </message>
+    <message>
+        <source>TOT_THEME</source>
+        <translation>Theme</translation>
+    </message>
+    <message>
+        <source>PRP_THEME</source>
+        <translation>Change style properties</translation>
+    </message>
+    <message>
         <source>INF_TOOLBAR_MODULES</source>
         <translation>Modules</translation>
     </message>

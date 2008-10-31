@@ -61,7 +61,6 @@
 
 #include <QtxSplash.h>
 #include <Style_Salome.h>
-#include <Style_Model.h>
 #include <SUIT_Tools.h>
 #include <SUIT_Session.h>
 #include <SUIT_Application.h>
@@ -359,7 +358,8 @@ int main( int argc, char **argv )
     // ...create resource manager
     SUIT_ResourceMgr resMgr( "SalomeApp", QString( "%1Config" ) );
     resMgr.setCurrentFormat( "xml" );
-    resMgr.loadLanguage( false, "LightApp", "en" );
+    resMgr.setWorkingMode( QtxResourceMgr::IgnoreUserValues );
+    resMgr.loadLanguage( "LightApp", "en" );
     //
     splash = QtxSplash::splash( QPixmap() );
     splash->readSettings( &resMgr );
@@ -534,16 +534,9 @@ int main( int argc, char **argv )
       SUIT_Application* aGUIApp = aGUISession->startApplication( "SalomeApp", 0, 0 );
       if ( aGUIApp )
       {
-        // Set SALOME style to the application
-	SUIT_ResourceMgr resMgr( "SalomeApp", QString( "%1Config" ) );
-	resMgr.setCurrentFormat( "xml" );
-	resMgr.loadLanguage( false, "LightApp", "en" );
-	if ( bool isSSUse = resMgr.booleanValue( "Style", "use_salome_style", true ) )
-	{
-	  Style_Salome* aStyle = new Style_Salome();
-	  aStyle->getModel()->initFromResource( aGUIApp->resourceMgr() );
-	  _qappl.setStyle( aStyle );
-	}
+	Style_Salome::initialize( aGUIApp->resourceMgr() );
+	if ( aGUIApp->resourceMgr()->booleanValue( "Style", "use_salome_style", true ) )
+	  Style_Salome::apply();
 
 	if ( !isFound( "noexcepthandler", argc, argv ) )
 	  _qappl.setHandler( aGUISession->handler() ); // after loading SalomeApp application

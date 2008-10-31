@@ -1,5 +1,5 @@
 <document>
-  <section name="Steel-blue">
+  <section name="Steel-Blue">
     <parameter name="button-color"            value="silver" />
     <parameter name="base-color"              value="white" />
     <parameter name="window-color"            value="lightsteelblue" />
@@ -22,7 +22,7 @@
     <parameter name="widget-effect"           value="1" />
     <parameter name="slider-size"             value="5" />
   </section>
-  <section name="Dark-green">
+  <section name="Dark-Green">
     <parameter name="button-color"            value="#003300" />
     <parameter name="window-color"            value="black" />
     <parameter name="text-color"              value="white" />

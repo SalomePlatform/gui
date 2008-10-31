@@ -29,9 +29,13 @@
 
 if [ -z "$LightAppConfig" ] ; then
   export LightAppConfig=${GUI_ROOT_DIR}/share/salome/resources/gui
+else
+  export LightAppConfig=${LightAppConfig}:${GUI_ROOT_DIR}/share/salome/resources/gui
 fi
 if [ -z "$LightAppResources" ] ; then
   export LightAppResources=${GUI_ROOT_DIR}/share/salome/resources/gui
+else
+  export LightAppResources=${LightAppResources}:${GUI_ROOT_DIR}/share/salome/resources/gui
 fi
 
 ###
@@ -142,4 +146,4 @@ fi
 # start application
 ###
 
-SUITApp LightApp -style salome $* &
+SUITApp LightApp $* &

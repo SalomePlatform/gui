@@ -27,8 +27,16 @@
 # is necessary for loading of .ini or .xml resources file
 ###
 
-if ( ! $?LightAppConfig )    setenv LightAppConfig ${GUI_ROOT_DIR}/share/salome/resources/gui
-if ( ! $?LightAppResources ) setenv LightAppResources ${GUI_ROOT_DIR}/share/salome/resources/gui
+if ( ! ($?LightAppConfig) ) then
+    setenv LightAppConfig ${GUI_ROOT_DIR}/share/salome/resources/gui
+else
+    setenv LightAppConfig ${LightAppConfig}:${GUI_ROOT_DIR}/share/salome/resources/gui
+endif
+if ( ! ($?LightAppResources) ) then
+    setenv LightAppResources ${GUI_ROOT_DIR}/share/salome/resources/gui
+else
+    setenv LightAppResources ${LightAppResources}:${GUI_ROOT_DIR}/share/salome/resources/gui
+endif
 
 ###
 # default settings 
@@ -144,4 +152,4 @@ if ( "${PYTHONPATH}" != "" ) setenv PYTHONPATH ${MY_PYTHONPATH}:${PYTHONPATH}
 # start application
 ###
 
-SUITApp LightApp -style salome $* &
+SUITApp LightApp $* &

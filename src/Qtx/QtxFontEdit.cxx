@@ -130,11 +130,25 @@ QFont QtxFontEdit::currentFont() const
 */
 void QtxFontEdit::setCurrentFont( const QFont& fnt )
 {
+  myFamily->blockSignals( true );
+  mySize->blockSignals( true );
+  myB->blockSignals( true );
+  myI->blockSignals( true );
+  myU->blockSignals( true );
+
   setFontFamily( fnt.family() );
   setFontSize( fnt.pointSize() );
   setFontScripting( ( fnt.bold() ? Bold : 0 ) |
                     ( fnt.italic() ? Italic : 0 ) |
                     ( fnt.underline() ? Underline : 0 ) );
+
+  myFamily->blockSignals( false );
+  mySize->blockSignals( false );
+  myB->blockSignals( false );
+  myI->blockSignals( false );
+  myU->blockSignals( false );
+
+  emit( changed( currentFont() ) );
 }
 
 /*!
@@ -234,6 +248,9 @@ void QtxFontEdit::updateState()
 */
 void QtxFontEdit::onFontChanged( const QFont& /*f*/ )
 {
+  bool blocked = mySize->signalsBlocked();
+  mySize->blockSignals( true );
+
   int s = fontSize();
   mySize->clear();
 
@@ -244,6 +261,16 @@ void QtxFontEdit::onFontChanged( const QFont& /*f*/ )
   mySize->addItems( sizes );
 
   setFontSize( s );
+
+  mySize->blockSignals( blocked );
+
+  if ( !myFamily->signalsBlocked() )
+    emit( changed( currentFont() ) );
+}
+
+void QtxFontEdit::onPropertyChanged()
+{
+  emit( changed( currentFont() ) );
 }
 
 /*!
@@ -290,8 +317,13 @@ void QtxFontEdit::initialize()
 
   myFamily->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Preferred );
 
-  connect( myPreview, SIGNAL( clicked( bool ) ), this, SLOT( onPreview( bool ) ) );
-  connect( myFamily, SIGNAL( currentFontChanged( const QFont& ) ), this, SLOT( onFontChanged( const QFont& ) ) );
+  connect( myPreview, SIGNAL( clicked( bool ) ),                    this, SLOT( onPreview( bool ) ) );
+  connect( myFamily,  SIGNAL( currentFontChanged( const QFont& ) ), this, SLOT( onFontChanged( const QFont& ) ) );
+  connect( mySize,    SIGNAL( currentIndexChanged( int ) ),         this, SLOT( onPropertyChanged() ) );
+  connect( mySize,    SIGNAL( editTextChanged( QString ) ),         this, SLOT( onPropertyChanged() ) );
+  connect( myB,       SIGNAL( toggled( bool ) ),                    this, SLOT( onPropertyChanged() ) );
+  connect( myI,       SIGNAL( toggled( bool ) ),                    this, SLOT( onPropertyChanged() ) );
+  connect( myU,       SIGNAL( toggled( bool ) ),                    this, SLOT( onPropertyChanged() ) );
 
   updateState();
   onFontChanged( currentFont() );

@@ -67,9 +67,13 @@ public:
   int            features() const;
   void           setFeatures( const int );
 
+signals:
+  void           changed( const QFont& );
+
 private slots:
   void           onPreview( bool );
   void           onFontChanged( const QFont& );
+  void           onPropertyChanged();
  
 private:
   void           initialize();

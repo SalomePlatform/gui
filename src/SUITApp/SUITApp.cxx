@@ -29,7 +29,6 @@
 #include <SUIT_Desktop.h>
 #include <SUIT_ResourceMgr.h>
 #include <Style_Salome.h>
-#include <Style_Model.h>
 #include <QtxSplash.h>
 
 #include <SUIT_LicenseDlg.h>
@@ -256,13 +255,10 @@ int main( int args, char* argv[] )
     SUIT_Application* theApp = aSession->startApplication( argList.first() );
     if ( theApp )
     {
-      if ( resMgr && resMgr->booleanValue( "Style", "use_salome_style", true ) )
-      {
-	Style_Salome* aStyle = new Style_Salome();
-	aStyle->getModel()->initFromResource( theApp->resourceMgr() );
-	app.setStyle( aStyle );
-      }
-	
+      Style_Salome::initialize( theApp->resourceMgr() );
+      if ( theApp->resourceMgr()->booleanValue( "Style", "use_salome_style", true ) )
+	Style_Salome::apply();
+
       if ( !noExceptHandling )
         app.setHandler( aSession->handler() );
 
@@ -270,7 +266,6 @@ int main( int args, char* argv[] )
 	splash->finish( theApp->desktop() );
 
       result = app.exec();
-      delete splash;
     }
     delete aSession;
   }

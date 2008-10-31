@@ -23,28 +23,45 @@
 #ifndef STYLE_TOOLS_H
 #define STYLE_TOOLS_H
 
-#include "Style.h"
 #include <QPainterPath>
 #include <QRect>
 #include <QColor>
 #include <QStyle>
 
-class STYLE_SALOME_EXPORT Style_Tools
+//
+// This class is private for Style package.
+// Normally it should not be exported.
+//
+class Style_Tools
 {
 public:
-  typedef enum { None        = 0x00000000,
-                 All         = 0x00000001,
-                 Right       = 0x00000002, 
-                 Left        = 0x00000004,
-                 TopLeft     = 0x00000008,
-                 TopRight    = 0x00000010,
-                 BottomLeft  = 0x00000020,
-                 BottomRight = 0x00000040
-                 } RoundType;
+  //! Rounding operation type
+  typedef enum {
+    None        = 0x00000000,       //!< No rounding required
+    All         = 0x00000001,       //!< All corners
+    Right       = 0x00000002,       //!< Right corners
+    Left        = 0x00000004,       //!< Left corners
+    TopLeft     = 0x00000008,       //!< Top-left corner
+    TopRight    = 0x00000010,       //!< Top-right corner
+    BottomLeft  = 0x00000020,       //!< Bottom-left corner
+    BottomRight = 0x00000040        //!< Bottom-right corner
+  } RoundType;
 
-  typedef enum { WholePath, BottomPath, TopPath } ShadowType;
+  //! Shadow type
+  typedef enum {
+    WholePath,        //!< Whole path
+    BottomPath,       //!< Bottom path
+    TopPath           //!< Top path
+  } ShadowType;
 
-  typedef enum { SlUp, SlDown, SlLeft, SlRight, SlNone } SliderType;
+  //! Slider type
+  typedef enum {
+    SlUp,             //!< Up-to-down gradient
+    SlDown,           //!< Down-to-up gradient
+    SlLeft,           //!< Left-to-right gradient
+    SlRight,          //!< Right-to-left gradient
+    SlNone            //!< No gradient
+  } SliderType;
 
   static QPainterPath painterPath( const QRect& );
   static QPainterPath substractPath( const QPainterPath&, const QPainterPath& );

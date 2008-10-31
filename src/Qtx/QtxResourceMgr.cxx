@@ -1041,8 +1041,11 @@ bool QtxResourceMgr::Format::save( Resources* res )
   resources environment variable has higher priority. Priority has the meaning when
   searching requested resources (application preference, pixmap file name, translation
   file, etc).
-  Loading of the user configuration file can be omitted by calling setIgnoreUserValues() 
-  with \c true parameter.
+
+  When retrieving preferences, it is sometimes helpful to ignore values coming from the
+  user preference file and take into account only global preferences.
+  To do this, use setWorkingMode() method passing QtxResourceMgr::IgnoreUserValues enumerator
+  as parameter.
 
   Resources manager operates with such terms like options, sections and parameters. 
   Parametets are named application resources, for example, application preferences like
@@ -1082,7 +1085,8 @@ QtxResourceMgr::QtxResourceMgr( const QString& appName, const QString& resVarTem
   myCheckExist( true ),
   myDefaultPix( 0 ),
   myIsPixmapCached( true ),
-  myIsIgnoreUserValues( false )
+  myHasUserValues( true ),
+  myWorkingMode( AllowUserValues )
 {
   QString envVar = !resVarTemplate.isEmpty() ? resVarTemplate : QString( "%1Resources" );
   if ( envVar.contains( "%1" ) )
@@ -1172,17 +1176,18 @@ QStringList QtxResourceMgr::dirList() const
   Prepare the resources containers and load resources (if \a autoLoad is \c true).
 
   \param autoLoad if \c true (default) then all resources are loaded
-  \param loadUser if \c true (default) then user settings are also loaded
 */
-void QtxResourceMgr::initialize( const bool autoLoad, const bool loadUser ) const
+void QtxResourceMgr::initialize( const bool autoLoad ) const
 {
   if ( !myResources.isEmpty() )
     return;
 
   QtxResourceMgr* that = (QtxResourceMgr*)this;
 
-  if ( loadUser && !userFileName( appName() ).isEmpty() )
+  if ( !userFileName( appName() ).isEmpty() )
     that->myResources.append( new Resources( that, userFileName( appName() ) ) );
+
+  that->myHasUserValues = myResources.count() > 0;
 
   for ( QStringList::ConstIterator it = myDirList.begin(); it != myDirList.end(); ++it )
   {
@@ -1230,27 +1235,31 @@ void QtxResourceMgr::clear()
 }
 
 /*!
-  \brief Set "ignore user values" option value.
+  \brief Get current working mode.
   
-  If this option is \c true, then all resources loaded from user home directory are ignored.
-  
-  \param val new option value
-  \sa ignoreUserValues()
+  \return current working mode
+  \sa setWorkingMode(), value(), hasValue(), hasSection(), setValue()
 */
-void QtxResourceMgr::setIgnoreUserValues( const bool val )
+QtxResourceMgr::WorkingMode QtxResourceMgr::workingMode() const
 {
-  myIsIgnoreUserValues = val;
+  return myWorkingMode;
 }
 
 /*!
-  \brief Get "ignore user values" option value.
+  \brief Set resource manager's working mode.
+
+  The resource manager can operate in the following working modes:
+  * AllowUserValues  : methods values(), hasValue(), hasSection() take into account user values (default)
+  * IgnoreUserValues : methods values(), hasValue(), hasSection() do not take into account user values
+
+  Note, that setValue() method always put the value to the user settings file.
   
-  \return "ignore user values" option value
-  \sa setIgnoreUserValues()
+  \param mode new working mode
+  \sa workingMode(), value(), hasValue(), hasSection(), setValue()
 */
-bool QtxResourceMgr::ignoreUserValues() const
+void QtxResourceMgr::setWorkingMode( WorkingMode mode )
 {
-  return myIsIgnoreUserValues;
+  myWorkingMode = mode;
 }
 
 /*!
@@ -1493,7 +1502,7 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QString& v
   bool ok = false;
  
   ResList::ConstIterator it = myResources.begin();
-  if ( ignoreUserValues() )
+  if ( myHasUserValues && workingMode() == IgnoreUserValues )
     ++it;
 
   for ( ; it != myResources.end() && !ok; ++it )
@@ -1702,7 +1711,12 @@ bool QtxResourceMgr::hasValue( const QString& sect, const QString& name ) const
   initialize();
 
   bool ok = false;
-  for ( ResList::ConstIterator it = myResources.begin(); it != myResources.end() && !ok; ++it )
+
+  ResList::ConstIterator it = myResources.begin();
+  if ( myHasUserValues && workingMode() == IgnoreUserValues )
+    ++it;
+
+  for ( ; it != myResources.end() && !ok; ++it )
     ok = (*it)->hasValue( sect, name );
 
   return ok;
@@ -1718,7 +1732,12 @@ bool QtxResourceMgr::hasSection( const QString& sect ) const
   initialize();
 
   bool ok = false;
-  for ( ResList::ConstIterator it = myResources.begin(); it != myResources.end() && !ok; ++it )
+
+  ResList::ConstIterator it = myResources.begin();
+  if ( myHasUserValues && workingMode() == IgnoreUserValues )
+    ++it;
+
+  for ( ; it != myResources.end() && !ok; ++it )
     ok = (*it)->hasSection( sect );
 
   return ok;
@@ -2062,6 +2081,9 @@ bool QtxResourceMgr::import( const QString& fname )
   if ( !fmt )
     return false;
 
+  if ( myResources.isEmpty() || !myHasUserValues )
+    return false;
+
   Resources* r = myResources[0];
   if ( !r )
     return false;
@@ -2085,7 +2107,7 @@ bool QtxResourceMgr::save()
   if ( !fmt )
     return false;
 
-  if ( myResources.isEmpty() )
+  if ( myResources.isEmpty() || !myHasUserValues )
     return true;
 
   return fmt->save( myResources[0] );
@@ -2100,18 +2122,19 @@ QStringList QtxResourceMgr::sections() const
   initialize();
 
   QMap<QString, int> map;
-  for ( ResList::ConstIterator it = myResources.begin(); it != myResources.end(); ++it )
+
+  ResList::ConstIterator it = myResources.begin();
+  if ( myHasUserValues && workingMode() == IgnoreUserValues )
+    ++it;
+
+  for ( ; it != myResources.end(); ++it )
   {
     QStringList lst = (*it)->sections();
     for ( QStringList::ConstIterator itr = lst.begin(); itr != lst.end(); ++itr )
       map.insert( *itr, 0 );
   }
 
-  QStringList res;
-  for ( QMap<QString, int>::ConstIterator iter = map.begin(); iter != map.end(); ++iter )
-    res.append( iter.key() );
-
-  return res;
+  return map.keys();
 }
 
 /*!
@@ -2130,20 +2153,24 @@ QStringList QtxResourceMgr::parameters( const QString& sec ) const
 #endif
   PMap pmap;
   
-  ResList::ConstIterator it = myResources.end();
-  while ( it != myResources.begin() )
+  Resources* ur = !myResources.isEmpty() && workingMode() == IgnoreUserValues ? myResources[0] : 0;
+  
+  QListIterator<Resources*> it( myResources );
+  it.toBack();
+  while ( it.hasPrevious() )
   {
-    --it;
-    QStringList lst = (*it)->parameters( sec );
+    Resources* r = it.previous();
+    if ( r == ur ) break;
+    QStringList lst = r->parameters( sec );
     for ( QStringList::ConstIterator itr = lst.begin(); itr != lst.end(); ++itr )
+#if defined(QTX_NO_INDEXED_MAP)
+      if ( !pmap.contains( *itr ) ) pmap.insert( *itr, 0 );
+#else
       pmap.insert( *itr, 0, false );
+#endif
   }
 
-  QStringList res;
-  for ( PMap::ConstIterator iter = pmap.begin(); iter != pmap.end(); ++iter )
-    res.append( iter.key() );
-
-  return res;
+  return pmap.keys();
 }
 
 /*!
@@ -2163,7 +2190,12 @@ QStringList QtxResourceMgr::parameters( const QString& sec ) const
 QString QtxResourceMgr::path( const QString& sect, const QString& prefix, const QString& name ) const
 {
   QString res;
-  for ( ResList::ConstIterator it = myResources.begin(); it != myResources.end() && res.isEmpty(); ++it )
+
+  ResList::ConstIterator it = myResources.begin();
+  if ( myHasUserValues && workingMode() == IgnoreUserValues )
+    ++it;
+
+  for ( ; it != myResources.end() && res.isEmpty(); ++it )
     res = (*it)->path( sect, prefix, name );
   return res;
 }
@@ -2276,37 +2308,16 @@ QPixmap QtxResourceMgr::loadPixmap( const QString& prefix, const QString& name, 
   initialize();
 
   QPixmap pix;
-  for ( ResList::ConstIterator it = myResources.begin(); it != myResources.end() && pix.isNull(); ++it )
+
+  ResList::ConstIterator it = myResources.begin();
+  if ( myHasUserValues && workingMode() == IgnoreUserValues )
+    ++it;
+
+  for ( ; it != myResources.end() && pix.isNull(); ++it )
     pix = (*it)->loadPixmap( resSection(), prefix, name );
   if ( pix.isNull() )
     pix = defPix;
   return pix;
-}
-
-/*!
-  \brief Load translation files according to the specified language.
-
-  Names of the translation files are calculated according to the pattern specified
-  by the "translators" option (this option is read from the section "language" of resources files).
-  By default, "%P_msg_%L.qm" pattern is used.
-  Keywords \%A, \%P, \%L in the pattern are substituted by the application name, prefix and language name
-  correspondingly.
-  For example, for prefix "SUIT" an language "en", all translation files "SUIT_msg_en.qm" are searched and
-  loaded.
-
-  If prefix is empty or null string, all translation files specified in the "resources" section of resources
-  files are loaded (actually, the section is retrieved from resSection() method). 
-  If language is not specified, it is retrieved from the langSection() method, and if the latest is also empty,
-  by default "en" (English) language is used.
-
-  \param pref parameter which defines translation context (for example, package name)
-  \param l language name
-
-  \sa resSection(), langSection(), loadTranslators()
-*/
-void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
-{
-  loadLanguage( true, pref, l );
 }
 
 /*!
@@ -2327,15 +2338,14 @@ void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
   By default, settings from the user preferences file are also loaded (if user resource file is valid, 
   see userFileName()). To avoid loading user settings, pass \c false as first parameter.
 
-  \param loadUser if \c true then user settings are also loaded
   \param pref parameter which defines translation context (for example, package name)
   \param l language name
 
   \sa resSection(), langSection(), loadTranslators()
 */
-void QtxResourceMgr::loadLanguage( const bool loadUser, const QString& pref, const QString& l )
+void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
 {
-  initialize( true, loadUser );
+  initialize( true );
 
   QMap<QChar, QString> substMap;
   substMap.insert( 'A', appName() );
@@ -2402,7 +2412,12 @@ void QtxResourceMgr::loadTranslators( const QString& prefix, const QStringList& 
   initialize();
 
   ResList lst;
-  for ( ResList::Iterator iter = myResources.begin(); iter != myResources.end(); ++iter )
+
+  ResList::ConstIterator iter = myResources.begin();
+  if ( myHasUserValues && workingMode() == IgnoreUserValues )
+    ++iter;
+
+  for ( ; iter != myResources.end(); ++iter )
     lst.prepend( *iter );
 
   QTranslator* trans = 0;
@@ -2434,11 +2449,16 @@ void QtxResourceMgr::loadTranslator( const QString& prefix, const QString& name 
 
   QTranslator* trans = 0;
 
-  ResList::ConstIterator it = myResources.end();
-  while ( it != myResources.begin() )
+  Resources* ur = !myResources.isEmpty() && workingMode() == IgnoreUserValues ? myResources[0] : 0;
+  
+  QListIterator<Resources*> it( myResources );
+  it.toBack();
+  while ( it.hasPrevious() )
   {
-    --it;
-    trans = (*it)->loadTranslator( resSection(), prefix, name );
+    Resources* r = it.previous();
+    if ( r == ur ) break;
+
+    trans = r->loadTranslator( resSection(), prefix, name );
     if ( trans )
     {
       if ( !myTranslator[prefix].contains( trans ) )
@@ -2524,7 +2544,7 @@ void QtxResourceMgr::setResource( const QString& sect, const QString& name, cons
 {
   initialize();
 
-  if ( !myResources.isEmpty() )
+  if ( !myResources.isEmpty() && myHasUserValues )
     myResources.first()->setValue( sect, name, val );
 }
 

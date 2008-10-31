@@ -77,7 +77,9 @@ public:
   enum { RenameId = CAM_Application::UserID,
 	 CloseId, CloseAllId, GroupAllId,
 	 PreferencesId, MRUId, ModulesListId,
-         NewGLViewId, NewPlot2dId, NewOCCViewId, NewVTKViewId, NewQxGraphViewId, UserID };
+         NewGLViewId, NewPlot2dId, NewOCCViewId, NewVTKViewId, NewQxGraphViewId,
+	 StyleId,
+	 UserID };
 
 protected:
   enum { NewStudyId = 1, OpenStudyId };
@@ -202,6 +204,8 @@ protected slots:
   void                                onWCDestroyed( QObject* );
 
   void                                onMRUActivated( const QString& );
+
+  void                                onStylePreferences();
 
 private slots:
   void                                onSelection();

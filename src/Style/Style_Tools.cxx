@@ -29,6 +29,16 @@
 #include <QSize>
 #include <QTabWidget>
 
+/*!
+  \class Style_Tools
+  \brief A set of utility functions used by SALOME style to draw widgets
+*/
+
+/*!
+  \brief Create painter path for specified rectangle
+  \param r rectangle on which painter path is build
+  \return resulting painter path
+*/
 QPainterPath Style_Tools::painterPath( const QRect& r )
 {
   QPainterPath res;
@@ -41,6 +51,13 @@ QPainterPath Style_Tools::painterPath( const QRect& r )
   return res;
 }
 
+/*!
+  \brief Create painter path by subtracting painter path \a path from another
+  painter path \a fromPath
+  \param fromPath initial painter path
+  \param path painter path being subtracted from \a fromPath
+  \return resulting painter path
+*/
 QPainterPath Style_Tools::substractPath( const QPainterPath& fromPath,
                                          const QPainterPath& path )
 {
@@ -52,6 +69,15 @@ QPainterPath Style_Tools::substractPath( const QPainterPath& fromPath,
   return res;
 }
 
+/*!
+  \brief Create painter path basing on specified rectangle \a r with rounded corners
+  specified by radius \a r, operation \a type and shadow type \a shType.
+  \param r initial rectangle
+  \param rad rounding radius
+  \param type rounding type operation (Style_Tools::RoundType)
+  \param shType shadow type (Style_Tools::ShadowType)
+  \return resulting painter path
+*/
 QPainterPath Style_Tools::roundRect( const QRect& r, const double rad, int type,
                                      int shType )
 {
@@ -102,6 +128,17 @@ QPainterPath Style_Tools::roundRect( const QRect& r, const double rad, int type,
   return res;
 }
 
+/*!
+  \brief Draw rectangle with rounded corners.
+  \param p painter
+  \param r drawing rectangle
+  \param rad corner rounding radius
+  \param type rounding type operation (Style_Tools::RoundType)
+  \param c1 first gradient color
+  \param c2 second gradient color
+  \param fill if \c true rectangle is filled with gradiented background according to \a c1 and \a c2
+  \param antial if \c true, rectangle corners are anti-aliased
+*/
 void Style_Tools::roundRect( QPainter* p, const QRect& r, const double rad, const int type,
                              const QColor& c1, const QColor& c2, bool fill, bool antial )
 {
@@ -120,6 +157,23 @@ void Style_Tools::roundRect( QPainter* p, const QRect& r, const double rad, cons
   p->strokePath( path, QPen( c2, Qt::SolidLine ) );
 }
 
+/*!
+  \brief Draw rectangle with rounded corners and shadow.
+  \param p painter
+  \param r drawing rectangle
+  \param rad corner rounding radius
+  \param marg drawing margin
+  \param shad shadow size
+  \param type rounding type operation (Style_Tools::RoundType)
+  \param light background's first gradient color
+  \param dark background's second gradient color
+  \param border_top top-left border's color
+  \param border_bot bottom-right border's color
+  \param antialize if \c true, rectangle corners are anti-aliased
+  \param isButton \c true if button is drawn
+  \param btnOn \c true if button is drawn and it is pressed
+  \param fill if \c true rectangle is filled with gradiented background according to \a light and \a dark
+*/
 void Style_Tools::shadowRect( QPainter* p, const QRect& r, const double rad, const double marg,
                               const int shad, int type, const QColor& light, const QColor& dark,
                               const QColor& border_top, const QColor& border_bot, const bool antialize,
@@ -194,6 +248,17 @@ void Style_Tools::shadowRect( QPainter* p, const QRect& r, const double rad, con
   p->restore();
 }
 
+/*!
+  \brief Draw shadow of the check-mark
+  \param p painter
+  \param r drawing rectangle
+  \param rad corner rounding radius
+  \param type rounding type operation (Style_Tools::RoundType)
+  \param light background's first gradient color
+  \param dark background's second gradient color
+  \param border_top top-left border's color
+  \param border_bot bottom-right border's color
+*/
 void Style_Tools::shadowCheck( QPainter* p, const QRect& r, const double rad, const int type,
                                const QColor& light, const QColor& dark,
                                const QColor& border_top, const QColor& border_bot  )
@@ -213,7 +278,14 @@ void Style_Tools::shadowCheck( QPainter* p, const QRect& r, const double rad, co
   p->strokePath( topPath, border_top );
 }
 
-
+/*!
+  \brief Draw rectnagle arrow
+  \param p painter
+  \param re drawing rectangle
+  \param frame frame color
+  \param gr1 background's first gradient color
+  \param gr2 background's second gradient color
+*/
 void Style_Tools::arrowRect( QPainter* p, const QRect& re, const QColor& frame,
                              const QColor& gr1, const QColor& gr2 )
 {
@@ -241,18 +313,33 @@ void Style_Tools::arrowRect( QPainter* p, const QRect& re, const QColor& frame,
   p->strokePath( path, QPen( frame, Qt::SolidLine ) );
 }
 
-void Style_Tools::fillRect( QPainter* p, const QRect& re, const QColor& _c1,
-                            const QColor& _c2, const int alpha )
+/*!
+  \brief Fill rectangle with gradiented background
+  \param p painter
+  \param re drawing rectangle
+  \param c1 background's first gradient color
+  \param c2 background's second gradient color
+*/
+void Style_Tools::fillRect( QPainter* p, const QRect& re, const QColor& c1,
+                            const QColor& c2, const int alpha )
 {
   QLinearGradient gr( re.x(), re.y(), re.x()+re.width(), re.y()+re.height() );
-  QColor c1 = _c1, c2 = _c2;
-  c1.setAlpha( alpha );
-  c2.setAlpha( alpha );
-  gr.setColorAt( 0.0, c1 );
-  gr.setColorAt( 1.0, c2 );
+  QColor cc1 = c1, cc2 = c2;
+  cc1.setAlpha( alpha );
+  cc2.setAlpha( alpha );
+  gr.setColorAt( 0.0, cc1 );
+  gr.setColorAt( 1.0, cc2 );
   p->fillRect( re, gr );
 }
 
+/*!
+  \brief Draw arrow (for example, for combo-box drop-down menu button)
+  \param type primitive type
+  \param p painter
+  \param r drawing rectangle
+  \param pen foreground painter pen
+  \param brush background painter brush
+*/
 void Style_Tools::drawArrow( QStyle::PrimitiveElement type, QPainter* p, const QRect& r,
                              const QColor& pen, const QColor& brush )
 {
@@ -338,6 +425,14 @@ void Style_Tools::drawArrow( QStyle::PrimitiveElement type, QPainter* p, const Q
   p->restore();
 }
 
+/*!
+  \brief Draw indicator (for example, for spin box's increment/decrement buttons)
+  \param type primitive type
+  \param p painter
+  \param r drawing rectangle
+  \param pen foreground painter pen
+  \param brush background painter brush
+*/
 void Style_Tools::drawSign( QStyle::PrimitiveElement type, QPainter* p, const QRect& r,
 			    const QColor& pen, const QColor& brush )
 {
@@ -409,6 +504,24 @@ void Style_Tools::drawSign( QStyle::PrimitiveElement type, QPainter* p, const QR
   p->restore();
 }
 
+/*!
+  \brief Create painter path for tab bar and optionally draw it
+  \param p painter
+  \param r drawing rectangle
+  \param position tab position
+  \param rad rounding radius
+  \param delta gap between tabs
+  \param light background's first gradient color
+  \param dark background's second gradient color
+  \param border_top top-left border's color
+  \param border_bot bottom-right border's color
+  \param selected \c true if tab is selected
+  \param isLast \c true if tab is last in the tabs list
+  \param isHover \c true if tab is hovered
+  \param focusRect focus rectangle
+  \param draw if \c true, tab bar is drawn
+  \return tab bar's painter path
+*/
 QPainterPath Style_Tools::tabRect( QPainter* p, const QRect& r, const int position, const double rad,
                                    const double delta, const QColor& light, const QColor& dark,
                                    const QColor& border_top, const QColor& border_bot,
@@ -531,6 +644,14 @@ QPainterPath Style_Tools::tabRect( QPainter* p, const QRect& r, const int positi
   return path;
 }
 
+/*!
+  \brief Draw widget's focus
+  \param p painter
+  \param aRect drawing rectangle
+  \param rad rounding radius
+  \param type rounding operation type
+  \param border focus rectangle color
+*/
 void Style_Tools::drawFocus( QPainter* p, const QRect& aRect, const double rad, const int type,
                              const QColor& border )
 {
@@ -539,6 +660,13 @@ void Style_Tools::drawFocus( QPainter* p, const QRect& aRect, const double rad, 
   drawFocus( p, path, border );
 }
 
+/*!
+  \brief Draw widget's focus
+  \param p painter
+  \param path drawing painter path
+  \param border focus rectangle color
+  \param line if \c true, focus is drawn as dotted line
+*/
 void Style_Tools::drawFocus( QPainter* p, const QPainterPath& path, const QColor& border,
                              const bool line )
 {
@@ -553,6 +681,17 @@ void Style_Tools::drawFocus( QPainter* p, const QPainterPath& path, const QColor
   p->setPen( oldPen );
 }
 
+/*!
+  \brief Draw slider
+  \param p painter
+  \param r drawing rectangle
+  \param rad rounding radius
+  \param slider slider type
+  \param light background's first gradient color
+  \param dark background's second gradient color
+  \param border_top top-left border's color
+  \param border_bot bottom-right border's color
+*/
 void Style_Tools::drawSlider( QPainter* p, const QRect& r, const double rad,
                               SliderType type, const QColor& light, const QColor& dark,
                               const QColor& border_top, const QColor& border_bot )
@@ -625,6 +764,17 @@ void Style_Tools::drawSlider( QPainter* p, const QRect& r, const double rad,
   p->restore();
 }
 
+/*!
+  \brief Draw highlighted rectangle
+  \param p painter
+  \param rect drawing rectangle
+  \param rad rounding radius
+  \param type rounding operation type
+  \parma marg margin size
+  \param center background's center gradient color
+  \param out_center background's second color
+  \param border border color
+*/
 void Style_Tools::highlightRect( QPainter* p, const QRect& rect, const double rad, const int type,
                                  const double marg, const QColor& center, const QColor& out_center,
                                  const QColor& border )
@@ -656,6 +806,13 @@ void Style_Tools::highlightRect( QPainter* p, const QRect& rect, const double ra
   p->strokePath( path, border );
 }
 
+/*!
+  \brief Get minimal delta value (the minimum between \a rect and \a size dimensions)
+  \param rect rectangle
+  \param size size
+  \param defDelta default minimum delta
+  \return resulting minimum value
+*/
 int Style_Tools::getMinDelta( const QRect& rect, const QSize& size, const int defDelta )
 {
   int aDelta = defDelta;
@@ -664,6 +821,12 @@ int Style_Tools::getMinDelta( const QRect& rect, const QSize& size, const int de
   return aDelta;
 }
 
+/*!
+  \brief Get halved size of the quadrangle covering specified rectangle
+  \param rect rectangle
+  \param defRect default quadranle size value
+  \return resulting value
+*/
 int Style_Tools::getMaxRect( const QRect& rect, const int defRect )
 {
   int aRect = defRect;
@@ -671,4 +834,3 @@ int Style_Tools::getMaxRect( const QRect& rect, const int defRect )
   aRect = qMin( aRect, rect.width()  / 2 );
   return aRect;
 }
-

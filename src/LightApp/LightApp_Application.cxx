@@ -44,8 +44,8 @@
 
 #include <SALOME_Event.h>
 
-#include <Style_Model.h>
 #include <Style_Salome.h>
+#include <Style_PrefDlg.h>
 
 #include <CAM_Module.h>
 #include <CAM_DataModel.h>
@@ -613,6 +613,13 @@ void LightApp_Application::createActions()
   createMenu( separator(), fileMenu, -1, 100, -1 );
   createMenu( MRUId, fileMenu, 100, -1 );
   createMenu( separator(), fileMenu, -1, 100, -1 );
+
+  createAction( StyleId, tr( "TOT_THEME" ), QIcon(), tr( "MEN_DESK_THEME" ), tr( "PRP_THEME" ),
+                0, desk, false, this, SLOT( onStylePreferences() ) );
+
+  int viewMenu = createMenu( tr( "MEN_DESK_VIEW" ), -1 );
+  createMenu( separator(), viewMenu, -1, 20, -1 );
+  createMenu( StyleId, viewMenu, 20, -1 );
 
   int modTBar = createTool( tr( "INF_TOOLBAR_MODULES" ) );
   createTool( ModulesListId, modTBar );
@@ -1778,11 +1785,6 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   int pythonConsoleGroup = pref->addPreference( tr( "PREF_GROUP_PY_CONSOLE" ), genTab );
   pref->addPreference( tr( "PREF_FONT" ), pythonConsoleGroup, LightApp_Preferences::Font, "PyConsole", "font" );
 
-  int SalomeStyleGroup = pref->addPreference( tr( "PREF_GROUP_STYLE" ), genTab );
-  pref->addPreference( tr( "PREF_USE_SALOME_STYLE" ), SalomeStyleGroup, LightApp_Preferences::Bool, "Style", "use_salome_style" );
-  if ( resourceMgr() )
-    resourceMgr()->booleanValue( "Style", "use_salome_style", true );
-
   int viewTab = pref->addPreference( tr( "PREF_TAB_VIEWERS" ), salomeCat );
 
   int occGroup = pref->addPreference( tr( "PREF_GROUP_OCCVIEWER" ), viewTab );
@@ -2034,66 +2036,6 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "strings", aValuesList,   mruLinkType );
   pref->setItemProperty( "indexes", anIndicesList, mruLinkType );
 
-  // theme values
-  Style_Model* aSModel = 0;
-  QStyle* style = qApp->style();
-  if ( style ) {
-    Style_Salome* aSStyle = qobject_cast<Style_Salome*>( style );
-    if ( aSStyle )
-      aSModel = aSStyle->getModel();
-  }
-  if ( !aSModel )
-    return;
-
-  QString aSection = aSModel->sectionName();
-  int themaTab = pref->addPreference( aSection, salomeCat );
-  QtxResourceMgr* aResMgr = pref->resourceMgr();
-  aSModel->initFromResource( aResMgr );
-
-  QList<int> aTabLst = aSModel->getTabs();
-  QList<int>::iterator aTabIt = aTabLst.begin(), aTabEnd = aTabLst.end();
-  QList<int> aGrpLst, aPropLst;
-  QList<int>::iterator anIt, anEnd, aPropIt, aPropEnd;
-  int aGrpId, aPropId, aPrefId;
-  int themaSubTab = pref->addPreference( "ThemeTabs", themaTab,
-                                         SUIT_PreferenceMgr::Tab );
-  for ( ; aTabIt != aTabEnd; ++aTabIt ) {
-    QList<int> aGrpLst = aSModel->getGroups( *aTabIt );
-    int themaSubSubTab = pref->addPreference( aSModel->getTabTitle( *aTabIt ), themaSubTab,
-					   SUIT_PreferenceMgr::Frame );
-    for( anIt = aGrpLst.begin(), anEnd = aGrpLst.end(); anIt != anEnd; ++anIt ) {
-      aGrpId = *anIt;
-      int themaGroup = pref->addPreference( aSModel->getGroupTitle( aGrpId ), themaSubSubTab, SUIT_PreferenceMgr::GroupBox );
-      pref->setItemProperty( "columns", aSModel->getGroupNbColumns( aGrpId ), themaGroup );
-      aPropLst = aSModel->getGroupProps( aGrpId );
-      for( aPropIt = aPropLst.begin(), aPropEnd = aPropLst.end(); aPropIt != aPropEnd; ++aPropIt ) {
-        aPropId = *aPropIt;
-        Style_Model::PropType aType = aSModel->getPropType( aPropId );
-        LightApp_Preferences::PrefItemType aPType = LightApp_Preferences::Auto;
-        switch( aType ) {
-          case Style_Model::Bool:     aPType = LightApp_Preferences::Bool; break;
-          case Style_Model::Color:    aPType = LightApp_Preferences::Color; break;
-          case Style_Model::String:   aPType = LightApp_Preferences::String; break;
-          case Style_Model::IntSpin:  aPType = LightApp_Preferences::IntSpin; break;
-          case Style_Model::DblSpin:  aPType = LightApp_Preferences::DblSpin; break;
-          case Style_Model::Selector: aPType = LightApp_Preferences::Selector; break;
-          case Style_Model::Font:     aPType = LightApp_Preferences::Font; break;
-          default: break;
-        }
-        aPrefId = pref->addPreference( aSModel->getPropTitle( aPropId ), themaGroup,
-                                       aPType, aSection, aSModel->getPropName( aPropId ) );
-        aSModel->getValueTo( aResMgr, aPropId, true );//set default values into resource
-        if ( aPType == LightApp_Preferences::Selector )
-	{
-	  aValuesList.clear();
-	  anIndicesList.clear();
-          aSModel->getSelector( aPropId, aValuesList, anIndicesList );
-          pref->setItemProperty( "strings", aValuesList,   aPrefId );
-          pref->setItemProperty( "indexes", anIndicesList, aPrefId );
-        }
-      }
-    }
-  }
   pref->retrieve();
 }
 
@@ -2303,29 +2245,6 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
   }
 #endif
 
-  Style_Salome* aSStyle = 0;
-  if ( QStyle* style = qApp->style() ) aSStyle = qobject_cast<Style_Salome*>( style );
-
-  if( sec=="Style" )
-  {
-    if( param=="use_salome_style" )
-    {
-      if ( resMgr->booleanValue( "Style", "use_salome_style", true ) )
-      {
-	if ( !aSStyle )
-	{
-	  aSStyle = new Style_Salome();
-	  aSStyle->getModel()->initFromResource( resMgr );
-	  qApp->setStyle( aSStyle );
-	}
-      }
-      else if ( aSStyle )
-      {
-	qApp->setStyle( new QWindowsStyle );
-      }
-    }
-  }
-
   if( sec=="MRU" )
   {
     QtxMRUAction* mru = ::qobject_cast<QtxMRUAction*>( action( MRUId ) );
@@ -2342,16 +2261,6 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 	mru->setClearPossible( resMgr->booleanValue( "MRU", "show_clear", false ) );  // do not show "Clear" item by default
       else if ( param == "show_mru" )
 	mru->setVisible( resMgr->booleanValue( "MRU", "show_mru", false ) );          // do not show MRU menu item by default
-    }
-  }
-
-  if ( aSStyle ) {
-    Style_Model* aSModel = aSStyle->getModel();
-    if ( sec==aSModel->sectionName() ) {
-      bool retrieve = aSModel->updateFromResource( resMgr, param );
-      if ( retrieve && _prefs_ )
-	_prefs_->retrieve();
-      aSStyle->polish(qApp);
     }
   }
 }
@@ -2861,6 +2770,14 @@ void LightApp_Application::onMRUActivated( const QString& name )
   SUIT_Session* s = SUIT_Session::session();
   if ( s && s->activeApplication() == this )
     onOpenDoc( name );
+}
+
+void LightApp_Application::onStylePreferences()
+{
+  Style_PrefDlg dlg( desktop() );
+  dlg.exec();
+
+  resourceMgr()->setValue( "Style", "use_salome_style", Style_Salome::isActive() );
 }
 
 /*!

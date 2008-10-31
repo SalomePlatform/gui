@@ -60,6 +60,12 @@ public:
   typedef IMap<QString, QString> Section;   //!< resource section
 #endif
 
+  //! Working mode; defines a way how resource manager handles user preferences
+  typedef enum {
+    AllowUserValues,       //!< User values are processed by the resource manager
+    IgnoreUserValues       //!< User values are ignored by the resource manager
+  } WorkingMode;
+
 public:
   QtxResourceMgr( const QString&, const QString& = QString() );
   virtual ~QtxResourceMgr();
@@ -75,8 +81,8 @@ public:
 
   void             clear();
 
-  void             setIgnoreUserValues( const bool = true );
-  bool             ignoreUserValues() const;
+  WorkingMode      workingMode() const;
+  void             setWorkingMode( WorkingMode );
 
   bool             value( const QString&, const QString&, int& ) const;
   bool             value( const QString&, const QString&, double& ) const;
@@ -138,7 +144,6 @@ public:
   QPixmap          loadPixmap( const QString&, const QString&, const bool ) const;
   QPixmap          loadPixmap( const QString&, const QString&, const QPixmap& ) const;
   void             loadLanguage( const QString& = QString(), const QString& = QString() );
-  void             loadLanguage( const bool, const QString& = QString(), const QString& = QString() );
 
   void             raiseTranslators( const QString& );
   void             removeTranslators( const QString& );
@@ -164,7 +169,7 @@ protected:
   virtual QString  globalFileName( const QString& ) const;
 
 private:
-  void             initialize( const bool = true, const bool = true ) const;
+  void             initialize( const bool = true ) const;
   QString          substMacro( const QString&, const QMap<QChar, QString>& ) const;
 
 private:
@@ -185,7 +190,8 @@ private:
   QPixmap*         myDefaultPix;              //!< default icon
   bool             myIsPixmapCached;          //!< "cached pixmaps" flag
 
-  bool             myIsIgnoreUserValues;      //!< "ignore user values" flag
+  bool             myHasUserValues;           //!< \c true if user preferences has been read
+  WorkingMode      myWorkingMode;             //!< working mode
 
   friend class QtxResourceMgr::Format;
 };

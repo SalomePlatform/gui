@@ -37,9 +37,11 @@
 #include <QGridLayout>
 #include <QGroupBox>
 #include <QHBoxLayout>
+#include <QKeyEvent>
 #include <QLabel>
 #include <QListWidget>
 #include <QMap>
+#include <QMessageBox>
 #include <QPushButton>
 #include <QRadioButton>
 #include <QSlider>
@@ -483,7 +485,7 @@ void Style_PrefDlg::PaletteEditor::onAuto()
   \param parent parent widget
 */
 Style_PrefDlg::Style_PrefDlg( QWidget* parent )
-  : QtxDialog( parent, true, true, OK | Close | Apply | Help ),
+  : QtxDialog( parent, true, true, OK | Close | Apply ),
     myResMgr( 0 )
 {
   // set title
@@ -710,6 +712,29 @@ void Style_PrefDlg::accept()
 {
   onApply();
   QtxDialog::accept();
+}
+
+/*!
+  \brief Process key press event
+  \param e key event
+*/
+void Style_PrefDlg::keyPressEvent( QKeyEvent* e )
+{
+  if ( e->key() == Qt::Key_Delete ) {
+    QListWidgetItem* item = myStylesList->currentItem();
+    if ( item && item->data( TypeRole ).toInt() == User ) {
+      if ( QMessageBox::question( this,
+				  tr( "Delete user theme" ),
+				  tr( "Remove theme %1?" ).arg( item->text() ),
+				  QMessageBox::Yes | QMessageBox::No,
+				  QMessageBox::Yes ) == QMessageBox::Yes ) {
+	resourceMgr()->remove( item->data( NameRole ).toString() );
+	resourceMgr()->save();
+	delete item;
+      }
+    }
+  }
+  QtxDialog::keyPressEvent( e );
 }
 
 /*!

@@ -59,6 +59,9 @@ public:
 
   void               accept();
 
+protected:
+  void               keyPressEvent( QKeyEvent* );
+
 private:
   Style_ResourceMgr* resourceMgr();
   void               fromModel( Style_Model* );

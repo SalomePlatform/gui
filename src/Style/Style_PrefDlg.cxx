@@ -629,7 +629,7 @@ Style_PrefDlg::Style_PrefDlg( QWidget* parent )
   setFocusProxy( fr );
   setButtonPosition( Right, Close );
   setDialogFlags( AlignOnce );
-  myStylesList->setEditTriggers( QAbstractItemView::DoubleClicked | QAbstractItemView::EditKeyPressed );
+  myStylesList->setEditTriggers( QAbstractItemView::EditKeyPressed );
 
   QStringList globalStyles = resourceMgr()->styles( Style_ResourceMgr::Global );
   QStringList userStyles   = resourceMgr()->styles( Style_ResourceMgr::User );
@@ -666,7 +666,10 @@ Style_PrefDlg::Style_PrefDlg( QWidget* parent )
   // connect widgets
   connect( myStyleCheck,        SIGNAL( toggled( bool ) ),        fr,   SLOT( setEnabled( bool ) ) );
   connect( myStylesList,        SIGNAL( itemSelectionChanged() ), this, SLOT( onStyleChanged() ) );
-  connect( myStylesList,        SIGNAL( itemChanged( QListWidgetItem* ) ), this, SLOT( onItemChanged( QListWidgetItem* ) ) );
+  connect( myStylesList,        SIGNAL( itemChanged( QListWidgetItem* ) ),       
+	   this, SLOT( onItemChanged( QListWidgetItem* ) ) );
+  connect( myStylesList,        SIGNAL( itemDoubleClicked( QListWidgetItem* ) ), 
+	   this, SLOT( onApply() ) );
   connect( myLinesCombo,        SIGNAL( activated( int ) ),       this, SLOT( onLinesType() ) );
   connect( myPaletteEditor,     SIGNAL( changed() ),              this, SIGNAL( styleChanged() ) );
   connect( myFontEdit,          SIGNAL( changed( QFont ) ),       this, SIGNAL( styleChanged() ) );
@@ -988,6 +991,7 @@ void Style_PrefDlg::onItemChanged( QListWidgetItem* item )
     item->setText( uniqueName );
     myStylesList->blockSignals( false );
   }
+  onChanged();
 }				
 
 /*!

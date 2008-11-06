@@ -121,7 +121,7 @@ if test "x$pyqt_ok" == "xyes" ; then
 	TEST_LIB_DIRS="${TEST_LIB_DIRS} ${SIPDIR}/lib${LIB_LOCATION_SUFFIX}/python${PYTHON_VERSION}/site-packages"
 	TEST_LIB_DIRS="${TEST_LIB_DIRS} ${SIPDIR}/lib${LIB_LOCATION_SUFFIX}/python${PYTHON_VERSION}/site-packages/PyQt4"
         TEST_SIPS_DIRS="${TEST_SIPS_DIRS} ${SIPDIR} ${SIPDIR}/sip"
-        TEST_SIPS_DIRS="${TEST_SIPS_DIRS} ${SIPDIR}/share ${SIPDIR}/share/sip"
+        TEST_SIPS_DIRS="${TEST_SIPS_DIRS} ${SIPDIR}/share ${SIPDIR}/share/sip ${SIPDIR}/share/sip/PyQt4"
     fi
     if test "x${PYTHONHOME}" != "x" ; then
         TEST_LIB_DIRS="${TEST_LIB_DIRS} ${PYTHONHOME}/lib${LIB_LOCATION_SUFFIX}/python${PYTHON_VERSION}/site-packages"

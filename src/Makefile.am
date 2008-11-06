@@ -61,7 +61,7 @@ endif
 if ENABLE_QXGRAPHVIEWER
   SUBDIRS += QxGraph
 endif
-SUBDIRS += LightApp ResExporter
+SUBDIRS += QxScene LightApp ResExporter
 
 if GUI_ENABLE_CORBA
   SUBDIRS += TOOLSGUI Session SalomeApp SALOME_SWIG SALOME_PY SALOME_PYQT

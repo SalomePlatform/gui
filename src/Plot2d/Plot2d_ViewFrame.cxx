@@ -151,7 +151,7 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
        myXGridMinorEnabled( false ), myYGridMinorEnabled( false ), myY2GridMinorEnabled( false ),
        myXGridMaxMajor( 8 ), myYGridMaxMajor( 8 ), myY2GridMaxMajor( 8 ),
        myXGridMaxMinor( 5 ), myYGridMaxMinor( 5 ), myY2GridMaxMinor( 5 ),
-       myXMode( 0 ), myYMode( 0 ), mySecondY( false )
+       myXMode( 0 ), myYMode( 0 ), mySecondY( false ), myIsRescaled( false )
 {
   /* Plot 2d View */
   QVBoxLayout* aLayout = new QVBoxLayout( this ); 
@@ -170,6 +170,8 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
      this,   SLOT( plotMouseReleased( const QMouseEvent& ) ) );
   connect( myPlot, SIGNAL( legendClicked( long ) ),
      this, SIGNAL( legendClicked( long ) ) );
+  connect( myPlot, SIGNAL( rescale() ),
+     this, SLOT( rescale() ) );
 
   /* Initial Setup - get from the preferences */
   readPreferences();
@@ -801,26 +803,26 @@ void Plot2d_ViewFrame::fitAll()
 
   myPlot->setAxisAutoScale( QwtPlot::yLeft );
   myPlot->setAxisAutoScale( QwtPlot::xBottom );
-  myPlot->replot();
+  //myPlot->replot();
 
   // for existing grid
   QwtDiMap xMap = myPlot->canvasMap( QwtPlot::xBottom );
   QwtDiMap yMap = myPlot->canvasMap( QwtPlot::yLeft );
 
   myPlot->setAxisScale( QwtPlot::xBottom, 
-      myPlot->invTransform( QwtPlot::xBottom, xMap.i1() ), 
-      myPlot->invTransform( QwtPlot::xBottom, xMap.i2() ) );
+      QString::number(myPlot->invTransform( QwtPlot::xBottom, xMap.i1() )).toDouble(), 
+      QString::number(myPlot->invTransform( QwtPlot::xBottom, xMap.i2() )).toDouble() );
   myPlot->setAxisScale( QwtPlot::yLeft, 
-      myPlot->invTransform( QwtPlot::yLeft, yMap.i1() ), 
-      myPlot->invTransform( QwtPlot::yLeft, yMap.i2() ) );
+      QString::number(myPlot->invTransform( QwtPlot::yLeft, yMap.i1() )).toDouble(), 
+      QString::number(myPlot->invTransform( QwtPlot::yLeft, yMap.i2() )).toDouble() );
 
   if (mySecondY) {
     myPlot->setAxisAutoScale( QwtPlot::yRight );
     myPlot->replot();
     QwtDiMap yMap2 = myPlot->canvasMap( QwtPlot::yRight );
     myPlot->setAxisScale( QwtPlot::yRight, 
-        myPlot->invTransform( QwtPlot::yRight, yMap2.i1() ), 
-        myPlot->invTransform( QwtPlot::yRight, yMap2.i2() ) );
+	QString::number(myPlot->invTransform( QwtPlot::yRight, yMap2.i1() )).toDouble(), 
+        QString::number(myPlot->invTransform( QwtPlot::yRight, yMap2.i2() )).toDouble() );
   }
   myPlot->replot();
 }
@@ -1478,6 +1480,28 @@ void Plot2d_ViewFrame::plotMouseReleased( const QMouseEvent& me )
      aParent->putInfo(tr("INF_READY"));
   myOperation = NoOpId;
 }
+
+/*!
+  Slot, rescales axis on the first show of view frame in order to take into account the correct canvas map
+*/
+void Plot2d_ViewFrame::rescale()
+{
+  if ( myPlot && !myIsRescaled ) {
+    myIsRescaled = true;
+
+    QwtDiMap map;
+    int axis[3] = { QwtPlot::xBottom, QwtPlot::yLeft, QwtPlot::yRight };
+    double dMin, dMax;
+    for ( int i = 0; i < 3; i++ )
+      if ( i < 2 || i == 2 && mySecondY ) {
+	map = myPlot->canvasMap(axis[i]);
+	dMin = myPlot->invTransform(axis[i], map.i1()); dMax = myPlot->invTransform(axis[i], map.i2());
+	myPlot->setAxisScale( axis[i], QString::number(dMin).toDouble(), QString::number(dMax).toDouble() ); 
+      }
+    myPlot->replot();
+  }
+}
+
 /*!
   Slot, called when user wheeling mouse
 */
@@ -1778,6 +1802,18 @@ bool Plot2d_Plot2d::existMarker( const QwtSymbol::Style typeMarker, const QColor
     }
   }
   return false;
+}
+
+/*!
+  Emits rescale() signal on the first drawing of the QwtPlotCanvas.
+*/
+void Plot2d_Plot2d::drawCanvas(QPainter *painter)
+{
+  if ( Plot2d_ViewFrame* aVF = dynamic_cast<Plot2d_ViewFrame*>(parentWidget()) )
+    if ( !aVF->isRescaled() )
+      emit rescale();
+  
+  QwtPlot::drawCanvas(painter);
 }
 
 /*!

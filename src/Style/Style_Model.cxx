@@ -93,13 +93,13 @@ Style_Model::~Style_Model()
   The simplest way it can be done is using static functions of Style_Salome class:
   Style_Salome::apply(), Style_Salome::restore()
 
-  \param reset if \c true model is first restores default values of all properties
+  \param reset if \c true model is also initializes preoperties from the application
   \sa restore(), fromResources()
   \sa Style_Salome class
 */
 void Style_Model::fromApplication( bool reset )
 {
-  if ( reset ) initDefaults();
+  initDefaults();
 
   if ( !QApplication::instance() )  // application object is not created yet
     return;
@@ -114,6 +114,8 @@ void Style_Model::fromApplication( bool reset )
   }
 
   // initialize style properties from the application
+
+  if ( !reset ) return;
 
   // font
   myFont = myAppData->myFont;
@@ -157,7 +159,7 @@ void Style_Model::fromApplication( bool reset )
 void Style_Model::fromResources( QtxResourceMgr* resMgr, const QString& resSection )
 {
   // init from application
-  fromApplication( true );
+  fromApplication( false );
 
   myResourceMgr     = resMgr;
   myResourceSection = resSection;

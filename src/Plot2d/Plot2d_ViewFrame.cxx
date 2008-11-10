@@ -45,6 +45,7 @@
 #include <QContextMenuEvent>
 #include <QPrinter>
 #include <QPalette>
+#include <QLocale>
 
 #include <qwt_math.h>
 #include <qwt_plot_canvas.h>
@@ -60,6 +61,7 @@
 #include <qprinter.h>
 
 #include <qwt_legend.h>
+#include <qwt_scale_widget.h>
 
 #define DEFAULT_LINE_WIDTH     0     // (default) line width
 #define DEFAULT_MARKER_SIZE    9     // default marker size
@@ -174,6 +176,15 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
   //  createActions();
   connect( myPlot, SIGNAL( legendClicked( QwtPlotItem* ) ), 
 	   this, SIGNAL( legendClicked( QwtPlotItem* ) ) );
+
+  connect( myPlot->axisWidget( QwtPlot::xBottom ), SIGNAL( scaleDivChanged() ),
+	   myPlot, SLOT( onScaleDivChanged() ) );
+  connect( myPlot->axisWidget( QwtPlot::yLeft ), SIGNAL( scaleDivChanged() ),
+	   myPlot, SLOT( onScaleDivChanged() ) );
+  if (mySecondY)
+    connect( myPlot->axisWidget( QwtPlot::yRight ), SIGNAL( scaleDivChanged() ),
+	     myPlot, SLOT( onScaleDivChanged() ) );
+
 
   /* Initial Setup - get from the preferences */
   readPreferences();
@@ -1820,6 +1831,41 @@ bool Plot2d_Plot2d::existMarker( const QwtSymbol::Style typeMarker, const QColor
   return false;
 }
 
+void Plot2d_Plot2d::onScaleDivChanged()
+{
+  QwtScaleWidget* aSW = 0;
+  if ( ( aSW = dynamic_cast<QwtScaleWidget*>(sender()) ) ) {
+    int axisId = -1;
+    switch ( aSW->alignment() ) {
+    case QwtScaleDraw::BottomScale:
+      axisId = QwtPlot::xBottom;
+      break;
+    case QwtScaleDraw::LeftScale:
+      axisId = QwtPlot::yLeft;
+      break;
+    case QwtScaleDraw::RightScale:
+      axisId = QwtPlot::yRight;
+      break;
+    default:
+      break;
+    }
+      
+    if ( axisId >= 0 ) {
+      QwtScaleMap map = canvasMap(axisId);
+      double aDist = fabs(map.s2()-map.s1()) / (axisMaxMajor(axisId)*axisMaxMinor(axisId));
+
+      QString diffPrecStr;
+      diffPrecStr.sprintf("%e",aDist);
+      int deltaEpsilon = diffPrecStr.right(diffPrecStr.length()-diffPrecStr.indexOf('e')-2).toInt();
+
+      QwtScaleDraw* aQwtSD = axisScaleDraw(axisId);
+      Plot2d_ScaleDraw* aPlot2dSD = dynamic_cast<Plot2d_ScaleDraw*>(aQwtSD);
+      if ( !aPlot2dSD && deltaEpsilon > 6 || aPlot2dSD && aPlot2dSD->precision() != deltaEpsilon )
+	setAxisScaleDraw( axisId, new Plot2d_ScaleDraw(*aQwtSD, 'f', deltaEpsilon) );
+    }
+  }
+}
+
 /*!
   Sets the flag saying that QwtPlot geometry has been fully defined.
 */
@@ -2118,4 +2164,25 @@ void Plot2d_ViewFrame::customEvent( QEvent* ce )
 {
   if ( ce->type() == FITALL_EVENT )
     fitAll();
+}
+
+Plot2d_ScaleDraw::Plot2d_ScaleDraw( char f, int prec )
+  : QwtScaleDraw(),
+    myFormat(f),
+    myPrecision(prec)
+{
+  invalidateCache();
+}
+
+Plot2d_ScaleDraw::Plot2d_ScaleDraw( const QwtScaleDraw& scaleDraw, char f, int prec )
+  : QwtScaleDraw(scaleDraw),
+    myFormat(f),
+    myPrecision(prec)
+{
+  invalidateCache();
+}
+
+QwtText Plot2d_ScaleDraw::label( double value ) const
+{
+  return QLocale::system().toString(value,myFormat,myPrecision);
 }

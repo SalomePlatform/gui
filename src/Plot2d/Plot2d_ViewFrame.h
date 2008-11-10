@@ -24,6 +24,7 @@
 #include <QMultiHash>
 #include <QList>
 #include <qwt_symbol.h>
+#include <qwt_scale_draw.h>
 
 class Plot2d_Plot2d;
 class Plot2d_Prs;
@@ -225,12 +226,30 @@ public slots:
 protected:
   bool       existMarker( const QwtSymbol::Style typeMarker, const QColor& color, const Qt::PenStyle typeLine );
 
+protected slots:
+  void onScaleDivChanged();
+
 protected:
   CurveDict          myCurves;
   QwtPlotGrid*       myGrid;
   QList<QColor>      myColors;
   bool               myIsPolished;
   QwtPlotZoomer*     myPlotZoomer;
+};
+
+class Plot2d_ScaleDraw: public QwtScaleDraw
+{
+public:
+  Plot2d_ScaleDraw( char f = 'g', int prec = 6 );
+  Plot2d_ScaleDraw( const QwtScaleDraw& scaleDraw, char f = 'g', int prec = 6 );
+
+  virtual QwtText label( double value ) const;
+
+  int precision() const { return myPrecision; }
+
+private:
+  char myFormat;
+  int  myPrecision;
 };
 
 #endif

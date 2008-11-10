@@ -1854,14 +1854,14 @@ void Plot2d_Plot2d::onScaleDivChanged()
       QwtScaleMap map = canvasMap(axisId);
       double aDist = fabs(map.s2()-map.s1()) / (axisMaxMajor(axisId)*axisMaxMinor(axisId));
 
-      QString diffPrecStr;
-      diffPrecStr.sprintf("%e",aDist);
-      int deltaEpsilon = diffPrecStr.right(diffPrecStr.length()-diffPrecStr.indexOf('e')-2).toInt();
+      QString aDistStr;
+      aDistStr.sprintf("%e",aDist);
+      int aPrecision = aDistStr.right(aDistStr.length()-aDistStr.indexOf('e')-2).toInt();
 
       QwtScaleDraw* aQwtSD = axisScaleDraw(axisId);
       Plot2d_ScaleDraw* aPlot2dSD = dynamic_cast<Plot2d_ScaleDraw*>(aQwtSD);
-      if ( !aPlot2dSD && deltaEpsilon > 6 || aPlot2dSD && aPlot2dSD->precision() != deltaEpsilon )
-	setAxisScaleDraw( axisId, new Plot2d_ScaleDraw(*aQwtSD, 'f', deltaEpsilon) );
+      if ( !aPlot2dSD && aPrecision > 6 || aPlot2dSD && aPlot2dSD->precision() != aPrecision )
+	setAxisScaleDraw( axisId, new Plot2d_ScaleDraw(*aQwtSD, 'f', aPrecision) );
     }
   }
 }

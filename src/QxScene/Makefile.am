@@ -60,3 +60,7 @@ nodist_salomeres_DATA= \
 libQxScene_la_CPPFLAGS=$(QT_INCLUDES) $(CAS_CPPFLAGS) $(PYTHON_INCLUDES) $(BOOST_CPPFLAGS) \
 	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT
 libQxScene_la_LDFLAGS=$(QT_MT_LIBS) ../SUIT/libsuit.la
+
+# --- warning:
+#     this file is used for debug purposes only, to be removed later
+EXTRA_DIST += DebTrace.hxx

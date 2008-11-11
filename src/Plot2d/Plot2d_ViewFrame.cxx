@@ -1831,6 +1831,9 @@ bool Plot2d_Plot2d::existMarker( const QwtSymbol::Style typeMarker, const QColor
   return false;
 }
 
+/*!
+  Slot: checks the current labels format and change it if needed
+*/
 void Plot2d_Plot2d::onScaleDivChanged()
 {
   QwtScaleWidget* aSW = 0;

@@ -125,8 +125,6 @@ public:
   void    incrementalPan ( const int incrX, const int incrY );
   void    incrementalZoom( const int incrX, const int incrY );
 
-  bool    isRescaled() const { return myIsRescaled; }
-
 protected:
   int     testOperation( const QMouseEvent& );
   void    readPreferences();
@@ -158,7 +156,6 @@ protected slots:
   void    plotMousePressed( const QMouseEvent& );
   void    plotMouseMoved( const QMouseEvent& );
   void    plotMouseReleased( const QMouseEvent& );
-  void    rescale();
 
 signals:
   void    vpModeHorChanged();
@@ -187,7 +184,6 @@ protected:
   int            myXMode, myYMode;
   double         myXDistance, myYDistance, myYDistance2;
   bool           mySecondY;
-  bool           myIsRescaled;
 };
 
 class Plot2d_Plot2d : public QwtPlot 
@@ -214,12 +210,9 @@ public:
 public slots:
   virtual void polish();
 
-signals:
-  void rescale();
-
 protected:
   bool         existMarker( const QwtSymbol::Style typeMarker, const QColor& color, const Qt::PenStyle typeLine );
-  virtual void drawCanvas(QPainter *);
+  virtual void drawCanvas( QPainter *painter );
 
 protected:
   QValueList<QColor> myColors;

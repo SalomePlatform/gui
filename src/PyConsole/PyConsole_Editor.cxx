@@ -318,6 +318,8 @@ void PyConsole_Editor::exec( const QString& command )
       myHistory.push_back( lines[i] );
     addText( ( i == 0 ? READY_PROMPT : DOTS_PROMPT ) + lines[i], i != 0 );
   }
+  // IPAL20182
+  addText( "", true );
   // set read-only mode
   setReadOnly( true );
   // set busy cursor

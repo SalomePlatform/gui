@@ -62,7 +62,8 @@ void PyInterp_Request::process()
 
 void PyInterp_Request::safeExecute()
 {
-  ProcessVoidEvent( new PyInterp_ExecuteEvent( this ) );
+  //ProcessVoidEvent( new PyInterp_ExecuteEvent( this ) );
+  execute();
 }
 
 void PyInterp_Request::Destroy( PyInterp_Request* request )
@@ -107,7 +108,8 @@ void PyInterp_LockRequest::safeExecute()
 {
   if ( getInterp() ){
     PyLockWrapper aLock = getInterp()->GetLockWrapper();
-    ProcessVoidEvent( new PyInterp_ExecuteEvent( this ) );
+    //ProcessVoidEvent( new PyInterp_ExecuteEvent( this ) );
+    execute();
   }
 }
 

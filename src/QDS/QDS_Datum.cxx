@@ -25,7 +25,7 @@
 #include <QMessageBox>
 #include <QApplication>
 
-#include <QDS_Validator.h>
+#include "QDS_Validator.h"
 #include <DDS_Dictionary.h>
 
 /*!

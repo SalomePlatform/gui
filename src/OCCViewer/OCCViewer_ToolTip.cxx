@@ -19,10 +19,10 @@
 // File:      OCCViewer_ToolTip.cxx
 // Author:    Alexandre SOLOVYOV
 
-#include <OCCViewer_ToolTip.h>
-#include <OCCViewer_ViewWindow.h>
-#include <OCCViewer_ViewPort3d.h>
-#include <OCCViewer_ViewModel.h>
+#include "OCCViewer_ToolTip.h"
+#include "OCCViewer_ViewWindow.h"
+#include "OCCViewer_ViewPort3d.h"
+#include "OCCViewer_ViewModel.h"
 
 #include <SUIT_ViewManager.h>
 

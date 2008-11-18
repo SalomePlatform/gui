@@ -19,7 +19,7 @@
 #ifndef OCCVIEWER_TOOLTIP_H
 #define OCCVIEWER_TOOLTIP_H
 
-#include <OCCViewer.h>
+#include "OCCViewer.h"
 #include <QtxToolTip.h>
 #include <QFont>
 

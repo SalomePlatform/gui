@@ -473,9 +473,6 @@ SVTK_Recorder
     " | xargs rm " +
     ")";
 
-  aCommand = 
-    QString("rm ") + aDirPath + "/" + aBaseName + "*.jpeg";
-
   if(MYDEBUG) cout<<"SVTK_Recorder::MakeFileAVI - "<<(const char*)aCommand.toLatin1()<<endl;
   system((const char*)aCommand.toLatin1());
 }

@@ -25,6 +25,9 @@ admlocaldir        = $(prefix)/adm_local
 admlocalunixdir    = $(admlocaldir)/unix
 admlocalm4dir      = $(admlocaldir)/unix/config_files
 
+# Directory for install cmake files
+admlocal_cmakedir = $(admlocaldir)/cmake_files
+
 # Shared modules installation directory
 sharedpkgpythondir = $(salomepythondir)/shared_modules
 

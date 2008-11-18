@@ -16,4 +16,12 @@
 # 
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 # 
-SUBDIRS = unix cmake_files
+include $(top_srcdir)/adm_local/unix/make_common_starter.am
+
+dist_admlocal_cmake_DATA = \
+FindCAS.cmake \
+FindOPENGL.cmake \
+FindQT4.cmake \
+FindQWT.cmake \
+FindSIPPYQT.cmake \
+FindVTK.cmake

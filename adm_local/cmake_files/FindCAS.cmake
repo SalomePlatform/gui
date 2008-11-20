@@ -33,18 +33,13 @@ FIND_LIBRARY(TKOpenGl TKOpenGl PATHS ${CASROOT_LIBDIR})
 FIND_LIBRARY(TKG3d TKG3d PATHS ${CASROOT_LIBDIR})
 
 SET(CAS_KERNEL ${TKernel} ${TKMath})
-SET(CAS_TKV3d ${TKernel} ${TKMath} ${TKV3d})
 SET(CAS_OCAF ${TKernel} ${TKCDF} ${TKLCAF})
 SET(CAS_VIEWER ${TKService} ${TKV3d} ${TKG3d} ${TKGeomBase} ${TKBRep})
 
+SET(TKV3d ${TKernel} ${TKMath} ${TKV3d})
+
 #SET(CAS_VIEWER ${TKService}) # From check_cas .m4
 #SET(CAS_VIEWER ${CAS_VIEWER} ${CAS_TKV3d} ${CAS_TKBRep}) # Add-ons E.A.
-
-
-
-
-
-
 
 #SET(CAS_CXXFLAGS)
 

@@ -731,6 +731,10 @@ QString SUIT_FileDlg::getFileName( QWidget* parent, const QString& initial,
 
   fd.setFileMode( open ? ExistingFile : AnyFile );
 
+  QString filename = initial;
+  filename.simplified();
+  filename = filename.replace(QRegExp("\\*"), "" ).replace(QRegExp("\\?"), "" );
+
   if ( filters.isEmpty() )
     fd.setFilter( tr( "ALL_FILES_FILTER" ) ); // All files (*)
   else
@@ -739,13 +743,11 @@ QString SUIT_FileDlg::getFileName( QWidget* parent, const QString& initial,
   if ( !caption.isEmpty() )
     fd.setWindowTitle( caption );
 
-  if ( !initial.isEmpty() )
-    fd.processPath( initial );
+  if ( !filename.isEmpty() )
+    fd.processPath( filename );
 
   if ( validator )
     fd.setValidator( validator );
-
-  QString filename;
 
   if ( fd.exec() == QDialog::Accepted )
     filename = fd.selectedFile();

@@ -53,8 +53,8 @@ void LightApp_Plot2dSelector::setSelection( const SUIT_DataOwnerPtrList& theList
 {
   /*  if( theList.count()>0 )
     myCurEntry = theList.first()->getEntry();
-  else
-  myCurEntry = QString::null;*/
+  else*/
+  myCurEntry = QString::null;
 }
 
 /*!On selection changed.*/

@@ -873,9 +873,6 @@ QModelIndex SUIT_TreeModel::index( int row, int column,
   if( hasIndex( row, column, parent ) )
   {
     TreeItem* parentItem = treeItem( parent );
-    QString pname;
-    if( parentItem && parentItem->dataObject() )
-      pname = parentItem->dataObject()->name();
     if( parentItem )
     {
       TreeItem* childItem = parentItem->child( row );

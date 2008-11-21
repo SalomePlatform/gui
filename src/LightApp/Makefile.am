@@ -227,7 +227,7 @@ libLightApp_la_LIBADD = ../SUIT/libsuit.la ../STD/libstd.la ../CAM/libCAM.la			\
 	../LogWindow/libLogWindow.la $(CAS_KERNEL)						\
 	../Prs/libSalomePrs.la ../ObjBrowser/libObjBrowser.la ../Style/libSalomeStyle.la	\
 	../Event/libEvent.la									\
-	$(HDF5_LIBS) $(KERNEL_LDFLAGS) -lSalomeHDFPersist
+	$(HDF5_LIBS) $(KERNEL_LDFLAGS) -lSalomeHDFPersist -lSALOMELocalTrace
 
 if ENABLE_SALOMEOBJECT
   libLightApp_la_LIBADD += ../OBJECT/libSalomeObject.la

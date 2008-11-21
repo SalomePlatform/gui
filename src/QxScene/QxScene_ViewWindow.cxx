@@ -247,6 +247,8 @@ void QxScene_ViewWindow::setBackgroundColor( const QColor& color )
 QColor QxScene_ViewWindow::backgroundColor() const
 {
   DEBTRACE("QxScene_ViewWindow::backgroundColor");
+  QColor col;
+  return col;
 }
 
 /*!

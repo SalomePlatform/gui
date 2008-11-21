@@ -27,10 +27,20 @@
 
 class SUIT_ExceptionHandler;
 
-#ifdef ENABLE_TESTRECORDER
-  class SUITApp_Application : public TestApplication
+#ifdef WNT
+#  ifdef SUITAPP_EXPORTS
+#    define SUITAPP_EXPORT __declspec(dllexport)
+#  else
+#   define SUITAPP_EXPORT __declspec(dllimport)
+#  endif
 #else
-  class SUITApp_Application : public QApplication
+#  define SUITAPP_EXPORT
+#endif
+
+#ifdef ENABLE_TESTRECORDER
+  class SUITAPP_EXPORT SUITApp_Application : public TestApplication
+#else
+  class SUITAPP_EXPORT SUITApp_Application : public QApplication
 #endif
 {
   Q_OBJECT

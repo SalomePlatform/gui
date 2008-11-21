@@ -42,7 +42,7 @@ nodist_libSPlot2d_la_SOURCES = $(MOC_FILES)
 libSPlot2d_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) $(QWT_INCLUDES) $(BOOST_CPPFLAGS)	\
 	                 -I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../Plot2d		\
 	                 -I$(srcdir)/../Prs -I$(srcdir)/../OBJECT
-libSPlot2d_la_LDFLAGS  = $(QT_MT_LIBS) $(QWT_LIBS) ../SUIT/libsuit.la ../Plot2d/libPlot2d.la ../Prs/libSalomePrs.la
+libSPlot2d_la_LDFLAGS  = $(QT_MT_LIBS) $(CAS_KERNEL) $(QWT_LIBS) ../SUIT/libsuit.la ../Plot2d/libPlot2d.la ../Prs/libSalomePrs.la ../OBJECT/libSalomeObject.la
 
 
 

@@ -50,4 +50,4 @@ nodist_salomeres_DATA =		\
 
 libSUPERVGraph_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) $(PYTHON_INCLUDES) $(BOOST_CPPFLAGS) \
 	                     -I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../OBJECT
-libSUPERVGraph_la_LDFLAGS  = $(QT_MT_LIBS) ../SUIT/libsuit.la
+libSUPERVGraph_la_LDFLAGS  = $(QT_MT_LIBS) ../SUIT/libsuit.la ../OBJECT/libSalomeObject.la

@@ -55,4 +55,4 @@ libToolsGUI_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) $(BOOST_CPPFLAGS)	\
 	-I$(top_builddir)/salome_adm/unix -I$(top_builddir)/idl			\
 	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT
 libToolsGUI_la_LDFLAGS  = $(QT_MT_LIBS) ../SUIT/libsuit.la $(CAS_KERNEL) $(KERNEL_LDFLAGS) \
-	-lSalomeNS -lOpUtil $(top_builddir)/idl/libSalomeIDLGUI.so
+	-lSalomeIDLKernel -lSALOMELocalTrace -lSalomeNS -lOpUtil $(top_builddir)/idl/libSalomeIDLGUI.la

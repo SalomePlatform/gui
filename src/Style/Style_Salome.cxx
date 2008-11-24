@@ -1201,11 +1201,42 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
           }
         }
       break;
-      /*
     case CE_ToolBoxTab:
-      QCommonStyle::drawControl( ce, opt, p, w );
+       if ( const QStyleOptionToolBox *tb =
+            qstyleoption_cast<const QStyleOptionToolBox *>( opt ) ) {
+         drawControl( CE_ToolBoxTabShape, tb, p, w);
+         drawControl( CE_ToolBoxTabLabel, tb, p, w );
+      }
+      else
+        QCommonStyle::drawControl( ce, opt, p, w );
       break;
-      */
+    case CE_ToolBoxTabShape:
+        if (const QStyleOptionToolBox *tb = qstyleoption_cast<const QStyleOptionToolBox *>(opt)) {
+	  //if ( qstyleoption_cast<const QStyleOptionButton *>(opt) ) {
+        double aRad = 0;//getDblValue( Style_Model::btn_rad );
+        bool aStateOn = opt->state & ( State_Sunken | State_On );
+        bool isAutoRaising = getBoolValue( Style_Model::auto_raising_wdg );
+        bool isHighWdg = getBoolValue( Style_Model::highlight_wdg );
+        bool enabled = opt->state & State_Enabled;
+        bool hover = hasHover() && enabled && ( opt->state & State_MouseOver );
+
+        QColor aBtnCol = opt->palette.color( QPalette::Window );//Button );
+        QColor top = aBtnCol.light( BUT_PERCENT_COL ),
+	       bottom = aBtnCol.dark( BUT_PERCENT_COL );
+        QColor aBrdTopCol = getColor( Style_Model::border_top_clr ),
+	       aBrdBotCol = getColor( Style_Model::border_bot_clr );
+        QRect r = opt->rect;
+        bool antialized = getBoolValue( Style_Model::all_antialized );
+        if ( isAutoRaising && hover && !aStateOn )
+          Style_Tools::shadowRect( p, r, aRad, -1, SHADOW, Style_Tools::All, bottom, top,
+                                   aBrdTopCol, aBrdBotCol, antialized, true, aStateOn );
+        else if ( isHighWdg && hover && !aStateOn )
+          drawHoverRect( p, r, opt->palette.color( QPalette::Window ), aRad, Style_Tools::All, true );
+	else
+          Style_Tools::shadowRect( p, r, aRad, -1, SHADOW, Style_Tools::All, top, bottom,
+                                   aBrdTopCol, aBrdBotCol, antialized, true, aStateOn );
+	break;
+      }
     case CE_HeaderSection: {
       bool aStateOn = opt->state & State_On;
       QColor aColor = getColor( Style_Model::header_clr );

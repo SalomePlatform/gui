@@ -24,4 +24,6 @@ FindOPENGL.cmake \
 FindQT4.cmake \
 FindQWT.cmake \
 FindSIPPYQT.cmake \
-FindVTK.cmake
+FindVTK.cmake \
+FindGUI.cmake
+

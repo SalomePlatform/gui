@@ -751,6 +751,8 @@ QString SUIT_FileDlg::getFileName( QWidget* parent, const QString& initial,
 
   if ( fd.exec() == QDialog::Accepted )
     filename = fd.selectedFile();
+  else
+    filename = "";
 
   QApplication::processEvents();
 
@@ -976,6 +978,6 @@ QString SUIT_FileDlg::getLastVisitedPath()
 */
 void SUIT_FileDlg::selectFile( const QString& f )
 {
-  QFileDialog::selectFile( f );
+  QFileDialog::selectFile( QFileInfo( f ).baseName() );
   setDirectory( QFileInfo( f ).absoluteDir() );
 }

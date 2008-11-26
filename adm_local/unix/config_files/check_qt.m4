@@ -20,6 +20,20 @@ dnl
 dnl
 dnl
 
+dnl  OPTIONS_QT
+dnl  ------------------------------------------------------------------------
+dnl  Adds the --with-qt=path
+dnl
+AC_DEFUN([OPTIONS_QT], [
+  AC_ARG_WITH([qt],
+              [AC_HELP_STRING([--with-qt], [Possible usage:
+                                             "Qt_Install_Path" - prefix to path where Qt was installd;
+                                             "" or "yes" or "auto" - means seaching installed Qt product in the system (checking $QTDIR and then - standard system paths );
+                                             "no" - not use Qt product (is not supported)
+                                            By default "" option is used)])],
+              [with_qt=$withval], [with_qt=""])
+])
+
 AC_DEFUN([CHECK_QT],[
 AC_REQUIRE([AC_PROG_CC])dnl
 AC_REQUIRE([AC_PROG_CXX])dnl
@@ -27,6 +41,8 @@ AC_REQUIRE([AC_PROG_CPP])dnl
 AC_REQUIRE([AC_PROG_CXXCPP])dnl
 AC_REQUIRE([CHECK_OPENGL])dnl
 AC_REQUIRE([AC_LINKER_OPTIONS])dnl
+
+AC_REQUIRE([OPTIONS_QT])dnl
 
 AC_CHECKING(for Qt)
 
@@ -39,15 +55,56 @@ qt_ok=yes
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
 
+dnl QT install dir
+if test -z $with_qt ; then
+  with_qt=""
+fi
+if test "x$with_qt" = "xyes" ; then
+  dnl in case user wrote --with-qt=yes
+  with_qt=""
+fi
+if test "x$with_qt" = "xauto" ; then
+  dnl in case user wrote --with-qt=auto
+  with_qt=""
+fi
+if test "x$with_qt" = "xno" ; then
+  dnl in case user wrote --with-qt=no
+  with_qt=""
+  AC_MSG_WARN(Value no, specified for option --with-qt, is not supported)
+fi
+
+if test "x$with_qt" != "x" ; then
+  dnl Using "--with-qt" prefix path
+  QTDIR="$with_qt"
+else
+  if test -z $QTDIR ; then
+    AC_MSG_WARN(undefined QTDIR variable which specify where Qt product was installed)
+    for d in /usr/local/lib/qt4 /usr/lib/qt4 ; do
+      if test -f ${d}/include/Qt/qconfig.h ; then
+        AC_MSG_RESULT(trying ${d})
+        QTDIR="${d}"
+        break
+      else
+        if test -f ${d}/include/qconfig.h ; then
+          AC_MSG_RESULT(trying ${d})
+          QTDIR="${d}"
+          break
+        fi
+      fi
+    done
+  else
+    dnl Using QTDIR environment variable
+    AC_MSG_RESULT(QTDIR is $QTDIR)
+  fi
+fi
+
 #
 # check QTDIR environment variable
 #
 if test "x$QTDIR" = "x"
 then
-   AC_MSG_RESULT(please define QTDIR variable)
+   AC_MSG_RESULT(Please define correct path in "--with-qt" option or use correct $QTDIR variable)
    qt_ok=no
-else
-   AC_MSG_RESULT(QTDIR is $QTDIR)
 fi
 
 #
@@ -102,6 +159,21 @@ then
     qt_ok=yes
     AC_MSG_RESULT(moc (Qt meta-object compiler) is found)
   fi
+
+  if test "x$qt_ok" = "xyes"
+  then
+    dnl check moc version
+    AC_MSG_CHECKING(cheching equality Qt and moc tool version)
+    MOC_VERSION=`$MOC -v 2>&1 | awk 'BEGIN{FS="[[ ()]]"};{print $(NF-1)}'`
+    if test "x$QT_VERSION" = "x$MOC_VERSION"
+    then
+      AC_MSG_RESULT(yes)
+      qt_ok=yes
+    else
+      AC_MSG_RESULT(moc tool and Qt product are inpompatible $MOC_VERSION)
+      qt_ok=no
+    fi
+  fi
 fi
 
 #
@@ -144,6 +216,21 @@ then
     qt_ok=yes
     AC_MSG_RESULT(rcc (Qt resources compiler) is found)
   fi
+
+  if test "x$qt_ok" = "xyes"
+  then
+    dnl check rcc version
+    AC_MSG_CHECKING(cheching equality Qt and rcc tool version)
+    QRCC_VERSION=`$QRCC -v 2>&1 | awk '{print $NF}'`
+    if test "x$QT_VERSION" = "x$QRCC_VERSION"
+    then
+      AC_MSG_RESULT(yes)
+      qt_ok=yes
+    else
+      AC_MSG_RESULT(rcc tool and Qt product are inpompatible)
+      qt_ok=no
+    fi
+  fi
 fi
 
 #
@@ -164,6 +251,21 @@ then
   else
     qt_ok=yes
     AC_MSG_RESULT(lrelease (Qt translation files compiler) is found)
+  fi
+  
+  if test "x$qt_ok" = "xyes"
+  then
+    dnl check lrelease version
+    AC_MSG_CHECKING( equality of Qt and lrelease tool version)
+    LRELEASE_VERSION=`$LRELEASE -version 2>&1 | awk '{print $NF}'`
+    if test "x$QT_VERSION" = "x$LRELEASE_VERSION"
+    then
+      AC_MSG_RESULT(yes)
+      qt_ok=yes
+    else
+      AC_MSG_RESULT(lrelease tool and Qt product are inpompatible)
+      qt_ok=no
+    fi
   fi
 fi
 
@@ -222,8 +324,13 @@ then
   if test "x$QTDIR" = "x/usr"
   then
     QT_LIB_DIR=""
+  elif test -d ${QTDIR}/lib; then
+    QT_LIB_DIR="-L$QTDIR/lib"
+  elif test -d ${QTDIR}/lib64; then
+    QT_LIB_DIR="-L$QTDIR/lib64"
   else
-    QT_LIB_DIR="-L$QTDIR/lib${LIB_LOCATION_SUFFIX}"
+    AC_MSG_ERROR(Can't detect of Qt library directory )
+    qt_ok=no
   fi
   LIBS="$LIBS $QT_LIB_DIR -lQtCore"
 

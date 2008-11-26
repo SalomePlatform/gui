@@ -23,8 +23,6 @@
 //  Created   : 25/04/05
 //  Author    : Vadim SANDLER
 //  Project   : SALOME
-//  Copyright : 2003-2005 CEA/DEN, EDF R&D
-//  $Header   : $
 
 %Module SalomePyQt
 

@@ -1933,7 +1933,7 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
 	  light = base,
 	  light_alt = base.dark(110),//AlternateBase color
 	  dark  = model()->color( Style_Model::FieldDark ); // Style_Model::fld_dark_clr
-        light.setAlpha( 0 ); // VSR commented: IPAL19262
+        //light.setAlpha( 0 ); // VSR commented: IPAL19262
         QLinearGradient gr_h(r.x(), r.y(), r.right(), r.y());
         gr_h.setColorAt( 0.0, dark );
         gr_h.setColorAt( aMarg / r.width(), light );

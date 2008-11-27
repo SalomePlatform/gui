@@ -25,3 +25,11 @@
 # $Header$
 #
 SUBDIRS= salome
+
+usr_docs:
+	(cd salome && $(MAKE) $(AM_MAKEFLAGS) usr_docs)
+
+docs: usr_docs
+
+dev_docs:
+	(cd salome && $(MAKE) $(AM_MAKEFLAGS) dev_docs)

@@ -51,5 +51,15 @@ dev_docs:
 
 doctuidir=$(docdir)/tui/GUI
 
+install-data-local:
+	if test -d GUI; then \
+	  $(INSTALL) -d $(docdir)/tui ; \
+	  cp -rp GUI $(docdir)/tui ; \
+	  find $(docdir)/tui -name CVS -prune -exec rm -rf {} ";" ; \
+	fi;
+
+uninstall-local:
+	rm -rf $(docdir)/tui/GUI
+
 nodist_doctui_DATA= GUI/doxyfile
 EXTRA_DIST+= GUI/doxyfile.in

@@ -569,7 +569,7 @@ void LightApp_Application::createActions()
       moduleAction->insertModule( *it, icon );
     }
 
-    
+
     connect( moduleAction, SIGNAL( moduleActivated( const QString& ) ), this, SLOT( onModuleActivation( const QString& ) ) );
     registerAction( ModulesListId, moduleAction );
   }
@@ -1292,7 +1292,7 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
     viewMgr = new QxScene_ViewManager( activeStudy(), desktop() );
     QxScene_Viewer* vm = new QxScene_Viewer();
     viewMgr->setViewModel( vm  );
-    QxScene_ViewWindow* wnd = dynamic_cast<QxScene_ViewWindow*>( viewMgr->getActiveView() );
+    //QxScene_ViewWindow* wnd = dynamic_cast<QxScene_ViewWindow*>( viewMgr->getActiveView() );
   }
   //#ifndef DISABLE_SUPERVGRAPHVIEWER
   //  if( vmType == SUPERVGraph_Viewer::Type() )
@@ -1311,11 +1311,10 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
   {
     viewMgr = new OCCViewer_ViewManager( activeStudy(), desktop() );
     OCCViewer_Viewer* vm;
-	bool staticTrihedron = resMgr->booleanValue( "OCCViewer", "static_trihedron", true );
 #ifndef DISABLE_SALOMEOBJECT
     vm = new SOCC_Viewer();
 #else
-    vm = new OCCViewer_Viewer( true, staticTrihedron );
+    vm = new OCCViewer_Viewer( true, resMgr->booleanValue( "OCCViewer", "static_trihedron", true ) );
 #endif
     vm->setBackgroundColor( resMgr->colorValue( "OCCViewer", "background", vm->backgroundColor() ) );
     vm->setTrihedronSize( resMgr->doubleValue( "OCCViewer", "trihedron_size", vm->trihedronSize() ) );
@@ -1700,21 +1699,30 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
 
   that->myPrefs = _prefs_;
 
-  QList<SUIT_Application*> appList = SUIT_Session::session()->applications();
-  QListIterator<SUIT_Application*> appIt ( appList );
-  while ( appIt.hasNext() )
-  {
-    SUIT_Application* anItem = appIt.next();
-    if ( !anItem->inherits( "LightApp_Application" ) )
-      continue;
+  SUIT_ResourceMgr* resMgr = resourceMgr();
 
-    LightApp_Application* app = (LightApp_Application*)anItem;
+  QList<SUIT_Application*> appList = SUIT_Session::session()->applications();
+  for ( QList<SUIT_Application*>::iterator appIt = appList.begin(); appIt != appList.end(); ++appIt )
+  {
+    LightApp_Application* app = ::qobject_cast<LightApp_Application*>( *appIt );
+    if ( !app )
+      continue;
 
     QStringList modNameList;
     app->modules( modNameList, false );
-    for ( QStringList::const_iterator it = modNameList.begin();
-	  it != modNameList.end(); ++it )
-      _prefs_->addPreference( *it );
+
+    QMap<QString, QString> iconMap;
+    app->moduleIconNames( iconMap );
+
+    for ( QStringList::const_iterator it = modNameList.begin(); it != modNameList.end(); ++it )
+    {
+      if ( !app->isLibExists( *it ) )
+	continue;
+
+      int modId = _prefs_->addPreference( *it );
+      if ( iconMap.contains( *it ) )
+	_prefs_->setItemIcon( modId, Qtx::scaleIcon( resMgr->loadPixmap( moduleName( *it ), iconMap[*it], false ), 20 ) );
+    }
 
     ModuleList modList;
     app->modules( modList );
@@ -1732,9 +1740,7 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
 	_prefs_->addPreference( mod->moduleName() );
 	if( toCreate )
 	  mod->createPreferences();
-	QtxPreferenceItem* item = _prefs_->findItem( mod->moduleName(), true );
-	if ( item && item->isEmpty() )
-	  delete item;
+	that->emptyPreferences( mod->moduleName() );
       }
     }
   }
@@ -1761,10 +1767,22 @@ void LightApp_Application::moduleAdded( CAM_Module* mod )
   {
     myPrefs->addPreference( mod->moduleName() );
     lightMod->createPreferences();
-    QtxPreferenceItem* item = myPrefs->findItem( mod->moduleName(), true );
-    if ( item && item->isEmpty() )
-      delete item;
+    emptyPreferences( mod->moduleName() );
   }
+}
+
+void LightApp_Application::emptyPreferences( const QString& modName )
+{
+  QtxPreferenceItem* item = myPrefs->findItem( modName, true );
+  if ( !item || !item->isEmpty() )
+    return;
+
+  QtxPagePrefFrameItem* frm = new QtxPagePrefFrameItem( item->title(), item->parentItem() );
+  frm->setIcon( item->icon() );
+  frm->setStretch( false );
+  item->parentItem()->insertItem( frm, item );
+  new QtxPagePrefLabelItem( Qt::AlignCenter, tr( "PREFERENCES_NOT_SUPPORTED" ).arg( modName ), frm );
+  delete item;
 }
 
 /*!
@@ -1779,6 +1797,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   QList<QVariant> anIndicesList;
 
   int salomeCat = pref->addPreference( tr( "PREF_CATEGORY_SALOME" ) );
+  pref->setItemIcon( salomeCat, Qtx::scaleIcon( resourceMgr()->loadPixmap( "LightApp", tr( "APP_DEFAULT_ICO" ), false ), 20 ) );
 
   int genTab = pref->addPreference( tr( "PREF_TAB_GENERAL" ), salomeCat );
   int studyGroup = pref->addPreference( tr( "PREF_GROUP_STUDY" ), genTab );
@@ -1814,9 +1833,9 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   int supervGroup = pref->addPreference( tr( "PREF_GROUP_SUPERV" ), viewTab );
 
-  pref->setItemProperty( "columns", 4, occGroup );
+  pref->setItemProperty( "columns", 2, occGroup );
   pref->setItemProperty( "columns", 1, vtkGroup );
-  pref->setItemProperty( "columns", 4, plot2dGroup );
+  pref->setItemProperty( "columns", 2, plot2dGroup );
 
   // OCC Viewer
   int occTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), occGroup,
@@ -2180,7 +2199,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 #endif
 
 #ifndef DISABLE_VTKVIEWER
-  if ( sec == QString( "VTKViewer" ) && (param == QString( "spacemouse_func1_btn" ) || 
+  if ( sec == QString( "VTKViewer" ) && (param == QString( "spacemouse_func1_btn" ) ||
 					 param == QString( "spacemouse_func2_btn" ) ||
 					 param == QString( "spacemouse_func5_btn" ) ) )
   {

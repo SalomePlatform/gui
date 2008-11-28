@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -30,10 +30,10 @@
 #include <SUIT_Session.h>
 #include <SUIT_ResourceMgr.h>
 
-/*! 
+/*!
   \class CAM_Module
   \brief Base implementation of the module in the CAM application architecture.
-  
+
   Provides support of menu/toolbars management.
 */
 
@@ -51,7 +51,7 @@ CAM_Module::CAM_Module()
 
 /*!
   \brief Constructor.
-  
+
   Creates module with the specified \a name.
 
   \param name module name
@@ -66,7 +66,7 @@ CAM_Module::CAM_Module( const QString& name )
 
 /*!
   \brief Destructor.
-  
+
   Destroy data model.
 */
 CAM_Module::~CAM_Module()
@@ -78,7 +78,7 @@ CAM_Module::~CAM_Module()
 /*!
   \brief Initialize module.
 
-  This method is usually called when the module is created (for example, 
+  This method is usually called when the module is created (for example,
   on the module library loading).
   Successor classes can use this method to create menu/toolbar actions
   and perform other module initialization.
@@ -152,9 +152,9 @@ QString CAM_Module::moduleName() const
 
 /*!
   \brief Get data model.
-  
+
   Creates data model, if it is not yet created.
-  
+
   \return data model pointer
   \sa createDataModel()
 */
@@ -194,7 +194,7 @@ bool CAM_Module::isSelectionCompatible()
   for example, to show own menus, toolbars, etc.
 
   Default implementation always returns \c true.
-  
+
   \return \c true if module is activated successfully.
   \sa initialize(), deactivateModule()
  */
@@ -211,7 +211,7 @@ bool CAM_Module::activateModule( SUIT_Study* /*study*/ )
   for example, to hide own menus, toolbars, etc.
 
   Default implementation always returns \c true.
-  
+
   \return \c true if module is deactivated successfully.
   \sa initialize(), activateModule()
  */
@@ -224,13 +224,13 @@ bool CAM_Module::deactivateModule( SUIT_Study* )
   \brief Called when study is closed.
 
   Removes data model from the \a study.
-  
+
   \param study study being closed
 */
 void CAM_Module::studyClosed( SUIT_Study* study )
 {
   CAM_Study* camDoc = dynamic_cast<CAM_Study*>( study );
-  if ( !camDoc ) 
+  if ( !camDoc )
     return;
 
   CAM_DataModel* dm = dataModel();
@@ -244,7 +244,7 @@ void CAM_Module::studyClosed( SUIT_Study* study )
   \brief Called when study is changed (obsolete).
 
   Default implementation does nothing.
-    
+
   \param oldStudy old study
   \param newStudy new study
 */
@@ -263,7 +263,7 @@ bool CAM_Module::isActiveModule() const
 
 /*!
   \brief Put the text message into the status bar of the application main window.
-  
+
   If \a msec > 0, the message will be shown \a msec milliseconds.
   If \a msec < 0, the message will be constantly displayed until module is active.
 
@@ -311,7 +311,7 @@ void CAM_Module::onApplicationClosed( SUIT_Application* theApp )
   \return created data model object or 0 if it could not be created
 */
 CAM_DataModel* CAM_Module::createDataModel()
-{ 
+{
   return new CAM_DataModel( this );
 }
 
@@ -335,7 +335,7 @@ void CAM_Module::setModuleName( const QString& name )
   myName = name;
 }
 
-/*! 
+/*!
   \brief Get menu manager.
   \return menu manager pointer
 */
@@ -347,7 +347,7 @@ QtxActionMenuMgr* CAM_Module::menuMgr() const
   return mgr;
 }
 
-/*! 
+/*!
   \brief Get toolbar manager.
   \return toolbar manager pointer
 */
@@ -359,11 +359,11 @@ QtxActionToolMgr* CAM_Module::toolMgr() const
   return mgr;
 }
 
-/*! 
+/*!
   \brief Create toolbar with speicifed \a name.
 
   If the toolbar has been already created, its ID is just returned.
-  
+
   \param name toolbar name
   \return toolbar ID or -1 if toolbar could not be created
 */
@@ -379,7 +379,7 @@ int CAM_Module::createTool( const QString& name )
   \brief Add toolbar item.
 
   Insert action \a to the toolbar manager and register it with specified \a id.
-  Resulting action ID may differ from the requested one. This can happen if 
+  Resulting action ID may differ from the requested one. This can happen if
   requested ID is already in use.
 
   If action has been already added previously, its ID is just returned.
@@ -387,7 +387,7 @@ int CAM_Module::createTool( const QString& name )
   If \a id < 0, the action ID is generated automatically.
 
   If \a idx < 0, the action is added to the end of the toolbar.
-  
+
   \param a action
   \param tBar toolbar ID
   \param id requested action ID
@@ -408,7 +408,7 @@ int CAM_Module::createTool( QAction* a, const int tBar, const int id, const int 
   \brief Add toolbar item.
 
   Insert action \a to the toolbar manager and register it with specified \a id.
-  Resulting action ID may differ from the requested one. This can happen if 
+  Resulting action ID may differ from the requested one. This can happen if
   requested ID is already in use.
 
   If action has been already added previously, its ID is just returned.
@@ -416,7 +416,7 @@ int CAM_Module::createTool( QAction* a, const int tBar, const int id, const int 
   If \a id < 0, the action ID is generated automatically.
 
   If \a idx < 0, the action is added to the end of the toolbar.
-  
+
   \param a action
   \param tBar toolbar name
   \param id requested action ID
@@ -439,13 +439,13 @@ int CAM_Module::createTool( QAction* a, const QString& tBar, const int id, const
   Insert action with \a id identifier to the toolbar manager.
   It is assumed that action has been already registered.
 
-  Resulting action ID may differ from the requested one. This can happen if 
+  Resulting action ID may differ from the requested one. This can happen if
   requested ID is already in use.
 
   If action has been already added previously, its ID is just returned.
 
   If \a idx < 0, the action is added to the end of the toolbar.
-  
+
   \param id action ID
   \param tBar toolbar ID
   \param idx action index (desired position in the toolbar)
@@ -466,13 +466,13 @@ int CAM_Module::createTool( const int id, const int tBar, const int idx )
   Insert action with \a id identifier to the toolbar manager.
   It is assumed that action has been already registered.
 
-  Resulting action ID may differ from the requested one. This can happen if 
+  Resulting action ID may differ from the requested one. This can happen if
   requested ID is already in use.
 
   If action has been already added previously, its ID is just returned.
 
   If \a idx < 0, the action is added to the end of the toolbar.
-  
+
   \param id action ID
   \param tBar toolbar name
   \param idx action index (desired position in the toolbar)
@@ -491,18 +491,18 @@ int CAM_Module::createTool( const int id, const QString& tBar, const int idx )
   \brief Create menu or submenu.
 
   Create main menu or popup submenu and register it with specified \a id.
-  Resulting action ID may differ from the requested one. This can happen if 
+  Resulting action ID may differ from the requested one. This can happen if
   requested ID is already in use.
 
   If \a id < 0, the menu ID is generated automatically.
   If menu has been already created previously, its ID is just returned.
 
   The \a menu parameter represents the menu name - it could be a sequence
-  of strings, separated by '|' symbol. For example, "File|Edit" means 
+  of strings, separated by '|' symbol. For example, "File|Edit" means
   File->Edit submenu. If menu doesn't exist, it is created automatically.
 
   Parameter \a idx defines the index of the menu item in the menu group which
-  is defined by the \a group. If \a idx < 0, the menu/submenu is added to the 
+  is defined by the \a group. If \a idx < 0, the menu/submenu is added to the
   end of the menu group.
 
   \param subMenu subMenu name
@@ -525,18 +525,18 @@ int CAM_Module::createMenu( const QString& subMenu, const int menu,
   \brief Create menu or submenu.
 
   Create main menu or popup submenu and register it with specified \a id.
-  Resulting action ID may differ from the requested one. This can happen if 
+  Resulting action ID may differ from the requested one. This can happen if
   requested ID is already in use.
 
   If \a id < 0, the menu ID is generated automatically.
   If menu has been already created previously, its ID is just returned.
 
   The \a menu parameter represents the menu name - it could be a sequence
-  of strings, separated by '|' symbol. For example, "File|Edit" means 
+  of strings, separated by '|' symbol. For example, "File|Edit" means
   File->Edit submenu. If menu doesn't exist, it is created automatically.
 
   Parameter \a idx defines the index of the menu item in the menu group which
-  is defined by the \a group. If \a idx < 0, the menu/submenu is added to the 
+  is defined by the \a group. If \a idx < 0, the menu/submenu is added to the
   end of the menu group.
 
   \param subMenu subMenu name
@@ -559,7 +559,7 @@ int CAM_Module::createMenu( const QString& subMenu, const QString& menu,
   \brief Add menu item.
 
   Insert action \a to the menu manager and register it with specified \a id.
-  Resulting action ID may differ from the requested one. This can happen if 
+  Resulting action ID may differ from the requested one. This can happen if
   requested ID is already in use.
 
   If \a id < 0, the action ID is generated automatically.
@@ -567,7 +567,7 @@ int CAM_Module::createMenu( const QString& subMenu, const QString& menu,
   If action has been already added previously, its ID is just returned.
 
   Parameter \a idx defines the index of the menu item in the menu group which
-  is defined by the \a group. If \a idx < 0, the action is added to the 
+  is defined by the \a group. If \a idx < 0, the action is added to the
   end of the menu group.
 
   \param a action
@@ -591,7 +591,7 @@ int CAM_Module::createMenu( QAction* a, const int menu, const int id, const int 
   \brief Add menu item.
 
   Insert action \a to the menu manager and register it with specified \a id.
-  Resulting action ID may differ from the requested one. This can happen if 
+  Resulting action ID may differ from the requested one. This can happen if
   requested ID is already in use.
 
   If \a id < 0, the action ID is generated automatically.
@@ -599,11 +599,11 @@ int CAM_Module::createMenu( QAction* a, const int menu, const int id, const int 
   If action has been already added previously, its ID is just returned.
 
   The \a menu parameter represents the menu name - it could be a sequence
-  of strings, separated by '|' symbol. For example, "File|Edit" means 
+  of strings, separated by '|' symbol. For example, "File|Edit" means
   File->Edit submenu. If menu doesn't exist, it is created automatically.
 
   Parameter \a idx defines the index of the menu item in the menu group which
-  is defined by the \a group. If \a idx < 0, the action is added to the 
+  is defined by the \a group. If \a idx < 0, the action is added to the
   end of the menu group.
 
   \param a action
@@ -629,13 +629,13 @@ int CAM_Module::createMenu( QAction* a, const QString& menu, const int id, const
   Insert action with \a id identifier to the menu manager.
   It is assumed that action has been already registered.
 
-  Resulting action ID may differ from the requested one. This can happen if 
+  Resulting action ID may differ from the requested one. This can happen if
   requested ID is already in use.
 
   If action has been already added previously, its ID is just returned.
 
   Parameter \a idx defines the index of the menu item in the menu group which
-  is defined by the \a group. If \a idx < 0, the action is added to the 
+  is defined by the \a group. If \a idx < 0, the action is added to the
   end of the menu group.
 
   \param id action ID
@@ -659,17 +659,17 @@ int CAM_Module::createMenu( const int id, const int menu, const int group, const
   Insert action with \a id identifier to the menu manager.
   It is assumed that action has been already registered.
 
-  Resulting action ID may differ from the requested one. This can happen if 
+  Resulting action ID may differ from the requested one. This can happen if
   requested ID is already in use.
 
   If action has been already added previously, its ID is just returned.
 
   The \a menu parameter represents the menu name - it could be a sequence
-  of strings, separated by '|' symbol. For example, "File|Edit" means 
+  of strings, separated by '|' symbol. For example, "File|Edit" means
   File->Edit submenu. If menu doesn't exist, it is created automatically.
 
   Parameter \a idx defines the index of the menu item in the menu group which
-  is defined by the \a group. If \a idx < 0, the action is added to the 
+  is defined by the \a group. If \a idx < 0, the action is added to the
   end of the menu group.
 
   \param id action ID
@@ -813,7 +813,7 @@ int CAM_Module::actionId( const QAction* a ) const
 /*!
   \brief Create new instance of QtxAction and register action with specified \a id.
 
-  Resulting action ID may differ from the requested one. This can happen if 
+  Resulting action ID may differ from the requested one. This can happen if
   requested ID is already in use.
 
   If \a id < 0, the action ID is generated automatically.
@@ -875,6 +875,9 @@ int CAM_Module::registerAction( const int id, QAction* a )
   if ( toolMgr() )
     toolMgr()->registerAction( a );
 
+  if ( application() && application()->desktop() )
+    application()->desktop()->addAction( a );
+
   return ident;
 }
 
@@ -918,7 +921,7 @@ bool CAM_Module::unregisterAction( QAction* a )
 
 /*!
   \brief Create separator action.
-  
+
   Separator action can be used in menus or toolbars.
 
   \return new separator action

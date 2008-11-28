@@ -246,6 +246,9 @@ protected:
 
   void                                showPreferences( const QString& = QString() );
 
+private:
+  void                                emptyPreferences( const QString& );
+
 protected:
   typedef QPointer<QWidget>         WinPtr;
   typedef QMap<int, WinPtr>         WinMap;

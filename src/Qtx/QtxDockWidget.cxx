@@ -374,6 +374,10 @@ QSize QtxDockWidget::sizeHint() const
 {
   QSize sz = QDockWidget::sizeHint();
 
+  printf( "----------------> QtxDockWidget::sizeHint()\n" );
+
+  return QSize( 500, 100 );
+
   return sz;
 }
 

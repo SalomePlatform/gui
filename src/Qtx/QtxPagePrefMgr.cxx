@@ -1721,6 +1721,71 @@ void QtxPagePrefGroupItem::updateGroup()
 }
 
 /*!
+  \class QtxPagePrefLabelItem
+  \brief Label item which can be used in the preferences editor dialog box.
+*/
+
+/*!
+  \brief Constructor.
+
+  Creates label item with specified title.
+
+  \param text label text
+  \param parent parent preference item
+*/
+QtxPagePrefLabelItem::QtxPagePrefLabelItem( const QString& text, QtxPreferenceItem* parent )
+: QtxPagePrefItem( text, parent )
+{
+  setWidget( myLabel = new QLabel( text ) );
+}
+
+QtxPagePrefLabelItem::QtxPagePrefLabelItem( Qt::Alignment align, const QString& text, QtxPreferenceItem* parent )
+: QtxPagePrefItem( text, parent )
+{
+  setWidget( myLabel = new QLabel( text ) );
+  myLabel->setAlignment( align );
+}
+
+QtxPagePrefLabelItem::~QtxPagePrefLabelItem()
+{
+}
+
+void QtxPagePrefLabelItem::setTitle( const QString& text )
+{
+  QtxPagePrefItem::setTitle( text );
+
+  if ( myLabel )
+    myLabel->setText( text );
+}
+
+Qt::Alignment QtxPagePrefLabelItem::alignment() const
+{
+  return myLabel->alignment();
+}
+
+void QtxPagePrefLabelItem::setAlignment( Qt::Alignment align )
+{
+  myLabel->setAlignment( align );
+}
+
+QVariant QtxPagePrefLabelItem::optionValue( const QString& name ) const
+{
+  QVariant val;
+  if ( name == "alignment" )
+    val = (int)alignment();
+  return val;
+}
+
+void QtxPagePrefLabelItem::setOptionValue( const QString& name, const QVariant& val )
+{
+  if ( name == "alignment" )
+  {
+    if ( val.canConvert( QVariant::Int ) )
+      setAlignment( (Qt::Alignment)val.toInt() );
+  }
+}
+
+/*!
   \class QtxPagePrefSpaceItem
   \brief Simple spacer item which can be used in the preferences
   editor dialog box.

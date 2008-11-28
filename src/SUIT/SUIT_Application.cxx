@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -61,7 +61,7 @@ SUIT_Application::SUIT_Application()
 /*!
   Destructor
 */
-SUIT_Application::~SUIT_Application() 
+SUIT_Application::~SUIT_Application()
 {
   SUIT_Study* s = myStudy;
   setActiveStudy( 0 );
@@ -79,7 +79,7 @@ SUIT_Desktop* SUIT_Application::desktop()
 }
 
 /*!
-   \return FALSE if application can not be closed (because of non saved data for example). 
+   \return FALSE if application can not be closed (because of non saved data for example).
    This method called by SUIT_Session whin closing of application was requested.
 */
 bool SUIT_Application::isPossibleToClose( bool& )
@@ -151,7 +151,7 @@ void SUIT_Application::createEmptyStudy()
 }
 
 /*!
-  \return number of Studies. 
+  \return number of Studies.
   Must be redefined in Applications which support several studies for one Application instance.
 */
 int SUIT_Application::getNbStudies() const
@@ -173,7 +173,7 @@ SUIT_ResourceMgr* SUIT_Application::resourceMgr() const
 #define DEFAULT_MESSAGE_DELAY 3000
 
 /*!
-  Puts the message to the status bar  
+  Puts the message to the status bar
   \param msg - text of message
   \param msec - time in milliseconds, after that the status label will be cleared
 */
@@ -283,12 +283,12 @@ void SUIT_Application::setActiveStudy( SUIT_Study* study )
     return;
 
   if ( myStudy )
-    disconnect( myStudy, SIGNAL( studyModified( SUIT_Study* ) ), 
+    disconnect( myStudy, SIGNAL( studyModified( SUIT_Study* ) ),
 		this, SLOT( updateCommandsStatus() ) );
   if ( study )
-    connect( study, SIGNAL( studyModified( SUIT_Study* ) ), 
+    connect( study, SIGNAL( studyModified( SUIT_Study* ) ),
 	     this, SLOT( updateCommandsStatus() ) );
-	    
+
   myStudy = study;
 }
 
@@ -490,7 +490,7 @@ void SUIT_Application::setMenuShown( QAction* a, const bool on )
 {
   if ( !a || !desktop() )
     return;
-  
+
   QtxActionMenuMgr* mMgr = desktop()->menuMgr();
   if ( mMgr )
     mMgr->setShown( mMgr->actionId( a ), on );
@@ -515,7 +515,7 @@ void SUIT_Application::setToolShown( QAction* a, const bool on )
 {
   if ( !a || !desktop() )
     return;
-  
+
   QtxActionToolMgr* tMgr = desktop()->toolMgr();
   if ( tMgr )
     tMgr->setShown( tMgr->actionId( a ), on );
@@ -633,7 +633,7 @@ int SUIT_Application::registerAction( const int id, QAction* a )
   static int generatedId = -1;
   ident = id == -1 ? --generatedId : id;
 
-  if ( action( ident ) ) 
+  if ( action( ident ) )
     qWarning( "Action registration id is already in use: %d", ident );
 
   myActionMap.insert( ident, a );
@@ -643,6 +643,9 @@ int SUIT_Application::registerAction( const int id, QAction* a )
 
   if ( desktop() && desktop()->toolMgr() )
     desktop()->toolMgr()->registerAction( a );
+
+  if ( desktop() )
+    desktop()->addAction( a );
 
   return ident;
 }

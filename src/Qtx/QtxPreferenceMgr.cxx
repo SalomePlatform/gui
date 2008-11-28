@@ -245,16 +245,41 @@ QtxPreferenceItem* QtxPreferenceItem::parentItem() const
   \param item item to be added
   \sa removeItem()
 */
-void QtxPreferenceItem::insertItem( QtxPreferenceItem* item )
+void QtxPreferenceItem::appendItem( QtxPreferenceItem* item )
 {
-  if ( !item || myChildren.contains( item ) )
+  insertItem( item, 0 );
+}
+
+/*!
+  \brief Insert child preference item before specified item.
+  If the before item is 0 then new item is appended.
+
+  Removes (if necessary) the item from the previous parent.
+
+  \param item item to be added
+  \param before item before which is inserted new \aitem
+  \sa removeItem()
+*/
+void QtxPreferenceItem::insertItem( QtxPreferenceItem* item, QtxPreferenceItem* before )
+{
+  if ( !item )
     return;
+
+  if ( myChildren.contains( item ) && item == before )
+    return;
+
+  if ( myChildren.contains( item ) )
+    myChildren.removeAll( item );
+
+  int idx = myChildren.indexOf( before );
+  if ( idx < 0 )
+    idx = myChildren.count();
 
   if ( item->parentItem() && item->parentItem() != this )
     item->parentItem()->removeItem( item );
 
   item->myParent = this;
-  myChildren.append( item );
+  myChildren.insert( idx, item );
 
   itemAdded( item );
 }
@@ -781,6 +806,8 @@ QVariant QtxPreferenceItem::optionValue( const QString& name ) const
   QVariant val;
   if ( name == "eval" || name == "evaluation" || name == "subst" || name == "substitution" )
     val = isEvaluateValues();
+  else if ( name == "title" )
+    val = title();
   return val;
 }
 
@@ -800,6 +827,11 @@ void QtxPreferenceItem::setOptionValue( const QString& name, const QVariant& val
   {
     if ( val.canConvert( QVariant::Bool ) )
       setEvaluateValues( val.toBool() );
+  }
+  else if ( name == "title" )
+  {
+    if ( val.canConvert( QVariant::String ) )
+      setTitle( val.toString() );
   }
 }
 

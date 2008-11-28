@@ -57,8 +57,9 @@ public:
   int                       count() const;
   virtual bool              isEmpty() const;
 
-  void                      insertItem( QtxPreferenceItem* );
+  void                      appendItem( QtxPreferenceItem* );
   void                      removeItem( QtxPreferenceItem* );
+  void                      insertItem( QtxPreferenceItem*, QtxPreferenceItem* = 0 );
 
   QIcon                     icon() const;
   QString                   title() const;

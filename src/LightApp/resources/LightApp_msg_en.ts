@@ -591,8 +591,8 @@ File does not exist</translation>
         <translation>Full</translation>
     </message>
     <message>
-        <source></source>
-        <translation></translation>
+        <source>PREFERENCES_NOT_SUPPORTED</source>
+        <translation>Preferences for module "%1" not supported</translation>
     </message>
 </context>
 <context>

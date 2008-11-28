@@ -328,7 +328,7 @@ QWidget* QtxMultiAction::createWidget( QWidget* parent )
   if ( !tb )
     return 0;
 
-  QToolButton* w = new Button( tb );
+  QToolButton* w = new QToolButton( tb );
   w->setMenu( new Menu( w ) );
   w->setMouseTracking( true );
   w->setFocusPolicy( Qt::NoFocus );

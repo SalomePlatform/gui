@@ -233,7 +233,7 @@ if ENABLE_SALOMEOBJECT
   libLightApp_la_LIBADD += ../OBJECT/libSalomeObject.la
 endif
 if ENABLE_VTKVIEWER
-  libLightApp_la_LIBADD += ../VTKViewer/libVTKViewer.la
+  libLightApp_la_LIBADD +=  $(VTK_LIBS) ../VTKViewer/libVTKViewer.la
 if ENABLE_SALOMEOBJECT
   libLightApp_la_LIBADD += ../SVTK/libSVTK.la
 endif

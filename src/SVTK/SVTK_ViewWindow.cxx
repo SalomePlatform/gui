@@ -674,8 +674,10 @@ void SVTK_ViewWindow::activateStartFocalPointSelection()
 
 void SVTK_ViewWindow::activateProjectionMode(int theMode)
 {
-  SVTK_ComboAction* a = ::qobject_cast<SVTK_ComboAction*>( toolMgr()->action( ProjectionModeId ) );
-  if ( a ) a->setCurrentIndex(theMode);
+  if (theMode)
+    toolMgr()->action( ProjectionModeId )->setChecked( true );
+  else
+    toolMgr()->action( ParallelModeId )->setChecked( true );
 }
 
 /*!
@@ -1504,10 +1506,10 @@ void SVTK_ViewWindow::activateStartPointSelection()
 /*!
   Set the view projection mode: orthogonal or perspective
 */
-void SVTK_ViewWindow::onProjectionMode(int mode)
+void SVTK_ViewWindow::onPerspectiveMode()
 {
   vtkCamera* aCamera = getRenderer()->GetActiveCamera();
-  aCamera->SetParallelProjection(mode==0);
+  aCamera->SetParallelProjection(toolMgr()->action( ParallelModeId )->isChecked());
   GetInteractor()->GetDevice()->CreateTimer(VTKI_TIMER_FIRST);
 }
 
@@ -1675,13 +1677,26 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onUpdateRate(bool)));
   mgr->registerAction( anAction, UpdateRate );
 
-  // Set projection mode
-  SVTK_ComboAction* aModeAction = new SVTK_ComboAction(tr("MNU_SVTK_PROJECTION_MODE"), this);
-  aModeAction->setStatusTip(tr("DSC_SVTK_PROJECTION_MODE"));
-  aModeAction->insertItem(theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_VIEW_PARALLEL" ) ) );
-  aModeAction->insertItem(theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_VIEW_PERSPECTIVE" ) ) );
-  connect(aModeAction, SIGNAL(triggered(int)), this, SLOT(onProjectionMode(int)));
-  mgr->registerAction( aModeAction, ProjectionModeId );
+  // Set perspective mode group
+  anAction = new QtxAction(tr("MNU_SVTK_PARALLEL_MODE"), 
+			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_VIEW_PARALLEL" ) ),
+			   tr( "MNU_SVTK_PARALLEL_MODE" ), 0, this);
+  anAction->setStatusTip(tr("DSC_SVTK_PARALLEL_MODE"));
+  anAction->setCheckable(true);
+  connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onPerspectiveMode()));
+  mgr->registerAction( anAction, ParallelModeId );
+
+  anAction = new QtxAction(tr("MNU_SVTK_PERSPECTIVE_MODE"), 
+			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_VIEW_PERSPECTIVE" ) ),
+			   tr( "MNU_SVTK_PERSPECTIVE_MODE" ), 0, this);
+  anAction->setStatusTip(tr("DSC_SVTK_PERSPECTIVE_MODE"));
+  anAction->setCheckable(true);
+  connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onPerspectiveMode()));
+  mgr->registerAction( anAction, ProjectionModeId );
+
+  QActionGroup* aPerspectiveGroup = new QActionGroup( this );
+  aPerspectiveGroup->addAction( mgr->action( ParallelModeId ) );
+  aPerspectiveGroup->addAction( mgr->action( ProjectionModeId ) );
 
   // View Parameters
   anAction = new QtxAction(tr("MNU_VIEWPARAMETERS_VIEW"), 
@@ -1779,6 +1794,8 @@ void SVTK_ViewWindow::createToolBar()
   mgr->append( GraduatedAxes, myToolBar );
 
   mgr->append( ViewParametersId, myToolBar );
+  mgr->append( toolMgr()->separator(), myToolBar );
+  mgr->append( ParallelModeId, myToolBar );
   mgr->append( ProjectionModeId, myToolBar );
 
   mgr->append( StartRecordingId, myRecordingToolBar );

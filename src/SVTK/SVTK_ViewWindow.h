@@ -271,7 +271,7 @@ public slots:
   void activatePanning(); 
   void activateGlobalPanning(); 
 
-  void onProjectionMode(int mode);
+  void onPerspectiveMode();
 
   void activateProjectionMode(int);
 
@@ -358,7 +358,7 @@ protected:
 	 ChangeRotationPointId, RotationId,
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, 
 	 ViewTrihedronId, NonIsometric, GraduatedAxes, UpdateRate,
-	 ProjectionModeId, ViewParametersId, SwitchInteractionStyleId,
+	 ParallelModeId, ProjectionModeId, ViewParametersId, SwitchInteractionStyleId,
 	 StartRecordingId, PlayRecordingId, PauseRecordingId, StopRecordingId };
 
 

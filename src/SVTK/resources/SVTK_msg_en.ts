@@ -162,12 +162,20 @@
         <translation>Change the parameters of the view</translation>
     </message>
     <message>
-        <source>MNU_SVTK_PROJECTION_MODE</source>
-        <translation>Projection Mode</translation>
+        <source>MNU_SVTK_PARALLEL_MODE</source>
+        <translation>Orthogonal Mode</translation>
     </message>
     <message>
-        <source>DSC_SVTK_PROJECTION_MODE</source>
-        <translation>Set orthogonal or perspective projection of the view</translation>
+        <source>DSC_SVTK_PARALLEL_MODE</source>
+        <translation>Set the orthogonal projection type</translation>
+    </message>
+    <message>
+        <source>MNU_SVTK_PERSPECTIVE_MODE</source>
+        <translation>Perspective Mode</translation>
+    </message>
+    <message>
+        <source>DSC_SVTK_PERSPECTIVE_MODE</source>
+        <translation>Set the perspective projection type</translation>
     </message>
     <message>
         <source>DSC_SVTK_STYLE_SWITCH</source>

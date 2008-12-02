@@ -305,6 +305,9 @@ then
     #QT_INCLUDES="${QT_INCLUDES} -I$(QTDIR)/include${QTINC}/QtTest"
     #QT_INCLUDES="${QT_INCLUDES} -I$(QTDIR)/include${QTINC}/QtUiTools"
 
+    QT_ASSISTANT_INCLUDES="${QT_ASSISTANT_INCLUDES} -I${QTDIR}/include${QTINC}/QtAssistant"
+    QT_ASSISTANT_INCLUDES="${QT_ASSISTANT_INCLUDES} -I${QTDIR}/include${QTINC}/QtNetwork"
+
     # this flag is obsolete with Qt 4
     QT_MT_INCLUDES="$QT_INCLUDES"
   fi
@@ -379,6 +382,7 @@ then
     QT_OTHER_LIBS="$QT_LIB_DIR"
     # other libs (can be used if necessary)
     #QT_OTHER_LIBS="$QT_LIB_DIR -lQt3Support -lQtAssistantClient -lQtDesigner -lQtNetwork -lQtSql -lQtSvg -lQtTest -ltQtUiTools"
+    QT_ASSISTANT_LIBS="$QT_LIB_DIR -lQtAssistantClient -lQtNetwork"
     # all libs
     QT_LIBS="$QT_CORE_LIBS $QT_GUI_LIBS $QT_OTHER_LIBS"
     # this flag is obsolete with Qt 4
@@ -397,12 +401,14 @@ AC_SUBST(LRELEASE)
 AC_SUBST(QT_ROOT)
 AC_SUBST(QT_INCLUDES)
 AC_SUBST(QT_MT_INCLUDES)
+AC_SUBST(QT_ASSISTANT_INCLUDES)
 AC_SUBST(QT_LIB_DIR)
 AC_SUBST(QT_CORE_LIBS)
 AC_SUBST(QT_GUI_LIBS)
 AC_SUBST(QT_OTHER_LIBS)
 AC_SUBST(QT_LIBS)
 AC_SUBST(QT_MT_LIBS)
+AC_SUBST(QT_ASSISTANT_LIBS)
 AC_SUBST(QT_VERSION)
 AC_SUBST(QT_VERSION_ID)
 

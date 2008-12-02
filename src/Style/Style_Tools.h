@@ -23,6 +23,8 @@
 #ifndef STYLE_TOOLS_H
 #define STYLE_TOOLS_H
 
+#include "Style.h"
+
 #include <QPainterPath>
 #include <QRect>
 #include <QColor>
@@ -32,7 +34,7 @@
 // This class is private for Style package.
 // Normally it should not be exported.
 //
-class Style_Tools
+class STYLE_SALOME_EXPORT Style_Tools
 {
 public:
   //! Rounding operation type

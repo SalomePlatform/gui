@@ -23,13 +23,15 @@
 #ifndef STYLE_RESOURCEMGR_H
 #define STYLE_RESOURCEMGR_H
 
+#include "Style.h"
+
 #include <QtxResourceMgr.h>
 
 //
 // This class is private for Style package.
 // Normally it should not be exported.
 //
-class Style_ResourceMgr : public QtxResourceMgr
+class STYLE_SALOME_EXPORT Style_ResourceMgr : public QtxResourceMgr
 {
 public:
   //! Style type

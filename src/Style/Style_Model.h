@@ -23,6 +23,8 @@
 #ifndef STYLE_MODEL_H
 #define STYLE_MODEL_H
 
+#include "Style.h"
+
 #include <QMap>
 #include <QString>
 #include <QPalette>
@@ -35,7 +37,7 @@ class QtxResourceMgr;
 // This class is private for Style package.
 // Normally it should not be exported.
 //
-class Style_Model
+class STYLE_SALOME_EXPORT Style_Model
 {
 public:
   //! Color palette instance enumeration

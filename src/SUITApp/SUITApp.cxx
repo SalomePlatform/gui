@@ -18,10 +18,22 @@
 //
 #if defined WIN32
 
+#ifdef SUIT_ENABLE_PYTHON
 #undef SUIT_ENABLE_PYTHON
-//#else
-//#include "SUITconfig.h"
 #endif
+
+#else //#if defined WIN32
+
+#ifndef SUIT_ENABLE_PYTHON
+// NOTE: DO NOT DELETE THIS DEFINITION ON LINUX
+// or make sure Python is initialized in main() in any case
+// Otherwise, application based on light SALOME and using Python 
+// are unlikely to work properly.
+#define SUIT_ENABLE_PYTHON
+#include <Python.h>
+#endif
+
+#endif //#if defined WIN32
 
 #include "SUITApp_Application.h"
 
@@ -32,9 +44,6 @@
 #include <QtxSplash.h>
 
 #include <SUIT_LicenseDlg.h>
-#ifdef SUIT_ENABLE_PYTHON
-#include <Python.h>
-#endif
 
 #include <QDir>
 #include <QFile>
@@ -158,11 +167,16 @@ private:
   bool  myIniFormat;
 };
 
-int main( int args, char* argv[] )
+int main( int argc, char* argv[] )
 {
 #ifdef SUIT_ENABLE_PYTHON
-  Py_Initialize();
-  PySys_SetArgv( args, argv );
+  // First of all initialize Python, as in complex multi-component applications
+  // someone else might initialize it some way unsuitable for light SALOME!
+  Py_SetProgramName( argv[0] );
+  Py_Initialize(); // Initialize the interpreter
+  PySys_SetArgv( argc,  argv );
+  PyEval_InitThreads(); // Create (and acquire) the interpreter lock
+  PyEval_ReleaseLock(); // Let the others use Python API until we need it again
 #endif
 
   //qInstallMsgHandler( MessageOutput );
@@ -172,7 +186,7 @@ int main( int args, char* argv[] )
   bool iniFormat        = false;
   bool noSplash         = false;
   bool useLicense       = false;
-  for ( int i = 1; i < args /*&& !noExceptHandling*/; i++ )
+  for ( int i = 1; i < argc /*&& !noExceptHandling*/; i++ )
   {
     if ( !strcmp( argv[i], "--noexcepthandling" ) )
       noExceptHandling = true;
@@ -186,7 +200,7 @@ int main( int args, char* argv[] )
       argList.append( QString( argv[i] ) );
   }
 
-  SUITApp_Application app( args, argv );
+  SUITApp_Application app( argc, argv );
 
   int result = -1;
 

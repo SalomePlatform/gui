@@ -249,24 +249,29 @@ void PyInterp_Interp::initialize()
 /*!
   \brief Initialize Python interpreter.
 
-  Set program name, initialize interpreter, set program arguments,
-  initiaize threads.
+  In case if Python is not initialized, it sets program name, initializes the interpreter, sets program arguments,
+  initializes threads. 
+  Otherwise, it just obtains the global interpreter and thread states. This is important for light SALOME configuration, 
+  as in full SALOME this is done at SalomeApp level.
+  \sa SalomeApp_PyInterp class
  */
 void PyInterp_Interp::initPython()
 {
-  if (Py_IsInitialized())
-    return;
+  if (!Py_IsInitialized()){
+    // Python is not initialized
+    Py_SetProgramName(_argv[0]);
+    Py_Initialize(); // Initialize the interpreter
+    PySys_SetArgv(_argc, _argv);
+    PyEval_InitThreads(); // Create (and acquire) the interpreter lock
+  }
 
-  // Python is not initialized
-  Py_SetProgramName(_argv[0]);
-  Py_Initialize(); // Initialize the interpreter
-  PySys_SetArgv(_argc, _argv);
-  PyEval_InitThreads(); // Create (and acquire) the interpreter lock
-  _interp = PyThreadState_Get()->interp;
+  if ( _interp == NULL )
+    _interp = PyThreadState_Get()->interp;
   if (PyType_Ready(&PyStdOut_Type) < 0) {
     PyErr_Print();
   }
-  _gtstate = PyEval_SaveThread(); // Release global thread state
+  if ( _gtstate == NULL )
+    _gtstate = PyEval_SaveThread(); // Release global thread state
 }
 
 /*!

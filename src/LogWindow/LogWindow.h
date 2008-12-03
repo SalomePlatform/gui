@@ -71,7 +71,7 @@ public:
     DisplayDate      = 0x01,                     //!< display message date
     DisplayTime      = 0x02,                     //!< display message time
     DisplaySeparator = 0x04,                     //!< display separator between messages
-    DisplayNoColor   = 0x08,                     //!< display colored message
+    DisplayNoColor   = 0x08,                     //!< display non-colored message
     DisplayDateTime  = DisplayDate | DisplayTime //!< display date & time
   };
 

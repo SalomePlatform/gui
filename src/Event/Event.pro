@@ -14,9 +14,11 @@ win32:DEFINES += WIN32
 DEFINES += EVENT_EXPORTS
 
 HEADERS  = Event.h
-HEADERS += SALOME_Event.h
+HEADERS += SALOME_Event.h 
+HEADERS += SALOME_EventFilter.h
 
-SOURCES  = SALOME_Event.cxx
+SOURCES  = SALOME_Event.cxx 
+SOURCES += SALOME_EventFilter.cxx
 
 includes.files = $$HEADERS
 includes.path = ../../include

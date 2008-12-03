@@ -411,9 +411,6 @@ int main( int argc, char **argv )
     int orbArgc = 1;
     orb = init( orbArgc, argv );
 
-    // ...install SALOME thread event handler
-    SALOME_Event::GetSessionThread();
-
     CORBA::Object_var obj = orb->resolve_initial_references( "RootPOA" );
     poa = PortableServer::POA::_narrow( obj );
 

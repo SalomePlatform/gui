@@ -16,10 +16,10 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifndef SALOMEAPP_EVENTFILTER_H
-#define SALOMEAPP_EVENTFILTER_H
+#ifndef SALOME_EVENTFILTER_H
+#define SALOME_EVENTFILTER_H
 
-#include "SalomeApp.h"
+#include "Event.h"
 #include <QObject>
 
 #if defined WIN32
@@ -29,17 +29,20 @@
 class SALOME_Event;
 
 /*!
-  Class provide event filter.
+  Event filter class for QApplication object that handles custom events posted by SALOME_Event objects.
+  It assumes that such custom events are alwys posted, not sent. 
+  This event filter can be installed by any application that intends to use SALOME_Event mechanism asynchronously.
+  This class replaced SalomeApp_EventFilter.
 */
-class SALOMEAPP_EXPORT SalomeApp_EventFilter: public QObject 
+class EVENT_EXPORT SALOME_EventFilter: public QObject 
 {
 public:
   static void Init();
   static void Destroy();
 
 protected:
-  SalomeApp_EventFilter();
-  virtual ~SalomeApp_EventFilter();
+  SALOME_EventFilter();
+  virtual ~SALOME_EventFilter();
 
 private:
   /*! global event filter for qapplication */
@@ -47,7 +50,7 @@ private:
   void processEvent( SALOME_Event* );
 
 private:
-  static SalomeApp_EventFilter* myFilter;
+  static SALOME_EventFilter* myFilter;
 };
 
 #if defined WIN32

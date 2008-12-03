@@ -40,7 +40,6 @@ salomeinclude_HEADERS =			\
 	SalomeApp_Module.h		\
 	SalomeApp_Study.h		\
 	SalomeApp_ExceptionHandler.h	\
-	SalomeApp_EventFilter.h		\
 	SalomeApp_PyInterp.h		\
 	SalomeApp_Tools.h		\
 	SalomeApp_ImportOperation.h	\
@@ -59,7 +58,6 @@ dist_libSalomeApp_la_SOURCES =			\
 	SalomeApp_LoadStudiesDlg.cxx		\
 	SalomeApp_Study.cxx			\
 	SalomeApp_ExceptionHandler.cxx		\
-	SalomeApp_EventFilter.cxx		\
 	SalomeApp_PyInterp.cxx			\
 	SalomeApp_Tools.cxx			\
 	SalomeApp_ImportOperation.cxx		\
@@ -109,4 +107,4 @@ libSalomeApp_la_LIBADD  = $(KERNEL_LDFLAGS) -lOpUtil -lSALOMELocalTrace -lSalome
 	../SVTK/libSVTK.la ../SOCC/libSOCC.la ../PyInterp/libPyInterp.la			\
 	../PyConsole/libPyConsole.la ../LogWindow/libLogWindow.la				\
 	../LightApp/libLightApp.la ../TOOLSGUI/libToolsGUI.la ../Session/libSalomeSession.la	\
-	../CASCatch/libCASCatch.la $(CAS_KERNEL)
+	../Event/libEvent.la ../CASCatch/libCASCatch.la $(CAS_KERNEL)

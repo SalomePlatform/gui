@@ -32,9 +32,12 @@ lib_LTLIBRARIES = libEvent.la
 
 salomeinclude_HEADERS =	\
 	Event.h		\
-	SALOME_Event.h 
+	SALOME_Event.h  \
+	SALOME_EventFilter.h
 
-dist_libEvent_la_SOURCES = SALOME_Event.cxx 
+dist_libEvent_la_SOURCES = \
+	SALOME_Event.cxx   \
+	SALOME_EventFilter.cxx
 
 libEvent_la_CPPFLAGS = $(QT_INCLUDES)
 libEvent_la_LDFLAGS  = $(QT_MT_LIBS)

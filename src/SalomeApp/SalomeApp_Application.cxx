@@ -26,7 +26,6 @@
 #include "SalomeApp_Study.h"
 #include "SalomeApp_DataModel.h"
 #include "SalomeApp_DataObject.h"
-#include "SalomeApp_EventFilter.h"
 #include "SalomeApp_VisualState.h"
 #include "SalomeApp_StudyPropertiesDlg.h"
 #include "SalomeApp_LoadStudiesDlg.h"
@@ -51,6 +50,8 @@
 #include <SUIT_TreeModel.h>
 
 #include <QtxTreeView.h>
+
+#include <SALOME_EventFilter.h>
 
 // temporary commented
 //#include <OB_ListItem.h>
@@ -146,7 +147,7 @@ SalomeApp_Application::SalomeApp_Application()
 SalomeApp_Application::~SalomeApp_Application()
 {
   // Do not destroy. It's a singleton !
-  //SalomeApp_EventFilter::Destroy();
+  //SALOME_EventFilter::Destroy();
 }
 
 /*!Start application.*/
@@ -154,7 +155,7 @@ void SalomeApp_Application::start()
 {
   LightApp_Application::start();
 
-  SalomeApp_EventFilter::Init();
+  SALOME_EventFilter::Init();
 
   static bool isFirst = true;
   if ( isFirst ) {

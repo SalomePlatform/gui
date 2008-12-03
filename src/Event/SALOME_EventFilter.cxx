@@ -17,15 +17,15 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#include "SalomeApp_EventFilter.h"
-#include <SALOME_Event.h>
+#include "SALOME_EventFilter.h"
+#include "SALOME_Event.h"
 
 #include <QApplication>
 
-SalomeApp_EventFilter* SalomeApp_EventFilter::myFilter = NULL;
+SALOME_EventFilter* SALOME_EventFilter::myFilter = NULL;
 
 /*!Constructor.*/
-SalomeApp_EventFilter::SalomeApp_EventFilter()
+SALOME_EventFilter::SALOME_EventFilter()
 : QObject()
 {
   /* VSR 13/01/03 : installing global event filter for the application */
@@ -33,7 +33,7 @@ SalomeApp_EventFilter::SalomeApp_EventFilter()
 }
 
 /*!Destructor.*/
-SalomeApp_EventFilter::~SalomeApp_EventFilter()
+SALOME_EventFilter::~SALOME_EventFilter()
 {
   qApp->removeEventFilter( this );
 }
@@ -41,7 +41,7 @@ SalomeApp_EventFilter::~SalomeApp_EventFilter()
 /*!
   Custom event filter
 */
-bool SalomeApp_EventFilter::eventFilter( QObject* o, QEvent* e )
+bool SALOME_EventFilter::eventFilter( QObject* o, QEvent* e )
 {
   if ( e->type() == SALOME_EVENT )
   { 
@@ -54,24 +54,21 @@ bool SalomeApp_EventFilter::eventFilter( QObject* o, QEvent* e )
 }
 
 /*!Process event.*/
-void SalomeApp_EventFilter::processEvent( SALOME_Event* theEvent )
+void SALOME_EventFilter::processEvent( SALOME_Event* theEvent )
 {
-  if(theEvent){
-    theEvent->Execute();
-    // Signal the calling thread that the event has been processed
-    theEvent->processed();
-  }
+  if(theEvent)
+    theEvent->ExecutePostedEvent();
 }
 
-/*!Create new instance of SalomeApp_EventFilter*/
-void SalomeApp_EventFilter::Init()
+/*!Create new instance of SALOME_EventFilter*/
+void SALOME_EventFilter::Init()
 {
   if( myFilter==NULL )
-    myFilter = new SalomeApp_EventFilter();
+    myFilter = new SALOME_EventFilter();
 }
 
 /*!Destroy filter.*/
-void SalomeApp_EventFilter::Destroy()
+void SALOME_EventFilter::Destroy()
 {
   if( myFilter )
   {

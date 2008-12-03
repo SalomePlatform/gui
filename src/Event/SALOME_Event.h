@@ -53,6 +53,7 @@ public:
   SALOME_Event();
   virtual ~SALOME_Event();
 
+  void            ExecutePostedEvent();
   virtual void    Execute() = 0;
 
   static bool     IsSessionThread();
@@ -63,7 +64,6 @@ protected:
   friend class    SalomeApp_EventFilter;
 
   static void     GetSessionThread();
-  friend int      main(int, char **);
 
 private:
   QSemaphore*     mySemaphore;     //!< internal semaphore

@@ -42,6 +42,49 @@ static pthread_t myThread;
 #endif
 
 /*!
+  \class InitEvent
+  \brief Helper event class responsible for initializing SALOME_Event
+  mechanism by the main thread ID
+ */
+class InitEvent : public SALOME_Event
+{
+public:
+  InitEvent();
+  virtual      ~InitEvent();
+  virtual void Execute();
+};
+
+/*!
+  \brief Constructor, initializes the event mechanism by the current thread ID.
+  It is asssumed to be the main thread ID, so be careful!
+*/
+InitEvent::InitEvent()
+{
+  GetSessionThread();
+}
+
+/*!
+  \brief Destructor, does nothing.
+*/
+InitEvent::~InitEvent()
+{
+}
+
+/*!
+  \brief Nothing to be executed for this kind of event.
+*/
+void InitEvent::Execute()
+{
+}
+
+// NOTE: Here the SALOME event mechanism is initalized by the 
+// current thread ID that is always assumed to be the main thread ID.
+// This should be revised as soon as the application library is no longer
+// linked against the Event library (i.e. this static object is not created or created 
+// outside the main thread).
+static InitEvent myInitEvent;
+
+/*!
   \class SALOME_CustomEvent
   \brief Generic event class for user-defined events
   
@@ -173,11 +216,35 @@ SALOME_Event::~SALOME_Event(){
 }
 
 /*!
+  \brief This method should be called by the main GUI thread
+  in order to execute the code specific for this event and finally
+  to inform the calling thread that the event 
+  has been processed waking it up with help of the semaphore .
+ */
+void SALOME_Event::ExecutePostedEvent()
+{
+  // Diagnose incorrect usage of SALOME_Event API
+  if ( !IsSessionThread() ){
+    qWarning( "SALOME_Event::ExecutePostedEvent() is called from a secondary thread that might mean an error in application logic!" );
+  }
+  // Actual execution specific for particular kind of event
+  Execute();
+  // Signal the calling thread that the event has been processed
+  processed();
+}
+
+/*!
   \brief Post the event and wait for its completion.
+  process() should be called from a secondary thread only. 
   \sa processed()
 */
 void SALOME_Event::process()
 {
+  // Diagnose incorrect usage of SALOME_Event API
+  if ( IsSessionThread() ){
+    qWarning( "SALOME_Event::process() is called from the main GUI thread that might mean an error in application logic!" );
+  }
+
   QApplication::postEvent( qApp, new SALOME_CustomEvent( SALOME_EVENT, (void*)this ) );
   mySemaphore->acquire( 1 );
 }

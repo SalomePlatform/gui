@@ -61,8 +61,6 @@ public:
 
 protected:
   void            processed();
-  friend class    SalomeApp_EventFilter;
-
   static void     GetSessionThread();
 
 private:

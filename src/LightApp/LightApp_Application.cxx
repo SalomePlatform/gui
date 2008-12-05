@@ -1693,13 +1693,16 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
   LightApp_Application* that = (LightApp_Application*)this;
 
   bool toCreate = !_prefs_ && crt;
-  if( toCreate )
+  if ( toCreate )
   {
     _prefs_ = new LightApp_Preferences( resourceMgr() );
     that->createPreferences( _prefs_ );
   }
 
   that->myPrefs = _prefs_;
+
+  if ( !toCreate )
+    return myPrefs;
 
   SUIT_ResourceMgr* resMgr = resourceMgr();
 
@@ -1740,8 +1743,7 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
       if ( mod && !_prefs_->hasModule( mod->moduleName() ) )
       {
 	_prefs_->addPreference( mod->moduleName() );
-	if( toCreate )
-	  mod->createPreferences();
+	mod->createPreferences();
 	that->emptyPreferences( mod->moduleName() );
       }
     }
@@ -1778,6 +1780,8 @@ void LightApp_Application::emptyPreferences( const QString& modName )
   QtxPreferenceItem* item = myPrefs->findItem( modName, true );
   if ( !item || !item->isEmpty() )
     return;
+
+  printf( "---------------------> Modify for empty module.\n" );
 
   QtxPagePrefFrameItem* frm = new QtxPagePrefFrameItem( item->title(), item->parentItem() );
   frm->setIcon( item->icon() );

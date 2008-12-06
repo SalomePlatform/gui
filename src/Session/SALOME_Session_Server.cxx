@@ -19,12 +19,10 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// SALOME Session : implementation of Session.idl
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 02111-1307 USA
-// File : SALOME_Session_Server.cxx
-// Author : Paul RASCLE, EDF
-// Module : SALOME
+//  SALOME Session : implementation of Session.idl
+//  File : SALOME_Session_Server.cxx
+//  Author : Paul RASCLE, EDF
+//  Module : SALOME
 //
 #include <Container_init_python.hxx>
 #include <Utils_ORB_INIT.hxx>

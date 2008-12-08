@@ -34,6 +34,8 @@
 // VTKViewer_VectorText.h is a copy of vtkVectorText.h file.
 // Purpose of copying: to remove linking to libHybrid.so VTK library 
 
+// Modified by Open CASCADE SAS (www.opencascade.com)
+
 #ifndef __VTKViewer_VectorText_h
 #define __VTKViewer_VectorText_h
 

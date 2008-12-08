@@ -13,6 +13,8 @@
      This software is distributed WITHOUT ANY WARRANTY; without even 
      the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR 
      PURPOSE.  See the above copyright notice for more information.*/
+     
+// Modified by Open CASCADE SAS (www.opencascade.com)    
 
 // VTKViewer_VectorText.cxx is a copy of vtkVectorText.cxx file.
 // Purpose of copying:  to remove linking to libHybrid.so VTK library 

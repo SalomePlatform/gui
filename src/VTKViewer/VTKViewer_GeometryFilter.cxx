@@ -151,7 +151,10 @@ VTKViewer_GeometryFilter
   vtkIdType newCellId;
   int faceId, *faceVerts, numFacePts;
   vtkFloatingPointType *x;
-  int PixelConvert[4], aNewPts[VTK_CELL_SIZE];
+  int PixelConvert[4];
+  // Change the type from int to vtkIdType in order to avoid compilation errors while using VTK
+  // from ParaView-3.4.0 compiled on 64-bit Debian platform with VTK_USE_64BIT_IDS = ON
+  vtkIdType aNewPts[VTK_CELL_SIZE];
   // ghost cell stuff
   unsigned char  updateLevel = (unsigned char)(output->GetUpdateGhostLevel());
   unsigned char  *cellGhostLevels = 0;  

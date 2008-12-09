@@ -69,8 +69,8 @@ public:
 public slots:
   void                       slotHelp();
   void                       slotListeSelect();
-  void                       slotClientChanged( QTreeWidgetItem* );
-  void                       slotHistoryChanged( QTreeWidgetItem* );
+  void                       slotClientChanged( QTreeWidgetItem*, int );
+  void                       slotHistoryChanged( QTreeWidgetItem*, int );
   void                       slotSelectRefresh();
   void                       slotIntervalOk();
 

@@ -543,8 +543,8 @@ ToolsGUI_RegWidget::ToolsGUI_RegWidget( CORBA::ORB_var& orb, QWidget* parent )
   _tabWidget->addTab( _clients, tr( "Running" ) );
   _tabWidget->addTab( _history, tr( "History" ) );
   connect( _tabWidget, SIGNAL( currentChanged( QWidget* )), this, SLOT( slotListeSelect() ) );
-  connect( _clients,   SIGNAL( clicked( QTreeWidgetItem* ) ),        this, SLOT( slotClientChanged( QTreeWidgetItem* ) ) );
-  connect( _history,   SIGNAL( clicked( QTreeWidgetItem* ) ),        this, SLOT( slotHistoryChanged( QTreeWidgetItem* ) ) );
+  connect( _clients,   SIGNAL( itemDoubleClicked( QTreeWidgetItem*, int ) ),        this, SLOT( slotClientChanged( QTreeWidgetItem* , int ) ) );
+  connect( _history,   SIGNAL( itemDoubleClicked( QTreeWidgetItem*, int ) ),        this, SLOT( slotHistoryChanged( QTreeWidgetItem* , int ) ) );
   setCentralWidget( _tabWidget );
   
   // Timer definition (used to automaticaly refresh the display area)
@@ -560,6 +560,8 @@ ToolsGUI_RegWidget::ToolsGUI_RegWidget( CORBA::ORB_var& orb, QWidget* parent )
   setGeometry( xpos, ypos, largeur, hauteur ) ;
   setWindowTitle( tr( "Registry" ) ) ;
   statusBar()->showMessage("    ");
+
+  slotListeSelect();
 }
 
 /*!
@@ -592,13 +594,13 @@ bool ToolsGUI_RegWidget::eventFilter( QObject* object, QEvent* event )
     else if ( object == _clients && event->type() == QEvent::KeyPress ) {
       QKeyEvent* ke = (QKeyEvent*)event;
       if ( ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Return ) {
-	slotClientChanged( _clients->currentItem() );
+	slotClientChanged( _clients->currentItem(), 0 );
       }
     }
     else if ( object == _history && event->type() == QEvent::KeyPress ) {
       QKeyEvent* ke = (QKeyEvent*)event;
       if ( ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Return ) {
-	slotHistoryChanged( _history->currentItem() );
+	slotHistoryChanged( _history->currentItem(), 0 );
       }
     }
   }
@@ -883,9 +885,9 @@ void ToolsGUI_RegWidget::slotHelp()
   \brief Called when user clicks on item in \c Running list
   \param item item clicked by the user
 */
-void ToolsGUI_RegWidget::slotClientChanged( QTreeWidgetItem* item )
+void ToolsGUI_RegWidget::slotClientChanged( QTreeWidgetItem* item, int col )
 {
-  if ( item <= 0)
+  if ( !item || col < 0 )
     return;
 
   blockSignals( true ); // for sure that item will not be deleted when refreshing
@@ -917,9 +919,9 @@ void ToolsGUI_RegWidget::slotClientChanged( QTreeWidgetItem* item )
   \brief Called when user clicks on item in \c History list
   \param item item clicked by the user
 */
-void ToolsGUI_RegWidget::slotHistoryChanged( QTreeWidgetItem* item )
+void ToolsGUI_RegWidget::slotHistoryChanged( QTreeWidgetItem* item, int col )
 {
-  if ( item <= 0)
+  if ( !item || col < 0 )
     return;
 
   blockSignals( true ); // for sure that item will not be deleted when refreshing

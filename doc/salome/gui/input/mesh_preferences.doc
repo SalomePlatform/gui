@@ -75,6 +75,14 @@ of elements. Click on the colored line to access to the
 <li><b>Shrink coef.</b> - allows to define relative space of elements
 compared to gaps between them in shrink mode.</li>
 </ul>
+<li><b>Orientation of Faces</b> - allows to define the behavior of
+<b>Orientation of faces</b> functionality</li>
+<ul>
+<li> \b Color - allows to define the color of orientation vertors;</li>
+<li> \b Scale - allows to define the size of orientation vectors;</li> 
+<li> <b> 3D Vector </b> checkbox allows to choose between 2D planar
+and 3D vectors.</li>
+</ul>
 </ul>
 
 <br><h2>Selection Preferences</h2>
@@ -115,7 +123,7 @@ used for <b>Nodes</b>, <b>Elements</b> and <b>Objects</b>.</li>
 <li><b>Font</b> - in this menu you can set type, face and color for
 the font of <b>Title</b> and <b>Labels</b>.</li>
 <li><b>Colors & Labels</b> - in this menu you can set the <b>number of
-colors</b> and the <b>number of labels</b> in use.<li>
+colors</b> and the <b>number of labels</b> in use.</li>
 <li><b>Orientation</b> - here you can choose between vertical and
 horizontal orientation of the <b>Scalar Bar</b></li>.
 <li><b>Origin & Size Vertical & Horizontal</b> - allows to define

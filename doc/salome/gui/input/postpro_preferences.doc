@@ -104,11 +104,33 @@ structure of the study and can be visualized in a XY plot.</li>
 </ul>
 </ul>
 
-<br><h2>Sweep Preferences</h2>
+<br><h2>Sweep and Animation Preferences</h2>
 
 \image html ppref3.png
 
+
 <ul>
+<li><b>3D Cache</b> - allow to define the mode of usage
+and the size of the 3D Cache, which enables to save in RAM and quickly
+restore the states of field animation (\b Sliding functionality).</li>
+<ul>
+<li><b>Memory Mode</b> - allows to define the mode of usage
+of the 3D Cache: <b>Minimal</b> actually disables the Cache,
+<b>Limited</b> Cache size depends on the current system
+configuration.</li>
+<li><b>Memory Limit</b> - allows to define the maximum size of the 3D
+Cache</li> 
+</ul>
+
+<ul>
+<li><b>Animation preferences</b></li>
+<ul>
+<li><b>Speed</b> - allows to define the speed of the animation.</li>
+<li><b>Cycled animation</b> - allows to start a cycled animation of the presentation.</li>
+<li><b>Use proportional timing</b> - allows to render the animation with proportional periods of time between every frame (not depending on the time stamps).</li>
+<li><b>Clean memory at each frame</b> - this option allows to optimize the performance of the operation.</li>
+</ul>
+
 <li><b>Sweeping preferences</b></li>
 <ul>
 <li><b>Mode of the Sweeping</b> - allows to choose between Linear,
@@ -121,16 +143,6 @@ of times this animation will be repeated.</li>
 steps, which will compose the whole animation.</li>
 <li><b>Parameter varies</b> - allows to choose the range for the
 parameter: from 0 to Pi or from Pi to -Pi.</li>  
-</ul>
-</ul>
-
-<ul>
-<li><b>Animation preferences</b></li>
-<ul>
-<li><b>Speed</b> - allows to define the speed of the animation.</li>
-<li><b>Cycled animation</b> - allows to start a cycled animation of the presentation.</li>
-<li><b>Use proportional timing</b> - allows to render the animation with proportional periods of time between every frame (not depending on the time stamps).</li>
-<li><b>Clean memory at each frame</b> - this option allows to optimize the performance of the operation.</li>
 </ul>
 </ul>
 
@@ -152,22 +164,19 @@ Browser.</li>
 </ul>
 </ul>
 
-<br><h2>3D Cache</h2>
+<br><h2>Feature Edges</h2>
 
-\image.html pref40.png
+\image html featureedgesprops.png
 
+These properties define which contours should be highlighted with
+<b>Feature Edges</b> functionality. 
 <ul>
-<li><b>3D Cache Preferences</b> - allow to define the mode of usage
-and the size of the 3D Cache, which enables to save in RAM and quickly
-restore the states of field animation.</li>
-<ul>
-<li><b>Memory Mode</b> - allows to define the mode of usage
-of the 3D Cache: <b>Minimal</b> actually disables the Cache,
-<b>Limited</b> Cache size depends on the current system
-configuration.</li>
-<li><b>Memory Limit</b> - allows to define the maximum size of the 3D
-Cache</li> 
-</ul>
+<li><b>Feature edges angle</b> - allows to define at which minimum
+angle between two faces a wire is considered an edge </li> 
+<li><b>Show feature edges</b> - allows to display feature edges.</li>
+<li><b>Show boundary edges</b> - allows to display boundary edges.</li>
+<li><b>Show manifold edges</b> - allows to display manifold edges. </li>
+<li><b>Show non-manifold edges</b> - allows to display non-manifold edges.</li>
 </ul>
   
 
@@ -264,6 +273,16 @@ hide the Global Bar.</li>
 </ul>
 </ul>
 
+<ul>
+<b>Spacemouse</b>
+<ul>
+<li><b>Decrease Gauss Points Magnification </b> - divides the current
+magnification by magnification ratio. </li>
+<li><b>Increase Gauss Points Magnification </b> - multiplies the
+current magnification by magnification ratio. </li>
+</ulul>
+</ul>
+
 <br><br><b>Inside<b> and </b>Outside Cursor Preferences</b> allow to set
 <b>Primitives</b>, <b>Size</b> and <b>Magnification</b> for the
 respective zones.
@@ -298,77 +317,6 @@ momentarily. Greater numbers mean very slow camera movement.</li>
 </ul>
 <li><b>Display parent mesh element</b> - allows to visualize or hide
 the patent mesh element of the selected gauss point.</li>
-</ul>
-
-<br><h2>Navigation Preferences</h2>
-
-\image html pref38.png
-
-<br>
-<ul>
-<li><b>Mouse</b></li>
-<ul>
-<li><b>Mouse Behaviour</b> - this option allows to choose one of the
-modes of work with mouse in Gauss Viewer.</li>
-<ul>
-<li><b>Salome Standard Controls</b> - allows to manipulate objects in the
-viewer with the mouse and locked Ctrl button: increase or decrease the
-zoom ratio with the left mouse button, translate object in any
-direction with the central mouse button or rotate it with the right
-mouse button.</li>
-<li><b>Keyboard Free</b> - allows to manipulate objects in the viewer
-with the mouse without locking Ctrl button. In this case the
-operations are assigned to the buttons differently: rotation is made
-with the left button, translation with the right and zoom with both
-pressed in the same time.</li>
-</ul>
-</ul>
-</ul>
-
-<ul>
-<li><b>Keyboard</b></li>
-<ul>
-<li><b>[+]/[-] Speed Increment</b> - defines the number of units by
-which the speed increases or respectively decreases after pressing [+]
-or [-] keyboard buttons.</li>
-</ul>
-</ul>
-
-<ul>
-<li><b>Spacemouse</b> - a mouse-like manipulator device specially designed
-for working with 3D presentations, objects, etc. You can reassign the
-actions listed below to any of its buttons.</li>
-<ul>
-<li><b>Decrease Speed Increment</b> - decreases by 1 the speed increment used for the keyboard (same as [-] key).</li>
-<li><b>Increase Speed Increment</b> - increase by 1 the speed increment used for the keyboard (same as [+] key).</li>
-<li><b>Decrease Gauss Points Magnification</b> - divides the current magnification by the magnification ratio.</li>
-<li><b>Increase Gauss Points Magnification</b> - multiplies the current magnification by the magnification ratio.</li>
-<li><b>Dominant / combined switch</b> - toggles button to switch to dominant or combined movements.</li>
-</ul>
-</ul>
-
-<br><h2>Recorder Preferences</h2>
-
-\image html pref38.png
-
-<ul>
-<li><b>Settings</b></li>
-<ul>
-<li><b>Mode</b> - allows to choose from two recording regimes:</li>
-<ul>
-<li><b>Recording all displayed frames</b> - records exactly at the FPS rate specified by the user.</li>
-<li><b>Recording at a given FPS</b> - records only when the contents
-of the viewer change (some activity is performed).  In the AVI file
-non-recorded images are substituted with the copies of the latest
-recorded image, which produces files with lower quality but requires
-less system resources.   </li>
-</ul>
-<li><b>FPS</b> - allows to define the FPS (frames per second) rate for
-the clip. Set greater value for better quality.</li>
-<li><b>Quality</b> - allows to set the quality of the clip in the
-interval between 0 and 100.</li>
-<li><b>Progressive</b> - allows to record a progressive API
-file.</li>
 </ul>
 </ul>
 

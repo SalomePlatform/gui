@@ -16,21 +16,21 @@ the \ref select_color_and_font_page "Select Color" dialog box.
 <li><b>General</b></li>
 <ul>
 <li><b>Default Display Mode</b> - allows to choose between wireframe
-or shading.<li>
+or shading.</li>
 <li><b>Default Shading Color</b> - allows to select default shading
-color.<li>
+color.</li>
 <li><b> Default Wireframe Color</b> - allows to select default
 wireframe color (to be applied to any lines not being free boundaries
-or isolated lines).<li>
-<li><b>Color of free boundaries</b> - allows to select default color for free boundaries.<li>
+or isolated lines).</li>
+<li><b>Color of free boundaries</b> - allows to select default color for free boundaries.</li>
 <li><b>Color of edges, vectors and wires</b> - allows to select
-default color for edges, vectors and wires (isolated lines).<li>
+default color for edges, vectors and wires (isolated lines).</li>
 <li><b>Color of points</b> - allows to select default color for
-vertices.<li>
+vertices.</li>
 <li><b>Color of isolines</b> - allows to select default color for
-isolines.<li>
+isolines.</li>
 <li><b>Step Value for Spin Boxes</b> - allows to define the increment
-of values set in spin boxes.<li>
+of values set in spin boxes.</li>
 </ul>
 </ul>
 

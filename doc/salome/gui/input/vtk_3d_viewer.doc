@@ -2,10 +2,6 @@
 
 \page vtk_3d_viewer_page VTK 3D Viewer
 
-<b>VTK 3D viewer</b> is the default viewer for Mesh Module, allowing to
-visualize meshes. It is also used in Post-Pro module for all 3D
-presentations except for Gauss Points.
-
 The functionalities of VTK viewer are available via its Viewer
 Toolbar. Buttons marked with small downward triangles have extended
 functionality which can be accessed by locking on them with left mouse
@@ -14,7 +10,7 @@ button.
 \image html image157.gif "Viewer Toolbar"
 
 <hr>
-\image html image77.gif
+\image html image77.png
 \n <center><b>Dump View</b> - exports an object from the viewer in bmp, png, jpg
 or jpeg image format.</center>
 <hr>
@@ -23,28 +19,28 @@ or jpeg image format.</center>
 \n <center><b>Show/Hide Trihedron</b> - shows or hides coordinate axes.</center>
 <hr>
 
-\image html image96.gif
+\image html image96.png
 \n <center><b>Fit all</b> - scales the presentation so that it could
 fit within the Viewer boundaries. </center>
 <hr>
 
-\image html image97.gif
+\image html image97.png
 \n <center><b>Fit area</b> - resizes the view to place in the visible area
 only the contents of a frame drawn with pressed left mouse button.</center>
 <hr>
 
-\image html image98.gif
+\image html image98.png
 \n <center><b>Zoom</b> - allows to zoom in and out.</center>
 <hr>
 
-\image html image99.gif
+\image html image99.png
 \n <center><b>Panning</b> - if the represented objects are greater that the
 visible area and you don't wish to use <b>Fit all</b> functionality, click on
 this button and you'll be able to drag the scene to see its remote
 parts.</center>
 <hr>
 
-\image html image100.gif
+\image html image100.png
 \n <center><b>Global panning</b> - allows to select a point to be the
 center of the presentation showing all displayeed objects in the
 visible ares <center>
@@ -70,7 +66,7 @@ coordinates.\n
 point in the 3D Viewer.
 <hr>
 
-\image html image89.gif
+\image html image89.png
 \n <center><b>Rotation</b> - allows to rotate the selected object using the
 mouse.</center>
 
@@ -79,7 +75,7 @@ mouse.</center>
 <center>These buttons orientate the scene strictly about coordinate axes.</center>
 <hr>
 
-\image html image91.gif
+\image html image91.png
 \n <center><b>Reset</b> - restores the default position (isometric) of
 objects in the scene.</center>
 <hr>
@@ -102,7 +98,7 @@ available on your configuration</li>
 display</li> 
 </ul>
 
-\image html image108.gif
+\image html image108.png
 \n <center><b>Scaling</b> - represents objects deformed (stretched or
 stuffed) along the axes of coordinates.</center>
 <hr>

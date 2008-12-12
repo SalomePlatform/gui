@@ -3,9 +3,29 @@
 \page salome_architecture_page SALOME architecture
 
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
 \b SALOME architecture is based on \b CORBA technology using
-distributed system model of applications. This architecture takes the
-concept of multitier client/server to its natural conclusion. The
+distributed system model of applications.
+\b SALOME combines several software components, which are built in such a way that it allows to
+integrate solvers and existing meshing algorithms along with the
+specification of physical properties for a given domain. The
+originality of this approach is that the various components must
+cooperate dynamically and be configurable.
+
+\image html image54.jpg
+
+<br>SALOME platform integrates a number of modules each having its own function:
+<ul>
+<li>\b KERNEL :  provides a common shell for all components, which can be integrated into the SALOME platform.
+<li>\b GUI : provides visual representation: basic widgets, viewers
+etc. Third party modules optionally can have GUI, but in any case they always connected with KERNEL.
+<li>\b Geometry :  facilitates construction and optimization of geometrical models using a wide range of  CAD functions. 
+<li>\b Mesh :  generates meshes on geometrical models previously created or imported by the Geometry component.
+<li>\b Post-Pro :  performs data visualization and post-processing.
+<li>\b MED :  allows to work with MED files.
+</ul>
+
+Salome architecture takes the concept of multitier client/server to its natural conclusion. The
 distributed system model exposes all functionality of the application
 as objects, each of which can use any of the services provided by
 other objects in the system, or even objects in other systems. The

@@ -2,64 +2,62 @@
 
 \page plot2d_viewer_page Plot 2D viewer
 
-\n <b>Plot 2d viewer</b> is destined to the representation of  2d
-plots and graphs in Post-Pro module.
-\n Its viewer toolbar gives you fast access to the following
+\n <b>Plot 2d viewer</b> toolbar gives fast access to the following
 operations:
 
-\image html image77.gif
+\image html image77.png
 <center><b>Dump View</b> - exports an object from the viewer in bmp,
 png, jpg or jpeg image format.</center>
 
-\image html image96.gif
+\image html image96.png
 <center><b>Fit all</b> - scales the display to show the entire
 scene. Use this to resize the scene so that it could fit within the
 Viewer boundary.</center>
 
-\image html image97.gif
+\image html image97.png
 <center><b>Fit area</b> - resizes the view to place in the visible
 area only the contents of a frame drawn with pressed left mouse
 button.</center>
 
-\image html image98.gif
+\image html image98.png
 <center><b>Zoom</b> - allows to zoom in and out.</center>
 
-\image html image99.gif
+\image html image99.png
 <center>\b Panning - if the represented objects are greater that the
 visible area and you don't wish to use Fit all functionality, click on
 this button and you'll be able to drag the scene to see its remote
 parts.</center>
 
-\image html image100.gif
+\image html image100.png
 <center><b>Global panning</b> - allows to define the center of the
 scene presenting all displayed objects in the visible area.</center>
 
-\image html plot2d_points.gif
+\image html plot2d_points.png
 <center><b>Draw Points</b> - represents points on the graph.</center>
 
-\image html plot2d_lines.gif
+\image html plot2d_lines.png
 <center><b>Draw Lines</b> - represents lines on the graph.</center>
 
-\image html plot2d_splines.gif
+\image html plot2d_splines.png
 <center><b>Draw Splines</b> - represents splines on the graph.</center>
 
-\image html plot2d_logarithmic_horizontal.gif
+\image html plot2d_logarithmic_horizontal.png
 <center><b>Horizontal axis logarithmic</b> - changes the scaling on
 horizontal axis to logarithmic.</center>
 
-\image html plot2d_logarithmic_vertical.gif
+\image html plot2d_logarithmic_vertical.png
 <center><b>Vertical axis logarithmic</b> - changes the scaling on vertical
 axis to logarithmic.</center>
 
-\image html plot2d_legend.gif
+\image html plot2d_legend.png
 <center><b>Show Legend</b> - reveals all verbal and numerical
 information on the graphs.</center>
 
-\image html plot2d_settings.gif
+\image html plot2d_settings.png
 <center>\b Settings - calls a menu, in which you can specify advanced
 settings for your Plot 2d Viewer.</center>
 
-\image html plot2d_clone.gif
+\image html plot2d_clone.png
 <center><b>Clone view</b> - opens a new duplicate scene.</center>
 
 \anchor settings

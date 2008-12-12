@@ -1,6 +1,6 @@
 /*!
 
-\page working_with_python_scripts_page Working with Python Scripts
+\page python_interpreter_page Python Interpreter
 
 \b SALOME Platform can be launched in the batch mode, without Graphical
 User Interface, and operated with the use of Python scripts, which can
@@ -21,32 +21,8 @@ of the component specific Python scripts without touching others, thus
 avoiding expert knowledge of Python API of unused components.
 
 To Dump a  SALOME Study in one or several scripts, in the main menu
-select \b File --> <b>Dump study</b>
-\n The following dialog box allowing to browse for the location and
-define the name for a Python file will appear:
-
-\image html dumpstudy.png
-
-\par
-<ul>
-<li>
-<b>Publish in study</b> - if checked in, the component objects created by
-Python commands will be published in the created Study when the script
-is played, otherwise the objects will not be published in the Study.
-</li>
-<li>
-<b>Save GUI state</b> - if checked in, the current application layout will be
-saved in the Python file.
-</li>
-</ul>
-To confirm your choice click \b Save.
-
-Reversibly it is possible to load a saved Python Script selecting in
+select \b File --> <b>Dump study</b>.
+Reversibly, it is possible to load a saved Python Script selecting in
 the main menu \b File -> <b>Load Script</b>.
-
-\image html loadscript.png
-
-\par
-To confirm your choice click \b Open.
 
 */

@@ -1,11 +1,19 @@
 /*!
 
-\page setting_preferences_subpage Setting Preferences
+\page setting_preferences_page Setting Preferences
 
 In \b SALOME you can set preferences for each module in the common editor
-of preferences. SALOME preferences refer to the whole GUI SALOME
+of preferences. \subpage salome_preferences_page "SALOME preferences" refer to the whole GUI SALOME
 session, other preferences are module-specific and are accessible only
 after you load a respective module.
+It is possible to set preferences for 
+\subpage geometry_preferences_page "Geometry", 
+\subpage mesh_preferences_page "Mesh" and
+\subpage postpro_preferences_page "Post-Pro" modules. 
+
+\subpage select_color_and_font_page "Font and color preferences"
+dialogs are often called from other \b Preferences dialogs.
+
 \n When you change settings (click \b OK or \b Apply button) each module
 receives the notification about what preferences are changed. You can
 also click \b Defaults button to restore default preferences or \b Close

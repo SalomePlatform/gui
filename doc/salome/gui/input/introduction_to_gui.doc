@@ -16,7 +16,7 @@ loaded on demand. So, all modules add their own menu items, buttons
 in toolbar, windows etc.
 \b GUI (Graphical User Interface) provides a common shell for all
 components, which can be integrated into the SALOME platform and some
-basic GUI functuionalities, common for all modules.
+basic GUI functionalities, common for all modules.
 
 \image html mainmenu.png
 
@@ -41,7 +41,7 @@ application, also providing search possibilities with the
 <li>\subpage python_interpreter_page "Python interpreter", used for
 direct input of python commands and dumping studies into Python
 scripts. </li> 
-<li> Almows all aspects of Salome look and feel can be tuned by the
+<li> Almost all aspects of Salome look and feel can be tuned by the
 user in \subpage themes_page "Themes" dialog. </li>
 </ul>
 </li>

@@ -96,7 +96,7 @@ viewer.</li>
 <li><b>Close</b> - closes the currently active viewer window.</li> 
 <li><b>Close all</b> - closes all viewer windows.</li>
 <li><b>Group all</b> - arranges all created viewer windows on the same desktop</li>
-<li><b>Split Vertically</b> and <b>Split Horisontally</b> allows to split
+<li><b>Split Vertically</b> and <b>Split Horizontally</b> allows to split
 the representation area into two parts, in horizontal or vertical
 direction.</li>
 <li>List of all opened viewer windows provides fast access to

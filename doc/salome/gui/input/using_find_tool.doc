@@ -32,7 +32,7 @@ The \b Find toolbox provides a set of widgets which are used to
 perform the search operations or change the search conditions:
 - \a "Close" button closes the \b Find toolbox.
 - Line edit box is used to input the searched text. Note that the
-search is alwasy done by the object name, i.e. by the data displayed
+search is always done by the object name, i.e. by the data displayed
 in the "Name" column of the Object Browser.
 - \a "Find first item" button searches the very first item
 which satisfies the search conditions.

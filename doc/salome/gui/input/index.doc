@@ -67,8 +67,8 @@ integrated Python console
 <li>Manage computation schemes: definition, execution.
 </ul>
 
-From the point of view of the \subpage salome_architecture_page
-"Architecture" salome is composed of several modules, which provides a
+From the point of view of the \subpage salome_architecture_page "Architecture", 
+Salome is composed of several modules, which provides a
 great flexibility in its structure during 
 \subpage installing_salome_page "Installation" and
 \subpage running_salome_page "Running".

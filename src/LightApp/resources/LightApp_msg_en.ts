@@ -30,7 +30,9 @@
     </message>
     <message>
         <source>ABOUT_COPYRIGHT</source>
-        <translation>Copyright (C) 2003-2008 OPEN CASCADE, EADS/CCR, LIP6,
+        <translation>Copyright (C) 2007-2008 CEA/DEN, EDF R&amp;D, OPEN CASCADE
+
+Copyright (C) 2003-2007 OPEN CASCADE, EADS/CCR, LIP6,
 CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translation>
     </message>
     <message>

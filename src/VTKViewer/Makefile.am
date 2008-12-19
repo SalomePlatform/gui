@@ -102,7 +102,7 @@ nodist_salomeres_DATA =		\
 
 libVTKViewer_la_CPPFLAGS = $(QT_INCLUDES) $(VTK_INCLUDES) $(CAS_CPPFLAGS)	\
 	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT
-libVTKViewer_la_LDFLAGS = $(QT_MT_LIBS) $(CAS_KERNEL) $(VTK_LIBS) $(OGL_LIBS)	\
+libVTKViewer_la_LDFLAGS = $(VTK_LIBS) $(QT_MT_LIBS) $(CAS_KERNEL) $(OGL_LIBS)	\
 	../Qtx/libqtx.la ../SUIT/libsuit.la
 
 # Executable

@@ -391,19 +391,15 @@ void QtxMultiAction::updateButton( QToolButton* btn )
     return;
 
   pm->clear();
-  for ( int i = 0; pm->layout() && i < pm->layout()->count(); i++ )
-    delete pm->layout()->widget();
 
-  delete pm->layout();
-
-  QVBoxLayout* vbox = new QVBoxLayout( pm );
-  vbox->setMargin( 1 );
-  vbox->setSpacing( 0 );
-  Filter* filter = new Filter( vbox );
+  Filter* filter = new Filter( pm );
   QList<QAction*> actList = actions();
   for ( QList<QAction*>::iterator itr = actList.begin(); itr != actList.end(); ++itr )
   {
+    if ( !(*itr) || !(*itr)->isVisible() )
+      continue;
     QToolButton* b = new QToolButton( pm );
+    b->setEnabled( (*itr)->isEnabled() );
     b->setDefaultAction( *itr );
     b->setToolTip( (*itr)->toolTip() );
     b->setStatusTip( (*itr)->statusTip() );
@@ -412,7 +408,10 @@ void QtxMultiAction::updateButton( QToolButton* btn )
     b->setToolButtonStyle( btn->toolButtonStyle() );
     b->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
     b->installEventFilter( filter );
-    vbox->addWidget( b );
+
+    QWidgetAction* anAction = new QWidgetAction( pm );
+    anAction->setDefaultWidget( b );
+    pm->addAction( anAction );
   }
 }
 
@@ -425,21 +424,29 @@ void QtxMultiAction::updateButton( QToolButton* btn )
 */
 void QtxMultiAction::onActionChanged()
 {
-  if ( myCurrent && myCurrent->isEnabled() )
-    return;
+  if ( !myCurrent || !myCurrent->isEnabled() ) {
+    QList<QAction*> alist = actions();
+    QList<QAction*>::ConstIterator it;
 
-  QList<QAction*> alist = actions();
-  QAction* a = 0;
-  for ( QList<QAction*>::ConstIterator it = alist.begin(); it != alist.end() && !a; ++it ) {
-    if ( (*it)->isEnabled() )
-      a = *it;
+    QList<QAction*> aVisList;
+    for ( it = alist.begin(); it != alist.end(); ++it ) {
+      if ( (*it)->isVisible() )
+        aVisList.append( (*it) );
+    }
+
+    QAction* a = 0;
+    for ( it = aVisList.begin(); it != aVisList.end() && !a; ++it ) {
+      if ( (*it)->isEnabled() )
+        a = *it;
+    }
+
+    if ( a )
+      myCurrent = a;
+    else
+      myCurrent = alist.isEmpty() ? 0 : alist.first();
+
+    setEnabled( myCurrent && myCurrent->isEnabled() );
   }
 
-  if ( a )
-    myCurrent = a;
-  else
-    myCurrent = alist.isEmpty() ? 0 : alist.first();
-
-  setEnabled( myCurrent && myCurrent->isEnabled() );
   updateAction();
 }

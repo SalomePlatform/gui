@@ -151,7 +151,7 @@ VTKViewer_GeometryFilter
   vtkIdType newCellId;
   int faceId, *faceVerts, numFacePts;
   vtkFloatingPointType *x;
-  int PixelConvert[4], aNewPts[VTK_CELL_SIZE];
+  vtkIdType PixelConvert[4], aNewPts[VTK_CELL_SIZE];
   // ghost cell stuff
   unsigned char  updateLevel = (unsigned char)(output->GetUpdateGhostLevel());
   unsigned char  *cellGhostLevels = 0;  

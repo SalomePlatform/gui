@@ -45,6 +45,7 @@
 <li>\ref mesh_preferences_page</li>
 <li>\ref postpro_preferences_page</li>
 </ul>
+<li>\subpage tui_page</li>
 </ul>
 
 

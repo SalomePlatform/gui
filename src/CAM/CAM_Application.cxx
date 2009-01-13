@@ -198,7 +198,7 @@ void CAM_Application::loadModules()
  *\warning If module library (for module with \a modName) is empty.
  *\warning If module library is not loaded.
  */
-CAM_Module* CAM_Application::loadModule( const QString& modName )
+CAM_Module* CAM_Application::loadModule( const QString& modName, const bool showMsg )
 {
   if ( myInfoList.isEmpty() )
   {
@@ -257,7 +257,7 @@ CAM_Module* CAM_Application::loadModule( const QString& modName )
     module->setName( moduleName( modName ) );
   }
 
-  if ( !err.isEmpty() ) {
+  if ( !err.isEmpty() && showMsg ) {
     if ( desktop() && desktop()->isShown() )
       SUIT_MessageBox::warn1( desktop(), tr( "Error" ), err, tr( "Ok" ) );
     else

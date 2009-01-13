@@ -68,7 +68,7 @@ public:
   virtual void        addModule( CAM_Module* );
 
   virtual void        loadModules();
-  virtual CAM_Module* loadModule( const QString& );
+  virtual CAM_Module* loadModule( const QString&, const bool = true );
 
   virtual bool        activateModule( const QString& );
 

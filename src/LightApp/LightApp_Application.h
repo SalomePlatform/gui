@@ -110,7 +110,7 @@ public:
   virtual QString                     applicationName() const;
   virtual QString                     applicationVersion() const;
 
-  virtual CAM_Module*                 loadModule( const QString& );
+  virtual CAM_Module*                 loadModule( const QString&, const bool = true );
   virtual bool                        activateModule( const QString& );
 
   virtual bool                        useStudy( const QString& );

@@ -364,9 +364,9 @@ QString LightApp_Application::applicationVersion() const
 }
 
 /*!Load module by \a name.*/
-CAM_Module* LightApp_Application::loadModule( const QString& name )
+CAM_Module* LightApp_Application::loadModule( const QString& name, const bool showMsg )
 {
-  CAM_Module* mod = CAM_Application::loadModule( name );
+  CAM_Module* mod = CAM_Application::loadModule( name, showMsg );
   if ( mod )
   {
     connect( this, SIGNAL( studyOpened() ), mod, SLOT( onModelOpened() ) );

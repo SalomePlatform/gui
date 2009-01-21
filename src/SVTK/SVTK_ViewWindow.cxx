@@ -46,6 +46,7 @@
 #include "SUIT_Accel.h"
 
 #include "VTKViewer_Utilities.h"
+#include "VTKViewer_Trihedron.h"
 
 #include "SVTK_View.h"
 #include "SVTK_MainWindow.h"
@@ -991,6 +992,11 @@ SVTK_ViewWindow
     retStr += ::getGradAxisVisualParams( gradAxesActor->GetZAxisActor2D() );
   }
 
+  // save trihedron parameters
+  bool isVisible = isTrihedronDisplayed();
+  vtkFloatingPointType size = GetTrihedronSize();
+  retStr += QString().sprintf("* Trihedron: *%u*%.2f", isVisible, size);
+
   return retStr;
 }
 
@@ -1060,6 +1066,13 @@ SVTK_ViewWindow
       else
 	gradAxesActor->VisibilityOff();
     }
+    
+    if ( paramsLst[14].toUShort() )
+      GetTrihedron()->VisibilityOn();
+    else
+      GetTrihedron()->VisibilityOff();
+
+    SetTrihedronSize(paramsLst[15].toDouble());
   }
 }
 

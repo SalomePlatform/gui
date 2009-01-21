@@ -58,6 +58,8 @@ public:
         double   scaleX;
         double   scaleY;
         double   scaleZ;
+	bool     isVisible;
+	double   size;
 };
 
 typedef QValueList<viewAspect> viewAspectList;

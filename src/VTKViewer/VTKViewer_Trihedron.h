@@ -89,7 +89,7 @@ public:
   /*! Sets Arrow actor.
    * \param theLabelActor - VTKViewer_UnScaledActor
    */
-  void SetArrowActor(VTKViewer_UnScaledActor* theLabelActor);
+  void SetArrowActor(vtkFollower* theArrowActor);
 
   virtual void Render(vtkRenderer *theRenderer);
   
@@ -111,7 +111,7 @@ protected:
   VTKViewer_UnScaledActor* LabelActor;
 
   /*!Arrow actor pointer*/
-  VTKViewer_UnScaledActor* ArrowActor;
+  vtkFollower* ArrowActor;
 };
 
 /*!This class provide support trihedron object in vtk viewer.*/
@@ -242,7 +242,7 @@ public:
   /*! Get arrow actor.
    * \retval Return myArrowActor
    */
-  virtual VTKViewer_UnScaledActor* GetArrow() { return myArrowActor; }
+  virtual vtkFollower* GetArrow() { return myArrowActor; }
 
   /*! Check if actor belongs to the axis object
    * \param theActor - vtkActor pointer
@@ -267,9 +267,9 @@ protected:
    */
   VTKViewer_LineActor *myLineActor;
 
-  /*! VTKViewer_UnScaledActor actor pointer
+  /*! vtkFollower actor pointer
    */
-  VTKViewer_UnScaledActor *myArrowActor;
+  vtkFollower *myArrowActor;
 
   /*! VTKViewer_UnScaledActor actor pointer
    */

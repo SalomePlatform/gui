@@ -1054,7 +1054,6 @@ SVTK_ViewWindow
     // apply graduated axes parameters
     SVTK_CubeAxesActor2D* gradAxesActor = GetCubeAxes();
     if ( gradAxesActor && paramsLst.size() == nAllParams ) {
-      
       int i = nNormalParams+1, j = i + nGradAxisParams - 1;
       ::setGradAxisVisualParams( gradAxesActor->GetXAxisActor2D(), parameters.section( '*', i, j ) ); 
       i = j + 1; j += nGradAxisParams;
@@ -1066,14 +1065,14 @@ SVTK_ViewWindow
 	gradAxesActor->VisibilityOn();
       else
 	gradAxesActor->VisibilityOff();
+    } else if ( paramsLst.size() == nAllParams ) {
+      if ( paramsLst[90].toUShort() )
+	GetTrihedron()->VisibilityOn();
+      else
+	GetTrihedron()->VisibilityOff();
+      
+      SetTrihedronSize(paramsLst[91].toDouble());
     }
-
-    if ( paramsLst[90].toUShort() )
-      GetTrihedron()->VisibilityOn();
-    else
-      GetTrihedron()->VisibilityOff();
-
-    SetTrihedronSize(paramsLst[91].toDouble());
   }
 }
 

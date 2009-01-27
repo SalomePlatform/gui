@@ -1457,13 +1457,13 @@ void OCCViewer_ViewWindow::setVisualParameters( const QString& parameters )
       params.scaleX    = paramsLst[13].toDouble();
       params.scaleY    = paramsLst[14].toDouble();
       params.scaleZ    = paramsLst[15].toDouble();
+      params.isVisible   = paramsLst[16].toDouble();
+      params.size        = paramsLst[17].toDouble();
     } else {
       params.scaleX    = 1.;
       params.scaleY    = 1.;
       params.scaleZ    = 1.;
     }
-    params.isVisible   = paramsLst[16].toDouble();
-    params.size        = paramsLst[17].toDouble();
 
     performRestoring( params );
   }

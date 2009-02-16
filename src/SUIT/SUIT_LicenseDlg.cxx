@@ -118,15 +118,16 @@ void SUIT_LicenseDlg::onAgree()
 {
   QString env;
 #ifdef WIN32
-    DWORD aLen=1024;
-  char aStr[1024];
+  DWORD aLen=1024;
+  wchar_t aStr[1024];
   HANDLE aToken=0;
   HANDLE hProcess = GetCurrentProcess();
   OpenProcessToken(hProcess,TOKEN_QUERY,&aToken);
   if( ! GetUserProfileDirectory( aToken, aStr, &aLen ) )
     reject();
 
-  env = aStr;
+  if ( aLen > 0 )
+    env = QString::fromWCharArray(aStr, aLen);
 #else
   if( ! ::getenv( "HOME" ) )
     reject();

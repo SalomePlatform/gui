@@ -800,7 +800,11 @@ void Plot2d_ViewFrame::fitAll()
     return;
   }
 
-  QwtDiMap xMap1 = myPlot->canvasMap( QwtPlot::xBottom );
+
+  if ( myCurves.isEmpty() ) { // Nothing to fit all
+    myPlot->replot();
+    return;
+  }
 
   myPlot->setAxisAutoScale( QwtPlot::yLeft );
   myPlot->setAxisAutoScale( QwtPlot::xBottom );
@@ -1347,9 +1351,22 @@ void Plot2d_ViewFrame::setHorScaleMode( const int mode, bool update )
     return;
   }
 
+  const QwtScaleDiv* aXscale = myPlot->axisScale( QwtPlot::xBottom );
+  double majXmark = aXscale->majCnt() > 0 ? aXscale->majMark( 0 ) : 0;
+  double minXmark = majXmark;
+  for ( int i = 1; i < aXscale->majCnt(); i++ ) {
+    majXmark = std::max(majXmark,aXscale->majMark( i ));
+    minXmark = std::min(minXmark,aXscale->majMark( i ));
+  }
+  if ( minXmark <= 0 ) minXmark = 0.01; //QwtDiMap::LogMin;
+  if ( majXmark <= 0 ) majXmark = minXmark * 10e9;
+
   myXMode = mode;
 
   myPlot->changeAxisOptions( QwtPlot::xBottom, QwtAutoScale::Logarithmic, myXMode != 0 );
+
+  if( mode )
+    myPlot->setAxisScale( QwtPlot::xBottom, minXmark , majXmark);
 
   if ( update )
     fitAll();
@@ -1368,10 +1385,39 @@ void Plot2d_ViewFrame::setVerScaleMode( const int mode, bool update )
     return;
   }
 
+  const QwtScaleDiv* aYscale = myPlot->axisScale( QwtPlot::yLeft );
+  double majYmark = aYscale->majCnt() > 0 ? aYscale->majMark( 0 ) : 0;
+  double minYmark = majYmark;
+  for ( int i = 1; i < aYscale->majCnt(); i++ ) {
+    majYmark = std::max(majYmark,aYscale->majMark( i ));
+    minYmark = std::min(minYmark,aYscale->majMark( i ));
+  }
+  if ( minYmark <= 0 ) minYmark = 0.01; //QwtDiMap::LogMin;
+  if ( majYmark <= 0 ) majYmark = minYmark * 10e9;
+
+  double majY2mark = 0, minY2mark = 0;
+  if ( mySecondY ) {
+    const QwtScaleDiv* aY2scale = myPlot->axisScale( QwtPlot::yLeft );
+    majY2mark = aY2scale->majCnt() > 0 ? aY2scale->majMark( 0 ) : 0;
+    minY2mark = majY2mark;
+    for ( int i = 1; i < aY2scale->majCnt(); i++ ) {
+      majY2mark = std::max(majY2mark,aY2scale->majMark( i ));
+      minY2mark = std::min(minY2mark,aY2scale->majMark( i ));
+    }
+    if ( minY2mark <= 0 ) minY2mark = 0.01; //QwtDiMap::LogMin;
+    if ( majY2mark <= 0 ) majY2mark = minY2mark * 10e9;
+  }
+
   myYMode = mode;
   myPlot->changeAxisOptions( QwtPlot::yLeft, QwtAutoScale::Logarithmic, myYMode != 0 );
   if (mySecondY)
     myPlot->changeAxisOptions( QwtPlot::yRight, QwtAutoScale::Logarithmic, myYMode != 0 );
+
+  if( mode ) {
+    myPlot->setAxisScale( QwtPlot::yLeft, minYmark , majYmark);
+    if (mySecondY)
+      myPlot->setAxisScale( QwtPlot::yRight, minY2mark , majY2mark);
+  }
 
   if ( update )
     fitAll();

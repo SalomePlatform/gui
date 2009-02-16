@@ -23,7 +23,7 @@ class QwtIntervalData;
 class QwtLegend;
 class QString;
 
-class Plot2d_HistogramQwtItem: public QwtPlotItem
+class PLOT2D_EXPORT Plot2d_HistogramQwtItem: public QwtPlotItem
 {
 protected:
   class PrivateData {

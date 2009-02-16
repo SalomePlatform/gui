@@ -764,22 +764,23 @@ bool QtxPathListEdit::checkExistance( const QString& str, const bool msg )
   if ( pathType() == Qtx::PT_SaveFile )
     return true;
 
-  bool ok = QFileInfo( str ).exists();
+  QFileInfo aFI = QFileInfo( Qtx::makeEnvVarSubst( str ) );
+  bool ok = aFI.exists();
   if ( !ok && msg )
     ok = QMessageBox::question( this, tr( "Warning" ), tr( "Path \"%1\" doesn't exist. Add it to list anyway?" ).arg( str ),
                                 QMessageBox::Yes, QMessageBox::No ) == QMessageBox::Yes;
 
-  if ( ok && QFileInfo( str ).exists() )
+  if ( ok && aFI.exists() )
   {
     switch ( pathType() )
     {
     case Qtx::PT_OpenFile:
-      ok = QFileInfo( str ).isFile();
+      ok = aFI.isFile();
       if ( !ok && msg )
         QMessageBox::warning( this, tr( "Error" ), tr( "Location \"%1\" doesn't point to file" ).arg( str ) );
       break;
     case Qtx::PT_Directory:
-      ok = QFileInfo( str ).isDir();
+      ok = aFI.isDir();
       if ( !ok && msg )
         QMessageBox::warning( this, tr( "Error" ), tr( "Location \"%1\" doesn't point to directory" ).arg( str ) );
       break;

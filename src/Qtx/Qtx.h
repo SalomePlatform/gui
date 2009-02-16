@@ -105,6 +105,13 @@ public:
 	Toggled  //!< it should be possible to show/hide the column with help of popup menu
   } Appropriate;  //!< appropriate status
 
+  //! Environment variables substitution mode
+  typedef enum {
+	Always, //!< substitute environment variable by it's value if variable exists, and "" otherwise
+	Never,  //!< keep environment variable as is without any substitution
+	Auto    //!< substitute environment variable by it's value if variable exists, and keep it as is otherwise
+  } SubstMode;
+
   static QString     toQString( const char*, const int = -1 );
   static QString     toQString( const short*, const int = -1 );
   static QString     toQString( const unsigned char*, const int = -1 );
@@ -132,6 +139,8 @@ public:
   static QString     addSlash( const QString& );
 
   static QCompleter* pathCompleter( const PathType, const QString& = QString() );
+  static QString     findEnvVar( const QString&, int&, int& );
+  static QString     makeEnvVarSubst( const QString&, const SubstMode = Auto );
 
   static int         rgbSet( const QColor& );
   static int         rgbSet( const int, const int, const int );

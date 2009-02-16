@@ -65,7 +65,6 @@ public:
   QPixmap                loadPixmap( const QString&, const QString&, const QString& ) const;
   QTranslator*           loadTranslator( const QString&, const QString&, const QString& ) const;
 
-  QString                environmentVariable( const QString&, int&, int& ) const;
   QString                makeSubstitution( const QString&, const QString&, const QString& ) const;
 
   void                   clear();
@@ -399,54 +398,6 @@ QTranslator* QtxResourceMgr::Resources::loadTranslator( const QString& sect, con
 }
 
 /*!
-  \brief Parse given string to retrieve environment variable.
-
-  Looks through the string for the patterns: ${name} or $(name) or %name%.
-  If string contains variable satisfying any pattern, the variable name
-  is returned, start index of the variable is returned in the \a start parameter,
-  and length of the variable is returned in the \a len parameter.
-
-  \param str string being processed
-  \param start if variable is found, this parameter contains its starting 
-         position in the \a str
-  \param len if variable is found, this parameter contains its length 
-  \return first found variable or null QString if there is no ones
-*/
-QString QtxResourceMgr::Resources::environmentVariable( const QString& str, int& start, int& len ) const
-{
-  QString varName;
-  len = 0;
-
-  QRegExp rx( "(^\\$\\{|[^\\$]\\$\\{)([a-zA-Z]+[a-zA-Z0-9_]*)(\\})|(^\\$\\(|[^\\$]\\$\\()([a-zA-Z]+[a-zA-Z0-9_]*)(\\))|(^\\$|[^\\$]\\$)([a-zA-Z]+[a-zA-Z0-9_]*)|(^%|[^%]%)([a-zA-Z]+[a-zA-Z0-9_]*)(%[^%]|%$)" );
-
-  int pos = rx.indexIn( str, start );
-  if ( pos != -1 )
-  {
-    int i = 1;
-    while ( i <= rx.numCaptures() && varName.isEmpty() )
-    {
-      QString capStr = rx.cap( i );
-      if ( !capStr.contains( "%" ) && !capStr.contains( "$" ) )
-        varName = capStr;
-      i++;
-    }
-
-    if ( !varName.isEmpty() )
-    {
-      int capIdx = i - 1;
-      start = rx.pos( capIdx );
-      int end = start + varName.length();
-      if ( capIdx > 1 && rx.cap( capIdx - 1 ).contains( QRegExp( "\\$|%" ) ) )
-        start = rx.pos( capIdx - 1 ) + rx.cap( capIdx - 1 ).indexOf( QRegExp( "\\$|%" ) );
-      if ( capIdx < rx.numCaptures() && !rx.cap( capIdx - 1 ).isEmpty() )
-        end++;
-      len = end - start;
-    }
-  }
-  return varName;
-}
-
-/*!
   \brief Substitute variables by their values.
 
   Environment variable is substituted by its value. For other variables resource
@@ -467,7 +418,7 @@ QString QtxResourceMgr::Resources::makeSubstitution( const QString& str, const Q
   int start( 0 ), len( 0 );
   while ( true )
   {
-    QString envName = environmentVariable( res, start, len );
+    QString envName = Qtx::findEnvVar( res, start, len );
     if ( envName.isNull() )
       break;
 

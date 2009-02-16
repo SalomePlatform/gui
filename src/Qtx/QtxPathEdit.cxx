@@ -190,7 +190,7 @@ void QtxPathEdit::setPathFilter( const QString& f )
 void QtxPathEdit::onBrowse( bool /*on*/ )
 {
   QString path;
-  QString initial = QFileInfo( myPath->text() ).path();
+  QString initial = QFileInfo( Qtx::makeEnvVarSubst( myPath->text() ) ).filePath();
   switch ( pathType() )
   {
   case Qtx::PT_OpenFile:
@@ -229,7 +229,7 @@ void QtxPathEdit::initialize()
   base->setSpacing( 5 );
 
   base->addWidget( myPath = new QLineEdit( this ) );
-  myPath->setValidator( new QRegExpValidator( QRegExp( "^([\\w/]{2}|[A-Z]:)[^:;\\*\\?]*[\\w\\\\/\\.]$" ), myPath ) );
+  myPath->setValidator( new QRegExpValidator( QRegExp( "^([\\$]|[\\%]|[\\w/]{2}|[A-Z]:)[^:;\\*\\?]*[\\w\\\\/\\.]$" ), myPath ) );
 
   QToolButton* browse = new QToolButton( this );
   browse->setIcon( QPixmap( browse_icon ) );

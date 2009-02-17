@@ -71,12 +71,69 @@ double TableViewer_Tool::ToDouble( const QString& txt, bool& isDone )
 // Function : DoubleToQString
 // Purpose  : convert string to double
 //================================================================
-QString TableViewer_Tool::DoubleToQString( const double val, const bool replaceDot )
-{
-  QString txt = QString::number( val );
-  if ( replaceDot )
-    txt.replace( '.', ',' );
-  return txt;
+QString TableViewer_Tool::DoubleToQString( const double theVal, const int thePrecision, const bool IsRemoveInsignificantZeroes, const bool replaceDot )
+{  
+  char* aResult = new char[256];  
+
+  int aWholePart = int( theVal );
+  QString aWholePartStr = QString::number( aWholePart );
+
+  int i = aWholePartStr.at( 0 ) == '0' ? 1:0;	    
+  int aDigitsBeforeDot = aWholePartStr.size() - i;
+  
+  int aFractionalPartLen = thePrecision-aDigitsBeforeDot;  
+  int aFieldWidth = aFractionalPartLen > 0 ? aFractionalPartLen:0;	  	  	        
+
+//  char* aFieldWidthStr;
+//  std::sprintf( aFieldWidthStr, "%d", (int)aFieldWidth );
+
+  std::string aFieldWidthStr = QString::number( aFieldWidth ).toStdString();
+
+  std::string aPercent = "%";
+  std::string aFormat = "";
+  std::string aOption = "";
+  
+  int aNum = (int)( theVal*( 10^thePrecision ) );
+  
+  if ( aNum>0 ) {
+    aOption = ".*f";
+  }
+  else {
+    aOption = ".*g";
+  }    
+  
+  aFormat = aPercent+aFieldWidthStr;
+  aFormat += aOption;         
+  
+  std::sprintf( aResult, aFormat.c_str(), aFieldWidth, (double)theVal );    
+    
+  if ( IsRemoveInsignificantZeroes ) {	  	    	    	    	    	    	    	    	    	    
+    string aResultStr = aResult;	    
+    string aNewResult = "";	    
+    int counter = 0;        
+    for ( int jj = aResultStr.size()-1; jj>=aWholePartStr.size(); --jj ) {
+      if ( aResultStr.at(jj) == '0' || aResultStr.at( jj ) == '.' ) {
+	counter++;
+      } 
+      else {
+        break;
+      }
+    }	   	    
+    for ( int ii = 0;  ii<aResultStr.size()-counter; ii++) {	    	     
+      aNewResult += aResultStr.at( ii );      
+    }  
+    QString aResultQStr( (char*)aNewResult.c_str() );    
+    if( replaceDot ) 
+      aResultQStr.replace( '.', ',' );        
+    return aResultQStr;
+  }
+  else {  
+    QString aResultQStr( aResult );
+    delete aResult;
+    if( replaceDot ) 
+      aResultQStr.replace( '.', ',' );    
+    return aResultQStr;
+  } 
 }
 
 //================================================================

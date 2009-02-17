@@ -119,7 +119,7 @@ ComputeVisiblePropBounds(vtkRenderer* theRenderer,
   aCollection->InitTraversal();
   while (vtkActor* aProp = aCollection->GetNextActor()) {
     // if it's invisible, or has no geometry, we can skip the rest 
-    if(aProp->GetVisibility() && aProp->GetMapper()){
+    if(aProp->GetVisibility() && aProp->GetMapper() && vtkMath::AreBoundsInitialized(aProp->GetBounds()) > 0){
       if(VTKViewer_Actor* anActor = VTKViewer_Actor::SafeDownCast(aProp))
         if(anActor->IsInfinitive())
 	  continue;

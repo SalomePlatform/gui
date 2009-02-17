@@ -53,7 +53,7 @@ SVTK_Trihedron
         if(!anActor->IsInfinitive()) 
 	  aCount++;
       }
-      else if ( !OwnActor( anActor ) ) {
+      else if ( !OwnActor( aProp ) ) {
 	aCount++;
       }
   }

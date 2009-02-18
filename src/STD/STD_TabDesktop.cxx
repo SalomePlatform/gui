@@ -51,7 +51,7 @@ myWorkstackAction( 0 )
   myWorkstack = new QtxWorkstack( base );
   main->addWidget( myWorkstack );
   // setting Expanding size policy for central workstack.  If there are several widgets
-  // in central area of Desktop, other widgets will be added below the workstack (CATHARE, TRIPOLI modules).  
+  // in central area of Desktop, other widgets will be added below the workstack (CATHARE, TRIPOLI modules).
   // But the workstack must occupy as much space as possible -- set Expanding for it.
   myWorkstack->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 
@@ -61,7 +61,7 @@ myWorkstackAction( 0 )
 
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
   if ( resMgr ) {
-    myWorkstack->setIcon( QtxWorkstack::SplitVertical,   
+    myWorkstack->setIcon( QtxWorkstack::SplitVertical,
 			  resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_VSPLIT" ) ) );
     myWorkstack->setIcon( QtxWorkstack::SplitHorizontal,
 			  resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_HSPLIT" ) ) );

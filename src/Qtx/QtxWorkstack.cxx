@@ -1344,6 +1344,8 @@ QtxWorkstackChild::QtxWorkstackChild( QWidget* wid, QWidget* parent, Qt::WindowF
   {
     myWidget->setParent( this, f );
     myWidget->installEventFilter( this );
+    if ( myWidget->focusProxy() )
+      myWidget->focusProxy()->installEventFilter( this );
     myWidget->setVisible( myWidget->isVisibleTo( myWidget->parentWidget() ) );
 
     QVBoxLayout* base = new QVBoxLayout( this );
@@ -1368,6 +1370,8 @@ QtxWorkstackChild::~QtxWorkstackChild()
 
   widget()->hide();
   widget()->removeEventFilter( this );
+  if ( widget()->focusProxy() )
+    widget()->focusProxy()->removeEventFilter( this );
 
   widget()->setParent( 0 );
 }

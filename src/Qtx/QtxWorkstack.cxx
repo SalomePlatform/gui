@@ -687,10 +687,10 @@ void QtxWorkstackArea::removeChild( QtxWorkstackChild* child, const bool del )
   if ( !myList.contains( child ) )
     return;
 
+  myStack->removeWidget( child );
+
   if ( myBar->indexOf( child->id() ) != -1 )
     myBar->removeTab( myBar->indexOf( child->id() ) );
-
-  myStack->removeWidget( child );
 
   myList.removeAll( child );
 
@@ -1456,10 +1456,6 @@ bool QtxWorkstackChild::eventFilter( QObject* o, QEvent* e )
 */
 void QtxWorkstackChild::onDestroyed( QObject* obj )
 {
-  if ( obj != widget() )
-    return;
-
-  myWidget = 0;
   deleteLater();
 }
 

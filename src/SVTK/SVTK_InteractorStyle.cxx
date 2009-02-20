@@ -560,10 +560,11 @@ SVTK_InteractorStyle
 {
   myShiftState = shift;
   // finishing current viewer operation
-  //if (State != VTK_INTERACTOR_STYLE_CAMERA_NONE) {
-    onFinishOperation();
-    startOperation(VTK_INTERACTOR_STYLE_CAMERA_NONE);
-  //}
+  // san (20.02.2009): State == VTK_INTERACTOR_STYLE_CAMERA_NONE is also processed
+  // by onFinishOperation(), it might mean that the left button was pressed when
+  // no multi-selection is allowed
+  onFinishOperation();
+  startOperation(VTK_INTERACTOR_STYLE_CAMERA_NONE);
 }
 
 /*!

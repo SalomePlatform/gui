@@ -68,6 +68,8 @@ SVTK_Viewer::SVTK_Viewer()
 {
   myTrihedronSize = 105;
   myTrihedronRelative = true;
+  mySelectionEnabled = true;
+  myMultiSelectionEnabled = true;
 }
 
 /*!

@@ -71,69 +71,60 @@ double TableViewer_Tool::ToDouble( const QString& txt, bool& isDone )
 // Function : DoubleToQString
 // Purpose  : convert string to double
 //================================================================
-QString TableViewer_Tool::DoubleToQString( const double theVal, const int thePrecision, const bool IsRemoveInsignificantZeroes, const bool replaceDot )
-{  
-  char* aResult = new char[256];  
+QString TableViewer_Tool::DoubleToQString( const double value,
+                                           const int precision,
+                                           const bool removeZeroes,
+                                           const bool replaceDot )
+{
+  QString aResult = "";
 
-  int aWholePart = int( theVal );
+  int aWholePart = int( value );
   QString aWholePartStr = QString::number( aWholePart );
 
-  int i = aWholePartStr.at( 0 ) == '0' ? 1:0;	    
+  int i = aWholePartStr.at( 0 ) == '0' ? 1:0;
   int aDigitsBeforeDot = aWholePartStr.size() - i;
-  
-  int aFractionalPartLen = thePrecision-aDigitsBeforeDot;  
-  int aFieldWidth = aFractionalPartLen > 0 ? aFractionalPartLen:0;	  	  	        
+
+  int aFractionalPartLen = precision-aDigitsBeforeDot;
+  int aFieldWidth = aFractionalPartLen > 0 ? aFractionalPartLen:0;
 
 //  char* aFieldWidthStr;
 //  std::sprintf( aFieldWidthStr, "%d", (int)aFieldWidth );
-
   std::string aFieldWidthStr = QString::number( aFieldWidth ).toStdString();
 
-  std::string aPercent = "%";
-  std::string aFormat = "";
-  std::string aOption = "";
-  
-  int aNum = (int)( theVal*( 10^thePrecision ) );
-  
-  if ( aNum>0 ) {
-    aOption = ".*f";
+  // the next row checks belonging the formatted result to ".*f" format
+  // if the result isn't signed('0.000' for '.00001'), it's necessary use ".*g"
+  int aNum = (int)( value*( 10^precision ) );
+  std::string anOption = aNum > 0 ? ".*f" : ".*g";
+
+  std::string aFormat = "%"+aFieldWidthStr;
+  aFormat += anOption;
+
+  char* aBuf = new char[256];
+  std::sprintf( aBuf, aFormat.c_str(), aFieldWidth, (double)value );
+
+  if ( removeZeroes ) {
+    std::string aResultStr = aBuf;
+    delete aBuf;
+    std::string aNewResult = "";
+    int aCounter = 0;
+    for ( int jj = aResultStr.size()-1; jj >=aWholePartStr.size(); --jj ) {
+      if ( aResultStr.at(jj) == '0' || aResultStr.at( jj ) == '.' )
+	aCounter++;
+      else
+        break;
+    }
+    for ( int ii = 0;  ii<aResultStr.size()-aCounter; ii++)
+      aNewResult += aResultStr.at( ii );
+    aResult = QString( (char*)aNewResult.c_str() );
   }
   else {
-    aOption = ".*g";
-  }    
-  
-  aFormat = aPercent+aFieldWidthStr;
-  aFormat += aOption;         
-  
-  std::sprintf( aResult, aFormat.c_str(), aFieldWidth, (double)theVal );    
-    
-  if ( IsRemoveInsignificantZeroes ) {	  	    	    	    	    	    	    	    	    	    
-    string aResultStr = aResult;	    
-    string aNewResult = "";	    
-    int counter = 0;        
-    for ( int jj = aResultStr.size()-1; jj>=aWholePartStr.size(); --jj ) {
-      if ( aResultStr.at(jj) == '0' || aResultStr.at( jj ) == '.' ) {
-	counter++;
-      } 
-      else {
-        break;
-      }
-    }	   	    
-    for ( int ii = 0;  ii<aResultStr.size()-counter; ii++) {	    	     
-      aNewResult += aResultStr.at( ii );      
-    }  
-    QString aResultQStr( (char*)aNewResult.c_str() );    
-    if( replaceDot ) 
-      aResultQStr.replace( '.', ',' );        
-    return aResultQStr;
+    aResult = QString( aBuf );
+    delete aBuf;
   }
-  else {  
-    QString aResultQStr( aResult );
-    delete aResult;
-    if( replaceDot ) 
-      aResultQStr.replace( '.', ',' );    
-    return aResultQStr;
-  } 
+
+  if( replaceDot )
+    aResult.replace( '.', ',' );
+  return aResult;
 }
 
 //================================================================

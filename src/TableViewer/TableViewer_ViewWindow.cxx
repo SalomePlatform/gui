@@ -528,12 +528,12 @@ void TableViewer_ViewWindow::exportTableData( Handle(HTMLService_HTMLTable)& tab
 
   bool isExpImg = true;
   bool dotToComma = false;
-  int number_precision;
+  int precision;
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
   if ( resMgr ) {
     isExpImg = resMgr->booleanValue( "TableViewer", "export_table_images", true );
     dotToComma = resMgr->booleanValue( "TableViewer", "replace_dot_by_comma", true );
-    number_precision = resMgr->integerValue( "TableViewer", "number_precision", 6 );
+    precision = resMgr->integerValue( "TableViewer", "number_precision", 6 );
   }
 
   for ( int c = 0, nbC = numCols( type ); c < nbC; c++ ) {
@@ -556,7 +556,8 @@ void TableViewer_ViewWindow::exportTableData( Handle(HTMLService_HTMLTable)& tab
         double aVal = TableViewer_Tool::ToDouble( txt, aDbl );
         if ( aDbl )
           cell->InsertText( TableViewer_Tool::ToExtString( 
-                            TableViewer_Tool::DoubleToQString( aVal, number_precision, false, dotToComma ) ) );
+                            TableViewer_Tool::DoubleToQString( aVal,
+                                     precision, false, dotToComma ) ) );
         else
           cell->InsertText( TableViewer_Tool::ToExtString( txt ) );
       }

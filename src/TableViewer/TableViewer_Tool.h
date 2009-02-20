@@ -32,10 +32,12 @@ public:
   static TCollection_ExtendedString  ToExtString( const QString& );
   static double                      ToDouble( const QString& );
   static double                      ToDouble( const QString&, bool& );
-  static QString                     DoubleToQString( const double, const int, const bool = false, const bool = false );
+  static QString                     DoubleToQString( const double, const int,
+                                                      const bool = false,
+                                                      const bool = false );
 
-  static Quantity_Color                           Color( const QColor& );
-  static QColor                                   Color( const Quantity_Color& );
+  static Quantity_Color              Color( const QColor& );
+  static QColor                      Color( const Quantity_Color& );
 };
 
 #endif // !defined(TABLEVIEWER_TOOL_H)

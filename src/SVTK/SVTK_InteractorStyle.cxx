@@ -31,6 +31,10 @@
 
 #include "VTKViewer_Utilities.h"
 #include "SVTK_GenericRenderWindowInteractor.h"
+#include "SVTK_RenderWindowInteractor.h"
+#include "SVTK_MainWindow.h"
+#include "SVTK_ViewWindow.h"
+#include "SVTK_ViewModel.h"
 
 #include "SVTK_Selection.h"
 #include "SVTK_Event.h" 
@@ -42,6 +46,7 @@
 #include "SVTK_Functor.h"
 
 #include "SUIT_Tools.h"
+#include "SUIT_ViewManager.h"
 #include "SALOME_Actor.h"
 
 #include <vtkObjectFactory.h>
@@ -532,8 +537,12 @@ SVTK_InteractorStyle
 
       GetRenderWidget()->setCursor(myDefCursor); 
     }
-    else
-      startOperation(VTK_INTERACTOR_STYLE_CAMERA_SELECT);
+    else {
+      // san (19.02.2009): do not enter selection operation if multi-selection is not enabled.
+      // single-click selection is processed in onFinishOperation()
+      if ( isSelectionEnabled() && isMultiSelectionEnabled() )
+        startOperation(VTK_INTERACTOR_STYLE_CAMERA_SELECT);
+    }
   }
   
   return;
@@ -551,10 +560,10 @@ SVTK_InteractorStyle
 {
   myShiftState = shift;
   // finishing current viewer operation
-  if (State != VTK_INTERACTOR_STYLE_CAMERA_NONE) {
+  //if (State != VTK_INTERACTOR_STYLE_CAMERA_NONE) {
     onFinishOperation();
     startOperation(VTK_INTERACTOR_STYLE_CAMERA_NONE);
-  }
+  //}
 }
 
 /*!
@@ -1043,6 +1052,11 @@ SVTK_InteractorStyle
   SVTK_SelectionEvent* aSelectionEvent = GetSelectionEventFlipY();
 
   switch (State) {
+    case VTK_INTERACTOR_STYLE_CAMERA_NONE:
+      // san (19.02.2009): If we are here, and single selection is enabled,
+      // then we should process the mouse click - and break otherwise
+      if ( !isSelectionEnabled() || isMultiSelectionEnabled() )
+        break;
     case VTK_INTERACTOR_STYLE_CAMERA_SELECT:
     case VTK_INTERACTOR_STYLE_CAMERA_FIT:
     {
@@ -1368,6 +1382,68 @@ SVTK_InteractorStyle
 
     theInteractor->AddObserver( SVTK::ChangeRotationPoint, EventCallbackCommand, Priority );
   }
+
+  // Apply custom event priorities
+  updateObservers();
+}
+
+/*!
+  Internal method, (re-)binds event handlers using the custom event priorities (if any).
+  NOTE: This method assumes that vtkInteractorObserver::EventCallbackCommand is always used,
+  any other callbacks are unbound here. This is a limitation of vtkObject API related to event observers, 
+  it does not have a method to get the current observer for certain event type. As soon as 
+  this limitation is eliminated, updateObservers() can be improved.
+*/
+void
+SVTK_InteractorStyle
+::updateObservers()
+{
+  vtkRenderWindowInteractor* anInteractor = this->GetInteractor();
+  if ( !anInteractor )
+    return;
+
+  TEventPriorities::const_iterator cit = myEventPriorities.begin(), cend = myEventPriorities.end();
+  for ( ; cit != cend; cit++ ){
+    unsigned long anEvent = cit->first;
+    if ( anInteractor->HasObserver( anEvent ) )
+      anInteractor->RemoveObserver( anEvent );
+    anInteractor->AddObserver( anEvent, this->EventCallbackCommand, cit->second );
+  }
+}
+/*!
+  Sets custom event priority for a specific event type to fine-tune participation
+  in event processing chains. For instance, it is sometimes important to 
+  ensure that the interactor style processes single-click selection,
+  even if some other interactor observer tries to block further mouse click processing
+  (see vtkImplicitPlaneWidget class). Negative priority value can be used to reset 
+  some event's priority to the default.
+*/
+void
+SVTK_InteractorStyle
+::SetEventPriority( const int eventType, const float& priority )
+{
+  if ( priority < 0. || priority > 1. ) {
+    if ( myEventPriorities.find( eventType ) != myEventPriorities.end() )
+      myEventPriorities.erase( eventType );
+    return;
+  }
+  myEventPriorities[eventType] = priority;
+
+  // Apply custom event priorities
+  updateObservers();
+}
+
+/*!
+  Returns custom event priority for the eventType, or the default value from
+  vtkInteractorObserver::Priority field in case if no custom value has been specified.
+*/
+float
+SVTK_InteractorStyle
+::EventPriority( const int eventType ) const
+{
+  if ( myEventPriorities.find( eventType ) != myEventPriorities.end() )
+    return myEventPriorities.find( eventType )->second;
+  return this->Priority;
 }
 
 /*!
@@ -1482,6 +1558,56 @@ SVTK_InteractorStyle
 
   delete myRectBand;
   myRectBand = 0;
+}
+
+SVTK_Viewer*
+SVTK_InteractorStyle
+::getViewModel() const
+{
+  SVTK_Viewer* result = 0;
+  SVTK_InteractorStyle* that = const_cast<SVTK_InteractorStyle*>( this );
+  SVTK_RenderWindowInteractor* anIteractor = 
+    dynamic_cast<SVTK_RenderWindowInteractor*>( that->GetRenderWidget() );
+  if ( anIteractor ) {
+    SVTK_MainWindow* aMainWin = dynamic_cast<SVTK_MainWindow*>( anIteractor->parentWidget() );
+    if ( aMainWin ) {
+      SVTK_ViewWindow* aViewWin = dynamic_cast<SVTK_ViewWindow*>( aMainWin->parentWidget() );
+      if ( aViewWin ) {
+        result = dynamic_cast<SVTK_Viewer*>( aViewWin->getViewManager()->getViewModel() );
+      }
+    }
+  }
+  return result;
+}
+
+/*!
+  \brief Internal helper methods that access the view model class to return information about
+  the current selection options
+ */
+bool
+SVTK_InteractorStyle
+::isSelectionEnabled() const
+{
+  bool result = true;
+  SVTK_Viewer* aViewModel = getViewModel();
+  if ( aViewModel )
+    result = aViewModel->isSelectionEnabled();
+  return result;
+}
+
+/*!
+  \brief Internal helper methods that access the view model class to return information about
+  the current selection options
+*/
+bool
+SVTK_InteractorStyle
+::isMultiSelectionEnabled() const
+{
+  bool result = false;
+  SVTK_Viewer* aViewModel = getViewModel();
+  if ( aViewModel )
+    result = aViewModel->isMultiSelectionEnabled();
+  return result;
 }
 
 /*!

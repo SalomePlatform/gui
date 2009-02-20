@@ -109,6 +109,7 @@ class SALOME_Actor;
 class SVTK_Selector;
 class SVTK_GenericRenderWindowInteractor;
 class SVTK_Actor;
+class SVTK_Viewer;
 
 class QRubberBand;
 
@@ -229,7 +230,13 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
 
   int   CurrentState() const { return State; }
 
-  protected:
+  //! Sets custom event priority for a specific event type
+  void SetEventPriority( const int eventType, const float& priority );
+
+  //! Returns custom event priority for the eventType
+  float EventPriority( const int eventType ) const;
+
+protected:
   SVTK_InteractorStyle();
   ~SVTK_InteractorStyle();
 
@@ -301,7 +308,18 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
   void drawRect();
   void endDrawRect();
 
- protected:
+  SVTK_Viewer* getViewModel() const;
+
+  /*!
+      Internal helper methods that access the view model class to return information about
+      the current selection options
+   */
+  bool isSelectionEnabled() const;
+  bool isMultiSelectionEnabled() const;
+
+  void updateObservers();
+
+protected:
   QCursor                   myDefCursor;
   QCursor                   myPanCursor;
   QCursor                   myZoomCursor;
@@ -347,6 +365,10 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
   bool                            myBBFirstCheck;
 
   QRubberBand*                    myRectBand; //!< selection rectangle rubber band
+
+  // ! Custom priorities for certain event types
+  typedef std::map<unsigned long, float> TEventPriorities;
+  TEventPriorities  myEventPriorities;
 };
 
 #ifdef WIN32

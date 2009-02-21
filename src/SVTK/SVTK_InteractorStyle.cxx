@@ -555,16 +555,24 @@ void
 SVTK_InteractorStyle
 ::OnLeftButtonUp(int vtkNotUsed(ctrl),
 		 int shift, 
-		 int vtkNotUsed(x),
-		 int vtkNotUsed(y))
+		 int x,
+		 int y)
 {
+  // san (21.02.2009): State == VTK_INTERACTOR_STYLE_CAMERA_NONE when the left button is released
+  // and single selection is enabled means a selection event
+  if ( State == VTK_INTERACTOR_STYLE_CAMERA_NONE ) {
+    if ( isSelectionEnabled() && !isMultiSelectionEnabled() ) {
+      myOtherPoint = myPoint = QPoint(x, y);
+      startOperation(VTK_INTERACTOR_STYLE_CAMERA_SELECT);
+    }
+  }
+
   myShiftState = shift;
   // finishing current viewer operation
-  // san (20.02.2009): State == VTK_INTERACTOR_STYLE_CAMERA_NONE is also processed
-  // by onFinishOperation(), it might mean that the left button was pressed when
-  // no multi-selection is allowed
-  onFinishOperation();
-  startOperation(VTK_INTERACTOR_STYLE_CAMERA_NONE);
+  if (State != VTK_INTERACTOR_STYLE_CAMERA_NONE) {
+    onFinishOperation();
+    startOperation(VTK_INTERACTOR_STYLE_CAMERA_NONE);
+  }
 }
 
 /*!
@@ -1053,11 +1061,6 @@ SVTK_InteractorStyle
   SVTK_SelectionEvent* aSelectionEvent = GetSelectionEventFlipY();
 
   switch (State) {
-    case VTK_INTERACTOR_STYLE_CAMERA_NONE:
-      // san (19.02.2009): If we are here, and single selection is enabled,
-      // then we should process the mouse click - and break otherwise
-      if ( !isSelectionEnabled() || isMultiSelectionEnabled() )
-        break;
     case VTK_INTERACTOR_STYLE_CAMERA_SELECT:
     case VTK_INTERACTOR_STYLE_CAMERA_FIT:
     {

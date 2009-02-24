@@ -97,10 +97,6 @@
         <translation>Rotation</translation>
     </message>
     <message>
-        <source>OCC_IMAGE_FILES</source>
-        <translation>Images Files (*.bmp *.png *.jpg *.jpeg)</translation>
-    </message>
-    <message>
         <source>DSC_FRONT_VIEW</source>
         <translation>Front View</translation>
     </message>

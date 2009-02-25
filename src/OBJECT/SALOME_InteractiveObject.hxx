@@ -27,6 +27,14 @@
 #define _SALOME_InteractiveObject_HeaderFile
 
 #ifndef _Standard_HeaderFile
+// E.A. : Standard.hxx defines PACKAGE and VERSION --> Pb in Werror mode
+// E.A. : --> Add the undef of PACKAGE and VERSION (really ugly !)
+#ifdef PACKAGE
+#undef PACKAGE
+#endif
+#ifdef VERSION
+#undef VERSION
+#endif
 #include <Standard.hxx>
 #endif
 #ifndef _Handle_SALOME_InteractiveObject_HeaderFile

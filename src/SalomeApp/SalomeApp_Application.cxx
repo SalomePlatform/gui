@@ -205,7 +205,7 @@ void SalomeApp_Application::start()
               QString extension = fi.suffix().toLower();
               if ( fi.exists() ) {
                 // execute python script
-                QString command = QString( "execfile(\"%1\")" ).arg( fi.absoluteFilePath() );
+                QString command = QString( "execfile(r\"%1\")" ).arg( fi.absoluteFilePath() );
                 pyConsole->exec( command );
               }
               else {
@@ -765,7 +765,7 @@ void SalomeApp_Application::onLoadScript( )
 
   if ( !aFile.isEmpty() )
   {
-    QString command = QString("execfile(\"%1\")").arg(aFile);
+    QString command = QString("execfile(r\"%1\")").arg(aFile);
 
     PyConsole_Console* pyConsole = pythonConsole();
 

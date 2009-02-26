@@ -1837,7 +1837,9 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   int plot2dGroup = pref->addPreference( tr( "PREF_GROUP_PLOT2DVIEWER" ), viewTab );
 
+  /* VSR : 26/02/09 : temporarily comment : SUPERV is not migrated to Qt 4
   int supervGroup = pref->addPreference( tr( "PREF_GROUP_SUPERV" ), viewTab );
+  ----> end VSR : 26/02/09 */
 
   pref->setItemProperty( "columns", 2, occGroup );
   pref->setItemProperty( "columns", 1, vtkGroup );
@@ -2042,6 +2044,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "" ), dirGroup,
 		       LightApp_Preferences::DirList, "FileDlg", "QuickDirList" );
 
+  /* VSR : 26/02/09 : temporarily comment : SUPERV is not migrated to Qt 4
   pref->setItemProperty( "columns", 4, supervGroup );
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), supervGroup,
 		       LightApp_Preferences::Color, "SUPERVGraph", "Background" );
@@ -2049,6 +2052,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 		       LightApp_Preferences::Color, "SUPERVGraph", "Title" );
 //  pref->addPreference( tr( "PREF_SUPERV_CTRL_COLOR" ), supervGroup,
 //		       LightApp_Preferences::Color, "SUPERVGraph", "Ctrl" );
+  ----> end VSR : 26/02/09 */
 
   int obTab = pref->addPreference( tr( "PREF_TAB_OBJBROWSER" ), salomeCat );
   int stGroup = pref->addPreference( tr( "PREF_OBJ_BROWSER_SEARCH_TOOL" ), obTab );

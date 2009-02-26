@@ -794,6 +794,8 @@ void STD_Application::onConnectPopupRequest( SUIT_PopupClient* client, QContextM
   if ( !popup->actions().isEmpty() )
     popup->exec( e->globalPos() );
   delete popup;
+
+  e->accept();
 }
 
 /*!\retval QString - return file name from dialog.*/

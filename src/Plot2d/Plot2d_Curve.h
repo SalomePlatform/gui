@@ -99,6 +99,8 @@ public:
   // non-positive X/Y coordinate
   double             getMinX() const;
   double             getMinY() const;
+  double             getMaxX() const;
+  double             getMaxY() const;
 
 protected:
   bool               myAutoAssign;

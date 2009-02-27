@@ -741,18 +741,17 @@ void Plot2d_ViewFrame::fitAll()
   myPlot->setAxisAutoScale( QwtPlot::xBottom );
   myPlot->replot();
 
-  // for existing grid
-  QwtScaleMap xMap = myPlot->canvasMap( QwtPlot::xBottom );
-  QwtScaleMap yMap = myPlot->canvasMap( QwtPlot::yLeft );
+  double xmin, xmax, y1min, y1max, y2min, y2max;
+  getFitRangeByCurves(xmin, xmax, y1min, y1max, y2min, y2max);
 
-  myPlot->setAxisScale( QwtPlot::xBottom, xMap.s1(), xMap.s2() );
-  myPlot->setAxisScale( QwtPlot::yLeft, yMap.s1(), yMap.s2() );
+  myPlot->setAxisScale( QwtPlot::xBottom, xmin, xmax );
+  myPlot->setAxisScale( QwtPlot::yLeft, y1min, y1max );
 
   if (mySecondY) {
     myPlot->setAxisAutoScale( QwtPlot::yRight );
     myPlot->replot();
     QwtScaleMap yMap2 = myPlot->canvasMap( QwtPlot::yRight );
-    myPlot->setAxisScale( QwtPlot::yRight, yMap2.s1(), yMap2.s2() );
+    myPlot->setAxisScale( QwtPlot::yRight, y2min, y2max );
   }
   myPlot->replot();
 }
@@ -825,6 +824,26 @@ void Plot2d_ViewFrame::getFitRanges(double& xMin,double& xMax,
     y2Min = myPlot->invTransform(QwtPlot::yRight, iyMin);
     y2Max = myPlot->invTransform(QwtPlot::yRight, iyMax);
   }
+}
+
+/*!
+  Gets current fit ranges by Curves
+*/
+void Plot2d_ViewFrame::getFitRangeByCurves(double& xMin,double& xMax,
+					   double& yMin, double& yMax,
+					   double& y2Min, double& y2Max)
+{
+  CurveDict::const_iterator it = myPlot->getCurves().begin();
+  xMin = yMin = y2Min = 1e150;
+  xMax = yMax = y2Max = -1e150;
+  for ( ; it != myPlot->getCurves().end(); it++ ) {
+    if ( xMin > it.value()->getMinX() ) xMin = it.value()->getMinX();
+    if ( xMax < it.value()->getMaxX() ) xMax = it.value()->getMaxX();
+    if ( yMin > it.value()->getMinY() ) yMin = it.value()->getMinY();
+    if ( yMax < it.value()->getMaxY() ) yMax = it.value()->getMaxY();
+  }
+  y2Min = yMin;
+  y2Max = yMax;
 }
 
 /*!

@@ -85,13 +85,9 @@ vtkIdType VTKViewer_ExtractUnstructuredGrid::GetInputId(int theOutId) const
   if ( myCellIds.empty() && myCellTypes.empty() )
     return theOutId;
 
-  if ( myOut2InId.empty() || theOutId > (int)myOut2InId.size() )
+  if ( theOutId<0 || theOutId >= (int)myOut2InId.size() )
     return -1;
-#if defined __GNUC_2__
   return myOut2InId[theOutId];
-#else
-  return myOut2InId.at(theOutId);
-#endif
 }
 
 vtkIdType VTKViewer_ExtractUnstructuredGrid::GetOutputId(int theInId) const{

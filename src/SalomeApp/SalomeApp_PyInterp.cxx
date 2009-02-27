@@ -110,7 +110,7 @@ bool SalomeApp_PyInterp::initContext()
  */
 void SalomeApp_PyInterp::initPython()
 {
-  MESSAGE("PyInterp_base::initPython");
+  MESSAGE("SalomeApp_PyInterp::initPython");
   ASSERT(KERNEL_PYTHON::_gtstate); // initialisation in main
   SCRUTE(KERNEL_PYTHON::_gtstate);
   _gtstate=KERNEL_PYTHON::_gtstate;

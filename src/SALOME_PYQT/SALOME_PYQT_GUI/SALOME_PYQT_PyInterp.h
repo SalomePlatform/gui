@@ -38,6 +38,7 @@ public:
   int run( const char* );
   
 protected:
+  virtual void initPython();
   virtual bool initState();
   virtual bool initContext();  
 };

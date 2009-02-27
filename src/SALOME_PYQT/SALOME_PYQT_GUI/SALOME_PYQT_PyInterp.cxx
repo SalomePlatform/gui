@@ -39,6 +39,19 @@ SALOME_PYQT_PyInterp::~SALOME_PYQT_PyInterp()
 {
 }
 
+void SALOME_PYQT_PyInterp::initPython()
+{
+ /*
+  * Do nothing
+  * The initialization has been done in main
+  */
+  MESSAGE("SALOME_PYQT_PyInterp::initPython");
+  ASSERT(KERNEL_PYTHON::_gtstate); // initialisation in main
+  SCRUTE(KERNEL_PYTHON::_gtstate);
+  _gtstate=KERNEL_PYTHON::_gtstate;
+  _interp=KERNEL_PYTHON::_interp;
+}
+
 bool SALOME_PYQT_PyInterp::initState()
 {
  /*

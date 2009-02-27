@@ -23,7 +23,6 @@
 //  File   : VTKViewer_GeometryFilter.cxx
 //  Author : Michael ZORIN
 //  Module : SALOME
-//  $Header$ 
 //
 #include "VTKViewer_GeometryFilter.h"
 #include "VTKViewer_ConvexTool.h"
@@ -994,11 +993,7 @@ VTKViewer_GeometryFilter
 
 vtkIdType VTKViewer_GeometryFilter::GetElemObjId( int theVtkID )
 {
-  if( myVTK2ObjIds.empty() || theVtkID > (int)myVTK2ObjIds.size() )
+  if( theVtkID < 0 || theVtkID >= (int)myVTK2ObjIds.size() )
     return -1;
-#if defined __GNUC_2__
   return myVTK2ObjIds[theVtkID];
-#else
-  return myVTK2ObjIds.at(theVtkID);
-#endif
 }

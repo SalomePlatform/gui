@@ -23,7 +23,6 @@
 //  File   : VTKViewer_GeometryFilter.cxx
 //  Author : Michael ZORIN
 //  Module : SALOME
-//  $Header$
 //
 #include "VTKViewer_GeometryFilter.h"
 #include "VTKViewer_ConvexTool.h"
@@ -151,7 +150,10 @@ VTKViewer_GeometryFilter
   vtkIdType newCellId;
   int faceId, *faceVerts, numFacePts;
   vtkFloatingPointType *x;
-  vtkIdType PixelConvert[4], aNewPts[VTK_CELL_SIZE];
+  vtkIdType PixelConvert[4];
+  // Change the type from int to vtkIdType in order to avoid compilation errors while using VTK
+  // from ParaView-3.4.0 compiled on 64-bit Debian platform with VTK_USE_64BIT_IDS = ON
+  vtkIdType aNewPts[VTK_CELL_SIZE];
   // ghost cell stuff
   unsigned char  updateLevel = (unsigned char)(output->GetUpdateGhostLevel());
   unsigned char  *cellGhostLevels = 0;  
@@ -991,11 +993,7 @@ VTKViewer_GeometryFilter
 
 vtkIdType VTKViewer_GeometryFilter::GetElemObjId( int theVtkID )
 {
-  if( myVTK2ObjIds.empty() || theVtkID > (int)myVTK2ObjIds.size() )
+  if( theVtkID < 0 || theVtkID >= (int)myVTK2ObjIds.size() )
     return -1;
-#if defined __GNUC_2__
   return myVTK2ObjIds[theVtkID];
-#else
-  return myVTK2ObjIds.at(theVtkID);
-#endif
 }

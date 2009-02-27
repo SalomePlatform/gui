@@ -800,7 +800,6 @@ void Plot2d_ViewFrame::fitAll()
     return;
   }
 
-
   if ( myCurves.isEmpty() ) { // Nothing to fit all
     myPlot->replot();
     return;
@@ -810,24 +809,17 @@ void Plot2d_ViewFrame::fitAll()
   myPlot->setAxisAutoScale( QwtPlot::xBottom );
   myPlot->replot();
 
-  // for existing grid
-  QwtDiMap xMap = myPlot->canvasMap( QwtPlot::xBottom );
-  QwtDiMap yMap = myPlot->canvasMap( QwtPlot::yLeft );
+  double xmin, xmax, y1min, y1max, y2min, y2max;
+  getFitRangeByCurves(xmin, xmax, y1min, y1max, y2min, y2max);
 
-  myPlot->setAxisScale( QwtPlot::xBottom, 
-      myPlot->invTransform( QwtPlot::xBottom, xMap.i1() ), 
-      myPlot->invTransform( QwtPlot::xBottom, xMap.i2() ) );
-  myPlot->setAxisScale( QwtPlot::yLeft, 
-      myPlot->invTransform( QwtPlot::yLeft, yMap.i1() ), 
-      myPlot->invTransform( QwtPlot::yLeft, yMap.i2() ) );
+  myPlot->setAxisScale( QwtPlot::xBottom, xmin, xmax );
+  myPlot->setAxisScale( QwtPlot::yLeft, y1min, y1max );
 
   if (mySecondY) {
     myPlot->setAxisAutoScale( QwtPlot::yRight );
     myPlot->replot();
     QwtDiMap yMap2 = myPlot->canvasMap( QwtPlot::yRight );
-    myPlot->setAxisScale( QwtPlot::yRight, 
-        myPlot->invTransform( QwtPlot::yRight, yMap2.i1() ), 
-        myPlot->invTransform( QwtPlot::yRight, yMap2.i2() ) );
+    myPlot->setAxisScale( QwtPlot::yRight, y2min, y2max);
   }
   myPlot->replot();
 }
@@ -900,6 +892,29 @@ void Plot2d_ViewFrame::getFitRanges(double& xMin,double& xMax,
     y2Min = myPlot->invTransform(QwtPlot::yRight, iyMin);
     y2Max = myPlot->invTransform(QwtPlot::yRight, iyMax);
   }
+}
+
+/*!
+  Gets current fit ranges by Curves
+*/
+void Plot2d_ViewFrame::getFitRangeByCurves(double& xMin,double& xMax,
+					   double& yMin, double& yMax,
+					   double& y2Min, double& y2Max)
+{
+  QList<Plot2d_Curve> clist;
+  getCurves( clist );
+  xMin = clist.at(0)->getMinX();
+  xMax = clist.at(0)->getMaxX();
+  yMin = clist.at(0)->getMinY();
+  yMax = clist.at(0)->getMaxY();
+  for ( int i = 1; i < (int)clist.count(); i++ ) {
+    if ( xMin > clist.at(i)->getMinX() ) xMin = clist.at(i)->getMinX();
+    if ( xMax < clist.at(i)->getMaxX() ) xMax = clist.at(i)->getMaxX();
+    if ( yMin > clist.at(i)->getMinY() ) yMin = clist.at(i)->getMinY();
+    if ( yMax < clist.at(i)->getMaxY() ) yMax = clist.at(i)->getMaxY();
+  }
+  y2Min = yMin;
+  y2Max = yMax;
 }
 
 /*!

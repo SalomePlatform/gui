@@ -371,12 +371,25 @@ double Plot2d_Curve::getMinX() const
 {
   QValueList<Plot2d_Point>::const_iterator aIt;
   double aMinX = 1e150;
-  //int aCurrent = 0;
   for(aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt) {
     if ( (*aIt).x < aMinX )
       aMinX = (*aIt).x;
   }
   return aMinX;
+}
+
+/*!
+  Gets curve's maximal abscissa
+*/
+double Plot2d_Curve::getMaxX() const
+{
+  QValueList<Plot2d_Point>::const_iterator aIt;
+  double aMaxX = -1e150;
+  for(aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt) {
+    if ( (*aIt).x > aMaxX )
+      aMaxX = (*aIt).x;
+  }
+  return aMaxX;
 }
 
 /*!
@@ -386,12 +399,25 @@ double Plot2d_Curve::getMinY() const
 {
   QValueList<Plot2d_Point>::const_iterator aIt;
   double aMinY = 1e150;
-  //int aCurrent = 0;
   for(aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt) {
     if ( (*aIt).y < aMinY )
       aMinY = (*aIt).y;
   }
   return aMinY;
+}
+
+/*!
+  Gets curve's maximal ordinate
+*/
+double Plot2d_Curve::getMaxY() const
+{
+  QValueList<Plot2d_Point>::const_iterator aIt;
+  double aMaxY = -1e150;
+  for(aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt) {
+    if ( (*aIt).y > aMaxY )
+      aMaxY = (*aIt).y;
+  }
+  return aMaxY;
 }
 
 /*!

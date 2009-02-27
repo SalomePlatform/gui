@@ -83,6 +83,10 @@ public:
 		       double& yMin, double& yMax,
 		       double& y2Min, double& y2Max);
 
+  void    getFitRangeByCurves(double& xMin, double& xMax,
+			      double& yMin, double& yMax,
+			      double& y2Min, double& y2Max);
+
   /* view parameters */
   void    copyPreferences( Plot2d_ViewFrame* );
   void    setCurveType( int curveType, bool update = true );

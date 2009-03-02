@@ -45,10 +45,17 @@ QtxWorkstackAction::QtxWorkstackAction( QtxWorkstack* ws, QObject* parent )
   myWorkstack( ws ),
   myWindowsFlag( true )
 {
-  insertAction( new QtxAction( tr( "Split the active window on two vertical parts" ),
-                               tr( "Split vertically" ), 0, this ), SplitVertical );
-  insertAction( new QtxAction( tr( "Split the active window on two horizontal parts" ),
-                               tr( "Split horizontally" ), 0, this ), SplitHorizontal );
+  if ( myWorkstack )
+    insertAction( myWorkstack->action( QtxWorkstack::SplitVertical ), SplitVertical );
+  else
+    insertAction( new QtxAction( tr( "Split the active window on two vertical parts" ),
+				 tr( "Split vertically" ), 0, this ), SplitVertical );
+
+  if ( myWorkstack )
+    insertAction( myWorkstack->action( QtxWorkstack::SplitHorizontal ), SplitHorizontal );
+  else
+    insertAction( new QtxAction( tr( "Split the active window on two horizontal parts" ),
+				 tr( "Split horizontally" ), 0, this ), SplitHorizontal );
 
   connect( this, SIGNAL( triggered( int ) ), this, SLOT( onTriggered( int ) ) );
 
@@ -73,8 +80,8 @@ QtxWorkstack* QtxWorkstackAction::workstack() const
 
 /*!
   \brief Set actions to be visible in the menu.
-  
-  Actions, which IDs are set in \a flags parameter, will be shown in the 
+
+  Actions, which IDs are set in \a flags parameter, will be shown in the
   menu bar. Other actions will not be shown.
 
   \param flags ORed together actions flags
@@ -205,6 +212,7 @@ void QtxWorkstackAction::setStatusTip( const int id, const QString& txt )
 */
 void QtxWorkstackAction::perform( const int type )
 {
+  /*
   switch ( type )
   {
   case SplitVertical:
@@ -214,6 +222,7 @@ void QtxWorkstackAction::perform( const int type )
     splitHorizontal();
     break;
   }
+  */
 }
 
 /*!
@@ -356,7 +365,7 @@ void QtxWorkstackAction::activateItem( const int idx )
 
 /*!
   \brief Called when menu item is activated by the user.
-  
+
   Perform the corresponding action.
 
   \param id menu item identifier

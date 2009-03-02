@@ -168,11 +168,11 @@ private:
 				                           const int need_pos, const int splitter_pos );
 
 private:
-  QWidget*              myWin;        //!< active widget
-  QtxWorkstackArea*     myArea;       //!< active workarea
-  QtxWorkstackSplitter* mySplit;      //!< tol-level splitter
-  QWidget*              myWorkWin;    //!< widget where popup menu is invoked (used internally)
-  QtxWorkstackArea*     myWorkArea;   //!< workarea where popup menu is invoked (used internally)
+  QPointer<QWidget>          myWin;        //!< active widget
+  QPointer<QtxWorkstackArea> myArea;       //!< active workarea
+  QtxWorkstackSplitter*      mySplit;      //!< tol-level splitter
+  QPointer<QWidget>          myWorkWin;    //!< widget where popup menu is invoked (used internally)
+  QPointer<QtxWorkstackArea> myWorkArea;   //!< workarea where popup menu is invoked (used internally)
 
   QMap<int, QAction*> myActionsMap; //!< actions map
 

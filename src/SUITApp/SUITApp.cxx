@@ -203,6 +203,11 @@ int main( int argc, char* argv[] )
       argList.append( QString( argv[i] ) );
   }
 
+  // add $QTDIR/plugins to the pluins search path for image plugins
+  QString qtdir( ::getenv( "QTDIR" ) );
+  if ( !qtdir.isEmpty() )
+    QApplication::addLibraryPath( QDir( qtdir ).absoluteFilePath( "plugins" ) );
+  
   SUITApp_Application app( argc, argv );
 
   int result = -1;

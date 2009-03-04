@@ -339,6 +339,11 @@ int main( int argc, char **argv )
   // Install Qt debug messages handler
   qInstallMsgHandler( MessageOutput );
   
+  // add $QTDIR/plugins to the pluins search path for image plugins
+  QString qtdir( ::getenv( "QTDIR" ) );
+  if ( !qtdir.isEmpty() )
+    QApplication::addLibraryPath( QDir( qtdir ).absoluteFilePath( "plugins" ) );
+
   // Create Qt application instance;
   // this should be done the very first!
   SALOME_QApplication _qappl( argc, argv );

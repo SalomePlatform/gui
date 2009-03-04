@@ -454,64 +454,30 @@ void LightApp_Application::createActions()
 
   QStringList aModuleList;
   modules( aModuleList, false );
+  aModuleList.prepend( "GUI" );
+  aModuleList.prepend( "KERNEL" );
 
   int id = LightApp_Application::UserID + FIRST_HELP_ID;
-  // help for KERNEL and GUI
-  QString dir;//QByteArray dir;
-  QString aFileName = "index.html";
-  QString root;
-  QAction* a;
-  dir = getenv("GUI_ROOT_DIR");
-  if ( !dir.isEmpty() ) {
-    root = Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") +
-                          Qtx::addSlash("salome") + Qtx::addSlash("gui") +  Qtx::addSlash("GUI") );
-    if ( QFileInfo( root + aFileName ).exists() ) {
-      a = createAction( id, tr( QString("GUI Help").toLatin1().constData() ),
-			resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false ),
-			tr( QString("GUI Help").toLatin1().constData() ),
-			tr( QString("GUI Help").toLatin1().constData() ),
-			0, desk, false, this, SLOT( onHelpContentsModule() ) );
-      a->setObjectName( QString("GUI") );
-      createMenu( a, helpModuleMenu, -1 );
-      id++;
-    }
-  }
-  dir = getenv("KERNEL_ROOT_DIR");
-  if ( !dir.isEmpty() ) {
-    root = Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") +
-			  Qtx::addSlash("salome") );
-    if ( QFileInfo( root + aFileName ).exists() ) {
-      a = createAction( id, tr( QString("KERNEL Help").toLatin1().constData() ),
-			resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false ),
-			tr( QString("KERNEL Help").toLatin1().constData() ),
-			tr( QString("KERNEL Help").toLatin1().constData() ),
-			0, desk, false, this, SLOT( onHelpContentsModule() ) );
-      a->setObjectName( QString("KERNEL") );
-      createMenu( a, helpModuleMenu, -1 );
-      id++;
-    }
-  }
+
   // help for other existing modules
-  QStringList::Iterator it;
-  for ( it = aModuleList.begin(); it != aModuleList.end(); ++it )
-  {
-    if ( (*it).isEmpty() )
+  QString aModule;
+  foreach( aModule, aModuleList ) {
+    if ( aModule.isEmpty() )                                         // module title (user name)
       continue;
-
-    QString modName = moduleName( *it );
-
-    dir = getenv( (modName + "_ROOT_DIR").toLatin1().constData() );
-    if ( !dir.isEmpty() ) {
-      root = Qtx::addSlash( Qtx::addSlash(dir) +  Qtx::addSlash("share") + Qtx::addSlash("doc") +
-                            Qtx::addSlash("salome") + Qtx::addSlash("gui") +  Qtx::addSlash(modName) );
-      if ( QFileInfo( root + aFileName ).exists() ) {
-
-	QAction* a = createAction( id, tr( (moduleTitle(modName) + QString(" Help")).toLatin1().constData() ),
+    QString modName = moduleName( aModule );                         // module name
+    if ( modName.isEmpty() ) modName = aModule;                      // for KERNEL and GUI
+    QString rootDir = QString( "%1_ROOT_DIR" ).arg( modName );       // module root dir variable
+    QString modDir  = getenv( rootDir.toLatin1().constData() );      // module root dir
+    if ( !modDir.isEmpty() ) {
+      QStringList idxLst = QStringList() << modDir << "share" << "doc" << "salome" << "gui" << modName << "index.html";
+      QString indexFile = idxLst.join( QDir::separator() );          // index file
+      if ( QFile::exists( indexFile ) ) {
+	QAction* a = createAction( id, tr( "%1 Help" ).arg( aModule ),
 				   resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false ),
-				   tr( (moduleTitle(modName) + QString(" Help")).toLatin1().constData() ),
-				   tr( (moduleTitle(modName) + QString(" Help")).toLatin1().constData() ),
+				   tr( "%1 Help" ).arg( aModule ),
+				   tr( "%1 Help" ).arg( aModule ),
 				   0, desk, false, this, SLOT( onHelpContentsModule() ) );
-	a->setObjectName( modName );
+	a->setData( indexFile );
 	createMenu( a, helpModuleMenu, -1 );
 	id++;
       }
@@ -546,6 +512,7 @@ void LightApp_Application::createActions()
 
     const int iconSize = 20;
 
+    QStringList::Iterator it;
     for ( it = modList.begin(); it != modList.end(); ++it )
     {
       if ( !isLibExists( *it ) )
@@ -905,29 +872,22 @@ private:
 */
 void LightApp_Application::onHelpContentsModule()
 {
-  const QAction* obj = (QAction*) sender();
+  const QAction* a = (QAction*) sender();
+  QString helpFile = a->data().toString();
+  if ( helpFile.isEmpty() ) return;
 
-  QString aComponentName = obj->objectName();
-  QString aFileName = "index.html";
-
-  QString dir = getenv( (aComponentName + "_ROOT_DIR").toLatin1().constData() );
-  QString homeDir = !aComponentName.compare(QString("KERNEL")) ?
-    Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") + Qtx::addSlash("salome") ) :
-    Qtx::addSlash( Qtx::addSlash(dir) + Qtx::addSlash("share") + Qtx::addSlash("doc") + Qtx::addSlash("salome") + Qtx::addSlash("gui") +  Qtx::addSlash(aComponentName) );
-
-  QString helpFile = QFileInfo( homeDir + aFileName ).absoluteFilePath();
   SUIT_ResourceMgr* resMgr = resourceMgr();
-	QString platform;
+  QString platform;
 #ifdef WIN32
-	platform = "winapplication";
+  platform = "winapplication";
 #else
-	platform = "application";
+  platform = "application";
 #endif
-	QString anApp = resMgr->stringValue("ExternalBrowser", platform);
+  QString anApp = resMgr->stringValue("ExternalBrowser", platform);
 #ifdef WIN32
-	QString quote("\"");
-	anApp.prepend( quote );
-	anApp.append( quote );
+  QString quote("\"");
+  anApp.prepend( quote );
+  anApp.append( quote );
 #endif
   QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 

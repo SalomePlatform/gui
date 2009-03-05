@@ -1661,6 +1661,9 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
 
   that->myPrefs = _prefs_;
 
+  connect( myPrefs, SIGNAL( preferenceChanged( QString&, QString&, QString& ) ),
+           this, SLOT( onPreferenceChanged( QString&, QString&, QString& ) ) );
+
   if ( !toCreate )
     return myPrefs;
 
@@ -1710,9 +1713,6 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
   }
   _prefs_->setItemProperty( "info", tr( "PREFERENCES_NOT_LOADED" ) );
 
-  connect( myPrefs, SIGNAL( preferenceChanged( QString&, QString&, QString& ) ),
-           this, SLOT( onPreferenceChanged( QString&, QString&, QString& ) ) );
-
   return myPrefs;
 }
 
@@ -1741,7 +1741,7 @@ void LightApp_Application::emptyPreferences( const QString& modName )
   if ( !item || !item->isEmpty() )
     return;
 
-  printf( "---------------------> Modify for empty module.\n" );
+  //  printf( "---------------------> Modify for empty module.\n" );
 
   QtxPagePrefFrameItem* frm = new QtxPagePrefFrameItem( item->title(), item->parentItem() );
   frm->setIcon( item->icon() );

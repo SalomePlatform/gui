@@ -279,6 +279,25 @@ SVTK_View
   return anActor != NULL;
 }
 
+namespace SVTK
+{
+  struct TIsActorVisibleAction
+  {
+    bool& myResult;
+    TIsActorVisibleAction(bool& theResult): 
+      myResult(theResult)
+    {
+      myResult = false;
+    }
+    void
+    operator()(SALOME_Actor* theActor)
+    {
+      if( !myResult )
+	myResult = theActor->GetVisibility();
+    }
+  };
+}
+
 /*!
   \return true if object is displayed in viewer
   \param theIO - object to be checked
@@ -288,10 +307,11 @@ SVTK_View
 ::isVisible(const Handle(SALOME_InteractiveObject)& theIObject)
 {
   using namespace SVTK;
-  SALOME_Actor* anActor = 
-    Find<SALOME_Actor>(getRenderer()->GetActors(),
-		       TIsSameIObject<SALOME_Actor>(theIObject));
-  return anActor != NULL && anActor->GetVisibility();
+  bool aResult;
+  ForEachIf<SALOME_Actor>(getRenderer()->GetActors(),
+			  TIsSameIObject<SALOME_Actor>(theIObject),
+			  TIsActorVisibleAction(aResult));
+  return aResult;
 }
 
 /*!

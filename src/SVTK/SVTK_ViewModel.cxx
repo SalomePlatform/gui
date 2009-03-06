@@ -418,6 +418,8 @@ void SVTK_Viewer::Display( const SALOME_VTKPrs* prs )
       anActorCollection->InitTraversal();
       while(vtkActor* anActor = anActorCollection->GetNextActor()){
 	if(SALOME_Actor* anAct = SALOME_Actor::SafeDownCast(anActor)){
+	  if(!anAct->ShouldBeDisplayed())
+	    continue;
 	  // Set visibility flag
           // Temporarily commented to avoid awful dependecy on SALOMEDS
           // TODO: better mechanism of storing display/erse status in a study

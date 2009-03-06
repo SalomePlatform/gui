@@ -27,7 +27,7 @@
 #define LOGWINDOW_H
 
 #if defined WIN32
-#  if defined LOGWINDOW_EXPORTS
+#  if defined LOGWINDOW_EXPORTS || defined LogWindow_EXPORTS
 #    define LOGWINDOW_EXPORT __declspec( dllexport )
 #  else
 #    define LOGWINDOW_EXPORT __declspec( dllimport )

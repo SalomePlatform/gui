@@ -27,7 +27,7 @@
 #define _SALOME_Session_HXX_
 
 #if defined WIN32
-#  if defined SESSION_EXPORTS
+#  if defined SESSION_EXPORTS || defined SalomeSession_EXPORTS
 #    define SESSION_EXPORT __declspec( dllexport )
 #  else
 #    define SESSION_EXPORT __declspec( dllimport )

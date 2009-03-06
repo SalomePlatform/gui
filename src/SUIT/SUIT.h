@@ -26,7 +26,7 @@
 #define SUIT_H
 
 #if defined WIN32
-#  if defined SUIT_EXPORTS
+#  if defined SUIT_EXPORTS || defined suit_EXPORTS
 #    define SUIT_EXPORT __declspec( dllexport )
 #  else
 #    define SUIT_EXPORT __declspec( dllimport )

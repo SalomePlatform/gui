@@ -23,7 +23,7 @@
 #define SALOME_PRS_H
 
 #ifdef WIN32
-#ifdef PRS_EXPORTS
+#if defined PRS_EXPORTS || defined SalomePrs_EXPORTS
 #define PRS_EXPORT __declspec(dllexport)
 #else
 #define PRS_EXPORT __declspec(dllimport)

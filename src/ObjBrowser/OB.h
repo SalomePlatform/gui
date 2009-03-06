@@ -23,7 +23,7 @@
 #define OB_H
 
 #if defined WIN32
-#  if defined OB_EXPORTS || defined OBJBROWSER_EXPORTS
+#  if defined OB_EXPORTS || defined OBJBROWSER_EXPORTS || defined ObjBrowser_EXPORTS
 #    define OB_EXPORT __declspec( dllexport )
 #  else
 #    define OB_EXPORT __declspec( dllimport )

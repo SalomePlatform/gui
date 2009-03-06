@@ -26,7 +26,7 @@
 #define QTX_H
 
 #if defined WIN32
-#  if defined QTX_EXPORTS
+#  if defined QTX_EXPORTS || defined qtx_EXPORTS
 #    define QTX_EXPORT _declspec( dllexport )
 #  else
 #    define QTX_EXPORT _declspec( dllimport )

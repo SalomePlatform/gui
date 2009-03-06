@@ -27,7 +27,7 @@
 #define TOOLSGUI_H
 
 #ifdef WIN32
-#  ifdef TOOLSGUI_EXPORTS
+#  if defined TOOLSGUI_EXPORTS || defined ToolsGUI_EXPORTS
 #    define TOOLSGUI_EXPORT __declspec(dllexport)
 #  else
 #    define TOOLSGUI_EXPORT __declspec(dllimport)

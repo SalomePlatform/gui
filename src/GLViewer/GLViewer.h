@@ -26,7 +26,7 @@
 //
 #ifdef WIN32
 
-#ifdef GLVIEWER_EXPORTS
+#if defined GLVIEWER_EXPORTS || defined GLViewer_EXPORTS
 #define GLVIEWER_API __declspec(dllexport)
 #else
 #define GLVIEWER_API __declspec(dllimport)

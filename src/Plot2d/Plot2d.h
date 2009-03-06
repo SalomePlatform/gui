@@ -26,7 +26,7 @@
 #define PLOT2D_H
 
 #ifdef WIN32
-#  ifdef PLOT2D_EXPORTS
+#  if defined PLOT2D_EXPORTS || defined Plot2d_EXPORTS
 #    define PLOT2D_EXPORT __declspec(dllexport)
 #  else
 #    define PLOT2D_EXPORT __declspec(dllimport)

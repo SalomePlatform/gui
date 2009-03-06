@@ -23,7 +23,7 @@
 #define EVENT_H
 
 #ifdef WIN32
-#  ifdef EVENT_EXPORTS
+#  if defined EVENT_EXPORTS || defined Event_EXPORTS
 #    define EVENT_EXPORT __declspec(dllexport)
 #  else
 #    define EVENT_EXPORT __declspec(dllimport)

@@ -20,7 +20,7 @@
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifdef WIN32
-#ifdef SPLOT2D_EXPORTS
+#if defined SPLOT2D_EXPORTS || defined SPlot2d_EXPORTS
 #define SPLOT2D_EXPORT __declspec(dllexport)
 #else
 #define SPLOT2D_EXPORT __declspec(dllimport)

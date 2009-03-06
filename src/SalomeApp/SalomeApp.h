@@ -31,7 +31,7 @@
 //
 #ifdef WIN32
 
-#ifdef SALOMEAPP_EXPORTS
+#if defined SALOMEAPP_EXPORTS || defined SalomeApp_EXPORTS
 #define SALOMEAPP_EXPORT __declspec(dllexport)
 #else
 #define SALOMEAPP_EXPORT __declspec(dllimport)

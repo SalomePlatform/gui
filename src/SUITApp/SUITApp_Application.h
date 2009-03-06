@@ -31,7 +31,7 @@
 class SUIT_ExceptionHandler;
 
 #ifdef WNT
-#  ifdef SUITAPP_EXPORTS
+#  if defined SUITAPP_EXPORTS || defined SUITApp_EXPORTS
 #    define SUITAPP_EXPORT __declspec(dllexport)
 #  else
 #   define SUITAPP_EXPORT __declspec(dllimport)

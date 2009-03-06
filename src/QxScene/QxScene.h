@@ -22,7 +22,7 @@
 //  SALOME QxScene : build Supervisor viewer into desktop
 //
 #ifdef WNT
-#ifdef QXSCENE_EXPORTS
+#if defined QXSCENE_EXPORTS || defined QxScene_EXPORTS
 #define QXSCENE_EXPORT __declspec(dllexport)
 #else
 #define QXSCENE_EXPORT __declspec(dllimport)

@@ -29,7 +29,7 @@
 #define SUPERVGraph_HeaderFile
 
 #ifdef WIN32
-#ifdef SUPERVGRAPH_EXPORTS
+#if defined SUPERVGRAPH_EXPORTS || defined SUPERVGraph_EXPORTS
 #define SUPERVGRAPH_EXPORT __declspec(dllexport)
 #else
 #define SUPERVGRAPH_EXPORT __declspec(dllimport)

@@ -22,7 +22,7 @@
 //  SALOME QxGraph : build Supervisor viewer into desktop
 //
 #ifdef WNT
-#ifdef QXGRAPH_EXPORTS
+#if defined QXGRAPH_EXPORTS || defined QxGraph_EXPORTS
 #define QXGRAPH_EXPORT __declspec(dllexport)
 #else
 #define QXGRAPH_EXPORT __declspec(dllimport)

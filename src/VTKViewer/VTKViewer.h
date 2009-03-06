@@ -23,7 +23,7 @@
 #define VTKVIEWER_H
 
 #ifdef WIN32
-#  ifdef VTKVIEWER_EXPORTS
+#  if defined VTKVIEWER_EXPORTS || defined VTKViewer_EXPORTS
 #    define VTKVIEWER_EXPORT __declspec( dllexport )
 #  else
 #    define VTKVIEWER_EXPORT __declspec( dllimport )

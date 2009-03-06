@@ -23,7 +23,7 @@
 #define QDS_H
 
 #ifdef WIN32
-#ifdef QDS_EXPORTS
+#if defined QDS_EXPORTS
 #define QDS_EXPORT __declspec(dllexport)
 #else
 #define QDS_EXPORT __declspec(dllimport)

@@ -20,7 +20,7 @@
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 #ifdef WIN32
-#ifdef OCCVIEWER_EXPORTS
+#if defined OCCVIEWER_EXPORTS || defined OCCViewer_EXPORTS
 #define OCCVIEWER_EXPORT __declspec(dllexport)
 #else
 #define OCCVIEWER_EXPORT __declspec(dllimport)

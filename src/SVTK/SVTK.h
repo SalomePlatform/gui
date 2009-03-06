@@ -25,7 +25,7 @@
 #include "VTKViewer.h"
 
 #ifdef WIN32
-#  ifdef SVTK_EXPORTS
+#  if defined SVTK_EXPORTS
 #    define SVTK_EXPORT __declspec(dllexport)
 #  else
 #   define SVTK_EXPORT __declspec(dllimport)

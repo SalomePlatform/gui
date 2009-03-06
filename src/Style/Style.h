@@ -26,7 +26,7 @@
 #define STYLE_H
 
 #if defined WIN32
-#  if defined STYLE_SALOME_EXPORTS || defined STYLE_EXPORTS
+#  if defined STYLE_SALOME_EXPORTS || defined STYLE_EXPORTS || defined SalomeStyle_EXPORTS
 #    define STYLE_SALOME_EXPORT _declspec( dllexport )
 #  else
 #    define STYLE_SALOME_EXPORT _declspec( dllimport )

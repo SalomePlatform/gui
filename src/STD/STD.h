@@ -23,7 +23,7 @@
 #define STD_H
 
 #if defined WIN32
-#  if defined STD_EXPORTS
+#  if defined STD_EXPORTS || defined std_EXPORTS
 #    define STD_EXPORT  __declspec( dllexport )
 #  else
 #    define STD_EXPORT  __declspec( dllimport )

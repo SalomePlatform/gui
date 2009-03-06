@@ -26,7 +26,7 @@
 #define LIGHTAPP_H
 
 #ifdef WIN32
-#  ifdef LIGHTAPP_EXPORTS
+#  if defined LIGHTAPP_EXPORTS || defined LightApp_EXPORTS
 #    define LIGHTAPP_EXPORT __declspec(dllexport)
 #  else
 #    define LIGHTAPP_EXPORT __declspec(dllimport)

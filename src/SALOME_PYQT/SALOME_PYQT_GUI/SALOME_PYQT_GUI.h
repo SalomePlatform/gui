@@ -28,7 +28,7 @@
 // ========================================================
 // set dllexport type for Win platform 
 #ifdef WIN32
-#  ifdef SALOME_PYQT_EXPORTS
+#  if defined SALOME_PYQT_EXPORTS || defined SalomePyQtGUI_EXPORTS
 #    define SALOME_PYQT_EXPORT __declspec(dllexport)
 #  else
 #    define SALOME_PYQT_EXPORT __declspec(dllimport)

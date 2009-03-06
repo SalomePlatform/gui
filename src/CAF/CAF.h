@@ -23,7 +23,7 @@
 #define CAF_H
 
 #if defined WIN32
-#  if defined CAF_EXPORTS
+#  if defined CAF_EXPORTS || defined caf_EXPORTS
 #    define CAF_EXPORT __declspec( dllexport )
 #  else
 #    define CAF_EXPORT __declspec( dllimport )

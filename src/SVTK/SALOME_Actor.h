@@ -118,6 +118,11 @@ class SVTK_EXPORT SALOME_Actor : public VTKViewer_Actor
   void
   SetVisibility( int );
 
+  //! Gets know whether the actor should be displayed or not
+  virtual
+  bool
+  ShouldBeDisplayed();
+
   //----------------------------------------------------------------------------
   //! To publish the actor an all its internal devices
   virtual

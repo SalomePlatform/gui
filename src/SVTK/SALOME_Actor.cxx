@@ -363,6 +363,16 @@ SALOME_Actor
 }
 
 /*!
+  Gets know whether the actor should be displayed or not
+*/
+bool 
+SALOME_Actor
+::ShouldBeDisplayed()
+{
+  return true;
+}
+
+/*!
   Set selector in order to the actor at any time can restore current selection
   \param theSelector - new selector
 */

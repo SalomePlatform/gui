@@ -833,17 +833,27 @@ void Plot2d_ViewFrame::getFitRangeByCurves(double& xMin,double& xMax,
 					   double& yMin, double& yMax,
 					   double& y2Min, double& y2Max)
 {
-  CurveDict::const_iterator it = myPlot->getCurves().begin();
-  xMin = yMin = y2Min = 1e150;
-  xMax = yMax = y2Max = -1e150;
-  for ( ; it != myPlot->getCurves().end(); it++ ) {
-    if ( xMin > it.value()->getMinX() ) xMin = it.value()->getMinX();
-    if ( xMax < it.value()->getMaxX() ) xMax = it.value()->getMaxX();
-    if ( yMin > it.value()->getMinY() ) yMin = it.value()->getMinY();
-    if ( yMax < it.value()->getMaxY() ) yMax = it.value()->getMaxY();
+  CurveDict cdict = getCurves();
+  if ( !cdict.isEmpty() ) {
+    CurveDict::const_iterator it = myPlot->getCurves().begin();
+    xMin = yMin = y2Min = 1e150;
+    xMax = yMax = y2Max = -1e150;
+    for ( ; it != myPlot->getCurves().end(); it++ ) {
+      if ( xMin > it.value()->getMinX() ) xMin = it.value()->getMinX();
+      if ( xMax < it.value()->getMaxX() ) xMax = it.value()->getMaxX();
+      if ( yMin > it.value()->getMinY() ) yMin = it.value()->getMinY();
+      if ( yMax < it.value()->getMaxY() ) yMax = it.value()->getMaxY();
+    }
+    y2Min = yMin;
+    y2Max = yMax;
   }
-  y2Min = yMin;
-  y2Max = yMax;
+  else {
+    // default values
+    xMin = isModeHorLinear() ? 0.    : 1.;
+    xMax = isModeHorLinear() ? 1000. : 1e5;
+    yMin = y2Min = isModeVerLinear() ? 0.   : 1.;
+    yMax = y2Max = isModeVerLinear() ? 1000 : 1e5;
+  }
 }
 
 /*!

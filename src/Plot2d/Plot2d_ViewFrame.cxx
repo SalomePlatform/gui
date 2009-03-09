@@ -856,24 +856,21 @@ int Plot2d_ViewFrame::testOperation( const QMouseEvent& me )
   const int panBtn  = Qt::ControlModifier | Qt::MidButton;
   const int fitBtn  = Qt::ControlModifier | Qt::RightButton;
 
-  switch (btn)
-  {
-  case zoomBtn:
-    {
-      QPixmap zoomPixmap (imageZoomCursor);
-      QCursor zoomCursor (zoomPixmap);
-      myPlot->canvas()->setCursor( zoomCursor );
-      return ZoomId;
-    }
-  case panBtn:
+  if ( btn == zoomBtn ) {
+    QPixmap zoomPixmap (imageZoomCursor);
+    QCursor zoomCursor (zoomPixmap);
+    myPlot->canvas()->setCursor( zoomCursor );
+    return ZoomId;
+  }
+  else if ( btn == panBtn ) {
     myPlot->canvas()->setCursor( QCursor( Qt::SizeAllCursor ) );
     return PanId;
-  case fitBtn:
+  }
+  else if ( btn == fitBtn ) {
     myPlot->canvas()->setCursor( QCursor( Qt::PointingHandCursor ) );
     return FitAreaId;
-  default :
-    return NoOpId;
   }
+  return NoOpId;
 }
 
 /*!

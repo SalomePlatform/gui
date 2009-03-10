@@ -276,7 +276,7 @@ SUIT_ResourceMgr* QxScene_ViewWindow::resMgr() const
 bool QxScene_ViewWindow::closeRequested()
 {
   DEBTRACE("QxScene_ViewWindow::closeRequested");
-  bool isClosed = false;
+  bool isClosed = true;
   emit tryClose(isClosed, this);
   DEBTRACE("isClosed=" << isClosed);
   return isClosed;

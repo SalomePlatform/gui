@@ -230,7 +230,7 @@
     </message>
     <message>
         <source>OCC_IMAGE_FILES</source>
-        <translation>Images Files (*.bmp *.png *.jpg *.jpeg *.eps *.ps)</translation>
+        <translation>Images Files (*.bmp *.png *.jpg *.jpeg)</translation>
     </message>
 </context>
 <context>

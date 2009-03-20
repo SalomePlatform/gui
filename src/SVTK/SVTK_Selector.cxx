@@ -125,6 +125,8 @@ SVTK_SelectorDef
     mySelectionMode = theMode;
     myMapIOSubIndex.clear();
     this->EndPickCallback();
+    // Let everybody process selection mode change
+    this->Modified();
   }
 }
 

@@ -40,6 +40,8 @@
 #include <vtkActorCollection.h>
 #include <vtkRenderer.h>
 
+#include <set>
+
 /*!
   Constructor
 */
@@ -134,6 +136,22 @@ namespace SVTK
       }
     }
   };
+
+  struct TAddAction
+  {
+    std::set<SALOME_Actor*>* myActors;
+    TAddAction( std::set<SALOME_Actor*>* actors ):
+      myActors( actors )
+    {}
+    
+    void
+    operator()( SALOME_Actor* theActor) 
+    {
+      if(myActors && theActor->GetMapper() && theActor->hasIO()){
+	myActors->insert( theActor );
+      }
+    }    
+  };
 }
 
 /*!
@@ -146,16 +164,13 @@ SVTK_SignalHandler
   vtkActorCollection* anActors = myMainWindow->getRenderer()->GetActors();
 
   using namespace SVTK;
-  ForEach<SALOME_Actor>(anActors,
-			THighlightAction( false ));
   SVTK_Selector* aSelector = myMainWindow->GetSelector();
   const SALOME_ListIO& aListIO = aSelector->StoredIObjects();
-  SALOME_ListIteratorOfListIO anIter(aListIO);
-  for(; anIter.More(); anIter.Next()){
-    ForEachIf<SALOME_Actor>(anActors,
-			    TIsSameIObject<SALOME_Actor>(anIter.Value()),
-			    THighlightAction(true));
-  }
+
+  ForEachIfElse<SALOME_Actor>(anActors,
+                              TIsInList<SALOME_Actor>(aListIO),
+                              THighlightAction(true),
+                              THighlightAction(false));
 
   myMainWindow->Repaint(false);
 }

@@ -26,6 +26,9 @@
 #include <VTKViewer_Functor.h>
 
 #include "SALOME_InteractiveObject.hxx"
+#include "SALOME_ListIO.hxx"
+
+#include <TColStd_MapOfTransient.hxx>
 
 /*!
   \file SVTK_Functor.h
@@ -77,6 +80,34 @@ namespace SVTK
       {
 	Handle(SALOME_InteractiveObject) anIO = theActor->getIO();
 	return myIObject->isSame(anIO);
+      }
+      return false;
+    }
+  };
+
+  //----------------------------------------------------------------
+  //! This functor check, if the actor's #SALOME_InteractiveObject is in the given list
+  template<class TActor> 
+  struct TIsInList
+  {
+    TColStd_MapOfTransient myIObjects;
+    //! To construct the functor
+    TIsInList( const SALOME_ListIO& theObjList )
+    {
+      SALOME_ListIteratorOfListIO anIter( theObjList );
+      for(; anIter.More(); anIter.Next() ){
+        if ( !myIObjects.Contains( anIter.Value() ) )
+          myIObjects.Add( anIter.Value() );
+      }
+    }
+
+    //! To calculate the functor
+    bool operator()(TActor* theActor)
+    {
+      if(theActor->hasIO())
+      {
+	Handle(SALOME_InteractiveObject) anIO = theActor->getIO();
+        return myIObjects.Contains( anIO );
       }
       return false;
     }

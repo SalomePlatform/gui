@@ -68,6 +68,28 @@ namespace VTK
 	}
 	return theFun;
       }
+
+     /*!For each actor(for ex: someActor) from \a theCollection(that can be dynamic cast to type TActor and \n
+     * method \a thePredicate(someActor) return true) \n
+     * calls method \a theFun(someActor), otherwise calls \a theAltFun(someActor)
+     */
+    template<typename TActor, typename TPredicate, typename TFunction, typename TAltFunction>
+      TFunction ForEachIfElse(vtkActorCollection *theCollection, 
+			      TPredicate thePredicate,
+			      TFunction theFun,
+                              TAltFunction theAltFun)
+      {
+	if(theCollection){
+	  theCollection->InitTraversal();
+	  while(vtkActor *anAct = theCollection->GetNextActor())
+	    if(TActor *anActor = dynamic_cast<TActor*>(anAct))
+	      if(thePredicate(anActor))
+		theFun(anActor);
+              else
+                theAltFun(anActor);
+	}
+	return theFun;
+      }
   
     /*!Find actor from collection, that can be dynamicaly cast to \a TActor, \n
      *and method \a thePredicate(someActor) return true) \n

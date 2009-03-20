@@ -1100,8 +1100,8 @@ SVTK_InteractorStyle
 	      {
 		if(myLastHighlitedActor.GetPointer() && myLastHighlitedActor.GetPointer() != anActor)
 		  myLastHighlitedActor->Highlight( this, aSelectionEvent, false );
-		myLastHighlitedActor = anActor;
 	      }
+	    myLastHighlitedActor = anActor;
 	  } 
 	else 
 	  {
@@ -1393,10 +1393,6 @@ SVTK_InteractorStyle
 
 /*!
   Internal method, (re-)binds event handlers using the custom event priorities (if any).
-  NOTE: This method assumes that vtkInteractorObserver::EventCallbackCommand is always used,
-  any other callbacks are unbound here. This is a limitation of vtkObject API related to event observers, 
-  it does not have a method to get the current observer for certain event type. As soon as 
-  this limitation is eliminated, updateObservers() can be improved.
 */
 void
 SVTK_InteractorStyle
@@ -1409,8 +1405,9 @@ SVTK_InteractorStyle
   TEventPriorities::const_iterator cit = myEventPriorities.begin(), cend = myEventPriorities.end();
   for ( ; cit != cend; cit++ ){
     unsigned long anEvent = cit->first;
-    if ( anInteractor->HasObserver( anEvent ) )
-      anInteractor->RemoveObserver( anEvent );
+    // Rebind EventCallbackCommand with custom priorities 
+    if ( anInteractor->HasObserver( anEvent, this->EventCallbackCommand ) )
+      anInteractor->RemoveObservers( anEvent, this->EventCallbackCommand );
     anInteractor->AddObserver( anEvent, this->EventCallbackCommand, cit->second );
   }
 }

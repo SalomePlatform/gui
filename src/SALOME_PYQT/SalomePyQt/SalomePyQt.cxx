@@ -126,7 +126,7 @@ SALOME_Selection* SALOME_Selection::GetSelection( SalomeApp_Application* app )
   \brief Constructor.
   \param p parent object
 */
-SALOME_Selection::SALOME_Selection( QObject* p ) : QObject( p ), mySelMgr( 0 )
+SALOME_Selection::SALOME_Selection( QObject* p ) : QObject( 0 ), mySelMgr( 0 )
 {
   SalomeApp_Application* app = dynamic_cast<SalomeApp_Application*>( p );
   if ( app ) {
@@ -140,9 +140,12 @@ SALOME_Selection::SALOME_Selection( QObject* p ) : QObject( p ), mySelMgr( 0 )
 */
 SALOME_Selection::~SALOME_Selection()
 {
-  SalomeApp_Application* app = dynamic_cast<SalomeApp_Application*>( parent() );
-  if ( app && SelMap.find( app ) != SelMap.end() )
-    SelMap.remove( app );
+  SalomeApp_Application* app = 0;
+  QMap<SalomeApp_Application*, SALOME_Selection*>::Iterator it;
+  for ( it = SelMap.begin(); it != SelMap.end() && !app; ++it ) {
+    if ( it.value() == this ) app = it.key();
+  }
+  if ( app ) SelMap.remove( app );
 }
 
 /*!

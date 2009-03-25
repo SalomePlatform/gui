@@ -75,7 +75,7 @@ namespace VTK
      */
     template<typename TActor, typename TPredicate, typename TFunction, typename TAltFunction>
       TFunction ForEachIfElse(vtkActorCollection *theCollection, 
-			      TPredicate thePredicate,
+			      const TPredicate& thePredicate,
 			      TFunction theFun,
                               TAltFunction theAltFun)
       {

@@ -166,9 +166,10 @@ SVTK_SignalHandler
   using namespace SVTK;
   SVTK_Selector* aSelector = myMainWindow->GetSelector();
   const SALOME_ListIO& aListIO = aSelector->StoredIObjects();
+  TIsInList<SALOME_Actor> aPredicate(aListIO);
 
   ForEachIfElse<SALOME_Actor>(anActors,
-                              TIsInList<SALOME_Actor>(aListIO),
+                              aPredicate,
                               THighlightAction(true),
                               THighlightAction(false));
 

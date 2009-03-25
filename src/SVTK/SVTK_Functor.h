@@ -27,6 +27,7 @@
 
 #include "SALOME_InteractiveObject.hxx"
 #include "SALOME_ListIO.hxx"
+#include "SALOME_ListIteratorOfListIO.hxx"
 
 #include <TColStd_MapOfTransient.hxx>
 
@@ -111,6 +112,9 @@ namespace SVTK
       }
       return false;
     }
+    
+  private:
+    TIsInList( const TIsInList<TActor>& ) {}
   };
 
 

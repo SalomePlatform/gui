@@ -102,7 +102,7 @@ namespace SVTK
     }
 
     //! To calculate the functor
-    bool operator()(TActor* theActor)
+    bool operator()(TActor* theActor) const
     {
       if(theActor->hasIO())
       {

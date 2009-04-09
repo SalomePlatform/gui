@@ -29,6 +29,7 @@
 #define VTKViewer_Algorithm_H
 
 #include <vtkActorCollection.h>
+#include <vtkCollectionIterator.h>
 
 class vtkActor;
 
@@ -41,10 +42,12 @@ namespace VTK
       TFunction ForEach(vtkActorCollection *theCollection, TFunction theFun)
       {
 	if(theCollection){
-	  theCollection->InitTraversal();
-	  while(vtkActor *anAct = theCollection->GetNextActor())
-	    if(TActor *anActor = dynamic_cast<TActor*>(anAct))
+	  vtkCollectionIterator* anIterator = theCollection->NewIterator();
+	  while (anIterator->IsDoneWithTraversal()) {
+	    if(TActor *anActor = dynamic_cast<TActor*>(anIterator->GetObject()))
 	      theFun(anActor);
+	    anIterator->GoToNextItem();
+	  }
 	}
 	return theFun;
       }
@@ -59,11 +62,14 @@ namespace VTK
 			  TFunction theFun)
       {
 	if(theCollection){
-	  theCollection->InitTraversal();
-	  while(vtkActor *anAct = theCollection->GetNextActor())
-	    if(TActor *anActor = dynamic_cast<TActor*>(anAct))
+	  vtkCollectionIterator* anIterator = theCollection->NewIterator();
+	  while (anIterator->IsDoneWithTraversal()) {
+	    if(TActor *anActor = dynamic_cast<TActor*>(anIterator->GetObject())) {
 	      if(thePredicate(anActor))
 		theFun(anActor);
+	    }
+	    anIterator->GoToNextItem();
+	  }
 	}
 	return theFun;
       }
@@ -76,11 +82,14 @@ namespace VTK
       TActor* Find(vtkActorCollection *theCollection, TPredicate thePredicate)
       {
 	if(theCollection){
-	  theCollection->InitTraversal();
-	  while(vtkActor *anAct = theCollection->GetNextActor())
-	    if(TActor *anActor = dynamic_cast<TActor*>(anAct))
+	  vtkCollectionIterator* anIterator = theCollection->NewIterator();
+	  while (anIterator->IsDoneWithTraversal()) {
+	    if(TActor* anActor = dynamic_cast<TActor*>(anIterator->GetObject())) {
 	      if(thePredicate(anActor))
 		return anActor;
+	    }
+	    anIterator->GoToNextItem();
+	  }
 	}
 	return NULL;
       }

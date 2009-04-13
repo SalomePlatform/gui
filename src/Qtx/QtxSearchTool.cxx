@@ -380,6 +380,8 @@ void QtxSearchTool::setSearcher( QtxSearchTool::Searcher* s )
   if ( mySearcher )
     delete mySearcher;
   mySearcher = s;
+  connect( mySearcher, SIGNAL( resultChanged( bool ) ),
+           this, SLOT( searchResultChanged( bool ) ) );
 }
 
 /*!
@@ -824,12 +826,6 @@ void QtxSearchTool::find( const QString& what, int where )
   if ( !isVisible() )
     show();
 
-  QPalette p = myData->palette();
-  p.setColor( QPalette::Active,
-	      QPalette::Base,
-	      QApplication::palette( myData ).color( QPalette::Active,
-						     QPalette::Base ) );
-
   bool found = true;
   if ( mySearcher && !what.isEmpty() )
   {
@@ -849,13 +845,10 @@ void QtxSearchTool::find( const QString& what, int where )
     }
   }
 
-  if ( !found )
-    p.setColor( QPalette::Active, QPalette::Base, QColor( highlightColor ) );
-
   if ( !focused() && myAutoHideEnabled )
     myAutoHideTimer->start();
 
-  myData->setPalette( p );
+  updateContent( found );
 }
 
 /*!
@@ -865,6 +858,15 @@ void QtxSearchTool::find( const QString& what, int where )
 void QtxSearchTool::modifierSwitched()
 {
   find( myData->text() );
+}
+
+/*!
+  \brief Called when the search result's changed. It updates validity of the current content
+  \internal
+*/
+void QtxSearchTool::searchResultChanged( bool theResult )
+{
+  updateContent( theResult );
 }
 
 /*!
@@ -1061,6 +1063,20 @@ void QtxSearchTool::updateControls()
 
   myBtnWidget->setVisible( myControls & Standard );
   myModWidget->setVisible( myControls & Modifiers );
+}
+
+/*!
+  \brief Colors the data content in valid/invalid value.
+  \param validState flag tells about validity of the current content
+  \internal
+*/
+void QtxSearchTool::updateContent( const bool& validState )
+{
+  QPalette p = myData->palette();
+  p.setColor( QPalette::Active, QPalette::Base, validState
+        ? QApplication::palette( myData ).color( QPalette::Active, QPalette::Base )
+        : QColor( highlightColor ) );
+  myData->setPalette( p );
 }
 
 /*!

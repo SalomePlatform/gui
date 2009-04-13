@@ -127,6 +127,7 @@ public slots:
 private slots:
   void                find( const QString&, int = fAny );
   void                modifierSwitched();
+  void                searchResultChanged( bool );
 
 private:
   void                init();
@@ -135,6 +136,7 @@ private:
   void                initShortcuts( const QList<QKeySequence>& );
   void                updateShortcuts();
   void                updateControls();
+  void                updateContent( const bool& );
 
 private:
   typedef QPointer<QShortcut> ShortcutPtr;
@@ -162,8 +164,10 @@ private:
   QMap<int, QWidget*> myWidgets;
 };
 
-class QTX_EXPORT QtxSearchTool::Searcher
+class QTX_EXPORT QtxSearchTool::Searcher : public QObject
 {
+  Q_OBJECT
+
 public:
   Searcher();
   virtual ~Searcher();
@@ -173,6 +177,9 @@ public:
   virtual bool findPrevious( const QString&, QtxSearchTool* ) = 0;
   virtual bool findFirst( const QString&, QtxSearchTool* ) = 0;
   virtual bool findLast( const QString&, QtxSearchTool* ) = 0;
+
+signals:
+  void         resultChanged( bool );
 };
 
 class QTX_EXPORT QtxTreeViewSearcher : public QtxSearchTool::Searcher

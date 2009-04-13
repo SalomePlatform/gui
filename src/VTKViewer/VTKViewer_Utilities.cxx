@@ -54,12 +54,49 @@ ResetCamera(vtkRenderer* theRenderer,
     
     if(aLength < MIN_DISTANCE)
       return;
-
-    vtkFloatingPointType aWidth = 
-      sqrt((aBounds[1]-aBounds[0])*(aBounds[1]-aBounds[0]) +
-	   (aBounds[3]-aBounds[2])*(aBounds[3]-aBounds[2]) +
-	   (aBounds[5]-aBounds[4])*(aBounds[5]-aBounds[4]));
     
+    double aX, anY, aZ;
+    vtkFloatingPointType aNewBounds[6] = {VTK_LARGE_FLOAT, -VTK_LARGE_FLOAT,
+                                          VTK_LARGE_FLOAT, -VTK_LARGE_FLOAT,
+                                          VTK_LARGE_FLOAT, -VTK_LARGE_FLOAT };
+    
+    // We calculate a new bounding box that is aligned with the view CS axes.
+    // The new box should fully include the original box in the view XOY plane.
+    // Then we calculate the distance from the camera so that the new box is
+    // not clipped, preserving the current view angle. 
+    // This gives us the required zooming.
+    // In order to simplify calculation of the distance
+    // we set the camera's scale to 1 before transforming the box coordinates
+    // (actually we set it to 0.9 to have some empty space around the 3D model
+    // after this operation). Otherwise we would have to take the current scale 
+    // into account when calculating the new camera position. 
+    aCamera->SetParallelScale( 0.9 );
+
+    for ( int i = 0; i < 2; i++ ) {
+      for ( int j = 2; j < 4; j++ ) {
+        for ( int k = 4; k < 6; k++ ) {
+          aX = aBounds[i];
+          anY = aBounds[j];
+          aZ = aBounds[k];
+
+	  // Transform the original 3D point in the world CS
+	  // into a point in the view CS without any scaling
+	  // (i.e. we only rotate and translate the CS according 
+	  // to the current camera orientation).
+          theRenderer->WorldToView(aX, anY, aZ);
+
+          aNewBounds[i] = i%2 == 0 ? min(aNewBounds[i], aX)
+                                   : max(aNewBounds[i], aX);
+          aNewBounds[j] = j%2 == 0 ? min(aNewBounds[j], anY)
+                                   : max(aNewBounds[j], anY);
+          aNewBounds[k] = k%2 == 0 ? min(aNewBounds[k], aZ)
+                                   : max(aNewBounds[k], aZ);
+        }
+      }
+    }
+    vtkFloatingPointType aWidth = max(aNewBounds[1] - aNewBounds[0],
+                                      aNewBounds[3] - aNewBounds[2]);
+
     if(aWidth < MIN_DISTANCE)
       return;
 

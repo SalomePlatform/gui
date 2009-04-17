@@ -31,10 +31,10 @@
 #include <SUIT_ViewManager.h>
 #include <SUIT_DataObjectIterator.h>
 #include <CAM_DataModel.h>
-#include <SalomeApp_Application.h>
-#include <SalomeApp_Study.h>
-#include <SalomeApp_Module.h>
-#include <SalomeApp_DataObject.h>
+#include <LightApp_Application.h>
+#include <LightApp_Study.h>
+#include <LightApp_Module.h>
+#include <LightApp_DataObject.h>
 #include <LightApp_SelectionMgr.h>
 #include <LightApp_DataOwner.h>
 #include <SALOME_Prs.h>
@@ -101,10 +101,10 @@
   \internal
   \return active application or 0 if there is no any
 */
-static SalomeApp_Application* getApplication()
+static LightApp_Application* getApplication()
 {
   if ( SUIT_Session::session() )
-    return dynamic_cast<SalomeApp_Application*>( SUIT_Session::session()->activeApplication() );
+    return dynamic_cast<LightApp_Application*>( SUIT_Session::session()->activeApplication() );
   return 0;
 }
 
@@ -113,10 +113,10 @@ static SalomeApp_Application* getApplication()
   \internal
   \return active study or 0 if there is no study opened
 */
-static SalomeApp_Study* getActiveStudy()
+static LightApp_Study* getActiveStudy()
 {
   if ( getApplication() )
-    return dynamic_cast<SalomeApp_Study*>( getApplication()->activeStudy() );
+    return dynamic_cast<LightApp_Study*>( getApplication()->activeStudy() );
   return 0;
 }
 
@@ -168,7 +168,7 @@ void SALOMEGUI_Swig::updateObjBrowser( bool /*updateSelection*/ )
     TEvent() {}
     virtual void Execute()
     {
-      if ( SalomeApp_Application* anApp = getApplication() ) {
+      if ( LightApp_Application* anApp = getApplication() ) {
 	anApp->updateObjectBrowser();
 	anApp->updateActions(); //SRN: added in order to update the toolbar
       }
@@ -191,8 +191,8 @@ public:
   TGetActiveStudyIdEvent() : myResult( 0 ) {}
   virtual void Execute()
   {
-    if ( SalomeApp_Study* aStudy = getActiveStudy() ) {
-      myResult = aStudy->studyDS()->StudyId();
+    if ( LightApp_Study* aStudy = getActiveStudy() ) {
+      myResult = aStudy->id();
     }
   }
 };
@@ -215,8 +215,8 @@ public:
   TGetActiveStudyNameEvent() {}
   virtual void Execute()
   {
-    if ( SalomeApp_Study* aStudy = getActiveStudy() ) {
-      myResult = aStudy->studyDS()->Name();
+    if ( LightApp_Study* aStudy = getActiveStudy() ) {
+      myResult = aStudy->id();
     }
   }
 };
@@ -251,7 +251,7 @@ public:
     : myName( name ), myIsUserName( isUserName ) {}
   virtual void Execute()
   {
-    if ( SalomeApp_Application* app = getApplication() ) {
+    if ( LightApp_Application* app = getApplication() ) {
       myResult = myIsUserName ? app->moduleTitle( myName ) : app->moduleName( myName );
     }
   }
@@ -288,8 +288,8 @@ public:
   TGetSelectedEvent() {}
   virtual void Execute()
   {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
-      SalomeApp_Study* aStudy  = dynamic_cast<SalomeApp_Study*>( anApp->activeStudy() ); // for sure!
+    if ( LightApp_Application* anApp = getApplication() ) {
+      LightApp_Study* aStudy  = dynamic_cast<LightApp_Study*>( anApp->activeStudy() ); // for sure!
       LightApp_SelectionMgr* aSelMgr = anApp->selectionMgr(); 
       if ( aStudy && aSelMgr ) {
 	SUIT_DataOwnerPtrList aList;
@@ -334,8 +334,8 @@ void SALOMEGUI_Swig::AddIObject( const char* theEntry )
     TEvent( const char* theEntry ) : myEntry( theEntry ) {}
     virtual void Execute()
     {
-      if ( SalomeApp_Application* anApp = getApplication() ) {
-	SalomeApp_Study*       aStudy  = dynamic_cast<SalomeApp_Study*>( anApp->activeStudy() ); // for sure!
+      if ( LightApp_Application* anApp = getApplication() ) {
+	LightApp_Study*       aStudy  = dynamic_cast<LightApp_Study*>( anApp->activeStudy() ); // for sure!
 	LightApp_SelectionMgr* aSelMgr = anApp->selectionMgr(); 
 	if ( aStudy && aSelMgr ) {
 	  SALOME_ListIO anIOList;
@@ -361,8 +361,8 @@ void SALOMEGUI_Swig::RemoveIObject( const char* theEntry )
     TEvent( const char* theEntry ) : myEntry( theEntry ) {}
     virtual void Execute()
     {
-      if ( SalomeApp_Application* anApp = getApplication() ) {
-	SalomeApp_Study* aStudy  = dynamic_cast<SalomeApp_Study*>( anApp->activeStudy() ); // for sure!
+      if ( LightApp_Application* anApp = getApplication() ) {
+	LightApp_Study* aStudy  = dynamic_cast<LightApp_Study*>( anApp->activeStudy() ); // for sure!
 	LightApp_SelectionMgr* aSelMgr = anApp->selectionMgr(); 
 	if ( aStudy && aSelMgr ) {
 	  SALOME_ListIO anIOList;
@@ -398,8 +398,8 @@ void SALOMEGUI_Swig::ClearIObjects()
     TEvent() {}
     virtual void Execute()
     {
-      if ( SalomeApp_Application* anApp = getApplication() ) {
-	SalomeApp_Study* aStudy  = dynamic_cast<SalomeApp_Study*>( anApp->activeStudy() ); // for sure!
+      if ( LightApp_Application* anApp = getApplication() ) {
+	LightApp_Study* aStudy  = dynamic_cast<LightApp_Study*>( anApp->activeStudy() ); // for sure!
 	LightApp_SelectionMgr* aSelMgr = anApp->selectionMgr(); 
 	if ( aStudy && aSelMgr )
 	  aSelMgr->clearSelected();
@@ -427,7 +427,7 @@ void SALOMEGUI_Swig::Display( const char* theEntry )
   public:
     TEvent( const char* theEntry ) : myEntry( theEntry ) {}
     virtual void Execute() {
-      if ( SalomeApp_Application* anApp = getApplication() ) {
+      if ( LightApp_Application* anApp = getApplication() ) {
 	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
 	if ( window ) {
 	  SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
@@ -460,7 +460,7 @@ void SALOMEGUI_Swig::DisplayOnly( const char* theEntry )
     TEvent( const char* theEntry ) : myEntry( theEntry ) {}
     virtual void Execute()
     {
-      if ( SalomeApp_Application* anApp = getApplication() ) {
+      if ( LightApp_Application* anApp = getApplication() ) {
 	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
 	if ( window ) {
 	  SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
@@ -494,7 +494,7 @@ void SALOMEGUI_Swig::Erase( const char* theEntry )
     TEvent( const char* theEntry ) : myEntry( theEntry ) {}
     virtual void Execute()
     {
-      if ( SalomeApp_Application* anApp = getApplication() ) {
+      if ( LightApp_Application* anApp = getApplication() ) {
 	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
 	if ( window ) {
 	  SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
@@ -524,15 +524,15 @@ void SALOMEGUI_Swig::DisplayAll()
     TEvent() {}
     virtual void Execute()
     {
-      if ( SalomeApp_Application* anApp = getApplication() ) {
-	SalomeApp_Study*  study        = dynamic_cast<SalomeApp_Study*>( anApp->activeStudy() ); // for sure!
+      if ( LightApp_Application* anApp = getApplication() ) {
+	LightApp_Study*  study        = dynamic_cast<LightApp_Study*>( anApp->activeStudy() ); // for sure!
 	SUIT_ViewWindow*  window       = anApp->desktop()->activeWindow();
-	SalomeApp_Module* activeModule = dynamic_cast<SalomeApp_Module*>( anApp->activeModule() );
+	LightApp_Module* activeModule = dynamic_cast<LightApp_Module*>( anApp->activeModule() );
 	if ( study && window && activeModule ) {
 	  SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
 	  if ( view ) {
 	    for ( SUIT_DataObjectIterator it( activeModule->dataModel()->root(), SUIT_DataObjectIterator::DepthLeft ); it.current(); ++it ) {
-	      SalomeApp_DataObject* obj = dynamic_cast<SalomeApp_DataObject*>( it.current() );
+	      LightApp_DataObject* obj = dynamic_cast<LightApp_DataObject*>( it.current() );
 	      if ( obj && !obj->entry().isEmpty() )
 		view->Display( view->CreatePrs( obj->entry().toLatin1() ) );
 	    }
@@ -557,7 +557,7 @@ void SALOMEGUI_Swig::EraseAll()
     TEvent() {}
     virtual void Execute()
     {
-      if ( SalomeApp_Application* anApp = getApplication() ) {
+      if ( LightApp_Application* anApp = getApplication() ) {
 	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
 	if ( window ) {
 	  SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
@@ -590,7 +590,7 @@ public:
   TIsInViewerEvent( const char* theEntry ) : myEntry( theEntry ), myResult( false ) {}
   virtual void Execute()
   {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
+    if ( LightApp_Application* anApp = getApplication() ) {
       SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
       if ( window ) {
 	SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
@@ -618,7 +618,7 @@ void SALOMEGUI_Swig::UpdateView()
     TEvent() {}
     virtual void Execute()
     {
-      if ( SalomeApp_Application* anApp = getApplication() ) {
+      if ( LightApp_Application* anApp = getApplication() ) {
 	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
 	if ( window ) {
 	  SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
@@ -642,7 +642,7 @@ void SALOMEGUI_Swig::FitAll()
     TEvent() {}
     virtual void Execute()
     {
-      if ( SalomeApp_Application* anApp = getApplication() ) {
+      if ( LightApp_Application* anApp = getApplication() ) {
 	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
 	if ( window ) {
 	  if ( dynamic_cast<SVTK_ViewWindow*>( window ) )
@@ -669,7 +669,7 @@ void SALOMEGUI_Swig::ResetView()
     TEvent() {}
     virtual void Execute()
     {
-      if ( SalomeApp_Application* anApp = getApplication() ) {
+      if ( LightApp_Application* anApp = getApplication() ) {
 	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
 	if ( window ) {
 	  if ( dynamic_cast<SVTK_ViewWindow*>( window ) )
@@ -715,7 +715,7 @@ static void setView( int view )
     TEvent( int view ) : myView( view ) {}
     virtual void Execute()
     {
-      if ( SalomeApp_Application* anApp = getApplication() ) {
+      if ( LightApp_Application* anApp = getApplication() ) {
 	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
 	if ( window ) {
 	  if ( dynamic_cast<SVTK_ViewWindow*>( window ) ) {

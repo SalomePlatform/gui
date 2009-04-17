@@ -19,44 +19,24 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifndef LIGHTAPP_EVENTFILTER_H
-#define LIGHTAPP_EVENTFILTER_H
-
-#include "LightApp.h"
-
-#include <QObject>
-
-#if defined WIN32
-#pragma warning( disable: 4251 )
-#endif
+//  Author : Roman NIKOLAEV, Open CASCADE S.A.S. (roman.nikolaev@opencascade.com)
+//  Date   : 22/06/2007
 
 
-class SALOME_Event;
+#ifndef _SUITAPP_INIT_PYTHON_
+#define _SUITAPP_INIT_PYTHON_
 
-/*!
-  Class provide event filter.
-*/
-class LIGHTAPP_EXPORT LightApp_EventFilter: public QObject 
+#include <pthread.h> 
+#include <Python.h>
+
+struct SUIT_PYTHON
 {
-public:
-  static void Init();
-  static void Destroy();
+  static PyThreadState *_gtstate;
+  static PyInterpreterState *_interp;
+  static PyObject *salome_shared_modules_module;
+  static bool initialized;
+  static void init_python(int argc, char **argv);
 
-protected:
-  LightApp_EventFilter();
-  virtual ~LightApp_EventFilter();
-
-private:
-  /*! global event filter for qapplication */
-  virtual bool eventFilter( QObject* o, QEvent* e );
-  void processEvent( SALOME_Event* );
-
-private:
-  static LightApp_EventFilter* myFilter;
 };
 
-#if defined WIN32
-#pragma warning( default: 4251 )
-#endif
-
-#endif
+#endif // _SUITAPP_INIT_PYTHON_

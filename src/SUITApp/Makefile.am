@@ -29,11 +29,13 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 lib_LTLIBRARIES = libSUITApp.la
 
 salomeinclude_HEADERS =		\
-	SUITApp_Application.h
+	SUITApp_Application.h   \
+	SUITApp_init_python.hxx
 
 dist_libSUITApp_la_SOURCES =	\
 	SUITApp.cxx		\
-	SUITApp_Application.cxx 
+	SUITApp_Application.cxx \
+	SUITApp_init_python.cxx 
 
 MOC_FILES =				\
 	SUITApp_Application_moc.cxx
@@ -60,6 +62,7 @@ libSUITApp_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la ../Style/libSalomeS
 
 if ENABLE_PYCONSOLE
 libSUITApp_la_LDFLAGS += -Xlinker -export-dynamic $(PYTHON_LIBS)
+CPPFLAGS+=-DSUIT_ENABLE_PYTHON
 endif
 
 # Executable

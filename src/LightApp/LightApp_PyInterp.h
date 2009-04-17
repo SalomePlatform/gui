@@ -19,44 +19,23 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifndef LIGHTAPP_EVENTFILTER_H
-#define LIGHTAPP_EVENTFILTER_H
+//  Author : Roman NIKOLAEV, Open CASCADE S.A.S. (roman.nikolaev@opencascade.com)
+//  Date   : 22/06/2007
 
-#include "LightApp.h"
+#ifndef _LIGHTAPP_PYINTERP_H_
+#define _LIGHTAPP_PYINTERP_H_
 
-#include <QObject>
+#include <PyConsole_Interp.h> // this include must be first (see PyInterp_base.h)!
 
-#if defined WIN32
-#pragma warning( disable: 4251 )
-#endif
-
-
-class SALOME_Event;
-
-/*!
-  Class provide event filter.
-*/
-class LIGHTAPP_EXPORT LightApp_EventFilter: public QObject 
+class LightApp_PyInterp : public PyConsole_Interp
 {
 public:
-  static void Init();
-  static void Destroy();
-
+  LightApp_PyInterp();
+  virtual ~LightApp_PyInterp();
+  
 protected:
-  LightApp_EventFilter();
-  virtual ~LightApp_EventFilter();
-
-private:
-  /*! global event filter for qapplication */
-  virtual bool eventFilter( QObject* o, QEvent* e );
-  void processEvent( SALOME_Event* );
-
-private:
-  static LightApp_EventFilter* myFilter;
+  virtual void initPython();
+  virtual bool initContext();
 };
 
-#if defined WIN32
-#pragma warning( default: 4251 )
-#endif
-
-#endif
+#endif //_LIGHTAPP_PYINTERP_H_

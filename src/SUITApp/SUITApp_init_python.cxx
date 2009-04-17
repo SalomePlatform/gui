@@ -19,44 +19,30 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifndef LIGHTAPP_EVENTFILTER_H
-#define LIGHTAPP_EVENTFILTER_H
-
-#include "LightApp.h"
-
-#include <QObject>
-
-#if defined WIN32
-#pragma warning( disable: 4251 )
-#endif
+//  Author : Roman NIKOLAEV, Open CASCADE S.A.S. (roman.nikolaev@opencascade.com)
+//  Date   : 22/06/2007
 
 
-class SALOME_Event;
+#include "SUITApp_init_python.hxx"
 
-/*!
-  Class provide event filter.
-*/
-class LIGHTAPP_EXPORT LightApp_EventFilter: public QObject 
+
+PyThreadState* SUIT_PYTHON::_gtstate                = NULL;
+PyObject *SUIT_PYTHON::salome_shared_modules_module = NULL;
+PyInterpreterState* SUIT_PYTHON::_interp            = NULL;
+bool SUIT_PYTHON::initialized                       = false;
+
+void SUIT_PYTHON::init_python(int argc, char **argv)
 {
-public:
-  static void Init();
-  static void Destroy();
+  if (Py_IsInitialized())
+  {
+    return;
+  }
+  Py_SetProgramName(argv[0]);
+  Py_Initialize(); // Initialize the interpreter
+  PySys_SetArgv(argc, argv);
+  SUIT_PYTHON::_interp = PyThreadState_Get()->interp;
+  PyEval_InitThreads(); // Create (and acquire) the interpreter lock
+  SUIT_PYTHON::_gtstate = PyEval_SaveThread(); // Release global thread state
+  SUIT_PYTHON::initialized = true;
+}
 
-protected:
-  LightApp_EventFilter();
-  virtual ~LightApp_EventFilter();
-
-private:
-  /*! global event filter for qapplication */
-  virtual bool eventFilter( QObject* o, QEvent* e );
-  void processEvent( SALOME_Event* );
-
-private:
-  static LightApp_EventFilter* myFilter;
-};
-
-#if defined WIN32
-#pragma warning( default: 4251 )
-#endif
-
-#endif

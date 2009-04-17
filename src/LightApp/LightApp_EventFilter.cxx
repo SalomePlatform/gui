@@ -25,6 +25,8 @@
 
 #include <QApplication>
 
+#include <SALOME_Event.h>
+
 LightApp_EventFilter* LightApp_EventFilter::myFilter = NULL;
 
 /*!Constructor.*/
@@ -61,9 +63,25 @@ bool LightApp_EventFilter::eventFilter( QObject* o, QEvent* e )
       if ( aDesktop )
 	aDesktop->emitActivated();
     }
+
+  else if(e->type() == SALOME_EVENT)
+    {
+      SALOME_Event* aSE = (SALOME_Event*)((SALOME_CustomEvent*)e)->data();
+      processEvent(aSE);
+      ((SALOME_CustomEvent*)e)->setData( 0 );
+      return true;
+    }
   
   return QObject::eventFilter( o, e );
 }
+
+/*!Process event.*/
+void LightApp_EventFilter::processEvent( SALOME_Event* theEvent )
+{
+  if(theEvent)
+    theEvent->ExecutePostedEvent();
+}
+
 
 /*!Create new instance of LightApp_EventFilter*/
 void LightApp_EventFilter::Init()

@@ -19,44 +19,11 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifndef LIGHTAPP_EVENTFILTER_H
-#define LIGHTAPP_EVENTFILTER_H
+//  File   : SALOME_PYQT_GUI.sip
+//  Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
-#include "LightApp.h"
+%Module SalomePyQtGUILight
 
-#include <QObject>
-
-#if defined WIN32
-#pragma warning( disable: 4251 )
-#endif
-
-
-class SALOME_Event;
-
-/*!
-  Class provide event filter.
-*/
-class LIGHTAPP_EXPORT LightApp_EventFilter: public QObject 
-{
-public:
-  static void Init();
-  static void Destroy();
-
-protected:
-  LightApp_EventFilter();
-  virtual ~LightApp_EventFilter();
-
-private:
-  /*! global event filter for qapplication */
-  virtual bool eventFilter( QObject* o, QEvent* e );
-  void processEvent( SALOME_Event* );
-
-private:
-  static LightApp_EventFilter* myFilter;
-};
-
-#if defined WIN32
-#pragma warning( default: 4251 )
-#endif
-
-#endif
+%Import QtGuimod.sip
+%Import QtXmlmod.sip

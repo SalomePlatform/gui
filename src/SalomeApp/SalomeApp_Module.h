@@ -39,7 +39,7 @@ class QString;
 /*!
  * \brief Base class for all salome modules
 */
-class SALOMEAPP_EXPORT SalomeApp_Module : public LightApp_Module
+class SALOMEAPP_EXPORT SalomeApp_Module : virtual public LightApp_Module
 {
   Q_OBJECT
 

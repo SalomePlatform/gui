@@ -26,4 +26,8 @@
 #
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-SUBDIRS = SALOME_PYQT_GUI SalomePyQt 
+SUBDIRS = SALOME_PYQT_GUILight SalomePyQt
+
+if GUI_ENABLE_CORBA
+  SUBDIRS += SALOME_PYQT_GUI
+endif

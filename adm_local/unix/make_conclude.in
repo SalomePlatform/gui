@@ -37,25 +37,25 @@ ifneq ($(GUI_DISABLE_CORBA),yes)
 # transform idl reference in appropriate obj file
 LIB_CLIENT_SRC = $(LIB_CLIENT_IDL:%.idl=%$(IDL_CLN_CXX))
 LIB_SERVER_SRC = $(LIB_SERVER_IDL:%.idl=%$(IDL_SRV_CXX))
-LIB_SWIG_SRC = $(SWIG_DEF:%.i=%_wrap.cxx)
 else
 LIB_CLIENT_SRC = 
 LIB_SERVER_SRC = 
 LIB_SWIG_SRC = 
 endif
 
+LIB_SWIG_SRC = $(SWIG_DEF:%.i=%_wrap.cxx)
 LIB_MOC_SRC = $(LIB_MOC:%.h=%_moc.cxx)
 LIB_SRC+=$(LIB_MOC_SRC)
 LIB_DEP= $(LIB_SRC) $(LIB_CLIENT_SRC) $(LIB_SERVER_SRC) $(LIB_SWIG_SRC)
- 
+
+LIB_SWIG_OBJ = $(LIB_SWIG_SRC:%.cxx=%.lo)
+
 ifneq ($(GUI_DISABLE_CORBA),yes)
 LIB_CLIENT_OBJ = $(LIB_CLIENT_IDL:%.idl=%$(IDL_CLN_OBJ))
 LIB_SERVER_OBJ = $(LIB_SERVER_IDL:%.idl=%$(IDL_SRV_OBJ))
-LIB_SWIG_OBJ = $(LIB_SWIG_SRC:%.cxx=%.lo)
 else
 LIB_CLIENT_OBJ = 
 LIB_SERVER_OBJ = 
-LIB_SWIG_OBJ = 
 endif
  
 # transform c file in appropriate libtool obj file (.c, .cc and .cxx)
@@ -73,11 +73,7 @@ LIB_BUILD_A = $(patsubst %.a, $(top_builddir)/lib@LIB_LOCATION_SUFFIX@/salome/%.
 LIB_BUILD_SO = $(patsubst %.so, $(top_builddir)/lib@LIB_LOCATION_SUFFIX@/salome/%.so, $(filter %.so, $(LIB)))
 
 ifneq ($(findstring cmodule.la,$(filter %.la, $(LIB))),)
-ifneq ($(GUI_DISABLE_CORBA),yes)
 LIB_SWIG = $(patsubst %cmodule.la,%.so, $(filter %.la, $(LIB)))
-else
-LIB_SWIG = 
-endif
 else
 LIB_SWIG = 
 endif

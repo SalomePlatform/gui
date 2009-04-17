@@ -19,44 +19,34 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#ifndef LIGHTAPP_EVENTFILTER_H
-#define LIGHTAPP_EVENTFILTER_H
+// File   : SALOME_PYQT_GUI.h
+// Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//
 
-#include "LightApp.h"
+#if !defined ( SALOME_PYQT_GUILIGHT_H )
+#define SALOME_PYQT_GUIILIGHT_H
 
-#include <QObject>
+// ========================================================
+// set dllexport type for Win platform 
+#ifdef WNT
 
-#if defined WIN32
-#pragma warning( disable: 4251 )
+#ifdef SALOME_PYQT_EXPORTS
+#define SALOME_PYQT_EXPORT __declspec(dllexport)
+#else
+#define SALOME_PYQT_EXPORT __declspec(dllimport)
 #endif
 
+#else   // WNT
 
-class SALOME_Event;
+#define SALOME_PYQT_EXPORT
 
-/*!
-  Class provide event filter.
-*/
-class LIGHTAPP_EXPORT LightApp_EventFilter: public QObject 
-{
-public:
-  static void Init();
-  static void Destroy();
+#endif  // WNT
 
-protected:
-  LightApp_EventFilter();
-  virtual ~LightApp_EventFilter();
-
-private:
-  /*! global event filter for qapplication */
-  virtual bool eventFilter( QObject* o, QEvent* e );
-  void processEvent( SALOME_Event* );
-
-private:
-  static LightApp_EventFilter* myFilter;
-};
-
-#if defined WIN32
-#pragma warning( default: 4251 )
+// ========================================================
+// avoid warning messages
+#ifdef WNT
+#pragma warning (disable : 4786)
+#pragma warning (disable : 4251)
 #endif
 
-#endif
+#endif // SALOME_PYQT_GUIILIGHT_H

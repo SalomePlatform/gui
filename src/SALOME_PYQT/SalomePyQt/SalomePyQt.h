@@ -33,7 +33,7 @@
 #include <LightApp_Preferences.h>
 
 class LightApp_SelectionMgr;
-class SalomeApp_Application;
+class LightApp_Application;
 class QMenuBar;
 class QMenu;
 class QWidget;
@@ -46,7 +46,7 @@ class SALOME_Selection : public QObject
 
 public:
   ~SALOME_Selection();
-  static SALOME_Selection* GetSelection( SalomeApp_Application* );
+  static SALOME_Selection* GetSelection( LightApp_Application* );
 
   void Clear();
   void ClearIObjects();
@@ -129,6 +129,21 @@ public:
   static QString           getFileName         ( QWidget*, const QString&, const QStringList&, const QString&, bool );
   static QStringList       getOpenFileNames    ( QWidget*, const QString&, const QStringList&, const QString& );
   static QString           getExistingDirectory( QWidget*, const QString&, const QString& );
+
+  static QString           createObject(const QString& parent = QString(""));
+  static QString           createObject(const QString& name,
+					const QString& iconname,
+					const QString& tooltip,
+					const QString& parent = QString(""));
+
+  static void              removeObject( const QString& obj);
+  static void              removeChild( const QString& obj = QString(""));
+  static QStringList       getChildren(const QString& obj = QString(""), const bool rec = false);
+  static void              setName(const QString& obj,const QString& name);
+  static void              setIcon(const QString& obj,const QString& iconname);
+  static void              setToolTip(const QString& obj,const QString& tooltip);
+  static QString           getName(const QString& obj);
+  static QString           getToolTip(const QString& obj);
 
   static void              helpContext( const QString&, const QString& );
 

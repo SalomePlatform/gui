@@ -226,6 +226,16 @@ echo
 
 CHECK_PYTHON
 
+echo
+echo ---------------------------------------------
+echo testing swig
+echo ---------------------------------------------
+echo
+
+AM_PATH_PYTHON(2.3)
+CHECK_SWIG
+
+
 dnl echo
 dnl echo ---------------------------------------------
 dnl echo testing java
@@ -242,18 +252,6 @@ echo
 
 CHECK_DISABLE_CORBA
 echo "GUI_DISABLE_CORBA = "$GUI_DISABLE_CORBA
-
-if test "x${GUI_DISABLE_CORBA}" != "xyes" ; then
-
-echo
-echo ---------------------------------------------
-echo testing swig
-echo ---------------------------------------------
-echo
-
-AM_PATH_PYTHON(2.3)
-CHECK_SWIG
-fi
 
 echo
 echo ---------------------------------------------
@@ -649,6 +647,7 @@ AC_OUTPUT([ \
   ./src/SALOME_PY/Makefile \
   ./src/SALOME_PYQT/Makefile \
   ./src/SALOME_PYQT/SALOME_PYQT_GUI/Makefile \
+  ./src/SALOME_PYQT/SALOME_PYQT_GUILight/Makefile \
   ./src/SALOME_PYQT/SalomePyQt/Makefile \
   ./resources/Makefile \
   ./idl/Makefile \

@@ -22,7 +22,7 @@
 // File   : SalomePyQt.cxx
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 //
-#include <SALOME_PYQT_Module.h> // this include must be first!!!
+#include <SALOME_PYQT_ModuleLight.h> // this include must be first!!!
 #include "SalomePyQt.h"
 
 #include <QApplication>
@@ -44,8 +44,8 @@
 #include <SUIT_ViewManager.h>
 #include <SUIT_ViewWindow.h>
 #include <STD_TabDesktop.h>
-#include <SalomeApp_Application.h>
-#include <SalomeApp_Study.h>
+#include <LightApp_Application.h>
+#include <LightApp_Study.h>
 #include <LightApp_SelectionMgr.h>
 #include <LogWindow.h>
 #include <OCCViewer_ViewWindow.h>
@@ -57,10 +57,10 @@
   \internal
   \return active application object or 0 if there is no any
 */
-static SalomeApp_Application* getApplication()
+static LightApp_Application* getApplication()
 {
   if ( SUIT_Session::session() )
-    return dynamic_cast<SalomeApp_Application*>( SUIT_Session::session()->activeApplication() );
+    return dynamic_cast<LightApp_Application*>( SUIT_Session::session()->activeApplication() );
   return 0;
 }
 
@@ -69,10 +69,10 @@ static SalomeApp_Application* getApplication()
   \internal
   \return active study or 0 if there is no study opened
 */
-static SalomeApp_Study* getActiveStudy()
+static LightApp_Study* getActiveStudy()
 {
   if ( getApplication() )
-    return dynamic_cast<SalomeApp_Study*>( getApplication()->activeStudy() );
+    return dynamic_cast<LightApp_Study*>( getApplication()->activeStudy() );
   return 0;
 }
 
@@ -82,13 +82,13 @@ static SalomeApp_Study* getActiveStudy()
   This function returns correct result only if Python-based
   module is currently active. Otherwize, 0 is returned.
 */
-static SALOME_PYQT_Module* getActiveModule()
+static SALOME_PYQT_ModuleLight* getActiveModule()
 {
-  SALOME_PYQT_Module* module = 0;
-  if ( SalomeApp_Application* anApp = getApplication() ) {
-    module = SALOME_PYQT_Module::getInitModule();
+  SALOME_PYQT_ModuleLight* module = 0;
+  if ( LightApp_Application* anApp = getApplication() ) {
+    module = SALOME_PYQT_ModuleLight::getInitModule();
     if ( !module )
-      module = dynamic_cast<SALOME_PYQT_Module*>( anApp->activeModule() );
+      module = dynamic_cast<SALOME_PYQT_ModuleLight*>( anApp->activeModule() );
   }
   return module;
 }
@@ -102,7 +102,7 @@ static SALOME_PYQT_Module* getActiveModule()
   \brief Map of created selection objects.
   \internal
 */
-static QMap<SalomeApp_Application*, SALOME_Selection*> SelMap;
+static QMap<LightApp_Application*, SALOME_Selection*> SelMap;
 
 /*!
   \brief Get the selection object for the specified application.
@@ -112,7 +112,7 @@ static QMap<SalomeApp_Application*, SALOME_Selection*> SelMap;
   \param app application object
   \return selection object or 0 if \a app is invalid
 */
-SALOME_Selection* SALOME_Selection::GetSelection( SalomeApp_Application* app )
+SALOME_Selection* SALOME_Selection::GetSelection( LightApp_Application* app )
 {
   SALOME_Selection* sel = 0;
   if ( app && SelMap.find( app ) != SelMap.end() )
@@ -128,7 +128,7 @@ SALOME_Selection* SALOME_Selection::GetSelection( SalomeApp_Application* app )
 */
 SALOME_Selection::SALOME_Selection( QObject* p ) : QObject( 0 ), mySelMgr( 0 )
 {
-  SalomeApp_Application* app = dynamic_cast<SalomeApp_Application*>( p );
+  LightApp_Application* app = dynamic_cast<LightApp_Application*>( p );
   if ( app ) {
     mySelMgr = app->selectionMgr();
     connect( mySelMgr, SIGNAL( selectionChanged() ), this, SIGNAL( currentSelectionChanged() ) );
@@ -140,8 +140,8 @@ SALOME_Selection::SALOME_Selection( QObject* p ) : QObject( 0 ), mySelMgr( 0 )
 */
 SALOME_Selection::~SALOME_Selection()
 {
-  SalomeApp_Application* app = 0;
-  QMap<SalomeApp_Application*, SALOME_Selection*>::Iterator it;
+  LightApp_Application* app = 0;
+  QMap<LightApp_Application*, SALOME_Selection*>::Iterator it;
   for ( it = SelMap.begin(); it != SelMap.end() && !app; ++it ) {
     if ( it.value() == this ) app = it.key();
   }
@@ -285,7 +285,7 @@ public:
   TGetMainMenuBarEvent() : myResult( 0 ) {}
   virtual void Execute()
   {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
+    if ( LightApp_Application* anApp = getApplication() ) {
       myResult = anApp->desktop()->menuBar();
     }
   }
@@ -325,7 +325,7 @@ public:
   TGetPopupMenuEvent( const QString& menu ) : myResult( 0 ), myMenuName( menu ) {}
   virtual void Execute()
   {
-    SalomeApp_Application* anApp = getApplication();
+    LightApp_Application* anApp = getApplication();
     if ( anApp && !myMenuName.isEmpty() ) {
       QtxActionMenuMgr* mgr = anApp->desktop()->menuMgr();
       myResult = mgr->findMenu( myMenuName, -1, false ); // search only top menu
@@ -384,8 +384,8 @@ public:
   TGetStudyIdEvent() : myResult( 0 ) {}
   virtual void Execute()
   {
-    if ( SalomeApp_Study* aStudy = getActiveStudy() ) {
-      myResult = aStudy->studyDS()->StudyId();
+    if ( LightApp_Study* aStudy = getActiveStudy() ) {
+      myResult = aStudy->id();
     }
   }
 };
@@ -440,7 +440,7 @@ public:
   TPutInfoEvent( const QString& msg, const int sec = 0 ) : myMsg( msg ), mySecs( sec ) {}
   virtual void Execute()
   {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
+    if ( LightApp_Application* anApp = getApplication() ) {
       anApp->putInfo( myMsg, mySecs * 1000 );
     }
   }
@@ -464,7 +464,7 @@ public:
   TGetActiveComponentEvent() {}
   virtual void Execute() 
   {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
+    if ( LightApp_Application* anApp = getApplication() ) {
       if ( CAM_Module* mod = anApp->activeModule() ) {
         myResult = mod->name();
       }
@@ -506,7 +506,7 @@ void SalomePyQt::updateObjBrowser( const int studyId, bool updateSelection )
           QList<SUIT_Application*> apps = SUIT_Session::session()->applications();
           QList<SUIT_Application*>::Iterator it;
 	  for( it = apps.begin(); it != apps.end(); ++it ) {
-            SalomeApp_Application* anApp = dynamic_cast<SalomeApp_Application*>( *it );
+            LightApp_Application* anApp = dynamic_cast<LightApp_Application*>( *it );
             if ( anApp && anApp->activeStudy() && anApp->activeStudy()->id() == myStudyId ) {
 	      anApp->updateObjectBrowser();
 	      return;
@@ -1149,7 +1149,7 @@ public:
       myOpen ( open ) {}
   virtual void Execute() 
   {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
+    if ( LightApp_Application* anApp = getApplication() ) {
       myResult = anApp->getFileName( myOpen, myInitial, myFilters.join(";;"), 
 				     myCaption, myParent );
     }
@@ -1197,7 +1197,7 @@ public:
       myCaption( caption ) {}
   virtual void Execute() 
   {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
+    if ( LightApp_Application* anApp = getApplication() ) {
       myResult = anApp->getOpenFileNames( myInitial, myFilters.join(";;"), myCaption, myParent );
     }
   }
@@ -1238,7 +1238,7 @@ public:
       myCaption( caption ) {}
   virtual void Execute() 
   {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
+    if ( LightApp_Application* anApp = getApplication() ) {
       myResult = anApp->getDirectory( myInitial, myCaption, myParent );
     }
   }
@@ -1270,7 +1270,7 @@ void SalomePyQt::helpContext( const QString& source, const QString& context )
       : mySource( source ), myContext( context ) {}
     virtual void Execute() 
     {
-      if ( SalomeApp_Application* anApp = getApplication() ) {
+      if ( LightApp_Application* anApp = getApplication() ) {
         anApp->onHelpContextModule( "", mySource, myContext );
       }
     }
@@ -1301,7 +1301,7 @@ public:
     : myResult ( false ), myFileName( filename ) {}
   virtual void Execute() 
   {
-    if ( SalomeApp_Application* anApp = getApplication() ) {
+    if ( LightApp_Application* anApp = getApplication() ) {
       SUIT_ViewManager* vm = anApp->activeViewManager();
       if ( vm ) { 
         SUIT_ViewWindow* vw = vm->getActiveView();
@@ -1338,7 +1338,7 @@ public:
   TDefMenuGroupEvent() : myResult( -1 ) {}
   virtual void Execute() 
   {
-    myResult = SALOME_PYQT_Module::defaultMenuGroup();
+    myResult = SALOME_PYQT_ModuleLight::defaultMenuGroup();
   }
 };
 int SalomePyQt::defaultMenuGroup()
@@ -1360,7 +1360,7 @@ public:
   CrTool( QAction* action, const QString& tBar, const int id, const int idx )
     : myCase( 4 ), myAction( action ), myTbName( tBar ), myId( id ), myIndex( idx ) {}
 
-  int execute( SALOME_PYQT_Module* module ) const
+  int execute( SALOME_PYQT_ModuleLight* module ) const
   {
     if ( module ) {
       switch ( myCase ) {
@@ -1397,7 +1397,7 @@ public:
     : myResult( -1 ), myCrTool( crTool ) {}
   virtual void Execute() 
   {
-    SALOME_PYQT_Module* module = getActiveModule();
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
     if ( module )
       myResult = myCrTool.execute( module );
   }
@@ -1479,7 +1479,7 @@ public:
   CrMenu( QAction* action, const QString& menu, const int id, const int group, const int idx ) 
     : myCase( 5 ), myAction( action ), myMenuName( menu ), myId( id ), myGroup( group ), myIndex( idx ) {}
 
-  int execute( SALOME_PYQT_Module* module ) const
+  int execute( SALOME_PYQT_ModuleLight* module ) const
   {
     if ( module ) {
       switch ( myCase ) {
@@ -1520,7 +1520,7 @@ public:
     : myResult( -1 ), myCrMenu( crMenu ) {}
   virtual void Execute()
   {
-    SALOME_PYQT_Module* module = getActiveModule();
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
     if ( module )
       myResult = myCrMenu.execute( module );
   }
@@ -1621,7 +1621,7 @@ public:
     : myResult( 0 ) {}
   virtual void Execute() 
   {
-    SALOME_PYQT_Module* module = getActiveModule();
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
     if ( module )
       myResult = (QAction*)module->separator();
   }
@@ -1667,7 +1667,7 @@ public:
       myStatusText( statusText ), myIcon( icon ), myKey( key ), myToggle( toggle ) {}
   virtual void Execute()
   {
-    SALOME_PYQT_Module* module = getActiveModule();
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
     if ( module )
       myResult = (QAction*)module->createAction( myId, myTipText, myIcon, myMenuText, myStatusText, myKey, myToggle );
   }
@@ -1695,7 +1695,7 @@ struct TcreateActionGroupEvent: public SALOME_Event {
     : myId( id ), myExclusive( exclusive ) {}
   virtual void Execute()
   {
-    SALOME_PYQT_Module* module = getActiveModule();
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
     if ( module )
       myResult = module->createActionGroup( myId, myExclusive );
   }
@@ -1721,7 +1721,7 @@ public:
     : myResult( 0 ), myId( id ) {}
   virtual void Execute()
   {
-    SALOME_PYQT_Module* module = getActiveModule();
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
     if ( module )
       myResult = (QAction*)module->action( myId );
   }
@@ -1747,7 +1747,7 @@ public:
     : myResult( -1 ), myAction( action ) {}
   virtual void Execute()
   {
-    SALOME_PYQT_Module* module = getActiveModule();
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
     if ( module )
       myResult = module->actionId( myAction );
   }
@@ -1774,7 +1774,7 @@ public:
     : myResult( -1 ), myLabel( label ) {}
   virtual void Execute() 
   {
-    SALOME_PYQT_Module* module = getActiveModule();
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
     if ( module )
       myResult = module->addGlobalPreference( myLabel );
   }
@@ -1801,7 +1801,7 @@ public:
     : myResult( -1 ), myLabel( label ) {}
   virtual void Execute() 
   {
-    SALOME_PYQT_Module* module = getActiveModule();
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
     if ( module )
       myResult = module->addPreference( myLabel );
   }
@@ -1842,7 +1842,7 @@ public:
       mySection( section ), myParam ( param ) {}
   virtual void Execute()
   {
-    SALOME_PYQT_Module* module = getActiveModule();
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
     if ( module )
       myResult = module->addPreference( myLabel, myPId, myType, mySection, myParam );
   }
@@ -1872,7 +1872,7 @@ public:
     : myId( id ), myProp( prop ) {}
   virtual void Execute()
   {
-    SALOME_PYQT_Module* module = getActiveModule();
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
     if ( module )
       myResult = module->preferenceProperty( myId, myProp );
   }
@@ -1902,7 +1902,7 @@ void SalomePyQt::setPreferenceProperty( const int id,
       : myId( id ), myProp( prop ), myVar( var ) {}
     virtual void Execute() 
     {
-      SALOME_PYQT_Module* module = getActiveModule();
+      SALOME_PYQT_ModuleLight* module = getActiveModule();
       if ( module )
 	module->setPreferenceProperty( myId, myProp, myVar );
     }
@@ -1937,7 +1937,7 @@ void SalomePyQt::addPreferenceProperty( const int id,
       : myId( id ), myProp( prop ), myIdx( idx), myVar( var ) {}
     virtual void Execute()
     {
-      SALOME_PYQT_Module* module = getActiveModule();
+      SALOME_PYQT_ModuleLight* module = getActiveModule();
       if ( module ) {
 	QVariant var =  module->preferenceProperty( myId, myProp );
 	if ( var.isValid() ) {
@@ -1986,7 +1986,7 @@ void SalomePyQt::message( const QString& msg, bool addSeparator )
       : myMsg( msg ), myAddSep( addSeparator ) {}
     virtual void Execute()
     {
-      if ( SalomeApp_Application* anApp = getApplication() ) {
+      if ( LightApp_Application* anApp = getApplication() ) {
 	LogWindow* lw = anApp->logWindow();
 	if ( lw )
 	  lw->putMessage( myMsg, myAddSep );
@@ -2007,7 +2007,7 @@ void SalomePyQt::clearMessages()
     TEvent() {}
     virtual void Execute()
     {
-      if ( SalomeApp_Application* anApp = getApplication() ) {
+      if ( LightApp_Application* anApp = getApplication() ) {
 	LogWindow* lw = anApp->logWindow();
 	if ( lw )
 	  lw->clear();
@@ -2027,7 +2027,7 @@ static SUIT_ViewWindow* getWnd( const int id )
 {
   SUIT_ViewWindow* resWnd = 0;
 
-  SalomeApp_Application* app  = getApplication();
+  LightApp_Application* app  = getApplication();
   if ( app )
   {
     STD_TabDesktop* tabDesk = dynamic_cast<STD_TabDesktop*>( app->desktop() );
@@ -2064,7 +2064,7 @@ public:
   virtual void Execute() 
   {
     myResult.clear();
-    SalomeApp_Application* app  = getApplication();
+    LightApp_Application* app  = getApplication();
     if ( app )
     {
       STD_TabDesktop* tabDesk = dynamic_cast<STD_TabDesktop*>( app->desktop() );
@@ -2098,7 +2098,7 @@ public:
     : myResult( -1 ) {}
   virtual void Execute() 
   {
-    SalomeApp_Application* app = getApplication();
+    LightApp_Application* app = getApplication();
     if ( app )
     {
       SUIT_ViewManager* viewMgr = app->activeViewManager();
@@ -2228,7 +2228,7 @@ public:
   virtual void Execute() 
   {
     myResult.clear();
-    SalomeApp_Application* app  = getApplication();
+    LightApp_Application* app  = getApplication();
     if ( app )
     {
       ViewManagerList vmList;
@@ -2301,7 +2301,7 @@ public:
       myType( theType ) {}
   virtual void Execute() 
   {
-    SalomeApp_Application* app  = getApplication();
+    LightApp_Application* app  = getApplication();
     if ( app )
     {
       SUIT_ViewManager* viewMgr = app->createViewManager( myType );
@@ -2452,7 +2452,7 @@ public:
     : myResult( false ) {}
   virtual void Execute() 
   {
-    SalomeApp_Application* app  = getApplication();
+    LightApp_Application* app  = getApplication();
     if ( app )
     {
       STD_TabDesktop* tabDesk = dynamic_cast<STD_TabDesktop*>( app->desktop() );
@@ -2622,4 +2622,247 @@ public:
 QList<int> SalomePyQt::neighbourViews( const int id )
 {
   return ProcessEvent( new TNeighbourViews( id ) );
+}
+
+
+/*!
+  SalomePyQt::createObject(parent)
+  Create empty data object
+*/
+class TCreateEmptyObjectEvent: public SALOME_Event {
+public:
+  typedef QString TResult;
+  TResult  myResult;
+  QString  myParent;
+  TCreateEmptyObjectEvent(const QString& parent) : myParent( parent ) {}
+  virtual void Execute() {
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
+    if ( module )
+      myResult = (QString)module->createObject(myParent);
+  }
+};
+QString SalomePyQt::createObject(const QString& parent)
+{
+  return ProcessEvent( new TCreateEmptyObjectEvent(parent) );
+}
+
+/*!
+  SalomePyQt::createObject( name, icon, tooltip, parent )
+  Create data object with name, icon and tooltip
+*/
+class TCreateObjectEvent: public SALOME_Event {
+public:
+  typedef QString TResult;
+  TResult myResult;
+  QString myParent;
+  QString myName;
+  QString myIconName;
+  QString myToolTip;
+  TCreateObjectEvent(const QString& name,
+                     const QString& iconname,
+                     const QString& tooltip,
+                     const QString& parent) : myName(name),
+                                              myIconName(iconname),
+                                              myToolTip(tooltip),
+                                              myParent( parent ){}
+  virtual void Execute() {
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
+    if ( module )
+      myResult = (QString)module->createObject(myName, myIconName,
+                                               myToolTip, myParent);
+  }
+};
+QString SalomePyQt::createObject(const QString& name,
+                                 const QString& iconname,
+                                 const QString& tooltip,
+                                 const QString& parent)
+{
+  return ProcessEvent( new TCreateObjectEvent(name, iconname, tooltip, parent) );
+}
+
+
+/*!
+  SalomePyQt::setName(obj,name)
+  Set object name
+*/
+class TSetNameEvent: public SALOME_Event
+{
+public:
+  QString myObj;
+  QString myName;
+  TSetNameEvent( const QString& obj,
+                 const QString& name) : myObj(obj),
+                                         myName(name) {}
+  virtual void Execute() {
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
+    if ( module )
+      module->setName(myObj,myName);
+  }
+};
+void SalomePyQt::setName(const QString& obj,const QString& name)
+{
+  ProcessVoidEvent(new TSetNameEvent(obj,name));
+}
+
+
+/*!
+  SalomePyQt::setIcon(obj,icon)
+  Set object icon
+*/
+class TSetIconEvent: public SALOME_Event
+{
+public:
+  QString myObj;
+  QString myIconName;
+  TSetIconEvent( const QString& obj,
+                 const QString& iconname) : myObj(obj),
+                                            myIconName(iconname) {}
+  virtual void Execute() {
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
+    if ( module )
+      module->setIcon(myObj,myIconName);
+  }
+};
+
+void SalomePyQt::setIcon(const QString& obj,const QString& iconname)
+{
+  ProcessVoidEvent(new TSetIconEvent(obj,iconname));
+}
+
+/*!
+  SalomePyQt::setToolTip(obj,tooltip)
+  Set object tool tip
+*/
+class TSetToolTipEvent: public SALOME_Event
+{
+public:
+  QString myObj;
+  QString myToolTip;
+  TSetToolTipEvent( const QString& obj,
+                    const QString& tooltip) : myObj(obj),
+                                              myToolTip(tooltip) {}
+  virtual void Execute() {
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
+    if ( module )
+      module->setToolTip(myObj,myToolTip);
+  }
+};
+void SalomePyQt::setToolTip(const QString& obj,const QString& tooltip)
+{
+  ProcessVoidEvent(new TSetToolTipEvent(obj,tooltip));
+}
+
+/*!
+  SalomePyQt::getName(obj)
+  Return name of object
+*/
+class TGetNameEvent: public SALOME_Event
+{
+public:
+  typedef QString TResult;
+  TResult myResult;
+  QString myObj;
+  TGetNameEvent( const QString& obj ) : myObj(obj) {}
+  virtual void Execute() {
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
+    if ( module )
+      myResult = (QString) module->getName(myObj);
+  }
+};
+
+QString SalomePyQt::getName(const QString& obj)
+{
+  return ProcessEvent(new TGetNameEvent(obj));
+}
+
+/*!
+  SalomePyQt::getToolTip(obj)
+  Return tool tip of object
+*/
+class TGetToolTipEvent: public SALOME_Event
+{
+public:
+  typedef QString TResult;
+  TResult myResult;
+  QString myObj;
+  TGetToolTipEvent( const QString& obj ) : myObj(obj) {}
+  virtual void Execute() {
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
+    if ( module )
+      myResult = (QString)module->getToolTip(myObj);
+  }
+};
+QString SalomePyQt::getToolTip(const QString& obj)
+{
+  return ProcessEvent(new TGetToolTipEvent(obj));
+}
+
+
+/*!
+  SalomePyQt::removeChild(obj)
+  Remove childrens from object
+*/
+class TRemoveChildEvent: public SALOME_Event
+{
+public:
+  QString myObj;
+  TRemoveChildEvent(const QString& obj) : myObj(obj) {}
+  
+  virtual void Execute() {
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
+    if ( module )
+      module->removeChild(myObj);
+  }
+};
+void SalomePyQt::removeChild(const QString& obj)
+{
+  ProcessVoidEvent(new TRemoveChildEvent(obj));
+}
+
+
+/*!
+  SalomePyQt::removeObject(obj)
+  Remove object
+*/
+class TRemoveObjectEvent: public SALOME_Event
+{
+public:
+  QString myObj;
+  
+  TRemoveObjectEvent( const QString& obj) : myObj(obj) {}
+  virtual void Execute() {
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
+    if ( module )
+      module->removeObject(myObj);
+  }
+};
+void SalomePyQt::removeObject(const QString& obj)
+{
+  ProcessVoidEvent(new TRemoveObjectEvent(obj));
+}
+
+/*!
+  SalomePyQt::getChildren(obj)
+  Return the list of the child objects
+  if rec == true then function get all sub children.
+*/
+
+class TGetChildrenEvent: public SALOME_Event
+{
+public:
+  typedef QStringList TResult;
+  TResult myResult;
+  QString myObj;
+  bool myRec; 
+  TGetChildrenEvent(const QString& obj, const bool rec) : myObj(obj),
+                                                          myRec(rec) {}
+  virtual void Execute() {
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
+    if ( module )
+      myResult = (QStringList)module->getChildren(myObj,myRec);
+  }
+};
+QStringList SalomePyQt::getChildren(const QString& obj, const bool rec)
+{
+  return ProcessEvent( new TGetChildrenEvent(obj,rec) ); 
 }

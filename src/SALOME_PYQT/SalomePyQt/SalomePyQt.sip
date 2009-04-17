@@ -216,7 +216,26 @@ public:
 
   static QString           getFileName         ( QWidget*, const QString&, const QStringList&, const QString&, bool ) /ReleaseGIL/ ;
   static QStringList       getOpenFileNames    ( QWidget*, const QString&, const QStringList&, const QString& ) /ReleaseGIL/ ;
-  static QString           getExistingDirectory( QWidget*, const QString&, const QString& ) /ReleaseGIL/ ;
+  static QString           getExistingDirectory( QWidget*, const
+  QString&, const QString& ) /ReleaseGIL/ ;
+
+
+			 
+  static QString           createObject( const QString& = QString("") )  /ReleaseGIL/ ;
+  static QString           createObject( const QString&,
+			                const QString&,
+					const QString&,
+					const QString& = QString("") )  /ReleaseGIL/ ;
+
+  static void              setName(const QString& ,const QString& ) /ReleaseGIL/ ;
+  static void              setIcon(const QString& ,const QString& ) /ReleaseGIL/ ;
+  static void              setToolTip(const QString& ,const QString& ) /ReleaseGIL/ ;
+  static QString           getName(const QString& ) /ReleaseGIL/ ;
+  static QString           getToolTip(const QString& ) /ReleaseGIL/ ;
+
+  static void              removeObject(const QString&  )    /ReleaseGIL/ ;
+  static void              removeChild(const QString& = QString("")  ) /ReleaseGIL/ ;
+  static QStringList       getChildren(const QString&=QString("") , const bool = false) /ReleaseGIL/ ;
 
   static void              helpContext( const QString&, const QString& ) /ReleaseGIL/ ;
 

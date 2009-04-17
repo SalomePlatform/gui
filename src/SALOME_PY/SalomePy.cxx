@@ -34,8 +34,8 @@
 #include <SALOME_Event.h>
 
 #include <SUIT_Session.h>
-#include <SalomeApp_Application.h>
-#include <SalomeApp_Study.h>
+#include <LightApp_Application.h>
+#include <LightApp_Study.h>
 
 #include <SVTK_ViewManager.h>
 #include <SVTK_ViewWindow.h>
@@ -97,7 +97,7 @@ static PyObject* GetPyClass( const char* theClassName )
   PyObject* aPyClass = 0;
   if( !aVTKModule ) {
     if ( VTK_MAJOR_VERSION > 3 )
-      aVTKModule = PyImport_ImportModule( "libvtkRenderingPython" ); 
+      aVTKModule = PyImport_ImportModule( "vtk.libvtkRenderingPython" ); 
     else
       aVTKModule = PyImport_ImportModule( "libVTKGraphicsPython" ); 
     if( PyErr_Occurred() ) {
@@ -130,10 +130,10 @@ static SVTK_ViewWindow* GetVTKViewWindow( int toCreate = __FindOrCreate ) {
   SVTK_ViewWindow* aVW = 0;
   if ( SUIT_Session::session() ) {
     // get application
-    SalomeApp_Application* anApp = dynamic_cast<SalomeApp_Application*>( SUIT_Session::session()->activeApplication() );
+    LightApp_Application* anApp = dynamic_cast<LightApp_Application*>( SUIT_Session::session()->activeApplication() );
     if ( anApp ) {
       // get active study
-      SalomeApp_Study* aStudy = dynamic_cast<SalomeApp_Study*>( anApp->activeStudy() );
+      LightApp_Study* aStudy = dynamic_cast<LightApp_Study*>( anApp->activeStudy() );
       if ( aStudy ) {
 	// find or create VTK view manager
 	if ( toCreate == __Create ) {

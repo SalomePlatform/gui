@@ -36,6 +36,10 @@
 #include <Python.h>
 #endif
 
+#ifdef SUIT_ENABLE_PYTHON
+#include <SUITApp_init_python.hxx>
+#endif
+
 #endif //#if defined WIN32
 
 #include "SUITApp_Application.h"
@@ -172,15 +176,15 @@ private:
 
 int main( int argc, char* argv[] )
 {
-#ifdef SUIT_ENABLE_PYTHON
-  // First of all initialize Python, as in complex multi-component applications
-  // someone else might initialize it some way unsuitable for light SALOME!
-  Py_SetProgramName( argv[0] );
-  Py_Initialize(); // Initialize the interpreter
-  PySys_SetArgv( argc,  argv );
-  PyEval_InitThreads(); // Create (and acquire) the interpreter lock
-  PyEval_ReleaseLock(); // Let the others use Python API until we need it again
-#endif
+  //#ifdef SUIT_ENABLE_PYTHON
+  //  // First of all initialize Python, as in complex multi-component applications
+  //  // someone else might initialize it some way unsuitable for light SALOME!
+  //  Py_SetProgramName( argv[0] );
+  //  Py_Initialize(); // Initialize the interpreter
+  //  PySys_SetArgv( argc,  argv );
+  //  PyEval_InitThreads(); // Create (and acquire) the interpreter lock
+  //  PyEval_ReleaseLock(); // Let the others use Python API until we need it again
+  //#endif
 
   //qInstallMsgHandler( MessageOutput );
 
@@ -273,6 +277,23 @@ int main( int argc, char* argv[] )
 	}
       }
     }
+
+#ifdef SUIT_ENABLE_PYTHON
+    //...Initialize python 
+    int   _argc   = 1;
+    char* _argv[] = {""};
+    SUIT_PYTHON::init_python(_argc,_argv);
+    
+    PyEval_RestoreThread( SUIT_PYTHON::_gtstate );
+    
+    if ( !SUIT_PYTHON::salome_shared_modules_module ) // import only once
+      SUIT_PYTHON::salome_shared_modules_module = PyImport_ImportModule( "salome_shared_modules" );
+    if ( !SUIT_PYTHON::salome_shared_modules_module ) 
+      PyErr_Print();
+    
+    PyEval_ReleaseThread( SUIT_PYTHON::_gtstate );
+
+#endif
 
     SUIT_Application* theApp = aSession->startApplication( argList.first() );
     if ( theApp )

@@ -24,7 +24,7 @@
 // Author:    Natalia Donis
 //
 #ifndef DISABLE_PYCONSOLE
-  #include <PyConsole_Interp.h> // WARNING! This include must be the first!
+  #include <LightApp_PyInterp.h> // WARNING! This include must be the first!
   #include <PyConsole_Console.h>
 #endif
 
@@ -1606,7 +1606,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
 #ifndef DISABLE_PYCONSOLE
   else  if ( flag == WT_PyConsole )
   {
-    PyConsole_Console* pyCons = new PyConsole_Console( desktop() );
+    PyConsole_Console* pyCons = new PyConsole_Console( desktop(),new LightApp_PyInterp());
     pyCons->setWindowTitle( tr( "PYTHON_CONSOLE" ) );
     wid = pyCons;
     pyCons->connectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
@@ -2887,6 +2887,7 @@ bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
 
   //abd: changed libSalomePyQtGUI to SalomePyQtGUI for WIN32
   bool isPythonModule = lib.contains("SalomePyQtGUI");
+  bool isPythonLightModule = lib.contains("libSalomePyQtGUILight");
 
   QStringList paths;
 #ifdef WIN32
@@ -2915,10 +2916,10 @@ bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
           << "*    Module " << moduleTitle.toLatin1().constData() << " will not be available in GUI mode" << std::endl
           << "****************************************************************" << std::endl );
     }
-  else if ( !isPythonModule )
+  else if ( !isPythonModule && !isPythonLightModule)
     return true;
 
-  if ( isPythonModule )
+  if ( isPythonModule || isPythonLightModule)
     {
       QString pylib = moduleName( moduleTitle ) + QString(".py");
       QString pylibgui = moduleName( moduleTitle ) + QString("GUI.py");
@@ -2936,13 +2937,14 @@ bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
 	  QFileInfo inf( Qtx::addSlash( *anIt ) + pylib );
 	  QFileInfo infgui( Qtx::addSlash( *anIt ) + pylibgui );
 
-	  if( !isPyLib && inf.exists() )
-	    isPyLib = true;
+          if(!isPythonLightModule)
+            if( !isPyLib && inf.exists() )
+              isPyLib = true;
 
 	  if( !isPyGuiLib && infgui.exists() )
 	    isPyGuiLib = true;
 
-	  if ( isPyLib && isPyGuiLib && isLibFound)
+	  if ((isPyLib || isPythonLightModule ) && isPyGuiLib && isLibFound)
 	    return true;
 	}
 

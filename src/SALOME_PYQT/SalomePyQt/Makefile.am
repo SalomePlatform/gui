@@ -47,27 +47,26 @@ CLEANFILES = $(SIP_SRC)
 MOC_FILES = SalomePyQt_moc.cxx
 
 # compilation flags
-COMMON_CPP_FLAGS = $(QT_INCLUDES) $(QWT_INCLUDES) $(SIP_INCLUDES) $(PYTHON_INCLUDES)	\
-	$(CAS_CPPFLAGS) $(VTK_INCLUDES) $(OGL_INCLUDES) $(BOOST_CPPFLAGS)		\
-	-DHAVE_CONFIG_H @KERNEL_CXXFLAGS@ -I$(top_builddir)/salomeadn/unix		\
-	-I$(srcdir) -I$(top_builddir)/idl						\
-	-I$(srcdir)/../../SUIT -I$(srcdir)/../../CAM -I$(srcdir)/../../STD		\
-	-I$(srcdir)/../../Qtx -I$(srcdir)/../../SalomeApp -I$(srcdir)/../../Event	\
-	-I$(srcdir)/../../SalomeSession -I$(srcdir)/../../LogWindow			\
-	-I$(srcdir)/../../VTKViewer -I$(srcdir)/../../TOOLSGUI				\
-	-I$(srcdir)/../../OCCViewer -I$(srcdir)/../../Plot2d				\
-	-I$(srcdir)/../SALOME_PYQT_GUI -I$(srcdir)/../../PyInterp			\
-	-I$(srcdir)/../../LightApp -I$(srcdir)/../../ObjBrowser				\
-	-I$(srcdir)/../../OBJECT							\
-	-I$(top_builddir)/salome_adm/unix @CORBA_CXXFLAGS@ @CORBA_INCLUDES@
+COMMON_CPP_FLAGS = $(QT_INCLUDES) $(QWT_INCLUDES) $(SIP_INCLUDES) $(PYTHON_INCLUDES)	 \
+	$(CAS_CPPFLAGS) $(VTK_INCLUDES) $(OGL_INCLUDES) $(BOOST_CPPFLAGS)		 \
+	-DHAVE_CONFIG_H @KERNEL_CXXFLAGS@ -I$(top_builddir)/salomeadn/unix		 \
+	-I$(srcdir) -I$(top_builddir)/idl						 \
+	-I$(srcdir)/../../SUIT -I$(srcdir)/../../CAM -I$(srcdir)/../../STD		 \
+	-I$(srcdir)/../../Qtx -I$(srcdir)/../../Event	                                 \
+	-I$(srcdir)/../../LogWindow			                                 \
+	-I$(srcdir)/../../VTKViewer                     				 \
+	-I$(srcdir)/../../OCCViewer -I$(srcdir)/../../Plot2d				 \
+	-I$(srcdir)/../SALOME_PYQT_GUILight -I$(srcdir)/../../PyInterp			 \
+	-I$(srcdir)/../../LightApp -I$(srcdir)/../../ObjBrowser				 \
+	-I$(srcdir)/../../OBJECT							
 
 # linkage flags
-COMMON_LIBS = $(PYTHON_LIBS) $(SIP_LIBS) $(PYQT_LIBS) $(VTK_LIBS) $(QWT_LIBS)		\
-	$(OGL_LIBS) ../../SUIT/libsuit.la ../../CAM/libCAM.la ../../STD/libstd.la	\
-	../../Qtx/libqtx.la ../../SalomeApp/libSalomeApp.la ../../Event/libEvent.la	\
-	../../Session/libSalomeSession.la ../../LogWindow/libLogWindow.la		\
-	../../VTKViewer/libVTKViewer.la ../../TOOLSGUI/libToolsGUI.la			\
-	../SALOME_PYQT_GUI/libSalomePyQtGUI.la ../../OCCViewer/libOCCViewer.la		\
+COMMON_LIBS = $(PYTHON_LIBS) $(SIP_LIBS) $(PYQT_LIBS) $(VTK_LIBS) $(QWT_LIBS)		 \
+	$(OGL_LIBS) ../../SUIT/libsuit.la ../../CAM/libCAM.la ../../STD/libstd.la	 \
+	../../Qtx/libqtx.la ../../Event/libEvent.la	                                 \
+	../../LogWindow/libLogWindow.la		                                         \
+	../../VTKViewer/libVTKViewer.la                         			 \
+	../SALOME_PYQT_GUILight/libSalomePyQtGUILight.la ../../OCCViewer/libOCCViewer.la \
 	../../Plot2d/libPlot2d.la
 
 # libraries targets

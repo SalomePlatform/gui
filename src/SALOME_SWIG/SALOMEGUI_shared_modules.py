@@ -23,7 +23,10 @@
 
 """
 
-import SALOME_Session_idl
+try:
+   import SALOME_Session_idl
+except:
+   pass
 
 from import_hook import register_name
 register_name("SalomePyQt")

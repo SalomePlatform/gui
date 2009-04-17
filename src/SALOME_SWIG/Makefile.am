@@ -63,17 +63,16 @@ _libSALOME_Swig_la_CPPFLAGS = \
 	$(QT_INCLUDES) $(QWT_INCLUDES) $(PYTHON_INCLUDES) $(CAS_CPPFLAGS) $(VTK_INCLUDES)	\
 	$(OGL_INCLUDES) $(BOOST_CPPFLAGS) -DHAVE_CONFIG_H @KERNEL_CXXFLAGS@			\
 	-I$(top_builddir)/salome_adm/unix -I$(top_builddir)/idl -I$(srcdir) 			\
-	-I$(srcdir)/../SalomeApp -I$(srcdir)/../Qtx -I$(srcdir)/../SUIT				\
+	-I$(srcdir)/../LightApp -I$(srcdir)/../Qtx -I$(srcdir)/../SUIT				\
 	-I$(srcdir)/../ObjBrowser -I$(srcdir)/../LightApp -I$(srcdir)/../SOCC			\
 	-I$(srcdir)/../SVTK -I$(srcdir)/../Event -I$(srcdir)/../OBJECT				\
 	-I$(srcdir)/../CAM -I$(srcdir)/../STD -I$(srcdir)/../OCCViewer				\
 	-I$(srcdir)/../Prs -I$(srcdir)/../VTKViewer -I$(srcdir)/../SPlot2d			\
-	-I$(srcdir)/../Plot2d									\
-	@CORBA_CXXFLAGS@ @CORBA_INCLUDES@
+	-I$(srcdir)/../Plot2d
 
 _libSALOME_Swig_la_LDFLAGS  = -module
 _libSALOME_Swig_la_LIBADD   =		\
-	../SalomeApp/libSalomeApp.la	\
+	../LightApp/libLightApp.la	\
 	@PYTHON_LIBS@
 
 swig_wrap.cpp : $(SWIG_SOURCES)

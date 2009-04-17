@@ -64,7 +64,11 @@ endif
 SUBDIRS += QxScene LightApp ResExporter
 
 if GUI_ENABLE_CORBA
-  SUBDIRS += TOOLSGUI Session SalomeApp SALOME_SWIG SALOME_PY SALOME_PYQT
+  SUBDIRS += TOOLSGUI Session SalomeApp 
+endif
+
+if ENABLE_PYCONSOLE
+  SUBDIRS += SALOME_SWIG SALOME_PY SALOME_PYQT
 endif
 
 DIST_SUBDIRS = CASCatch Qtx Style DDS QDS ObjBrowser SUIT SUITApp STD CAF CAM LogWindow Prs Event \

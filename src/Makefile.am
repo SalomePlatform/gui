@@ -103,23 +103,23 @@ endif
 SUBDIRS_LIGHT = LightApp ResExporter
 
 ##
-# Extra Python packages
-##
-if ENABLE_PYCONSOLE
-  SUBDIRS_PY_LIGHT = SALOME_SWIG SALOME_PY SALOME_PYQT
-endif
-
-##
 # Full (CORBA) SALOME packages
 ##
 if GUI_ENABLE_CORBA
   SUBDIRS_CORBA = TOOLSGUI Session SalomeApp 
 endif
 
+##
+# Extra Python packages
+##
+if ENABLE_PYCONSOLE
+  SUBDIRS_PY_LIGHT = SALOME_SWIG SALOME_PY SALOME_PYQT
+endif
+
 SUBDIRS = $(SUBDIRS_COMMON) $(SUBDIRS_OBJECT) $(SUBDIRS_GLVIEWER) $(SUBDIRS_VTKVIEWER) $(SUBDIRS_OCCVIEWER)  \
           $(SUBDIRS_PLOT2DVIEWER) $(SUBDIRS_SUPERVGRAPHVIEWER) $(SUBDIRS_QXGRAPHVIEWER) $(SUBDIRS_PYCONSOLE) \
-          $(SUBDIRS_LIGHT) $(SUBDIRS_PY_LIGHT) $(SUBDIRS_CORBA)
+          $(SUBDIRS_LIGHT) $(SUBDIRS_CORBA) $(SUBDIRS_PY_LIGHT)
 
 DIST_SUBDIRS = CASCatch Qtx Style DDS QDS ObjBrowser SUIT SUITApp STD CAF CAM LogWindow Prs Event \
                OBJECT GLViewer VTKViewer SVTK OCCViewer SOCC Plot2d SPlot2d SUPERVGraph QxGraph QxScene \
-               PyInterp PyConsole LightApp ResExporter SALOME_SWIG SALOME_PY SALOME_PYQT TOOLSGUI Session SalomeApp
+               PyInterp PyConsole LightApp ResExporter TOOLSGUI Session SalomeApp SALOME_SWIG SALOME_PY SALOME_PYQT

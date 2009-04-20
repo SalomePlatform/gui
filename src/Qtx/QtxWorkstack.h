@@ -170,7 +170,7 @@ public:
 
   bool                contains( QWidget* ) const;
 
-  QWidgetList         widgetList() const;
+  QWidgetList         widgetList( const bool = false ) const;
 
   bool                isActive() const;
   void                updateActiveState();

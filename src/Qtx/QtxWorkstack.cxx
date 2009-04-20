@@ -77,9 +77,9 @@ QtxWorkstack::~QtxWorkstack()
 }
 
 /*!
-  \brief Gets list of all widgets in all areas or in specified area which given 
+  \brief Gets list of all widgets in all areas or in specified area which given
          widget belong to
-  \param wid widget specifying area if it is equal to null when widgets of all 
+  \param wid widget specifying area if it is equal to null when widgets of all
          areas are retuned
   \return list of widgets
 */
@@ -88,7 +88,7 @@ QWidgetList QtxWorkstack::windowList( QWidget* wid ) const
   QPtrList<QtxWorkstackArea> lst;
   if ( !wid )
     areas( mySplit, lst, true );
-  else 
+  else
   {
     QtxWorkstackArea* area = wgArea( wid );
     if ( area )
@@ -457,7 +457,7 @@ void QtxWorkstack::SetRelativePosition( QWidget* wid, const Qt::Orientation o,
 }
 
 /*!
-* \brief Sets the action's accelerator key to accel. 
+* \brief Sets the action's accelerator key to accel.
 * \param id - the key of the action in the actions map.
 * \param accel - action's accelerator key.
 */
@@ -553,7 +553,7 @@ static int positionSimple (QIntList& szList, const int nb, const int splitter_si
 * \param splitter_pos - position of the splitter \a split
 *                       (from top/left side of workstack area)
 * \retval int - returns difference between a required and a distinguished position.
-* 
+*
 * Internal method. Recursively calls itself.
 * Is called from <VAR>SetRelativePosition</VAR> public method.
 */
@@ -948,7 +948,7 @@ void QtxWorkstack::onContextMenuRequested( QWidget* w, QPoint p )
   myWorkArea = anArea;
 
   QPopupMenu* pm = new QPopupMenu();
-  
+
   if ( lst.count() > 1 )
   {
     myActionsMap[SplitVertical]->addTo( pm );
@@ -1273,7 +1273,7 @@ void QtxWorkstack::splitterInfo( QSplitter* split, QString& info ) const
 	sizesStr += QString( ":%1" ).arg( *sIt );  // so we don't need to store its size
     }
     if ( !sizesStr.isEmpty() ) // cut the first ':'
-      sizesStr = sizesStr.right( sizesStr.length()-1 );    
+      sizesStr = sizesStr.right( sizesStr.length()-1 );
 
     // count all QSplitter-s and QtxWorkstackArea-s
     //    int nChilds( 0 );
@@ -1284,9 +1284,9 @@ void QtxWorkstack::splitterInfo( QSplitter* split, QString& info ) const
     //           it.current()->inherits( "QtxWorkstackArea" ) )
     //	nChilds++;
     //    }
-      
+
     info += QString( "(splitter orientation=%1 sizes=%3 " ).arg( split->orientation() ).arg( sizesStr );
-    
+
     for ( QObjectListIt it( *objs ); it.current(); ++it )
     {
       if ( it.current()->inherits( "QSplitter" ) )
@@ -1296,9 +1296,10 @@ void QtxWorkstack::splitterInfo( QSplitter* split, QString& info ) const
 	if ( area->isEmpty() )
 	  continue;
 	info += QString( "(views active='%1'" ).arg( area->activeWidget()->name() );
-	QWidgetList views = area->widgetList();
+	QWidgetList views = area->widgetList( false );
 	for ( QWidgetListIt wIt( views ); wIt.current(); ++wIt )
-	  info += QString( " '%1'" ).arg( wIt.current()->name() );
+	  info += QString( " '%1'%2" ).arg( wIt.current()->name() ).
+	                               arg( wIt.current()->isVisibleTo( wIt.current()->parentWidget() ) ? "+" : "-" );
 	info += ')';
       }
     }
@@ -1374,7 +1375,7 @@ QStringList getChildren( const QString& str )
   QStringList lst;
   if ( !str.startsWith( "(" ) )
     return lst;
-  
+
   int i = 1,
   nOpen = 1, // count brackets: '(' increments nOpen, ')' decrements
   start = 0;
@@ -1389,7 +1390,7 @@ QStringList getChildren( const QString& str )
     else if ( str[i] == ')' )
     {
       nOpen--;
-      if ( nOpen == 0 ) 
+      if ( nOpen == 0 )
 	lst.append( str.mid( start, i-start+1 ) );
     }
     i++;
@@ -1399,21 +1400,25 @@ QStringList getChildren( const QString& str )
 }
 
 // for a string like "views active='AnotherView' 'GLView' 'AnotherView'"
-// getViewName( example, 0 ) returns "GLView", 
+// getViewName( example, 0 ) returns "GLView",
 // getViewName( example, 1 ) -> "AnotherView", etc.
-QString getViewName( const QString& str, int i )
+QString getViewName( const QString& str, int i, bool& vis )
 {
-  QRegExp exp( "\\s'\\w+'" );
+  QRegExp exp( "\\s'([^']+)'([\\+\\-]?)" );
   int start = 0; // start index of view name in the string
   int num = 0 ; // index of found match
-  while ( ( start = exp.search( str, start ) ) != -1 && num < i ) {
+  while ( ( start = exp.search( str, start ) ) != -1 && num < i )
+  {
     start += exp.matchedLength();
     num ++;
   }
-  if ( start != -1 )      // +2 and -3 avoid starting space and starting and ending ' symbols
-    return str.mid( start+2, exp.matchedLength()-3 );
 
-  return QString( "" );
+  if ( start == -1 )      // +2 and -3 avoid starting space and starting and ending ' symbols
+    return QString();
+
+  vis = exp.cap( 2 ) != QString( "-" );
+
+  return exp.cap( 1 );
 }
 
 // returns widget with given name
@@ -1458,12 +1463,14 @@ void QtxWorkstack::setSplitter( QSplitter* splitter, const QString& parameters, 
   QStringList children = ::getChildren( childrenStr );
 
   // debug output..
-  //  printf (" splitter orient=%d, sizes_count=%d, children=%d\n", orient, sizes.count(), children.count() ); 
-  //  for ( QStringList::Iterator tit = children.begin(); tit != children.end(); ++tit ) 
+  //  printf (" splitter orient=%d, sizes_count=%d, children=%d\n", orient, sizes.count(), children.count() );
+  //  for ( QStringList::Iterator tit = children.begin(); tit != children.end(); ++tit )
   //    printf ("   |-> child = [%s]\n", (*tit).latin1() );
 
-  for ( QStringList::Iterator it = children.begin(); it != children.end(); ++it ) {
-    if ( (*it).startsWith( "(splitter" ) ) {
+  for ( QStringList::Iterator it = children.begin(); it != children.end(); ++it )
+  {
+    if ( (*it).startsWith( "(splitter" ) )
+    {
       QSplitter* newSplitter = new QSplitter( splitter );
       setSplitter( newSplitter, *it, sMap );
     }
@@ -1473,14 +1480,18 @@ void QtxWorkstack::setSplitter( QSplitter* splitter, const QString& parameters, 
       QWidget* activeView( 0 );
       activeViewName = activeViewName.mid( 1, activeViewName.length()-2 ); // chop off ' symbols
       int i = 0;
-      QString viewName = ::getViewName( *it, i );
-      while ( !viewName.isEmpty() ) {
-	if ( QWidget* view = ::getView( splitter, viewName ) ) {
+      bool vis = true;
+      QString viewName = ::getViewName( *it, i, vis );
+      while ( !viewName.isEmpty() )
+      {
+	if ( QWidget* view = ::getView( splitter, viewName ) )
+	{
+	  view->setShown( vis );
 	  newArea->insertWidget( view );
 	  if ( activeViewName == view->name() )
 	    activeView = view;
 	}
-	viewName = ::getViewName( *it, ++i );
+	viewName = ::getViewName( *it, ++i, vis );
       }
       if ( activeView )
       	newArea->setActiveWidget( activeView );
@@ -1493,6 +1504,19 @@ void QtxWorkstack::setSplitter( QSplitter* splitter, const QString& parameters, 
 */
 QtxWorkstack& QtxWorkstack::operator<<( const QString& parameters )
 {
+  QMap<QString, QWidget*> map;
+  QPtrList<QtxWorkstackArea> lst;
+  areas( mySplit, lst, true );
+
+  QWidgetList widList;
+  for ( QPtrListIterator<QtxWorkstackArea> it( lst ); it.current(); ++it )
+  {
+    QWidgetList wids = it.current()->widgetList();
+    for ( QWidgetListIt itr( wids ); itr.current(); ++itr )
+      widList.append( itr.current() );
+  }
+
+
   // clear the main splitter - remove all child splitters and empty areas from it
   QPtrList<QSplitter> splitList;
   QPtrList<QtxWorkstackArea> areaList;
@@ -1500,19 +1524,19 @@ QtxWorkstack& QtxWorkstack::operator<<( const QString& parameters )
   areas( mySplit, areaList, false );
   for ( QPtrListIterator<QSplitter> iter( splitList ); iter.current(); ++iter )
     delete iter.current();
-  for ( QPtrListIterator<QtxWorkstackArea> it( areaList ); it.current(); ++it ) 
+  for ( QPtrListIterator<QtxWorkstackArea> it( areaList ); it.current(); ++it )
     if ( it.current()->isEmpty() )
       delete it.current();
 
   // restore splitter recursively
   QMap< QSplitter*, QValueList<int> > sMap;
-  setSplitter( mySplit, parameters, sMap );  
+  setSplitter( mySplit, parameters, sMap );
 
   // now mySplit may contains empty area (where all views were located before restoring)
   // in order setSize to work correctly we have to exclude this area
   areaList.clear();
   areas( mySplit, areaList, false );
-  for ( QPtrListIterator<QtxWorkstackArea> delIt( areaList ); delIt.current(); ++delIt ) 
+  for ( QPtrListIterator<QtxWorkstackArea> delIt( areaList ); delIt.current(); ++delIt )
     if ( delIt.current()->isEmpty() )
       delete delIt.current();
 
@@ -1565,9 +1589,9 @@ QtxWorkstackArea* QtxWorkstack::wgArea( QWidget* wid ) const
   \brief Moves the first widget to the same area which the second widget belongs to
   \param wid widget to be moved
   \param wid_to widget specified the destination area
-  \param before specifies whether the first widget has to be moved before or after 
+  \param before specifies whether the first widget has to be moved before or after
          the second widget
-  \return TRUE if operation is completed successfully, FALSE otherwise 
+  \return TRUE if operation is completed successfully, FALSE otherwise
 */
 bool QtxWorkstack::move( QWidget* wid, QWidget* wid_to, const bool before )
 {
@@ -1602,7 +1626,7 @@ bool QtxWorkstack::move( QWidget* wid, QWidget* wid_to, const bool before )
 
 /*!
   \brief Group all windows in one area
-  \return TRUE if operation is completed successfully, FALSE otherwise 
+  \return TRUE if operation is completed successfully, FALSE otherwise
 */
 void QtxWorkstack::stack()
 {
@@ -1620,7 +1644,7 @@ void QtxWorkstack::stack()
       area_to = wgArea( it );
       area_src = area_to;
     }
-    else 
+    else
       area_src = wgArea( it );
 
     if ( area_src != area_to )
@@ -1786,12 +1810,12 @@ void QtxWorkstackArea::removeWidget( QWidget* wid, const bool del )
 /*!
   \return list of visible widgets
 */
-QWidgetList QtxWorkstackArea::widgetList() const
+QWidgetList QtxWorkstackArea::widgetList( const bool all ) const
 {
   QWidgetList lst;
   for ( QWidgetListIt it( myList ); it.current(); ++it )
   {
-    if ( widgetVisibility( it.current() ) )
+    if ( all && widgetVisibility( it.current() ) )
       lst.append( it.current() );
   }
   return lst;
@@ -1937,7 +1961,7 @@ QRect QtxWorkstackArea::floatTab( const int idx ) const
 }
 
 /*!
-  \return tab covering point 
+  \return tab covering point
   \param p - point
 */
 int QtxWorkstackArea::tabAt( const QPoint& p ) const

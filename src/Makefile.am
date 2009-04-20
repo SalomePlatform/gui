@@ -24,53 +24,102 @@
 #  Module : SALOME
 # $Header$
 #
-SUBDIRS = CASCatch Qtx Style DDS QDS ObjBrowser SUIT SUITApp STD CAF CAM LogWindow Prs Event
 
+##
+# Common packages
+##
+SUBDIRS_COMMON = CASCatch Qtx Style DDS QDS ObjBrowser SUIT SUITApp STD CAF CAM LogWindow Prs Event
+
+##
+# SALOME object
+##
 if ENABLE_SALOMEOBJECT
-  SUBDIRS += OBJECT
+  SUBDIRS_OBJECT = OBJECT
 endif
 
+##
+# GL viewer
+##
 if ENABLE_GLVIEWER
-  SUBDIRS += GLViewer
+  SUBDIRS_GLVIEWER = GLViewer
 endif
 
+##
+# VTK viewer
+##
 if ENABLE_VTKVIEWER
-  SUBDIRS += VTKViewer
+  SUBDIRS_VTKVIEWER = VTKViewer
 if ENABLE_SALOMEOBJECT
-    SUBDIRS += SVTK
+    SUBDIRS_VTKVIEWER += SVTK
 endif
 endif
+
+##
+# OCC viewer
+##
 if ENABLE_OCCVIEWER
-  SUBDIRS += OCCViewer
+  SUBDIRS_OCCVIEWER = OCCViewer
 if ENABLE_SALOMEOBJECT
-    SUBDIRS += SOCC
+    SUBDIRS_OCCVIEWER += SOCC
 endif
 endif
-if ENABLE_PYCONSOLE
-  SUBDIRS += PyInterp PyConsole
-endif
+
+##
+# Plot2d viewer
+##
 if ENABLE_PLOT2DVIEWER
-  SUBDIRS += Plot2d
+  SUBDIRS_PLOT2DVIEWER = Plot2d
 if ENABLE_SALOMEOBJECT
-    SUBDIRS += SPlot2d
+    SUBDIRS_PLOT2DVIEWER += SPlot2d
 endif
 endif
+
+##
+# SUPERV graph viewer
+##
 if ENABLE_SUPERVGRAPHVIEWER
-  SUBDIRS += SUPERVGraph
+  SUBDIRS_SUPERVGRAPHVIEWER = SUPERVGraph
 endif
+
+##
+# Qx scene viewer
+##
+###VSR: QxGraph has been replaced by QxScene
+###SUBDIRS_QXGRAPHVIEWER = QxGraph
 if ENABLE_QXGRAPHVIEWER
-  SUBDIRS += QxGraph
-endif
-SUBDIRS += QxScene LightApp ResExporter
-
-if GUI_ENABLE_CORBA
-  SUBDIRS += TOOLSGUI Session SalomeApp 
+  SUBDIRS_QXGRAPHVIEWER = QxScene
 endif
 
+##
+# Python console (base)
+##
 if ENABLE_PYCONSOLE
-  SUBDIRS += SALOME_SWIG SALOME_PY SALOME_PYQT
+  SUBDIRS_PYCONSOLE = PyInterp PyConsole
 endif
+
+##
+# Light SALOME packages
+##
+SUBDIRS_LIGHT = LightApp ResExporter
+
+##
+# Extra Python packages
+##
+if ENABLE_PYCONSOLE
+  SUBDIRS_PY_LIGHT = SALOME_SWIG SALOME_PY SALOME_PYQT
+endif
+
+##
+# Full (CORBA) SALOME packages
+##
+if GUI_ENABLE_CORBA
+  SUBDIRS_CORBA = TOOLSGUI Session SalomeApp 
+endif
+
+SUBDIRS = $(SUBDIRS_COMMON) $(SUBDIRS_OBJECT) $(SUBDIRS_GLVIEWER) $(SUBDIRS_VTKVIEWER) $(SUBDIRS_OCCVIEWER)  \
+          $(SUBDIRS_PLOT2DVIEWER) $(SUBDIRS_SUPERVGRAPHVIEWER) $(SUBDIRS_QXGRAPHVIEWER) $(SUBDIRS_PYCONSOLE) \
+          $(SUBDIRS_LIGHT) $(SUBDIRS_PY_LIGHT) $(SUBDIRS_CORBA)
 
 DIST_SUBDIRS = CASCatch Qtx Style DDS QDS ObjBrowser SUIT SUITApp STD CAF CAM LogWindow Prs Event \
-               OBJECT GLViewer VTKViewer SVTK OCCViewer SOCC PyInterp PyConsole Plot2d SPlot2d SUPERVGraph \
-               QxGraph QxScene LightApp ResExporter TOOLSGUI Session SalomeApp SALOME_SWIG SALOME_PY SALOME_PYQT
+               OBJECT GLViewer VTKViewer SVTK OCCViewer SOCC Plot2d SPlot2d SUPERVGraph QxGraph QxScene \
+               PyInterp PyConsole LightApp ResExporter SALOME_SWIG SALOME_PY SALOME_PYQT TOOLSGUI Session SalomeApp

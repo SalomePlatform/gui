@@ -80,7 +80,7 @@ public:
 	 CloseId, CloseAllId, GroupAllId,
 	 PreferencesId, MRUId, ModulesListId,
          NewGLViewId, NewPlot2dId, NewOCCViewId, NewVTKViewId, NewQxGraphViewId,
-	 NewQxSceneViewId, StyleId,
+	 NewQxSceneViewId = NewQxGraphViewId, StyleId,
 	 UserID };
 
 protected:

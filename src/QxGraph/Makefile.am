@@ -19,6 +19,11 @@
 #
 #  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
+
+##############################################################
+# VSR: WARNING! THIS PACKAGE IS OBSOLETE
+##############################################################
+
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libQxGraph.la

@@ -188,8 +188,6 @@ if ENABLE_PLOT2DVIEWER
 else
   libLightApp_la_CPPFLAGS += -DDISABLE_PLOT2DVIEWER
 endif
-libLightApp_la_CPPFLAGS+= -I$(srcdir)/../QxScene
-
 if ENABLE_OCCVIEWER
   libLightApp_la_CPPFLAGS += -I$(srcdir)/../OCCViewer
 else !ENABLE_OCCVIEWER
@@ -212,8 +210,10 @@ if ENABLE_SUPERVGRAPHVIEWER
 else !ENABLE_SUPERVGRAPHVIEWER
   libLightApp_la_CPPFLAGS += -DDISABLE_SUPERVGRAPHVIEWER
 endif
+###VSR: QxGraph has been replaced by QxScene
+###libLightApp_la_CPPFLAGS += -I$(srcdir)/../QxGraph
 if ENABLE_QXGRAPHVIEWER
-  libLightApp_la_CPPFLAGS += -I$(srcdir)/../QxGraph
+  libLightApp_la_CPPFLAGS += -I$(srcdir)/../QxScene
 else !ENABLE_QXGRAPHVIEWER
   libLightApp_la_CPPFLAGS += -DDISABLE_QXGRAPHVIEWER
 endif
@@ -274,7 +274,8 @@ endif
 if ENABLE_SUPERVGRAPHVIEWER
   libLightApp_la_LIBADD += ../SUPERVGraph/libSUPERVGraph.la
 endif
+###VSR: QxGraph has been replaced by QxScene
+###libLightApp_la_LIBADD += ../QxGraph/libQxGraph.la
 if ENABLE_QXGRAPHVIEWER
-  libLightApp_la_LIBADD += ../QxGraph/libQxGraph.la
-endif
   libLightApp_la_LIBADD+= ../QxScene/libQxScene.la
+endif

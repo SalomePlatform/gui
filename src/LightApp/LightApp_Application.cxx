@@ -93,10 +93,6 @@
 #endif
 #endif
 
-#include <QxScene_ViewManager.h>
-#include <QxScene_ViewModel.h>
-#include <QxScene_ViewWindow.h>
-
 #ifndef DISABLE_OCCVIEWER
   #include <OCCViewer_ViewManager.h>
 #ifndef DISABLE_SALOMEOBJECT
@@ -126,9 +122,13 @@
 //#endif
 
 #ifndef DISABLE_QXGRAPHVIEWER
-  #include <QxGraph_ViewModel.h>
-  #include <QxGraph_ViewWindow.h>
-  #include <QxGraph_ViewManager.h>
+//VSR: QxGraph has been replaced by QxScene
+//  #include <QxGraph_ViewModel.h>
+//  #include <QxGraph_ViewWindow.h>
+//  #include <QxGraph_ViewManager.h>
+  #include <QxScene_ViewManager.h>
+  #include <QxScene_ViewModel.h>
+  #include <QxScene_ViewWindow.h>
 #endif
 
 #include <QDir>
@@ -572,10 +572,10 @@ void LightApp_Application::createActions()
   createActionForViewer( NewVTKViewId, newWinMenu, QString::number( 3 ), Qt::ALT+Qt::Key_K );
 #endif
 #ifndef DISABLE_QXGRAPHVIEWER
-  createActionForViewer( NewQxGraphViewId, newWinMenu, QString::number( 4 ), Qt::ALT+Qt::Key_C );
+//VSR: QxGraph has been replaced by QxScene
+//  createActionForViewer( NewQxGraphViewId, newWinMenu, QString::number( 4 ), Qt::ALT+Qt::Key_C );
+  createActionForViewer( NewQxSceneViewId, newWinMenu, QString::number( 4 ), Qt::ALT+Qt::Key_S );
 #endif
-
-  createActionForViewer( NewQxSceneViewId, newWinMenu, QString::number( 5 ), Qt::ALT+Qt::Key_S );
 
   createAction( RenameId, tr( "TOT_RENAME" ), QIcon(), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ),
 		Qt::SHIFT+Qt::Key_R, desk, false, this, SLOT( onRenameWindow() ) );
@@ -681,13 +681,14 @@ void LightApp_Application::onNewWindow()
     break;
 #endif
 #ifndef DISABLE_QXGRAPHVIEWER
-  case NewQxGraphViewId:
-    type = QxGraph_Viewer::Type();
-    break;
-#endif
+//VSR: QxGraph has been replaced by QxScene
+//  case NewQxGraphViewId:
+//    type = QxGraph_Viewer::Type();
+//    break;
   case NewQxSceneViewId:
     type = QxScene_Viewer::Type();
     break;
+#endif
   }
 
   if ( !type.isEmpty() )
@@ -805,13 +806,12 @@ void LightApp_Application::updateCommandsStatus()
 #endif
 
 #ifndef DISABLE_QXGRAPHVIEWER
-  a = action( NewQxGraphViewId );
-  if( a )
-    a->setEnabled( activeStudy() );
-#endif
+//VSR: QxGraph has been replaced by QxScene
+//  a = action( NewQxGraphViewId );
   a = action( NewQxSceneViewId );
   if( a )
     a->setEnabled( activeStudy() );
+#endif
 }
 
 /*!
@@ -1249,13 +1249,6 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
     }
   }
 #endif
-  if( vmType == QxScene_Viewer::Type() )
-  {
-    viewMgr = new QxScene_ViewManager( activeStudy(), desktop() );
-    QxScene_Viewer* vm = new QxScene_Viewer();
-    viewMgr->setViewModel( vm  );
-    //QxScene_ViewWindow* wnd = dynamic_cast<QxScene_ViewWindow*>( viewMgr->getActiveView() );
-  }
   //#ifndef DISABLE_SUPERVGRAPHVIEWER
   //  if( vmType == SUPERVGraph_Viewer::Type() )
   //  {
@@ -1263,10 +1256,18 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
   //  }
   //#endif
 #ifndef DISABLE_QXGRAPHVIEWER
-  if( vmType == QxGraph_Viewer::Type() )
-    {
-      viewMgr = new QxGraph_ViewManager( activeStudy(), desktop(), new QxGraph_Viewer() );
-    }
+//VSR: QxGraph has been replaced by QxScene
+//  if( vmType == QxGraph_Viewer::Type() )
+//    {
+//      viewMgr = new QxGraph_ViewManager( activeStudy(), desktop(), new QxGraph_Viewer() );
+//    }
+  if( vmType == QxScene_Viewer::Type() )
+  {
+    viewMgr = new QxScene_ViewManager( activeStudy(), desktop() );
+    QxScene_Viewer* vm = new QxScene_Viewer();
+    viewMgr->setViewModel( vm  );
+    //QxScene_ViewWindow* wnd = dynamic_cast<QxScene_ViewWindow*>( viewMgr->getActiveView() );
+  }
 #endif
 #ifndef DISABLE_OCCVIEWER
   if( vmType == OCCViewer_Viewer::Type() )

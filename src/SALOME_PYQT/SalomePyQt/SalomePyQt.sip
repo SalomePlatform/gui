@@ -216,10 +216,7 @@ public:
 
   static QString           getFileName         ( QWidget*, const QString&, const QStringList&, const QString&, bool ) /ReleaseGIL/ ;
   static QStringList       getOpenFileNames    ( QWidget*, const QString&, const QStringList&, const QString& ) /ReleaseGIL/ ;
-  static QString           getExistingDirectory( QWidget*, const
-  QString&, const QString& ) /ReleaseGIL/ ;
-
-
+  static QString           getExistingDirectory( QWidget*, const QString&, const QString& ) /ReleaseGIL/ ;
 			 
   static QString           createObject( const QString& = QString("") )  /ReleaseGIL/ ;
   static QString           createObject( const QString&,

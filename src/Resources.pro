@@ -10,6 +10,6 @@ win32:copy_res.input = Resource
 win32:QMAKE_EXTRA_COMPILERS += copy_res
 
 resources.files = $$RES_FILES
-resources.path = $${GUIResources}/resources
+resources.path = $${GUIResources}
 
 INSTALLS += resources

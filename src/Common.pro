@@ -14,27 +14,28 @@ isEmpty( HEADERS ):HEADERS = *.h
 isEmpty( SOURCES ):SOURCES = *.cxx
 
 MOC_DIR = ../../moc
-OBJECTS_DIR = ../../$$(CONFIG_ID)/$$(CONFIG_MODE)/obj/$$TARGET
 
 unix {
+  OBJECTS_DIR = ../../$$(CONFIG_ID)/obj
   contains( TEMPLATE, lib ) {
     DESTDIR = ../../$(CONFIG_ID)/lib
   } else {
     DESTDIR = ../../$(CONFIG_ID)/bin
   }
 
-  INCLUDEPATH += ../../include
+  INCLUDEPATH += ../../$(CONFIG_ID)/include
   LIBS += -L../../$(CONFIG_ID)/lib
 
-  GUIResources = ../../resources
+  GUIResources = ../../$(CONFIG_ID)/resources
 
   includes.files = $$HEADERS
-  includes.path = ../../include
+  includes.path = ../../$(CONFIG_ID)/include
 
   INSTALLS += includes
 }
 
 win32 {
+  OBJECTS_DIR = ../../$$(CONFIG_ID)/$$(CONFIG_MODE)/obj/$$TARGET
   contains( TEMPLATE, vclib ) {
     DESTDIR = $$(SUIT_DIR)/$$(CONFIG_ID)/lib/$$(CONFIG_MODE)
   } else {

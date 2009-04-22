@@ -1,24 +1,12 @@
-TEMPLATE = lib
+unix:TEMPLATE = lib
+win32:TEMPLATE = vclib
 TARGET = Event
 
 include(../Common.pro)
 
-DESTDIR = ../../$(CONFIG_ID)/lib
-MOC_DIR = ../../moc
-OBJECTS_DIR = ../../$(CONFIG_ID)/obj/$$TARGET
+win32:LIBS *= -L$(QTLIB)
+win32:INCLUDEPATH *= $(QTINC) $(QTINC)\QtCore $(QTINC)\QtGui
 
-INCLUDEPATH += ../../include
-LIBS += 
+win32:DEFINES += WNT WIN32
 
-win32:DEFINES += WIN32 
 DEFINES += EVENT_EXPORTS
-
-HEADERS  = Event.h
-HEADERS += SALOME_Event.h
-
-SOURCES  = SALOME_Event.cxx
-
-includes.files = $$HEADERS
-includes.path = ../../include
-
-INSTALLS += includes

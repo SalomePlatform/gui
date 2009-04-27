@@ -1815,7 +1815,7 @@ QWidgetList QtxWorkstackArea::widgetList( const bool all ) const
   QWidgetList lst;
   for ( QWidgetListIt it( myList ); it.current(); ++it )
   {
-    if ( all && widgetVisibility( it.current() ) )
+    if ( all || widgetVisibility( it.current() ) )
       lst.append( it.current() );
   }
   return lst;

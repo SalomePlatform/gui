@@ -38,14 +38,14 @@ class SALOME_PYQT_EXPORT SALOME_PYQT_Module: public SalomeApp_Module,
 {
   Q_OBJECT;
 
- public:
+public:
   SALOME_PYQT_Module();
   ~SALOME_PYQT_Module();
 
   /* get module engine IOR */
-  virtual QString engineIOR() const;
+  virtual QString            engineIOR() const;
 
-  public slots:
+public slots:
   void                       preferenceChanged( const QString&, 
 						const QString&, 
 						const QString& );
@@ -54,12 +54,17 @@ class SALOME_PYQT_EXPORT SALOME_PYQT_Module: public SalomeApp_Module,
   void                       onViewClosed( SUIT_ViewWindow* );
   void                       onViewCloned( SUIT_ViewWindow* );
 
- protected:
+protected:
   /* create data model */
-  virtual CAM_DataModel*  createDataModel();
+  virtual CAM_DataModel*     createDataModel();
 
   Engines::Component_var     getEngine() const;
 
+private:
+  void                       getEngineIOR();
+
+private:
+  QString                    myIOR;
 };
 
 #endif // SALOME_PYQT_MODULE_H

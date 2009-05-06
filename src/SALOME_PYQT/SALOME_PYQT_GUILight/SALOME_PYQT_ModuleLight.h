@@ -55,7 +55,6 @@ private:
 
   //! study to Python subinterpreter map
   typedef QMap<int, PyInterp_Interp*> InterpMap;
-  PyObjWrapper                    myModule;     //!< Python GUI module
   static SALOME_PYQT_ModuleLight* myInitModule; //!< Python GUI being initialized (not zero only during the initialization)
 
   XmlHandler*                myXmlHandler; //!< XML resource file parser
@@ -63,8 +62,8 @@ private:
   QStringList                myViewMgrList;//!< compatible view managers list
   bool                       myLastActivateStatus; //!< latest module activation status
 
-
 protected:
+  PyObjWrapper                    myModule;     //!< Python GUI module
   PyInterp_Interp*                myInterp;     //!< current Python subinterpreter
   static InterpMap                myInterpMap;  //!< study to Python subinterpreter map
 

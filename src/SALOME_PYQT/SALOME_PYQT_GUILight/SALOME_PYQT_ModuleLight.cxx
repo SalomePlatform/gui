@@ -23,7 +23,7 @@
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 //
 
-#include <SALOME_PYQT_PyInterp.h>
+#include "SALOME_PYQT_PyInterp.h"
 #include <SUITApp_init_python.hxx>
 #include <PyInterp_Interp.h>
 #include <PyConsole_Interp.h>

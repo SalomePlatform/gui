@@ -24,7 +24,7 @@
 // Author:    Natalia Donis
 //
 #ifndef DISABLE_PYCONSOLE
-  #include <LightApp_PyInterp.h> // WARNING! This include must be the first!
+  #include "LightApp_PyInterp.h" // WARNING! This include must be the first!
   #include <PyConsole_Console.h>
 #endif
 

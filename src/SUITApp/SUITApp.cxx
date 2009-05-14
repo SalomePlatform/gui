@@ -37,7 +37,7 @@
 #endif
 
 #ifdef SUIT_ENABLE_PYTHON
-#include <SUITApp_init_python.hxx>
+#include "SUITApp_init_python.hxx"
 #endif
 
 #endif //#if defined WIN32

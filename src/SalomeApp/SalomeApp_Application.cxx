@@ -765,10 +765,7 @@ void SalomeApp_Application::onLoadScript( )
 
   if ( !aFile.isEmpty() )
   {
-    QFileInfo aFileInfo( aFile );
-    QString anAbsPath = aFileInfo.absolutePath();
-    QString aFileName = aFileInfo.baseName();
-    QString command = QString("import sys; sys.path.insert(0,r\"%1\"); import %2").arg(anAbsPath, aFileName);
+    QString command = QString("execfile(r\"%1\")").arg(aFile);
 
     PyConsole_Console* pyConsole = pythonConsole();
 

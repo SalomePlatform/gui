@@ -206,7 +206,7 @@ void SALOME_PYQT_Module::onViewClosed( SUIT_ViewWindow* pview )
   \param section preference resource file section
   \param setting preference resource name
 */
-void SALOME_PYQT_ModuleLight::preferenceChanged( const QString& module, 
+void SALOME_PYQT_Module::preferenceChanged( const QString& module, 
 					    const QString& section, 
 					    const QString& setting )
 {

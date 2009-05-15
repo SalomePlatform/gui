@@ -74,7 +74,8 @@ QtxFontEdit::QtxFontEdit( const int feat, QWidget* parent )
 */
 QtxFontEdit::QtxFontEdit( QWidget* parent )
 : QFrame( parent ),
-  myFeatures( All )
+  myFeatures( All ),
+  myMode( Native )
 {
   initialize();
 }

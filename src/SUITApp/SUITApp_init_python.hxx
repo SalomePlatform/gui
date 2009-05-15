@@ -29,7 +29,17 @@
 #include <pthread.h> 
 #include <Python.h>
 
-struct SUIT_PYTHON
+#ifdef WNT
+#  if defined SUITAPP_EXPORTS || defined SUITApp_EXPORTS
+#    define SUITAPP_EXPORT __declspec(dllexport)
+#  else
+#   define SUITAPP_EXPORT __declspec(dllimport)
+#  endif
+#else
+#  define SUITAPP_EXPORT
+#endif
+
+struct SUITAPP_EXPORT SUIT_PYTHON
 {
   static PyThreadState *_gtstate;
   static PyInterpreterState *_interp;

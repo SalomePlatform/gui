@@ -37,6 +37,9 @@
 #include <vtkPolyDataMapper.h>
 #include <vtkVectorText.h>
 
+// QT includes
+#include <QtGlobal>
+
 vtkStandardNewMacro(VTKViewer_UnScaledActor);
 
 /*!Constructor*/
@@ -85,10 +88,10 @@ void VTKViewer_UnScaledActor::Render(vtkRenderer *theRenderer)
     vtkFloatingPointType aZeroTol   = 1.0E-12;
     vtkFloatingPointType anOldScale = GetScale()[0];
     vtkFloatingPointType aScale = anOldScale;
-    vtkFloatingPointType aMaxSize = (vtkFloatingPointType)fmax(aSize[1],aSize[0]);
-    if (fabs(aWinDiag) > aZeroTol && fabs(aLength) > aZeroTol && fabs(aMaxSize) > aZeroTol)
-      aScale = mySize*aWorldDiag/aWinDiag/aLength*sqrt(vtkFloatingPointType(fmin(aSize[1],aSize[0]))/aMaxSize);
-    if(fabs(aScale) > aZeroTol && fabs(aScale - anOldScale)/aScale > aPrecision){
+    vtkFloatingPointType aMaxSize = (vtkFloatingPointType)qMax(aSize[1],aSize[0]);
+    if (qAbs(aWinDiag) > aZeroTol && qAbs(aLength) > aZeroTol && qAbs(aMaxSize) > aZeroTol)
+      aScale = mySize*aWorldDiag/aWinDiag/aLength*sqrt(vtkFloatingPointType(qMin(aSize[1],aSize[0]))/aMaxSize);
+    if(qAbs(aScale) > aZeroTol && qAbs(aScale - anOldScale)/aScale > aPrecision){
       SetScale(aScale);
     }
   }

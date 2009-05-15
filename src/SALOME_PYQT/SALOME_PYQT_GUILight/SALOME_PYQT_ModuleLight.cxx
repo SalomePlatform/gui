@@ -184,7 +184,7 @@ PyMODINIT_FUNC INIT_FUNCTION();
 */
 
 extern "C" {
-  SALOME_PYQT_EXPORT CAM_Module* createModule() {
+  SALOME_PYQT_LIGHT_EXPORT CAM_Module* createModule() {
 
     static bool alreadyInitialized = false;
     if ( !alreadyInitialized ) {

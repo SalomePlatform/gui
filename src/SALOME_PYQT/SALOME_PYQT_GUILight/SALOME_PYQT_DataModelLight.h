@@ -35,7 +35,7 @@ class SALOME_PYQT_RootObjectLight;
 
 
 
-class SALOME_PYQT_EXPORT SALOME_PYQT_DataModelLight : public LightApp_DataModel
+class SALOME_PYQT_LIGHT_EXPORT SALOME_PYQT_DataModelLight : public LightApp_DataModel
 {
   Q_OBJECT
 

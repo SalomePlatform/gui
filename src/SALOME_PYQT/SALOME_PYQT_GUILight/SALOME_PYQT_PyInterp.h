@@ -31,7 +31,7 @@
 
 #include "PyInterp_Interp.h" // this include must be first !!!
 
-class SALOME_PYQT_EXPORT SALOME_PYQT_PyInterp : public PyInterp_Interp
+class SALOME_PYQT_LIGHT_EXPORT SALOME_PYQT_PyInterp : public PyInterp_Interp
 {
  public:
   SALOME_PYQT_PyInterp();

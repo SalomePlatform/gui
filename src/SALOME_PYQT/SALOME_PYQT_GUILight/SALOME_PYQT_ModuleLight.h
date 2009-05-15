@@ -46,7 +46,7 @@ class QtxActionGroup;
 class QMenu;
 
 
-class SALOME_PYQT_EXPORT SALOME_PYQT_ModuleLight: virtual public LightApp_Module
+class SALOME_PYQT_LIGHT_EXPORT SALOME_PYQT_ModuleLight: virtual public LightApp_Module
 {
   Q_OBJECT;
 

@@ -36,7 +36,7 @@
 /*!
  * SALOME_PYQT_DataObjectLight - PYTHON LIGHT module's data object class
  */
-class SALOME_PYQT_EXPORT SALOME_PYQT_DataObjectLight : public virtual LightApp_DataObject
+class SALOME_PYQT_LIGHT_EXPORT SALOME_PYQT_DataObjectLight : public virtual LightApp_DataObject
 {
 
  public:

@@ -30,15 +30,15 @@
 // set dllexport type for Win platform 
 #ifdef WNT
 
-#ifdef SALOME_PYQT_EXPORTS
-#define SALOME_PYQT_EXPORT __declspec(dllexport)
+#if defined SALOME_PYQT_LIGHT_EXPORTS || defined SalomePyQtGUILight_EXPORTS
+#define SALOME_PYQT_LIGHT_EXPORT __declspec(dllexport)
 #else
-#define SALOME_PYQT_EXPORT __declspec(dllimport)
+#define SALOME_PYQT_LIGHT_EXPORT __declspec(dllimport)
 #endif
 
 #else   // WNT
 
-#define SALOME_PYQT_EXPORT
+#define SALOME_PYQT_LIGHT_EXPORT
 
 #endif  // WNT
 

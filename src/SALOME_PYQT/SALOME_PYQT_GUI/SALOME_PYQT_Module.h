@@ -25,6 +25,7 @@
 #ifndef SALOME_PYQT_MODULE_H
 #define SALOME_PYQT_MODULE_H
 
+#include "SALOME_PYQT_GUI.h"
 #include "SALOME_PYQT_PyInterp.h" // this include must be first (see PyInterp_base.h)!*/
 #include "SALOME_PYQT_ModuleLight.h"
 #include "SalomeApp_Module.h"

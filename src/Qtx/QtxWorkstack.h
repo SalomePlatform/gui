@@ -162,7 +162,7 @@ public:
 
   bool                isEmpty() const;
 
-  void                insertWidget( QWidget*, const int = -1 );
+  void                insertWidget( QWidget*, const int = -1, const int = 0 );
   void                removeWidget( QWidget*, const bool = true );
 
   QWidget*            activeWidget() const;

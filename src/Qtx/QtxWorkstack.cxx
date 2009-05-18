@@ -1296,7 +1296,7 @@ void QtxWorkstack::splitterInfo( QSplitter* split, QString& info ) const
 	if ( area->isEmpty() )
 	  continue;
 	info += QString( "(views active='%1'" ).arg( area->activeWidget()->name() );
-	QWidgetList views = area->widgetList( false );
+	QWidgetList views = area->widgetList( true );
 	for ( QWidgetListIt wIt( views ); wIt.current(); ++wIt )
 	  info += QString( " '%1'%2" ).arg( wIt.current()->name() ).
 	                               arg( wIt.current()->isVisibleTo( wIt.current()->parentWidget() ) ? "+" : "-" );
@@ -1486,8 +1486,8 @@ void QtxWorkstack::setSplitter( QSplitter* splitter, const QString& parameters, 
       {
 	if ( QWidget* view = ::getView( splitter, viewName ) )
 	{
+	  newArea->insertWidget( view, -1, vis ? 1 : -1 );
 	  view->setShown( vis );
-	  newArea->insertWidget( view );
 	  if ( activeViewName == view->name() )
 	    activeView = view;
 	}
@@ -1716,7 +1716,7 @@ bool QtxWorkstackArea::isEmpty() const
   \param wid - widget
   \param idx - index
 */
-void QtxWorkstackArea::insertWidget( QWidget* wid, const int idx )
+void QtxWorkstackArea::insertWidget( QWidget* wid, const int idx, const int vis )
 {
   if ( !wid )
     return;
@@ -1732,9 +1732,10 @@ void QtxWorkstackArea::insertWidget( QWidget* wid, const int idx )
   {
     QtxWorkstackChild* child = new QtxWorkstackChild( wid, myStack );
     myChild.insert( wid, child );
+
     myInfo.insert( wid, WidgetInfo() );
     myInfo[wid].id = generateId();
-    myInfo[wid].vis = wid->isVisibleTo( wid->parentWidget() );
+    myInfo[wid].vis = vis == 0 ? wid->isVisibleTo( wid->parentWidget() ) : vis > 0;
 
     connect( child, SIGNAL( destroyed( QObject* ) ), this, SLOT( onChildDestroyed( QObject* ) ) );
     connect( wid, SIGNAL( destroyed() ), this, SLOT( onWidgetDestroyed() ) );
@@ -1746,7 +1747,9 @@ void QtxWorkstackArea::insertWidget( QWidget* wid, const int idx )
 
   updateState();
 
-  setWidgetActive( wid );
+  if ( widgetVisibility( wid ) )
+    setWidgetActive( wid );
+
   wid->setFocus();
 }
 
@@ -2380,6 +2383,7 @@ QtxWorkstackChild::QtxWorkstackChild( QWidget* wid, QWidget* parent )
 myWidget( wid )
 {
   myWidget->reparent( this, QPoint( 0, 0 ), myWidget->isVisibleTo( myWidget->parentWidget() ) );
+
   myWidget->installEventFilter( this );
 
   connect( myWidget, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );

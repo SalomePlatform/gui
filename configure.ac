@@ -29,7 +29,7 @@ AC_INIT([Salome2 Project GUI module], [5.1.1], [webmaster.salome@opencascade.com
 AC_CONFIG_AUX_DIR(salome_adm/unix/config_files)
 AC_CANONICAL_HOST
 AC_CANONICAL_TARGET
-AM_INIT_AUTOMAKE
+AM_INIT_AUTOMAKE([-Wno-portability])
 
 XVERSION=`echo $VERSION | awk -F. '{printf("0x%02x%02x%02x",$1,$2,$3)}'`
 AC_SUBST(XVERSION)
@@ -588,63 +588,63 @@ echo
 # autoscan, the Makefile list is generated in the output file configure.scan.
 # This could be helpfull to update de configuration.
 AC_OUTPUT([ \
-  ./salome_adm/unix/SALOMEconfig.h \
-  ./adm_local/Makefile \
-  ./adm_local/cmake_files/Makefile \
-  ./adm_local/unix/Makefile \
-  ./adm_local/unix/config_files/Makefile \
-  ./bin/VERSION \
-  ./bin/Makefile \
-  ./GUI_version.h \
-  ./doc/Makefile \
-  ./doc/salome/Makefile \
-  ./doc/salome/gui/Makefile \
-  ./doc/salome/gui/doxyfile \
-  ./doc/salome/tui/Makefile \
-  ./doc/salome/tui/doxyfile \
-  ./src/Makefile \
-  ./src/CASCatch/Makefile \
-  ./src/Qtx/Makefile \
-  ./src/Style/Makefile \
-  ./src/DDS/Makefile \
-  ./src/QDS/Makefile \
-  ./src/SUIT/Makefile \
-  ./src/STD/Makefile \
-  ./src/CAF/Makefile \
-  ./src/CAM/Makefile \
-  ./src/SUITApp/Makefile \
-  ./src/LogWindow/Makefile \
-  ./src/ObjBrowser/Makefile \
-  ./src/Prs/Makefile \
-  ./src/OBJECT/Makefile \
-  ./src/GLViewer/Makefile \
-  ./src/VTKViewer/Makefile \
-  ./src/SVTK/Makefile \
-  ./src/OCCViewer/Makefile \
-  ./src/SOCC/Makefile \
-  ./src/PyInterp/Makefile \
-  ./src/PyConsole/Makefile \
-  ./src/Plot2d/Makefile \
-  ./src/SPlot2d/Makefile \
-  ./src/SUPERVGraph/Makefile \
-  ./src/QxGraph/Makefile \
-  ./src/QxScene/Makefile \
-  ./src/LightApp/Makefile \
-  ./src/ResExporter/Makefile \
-  ./src/TOOLSGUI/Makefile \
-  ./src/Event/Makefile \
-  ./src/Session/Makefile \
-  ./src/SalomeApp/Makefile \
-  ./src/SalomeApp/Test/Makefile \
-  ./src/SALOME_SWIG/Makefile \
-  ./src/SALOME_SWIG/supervisionexample.py \
-  ./src/SALOME_SWIG/supervisiongeomexample.py \
-  ./src/SALOME_PY/Makefile \
-  ./src/SALOME_PYQT/Makefile \
-  ./src/SALOME_PYQT/SALOME_PYQT_GUI/Makefile \
-  ./src/SALOME_PYQT/SALOME_PYQT_GUILight/Makefile \
-  ./src/SALOME_PYQT/SalomePyQt/Makefile \
-  ./resources/Makefile \
-  ./idl/Makefile \
+  salome_adm/unix/SALOMEconfig.h \
+  adm_local/Makefile \
+  adm_local/cmake_files/Makefile \
+  adm_local/unix/Makefile \
+  adm_local/unix/config_files/Makefile \
+  bin/VERSION \
+  bin/Makefile \
+  GUI_version.h \
+  doc/Makefile \
+  doc/salome/Makefile \
+  doc/salome/gui/Makefile \
+  doc/salome/gui/doxyfile \
+  doc/salome/tui/Makefile \
+  doc/salome/tui/doxyfile \
+  src/Makefile \
+  src/CASCatch/Makefile \
+  src/Qtx/Makefile \
+  src/Style/Makefile \
+  src/DDS/Makefile \
+  src/QDS/Makefile \
+  src/SUIT/Makefile \
+  src/STD/Makefile \
+  src/CAF/Makefile \
+  src/CAM/Makefile \
+  src/SUITApp/Makefile \
+  src/LogWindow/Makefile \
+  src/ObjBrowser/Makefile \
+  src/Prs/Makefile \
+  src/OBJECT/Makefile \
+  src/GLViewer/Makefile \
+  src/VTKViewer/Makefile \
+  src/SVTK/Makefile \
+  src/OCCViewer/Makefile \
+  src/SOCC/Makefile \
+  src/PyInterp/Makefile \
+  src/PyConsole/Makefile \
+  src/Plot2d/Makefile \
+  src/SPlot2d/Makefile \
+  src/SUPERVGraph/Makefile \
+  src/QxGraph/Makefile \
+  src/QxScene/Makefile \
+  src/LightApp/Makefile \
+  src/ResExporter/Makefile \
+  src/TOOLSGUI/Makefile \
+  src/Event/Makefile \
+  src/Session/Makefile \
+  src/SalomeApp/Makefile \
+  src/SalomeApp/Test/Makefile \
+  src/SALOME_SWIG/Makefile \
+  src/SALOME_SWIG/supervisionexample.py \
+  src/SALOME_SWIG/supervisiongeomexample.py \
+  src/SALOME_PY/Makefile \
+  src/SALOME_PYQT/Makefile \
+  src/SALOME_PYQT/SALOME_PYQT_GUI/Makefile \
+  src/SALOME_PYQT/SALOME_PYQT_GUILight/Makefile \
+  src/SALOME_PYQT/SalomePyQt/Makefile \
+  resources/Makefile \
+  idl/Makefile \
   Makefile
 ])

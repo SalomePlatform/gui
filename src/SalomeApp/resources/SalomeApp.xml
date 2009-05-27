@@ -139,6 +139,13 @@
     <parameter name="show_group_names"         value="true"/>
     <parameter name="group_names_text_color"   value="255, 255, 255"/>
     <parameter name="group_names_transparency" value="0.5"/>
+    <parameter name="projection_mode" value="0"/>
+    <parameter name="navigation_mode" value="0"/>
+    <parameter name="speed_mode" value="0"/>
+    <parameter name="speed_value" value="10"/>
+    <parameter name="spacemouse_func1_btn" value="1"/>
+    <parameter name="spacemouse_func2_btn" value="2"/>
+    <parameter name="spacemouse_func5_btn" value="5"/>
  </section>
  <section name="Plot2d" >
     <!-- Plot2d viewer preferences -->

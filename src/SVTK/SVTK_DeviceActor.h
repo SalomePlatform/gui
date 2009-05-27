@@ -225,6 +225,14 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
 
   vtkDataSetMapper* GetDataSetMapper();
 
+  //----------------------------------------------------------------------------
+  //! Setting for displaying quadratic elements
+  virtual void SetQuadraticArcMode(bool theFlag);
+  virtual bool GetQuadraticArcMode();
+
+  virtual void SetQuadraticArcAngle(vtkFloatingPointType theMaxAngle);
+  virtual vtkFloatingPointType GetQuadraticArcAngle();
+
  protected:
   SVTK::Representation::Type myRepresentation;
   vtkProperty *myProperty;

@@ -49,7 +49,8 @@ salomeinclude_HEADERS =				\
 	VTKViewer_ViewManager.h			\
 	VTKViewer_ViewModel.h			\
 	VTKViewer_ViewWindow.h			\
-	VTKViewer_Functor.h
+	VTKViewer_Functor.h                     \
+	VTKViewer_ArcBuilder.h
 
 dist_libVTKViewer_la_SOURCES =			\
 	VTKViewer_CellLocationsArray.cxx	\
@@ -70,7 +71,8 @@ dist_libVTKViewer_la_SOURCES =			\
 	VTKViewer_ViewManager.cxx		\
 	VTKViewer_ViewModel.cxx			\
 	VTKViewer_ConvexTool.cxx		\
-	VTKViewer_ViewWindow.cxx 		
+	VTKViewer_ViewWindow.cxx 		\
+	VTKViewer_ArcBuilder.cxx
 
 MOC_FILES =						\
 	VTKViewer_RenderWindow_moc.cxx			\

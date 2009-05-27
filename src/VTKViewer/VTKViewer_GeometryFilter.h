@@ -32,6 +32,8 @@
 #pragma warning ( disable:4251 )
 #endif
 
+class vtkUnstructuredGrid;
+
 /*! \brief This class used same as vtkGeometryFilter. See documentation on VTK for more information.
  */
 class VTKVIEWER_EXPORT VTKViewer_GeometryFilter : public vtkGeometryFilter 
@@ -86,6 +88,13 @@ public:
    */
   virtual vtkIdType GetElemObjId(int theVtkID);
 
+  virtual void SetQuadraticArcMode(bool theFlag);
+  virtual bool GetQuadraticArcMode() const;
+
+  virtual void   SetQuadraticArcAngle(vtkFloatingPointType theMaxAngle);
+  virtual vtkFloatingPointType GetQuadraticArcAngle() const;
+
+
 protected:
   /*! \fn VTKViewer_GeometryFilter();
    * \brief Constructor which sets \a myShowInside = 0 and \a myStoreMapping = 0
@@ -104,6 +113,9 @@ protected:
    * \brief Filter culculation method for data object type is VTK_UNSTRUCTURED_GRID.
    */
   int UnstructuredGridExecute (vtkDataSet *, vtkPolyData *, vtkInformation *);
+
+
+  void BuildArcedPolygon(vtkIdType cellId, vtkUnstructuredGrid* input, vtkPolyData *output, bool triangulate = false);
     
 private:
   typedef std::vector<vtkIdType> TVectorId;
@@ -113,6 +125,9 @@ private:
   int       myShowInside;
   int       myStoreMapping;
   int       myIsWireframeMode;
+
+  vtkFloatingPointType    myMaxArcAngle;   // define max angle for mesh 2D quadratic element in the degrees
+  bool      myIsBuildArc;     // flag for representation 2D quadratic element as arked polygon
 };
 
 #ifdef WIN32

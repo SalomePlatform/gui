@@ -673,4 +673,34 @@ VTKViewer_Actor
   myIsHighlighted = theIsHighlight; 
 }
 
+/*!
+ * On/Off representation 2D quadratic element as arked polygon
+ */
+void VTKViewer_Actor::SetQuadraticArcMode(bool theFlag){
+  myGeomFilter->SetQuadraticArcMode(theFlag);
+}
+
+/*!
+ * Return true if 2D quadratic element displayed as arked polygon
+ */
+bool VTKViewer_Actor::GetQuadraticArcMode() const{
+  return myGeomFilter->GetQuadraticArcMode();
+}
+/*!
+ * Set Max angle for representation 2D quadratic element as arked polygon
+ */
+void VTKViewer_Actor::SetQuadraticArcAngle(vtkFloatingPointType theMaxAngle){
+  myGeomFilter->SetQuadraticArcAngle(theMaxAngle);
+}
+
+/*!
+ * Return Max angle of the representation 2D quadratic element as arked polygon
+ */
+vtkFloatingPointType VTKViewer_Actor::GetQuadraticArcAngle() const{
+  return myGeomFilter->GetQuadraticArcAngle();
+}
+
+
+
+
 vtkCxxSetObjectMacro(VTKViewer_Actor,PreviewProperty,vtkProperty);

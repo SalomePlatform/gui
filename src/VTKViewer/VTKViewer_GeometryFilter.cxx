@@ -26,6 +26,7 @@
 //
 #include "VTKViewer_GeometryFilter.h"
 #include "VTKViewer_ConvexTool.h"
+#include "VTKViewer_ArcBuilder.h"
 
 #include <vtkSmartPointer.h>
 #include <vtkCellArray.h>
@@ -45,6 +46,7 @@
 #include <vtkWedge.h>
 #include <vtkInformationVector.h>
 #include <vtkInformation.h>
+#include <vtkPolygon.h>
 
 #include <algorithm>
 #include <iterator>
@@ -58,6 +60,7 @@
   #endif
 #endif
 
+//#define __MYDEBUG__
 //#define USE_ROBUST_TRIANGULATION
 
 vtkCxxRevisionMacro(VTKViewer_GeometryFilter, "$Revision$");
@@ -67,7 +70,9 @@ VTKViewer_GeometryFilter
 ::VTKViewer_GeometryFilter(): 
   myShowInside(0),
   myStoreMapping(0),
-  myIsWireframeMode(0)
+  myIsWireframeMode(0),
+  myIsBuildArc(false),
+  myMaxArcAngle(2)
 {}
 
 
@@ -479,36 +484,54 @@ VTKViewer_GeometryFilter
         case VTK_QUADRATIC_PYRAMID:
 	  if(!myIsWireframeMode){
 	    input->GetCell(cellId,cell);
-	    vtkIdList *pts = vtkIdList::New();  
+	    vtkIdList *lpts = vtkIdList::New();  
 	    vtkPoints *coords = vtkPoints::New();
 	    vtkIdList *cellIds = vtkIdList::New();
 	    vtkIdType newCellId;
 	    
 	    if ( cell->GetCellDimension() == 1 ) {
-	      aCellType = VTK_LINE;
-	      numFacePts = 2;
-	      cell->Triangulate(0,pts,coords);
-	      for (i=0; i < pts->GetNumberOfIds(); i+=2) {
-		aNewPts[0] = pts->GetId(i);
-		aNewPts[1] = pts->GetId(i+1);
-		newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
-		if(myStoreMapping)
-		  myVTK2ObjIds.push_back(cellId);
-		outputCD->CopyData(cd,cellId,newCellId);
+              vtkIdType arcResult = -1;
+              if(myIsBuildArc) {
+                arcResult = Build1DArc(cellId, input, output, pts, myMaxArcAngle);
+                newCellId = arcResult;
               }
+              
+              if(!myIsBuildArc || arcResult == -1 ) {
+                aCellType = VTK_LINE;
+                numFacePts = 2;
+                cell->Triangulate(0,lpts,coords);
+                for (i=0; i < lpts->GetNumberOfIds(); i+=2) {
+                  aNewPts[0] = lpts->GetId(i);
+                  aNewPts[1] = lpts->GetId(i+1);
+                  newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
+                  if(myStoreMapping)
+                    myVTK2ObjIds.push_back(cellId);
+                  outputCD->CopyData(cd,cellId,newCellId);
+                }
+              }
+              else {
+                if(myStoreMapping)
+                  myVTK2ObjIds.push_back(cellId);
+                outputCD->CopyData(cd,cellId,newCellId);
+              }            
             }
 	    else if ( cell->GetCellDimension() == 2 ) {
-	      aCellType = VTK_TRIANGLE;
-	      numFacePts = 3;
-	      cell->Triangulate(0,pts,coords);
-	      for (i=0; i < pts->GetNumberOfIds(); i+=3) {
-		aNewPts[0] = pts->GetId(i);
-		aNewPts[1] = pts->GetId(i+1);
-		aNewPts[2] = pts->GetId(i+2);
-		newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
-		if(myStoreMapping)
-		  myVTK2ObjIds.push_back(cellId);
-		outputCD->CopyData(cd,cellId,newCellId);
+              if(!myIsBuildArc) {
+                aCellType = VTK_TRIANGLE;
+                numFacePts = 3;
+                cell->Triangulate(0,lpts,coords);
+                for (i=0; i < lpts->GetNumberOfIds(); i+=3) {
+                  aNewPts[0] = lpts->GetId(i);
+                  aNewPts[1] = lpts->GetId(i+1);
+                  aNewPts[2] = lpts->GetId(i+2);
+                  newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
+                  if(myStoreMapping)
+                    myVTK2ObjIds.push_back(cellId);
+                  outputCD->CopyData(cd,cellId,newCellId);
+                }
+              }
+              else{
+                BuildArcedPolygon(cellId,input,output,true);
               }
             } 
 	    else //3D nonlinear cell
@@ -519,11 +542,11 @@ VTKViewer_GeometryFilter
 		vtkCell *face = cell->GetFace(j);
 		input->GetCellNeighbors(cellId, face->PointIds, cellIds);
 		if ( cellIds->GetNumberOfIds() <= 0 || myShowInside ) {
-		  face->Triangulate(0,pts,coords);
-		  for (i=0; i < pts->GetNumberOfIds(); i+=3) {
-		    aNewPts[0] = pts->GetId(i);
-		    aNewPts[1] = pts->GetId(i+1);
-		    aNewPts[2] = pts->GetId(i+2);
+		  face->Triangulate(0,lpts,coords);
+		  for (i=0; i < lpts->GetNumberOfIds(); i+=3) {
+		    aNewPts[0] = lpts->GetId(i);
+		    aNewPts[1] = lpts->GetId(i+1);
+		    aNewPts[2] = lpts->GetId(i+2);
 		    newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
 		    if(myStoreMapping)
 		      myVTK2ObjIds.push_back(cellId);
@@ -531,65 +554,72 @@ VTKViewer_GeometryFilter
                   }
                 }
               }
-            } //3d cell
+            } //3d nonlinear cell
 	    cellIds->Delete();
 	    coords->Delete();
-	    pts->Delete();
+	    lpts->Delete();
 	    break;
           }else{
 	    switch(aCellType){
 	    case VTK_QUADRATIC_EDGE: {
-	      aCellType = VTK_POLY_LINE;
-	      numFacePts = 3;
+              vtkIdType arcResult =-1;
+              if(myIsBuildArc) {
+               arcResult = Build1DArc(cellId, input, output, pts,myMaxArcAngle);
+               newCellId = arcResult;
+              }
+              if(!myIsBuildArc || arcResult == -1) {
+                aCellType = VTK_POLY_LINE;
+                numFacePts = 3;
 	      
-	      aNewPts[0] = pts[0];
-	      aNewPts[2] = pts[1];
-	      aNewPts[1] = pts[2];
+                aNewPts[0] = pts[0];
+                aNewPts[2] = pts[1];
+                aNewPts[1] = pts[2];
 	      
-	      newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
-	      if(myStoreMapping)
-		myVTK2ObjIds.push_back(cellId);
-	      
-	      outputCD->CopyData(cd,cellId,newCellId);
-	      break;
-	    }
-	    case VTK_QUADRATIC_TRIANGLE: {
-	      aCellType = VTK_POLYGON;
-	      numFacePts = 6;
-	      
-	      aNewPts[0] = pts[0];
-	      aNewPts[1] = pts[3];
-	      aNewPts[2] = pts[1];
-	      aNewPts[3] = pts[4];
-	      aNewPts[4] = pts[2];
-	      aNewPts[5] = pts[5];
-	      
-	      newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
-	      if(myStoreMapping)
-		myVTK2ObjIds.push_back(cellId);
+                newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
+              }
+              
+              if(myStoreMapping)
+                myVTK2ObjIds.push_back(cellId);
 	      
 	      outputCD->CopyData(cd,cellId,newCellId);
 	      break;
 	    }
-	    case VTK_QUADRATIC_QUAD: {
-	      aCellType = VTK_POLYGON;
-	      numFacePts = 8;
-	      
-	      aNewPts[0] = pts[0];
-	      aNewPts[1] = pts[4];
-	      aNewPts[2] = pts[1];
-	      aNewPts[3] = pts[5];
-	      aNewPts[4] = pts[2];
-	      aNewPts[5] = pts[6];
-	      aNewPts[6] = pts[3];
-	      aNewPts[7] = pts[7];
-	      
-	      newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
-	      if(myStoreMapping)
-		myVTK2ObjIds.push_back(cellId);
-	      
-	      outputCD->CopyData(cd,cellId,newCellId);
-	      break;
+	    case VTK_QUADRATIC_TRIANGLE: {	      
+              if(!myIsBuildArc) {
+                aCellType = VTK_POLYGON;
+                numFacePts = 6;              
+
+                aNewPts[0] = pts[0];
+                aNewPts[1] = pts[3];
+                aNewPts[2] = pts[1];
+                aNewPts[3] = pts[4];
+                aNewPts[4] = pts[2];
+                aNewPts[5] = pts[5];
+                
+                newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
+              }
+              else 
+                BuildArcedPolygon(cellId,input,output);
+              break;
+	    }
+	    case VTK_QUADRATIC_QUAD: {	      	      
+              if(!myIsBuildArc) {
+                aCellType = VTK_POLYGON;
+                numFacePts = 8;
+
+                aNewPts[0] = pts[0];
+                aNewPts[1] = pts[4];
+                aNewPts[2] = pts[1];
+                aNewPts[3] = pts[5];
+                aNewPts[4] = pts[2];
+                aNewPts[5] = pts[6];
+                aNewPts[6] = pts[3];
+                aNewPts[7] = pts[7];
+                newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
+              }
+              else 
+                BuildArcedPolygon(cellId,input,output);
+              break;
 	    }
 	    case VTK_QUADRATIC_TETRA: {
 	      aCellType = VTK_POLYGON;
@@ -914,7 +944,7 @@ VTKViewer_GeometryFilter
 	} //switch
       } //if visible
     } //for all cells
-  
+    
   output->Squeeze();
 
   vtkDebugMacro(<<"Extracted " << input->GetNumberOfPoints() << " points,"
@@ -996,4 +1026,265 @@ vtkIdType VTKViewer_GeometryFilter::GetElemObjId( int theVtkID )
   if( theVtkID < 0 || theVtkID >= (int)myVTK2ObjIds.size() )
     return -1;
   return myVTK2ObjIds[theVtkID];
+}
+
+
+void VTKViewer_GeometryFilter::BuildArcedPolygon(vtkIdType cellId, vtkUnstructuredGrid* input, vtkPolyData *output, bool triangulate){
+  vtkFloatingPointType coord[3];
+  vtkIdType aCellType = VTK_POLYGON;
+  vtkIdType *aNewPoints;
+  vtkIdType aNbPoints = 0;
+  vtkIdType newCellId;
+
+  //Input and output cell data
+  vtkCellData *cd = input->GetCellData();
+  vtkCellData *outputCD = output->GetCellData();
+  
+  vtkCell* aCell = input->GetCell(cellId);
+  switch(aCell->GetCellType()) {
+  case VTK_QUADRATIC_TRIANGLE:
+    { 
+      //Get All points from input cell
+      aCell->GetPoints()->GetPoint(0,coord);
+      Pnt P0(coord[0],coord[1],coord[2]);
+      aCell->GetPoints()->GetPoint(1,coord);
+      Pnt P1(coord[0],coord[1],coord[2]);
+      aCell->GetPoints()->GetPoint(2,coord);
+      Pnt P2(coord[0],coord[1],coord[2]);
+      
+      aCell->GetPoints()->GetPoint(3,coord);
+      Pnt P3(coord[0],coord[1],coord[2]);
+      aCell->GetPoints()->GetPoint(4,coord);
+      Pnt P4(coord[0],coord[1],coord[2]);
+      aCell->GetPoints()->GetPoint(5,coord);
+      Pnt P5(coord[0],coord[1],coord[2]);
+      
+      //Build arc usinf 0, 3 and 1 points 
+      VTKViewer_ArcBuilder aBuilder1(P0,P3,P1,myMaxArcAngle);
+#ifdef __MYDEBUG__
+      if(aBuilder1.GetStatus() == VTKViewer_ArcBuilder::Arc_Done) {
+        cout<<"Triangle arc 1 done !!!"<<endl;
+      }
+      else{
+        cout<<"Triangle arc 1 NOT done !!!"<<endl;
+      }
+#endif
+      
+      //Build arc usinf 1, 4 and 2 points
+      VTKViewer_ArcBuilder aBuilder2(P1,P4,P2,myMaxArcAngle);
+#ifdef __MYDEBUG__
+      if(aBuilder2.GetStatus() == VTKViewer_ArcBuilder::Arc_Done) {
+        cout<<"Triangle arc 2 done !!!"<<endl;
+      }      
+      else{
+        cout<<"Triangle arc 2 NOT done !!!"<<endl;
+      }
+#endif
+      //Build arc usinf 2, 5 and 0 points
+      VTKViewer_ArcBuilder aBuilder3(P2,P5,P0,myMaxArcAngle);
+#ifdef __MYDEBUG__
+      if(aBuilder3.GetStatus() == VTKViewer_ArcBuilder::Arc_Done) {
+        cout<<"Triangle arc 3 done !!!"<<endl;
+      }
+      else{
+        cout<<"Triangle arc 3 NOT done !!!"<<endl;
+      }
+#endif
+      std::vector<vtkPoints*> aCollection;
+      aCollection.push_back(aBuilder1.GetPoints());
+      aCollection.push_back(aBuilder2.GetPoints());
+      aCollection.push_back(aBuilder3.GetPoints());
+            
+
+      //-----------------------------------------------------------------------------------------
+      if(triangulate){
+        vtkIdType numFacePts = 3;
+        vtkIdList *pts = vtkIdList::New();
+        vtkPoints *coords = vtkPoints::New();
+        aCellType = VTK_TRIANGLE;
+        vtkIdType aNewPts[numFacePts];
+        vtkIdType aTriangleId;
+
+        vtkPolygon *aPlg = vtkPolygon::New();
+        aNbPoints = MergevtkPoints(aCollection, aPlg->GetPoints(), aNewPoints);
+        aPlg->GetPointIds()->SetNumberOfIds(aNbPoints);
+
+        for(vtkIdType i = 0; i < aNbPoints;i++) {
+          aPlg->GetPointIds()->SetId(i, aNewPoints[i]);
+        }
+        
+        aPlg->Triangulate(0,pts,coords);
+        
+        for (vtkIdType i=0; i < pts->GetNumberOfIds(); i+=3) {
+          aNewPts[0] = output->GetPoints()->InsertNextPoint(coords->GetPoint(i));
+          aNewPts[1] = output->GetPoints()->InsertNextPoint(coords->GetPoint(i+1));
+          aNewPts[2] = output->GetPoints()->InsertNextPoint(coords->GetPoint(i+2));
+          
+          aTriangleId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
+          
+          if(myStoreMapping)
+            myVTK2ObjIds.push_back(cellId);
+          outputCD->CopyData(cd,cellId,aTriangleId);          
+        }
+        pts->Delete();
+        coords->Delete();
+        aPlg->Delete();
+      }
+      //---------------------------------------------------------------------------------------------------
+      else {
+        aNbPoints = MergevtkPoints(aCollection, output->GetPoints(), aNewPoints);
+        newCellId = output->InsertNextCell(aCellType,aNbPoints,aNewPoints);
+        outputCD->CopyData(cd,cellId,newCellId);
+
+        if(myStoreMapping)
+          myVTK2ObjIds.push_back(cellId);
+      }
+      break;
+    } //VTK_QUADRATIC_TRIANGLE
+    
+    case VTK_QUADRATIC_QUAD:
+      {        
+        //Get All points from input cell
+        aCell->GetPoints()->GetPoint(0,coord);
+        Pnt P0(coord[0],coord[1],coord[2]);
+        aCell->GetPoints()->GetPoint(1,coord);
+        Pnt P1(coord[0],coord[1],coord[2]);
+        aCell->GetPoints()->GetPoint(2,coord);
+        Pnt P2(coord[0],coord[1],coord[2]);        
+        aCell->GetPoints()->GetPoint(3,coord);
+        Pnt P3(coord[0],coord[1],coord[2]);
+
+        aCell->GetPoints()->GetPoint(4,coord);
+        Pnt P4(coord[0],coord[1],coord[2]);
+        aCell->GetPoints()->GetPoint(5,coord);
+        Pnt P5(coord[0],coord[1],coord[2]);
+        aCell->GetPoints()->GetPoint(6,coord);
+        Pnt P6(coord[0],coord[1],coord[2]);
+        aCell->GetPoints()->GetPoint(7,coord);
+        Pnt P7(coord[0],coord[1],coord[2]);
+
+        //Build arc usinf 0, 4 and 1 points
+        VTKViewer_ArcBuilder aBuilder1(P0,P4,P1,myMaxArcAngle);
+#ifdef __MYDEBUG__
+        if(aBuilder1.GetStatus() == VTKViewer_ArcBuilder::Arc_Done) {
+          cout<<"Quadrangle arc 1 done !!!"<<endl;
+        }
+        else{
+          cout<<"Quadrangle arc 1 NOT done !!!"<<endl;
+        }
+#endif
+        //Build arc usinf 1, 5 and 2 points
+        VTKViewer_ArcBuilder aBuilder2(P1,P5,P2,myMaxArcAngle);
+#ifdef __MYDEBUG__
+        if(aBuilder2.GetStatus() == VTKViewer_ArcBuilder::Arc_Done) {
+          cout<<"Quadrangle arc 2 done !!!"<<endl;
+        }      
+        else{
+          cout<<"Quadrangle arc 2 NOT done !!!"<<endl;
+        }
+#endif
+        //Build arc usinf 2, 6 and 3 points
+        VTKViewer_ArcBuilder aBuilder3(P2,P6,P3,myMaxArcAngle);
+#ifdef __MYDEBUG__
+        if(aBuilder3.GetStatus() == VTKViewer_ArcBuilder::Arc_Done) {
+          cout<<"Quadrangle arc 3 done !!!"<<endl;
+        }
+        else{
+          cout<<"Quadrangle arc 3 NOT done !!!"<<endl;
+        }
+#endif
+        //Build arc usinf 3, 7 and 0 points
+        VTKViewer_ArcBuilder aBuilder4(P3,P7,P0,myMaxArcAngle);
+#ifdef __MYDEBUG__
+        if(aBuilder3.GetStatus() == VTKViewer_ArcBuilder::Arc_Done) {
+          cout<<"Quadrangle arc 4 done !!!"<<endl;
+        }
+        else{
+          cout<<"Quadrangle arc 4 NOT done !!!"<<endl;
+        }
+#endif
+        std::vector<vtkPoints*> aCollection;
+        aCollection.push_back(aBuilder1.GetPoints());
+        aCollection.push_back(aBuilder2.GetPoints());
+        aCollection.push_back(aBuilder3.GetPoints());
+        aCollection.push_back(aBuilder4.GetPoints());
+
+        //-----------------------------------------------------------------------------------------
+        if(triangulate){
+          vtkIdType numFacePts = 3;
+          vtkIdList *pts = vtkIdList::New();
+          vtkPoints *coords = vtkPoints::New();
+          aCellType = VTK_TRIANGLE;
+          vtkIdType aNewPts[numFacePts];
+          vtkIdType aTriangleId;
+
+          vtkPolygon *aPlg = vtkPolygon::New();
+          aNbPoints = MergevtkPoints(aCollection, aPlg->GetPoints(), aNewPoints);
+          aPlg->GetPointIds()->SetNumberOfIds(aNbPoints);
+
+          for(vtkIdType i = 0; i < aNbPoints;i++) {
+            aPlg->GetPointIds()->SetId(i, aNewPoints[i]);
+          }
+          
+          aPlg->Triangulate(0,pts,coords);
+          
+          for (vtkIdType i=0; i < pts->GetNumberOfIds(); i+=3) {
+            aNewPts[0] = output->GetPoints()->InsertNextPoint(coords->GetPoint(i));
+            aNewPts[1] = output->GetPoints()->InsertNextPoint(coords->GetPoint(i+1));
+            aNewPts[2] = output->GetPoints()->InsertNextPoint(coords->GetPoint(i+2));
+          
+            aTriangleId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
+          
+            if(myStoreMapping)
+              myVTK2ObjIds.push_back(cellId);
+            outputCD->CopyData(cd,cellId,aTriangleId);          
+          }
+          pts->Delete();
+          coords->Delete();
+          aPlg->Delete();
+        }
+        else {
+          aNbPoints = MergevtkPoints(aCollection, output->GetPoints(), aNewPoints);
+          newCellId = output->InsertNextCell(aCellType,aNbPoints,aNewPoints);
+          outputCD->CopyData(cd,cellId,newCellId);
+
+          if(myStoreMapping)
+            myVTK2ObjIds.push_back(cellId);
+        }
+        break;
+      } //VTK_QUADRATIC_QUAD
+      
+      //Unsupported cell type
+  default:
+    break;
+  } //switch 
+  
+  if (aNewPoints)
+    delete [] aNewPoints; 
+}
+
+
+void VTKViewer_GeometryFilter::SetQuadraticArcMode(bool theFlag)
+{
+  if(myIsBuildArc != theFlag) {
+    myIsBuildArc = theFlag;
+    this->Modified();
+  }
+}
+bool VTKViewer_GeometryFilter::GetQuadraticArcMode() const
+{
+  return myIsBuildArc;
+}
+
+void VTKViewer_GeometryFilter::SetQuadraticArcAngle(vtkFloatingPointType theMaxAngle)
+{
+  if(myMaxArcAngle != theMaxAngle) {
+    myMaxArcAngle = theMaxAngle;
+    this->Modified();
+  }
+}
+
+vtkFloatingPointType VTKViewer_GeometryFilter:: GetQuadraticArcAngle() const
+{
+  return myMaxArcAngle;
 }

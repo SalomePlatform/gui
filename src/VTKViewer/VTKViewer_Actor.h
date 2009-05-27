@@ -301,6 +301,15 @@ class VTKVIEWER_EXPORT VTKViewer_Actor : public vtkLODActor
   void
   SetPreviewProperty(vtkProperty* theProperty);
 
+  //----------------------------------------------------------------------------
+  //! Setting for displaying quadratic elements
+  virtual void SetQuadraticArcMode(bool theFlag);
+  virtual bool GetQuadraticArcMode() const;
+
+  virtual void   SetQuadraticArcAngle(vtkFloatingPointType theMaxAngle);
+  virtual vtkFloatingPointType GetQuadraticArcAngle() const;
+
+
  protected:
   //----------------------------------------------------------------------------
   bool myIsResolveCoincidentTopology;

@@ -247,6 +247,7 @@ SVTK_Renderer
     anActor->SetHighlightProperty(myHighlightProperty.GetPointer());
 
     anActor->AddToRender(GetDevice());
+    anActor->UpdateNameActors();
     AdjustActors();
   }
 }

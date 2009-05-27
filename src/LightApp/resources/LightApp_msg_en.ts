@@ -251,6 +251,18 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>Recording at a given FPS</translation>
     </message>
     <message>
+        <source>PREF_FRAME_GROUP_NAMES</source>
+        <translation>Names of groups</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_NAMES_TEXT_COLOR</source>
+        <translation>Text color</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_NAMES_TRANSPARENCY</source>
+        <translation>Transparency</translation>
+    </message>
+    <message>
         <source>PREF_BOTTOM</source>
         <translation>Bottom</translation>
     </message>

@@ -1958,6 +1958,19 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "PREF_PROGRESSIVE" ), vtkRec,
 		       LightApp_Preferences::Bool, "VTKViewer", "recorder_progressive" );
 
+  int vtkGN = pref->addPreference( tr( "PREF_FRAME_GROUP_NAMES" ), vtkGroup,
+				   LightApp_Preferences::GroupBox, "VTKViewer", "show_group_names" );
+  pref->setItemProperty( "columns", 2, vtkGN );
+
+  pref->addPreference( tr( "PREF_GROUP_NAMES_TEXT_COLOR" ), vtkGN,
+		       LightApp_Preferences::Color, "VTKViewer", "group_names_text_color" );
+  int transPref = pref->addPreference( tr( "PREF_GROUP_NAMES_TRANSPARENCY" ), vtkGN,
+				       LightApp_Preferences::DblSpin, "VTKViewer", "group_names_transparency" );
+
+  pref->setItemProperty( "min", 0.0, transPref );
+  pref->setItemProperty( "max", 1.0, transPref );
+  pref->setItemProperty( "step", 0.1, transPref );
+
   // Plot2d
   pref->addPreference( tr( "PREF_SHOW_LEGEND" ), plot2dGroup,
 		       LightApp_Preferences::Bool, "Plot2d", "ShowLegend" );

@@ -31,6 +31,7 @@ salomeinclude_HEADERS =				\
 	VTKViewer.h				\
 	VTKViewer_CellLocationsArray.h		\
 	VTKViewer_Actor.h			\
+	VTKViewer_FramedTextActor.h		\
 	VTKViewer_ExtractUnstructuredGrid.h	\
 	VTKViewer_ConvexTool.h			\
 	VTKViewer_Filter.h			\
@@ -53,6 +54,7 @@ salomeinclude_HEADERS =				\
 dist_libVTKViewer_la_SOURCES =			\
 	VTKViewer_CellLocationsArray.cxx	\
 	VTKViewer_Actor.cxx			\
+	VTKViewer_FramedTextActor.cxx		\
 	VTKViewer_ExtractUnstructuredGrid.cxx	\
 	VTKViewer_Filter.cxx			\
 	VTKViewer_GeometryFilter.cxx		\

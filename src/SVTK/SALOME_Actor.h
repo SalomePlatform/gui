@@ -49,6 +49,8 @@ class vtkOutlineSource;
 class vtkInteractorStyle;
 class vtkRenderWindowInteractor;
 
+class VTKViewer_FramedTextActor;
+
 class SVTK_Actor;
 class SVTK_RectPicker;
 class SVTK_InteractorStyle;
@@ -181,6 +183,37 @@ class SVTK_EXPORT SALOME_Actor : public VTKViewer_Actor
 	    bool theIsHighlight);
 
   //----------------------------------------------------------------------------
+  //! To get flag of displaying of name actor
+  virtual
+  bool
+  IsDisplayNameActor() const;
+
+  //! To set flag of displaying of name actor
+  virtual
+  void
+  SetIsDisplayNameActor(bool theIsDisplayNameActor);
+
+  //! To set text of name actor
+  virtual
+  void
+  SetNameActorText(const char* theText);
+
+  //! To set offset of name actor
+  virtual
+  void
+  SetNameActorOffset(int theOffset[2]);
+
+  //! To get size of name actor
+  virtual
+  void
+  GetNameActorSize(vtkRenderer* theRenderer, int theSize[2]) const;
+
+  //! To update visibility of name actors
+  virtual
+  void
+  UpdateNameActors();
+
+  //----------------------------------------------------------------------------
   //! To set up a picker for nodal selection (initialized by #SVTK_Renderer::AddActor)
   void
   SetPointPicker(vtkPointPicker* thePointPicker); 
@@ -233,6 +266,9 @@ class SVTK_EXPORT SALOME_Actor : public VTKViewer_Actor
 
   vtkSmartPointer<VTKViewer_Actor> myOutlineActor;
   vtkSmartPointer<vtkOutlineSource> myOutline;
+
+  bool myIsDisplayNameActor;
+  vtkSmartPointer<VTKViewer_FramedTextActor> myNameActor;
 };
 
 #ifdef WIN32

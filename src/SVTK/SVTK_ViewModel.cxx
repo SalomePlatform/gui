@@ -506,9 +506,16 @@ void SVTK_Viewer::EraseAll( const bool forced )
       if(SVTK_View* aView = aViewWindow->getView()){
 	vtkRenderer* aRenderer =  aView->getRenderer();
 	vtkActorCollection* anActorCollection = aRenderer->GetActors();
+	// another way is used to cycle over the actor collection to avoid problems
+	// with the similar cycle inside SALOME_Actor::UpdateNameActors() called from
+	// SALOME_Actor::SetVisibility(...), which is called below
+	/*
 	anActorCollection->InitTraversal();
 	while(vtkActor* anActor = anActorCollection->GetNextActor()){
 	  if(SALOME_Actor* anAct = SALOME_Actor::SafeDownCast(anActor)){
+	*/
+	for(int anIndex = 0, aNbItems = anActorCollection->GetNumberOfItems(); anIndex < aNbItems; anIndex++){
+	  if(SALOME_Actor* anAct = SALOME_Actor::SafeDownCast(anActorCollection->GetItemAsObject(anIndex))){
 	    // Set visibility flag
             // Temporarily commented to avoid awful dependecy on SALOMEDS
             // TODO: better mechanism of storing display/erse status in a study

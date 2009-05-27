@@ -36,9 +36,13 @@
 #include "VTKViewer_Transform.h"
 #include "VTKViewer_TransformFilter.h"
 #include "VTKViewer_GeometryFilter.h"
+#include "VTKViewer_FramedTextActor.h"
 #include "SVTK_RectPicker.h"
 
 #include "SVTK_Actor.h"
+
+#include <SUIT_ResourceMgr.h>
+#include <SUIT_Session.h>
 
 // VTK Includes
 #include <vtkCell.h>
@@ -156,7 +160,9 @@ SALOME_Actor
   myPreHighlightActor(SVTK_Actor::New()),
   myHighlightActor(SVTK_Actor::New()),
   myOutline(vtkOutlineSource::New()),
-  myOutlineActor(VTKViewer_Actor::New())
+  myOutlineActor(VTKViewer_Actor::New()),
+  myIsDisplayNameActor(false),
+  myNameActor(VTKViewer_FramedTextActor::New())
 {
   myPreHighlightActor->Delete();
   myPreHighlightActor->Initialize();
@@ -183,6 +189,24 @@ SALOME_Actor
   myOutlineActor->GetProperty()->SetAmbient(1.0);
   myOutlineActor->GetProperty()->SetDiffuse(0.0);
   myOutlineActor->SetVisibility( false );
+
+  // Name actor
+  myNameActor->Delete();
+  myNameActor->SetVisibility(false);
+  myNameActor->SetPickable(false);
+  myNameActor->SetModePosition(VTKViewer_FramedTextActor::TopRight);
+  myNameActor->SetLayoutType(VTKViewer_FramedTextActor::Vertical);
+
+  SUIT_ResourceMgr* aResourceMgr = SUIT_Session::session()->resourceMgr();
+
+  QColor aForegroundColor = aResourceMgr->colorValue( "VTKViewer", "group_names_text_color", Qt::white );
+  myNameActor->SetForegroundColor(aForegroundColor.redF(),
+				  aForegroundColor.greenF(),
+				  aForegroundColor.blueF());
+
+  vtkFloatingPointType aGroupNamesTransparency = 0.5;
+  aGroupNamesTransparency = aResourceMgr->doubleValue( "VTKViewer", "group_names_transparency", aGroupNamesTransparency );
+  myNameActor->SetTransparency(aGroupNamesTransparency);
 }
 
 /*!
@@ -234,6 +258,7 @@ SALOME_Actor
 {
   if(hasIO())	
     myIO->setName(theName);
+  myNameActor->SetText(theName);
   Superclass::setName(theName);
 }
 
@@ -252,6 +277,7 @@ SALOME_Actor
   theRenderer->AddActor( myPreHighlightActor.GetPointer() );
   theRenderer->AddActor( myHighlightActor.GetPointer() );
   theRenderer->AddActor( myOutlineActor.GetPointer() );
+  theRenderer->AddActor( myNameActor.GetPointer() );
 }
 
 /*!
@@ -266,6 +292,7 @@ SALOME_Actor
   theRenderer->RemoveActor( myPreHighlightActor.GetPointer() );
   theRenderer->RemoveActor( myHighlightActor.GetPointer() );
   theRenderer->RemoveActor( myOutlineActor.GetPointer() );
+  theRenderer->RemoveActor( myNameActor.GetPointer() );
 }
 
 /*!
@@ -360,6 +387,8 @@ SALOME_Actor
       myHighlightActor->SetVisibility( theVisibility && isHighlighted() && aHasIndex);
     }
   }
+
+  UpdateNameActors();
 }
 
 /*!
@@ -787,6 +816,97 @@ SALOME_Actor
   mySelectionMode = aSelectionMode;
 
   return true;
+}
+
+/*!
+  To get flag of displaying of name actor
+  \return flag to display or not to display name actor
+*/
+bool
+SALOME_Actor
+::IsDisplayNameActor() const
+{
+  return myIsDisplayNameActor;
+}
+
+/*!
+  To set flag of displaying of name actor
+  \param theIsDisplayNameActor flag to display or not to display name actor
+*/
+void
+SALOME_Actor
+::SetIsDisplayNameActor(bool theIsDisplayNameActor)
+{
+  SUIT_ResourceMgr* aResourceMgr = SUIT_Session::session()->resourceMgr();
+  bool isShowGroupNames = aResourceMgr->booleanValue("VTKViewer", "show_group_names", false);
+  myIsDisplayNameActor = theIsDisplayNameActor && isShowGroupNames;
+  UpdateNameActors();
+}
+
+/*!
+  To set text of name actor
+  \param theText - text of name actor
+*/
+void
+SALOME_Actor
+::SetNameActorText(const char* theText)
+{
+  myNameActor->SetText(theText);
+}
+
+/*!
+  To set offset of name actor
+  \param theOffset - offset of name actor
+*/
+void
+SALOME_Actor
+::SetNameActorOffset(int theOffset[2])
+{
+  myNameActor->SetOffset(theOffset);
+}
+
+/*!
+  To get size of name actor
+  \param theRenderer - renderer
+  \param theSize - size of name actor
+*/
+void
+SALOME_Actor
+::GetNameActorSize(vtkRenderer* theRenderer, int theSize[2]) const
+{
+  myNameActor->GetSize(theRenderer, theSize);
+}
+
+/*!
+  Update visibility of name actors
+*/
+void
+SALOME_Actor
+::UpdateNameActors()
+{
+  if( vtkRenderer* aRenderer = GetRenderer() )
+  {
+    int anOffset[2] = { 0, 0 };
+    vtkActorCollection* aCollection = aRenderer->GetActors();
+    for( int anIndex = 0, aNbItems = aCollection->GetNumberOfItems(); anIndex < aNbItems; anIndex++ )
+    {
+      if( SALOME_Actor* anActor = dynamic_cast<SALOME_Actor*>( aCollection->GetItemAsObject( anIndex ) ) )
+      {
+	if( anActor->IsDisplayNameActor() )
+	{
+	  anActor->SetNameActorOffset( anOffset );
+	  if( anActor->GetVisibility() )
+	  {
+	    int aSize[2];
+	    anActor->GetNameActorSize( aRenderer, aSize );
+	    anOffset[0] = anOffset[0] + aSize[0];
+	    anOffset[1] = anOffset[1] + aSize[1];
+	  }
+	}
+      }
+    }
+  }
+  myNameActor->SetVisibility( GetVisibility() && IsDisplayNameActor() );
 }
 
 /*!

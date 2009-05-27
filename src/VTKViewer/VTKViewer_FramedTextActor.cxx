@@ -36,7 +36,7 @@
 #include <vtkViewport.h>
 #include <vtkWindow.h>
 
-#include <QString>
+#include <QStringList>
 
 #define TEXT_MARGIN    4
 #define OFFSET_SPACING 2
@@ -273,8 +273,16 @@ void VTKViewer_FramedTextActor::SetOffset(const int theOffset[2])
 void VTKViewer_FramedTextActor::SetText(const char* theText)
 {
   // remove whitespaces from from the start and the end
+  // additionally, consider a case of multi-string text
   QString aString(theText);
-  myTextMapper->SetInput(aString.trimmed().toLatin1().constData());
+
+  QStringList aTrimmedStringList;
+  QStringList aStringList = aString.split("\n");
+  QStringListIterator anIter(aStringList);
+  while(anIter.hasNext())
+    aTrimmedStringList.append(anIter.next().trimmed());
+
+  myTextMapper->SetInput(aTrimmedStringList.join("\n").toLatin1().constData());
   Modified();
 }
 

@@ -248,6 +248,8 @@ public:
   
   virtual void paint( QPainter*, const QStyleOptionViewItem&,
 		      const QModelIndex& ) const;
+		      
+  virtual QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
 };
 
 #ifdef WIN32

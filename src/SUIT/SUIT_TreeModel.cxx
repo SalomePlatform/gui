@@ -1672,3 +1672,10 @@ void SUIT_ItemDelegate::paint( QPainter* painter,
   }
   QItemDelegate::paint( painter, opt, index );
 }
+
+QSize SUIT_ItemDelegate::sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const
+{
+    QSize size = QItemDelegate::sizeHint ( option, index );
+    size.setHeight( size.height() + 1 );
+    return size;
+}

@@ -1098,7 +1098,7 @@ void VTKViewer_GeometryFilter::BuildArcedPolygon(vtkIdType cellId, vtkUnstructur
 
       //-----------------------------------------------------------------------------------------
       if(triangulate){
-        vtkIdType numFacePts = 3;
+        const vtkIdType numFacePts = 3;
         vtkIdList *pts = vtkIdList::New();
         vtkPoints *coords = vtkPoints::New();
         aCellType = VTK_TRIANGLE;
@@ -1211,7 +1211,7 @@ void VTKViewer_GeometryFilter::BuildArcedPolygon(vtkIdType cellId, vtkUnstructur
 
         //-----------------------------------------------------------------------------------------
         if(triangulate){
-          vtkIdType numFacePts = 3;
+          const vtkIdType numFacePts = 3;
           vtkIdList *pts = vtkIdList::New();
           vtkPoints *coords = vtkPoints::New();
           aCellType = VTK_TRIANGLE;

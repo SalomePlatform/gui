@@ -884,6 +884,8 @@ void
 SALOME_Actor
 ::UpdateNameActors()
 {
+  // the code is temporarily disabled due to bug 20383
+#ifdef FEATURE_19818
   if( vtkRenderer* aRenderer = GetRenderer() )
   {
     int anOffset[2] = { 0, 0 };
@@ -907,6 +909,7 @@ SALOME_Actor
     }
   }
   myNameActor->SetVisibility( GetVisibility() && IsDisplayNameActor() );
+#endif
 }
 
 /*!

@@ -1958,6 +1958,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "PREF_PROGRESSIVE" ), vtkRec,
 		       LightApp_Preferences::Bool, "VTKViewer", "recorder_progressive" );
 
+#ifdef FEATURE_19818
   int vtkGN = pref->addPreference( tr( "PREF_FRAME_GROUP_NAMES" ), vtkGroup,
 				   LightApp_Preferences::GroupBox, "VTKViewer", "show_group_names" );
   pref->setItemProperty( "columns", 2, vtkGN );
@@ -1970,6 +1971,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "min", 0.0, transPref );
   pref->setItemProperty( "max", 1.0, transPref );
   pref->setItemProperty( "step", 0.1, transPref );
+#endif
 
   // Plot2d
   pref->addPreference( tr( "PREF_SHOW_LEGEND" ), plot2dGroup,

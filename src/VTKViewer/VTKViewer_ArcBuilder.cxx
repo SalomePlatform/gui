@@ -37,6 +37,7 @@
 #include <vtkCellArray.h>
 #include <vtkTriangle.h>
 #include <vtkPolyData.h>
+#include <vtkPointData.h>
 
 #define PRECISION 10e-4
 #define ANGLE_PRECISION 0.5
@@ -87,16 +88,23 @@ double XYZ::Modulus () const {
  */
 Pnt::Pnt(double X, 
          double Y, 
-         double Z):
-  coord(X,Y,Z) {}
+         double Z,
+	 double ScalarValue):
+  coord(X,Y,Z),
+  scalarValue(ScalarValue)
+{
+}
 
+Pnt::Pnt()
+{
+}
 
-Pnt::Pnt(){}
 /*!
  * Destructor
  */
 Pnt::~Pnt()
-{}
+{
+}
 
 //------------------------------------------------------------------------
 /*!
@@ -129,7 +137,12 @@ double Vec::AngleBetween(const Vec & Other)
   double res;
   double numerator = GetXYZ().X()*Other.GetXYZ().X()+GetXYZ().Y()*Other.GetXYZ().Y()+GetXYZ().Z()*Other.GetXYZ().Z();
   double denumerator = GetXYZ().Modulus()*Other.GetXYZ().Modulus();
-  res = acos(numerator/denumerator);
+  double d = numerator/denumerator;
+  if( d < -1 && d > -1 - PRECISION )
+    d = -1;
+  else if( d > 1 && d < 1 + PRECISION )
+    d = 1;
+  res = acos( d );
   return res;
 }
 
@@ -294,12 +307,13 @@ VTKViewer_ArcBuilder::VTKViewer_ArcBuilder(const Pnt& thePnt1,
       
       double coords[3];
       aTransformedGrid->GetPoint(0,coords);
-      myPnt1 = Pnt(coords[0],coords[1],coords[2]);
+      myPnt1 = Pnt(coords[0],coords[1],coords[2], thePnt1.GetScalarValue());
       aTransformedGrid->GetPoint(1,coords);
-      myPnt2 = Pnt(coords[0],coords[1],coords[2]);
+      myPnt2 = Pnt(coords[0],coords[1],coords[2], thePnt2.GetScalarValue());
       aTransformedGrid->GetPoint(2,coords);
-      myPnt3 = Pnt(coords[0],coords[1],coords[2]);
-      vtkUnstructuredGrid* anArc = BuildArc();
+      myPnt3 = Pnt(coords[0],coords[1],coords[2], thePnt3.GetScalarValue());
+      std::vector<double> aScalarValues;
+      vtkUnstructuredGrid* anArc = BuildArc(aScalarValues);
       vtkUnstructuredGrid* anTransArc;
       if(needRotation) {
         anTransArc = TransformGrid(anArc,aAxis,-anAngle);
@@ -309,6 +323,7 @@ VTKViewer_ArcBuilder::VTKViewer_ArcBuilder(const Pnt& thePnt1,
         anTransArc = anArc;
       
       myPoints = anTransArc->GetPoints();
+      myScalarValues = aScalarValues;
       myStatus = Arc_Done;
     }
   }
@@ -323,6 +338,12 @@ VTKViewer_ArcBuilder::VTKViewer_ArcBuilder(const Pnt& thePnt1,
     vtkUnstructuredGrid* aGrid = BuildGrid(aList);
     aGrid->Update();
     myPoints = aGrid->GetPoints();
+
+    myScalarValues.clear();
+    myScalarValues.push_back(thePnt1.GetScalarValue());
+    myScalarValues.push_back(thePnt2.GetScalarValue());
+    myScalarValues.push_back(thePnt3.GetScalarValue());
+    myStatus = Arc_Done;
   }
 }
 
@@ -387,12 +408,25 @@ void VTKViewer_ArcBuilder::GetAngle(const double theAngle){
   myAngle = theAngle;
 }
 
-vtkUnstructuredGrid* VTKViewer_ArcBuilder::BuildArc(){
+double InterpolateScalarValue(int index, int count, double firstValue, double middleValue, double lastValue)
+{
+  bool isFirstHalf = index <= count / 2;
+  double first = isFirstHalf ? firstValue : lastValue;
+  double last = isFirstHalf ? middleValue : middleValue;
+  double ratio = (double)index / (double)count;
+  double position = isFirstHalf ? ratio * 2 : ( 1 - ratio ) * 2;
+  double value = first + (last - first) * position;
+  return value;
+}
+
+vtkUnstructuredGrid* VTKViewer_ArcBuilder::BuildArc(std::vector<double>& theScalarValues){
   double x1 = myPnt1.GetXYZ().X(); double x2 = myPnt2.GetXYZ().X(); double x3 = myPnt3.GetXYZ().X();
   double y1 = myPnt1.GetXYZ().Y(); double y2 = myPnt2.GetXYZ().Y(); double y3 = myPnt3.GetXYZ().Y();
   double z =  myPnt1.GetXYZ().Z();  //Points on plane || XOY
   
-  
+
+  theScalarValues.clear();
+
   double K1;
   double K2;
   K1 = (y2 - y1)/(x2 - x1);
@@ -461,17 +495,22 @@ vtkUnstructuredGrid* VTKViewer_ArcBuilder::BuildArc(){
   
     PntList aList;
     aList.push_back(myPnt1);
-    for(int i=0;i<nbSteps-1;i++){
+    theScalarValues.push_back(myPnt1.GetScalarValue());
+    for(int i=1;i<=nbSteps-1;i++){
       double x = xCenter + aRadius*cos(aCurrentAngle);
       double y = yCenter + aRadius*sin(aCurrentAngle);
-      Pnt aPnt(x,y,z);
+      double value = InterpolateScalarValue(i, nbSteps, myPnt1.GetScalarValue(), myPnt2.GetScalarValue(), myPnt3.GetScalarValue());
+      Pnt aPnt(x,y,z,value);
+
       aList.push_back(aPnt);
+      theScalarValues.push_back(aPnt.GetScalarValue());
       if(aOrder == VTKViewer_ArcBuilder::MINUS)
         aCurrentAngle-=anIncrementAngle;
       else
         aCurrentAngle+=anIncrementAngle;
     }
     aList.push_back(myPnt3);
+    theScalarValues.push_back(myPnt3.GetScalarValue());
     
     aC = BuildGrid(aList);
 #ifdef _MY_DEBUG_
@@ -486,6 +525,10 @@ vtkUnstructuredGrid* VTKViewer_ArcBuilder::BuildArc(){
     aList.push_back(myPnt2);
     aList.push_back(myPnt3);
     aC = BuildGrid(aList);
+
+    theScalarValues.push_back(myPnt1.GetScalarValue());
+    theScalarValues.push_back(myPnt2.GetScalarValue());
+    theScalarValues.push_back(myPnt3.GetScalarValue());
   }
   return aC;
 }
@@ -502,6 +545,11 @@ GetPointAngleOnCircle(const double theXCenter, const double theYCenter,
 
 vtkPoints* VTKViewer_ArcBuilder::GetPoints(){
   return myPoints;
+}
+
+const std::vector<double>& VTKViewer_ArcBuilder::GetScalarValues()
+{
+  return myScalarValues;
 }
 
 VTKViewer_ArcBuilder::IncOrder VTKViewer_ArcBuilder::GetArcAngle( const double& P1, const double& P2, const double& P3,double* Ang){
@@ -526,22 +574,31 @@ VTKViewer_ArcBuilder::IncOrder VTKViewer_ArcBuilder::GetArcAngle( const double& 
 }
 
 //------------------------------------------------------------------------
+Pnt CreatePnt(vtkCell* cell, vtkDataArray* scalars, vtkIdType index)
+{
+  vtkFloatingPointType coord[3];
+  cell->GetPoints()->GetPoint(index, coord);
+  vtkIdType pointId = cell->GetPointId(index);
+  double scalarValue = scalars ? scalars->GetTuple1(pointId) : 0;
+  Pnt point(coord[0], coord[1], coord[2], scalarValue);
+  return point;
+}
+
+//------------------------------------------------------------------------
 vtkIdType Build1DArc(vtkIdType cellId, vtkUnstructuredGrid* input, 
                      vtkPolyData *output,vtkIdType *pts, 
                      vtkFloatingPointType myMaxArcAngle){
   
-  vtkFloatingPointType coord[3];
   vtkIdType aResult = -1;
   vtkIdType *aNewPoints;
 
+  vtkDataArray* inputScalars = input->GetPointData()->GetScalars();
+
   vtkCell* aCell = input->GetCell(cellId);
   //Get All points from input cell
-  aCell->GetPoints()->GetPoint(0,coord);
-  Pnt P0(coord[0],coord[1],coord[2]);
-  aCell->GetPoints()->GetPoint(1,coord);
-  Pnt P1(coord[0],coord[1],coord[2]);
-  aCell->GetPoints()->GetPoint(2,coord);
-  Pnt P2(coord[0],coord[1],coord[2]);
+  Pnt P0 = CreatePnt( aCell, inputScalars, 0 );
+  Pnt P1 = CreatePnt( aCell, inputScalars, 1 );
+  Pnt P2 = CreatePnt( aCell, inputScalars, 2 );
 
   VTKViewer_ArcBuilder aBuilder(P0,P2,P1,myMaxArcAngle);
   if (aBuilder.GetStatus() != VTKViewer_ArcBuilder::Arc_Done) {
@@ -549,6 +606,7 @@ vtkIdType Build1DArc(vtkIdType cellId, vtkUnstructuredGrid* input,
   }
   else{
     vtkPoints* aPoints = aBuilder.GetPoints();
+    std::vector<double> aScalarValues = aBuilder.GetScalarValues();
     vtkIdType aNbPts = aPoints->GetNumberOfPoints();
     aNewPoints = new vtkIdType[aNbPts];
     vtkIdType curID;
@@ -557,6 +615,7 @@ vtkIdType Build1DArc(vtkIdType cellId, vtkUnstructuredGrid* input,
     aNewPoints[0] = pts[0];
     for(vtkIdType idx = 1; idx < aNbPts-1;idx++) {
       curID = output->GetPoints()->InsertNextPoint(aPoints->GetPoint(idx));
+      output->GetPointData()->GetScalars()->InsertNextTuple1(aScalarValues[idx]);
       aNewPoints[idx] = curID;
     }
     aNewPoints[aNbPts-1] = pts[1];
@@ -570,7 +629,11 @@ vtkIdType Build1DArc(vtkIdType cellId, vtkUnstructuredGrid* input,
  * Add all points from the input vector theCollection into thePoints. 
  * Array theIds - it is array with ids of added points.
  */
-vtkIdType MergevtkPoints(const std::vector<vtkPoints*>& theCollection, vtkPoints* thePoints, vtkIdType* &theIds){
+vtkIdType MergevtkPoints(const std::vector<vtkPoints*>& theCollection,
+			 const std::vector< std::vector<double> >& theScalarCollection,
+			 vtkPoints* thePoints,
+			 std::map<int, double>& thePntId2ScalarValue,
+			 vtkIdType* &theIds){
   vtkIdType aNbPoints = 0;
   vtkIdType anIdCounter = 0;
   vtkIdType aNewPntId = 0;
@@ -584,15 +647,18 @@ vtkIdType MergevtkPoints(const std::vector<vtkPoints*>& theCollection, vtkPoints
     }
   }
   it = theCollection.begin();
+  std::vector< std::vector<double> >::const_iterator itScalar = theScalarCollection.begin();
   theIds = new vtkIdType[aNbPoints];
   // ..and add all points
-  for(;it != theCollection.end();it++){
+  for(;it != theCollection.end() && itScalar != theScalarCollection.end(); it++, itScalar++){
     vtkPoints* aPoints = *it;
+    std::vector<double> aScalarValues = *itScalar;
     
     if(aPoints){
       for(vtkIdType idx = 0;idx < aPoints->GetNumberOfPoints()-1;idx++){
         aNewPntId = thePoints->InsertNextPoint(aPoints->GetPoint(idx));
         theIds[anIdCounter] = aNewPntId;
+	thePntId2ScalarValue[ aNewPntId ] = aScalarValues[idx];
         anIdCounter++;
       }
     }

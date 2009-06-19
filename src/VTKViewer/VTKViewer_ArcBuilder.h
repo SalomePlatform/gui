@@ -24,18 +24,23 @@
 
 #include "VTKViewer.h"
 #include <list>
+#include <map>
 #include <vector>
 
-class vtkUnstructuredGrid;
+class vtkCell;
+class vtkDataArray;
 class vtkPoints;
 class vtkPolyData;
+class vtkUnstructuredGrid;
 
 class Pnt;
 
 typedef std::list<Pnt> PntList;
 
 vtkIdType MergevtkPoints(const std::vector<vtkPoints*>& theCollection,
-                         vtkPoints* thePoints, 
+			 const std::vector< std::vector<double> >& theScalarCollection,
+                         vtkPoints* thePoints,
+			 std::map<int, double>& thePntId2ScalarValue,
                          vtkIdType* &theIds);
 
 vtkIdType Build1DArc(vtkIdType cellId, 
@@ -44,6 +49,9 @@ vtkIdType Build1DArc(vtkIdType cellId,
                      vtkIdType *pts, 
                      vtkFloatingPointType myMaxArcAngle);
 
+Pnt CreatePnt(vtkCell* cell,
+	      vtkDataArray* scalars,
+	      vtkIdType index);
 
 /*!
  * Class for represenation coordinates X,Y,Z
@@ -79,14 +87,16 @@ class XYZ{
 class Pnt{
  public:
   Pnt();
-  Pnt(double , double , double );
+  Pnt(double, double, double, double);
   ~Pnt();
 
   void Coord (double& X, double& Y, double& Z) const {coord.Coord(X,Y,Z);}
   XYZ GetXYZ() const {return coord;}
+  double GetScalarValue() const { return scalarValue; }
 
  private:
   XYZ coord;
+  double scalarValue;
 };
 
 /*!
@@ -154,6 +164,7 @@ class VTKViewer_ArcBuilder{
 				      const double theXPoint, const double theYPoint);
 
   vtkPoints* GetPoints();
+  const std::vector<double>& GetScalarValues();
 
  private:
   
@@ -161,7 +172,7 @@ class VTKViewer_ArcBuilder{
   
   vtkUnstructuredGrid* BuildGrid(const PntList& theList) const;
   vtkUnstructuredGrid* TransformGrid(vtkUnstructuredGrid* theGrid, const Vec& theAxis, const double angle) const;
-  vtkUnstructuredGrid* BuildArc();
+  vtkUnstructuredGrid* BuildArc(std::vector<double>& theScalarValues);
   IncOrder GetArcAngle( const double& P1, const double& P2, const double& P3, double* Ang);
   
 
@@ -174,6 +185,7 @@ class VTKViewer_ArcBuilder{
   double myAngle;
   ArcStatus myStatus;
   vtkPoints* myPoints;
+  std::vector<double> myScalarValues;
 };
 
 #endif //VTKVIEWER_ARCBUILDER_H 

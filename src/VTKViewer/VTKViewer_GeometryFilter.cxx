@@ -198,8 +198,13 @@ VTKViewer_GeometryFilter
     cellVis = new char[numCells];
     }
 
-  // Just pass points through, never merge
-  output->SetPoints(input->GetPoints());
+  // Issue 0020115: [CEA 308] Quadratic elements visualization
+  // Fix of remark described in note 0005222 - SIGSEGV
+  vtkPoints* outputPoints = vtkPoints::New();
+  outputPoints->DeepCopy(input->GetPoints());
+  output->SetPoints(outputPoints);
+  outputPoints->Delete();
+
   outputPD->PassData(pd);
 
   outputCD->CopyAllocate(cd,numCells,numCells/2);

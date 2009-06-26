@@ -66,7 +66,7 @@ bool SUIT_FileValidator::canOpen( const QString& fileName, bool checkPermission 
   if ( checkPermission && !QFileInfo( fileName ).isReadable() ) {
     if ( parent() )
       SUIT_MessageBox::critical( parent(), QObject::tr( "ERR_ERROR" ),
-				 QObject::tr( "ERR_PERMISSION_DENIED" ).arg( fileName ) );
+				 QObject::tr( "ERR_OPEN_PERMISSION_DENIED" ).arg( fileName ) );
     return false; 
   }
   return true;
@@ -105,6 +105,11 @@ bool SUIT_FileValidator::canSave( const QString& fileName, bool checkPermission 
   }
   else {
     QString dirName = SUIT_Tools::dir( fileName );
+    if ( !QFile::exists( dirName ) ) {
+      SUIT_MessageBox::critical( parent(), QObject::tr( "WRN_WARNING" ),
+				 QObject::tr( "ERR_DIR_NOT_EXIST" ).arg( dirName ) );
+      return false;
+    }
     if ( checkPermission && !QFileInfo( dirName ).isWritable() ) {
       if ( parent() )
 	SUIT_MessageBox::critical( parent(), QObject::tr( "ERR_ERROR" ),
@@ -144,7 +149,7 @@ bool SUIT_FileValidator::canReadDir( const QString& dirName, bool checkPermissio
   if ( checkPermission && !info.isReadable() ) {
     if ( parent() )
       SUIT_MessageBox::critical( parent(), QObject::tr( "ERR_ERROR" ),
-				 QObject::tr( "ERR_PERMISSION_DENIED" ).arg( dirName ) );
+				 QObject::tr( "ERR_DIR_READ_PERMISSION_DENIED" ).arg( dirName ) );
     return false; 
   }
   return true;
@@ -179,7 +184,7 @@ bool SUIT_FileValidator::canWriteDir( const QString& dirName, bool checkPermissi
   if ( checkPermission && !info.isWritable() ) {
     if ( parent() )
       SUIT_MessageBox::critical( parent(), QObject::tr( "ERR_ERROR" ),
-				 QObject::tr( "ERR_PERMISSION_DENIED" ).arg( dirName ) );
+				 QObject::tr( "ERR_DIR_WRITE_PERMISSION_DENIED" ).arg( dirName ) );
     return false; 
   }
   return true;

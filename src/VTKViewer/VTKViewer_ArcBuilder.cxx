@@ -593,6 +593,7 @@ vtkIdType Build1DArc(vtkIdType cellId, vtkUnstructuredGrid* input,
   vtkIdType *aNewPoints;
 
   vtkDataArray* inputScalars = input->GetPointData()->GetScalars();
+  vtkDataArray* outputScalars = output->GetPointData()->GetScalars();
 
   vtkCell* aCell = input->GetCell(cellId);
   //Get All points from input cell
@@ -615,7 +616,8 @@ vtkIdType Build1DArc(vtkIdType cellId, vtkUnstructuredGrid* input,
     aNewPoints[0] = pts[0];
     for(vtkIdType idx = 1; idx < aNbPts-1;idx++) {
       curID = output->GetPoints()->InsertNextPoint(aPoints->GetPoint(idx));
-      output->GetPointData()->GetScalars()->InsertNextTuple1(aScalarValues[idx]);
+      if( outputScalars )
+	outputScalars->InsertNextTuple1(aScalarValues[idx]);
       aNewPoints[idx] = curID;
     }
     aNewPoints[aNbPts-1] = pts[1];

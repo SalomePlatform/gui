@@ -805,8 +805,13 @@ SALOME_Actor
 	    }
 	}
       }
-      mySelector->AddOrRemoveIndex( myIO, anIndexes, anIsShift );
-      mySelector->AddIObject( this );
+      if( !anIndexes.IsEmpty() ) {
+	mySelector->AddOrRemoveIndex( myIO, anIndexes, anIsShift );
+	mySelector->AddIObject( this );
+	anIndexes.Clear();
+      }
+      else
+	mySelector->RemoveIObject( this );
     }
     default:
       break;

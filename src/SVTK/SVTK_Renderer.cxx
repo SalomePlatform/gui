@@ -104,6 +104,9 @@ SVTK_Renderer
   myHighlightProperty->SetLineWidth(SALOME_LINE_WIDTH+2);
   myHighlightProperty->SetRepresentationToPoints();
 
+  // Bug 0020123, note 0005217 - Problem with zoom
+  GetDevice()->SetNearClippingPlaneTolerance( 0.00001 );
+
   myTrihedron->Delete();
   myCubeAxes->Delete();
   myEventCallbackCommand->Delete();

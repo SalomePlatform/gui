@@ -21,7 +21,7 @@
 //
 // File   : OCCViewer_ViewWindow.cxx
 // Author :
-//
+
 #include "OCCViewer_ViewWindow.h"
 #include "OCCViewer_ViewModel.h"
 #include "OCCViewer_ViewPort3d.h"
@@ -1046,9 +1046,10 @@ void OCCViewer_ViewWindow::createActions()
   connect(aAction, SIGNAL(triggered()), this, SLOT(onResetView()));
   toolMgr()->registerAction( aAction, ResetId );
 
-  // Reset
-  aAction = new QtxAction(tr("MNU_CLONE_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_CLONE_VIEW" ) ),
-                           tr( "MNU_CLONE_VIEW" ), 0, this);
+  // Clone
+  aAction = new QtxAction(tr("MNU_CLONE_VIEW"),
+                          aResMgr->loadPixmap("OCCViewer", tr("ICON_OCCVIEWER_CLONE_VIEW")),
+                          tr("MNU_CLONE_VIEW"), 0, this);
   aAction->setStatusTip(tr("DSC_CLONE_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onCloneView()));
   toolMgr()->registerAction( aAction, CloneId );
@@ -1241,30 +1242,31 @@ void OCCViewer_ViewWindow::onFitAll()
 */
 void OCCViewer_ViewWindow::onSetRotationPoint( bool on )
 {
-  if ( on )
+  if (on)
+  {
+    if (!mySetRotationPointDlg)
     {
-      if ( !mySetRotationPointDlg )
-	{
-	  mySetRotationPointDlg = new OCCViewer_SetRotationPointDlg( this, myDesktop );
-	  mySetRotationPointDlg->SetAction( mySetRotationPointAction );
-	}
+      mySetRotationPointDlg = new OCCViewer_SetRotationPointDlg (this, myDesktop);
+      mySetRotationPointDlg->SetAction(mySetRotationPointAction);
+    }
 
-      if ( !mySetRotationPointDlg->isVisible() )
-      {
-	if ( mySetRotationPointDlg->IsFirstShown() )
-	{
-	  Standard_Real Xcenter, Ycenter, Zcenter;
-	  if ( computeGravityCenter( Xcenter, Ycenter, Zcenter ) )
-	    mySetRotationPointDlg->setCoords( Xcenter, Ycenter, Zcenter );
-	}
-	mySetRotationPointDlg->show();
-      }
-    }
-  else
+    if (!mySetRotationPointDlg->isVisible())
     {
-      if ( mySetRotationPointDlg->isVisible() )
-	mySetRotationPointDlg->hide();
+      //if (mySetRotationPointDlg->IsFirstShown())
+      if (myCurrPointType == GRAVITY)
+      {
+        Standard_Real Xcenter, Ycenter, Zcenter;
+        if (computeGravityCenter(Xcenter, Ycenter, Zcenter))
+          mySetRotationPointDlg->setCoords(Xcenter, Ycenter, Zcenter);
+      }
+      mySetRotationPointDlg->show();
     }
+  }
+  else
+  {
+    if (mySetRotationPointDlg->isVisible())
+      mySetRotationPointDlg->hide();
+  }
 }
 
 /*!

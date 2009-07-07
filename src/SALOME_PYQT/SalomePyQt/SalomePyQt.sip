@@ -234,6 +234,7 @@ public:
   static void              removeChild(const QString& = QString("")  ) /ReleaseGIL/ ;
   static QStringList       getChildren(const QString&=QString("") , const bool = false) /ReleaseGIL/ ;
 
+  static QIcon             loadIcon( const QString&, const QString& ) /ReleaseGIL/ ;
   static void              helpContext( const QString&, const QString& ) /ReleaseGIL/ ;
 
   static bool              dumpView( const QString& ) /ReleaseGIL/ ;

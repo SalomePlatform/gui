@@ -1259,6 +1259,40 @@ QString SalomePyQt::getExistingDirectory( QWidget*       parent,
 }
 
 /*!
+  \fn QString SalomePyQt::loadIcon( const QString& filename );
+  \brief Load an icon from the module resources by the specified file name.
+  \param filename icon file name
+  \return icon object
+*/
+class TLoadIconEvent: public SALOME_Event 
+{
+public:
+  typedef QIcon TResult;
+  TResult     myResult;
+  QString     myModule;
+  QString     myFileName;
+  TLoadIconEvent( const QString& module, const QString& filename ) 
+    : myModule( module ), 
+      myFileName ( filename ) {}
+  virtual void Execute() 
+  {
+    if ( LightApp_Application* anApp = getApplication() ) {
+      if ( !myFileName.isEmpty() ) {
+	QPixmap pixmap = anApp->resourceMgr()->loadPixmap( myModule, 
+                         QApplication::translate( myModule.toLatin1().data(), 
+						  myFileName.toLatin1().data() ) );
+	if ( !pixmap.isNull() )
+	  myResult = QIcon( pixmap );
+      }
+    }
+  }
+};
+QIcon SalomePyQt::loadIcon( const QString& module, const QString& filename )
+{
+  return ProcessEvent( new TLoadIconEvent( module, filename ) );
+}
+
+/*!
   \brief Open external browser to display context help information.
   \todo
 

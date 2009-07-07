@@ -145,6 +145,8 @@ public:
   static QString           getName(const QString& obj);
   static QString           getToolTip(const QString& obj);
 
+  static QIcon             loadIcon( const QString&, const QString& );
+
   static void              helpContext( const QString&, const QString& );
 
   static bool              dumpView( const QString& );

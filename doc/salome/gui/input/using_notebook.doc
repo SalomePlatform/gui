@@ -22,12 +22,18 @@ the table has an invalid name or value (marked by red color). The names of
 variables should be unique and their values should be numerical (integer or
 double) or boolean ("True" / "False").
 
+Here is an example of setting of variables in python scripts:
+\code
+import salome_notebook
+
+notebook = salome_notebook.notebook
+
+notebook.set("Length", 100)
+notebook.set("Radius", 37.5)
+notebook.set("Flag", True)
+\endcode
+
 Later these values can be used as parameters for any operations in
-various components. For example:
-
-\image html box3.png "Box creation in Geometry module"
-
-\image html addnode_notebook.png "Node added in Mesh module"
-
+various components.
 
 */

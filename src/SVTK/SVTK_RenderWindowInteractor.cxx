@@ -59,7 +59,7 @@
 
 using namespace std;
 
-static bool GENERATE_SUIT_EVENTS = false;
+static bool GENERATE_SUIT_EVENTS = true;
 static bool FOCUS_UNDER_MOUSE = false;
 
 

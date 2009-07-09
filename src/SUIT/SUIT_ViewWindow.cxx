@@ -54,6 +54,8 @@ SUIT_ViewWindow::SUIT_ViewWindow( SUIT_Desktop* theDesktop )
   setAttribute( Qt::WA_DeleteOnClose );
 
   myToolMgr = new QtxActionToolMgr( this );
+
+  setCustomData(QString("VectorsMode"), QVariant(false));
 }
 
 /*! Destructor.*/
@@ -240,4 +242,24 @@ QtxActionToolMgr* SUIT_ViewWindow::toolMgr() const
 int SUIT_ViewWindow::getId() const
 {
   return int(long(this));
+}
+
+/*!
+  Assign custom data to the view window.
+  \param name castom data name
+  \param value custom data value
+*/
+void SUIT_ViewWindow::setCustomData(const QString& name, const QVariant& value)
+{
+  myCustomData[name] = value;
+}
+
+/*!
+  Get custom data assigned to the view window.
+  \param name castom data name
+  \return custom data assigned to the window
+*/
+QVariant SUIT_ViewWindow::getCustomData(const QString& name) const
+{
+  return myCustomData.contains( name ) ? myCustomData[name] : QVariant();
 }

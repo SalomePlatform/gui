@@ -27,6 +27,8 @@
 #include "SUIT.h"
 
 #include <QMainWindow>
+#include <QMap>
+#include <QVariant>
 
 class SUIT_Desktop;
 class SUIT_ViewManager;
@@ -56,6 +58,10 @@ public:
   void              setDestructiveClose( const bool );
   
   int               getId() const;
+  
+  void              setCustomData (const QString& name, const QVariant& data);
+  
+  QVariant          getCustomData (const QString & name) const;
 
   QtxActionToolMgr* toolMgr() const;
 
@@ -85,6 +91,7 @@ protected:
 
 private:
   QtxActionToolMgr* myToolMgr;
+  QMap<QString, QVariant> myCustomData;
 };
 
 #endif // !defined(AFX_SUIT_VIEWWINDOW_H__82C3D51A_6F10_45B0_BCFE_3CB3EF596A4D__INCLUDED_)

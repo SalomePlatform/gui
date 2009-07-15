@@ -34,9 +34,9 @@
 #include <QTabBar>
 #include <QPointer>
 #include <QSplitter>
+#include <QByteArray>
 
 class QAction;
-class QByteArray;
 class QDataStream;
 class QRubberBand;
 class QStackedWidget;

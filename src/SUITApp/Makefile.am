@@ -62,7 +62,7 @@ libSUITApp_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la ../Style/libSalomeS
 
 if ENABLE_PYCONSOLE
 libSUITApp_la_LDFLAGS += -Xlinker -export-dynamic $(PYTHON_LIBS)
-CPPFLAGS+=-DSUIT_ENABLE_PYTHON
+AM_CPPFLAGS=-DSUIT_ENABLE_PYTHON
 endif
 
 # Executable

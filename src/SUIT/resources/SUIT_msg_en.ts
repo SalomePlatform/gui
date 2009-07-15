@@ -79,6 +79,21 @@ Do you want to overwrite it ?</translation>
 Permission denied.</translation>
     </message>
     <message>
+        <source>ERR_OPEN_PERMISSION_DENIED</source>
+        <translation>Can&apos;t open file &quot;%1&quot;.
+Permission denied.</translation>
+    </message>
+    <message>
+        <source>ERR_DIR_READ_PERMISSION_DENIED</source>
+        <translation>Can&apos;t read directory &quot;%1&quot;.
+Permission denied.</translation>
+    </message>
+    <message>
+        <source>ERR_DIR_WRITE_PERMISSION_DENIED</source>
+        <translation>Can&apos;t write directory &quot;%1&quot;.
+Permission denied.</translation>
+    </message>
+    <message>
         <source>ERR_ERROR</source>
         <translation>Error</translation>
     </message>

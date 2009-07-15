@@ -31,7 +31,6 @@
 #include <QRegExp>
 #include <QLayout>
 #include <QPainter>
-#include <QByteArray>
 #include <QDataStream>
 #include <QFocusEvent>
 #include <QMouseEvent>

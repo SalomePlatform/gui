@@ -79,6 +79,7 @@
 #include "SUIT_MessageBox.h"
 #include "SUIT_ResourceMgr.h"
 #include "SUIT_FileValidator.h"
+#include "Qtx.h"
 
 #include <QDir>
 #include <QEvent>
@@ -496,6 +497,9 @@ QString SUIT_FileDlg::addExtension( const QString& fileName ) const
 
   QRegExp r( QString::fromLatin1("\\(?[a-zA-Z0-9.*? +;#|]*\\)?$") );
   int index = r.indexIn( selectedFilter().trimmed() );
+
+  if ( QFileInfo( fileName ).exists() )
+    return fileName; // if file exists return as is
 
   if ( index >= 0 ) {            
     // Create wildcard regular expression basing on selected filter 
@@ -981,5 +985,6 @@ QString SUIT_FileDlg::getLastVisitedPath()
 void SUIT_FileDlg::selectFile( const QString& f )
 {
   QFileDialog::selectFile( QFileInfo( f ).baseName() );
-  setDirectory( QFileInfo( f ).absoluteDir() );
+  if ( !Qtx::dir( f, false ).isEmpty() )
+    setDirectory( QFileInfo( f ).absolutePath() );
 }

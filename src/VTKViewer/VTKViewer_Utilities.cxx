@@ -21,6 +21,7 @@
 //
 #include "VTKViewer_Utilities.h"
 #include "VTKViewer_Actor.h"
+#include "VTKViewer_Algorithm.h"
 
 #include <algorithm>
 
@@ -115,7 +116,8 @@ ComputeVisiblePropBounds(vtkRenderer* theRenderer,
   theBounds[1] = theBounds[3] = theBounds[5] = -VTK_LARGE_FLOAT;
   
   // loop through all props
-  vtkActorCollection* aCollection = theRenderer->GetActors();
+  VTK::ActorCollectionCopy aCopy(theRenderer->GetActors());
+  vtkActorCollection* aCollection = aCopy.GetActors();
   aCollection->InitTraversal();
   while (vtkActor* aProp = aCollection->GetNextActor()) {
     // if it's invisible, or has no geometry, we can skip the rest 
@@ -227,7 +229,8 @@ bool IsBBEmpty(vtkRenderer* theRenderer)
   aNewBndBox[ 1 ] = aNewBndBox[ 3 ] = aNewBndBox[ 5 ] = -VTK_LARGE_FLOAT;
   
   // iterate through displayed objects and set size if necessary
-  vtkActorCollection* anActors = theRenderer->GetActors();
+  VTK::ActorCollectionCopy aCopy(theRenderer->GetActors());
+  vtkActorCollection* anActors = aCopy.GetActors();
   anActors->InitTraversal();
   bool isAny = false;
   while(vtkActor* anAct = anActors->GetNextActor())
@@ -257,7 +260,8 @@ bool ComputeBBCenter(vtkRenderer* theRenderer, vtkFloatingPointType theCenter[3]
   aNewBndBox[ 1 ] = aNewBndBox[ 3 ] = aNewBndBox[ 5 ] = -VTK_LARGE_FLOAT;
 
   // iterate through displayed objects and set size if necessary
-  vtkActorCollection* anActors = theRenderer->GetActors();
+  VTK::ActorCollectionCopy aCopy(theRenderer->GetActors());
+  vtkActorCollection* anActors = aCopy.GetActors();
   anActors->InitTraversal();
   bool isAny = false;
   while(vtkActor* anAct = anActors->GetNextActor())

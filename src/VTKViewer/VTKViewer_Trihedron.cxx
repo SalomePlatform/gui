@@ -21,6 +21,7 @@
 //
 #include "VTKViewer_Trihedron.h"
 #include "VTKViewer_Actor.h"
+#include "VTKViewer_Algorithm.h"
 
 // VTK Includes
 #include <vtkMath.h>
@@ -445,7 +446,8 @@ int VTKViewer_Trihedron::GetVisibleActorCount(vtkRenderer* theRenderer)
 {
   //TVisibility aVis = GetVisibility();
   //SetVisibility(eOff);
-  vtkActorCollection* aCollection = theRenderer->GetActors();
+  VTK::ActorCollectionCopy aCopy(theRenderer->GetActors());
+  vtkActorCollection* aCollection = aCopy.GetActors();
   aCollection->InitTraversal();
   int aCount = 0;
   while(vtkActor* prop = aCollection->GetNextActor()) {

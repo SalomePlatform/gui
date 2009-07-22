@@ -105,7 +105,8 @@ namespace
 		   vtkFloatingPointType theUpdateRate)
   {
     if(vtkRenderer *aRenderer = theRWInteractor->getRenderer()){
-      if(vtkActorCollection *anActorCollection = aRenderer->GetActors()){
+      VTK::ActorCollectionCopy aCopy(aRenderer->GetActors());
+      if(vtkActorCollection *anActorCollection = aCopy.GetActors()){
 	TRenderTimeMultiplier aMultiplier;
 	using namespace VTK;
 	aMultiplier = ForEach<vtkActor>(anActorCollection,
@@ -146,7 +147,8 @@ namespace
   GetNumberOfCells(SVTK_RenderWindowInteractor* theRWInteractor)
   {
     if(vtkRenderer *aRenderer = theRWInteractor->getRenderer()){
-      if(vtkActorCollection *anActorCollection = aRenderer->GetActors()){
+      VTK::ActorCollectionCopy aCopy(aRenderer->GetActors());
+      if(vtkActorCollection *anActorCollection = aCopy.GetActors()){
 	TCellsCounter aCounter;
 	using namespace VTK;
 	aCounter = ForEach<SALOME_Actor>(anActorCollection,

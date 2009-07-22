@@ -33,6 +33,7 @@
 #include "SALOME_Actor.h"
 #include "SALOME_InteractiveObject.hxx"
 
+#include "VTKViewer_Algorithm.h"
 #include "VTKViewer_Transform.h"
 #include "VTKViewer_TransformFilter.h"
 #include "VTKViewer_GeometryFilter.h"
@@ -493,7 +494,8 @@ SALOME_Actor
 
   if( !theIsHighlight ) {
     SetPreSelected( false );
-    vtkActorCollection* theActors = aRenderer->GetActors();
+    VTK::ActorCollectionCopy aCopy(aRenderer->GetActors());
+    vtkActorCollection* theActors = aCopy.GetActors();
     theActors->InitTraversal();
     while( vtkActor *ac = theActors->GetNextActor() )
       if( SALOME_Actor* anActor = SALOME_Actor::SafeDownCast( ac ) )
@@ -592,7 +594,8 @@ SALOME_Actor
       if( !mySelector->IsSelected( myIO ) ) {
 	SetPreSelected( true );
 
-	vtkActorCollection* theActors = aRenderer->GetActors();
+	VTK::ActorCollectionCopy aCopy(aRenderer->GetActors());
+	vtkActorCollection* theActors = aCopy.GetActors();
 	theActors->InitTraversal();
 	while( vtkActor *anAct = theActors->GetNextActor() ) {
 	  if( anAct != this )
@@ -889,12 +892,11 @@ void
 SALOME_Actor
 ::UpdateNameActors()
 {
-  // the code is temporarily disabled due to bug 20383
-#ifdef FEATURE_19818
   if( vtkRenderer* aRenderer = GetRenderer() )
   {
     int anOffset[2] = { 0, 0 };
-    vtkActorCollection* aCollection = aRenderer->GetActors();
+    VTK::ActorCollectionCopy aCopy(aRenderer->GetActors());
+    vtkActorCollection* aCollection = aCopy.GetActors();
     for( int anIndex = 0, aNbItems = aCollection->GetNumberOfItems(); anIndex < aNbItems; anIndex++ )
     {
       if( SALOME_Actor* anActor = dynamic_cast<SALOME_Actor*>( aCollection->GetItemAsObject( anIndex ) ) )
@@ -914,7 +916,6 @@ SALOME_Actor
     }
   }
   myNameActor->SetVisibility( GetVisibility() && IsDisplayNameActor() );
-#endif
 }
 
 /*!

@@ -34,6 +34,32 @@ class vtkActor;
 
 namespace VTK
 {
+  /*!
+   * This object should be used to avoid problems with recurring calls of GetActors() method of the vtkRenderer class.
+   *
+   * Instead of the following instructions:
+   *
+   * vtkRenderer* aRenderer = ...;
+   * vtkActorCollection* anActorCollection = aRenderer->GetActors();
+   * DoSomething( anActorCollection ); // where GetActors() could be called again
+   *
+   * A code like the following should be used:
+   *
+   * vtkRenderer* aRenderer = ...;
+   * vtkActorCollection* anActorCollection = aRenderer->GetActors();
+   * ActorCollectionCopy aCopy( anActorCollection );
+   * DoSomething( aCopy.GetActors() );
+   */
+  struct ActorCollectionCopy
+  {
+    vtkActorCollection* myActorCollection;
+
+    ActorCollectionCopy( vtkActorCollection* theActorCollection );
+    ~ActorCollectionCopy();
+
+    vtkActorCollection* GetActors() const;
+  };
+
   /*!For each actor(for ex: someActor) from \a theCollection(that can be dynamic cast to type TActor)\n
    * Call method \a theFun(someActor)
    */

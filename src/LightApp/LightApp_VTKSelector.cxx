@@ -113,7 +113,8 @@ LightApp_SVTKDataOwner
 {
   if(SVTK_ViewWindow* aViewWindow = GetActiveViewWindow()){
     using namespace SVTK;
-    return Find<SALOME_Actor>(aViewWindow->getRenderer()->GetActors(),TIsSameIObject<SALOME_Actor>(IO()));
+    VTK::ActorCollectionCopy aCopy(aViewWindow->getRenderer()->GetActors());
+    return Find<SALOME_Actor>(aCopy.GetActors(),TIsSameIObject<SALOME_Actor>(IO()));
   }
 
   return NULL;

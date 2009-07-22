@@ -35,6 +35,7 @@
 //#include "SVTK_MainWindow.h"
 #include "SVTK_Prs.h"
 
+#include "VTKViewer_Algorithm.h"
 #include "VTKViewer_ViewModel.h"
 
 #include "SUIT_ViewModel.h"
@@ -505,17 +506,11 @@ void SVTK_Viewer::EraseAll( const bool forced )
     if(SVTK_ViewWindow* aViewWindow = dynamic_cast<SVTK_ViewWindow*>(aViews.at(i)))
       if(SVTK_View* aView = aViewWindow->getView()){
 	vtkRenderer* aRenderer =  aView->getRenderer();
-	vtkActorCollection* anActorCollection = aRenderer->GetActors();
-	// another way is used to cycle over the actor collection to avoid problems
-	// with the similar cycle inside SALOME_Actor::UpdateNameActors() called from
-	// SALOME_Actor::SetVisibility(...), which is called below
-	/*
+	VTK::ActorCollectionCopy aCopy(aRenderer->GetActors());
+	vtkActorCollection* anActorCollection = aCopy.GetActors();
 	anActorCollection->InitTraversal();
 	while(vtkActor* anActor = anActorCollection->GetNextActor()){
 	  if(SALOME_Actor* anAct = SALOME_Actor::SafeDownCast(anActor)){
-	*/
-	for(int anIndex = 0, aNbItems = anActorCollection->GetNumberOfItems(); anIndex < aNbItems; anIndex++){
-	  if(SALOME_Actor* anAct = SALOME_Actor::SafeDownCast(anActorCollection->GetItemAsObject(anIndex))){
 	    // Set visibility flag
             // Temporarily commented to avoid awful dependecy on SALOMEDS
             // TODO: better mechanism of storing display/erse status in a study
@@ -554,7 +549,8 @@ SALOME_Prs* SVTK_Viewer::CreatePrs( const char* entry )
     if(SVTK_ViewWindow* aViewWindow = dynamic_cast<SVTK_ViewWindow*>(getViewManager()->getActiveView()))
       if(SVTK_View* aView = aViewWindow->getView()){
 	vtkRenderer* aRenderer =  aView->getRenderer();
-	vtkActorCollection* theActors = aRenderer->GetActors();
+	VTK::ActorCollectionCopy aCopy(aRenderer->GetActors());
+	vtkActorCollection* theActors = aCopy.GetActors();
 	theActors->InitTraversal();
 	vtkActor* ac;
 	while( ( ac = theActors->GetNextActor() ) ) {

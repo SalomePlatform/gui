@@ -27,6 +27,7 @@
 //
 #include "SVTK_InteractorStyle.h"
 
+#include "VTKViewer_Algorithm.h"
 #include "VTKViewer_Utilities.h"
 #include "SVTK_GenericRenderWindowInteractor.h"
 
@@ -1062,7 +1063,8 @@ void SVTK_InteractorStyle::onFinishOperation()
 	    if(!myShiftState)
 	      GetSelector()->ClearIObjects();
 
-	    vtkActorCollection* aListActors = GetCurrentRenderer()->GetActors();
+	    VTK::ActorCollectionCopy aCopy(GetCurrentRenderer()->GetActors());
+	    vtkActorCollection* aListActors = aCopy.GetActors();
 	    aListActors->InitTraversal();
 	    while(vtkActor* aActor = aListActors->GetNextActor())
 	      {

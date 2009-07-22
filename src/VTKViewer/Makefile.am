@@ -60,6 +60,7 @@ dist_libVTKViewer_la_SOURCES =			\
 	VTKViewer_Filter.cxx			\
 	VTKViewer_GeometryFilter.cxx		\
 	VTKViewer_AppendFilter.cxx		\
+	VTKViewer_Algorithm.cxx			\
 	VTKViewer_InteractorStyle.cxx		\
 	VTKViewer_RenderWindow.cxx		\
 	VTKViewer_RenderWindowInteractor.cxx	\

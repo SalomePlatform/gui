@@ -19,46 +19,26 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#include "SVTK_Trihedron.h"
-#include "SALOME_Actor.h"
-
 #include "VTKViewer_Algorithm.h"
 
-#include <vtkObjectFactory.h>
-#include <vtkActorCollection.h>
-#include <vtkRenderer.h>
-
-vtkStandardNewMacro(SVTK_Trihedron);
-
-/*!
-  Constructor
-*/
-SVTK_Trihedron
-::SVTK_Trihedron()
+namespace VTK
 {
-}
-
-/*!
-  \return count of visible actors
-  \param theRenderer - renderer to be checked
-*/
-int 
-SVTK_Trihedron
-::GetVisibleActorCount(vtkRenderer* theRenderer)
-{
-  VTK::ActorCollectionCopy aCopy(theRenderer->GetActors());
-  vtkActorCollection* aCollection = aCopy.GetActors();
-  aCollection->InitTraversal();
-  int aCount = 0;
-  while(vtkActor* aProp = aCollection->GetNextActor()) {
-    if(aProp->GetVisibility())
-      if(SALOME_Actor* anActor = SALOME_Actor::SafeDownCast(aProp)) {
-        if(!anActor->IsInfinitive()) 
-	  aCount++;
-      }
-      else if ( !OwnActor( aProp ) ) {
-	aCount++;
-      }
+  ActorCollectionCopy::ActorCollectionCopy( vtkActorCollection* theActorCollection )
+  {
+    myActorCollection = vtkActorCollection::New();
+    theActorCollection->InitTraversal();
+    while(vtkActor* anActor = theActorCollection->GetNextActor())
+      myActorCollection->AddItem(anActor);
   }
-  return aCount;
+
+  ActorCollectionCopy::~ActorCollectionCopy()
+  {
+    myActorCollection->Delete();
+    myActorCollection = NULL;
+  }
+
+  vtkActorCollection* ActorCollectionCopy::GetActors() const
+  {
+    return myActorCollection;
+  }
 }

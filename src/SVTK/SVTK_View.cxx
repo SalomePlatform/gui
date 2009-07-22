@@ -142,7 +142,8 @@ void
 SVTK_SignalHandler
 ::onSelectionChanged()
 {
-  vtkActorCollection* anActors = myMainWindow->getRenderer()->GetActors();
+  VTK::ActorCollectionCopy aCopy(myMainWindow->getRenderer()->GetActors());
+  vtkActorCollection* anActors = aCopy.GetActors();
 
   using namespace SVTK;
   ForEach<SALOME_Actor>(anActors,
@@ -184,7 +185,8 @@ SVTK_View
 ::unHighlightAll() 
 {
   using namespace SVTK;
-  ForEach<SALOME_Actor>(getRenderer()->GetActors(),
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  ForEach<SALOME_Actor>(aCopy.GetActors(),
 			THighlightAction( false ));
   Repaint();
 }
@@ -202,7 +204,8 @@ SVTK_View
 	     bool theIsUpdate ) 
 {
   using namespace SVTK;
-  ForEachIf<SALOME_Actor>(getRenderer()->GetActors(),
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  ForEachIf<SALOME_Actor>(aCopy.GetActors(),
 			  TIsSameIObject<SALOME_Actor>( theIO ),
 			  THighlightAction(theIsHighlight));
   Repaint();
@@ -217,8 +220,9 @@ SVTK_View
 ::FindIObject(const char* theEntry) 
 {
   using namespace SVTK;
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   SALOME_Actor* anActor = 
-    Find<SALOME_Actor>(getRenderer()->GetActors(),
+    Find<SALOME_Actor>(aCopy.GetActors(),
 		       TIsSameEntry<SALOME_Actor>(theEntry));
   if(anActor != NULL)
     return anActor->getIO();
@@ -273,8 +277,9 @@ SVTK_View
 ::isInViewer(const Handle(SALOME_InteractiveObject)& theIObject)
 {
   using namespace SVTK;
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   SALOME_Actor* anActor = 
-    Find<SALOME_Actor>(getRenderer()->GetActors(),
+    Find<SALOME_Actor>(aCopy.GetActors(),
 		       TIsSameIObject<SALOME_Actor>(theIObject));
   return anActor != NULL;
 }
@@ -308,7 +313,8 @@ SVTK_View
 {
   using namespace SVTK;
   bool aResult;
-  ForEachIf<SALOME_Actor>(getRenderer()->GetActors(),
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  ForEachIf<SALOME_Actor>(aCopy.GetActors(),
 			  TIsSameIObject<SALOME_Actor>(theIObject),
 			  TIsActorVisibleAction(aResult));
   return aResult;
@@ -325,7 +331,8 @@ SVTK_View
 	 const QString& theName)
 {
   using namespace SVTK;
-  ForEachIf<SALOME_Actor>(getRenderer()->GetActors(),
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  ForEachIf<SALOME_Actor>(aCopy.GetActors(),
 			  TIsSameIObject<SALOME_Actor>(theIObject),
 			  TSetFunction<SALOME_Actor,const char*,const char*>
 			  (&SALOME_Actor::setName,theName.toLatin1().data()));
@@ -367,7 +374,8 @@ SVTK_View
 		 int theMode)
 {
   using namespace SVTK;
-  ForEachIf<SALOME_Actor>(getRenderer()->GetActors(),
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  ForEachIf<SALOME_Actor>(aCopy.GetActors(),
 			  TIsSameIObject<SALOME_Actor>(theIObject),
 			  TSetFunction<SALOME_Actor,int>
 			  (&SALOME_Actor::setDisplayMode,theMode));
@@ -380,7 +388,8 @@ void
 SVTK_View
 ::ChangeRepresentationToWireframe()
 {
-  ChangeRepresentationToWireframe(getRenderer()->GetActors());
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  ChangeRepresentationToWireframe(aCopy.GetActors());
 }
 
 /*!
@@ -390,7 +399,8 @@ void
 SVTK_View
 ::ChangeRepresentationToSurface()
 {
-  ChangeRepresentationToSurface(getRenderer()->GetActors());
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  ChangeRepresentationToSurface(aCopy.GetActors());
 }
 
 /*!
@@ -452,7 +462,8 @@ SVTK_View
 ::EraseAll()
 {   
   using namespace SVTK;
-  ForEach<SALOME_Actor>(getRenderer()->GetActors(),
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  ForEach<SALOME_Actor>(aCopy.GetActors(),
 			TErase());
   Repaint();
 }
@@ -465,7 +476,8 @@ SVTK_View
 ::DisplayAll()
 { 
   using namespace SVTK;
-  ForEach<SALOME_Actor>(getRenderer()->GetActors(),
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  ForEach<SALOME_Actor>(aCopy.GetActors(),
 			TSetVisibility<SALOME_Actor>(true));
   Repaint();
 }
@@ -498,7 +510,8 @@ SVTK_View
 	bool theIsUpdate)
 {
   using namespace SVTK;
-  ForEachIf<SALOME_Actor>(getRenderer()->GetActors(),
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  ForEachIf<SALOME_Actor>(aCopy.GetActors(),
 			  TIsSameIObject<SALOME_Actor>(theIObject),
 			  TErase());
   if(theIsUpdate)
@@ -529,7 +542,8 @@ SVTK_View
 	  bool theIsUpdate)
 {
   using namespace SVTK;
-  ForEachIf<SALOME_Actor>(getRenderer()->GetActors(),
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  ForEachIf<SALOME_Actor>(aCopy.GetActors(),
 			  TIsSameIObject<SALOME_Actor>(theIObject),
 			  TSetVisibility<SALOME_Actor>(true));
 
@@ -574,7 +588,8 @@ SVTK_View
 	 bool theIsUpdate)
 {
   using namespace SVTK;
-  ForEachIf<SALOME_Actor>(getRenderer()->GetActors(),
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  ForEachIf<SALOME_Actor>(aCopy.GetActors(),
 			  TIsSameIObject<SALOME_Actor>(theIObject),
 			  TRemoveAction(GetRenderer()));
   if(theIsUpdate)
@@ -602,7 +617,8 @@ SVTK_View
 ::RemoveAll(bool theIsUpdate)
 {
   vtkRenderer* aRenderer = getRenderer();
-  if(vtkActorCollection* anActors = aRenderer->GetActors()){
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  if(vtkActorCollection* anActors = aCopy.GetActors()){
     anActors->InitTraversal();
     while(vtkActor *anAct = anActors->GetNextActor()){
       if(SALOME_Actor* aSAct = SALOME_Actor::SafeDownCast(anAct)){
@@ -625,8 +641,9 @@ SVTK_View
 ::GetTransparency(const Handle(SALOME_InteractiveObject)& theIObject) 
 {
   using namespace SVTK;
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   SALOME_Actor* anActor = 
-    Find<SALOME_Actor>(getRenderer()->GetActors(),
+    Find<SALOME_Actor>(aCopy.GetActors(),
 		       TIsSameIObject<SALOME_Actor>(theIObject));
   if(anActor)
     return 1.0 - anActor->GetOpacity();
@@ -646,7 +663,8 @@ SVTK_View
 {
   vtkFloatingPointType anOpacity = 1.0 - theTrans;
   using namespace SVTK;
-  ForEachIf<SALOME_Actor>(getRenderer()->GetActors(),
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  ForEachIf<SALOME_Actor>(aCopy.GetActors(),
 			  TIsSameIObject<SALOME_Actor>(theIObject),
 			  TSetFunction<SALOME_Actor,vtkFloatingPointType>
 			  (&SALOME_Actor::SetOpacity,anOpacity));
@@ -665,7 +683,8 @@ SVTK_View
   vtkFloatingPointType aColor[3] = {theColor.red()/255., theColor.green()/255., theColor.blue()/255.};
 
   using namespace SVTK;
-  ForEachIf<SALOME_Actor>(getRenderer()->GetActors(),
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  ForEachIf<SALOME_Actor>(aCopy.GetActors(),
 			  TIsSameIObject<SALOME_Actor>(theIObject),
 			  TSetFunction<SALOME_Actor,const vtkFloatingPointType*>
 			  (&SALOME_Actor::SetColor,aColor));
@@ -681,8 +700,9 @@ SVTK_View
 ::GetColor(const Handle(SALOME_InteractiveObject)& theIObject) 
 {
   using namespace SVTK;
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   SALOME_Actor* anActor = 
-    Find<SALOME_Actor>(getRenderer()->GetActors(),
+    Find<SALOME_Actor>(aCopy.GetActors(),
 		       TIsSameIObject<SALOME_Actor>(theIObject));
   if(anActor){
     vtkFloatingPointType r,g,b;

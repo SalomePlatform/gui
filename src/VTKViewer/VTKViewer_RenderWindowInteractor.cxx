@@ -498,13 +498,17 @@ void VTKViewer_RenderWindowInteractor::SetDisplayMode(int theMode) {
 /*!Change all actors to wireframe*/
 void VTKViewer_RenderWindowInteractor::ChangeRepresentationToWireframe()
 {
-  ChangeRepresentationToWireframe(GetRenderer()->GetActors());
+  using namespace VTK;
+  ActorCollectionCopy aCopy(GetRenderer()->GetActors());
+  ChangeRepresentationToWireframe(aCopy.GetActors());
 }
 
 /*!Change all actors to surface*/
 void VTKViewer_RenderWindowInteractor::ChangeRepresentationToSurface()
 {
-  ChangeRepresentationToSurface(GetRenderer()->GetActors());
+  using namespace VTK;
+  ActorCollectionCopy aCopy(GetRenderer()->GetActors());
+  ChangeRepresentationToSurface(aCopy.GetActors());
 }
 
 /*!Change all actors from \a theCollection to wireframe and
@@ -550,8 +554,8 @@ void VTKViewer_RenderWindowInteractor::EraseAll()
 void VTKViewer_RenderWindowInteractor::DisplayAll()
 {
   using namespace VTK;
-  vtkActorCollection* aCollection = GetRenderer()->GetActors();
-  ForEach<VTKViewer_Actor>(aCollection,TSetVisibility<VTKViewer_Actor>(true));
+  ActorCollectionCopy aCopy(GetRenderer()->GetActors());
+  ForEach<VTKViewer_Actor>(aCopy.GetActors(),TSetVisibility<VTKViewer_Actor>(true));
 
   emit RenderWindowModified() ;
 }
@@ -577,8 +581,10 @@ void VTKViewer_RenderWindowInteractor::Remove( VTKViewer_Actor* SActor, bool upd
  */
 void VTKViewer_RenderWindowInteractor::RemoveAll( const bool updateViewer )
 {
+  using namespace VTK;
   vtkRenderer* aRenderer = GetRenderer();
-  vtkActorCollection* anActors = aRenderer->GetActors();
+  ActorCollectionCopy aCopy(aRenderer->GetActors());
+  vtkActorCollection* anActors = aCopy.GetActors();
   if ( anActors )
   {
     anActors->InitTraversal();
@@ -627,7 +633,8 @@ struct TUpdateAction{
 void VTKViewer_RenderWindowInteractor::Update() {
   using namespace VTK;
   vtkRenderer* aRen = GetRenderer();
-  ForEach<vtkActor>(aRen->GetActors(),TUpdateAction());
+  ActorCollectionCopy aCopy(aRen->GetActors());
+  ForEach<vtkActor>(aCopy.GetActors(),TUpdateAction());
 
   aRen->ResetCamera();
 

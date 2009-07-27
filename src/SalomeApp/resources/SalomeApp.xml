@@ -192,6 +192,7 @@
   <section name="FileDlg" >
     <!-- "Open/Save File" dialog box preferences-->
     <parameter name="QuickDirList" value="${DATA_DIR}" />
+    <parameter name="ShowCurDirInitial" value="true" />
   </section>
   <section name="Study">
     <!-- General study settings -->

@@ -119,6 +119,8 @@ SUIT_FileDlg::SUIT_FileDlg( QWidget* parent, bool open, bool showQuickDir, bool 
   myQuickButton( 0 ),
   myCheckPermissions( true )
 {
+  SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+  
   setModal( modal );
   setSizeGripEnabled( true );
   if ( parent )
@@ -137,9 +139,8 @@ SUIT_FileDlg::SUIT_FileDlg( QWidget* parent, bool open, bool showQuickDir, bool 
       // retrieve directories list from the resources
       QStringList dirList;
   
-      SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
       if ( resMgr )
-	dirList = resMgr->stringValue( "FileDlg", QString( "QuickDirList" ) ).split( ';', QString::SkipEmptyParts );
+	dirList = resMgr->stringValue( "FileDlg", "QuickDirList" ).split( ';', QString::SkipEmptyParts );
 
       if ( dirList.isEmpty() ) 
 	dirList << QDir::homePath();
@@ -157,10 +158,15 @@ SUIT_FileDlg::SUIT_FileDlg( QWidget* parent, bool open, bool showQuickDir, bool 
   setAcceptMode( open ? AcceptOpen: AcceptSave );
   setWindowTitle( open ? tr( "INF_DESK_DOC_OPEN" ) : tr( "INF_DESK_DOC_SAVE" ) );
 
+  bool showCurrentDirInitial = resMgr ? resMgr->booleanValue( "FileDlg", "ShowCurDirInitial", false ) : false;
+
   // If last visited path doesn't exist -> switch to the first preferred path
   if ( !myLastVisitedPath.isEmpty() ) {
     if ( !processPath( myLastVisitedPath ) && showQuickDir )
       processPath( myQuickCombo->itemText( 0 ) );
+  }
+  else if ( showCurrentDirInitial ) {
+    processPath( QDir::currentPath() );
   }
   else if ( showQuickDir ) {
     processPath( myQuickCombo->itemText( 0 ) );
@@ -562,11 +568,11 @@ bool SUIT_FileDlg::processPath( const QString& path )
 	setDirectory( path );
       return true;
     }
-    else if ( QFileInfo( SUIT_Tools::dir( path ) ).exists() ) {
-      setDirectory( SUIT_Tools::dir( path ) );
-      selectFile( path );
-      return true;
-    }
+    QString dirPath = SUIT_Tools::dir( path, false );
+    if ( !dirPath.isEmpty() && QFileInfo( dirPath ).exists() )
+      setDirectory( dirPath );
+    selectFile( SUIT_Tools::file( path ) );
+    return true;
   }
   return false;
 }
@@ -640,7 +646,7 @@ void SUIT_FileDlg::addQuickDir()
 
     SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
     if ( resMgr )
-      dirList = resMgr->stringValue( "FileDlg", QString( "QuickDirList" ) ).split( ';', QString::SkipEmptyParts );
+      dirList = resMgr->stringValue( "FileDlg", "QuickDirList" ).split( ';', QString::SkipEmptyParts );
 
     bool found = false;
     bool emptyAndHome = false;
@@ -660,7 +666,7 @@ void SUIT_FileDlg::addQuickDir()
 
     if ( !found ) {
       dirList.append( dp );
-      resMgr->setValue( "FileDlg", QString( "QuickDirList" ), dirList.join( ";" ) );
+      resMgr->setValue( "FileDlg", "QuickDirList", dirList.join( ";" ) );
       if ( !emptyAndHome )
 	myQuickCombo->addItem( dp );
     }

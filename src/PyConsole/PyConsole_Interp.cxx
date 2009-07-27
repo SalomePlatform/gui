@@ -84,12 +84,14 @@ PyConsole_Interp::~PyConsole_Interp()
  
 /*!
   \brief Initialize internal Python interpreter state.
+
+  When calling initState the GIL is not held
+  It must not be held on exit
+
   \return \c true on success
 */
 bool PyConsole_Interp::initState()
 {
-  // The GIL is acquired and will be held on initState output
-  // It is the caller responsability to release the lock if needed
   PyEval_AcquireLock();
   _tstate = Py_NewInterpreter(); // create an interpreter and save current state
   PySys_SetArgv(PyInterp_Interp::_argc,PyInterp_Interp::_argv); // initialize sys.argv
@@ -120,8 +122,8 @@ bool PyConsole_Interp::initState()
   \brief Initialize python interpeter context.
 
   The GIL is assumed to be held.
-  It is the caller responsability caller to acquire the GIL.
-  It will still be held on initContext() exit.
+  It is the caller responsability to acquire the GIL.
+  It must still be held on initContext() exit.
 
   \return \c true on success
 */

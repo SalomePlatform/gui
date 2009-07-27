@@ -24,16 +24,21 @@
 //  Module : SALOME
 //
 #include "PyInterp_Interp.h"  // !!! WARNING !!! THIS INCLUDE MUST BE THE VERY FIRST !!!
+#include <pythread.h>
 
 #include <cStringIO.h>
 #include <structmember.h>
 
 #include <string>
 #include <vector>
+#include <map>
 #include <iostream>
 
 #define TOP_HISTORY_PY   "--- top of history ---"
 #define BEGIN_HISTORY_PY "--- begin of history ---"
+
+// a map to store python thread states that have been created for a given system thread (key=thread id,value=thread state)
+std::map<long,PyThreadState*> currentThreadMap;
 
 /*!
   \class PyLockWrapper
@@ -55,7 +60,7 @@ PyLockWrapper::PyLockWrapper(PyThreadState* theThreadState):
 }
 
 /*!
-  \brief Desstructor. Automatically releases GIL.
+  \brief Destructor. Automatically releases GIL.
 */
 PyLockWrapper::~PyLockWrapper()
 {
@@ -71,7 +76,39 @@ PyLockWrapper::~PyLockWrapper()
 */
 PyLockWrapper PyInterp_Interp::GetLockWrapper()
 {
-  return _tstate;
+  if (_tstate->interp == PyInterp_Interp::_interp)
+    return _tstate;
+
+  // If we are here, we have a secondary python interpreter. Try to get a thread state synchronized with the system thread
+  long currentThreadid=PyThread_get_thread_ident(); // the system thread id
+  PyThreadState* theThreadState;
+  if(currentThreadMap.count(currentThreadid) != 0)
+    {
+      //a thread state exists for this thread id
+      PyThreadState* oldThreadState=currentThreadMap[currentThreadid];
+      if(_tstate->interp ==oldThreadState->interp)
+        {
+          //The old thread state has the same python interpreter as this one : reuse the threadstate
+          theThreadState=oldThreadState;
+        }
+      else
+        {
+          //The old thread state has not the same python interpreter as this one : delete the old threadstate and create a new one
+          PyEval_AcquireLock();
+          PyThreadState_Clear(oldThreadState);
+          PyThreadState_Delete(oldThreadState);
+          PyEval_ReleaseLock();
+          theThreadState=PyThreadState_New(_tstate->interp);
+          currentThreadMap[currentThreadid]=theThreadState;
+        }
+    }
+  else
+    {
+      // no old thread state for this thread id : create a new one
+      theThreadState=PyThreadState_New(_tstate->interp);
+      currentThreadMap[currentThreadid]=theThreadState;
+    }
+  return theThreadState;
 }
 
 /*
@@ -230,7 +267,7 @@ void PyInterp_Interp::initialize()
 
   initState();
 
-  PyLockWrapper aLock = GetLockWrapper();
+  PyEval_AcquireThread(_tstate);
 
   initContext();
 
@@ -238,6 +275,7 @@ void PyInterp_Interp::initialize()
   PyObjWrapper m(PyImport_ImportModule("codeop"));
   if(!m) {
     PyErr_Print();
+    PyEval_ReleaseThread(_tstate);
     return;
   }
 
@@ -247,6 +285,7 @@ void PyInterp_Interp::initialize()
 
   // All the initRun outputs are redirected to the standard output (console)
   initRun();
+  PyEval_ReleaseThread(_tstate);
 }
 
 /*!

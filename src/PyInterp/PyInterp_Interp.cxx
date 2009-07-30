@@ -149,8 +149,8 @@ static PyMethodDef PyStdOut_methods[] = {
 };
 
 static PyMemberDef PyStdOut_memberlist[] = {
-  {"softspace", T_INT,  offsetof(PyStdOut, softspace), 0,
-   "flag indicating that a space needs to be printed; used by print"},
+  {(char*)"softspace", T_INT,  offsetof(PyStdOut, softspace), 0,
+   (char*)"flag indicating that a space needs to be printed; used by print"},
   {NULL} /* Sentinel */
 };
 
@@ -222,7 +222,7 @@ static PyStdOut* newPyStdOut( bool iscerr )
 */
 
 int   PyInterp_Interp::_argc   = 1;
-char* PyInterp_Interp::_argv[] = {""};
+char* PyInterp_Interp::_argv[] = {(char*)""};
 PyObject*           PyInterp_Interp::builtinmodule = NULL;
 PyThreadState*      PyInterp_Interp::_gtstate      = NULL;
 PyInterpreterState* PyInterp_Interp::_interp       = NULL;
@@ -372,7 +372,7 @@ static int compile_command(const char *command,PyObject *context)
     PyErr_Print();
     return -1;
   }
-  PyObjWrapper v(PyObject_CallMethod(m,"compile_command","s",command));
+  PyObjWrapper v(PyObject_CallMethod(m,(char*)"compile_command",(char*)"s",command));
   if(!v) {
     // Error encountered. It should be SyntaxError,
     //so we don't write out traceback
@@ -432,14 +432,14 @@ int PyInterp_Interp::simpleRun(const char *command, const bool addToHistory)
   //PyLockWrapper aLock(_tstate); // san - lock is centralized now
 
   // Reset redirected outputs before treatment
-  PySys_SetObject("stderr",_verr);
-  PySys_SetObject("stdout",_vout);
+  PySys_SetObject((char*)"stderr",_verr);
+  PySys_SetObject((char*)"stdout",_vout);
 
   int ier = compile_command(command,_g);
 
   // Outputs are redirected on standards outputs (console)
-  PySys_SetObject("stdout",PySys_GetObject("__stdout__"));
-  PySys_SetObject("stderr",PySys_GetObject("__stderr__"));
+  PySys_SetObject((char*)"stdout",PySys_GetObject((char*)"__stdout__"));
+  PySys_SetObject((char*)"stderr",PySys_GetObject((char*)"__stderr__"));
 
   return ier;
 }

@@ -158,7 +158,7 @@ void SALOME_PYQT_Module::getEngineIOR()
     return;
 
   if ( PyObject_HasAttrString( myModule , "engineIOR" ) ) {
-    PyObjWrapper res( PyObject_CallMethod( myModule, "engineIOR", "" ) );
+    PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"engineIOR", (char*)"" ) );
     if ( !res ) {
       PyErr_Print();
     }

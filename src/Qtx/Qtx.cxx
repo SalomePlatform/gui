@@ -434,7 +434,7 @@ QString Qtx::library( const QString& str )
 */
 QString Qtx::tmpDir()
 {
-  char* tmpdir = ::getenv( "TEMP" );
+  const char* tmpdir = ::getenv( "TEMP" );
   if ( !tmpdir )
     tmpdir = ::getenv ( "TMP" );
   if ( !tmpdir )

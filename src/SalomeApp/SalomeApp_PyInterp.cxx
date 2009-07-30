@@ -92,7 +92,7 @@ bool SalomeApp_PyInterp::initContext()
 
   // Call init_shared_modules to initialize the shared import mechanism for modules 
   //that must not be imported twice
-  PyObjWrapper m2( PyObject_CallMethod( m1, "init_shared_modules", "O", KERNEL_PYTHON::salome_shared_modules_module ) );
+  PyObjWrapper m2( PyObject_CallMethod( m1, (char*)"init_shared_modules", (char*)"O", KERNEL_PYTHON::salome_shared_modules_module ) );
   if ( !m2 )
   {
     MESSAGE( "initContext: problem with init_shared_modules call" );

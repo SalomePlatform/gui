@@ -41,7 +41,7 @@ static Handle(CASCatch_Failure) RaisedError;
  * \brief creates a CASCatch_Failure
  */
 //================================================================================ 
-CASCatch_Failure::CASCatch_Failure () { myMessage = "Signal detected";}
+CASCatch_Failure::CASCatch_Failure () { myMessage = (Standard_Character*)"Signal detected";}
 
 
 //================================================================================

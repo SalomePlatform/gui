@@ -213,7 +213,7 @@ void Session_ServerLauncher::ActivateAll()
 
   int argc=1;
   char** argv = new char*[argc];
-  argv[0] = "Session";
+  argv[0] = (char*)"Session";
   Session_SessionThread* aServerThread
     = new Session_SessionThread(argc, argv, _orb,_root_poa,_SessionMutex,_SessionStarted);
   _serverThreads.push_front(aServerThread);

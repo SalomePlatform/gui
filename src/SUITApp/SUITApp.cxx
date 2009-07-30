@@ -281,7 +281,7 @@ int main( int argc, char* argv[] )
 #ifdef SUIT_ENABLE_PYTHON
     //...Initialize python 
     int   _argc   = 1;
-    char* _argv[] = {""};
+    char* _argv[] = {(char*)""};
     SUIT_PYTHON::init_python(_argc,_argv);
     
     PyEval_RestoreThread( SUIT_PYTHON::_gtstate );

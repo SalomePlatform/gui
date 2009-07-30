@@ -398,7 +398,7 @@ int main( int argc, char **argv )
   try {
     // ...initialize Python (only once)
     int   _argc   = 1;
-    char* _argv[] = {""};
+    char* _argv[] = {(char*)""};
     KERNEL_PYTHON::init_python( _argc,_argv );
     PyEval_RestoreThread( KERNEL_PYTHON::_gtstate );
     if ( !KERNEL_PYTHON::salome_shared_modules_module ) // import only once

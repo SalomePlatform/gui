@@ -479,7 +479,7 @@ static PyMethodDef Module_Methods[] =
 */
 extern "C" void initlibSalomePy()
 {
-  static char* modulename = "libSalomePy";
+  static char* modulename = (char*)"libSalomePy";
 
   // init module
   PyObject* aModule = Py_InitModule( modulename, Module_Methods );

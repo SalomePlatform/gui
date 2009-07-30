@@ -365,7 +365,7 @@ void Session_ServerThread::ActivateContainer(int argc,
       MESSAGE("pmanfac->activate()");
     }
     
-    char *containerName = "";
+    char *containerName = (char*)"";
     if (argc >1) {
       containerName = argv[1];
     }

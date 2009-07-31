@@ -28,6 +28,8 @@
 #ifndef VTKViewer_Algorithm_H
 #define VTKViewer_Algorithm_H
 
+#include "VTKViewer.h"
+
 #include <vtkActorCollection.h>
 
 class vtkActor;
@@ -50,7 +52,7 @@ namespace VTK
    * ActorCollectionCopy aCopy( anActorCollection );
    * DoSomething( aCopy.GetActors() );
    */
-  struct ActorCollectionCopy
+  struct VTKVIEWER_EXPORT ActorCollectionCopy
   {
     vtkActorCollection* myActorCollection;
 

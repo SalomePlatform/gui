@@ -15,7 +15,7 @@ button.
 or jpeg image format.</center>
 <hr>
 
-\image html image88.gif
+\image html image88.png
 \n <center><b>Show/Hide Trihedron</b> - shows or hides coordinate axes.</center>
 <hr>
 
@@ -33,7 +33,7 @@ only the contents of a frame drawn with pressed left mouse button.</center>
 \n <center><b>Zoom</b> - allows to zoom in and out.</center>
 <hr>
 
-\image html image99.gif
+\image html image99.png
 \n <center><b>Panning</b> - if the represented objects are greater that the
 visible area and you don't wish to use <b>Fit all</b> functionality, click on
 this button and you'll be able to drag the scene to see its remote
@@ -69,7 +69,7 @@ point in the 3D Viewer.
 \n <center><b>Rotation</b> - allows to rotate the selected object using the
 mouse.</center>
 
-\image html image102.gif
+\image html image102.png
 
 <center>These buttons orientate the scene strictly about coordinate axes.</center>
 <hr>
@@ -84,7 +84,7 @@ objects in the scene.</center>
 objects in the scene.</center>
 <hr>
 
-\image html image105.gif
+\image html image105.png
 \n <center><b>Restore view</b> - restores the saved position of
 objects in the scene.</center>
 <hr>

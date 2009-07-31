@@ -60,7 +60,7 @@ different locations have the same name. </li>
 For detailed settings in \ref select_color_and_font_page "Select Font"
 dialog box press the &quot;<b>...</b>&quot; button(see the picture below).
 
-\image html image69.gif "&quot;...&quot; button"
+\image html image69.png "&quot;...&quot; button"
 
 <br><h2>Viewers Preferences</h2>
 
@@ -166,15 +166,15 @@ the colored line to access to the
 <b>Quick Directory List</b> - this section allows to create and manage
 a custom quick directory list. To add a directory in the list, press
 the "Add directory" button:
-\image html image70.gif
+\image html image70.png
 
 then the &quot;<b>...</b>&quot; button and browse the data tree for the
 directory you need.
 The "Up" and "Down" buttons(see the picture below) help you to sort
 the directories in the list:
-\image html image73.gif
+\image html image73.png
 
-\image html image75.gif
+\image html image75.png
 To remove the selected directory from the list, press the "Delete"
 button:
 \image html image72.png

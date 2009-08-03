@@ -388,7 +388,7 @@ SALOME_Actor
   myPreHighlightActor->SetProperty(aProp);
 
   int vis = myPreHighlightActor->GetVisibility();
-  printf ("\n Visibility = %d", vis);
+  //printf ("\n Visibility = %d", vis);
 
   if(mySelector.GetPointer() && hasIO()){
     if(mySelector->SelectionMode() != ActorSelection) {

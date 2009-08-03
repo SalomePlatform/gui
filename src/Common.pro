@@ -52,7 +52,7 @@ win32 {
   copy_hdr.input = HEADERS
   QMAKE_EXTRA_COMPILERS += copy_hdr
 
-  GUIResources = $$(SUIT_DIR)\\$$(CONFIG_ID)\\resources
+  GUIResources = $$(SUIT_DIR)\\resources
 }
 
 

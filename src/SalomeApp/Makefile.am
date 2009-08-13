@@ -110,7 +110,7 @@ libSalomeApp_la_CPPFLAGS = $(PYTHON_INCLUDES) $(QT_INCLUDES) $(QWT_INCLUDES)	\
 	-I$(srcdir)/../PyConsole -I$(srcdir)/../TOOLSGUI			\
 	-I$(srcdir)/../PyInterp -I$(srcdir)/../Session -I$(top_builddir)/idl	\
 	-I$(srcdir)/../Event -I$(srcdir)/../CASCatch				\
-	-I$(top_builddir)/salome_adm/unix @CORBA_CXXFLAGS@ @CORBA_INCLUDES@ @LIBXML_INCLUDES@
+	@CORBA_CXXFLAGS@ @CORBA_INCLUDES@ @LIBXML_INCLUDES@
 libSalomeApp_la_LDFLAGS = $(PYTHON_LIBS) $(QT_MT_LIBS) 
 libSalomeApp_la_LIBADD  = $(KERNEL_LDFLAGS) -lOpUtil -lSALOMELocalTrace -lSalomeDSClient		\
 	../SUIT/libsuit.la ../STD/libstd.la ../CAM/libCAM.la ../ObjBrowser/libObjBrowser.la	\

@@ -53,7 +53,7 @@ libSalomePyQtGUI_la_CPPFLAGS = $(QT_INCLUDES) $(SIP_INCLUDES) $(PYTHON_INCLUDES)
 	-I$(srcdir)/../SALOME_PYQT_GUILight                                             \
 	-I$(srcdir)/../../Plot2d -I$(srcdir)/../../OCCViewer				\
 	-I$(srcdir)/../../SalomeApp -I$(srcdir)/../../CAM -I$(srcdir)/../../STD		\
-	-I$(top_builddir)/salome_adm/unix @CORBA_CXXFLAGS@ @CORBA_INCLUDES@
+	@CORBA_CXXFLAGS@ @CORBA_INCLUDES@
 
 # linkage flags
 libSalomePyQtGUI_la_LIBADD = $(PYTHON_LIBS) $(SIP_LIBS) $(PYQT_LIBS) $(VTK_LIBS)	\

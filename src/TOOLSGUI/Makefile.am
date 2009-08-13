@@ -51,7 +51,6 @@ nodist_salomeres_DATA =		\
 
 libToolsGUI_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) $(BOOST_CPPFLAGS)	\
 	@KERNEL_CXXFLAGS@ @CORBA_CXXFLAGS@ @CORBA_INCLUDES@			\
-	-I$(top_builddir)/salome_adm/unix -I$(top_builddir)/idl			\
-	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT
+	-I$(top_builddir)/idl -I$(srcdir)/../Qtx -I$(srcdir)/../SUIT
 libToolsGUI_la_LDFLAGS  = $(QT_MT_LIBS) ../SUIT/libsuit.la $(CAS_KERNEL) $(KERNEL_LDFLAGS) \
 	-lSalomeIDLKernel -lSALOMELocalTrace -lSalomeNS -lOpUtil $(top_builddir)/idl/libSalomeIDLGUI.la

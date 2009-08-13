@@ -79,7 +79,6 @@ libSalomePyQtGUILight_la_CPPFLAGS =  $(QT_INCLUDES) $(SIP_INCLUDES) $(PYTHON_INC
 
 if GUI_ENABLE_CORBA
 libSalomePyQtGUILight_la_CPPFLAGS += -I$(srcdir)/../../SalomeApp \
-                                     -I$(top_builddir)/salome_adm/unix \
 				     @CORBA_CXXFLAGS@ @CORBA_INCLUDES@
 endif
 			

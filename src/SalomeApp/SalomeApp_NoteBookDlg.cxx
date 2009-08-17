@@ -171,10 +171,10 @@ bool NoteBook_TableRow::CheckValue()
 {
   bool aResult = false;
   QString aValue = GetValue();
-  if( (!aValue.isEmpty()) && 
-      (IsRealValue(aValue)) ||
-      IsIntegerValue(aValue)||
-      IsBooleanValue(aValue)) 
+  if(!aValue.isEmpty() && 
+     (IsRealValue(aValue) ||
+      IsIntegerValue(aValue) ||
+      IsBooleanValue(aValue))) 
     aResult = true;
   
   return aResult;
@@ -220,7 +220,7 @@ bool NoteBook_TableRow::IsRealValue(const QString theValue, double* theResult)
 {
   bool aResult = false;
   double aDResult = theValue.toDouble(&aResult);
-  if(theResult)
+  if(aResult && theResult)
     *theResult = aDResult;
   
   return aResult;
@@ -243,7 +243,7 @@ bool NoteBook_TableRow::IsBooleanValue(const QString theValue, bool* theResult){
     aBResult = false;
     aResult = true;
   }
-  if(theResult)
+  if(aResult && theResult)
     *theResult = aBResult;
   
   return aResult;
@@ -261,7 +261,7 @@ bool NoteBook_TableRow::IsIntegerValue(const QString theValue, int* theResult)
   int anIResult;
   anIResult = theValue.toInt(&aResult);
 
-  if(theResult)
+  if(aResult && theResult)
     *theResult = anIResult;  
   
   return aResult;

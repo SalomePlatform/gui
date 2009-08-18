@@ -161,6 +161,10 @@ void STD_Application::createActions()
                 tr( "MEN_DESK_FILE_OPEN" ), tr( "PRP_DESK_FILE_OPEN" ),
                 Qt::CTRL+Qt::Key_O, desk, false, this, SLOT( onOpenDoc() ) );
 
+  createAction( FileReopenId, tr( "TOT_DESK_FILE_REOPEN" ), QIcon(),
+		tr( "MEN_DESK_FILE_REOPEN" ), tr( "PRP_DESK_FILE_REOPEN" ),
+		0, desk, false, this, SLOT( onReopenDoc() ) );
+
   createAction( FileCloseId, tr( "TOT_DESK_FILE_CLOSE" ),
                 resMgr->loadPixmap( "STD", tr( "ICON_FILE_CLOSE" ) ),
                 tr( "MEN_DESK_FILE_CLOSE" ), tr( "PRP_DESK_FILE_CLOSE" ),
@@ -222,6 +226,7 @@ void STD_Application::createActions()
 
   createMenu( FileNewId,    fileMenu, 0 );
   createMenu( FileOpenId,   fileMenu, 0 );
+  createMenu( FileReopenId, fileMenu, 0 ); 
   createMenu( FileCloseId,  fileMenu, 5 );
   createMenu( separator(),  fileMenu, -1, 5 );
   createMenu( FileSaveId,   fileMenu, 5 );
@@ -323,6 +328,45 @@ bool STD_Application::onOpenDoc( const QString& aName )
   
   QApplication::restoreOverrideCursor();
 
+  return res;
+}
+
+/*! Reload document from the file.*/
+bool STD_Application::onReopenDoc()
+{
+  bool res = false;
+
+  SUIT_Study* study = activeStudy();
+  if ( study && study->isSaved() ) {
+    // remember study name
+    QString studyName = study->studyName();
+
+    // close study
+    beforeCloseDoc( study );
+    study->closeDocument( true );
+
+    // update views / windows / status bar / title
+    clearViewManagers();
+    setActiveStudy( 0 );
+    updateDesktopTitle();
+    updateCommandsStatus();
+
+    // delete study
+    delete study;
+    study = 0;
+    
+    // post closing actions
+    afterCloseDoc();
+
+    // reload study from the file
+    res = useFile( studyName ) && activeStudy();
+
+    // if reloading is failed, close the desktop
+    if ( !res ) {
+      setDesktop( 0 );
+      closeApplication();
+    }
+  }
   return res;
 }
 
@@ -621,12 +665,14 @@ void STD_Application::updateCommandsStatus()
 {
   SUIT_Application::updateCommandsStatus();
 
-  bool aHasStudy = activeStudy() != 0;
-  bool aIsNeedToSave = false;
-  if ( aHasStudy )
-    aIsNeedToSave = !activeStudy()->isSaved() || activeStudy()->isModified();
+  bool aHasStudy     = activeStudy() != 0;
+  bool aSaved        = aHasStudy && activeStudy()->isSaved();
+  bool aModified     = aHasStudy && activeStudy()->isModified();
+  bool aIsNeedToSave = aHasStudy && ( !aSaved || aModified );
 
-  if ( action( FileSaveId ) )
+ if ( action( FileReopenId ) )
+    action( FileReopenId )->setEnabled( aSaved );
+ if ( action( FileSaveId ) )
     action( FileSaveId )->setEnabled( aIsNeedToSave );
   if ( action( FileSaveAsId ) )
     action( FileSaveAsId )->setEnabled( aHasStudy );

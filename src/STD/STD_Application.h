@@ -52,7 +52,7 @@ class STD_EXPORT STD_Application : public SUIT_Application
   Q_OBJECT
 
 public:
-  enum { MenuFileId, FileNewId, FileOpenId, FileCloseId, FileSaveId, FileSaveAsId, FileExitId,
+  enum { MenuFileId, FileNewId, FileOpenId, FileReopenId, FileCloseId, FileSaveId, FileSaveAsId, FileExitId,
          MenuViewId, ViewWindowsId, ViewToolBarsId, ViewStatusBarId, NewWindowId,
          MenuEditId, EditCutId, EditCopyId, EditPasteId,
          MenuHelpId, HelpAboutId,
@@ -120,6 +120,8 @@ public slots:
 
   virtual void          onOpenDoc();
   virtual bool          onOpenDoc( const QString& );
+
+  virtual bool          onReopenDoc();
 
   virtual void          onExit();
 

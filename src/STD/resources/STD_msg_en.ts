@@ -388,12 +388,20 @@ Do you want to overwrite it?</translation>
         <translation>Open document</translation>
     </message>
     <message>
+        <source>TOT_DESK_FILE_REOPEN</source>
+        <translation>Reopen document</translation>
+    </message>
+    <message>
         <source>PRP_DESK_FILE_EXIT</source>
         <translation>Exits the application</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_OPEN</source>
         <translation>Opens an existing document</translation>
+    </message>
+    <message>
+        <source>PRP_DESK_FILE_REOPEN</source>
+        <translation>Reload the current document from the file</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_SAVE</source>
@@ -422,6 +430,10 @@ Do you want to overwrite it?</translation>
     <message>
         <source>MEN_DESK_FILE_OPEN</source>
         <translation>&amp;Open...</translation>
+    </message>
+    <message>
+        <source>MEN_DESK_FILE_REOPEN</source>
+        <translation>Reopen</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_LOAD</source>

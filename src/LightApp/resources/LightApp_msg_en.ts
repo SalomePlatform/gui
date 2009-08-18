@@ -119,6 +119,14 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>Store positions of windows</translation>
     </message>
     <message>
+        <source>PREF_AUTO_SAVE</source>
+        <translation>Auto-save interval (min)</translation>
+    </message>
+    <message>
+        <source>PREF_AUTO_SAVE_DISABLED</source>
+        <translation>Disabled</translation>
+    </message>
+    <message>
         <source>PREF_PROJECTION_MODE</source>
         <translation>Projection mode:</translation>
     </message>

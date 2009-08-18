@@ -198,6 +198,7 @@
     <!-- General study settings -->
     <parameter name="store_positions"     value="false" />
     <parameter name="store_visual_state"  value="false" />
+    <parameter name="auto_save_interval"  value="0" />
   </section>
   <section name="ExternalBrowser" >
     <!-- External HELP browser settings -->

@@ -52,6 +52,7 @@ class QString;
 class QWidget;
 class QStringList;
 class QDockWidget;
+class QTimer;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -229,6 +230,7 @@ protected:
 
   virtual void                        studyOpened( SUIT_Study* );
   virtual void                        studyCreated( SUIT_Study* );
+  virtual void                        studySaved( SUIT_Study* );
 
   void                                updatePreference( const QString&, const QString&, const QString& );
 
@@ -268,6 +270,7 @@ protected:
   WinGeom                             myWinGeom;
 
   SUIT_Accel*                         myAccel;
+  QTimer*                             myAutoSaveTimer;
 
   static LightApp_Preferences*        _prefs_;
 

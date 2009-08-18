@@ -16,9 +16,14 @@ All operations with studies are available from the \b File menu.
 \b New - creates a new study. The study will be created
 with default name \b Study1. It is possible to create
 several studies, each accessible from the task bar.
+
 \b Open - allows to open an existing study by browsing for it in a
 standard Search File dialog box, choosing the required
 *.hdf file and clicking \b Open button.
+
+\b Reopen - reloads the current study from the *.hdf file. This menu command
+can be used to reverse the study to the latest saved state.
+
 \b Connect - allows to open an unloaded study.
 \image html loadstudy2.png
 Select one of the studies, which has been previously

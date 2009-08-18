@@ -157,6 +157,7 @@
 #include <QByteArray>
 #include <QMenu>
 #include <QProcess>
+#include <QTimer>
 
 #include <utilities.h>
 
@@ -226,6 +227,11 @@ LightApp_Application::LightApp_Application()
   STD_TabDesktop* desk = new STD_TabDesktop();
 
   setDesktop( desk );
+
+  // initialize auto save timer
+  myAutoSaveTimer = new QTimer( this );
+  myAutoSaveTimer->setSingleShot( true );
+  connect( myAutoSaveTimer, SIGNAL( timeout() ), this, SLOT( onSaveDoc() ) );
 
   SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
   QPixmap aLogo = aResMgr->loadPixmap( "LightApp", tr( "APP_DEFAULT_ICO" ), false );
@@ -1418,6 +1424,9 @@ void LightApp_Application::onStudySaved( SUIT_Study* s )
 /*!Protected SLOT. On study closed.*/
 void LightApp_Application::onStudyClosed( SUIT_Study* s )
 {
+  // stop auto-save timer
+  myAutoSaveTimer->stop();
+
   // Bug 10396: clear selection
   mySelMgr->clearSelected();
 
@@ -1442,6 +1451,16 @@ void LightApp_Application::studyOpened( SUIT_Study* s )
 
   updateWindows();
   updateViewManagers();
+}
+
+void LightApp_Application::studySaved( SUIT_Study* s )
+{
+  CAM_Application::studyOpened( s );
+  SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
+  if ( aResMgr && activeStudy() ) {
+    int autoSaveInterval = aResMgr->integerValue( "Study", "auto_save_interval", 0 );
+    if ( autoSaveInterval > 0 ) myAutoSaveTimer->start( autoSaveInterval*60000 );
+  }
 }
 
 void LightApp_Application::studyCreated( SUIT_Study* s )
@@ -1782,6 +1801,12 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "PREF_MULTI_FILE" ), studyGroup, LightApp_Preferences::Bool, "Study", "multi_file" );
   pref->addPreference( tr( "PREF_ASCII_FILE" ), studyGroup, LightApp_Preferences::Bool, "Study", "ascii_file" );
   pref->addPreference( tr( "PREF_STORE_POS" ),  studyGroup, LightApp_Preferences::Bool, "Study", "store_positions" );
+
+  int autoSaveInterval = pref->addPreference( tr( "PREF_AUTO_SAVE" ),  studyGroup, 
+					      LightApp_Preferences::IntSpin, "Study", "auto_save_interval" );
+  pref->setItemProperty( "min",        0, autoSaveInterval );
+  pref->setItemProperty( "max",     1440, autoSaveInterval );
+  pref->setItemProperty( "special", tr( "PREF_AUTO_SAVE_DISABLED" ), autoSaveInterval );
 
   int extgroup = pref->addPreference( tr( "PREF_GROUP_EXT_BROWSER" ), genTab );
   QString platform;
@@ -2264,6 +2289,11 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
   {
     if( param=="store_positions" )
       updateWindows();
+    if( param=="auto_save_interval" ) {
+      myAutoSaveTimer->stop();
+      int autoSaveInterval = resMgr->integerValue( "Study", "auto_save_interval", 0 );
+      if ( activeStudy() && autoSaveInterval > 0 ) myAutoSaveTimer->start( autoSaveInterval*60000 );
+    }
   }
 
 #ifndef DISABLE_PYCONSOLE
@@ -2754,6 +2784,12 @@ void LightApp_Application::createEmptyStudy()
 
   if ( objectBrowser() )
     objectBrowser()->updateTree();
+  
+  SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
+  if ( aResMgr && activeStudy() ) {
+    int autoSaveInterval = aResMgr->integerValue( "Study", "auto_save_interval", 0 );
+    if ( autoSaveInterval > 0 ) myAutoSaveTimer->start( autoSaveInterval*60000 );
+  }
 }
 
 /*!

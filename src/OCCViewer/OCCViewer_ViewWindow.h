@@ -49,7 +49,7 @@ public:
   enum { DumpId, FitAllId, FitRectId, ZoomId, PanId, GlobalPanId,
 	 ChangeRotationPointId, RotationId,
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, CloneId, ClippingId, MemId, RestoreId,
-         TrihedronShowId, AxialScaleId };
+         TrihedronShowId, AxialScaleId, AmbientId };
 
   enum OperationType{ NOTHING, PANVIEW, ZOOMVIEW, ROTATE, 
 		      PANGLOBAL, WINDOWFIT, FITALLVIEW, RESETVIEW,
@@ -104,6 +104,7 @@ public slots:
   void onCloneView();
   void onClipping( bool on );
   void onAxialScale();
+  void onAmbientToogle();
   void onMemorizeView();
   void onRestoreView();
   void onTrihedronShow();

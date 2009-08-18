@@ -112,5 +112,9 @@
         <source>ICON_OCCVIEWER_SCALING</source>
         <translation>occ_view_scaling.png</translation>
     </message>
+    <message>
+        <source>ICON_OCCVIEWER_AMBIENT</source>
+        <translation>occ_view_ambient.png</translation>
+    </message>
 </context>
 </TS>

@@ -229,6 +229,14 @@
         <translation>Scaling</translation>
     </message>
     <message>
+        <source>DSC_AMBIENT</source>
+        <translation>Toogle keep only ambient light</translation>
+    </message>
+    <message>
+        <source>MNU_AMBIENT</source>
+        <translation>Toogle keep only ambient light</translation>
+    </message>
+    <message>
         <source>OCC_IMAGE_FILES</source>
         <translation>Images Files (*.bmp *.png *.jpg *.jpeg)</translation>
     </message>

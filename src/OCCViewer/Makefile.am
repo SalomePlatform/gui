@@ -84,6 +84,7 @@ dist_salomeres_DATA =				\
 	resources/occ_view_clipping.png		\
 	resources/occ_view_clipping_pressed.png	\
 	resources/occ_view_scaling.png		\
+	resources/occ_view_ambient.png		\
 	resources/occ_view_fitall.png		\
 	resources/occ_view_fitarea.png		\
 	resources/occ_view_front.png		\

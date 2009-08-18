@@ -50,6 +50,7 @@
 #include <QApplication>
 
 #include <V3d_Plane.hxx>
+#include <V3d_Light.hxx>
 #include <gp_Dir.hxx>
 #include <gp_Pln.hxx>
 #include <TColgp_Array1OfPnt2d.hxx>
@@ -1087,6 +1088,13 @@ void OCCViewer_ViewWindow::createActions()
   aAction->setStatusTip(tr("DSC_SCALING"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onAxialScale()));
   toolMgr()->registerAction( aAction, AxialScaleId );
+
+  // Active only ambient light or not
+  aAction = new QtxAction(tr("MNU_AMBIENT"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_AMBIENT" ) ),
+                           tr( "MNU_AMBIENT" ), 0, this);
+  aAction->setStatusTip(tr("DSC_AMBIENT"));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onAmbientToogle()));
+  toolMgr()->registerAction( aAction, AmbientId );
 }
 
 /*!
@@ -1136,6 +1144,7 @@ void OCCViewer_ViewWindow::createToolBar()
   toolMgr()->append( toolMgr()->separator(), tid );
   toolMgr()->append( ClippingId, tid );
   toolMgr()->append( AxialScaleId, tid );
+  toolMgr()->append( AmbientId, tid );
 }
 
 /*!
@@ -1324,6 +1333,24 @@ void OCCViewer_ViewWindow::onAxialScale()
   
   if ( !myScalingDlg->isVisible() )
     myScalingDlg->show();
+}
+
+void OCCViewer_ViewWindow::onAmbientToogle()
+{
+  Handle(V3d_Viewer) viewer = myViewPort->getViewer();
+  viewer->InitDefinedLights();
+  while(viewer->MoreDefinedLights())
+    {
+      Handle(V3d_Light) light = viewer->DefinedLight();
+      if(light->Type() != V3d_AMBIENT)
+ 	{
+	  Handle(V3d_View) aView3d = myViewPort->getView();
+	  if( aView3d->IsActiveLight(light) ) viewer->SetLightOff(light);
+	  else viewer->SetLightOn(light);
+	}
+      viewer->NextDefinedLights();
+    }
+  viewer->Update();
 }
 
 /*!

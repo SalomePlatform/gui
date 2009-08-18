@@ -284,6 +284,23 @@ QString SalomeApp_DataObject::toolTip( const int /*id*/ ) const
 }
 
 /*!
+  \brief Get font to be used for data object rendering in the item views
+  \param id column id
+  \return font to be used for the item rendering
+*/
+QFont SalomeApp_DataObject::font( const int id ) const
+{
+  QFont f = LightApp_DataObject::font( id );
+  if ( id == NameId ) {
+    if ( !expandable() && hasChildren() ) {
+      // set bold font to highlight the item which is non-expandable but has children
+      f.setBold( true );
+    }
+  }
+  return f;
+}
+
+/*!
   \brief Get component type.
   \return component type
 */
@@ -339,6 +356,40 @@ _PTR(SObject) SalomeApp_DataObject::referencedObject() const
     obj = refObj;
 
   return obj;
+}
+
+/*!
+  \brief Check if object has children
+  \return \c true if object has at least one child sub-object and \c false otherwise
+*/
+bool SalomeApp_DataObject::hasChildren() const
+{
+  bool ok = false;
+  _PTR(ChildIterator) it ( myObject->GetStudy()->NewChildIterator( myObject ) );
+  for ( ; it->More() && !ok; it->Next() ) {
+    _PTR(SObject) obj = it->Value();
+    if ( obj ) {
+      _PTR(SObject) refObj;
+      //if ( obj->ReferencedObject( refObj ) ) continue; // omit references
+      if ( obj->GetName() != "" ) ok = true;
+    }
+  }
+  return ok;
+}
+
+/*!
+  \brief Check if the object is expandable (e.g. in the data tree view)
+  \return \c true if object is expandable and \c false otherwise
+*/
+bool SalomeApp_DataObject::expandable() const
+{
+  bool exp = true;
+  _PTR(GenericAttribute) anAttr;
+  if ( myObject->FindAttribute( anAttr, "AttributeExpandable" ) ) {
+    _PTR(AttributeExpandable) aAttrExp = anAttr;
+    exp = aAttrExp->IsExpandable();
+  }
+  return exp;
 }
 
 /*!

@@ -179,9 +179,19 @@ QList<kerPtr> SalomeApp_DataModelSync::children( const kerPtr& obj ) const
 {
   QList<kerPtr> ch;
 
-  _PTR(ChildIterator) it ( myStudy->NewChildIterator( obj ) );
-  for( ; it->More(); it->Next() )
-    ch.append( it->Value() );
+  _PTR( GenericAttribute ) anAttr;
+  bool expandable = true;
+  if ( obj && obj->FindAttribute( anAttr, "AttributeExpandable" ) ) {
+    _PTR(AttributeExpandable) aAttrExp = anAttr;
+    expandable = aAttrExp->IsExpandable();
+  }
+  
+  if ( expandable ) {
+    _PTR(ChildIterator) it ( myStudy->NewChildIterator( obj ) );
+    for ( ; it->More(); it->Next() )
+      ch.append( it->Value() );
+  }
+
   return ch;
 }
 

@@ -54,11 +54,14 @@ public:
   virtual QPixmap        icon( const int = NameId ) const;
   virtual QColor         color( const ColorRole, const int = NameId ) const;
   virtual QString        toolTip( const int = NameId ) const;
+  virtual QFont          font( const int = NameId ) const;
 
   virtual _PTR(SObject)  object() const;
 
   bool                   isReference() const;
   _PTR(SObject)          referencedObject() const;
+  bool                   hasChildren() const;
+  bool                   expandable() const;
 
   virtual QString        componentDataType() const;
 

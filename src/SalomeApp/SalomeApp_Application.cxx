@@ -866,6 +866,7 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
   {
     PyConsole_Console* pyCons = new PyConsole_Console( desktop(), new SalomeApp_PyInterp() );
     pyCons->setWindowTitle( tr( "PYTHON_CONSOLE" ) );
+    pyCons->setFont(resourceMgr()->fontValue( "PyConsole", "font" ));
     wid = pyCons;
     pyCons->resize( pyCons->width(), desktop()->height()/4 );
     pyCons->connectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );

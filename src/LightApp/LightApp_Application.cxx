@@ -1636,6 +1636,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
   {
     PyConsole_Console* pyCons = new PyConsole_Console( desktop(),new LightApp_PyInterp());
     pyCons->setWindowTitle( tr( "PYTHON_CONSOLE" ) );
+    pyCons->setFont(resourceMgr()->fontValue( "PyConsole", "font" ));
     wid = pyCons;
     pyCons->connectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
   }

@@ -498,5 +498,14 @@ Do you want to save changes?</translation>
         <source>CLOSE_QUESTION</source>
         <translation>Do you want to save study before closing?</translation>
     </message>
+    <message>
+        <source>REOPEN_STUDY</source>
+        <translation>Reopen study</translation>
+    </message>
+    <message>
+        <source>REOPEN_QUESTION</source>
+        <translation>Do you really want to re-open study?
+All the changes made since last saving will be lost.</translation>
+    </message>
 </context>
 </TS>

@@ -338,6 +338,12 @@ bool STD_Application::onReopenDoc()
 
   SUIT_Study* study = activeStudy();
   if ( study && study->isSaved() ) {
+    // ask user for the confirmation
+    if ( SUIT_MessageBox::question( desktop(), tr( "REOPEN_STUDY" ), tr( "REOPEN_QUESTION" ),
+				    SUIT_MessageBox::Yes | SUIT_MessageBox::No, SUIT_MessageBox::No
+				    ) == SUIT_MessageBox::No )
+      return false;
+
     // remember study name
     QString studyName = study->studyName();
 

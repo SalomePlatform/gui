@@ -52,7 +52,9 @@ inspected:</li>
 </ul>
 <li><b>Logarithmic Scaling</b> - this checkbox toggles logarithmic
 scaling.</li>
-<li><b>Ranges to Use</b> - you can use either Field Range or Imposed Range.</li>
+<li><b>Ranges to Use</b> - you can use either Field Range or Imposed
+Range.</li>
+<li><b>Gauss Metric</b> - gives the choice among Average, Minimum and Maximum.
 </ul>
 <li><b>Min and Max for Imposed Range</b> - in this menu  you can set
 the limits for your Imposed Range, if you have chosen to use it.</li>
@@ -154,6 +156,14 @@ parameter: from 0 to Pi or from Pi to -Pi.</li>
 <li><b>Representation properties</b> - these checkboxes allow to
 choose the default representation type for each field presentation.</li>
 <ul>
+<li><b>Floating Point Precision</b> - allows defining the number
+of digits displayed after the decimal point.</li>
+<li><b>Representation of the 2D quadratic elements</b> - allows
+selecting lines or arcs for representation of quadratic elements.</li>
+<li><b>Maximum Angle</b> - maximum deviation angle used by the
+application to build arcs. </li>
+<li><b>Edge Color</b> - allows selecting the color for representation
+of edges. </li>
 <li><b>Use Shading</b> - when this option is checked, the objects will
 be displayed with shading.</li>
 <li><b>Display only on creation</b> - when this option is checked, all
@@ -161,8 +171,12 @@ previously created presentations will be automatically removed from
 the viewer when a new presentation is created and displayed. You can
 restore the previously created presentations using the Object
 Browser.</li>
+<li><b>Automatic Fit All</b> - when this option is checked, the center
+of the view is automatically chosen to represent all displayed objects
+in the visible area.</li> 
 </ul>
 </ul>
+
 
 <br><h2>Feature Edges</h2>
 

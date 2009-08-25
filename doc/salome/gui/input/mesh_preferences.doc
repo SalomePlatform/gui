@@ -27,6 +27,13 @@ the corresponding field. By default, numbers in <b>Quality Control</b>
 diagrams are presented as integers.</li>
 <li><b>Display mode</b> - allows to set Wireframe, Shading, Nodes or Shrink
 presentation mode as default.</li>
+<li><b>Representation of the 2D quadratic elements</b></li>
+<ul>
+<li><b>Representation of the 2D quadratic elements</b> combobox - allows
+to select lines or arcs for representation of quadratic elements.</li>
+<li><b>Maximum Angle</b> - maximum deviation angle used by the
+application to build arcs. </li>
+</ul>
 <li><b>Mesh export</b></li>
 <ul>
 <li>If you toggle <b>Automatically create groups for MED export</b> checkbox,
@@ -45,6 +52,14 @@ There are 3 possible modes:</li>
 some errors during a mesh computation;</li>
 <li><b>Always</b> - show the result dialog after each mesh
 computation. This is a default mode.</li>
+</ul>
+<li><b>Automatic Parameters</b></li>
+<ul>
+<li><b>Ratio Bounding Box Diagonal / Max Size</b> - this parameter is
+used for automatic meshing: ratio between the bounding box of the
+meshed object and the Max Size of segments.</li>
+<li><b>Default Number of Segments</b> - allows defining the default
+number of segments on each edge</li>
 </ul>
 </ul>
 

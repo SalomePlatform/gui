@@ -105,7 +105,7 @@ public:
   void             setCellIcon( const int, const int, QIcon& );
 
   virtual QTableWidgetItem* getItem( const int, const int, const bool = true );
-  QModelIndexList getSelectedIndexes();
+  virtual QModelIndexList   getSelectedIndexes();
   bool             indexPosition( const QModelIndex&, int&, int& ) const;
 
   //virtual void     paintCell( QPainter*, int, int, const QRect&, bool, const QColorGroup& );

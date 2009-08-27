@@ -1866,7 +1866,6 @@ void QtxWorkstack::Split( QWidget* wid, const Qt::Orientation o, const SplitType
   QList<QtxWorkstackArea*> allAreas;
   areas(mySplit, allAreas, true);
 
-
   for ( QList<QtxWorkstackArea*>::iterator it = allAreas.begin(); it != allAreas.end() && !area; ++it )
   {
     if ( (*it)->contains( wid ) )
@@ -1874,6 +1873,10 @@ void QtxWorkstack::Split( QWidget* wid, const Qt::Orientation o, const SplitType
   }
 
   if ( !area )
+    return;
+
+  QWidget* curWid = area->activeWidget();
+  if ( !curWid )
     return;
 
   QWidgetList wids = area->widgetList();
@@ -1909,6 +1912,7 @@ void QtxWorkstack::Split( QWidget* wid, const Qt::Orientation o, const SplitType
       {
         area->removeWidget( wid_i );
         newArea->insertWidget( wid_i );
+	wid_i->showMaximized();
       }
     }
     break;
@@ -1922,16 +1926,21 @@ void QtxWorkstack::Split( QWidget* wid, const Qt::Orientation o, const SplitType
       {
         area->removeWidget( *itr );
         newArea->insertWidget( *itr );
+	(*itr)->showMaximized();
       }
     }
     break;
   case SplitMove:
     area->removeWidget( wid );
     newArea->insertWidget( wid );
+    wid->showMaximized();
     break;
   }
 
   distributeSpace( trg );
+
+  curWid->show();
+  curWid->setFocus();
 }
 
 /*!
@@ -1971,6 +1980,8 @@ void QtxWorkstack::Attract( QWidget* wid1, QWidget* wid2, const bool all )
   if ( !area1 || !area2 )
     return;
 
+  QSplitter* s1 = splitter( area1 );
+
   QWidget* curWid = area1->activeWidget();
   if ( !curWid )
     return;
@@ -1982,6 +1993,8 @@ void QtxWorkstack::Attract( QWidget* wid1, QWidget* wid2, const bool all )
       // Set wid1 at first position, wid2 at second
       area1->insertWidget( wid1 );
       area1->insertWidget( wid2, 1 );
+      wid1->showMaximized();
+      wid2->showMaximized();
     }
     else
     {
@@ -1991,6 +2004,7 @@ void QtxWorkstack::Attract( QWidget* wid1, QWidget* wid2, const bool all )
       QWidgetList wids1 = area1->widgetList();
       for ( QWidgetList::iterator itr1 = wids1.begin(); itr1 != wids1.end() && *itr1 != wid1; ++itr1, ++wid1_ind );
       area1->insertWidget( wid2, wid1_ind + 1 );
+      wid2->showMaximized();
     }
   }
   else
@@ -2010,6 +2024,7 @@ void QtxWorkstack::Attract( QWidget* wid1, QWidget* wid2, const bool all )
           area1->insertWidget( *itr2, wid1_ind + 1 );
         else
           area1->insertWidget( *itr2, ind );
+	(*itr2)->showMaximized();
       }
     }
     else
@@ -2017,10 +2032,18 @@ void QtxWorkstack::Attract( QWidget* wid1, QWidget* wid2, const bool all )
       // Set wid2 right after wid1
       area2->removeWidget( wid2 );
       area1->insertWidget( wid2, wid1_ind + 1 );
+      wid2->showMaximized();
     }
   }
 
+  distributeSpace( s1 );
+
   area1->setActiveWidget( curWid );
+
+  wid2->show();
+  wid1->setFocus();
+  curWid->show();
+  curWid->setFocus();
 }
 
 /*!

@@ -3233,6 +3233,7 @@ void QtxWorkstack::stack()
     {
       area_src->removeWidget( *it, true );
       area_to->insertWidget( *it, -1 );
+      (*it)->showMaximized();
     }
   }
 }

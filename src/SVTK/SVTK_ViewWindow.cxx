@@ -212,7 +212,9 @@ void SVTK_ViewWindow::Initialize(SVTK_View* theView,
   Destructor
 */
 SVTK_ViewWindow::~SVTK_ViewWindow()
-{}
+{
+  myRecorder->Delete();
+}
 
 
 /*!

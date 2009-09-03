@@ -386,6 +386,7 @@ SALOME_Actor
   aProp->SetColor( 255, 255, 255);
   aProp->SetLineWidth ( 3 );
   myPreHighlightActor->SetProperty(aProp);
+  aProp->Delete();
 
   int vis = myPreHighlightActor->GetVisibility();
   //printf ("\n Visibility = %d", vis);

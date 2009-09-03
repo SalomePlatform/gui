@@ -216,6 +216,12 @@ QtxMultiAction::QtxMultiAction( const QIcon& ico, const QString& txt, QObject* p
 */
 QtxMultiAction::~QtxMultiAction()
 {
+  // to avoid memory leak
+  if( QMenu* aMenu = menu() )
+  {
+    delete aMenu;
+    aMenu = 0;
+  }
 }
 
 /*!

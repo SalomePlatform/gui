@@ -86,6 +86,12 @@ QtxDockAction::QtxDockAction( const QString& text, const QIcon& icon, const QStr
 */
 QtxDockAction::~QtxDockAction()
 {
+  // to avoid memory leak
+  if( QMenu* aMenu = menu() )
+  {
+    delete aMenu;
+    aMenu = 0;
+  }
 }
 
 /*!

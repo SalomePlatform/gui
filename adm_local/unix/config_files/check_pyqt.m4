@@ -148,6 +148,8 @@ if test "x$pyqt_ok" == "xyes" ; then
     fi
     TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib${LIB_LOCATION_SUFFIX} /usr/lib${LIB_LOCATION_SUFFIX}/python${PYTHON_VERSION}/site-packages"
     TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib${LIB_LOCATION_SUFFIX}/python${PYTHON_VERSION}/site-packages/PyQt4"
+    TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib${LIB_LOCATION_SUFFIX}/python${PYTHON_VERSION}/dist-packages/PyQt4"
+    TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib${LIB_LOCATION_SUFFIX}/pymodules/python${PYTHON_VERSION}/PyQt4"
     TEST_SIPS_DIRS="${TEST_SIPS_DIRS} /usr/share/sip"
     TEST_SIPS_DIRS="${TEST_SIPS_DIRS} /usr/share/sip/PyQt4"
 
@@ -213,5 +215,4 @@ AC_MSG_RESULT(for pyqt: $pyqt_ok)
 
 ])dnl
 dnl
-
 

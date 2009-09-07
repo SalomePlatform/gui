@@ -71,7 +71,8 @@ if test "x$sip_ok" = "xyes" ; then
     fi
     TEST_INC_DIRS="${TEST_INC_DIRS} /usr/include /usr/include/python${PYTHON_VERSION}"
     TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib${LIB_LOCATION_SUFFIX} /usr/lib${LIB_LOCATION_SUFFIX}/python${PYTHON_VERSION}/site-packages"
-
+    TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib${LIB_LOCATION_SUFFIX}/python${PYTHON_VERSION}/dist-packages/PyQt4"
+    TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib${LIB_LOCATION_SUFFIX}/pymodules/python${PYTHON_VERSION}"
     dnl Search sip.h file
     sip_ok=no
     for d in ${TEST_INC_DIRS} ; do

@@ -451,6 +451,14 @@ void OCCViewer_ViewPort::onUpdate()
 }
 
 /*!
+  Get paint engine for the OpenGL viewer. [ virtual public ]
+*/
+QPaintEngine* OCCViewer_ViewPort::paintEngine() const
+{
+  return 0;
+}
+
+/*!
     Creates the popup. [ virtual protected ]
 */
 /*void OCCViewer_ViewPort::onCreatePopup( QPopupMenu* popup )

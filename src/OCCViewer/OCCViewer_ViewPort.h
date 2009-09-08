@@ -67,6 +67,8 @@ public:
 
   virtual void                   onUpdate();
 
+  virtual QPaintEngine*          paintEngine() const;
+
 protected:
 //	enum ViewType { Type2D, Type3D };
   void		                 selectVisualId();

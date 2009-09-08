@@ -1002,7 +1002,7 @@ bool SalomeApp_NoteBookDlg::updateStudy()
   app = dynamic_cast<SalomeApp_Application*>( SUIT_Session::session()->activeApplication() );
 
   // load study from the temporary directory
-  QString command = QString( "execfile(\"%1\")" ).arg( aTmpDir + QDir::separator() + aFileName + ".py" );
+  QString command = QString( "execfile(r\"%1\")" ).arg( aTmpDir + QDir::separator() + aFileName + ".py" );
 
   PyConsole_Console* pyConsole = app->pythonConsole();
   if ( pyConsole )

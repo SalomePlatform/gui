@@ -88,6 +88,9 @@ class SVTK_EXPORT QVTK_RenderWindowInteractor: public QWidget
   void
   InvokeEvent(unsigned long theEvent, void* theCallData);
 
+  //! Get paint engine for the scene
+  virtual QPaintEngine* paintEngine() const;
+
  public slots:
    //! Need for initial contents display on Win32
   virtual void show();

@@ -58,7 +58,7 @@
 
 using namespace std;
 
-static bool GENERATE_SUIT_EVENTS = false;
+static bool GENERATE_SUIT_EVENTS = true;
 static bool FOCUS_UNDER_MOUSE = false;
 
 
@@ -145,6 +145,14 @@ QVTK_RenderWindowInteractor
 ::InvokeEvent(unsigned long theEvent, void* theCallData)
 {
   GetDevice()->InvokeEvent(theEvent,theCallData);
+}
+
+/*!
+  Get paint engine for the scene
+*/
+QPaintEngine* QVTK_RenderWindowInteractor::paintEngine() const
+{
+  return 0;
 }
 
 /*!

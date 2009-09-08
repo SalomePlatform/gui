@@ -91,6 +91,12 @@ void VTKViewer_RenderWindow::resizeEvent(QResizeEvent* theEvent)
   }
 }
 
+/*! Get paint engine for the scene */
+QPaintEngine* VTKViewer_RenderWindow::paintEngine() const
+{
+  return 0;
+}
+
 /*!Emit mouse move event.*/
 void VTKViewer_RenderWindow::mouseMoveEvent(QMouseEvent* event) 
 {

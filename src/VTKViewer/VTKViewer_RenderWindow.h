@@ -45,6 +45,8 @@ public:
   /*!Get render window pointer.*/
   vtkRenderWindow* getRenderWindow() { return myRW; }
 
+  virtual QPaintEngine* paintEngine() const;
+
  protected:
   virtual void mouseMoveEvent( QMouseEvent* );
   virtual void mousePressEvent( QMouseEvent* );

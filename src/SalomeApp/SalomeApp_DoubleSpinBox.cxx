@@ -267,8 +267,8 @@ SalomeApp_DoubleSpinBox::State SalomeApp_DoubleSpinBox::isValid( const QString& 
   if( aSearchState == NotFound )
   {
     bool ok = false;
-    value = text.toDouble( &ok );
-    if( !ok )
+    value = QLocale().toDouble( text, &ok );
+    if ( !ok )
       return NoVariable;
   }
   else if( aSearchState == IncorrectType )

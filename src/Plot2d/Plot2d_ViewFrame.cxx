@@ -334,6 +334,26 @@ bool Plot2d_ViewFrame::eventFilter( QObject* watched, QEvent* e )
       }
     }
   }
+  if ( myOperation != FitAreaId ) {
+    // this is a fix for zoomer's work. It has the base value, which by default
+    // is equal to original range of viewer: QRectF(0, 0, 1000, 100). When user
+    // wish to make fitRange for any region which lays outside this rect,
+    // the result is empty area, because zoomer make operation '&' between
+    // base and current rect. So we need to update base of zommer rect by content
+    // of QwtPlot in order to have valid intersection. It's right to change it by
+    // listening signal of changing scale of QwtPlot. But unfortunately it has no
+    // such a signal and we have to perform such a correction in this place.
+    QwtPlotZoomer* aZoomer = myPlot->getZoomer();
+    if ( aZoomer ) {
+      QwtDoubleRect aBase = aZoomer->zoomBase();
+      double xMin,xMax,yMin,yMax,y2Min,y2Max;
+      getFitRanges( xMin,xMax,yMin,yMax,y2Min,y2Max );
+      QwtDoubleRect aFitRect = QwtDoubleRect( xMin, yMin,
+                                 fabs( xMax-xMin ), fabs( yMax-yMin ) );
+      if ( aBase != aFitRect )
+        aZoomer->setZoomBase( aFitRect );
+    }
+  }
   return QWidget::eventFilter( watched, e );
 }
 

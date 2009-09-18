@@ -246,6 +246,8 @@ public:
   bool                polished() const { return myIsPolished; }
   QwtPlotGrid*        grid() { return myGrid; };
 
+  QwtPlotZoomer*      getZoomer() { return myPlotZoomer; }
+
 public slots:
   virtual void polish();
 

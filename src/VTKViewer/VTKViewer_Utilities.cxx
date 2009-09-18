@@ -124,11 +124,6 @@ ResetCamera(vtkRenderer* theRenderer,
     aCamera->SetPosition(aCenter[0]+aDistance*aViewPlaneNormal[0],
 			 aCenter[1]+aDistance*aViewPlaneNormal[1],
 			 aCenter[2]+aDistance*aViewPlaneNormal[2]);
-
-    // find size of the window
-    int* aWinSize = theRenderer->GetSize();
-    if(aWinSize[0] < aWinSize[1]) 
-      aWidth *= vtkFloatingPointType(aWinSize[1])/vtkFloatingPointType(aWinSize[0]);
     
     if(theUsingZeroFocalPoint) 
       aWidth *= sqrt(2.0);

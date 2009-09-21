@@ -275,7 +275,7 @@ QString SalomeApp_DataObject::toolTip( const int /*id*/ ) const
       if ( !CORBA::is_nil(aComponent) && aComponent->hasObjectInfo() ) {
 	LightApp_RootObject* aRoot = dynamic_cast<LightApp_RootObject*>( root() );
 	if ( aRoot && aRoot->study() )
-	  return QString( aComponent->getObjectInfo( aRoot->study()->id(), entry().toLatin1().constData()) );
+	  return QString( (CORBA::String_var)aComponent->getObjectInfo( aRoot->study()->id(), entry().toLatin1().constData()) );
       }
     }
   }

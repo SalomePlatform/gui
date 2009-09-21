@@ -581,9 +581,6 @@ int main( int argc, char **argv )
   delete myServerLauncher;
   delete _NS;
 
-  PyGILState_STATE gstate = PyGILState_Ensure();
-  Py_Finalize();
-
   try  {
     orb->shutdown(0);
   }
@@ -597,8 +594,16 @@ int main( int argc, char **argv )
     // std::cerr << "Caught unexpected exception on destroy : ignored !!" << std::endl;
   }
 
+  PyGILState_STATE gstate = PyGILState_Ensure();
+  //Destroy orb from python (for chasing memory leaks)
+  //PyRun_SimpleString("from omniORB import CORBA");
+  //PyRun_SimpleString("orb=CORBA.ORB_init([''], CORBA.ORB_ID)");
+  //PyRun_SimpleString("orb.destroy()");
+  Py_Finalize();
+
   if ( shutdown )
     killOmniNames();
 
+  MESSAGE( "Salome_Session_Server:endofserver" );
   return result;
 }

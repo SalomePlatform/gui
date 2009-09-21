@@ -1508,7 +1508,7 @@ void QtxWorkstackChild::childEvent( QChildEvent* e )
 */
 QtxWorkstackTabBar::QtxWorkstackTabBar( QWidget* parent )
 : QTabBar( parent ),
-  myId( -1 )
+  myId( -1 ),myActive(false)
 {
   setDrawBase( true );
   setElideMode( Qt::ElideNone );

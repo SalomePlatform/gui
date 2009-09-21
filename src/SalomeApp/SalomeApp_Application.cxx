@@ -1078,15 +1078,15 @@ SALOMEDSClient_StudyManager* SalomeApp_Application::studyMgr()
 /*!Create and return SALOME_NamingService.*/
 SALOME_NamingService* SalomeApp_Application::namingService()
 {
-  static SALOME_NamingService* _ns = new SALOME_NamingService( orb() );
-  return _ns;
+  static SALOME_NamingService _ns(orb());
+  return &_ns;
 }
 
 /*!Create and return SALOME_LifeCycleCORBA.*/
 SALOME_LifeCycleCORBA* SalomeApp_Application::lcc()
 {
-  static SALOME_LifeCycleCORBA* _lcc = new SALOME_LifeCycleCORBA( namingService() );
-  return _lcc;
+  static SALOME_LifeCycleCORBA _lcc( namingService() );
+  return &_lcc;
 }
 
 /*!Return default engine IOR for light modules*/

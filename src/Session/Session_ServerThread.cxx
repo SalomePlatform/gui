@@ -265,10 +265,11 @@ void Session_ServerThread::ActivateRegistry(int argc,
   const char *registryName = "Registry";
   Registry::Components_var varComponents;
   try {
-    RegistryService *ptrRegistry = SINGLETON_<RegistryService>::Instance();
+    RegistryService *ptrRegistry = new RegistryService;
     ptrRegistry->SessionName( ptrSessionName );
     ptrRegistry->SetOrb(_orb);
     varComponents = ptrRegistry->_this();
+    ptrRegistry->_remove_ref(); //let poa manage registry service deletion
     // The RegistryService must not already exist.
     
     try {
@@ -283,7 +284,6 @@ void Session_ServerThread::ActivateRegistry(int argc,
     }
     string absoluteName = string("/") + registryName;
     _NS->Register( varComponents , absoluteName.c_str() );
-    MESSAGE("On attend les requetes des clients");
   }
   catch( const SALOME_Exception &ex ) {
     INFOS( "Communication Error : " << ex.what() );

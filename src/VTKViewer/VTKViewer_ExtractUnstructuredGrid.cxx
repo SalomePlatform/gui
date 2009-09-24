@@ -178,14 +178,14 @@ void VTKViewer_ExtractUnstructuredGrid::Execute()
   if(myExtractionMode == eCells){
     if(myChangeMode == ePassAll || myCellIds.empty() && myCellTypes.empty() && myChangeMode == eRemoving){
       if(vtkIdType aNbElems = anInput->GetNumberOfCells()){
-	if(myStoreMapping) myOut2InId.reserve(aNbElems);
-	anOutput->ShallowCopy(anInput);
-	for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
-	  if(myStoreMapping){
-	    myOut2InId.push_back(aCellId);
-	    myIn2OutId[aCellId] = anOutId;
-	  }
-	}
+        if(myStoreMapping) myOut2InId.reserve(aNbElems);
+        anOutput->ShallowCopy(anInput);
+        for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
+          if(myStoreMapping){
+            myOut2InId.push_back(aCellId);
+            myIn2OutId[aCellId] = anOutId;
+          }
+        }
       }
     }else{
       vtkIdList *anIdList = vtkIdList::New();
@@ -196,74 +196,74 @@ void VTKViewer_ExtractUnstructuredGrid::Execute()
       aCellTypesArray->SetNumberOfComponents(1);
       aCellTypesArray->Allocate(aNbElems*aCellTypesArray->GetNumberOfComponents());
       if(!myCellIds.empty() && myCellTypes.empty()){
-	if(myStoreMapping) myOut2InId.reserve(myCellIds.size());
-	if(myChangeMode == eAdding){
-	  for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
-	    if(myCellIds.find(aCellId) != myCellIds.end()){
-	      InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
-			 myStoreMapping,anOutId,myOut2InId,myIn2OutId);
-	    }
-	  }
-	}else{
-	  for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
-	    if(myCellIds.find(aCellId) == myCellIds.end()){
-	      InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
-			 myStoreMapping,anOutId,myOut2InId,myIn2OutId);
-	    }
-	  }
-	}
+        if(myStoreMapping) myOut2InId.reserve(myCellIds.size());
+        if(myChangeMode == eAdding){
+          for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
+            if(myCellIds.find(aCellId) != myCellIds.end()){
+              InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
+                         myStoreMapping,anOutId,myOut2InId,myIn2OutId);
+            }
+          }
+        }else{
+          for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
+            if(myCellIds.find(aCellId) == myCellIds.end()){
+              InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
+                         myStoreMapping,anOutId,myOut2InId,myIn2OutId);
+            }
+          }
+        }
       }else if(myCellIds.empty() && !myCellTypes.empty()){
-	if(myChangeMode == eAdding){
-	  for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
-	    vtkIdType aType = anInput->GetCellType(aCellId);
-	    if(myCellTypes.find(aType) != myCellTypes.end()){
-	      InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
-			 myStoreMapping,anOutId,myOut2InId,myIn2OutId);
-	    }
-	  }
-	}else{
-	  for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
-	    vtkIdType aType = anInput->GetCellType(aCellId);
-	    if(myCellTypes.find(aType) == myCellTypes.end()){
-	      InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
-			 myStoreMapping,anOutId,myOut2InId,myIn2OutId);
-	    }
-	  }
-	}
+        if(myChangeMode == eAdding){
+          for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
+            vtkIdType aType = anInput->GetCellType(aCellId);
+            if(myCellTypes.find(aType) != myCellTypes.end()){
+              InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
+                         myStoreMapping,anOutId,myOut2InId,myIn2OutId);
+            }
+          }
+        }else{
+          for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
+            vtkIdType aType = anInput->GetCellType(aCellId);
+            if(myCellTypes.find(aType) == myCellTypes.end()){
+              InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
+                         myStoreMapping,anOutId,myOut2InId,myIn2OutId);
+            }
+          }
+        }
       }else if(!myCellIds.empty() && !myCellTypes.empty()){
-	if(myChangeMode == eAdding){
-	  for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
-	    vtkIdType aType = anInput->GetCellType(aCellId);
-	    if(myCellTypes.find(aType) != myCellTypes.end()){
-	      if(myCellIds.find(aCellId) != myCellIds.end()){
-		InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
-			   myStoreMapping,anOutId,myOut2InId,myIn2OutId);
-	      }
-	    }
-	  }
-	}else{
-	  for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
-	    vtkIdType aType = anInput->GetCellType(aCellId);
-	    if(myCellTypes.find(aType) == myCellTypes.end()){
-	      if(myCellIds.find(aCellId) == myCellIds.end()){
-		InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
-			   myStoreMapping,anOutId,myOut2InId,myIn2OutId);
-	      }
-	    }
-	  }
-	}
+        if(myChangeMode == eAdding){
+          for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
+            vtkIdType aType = anInput->GetCellType(aCellId);
+            if(myCellTypes.find(aType) != myCellTypes.end()){
+              if(myCellIds.find(aCellId) != myCellIds.end()){
+                InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
+                           myStoreMapping,anOutId,myOut2InId,myIn2OutId);
+              }
+            }
+          }
+        }else{
+          for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
+            vtkIdType aType = anInput->GetCellType(aCellId);
+            if(myCellTypes.find(aType) == myCellTypes.end()){
+              if(myCellIds.find(aCellId) == myCellIds.end()){
+                InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
+                           myStoreMapping,anOutId,myOut2InId,myIn2OutId);
+              }
+            }
+          }
+        }
       }
       if((aNbElems = aConnectivity->GetNumberOfCells())){
-	VTKViewer_CellLocationsArray* aCellLocationsArray = VTKViewer_CellLocationsArray::New();
-	aCellLocationsArray->SetNumberOfComponents(1);
-	aCellLocationsArray->SetNumberOfTuples(aNbElems);
-	aConnectivity->InitTraversal();
-	for(vtkIdType i = 0, *pts, npts; aConnectivity->GetNextCell(npts,pts); i++){
-	  aCellLocationsArray->SetValue(i,aConnectivity->GetTraversalLocation(npts));
-	}
-	anOutput->SetCells(aCellTypesArray,aCellLocationsArray,aConnectivity);
-	anOutput->SetPoints(anInput->GetPoints());
-	aCellLocationsArray->Delete();
+        VTKViewer_CellLocationsArray* aCellLocationsArray = VTKViewer_CellLocationsArray::New();
+        aCellLocationsArray->SetNumberOfComponents(1);
+        aCellLocationsArray->SetNumberOfTuples(aNbElems);
+        aConnectivity->InitTraversal();
+        for(vtkIdType i = 0, *pts, npts; aConnectivity->GetNextCell(npts,pts); i++){
+          aCellLocationsArray->SetValue(i,aConnectivity->GetTraversalLocation(npts));
+        }
+        anOutput->SetCells(aCellTypesArray,aCellLocationsArray,aConnectivity);
+        anOutput->SetPoints(anInput->GetPoints());
+        aCellLocationsArray->Delete();
       }
       aCellTypesArray->Delete();
       aConnectivity->Delete();
@@ -281,65 +281,65 @@ void VTKViewer_ExtractUnstructuredGrid::Execute()
     if(myChangeMode == ePassAll || myCellIds.empty() && myCellTypes.empty() && myChangeMode == eRemoving){
       if(myStoreMapping) myOut2InId.reserve(aNbElems);
       for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
-	InsertPointCell(aConnectivity,aCellTypesArray,aCellId,anIdList,
-			myStoreMapping,anOutId,myOut2InId,myIn2OutId);
+        InsertPointCell(aConnectivity,aCellTypesArray,aCellId,anIdList,
+                        myStoreMapping,anOutId,myOut2InId,myIn2OutId);
       }
     }else if(!myCellIds.empty() && myCellTypes.empty()){
       if(myStoreMapping) myOut2InId.reserve(myCellIds.size());
       if(myChangeMode == eAdding){
-	for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
-	  if(myCellIds.find(aCellId) != myCellIds.end()){
-	    InsertPointCell(aConnectivity,aCellTypesArray,aCellId,anIdList,
-			    myStoreMapping,anOutId,myOut2InId,myIn2OutId);
-	  }
-	}
+        for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
+          if(myCellIds.find(aCellId) != myCellIds.end()){
+            InsertPointCell(aConnectivity,aCellTypesArray,aCellId,anIdList,
+                            myStoreMapping,anOutId,myOut2InId,myIn2OutId);
+          }
+        }
       }else{
-	for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
-	  if(myCellIds.find(aCellId) == myCellIds.end()){
-	    InsertPointCell(aConnectivity,aCellTypesArray,aCellId,anIdList,
-			    myStoreMapping,anOutId,myOut2InId,myIn2OutId);
-	  }
-	}
+        for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
+          if(myCellIds.find(aCellId) == myCellIds.end()){
+            InsertPointCell(aConnectivity,aCellTypesArray,aCellId,anIdList,
+                            myStoreMapping,anOutId,myOut2InId,myIn2OutId);
+          }
+        }
       }
     }else if(myCellIds.empty() && !myCellTypes.empty()){
       if(myChangeMode == eAdding){
-	for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
-	  vtkIdType aType = anInput->GetCellType(aCellId);
-	  if(myCellTypes.find(aType) != myCellTypes.end()){
-	    InsertPointCell(aConnectivity,aCellTypesArray,aCellId,anIdList,
-			    myStoreMapping,anOutId,myOut2InId,myIn2OutId);
-	  }
-	}
+        for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
+          vtkIdType aType = anInput->GetCellType(aCellId);
+          if(myCellTypes.find(aType) != myCellTypes.end()){
+            InsertPointCell(aConnectivity,aCellTypesArray,aCellId,anIdList,
+                            myStoreMapping,anOutId,myOut2InId,myIn2OutId);
+          }
+        }
       }else{
-	for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
-	  vtkIdType aType = anInput->GetCellType(aCellId);
-	  if(myCellTypes.find(aType) == myCellTypes.end()){
-	    InsertPointCell(aConnectivity,aCellTypesArray,aCellId,anIdList,
-			    myStoreMapping,anOutId,myOut2InId,myIn2OutId);
-	  }
-	}
+        for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
+          vtkIdType aType = anInput->GetCellType(aCellId);
+          if(myCellTypes.find(aType) == myCellTypes.end()){
+            InsertPointCell(aConnectivity,aCellTypesArray,aCellId,anIdList,
+                            myStoreMapping,anOutId,myOut2InId,myIn2OutId);
+          }
+        }
       }
     }else if(!myCellIds.empty() && !myCellTypes.empty()){
       if(myChangeMode == eAdding){
-	for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
-	  vtkIdType aType = anInput->GetCellType(aCellId);
-	  if(myCellTypes.find(aType) != myCellTypes.end()){
-	    if(myCellIds.find(aCellId) != myCellIds.end()){
-	      InsertPointCell(aConnectivity,aCellTypesArray,aCellId,anIdList,
-			      myStoreMapping,anOutId,myOut2InId,myIn2OutId);
-	    }
-	  }
-	}
+        for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
+          vtkIdType aType = anInput->GetCellType(aCellId);
+          if(myCellTypes.find(aType) != myCellTypes.end()){
+            if(myCellIds.find(aCellId) != myCellIds.end()){
+              InsertPointCell(aConnectivity,aCellTypesArray,aCellId,anIdList,
+                              myStoreMapping,anOutId,myOut2InId,myIn2OutId);
+            }
+          }
+        }
       }else{
-	for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
-	  vtkIdType aType = anInput->GetCellType(aCellId);
-	  if(myCellTypes.find(aType) == myCellTypes.end()){
-	    if(myCellIds.find(aCellId) == myCellIds.end()){
-	      InsertPointCell(aConnectivity,aCellTypesArray,aCellId,anIdList,
-			      myStoreMapping,anOutId,myOut2InId,myIn2OutId);
-	    }
-	  }
-	}
+        for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
+          vtkIdType aType = anInput->GetCellType(aCellId);
+          if(myCellTypes.find(aType) == myCellTypes.end()){
+            if(myCellIds.find(aCellId) == myCellIds.end()){
+              InsertPointCell(aConnectivity,aCellTypesArray,aCellId,anIdList,
+                              myStoreMapping,anOutId,myOut2InId,myIn2OutId);
+            }
+          }
+        }
       }
     }
     if((aNbElems = aConnectivity->GetNumberOfCells())){
@@ -348,7 +348,7 @@ void VTKViewer_ExtractUnstructuredGrid::Execute()
       aCellLocationsArray->SetNumberOfTuples(aNbElems);
       aConnectivity->InitTraversal();
       for(vtkIdType i = 0, *pts, npts; aConnectivity->GetNextCell(npts,pts); i++){
-	aCellLocationsArray->SetValue(i,aConnectivity->GetTraversalLocation(npts));
+        aCellLocationsArray->SetValue(i,aConnectivity->GetTraversalLocation(npts));
       }
       anOutput->SetCells(aCellTypesArray,aCellLocationsArray,aConnectivity);
       anOutput->SetPoints(anInput->GetPoints());

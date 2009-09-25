@@ -50,13 +50,14 @@ if test -z $QWTHOME; then
   exist_ok=no	
   if test "x$exist_ok" = "xno"; then
      for d in /usr /usr/local ; do
-        for extension in qwt qwt-qt4; do
+        for extension in qwt-qt4 qwt; do
            AC_CHECK_FILE(${d}/lib${LIB_LOCATION_SUFFIX}/lib${extension}.so,exist_ok=yes,exist_ok=no)
            if test "x$exist_ok" = "xyes"; then
               QWTHOME=$d
               AC_MSG_RESULT(lib${extension}.so detected in $d/lib)
               libqwt_name=${extension}
-              dnl  No break here, libqwt-qt4.so is choosen even if libqwt.so is present: if 2 are present, in most of cases, libqwt.so is Qt3 version.
+              dnl  break, libqwt-qt4.so is choosen before libqwt.so since it is surely the Qt4 version.
+              break
            fi
         done
         if test "x$exist_ok" = "xyes"; then

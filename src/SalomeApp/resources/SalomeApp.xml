@@ -109,10 +109,10 @@
     <parameter name="auto_size"             value="false" />
     <parameter name="auto_size_first"       value="true"  />
     <parameter name="resize_on_expand_item" value="false"  />
-    <parameter name="visibility_column_id_1" value="true"  />
-    <parameter name="visibility_column_id_2" value="true" />
-    <parameter name="visibility_column_id_3" value="true" />
-    <parameter name="visibility_column_id_4" value="true" />
+    <parameter name="visibility_column_id_1" value="false"  />
+    <parameter name="visibility_column_id_2" value="false" />
+    <parameter name="visibility_column_id_3" value="false" />
+    <parameter name="visibility_column_id_4" value="false" />
   </section>
   <section name="PyConsole">
     <!-- Python console preferences -->

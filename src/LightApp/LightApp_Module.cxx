@@ -219,6 +219,9 @@ bool LightApp_Module::activateModule( SUIT_Study* study )
   if ( mySwitchOp == 0 )
     mySwitchOp = new LightApp_SwitchOp( this );
 
+  /*  BUG 0020498 : The Entry column is always shown at module activation
+      The registration of column is moved into LightApp_Application
+
   QString EntryCol = QObject::tr( "ENTRY_COLUMN" );
   LightApp_DataModel* m = dynamic_cast<LightApp_DataModel*>( dataModel() );
   if( m )
@@ -226,7 +229,7 @@ bool LightApp_Module::activateModule( SUIT_Study* study )
     SUIT_AbstractModel* treeModel = dynamic_cast<SUIT_AbstractModel*>( getApp()->objectBrowser()->model() );
     m->registerColumn( getApp()->objectBrowser(), EntryCol, LightApp_DataObject::EntryId );
     treeModel->setAppropriate( EntryCol, Qtx::Toggled );
-  }
+  }*/
   return res;
 }
 
@@ -247,6 +250,7 @@ bool LightApp_Module::deactivateModule( SUIT_Study* study )
     anIt.value()->abort();
   }
 
+  /*  BUG 0020498 : The Entry column is always shown at module activation
   QString EntryCol = QObject::tr( "ENTRY_COLUMN" );
   LightApp_DataModel* m = dynamic_cast<LightApp_DataModel*>( dataModel() );
   if( m )
@@ -256,6 +260,7 @@ bool LightApp_Module::deactivateModule( SUIT_Study* study )
     treeModel->setAppropriate( EntryCol, Qtx::Shown );
     m->unregisterColumn( getApp()->objectBrowser(), EntryCol );
   }
+  */
   return CAM_Module::deactivateModule( study );
 }
 

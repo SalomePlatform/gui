@@ -580,12 +580,12 @@ QPixmap SUIT_TreeModel::columnIcon( const QString& name ) const
 void SUIT_TreeModel::setAppropriate( const QString& name, const Qtx::Appropriate appr )
 {
   for( int i=0, n=myColumns.size(); i<n; i++ )
-    if( myColumns[i].myName==name )
-	{
-	  myColumns[i].myAppropriate = appr;
-	  emit headerDataChanged( Qt::Horizontal, i, i );
-	  break;
-	}
+    if( myColumns[i].myName==name || myColumns[i].myAppropriate != appr )
+    {
+      myColumns[i].myAppropriate = appr;
+      emit headerDataChanged( Qt::Horizontal, i, i );
+      break;
+    }
 }
 
 /*!

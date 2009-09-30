@@ -71,6 +71,7 @@
 #include <SUIT_Accel.h>
 #include <SUIT_MessageBox.h>
 #include <SUIT_ViewWindow.h>
+#include <SUIT_TreeModel.h>
 
 #include <Qtx.h>
 #include <QtxToolBar.h>
@@ -1614,6 +1615,11 @@ QWidget* LightApp_Application::createWindow( const int flag )
     //ob->setAutoOpenLevel( 1 ); // commented by ASV as a fix to bug IPAL10107
     ob->setWindowTitle( tr( "OBJECT_BROWSER" ) );
     connect( ob, SIGNAL( requestUpdate() ), this, SLOT( onRefresh() ) );
+
+    QString EntryCol = QObject::tr( "ENTRY_COLUMN" );
+    SUIT_AbstractModel* treeModel = dynamic_cast<SUIT_AbstractModel*>( ob->model() );
+    treeModel->registerColumn( 0, EntryCol, LightApp_DataObject::EntryId );
+    treeModel->setAppropriate( EntryCol, Qtx::Toggled );
 
     // temporary commented
     /*

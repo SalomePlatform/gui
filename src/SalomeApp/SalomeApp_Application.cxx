@@ -670,8 +670,7 @@ bool DumpStudyFileValidator::canSave(const QString& file, bool permissions)
 {
   QFileInfo fi( file );
   QString name = fi.fileName(); 
-  
-  if ( name.indexOf( QRegExp("[-!?#*&]") ) >= 0 ) {
+  if ( name.indexOf( QRegExp("[-!?#*&]") ) >= 0 || name.indexOf( QRegExp("[0-9]")) == 0 ) {
     SUIT_MessageBox::critical( parent(),
 			       QObject::tr("WRN_WARNING"),
 			       QObject::tr("WRN_FILE_NAME_BAD") );

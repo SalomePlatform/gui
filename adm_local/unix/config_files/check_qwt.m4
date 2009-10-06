@@ -47,6 +47,7 @@ AC_ARG_WITH(qwt_inc,
 libqwt_name=qwt
 if test -z $QWTHOME; then
   AC_MSG_RESULT(QWTHOME not defined)
+  AC_MSG_NOTICE(Trying native Qwt...)
   exist_ok=no	
   if test "x$exist_ok" = "xno"; then
      for d in /usr /usr/local ; do
@@ -78,21 +79,22 @@ if test -z $QWTHOME; then
   fi
   if test "x$exist_ok" = "xyes"; then
      if test -z $QWT_INCDIR; then
-        QWT_INCDIR=$QWTHOME"/include/qwt"
+        QWT_INCDIR=$QWTHOME"/include/qwt-qt4"
+        if test ! -f $QWT_INCDIR/qwt.h ; then
+          QWT_INCDIR=/usr/include/qwt
+        fi
         if test ! -f $QWT_INCDIR/qwt.h ; then
           QWT_INCDIR=$QWTHOME"/include"
         fi
         if test ! -f $QWT_INCDIR/qwt.h ; then
           QWT_INCDIR=/usr/lib/qt4/include/qwt
         fi
-        if test ! -f $QWT_INCDIR/qwt.h ; then
-          QWT_INCDIR=/usr/include/qwt-qt4
-        fi
      fi
   else
      qwt_ok=no
   fi
 else
+  AC_MSG_NOTICE(Trying Qwt from $QWTHOME ...)
   if test -z $QWT_INCDIR; then
      QWT_INCDIR="$QWTHOME/include"
   fi   	

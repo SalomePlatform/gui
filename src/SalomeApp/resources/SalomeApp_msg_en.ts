@@ -26,7 +26,8 @@
     <name>@default</name>
     <message>
         <source>WRN_FILE_NAME_BAD</source>
-        <translation>Please, enter a valid file name. The name should not contain any reserved characters or begin with a numeral.</translation>
+        <translation>Please enter correct file name.
+Python file must include only letters, digits and underscores and start from letter or underscore.</translation>
     </message>
     <message>
         <source>CLOSE_LOCKED_STUDY</source>

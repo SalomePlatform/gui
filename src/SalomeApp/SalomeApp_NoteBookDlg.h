@@ -76,6 +76,7 @@ class SALOMEAPP_EXPORT NoteBook_TableRow : public QWidget
   static bool IsRealValue(const QString theValue, double* theResult = 0);
   static bool IsIntegerValue(const QString theValue, int* theResult = 0);
   static bool IsBooleanValue(const QString theValue, bool* theResult = 0);
+  static bool IsValidStringValue(const QString theName);
   
  private:
   int               myIndex;

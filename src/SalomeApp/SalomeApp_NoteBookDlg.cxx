@@ -20,6 +20,9 @@
 // Author : Roman NIKOLAEV, Open CASCADE S.A.S.
 // Module : GUI
 
+#include <PyConsole_Interp.h> // this include must be first (see PyInterp_base.h)!
+#include <PyConsole_Console.h>
+
 #include "SalomeApp_NoteBookDlg.h"
 #include "SalomeApp_Application.h"
 #include "SalomeApp_Study.h"
@@ -33,8 +36,6 @@
 #include <SUIT_MessageBox.h>
 #include <SUIT_ResourceMgr.h>
 #include <SUIT_Session.h>
-
-#include <PyConsole_Console.h>
 
 #include <SALOMEDS_Tool.hxx>
 
@@ -174,7 +175,8 @@ bool NoteBook_TableRow::CheckValue()
   if(!aValue.isEmpty() && 
      (IsRealValue(aValue) ||
       IsIntegerValue(aValue) ||
-      IsBooleanValue(aValue))) 
+      IsBooleanValue(aValue) ||
+      IsValidStringValue(aValue)))
     aResult = true;
   
   return aResult;
@@ -267,6 +269,18 @@ bool NoteBook_TableRow::IsIntegerValue(const QString theValue, int* theResult)
   return aResult;
 }
 
+//============================================================================
+/*! Function : IsValidStringValue
+ *  Purpose  : Return true if theValue string is valid, otherwise return 
+ *             false
+ *             The string are always valid for the moment
+ *             The whole notebook is verified on apply
+ */
+//============================================================================
+bool NoteBook_TableRow::IsValidStringValue(const QString theValue)
+{
+  return true;
+}
 
 ///////////////////////////////////////////////////////////////////////////
 //                      NoteBook_Table class                             //
@@ -397,6 +411,8 @@ QString NoteBook_Table::Variable2String(const string& theVarName,
     aResult = QString::number(theStudy->GetInteger(theVarName));
   else if( theStudy->IsBoolean(theVarName) )
     aResult = theStudy->GetBoolean(theVarName) ? QString("True") : QString("False");
+  else if( theStudy->IsString(theVarName) )
+    aResult = theStudy->GetString(theVarName).c_str();
   
   return aResult;
 }
@@ -419,7 +435,23 @@ bool NoteBook_Table::IsValid() const
     if( !myRows[i]->CheckName() || !IsUniqueName( myRows[i] ) || !myRows[i]->CheckValue() )
       return false;
 
-  return true;
+  SalomeApp_Application* app = dynamic_cast<SalomeApp_Application*>( SUIT_Session::session()->activeApplication() );
+  PyConsole_Console* pyConsole = app->pythonConsole();
+  PyConsole_Interp* pyInterp = pyConsole->getInterp();
+  PyLockWrapper aLock = pyInterp->GetLockWrapper();
+  string command = "import salome_notebook ; ";
+  command += "salome_notebook.checkThisNoteBook(";
+  for( int i = 0, n = aLastRowIsEmpty ? aNumRows - 1 : aNumRows; i < n; i++ )
+    {
+      command += myRows[i]->GetName().toStdString();
+      command += "=\"";
+      command += myRows[i]->GetValue().toStdString();
+      command += "\",";
+    }
+  command += ")";
+  bool aResult = pyInterp->run(command.c_str());
+  aResult = !aResult;
+  return aResult;
 }
 
 //============================================================================
@@ -886,6 +918,9 @@ void SalomeApp_NoteBookDlg::onApply()
     
       else if( NoteBook_TableRow::IsBooleanValue(aValue,&aBVal) )
 	myStudy->SetBoolean(string(aName.toLatin1().constData()),aBVal);
+    
+      else if( NoteBook_TableRow::IsValidStringValue(aValue) )
+	myStudy->SetString(string(aName.toLatin1().constData()),aValue.toStdString());
     }
   }
   myTable->ResetMaps();

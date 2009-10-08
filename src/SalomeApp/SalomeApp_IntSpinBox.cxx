@@ -19,6 +19,9 @@
 // File:      SalomeApp_IntSpinBox.cxx
 // Author:    Oleg UVAROV
 
+#include <PyConsole_Interp.h> //this include must be first (see PyInterp_base.h)!
+#include <PyConsole_Console.h>
+
 #include "SalomeApp_IntSpinBox.h"
 #include "SalomeApp_Application.h"
 #include "SalomeApp_Study.h"
@@ -30,6 +33,8 @@
 
 #include <QKeyEvent>
 #include <QLineEdit>
+
+#include <string>
 
 /*!
   \class SalomeApp_IntSpinBox
@@ -278,8 +283,25 @@ SalomeApp_IntSpinBox::SearchState SalomeApp_IntSpinBox::findVariable( const QStr
       std::string aName = name.toStdString();
       if( studyDS->IsVariable( aName ) )
       {
-	if( studyDS->IsInteger( aName ) )
+	if( studyDS->IsInteger( aName ) || studyDS->IsString( aName ) )
 	{
+	  if( studyDS->IsString( aName ) )
+	    {
+	      PyConsole_Console* pyConsole = app->pythonConsole();
+	      PyConsole_Interp* pyInterp = pyConsole->getInterp();
+	      PyLockWrapper aLock = pyInterp->GetLockWrapper();
+	      std::string command;
+	      command  = "import salome_notebook ; ";
+	      command += "salome_notebook.notebook.setAsInteger(\"";
+	      command += aName;
+	      command += "\")";
+	      bool aResult;
+	      aResult = pyInterp->run(command.c_str());
+	      if(aResult)
+		{
+		  return IncorrectType;
+		}
+	    }
 	  value = studyDS->GetInteger( aName );
 	  return Found;
 	}

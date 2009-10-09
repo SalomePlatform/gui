@@ -75,6 +75,7 @@ protected:
 
   virtual void        moduleAdded( CAM_Module* );
   virtual void        beforeCloseDoc( SUIT_Study* );
+  virtual void        afterCloseDoc();
   virtual bool        activateModule( CAM_Module* = 0 );
 
   virtual void        setActiveStudy( SUIT_Study* );

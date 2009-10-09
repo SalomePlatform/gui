@@ -63,7 +63,7 @@ private:
   bool                       myLastActivateStatus; //!< latest module activation status
 
 protected:
-  PyObjWrapper                    myModule;     //!< Python GUI module
+  PyObjWrapper*                   myModule;     //!< Python GUI module
   PyInterp_Interp*                myInterp;     //!< current Python subinterpreter
   static InterpMap                myInterpMap;  //!< study to Python subinterpreter map
 

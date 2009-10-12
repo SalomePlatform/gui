@@ -486,9 +486,10 @@ void SalomeApp_Application::onCloseDoc( bool ask )
     }
   }
 
-  LightApp_Application::onCloseDoc( ask );
   if(myNoteBook && myNoteBook->isVisible())
-     myNoteBook->hide();
+    myNoteBook->hide();
+
+  LightApp_Application::onCloseDoc( ask );
 }
 
 /*!Sets enable or disable some actions on selection changed.*/

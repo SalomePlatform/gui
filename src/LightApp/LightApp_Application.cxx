@@ -715,7 +715,9 @@ void LightApp_Application::onNewWindow()
 */
 void LightApp_Application::onNewDoc()
 {
-  saveDockWindowsState();
+  //asl: fix for 0020515
+  if ( activeStudy() )
+    saveDockWindowsState();
 
   CAM_Application::onNewDoc();
 }

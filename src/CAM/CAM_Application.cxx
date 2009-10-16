@@ -88,6 +88,9 @@ CAM_Application::CAM_Application( const bool autoLoad )
 */
 CAM_Application::~CAM_Application()
 {
+  for ( QList<CAM_Module*>::const_iterator it = myModules.begin(); it != myModules.end(); ++it )
+    delete *it;
+  myModules.clear();
 }
 
 /*! 
@@ -437,9 +440,6 @@ void CAM_Application::beforeCloseDoc( SUIT_Study* theDoc )
 
 void CAM_Application::afterCloseDoc()
 {
-  for ( QList<CAM_Module*>::const_iterator it = myModules.begin(); it != myModules.end(); ++it )
-    delete *it;
-  myModules.clear();
 }
 
 /*!

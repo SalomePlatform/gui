@@ -52,8 +52,8 @@ GetLastSALOMEActor(vtkActorCollection* theCollection)
   if (theCollection) {
     for (int i = theCollection->GetNumberOfItems() - 1; i >= 0; i--) {
       if (SALOME_Actor* anActor = dynamic_cast<SALOME_Actor*>(theCollection->GetItemAsObject(i)))
-	if (anActor->hasIO())
-	  return anActor;
+        if (anActor->hasIO())
+          return anActor;
     }
   }
   return NULL;
@@ -287,7 +287,7 @@ SVTK_SelectorDef
 void 
 SVTK_SelectorDef
 ::GetIndex( const Handle(SALOME_InteractiveObject)& theIO, 
-	    TColStd_IndexedMapOfInteger& theIndex)
+            TColStd_IndexedMapOfInteger& theIndex)
 {
   TMapIOSubIndex::const_iterator anIter = myMapIOSubIndex.find(theIO);
   if(anIter != myMapIOSubIndex.end())
@@ -304,7 +304,7 @@ SVTK_SelectorDef
 bool
 SVTK_SelectorDef
 ::IsIndexSelected(const Handle(SALOME_InteractiveObject)& theIO, 
-		  int theIndex) const
+                  int theIndex) const
 {
   TMapIOSubIndex::const_iterator anIter = myMapIOSubIndex.find(theIO);
   if(anIter != myMapIOSubIndex.end()){
@@ -346,8 +346,8 @@ static bool removeIndex(TColStd_IndexedMapOfInteger& theMapIndex, const int theI
 bool
 SVTK_SelectorDef
 ::AddOrRemoveIndex( const Handle(SALOME_InteractiveObject)& theIO, 
-		    const TColStd_IndexedMapOfInteger& theIndices, 
-		    bool theIsModeShift)
+                    const TColStd_IndexedMapOfInteger& theIndices, 
+                    bool theIsModeShift)
 {
   TMapIOSubIndex::iterator aMapIter = myMapIOSubIndex.find(theIO);
   if(aMapIter == myMapIOSubIndex.end()){
@@ -381,8 +381,8 @@ SVTK_SelectorDef
 bool
 SVTK_SelectorDef
 ::AddOrRemoveIndex( const Handle(SALOME_InteractiveObject)& theIO, 
-		    const TColStd_MapOfInteger& theIndices, 
-		    bool theIsModeShift)
+                    const TColStd_MapOfInteger& theIndices, 
+                    bool theIsModeShift)
 {
   TMapIOSubIndex::iterator aMapIter = myMapIOSubIndex.find(theIO);
   if(aMapIter == myMapIOSubIndex.end()){
@@ -417,8 +417,8 @@ SVTK_SelectorDef
 bool 
 SVTK_SelectorDef
 ::AddOrRemoveIndex( const Handle(SALOME_InteractiveObject)& theIO, 
-		    int theIndex, 
-		    bool theIsModeShift)
+                    int theIndex, 
+                    bool theIsModeShift)
 {
   TMapIOSubIndex::iterator anIter = myMapIOSubIndex.find(theIO);
   if(anIter == myMapIOSubIndex.end()){
@@ -453,7 +453,7 @@ SVTK_SelectorDef
 void
 SVTK_SelectorDef
 ::RemoveIndex( const Handle(SALOME_InteractiveObject)& theIO, 
-	       int theIndex)
+               int theIndex)
 {
   if(IsIndexSelected(theIO,theIndex)){
     TMapIOSubIndex::iterator anIter = myMapIOSubIndex.find(theIO);
@@ -515,8 +515,8 @@ SVTK_SelectorDef
 bool
 SVTK_SelectorDef
 ::IsValid(SALOME_Actor* theActor,
-	  const TFilterID theId,
-	  const bool theIsNode) const
+          const TFilterID theId,
+          const bool theIsNode) const
 {
   TFilters::const_iterator anIter = myFilters.begin();
   for(; anIter != myFilters.end(); ++anIter){
@@ -557,9 +557,9 @@ SVTK_SelectorDef
   vtkActorCollection* aListActors = NULL;
   if ( anAdvancedSelectionAlgorithm ) {
     myCellPicker->Pick(theEvent->myX,
-		       theEvent->myY, 
-		       0.0,
-		       theRenderer);
+                       theEvent->myY, 
+                       0.0,
+                       theRenderer);
   
     aListActors = myCellPicker->GetActors();
     anActor = GetLastSALOMEActor(aListActors);
@@ -567,9 +567,9 @@ SVTK_SelectorDef
 
   if ( !anActor ) {
     myPicker->Pick(theEvent->myX,
-		   theEvent->myY, 
-		   0.0,
-		   theRenderer);
+                   theEvent->myY, 
+                   0.0,
+                   theRenderer);
     aListActors = myPicker->GetActors();
     anActor = GetLastSALOMEActor(aListActors);
   }
@@ -581,6 +581,6 @@ void
 SVTK_SelectorDef
 ::SetTolerance(const double& theTolerance) 
 {
-  myPicker->SetTolerance(theTolerance); 	
+  myPicker->SetTolerance(theTolerance);         
   myCellPicker->SetTolerance(theTolerance);
 }

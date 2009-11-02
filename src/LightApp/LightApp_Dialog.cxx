@@ -148,7 +148,7 @@ bool LightApp_Dialog::isObjectShown( const int id ) const
 {
   return myObjects.contains( id ) &&
          ( myObjects[ id ].myEdit->isVisible() ||
-	   myObjects[ id ].myEdit->isVisibleTo( myObjects[ id ].myEdit->parentWidget() ) );
+           myObjects[ id ].myEdit->isVisibleTo( myObjects[ id ].myEdit->parentWidget() ) );
 }
 
 /*!
@@ -203,7 +203,7 @@ void LightApp_Dialog::selectObject( const QString& name, const int type, const Q
 void LightApp_Dialog::selectObject( const QStringList& _names,
                                      const TypesList& _types,
                                      const QStringList& _ids,
-				     const bool update )
+                                     const bool update )
 {
   ObjectMap::iterator anIt = myObjects.begin(),
                       aLast = myObjects.end();

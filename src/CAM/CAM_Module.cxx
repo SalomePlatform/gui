@@ -952,9 +952,9 @@ void CAM_Module::connectToStudy( CAM_Study* camStudy )
     if( (*it) == this && !camStudy->containsDataModel( dm ) )
     {
       if ( prev )
-	camStudy->insertDataModel( (*it)->dataModel(), prev );
+        camStudy->insertDataModel( (*it)->dataModel(), prev );
       else
-	camStudy->insertDataModel( (*it)->dataModel(), 0 );
+        camStudy->insertDataModel( (*it)->dataModel(), 0 );
     }
     prev = dm;
   }

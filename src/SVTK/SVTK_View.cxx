@@ -50,21 +50,21 @@ SVTK_SignalHandler
   SVTK_RenderWindowInteractor* anInteractor = theMainWindow->GetInteractor();
 
   connect(anInteractor,SIGNAL(KeyPressed(QKeyEvent*)),
-	  this,SIGNAL(KeyPressed(QKeyEvent*)) );
+          this,SIGNAL(KeyPressed(QKeyEvent*)) );
   connect(anInteractor,SIGNAL(KeyReleased(QKeyEvent*)),
-	  this,SIGNAL(KeyReleased(QKeyEvent*)));
+          this,SIGNAL(KeyReleased(QKeyEvent*)));
   connect(anInteractor,SIGNAL(MouseButtonPressed(QMouseEvent*)),
-	  this,SIGNAL(MouseButtonPressed(QMouseEvent*)));
+          this,SIGNAL(MouseButtonPressed(QMouseEvent*)));
   connect(anInteractor,SIGNAL(MouseButtonReleased(QMouseEvent*)),
-	  this,SIGNAL(MouseButtonReleased(QMouseEvent*)));
+          this,SIGNAL(MouseButtonReleased(QMouseEvent*)));
   connect(anInteractor,SIGNAL(MouseDoubleClicked(QMouseEvent*)),
-	  this,SIGNAL(MouseDoubleClicked(QMouseEvent*)));
+          this,SIGNAL(MouseDoubleClicked(QMouseEvent*)));
   connect(anInteractor,SIGNAL(MouseMove(QMouseEvent*)),
-	  this,SIGNAL(MouseMove(QMouseEvent*)));
+          this,SIGNAL(MouseMove(QMouseEvent*)));
   connect(anInteractor,SIGNAL(contextMenuRequested(QContextMenuEvent*)),
-	  this,SIGNAL(contextMenuRequested(QContextMenuEvent*)));
+          this,SIGNAL(contextMenuRequested(QContextMenuEvent*)));
   connect(anInteractor,SIGNAL(selectionChanged()),
-	  this,SIGNAL(selectionChanged()));
+          this,SIGNAL(selectionChanged()));
 }
 
 /*!
@@ -129,7 +129,7 @@ namespace SVTK
     operator()( SALOME_Actor* theActor) 
     {
       if(theActor->GetMapper() && theActor->hasIO()){
-	theActor->Highlight( myIsHighlight );
+        theActor->Highlight( myIsHighlight );
       }
     }
   };
@@ -147,14 +147,14 @@ SVTK_SignalHandler
 
   using namespace SVTK;
   ForEach<SALOME_Actor>(anActors,
-			THighlightAction( false ));
+                        THighlightAction( false ));
   SVTK_Selector* aSelector = myMainWindow->GetSelector();
   const SALOME_ListIO& aListIO = aSelector->StoredIObjects();
   SALOME_ListIteratorOfListIO anIter(aListIO);
   for(; anIter.More(); anIter.Next()){
     ForEachIf<SALOME_Actor>(anActors,
-			    TIsSameIObject<SALOME_Actor>(anIter.Value()),
-			    THighlightAction(true));
+                            TIsSameIObject<SALOME_Actor>(anIter.Value()),
+                            THighlightAction(true));
   }
 
   myMainWindow->Repaint(false);
@@ -187,7 +187,7 @@ SVTK_View
   using namespace SVTK;
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   ForEach<SALOME_Actor>(aCopy.GetActors(),
-			THighlightAction( false ));
+                        THighlightAction( false ));
   Repaint();
 }
 
@@ -200,14 +200,14 @@ SVTK_View
 void
 SVTK_View
 ::highlight( const Handle(SALOME_InteractiveObject)& theIO, 
-	     bool theIsHighlight, 
-	     bool theIsUpdate ) 
+             bool theIsHighlight, 
+             bool theIsUpdate ) 
 {
   using namespace SVTK;
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   ForEachIf<SALOME_Actor>(aCopy.GetActors(),
-			  TIsSameIObject<SALOME_Actor>( theIO ),
-			  THighlightAction(theIsHighlight));
+                          TIsSameIObject<SALOME_Actor>( theIO ),
+                          THighlightAction(theIsHighlight));
   Repaint();
 }
 
@@ -223,7 +223,7 @@ SVTK_View
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   SALOME_Actor* anActor = 
     Find<SALOME_Actor>(aCopy.GetActors(),
-		       TIsSameEntry<SALOME_Actor>(theEntry));
+                       TIsSameEntry<SALOME_Actor>(theEntry));
   if(anActor != NULL)
     return anActor->getIO();
  
@@ -236,9 +236,9 @@ SVTK_View
 void
 SVTK_View
 ::SetSelectionProp(const double& theRed, 
-		   const double& theGreen, 
-		   const double& theBlue, 
-		   const int& theWidth) 
+                   const double& theGreen, 
+                   const double& theBlue, 
+                   const int& theWidth) 
 {
   GetRenderer()->SetSelectionProp(theRed,theGreen,theBlue,theWidth);
 }
@@ -249,9 +249,9 @@ SVTK_View
 void
 SVTK_View
 ::SetPreselectionProp(const double& theRed, 
-		      const double& theGreen, 
-		      const double& theBlue, 
-		      const int& theWidth) 
+                      const double& theGreen, 
+                      const double& theBlue, 
+                      const int& theWidth) 
 {
   GetRenderer()->SetPreselectionProp(theRed,theGreen,theBlue,theWidth);
 }
@@ -262,8 +262,8 @@ SVTK_View
 void
 SVTK_View
 ::SetSelectionTolerance(const double& theTolNodes, 
-			const double& theTolCell,
-			const double& theTolObjects)
+                        const double& theTolCell,
+                        const double& theTolObjects)
 {
   GetRenderer()->SetSelectionTolerance(theTolNodes, theTolCell, theTolObjects);
 }
@@ -280,7 +280,7 @@ SVTK_View
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   SALOME_Actor* anActor = 
     Find<SALOME_Actor>(aCopy.GetActors(),
-		       TIsSameIObject<SALOME_Actor>(theIObject));
+                       TIsSameIObject<SALOME_Actor>(theIObject));
   return anActor != NULL;
 }
 
@@ -298,7 +298,7 @@ namespace SVTK
     operator()(SALOME_Actor* theActor)
     {
       if( !myResult )
-	myResult = theActor->GetVisibility();
+        myResult = theActor->GetVisibility();
     }
   };
 }
@@ -315,8 +315,8 @@ SVTK_View
   bool aResult;
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   ForEachIf<SALOME_Actor>(aCopy.GetActors(),
-			  TIsSameIObject<SALOME_Actor>(theIObject),
-			  TIsActorVisibleAction(aResult));
+                          TIsSameIObject<SALOME_Actor>(theIObject),
+                          TIsActorVisibleAction(aResult));
   return aResult;
 }
 
@@ -328,14 +328,14 @@ SVTK_View
 void
 SVTK_View
 ::rename(const Handle(SALOME_InteractiveObject)& theIObject, 
-	 const QString& theName)
+         const QString& theName)
 {
   using namespace SVTK;
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   ForEachIf<SALOME_Actor>(aCopy.GetActors(),
-			  TIsSameIObject<SALOME_Actor>(theIObject),
-			  TSetFunction<SALOME_Actor,const char*,const char*>
-			  (&SALOME_Actor::setName,theName.toLatin1().data()));
+                          TIsSameIObject<SALOME_Actor>(theIObject),
+                          TSetFunction<SALOME_Actor,const char*,const char*>
+                          (&SALOME_Actor::setName,theName.toLatin1().data()));
 }
 
 /*!
@@ -371,14 +371,14 @@ SVTK_View
 void
 SVTK_View
 ::SetDisplayMode(const Handle(SALOME_InteractiveObject)& theIObject, 
-		 int theMode)
+                 int theMode)
 {
   using namespace SVTK;
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   ForEachIf<SALOME_Actor>(aCopy.GetActors(),
-			  TIsSameIObject<SALOME_Actor>(theIObject),
-			  TSetFunction<SALOME_Actor,int>
-			  (&SALOME_Actor::setDisplayMode,theMode));
+                          TIsSameIObject<SALOME_Actor>(theIObject),
+                          TSetFunction<SALOME_Actor,int>
+                          (&SALOME_Actor::setDisplayMode,theMode));
 }
 
 /*!
@@ -413,8 +413,8 @@ SVTK_View
 {
   using namespace SVTK;
   ForEach<SALOME_Actor>(theCollection,
-			TSetFunction<SALOME_Actor,int>
-			(&SALOME_Actor::setDisplayMode,0));
+                        TSetFunction<SALOME_Actor,int>
+                        (&SALOME_Actor::setDisplayMode,0));
   Repaint();
 }
 
@@ -428,8 +428,8 @@ SVTK_View
 {
   using namespace SVTK;
   ForEach<SALOME_Actor>(theCollection,
-			TSetFunction<SALOME_Actor,int>
-			(&SALOME_Actor::setDisplayMode,1));
+                        TSetFunction<SALOME_Actor,int>
+                        (&SALOME_Actor::setDisplayMode,1));
   Repaint();
 }
 
@@ -464,7 +464,7 @@ SVTK_View
   using namespace SVTK;
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   ForEach<SALOME_Actor>(aCopy.GetActors(),
-			TErase());
+                        TErase());
   Repaint();
 }
 
@@ -478,7 +478,7 @@ SVTK_View
   using namespace SVTK;
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   ForEach<SALOME_Actor>(aCopy.GetActors(),
-			TSetVisibility<SALOME_Actor>(true));
+                        TSetVisibility<SALOME_Actor>(true));
   Repaint();
 }
 
@@ -490,7 +490,7 @@ SVTK_View
 void
 SVTK_View
 ::Erase(SALOME_Actor* theActor, 
-	bool theIsUpdate)
+        bool theIsUpdate)
 {
   SVTK::TErase()(theActor);
 
@@ -507,13 +507,13 @@ SVTK_View
 void
 SVTK_View
 ::Erase(const Handle(SALOME_InteractiveObject)& theIObject, 
-	bool theIsUpdate)
+        bool theIsUpdate)
 {
   using namespace SVTK;
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   ForEachIf<SALOME_Actor>(aCopy.GetActors(),
-			  TIsSameIObject<SALOME_Actor>(theIObject),
-			  TErase());
+                          TIsSameIObject<SALOME_Actor>(theIObject),
+                          TErase());
   if(theIsUpdate)
     Repaint();
 }
@@ -524,7 +524,7 @@ SVTK_View
 void
 SVTK_View
 ::Display(SALOME_Actor* theActor, 
-	  bool theIsUpdate)
+          bool theIsUpdate)
 {
   GetRenderer()->AddActor(theActor);
   theActor->SetVisibility(true);
@@ -539,13 +539,13 @@ SVTK_View
 void
 SVTK_View
 ::Display(const Handle(SALOME_InteractiveObject)& theIObject, 
-	  bool theIsUpdate)
+          bool theIsUpdate)
 {
   using namespace SVTK;
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   ForEachIf<SALOME_Actor>(aCopy.GetActors(),
-			  TIsSameIObject<SALOME_Actor>(theIObject),
-			  TSetVisibility<SALOME_Actor>(true));
+                          TIsSameIObject<SALOME_Actor>(theIObject),
+                          TSetVisibility<SALOME_Actor>(true));
 
   if(theIsUpdate)
     Repaint();
@@ -585,13 +585,13 @@ namespace SVTK
 void
 SVTK_View
 ::Remove(const Handle(SALOME_InteractiveObject)& theIObject, 
-	 bool theIsUpdate)
+         bool theIsUpdate)
 {
   using namespace SVTK;
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   ForEachIf<SALOME_Actor>(aCopy.GetActors(),
-			  TIsSameIObject<SALOME_Actor>(theIObject),
-			  TRemoveAction(GetRenderer()));
+                          TIsSameIObject<SALOME_Actor>(theIObject),
+                          TRemoveAction(GetRenderer()));
   if(theIsUpdate)
     Repaint();
 }
@@ -602,7 +602,7 @@ SVTK_View
 void
 SVTK_View
 ::Remove(SALOME_Actor* theActor, 
-	 bool theIsUpdate)
+         bool theIsUpdate)
 {
   GetRenderer()->RemoveActor(theActor);
   if(theIsUpdate)
@@ -644,7 +644,7 @@ SVTK_View
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   SALOME_Actor* anActor = 
     Find<SALOME_Actor>(aCopy.GetActors(),
-		       TIsSameIObject<SALOME_Actor>(theIObject));
+                       TIsSameIObject<SALOME_Actor>(theIObject));
   if(anActor)
     return 1.0 - anActor->GetOpacity();
   return -1.0;
@@ -659,15 +659,15 @@ SVTK_View
 void
 SVTK_View
 ::SetTransparency(const Handle(SALOME_InteractiveObject)& theIObject, 
-		  float theTrans)
+                  float theTrans)
 {
   vtkFloatingPointType anOpacity = 1.0 - theTrans;
   using namespace SVTK;
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   ForEachIf<SALOME_Actor>(aCopy.GetActors(),
-			  TIsSameIObject<SALOME_Actor>(theIObject),
-			  TSetFunction<SALOME_Actor,vtkFloatingPointType>
-			  (&SALOME_Actor::SetOpacity,anOpacity));
+                          TIsSameIObject<SALOME_Actor>(theIObject),
+                          TSetFunction<SALOME_Actor,vtkFloatingPointType>
+                          (&SALOME_Actor::SetOpacity,anOpacity));
 }
 
 /*!
@@ -678,16 +678,16 @@ SVTK_View
 void
 SVTK_View
 ::SetColor(const Handle(SALOME_InteractiveObject)& theIObject,
-	   const QColor& theColor) 
+           const QColor& theColor) 
 {
   vtkFloatingPointType aColor[3] = {theColor.red()/255., theColor.green()/255., theColor.blue()/255.};
 
   using namespace SVTK;
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   ForEachIf<SALOME_Actor>(aCopy.GetActors(),
-			  TIsSameIObject<SALOME_Actor>(theIObject),
-			  TSetFunction<SALOME_Actor,const vtkFloatingPointType*>
-			  (&SALOME_Actor::SetColor,aColor));
+                          TIsSameIObject<SALOME_Actor>(theIObject),
+                          TSetFunction<SALOME_Actor,const vtkFloatingPointType*>
+                          (&SALOME_Actor::SetColor,aColor));
 }
 
 
@@ -703,7 +703,7 @@ SVTK_View
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   SALOME_Actor* anActor = 
     Find<SALOME_Actor>(aCopy.GetActors(),
-		       TIsSameIObject<SALOME_Actor>(theIObject));
+                       TIsSameIObject<SALOME_Actor>(theIObject));
   if(anActor){
     vtkFloatingPointType r,g,b;
     anActor->GetColor(r,g,b);

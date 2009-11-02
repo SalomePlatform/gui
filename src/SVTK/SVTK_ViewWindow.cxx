@@ -188,7 +188,7 @@ void SVTK_ViewWindow::Initialize(SVTK_ViewModelBase* theModel)
   To initialize #SVTK_ViewWindow instance
 */
 void SVTK_ViewWindow::Initialize(SVTK_View* theView,
-				 SVTK_ViewModelBase* theModel)
+                                 SVTK_ViewModelBase* theModel)
 {
   connect(theView,SIGNAL(KeyPressed(QKeyEvent*)),
           this,SLOT(onKeyPressed(QKeyEvent*)) );
@@ -205,7 +205,7 @@ void SVTK_ViewWindow::Initialize(SVTK_View* theView,
   connect(theView,SIGNAL(contextMenuRequested(QContextMenuEvent*)),
           this,SIGNAL(contextMenuRequested(QContextMenuEvent *)));
   connect(theView,SIGNAL(selectionChanged()),
-	  theModel,SLOT(onSelectionChanged()));
+          theModel,SLOT(onSelectionChanged()));
 }
 
 /*!
@@ -385,8 +385,8 @@ void SVTK_ViewWindow::unHighlightAll()
   \param theIsUpdate - update current viewer
 */
 void SVTK_ViewWindow::highlight(const Handle(SALOME_InteractiveObject)& theIO, 
-				bool theIsHighlight, 
-				bool theIsUpdate ) 
+                                bool theIsHighlight, 
+                                bool theIsUpdate ) 
 {
   myView->highlight( theIO, theIsHighlight, theIsUpdate );
 }
@@ -424,7 +424,7 @@ Handle(SALOME_InteractiveObject) SVTK_ViewWindow::FindIObject(const char* theEnt
   \param theImmediatly - update viewer
 */
 void SVTK_ViewWindow::Display(const Handle(SALOME_InteractiveObject)& theIO,
-			      bool theImmediatly) 
+                              bool theImmediatly) 
 {
   myView->Display(theIO,theImmediatly);
 }
@@ -435,7 +435,7 @@ void SVTK_ViewWindow::Display(const Handle(SALOME_InteractiveObject)& theIO,
   \param theImmediatly - update viewer
 */
 void SVTK_ViewWindow::Erase(const Handle(SALOME_InteractiveObject)& theIO,
-			    bool theImmediatly) 
+                            bool theImmediatly) 
 {
   myView->Erase(theIO,theImmediatly);
 }
@@ -472,8 +472,8 @@ void SVTK_ViewWindow::EraseAll()
 void SVTK_ViewWindow::setBackgroundColor( const QColor& theColor )
 {
   getRenderer()->SetBackground(theColor.red()/255.0, 
-			       theColor.green()/255.0,
-			       theColor.blue()/255.0);
+                               theColor.green()/255.0,
+                               theColor.blue()/255.0);
 }
 
 /*!
@@ -484,8 +484,8 @@ QColor SVTK_ViewWindow::backgroundColor() const
   vtkFloatingPointType aBackgroundColor[3];
   getRenderer()->GetBackground(aBackgroundColor);
   return QColor(int(aBackgroundColor[0]*255), 
-		int(aBackgroundColor[1]*255), 
-		int(aBackgroundColor[2]*255));
+                int(aBackgroundColor[1]*255), 
+                int(aBackgroundColor[2]*255));
 }
 
 
@@ -666,8 +666,8 @@ void SVTK_ViewWindow::onSwitchInteractionStyle(bool theOn)
       // keep the same style extensions
       SVTK_InteractorStyle* aStyle = (SVTK_InteractorStyle*)GetInteractorStyle();
       if ( aStyle ) {
-	myKeyFreeInteractorStyle->SetControllerIncrement(aStyle->ControllerIncrement());
-	myKeyFreeInteractorStyle->SetControllerOnKeyDown(aStyle->ControllerOnKeyDown());
+        myKeyFreeInteractorStyle->SetControllerIncrement(aStyle->ControllerIncrement());
+        myKeyFreeInteractorStyle->SetControllerOnKeyDown(aStyle->ControllerOnKeyDown());
       }
 
       PushInteractorStyle(myKeyFreeInteractorStyle.GetPointer());
@@ -702,8 +702,8 @@ void SVTK_ViewWindow::SetIncrementalSpeed(const int theValue, const int theMode)
   \param theBtn3 - spacemouse button for the "dominant combined switch"
 */
 void SVTK_ViewWindow::SetSpacemouseButtons(const int theBtn1, 
-					   const int theBtn2,
-					   const int theBtn3)
+                                           const int theBtn2,
+                                           const int theBtn3)
 {
   int val = theBtn1;
   myEventDispatcher->InvokeEvent(SVTK::SetSMDecreaseSpeedEvent, &val);
@@ -801,7 +801,7 @@ void SVTK_ViewWindow::onMouseDoubleClicked( QMouseEvent* event )
   Redirect the request to #SVTK_Renderer::AddActor
 */
 void SVTK_ViewWindow::AddActor( VTKViewer_Actor* theActor, 
-				bool theUpdate )
+                                bool theUpdate )
 {
   GetRenderer()->AddActor(theActor);
   if(theUpdate) 
@@ -813,7 +813,7 @@ void SVTK_ViewWindow::AddActor( VTKViewer_Actor* theActor,
   Redirect the request to #SVTK_Renderer::RemoveActor
 */
 void SVTK_ViewWindow::RemoveActor( VTKViewer_Actor* theActor, 
-				   bool theUpdate )
+                                   bool theUpdate )
 {
   GetRenderer()->RemoveActor(theActor);
   if(theUpdate) 
@@ -900,9 +900,9 @@ void SVTK_ViewWindow::RefreshDumpImage()
   Redirect the request to #SVTK_Renderer::SetSelectionProp
 */
 void SVTK_ViewWindow::SetSelectionProp(const double& theRed, 
-				       const double& theGreen, 
-				       const double& theBlue, 
-				       const int& theWidth) 
+                                       const double& theGreen, 
+                                       const double& theBlue, 
+                                       const int& theWidth) 
 {
   myView->SetSelectionProp(theRed,theGreen,theBlue,theWidth);
 }
@@ -911,9 +911,9 @@ void SVTK_ViewWindow::SetSelectionProp(const double& theRed,
   Redirect the request to #SVTK_Renderer::SetSelectionProp
 */
 void SVTK_ViewWindow::SetPreselectionProp(const double& theRed, 
-					  const double& theGreen, 
-					  const double& theBlue, 
-					  const int& theWidth) 
+                                          const double& theGreen, 
+                                          const double& theBlue, 
+                                          const int& theWidth) 
 {
   myView->SetPreselectionProp(theRed,theGreen,theBlue,theWidth);
 }
@@ -922,8 +922,8 @@ void SVTK_ViewWindow::SetPreselectionProp(const double& theRed,
   Redirect the request to #SVTK_Renderer::SetSelectionTolerance
 */
 void SVTK_ViewWindow::SetSelectionTolerance(const double& theTolNodes, 
-					    const double& theTolItems,
-					    const double& theTolObjects)
+                                            const double& theTolItems,
+                                            const double& theTolObjects)
 {
   myView->SetSelectionTolerance(theTolNodes, theTolItems, theTolObjects);
 }
@@ -1004,7 +1004,7 @@ void getGradAxisVisualParams( QXmlStreamWriter& writer, vtkAxisActor2D* actor, Q
   writer.writeEndElement();
 
   //params.sprintf( "* Graduated Axis: * Name *%u*%s*%.2f*%.2f*%.2f*%u*%u*%u*%u", isVisible, 
-  //		  title.toLatin1().data(), color[0], color[1], color[2], font, bold, italic, shadow );
+  //              title.toLatin1().data(), color[0], color[1], color[2], font, bold, italic, shadow );
 
   // Labels
   isVisible = actor->GetLabelVisibility();
@@ -1041,7 +1041,7 @@ void getGradAxisVisualParams( QXmlStreamWriter& writer, vtkAxisActor2D* actor, Q
   writer.writeEndElement();
   writer.writeEndElement();
   //  params += QString().sprintf( "* Labels *%u*%u*%u*%.2f*%.2f*%.2f*%u*%u*%u*%u", isVisible, labels, offset,  
-  //			       color[0], color[1], color[2], font, bold, italic, shadow );
+  //                           color[0], color[1], color[2], font, bold, italic, shadow );
 
   // Tick marks
   isVisible = actor->GetTickVisibility();
@@ -1320,45 +1320,45 @@ void SVTK_ViewWindow::doSetVisualParameters( const QString& parameters )
     if (aReader.isStartElement()) {
       QXmlStreamAttributes aAttr = aReader.attributes();
       //printf("### Name = %s\n", qPrintable(aReader.name().toString()));
-      if (aReader.name() == "Position") {	
-	pos[0] = aAttr.value("X").toString().toDouble();
-	pos[1] = aAttr.value("Y").toString().toDouble();
-	pos[2] = aAttr.value("Z").toString().toDouble();
-	//printf("#### Position %f; %f; %f\n", pos[0], pos[1], pos[2]);
+      if (aReader.name() == "Position") {       
+        pos[0] = aAttr.value("X").toString().toDouble();
+        pos[1] = aAttr.value("Y").toString().toDouble();
+        pos[2] = aAttr.value("Z").toString().toDouble();
+        //printf("#### Position %f; %f; %f\n", pos[0], pos[1], pos[2]);
       } else if (aReader.name() == "FocalPoint") {
-	focalPnt[0] = aAttr.value("X").toString().toDouble();
-	focalPnt[1] = aAttr.value("Y").toString().toDouble();
-	focalPnt[2] = aAttr.value("Z").toString().toDouble();
-	//printf("#### FocalPoint %f; %f; %f\n", focalPnt[0], focalPnt[1], focalPnt[2]);
+        focalPnt[0] = aAttr.value("X").toString().toDouble();
+        focalPnt[1] = aAttr.value("Y").toString().toDouble();
+        focalPnt[2] = aAttr.value("Z").toString().toDouble();
+        //printf("#### FocalPoint %f; %f; %f\n", focalPnt[0], focalPnt[1], focalPnt[2]);
       } else if (aReader.name() == "ViewUp") {
-	viewUp[0] = aAttr.value("X").toString().toDouble();
-	viewUp[1] = aAttr.value("Y").toString().toDouble();
-	viewUp[2] = aAttr.value("Z").toString().toDouble();
-	//printf("#### ViewUp %f; %f; %f\n", viewUp[0], viewUp[1], viewUp[2]);
+        viewUp[0] = aAttr.value("X").toString().toDouble();
+        viewUp[1] = aAttr.value("Y").toString().toDouble();
+        viewUp[2] = aAttr.value("Z").toString().toDouble();
+        //printf("#### ViewUp %f; %f; %f\n", viewUp[0], viewUp[1], viewUp[2]);
       } else if (aReader.name() == "ViewScale") {
-	parScale = aAttr.value("Parallel").toString().toDouble();
-	scale[0] = aAttr.value("X").toString().toDouble();
-	scale[1] = aAttr.value("Y").toString().toDouble();
-	scale[2] = aAttr.value("Z").toString().toDouble();
-	//printf("#### ViewScale %f; %f; %f\n", scale[0], scale[1], scale[2]);
+        parScale = aAttr.value("Parallel").toString().toDouble();
+        scale[0] = aAttr.value("X").toString().toDouble();
+        scale[1] = aAttr.value("Y").toString().toDouble();
+        scale[2] = aAttr.value("Z").toString().toDouble();
+        //printf("#### ViewScale %f; %f; %f\n", scale[0], scale[1], scale[2]);
       } else if (aReader.name() == "DisplayCubeAxis") {
-	if (aAttr.value("Show") == "0")
-	  gradAxesActor->VisibilityOff();
-	else
-	  gradAxesActor->VisibilityOn();
+        if (aAttr.value("Show") == "0")
+          gradAxesActor->VisibilityOff();
+        else
+          gradAxesActor->VisibilityOn();
       } else if (aReader.name() == "GraduatedAxis") {
-	if(aAttr.value("Axis") == "X") 
-	  setGradAxisVisualParams(aReader, gradAxesActor->GetXAxisActor2D());
-	else if(aAttr.value("Axis") == "Y")
-	  setGradAxisVisualParams(aReader, gradAxesActor->GetYAxisActor2D());
-	else if(aAttr.value("Axis") == "Z")
-	  setGradAxisVisualParams(aReader, gradAxesActor->GetZAxisActor2D());
+        if(aAttr.value("Axis") == "X") 
+          setGradAxisVisualParams(aReader, gradAxesActor->GetXAxisActor2D());
+        else if(aAttr.value("Axis") == "Y")
+          setGradAxisVisualParams(aReader, gradAxesActor->GetYAxisActor2D());
+        else if(aAttr.value("Axis") == "Z")
+          setGradAxisVisualParams(aReader, gradAxesActor->GetZAxisActor2D());
       } else if (aReader.name() == "Trihedron") {
-	if (aAttr.value("isShown") == "0")
-	  GetTrihedron()->VisibilityOff();
-	else
-	  GetTrihedron()->VisibilityOn();
-	SetTrihedronSize(aAttr.value("Size").toString().toDouble());
+        if (aAttr.value("isShown") == "0")
+          GetTrihedron()->VisibilityOff();
+        else
+          GetTrihedron()->VisibilityOn();
+        SetTrihedronSize(aAttr.value("Size").toString().toDouble());
       }
     } 
   }
@@ -1398,24 +1398,24 @@ void SVTK_ViewWindow::doSetVisualParameters( const QString& parameters )
       // apply graduated axes parameters
       SVTK_CubeAxesActor2D* gradAxesActor = GetCubeAxes();
       if ( gradAxesActor && paramsLst.size() == nAllParams ) {
-	int i = nNormalParams+1, j = i + nGradAxisParams - 1;
-	::setGradAxisVisualParams( gradAxesActor->GetXAxisActor2D(), parameters.section( '*', i, j ) ); 
-	i = j + 1; j += nGradAxisParams;
-	::setGradAxisVisualParams( gradAxesActor->GetYAxisActor2D(), parameters.section( '*', i, j ) ); 
-	i = j + 1; j += nGradAxisParams;
-	::setGradAxisVisualParams( gradAxesActor->GetZAxisActor2D(), parameters.section( '*', i, j ) ); 
-	
-	if ( paramsLst[13].toUShort() )
-	  gradAxesActor->VisibilityOn();
-	else
-	  gradAxesActor->VisibilityOff();
+        int i = nNormalParams+1, j = i + nGradAxisParams - 1;
+        ::setGradAxisVisualParams( gradAxesActor->GetXAxisActor2D(), parameters.section( '*', i, j ) ); 
+        i = j + 1; j += nGradAxisParams;
+        ::setGradAxisVisualParams( gradAxesActor->GetYAxisActor2D(), parameters.section( '*', i, j ) ); 
+        i = j + 1; j += nGradAxisParams;
+        ::setGradAxisVisualParams( gradAxesActor->GetZAxisActor2D(), parameters.section( '*', i, j ) ); 
+        
+        if ( paramsLst[13].toUShort() )
+          gradAxesActor->VisibilityOn();
+        else
+          gradAxesActor->VisibilityOff();
       } else if ( paramsLst.size() == nAllParams ) {
-	if ( paramsLst[90].toUShort() )
-	  GetTrihedron()->VisibilityOn();
-	else
-	  GetTrihedron()->VisibilityOff();
-	
-	SetTrihedronSize(paramsLst[91].toDouble());
+        if ( paramsLst[90].toUShort() )
+          GetTrihedron()->VisibilityOn();
+        else
+          GetTrihedron()->VisibilityOff();
+        
+        SetTrihedronSize(paramsLst[91].toDouble());
       }
     }
   }
@@ -1501,56 +1501,56 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
 
   // Dump view
   anAction = new QtxAction(tr("MNU_DUMP_VIEW"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_DUMP" ) ),
-			   tr( "MNU_DUMP_VIEW" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_DUMP" ) ),
+                           tr( "MNU_DUMP_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_DUMP_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onDumpView()));
   mgr->registerAction( anAction, DumpId );
 
   // FitAll
   anAction = new QtxAction(tr("MNU_FITALL"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_FITALL" ) ),
-			   tr( "MNU_FITALL" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_FITALL" ) ),
+                           tr( "MNU_FITALL" ), 0, this);
   anAction->setStatusTip(tr("DSC_FITALL"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onFitAll()));
   mgr->registerAction( anAction, FitAllId );
 
   // FitRect
   anAction = new QtxAction(tr("MNU_FITRECT"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_FITAREA" ) ),
-			   tr( "MNU_FITRECT" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_FITAREA" ) ),
+                           tr( "MNU_FITRECT" ), 0, this);
   anAction->setStatusTip(tr("DSC_FITRECT"));
   connect(anAction, SIGNAL(activated()), this, SLOT(activateWindowFit()));
   mgr->registerAction( anAction, FitRectId );
 
   // Zoom
   anAction = new QtxAction(tr("MNU_ZOOM_VIEW"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_ZOOM" ) ),
-			   tr( "MNU_ZOOM_VIEW" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_ZOOM" ) ),
+                           tr( "MNU_ZOOM_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_ZOOM_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(activateZoom()));
   mgr->registerAction( anAction, ZoomId );
 
   // Panning
   anAction = new QtxAction(tr("MNU_PAN_VIEW"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_PAN" ) ),
-			   tr( "MNU_PAN_VIEW" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_PAN" ) ),
+                           tr( "MNU_PAN_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_PAN_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(activatePanning()));
   mgr->registerAction( anAction, PanId );
 
   // Global Panning
   anAction = new QtxAction(tr("MNU_GLOBALPAN_VIEW"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_GLOBALPAN" ) ),
-			   tr( "MNU_GLOBALPAN_VIEW" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_GLOBALPAN" ) ),
+                           tr( "MNU_GLOBALPAN_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_GLOBALPAN_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(activateGlobalPanning()));
   mgr->registerAction( anAction, GlobalPanId );
 
   // Change rotation point
   anAction = new QtxAction(tr("MNU_CHANGINGROTATIONPOINT_VIEW"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_ROTATION_POINT" ) ),
-			   tr( "MNU_CHANGINGROTATIONPOINT_VIEW" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_ROTATION_POINT" ) ),
+                           tr( "MNU_CHANGINGROTATIONPOINT_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_CHANGINGROTATIONPOINT_VIEW"));
   anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onChangeRotationPoint(bool)));
@@ -1558,75 +1558,75 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
 
   // Rotation
   anAction = new QtxAction(tr("MNU_ROTATE_VIEW"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_ROTATE" ) ),
-			   tr( "MNU_ROTATE_VIEW" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_ROTATE" ) ),
+                           tr( "MNU_ROTATE_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_ROTATE_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(activateRotation()));
   mgr->registerAction( anAction, RotationId );
 
   // Projections
   anAction = new QtxAction(tr("MNU_FRONT_VIEW"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_FRONT" ) ),
-			   tr( "MNU_FRONT_VIEW" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_FRONT" ) ),
+                           tr( "MNU_FRONT_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_FRONT_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onFrontView()));
   mgr->registerAction( anAction, FrontId );
 
   anAction = new QtxAction(tr("MNU_BACK_VIEW"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_BACK" ) ),
-			   tr( "MNU_BACK_VIEW" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_BACK" ) ),
+                           tr( "MNU_BACK_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_BACK_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onBackView()));
   mgr->registerAction( anAction, BackId );
 
   anAction = new QtxAction(tr("MNU_TOP_VIEW"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_TOP" ) ),
-			   tr( "MNU_TOP_VIEW" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_TOP" ) ),
+                           tr( "MNU_TOP_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_TOP_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onTopView()));
   mgr->registerAction( anAction, TopId );
 
   anAction = new QtxAction(tr("MNU_BOTTOM_VIEW"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_BOTTOM" ) ),
-			   tr( "MNU_BOTTOM_VIEW" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_BOTTOM" ) ),
+                           tr( "MNU_BOTTOM_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_BOTTOM_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onBottomView()));
   mgr->registerAction( anAction, BottomId );
 
   anAction = new QtxAction(tr("MNU_LEFT_VIEW"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_LEFT" ) ),
-			   tr( "MNU_LEFT_VIEW" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_LEFT" ) ),
+                           tr( "MNU_LEFT_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_LEFT_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onLeftView()));
   mgr->registerAction( anAction, LeftId );
 
   anAction = new QtxAction(tr("MNU_RIGHT_VIEW"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_RIGHT" ) ),
-			   tr( "MNU_RIGHT_VIEW" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_RIGHT" ) ),
+                           tr( "MNU_RIGHT_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_RIGHT_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onRightView()));
   mgr->registerAction( anAction, RightId );
 
   // Reset
   anAction = new QtxAction(tr("MNU_RESET_VIEW"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_RESET" ) ),
-			   tr( "MNU_RESET_VIEW" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_RESET" ) ),
+                           tr( "MNU_RESET_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_RESET_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onResetView()));
   mgr->registerAction( anAction, ResetId );
 
   // onViewTrihedron: Shows - Hides Trihedron
   anAction = new QtxAction(tr("MNU_SHOW_TRIHEDRON"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_TRIHEDRON" ) ),
-			   tr( "MNU_SHOW_TRIHEDRON" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_TRIHEDRON" ) ),
+                           tr( "MNU_SHOW_TRIHEDRON" ), 0, this);
   anAction->setStatusTip(tr("DSC_SHOW_TRIHEDRON"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onViewTrihedron()));
   mgr->registerAction( anAction, ViewTrihedronId );
 
   // onNonIsometric: Manage non-isometric params
   anAction = new QtxAction(tr("MNU_SVTK_SCALING"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_SCALING" ) ),
-			   tr( "MNU_SVTK_SCALING" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_SCALING" ) ),
+                           tr( "MNU_SVTK_SCALING" ), 0, this);
   anAction->setStatusTip(tr("DSC_SVTK_SCALING"));
   anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onNonIsometric(bool)));
@@ -1634,8 +1634,8 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
 
   // onGraduatedAxes: Manage graduated axes params
   anAction = new QtxAction(tr("MNU_SVTK_GRADUATED_AXES"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_GRADUATED_AXES" ) ),
-			   tr( "MNU_SVTK_GRADUATED_AXES" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_GRADUATED_AXES" ) ),
+                           tr( "MNU_SVTK_GRADUATED_AXES" ), 0, this);
   anAction->setStatusTip(tr("DSC_SVTK_GRADUATED_AXES"));
   anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onGraduatedAxes(bool)));
@@ -1643,8 +1643,8 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
 
   // onGraduatedAxes: Manage graduated axes params
   anAction = new QtxAction(tr("MNU_SVTK_UPDATE_RATE"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_UPDATE_RATE" ) ),
-			   tr( "MNU_SVTK_UPDATE_RATE" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_UPDATE_RATE" ) ),
+                           tr( "MNU_SVTK_UPDATE_RATE" ), 0, this);
   anAction->setStatusTip(tr("DSC_SVTK_UPDATE_RATE"));
   anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onUpdateRate(bool)));
@@ -1652,16 +1652,16 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
 
   // Set perspective mode group
   anAction = new QtxAction(tr("MNU_SVTK_PARALLEL_MODE"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_VIEW_PARALLEL" ) ),
-			   tr( "MNU_SVTK_PARALLEL_MODE" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_VIEW_PARALLEL" ) ),
+                           tr( "MNU_SVTK_PARALLEL_MODE" ), 0, this);
   anAction->setStatusTip(tr("DSC_SVTK_PARALLEL_MODE"));
   anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onPerspectiveMode()));
   mgr->registerAction( anAction, ParallelModeId );
 
   anAction = new QtxAction(tr("MNU_SVTK_PERSPECTIVE_MODE"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_VIEW_PERSPECTIVE" ) ),
-			   tr( "MNU_SVTK_PERSPECTIVE_MODE" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_VIEW_PERSPECTIVE" ) ),
+                           tr( "MNU_SVTK_PERSPECTIVE_MODE" ), 0, this);
   anAction->setStatusTip(tr("DSC_SVTK_PERSPECTIVE_MODE"));
   anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onPerspectiveMode()));
@@ -1673,8 +1673,8 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
 
   // View Parameters
   anAction = new QtxAction(tr("MNU_VIEWPARAMETERS_VIEW"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_VIEW_PARAMETERS" ) ),
-			   tr( "MNU_VIEWPARAMETERS_VIEW" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_VIEW_PARAMETERS" ) ),
+                           tr( "MNU_VIEWPARAMETERS_VIEW" ), 0, this);
   anAction->setStatusTip(tr("DSC_VIEWPARAMETERS_VIEW"));
   anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onViewParameters(bool)));
@@ -1682,8 +1682,8 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
 
   // Switch between interaction styles
   anAction = new QtxAction(tr("MNU_SVTK_STYLE_SWITCH"), 
-			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_STYLE_SWITCH" ) ),
-			   tr( "MNU_SVTK_STYLE_SWITCH" ), 0, this);
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_STYLE_SWITCH" ) ),
+                           tr( "MNU_SVTK_STYLE_SWITCH" ), 0, this);
   anAction->setStatusTip(tr("DSC_SVTK_STYLE_SWITCH"));
   anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onSwitchInteractionStyle(bool)));
@@ -1691,16 +1691,16 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
 
   // Start recording
   myStartAction = new QtxAction(tr("MNU_SVTK_RECORDING_START"), 
-				theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_RECORDING_START" ) ),
-				tr( "MNU_SVTK_RECORDING_START" ), 0, this);
+                                theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_RECORDING_START" ) ),
+                                tr( "MNU_SVTK_RECORDING_START" ), 0, this);
   myStartAction->setStatusTip(tr("DSC_SVTK_RECORDING_START"));
   connect( myStartAction, SIGNAL( triggered ( bool ) ), this, SLOT( onStartRecording() ) );
   mgr->registerAction( myStartAction, StartRecordingId );
 
   // Play recording
   myPlayAction = new QtxAction(tr("MNU_SVTK_RECORDING_PLAY"), 
-			       theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_RECORDING_PLAY" ) ),
-			       tr( "MNU_SVTK_RECORDING_PLAY" ), 0, this);
+                               theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_RECORDING_PLAY" ) ),
+                               tr( "MNU_SVTK_RECORDING_PLAY" ), 0, this);
   myPlayAction->setStatusTip(tr("DSC_SVTK_RECORDING_PLAY"));
   myPlayAction->setEnabled( false );
   connect( myPlayAction, SIGNAL( triggered ( bool ) ), this, SLOT( onPlayRecording() ) );
@@ -1708,8 +1708,8 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
 
   // Pause recording
   myPauseAction = new QtxAction(tr("MNU_SVTK_RECORDING_PAUSE"), 
-				theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_RECORDING_PAUSE" ) ),
-				tr( "MNU_SVTK_RECORDING_PAUSE" ), 0, this);
+                                theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_RECORDING_PAUSE" ) ),
+                                tr( "MNU_SVTK_RECORDING_PAUSE" ), 0, this);
   myPauseAction->setStatusTip(tr("DSC_SVTK_RECORDING_PAUSE"));
   myPauseAction->setEnabled( false );
   connect( myPauseAction, SIGNAL( triggered ( bool ) ), this, SLOT( onPauseRecording() ) );
@@ -1717,8 +1717,8 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
 
   // Stop recording
   myStopAction = new QtxAction(tr("MNU_SVTK_RECORDING_STOP"), 
-			       theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_RECORDING_STOP" ) ),
-			       tr( "MNU_SVTK_RECORDING_STOP" ), 0, this);
+                               theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_RECORDING_STOP" ) ),
+                               tr( "MNU_SVTK_RECORDING_STOP" ), 0, this);
   myStopAction->setStatusTip(tr("DSC_SVTK_RECORDING_STOP"));
   myStopAction->setEnabled( false );
   connect( myStopAction, SIGNAL( triggered ( bool ) ), this, SLOT( onStopRecording() ) );

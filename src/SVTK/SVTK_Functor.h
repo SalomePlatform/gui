@@ -54,9 +54,9 @@ namespace SVTK
     {
       if ( theActor->hasIO() )
       {
-	Handle(SALOME_InteractiveObject) anIO = theActor->getIO();
-	if ( anIO->hasEntry() )
-	  return myEntry == anIO->getEntry();
+        Handle(SALOME_InteractiveObject) anIO = theActor->getIO();
+        if ( anIO->hasEntry() )
+          return myEntry == anIO->getEntry();
       }
       return false;
     }
@@ -78,8 +78,8 @@ namespace SVTK
     {
       if(theActor->hasIO())
       {
-	Handle(SALOME_InteractiveObject) anIO = theActor->getIO();
-	return myIObject->isSame(anIO);
+        Handle(SALOME_InteractiveObject) anIO = theActor->getIO();
+        return myIObject->isSame(anIO);
       }
       return false;
     }
@@ -102,7 +102,7 @@ namespace SVTK
     void operator()(TActor* theActor) 
     {
       if(theActor->GetVisibility() && theActor->GetMapper())
-	theActor->highlight( myIsHighlight );
+        theActor->highlight( myIsHighlight );
     }
   };
 

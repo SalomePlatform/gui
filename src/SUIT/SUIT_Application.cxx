@@ -289,10 +289,10 @@ void SUIT_Application::setActiveStudy( SUIT_Study* study )
 
   if ( myStudy )
     disconnect( myStudy, SIGNAL( studyModified( SUIT_Study* ) ),
-		this, SLOT( updateCommandsStatus() ) );
+                this, SLOT( updateCommandsStatus() ) );
   if ( study )
     connect( study, SIGNAL( studyModified( SUIT_Study* ) ),
-	     this, SLOT( updateCommandsStatus() ) );
+             this, SLOT( updateCommandsStatus() ) );
 
   myStudy = study;
 }
@@ -677,6 +677,6 @@ void SUIT_Application::onDesktopActivated()
 */
 void SUIT_Application::onHelpContextModule( const QString& /*theComponentName*/,
                                             const QString& /*theFileName*/,
-					    const QString& /*theContext*/ )
+                                            const QString& /*theContext*/ )
 {
 }

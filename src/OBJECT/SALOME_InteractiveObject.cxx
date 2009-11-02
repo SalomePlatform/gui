@@ -51,8 +51,8 @@ SALOME_InteractiveObject::SALOME_InteractiveObject()
   \param aName - name of object
 */
 SALOME_InteractiveObject::SALOME_InteractiveObject(const char* anEntry, 
-						   const char* aComponentDataType,
-						   const char* aName):
+                                                   const char* aComponentDataType,
+                                                   const char* aName):
   myEntry(anEntry), 
   myName(aName), 
   myComponentDataType(aComponentDataType), 

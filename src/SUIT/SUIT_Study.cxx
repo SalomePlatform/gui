@@ -288,7 +288,7 @@ bool SUIT_Study::start( SUIT_Operation* theOp, const bool toCheck )
     {
       int anAnsw = SUIT_MessageBox::question( application()->desktop(),
                                               tr( "OPERATION_LAUNCH" ), tr( "PREVIOUS_NOT_FINISHED" ),
-					      tr( "CONTINUE" ), tr( "CANCEL" ) );
+                                              tr( "CONTINUE" ), tr( "CANCEL" ) );
 
       if ( anAnsw == 1 )
         return false;

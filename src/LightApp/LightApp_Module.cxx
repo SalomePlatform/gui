@@ -145,7 +145,7 @@ void LightApp_Module::contextMenuPopup( const QString& client, QMenu* menu, QStr
  * For updating model or whole object browser use update() method can be used.
 */
 void LightApp_Module::updateObjBrowser( bool theIsUpdateDataModel, 
-					SUIT_DataObject* theDataObject )
+                                        SUIT_DataObject* theDataObject )
 {
   bool upd = getApp()->objectBrowser()->autoUpdate();
   getApp()->objectBrowser()->setAutoUpdate( false );
@@ -153,12 +153,12 @@ void LightApp_Module::updateObjBrowser( bool theIsUpdateDataModel,
   if( theIsUpdateDataModel ){
     if( CAM_DataModel* aDataModel = dataModel() ){
       if ( LightApp_DataModel* aModel = dynamic_cast<LightApp_DataModel*>( aDataModel ) ) {
-	SUIT_DataObject* aParent = NULL;
-	if(theDataObject && theDataObject != aDataModel->root())
-	  aParent = theDataObject->parent();
+        SUIT_DataObject* aParent = NULL;
+        if(theDataObject && theDataObject != aDataModel->root())
+          aParent = theDataObject->parent();
 
-	LightApp_DataObject* anObject = dynamic_cast<LightApp_DataObject*>(theDataObject);
-	LightApp_Study* aStudy = dynamic_cast<LightApp_Study*>(getApp()->activeStudy());
+        LightApp_DataObject* anObject = dynamic_cast<LightApp_DataObject*>(theDataObject);
+        LightApp_Study* aStudy = dynamic_cast<LightApp_Study*>(getApp()->activeStudy());
         aModel->update( anObject, aStudy );
       }
     }
@@ -240,9 +240,9 @@ bool LightApp_Module::deactivateModule( SUIT_Study* study )
   mySwitchOp = 0;
 
   disconnect( application(), SIGNAL( viewManagerAdded( SUIT_ViewManager* ) ),
-	      this, SLOT( onViewManagerAdded( SUIT_ViewManager* ) ) );
+              this, SLOT( onViewManagerAdded( SUIT_ViewManager* ) ) );
   disconnect( application(), SIGNAL( viewManagerRemoved( SUIT_ViewManager* ) ),
-	      this, SLOT( onViewManagerRemoved( SUIT_ViewManager* ) ) );
+              this, SLOT( onViewManagerRemoved( SUIT_ViewManager* ) ) );
 
   // abort all operations
   MapOfOperation::const_iterator anIt;
@@ -385,13 +385,13 @@ QtxPopupMgr* LightApp_Module::popupMgr()
     
     QAction 
       *disp = createAction( -1, tr( "TOP_SHOW" ), p, tr( "MEN_SHOW" ), tr( "STB_SHOW" ),
-			    0, d, false, this, SLOT( onShowHide() ) ),
+                            0, d, false, this, SLOT( onShowHide() ) ),
       *erase = createAction( -1, tr( "TOP_HIDE" ), p, tr( "MEN_HIDE" ), tr( "STB_HIDE" ),
-			     0, d, false, this, SLOT( onShowHide() ) ),
+                             0, d, false, this, SLOT( onShowHide() ) ),
       *dispOnly = createAction( -1, tr( "TOP_DISPLAY_ONLY" ), p, tr( "MEN_DISPLAY_ONLY" ), tr( "STB_DISPLAY_ONLY" ),
-			        0, d, false, this, SLOT( onShowHide() ) ),
+                                0, d, false, this, SLOT( onShowHide() ) ),
       *eraseAll = createAction( -1, tr( "TOP_ERASE_ALL" ), p, tr( "MEN_ERASE_ALL" ), tr( "STB_ERASE_ALL" ),
-			        0, d, false, this, SLOT( onShowHide() ) );
+                                0, d, false, this, SLOT( onShowHide() ) );
     myDisplay     = actionId( disp );
     myErase       = actionId( erase );
     myDisplayOnly = actionId( dispOnly );

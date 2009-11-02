@@ -30,4 +30,5 @@ SUBDIRS = src/Qtx \
 	  src/OBJECT \
 	  src/Prs \
 	  src/SVTK \
-          src/STD
+          src/STD \
+          src/CAM

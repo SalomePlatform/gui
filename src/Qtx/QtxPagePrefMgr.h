@@ -434,9 +434,11 @@ public:
 
   QStringList      strings() const;
   QList<int>       numbers() const;
+  QList<QIcon>   icons() const;
 
   void             setStrings( const QStringList& );
   void             setNumbers( const QList<int>& );
+  void             setIcons( const QList<QIcon>& );
 
   virtual void     store();
   virtual void     retrieve();
@@ -449,6 +451,7 @@ private:
   void             updateSelector();
   void             setStrings( const QVariant& );
   void             setNumbers( const QVariant& );
+  void             setIcons( const QVariant& );
 
 private:
   int              myType;

@@ -39,6 +39,8 @@
 #include <dlfcn.h>
 #endif
 
+#include <cstdio>
+
 /*!
   \brief Create new instance of CAM_Application.
   \return new instance of CAM_Application class

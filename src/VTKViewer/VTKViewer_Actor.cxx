@@ -79,7 +79,7 @@ VTKViewer_Actor
   myTransformFilter(VTKViewer_TransformFilter::New())
 {
   vtkMapper::GetResolveCoincidentTopologyPolygonOffsetParameters(myPolygonOffsetFactor,
-								 myPolygonOffsetUnits);
+                                                                 myPolygonOffsetUnits);
 
   for(int i = 0; i < 6; i++)
     myPassFilter.push_back(vtkPassThroughFilter::New());
@@ -233,7 +233,7 @@ VTKViewer_Actor
     
     vtkMapper::SetResolveCoincidentTopologyToPolygonOffset();
     vtkMapper::SetResolveCoincidentTopologyPolygonOffsetParameters(myPolygonOffsetFactor,
-								   myPolygonOffsetUnits);
+                                                                   myPolygonOffsetUnits);
     Superclass::Render(ren,m);
     
     vtkMapper::SetResolveCoincidentTopologyPolygonOffsetParameters(aFactor,aUnit);
@@ -261,7 +261,7 @@ VTKViewer_Actor
 void
 VTKViewer_Actor
 ::SetPolygonOffsetParameters(vtkFloatingPointType factor, 
-			     vtkFloatingPointType units)
+                             vtkFloatingPointType units)
 {
   myPolygonOffsetFactor = factor;
   myPolygonOffsetUnits = units;
@@ -274,7 +274,7 @@ VTKViewer_Actor
 void
 VTKViewer_Actor
 ::GetPolygonOffsetParameters(vtkFloatingPointType& factor, 
-			     vtkFloatingPointType& units)
+                             vtkFloatingPointType& units)
 {
   factor = myPolygonOffsetFactor;
   units = myPolygonOffsetUnits;
@@ -578,8 +578,8 @@ VTKViewer_Actor
 void
 VTKViewer_Actor
 ::SetColor(vtkFloatingPointType r,
-	   vtkFloatingPointType g,
-	   vtkFloatingPointType b)
+           vtkFloatingPointType g,
+           vtkFloatingPointType b)
 {
   GetProperty()->SetColor(r,g,b);
 }
@@ -600,8 +600,8 @@ VTKViewer_Actor
 void
 VTKViewer_Actor
 ::GetColor(vtkFloatingPointType& r,
-	   vtkFloatingPointType& g,
-	   vtkFloatingPointType& b)
+           vtkFloatingPointType& g,
+           vtkFloatingPointType& b)
 {
   vtkFloatingPointType aColor[3];
   GetProperty()->GetColor(aColor);

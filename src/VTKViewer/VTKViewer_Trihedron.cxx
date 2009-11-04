@@ -78,8 +78,8 @@ void VTKViewer_UnScaledActor::Render(vtkRenderer *theRenderer)
     theRenderer->ViewToWorld(P[0][0],P[0][1],P[0][2]);
     theRenderer->ViewToWorld(P[1][0],P[1][1],P[1][2]);
     vtkFloatingPointType aWorldDiag = sqrt((P[1][0]-P[0][0])*(P[1][0]-P[0][0])+
-					   (P[1][1]-P[0][1])*(P[1][1]-P[0][1])+
-					   (P[1][2]-P[0][2])*(P[1][2]-P[0][2]));
+                                           (P[1][1]-P[0][1])*(P[1][1]-P[0][1])+
+                                           (P[1][2]-P[0][2])*(P[1][2]-P[0][2]));
     int* aSize = theRenderer->GetRenderWindow()->GetSize();
     vtkFloatingPointType aWinDiag = sqrt(vtkFloatingPointType(aSize[0]*aSize[0]+aSize[1]*aSize[1]));
     vtkDataSet* aDataSet = GetMapper()->GetInput();
@@ -454,10 +454,10 @@ int VTKViewer_Trihedron::GetVisibleActorCount(vtkRenderer* theRenderer)
     if( prop->GetVisibility())
       if(VTKViewer_Actor* anActor = VTKViewer_Actor::SafeDownCast(prop)) {
         if(!anActor->IsInfinitive()) 
-	  aCount++;
+          aCount++;
       }
       else if ( !OwnActor( anActor ) ) {
-	aCount++;
+        aCount++;
       }
         //int aCount = theRenderer->VisibleActorCount();
         //SetVisibility(aVis);

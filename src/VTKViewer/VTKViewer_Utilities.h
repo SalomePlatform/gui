@@ -30,13 +30,13 @@ VTKVIEWER_EXPORT
 extern
 void
 ResetCamera(vtkRenderer* theRenderer, 
-	    int theUsingZeroFocalPoint = false);
+            int theUsingZeroFocalPoint = false);
 
 VTKVIEWER_EXPORT
 extern
 int
 ComputeVisiblePropBounds(vtkRenderer* theRenderer, 
-			 vtkFloatingPointType theBounds[6]);
+                         vtkFloatingPointType theBounds[6]);
 
 VTKVIEWER_EXPORT
 extern
@@ -46,9 +46,9 @@ VTKVIEWER_EXPORT
 extern
 bool
 ComputeTrihedronSize(vtkRenderer* theRenderer, 
-		     vtkFloatingPointType& theNewSize, 
-		     const vtkFloatingPointType theSize, 
-		     const vtkFloatingPointType theSizeInPercents);
+                     vtkFloatingPointType& theNewSize, 
+                     const vtkFloatingPointType theSize, 
+                     const vtkFloatingPointType theSizeInPercents);
 
 VTKVIEWER_EXPORT
 extern
@@ -56,5 +56,5 @@ bool IsBBEmpty(vtkRenderer* theRenderer);
 VTKVIEWER_EXPORT
 extern
 bool ComputeBBCenter(vtkRenderer* theRenderer, 
-		     vtkFloatingPointType theCenter[3]);
+                     vtkFloatingPointType theCenter[3]);
 #endif

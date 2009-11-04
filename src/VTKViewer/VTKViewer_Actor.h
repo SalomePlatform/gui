@@ -91,15 +91,15 @@ class VTKVIEWER_EXPORT VTKViewer_Actor : public vtkLODActor
   virtual
   void
   SetColor(vtkFloatingPointType r,
-	   vtkFloatingPointType g,
-	   vtkFloatingPointType b);
+           vtkFloatingPointType g,
+           vtkFloatingPointType b);
 
   //! Get current color
   virtual
   void
   GetColor(vtkFloatingPointType& r,
-	   vtkFloatingPointType& g,
-	   vtkFloatingPointType& b);
+           vtkFloatingPointType& g,
+           vtkFloatingPointType& b);
 
   //! Change color
   virtual
@@ -223,12 +223,12 @@ class VTKVIEWER_EXPORT VTKViewer_Actor : public vtkLODActor
   //! Set ResolveCoincidentTopology parameters
   void
   SetPolygonOffsetParameters(vtkFloatingPointType factor, 
-			     vtkFloatingPointType units);
+                             vtkFloatingPointType units);
 
   //! Get current ResolveCoincidentTopology parameters
   void
   GetPolygonOffsetParameters(vtkFloatingPointType& factor, 
-			     vtkFloatingPointType& units);
+                             vtkFloatingPointType& units);
 
   virtual
   void

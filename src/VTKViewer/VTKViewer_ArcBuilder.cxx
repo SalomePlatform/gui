@@ -89,7 +89,7 @@ double XYZ::Modulus () const {
 Pnt::Pnt(double X, 
          double Y, 
          double Z,
-	 double ScalarValue):
+         double ScalarValue):
   coord(X,Y,Z),
   scalarValue(ScalarValue)
 {
@@ -617,7 +617,7 @@ vtkIdType Build1DArc(vtkIdType cellId, vtkUnstructuredGrid* input,
     for(vtkIdType idx = 1; idx < aNbPts-1;idx++) {
       curID = output->GetPoints()->InsertNextPoint(aPoints->GetPoint(idx));
       if( outputScalars )
-	outputScalars->InsertNextTuple1(aScalarValues[idx]);
+        outputScalars->InsertNextTuple1(aScalarValues[idx]);
       aNewPoints[idx] = curID;
     }
     aNewPoints[aNbPts-1] = pts[1];
@@ -632,10 +632,10 @@ vtkIdType Build1DArc(vtkIdType cellId, vtkUnstructuredGrid* input,
  * Array theIds - it is array with ids of added points.
  */
 vtkIdType MergevtkPoints(const std::vector<vtkPoints*>& theCollection,
-			 const std::vector< std::vector<double> >& theScalarCollection,
-			 vtkPoints* thePoints,
-			 std::map<int, double>& thePntId2ScalarValue,
-			 vtkIdType* &theIds){
+                         const std::vector< std::vector<double> >& theScalarCollection,
+                         vtkPoints* thePoints,
+                         std::map<int, double>& thePntId2ScalarValue,
+                         vtkIdType* &theIds){
   vtkIdType aNbPoints = 0;
   vtkIdType anIdCounter = 0;
   vtkIdType aNewPntId = 0;
@@ -660,7 +660,7 @@ vtkIdType MergevtkPoints(const std::vector<vtkPoints*>& theCollection,
       for(vtkIdType idx = 0;idx < aPoints->GetNumberOfPoints()-1;idx++){
         aNewPntId = thePoints->InsertNextPoint(aPoints->GetPoint(idx));
         theIds[anIdCounter] = aNewPntId;
-	thePntId2ScalarValue[ aNewPntId ] = aScalarValues[idx];
+        thePntId2ScalarValue[ aNewPntId ] = aScalarValues[idx];
         anIdCounter++;
       }
     }

@@ -43,14 +43,14 @@ namespace VTK
     {}
     void operator()(TActor* theActor)
     {
-	    (theActor->*myAction)(myArg);
+            (theActor->*myAction)(myArg);
     }
   };
 
   template<class TActor, class TArg = int> struct TSetVisibility: TSetFunction<TActor,TArg>
   {
     TSetVisibility(TArg theArg): 
-	    TSetFunction<TActor,TArg>(&TActor::SetVisibility,theArg)
+            TSetFunction<TActor,TArg>(&TActor::SetVisibility,theArg)
     {}
   };
 }

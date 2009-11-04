@@ -73,18 +73,18 @@ public:
   vtkFloatingPointType        GetDistance() const;
 
   void                        SetForegroundColor(const vtkFloatingPointType r,
-						 const vtkFloatingPointType g,
-						 const vtkFloatingPointType b);
+                                                 const vtkFloatingPointType g,
+                                                 const vtkFloatingPointType b);
   void                        GetForegroundColor(vtkFloatingPointType& r,
-						 vtkFloatingPointType& g,
-						 vtkFloatingPointType& b);
+                                                 vtkFloatingPointType& g,
+                                                 vtkFloatingPointType& b);
 
   void                        SetBackgroundColor(const vtkFloatingPointType r,
-						 const vtkFloatingPointType g,
-						 const vtkFloatingPointType b);
+                                                 const vtkFloatingPointType g,
+                                                 const vtkFloatingPointType b);
   void                        GetBackgroundColor(vtkFloatingPointType& r,
-						 vtkFloatingPointType& g,
-						 vtkFloatingPointType& b);
+                                                 vtkFloatingPointType& g,
+                                                 vtkFloatingPointType& b);
 
   void                        SetTransparency(const vtkFloatingPointType theTransparency);
   vtkFloatingPointType        GetTransparency() const;

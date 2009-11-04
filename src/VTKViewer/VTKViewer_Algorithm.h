@@ -68,13 +68,13 @@ namespace VTK
     template<typename TActor, typename TFunction>
       TFunction ForEach(vtkActorCollection *theCollection, TFunction theFun)
       {
-	if(theCollection){
-	  theCollection->InitTraversal();
-	  while(vtkActor *anAct = theCollection->GetNextActor())
-	    if(TActor *anActor = dynamic_cast<TActor*>(anAct))
-	      theFun(anActor);
-	}
-	return theFun;
+        if(theCollection){
+          theCollection->InitTraversal();
+          while(vtkActor *anAct = theCollection->GetNextActor())
+            if(TActor *anActor = dynamic_cast<TActor*>(anAct))
+              theFun(anActor);
+        }
+        return theFun;
       }
   
     /*!For each actor(for ex: someActor) from \a theCollection(that can be dynamic cast to type TActor and \n
@@ -83,17 +83,17 @@ namespace VTK
      */
     template<typename TActor, typename TPredicate, typename TFunction>
       TFunction ForEachIf(vtkActorCollection *theCollection, 
-			  TPredicate thePredicate,
-			  TFunction theFun)
+                          TPredicate thePredicate,
+                          TFunction theFun)
       {
-	if(theCollection){
-	  theCollection->InitTraversal();
-	  while(vtkActor *anAct = theCollection->GetNextActor())
-	    if(TActor *anActor = dynamic_cast<TActor*>(anAct))
-	      if(thePredicate(anActor))
-		theFun(anActor);
-	}
-	return theFun;
+        if(theCollection){
+          theCollection->InitTraversal();
+          while(vtkActor *anAct = theCollection->GetNextActor())
+            if(TActor *anActor = dynamic_cast<TActor*>(anAct))
+              if(thePredicate(anActor))
+                theFun(anActor);
+        }
+        return theFun;
       }
   
     /*!Find actor from collection, that can be dynamicaly cast to \a TActor, \n
@@ -103,14 +103,14 @@ namespace VTK
     template<typename TActor, typename TPredicate>
       TActor* Find(vtkActorCollection *theCollection, TPredicate thePredicate)
       {
-	if(theCollection){
-	  theCollection->InitTraversal();
-	  while(vtkActor *anAct = theCollection->GetNextActor())
-	    if(TActor *anActor = dynamic_cast<TActor*>(anAct))
-	      if(thePredicate(anActor))
-		return anActor;
-	}
-	return NULL;
+        if(theCollection){
+          theCollection->InitTraversal();
+          while(vtkActor *anAct = theCollection->GetNextActor())
+            if(TActor *anActor = dynamic_cast<TActor*>(anAct))
+              if(thePredicate(anActor))
+                return anActor;
+        }
+        return NULL;
       }
 
 }

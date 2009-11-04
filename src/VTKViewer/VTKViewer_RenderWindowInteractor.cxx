@@ -391,8 +391,8 @@ void VTKViewer_RenderWindowInteractor::LeftButtonPressed(const QMouseEvent *even
     return ;
   }
   myInteractorStyle->OnLeftButtonDown((event->modifiers() & Qt::ControlModifier), 
-				      (event->modifiers() & Qt::ShiftModifier), 
-				      event->x(), event->y());
+                                      (event->modifiers() & Qt::ShiftModifier), 
+                                      event->x(), event->y());
 }
 
 /*!Reaction on left button releases.\n
@@ -404,8 +404,8 @@ void VTKViewer_RenderWindowInteractor::LeftButtonReleased(const QMouseEvent *eve
     return ;
   }
   myInteractorStyle->OnLeftButtonUp( (event->modifiers() & Qt::ControlModifier), 
-				     (event->modifiers() & Qt::ShiftModifier), 
-				     event->x(), event->y() ) ;
+                                     (event->modifiers() & Qt::ShiftModifier), 
+                                     event->x(), event->y() ) ;
 }
 
 /*!Reaction on middle button pressed.\n
@@ -417,8 +417,8 @@ void VTKViewer_RenderWindowInteractor::MiddleButtonPressed(const QMouseEvent *ev
     return ;
   }
   myInteractorStyle->OnMiddleButtonDown((event->modifiers() & Qt::ControlModifier), 
-					(event->modifiers() & Qt::ShiftModifier), 
-					event->x(), event->y() ) ;
+                                        (event->modifiers() & Qt::ShiftModifier), 
+                                        event->x(), event->y() ) ;
 }
 
 /*!Reaction on middle button released.\n
@@ -430,8 +430,8 @@ void VTKViewer_RenderWindowInteractor::MiddleButtonReleased(const QMouseEvent *e
     return ;
   }
   myInteractorStyle->OnMiddleButtonUp( (event->modifiers() & Qt::ControlModifier), 
-				       (event->modifiers() & Qt::ShiftModifier), 
-				       event->x(), event->y() ) ;
+                                       (event->modifiers() & Qt::ShiftModifier), 
+                                       event->x(), event->y() ) ;
 }
 
 /*!Reaction on right button pressed.\n
@@ -443,8 +443,8 @@ void VTKViewer_RenderWindowInteractor::RightButtonPressed(const QMouseEvent *eve
     return ;
   }
   myInteractorStyle->OnRightButtonDown( (event->modifiers() & Qt::ControlModifier), 
-					(event->modifiers() & Qt::ShiftModifier), 
-					event->x(), event->y() ) ;
+                                        (event->modifiers() & Qt::ShiftModifier), 
+                                        event->x(), event->y() ) ;
 }
 
 /*!Reaction on right button released.\n
@@ -457,8 +457,8 @@ void VTKViewer_RenderWindowInteractor::RightButtonReleased(const QMouseEvent *ev
   }
   bool isOperation = myInteractorStyle->CurrentState() != VTK_INTERACTOR_STYLE_CAMERA_NONE;
   myInteractorStyle->OnRightButtonUp( (event->modifiers() & Qt::ControlModifier),
-				      (event->modifiers() & Qt::ShiftModifier),
-				      event->x(), event->y() );
+                                      (event->modifiers() & Qt::ShiftModifier),
+                                      event->x(), event->y() );
   if ( !isOperation )
   {
     QContextMenuEvent aEvent( QContextMenuEvent::Mouse,
@@ -518,8 +518,8 @@ void VTKViewer_RenderWindowInteractor::ChangeRepresentationToWireframe(vtkActorC
 {
   using namespace VTK;
   ForEach<VTKViewer_Actor>(theCollection,
-			TSetFunction<VTKViewer_Actor,int>
-			(&VTKViewer_Actor::setDisplayMode,0));
+                        TSetFunction<VTKViewer_Actor,int>
+                        (&VTKViewer_Actor::setDisplayMode,0));
   emit RenderWindowModified();
 }
 
@@ -530,8 +530,8 @@ void VTKViewer_RenderWindowInteractor::ChangeRepresentationToSurface(vtkActorCol
 {
   using namespace VTK;
   ForEach<VTKViewer_Actor>(theCollection,
-			TSetFunction<VTKViewer_Actor,int>
-			(&VTKViewer_Actor::setDisplayMode,1));
+                        TSetFunction<VTKViewer_Actor,int>
+                        (&VTKViewer_Actor::setDisplayMode,1));
   emit RenderWindowModified();
 }
 
@@ -664,8 +664,8 @@ bool VTKViewer_RenderWindowInteractor::unHighlightAll(){
  * \li Emit render window modified, if flag \a update - true.
  */
 bool VTKViewer_RenderWindowInteractor::highlight(const TColStd_IndexedMapOfInteger& theMapIndex,
-						 VTKViewer_Actor* theMapActor, VTKViewer_Actor* theActor,
-						 TUpdateActor theFun, bool hilight, bool update)
+                                                 VTKViewer_Actor* theMapActor, VTKViewer_Actor* theActor,
+                                                 TUpdateActor theFun, bool hilight, bool update)
 {
   if(theMapIndex.Extent() == 0) return false;
 
@@ -687,9 +687,9 @@ bool VTKViewer_RenderWindowInteractor::highlight(const TColStd_IndexedMapOfInteg
 
 /*!Sets actors data.*/
 void VTKViewer_RenderWindowInteractor::setActorData(const TColStd_IndexedMapOfInteger& theMapIndex,
-						    VTKViewer_Actor * theMapActor,
-						    VTKViewer_Actor * theActor,
-						    TUpdateActor theFun)
+                                                    VTKViewer_Actor * theMapActor,
+                                                    VTKViewer_Actor * theActor,
+                                                    TUpdateActor theFun)
 {
   (*theFun)(theMapIndex,theMapActor,theActor);
   vtkFloatingPointType aPos[3];

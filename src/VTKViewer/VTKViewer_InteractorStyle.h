@@ -78,7 +78,7 @@ class VTKVIEWER_EXPORT VTKViewer_InteractorStyle : public QObject, public vtkInt
 
   void setTriedron(VTKViewer_Trihedron* theTrihedron);
   void setPreselectionProp(const double& theRed = 0, const double& theGreen = 1,
-			   const double& theBlue = 1, const int& theWidth = 5);
+                           const double& theBlue = 1, const int& theWidth = 5);
 
   // Generic event bindings must be overridden in subclasses
   void OnMouseMove  (int ctrl, int shift, int x, int y);
@@ -121,14 +121,14 @@ class VTKVIEWER_EXPORT VTKViewer_InteractorStyle : public QObject, public vtkInt
   void Place(const int theX, const int theY);
   void TranslateView(int toX, int toY, int fromX, int fromY);
   bool IsInRect(vtkActor* theActor, 
-		const int left, const int top, 
-		const int right, const int bottom);
+                const int left, const int top, 
+                const int right, const int bottom);
   bool IsInRect(vtkCell* theCell, 
-		const int left, const int top, 
-		const int right, const int bottom);
+                const int left, const int top, 
+                const int right, const int bottom);
   bool IsInRect(vtkFloatingPointType* thePoint, 
-		const int left, const int top, 
-		const int right, const int bottom);
+                const int left, const int top, 
+                const int right, const int bottom);
 
   int State;
   vtkFloatingPointType MotionFactor;

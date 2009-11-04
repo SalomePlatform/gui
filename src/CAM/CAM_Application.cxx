@@ -276,13 +276,21 @@ CAM_Module* CAM_Application::loadModule( const QString& modName, const bool show
   GET_MODULE_FUNC crtInst = 0;
 
 #ifdef WIN32
-  HINSTANCE modLib = ::LoadLibrary( libName.toLatin1() ); 
+#ifdef UNICODE
+  HINSTANCE modLib = ::LoadLibrary( (LPTSTR)libName.utf16() );   
+#else
+  HINSTANCE modLib = ::LoadLibrary( (LPTSTR)libName.toLatin1().constData() ); 
+#endif
   if ( !modLib )
   {
     LPVOID lpMsgBuf;
     ::FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
                      FORMAT_MESSAGE_IGNORE_INSERTS, 0, ::GetLastError(), 0, (LPTSTR)&lpMsgBuf, 0, 0 );
+#ifdef UNICODE
+    err = QString( "Failed to load  %1. %2" ).arg( libName ).arg( QString::fromUtf16( (LPTSTR)lpMsgBuf ) );
+#else
     err = QString( "Failed to load  %1. %2" ).arg( libName ).arg( (LPTSTR)lpMsgBuf );
+#endif
     ::LocalFree( lpMsgBuf );
   }
   else
@@ -293,7 +301,11 @@ CAM_Module* CAM_Application::loadModule( const QString& modName, const bool show
       LPVOID lpMsgBuf;
       ::FormatMessage( FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM |
                        FORMAT_MESSAGE_IGNORE_INSERTS, 0, ::GetLastError(), 0, (LPTSTR)&lpMsgBuf, 0, 0 );
+#ifdef UNICODE
+    err = QString( "Failed to find  %1 function. %2" ).arg( GET_MODULE_NAME ).arg( QString::fromUtf16( (LPTSTR)lpMsgBuf ) );
+#else
     err = QString( "Failed to find  %1 function. %2" ).arg( GET_MODULE_NAME ).arg( (LPTSTR)lpMsgBuf );
+#endif
     ::LocalFree( lpMsgBuf );
     }
   }

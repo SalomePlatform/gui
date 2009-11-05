@@ -45,6 +45,8 @@
 #include <QDateTimeEdit>
 #include <QStackedWidget>
 
+#include <stdio.h>
+
 /*!
   \class QtxPagePrefMgr
   \brief GUI implementation of the QtxPreferenceMgr class: preferences manager.
@@ -2539,11 +2541,9 @@ void QtxPagePrefSelectItem::setIcons( const QVariant& var )
   {
     index++;
     if ( (*it).canConvert<QIcon>() ) {
-      printf("\nQIcon Item Appended!!!");
       QIcon icon = (*it).value<QIcon>();
       lst.append( icon );
     } else if ( (*it).canConvert<QPixmap>() ) {
-      printf("\nQPixmap Item Appended!!!");
       QPixmap pix = (*it).value<QPixmap>();
       QIcon icon (pix);
       lst.append( icon );

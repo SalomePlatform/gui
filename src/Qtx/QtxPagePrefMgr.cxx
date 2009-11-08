@@ -2298,7 +2298,7 @@ void QtxPagePrefSelectItem::setInputType( const int type )
 /*!
   \brief Get the list of the values from the selection widget.
   \return list of values
-  \sa numbers(), setStrings()
+  \sa numbers(), icons(), setStrings()
 */
 QStringList QtxPagePrefSelectItem::strings() const
 {
@@ -2311,7 +2311,7 @@ QStringList QtxPagePrefSelectItem::strings() const
 /*!
   \brief Get the list of the values identifiers from the selection widget.
   \return list of values IDs
-  \sa strings(), setNumbers()
+  \sa strings(), icons(), setNumbers()
 */
 QList<int> QtxPagePrefSelectItem::numbers() const
 {
@@ -2325,25 +2325,22 @@ QList<int> QtxPagePrefSelectItem::numbers() const
 }
 
 /*!
-  \brief Get the list of the graphic identifiers from the selection widget.
-  \return list of pixmaps
-  \sa icons(), setIcons()
+  \brief Get the list of the icons associated with the selection widget.items
+  \return list of icons
+  \sa strings(), numbers(), setIcons()
 */
 QList<QIcon> QtxPagePrefSelectItem::icons() const
 {
   QList<QIcon> res;
   for ( uint i = 0; i < mySelector->count(); i++ )
-  {
-    if ( mySelector->hasId( i ) )
-      res.append( mySelector->itemIcon ( i ) );
-  }
+    res.append( mySelector->itemIcon( i ) );
   return res;
 }
 
 /*!
   \brief Set the list of the values to the selection widget.
   \param lst new list of values
-  \sa strings(), setNumbers()
+  \sa strings(), setNumbers(), setIcons()
 */
 void QtxPagePrefSelectItem::setStrings( const QStringList& lst )
 {
@@ -2352,9 +2349,9 @@ void QtxPagePrefSelectItem::setStrings( const QStringList& lst )
 }
 
 /*!
-  \brief Set the list of the values identifiers to the selection widget.
+  \brief Set the list of the values identifiers to the selection widget
   \param ids new list of values IDs
-  \sa numbers(), setStrings()
+  \sa numbers(), setStrings(), setIcons()
 */
 void QtxPagePrefSelectItem::setNumbers( const QList<int>& ids )
 {
@@ -2368,14 +2365,17 @@ void QtxPagePrefSelectItem::setNumbers( const QList<int>& ids )
 }
 
 /*!
-  \brief Set the list of the graphic identifiers to the selection widget.
-  \param pix new list of Icons
-  \sa icons(), setIcons()
+  \brief Set the list of the icons to the selection widget items
+
+  Important: call this method after setStrings() or setNumbers()
+
+  \param icns new list of icons
+  \sa icons(), setStrings(), setNumbers()
 */
-void QtxPagePrefSelectItem::setIcons( const QList<QIcon>& icons )
+void QtxPagePrefSelectItem::setIcons( const QList<QIcon>& icns )
 {
   uint i = 0;
-  for ( QList<QIcon>::const_iterator it = icons.begin(); it != icons.end() && i < mySelector->count(); ++it, i++ )
+  for ( QList<QIcon>::const_iterator it = icns.begin(); it != icns.end() && i < mySelector->count(); ++it, i++ )
     mySelector->setItemIcon( i, *it );
 }
 
@@ -2455,12 +2455,12 @@ QVariant QtxPagePrefSelectItem::optionValue( const QString& name ) const
     for ( QList<int>::const_iterator it = nums.begin(); it != nums.end(); ++it )
       lst.append( *it );
     return lst;
-  } else if ( name == "icons" )
+  }
+  else if ( name == "icons" || name == "pixmaps" )
   {
     QList<QVariant> lst;
-    QList<QIcon> ico;
-    ico = icons();
-    for ( QList<QIcon>::const_iterator it = ico.begin(); it != ico.end(); ++it )
+    QList<QIcon> ics = icons();
+    for ( QList<QIcon>::const_iterator it = ics.begin(); it != ics.end(); ++it )
       lst.append( *it );
     return lst;
   }
@@ -2485,7 +2485,7 @@ void QtxPagePrefSelectItem::setOptionValue( const QString& name, const QVariant&
     setStrings( val );
   else if ( name == "numbers" || name == "ids" || name == "indexes" )
     setNumbers( val );
-  else if ( name == "icons" )
+  else if ( name == "icons" || name == "pixmaps" )
     setIcons( val );
   else
     QtxPageNamedPrefItem::setOptionValue( name, val );
@@ -2525,7 +2525,7 @@ void QtxPagePrefSelectItem::setNumbers( const QVariant& var )
 }
 
 /*!
-  \brief Set the list of the graphic identifiers from the resource manager.
+  \brief Set the list of the icons from the resource manager.
   \param var new icons list
   \internal
 */
@@ -2536,18 +2536,14 @@ void QtxPagePrefSelectItem::setIcons( const QVariant& var )
 
   QList<QIcon> lst;
   QList<QVariant> varList = var.toList();
-  int index=1;
   for ( QList<QVariant>::const_iterator it = varList.begin(); it != varList.end(); ++it )
   {
-    index++;
-    if ( (*it).canConvert<QIcon>() ) {
-      QIcon icon = (*it).value<QIcon>();
-      lst.append( icon );
-    } else if ( (*it).canConvert<QPixmap>() ) {
-      QPixmap pix = (*it).value<QPixmap>();
-      QIcon icon (pix);
-      lst.append( icon );
-    }
+    if ( (*it).canConvert<QIcon>() )
+      lst.append( (*it).value<QIcon>() );
+    else if ( (*it).canConvert<QPixmap>() )
+      lst.append( (*it).value<QPixmap>() );
+    else
+      lst.append( QIcon() );
   }
   setIcons( lst );
 }

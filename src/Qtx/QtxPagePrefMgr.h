@@ -33,6 +33,7 @@
 #include <QFrame>
 #include <QLabel>
 #include <QPointer>
+#include <QIcon>
 
 class QtxGridBox;
 class QtxFontEdit;
@@ -434,7 +435,7 @@ public:
 
   QStringList      strings() const;
   QList<int>       numbers() const;
-  QList<QIcon>   icons() const;
+  QList<QIcon>     icons() const;
 
   void             setStrings( const QStringList& );
   void             setNumbers( const QList<int>& );

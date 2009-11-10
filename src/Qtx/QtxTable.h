@@ -92,17 +92,17 @@ public:
   virtual void     setHeaderBackground( const Qt::Orientation, const int, const QColor& );
   virtual void     setHeaderIcon( const Qt::Orientation, const int, const QIcon& );
 
-  QVariant         cellData( const int, const int ) const;
-  QFont            cellFont( const int, const int ) const;
-  QColor           cellForeground( const int, const int ) const;
-  QColor           cellBackground( const int, const int ) const;
-  QIcon            cellIcon( const int, const int ) const;
+  virtual QVariant cellData( const int, const int ) const;
+  virtual QFont    cellFont( const int, const int ) const;
+  virtual QColor   cellForeground( const int, const int ) const;
+  virtual QColor   cellBackground( const int, const int ) const;
+  virtual QIcon    cellIcon( const int, const int ) const;
 
-  void             setCellData( const int, const int, const QVariant& );
-  void             setCellFont( const int, const int, const QFont& );
-  void             setCellForeground( const int, const int, const QColor& );
-  void             setCellBackground( const int, const int, const QColor& );
-  void             setCellIcon( const int, const int, QIcon& );
+  virtual void     setCellData( const int, const int, const QVariant& );
+  virtual void     setCellFont( const int, const int, const QFont& );
+  virtual void     setCellForeground( const int, const int, const QColor& );
+  virtual void     setCellBackground( const int, const int, const QColor& );
+  virtual void     setCellIcon( const int, const int, QIcon& );
 
   virtual QTableWidgetItem* getItem( const int, const int, const bool = true );
   virtual QModelIndexList   getSelectedIndexes();

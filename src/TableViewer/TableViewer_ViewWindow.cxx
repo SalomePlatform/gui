@@ -181,8 +181,7 @@ QString TableViewer_ViewWindow::text( const ContentType type, const int row, con
       aTxt = myTable->headerData( Qt::Horizontal, col ).toString();
       break;
     case Cells:
-      if ( myTable->item( row, col ) )
-        aTxt = myTable->item( row, col )->text();
+      aTxt = myTable->cellData( row, col ).toString();
       break;
     default:
       break;
@@ -445,7 +444,6 @@ void TableViewer_ViewWindow::pasteData()
     return;
   int aLeftCol = myTable->columnCount(), aTopRow = myTable->rowCount();
   QModelIndexList::const_iterator anIt = anItems.begin(), aLast = anItems.end();
-  QTableWidgetItem* anItem;
   int aCol, aRow;
   for ( ; anIt != aLast; ++anIt ) {
     aRow = (*anIt).row();
@@ -467,13 +465,11 @@ void TableViewer_ViewWindow::pasteData()
     aRow = aCopyItem.myRow+aTopRow;
     if ( !canPaste( aRow, aCol, aCopyItem.myText ) )
       continue;
-    anItem = myTable->getItem( aRow, aCol, true );
-    anItem->setText( aCopyItem.myText );
-    if ( aCopyItem.myBgCol.isValid() )
-      anItem->setBackground( aCopyItem.myBgCol );
-    if ( aCopyItem.myFgCol.isValid() )
-      anItem->setForeground( aCopyItem.myFgCol );    
-    anItem->setFont( aCopyItem.myFont );
+
+    myTable->setCellData( aRow, aCol, aCopyItem.myText );
+    myTable->setCellBackground( aRow, aCol, aCopyItem.myBgCol );
+    myTable->setCellForeground( aRow, aCol, aCopyItem.myFgCol );
+    myTable->setCellFont( aRow, aCol, aCopyItem.myFont );
   }
 }
 

@@ -99,15 +99,15 @@ void SUIT_Desktop::closeEvent( QCloseEvent* e )
 /*!
   Child event.
 */
-void SUIT_Desktop::childEvent( QChildEvent* e )
+/*void SUIT_Desktop::childEvent( QChildEvent* e )
 {
   if ( e->type() == QEvent::ChildAdded && e->child()->isWidgetType() )
     QApplication::postEvent( this, new ReparentEvent( QEvent::Type( Reparent ), e->child() ) );
   else
     QtxMainWindow::childEvent( e );
-}
+}*/
 
-void SUIT_Desktop::customEvent( QEvent* e )
+/*void SUIT_Desktop::customEvent( QEvent* e )
 {
   if ( (int)e->type() != Reparent )
     return;
@@ -122,7 +122,7 @@ void SUIT_Desktop::customEvent( QEvent* e )
     addWindow( wid );
     wid->setShown( !invis );
   }
-}
+}*/
 
 /*!
   Gets menu manager.

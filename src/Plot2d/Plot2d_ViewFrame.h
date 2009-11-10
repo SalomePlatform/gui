@@ -218,6 +218,7 @@ protected:
   double         myXDistance, myYDistance, myYDistance2;
   bool           mySecondY;
   ObjectDict     myObjects;
+  bool           isDefTitle;
 };
 
 class Plot2d_Plot2d : public QwtPlot 

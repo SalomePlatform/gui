@@ -63,10 +63,10 @@ public slots:
   void           cut();
   void           paste();
   void           clear();
-  void           handleReturn();
+  virtual void   handleReturn();
   void           onPyInterpChanged( PyConsole_Interp* );
   
-private:
+protected:
   PyConsole_Interp* myInterp;           //!< python interpreter
 
   QString           myCommandBuffer;    //!< python comman buffer

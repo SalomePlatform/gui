@@ -60,9 +60,7 @@ PyConsole_Console::PyConsole_Console( QWidget* parent, PyConsole_Interp* interp 
   // create editor console
   QVBoxLayout* lay = new QVBoxLayout( this );
   lay->setMargin( 0 );
-  myEditor = new PyConsole_Editor( myInterp, this );
-  myEditor->viewport()->installEventFilter( this );
-  lay->addWidget( myEditor );
+  setEditor( new PyConsole_Editor( myInterp, this ) );
 
   createActions();
 }
@@ -75,6 +73,25 @@ PyConsole_Console::PyConsole_Console( QWidget* parent, PyConsole_Interp* interp 
 PyConsole_Console::~PyConsole_Console()
 {
 }
+
+/*!
+  \brief Set python console editor widget
+  \param editor
+*/
+void PyConsole_Console::setEditor( PyConsole_Editor* theEditor )
+{
+  QVBoxLayout* lay = dynamic_cast<QVBoxLayout*>( layout() );
+  if ( !lay || theEditor == myEditor )
+    return;
+
+  if ( myEditor ) {
+    lay->removeWidget( myEditor );
+    delete myEditor;
+  }
+  myEditor = theEditor;
+  myEditor->viewport()->installEventFilter( this );
+  lay->addWidget( myEditor );
+} 
 
 /*!
   \brief Execute python command in the interpreter.

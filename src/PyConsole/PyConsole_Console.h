@@ -51,6 +51,8 @@ public:
   PyConsole_Console( QWidget* parent, PyConsole_Interp* interp = 0 );
   virtual ~PyConsole_Console();
 
+  void                setEditor( PyConsole_Editor* );
+
   //! \brief Get python interperter
   PyConsole_Interp*   getInterp() { return myInterp; } 
   QFont               font() const;

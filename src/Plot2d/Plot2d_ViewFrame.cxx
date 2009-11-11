@@ -161,7 +161,7 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
        myXGridMinorEnabled( false ), myYGridMinorEnabled( false ), myY2GridMinorEnabled( false ),
        myXGridMaxMajor( 8 ), myYGridMaxMajor( 8 ), myY2GridMaxMajor( 8 ),
        myXGridMaxMinor( 5 ), myYGridMaxMinor( 5 ), myY2GridMaxMinor( 5 ),
-       myXMode( 0 ), myYMode( 0 ), mySecondY( false ), isDefTitle( true )
+       myXMode( 0 ), myYMode( 0 ), mySecondY( false ), myIsDefTitle( true )
 {
   setObjectName( title );
   /* Plot 2d View */
@@ -363,7 +363,7 @@ bool Plot2d_ViewFrame::eventFilter( QObject* watched, QEvent* e )
 void Plot2d_ViewFrame::setTitle( const QString& title )
 {
   setTitle( myTitleEnabled, title, MainTitle, true );
-  isDefTitle = false;
+  myIsDefTitle = false;
 }
 
 /*!
@@ -1004,7 +1004,7 @@ void Plot2d_ViewFrame::onSettings()
 
     // main title
     if( dlg->isMainTitleEnabled() && myTitle != dlg->getMainTitle() ) 
-      isDefTitle = false;
+      myIsDefTitle = false;
     setTitle( dlg->isMainTitleEnabled(), dlg->getMainTitle(), MainTitle, true );
     // curve type
     if ( myCurveType != dlg->getCurveType() ) {
@@ -1953,7 +1953,7 @@ void Plot2d_ViewFrame::updateTitles()
   setTitle( myYTitleEnabled, yTitle + yUnits, YTitle, true );
   if ( mySecondY )
     setTitle( myY2TitleEnabled, y2Title + y2Units, Y2Title, true );
-  if( isDefTitle ) 
+  if( myIsDefTitle ) 
     setTitle( true, aTables.join("; "), MainTitle, true );
 }
 

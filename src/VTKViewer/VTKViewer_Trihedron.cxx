@@ -37,6 +37,9 @@
 #include <vtkConeSource.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkVectorText.h>
+#include <vtkTextActor.h>
+#include <vtkTextMapper.h>
+#include <vtkTextProperty.h>
 
 // QT includes
 #include <QtGlobal>
@@ -101,16 +104,22 @@ void VTKViewer_UnScaledActor::Render(vtkRenderer *theRenderer)
 
 vtkStandardNewMacro(VTKViewer_LineActor);
 
+#ifdef IPAL21440
+vtkCxxSetObjectMacro(VTKViewer_LineActor,LabelActor,vtkTextActor);
+#else
 vtkCxxSetObjectMacro(VTKViewer_LineActor,LabelActor,VTKViewer_UnScaledActor);
+#endif
 vtkCxxSetObjectMacro(VTKViewer_LineActor,ArrowActor,vtkFollower);
 
 /*!Adds Label and Arrow actors to \a theRenderer.*/
 void VTKViewer_LineActor::Render(vtkRenderer *theRenderer)
 {
+#ifndef IPAL21440
   if(LabelActor && LabelActor->GetVisibility()){
     LabelActor->Modified();
     LabelActor->Render(theRenderer);
   }
+#endif
   if(ArrowActor && ArrowActor->GetVisibility()){
     ArrowActor->Modified();
     ArrowActor->Render(theRenderer);
@@ -152,6 +161,18 @@ VTKViewer_Axis::VTKViewer_Axis()
   myLineActor->SetArrowActor(myArrowActor);
   
   /*! \li Initialize the Label pipe-line representation */
+#ifdef IPAL21440
+  myTextMapper = vtkTextMapper::New();
+  
+  myLabelActor = vtkTextActor::New();
+  myLabelActor->SetMapper(myTextMapper);
+  myLabelActor->ScaledTextOff();
+  myLabelActor->PickableOff();
+  
+  vtkCoordinate* aCoord = vtkCoordinate::New();
+  myLabelActor->GetPositionCoordinate()->SetReferenceCoordinate( aCoord );
+  aCoord->Delete();
+#else
   myVectorText = vtkVectorText::New();
   
   myMapper[2] = vtkPolyDataMapper::New();
@@ -163,6 +184,7 @@ VTKViewer_Axis::VTKViewer_Axis()
   myLabelActor->SetSize(aLabelActorSize);
   myLabelActor->PickableOff();
   //myLabelActor->DebugOn();
+#endif
   
   myLineActor->SetLabelActor(myLabelActor);
   
@@ -181,8 +203,6 @@ VTKViewer_Axis::~VTKViewer_Axis()
   myMapper[0]->RemoveAllInputs();
   myMapper[0]->Delete();
   
-  myVectorText->Delete();
-  
   /*! \li Destroy of the Arrow pipe-line representation */
   myArrowActor->Delete();
   
@@ -194,8 +214,15 @@ VTKViewer_Axis::~VTKViewer_Axis()
   /*! \li Destroy of the Line pipe-line representation */
   myLineActor->Delete();
   
+#ifdef IPAL21440
+  myTextMapper->RemoveAllInputs();
+  myTextMapper->Delete();
+#else
+  myVectorText->Delete();
+  
   myMapper[2]->RemoveAllInputs();
   myMapper[2]->Delete();
+#endif
   
   myLineSource->Delete();
 }
@@ -244,15 +271,36 @@ void VTKViewer_Axis::SetVisibility(VTKViewer_Trihedron::TVisibility theVis)
 /*! Set camera for myLabelActor
  */
 void VTKViewer_Axis::SetCamera(vtkCamera* theCamera){
+#ifndef IPAL21440
   myLabelActor->SetCamera(theCamera);
+#endif
 }
 
-/*! Sets \a theProperty for actors: myLineActor,myLabelActor,myArrowActor
+/*! Sets color for actors: myLineActor,myLabelActor,myArrowActor
  */
-void VTKViewer_Axis::SetProperty(vtkProperty* theProperty){
-  myLabelActor->SetProperty(theProperty);
-  myArrowActor->SetProperty(theProperty);
-  myLineActor->SetProperty(theProperty);
+void VTKViewer_Axis::SetColor(double theRed, double theGreen, double theBlue)
+{
+  // Set color property for arrow and line actors
+  vtkProperty* aProperty = vtkProperty::New();
+  aProperty->SetColor(theRed, theGreen, theBlue);
+
+  myArrowActor->SetProperty(aProperty);
+  myLineActor->SetProperty(aProperty);
+#ifndef IPAL21440
+  myLabelActor->SetProperty(aProperty);
+#endif
+
+  aProperty->Delete();
+  
+  // Set color property for label actor
+#ifdef IPAL21440
+  vtkTextProperty* aTextProperty = vtkTextProperty::New();
+  aTextProperty->SetColor(theRed, theGreen, theBlue);
+
+  myLabelActor->SetTextProperty(aTextProperty);
+
+  aTextProperty->Delete();
+#endif
 }
 
 /*! Set size of VTKViewer_Axis
@@ -270,8 +318,13 @@ void VTKViewer_Axis::SetSize(vtkFloatingPointType theSize)
   myArrowActor->SetOrientation(myRot);
   myArrowActor->SetScale(theSize / 10.);
   
+#ifdef IPAL21440
+  if( vtkCoordinate* aCoord = myLabelActor->GetPositionCoordinate()->GetReferenceCoordinate() )
+    aCoord->SetValue( aPosition );
+#else
   myLabelActor->SetPosition(0.0,0.0,0.0);
   myLabelActor->AddPosition(aPosition);
+#endif
 }
 
 /*! Check if actor belongs to the axis object
@@ -282,7 +335,11 @@ bool VTKViewer_Axis::OwnActor(const vtkActor* theActor)
 {
   return theActor == myLineActor  || 
          theActor == myArrowActor ||
+#ifdef IPAL21440
+         false;
+#else
          theActor == myLabelActor;
+#endif
 }
 
 /*! \class VTKViewer_XAxis
@@ -304,11 +361,12 @@ vtkStandardNewMacro(VTKViewer_XAxis);
 VTKViewer_XAxis::VTKViewer_XAxis(){ 
   myDir[0] = 1.0; myDir[1] = 0.0; myDir[2] = 0.0;
   myRot[0] = 0.0; myRot[1] = 0.0; myRot[2] = 0.0;
+#ifdef IPAL21440
+  myTextMapper->SetInput("X");
+#else
   myVectorText->SetText("X");
-  vtkProperty* aProperty = vtkProperty::New();
-  aProperty->SetColor(1.0,0.0,0.0);
-  SetProperty(aProperty);
-  aProperty->Delete();
+#endif
+  SetColor(1.0,0.0,0.0);
 }
 
 /*! \class VTKViewer_YAxis
@@ -330,11 +388,12 @@ VTKViewer_YAxis::VTKViewer_YAxis()
 { 
   myDir[0] = 0.0; myDir[1] = 1.0; myDir[2] = 0.0;
   myRot[0] = 0.0; myRot[1] = 0.0; myRot[2] = 90.;
+#ifdef IPAL21440
+  myTextMapper->SetInput("Y");
+#else
   myVectorText->SetText("Y");
-  vtkProperty* aProperty = vtkProperty::New();
-  aProperty->SetColor(0.0,1.0,0.0);
-  SetProperty(aProperty);
-  aProperty->Delete();
+#endif
+  SetColor(0.0,1.0,0.0);
 }
 
 /*! \class VTKViewer_ZAxis
@@ -357,11 +416,12 @@ VTKViewer_ZAxis::VTKViewer_ZAxis()
 {
   myDir[0] = 0.0; myDir[1] = 0.0; myDir[2] = 1.0;
   myRot[0] = 0.0; myRot[1] = -90; myRot[2] = 0.0;
+#ifdef IPAL21440
+  myTextMapper->SetInput("Z");
+#else
   myVectorText->SetText("Z");
-  vtkProperty* aProperty = vtkProperty::New();
-  aProperty->SetColor(0.0,0.0,1.0);
-  SetProperty(aProperty);
-  aProperty->Delete();
+#endif
+  SetColor(0.0,0.0,1.0);
 }
 
 vtkStandardNewMacro(VTKViewer_Trihedron);

@@ -149,11 +149,11 @@ SUIT_ViewWindow* SUIT_ViewManager::createViewWindow()
 
   setViewName( aView );
   aView->setWindowIcon( QIcon( myIcon ) );
+  aView->setViewManager( this );
 
   myDesktop->addWindow( aView );
   //it is done automatically during creation of view
 
-  aView->setViewManager( this );
   emit viewCreated( aView );
 
   // Special treatment for the case when <aView> is the first one in this view manager

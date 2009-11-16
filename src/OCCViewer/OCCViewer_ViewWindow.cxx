@@ -1102,7 +1102,7 @@ void OCCViewer_ViewWindow::createActions()
 */
 void OCCViewer_ViewWindow::createToolBar()
 {
-  int tid = toolMgr()->createToolBar( tr( "LBL_TOOLBAR_LABEL" ) );
+  int tid = toolMgr()->createToolBar( tr( "LBL_TOOLBAR_LABEL" ), false );
 
   toolMgr()->append( DumpId, tid );
   if( myModel->trihedronActivated() ) 

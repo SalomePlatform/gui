@@ -100,6 +100,12 @@ QMainWindow* QtxActionToolMgr::mainWindow() const
 */
 int QtxActionToolMgr::createToolBar( const QString& title, const int tid, QMainWindow* mw )
 {
+  return createToolBar( title, true, Qt::AllToolBarAreas, tid, mw );
+}
+
+int QtxActionToolMgr::createToolBar( const QString& title, bool floatable, Qt::ToolBarAreas dockAreas, 
+				     int tid, QMainWindow* mw )
+{
   static int _toolBarId = -1;
 
   int tbId = -1;
@@ -124,6 +130,9 @@ int QtxActionToolMgr::createToolBar( const QString& title, const int tid, QMainW
   if ( !tb )
   {
     tb = new QtxToolBar( true, tbw );
+    tb->setFloatable( floatable );
+    tb->setAllowedAreas( dockAreas );
+    tb->setMovable( dockAreas & Qt::AllToolBarAreas );
     //mainWindow()->addToolBar( tb );
     tb->setWindowTitle( title );
     tb->setObjectName( title );

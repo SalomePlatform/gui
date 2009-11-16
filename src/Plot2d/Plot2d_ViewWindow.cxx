@@ -386,7 +386,7 @@ void Plot2d_ViewWindow::createActions()
 void Plot2d_ViewWindow::createToolBar()
 {
   QtxActionToolMgr* mgr = toolMgr();
-  myToolBar = mgr->createToolBar( tr( "LBL_TOOLBAR_LABEL" ) );
+  myToolBar = mgr->createToolBar( tr( "LBL_TOOLBAR_LABEL" ), false );
   mgr->append( DumpId, myToolBar );
   mgr->append( ScaleOpId, myToolBar );
   mgr->append( MoveOpId, myToolBar );

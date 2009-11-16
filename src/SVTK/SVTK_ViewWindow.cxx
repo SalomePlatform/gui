@@ -143,8 +143,8 @@ void SVTK_ViewWindow::Initialize(SVTK_ViewModelBase* theModel)
   aRenderer->Delete();
   aSelector->Delete();
   
-  myToolBar = toolMgr()->createToolBar( tr("LBL_TOOLBAR_LABEL"), -1, this );
-  myRecordingToolBar = toolMgr()->createToolBar( tr("LBL_TOOLBAR_RECORD_LABEL"), -1, this );
+  myToolBar = toolMgr()->createToolBar( tr("LBL_TOOLBAR_LABEL"), false, Qt::AllToolBarAreas, -1, this );
+  myRecordingToolBar = toolMgr()->createToolBar( tr("LBL_TOOLBAR_RECORD_LABEL"), false, Qt::AllToolBarAreas, -1, this );
   
   createActions( SUIT_Session::session()->activeApplication()->resourceMgr() );
   createToolBar();

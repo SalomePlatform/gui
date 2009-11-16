@@ -846,6 +846,7 @@ QImage SVTK_ViewWindow::dumpView()
   if( myDumpImage.isNull() )
     return dumpViewContent();
   
+  RefreshDumpImage();
   return myDumpImage;
 }
 

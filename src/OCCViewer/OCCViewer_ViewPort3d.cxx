@@ -51,14 +51,14 @@ static int sy = 0;
 static Standard_Boolean zRotation = Standard_False;
 
 /*!
-    Constructor
+  Constructor
 */
 OCCViewer_ViewPort3d::OCCViewer_ViewPort3d( QWidget* parent, const Handle( V3d_Viewer)& viewer, V3d_TypeOfView  type )
-: OCCViewer_ViewPort( parent ),
-myScale( 1.0 ),
-myDegenerated( true ),
-myAnimate( false ),
-myBusy( true )
+  : OCCViewer_ViewPort( parent ),
+    myScale( 1.0 ),
+    myDegenerated( true ),
+    myAnimate( false ),
+    myBusy( true )
 {
   selectVisualId();
 
@@ -75,7 +75,7 @@ myBusy( true )
 }
 
 /*!
-    Destructor
+  Destructor
 */
 OCCViewer_ViewPort3d::~OCCViewer_ViewPort3d()
 {
@@ -85,41 +85,40 @@ OCCViewer_ViewPort3d::~OCCViewer_ViewPort3d()
 }
 
 /*!
-    Activates the desired 'type' of view in the viewer
-    ( view of 'type' is created if it doesn't exist ). [ public ]
+  Activates the desired 'type' of view in the viewer
+  ( view of 'type' is created if it doesn't exist ). [ public ]
 */
 /*void OCCViewer_ViewPort3d::setActive( V3d_TypeOfView type )
 {
-    if ( activeView().IsNull() )
-        return;
+  if ( activeView().IsNull() )
+  return;
 
-    if ( activeView()->Type() != type )
-    {
-        if ( type == V3d_ORTHOGRAPHIC )
-            setView( myOrthoView );
-        if ( type == V3d_PERSPECTIVE )
-            setView( myPerspView );
-    }
+  if ( activeView()->Type() != type )
+  {
+  if ( type == V3d_ORTHOGRAPHIC )
+  setView( myOrthoView );
+  if ( type == V3d_PERSPECTIVE )
+  setView( myPerspView );
+  }
 }*/
 
 /*!
-    Maps CasCade 'view' to this viewport. [ private ]
+  Maps CasCade 'view' to this viewport. [ private ]
 */
 bool OCCViewer_ViewPort3d::mapView( const Handle(V3d_View)& view )
 {
   if ( !setWindow( view ) )
     return false;
 
-  if ( !mapped( view ) )
-	{
-		view->SetWindow( myWindow );
-		if ( view != activeView() )
-	    view->View()->Deactivate();
-	}
+  if ( !mapped( view ) ) {
+    view->SetWindow( myWindow );
+    if ( view != activeView() )
+      view->View()->Deactivate();
+  }
 
   /* create static trihedron (16551: EDF PAL 501) */
   OCCViewer_ViewWindow* aVW = dynamic_cast<OCCViewer_ViewWindow*>( parentWidget() );
-  if ( aVW ){
+  if ( aVW ) {
     OCCViewer_Viewer* aViewModel = dynamic_cast<OCCViewer_Viewer*>( aVW->getViewManager()->getViewModel() );
     if ( aViewModel && aViewModel->isStaticTrihedronDisplayed() ){
       view->ZBufferTriedronSetup();
@@ -130,7 +129,7 @@ bool OCCViewer_ViewPort3d::mapView( const Handle(V3d_View)& view )
 }
 
 /*!
-    Sets new CASCADE view on viewport. Returns the previous active view. [ public ]
+  Sets new CASCADE view on viewport. Returns the previous active view. [ public ]
 */
 Handle( V3d_View ) OCCViewer_ViewPort3d::setView( const Handle( V3d_View )& view )
 {
@@ -138,13 +137,14 @@ Handle( V3d_View ) OCCViewer_ViewPort3d::setView( const Handle( V3d_View )& view
   if ( view == activeView() || !mapView( view ) )
     return activeView();
 
-    /* activate the new view*/
+  /* activate the new view*/
   Handle( V3d_View ) oldView = activeView();
-	if ( !oldView.IsNull() )
-  {
-		oldView->View()->Deactivate();
-		view->SetBackgroundColor( oldView->BackgroundColor() );
-	}
+  if ( !oldView.IsNull() ) {
+    if (oldView->View()->IsDefined())
+      oldView->View()->Deactivate();
+    view->SetBackgroundColor( oldView->BackgroundColor() );
+  }
+  
   if ( myDegenerated )
     view->SetDegenerateModeOn();
   else
@@ -152,32 +152,32 @@ Handle( V3d_View ) OCCViewer_ViewPort3d::setView( const Handle( V3d_View )& view
 
   view->View()->Activate();
   activeView() = view;
-	return oldView;
+  return oldView;
 }
 
 /*!
-    Returns CasCade 3D view. [ public ]
+  Returns CasCade 3D view. [ public ]
 */
 Handle(V3d_View) OCCViewer_ViewPort3d::getView() const
 {
-	return activeView();
+  return activeView();
 }
 
 /*!
-    Returns CasCade 3D viewer [ public ]
+  Returns CasCade 3D viewer [ public ]
 */
 Handle(V3d_Viewer) OCCViewer_ViewPort3d::getViewer() const
 {
-	Handle(V3d_Viewer) viewer;
-	if ( !activeView().IsNull() )
+  Handle(V3d_Viewer) viewer;
+  if ( !activeView().IsNull() )
     viewer = activeView()->Viewer();
-	return viewer;
+  return viewer;
 }
 
 /*!
-    Syncronizes visual state of this viewport with 'ref'
-    ( scale, projection, eye etc ) Returns 'true' if copied OK,
-    'false' otherwise. [ virtual public ]
+  Syncronizes visual state of this viewport with 'ref'
+  ( scale, projection, eye etc ) Returns 'true' if copied OK,
+  'false' otherwise. [ virtual public ]
 */
 bool OCCViewer_ViewPort3d::syncronize( const OCCViewer_ViewPort3d* ref )
 {
@@ -186,11 +186,11 @@ bool OCCViewer_ViewPort3d::syncronize( const OCCViewer_ViewPort3d* ref )
   Handle(V3d_View) tgtView = getView();
 
   /* Syncronize view types */
-/*    if ( tgtView->Type() != refView->Type() )
-  {
-      setActive( refView->Type() );
-      tgtView = getView();
-  }*/
+  /*    if ( tgtView->Type() != refView->Type() )
+	{
+	setActive( refView->Type() );
+	tgtView = getView();
+	}*/
 
   /*  The following params are copied:
       - view type( ortho/persp )
@@ -208,7 +208,7 @@ bool OCCViewer_ViewPort3d::syncronize( const OCCViewer_ViewPort3d* ref )
 
   /* perspective */
   if ( refView->Type() == V3d_PERSPECTIVE )
-      tgtView->SetFocale( refView->Focale() );
+    tgtView->SetFocale( refView->Focale() );
 
   /* copy params */
   Standard_Real x, y, z;
@@ -227,7 +227,7 @@ bool OCCViewer_ViewPort3d::syncronize( const OCCViewer_ViewPort3d* ref )
 }
 
 /*!
-    Returns Z-size of this view. [ public ]
+  Returns Z-size of this view. [ public ]
 */
 double OCCViewer_ViewPort3d::getZSize() const
 {
@@ -237,46 +237,44 @@ double OCCViewer_ViewPort3d::getZSize() const
 }
 
 /*!
-    Sets Z-size of this view ( for both orthographic and perspective ). [ public ]
+  Sets Z-size of this view ( for both orthographic and perspective ). [ public ]
 */
 void OCCViewer_ViewPort3d::setZSize( double zsize )
 {
   myActiveView->SetZSize( zsize );
-/*    if ( !myOrthoView.IsNull() )
+  /*    if ( !myOrthoView.IsNull() )
         myOrthoView->SetZSize( zsize );
-    if ( !myPerspView.IsNull() )
+	if ( !myPerspView.IsNull() )
         myPerspView->SetZSize( zsize );*/
 }
 
 /*!
-    Returns the background color [ virtual public ]
+  Returns the background color [ virtual public ]
 */
 QColor OCCViewer_ViewPort3d::backgroundColor() const
 {
-	if ( !activeView().IsNull() )
-	{
-		Standard_Real aRed, aGreen, aBlue;
-		activeView()->BackgroundColor( Quantity_TOC_RGB, aRed, aGreen, aBlue );
-		int red = (int) (aRed * 255);
-		int green = (int) (aGreen * 255);
-		int blue = (int) (aBlue * 255);
-		return QColor( red, green, blue );
-	}
-	return OCCViewer_ViewPort::backgroundColor();
+  if ( !activeView().IsNull() ) {
+    Standard_Real aRed, aGreen, aBlue;
+    activeView()->BackgroundColor( Quantity_TOC_RGB, aRed, aGreen, aBlue );
+    int red = (int) (aRed * 255);
+    int green = (int) (aGreen * 255);
+    int blue = (int) (aBlue * 255);
+    return QColor( red, green, blue );
+  }
+  return OCCViewer_ViewPort::backgroundColor();
 }
 
 /*!
-    Sets the background color [ virtual public ]
+  Sets the background color [ virtual public ]
 */
 void OCCViewer_ViewPort3d::setBackgroundColor( const QColor& color )
 {
-	if ( !activeView().IsNull() )
-	{
-	  activeView()->SetBackgroundColor( Quantity_TOC_RGB, color.red()/255.,
-					    color.green()/255., color.blue()/255.);
-	  activeView()->Update();
-	  emit vpChangeBGColor( color );
-	}
+  if ( !activeView().IsNull() ) {
+    activeView()->SetBackgroundColor( Quantity_TOC_RGB, color.red()/255.,
+				      color.green()/255., color.blue()/255.);
+    activeView()->Update();
+    emit vpChangeBGColor( color );
+  }
 }
 
 /*!
@@ -285,15 +283,14 @@ void OCCViewer_ViewPort3d::setBackgroundColor( const QColor& color )
 */
 void OCCViewer_ViewPort3d::setAnimationMode(bool theDegenerated)
 {
-	if ( !activeView().IsNull() )
-	{
+  if ( !activeView().IsNull() ) {
     myAnimate = theDegenerated;
     activeView()->SetAnimationMode(true, theDegenerated);
   }
 }
 
 /*!
-    Updates the active viewport. [ virtual public ]
+  Updates the active viewport. [ virtual public ]
 */
 void OCCViewer_ViewPort3d::onUpdate()
 {
@@ -302,16 +299,16 @@ void OCCViewer_ViewPort3d::onUpdate()
 }
 
 /*!
-    Called at 'window fit' transformation. [ virtual protected ]
+  Called at 'window fit' transformation. [ virtual protected ]
 */
 void OCCViewer_ViewPort3d::fitRect( const QRect& rect )
 {
-	if ( !activeView().IsNull() )
-	  activeView()->WindowFit( rect.left(), rect.top(), rect.right(), rect.bottom() );
+  if ( !activeView().IsNull() )
+    activeView()->WindowFit( rect.left(), rect.top(), rect.right(), rect.bottom() );
 }
 
 /*!
-    Called at 'zoom' transformation. [ virtual protected ]
+  Called at 'zoom' transformation. [ virtual protected ]
 */
 void OCCViewer_ViewPort3d::zoom( int x0, int y0, int x, int y )
 {
@@ -324,74 +321,73 @@ void OCCViewer_ViewPort3d::zoom( int x0, int y0, int x, int y )
 }
 
 /*!
-    Centers the viewport. [ virtual protected ]
+  Centers the viewport. [ virtual protected ]
 */
 void OCCViewer_ViewPort3d::setCenter( int x, int y )
 {
-	if ( !activeView().IsNull() )
-	    activeView()->Place( x, y, myScale );
+  if ( !activeView().IsNull() )
+    activeView()->Place( x, y, myScale );
 }
 
 /*!
-    Called at 'pan' transformation. [ virtual protected ]
+  Called at 'pan' transformation. [ virtual protected ]
 */
 void OCCViewer_ViewPort3d::pan( int dx, int dy )
 {
-	if ( !activeView().IsNull() )
-        activeView()->Pan( dx, dy, 1.0 );
+  if ( !activeView().IsNull() )
+    activeView()->Pan( dx, dy, 1.0 );
 }
 
 /*!
-    Inits 'rotation' transformation. [ protected ]
+  Inits 'rotation' transformation. [ protected ]
 */
 void OCCViewer_ViewPort3d::startRotation( int x, int y, 
 					  int theRotationPointType,
 					  const gp_Pnt& theSelectedPoint )
 {
-  if ( !activeView().IsNull() )
-    {
-      myDegenerated = activeView()->DegenerateModeIsOn();
-      activeView()->SetDegenerateModeOn();
-      if (myAnimate) activeView()->SetAnimationModeOn();
-
-      //double gx, gy, gz;
-      //double gx = activeView()->gx;
-      //activeView()->Gravity(gx,gy,gz);
-
-      switch ( theRotationPointType ) {
-      case OCCViewer_ViewWindow::GRAVITY:
-	activeView()->StartRotation( x, y, 0.45 );
-	break;
-      case OCCViewer_ViewWindow::SELECTED:
-	sx = x; sy = y;
-	
-	double X,Y;
-	activeView()->Size(X,Y);
-	rx = Standard_Real(activeView()->Convert(X)); 
-	ry = Standard_Real(activeView()->Convert(Y)); 
-	
-	activeView()->Rotate( 0., 0., 0., 
-			      theSelectedPoint.X(),theSelectedPoint.Y(), theSelectedPoint.Z(), 
-			      Standard_True );
-	
-	Quantity_Ratio zRotationThreshold;
-	zRotation = Standard_False;
-	zRotationThreshold = 0.45;
-	if( zRotationThreshold > 0. ) {
-	  Standard_Real dx = Abs(sx - rx/2.);
-	  Standard_Real dy = Abs(sy - ry/2.);
-	  Standard_Real dd = zRotationThreshold * (rx + ry)/2.;
-	  if( dx > dd || dy > dd ) zRotation = Standard_True;
-	}
-	break;
-      default:
-	break;
+  if ( !activeView().IsNull() ) {
+    myDegenerated = activeView()->DegenerateModeIsOn();
+    activeView()->SetDegenerateModeOn();
+    if (myAnimate) activeView()->SetAnimationModeOn();
+    
+    //double gx, gy, gz;
+    //double gx = activeView()->gx;
+    //activeView()->Gravity(gx,gy,gz);
+    
+    switch ( theRotationPointType ) {
+    case OCCViewer_ViewWindow::GRAVITY:
+      activeView()->StartRotation( x, y, 0.45 );
+      break;
+    case OCCViewer_ViewWindow::SELECTED:
+      sx = x; sy = y;
+      
+      double X,Y;
+      activeView()->Size(X,Y);
+      rx = Standard_Real(activeView()->Convert(X)); 
+      ry = Standard_Real(activeView()->Convert(Y)); 
+      
+      activeView()->Rotate( 0., 0., 0., 
+			    theSelectedPoint.X(),theSelectedPoint.Y(), theSelectedPoint.Z(), 
+			    Standard_True );
+      
+      Quantity_Ratio zRotationThreshold;
+      zRotation = Standard_False;
+      zRotationThreshold = 0.45;
+      if( zRotationThreshold > 0. ) {
+	Standard_Real dx = Abs(sx - rx/2.);
+	Standard_Real dy = Abs(sy - ry/2.);
+	Standard_Real dd = zRotationThreshold * (rx + ry)/2.;
+	if( dx > dd || dy > dd ) zRotation = Standard_True;
       }
+      break;
+    default:
+      break;
     }
+  }
 }
 
 /*!
-    Rotates the viewport. [ protected ]
+  Rotates the viewport. [ protected ]
 */
 void OCCViewer_ViewPort3d::rotate( int x, int y, 
 				   int theRotationPointType,
@@ -427,65 +423,62 @@ void OCCViewer_ViewPort3d::rotate( int x, int y,
 }
 
 /*!
-    Resets the viewport after 'rotation'. [ protected ]
+  Resets the viewport after 'rotation'. [ protected ]
 */
 void OCCViewer_ViewPort3d::endRotation()
 {
-  if ( !activeView().IsNull() )
-    {
-      if (myAnimate) activeView()->SetAnimationModeOff();
-      if ( !myDegenerated )
-	activeView()->SetDegenerateModeOff();
-      activeView()->ZFitAll(1.);
-      activeView()->SetZSize(0.);
-      activeView()->Update();
-    }
+  if ( !activeView().IsNull() ) {
+    if (myAnimate) activeView()->SetAnimationModeOff();
+    if ( !myDegenerated )
+      activeView()->SetDegenerateModeOff();
+    activeView()->ZFitAll(1.);
+    activeView()->SetZSize(0.);
+    activeView()->Update();
+  }
 }
 
 /*!
-    Repaints the viewport. [ virtual protected ]
+  Repaints the viewport. [ virtual protected ]
 */
 void OCCViewer_ViewPort3d::paintEvent( QPaintEvent* e )
 {
 #ifndef WNT
-	/* X11 : map before show doesn't work */
-	if ( !mapped( activeView() ) )
-    	mapView( activeView() );
+  /* X11 : map before show doesn't work */
+  if ( !mapped( activeView() ) )
+    mapView( activeView() );
 #endif
-	if ( !myWindow.IsNull() )
-	{
-		QApplication::syncX();
-		QRect rc = e->rect();
-		if ( !myPaintersRedrawing )
-		    activeView()->Redraw( rc.x(), rc.y(), rc.width(), rc.height() );
-	}
-	OCCViewer_ViewPort::paintEvent( e );
-	myBusy = false;
+  if ( !myWindow.IsNull() ) {
+    QApplication::syncX();
+    QRect rc = e->rect();
+    if ( !myPaintersRedrawing )
+      activeView()->Redraw( rc.x(), rc.y(), rc.width(), rc.height() );
+  }
+  OCCViewer_ViewPort::paintEvent( e );
+  myBusy = false;
 }
 
 /*!
-    Resizes the viewport. [ virtual protected ]
+  Resizes the viewport. [ virtual protected ]
 */
 void OCCViewer_ViewPort3d::resizeEvent( QResizeEvent* e )
 {
 #ifdef WNT
-	/* Win32 : map before first show to avoid flicker */
-	if ( !mapped( activeView() ) )
-	    mapView( activeView() );
+  /* Win32 : map before first show to avoid flicker */
+  if ( !mapped( activeView() ) )
+    mapView( activeView() );
 #endif
-	QApplication::syncX();
-    if ( !activeView().IsNull() )
-        activeView()->MustBeResized();
+  QApplication::syncX();
+  if ( !activeView().IsNull() )
+    activeView()->MustBeResized();
 }
 
 /*!
-    Fits all objects in view. [ virtual protected ]
+  Fits all objects in view. [ virtual protected ]
 */
 void OCCViewer_ViewPort3d::fitAll( bool keepScale, bool withZ, bool upd )
 {
   if ( activeView().IsNull() )
     return;
-
 
   if ( keepScale )
     myScale = activeView()->Scale();
@@ -496,59 +489,68 @@ void OCCViewer_ViewPort3d::fitAll( bool keepScale, bool withZ, bool upd )
 }
 
 /*!
-    Resets the view. [ virtual protected ]
+  Resets the view. [ virtual protected ]
 */
 void OCCViewer_ViewPort3d::reset()
 {
-//  double zsize = getZSize();
-	if ( !activeView().IsNull() )
-        activeView()->Reset();
-//    setZSize( zsize );
+  //  double zsize = getZSize();
+  if ( !activeView().IsNull() )
+    activeView()->Reset();
+  //    setZSize( zsize );
 }
 
 /*!
-    Passed the handle of native window of the component to CASCADE view. [ private ]
+  Passed the handle of native window of the component to CASCADE view. [ private ]
 */
 bool OCCViewer_ViewPort3d::setWindow( const Handle(V3d_View)& view )
 {
-	if ( !myWindow.IsNull() )
-		return true;
+  if ( !myWindow.IsNull() )
+    return true;
 
-	if ( view.IsNull() )
-		return false;
+  if ( view.IsNull() )
+    return false;
 
-	int hwnd = (int)winId();
-	if ( !hwnd )
-        return false;
+  int hwnd = (int)winId();
+  if ( !hwnd )
+    return false;
 
-	/* set this widget as the drawing window */
-	short lo = (short)hwnd;
-	short hi = (short)( hwnd >> 16 );
-	OCCViewer_VService::SetWindow( view, (int)hi, (int)lo, Xw_WQ_SAMEQUALITY );
-	myWindow = view->Window();
-	return !myWindow.IsNull();
+  /* set this widget as the drawing window */
+  short lo = (short)hwnd;
+  short hi = (short)( hwnd >> 16 );
+
+  attachWindow( view, OCCViewer_VService::CreateWindow( view, (int)hi, (int)lo, Xw_WQ_SAMEQUALITY ) );
+
+  myWindow = view->Window();
+  return !myWindow.IsNull();
+}
+
+void OCCViewer_ViewPort3d::attachWindow( const Handle(V3d_View)& view, 
+                                         const Handle(Aspect_Window)& window)
+{
+  if (!view.IsNull())
+    view->SetWindow( window );
 }
 
 /*!
-	Returns the current active view. [ private ]
+  Returns the current active view. [ private ]
 */
 Handle(V3d_View) OCCViewer_ViewPort3d::activeView() const
 {
-	return myActiveView;
+  return myActiveView;
 }
 
 /*!
-	Returns the current inactive view [ private ]
+  Returns the current inactive view [ private ]
 */
 /*Handle(V3d_View) OCCViewer_ViewPort3d::inactiveView() const
-{
-	return ( activeView() == myOrthoView ? myPerspView : myOrthoView );
-}*/
+  {
+  return ( activeView() == myOrthoView ? myPerspView : myOrthoView );
+  }*/
 
 /*!
-	Returns 'true' if the given view is mapped to window. [ private ]
+  Returns 'true' if the given view is mapped to window. [ private ]
 */
 bool OCCViewer_ViewPort3d::mapped( const Handle(V3d_View)& view ) const
 {
-	return ( !view.IsNull() && view->View()->IsDefined() );
+  return ( !view.IsNull() && view->View()->IsDefined() );
 }

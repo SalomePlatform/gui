@@ -1164,6 +1164,7 @@ void OCCViewer_ViewWindow::onFrontView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if ( !aView3d.IsNull() ) aView3d->SetProj (V3d_Xpos);
   onViewFitAll();
+  emit vpTransformationFinished ( FRONTVIEW );
 }
 
 /*!
@@ -1175,6 +1176,7 @@ void OCCViewer_ViewWindow::onBackView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if ( !aView3d.IsNull() ) aView3d->SetProj (V3d_Xneg);
   onViewFitAll();
+  emit vpTransformationFinished ( BACKVIEW );
 }
 
 /*!
@@ -1186,6 +1188,7 @@ void OCCViewer_ViewWindow::onTopView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if ( !aView3d.IsNull() ) aView3d->SetProj (V3d_Zpos);
   onViewFitAll();
+  emit vpTransformationFinished ( TOPVIEW );
 }
 
 /*!
@@ -1197,6 +1200,7 @@ void OCCViewer_ViewWindow::onBottomView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if ( !aView3d.IsNull() ) aView3d->SetProj (V3d_Zneg);
   onViewFitAll();
+  emit vpTransformationFinished ( BOTTOMVIEW );
 }
 
 /*!
@@ -1208,6 +1212,7 @@ void OCCViewer_ViewWindow::onLeftView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if ( !aView3d.IsNull() ) aView3d->SetProj (V3d_Yneg);
   onViewFitAll();
+  emit vpTransformationFinished ( LEFTVIEW );
 }
 
 /*!
@@ -1219,6 +1224,7 @@ void OCCViewer_ViewWindow::onRightView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if ( !aView3d.IsNull() ) aView3d->SetProj (V3d_Ypos);
   onViewFitAll();
+  emit vpTransformationFinished ( RIGHTVIEW );
 }
 
 /*!
@@ -1234,6 +1240,7 @@ void OCCViewer_ViewWindow::onResetView()
   myViewPort->fitAll( false, true, false );
   myViewPort->getView()->SetImmediateUpdate( upd );
   myViewPort->getView()->Update();
+  emit vpTransformationFinished( RESETVIEW );
 }
 
 /*!
@@ -1243,6 +1250,7 @@ void OCCViewer_ViewWindow::onFitAll()
 {
   emit vpTransformationStarted( FITALLVIEW );
   myViewPort->fitAll();
+  emit vpTransformationFinished( FITALLVIEW );
 }
 
 /*!
@@ -1433,9 +1441,9 @@ bool OCCViewer_ViewWindow::dumpViewToFormat( const QImage& img,
   Handle(Visual3d_View) a3dView = myViewPort->getView()->View();
 
   if (format == "PS")
-    a3dView->Export(qPrintable(fileName), Graphic3d_EF_PostScript);
+    a3dView->Export(strdup(qPrintable(fileName)), Graphic3d_EF_PostScript);
   else if (format == "EPS")
-    a3dView->Export(qPrintable(fileName), Graphic3d_EF_EnhPostScript);
+    a3dView->Export(strdup(qPrintable(fileName)), Graphic3d_EF_EnhPostScript);
 
   return true;
 }

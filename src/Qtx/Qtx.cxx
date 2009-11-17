@@ -814,7 +814,7 @@ void Qtx::scaleColors( const int num, QColorList& lst )
 /*!
   \brief Scale the pixmap to the required size.
 
-  If \h is 0 (default) the value of \a w is used instead (to create
+  If \a h is 0 (default) the value of \a w is used instead (to create
   square pixmap).
 
   \param icon pixmap to be resized
@@ -1058,7 +1058,7 @@ QString Qtx::colorToString( const QColor& color )
   - "RR,GG,BB[,AA]" or "RR GG BB[ AA]" (\c RR, \c GG, \c BB
   and optional \c AA values represent red, green, blue and alpha
   components of the color in decimal form)
-  - #RRGGBB" - (\c RR, \c GG and \c BB values represent red, green and blue
+  - "#RRGGBB" - (\c RR, \c GG and \c BB values represent red, green and blue
   components of the color in hexadecimal form)
   - an integer value representing packed color components (see rgbSet())
   - a name from the list of colors defined in the list of SVG color keyword names

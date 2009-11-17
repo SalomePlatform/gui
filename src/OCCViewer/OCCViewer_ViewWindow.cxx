@@ -75,6 +75,8 @@ static QEvent* l_mbPressEvent = 0;
 # include <QWindowsStyle>
 #endif
 
+#include <GL/gl.h>
+
 const char* imageZoomCursor[] = {
 "32 32 3 1",
 ". c None",
@@ -1427,8 +1429,25 @@ void OCCViewer_ViewWindow::onTrihedronShow()
 */
 QImage OCCViewer_ViewWindow::dumpView()
 {
-  QPixmap px = QPixmap::grabWindow( myViewPort->winId() );
-  return px.toImage();
+  Handle(V3d_View) view = myViewPort->getView();
+  if ( view.IsNull() )
+    return QImage();
+  QApplication::syncX();
+  view->Update();
+  view->Redraw();
+
+  unsigned char* data = new unsigned char[ (myViewPort->width()*myViewPort->height())*4 ];
+
+  QPoint p = myViewPort->mapFromParent(myViewPort->geometry().topLeft());
+
+  glReadPixels( p.x(), p.y(), myViewPort->width(), myViewPort->height(), GL_RGBA, GL_UNSIGNED_BYTE,
+                data);
+
+  QImage anImage( data, myViewPort->width(), myViewPort->height(), QImage::Format_ARGB32 );
+  anImage = anImage.mirrored();
+  anImage = anImage.rgbSwapped();
+  return anImage;
+
 }
 
 bool OCCViewer_ViewWindow::dumpViewToFormat( const QImage& img, 

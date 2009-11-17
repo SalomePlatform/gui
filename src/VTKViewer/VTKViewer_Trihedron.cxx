@@ -24,6 +24,7 @@
 #include "VTKViewer_Algorithm.h"
 
 // VTK Includes
+#include <vtkConfigure.h>
 #include <vtkMath.h>
 #include <vtkMapper.h>
 #include <vtkDataSet.h>
@@ -36,6 +37,7 @@
 #include <vtkLineSource.h>
 #include <vtkConeSource.h>
 #include <vtkPolyDataMapper.h>
+#include <vtkPolyDataMapper2D.h>
 #include <vtkVectorText.h>
 #include <vtkTextActor.h>
 #include <vtkTextMapper.h>
@@ -43,6 +45,10 @@
 
 // QT includes
 #include <QtGlobal>
+
+#if !defined(VTK_XVERSION)
+#define VTK_XVERSION (VTK_MAJOR_VERSION<<16)+(VTK_MINOR_VERSION<<8)+(VTK_BUILD_VERSION)
+#endif
 
 vtkStandardNewMacro(VTKViewer_UnScaledActor);
 
@@ -165,7 +171,11 @@ VTKViewer_Axis::VTKViewer_Axis()
   myTextMapper = vtkTextMapper::New();
   
   myLabelActor = vtkTextActor::New();
+#if (VTK_XVERSION > 0x050000)
+  myLabelActor->SetMapper(vtkPolyDataMapper2D::SafeDownCast(myTextMapper));
+#else
   myLabelActor->SetMapper(myTextMapper);
+#endif
   myLabelActor->ScaledTextOff();
   myLabelActor->PickableOff();
   
@@ -511,7 +521,7 @@ int VTKViewer_Trihedron::GetVisibleActorCount(vtkRenderer* theRenderer)
   aCollection->InitTraversal();
   int aCount = 0;
   while(vtkActor* prop = aCollection->GetNextActor()) {
-    if( prop->GetVisibility())
+    if( prop->GetVisibility()) {
       if(VTKViewer_Actor* anActor = VTKViewer_Actor::SafeDownCast(prop)) {
         if(!anActor->IsInfinitive()) 
           aCount++;
@@ -521,6 +531,7 @@ int VTKViewer_Trihedron::GetVisibleActorCount(vtkRenderer* theRenderer)
       }
         //int aCount = theRenderer->VisibleActorCount();
         //SetVisibility(aVis);
+    }
   }
   return aCount;
 }

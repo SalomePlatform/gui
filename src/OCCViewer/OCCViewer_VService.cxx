@@ -88,13 +88,12 @@ Handle(Aspect_Window) OCCViewer_VService::CreateWindow( const Handle(V3d_View)& 
 							const Standard_Integer lowin,
 							const Xw_WindowQuality quality )
 {
-  Handle(Aspect_Window) viewWindow;
 #ifdef WNT
-  viewWindow = new WNT_Window( Handle(Graphic3d_WNTGraphicDevice)::DownCast(view->Viewer()->Device()), hiwin, lowin );
+  Handle(WNT_Window) viewWindow = new WNT_Window( Handle(Graphic3d_WNTGraphicDevice)::DownCast(view->Viewer()->Device()), hiwin, lowin );
   // Prevent flickering
-  w->SetFlags( WDF_NOERASEBKGRND );
+  viewWindow->SetFlags( WDF_NOERASEBKGRND );
 #else
-  viewWindow = new Xw_Window( Handle(Graphic3d_GraphicDevice)::DownCast(view->Viewer()->Device()), hiwin, lowin, quality );
+  Handle(Xw_Window) viewWindow = new Xw_Window( Handle(Graphic3d_GraphicDevice)::DownCast(view->Viewer()->Device()), hiwin, lowin, quality );
 #endif
   return viewWindow;
 }

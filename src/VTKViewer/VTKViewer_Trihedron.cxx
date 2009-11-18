@@ -46,10 +46,6 @@
 // QT includes
 #include <QtGlobal>
 
-#if !defined(VTK_XVERSION)
-#define VTK_XVERSION (VTK_MAJOR_VERSION<<16)+(VTK_MINOR_VERSION<<8)+(VTK_BUILD_VERSION)
-#endif
-
 vtkStandardNewMacro(VTKViewer_UnScaledActor);
 
 /*!Constructor*/
@@ -171,11 +167,7 @@ VTKViewer_Axis::VTKViewer_Axis()
   myTextMapper = vtkTextMapper::New();
   
   myLabelActor = vtkTextActor::New();
-#if (VTK_XVERSION > 0x050000)
-  myLabelActor->SetMapper(vtkPolyDataMapper2D::SafeDownCast(myTextMapper));
-#else
   myLabelActor->SetMapper(myTextMapper);
-#endif
   myLabelActor->ScaledTextOff();
   myLabelActor->PickableOff();
   

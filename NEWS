@@ -1,6 +1,22 @@
 This is the cumulative history of changes, integrations and releases
 (IN REVERSE TIME ORDER):
 
+#######################################################################
+-  suit 5.1.1 (v5.1.1)
+  * Some products are changed:
+        Qt  - to correct Undo/Redo functionality of QLineEdit.
+        VTK - to improve representation of numeric data
+  * There are some minor improvements in the Plot2D Viewer:
+        - the FitArea functionality was improved to work with scale range
+          from 0.0 to 7e-09 correctly;
+        - Established title of a graph isn't changed by modification of
+          of the other curve parameters.
+  * There are some minor improvements in the VTK Viewer:
+        - The highlighting of the selection was optimized;
+        - The FitAll functionality was improved.
+  * There is an improvement in the Python Console in order to have
+        an opportunity to redirect  the output of a system command from
+        the bash terminal to this console (e.g. os.system('ls')).
 
 #######################################################################
 -  suit 5.0.7 (v5.0.7)

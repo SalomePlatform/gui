@@ -1,0 +1,12 @@
+This is the cumulative history of changes, integrations and releases
+(IN REVERSE TIME ORDER):
+
+
+#######################################################################
+-  suit 5.0.7 (v5.0.7)
+  * SUIT 5.0.7 improved selection in VTK presentation needed for ACHERON
+
+#######################################################################
+-  suit 5.0.6 (v5.0.6)
+  * SUIT 5.0.6 contains modifications inside export to HTML functionality of
+    Table View to provide powerful generation of HTML report.

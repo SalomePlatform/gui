@@ -57,7 +57,6 @@ salomeinclude_HEADERS= \
 	SVTK_SetRotationPointDlg.h \
 	SVTK_ViewParameterDlg.h \
 	SVTK_ComboAction.h \
-	SVTK_Extension.h \
 	SVTK_Recorder.h \
 	SVTK_RecorderDlg.h \
 	SVTK_ImageWriter.h \
@@ -90,7 +89,6 @@ dist_libSVTK_la_SOURCES= \
 	SVTK_SetRotationPointDlg.cxx \
 	SVTK_ViewParameterDlg.cxx \
 	SVTK_ComboAction.cxx \
-	SVTK_Extension.cxx \
 	SVTK_Recorder.cxx \
 	SVTK_RecorderDlg.cxx \
 	SVTK_ImageWriter.cxx \

@@ -142,9 +142,16 @@ PyStdOut_write(PyStdOut *self, PyObject *args)
   return Py_None;
 }
 
+static PyObject*
+PyStdOut_flush(PyStdOut *self)
+{
+  Py_INCREF(Py_None);
+  return Py_None;
+}
+
 static PyMethodDef PyStdOut_methods[] = {
-  {"write",  (PyCFunction)PyStdOut_write,  METH_VARARGS,
-    PyDoc_STR("write(string) -> None")},
+  {"write",  (PyCFunction)PyStdOut_write,  METH_VARARGS, PyDoc_STR("write(string) -> None")},
+  {"flush",  (PyCFunction)PyStdOut_flush,  METH_NOARGS,  PyDoc_STR("flush() -> None")},
   {NULL,    NULL}   /* sentinel */
 };
 

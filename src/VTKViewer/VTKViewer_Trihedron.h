@@ -47,7 +47,7 @@ class VTKViewer_Axis;
 // VTKViewer_UnScaledActor is temporarily replaced with simple vtkTextActor
 // This workaround caused by the bug with disappeared labels of the trihedron
 // reproduced after migration from qt-4.4.3 to qt-4.5.2
-#if (VTK_XVERSION <= 0x050000)
+#if (VTK_XVERSION < 0x050200)
 #define IPAL21440
 #endif
 

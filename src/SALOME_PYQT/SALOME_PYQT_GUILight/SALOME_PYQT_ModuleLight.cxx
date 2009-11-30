@@ -1185,13 +1185,11 @@ void SALOME_PYQT_ModuleLight::contextMenu( const QString& theContext, QMenu* the
   if ( myXmlHandler )
     myXmlHandler->createPopup( thePopupMenu, aContext, aParent, aObject );
 
-  PyObjWrapper sipPopup( sipBuildResult( 0, "D", thePopupMenu, 
 #if SIP_VERSION < 0x040800
-                                                         sipClass_QMenu
+  PyObjWrapper sipPopup( sipBuildResult( 0, "M", thePopupMenu, sipClass_QMenu) );
 #else
-                                                         sipType_QMenu
+  PyObjWrapper sipPopup( sipBuildResult( 0, "D", thePopupMenu, sipType_QMenu, NULL) );
 #endif
-  , NULL) );
 
   // then call Python module's createPopupMenu() method (for new modules)
   if ( PyObject_HasAttrString( myModule, "createPopupMenu" ) ) {
@@ -1403,13 +1401,11 @@ void SALOME_PYQT_ModuleLight::setWorkSpace()
       if ( aDesktop )
         aWorkspace = aDesktop->workstack();
     }
-    PyObjWrapper pyws( sipBuildResult( 0, "D", aWorkspace, 
 #if SIP_VERSION < 0x040800
-                                                         sipClass_QWidget
+    PyObjWrapper pyws( sipBuildResult( 0, "M", aWorkspace, sipClass_QWidget) );
 #else
-                                                         sipType_QWidget
+    PyObjWrapper pyws( sipBuildResult( 0, "D", aWorkspace, sipType_QWidget , NULL) );
 #endif
-  , NULL) );
     // ... and finally call Python module's setWorkspace() method (obsolete)
     if ( PyObject_HasAttrString( myModule, "setWorkSpace" ) ) {
       PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"setWorkSpace", (char*)"O", pyws.get() ) );
@@ -2472,13 +2468,11 @@ void SALOME_PYQT_ModuleLight::openEvent(QStringList theListOfFiles, bool &opened
     return;
   QStringList* theList = new QStringList(theListOfFiles);
 
-  PyObjWrapper sipList( sipBuildResult( 0, "D", theList,
 #if SIP_VERSION < 0x040800
-                                                         sipClass_QStringList
+  PyObjWrapper sipList( sipBuildResult( 0, "M", theList, sipClass_QStringList) );
 #else
-                                                         sipType_QStringList
+  PyObjWrapper sipList( sipBuildResult( 0, "D", theList,  sipType_QStringList , NULL) );
 #endif
-  , NULL) );
   if ( PyObject_HasAttrString(myModule , "openFiles") ) {
     PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"openFiles",
 					   (char*)"O", sipList.get()));

@@ -510,7 +510,7 @@ void LightApp_Module::setPreferenceProperty( const int id, const QString& prop, 
 void LightApp_Module::startOperation( const int id )
 {
   LightApp_Operation* op = 0;
-  if( myOperations.contains( id ) )
+  if( myOperations.contains( id ) && reusableOperation( id ) )
     op = myOperations[ id ];
   else
   {
@@ -641,3 +641,11 @@ LightApp_Operation* LightApp_Module::operation( const int id ) const
 {
   return myOperations.contains( id ) ? myOperations[id] : 0;
 }
+
+/*!
+  virtual method called to manage the same operations
+*/
+bool LightApp_Module::reusableOperation( const int id )
+{
+ return true;
+} 

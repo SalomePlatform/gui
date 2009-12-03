@@ -115,6 +115,8 @@ protected:
 
   virtual CAM_DataModel*              createDataModel();
 
+  virtual bool                        reusableOperation( const int id );
+
   int                                 addPreference( const QString& label );
   int                                 addPreference( const QString& label, const int pId, const int = LightApp_Preferences::Auto,
 				                     const QString& section = QString(),

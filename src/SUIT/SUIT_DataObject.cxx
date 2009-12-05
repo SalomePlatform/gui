@@ -485,6 +485,13 @@ QPixmap SUIT_DataObject::icon( const int /*index*/ ) const
   The parameter \a index specifies the column number
   (to display, for example, in the tree view widget).
 
+  There is a tricky point around alpha value for role == Background.
+  Zero alpha is treated as fully transparent, therefore no background
+  is drawn at all (that is, the base color will appear instead of the custom backround color).
+  However, maximum alpha (each QColor has alpha == 1.0f by default) might be also inacceptable 
+  since it disables blending effects that might be used by a custom style. 
+  Thus applications should choose color's alpha carefully to avoid visual artefacts.
+
   \param role color role
   \param index column index
   \return object color for the specified column

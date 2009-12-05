@@ -21,10 +21,14 @@
 //
 
 #include "QtxTreeView.h"
+#include "QtxTreeModel.h"
 
+#include <QApplication>
 #include <QHeaderView>
 #include <QMenu>
 #include <QMouseEvent>
+#include <QPainter>
+#include <QPalette>
 
 /*!
   \class QtxTreeView::Header
@@ -34,21 +38,38 @@
 
 class QtxTreeView::Header : public QHeaderView
 {
+  Q_OBJECT
 public:
   Header( const bool, QWidget* = 0 );
   ~Header();
 
-  void     setSortMenuEnabled( const bool );
-  bool     sortMenuEnabled() const;
+  void         setSortMenuEnabled( const bool );
+  bool         sortMenuEnabled() const;
 
-  void     addMenuAction( QAction* );
+  void         setSortingEnabled( const bool );
+  bool         sortingEnabled() const;
+  void         setMultiSortEnabled( const bool );
+  bool         multiSortEnabled() const;
+  void         setSortIndicators( const QVector<int>&, const QVector<Qt::SortOrder>& );
+  void         sortIndicators( QVector<int>&, QVector<Qt::SortOrder>& ) const;
+  void         clearSortIndicators();
+  bool         sortIndicatorsShown() const;
+
+  void         addMenuAction( QAction* );
 protected:
-  void     contextMenuEvent( QContextMenuEvent* );
+  virtual void contextMenuEvent( QContextMenuEvent* );
+  virtual void paintSection( QPainter* painter, const QRect& rect, int logicalIndex ) const;
+
+private slots:
+  void         onSectionClicked( int logicalIndex );
 
 private:
   typedef QMap<int, QAction*> ActionsMap;
-  bool     myEnableSortMenu;
-  ActionsMap myActions;
+  bool                   myEnableSortMenu;
+  ActionsMap             myActions;
+  bool                   myEnableMultiSort;
+  QVector<int>           mySortSections;
+  QVector<Qt::SortOrder> mySortOrders;
 };
 
 /*!
@@ -61,6 +82,10 @@ QtxTreeView::Header::Header( const bool enableSortMenu, QWidget* parent )
 : QHeaderView( Qt::Horizontal, parent ),
   myEnableSortMenu( enableSortMenu )
 {
+  setMultiSortEnabled( false );
+  // This connection should be created as early as possible, to perform internal processing
+  // before any external actions
+  connect( this, SIGNAL( sectionClicked( int ) ), this, SLOT( onSectionClicked( int ) ) );
 }
 
 /*!
@@ -71,7 +96,55 @@ QtxTreeView::Header::~Header()
 {
 }
 
-/*
+/*!
+  \brief Enable/disable sorting operation for the header.
+  \param enable if \c true, makes the header clickable and shows sort indicator(s)
+  \internal
+*/
+void QtxTreeView::Header::setSortingEnabled( const bool enable )
+{
+  // Suppress default Qt sort indicator for multi-sort case
+  setSortIndicatorShown( enable && !multiSortEnabled() );
+
+  // Clear multi-sort indicators
+  if ( !enable )
+    clearSortIndicators();
+
+  setClickable( enable );
+
+  QtxTreeView* view = qobject_cast<QtxTreeView*>( parent() );
+  if ( view ) {
+    view->emitSortingEnabled( enable );
+    if ( enable ) {
+      connect( this, SIGNAL( sectionClicked( int ) ), view, SLOT( onHeaderClicked() ) );
+      if ( multiSortEnabled() )
+      {
+        QVector<int> columns;
+        columns.push_back( 0 );
+        QVector<Qt::SortOrder> orders;
+        orders.push_back( Qt::AscendingOrder );
+        setSortIndicators( columns, orders );
+      }
+      view->onHeaderClicked();
+    }
+    else {
+      disconnect( this, SIGNAL( sectionClicked( int ) ), view, SLOT( onHeaderClicked() ) );
+      view->sortByColumn( 0, Qt::AscendingOrder );
+    }
+  }
+}
+
+/*!
+  \brief Query status of sorting (enabled or disabled).
+  \return \c true if single or multiple sort indicators are shown
+  \internal
+*/
+bool QtxTreeView::Header::sortingEnabled() const
+{
+  return sortIndicatorsShown();
+}
+
+/*!
   \brief Enable/disable "Sorting" popup menu command for the header.
   \param enableSortMenu if \c true, enable "Sorting" menu command
   \internal
@@ -81,7 +154,7 @@ void QtxTreeView::Header::setSortMenuEnabled( const bool enableSortMenu )
   myEnableSortMenu = enableSortMenu;
 }
 
-/*
+/*!
   \brief Check if "Sorting" popup menu command for the header is enabled.
   \return \c true if "Sorting" menu command is enabled
   \internal
@@ -91,7 +164,218 @@ bool QtxTreeView::Header::sortMenuEnabled() const
   return myEnableSortMenu;
 }
 
-/*
+/*!
+  \brief Enable/disable multi-column sorting. Sorting itself should be enabled using setSortingEnabled( true )
+  \param enable if \c true, enables multi-column sorting
+  \internal
+*/
+void QtxTreeView::Header::setMultiSortEnabled( const bool enable )
+{
+  myEnableMultiSort = enable;
+  // Multi-sort and usual sort are mutually exclusive
+  setSortIndicatorShown( isSortIndicatorShown() && !enable );
+}
+
+/*!
+  \brief Check multi-column sorting status (enabled or disabled).
+  \return \c true if multi-column sorting is enabled
+  \internal
+*/
+bool QtxTreeView::Header::multiSortEnabled() const
+{
+  return myEnableMultiSort;
+}
+
+/*!
+  \brief Set sorting columns and sort orders for multi-sorting operation.
+  \param logicalIndices Zero-based logical indices of columns to be used for sorting
+  \param orders orders[i] contains sort order for section logicalIndices[i]
+  \internal
+*/
+void QtxTreeView::Header::setSortIndicators( const QVector<int>& logicalIndices, 
+                                             const QVector<Qt::SortOrder>& orders )
+{
+  mySortSections = logicalIndices;
+  mySortOrders   = orders;
+}
+
+/*!
+  \brief Query sorting columns and sort orders for multi-sorting operation.
+  \param logicalIndices Out parameter for zero-based logical indices of columns currently used for sorting
+  \param orders Out parameter, orders[i] contains the current sort order for section logicalIndices[i]
+  \internal
+*/
+void QtxTreeView::Header::sortIndicators( QVector<int>& logicalIndices, 
+                                          QVector<Qt::SortOrder>& orders ) const
+{
+  logicalIndices.clear();
+  orders.clear();
+  
+  if ( isSortIndicatorShown() ){
+    logicalIndices.push_back( sortIndicatorSection() );
+    orders.push_back        ( sortIndicatorOrder  () );
+  }
+  else{
+    logicalIndices = mySortSections;
+    orders         = mySortOrders;
+  }
+}
+
+/*!
+  \brief Clears sort indicators for multi-column sorting.
+  \internal
+*/
+void QtxTreeView::Header::clearSortIndicators()
+{
+  mySortSections.clear();
+  mySortOrders.clear();
+}
+
+/*!
+  \brief Query sort indicators state (shown or not).
+  \return \c true if usual or multi-column sorting indicator is shown
+  \internal
+*/
+bool QtxTreeView::Header::sortIndicatorsShown() const
+{
+  return isSortIndicatorShown() || ( multiSortEnabled() && mySortSections.size() );
+}
+
+Qt::SortOrder operator~( const Qt::SortOrder& arg )
+{
+  return arg == Qt::AscendingOrder ? Qt::DescendingOrder : Qt::AscendingOrder;
+}
+
+/*!
+  \brief Paints the tree view header section.
+
+  Re-implementation of paintSection() handles multiple sort indicators.
+  It lacks selection support (that is not important for the tree view header in most cases)
+  and some dynamic features such as mouse hover feedback. This can be added if necessary.
+
+  \internal
+*/
+void QtxTreeView::Header::paintSection( QPainter* painter, const QRect& rect, int logicalIndex ) const
+{
+  if (!rect.isValid())
+    return;
+  // get the state of the section
+  QStyleOptionHeader opt;
+  initStyleOption(&opt);
+
+  if (isEnabled())
+    opt.state |= QStyle::State_Enabled;
+  if (window()->isActiveWindow())
+    opt.state |= QStyle::State_Active;
+
+  QVector<int>           sortIndices;
+  QVector<Qt::SortOrder> sortOrders;
+  sortIndicators( sortIndices, sortOrders );
+
+  int sortIndex = sortIndices.indexOf( logicalIndex );
+
+  if ( ( isSortIndicatorShown() || multiSortEnabled() ) && sortIndex != -1 )
+    opt.sortIndicator = ( sortOrders[sortIndex] == Qt::AscendingOrder )
+    ? QStyleOptionHeader::SortDown : QStyleOptionHeader::SortUp;
+
+  // setup the style options structure
+  QVariant textAlignment   = model()->headerData( logicalIndex, Qt::Horizontal, Qt::TextAlignmentRole );
+  opt.rect = rect;
+  opt.section = logicalIndex;
+  opt.textAlignment = Qt::Alignment( textAlignment.isValid()
+    ? Qt::Alignment( textAlignment.toInt() ) : defaultAlignment() );
+
+  opt.iconAlignment = Qt::AlignVCenter;
+  opt.text                 = model()->headerData( logicalIndex, Qt::Horizontal, Qt::DisplayRole ).toString();
+
+  QVariant variant         = model()->headerData( logicalIndex, Qt::Horizontal, Qt::DecorationRole );
+  opt.icon = qvariant_cast<QIcon>(variant);
+  if (opt.icon.isNull())
+    opt.icon = qvariant_cast<QPixmap>(variant);
+
+  QVariant foregroundBrush = model()->headerData( logicalIndex, Qt::Horizontal, Qt::ForegroundRole);
+  if (qVariantCanConvert<QBrush>(foregroundBrush))
+    opt.palette.setBrush(QPalette::ButtonText, qvariant_cast<QBrush>(foregroundBrush));
+
+  QPointF oldBO = painter->brushOrigin();
+  QVariant backgroundBrush = model()->headerData( logicalIndex, Qt::Horizontal, Qt::BackgroundRole );
+  if ( qVariantCanConvert<QBrush>( backgroundBrush ) ) {
+    opt.palette.setBrush(QPalette::Button, qvariant_cast<QBrush>(backgroundBrush));
+    opt.palette.setBrush(QPalette::Window, qvariant_cast<QBrush>(backgroundBrush));
+    painter->setBrushOrigin( opt.rect.topLeft() );
+  }
+
+  // the section position
+  int visual = visualIndex( logicalIndex );
+  Q_ASSERT(visual != -1);
+  if ( count() == 1 )
+    opt.position = QStyleOptionHeader::OnlyOneSection;
+  else if ( visual == 0 )
+    opt.position = QStyleOptionHeader::Beginning;
+  else if ( visual == count() - 1 )
+    opt.position = QStyleOptionHeader::End;
+  else
+    opt.position = QStyleOptionHeader::Middle;
+
+  opt.orientation = Qt::Horizontal;
+
+  // draw the section (background, label, pixmap and sort indicator)
+  style()->drawControl( QStyle::CE_Header, &opt, painter, this );
+
+  // Optionally, draw the sort priority for the current column
+  if ( sortIndex >=0 && sortIndices.size() > 1 ){
+    QRegion oldClip = painter->clipRegion();
+    painter->setClipRect( rect );
+
+    QFont oldFont = painter->font();
+    QFont fnt( oldFont );
+    fnt.setPointSize( fnt.pointSize() - 2 );
+    painter->setFont(fnt);
+    style()->drawItemText( painter,
+                           //rect,
+                           QRect( rect.left(), rect.top(), rect.width() - 2, rect.height() ),
+                           Qt::AlignRight, 
+                           opt.palette,
+                           ( opt.state & QStyle::State_Enabled ),
+                           QString( "%1" ).arg( ++sortIndex ),
+                           QPalette::ButtonText );
+
+    painter->setFont( oldFont );
+    painter->setClipRegion( oldClip );
+  }
+
+  painter->setBrushOrigin(oldBO);
+}
+
+/*!
+  \brief Custom mouse click handler, supports clicking multiple header sections with <Ctrl> held.
+  \param logicalIndex the logical index of section
+  \internal
+*/
+void QtxTreeView::Header::onSectionClicked( int logicalIndex )
+{
+  if ( multiSortEnabled() ){
+    // Already using section for sorting -> reverse the order
+    int sortIndex = mySortSections.indexOf( logicalIndex );
+    Qt::SortOrder aDefSortOrder = sortIndex != -1 ? ~mySortOrders[sortIndex] : Qt::AscendingOrder;
+
+    // <Ctrl> not pressed -> clear all sort columns first
+    if ( !( QApplication::keyboardModifiers() & Qt::ControlModifier ) ){
+      mySortSections.clear();
+      mySortOrders.clear();
+    }
+
+    if ( sortIndex >=0 && sortIndex < mySortOrders.size() ){
+      mySortOrders[sortIndex] = aDefSortOrder;
+    }
+    else{
+      mySortSections.push_back( logicalIndex );
+      mySortOrders.push_back  ( mySortOrders.empty() ? aDefSortOrder : mySortOrders.last() );
+    }
+  }
+}
+
+/*!
   \brief Appends action to header popup menu.
   \param action the action
   \internal
@@ -143,7 +427,7 @@ void QtxTreeView::Header::contextMenuEvent( QContextMenuEvent* e )
     menu.addSeparator();
     sortAction = menu.addAction( tr( "Enable sorting" ) );
     sortAction->setCheckable( true );
-    sortAction->setChecked( isSortIndicatorShown() );
+    sortAction->setChecked( sortingEnabled() );
   }
   if ( myActions.size() > 0 ) {
     menu.addSeparator();
@@ -158,20 +442,7 @@ void QtxTreeView::Header::contextMenuEvent( QContextMenuEvent* e )
       setSectionHidden( actionMap[ a ], !isSectionHidden( actionMap[ a ] ) );
     }
     else if ( a && a == sortAction ) {
-      setSortIndicatorShown( a->isChecked() );
-      setClickable( a->isChecked() );
-      QtxTreeView* view = qobject_cast<QtxTreeView*>( parent() );
-      if ( view ) {
-	view->emitSortingEnabled( a->isChecked() );
-	if ( a->isChecked() ) {
-	  connect( this, SIGNAL( sectionClicked( int ) ), view, SLOT( onHeaderClicked( int ) ) );
-	  view->sortByColumn( sortIndicatorSection(), sortIndicatorOrder() );
-	}
-	else {
-	  disconnect( this, SIGNAL( sectionClicked( int ) ), view, SLOT( onHeaderClicked( int ) ) );
-	  view->sortByColumn( 0, Qt::AscendingOrder );
-	}
-      }
+      setSortingEnabled( a->isChecked() );
     }
   }
   e->accept();
@@ -326,13 +597,78 @@ void QtxTreeView::resizeColumnToEncloseContents( int column )
     setColumnWidth( column, sizeHint );
 }
 
+/*!
+  \brief Enable/disable sorting operation for the view.
+  \param enable if \c true, makes the tree view header clickable and shows sort indicator(s)
+  \sa setMultiSortEnabled()
+*/
+void QtxTreeView::setSortingEnabled( const bool enable )
+{
+  Header* h = dynamic_cast<Header*>( header() );
+  if ( h ) 
+    h->setSortingEnabled( enable );
+}
+
+/*!
+  \brief Query status of sorting (enabled or disabled).
+  \return \c true if single or multiple sort indicators are shown
+  \sa multiSortEnabled()
+*/
+bool QtxTreeView::sortingEnabled() const
+{
+  Header* h = dynamic_cast<Header*>( header() );
+  return h && ( h->sortingEnabled() );
+}
+
+/*!
+  \brief Enables multi-column sorting.
+  As soon as multi-column sorting is enabled, the user can click 
+  several header sections in required order while holding <Ctrl> key so as to sort the contents
+  of the tree view on a basis of these columns' values. The column clicked first
+  has maximum sort priority, the column clicked last has minimum sort priority.
+  Each column used for sorting has a sort indicator and sort priority value displayed
+  in its header section.
+  Note that sorting in general should be enabled first using setSortingEnabled().
+  \param enable true to enable, otherwise false.
+  \sa setSortingEnabled()
+*/
+void QtxTreeView::setMultiSortEnabled( const bool enable )
+{
+  Header* h = dynamic_cast<Header*>( header() );
+  if ( h )
+    h->setMultiSortEnabled( enable );
+}
+
+/*!
+  \brief Returns true if multi-sorting is enabled, otherwise returns false.
+  \return Multi-sorting status.
+*/
+bool QtxTreeView::multiSortEnabled() const
+{
+  Header* h = dynamic_cast<Header*>( header() );
+  return h ? h->multiSortEnabled() : false;
+}
+
 /*
   \brief Called when the header section is clicked.
-  \param column header column index
 */
-void QtxTreeView::onHeaderClicked( int column )
+void QtxTreeView::onHeaderClicked()
 {
-  sortByColumn( column, header()->sortIndicatorOrder() );
+  Header* h            = dynamic_cast<Header*>( header() );
+  QtxMultiSortModel* m = dynamic_cast<QtxMultiSortModel*>( model() );
+
+  QApplication::setOverrideCursor( Qt::WaitCursor );
+
+  if ( h && m && multiSortEnabled() ){
+    QVector<int>           columns;
+    QVector<Qt::SortOrder> orders;
+    h->sortIndicators( columns, orders );
+    m->multiSort( columns, orders );
+  }
+  else
+    sortByColumn( header()->sortIndicatorSection(), header()->sortIndicatorOrder() );
+
+  QApplication::restoreOverrideCursor();
 }
 
 /*!
@@ -418,3 +754,5 @@ void QtxTreeView::emitSortingEnabled( bool enabled )
 {
   emit( sortingEnabled( enabled ) );
 }
+
+#include <QtxTreeView.moc>

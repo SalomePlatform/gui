@@ -55,8 +55,14 @@ public:
 
   void     resizeColumnToEncloseContents( int );
 
+  void     setSortingEnabled( const bool );
+  bool     sortingEnabled() const;
+
+  void     setMultiSortEnabled( const bool );
+  bool     multiSortEnabled() const;
+
 protected slots:
-  void     onHeaderClicked( int );
+  void     onHeaderClicked();
   void     rowsAboutToBeRemoved( const QModelIndex&, int, int );
   void     selectionChanged( const QItemSelection&, const QItemSelection& );
   

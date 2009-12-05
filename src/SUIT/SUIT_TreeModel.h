@@ -25,7 +25,7 @@
 
 #include "SUIT.h"
 
-#include <Qtx.h>
+#include <QtxTreeModel.h>
 
 #include <QAbstractItemModel>
 #include <QSortFilterProxyModel>
@@ -40,7 +40,7 @@
 class SUIT_DataObject;
 class SUIT_TreeModel;
 
-class SUIT_EXPORT SUIT_TreeModel : public QAbstractItemModel
+class SUIT_EXPORT SUIT_TreeModel : public QtxTreeModel
 {
   Q_OBJECT
 
@@ -141,7 +141,7 @@ private:
   friend class SUIT_TreeModel::TreeSync;
 };
 
-class SUIT_EXPORT SUIT_ProxyModel : public QSortFilterProxyModel
+class SUIT_EXPORT SUIT_ProxyModel : public QtxMultiSortModel
 {
   Q_OBJECT
 
@@ -163,26 +163,17 @@ public:
   bool                   autoUpdate() const;
   void                   setAutoUpdate( const bool, const bool = true );
  
-  bool                   isSortingEnabled() const;
-
   QAbstractItemDelegate* delegate() const;
 
 public slots:
   virtual void           updateTree( const QModelIndex& );
   virtual void           updateTree( SUIT_DataObject* = 0 );
-  void                   setSortingEnabled( bool );
 
 signals:
   void modelUpdated();
 
-protected:
-  virtual bool           lessThan( const QModelIndex&, const QModelIndex& ) const;
-
 private:
   SUIT_TreeModel*        treeModel() const;
-
-private:
-  bool                   mySortingEnabled;
 };
 
 class SUIT_EXPORT SUIT_ItemDelegate : public QItemDelegate

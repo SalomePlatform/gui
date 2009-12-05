@@ -410,7 +410,7 @@ bool SUIT_TreeModel::TreeSync::needUpdate( const ItemPtr& item ) const
   \param parent parent object
 */
 SUIT_TreeModel::SUIT_TreeModel( QObject* parent )
-: QAbstractItemModel( parent ),
+: QtxTreeModel( parent ),
   myRoot( 0 ),
   myRootItem( 0 ),
   myAutoDeleteTree( false ),
@@ -425,7 +425,7 @@ SUIT_TreeModel::SUIT_TreeModel( QObject* parent )
   \param parent parent object
 */
 SUIT_TreeModel::SUIT_TreeModel( SUIT_DataObject* root, QObject* parent )
-: QAbstractItemModel( parent ),
+: QtxTreeModel( parent ),
   myRoot( root ),
   myRootItem( 0 ),
   myAutoDeleteTree( false ),
@@ -535,9 +535,15 @@ QVariant SUIT_TreeModel::data( const QModelIndex& index, int role ) const
     case BackgroundRole:
       // data background color for the specified column
       c = obj->color( SUIT_DataObject::Background, index.column() );
-      if ( !c.isValid() ) // default value
+      // NOTE by san: Zero alpha is treated as fully transparent, therefore no background
+      // is drawn at all (that is, the base color will appear instead of the custom backround).
+      // However, maximum alpha (each QColor has alpha == 1.0f by default) might be also unacceptable 
+      // since it disables blending effects that might be used by a custom style. 
+      // Thus applications should choose color's alpha themselves to get required visual result.
+      if ( !c.isValid() ){ // default value, should be fully transparent
 	c = QApplication::palette().color( QPalette::Base );
-      c.setAlpha( 0 );
+        c.setAlpha( 0 );
+      }
       val = c; 
       break;
     case ForegroundRole:
@@ -621,7 +627,7 @@ bool SUIT_TreeModel::setData( const QModelIndex& index,
       }
     }
   }
-  return QAbstractItemModel::setData( index, value, role );
+  return QtxTreeModel::setData( index, value, role );
 }
 
 /*!
@@ -1119,9 +1125,9 @@ void SUIT_TreeModel::onRemoved( SUIT_DataObject* /*object*/, SUIT_DataObject* pa
   \param parent parent object
 */
 SUIT_ProxyModel::SUIT_ProxyModel( QObject* parent )
-: QSortFilterProxyModel( parent ),
-  mySortingEnabled( true )
+: QtxMultiSortModel( parent )
 {
+  setSortingEnabled( true );
   SUIT_TreeModel* model = new SUIT_TreeModel( this );
   connect( model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
   setSourceModel( model );
@@ -1133,9 +1139,9 @@ SUIT_ProxyModel::SUIT_ProxyModel( QObject* parent )
   \param parent parent object
 */
 SUIT_ProxyModel::SUIT_ProxyModel( SUIT_DataObject* root, QObject* parent )
-: QSortFilterProxyModel( parent ),
-  mySortingEnabled( true )
+: QtxMultiSortModel( parent )
 {
+  setSortingEnabled( true );
   SUIT_TreeModel* model = new SUIT_TreeModel( root, this );
   connect( model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
   setSourceModel( model );
@@ -1147,9 +1153,9 @@ SUIT_ProxyModel::SUIT_ProxyModel( SUIT_DataObject* root, QObject* parent )
   \param parent parent object
 */
 SUIT_ProxyModel::SUIT_ProxyModel( SUIT_TreeModel* model, QObject* parent )
-: QSortFilterProxyModel( parent ),
-  mySortingEnabled( true )
+: QtxMultiSortModel( parent )
 {
+  setSortingEnabled( true );
   connect( model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
   setSourceModel( model );
 }
@@ -1256,16 +1262,6 @@ void SUIT_ProxyModel::setAutoUpdate( const bool on, const bool updateImmediately
 }
 
 /*!
-  \brief Check if sorting is enabled.
-  \return \c true if sorting is enabled
-  \sa setSortingEnabled()
-*/
-bool SUIT_ProxyModel::isSortingEnabled() const
-{
-  return mySortingEnabled;
-}
-
-/*!
   \brief Get item delegate for the model.
   \return new item delegate
 */
@@ -1304,34 +1300,6 @@ void SUIT_ProxyModel::updateTree( SUIT_DataObject* obj )
 {
   if ( treeModel() )
     treeModel()->updateTree( obj );
-}
-
-/*!
-  \brief Compares two model indexes for the sorting purposes.
-  \param left first index to compare
-  \param right second index to compare
-  \return result of the comparison
-*/
-bool SUIT_ProxyModel::lessThan( const QModelIndex& left, const QModelIndex& right ) const
-{
-  if ( !isSortingEnabled() && left.isValid() && right.isValid() ) {
-    return left.row() < right.row();
-  }
-  if ( treeModel() && treeModel()->customSorting( left.column() ) ) {
-    return treeModel()->lessThan( left, right );
-  }
-  return QSortFilterProxyModel::lessThan( left, right );
-}
-
-/*!
-  \brief Enable/disable sorting.
-  \param enabled new flag state
-  \sa isSortingEnabled()
-*/
-void SUIT_ProxyModel::setSortingEnabled( bool enabled )
-{
-  mySortingEnabled = enabled;
-  clear();
 }
 
 /*
@@ -1380,11 +1348,8 @@ void SUIT_ItemDelegate::paint( QPainter* painter,
     // Note: we check into account only custom roles; other roles are process
     //       correctly by the QItemDelegate class
     QVariant val = index.data( SUIT_TreeModel::BaseColorRole );
-    if ( val.isValid() && val.value<QColor>().isValid() ) {
-      QColor aBase = val.value<QColor>();
-      aBase.setAlpha( 0 );
+    if ( val.isValid() && val.value<QColor>().isValid() )
       opt.palette.setBrush( QPalette::Base, val.value<QColor>() );
-    }
     val = index.data( SUIT_TreeModel::TextColorRole );
     if ( val.isValid() && val.value<QColor>().isValid() )
       opt.palette.setBrush( QPalette::Text, val.value<QColor>() );

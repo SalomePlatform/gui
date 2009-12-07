@@ -180,14 +180,14 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
   connect( myPlot, SIGNAL( legendClicked( QwtPlotItem* ) ), 
 	   this, SIGNAL( legendClicked( QwtPlotItem* ) ) );
 
-  connect( myPlot->axisWidget( QwtPlot::xBottom ), SIGNAL( scaleDivChanged() ),
+  // IPAL 21465
+  /*  connect( myPlot->axisWidget( QwtPlot::xBottom ), SIGNAL( scaleDivChanged() ),
 	   myPlot, SLOT( onScaleDivChanged() ) );
   connect( myPlot->axisWidget( QwtPlot::yLeft ), SIGNAL( scaleDivChanged() ),
 	   myPlot, SLOT( onScaleDivChanged() ) );
   if (mySecondY)
     connect( myPlot->axisWidget( QwtPlot::yRight ), SIGNAL( scaleDivChanged() ),
-	     myPlot, SLOT( onScaleDivChanged() ) );
-
+    myPlot, SLOT( onScaleDivChanged() ) );*/
 
   /* Initial Setup - get from the preferences */
   readPreferences();
@@ -844,6 +844,14 @@ void Plot2d_ViewFrame::getFitRangeByCurves(double& xMin,double& xMax,
       if ( yMin > it.value()->getMinY() ) yMin = it.value()->getMinY();
       if ( yMax < it.value()->getMaxY() ) yMax = it.value()->getMaxY();
     }
+    if ( xMin == xMax ) {
+      xMin -= xMin/10.;
+      xMax += xMax/10.;
+    }
+    if ( yMin == yMax ) {
+      yMin -= yMin/10.;
+      yMax += yMax/10.;
+    }
     y2Min = yMin;
     y2Max = yMax;
   }
@@ -1464,11 +1472,15 @@ void Plot2d_ViewFrame::wheelEvent(QWheelEvent* event)
   QwtScaleMap xMap = myPlot->canvasMap( QwtPlot::xBottom );
   QwtScaleMap yMap = myPlot->canvasMap( QwtPlot::yLeft );
 
-  myPlot->setAxisScale( QwtPlot::yLeft, yMap.s1(), yMap.s2()*aScale );
-  myPlot->setAxisScale( QwtPlot::xBottom, xMap.s1(), xMap.s2()*aScale );
+  if ( ((yMap.s2() - yMap.s1()) < 10e-13 || (xMap.s2() - xMap.s1()) < 10e-13 ) && aScale < 1 )
+    return;
+
+  myPlot->setAxisScale( QwtPlot::yLeft, yMap.s1(), yMap.s1() + aScale*(yMap.s2() - yMap.s1()) );
+  myPlot->setAxisScale( QwtPlot::xBottom, xMap.s1(), xMap.s1() + aScale*(xMap.s2() - xMap.s1()) );
   if (mySecondY) {
     QwtScaleMap y2Map = myPlot->canvasMap( QwtPlot::yRight );
-    myPlot->setAxisScale( QwtPlot::yRight, y2Map.s1(), y2Map.s2()*aScale );
+    if ( ((y2Map.s2() - y2Map.s1()) < 10e-13  ) && aScale < 1 ) return;
+    myPlot->setAxisScale( QwtPlot::yRight, y2Map.s1(), y2Map.s1() + aScale*(y2Map.s2() - y2Map.s1()) );
   }
   myPlot->replot();
   myPnt = event->pos();
@@ -1634,6 +1646,11 @@ Plot2d_Plot2d::Plot2d_Plot2d( QWidget* parent )
   myPlotZoomer->setRubberBandPen( QColor( Qt::green ) );
 
   defaultPicker();
+
+  // Create alternative scales
+  setAxisScaleDraw( QwtPlot::yLeft,   new Plot2d_ScaleDraw() );
+  setAxisScaleDraw( QwtPlot::xBottom, new Plot2d_ScaleDraw() );
+  setAxisScaleDraw( QwtPlot::yRight,  new Plot2d_ScaleDraw() );
 
   // auto scaling by default
   setAxisAutoScale( QwtPlot::yLeft );
@@ -1881,7 +1898,7 @@ void Plot2d_Plot2d::onScaleDivChanged()
     default:
       break;
     }
-      
+
     if ( axisId >= 0 ) {
       QwtScaleMap map = canvasMap(axisId);
       double aDist = fabs(map.s2()-map.s1()) / (axisMaxMajor(axisId)*axisMaxMinor(axisId));
@@ -2216,5 +2233,19 @@ Plot2d_ScaleDraw::Plot2d_ScaleDraw( const QwtScaleDraw& scaleDraw, char f, int p
 
 QwtText Plot2d_ScaleDraw::label( double value ) const
 {
-  return QLocale::system().toString(value,myFormat,myPrecision);
+  QwtScaleMap m = map();
+  QString str1 = QwtScaleDraw::label( m.s1() ).text();
+  QString str2 = QwtScaleDraw::label( m.s2() ).text();
+  if ( str1 == str2 ) {
+    double aDist = fabs(map().s2()-map().s1())/5;
+    int precision = 0;
+    while (aDist < 1 ) {
+      precision++; 
+      aDist *= 10.; 
+    }
+    if ( precision > 0 && value > 0 )
+      return QLocale::system().toString( value,'f', precision );
+  }
+
+  return QwtScaleDraw::label( value );
 }

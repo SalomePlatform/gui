@@ -104,24 +104,24 @@ public:
   /** @name Selection Management */
   //@{
   bool highlightCell(const TColStd_IndexedMapOfInteger& MapIndex,
-		     VTKViewer_Actor* theMapActor,
-		     bool hilight,
-		     bool update = true );
+                     VTKViewer_Actor* theMapActor,
+                     bool hilight,
+                     bool update = true );
   bool highlightEdge(const TColStd_IndexedMapOfInteger& MapIndex,
-		     VTKViewer_Actor* theMapActor,
-		     bool hilight,
-		     bool update = true );
+                     VTKViewer_Actor* theMapActor,
+                     bool hilight,
+                     bool update = true );
   bool highlightPoint(const TColStd_IndexedMapOfInteger& MapIndex,
-		      VTKViewer_Actor* theMapActor,
-		      bool hilight,
-		      bool update = true );
+                      VTKViewer_Actor* theMapActor,
+                      bool hilight,
+                      bool update = true );
 
   void unHighlightSubSelection();
   bool unHighlightAll();
 
   //void SetSelectionMode(Selection_Mode mode);
   void SetSelectionProp(const double& theRed = 1, const double& theGreen = 1,
-			const double& theBlue = 0, const int& theWidth = 5);
+                        const double& theBlue = 0, const int& theWidth = 5);
   void SetSelectionTolerance(const double& theTolNodes = 0.025, const double& theTolCell = 0.001);
   //@}
 
@@ -161,19 +161,19 @@ public:
   void setViewWindow( VTKViewer_ViewWindow* theViewWnd );
 
   void setCellData(const int& theIndex,
-		   VTKViewer_Actor* theMapActor,
-		   VTKViewer_Actor* theActor) {}
+                   VTKViewer_Actor* theMapActor,
+                   VTKViewer_Actor* theActor) {}
   void setEdgeData(const int& theCellIndex,
-		   VTKViewer_Actor* theMapActor,
-		   const int& theEdgeIndex,
-		   VTKViewer_Actor* theActor ) {} //NB
+                   VTKViewer_Actor* theMapActor,
+                   const int& theEdgeIndex,
+                   VTKViewer_Actor* theActor ) {} //NB
   void setPointData(const int& theIndex,
-		    VTKViewer_Actor* theMapActor,
-		    VTKViewer_Actor* theActor) {}
+                    VTKViewer_Actor* theMapActor,
+                    VTKViewer_Actor* theActor) {}
 
   typedef void (*TUpdateActor)(const TColStd_IndexedMapOfInteger& theMapIndex,
-			       VTKViewer_Actor* theMapActor,
-			       VTKViewer_Actor* theActor);
+                               VTKViewer_Actor* theMapActor,
+                               VTKViewer_Actor* theActor);
  protected:
 
   VTKViewer_RenderWindowInteractor();
@@ -182,12 +182,12 @@ public:
   VTKViewer_InteractorStyle* myInteractorStyle;
 
   bool highlight(const TColStd_IndexedMapOfInteger& theMapIndex,
-		 VTKViewer_Actor* theMapActor, VTKViewer_Actor* theActor,
-		 TUpdateActor theFun, bool hilight, bool update);
+                 VTKViewer_Actor* theMapActor, VTKViewer_Actor* theActor,
+                 TUpdateActor theFun, bool hilight, bool update);
   void setActorData(const TColStd_IndexedMapOfInteger& theMapIndex,
-		    VTKViewer_Actor* theMapActor,
-		    VTKViewer_Actor *theActor,
-		    TUpdateActor theFun);
+                    VTKViewer_Actor* theMapActor,
+                    VTKViewer_Actor *theActor,
+                    TUpdateActor theFun);
 
   /*! Timer used during various mouse events to figure 
    * out mouse movements.

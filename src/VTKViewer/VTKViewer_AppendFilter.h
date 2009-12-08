@@ -62,23 +62,23 @@ public:
 
   vtkIdType
   GetPointOutputID(vtkIdType theInputID,
-		   vtkIdType theInputDataSetID);
+                   vtkIdType theInputDataSetID);
 
   vtkIdType
   GetCellOutputID(vtkIdType theInputID,
-		  vtkIdType theInputDataSetID);
+                  vtkIdType theInputDataSetID);
 
   void 
   GetPointInputID(vtkIdType theOutputID,
-		 vtkIdType& theInputID,
-		 vtkIdType& theStartID,
-		 vtkIdType& theInputDataSetID);
+                 vtkIdType& theInputID,
+                 vtkIdType& theStartID,
+                 vtkIdType& theInputDataSetID);
 
   void
   GetCellInputID(vtkIdType theOutputID,
-		 vtkIdType& theInputID,
-		 vtkIdType& theStartID,
-		 vtkIdType& theInputDataSetID);
+                 vtkIdType& theInputID,
+                 vtkIdType& theStartID,
+                 vtkIdType& theInputDataSetID);
 
   typedef std::vector<vtkIdType> TVectorIds;
 

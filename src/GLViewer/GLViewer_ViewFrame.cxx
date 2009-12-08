@@ -153,7 +153,7 @@ void GLViewer_ViewFrame::createActions()
 */
 void GLViewer_ViewFrame::createToolBar()
 {
-  int tid = toolMgr()->createToolBar( tr("LBL_TOOLBAR_LABEL") );
+  int tid = toolMgr()->createToolBar( tr("LBL_TOOLBAR_LABEL"), false );
   toolMgr()->append( DumpId, tid );
 
   QtxMultiAction* aScaleAction = new QtxMultiAction( this );

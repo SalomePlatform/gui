@@ -63,7 +63,6 @@
 #include <QMenu>
 #include <QAction>
 
-
 #include "sipAPISalomePyQtGUILight.h"
 
 #include <sip.h>
@@ -283,9 +282,9 @@ SALOME_PYQT_ModuleLight::~SALOME_PYQT_ModuleLight()
 {
   if ( myXmlHandler )
     delete myXmlHandler;
-  if ( myInterp ) {
+  if ( myInterp && myModule ) {
     PyLockWrapper aLock = myInterp->GetLockWrapper();
-    delete myModule;
+    Py_XDECREF(myModule);
   }
 }
 
@@ -866,8 +865,8 @@ void SALOME_PYQT_ModuleLight::init( CAM_Application* app )
   PyLockWrapper aLock = myInterp->GetLockWrapper();
   // ... (the Python module is already imported)
   // ... finally call Python module's initialize() method
-  if ( PyObject_HasAttrString( myModule->get(), "initialize" ) ) {
-    PyObjWrapper res( PyObject_CallMethod( myModule->get(), (char*)"initialize", (char*)"" ) );
+  if ( PyObject_HasAttrString( myModule, "initialize" ) ) {
+    PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"initialize", (char*)"" ) );
     if ( !res ) {
       PyErr_Print();
     }
@@ -880,8 +879,8 @@ void SALOME_PYQT_ModuleLight::init( CAM_Application* app )
   myWindowsMap.insert( LightApp_Application::WT_PyConsole,     Qt::BottomDockWidgetArea );
   myWindowsMap.insert( LightApp_Application::WT_LogWindow,     Qt::BottomDockWidgetArea );
 
-  if ( PyObject_HasAttrString( myModule->get() , "windows" ) ) {
-    PyObjWrapper res1( PyObject_CallMethod( myModule->get(), (char*)"windows", (char*)"" ) );
+  if ( PyObject_HasAttrString( myModule , "windows" ) ) {
+    PyObjWrapper res1( PyObject_CallMethod( myModule, (char*)"windows", (char*)"" ) );
     if ( !res1 ) {
       PyErr_Print();
     }
@@ -907,8 +906,8 @@ void SALOME_PYQT_ModuleLight::init( CAM_Application* app )
 
   // get compatible view windows types from the Python module 
   // by calling views() method
-  if ( PyObject_HasAttrString( myModule->get() , "views" ) ) {
-    PyObjWrapper res2( PyObject_CallMethod( myModule->get(), (char*)"views", (char*)"" ) );
+  if ( PyObject_HasAttrString( myModule , "views" ) ) {
+    PyObjWrapper res2( PyObject_CallMethod( myModule, (char*)"views", (char*)"" ) );
     if ( !res2 ) {
       PyErr_Print();
     }
@@ -954,20 +953,24 @@ void SALOME_PYQT_ModuleLight::activate( SUIT_Study* theStudy )
 
   // initialize Python subinterpreter (on per study) and put it in <myInterp> variable
   initInterp( aStudyId );
-  if ( !myInterp )
+  if ( !myInterp ) {
+    myLastActivateStatus = false;
     return; // Error
+  }
 
   // import Python GUI module
   importModule();
-  if ( !myModule )
+  if ( !myModule ) {
+    myLastActivateStatus = false;
     return; // Error
+  }
 
   // get python lock
   PyLockWrapper aLock = myInterp->GetLockWrapper();
 
   // call Python module's activate() method (for the new modules)
-  if ( PyObject_HasAttrString( myModule->get() , "activate" ) ) {
-    PyObject* res1 = PyObject_CallMethod( myModule->get(), (char*)"activate", (char*)"" );
+  if ( PyObject_HasAttrString( myModule , "activate" ) ) {
+    PyObject* res1 = PyObject_CallMethod( myModule, (char*)"activate", (char*)"" );
     if ( !res1 || !PyBool_Check( res1 ) ) {
       PyErr_Print();
       // always true for old modules (no return value)
@@ -1039,8 +1042,8 @@ void SALOME_PYQT_ModuleLight::customize( SUIT_Study* theStudy )
 
   if ( IsCallOldMethods ) {
     // call Python module's setSettings() method (obsolete)
-    if ( PyObject_HasAttrString( myModule->get() , "setSettings" ) ) {
-      PyObjWrapper res( PyObject_CallMethod( myModule->get(), (char*)"setSettings", (char*)"" ) );
+    if ( PyObject_HasAttrString( myModule , "setSettings" ) ) {
+      PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"setSettings", (char*)"" ) );
       if( !res ) {
         PyErr_Print();
       }
@@ -1066,8 +1069,8 @@ void SALOME_PYQT_ModuleLight::deactivate( SUIT_Study* theStudy )
     return;
   }
   // then call Python module's deactivate() method
-  if ( PyObject_HasAttrString( myModule->get() , "deactivate" ) ) {
-    PyObjWrapper res( PyObject_CallMethod( myModule->get(), (char*)"deactivate", (char*)"" ) );
+  if ( PyObject_HasAttrString( myModule , "deactivate" ) ) {
+    PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"deactivate", (char*)"" ) );
     if( !res ) {
       PyErr_Print();
     }
@@ -1120,8 +1123,8 @@ void SALOME_PYQT_ModuleLight::studyChanged( SUIT_Study* theStudy )
   PyLockWrapper aLock = myInterp->GetLockWrapper();
 
   // call Python module's activeStudyChanged() method
-  if ( PyObject_HasAttrString( myModule->get(), "activeStudyChanged" ) ) {
-    PyObjWrapper res( PyObject_CallMethod( myModule->get(), (char*)"activeStudyChanged", (char*)"i", aStudyId ) );
+  if ( PyObject_HasAttrString( myModule, "activeStudyChanged" ) ) {
+    PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"activeStudyChanged", (char*)"i", aStudyId ) );
     if( !res ) {
       PyErr_Print();
     }
@@ -1154,10 +1157,10 @@ void SALOME_PYQT_ModuleLight::contextMenu( const QString& theContext, QMenu* the
 
   QString aContext( "" ), aObject( "" ), aParent( theContext );
 
-  if ( IsCallOldMethods && PyObject_HasAttrString( myModule->get(), "definePopup" ) ) {
+  if ( IsCallOldMethods && PyObject_HasAttrString( myModule, "definePopup" ) ) {
     // call definePopup() Python module's function
     // this is obsolete function, used only for compatibility reasons
-    PyObjWrapper res( PyObject_CallMethod( myModule->get(),
+    PyObjWrapper res( PyObject_CallMethod( myModule,
 					   (char*)"definePopup",
 					   (char*)"sss",
 					   theContext.toLatin1().constData(),
@@ -1182,11 +1185,15 @@ void SALOME_PYQT_ModuleLight::contextMenu( const QString& theContext, QMenu* the
   if ( myXmlHandler )
     myXmlHandler->createPopup( thePopupMenu, aContext, aParent, aObject );
 
-  PyObjWrapper sipPopup( sipBuildResult( 0, "M", thePopupMenu, sipClass_QMenu ) );
+#if SIP_VERSION < 0x040800
+  PyObjWrapper sipPopup( sipBuildResult( 0, "M", thePopupMenu, sipClass_QMenu) );
+#else
+  PyObjWrapper sipPopup( sipBuildResult( 0, "D", thePopupMenu, sipType_QMenu, NULL) );
+#endif
 
   // then call Python module's createPopupMenu() method (for new modules)
-  if ( PyObject_HasAttrString( myModule->get(), "createPopupMenu" ) ) {
-    PyObjWrapper res1( PyObject_CallMethod( myModule->get(),
+  if ( PyObject_HasAttrString( myModule, "createPopupMenu" ) ) {
+    PyObjWrapper res1( PyObject_CallMethod( myModule,
 					    (char*)"createPopupMenu",
 					    (char*)"Os",
 					    sipPopup.get(),
@@ -1196,10 +1203,10 @@ void SALOME_PYQT_ModuleLight::contextMenu( const QString& theContext, QMenu* the
     }
   }
 
-  if ( IsCallOldMethods && PyObject_HasAttrString( myModule->get(), "customPopup" ) ) {
+  if ( IsCallOldMethods && PyObject_HasAttrString( myModule, "customPopup" ) ) {
     // call customPopup() Python module's function
     // this is obsolete function, used only for compatibility reasons
-    PyObjWrapper res2( PyObject_CallMethod( myModule->get(),
+    PyObjWrapper res2( PyObject_CallMethod( myModule,
 					    (char*)"customPopup",
 					    (char*)"Osss",
 					    sipPopup.get(),
@@ -1229,8 +1236,8 @@ void SALOME_PYQT_ModuleLight::guiEvent( const int theId )
   if ( !myInterp || !myModule )
     return;
 
-  if ( PyObject_HasAttrString( myModule->get(), "OnGUIEvent" ) ) {
-    PyObjWrapper res( PyObject_CallMethod( myModule->get(), (char*)"OnGUIEvent", (char*)"i", theId ) );
+  if ( PyObject_HasAttrString( myModule, "OnGUIEvent" ) ) {
+    PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"OnGUIEvent", (char*)"i", theId ) );
     if( !res ) {
       PyErr_Print();
     }
@@ -1256,8 +1263,8 @@ void SALOME_PYQT_ModuleLight::initPreferences()
   // might be called during the module intialization process
   myInitModule = this;
 
-  if ( PyObject_HasAttrString( myModule->get(), "createPreferences" ) ) {
-    PyObjWrapper res( PyObject_CallMethod( myModule->get(), (char*)"createPreferences", (char*)"" ) );
+  if ( PyObject_HasAttrString( myModule, "createPreferences" ) ) {
+    PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"createPreferences", (char*)"" ) );
     if( !res ) {
       PyErr_Print();
     }
@@ -1339,7 +1346,11 @@ void SALOME_PYQT_ModuleLight::importModule()
   PyLockWrapper aLock = myInterp->GetLockWrapper();
   // ... then import a module
   QString aMod = name() + "GUI";
-  myModule = new PyObjWrapper( PyImport_ImportModule( aMod.toLatin1().data() ) );
+  try {
+    myModule = PyImport_ImportModule( aMod.toLatin1().data() );
+  }
+  catch (...) {
+  }
   if( !myModule ) {
     // Error!
     PyErr_Print();
@@ -1390,10 +1401,14 @@ void SALOME_PYQT_ModuleLight::setWorkSpace()
       if ( aDesktop )
         aWorkspace = aDesktop->workstack();
     }
-    PyObjWrapper pyws( sipBuildResult( 0, "M", aWorkspace, sipClass_QWidget ) );
+#if SIP_VERSION < 0x040800
+    PyObjWrapper pyws( sipBuildResult( 0, "M", aWorkspace, sipClass_QWidget) );
+#else
+    PyObjWrapper pyws( sipBuildResult( 0, "D", aWorkspace, sipType_QWidget , NULL) );
+#endif
     // ... and finally call Python module's setWorkspace() method (obsolete)
-    if ( PyObject_HasAttrString( myModule->get(), "setWorkSpace" ) ) {
-      PyObjWrapper res( PyObject_CallMethod( myModule->get(), (char*)"setWorkSpace", (char*)"O", pyws.get() ) );
+    if ( PyObject_HasAttrString( myModule, "setWorkSpace" ) ) {
+      PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"setWorkSpace", (char*)"O", pyws.get() ) );
       if( !res ) {
         PyErr_Print();
       }
@@ -1419,8 +1434,8 @@ void SALOME_PYQT_ModuleLight::prefChanged( const QString& section, const QString
   if ( !myInterp || !myModule )
     return;
 
-  if ( PyObject_HasAttrString( myModule->get(), "preferenceChanged" ) ) {
-    PyObjWrapper res( PyObject_CallMethod( myModule->get(),
+  if ( PyObject_HasAttrString( myModule, "preferenceChanged" ) ) {
+    PyObjWrapper res( PyObject_CallMethod( myModule,
 					   (char*)"preferenceChanged", 
 					   (char*)"ss", 
 					   section.toLatin1().constData(), 
@@ -1817,12 +1832,12 @@ void SALOME_PYQT_ModuleLight::activeViewChanged( const SUIT_ViewWindow* pview )
   
   connectView( pview );
 
-  if ( PyObject_HasAttrString( myModule->get(), "activeViewChanged" ) ) 
+  if ( PyObject_HasAttrString( myModule, "activeViewChanged" ) ) 
   {
     if ( !pview ) 
       return;   
 
-    PyObjWrapper res( PyObject_CallMethod( myModule->get(), (char*)"activeViewChanged", (char*)"i" , pview->getId() ) );
+    PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"activeViewChanged", (char*)"i" , pview->getId() ) );
     if( !res )
       PyErr_Print();
   }
@@ -1864,9 +1879,9 @@ void SALOME_PYQT_ModuleLight::viewCloned( const SUIT_ViewWindow* pview )
   if ( !myInterp || !myModule || !pview ) 
     return;  
 
-  if ( PyObject_HasAttrString( myModule->get(), "viewCloned" ) ) 
+  if ( PyObject_HasAttrString( myModule, "viewCloned" ) ) 
   {
-    PyObjWrapper res( PyObject_CallMethod( myModule->get(), (char*)"viewCloned", (char*)"i", pview->getId() ) );
+    PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"viewCloned", (char*)"i", pview->getId() ) );
     if( !res )
       PyErr_Print();
   }
@@ -1908,9 +1923,9 @@ void SALOME_PYQT_ModuleLight::viewClosed( const SUIT_ViewWindow* pview )
   if ( !myInterp || !myModule ) 
     return;  
 
-  if ( PyObject_HasAttrString( myModule->get(), "viewClosed" ) ) 
+  if ( PyObject_HasAttrString( myModule, "viewClosed" ) ) 
   {
-    PyObjWrapper res( PyObject_CallMethod( myModule->get(), (char*)"viewClosed", (char*)"i", pview->getId() ) );
+    PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"viewClosed", (char*)"i", pview->getId() ) );
     if ( !res )
     {
       PyErr_Print();
@@ -2376,8 +2391,8 @@ void SALOME_PYQT_ModuleLight::saveEvent(QStringList& theListOfFiles)
   if ( !myInterp || !myModule || (it == theListOfFiles.end()))
     return;
 
-  if ( PyObject_HasAttrString(myModule->get(), "saveFiles") ) {
-    PyObjWrapper res( PyObject_CallMethod( myModule->get(), (char*)"saveFiles",
+  if ( PyObject_HasAttrString(myModule, "saveFiles") ) {
+    PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"saveFiles",
 					   (char*)"s", (*it).toLatin1().constData()));
     if( !res ) {
       PyErr_Print();
@@ -2453,10 +2468,13 @@ void SALOME_PYQT_ModuleLight::openEvent(QStringList theListOfFiles, bool &opened
     return;
   QStringList* theList = new QStringList(theListOfFiles);
 
-  PyObjWrapper sipList( sipBuildResult( 0, "M", theList, sipClass_QStringList ) );
-  
-  if ( PyObject_HasAttrString(myModule->get() , "openFiles") ) {
-    PyObjWrapper res( PyObject_CallMethod( myModule->get(), (char*)"openFiles",
+#if SIP_VERSION < 0x040800
+  PyObjWrapper sipList( sipBuildResult( 0, "M", theList, sipClass_QStringList) );
+#else
+  PyObjWrapper sipList( sipBuildResult( 0, "D", theList,  sipType_QStringList , NULL) );
+#endif
+  if ( PyObject_HasAttrString(myModule , "openFiles") ) {
+    PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"openFiles",
 					   (char*)"O", sipList.get()));
     if( !res || !PyBool_Check( res )) {
       PyErr_Print();

@@ -81,6 +81,9 @@ protected:
   virtual void		paintEvent( QPaintEvent* );
   virtual void          resizeEvent( QResizeEvent* );
 
+  // initialization
+  virtual void          attachWindow( const Handle(V3d_View)&, const Handle(Aspect_Window)& );
+
 private:
   Handle(V3d_View) activeView() const;
   Handle(V3d_View) inactiveView() const;

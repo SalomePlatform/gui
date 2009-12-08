@@ -148,7 +148,7 @@ int VTKViewer_ShrinkFilter::RequestData(
       oldId = ptIds->GetId(i);
       newId = newPts->InsertNextPoint(pt);
       if(myStoreMapping)
-	myVTK2ObjIds.push_back(oldId);
+        myVTK2ObjIds.push_back(oldId);
       newPtIds->InsertId(i,newId);
 
       outPD->CopyData(pd, oldId, newId);

@@ -24,18 +24,22 @@
 #  Module : SALOME
 #
 import libSalomePy
-ren=libSalomePy.renderer
-#iren=libSalomePy.interactor
+import vtk
 
-from libVTKCommonPython import *
-from libVTKGraphicsPython import *
-cone = vtkConeSource()
+# get the "vtkRenderer": an OpenGL rendering context
+ren=libSalomePy.getRenderer()
+
+# create an actor and give it cone geometry
+cone = vtk.vtkConeSource()
 cone.SetResolution(8)
-coneMapper = vtkPolyDataMapper()
+coneMapper = vtk.vtkPolyDataMapper()
 coneMapper.SetInput(cone.GetOutput())
-coneActor = vtkActor()
+coneActor = vtk.vtkActor()
 coneActor.SetMapper(coneMapper)
 
+# assign our actor to the renderer
 ren.AddActor(coneActor)
-iren = vtkRenderWindowInteractor()
 
+libSalomePy.fitAll()
+
+iren = libSalomePy.getRenderWindowInteractor()

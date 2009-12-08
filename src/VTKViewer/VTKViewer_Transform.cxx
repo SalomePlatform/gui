@@ -61,6 +61,6 @@ int VTKViewer_Transform::IsIdentity(){
   double aScale[3];
   this->GetMatrixScale(aScale);
   return (fabs(aScale[0] - 1.0) < EPS && 
-	  fabs(aScale[1] - 1.0) < EPS && 
-	  fabs(aScale[2] - 1.0) < EPS);
+          fabs(aScale[1] - 1.0) < EPS && 
+          fabs(aScale[2] - 1.0) < EPS);
 }

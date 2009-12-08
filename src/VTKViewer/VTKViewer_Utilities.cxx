@@ -36,7 +36,7 @@ using namespace std;
 /*!@see vtkRenderer::ResetCamera(vtkFloatingPointType bounds[6]) method*/
 void 
 ResetCamera(vtkRenderer* theRenderer, 
-	    int theUsingZeroFocalPoint)
+            int theUsingZeroFocalPoint)
 {  
   if(!theRenderer)
     return;
@@ -60,8 +60,8 @@ ResetCamera(vtkRenderer* theRenderer,
 
     vtkFloatingPointType aWidth = 
       sqrt((aBounds[1]-aBounds[0])*(aBounds[1]-aBounds[0]) +
-	   (aBounds[3]-aBounds[2])*(aBounds[3]-aBounds[2]) +
-	   (aBounds[5]-aBounds[4])*(aBounds[5]-aBounds[4]));
+           (aBounds[3]-aBounds[2])*(aBounds[3]-aBounds[2]) +
+           (aBounds[5]-aBounds[4])*(aBounds[5]-aBounds[4]));
     
     if(aWidth < MIN_DISTANCE)
       return;
@@ -88,8 +88,8 @@ ResetCamera(vtkRenderer* theRenderer,
     
     // update the camera
     aCamera->SetPosition(aCenter[0]+aDistance*aViewPlaneNormal[0],
-			 aCenter[1]+aDistance*aViewPlaneNormal[1],
-			 aCenter[2]+aDistance*aViewPlaneNormal[2]);
+                         aCenter[1]+aDistance*aViewPlaneNormal[1],
+                         aCenter[2]+aDistance*aViewPlaneNormal[2]);
 
     // find size of the window
     int* aWinSize = theRenderer->GetSize();
@@ -108,7 +108,7 @@ ResetCamera(vtkRenderer* theRenderer,
 /*! Compute the bounds of the visible props*/
 int
 ComputeVisiblePropBounds(vtkRenderer* theRenderer, 
-			 vtkFloatingPointType theBounds[6])
+                         vtkFloatingPointType theBounds[6])
 {
   int aCount = 0;
   
@@ -124,25 +124,25 @@ ComputeVisiblePropBounds(vtkRenderer* theRenderer,
     if(aProp->GetVisibility() && aProp->GetMapper() && vtkMath::AreBoundsInitialized(aProp->GetBounds())){
       if(VTKViewer_Actor* anActor = VTKViewer_Actor::SafeDownCast(aProp))
         if(anActor->IsInfinitive())
-	  continue;
-	
+          continue;
+        
       vtkFloatingPointType *aBounds = aProp->GetBounds();
       static vtkFloatingPointType MAX_DISTANCE = 0.9*VTK_LARGE_FLOAT;
       // make sure we haven't got bogus bounds
       if ( aBounds != NULL &&
-	   aBounds[0] > -MAX_DISTANCE && aBounds[1] < MAX_DISTANCE &&
-	   aBounds[2] > -MAX_DISTANCE && aBounds[3] < MAX_DISTANCE &&
-	   aBounds[4] > -MAX_DISTANCE && aBounds[5] < MAX_DISTANCE )
+           aBounds[0] > -MAX_DISTANCE && aBounds[1] < MAX_DISTANCE &&
+           aBounds[2] > -MAX_DISTANCE && aBounds[3] < MAX_DISTANCE &&
+           aBounds[4] > -MAX_DISTANCE && aBounds[5] < MAX_DISTANCE )
       {
-	aCount++;
+        aCount++;
 
-	theBounds[0] = min(aBounds[0],theBounds[0]);
-	theBounds[2] = min(aBounds[2],theBounds[2]);
-	theBounds[4] = min(aBounds[4],theBounds[4]);
+        theBounds[0] = min(aBounds[0],theBounds[0]);
+        theBounds[2] = min(aBounds[2],theBounds[2]);
+        theBounds[4] = min(aBounds[4],theBounds[4]);
 
-	theBounds[1] = max(aBounds[1],theBounds[1]);
-	theBounds[3] = max(aBounds[3],theBounds[3]);
-	theBounds[5] = max(aBounds[5],theBounds[5]);
+        theBounds[1] = max(aBounds[1],theBounds[1]);
+        theBounds[3] = max(aBounds[3],theBounds[3]);
+        theBounds[5] = max(aBounds[5],theBounds[5]);
 
       }//not bogus
     }
@@ -194,9 +194,9 @@ ResetCameraClippingRange(vtkRenderer* theRenderer)
 /*!Compute trihedron size.*/
 bool
 ComputeTrihedronSize( vtkRenderer* theRenderer,
-		      vtkFloatingPointType& theNewSize,
-		      const vtkFloatingPointType theSize, 
-		      const vtkFloatingPointType theSizeInPercents )
+                      vtkFloatingPointType& theNewSize,
+                      const vtkFloatingPointType theSize, 
+                      const vtkFloatingPointType theSizeInPercents )
 {
   // calculating diagonal of visible props of the renderer
   vtkFloatingPointType bnd[ 6 ];
@@ -238,11 +238,11 @@ bool IsBBEmpty(vtkRenderer* theRenderer)
     if(VTKViewer_Actor* anActor = VTKViewer_Actor::SafeDownCast(anAct))
       if(anActor->GetVisibility() && !anActor->IsInfinitive())
       {
-	vtkFloatingPointType *aBounds = anActor->GetBounds();
-	if(aBounds[0] > -VTK_LARGE_FLOAT && aBounds[1] < VTK_LARGE_FLOAT &&
-	   aBounds[2] > -VTK_LARGE_FLOAT && aBounds[3] < VTK_LARGE_FLOAT &&
-	   aBounds[4] > -VTK_LARGE_FLOAT && aBounds[5] < VTK_LARGE_FLOAT)
-	  isAny = true;
+        vtkFloatingPointType *aBounds = anActor->GetBounds();
+        if(aBounds[0] > -VTK_LARGE_FLOAT && aBounds[1] < VTK_LARGE_FLOAT &&
+           aBounds[2] > -VTK_LARGE_FLOAT && aBounds[3] < VTK_LARGE_FLOAT &&
+           aBounds[4] > -VTK_LARGE_FLOAT && aBounds[5] < VTK_LARGE_FLOAT)
+          isAny = true;
       }
   
   return !isAny;
@@ -271,19 +271,19 @@ bool ComputeBBCenter(vtkRenderer* theRenderer, vtkFloatingPointType theCenter[3]
     {
       if(anActor->GetVisibility() && !anActor->IsInfinitive())
       {
-	vtkFloatingPointType *aBounds = anActor->GetBounds();
-	if(aBounds[0] > -VTK_LARGE_FLOAT && aBounds[1] < VTK_LARGE_FLOAT &&
-	   aBounds[2] > -VTK_LARGE_FLOAT && aBounds[3] < VTK_LARGE_FLOAT &&
-	   aBounds[4] > -VTK_LARGE_FLOAT && aBounds[5] < VTK_LARGE_FLOAT)
-	{
-	  for(int i = 0; i < 5; i = i + 2){
-	    if(aBounds[i] < aNewBndBox[i]) 
-	      aNewBndBox[i] = aBounds[i];
-	    if(aBounds[i+1] > aNewBndBox[i+1]) 
-	      aNewBndBox[i+1] = aBounds[i+1];
-	  }
-	  isAny = true;
-	}
+        vtkFloatingPointType *aBounds = anActor->GetBounds();
+        if(aBounds[0] > -VTK_LARGE_FLOAT && aBounds[1] < VTK_LARGE_FLOAT &&
+           aBounds[2] > -VTK_LARGE_FLOAT && aBounds[3] < VTK_LARGE_FLOAT &&
+           aBounds[4] > -VTK_LARGE_FLOAT && aBounds[5] < VTK_LARGE_FLOAT)
+        {
+          for(int i = 0; i < 5; i = i + 2){
+            if(aBounds[i] < aNewBndBox[i]) 
+              aNewBndBox[i] = aBounds[i];
+            if(aBounds[i+1] > aNewBndBox[i+1]) 
+              aNewBndBox[i+1] = aBounds[i+1];
+          }
+          isAny = true;
+        }
       }
     }
   }
@@ -309,8 +309,8 @@ bool ComputeBBCenter(vtkRenderer* theRenderer, vtkFloatingPointType theCenter[3]
 
     vtkFloatingPointType aWidth = 
       sqrt((aNewBndBox[1]-aNewBndBox[0])*(aNewBndBox[1]-aNewBndBox[0]) +
-	   (aNewBndBox[3]-aNewBndBox[2])*(aNewBndBox[3]-aNewBndBox[2]) +
-	   (aNewBndBox[5]-aNewBndBox[4])*(aNewBndBox[5]-aNewBndBox[4]));
+           (aNewBndBox[3]-aNewBndBox[2])*(aNewBndBox[3]-aNewBndBox[2]) +
+           (aNewBndBox[5]-aNewBndBox[4])*(aNewBndBox[5]-aNewBndBox[4]));
     
     if(aWidth < MIN_DISTANCE)
       return false;
@@ -327,7 +327,7 @@ bool ComputeBBCenter(vtkRenderer* theRenderer, vtkFloatingPointType theCenter[3]
   vtkFloatingPointType aBounds[6];
   int aCount = ComputeVisiblePropBounds(theRenderer,aBounds);
   printf("aNewBndBox[0] = %f, aNewBndBox[1] = %f,\naNewBndBox[2] = %f, aNewBndBox[3] = %f,\naNewBndBox[4] = %f, aNewBndBox[5] = %f\n",
-	   aBounds[0],aBounds[1],aBounds[2],aBounds[3],aBounds[4],aBounds[5]);
+           aBounds[0],aBounds[1],aBounds[2],aBounds[3],aBounds[4],aBounds[5]);
   printf("aCount = %d\n",aCount);
 
   if(aCount){
@@ -342,8 +342,8 @@ bool ComputeBBCenter(vtkRenderer* theRenderer, vtkFloatingPointType theCenter[3]
 
     vtkFloatingPointType aWidth = 
       sqrt((aBounds[1]-aBounds[0])*(aBounds[1]-aBounds[0]) +
-	   (aBounds[3]-aBounds[2])*(aBounds[3]-aBounds[2]) +
-	   (aBounds[5]-aBounds[4])*(aBounds[5]-aBounds[4]));
+           (aBounds[3]-aBounds[2])*(aBounds[3]-aBounds[2]) +
+           (aBounds[5]-aBounds[4])*(aBounds[5]-aBounds[4]));
     
     if(aWidth < MIN_DISTANCE)
       return false;

@@ -44,8 +44,8 @@
 /*! Construction*/
 VTKViewer_ViewWindow::VTKViewer_ViewWindow( SUIT_Desktop* theDesktop, 
                                             VTKViewer_Viewer* theModel,
-					    VTKViewer_InteractorStyle* iStyle,
-					    VTKViewer_RenderWindowInteractor* rw )
+                                            VTKViewer_InteractorStyle* iStyle,
+                                            VTKViewer_RenderWindowInteractor* rw )
 : SUIT_ViewWindow( theDesktop )
 {
   myModel = theModel;
@@ -92,6 +92,7 @@ VTKViewer_ViewWindow::VTKViewer_ViewWindow( SUIT_Desktop* theDesktop,
   setCentralWidget( myRenderWindow );
 
   myToolBar = new QtxToolBar( true, tr("LBL_TOOLBAR_LABEL"), this );
+  myToolBar->setFloatable( false );
 
   createActions();
   createToolBar();
@@ -579,8 +580,8 @@ QString VTKViewer_ViewWindow::getVisualParameters()
 
   QString retStr;
   retStr.sprintf( "%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e", 
-		  pos[0], pos[1], pos[2], focalPnt[0], focalPnt[1], focalPnt[2], viewUp[0], viewUp[1], 
-		  viewUp[2], parScale, scale[0], scale[1], scale[2] );
+                  pos[0], pos[1], pos[2], focalPnt[0], focalPnt[1], focalPnt[2], viewUp[0], viewUp[1], 
+                  viewUp[2], parScale, scale[0], scale[1], scale[2] );
   return retStr;
 }
 

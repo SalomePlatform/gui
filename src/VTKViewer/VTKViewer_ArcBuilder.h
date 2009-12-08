@@ -38,9 +38,9 @@ class Pnt;
 typedef std::list<Pnt> PntList;
 
 vtkIdType MergevtkPoints(const std::vector<vtkPoints*>& theCollection,
-			 const std::vector< std::vector<double> >& theScalarCollection,
+                         const std::vector< std::vector<double> >& theScalarCollection,
                          vtkPoints* thePoints,
-			 std::map<int, double>& thePntId2ScalarValue,
+                         std::map<int, double>& thePntId2ScalarValue,
                          vtkIdType* &theIds);
 
 vtkIdType Build1DArc(vtkIdType cellId, 
@@ -50,8 +50,8 @@ vtkIdType Build1DArc(vtkIdType cellId,
                      vtkFloatingPointType myMaxArcAngle);
 
 Pnt CreatePnt(vtkCell* cell,
-	      vtkDataArray* scalars,
-	      vtkIdType index);
+              vtkDataArray* scalars,
+              vtkIdType index);
 
 /*!
  * Class for represenation coordinates X,Y,Z
@@ -138,9 +138,9 @@ class Plane{
   void CalculatePlane(const Pnt& thePnt1, const Pnt& thePnt2, const Pnt& thePnt3);
   
  private:
-	double myA;
-	double myB;
-	double myC;
+        double myA;
+        double myB;
+        double myC;
 };
 
 
@@ -148,9 +148,9 @@ class VTKViewer_ArcBuilder{
  public:
   enum ArcStatus {Arc_Done=0, Arc_Error};
   VTKViewer_ArcBuilder(const Pnt& thePnt1,
-		       const Pnt& thePnt2,
-		       const Pnt& thePnt3,
-		       double theAngle);
+                       const Pnt& thePnt2,
+                       const Pnt& thePnt3,
+                       double theAngle);
   
   ~VTKViewer_ArcBuilder();  
 
@@ -161,7 +161,7 @@ class VTKViewer_ArcBuilder{
   void GetAngle(const double theAngle);
 
   static double GetPointAngleOnCircle(const double theXCenter, const double theYCenter,
-				      const double theXPoint, const double theYPoint);
+                                      const double theXPoint, const double theYPoint);
 
   vtkPoints* GetPoints();
   const std::vector<double>& GetScalarValues();

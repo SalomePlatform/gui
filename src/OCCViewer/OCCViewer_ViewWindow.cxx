@@ -75,6 +75,8 @@ static QEvent* l_mbPressEvent = 0;
 # include <QWindowsStyle>
 #endif
 
+#include <GL/gl.h>
+
 const char* imageZoomCursor[] = {
 "32 32 3 1",
 ". c None",
@@ -1102,7 +1104,7 @@ void OCCViewer_ViewWindow::createActions()
 */
 void OCCViewer_ViewWindow::createToolBar()
 {
-  int tid = toolMgr()->createToolBar( tr( "LBL_TOOLBAR_LABEL" ) );
+  int tid = toolMgr()->createToolBar( tr( "LBL_TOOLBAR_LABEL" ), false );
 
   toolMgr()->append( DumpId, tid );
   if( myModel->trihedronActivated() ) 
@@ -1164,6 +1166,7 @@ void OCCViewer_ViewWindow::onFrontView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if ( !aView3d.IsNull() ) aView3d->SetProj (V3d_Xpos);
   onViewFitAll();
+  emit vpTransformationFinished ( FRONTVIEW );
 }
 
 /*!
@@ -1175,6 +1178,7 @@ void OCCViewer_ViewWindow::onBackView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if ( !aView3d.IsNull() ) aView3d->SetProj (V3d_Xneg);
   onViewFitAll();
+  emit vpTransformationFinished ( BACKVIEW );
 }
 
 /*!
@@ -1186,6 +1190,7 @@ void OCCViewer_ViewWindow::onTopView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if ( !aView3d.IsNull() ) aView3d->SetProj (V3d_Zpos);
   onViewFitAll();
+  emit vpTransformationFinished ( TOPVIEW );
 }
 
 /*!
@@ -1197,6 +1202,7 @@ void OCCViewer_ViewWindow::onBottomView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if ( !aView3d.IsNull() ) aView3d->SetProj (V3d_Zneg);
   onViewFitAll();
+  emit vpTransformationFinished ( BOTTOMVIEW );
 }
 
 /*!
@@ -1208,6 +1214,7 @@ void OCCViewer_ViewWindow::onLeftView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if ( !aView3d.IsNull() ) aView3d->SetProj (V3d_Yneg);
   onViewFitAll();
+  emit vpTransformationFinished ( LEFTVIEW );
 }
 
 /*!
@@ -1219,6 +1226,7 @@ void OCCViewer_ViewWindow::onRightView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if ( !aView3d.IsNull() ) aView3d->SetProj (V3d_Ypos);
   onViewFitAll();
+  emit vpTransformationFinished ( RIGHTVIEW );
 }
 
 /*!
@@ -1234,6 +1242,7 @@ void OCCViewer_ViewWindow::onResetView()
   myViewPort->fitAll( false, true, false );
   myViewPort->getView()->SetImmediateUpdate( upd );
   myViewPort->getView()->Update();
+  emit vpTransformationFinished( RESETVIEW );
 }
 
 /*!
@@ -1243,6 +1252,7 @@ void OCCViewer_ViewWindow::onFitAll()
 {
   emit vpTransformationStarted( FITALLVIEW );
   myViewPort->fitAll();
+  emit vpTransformationFinished( FITALLVIEW );
 }
 
 /*!
@@ -1419,8 +1429,25 @@ void OCCViewer_ViewWindow::onTrihedronShow()
 */
 QImage OCCViewer_ViewWindow::dumpView()
 {
-  QPixmap px = QPixmap::grabWindow( myViewPort->winId() );
-  return px.toImage();
+  Handle(V3d_View) view = myViewPort->getView();
+  if ( view.IsNull() )
+    return QImage();
+  QApplication::syncX();
+  view->Update();
+  view->Redraw();
+
+  unsigned char* data = new unsigned char[ (myViewPort->width()*myViewPort->height())*4 ];
+
+  QPoint p = myViewPort->mapFromParent(myViewPort->geometry().topLeft());
+
+  glReadPixels( p.x(), p.y(), myViewPort->width(), myViewPort->height(), GL_RGBA, GL_UNSIGNED_BYTE,
+                data);
+
+  QImage anImage( data, myViewPort->width(), myViewPort->height(), QImage::Format_ARGB32 );
+  anImage = anImage.mirrored();
+  anImage = anImage.rgbSwapped();
+  return anImage;
+
 }
 
 bool OCCViewer_ViewWindow::dumpViewToFormat( const QImage& img, 
@@ -1433,9 +1460,9 @@ bool OCCViewer_ViewWindow::dumpViewToFormat( const QImage& img,
   Handle(Visual3d_View) a3dView = myViewPort->getView()->View();
 
   if (format == "PS")
-    a3dView->Export(qPrintable(fileName), Graphic3d_EF_PostScript);
+    a3dView->Export(strdup(qPrintable(fileName)), Graphic3d_EF_PostScript);
   else if (format == "EPS")
-    a3dView->Export(qPrintable(fileName), Graphic3d_EF_EnhPostScript);
+    a3dView->Export(strdup(qPrintable(fileName)), Graphic3d_EF_EnhPostScript);
 
   return true;
 }

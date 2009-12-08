@@ -32,7 +32,6 @@
 #include <WNT_Window.hxx>
 #include <Graphic3d_WNTGraphicDevice.hxx>
 #include <WNT_GraphicDevice.hxx>
-#include <WNT_GraphicDevice.hxx>
 #include <WNT_WDriver.hxx>
 #include <InterfaceGraphic_WNT.hxx>
 #else
@@ -82,23 +81,32 @@ return XServiceImageDevice;
 #endif // WNT
 
 /*!
+    Create native view window for CasCade view [ static ]
+*/
+Handle(Aspect_Window) OCCViewer_VService::CreateWindow( const Handle(V3d_View)& view,
+							const Standard_Integer hiwin,
+							const Standard_Integer lowin,
+							const Xw_WindowQuality quality )
+{
+#ifdef WNT
+  Handle(WNT_Window) viewWindow = new WNT_Window( Handle(Graphic3d_WNTGraphicDevice)::DownCast(view->Viewer()->Device()), hiwin, lowin );
+  // Prevent flickering
+  viewWindow->SetFlags( WDF_NOERASEBKGRND );
+#else
+  Handle(Xw_Window) viewWindow = new Xw_Window( Handle(Graphic3d_GraphicDevice)::DownCast(view->Viewer()->Device()), hiwin, lowin, quality );
+#endif
+  return viewWindow;
+}
+
+/*!
     Maps CasCade view to the window [ static ]
 */
 void OCCViewer_VService::SetWindow( const Handle(V3d_View)& view,
-	                          const Standard_Integer hiwin,
-	                          const Standard_Integer lowin,
-	                          const Xw_WindowQuality quality )
+				    const Standard_Integer hiwin,
+				    const Standard_Integer lowin,
+				    const Xw_WindowQuality quality )
 {
-#ifdef WNT
-  Handle(WNT_Window) w =
-      new WNT_Window( Handle(Graphic3d_WNTGraphicDevice)::DownCast(view->Viewer()->Device()), hiwin, lowin );
-  // Prevent flicker
-  w->SetFlags( WDF_NOERASEBKGRND );
-#else
-  Handle(Xw_Window) w =
-      new Xw_Window( Handle(Graphic3d_GraphicDevice)::DownCast(view->Viewer()->Device()), hiwin, lowin, quality );
-#endif
-  view->SetWindow( w );
+  view->SetWindow( OCCViewer_VService::CreateWindow( view, hiwin, lowin, quality ) );
 }
 
 /*!

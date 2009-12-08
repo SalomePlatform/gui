@@ -99,14 +99,14 @@ vtkIdType VTKViewer_ExtractUnstructuredGrid::GetOutputId(int theInId) const{
 
 
 inline void InsertCell(vtkUnstructuredGrid *theInput,
-		       vtkCellArray *theConnectivity, 
-		       vtkUnsignedCharArray* theCellTypesArray,
-		       vtkIdType theCellId, 
-		       vtkIdList *theIdList,
-		       bool theStoreMapping,
-		       vtkIdType theOutId, 
-		       VTKViewer_ExtractUnstructuredGrid::TVectorId& theOut2InId,
-		       VTKViewer_ExtractUnstructuredGrid::TMapId& theIn2OutId)
+                       vtkCellArray *theConnectivity, 
+                       vtkUnsignedCharArray* theCellTypesArray,
+                       vtkIdType theCellId, 
+                       vtkIdList *theIdList,
+                       bool theStoreMapping,
+                       vtkIdType theOutId, 
+                       VTKViewer_ExtractUnstructuredGrid::TVectorId& theOut2InId,
+                       VTKViewer_ExtractUnstructuredGrid::TMapId& theIn2OutId)
 {
   vtkCell *aCell = theInput->GetCell(theCellId);
   vtkIdList *aPntIds = aCell->GetPointIds();
@@ -126,13 +126,13 @@ inline void InsertCell(vtkUnstructuredGrid *theInput,
 }
 
 inline void InsertPointCell(vtkCellArray *theConnectivity, 
-			    vtkUnsignedCharArray* theCellTypesArray,
-			    vtkIdType theCellId, 
-			    vtkIdList *theIdList,
-			    bool theStoreMapping,
-			    vtkIdType theOutId, 
-			    VTKViewer_ExtractUnstructuredGrid::TVectorId& theOut2InId,
-			    VTKViewer_ExtractUnstructuredGrid::TMapId& theIn2OutId)
+                            vtkUnsignedCharArray* theCellTypesArray,
+                            vtkIdType theCellId, 
+                            vtkIdList *theIdList,
+                            bool theStoreMapping,
+                            vtkIdType theOutId, 
+                            VTKViewer_ExtractUnstructuredGrid::TVectorId& theOut2InId,
+                            VTKViewer_ExtractUnstructuredGrid::TMapId& theIn2OutId)
 {
   theIdList->SetId(0,theCellId);
   theConnectivity->InsertNextCell(theIdList);

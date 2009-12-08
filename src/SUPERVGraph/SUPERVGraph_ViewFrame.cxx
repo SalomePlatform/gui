@@ -93,6 +93,7 @@ SUPERVGraph_ViewFrame::SUPERVGraph_ViewFrame( SUIT_Desktop* theDesktop )
   setBackgroundColor(QColor(R,G,B));*/
 
   myToolBar = new QToolBar(this);
+  myToolBar->setFloatable(false);
   //myToolBar->setCloseMode(QDockWindow::Undocked);
   myToolBar->setWindowTitle(tr("LBL_TOOLBAR_LABEL"));
   createActions();

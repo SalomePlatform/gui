@@ -150,7 +150,7 @@ void VTKViewer_RenderWindow::onChangeBackgroundColor()
   vtkRenderer * theRenderer = theRenderers->GetNextItem();
   theRenderer->GetBackground(backint);
 
-  QColor selColor = QColorDialog::getColor ( QColor(int(backint[0]*255), int(backint[1]*255), int(backint[2]*255)), NULL );	
+  QColor selColor = QColorDialog::getColor ( QColor(int(backint[0]*255), int(backint[1]*255), int(backint[2]*255)), NULL );     
   if ( selColor.isValid() ) {
     theRenderer->SetBackground( selColor.red()/255., selColor.green()/255., selColor.blue()/255. ); 
     /* VSR : PAL5420 ---------------------------------------------------

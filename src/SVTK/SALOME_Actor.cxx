@@ -382,17 +382,8 @@ SALOME_Actor
 
   myPreHighlightActor->SetVisibility( theVisibility && myIsPreselected );
 
-  vtkProperty* aProp = vtkProperty::New();
-  aProp->SetColor( 255, 255, 255);
-  aProp->SetLineWidth ( 3 );
-  myPreHighlightActor->SetProperty(aProp);
-  aProp->Delete();
-
-  int vis = myPreHighlightActor->GetVisibility();
-  //printf ("\n Visibility = %d", vis);
-
   if(mySelector.GetPointer() && hasIO()){
-    if(mySelector->SelectionMode() != ActorSelection) {
+    if(mySelector->SelectionMode() != ActorSelection){
       int aHasIndex = mySelector->HasIndex( getIO() );
       myHighlightActor->SetVisibility( theVisibility && isHighlighted() && aHasIndex);
     }

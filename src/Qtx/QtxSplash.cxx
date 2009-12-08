@@ -24,6 +24,7 @@
 //
 #include "QtxSplash.h"
 #include "QtxResourceMgr.h"
+#include <cstdio>
 
 #include <QApplication>
 #include <QPainter>

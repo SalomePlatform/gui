@@ -57,13 +57,13 @@ if ENABLE_TESTRECORDER
   libSalomeSession_la_CPPFLAGS+= -DENABLE_TESTRECORDER $(TESTRECORDER_INCLUDES)
 endif
 
-libSalomeSession_la_LDFLAGS = $(QT_MT_LIBS) $(KERNEL_LDFLAGS) -lSalomeNS	\
+libSalomeSession_la_LDFLAGS = $(KERNEL_LDFLAGS) -lSalomeNS			\
 	-lSalomeLifeCycleCORBA -lOpUtil -lSALOMELocalTrace -lSalomeCatalog	\
 	-lSalomeDSClient $(CAS_KERNEL) -lwith_loggerTraceCollector		\
 	-lSalomeIDLKernel -lSalomeContainer -lTOOLSDS -lSalomeLauncher		\
 	-lRegistry -lSALOMEBasics						\
 	../SUIT/libsuit.la ../Event/libEvent.la ../../idl/libSalomeIDLGUI.la	\
-	../Style/libSalomeStyle.la
+	../Style/libSalomeStyle.la $(QT_MT_LIBS) 
 
 if ENABLE_TESTRECORDER
   libSalomeSession_la_LDFLAGS+= $(TESTRECORDER_LIBS)
@@ -76,12 +76,11 @@ dist_SALOME_Session_Server_SOURCES = SALOME_Session_Server.cxx
 
 SALOME_Session_Server_CPPFLAGS = $(libSalomeSession_la_CPPFLAGS)
 SALOME_Session_Server_LDADD    = $(libSalomeSession_la_LDFLAGS) 		\
-	$(PYTHON_LIBS) $(OMNIORB_LIBS)						\
-	$(HDF5_LIBS) -lSalomeContainer -lSalomeResourcesManager -lTOOLSDS	\
+	-lSalomeContainer -lSalomeResourcesManager -lTOOLSDS			\
 	-lSalomeHDFPersist -lSalomeDSImpl -lSalomeGenericObj -lRegistry		\
 	-lSalomeNotification -lSALOMEBasics -lSalomeLauncher ../Qtx/libqtx.la	\
-	$(top_builddir)/idl/libSalomeIDLGUI.la					\
-	libSalomeSession.la
+	$(top_builddir)/idl/libSalomeIDLGUI.la libSalomeSession.la		\
+	$(HDF5_LIBS) $(PYTHON_LIBS) $(OMNIORB_LIBS)
 
 if ENABLE_TESTRECORDER
   SALOME_Session_Server_LDADD+= $(TESTRECORDER_LIBS)

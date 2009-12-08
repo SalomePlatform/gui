@@ -99,9 +99,9 @@ VTKViewer_AppendFilter
 int
 VTKViewer_AppendFilter
 ::RequestData(
-	      vtkInformation *request,
-	      vtkInformationVector **inputVector,
-	      vtkInformationVector *outputVector)
+              vtkInformation *request,
+              vtkInformationVector **inputVector,
+              vtkInformationVector *outputVector)
 {
   int aRet = 0;
   if(GetSharedPointsDataSet())
@@ -146,8 +146,8 @@ namespace
   inline
   vtkIdType
   GetOutputID(vtkIdType theInputID,
-	      vtkIdType theInputDataSetID,
-	      const VTKViewer_AppendFilter::TVectorIds& theRanges)
+              vtkIdType theInputDataSetID,
+              const VTKViewer_AppendFilter::TVectorIds& theRanges)
   {
     theInputID = theInputDataSetID = -1;
 
@@ -163,7 +163,7 @@ namespace
 vtkIdType
 VTKViewer_AppendFilter
 ::GetPointOutputID(vtkIdType theInputID,
-		   vtkIdType theInputDataSetID)
+                   vtkIdType theInputDataSetID)
 {
   if(GetSharedPointsDataSet())
     return theInputID;
@@ -175,7 +175,7 @@ VTKViewer_AppendFilter
 vtkIdType 
 VTKViewer_AppendFilter
 ::GetCellOutputID(vtkIdType theInputID,
-		   vtkIdType theInputDataSetID)
+                   vtkIdType theInputDataSetID)
 {
   if(GetSharedPointsDataSet())
     return theInputID;
@@ -188,10 +188,10 @@ namespace
 {
   void
   GetInputID(vtkIdType theOutputID,
-	     vtkIdType& theInputID,
-	     vtkIdType& theStartID,
-	     vtkIdType& theInputDataSetID,
-	     const VTKViewer_AppendFilter::TVectorIds& theRanges)
+             vtkIdType& theInputID,
+             vtkIdType& theStartID,
+             vtkIdType& theInputDataSetID,
+             const VTKViewer_AppendFilter::TVectorIds& theRanges)
   {
     theInputID = theStartID = theInputDataSetID = -1;
 
@@ -207,10 +207,10 @@ namespace
     for(vtkIdType aDataSetId = 0; aDataSetId < aNbInputs; ++aDataSetId){
       vtkIdType aRange = theRanges[aDataSetId];
       if(aRange > theOutputID){
-	theInputID = theOutputID - aStartId;
-	theInputDataSetID = aDataSetId;
-	theStartID = aStartId;
-	break;
+        theInputID = theOutputID - aStartId;
+        theInputDataSetID = aDataSetId;
+        theStartID = aStartId;
+        break;
       }
       aStartId = aRange;
     }
@@ -220,9 +220,9 @@ namespace
 void 
 VTKViewer_AppendFilter
 ::GetPointInputID(vtkIdType theOutputID,
-		  vtkIdType& theInputID,
-		  vtkIdType& theStartID,
-		  vtkIdType& theInputDataSetID)
+                  vtkIdType& theInputID,
+                  vtkIdType& theStartID,
+                  vtkIdType& theInputDataSetID)
 {
   if(GetSharedPointsDataSet()) {
     theStartID = theInputDataSetID = 0;
@@ -231,25 +231,25 @@ VTKViewer_AppendFilter
   }
 
   ::GetInputID(theOutputID,
-	       theInputID,
-	       theStartID,
-	       theInputDataSetID,
-	       myNodeRanges);
+               theInputID,
+               theStartID,
+               theInputDataSetID,
+               myNodeRanges);
 }
 
 
 void
 VTKViewer_AppendFilter
 ::GetCellInputID(vtkIdType theOutputID,
-		 vtkIdType& theInputID,
-		 vtkIdType& theStartID,
-		 vtkIdType& theInputDataSetID)
+                 vtkIdType& theInputID,
+                 vtkIdType& theStartID,
+                 vtkIdType& theInputDataSetID)
 {
   ::GetInputID(theOutputID,
-	       theInputID,
-	       theStartID,
-	       theInputDataSetID,
-	       myCellRanges);
+               theInputID,
+               theStartID,
+               theInputDataSetID,
+               myCellRanges);
 }
 
 

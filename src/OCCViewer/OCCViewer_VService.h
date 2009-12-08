@@ -58,6 +58,9 @@
 #ifndef _Handle_Aspect_WindowDriver_HeaderFile
 #include <Handle_Aspect_WindowDriver.hxx>
 #endif
+#ifndef _Handle_Aspect_Window_HeaderFile
+#include <Handle_Aspect_Window.hxx>
+#endif
 
 class V3d_View;
 class V2d_View;
@@ -90,6 +93,12 @@ public:
     }
 
     // STATIC METHODS
+    static Handle(Aspect_Window) 
+                    CreateWindow( const Handle(V3d_View)& view,
+				  const Standard_Integer hiwin,
+				  const Standard_Integer lowin,
+				  const Xw_WindowQuality quality );
+
     static void     SetWindow( const Handle(  V3d_View )& view,
                                const Standard_Integer hiwin,
                                const Standard_Integer lowin,

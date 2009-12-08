@@ -41,6 +41,7 @@
 
 #include <vector>//?
 #include <string>//?
+#include <cstdio>
 
 /*!
   Constructor.

@@ -162,8 +162,8 @@ void VTKViewer_FramedTextActor::GetSize(vtkRenderer* theRenderer, int theSize[2]
 // purpose  :
 //==================================================================
 void VTKViewer_FramedTextActor::SetForegroundColor(const vtkFloatingPointType r,
-						   const vtkFloatingPointType g,
-						   const vtkFloatingPointType b)
+                                                   const vtkFloatingPointType g,
+                                                   const vtkFloatingPointType b)
 {
   myTextProperty->SetColor(r, g, b);
   myTextMapper->GetTextProperty()->ShallowCopy(myTextProperty);
@@ -175,8 +175,8 @@ void VTKViewer_FramedTextActor::SetForegroundColor(const vtkFloatingPointType r,
 // purpose  :
 //==================================================================
 void VTKViewer_FramedTextActor::GetForegroundColor(vtkFloatingPointType& r,
-						   vtkFloatingPointType& g,
-						   vtkFloatingPointType& b)
+                                                   vtkFloatingPointType& g,
+                                                   vtkFloatingPointType& b)
 {
   vtkFloatingPointType aColor[3];
   myTextProperty->GetColor(aColor);
@@ -190,8 +190,8 @@ void VTKViewer_FramedTextActor::GetForegroundColor(vtkFloatingPointType& r,
 // purpose  :
 //==================================================================
 void VTKViewer_FramedTextActor::SetBackgroundColor(const vtkFloatingPointType r,
-						   const vtkFloatingPointType g,
-						   const vtkFloatingPointType b)
+                                                   const vtkFloatingPointType g,
+                                                   const vtkFloatingPointType b)
 {
   myBarActor->GetProperty()->SetColor(r, g, b);
   Modified();
@@ -202,8 +202,8 @@ void VTKViewer_FramedTextActor::SetBackgroundColor(const vtkFloatingPointType r,
 // purpose  :
 //==================================================================
 void VTKViewer_FramedTextActor::GetBackgroundColor(vtkFloatingPointType& r,
-						   vtkFloatingPointType& g,
-						   vtkFloatingPointType& b)
+                                                   vtkFloatingPointType& g,
+                                                   vtkFloatingPointType& b)
 {
   vtkFloatingPointType aColor[3];
   myBarActor->GetProperty()->GetColor(aColor);
@@ -485,7 +485,7 @@ VTKViewer_FramedTextActor
     }
 
     PositionCoordinate->SetValue(x / (vtkFloatingPointType)aViewPortWidth,
-				 y / (vtkFloatingPointType)aViewPortHeight);
+                                 y / (vtkFloatingPointType)aViewPortHeight);
   }
 
   aPoints->SetPoint(0, xMin, yMax, 0.0);

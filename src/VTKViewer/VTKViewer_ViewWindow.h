@@ -49,7 +49,7 @@ class VTKVIEWER_EXPORT VTKViewer_ViewWindow : public SUIT_ViewWindow
 public:
   VTKViewer_ViewWindow( SUIT_Desktop*, VTKViewer_Viewer*,
                         VTKViewer_InteractorStyle* = 0,
-			VTKViewer_RenderWindowInteractor* = 0 );
+                        VTKViewer_RenderWindowInteractor* = 0 );
   virtual ~VTKViewer_ViewWindow();
   
   /*!Gets tool bar.*/
@@ -61,7 +61,7 @@ public:
   /*!Gets renderer.*/
   vtkRenderer*                      getRenderer()     { return myRenderer;     }
   /*!Gets render window.*/
-  VTKViewer_RenderWindow*	    getRenderWindow() { return myRenderWindow; }
+  VTKViewer_RenderWindow*           getRenderWindow() { return myRenderWindow; }
   /*!Gets render window interactor.*/
   VTKViewer_RenderWindowInteractor* getRWInteractor() { return myRWInteractor; }
   bool                              isTrihedronDisplayed();

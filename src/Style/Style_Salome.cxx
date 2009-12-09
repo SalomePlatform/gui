@@ -673,7 +673,11 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
           bool floating = false;
           int menuOffset = 0; //used to center text when floated
           QColor inactiveCaptionTextColor = opt->palette.color( QPalette::HighlightedText );
-          const QDockWidget *dockWidget = qobject_cast<const QDockWidget *>(w);
+          QDockWidget* dockWidget = qobject_cast<QDockWidget*>(const_cast<QWidget*>(w));
+          // A little trick to handle custom title bar widgets here, of course if 
+          // the parent is QDockWidget
+          if (w && !dockWidget)
+            dockWidget = qobject_cast<QDockWidget *>(w->parentWidget());
           //Titlebar gradient
           if (dockWidget) {
             if ( dockWidget->isFloating() && dwOpt->movable) {

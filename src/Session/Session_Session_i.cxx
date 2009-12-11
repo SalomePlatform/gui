@@ -36,6 +36,8 @@
 #include "SUIT_Desktop.h"
 #include "SUIT_Study.h"
 
+#include "Basics_Utils.hxx"
+
 #include <QMutex>
 #include <QWaitCondition>
 
@@ -212,6 +214,12 @@ CORBA::Long SALOME_Session_i::getPID() {
 #else
     _getpid();
 #endif
+}
+
+char* SALOME_Session_i::getHostname()
+{
+  string aHostName = Kernel_Utils::GetHostname();
+  return CORBA::string_dup( aHostName.data() );
 }
 
 bool SALOME_Session_i::restoreVisualState(CORBA::Long theSavePoint)

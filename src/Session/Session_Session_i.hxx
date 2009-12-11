@@ -69,6 +69,7 @@ public:
 
   void ping(){};
   CORBA::Long getPID();
+  char* getHostname();
 
   //! Restors a visual state of the study at theSavePoint
   bool restoreVisualState(CORBA::Long theSavePoint);

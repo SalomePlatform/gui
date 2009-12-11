@@ -47,13 +47,13 @@ Session_ServerLauncher::Session_ServerLauncher()
   constructor
 */
 Session_ServerLauncher::Session_ServerLauncher(int argc,
-					       char ** argv, 
-					       CORBA::ORB_ptr orb, 
-					       PortableServer::POA_ptr poa,
-					       QMutex *GUIMutex,
-					       QWaitCondition *ServerLaunch,
-					       QMutex *SessionMutex,
-					       QWaitCondition *SessionStarted)
+                                               char ** argv, 
+                                               CORBA::ORB_ptr orb, 
+                                               PortableServer::POA_ptr poa,
+                                               QMutex *GUIMutex,
+                                               QWaitCondition *ServerLaunch,
+                                               QMutex *SessionMutex,
+                                               QWaitCondition *SessionStarted)
 {
   _argc = argc;
   _argv = argv;
@@ -117,60 +117,60 @@ void Session_ServerLauncher::CheckArgs()
       SCRUTE(_argv[iarg]);
       _argCopy.push_back(_argv[iarg]);
       switch (argState)
-	{
-	case 0: // looking for "--with"
-	  {
-	    if (strcmp(_argv[iarg],"--with")==0)
-	      argState = 1;
-	    break;
-	  }
-	case 1: // looking for server type
-	  {
-	    for (int i=0; i<Session_ServerThread::NB_SRV_TYP; i++)
-		if (strcmp(_argv[iarg],Session_ServerThread::_serverTypes[i])==0)
-		  {
-		    aServArg._servType = i;
-		    argState = 2;
-		    break;
-		  }
-	    break;
-	  }
-	case 2: // looking for "("
-	  {
-	    if (strcmp(_argv[iarg],"(")!=0)
-	      {
-		INFOS("parenthesis '(' is required here...");
-		for (int i=0; i<iarg; i++)
-		  cerr << _argv[i] << " ";
-		cerr << endl;
-		throw SALOME_Exception(LOCALIZED("Error in command arguments, missing prenthesis"));
-	      } 
-	    else
-	      {
-		aServArg._firstArg=iarg+1;    // arg after '('
-		argState = 3;
-	      }
-	    break;
-	  }
-	case 3: // looking for arguments
-	  {
-	    if (strcmp(_argv[iarg],")")==0)   // end of arguments = ')'
-	      {
-		aServArg._lastArg=iarg-1;     // arg before ')'
-		MESSAGE("server : "<< Session_ServerThread::_serverTypes[aServArg._servType]);
-		for (int i=aServArg._firstArg; i<=aServArg._lastArg; i++)
-		  MESSAGE("  arg : " << _argCopy[i]);
-		_argServToLaunch.push_back(aServArg);
-		argState = 0;
-	      } 
-	    break;
-	  }
-	default:
-	  {
-	    ASSERT(0);
-	    break;
-	  }
-	}
+        {
+        case 0: // looking for "--with"
+          {
+            if (strcmp(_argv[iarg],"--with")==0)
+              argState = 1;
+            break;
+          }
+        case 1: // looking for server type
+          {
+            for (int i=0; i<Session_ServerThread::NB_SRV_TYP; i++)
+                if (strcmp(_argv[iarg],Session_ServerThread::_serverTypes[i])==0)
+                  {
+                    aServArg._servType = i;
+                    argState = 2;
+                    break;
+                  }
+            break;
+          }
+        case 2: // looking for "("
+          {
+            if (strcmp(_argv[iarg],"(")!=0)
+              {
+                INFOS("parenthesis '(' is required here...");
+                for (int i=0; i<iarg; i++)
+                  cerr << _argv[i] << " ";
+                cerr << endl;
+                throw SALOME_Exception(LOCALIZED("Error in command arguments, missing prenthesis"));
+              } 
+            else
+              {
+                aServArg._firstArg=iarg+1;    // arg after '('
+                argState = 3;
+              }
+            break;
+          }
+        case 3: // looking for arguments
+          {
+            if (strcmp(_argv[iarg],")")==0)   // end of arguments = ')'
+              {
+                aServArg._lastArg=iarg-1;     // arg before ')'
+                MESSAGE("server : "<< Session_ServerThread::_serverTypes[aServArg._servType]);
+                for (int i=aServArg._firstArg; i<=aServArg._lastArg; i++)
+                  MESSAGE("  arg : " << _argCopy[i]);
+                _argServToLaunch.push_back(aServArg);
+                argState = 0;
+              } 
+            break;
+          }
+        default:
+          {
+            ASSERT(0);
+            break;
+          }
+        }
     }
   if (argState == 1)
     throw SALOME_Exception(LOCALIZED("Error in command arguments, missing server type"));
@@ -193,8 +193,8 @@ void Session_ServerLauncher::ActivateAll()
     if (argc>1)
     {
       for (int i=0; i<argc-1; i++)
-	//argv[i+1] = _argCopy[(*itServ)._firstArg + i].c_str();
-	      argv[i+1] = _argv[(*itServ)._firstArg + i];
+        //argv[i+1] = _argCopy[(*itServ)._firstArg + i].c_str();
+              argv[i+1] = _argv[(*itServ)._firstArg + i];
     }
 
     MESSAGE("*** activating [" << argc << "] : " << argv[0]);

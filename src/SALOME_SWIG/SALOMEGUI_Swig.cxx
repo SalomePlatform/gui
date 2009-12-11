@@ -169,8 +169,8 @@ void SALOMEGUI_Swig::updateObjBrowser( bool /*updateSelection*/ )
     virtual void Execute()
     {
       if ( LightApp_Application* anApp = getApplication() ) {
-	anApp->updateObjectBrowser();
-	anApp->updateActions(); //SRN: added in order to update the toolbar
+        anApp->updateObjectBrowser();
+        anApp->updateActions(); //SRN: added in order to update the toolbar
       }
     }
   };
@@ -292,19 +292,19 @@ public:
       LightApp_Study* aStudy  = dynamic_cast<LightApp_Study*>( anApp->activeStudy() ); // for sure!
       LightApp_SelectionMgr* aSelMgr = anApp->selectionMgr(); 
       if ( aStudy && aSelMgr ) {
-	SUIT_DataOwnerPtrList aList;
-	aSelMgr->selected( aList );
+        SUIT_DataOwnerPtrList aList;
+        aSelMgr->selected( aList );
 
-	for ( SUIT_DataOwnerPtrList::const_iterator itr = aList.begin(); 
-	      itr != aList.end(); ++itr ) {
-	  const LightApp_DataOwner* owner = 
-	    dynamic_cast<const LightApp_DataOwner*>( (*itr).operator->() );
-	  if( !owner )
-	    continue;
-	  QString entry = owner->entry();
-	  if( !myResult.contains( entry ) )
-	    myResult.append( entry );
-	}
+        for ( SUIT_DataOwnerPtrList::const_iterator itr = aList.begin(); 
+              itr != aList.end(); ++itr ) {
+          const LightApp_DataOwner* owner = 
+            dynamic_cast<const LightApp_DataOwner*>( (*itr).operator->() );
+          if( !owner )
+            continue;
+          QString entry = owner->entry();
+          if( !myResult.contains( entry ) )
+            myResult.append( entry );
+        }
       }
     }
   }
@@ -335,13 +335,13 @@ void SALOMEGUI_Swig::AddIObject( const char* theEntry )
     virtual void Execute()
     {
       if ( LightApp_Application* anApp = getApplication() ) {
-	LightApp_Study*       aStudy  = dynamic_cast<LightApp_Study*>( anApp->activeStudy() ); // for sure!
-	LightApp_SelectionMgr* aSelMgr = anApp->selectionMgr(); 
-	if ( aStudy && aSelMgr ) {
-	  SALOME_ListIO anIOList;
-	  anIOList.Append( new SALOME_InteractiveObject( myEntry.toLatin1(), "", "" ) );
-	  aSelMgr->setSelectedObjects( anIOList, true );
-	}
+        LightApp_Study*       aStudy  = dynamic_cast<LightApp_Study*>( anApp->activeStudy() ); // for sure!
+        LightApp_SelectionMgr* aSelMgr = anApp->selectionMgr(); 
+        if ( aStudy && aSelMgr ) {
+          SALOME_ListIO anIOList;
+          anIOList.Append( new SALOME_InteractiveObject( myEntry.toLatin1(), "", "" ) );
+          aSelMgr->setSelectedObjects( anIOList, true );
+        }
       }
     }
   };
@@ -362,25 +362,25 @@ void SALOMEGUI_Swig::RemoveIObject( const char* theEntry )
     virtual void Execute()
     {
       if ( LightApp_Application* anApp = getApplication() ) {
-	LightApp_Study* aStudy  = dynamic_cast<LightApp_Study*>( anApp->activeStudy() ); // for sure!
-	LightApp_SelectionMgr* aSelMgr = anApp->selectionMgr(); 
-	if ( aStudy && aSelMgr ) {
-	  SALOME_ListIO anIOList;
-	  // VSR: temporary solution, until LightApp_SelectionMgr::unsetSelectedObjects() method appears
-	  // Lately this should be replaced by the following:
-	  // anIOList.Append( new SALOME_InteractiveObject( myEntry, "", "" ) );
-	  // aSelMgr->unsetSelectedObjects( anIOList );
-	  ///////////////////////////////////////////////
-	  aSelMgr->selectedObjects( anIOList );
-	  SALOME_ListIteratorOfListIO anIter( anIOList );
-	  for( ; anIter.More(); anIter.Next() ) {
-	    if ( anIter.Value()->isSame( new SALOME_InteractiveObject( myEntry.toLatin1(), "", "" ) ) ) { 
-	      anIOList.Remove( anIter );
-	      aSelMgr->setSelectedObjects( anIOList, true );
-	      return;
-	    }
-	  }
-	}
+        LightApp_Study* aStudy  = dynamic_cast<LightApp_Study*>( anApp->activeStudy() ); // for sure!
+        LightApp_SelectionMgr* aSelMgr = anApp->selectionMgr(); 
+        if ( aStudy && aSelMgr ) {
+          SALOME_ListIO anIOList;
+          // VSR: temporary solution, until LightApp_SelectionMgr::unsetSelectedObjects() method appears
+          // Lately this should be replaced by the following:
+          // anIOList.Append( new SALOME_InteractiveObject( myEntry, "", "" ) );
+          // aSelMgr->unsetSelectedObjects( anIOList );
+          ///////////////////////////////////////////////
+          aSelMgr->selectedObjects( anIOList );
+          SALOME_ListIteratorOfListIO anIter( anIOList );
+          for( ; anIter.More(); anIter.Next() ) {
+            if ( anIter.Value()->isSame( new SALOME_InteractiveObject( myEntry.toLatin1(), "", "" ) ) ) { 
+              anIOList.Remove( anIter );
+              aSelMgr->setSelectedObjects( anIOList, true );
+              return;
+            }
+          }
+        }
       }
     }
   };
@@ -399,10 +399,10 @@ void SALOMEGUI_Swig::ClearIObjects()
     virtual void Execute()
     {
       if ( LightApp_Application* anApp = getApplication() ) {
-	LightApp_Study* aStudy  = dynamic_cast<LightApp_Study*>( anApp->activeStudy() ); // for sure!
-	LightApp_SelectionMgr* aSelMgr = anApp->selectionMgr(); 
-	if ( aStudy && aSelMgr )
-	  aSelMgr->clearSelected();
+        LightApp_Study* aStudy  = dynamic_cast<LightApp_Study*>( anApp->activeStudy() ); // for sure!
+        LightApp_SelectionMgr* aSelMgr = anApp->selectionMgr(); 
+        if ( aStudy && aSelMgr )
+          aSelMgr->clearSelected();
       }
     }
   };
@@ -418,7 +418,7 @@ void SALOMEGUI_Swig::ClearIObjects()
   For the current moment implemented for OCC and VTK viewers only.
 
   \param theEntry object entry
-*/		
+*/              
 void SALOMEGUI_Swig::Display( const char* theEntry )
 {
   class TEvent: public SALOME_Event
@@ -428,12 +428,12 @@ void SALOMEGUI_Swig::Display( const char* theEntry )
     TEvent( const char* theEntry ) : myEntry( theEntry ) {}
     virtual void Execute() {
       if ( LightApp_Application* anApp = getApplication() ) {
-	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
-	if ( window ) {
-	  SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
-	  if ( view )
-	    view->Display( view->CreatePrs( myEntry.toLatin1() ) );
-	}
+        SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
+        if ( window ) {
+          SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
+          if ( view )
+            view->Display( view->CreatePrs( myEntry.toLatin1() ) );
+        }
       }
     }
   };
@@ -461,14 +461,14 @@ void SALOMEGUI_Swig::DisplayOnly( const char* theEntry )
     virtual void Execute()
     {
       if ( LightApp_Application* anApp = getApplication() ) {
-	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
-	if ( window ) {
-	  SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
-	  if ( view ) {
-	    view->EraseAll( false );
-	    view->Display( view->CreatePrs( myEntry.toLatin1() ) );
-	  }
-	}
+        SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
+        if ( window ) {
+          SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
+          if ( view ) {
+            view->EraseAll( false );
+            view->Display( view->CreatePrs( myEntry.toLatin1() ) );
+          }
+        }
       }
     }
   };
@@ -484,7 +484,7 @@ void SALOMEGUI_Swig::DisplayOnly( const char* theEntry )
   For the current moment implemented for OCC and VTK viewers only.
 
   \param theEntry object entry
-*/		
+*/              
 void SALOMEGUI_Swig::Erase( const char* theEntry )
 {
   class TEvent: public SALOME_Event
@@ -495,12 +495,12 @@ void SALOMEGUI_Swig::Erase( const char* theEntry )
     virtual void Execute()
     {
       if ( LightApp_Application* anApp = getApplication() ) {
-	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
-	if ( window ) {
-	  SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
-	  if ( view )
-	    view->Erase( view->CreatePrs( myEntry.toLatin1() ) );
-	}
+        SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
+        if ( window ) {
+          SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
+          if ( view )
+            view->Erase( view->CreatePrs( myEntry.toLatin1() ) );
+        }
       }
     }
   };
@@ -525,19 +525,19 @@ void SALOMEGUI_Swig::DisplayAll()
     virtual void Execute()
     {
       if ( LightApp_Application* anApp = getApplication() ) {
-	LightApp_Study*  study        = dynamic_cast<LightApp_Study*>( anApp->activeStudy() ); // for sure!
-	SUIT_ViewWindow*  window       = anApp->desktop()->activeWindow();
-	LightApp_Module* activeModule = dynamic_cast<LightApp_Module*>( anApp->activeModule() );
-	if ( study && window && activeModule ) {
-	  SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
-	  if ( view ) {
-	    for ( SUIT_DataObjectIterator it( activeModule->dataModel()->root(), SUIT_DataObjectIterator::DepthLeft ); it.current(); ++it ) {
-	      LightApp_DataObject* obj = dynamic_cast<LightApp_DataObject*>( it.current() );
-	      if ( obj && !obj->entry().isEmpty() )
-		view->Display( view->CreatePrs( obj->entry().toLatin1() ) );
-	    }
-	  }
-	}
+        LightApp_Study*  study        = dynamic_cast<LightApp_Study*>( anApp->activeStudy() ); // for sure!
+        SUIT_ViewWindow*  window       = anApp->desktop()->activeWindow();
+        LightApp_Module* activeModule = dynamic_cast<LightApp_Module*>( anApp->activeModule() );
+        if ( study && window && activeModule ) {
+          SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
+          if ( view ) {
+            for ( SUIT_DataObjectIterator it( activeModule->dataModel()->root(), SUIT_DataObjectIterator::DepthLeft ); it.current(); ++it ) {
+              LightApp_DataObject* obj = dynamic_cast<LightApp_DataObject*>( it.current() );
+              if ( obj && !obj->entry().isEmpty() )
+                view->Display( view->CreatePrs( obj->entry().toLatin1() ) );
+            }
+          }
+        }
       }
     }
   };
@@ -558,12 +558,12 @@ void SALOMEGUI_Swig::EraseAll()
     virtual void Execute()
     {
       if ( LightApp_Application* anApp = getApplication() ) {
-	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
-	if ( window ) {
-	  SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
-	  if ( view )
-	    view->EraseAll( false );
-	}
+        SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
+        if ( window ) {
+          SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
+          if ( view )
+            view->EraseAll( false );
+        }
       }
     }
   };
@@ -593,11 +593,11 @@ public:
     if ( LightApp_Application* anApp = getApplication() ) {
       SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
       if ( window ) {
-	SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
-	if ( view ) {
-	  SALOME_Prs* aPrs = view->CreatePrs( myEntry.toLatin1() );
-	  myResult = !aPrs->IsNull();
-	}
+        SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
+        if ( view ) {
+          SALOME_Prs* aPrs = view->CreatePrs( myEntry.toLatin1() );
+          myResult = !aPrs->IsNull();
+        }
       }
     }
   }
@@ -619,12 +619,12 @@ void SALOMEGUI_Swig::UpdateView()
     virtual void Execute()
     {
       if ( LightApp_Application* anApp = getApplication() ) {
-	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
-	if ( window ) {
-	  SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
-	  if ( view )
-	    view->Repaint();
-	}
+        SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
+        if ( window ) {
+          SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
+          if ( view )
+            view->Repaint();
+        }
       }
     }
   };
@@ -643,15 +643,15 @@ void SALOMEGUI_Swig::FitAll()
     virtual void Execute()
     {
       if ( LightApp_Application* anApp = getApplication() ) {
-	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
-	if ( window ) {
-	  if ( dynamic_cast<SVTK_ViewWindow*>( window ) )
-	    ( dynamic_cast<SVTK_ViewWindow*>( window ) )->onFitAll();
-	  else if ( dynamic_cast<SOCC_ViewWindow*>( window ) )
-	    ( dynamic_cast<SOCC_ViewWindow*>( window ) )->onFitAll();
-	  else if ( dynamic_cast<SPlot2d_ViewWindow*>( window ) )
-	    ( dynamic_cast<SPlot2d_ViewWindow*>( window ) )->onFitAll();
-	}
+        SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
+        if ( window ) {
+          if ( dynamic_cast<SVTK_ViewWindow*>( window ) )
+            ( dynamic_cast<SVTK_ViewWindow*>( window ) )->onFitAll();
+          else if ( dynamic_cast<SOCC_ViewWindow*>( window ) )
+            ( dynamic_cast<SOCC_ViewWindow*>( window ) )->onFitAll();
+          else if ( dynamic_cast<SPlot2d_ViewWindow*>( window ) )
+            ( dynamic_cast<SPlot2d_ViewWindow*>( window ) )->onFitAll();
+        }
       }
     }
   };
@@ -670,17 +670,17 @@ void SALOMEGUI_Swig::ResetView()
     virtual void Execute()
     {
       if ( LightApp_Application* anApp = getApplication() ) {
-	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
-	if ( window ) {
-	  if ( dynamic_cast<SVTK_ViewWindow*>( window ) )
-	    (dynamic_cast<SVTK_ViewWindow*>( window ))->onResetView();
-	  else if ( dynamic_cast<SOCC_ViewWindow*>( window ) )
-	    (dynamic_cast<SOCC_ViewWindow*>( window ))->onResetView();
-	  else if ( dynamic_cast<SPlot2d_ViewWindow*>( window ) )
-	    (dynamic_cast<SPlot2d_ViewWindow*>( window ))->onFitAll();
-	  // VSR: there is no 'ResetView' functionality for Plot2d viewer,
-	  // so we use 'FitAll' instead.
-	}
+        SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
+        if ( window ) {
+          if ( dynamic_cast<SVTK_ViewWindow*>( window ) )
+            (dynamic_cast<SVTK_ViewWindow*>( window ))->onResetView();
+          else if ( dynamic_cast<SOCC_ViewWindow*>( window ) )
+            (dynamic_cast<SOCC_ViewWindow*>( window ))->onResetView();
+          else if ( dynamic_cast<SPlot2d_ViewWindow*>( window ) )
+            (dynamic_cast<SPlot2d_ViewWindow*>( window ))->onFitAll();
+          // VSR: there is no 'ResetView' functionality for Plot2d viewer,
+          // so we use 'FitAll' instead.
+        }
       }
     }
   };
@@ -716,45 +716,45 @@ static void setView( int view )
     virtual void Execute()
     {
       if ( LightApp_Application* anApp = getApplication() ) {
-	SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
-	if ( window ) {
-	  if ( dynamic_cast<SVTK_ViewWindow*>( window ) ) {
-	    switch( myView ) {
-	    case __ViewTop:
-	      (dynamic_cast<SVTK_ViewWindow*>( window ))->onTopView(); break;
-	    case __ViewBottom:
-	      (dynamic_cast<SVTK_ViewWindow*>( window ))->onBottomView(); break;
-	    case __ViewLeft:
-	      (dynamic_cast<SVTK_ViewWindow*>( window ))->onLeftView(); break;
-	    case __ViewRight:
-	      (dynamic_cast<SVTK_ViewWindow*>( window ))->onRightView(); break;
-	    case __ViewFront:
-	      (dynamic_cast<SVTK_ViewWindow*>( window ))->onFrontView(); break;
-	    case __ViewBack:
-	      (dynamic_cast<SVTK_ViewWindow*>( window ))->onBackView(); break;
-	    default:
-	      break;
-	    }
-	  }
-	  else if ( dynamic_cast<SOCC_ViewWindow*>( window ) ) {
-	    switch( myView ) {
-	    case __ViewTop:
-	      (dynamic_cast<SOCC_ViewWindow*>( window ))->onTopView(); break;
-	    case __ViewBottom:
-	      (dynamic_cast<SOCC_ViewWindow*>( window ))->onBottomView(); break;
-	    case __ViewLeft:
-	      (dynamic_cast<SOCC_ViewWindow*>( window ))->onLeftView(); break;
-	    case __ViewRight:
-	      (dynamic_cast<SOCC_ViewWindow*>( window ))->onRightView(); break;
-	    case __ViewFront:
-	      (dynamic_cast<SOCC_ViewWindow*>( window ))->onFrontView(); break;
-	    case __ViewBack:
-	      (dynamic_cast<SOCC_ViewWindow*>( window ))->onBackView(); break;
-	    default:
-	      break;
-	    }
-	  }
-	}
+        SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
+        if ( window ) {
+          if ( dynamic_cast<SVTK_ViewWindow*>( window ) ) {
+            switch( myView ) {
+            case __ViewTop:
+              (dynamic_cast<SVTK_ViewWindow*>( window ))->onTopView(); break;
+            case __ViewBottom:
+              (dynamic_cast<SVTK_ViewWindow*>( window ))->onBottomView(); break;
+            case __ViewLeft:
+              (dynamic_cast<SVTK_ViewWindow*>( window ))->onLeftView(); break;
+            case __ViewRight:
+              (dynamic_cast<SVTK_ViewWindow*>( window ))->onRightView(); break;
+            case __ViewFront:
+              (dynamic_cast<SVTK_ViewWindow*>( window ))->onFrontView(); break;
+            case __ViewBack:
+              (dynamic_cast<SVTK_ViewWindow*>( window ))->onBackView(); break;
+            default:
+              break;
+            }
+          }
+          else if ( dynamic_cast<SOCC_ViewWindow*>( window ) ) {
+            switch( myView ) {
+            case __ViewTop:
+              (dynamic_cast<SOCC_ViewWindow*>( window ))->onTopView(); break;
+            case __ViewBottom:
+              (dynamic_cast<SOCC_ViewWindow*>( window ))->onBottomView(); break;
+            case __ViewLeft:
+              (dynamic_cast<SOCC_ViewWindow*>( window ))->onLeftView(); break;
+            case __ViewRight:
+              (dynamic_cast<SOCC_ViewWindow*>( window ))->onRightView(); break;
+            case __ViewFront:
+              (dynamic_cast<SOCC_ViewWindow*>( window ))->onFrontView(); break;
+            case __ViewBack:
+              (dynamic_cast<SOCC_ViewWindow*>( window ))->onBackView(); break;
+            default:
+              break;
+            }
+          }
+        }
       }
     }
   };

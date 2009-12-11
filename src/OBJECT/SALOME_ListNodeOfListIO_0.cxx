@@ -62,10 +62,10 @@ Standard_EXPORT Handle_Standard_Type& SALOME_ListNodeOfListIO_Type_()
 
   static Handle_Standard_Transient _Ancestors[]= {aType1,aType2,aType3,NULL};
   static Handle_Standard_Type _aType = new Standard_Type("SALOME_ListNodeOfListIO",
-			                                 sizeof(SALOME_ListNodeOfListIO),
-			                                 1,
-			                                 (Standard_Address)_Ancestors,
-			                                 (Standard_Address)NULL);
+                                                         sizeof(SALOME_ListNodeOfListIO),
+                                                         1,
+                                                         (Standard_Address)_Ancestors,
+                                                         (Standard_Address)NULL);
 
   return _aType;
 }

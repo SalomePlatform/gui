@@ -94,13 +94,13 @@ void CAM_DataModel::setRoot( const CAM_DataObject* newRoot )
 
   if ( myRoot )
     myRoot->disconnect( SIGNAL( destroyed( SUIT_DataObject* ) ), 
-			this, SLOT( onDestroyed( SUIT_DataObject* ) ) );
+                        this, SLOT( onDestroyed( SUIT_DataObject* ) ) );
 
   myRoot = (CAM_DataObject*)newRoot;
 
   if ( myRoot )
     myRoot->connect( SIGNAL( destroyed( SUIT_DataObject* ) ), 
-		     this, SLOT( onDestroyed( SUIT_DataObject* ) ) );
+                     this, SLOT( onDestroyed( SUIT_DataObject* ) ) );
 
   emit rootChanged( this );
 }
@@ -139,8 +139,8 @@ void CAM_DataModel::onDestroyed( SUIT_DataObject* obj )
   \return \c true if data model is loaded successfully
 */
 bool CAM_DataModel::open( const QString& /*name*/, 
-			  CAM_Study*     /*study*/, 
-			  QStringList    /*files*/ )
+                          CAM_Study*     /*study*/, 
+                          QStringList    /*files*/ )
 {
   return true;
 }
@@ -171,8 +171,8 @@ bool CAM_DataModel::save( QStringList& )
   \return \c true if data model is saved successfully
 */
 bool CAM_DataModel::saveAs( const QString& /*name*/,
-			    CAM_Study*     /*study*/,
-			    QStringList&   /*files*/ )
+                            CAM_Study*     /*study*/,
+                            QStringList&   /*files*/ )
 {
   return true;
 }

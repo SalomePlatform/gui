@@ -119,48 +119,48 @@ int main( int argc, char** argv )
     for ( int i = 1; i < argc; i ++ ) {
       QString anArg = QString( argv[i] ).trimmed();
       if ( anArg.startsWith( "-" ) ) {
-	anArg.remove( 0, 1 );
-	if ( anArg.contains( ":" ) ) {
-	  QStringList vals = anArg.split( ":", QString::SkipEmptyParts );
-	  QString section  = vals[ 0 ].trimmed();
-	  QString param    = vals[ 1 ].trimmed();
-	  if ( section.isEmpty() || param.isEmpty() ) continue;
-	  resMgr->remove( section, param );
-	}
+        anArg.remove( 0, 1 );
+        if ( anArg.contains( ":" ) ) {
+          QStringList vals = anArg.split( ":", QString::SkipEmptyParts );
+          QString section  = vals[ 0 ].trimmed();
+          QString param    = vals[ 1 ].trimmed();
+          if ( section.isEmpty() || param.isEmpty() ) continue;
+          resMgr->remove( section, param );
+        }
       }
       else if ( anArg.contains( "+=" ) ) {
-	QStringList vals = anArg.split( "+=", QString::SkipEmptyParts );
-	if ( vals[ 0 ].contains( ":" ) ) {
-	  QStringList vals1 = vals[ 0 ].split( ":", QString::SkipEmptyParts );
-	  QString section  = vals1[ 0 ].trimmed();
-	  QString param    = vals1[ 1 ].trimmed();
-	  QString newValue = vals [ 1 ].trimmed();
-	  QString separ    = ","; // default separator
-	  if ( newValue.contains( "|" ) ) {
-	    QStringList vals2 = newValue.split( "|", QString::SkipEmptyParts );
-	    newValue = vals2[ 0 ].trimmed();
-	    separ  = vals2[ 1 ].trimmed();
-	  }
-	  if ( section.isEmpty() || param.isEmpty() || newValue.isEmpty() || separ.isEmpty() ) continue;
-	  QString value = resMgr->stringValue( section, param );
-	  QStringList valsOld = value.split( separ, QString::SkipEmptyParts );
-	  QStringList valsNew = newValue.split( separ, QString::SkipEmptyParts );
-	  for ( int i = 0; i < (int)valsNew.count(); i++ )
-	    if ( !valsOld.contains( valsNew[i] ) )
-	      valsOld.append( valsNew[i] );
-	  resMgr->setValue( section, param, valsOld.join( separ ) );
-	}
+        QStringList vals = anArg.split( "+=", QString::SkipEmptyParts );
+        if ( vals[ 0 ].contains( ":" ) ) {
+          QStringList vals1 = vals[ 0 ].split( ":", QString::SkipEmptyParts );
+          QString section  = vals1[ 0 ].trimmed();
+          QString param    = vals1[ 1 ].trimmed();
+          QString newValue = vals [ 1 ].trimmed();
+          QString separ    = ","; // default separator
+          if ( newValue.contains( "|" ) ) {
+            QStringList vals2 = newValue.split( "|", QString::SkipEmptyParts );
+            newValue = vals2[ 0 ].trimmed();
+            separ  = vals2[ 1 ].trimmed();
+          }
+          if ( section.isEmpty() || param.isEmpty() || newValue.isEmpty() || separ.isEmpty() ) continue;
+          QString value = resMgr->stringValue( section, param );
+          QStringList valsOld = value.split( separ, QString::SkipEmptyParts );
+          QStringList valsNew = newValue.split( separ, QString::SkipEmptyParts );
+          for ( int i = 0; i < (int)valsNew.count(); i++ )
+            if ( !valsOld.contains( valsNew[i] ) )
+              valsOld.append( valsNew[i] );
+          resMgr->setValue( section, param, valsOld.join( separ ) );
+        }
       }
       else if ( anArg.contains( "=" ) ) {
-	QStringList vals = anArg.split( "=", QString::SkipEmptyParts );
-	if ( vals[ 0 ].contains( ":" ) ) {
-	  QStringList vals1 = vals[ 0 ].split( ":", QString::SkipEmptyParts );
-	  QString section  = vals1[ 0 ].trimmed();
-	  QString param    = vals1[ 1 ].trimmed();
-	  QString value = vals [ 1 ].trimmed();
-	  if ( section.isEmpty() || param.isEmpty() ) continue;
-	  resMgr->setValue( section, param, value );
-	}
+        QStringList vals = anArg.split( "=", QString::SkipEmptyParts );
+        if ( vals[ 0 ].contains( ":" ) ) {
+          QStringList vals1 = vals[ 0 ].split( ":", QString::SkipEmptyParts );
+          QString section  = vals1[ 0 ].trimmed();
+          QString param    = vals1[ 1 ].trimmed();
+          QString value = vals [ 1 ].trimmed();
+          if ( section.isEmpty() || param.isEmpty() ) continue;
+          resMgr->setValue( section, param, value );
+        }
       }
     }
     resMgr->save();

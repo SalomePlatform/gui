@@ -68,7 +68,7 @@ class SVTK_EXPORT QVTK_RenderWindowInteractor: public QWidget
 
  public:
   QVTK_RenderWindowInteractor(QWidget* theParent, 
-			      const char* theName);
+                              const char* theName);
 
   ~QVTK_RenderWindowInteractor();
 
@@ -149,7 +149,7 @@ class SVTK_EXPORT SVTK_RenderWindowInteractor: public QVTK_RenderWindowInteracto
 
  public:
   SVTK_RenderWindowInteractor(QWidget* theParent, 
-			      const char* theName);
+                              const char* theName);
 
   ~SVTK_RenderWindowInteractor();
 
@@ -157,8 +157,8 @@ class SVTK_EXPORT SVTK_RenderWindowInteractor: public QVTK_RenderWindowInteracto
   virtual
   void
   Initialize(vtkGenericRenderWindowInteractor* theDevice,
-	     SVTK_Renderer* theRenderer,
-	     SVTK_Selector* theSelector);
+             SVTK_Renderer* theRenderer,
+             SVTK_Selector* theSelector);
 
   //----------------------------------------------------------------------------
   //! To get corresponding SVTK_Renderer instance
@@ -238,9 +238,9 @@ class SVTK_EXPORT SVTK_RenderWindowInteractor: public QVTK_RenderWindowInteracto
   static
   void
   ProcessEvents(vtkObject* theObject, 
-		unsigned long theEvent,
-		void* theClientData, 
-		void* theCallData);
+                unsigned long theEvent,
+                void* theClientData, 
+                void* theCallData);
 
   // Used to process VTK events
   vtkSmartPointer<vtkCallbackCommand> myEventCallbackCommand;

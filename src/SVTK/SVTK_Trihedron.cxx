@@ -54,10 +54,10 @@ SVTK_Trihedron
     if(aProp->GetVisibility())
       if(SALOME_Actor* anActor = SALOME_Actor::SafeDownCast(aProp)) {
         if(!anActor->IsInfinitive()) 
-	  aCount++;
+          aCount++;
       }
       else if ( !OwnActor( aProp ) ) {
-	aCount++;
+        aCount++;
       }
   }
   return aCount;

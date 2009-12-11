@@ -69,7 +69,7 @@ Plot2d_ViewWindow::Plot2d_ViewWindow( SUIT_Desktop* theDesktop, Plot2d_Viewer* t
   connect( myViewFrame, SIGNAL( vpModeVerChanged() ), this, SLOT( onChangeVerMode() ) );
   connect( myViewFrame, SIGNAL( vpCurveChanged() ),   this, SLOT( onChangeCurveMode() ) );
   connect( myViewFrame, SIGNAL( contextMenuRequested( QContextMenuEvent* ) ),
-	   this,        SIGNAL( contextMenuRequested( QContextMenuEvent* ) ) );
+           this,        SIGNAL( contextMenuRequested( QContextMenuEvent* ) ) );
 
   myViewFrame->installEventFilter( this );
 }
@@ -186,9 +186,9 @@ void Plot2d_ViewWindow::createActions()
 
   // 1. Dump View
   aAction = new QtxAction( tr( "MNU_DUMP_VIEW" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_DUMP" ) ),
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_DUMP" ) ),
                            tr( "MNU_DUMP_VIEW" ),
-			   0, this);
+                           0, this);
   aAction->setStatusTip( tr( "DSC_DUMP_VIEW" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onDumpView() ) );
   mgr->registerAction( aAction, DumpId );
@@ -197,27 +197,27 @@ void Plot2d_ViewWindow::createActions()
 
   // 2.1. Fit All
   aAction = new QtxAction( tr( "MNU_FITALL" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_FIT_ALL" ) ),
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_FIT_ALL" ) ),
                            tr( "MNU_FITALL" ),
-			   0, this);
+                           0, this);
   aAction->setStatusTip( tr( "DSC_FITALL" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onFitAll() ) );
   mgr->registerAction( aAction, FitAllId );
 
   // 2.2. Fit Rect
   aAction = new QtxAction( tr( "MNU_FITRECT" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_FIT_AREA" ) ),
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_FIT_AREA" ) ),
                            tr( "MNU_FITRECT" ),
-			   0, this);
+                           0, this);
   aAction->setStatusTip( tr( "DSC_FITRECT" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onFitRect() ) );
   mgr->registerAction( aAction, FitRectId );
 
   // 2.3. Zoom
   aAction = new QtxAction( tr( "MNU_ZOOM_VIEW" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_ZOOM" ) ),
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_ZOOM" ) ),
                            tr( "MNU_ZOOM_VIEW" ),
-			   0, this);
+                           0, this);
   aAction->setStatusTip( tr( "DSC_ZOOM_VIEW" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onZoom() ) );
   mgr->registerAction( aAction, ZoomId );
@@ -233,18 +233,18 @@ void Plot2d_ViewWindow::createActions()
 
   // 3.1. Panning
   aAction = new QtxAction( tr( "MNU_PAN_VIEW" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_PAN" ) ),
-			   tr( "MNU_PAN_VIEW" ), 
-			   0, this);
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_PAN" ) ),
+                           tr( "MNU_PAN_VIEW" ), 
+                           0, this);
   aAction->setStatusTip( tr( "DSC_PAN_VIEW" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onPanning() ) );
   mgr->registerAction( aAction, PanId );
 
   // 3.2. Global Panning
   aAction = new QtxAction( tr( "MNU_GLOBALPAN_VIEW" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_GLOBALPAN" ) ),
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_GLOBALPAN" ) ),
                            tr( "MNU_GLOBALPAN_VIEW" ),
-			   0, this);
+                           0, this);
   aAction->setStatusTip( tr( "DSC_GLOBALPAN_VIEW" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onGlobalPanning() ) );
   mgr->registerAction( aAction, GlobalPanId );
@@ -259,27 +259,27 @@ void Plot2d_ViewWindow::createActions()
   
   // 4.1. Points
   aAction = new QtxAction( tr( "TOT_PLOT2D_CURVES_POINTS" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_CURVES_POINTS" ) ),
-			   tr( "MEN_PLOT2D_CURVES_POINTS" ),
-			   0, this );
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_CURVES_POINTS" ) ),
+                           tr( "MEN_PLOT2D_CURVES_POINTS" ),
+                           0, this );
   aAction->setStatusTip( tr( "PRP_PLOT2D_CURVES_POINTS" ) );
   aAction->setCheckable( true );
   mgr->registerAction( aAction, CurvPointsId );
 
   // 4.2. Lines
   aAction = new QtxAction( tr( "TOT_PLOT2D_CURVES_LINES" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_CURVES_LINES" ) ),
-			   tr( "MEN_PLOT2D_CURVES_LINES" ),
-			   0, this );
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_CURVES_LINES" ) ),
+                           tr( "MEN_PLOT2D_CURVES_LINES" ),
+                           0, this );
   aAction->setStatusTip( tr( "PRP_PLOT2D_CURVES_LINES" ) );
   aAction->setCheckable( true );
   mgr->registerAction( aAction, CurvLinesId );
 
   // 4.3. Splines
   aAction = new QtxAction( tr( "TOT_PLOT2D_CURVES_SPLINES" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_CURVES_SPLINES" ) ),
-			   tr( "MEN_PLOT2D_CURVES_SPLINES" ),
-			   0, this );
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_CURVES_SPLINES" ) ),
+                           tr( "MEN_PLOT2D_CURVES_SPLINES" ),
+                           0, this );
   aAction->setStatusTip( tr( "PRP_PLOT2D_CURVES_SPLINES" ) );
   aAction->setCheckable( true );
   mgr->registerAction( aAction, CurvSplinesId );
@@ -295,9 +295,9 @@ void Plot2d_ViewWindow::createActions()
 
   // 5.1. Linear
   aAction = new QtxAction( tr( "TOT_PLOT2D_MODE_LINEAR_HOR" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_MODE_LINEAR_HOR" ) ),
-			   tr( "MEN_PLOT2D_MODE_LINEAR_HOR" ),
-			   0, this );
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_MODE_LINEAR_HOR" ) ),
+                           tr( "MEN_PLOT2D_MODE_LINEAR_HOR" ),
+                           0, this );
   aAction->setStatusTip( tr( "PRP_PLOT2D_MODE_LINEAR_HOR" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewHorMode() ) );
   aAction->setCheckable( true );
@@ -305,9 +305,9 @@ void Plot2d_ViewWindow::createActions()
   
   // 5.2. Logarithmic
   aAction = new QtxAction( tr( "TOT_PLOT2D_MODE_LOGARITHMIC_HOR" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_MODE_LOGARITHMIC_HOR" ) ),
-			   tr( "MEN_PLOT2D_MODE_LOGARITHMIC_HOR" ),
-			   0, this );
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_MODE_LOGARITHMIC_HOR" ) ),
+                           tr( "MEN_PLOT2D_MODE_LOGARITHMIC_HOR" ),
+                           0, this );
   aAction->setStatusTip( tr( "PRP_PLOT2D_MODE_LOGARITHMIC_HOR" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewHorMode() ) );
   aAction->setCheckable( true );
@@ -322,9 +322,9 @@ void Plot2d_ViewWindow::createActions()
 
   // 6.1. Linear
   aAction = new QtxAction( tr( "TOT_PLOT2D_MODE_LINEAR_VER" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_MODE_LINEAR_VER" ) ),
-			   tr( "MEN_PLOT2D_MODE_LINEAR_VER" ),
-			   0, this );
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_MODE_LINEAR_VER" ) ),
+                           tr( "MEN_PLOT2D_MODE_LINEAR_VER" ),
+                           0, this );
   aAction->setStatusTip( tr( "PRP_PLOT2D_MODE_LINEAR_VER" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewVerMode() ) );
   aAction->setCheckable( true );
@@ -332,9 +332,9 @@ void Plot2d_ViewWindow::createActions()
 
   // 6.2. Logarithmic
   aAction = new QtxAction( tr( "TOT_PLOT2D_MODE_LOGARITHMIC_VER" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_MODE_LOGARITHMIC_VER" ) ),
-			   tr( "MEN_PLOT2D_MODE_LOGARITHMIC_VER" ),
-			   0, this );
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_MODE_LOGARITHMIC_VER" ) ),
+                           tr( "MEN_PLOT2D_MODE_LOGARITHMIC_VER" ),
+                           0, this );
   aAction->setStatusTip( tr( "PRP_PLOT2D_MODE_LOGARITHMIC_VER" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewVerMode() ) );
   aAction->setCheckable( true );
@@ -347,9 +347,9 @@ void Plot2d_ViewWindow::createActions()
 
   // 7. Legend
   aAction = new QtxAction( tr( "TOT_PLOT2D_SHOW_LEGEND" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_SHOW_LEGEND" ) ),
-			   tr( "MEN_PLOT2D_SHOW_LEGEND" ),
-			   0, this );
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_SHOW_LEGEND" ) ),
+                           tr( "MEN_PLOT2D_SHOW_LEGEND" ),
+                           0, this );
   aAction->setStatusTip( tr( "PRP_PLOT2D_SHOW_LEGEND" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onLegend() ) );
   aAction->setCheckable( true );
@@ -357,18 +357,18 @@ void Plot2d_ViewWindow::createActions()
 
   // 8. Settings
   aAction = new QtxAction( tr( "TOT_PLOT2D_SETTINGS" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_SETTINGS" ) ),
-			   tr( "MEN_PLOT2D_SETTINGS" ),
-			   0, this );
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_SETTINGS" ) ),
+                           tr( "MEN_PLOT2D_SETTINGS" ),
+                           0, this );
   aAction->setStatusTip( tr( "PRP_PLOT2D_SETTINGS" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), myViewFrame, SLOT( onSettings() ) );
   mgr->registerAction( aAction, CurvSettingsId );
 
   // 9. Clone
   aAction = new QtxAction( tr( "MNU_CLONE_VIEW" ),
-			   aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_CLONE_VIEW" ) ),
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_CLONE_VIEW" ) ),
                            tr( "MNU_CLONE_VIEW" ),
-			   0, this);
+                           0, this);
   aAction->setStatusTip( tr( "DSC_CLONE_VIEW" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SIGNAL( cloneView() ) );
   mgr->registerAction( aAction, CloneId );
@@ -601,8 +601,8 @@ QImage Plot2d_ViewWindow::dumpView()
   \param format image format ("BMP" [default], "JPEG", "JPG", "PNG")
 */
 bool Plot2d_ViewWindow::dumpViewToFormat( const QImage&  img,
-					  const QString& fileName, 
-					  const QString& format )
+                                          const QString& fileName, 
+                                          const QString& format )
 {
   bool res = myViewFrame ? myViewFrame->print( fileName, format ) : false;
   if( !res )

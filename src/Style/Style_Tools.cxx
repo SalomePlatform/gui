@@ -436,7 +436,7 @@ void Style_Tools::drawArrow( QStyle::PrimitiveElement type, QPainter* p, const Q
   \param brush background painter brush
 */
 void Style_Tools::drawSign( QStyle::PrimitiveElement type, QPainter* p, const QRect& r,
-			    const QColor& pen, const QColor& brush )
+                            const QColor& pen, const QColor& brush )
 {
   p->save();
   QPainterPath sign;
@@ -458,31 +458,31 @@ void Style_Tools::drawSign( QStyle::PrimitiveElement type, QPainter* p, const QR
         deltaY = -deltaY;
       }
       if ( correct ) 
-	sign.moveTo(  deltaY/2,   -aDelta/2-(deltaY/2-aDelta/3) );
+        sign.moveTo(  deltaY/2,   -aDelta/2-(deltaY/2-aDelta/3) );
       else {
-	sign.moveTo(  aDelta/3,   -aDelta/2 );
-	sign.lineTo(  aDelta/3,   -aDelta/2-(deltaY/2-aDelta/3) );
-	sign.lineTo(  deltaY/2,   -aDelta/2-(deltaY/2-aDelta/3) );
+        sign.moveTo(  aDelta/3,   -aDelta/2 );
+        sign.lineTo(  aDelta/3,   -aDelta/2-(deltaY/2-aDelta/3) );
+        sign.lineTo(  deltaY/2,   -aDelta/2-(deltaY/2-aDelta/3) );
       }
       
       sign.lineTo(    deltaY/2,   -aDelta/2-(deltaY/2-aDelta/3)-2*aDelta/3 );
       
       if ( !correct ) {
-	sign.lineTo(  aDelta/3,   -aDelta/2-(deltaY/2-aDelta/3)-2*aDelta/3 );
-	sign.lineTo(  aDelta/3,   -aDelta/2-deltaY );
-	sign.lineTo( -aDelta/3,   -aDelta/2-deltaY );
-	sign.lineTo( -aDelta/3,   -aDelta/2-(deltaY/2-aDelta/3)-2*aDelta/3 );
+        sign.lineTo(  aDelta/3,   -aDelta/2-(deltaY/2-aDelta/3)-2*aDelta/3 );
+        sign.lineTo(  aDelta/3,   -aDelta/2-deltaY );
+        sign.lineTo( -aDelta/3,   -aDelta/2-deltaY );
+        sign.lineTo( -aDelta/3,   -aDelta/2-(deltaY/2-aDelta/3)-2*aDelta/3 );
       }
       
       sign.lineTo(   -deltaY/2,   -aDelta/2-(deltaY/2-aDelta/3)-2*aDelta/3 );
       sign.lineTo(   -deltaY/2,   -aDelta/2-(deltaY/2-aDelta/3) );
 
       if ( correct ) 
-	sign.lineTo(  deltaY/2,   -aDelta/2-(deltaY/2-aDelta/3) );
+        sign.lineTo(  deltaY/2,   -aDelta/2-(deltaY/2-aDelta/3) );
       else {
-	sign.lineTo( -aDelta/3,   -aDelta/2-(deltaY/2-aDelta/3) );
-	sign.lineTo( -aDelta/3,   -aDelta/2 );
-	sign.lineTo(  aDelta/3,   -aDelta/2);
+        sign.lineTo( -aDelta/3,   -aDelta/2-(deltaY/2-aDelta/3) );
+        sign.lineTo( -aDelta/3,   -aDelta/2 );
+        sign.lineTo(  aDelta/3,   -aDelta/2);
       }
 
       if ( correct )

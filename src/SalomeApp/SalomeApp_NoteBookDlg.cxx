@@ -368,8 +368,8 @@ void NoteBook_Table::Init(_PTR(Study) theStudy)
       NoteBook_TableRow* aRow = myRows[ i ];
       if( aRow )
       {
-	delete aRow;
-	aRow = 0;
+        delete aRow;
+        aRow = 0;
       }
     }
     myRows.clear();
@@ -384,7 +384,7 @@ void NoteBook_Table::Init(_PTR(Study) theStudy)
   vector<string> aVariables = theStudy->GetVariableNames();
   for(int iVar = 0; iVar < aVariables.size(); iVar++ ) {
     AddRow(QString(aVariables[iVar].c_str()),
-	   Variable2String(aVariables[iVar],theStudy));
+           Variable2String(aVariables[iVar],theStudy));
   }
 
   //Add empty row
@@ -535,51 +535,51 @@ void NoteBook_Table::onItemChanged(QTableWidgetItem* theItem)
       QString aMsg;
 
       if(aCurrentColumn == NAME_COLUMN) {
-	int anIndex = aRow->GetIndex();
-	if( myVariableMap.contains( anIndex ) )
-	{
-	  const NoteBoox_Variable& aVariable = myVariableMap[ anIndex ];
-	  if( !aVariable.Name.isEmpty() && myStudy->IsVariableUsed( string( aVariable.Name.toLatin1().constData() ) ) )
-	  {
-	    if( QMessageBox::warning( parentWidget(), tr( "WARNING" ),
-				      tr( "RENAME_VARIABLE_IS_USED" ).arg( aVariable.Name ),
-				      QMessageBox::Yes, QMessageBox::No ) == QMessageBox::No )
-	    {
-	      bool isBlocked = blockSignals( true );
-	      aRow->SetName( aVariable.Name );
-	      blockSignals( isBlocked );
-	      return;
-	    }
-	  }
-	}
+        int anIndex = aRow->GetIndex();
+        if( myVariableMap.contains( anIndex ) )
+        {
+          const NoteBoox_Variable& aVariable = myVariableMap[ anIndex ];
+          if( !aVariable.Name.isEmpty() && myStudy->IsVariableUsed( string( aVariable.Name.toLatin1().constData() ) ) )
+          {
+            if( QMessageBox::warning( parentWidget(), tr( "WARNING" ),
+                                      tr( "RENAME_VARIABLE_IS_USED" ).arg( aVariable.Name ),
+                                      QMessageBox::Yes, QMessageBox::No ) == QMessageBox::No )
+            {
+              bool isBlocked = blockSignals( true );
+              aRow->SetName( aVariable.Name );
+              blockSignals( isBlocked );
+              return;
+            }
+          }
+        }
       }
 
       //Case then varible name changed. 
       if(aCurrentColumn == NAME_COLUMN) {
         if(!aRow->CheckName()) {
-	  IsCorrect = false;
-	  aMsg = tr( "VARNAME_INCORRECT" ).arg(aRow->GetName());
-	}
+          IsCorrect = false;
+          aMsg = tr( "VARNAME_INCORRECT" ).arg(aRow->GetName());
+        }
         else if(!IsUniqueName(aRow)) {
-	  IsCorrect = false;
+          IsCorrect = false;
           aMsg = tr( "VARNAME_EXISTS" ).arg(aRow->GetName());
-	}
-	else
-	  IsVariableComplited = aRow->CheckValue();
+        }
+        else
+          IsVariableComplited = aRow->CheckValue();
       }
       
       //Case then varible value changed. 
       else if(aCurrentColumn == VALUE_COLUMN){
         if(!aRow->CheckValue()) {
-	  IsCorrect = false;
-	  aMsg = tr( "VARVALUE_INCORRECT" ).arg(aRow->GetName());
-	}
-	else
-	  IsVariableComplited = aRow->CheckName() && IsUniqueName(aRow);
+          IsCorrect = false;
+          aMsg = tr( "VARVALUE_INCORRECT" ).arg(aRow->GetName());
+        }
+        else
+          IsVariableComplited = aRow->CheckName() && IsUniqueName(aRow);
       }
 
       if(!IsCorrect && !aMsg.isEmpty())
-	SUIT_MessageBox::warning( parentWidget(), tr( "WARNING" ), aMsg );
+        SUIT_MessageBox::warning( parentWidget(), tr( "WARNING" ), aMsg );
 
       bool isBlocked = blockSignals( true );
       theItem->setForeground( QBrush( IsCorrect ? Qt::black : Qt::red ) );
@@ -588,19 +588,19 @@ void NoteBook_Table::onItemChanged(QTableWidgetItem* theItem)
       int anIndex = aRow->GetIndex();
       if( myVariableMap.contains( anIndex ) )
       {
-	NoteBoox_Variable& aVariable = myVariableMap[ anIndex ];
-	if( aVariable.Name.compare( aRow->GetName() ) != 0 ||
-	    aVariable.Value.compare( aRow->GetValue() ) != 0 )
-	{
-	  aVariable.Name = aRow->GetName();
-	  aVariable.Value = aRow->GetValue();
-	}
-	else
-	  isModified = false;
+        NoteBoox_Variable& aVariable = myVariableMap[ anIndex ];
+        if( aVariable.Name.compare( aRow->GetName() ) != 0 ||
+            aVariable.Value.compare( aRow->GetValue() ) != 0 )
+        {
+          aVariable.Name = aRow->GetName();
+          aVariable.Value = aRow->GetValue();
+        }
+        else
+          isModified = false;
       }
 
       if(IsCorrect && IsVariableComplited && IsLastRow(aRow))
-	AddEmptyRow();
+        AddEmptyRow();
     }
 
     if( !myIsModified )
@@ -648,22 +648,22 @@ void NoteBook_Table::RemoveSelected()
       else {
         int nRow = row(aSelectedItems[i]);
 
-	if( myStudy->IsVariableUsed( string( aRow->GetName().toLatin1().constData() ) ) )
-	{
-	  if( QMessageBox::warning( parentWidget(), tr( "WARNING" ),
-				    tr( "REMOVE_VARIABLE_IS_USED" ).arg( aRow->GetName() ),
-				    QMessageBox::Yes, QMessageBox::No ) == QMessageBox::No )
-	  {
-	    isProcessItemChangedSignal = true;
-	    return;
-	  }
-	}
+        if( myStudy->IsVariableUsed( string( aRow->GetName().toLatin1().constData() ) ) )
+        {
+          if( QMessageBox::warning( parentWidget(), tr( "WARNING" ),
+                                    tr( "REMOVE_VARIABLE_IS_USED" ).arg( aRow->GetName() ),
+                                    QMessageBox::Yes, QMessageBox::No ) == QMessageBox::No )
+          {
+            isProcessItemChangedSignal = true;
+            return;
+          }
+        }
 
-	int index = aRow->GetIndex();
+        int index = aRow->GetIndex();
         QString aVarName = aRow->GetName();
-	myRemovedRows.append( index );
-	if( myVariableMap.contains( index ) )
-	  myVariableMap.remove( index );
+        myRemovedRows.append( index );
+        if( myVariableMap.contains( index ) )
+          myVariableMap.remove( index );
         removeRow(nRow);
         myRows.removeAt(nRow);
         if(myStudy->IsVariable(aVarName.toLatin1().constData()))
@@ -899,28 +899,28 @@ void SalomeApp_NoteBookDlg::onApply()
     {
       if( aVariableMapRef.contains( anIndex ) )
       {
-	const NoteBoox_Variable& aVariableRef = aVariableMapRef[ anIndex ];
-	QString aNameRef = aVariableRef.Name;
-	QString aValueRef = aVariableRef.Value;
+        const NoteBoox_Variable& aVariableRef = aVariableMapRef[ anIndex ];
+        QString aNameRef = aVariableRef.Name;
+        QString aValueRef = aVariableRef.Value;
 
-	if( !aNameRef.isEmpty() && !aValueRef.isEmpty() && aNameRef != aName )
-	{
-	  myStudy->RenameVariable( string( aNameRef.toLatin1().constData() ),
-				   string( aName.toLatin1().constData() ) );
-	}
+        if( !aNameRef.isEmpty() && !aValueRef.isEmpty() && aNameRef != aName )
+        {
+          myStudy->RenameVariable( string( aNameRef.toLatin1().constData() ),
+                                   string( aName.toLatin1().constData() ) );
+        }
       }
 
       if( NoteBook_TableRow::IsIntegerValue(aValue,&anIVal) )
-	myStudy->SetInteger(string(aName.toLatin1().constData()),anIVal);
+        myStudy->SetInteger(string(aName.toLatin1().constData()),anIVal);
 
       else if( NoteBook_TableRow::IsRealValue(aValue,&aDVal) )
-	myStudy->SetReal(string(aName.toLatin1().constData()),aDVal);
+        myStudy->SetReal(string(aName.toLatin1().constData()),aDVal);
     
       else if( NoteBook_TableRow::IsBooleanValue(aValue,&aBVal) )
-	myStudy->SetBoolean(string(aName.toLatin1().constData()),aBVal);
+        myStudy->SetBoolean(string(aName.toLatin1().constData()),aBVal);
     
       else if( NoteBook_TableRow::IsValidStringValue(aValue) )
-	myStudy->SetString(string(aName.toLatin1().constData()),aValue.toStdString());
+        myStudy->SetString(string(aName.toLatin1().constData()),aValue.toStdString());
     }
   }
   myTable->ResetMaps();
@@ -941,13 +941,13 @@ void SalomeApp_NoteBookDlg::onCancel()
   if( myTable->IsModified() )
   {
     int answer = QMessageBox::question( this, tr( "CLOSE_CAPTION" ), tr( "CLOSE_DESCRIPTION" ),
-					QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel );
+                                        QMessageBox::Yes, QMessageBox::No, QMessageBox::Cancel );
     switch( answer )
     {
       case QMessageBox::Yes    : onOK(); return;
       case QMessageBox::No     : break;
       case QMessageBox::Cancel : return;
-      default :	break;
+      default : break;
     }
   }
   reject();
@@ -1086,7 +1086,7 @@ void SalomeApp_NoteBookDlg::clearStudy()
   int aY = y();
 
   // Disconnect dialog from application desktop in case if:
-  // 1) Application is not the first application in the session	
+  // 1) Application is not the first application in the session 
   // 2) Application is the first application in session but not the only.
   bool changeDesktop = ((anIndex > 0) || (anIndex == 0 && aList.count() > 1));
 

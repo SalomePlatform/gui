@@ -30,7 +30,7 @@
 */
 SOCC_ViewWindow
 ::SOCC_ViewWindow( SUIT_Desktop* theDesktop, 
-		   OCCViewer_Viewer* theModel)
+                   OCCViewer_Viewer* theModel)
   : OCCViewer_ViewWindow( theDesktop, theModel )
 {
 }

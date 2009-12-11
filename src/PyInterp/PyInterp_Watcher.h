@@ -34,7 +34,7 @@
 
 // Private class that keeps track of destructions of request listeners
 class PYINTERP_EXPORT PyInterp_Watcher : public QObject
-{					    
+{                                           
   Q_OBJECT
 
 public:

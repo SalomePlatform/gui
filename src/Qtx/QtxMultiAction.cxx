@@ -53,7 +53,7 @@ public:
     if ( e->type() == QEvent::Leave ) {
       QToolButton* tb = qobject_cast<QToolButton*>( o );
       if ( tb )
-	tb->setDown( false );
+        tb->setDown( false );
     }
     return QObject::eventFilter( o, e );
   }

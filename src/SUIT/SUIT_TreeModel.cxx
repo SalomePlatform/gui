@@ -90,8 +90,8 @@ private:
   \param after tree item after each this one should be inserted
 */
 SUIT_TreeModel::TreeItem::TreeItem( SUIT_DataObject*          obj, 
-				    SUIT_TreeModel::TreeItem* parent,
-				    SUIT_TreeModel::TreeItem* after )
+                                    SUIT_TreeModel::TreeItem* parent,
+                                    SUIT_TreeModel::TreeItem* after )
 : myParent( parent ),
   myObj( obj )
 {
@@ -123,7 +123,7 @@ SUIT_TreeModel::TreeItem::~TreeItem()
   \param after tree item after each \a child should be inserted
 */
 void SUIT_TreeModel::TreeItem::insertChild( SUIT_TreeModel::TreeItem* child, 
-					    SUIT_TreeModel::TreeItem* after )
+                                            SUIT_TreeModel::TreeItem* after )
 {
   if ( !child )
     return;
@@ -303,8 +303,8 @@ SUIT_TreeModel::ItemPtr SUIT_TreeModel::TreeSync::nullTrg() const
   \return created item
 */
 SUIT_TreeModel::ItemPtr SUIT_TreeModel::TreeSync::createItem( const ObjPtr&  obj,
-							      const ItemPtr& parent, 
-							      const ItemPtr& after ) const
+                                                              const ItemPtr& parent, 
+                                                              const ItemPtr& after ) const
 {
   ItemPtr item = myModel ? myModel->createItem( obj, parent, after ) : 0;
 
@@ -401,21 +401,21 @@ bool SUIT_TreeModel::TreeSync::needUpdate( const ItemPtr& item ) const
 /*      update = ( item->text( 0 ) != obj->name() ) || myBrowser->needToUpdateTexts( item );
 
       if ( !update ) { 
-	// 2. check pixmap (compare serialNumber()-s)
-	QPixmap objPix = obj->icon();
-	const QPixmap* itemPix = item->pixmap( 0 );
-	update = (  objPix.isNull() && (  itemPix && !itemPix->isNull() ) ) || 
-	         ( !objPix.isNull() && ( !itemPix ||  itemPix->isNull() ) ); 
-	if ( !update && !objPix.isNull() && itemPix && !itemPix->isNull() ) {
-	  int aIconW = objPix.width();
-	  if( aIconW > 20 ) {
-	    QWMatrix aM;
-	    double aScale = 20.0 / aIconW;
-	    aM.scale( aScale, aScale );
-	    objPix = objPix.xForm( aM );
-	  }
-	  update = ( objPix.serialNumber() != itemPix->serialNumber() );
-	}
+        // 2. check pixmap (compare serialNumber()-s)
+        QPixmap objPix = obj->icon();
+        const QPixmap* itemPix = item->pixmap( 0 );
+        update = (  objPix.isNull() && (  itemPix && !itemPix->isNull() ) ) || 
+                 ( !objPix.isNull() && ( !itemPix ||  itemPix->isNull() ) ); 
+        if ( !update && !objPix.isNull() && itemPix && !itemPix->isNull() ) {
+          int aIconW = objPix.width();
+          if( aIconW > 20 ) {
+            QWMatrix aM;
+            double aScale = 20.0 / aIconW;
+            aM.scale( aScale, aScale );
+            objPix = objPix.xForm( aM );
+          }
+          update = ( objPix.serialNumber() != itemPix->serialNumber() );
+        }
       }*/
     }
   }
@@ -468,9 +468,9 @@ SUIT_TreeModel::~SUIT_TreeModel()
 {
   if ( autoDeleteTree() ) {
     SUIT_DataObject::disconnect( SIGNAL( inserted( SUIT_DataObject*, SUIT_DataObject* ) ),
-				 this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
+                                 this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
     SUIT_DataObject::disconnect( SIGNAL( removed( SUIT_DataObject*, SUIT_DataObject* ) ),
-				 this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
+                                 this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
     delete myRoot;
   }
 
@@ -488,20 +488,20 @@ void SUIT_TreeModel::registerColumn( const int group_id, const QString& name, co
   bool found = false;
   for( int i=0, n=myColumns.size(); i<n && !found; i++ )
     if( name==myColumns[i].myName )
-	{
-	  myColumns[i].myIds.insert( group_id, custom_id );
-	  found = true;
-	}
+        {
+          myColumns[i].myIds.insert( group_id, custom_id );
+          found = true;
+        }
   if( !found )
   {
-	ColumnInfo inf;
-	inf.myName = name;
-	inf.myIds.insert( group_id, custom_id );
-	inf.myAppropriate = Qtx::Shown;
-	int n = myColumns.size();
-	myColumns.resize( n+1 );
-	myColumns[n] = inf;
-	reset();
+        ColumnInfo inf;
+        inf.myName = name;
+        inf.myIds.insert( group_id, custom_id );
+        inf.myAppropriate = Qtx::Shown;
+        int n = myColumns.size();
+        myColumns.resize( n+1 );
+        myColumns[n] = inf;
+        reset();
   }
 }
 
@@ -520,14 +520,14 @@ void SUIT_TreeModel::unregisterColumn( const int group_id, const QString& name )
 {
   for( int i=0, n=myColumns.size(); i<n; i++ )
     if( myColumns[i].myName==name )
-	{
-	  myColumns[i].myIds.remove( group_id );
-	  if( myColumns[i].myIds.isEmpty() )
-	  {
-	    myColumns.remove( i );
-		reset();
-	  }
-	  break;
+        {
+          myColumns[i].myIds.remove( group_id );
+          if( myColumns[i].myIds.isEmpty() )
+          {
+            myColumns.remove( i );
+                reset();
+          }
+          break;
     }
 }
 
@@ -541,10 +541,10 @@ void SUIT_TreeModel::setColumnIcon( const QString& name, const QPixmap& icon )
 {
   for( int i=0, n=myColumns.size(); i<n; i++ )
     if( myColumns[i].myName==name )
-	{
-	  myColumns[i].myIcon = icon;
-	  break;
-	}
+        {
+          myColumns[i].myIcon = icon;
+          break;
+        }
 }
 
 /*!
@@ -558,10 +558,10 @@ QPixmap SUIT_TreeModel::columnIcon( const QString& name ) const
   QPixmap res;
   for( int i=0, n=myColumns.size(); i<n; i++ )
     if( myColumns[i].myName==name )
-	{
-	  res = myColumns[i].myIcon;
-	  break;
-	}
+        {
+          res = myColumns[i].myIcon;
+          break;
+        }
   return res;
 }
 
@@ -603,10 +603,10 @@ Qtx::Appropriate SUIT_TreeModel::appropriate( const QString& name ) const
   Qtx::Appropriate appr = Qtx::Shown;
   for( int i=0, n=myColumns.size(); i<n; i++ )
     if( myColumns[i].myName==name )
-	{
-	  appr = myColumns[i].myAppropriate;
-	  break;
-	}
+        {
+          appr = myColumns[i].myAppropriate;
+          break;
+        }
   return appr;
 }
 
@@ -633,9 +633,9 @@ void SUIT_TreeModel::setRoot( SUIT_DataObject* r )
 
   if ( autoDeleteTree() ) {
     SUIT_DataObject::disconnect( SIGNAL( inserted( SUIT_DataObject*, SUIT_DataObject* ) ),
-				 this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
+                                 this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
     SUIT_DataObject::disconnect( SIGNAL( removed( SUIT_DataObject*, SUIT_DataObject* ) ),
-				 this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
+                                 this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
     delete myRoot;
   }
 
@@ -678,7 +678,7 @@ QVariant SUIT_TreeModel::data( const QModelIndex& index, int role ) const
   if ( obj )
   {
     switch ( role )
-	{
+        {
     case DisplayRole:
       // data object text for the specified column
       val = obj->text( id ); 
@@ -711,7 +711,7 @@ QVariant SUIT_TreeModel::data( const QModelIndex& index, int role ) const
       // data background color for the specified column
       c = obj->color( SUIT_DataObject::Background, id );
       if( !c.isValid() ) // default value
-	    c = QApplication::palette().color( QPalette::Base );
+            c = QApplication::palette().color( QPalette::Base );
       c.setAlpha( 0 );
       val = c; 
       break;
@@ -719,42 +719,42 @@ QVariant SUIT_TreeModel::data( const QModelIndex& index, int role ) const
       // data foreground (text) color for the specified column
       c = obj->color( SUIT_DataObject::Foreground, id );
       if( !c.isValid() ) // default value
-	    c = QApplication::palette().color( QPalette::Foreground );
+            c = QApplication::palette().color( QPalette::Foreground );
       val = c; 
       break;
     case BaseColorRole:
       // editor background color for the specified column
       c = obj->color( SUIT_DataObject::Base, id );
       if( !c.isValid() ) // default value
-	    c = QApplication::palette().color( QPalette::Base );
+            c = QApplication::palette().color( QPalette::Base );
       val = c; 
       break;
     case TextColorRole:
       // editor foreground (text) color for the specified column
       c = obj->color( SUIT_DataObject::Text, id );
       if( !c.isValid() ) // default value
-	    c = QApplication::palette().color( QPalette::Text );
+            c = QApplication::palette().color( QPalette::Text );
       val = c; 
       break;
     case HighlightRole:
       // adta object highlighted background color for the specified column
       c = obj->color( SUIT_DataObject::Highlight, id );
       if( !c.isValid() ) // default value
-	    c = QApplication::palette().color( QPalette::Highlight );
+            c = QApplication::palette().color( QPalette::Highlight );
       val = c; 
       break;
     case HighlightedTextRole:
       // data object highlighted foreground (text) color for the specified column
       c = obj->color( SUIT_DataObject::HighlightedText, id );
       if( !c.isValid() ) // default value
-	    c = QApplication::palette().color( QPalette::HighlightedText );
+            c = QApplication::palette().color( QPalette::HighlightedText );
       val = c; 
       break;
     case CheckStateRole:
       // data object checked state for the specified column
       // NOTE! three-state check is not supported currently
       if( obj->isCheckable( id ) )
-	    val = obj->isOn( id ) ? Qt::Checked : Qt::Unchecked; 
+            val = obj->isOn( id ) ? Qt::Checked : Qt::Unchecked; 
       break;
     case SizeHintRole:
       // data size hint
@@ -776,7 +776,7 @@ QVariant SUIT_TreeModel::data( const QModelIndex& index, int role ) const
   \sa data()
 */
 bool SUIT_TreeModel::setData( const QModelIndex& index, 
-			      const QVariant& value, int role )
+                              const QVariant& value, int role )
 {
   if ( index.isValid() && value.isValid() ) {
     SUIT_DataObject* obj = object( index );
@@ -784,15 +784,15 @@ bool SUIT_TreeModel::setData( const QModelIndex& index,
       // NOTE! only 'check state' data is supported by default
       switch ( role ) {
       case CheckStateRole:
-	// checked state
-	if ( obj->isCheckable( index.column() ) ) {
-	  obj->setOn( value.toBool(), index.column() );
-	  emit( dataChanged( index, index ) );
-	  return true;
-	}
-	break;
+        // checked state
+        if ( obj->isCheckable( index.column() ) ) {
+          obj->setOn( value.toBool(), index.column() );
+          emit( dataChanged( index, index ) );
+          return true;
+        }
+        break;
       default:
-	break;
+        break;
       }
     }
   }
@@ -842,7 +842,7 @@ QVariant SUIT_TreeModel::headerData( int column, Qt::Orientation orientation, in
   if ( root() && orientation == Qt::Horizontal )
   {
     switch ( role )
-	{
+        {
     case DisplayRole:
       // column title
       d = myColumns[column].myName;
@@ -870,7 +870,7 @@ QVariant SUIT_TreeModel::headerData( int column, Qt::Orientation orientation, in
   \return model index
 */
 QModelIndex SUIT_TreeModel::index( int row, int column, 
-				   const QModelIndex& parent ) const
+                                   const QModelIndex& parent ) const
 {
   if( hasIndex( row, column, parent ) )
   {
@@ -879,7 +879,7 @@ QModelIndex SUIT_TreeModel::index( int row, int column,
     {
       TreeItem* childItem = parentItem->child( row );
       if( childItem )
-	return createIndex( row, column, childItem );
+        return createIndex( row, column, childItem );
     }
   }
   return QModelIndex();
@@ -1006,16 +1006,16 @@ void SUIT_TreeModel::setAutoUpdate( const bool on )
     return;
 
   SUIT_DataObject::disconnect( SIGNAL( inserted( SUIT_DataObject*, SUIT_DataObject* ) ),
-			       this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
+                               this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
   SUIT_DataObject::disconnect( SIGNAL( removed( SUIT_DataObject*, SUIT_DataObject* ) ),
-			       this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
+                               this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
   myAutoUpdate = on;
 
   if ( myAutoUpdate ) {
     SUIT_DataObject::connect( SIGNAL( inserted( SUIT_DataObject*, SUIT_DataObject* ) ),
-			      this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
+                              this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
     SUIT_DataObject::connect( SIGNAL( removed( SUIT_DataObject*, SUIT_DataObject* ) ),
-			      this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
+                              this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
 
     updateTree();
   }
@@ -1094,8 +1094,8 @@ void SUIT_TreeModel::updateTree( SUIT_DataObject* obj )
     return;
 
   synchronize<ObjPtr,ItemPtr,SUIT_TreeModel::TreeSync>( obj, 
-							treeItem( obj ), 
-							SUIT_TreeModel::TreeSync( this ) );
+                                                        treeItem( obj ), 
+                                                        SUIT_TreeModel::TreeSync( this ) );
   emit modelUpdated();
 }
 
@@ -1105,14 +1105,14 @@ void SUIT_TreeModel::updateTree( SUIT_DataObject* obj )
 void SUIT_TreeModel::initialize()
 {
   SUIT_DataObject::disconnect( SIGNAL( inserted( SUIT_DataObject*, SUIT_DataObject* ) ),
-			       this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
+                               this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
   SUIT_DataObject::disconnect( SIGNAL( removed( SUIT_DataObject*, SUIT_DataObject* ) ),
-			       this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
+                               this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
   if ( autoUpdate() ) {
     SUIT_DataObject::connect( SIGNAL( inserted( SUIT_DataObject*, SUIT_DataObject* ) ),
-			      this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
+                              this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
     SUIT_DataObject::connect( SIGNAL( removed( SUIT_DataObject*, SUIT_DataObject* ) ),
-			      this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
+                              this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
   }
 
   myItems.clear(); // ????? is it really necessary
@@ -1182,8 +1182,8 @@ SUIT_DataObject* SUIT_TreeModel::object( const SUIT_TreeModel::TreeItem* item ) 
   \return created tree item or 0 if item could not be created
 */
 SUIT_TreeModel::TreeItem* SUIT_TreeModel::createItem( SUIT_DataObject* obj,
-						      SUIT_TreeModel::TreeItem* parent, 
-						      SUIT_TreeModel::TreeItem* after )
+                                                      SUIT_TreeModel::TreeItem* parent, 
+                                                      SUIT_TreeModel::TreeItem* after )
 {
   if ( !obj )
     return 0;
@@ -1647,8 +1647,8 @@ SUIT_ItemDelegate::SUIT_ItemDelegate( QObject* parent )
   \param index model index being rendered
 */
 void SUIT_ItemDelegate::paint( QPainter* painter, 
-			       const QStyleOptionViewItem& option,
-			       const QModelIndex& index ) const
+                               const QStyleOptionViewItem& option,
+                               const QModelIndex& index ) const
 {
   QStyleOptionViewItem opt = option;
   if ( index.isValid() ) {

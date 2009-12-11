@@ -1188,12 +1188,12 @@ void GLViewer_ViewPort2d::drawSelectByRect( int x, int y )
     {
         myRectBand->hide();    /* erase */
 
-	mypLastPoint->setX( x );
+        mypLastPoint->setX( x );
         mypLastPoint->setY( y );
 
-	QRect aRect = selectionRect();
-	myRectBand->setGeometry( aRect );    /* draw */
-	myRectBand->setVisible( aRect.isValid() );
+        QRect aRect = selectionRect();
+        myRectBand->setGeometry( aRect );    /* draw */
+        myRectBand->setVisible( aRect.isValid() );
     }
 
 }
@@ -1215,8 +1215,8 @@ void GLViewer_ViewPort2d::finishSelectByRect()
         mypFirstPoint = NULL;
         mypLastPoint = NULL;
 
-	delete myRectBand;
-	myRectBand = 0;
+        delete myRectBand;
+        myRectBand = 0;
     }
 }
 

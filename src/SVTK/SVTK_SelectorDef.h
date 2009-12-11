@@ -107,31 +107,31 @@ public:
   virtual
   void 
   GetIndex( const Handle(SALOME_InteractiveObject)& theIO, 
-	    TColStd_IndexedMapOfInteger& theIndex );
-	
+            TColStd_IndexedMapOfInteger& theIndex );
+        
   virtual
   bool 
   AddOrRemoveIndex( const Handle(SALOME_InteractiveObject)& theIO, 
-		    const TColStd_IndexedMapOfInteger& theIndices, 
-		    bool theIsModeShift);
+                    const TColStd_IndexedMapOfInteger& theIndices, 
+                    bool theIsModeShift);
   virtual
   bool 
   AddOrRemoveIndex( const Handle(SALOME_InteractiveObject)& theIO, 
-		    const TColStd_MapOfInteger& theIndices, 
-		    bool theIsModeShift);
+                    const TColStd_MapOfInteger& theIndices, 
+                    bool theIsModeShift);
   virtual
   bool
   AddOrRemoveIndex( const Handle(SALOME_InteractiveObject)& theIO, 
-		    int theIndex, 
-		    bool theIsModeShift);
+                    int theIndex, 
+                    bool theIsModeShift);
   virtual
   void 
   RemoveIndex( const Handle(SALOME_InteractiveObject)& theIO, 
-	       int theIndex);
+               int theIndex);
   virtual
   bool 
   IsIndexSelected(const Handle(SALOME_InteractiveObject)& theIO, 
-		  int theIndex) const;
+                  int theIndex) const;
   virtual
   void 
   ClearIndex();
@@ -156,8 +156,8 @@ public:
   virtual
   bool
   IsValid(SALOME_Actor* theActor,
-	  const TFilterID theId,
-	  const bool theIsNode = false) const;
+          const TFilterID theId,
+          const bool theIsNode = false) const;
   
   //----------------------------------------------------------------------------
   virtual
@@ -184,7 +184,7 @@ private:
   {
     bool 
     operator()(const Handle(SALOME_InteractiveObject)& theRightIO,
-	       const Handle(SALOME_InteractiveObject)& theLeftIO) const
+               const Handle(SALOME_InteractiveObject)& theLeftIO) const
     {
       return strcmp(theRightIO->getEntry(),theLeftIO->getEntry()) < 0;
     }

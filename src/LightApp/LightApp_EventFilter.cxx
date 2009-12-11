@@ -54,14 +54,14 @@ bool LightApp_EventFilter::eventFilter( QObject* o, QEvent* e )
       SUIT_Desktop* aDesktop = 0;
       
       while( parent )
-	{
-	  if ( aDesktop = dynamic_cast<SUIT_Desktop*>(parent) )
-	    break;
-	  parent = parent->parentWidget();
-	}
+        {
+          if ( aDesktop = dynamic_cast<SUIT_Desktop*>(parent) )
+            break;
+          parent = parent->parentWidget();
+        }
       
       if ( aDesktop )
-	aDesktop->emitActivated();
+        aDesktop->emitActivated();
     }
 
   else if(e->type() == SALOME_EVENT)

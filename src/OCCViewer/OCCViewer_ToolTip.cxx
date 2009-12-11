@@ -41,7 +41,7 @@ OCCViewer_ToolTip::OCCViewer_ToolTip( OCCViewer_ViewWindow* wnd )
   myWnd( wnd )
 {
   connect( this, SIGNAL( maybeTip( QPoint, QString&, QFont&, QRect&, QRect& ) ),
-	   this, SLOT( onToolTip( QPoint, QString&, QFont&, QRect&, QRect& ) ) );
+           this, SLOT( onToolTip( QPoint, QString&, QFont&, QRect&, QRect& ) ) );
 }
 
 /*!

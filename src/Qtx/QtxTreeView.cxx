@@ -110,13 +110,13 @@ void QtxTreeView::Header::contextMenuEvent( QContextMenuEvent* e )
     QIcon icon;
     if ( iconData.isValid() ) {
       if ( qVariantCanConvert<QIcon>( iconData ) )
-	icon = qVariantValue<QIcon>( iconData );
+        icon = qVariantValue<QIcon>( iconData );
       else if ( qVariantCanConvert<QPixmap>( iconData ) )
-	icon = qVariantValue<QPixmap>( iconData );
+        icon = qVariantValue<QPixmap>( iconData );
     }
     if( ( !lab.isEmpty() || !icon.isNull() ) && 
-	    appropriate.isValid() ? appropriate.toInt()==Qtx::Toggled : true )
-	{
+            appropriate.isValid() ? appropriate.toInt()==Qtx::Toggled : true )
+        {
       QAction* a = menu.addAction( icon, lab );
       a->setCheckable( true );
       a->setChecked( !isSectionHidden( i ) );
@@ -141,15 +141,15 @@ void QtxTreeView::Header::contextMenuEvent( QContextMenuEvent* e )
       setClickable( a->isChecked() );
       QtxTreeView* view = qobject_cast<QtxTreeView*>( parent() );
       if ( view ) {
-	view->emitSortingEnabled( a->isChecked() );
-	if ( a->isChecked() ) {
-	  connect( this, SIGNAL( sectionClicked( int ) ), view, SLOT( onHeaderClicked( int ) ) );
-	  view->sortByColumn( sortIndicatorSection(), sortIndicatorOrder() );
-	}
-	else {
-	  disconnect( this, SIGNAL( sectionClicked( int ) ), view, SLOT( onHeaderClicked( int ) ) );
-	  view->sortByColumn( 0, Qt::AscendingOrder );
-	}
+        view->emitSortingEnabled( a->isChecked() );
+        if ( a->isChecked() ) {
+          connect( this, SIGNAL( sectionClicked( int ) ), view, SLOT( onHeaderClicked( int ) ) );
+          view->sortByColumn( sortIndicatorSection(), sortIndicatorOrder() );
+        }
+        else {
+          disconnect( this, SIGNAL( sectionClicked( int ) ), view, SLOT( onHeaderClicked( int ) ) );
+          view->sortByColumn( 0, Qt::AscendingOrder );
+        }
       }
     }
   }
@@ -315,7 +315,7 @@ void QtxTreeView::onHeaderClicked( int column )
   \param deselected previous selection
 */
 void QtxTreeView::selectionChanged( const QItemSelection& selected, 
-				    const QItemSelection& deselected )
+                                    const QItemSelection& deselected )
 {
   QTreeView::selectionChanged( selected, deselected );
   emit( selectionChanged() );
@@ -384,15 +384,15 @@ void QtxTreeView::setModel( QAbstractItemModel* m )
   QTreeView::setModel( m );
   if ( model() )
     connect( model(), SIGNAL( headerDataChanged( Qt::Orientation, int, int ) ),
-	     this, SLOT( onAppropriate( Qt::Orientation, int, int ) ) );
+             this, SLOT( onAppropriate( Qt::Orientation, int, int ) ) );
 }
 
 void QtxTreeView::onAppropriate( Qt::Orientation orient, int first, int last )
 {
   if( orient==Qt::Horizontal )
     for( int i=first; i<=last; i++ )
-	{
-	  int appr = model()->headerData( i, orient, Qtx::AppropriateRole ).toInt();
-	  header()->setSectionHidden( i, appr==Qtx::Hidden );
-	}
+        {
+          int appr = model()->headerData( i, orient, Qtx::AppropriateRole ).toInt();
+          header()->setSectionHidden( i, appr==Qtx::Hidden );
+        }
 }

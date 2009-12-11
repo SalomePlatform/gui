@@ -38,9 +38,9 @@ class SVTK_ImageWriterMgr
   
   void
   StartImageWriter(vtkImageData *theImageData,
-		   const std::string& theName,
-		   const int theProgressive,
-		   const int theQuality);
+                   const std::string& theName,
+                   const int theProgressive,
+                   const int theQuality);
 
   void
   Stop();

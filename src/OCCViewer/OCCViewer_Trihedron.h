@@ -39,11 +39,11 @@ public:
   virtual ~OCCViewer_Trihedron();
 
   virtual void           Compute( const Handle(PrsMgr_PresentationManager3d)&,
-				  const Handle(Prs3d_Presentation)&,
-				  const Standard_Integer );
+                                  const Handle(Prs3d_Presentation)&,
+                                  const Standard_Integer );
 
   virtual void           ComputeSelection( const Handle( SelectMgr_Selection )&,
-					   const Standard_Integer );
+                                           const Standard_Integer );
 
   virtual void           bounds( Graphic3d_CBounds& ) const;
 

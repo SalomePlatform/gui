@@ -178,13 +178,13 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
 
   //  createActions();
   connect( myPlot, SIGNAL( legendClicked( QwtPlotItem* ) ), 
-	   this, SIGNAL( legendClicked( QwtPlotItem* ) ) );
+           this, SIGNAL( legendClicked( QwtPlotItem* ) ) );
 
   // IPAL 21465
   /*  connect( myPlot->axisWidget( QwtPlot::xBottom ), SIGNAL( scaleDivChanged() ),
-	   myPlot, SLOT( onScaleDivChanged() ) );
+           myPlot, SLOT( onScaleDivChanged() ) );
   connect( myPlot->axisWidget( QwtPlot::yLeft ), SIGNAL( scaleDivChanged() ),
-	   myPlot, SLOT( onScaleDivChanged() ) );
+           myPlot, SLOT( onScaleDivChanged() ) );
   if (mySecondY)
     connect( myPlot->axisWidget( QwtPlot::yRight ), SIGNAL( scaleDivChanged() ),
     myPlot, SLOT( onScaleDivChanged() ) );*/
@@ -315,7 +315,7 @@ bool Plot2d_ViewFrame::eventFilter( QObject* watched, QEvent* e )
           if ( plotMouseMoved( m ) )
             return true;
         }
-	break;
+        break;
       }
       case QEvent::MouseButtonPress: {
         QMouseEvent* me = (QMouseEvent*)e;
@@ -787,9 +787,9 @@ void Plot2d_ViewFrame::fitArea( const QRect& area )
   "Fit Data" command for TUI interface
 */
 void Plot2d_ViewFrame::fitData(const int mode,
-			       const double xMin, const double xMax,
-			       const double yMin, const double yMax,
-			       double y2Min, double y2Max)
+                               const double xMin, const double xMax,
+                               const double yMin, const double yMax,
+                               double y2Min, double y2Max)
 {
   if ( mode == 0 || mode == 2 ) {
     myPlot->setAxisScale( QwtPlot::yLeft, yMin, yMax );
@@ -805,8 +805,8 @@ void Plot2d_ViewFrame::fitData(const int mode,
   Gets current fit ranges for view frame
 */
 void Plot2d_ViewFrame::getFitRanges(double& xMin,double& xMax,
-				    double& yMin, double& yMax,
-				    double& y2Min, double& y2Max)
+                                    double& yMin, double& yMax,
+                                    double& y2Min, double& y2Max)
 {
   int ixMin = myPlot->canvasMap( QwtPlot::xBottom ).transform( myPlot->canvasMap( QwtPlot::xBottom ).s1() );
   int ixMax = myPlot->canvasMap( QwtPlot::xBottom ).transform( myPlot->canvasMap( QwtPlot::xBottom ).s2() );
@@ -830,8 +830,8 @@ void Plot2d_ViewFrame::getFitRanges(double& xMin,double& xMax,
   Gets current fit ranges by Curves
 */
 void Plot2d_ViewFrame::getFitRangeByCurves(double& xMin,double& xMax,
-					   double& yMin, double& yMax,
-					   double& y2Min, double& y2Max)
+                                           double& yMin, double& yMax,
+                                           double& y2Min, double& y2Max)
 {
   CurveDict cdict = getCurves();
   if ( !cdict.isEmpty() ) {
@@ -1031,7 +1031,7 @@ void Plot2d_ViewFrame::onFitData()
 */
 void Plot2d_ViewFrame::onChangeBackground()
 {
-  QColor selColor = QColorDialog::getColor ( backgroundColor(), this );	
+  QColor selColor = QColorDialog::getColor ( backgroundColor(), this ); 
   if ( selColor.isValid() ) {
     setBackgroundColor( selColor );
   }
@@ -1910,7 +1910,7 @@ void Plot2d_Plot2d::onScaleDivChanged()
       QwtScaleDraw* aQwtSD = axisScaleDraw(axisId);
       Plot2d_ScaleDraw* aPlot2dSD = dynamic_cast<Plot2d_ScaleDraw*>(aQwtSD);
       if ( !aPlot2dSD && aPrecision > 6 || aPlot2dSD && aPlot2dSD->precision() != aPrecision )
-	setAxisScaleDraw( axisId, new Plot2d_ScaleDraw(*aQwtSD, 'f', aPrecision) );
+        setAxisScaleDraw( axisId, new Plot2d_ScaleDraw(*aQwtSD, 'f', aPrecision) );
     }
   }
 }
@@ -2076,7 +2076,7 @@ QString Plot2d_ViewFrame::getVisualParameters()
   getFitRanges( xmin, xmax, ymin, ymax, y2min, y2max );
   QString retStr;
   retStr.sprintf( "%d*%d*%d*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e", myXMode,
-		  myYMode, mySecondY, xmin, xmax, ymin, ymax, y2min, y2max );
+                  myYMode, mySecondY, xmin, xmax, ymin, ymax, y2min, y2max );
   return retStr; 
 }
 
@@ -2121,16 +2121,16 @@ void Plot2d_ViewFrame::incrementalPan( const int incrX, const int incrY ) {
   QwtScaleMap yMap = myPlot->canvasMap( QwtPlot::yLeft );
   
   myPlot->setAxisScale( QwtPlot::yLeft, 
-			myPlot->invTransform( QwtPlot::yLeft, yMap.transform( yMap.s1() )-incrY ), 
-			myPlot->invTransform( QwtPlot::yLeft, yMap.transform( yMap.s2() )-incrY ) );
+                        myPlot->invTransform( QwtPlot::yLeft, yMap.transform( yMap.s1() )-incrY ), 
+                        myPlot->invTransform( QwtPlot::yLeft, yMap.transform( yMap.s2() )-incrY ) );
   myPlot->setAxisScale( QwtPlot::xBottom, 
-			myPlot->invTransform( QwtPlot::xBottom, xMap.transform( xMap.s1() )-incrX ),
-			myPlot->invTransform( QwtPlot::xBottom, xMap.transform( xMap.s2() )-incrX ) ); 
+                        myPlot->invTransform( QwtPlot::xBottom, xMap.transform( xMap.s1() )-incrX ),
+                        myPlot->invTransform( QwtPlot::xBottom, xMap.transform( xMap.s2() )-incrX ) ); 
   if (mySecondY) {
     QwtScaleMap y2Map = myPlot->canvasMap( QwtPlot::yRight );
     myPlot->setAxisScale( QwtPlot::yRight,
-			  myPlot->invTransform( QwtPlot::yRight, y2Map.transform( y2Map.s1() )-incrY ), 
-			  myPlot->invTransform( QwtPlot::yRight, y2Map.transform( y2Map.s2() )-incrY ) );
+                          myPlot->invTransform( QwtPlot::yRight, y2Map.transform( y2Map.s1() )-incrY ), 
+                          myPlot->invTransform( QwtPlot::yRight, y2Map.transform( y2Map.s2() )-incrY ) );
   }
   myPlot->replot();
 }
@@ -2143,13 +2143,13 @@ void Plot2d_ViewFrame::incrementalZoom( const int incrX, const int incrY ) {
   QwtScaleMap yMap = myPlot->canvasMap( QwtPlot::yLeft );
   
   myPlot->setAxisScale( QwtPlot::yLeft, yMap.s1(), 
-			myPlot->invTransform( QwtPlot::yLeft, yMap.transform( yMap.s2() ) + incrY ) );
+                        myPlot->invTransform( QwtPlot::yLeft, yMap.transform( yMap.s2() ) + incrY ) );
   myPlot->setAxisScale( QwtPlot::xBottom, xMap.s1(), 
-			myPlot->invTransform( QwtPlot::xBottom, xMap.transform( xMap.s2() ) - incrX ) );
+                        myPlot->invTransform( QwtPlot::xBottom, xMap.transform( xMap.s2() ) - incrX ) );
   if (mySecondY) {
     QwtScaleMap y2Map = myPlot->canvasMap( QwtPlot::yRight );
     myPlot->setAxisScale( QwtPlot::yRight, y2Map.s1(),
-			  myPlot->invTransform( QwtPlot::yRight, y2Map.transform( y2Map.s2() ) + incrY ) );
+                          myPlot->invTransform( QwtPlot::yRight, y2Map.transform( y2Map.s2() ) + incrY ) );
   }
   myPlot->replot();
 }

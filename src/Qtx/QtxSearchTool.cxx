@@ -38,20 +38,20 @@
 
 const char* const first_xpm[] = {
 "16 16 14 1",
-" 	c None",
-".	c #111111",
-"+	c #0A0A0A",
-"@	c #161616",
-"#	c #ACACAC",
-"$	c #FC6D6E",
-"%	c #FB6364",
-"&	c #F25B5C",
-"*	c #EA5859",
-"=	c #C1494A",
-"-	c #B64545",
-";	c #AB4040",
-">	c #A03C3C",
-",	c #99393A",
+"       c None",
+".      c #111111",
+"+      c #0A0A0A",
+"@      c #161616",
+"#      c #ACACAC",
+"$      c #FC6D6E",
+"%      c #FB6364",
+"&      c #F25B5C",
+"*      c #EA5859",
+"=      c #C1494A",
+"-      c #B64545",
+";      c #AB4040",
+">      c #A03C3C",
+",      c #99393A",
 "           .    ",
 " +@+      ..#   ",
 " +$+#    .$.... ",
@@ -71,20 +71,20 @@ const char* const first_xpm[] = {
 
 const char* const last_xpm[] = {
 "16 16 14 1",
-" 	c None",
-".	c #111111",
-"+	c #0A0A0A",
-"@	c #161616",
-"#	c #FC6D6E",
-"$	c #ACACAC",
-"%	c #FB6364",
-"&	c #F25B5C",
-"*	c #EA5859",
-"=	c #C1494A",
-"-	c #B64545",
-";	c #AB4040",
-">	c #A03C3C",
-",	c #99393A",
+"       c None",
+".      c #111111",
+"+      c #0A0A0A",
+"@      c #161616",
+"#      c #FC6D6E",
+"$      c #ACACAC",
+"%      c #FB6364",
+"&      c #F25B5C",
+"*      c #EA5859",
+"=      c #C1494A",
+"-      c #B64545",
+";      c #AB4040",
+">      c #A03C3C",
+",      c #99393A",
 "    .           ",
 "    ..      +@+ ",
 " ....#.     +#+$",
@@ -104,18 +104,18 @@ const char* const last_xpm[] = {
 
 const char* const prev_xpm[] = {
 "16 16 12 1",
-" 	c None",
-".	c #111111",
-"+	c #ACACAC",
-"@	c #FC6D6E",
-"#	c #FB6364",
-"$	c #F25B5C",
-"%	c #EA5859",
-"&	c #C1494A",
-"*	c #B64545",
-"=	c #AB4040",
-"-	c #A03C3C",
-";	c #99393A",
+"       c None",
+".      c #111111",
+"+      c #ACACAC",
+"@      c #FC6D6E",
+"#      c #FB6364",
+"$      c #F25B5C",
+"%      c #EA5859",
+"&      c #C1494A",
+"*      c #B64545",
+"=      c #AB4040",
+"-      c #A03C3C",
+";      c #99393A",
 "        .       ",
 "       ..+      ",
 "      .@......  ",
@@ -135,18 +135,18 @@ const char* const prev_xpm[] = {
 
 const char* const next_xpm[] = {
 "16 16 12 1",
-" 	c None",
-".	c #111111",
-"+	c #FC6D6E",
-"@	c #FB6364",
-"#	c #F25B5C",
-"$	c #EA5859",
-"%	c #C1494A",
-"&	c #B64545",
-"*	c #ACACAC",
-"=	c #AB4040",
-"-	c #A03C3C",
-";	c #99393A",
+"       c None",
+".      c #111111",
+"+      c #FC6D6E",
+"@      c #FB6364",
+"#      c #F25B5C",
+"$      c #EA5859",
+"%      c #C1494A",
+"&      c #B64545",
+"*      c #ACACAC",
+"=      c #AB4040",
+"-      c #A03C3C",
+";      c #99393A",
 "       .        ",
 "       ..       ",
 "  ......+.      ",
@@ -166,14 +166,14 @@ const char* const next_xpm[] = {
 
 const char* const close_xpm[] = {
 "16 16 8 1",
-" 	c None",
-".	c #D73727",
-"+	c #E17765",
-"@	c #E7957F",
-"#	c #DE6F48",
-"$	c #DF7B4F",
-"%	c #FAE9E4",
-"&	c #FFFFFF",
+"       c None",
+".      c #D73727",
+"+      c #E17765",
+"@      c #E7957F",
+"#      c #DE6F48",
+"$      c #DF7B4F",
+"%      c #FAE9E4",
+"&      c #FFFFFF",
 "                ",
 "  ............  ",
 " .+@@@@@@@@@@+. ",
@@ -828,9 +828,9 @@ void QtxSearchTool::find( const QString& what, int where )
 
   QPalette p = myData->palette();
   p.setColor( QPalette::Active,
-	      QPalette::Base,
-	      QApplication::palette( myData ).color( QPalette::Active,
-						     QPalette::Base ) );
+              QPalette::Base,
+              QApplication::palette( myData ).color( QPalette::Active,
+                                                     QPalette::Base ) );
 
   bool found = true;
   if ( mySearcher && !what.isEmpty() )
@@ -1041,7 +1041,7 @@ void QtxSearchTool::updateShortcuts()
   for ( it = myShortcuts.begin(), i = 0; it != myShortcuts.end(); ++it, i++ )
   {
     (*it)->setEnabled( isEnabled() && ( i < 3 && myActivators & StandardKey ||
-					i > 2 && myActivators & HotKey ) );
+                                        i > 2 && myActivators & HotKey ) );
   }
 }
 
@@ -1408,8 +1408,8 @@ QModelIndexList QtxTreeViewSearcher::findItems( const QString& text, QtxSearchTo
 
   if ( myView->model() )
     return myView->model()->match( myView->model()->index( 0, myColumn ),
-				   Qt::DisplayRole,
-				   s, -1, fl );
+                                   Qt::DisplayRole,
+                                   s, -1, fl );
   return QModelIndexList();
 }
 
@@ -1422,8 +1422,8 @@ QModelIndexList QtxTreeViewSearcher::findItems( const QString& text, QtxSearchTo
   appropriate item
 */
 QModelIndex QtxTreeViewSearcher::findNearest( const QModelIndex& index,
-					      const QModelIndexList& lst,
-					      bool direction )
+                                              const QModelIndexList& lst,
+                                              bool direction )
 {
   if ( direction )
   {
@@ -1432,7 +1432,7 @@ QModelIndex QtxTreeViewSearcher::findNearest( const QModelIndex& index,
     {
       QModelIndex found = it.next();
       if ( compareIndices( found, index ) > 0 )
-	return found;
+        return found;
     }
   }
   else
@@ -1443,7 +1443,7 @@ QModelIndex QtxTreeViewSearcher::findNearest( const QModelIndex& index,
     {
       QModelIndex found = it.previous();
       if ( compareIndices( found, index ) < 0 )
-	return found;
+        return found;
     }
   }
   return QModelIndex();
@@ -1494,7 +1494,7 @@ QString QtxTreeViewSearcher::getId( const QModelIndex& index )
   and positive value otherwise
 */
 int QtxTreeViewSearcher::compareIndices( const QModelIndex& left,
-					 const QModelIndex& right )
+                                         const QModelIndex& right )
 {
   QString leftId = getId( left );
   QString rightId = getId( right );

@@ -33,20 +33,20 @@ class QTimer;
 
 class QTX_EXPORT QtxToolTip : public QLabel
 {
-	Q_OBJECT
+        Q_OBJECT
 
 public:
-	QtxToolTip( QWidget* = 0 );
-	virtual ~QtxToolTip();
+        QtxToolTip( QWidget* = 0 );
+        virtual ~QtxToolTip();
 
-	void          hideTip();
+        void          hideTip();
   
-	virtual void  showTip( const QPoint& aPos,
+        virtual void  showTip( const QPoint& aPos,
                          const QString& text, const QRect& aWidgetRegion );
-	virtual void  showTip( const QRect& aRegion,
+        virtual void  showTip( const QRect& aRegion,
                          const QString& text, const QRect& aWidgetRegion );
 
-	virtual bool  eventFilter( QObject* o, QEvent* e );
+        virtual bool  eventFilter( QObject* o, QEvent* e );
 
   void          setWakeUpDelayTime( int );
   void          setShowDelayTime( int );
@@ -58,21 +58,21 @@ signals:
   void          maybeTip( QPoint, QString&, QFont&, QRect&, QRect& );
 
 protected slots:
-	void          onSleepTimeOut();
-	void          onWakeUpTimeOut();
+        void          onSleepTimeOut();
+        void          onWakeUpTimeOut();
 
 protected:
-	virtual void  maybeTip( const QPoint& );
-	virtual void  mousePressEvent( QMouseEvent* );
-	virtual void  mouseDoubleClickEvent( QMouseEvent* );
+        virtual void  maybeTip( const QPoint& );
+        virtual void  mousePressEvent( QMouseEvent* );
+        virtual void  mouseDoubleClickEvent( QMouseEvent* );
 
   QTimer*       sleepTimer() const;
   QTimer*       wakeUpTimer() const;
 
 private:
-	QTimer*       myWakeUpTimer;
-	QTimer*       mySleepTimer;
-	QRect         myWidgetRegion;
+        QTimer*       myWakeUpTimer;
+        QTimer*       mySleepTimer;
+        QRect         myWidgetRegion;
 
   int           myShowDelayTime;
   int           myWakeUpDelayTime;

@@ -198,7 +198,7 @@ const char* imageCrossCursor[] = {
   \param theModel OCC 3D viewer
 */
 OCCViewer_ViewWindow::OCCViewer_ViewWindow( SUIT_Desktop*     theDesktop,
-					    OCCViewer_Viewer* theModel )
+                                            OCCViewer_Viewer* theModel )
 : SUIT_ViewWindow( theDesktop )
 {
   myModel = theModel;
@@ -360,65 +360,65 @@ void OCCViewer_ViewWindow::vpMousePressEvent( QMouseEvent* theEvent )
 
   case ROTATE:
     if ( theEvent->button() == Qt::LeftButton ) {
-	    myViewPort->startRotation(myStartX, myStartY, myCurrPointType, mySelectedPoint);
-	    emit vpTransformationStarted ( ROTATE );
-	  }
+            myViewPort->startRotation(myStartX, myStartY, myCurrPointType, mySelectedPoint);
+            emit vpTransformationStarted ( ROTATE );
+          }
     break;
 
   default:
   /*  Try to activate a transformation */
     switch ( getButtonState(theEvent) ) {
     case ZOOMVIEW:
-	    activateZoom();
+            activateZoom();
       break;
     case PANVIEW:
-	    activatePanning();
+            activatePanning();
       break;
     case ROTATE:
-	    activateRotation();
-	    myViewPort->startRotation(myStartX, myStartY, myCurrPointType, mySelectedPoint);
+            activateRotation();
+            myViewPort->startRotation(myStartX, myStartY, myCurrPointType, mySelectedPoint);
       break;
     default:
       if ( myRotationPointSelection )
       {
-	if ( theEvent->button() == Qt::LeftButton )
-	{
-	  Handle(AIS_InteractiveContext) ic = myModel->getAISContext();
-	  ic->Select();
-	  for ( ic->InitSelected(); ic->MoreSelected(); ic->NextSelected() )
-	  {
-	    TopoDS_Shape aShape = ic->SelectedShape();
-	    if ( !aShape.IsNull() && aShape.ShapeType() == TopAbs_VERTEX )
-	    {
-	      gp_Pnt aPnt = BRep_Tool::Pnt( TopoDS::Vertex( ic->SelectedShape() ) );
-	      if ( mySetRotationPointDlg )
-	      {
-		myRotationPointSelection = false;
-		mySetRotationPointDlg->setCoords(aPnt.X(), aPnt.Y(), aPnt.Z());
-	      }
-	    }
-	    else
-	    {
-	      myCurrPointType = myPrevPointType;
-	      break;
-	    }
-	  }
-	  if ( ic->NbSelected() == 0 ) myCurrPointType = myPrevPointType;
-	  if ( mySetRotationPointDlg ) mySetRotationPointDlg->toggleChange();
-	  ic->CloseAllContexts();
-	  myOperation = NOTHING;
-	  myViewPort->setCursor( myCursor );
-	  myCursorIsHand = false;
-	  myRotationPointSelection = false;
-	}
+        if ( theEvent->button() == Qt::LeftButton )
+        {
+          Handle(AIS_InteractiveContext) ic = myModel->getAISContext();
+          ic->Select();
+          for ( ic->InitSelected(); ic->MoreSelected(); ic->NextSelected() )
+          {
+            TopoDS_Shape aShape = ic->SelectedShape();
+            if ( !aShape.IsNull() && aShape.ShapeType() == TopAbs_VERTEX )
+            {
+              gp_Pnt aPnt = BRep_Tool::Pnt( TopoDS::Vertex( ic->SelectedShape() ) );
+              if ( mySetRotationPointDlg )
+              {
+                myRotationPointSelection = false;
+                mySetRotationPointDlg->setCoords(aPnt.X(), aPnt.Y(), aPnt.Z());
+              }
+            }
+            else
+            {
+              myCurrPointType = myPrevPointType;
+              break;
+            }
+          }
+          if ( ic->NbSelected() == 0 ) myCurrPointType = myPrevPointType;
+          if ( mySetRotationPointDlg ) mySetRotationPointDlg->toggleChange();
+          ic->CloseAllContexts();
+          myOperation = NOTHING;
+          myViewPort->setCursor( myCursor );
+          myCursorIsHand = false;
+          myRotationPointSelection = false;
+        }
       }
       else
-	emit mousePressed(this, theEvent);
+        emit mousePressed(this, theEvent);
       break;
     }
     /* notify that we start a transformation */
     if ( transformRequested() )
-	    emit vpTransformationStarted ( myOperation );
+            emit vpTransformationStarted ( myOperation );
   }
   if ( transformRequested() )
     setTransformInProcess( true );
@@ -438,7 +438,7 @@ void OCCViewer_ViewWindow::vpMousePressEvent( QMouseEvent* theEvent )
 void OCCViewer_ViewWindow::activateZoom()
 {
   if ( !transformRequested() && !myCursorIsHand )
-    myCursor = cursor();	        /* save old cursor */
+    myCursor = cursor();                /* save old cursor */
 
   if ( myOperation != ZOOMVIEW ) {
     QPixmap zoomPixmap (imageZoomCursor);
@@ -457,7 +457,7 @@ void OCCViewer_ViewWindow::activateZoom()
 void OCCViewer_ViewWindow::activatePanning()
 {
   if ( !transformRequested() && !myCursorIsHand )
-    myCursor = cursor();	        // save old cursor
+    myCursor = cursor();                // save old cursor
 
   if ( myOperation != PANVIEW ) {
     QCursor panCursor (Qt::SizeAllCursor);
@@ -474,7 +474,7 @@ void OCCViewer_ViewWindow::activatePanning()
 void OCCViewer_ViewWindow::activateRotation()
 {
   if ( !transformRequested() && !myCursorIsHand )
-    myCursor = cursor();	        // save old cursor
+    myCursor = cursor();                // save old cursor
 
   if ( myOperation != ROTATE ) {
     QPixmap rotatePixmap (imageRotateCursor);
@@ -666,7 +666,7 @@ void OCCViewer_ViewWindow::activateGlobalPanning()
     QCursor glPanCursor (globalPanPixmap);
     myCurScale = aView3d->Scale();
     aView3d->FitAll(0.01, false);
-    myCursor = cursor();	        // save old cursor
+    myCursor = cursor();                // save old cursor
     myViewPort->fitAll(); // fits view before selecting a new scene center
     setTransformRequested( PANGLOBAL );
     myViewPort->setCursor( glPanCursor );
@@ -681,7 +681,7 @@ void OCCViewer_ViewWindow::activateGlobalPanning()
 void OCCViewer_ViewWindow::activateWindowFit()
 {
   if ( !transformRequested() && !myCursorIsHand )
-    myCursor = cursor();	        /* save old cursor */
+    myCursor = cursor();                /* save old cursor */
 
   if ( myOperation != WINDOWFIT ) {
     QCursor handCursor (Qt::PointingHandCursor);
@@ -742,45 +742,45 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent( QMouseEvent* theEvent )
       int aState = theEvent->modifiers();
       int aButton = theEvent->buttons();
       if ( aButton == Qt::LeftButton && ( aState == Qt::NoModifier || Qt::ShiftModifier ) ) {
-	myDrawRect = myEnableDrawMode;
-	if ( myDrawRect ) {
-	  drawRect();
-	  if ( !myCursorIsHand )	{   // we are going to sketch a rectangle
-	    QCursor handCursor (Qt::PointingHandCursor);
-	    myCursorIsHand = true;
-	    myCursor = cursor();
-	    myViewPort->setCursor( handCursor );
-	  }
-	}
+        myDrawRect = myEnableDrawMode;
+        if ( myDrawRect ) {
+          drawRect();
+          if ( !myCursorIsHand )        {   // we are going to sketch a rectangle
+            QCursor handCursor (Qt::PointingHandCursor);
+            myCursorIsHand = true;
+            myCursor = cursor();
+            myViewPort->setCursor( handCursor );
+          }
+        }
       }
       else if ( aButton == Qt::RightButton && ( aState == Qt::NoModifier || Qt::ShiftModifier ) ) {
-	OCCViewer_ViewSketcher* sketcher = 0;
-	QList<OCCViewer_ViewSketcher*>::Iterator it;
-	for ( it = mySketchers.begin(); it != mySketchers.end() && !sketcher; ++it )
-	{
-	  OCCViewer_ViewSketcher* sk = (*it);
-	  if( sk->isDefault() && sk->sketchButton() == aButton )
-	    sketcher = sk;
-	}
-	if ( sketcher && myCurSketch == -1 )
-	{
-	  activateSketching( sketcher->type() );
-	  if ( mypSketcher )
-	  {
-	    myCurSketch = mypSketcher->sketchButton();
+        OCCViewer_ViewSketcher* sketcher = 0;
+        QList<OCCViewer_ViewSketcher*>::Iterator it;
+        for ( it = mySketchers.begin(); it != mySketchers.end() && !sketcher; ++it )
+        {
+          OCCViewer_ViewSketcher* sk = (*it);
+          if( sk->isDefault() && sk->sketchButton() == aButton )
+            sketcher = sk;
+        }
+        if ( sketcher && myCurSketch == -1 )
+        {
+          activateSketching( sketcher->type() );
+          if ( mypSketcher )
+          {
+            myCurSketch = mypSketcher->sketchButton();
 
-	    if ( l_mbPressEvent )
-	    {
-	      QApplication::sendEvent( getViewPort(), l_mbPressEvent );
-	      delete l_mbPressEvent;
-	      l_mbPressEvent = 0;
-	    }
-	    QApplication::sendEvent( getViewPort(), theEvent );
-	  }
-	}
+            if ( l_mbPressEvent )
+            {
+              QApplication::sendEvent( getViewPort(), l_mbPressEvent );
+              delete l_mbPressEvent;
+              l_mbPressEvent = 0;
+            }
+            QApplication::sendEvent( getViewPort(), theEvent );
+          }
+        }
       }
       else
-	emit mouseMoving( this, theEvent );
+        emit mouseMoving( this, theEvent );
     }
   }
 }
@@ -797,13 +797,13 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
       int prevState = myCurSketch;
       if(theEvent->button() == Qt::RightButton)
       {
-	QList<OCCViewer_ViewSketcher*>::Iterator it;
-	for ( it = mySketchers.begin(); it != mySketchers.end() && myCurSketch != -1; ++it )
-	{
-	  OCCViewer_ViewSketcher* sk = (*it);
-	  if( ( sk->sketchButton() & theEvent->button() ) && sk->sketchButton() == myCurSketch )
-	    myCurSketch = -1;
-	}
+        QList<OCCViewer_ViewSketcher*>::Iterator it;
+        for ( it = mySketchers.begin(); it != mySketchers.end() && myCurSketch != -1; ++it )
+        {
+          OCCViewer_ViewSketcher* sk = (*it);
+          if( ( sk->sketchButton() & theEvent->button() ) && sk->sketchButton() == myCurSketch )
+            myCurSketch = -1;
+        }
       }
 
       emit mouseReleased(this, theEvent);
@@ -1353,11 +1353,11 @@ void OCCViewer_ViewWindow::onAmbientToogle()
     {
       Handle(V3d_Light) light = viewer->DefinedLight();
       if(light->Type() != V3d_AMBIENT)
- 	{
-	  Handle(V3d_View) aView3d = myViewPort->getView();
-	  if( aView3d->IsActiveLight(light) ) viewer->SetLightOff(light);
-	  else viewer->SetLightOn(light);
-	}
+        {
+          Handle(V3d_View) aView3d = myViewPort->getView();
+          if( aView3d->IsActiveLight(light) ) viewer->SetLightOff(light);
+          else viewer->SetLightOn(light);
+        }
       viewer->NextDefinedLights();
     }
   viewer->Update();
@@ -1403,7 +1403,7 @@ void OCCViewer_ViewWindow::performRestoring( const viewAspect& anItem )
   aView3d->SetAxialScale( anItem.scaleX, anItem.scaleY, anItem.scaleZ );
   myModel->setTrihedronShown( anItem.isVisible );
   myModel->setTrihedronSize( anItem.size );
-	
+        
   myRestoreFlag = 0;
 }
 
@@ -1451,8 +1451,8 @@ QImage OCCViewer_ViewWindow::dumpView()
 }
 
 bool OCCViewer_ViewWindow::dumpViewToFormat( const QImage& img, 
-					     const QString& fileName, 
-					     const QString& format )
+                                             const QString& fileName, 
+                                             const QString& format )
 {
   if ( format != "PS" && format != "EPS")
     return SUIT_ViewWindow::dumpViewToFormat( img, fileName, format );
@@ -1485,7 +1485,7 @@ QString OCCViewer_ViewWindow::filter() const
   \param dz Z coordinate of plane normal
 */
 void OCCViewer_ViewWindow::setCuttingPlane( bool on, const double x,  const double y,  const double z,
-					    const double dx, const double dy, const double dz )
+                                            const double dx, const double dy, const double dz )
 {
   Handle(V3d_View) view = myViewPort->getView();
   if ( view.IsNull() )
@@ -1570,7 +1570,7 @@ viewAspect OCCViewer_ViewWindow::getViewParams() const
   params.scaleX   = aScaleX;
   params.scaleY   = aScaleY;
   params.scaleZ   = aScaleZ;
-  params.name	  = aName;
+  params.name     = aName;
   params.isVisible= isShown;
   params.size     = size;
 
@@ -1587,9 +1587,9 @@ QString OCCViewer_ViewWindow::getVisualParameters()
   viewAspect params = getViewParams();
   QString retStr;
   retStr.sprintf( "%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e", params.scale,
-		  params.centerX, params.centerY, params.projX, params.projY, params.projZ, params.twist,
-		  params.atX, params.atY, params.atZ, params.eyeX, params.eyeY, params.eyeZ,
-		  params.scaleX, params.scaleY, params.scaleZ );
+                  params.centerX, params.centerY, params.projX, params.projY, params.projZ, params.twist,
+                  params.atX, params.atY, params.atZ, params.eyeX, params.eyeY, params.eyeZ,
+                  params.scaleX, params.scaleY, params.scaleZ );
   retStr += QString().sprintf("*%u*%.2f", params.isVisible, params.size );
   return retStr;
 }
@@ -1746,19 +1746,19 @@ void OCCViewer_ViewWindow::onSketchingFinished()
     {
     case Rect:
       {
-	QRect* aRect = (QRect*)mypSketcher->data();
-	if( aRect )
-	{
-	  int aLeft = aRect->left();
-	  int aRight = aRect->right();
-	  int aTop = aRect->top();
-	  int aBottom = aRect->bottom();
+        QRect* aRect = (QRect*)mypSketcher->data();
+        if( aRect )
+        {
+          int aLeft = aRect->left();
+          int aRight = aRect->right();
+          int aTop = aRect->top();
+          int aBottom = aRect->bottom();
 
-	  if( append )
-	    ic->ShiftSelect( aLeft, aBottom, aRight, aTop, getViewPort()->getView(), Standard_False );
-	  else
-	    ic->Select( aLeft, aBottom, aRight, aTop, getViewPort()->getView(), Standard_False );
-	}
+          if( append )
+            ic->ShiftSelect( aLeft, aBottom, aRight, aTop, getViewPort()->getView(), Standard_False );
+          else
+            ic->Select( aLeft, aBottom, aRight, aTop, getViewPort()->getView(), Standard_False );
+        }
       }
       break;
     case Polygon:
@@ -1766,21 +1766,21 @@ void OCCViewer_ViewWindow::onSketchingFinished()
         QPolygon* aPolygon = (QPolygon*)mypSketcher->data();
         if( aPolygon )
         {
-	  int size = aPolygon->size();
-	  TColgp_Array1OfPnt2d anArray( 1, size );
+          int size = aPolygon->size();
+          TColgp_Array1OfPnt2d anArray( 1, size );
 
-	  QPolygon::Iterator it = aPolygon->begin();
-	  QPolygon::Iterator itEnd = aPolygon->end();
-	  for( int index = 1; it != itEnd; ++it, index++ )
-	  {
-	    QPoint aPoint = *it;
-	    anArray.SetValue( index, gp_Pnt2d( aPoint.x(), aPoint.y() ) );
-	  }
+          QPolygon::Iterator it = aPolygon->begin();
+          QPolygon::Iterator itEnd = aPolygon->end();
+          for( int index = 1; it != itEnd; ++it, index++ )
+          {
+            QPoint aPoint = *it;
+            anArray.SetValue( index, gp_Pnt2d( aPoint.x(), aPoint.y() ) );
+          }
 
-	  if( append )
-	    ic->ShiftSelect( anArray, getViewPort()->getView(), Standard_False );
-	  else
-	    ic->Select( anArray, getViewPort()->getView(), Standard_False );
+          if( append )
+            ic->ShiftSelect( anArray, getViewPort()->getView(), Standard_False );
+          else
+            ic->Select( anArray, getViewPort()->getView(), Standard_False );
         }
       }
       break;

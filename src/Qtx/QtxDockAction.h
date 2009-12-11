@@ -46,8 +46,8 @@ class QTX_EXPORT QtxDockAction : public QtxAction
 public:
   //! Dock windows type.
   enum { ToolBar,      //!< list toolbars only
-	 DockWidget,   //!< list dockable windows only
-	 Both          //!< list toolbars and dockable windows
+         DockWidget,   //!< list dockable windows only
+         Both          //!< list toolbars and dockable windows
   } DockType;
 
 public:

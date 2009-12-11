@@ -130,8 +130,8 @@ void LightApp_OBSelector::getSelection( SUIT_DataOwnerPtrList& theList ) const
 #ifndef DISABLE_SALOMEOBJECT
         Handle(SALOME_InteractiveObject) aSObj = new SALOME_InteractiveObject
           ( obj->entry().toLatin1().constData(),
-	    obj->componentDataType().toLatin1().constData(),
-	    obj->name().toLatin1().constData() );
+            obj->componentDataType().toLatin1().constData(),
+            obj->name().toLatin1().constData() );
         LightApp_DataOwner* owner = new LightApp_DataOwner( aSObj  );
 #else
         LightApp_DataOwner* owner = new LightApp_DataOwner( obj->entry() );
@@ -152,12 +152,12 @@ void LightApp_OBSelector::setSelection( const SUIT_DataOwnerPtrList& theList )
   if ( !myBrowser )
     return;
 
-  if( myEntries.count() == 0 ||	myModifiedTime < myBrowser->getModifiedTime() )
+  if( myEntries.count() == 0 || myModifiedTime < myBrowser->getModifiedTime() )
     fillEntries( myEntries );
 
   DataObjectList objList;
   for ( SUIT_DataOwnerPtrList::const_iterator it = theList.begin(); 
-	it != theList.end(); ++it ) {
+        it != theList.end(); ++it ) {
     const LightApp_DataOwner* owner = dynamic_cast<const LightApp_DataOwner*>( (*it).operator->() );
     if ( owner && myEntries.contains( owner->entry() ) )
       objList.append( myEntries[owner->entry()] );

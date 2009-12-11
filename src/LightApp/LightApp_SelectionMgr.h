@@ -63,17 +63,17 @@ public:
   void                   setSelectedObjects( const SALOME_ListIO&, const bool = false );
 
   void                   GetIndexes( const Handle(SALOME_InteractiveObject)& IObject, 
-				     TColStd_IndexedMapOfInteger& theIndex );
+                                     TColStd_IndexedMapOfInteger& theIndex );
   void                   GetIndexes( const QString& theEntry, 
-				     TColStd_IndexedMapOfInteger& theIndex );
+                                     TColStd_IndexedMapOfInteger& theIndex );
 
   //bool                   AddOrRemoveIndex( const Handle(SALOME_InteractiveObject)& IObject, 
   void                   AddOrRemoveIndex( const Handle(SALOME_InteractiveObject)& IObject, 
-					   const TColStd_MapOfInteger& theIndices, 
-					   bool modeShift );
+                                           const TColStd_MapOfInteger& theIndices, 
+                                           bool modeShift );
 
   void                   selectObjects( const Handle(SALOME_InteractiveObject)& IObject, 
-					TColStd_IndexedMapOfInteger theIndex, bool append );
+                                        TColStd_IndexedMapOfInteger theIndex, bool append );
   void                   selectObjects( MapIOOfMapOfInteger theMapIO, bool append );
 
   void                   selectedSubOwners( MapEntryOfMapOfInteger& theMap );

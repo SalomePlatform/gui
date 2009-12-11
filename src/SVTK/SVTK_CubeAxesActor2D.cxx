@@ -194,10 +194,10 @@ int SVTK_CubeAxesActor2D::RenderOverlay(vtkViewport *viewport)
 }
 
 static void ChangeValues(vtkFloatingPointType* aArray1,
-			 vtkFloatingPointType* aArray2,
-			 vtkFloatingPointType *aRange1,
-			 vtkFloatingPointType* aRange2,
-			 bool theY)
+                         vtkFloatingPointType* aArray2,
+                         vtkFloatingPointType *aRange1,
+                         vtkFloatingPointType* aRange2,
+                         bool theY)
 {
   vtkFloatingPointType tmp=-1000;
   if (!theY){
@@ -220,14 +220,14 @@ static void ChangeValues(vtkFloatingPointType* aArray1,
 }
 
 static void ChangeArrays(vtkFloatingPointType* xCoords,
-			 vtkFloatingPointType* yCoords,
-			 vtkFloatingPointType* zCoords,
-			 vtkFloatingPointType* xRange,
-			 vtkFloatingPointType* yRange,
-			 vtkFloatingPointType* zRange,
-			 const int xAxes,
-			 const int yAxes, 
-			 const int zAxes)
+                         vtkFloatingPointType* yCoords,
+                         vtkFloatingPointType* zCoords,
+                         vtkFloatingPointType* xRange,
+                         vtkFloatingPointType* yRange,
+                         vtkFloatingPointType* zRange,
+                         const int xAxes,
+                         const int yAxes, 
+                         const int zAxes)
 {
   if ( xAxes == 0 && yAxes == 2 && zAxes == 1)
     ChangeValues(yCoords,zCoords,yRange,zRange,true);
@@ -417,8 +417,8 @@ int SVTK_CubeAxesActor2D::RenderOpaqueGeometry(vtkViewport *viewport)
   // if xAxes=0 yAxes=1 zAxes=2 - good situation
   if (!(xAxes == 0 && yAxes == 1 && zAxes == 2))
     ChangeArrays(xCoords,yCoords,zCoords,
-		 xRange,yRange,zRange,
-		 xAxes,yAxes,zAxes);
+                 xRange,yRange,zRange,
+                 xAxes,yAxes,zAxes);
 
   double aTScale[3];
   if(m_Transform.GetPointer() != NULL)

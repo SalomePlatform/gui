@@ -98,13 +98,13 @@ void LightApp_Displayer::Redisplay( const QString& entry, const bool updateViewe
 
       SUIT_ViewModel* vmodel = vman->getViewModel();
       if( !vmodel )
-	continue;
-	
+        continue;
+        
       SALOME_View* view = dynamic_cast<SALOME_View*>(vmodel);
       if( view && ( IsDisplayed( entry, view ) || view == GetActiveView() ) )
       {
-	Erase( entry, true, false, view );
-	Display( entry, updateViewer, view );
+        Erase( entry, true, false, view );
+        Display( entry, updateViewer, view );
       }
     }
   }
@@ -127,7 +127,7 @@ void LightApp_Displayer::Erase( const QString& entry, const bool forced,
     if ( prs ) {
       vf->Erase( prs, forced );
       if ( updateViewer )
-	vf->Repaint();
+        vf->Repaint();
       delete prs;  // delete presentation because displayer is its owner
     }
   }
@@ -207,8 +207,8 @@ SALOME_View* LightApp_Displayer::GetActiveView()
   if (  SUIT_Application* app = session->activeApplication() ) {
     if ( LightApp_Application* sApp = dynamic_cast<LightApp_Application*>( app ) ) {
       if( SUIT_ViewManager* vman = sApp->activeViewManager() ) {
-	if ( SUIT_ViewModel* vmod = vman->getViewModel() )
-	  return dynamic_cast<SALOME_View*>( vmod );
+        if ( SUIT_ViewModel* vmod = vman->getViewModel() )
+          return dynamic_cast<SALOME_View*>( vmod );
       }
     }
   }
@@ -236,8 +236,8 @@ bool LightApp_Displayer::canBeDisplayed( const QString& entry ) const
   if(  SUIT_Application* app = session->activeApplication() )
     if( LightApp_Application* sApp = dynamic_cast<LightApp_Application*>( app ) )
       if( SUIT_ViewManager* vman = sApp->activeViewManager() )
-	if( SUIT_ViewModel* vmod = vman->getViewModel() )
-	  viewerType = vmod->getType();
+        if( SUIT_ViewModel* vmod = vman->getViewModel() )
+          viewerType = vmod->getType();
   return canBeDisplayed( entry, viewerType );
 }
 

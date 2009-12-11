@@ -60,8 +60,8 @@ namespace
   inline
   void
   GetNameJPEG(const std::string& thePreffix,  
-	      const int theIndex,
-	      std::string& theName)
+              const int theIndex,
+              std::string& theName)
   {
     using namespace std;
     ostringstream aStream;
@@ -241,16 +241,16 @@ SVTK_Recorder
 void
 SVTK_Recorder
 ::ProcessEvents(vtkObject* vtkNotUsed(theObject), 
-		unsigned long theEvent,
-		void* theClientData, 
-		void* vtkNotUsed(theCallData))
+                unsigned long theEvent,
+                void* theClientData, 
+                void* vtkNotUsed(theCallData))
 {
   if(vtkObject* anObj = reinterpret_cast<vtkObject*>(theClientData)){ 
     if(SVTK_Recorder* aSelf = dynamic_cast<SVTK_Recorder*>(anObj)){
       if(theEvent==vtkCommand::EndEvent){
-	if(aSelf->State() == SVTK_Recorder::SVTK_Recorder_Record){
-	  aSelf->DoRecord();
-	}
+        if(aSelf->State() == SVTK_Recorder::SVTK_Recorder_Record){
+          aSelf->DoRecord();
+        }
       }
     }
   }
@@ -322,7 +322,7 @@ SVTK_Recorder
 inline 
 int
 GetFrameIndex(double theStartTime,
-	      double theFPS)
+              double theFPS)
 {
   double aTimeNow = vtkTimerLog::GetCurrentTime();
   double aDelta = aTimeNow - theStartTime;
@@ -350,8 +350,8 @@ SVTK_Recorder
       myFrameIndexes.back() = abs(myFrameIndexes.back());
       double aPauseTime = fabs((double)(aFrameIndex - myFrameIndex - 1)) / myNbFPS;
       if(MYDEBUG) 
-	cout<<"SVTK_Recorder::DoRecord - aFrameIndex = "<<aFrameIndex<<
-	  "; aPauseTime = "<<aPauseTime<<endl;
+        cout<<"SVTK_Recorder::DoRecord - aFrameIndex = "<<aFrameIndex<<
+          "; aPauseTime = "<<aPauseTime<<endl;
       myTimeStart += aPauseTime;
     }
 
@@ -399,8 +399,8 @@ SVTK_Recorder
   anImageData->UpdateInformation();
   int *anExtent = anImageData->GetWholeExtent();
   anImageData->SetUpdateExtent(anExtent[0], anExtent[1],
-			       anExtent[2], anExtent[3],
-			       0,0);
+                               anExtent[2], anExtent[3],
+                               0,0);
   anImageData->UpdateData();
 }
 
@@ -434,7 +434,7 @@ SVTK_Recorder
       GetNameJPEG(myName,anIndex,anCurrentName);
       aStream<<"ln -s "<< anInitialName<<" "<<anCurrentName<<";";
       if(anIndex + 1 < aFinishIndex)
-	aStream<<" \\";
+        aStream<<" \\";
       aStream<<endl;
     }
     std::string aString(aStream.str());

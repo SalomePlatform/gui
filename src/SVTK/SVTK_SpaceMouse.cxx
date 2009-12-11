@@ -120,8 +120,8 @@ int SVTK_SpaceMouse::setWindow( Display *display, Window window )
 
   PropReturn = NULL;
   XGetWindowProperty( display, root, XCommandEvent, 0,1, 0,
-		      AnyPropertyType, &type, &format, &NItems,
-		      &BytesReturn, &PropReturn );
+                      AnyPropertyType, &type, &format, &NItems,
+                      &BytesReturn, &PropReturn );
 
   win = InputFocus;
   if ( PropReturn != NULL ) {
@@ -172,7 +172,7 @@ int SVTK_SpaceMouse::close(Display *display)
   Custom event handler
 */
 int SVTK_SpaceMouse::translateEvent( Display* display, XEvent* xEvent, MoveEvent* spaceMouseEvent,
-		    double scale, double rScale )
+                    double scale, double rScale )
 {
   if ( !spaceMouseOn )
     return 0;
@@ -181,17 +181,17 @@ int SVTK_SpaceMouse::translateEvent( Display* display, XEvent* xEvent, MoveEvent
     if ( xEvent->xclient.message_type == XMotionEvent ) {
       spaceMouseEvent->type = SpaceMouseMove;
       spaceMouseEvent->data[ x ] =
-	xEvent->xclient.data.s[2] * scale;
+        xEvent->xclient.data.s[2] * scale;
       spaceMouseEvent->data[ y ] =
-	xEvent->xclient.data.s[3] * scale;
+        xEvent->xclient.data.s[3] * scale;
       spaceMouseEvent->data[ z ] =
-	xEvent->xclient.data.s[4] * scale;
+        xEvent->xclient.data.s[4] * scale;
       spaceMouseEvent->data[ a ] =
-	xEvent->xclient.data.s[5] * rScale;
+        xEvent->xclient.data.s[5] * rScale;
       spaceMouseEvent->data[ b ] =
-	xEvent->xclient.data.s[6] * rScale;
+        xEvent->xclient.data.s[6] * rScale;
       spaceMouseEvent->data[ c ] =
-	xEvent->xclient.data.s[7] * rScale;
+        xEvent->xclient.data.s[7] * rScale;
       spaceMouseEvent->period = xEvent->xclient.data.s[8];
       return 1;
     }

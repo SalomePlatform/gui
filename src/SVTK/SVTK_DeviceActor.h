@@ -177,15 +177,15 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
   virtual
   void
   GetFeatureEdgesFlags(bool& theIsFeatureEdges,
-		       bool& theIsBoundaryEdges,
-		       bool& theIsManifoldEdges,
-		       bool& theIsNonManifoldEdges);
+                       bool& theIsBoundaryEdges,
+                       bool& theIsManifoldEdges,
+                       bool& theIsNonManifoldEdges);
   virtual
   void
   SetFeatureEdgesFlags(bool theIsFeatureEdges,
-		       bool theIsBoundaryEdges,
-		       bool theIsManifoldEdges,
-		       bool theIsNonManifoldEdges);
+                       bool theIsBoundaryEdges,
+                       bool theIsManifoldEdges,
+                       bool theIsNonManifoldEdges);
 
   virtual
   bool
@@ -260,9 +260,9 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
   vtkFloatingPointType myPolygonOffsetUnits;
 
   void SetPolygonOffsetParameters(vtkFloatingPointType factor, 
-				  vtkFloatingPointType units);
+                                  vtkFloatingPointType units);
   void GetPolygonOffsetParameters(vtkFloatingPointType& factor, 
-				  vtkFloatingPointType& units);
+                                  vtkFloatingPointType& units);
 
   SVTK_DeviceActor();
   ~SVTK_DeviceActor();

@@ -89,9 +89,9 @@ SalomeApp_ListView::SalomeApp_ListView( QWidget* parent )
   viewport()->installEventFilter(this);
 
   connect(this, SIGNAL(itemSelectionChanged()),
-	  this, SLOT(onSelectionChanged()));
+          this, SLOT(onSelectionChanged()));
   connect(header(), SIGNAL(sizeChange(int, int, int)),
-	  this,     SLOT(onHeaderSizeChange(int, int, int)));
+          this,     SLOT(onHeaderSizeChange(int, int, int)));
 }
 
 /*!
@@ -330,10 +330,10 @@ UpdateType SalomeApp_ListView::finishEditing(bool ok)
     if (ok) {
       aNeedsUpdate = myEditedItem->finishEditing(myEdit);
       if (aNeedsUpdate == utCancel) {
-	// something to do here on Cancel...
+        // something to do here on Cancel...
       }
       else {
-	// something to do here on OK...
+        // something to do here on OK...
       }
       // updating contents
       switch (aNeedsUpdate) {
@@ -385,9 +385,9 @@ UpdateType SalomeApp_ListView::finishEditing(bool ok)
   \retval valid rect in success
 */
 QRect SalomeApp_ListView::tip(QPoint aPos,
-			      QString& aText,
-			      QRect& dspRect,
-			      QFont& dspFnt) const
+                              QString& aText,
+                              QRect& dspRect,
+                              QFont& dspFnt) const
 {
   QRect result( -1, -1, -1, -1 );
   SalomeApp_ListViewItem* aItem = (SalomeApp_ListViewItem*)itemAt( aPos );
@@ -396,15 +396,15 @@ QRect SalomeApp_ListView::tip(QPoint aPos,
       QRect aItemRect = aItem->itemRect(i);
       QRect aTextRect = aItem->textRect(i);
       if ( !aItem->text(i).isEmpty() &&
-	   ( aItemRect.width()  > header()->sectionSize(i) ||
-	     aTextRect.left()   < 0 ||
+           ( aItemRect.width()  > header()->sectionSize(i) ||
+             aTextRect.left()   < 0 ||
              aTextRect.top()    < 0 ||
              aTextRect.right()  > viewport()->width() ||
              aTextRect.bottom() > viewport()->height() ) ) {
         // calculating tip data
         aText   = aItem->tipText();
-	dspRect = aItem->tipRect();
-	dspFnt  = font();
+        dspRect = aItem->tipRect();
+        dspFnt  = font();
         if (dspRect.isValid()) {
           result  = QRect(QPoint(0, aItemRect.top()),
                           QSize(viewport()->width(), aItemRect.height()));
@@ -428,7 +428,7 @@ QTreeWidgetItem( parent )
   Constructor
 */
 SalomeApp_ListViewItem::SalomeApp_ListViewItem(SalomeApp_ListView*     parent,
-					       SalomeApp_ListViewItem* after) :
+                                               SalomeApp_ListViewItem* after) :
 QTreeWidgetItem( parent, after )
 {
   init();
@@ -438,8 +438,8 @@ QTreeWidgetItem( parent, after )
   Constructor
 */
 SalomeApp_ListViewItem::SalomeApp_ListViewItem(SalomeApp_ListView*     parent,
-					       const QStringList&    theStrings,
-					       const bool        theEditable) :
+                                               const QStringList&    theStrings,
+                                               const bool        theEditable) :
 QTreeWidgetItem(parent, theStrings)
 {
   init();
@@ -450,8 +450,8 @@ QTreeWidgetItem(parent, theStrings)
   Constructor
 */
 SalomeApp_ListViewItem::SalomeApp_ListViewItem(SalomeApp_ListViewItem* parent,
-					       const QStringList&    theString,
-					       const bool        theEditable) :
+                                               const QStringList&    theString,
+                                               const bool        theEditable) :
 QTreeWidgetItem(parent, theString)
 {
   init();
@@ -462,9 +462,9 @@ QTreeWidgetItem(parent, theString)
   Constructor
 */
 SalomeApp_ListViewItem::SalomeApp_ListViewItem(SalomeApp_ListViewItem* parent,
-					       SalomeApp_ListViewItem* after,
-					       const QString&    theName,
-					       const bool        theEditable) :
+                                               SalomeApp_ListViewItem* after,
+                                               const QString&    theName,
+                                               const bool        theEditable) :
 QTreeWidgetItem(parent, after)
 {
   setData(0,Qt::DisplayRole,QVariant(theName));
@@ -476,9 +476,9 @@ QTreeWidgetItem(parent, after)
   Constructor
 */
 SalomeApp_ListViewItem::SalomeApp_ListViewItem(SalomeApp_ListView*     parent,
-					       SalomeApp_ListViewItem* after,
-					       const QString&    theName,
-					       const bool        theEditable) :
+                                               SalomeApp_ListViewItem* after,
+                                               const QString&    theName,
+                                               const bool        theEditable) :
 QTreeWidgetItem(parent, after)
 {
   setData(0,Qt::DisplayRole,QVariant(theName));
@@ -490,10 +490,10 @@ QTreeWidgetItem(parent, after)
   Constructor
 */
 SalomeApp_ListViewItem::SalomeApp_ListViewItem(SalomeApp_ListViewItem* parent,
-					       SalomeApp_ListViewItem* after,
-					       const QString&    theName,
-					       const QString&    theValue,
-					       const bool        theEditable) :
+                                               SalomeApp_ListViewItem* after,
+                                               const QString&    theName,
+                                               const QString&    theValue,
+                                               const bool        theEditable) :
 QTreeWidgetItem(parent, after)
 {
   setData(0,Qt::DisplayRole,QVariant(theName));
@@ -506,10 +506,10 @@ QTreeWidgetItem(parent, after)
   Constructor
 */
 SalomeApp_ListViewItem::SalomeApp_ListViewItem(SalomeApp_ListView*     parent,
-					       SalomeApp_ListViewItem* after,
-					       const QString&    theName,
-					       const QString&    theValue,
-					       const bool        theEditable) :
+                                               SalomeApp_ListViewItem* after,
+                                               const QString&    theName,
+                                               const QString&    theValue,
+                                               const bool        theEditable) :
 QTreeWidgetItem(parent, after)
 {
   setData(0,Qt::DisplayRole,QVariant(theName));
@@ -767,9 +767,9 @@ SalomeApp_EntityEdit* SalomeApp_ListViewItem::startEditing()
       return 0;
     aWidget = new SalomeApp_EntityEdit(aListView->viewport(),
                                  anEditType,
-				 aValueType,
-				 aButtons & SalomeApp_EntityEdit::btApply,
-				 aButtons & SalomeApp_EntityEdit::btCancel);
+                                 aValueType,
+                                 aButtons & SalomeApp_EntityEdit::btApply,
+                                 aButtons & SalomeApp_EntityEdit::btCancel);
     computeEditGeometry(this, aWidget);
 
     fillWidgetWithValues(aWidget);
@@ -966,7 +966,7 @@ int SalomeApp_ComboBox::findItem(const QString& theText)
   Adds item in combo box
 */
 void SalomeApp_ComboBox::insertItem(const QString& theValue,
-				    int            theIndex)
+                                    int            theIndex)
 {
   if (duplicatesEnabled() || findItem(theValue) < 0)
     QComboBox::insertItem(theIndex, theValue);
@@ -1046,10 +1046,10 @@ void SalomeApp_ComboBox::insertList(const TColStd_ListOfReal& theList)
   Constructor
 */
 SalomeApp_EntityEdit::SalomeApp_EntityEdit(QWidget* parent,
-			       int      controlType,
-			       int      valueType,
-			       bool     butApply,
-			       bool     butCancel) :
+                               int      controlType,
+                               int      valueType,
+                               bool     butApply,
+                               bool     butCancel) :
 QWidget(parent),
 myEdit(0),
 myCombo(0),
@@ -1185,8 +1185,8 @@ void SalomeApp_EntityEdit::setText(const QString& theText)
   Adds item in combo box, sets it current if theSetCurrent is true
 */
 void SalomeApp_EntityEdit::insertItem(const QString& theValue,
-				bool           theSetCurrent,
-				int            theOrder)
+                                bool           theSetCurrent,
+                                int            theOrder)
 {
   if (myCombo) {
     int aIndexAt = -1;
@@ -1208,7 +1208,7 @@ void SalomeApp_EntityEdit::insertItem(const QString& theValue,
   Adds items in combo box, sets item theCurrent as current
 */
 void SalomeApp_EntityEdit::insertList(const QStringList& theList,
-				const int          theCurrent)
+                                const int          theCurrent)
 {
   if (myCombo)
     myCombo->insertList(theList);
@@ -1220,7 +1220,7 @@ void SalomeApp_EntityEdit::insertList(const QStringList& theList,
   Adds item in combo box, sets it current if theSetCurrent is true
 */
 void SalomeApp_EntityEdit::insertItem(const int theValue,
-				bool      theSetCurrent)
+                                bool      theSetCurrent)
 {
   if (myCombo) {
     myCombo->insertItem(theValue);
@@ -1233,7 +1233,7 @@ void SalomeApp_EntityEdit::insertItem(const int theValue,
   Adds items in combo box, sets item theCurrent as current
 */
 void SalomeApp_EntityEdit::insertList(const TColStd_ListOfInteger& theList,
-				const int                    theCurrent)
+                                const int                    theCurrent)
 {
   if (myCombo)
     myCombo->insertList(theList);
@@ -1251,7 +1251,7 @@ void SalomeApp_EntityEdit::insertList(const TColStd_ListOfInteger& theList,
   Adds item in combo box, sets it current if theSetCurrent is true
 */
 void SalomeApp_EntityEdit::insertItem(const double theValue,
-				bool         theSetCurrent)
+                                bool         theSetCurrent)
 {
   if (myCombo) {
     myCombo->insertItem(theValue);
@@ -1264,7 +1264,7 @@ void SalomeApp_EntityEdit::insertItem(const double theValue,
   Adds items in combo box, sets item theCurrent as current
 */
 void SalomeApp_EntityEdit::insertList(const TColStd_ListOfReal& theList,
-				const int                 theCurrent)
+                                const int                 theCurrent)
 {
   if (myCombo)
     myCombo->insertList(theList);

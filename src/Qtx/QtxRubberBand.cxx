@@ -213,7 +213,7 @@ void QtxAbstractRubberBand::updateMask()
 
 
 QtxRectRubberBand::QtxRectRubberBand(QWidget* parent)
-  :QtxAbstractRubberBand( parent )	
+  :QtxAbstractRubberBand( parent )      
 {
   myPoints.resize( 4 );
   myIsClosed = true;
@@ -241,7 +241,7 @@ void QtxRectRubberBand::setStartPoint( const QPoint& thePoint )
 
 void QtxRectRubberBand::setEndPoint( const QPoint& thePoint)
 {
-  myPoints[2] = thePoint;	
+  myPoints[2] = thePoint;       
   myPoints[1].setX( thePoint.x() );
   myPoints[3].setY( thePoint.y() );
   updateMask();

@@ -199,7 +199,7 @@ Standard_Real DDS_DicItem::GetMinValue() const
 /*!
   \brief Get the minimum value of the parameter for the specified 
          units system \a theSystem.
-	 
+         
   Returned value is converted to SI.
 
   \param theUnitsSystem units system
@@ -774,9 +774,9 @@ void DDS_DicItem::FillDataMap( TCollection_AsciiString theID, const LDOM_Element
             {
               //  Read the text in the element "value"
               //LDOM_Text aListItemTxt = (const LDOM_Text&)aListItemValue.getFirstChild();
-	      LDOM_Node aNode = aListItemValue.getFirstChild();
-	      const LDOM_Text& aText = (const LDOM_Text&) aNode;
-	      LDOM_Text aListItemTxt(aText);
+              LDOM_Node aNode = aListItemValue.getFirstChild();
+              const LDOM_Text& aText = (const LDOM_Text&) aNode;
+              LDOM_Text aListItemTxt(aText);
               if ( !aListItemTxt.isNull() )
               {
                 // adding ID and text value to sequence
@@ -855,12 +855,12 @@ void DDS_DicItem::FillDataMap( TCollection_AsciiString theID, const LDOM_Element
         LDOMString v = attr.getValue();
         if( v.Type()==LDOMBasicString::LDOM_Integer )
         {
-	        Standard_Integer ival;
-	        v.GetInteger( ival );
-	        value = TCollection_ExtendedString( ival );
+                Standard_Integer ival;
+                v.GetInteger( ival );
+                value = TCollection_ExtendedString( ival );
         }
         else
-	        value = ( Standard_CString )v.GetString();
+                value = ( Standard_CString )v.GetString();
       }
       else
         continue;
@@ -894,7 +894,7 @@ void DDS_DicItem::FillDataMap( TCollection_AsciiString theID, const LDOM_Element
       else if ( anUnitData.myUnits.ToCString()[0] ) // treat '%' as unit with scale 100
         anUnitData.myScale = 0.01;
     }
-	  catch( Standard_Failure ) {
+          catch( Standard_Failure ) {
       anUnitData.myUnits.Clear();
     }
 

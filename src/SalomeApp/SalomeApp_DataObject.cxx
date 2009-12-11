@@ -60,7 +60,7 @@ SalomeApp_DataObject::SalomeApp_DataObject( SUIT_DataObject* parent )
   \param parent parent data object
 */
 SalomeApp_DataObject::SalomeApp_DataObject( const _PTR(SObject)& sobj, 
-					    SUIT_DataObject* parent )
+                                            SUIT_DataObject* parent )
 : CAM_DataObject( parent ),
   LightApp_DataObject( parent )
 {
@@ -136,7 +136,7 @@ QString SalomeApp_DataObject::text( const int id ) const
 #endif
       txt = value( object() );
       if ( txt.isEmpty() )
-	txt = value( referencedObject() );
+        txt = value( referencedObject() );
     break;
   case IORId:
     txt = ior( referencedObject() );
@@ -165,20 +165,20 @@ QPixmap SalomeApp_DataObject::icon( const int id ) const
     if ( myObject && myObject->FindAttribute( anAttr, "AttributePixMap" ) ){
       _PTR(AttributePixMap) aPixAttr ( anAttr );
       if ( aPixAttr->HasPixMap() ) {
-	QString componentType = componentDataType();
-	QString pixmapID      = aPixAttr->GetPixMap().c_str();
-	// select a plugin within a component
-	QStringList plugin_pixmap = pixmapID.split( "::", QString::KeepEmptyParts );
-	if ( plugin_pixmap.size() == 2 ) {
-	  componentType = plugin_pixmap.front();
-	  pixmapID      = plugin_pixmap.back();
-	}
-	QString pixmapName = QObject::tr( pixmapID.toLatin1().constData() );
-	LightApp_RootObject* aRoot = dynamic_cast<LightApp_RootObject*>( root() );
-	if ( aRoot && aRoot->study() ) {
-	  SUIT_ResourceMgr* mgr = aRoot->study()->application()->resourceMgr();
-	  return mgr->loadPixmap( componentType, pixmapName, false ); 
-	}
+        QString componentType = componentDataType();
+        QString pixmapID      = aPixAttr->GetPixMap().c_str();
+        // select a plugin within a component
+        QStringList plugin_pixmap = pixmapID.split( "::", QString::KeepEmptyParts );
+        if ( plugin_pixmap.size() == 2 ) {
+          componentType = plugin_pixmap.front();
+          pixmapID      = plugin_pixmap.back();
+        }
+        QString pixmapName = QObject::tr( pixmapID.toLatin1().constData() );
+        LightApp_RootObject* aRoot = dynamic_cast<LightApp_RootObject*>( root() );
+        if ( aRoot && aRoot->study() ) {
+          SUIT_ResourceMgr* mgr = aRoot->study()->application()->resourceMgr();
+          return mgr->loadPixmap( componentType, pixmapName, false ); 
+        }
       }
     }
   }
@@ -203,16 +203,16 @@ QColor SalomeApp_DataObject::color( const ColorRole role, const int id ) const
     // text color (not selected item)
     if ( isReference() ) {
       if ( !(QString(referencedObject()->GetName().c_str()).isEmpty()) )
-	c = QColor( 255, 0, 0 );      // valid reference (red)
+        c = QColor( 255, 0, 0 );      // valid reference (red)
       else
-	c = QColor( 200, 200, 200 );  // invalid reference (grayed)
+        c = QColor( 200, 200, 200 );  // invalid reference (grayed)
     }
     else if ( myObject ) {
       // get color atrtribute value
       _PTR(GenericAttribute) anAttr;
       if ( myObject->FindAttribute( anAttr, "AttributeTextColor" ) ) {
-	_PTR(AttributeTextColor) aColAttr = anAttr;
-	c = QColor( (int)aColAttr->TextColor().R, (int)aColAttr->TextColor().G, (int)aColAttr->TextColor().B );
+        _PTR(AttributeTextColor) aColAttr = anAttr;
+        c = QColor( (int)aColAttr->TextColor().R, (int)aColAttr->TextColor().G, (int)aColAttr->TextColor().B );
       }
     }
     break;
@@ -220,18 +220,18 @@ QColor SalomeApp_DataObject::color( const ColorRole role, const int id ) const
     // background color for the highlighted item
     if ( isReference() ) {
       if ( !(QString(referencedObject()->GetName().c_str()).isEmpty()) )
-	c = QColor( 255, 0, 0 );      // valid reference (red)
+        c = QColor( 255, 0, 0 );      // valid reference (red)
       else
-	c = QColor( 200, 200, 200 );  // invalid reference (grayed)
+        c = QColor( 200, 200, 200 );  // invalid reference (grayed)
     }
     else if ( myObject ) {
       // get color atrtribute value
       _PTR(GenericAttribute) anAttr;
       if( myObject->FindAttribute ( anAttr, "AttributeTextHighlightColor") ) {
         _PTR(AttributeTextHighlightColor) aHighColAttr = anAttr;
-	c = QColor( (int)(aHighColAttr->TextHighlightColor().R), 
-		    (int)(aHighColAttr->TextHighlightColor().G), 
-		    (int)(aHighColAttr->TextHighlightColor().B));
+        c = QColor( (int)(aHighColAttr->TextHighlightColor().R), 
+                    (int)(aHighColAttr->TextHighlightColor().G), 
+                    (int)(aHighColAttr->TextHighlightColor().B));
       }
     }
     break;
@@ -273,9 +273,9 @@ QString SalomeApp_DataObject::toolTip( const int /*id*/ ) const
         app->lcc()->FindComponent(params, componentDataType().toLatin1().constData() );
       
       if ( !CORBA::is_nil(aComponent) && aComponent->hasObjectInfo() ) {
-	LightApp_RootObject* aRoot = dynamic_cast<LightApp_RootObject*>( root() );
-	if ( aRoot && aRoot->study() )
-	  return QString( (CORBA::String_var)aComponent->getObjectInfo( aRoot->study()->id(), entry().toLatin1().constData()) );
+        LightApp_RootObject* aRoot = dynamic_cast<LightApp_RootObject*>( root() );
+        if ( aRoot && aRoot->study() )
+          return QString( (CORBA::String_var)aComponent->getObjectInfo( aRoot->study()->id(), entry().toLatin1().constData()) );
       }
     }
   }
@@ -440,8 +440,8 @@ QString SalomeApp_DataObject::ior( const _PTR(SObject)& obj ) const
       _PTR(AttributeIOR) iorAttr = attr;
       if ( iorAttr )
       {
-	std::string str = iorAttr->Value();
-	txt = QString( str.c_str() );
+        std::string str = iorAttr->Value();
+        txt = QString( str.c_str() );
       }
     }
   }
@@ -491,28 +491,28 @@ QString SalomeApp_DataObject::value( const _PTR(SObject)& obj ) const
       {
         _PTR(Study) studyDS( aStudy->studyDS() );
 
-	bool ok = false;
-	QStringList aSectionList = aStrings.split( "|" );
-	if ( !aSectionList.isEmpty() )
-	{
-	  QString aLastSection = aSectionList.last();
-	  QStringList aStringList = aLastSection.split( ":" );
-	  if ( !aStringList.isEmpty() )
-	  {
-	    ok = true;
-	    for ( int i = 0, n = aStringList.size(); i < n; i++ )
-	    {
-	      QString aStr = aStringList[i];
-	      if ( studyDS->IsVariable( aStr.toStdString() ) )
-		val.append( aStr + ", " );
-	    }
+        bool ok = false;
+        QStringList aSectionList = aStrings.split( "|" );
+        if ( !aSectionList.isEmpty() )
+        {
+          QString aLastSection = aSectionList.last();
+          QStringList aStringList = aLastSection.split( ":" );
+          if ( !aStringList.isEmpty() )
+          {
+            ok = true;
+            for ( int i = 0, n = aStringList.size(); i < n; i++ )
+            {
+              QString aStr = aStringList[i];
+              if ( studyDS->IsVariable( aStr.toStdString() ) )
+                val.append( aStr + ", " );
+            }
 
-	    if ( !val.isEmpty() )
-	      val.remove( val.length() - 2, 2 );
-	  }
-	}
-	if( !ok )
-	  val = aStrings;
+            if ( !val.isEmpty() )
+              val.remove( val.length() - 2, 2 );
+          }
+        }
+        if( !ok )
+          val = aStrings;
       }
     }
   }
@@ -581,7 +581,7 @@ SalomeApp_ModuleObject::SalomeApp_ModuleObject( SUIT_DataObject* parent )
   \param parent parent data object
 */
 SalomeApp_ModuleObject::SalomeApp_ModuleObject( const _PTR(SObject)& sobj, 
-						SUIT_DataObject* parent )
+                                                SUIT_DataObject* parent )
 : CAM_DataObject( parent ),
   LightApp_DataObject( parent ),
   SalomeApp_DataObject( sobj, parent ),
@@ -596,8 +596,8 @@ SalomeApp_ModuleObject::SalomeApp_ModuleObject( const _PTR(SObject)& sobj,
   \param parent parent data object
 */
 SalomeApp_ModuleObject::SalomeApp_ModuleObject( CAM_DataModel* dm, 
-						const _PTR(SObject)& sobj, 
-						SUIT_DataObject* parent )
+                                                const _PTR(SObject)& sobj, 
+                                                SUIT_DataObject* parent )
 : CAM_DataObject( parent ),
   LightApp_DataObject( parent ),
   SalomeApp_DataObject( sobj, parent ),
@@ -744,8 +744,8 @@ QString SalomeApp_RootObject::toolTip( const int id ) const
   \param study study
 */
 SalomeApp_SavePointObject::SalomeApp_SavePointObject( SUIT_DataObject* parent, 
-						      const int id, 
-						      SalomeApp_Study* study )
+                                                      const int id, 
+                                                      SalomeApp_Study* study )
 : LightApp_DataObject( parent ), 
   CAM_DataObject( parent ),
   myId( id ),

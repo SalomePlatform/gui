@@ -505,24 +505,24 @@ bool QtxPathListEdit::validate( const bool quietMode )
       if (found) {
         if (found != myLastSelected) {
           // it is forbidden to add directory more then once
-	  if ( !quietMode )
-	    QMessageBox::critical(this, 
-				  tr("Error"),
-				  tr("Directory already specified."), 
-				  tr("Ok"));
-	  myEdit->setFocus();
+          if ( !quietMode )
+            QMessageBox::critical(this, 
+                                  tr("Error"),
+                                  tr("Directory already specified."), 
+                                  tr("Ok"));
+          myEdit->setFocus();
           return false;
         }
       }
       else {
         if (!dir.exists()) {
-	  if ( !quietMode && QMessageBox::information(this, 
-						      tr("Warning"),
-						      tr("%1\n\nThe directory doesn't exist.\nAdd directory anyway?").arg(dir.absPath()),
-						      tr("Yes"), tr("No"), QString(), 1, 1) == 1) {
-	    myEdit->setFocus();
+          if ( !quietMode && QMessageBox::information(this, 
+                                                      tr("Warning"),
+                                                      tr("%1\n\nThe directory doesn't exist.\nAdd directory anyway?").arg(dir.absPath()),
+                                                      tr("Yes"), tr("No"), QString(), 1, 1) == 1) {
+            myEdit->setFocus();
             return false;
-	  }
+          }
         }
         // append
         appendDir(myLastSelected, dir.absPath());

@@ -107,7 +107,7 @@ void LightApp_SelectionMgr::selectedObjects( SALOME_ListIO& theList, const QStri
     }
     else {
       if( !entryMap.contains( entry ) && !owner->IO().IsNull() )
-	theList.Append( owner->IO() );
+        theList.Append( owner->IO() );
     }
 
     entryMap.insert(checkEntry, 1);
@@ -188,7 +188,7 @@ void LightApp_SelectionMgr::GetIndexes( const Handle(SALOME_InteractiveObject)& 
     const LightApp_DataSubOwner* subOwner = dynamic_cast<const LightApp_DataSubOwner*>( (*itr).operator->() );
     if ( subOwner )
       if ( subOwner->entry() == QString(IObject->getEntry()) )
-	theIndex.Add( subOwner->index() );
+        theIndex.Add( subOwner->index() );
   }
   
 }
@@ -208,7 +208,7 @@ void LightApp_SelectionMgr::GetIndexes( const QString& theEntry, TColStd_Indexed
     const LightApp_DataSubOwner* subOwner = dynamic_cast<const LightApp_DataSubOwner*>( (*itr).operator->() );
     if ( subOwner )
       if ( subOwner->entry() == theEntry )
-	theIndex.Add( subOwner->index() );
+        theIndex.Add( subOwner->index() );
   }
 
 }
@@ -234,14 +234,14 @@ void LightApp_SelectionMgr::AddOrRemoveIndex( const Handle(SALOME_InteractiveObj
       const LightApp_DataOwner* owner = dynamic_cast<const LightApp_DataOwner*>( (*itr).operator->() );
       if ( owner )
       {
-	if ( owner->entry() != ioEntry )
-	{
-	  const LightApp_DataSubOwner* subOwner = dynamic_cast<const LightApp_DataSubOwner*>( owner );
-	  if ( subOwner )
-	    remainsOwners.append( new LightApp_DataSubOwner( subOwner->entry(), subOwner->index() ) );
-	  else
-	    remainsOwners.append( new LightApp_DataOwner( owner->entry() ) );
-	}
+        if ( owner->entry() != ioEntry )
+        {
+          const LightApp_DataSubOwner* subOwner = dynamic_cast<const LightApp_DataSubOwner*>( owner );
+          if ( subOwner )
+            remainsOwners.append( new LightApp_DataSubOwner( subOwner->entry(), subOwner->index() ) );
+          else
+            remainsOwners.append( new LightApp_DataOwner( owner->entry() ) );
+        }
       }
     }
   }
@@ -268,7 +268,7 @@ void LightApp_SelectionMgr::AddOrRemoveIndex( const Handle(SALOME_InteractiveObj
   select 'subobjects' with given indexes
 */
 void LightApp_SelectionMgr::selectObjects( const Handle(SALOME_InteractiveObject)& IObject, 
-					    TColStd_IndexedMapOfInteger theIndex, bool append )
+                                            TColStd_IndexedMapOfInteger theIndex, bool append )
 {
   SUIT_DataOwnerPtrList aList;
 
@@ -278,7 +278,7 @@ void LightApp_SelectionMgr::selectObjects( const Handle(SALOME_InteractiveObject
     {
       int i;
       for ( i = 1; i <= theIndex.Extent(); i++ )
-	aList.append( new LightApp_DataSubOwner( QString(IObject->getEntry()), theIndex( i ) ) );
+        aList.append( new LightApp_DataSubOwner( QString(IObject->getEntry()), theIndex( i ) ) );
     }
 
   setSelected( aList, append );
@@ -296,13 +296,13 @@ void LightApp_SelectionMgr::selectObjects( MapIOOfMapOfInteger theMapIO, bool ap
   for ( ; it.More(); it.Next() ) 
     {
       if ( it.Value().IsEmpty() )
-	aList.append( new LightApp_DataOwner( QString(it.Key()->getEntry()) ) );
+        aList.append( new LightApp_DataOwner( QString(it.Key()->getEntry()) ) );
       else
-	{
-	  int i;
-	  for ( i = 1; i <= it.Value().Extent(); i++ )
-	    aList.append( new LightApp_DataSubOwner( QString(it.Key()->getEntry()), it.Value()( i ) ) );
-	}
+        {
+          int i;
+          for ( i = 1; i <= it.Value().Extent(); i++ )
+            aList.append( new LightApp_DataSubOwner( QString(it.Key()->getEntry()), it.Value()( i ) ) );
+        }
     }
   
   setSelected( aList, append );
@@ -333,8 +333,8 @@ void LightApp_SelectionMgr::selectedSubOwners( MapEntryOfMapOfInteger& theMap )
       if ( !theMap.IsBound( subOwner->entry().toLatin1().data() ) )
 #endif
       {
-	anIndexes.Clear();
-	//Bug 17269: GetIndexes( subOwner->entry(), anIndexes );
+        anIndexes.Clear();
+        //Bug 17269: GetIndexes( subOwner->entry(), anIndexes );
         //Bug 17269: To avoid multiple calling of selected(aList)
         for ( SUIT_DataOwnerPtrList::const_iterator itr2 = itr; itr2 != aList.end(); ++itr2 )
         {
@@ -345,7 +345,7 @@ void LightApp_SelectionMgr::selectedSubOwners( MapEntryOfMapOfInteger& theMap )
               anIndexes.Add( subOwner2->index() );
         }
         //
-	theMap.Bind( subOwner->entry().toLatin1().data(), anIndexes );
+        theMap.Bind( subOwner->entry().toLatin1().data(), anIndexes );
       }
     }
   }

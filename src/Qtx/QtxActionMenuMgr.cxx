@@ -71,9 +71,9 @@ QtxActionMenuMgr::MenuNode::MenuNode()
   \param _group menu node group ID
 */
 QtxActionMenuMgr::MenuNode::MenuNode( MenuNode* p,
-				      const int _id,
-				      const int _idx,
-				      const int _group )
+                                      const int _id,
+                                      const int _idx,
+                                      const int _group )
 : parent( p ), id( _id ), idx( _idx ), group( _group ), visible( true ), emptyEnabled( 0 )
 {
   if ( p )
@@ -886,7 +886,7 @@ void QtxActionMenuMgr::updateMenu( MenuNode* startNode, const bool rec, const bo
     {
       a = foralit.next();
       if ( !mw->actions().contains( a ) )
-	foralit.remove();
+        foralit.remove();
     }
   }
   QList<QAction*> alist = mw->actions();

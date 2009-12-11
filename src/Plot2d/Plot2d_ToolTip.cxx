@@ -42,7 +42,7 @@ Plot2d_ToolTip::Plot2d_ToolTip( Plot2d_ViewFrame* frame, Plot2d_Plot2d* plot )
   myPlot( plot )
 {
   connect( this, SIGNAL( maybeTip( QPoint, QString&, QFont&, QRect&, QRect& ) ),
-	   this, SLOT( onToolTip( QPoint, QString&, QFont&, QRect&, QRect& ) ) );
+           this, SLOT( onToolTip( QPoint, QString&, QFont&, QRect&, QRect& ) ) );
 }
 
 Plot2d_ToolTip::~Plot2d_ToolTip()

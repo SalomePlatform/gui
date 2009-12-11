@@ -229,6 +229,6 @@ void Plot2d_Viewer::setViewManager( SUIT_ViewManager* mgr )
   {
     Plot2d_ViewManager* pmgr = ( Plot2d_ViewManager* )mgr;
     connect( pmgr, SIGNAL( cloneView( Plot2d_ViewFrame*, Plot2d_ViewFrame* ) ),
-	     this, SLOT( onCloneView( Plot2d_ViewFrame*, Plot2d_ViewFrame* ) ) );
+             this, SLOT( onCloneView( Plot2d_ViewFrame*, Plot2d_ViewFrame* ) ) );
   }
 }

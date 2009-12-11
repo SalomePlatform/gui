@@ -54,17 +54,17 @@ TrgItem synchronize( const SrcItem&, const TrgItem&, const TreeData& );
 
 template <class SrcItem, class TrgItem, class TreeData>
 QList< DiffItem<SrcItem,TrgItem> > diffSiblings( const SrcItem&, 
-						 const TrgItem&, 
-						 const TreeData& );
+                                                 const TrgItem&, 
+                                                 const TreeData& );
 
 template <class SrcItem, class TrgItem, class TreeData>
 TrgItem createSubTree( const SrcItem&, const TrgItem&, const TrgItem&, const TreeData& );
 
 template <class SrcItem, class TrgItem, class TreeData>
 const typename QList<TrgItem>::const_iterator findEqual( const SrcItem& it,
-							 const typename QList<TrgItem>::const_iterator& first,
-							 const typename QList<TrgItem>::const_iterator& last,
-							 const TreeData& td );
+                                                         const typename QList<TrgItem>::const_iterator& first,
+                                                         const typename QList<TrgItem>::const_iterator& last,
+                                                         const TreeData& td );
 
 
 //
@@ -129,24 +129,24 @@ TrgItem synchronize( const SrcItem& r1, const TrgItem& r2, const TreeData& td )
     for ( ; anIt != aLast; anIt++ ) {
       const DiffItem<SrcItem,TrgItem>& item = *anIt;
       if ( item.mySrc == td.nullSrc() ) {
-	if ( item.myTrg == td.nullTrg() )
-	  qDebug( "error: both null" );
+        if ( item.myTrg == td.nullTrg() )
+          qDebug( "error: both null" );
         else
-	  // delete item
-	  td.deleteItemWithChildren( item.myTrg );
+          // delete item
+          td.deleteItemWithChildren( item.myTrg );
       }
       else {
-	if ( item.myTrg == td.nullTrg() ) {
-	  // add item (recursively)
-	  TrgItem nitem = createSubTree( item.mySrc, r2, lastItem, td );
-	  if ( nitem != td.nullTrg() )
-	    lastItem = nitem;
-	}
+        if ( item.myTrg == td.nullTrg() ) {
+          // add item (recursively)
+          TrgItem nitem = createSubTree( item.mySrc, r2, lastItem, td );
+          if ( nitem != td.nullTrg() )
+            lastItem = nitem;
+        }
         else {
-	  // update item
-	  synchronize( item.mySrc, item.myTrg, td );
-	  lastItem = item.myTrg;
-	}
+          // update item
+          synchronize( item.mySrc, item.myTrg, td );
+          lastItem = item.myTrg;
+        }
       }
     }
     return r2;
@@ -177,9 +177,9 @@ TrgItem synchronize( const SrcItem& r1, const TrgItem& r2, const TreeData& td )
 */
 template <class SrcItem, class TrgItem, class TreeData>
 const typename QList<TrgItem>::const_iterator findEqual( const SrcItem& it,
-							 const typename QList<TrgItem>::const_iterator& first,
-							 const typename QList<TrgItem>::const_iterator& last,
-							 const TreeData& td )
+                                                         const typename QList<TrgItem>::const_iterator& first,
+                                                         const typename QList<TrgItem>::const_iterator& last,
+                                                         const TreeData& td )
 {
   typename QList<TrgItem>::const_iterator cur = first;
   for ( ; cur != last; cur++ ) {
@@ -199,7 +199,7 @@ const typename QList<TrgItem>::const_iterator findEqual( const SrcItem& it,
 */
 template <class SrcItem, class TrgItem, class TreeData>
 QList< DiffItem<SrcItem,TrgItem> > diffSiblings( const SrcItem& src, const TrgItem& trg,
-						 const TreeData& td )
+                                                 const TreeData& td )
 {
   //if( src==td.nullSrc() || trg==td.nullTrg() )
   //  return;
@@ -219,10 +219,10 @@ QList< DiffItem<SrcItem,TrgItem> > diffSiblings( const SrcItem& src, const TrgIt
       // target is found
       // mark all items before found one as "to be deleted"
       for ( typename QList<TrgItem>::const_iterator it = cur; it != f; it++ ) {
-	DiffItem<SrcItem,TrgItem> ndiff;
-	ndiff.mySrc = td.nullSrc();
-	ndiff.myTrg = *it;        // delete item
-	d.append( ndiff );
+        DiffItem<SrcItem,TrgItem> ndiff;
+        ndiff.mySrc = td.nullSrc();
+        ndiff.myTrg = *it;        // delete item
+        d.append( ndiff );
       }
       cur = f;
       DiffItem<SrcItem,TrgItem> ndiff;
@@ -261,7 +261,7 @@ QList< DiffItem<SrcItem,TrgItem> > diffSiblings( const SrcItem& src, const TrgIt
 */
 template <class SrcItem, class TrgItem, class TreeData>
 TrgItem createSubTree( const SrcItem& src, const TrgItem& parent,
-		       const TrgItem& after, const TreeData& td )
+                       const TrgItem& after, const TreeData& td )
 {
   if ( src == td.nullSrc() )
     return td.nullTrg();

@@ -94,7 +94,7 @@ class SALOMEAPP_EXPORT NoteBook_Table : public QTableWidget
 
   void Init(_PTR(Study) theStudy);
   static QString Variable2String(const std::string& theVarName,
-				 _PTR(Study) theStudy);
+                                 _PTR(Study) theStudy);
 
   bool IsValid() const;
 

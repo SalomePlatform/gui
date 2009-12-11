@@ -255,7 +255,7 @@ QPixmap Plot2d_SetupCurveDlg::lineIcon( Plot2d::LineType type ) const
   px.fill( QColor( 255, 255, 255, 0 ) );
   QPainter p( &px );
   Plot2d::drawLine( &p, 5, sz.height()/2, sz.width()-5, sz.height()/2, type,
-		    myLineCombo->palette().color( QPalette::Text ), 1 );
+                    myLineCombo->palette().color( QPalette::Text ), 1 );
   return px;
 }
 
@@ -271,7 +271,7 @@ QPixmap Plot2d_SetupCurveDlg::markerIcon( Plot2d::MarkerType type ) const
   px.fill( QColor( 255, 255, 255, 0 ) );
   QPainter p( &px );
   Plot2d::drawMarker( &p, sz.width()/2, sz.height()/2, MSIZE, MSIZE, type,
-		      myMarkerCombo->palette().color( QPalette::Text ) );
+                      myMarkerCombo->palette().color( QPalette::Text ) );
   return px;
 }
 
@@ -287,11 +287,11 @@ void Plot2d_SetupCurveDlg::updatePreview()
   QPainter p( &px );
 
   Plot2d::drawLine( &p, 5+MSIZE/2, sz.height()/2, sz.width()-5-MSIZE/2, sz.height()/2,
-		    getLine(), getColor(), getLineWidth() );
+                    getLine(), getColor(), getLineWidth() );
   Plot2d::drawMarker( &p, 5+MSIZE/2, sz.height()/2, MSIZE, MSIZE,
-		      getMarker(), getColor() );
+                      getMarker(), getColor() );
   Plot2d::drawMarker( &p, sz.width()-5-MSIZE/2, sz.height()/2, MSIZE, MSIZE,
-		      getMarker(), getColor() );
+                      getMarker(), getColor() );
 
   myPreview->setPixmap( px );
 }

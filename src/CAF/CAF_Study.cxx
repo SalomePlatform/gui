@@ -379,7 +379,7 @@ bool CAF_Study::undo()
   }
   catch ( Standard_Failure ) {
     SUIT_MessageBox::critical(application()->desktop(), tr( "ERR_ERROR" ),
-			      tr( "ERR_DOC_UNDO" ));
+                              tr( "ERR_DOC_UNDO" ));
     return false;
   }
   return true;
@@ -403,7 +403,7 @@ bool CAF_Study::redo()
   }
   catch ( Standard_Failure ) {
     SUIT_MessageBox::critical( application()->desktop(), tr( "ERR_ERROR" ),
-			       tr( "ERR_DOC_REDO" ) );
+                               tr( "ERR_DOC_REDO" ) );
     return false;
   }
   return true;

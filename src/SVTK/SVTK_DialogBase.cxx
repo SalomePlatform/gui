@@ -34,12 +34,12 @@
 */
 SVTK_DialogBase
 ::SVTK_DialogBase(QtxAction* theAction,
-		  QWidget* theParent,
-		  const char* theName, 
-		  bool theModal, 
-		  Qt::WindowFlags theWFalgs):
+                  QWidget* theParent,
+                  const char* theName, 
+                  bool theModal, 
+                  Qt::WindowFlags theWFalgs):
   QDialog(theParent, 
-	  theWFalgs | Qt::WindowTitleHint | Qt::WindowSystemMenuHint),
+          theWFalgs | Qt::WindowTitleHint | Qt::WindowSystemMenuHint),
   myAction(theAction)
 {
   setObjectName(theName);

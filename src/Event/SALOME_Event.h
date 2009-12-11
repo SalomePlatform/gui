@@ -75,7 +75,7 @@ public:
   TResult myResult;
   typedef TResult (TObject::* TAction)();
   TMemFunEvent(TObject* theObject, TAction theAction, 
-	       TResult theResult = TResult()):
+               TResult theResult = TResult()):
     myObject(theObject),
     myAction(theAction),
     myResult(theResult)
@@ -114,7 +114,7 @@ public:
   TResult myResult;
   typedef TResult (TObject::* TAction)(TArg);
   TMemFun1ArgEvent(TObject* theObject, TAction theAction, TArg theArg, 
-		   TResult theResult = TResult()):
+                   TResult theResult = TResult()):
     myObject(theObject),
     myAction(theAction),
     myResult(theResult),
@@ -158,8 +158,8 @@ public:
   TResult myResult;
   typedef TResult (TObject::* TAction)(TArg,TArg1);
   TMemFun2ArgEvent(TObject* theObject, TAction theAction, 
-		   TArg theArg, TArg1 theArg1,
-		   TResult theResult = TResult()):
+                   TArg theArg, TArg1 theArg1,
+                   TResult theResult = TResult()):
     myObject(theObject),
     myAction(theAction),
     myResult(theResult),

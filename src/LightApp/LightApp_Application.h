@@ -78,11 +78,11 @@ public:
   enum { MenuWindowId = 6 };
 
   enum { RenameId = CAM_Application::UserID,
-	 CloseId, CloseAllId, GroupAllId,
-	 PreferencesId, MRUId, ModulesListId,
+         CloseId, CloseAllId, GroupAllId,
+         PreferencesId, MRUId, ModulesListId,
          NewGLViewId, NewPlot2dId, NewOCCViewId, NewVTKViewId, NewQxGraphViewId,
-	 NewQxSceneViewId = NewQxGraphViewId, StyleId,
-	 UserID };
+         NewQxSceneViewId = NewQxGraphViewId, StyleId,
+         UserID };
 
 protected:
   enum { NewStudyId = 1, OpenStudyId };
@@ -112,10 +112,10 @@ public:
   virtual QString                     getFileFilter() const;
 
   virtual QString                     getFileName( bool open, const QString& initial, const QString& filters,
-						   const QString& caption, QWidget* parent );
+                                                   const QString& caption, QWidget* parent );
   virtual QString                     getDirectory( const QString& initial, const QString& caption, QWidget* parent );
   virtual QStringList                 getOpenFileNames( const QString& initial, const QString& filters,
-							const QString& caption, QWidget* parent );
+                                                        const QString& caption, QWidget* parent );
 
   void                                updateActions();
 

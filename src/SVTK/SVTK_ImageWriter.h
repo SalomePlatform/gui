@@ -32,10 +32,10 @@ class SVTK_ImageWriter : public QThread
 {
 public:
   SVTK_ImageWriter(QSemaphore* theSemaphore,
-		   vtkImageData* theImageData,
-		   const std::string& theName,
-		   int theProgressive,
-		   int theQuality);
+                   vtkImageData* theImageData,
+                   const std::string& theName,
+                   int theProgressive,
+                   int theQuality);
 
   ~SVTK_ImageWriter();
 

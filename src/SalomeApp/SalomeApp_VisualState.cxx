@@ -240,11 +240,11 @@ void SalomeApp_VisualState::restoreState(int savePoint)
     {
       viewWin = views[i];
       if ( !viewWin )
-	continue;
+        continue;
 
       // wait untill the window is really shown.  This step fixes MANY bugs..
       //      while ( !vm->isVisible() )
-      //	qApp->processEvents();
+      //        qApp->processEvents();
 
       viewWin->setWindowTitle( ip->getValue( viewerEntry, j ).c_str() );
 
@@ -279,8 +279,8 @@ void SalomeApp_VisualState::restoreState(int savePoint)
     {
       if ( !viewersParameters.contains( views[i] ) )
       {
-	viewersParameters[ views[i] ] = views[i]->getVisualParameters();
-	//	printf ( "store VP for viewWin \"%s\": %s\n", views[i]->name(), views[i]->getVisualParameters().toLatin1().constData() );
+        viewersParameters[ views[i] ] = views[i]->getVisualParameters();
+        //      printf ( "store VP for viewWin \"%s\": %s\n", views[i]->name(), views[i]->getVisualParameters().toLatin1().constData() );
       }
     }
   }
@@ -331,7 +331,7 @@ void SalomeApp_VisualState::restoreState(int savePoint)
   //    QPtrVector<SUIT_ViewWindow> views = it.current()->getViews();
   //    for ( int i = 0; i < view_count; i++ )  {
   //      if ( activeViewName == views[i]->name() )
-  //	views[i]->setFocus();
+  //    views[i]->setFocus();
   //    }
   //  }
 }

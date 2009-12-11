@@ -186,10 +186,10 @@ public:
 
 public:
   SalomeApp_EntityEdit( QWidget* parent, 
-		        int      controlType = etLineEdit, 
-		        int      valueType   = vtString,
-		        bool     butApply    = false, 
-		        bool     butCancel   = false);
+                        int      controlType = etLineEdit, 
+                        int      valueType   = vtString,
+                        bool     butApply    = false, 
+                        bool     butCancel   = false);
   ~SalomeApp_EntityEdit();
 
   void finishEditing();
@@ -197,18 +197,18 @@ public:
   QString getText();
   void setText(const QString& theText );
   void insertItem( const QString& theValue, 
-		   bool           theSetCurrent = false,
-		   int            theOrder = atBottom );
+                   bool           theSetCurrent = false,
+                   int            theOrder = atBottom );
   void insertList( const QStringList& theList, 
-		   const int          theCurrent = -1 );
+                   const int          theCurrent = -1 );
   void insertItem( const int theValue, 
-		   bool  theSetCurrent = false );
+                   bool  theSetCurrent = false );
   void insertList( const TColStd_ListOfInteger& theList, 
-		   const int                    theCurrent = -1 );
+                   const int                    theCurrent = -1 );
   void insertItem( const double theValue, 
-		   bool         theSetCurrent = false );
+                   bool         theSetCurrent = false );
   void insertList( const TColStd_ListOfReal& theList, 
-		   const int                 theCurrent = -1 );
+                   const int                 theCurrent = -1 );
   QWidget* getControl();
   void setFocus();
   void setValidator(const QValidator*);
@@ -241,31 +241,31 @@ class SalomeApp_ListViewItem : public QTreeWidgetItem
 public:
   SalomeApp_ListViewItem( SalomeApp_ListView* );
   SalomeApp_ListViewItem( SalomeApp_ListView*, 
-			  SalomeApp_ListViewItem* );
+                          SalomeApp_ListViewItem* );
   SalomeApp_ListViewItem( SalomeApp_ListView*,
-			  const QStringList&,
-			  const bool = false );
+                          const QStringList&,
+                          const bool = false );
   SalomeApp_ListViewItem( SalomeApp_ListViewItem*,
-			  const QStringList&,
-			  const bool = false );
+                          const QStringList&,
+                          const bool = false );
   SalomeApp_ListViewItem( SalomeApp_ListView*,
-			  SalomeApp_ListViewItem*,
-			  const QString&,
-			  const bool = false );
+                          SalomeApp_ListViewItem*,
+                          const QString&,
+                          const bool = false );
   SalomeApp_ListViewItem( SalomeApp_ListViewItem*,
-			  SalomeApp_ListViewItem*,
-			  const QString&,
-			  const bool = false);
+                          SalomeApp_ListViewItem*,
+                          const QString&,
+                          const bool = false);
   SalomeApp_ListViewItem( SalomeApp_ListView*,
-			  SalomeApp_ListViewItem*,
-			  const QString& theName,
-			  const QString& theValue, 
-			  const bool = false);
+                          SalomeApp_ListViewItem*,
+                          const QString& theName,
+                          const QString& theValue, 
+                          const bool = false);
   SalomeApp_ListViewItem( SalomeApp_ListViewItem*,
-			  SalomeApp_ListViewItem*,
-			  const QString&,
-			  const QString&, 
-			  const bool = false);
+                          SalomeApp_ListViewItem*,
+                          const QString&,
+                          const QString&, 
+                          const bool = false);
   ~SalomeApp_ListViewItem();
 
   QString            fullName();

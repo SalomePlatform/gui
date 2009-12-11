@@ -49,13 +49,13 @@ QtxWorkstackAction::QtxWorkstackAction( QtxWorkstack* ws, QObject* parent )
     insertAction( myWorkstack->action( QtxWorkstack::SplitVertical ), SplitVertical );
   else
     insertAction( new QtxAction( tr( "Split the active window on two vertical parts" ),
-				 tr( "Split vertically" ), 0, this ), SplitVertical );
+                                 tr( "Split vertically" ), 0, this ), SplitVertical );
 
   if ( myWorkstack )
     insertAction( myWorkstack->action( QtxWorkstack::SplitHorizontal ), SplitHorizontal );
   else
     insertAction( new QtxAction( tr( "Split the active window on two horizontal parts" ),
-				 tr( "Split horizontally" ), 0, this ), SplitHorizontal );
+                                 tr( "Split horizontally" ), 0, this ), SplitHorizontal );
 
   connect( this, SIGNAL( triggered( int ) ), this, SLOT( onTriggered( int ) ) );
 

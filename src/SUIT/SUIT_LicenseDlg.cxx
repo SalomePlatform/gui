@@ -108,8 +108,8 @@ SUIT_LicenseDlg::SUIT_LicenseDlg( bool firstShow, QWidget* parent, const char* n
 }
 
 /*!
-	Name: ~SUIT_LicenseDlg [public]
-	Desc: Destructor
+        Name: ~SUIT_LicenseDlg [public]
+        Desc: Destructor
 */
 
 SUIT_LicenseDlg::~SUIT_LicenseDlg()
@@ -175,20 +175,20 @@ void SUIT_LicenseDlg::onPrint()
 
     // convert text to rich text format
     QString aFormattedText = Qt::convertFromPlainText( myTextEdit->toPlainText() );
-	
+        
     QTextDocument aRichText( aFormattedText );
     aRichText.setDefaultFont( aBodyFont );
 
 
     /*QSimpleRichText aRichText( aFormattedText,
-			       aBodyFont,
-			       myTextEdit->context(),
-			       myTextEdit->styleSheet(),
-			       myTextEdit->mimeSourceFactory(),
-			       aBody.height() );
+                               aBodyFont,
+                               myTextEdit->context(),
+                               myTextEdit->styleSheet(),
+                               myTextEdit->mimeSourceFactory(),
+                               aBody.height() );
     */
     aRichText.setPageSize( QSize( aBody.width(), aRichText.pageSize().height() ) );
-	//aRichText.setWidth( &aPainter, aBody.width() );
+        //aRichText.setWidth( &aPainter, aBody.width() );
     
     QRect aView( aBody );
     
@@ -197,7 +197,7 @@ void SUIT_LicenseDlg::onPrint()
     do {
       // print page text
       aRichText.drawContents( &aPainter, aView );
-	  //aRichText.draw( &aPainter, aBody.left(), aBody.top(), aView, colorGroup() );
+          //aRichText.draw( &aPainter, aBody.left(), aBody.top(), aView, colorGroup() );
       aView.translate( 0, aBody.height() );
       aPainter.translate( 0 , -aBody.height() );
       
@@ -206,10 +206,10 @@ void SUIT_LicenseDlg::onPrint()
       aPainter.setFont(aFooterFont);
       QString aFooter = QString("Page ") + QString::number(aPageIndex);
       aPainter.drawText( aView.right() - aPainter.fontMetrics().width( aFooter ),
-			 aView.bottom() + aPainter.fontMetrics().ascent() + 5, aFooter );
+                         aView.bottom() + aPainter.fontMetrics().ascent() + 5, aFooter );
       
       if ( aView.top() >= aRichText.size().height() )
-	break;
+        break;
       aPrinter.newPage();
       aPageIndex++;
     } while (true);

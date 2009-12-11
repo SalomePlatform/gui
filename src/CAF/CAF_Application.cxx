@@ -165,15 +165,15 @@ void CAF_Application::createActions()
 
   QtxListAction* editUndo = 
     new QtxListAction( tr( "TOT_APP_EDIT_UNDO" ), 
-		       resMgr->loadPixmap( "STD", tr( "ICON_EDIT_UNDO" ) ),
-		       tr( "MEN_APP_EDIT_UNDO" ), Qt::CTRL+Qt::Key_Z, desk );
+                       resMgr->loadPixmap( "STD", tr( "ICON_EDIT_UNDO" ) ),
+                       tr( "MEN_APP_EDIT_UNDO" ), Qt::CTRL+Qt::Key_Z, desk );
   editUndo->setStatusTip( tr( "PRP_APP_EDIT_UNDO" ) );
   registerAction( EditUndoId, editUndo );
 
   QtxListAction* editRedo =
     new QtxListAction( tr( "TOT_APP_EDIT_REDO" ), 
-		       resMgr->loadPixmap( "STD", tr( "ICON_EDIT_REDO" ) ),
-		       tr( "MEN_APP_EDIT_REDO" ), Qt::CTRL+Qt::Key_Y, desk );
+                       resMgr->loadPixmap( "STD", tr( "ICON_EDIT_REDO" ) ),
+                       tr( "MEN_APP_EDIT_REDO" ), Qt::CTRL+Qt::Key_Y, desk );
   editRedo->setStatusTip( tr( "PRP_APP_EDIT_REDO" ) );
   registerAction( EditRedoId, editRedo );
 
@@ -247,8 +247,8 @@ bool CAF_Application::onUndo( int numActions )
     {
       if ( !undo( cafStudy ) )
       {
-	ok = false;
-	break;
+        ok = false;
+        break;
       }
       numActions--;
     }
@@ -275,8 +275,8 @@ bool CAF_Application::onRedo( int numActions )
     {
       if ( !redo( cafStudy ) )
       {
-	ok = false;
-	break;
+        ok = false;
+        break;
       }
       numActions--;
     }

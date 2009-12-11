@@ -53,7 +53,7 @@ SVTK_KeyFreeInteractorStyle::~SVTK_KeyFreeInteractorStyle()
 
 //----------------------------------------------------------------------------
 void SVTK_KeyFreeInteractorStyle::OnLeftButtonDown(int ctrl, int shift, 
-						   int x, int y) 
+                                                   int x, int y) 
 {
   myIsLeftButtonDown = true;
 
@@ -78,10 +78,10 @@ void SVTK_KeyFreeInteractorStyle::OnLeftButtonDown(int ctrl, int shift,
   else {
     if (!(ctrl||shift)){
       if (myIsMidButtonDown){
-	startOperation(VTK_INTERACTOR_STYLE_CAMERA_ZOOM);
+        startOperation(VTK_INTERACTOR_STYLE_CAMERA_ZOOM);
       }
       else{
-	startOperation(VTK_INTERACTOR_STYLE_CAMERA_ROTATE);
+        startOperation(VTK_INTERACTOR_STYLE_CAMERA_ROTATE);
       }
     }
   }
@@ -90,8 +90,8 @@ void SVTK_KeyFreeInteractorStyle::OnLeftButtonDown(int ctrl, int shift,
 
 //----------------------------------------------------------------------------
 void SVTK_KeyFreeInteractorStyle::OnMiddleButtonDown(int ctrl,
-						     int shift, 
-						     int x, int y) 
+                                                     int shift, 
+                                                     int x, int y) 
 {
   myIsMidButtonDown = true;
 
@@ -116,10 +116,10 @@ void SVTK_KeyFreeInteractorStyle::OnMiddleButtonDown(int ctrl,
   else {
     if (!(ctrl||shift)){
       if ( myIsLeftButtonDown ){
-	startOperation(VTK_INTERACTOR_STYLE_CAMERA_ZOOM);
+        startOperation(VTK_INTERACTOR_STYLE_CAMERA_ZOOM);
       }
       else{
-	startOperation(VTK_INTERACTOR_STYLE_CAMERA_PAN);
+        startOperation(VTK_INTERACTOR_STYLE_CAMERA_PAN);
       }
     }
   }

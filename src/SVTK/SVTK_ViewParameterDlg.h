@@ -55,8 +55,8 @@ class SVTK_EXPORT SVTK_ViewParameterDlg : public SVTK_DialogBase
 
 public:
   SVTK_ViewParameterDlg(QtxAction* theAction,
-			SVTK_ViewWindow* theParent,
-			const char* theName);
+                        SVTK_ViewWindow* theParent,
+                        const char* theName);
 
   ~SVTK_ViewParameterDlg();
   
@@ -106,7 +106,7 @@ protected:
 
   void setEnabled(QFrame* theWidget, const bool theState);
   bool computePoint(const double start[3], const double dir[3], 
-		    const double dist, double result[3]);
+                    const double dist, double result[3]);
   void updateProjection();
   void updateCoordinates();
 

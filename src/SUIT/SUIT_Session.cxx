@@ -173,7 +173,7 @@ void SUIT_Session::insertApplication( SUIT_Application* app )
   connect( app, SIGNAL( applicationClosed( SUIT_Application* ) ),
            this, SLOT( onApplicationClosed( SUIT_Application* ) ) );
   connect( app, SIGNAL( activated( SUIT_Application* ) ), 
-	         this, SLOT( onApplicationActivated( SUIT_Application* ) ) );
+                 this, SLOT( onApplicationActivated( SUIT_Application* ) ) );
 }
 
 /*!
@@ -254,7 +254,7 @@ void SUIT_Session::closeSession( int mode, int flags )
     {
       SUIT_Study* study = app->activeStudy();
       if ( study->isModified() && study->isSaved() )
-	      study->saveDocument();
+              study->saveDocument();
     }
     else if ( mode == DONT_SAVE )
     {

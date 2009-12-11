@@ -210,10 +210,10 @@ int GLViewer_Context::Select( bool Append, bool byCircle )
         if ( !Append )
         {
             for( it = mySelectedObjects.begin(), itEnd = mySelectedObjects.end() ; it != itEnd; ++it )
-	            if( myLastPicked != *it )
+                    if( myLastPicked != *it )
                 {
-	                updateAll = (*it)->unselect() || updateAll;
-	                aList.append( *it );
+                        updateAll = (*it)->unselect() || updateAll;
+                        aList.append( *it );
                 }
 
             if( updateAll || myUpdateAll )
@@ -257,10 +257,10 @@ int GLViewer_Context::Select( bool Append, bool byCircle )
         if ( !Append )
         {
             for( it = mySelectedObjects.begin(), itEnd = mySelectedObjects.end() ; it != itEnd; ++it )
-	            if ( myLastPicked != *it )
+                    if ( myLastPicked != *it )
                 {
-	                updateAll = (*it)->unselect() || updateAll;
-	                aList.append( *it );
+                        updateAll = (*it)->unselect() || updateAll;
+                        aList.append( *it );
                 }
 
             if( updateAll || myUpdateAll )

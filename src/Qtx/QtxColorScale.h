@@ -137,12 +137,12 @@ private:
   double                getNumber( const int ) const;
   QTextDocument*        textDocument( const int ) const;
   void                  drawScale( QPainter*, const bool, const int, const int,
-				   const int, const int, const bool, const bool, const bool ) const;
+                                   const int, const int, const bool, const bool, const bool ) const;
   void                  drawScale( QPainter*, const QColor&, const bool,
-				   const int, const int, const int, const int,
-				   const bool, const bool, const bool ) const;
+                                   const int, const int, const int, const int,
+                                   const bool, const bool, const bool ) const;
   QSize                 calculateSize( const bool, const int,
-				       const bool, const bool, const bool ) const;
+                                       const bool, const bool, const bool ) const;
 
 private:
   double                myMin;             //!< lower limit

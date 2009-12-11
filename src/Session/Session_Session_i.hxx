@@ -39,7 +39,7 @@ class QMutex;
 class QWaitCondition;
 
 class SESSION_EXPORT SALOME_Session_i:  public virtual POA_SALOME::Session,
-		         public virtual PortableServer::ServantBase
+                         public virtual PortableServer::ServantBase
 {
 public:
   SALOME_Session_i(int argc, 

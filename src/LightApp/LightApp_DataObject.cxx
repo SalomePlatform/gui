@@ -237,28 +237,28 @@ bool LightApp_DataObject::compare( const QVariant& left, const QVariant& right, 
       bool result = true;
       bool calculated = false;
       for ( int i = 0; i < idsLeft.count() || i < idsRight.count(); i++ ) {
-	bool okLeft = true, okRight = true;
-	int lid = 0, rid = 0;
-	if ( i < idsLeft.count() )
-	  lid = idsLeft[i].toInt( &okLeft );
-	if ( i < idsRight.count() )
-	  rid = idsRight[i].toInt( &okRight );
-	if ( okLeft && okRight ) {
-	  // both seem to be correct integer ID
-	  return lid < rid;
-	}
-	else if ( okLeft || okRight ) {
-	  // objects with correct (int) ID have higher priority
-	  return okLeft;
-	}
-	else {
-	  // both not integer ID
-	  int r = QString::localeAwareCompare( idsLeft[i], idsRight[i] ); 
-	  if ( !calculated && r != 0 ) {
-	    result = r < 0;
-	    calculated = true;
-	  }
-	}
+        bool okLeft = true, okRight = true;
+        int lid = 0, rid = 0;
+        if ( i < idsLeft.count() )
+          lid = idsLeft[i].toInt( &okLeft );
+        if ( i < idsRight.count() )
+          rid = idsRight[i].toInt( &okRight );
+        if ( okLeft && okRight ) {
+          // both seem to be correct integer ID
+          return lid < rid;
+        }
+        else if ( okLeft || okRight ) {
+          // objects with correct (int) ID have higher priority
+          return okLeft;
+        }
+        else {
+          // both not integer ID
+          int r = QString::localeAwareCompare( idsLeft[i], idsRight[i] ); 
+          if ( !calculated && r != 0 ) {
+            result = r < 0;
+            calculated = true;
+          }
+        }
       }
       // we should reach this if the entries are exactly equal
       return result; 

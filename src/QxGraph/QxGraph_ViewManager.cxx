@@ -25,8 +25,8 @@
   Constructor
 */
 QxGraph_ViewManager::QxGraph_ViewManager( SUIT_Study* theStudy, 
-					  SUIT_Desktop* theDesktop, 
-					  SUIT_ViewModel* theViewModel )
+                                          SUIT_Desktop* theDesktop, 
+                                          SUIT_ViewModel* theViewModel )
   : SUIT_ViewManager( theStudy, theDesktop, theViewModel )
 {
 }

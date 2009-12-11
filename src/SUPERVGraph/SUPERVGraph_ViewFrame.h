@@ -79,17 +79,17 @@ class SUPERVGRAPH_EXPORT SUPERVGraph_ViewFrame : public SUIT_ViewWindow {
   
   /*  interactive object management */
   void                           highlight( const Handle(SALOME_InteractiveObject)& IObject, 
-					    bool highlight, bool immediatly = true );
+                                            bool highlight, bool immediatly = true );
   void                           unHighlightAll();
   void                           rename( const Handle(SALOME_InteractiveObject)& IObject,
-					 QString newName );
+                                         QString newName );
   bool                           isInViewer( const Handle(SALOME_InteractiveObject)& IObject );
   bool                           isVisible( const Handle(SALOME_InteractiveObject)& IObject );
   
   /* selection */
   Handle(SALOME_InteractiveObject) FindIObject(const char* Entry) { Handle(SALOME_InteractiveObject) o; return o; };
 
-  /* display */		
+  /* display */         
   void           Display(const Handle(SALOME_InteractiveObject)& IObject, bool immediatly = true){};
   void           DisplayOnly(const Handle(SALOME_InteractiveObject)& IObject){};
   void           Erase(const Handle(SALOME_InteractiveObject)& IObject, bool immediatly = true){};

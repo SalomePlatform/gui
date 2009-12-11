@@ -57,11 +57,11 @@ using namespace std;
 
 const int Session_ServerThread::NB_SRV_TYP = 7;
 const char* Session_ServerThread::_serverTypes[NB_SRV_TYP] = {"Container",
-							      "ModuleCatalog",
-							      "Registry",
-							      "SALOMEDS",
-							      "Session",
-							      "SalomeAppEngine",
+                                                              "ModuleCatalog",
+                                                              "Registry",
+                                                              "SALOMEDS",
+                                                              "Session",
+                                                              "SalomeAppEngine",
                                                               "ContainerManager"};
 
 /*! 
@@ -76,9 +76,9 @@ Session_ServerThread::Session_ServerThread()
   constructor
 */
 Session_ServerThread::Session_ServerThread(int argc,
-					   char ** argv, 
-					   CORBA::ORB_ptr orb, 
-					   PortableServer::POA_ptr poa)
+                                           char ** argv, 
+                                           CORBA::ORB_ptr orb, 
+                                           PortableServer::POA_ptr poa)
 {
   //MESSAGE("Session_ServerThread Constructor " << argv[0]);
   _argc = argc;
@@ -123,64 +123,64 @@ void Session_ServerThread::Init()
       MESSAGE("Server Thread type : "<<_serverTypes[i]);
       switch (_servType) {
       case 0:  // Container
-	{
-	  NamingService_WaitForServerReadiness(_NS,"/Registry");
-	  NamingService_WaitForServerReadiness(_NS,"/ContainerManager");
-	  ActivateContainer(_argc, _argv);
-	  break;
-	}
+        {
+          NamingService_WaitForServerReadiness(_NS,"/Registry");
+          NamingService_WaitForServerReadiness(_NS,"/ContainerManager");
+          ActivateContainer(_argc, _argv);
+          break;
+        }
       case 1:  // ModuleCatalog
-	{
-	  NamingService_WaitForServerReadiness(_NS,"/Registry");
-	  ActivateModuleCatalog(_argc, _argv);
-	  break;
-	}
+        {
+          NamingService_WaitForServerReadiness(_NS,"/Registry");
+          ActivateModuleCatalog(_argc, _argv);
+          break;
+        }
       case 2:  // Registry
-	{
-	  NamingService_WaitForServerReadiness(_NS,"");
-	  ActivateRegistry(_argc, _argv);
-	  break;
-	}
+        {
+          NamingService_WaitForServerReadiness(_NS,"");
+          ActivateRegistry(_argc, _argv);
+          break;
+        }
       case 3:  // SALOMEDS
-	{
-	  NamingService_WaitForServerReadiness(_NS,"/Kernel/ModulCatalog");
-	  ActivateSALOMEDS(_argc, _argv);
-	  break;
-	}
+        {
+          NamingService_WaitForServerReadiness(_NS,"/Kernel/ModulCatalog");
+          ActivateSALOMEDS(_argc, _argv);
+          break;
+        }
       case 4:  // Session
-	{
-	  NamingService_WaitForServerReadiness(_NS,"/myStudyManager");
-	  string containerName = "/Containers/";
-	  containerName = containerName + Kernel_Utils::GetHostname();
-	  containerName = containerName + "/FactoryServer";
-	  NamingService_WaitForServerReadiness(_NS,containerName);
-	  ActivateSession(_argc, _argv);
-	  break;
-	}
+        {
+          NamingService_WaitForServerReadiness(_NS,"/myStudyManager");
+          string containerName = "/Containers/";
+          containerName = containerName + Kernel_Utils::GetHostname();
+          containerName = containerName + "/FactoryServer";
+          NamingService_WaitForServerReadiness(_NS,containerName);
+          ActivateSession(_argc, _argv);
+          break;
+        }
       case 5: // SalomeApp_Engine
-	{
-	  NamingService_WaitForServerReadiness(_NS,"/myStudyManager");
-	  ActivateEngine(_argc, _argv);
-	  break;
-	}
+        {
+          NamingService_WaitForServerReadiness(_NS,"/myStudyManager");
+          ActivateEngine(_argc, _argv);
+          break;
+        }
       case 6: // Container Manager
-	{
-	  NamingService_WaitForServerReadiness(_NS,"");
-	  ActivateContainerManager(_argc, _argv);
-	  break;
-	}
+        {
+          NamingService_WaitForServerReadiness(_NS,"");
+          ActivateContainerManager(_argc, _argv);
+          break;
+        }
       default:
-	{
-	  ASSERT(0);
-	  break;
-	}
+        {
+          ASSERT(0);
+          break;
+        }
       }
     }
   }
 }
 
 void Session_ServerThread::ActivateModuleCatalog(int argc,
-						 char ** argv)
+                                                 char ** argv)
 {
   try {
     MESSAGE("ModuleCatalog thread started");
@@ -215,7 +215,7 @@ void Session_ServerThread::ActivateModuleCatalog(int argc,
 }
 
 void Session_ServerThread::ActivateSALOMEDS(int argc,
-					    char ** argv)
+                                            char ** argv)
 {
   try {
     MESSAGE("SALOMEDS thread started");
@@ -243,7 +243,7 @@ void Session_ServerThread::ActivateSALOMEDS(int argc,
 }
 
 void Session_ServerThread::ActivateRegistry(int argc,
-					    char ** argv)
+                                            char ** argv)
 {
   MESSAGE("Registry thread started");
   SCRUTE(argc); 
@@ -292,7 +292,7 @@ void Session_ServerThread::ActivateRegistry(int argc,
 }
 
 void Session_ServerThread::ActivateContainerManager(int argc,
-					     char ** argv)
+                                             char ** argv)
 {
   try {
     PortableServer::POA_var root_poa=PortableServer::POA::_the_root_poa();
@@ -317,7 +317,7 @@ void Session_ServerThread::ActivateContainerManager(int argc,
 }
 
 void Session_ServerThread::ActivateContainer(int argc,
-					     char ** argv)
+                                             char ** argv)
 {
   try {
     MESSAGE("Container thread started");
@@ -333,25 +333,25 @@ void Session_ServerThread::ActivateContainer(int argc,
       MESSAGE("factory_poa does not exists, create...");
       // define policy objects     
       PortableServer::ImplicitActivationPolicy_var implicitActivation =
-	_root_poa->create_implicit_activation_policy(PortableServer::NO_IMPLICIT_ACTIVATION);
+        _root_poa->create_implicit_activation_policy(PortableServer::NO_IMPLICIT_ACTIVATION);
       // default = NO_IMPLICIT_ACTIVATION
       PortableServer::ThreadPolicy_var threadPolicy =
-	_root_poa->create_thread_policy(PortableServer::ORB_CTRL_MODEL);
+        _root_poa->create_thread_policy(PortableServer::ORB_CTRL_MODEL);
       // default = ORB_CTRL_MODEL, other choice SINGLE_THREAD_MODEL
       
       // create policy list
       CORBA::PolicyList policyList;
       policyList.length(2);
       policyList[0] = PortableServer::ImplicitActivationPolicy::
-	_duplicate(implicitActivation);
+        _duplicate(implicitActivation);
       policyList[1] = PortableServer::ThreadPolicy::
-	_duplicate(threadPolicy);
+        _duplicate(threadPolicy);
       
       PortableServer::POAManager_var nil_mgr
-	= PortableServer::POAManager::_nil();
+        = PortableServer::POAManager::_nil();
       factory_poa = _root_poa->create_POA("factory_poa",
-					  nil_mgr,
-					  policyList);
+                                          nil_mgr,
+                                          policyList);
       //with nil_mgr instead of pman,
       //a new POA manager is created with the new POA
       
@@ -414,7 +414,7 @@ void Session_ServerThread::ActivateEngine(int /*argc*/, char ** /*argv*/)
 }
 
 void Session_ServerThread::ActivateSession(int argc,
-					   char ** argv)
+                                           char ** argv)
 {
   MESSAGE("Session_ServerThread::ActivateSession() not implemented!");
 }
@@ -423,11 +423,11 @@ void Session_ServerThread::ActivateSession(int argc,
   constructor 
 */
 Session_SessionThread::Session_SessionThread(int argc,
-					     char** argv, 
-					     CORBA::ORB_ptr orb, 
-					     PortableServer::POA_ptr poa,
-					     QMutex* GUIMutex,
-					     QWaitCondition* GUILauncher)
+                                             char** argv, 
+                                             CORBA::ORB_ptr orb, 
+                                             PortableServer::POA_ptr poa,
+                                             QMutex* GUIMutex,
+                                             QWaitCondition* GUILauncher)
 : Session_ServerThread(argc, argv, orb, poa),
   _GUIMutex( GUIMutex ),
   _GUILauncher( GUILauncher )
@@ -442,7 +442,7 @@ Session_SessionThread::~Session_SessionThread()
 }
 
 void Session_SessionThread::ActivateSession(int argc,
-					    char ** argv)
+                                            char ** argv)
 {
   try {
     MESSAGE("Session thread started");

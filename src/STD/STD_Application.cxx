@@ -162,8 +162,8 @@ void STD_Application::createActions()
                 Qt::CTRL+Qt::Key_O, desk, false, this, SLOT( onOpenDoc() ) );
 
   createAction( FileReopenId, tr( "TOT_DESK_FILE_REOPEN" ), QIcon(),
-		tr( "MEN_DESK_FILE_REOPEN" ), tr( "PRP_DESK_FILE_REOPEN" ),
-		0, desk, false, this, SLOT( onReopenDoc() ) );
+                tr( "MEN_DESK_FILE_REOPEN" ), tr( "PRP_DESK_FILE_REOPEN" ),
+                0, desk, false, this, SLOT( onReopenDoc() ) );
 
   createAction( FileCloseId, tr( "TOT_DESK_FILE_CLOSE" ),
                 resMgr->loadPixmap( "STD", tr( "ICON_FILE_CLOSE" ) ),
@@ -340,8 +340,8 @@ bool STD_Application::onReopenDoc()
   if ( study && study->isSaved() ) {
     // ask user for the confirmation
     if ( SUIT_MessageBox::question( desktop(), tr( "REOPEN_STUDY" ), tr( "REOPEN_QUESTION" ),
-				    SUIT_MessageBox::Yes | SUIT_MessageBox::No, SUIT_MessageBox::No
-				    ) == SUIT_MessageBox::No )
+                                    SUIT_MessageBox::Yes | SUIT_MessageBox::No, SUIT_MessageBox::No
+                                    ) == SUIT_MessageBox::No )
       return false;
 
     // remember study name
@@ -506,13 +506,13 @@ bool STD_Application::openAction( const int choice, const QString& aName )
       QList<SUIT_Application*> aAppList = aSession->applications();
       for ( QList<SUIT_Application*>::iterator it = aAppList.begin(); it != aAppList.end() && !aApp; ++it )
       {
-	if ( (*it)->activeStudy() && (*it)->activeStudy()->studyName() == aName )
-	  aApp = *it;
+        if ( (*it)->activeStudy() && (*it)->activeStudy()->studyName() == aName )
+          aApp = *it;
       }
       if ( aApp )
-	aApp->desktop()->activateWindow();
+        aApp->desktop()->activateWindow();
       else
-	res = false;
+        res = false;
     }
     break;
   case OpenNew:
@@ -522,9 +522,9 @@ bool STD_Application::openAction( const int choice, const QString& aName )
     {
       SUIT_Application* aApp = startApplication( 0, 0 );
       if ( aApp )
-	res = aApp->useFile( aName );
+        res = aApp->useFile( aName );
       if ( !res )
-	aApp->closeApplication();
+        aApp->closeApplication();
     }
     break;
   case OpenCancel:
@@ -854,7 +854,7 @@ void STD_Application::onConnectPopupRequest( SUIT_PopupClient* client, QContextM
 
 /*!\retval QString - return file name from dialog.*/
 QString STD_Application::getFileName( bool open, const QString& initial, const QString& filters,
-				      const QString& caption, QWidget* parent )
+                                      const QString& caption, QWidget* parent )
 {
   if ( !parent )
     parent = desktop();
@@ -876,9 +876,9 @@ QString STD_Application::getFileName( bool open, const QString& initial, const Q
         isOk = true;
       else
       {
-	int aEnd = aUsedFilter.lastIndexOf( ')' );
-	int aStart = aUsedFilter.lastIndexOf( '(', aEnd );
-	QString wcStr = aUsedFilter.mid( aStart + 1, aEnd - aStart - 1 );
+        int aEnd = aUsedFilter.lastIndexOf( ')' );
+        int aStart = aUsedFilter.lastIndexOf( '(', aEnd );
+        QString wcStr = aUsedFilter.mid( aStart + 1, aEnd - aStart - 1 );
 
         int idx = 0;
         QStringList extList;
@@ -892,23 +892,23 @@ QString STD_Application::getFileName( bool open, const QString& initial, const Q
         if ( !extList.isEmpty() && !extList.contains( SUIT_Tools::extension( aName ) ) )
           aName += QString( ".%1" ).arg( extList.first() );
 
-	if ( QFileInfo( aName ).exists() )
+        if ( QFileInfo( aName ).exists() )
         {
-	  int aAnswer = SUIT_MessageBox::question( desktop(), tr( "TIT_FILE_SAVEAS" ),
-						   tr( "MSG_FILE_EXISTS" ).arg( aName ),
-						   SUIT_MessageBox::Yes | SUIT_MessageBox::No | SUIT_MessageBox::Cancel, SUIT_MessageBox::Yes );
-	  if ( aAnswer == SUIT_MessageBox::Cancel )
+          int aAnswer = SUIT_MessageBox::question( desktop(), tr( "TIT_FILE_SAVEAS" ),
+                                                   tr( "MSG_FILE_EXISTS" ).arg( aName ),
+                                                   SUIT_MessageBox::Yes | SUIT_MessageBox::No | SUIT_MessageBox::Cancel, SUIT_MessageBox::Yes );
+          if ( aAnswer == SUIT_MessageBox::Cancel )
           {     // cancelled
             aName = QString();
-	    isOk = true;
+            isOk = true;
           }
-	  else if ( aAnswer == SUIT_MessageBox::No ) // not save to this file
-	    anOldPath = aName;             // not to return to the same initial dir at each "while" step
-	  else                     // overwrite the existing file
-	    isOk = true;
+          else if ( aAnswer == SUIT_MessageBox::No ) // not save to this file
+            anOldPath = aName;             // not to return to the same initial dir at each "while" step
+          else                     // overwrite the existing file
+            isOk = true;
         }
-	else
-	  isOk = true;
+        else
+          isOk = true;
       }
     }
     return aName;

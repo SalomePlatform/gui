@@ -43,8 +43,8 @@ SVTK_ImageWriterMgr
   mySemaphore = new QSemaphore(aMax);
   mySemaphore->acquire( aMax );
   if(MYDEBUG) cout<<"SVTK_ImageWriterMgr::SVTK_ImageWriterMgr "<<
-		//"- total = "<<mySemaphore->total()<<
-		"; available = "<<mySemaphore->available()<<endl;
+                //"- total = "<<mySemaphore->total()<<
+                "; available = "<<mySemaphore->available()<<endl;
 }
 
 
@@ -61,16 +61,16 @@ SVTK_ImageWriterMgr
 void
 SVTK_ImageWriterMgr
 ::StartImageWriter(vtkImageData *theImageData,
-		   const std::string& theName,
-		   const int theProgressive,
-		   const int theQuality)
+                   const std::string& theName,
+                   const int theProgressive,
+                   const int theQuality)
 {
   SVTK_ImageWriter *anImageWriter = 
     new SVTK_ImageWriter(mySemaphore,
-			 theImageData,
-			 theName,
-			 theProgressive,
-			 theQuality);
+                         theImageData,
+                         theName,
+                         theProgressive,
+                         theQuality);
   myThreads.push_back(anImageWriter);
 
   anImageWriter->start();
@@ -84,8 +84,8 @@ SVTK_ImageWriterMgr
 ::Stop()
 {
   if(MYDEBUG) cout<<"SVTK_ImageWriterMgr::Stop "<<
-		//"- total = "<<mySemaphore->total()<<
-		"; available = "<<mySemaphore->available()<<endl;
+                //"- total = "<<mySemaphore->total()<<
+                "; available = "<<mySemaphore->available()<<endl;
   if(MYDEBUG) cout<<"SVTK_ImageWriterMgr::Stop - *mySemaphore += "<<myThreads.size()<<endl;
   mySemaphore->acquire( myThreads.size() );
 

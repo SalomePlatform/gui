@@ -55,11 +55,11 @@ bool SalomeApp_TypeFilter::isOk( const SUIT_DataOwner* sOwner ) const
       
       _PTR(SObject) aSObj( aStudy->FindObjectID( entry.toStdString() ) );
       if (aSObj)
-	{
-	  _PTR(SComponent) aComponent(aSObj->GetFatherComponent());
-	  if ( aComponent && (aComponent->ComponentDataType() == myKind.toStdString()) )
-	    return true;
-	}
+        {
+          _PTR(SComponent) aComponent(aSObj->GetFatherComponent());
+          if ( aComponent && (aComponent->ComponentDataType() == myKind.toStdString()) )
+            return true;
+        }
     }
 
   return false;

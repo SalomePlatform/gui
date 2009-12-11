@@ -2085,7 +2085,7 @@ QtxPagePrefEditItem::QtxPagePrefEditItem( const QString& title, QtxPreferenceIte
 */
 QtxPagePrefEditItem::QtxPagePrefEditItem( const int type, const QString& title,
                                           QtxPreferenceItem* parent, const QString& sect,
-					  const QString& param )
+                                          const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param ),
   myType( type )
 {
@@ -2618,7 +2618,7 @@ QtxPagePrefSpinItem::QtxPagePrefSpinItem( const QString& title, QtxPreferenceIte
 */
 QtxPagePrefSpinItem::QtxPagePrefSpinItem( const int type, const QString& title,
                                           QtxPreferenceItem* parent, const QString& sect,
-					  const QString& param )
+                                          const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param ),
   myType( type )
 {
@@ -2988,7 +2988,7 @@ void QtxPagePrefSpinItem::updateSpinBox()
   \param param resource file parameter associated with the preference item
 */
 QtxPagePrefTextItem::QtxPagePrefTextItem( QtxPreferenceItem* parent, const QString& sect,
-					  const QString& param )
+                                          const QString& param )
 : QtxPageNamedPrefItem( QString(), parent, sect, param )
 {
   myEditor = new QTextEdit();
@@ -3102,7 +3102,7 @@ void QtxPagePrefColorItem::retrieve()
 */
 QtxPagePrefFontItem::QtxPagePrefFontItem( const int feat, const QString& title,
                                           QtxPreferenceItem* parent, const QString& sect,
-					  const QString& param )
+                                          const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param )
 {
   setControl( myFont = new QtxFontEdit( feat ) );

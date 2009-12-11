@@ -173,9 +173,9 @@ private:
   typedef struct
   {
     QString myName;
-	QMap<int,int> myIds;
-	QPixmap myIcon;
-	Qtx::Appropriate myAppropriate;
+        QMap<int,int> myIds;
+        QPixmap myIcon;
+        Qtx::Appropriate myAppropriate;
 
   } ColumnInfo;
   
@@ -247,8 +247,8 @@ public:
   SUIT_ItemDelegate( QObject* = 0 );
   
   virtual void paint( QPainter*, const QStyleOptionViewItem&,
-		      const QModelIndex& ) const;
-		      
+                      const QModelIndex& ) const;
+                      
   virtual QSize sizeHint ( const QStyleOptionViewItem & option, const QModelIndex & index ) const;
 };
 

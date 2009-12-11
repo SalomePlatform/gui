@@ -478,7 +478,7 @@ bool Qtx::rmDir( const QString& thePath )
     {
       QFileInfo inf = *it;
       if ( inf.fileName() == "." || inf.fileName() == ".." )
-	continue;
+        continue;
       stat = stat && rmDir( inf.absoluteFilePath() );
     }
     stat = stat && aDir.rmdir( thePath );
@@ -559,7 +559,7 @@ bool Qtx::dos2unix( const QString& absName )
     if ( nbwri != outcnt )
     {
       ::fclose( src );
-			::fclose( tgt );
+                        ::fclose( tgt );
       QFile::remove( QString( temp ) );
       return false;
     }
@@ -695,20 +695,20 @@ QString Qtx::makeEnvVarSubst( const QString& str, const SubstMode mode )
     {
       QString envName = findEnvVar( res, start, len );
       if ( envName.isNull() )
-	break;
+        break;
 
       QString newStr;
       if ( ::getenv( envName.toLatin1() ) || mode == Always )
-	newStr = QString( ::getenv( envName.toLatin1() ) );
+        newStr = QString( ::getenv( envName.toLatin1() ) );
 
       if ( newStr.isNull() )
       {
-	if ( ignoreMap.contains( envName ) )
-	{
-	  start += len;
-	  continue;
-	}
-	ignoreMap.insert( envName, 0 );
+        if ( ignoreMap.contains( envName ) )
+        {
+          start += len;
+          continue;
+        }
+        ignoreMap.insert( envName, 0 );
       }
       res.replace( start, len, newStr );
     }
@@ -1249,25 +1249,25 @@ bool Qtx::stringToLinearGradient( const QString& str, QLinearGradient& gradient 
       // spread type
       if ( vals.count() > 5 )
       {
-	QString spread = vals[ 5 ].trimmed().toLower();
-	if ( spread == "pad" || spread == "0" )
-	  gradient.setSpread( QGradient::PadSpread );
-	else if ( spread == "repeat" || spread == "2" )
-	  gradient.setSpread( QGradient::RepeatSpread );
-	else if ( spread == "reflect" || spread == "1" )
-	  gradient.setSpread( QGradient::ReflectSpread );
+        QString spread = vals[ 5 ].trimmed().toLower();
+        if ( spread == "pad" || spread == "0" )
+          gradient.setSpread( QGradient::PadSpread );
+        else if ( spread == "repeat" || spread == "2" )
+          gradient.setSpread( QGradient::RepeatSpread );
+        else if ( spread == "reflect" || spread == "1" )
+          gradient.setSpread( QGradient::ReflectSpread );
       }
       // stop points
       QGradientStops stops;
       for ( int i = 6; i < vals.count(); i+=2 )
       {
-	bool bOk5, bOk6 = false;
-	QColor c;
-	double stop = vals[i].toDouble( &bOk5 );
-	if ( i+1 < vals.count() )
-	  bOk6 = stringToColor( vals[ i+1 ], c );
-	if ( bOk5 && stop >= 0.0 && stop <= 1.0 && bOk6 && c.isValid() )
-	  stops.append( QGradientStop( stop, c ) );
+        bool bOk5, bOk6 = false;
+        QColor c;
+        double stop = vals[i].toDouble( &bOk5 );
+        if ( i+1 < vals.count() )
+          bOk6 = stringToColor( vals[ i+1 ], c );
+        if ( bOk5 && stop >= 0.0 && stop <= 1.0 && bOk6 && c.isValid() )
+          stops.append( QGradientStop( stop, c ) );
       }
       gradient.setStops( stops );
       success = true;
@@ -1303,25 +1303,25 @@ bool Qtx::stringToRadialGradient( const QString& str, QRadialGradient& gradient 
       // spread type
       if ( vals.count() > 6 )
       {
-	QString spread = vals[ 6 ].trimmed().toLower();
-	if ( spread == "pad" || spread == "0" )
-	  gradient.setSpread( QGradient::PadSpread );
-	else if ( spread == "repeat" || spread == "2" )
-	  gradient.setSpread( QGradient::RepeatSpread );
-	else if ( spread == "reflect" || spread == "1" )
-	  gradient.setSpread( QGradient::ReflectSpread );
+        QString spread = vals[ 6 ].trimmed().toLower();
+        if ( spread == "pad" || spread == "0" )
+          gradient.setSpread( QGradient::PadSpread );
+        else if ( spread == "repeat" || spread == "2" )
+          gradient.setSpread( QGradient::RepeatSpread );
+        else if ( spread == "reflect" || spread == "1" )
+          gradient.setSpread( QGradient::ReflectSpread );
       }
       // stop points
       QGradientStops stops;
       for ( int i = 7; i < vals.count(); i+=2 )
       {
-	bool bOk7, bOk8 = false;
-	QColor c;
-	double stop = vals[i].toDouble( &bOk7 );
-	if ( i+1 < vals.count() )
-	  bOk8 = stringToColor( vals[ i+1 ], c );
-	if ( bOk7 && stop >= 0.0 && stop <= 1.0 && bOk8 && c.isValid() )
-	  stops.append( QGradientStop( stop, c ) );
+        bool bOk7, bOk8 = false;
+        QColor c;
+        double stop = vals[i].toDouble( &bOk7 );
+        if ( i+1 < vals.count() )
+          bOk8 = stringToColor( vals[ i+1 ], c );
+        if ( bOk7 && stop >= 0.0 && stop <= 1.0 && bOk8 && c.isValid() )
+          stops.append( QGradientStop( stop, c ) );
       }
       gradient.setStops( stops );
       success = true;
@@ -1355,25 +1355,25 @@ bool Qtx::stringToConicalGradient( const QString& str, QConicalGradient& gradien
       // spread type
       if ( vals.count() > 4 )
       {
-	QString spread = vals[ 4 ].trimmed().toLower();
-	if ( spread == "pad" || spread == "0" )
-	  gradient.setSpread( QGradient::PadSpread );
-	else if ( spread == "repeat" || spread == "2" )
-	  gradient.setSpread( QGradient::RepeatSpread );
-	else if ( spread == "reflect" || spread == "1" )
-	  gradient.setSpread( QGradient::ReflectSpread );
+        QString spread = vals[ 4 ].trimmed().toLower();
+        if ( spread == "pad" || spread == "0" )
+          gradient.setSpread( QGradient::PadSpread );
+        else if ( spread == "repeat" || spread == "2" )
+          gradient.setSpread( QGradient::RepeatSpread );
+        else if ( spread == "reflect" || spread == "1" )
+          gradient.setSpread( QGradient::ReflectSpread );
       }
       // stop points
       QGradientStops stops;
       for ( int i = 5; i < vals.count(); i+=2 )
       {
-	bool bOk4, bOk5 = false;
-	QColor c;
-	double stop = vals[i].toDouble( &bOk4 );
-	if ( i+1 < vals.count() )
-	  bOk5 = stringToColor( vals[ i+1 ], c );
-	if ( bOk4 && stop >= 0.0 && stop <= 1.0 && bOk5 && c.isValid() )
-	  stops.append( QGradientStop( stop, c ) );
+        bool bOk4, bOk5 = false;
+        QColor c;
+        double stop = vals[i].toDouble( &bOk4 );
+        if ( i+1 < vals.count() )
+          bOk5 = stringToColor( vals[ i+1 ], c );
+        if ( bOk4 && stop >= 0.0 && stop <= 1.0 && bOk5 && c.isValid() )
+          stops.append( QGradientStop( stop, c ) );
       }
       gradient.setStops( stops );
       success = true;

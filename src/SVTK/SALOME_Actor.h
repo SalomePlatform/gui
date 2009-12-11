@@ -106,8 +106,8 @@ class SVTK_EXPORT SALOME_Actor : public VTKViewer_Actor
   virtual
   void
   SetPosition(vtkFloatingPointType _arg1, 
-	      vtkFloatingPointType _arg2, 
-	      vtkFloatingPointType _arg3);
+              vtkFloatingPointType _arg2, 
+              vtkFloatingPointType _arg3);
 
   //! Apply additional position
   virtual
@@ -172,15 +172,15 @@ class SVTK_EXPORT SALOME_Actor : public VTKViewer_Actor
   virtual
   bool
   PreHighlight(vtkInteractorStyle* theInteractorStyle, 
-	       SVTK_SelectionEvent* theSelectionEvent,
-	       bool theIsHighlight);
+               SVTK_SelectionEvent* theSelectionEvent,
+               bool theIsHighlight);
 
   //! To process highlight (called from #SVTK_InteractorStyle)
   virtual 
   bool
   Highlight(vtkInteractorStyle* theInteractorStyle, 
-	    SVTK_SelectionEvent* theSelectionEvent,
-	    bool theIsHighlight);
+            SVTK_SelectionEvent* theSelectionEvent,
+            bool theIsHighlight);
 
   //----------------------------------------------------------------------------
   //! To get flag of displaying of name actor

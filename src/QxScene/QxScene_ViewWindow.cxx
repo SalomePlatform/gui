@@ -88,7 +88,7 @@ void QxScene_ViewWindow::createActions()
   aAction = new QtxAction( tr( "MNU_FITALL" ),
                            aResMgr->loadPixmap( "QxSceneViewer", tr( "ICON_QXSCENE_FITALL" ) ),
                            tr( "MNU_FITALL" ),
-			   0, this);
+                           0, this);
   aAction->setStatusTip( tr( "DSC_FITALL" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewFitAll() ) );
   mgr->registerAction( aAction, FitAllId );
@@ -97,16 +97,16 @@ void QxScene_ViewWindow::createActions()
   aAction = new QtxAction( tr( "MNU_FITRECT" ),
                            aResMgr->loadPixmap( "QxSceneViewer", tr( "ICON_QXSCENE_FITAREA" ) ),
                            tr( "MNU_FITRECT" ),
-			   0, this);
+                           0, this);
   aAction->setStatusTip( tr( "DSC_FITRECT" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewFitArea() ) );
   mgr->registerAction( aAction, FitRectId );
 
   // 2.3. Zoom
   aAction = new QtxAction( tr( "MNU_ZOOM_VIEW" ),
-			   aResMgr->loadPixmap( "QxSceneViewer", tr( "ICON_QXSCENE_ZOOM" ) ),
+                           aResMgr->loadPixmap( "QxSceneViewer", tr( "ICON_QXSCENE_ZOOM" ) ),
                            tr( "MNU_ZOOM_VIEW" ),
-			   0, this);
+                           0, this);
   aAction->setStatusTip( tr( "DSC_ZOOM_VIEW" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewZoom() ) );
   mgr->registerAction( aAction, ZoomId );
@@ -122,18 +122,18 @@ void QxScene_ViewWindow::createActions()
 
   // 3.1. Panning
   aAction = new QtxAction( tr( "MNU_PAN_VIEW" ),
-			   aResMgr->loadPixmap( "QxSceneViewer", tr( "ICON_QXSCENE_PAN" ) ),
-			   tr( "MNU_PAN_VIEW" ), 
-			   0, this);
+                           aResMgr->loadPixmap( "QxSceneViewer", tr( "ICON_QXSCENE_PAN" ) ),
+                           tr( "MNU_PAN_VIEW" ), 
+                           0, this);
   aAction->setStatusTip( tr( "DSC_PAN_VIEW" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewPan() ) );
   mgr->registerAction( aAction, PanId );
 
   // 3.2. Global Panning
   aAction = new QtxAction( tr( "MNU_GLOBALPAN_VIEW" ),
-			   aResMgr->loadPixmap( "QxSceneViewer", tr( "ICON_QXSCENE_GLOBALPAN" ) ),
+                           aResMgr->loadPixmap( "QxSceneViewer", tr( "ICON_QXSCENE_GLOBALPAN" ) ),
                            tr( "MNU_GLOBALPAN_VIEW" ),
-			   0, this);
+                           0, this);
   aAction->setStatusTip( tr( "DSC_GLOBALPAN_VIEW" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewGlobalPan() ) );
   mgr->registerAction( aAction, GlobalPanId );
@@ -146,9 +146,9 @@ void QxScene_ViewWindow::createActions()
 
   // reset
   aAction = new QtxAction( tr( "MNU_RESET_VIEW" ),
-			   aResMgr->loadPixmap( "QxSceneViewer", tr( "ICON_QXSCENE_RESET" ) ),
-			   tr( "MNU_RESET_VIEW" ), 
-			   0, this);
+                           aResMgr->loadPixmap( "QxSceneViewer", tr( "ICON_QXSCENE_RESET" ) ),
+                           tr( "MNU_RESET_VIEW" ), 
+                           0, this);
   aAction->setStatusTip( tr( "DSC_RESET_VIEW" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewReset() ) );
   mgr->registerAction( aAction, ResetId );

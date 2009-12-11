@@ -86,16 +86,16 @@ SalomeApp_IntSpinBox::~SalomeApp_IntSpinBox()
 void SalomeApp_IntSpinBox::connectSignalsAndSlots()
 {
   connect( this, SIGNAL( editingFinished() ),
-	   this, SLOT( onEditingFinished() ) );
+           this, SLOT( onEditingFinished() ) );
 
   connect( this, SIGNAL( valueChanged( const QString& ) ),
-	   this, SLOT( onTextChanged( const QString& ) ) );
+           this, SLOT( onTextChanged( const QString& ) ) );
 
   connect( lineEdit(), SIGNAL( textChanged( const QString& ) ),
-	   this, SLOT( onTextChanged( const QString& ) ) );
+           this, SLOT( onTextChanged( const QString& ) ) );
 
   connect( lineEdit(), SIGNAL( textChanged( const QString& )),
- 	   this, SIGNAL( textChanged( const QString& ) ) );
+           this, SIGNAL( textChanged( const QString& ) ) );
 }
 
 /*!
@@ -174,11 +174,11 @@ bool SalomeApp_IntSpinBox::isValid( QString& msg, bool toCorrect )
     if( toCorrect )
     {
       if( aState == Incompatible )
-	msg += tr( "ERR_INCOMPATIBLE_TYPE" ).arg( text() ) + "\n";
+        msg += tr( "ERR_INCOMPATIBLE_TYPE" ).arg( text() ) + "\n";
       else if( aState == NoVariable )
-	msg += tr( "ERR_NO_VARIABLE" ).arg( text() ) + "\n";
+        msg += tr( "ERR_NO_VARIABLE" ).arg( text() ) + "\n";
       else if( aState == Invalid )
-	msg += tr( "ERR_INVALID_VALUE" ) + "\n";
+        msg += tr( "ERR_INVALID_VALUE" ) + "\n";
 
       setText( myCorrectValue );
     }
@@ -233,7 +233,7 @@ SalomeApp_IntSpinBox::State SalomeApp_IntSpinBox::isValid( const QString& text, 
     {
       text.toDouble( &ok );
       if( ok )
-	return Invalid;
+        return Invalid;
       return NoVariable;
     }
   }
@@ -283,29 +283,29 @@ SalomeApp_IntSpinBox::SearchState SalomeApp_IntSpinBox::findVariable( const QStr
       std::string aName = name.toStdString();
       if( studyDS->IsVariable( aName ) )
       {
-	if( studyDS->IsInteger( aName ) || studyDS->IsString( aName ) )
-	{
-	  if( studyDS->IsString( aName ) )
-	    {
-	      PyConsole_Console* pyConsole = app->pythonConsole();
-	      PyConsole_Interp* pyInterp = pyConsole->getInterp();
-	      PyLockWrapper aLock = pyInterp->GetLockWrapper();
-	      std::string command;
-	      command  = "import salome_notebook ; ";
-	      command += "salome_notebook.notebook.setAsInteger(\"";
-	      command += aName;
-	      command += "\")";
-	      bool aResult;
-	      aResult = pyInterp->run(command.c_str());
-	      if(aResult)
-		{
-		  return IncorrectType;
-		}
-	    }
-	  value = studyDS->GetInteger( aName );
-	  return Found;
-	}
-	return IncorrectType;
+        if( studyDS->IsInteger( aName ) || studyDS->IsString( aName ) )
+        {
+          if( studyDS->IsString( aName ) )
+            {
+              PyConsole_Console* pyConsole = app->pythonConsole();
+              PyConsole_Interp* pyInterp = pyConsole->getInterp();
+              PyLockWrapper aLock = pyInterp->GetLockWrapper();
+              std::string command;
+              command  = "import salome_notebook ; ";
+              command += "salome_notebook.notebook.setAsInteger(\"";
+              command += aName;
+              command += "\")";
+              bool aResult;
+              aResult = pyInterp->run(command.c_str());
+              if(aResult)
+                {
+                  return IncorrectType;
+                }
+            }
+          value = studyDS->GetInteger( aName );
+          return Found;
+        }
+        return IncorrectType;
       }
     }
   }

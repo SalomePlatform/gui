@@ -38,10 +38,10 @@ static int MYDEBUG = 0;
 //----------------------------------------------------------------------------
 SVTK_ImageWriter
 ::SVTK_ImageWriter(QSemaphore* theSemaphore,
-		   vtkImageData* theImageData,
-		   const std::string& theName,
-		   int theProgressive,
-		   int theQuality):
+                   vtkImageData* theImageData,
+                   const std::string& theName,
+                   int theProgressive,
+                   int theQuality):
   mySemaphore(theSemaphore),
   myImageData(theImageData),
   myName(theName),
@@ -98,9 +98,9 @@ SVTK_ImageWriter
   myImageData->Delete();
 
   if(MYDEBUG) cout<<"SVTK_ImageWriter::run "<<
-		"- this = "<<this<<
-		//"; total = "<<mySemaphore->total()<<
-		"; available = "<<mySemaphore->available()<<endl;
+                "- this = "<<this<<
+                //"; total = "<<mySemaphore->total()<<
+                "; available = "<<mySemaphore->available()<<endl;
   mySemaphore->release();
 }
 

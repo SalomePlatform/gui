@@ -203,7 +203,7 @@ void QtxActionGroup::onTriggered( QAction* a )
     {
       QtxComboBox* cb = ::qobject_cast<QtxComboBox*>( *it );
       if ( cb )
-	cb->setCurrentId( id );
+        cb->setCurrentId( id );
     }
   }
   
@@ -226,7 +226,7 @@ void QtxActionGroup::updateAction( QWidget* w )
       
       QList<QAction*> lst = actions();
       for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end(); ++it )
-	w->removeAction( *it );
+        w->removeAction( *it );
     }
   }
   else
@@ -237,7 +237,7 @@ void QtxActionGroup::updateAction( QWidget* w )
     else {
       QList<QAction*> lst = actions();
       for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end(); ++it )
-	w->removeAction( *it );
+        w->removeAction( *it );
     }
   }
 }

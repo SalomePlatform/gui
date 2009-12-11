@@ -40,7 +40,7 @@ class QXGRAPH_EXPORT QxGraph_CanvasView : public QCanvasView {
 
  public:
   enum OperationType{ NOTHING, PANVIEW, ZOOMVIEW, PANGLOBAL, 
-		      WINDOWFIT, FITALLVIEW, RESETVIEW };
+                      WINDOWFIT, FITALLVIEW, RESETVIEW };
   
   QxGraph_CanvasView(QxGraph_Canvas* theCanvas, QxGraph_ViewWindow* theViewWindow);
   virtual ~QxGraph_CanvasView();

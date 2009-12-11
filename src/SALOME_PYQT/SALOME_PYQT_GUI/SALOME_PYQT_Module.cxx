@@ -122,7 +122,7 @@ QString SALOME_PYQT_Module::engineIOR() const
   {
   public:
     EngineIORReq( PyInterp_Interp*    _py_interp,
-		  SALOME_PYQT_Module* _obj )
+                  SALOME_PYQT_Module* _obj )
       : PyInterp_LockRequest( _py_interp, 0, true ), // this request should be processed synchronously (sync == true)
         myObj( _obj ) {}
 
@@ -207,8 +207,8 @@ void SALOME_PYQT_Module::onViewClosed( SUIT_ViewWindow* pview )
   \param setting preference resource name
 */
 void SALOME_PYQT_Module::preferenceChanged( const QString& module, 
-					    const QString& section, 
-					    const QString& setting )
+                                            const QString& section, 
+                                            const QString& setting )
 {
   SALOME_PYQT_ModuleLight::preferenceChanged(module,section,setting);
 }

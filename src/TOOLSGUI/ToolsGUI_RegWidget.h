@@ -62,7 +62,7 @@ public:
   bool                       eventFilter( QObject* object, QEvent* event );
 
   static ToolsGUI_RegWidget* GetRegWidget( CORBA::ORB_var& orb, 
-					   QWidget* parent = 0 );
+                                           QWidget* parent = 0 );
 
   virtual QMenu*             createPopupMenu();
 
@@ -77,9 +77,9 @@ public slots:
 protected:  
   static QString             setlongText( const Registry::Infos& c_info );
   int                        numitem( const QString& name, 
-				      const QString& pid, 
-				      const QString& machine, 
-				      const Registry::AllInfos* clistclient );
+                                      const QString& pid, 
+                                      const QString& machine, 
+                                      const Registry::AllInfos* clistclient );
   void                       closeEvent( QCloseEvent* e );
    
 protected :

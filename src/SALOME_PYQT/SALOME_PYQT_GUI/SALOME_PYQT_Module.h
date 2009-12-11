@@ -48,8 +48,8 @@ public:
 
 public slots:
   void                       preferenceChanged( const QString&, 
-						const QString&, 
-						const QString& );
+                                                const QString&, 
+                                                const QString& );
   void                       onGUIEvent();
   void                       onActiveViewChanged( SUIT_ViewWindow* );
   void                       onViewClosed( SUIT_ViewWindow* );

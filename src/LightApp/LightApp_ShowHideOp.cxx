@@ -104,7 +104,7 @@ void LightApp_ShowHideOp::startOperation()
     {
       LightApp_Displayer* disp = LightApp_Displayer::FindDisplayer( app->moduleTitle( *anIt ), true );
       if( disp )
-	disp->EraseAll( false, false, 0 );
+        disp->EraseAll( false, false, 0 );
     }
     if( myActionType==ERASE_ALL )
     {

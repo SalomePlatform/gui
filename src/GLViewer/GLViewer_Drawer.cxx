@@ -516,25 +516,25 @@ void GLViewer_Drawer::destroyAllTextures()
 */
 void GLViewer_Drawer::setAntialiasing(const bool on)
 {
-	if (on)
-	{
+        if (on)
+        {
     glHint(GL_LINE_SMOOTH_HINT, GL_NICEST);
     glHint(GL_POLYGON_SMOOTH_HINT, GL_NICEST);
 
-		glEnable(GL_POINT_SMOOTH);
-		glEnable(GL_LINE_SMOOTH);
-		glEnable(GL_POLYGON_SMOOTH);
-		glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
-		glEnable (GL_BLEND);
-	}
-	else
-	{
-		glDisable(GL_POINT_SMOOTH);
-		glDisable(GL_LINE_SMOOTH);
-		glDisable(GL_POLYGON_SMOOTH);
-		glBlendFunc (GL_ONE, GL_ZERO);
-		glDisable (GL_BLEND);
-	}
+                glEnable(GL_POINT_SMOOTH);
+                glEnable(GL_LINE_SMOOTH);
+                glEnable(GL_POLYGON_SMOOTH);
+                glBlendFunc (GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); 
+                glEnable (GL_BLEND);
+        }
+        else
+        {
+                glDisable(GL_POINT_SMOOTH);
+                glDisable(GL_LINE_SMOOTH);
+                glDisable(GL_POLYGON_SMOOTH);
+                glBlendFunc (GL_ONE, GL_ZERO);
+                glDisable (GL_BLEND);
+        }
 }
 
 /*! Loads texture from file
@@ -949,7 +949,7 @@ bool GLViewer_Drawer::translateToEMF( HDC hDC, GLViewer_CoordSystem* aViewerCS, 
   \param fillingColor - color of filling
 */
 void GLViewer_Drawer::drawRectangle( GLViewer_Rect* rect, GLfloat lineWidth, GLfloat gap,
-				     QColor color, bool filled, QColor fillingColor )
+                                     QColor color, bool filled, QColor fillingColor )
 {
   if( !rect )
     return;
@@ -1014,7 +1014,7 @@ void GLViewer_Drawer::drawContour( const GLViewer_PntList& pntList, QColor color
   \param isStripe - enables line stipple
 */
 void GLViewer_Drawer::drawContour( GLViewer_Rect* rect, QColor color, GLfloat lineWidth,
-				   GLushort pattern, bool isStripe )
+                                   GLushort pattern, bool isStripe )
 {
   float x1 = rect->left();
   float x2 = rect->right();
@@ -1137,9 +1137,9 @@ void GLViewer_Drawer::drawCross( GLfloat x, GLfloat y, QColor color )
   \param filled - drawn as filled
 */
 void GLViewer_Drawer::drawArrow( const GLfloat red, const GLfloat green, const GLfloat blue,
-				 GLfloat lineWidth,
-				 GLfloat staff, GLfloat length, GLfloat width,
-				 GLfloat x, GLfloat y, GLfloat angle, GLboolean filled )
+                                 GLfloat lineWidth,
+                                 GLfloat staff, GLfloat length, GLfloat width,
+                                 GLfloat x, GLfloat y, GLfloat angle, GLboolean filled )
 {
   GLfloat vx1 = x;
   GLfloat vy1 = y + staff + length;

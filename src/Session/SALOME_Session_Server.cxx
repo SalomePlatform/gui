@@ -180,7 +180,7 @@ public:
       if ( myExtAppVersion == "APP_VERSION" ) {
         if ( myExtAppName != "SalomeApp" )
           myExtAppVersion = "";
-	else myExtAppVersion = salomeVersion();
+        else myExtAppVersion = salomeVersion();
       }
     }
   }
@@ -201,23 +201,23 @@ protected:
       
       QString fname = QFileInfo( _fname ).fileName();
       if( exp.exactMatch( fname ) ) {
-	QStringList vers = exp.cap( 1 ).split( ".", QString::SkipEmptyParts );
-	int major=0, minor=0;
-	major = vers[0].toInt();
-	minor = vers[1].toInt();
-	if( vers_exp.indexIn( vers[2] )==-1 )
-	  return -1;
-	int release = 0, dev1 = 0, dev2 = 0;
-	release = vers_exp.cap( 1 ).toInt();
-	dev1 = vers_exp.cap( 2 )[ 0 ].toLatin1();
-	dev2 = vers_exp.cap( 3 ).toInt();
-	
-	int dev = dev1*100+dev2, id = major;
-	id*=100; id+=minor;
-	id*=100; id+=release;
-	id*=10000;
-	if ( dev > 0 ) id+=dev-10000;
-	return id;
+        QStringList vers = exp.cap( 1 ).split( ".", QString::SkipEmptyParts );
+        int major=0, minor=0;
+        major = vers[0].toInt();
+        minor = vers[1].toInt();
+        if( vers_exp.indexIn( vers[2] )==-1 )
+          return -1;
+        int release = 0, dev1 = 0, dev2 = 0;
+        release = vers_exp.cap( 1 ).toInt();
+        dev1 = vers_exp.cap( 2 )[ 0 ].toLatin1();
+        dev2 = vers_exp.cap( 3 ).toInt();
+        
+        int dev = dev1*100+dev2, id = major;
+        id*=100; id+=minor;
+        id*=100; id+=release;
+        id*=10000;
+        if ( dev > 0 ) id+=dev-10000;
+        return id;
       }
     }
 
@@ -473,22 +473,22 @@ int main( int argc, char **argv )
       splash->setProgress( 0, sc.totalSteps() );
       // start check loop 
       while ( true ) {
-	int step    = sc.currentStep();
-	int total   = sc.totalSteps();
-	QString msg = sc.currentMessage();
-	QString err = sc.error();
-	if ( !err.isEmpty() ) {
-	  QtxSplash::setError( err );
-	  QApplication::instance()->processEvents();
-	  result = -1;
-	  break;
-	}
-	QtxSplash::setStatus( msg, step );
-	QApplication::instance()->processEvents();
-	if ( step >= total )
-	  break;
-	// ...block this thread until servers checking is finished
-	_SplashStarted.wait( &_SplashMutex );
+        int step    = sc.currentStep();
+        int total   = sc.totalSteps();
+        QString msg = sc.currentMessage();
+        QString err = sc.error();
+        if ( !err.isEmpty() ) {
+          QtxSplash::setError( err );
+          QApplication::instance()->processEvents();
+          result = -1;
+          break;
+        }
+        QtxSplash::setStatus( msg, step );
+        QApplication::instance()->processEvents();
+        if ( step >= total )
+          break;
+        // ...block this thread until servers checking is finished
+        _SplashStarted.wait( &_SplashMutex );
       }
       // ...unlock mutex 'cause it is no more needed
       _SplashMutex.unlock();
@@ -506,7 +506,7 @@ int main( int argc, char **argv )
     // Launch GUI activator
     if ( isGUI ) {
       if ( splash )
-	splash->setStatus( QApplication::translate( "", "Activating desktop..." ) );
+        splash->setStatus( QApplication::translate( "", "Activating desktop..." ) );
       // ...retrieve Session interface reference
       CORBA::Object_var obj = _NS->Resolve( "/Kernel/Session" );
       SALOME::Session_var session = SALOME::Session::_narrow( obj ) ;
@@ -535,28 +535,28 @@ int main( int argc, char **argv )
       SUIT_Application* aGUIApp = aGUISession->startApplication( "SalomeApp", 0, 0 );
       if ( aGUIApp )
       {
-	Style_Salome::initialize( aGUIApp->resourceMgr() );
-	if ( aGUIApp->resourceMgr()->booleanValue( "Style", "use_salome_style", true ) )
-	  Style_Salome::apply();
+        Style_Salome::initialize( aGUIApp->resourceMgr() );
+        if ( aGUIApp->resourceMgr()->booleanValue( "Style", "use_salome_style", true ) )
+          Style_Salome::apply();
 
-	if ( !isFound( "noexcepthandler", argc, argv ) )
-	  _qappl.setHandler( aGUISession->handler() ); // after loading SalomeApp application
-	                                               // aGUISession contains SalomeApp_ExceptionHandler
-	// Run GUI loop
-	MESSAGE( "run(): starting the main event loop" );
+        if ( !isFound( "noexcepthandler", argc, argv ) )
+          _qappl.setHandler( aGUISession->handler() ); // after loading SalomeApp application
+                                                       // aGUISession contains SalomeApp_ExceptionHandler
+        // Run GUI loop
+        MESSAGE( "run(): starting the main event loop" );
 
-	if ( splash )
-	  splash->finish( aGUIApp->desktop() );
-	  
-	result = _qappl.exec();
-	
-	splash = 0;
+        if ( splash )
+          splash->finish( aGUIApp->desktop() );
+          
+        result = _qappl.exec();
+        
+        splash = 0;
 
-	if ( result == SUIT_Session::NORMAL ) { // desktop is closed by user from GUI
-	  shutdown = aGUISession->exitFlags();
-	  _SessionMutex.lock();
-	  break;
-	}
+        if ( result == SUIT_Session::NORMAL ) { // desktop is closed by user from GUI
+          shutdown = aGUISession->exitFlags();
+          _SessionMutex.lock();
+          break;
+        }
       }
 
       delete aGUISession;

@@ -102,7 +102,7 @@ QtxDoubleValidator::QtxDoubleValidator( QObject* parent )
   \param parent parent object
 */
 QtxDoubleValidator::QtxDoubleValidator( const double bot, const double top,
-					const int dec, QObject* parent )
+                                        const int dec, QObject* parent )
 : QDoubleValidator( bot, top, dec, parent )
 {
 }

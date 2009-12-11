@@ -236,8 +236,8 @@ public:
   //! Returns object priority
   int                             getPriority() const { return myPriority; }
 
-	//! The function enables and disables antialiasing in Open GL (for points, lines and polygons).
-	void                            setAntialiasing(const bool on);
+        //! The function enables and disables antialiasing in Open GL (for points, lines and polygons).
+        void                            setAntialiasing(const bool on);
   
   //! Clears all generated textures
   static void                     destroyAllTextures();
@@ -342,7 +342,7 @@ public:
   */
   void                            drawText( const QString& text,
                                             GLfloat xPos,
-					                                  GLfloat yPos,
+                                                                          GLfloat yPos,
                                             const QColor& color,
                                             QFont* aFont,
                                             int theSeparator,
@@ -359,8 +359,8 @@ public:
    *\param smallFont - font format
   */
   void                            drawGLText( QString text,
-					                                    float x,
-					                                    float y,
+                                                                            float x,
+                                                                            float y,
                                               int hPosition = GLText_Center,
                                               int vPosition = GLText_Center,
                                               QColor color = Qt::black,
@@ -404,7 +404,7 @@ protected:
   //! Draw basic primitives: rectangle, contour, polygon, vertex, cross, arrow
   //* with predefined color
   static void                     drawRectangle( GLViewer_Rect*, GLfloat, GLfloat = 0, QColor = Qt::black, 
-						 bool = false, QColor = Qt::white );
+                                                 bool = false, QColor = Qt::white );
   static void                     drawContour( GLViewer_Rect*, QColor, GLfloat, GLushort, bool );
   static void                     drawContour( const GLViewer_PntList&, QColor, GLfloat );
   static void                     drawPolygon( GLViewer_Rect*, QColor, GLushort, bool );
@@ -412,8 +412,8 @@ protected:
   static void                     drawVertex( GLfloat, GLfloat, QColor );
   static void                     drawCross( GLfloat, GLfloat, QColor );
   static void                     drawArrow( const GLfloat red, const GLfloat green, const GLfloat blue,
-					     GLfloat, GLfloat, GLfloat, GLfloat,
-					     GLfloat, GLfloat, GLfloat, GLboolean = GL_FALSE );
+                                             GLfloat, GLfloat, GLfloat, GLfloat,
+                                             GLfloat, GLfloat, GLfloat, GLboolean = GL_FALSE );
 
   //! Draw object text
   virtual void                    drawText( GLViewer_Object* theObject );

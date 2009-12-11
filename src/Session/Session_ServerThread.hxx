@@ -47,9 +47,9 @@ public:
 
   Session_ServerThread();
   Session_ServerThread(int argc,
-		       char ** argv, 
-		       CORBA::ORB_ptr orb, 
-		       PortableServer::POA_ptr poa);
+                       char ** argv, 
+                       CORBA::ORB_ptr orb, 
+                       PortableServer::POA_ptr poa);
   virtual ~Session_ServerThread();
   void         Init();
 protected:
@@ -77,10 +77,10 @@ class SESSION_EXPORT Session_SessionThread : public Session_ServerThread
 public:
   Session_SessionThread() {}
   Session_SessionThread(int argc,
-		       char** argv, 
-		       CORBA::ORB_ptr orb, 
-		       PortableServer::POA_ptr poa,
-		       QMutex* GUIMutex,
+                       char** argv, 
+                       CORBA::ORB_ptr orb, 
+                       PortableServer::POA_ptr poa,
+                       QMutex* GUIMutex,
                        QWaitCondition* GUILauncher);
   virtual ~Session_SessionThread();  
 

@@ -55,67 +55,67 @@ public:
   virtual ~OCCViewer_ViewPort();
 
 public:
-  void	                         setSketchingEnabled( bool );
+  void                           setSketchingEnabled( bool );
   bool                           isSketchingEnabled() const;
-  void	                         setTransformEnabled( bool );
+  void                           setTransformEnabled( bool );
   bool                           isTransformEnabled() const;
 
   virtual QColor                 backgroundColor() const;
   virtual void                   setBackgroundColor( const QColor& );
 
-  void	                         redrawPainters();
+  void                           redrawPainters();
 
   virtual void                   onUpdate();
 
   virtual QPaintEngine*          paintEngine() const;
 
 protected:
-//	enum ViewType { Type2D, Type3D };
-  void		                 selectVisualId();
+//      enum ViewType { Type2D, Type3D };
+  void                           selectVisualId();
 
 // EVENTS
   virtual void                   paintEvent( QPaintEvent *);
-  virtual void	                 mouseMoveEvent( QMouseEvent *);
-  virtual void	                 mouseReleaseEvent( QMouseEvent *);
-  virtual void	                 mousePressEvent( QMouseEvent *);
-  virtual void	                 mouseDoubleClickEvent( QMouseEvent *);
+  virtual void                   mouseMoveEvent( QMouseEvent *);
+  virtual void                   mouseReleaseEvent( QMouseEvent *);
+  virtual void                   mousePressEvent( QMouseEvent *);
+  virtual void                   mouseDoubleClickEvent( QMouseEvent *);
   virtual void                   keyPressEvent( QKeyEvent *);
   virtual void                   keyReleaseEvent( QKeyEvent *);
 
 // TO BE REDEFINED
-  virtual void	                 reset() = 0;
-  virtual void	                 pan( int, int ) = 0;
-  virtual void	                 setCenter( int, int ) = 0;
-  virtual void	                 fitRect( const QRect& ) = 0;
-  virtual void	                 zoom( int, int, int, int ) = 0;
-  virtual void	                 fitAll( bool keepScale = false, bool withZ = true, bool upd = true ) = 0;
+  virtual void                   reset() = 0;
+  virtual void                   pan( int, int ) = 0;
+  virtual void                   setCenter( int, int ) = 0;
+  virtual void                   fitRect( const QRect& ) = 0;
+  virtual void                   zoom( int, int, int, int ) = 0;
+  virtual void                   fitAll( bool keepScale = false, bool withZ = true, bool upd = true ) = 0;
 
 // POPUP
 //  void                             onCreatePopup( QPopupMenu* );
 //  void                             onDestroyPopup( QPopupMenu* );
 
 protected slots:
-  virtual void	                 onChangeBgColor();
+  virtual void                   onChangeBgColor();
 
 signals:
-  void		                 vpKeyEvent( QKeyEvent* );
-  void		                 vpMouseEvent( QMouseEvent* );
-  void	   	                 vpDrawExternal( QPainter* );
+  void                           vpKeyEvent( QKeyEvent* );
+  void                           vpMouseEvent( QMouseEvent* );
+  void                           vpDrawExternal( QPainter* );
   void                           vpChangeBGColor( QColor );
 
 private:
-  void	                         initialize();
-  void	                         cleanup();
+  void                           initialize();
+  void                           cleanup();
 
 protected:
   Handle(Aspect_Window)          myWindow;
-  bool	                         myEnableSketching;
-  bool		                 myEnableTransform;
-  bool		                 myPaintersRedrawing; /* set to draw externally */
+  bool                           myEnableSketching;
+  bool                           myEnableTransform;
+  bool                           myPaintersRedrawing; /* set to draw externally */
   QList<QtxAction*>              myPopupActions;
 
 private:
-  static int		         nCounter; /* objects counter */
+  static int                     nCounter; /* objects counter */
 };
 
 #ifdef WIN32

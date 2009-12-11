@@ -43,32 +43,32 @@ class QListWidgetItem;
 
 class OCCVIEWER_EXPORT OCCViewer_CreateRestoreViewDlg : public QDialog
 {
-	Q_OBJECT
+        Q_OBJECT
 
 public:
-	OCCViewer_CreateRestoreViewDlg( QWidget*, OCCViewer_Viewer* );
-	virtual ~OCCViewer_CreateRestoreViewDlg();
+        OCCViewer_CreateRestoreViewDlg( QWidget*, OCCViewer_Viewer* );
+        virtual ~OCCViewer_CreateRestoreViewDlg();
 
-	const viewAspectList&         parameters() const;
-	viewAspect                    currentItem() const;
-	virtual bool		      eventFilter( QObject*, QEvent* );
+        const viewAspectList&         parameters() const;
+        viewAspect                    currentItem() const;
+        virtual bool                  eventFilter( QObject*, QEvent* );
 
 public slots:
-	void	                      OKpressed();
-	void	                      clearList();
-	void                          editItemText( QListWidgetItem* );
-	void	                      changeImage( QListWidgetItem* );
-	void	                      deleteSelectedItems();
+        void                          OKpressed();
+        void                          clearList();
+        void                          editItemText( QListWidgetItem* );
+        void                          changeImage( QListWidgetItem* );
+        void                          deleteSelectedItems();
 
 signals:
-	void	                      dlgOk();
+        void                          dlgOk();
 
 private:
-	int		              myKeyFlag;
-	QListWidget*		      myListBox;
-	OCCViewer_ViewPort3d*	      myCurViewPort;
-	viewAspect                    myCurrentItem;
-	viewAspectList                myParametersMap;
+        int                           myKeyFlag;
+        QListWidget*                  myListBox;
+        OCCViewer_ViewPort3d*         myCurViewPort;
+        viewAspect                    myCurrentItem;
+        viewAspectList                myParametersMap;
 };
 
 #ifdef WIN32

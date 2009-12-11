@@ -62,11 +62,11 @@ myWorkstackAction( 0 )
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
   if ( resMgr ) {
     myWorkstack->setIcon( QtxWorkstack::SplitVertical,
-			  resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_VSPLIT" ) ) );
+                          resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_VSPLIT" ) ) );
     myWorkstack->setIcon( QtxWorkstack::SplitHorizontal,
-			  resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_HSPLIT" ) ) );
+                          resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_HSPLIT" ) ) );
     myWorkstack->setIcon( QtxWorkstack::Close,
-			  resMgr->loadPixmap( "STD", tr( "ICON_FILE_CLOSE" ) ));
+                          resMgr->loadPixmap( "STD", tr( "ICON_FILE_CLOSE" ) ));
   }
 
   connect( myWorkstack, SIGNAL( windowActivated( QWidget* ) ),
@@ -138,18 +138,18 @@ void STD_TabDesktop::windowOperation( const int type )
 void STD_TabDesktop::setWindowOperations( const int first, ... )
 {
   va_list ints;
-	va_start( ints, first );
+        va_start( ints, first );
 
-	QList<int> typeList;
+        QList<int> typeList;
 
-	int cur = first;
-	while ( cur )
-	{
-	  typeList.append( cur );
-		cur = va_arg( ints, int );
+        int cur = first;
+        while ( cur )
+        {
+          typeList.append( cur );
+                cur = va_arg( ints, int );
   }
 
-	setWindowOperations( typeList );
+        setWindowOperations( typeList );
 }
 
 /*!

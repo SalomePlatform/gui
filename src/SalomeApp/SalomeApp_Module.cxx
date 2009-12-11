@@ -96,26 +96,26 @@ void SalomeApp_Module::extractContainers( const SALOME_ListIO& source, SALOME_Li
       _PTR(SObject) SO = study->studyDS()->FindObjectID( obj->getEntry() );
       if( SO && QString( SO->GetID().c_str() ) == SO->GetFatherComponent()->GetID().c_str() )
       { //component is selected
-	_PTR(SComponent) SC( SO->GetFatherComponent() );
-	_PTR(ChildIterator) anIter ( study->studyDS()->NewChildIterator( SC ) );
-	anIter->InitEx( true );
-	while( anIter->More() )
-	{
-	  _PTR(SObject) valSO ( anIter->Value() );
-	  _PTR(SObject) refSO;
-	  if( !valSO->ReferencedObject( refSO ) )
-	  {
-	    QString id = valSO->GetID().c_str(),
-	            comp = SC->ComponentDataType().c_str(),
-		    val = valSO->GetName().c_str();
+        _PTR(SComponent) SC( SO->GetFatherComponent() );
+        _PTR(ChildIterator) anIter ( study->studyDS()->NewChildIterator( SC ) );
+        anIter->InitEx( true );
+        while( anIter->More() )
+        {
+          _PTR(SObject) valSO ( anIter->Value() );
+          _PTR(SObject) refSO;
+          if( !valSO->ReferencedObject( refSO ) )
+          {
+            QString id = valSO->GetID().c_str(),
+                    comp = SC->ComponentDataType().c_str(),
+                    val = valSO->GetName().c_str();
 
-	    Handle( SALOME_InteractiveObject ) new_obj =
-	      new SALOME_InteractiveObject( id.toLatin1(), comp.toLatin1(), val.toLatin1() );
-	    dest.Append( new_obj );
-	  }
-	  anIter->Next();
-	}
-	continue;
+            Handle( SALOME_InteractiveObject ) new_obj =
+              new SALOME_InteractiveObject( id.toLatin1(), comp.toLatin1(), val.toLatin1() );
+            dest.Append( new_obj );
+          }
+          anIter->Next();
+        }
+        continue;
       }
     }
     dest.Append( obj );

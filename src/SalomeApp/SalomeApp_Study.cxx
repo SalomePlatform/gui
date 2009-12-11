@@ -213,7 +213,7 @@ bool SalomeApp_Study::saveDocumentAs( const QString& theFileName )
       listOfFiles.clear();
       aModel->saveAs( theFileName, this, listOfFiles );
       if ( !listOfFiles.isEmpty() )
-	saveModuleData(aModel->module()->name(), listOfFiles);
+        saveModuleData(aModel->module()->name(), listOfFiles);
     }
   }
 
@@ -255,7 +255,7 @@ bool SalomeApp_Study::saveDocument()
       listOfFiles.clear();
       aModel->save(listOfFiles);
       if ( !listOfFiles.isEmpty() ) 
-	saveModuleData(aModel->module()->name(), listOfFiles);
+        saveModuleData(aModel->module()->name(), listOfFiles);
     }
   }
 
@@ -523,7 +523,7 @@ QString SalomeApp_Study::newStudyName() const
     curName = prefix.arg( i );
     for ( j = 0 ; j < n; j++ ){
       if ( !strcmp( studies[j].c_str(), curName.toLatin1() ) )
-	break;
+        break;
     }
     if ( j == n )
       newName = curName;

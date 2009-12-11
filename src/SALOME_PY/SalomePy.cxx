@@ -143,29 +143,29 @@ static SVTK_ViewWindow* GetVTKViewWindow( int toCreate = __FindOrCreate ) {
       // get active study
       LightApp_Study* aStudy = dynamic_cast<LightApp_Study*>( anApp->activeStudy() );
       if ( aStudy ) {
-	// find or create VTK view manager
-	if ( toCreate == __Create ) {
-	  SVTK_ViewManager* aVM = dynamic_cast<SVTK_ViewManager*>( anApp->createViewManager( "VTKViewer" ) );
-	  if ( aVM ) {
-	    aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->getActiveView() );
-	    if ( !aVW )
-	      aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->createViewWindow() );
-	    // VSR : When new view window is created it can be not active yet at this moment,
-	    // so the following is a some workaround
-	    if ( !aVW && !aVM->getViews().isEmpty() )
-	      aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->getViews()[0] );
-	  }
-	}
-	else {
-	  SVTK_ViewManager* aVM = dynamic_cast<SVTK_ViewManager*>( anApp->getViewManager( "VTKViewer", toCreate == __FindOrCreate ) );
-	  if ( aVM ) {
-	    aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->getActiveView() );
-	    // VSR : When new view window is created it can be not active yet at this moment,
-	    // so the following is a some workaround
-	    if ( !aVW && !aVM->getViews().isEmpty() )
-	      aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->getViews()[0] );
-	  }
-	}
+        // find or create VTK view manager
+        if ( toCreate == __Create ) {
+          SVTK_ViewManager* aVM = dynamic_cast<SVTK_ViewManager*>( anApp->createViewManager( "VTKViewer" ) );
+          if ( aVM ) {
+            aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->getActiveView() );
+            if ( !aVW )
+              aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->createViewWindow() );
+            // VSR : When new view window is created it can be not active yet at this moment,
+            // so the following is a some workaround
+            if ( !aVW && !aVM->getViews().isEmpty() )
+              aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->getViews()[0] );
+          }
+        }
+        else {
+          SVTK_ViewManager* aVM = dynamic_cast<SVTK_ViewManager*>( anApp->getViewManager( "VTKViewer", toCreate == __FindOrCreate ) );
+          if ( aVM ) {
+            aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->getActiveView() );
+            // VSR : When new view window is created it can be not active yet at this moment,
+            // so the following is a some workaround
+            if ( !aVW && !aVM->getViews().isEmpty() )
+              aVW = dynamic_cast<SVTK_ViewWindow*>( aVM->getViews()[0] );
+          }
+        }
       }
     }
   }
@@ -340,8 +340,8 @@ extern "C" PyObject* libSalomePy_showTrihedron( PyObject* self, PyObject* args )
     virtual void Execute()
     {
       if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( __Find ) ) {
-	if ( aVTKViewWindow->isTrihedronDisplayed() != myShow )
-	  aVTKViewWindow->onViewTrihedron();
+        if ( aVTKViewWindow->isTrihedronDisplayed() != myShow )
+          aVTKViewWindow->onViewTrihedron();
       }
     }
   };
@@ -373,7 +373,7 @@ extern "C" PyObject* libSalomePy_fitAll( PyObject* self, PyObject* args )
     virtual void Execute()
     {
       if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( __Find ) ) {
-	aVTKViewWindow->onFitAll();
+        aVTKViewWindow->onFitAll();
       }
     }
   };
@@ -402,23 +402,23 @@ extern "C" PyObject* libSalomePy_setView( PyObject* self, PyObject* args )
     virtual void Execute()
     {
       if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( __Find ) ) {
-	switch( myType ) {
-	case ViewFront:
-	  aVTKViewWindow->onFrontView();  break;
-	case ViewBack:
-	  aVTKViewWindow->onBackView();   break;
-	case ViewTop:
-	  aVTKViewWindow->onTopView();    break;
-	case ViewBottom:
-	  aVTKViewWindow->onBottomView(); break;
-	case ViewRight:
-	  aVTKViewWindow->onRightView();  break;
-	case ViewLeft:
-	  aVTKViewWindow->onLeftView();   break;
-	default:
-	  PyErr_Format(PyExc_ValueError,"setView%: wrong parameter value; must be between %d and %d", ViewFront, ViewLeft );
-	  break;
-	}
+        switch( myType ) {
+        case ViewFront:
+          aVTKViewWindow->onFrontView();  break;
+        case ViewBack:
+          aVTKViewWindow->onBackView();   break;
+        case ViewTop:
+          aVTKViewWindow->onTopView();    break;
+        case ViewBottom:
+          aVTKViewWindow->onBottomView(); break;
+        case ViewRight:
+          aVTKViewWindow->onRightView();  break;
+        case ViewLeft:
+          aVTKViewWindow->onLeftView();   break;
+        default:
+          PyErr_Format(PyExc_ValueError,"setView%: wrong parameter value; must be between %d and %d", ViewFront, ViewLeft );
+          break;
+        }
       }
     }
   };
@@ -452,7 +452,7 @@ extern "C" PyObject* libSalomePy_resetView( PyObject* self, PyObject* args )
     virtual void Execute()
     {
       if( SVTK_ViewWindow* aVTKViewWindow = GetVTKViewWindow( __Find ) ) {
-	aVTKViewWindow->onResetView();
+        aVTKViewWindow->onResetView();
       }
     }
   };

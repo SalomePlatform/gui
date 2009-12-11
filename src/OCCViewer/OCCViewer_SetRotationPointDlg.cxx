@@ -208,8 +208,8 @@ OCCViewer_SetRotationPointDlg
   }
   else
     myView->activateSetRotationSelected(myX->text().toDouble(), 
-					myY->text().toDouble(), 
-					myZ->text().toDouble());
+                                        myY->text().toDouble(), 
+                                        myZ->text().toDouble());
 }
 
 void
@@ -220,8 +220,8 @@ OCCViewer_SetRotationPointDlg
     mySelectPoint->toggle();
   setCoords();
   myView->activateSetRotationSelected(myX->text().toDouble(), 
-				      myY->text().toDouble(), 
-				      myZ->text().toDouble());
+                                      myY->text().toDouble(), 
+                                      myZ->text().toDouble());
 }
 
 void
@@ -241,12 +241,12 @@ OCCViewer_SetRotationPointDlg
   if ( !myIsBBCenter->isChecked() )
   {
     if ( mySelectPoint->isChecked()
-	 &&
-	 ( myX->hasFocus() || myY->hasFocus() || myZ->hasFocus() ) )
+         &&
+         ( myX->hasFocus() || myY->hasFocus() || myZ->hasFocus() ) )
       mySelectPoint->toggle();
     myView->activateSetRotationSelected(myX->text().toDouble(), 
-					myY->text().toDouble(), 
-					myZ->text().toDouble());
+                                        myY->text().toDouble(), 
+                                        myZ->text().toDouble());
   }
 }
 

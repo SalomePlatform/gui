@@ -148,8 +148,8 @@ static const char* const default_icon[] = {
   \param icon module icon
 */
 LightApp_ModuleDlg::LightApp_ModuleDlg( QWidget*       parent, 
-					const QString& component, 
-					const QPixmap& icon )
+                                        const QString& component, 
+                                        const QPixmap& icon )
 : QDialog ( parent )
 {
   setModal( true );
@@ -242,7 +242,7 @@ QPushButton* LightApp_ModuleDlg::findButton( const int id ) const
 {
   QPushButton* btn = 0;
   for ( ButtonMap::ConstIterator it = myButtons.begin(); 
-	it != myButtons.end() && !btn; ++it ) {
+        it != myButtons.end() && !btn; ++it ) {
     if ( it.value() == id )
       btn = it.key();
   }

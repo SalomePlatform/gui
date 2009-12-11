@@ -73,8 +73,8 @@ public:
  // 
 Standard_EXPORT   SALOME_InteractiveObject();
 Standard_EXPORT   SALOME_InteractiveObject(const char* anEntry, 
-					   const char* aComponentDataType,
-					   const char* aName = "");
+                                           const char* aComponentDataType,
+                                           const char* aName = "");
 Standard_EXPORT   void setEntry(const char* anEntry) ;
 Standard_EXPORT   const char* getEntry() ;
 Standard_EXPORT   void setName(const char* aName) ;
@@ -105,7 +105,7 @@ friend Standard_Boolean IsEqual(const Handle(SALOME_InteractiveObject)& anIO1,
  //
  Standard_EXPORT friend Handle_Standard_Type& SALOME_InteractiveObject_Type_();
  Standard_EXPORT const Handle(Standard_Type)& DynamicType() const;
- Standard_EXPORT Standard_Boolean	       IsKind(const Handle(Standard_Type)&) const;
+ Standard_EXPORT Standard_Boolean              IsKind(const Handle(Standard_Type)&) const;
 
 protected:
 

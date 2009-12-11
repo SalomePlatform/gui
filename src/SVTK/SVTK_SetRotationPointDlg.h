@@ -53,8 +53,8 @@ class SVTK_EXPORT SVTK_SetRotationPointDlg : public SVTK_DialogBase
 
 public:
   SVTK_SetRotationPointDlg(QtxAction* theAction,
-			   SVTK_ViewWindow* theParent,
-			   const char* theName);
+                           SVTK_ViewWindow* theParent,
+                           const char* theName);
 
   ~SVTK_SetRotationPointDlg();
   

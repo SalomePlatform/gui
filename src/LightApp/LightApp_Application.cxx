@@ -174,7 +174,7 @@
 
 static const char* imageEmptyIcon[] = {
 "20 20 1 1",
-". 	c None",
+".      c None",
 "....................",
 "....................",
 "....................",
@@ -307,11 +307,11 @@ LightApp_Application::LightApp_Application()
     {
       aFamily = *it;
       if ( famdb.contains(aFamily) )
-	{
-	  f.setFamily( aFamily );
-	  aResMgr->setValue( "PyConsole", "font", f );
-	  break;
-	}
+        {
+          f.setFamily( aFamily );
+          aResMgr->setValue( "PyConsole", "font", f );
+          break;
+        }
     }
 }
 
@@ -369,16 +369,16 @@ QString LightApp_Application::applicationVersion() const
       if ( vf.open( QIODevice::ReadOnly ) )
       {
         QString line( vf.readLine( 1024 ) );
-	vf.close();
+        vf.close();
 
-	if ( !line.isEmpty() )
+        if ( !line.isEmpty() )
         {
-	  while ( !line.isEmpty() && line.at( line.length() - 1 ) == QChar( '\n' ) )
-	    line.remove( line.length() - 1, 1 );
+          while ( !line.isEmpty() && line.at( line.length() - 1 ) == QChar( '\n' ) )
+            line.remove( line.length() - 1, 1 );
 
-	  int idx = line.lastIndexOf( ":" );
-	  if ( idx != -1 )
-	    _app_version = line.mid( idx + 1 ).trimmed();
+          int idx = line.lastIndexOf( ":" );
+          if ( idx != -1 )
+            _app_version = line.mid( idx + 1 ).trimmed();
         }
       }
     }
@@ -443,9 +443,9 @@ void LightApp_Application::createActionForViewer( const int id,
                                                   const int accel )
 {
   QAction* a = createAction( id, tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() ), QIcon(),
-			     tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() ),
-			     tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() ),
-			     accel, desktop(), false, this, SLOT( onNewWindow() ) );
+                             tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() ),
+                             tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() ),
+                             accel, desktop(), false, this, SLOT( onNewWindow() ) );
   createMenu( a, parentId, -1 );
 }
 
@@ -459,8 +459,8 @@ void LightApp_Application::createActions()
 
   //! Preferences
   createAction( PreferencesId, tr( "TOT_DESK_PREFERENCES" ), QIcon(),
-		tr( "MEN_DESK_PREFERENCES" ), tr( "PRP_DESK_PREFERENCES" ),
-		Qt::CTRL+Qt::Key_R, desk, false, this, SLOT( onPreferences() ) );
+                tr( "MEN_DESK_PREFERENCES" ), tr( "PRP_DESK_PREFERENCES" ),
+                Qt::CTRL+Qt::Key_R, desk, false, this, SLOT( onPreferences() ) );
 
   //! Help for modules
   int helpMenu = createMenu( tr( "MEN_DESK_HELP" ), -1, -1, 1000 );
@@ -487,14 +487,14 @@ void LightApp_Application::createActions()
       QStringList idxLst = QStringList() << modDir << "share" << "doc" << "salome" << "gui" << modName << "index.html";
       QString indexFile = idxLst.join( QDir::separator() );          // index file
       if ( QFile::exists( indexFile ) ) {
-	QAction* a = createAction( id, tr( "%1 Help" ).arg( aModule ),
-				   resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false ),
-				   tr( "%1 Help" ).arg( aModule ),
-				   tr( "%1 Help" ).arg( aModule ),
-				   0, desk, false, this, SLOT( onHelpContentsModule() ) );
-	a->setData( indexFile );
-	createMenu( a, helpModuleMenu, -1 );
-	id++;
+        QAction* a = createAction( id, tr( "%1 Help" ).arg( aModule ),
+                                   resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false ),
+                                   tr( "%1 Help" ).arg( aModule ),
+                                   tr( "%1 Help" ).arg( aModule ),
+                                   0, desk, false, this, SLOT( onHelpContentsModule() ) );
+        a->setData( indexFile );
+        createMenu( a, helpModuleMenu, -1 );
+        id++;
       }
     }
   }
@@ -542,10 +542,10 @@ void LightApp_Application::createActions()
       QPixmap icon = resMgr->loadPixmap( modName, iconName, false );
       if ( icon.isNull() )
       {
-	icon = modIcon;
-	INFOS ( "****************************************************************" << std::endl
-	     << "*    Icon for " << (*it).toLatin1().constData() << " not found. Using the default one." << std::endl
-	     << "****************************************************************" << std::endl );
+        icon = modIcon;
+        INFOS ( "****************************************************************" << std::endl
+             << "*    Icon for " << (*it).toLatin1().constData() << " not found. Using the default one." << std::endl
+             << "****************************************************************" << std::endl );
       }
 
       icon = Qtx::scaleIcon( icon, iconSize );
@@ -593,7 +593,7 @@ void LightApp_Application::createActions()
 #endif
 
   createAction( RenameId, tr( "TOT_RENAME" ), QIcon(), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ),
-		Qt::SHIFT+Qt::Key_R, desk, false, this, SLOT( onRenameWindow() ) );
+                Qt::SHIFT+Qt::Key_R, desk, false, this, SLOT( onRenameWindow() ) );
   createMenu( RenameId, windowMenu, -1 );
 
   int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1 );
@@ -643,9 +643,9 @@ void LightApp_Application::onModuleActivation( const QString& modName )
       putInfo( tr("INF_CANCELLED") );
 
       LightApp_ModuleAction* moduleAction =
-	qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
+        qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
       if ( moduleAction )
-	moduleAction->setActiveModule( QString() );
+        moduleAction->setActiveModule( QString() );
       cancelled = true;
     }
   }
@@ -839,10 +839,10 @@ class RunBrowser: public QThread
 {
 public:
   RunBrowser( LightApp_Application* app,
-	      const QString&        theApp,
-	      const QString&        theParams,
-	      const QString&        theHelpFile,
-	      const QString&        theContext = QString() )
+              const QString&        theApp,
+              const QString&        theParams,
+              const QString&        theHelpFile,
+              const QString&        theContext = QString() )
     : myApp( theApp ),
       myParams( theParams ),
 #ifdef WIN32
@@ -861,16 +861,16 @@ public:
     if ( !myApp.isEmpty()) {
       QString aCommand = QString( "%1 %2 %3" ).arg( myApp, myParams, myHelpFile );
       if ( !myContext.isEmpty() )
-	aCommand += "#" + myContext;
+        aCommand += "#" + myContext;
 
       QProcess* proc = new QProcess();
 
       proc->start( aCommand );
       if ( !proc->waitForStarted() ) {
-	SALOME_CustomEvent* ce2000 = new SALOME_CustomEvent( 2000 );
-	QString* msg = new QString( QObject::tr( "EXTERNAL_BROWSER_CANNOT_SHOW_PAGE" ).arg( myApp, myHelpFile ) );
-	ce2000->setData( msg );
-	QApplication::postEvent( myLApp, ce2000 );
+        SALOME_CustomEvent* ce2000 = new SALOME_CustomEvent( 2000 );
+        QString* msg = new QString( QObject::tr( "EXTERNAL_BROWSER_CANNOT_SHOW_PAGE" ).arg( myApp, myHelpFile ) );
+        ce2000->setData( msg );
+        QApplication::postEvent( myLApp, ce2000 );
       }
     }
   }
@@ -916,8 +916,8 @@ void LightApp_Application::onHelpContentsModule()
   else
   {
     if ( SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "DEFINE_EXTERNAL_BROWSER" ),
-				    SUIT_MessageBox::Yes | SUIT_MessageBox::No,
-				    SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
+                                    SUIT_MessageBox::Yes | SUIT_MessageBox::No,
+                                    SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
 
       showPreferences( tr( "PREF_APP" ) );
   }
@@ -927,34 +927,34 @@ void LightApp_Application::onHelpContentsModule()
   SLOT: Displays help contents for choosen dialog
 */
 void LightApp_Application::onHelpContextModule( const QString& theComponentName,
-						const QString& theFileName,
-						const QString& theContext )
+                                                const QString& theFileName,
+                                                const QString& theContext )
 {
   QString homeDir = "";
   if ( !theComponentName.isEmpty() ) {
     QString dir = getenv( ( theComponentName + "_ROOT_DIR" ).toLatin1().constData() );
     if ( !dir.isEmpty() )
       homeDir = Qtx::addSlash( Qtx::addSlash( dir )      +
-			       Qtx::addSlash( "share" )  +
-			       Qtx::addSlash( "doc" )    +
-			       Qtx::addSlash( "salome" ) +
-			       Qtx::addSlash( "gui" )    +
-			       Qtx::addSlash( theComponentName ) );
+                               Qtx::addSlash( "share" )  +
+                               Qtx::addSlash( "doc" )    +
+                               Qtx::addSlash( "salome" ) +
+                               Qtx::addSlash( "gui" )    +
+                               Qtx::addSlash( theComponentName ) );
   }
 
   QString helpFile = QFileInfo( homeDir + theFileName ).absoluteFilePath();
   SUIT_ResourceMgr* resMgr = resourceMgr();
-	QString platform;
+        QString platform;
 #ifdef WIN32
-	platform = "winapplication";
+        platform = "winapplication";
 #else
-	platform = "application";
+        platform = "application";
 #endif
-	QString anApp = resMgr->stringValue("ExternalBrowser", platform);
+        QString anApp = resMgr->stringValue("ExternalBrowser", platform);
 #ifdef WIN32
-	QString quote("\"");
-	anApp.prepend( quote );
-	anApp.append( quote );
+        QString quote("\"");
+        anApp.prepend( quote );
+        anApp.append( quote );
 #endif
   QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 
@@ -966,8 +966,8 @@ void LightApp_Application::onHelpContextModule( const QString& theComponentName,
   else
   {
     if ( SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "DEFINE_EXTERNAL_BROWSER" ),
-				    SUIT_MessageBox::Yes | SUIT_MessageBox::No,
-				    SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
+                                    SUIT_MessageBox::Yes | SUIT_MessageBox::No,
+                                    SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
       showPreferences( tr( "PREF_APP" ) );
   }
 }
@@ -1032,8 +1032,8 @@ void LightApp_Application::addWindow( QWidget* wid, const int flag, const int st
       f = resourceMgr()->fontValue( "PyConsole", "font" );
     else
       {
-	f = ( ( PyConsole_Console* )wid )->font();
-	resourceMgr()->setValue( "PyConsole", "font", f );
+        f = ( ( PyConsole_Console* )wid )->font();
+        resourceMgr()->setValue( "PyConsole", "font", f );
       }
   }
   else
@@ -1179,7 +1179,7 @@ void LightApp_Application::updateObjectBrowser( const bool updateModels )
       study->dataModels( dm_list );
       QListIterator<CAM_DataModel*> it( dm_list );
       while ( it.hasNext() ) {
-	CAM_DataModel* camDM = it.next();
+        CAM_DataModel* camDM = it.next();
         if ( camDM && camDM->inherits( "LightApp_DataModel" ) )
           ((LightApp_DataModel*)camDM)->update();
       }
@@ -1322,13 +1322,13 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
       vm->setProjectionMode( resMgr->integerValue( "VTKViewer", "projection_mode", vm->projectionMode() ) );
       vm->setBackgroundColor( resMgr->colorValue( "VTKViewer", "background", vm->backgroundColor() ) );
       vm->setTrihedronSize( resMgr->doubleValue( "VTKViewer", "trihedron_size", vm->trihedronSize() ),
-			    resMgr->booleanValue( "VTKViewer", "relative_size", vm->trihedronRelative() ) );
+                            resMgr->booleanValue( "VTKViewer", "relative_size", vm->trihedronRelative() ) );
       vm->setInteractionStyle( resMgr->integerValue( "VTKViewer", "navigation_mode", vm->interactionStyle() ) );
       vm->setIncrementalSpeed( resMgr->integerValue( "VTKViewer", "speed_value", vm->incrementalSpeed() ),
-			       resMgr->integerValue( "VTKViewer", "speed_mode", vm->incrementalSpeedMode() ) );
+                               resMgr->integerValue( "VTKViewer", "speed_mode", vm->incrementalSpeedMode() ) );
       vm->setSpacemouseButtons( resMgr->integerValue( "VTKViewer", "spacemouse_func1_btn", vm->spacemouseBtn(1) ),
-				resMgr->integerValue( "VTKViewer", "spacemouse_func2_btn", vm->spacemouseBtn(2) ),
-				resMgr->integerValue( "VTKViewer", "spacemouse_func5_btn", vm->spacemouseBtn(3) ) );
+                                resMgr->integerValue( "VTKViewer", "spacemouse_func2_btn", vm->spacemouseBtn(2) ),
+                                resMgr->integerValue( "VTKViewer", "spacemouse_func5_btn", vm->spacemouseBtn(3) ) );
       new LightApp_VTKSelector( vm, mySelMgr );
     }
 #else
@@ -1722,11 +1722,11 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
     for ( QStringList::const_iterator it = modNameList.begin(); it != modNameList.end(); ++it )
     {
       if ( !app->isLibExists( *it ) )
-	continue;
+        continue;
 
       int modId = _prefs_->addPreference( *it );
       if ( iconMap.contains( *it ) )
-	_prefs_->setItemIcon( modId, Qtx::scaleIcon( resMgr->loadPixmap( moduleName( *it ), iconMap[*it], false ), 20 ) );
+        _prefs_->setItemIcon( modId, Qtx::scaleIcon( resMgr->loadPixmap( moduleName( *it ), iconMap[*it], false ), 20 ) );
     }
 
     ModuleList modList;
@@ -1738,13 +1738,13 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
 
       CAM_Module* anItem = itr.next();
       if ( anItem->inherits( "LightApp_Module" ) )
-	mod = (LightApp_Module*)anItem;
+        mod = (LightApp_Module*)anItem;
 
       if ( mod && !_prefs_->hasModule( mod->moduleName() ) )
       {
-	_prefs_->addPreference( mod->moduleName() );
-	mod->createPreferences();
-	that->emptyPreferences( mod->moduleName() );
+        _prefs_->addPreference( mod->moduleName() );
+        mod->createPreferences();
+        that->emptyPreferences( mod->moduleName() );
       }
     }
   }
@@ -1812,7 +1812,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "PREF_STORE_POS" ),  studyGroup, LightApp_Preferences::Bool, "Study", "store_positions" );
 
   int autoSaveInterval = pref->addPreference( tr( "PREF_AUTO_SAVE" ),  studyGroup, 
-					      LightApp_Preferences::IntSpin, "Study", "auto_save_interval" );
+                                              LightApp_Preferences::IntSpin, "Study", "auto_save_interval" );
   pref->setItemProperty( "min",        0, autoSaveInterval );
   pref->setItemProperty( "max",     1440, autoSaveInterval );
   pref->setItemProperty( "special", tr( "PREF_AUTO_SAVE_DISABLED" ), autoSaveInterval );
@@ -1850,21 +1850,21 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   // OCC Viewer
   int occTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), occGroup,
-				   LightApp_Preferences::DblSpin, "OCCViewer", "trihedron_size" );
+                                   LightApp_Preferences::DblSpin, "OCCViewer", "trihedron_size" );
   pref->setItemProperty( "min", 1.0E-06, occTS );
   pref->setItemProperty( "max", 1000, occTS );
 
 
   int isoU = pref->addPreference( tr( "PREF_ISOS_U" ), occGroup,
-				  LightApp_Preferences::IntSpin, "OCCViewer", "iso_number_u" );
+                                  LightApp_Preferences::IntSpin, "OCCViewer", "iso_number_u" );
   pref->setItemProperty( "min", 0, isoU );
   pref->setItemProperty( "max", 100000, isoU );
 
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), occGroup,
-		       LightApp_Preferences::Color, "OCCViewer", "background" );
+                       LightApp_Preferences::Color, "OCCViewer", "background" );
 
   int isoV = pref->addPreference( tr( "PREF_ISOS_V" ), occGroup,
-				  LightApp_Preferences::IntSpin, "OCCViewer", "iso_number_v" );
+                                  LightApp_Preferences::IntSpin, "OCCViewer", "iso_number_v" );
   pref->setItemProperty( "min", 0, isoV );
   pref->setItemProperty( "max", 100000, isoV );
 
@@ -1873,7 +1873,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "columns", 2, vtkGen );
 
   int vtkProjMode = pref->addPreference( tr( "PREF_PROJECTION_MODE" ), vtkGen,
-					 LightApp_Preferences::Selector, "VTKViewer", "projection_mode" );
+                                         LightApp_Preferences::Selector, "VTKViewer", "projection_mode" );
   QStringList aProjModeList;
   aProjModeList.append( tr("PREF_ORTHOGRAPHIC") );
   aProjModeList.append( tr("PREF_PERSPECTIVE") );
@@ -1886,10 +1886,10 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "indexes", aModeIndexesList, vtkProjMode );
 
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), vtkGen,
-		       LightApp_Preferences::Color, "VTKViewer", "background" );
+                       LightApp_Preferences::Color, "VTKViewer", "background" );
 
   int vtkTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), vtkGen,
-				   LightApp_Preferences::DblSpin, "VTKViewer", "trihedron_size" );
+                                   LightApp_Preferences::DblSpin, "VTKViewer", "trihedron_size" );
 
   pref->setItemProperty( "min", 1.0E-06, vtkTS );
   pref->setItemProperty( "max", 150, vtkTS );
@@ -1897,7 +1897,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "PREF_RELATIVE_SIZE" ), vtkGen, LightApp_Preferences::Bool, "VTKViewer", "relative_size" );
 
   int vtkStyleMode = pref->addPreference( tr( "PREF_NAVIGATION" ), vtkGen,
-					  LightApp_Preferences::Selector, "VTKViewer", "navigation_mode" );
+                                          LightApp_Preferences::Selector, "VTKViewer", "navigation_mode" );
   QStringList aStyleModeList;
   aStyleModeList.append( tr("PREF_STANDARD_STYLE") );
   aStyleModeList.append( tr("PREF_KEYFREE_STYLE") );
@@ -1908,13 +1908,13 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( "", vtkGroup, LightApp_Preferences::Space );
 
   int vtkSpeed = pref->addPreference( tr( "PREF_INCREMENTAL_SPEED" ), vtkGen,
-				      LightApp_Preferences::IntSpin, "VTKViewer", "speed_value" );
+                                      LightApp_Preferences::IntSpin, "VTKViewer", "speed_value" );
 
   pref->setItemProperty( "min", 1, vtkSpeed );
   pref->setItemProperty( "max", 1000, vtkSpeed );
 
   int vtkSpeedMode = pref->addPreference( tr( "PREF_INCREMENTAL_SPEED_MODE" ), vtkGen,
-					  LightApp_Preferences::Selector, "VTKViewer", "speed_mode" );
+                                          LightApp_Preferences::Selector, "VTKViewer", "speed_mode" );
   QStringList aSpeedModeList;
   aSpeedModeList.append( tr("PREF_ARITHMETIC") );
   aSpeedModeList.append( tr("PREF_GEOMETRICAL") );
@@ -1925,14 +1925,14 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   int vtkSM = pref->addPreference( tr( "PREF_FRAME_SPACEMOUSE" ), vtkGroup, LightApp_Preferences::GroupBox );
   pref->setItemProperty( "columns", 2, vtkSM );
   int spacemousePref1 = pref->addPreference( tr( "PREF_SPACEMOUSE_FUNC_1" ), vtkSM,
-					     LightApp_Preferences::Selector, "VTKViewer",
-					     "spacemouse_func1_btn" ); //decrease_speed_increment
+                                             LightApp_Preferences::Selector, "VTKViewer",
+                                             "spacemouse_func1_btn" ); //decrease_speed_increment
   int spacemousePref2 = pref->addPreference( tr( "PREF_SPACEMOUSE_FUNC_2" ), vtkSM,
-					     LightApp_Preferences::Selector, "VTKViewer",
-					     "spacemouse_func2_btn" ); //increase_speed_increment
+                                             LightApp_Preferences::Selector, "VTKViewer",
+                                             "spacemouse_func2_btn" ); //increase_speed_increment
   int spacemousePref3 = pref->addPreference( tr( "PREF_SPACEMOUSE_FUNC_3" ), vtkSM,
-					     LightApp_Preferences::Selector, "VTKViewer",
-					     "spacemouse_func5_btn" ); //dominant_combined_switch
+                                             LightApp_Preferences::Selector, "VTKViewer",
+                                             "spacemouse_func5_btn" ); //dominant_combined_switch
 
   QStringList values;
   values.append( tr( "PREF_SPACEMOUSE_BTN_1" ) );
@@ -1969,7 +1969,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "columns", 2, vtkRec );
 
   int modePref = pref->addPreference( tr( "PREF_RECORDING_MODE" ), vtkRec,
-				      LightApp_Preferences::Selector, "VTKViewer", "recorder_mode" );
+                                      LightApp_Preferences::Selector, "VTKViewer", "recorder_mode" );
   values.clear();
   values.append( tr( "PREF_SKIPPED_FRAMES" ) );
   values.append( tr( "PREF_ALL_DISLPAYED_FRAMES" ) );
@@ -1980,26 +1980,26 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "indexes", indices, modePref );
 
   int fpsPref = pref->addPreference( tr( "PREF_FPS" ), vtkRec,
-				     LightApp_Preferences::DblSpin, "VTKViewer", "recorder_fps" );
+                                     LightApp_Preferences::DblSpin, "VTKViewer", "recorder_fps" );
   pref->setItemProperty( "min", 0.1, fpsPref );
   pref->setItemProperty( "max", 100, fpsPref );
 
   int qualityPref = pref->addPreference( tr( "PREF_QUALITY" ), vtkRec,
-					 LightApp_Preferences::IntSpin, "VTKViewer", "recorder_quality" );
+                                         LightApp_Preferences::IntSpin, "VTKViewer", "recorder_quality" );
   pref->setItemProperty( "min", 1, qualityPref );
   pref->setItemProperty( "max", 100, qualityPref );
 
   pref->addPreference( tr( "PREF_PROGRESSIVE" ), vtkRec,
-		       LightApp_Preferences::Bool, "VTKViewer", "recorder_progressive" );
+                       LightApp_Preferences::Bool, "VTKViewer", "recorder_progressive" );
 
   int vtkGN = pref->addPreference( tr( "PREF_FRAME_GROUP_NAMES" ), vtkGroup,
-				   LightApp_Preferences::GroupBox, "VTKViewer", "show_group_names" );
+                                   LightApp_Preferences::GroupBox, "VTKViewer", "show_group_names" );
   pref->setItemProperty( "columns", 2, vtkGN );
 
   pref->addPreference( tr( "PREF_GROUP_NAMES_TEXT_COLOR" ), vtkGN,
-		       LightApp_Preferences::Color, "VTKViewer", "group_names_text_color" );
+                       LightApp_Preferences::Color, "VTKViewer", "group_names_text_color" );
   int transPref = pref->addPreference( tr( "PREF_GROUP_NAMES_TRANSPARENCY" ), vtkGN,
-				       LightApp_Preferences::DblSpin, "VTKViewer", "group_names_transparency" );
+                                       LightApp_Preferences::DblSpin, "VTKViewer", "group_names_transparency" );
 
   pref->setItemProperty( "min", 0.0, transPref );
   pref->setItemProperty( "max", 1.0, transPref );
@@ -2007,10 +2007,10 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   // Plot2d
   pref->addPreference( tr( "PREF_SHOW_LEGEND" ), plot2dGroup,
-		       LightApp_Preferences::Bool, "Plot2d", "ShowLegend" );
+                       LightApp_Preferences::Bool, "Plot2d", "ShowLegend" );
 
   int legendPosition = pref->addPreference( tr( "PREF_LEGEND_POSITION" ), plot2dGroup,
-					    LightApp_Preferences::Selector, "Plot2d", "LegendPos" );
+                                            LightApp_Preferences::Selector, "Plot2d", "LegendPos" );
   aValuesList.clear();
   anIndicesList.clear();
   aValuesList   << tr("PREF_LEFT") << tr("PREF_RIGHT") << tr("PREF_TOP") << tr("PREF_BOTTOM");
@@ -2020,7 +2020,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "indexes", anIndicesList, legendPosition );
 
   int curveType = pref->addPreference( tr( "PREF_CURVE_TYPE" ), plot2dGroup,
-				       LightApp_Preferences::Selector, "Plot2d", "CurveType" );
+                                       LightApp_Preferences::Selector, "Plot2d", "CurveType" );
   aValuesList.clear();
   anIndicesList.clear();
   aValuesList   << tr("PREF_POINTS") << tr("PREF_LINES") << tr("PREF_SPLINE");
@@ -2030,7 +2030,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "indexes", anIndicesList, curveType );
 
   int markerSize = pref->addPreference( tr( "PREF_MARKER_SIZE" ), plot2dGroup,
-					LightApp_Preferences::IntSpin, "Plot2d", "MarkerSize" );
+                                        LightApp_Preferences::IntSpin, "Plot2d", "MarkerSize" );
 
   pref->setItemProperty( "min", 0, markerSize );
   pref->setItemProperty( "max", 100, markerSize );
@@ -2041,58 +2041,58 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   anIndicesList << 0                 << 1                     ;
 
   int horScale = pref->addPreference( tr( "PREF_HOR_AXIS_SCALE" ), plot2dGroup,
-				      LightApp_Preferences::Selector, "Plot2d", "HorScaleMode" );
+                                      LightApp_Preferences::Selector, "Plot2d", "HorScaleMode" );
 
   pref->setItemProperty( "strings", aValuesList,   horScale );
   pref->setItemProperty( "indexes", anIndicesList, horScale );
 
   int verScale = pref->addPreference( tr( "PREF_VERT_AXIS_SCALE" ), plot2dGroup,
-				      LightApp_Preferences::Selector, "Plot2d", "VerScaleMode" );
+                                      LightApp_Preferences::Selector, "Plot2d", "VerScaleMode" );
 
   pref->setItemProperty( "strings", aValuesList,   verScale );
   pref->setItemProperty( "indexes", anIndicesList, verScale );
 
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), plot2dGroup,
-		       LightApp_Preferences::Color, "Plot2d", "Background" );
+                       LightApp_Preferences::Color, "Plot2d", "Background" );
 
   int dirTab = pref->addPreference( tr( "PREF_TAB_DIRECTORIES" ), salomeCat );
   int dirGroup = pref->addPreference( tr( "PREF_GROUP_DIRECTORIES" ), dirTab );
   pref->addPreference( tr( "" ), dirGroup,
-		       LightApp_Preferences::DirList, "FileDlg", "QuickDirList" );
+                       LightApp_Preferences::DirList, "FileDlg", "QuickDirList" );
 
   /* VSR : 26/02/09 : temporarily comment : SUPERV is not migrated to Qt 4
   pref->setItemProperty( "columns", 4, supervGroup );
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), supervGroup,
-		       LightApp_Preferences::Color, "SUPERVGraph", "Background" );
+                       LightApp_Preferences::Color, "SUPERVGraph", "Background" );
   pref->addPreference( tr( "PREF_SUPERV_TITLE_COLOR" ), supervGroup,
-		       LightApp_Preferences::Color, "SUPERVGraph", "Title" );
+                       LightApp_Preferences::Color, "SUPERVGraph", "Title" );
 //  pref->addPreference( tr( "PREF_SUPERV_CTRL_COLOR" ), supervGroup,
-//		       LightApp_Preferences::Color, "SUPERVGraph", "Ctrl" );
+//                     LightApp_Preferences::Color, "SUPERVGraph", "Ctrl" );
   ----> end VSR : 26/02/09 */
 
   int obTab = pref->addPreference( tr( "PREF_TAB_OBJBROWSER" ), salomeCat );
   int stGroup = pref->addPreference( tr( "PREF_OBJ_BROWSER_SEARCH_TOOL" ), obTab );
   pref->addPreference( tr( "PREF_AUTO_HIDE_SEARCH_TOOL" ), stGroup, LightApp_Preferences::Bool,
-		       "ObjectBrowser", "auto_hide_search_tool" );
+                       "ObjectBrowser", "auto_hide_search_tool" );
 
   int objSetGroup = pref->addPreference( tr( "PREF_OBJ_BROWSER_SETTINGS" ), obTab );
   pref->setItemProperty( "columns", 2, objSetGroup );
   pref->addPreference( tr( "PREF_AUTO_SIZE_FIRST" ), objSetGroup, LightApp_Preferences::Bool,
-		       "ObjectBrowser", "auto_size_first" );
+                       "ObjectBrowser", "auto_size_first" );
   pref->addPreference( tr( "PREF_AUTO_SIZE" ), objSetGroup, LightApp_Preferences::Bool,
-		       "ObjectBrowser", "auto_size" );
+                       "ObjectBrowser", "auto_size" );
   pref->addPreference( tr( "PREF_RESIZE_ON_EXPAND_ITEM" ), objSetGroup, LightApp_Preferences::Bool,
-		       "ObjectBrowser", "resize_on_expand_item" );
+                       "ObjectBrowser", "resize_on_expand_item" );
 
   // MRU preferences
   int mruGroup = pref->addPreference( tr( "PREF_GROUP_MRU" ), genTab, LightApp_Preferences::Auto, "MRU", "show_mru" );
   pref->setItemProperty( "columns", 4, mruGroup );
   int mruVisCount = pref->addPreference( tr( "PREF_MRU_VISIBLE_COUNT" ), mruGroup, LightApp_Preferences::IntSpin,
-					 "MRU", "visible_count" );
+                                         "MRU", "visible_count" );
   pref->setItemProperty( "min", 0,   mruVisCount );
   pref->setItemProperty( "max", 100, mruVisCount );
   int mruLinkType = pref->addPreference( tr( "PREF_MRU_LINK_TYPE" ), mruGroup, LightApp_Preferences::Selector,
-					 "MRU", "link_type" );
+                                         "MRU", "link_type" );
   aValuesList.clear();
   anIndicesList.clear();
   aValuesList   << tr("PREF_MRU_LINK_AUTO") << tr("PREF_MRU_LINK_SHORT") << tr("PREF_MRU_LINK_FULL");
@@ -2125,7 +2125,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
     {
       SUIT_ViewModel* vm = it.next()->getViewModel();
       if ( !vm || !vm->inherits( "OCCViewer_Viewer" ) )
-	continue;
+        continue;
 
       OCCViewer_Viewer* occVM = (OCCViewer_Viewer*)vm;
       occVM->setTrihedronSize( sz );
@@ -2147,13 +2147,13 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
     {
       SUIT_ViewModel* vm = it.next()->getViewModel();
       if ( !vm || !vm->inherits( "SVTK_Viewer" ) )
-	continue;
+        continue;
 
       SVTK_Viewer* vtkVM = dynamic_cast<SVTK_Viewer*>( vm );
       if( vtkVM )
       {
-	vtkVM->setTrihedronSize( sz, isRelative );
-	vtkVM->Repaint();
+        vtkVM->setTrihedronSize( sz, isRelative );
+        vtkVM->Repaint();
       }
     }
 #endif
@@ -2173,7 +2173,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
     {
       SUIT_ViewModel* vm = it.next()->getViewModel();
       if ( !vm || !vm->inherits( "SVTK_Viewer" ) )
-	continue;
+        continue;
 
       SVTK_Viewer* vtkVM = dynamic_cast<SVTK_Viewer*>( vm );
       if( vtkVM ) vtkVM->setIncrementalSpeed( speed, mode );
@@ -2194,7 +2194,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
     {
       SUIT_ViewModel* vm = it.next()->getViewModel();
       if ( !vm || !vm->inherits( "SVTK_Viewer" ) )
-	continue;
+        continue;
 
       SVTK_Viewer* vtkVM = dynamic_cast<SVTK_Viewer*>( vm );
       if( vtkVM ) vtkVM->setProjectionMode( mode );
@@ -2215,7 +2215,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
     {
       SUIT_ViewModel* vm = it.next()->getViewModel();
       if ( !vm || !vm->inherits( "SVTK_Viewer" ) )
-	continue;
+        continue;
 
       SVTK_Viewer* vtkVM = dynamic_cast<SVTK_Viewer*>( vm );
       if( vtkVM ) vtkVM->setInteractionStyle( mode );
@@ -2226,8 +2226,8 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 
 #ifndef DISABLE_VTKVIEWER
   if ( sec == QString( "VTKViewer" ) && (param == QString( "spacemouse_func1_btn" ) ||
-					 param == QString( "spacemouse_func2_btn" ) ||
-					 param == QString( "spacemouse_func5_btn" ) ) )
+                                         param == QString( "spacemouse_func2_btn" ) ||
+                                         param == QString( "spacemouse_func5_btn" ) ) )
   {
     int btn1 = resMgr->integerValue( "VTKViewer", "spacemouse_func1_btn", 1 );
     int btn2 = resMgr->integerValue( "VTKViewer", "spacemouse_func2_btn", 2 );
@@ -2240,7 +2240,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
     {
       SUIT_ViewModel* vm = it.next()->getViewModel();
       if ( !vm || !vm->inherits( "SVTK_Viewer" ) )
-	continue;
+        continue;
 
       SVTK_Viewer* vtkVM = dynamic_cast<SVTK_Viewer*>( vm );
       if( vtkVM ) vtkVM->setSpacemouseButtons( btn1, btn2, btn3 );
@@ -2261,7 +2261,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
     {
       OCCViewer_ViewManager* mgr = dynamic_cast<OCCViewer_ViewManager*>( it.next() );
       if( mgr && mgr->getOCCViewer() )
-	mgr->getOCCViewer()->setIsos( u, v );
+        mgr->getOCCViewer()->setIsos( u, v );
     }
   }
 #endif
@@ -2277,13 +2277,13 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
       bool autoSizeFirst = resMgr->booleanValue( "ObjectBrowser", "auto_size_first", true );
       ob->setAutoSizeFirstColumn( autoSizeFirst );
       if ( autoSizeFirst )
-	ob->adjustFirstColumnWidth();
+        ob->adjustFirstColumnWidth();
     }
     else if ( param=="auto_size" ) {
       bool autoSize = resMgr->booleanValue( "ObjectBrowser", "auto_size", false );
       ob->setAutoSizeColumns(autoSize);
       if ( autoSize )
-	ob->adjustColumnsWidth();
+        ob->adjustColumnsWidth();
     }
     else if ( param=="resize_on_expand_item" ) {
       bool resizeOnExpandItem = resMgr->booleanValue( "ObjectBrowser", "resize_on_expand_item", false );
@@ -2310,7 +2310,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
   {
     if( param=="font" )
       if( pythonConsole() )
-	pythonConsole()->setFont( resMgr->fontValue( "PyConsole", "font" ) );
+        pythonConsole()->setFont( resMgr->fontValue( "PyConsole", "font" ) );
   }
 #endif
 
@@ -2319,17 +2319,17 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
     QtxMRUAction* mru = ::qobject_cast<QtxMRUAction*>( action( MRUId ) );
     if ( mru ) {
       if ( param == "visible_count" )
-	mru->setVisibleCount( resMgr->integerValue( "MRU", "visible_count", 5 ) );    // 5 MRU items by default
+        mru->setVisibleCount( resMgr->integerValue( "MRU", "visible_count", 5 ) );    // 5 MRU items by default
       else if ( param == "max_count" )
-	mru->setHistoryCount( resMgr->integerValue( "MRU", "max_count", -1 ) );       // unlimited history by default
+        mru->setHistoryCount( resMgr->integerValue( "MRU", "max_count", -1 ) );       // unlimited history by default
       else if ( param == "insert_mode" )
-	mru->setInsertMode( resMgr->integerValue( "MRU", "insert_mode", 0 ) );        // QtxMRUAction::MoveFirst by default
+        mru->setInsertMode( resMgr->integerValue( "MRU", "insert_mode", 0 ) );        // QtxMRUAction::MoveFirst by default
       else if ( param == "link_type" )
-	mru->setLinkType( resMgr->integerValue( "MRU", "link_type", 0 ) );            // QtxMRUAction::LinkAuto by default
+        mru->setLinkType( resMgr->integerValue( "MRU", "link_type", 0 ) );            // QtxMRUAction::LinkAuto by default
       else if ( param == "show_clear" )
-	mru->setClearPossible( resMgr->booleanValue( "MRU", "show_clear", false ) );  // do not show "Clear" item by default
+        mru->setClearPossible( resMgr->booleanValue( "MRU", "show_clear", false ) );  // do not show "Clear" item by default
       else if ( param == "show_mru" )
-	mru->setVisible( resMgr->booleanValue( "MRU", "show_mru", false ) );          // do not show MRU menu item by default
+        mru->setVisible( resMgr->booleanValue( "MRU", "show_mru", false ) );          // do not show MRU menu item by default
     }
   }
 }
@@ -2548,7 +2548,7 @@ void LightApp_Application::updateWindows()
     for ( QMap<int, int>::ConstIterator it = winMap.begin(); it != winMap.end(); ++it )
     {
       if ( !dockWindow( it.key() ) )
-	getWindow( it.key() );
+        getWindow( it.key() );
     }
   }
 
@@ -2971,8 +2971,8 @@ bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
 
     if( inf.exists() )
       {
-	isLibFound = true;
-	break;
+        isLibFound = true;
+        break;
       }
   }
 
@@ -3000,27 +3000,27 @@ bool LightApp_Application::isLibExists( const QString& moduleTitle ) const
       bool isPyLib = false, isPyGuiLib = false;
       QStringList::const_iterator anIt = paths.begin(), aLast = paths.end();
       for( ; anIt!=aLast; anIt++ )
-	{
-	  QFileInfo inf( Qtx::addSlash( *anIt ) + pylib );
-	  QFileInfo infgui( Qtx::addSlash( *anIt ) + pylibgui );
+        {
+          QFileInfo inf( Qtx::addSlash( *anIt ) + pylib );
+          QFileInfo infgui( Qtx::addSlash( *anIt ) + pylibgui );
 
           if(!isPythonLightModule)
             if( !isPyLib && inf.exists() )
               isPyLib = true;
 
-	  if( !isPyGuiLib && infgui.exists() )
-	    isPyGuiLib = true;
+          if( !isPyGuiLib && infgui.exists() )
+            isPyGuiLib = true;
 
-	  if ((isPyLib || isPythonLightModule ) && isPyGuiLib && isLibFound)
-	    return true;
-	}
+          if ((isPyLib || isPythonLightModule ) && isPyGuiLib && isLibFound)
+            return true;
+        }
 
       printf( "****************************************************************\n" );
       printf( "*    Warning: python library for %s cannot be found:\n", moduleTitle.toLatin1().constData() );
       if (!isPyLib)
-	printf( "*    No module named %s\n", moduleName( moduleTitle ).toLatin1().constData() );
+        printf( "*    No module named %s\n", moduleName( moduleTitle ).toLatin1().constData() );
       if (!isPyGuiLib)
-	printf( "*    No module named %s\n", (moduleName( moduleTitle ) + QString("GUI")).toLatin1().constData() );
+        printf( "*    No module named %s\n", (moduleName( moduleTitle ) + QString("GUI")).toLatin1().constData() );
       printf( "****************************************************************\n" );
       return true;
   }
@@ -3054,9 +3054,9 @@ bool LightApp_Application::event( QEvent* e )
     SALOME_CustomEvent* ce = ( SALOME_CustomEvent* )e;
     QString* d = ( QString* )ce->data();
     if( SUIT_MessageBox::question(0, tr("WRN_WARNING"),
-				  d ? *d : "",
-				  SUIT_MessageBox::Yes | SUIT_MessageBox::No,
-				  SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
+                                  d ? *d : "",
+                                  SUIT_MessageBox::Yes | SUIT_MessageBox::No,
+                                  SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
       showPreferences( tr( "PREF_APP" ) );
     if( d )
       delete d;
@@ -3070,9 +3070,9 @@ bool LightApp_Application::checkDataObject(LightApp_DataObject* theObj)
 {
   if (theObj)
     {
-      bool isSuitable =	!theObj->entry().isEmpty() &&
-	                !theObj->componentDataType().isEmpty() &&
-	                !theObj->name().isEmpty();
+      bool isSuitable = !theObj->entry().isEmpty() &&
+                        !theObj->componentDataType().isEmpty() &&
+                        !theObj->name().isEmpty();
       return isSuitable;
     }
 
@@ -3087,7 +3087,7 @@ int LightApp_Application::openChoice( const QString& aName )
   {
     // Do you want to reload it?
     if ( SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "QUE_DOC_ALREADYOPEN" ).arg( aName ),
-				    SUIT_MessageBox::Yes | SUIT_MessageBox::No, SUIT_MessageBox::No ) == SUIT_MessageBox::Yes )
+                                    SUIT_MessageBox::Yes | SUIT_MessageBox::No, SUIT_MessageBox::No ) == SUIT_MessageBox::Yes )
       choice = OpenReload;
   }
 
@@ -3106,20 +3106,20 @@ bool LightApp_Application::openAction( const int choice, const QString& aName )
       QList<SUIT_Application*> appList = session->applications();
       for ( QList<SUIT_Application*>::iterator it = appList.begin(); it != appList.end() && !app; ++it )
       {
-	if ( (*it)->activeStudy() && (*it)->activeStudy()->studyName() == aName )
-	  app = ::qobject_cast<STD_Application*>( *it );
+        if ( (*it)->activeStudy() && (*it)->activeStudy()->studyName() == aName )
+          app = ::qobject_cast<STD_Application*>( *it );
       }
 
       if ( app )
       {
-	app->onCloseDoc( false );
-	appList = session->applications();
-	STD_Application* other = 0;
-	for ( QList<SUIT_Application*>::iterator it = appList.begin(); it != appList.end() && !other; ++it )
-	  other = ::qobject_cast<STD_Application*>( *it );
+        app->onCloseDoc( false );
+        appList = session->applications();
+        STD_Application* other = 0;
+        for ( QList<SUIT_Application*>::iterator it = appList.begin(); it != appList.end() && !other; ++it )
+          other = ::qobject_cast<STD_Application*>( *it );
 
-	if ( other )
-	  res = other->onOpenDoc( aName );
+        if ( other )
+          res = other->onOpenDoc( aName );
       }
     }
     break;

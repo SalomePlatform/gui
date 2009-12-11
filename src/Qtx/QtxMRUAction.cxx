@@ -378,7 +378,7 @@ void QtxMRUAction::saveLinks( QtxResourceMgr* resMgr, const QString& section, co
     for ( QStringList::const_iterator it = items.begin(); it != items.end(); ++it )
     {
       if ( (*it).startsWith( itemPrefix ) )
-	resMgr->remove( section, *it );
+        resMgr->remove( section, *it );
     }
   }
 
@@ -408,8 +408,8 @@ void QtxMRUAction::saveLinks( QtxResourceMgr* resMgr, const QString& section, co
 
   int counter = 0;
   for ( QStringList::const_iterator iter = lst.begin();
-	iter != lst.end() && ( myHistoryCount < 0 || counter < myHistoryCount );
-	++iter, counter++ )
+        iter != lst.end() && ( myHistoryCount < 0 || counter < myHistoryCount );
+        ++iter, counter++ )
     resMgr->setValue( section, itemPrefix + QString().sprintf( "%03d", counter ), *iter );
 }
 
@@ -467,9 +467,9 @@ void QtxMRUAction::updateMenu()
     {
       QString shortName = Qtx::file( myLinks[i] );
       if ( map.contains( shortName ) )
-	map[shortName]++;
+        map[shortName]++;
       else
-	map.insert( shortName, 0 );
+        map.insert( shortName, 0 );
     }
   }
 
@@ -482,7 +482,7 @@ void QtxMRUAction::updateMenu()
     case LinkAuto:
       linkName = Qtx::file( *it );
       if ( map.contains( linkName ) && map[linkName] )
-	linkName = *it;
+        linkName = *it;
       break;
     case LinkShort:
       linkName = Qtx::file( *it );

@@ -156,15 +156,15 @@ void SVTK_RecorderDlg::onHelp()
   if (app)
     app->onHelpContextModule(app->activeModule() ? app->moduleName(app->activeModule()->moduleName()) : QString(""), aHelpFileName);
   else {
-		QString platform;
+                QString platform;
 #ifdef WIN32
-		platform = "winapplication";
+                platform = "winapplication";
 #else
-		platform = "application";
+                platform = "application";
 #endif
     SUIT_MessageBox::warning(0, QObject::tr("WRN_WARNING"),
-			     QObject::tr("EXTERNAL_BROWSER_CANNOT_SHOW_PAGE").
-			     arg(app->resourceMgr()->stringValue("ExternalBrowser", platform)).arg(aHelpFileName) );
+                             QObject::tr("EXTERNAL_BROWSER_CANNOT_SHOW_PAGE").
+                             arg(app->resourceMgr()->stringValue("ExternalBrowser", platform)).arg(aHelpFileName) );
   }
   */
 }
@@ -176,7 +176,7 @@ bool SVTK_RecorderDlg::onBrowseFile()
   aFilter.append( tr( "FLT_ALL_FILES" ) );
 
   QString aFileName = SUIT_FileDlg::getFileName( this, getenv( "HOME" ), aFilter,
-						 tr( "FILE_NAME" ), false );
+                                                 tr( "FILE_NAME" ), false );
 
   if( aFileName.isNull() )
     return false;

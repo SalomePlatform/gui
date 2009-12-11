@@ -150,7 +150,7 @@ SalomeApp_Application::SalomeApp_Application()
   : LightApp_Application()
 {
   connect( desktop(), SIGNAL( message( const QString& ) ),
-	   this,      SLOT( onDesktopMessage( const QString& ) ) );
+           this,      SLOT( onDesktopMessage( const QString& ) ) );
   setNoteBook(0);
 }
 
@@ -180,7 +180,7 @@ void SalomeApp_Application::start()
     for (int i = 1; i < qApp->argc(); i++) {
       QRegExp rxs ("--study-hdf=(.+)");
       if ( rxs.indexIn( QString(qApp->argv()[i]) ) >= 0 && rxs.capturedTexts().count() > 1 ) {
-	QString file = rxs.capturedTexts()[1];
+        QString file = rxs.capturedTexts()[1];
         QFileInfo fi ( file );
         QString extension = fi.suffix().toLower();
         if ( extension == "hdf" && fi.exists() )
@@ -204,12 +204,12 @@ void SalomeApp_Application::start()
     if ( pyfiles.count() > 0 && activeStudy() ) {
       SalomeApp_Study* appStudy = dynamic_cast<SalomeApp_Study*>( activeStudy() );
       if ( appStudy ) {
-	_PTR(Study) aStudy = appStudy->studyDS();
-	if ( !aStudy->GetProperties()->IsLocked() ) {
+        _PTR(Study) aStudy = appStudy->studyDS();
+        if ( !aStudy->GetProperties()->IsLocked() ) {
           for (uint j = 0; j < pyfiles.count(); j++ ) {
             QFileInfo fi ( pyfiles[j] );
-	    PyConsole_Console* pyConsole = pythonConsole();
-	    if ( pyConsole ) {
+            PyConsole_Console* pyConsole = pythonConsole();
+            if ( pyConsole ) {
               QString extension = fi.suffix().toLower();
               if ( fi.exists() ) {
                 // execute python script
@@ -219,13 +219,13 @@ void SalomeApp_Application::start()
               else {
                 // import python module
                 QString command = QString( "import %1" ).arg( pyfiles[j] );
-		if ( extension == "py" )
-		  command = QString( "import %1" ).arg( fi.completeBaseName() );
+                if ( extension == "py" )
+                  command = QString( "import %1" ).arg( fi.completeBaseName() );
                 pyConsole->exec( command );
               }
             }
           }
-	}
+        }
       }
     }
   }
@@ -241,13 +241,13 @@ void SalomeApp_Application::createActions()
   //! Save GUI state
   // "Save GUI State" command is moved to VISU module
   //  createAction( SaveGUIStateId, tr( "TOT_DESK_FILE_SAVE_GUI_STATE" ), QIcon(),
-  //  		tr( "MEN_DESK_FILE_SAVE_GUI_STATE" ), tr( "PRP_DESK_FILE_SAVE_GUI_STATE" ),
-  //  		0, desk, false, this, SLOT( onSaveGUIState() ) );
+  //            tr( "MEN_DESK_FILE_SAVE_GUI_STATE" ), tr( "PRP_DESK_FILE_SAVE_GUI_STATE" ),
+  //            0, desk, false, this, SLOT( onSaveGUIState() ) );
 
   //! Dump study
   createAction( DumpStudyId, tr( "TOT_DESK_FILE_DUMP_STUDY" ), QIcon(),
-		tr( "MEN_DESK_FILE_DUMP_STUDY" ), tr( "PRP_DESK_FILE_DUMP_STUDY" ),
-		Qt::CTRL+Qt::Key_D, desk, false, this, SLOT( onDumpStudy() ) );
+                tr( "MEN_DESK_FILE_DUMP_STUDY" ), tr( "PRP_DESK_FILE_DUMP_STUDY" ),
+                Qt::CTRL+Qt::Key_D, desk, false, this, SLOT( onDumpStudy() ) );
 
   //! NoteBook
   createAction(NoteBookId, tr( "TOT_DESK_FILE_NOTEBOOK" ), QIcon(),
@@ -256,29 +256,29 @@ void SalomeApp_Application::createActions()
 
   //! Load script
   createAction( LoadScriptId, tr( "TOT_DESK_FILE_LOAD_SCRIPT" ), QIcon(),
-		tr( "MEN_DESK_FILE_LOAD_SCRIPT" ), tr( "PRP_DESK_FILE_LOAD_SCRIPT" ),
-		Qt::CTRL+Qt::Key_T, desk, false, this, SLOT( onLoadScript() ) );
+                tr( "MEN_DESK_FILE_LOAD_SCRIPT" ), tr( "PRP_DESK_FILE_LOAD_SCRIPT" ),
+                Qt::CTRL+Qt::Key_T, desk, false, this, SLOT( onLoadScript() ) );
 
   //! Properties
   createAction( PropertiesId, tr( "TOT_DESK_PROPERTIES" ), QIcon(),
-	        tr( "MEN_DESK_PROPERTIES" ), tr( "PRP_DESK_PROPERTIES" ),
-	        Qt::CTRL+Qt::Key_P, desk, false, this, SLOT( onProperties() ) );
+                tr( "MEN_DESK_PROPERTIES" ), tr( "PRP_DESK_PROPERTIES" ),
+                Qt::CTRL+Qt::Key_P, desk, false, this, SLOT( onProperties() ) );
 
   //! Catalog Generator
   createAction( CatalogGenId, tr( "TOT_DESK_CATALOG_GENERATOR" ),  QIcon(),
-		tr( "MEN_DESK_CATALOG_GENERATOR" ), tr( "PRP_DESK_CATALOG_GENERATOR" ),
-		Qt::SHIFT+Qt::Key_G, desk, false, this, SLOT( onCatalogGen() ) );
+                tr( "MEN_DESK_CATALOG_GENERATOR" ), tr( "PRP_DESK_CATALOG_GENERATOR" ),
+                Qt::SHIFT+Qt::Key_G, desk, false, this, SLOT( onCatalogGen() ) );
 
   //! Registry Display
   createAction( RegDisplayId, tr( "TOT_DESK_REGISTRY_DISPLAY" ),  QIcon(),
-		tr( "MEN_DESK_REGISTRY_DISPLAY" ), tr( "PRP_DESK_REGISTRY_DISPLAY" ),
-		/*Qt::SHIFT+Qt::Key_D*/0, desk, false, this, SLOT( onRegDisplay() ) );
+                tr( "MEN_DESK_REGISTRY_DISPLAY" ), tr( "PRP_DESK_REGISTRY_DISPLAY" ),
+                /*Qt::SHIFT+Qt::Key_D*/0, desk, false, this, SLOT( onRegDisplay() ) );
 
   //SRN: BugID IPAL9021, add an action "Load"
   createAction( FileLoadId, tr( "TOT_DESK_FILE_LOAD" ),
                 resourceMgr()->loadPixmap( "STD", tr( "ICON_FILE_OPEN" ) ),
-		tr( "MEN_DESK_FILE_LOAD" ), tr( "PRP_DESK_FILE_LOAD" ),
-		Qt::CTRL+Qt::Key_L, desk, false, this, SLOT( onLoadDoc() ) );
+                tr( "MEN_DESK_FILE_LOAD" ), tr( "PRP_DESK_FILE_LOAD" ),
+                Qt::CTRL+Qt::Key_L, desk, false, this, SLOT( onLoadDoc() ) );
   //SRN: BugID IPAL9021: End
 
 
@@ -342,9 +342,9 @@ void SalomeApp_Application::onLoadDoc()
      while ( it.hasNext() && !isAlreadyOpen ) {
        SUIT_Application* aApp = it.next();
        if( !aApp || !aApp->activeStudy() )
-	 continue;
+         continue;
        if ( aApp->activeStudy()->studyName() == studyName )
-	 isAlreadyOpen = true;
+         isAlreadyOpen = true;
      }
 
      if ( !isAlreadyOpen )
@@ -383,7 +383,7 @@ bool SalomeApp_Application::onLoadDoc( const QString& aName )
     bool isAlreadyOpen = false;
     SalomeApp_Application* aApp = 0;
     for ( QList<SUIT_Application*>::iterator it = aAppList.begin();
-	  it != aAppList.end() && !isAlreadyOpen; ++it ) {
+          it != aAppList.end() && !isAlreadyOpen; ++it ) {
       aApp = dynamic_cast<SalomeApp_Application*>( *it );
       if ( aApp && aApp->activeStudy()->studyName() == aName )
         isAlreadyOpen = true;
@@ -419,8 +419,8 @@ void SalomeApp_Application::onCopy()
     {
       _PTR(SObject) so = stdDS->FindObjectID(it.Value()->getEntry());
       try {
-	studyMgr()->Copy(so);
-	onSelectionChanged();
+        studyMgr()->Copy(so);
+        onSelectionChanged();
       }
       catch(...) {
       }
@@ -442,8 +442,8 @@ void SalomeApp_Application::onPaste()
 
   if ( stdDS->GetProperties()->IsLocked() ) {
     SUIT_MessageBox::warning( desktop(),
-			      QObject::tr("WRN_WARNING"),
-			      QObject::tr("WRN_STUDY_LOCKED") );
+                              QObject::tr("WRN_WARNING"),
+                              QObject::tr("WRN_STUDY_LOCKED") );
     return;
   }
 
@@ -452,9 +452,9 @@ void SalomeApp_Application::onPaste()
     {
       _PTR(SObject) so = stdDS->FindObjectID(it.Value()->getEntry());
       try {
-	studyMgr()->Paste(so);
-	updateObjectBrowser( true );
- 	updateActions(); //SRN: BugID IPAL9377, case 3
+        studyMgr()->Paste(so);
+        updateObjectBrowser( true );
+        updateActions(); //SRN: BugID IPAL9377, case 3
       }
       catch(...) {
       }
@@ -478,10 +478,10 @@ void SalomeApp_Application::onCloseDoc( bool ask )
     _PTR(Study) stdDS = study->studyDS();
     if(stdDS && stdDS->IsStudyLocked()) {
       if ( SUIT_MessageBox::question( desktop(),
-				      QObject::tr( "WRN_WARNING" ),
-				      QObject::tr( "CLOSE_LOCKED_STUDY" ),
-				      SUIT_MessageBox::Yes | SUIT_MessageBox::No,
-				      SUIT_MessageBox::No) == SUIT_MessageBox::No ) return;
+                                      QObject::tr( "WRN_WARNING" ),
+                                      QObject::tr( "CLOSE_LOCKED_STUDY" ),
+                                      SUIT_MessageBox::Yes | SUIT_MessageBox::No,
+                                      SUIT_MessageBox::No) == SUIT_MessageBox::No ) return;
 
     }
   }
@@ -544,10 +544,10 @@ void SalomeApp_Application::onDeleteInvalidReferences()
     {
       _PTR(SObject) aSObject = aStudyDS->FindObjectID( it.Value()->getEntry() ), aRefObj = aSObject;
       while( aRefObj && aRefObj->ReferencedObject( anObj ) )
-	aRefObj = anObj;
+        aRefObj = anObj;
 
       if( aRefObj && aRefObj!=aSObject && QString( aRefObj->GetName().c_str() ).isEmpty() )
-	 aStudyBuilder->RemoveReference( aSObject );
+         aStudyBuilder->RemoveReference( aSObject );
     }
   updateObjectBrowser();
 }
@@ -672,8 +672,8 @@ bool DumpStudyFileValidator::canSave(const QString& file, bool permissions)
   QFileInfo fi( file );
   if ( !QRegExp( "[A-Za-z_][A-Za-z0-9_]*" ).exactMatch( fi.completeBaseName() ) ) {
     SUIT_MessageBox::critical( parent(),
-			       QObject::tr("WRN_WARNING"),
-			       QObject::tr("WRN_FILE_NAME_BAD") );
+                               QObject::tr("WRN_WARNING"),
+                               QObject::tr("WRN_FILE_NAME_BAD") );
     return false;
   }
   return SUIT_FileValidator::canSave( file, permissions);
@@ -705,24 +705,24 @@ void SalomeApp_Application::onDumpStudy( )
     if ( !aFileName.isEmpty() ) {
       QFileInfo aFileInfo(aFileName);
       if( aFileInfo.isDir() ) // IPAL19257
-	return;
+        return;
 
       int savePoint;
       _PTR(AttributeParameter) ap;
       _PTR(IParameters) ip = ClientFactory::getIParameters(ap);
       if(ip->isDumpPython(appStudy->studyDS())) ip->setDumpPython(appStudy->studyDS()); //Unset DumpPython flag.
       if ( toSaveGUI ) { //SRN: Store a visual state of the study at the save point for DumpStudy method
-	ip->setDumpPython(appStudy->studyDS());
-	savePoint = SalomeApp_VisualState( this ).storeState(); //SRN: create a temporary save point
+        ip->setDumpPython(appStudy->studyDS());
+        savePoint = SalomeApp_VisualState( this ).storeState(); //SRN: create a temporary save point
       }
       bool res = aStudy->DumpStudy( aFileInfo.absolutePath().toStdString(),
-				    aFileInfo.baseName().toStdString(), toPublish);
+                                    aFileInfo.baseName().toStdString(), toPublish);
       if ( toSaveGUI )
-	appStudy->removeSavePoint(savePoint); //SRN: remove the created temporary save point.
+        appStudy->removeSavePoint(savePoint); //SRN: remove the created temporary save point.
       if ( !res )
-	SUIT_MessageBox::warning( desktop(),
-				  QObject::tr("WRN_WARNING"),
-				  tr("WRN_DUMP_STUDY_FAILED") );
+        SUIT_MessageBox::warning( desktop(),
+                                  QObject::tr("WRN_WARNING"),
+                                  tr("WRN_DUMP_STUDY_FAILED") );
     }
   }
 }
@@ -755,8 +755,8 @@ void SalomeApp_Application::onLoadScript( )
 
   if ( aStudy->GetProperties()->IsLocked() ) {
     SUIT_MessageBox::warning( desktop(),
-			      QObject::tr("WRN_WARNING"),
-			      QObject::tr("WRN_STUDY_LOCKED") );
+                              QObject::tr("WRN_WARNING"),
+                              QObject::tr("WRN_STUDY_LOCKED") );
     return;
   }
 
@@ -855,9 +855,9 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
 
       // temporary commented
       /*
-	ob->setWidthMode( autoSize ? QListView::Maximum : QListView::Manual );
-	ob->listView()->setColumnWidthMode( 0, autoSizeFirst ? QListView::Maximum : QListView::Manual );
-	ob->resize( desktop()->width()/3, ob->height() );
+        ob->setWidthMode( autoSize ? QListView::Maximum : QListView::Manual );
+        ob->listView()->setColumnWidthMode( 0, autoSizeFirst ? QListView::Maximum : QListView::Manual );
+        ob->resize( desktop()->width()/3, ob->height() );
       */
     }
   }
@@ -912,11 +912,11 @@ void SalomeApp_Application::updateDesktopTitle() {
       if ( study ) {
         _PTR(Study) stdDS = study->studyDS();
         if(stdDS) {
-	  if ( stdDS->GetProperties()->IsLocked() ) {
-	    aTitle += QString( " - [%1 (%2)]").arg( sName ).arg( tr( "STUDY_LOCKED" ) );
-	  } else {
-	    aTitle += QString( " - [%1]" ).arg( sName );
-  	  }
+          if ( stdDS->GetProperties()->IsLocked() ) {
+            aTitle += QString( " - [%1 (%2)]").arg( sName ).arg( tr( "STUDY_LOCKED" ) );
+          } else {
+            aTitle += QString( " - [%1]" ).arg( sName );
+          }
         }
       }
     }
@@ -929,7 +929,7 @@ int SalomeApp_Application::closeChoice( const QString& docName )
 {
   int answer = SUIT_MessageBox::question( desktop(), tr( "APPCLOSE_CAPTION" ), tr( "APPCLOSE_DESCRIPTION" ).arg( docName ),
                                           tr ("APPCLOSE_SAVE"), tr ("APPCLOSE_CLOSE"),
-					  tr ("APPCLOSE_UNLOAD"), tr ("APPCLOSE_CANCEL"), 0 );
+                                          tr ("APPCLOSE_UNLOAD"), tr ("APPCLOSE_CANCEL"), 0 );
 
   int res = CloseCancel;
   if ( answer == 0 )
@@ -985,11 +985,11 @@ int SalomeApp_Application::openChoice( const QString& aName )
     if ( exist )
     {
       int answer = SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "QUE_DOC_ALREADYEXIST" ).arg( aName ),
-					      SUIT_MessageBox::Yes | SUIT_MessageBox::No, SUIT_MessageBox::No );
+                                              SUIT_MessageBox::Yes | SUIT_MessageBox::No, SUIT_MessageBox::No );
       if ( answer == SUIT_MessageBox::Yes )
-	choice = OpenRefresh;
+        choice = OpenRefresh;
       else
-	choice = OpenCancel;
+        choice = OpenCancel;
     }
   }
 
@@ -1007,8 +1007,8 @@ bool SalomeApp_Application::openAction( const int aChoice, const QString& aName 
       _PTR(Study) aStudy = studyMgr()->GetStudyByName( aName.toStdString() );
       if ( aStudy )
       {
-	studyMgr()->Close( aStudy );
-	choice = OpenNew;
+        studyMgr()->Close( aStudy );
+        choice = OpenNew;
       }
     }
   default:
@@ -1161,10 +1161,10 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QMenu* thePop
     {
       _PTR(SObject) aSObject = aStudyDS->FindObjectID( it.Value()->getEntry() ), aRefObj = aSObject;
       while( aRefObj && aRefObj->ReferencedObject( anObj ) )
-	aRefObj = anObj;
+        aRefObj = anObj;
 
       if( aRefObj && aRefObj!=aSObject && QString( aRefObj->GetName().c_str() ).isEmpty() )
-	isInvalidRefs = true;
+        isInvalidRefs = true;
     }
 
   // Add "Delete reference" item to popup
@@ -1210,17 +1210,17 @@ void SalomeApp_Application::updateObjectBrowser( const bool updateModels )
     {
       for ( _PTR(SComponentIterator) it ( stdDS->NewComponentIterator() ); it->More(); it->Next() )
       {
-	_PTR(SComponent) aComponent ( it->Value() );
+        _PTR(SComponent) aComponent ( it->Value() );
 
-	if ( aComponent->ComponentDataType() == "Interface Applicative" )
-	  continue; // skip the magic "Interface Applicative" component
+        if ( aComponent->ComponentDataType() == "Interface Applicative" )
+          continue; // skip the magic "Interface Applicative" component
 
-	if ( !objectBrowser() )
-	  getWindow( WT_ObjectBrowser );
-	const bool isAutoUpdate = objectBrowser()->autoUpdate();
-	objectBrowser()->setAutoUpdate( false );
-	SalomeApp_DataModel::synchronize( aComponent, study );
-	objectBrowser()->setAutoUpdate( isAutoUpdate );
+        if ( !objectBrowser() )
+          getWindow( WT_ObjectBrowser );
+        const bool isAutoUpdate = objectBrowser()->autoUpdate();
+        objectBrowser()->setAutoUpdate( false );
+        SalomeApp_DataModel::synchronize( aComponent, study );
+        objectBrowser()->setAutoUpdate( isAutoUpdate );
       }
     }
   }
@@ -1272,7 +1272,7 @@ void SalomeApp_Application::onDblClick( SUIT_DataObject* theObj )
       
       QModelIndexList aSelectedIndexes = ob->selectedIndexes();
       if ( !aSelectedIndexes.isEmpty() )
-	ob->treeView()->scrollTo( aSelectedIndexes.first() );
+        ob->treeView()->scrollTo( aSelectedIndexes.first() );
     }
   }
 }

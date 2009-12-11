@@ -204,7 +204,7 @@ QList<GLViewer_Object*> GLViewer_MimeData::getObjects( QByteArray theArray, QStr
             for( j = 0; j < aObjNum; j++ )
             {
                 QByteArray aTempArray;
-		aTempArray.resize(aObjSizeList[j]);
+                aTempArray.resize(aObjSizeList[j]);
                 for( ; anIndex < aCurIndex + aObjSizeList[j]; anIndex++ )
                     aTempArray[anIndex-aCurIndex] = theArray[anIndex];
                 aObjects.append( aTempArray );

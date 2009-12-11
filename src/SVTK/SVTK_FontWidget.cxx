@@ -116,10 +116,10 @@ void SVTK_FontWidget::SetData( const QColor& theColor,
 }
 
 void SVTK_FontWidget::GetData( QColor& theColor,
-			       int& theFamily,
-			       bool& theBold,
-			       bool& theItalic,
-			       bool& theShadow ) const
+                               int& theFamily,
+                               bool& theBold,
+                               bool& theItalic,
+                               bool& theShadow ) const
 {
   theColor = GetColor();
 

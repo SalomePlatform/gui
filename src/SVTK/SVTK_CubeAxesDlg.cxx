@@ -213,10 +213,10 @@ void SVTK_CubeAxesDlg::AxisWidget::SetName(const QString& theName)
 }
 
 void SVTK_CubeAxesDlg::AxisWidget::SetNameFont(const QColor& theColor,
-					       const int theFont,
-					       const bool theIsBold,
-					       const bool theIsItalic,
-					       const bool theIsShadow)
+                                               const int theFont,
+                                               const bool theIsBold,
+                                               const bool theIsItalic,
+                                               const bool theIsShadow)
 {
   myNameFont->SetData(theColor, theFont, theIsBold, theIsItalic, theIsShadow);
 }
@@ -375,11 +375,11 @@ bool SVTK_CubeAxesDlg::AxisWidget::Apply(vtkAxisActor2D* theActor)
   Constructor
 */
 SVTK_CubeAxesDlg::SVTK_CubeAxesDlg(QtxAction* theAction,
-				   SVTK_ViewWindow* theParent,
-				   const char* theName):
+                                   SVTK_ViewWindow* theParent,
+                                   const char* theName):
   SVTK_DialogBase(theAction,
-		  theParent, 
-		  theName),
+                  theParent, 
+                  theName),
   myMainWindow(theParent)
 {
   setWindowTitle(tr("CAPTION"));

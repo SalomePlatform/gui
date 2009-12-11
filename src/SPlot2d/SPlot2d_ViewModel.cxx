@@ -91,7 +91,7 @@ SPlot2d_Viewer::~SPlot2d_Viewer()
   Renames curve if it is found
 */
 void SPlot2d_Viewer::rename( const Handle(SALOME_InteractiveObject)& IObject,
-			     const QString& newName, Plot2d_ViewFrame* fr ) 
+                             const QString& newName, Plot2d_ViewFrame* fr ) 
 {
   Plot2d_ViewFrame* aViewFrame = fr ? fr : getActiveViewFrame();
   if( !aViewFrame )
@@ -150,8 +150,8 @@ bool SPlot2d_Viewer::isInViewer( const Handle(SALOME_InteractiveObject)& IObject
       CurveDict::Iterator it = aCurves.begin();
       for( ; it != aCurves.end(); ++it ) {
         SPlot2d_Curve* aCurve = dynamic_cast<SPlot2d_Curve*>( it.value() );
-	if(aCurve && aCurve->hasIO() && aCurve->getTableIO()->isSame(IObject))
-	  return 1;
+        if(aCurve && aCurve->hasIO() && aCurve->getTableIO()->isSame(IObject))
+          return 1;
       }
     }
   }
@@ -216,10 +216,10 @@ void SPlot2d_Viewer::Erase( const Handle(SALOME_InteractiveObject)& IObject, boo
       _PTR(SObject) aChildSO = aIter->Value();
       _PTR(SObject) refSO;
       if ( aChildSO->ReferencedObject( refSO ) && refSO )
-	aChildSO = refSO;
+        aChildSO = refSO;
       curve = getCurveByIO( new SALOME_InteractiveObject( aChildSO->GetID().c_str(), "") );
       if ( curve )
-	aViewFrame->eraseCurve( curve, update );
+        aViewFrame->eraseCurve( curve, update );
     }
   }
 */
@@ -350,7 +350,7 @@ Plot2d_ViewFrame* SPlot2d_Viewer::getActiveViewFrame()
   \param fr - viewframe
 */
 SPlot2d_Curve* SPlot2d_Viewer::getCurveByIO( const Handle(SALOME_InteractiveObject)& theIObject,
-					     Plot2d_ViewFrame* fr )
+                                             Plot2d_ViewFrame* fr )
 {
   if ( !theIObject.IsNull() ) {
     Plot2d_ViewFrame* aViewFrame = fr ? fr : getActiveViewFrame();
@@ -359,10 +359,10 @@ SPlot2d_Curve* SPlot2d_Viewer::getCurveByIO( const Handle(SALOME_InteractiveObje
       CurveDict::Iterator it = aCurves.begin();
       for( ; it != aCurves.end(); ++it ) {
         SPlot2d_Curve* aCurve = dynamic_cast<SPlot2d_Curve*>( it.value() );
-	if(aCurve) {
-	  if ( aCurve->hasIO() && aCurve->getIO()->isSame( theIObject ) )
-	    return aCurve;
-	}
+        if(aCurve) {
+          if ( aCurve->hasIO() && aCurve->getIO()->isSame( theIObject ) )
+            return aCurve;
+        }
       }
     }
   }

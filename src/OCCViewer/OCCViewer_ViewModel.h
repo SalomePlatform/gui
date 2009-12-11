@@ -44,25 +44,25 @@ class AIS_ListOfInteractive;
 struct viewAspect
 {
 public:
-	double	  scale;
-	double	centerX;
-	double  centerY;
-	double    projX;
-	double    projY;
-	double    projZ;
-	double    twist;
-	double      atX;
-	double      atY;
-	double      atZ;
-	double     eyeX;
-	double     eyeY;
-	double     eyeZ;
+        double    scale;
+        double  centerX;
+        double  centerY;
+        double    projX;
+        double    projY;
+        double    projZ;
+        double    twist;
+        double      atX;
+        double      atY;
+        double      atZ;
+        double     eyeX;
+        double     eyeY;
+        double     eyeZ;
         double   scaleX;
         double   scaleY;
         double   scaleZ;
-	QString    name;
-	bool     isVisible;
-	double   size;
+        QString    name;
+        bool     isVisible;
+        double   size;
 };
 
 typedef QList<viewAspect> viewAspectList;
@@ -135,7 +135,7 @@ public:
 
   /* Selection management */
   bool    highlight( const Handle(AIS_InteractiveObject)&, bool, bool=true );
-  bool	  unHighlightAll( bool=true ); 
+  bool    unHighlightAll( bool=true ); 
   bool    isInViewer( const Handle(AIS_InteractiveObject)&, bool=false );
   bool    isVisible( const Handle(AIS_InteractiveObject)& );
 

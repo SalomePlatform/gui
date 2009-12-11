@@ -260,7 +260,7 @@ void QtxDialog::Area::layoutButtons()
     {
       buttonId[mit.value()] = mit.key();
       if ( mit.key() >= 0 )
-	src.append( mit.value() );
+        src.append( mit.value() );
     }
   }
 
@@ -321,7 +321,7 @@ void QtxDialog::Area::layoutButtons()
     {
       buttonLayout->addWidget( other[i] );
       if ( aPolicy == QtxDialog::Uniform && i < (int)other.count() - 1  )
-	buttonLayout->addStretch( 1 );
+        buttonLayout->addStretch( 1 );
     }
   }
 
@@ -446,10 +446,10 @@ QtxDialog::QtxDialog( QWidget* parent, bool modal, bool allowResize, const int f
 #endif
            ( ( allowResize 
 #ifdef WIN32 
-	       // in qwidget_win.cpp flag WStyle_ContextHelp will be unset in WStyle_MinMax in switched ON
-	       && !( wf & Qt::WindowContextHelpButtonHint )
+               // in qwidget_win.cpp flag WStyle_ContextHelp will be unset in WStyle_MinMax in switched ON
+               && !( wf & Qt::WindowContextHelpButtonHint )
 #endif
-	       ) ? Qt::WindowMaximizeButtonHint : 0 ) ) ),
+               ) ? Qt::WindowMaximizeButtonHint : 0 ) ) ),
   myInited( false ),
   mySender( 0 ),
   myAlignment( 0 ),
@@ -1051,7 +1051,7 @@ void QtxDialog::removeButton( const int id )
     for ( ButtonMap::Iterator it = myButton.begin(); it != myButton.end(); ++it )
     {
       if ( it.key() < 0 )
-	map.insert( it.key(), it.value() );
+        map.insert( it.key(), it.value() );
     }
   }
   else if ( myButton.contains( id ) )
@@ -1212,7 +1212,7 @@ QtxDialog::ButtonMap QtxDialog::buttons( const int f ) const
   {
     for ( ButtonMap::ConstIterator it = myButton.begin(); it != myButton.end(); ++it )
       if ( f == -1 || ( it.key() >= 0 && f & it.key() ) )
-	retmap.insert( it.key(), it.value() );
+        retmap.insert( it.key(), it.value() );
   }
   return retmap;
 }
@@ -1541,7 +1541,7 @@ void QtxDialog::adjustButtons()
     const QList<QAbstractButton*>& lst = aIt.value()->buttons();
     for ( QList<QAbstractButton*>::const_iterator bIt = lst.begin(); bIt != lst.end(); ++bIt )
       if ( (*bIt)->isVisibleTo( this ) )
-	minWidth = qMax( minWidth, (*bIt)->sizeHint().width() );
+        minWidth = qMax( minWidth, (*bIt)->sizeHint().width() );
   }
 
   for ( AreaMap::Iterator aItr = myArea.begin(); aItr != myArea.end(); ++aItr )
@@ -1549,7 +1549,7 @@ void QtxDialog::adjustButtons()
     const QList<QAbstractButton*>& lst = aItr.value()->buttons();
     for ( QList<QAbstractButton*>::const_iterator bItr = lst.begin(); bItr != lst.end(); ++bItr )
       if ( (*bItr)->isVisibleTo( this ) )
-	(*bItr)->setMinimumWidth( minWidth );
+        (*bItr)->setMinimumWidth( minWidth );
   }
 }
 

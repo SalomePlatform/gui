@@ -134,9 +134,9 @@ public:
     \param sync        if True the request is processed synchronously 
   */
   ExecCommand( PyInterp_Interp*        theInterp, 
-	       const QString&          theCommand,
-	       PyConsole_Editor*       theListener, 
-	       bool                    sync = false )
+               const QString&          theCommand,
+               PyConsole_Editor*       theListener, 
+               bool                    sync = false )
     : PyInterp_LockRequest( theInterp, theListener, sync ),
       myCommand( theCommand ), myState( PyInterp_Event::ES_OK )
   {}
@@ -152,9 +152,9 @@ protected:
     {
       int ret = getInterp()->run( myCommand.toLatin1() );
       if ( ret < 0 )
-	myState = PyInterp_Event::ES_ERROR;
+        myState = PyInterp_Event::ES_ERROR;
       else if ( ret > 0 )
-	myState = PyInterp_Event::ES_INCOMPLETE;
+        myState = PyInterp_Event::ES_INCOMPLETE;
     } 
   }
 
@@ -211,7 +211,7 @@ void staticCallback( void* data, char* c )
   \param theParent parent widget
 */
 PyConsole_Editor::PyConsole_Editor( PyConsole_Interp* theInterp, 
-				    QWidget*          theParent )
+                                    QWidget*          theParent )
 : QTextEdit( theParent ),
   myInterp( 0 ),
   myCmdInHistory( -1 ),
@@ -276,7 +276,7 @@ void PyConsole_Editor::setIsSync( const bool on )
   \param newBlock if True, then the string is printed on a new line
 */
 void PyConsole_Editor::addText( const QString& str, 
-				const bool     newBlock )
+                                const bool     newBlock )
 {
   moveCursor( QTextCursor::End );
   if ( newBlock )
@@ -413,11 +413,11 @@ void PyConsole_Editor::dropEvent( QDropEvent* event )
   }
   // create new drop event and use it instead of the original
   QDropEvent de( pos,
-		 event->possibleActions(),
-		 event->mimeData(),
-		 event->mouseButtons(),
-		 event->keyboardModifiers(),
-		 event->type() );
+                 event->possibleActions(),
+                 event->mimeData(),
+                 event->mouseButtons(),
+                 event->keyboardModifiers(),
+                 event->type() );
   QTextEdit::dropEvent( &de );
   // accept the original event
   event->acceptProposedAction();
@@ -527,7 +527,7 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
     // any printed key: just print it
     {
       if ( curLine < endLine || curCol < PROMPT_SIZE ) {
-	moveCursor( QTextCursor::End );
+        moveCursor( QTextCursor::End );
       }
       QTextEdit::keyPressEvent( event );
       break;
@@ -547,35 +547,35 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
     // - with <Ctrl>+<Shift> modifier keys pressed: scroll one row up
     {
       if ( ctrlPressed && shftPressed ) {
-	int value   = verticalScrollBar()->value();
-	int spacing = fontMetrics().lineSpacing();
-	verticalScrollBar()->setValue( value > spacing ? value-spacing : 0 );
+        int value   = verticalScrollBar()->value();
+        int spacing = fontMetrics().lineSpacing();
+        verticalScrollBar()->setValue( value > spacing ? value-spacing : 0 );
       }
       else if ( shftPressed || ctrlPressed ) {
-	if ( curLine > 0 )
-	  moveCursor( QTextCursor::Up, 
-		      shftPressed ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor );
+        if ( curLine > 0 )
+          moveCursor( QTextCursor::Up, 
+                      shftPressed ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor );
       }
       else { 
-	if ( myCmdInHistory < 0 && myHistory.count() > 0 ) {
-	  // set history browsing mode
-	  myCmdInHistory = myHistory.count();
-	  // remember current command
-	  QTextBlock par = document()->end().previous();
-	  myCurrentCommand = par.text().remove( 0, PROMPT_SIZE );
-	}
-	if ( myCmdInHistory > 0 ) {
-	  myCmdInHistory--;
-	  // get previous command in the history
-	  QString previousCommand = myHistory.at( myCmdInHistory );
-	  // print previous command
-	  moveCursor( QTextCursor::End );
-	  moveCursor( QTextCursor::StartOfBlock, QTextCursor::KeepAnchor );
-	  textCursor().removeSelectedText();
-	  addText( myPrompt + previousCommand ); 
-	  // move cursor to the end
-	  moveCursor( QTextCursor::End );
-	}
+        if ( myCmdInHistory < 0 && myHistory.count() > 0 ) {
+          // set history browsing mode
+          myCmdInHistory = myHistory.count();
+          // remember current command
+          QTextBlock par = document()->end().previous();
+          myCurrentCommand = par.text().remove( 0, PROMPT_SIZE );
+        }
+        if ( myCmdInHistory > 0 ) {
+          myCmdInHistory--;
+          // get previous command in the history
+          QString previousCommand = myHistory.at( myCmdInHistory );
+          // print previous command
+          moveCursor( QTextCursor::End );
+          moveCursor( QTextCursor::StartOfBlock, QTextCursor::KeepAnchor );
+          textCursor().removeSelectedText();
+          addText( myPrompt + previousCommand ); 
+          // move cursor to the end
+          moveCursor( QTextCursor::End );
+        }
       }
       break;
     }
@@ -587,40 +587,40 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
     // - with <Ctrl>+<Shift> modifier keys pressed: scroll one row down
     {
       if ( ctrlPressed && shftPressed ) {
-	int value   = verticalScrollBar()->value();
-	int maxval  = verticalScrollBar()->maximum();
-	int spacing = fontMetrics().lineSpacing();
-	verticalScrollBar()->setValue( value+spacing < maxval ? value+spacing : maxval );
+        int value   = verticalScrollBar()->value();
+        int maxval  = verticalScrollBar()->maximum();
+        int spacing = fontMetrics().lineSpacing();
+        verticalScrollBar()->setValue( value+spacing < maxval ? value+spacing : maxval );
       }
       else if ( shftPressed || ctrlPressed) {
-	if ( curLine < endLine )
-	  moveCursor( QTextCursor::Down, 
-		      shftPressed ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor );
+        if ( curLine < endLine )
+          moveCursor( QTextCursor::Down, 
+                      shftPressed ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor );
       }
       else { 
-	if ( myCmdInHistory >= 0 ) {
-	  // get next command in the history
-	  myCmdInHistory++;
-	  QString nextCommand;
-	  if ( myCmdInHistory < myHistory.count() ) {
-	    // next command in history
-	    nextCommand = myHistory.at( myCmdInHistory );
-	  }
-	  else {
-	    // end of history is reached
-	    // last printed command
-	    nextCommand = myCurrentCommand;
-	    // unset history browsing mode
-	    myCmdInHistory = -1;
-	  }
-	  // print next or current command
-	  moveCursor( QTextCursor::End );
-	  moveCursor( QTextCursor::StartOfBlock, QTextCursor::KeepAnchor );
-	  textCursor().removeSelectedText();
-	  addText( myPrompt + nextCommand );
-	  // move cursor to the end
-	  moveCursor( QTextCursor::End );
-	}
+        if ( myCmdInHistory >= 0 ) {
+          // get next command in the history
+          myCmdInHistory++;
+          QString nextCommand;
+          if ( myCmdInHistory < myHistory.count() ) {
+            // next command in history
+            nextCommand = myHistory.at( myCmdInHistory );
+          }
+          else {
+            // end of history is reached
+            // last printed command
+            nextCommand = myCurrentCommand;
+            // unset history browsing mode
+            myCmdInHistory = -1;
+          }
+          // print next or current command
+          moveCursor( QTextCursor::End );
+          moveCursor( QTextCursor::StartOfBlock, QTextCursor::KeepAnchor );
+          textCursor().removeSelectedText();
+          addText( myPrompt + nextCommand );
+          // move cursor to the end
+          moveCursor( QTextCursor::End );
+        }
       }
       break;
     }
@@ -633,11 +633,11 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
     {
       QString txt = textCursor().block().text();
       if ( !shftPressed && isCommand( txt ) && curCol <= PROMPT_SIZE ) {
-	moveCursor( QTextCursor::Up );
-	moveCursor( QTextCursor::EndOfBlock );
+        moveCursor( QTextCursor::Up );
+        moveCursor( QTextCursor::EndOfBlock );
       }
       else {
-	QTextEdit::keyPressEvent( event );
+        QTextEdit::keyPressEvent( event );
       }
       break;
     }
@@ -650,21 +650,21 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
     {
       QString txt = textCursor().block().text();
       if ( !shftPressed ) {
-	if ( curCol < txt.length() ) {
-	  if ( isCommand( txt ) && curCol < PROMPT_SIZE ) {
-	    cur.setPosition( cur.block().position() + PROMPT_SIZE );
-	    setTextCursor( cur );
-	    break;
-	  }
-	}
-	else {
-	  if ( curLine < endLine && isCommand( textCursor().block().next().text() ) ) {
-	    cur.setPosition( cur.position() + PROMPT_SIZE+1 );
-	    setTextCursor( cur );
-	    horizontalScrollBar()->setValue( horizontalScrollBar()->minimum() );
-	    break;
-	  }
-	}
+        if ( curCol < txt.length() ) {
+          if ( isCommand( txt ) && curCol < PROMPT_SIZE ) {
+            cur.setPosition( cur.block().position() + PROMPT_SIZE );
+            setTextCursor( cur );
+            break;
+          }
+        }
+        else {
+          if ( curLine < endLine && isCommand( textCursor().block().next().text() ) ) {
+            cur.setPosition( cur.position() + PROMPT_SIZE+1 );
+            setTextCursor( cur );
+            horizontalScrollBar()->setValue( horizontalScrollBar()->minimum() );
+            break;
+          }
+        }
       }
       QTextEdit::keyPressEvent( event );
       break;
@@ -677,49 +677,49 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
     // - with <Ctrl>+<Shift> modifier keys pressed: scroll one page up
     {
       if ( ctrlPressed && shftPressed ) {
-	verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepSub);
+        verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepSub);
       }
       else if ( shftPressed || ctrlPressed ) {
-	bool moved = false;
-	qreal lastY = cursorRect( cur ).top();
-	qreal distance = 0;
-	// move using movePosition to keep the cursor's x
-	do {
-	  qreal y = cursorRect( cur ).top();
-	  distance += qAbs( y - lastY );
-	  lastY = y;
-	  moved = cur.movePosition( QTextCursor::Up, 
-				    shftPressed ? QTextCursor::KeepAnchor : 
-				                  QTextCursor::MoveAnchor );
-	} while ( moved && distance < viewport()->height() );
-	if ( moved ) {
-	  cur.movePosition( QTextCursor::Down, 
-			    shftPressed ? QTextCursor::KeepAnchor : 
-			                  QTextCursor::MoveAnchor );
-	  verticalScrollBar()->triggerAction( QAbstractSlider::SliderPageStepSub );
-	}
-	setTextCursor( cur );
+        bool moved = false;
+        qreal lastY = cursorRect( cur ).top();
+        qreal distance = 0;
+        // move using movePosition to keep the cursor's x
+        do {
+          qreal y = cursorRect( cur ).top();
+          distance += qAbs( y - lastY );
+          lastY = y;
+          moved = cur.movePosition( QTextCursor::Up, 
+                                    shftPressed ? QTextCursor::KeepAnchor : 
+                                                  QTextCursor::MoveAnchor );
+        } while ( moved && distance < viewport()->height() );
+        if ( moved ) {
+          cur.movePosition( QTextCursor::Down, 
+                            shftPressed ? QTextCursor::KeepAnchor : 
+                                          QTextCursor::MoveAnchor );
+          verticalScrollBar()->triggerAction( QAbstractSlider::SliderPageStepSub );
+        }
+        setTextCursor( cur );
       }
       else { 
-	if ( myCmdInHistory < 0 && myHistory.count() > 0 ) {
-	  // set history browsing mode
-	  myCmdInHistory = myHistory.count();
-	  // remember current command
-	  QTextBlock par = document()->end().previous();
-	  myCurrentCommand = par.text().remove( 0, PROMPT_SIZE );
-	}
-	if ( myCmdInHistory > 0 ) {
-	  myCmdInHistory = 0;
-	  // get very first command in the history
-	  QString firstCommand = myHistory.at( myCmdInHistory );
-	  // print first command
-	  moveCursor( QTextCursor::End );
-	  moveCursor( QTextCursor::StartOfBlock, QTextCursor::KeepAnchor );
-	  textCursor().removeSelectedText();
-	  addText( myPrompt + firstCommand ); 
-	  // move cursor to the end
-	  moveCursor( QTextCursor::End );
-	}
+        if ( myCmdInHistory < 0 && myHistory.count() > 0 ) {
+          // set history browsing mode
+          myCmdInHistory = myHistory.count();
+          // remember current command
+          QTextBlock par = document()->end().previous();
+          myCurrentCommand = par.text().remove( 0, PROMPT_SIZE );
+        }
+        if ( myCmdInHistory > 0 ) {
+          myCmdInHistory = 0;
+          // get very first command in the history
+          QString firstCommand = myHistory.at( myCmdInHistory );
+          // print first command
+          moveCursor( QTextCursor::End );
+          moveCursor( QTextCursor::StartOfBlock, QTextCursor::KeepAnchor );
+          textCursor().removeSelectedText();
+          addText( myPrompt + firstCommand ); 
+          // move cursor to the end
+          moveCursor( QTextCursor::End );
+        }
       }
       break;
     }
@@ -731,41 +731,41 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
     // - with <Ctrl>+<Shift> modifier keys pressed: scroll one page down
     {
       if ( ctrlPressed && shftPressed ) {
-	verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepAdd);
+        verticalScrollBar()->triggerAction(QAbstractSlider::SliderPageStepAdd);
       }
       else if ( shftPressed || ctrlPressed ) {
-	bool moved = false;
-	qreal lastY = cursorRect( cur ).top();
-	qreal distance = 0;
-	// move using movePosition to keep the cursor's x
-	do {
-	  qreal y = cursorRect( cur ).top();
-	  distance += qAbs( y - lastY );
-	  lastY = y;
-	  moved = cur.movePosition( QTextCursor::Down, 
-				    shftPressed ? QTextCursor::KeepAnchor : 
-				                  QTextCursor::MoveAnchor );
-	} while ( moved && distance < viewport()->height() );
-	if ( moved ) {
-	  cur.movePosition( QTextCursor::Up, 
-			    shftPressed ? QTextCursor::KeepAnchor : 
-			                  QTextCursor::MoveAnchor );
-	  verticalScrollBar()->triggerAction( QAbstractSlider::SliderPageStepSub );
-	}
-	setTextCursor( cur );
+        bool moved = false;
+        qreal lastY = cursorRect( cur ).top();
+        qreal distance = 0;
+        // move using movePosition to keep the cursor's x
+        do {
+          qreal y = cursorRect( cur ).top();
+          distance += qAbs( y - lastY );
+          lastY = y;
+          moved = cur.movePosition( QTextCursor::Down, 
+                                    shftPressed ? QTextCursor::KeepAnchor : 
+                                                  QTextCursor::MoveAnchor );
+        } while ( moved && distance < viewport()->height() );
+        if ( moved ) {
+          cur.movePosition( QTextCursor::Up, 
+                            shftPressed ? QTextCursor::KeepAnchor : 
+                                          QTextCursor::MoveAnchor );
+          verticalScrollBar()->triggerAction( QAbstractSlider::SliderPageStepSub );
+        }
+        setTextCursor( cur );
       }
       else { 
-	if ( myCmdInHistory >= 0 ) {
-	  // unset history browsing mode
-	  myCmdInHistory = -1;
-	  // print current command
-	  moveCursor( QTextCursor::End );
-	  moveCursor( QTextCursor::StartOfBlock, QTextCursor::KeepAnchor );
-	  textCursor().removeSelectedText();
-	  addText( myPrompt + myCurrentCommand ); 
-	  // move cursor to the end
-	  moveCursor( QTextCursor::End );
-	}
+        if ( myCmdInHistory >= 0 ) {
+          // unset history browsing mode
+          myCmdInHistory = -1;
+          // print current command
+          moveCursor( QTextCursor::End );
+          moveCursor( QTextCursor::StartOfBlock, QTextCursor::KeepAnchor );
+          textCursor().removeSelectedText();
+          addText( myPrompt + myCurrentCommand ); 
+          // move cursor to the end
+          moveCursor( QTextCursor::End );
+        }
       }
       break;
     }
@@ -777,29 +777,29 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
     // - with <Ctrl>+<Shift> modifier keys pressed: move cursor to the very first symbol with selection
     {
       if ( ctrlPressed ) { 
-	moveCursor( QTextCursor::Start, 
-		    shftPressed ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor );
+        moveCursor( QTextCursor::Start, 
+                    shftPressed ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor );
       }
       else {
-	QString txt = textCursor().block().text();
-	if ( isCommand( txt ) ) {
-	  if ( shftPressed ) {
-	    if ( curCol > PROMPT_SIZE ) {
-	      cur.movePosition( QTextCursor::StartOfLine, QTextCursor::KeepAnchor );
-	      cur.movePosition( QTextCursor::Right, QTextCursor::KeepAnchor, PROMPT_SIZE );
-	    }
-	  }
-	  else {
-	    cur.movePosition( QTextCursor::StartOfLine );
-	    cur.movePosition( QTextCursor::Right, QTextCursor::MoveAnchor, PROMPT_SIZE );
-	  }
-	  setTextCursor( cur );
-	}
-	else {
-	  moveCursor( QTextCursor::StartOfBlock, 
-		      shftPressed ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor );
-	}
-	horizontalScrollBar()->setValue( horizontalScrollBar()->minimum() );
+        QString txt = textCursor().block().text();
+        if ( isCommand( txt ) ) {
+          if ( shftPressed ) {
+            if ( curCol > PROMPT_SIZE ) {
+              cur.movePosition( QTextCursor::StartOfLine, QTextCursor::KeepAnchor );
+              cur.movePosition( QTextCursor::Right, QTextCursor::KeepAnchor, PROMPT_SIZE );
+            }
+          }
+          else {
+            cur.movePosition( QTextCursor::StartOfLine );
+            cur.movePosition( QTextCursor::Right, QTextCursor::MoveAnchor, PROMPT_SIZE );
+          }
+          setTextCursor( cur );
+        }
+        else {
+          moveCursor( QTextCursor::StartOfBlock, 
+                      shftPressed ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor );
+        }
+        horizontalScrollBar()->setValue( horizontalScrollBar()->minimum() );
       }
       break;
     }
@@ -811,7 +811,7 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
     // - with <Ctrl>+<Shift> modifier keys pressed: move cursor to the very last symbol with selection
     {
       moveCursor( ctrlPressed ? QTextCursor::End : QTextCursor::EndOfBlock, 
-		  shftPressed ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor );
+                  shftPressed ? QTextCursor::KeepAnchor : QTextCursor::MoveAnchor );
       break;
     }  
   case Qt::Key_Backspace :
@@ -822,27 +822,27 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
     // works only for last (command) line
     {
       if ( cur.hasSelection() ) {
-	cut();
+        cut();
       }
       else if ( cur.position() > document()->end().previous().position() + PROMPT_SIZE ) {
-	if ( shftPressed ) {
-	  moveCursor( QTextCursor::PreviousWord, QTextCursor::KeepAnchor );
-	  textCursor().removeSelectedText();
-	}
-	else if ( ctrlPressed ) {
-	  cur.setPosition( document()->end().previous().position() + PROMPT_SIZE, 
-			   QTextCursor::KeepAnchor );
-	  setTextCursor( cur );
-	  textCursor().removeSelectedText();
-	}
-	else {
-	  QTextEdit::keyPressEvent( event );
-	}
+        if ( shftPressed ) {
+          moveCursor( QTextCursor::PreviousWord, QTextCursor::KeepAnchor );
+          textCursor().removeSelectedText();
+        }
+        else if ( ctrlPressed ) {
+          cur.setPosition( document()->end().previous().position() + PROMPT_SIZE, 
+                           QTextCursor::KeepAnchor );
+          setTextCursor( cur );
+          textCursor().removeSelectedText();
+        }
+        else {
+          QTextEdit::keyPressEvent( event );
+        }
       }
       else {
-	cur.setPosition( document()->end().previous().position() + PROMPT_SIZE );
-	setTextCursor( cur );
-	horizontalScrollBar()->setValue( horizontalScrollBar()->minimum() );
+        cur.setPosition( document()->end().previous().position() + PROMPT_SIZE );
+        setTextCursor( cur );
+        horizontalScrollBar()->setValue( horizontalScrollBar()->minimum() );
       }
       break;
     }
@@ -854,25 +854,25 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
     // works only for last (command) line
     {
       if ( cur.hasSelection() ) {
-	cut();
+        cut();
       }
       else if ( cur.position() > document()->end().previous().position() + PROMPT_SIZE-1 ) {
-	if ( shftPressed ) {
-	  moveCursor( QTextCursor::NextWord, QTextCursor::KeepAnchor );
-	  textCursor().removeSelectedText();
-	}
-	else if ( ctrlPressed ) {
-	  moveCursor( QTextCursor::EndOfBlock, QTextCursor::KeepAnchor );
-	  textCursor().removeSelectedText();
-	}
-	else {
-	  QTextEdit::keyPressEvent( event );
-	}
+        if ( shftPressed ) {
+          moveCursor( QTextCursor::NextWord, QTextCursor::KeepAnchor );
+          textCursor().removeSelectedText();
+        }
+        else if ( ctrlPressed ) {
+          moveCursor( QTextCursor::EndOfBlock, QTextCursor::KeepAnchor );
+          textCursor().removeSelectedText();
+        }
+        else {
+          QTextEdit::keyPressEvent( event );
+        }
       }
       else {
-	cur.setPosition( document()->end().previous().position() + PROMPT_SIZE );
-	setTextCursor( cur );
-	horizontalScrollBar()->setValue( horizontalScrollBar()->minimum() );
+        cur.setPosition( document()->end().previous().position() + PROMPT_SIZE );
+        setTextCursor( cur );
+        horizontalScrollBar()->setValue( horizontalScrollBar()->minimum() );
       }
       break;
     }
@@ -882,13 +882,13 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
     // - with <Shift> modifier key pressed: paste() to the command line
     {
       if ( ctrlPressed ) {
-	copy();
+        copy();
       }
       else if ( shftPressed ) {
-	paste();
+        paste();
       }
       else
-	QTextEdit::keyPressEvent( event );
+        QTextEdit::keyPressEvent( event );
       break;
     }
   }
@@ -997,7 +997,7 @@ void PyConsole_Editor::onPyInterpChanged( PyConsole_Interp* interp )
       viewport()->unsetCursor();
       // stop event loop (if running)
       if( myEventLoop)
-	myEventLoop->exit();
+        myEventLoop->exit();
     }
     else {
       // clear contents

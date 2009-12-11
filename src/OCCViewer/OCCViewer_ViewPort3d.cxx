@@ -187,10 +187,10 @@ bool OCCViewer_ViewPort3d::syncronize( const OCCViewer_ViewPort3d* ref )
 
   /* Syncronize view types */
   /*    if ( tgtView->Type() != refView->Type() )
-	{
-	setActive( refView->Type() );
-	tgtView = getView();
-	}*/
+        {
+        setActive( refView->Type() );
+        tgtView = getView();
+        }*/
 
   /*  The following params are copied:
       - view type( ortho/persp )
@@ -244,7 +244,7 @@ void OCCViewer_ViewPort3d::setZSize( double zsize )
   myActiveView->SetZSize( zsize );
   /*    if ( !myOrthoView.IsNull() )
         myOrthoView->SetZSize( zsize );
-	if ( !myPerspView.IsNull() )
+        if ( !myPerspView.IsNull() )
         myPerspView->SetZSize( zsize );*/
 }
 
@@ -271,7 +271,7 @@ void OCCViewer_ViewPort3d::setBackgroundColor( const QColor& color )
 {
   if ( !activeView().IsNull() ) {
     activeView()->SetBackgroundColor( Quantity_TOC_RGB, color.red()/255.,
-				      color.green()/255., color.blue()/255.);
+                                      color.green()/255., color.blue()/255.);
     activeView()->Update();
     emit vpChangeBGColor( color );
   }
@@ -342,8 +342,8 @@ void OCCViewer_ViewPort3d::pan( int dx, int dy )
   Inits 'rotation' transformation. [ protected ]
 */
 void OCCViewer_ViewPort3d::startRotation( int x, int y, 
-					  int theRotationPointType,
-					  const gp_Pnt& theSelectedPoint )
+                                          int theRotationPointType,
+                                          const gp_Pnt& theSelectedPoint )
 {
   if ( !activeView().IsNull() ) {
     myDegenerated = activeView()->DegenerateModeIsOn();
@@ -367,17 +367,17 @@ void OCCViewer_ViewPort3d::startRotation( int x, int y,
       ry = Standard_Real(activeView()->Convert(Y)); 
       
       activeView()->Rotate( 0., 0., 0., 
-			    theSelectedPoint.X(),theSelectedPoint.Y(), theSelectedPoint.Z(), 
-			    Standard_True );
+                            theSelectedPoint.X(),theSelectedPoint.Y(), theSelectedPoint.Z(), 
+                            Standard_True );
       
       Quantity_Ratio zRotationThreshold;
       zRotation = Standard_False;
       zRotationThreshold = 0.45;
       if( zRotationThreshold > 0. ) {
-	Standard_Real dx = Abs(sx - rx/2.);
-	Standard_Real dy = Abs(sy - ry/2.);
-	Standard_Real dd = zRotationThreshold * (rx + ry)/2.;
-	if( dx > dd || dy > dd ) zRotation = Standard_True;
+        Standard_Real dx = Abs(sx - rx/2.);
+        Standard_Real dy = Abs(sy - ry/2.);
+        Standard_Real dd = zRotationThreshold * (rx + ry)/2.;
+        if( dx > dd || dy > dd ) zRotation = Standard_True;
       }
       break;
     default:
@@ -390,8 +390,8 @@ void OCCViewer_ViewPort3d::startRotation( int x, int y,
   Rotates the viewport. [ protected ]
 */
 void OCCViewer_ViewPort3d::rotate( int x, int y, 
-				   int theRotationPointType,
-				   const gp_Pnt& theSelectedPoint )
+                                   int theRotationPointType,
+                                   const gp_Pnt& theSelectedPoint )
 {
   if ( !activeView().IsNull() ) {
     switch ( theRotationPointType ) {
@@ -401,19 +401,19 @@ void OCCViewer_ViewPort3d::rotate( int x, int y,
     case OCCViewer_ViewWindow::SELECTED:
       double dx, dy, dz;
       if( zRotation ) {
-	dz = atan2(Standard_Real(x)-rx/2., ry/2.-Standard_Real(y)) - 
-	  atan2(sx-rx/2.,ry/2.-sy);
-	dx = dy = 0.;
+        dz = atan2(Standard_Real(x)-rx/2., ry/2.-Standard_Real(y)) - 
+          atan2(sx-rx/2.,ry/2.-sy);
+        dx = dy = 0.;
       }
       else {
-	dx = (Standard_Real(x) - sx) * Standard_PI/rx;
-	dy = (sy - Standard_Real(y)) * Standard_PI/ry;
-	dz = 0.;
+        dx = (Standard_Real(x) - sx) * Standard_PI/rx;
+        dy = (sy - Standard_Real(y)) * Standard_PI/ry;
+        dz = 0.;
       }
       
       activeView()->Rotate( dx, dy, dz, 
-			    theSelectedPoint.X(),theSelectedPoint.Y(), theSelectedPoint.Z(),
-			    Standard_False );
+                            theSelectedPoint.X(),theSelectedPoint.Y(), theSelectedPoint.Z(),
+                            Standard_False );
       break;
     default:
       break;

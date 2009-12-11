@@ -52,8 +52,8 @@ class SVTK_CubeAxesDlg : public SVTK_DialogBase
 
 public:
                   SVTK_CubeAxesDlg(QtxAction* theAction,
-				   SVTK_ViewWindow* theParent,
-				   const char* theName);
+                                   SVTK_ViewWindow* theParent,
+                                   const char* theName);
   virtual         ~SVTK_CubeAxesDlg();
 
   void            Update();

@@ -264,9 +264,9 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
   static 
   void
   ProcessEvents(vtkObject* object, 
-		unsigned long event,
-		void* clientData, 
-		void* callData );
+                unsigned long event,
+                void* clientData, 
+                void* callData );
 
   float MotionFactor;
   float RadianToDegree;                 // constant: for conv from deg to rad

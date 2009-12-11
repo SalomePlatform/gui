@@ -48,14 +48,14 @@ class PLOT2D_EXPORT Plot2d_ViewWindow : public SUIT_ViewWindow
 
 public:
   enum { DumpId, 
-	 ScaleOpId, FitAllId, FitRectId, ZoomId,
-	 MoveOpId, PanId, GlobalPanId,
-	 PModeXLinearId, PModeXLogarithmicId, 
+         ScaleOpId, FitAllId, FitRectId, ZoomId,
+         MoveOpId, PanId, GlobalPanId,
+         PModeXLinearId, PModeXLogarithmicId, 
          PModeYLinearId, PModeYLogarithmicId,
-	 CurvPointsId, CurvLinesId, CurvSplinesId, 
-	 LegendId,
-	 CurvSettingsId,
-	 CloneId };
+         CurvPointsId, CurvLinesId, CurvSplinesId, 
+         LegendId,
+         CurvSettingsId,
+         CloneId };
 
 public:
   Plot2d_ViewWindow( SUIT_Desktop*, Plot2d_Viewer* );
@@ -98,8 +98,8 @@ public slots:
 protected:
   virtual QImage    dumpView();
   virtual bool      dumpViewToFormat( const QImage&, 
-				      const QString&, 
-				      const QString& );
+                                      const QString&, 
+                                      const QString& );
   virtual QString   filter() const;
 
 signals:

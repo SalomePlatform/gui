@@ -173,7 +173,7 @@ void CASCatch_CatchSignals::Activate()
 #endif
   act.sa_handler = (SIG_PFV) &SegvHandler ;
 
-#ifdef SA_SIGINFO	// OSF,SOLARIS,IRIX
+#ifdef SA_SIGINFO       // OSF,SOLARIS,IRIX
   act.sa_flags = act.sa_flags | SA_SIGINFO ;
 # ifdef SOLARIS
   act.sa_sigaction = (void(*)(int, siginfo_t *, void*)) &SegvHandler ;

@@ -58,10 +58,10 @@ public:
   * \param xScale and \param yScal  - scale factors along x and y direction
   */
   GLViewer_Grid( GLfloat width, GLfloat height,
-		 GLfloat winW, GLfloat winH,
-		 GLfloat xSize, GLfloat ySize,
-		 GLfloat xPan, GLfloat yPan,
-		 GLfloat xScale, GLfloat yScale );
+                 GLfloat winW, GLfloat winH,
+                 GLfloat xSize, GLfloat ySize,
+                 GLfloat xPan, GLfloat yPan,
+                 GLfloat xScale, GLfloat yScale );
   ~GLViewer_Grid();
 
   //! Draws grid

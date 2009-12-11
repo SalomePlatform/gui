@@ -530,7 +530,7 @@ QSize QtxColorScale::sizeHint() const
   \return color scale size
 */
 QSize QtxColorScale::calculateSize( const bool min, const int flags, const bool title,
-				    const bool labels, const bool colors ) const
+                                    const bool labels, const bool colors ) const
 {
   int num = intervalsNumber();
   
@@ -585,7 +585,7 @@ QSize QtxColorScale::calculateSize( const bool min, const int flags, const bool 
     {
       QPainter p( (QtxColorScale*)this );
       if ( scaleWidth )
-	srt->setTextWidth( scaleWidth );
+        srt->setTextWidth( scaleWidth );
       
       titleHeight = (int)srt->size().height() + spacer;
       titleWidth = (int)srt->size().width() + 10;
@@ -615,9 +615,9 @@ QPixmap QtxColorScale::dump() const
     {
       bool scale = ( myDumpMode == ScaleDump || myDumpMode == FullDump );
       bool label = ( myDumpMode == ScaleDump || myDumpMode == FullDump ) &&
-	labelPosition() != None;
+        labelPosition() != None;
       bool title = ( myDumpMode == TitleDump || myDumpMode == FullDump ) &&
-	titlePosition() != None;
+        titlePosition() != None;
       QColor bgc = palette().color( backgroundRole() );
       QPainter p;
       p.begin( &aPix );
@@ -666,9 +666,9 @@ QPixmap QtxColorScale::dump( const QColor& bg, const int w, const int h ) const
       QSize sz = calculateSize( false, myFlags & ~WrapTitle, title, label, scale );
       
       if ( W < 0 )
-	W = sz.width();
+        W = sz.width();
       if ( H < 0 )
-	H = sz.height();
+        H = sz.height();
     }
     
     aPix = QPixmap( W, H );
@@ -724,8 +724,8 @@ void QtxColorScale::drawContents( QPainter* p )
   QRect aDrawRect = contentsRect();
   
   drawScale( p, false/*testFlags( Transparent )*/, aDrawRect.x(),
-	     aDrawRect.y(), aDrawRect.width(), aDrawRect.height(),
-	     titlePosition() != None, labelPosition() != None, true );
+             aDrawRect.y(), aDrawRect.width(), aDrawRect.height(),
+             titlePosition() != None, labelPosition() != None, true );
 }
 
 /*!
@@ -906,13 +906,13 @@ void QtxColorScale::drawScale( QPainter* p, const QColor& bg, const bool transp,
       int pos2 = lab - 1 - i2;
       if ( filter && !( pos1 % filter ) )
       {
-	p->drawText( x, (int)( Y + i1 * step + ascent + offset ), labels[i1] );
-	last1 = i1;
+        p->drawText( x, (int)( Y + i1 * step + ascent + offset ), labels[i1] );
+        last1 = i1;
       }
       if ( filter && !( pos2 % filter ) )
       {
-	p->drawText( x, (int)( Y + i2 * step + ascent + offset ), labels[i2] );
-	last2 = i2;
+        p->drawText( x, (int)( Y + i2 * step + ascent + offset ), labels[i2] );
+        last2 = i2;
       }
       i1++;
       i2--;
@@ -922,8 +922,8 @@ void QtxColorScale::drawScale( QPainter* p, const QColor& bg, const bool transp,
     while ( pos <= i2 && i0 == -1 )
     {
       if ( filter && !( pos % filter ) &&
-	   qAbs( pos - last1 ) >= filter && qAbs( pos - last2 ) >= filter )
-	i0 = pos;
+           qAbs( pos - last1 ) >= filter && qAbs( pos - last2 ) >= filter )
+        i0 = pos;
       pos++;
     }
 

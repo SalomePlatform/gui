@@ -41,7 +41,7 @@ LightApp_DataModel::LightApp_DataModel( CAM_Module* theModule )
 {
   myGroupId = 0;
   if( module() )
-	myGroupId = qHash( module()->name() );
+        myGroupId = qHash( module()->name() );
 }
 
 /*!
@@ -206,5 +206,5 @@ void LightApp_DataModel::unregisterColumn( SUIT_DataBrowser* browser, const QStr
 {
   SUIT_AbstractModel* m = dynamic_cast<SUIT_AbstractModel*>( browser ? browser->model() : 0 );
   if( m )
-	m->unregisterColumn( groupId(), name );
+        m->unregisterColumn( groupId(), name );
 }

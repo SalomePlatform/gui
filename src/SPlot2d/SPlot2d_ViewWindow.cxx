@@ -30,7 +30,7 @@
 */
 SPlot2d_ViewWindow
 ::SPlot2d_ViewWindow( SUIT_Desktop* theDesktop, 
-		      Plot2d_Viewer* theModel)
+                      Plot2d_Viewer* theModel)
   : Plot2d_ViewWindow( theDesktop, theModel )
 {
 }

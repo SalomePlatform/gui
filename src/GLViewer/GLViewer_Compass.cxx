@@ -112,7 +112,7 @@ void GLViewer_Compass::setArrowWidthTop( const int WidthTop )
 void GLViewer_Compass::setArrowWidthBottom( const int WidthBot )
 { 
   if( WidthBot > myArrowWidthTop || WidthBot < 1 )
-    return;	
+    return;     
   myArrowWidthBottom=WidthBot;
 }
 

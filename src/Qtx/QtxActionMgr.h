@@ -113,7 +113,7 @@ public:
   Reader* reader() const;
 
   virtual int    append( const QString&, const bool,
-			 const ItemAttributes&, const int ) = 0;
+                         const ItemAttributes&, const int ) = 0;
   virtual void   connect( QAction* ) const;
 
   virtual bool   loadPixmap( const QString&, QPixmap& ) const;
@@ -121,7 +121,7 @@ public:
 protected:
   static int     intValue( const ItemAttributes&, const QString&, const int );
   static QString strValue( const ItemAttributes&, const QString&,
-			   const QString& = QString() );
+                           const QString& = QString() );
 private:
   QtxActionMgr::Reader*  myReader;  //!< actions reader
 };

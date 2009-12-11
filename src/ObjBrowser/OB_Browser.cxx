@@ -91,7 +91,7 @@ OB_Browser::ToolTip::~ToolTip()
 void OB_Browser::ToolTip::maybeTip( const QPoint& pos )
 {
   if ( !parentWidget() || !myBrowser || !myBrowser->isShowToolTips() )
-	  return;
+          return;
 
   QListView* lv = myBrowser->listView();
 
@@ -163,7 +163,7 @@ OB_Browser::OB_Browser( QWidget* parent, QAbstractItemModel* model )
   setModel( model );
 
   connect( myView, SIGNAL( selectionChanged() ),
-	   this,   SIGNAL( selectionChanged() ) );
+           this,   SIGNAL( selectionChanged() ) );
 
 }
 
@@ -758,7 +758,7 @@ void OB_Browser::restoreState( const DataObjectMap& selObjs, const DataObjectMap
     {
       bool parentOpen = true;
       if( item && item->parent() )
-	parentOpen = item->parent()->isOpen();
+        parentOpen = item->parent()->isOpen();
 
       if ( openObjs[obj] && parentOpen )
         lv->setOpen( item, true );
@@ -767,10 +767,10 @@ void OB_Browser::restoreState( const DataObjectMap& selObjs, const DataObjectMap
     {
       bool parentOpen = true;
       if( item && item->parent() )
-	parentOpen = item->parent()->isOpen();
+        parentOpen = item->parent()->isOpen();
 
       if( parentOpen )
-	lv->setOpen( item, true );
+        lv->setOpen( item, true );
     }
 
     if ( !curItem && ( curObj == obj || ( !curKey.isNull() && curKey == key )) )
@@ -984,12 +984,12 @@ void OB_Browser::createPopupMenu( QMenu* menu )
   bool closed = false, opened = false;
   
   for ( QModelIndexList::Iterator it = indexes.begin(); 
-	it != indexes.end() && !closed; ++it ) {
+        it != indexes.end() && !closed; ++it ) {
     closed = hasCollased( *it );
   }
 
   for ( QModelIndexList::Iterator it = indexes.begin(); 
-	it != indexes.end() && !opened; ++it ) {
+        it != indexes.end() && !opened; ++it ) {
     opened = hasExpanded( *it );
   }
 
@@ -1033,8 +1033,8 @@ bool OB_Browser::hasCollased( const QModelIndex& index ) const
     if ( !result && hasChildren ) {
       int rows = model()->rowCount( index );
       for ( int i = 0; i < rows && !result; i ++ ) {
-	QModelIndex child = model()->index( i, 0, index );
-	result = hasCollased( child );
+        QModelIndex child = model()->index( i, 0, index );
+        result = hasCollased( child );
       }
     }
   }
@@ -1055,8 +1055,8 @@ bool OB_Browser::hasExpanded( const QModelIndex& index ) const
     if ( !result && hasChildren ) {
       int rows = model()->rowCount( index );
       for ( int i = 0; i < rows && !result; i ++ ) {
-	QModelIndex child = model()->index( i, 0, index );
-	result = hasExpanded( child );
+        QModelIndex child = model()->index( i, 0, index );
+        result = hasExpanded( child );
       }
     }
   }

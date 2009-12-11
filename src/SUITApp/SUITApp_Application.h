@@ -54,8 +54,8 @@ public:
 
   virtual bool notify( QObject* receiver, QEvent* e );
 
-	SUIT_ExceptionHandler* handler() const;
-	void                   setHandler( SUIT_ExceptionHandler* );
+        SUIT_ExceptionHandler* handler() const;
+        void                   setHandler( SUIT_ExceptionHandler* );
 
 private:
   SUIT_ExceptionHandler* myExceptHandler;

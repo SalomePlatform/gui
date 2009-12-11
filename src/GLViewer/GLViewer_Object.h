@@ -82,7 +82,7 @@ public:
    *\param isCircle - = true if sensitive area of detection is round
   */
   virtual GLboolean         highlight( GLfloat x,
-				       GLfloat y,
+                                       GLfloat y,
                                        GLfloat tol,
                                        GLboolean isCircle = GL_FALSE ) = 0;
   //! Clears all highlight information

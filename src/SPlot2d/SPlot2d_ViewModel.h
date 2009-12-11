@@ -58,7 +58,7 @@ public:
 
   virtual   SUIT_ViewWindow* createView(SUIT_Desktop* theDesktop);
   
-  /* display */		
+  /* display */         
   void Display( const Handle(SALOME_InteractiveObject)& IObject, bool update = true );
   void DisplayOnly( const Handle(SALOME_InteractiveObject)& IObject );
   void Erase( const Handle(SALOME_InteractiveObject)& IObject, bool update = true );

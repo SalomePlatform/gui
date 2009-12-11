@@ -178,7 +178,7 @@ public:
   
   //! Export numbers of highlighted/selected lines
   void                    exportNumbers( QList<int>& high, QList<int>& unhigh,
-					 QList<int>& sel, QList<int>& unsel );
+                                         QList<int>& sel, QList<int>& unsel );
 
   //! Returns numbers of selected lines
   QList<int>              getSelectedElements() { return mySelNumbers; }

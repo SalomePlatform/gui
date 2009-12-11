@@ -510,15 +510,15 @@ void SalomePyQt::updateObjBrowser( const int studyId, bool updateSelection )
       if ( SUIT_Session::session() ) {
         if ( getActiveStudy() && myStudyId <= 0 )
           myStudyId = getActiveStudy()->id();
-	if ( myStudyId > 0 ) {
+        if ( myStudyId > 0 ) {
           QList<SUIT_Application*> apps = SUIT_Session::session()->applications();
           QList<SUIT_Application*>::Iterator it;
-	  for( it = apps.begin(); it != apps.end(); ++it ) {
+          for( it = apps.begin(); it != apps.end(); ++it ) {
             LightApp_Application* anApp = dynamic_cast<LightApp_Application*>( *it );
             if ( anApp && anApp->activeStudy() && anApp->activeStudy()->id() == myStudyId ) {
-	      anApp->updateObjectBrowser();
-	      return;
-	    }
+              anApp->updateObjectBrowser();
+              return;
+            }
           }
         }
       }
@@ -560,10 +560,10 @@ void SalomePyQt::addStringSetting( const QString& name, const QString& value, bo
     virtual void Execute() {
       if ( SUIT_Session::session() ) {
         SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
-	QStringList sl = myName.split( ":", QString::SkipEmptyParts );
-	QString _sec = sl.count() > 1 ? sl[ 0 ].trimmed() : QString( DEFAULT_SECTION );
-	QString _nam = sl.count() > 1 ? sl[ 1 ].trimmed() : sl.count() > 0 ? sl[ 0 ].trimmed() : QString( "" );
-	if ( !_sec.isEmpty() && !_nam.isEmpty() )
+        QStringList sl = myName.split( ":", QString::SkipEmptyParts );
+        QString _sec = sl.count() > 1 ? sl[ 0 ].trimmed() : QString( DEFAULT_SECTION );
+        QString _nam = sl.count() > 1 ? sl[ 1 ].trimmed() : sl.count() > 0 ? sl[ 0 ].trimmed() : QString( "" );
+        if ( !_sec.isEmpty() && !_nam.isEmpty() )
           resMgr->setValue( _sec, _nam, myValue );
       }
     }
@@ -599,10 +599,10 @@ void SalomePyQt::addIntSetting( const QString& name, const int value, bool autoV
     {
       if ( SUIT_Session::session() ) {
         SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
-	QStringList sl = myName.split( ":", QString::SkipEmptyParts );
-	QString _sec = sl.count() > 1 ? sl[ 0 ].trimmed() : QString( DEFAULT_SECTION );
-	QString _nam = sl.count() > 1 ? sl[ 1 ].trimmed() : sl.count() > 0 ? sl[ 0 ].trimmed() : QString( "" );
-	if ( !_sec.isEmpty() && !_nam.isEmpty() )
+        QStringList sl = myName.split( ":", QString::SkipEmptyParts );
+        QString _sec = sl.count() > 1 ? sl[ 0 ].trimmed() : QString( DEFAULT_SECTION );
+        QString _nam = sl.count() > 1 ? sl[ 1 ].trimmed() : sl.count() > 0 ? sl[ 0 ].trimmed() : QString( "" );
+        if ( !_sec.isEmpty() && !_nam.isEmpty() )
           resMgr->setValue( _sec, _nam, myValue );
       }
     }
@@ -638,10 +638,10 @@ void SalomePyQt::addDoubleSetting( const QString& name, const double value, bool
     {
       if ( SUIT_Session::session() ) {
         SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
-	QStringList sl = myName.split( ":", QString::SkipEmptyParts );
-	QString _sec = sl.count() > 1 ? sl[ 0 ].trimmed() : QString( DEFAULT_SECTION );
-	QString _nam = sl.count() > 1 ? sl[ 1 ].trimmed() : sl.count() > 0 ? sl[ 0 ].trimmed() : QString( "" );
-	if ( !_sec.isEmpty() && !_nam.isEmpty() )
+        QStringList sl = myName.split( ":", QString::SkipEmptyParts );
+        QString _sec = sl.count() > 1 ? sl[ 0 ].trimmed() : QString( DEFAULT_SECTION );
+        QString _nam = sl.count() > 1 ? sl[ 1 ].trimmed() : sl.count() > 0 ? sl[ 0 ].trimmed() : QString( "" );
+        if ( !_sec.isEmpty() && !_nam.isEmpty() )
           resMgr->setValue( _sec, _nam, myValue );
       }
     }
@@ -677,10 +677,10 @@ void SalomePyQt::addBoolSetting( const QString& name, const bool value, bool aut
     {
       if ( SUIT_Session::session() ) {
         SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
-	QStringList sl = myName.split( ":", QString::SkipEmptyParts );
-	QString _sec = sl.count() > 1 ? sl[ 0 ].trimmed() : QString( DEFAULT_SECTION );
-	QString _nam = sl.count() > 1 ? sl[ 1 ].trimmed() : sl.count() > 0 ? sl[ 0 ].trimmed() : QString( "" );
-	if ( !_sec.isEmpty() && !_nam.isEmpty() )
+        QStringList sl = myName.split( ":", QString::SkipEmptyParts );
+        QString _sec = sl.count() > 1 ? sl[ 0 ].trimmed() : QString( DEFAULT_SECTION );
+        QString _nam = sl.count() > 1 ? sl[ 1 ].trimmed() : sl.count() > 0 ? sl[ 0 ].trimmed() : QString( "" );
+        if ( !_sec.isEmpty() && !_nam.isEmpty() )
           resMgr->setValue( _sec, _nam, myValue );
       }
     }
@@ -705,10 +705,10 @@ void SalomePyQt::removeSettings( const QString& name )
     virtual void Execute() {
       if ( SUIT_Session::session() ) {
         SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
-	QStringList sl = myName.split( ":", QString::SkipEmptyParts );
-	QString _sec = sl.count() > 1 ? sl[ 0 ].trimmed() : QString( DEFAULT_SECTION );
-	QString _nam = sl.count() > 1 ? sl[ 1 ].trimmed() : sl.count() > 0 ? sl[ 0 ].trimmed() : QString( "" );
-	if ( !_sec.isEmpty() && !_nam.isEmpty() )
+        QStringList sl = myName.split( ":", QString::SkipEmptyParts );
+        QString _sec = sl.count() > 1 ? sl[ 0 ].trimmed() : QString( DEFAULT_SECTION );
+        QString _nam = sl.count() > 1 ? sl[ 1 ].trimmed() : sl.count() > 0 ? sl[ 0 ].trimmed() : QString( "" );
+        if ( !_sec.isEmpty() && !_nam.isEmpty() )
           resMgr->remove( _sec, _nam );
       }
     }
@@ -771,7 +771,7 @@ void SalomePyQt::addSetting( const QString& section, const QString& name, const 
     {
       if ( SUIT_Session::session() ) {
         SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
-	if ( !mySection.isEmpty() && !myName.isEmpty() )
+        if ( !mySection.isEmpty() && !myName.isEmpty() )
           resMgr->setValue( mySection, myName, myValue );
       }
     }
@@ -799,7 +799,7 @@ void SalomePyQt::addSetting( const QString& section, const QString& name, const 
     {
       if ( SUIT_Session::session() ) {
         SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
-	if ( !mySection.isEmpty() && !myName.isEmpty() )
+        if ( !mySection.isEmpty() && !myName.isEmpty() )
           resMgr->setValue( mySection, myName, myValue );
       }
     }
@@ -829,7 +829,7 @@ void SalomePyQt::addSetting( const QString& section, const QString& name, const 
     {
       if ( SUIT_Session::session() ) {
         SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
-	if ( !mySection.isEmpty() && !myName.isEmpty() )
+        if ( !mySection.isEmpty() && !myName.isEmpty() )
           resMgr->setValue( mySection, myName, myValue );
       }
     }
@@ -857,7 +857,7 @@ void SalomePyQt::addSetting( const QString& section, const QString& name, const 
     {
       if ( SUIT_Session::session() ) {
         SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
-	if ( !mySection.isEmpty() && !myName.isEmpty() )
+        if ( !mySection.isEmpty() && !myName.isEmpty() )
           resMgr->setValue( mySection, myName, myValue );
       }
     }
@@ -885,7 +885,7 @@ void SalomePyQt::addSetting( const QString& section, const QString& name, const 
     {
       if ( SUIT_Session::session() ) {
         SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
-	if ( !mySection.isEmpty() && !myName.isEmpty() )
+        if ( !mySection.isEmpty() && !myName.isEmpty() )
           resMgr->setValue( mySection, myName, myValue );
       }
     }
@@ -896,7 +896,7 @@ void SalomePyQt::addSetting( const QString& section, const QString& name, const 
 /*!
   \fn int SalomePyQt::integerSetting( const QString& section, 
                                       const QString& name, 
-				      const int def );
+                                      const int def );
   \brief Get integer setting from the application preferences.
   \param section resources file section name 
   \param name setting name
@@ -930,7 +930,7 @@ int SalomePyQt::integerSetting( const QString& section, const QString& name, con
 /*!
   \fn double SalomePyQt::doubleSetting( const QString& section, 
                                         const QString& name, 
-					const double def );
+                                        const double def );
   \brief Get double setting from the application preferences.
   \param section resources file section name 
   \param name setting name
@@ -964,7 +964,7 @@ double SalomePyQt::doubleSetting( const QString& section, const QString& name, c
 /*!
   \fn bool SalomePyQt::boolSetting( const QString& section, 
                                     const QString& name, 
-				    const bool def );
+                                    const bool def );
   \brief Get boolean setting from the application preferences.
   \param section resources file section name 
   \param name setting name
@@ -998,7 +998,7 @@ bool SalomePyQt::boolSetting( const QString& section, const QString& name, const
 /*!
   \fn QString SalomePyQt::stringSetting( const QString& section, 
                                          const QString& name, 
-					 const QString& def );
+                                         const QString& def );
   \brief Get string setting from the application preferences.
   \param section resources file section name 
   \param name setting name
@@ -1032,7 +1032,7 @@ QString SalomePyQt::stringSetting( const QString& section, const QString& name, 
 /*!
   \fn QColor SalomePyQt::colorSetting( const QString& section, 
                                        const QString& name, 
-				       const QColor def );
+                                       const QColor def );
   \brief Get color setting from the application preferences.
   \param section resources file section name 
   \param name setting name
@@ -1080,7 +1080,7 @@ void SalomePyQt::removeSetting( const QString& section, const QString& name )
     {
       if ( SUIT_Session::session() ) {
         SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
-	if ( !mySection.isEmpty() && !myName.isEmpty() )
+        if ( !mySection.isEmpty() && !myName.isEmpty() )
           resMgr->remove( mySection, myName );
       }
     }
@@ -1120,10 +1120,10 @@ bool SalomePyQt::hasSetting( const QString& section, const QString& name )
 
 /*!
   \fn QString SalomePyQt::getFileName( QWidget*           parent, 
-				       const QString&     initial, 
-				       const QStringList& filters, 
-				       const QString&     caption,
-				       bool               open );
+                                       const QString&     initial, 
+                                       const QStringList& filters, 
+                                       const QString&     caption,
+                                       bool               open );
   \brief Show 'Open/Save file' dialog box for file selection 
          and return a user's choice (selected file name).
   \param parent parent widget
@@ -1146,10 +1146,10 @@ public:
   QString     myCaption;
   bool        myOpen;
   TGetFileNameEvent( QWidget*           parent, 
-		     const QString&     initial, 
-		     const QStringList& filters, 
- 		     const QString&     caption,
-	 	     bool               open ) 
+                     const QString&     initial, 
+                     const QStringList& filters, 
+                     const QString&     caption,
+                     bool               open ) 
     : myParent ( parent ), 
       myInitial( initial ), 
       myFilters( filters ), 
@@ -1159,24 +1159,24 @@ public:
   {
     if ( LightApp_Application* anApp = getApplication() ) {
       myResult = anApp->getFileName( myOpen, myInitial, myFilters.join(";;"), 
-				     myCaption, myParent );
+                                     myCaption, myParent );
     }
   }
 };
 QString SalomePyQt::getFileName( QWidget*           parent, 
-				 const QString&     initial, 
-				 const QStringList& filters, 
-				 const QString&     caption,
-				 bool               open )
+                                 const QString&     initial, 
+                                 const QStringList& filters, 
+                                 const QString&     caption,
+                                 bool               open )
 {
   return ProcessEvent( new TGetFileNameEvent( parent, initial, filters, caption, open ) );
 }
 
 /*!
   \fn QStringList SalomePyQt::getOpenFileNames( QWidget*           parent, 
-					        const QString&     initial, 
-						const QStringList& filters, 
-						const QString&     caption );
+                                                const QString&     initial, 
+                                                const QStringList& filters, 
+                                                const QString&     caption );
   \brief Show 'Open files' dialog box for multiple files selection
          and return a user's choice (selected file names list).
   \param parent parent widget
@@ -1196,9 +1196,9 @@ public:
   QStringList myFilters;
   QString     myCaption;
   TGetOpenFileNamesEvent( QWidget*           parent, 
-			  const QString&     initial, 
-			  const QStringList& filters, 
-			  const QString&     caption ) 
+                          const QString&     initial, 
+                          const QStringList& filters, 
+                          const QString&     caption ) 
     : myParent ( parent ), 
       myInitial( initial ), 
       myFilters( filters ), 
@@ -1211,17 +1211,17 @@ public:
   }
 };
 QStringList SalomePyQt::getOpenFileNames( QWidget*           parent, 
-					  const QString&     initial, 
-					  const QStringList& filters, 
-					  const QString&     caption )
+                                          const QString&     initial, 
+                                          const QStringList& filters, 
+                                          const QString&     caption )
 {
   return ProcessEvent( new TGetOpenFileNamesEvent( parent, initial, filters, caption ) );
 }
 
 /*!
   \fn QString SalomePyQt::getExistingDirectory( QWidget*       parent,
-					        const QString& initial,
-						const QString& caption );
+                                                const QString& initial,
+                                                const QString& caption );
   \brief Show 'Get Directory' dialog box for the directory selection
          and return a user's choice (selected directory name).
   \param parent parent widget
@@ -1239,8 +1239,8 @@ public:
   QString     myInitial;
   QString     myCaption;
   TGetExistingDirectoryEvent( QWidget*           parent, 
-			      const QString&     initial, 
-			      const QString&     caption ) 
+                              const QString&     initial, 
+                              const QString&     caption ) 
     : myParent ( parent ), 
       myInitial( initial ), 
       myCaption( caption ) {}
@@ -1252,8 +1252,8 @@ public:
   }
 };
 QString SalomePyQt::getExistingDirectory( QWidget*       parent,
-					  const QString& initial,
-					  const QString& caption )
+                                          const QString& initial,
+                                          const QString& caption )
 {
   return ProcessEvent( new TGetExistingDirectoryEvent( parent, initial, caption ) );
 }
@@ -1278,11 +1278,11 @@ public:
   {
     if ( LightApp_Application* anApp = getApplication() ) {
       if ( !myFileName.isEmpty() ) {
-	QPixmap pixmap = anApp->resourceMgr()->loadPixmap( myModule, 
+        QPixmap pixmap = anApp->resourceMgr()->loadPixmap( myModule, 
                          QApplication::translate( myModule.toLatin1().data(), 
-						  myFileName.toLatin1().data() ) );
-	if ( !pixmap.isNull() )
-	  myResult = QIcon( pixmap );
+                                                  myFileName.toLatin1().data() ) );
+        if ( !pixmap.isNull() )
+          myResult = QIcon( pixmap );
       }
     }
   }
@@ -1347,15 +1347,15 @@ public:
       SUIT_ViewManager* vm = anApp->activeViewManager();
       if ( vm ) { 
         SUIT_ViewWindow* vw = vm->getActiveView();
-	if ( vw ) {
+        if ( vw ) {
           QImage im = vw->dumpView();
-	  if ( !im.isNull() && !myFileName.isEmpty() ) {
+          if ( !im.isNull() && !myFileName.isEmpty() ) {
             QString fmt = SUIT_Tools::extension( myFileName ).toUpper();
-	    if ( fmt.isEmpty() ) fmt = QString( "BMP" ); // default format
-	    if ( fmt == "JPG" )  fmt = "JPEG";
-	    myResult = im.save( myFileName, fmt.toLatin1() );
+            if ( fmt.isEmpty() ) fmt = QString( "BMP" ); // default format
+            if ( fmt == "JPG" )  fmt = "JPEG";
+            myResult = im.save( myFileName, fmt.toLatin1() );
           }
-	}
+        }
       }
     }
   }
@@ -1676,11 +1676,11 @@ QAction* SalomePyQt::createSeparator()
 /*!
   \fn QAction* SalomePyQt::createAction( const int      id,
                                            const QString& menuText, 
-					   const QString& tipText, 
-					   const QString& statusText, 
-					   const QString& icon,
-					   const int      key, 
-					   const bool     toggle )
+                                           const QString& tipText, 
+                                           const QString& statusText, 
+                                           const QString& icon,
+                                           const int      key, 
+                                           const bool     toggle )
   \brief Create an action which can be then used in the menu or toolbar.
   \param id the unique id action to be registered to
   \param menuText action text which should appear in menu
@@ -1704,7 +1704,7 @@ public:
   int     myKey;
   bool    myToggle;
   TCreateActionEvent( const int id, const QString& menuText, const QString& tipText, 
-		      const QString& statusText, const QString& icon, const int key, const bool toggle ) 
+                      const QString& statusText, const QString& icon, const int key, const bool toggle ) 
     : myResult( 0 ), myId( id ), myMenuText( menuText ), myTipText( tipText ),
       myStatusText( statusText ), myIcon( icon ), myKey( key ), myToggle( toggle ) {}
   virtual void Execute()
@@ -1715,8 +1715,8 @@ public:
   }
 };
 QAction* SalomePyQt::createAction( const int id,           const QString& menuText, 
-				     const QString& tipText, const QString& statusText, 
-				     const QString& icon,    const int key, const bool toggle )
+                                     const QString& tipText, const QString& statusText, 
+                                     const QString& icon,    const int key, const bool toggle )
 {
   return ProcessEvent( new TCreateActionEvent( id, menuText, tipText, statusText, icon, key, toggle ) );
 }
@@ -1855,7 +1855,7 @@ int SalomePyQt::addPreference( const QString& label )
 
 /*!
   \fn int SalomePyQt::addPreference( const QString& label, const int pId, const int type,
-			             const QString& section, const QString& param );
+                                     const QString& section, const QString& param );
   \brief Add module-related preferences.
   \param label preferences group name
   \param pId parent preferences group id
@@ -1876,9 +1876,9 @@ public:
   QString mySection;
   QString myParam;
   TAddPrefParamEvent( const QString& label, 
-		      const int pId, const int type,
-		      const QString& section, 
-		      const QString& param )
+                      const int pId, const int type,
+                      const QString& section, 
+                      const QString& param )
     : myResult( -1 ),
       myLabel( label ), myPId( pId ), myType( type ), 
       mySection( section ), myParam ( param ) {}
@@ -1890,7 +1890,7 @@ public:
   }
 };
 int SalomePyQt::addPreference( const QString& label, const int pId, const int type,
-			       const QString& section, const QString& param )
+                               const QString& section, const QString& param )
 {
   return ProcessEvent( new TAddPrefParamEvent( label, pId, type, section, param ) );
 }
@@ -1931,8 +1931,8 @@ QVariant SalomePyQt::preferenceProperty( const int id, const QString& prop )
   \param var preferences property value
 */
 void SalomePyQt::setPreferenceProperty( const int id, 
-					const QString& prop,
-					const QVariant& var )
+                                        const QString& prop,
+                                        const QVariant& var )
 {
   class TEvent: public SALOME_Event
   {
@@ -1946,7 +1946,7 @@ void SalomePyQt::setPreferenceProperty( const int id,
     {
       SALOME_PYQT_ModuleLight* module = getActiveModule();
       if ( module )
-	module->setPreferenceProperty( myId, myProp, myVar );
+        module->setPreferenceProperty( myId, myProp, myVar );
     }
   };
   ProcessVoidEvent( new TEvent( id, prop, var) );
@@ -1964,9 +1964,9 @@ void SalomePyQt::setPreferenceProperty( const int id,
   \param var preferences property value for the index \a idx
 */
 void SalomePyQt::addPreferenceProperty( const int id, 
-					const QString& prop,
-					const int idx, 
-					const QVariant& var )
+                                        const QString& prop,
+                                        const int idx, 
+                                        const QVariant& var )
 {
   class TEvent: public SALOME_Event
   {
@@ -1981,30 +1981,30 @@ void SalomePyQt::addPreferenceProperty( const int id,
     {
       SALOME_PYQT_ModuleLight* module = getActiveModule();
       if ( module ) {
-	QVariant var =  module->preferenceProperty( myId, myProp );
-	if ( var.isValid() ) {
-	  if ( var.type() == QVariant::StringList ) {
-	    QStringList sl = var.toStringList();
-	    if ( myIdx >= 0 && myIdx < sl.count() ) 
-	      sl[myIdx] = myVar.toString();
-	    else
-	      sl.append( myVar.toString() );
-	    module->setPreferenceProperty( myId, myProp, sl );
-	  }
-	  else if ( var.type() == QVariant::List ) {
-	    QList<QVariant> vl = var.toList();
-	    if ( myIdx >= 0 && myIdx < vl.count() ) 
-	      vl[myIdx] = myVar;
-	    else
-	      vl.append( myVar );
-	    module->setPreferenceProperty( myId, myProp, vl );
-	  }
-	}
-	else {
-	  QList<QVariant> vl;
-	  vl.append( myVar );
-	  module->setPreferenceProperty( myId, myProp, vl );
-	}
+        QVariant var =  module->preferenceProperty( myId, myProp );
+        if ( var.isValid() ) {
+          if ( var.type() == QVariant::StringList ) {
+            QStringList sl = var.toStringList();
+            if ( myIdx >= 0 && myIdx < sl.count() ) 
+              sl[myIdx] = myVar.toString();
+            else
+              sl.append( myVar.toString() );
+            module->setPreferenceProperty( myId, myProp, sl );
+          }
+          else if ( var.type() == QVariant::List ) {
+            QList<QVariant> vl = var.toList();
+            if ( myIdx >= 0 && myIdx < vl.count() ) 
+              vl[myIdx] = myVar;
+            else
+              vl.append( myVar );
+            module->setPreferenceProperty( myId, myProp, vl );
+          }
+        }
+        else {
+          QList<QVariant> vl;
+          vl.append( myVar );
+          module->setPreferenceProperty( myId, myProp, vl );
+        }
       }
     }
   };
@@ -2029,9 +2029,9 @@ void SalomePyQt::message( const QString& msg, bool addSeparator )
     virtual void Execute()
     {
       if ( LightApp_Application* anApp = getApplication() ) {
-	LogWindow* lw = anApp->logWindow();
-	if ( lw )
-	  lw->putMessage( myMsg, myAddSep );
+        LogWindow* lw = anApp->logWindow();
+        if ( lw )
+          lw->putMessage( myMsg, myAddSep );
       }
     }
   };
@@ -2050,9 +2050,9 @@ void SalomePyQt::clearMessages()
     virtual void Execute()
     {
       if ( LightApp_Application* anApp = getApplication() ) {
-	LogWindow* lw = anApp->logWindow();
-	if ( lw )
-	  lw->clear();
+        LogWindow* lw = anApp->logWindow();
+        if ( lw )
+          lw->clear();
       }
     }
   };

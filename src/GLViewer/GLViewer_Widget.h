@@ -63,11 +63,11 @@ public:
   //! Returns scales on OpenGL scene along 3 directions
   /*! in 2d scene zScale = 1.0 */
   void                   getScale( GLfloat& xScale,
-				   GLfloat& yScale,
-				   GLfloat& zScale );
+                                   GLfloat& yScale,
+                                   GLfloat& zScale );
   //! A function for installing the scales of OpenGL scene
   void                   setScale( GLfloat xScale,
-				   GLfloat yScale,
+                                   GLfloat yScale,
                                    GLfloat zScaleGLfloat );
   
   //! Returns offset parameters of Window in OpenGL global scene
@@ -84,17 +84,17 @@ public:
 
   //! Returns start point of curren rotation of Window in OpenGL global scene
   void                   getRotationStart( GLfloat& rotationStartX,
-					   GLfloat& rotationStartY,
-					   GLfloat& rotationStartZ );
+                                           GLfloat& rotationStartY,
+                                           GLfloat& rotationStartZ );
   //! A function for installing the start point of curren rotation of Window in OpenGL global scene
   void                   setRotationStart( GLfloat rotationStartX,
-					   GLfloat rotationStartY,
-					   GLfloat rotationStartZ );
+                                           GLfloat rotationStartY,
+                                           GLfloat rotationStartZ );
   //! Returns parameters of current rotation
   void                   getRotation( GLfloat& rotationAngle,
-				      GLfloat& rotationCenterX,
-				      GLfloat& rotationCenterY,
-				      GLfloat& rotationCenterZ );
+                                      GLfloat& rotationCenterX,
+                                      GLfloat& rotationCenterY,
+                                      GLfloat& rotationCenterZ );
   //! A function for installing the parameters of current rotation
   void                   setRotation( GLfloat, GLfloat, GLfloat, GLfloat );
 

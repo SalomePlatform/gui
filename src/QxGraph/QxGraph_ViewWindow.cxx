@@ -126,42 +126,42 @@ void QxGraph_ViewWindow::createActions()
 
   // FitAll
   aAction = new QtxAction(tr("MNU_FITALL"), aResMgr->loadPixmap( "QxGraph", tr( "ICON_QXGRAPH_FITALL" ) ),
-			  tr( "MNU_FITALL" ), 0, this);
+                          tr( "MNU_FITALL" ), 0, this);
   aAction->setStatusTip(tr("DSC_FITALL"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewFitAll()));
   myActionsMap[ FitAllId ] = aAction;
 
   // FitRect
   aAction = new QtxAction(tr("MNU_FITRECT"), aResMgr->loadPixmap( "QxGraph", tr( "ICON_QXGRAPH_FITAREA" ) ),
-			  tr( "MNU_FITRECT" ), 0, this);
+                          tr( "MNU_FITRECT" ), 0, this);
   aAction->setStatusTip(tr("DSC_FITRECT"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewFitArea()));
   myActionsMap[ FitRectId ] = aAction;
 
   // Zoom
   aAction = new QtxAction(tr("MNU_ZOOM_VIEW"), aResMgr->loadPixmap( "QxGraph", tr( "ICON_QXGRAPH_ZOOM" ) ),
-			  tr( "MNU_ZOOM_VIEW" ), 0, this);
+                          tr( "MNU_ZOOM_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_ZOOM_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewZoom()));
   myActionsMap[ ZoomId ] = aAction;
 
   // Panning
   aAction = new QtxAction(tr("MNU_PAN_VIEW"), aResMgr->loadPixmap( "QxGraph", tr( "ICON_QXGRAPH_PAN" ) ),
-			  tr( "MNU_PAN_VIEW" ), 0, this);
+                          tr( "MNU_PAN_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_PAN_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewPan()));
   myActionsMap[ PanId ] = aAction;
 
   // Global Panning
   aAction = new QtxAction(tr("MNU_GLOBALPAN_VIEW"), aResMgr->loadPixmap( "QxGraph", tr( "ICON_QXGRAPH_GLOBALPAN" ) ),
-			  tr( "MNU_GLOBALPAN_VIEW" ), 0, this);
+                          tr( "MNU_GLOBALPAN_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_GLOBALPAN_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewGlobalPan()));
   myActionsMap[ GlobalPanId ] = aAction;
 
   // Reset
   aAction = new QtxAction(tr("MNU_RESET_VIEW"), aResMgr->loadPixmap( "QxGraph", tr( "ICON_QXGRAPH_RESET" ) ),
-			  tr( "MNU_RESET_VIEW" ), 0, this);
+                          tr( "MNU_RESET_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_RESET_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewReset()));
   myActionsMap[ ResetId ] = aAction;

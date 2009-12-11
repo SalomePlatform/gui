@@ -66,7 +66,7 @@ public:
 
   int             createToolBar( const QString&, int = -1, QMainWindow* = 0 );
   int             createToolBar( const QString&, bool, Qt::ToolBarAreas = Qt::AllToolBarAreas, 
-				 int = -1, QMainWindow* = 0 );
+                                 int = -1, QMainWindow* = 0 );
   void            removeToolBar( const QString& );
   void            removeToolBar( const int );
 

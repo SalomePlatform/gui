@@ -88,8 +88,8 @@ void OCCViewer_Trihedron::bounds( Graphic3d_CBounds& aMinMax ) const
  * Redefined method. Calculates the object presentation.
  */
 void OCCViewer_Trihedron::Compute( const Handle( PrsMgr_PresentationManager3d )&,
-				   const Handle( Prs3d_Presentation )& aPrs,
-				   const Standard_Integer aMode )
+                                   const Handle( Prs3d_Presentation )& aPrs,
+                                   const Standard_Integer aMode )
 {
   if( aPrs.IsNull() )
     return;
@@ -102,7 +102,7 @@ void OCCViewer_Trihedron::Compute( const Handle( PrsMgr_PresentationManager3d )&
  * Redefined method. Does nothing.
  */
 void OCCViewer_Trihedron::ComputeSelection( const Handle( SelectMgr_Selection )& theSelection,
-					    const Standard_Integer theMode )
+                                            const Standard_Integer theMode )
 {
 }
 

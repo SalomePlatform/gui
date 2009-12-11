@@ -57,8 +57,8 @@ const int MIN_SPIN_WIDTH  = 70;
   \param secondAxisY if \c true, show widgets for the second (right) vertical axis
 */
 Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent, 
-					  bool showDefCheck, 
-					  bool secondAxisY )
+                                          bool showDefCheck, 
+                                          bool secondAxisY )
 : QDialog( parent ), 
   mySecondAxisY( secondAxisY )
 {

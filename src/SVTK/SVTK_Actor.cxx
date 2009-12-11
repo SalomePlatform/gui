@@ -112,7 +112,7 @@ SVTK_Actor
 void
 SVTK_Actor
 ::MapCells(SALOME_Actor* theMapActor,
-	   const TColStd_IndexedMapOfInteger& theMapIndex)
+           const TColStd_IndexedMapOfInteger& theMapIndex)
 {
   myUnstructuredGrid->Initialize();
   myUnstructuredGrid->Allocate();
@@ -139,7 +139,7 @@ SVTK_Actor
 void 
 SVTK_Actor
 ::MapPoints(SALOME_Actor* theMapActor,
-	    const TColStd_IndexedMapOfInteger& theMapIndex)
+            const TColStd_IndexedMapOfInteger& theMapIndex)
 {
   myUnstructuredGrid->Initialize();
   myUnstructuredGrid->Allocate();
@@ -150,10 +150,10 @@ SVTK_Actor
     for(vtkIdType i = 0; i < aNbOfParts; i++){
       int aPartId = theMapIndex( i+1 );
       if(vtkFloatingPointType* aCoord = theMapActor->GetNodeCoord(aPartId)){
-	aPoints->SetPoint(i,aCoord);
-	// Change the type from int to vtkIdType in order to avoid compilation errors while using VTK
-	// from ParaView-3.4.0 compiled on 64-bit Debian platform with VTK_USE_64BIT_IDS = ON
-	myUnstructuredGrid->InsertNextCell(VTK_VERTEX,(vtkIdType) 1,&i);
+        aPoints->SetPoint(i,aCoord);
+        // Change the type from int to vtkIdType in order to avoid compilation errors while using VTK
+        // from ParaView-3.4.0 compiled on 64-bit Debian platform with VTK_USE_64BIT_IDS = ON
+        myUnstructuredGrid->InsertNextCell(VTK_VERTEX,(vtkIdType) 1,&i);
       }
     }
     myUnstructuredGrid->SetPoints(aPoints);
@@ -168,7 +168,7 @@ SVTK_Actor
 void
 SVTK_Actor
 ::MapEdge(SALOME_Actor* theMapActor,
-	  const TColStd_IndexedMapOfInteger& theMapIndex)
+          const TColStd_IndexedMapOfInteger& theMapIndex)
 {
   myUnstructuredGrid->Initialize();
   myUnstructuredGrid->Allocate();
@@ -183,14 +183,14 @@ SVTK_Actor
 
     if(aCellId > 0){
       if(vtkCell* aCell = theMapActor->GetElemCell(aCellId)){
-	if(anEdgeId < 0){
-	  anEdgeId = -anEdgeId - 1;
-	  int aNbOfEdges = aCell->GetNumberOfEdges();
-	  if(0 <= anEdgeId || anEdgeId < aNbOfEdges){
-	    if(vtkCell* anEdge = aCell->GetEdge(anEdgeId))
-	      myUnstructuredGrid->InsertNextCell(VTK_LINE,anEdge->GetPointIds());
-	  }
-	}
+        if(anEdgeId < 0){
+          anEdgeId = -anEdgeId - 1;
+          int aNbOfEdges = aCell->GetNumberOfEdges();
+          if(0 <= anEdgeId || anEdgeId < aNbOfEdges){
+            if(vtkCell* anEdge = aCell->GetEdge(anEdgeId))
+              myUnstructuredGrid->InsertNextCell(VTK_LINE,anEdge->GetPointIds());
+          }
+        }
       }
     }
   }

@@ -95,8 +95,8 @@ public:
   int               progressFlags() const;
   
   void              setProgressColors( const QColor&, 
-				       const QColor& = QColor(),
-				       const Qt::Orientation = Qt::Vertical );
+                                       const QColor& = QColor(),
+                                       const Qt::Orientation = Qt::Vertical );
   void              setProgressColors( const QGradient& );
   const QGradient*  progressColors() const;
   
@@ -126,8 +126,8 @@ public:
 
 public slots:
   void              setMessage( const QString&, 
-				const int,
-				const QColor& = QColor() );
+                                const int,
+                                const QColor& = QColor() );
   void              setMessage( const QString& );
   void              clear();
   

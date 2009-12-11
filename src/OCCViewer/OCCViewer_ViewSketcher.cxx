@@ -255,7 +255,7 @@ void OCCViewer_RectSketcher::onMouse( QMouseEvent* e )
     myResult = Accept;
     QApplication::postEvent( avp, new QMouseEvent( e->type(), e->pos(),
                                                    e->globalPos(), e->button(), 
-						   e->buttons(), e->modifiers() ) );
+                                                   e->buttons(), e->modifiers() ) );
   }
 }
 
@@ -432,7 +432,7 @@ void OCCViewer_PolygonSketcher::onMouse( QMouseEvent* e )
     myResult = Reject;
     QApplication::postEvent( avp, new QMouseEvent( e->type(), e->pos(),
                                                    e->globalPos(), e->button(), 
-						   e->buttons(), e->modifiers() ) );
+                                                   e->buttons(), e->modifiers() ) );
   }
   else if ( e->type() == QEvent::MouseButtonRelease && ( e->button() & myAddButton ) )
   {
@@ -540,7 +540,7 @@ bool OCCViewer_PolygonSketcher::isValid( const QPolygon* aPoints, const QPoint& 
 }
 
 bool OCCViewer_PolygonSketcher::isIntersect( const QPoint& aStart1, const QPoint& anEnd1,
-					     const QPoint& aStart2, const QPoint& anEnd2 ) const
+                                             const QPoint& aStart2, const QPoint& anEnd2 ) const
 {
   if ( ( aStart1 == aStart2 && anEnd1 == anEnd2 ) ||
        ( aStart1 == anEnd2 && anEnd1 == aStart2 ) )

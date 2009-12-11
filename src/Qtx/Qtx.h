@@ -100,16 +100,16 @@ public:
   };
 
   typedef enum {
-	Shown,   //!< column should be always visible
-	Hidden,  //!< column should be always hidden
-	Toggled  //!< it should be possible to show/hide the column with help of popup menu
+        Shown,   //!< column should be always visible
+        Hidden,  //!< column should be always hidden
+        Toggled  //!< it should be possible to show/hide the column with help of popup menu
   } Appropriate;  //!< appropriate status
 
   //! Environment variables substitution mode
   typedef enum {
-	Always, //!< substitute environment variable by it's value if variable exists, and "" otherwise
-	Never,  //!< keep environment variable as is without any substitution
-	Auto    //!< substitute environment variable by it's value if variable exists, and keep it as is otherwise
+        Always, //!< substitute environment variable by it's value if variable exists, and "" otherwise
+        Never,  //!< keep environment variable as is without any substitution
+        Auto    //!< substitute environment variable by it's value if variable exists, and keep it as is otherwise
   } SubstMode;
 
   static QString     toQString( const char*, const int = -1 );

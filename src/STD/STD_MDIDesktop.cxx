@@ -175,8 +175,8 @@ void STD_MDIDesktop::createActions()
   myWorkspaceAction = new QtxWorkspaceAction( workspace(), this );
 
   myWorkspaceAction->setMenuActions( QtxWorkspaceAction::Cascade | QtxWorkspaceAction::Tile  |
-				     QtxWorkspaceAction::HTile   | QtxWorkspaceAction::VTile |
-				     QtxWorkspaceAction::Windows );
+                                     QtxWorkspaceAction::HTile   | QtxWorkspaceAction::VTile |
+                                     QtxWorkspaceAction::Windows );
 
   // Cascade
   myWorkspaceAction->setIcon( QtxWorkspaceAction::Cascade,

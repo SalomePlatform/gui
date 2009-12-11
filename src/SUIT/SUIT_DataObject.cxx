@@ -677,7 +677,7 @@ bool SUIT_DataObject::customSorting( const int /*id*/ ) const
   \sa customSorting()
 */
 bool SUIT_DataObject::compare( const QVariant& /*left*/, const QVariant& /*right*/,
-			       const int /*id*/ ) const
+                               const int /*id*/ ) const
 {
   return false;
 }
@@ -807,7 +807,7 @@ SUIT_DataObject::Signal::Signal()
 SUIT_DataObject::Signal::~Signal()
 {
   for ( DataObjectList::Iterator it = myDelLaterObjects.begin();
-	it != myDelLaterObjects.end(); ++it ) {
+        it != myDelLaterObjects.end(); ++it ) {
     delete *it;
   }
   myDelLaterObjects.clear();

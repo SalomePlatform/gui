@@ -81,8 +81,8 @@ namespace
 {
   int
   GetEdgeId(SALOME_Actor* theActor,
-	    vtkPicker* thePicker, 
-	    int theObjId)
+            vtkPicker* thePicker, 
+            int theObjId)
   {
     int anEdgeId = 0;
     if (vtkCell* aPickedCell = theActor->GetElemCell(theObjId)) {
@@ -90,15 +90,15 @@ namespace
       thePicker->GetPickPosition(aPickPosition);
       vtkFloatingPointType aMinDist = 1000000.0, aDist = 0;
       for (int i = 0, iEnd = aPickedCell->GetNumberOfEdges(); i < iEnd; i++){
-	if(vtkLine* aLine = vtkLine::SafeDownCast(aPickedCell->GetEdge(i))){
-	  int subId;  
-	  vtkFloatingPointType pcoords[3], closestPoint[3], weights[3];
-	  aLine->EvaluatePosition(aPickPosition,closestPoint,subId,pcoords,aDist,weights);
-	  if (aDist < aMinDist) {
-	    aMinDist = aDist;
-	    anEdgeId = -1 - i;
-	  }
-	}
+        if(vtkLine* aLine = vtkLine::SafeDownCast(aPickedCell->GetEdge(i))){
+          int subId;  
+          vtkFloatingPointType pcoords[3], closestPoint[3], weights[3];
+          aLine->EvaluatePosition(aPickPosition,closestPoint,subId,pcoords,aDist,weights);
+          if (aDist < aMinDist) {
+            aMinDist = aDist;
+            anEdgeId = -1 - i;
+          }
+        }
       }
     }
     return anEdgeId;
@@ -107,8 +107,8 @@ namespace
   inline
   bool
   CheckDimensionId(Selection_Mode theMode, 
-		   SALOME_Actor *theActor, 
-		   vtkIdType theObjId)
+                   SALOME_Actor *theActor, 
+                   vtkIdType theObjId)
   {
     switch(theMode){
     case CellSelection:
@@ -202,8 +202,8 @@ SALOME_Actor
 
   QColor aForegroundColor = aResourceMgr->colorValue( "VTKViewer", "group_names_text_color", Qt::white );
   myNameActor->SetForegroundColor(aForegroundColor.redF(),
-				  aForegroundColor.greenF(),
-				  aForegroundColor.blueF());
+                                  aForegroundColor.greenF(),
+                                  aForegroundColor.blueF());
 
   vtkFloatingPointType aGroupNamesTransparency = 0.5;
   aGroupNamesTransparency = aResourceMgr->doubleValue( "VTKViewer", "group_names_transparency", aGroupNamesTransparency );
@@ -257,7 +257,7 @@ void
 SALOME_Actor
 ::setName(const char* theName)
 {
-  if(hasIO())	
+  if(hasIO())   
     myIO->setName(theName);
   myNameActor->SetText(theName);
   Superclass::setName(theName);
@@ -348,8 +348,8 @@ SALOME_Actor
 void
 SALOME_Actor
 ::SetPosition(vtkFloatingPointType _arg1, 
-	      vtkFloatingPointType _arg2, 
-	      vtkFloatingPointType _arg3)
+              vtkFloatingPointType _arg2, 
+              vtkFloatingPointType _arg3)
 {
   Superclass::SetPosition(_arg1,_arg2,_arg3);
 
@@ -430,20 +430,20 @@ SALOME_Actor
       mySelector->GetIndex( getIO(), aMapIndex );
       switch( mySelectionMode ){
       case NodeSelection:
-	myHighlightActor->GetProperty()->SetRepresentationToPoints();
-	myHighlightActor->MapPoints( this, aMapIndex );
-	break;
+        myHighlightActor->GetProperty()->SetRepresentationToPoints();
+        myHighlightActor->MapPoints( this, aMapIndex );
+        break;
       case EdgeOfCellSelection:
-	myHighlightActor->GetProperty()->SetRepresentationToWireframe();
-	myHighlightActor->MapEdge( this, aMapIndex );
-	break;
+        myHighlightActor->GetProperty()->SetRepresentationToWireframe();
+        myHighlightActor->MapEdge( this, aMapIndex );
+        break;
       case CellSelection:
       case EdgeSelection:
       case FaceSelection:
       case VolumeSelection:
-	myHighlightActor->GetProperty()->SetRepresentationToSurface();
-	myHighlightActor->MapCells( this, aMapIndex );
-	break;
+        myHighlightActor->GetProperty()->SetRepresentationToSurface();
+        myHighlightActor->MapCells( this, aMapIndex );
+        break;
       }
       myHighlightActor->SetVisibility( GetVisibility() && theIsHighlight );
     }
@@ -474,8 +474,8 @@ SALOME_Actor
 bool
 SALOME_Actor
 ::PreHighlight(vtkInteractorStyle *theInteractorStyle, 
-	       SVTK_SelectionEvent* theSelectionEvent,
-	       bool theIsHighlight)
+               SVTK_SelectionEvent* theSelectionEvent,
+               bool theIsHighlight)
 {
   if ( !GetPickable() )
     return false;
@@ -499,8 +499,8 @@ SALOME_Actor
     theActors->InitTraversal();
     while( vtkActor *ac = theActors->GetNextActor() )
       if( SALOME_Actor* anActor = SALOME_Actor::SafeDownCast( ac ) )
-	if( anActor->hasIO() && myIO->isSame( anActor->getIO() ) )
-	  anActor->SetPreSelected( false );
+        if( anActor->hasIO() && myIO->isSame( anActor->getIO() ) )
+          anActor->SetPreSelected( false );
 
   }else{
     switch(aSelectionMode) {
@@ -511,21 +511,21 @@ SALOME_Actor
       
       int aVtkId = myPointPicker->GetPointId();
       if( aVtkId >= 0 && mySelector->IsValid( this, aVtkId, true ) ) {
-	int anObjId = GetNodeObjId( aVtkId );
-	myIsPreselected = (anObjId >= 0);
-	if(myIsPreselected){
-	  const TColStd_IndexedMapOfInteger& aMapIndex = myPreHighlightActor->GetMapIndex();
-	  int anExtent = aMapIndex.Extent();
-	  anIsChanged |= (anExtent == 0 || anExtent > 0 && anObjId != aMapIndex(1));
-	  if(anIsChanged){
-	    TColStd_IndexedMapOfInteger aMapIndex;
-	    aMapIndex.Add( anObjId );
-	    
-	    myPreHighlightActor->GetProperty()->SetRepresentationToPoints();
-	    myPreHighlightActor->MapPoints( this, aMapIndex );
-	  }
-	  myPreHighlightActor->SetVisibility( true );
-	}
+        int anObjId = GetNodeObjId( aVtkId );
+        myIsPreselected = (anObjId >= 0);
+        if(myIsPreselected){
+          const TColStd_IndexedMapOfInteger& aMapIndex = myPreHighlightActor->GetMapIndex();
+          int anExtent = aMapIndex.Extent();
+          anIsChanged |= (anExtent == 0 || anExtent > 0 && anObjId != aMapIndex(1));
+          if(anIsChanged){
+            TColStd_IndexedMapOfInteger aMapIndex;
+            aMapIndex.Add( anObjId );
+            
+            myPreHighlightActor->GetProperty()->SetRepresentationToPoints();
+            myPreHighlightActor->MapPoints( this, aMapIndex );
+          }
+          myPreHighlightActor->SetVisibility( true );
+        }
       }
       break;
     }
@@ -539,23 +539,23 @@ SALOME_Actor
       
       int aVtkId = myCellPicker->GetCellId();
       if ( aVtkId >= 0 && mySelector->IsValid( this, aVtkId ) && hasIO() ) {
-	int anObjId = GetElemObjId (aVtkId );
-	if ( anObjId >= 0 ) {
-	  myIsPreselected = CheckDimensionId(aSelectionMode,this,anObjId);
-	  if(myIsPreselected){
-	    const TColStd_IndexedMapOfInteger& aMapIndex = myPreHighlightActor->GetMapIndex();
-	    int anExtent = aMapIndex.Extent();
-	    anIsChanged |= (anExtent == 0 || anExtent > 0 && anObjId != aMapIndex(1));
-	    if(anIsChanged){
-	      TColStd_IndexedMapOfInteger aMapIndex;
-	      aMapIndex.Add( anObjId );
-	      
-	      myPreHighlightActor->GetProperty()->SetRepresentationToSurface();
-	      myPreHighlightActor->MapCells( this, aMapIndex );
-	    }
-	    myPreHighlightActor->SetVisibility( true );
-	  }
-	}
+        int anObjId = GetElemObjId (aVtkId );
+        if ( anObjId >= 0 ) {
+          myIsPreselected = CheckDimensionId(aSelectionMode,this,anObjId);
+          if(myIsPreselected){
+            const TColStd_IndexedMapOfInteger& aMapIndex = myPreHighlightActor->GetMapIndex();
+            int anExtent = aMapIndex.Extent();
+            anIsChanged |= (anExtent == 0 || anExtent > 0 && anObjId != aMapIndex(1));
+            if(anIsChanged){
+              TColStd_IndexedMapOfInteger aMapIndex;
+              aMapIndex.Add( anObjId );
+              
+              myPreHighlightActor->GetProperty()->SetRepresentationToSurface();
+              myPreHighlightActor->MapCells( this, aMapIndex );
+            }
+            myPreHighlightActor->SetVisibility( true );
+          }
+        }
       }
       break;
     }
@@ -566,43 +566,43 @@ SALOME_Actor
       
       int aVtkId = myCellPicker->GetCellId();
       if ( aVtkId >= 0 && mySelector->IsValid( this, aVtkId )) {
-	int anObjId = GetElemObjId( aVtkId );
-	if ( anObjId >= 0 ) {
-	  int anEdgeId = GetEdgeId(this,myCellPicker.GetPointer(),anObjId);
-	  myIsPreselected = anEdgeId < 0;
-	  if(myIsPreselected){
-	    const TColStd_IndexedMapOfInteger& aMapIndex = myPreHighlightActor->GetMapIndex();
-	    int anExtent = aMapIndex.Extent();
-	    anIsChanged |= (anExtent == 0 || anExtent == 1);
-	    anIsChanged |= (anExtent == 2 && (anObjId != aMapIndex(1) || anEdgeId != aMapIndex(2)));
-	    if(anIsChanged){
-	      TColStd_IndexedMapOfInteger aMapIndex;
-	      aMapIndex.Add( anObjId );
-	      aMapIndex.Add( anEdgeId );
+        int anObjId = GetElemObjId( aVtkId );
+        if ( anObjId >= 0 ) {
+          int anEdgeId = GetEdgeId(this,myCellPicker.GetPointer(),anObjId);
+          myIsPreselected = anEdgeId < 0;
+          if(myIsPreselected){
+            const TColStd_IndexedMapOfInteger& aMapIndex = myPreHighlightActor->GetMapIndex();
+            int anExtent = aMapIndex.Extent();
+            anIsChanged |= (anExtent == 0 || anExtent == 1);
+            anIsChanged |= (anExtent == 2 && (anObjId != aMapIndex(1) || anEdgeId != aMapIndex(2)));
+            if(anIsChanged){
+              TColStd_IndexedMapOfInteger aMapIndex;
+              aMapIndex.Add( anObjId );
+              aMapIndex.Add( anEdgeId );
 
-	      myPreHighlightActor->GetProperty()->SetRepresentationToWireframe();
-	      myPreHighlightActor->MapEdge( this, aMapIndex );
-	    }
-	    myPreHighlightActor->SetVisibility( true );
-	  }
-	}
+              myPreHighlightActor->GetProperty()->SetRepresentationToWireframe();
+              myPreHighlightActor->MapEdge( this, aMapIndex );
+            }
+            myPreHighlightActor->SetVisibility( true );
+          }
+        }
       }
       break;
     }
     case ActorSelection : 
     {
       if( !mySelector->IsSelected( myIO ) ) {
-	SetPreSelected( true );
+        SetPreSelected( true );
 
-	VTK::ActorCollectionCopy aCopy(aRenderer->GetActors());
-	vtkActorCollection* theActors = aCopy.GetActors();
-	theActors->InitTraversal();
-	while( vtkActor *anAct = theActors->GetNextActor() ) {
-	  if( anAct != this )
-	    if( SALOME_Actor* anActor = SALOME_Actor::SafeDownCast( anAct ) )
-	      if( anActor->hasIO() && myIO->isSame( anActor->getIO() ) )
-		anActor->SetPreSelected( true );
-	}
+        VTK::ActorCollectionCopy aCopy(aRenderer->GetActors());
+        vtkActorCollection* theActors = aCopy.GetActors();
+        theActors->InitTraversal();
+        while( vtkActor *anAct = theActors->GetNextActor() ) {
+          if( anAct != this )
+            if( SALOME_Actor* anActor = SALOME_Actor::SafeDownCast( anAct ) )
+              if( anActor->hasIO() && myIO->isSame( anActor->getIO() ) )
+                anActor->SetPreSelected( true );
+        }
       }
     }
     default:
@@ -622,8 +622,8 @@ SALOME_Actor
 bool
 SALOME_Actor
 ::Highlight(vtkInteractorStyle *theInteractorStyle, 
-	    SVTK_SelectionEvent* theSelectionEvent,
-	    bool theIsHighlight)
+            SVTK_SelectionEvent* theSelectionEvent,
+            bool theIsHighlight)
 {
   if ( !GetPickable() || !mySelector )
     return false;
@@ -654,11 +654,11 @@ SALOME_Actor
 
       int aVtkId = myPointPicker->GetPointId();
       if( aVtkId >= 0 && mySelector->IsValid( this, aVtkId, true ) ) {
-	int anObjId = GetNodeObjId( aVtkId );
-	if( anObjId >= 0 ) {
-	  mySelector->AddOrRemoveIndex( myIO, anObjId, anIsShift );
-	  mySelector->AddIObject( this );
-	}
+        int anObjId = GetNodeObjId( aVtkId );
+        if( anObjId >= 0 ) {
+          mySelector->AddOrRemoveIndex( myIO, anObjId, anIsShift );
+          mySelector->AddIObject( this );
+        }
       }
       break;
     }
@@ -672,13 +672,13 @@ SALOME_Actor
     
       int aVtkId = myCellPicker->GetCellId();
       if( aVtkId >= 0 && mySelector->IsValid( this, aVtkId ) ) {
-	int anObjId = GetElemObjId( aVtkId );
-	if( anObjId >= 0 ) {
-	  if ( CheckDimensionId(aSelectionMode,this,anObjId) ) {
-	    mySelector->AddOrRemoveIndex( myIO, anObjId, anIsShift );
-	    mySelector->AddIObject( this );
-	  }
-	}
+        int anObjId = GetElemObjId( aVtkId );
+        if( anObjId >= 0 ) {
+          if ( CheckDimensionId(aSelectionMode,this,anObjId) ) {
+            mySelector->AddOrRemoveIndex( myIO, anObjId, anIsShift );
+            mySelector->AddIObject( this );
+          }
+        }
       }
       break;
     }
@@ -689,24 +689,24 @@ SALOME_Actor
     
       int aVtkId = myCellPicker->GetCellId();
       if( aVtkId >= 0 && mySelector->IsValid( this, aVtkId ) ) {
-	int anObjId = GetElemObjId( aVtkId );
-	if( anObjId >= 0 ) {
-	  int anEdgeId = GetEdgeId(this,myCellPicker.GetPointer(),anObjId);
-	  if( anEdgeId < 0 ) {
-	    mySelector->AddOrRemoveIndex( myIO, anObjId, false );
-	    mySelector->AddOrRemoveIndex( myIO, anEdgeId, true );
-	    mySelector->AddIObject( this );
-	  } 
-	}
+        int anObjId = GetElemObjId( aVtkId );
+        if( anObjId >= 0 ) {
+          int anEdgeId = GetEdgeId(this,myCellPicker.GetPointer(),anObjId);
+          if( anEdgeId < 0 ) {
+            mySelector->AddOrRemoveIndex( myIO, anObjId, false );
+            mySelector->AddOrRemoveIndex( myIO, anEdgeId, true );
+            mySelector->AddIObject( this );
+          } 
+        }
       }
       break;
     }
     case ActorSelection : 
     {
       if( mySelector->IsSelected( myIO ) && anIsShift )
-	mySelector->RemoveIObject( this );
+        mySelector->RemoveIObject( this );
       else {
-	mySelector->AddIObject( this );
+        mySelector->AddIObject( this );
       }
       break;
     }
@@ -735,24 +735,24 @@ SALOME_Actor
       SVTK_RectPicker::TVectorIdsMap::const_iterator aMapIter = aVectorIdsMap.find(this);
       TColStd_MapOfInteger anIndexes;
       if(aMapIter != aVectorIdsMap.end()){
-	const SVTK_RectPicker::TVectorIds& aVectorIds = aMapIter->second;
-	vtkIdType anEnd = aVectorIds.size();
-	for(vtkIdType anId = 0; anId < anEnd; anId++ ) {
-	  int aPointId = aVectorIds[anId];
-	  if( aPointId >= 0 && mySelector->IsValid( this, aPointId, true ) ) {
-	    int anObjId = GetNodeObjId( aPointId );
-	    anIndexes.Add( anObjId );
-	  }
-	}
+        const SVTK_RectPicker::TVectorIds& aVectorIds = aMapIter->second;
+        vtkIdType anEnd = aVectorIds.size();
+        for(vtkIdType anId = 0; anId < anEnd; anId++ ) {
+          int aPointId = aVectorIds[anId];
+          if( aPointId >= 0 && mySelector->IsValid( this, aPointId, true ) ) {
+            int anObjId = GetNodeObjId( aPointId );
+            anIndexes.Add( anObjId );
+          }
+        }
       }
       
       if( !anIndexes.IsEmpty() ) {
-	mySelector->AddOrRemoveIndex( myIO, anIndexes, anIsShift );
-	mySelector->AddIObject( this );
-	anIndexes.Clear();
+        mySelector->AddOrRemoveIndex( myIO, anIndexes, anIsShift );
+        mySelector->AddIObject( this );
+        anIndexes.Clear();
       }
       else
-	mySelector->RemoveIObject( this );
+        mySelector->RemoveIObject( this );
 
       break;
     }
@@ -763,22 +763,22 @@ SALOME_Actor
 
       bool anIsPicked = true;
       for( int i = 0; i <= 1; i++ ) {
-	for( int j = 2; j <= 3; j++ ) {
-	  for( int k = 4; k <= 5; k++ ) {
-	    aRenderer->SetWorldPoint( aBounds[ i ], aBounds[ j ], aBounds[ k ], 1.0 );
-	    aRenderer->WorldToDisplay();
-	    aRenderer->GetDisplayPoint( aPnt );
+        for( int j = 2; j <= 3; j++ ) {
+          for( int k = 4; k <= 5; k++ ) {
+            aRenderer->SetWorldPoint( aBounds[ i ], aBounds[ j ], aBounds[ k ], 1.0 );
+            aRenderer->WorldToDisplay();
+            aRenderer->GetDisplayPoint( aPnt );
 
-	    if( aPnt[0] < x1 || aPnt[0] > x2 || aPnt[1] < y1 || aPnt[1] > y2 ) {
-	      anIsPicked = false;
-	      break;
-	    }
-	  }
-	}
+            if( aPnt[0] < x1 || aPnt[0] > x2 || aPnt[1] < y1 || aPnt[1] > y2 ) {
+              anIsPicked = false;
+              break;
+            }
+          }
+        }
       }
 
       if( anIsPicked )
-	mySelector->AddIObject(this);
+        mySelector->AddIObject(this);
 
       break;
     }
@@ -794,27 +794,27 @@ SALOME_Actor
       SVTK_RectPicker::TVectorIdsMap::const_iterator aMapIter = aVectorIdsMap.find(this);
       TColStd_MapOfInteger anIndexes;
       if(aMapIter != aVectorIdsMap.end()){
-	const SVTK_RectPicker::TVectorIds& aVectorIds = aMapIter->second;
-	vtkIdType anEnd = aVectorIds.size();
-	for(vtkIdType anId = 0; anId < anEnd; anId++ ) {
-	  int aCellId = aVectorIds[anId];
-	  if ( !mySelector->IsValid( this, aCellId ) )
-	    continue;
+        const SVTK_RectPicker::TVectorIds& aVectorIds = aMapIter->second;
+        vtkIdType anEnd = aVectorIds.size();
+        for(vtkIdType anId = 0; anId < anEnd; anId++ ) {
+          int aCellId = aVectorIds[anId];
+          if ( !mySelector->IsValid( this, aCellId ) )
+            continue;
 
-	  int anObjId = GetElemObjId( aCellId );
-	  if( anObjId != -1 )
-	    if ( CheckDimensionId(aSelectionMode,this,anObjId) ) {
-	      anIndexes.Add(anObjId);
-	    }
-	}
+          int anObjId = GetElemObjId( aCellId );
+          if( anObjId != -1 )
+            if ( CheckDimensionId(aSelectionMode,this,anObjId) ) {
+              anIndexes.Add(anObjId);
+            }
+        }
       }
       if( !anIndexes.IsEmpty() ) {
-	mySelector->AddOrRemoveIndex( myIO, anIndexes, anIsShift );
-	mySelector->AddIObject( this );
-	anIndexes.Clear();
+        mySelector->AddOrRemoveIndex( myIO, anIndexes, anIsShift );
+        mySelector->AddIObject( this );
+        anIndexes.Clear();
       }
       else
-	mySelector->RemoveIObject( this );
+        mySelector->RemoveIObject( this );
     }
     default:
       break;
@@ -901,17 +901,17 @@ SALOME_Actor
     {
       if( SALOME_Actor* anActor = dynamic_cast<SALOME_Actor*>( aCollection->GetItemAsObject( anIndex ) ) )
       {
-	if( anActor->IsDisplayNameActor() )
-	{
-	  anActor->SetNameActorOffset( anOffset );
-	  if( anActor->GetVisibility() )
-	  {
-	    int aSize[2];
-	    anActor->GetNameActorSize( aRenderer, aSize );
-	    anOffset[0] = anOffset[0] + aSize[0];
-	    anOffset[1] = anOffset[1] + aSize[1];
-	  }
-	}
+        if( anActor->IsDisplayNameActor() )
+        {
+          anActor->SetNameActorOffset( anOffset );
+          if( anActor->GetVisibility() )
+          {
+            int aSize[2];
+            anActor->GetNameActorSize( aRenderer, aSize );
+            anOffset[0] = anOffset[0] + aSize[0];
+            anOffset[1] = anOffset[1] + aSize[1];
+          }
+        }
       }
     }
   }

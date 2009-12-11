@@ -68,7 +68,7 @@ public:
   pointList          getPointList() const;
 
   void               setData( const double*, const double*, 
-			      long, const QStringList& = QStringList() );
+                              long, const QStringList& = QStringList() );
   double*            horData() const;
   double*            verData() const;
 

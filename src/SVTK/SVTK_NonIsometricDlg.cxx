@@ -44,11 +44,11 @@ using namespace std;
 */
 SVTK_NonIsometricDlg
 ::SVTK_NonIsometricDlg(QtxAction* theAction,
-		       SVTK_ViewWindow* theParent,
-		       const char* theName):
+                       SVTK_ViewWindow* theParent,
+                       const char* theName):
   SVTK_DialogBase(theAction,
-		  theParent, 
-		  theName),
+                  theParent, 
+                  theName),
   m_MainWindow(theParent)
 {
   setWindowTitle(tr("DLG_TITLE"));

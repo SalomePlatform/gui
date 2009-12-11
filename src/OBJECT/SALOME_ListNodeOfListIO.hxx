@@ -79,7 +79,7 @@ Standard_EXPORT ~SALOME_ListNodeOfListIO();
  //
  Standard_EXPORT friend Handle_Standard_Type& SALOME_ListNodeOfListIO_Type_();
  Standard_EXPORT const Handle(Standard_Type)& DynamicType() const;
- Standard_EXPORT Standard_Boolean	       IsKind(const Handle(Standard_Type)&) const;
+ Standard_EXPORT Standard_Boolean              IsKind(const Handle(Standard_Type)&) const;
 
 protected:
 

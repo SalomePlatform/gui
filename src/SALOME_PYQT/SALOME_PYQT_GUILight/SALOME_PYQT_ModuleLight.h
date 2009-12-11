@@ -88,30 +88,30 @@ public:
   int                        createTool( const int, const int, const int = -1 );
   int                        createTool( const int, const QString&, const int = -1 );
   int                        createTool( QAction*, const int, 
-					 const int = -1, const int = -1 );
+                                         const int = -1, const int = -1 );
   int                        createTool( QAction*, const QString&, 
-					 const int = -1, const int = -1 );
+                                         const int = -1, const int = -1 );
 
   int                        createMenu( const QString&, const int, 
-					 const int = -1, const int = -1, const int = -1 );
+                                         const int = -1, const int = -1, const int = -1 );
   int                        createMenu( const QString&, const QString&, 
-					 const int = -1, const int = -1, const int = -1 );
+                                         const int = -1, const int = -1, const int = -1 );
   int                        createMenu( const int, const int, 
-					 const int = -1, const int = -1 );
+                                         const int = -1, const int = -1 );
   int                        createMenu( const int, const QString&, 
-					 const int = -1, const int = -1 );
+                                         const int = -1, const int = -1 );
   int                        createMenu( QAction*, const int, 
-					 const int = -1, const int = -1, const int = -1 );
+                                         const int = -1, const int = -1, const int = -1 );
   int                        createMenu( QAction*, const QString&, 
-					 const int = -1, const int = -1, const int = -1 );
+                                         const int = -1, const int = -1, const int = -1 );
 
   QAction*                   separator();
 
   QAction*                   action( const int ) const;
   int                        actionId( const QAction* ) const;
   QAction*                   createAction( const int, const QString&, const QString&, 
-					   const QString&, const QString&, const int, 
-					   const bool = false, QObject* = 0 );
+                                           const QString&, const QString&, const int, 
+                                           const bool = false, QObject* = 0 );
   QtxActionGroup*            createActionGroup( const int, const bool );
 
 
@@ -120,11 +120,11 @@ public:
   int                        addGlobalPreference( const QString& );
   int                        addPreference( const QString& );
   int                        addPreference( const QString&, const int, const int = LightApp_Preferences::Auto,
-					    const QString& = QString(),
-					    const QString& = QString() );
+                                            const QString& = QString(),
+                                            const QString& = QString() );
   QVariant                   preferenceProperty( const int, const QString& ) const;
   void                       setPreferenceProperty( const int, const QString&, 
-						    const QVariant& );
+                                                    const QVariant& );
 
   void                   save(QStringList& theListOfFiles);
 
@@ -133,9 +133,9 @@ public:
   /*create new SALOME_PYQT_DataObjectLight and return its entry*/
   QString                   createObject(const QString& parent);
   QString                   createObject(const QString& name, 
-					 const QString& iconname,
-					 const QString& tooltip,
-					 const QString& parent);
+                                         const QString& iconname,
+                                         const QString& tooltip,
+                                         const QString& parent);
   /*Sets Name, Icon and Tool Tip for object*/
   void                      setName(const QString& obj,const QString& iconname);
   void                      setIcon(const QString& obj,const QString& name);
@@ -156,8 +156,8 @@ public slots:
   virtual bool               activateModule( SUIT_Study* );
   virtual bool               deactivateModule( SUIT_Study* );
   void                       preferenceChanged( const QString&, 
-						const QString&, 
-						const QString& );
+                                                const QString&, 
+                                                const QString& );
   void                       onGUIEvent();
 
   void                       onActiveViewChanged( SUIT_ViewWindow* );

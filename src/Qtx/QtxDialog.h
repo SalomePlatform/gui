@@ -48,41 +48,41 @@ class QTX_EXPORT QtxDialog : public QDialog
 public:
   //! Buttons alignment type
   typedef enum { Position,          //!< buttons are placed according their position
-		 Expand,            //!< buttons occupy all available space
-		 Uniform            //!< buttons are uniformly placed in the area
+                 Expand,            //!< buttons occupy all available space
+                 Uniform            //!< buttons are uniformly placed in the area
   } PlacePolicy;
   //! Buttons area
   typedef enum { TopArea,           //!< horizontal area at the top side of the dialog box
-		 BottomArea,        //!< horizontal area at the bottom side of the dialog box
-		 LeftArea,          //!< vertical area at the left side of the dialog box
-		 RightArea          //!< vertical area at the right side of the dialog box
+                 BottomArea,        //!< horizontal area at the bottom side of the dialog box
+                 LeftArea,          //!< vertical area at the left side of the dialog box
+                 RightArea          //!< vertical area at the right side of the dialog box
   } ButtonArea;
   //! Button position
   typedef enum { Left,              //!< set button left-most
-		 Right,             //!< set button right-most
-		 Center,            //!< place button in the center
-		 Top = Left,        //!< set button top-most
-		 Bottom = Right     //!< set button bottom-most
+                 Right,             //!< set button right-most
+                 Center,            //!< place button in the center
+                 Top = Left,        //!< set button top-most
+                 Bottom = Right     //!< set button bottom-most
   } ButtonPosition;
   //! Button ID flags
   typedef enum { None      = 0x00000000,                      //!< no button used
-		 OK        = 0x00000001,                      //!< OK button
-		 Apply     = 0x00000002,                      //!< Apply button
-		 Cancel    = 0x00000004,                      //!< Cancel button
-		 Yes       = 0x00000008,                      //!< Yes button
-		 No        = 0x00000010,                      //!< No button
-		 Close     = 0x00000020,                      //!< Close button
-		 Help      = 0x00000040,                      //!< Help button
-		 OKCancel  = OK  | Cancel,                    //!< OK & Cancel button
-		 YesNo     = Yes | No,                        //!< Yes & No buttons
-		 Standard  = OK  | Cancel | Help,             //!< OK, Cancel & Help buttons
-		 All       = Standard | YesNo | Apply | Close //!< all buttons
+                 OK        = 0x00000001,                      //!< OK button
+                 Apply     = 0x00000002,                      //!< Apply button
+                 Cancel    = 0x00000004,                      //!< Cancel button
+                 Yes       = 0x00000008,                      //!< Yes button
+                 No        = 0x00000010,                      //!< No button
+                 Close     = 0x00000020,                      //!< Close button
+                 Help      = 0x00000040,                      //!< Help button
+                 OKCancel  = OK  | Cancel,                    //!< OK & Cancel button
+                 YesNo     = Yes | No,                        //!< Yes & No buttons
+                 Standard  = OK  | Cancel | Help,             //!< OK, Cancel & Help buttons
+                 All       = Standard | YesNo | Apply | Close //!< all buttons
   } ButtonFlags;
   //! Dialog box flags
   typedef enum { Accept    = 0x000001, //!< allow dialog box accepting control
-		 Reject    = 0x000002, //!< allow dialog box rejecting control
-		 AlignOnce = 0x000004, //!< align dialog box only when it is first time shown
-		 SetFocus  = 0x000008  //!< allow to set focus on dialog box when it is shown (user can use setFocusProxy() and specify own initial focus widget)
+                 Reject    = 0x000002, //!< allow dialog box rejecting control
+                 AlignOnce = 0x000004, //!< align dialog box only when it is first time shown
+                 SetFocus  = 0x000008  //!< allow to set focus on dialog box when it is shown (user can use setFocusProxy() and specify own initial focus widget)
   } DialogFlags;
   
 public:

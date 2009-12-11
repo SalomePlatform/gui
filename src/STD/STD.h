@@ -44,10 +44,10 @@
 
 #if defined ( _DEBUG ) || defined ( DEBUG )
 #include <assert.h>
-#define STD_VERIFY(x)				(assert(x))
-#define STD_ASSERT(x)	            (assert(x))
+#define STD_VERIFY(x)                           (assert(x))
+#define STD_ASSERT(x)               (assert(x))
 #else
-#define STD_VERIFY(x)				(x)
+#define STD_VERIFY(x)                           (x)
 #define STD_ASSERT(x)
 #endif
 

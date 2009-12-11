@@ -47,13 +47,13 @@ public:
 
 public:
   Handle(V3d_View)        getView() const;
-  Handle(V3d_View)	  setView( const Handle(V3d_View)& );
+  Handle(V3d_View)        setView( const Handle(V3d_View)& );
   Handle(V3d_Viewer)      getViewer() const;
 
   void setAnimationMode(bool theDegenerated);
 
-  virtual void		setBackgroundColor( const QColor& color);
-  virtual QColor	backgroundColor() const;
+  virtual void          setBackgroundColor( const QColor& color);
+  virtual QColor        backgroundColor() const;
 
 //   void         setActive( V3d_TypeOfView );
   virtual bool syncronize( const OCCViewer_ViewPort3d* );
@@ -64,21 +64,21 @@ public:
   virtual void onUpdate();
 
   // TRANSFORMATIONS
-  virtual void	        reset();
-  virtual void	        pan( int , int );
-  virtual void	        setCenter( int , int );
-  virtual void	        fitRect( const QRect& );
-  virtual void	        zoom( int, int, int, int );
-  virtual void	        fitAll( bool keepScale = false, bool withZ = true, bool upd = true );
+  virtual void          reset();
+  virtual void          pan( int , int );
+  virtual void          setCenter( int , int );
+  virtual void          fitRect( const QRect& );
+  virtual void          zoom( int, int, int, int );
+  virtual void          fitAll( bool keepScale = false, bool withZ = true, bool upd = true );
 
-  void	                startRotation( int, int, int, const gp_Pnt& );
-  void	                rotate( int, int, int, const gp_Pnt& );
-  void	                endRotation();
+  void                  startRotation( int, int, int, const gp_Pnt& );
+  void                  rotate( int, int, int, const gp_Pnt& );
+  void                  endRotation();
   bool                  isBusy() {return myBusy;} // check that View Port is fully initialized
 
 protected:
     // EVENTS
-  virtual void		paintEvent( QPaintEvent* );
+  virtual void          paintEvent( QPaintEvent* );
   virtual void          resizeEvent( QResizeEvent* );
 
   // initialization
@@ -88,17 +88,17 @@ private:
   Handle(V3d_View) activeView() const;
   Handle(V3d_View) inactiveView() const;
   bool             mapView( const Handle(V3d_View)& );
-  bool	           setWindow( const Handle(V3d_View)& );
-  bool		   mapped( const Handle(V3d_View)& ) const;
+  bool             setWindow( const Handle(V3d_View)& );
+  bool             mapped( const Handle(V3d_View)& ) const;
 
 private:
-  Handle(V3d_View)	myOrthoView;
-  Handle(V3d_View)	myPerspView;
-  Handle(V3d_View)	myActiveView;
-  bool		        myDegenerated;
+  Handle(V3d_View)      myOrthoView;
+  Handle(V3d_View)      myPerspView;
+  Handle(V3d_View)      myActiveView;
+  bool                  myDegenerated;
   bool                  myAnimate;
   bool                  myBusy;
-  double	        myScale;
+  double                myScale;
 };
 
 #ifdef WIN32

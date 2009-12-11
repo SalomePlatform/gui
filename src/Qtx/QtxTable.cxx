@@ -154,7 +154,7 @@ bool QtxTable::eventFilter( QObject* o, QEvent* e )
 
   if ( o == myHeaderEditor && e->type() == QEvent::KeyPress && isHeaderEditing() )
   {
-	  QKeyEvent* ke = (QKeyEvent*)e;
+          QKeyEvent* ke = (QKeyEvent*)e;
     if ( ke->key() == Key_Escape )
     {
       endHeaderEdit( false );
@@ -173,8 +173,8 @@ bool QtxTable::eventFilter( QObject* o, QEvent* e )
   if ( o == myHeaderEditor && e->type() == QEvent::FocusOut &&
        isHeaderEditing() && ((QFocusEvent*)e)->reason() != QFocusEvent::Popup )
   {
-		endHeaderEdit();
-		return true;
+                endHeaderEdit();
+                return true;
   }
 
   if ( e->type() == QEvent::Wheel && isHeaderEditing() )

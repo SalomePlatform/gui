@@ -392,7 +392,7 @@ void QtxLogoMgr::generate()
     {
       logoLab->setPixmap( (*it).pix );
 //      if ( !pix.mask().isNull() )
-//  	    logoLab->setMask( pix.mask() );
+//          logoLab->setMask( pix.mask() );
     }
 
     logoLab->setScaledContents( false );

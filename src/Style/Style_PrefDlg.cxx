@@ -211,7 +211,7 @@ void Style_PrefDlg::PaletteEditor::setColor( int id, QPalette::ColorGroup cg, co
   \internal
 */
 void Style_PrefDlg::PaletteEditor::setColor( int id, const QColor& active,
-					     const QColor& inactive, const QColor& disabled )
+                                             const QColor& inactive, const QColor& disabled )
 {
   setColor( id, QPalette::Active,   active );
   setColor( id, QPalette::Inactive, inactive.isValid() ? inactive : active );
@@ -267,61 +267,61 @@ void Style_PrefDlg::PaletteEditor::fromColor( const QColor& c )
   const QPalette pal = QPalette( c );
   for ( int i = 0; i < (int)Style_Model::NColorRoles; i++ ) {
     setColor( i,
-	      pal.color( QPalette::Active,   (QPalette::ColorRole)i ), 
-	      pal.color( QPalette::Inactive, (QPalette::ColorRole)i ),
-	      pal.color( QPalette::Disabled, (QPalette::ColorRole)i ) );
+              pal.color( QPalette::Active,   (QPalette::ColorRole)i ), 
+              pal.color( QPalette::Inactive, (QPalette::ColorRole)i ),
+              pal.color( QPalette::Disabled, (QPalette::ColorRole)i ) );
   }
 
   // Header
   setColor( Style_Model::Header,
-	    pal.color( QPalette::Active,   QPalette::Button ), 
-	    pal.color( QPalette::Inactive, QPalette::Button ),
-	    pal.color( QPalette::Disabled, QPalette::Button ) );
+            pal.color( QPalette::Active,   QPalette::Button ), 
+            pal.color( QPalette::Inactive, QPalette::Button ),
+            pal.color( QPalette::Disabled, QPalette::Button ) );
   // Checked
   setColor( Style_Model::Checked,
-	    pal.color( QPalette::Active,   QPalette::Base ),
-	    pal.color( QPalette::Inactive, QPalette::Base ),
-	    pal.color( QPalette::Disabled, QPalette::Base ) );
+            pal.color( QPalette::Active,   QPalette::Base ),
+            pal.color( QPalette::Inactive, QPalette::Base ),
+            pal.color( QPalette::Disabled, QPalette::Base ) );
   // Lines
   setColor( Style_Model::Lines,
-	    pal.color( QPalette::Active,   QPalette::Mid ),
-	    pal.color( QPalette::Inactive, QPalette::Mid ),
-	    pal.color( QPalette::Disabled, QPalette::Mid ) );
+            pal.color( QPalette::Active,   QPalette::Mid ),
+            pal.color( QPalette::Inactive, QPalette::Mid ),
+            pal.color( QPalette::Disabled, QPalette::Mid ) );
   // Slider
   setColor( Style_Model::Slider,
-	    pal.color( QPalette::Active,   QPalette::Button ),
-	    pal.color( QPalette::Inactive, QPalette::Button ),
-	    pal.color( QPalette::Disabled, QPalette::Button ) );
+            pal.color( QPalette::Active,   QPalette::Button ),
+            pal.color( QPalette::Inactive, QPalette::Button ),
+            pal.color( QPalette::Disabled, QPalette::Button ) );
   // ProgressBar
   setColor( Style_Model::ProgressBar,
-	    pal.color( QPalette::Active,   QPalette::Highlight ),
-	    pal.color( QPalette::Inactive, QPalette::Highlight ),
-	    pal.color( QPalette::Disabled, QPalette::Highlight ) );
+            pal.color( QPalette::Active,   QPalette::Highlight ),
+            pal.color( QPalette::Inactive, QPalette::Highlight ),
+            pal.color( QPalette::Disabled, QPalette::Highlight ) );
   // FieldLight
   setColor( Style_Model::FieldLight,
-	    pal.color( QPalette::Active,   QPalette::Light ),
-	    pal.color( QPalette::Inactive, QPalette::Light ),
-	    pal.color( QPalette::Disabled, QPalette::Light ) );
+            pal.color( QPalette::Active,   QPalette::Light ),
+            pal.color( QPalette::Inactive, QPalette::Light ),
+            pal.color( QPalette::Disabled, QPalette::Light ) );
   // FieldDark
   setColor( Style_Model::FieldDark,
-	    pal.color( QPalette::Active,   QPalette::Mid ).light( 125 ),
-	    pal.color( QPalette::Inactive, QPalette::Mid ).light( 125 ),
-	    pal.color( QPalette::Disabled, QPalette::Mid ).light( 125 ) );
+            pal.color( QPalette::Active,   QPalette::Mid ).light( 125 ),
+            pal.color( QPalette::Inactive, QPalette::Mid ).light( 125 ),
+            pal.color( QPalette::Disabled, QPalette::Mid ).light( 125 ) );
   // GridLine
   setColor( Style_Model::GridLine,
-	    pal.color( QPalette::Active,   QPalette::Mid ),
-	    pal.color( QPalette::Inactive, QPalette::Mid ),
-	    pal.color( QPalette::Disabled, QPalette::Mid ) );
+            pal.color( QPalette::Active,   QPalette::Mid ),
+            pal.color( QPalette::Inactive, QPalette::Mid ),
+            pal.color( QPalette::Disabled, QPalette::Mid ) );
   // HighlightWidget
   setColor( Style_Model::HighlightWidget,
-	    pal.color( QPalette::Active,   QPalette::Button ),
-	    pal.color( QPalette::Inactive, QPalette::Button ),
-	    pal.color( QPalette::Disabled, QPalette::Button ) );
+            pal.color( QPalette::Active,   QPalette::Button ),
+            pal.color( QPalette::Inactive, QPalette::Button ),
+            pal.color( QPalette::Disabled, QPalette::Button ) );
   // HighlightWidget
   setColor( Style_Model::HighlightBorder,
-	    pal.color( QPalette::Active,   QPalette::Button ).dark( 100 ),
-	    pal.color( QPalette::Inactive, QPalette::Button ).dark( 100 ),
-	    pal.color( QPalette::Disabled, QPalette::Button ).dark( 100 ) );
+            pal.color( QPalette::Active,   QPalette::Button ).dark( 100 ),
+            pal.color( QPalette::Inactive, QPalette::Button ).dark( 100 ),
+            pal.color( QPalette::Disabled, QPalette::Button ).dark( 100 ) );
   // Pointer
   setColor( Style_Model::Pointer, Qt::black, Qt::black, Qt::black );
 
@@ -331,24 +331,24 @@ void Style_PrefDlg::PaletteEditor::fromColor( const QColor& c )
 
   // BorderTop
   setColor( Style_Model::BorderTop,
-	    aDarkActive.lighter(),
-	    aDarkInactive.lighter(),
-	    aDarkDisabled.lighter() );
+            aDarkActive.lighter(),
+            aDarkInactive.lighter(),
+            aDarkDisabled.lighter() );
   // BorderBottom
   setColor( Style_Model::BorderBottom,
-	    aDarkActive.darker(),
-	    aDarkInactive.darker(),
-	    aDarkDisabled.darker() );
+            aDarkActive.darker(),
+            aDarkInactive.darker(),
+            aDarkDisabled.darker() );
   // TabBorderTop
   setColor( Style_Model::TabBorderTop,
-	    aDarkActive.light().light().light(),
-	    aDarkInactive.light().light().light(), 
-	    aDarkDisabled.light().light().light() );
+            aDarkActive.light().light().light(),
+            aDarkInactive.light().light().light(), 
+            aDarkDisabled.light().light().light() );
   // TabBorderBottom
   setColor( Style_Model::TabBorderBottom,
-	    aDarkActive.dark().dark().dark(),
-	    aDarkInactive.dark().dark().dark(),
-	    aDarkDisabled.dark().dark().dark() );
+            aDarkActive.dark().dark().dark(),
+            aDarkInactive.dark().dark().dark(),
+            aDarkDisabled.dark().dark().dark() );
 }
 
 /*!
@@ -671,9 +671,9 @@ Style_PrefDlg::Style_PrefDlg( QWidget* parent )
   connect( myStyleCheck,        SIGNAL( toggled( bool ) ),        fr,   SLOT( setEnabled( bool ) ) );
   connect( myStylesList,        SIGNAL( itemSelectionChanged() ), this, SLOT( onStyleChanged() ) );
   connect( myStylesList,        SIGNAL( itemChanged( QListWidgetItem* ) ),       
-	   this, SLOT( onItemChanged( QListWidgetItem* ) ) );
+           this, SLOT( onItemChanged( QListWidgetItem* ) ) );
   connect( myStylesList,        SIGNAL( itemDoubleClicked( QListWidgetItem* ) ), 
-	   this, SLOT( onApply() ) );
+           this, SLOT( onApply() ) );
   connect( myLinesCombo,        SIGNAL( activated( int ) ),       this, SLOT( onLinesType() ) );
   connect( myPaletteEditor,     SIGNAL( changed() ),              this, SIGNAL( styleChanged() ) );
   connect( myFontEdit,          SIGNAL( changed( QFont ) ),       this, SIGNAL( styleChanged() ) );
@@ -688,7 +688,7 @@ Style_PrefDlg::Style_PrefDlg( QWidget* parent )
   connect( mySplitterLength,    SIGNAL( valueChanged( int ) ),    this, SIGNAL( styleChanged() ) );
   connect( mySliderSize,        SIGNAL( valueChanged( int ) ),    this, SIGNAL( styleChanged() ) );
   connect( aGroup,              SIGNAL( buttonClicked( QAbstractButton* ) ),
-	   this, SLOT( onEffectChanged( QAbstractButton* ) ) );
+           this, SLOT( onEffectChanged( QAbstractButton* ) ) );
   connect( this,                SIGNAL( styleChanged() ),         this, SLOT( onChanged() ) );
   
   connect( this, SIGNAL( dlgApply() ), this, SLOT( onApply() ) );
@@ -726,13 +726,13 @@ void Style_PrefDlg::keyPressEvent( QKeyEvent* e )
     QListWidgetItem* item = myStylesList->currentItem();
     if ( item && item->data( TypeRole ).toInt() == User ) {
       if ( QMessageBox::question( this,
-				  tr( "Delete user theme" ),
-				  tr( "Remove theme %1?" ).arg( item->text() ),
-				  QMessageBox::Yes | QMessageBox::No,
-				  QMessageBox::Yes ) == QMessageBox::Yes ) {
-	resourceMgr()->remove( item->data( NameRole ).toString() );
-	resourceMgr()->save();
-	delete item;
+                                  tr( "Delete user theme" ),
+                                  tr( "Remove theme %1?" ).arg( item->text() ),
+                                  QMessageBox::Yes | QMessageBox::No,
+                                  QMessageBox::Yes ) == QMessageBox::Yes ) {
+        resourceMgr()->remove( item->data( NameRole ).toString() );
+        resourceMgr()->save();
+        delete item;
       }
     }
   }
@@ -806,24 +806,24 @@ void Style_PrefDlg::toModel( Style_Model* model ) const
   // ... first set Button color 'cause it is used to calculate other ones
   if ( myPaletteEditor->isAuto() )
     model->setColor( Style_Model::Button,
-		     myPaletteEditor->color( Style_Model::Button, QPalette::Active ) );
+                     myPaletteEditor->color( Style_Model::Button, QPalette::Active ) );
   else 
     model->setColor( Style_Model::Button,
-		     myPaletteEditor->color( Style_Model::Button, QPalette::Active ),
-		     myPaletteEditor->color( Style_Model::Button, QPalette::Inactive ),
-		     myPaletteEditor->color( Style_Model::Button, QPalette::Disabled ));
+                     myPaletteEditor->color( Style_Model::Button, QPalette::Active ),
+                     myPaletteEditor->color( Style_Model::Button, QPalette::Inactive ),
+                     myPaletteEditor->color( Style_Model::Button, QPalette::Disabled ));
   // ... then set all other colors
   for ( int i = (int)Style_Model::WindowText; i < (int)Style_Model::LastColor; i++ ) {
     if ( i == Style_Model::NoRole ) continue; // not supported
     if ( i == Style_Model::Button ) continue; // already set
     if ( myPaletteEditor->isAuto() )
       model->setColor( (Style_Model::ColorRole)i,
-		       myPaletteEditor->color( i, QPalette::Active ) );
+                       myPaletteEditor->color( i, QPalette::Active ) );
     else 
       model->setColor( (Style_Model::ColorRole)i,
-		       myPaletteEditor->color( i, QPalette::Active ),
-		       myPaletteEditor->color( i, QPalette::Inactive ),
-		       myPaletteEditor->color( i, QPalette::Disabled ));
+                       myPaletteEditor->color( i, QPalette::Active ),
+                       myPaletteEditor->color( i, QPalette::Inactive ),
+                       myPaletteEditor->color( i, QPalette::Disabled ));
   }
   model->setAutoPalette( myPaletteEditor->isAuto() ); // internal
   // font
@@ -1019,7 +1019,7 @@ void Style_PrefDlg::onItemChanged( QListWidgetItem* item )
     myStylesList->blockSignals( false );
   }
   onChanged();
-}				
+}                               
 
 /*!
   \brief Called when widget effect is changed

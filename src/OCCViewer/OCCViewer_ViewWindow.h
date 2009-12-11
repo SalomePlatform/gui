@@ -47,12 +47,12 @@ class OCCVIEWER_EXPORT OCCViewer_ViewWindow : public SUIT_ViewWindow
 
 public:
   enum { DumpId, FitAllId, FitRectId, ZoomId, PanId, GlobalPanId,
-	 ChangeRotationPointId, RotationId,
+         ChangeRotationPointId, RotationId,
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, CloneId, ClippingId, MemId, RestoreId,
          TrihedronShowId, AxialScaleId, AmbientId };
 
   enum OperationType{ NOTHING, PANVIEW, ZOOMVIEW, ROTATE, 
-		      PANGLOBAL, WINDOWFIT, FITALLVIEW, RESETVIEW,
+                      PANGLOBAL, WINDOWFIT, FITALLVIEW, RESETVIEW,
                       FRONTVIEW, BACKVIEW, TOPVIEW, BOTTOMVIEW, LEFTVIEW, RIGHTVIEW };
 
   enum RotationPointType{ GRAVITY, SELECTED };
@@ -137,8 +137,8 @@ protected:
   void setTransformRequested ( OperationType );
 
   /* Transformation is selected and already started */
-  bool		transformInProcess() const;
-  void		setTransformInProcess( bool );
+  bool          transformInProcess() const;
+  void          setTransformInProcess( bool );
 
   void vpMousePressEvent(QMouseEvent* theEvent);
   void vpMouseReleaseEvent(QMouseEvent* theEvent);
@@ -176,20 +176,20 @@ protected:
   gp_Pnt                mySelectedPoint;
   bool                  myRotationPointSelection;
 
-  int					myRestoreFlag;
+  int                                   myRestoreFlag;
 
-  int					myStartX;
-  int					myStartY;
-  int					myCurrX;
-  int					myCurrY;
+  int                                   myStartX;
+  int                                   myStartY;
+  int                                   myCurrX;
+  int                                   myCurrY;
 
-  bool		        myEventStarted;       // set when transformation is in process 
-  bool		        myCursorIsHand;			
-  bool		        myDrawRect;           // set when a rect is used for selection or magnify 
-  bool		        myEnableDrawMode;
-  bool		        myPaintersRedrawing;  // set to draw with external painters 
+  bool                  myEventStarted;       // set when transformation is in process 
+  bool                  myCursorIsHand;                 
+  bool                  myDrawRect;           // set when a rect is used for selection or magnify 
+  bool                  myEnableDrawMode;
+  bool                  myPaintersRedrawing;  // set to draw with external painters 
  
-  QCursor	        myCursor;
+  QCursor               myCursor;
 
   double myCurScale;
 

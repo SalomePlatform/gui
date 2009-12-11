@@ -29,8 +29,8 @@
   Constructor
 */
 QxScene_ViewManager::QxScene_ViewManager( SUIT_Study* theStudy, 
-					  SUIT_Desktop* theDesktop, 
-					  SUIT_ViewModel* theViewModel )
+                                          SUIT_Desktop* theDesktop, 
+                                          SUIT_ViewModel* theViewModel )
   : SUIT_ViewManager( theStudy, theDesktop, theViewModel )
 {
   DEBTRACE("QxScene_ViewManager::QxScene_ViewManager");

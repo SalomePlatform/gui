@@ -44,7 +44,7 @@ class SUIT_ViewManager;
  */
 class SUIT_EXPORT SUIT_ViewModel : public QObject
 {
-	Q_OBJECT
+        Q_OBJECT
 public:
   enum HotOperation { PAN, ZOOM, ROTATE, FIT_AREA };
 
@@ -64,9 +64,9 @@ public:
   virtual void      contextMenuPopup( QMenu* ) {}
 
   static void       setHotButton( HotOperation theOper, Qt::KeyboardModifier theState,
-				  Qt::MouseButton theButton );
+                                  Qt::MouseButton theButton );
   static void       getHotButton( HotOperation theOper, Qt::KeyboardModifier& theState,
-				  Qt::MouseButton& theButton );
+                                  Qt::MouseButton& theButton );
 
 protected:
   SUIT_ViewManager* myViewManager;

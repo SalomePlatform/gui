@@ -63,7 +63,7 @@ bool Plot2d_ViewManager::insertView( SUIT_ViewWindow* theView )
     Plot2d_ViewFrame* aViewFrame = view->getViewFrame();
     Plot2d_Viewer* aViewer = getPlot2dModel();
     connect( aViewFrame, SIGNAL( legendClicked( QwtPlotItem* ) ), 
-	     aViewer, SLOT( onLegendClicked( QwtPlotItem* ) ) );
+             aViewer, SLOT( onLegendClicked( QwtPlotItem* ) ) );
   }
   return res;
 }

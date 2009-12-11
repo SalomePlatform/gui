@@ -144,14 +144,14 @@ SVTK_Renderer
   myEventCallbackCommand->SetClientData(this);
   myEventCallbackCommand->SetCallback(SVTK_Renderer::ProcessEvents);
   GetDevice()->AddObserver(vtkCommand::ConfigureEvent,
-			   myEventCallbackCommand.GetPointer(), 
-			   myPriority);
+                           myEventCallbackCommand.GetPointer(), 
+                           myPriority);
   GetDevice()->AddObserver(vtkCommand::ResetCameraEvent,
-			   myEventCallbackCommand.GetPointer(), 
-			   myPriority);
+                           myEventCallbackCommand.GetPointer(), 
+                           myPriority);
   GetDevice()->AddObserver(vtkCommand::ResetCameraClippingRangeEvent,
-			   myEventCallbackCommand.GetPointer(), 
-			   myPriority);
+                           myEventCallbackCommand.GetPointer(), 
+                           myPriority);
 }
 
 /*!
@@ -188,9 +188,9 @@ SVTK_Renderer
 void 
 SVTK_Renderer
 ::ProcessEvents(vtkObject* vtkNotUsed(theObject), 
-		unsigned long theEvent,
-		void* theClientData, 
-		void* vtkNotUsed(theCallData))
+                unsigned long theEvent,
+                void* theClientData, 
+                void* vtkNotUsed(theCallData))
 {
   SVTK_Renderer* self = reinterpret_cast<SVTK_Renderer*>(theClientData);
 
@@ -223,7 +223,7 @@ SVTK_Renderer
 void 
 SVTK_Renderer
 ::Initialize(vtkRenderWindowInteractor* theInteractor,
-	     SVTK_Selector* theSelector)
+             SVTK_Selector* theSelector)
 {
   myInteractor = theInteractor;
   mySelector = theSelector;
@@ -321,7 +321,7 @@ SVTK_Renderer
   while(vtkActor* anAct = anActors->GetNextActor())
     if(SALOME_Actor* anActor = dynamic_cast<SALOME_Actor*>(anAct))
       if(anActor->isHighlighted() && !anActor->IsInfinitive())
-	anActor->highlight(true);
+        anActor->highlight(true);
 }
 
 /*!
@@ -330,9 +330,9 @@ SVTK_Renderer
 void
 SVTK_Renderer
 ::SetSelectionProp(const double& theRed, 
-		   const double& theGreen, 
-		   const double& theBlue, 
-		   const int& theWidth) 
+                   const double& theGreen, 
+                   const double& theBlue, 
+                   const int& theWidth) 
 {
   myHighlightProperty->SetColor( theRed, theGreen, theBlue );
   myHighlightProperty->SetLineWidth( theWidth );
@@ -345,9 +345,9 @@ SVTK_Renderer
 void
 SVTK_Renderer
 ::SetPreselectionProp(const double& theRed, 
-		      const double& theGreen, 
-		      const double& theBlue, 
-		      const int& theWidth) 
+                      const double& theGreen, 
+                      const double& theBlue, 
+                      const int& theWidth) 
 {
   myPreHighlightProperty->SetColor( theRed, theGreen, theBlue );
   myPreHighlightProperty->SetLineWidth( theWidth );
@@ -360,8 +360,8 @@ SVTK_Renderer
 void
 SVTK_Renderer
 ::SetSelectionTolerance(const double& theTolNodes, 
-			const double& theTolCell,
-			const double& theTolObjects)
+                        const double& theTolCell,
+                        const double& theTolObjects)
 {
   myPointPicker->SetTolerance( theTolNodes );
   myCellPicker->SetTolerance( theTolCell );
@@ -414,8 +414,8 @@ SVTK_Renderer
     vtkFloatingPointType aSize = myTrihedron->GetSize();
     if ( IsTrihedronRelative() )
       {
-	ComputeTrihedronSize(GetDevice(),aSize,aSize,myTrihedronSize);
-	myTrihedron->SetSize(aSize);
+        ComputeTrihedronSize(GetDevice(),aSize,aSize,myTrihedronSize);
+        myTrihedron->SetSize(aSize);
       }
     else
       myTrihedron->SetSize( myTrihedronSize );
@@ -426,17 +426,17 @@ SVTK_Renderer
     anActors->InitTraversal();
     while(vtkActor* anAct = anActors->GetNextActor()){
       if(SALOME_Actor* anActor = dynamic_cast<SALOME_Actor*>(anAct)){
-	if(anActor->IsResizable())
-	  anActor->SetSize(0.5*aSize);
+        if(anActor->IsResizable())
+          anActor->SetSize(0.5*aSize);
         if(anActor->GetVisibility() && !anActor->IsInfinitive()){
-	  vtkFloatingPointType *aBounds = anActor->GetBounds();
+          vtkFloatingPointType *aBounds = anActor->GetBounds();
           if(CheckBndBox(aBounds))
-	    for(int i = 0; i < 5; i = i + 2){
-	      if(aBounds[i] < aNewBndBox[i]) 
-		aNewBndBox[i] = aBounds[i];
-	      if(aBounds[i+1] > aNewBndBox[i+1]) 
-		aNewBndBox[i+1] = aBounds[i+1];
-	    }
+            for(int i = 0; i < 5; i = i + 2){
+              if(aBounds[i] < aNewBndBox[i]) 
+                aNewBndBox[i] = aBounds[i];
+              if(aBounds[i+1] > aNewBndBox[i+1]) 
+                aNewBndBox[i+1] = aBounds[i+1];
+            }
         }
       }
     }

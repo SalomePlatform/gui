@@ -40,10 +40,10 @@ class SVTK_EXPORT SVTK_DialogBase : public QDialog
 
 public:
   SVTK_DialogBase(QtxAction* theAction,
-		  QWidget* theParent,
-		  const char* theName = "", 
-		  bool theModal = FALSE, 
-		  Qt::WindowFlags theWFalgs = 0);
+                  QWidget* theParent,
+                  const char* theName = "", 
+                  bool theModal = FALSE, 
+                  Qt::WindowFlags theWFalgs = 0);
 
   ~SVTK_DialogBase();
 

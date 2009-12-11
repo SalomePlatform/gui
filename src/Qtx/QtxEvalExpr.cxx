@@ -445,7 +445,7 @@ bool QtxEvalParser::prepare( const QString& expr, Postfix& post )
       mLen = 0;
       if ( oPos != pos && cPos != pos )
       {
-	      int i; 
+              int i; 
         for ( i = pos + 1; i < (int)expr.length(); i++ )
         {
           if ( expr[i].isSpace() )
@@ -2309,7 +2309,7 @@ QtxEvalExpr::Error QtxEvalSetSets::calculate( const QString& op, QVariant& v1, Q
         v1 = res;
       }
       else
-	      v1 = QVariant( v2.toList().contains( v1 ) );
+              v1 = QVariant( v2.toList().contains( v1 ) );
     }
   }
   return err;
@@ -2417,8 +2417,8 @@ int QtxEvalSetConst::priority( const QString& /*op*/, bool /*isBin*/ ) const
   \return error code (QtxEvalExpr::Error)
 */
 QtxEvalExpr::Error QtxEvalSetConst::isValid( const QString&       /*op*/, 
-					     const QVariant::Type /*t1*/,
-					     const QVariant::Type /*t2*/ ) const
+                                             const QVariant::Type /*t1*/,
+                                             const QVariant::Type /*t2*/ ) const
 {
   return QtxEvalExpr::InvalidOperation;
 }

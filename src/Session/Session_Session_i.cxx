@@ -54,11 +54,11 @@ using namespace std;
   constructor
 */
 SALOME_Session_i::SALOME_Session_i(int argc,
-				   char ** argv,
-				   CORBA::ORB_ptr orb,
-				   PortableServer::POA_ptr poa,
-				   QMutex* GUIMutex,
-				   QWaitCondition* GUILauncher)
+                                   char ** argv,
+                                   CORBA::ORB_ptr orb,
+                                   PortableServer::POA_ptr poa,
+                                   QMutex* GUIMutex,
+                                   QWaitCondition* GUILauncher)
 {
   _argc = argc ;
   _argv = argv ;
@@ -78,8 +78,8 @@ SALOME_Session_i::SALOME_Session_i(int argc,
 Engines::Component_ptr SALOME_Session_i::GetComponent(const char* theLibraryName)
 {
   typedef Engines::Component_ptr TGetImpl(CORBA::ORB_ptr,
-					  PortableServer::POA_ptr,
-					  SALOME_NamingService*,QMutex*);
+                                          PortableServer::POA_ptr,
+                                          SALOME_NamingService*,QMutex*);
   OSD_SharedLibrary  aSharedLibrary(const_cast<char*>(theLibraryName));
   if(aSharedLibrary.DlOpen(OSD_RTLD_LAZY))
     if(OSD_Function anOSDFun = aSharedLibrary.DlSymb("GetImpl"))
@@ -223,7 +223,7 @@ bool SALOME_Session_i::restoreVisualState(CORBA::Long theSavePoint)
     virtual void Execute() {
       SUIT_Study* study = SUIT_Session::session()->activeApplication()->activeStudy();
       if ( study ) {
-	study->restoreState(_savePoint);
+        study->restoreState(_savePoint);
       }
     }
   };
@@ -254,7 +254,7 @@ void SALOME_Session_i::emitMessage(const char* theMessage)
   if ( SUIT_Session::session() ) {
     if ( SUIT_Session::session()->activeApplication() ) {
       if ( SUIT_Session::session()->activeApplication()->desktop() ) {
-	ProcessVoidEvent( new TEvent(theMessage) );
+        ProcessVoidEvent( new TEvent(theMessage) );
       }
     }
   }

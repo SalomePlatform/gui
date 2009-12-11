@@ -63,17 +63,17 @@ public:
   //! Allow to recostruct selected cells from source SALOME_Actor and map of subindexes
   void
   MapCells(SALOME_Actor* theMapActor, 
-	   const TColStd_IndexedMapOfInteger& theMapIndex);
+           const TColStd_IndexedMapOfInteger& theMapIndex);
 
   //! Allow to recostruct selected points from source SALOME_Actor and map of subindexes
   void 
   MapPoints(SALOME_Actor* theMapActor, 
-	    const TColStd_IndexedMapOfInteger& theMapIndex);
+            const TColStd_IndexedMapOfInteger& theMapIndex);
 
   //! Allow to recostruct selected edges from source SALOME_Actor and map of subindexes
   void 
   MapEdge(SALOME_Actor* theMapActor, 
-	  const TColStd_IndexedMapOfInteger& theMapIndex);
+          const TColStd_IndexedMapOfInteger& theMapIndex);
 
   const TColStd_IndexedMapOfInteger&
   GetMapIndex() const;

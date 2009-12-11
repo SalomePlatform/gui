@@ -156,7 +156,7 @@ Plot2d::LineType Plot2d::qwt2plotLine( Qt::PenStyle p )
   \param width line width
 */
 void Plot2d::drawLine( QPainter* painter, const QPoint& p1, const QPoint& p2, 
-		       Qt::PenStyle type, const QColor& color, int width )
+                       Qt::PenStyle type, const QColor& color, int width )
 {
   painter->save();
   QPen pen( type );
@@ -177,7 +177,7 @@ void Plot2d::drawLine( QPainter* painter, const QPoint& p1, const QPoint& p2,
   \param width line width
 */
 void Plot2d::drawLine( QPainter* painter, const QPoint& p1, const QPoint& p2, 
-		       Plot2d::LineType type, const QColor& color, int width )
+                       Plot2d::LineType type, const QColor& color, int width )
 {
   drawLine( painter, p1, p2, plot2qwtLine( type ), color, width );
 }
@@ -194,7 +194,7 @@ void Plot2d::drawLine( QPainter* painter, const QPoint& p1, const QPoint& p2,
   \param width line width
 */
 void Plot2d::drawLine( QPainter* painter, int x1, int y1, int x2, int y2,
-		       Qt::PenStyle type, const QColor& color, int width )
+                       Qt::PenStyle type, const QColor& color, int width )
 {
   drawLine( painter, QPoint( x1, y1 ), QPoint( x2, y2 ), type, color, width );
 }
@@ -211,10 +211,10 @@ void Plot2d::drawLine( QPainter* painter, int x1, int y1, int x2, int y2,
   \param width line width
 */
 void Plot2d::drawLine( QPainter* painter, int x1, int y1, int x2, int y2,
-		       Plot2d::LineType type, const QColor& color, int width )
+                       Plot2d::LineType type, const QColor& color, int width )
 {
   drawLine( painter, QPoint( x1, y1 ), QPoint( x2, y2 ), 
-	    plot2qwtLine( type), color, width );
+            plot2qwtLine( type), color, width );
 }
 
 /*!
@@ -226,7 +226,7 @@ void Plot2d::drawLine( QPainter* painter, int x1, int y1, int x2, int y2,
   \param color marker color
 */
 void Plot2d::drawMarker( QPainter* painter, const QPoint& p, const QRect& r,
-			 QwtSymbol::Style type, const QColor& color )
+                         QwtSymbol::Style type, const QColor& color )
 {
   painter->save();
   painter->setPen( color );
@@ -314,7 +314,7 @@ void Plot2d::drawMarker( QPainter* painter, const QPoint& p, const QRect& r,
   \param color marker color
 */
 void Plot2d::drawMarker( QPainter* painter, const QPoint& p, const QRect& r,
-			 Plot2d::MarkerType type, const QColor& color )
+                         Plot2d::MarkerType type, const QColor& color )
 {
   drawMarker( painter, p, r, plot2qwtMarker( type ), color ); 
 }
@@ -330,7 +330,7 @@ void Plot2d::drawMarker( QPainter* painter, const QPoint& p, const QRect& r,
   \param color marker color
 */
 void Plot2d::drawMarker( QPainter* painter, int x, int y, int w, int h,
-			 QwtSymbol::Style type, const QColor& color )
+                         QwtSymbol::Style type, const QColor& color )
 {
   drawMarker( painter, QPoint( x, y ), QRect( 0, 0, w, h ), type, color ); 
 }
@@ -346,7 +346,7 @@ void Plot2d::drawMarker( QPainter* painter, int x, int y, int w, int h,
   \param color marker color
 */
 void Plot2d::drawMarker( QPainter* painter, int x, int y, int w, int h,
-			 Plot2d::MarkerType type, const QColor& color )
+                         Plot2d::MarkerType type, const QColor& color )
 {
   drawMarker( painter, QPoint( x, y ), QRect( 0, 0, w, h ), plot2qwtMarker( type ), color ); 
 }

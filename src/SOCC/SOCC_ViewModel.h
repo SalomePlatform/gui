@@ -41,7 +41,7 @@ public:
   virtual ~SOCC_Viewer();
 
   /* Selection management */
-  bool	    highlight( const Handle(SALOME_InteractiveObject)&, bool, bool=true );
+  bool      highlight( const Handle(SALOME_InteractiveObject)&, bool, bool=true );
   bool      isInViewer( const Handle(SALOME_InteractiveObject)&, bool=false );
 
   void      setColor( const Handle(SALOME_InteractiveObject)&, const QColor&, bool=true );

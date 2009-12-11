@@ -39,8 +39,8 @@
 class GLVIEWER_API GLViewer_Tools
 {
 public:
-	//GLViewer_Tools();
-	//virtual ~GLViewer_Tools();
+        //GLViewer_Tools();
+        //virtual ~GLViewer_Tools();
   //static 
 
 };

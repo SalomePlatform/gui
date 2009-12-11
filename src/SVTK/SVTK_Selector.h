@@ -128,40 +128,40 @@ public:
   virtual
   void 
   GetIndex( const Handle(SALOME_InteractiveObject)& theIO, 
-	    TColStd_IndexedMapOfInteger& theIndex ) = 0;
-	
+            TColStd_IndexedMapOfInteger& theIndex ) = 0;
+        
   //! Change indices of subselection for given #SALOME_InteractiveObject
   virtual
   bool 
   AddOrRemoveIndex( const Handle(SALOME_InteractiveObject)& theIO, 
-		    const TColStd_IndexedMapOfInteger& theIndices, 
-		    bool theIsModeShift) = 0;
+                    const TColStd_IndexedMapOfInteger& theIndices, 
+                    bool theIsModeShift) = 0;
 
   //! Change indexes of subslection for given #SALOME_InteractiveObject
   virtual
   bool 
   AddOrRemoveIndex( const Handle(SALOME_InteractiveObject)& theIO, 
-		    const TColStd_MapOfInteger& theIndices, 
-		    bool theIsModeShift) = 0;
+                    const TColStd_MapOfInteger& theIndices, 
+                    bool theIsModeShift) = 0;
 
   //! Change index of subslection for given #SALOME_InteractiveObject
   virtual
   bool
   AddOrRemoveIndex( const Handle(SALOME_InteractiveObject)& theIO, 
-		    int theIndex, 
-		    bool theIsModeShift) = 0;
+                    int theIndex, 
+                    bool theIsModeShift) = 0;
 
   //! Change index of subslection for given #SALOME_InteractiveObject
   virtual
   void 
   RemoveIndex( const Handle(SALOME_InteractiveObject)& theIO, 
-	       int theIndex) = 0;
+               int theIndex) = 0;
 
   //! Check, if the given index is present in subselection 
   virtual
   bool 
   IsIndexSelected(const Handle(SALOME_InteractiveObject)& theIO, 
-		  int theIndex) const = 0;
+                  int theIndex) const = 0;
 
   //! Clear subselection
   virtual
@@ -195,8 +195,8 @@ public:
   virtual
   bool
   IsValid(SALOME_Actor* theActor,
-	  const int theId,
-	  const bool theIsNode = false) const = 0;
+          const int theId,
+          const bool theIsNode = false) const = 0;
   
   //----------------------------------------------------------------------------
   virtual

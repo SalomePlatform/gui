@@ -70,7 +70,7 @@ public:
   void            initGeometry( const QRect& );
   void            setStartPoint( const QPoint& );
   void            setEndPoint( const QPoint& );
-	
+        
   virtual void    clearGeometry();
 };
 

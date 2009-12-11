@@ -201,9 +201,9 @@ int main( int argc, char* argv[] )
       iniFormat = true;
     else if ( !strcmp( argv[i], "--nosplash") )
       noSplash = true;
-	else if ( !strcmp( argv[i], "--uselicense" ) )
+        else if ( !strcmp( argv[i], "--uselicense" ) )
       useLicense = true;
-	else
+        else
       argList.append( QString( argv[i] ) );
   }
 
@@ -250,31 +250,31 @@ int main( int argc, char* argv[] )
     {
       if ( resMgr )
       {
-	resMgr->loadLanguage( false );
+        resMgr->loadLanguage( false );
 
-	splash = QtxSplash::splash( QPixmap() );
-	splash->readSettings( resMgr );
-	if ( splash->pixmap().isNull() ) {
-	  delete splash;
-	  splash = 0;
-	}
-	else {
-	  QString appName    = QObject::tr( "APP_NAME" ).trimmed();
-	  QString appVersion = QObject::tr( "APP_VERSION" ).trimmed();
-	  if ( appVersion == "APP_VERSION" )
-	  {
-	    if ( appName == "APP_NAME" || appName.toLower() == "salome" )
-	      appVersion = salomeVersion();
-	    else
-	      appVersion = "";
-	  }
-	  splash->setOption( "%A", appName );
-	  splash->setOption( "%V", QObject::tr( "ABOUT_VERSION" ).arg( appVersion ) );
-	  splash->setOption( "%L", QObject::tr( "ABOUT_LICENSE" ) );
-	  splash->setOption( "%C", QObject::tr( "ABOUT_COPYRIGHT" ) );
-	  splash->show();
-	  QApplication::instance()->processEvents();
-	}
+        splash = QtxSplash::splash( QPixmap() );
+        splash->readSettings( resMgr );
+        if ( splash->pixmap().isNull() ) {
+          delete splash;
+          splash = 0;
+        }
+        else {
+          QString appName    = QObject::tr( "APP_NAME" ).trimmed();
+          QString appVersion = QObject::tr( "APP_VERSION" ).trimmed();
+          if ( appVersion == "APP_VERSION" )
+          {
+            if ( appName == "APP_NAME" || appName.toLower() == "salome" )
+              appVersion = salomeVersion();
+            else
+              appVersion = "";
+          }
+          splash->setOption( "%A", appName );
+          splash->setOption( "%V", QObject::tr( "ABOUT_VERSION" ).arg( appVersion ) );
+          splash->setOption( "%L", QObject::tr( "ABOUT_LICENSE" ) );
+          splash->setOption( "%C", QObject::tr( "ABOUT_COPYRIGHT" ) );
+          splash->show();
+          QApplication::instance()->processEvents();
+        }
       }
     }
 
@@ -300,13 +300,13 @@ int main( int argc, char* argv[] )
     {
       Style_Salome::initialize( theApp->resourceMgr() );
       if ( theApp->resourceMgr()->booleanValue( "Style", "use_salome_style", true ) )
-	Style_Salome::apply();
+        Style_Salome::apply();
 
       if ( !noExceptHandling )
         app.setHandler( aSession->handler() );
 
       if ( splash )
-	splash->finish( theApp->desktop() );
+        splash->finish( theApp->desktop() );
 
       result = app.exec();
     }

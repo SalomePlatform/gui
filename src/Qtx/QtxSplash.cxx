@@ -266,9 +266,9 @@ void QtxSplash::setError( const QString& error, const QString& title, const int 
   if ( mySplash ) {
     mySplash->setError( code );
     QMessageBox::critical( mySplash, 
-			   title.isEmpty() ? tr( "Error" ) : title,
-			   error,
-			   tr( "&OK" ) );
+                           title.isEmpty() ? tr( "Error" ) : title,
+                           error,
+                           tr( "&OK" ) );
   }
   else {
     printf( "QtxSplash::error: %s\n",error.toLatin1().constData() );
@@ -552,7 +552,7 @@ int QtxSplash::progressFlags() const
   \sa progressColors()
 */
 void QtxSplash::setProgressColors( const QColor&         startColor, 
-				   const QColor&         endColor,
+                                   const QColor&         endColor,
                                    const Qt::Orientation orientation )
 {
   if ( !startColor.isValid() )
@@ -907,19 +907,19 @@ void QtxSplash::readSettings( QtxResourceMgr* resMgr, const QString& section )
       fl = 0;
       QStringList opts = pf.split( QRegExp( "," ), QString::SkipEmptyParts );
       for ( int i = 0; i < opts.count(); i++ ) {
-	QString opt = opts[i].trimmed().toLower();
-	if ( opt == "left" )
-	  fl = fl | LeftSide;
-	else if ( opt == "right" )
-	  fl = fl | RightSide;
-	else if ( opt == "top" )
-	  fl = fl | TopSide;
-	else if ( opt == "bottom" )
-	  fl = fl | BottomSide;
-	else if ( opt == "left_to_right" )
-	  fl = fl | LeftToRight;
-	else if ( opt == "right_to_left" )
-	  fl = fl | RightToLeft;
+        QString opt = opts[i].trimmed().toLower();
+        if ( opt == "left" )
+          fl = fl | LeftSide;
+        else if ( opt == "right" )
+          fl = fl | RightSide;
+        else if ( opt == "top" )
+          fl = fl | TopSide;
+        else if ( opt == "bottom" )
+          fl = fl | BottomSide;
+        else if ( opt == "left_to_right" )
+          fl = fl | LeftToRight;
+        else if ( opt == "right_to_left" )
+          fl = fl | RightToLeft;
       }
     }
     setProgressFlags( fl );
@@ -946,23 +946,23 @@ void QtxSplash::readSettings( QtxResourceMgr* resMgr, const QString& section )
       fl = 0;
       QStringList opts = al.split( QRegExp( "," ), QString::SkipEmptyParts );
       for ( int i = 0; i < opts.count(); i++ ) {
-	QString opt = opts[i].trimmed().toLower();
-	if ( opt == "left" )
-	  fl = fl | Qt::AlignLeft;
-	else if ( opt == "right" )
-	  fl = fl | Qt::AlignRight;
-	else if ( opt == "top" )
-	  fl = fl | Qt::AlignTop;
-	else if ( opt == "bottom" )
-	  fl = fl | Qt::AlignBottom;
-	else if ( opt == "hcenter" )
-	  fl = fl | Qt::AlignHCenter;
-	else if ( opt == "vcenter" )
-	  fl = fl | Qt::AlignVCenter;
-	else if ( opt == "justify" )
-	  fl = fl | Qt::AlignJustify;
-	else if ( opt == "center" )
-	  fl = fl | Qt::AlignCenter;
+        QString opt = opts[i].trimmed().toLower();
+        if ( opt == "left" )
+          fl = fl | Qt::AlignLeft;
+        else if ( opt == "right" )
+          fl = fl | Qt::AlignRight;
+        else if ( opt == "top" )
+          fl = fl | Qt::AlignTop;
+        else if ( opt == "bottom" )
+          fl = fl | Qt::AlignBottom;
+        else if ( opt == "hcenter" )
+          fl = fl | Qt::AlignHCenter;
+        else if ( opt == "vcenter" )
+          fl = fl | Qt::AlignVCenter;
+        else if ( opt == "justify" )
+          fl = fl | Qt::AlignJustify;
+        else if ( opt == "center" )
+          fl = fl | Qt::AlignCenter;
       }
     }
     setTextAlignment( fl );
@@ -978,17 +978,17 @@ void QtxSplash::readSettings( QtxResourceMgr* resMgr, const QString& section )
     setProgressColors( lgrad );
   }
   else if ( resMgr->value( resSection, "progress_color",  rgrad ) || 
-	    resMgr->value( resSection, "progress_colors", rgrad ) ) {
+            resMgr->value( resSection, "progress_colors", rgrad ) ) {
     // radial gradient-colored progress bar
     setProgressColors( rgrad );
   }
   else if ( resMgr->value( resSection, "progress_color",  cgrad ) || 
-	    resMgr->value( resSection, "progress_colors", cgrad ) ) {
+            resMgr->value( resSection, "progress_colors", cgrad ) ) {
     // conical gradient-colored progress bar
     setProgressColors( cgrad );
   }
   else if ( resMgr->value( resSection, "progress_color",  pc ) || 
-	    resMgr->value( resSection, "progress_colors", pc ) ) {
+            resMgr->value( resSection, "progress_colors", pc ) ) {
     // one/two-colored progress bar
     QStringList colors = pc.split( "|", QString::SkipEmptyParts );
     QColor c1, c2;
@@ -1000,12 +1000,12 @@ void QtxSplash::readSettings( QtxResourceMgr* resMgr, const QString& section )
       bool bOk;
       gt = colors[2].toInt( &bOk );
       if ( bOk ) {
-	if ( gt == 0 )
-	  o = Qt::Horizontal;
+        if ( gt == 0 )
+          o = Qt::Horizontal;
       }
       else {
-	if ( colors[2].toLower().startsWith( "h" ) )
-	  o = Qt::Horizontal;
+        if ( colors[2].toLower().startsWith( "h" ) )
+          o = Qt::Horizontal;
       }
     }
     setProgressColors( c1, c2, o );
@@ -1046,8 +1046,8 @@ void QtxSplash::readSettings( QtxResourceMgr* resMgr, const QString& section )
   \sa message(), constantInfo(), setConstantInfo()
 */
 void QtxSplash::setMessage( const QString& msg, 
-			    int            alignment,
-			    const QColor&  color )
+                            int            alignment,
+                            const QColor&  color )
 {
   myMessage   = msg;
   myAlignment = alignment;
@@ -1219,17 +1219,17 @@ void QtxSplash::drawProgressBar( QPainter* p )
       QLinearGradient lg;
       const QLinearGradient* other = static_cast<const QLinearGradient*>( progressColors() );
       if ( checkGradient( other ) ) {
-	// gradient is defined in relative coordinates [0.0 - 1.0]
-	lg.setStart( r.left() + r.width()  * other->start().x(), 
-		     r.top()  + r.height() * other->start().y() );
-	lg.setFinalStop( r.left() + r.width()  * other->finalStop().x(), 
-			 r.top()  + r.height() * other->finalStop().y() );
+        // gradient is defined in relative coordinates [0.0 - 1.0]
+        lg.setStart( r.left() + r.width()  * other->start().x(), 
+                     r.top()  + r.height() * other->start().y() );
+        lg.setFinalStop( r.left() + r.width()  * other->finalStop().x(), 
+                         r.top()  + r.height() * other->finalStop().y() );
       }
       else {
-	// gradient is defined in absolute coordinates
-	// according to its dimensions
-	lg.setStart( r.topLeft() + other->start() );
-	lg.setFinalStop( r.topLeft() + other->finalStop() );
+        // gradient is defined in absolute coordinates
+        // according to its dimensions
+        lg.setStart( r.topLeft() + other->start() );
+        lg.setFinalStop( r.topLeft() + other->finalStop() );
       }
       
       lg.setStops( other->stops() );
@@ -1244,17 +1244,17 @@ void QtxSplash::drawProgressBar( QPainter* p )
       QRadialGradient rg;
       const QRadialGradient* other = static_cast<const QRadialGradient*>( progressColors() );
       if ( checkGradient( other ) ) {
-	// gradient is defined in relative coordinates [0.0 - 1.0]
-	rg.setCenter( r.left() + r.width()  * other->center().x(),
-		      r.top()  + r.height() * other->center().y() );
-	rg.setFocalPoint( r.left() + r.width()  * other->focalPoint().x(),
-			  r.top()  + r.height() * other->focalPoint().y() );
+        // gradient is defined in relative coordinates [0.0 - 1.0]
+        rg.setCenter( r.left() + r.width()  * other->center().x(),
+                      r.top()  + r.height() * other->center().y() );
+        rg.setFocalPoint( r.left() + r.width()  * other->focalPoint().x(),
+                          r.top()  + r.height() * other->focalPoint().y() );
       }
       else {
-	// gradient is defined in absolute coordinates
-	// according to its dimensions
-	rg.setCenter( r.topLeft() + other->center() );
-	rg.setFocalPoint( r.topLeft() + other->focalPoint() );
+        // gradient is defined in absolute coordinates
+        // according to its dimensions
+        rg.setCenter( r.topLeft() + other->center() );
+        rg.setFocalPoint( r.topLeft() + other->focalPoint() );
       }
       
       // only width is taken into account for the radius in relative mode
@@ -1272,14 +1272,14 @@ void QtxSplash::drawProgressBar( QPainter* p )
       QConicalGradient cg;
       const QConicalGradient* other = static_cast<const QConicalGradient*>( progressColors() );
       if ( checkGradient( other ) ) {
-	// gradient is defined in relative coordinates [0.0 - 1.0]
-	cg.setCenter( r.left() + r.width()  * other->center().x(),
-		      r.top()  + r.height() * other->center().y() );
+        // gradient is defined in relative coordinates [0.0 - 1.0]
+        cg.setCenter( r.left() + r.width()  * other->center().x(),
+                      r.top()  + r.height() * other->center().y() );
       }
       else {
-	// gradient is defined in absolute coordinates
-	// according to its dimensions
-	cg.setCenter( r.topLeft() + other->center() );
+        // gradient is defined in absolute coordinates
+        // according to its dimensions
+        cg.setCenter( r.topLeft() + other->center() );
       }
 
       cg.setAngle( other->angle() );

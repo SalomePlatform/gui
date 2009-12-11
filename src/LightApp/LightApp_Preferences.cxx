@@ -97,7 +97,7 @@ void LightApp_Preferences::onApply()
 void LightApp_Preferences::changedResources( const ResourceMap& map )
 {
   for ( ResourceMap::ConstIterator it = map.begin(); 
-	it != map.end(); ++it )
+        it != map.end(); ++it )
   {
     QString sec, param;
     it.key()->resource( sec, param );

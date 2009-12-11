@@ -61,38 +61,38 @@ public:
   static QString      getLastVisitedDirectory();
 
   static QString      getFileName( QWidget*, 
-				   const QString&, 
-				   const QStringList&, 
-				   const QString& = QString(), 
-				   const bool = true, 
-				   const bool = true,
+                                   const QString&, 
+                                   const QStringList&, 
+                                   const QString& = QString(), 
+                                   const bool = true, 
+                                   const bool = true,
                                    SUIT_FileValidator* = 0 );
   static QString      getFileName( QWidget*, 
-				   const QString&, 
-				   const QString&,
-				   const QString& = QString(), 
-				   const bool = true,
-				   const bool = true,
+                                   const QString&, 
+                                   const QString&,
+                                   const QString& = QString(), 
+                                   const bool = true,
+                                   const bool = true,
                                    SUIT_FileValidator* = 0 );
 
   static QStringList  getOpenFileNames( QWidget*, 
-					const QString&,
-					const QStringList&, 
-				        const QString& = QString(),
-					const bool = true, 
-				        SUIT_FileValidator* = 0 );
+                                        const QString&,
+                                        const QStringList&, 
+                                        const QString& = QString(),
+                                        const bool = true, 
+                                        SUIT_FileValidator* = 0 );
   static QStringList  getOpenFileNames( QWidget*, 
-					const QString&,
-					const QString&, 
-				        const QString& = QString(),
-					const bool = true, 
-				        SUIT_FileValidator* = 0 );
+                                        const QString&,
+                                        const QString&, 
+                                        const QString& = QString(),
+                                        const bool = true, 
+                                        SUIT_FileValidator* = 0 );
 
   static QString      getExistingDirectory( QWidget*, 
-					    const QString&,
+                                            const QString&,
                                             const QString& = QString(), 
-					    const bool = true,
-					    SUIT_FileValidator* = 0 );
+                                            const bool = true,
+                                            SUIT_FileValidator* = 0 );
 
   static QString      getLastVisitedPath();
 

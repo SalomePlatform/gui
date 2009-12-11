@@ -102,8 +102,8 @@ bool SalomeApp_DataModelSync::isCorrect( const kerPtr& so ) const
   \param prepend - SUIT object must be added to start of children list
 */
 suitPtr SalomeApp_DataModelSync::createItem( const kerPtr& so,
-					     const suitPtr& parent,
-					     const suitPtr& after ) const
+                                             const suitPtr& parent,
+                                             const suitPtr& after ) const
 {
   if( !isCorrect( so ) )
     return 0;
@@ -150,7 +150,7 @@ bool SalomeApp_DataModelSync::isEqual( const kerPtr& p, const suitPtr& q ) const
   _PTR( SComponent ) aComp( p );
   bool res = ( !p && !q ) ||
              ( lobj && !sobj && aComp ) ||
-	     ( sobj && isCorrect( p ) && p->GetID().c_str()==sobj->entry() );
+             ( sobj && isCorrect( p ) && p->GetID().c_str()==sobj->entry() );
   return res;
 }
 
@@ -306,8 +306,8 @@ void SalomeApp_DataModel::update( LightApp_DataObject*, LightApp_Study* study )
       studyRoot = dynamic_cast<LightApp_RootObject*>( aSStudy->root() );
       QString anId = getRootEntry( aSStudy );
       if ( !anId.isEmpty() ){ // if nothing is published in the study for this module -> do nothing
-	_PTR(Study) aStudy ( aSStudy->studyDS() );
-	sobj = aStudy->FindComponentID( std::string( anId.toLatin1() ) );
+        _PTR(Study) aStudy ( aSStudy->studyDS() );
+        sobj = aStudy->FindComponentID( std::string( anId.toLatin1() ) );
       }
     }
   }

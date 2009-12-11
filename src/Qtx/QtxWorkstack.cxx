@@ -372,7 +372,7 @@ void CloseButton::paintEvent( QPaintEvent* )
 
   QPixmap pm = icon().pixmap( style()->pixelMetric( QStyle::PM_SmallIconSize ), isEnabled() ?
                               underMouse() ? QIcon::Active : QIcon::Normal
-			      : QIcon::Disabled,
+                              : QIcon::Disabled,
                               isDown() ? QIcon::On : QIcon::Off );
   style()->drawItemPixmap( &p, r, Qt::AlignCenter, pm );
 }
@@ -445,7 +445,7 @@ void QtxWorkstackSplitter::saveState( QDataStream& stream ) const
     {
       QtxWorkstackArea* area = ::qobject_cast<QtxWorkstackArea*>( wid );
       if ( area )
-	      area->saveState( stream );
+              area->saveState( stream );
     }
   }
 }
@@ -964,13 +964,13 @@ void QtxWorkstackArea::customEvent( QEvent* e )
         if ( activeWidget()->focusWidget()->hasFocus() )
         {
           QFocusEvent in( QEvent::FocusIn );
-	        QApplication::sendEvent( this, &in );
-	      }
+                QApplication::sendEvent( this, &in );
+              }
         else
         {
           activeWidget()->focusWidget()->setFocus();
-	        myBar->updateActiveState();
-	      }
+                myBar->updateActiveState();
+              }
       }
     }
     break;
@@ -1912,7 +1912,7 @@ void QtxWorkstack::Split( QWidget* wid, const Qt::Orientation o, const SplitType
       {
         area->removeWidget( wid_i );
         newArea->insertWidget( wid_i );
-	wid_i->showMaximized();
+        wid_i->showMaximized();
       }
     }
     break;
@@ -1926,7 +1926,7 @@ void QtxWorkstack::Split( QWidget* wid, const Qt::Orientation o, const SplitType
       {
         area->removeWidget( *itr );
         newArea->insertWidget( *itr );
-	(*itr)->showMaximized();
+        (*itr)->showMaximized();
       }
     }
     break;
@@ -2024,7 +2024,7 @@ void QtxWorkstack::Attract( QWidget* wid1, QWidget* wid2, const bool all )
           area1->insertWidget( *itr2, wid1_ind + 1 );
         else
           area1->insertWidget( *itr2, ind );
-	(*itr2)->showMaximized();
+        (*itr2)->showMaximized();
       }
     }
     else
@@ -2907,7 +2907,7 @@ QtxWorkstackArea* QtxWorkstack::createArea( QWidget* parent ) const
   connect( area, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
   connect( area, SIGNAL( activated( QWidget* ) ), this, SLOT( onWindowActivated( QWidget* ) ) );
   connect( area, SIGNAL( contextMenuRequested( QWidget*, QPoint ) ),
-	   this, SLOT( onContextMenuRequested( QWidget*, QPoint ) ) );
+           this, SLOT( onContextMenuRequested( QWidget*, QPoint ) ) );
   connect( area, SIGNAL( deactivated( QtxWorkstackArea* ) ), this, SLOT( onDeactivated( QtxWorkstackArea* ) ) );
 
   return area;
@@ -3095,7 +3095,7 @@ bool QtxWorkstack::restoreState( QDataStream& stream )
     {
       QtxWorkstackChild* c = *itr;
       if ( !c->widget() )
-	continue;
+        continue;
 
       map.insert( c->widget()->objectName(), c );
 

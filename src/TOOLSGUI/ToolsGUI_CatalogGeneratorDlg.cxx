@@ -324,8 +324,8 @@ QString ToolsGUI_CatalogGeneratorDlg::getIdlPath()
     QCString dir;
     if (dir = getenv( modulename + "_ROOT_DIR")) {
       IDLpath = IDLpath + "-I" + SUIT_Tools::addSlash( SUIT_Tools::addSlash(dir) + 
-						      SUIT_Tools::addSlash("idl") + 
-						      SUIT_Tools::addSlash("salome")) + " ";
+                                                      SUIT_Tools::addSlash("idl") + 
+                                                      SUIT_Tools::addSlash("salome")) + " ";
     }
   }
 
@@ -371,7 +371,7 @@ void ToolsGUI_CatalogGeneratorDlg::onBrowseBtnClicked()
 void ToolsGUI_CatalogGeneratorDlg::updateButtonState()
 {
   myApplyBtn->setEnabled( !myIdlEdit->text().trimmed().isEmpty() && 
-			  !myXmlEdit->text().trimmed().isEmpty() );
+                          !myXmlEdit->text().trimmed().isEmpty() );
 }
 
 /*!
@@ -395,25 +395,25 @@ void ToolsGUI_CatalogGeneratorDlg::onApply()
   if ( !XmlFile.isEmpty() && !IdlFile.isEmpty() ) {
     if ( !QFile::exists( IdlFile ) ) {
       SUIT_MessageBox::critical( this, 
-				 tr("TOOLS_ERR_ERROR"), 
-				 tr("TOOLS_ERR_FILE_NOT_EXIST").arg(IdlFile) );
+                                 tr("TOOLS_ERR_ERROR"), 
+                                 tr("TOOLS_ERR_FILE_NOT_EXIST").arg(IdlFile) );
     }
     else {
       QString command = "";
       if ( getenv("KERNEL_ROOT_DIR")  )
-	command = QString( getenv( "KERNEL_ROOT_DIR" ) ) + "/bin/salome/runIDLparser -K " + IDLpath + " -Wbcatalog=" + XmlFile;
+        command = QString( getenv( "KERNEL_ROOT_DIR" ) ) + "/bin/salome/runIDLparser -K " + IDLpath + " -Wbcatalog=" + XmlFile;
       else {
-	SUIT_MessageBox::critical( this, 
-				   tr("TOOLS_ERR_ERROR"), 
-				   tr("KERNEL_ROOT_DIR variable is not defined") );
+        SUIT_MessageBox::critical( this, 
+                                   tr("TOOLS_ERR_ERROR"), 
+                                   tr("KERNEL_ROOT_DIR variable is not defined") );
       }
 
       if (!Author.isEmpty()) command += ",author=" + Author; 
       if (!Version.isEmpty()) command += ",version=" + Version;
       if (!PngFile.isEmpty()) {
-	OSD_Path aPath((Standard_CString)PngFile.toLatin1().constData()); 
-	TCollection_AsciiString aFile = aPath.Name() + aPath.Extension();
-	command += QString(",icon=") + QString(aFile.ToCString());
+        OSD_Path aPath((Standard_CString)PngFile.toLatin1().constData()); 
+        TCollection_AsciiString aFile = aPath.Name() + aPath.Extension();
+        command += QString(",icon=") + QString(aFile.ToCString());
       }
       if (!CompName.isEmpty()) command += ",name=" + CompName;
       if (!CompUserName.isEmpty()) command += ",username=" + CompUserName;
@@ -424,9 +424,9 @@ void ToolsGUI_CatalogGeneratorDlg::onApply()
       int res;
       res = system( ( char* )( command.toLatin1().constData() ) );
       if ( res == -1 ) {
-	MESSAGE( "work failed (system command result = " << res );
+        MESSAGE( "work failed (system command result = " << res );
       } else if (res == 217) {
-	MESSAGE( "shell exec failed (system command result = " << res );
+        MESSAGE( "shell exec failed (system command result = " << res );
       }
     }
   }

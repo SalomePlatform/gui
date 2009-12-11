@@ -29,8 +29,8 @@ int SUPERVGraph_ViewManager::myMaxId = 0;
   Constructor
 */
 SUPERVGraph_ViewManager::SUPERVGraph_ViewManager( SUIT_Study* theStudy, 
-						  SUIT_Desktop* theDesktop, 
-						  SUIT_ViewModel* theViewModel )
+                                                  SUIT_Desktop* theDesktop, 
+                                                  SUIT_ViewModel* theViewModel )
   : SUIT_ViewManager( theStudy, theDesktop, theViewModel )
 {
   myId = ++myMaxId;

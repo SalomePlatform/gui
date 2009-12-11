@@ -125,8 +125,8 @@ public:
   //! To highlight a VTK presentation with the same #SALOME_InteractiveObject
   void
   highlight(const Handle(SALOME_InteractiveObject)& IObject, 
-	    bool highlight, 
-	    bool immediatly = true);
+            bool highlight, 
+            bool immediatly = true);
 
   //! To unhighlight all VTK presentations
   void
@@ -146,7 +146,7 @@ public:
 
   void
   rename(const Handle(SALOME_InteractiveObject)& IObject, 
-	 const QString& newName);
+         const QString& newName);
   
   //----------------------------------------------------------------------------
   // Displaymode management
@@ -161,7 +161,7 @@ public:
   //! Switch representation wireframe/shading
   void
   SetDisplayMode(const Handle(SALOME_InteractiveObject)& IObject, 
-		 int theMode);
+                 int theMode);
 
   //! Change all actors to wireframe
   void 
@@ -182,7 +182,7 @@ public:
   //! Change transparency
   void
   SetTransparency(const Handle(SALOME_InteractiveObject)& theIObject,
-		  float trans);
+                  float trans);
 
   //! Get current transparency
   float 
@@ -191,7 +191,7 @@ public:
   //! Change color
   void
   SetColor(const Handle(SALOME_InteractiveObject)& theIObject,
-	   const QColor& theColor);
+           const QColor& theColor);
 
   //! Get current color
   QColor
@@ -214,15 +214,15 @@ public:
   //! To erase VTK presentation with defined #SALOME_InteractiveObject
   void
   Erase(const Handle(SALOME_InteractiveObject)& IObject, 
-	bool immediatly = true);
+        bool immediatly = true);
   void
   Remove(const Handle(SALOME_InteractiveObject)& IObject, 
-	 bool immediatly = true);
+         bool immediatly = true);
 
   //! To display VTK presentation with defined #SALOME_InteractiveObject
   void
   Display(const Handle(SALOME_InteractiveObject)& IObject, 
-	  bool immediatly = true);
+          bool immediatly = true);
 
   //! To display VTK presentation with defined #SALOME_InteractiveObject and erase all anothers
   void
@@ -231,38 +231,38 @@ public:
   //! To display the VTK presentation
   void
   Display(SALOME_Actor* SActor, 
-	  bool immediatly = true);
+          bool immediatly = true);
 
   //! To erase the VTK presentation
   void
   Erase(SALOME_Actor* SActor, 
-	bool immediatly = true);
+        bool immediatly = true);
 
   //! To remove the VTK presentation
   void
   Remove(SALOME_Actor* SActor, 
-	 bool updateViewer = true);
+         bool updateViewer = true);
 
   //----------------------------------------------------------------------------
   //! Redirect the request to #SVTK_Renderer::SetPreselectionProp
   void
   SetSelectionProp(const double& theRed = 1, 
-		   const double& theGreen = 1,
-		   const double& theBlue = 0, 
-		   const int& theWidth = 5);
+                   const double& theGreen = 1,
+                   const double& theBlue = 0, 
+                   const int& theWidth = 5);
 
   //! Redirect the request to #SVTK_Renderer::SetPreselectionProp
   void
   SetPreselectionProp(const double& theRed = 0, 
-		      const double& theGreen = 1,
-		      const double& theBlue = 1, 
-		      const int& theWidth = 5);
+                      const double& theGreen = 1,
+                      const double& theBlue = 1, 
+                      const int& theWidth = 5);
 
   //! Redirect the request to #SVTK_Renderer::SetPreselectionProp
   void
   SetSelectionTolerance(const double& theTolNodes = 0.025, 
-			const double& theTolCell = 0.001,
-			const double& theTolObjects = 0.025);
+                        const double& theTolCell = 0.001,
+                        const double& theTolObjects = 0.025);
 
  protected:  
   int myDisplayMode;

@@ -54,19 +54,19 @@ class SalomeApp_PropItem : public SalomeApp_ListViewItem
 public:
   /*! constructor  */
   SalomeApp_PropItem(SalomeApp_ListView* parent,
-		     const QString       theName,
-		     const bool          theEditable,
-		     const int           theUserType) :
+                     const QString       theName,
+                     const bool          theEditable,
+                     const int           theUserType) :
   SalomeApp_ListViewItem( parent, QStringList(theName), theEditable )
   {
     setUserType(theUserType);
   }
   /*! constructor */
   SalomeApp_PropItem(SalomeApp_ListView*     parent,
-		     SalomeApp_ListViewItem* after,
-		     const QString     theName,
-		     const bool        theEditable,
-		     const int         theUserType) :
+                     SalomeApp_ListViewItem* after,
+                     const QString     theName,
+                     const bool        theEditable,
+                     const int         theUserType) :
   SalomeApp_ListViewItem( parent, after, theName, theEditable )
   {
     setUserType(theUserType);
@@ -85,46 +85,46 @@ public:
     //  }
     case SalomeApp_StudyPropertiesDlg::prpLockedId:
       {
-	list << SalomeApp_StudyPropertiesDlg::tr( "PRP_NO" ) << SalomeApp_StudyPropertiesDlg::tr( "PRP_YES" );
-	theWidget->insertList(list, getValue() == SalomeApp_StudyPropertiesDlg::tr( "PRP_NO" ) ? 0 : 1 );
-	break;
+        list << SalomeApp_StudyPropertiesDlg::tr( "PRP_NO" ) << SalomeApp_StudyPropertiesDlg::tr( "PRP_YES" );
+        theWidget->insertList(list, getValue() == SalomeApp_StudyPropertiesDlg::tr( "PRP_NO" ) ? 0 : 1 );
+        break;
       }
     case SalomeApp_StudyPropertiesDlg::prpModificationsId:
       {
-	SalomeApp_Study* study =
+        SalomeApp_Study* study =
           dynamic_cast<SalomeApp_Study*>( SUIT_Session::session()->activeApplication()->activeStudy() );
-	if (study) {
-	  _PTR(Study) studyDoc = study->studyDS();
-	  _PTR(AttributeStudyProperties) propAttr;
-	  if ( studyDoc ) {
-	    propAttr = studyDoc->GetProperties();
-	    if ( propAttr ) {
-	      std::vector<std::string> aUsers;
-	      std::vector<int>  aMins, aHours, aDays, aMonths, aYears;
-	      propAttr->GetModificationsList(aUsers, aMins, aHours, aDays, aMonths, aYears, false);
-	      int aCnt = aUsers.size();
-	      for ( int i = 0; i < aCnt; i++ ) {
-		QString val;
-		val.sprintf("%2.2d/%2.2d/%2d %2.2d:%2.2d",
-			    aDays  [i],
-			    aMonths[i],
-			    aYears [i],
-			    aHours [i],
-			    aMins  [i]);
-		val = val + " : " + QString( aUsers[i].c_str() );
-		list.prepend(val);
-	      }
-	      theWidget->setDuplicatesEnabled(true);
-	      theWidget->insertList(list);
-	    }
-	  }
-	}
-	break;
+        if (study) {
+          _PTR(Study) studyDoc = study->studyDS();
+          _PTR(AttributeStudyProperties) propAttr;
+          if ( studyDoc ) {
+            propAttr = studyDoc->GetProperties();
+            if ( propAttr ) {
+              std::vector<std::string> aUsers;
+              std::vector<int>  aMins, aHours, aDays, aMonths, aYears;
+              propAttr->GetModificationsList(aUsers, aMins, aHours, aDays, aMonths, aYears, false);
+              int aCnt = aUsers.size();
+              for ( int i = 0; i < aCnt; i++ ) {
+                QString val;
+                val.sprintf("%2.2d/%2.2d/%2d %2.2d:%2.2d",
+                            aDays  [i],
+                            aMonths[i],
+                            aYears [i],
+                            aHours [i],
+                            aMins  [i]);
+                val = val + " : " + QString( aUsers[i].c_str() );
+                list.prepend(val);
+              }
+              theWidget->setDuplicatesEnabled(true);
+              theWidget->insertList(list);
+            }
+          }
+        }
+        break;
       }
     default:
       {
-	SalomeApp_ListViewItem::fillWidgetWithValues(theWidget);
-	break;
+        SalomeApp_ListViewItem::fillWidgetWithValues(theWidget);
+        break;
       }
     }
   }
@@ -261,11 +261,11 @@ void SalomeApp_StudyPropertiesDlg::initData()
     if (aLast >= 0) {
       QString val;
       val.sprintf("%2.2d/%2.2d/%2d %2.2d:%2.2d",
-		  aDays  [aLast],
-		  aMonths[aLast],
-		  aYears [aLast],
-		  aHours [aLast],
-		  aMins  [aLast]);
+                  aDays  [aLast],
+                  aMonths[aLast],
+                  aYears [aLast],
+                  aHours [aLast],
+                  aMins  [aLast]);
       val = val + " : " + QString(aUsers[aUsers.size()-1].c_str());
       item->setValue(val);
     }
@@ -296,24 +296,24 @@ void SalomeApp_StudyPropertiesDlg::onOK()
       QTreeWidgetItemIterator it( myPropList );
       // iterate through all items of the listview
       while (*it) {
-	SalomeApp_PropItem* item = (SalomeApp_PropItem*)(*it);
-	switch (item->getUserType()) {
-	case prpAuthorId:
+        SalomeApp_PropItem* item = (SalomeApp_PropItem*)(*it);
+        switch (item->getUserType()) {
+        case prpAuthorId:
           if (QString(propAttr->GetUserName().c_str()) != item->getValue().trimmed()) {
             if (!propAttr->IsLocked()) {
               propAttr->SetUserName(item->getValue().trimmed().toStdString());
               myChanged = true;
             } else {
               SUIT_MessageBox::warning(SUIT_Session::session()->activeApplication()->desktop(),
-				       QObject::tr("WRN_WARNING"),
-				       QObject::tr("WRN_STUDY_LOCKED") );
+                                       QObject::tr("WRN_WARNING"),
+                                       QObject::tr("WRN_STUDY_LOCKED") );
             }
           }
-	  break;
+          break;
         //case prpModeId:
-	//  propAttr->SetCreationMode(item->getValue().trimmed().latin1());
-	//  break;
-	case prpLockedId:
+        //  propAttr->SetCreationMode(item->getValue().trimmed().latin1());
+        //  break;
+        case prpLockedId:
           {
             bool bLocked = item->getValue().compare(tr("PRP_YES")) == 0;
             if (propAttr->IsLocked() != bLocked) {
@@ -321,11 +321,11 @@ void SalomeApp_StudyPropertiesDlg::onOK()
               myChanged = true;
             }
           }
-	  break;
-	default:
-	  break;
-	}
-	++it;
+          break;
+        default:
+          break;
+        }
+        ++it;
       }
     }
     accept();
@@ -346,25 +346,25 @@ bool SalomeApp_StudyPropertiesDlg::propChanged()
       SalomeApp_PropItem* item = (SalomeApp_PropItem*)(*it);
       switch (item->getUserType()) {
       case prpAuthorId:
-	if ( QString( propAttr->GetUserName().c_str() ) != item->getValue().trimmed() ) {
-	  return true;
-	}
-	break;
+        if ( QString( propAttr->GetUserName().c_str() ) != item->getValue().trimmed() ) {
+          return true;
+        }
+        break;
       //case prpModeId:
       //  if ( QString( propAttr->GetCreationMode().c_str() ) != item->getValue().trimmed() ) {
       //    return true;
       //  }
       //  break;
       case prpLockedId:
-	{
-	  bool bLocked = item->getValue().compare( tr( "PRP_YES" ) ) == 0;
-	  if ( propAttr->IsLocked() != bLocked ) {
-	    return true;
-	  }
-	  break;
-	}
+        {
+          bool bLocked = item->getValue().compare( tr( "PRP_YES" ) ) == 0;
+          if ( propAttr->IsLocked() != bLocked ) {
+            return true;
+          }
+          break;
+        }
       default:
-	break;
+        break;
       }
       ++it;
     }

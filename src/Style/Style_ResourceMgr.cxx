@@ -81,8 +81,8 @@ QStringList Style_ResourceMgr::styles( StyleType type, bool sort )
       setWorkingMode( IgnoreUserValues );
       QMutableListIterator<QString> it( sl );
       while ( it.hasNext() ) {
-	QString s = it.next();
-	if ( hasSection( s ) ) it.remove();
+        QString s = it.next();
+        if ( hasSection( s ) ) it.remove();
       }
     }
     break;

@@ -251,12 +251,12 @@ void QtxWorkspaceAction::cascade()
 
   ws->cascade();
 
-	int w = ws->width();
-	int h = ws->height();
+        int w = ws->width();
+        int h = ws->height();
 
-	QWidgetList winList = ws->windowList();
+        QWidgetList winList = ws->windowList();
   for ( QWidgetList::iterator it = winList.begin(); it != winList.end(); ++it )
-		(*it)->resize( int( w * 0.8 ), int( h * 0.8 ) );
+                (*it)->resize( int( w * 0.8 ), int( h * 0.8 ) );
 }
 
 /*!

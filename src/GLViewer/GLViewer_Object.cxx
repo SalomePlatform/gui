@@ -168,8 +168,8 @@ QByteArray GLViewer_Object::getByteCopy()
 
     QByteArray aResult;
     aResult.resize( 2*anISize + sizeOf8Float + 
-		    aTypeLength + aToolTipLength +
-		    aGLText.size() + aAspect.size() );
+                    aTypeLength + aToolTipLength +
+                    aGLText.size() + aAspect.size() );
     // puts 8 float values into the byte array
     char* aPointer = (char*)&aRectData;
     for( i = 0; i < sizeOf8Float; i++, aPointer++ )

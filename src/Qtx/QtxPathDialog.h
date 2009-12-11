@@ -95,7 +95,7 @@ private:
   void               initialize();
   void               updateVisibility();
   QStringList        prepareFilters( const QString& ) const;
-	bool               hasVisibleChildren( QWidget* ) const;
+        bool               hasVisibleChildren( QWidget* ) const;
   QStringList        filterWildCards( const QString& ) const;
   QString            autoExtension( const QString&, const QString& = QString() ) const;
 

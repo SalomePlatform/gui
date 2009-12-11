@@ -59,21 +59,21 @@ class QTX_EXPORT QtxWorkstack : public QWidget
 public:
   //! Workstack actions (context menu items)
   enum { SplitVertical    = 0x01,  //!< "Split vertically" menu item
-	 SplitHorizontal  = 0x02,  //!< "Split horizontally" menu item
-	 Close            = 0x04,  //!< "Close" menu item
-	 Rename           = 0x08,  //!< "Rename" menu item
-	 All = SplitVertical | SplitHorizontal |
-	       Close | Rename      //!< all menu items
+         SplitHorizontal  = 0x02,  //!< "Split horizontally" menu item
+         Close            = 0x04,  //!< "Close" menu item
+         Rename           = 0x08,  //!< "Rename" menu item
+         All = SplitVertical | SplitHorizontal |
+               Close | Rename      //!< all menu items
   };
 
   enum { VersionMarker = 0x01,
-	       SplitMarker   = 0x02,
-	       AreaMarker    = 0x04,
-	       WidgetMarker  = 0x08
+               SplitMarker   = 0x02,
+               AreaMarker    = 0x04,
+               WidgetMarker  = 0x08
   };
 
   enum { Horizontal = 0x01,
-	       Visible    = 0x02
+               Visible    = 0x02
   };
 
   //! Workstack splitting type
@@ -165,7 +165,7 @@ private:
   void                distributeSpace( QSplitter* ) const;
 
   int                 setPosition( QWidget* wid, QSplitter* split, const Qt::Orientation o,
-				                           const int need_pos, const int splitter_pos );
+                                                           const int need_pos, const int splitter_pos );
 
 private:
   QPointer<QWidget>          myWin;        //!< active widget
@@ -265,7 +265,7 @@ protected:
 private:
   //! Custom events
   enum { ActivateWidget = QEvent::User,   //!< activate widget event
-	       FocusWidget,                     //!< focus receiving widget event
+               FocusWidget,                     //!< focus receiving widget event
          MakeCurrent,
          RestoreWidget
   };

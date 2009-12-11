@@ -65,7 +65,7 @@ QtxDoubleSpinBox::QtxDoubleSpinBox( QWidget* parent )
   myPrecision(0)
 {
   connect( lineEdit(), SIGNAL( textChanged( const QString& ) ), 
-	   this, SLOT( onTextChanged( const QString& ) ) );
+           this, SLOT( onTextChanged( const QString& ) ) );
 }
 
 /*!
@@ -90,7 +90,7 @@ QtxDoubleSpinBox::QtxDoubleSpinBox( double min, double max, double step, QWidget
   setSingleStep( step );
 
   connect( lineEdit(), SIGNAL( textChanged( const QString& ) ), 
-	   this, SLOT( onTextChanged( const QString& ) ) );
+           this, SLOT( onTextChanged( const QString& ) ) );
 }
 
 /*!
@@ -116,7 +116,7 @@ QtxDoubleSpinBox::QtxDoubleSpinBox( double min, double max, double step, int pre
   setSingleStep( step );
 
   connect( lineEdit(), SIGNAL( textChanged( const QString& ) ), 
-	   this, SLOT( onTextChanged( const QString& ) ) );
+           this, SLOT( onTextChanged( const QString& ) ) );
 }
 
 /*!
@@ -275,30 +275,30 @@ QValidator::State QtxDoubleSpinBox::validate( QString& str, int& pos ) const
   else
     {
       if ( str.length() >= overhead && str.startsWith( pref ) &&
-	   str.right( suff.length() ) == suff )
-	{
-	  QString core = str.mid( pref.length(), str.length() - overhead );
-	  int corePos = pos - pref.length();
-	  state = v.validate( core, corePos );
-	  pos = corePos + pref.length();
-	  str.replace( pref.length(), str.length() - overhead, core );
-	}
+           str.right( suff.length() ) == suff )
+        {
+          QString core = str.mid( pref.length(), str.length() - overhead );
+          int corePos = pos - pref.length();
+          state = v.validate( core, corePos );
+          pos = corePos + pref.length();
+          str.replace( pref.length(), str.length() - overhead, core );
+        }
       else
-	{
-	  state = v.validate( str, pos );
-	  if ( state == QValidator::Invalid )
-	    {
-	      QString special = this->specialValueText().trimmed();
-	      QString candidate = str.trimmed();
-	      if ( special.startsWith( candidate ) )
-		{
-		  if ( candidate.length() == special.length() )
-		    state = QValidator::Acceptable;
-		  else
-		    state = QValidator::Intermediate;
-		}
-	    }
-	}
+        {
+          state = v.validate( str, pos );
+          if ( state == QValidator::Invalid )
+            {
+              QString special = this->specialValueText().trimmed();
+              QString candidate = str.trimmed();
+              if ( special.startsWith( candidate ) )
+                {
+                  if ( candidate.length() == special.length() )
+                    state = QValidator::Acceptable;
+                  else
+                    state = QValidator::Intermediate;
+                }
+            }
+        }
     }
   return state;
 }

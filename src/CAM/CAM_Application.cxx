@@ -127,7 +127,7 @@ CAM_Module* CAM_Application::module(  const QString& modName ) const
 {
   CAM_Module* mod = 0;
   for ( QList<CAM_Module*>::const_iterator it = myModules.begin(); 
-	it != myModules.end() && !mod; ++it )
+        it != myModules.end() && !mod; ++it )
     if ( (*it)->moduleName() == modName )
       mod = *it;
   return mod;
@@ -151,7 +151,7 @@ void CAM_Application::modules( CAM_Application::ModuleList& out ) const
   out.clear();
 
   for ( QList<CAM_Module*>::const_iterator it = myModules.begin(); 
-	it != myModules.end(); ++it )
+        it != myModules.end(); ++it )
     out.append( *it );
 }
 
@@ -171,13 +171,13 @@ void CAM_Application::modules( QStringList& lst, const bool loaded ) const
   if ( loaded )
   {
     for ( QList<CAM_Module*>::const_iterator it = myModules.begin(); 
-	  it != myModules.end(); ++it )
+          it != myModules.end(); ++it )
       lst.append( (*it)->moduleName() );
   }
   else
   {
     for ( ModuleInfoList::const_iterator it = myInfoList.begin(); 
-	  it != myInfoList.end(); ++it )
+          it != myInfoList.end(); ++it )
       lst.append( (*it).title );
   }
 }
@@ -202,7 +202,7 @@ void CAM_Application::addModule( CAM_Module* mod )
 
   ModuleList newList;
   for ( ModuleInfoList::const_iterator it = myInfoList.begin(); 
-	it != myInfoList.end(); ++it )
+        it != myInfoList.end(); ++it )
   {
     if ( (*it).title == mod->moduleName() )
       newList.append( mod );
@@ -215,7 +215,7 @@ void CAM_Application::addModule( CAM_Module* mod )
   }
 
   for ( QList<CAM_Module*>::const_iterator it = myModules.begin();
-	it != myModules.end(); ++it )
+        it != myModules.end(); ++it )
   {
     if ( !newList.contains( *it ) )
       newList.append( *it );
@@ -244,9 +244,9 @@ void CAM_Application::loadModules()
     else {
       QString wrn = tr( "Can not load module %1" ).arg( (*it).title );
       if ( desktop() && desktop()->isVisible() )
-	SUIT_MessageBox::critical( desktop(), tr( "Loading modules" ), wrn );
+        SUIT_MessageBox::critical( desktop(), tr( "Loading modules" ), wrn );
       else
-	qWarning( qPrintable( wrn ) ); 
+        qWarning( qPrintable( wrn ) ); 
     }
   }
 }
@@ -382,7 +382,7 @@ bool CAM_Application::activateModule( CAM_Module* mod )
     {
       // ....      
     }    
-  }	
+  }     
   myModule = mod;
 
   if ( myModule ){
@@ -394,9 +394,9 @@ bool CAM_Application::activateModule( CAM_Module* mod )
       myModule->setToolShown( false );
       QString wrn = tr( "ERROR_ACTIVATE_MODULE_MSG" ).arg( myModule->moduleName() );
       if ( desktop() && desktop()->isVisible() )
-	SUIT_MessageBox::critical( desktop(), tr( "ERROR_TLT" ), wrn );
+        SUIT_MessageBox::critical( desktop(), tr( "ERROR_TLT" ), wrn );
       else
-	qWarning( qPrintable( wrn ) ); 
+        qWarning( qPrintable( wrn ) ); 
       myModule = 0;
       return false;
     }
@@ -592,7 +592,7 @@ void CAM_Application::readModuleList()
     QStringList mods = modules.split( QRegExp( "[:|,\\s]" ), QString::SkipEmptyParts );
     for ( int i = 0; i < mods.count(); i++ ) {
       if ( !mods[i].trimmed().isEmpty() )
-	modList.append( mods[i].trimmed() );
+        modList.append( mods[i].trimmed() );
     }
   }
 
@@ -656,9 +656,9 @@ void CAM_Application::readModuleList()
       SUIT_MessageBox::warning( desktop(), tr( "Warning" ), tr( "Modules list is empty" ) );
     else
       {
-	printf( "****************************************************************\n" );
-	printf( "*    Warning: modules list is empty.\n" );
-	printf( "****************************************************************\n" );
+        printf( "****************************************************************\n" );
+        printf( "*    Warning: modules list is empty.\n" );
+        printf( "****************************************************************\n" );
       }
   }
 }

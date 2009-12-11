@@ -76,11 +76,11 @@ void LightApp_Selection::init( const QString& client, LightApp_SelectionMgr* mgr
       SUIT_Selector* selector = it.next();
       if( selector->type() != client && selector->isEnabled() )
       {
-	//mgr->selected( cur_sel, selector->type() );
+        //mgr->selected( cur_sel, selector->type() );
         selector->selected( cur_sel );
-	SUIT_DataOwnerPtrList::const_iterator aLIt = cur_sel.begin(), aLLast = cur_sel.end();
-	for( ; aLIt!=aLLast; aLIt++ )
-	  sel.append( *aLIt ); //check entry and don't append if such entry is in list already
+        SUIT_DataOwnerPtrList::const_iterator aLIt = cur_sel.begin(), aLLast = cur_sel.end();
+        for( ; aLIt!=aLLast; aLIt++ )
+          sel.append( *aLIt ); //check entry and don't append if such entry is in list already
       }
     }
 
@@ -95,14 +95,14 @@ void LightApp_Selection::init( const QString& client, LightApp_SelectionMgr* mgr
       if( sowner )
       {
         entry = referencedToEntry( sowner->entry() );
-	if( entries.contains( entry ) )
-	  continue;
+        if( entries.contains( entry ) )
+          continue;
 
-	entries.insert( entry, 0 );
+        entries.insert( entry, 0 );
         myEntries.insert( num, entry );
-	myIsReferences.insert( num, sowner->entry() != entry );
+        myIsReferences.insert( num, sowner->entry() != entry );
         processOwner( sowner );
-	num++;
+        num++;
       }
     }
   }
@@ -256,7 +256,7 @@ SUIT_ViewWindow* LightApp_Selection::activeVW() const
     if ( app ) {
       SUIT_Desktop* desk = app->desktop();
       if ( desk ) 
-	return desk->activeWindow();
+        return desk->activeWindow();
     }
   }
   return 0;

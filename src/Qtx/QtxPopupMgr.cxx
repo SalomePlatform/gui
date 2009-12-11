@@ -51,11 +51,11 @@ bool operator<( const QVariant& v1, const QVariant& v2 )
     {
       const QList<QVariant>& aList1 = v1.toList(), aList2 = v2.toList();
       QList<QVariant>::const_iterator anIt1 = aList1.begin(), aLast1 = aList1.end(),
-	anIt2 = aList2.begin(), aLast2 = aList2.end();
+        anIt2 = aList2.begin(), aLast2 = aList2.end();
       for ( ; anIt1 != aLast1 && anIt2 != aLast2;  anIt1++, anIt2++ )
       {
-	if ( (*anIt1) != (*anIt2) )
-	  return (*anIt1)<(*anIt2);
+        if ( (*anIt1) != (*anIt2) )
+          return (*anIt1)<(*anIt2);
       }
       return anIt1 == aLast1 && anIt2 != aLast2;
     }
@@ -85,7 +85,7 @@ public:
                           const ItemAttributes&, const int );
 
   virtual QString rule( const ItemAttributes&, 
-			const QtxPopupMgr::RuleType = VisibleRule ) const;
+                        const QtxPopupMgr::RuleType = VisibleRule ) const;
 
 private:
   QtxPopupMgr*    myMgr;
@@ -189,7 +189,7 @@ int QtxPopupMgr::PopupCreator::append( const QString& tag, const bool subMenu,
   \return rule for the menu item corresponding to the rule type
 */
 QString QtxPopupMgr::PopupCreator::rule( const ItemAttributes& /*attr*/, 
-					 const QtxPopupMgr::RuleType /*ruleType*/ ) const
+                                         const QtxPopupMgr::RuleType /*ruleType*/ ) const
 {
   return QString();
 }
@@ -288,7 +288,7 @@ void QtxPopupMgr::setSelection( QtxPopupSelection* sel )
   if ( mySelection )
     mySelection->setParent( this );
   connect( mySelection, SIGNAL( destroyed( QObject* ) ), 
-	   this,        SLOT( onSelectionDestroyed( QObject* ) ) );
+           this,        SLOT( onSelectionDestroyed( QObject* ) ) );
 
   QtxActionMgr::triggerUpdate();
 }
@@ -514,18 +514,18 @@ bool QtxPopupMgr::isSatisfied( QAction* act, const RuleType ruleType ) const
       for ( int i = 0; i < mySelection->count() && !res; i++ )
       {
         QList<QVariant> c;
-	for ( QStringList::const_iterator anIt1 = specific.begin(); anIt1 != specific.end(); ++anIt1 )
+        for ( QStringList::const_iterator anIt1 = specific.begin(); anIt1 != specific.end(); ++anIt1 )
           c.append( parameter( *anIt1, i ) );
         aCorteges.insert( c, 0 );
       }
       for ( QMap<QList<QVariant>, int>::const_iterator anIt = aCorteges.begin(); anIt  != aCorteges.end(); ++anIt )
       {
-	const QList<QVariant>& aCortege = anIt.key();
-	QStringList::const_iterator anIt1 = specific.begin(), aLast1 = specific.end();
-	QList<QVariant>::const_iterator anIt2 = aCortege.begin();
-	for ( ; anIt1 != aLast1; anIt1++, anIt2++ )
-	  p->setParameter( *anIt1, *anIt2 );
-	res = res || result( p );
+        const QList<QVariant>& aCortege = anIt.key();
+        QStringList::const_iterator anIt1 = specific.begin(), aLast1 = specific.end();
+        QList<QVariant>::const_iterator anIt2 = aCortege.begin();
+        for ( ; anIt1 != aLast1; anIt1++, anIt2++ )
+          p->setParameter( *anIt1, *anIt2 );
+        res = res || result( p );
       }
     }
     else
@@ -726,9 +726,9 @@ QVariant QtxPopupSelection::parameter( const QString& str ) const
     {
       QVariant v = parameter( i, par );
       if ( v.isValid() )
-	QtxEvalSetSets::add( set, v );
+        QtxEvalSetSets::add( set, v );
       else
-	return QVariant();
+        return QVariant();
     }
     return set;
   }

@@ -35,32 +35,32 @@ class QtxAction;
 /*!Provide support QtxAction*/
 class SUIT_EXPORT SUIT_ActionOperation : public SUIT_Operation
 {
-	Q_OBJECT
+        Q_OBJECT
 
 public:
-	SUIT_ActionOperation( SUIT_Application* );
-	virtual ~SUIT_ActionOperation();
+        SUIT_ActionOperation( SUIT_Application* );
+        virtual ~SUIT_ActionOperation();
 
-	QtxAction*   action() const;
+        QtxAction*   action() const;
 
-	/** @name GUI management*/
-	//@{
-	virtual void setAction( const QString& text, const QIcon& icon, const QString& menuText,
-				                  QKeySequence accel, QObject* parent, bool toggle = false );
+        /** @name GUI management*/
+        //@{
+        virtual void setAction( const QString& text, const QIcon& icon, const QString& menuText,
+                                                  QKeySequence accel, QObject* parent, bool toggle = false );
 
-	virtual void setAction( const QString& text, const QString& menuText,
+        virtual void setAction( const QString& text, const QString& menuText,
                           QKeySequence accel, QObject* parent, bool toggle = false );
-	virtual void setAction( QtxAction* theAction );
-	
-	bool         addTo( QWidget* theWidget );
+        virtual void setAction( QtxAction* theAction );
+        
+        bool         addTo( QWidget* theWidget );
 
-	void         setStatusTip( const QString& theTip );
-	//@}
+        void         setStatusTip( const QString& theTip );
+        //@}
 
 private:
-	QtxAction*   myAction;
+        QtxAction*   myAction;
 
-	friend class SUIT_Study;
+        friend class SUIT_Study;
 };
 
 #endif

@@ -132,16 +132,16 @@ void LightApp_PreferencesDlg::onApply()
 void LightApp_PreferencesDlg::onDefault()
 {
   if( SUIT_MessageBox::Ok == SUIT_MessageBox::question( this, tr( "WARNING" ), tr( "DEFAULT_QUESTION" ),
-							SUIT_MessageBox::Ok | SUIT_MessageBox::Cancel,
-							SUIT_MessageBox::Ok ) )
+                                                        SUIT_MessageBox::Ok | SUIT_MessageBox::Cancel,
+                                                        SUIT_MessageBox::Ok ) )
     {
       if ( myPrefs && myPrefs->resourceMgr() )
-	{
+        {
           QtxResourceMgr::WorkingMode prev = myPrefs->resourceMgr()->workingMode();
-	  myPrefs->resourceMgr()->setWorkingMode( QtxResourceMgr::IgnoreUserValues );
-	  myPrefs->retrieve();
+          myPrefs->resourceMgr()->setWorkingMode( QtxResourceMgr::IgnoreUserValues );
+          myPrefs->retrieve();
           myPrefs->resourceMgr()->setWorkingMode( prev );
-	}
+        }
     }
 }
 

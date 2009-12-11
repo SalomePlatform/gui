@@ -386,16 +386,16 @@ void SOCC_Viewer::Display( const SALOME_OCCPrs* prs )
           bDisplayed = true;
 
           // Set visibility flag
-	  // Temporarily commented to avoid awful dependecy on SALOMEDS
-	  // TODO: better mechanism of storing display/erse status in a study
-	  // should be provided...
-	  //Handle(SALOME_InteractiveObject) anObj =
+          // Temporarily commented to avoid awful dependecy on SALOMEDS
+          // TODO: better mechanism of storing display/erse status in a study
+          // should be provided...
+          //Handle(SALOME_InteractiveObject) anObj =
           //  Handle(SALOME_InteractiveObject)::DownCast( anAIS->GetOwner() );
           //if ( !anObj.IsNull() && anObj->hasEntry() )
           //{
-	  //  if ( study )
-	  //    ToolsGUI::SetVisibility( study, anObj->getEntry(), true, this );
-	  //}
+          //  if ( study )
+          //    ToolsGUI::SetVisibility( study, anObj->getEntry(), true, this );
+          //}
           break;
         }
       }
@@ -508,7 +508,7 @@ void SOCC_Viewer::EraseAll( const bool forced )
   AIS_ListIteratorOfListOfInteractive anIter( aList );
   for ( ; anIter.More(); anIter.Next() ) {
     if ( isTrihedronDisplayed && anIter.Value()->DynamicType() == STANDARD_TYPE( AIS_Trihedron ) ||
-	 anIter.Value()->DynamicType() == STANDARD_TYPE( OCCViewer_Trihedron ))
+         anIter.Value()->DynamicType() == STANDARD_TYPE( OCCViewer_Trihedron ))
       continue;
 
     // erase an object
@@ -521,11 +521,11 @@ void SOCC_Viewer::EraseAll( const bool forced )
     // should be provided...
     //if ( !forced ) {
     //  Handle(SALOME_InteractiveObject) anObj =
-    //	Handle(SALOME_InteractiveObject)::DownCast( anIO->GetOwner() );
+    //  Handle(SALOME_InteractiveObject)::DownCast( anIO->GetOwner() );
 
     //  if ( !anObj.IsNull() && anObj->hasEntry() ) {
-    //	if ( study )
-    //	  ToolsGUI::SetVisibility( study, anObj->getEntry(), true, this );
+    //  if ( study )
+    //    ToolsGUI::SetVisibility( study, anObj->getEntry(), true, this );
     //  }
     //}
   }

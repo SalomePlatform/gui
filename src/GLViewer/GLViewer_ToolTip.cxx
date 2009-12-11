@@ -48,7 +48,7 @@ GLViewer_ObjectTip::GLViewer_ObjectTip( GLViewer_ViewPort2d* theParent )
   mypViewPort = theParent;
   //mypLabel = NULL;
   mypLabel = new QLabel( "Test", NULL, 
-			 Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint | Qt::Tool | Qt::X11BypassWindowManagerHint );
+                         Qt::WindowStaysOnTopHint | Qt::FramelessWindowHint | Qt::Tool | Qt::X11BypassWindowManagerHint );
   mypLabel->setObjectName("ObjectTipText");
   mypLabel->setMargin( 1 );
   //mypLabel->setAutoMask( FALSE );
@@ -146,9 +146,9 @@ bool GLViewer_ObjectTip::eventFilter( QObject* theObj, QEvent* e )
     case QEvent::MouseButtonDblClick:
     case QEvent::KeyPress:
     case QEvent::KeyRelease:
-	    // input - turn off tool tip mode
-	    hideTipAndSleep();
-	    break;*/
+            // input - turn off tool tip mode
+            hideTipAndSleep();
+            break;*/
     case QEvent::MouseMove:
       {
         //hideTipAndSleep();

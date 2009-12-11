@@ -137,19 +137,19 @@ public:
   XmlHandler( SALOME_PYQT_ModuleLight* module, const QString& fileName );
   void createActions();
   void createPopup  ( QMenu*         menu,
-		      const QString& context,
-		      const QString& parent,
-		      const QString& object );
+                      const QString& context,
+                      const QString& parent,
+                      const QString& object );
   void activateMenus( bool );
 
 protected:
   void createToolBar   ( QDomNode&   parentNode );
   void createMenu      ( QDomNode&   parentNode,
-			 const int   parentMenuId = -1,
-			 QMenu*      parentPopup = 0 );
+                         const int   parentMenuId = -1,
+                         QMenu*      parentPopup = 0 );
 
   void insertPopupItems( QDomNode&   parentNode,
-			 QMenu*      menu );
+                         QMenu*      menu );
 
 private:
   SALOME_PYQT_ModuleLight* myModule;
@@ -344,7 +344,7 @@ void SALOME_PYQT_ModuleLight::initialize( CAM_Application* app )
   {
   public:
     InitializeReq( CAM_Application*    _app,
-		   SALOME_PYQT_ModuleLight* _obj )
+                   SALOME_PYQT_ModuleLight* _obj )
       : PyInterp_Request( 0, true ), // this request should be processed synchronously (sync == true)
         myApp( _app ),
         myObj( _obj ) {}
@@ -396,7 +396,7 @@ bool SALOME_PYQT_ModuleLight::activateModule( SUIT_Study* theStudy )
   {
   public:
     ActivateReq( SUIT_Study*         _study,
-		 SALOME_PYQT_ModuleLight* _obj )
+                 SALOME_PYQT_ModuleLight* _obj )
       : PyInterp_Request( 0, true ), // this request should be processed synchronously (sync == true)
         myStudy ( _study ),
         myObj   ( _obj   ) {}
@@ -426,7 +426,7 @@ bool SALOME_PYQT_ModuleLight::activateModule( SUIT_Study* theStudy )
 
   // connect preferences changing signal
   connect( getApp(), SIGNAL( preferenceChanged( const QString&, const QString&, const QString& ) ),
-	   this,     SLOT(   preferenceChanged( const QString&, const QString&, const QString& ) ) );
+           this,     SLOT(   preferenceChanged( const QString&, const QString&, const QString& ) ) );
 
   // perform custom activation actions
   // CustomizeReq: request class for internal customize() operation
@@ -434,7 +434,7 @@ bool SALOME_PYQT_ModuleLight::activateModule( SUIT_Study* theStudy )
   {
   public:
     CustomizeReq( SUIT_Study*         _study,
-		  SALOME_PYQT_ModuleLight* _obj )
+                  SALOME_PYQT_ModuleLight* _obj )
       : PyInterp_Request( 0, true ), // this request should be processed synchronously (sync == true)
         myStudy ( _study ),
         myObj   ( _obj   ) {}
@@ -472,7 +472,7 @@ bool SALOME_PYQT_ModuleLight::deactivateModule( SUIT_Study* theStudy )
 
   // disconnect preferences changing signal
   disconnect( getApp(), SIGNAL( preferenceChanged( const QString&, const QString&, const QString& ) ),
-	      this,     SLOT(   preferenceChanged( const QString&, const QString&, const QString& ) ) );
+              this,     SLOT(   preferenceChanged( const QString&, const QString&, const QString& ) ) );
 
   // perform internal deactivation
   // DeactivateReq: request class for internal deactivate() operation
@@ -480,8 +480,8 @@ bool SALOME_PYQT_ModuleLight::deactivateModule( SUIT_Study* theStudy )
   {
   public:
     DeactivateReq( PyInterp_Interp*    _py_interp,
-		   SUIT_Study*         _study,
-		   SALOME_PYQT_ModuleLight* _obj )
+                   SUIT_Study*         _study,
+                   SALOME_PYQT_ModuleLight* _obj )
       : PyInterp_LockRequest( _py_interp, 0, true ), // this request should be processed synchronously (sync == true)
         myStudy ( _study ),
         myObj   ( _obj   ) {}
@@ -529,8 +529,8 @@ bool SALOME_PYQT_ModuleLight::lastActivationStatus() const
   \param setting preference resource name
 */
 void SALOME_PYQT_ModuleLight::preferenceChanged( const QString& module, 
-					    const QString& section, 
-					    const QString& setting )
+                                            const QString& section, 
+                                            const QString& setting )
 {
   FuncMsg fmsg( "SALOME_PYQT_ModuleLight::preferenceChanged()" );
 
@@ -539,9 +539,9 @@ void SALOME_PYQT_ModuleLight::preferenceChanged( const QString& module,
   {
   public:
     Event( PyInterp_Interp*    _py_interp,
-	   SALOME_PYQT_ModuleLight* _obj,
-	   const QString&      _section,
-	   const QString&      _setting )
+           SALOME_PYQT_ModuleLight* _obj,
+           const QString&      _section,
+           const QString&      _setting )
       : PyInterp_LockRequest( _py_interp, 0, true ), // this request should be processed synchronously (sync == true)
         myObj    ( _obj ),
         mySection( _section ),
@@ -583,7 +583,7 @@ void SALOME_PYQT_ModuleLight::studyActivated()
   {
   public:
     StudyChangedReq( SUIT_Study*         _study,
-		     SALOME_PYQT_ModuleLight* _obj )
+                     SALOME_PYQT_ModuleLight* _obj )
       : PyInterp_Request( 0, true ), // this request should be processed synchronously (sync == true)
         myStudy ( _study ),
         myObj   ( _obj   ) {}
@@ -625,8 +625,8 @@ void SALOME_PYQT_ModuleLight::onGUIEvent()
   {
   public:
     GUIEvent( PyInterp_Interp*    _py_interp,
-  	      SALOME_PYQT_ModuleLight* _obj,
-	      int                 _id )
+              SALOME_PYQT_ModuleLight* _obj,
+              int                 _id )
       : PyInterp_LockRequest( _py_interp, 0, true ), // this request should be processed synchronously (sync == true)
         myId    ( _id  ),
         myObj   ( _obj ) {}
@@ -657,8 +657,8 @@ void SALOME_PYQT_ModuleLight::onGUIEvent()
   \param title popup menu title (not used)
 */
 void SALOME_PYQT_ModuleLight::contextMenuPopup( const QString& theContext, 
-					   QMenu*         thePopupMenu, 
-					   QString&       /*title*/ )
+                                           QMenu*         thePopupMenu, 
+                                           QString&       /*title*/ )
 {
   FuncMsg fmsg( "SALOME_PYQT_ModuleLight::contextMenuPopup()" );
   fmsg.message( QString( "context: %1" ).arg( theContext ) );
@@ -668,9 +668,9 @@ void SALOME_PYQT_ModuleLight::contextMenuPopup( const QString& theContext,
   {
   public:
     PopupMenuEvent( PyInterp_Interp*    _py_interp,
-		    SALOME_PYQT_ModuleLight* _obj,
-		    const QString&      _context,
-		    QMenu*        _popup )
+                    SALOME_PYQT_ModuleLight* _obj,
+                    const QString&      _context,
+                    QMenu*        _popup )
       : PyInterp_LockRequest( _py_interp, 0, true ), // this request should be processed synchronously (sync == true)
         myContext( _context ),
         myPopup  ( _popup  ),
@@ -708,7 +708,7 @@ void SALOME_PYQT_ModuleLight::createPreferences()
   {
   public:
     Event( PyInterp_Interp*    _py_interp,
-	   SALOME_PYQT_ModuleLight* _obj )
+           SALOME_PYQT_ModuleLight* _obj )
       : PyInterp_LockRequest( _py_interp, 0, true ), // this request should be processed synchronously (sync == true)
         myObj    ( _obj )   {}
 
@@ -793,9 +793,9 @@ void SALOME_PYQT_ModuleLight::preferencesChanged( const QString& section, const 
   {
   public:
     Event( PyInterp_Interp*    _py_interp,
-	   SALOME_PYQT_ModuleLight* _obj,
-	   const QString&      _section,
-	   const QString&      _setting )
+           SALOME_PYQT_ModuleLight* _obj,
+           const QString&      _section,
+           const QString&      _setting )
       : PyInterp_LockRequest( _py_interp, 0, true ), // this request should be processed synchronously (sync == true)
         myObj    ( _obj ),
         mySection( _section ),
@@ -891,14 +891,14 @@ void SALOME_PYQT_ModuleLight::init( CAM_Application* app )
         PyObject* value;
         Py_ssize_t pos = 0;
         while ( PyDict_Next( res1, &pos, &key, &value ) ) {
-	  // parse the return value
-	  // it should be a map: {integer:integer}
-	  int aKey, aValue;
-	  if( key && PyInt_Check( key ) && value && PyInt_Check( value ) ) {
-	    aKey   = PyInt_AsLong( key );
-	    aValue = PyInt_AsLong( value );
-	    myWindowsMap[ aKey ] = aValue;
-	  }
+          // parse the return value
+          // it should be a map: {integer:integer}
+          int aKey, aValue;
+          if( key && PyInt_Check( key ) && value && PyInt_Check( value ) ) {
+            aKey   = PyInt_AsLong( key );
+            aValue = PyInt_AsLong( value );
+            myWindowsMap[ aKey ] = aValue;
+          }
         }
       }
     }
@@ -921,10 +921,10 @@ void SALOME_PYQT_ModuleLight::init( CAM_Application* app )
       else if ( PyList_Check( res2 ) ) {
         int size = PyList_Size( res2 );
         for ( int i = 0; i < size; i++ ) {
-	  PyObject* value = PyList_GetItem( res2, i );
-	  if( value && PyString_Check( value ) ) {
-	    myViewMgrList.append( PyString_AsString( value ) );
-	  }
+          PyObject* value = PyList_GetItem( res2, i );
+          if( value && PyString_Check( value ) ) {
+            myViewMgrList.append( PyString_AsString( value ) );
+          }
         }
       }
     }
@@ -987,7 +987,7 @@ void SALOME_PYQT_ModuleLight::activate( SUIT_Study* theStudy )
   if ( aDesk )
   {
     connect( aDesk, SIGNAL( windowActivated( SUIT_ViewWindow* ) ),
-	     this,  SLOT( onActiveViewChanged( SUIT_ViewWindow* ) ) );
+             this,  SLOT( onActiveViewChanged( SUIT_ViewWindow* ) ) );
     // If a active window exists send activeViewChanged
     // If a getActiveView() in SalomePyQt available we no longer need this 
     SUIT_ViewWindow* aView = aDesk->activeWindow();
@@ -1161,11 +1161,11 @@ void SALOME_PYQT_ModuleLight::contextMenu( const QString& theContext, QMenu* the
     // call definePopup() Python module's function
     // this is obsolete function, used only for compatibility reasons
     PyObjWrapper res( PyObject_CallMethod( myModule,
-					   (char*)"definePopup",
-					   (char*)"sss",
-					   theContext.toLatin1().constData(),
-					   aObject.toLatin1().constData(),
-					   aParent.toLatin1().constData() ) );
+                                           (char*)"definePopup",
+                                           (char*)"sss",
+                                           theContext.toLatin1().constData(),
+                                           aObject.toLatin1().constData(),
+                                           aParent.toLatin1().constData() ) );
     if( !res ) {
       PyErr_Print();
     }
@@ -1174,8 +1174,8 @@ void SALOME_PYQT_ModuleLight::contextMenu( const QString& theContext, QMenu* the
       char *co, *ob, *pa;
       if( PyArg_ParseTuple( res, "sss", &co, &ob, &pa ) ) {
         aContext = co;
-	aObject  = ob;
-	aParent  = pa;
+        aObject  = ob;
+        aParent  = pa;
       }
     }
   } // if ( IsCallOldMethods ... )
@@ -1194,10 +1194,10 @@ void SALOME_PYQT_ModuleLight::contextMenu( const QString& theContext, QMenu* the
   // then call Python module's createPopupMenu() method (for new modules)
   if ( PyObject_HasAttrString( myModule, "createPopupMenu" ) ) {
     PyObjWrapper res1( PyObject_CallMethod( myModule,
-					    (char*)"createPopupMenu",
-					    (char*)"Os",
-					    sipPopup.get(),
-					    theContext.toLatin1().constData() ) );
+                                            (char*)"createPopupMenu",
+                                            (char*)"Os",
+                                            sipPopup.get(),
+                                            theContext.toLatin1().constData() ) );
     if( !res1 ) {
       PyErr_Print();
     }
@@ -1207,12 +1207,12 @@ void SALOME_PYQT_ModuleLight::contextMenu( const QString& theContext, QMenu* the
     // call customPopup() Python module's function
     // this is obsolete function, used only for compatibility reasons
     PyObjWrapper res2( PyObject_CallMethod( myModule,
-					    (char*)"customPopup",
-					    (char*)"Osss",
-					    sipPopup.get(),
-					    aContext.toLatin1().constData(),
-					    aObject.toLatin1().constData(),
-					    aParent.toLatin1().constData() ) );
+                                            (char*)"customPopup",
+                                            (char*)"Osss",
+                                            sipPopup.get(),
+                                            aContext.toLatin1().constData(),
+                                            aObject.toLatin1().constData(),
+                                            aParent.toLatin1().constData() ) );
     if( !res2 ) {
       PyErr_Print();
     }
@@ -1436,10 +1436,10 @@ void SALOME_PYQT_ModuleLight::prefChanged( const QString& section, const QString
 
   if ( PyObject_HasAttrString( myModule, "preferenceChanged" ) ) {
     PyObjWrapper res( PyObject_CallMethod( myModule,
-					   (char*)"preferenceChanged", 
-					   (char*)"ss", 
-					   section.toLatin1().constData(), 
-					   setting.toLatin1().constData() ) );
+                                           (char*)"preferenceChanged", 
+                                           (char*)"ss", 
+                                           section.toLatin1().constData(), 
+                                           setting.toLatin1().constData() ) );
     if( !res ) {
       PyErr_Print();
     }
@@ -1649,8 +1649,8 @@ int SALOME_PYQT_ModuleLight::actionId( const QAction* a ) const
   \return created action
 */
 QAction* SALOME_PYQT_ModuleLight::createAction( const int id, const QString& text, const QString& icon,
-					   const QString& menu, const QString& tip, const int key,
-					   const bool toggle, QObject* parent )
+                                           const QString& menu, const QString& tip, const int key,
+                                           const bool toggle, QObject* parent )
 {
   QIcon anIcon = loadIcon( icon );
   QAction* a = action( id );
@@ -1666,15 +1666,15 @@ QAction* SALOME_PYQT_ModuleLight::createAction( const int id, const QString& tex
   }
   else {
     a = LightApp_Module::createAction( id, 
-					text, 
-					anIcon, 
-					menu, 
-					tip, 
-					key, 
-					parent ? parent : this, 
-					toggle, 
-					this, 
-					SLOT( onGUIEvent() ) );
+                                        text, 
+                                        anIcon, 
+                                        menu, 
+                                        tip, 
+                                        key, 
+                                        parent ? parent : this, 
+                                        toggle, 
+                                        this, 
+                                        SLOT( onGUIEvent() ) );
   }
   return a;
 }
@@ -1745,7 +1745,7 @@ int SALOME_PYQT_ModuleLight::addPreference( const QString& label )
 {
   return LightApp_Module::addPreference( label );
 }
-				       
+                                       
 /*!
   \brief Add preference.
   \param label preference name
@@ -1756,9 +1756,9 @@ int SALOME_PYQT_ModuleLight::addPreference( const QString& label )
   \return preference ID
 */
 int SALOME_PYQT_ModuleLight::addPreference( const QString& label, 
-				       const int pId, const int type,
-				       const QString& section,
-				       const QString& param )
+                                       const int pId, const int type,
+                                       const QString& section,
+                                       const QString& param )
 {
   return LightApp_Module::addPreference( label, pId, type, section, param );
 }
@@ -1770,7 +1770,7 @@ int SALOME_PYQT_ModuleLight::addPreference( const QString& label,
   \return property value (invalid QVariant() if property is not found)
 */
 QVariant SALOME_PYQT_ModuleLight::preferenceProperty( const int id, 
-						 const QString& prop ) const
+                                                 const QString& prop ) const
 {
   QVariant v = LightApp_Module::preferenceProperty( id, prop );
   return v;
@@ -1783,8 +1783,8 @@ QVariant SALOME_PYQT_ModuleLight::preferenceProperty( const int id,
   \param var property value
 */
 void SALOME_PYQT_ModuleLight::setPreferenceProperty( const int id, 
-						const QString& prop, 
-						const QVariant& var )
+                                                const QString& prop, 
+                                                const QVariant& var )
 {
   LightApp_Module::setPreferenceProperty( id, prop, var );
 }
@@ -2044,7 +2044,7 @@ static int checkInt( const QString& value, const int def = -1, const int shift =
   \param fileName XML file path
 */
 SALOME_PYQT_ModuleLight::XmlHandler::XmlHandler( SALOME_PYQT_ModuleLight* module, 
-					    const QString&      fileName )
+                                            const QString&      fileName )
 : myModule( module )
 {
   if ( fileName.isEmpty() ) 
@@ -2092,9 +2092,9 @@ void SALOME_PYQT_ModuleLight::XmlHandler::createActions()
   \param context popup menu object name
 */
 void SALOME_PYQT_ModuleLight::XmlHandler::createPopup( QMenu*         menu,
-						  const QString& context,
-						  const QString& parent,
-						  const QString& object )
+                                                  const QString& context,
+                                                  const QString& parent,
+                                                  const QString& object )
 {
   // get document element
   QDomElement aDocElem = myDoc.documentElement();
@@ -2110,8 +2110,8 @@ void SALOME_PYQT_ModuleLight::XmlHandler::createPopup( QMenu*         menu,
       QString prt = attribute( e, "parent-id"  );
       QString obj = attribute( e, "object-id"  );
       if ( ctx == context && prt == parent && obj == object )  {
-	insertPopupItems( n, menu );
-	break;
+        insertPopupItems( n, menu );
+        break;
       }
     }
   }
@@ -2140,8 +2140,8 @@ void SALOME_PYQT_ModuleLight::XmlHandler::activateMenus( bool enable )
   \param parentPopup parent popup menu (0 for top-level menu)
 */
 void SALOME_PYQT_ModuleLight::XmlHandler::createMenu( QDomNode& parentNode, 
-						 const int parentMenuId, 
-						 QMenu*    parentPopup )
+                                                 const int parentMenuId, 
+                                                 QMenu*    parentPopup )
 {
   if ( !myModule || parentNode.isNull() )
     return;
@@ -2152,70 +2152,70 @@ void SALOME_PYQT_ModuleLight::XmlHandler::createMenu( QDomNode& parentNode,
     int     pid    = checkInt( attribute( parentElement, "item-id" ) );
     int     ppos   = checkInt( attribute( parentElement, "pos-id" ) );
     int     group  = checkInt( attribute( parentElement, "group-id" ), 
-			       myModule->defaultMenuGroup() );
+                               myModule->defaultMenuGroup() );
     if ( !plabel.isEmpty() ) {
       QMenu* popup = 0;
       int menuId = -1;
       // create menu
       menuId = myModule->createMenu( plabel,         // label
-				     parentMenuId,   // parent menu ID, -1 for top-level menu
-				     pid,            // ID
-				     group,          // group ID
-				     ppos );         // position
+                                     parentMenuId,   // parent menu ID, -1 for top-level menu
+                                     pid,            // ID
+                                     group,          // group ID
+                                     ppos );         // position
       myMenuItems.append( menuId );
       QDomNode node = parentNode.firstChild();
       while ( !node.isNull() ) {
-	if ( node.isElement() ) {
-	  QDomElement elem = node.toElement();
-	  QString aTagName = tagName( elem );
-	  if ( aTagName == "popup-item" ) {
-	    int     id      = checkInt( attribute( elem, "item-id" ) );
-	    int     pos     = checkInt( attribute( elem, "pos-id" ) );
-	    int     group   = checkInt( attribute( elem, "group-id" ), 
-					myModule->defaultMenuGroup() );
-	    QString label   = attribute( elem, "label-id" );
-	    QString icon    = attribute( elem, "icon-id" );
-	    QString tooltip = attribute( elem, "tooltip-id" );
-	    QString accel   = attribute( elem, "accel-id" );
-	    bool    toggle  = checkBool( attribute( elem, "toggle-id" ) );
+        if ( node.isElement() ) {
+          QDomElement elem = node.toElement();
+          QString aTagName = tagName( elem );
+          if ( aTagName == "popup-item" ) {
+            int     id      = checkInt( attribute( elem, "item-id" ) );
+            int     pos     = checkInt( attribute( elem, "pos-id" ) );
+            int     group   = checkInt( attribute( elem, "group-id" ), 
+                                        myModule->defaultMenuGroup() );
+            QString label   = attribute( elem, "label-id" );
+            QString icon    = attribute( elem, "icon-id" );
+            QString tooltip = attribute( elem, "tooltip-id" );
+            QString accel   = attribute( elem, "accel-id" );
+            bool    toggle  = checkBool( attribute( elem, "toggle-id" ) );
 
-	    // -1 action ID is not allowed : it means that <item-id> attribute is missed in the XML file!
-	    // also check if the action with given ID is already created
-	    if ( id != -1 ) {
-	      // create menu action
-	      QAction* action = myModule->createAction( id,                     // ID
-							tooltip,                // tooltip
-							icon,                   // icon
-							label,                  // menu text
-							tooltip,                // status-bar text
-							QKeySequence( accel ),  // keyboard accelerator
-							toggle );               // toogled action
-	      myModule->createMenu( action,   // action
-				    menuId,   // parent menu ID
-				    id,       // ID (same as for createAction())
-				    group,    // group ID
-				    pos );    // position
-	    }
-	  }
-	  else if ( aTagName == "submenu" ) {
-	    // create sub-menu
-	    createMenu( node, menuId, popup );
-	  }
-	  else if ( aTagName == "separator" ) {
-	    // create menu separator
-	    int id    = checkInt( attribute( elem, "item-id" ) ); // separator can have ID
-	    int pos   = checkInt( attribute( elem, "pos-id" ) );
-	    int group = checkInt( attribute( elem, "group-id" ), 
-				  myModule->defaultMenuGroup() );
-	    QAction* action = myModule->separator();
-	    myModule->createMenu( action,  // separator action
-				  menuId,  // parent menu ID
-				  id,      // ID
-				  group,   // group ID
-				  pos );   // position
-	  }
-	}
-	node = node.nextSibling();
+            // -1 action ID is not allowed : it means that <item-id> attribute is missed in the XML file!
+            // also check if the action with given ID is already created
+            if ( id != -1 ) {
+              // create menu action
+              QAction* action = myModule->createAction( id,                     // ID
+                                                        tooltip,                // tooltip
+                                                        icon,                   // icon
+                                                        label,                  // menu text
+                                                        tooltip,                // status-bar text
+                                                        QKeySequence( accel ),  // keyboard accelerator
+                                                        toggle );               // toogled action
+              myModule->createMenu( action,   // action
+                                    menuId,   // parent menu ID
+                                    id,       // ID (same as for createAction())
+                                    group,    // group ID
+                                    pos );    // position
+            }
+          }
+          else if ( aTagName == "submenu" ) {
+            // create sub-menu
+            createMenu( node, menuId, popup );
+          }
+          else if ( aTagName == "separator" ) {
+            // create menu separator
+            int id    = checkInt( attribute( elem, "item-id" ) ); // separator can have ID
+            int pos   = checkInt( attribute( elem, "pos-id" ) );
+            int group = checkInt( attribute( elem, "group-id" ), 
+                                  myModule->defaultMenuGroup() );
+            QAction* action = myModule->separator();
+            myModule->createMenu( action,  // separator action
+                                  menuId,  // parent menu ID
+                                  id,      // ID
+                                  group,   // group ID
+                                  pos );   // position
+          }
+        }
+        node = node.nextSibling();
       }
     }
   }
@@ -2238,40 +2238,40 @@ void SALOME_PYQT_ModuleLight::XmlHandler::createToolBar( QDomNode& parentNode )
       int tbId = myModule->createTool( aLabel );
       QDomNode node = parentNode.firstChild();
       while ( !node.isNull() ) {
-	if ( node.isElement() ) {
-	  QDomElement elem = node.toElement();
-	  QString aTagName = tagName( elem );
-	  if ( aTagName == "toolbutton-item" ) {
-	    int     id      = checkInt( attribute( elem, "item-id" ) );
-	    int     pos     = checkInt( attribute( elem, "pos-id" ) );
-	    QString label   = attribute( elem, "label-id" );
-	    QString icon    = attribute( elem, "icon-id" );
-	    QString tooltip = attribute( elem, "tooltip-id" );
-	    QString accel   = attribute( elem, "accel-id" );
-	    bool    toggle  = checkBool( attribute( elem, "toggle-id" ) );
+        if ( node.isElement() ) {
+          QDomElement elem = node.toElement();
+          QString aTagName = tagName( elem );
+          if ( aTagName == "toolbutton-item" ) {
+            int     id      = checkInt( attribute( elem, "item-id" ) );
+            int     pos     = checkInt( attribute( elem, "pos-id" ) );
+            QString label   = attribute( elem, "label-id" );
+            QString icon    = attribute( elem, "icon-id" );
+            QString tooltip = attribute( elem, "tooltip-id" );
+            QString accel   = attribute( elem, "accel-id" );
+            bool    toggle  = checkBool( attribute( elem, "toggle-id" ) );
 
-	    // -1 action ID is not allowed : it means that <item-id> attribute is missed in the XML file!
-	    // also check if the action with given ID is already created
+            // -1 action ID is not allowed : it means that <item-id> attribute is missed in the XML file!
+            // also check if the action with given ID is already created
             if ( id != -1 ) {
-	      // create toolbar action
-	      QAction* action = myModule->createAction( id,                    // ID
-						        tooltip,               // tooltip
-						        icon,                  // icon
-						        label,                 // menu text
-						        tooltip,               // status-bar text
-						        QKeySequence( accel ), // keyboard accelerator
-						        toggle );              // toogled action
-	      myModule->createTool( action, tbId, -1, pos );
-	    }
-	  }
-	  else if ( aTagName == "separatorTB" || aTagName == "separator" ) {
-	    // create toolbar separator
-	    int pos = checkInt( attribute( elem, "pos-id" ) );
-	    QAction* action = myModule->separator();
-	    myModule->createTool( action, tbId, -1, pos );
-	  }
-	}
-	node = node.nextSibling();
+              // create toolbar action
+              QAction* action = myModule->createAction( id,                    // ID
+                                                        tooltip,               // tooltip
+                                                        icon,                  // icon
+                                                        label,                 // menu text
+                                                        tooltip,               // status-bar text
+                                                        QKeySequence( accel ), // keyboard accelerator
+                                                        toggle );              // toogled action
+              myModule->createTool( action, tbId, -1, pos );
+            }
+          }
+          else if ( aTagName == "separatorTB" || aTagName == "separator" ) {
+            // create toolbar separator
+            int pos = checkInt( attribute( elem, "pos-id" ) );
+            QAction* action = myModule->separator();
+            myModule->createTool( action, tbId, -1, pos );
+          }
+        }
+        node = node.nextSibling();
       }
     }
   }
@@ -2295,54 +2295,54 @@ void SALOME_PYQT_ModuleLight::XmlHandler::insertPopupItems( QDomNode& parentNode
       QString aTagName = tagName( elem );
       QList<QAction*> actions = menu->actions();
       if ( aTagName == "popup-item" ) {
-	// insert a command item
-	int     id      = checkInt( attribute( elem, "item-id" ) );
-	int     pos     = checkInt( attribute( elem, "pos-id" ) );
-	QString label   = attribute( elem, "label-id" );
-	QString icon    = attribute( elem, "icon-id" );
-	QString tooltip = attribute( elem, "tooltip-id" );
-	QString accel   = attribute( elem, "accel-id" );
-	bool    toggle  = checkBool( attribute( elem, "toggle-id" ) );
+        // insert a command item
+        int     id      = checkInt( attribute( elem, "item-id" ) );
+        int     pos     = checkInt( attribute( elem, "pos-id" ) );
+        QString label   = attribute( elem, "label-id" );
+        QString icon    = attribute( elem, "icon-id" );
+        QString tooltip = attribute( elem, "tooltip-id" );
+        QString accel   = attribute( elem, "accel-id" );
+        bool    toggle  = checkBool( attribute( elem, "toggle-id" ) );
 
-	// -1 action ID is not allowed : it means that <item-id> attribute is missed in the XML file!
-	// also check if the action with given ID is already created
-	if ( id != -1 ) {
-	  QAction* action = myModule->createAction( id,                     // ID
-						    tooltip,                // tooltip
-						    icon,                   // icon
-						    label,                  // menu text
-						    tooltip,                // status-bar text
-						    QKeySequence( accel ),  // keyboard accelerator
-						    toggle );               // toogled action
-	  QAction* before = ( pos >= 0 && pos < actions.count() ) ? actions[ pos ] : 0;
-	  menu->insertAction( before, action );
-	}
+        // -1 action ID is not allowed : it means that <item-id> attribute is missed in the XML file!
+        // also check if the action with given ID is already created
+        if ( id != -1 ) {
+          QAction* action = myModule->createAction( id,                     // ID
+                                                    tooltip,                // tooltip
+                                                    icon,                   // icon
+                                                    label,                  // menu text
+                                                    tooltip,                // status-bar text
+                                                    QKeySequence( accel ),  // keyboard accelerator
+                                                    toggle );               // toogled action
+          QAction* before = ( pos >= 0 && pos < actions.count() ) ? actions[ pos ] : 0;
+          menu->insertAction( before, action );
+        }
       }
       else if ( aTagName == "submenu" ) {
-	// create sub-menu
-	////int     id    = checkInt( attribute( elem, "item-id" ) ); // not used //
-	int     pos   = checkInt( attribute( elem, "pos-id" ) );
-	QString label = attribute( elem, "label-id" );
-	QString icon  = attribute( elem, "icon-id" );
+        // create sub-menu
+        ////int     id    = checkInt( attribute( elem, "item-id" ) ); // not used //
+        int     pos   = checkInt( attribute( elem, "pos-id" ) );
+        QString label = attribute( elem, "label-id" );
+        QString icon  = attribute( elem, "icon-id" );
 
-	QIcon anIcon;
-	if ( !icon.isEmpty() ) {
-  	  QPixmap pixmap  = myModule->getApp()->resourceMgr()->loadPixmap( myModule->name(), icon );
-	  if ( !pixmap.isNull() )
-	    anIcon = QIcon( pixmap );
+        QIcon anIcon;
+        if ( !icon.isEmpty() ) {
+          QPixmap pixmap  = myModule->getApp()->resourceMgr()->loadPixmap( myModule->name(), icon );
+          if ( !pixmap.isNull() )
+            anIcon = QIcon( pixmap );
         }
 
-	QMenu* newPopup = menu->addMenu( anIcon, label );
-	QAction* before = ( pos >= 0 && pos < actions.count() ) ? actions[ pos ] : 0;
-	menu->insertMenu( before, newPopup );
-	insertPopupItems( node, newPopup );
+        QMenu* newPopup = menu->addMenu( anIcon, label );
+        QAction* before = ( pos >= 0 && pos < actions.count() ) ? actions[ pos ] : 0;
+        menu->insertMenu( before, newPopup );
+        insertPopupItems( node, newPopup );
       }
       else if ( aTagName == "separator" ) {
-	// create menu separator
-	int pos = checkInt( attribute( elem, "pos-id" ) );
-	QAction* action = myModule->separator();
-	QAction* before = ( pos >= 0 && pos < actions.count() ) ? actions[ pos ] : 0;
-	menu->insertAction( before, action );
+        // create menu separator
+        int pos = checkInt( attribute( elem, "pos-id" ) );
+        QAction* action = myModule->separator();
+        QAction* before = ( pos >= 0 && pos < actions.count() ) ? actions[ pos ] : 0;
+        menu->insertAction( before, action );
       }
     }
     node = node.nextSibling();
@@ -2393,7 +2393,7 @@ void SALOME_PYQT_ModuleLight::saveEvent(QStringList& theListOfFiles)
 
   if ( PyObject_HasAttrString(myModule, "saveFiles") ) {
     PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"saveFiles",
-					   (char*)"s", (*it).toLatin1().constData()));
+                                           (char*)"s", (*it).toLatin1().constData()));
     if( !res ) {
       PyErr_Print();
     }
@@ -2409,10 +2409,10 @@ void SALOME_PYQT_ModuleLight::saveEvent(QStringList& theListOfFiles)
       else if ( PyList_Check( res ) ) {
         int size = PyList_Size( res );
         for ( int i = 0; i < size; i++ ) {
-	  PyObject* value = PyList_GetItem( res, i );
-	  if( value && PyString_Check( value ) ) {
-	    theListOfFiles.append( PyString_AsString( value ) );
-	  }
+          PyObject* value = PyList_GetItem( res, i );
+          if( value && PyString_Check( value ) ) {
+            theListOfFiles.append( PyString_AsString( value ) );
+          }
         }
       }
     }
@@ -2475,7 +2475,7 @@ void SALOME_PYQT_ModuleLight::openEvent(QStringList theListOfFiles, bool &opened
 #endif
   if ( PyObject_HasAttrString(myModule , "openFiles") ) {
     PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"openFiles",
-					   (char*)"O", sipList.get()));
+                                           (char*)"O", sipList.get()));
     if( !res || !PyBool_Check( res )) {
       PyErr_Print();
       opened = false;

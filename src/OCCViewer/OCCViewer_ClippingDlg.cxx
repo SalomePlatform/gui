@@ -325,7 +325,7 @@ void OCCViewer_ClippingDlg::ClickOnApply()
   qApp->processEvents();
   
   myView->setCuttingPlane( true, SpinBox_X->value() , SpinBox_Y->value() , SpinBox_Z->value(),
-	                         SpinBox_Dx->value(), SpinBox_Dy->value(), SpinBox_Dz->value() );
+                                 SpinBox_Dx->value(), SpinBox_Dy->value(), SpinBox_Dz->value() );
   
   QApplication::restoreOverrideCursor(); 
   
@@ -496,7 +496,7 @@ void OCCViewer_ClippingDlg::displayPreview()
       
       intersector.Perform( gp_Lin( aCenter, aNormal), gp_Pln( aBasePnt, aNormal), Precision::Confusion() );
       if ( intersector.IsDone() && intersector.NbPoints() == 1 )
-	aBasePnt = intersector.Point( 1 );
+        aBasePnt = intersector.Point( 1 );
     }
   
   myPreviewPlane = new AIS_Plane( new Geom_Plane( aBasePnt, aNormal ) );
@@ -579,7 +579,7 @@ void OCCViewer_ClippingDlg::ReserveClippingPlane()
     {
       aView3d->InitActivePlanes();
       if ( aView3d->MoreActivePlanes() )
-	myClippingPlane = aView3d->ActivePlane();
+        myClippingPlane = aView3d->ActivePlane();
     }
 }
 

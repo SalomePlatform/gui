@@ -462,7 +462,7 @@ ToolsGUI_RegWidget* ToolsGUI_RegWidget::myRegWidgetPtr = 0;
   \param parent parent widget
 */
 ToolsGUI_RegWidget* ToolsGUI_RegWidget::GetRegWidget( CORBA::ORB_var& orb,
-						      QWidget* parent )
+                                                      QWidget* parent )
 {
   if ( !myRegWidgetPtr ) 
     myRegWidgetPtr = new ToolsGUI_RegWidget( orb, parent );
@@ -594,13 +594,13 @@ bool ToolsGUI_RegWidget::eventFilter( QObject* object, QEvent* event )
     else if ( object == _clients && event->type() == QEvent::KeyPress ) {
       QKeyEvent* ke = (QKeyEvent*)event;
       if ( ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Return ) {
-	slotClientChanged( _clients->currentItem(), 0 );
+        slotClientChanged( _clients->currentItem(), 0 );
       }
     }
     else if ( object == _history && event->type() == QEvent::KeyPress ) {
       QKeyEvent* ke = (QKeyEvent*)event;
       if ( ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Return ) {
-	slotHistoryChanged( _history->currentItem(), 0 );
+        slotHistoryChanged( _history->currentItem(), 0 );
       }
     }
   }
@@ -616,9 +616,9 @@ bool ToolsGUI_RegWidget::eventFilter( QObject* object, QEvent* event )
   \return item index or -1 if it is not found.
 */
 int ToolsGUI_RegWidget::numitem( const QString& name, 
-				 const QString& pid, 
-				 const QString& machine,
-				 const Registry::AllInfos* listclient )
+                                 const QString& pid, 
+                                 const QString& machine,
+                                 const Registry::AllInfos* listclient )
 {
   for (CORBA::ULong i=0; i<listclient->length(); i++) {       
     const Registry::Infos & c_info=(*listclient)[i];
@@ -626,8 +626,8 @@ int ToolsGUI_RegWidget::numitem( const QString& name,
     QString b;
     b.setNum(int(c_info.pid));
     if ( (name.compare(QString(c_info.name)) == 0) && 
-	 (machine.compare(QString(c_info.machine)) == 0) && 
-	 (pid.compare(b) == 0) ) {
+         (machine.compare(QString(c_info.machine)) == 0) && 
+         (pid.compare(b) == 0) ) {
       return i;
     }
   }

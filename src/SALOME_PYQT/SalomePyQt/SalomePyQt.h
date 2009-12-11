@@ -132,9 +132,9 @@ public:
 
   static QString           createObject(const QString& parent = QString(""));
   static QString           createObject(const QString& name,
-					const QString& iconname,
-					const QString& tooltip,
-					const QString& parent = QString(""));
+                                        const QString& iconname,
+                                        const QString& tooltip,
+                                        const QString& parent = QString(""));
 
   static void              removeObject( const QString& obj);
   static void              removeChild( const QString& obj = QString(""));
@@ -160,23 +160,23 @@ public:
   static int               createTool( QAction*, const QString&, const int = -1, const int = -1 );
 
   static int               createMenu( const QString&, const int = -1,
-				       const int = -1, const int = -1, const int = -1 );
+                                       const int = -1, const int = -1, const int = -1 );
   static int               createMenu( const QString&, const QString& = QString(), 
-				       const int = -1, const int = -1, const int = -1 );
+                                       const int = -1, const int = -1, const int = -1 );
   static int               createMenu( const int,      const int = -1,
-				       const int = -1, const int = -1 );
+                                       const int = -1, const int = -1 );
   static int               createMenu( const int,      const QString& = QString(), 
-				       const int = -1, const int = -1 );
+                                       const int = -1, const int = -1 );
   static int               createMenu( QAction*,     const int,      const int = -1, 
-	                               const int = -1, const int = -1 );
+                                       const int = -1, const int = -1 );
   static int               createMenu( QAction*,     const QString&, const int = -1, 
-	                               const int = -1, const int = -1 );
+                                       const int = -1, const int = -1 );
 
   static QAction*          createSeparator();
 
   static QAction*          createAction( const int, const QString&,
-					 const QString& = QString(), const QString& = QString(), 
-					 const QString& = QString(), const int = 0, const bool = false );
+                                         const QString& = QString(), const QString& = QString(), 
+                                         const QString& = QString(), const int = 0, const bool = false );
   
   static QtxActionGroup*   createActionGroup( const int, const bool = true );
 
@@ -208,15 +208,15 @@ public:
   static int               addPreference( const QString&,
                                           const int, const int = PT_Auto,
                                           const QString& = QString(),
-				          const QString& = QString() );
+                                          const QString& = QString() );
   static QVariant          preferenceProperty( const int, const QString& );
   static void              setPreferenceProperty( const int, 
                                                   const QString&,
                                                   const QVariant& );
   static void              addPreferenceProperty( const int,
-						  const QString&,
-						  const int,
-						  const QVariant& );
+                                                  const QString&,
+                                                  const int,
+                                                  const QVariant& );
 
   static void              message( const QString&, bool = true );
   static void              clearMessages();

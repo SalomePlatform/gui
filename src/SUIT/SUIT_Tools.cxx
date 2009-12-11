@@ -39,10 +39,10 @@ void SUIT_Tools::trace( const char* lpszLog, const char* lpszFormat, ... )
 
   tmpPath += QString( "Salome_trace" );
 
-  FILE*	pStream;
+  FILE* pStream;
   pStream = fopen( lpszLog ? lpszLog : (const char*)tmpPath.toLatin1(), "a" );
   if ( pStream ) 
-  {	
+  {     
     va_list argptr;
     va_start( argptr, lpszFormat );
     fprintf( pStream, "- Trace %s [%d] : %s", __FILE__, __LINE__, lpszFormat );
@@ -55,7 +55,7 @@ void SUIT_Tools::trace( const char* lpszLog, const char* lpszFormat, ... )
 /*! 
     Creates a rect with TopLeft = ( min(x1,x2), min(y1,y2) )
     and BottomRight = ( TopLeft + (x2-x1)(y2-y1) )    
-*/	
+*/      
 QRect SUIT_Tools::makeRect( const int x1, const int y1, const int x2, const int y2 )
 {  
   return QRect( qMin( x1, x2 ), qMin( y1, y2 ), qAbs( x2 - x1 ), qAbs( y2 - y1 ) );

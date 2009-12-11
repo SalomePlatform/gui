@@ -683,24 +683,24 @@ bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Sectio
               secMap[section].insert( paramName, paramValue );
             }
             else
-	    {
-	      qDebug( "Invalid parameter element" );
+            {
+              qDebug( "Invalid parameter element" );
               res = false;
-	    }
+            }
           }
-	  else
-	  {
-	    res = paramNode.isComment();
-	    if( !res )
-	      qDebug( "Node isn't element nor comment" );
-	  }
+          else
+          {
+            res = paramNode.isComment();
+            if( !res )
+              qDebug( "Node isn't element nor comment" );
+          }
 
           paramNode = paramNode.nextSibling();
         }
       }
       else
       {
-	qDebug( "Invalid section" );
+        qDebug( "Invalid section" );
         res = false;
       }
     }
@@ -708,7 +708,7 @@ bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Sectio
     {
       res = sectNode.isComment(); // if it's a comment -- let it be, pass it..
       if( !res )
-	qDebug( "Node isn't element nor comment" );
+        qDebug( "Node isn't element nor comment" );
     }
 
     sectNode = sectNode.nextSibling();
@@ -870,7 +870,7 @@ QStringList QtxResourceMgr::Format::options() const
   \brief Get the value of the option with specified name.
 
   If option doesn't exist then null QString is returned.
-	 
+         
   \param opt option name
   \return option value
 */

@@ -104,7 +104,7 @@ int QtxActionToolMgr::createToolBar( const QString& title, const int tid, QMainW
 }
 
 int QtxActionToolMgr::createToolBar( const QString& title, bool floatable, Qt::ToolBarAreas dockAreas, 
-				     int tid, QMainWindow* mw )
+                                     int tid, QMainWindow* mw )
 {
   static int _toolBarId = -1;
 
@@ -429,8 +429,8 @@ bool QtxActionToolMgr::containsAction( const int id, const int tid ) const
     {
       const NodeList& list = it.value().nodes;
       for ( NodeList::const_iterator nit = list.begin(); nit != list.end(); ++nit )
-	if ( (*nit).id == id )
-	  return true;
+        if ( (*nit).id == id )
+          return true;
     }
   }
   return false;

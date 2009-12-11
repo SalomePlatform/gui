@@ -873,7 +873,7 @@ void GLViewer_ViewSketcher::onSketch( SketchState state )
                         qAbs( myStart.x() - myCurr.x() ), qAbs( myStart.y() - myCurr.y() ) );
             if ( !rect.isEmpty() )
             {
-	        if ( !sketchRect->isEmpty() && myRectBand )
+                if ( !sketchRect->isEmpty() && myRectBand )
                     myRectBand->hide();    /* erase */
                 *sketchRect = rect;
                 if ( state != Fin )

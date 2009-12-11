@@ -164,7 +164,7 @@ public:
    * output paper size \param aPType, with margins in mm
   */
   virtual bool         translateTo( VectorFileType aType, QString FileName, PaperType aPType, 
-				   double mmLeft, double mmRight, double mmTop, double mmBottom );
+                                   double mmLeft, double mmRight, double mmTop, double mmBottom );
     
   //bool                 isSketchingActive();
   //int                  getSketchingType();

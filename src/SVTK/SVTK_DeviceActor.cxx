@@ -66,7 +66,7 @@ SVTK_DeviceActor
 
   myIsResolveCoincidentTopology = true;
   vtkMapper::GetResolveCoincidentTopologyPolygonOffsetParameters(myPolygonOffsetFactor,
-								 myPolygonOffsetUnits);
+                                                                 myPolygonOffsetUnits);
 
   myMapper = vtkDataSetMapper::New();
 
@@ -266,7 +266,7 @@ SVTK_DeviceActor
     int numPts = aDataSet->GetNumberOfPoints();
     //It's impossible to use to apply "shrink" for "empty" dataset
     if (numCells < 1 || numPts < 1)
- 	    return;
+            return;
     myShrinkFilter->SetInput( aDataSet );
     myPassFilter[ 1 ]->SetInput( myShrinkFilter->GetOutput() );
     myIsShrunk = true;
@@ -400,9 +400,9 @@ SVTK_DeviceActor
 void
 SVTK_DeviceActor
 ::GetFeatureEdgesFlags(bool& theIsFeatureEdges,
-		       bool& theIsBoundaryEdges,
-		       bool& theIsManifoldEdges,
-		       bool& theIsNonManifoldEdges)
+                       bool& theIsBoundaryEdges,
+                       bool& theIsManifoldEdges,
+                       bool& theIsNonManifoldEdges)
 {
   theIsFeatureEdges = myFeatureEdges->GetFeatureEdges();
   theIsBoundaryEdges = myFeatureEdges->GetBoundaryEdges();
@@ -420,9 +420,9 @@ SVTK_DeviceActor
 void
 SVTK_DeviceActor
 ::SetFeatureEdgesFlags(bool theIsFeatureEdges,
-		       bool theIsBoundaryEdges,
-		       bool theIsManifoldEdges,
-		       bool theIsNonManifoldEdges)
+                       bool theIsBoundaryEdges,
+                       bool theIsManifoldEdges,
+                       bool theIsNonManifoldEdges)
 {
   myFeatureEdges->SetFeatureEdges(theIsFeatureEdges);
   myFeatureEdges->SetBoundaryEdges(theIsBoundaryEdges);
@@ -616,7 +616,7 @@ SVTK_DeviceActor
     
     vtkMapper::SetResolveCoincidentTopologyToPolygonOffset();
     vtkMapper::SetResolveCoincidentTopologyPolygonOffsetParameters(myPolygonOffsetFactor,
-								   myPolygonOffsetUnits);
+                                                                   myPolygonOffsetUnits);
     Superclass::Render(ren,m);
     
     vtkMapper::SetResolveCoincidentTopologyPolygonOffsetParameters(aFactor,aUnit);
@@ -633,7 +633,7 @@ SVTK_DeviceActor
 void
 SVTK_DeviceActor
 ::SetPolygonOffsetParameters(vtkFloatingPointType factor, 
-			     vtkFloatingPointType units)
+                             vtkFloatingPointType units)
 {
   myPolygonOffsetFactor = factor;
   myPolygonOffsetUnits = units;
@@ -646,7 +646,7 @@ SVTK_DeviceActor
 void
 SVTK_DeviceActor
 ::GetPolygonOffsetParameters(vtkFloatingPointType& factor, 
-			     vtkFloatingPointType& units)
+                             vtkFloatingPointType& units)
 {
   factor = myPolygonOffsetFactor;
   units = myPolygonOffsetUnits;

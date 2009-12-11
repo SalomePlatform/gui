@@ -61,13 +61,13 @@ class SESSION_EXPORT Session_ServerLauncher: public QThread
 public:
   Session_ServerLauncher();
   Session_ServerLauncher(int argc,
-			 char ** argv, 
-			 CORBA::ORB_ptr orb, 
-			 PortableServer::POA_ptr poa,
-			 QMutex *GUIMutex,
-			 QWaitCondition *ServerLaunch,
-			 QMutex *SessionMutex,
-			 QWaitCondition *SessionStarted);
+                         char ** argv, 
+                         CORBA::ORB_ptr orb, 
+                         PortableServer::POA_ptr poa,
+                         QMutex *GUIMutex,
+                         QWaitCondition *ServerLaunch,
+                         QMutex *SessionMutex,
+                         QWaitCondition *SessionStarted);
   virtual ~Session_ServerLauncher();
   void run();
   void KillAll();

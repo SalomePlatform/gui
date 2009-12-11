@@ -74,7 +74,7 @@ SalomeApp_LoadStudiesDlg::SalomeApp_LoadStudiesDlg( QWidget* parent, const QStri
   myList = new QListWidget( this );
   myList->setMinimumSize( MIN_LISTBOX_WIDTH, MIN_LISTBOX_HEIGHT );
   myList->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, 
-					       QSizePolicy::Expanding ) );
+                                               QSizePolicy::Expanding ) );
   myList->setSelectionMode( QAbstractItemView::SingleSelection );
 
   topLayout->addWidget( lab );
@@ -84,9 +84,9 @@ SalomeApp_LoadStudiesDlg::SalomeApp_LoadStudiesDlg( QWidget* parent, const QStri
   connect( myButtonOk,   SIGNAL( clicked() ), this, SLOT( accept() ) );
   connect( buttonCancel, SIGNAL( clicked() ), this, SLOT( reject() ) );
   connect( myList,       SIGNAL( itemDoubleClicked( QListWidgetItem* ) ),
-	                                      this, SLOT( accept() ) );
+                                              this, SLOT( accept() ) );
   connect( myList,       SIGNAL( itemSelectionChanged() ),
-	                                      this, SLOT( updateState() ) );
+                                              this, SLOT( updateState() ) );
   myList->addItems( studies );
 
   updateState();

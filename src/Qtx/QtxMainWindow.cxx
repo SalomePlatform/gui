@@ -309,7 +309,7 @@ void QtxMainWindow::retrieveGeometry( const QString& str )
     if ( xOk )
     {
       if ( xp )
-	x = screen.width() * qMax( qMin( x, 100 ), 0 ) / 100;
+        x = screen.width() * qMax( qMin( x, 100 ), 0 ) / 100;
       x = ( xs > 0 ? x : screen.right() - x - rect.width() ) + frameGeometry().x() - geometry().x();
     }
 
@@ -320,7 +320,7 @@ void QtxMainWindow::retrieveGeometry( const QString& str )
     if ( yOk )
     {
       if ( yp )
-	y = screen.height() * qMax( qMin( y, 100 ), 0 ) / 100;
+        y = screen.height() * qMax( qMin( y, 100 ), 0 ) / 100;
       y = ( ys > 0 ? y : screen.bottom() - y - rect.height() ) + frameGeometry().y() - geometry().y();
     }
 

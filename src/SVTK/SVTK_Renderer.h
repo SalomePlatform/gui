@@ -77,7 +77,7 @@ class SVTK_EXPORT SVTK_Renderer : public vtkObject
   virtual
   void 
   Initialize(vtkRenderWindowInteractor* theInteractor,
-	     SVTK_Selector* theSelector);
+             SVTK_Selector* theSelector);
 
   //----------------------------------------------------------------------------
   //! Publishes pointed actor into the renderer
@@ -107,22 +107,22 @@ class SVTK_EXPORT SVTK_Renderer : public vtkObject
   //! Applies color and size (PointSize and LineWidth) of primitives in selection mode
   void
   SetSelectionProp(const double& theRed = 1, 
-		   const double& theGreen = 1,
-		   const double& theBlue = 0, 
-		   const int& theWidth = 5);
+                   const double& theGreen = 1,
+                   const double& theBlue = 0, 
+                   const int& theWidth = 5);
 
   //! Applies color and size (PointSize and LineWidth) of primitives in preselection mode
   void
   SetPreselectionProp(const double& theRed = 0, 
-		      const double& theGreen = 1,
-		      const double& theBlue = 1, 
-		      const int& theWidth = 5);
+                      const double& theGreen = 1,
+                      const double& theBlue = 1, 
+                      const int& theWidth = 5);
 
   //! Setup requested tolerance for the picking
   void
   SetSelectionTolerance(const double& theTolNodes = 0.025, 
-			const double& theTolCell = 0.001,
-			const double& theTolObjects = 0.025);
+                        const double& theTolCell = 0.001,
+                        const double& theTolObjects = 0.025);
 
   //----------------------------------------------------------------------------
   //! Adjust all intenal actors (trihedron and graduated rules) to the scene

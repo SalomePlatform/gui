@@ -153,7 +153,7 @@ void SUIT_SelectionMgr::selectionChanged( SUIT_Selector* sel )
     {
       // Temporary action(to avoid selection of the objects which don't pass the filters):
       //if ( *it != sel )
-	(*it)->setSelected( newOwners );
+        (*it)->setSelected( newOwners );
     }
   }
   myIsSelChangeEnabled = true;

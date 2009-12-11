@@ -136,7 +136,7 @@ void SALOME_CustomEvent::setData( void* data )
   \class SALOME_Event
   \brief The class which encapsulates data and functionality required for 
          posting component-specific events to perform arbitrary operations 
-	 in the main GUI thread. 
+         in the main GUI thread. 
 
   SALOME_Event objects can be posted by any thread belonging to the GUI process.
   

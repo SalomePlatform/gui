@@ -44,8 +44,8 @@ class SVTK_NonIsometricDlg : public SVTK_DialogBase
 
 public:
   SVTK_NonIsometricDlg(QtxAction* theAction,
-		       SVTK_ViewWindow* theParent,
-		       const char* theName);
+                       SVTK_ViewWindow* theParent,
+                       const char* theName);
 
   ~SVTK_NonIsometricDlg();
 

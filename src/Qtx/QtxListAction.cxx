@@ -587,7 +587,7 @@ QtxListAction::QtxListAction( QObject* parent )
   \param parent parent object
 */
 QtxListAction::QtxListAction( const QIcon& icon, const QString& menuText, 
-			      int accel, QObject* parent )
+                              int accel, QObject* parent )
 : QtxAction( menuText, icon, menuText, accel, parent ),
   myFrame( 0 )
 {
@@ -615,7 +615,7 @@ QtxListAction::QtxListAction( const QString& menuText, int accel, QObject* paren
   \param parent parent object
 */
 QtxListAction::QtxListAction( const QString& text, const QString& menuText, 
-			      int accel, QObject* parent )
+                              int accel, QObject* parent )
 : QtxAction( text, menuText, accel, parent ),
   myFrame( 0 )
 {
@@ -631,7 +631,7 @@ QtxListAction::QtxListAction( const QString& text, const QString& menuText,
   \param parent parent object
 */
 QtxListAction::QtxListAction( const QString& text, const QIcon& icon, 
-			      const QString& menuText, int accel, QObject* parent )
+                              const QString& menuText, int accel, QObject* parent )
 : QtxAction( text, icon, menuText, accel, parent ),
   myFrame( 0 )
 {

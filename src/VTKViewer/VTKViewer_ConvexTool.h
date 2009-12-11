@@ -52,16 +52,16 @@ class VTKVIEWER_EXPORT VTKViewer_Triangulator
 
   bool 
   Execute(vtkUnstructuredGrid *theInput,
-	  vtkCellData* thInputCD,
-	  vtkIdType theCellId,
-	  int theShowInside,
-	  int theAllVisible,
-	  const char* theCellsVisibility,
-	  vtkPolyData *theOutput,
-	  vtkCellData* theOutputCD,
-	  int theStoreMapping,
-	  std::vector<vtkIdType>& theVTK2ObjIds,
-	  bool theIsCheckConvex);
+          vtkCellData* thInputCD,
+          vtkIdType theCellId,
+          int theShowInside,
+          int theAllVisible,
+          const char* theCellsVisibility,
+          vtkPolyData *theOutput,
+          vtkCellData* theOutputCD,
+          int theStoreMapping,
+          std::vector<vtkIdType>& theVTK2ObjIds,
+          bool theIsCheckConvex);
 
  private:
   vtkIdList* myCellIds;
@@ -74,7 +74,7 @@ class VTKVIEWER_EXPORT VTKViewer_Triangulator
   virtual
   vtkPoints* 
   InitPoints(vtkUnstructuredGrid *theInput,
-	     vtkIdType theCellId);
+             vtkIdType theCellId);
 
   virtual
   vtkIdType 
@@ -95,9 +95,9 @@ class VTKVIEWER_EXPORT VTKViewer_Triangulator
 
   void 
   GetCellNeighbors(vtkUnstructuredGrid *theInput,
-		   vtkIdType theCellId,
-		   vtkCell* theFace,
-		   vtkIdList* theCellIds);
+                   vtkIdType theCellId,
+                   vtkCell* theFace,
+                   vtkIdList* theCellIds);
 
   vtkIdType 
   GetConnectivity(vtkIdType thePntId);
@@ -121,7 +121,7 @@ class VTKVIEWER_EXPORT VTKViewer_OrderedTriangulator : public VTKViewer_Triangul
   virtual
   vtkPoints* 
   InitPoints(vtkUnstructuredGrid *theInput,
-	     vtkIdType theCellId);
+             vtkIdType theCellId);
 
   virtual
   vtkIdType 
@@ -151,7 +151,7 @@ class VTKVIEWER_EXPORT VTKViewer_DelaunayTriangulator : public VTKViewer_Triangu
   virtual
   vtkPoints* 
   InitPoints(vtkUnstructuredGrid *theInput,
-	     vtkIdType theCellId);
+             vtkIdType theCellId);
 
   virtual
   vtkIdType 

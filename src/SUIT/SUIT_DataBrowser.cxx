@@ -193,7 +193,7 @@ void SUIT_DataBrowser::getSelected( DataObjectList& lst ) const
     foreach( idx, sel ) {
       SUIT_DataObject* obj = m->object( idx );
       if ( obj )
-	lst.append( obj );
+        lst.append( obj );
     }
   }
 }
@@ -232,7 +232,7 @@ void SUIT_DataBrowser::setSelected( const DataObjectList& lst, const bool append
     foreach( obj, lst ) {
       QModelIndex index = m->index( obj );
       if ( index.isValid() )
-	indexes.append( index );
+        indexes.append( index );
     }
     select( indexes, true, append ); // if !indexes.isEmpty() ???
   }
@@ -309,13 +309,13 @@ void SUIT_DataBrowser::init( SUIT_DataObject* root )
   setModel( m );
   setItemDelegate( qobject_cast<SUIT_ProxyModel*>( model() )->delegate() );
   connect( treeView(), SIGNAL( sortingEnabled( bool ) ), 
-	   model(),    SLOT( setSortingEnabled( bool ) ) );
+           model(),    SLOT( setSortingEnabled( bool ) ) );
   connect( treeView(), SIGNAL( clicked( const QModelIndex& ) ), 
-	   this,       SLOT( onClicked( const QModelIndex& ) ) );
+           this,       SLOT( onClicked( const QModelIndex& ) ) );
   connect( treeView(), SIGNAL( doubleClicked( const QModelIndex& ) ), 
-	   this,       SLOT( onDblClicked( const QModelIndex& ) ) );
+           this,       SLOT( onDblClicked( const QModelIndex& ) ) );
   connect( treeView(), SIGNAL( expanded( const QModelIndex& ) ), 
-	   this,       SLOT( onExpanded( const QModelIndex& ) ) );
+           this,       SLOT( onExpanded( const QModelIndex& ) ) );
   myShortcut = new QShortcut( Qt::Key_F5, this, SIGNAL( requestUpdate() ), SIGNAL( requestUpdate() ) );
 
   myAutoSizeFirstColumn = true;

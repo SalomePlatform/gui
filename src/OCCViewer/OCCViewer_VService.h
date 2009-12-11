@@ -95,9 +95,9 @@ public:
     // STATIC METHODS
     static Handle(Aspect_Window) 
                     CreateWindow( const Handle(V3d_View)& view,
-				  const Standard_Integer hiwin,
-				  const Standard_Integer lowin,
-				  const Xw_WindowQuality quality );
+                                  const Standard_Integer hiwin,
+                                  const Standard_Integer lowin,
+                                  const Xw_WindowQuality quality );
 
     static void     SetWindow( const Handle(  V3d_View )& view,
                                const Standard_Integer hiwin,

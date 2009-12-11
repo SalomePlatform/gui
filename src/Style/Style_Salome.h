@@ -60,35 +60,35 @@ public:
   virtual void        polish( QWidget* );
   virtual void        unpolish( QWidget* );
   virtual void        drawComplexControl( ComplexControl, const QStyleOptionComplex*,
-					  QPainter*, const QWidget* = 0 ) const;
+                                          QPainter*, const QWidget* = 0 ) const;
   
   virtual void        drawControl( ControlElement, const QStyleOption*, QPainter*, const QWidget* ) const;
   virtual void        drawPrimitive( PrimitiveElement, const QStyleOption*,
-				     QPainter*, const QWidget* = 0 ) const;
+                                     QPainter*, const QWidget* = 0 ) const;
   virtual int         pixelMetric( PixelMetric, const QStyleOption* = 0,
-				   const QWidget* = 0 ) const;
+                                   const QWidget* = 0 ) const;
   virtual QSize       sizeFromContents ( ContentsType, const QStyleOption*,
-					 const QSize&, const QWidget* = 0 ) const;
+                                         const QSize&, const QWidget* = 0 ) const;
   virtual QPixmap     standardPixmap( StandardPixmap, const QStyleOption*,
-				      const QWidget* = 0) const;
+                                      const QWidget* = 0) const;
   virtual int         styleHint( StyleHint, const QStyleOption* = 0,
-				 const QWidget* = 0, QStyleHintReturn* = 0 ) const;
+                                 const QWidget* = 0, QStyleHintReturn* = 0 ) const;
   virtual QRect       subControlRect( ComplexControl, const QStyleOptionComplex*,
-				      SubControl, const QWidget* = 0 ) const;
+                                      SubControl, const QWidget* = 0 ) const;
   virtual QRect       subElementRect( SubElement, const QStyleOption*, const QWidget* = 0 ) const;
 
 protected slots:
   QIcon               standardIconImplementation( StandardPixmap, const QStyleOption* = 0,
-						  const QWidget* = 0 ) const;
+                                                  const QWidget* = 0 ) const;
 private:
   void                updatePaletteColors();
   void                updateAllWidgets( QApplication* );
   bool                hasHover() const;
   void                drawHoverRect( QPainter*, const QRect&, const QColor&, const double,
-				     const int, const bool ) const;
+                                     const int, const bool ) const;
   void                drawHandle( QPainter*, const QRect&, bool, bool = true ) const;
   void                drawBackground( QPainter*, const QRect&, const QColor&, const bool,
-				      const bool = false, const bool = true ) const;
+                                      const bool = false, const bool = true ) const;
   void                drawBorder( QPainter*, const QRect&, bool ) const;
 
   QString             titleText( const QString&, const int, const int, QFont& ) const;

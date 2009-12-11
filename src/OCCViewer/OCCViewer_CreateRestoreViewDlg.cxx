@@ -43,7 +43,7 @@ OCCViewer_CreateRestoreViewDlg::OCCViewer_CreateRestoreViewDlg( QWidget* aWin, O
   myKeyFlag = 0;
 
   int aQuantityOfItems = myParametersMap.count();
-	
+        
   setFixedSize( 400, 300 );
 
   QGridLayout* aGrid = new QGridLayout( this );
@@ -52,9 +52,9 @@ OCCViewer_CreateRestoreViewDlg::OCCViewer_CreateRestoreViewDlg( QWidget* aWin, O
 
   QWidget* aWidget1 = new QWidget( this );
   QWidget* aWidget2 = new QWidget( this );
-	
+        
   QHBoxLayout* aLayout = new QHBoxLayout( aWidget1 );
-	
+        
   myListBox = new QListWidget( aWidget1 );
   myListBox->installEventFilter( this );
 
@@ -62,7 +62,7 @@ OCCViewer_CreateRestoreViewDlg::OCCViewer_CreateRestoreViewDlg( QWidget* aWin, O
   myCurViewPort->getView()->SetBackgroundColor( Quantity_NOC_BLACK );
 
   myListBox->setEditTriggers( QAbstractItemView::DoubleClicked );
-	
+        
   if ( aQuantityOfItems )
   {
     myListBox->clear();
@@ -81,7 +81,7 @@ OCCViewer_CreateRestoreViewDlg::OCCViewer_CreateRestoreViewDlg( QWidget* aWin, O
 
   connect( myListBox, SIGNAL( itemClicked( QListWidgetItem* ) ), this, SLOT( changeImage( QListWidgetItem* ) ) );
   connect( myListBox, SIGNAL( itemChanged( QListWidgetItem* ) ), this, SLOT( editItemText( QListWidgetItem* ) ) );
-	
+        
   aLayout->addWidget( myListBox );
   aLayout->addWidget( myCurViewPort, 30 );
 
@@ -90,8 +90,8 @@ OCCViewer_CreateRestoreViewDlg::OCCViewer_CreateRestoreViewDlg( QWidget* aWin, O
   aButtonLayout->setSpacing( 5 );
 
   QPushButton* theOk     = new QPushButton( tr( "Ok" ), aWidget2 );            theOk->setAutoDefault( false );
-  QPushButton* theCancel = new QPushButton( tr( "Cancel" ), aWidget2 );		 theCancel->setAutoDefault( false );
-  QPushButton* theDelete = new QPushButton( tr( "Delete" ), aWidget2 );		 theDelete->setAutoDefault( false );
+  QPushButton* theCancel = new QPushButton( tr( "Cancel" ), aWidget2 );          theCancel->setAutoDefault( false );
+  QPushButton* theDelete = new QPushButton( tr( "Delete" ), aWidget2 );          theDelete->setAutoDefault( false );
   QPushButton* theClearAll = new QPushButton( tr( "Clear List" ), aWidget2 );  theClearAll->setAutoDefault( false );
 
   aButtonLayout->addWidget( theOk );
@@ -101,7 +101,7 @@ OCCViewer_CreateRestoreViewDlg::OCCViewer_CreateRestoreViewDlg( QWidget* aWin, O
 
   aGrid->addWidget( aWidget1, 0, 0 );
   aGrid->addWidget( aWidget2, 1, 0 );
-	
+        
   connect( theOk, SIGNAL( clicked() ), this, SLOT( OKpressed() ) );
   connect( theCancel, SIGNAL( clicked() ), this, SLOT( reject() ) );
   connect( theDelete, SIGNAL( clicked() ), this, SLOT( deleteSelectedItems() ) );
@@ -130,25 +130,25 @@ void OCCViewer_CreateRestoreViewDlg::changeImage( QListWidgetItem* curItem )
     {
       for( int i = 0; i < (int)myListBox->count(); i++ )
       {
-	if( myListBox->item( i )->isSelected() && i != index )
-	{
-	  myListBox->clearSelection();
-	  if( i > index )
-	  {
-	    lowLevel  = index;
-	    highLevel = i;
-	  }
-	  else
-	  {
-	    lowLevel  = i;
-	    highLevel = index;
-	  }
-	  for( int j = lowLevel; j <= highLevel; j++ )
-	    myListBox->item( j )->setSelected( TRUE );
-	  break;
-	}
-	if( myListBox->item( i )->isSelected() && i == index )
-	  myListBox->item( i )->setSelected( TRUE );
+        if( myListBox->item( i )->isSelected() && i != index )
+        {
+          myListBox->clearSelection();
+          if( i > index )
+          {
+            lowLevel  = index;
+            highLevel = i;
+          }
+          else
+          {
+            lowLevel  = i;
+            highLevel = index;
+          }
+          for( int j = lowLevel; j <= highLevel; j++ )
+            myListBox->item( j )->setSelected( TRUE );
+          break;
+        }
+        if( myListBox->item( i )->isSelected() && i == index )
+          myListBox->item( i )->setSelected( TRUE );
       }
     }
     
@@ -186,18 +186,18 @@ void OCCViewer_CreateRestoreViewDlg::deleteSelectedItems()
     for( int i = 0; i < (int)myListBox->count(); i++ )
       if( myListBox->item( i )->isSelected() && ( myListBox->item( i )->flags() & Qt::ItemIsEditable ) )
       {
-	QListWidgetItem* anItemToDelete = myListBox->takeItem( i );
-	delete anItemToDelete;
-	for( int j = i; j < (int)myParametersMap.count(); j++ )
-	  if( j != myParametersMap.count() - 1 )
-	    myParametersMap[ j ] = myParametersMap[ j + 1 ];
-	  else
-	    myParametersMap.removeAt( j );
-	if( i != myListBox->count() )
-	  curIndex = i;
-	else
-	  curIndex = i - 1;
-	i--;
+        QListWidgetItem* anItemToDelete = myListBox->takeItem( i );
+        delete anItemToDelete;
+        for( int j = i; j < (int)myParametersMap.count(); j++ )
+          if( j != myParametersMap.count() - 1 )
+            myParametersMap[ j ] = myParametersMap[ j + 1 ];
+          else
+            myParametersMap.removeAt( j );
+        if( i != myListBox->count() )
+          curIndex = i;
+        else
+          curIndex = i - 1;
+        i--;
       }
     if( curIndex >= 0 )
     {
@@ -252,12 +252,12 @@ bool OCCViewer_CreateRestoreViewDlg::eventFilter( QObject* anObj, QEvent* anEv )
     if( aKeyEv->key() == Qt::Key_Control )
     {
       myKeyFlag = 1;
-      myListBox->setSelectionMode( QAbstractItemView::MultiSelection );	
+      myListBox->setSelectionMode( QAbstractItemView::MultiSelection ); 
     }
     else if( aKeyEv->key() == Qt::Key_Shift )
     {
       myKeyFlag = 2;
-      myListBox->setSelectionMode( QAbstractItemView::MultiSelection );	
+      myListBox->setSelectionMode( QAbstractItemView::MultiSelection ); 
     }
     else
       myListBox->setSelectionMode( QAbstractItemView::SingleSelection );

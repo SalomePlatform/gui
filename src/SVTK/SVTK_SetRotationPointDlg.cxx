@@ -52,11 +52,11 @@ using namespace std;
 */
 SVTK_SetRotationPointDlg
 ::SVTK_SetRotationPointDlg(QtxAction* theAction,
-			   SVTK_ViewWindow* theParent,
-			   const char* theName):
+                           SVTK_ViewWindow* theParent,
+                           const char* theName):
   SVTK_DialogBase(theAction,
-		  theParent, 
-		  theName),
+                  theParent, 
+                  theName),
   myMainWindow(theParent),
   myPriority(0.0),
   myEventCallbackCommand(vtkCallbackCommand::New()),
@@ -209,9 +209,9 @@ SVTK_SetRotationPointDlg
 void 
 SVTK_SetRotationPointDlg
 ::ProcessEvents(vtkObject* vtkNotUsed(theObject), 
-		unsigned long theEvent,
-		void* theClientData, 
-		void* theCallData)
+                unsigned long theEvent,
+                void* theClientData, 
+                void* theCallData)
 {
   SVTK_SetRotationPointDlg* self = reinterpret_cast<SVTK_SetRotationPointDlg*>(theClientData);
   vtkFloatingPointType* aCoord = (vtkFloatingPointType*)theCallData;
@@ -219,14 +219,14 @@ SVTK_SetRotationPointDlg
   switch ( theEvent ) {
   case SVTK::BBCenterChanged:
     if ( self->myIsBBCenter->isChecked()
-	 ||
-	 IsBBEmpty(self->myMainWindow->getRenderer()) )
+         ||
+         IsBBEmpty(self->myMainWindow->getRenderer()) )
     {
       if ( aCoord )
       {
-	self->myX->setText( QString::number(aCoord[0]) );
-	self->myY->setText( QString::number(aCoord[1]) );
-	self->myZ->setText( QString::number(aCoord[2]) );
+        self->myX->setText( QString::number(aCoord[0]) );
+        self->myY->setText( QString::number(aCoord[1]) );
+        self->myZ->setText( QString::number(aCoord[2]) );
       }
     }
     break;
@@ -310,12 +310,12 @@ SVTK_SetRotationPointDlg
 {
   if ( !myIsBBCenter->isChecked() ) {
     if ( mySelectPoint->isChecked()
-	 &&
-	 ( myX->hasFocus() || myY->hasFocus() || myZ->hasFocus() ) )
+         &&
+         ( myX->hasFocus() || myY->hasFocus() || myZ->hasFocus() ) )
       mySelectPoint->toggle();
     vtkFloatingPointType aCenter[3] = {myX->text().toDouble(), 
-				       myY->text().toDouble(), 
-				       myZ->text().toDouble()};
+                                       myY->text().toDouble(), 
+                                       myZ->text().toDouble()};
     myMainWindow->activateSetRotationSelected((void*)aCenter);
   }
   else

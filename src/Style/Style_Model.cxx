@@ -41,9 +41,9 @@
 static QColor mixColors( const QColor& c1, const QColor& c2 )
 {
   return QColor( (c1.red()   + c2.red() )   / 2,
-		 (c1.green() + c2.green() ) / 2,
-		 (c1.blue()  + c2.blue() )  / 2,
-		 (c1.alpha() + c2.alpha() ) / 2 );
+                 (c1.green() + c2.green() ) / 2,
+                 (c1.blue()  + c2.blue() )  / 2,
+                 (c1.alpha() + c2.alpha() ) / 2 );
 }
 
 /*!
@@ -125,7 +125,7 @@ void Style_Model::fromApplication( bool reset )
   for ( int i = (int)QPalette::Active; i <= (int)QPalette::Inactive; i++ ) {
     for ( int j = (int)Style_Model::WindowText; j < (int)Style_Model::NColorRoles; j++ ) {
       myColors[ (QPalette::ColorGroup)i ][ (Style_Model::ColorRole)j ] =
-	myAppData->myPalette.color( (QPalette::ColorGroup)i, (QPalette::ColorRole)j );
+        myAppData->myPalette.color( (QPalette::ColorGroup)i, (QPalette::ColorRole)j );
     }
   }
 
@@ -281,7 +281,7 @@ void Style_Model::fromResources( QtxResourceMgr* resMgr, const QString& resSecti
       setWidgetEffect( (WidgetEffect)effect );
   }
   else if ( resourceMgr()->hasValue( section, "is-highlight-widget" ) ||
-	    resourceMgr()->hasValue( section, "is-raising-widget" ) ) {
+            resourceMgr()->hasValue( section, "is-raising-widget" ) ) {
     bool highlight = resourceMgr()->booleanValue( section, "is-highlight-widget", false );
     bool autoraise = resourceMgr()->booleanValue( section, "is-highlight-widget", false );
     if ( highlight )
@@ -504,7 +504,7 @@ QColor Style_Model::color( ColorRole role, QPalette::ColorGroup cg ) const
   \sa color()
 */
 void Style_Model::setColor( Style_Model::ColorRole role, const QColor& active,
-			    const QColor& inactive, const QColor& disabled )
+                            const QColor& inactive, const QColor& disabled )
 {
   QColor ac = active, ic = inactive, dc = disabled;
 
@@ -854,7 +854,7 @@ void Style_Model::readColorValue( ColorRole role, const QString& prefix )
   \sa readColorValue()
 */
 void Style_Model::writeColorValue( ColorRole role, const QString& prefix,
-				   QtxResourceMgr* resMgr, const QString& resSection ) const
+                                   QtxResourceMgr* resMgr, const QString& resSection ) const
 {
   QString active   = QString( "%1-color" ).arg( prefix );
   QString inactive = QString( "%1-color-inactive" ).arg( prefix );

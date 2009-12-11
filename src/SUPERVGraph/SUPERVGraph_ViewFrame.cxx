@@ -111,14 +111,14 @@ void SUPERVGraph_ViewFrame::createActions()
 
   // Panning
   aAction = new QtxAction(tr("MNU_PAN_VIEW"), aResMgr->loadPixmap( "SUPERVGraph", tr( "ICON_SUPERVGraph_PAN" ) ),
-			  tr( "MNU_PAN_VIEW" ), 0, this);
+                          tr( "MNU_PAN_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_PAN_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewPan()));
   myActionsMap[ PanId ] = aAction;
 
   // Reset
   aAction = new QtxAction(tr("MNU_RESET_VIEW"), aResMgr->loadPixmap( "SUPERVGraph", tr( "ICON_SUPERVGraph_RESET" ) ),
-			  tr( "MNU_RESET_VIEW" ), 0, this);
+                          tr( "MNU_RESET_VIEW" ), 0, this);
   aAction->setStatusTip(tr("DSC_RESET_VIEW"));
   connect(aAction, SIGNAL(activated()), this, SLOT(onViewReset()));
   myActionsMap[ ResetId ] = aAction;
@@ -308,7 +308,7 @@ void SUPERVGraph_ViewFrame::onAdjustTrihedron()
   \param name - new name
 */
 void SUPERVGraph_ViewFrame::rename( const Handle(SALOME_InteractiveObject)& IObject, 
-				    QString newName )
+                                    QString newName )
 {
 //  MESSAGE ( "SUPERVGraph_ViewFrame::rename" )
 }
@@ -329,7 +329,7 @@ void SUPERVGraph_ViewFrame::unHighlightAll()
   \param update - update current viewer
 */
 void SUPERVGraph_ViewFrame::highlight( const Handle(SALOME_InteractiveObject)& IObject, 
-				       bool highlight, bool immediatly ) 
+                                       bool highlight, bool immediatly ) 
 {
 //  MESSAGE ( "SUPERVGraph_ViewFrame::highlight" )
 }

@@ -39,9 +39,9 @@
   filters << "Image files (*.bmp *.gif *.jpg )" << "All files (*)";
   QString fileName = SUIT_FileDlg::getFileName( desktop(), 
                                                 QString(), 
-						filters, 
-						"Dump view",
-						false );
+                                                filters, 
+                                                "Dump view",
+                                                false );
   if ( !fileName.isEmpty() ) {
     ... writing image to the file 
   }
@@ -51,8 +51,8 @@
   filters << "*.cpp | *.cxx | *.c++" << "*.h | *.hpp | *.hxx";
   QStringList fileNames = SUIT_FileDlg::getOpenFileName( desktop(),
                                                          QString(), 
-							 filters, 
-							 QString() );
+                                                         filters, 
+                                                         QString() );
   if ( !fileNames.isEmpty() ) {
     ... open files
   }
@@ -140,13 +140,13 @@ SUIT_FileDlg::SUIT_FileDlg( QWidget* parent, bool open, bool showQuickDir, bool 
       QStringList dirList;
   
       if ( resMgr )
-	dirList = resMgr->stringValue( "FileDlg", "QuickDirList" ).split( ';', QString::SkipEmptyParts );
+        dirList = resMgr->stringValue( "FileDlg", "QuickDirList" ).split( ';', QString::SkipEmptyParts );
 
       if ( dirList.isEmpty() ) 
-	dirList << QDir::homePath();
+        dirList << QDir::homePath();
 
       for ( int i = 0; i < dirList.count(); i++ )
-	myQuickCombo->addItem( dirList[i] );
+        myQuickCombo->addItem( dirList[i] );
     }
     else {
       delete myQuickLab;    myQuickLab = 0;
@@ -293,7 +293,7 @@ QStringList SUIT_FileDlg::selectedFiles() const
       QString f = it.next();
       QFileInfo finfo( f );
       if ( !finfo.isDir() )
-	it.setValue( addExtension( f ) );
+        it.setValue( addExtension( f ) );
     }
   }
   return files;
@@ -351,7 +351,7 @@ QLineEdit* SUIT_FileDlg::lineEdit() const
     for ( int i = 0; i < editBoxes.count(); i++ ) {
       int widx = grid->indexOf( editBoxes[ i ] );
       if ( widx >= 0 )
-	idx = qMin( idx, widx );
+        idx = qMin( idx, widx );
     }
     if ( grid->itemAt( idx )  )
       ebox = qobject_cast<QLineEdit*>( grid->itemAt( idx )->widget() );
@@ -385,26 +385,26 @@ bool SUIT_FileDlg::acceptData()
     if ( txt == ".." ) {
       QDir dir = directory();
       if ( dir.cdUp() ) {
-	setDirectory( dir );
-	bool block = lineEdit()->blockSignals( true );
-	lineEdit()->setText( ".." );
-	lineEdit()->selectAll();
-	lineEdit()->setFocus( Qt::OtherFocusReason );
-	lineEdit()->blockSignals( block );
-	return false;
+        setDirectory( dir );
+        bool block = lineEdit()->blockSignals( true );
+        lineEdit()->setText( ".." );
+        lineEdit()->selectAll();
+        lineEdit()->setFocus( Qt::OtherFocusReason );
+        lineEdit()->blockSignals( block );
+        return false;
       }
     }
     else if ( fileMode() != DirectoryOnly ) {
       QStringList fs = txt.split( " ", QString::SkipEmptyParts );
       for ( int i = 0; i < fs.count(); i++ ) {
-	QString wc = fs.at( i );
-	if ( wc.startsWith( "\"" ) && wc.endsWith( "\"" ) )
-	  wc = wc.mid( 1, wc.length()-2 );
-	if ( hasWildCards( wc ) ) {
-	  addFilter( wc );
-	  lineEdit()->clear();
-	  return false;
-	}
+        QString wc = fs.at( i );
+        if ( wc.startsWith( "\"" ) && wc.endsWith( "\"" ) )
+          wc = wc.mid( 1, wc.length()-2 );
+        if ( hasWildCards( wc ) ) {
+          addFilter( wc );
+          lineEdit()->clear();
+          return false;
+        }
       }
     }
   }
@@ -421,8 +421,8 @@ bool SUIT_FileDlg::acceptData()
     {
       QString fn = files.first();
       if ( validator() ) {
-	bOk = isOpenDlg() ? validator()->canReadDir( fn, checkPermissions() ) : 
-	                    validator()->canWriteDir( fn, checkPermissions() );
+        bOk = isOpenDlg() ? validator()->canReadDir( fn, checkPermissions() ) : 
+                            validator()->canWriteDir( fn, checkPermissions() );
       }
       break;
     }
@@ -431,17 +431,17 @@ bool SUIT_FileDlg::acceptData()
       QString fn = files.first();
       QFileInfo info( fn );
       if ( info.isDir() ) {
-	setDirectory( info.absoluteFilePath() );
-	if ( lineEdit() ) {
-	  lineEdit()->selectAll();
-	  lineEdit()->setFocus( Qt::OtherFocusReason );
-	}
-	return false;
+        setDirectory( info.absoluteFilePath() );
+        if ( lineEdit() ) {
+          lineEdit()->selectAll();
+          lineEdit()->setFocus( Qt::OtherFocusReason );
+        }
+        return false;
       }
       // validation is not required
       if ( validator() ) {
-	bOk = isOpenDlg() ? validator()->canOpen( fn, checkPermissions() ) : 
-	                    validator()->canSave( fn, checkPermissions() );
+        bOk = isOpenDlg() ? validator()->canOpen( fn, checkPermissions() ) : 
+                            validator()->canSave( fn, checkPermissions() );
       }
       break;
     }
@@ -449,21 +449,21 @@ bool SUIT_FileDlg::acceptData()
   case ExistingFiles: 
     {
       for ( int i = 0; i < files.count(); ++i ) {
-	QFileInfo info( files.at( i ) );
-	if ( info.isDir() ) {
-	  setDirectory( info.absoluteFilePath() );
-	  if ( lineEdit() ) {
-	    lineEdit()->selectAll();
-	    lineEdit()->setFocus( Qt::OtherFocusReason );
-	  }
-	  return false;
-	}
-	if ( validator() ) {
-	  bOk = isOpenDlg() ? validator()->canOpen( files.at( i ), checkPermissions() ) : 
-	                      validator()->canSave( files.at( i ), checkPermissions() );
-	if ( !bOk )
-	  return false;
-	}
+        QFileInfo info( files.at( i ) );
+        if ( info.isDir() ) {
+          setDirectory( info.absoluteFilePath() );
+          if ( lineEdit() ) {
+            lineEdit()->selectAll();
+            lineEdit()->setFocus( Qt::OtherFocusReason );
+          }
+          return false;
+        }
+        if ( validator() ) {
+          bOk = isOpenDlg() ? validator()->canOpen( files.at( i ), checkPermissions() ) : 
+                              validator()->canSave( files.at( i ), checkPermissions() );
+        if ( !bOk )
+          return false;
+        }
       }
       break;
     }
@@ -563,9 +563,9 @@ bool SUIT_FileDlg::processPath( const QString& path )
     QFileInfo fi( path );
     if ( fi.exists() ) {
       if ( fi.isFile() )
-	selectFile( path );
+        selectFile( path );
       else if ( fi.isDir() )
-	setDirectory( path );
+        setDirectory( path );
       return true;
     }
     QString dirPath = SUIT_Tools::dir( path, false );
@@ -652,12 +652,12 @@ void SUIT_FileDlg::addQuickDir()
     bool emptyAndHome = false;
     if ( dirList.count() > 0 ) {
       for ( int i = 0; i < dirList.count() && !found; i++ )  {
-	QDir aDir( dirList[i] );
-	if ( aDir.canonicalPath().isNull() && dirList[i] == dir.absolutePath() ||
-	     !aDir.canonicalPath().isNull() && aDir.exists() && 
-	     aDir.canonicalPath() == dir.canonicalPath() ) {
-	  found = true;
-	}
+        QDir aDir( dirList[i] );
+        if ( aDir.canonicalPath().isNull() && dirList[i] == dir.absolutePath() ||
+             !aDir.canonicalPath().isNull() && aDir.exists() && 
+             aDir.canonicalPath() == dir.canonicalPath() ) {
+          found = true;
+        }
       }
     }
     else {
@@ -668,7 +668,7 @@ void SUIT_FileDlg::addQuickDir()
       dirList.append( dp );
       resMgr->setValue( "FileDlg", "QuickDirList", dirList.join( ";" ) );
       if ( !emptyAndHome )
-	myQuickCombo->addItem( dp );
+        myQuickCombo->addItem( dp );
     }
   }
 }
@@ -683,11 +683,11 @@ void SUIT_FileDlg::polish()
   int maxBtnWidth = 0;
 
   for ( QList<QPushButton*>::const_iterator it = buttons.begin(); 
-	it != buttons.end(); ++it )
+        it != buttons.end(); ++it )
     maxBtnWidth = qMax( maxBtnWidth, (*it)->sizeHint().width() );
 
   for ( QList<QPushButton*>::const_iterator it = buttons.begin(); 
-	it != buttons.end(); ++it ) {
+        it != buttons.end(); ++it ) {
     (*it)->setDefault( false );
     (*it)->setAutoDefault( false );
     (*it)->setFixedWidth( maxBtnWidth );
@@ -695,7 +695,7 @@ void SUIT_FileDlg::polish()
 
   QList<QListView*> views = findChildren<QListView*>();
   for ( QList<QListView*>::const_iterator it = views.begin(); 
-	it != views.end(); ++it ) {
+        it != views.end(); ++it ) {
     (*it)->setViewMode( QListView::ListMode );
   }
 }
@@ -735,8 +735,8 @@ void SUIT_FileDlg::polish()
   \sa getOpenFileNames(), getExistingDirectory()
 */
 QString SUIT_FileDlg::getFileName( QWidget* parent, const QString& initial, 
-				   const QStringList& filters, const QString& caption, 
-				   const bool open, const bool showQuickDir,
+                                   const QStringList& filters, const QString& caption, 
+                                   const bool open, const bool showQuickDir,
                                    SUIT_FileValidator* validator )
 {            
   SUIT_FileDlg fd( parent, open, showQuickDir, true );    
@@ -808,12 +808,12 @@ QString SUIT_FileDlg::getFileName( QWidget* parent, const QString& initial,
   \sa getOpenFileNames(), getExistingDirectory()
 */
 QString SUIT_FileDlg::getFileName( QWidget* parent, const QString& initial, 
-				   const QString& filters, const QString& caption, 
-				   const bool open, const bool showQuickDir,
+                                   const QString& filters, const QString& caption, 
+                                   const bool open, const bool showQuickDir,
                                    SUIT_FileValidator* validator )
 {
   return getFileName( parent, initial, filters.split( ";;", QString::SkipEmptyParts ), 
-		      caption, open, showQuickDir, validator );
+                      caption, open, showQuickDir, validator );
 }
 
 /*!
@@ -846,9 +846,9 @@ QString SUIT_FileDlg::getFileName( QWidget* parent, const QString& initial,
   \sa getFileName(), getExistingDirectory()
 */
 QStringList SUIT_FileDlg::getOpenFileNames( QWidget* parent, const QString& initial,
-					    const QStringList& filters, const QString& caption,
-					    const bool showQuickDir, 
-					    SUIT_FileValidator* validator )
+                                            const QStringList& filters, const QString& caption,
+                                            const bool showQuickDir, 
+                                            SUIT_FileValidator* validator )
 {            
   SUIT_FileDlg fd( parent, true, showQuickDir, true );
 
@@ -910,12 +910,12 @@ QStringList SUIT_FileDlg::getOpenFileNames( QWidget* parent, const QString& init
   \sa getFileName(), getExistingDirectory()
 */
 QStringList SUIT_FileDlg::getOpenFileNames( QWidget* parent, const QString& initial,
-					    const QString& filters, const QString& caption,
-					    const bool showQuickDir,
-					    SUIT_FileValidator* validator )
+                                            const QString& filters, const QString& caption,
+                                            const bool showQuickDir,
+                                            SUIT_FileValidator* validator )
 {
   return getOpenFileNames( parent, initial, filters.split( ";;", QString::SkipEmptyParts ), 
-			   caption, showQuickDir, validator );
+                           caption, showQuickDir, validator );
 }
 
 /*!
@@ -945,7 +945,7 @@ QStringList SUIT_FileDlg::getOpenFileNames( QWidget* parent, const QString& init
 */
 QString SUIT_FileDlg::getExistingDirectory( QWidget* parent, const QString& initial,
                                             const QString& caption, const bool showQuickDir,
-					    SUIT_FileValidator* validator )
+                                            SUIT_FileValidator* validator )
 {
   SUIT_FileDlg fd( parent, true, showQuickDir, true );
 

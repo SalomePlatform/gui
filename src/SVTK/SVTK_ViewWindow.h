@@ -139,8 +139,8 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
   /*  interactive object management */
   //! Redirect the request to #SVTK_View::highlight (to support old code)
   virtual void highlight(const Handle(SALOME_InteractiveObject)& theIO, 
-			 bool theIsHighlight = true, 
-			 bool theIsUpdate = true);
+                         bool theIsHighlight = true, 
+                         bool theIsUpdate = true);
 
   //! Redirect the request to #SVTK_View::unHighlightAll (to support old code)
   virtual void unHighlightAll();
@@ -155,18 +155,18 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
   //----------------------------------------------------------------------------
   Handle(SALOME_InteractiveObject) FindIObject(const char* theEntry);
   
-  /* display */		
+  /* display */         
   //----------------------------------------------------------------------------
   //! Redirect the request to #SVTK_View::Display (to support old code)
   virtual void Display(const Handle(SALOME_InteractiveObject)& theIObject,
-		       bool theImmediatly = true);
+                       bool theImmediatly = true);
 
   //! Redirect the request to #SVTK_View::DisplayOnly (to support old code)
   virtual void DisplayOnly(const Handle(SALOME_InteractiveObject)& theIObject);
 
   //! Redirect the request to #SVTK_View::Erase (to support old code)
   virtual void Erase(const Handle(SALOME_InteractiveObject)& theIObject,
-		     bool theImmediatly = true);
+                     bool theImmediatly = true);
 
   //! Redirect the request to #SVTK_View::DisplayAll (to support old code)
   virtual void DisplayAll();
@@ -186,11 +186,11 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
 
   //! Redirect the request to #SVTK_Renderer::AddActor
   virtual void AddActor(VTKViewer_Actor* theActor,
-			bool theIsUpdate = false);
+                        bool theIsUpdate = false);
 
   //! Redirect the request to #SVTK_Renderer::RemoveActor
   virtual void RemoveActor(VTKViewer_Actor* theActor,
-			   bool theIsUpdate = false);
+                           bool theIsUpdate = false);
 
   //----------------------------------------------------------------------------
   //! Redirect the request to #SVTK_Renderer::AdjustActors
@@ -222,20 +222,20 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
 
   //! Redirect the request to #SVTK_Renderer::SetSelectionProp
   virtual void SetSelectionProp(const double& theRed = 1, 
-				const double& theGreen = 1,
-				const double& theBlue = 0, 
-				const int& theWidth = 5);
+                                const double& theGreen = 1,
+                                const double& theBlue = 0, 
+                                const int& theWidth = 5);
 
   //! Redirect the request to #SVTK_Renderer::SetPreselectionProp
   virtual void SetPreselectionProp(const double& theRed = 0, 
-				   const double& theGreen = 1,
-				   const double& theBlue = 1, 
-				   const int& theWidth = 5);
+                                   const double& theGreen = 1,
+                                   const double& theBlue = 1, 
+                                   const int& theWidth = 5);
 
   //! Redirect the request to #SVTK_Renderer::SetSelectionTolerance
   virtual void SetSelectionTolerance(const double& theTolNodes = 0.025, 
-				     const double& theTolCell = 0.001,
-				     const double& theTolObjects = 0.025);
+                                     const double& theTolCell = 0.001,
+                                     const double& theTolObjects = 0.025);
 
   //! Methods to save/restore visual parameters of a view (pan, zoom, etc.)
   virtual QString getVisualParameters();
@@ -343,7 +343,7 @@ protected slots:
 
 protected:
   virtual void Initialize(SVTK_View* theView,
-			  SVTK_ViewModelBase* theModel);
+                          SVTK_ViewModelBase* theModel);
 
   void doSetVisualParameters( const QString& );
   void SetEventDispatcher(vtkObject* theDispatcher);
@@ -360,11 +360,11 @@ protected:
   void createActions(SUIT_ResourceMgr* theResourceMgr);
 
   enum { DumpId, FitAllId, FitRectId, ZoomId, PanId, GlobalPanId, 
-	 ChangeRotationPointId, RotationId,
+         ChangeRotationPointId, RotationId,
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, 
-	 ViewTrihedronId, NonIsometric, GraduatedAxes, UpdateRate,
-	 ParallelModeId, ProjectionModeId, ViewParametersId, SwitchInteractionStyleId,
-	 StartRecordingId, PlayRecordingId, PauseRecordingId, StopRecordingId };
+         ViewTrihedronId, NonIsometric, GraduatedAxes, UpdateRate,
+         ParallelModeId, ProjectionModeId, ViewParametersId, SwitchInteractionStyleId,
+         StartRecordingId, PlayRecordingId, PauseRecordingId, StopRecordingId };
 
 
   SVTK_View* myView;

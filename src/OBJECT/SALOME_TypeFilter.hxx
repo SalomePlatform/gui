@@ -79,7 +79,7 @@ Standard_EXPORT ~SALOME_TypeFilter();
  //
  Standard_EXPORT friend Handle_Standard_Type& SALOME_TypeFilter_Type_();
  Standard_EXPORT const Handle(Standard_Type)& DynamicType() const;
- Standard_EXPORT Standard_Boolean	       IsKind(const Handle(Standard_Type)&) const;
+ Standard_EXPORT Standard_Boolean              IsKind(const Handle(Standard_Type)&) const;
 
 protected:
 

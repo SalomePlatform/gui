@@ -184,11 +184,11 @@ bool SUIT_ViewWindow::event( QEvent* e )
       QString fileName = app->getFileName( false, QString(), filter(), tr( "TLT_DUMP_VIEW" ), 0 );
       if ( !fileName.isEmpty() )
       {
-	      QString fmt = SUIT_Tools::extension( fileName ).toUpper();
-	      bOk = dumpViewToFormat( im, fileName, fmt );
+              QString fmt = SUIT_Tools::extension( fileName ).toUpper();
+              bOk = dumpViewToFormat( im, fileName, fmt );
       }
       else
-	      bOk = true; // cancelled
+              bOk = true; // cancelled
     }
     if ( !bOk )
       SUIT_MessageBox::critical( this, tr( "ERROR" ), tr( "ERR_CANT_DUMP_VIEW" ) );

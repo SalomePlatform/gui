@@ -269,7 +269,7 @@ void QtxDockWidget::Watcher::updateVisibility()
     if ( l )
     {
       for ( int i = 0; i < (int)l->count() && !vis; i++ )
-	vis = l->itemAt( i ) && l->itemAt( i )->widget() && l->itemAt( i )->widget()->isVisibleTo( myCont );
+        vis = l->itemAt( i ) && l->itemAt( i )->widget() && l->itemAt( i )->widget()->isVisibleTo( myCont );
     }
   }
 

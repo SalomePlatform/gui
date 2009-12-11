@@ -42,14 +42,14 @@ class QTX_EXPORT QtxMRUAction : public QtxAction
 public:
   //! Items insertion policy
   typedef enum { MoveFirst,   //!< put the specified item to the beginning
-		 MoveLast,    //!< put the specified item to the end
-		 AddFirst,    //!< if specified item doesn't exist, add it to the beginning
-		 AddLast      //!< if specified item doesn't exist, add it to the end
+                 MoveLast,    //!< put the specified item to the end
+                 AddFirst,    //!< if specified item doesn't exist, add it to the beginning
+                 AddLast      //!< if specified item doesn't exist, add it to the end
   } InsertionMode;
 
   typedef enum { LinkAuto,    //!< put the full path of link into the menu if link file names of severals link are same
-		 LinkShort,   //!< put the only file name of link into the menu
-		 LinkFull     //!< put the full path of link into the menu
+                 LinkShort,   //!< put the only file name of link into the menu
+                 LinkFull     //!< put the full path of link into the menu
   } LinkType;
 
 public:

@@ -103,7 +103,7 @@ void GLViewer_Viewer2d::onChangeBgColor()
     return;
   GLViewer_ViewPort2d* vp = ( ( GLViewer_ViewPort2d* )getActiveView()->getViewPort() );
 
-  QColor selColor = QColorDialog::getColor( vp->backgroundColor(), vp );	
+  QColor selColor = QColorDialog::getColor( vp->backgroundColor(), vp );        
   if ( selColor.isValid() ) {
     vp->setBackgroundColor( selColor );
   }

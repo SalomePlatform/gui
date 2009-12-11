@@ -180,7 +180,7 @@ void OCCViewer_Viewer::setViewManager(SUIT_ViewManager* theViewManager)
   SUIT_ViewModel::setViewManager(theViewManager);
   if (theViewManager) {
     connect(theViewManager, SIGNAL(mousePress(SUIT_ViewWindow*, QMouseEvent*)), 
-	    this, SLOT(onMousePress(SUIT_ViewWindow*, QMouseEvent*)));
+            this, SLOT(onMousePress(SUIT_ViewWindow*, QMouseEvent*)));
 
     connect(theViewManager, SIGNAL(mouseMove(SUIT_ViewWindow*, QMouseEvent*)), 
             this, SLOT(onMouseMove(SUIT_ViewWindow*, QMouseEvent*)));
@@ -415,7 +415,7 @@ void OCCViewer_Viewer::onClearViewAspects()
 */
 void OCCViewer_Viewer::clearViewAspects()
 {
-	myViewAspects.clear();
+        myViewAspects.clear();
 }
 
 /*!
@@ -423,7 +423,7 @@ void OCCViewer_Viewer::clearViewAspects()
 */
 const viewAspectList& OCCViewer_Viewer::getViewAspects()
 {
-	return myViewAspects;
+        return myViewAspects;
 }
 
 /*!
@@ -432,7 +432,7 @@ const viewAspectList& OCCViewer_Viewer::getViewAspects()
 */
 void OCCViewer_Viewer::appendViewAspect( const viewAspect& aParams )
 {
-	myViewAspects.append( aParams );
+        myViewAspects.append( aParams );
 }
 
 /*!
@@ -441,7 +441,7 @@ void OCCViewer_Viewer::appendViewAspect( const viewAspect& aParams )
 */
 void OCCViewer_Viewer::updateViewAspects( const viewAspectList& aViewList )
 {
-	myViewAspects = aViewList;
+        myViewAspects = aViewList;
 }
 
 /*!

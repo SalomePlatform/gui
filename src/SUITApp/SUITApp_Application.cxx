@@ -93,7 +93,7 @@ bool SUITApp_Application::notify( QObject* receiver, QEvent* e )
 */
 void SUITApp_Application::setHandler( SUIT_ExceptionHandler* hand )
 {
-	myExceptHandler = hand;
+        myExceptHandler = hand;
 }
 
 /*!

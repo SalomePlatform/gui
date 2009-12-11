@@ -65,10 +65,10 @@ namespace
     if(vtkRenderer *aRenderer = theRWInteractor->getRenderer()){
       vtkFloatingPointType aLastRenderTimeInSeconds = aRenderer->GetLastRenderTimeInSeconds();
       if(aLastRenderTimeInSeconds > FLOAT_TOLERANCE){
-	std::ostringstream aStr;
-	vtkFloatingPointType aFPS = 1.0 / aLastRenderTimeInSeconds;
-	aStr<<aFPS;
-	return QString(aStr.str().c_str());
+        std::ostringstream aStr;
+        vtkFloatingPointType aFPS = 1.0 / aLastRenderTimeInSeconds;
+        aStr<<aFPS;
+        return QString(aStr.str().c_str());
       }
     }
     return "Inf";
@@ -90,9 +90,9 @@ namespace
     operator()(vtkActor* theActor)
     {
       if(theActor->GetVisibility()){
-	myVTKMultiplier += theActor->GetAllocatedRenderTime();
-	if(dynamic_cast<SALOME_Actor*>(theActor))
-	  mySALOMEMultiplier += theActor->GetAllocatedRenderTime();
+        myVTKMultiplier += theActor->GetAllocatedRenderTime();
+        if(dynamic_cast<SALOME_Actor*>(theActor))
+          mySALOMEMultiplier += theActor->GetAllocatedRenderTime();
       }
     }
   };
@@ -102,17 +102,17 @@ namespace
   inline
   vtkFloatingPointType 
   AdjustUpdateRate(SVTK_RenderWindowInteractor* theRWInteractor,
-		   vtkFloatingPointType theUpdateRate)
+                   vtkFloatingPointType theUpdateRate)
   {
     if(vtkRenderer *aRenderer = theRWInteractor->getRenderer()){
       VTK::ActorCollectionCopy aCopy(aRenderer->GetActors());
       if(vtkActorCollection *anActorCollection = aCopy.GetActors()){
-	TRenderTimeMultiplier aMultiplier;
-	using namespace VTK;
-	aMultiplier = ForEach<vtkActor>(anActorCollection,
-					aMultiplier);
-	if(aMultiplier.mySALOMEMultiplier > FLOAT_TOLERANCE)
-	  theUpdateRate *= aMultiplier.mySALOMEMultiplier / aMultiplier.myVTKMultiplier;
+        TRenderTimeMultiplier aMultiplier;
+        using namespace VTK;
+        aMultiplier = ForEach<vtkActor>(anActorCollection,
+                                        aMultiplier);
+        if(aMultiplier.mySALOMEMultiplier > FLOAT_TOLERANCE)
+          theUpdateRate *= aMultiplier.mySALOMEMultiplier / aMultiplier.myVTKMultiplier;
       }
     }
     return theUpdateRate;
@@ -131,11 +131,11 @@ namespace
     operator()(SALOME_Actor* theActor)
     {
       if(theActor->GetVisibility()){
-	if(vtkMapper *aMapper = theActor->GetMapper()){
-	  if(vtkDataSet *aDataSet = aMapper->GetInput()){
-	    myCounter += aDataSet->GetNumberOfCells();
-	  }
-	}
+        if(vtkMapper *aMapper = theActor->GetMapper()){
+          if(vtkDataSet *aDataSet = aMapper->GetInput()){
+            myCounter += aDataSet->GetNumberOfCells();
+          }
+        }
       }
     }
   };
@@ -149,11 +149,11 @@ namespace
     if(vtkRenderer *aRenderer = theRWInteractor->getRenderer()){
       VTK::ActorCollectionCopy aCopy(aRenderer->GetActors());
       if(vtkActorCollection *anActorCollection = aCopy.GetActors()){
-	TCellsCounter aCounter;
-	using namespace VTK;
-	aCounter = ForEach<SALOME_Actor>(anActorCollection,
-					 aCounter);
-	return QString::number(aCounter.myCounter);
+        TCellsCounter aCounter;
+        using namespace VTK;
+        aCounter = ForEach<SALOME_Actor>(anActorCollection,
+                                         aCounter);
+        return QString::number(aCounter.myCounter);
       }
     }
     
@@ -166,11 +166,11 @@ namespace
 */
 SVTK_UpdateRateDlg
 ::SVTK_UpdateRateDlg(QtxAction* theAction,
-		     SVTK_ViewWindow* theParent,
-		     const char* theName):
+                     SVTK_ViewWindow* theParent,
+                     const char* theName):
   SVTK_DialogBase(theAction,
-		  theParent, 
-		  theName),
+                  theParent, 
+                  theName),
   myPriority(0.0),
   myEventCallbackCommand(vtkCallbackCommand::New()),
   myRWInteractor(theParent->GetInteractor()),
@@ -295,8 +295,8 @@ SVTK_UpdateRateDlg
   myEventCallbackCommand->SetCallback(SVTK_UpdateRateDlg::ProcessEvents);
   vtkRenderer *aRenderer = myRWInteractor->getRenderer();
   aRenderer->AddObserver(vtkCommand::EndEvent,
-			 myEventCallbackCommand.GetPointer(), 
-			 myPriority);
+                         myEventCallbackCommand.GetPointer(), 
+                         myPriority);
 }
 
 /*!
@@ -314,9 +314,9 @@ SVTK_UpdateRateDlg
 void 
 SVTK_UpdateRateDlg
 ::ProcessEvents(vtkObject* vtkNotUsed(theObject), 
-		unsigned long theEvent,
-		void* theClientData, 
-		void* vtkNotUsed(theCallData))
+                unsigned long theEvent,
+                void* theClientData, 
+                void* vtkNotUsed(theCallData))
 {
   SVTK_UpdateRateDlg* self = reinterpret_cast<SVTK_UpdateRateDlg*>(theClientData);
 

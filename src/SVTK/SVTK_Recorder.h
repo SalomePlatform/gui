@@ -120,9 +120,9 @@ protected :
   static
   void
   ProcessEvents(vtkObject* theObject, 
-		unsigned long theEvent,
-		void* theClientData, 
-		void* theCallData);
+                unsigned long theEvent,
+                void* theClientData, 
+                void* theCallData);
 
 protected :
   int myState;

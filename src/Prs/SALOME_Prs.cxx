@@ -19,10 +19,10 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-// File:	SALOME_Prs.cxx
-// Created:	Wed Apr 28 15:03:43 2004
-// Author:	Sergey ANIKIN
-//		<san@startrex.nnov.opencascade.com>
+// File:        SALOME_Prs.cxx
+// Created:     Wed Apr 28 15:03:43 2004
+// Author:      Sergey ANIKIN
+//              <san@startrex.nnov.opencascade.com>
 //
 #include "SALOME_Prs.h"
 

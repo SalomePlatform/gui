@@ -102,7 +102,7 @@ LightApp_Operation* LightApp_SwitchOp::operation( QWidget* theWg ) const
       SUIT_Operation* anOp = anIter.next();
           
       if ( anOp &&
-	   anOp->inherits( "LightApp_Operation" ) &&
+           anOp->inherits( "LightApp_Operation" ) &&
            ((LightApp_Operation*)anOp)->dlg() == aDlg )
         return ((LightApp_Operation*)anOp);
     }

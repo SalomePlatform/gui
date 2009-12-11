@@ -90,7 +90,7 @@ public:
   static void         drawArrow( QStyle::PrimitiveElement, QPainter*, const QRect&,
                                  const QColor&, const QColor& );
   static void         drawSign( QStyle::PrimitiveElement, QPainter*, const QRect&,
-				const QColor&, const QColor& );
+                                const QColor&, const QColor& );
   static QPainterPath tabRect( QPainter*, const QRect&, const int, const double,
                                const double, const QColor&, const QColor&,
                                const QColor&, const QColor&,

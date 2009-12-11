@@ -33,6 +33,14 @@ class QTX_EXPORT QtxDockWidget : public QDockWidget
   class Watcher;
 
 public:
+
+  enum TitleWidgetRole { 
+    TitleText,
+    Undock, 
+    Close,
+    Last
+  };
+
   QtxDockWidget( const QString&, QWidget* = 0, Qt::WindowFlags = 0 );
   QtxDockWidget( const bool, QWidget* = 0, Qt::WindowFlags = 0 );
   QtxDockWidget( QWidget*, Qt::WindowFlags = 0 );
@@ -43,11 +51,18 @@ public:
 
   Qt::Orientation orientation() const;
 
+  void            enableCustomTitleBar( const bool );
+  bool            customTitleBarEnabled() const;
+  QWidget*        customTitleBarWidget( const int ) const;
+  void            insertCustomTitleBarWidget( const int, QWidget*, const int = Last );
+  void            removeCustomTitleBarWidget( const int );
+
 signals:
   void            orientationChanged( Qt::Orientation );
 
 public slots:
   virtual void    setVisible( bool );
+  void            toggleTopLevel();
 
 protected:
   virtual void    resizeEvent( QResizeEvent* );

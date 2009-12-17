@@ -155,9 +155,14 @@ private slots:
   void                                onCatalogGen();
   void                                onRegDisplay();
   void                                onOpenWith();
+  void                                onExtAction();
 
- private:
-  SalomeApp_NoteBookDlg*             myNoteBook;
+private:
+  void                                createExtraActions();
+
+private:
+  SalomeApp_NoteBookDlg*              myNoteBook;
+  QMap<long, QAction*>                myExtActions; // Map <AttributeLocalID, QAction>
 };
 
 #ifdef WIN32

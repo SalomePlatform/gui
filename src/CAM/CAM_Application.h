@@ -66,6 +66,7 @@ public:
   QString             moduleName( const QString& ) const;
   QString             moduleTitle( const QString& ) const;
   QString             moduleIcon( const QString& ) const;
+  bool                isModuleAccessible( const QString& ) const;
 
   virtual void        createEmptyStudy();
 
@@ -86,7 +87,7 @@ private:
   void                readModuleList();
 
 private:
-  typedef struct { QString name, title, internal, icon; } ModuleInfo;
+  typedef struct { QString name, title, internal, icon; bool isSingleton; } ModuleInfo;
   typedef QList<ModuleInfo> ModuleInfoList;
 
 private:

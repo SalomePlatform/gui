@@ -199,7 +199,8 @@ void SalomeApp_VisualState::restoreState(int savePoint)
   qApp->installEventFilter( this );
 
   //Remove all already existent veiwers and their views
-  myApp->clearViewManagers();
+  //myApp->clearViewManagers();
+  myApp->clearKnownViewManagers();
 
   //Restore the viewers and view windows
   int nbViewers = ip->nbValues( "AP_VIEWERS_LIST" );

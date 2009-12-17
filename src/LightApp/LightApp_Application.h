@@ -148,6 +148,12 @@ public:
 
   virtual void                        updateDesktopTitle();
 
+  //! Returns list of view manager types which are supported by this application
+  QStringList                          viewManagersTypes() const;
+
+  //! Removes ViewManagers only of known type
+  virtual void                        clearKnownViewManagers();
+
 signals:
   void                                studyOpened();
   void                                studySaved();

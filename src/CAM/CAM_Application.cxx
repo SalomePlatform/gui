@@ -238,6 +238,9 @@ void CAM_Application::loadModules()
 {
   for ( ModuleInfoList::const_iterator it = myInfoList.begin(); it != myInfoList.end(); ++it )
   {
+    if (!isModuleAccessible((*it).name)) {
+      continue;
+    }
     CAM_Module* mod = loadModule( (*it).title );
     if ( mod )
       addModule( mod );
@@ -514,6 +517,22 @@ QString CAM_Application::moduleIcon( const QString& name ) const
 }
 
 /*!
+  \brief Returns \c true if module is accessible for the current application.
+  Singleton module can be loaded only in one application object. In other application
+  objects this module will be unavailable.
+ */
+bool CAM_Application::isModuleAccessible( const QString& name ) const
+{
+  int aAppsNb = SUIT_Session::session()->applications().count();
+  for ( ModuleInfoList::const_iterator it = myInfoList.begin(); it != myInfoList.end(); ++it )
+  {
+    if ( (*it).name == name )
+      return (*it).isSingleton && (aAppsNb > 1);
+  }
+  return false;
+}
+
+/*!
   \brief Get module library name by its title (user name).
   \param title module title (user name)
   \param full if \c true, return full library name, otherwise return its internal name
@@ -643,11 +662,14 @@ void CAM_Application::readModuleList()
     else
       modLibrary = modName;
 
+    bool aIsSingleton = resMgr->booleanValue(*it, "singleton", false);
+
     ModuleInfo inf;
     inf.name = modName;
     inf.title = modTitle;
     inf.internal = modLibrary;
     inf.icon = modIcon;
+    inf.isSingleton = aIsSingleton;
     myInfoList.append( inf );
   }
 

@@ -503,20 +503,20 @@ void LightApp_Application::createActions()
   static QtxMRUAction* mru = new QtxMRUAction( tr( "TOT_DESK_MRU" ), tr( "MEN_DESK_MRU" ), 0 );
   connect( mru, SIGNAL( activated( const QString& ) ), this, SLOT( onMRUActivated( const QString& ) ) );
   registerAction( MRUId, mru );
-
+  
   // default icon for neutral point ('SALOME' module)
   QPixmap defIcon = resMgr->loadPixmap( "LightApp", tr( "APP_DEFAULT_ICO" ), false );
   if ( defIcon.isNull() )
     defIcon = QPixmap( imageEmptyIcon );
-
+  
   //! default icon for any module
   QPixmap modIcon = resMgr->loadPixmap( "LightApp", tr( "APP_MODULE_ICO" ), false );
   if ( modIcon.isNull() )
     modIcon = QPixmap( imageEmptyIcon );
-
+  
   QStringList modList;
   modules( modList, false );
-
+  
   if ( modList.count() > 1 )
   {
     LightApp_ModuleAction* moduleAction =
@@ -532,20 +532,24 @@ void LightApp_Application::createActions()
     {
       if ( !isLibExists( *it ) )
         continue;
+      
+      QString modName = moduleName( *it );
+
+      if (!isModuleAccessible(modName))
+	continue;
 
       QString iconName;
       if ( iconMap.contains( *it ) )
         iconName = iconMap[*it];
-
-      QString modName = moduleName( *it );
 
       QPixmap icon = resMgr->loadPixmap( modName, iconName, false );
       if ( icon.isNull() )
       {
         icon = modIcon;
         INFOS ( "****************************************************************" << std::endl
-             << "*    Icon for " << (*it).toLatin1().constData() << " not found. Using the default one." << std::endl
-             << "****************************************************************" << std::endl );
+		<<  "*    Icon for " << (*it).toLatin1().constData() 
+		<< " not found. Using the default one." << std::endl
+		<< "****************************************************************" << std::endl );
       }
 
       icon = Qtx::scaleIcon( icon, iconSize );
@@ -553,8 +557,8 @@ void LightApp_Application::createActions()
       moduleAction->insertModule( *it, icon );
     }
 
-
-    connect( moduleAction, SIGNAL( moduleActivated( const QString& ) ), this, SLOT( onModuleActivation( const QString& ) ) );
+    connect( moduleAction, SIGNAL( moduleActivated( const QString& ) ), 
+	     this, SLOT( onModuleActivation( const QString& ) ) );
     registerAction( ModulesListId, moduleAction );
   }
 
@@ -3129,4 +3133,43 @@ bool LightApp_Application::openAction( const int choice, const QString& aName )
   }
 
   return res;
+}
+
+QStringList LightApp_Application::viewManagersTypes() const
+{
+  QStringList aTypesList;
+#ifndef DISABLE_GLVIEWER
+  aTypesList<<GLViewer_Viewer::Type();
+#endif
+#ifndef DISABLE_PLOT2DVIEWER
+  aTypesList<<Plot2d_Viewer::Type();
+#endif
+#ifndef DISABLE_QXGRAPHVIEWER
+  aTypesList<<QxScene_Viewer::Type();
+#endif
+#ifndef DISABLE_OCCVIEWER
+  aTypesList<<OCCViewer_Viewer::Type();
+#endif
+#ifndef DISABLE_VTKVIEWER
+ #ifndef DISABLE_SALOMEOBJECT
+  aTypesList<<SVTK_Viewer::Type();
+ #else
+  aTypesList<<VTKViewer_Viewer::Type();
+ #endif
+#endif
+  return aTypesList;
+}
+/*!
+ * Removes all view managers of known types
+ * Other view managers are ignored
+ */
+void LightApp_Application::clearKnownViewManagers()
+{
+  QStringList aTypesList = viewManagersTypes();
+  QList<SUIT_ViewManager*> aMgrList;
+  viewManagers( aMgrList );
+  foreach (SUIT_ViewManager* aMgr, aMgrList) {
+    if (aTypesList.contains(aMgr->getType()))
+      removeViewManager(aMgr);
+  }
 }

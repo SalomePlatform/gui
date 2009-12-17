@@ -302,6 +302,8 @@ void SalomeApp_Application::createActions()
   createMenu( CatalogGenId, toolsMenu, 10, -1 );
   createMenu( RegDisplayId, toolsMenu, 10, -1 );
   createMenu( separator(), toolsMenu, -1, 15, -1 );
+
+  createExtraActions();
 }
 
 /*!
@@ -1182,6 +1184,29 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QMenu* thePop
   if (aList.Extent() != 1)
     return;
   Handle(SALOME_InteractiveObject) aIObj = aList.First();
+
+  // add extra popup menu (defined in XML)
+  if (myExtActions.size() > 0) {
+    // Use only first selected object
+    SalomeApp_Study* study = dynamic_cast<SalomeApp_Study*>(activeStudy());
+    if ( study ) {
+      _PTR(Study) stdDS = study->studyDS();
+      if ( stdDS ) { 
+	_PTR(SObject) aSO = stdDS->FindObjectID( aIObj->getEntry() );
+	if ( aSO ) {
+	  _PTR( GenericAttribute ) anAttr;
+	  if ( aSO->FindAttribute( anAttr, "AttributeLocalID" ) ) {
+	    _PTR(AttributeLocalID) aAttrID = anAttr;
+	    long aId = aAttrID->Value();
+	    if ( myExtActions.contains( aId ) ) {
+	      thePopup->addAction(myExtActions[aId]);
+	    }
+	  }
+        }
+      }
+    }
+  }
+
   // check if item is a "GUI state" item (also a first level object)
   QString entry( aIObj->getEntry() );
   if ( entry.startsWith( tr( "SAVE_POINT_DEF_NAME" ) ) )
@@ -1499,3 +1524,93 @@ SalomeApp_NoteBookDlg* SalomeApp_Application::getNoteBook() const
   return myNoteBook;
 }
 
+/*!
+ * Define extra actions defined in module definition XML file.
+ * Additional popup items sections can be defined by parameter "popupitems". 
+ * Supported attributes: 
+ * title - title of menu item, 
+ * attributelocalid - AttributeLocalId defined for selected data item where menu command has to be applied, 
+ * method - method which has to be called when menu item is selected
+ * Example:
+ * <section name="MODULENAME">
+ *   <parameter name="popupitems" value="menuitem1:menuitem2:..."/>
+ * </section>
+ * <section name="importmed">
+ *   <parameter name="title" value="My menu"/>
+ *   <parameter name="attributelocalid" value="19"/>
+ *   <parameter name="method" value="nameOfModuleMethod"/>
+ * </section>
+ */
+void SalomeApp_Application::createExtraActions()
+{
+  myExtActions.clear();
+  SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+
+  QStringList aModules;
+  modules(aModules, false);
+  foreach(QString aModile, aModules) {
+    QString aModName = moduleName(aModile);
+    QString aSectionStr = resMgr->stringValue(aModName, "popupitems", QString());
+    if (!aSectionStr.isNull()) {
+      QStringList aSections = aSectionStr.split(':');
+      foreach(QString aSection, aSections) {
+        QString aTitle = resMgr->stringValue(aSection, "title", QString());
+        int aId = resMgr->integerValue(aSection, "attributelocalid", -1);
+        QString aSlot = resMgr->stringValue(aSection, "method", QString());
+        if (aTitle.isNull() || aSlot.isNull() || (aId == -1))
+          continue;
+        
+        QString aModuleName = resMgr->stringValue(aSection, "module", QString());
+        if (aModuleName.isNull())
+          aModuleName = aModName;
+        
+        QAction* aAction = new QAction(aTitle, this);
+        QStringList aData;
+        aData<<aModuleName<<aSlot;
+        aAction->setData(aData);
+        connect(aAction, SIGNAL(triggered()), this, SLOT(onExtAction()));
+        myExtActions[aId] = aAction;
+      }
+    }
+  }
+}
+
+/*!
+ * Called when extra action is selected
+ */
+void SalomeApp_Application::onExtAction()
+{
+  QAction* aAction = ::qobject_cast<QAction*>(sender());
+  if (!aAction)
+    return;
+
+  QVariant aData = aAction->data();
+  QStringList aDataList = aData.value<QStringList>();
+  if (aDataList.size() != 2)
+    return;
+
+  LightApp_SelectionMgr* aSelectionMgr = selectionMgr();
+  SALOME_ListIO aListIO;
+  aSelectionMgr->selectedObjects(aListIO);
+  const Handle(SALOME_InteractiveObject)& anIO = aListIO.First();
+  if (aListIO.Extent() < 1)
+    return;
+  if (!anIO->hasEntry()) 
+    return;
+  
+  QString aEntry(anIO->getEntry());
+
+  QApplication::setOverrideCursor( Qt::WaitCursor );
+  QString aModuleTitle = moduleTitle(aDataList[0]);
+  activateModule(aModuleTitle);
+  QApplication::restoreOverrideCursor();
+
+  QCoreApplication::processEvents();
+
+  CAM_Module* aModule = activeModule();
+  if (!aModule)
+    return;
+
+  if (!QMetaObject::invokeMethod(aModule, qPrintable(aDataList[1]), Q_ARG(QString, aEntry)))
+    printf("Error: Can't Invoke method %s\n", qPrintable(aDataList[1]));
+}

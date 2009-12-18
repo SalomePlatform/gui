@@ -523,13 +523,15 @@ QString CAM_Application::moduleIcon( const QString& name ) const
  */
 bool CAM_Application::isModuleAccessible( const QString& name ) const
 {
+  bool found   = false;
+  bool blocked = false;
   int aAppsNb = SUIT_Session::session()->applications().count();
-  for ( ModuleInfoList::const_iterator it = myInfoList.begin(); it != myInfoList.end(); ++it )
+  for ( ModuleInfoList::const_iterator it = myInfoList.begin(); it != myInfoList.end() && !found; ++it )
   {
-    if ( (*it).name == name )
-      return (*it).isSingleton && (aAppsNb > 1);
+    found = (*it).name == name;
+    if ( found ) blocked = (*it).isSingleton && (aAppsNb > 1);
   }
-  return false;
+  return found && !blocked;
 }
 
 /*!

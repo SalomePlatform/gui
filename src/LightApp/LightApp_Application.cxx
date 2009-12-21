@@ -82,6 +82,7 @@
 #include <QtxActionToolMgr.h>
 #include <QtxSearchTool.h>
 #include <QtxWorkstack.h>
+#include <QtxMap.h>
 
 #include <LogWindow.h>
 
@@ -480,22 +481,48 @@ void LightApp_Application::createActions()
     if ( aModule.isEmpty() )                                         // module title (user name)
       continue;
     QString modName = moduleName( aModule );                         // module name
+    IMap <QString, QString> paramValue;
     if ( modName.isEmpty() ) modName = aModule;                      // for KERNEL and GUI
     QString rootDir = QString( "%1_ROOT_DIR" ).arg( modName );       // module root dir variable
     QString modDir  = getenv( rootDir.toLatin1().constData() );      // module root dir
-    if ( !modDir.isEmpty() ) {
+
+    QString docSection;
+    if (resMgr->hasValue( modName, "documentation" ) )
+      docSection  = resMgr->stringValue(modName, "documentation");
+    else if ( resMgr->hasSection( modName + "_documentation" ) )
+      docSection = modName + "_documentation";
+    if ( !docSection.isEmpty() ) {
+      QStringList listOfParam = resMgr->parameters( docSection );
+      foreach( QString paramName, listOfParam ){
+        QString valueStr = resMgr->stringValue( docSection, paramName );
+        if ( !valueStr.isEmpty() ) {
+          QFileInfo fi( valueStr );
+          if ( fi.isRelative() && !modDir.isEmpty() )
+            valueStr = Qtx::addSlash( modDir ) + valueStr;
+          if ( QFile::exists( valueStr ) )
+            paramValue.insert( paramName, valueStr );
+        }
+      }
+    }
+
+    if ( paramValue.isEmpty() && !modDir.isEmpty() ) {
       QStringList idxLst = QStringList() << modDir << "share" << "doc" << "salome" << "gui" << modName << "index.html";
       QString indexFile = idxLst.join( QDir::separator() );          // index file
-      if ( QFile::exists( indexFile ) ) {
-        QAction* a = createAction( id, tr( "%1 Help" ).arg( aModule ),
-                                   resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false ),
-                                   tr( "%1 Help" ).arg( aModule ),
-                                   tr( "%1 Help" ).arg( aModule ),
-                                   0, desk, false, this, SLOT( onHelpContentsModule() ) );
-        a->setData( indexFile );
-        createMenu( a, helpModuleMenu, -1 );
-        id++;
-      }
+      if ( QFile::exists( indexFile ) )
+        paramValue.insert( tr( "%1 Help" ).arg( aModule ), indexFile );
+    }
+    
+    IMapConstIterator<QString, QString> fileIt;
+    for ( fileIt = paramValue.begin(); fileIt != paramValue.end(); fileIt++ ) {
+      QString helpFileName = fileIt.key();
+      QString helpFilePath = fileIt.value();
+      QAction* a = createAction( id, helpFileName,
+                                 resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false ),
+                                 helpFileName, helpFileName,
+                                 0, desk, false, this, SLOT( onHelpContentsModule() ) );
+      a->setData( helpFilePath );
+      createMenu( a, helpModuleMenu, -1 );
+      id++;
     }
   }
 

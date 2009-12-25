@@ -347,6 +347,9 @@ int main( int argc, char **argv )
   // Create Qt application instance;
   // this should be done the very first!
   SALOME_QApplication _qappl( argc, argv );
+  _qappl.setOrganizationName( "SALOME" );
+  _qappl.setApplicationName( "SALOME" );
+  _qappl.setApplicationVersion( salomeVersion() );
 
   // Add application library path (to search style plugin etc...)
   QString path = QDir::convertSeparators( SUIT_Tools::addSlash( QString( ::getenv( "GUI_ROOT_DIR" ) ) ) + QString( "bin/salome" ) );

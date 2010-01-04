@@ -63,5 +63,14 @@ SET(PYQT_INCLUDES ${PYQT_INCLUDES} -I${PYQT_SIPS}/QtAssistant -I${PYQT_SIPS}/QtD
 SET(PYQT_INCLUDES ${PYQT_INCLUDES} -I${PYQT_SIPS}/QtNetwork -I${PYQT_SIPS}/QtSql)
 SET(PYQT_INCLUDES ${PYQT_INCLUDES} -I${PYQT_SIPS}/QtSvg -I${PYQT_SIPS}/QtTest)
 
-SET(PYQT_SIPFLAGS -x VendorID -x PyQt_NoPrintRangeBug -t WS_X11 -t Qt_4_4_1 -g -s .cc -c .)
+SET(qt_flag ${QTVERSION})
+STRING(REPLACE "." "_" qt_flag ${qt_flag})
+
+IF(WINDOWS)
+  SET(ws_flag WS_WIN)
+ELSE(WINDOWS)
+  SET(ws_flag WS_X11)
+ENDIF(WINDOWS)
+
+SET(PYQT_SIPFLAGS -x VendorID -x PyQt_NoPrintRangeBug -t ${ws_flag} -t Qt_${qt_flag} -g -s .cc -c .)
 SET(PYQT_SIPFLAGS ${PYQT_SIPFLAGS} ${PYQT_INCLUDES})

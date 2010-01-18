@@ -28,7 +28,7 @@
 ##
 # Common packages
 ##
-SUBDIRS_COMMON = CASCatch Qtx Style DDS QDS ObjBrowser SUIT SUITApp STD CAF CAM LogWindow Prs Event
+SUBDIRS_COMMON = CASCatch Qtx Style DDS QDS ObjBrowser SUIT SUITApp STD CAF CAM LogWindow Prs Event OpenGLUtils
 
 ##
 # SALOME object
@@ -120,6 +120,6 @@ SUBDIRS = $(SUBDIRS_COMMON) $(SUBDIRS_OBJECT) $(SUBDIRS_GLVIEWER) $(SUBDIRS_VTKV
           $(SUBDIRS_PLOT2DVIEWER) $(SUBDIRS_SUPERVGRAPHVIEWER) $(SUBDIRS_QXGRAPHVIEWER) $(SUBDIRS_PYCONSOLE) \
           $(SUBDIRS_LIGHT) $(SUBDIRS_CORBA) $(SUBDIRS_PY_LIGHT)
 
-DIST_SUBDIRS = CASCatch Qtx Style DDS QDS ObjBrowser SUIT SUITApp STD CAF CAM LogWindow Prs Event \
+DIST_SUBDIRS = CASCatch Qtx Style DDS QDS ObjBrowser SUIT SUITApp STD CAF CAM LogWindow Prs Event OpenGLUtils \
                OBJECT GLViewer VTKViewer SVTK OCCViewer SOCC Plot2d SPlot2d SUPERVGraph QxGraph QxScene \
                PyInterp PyConsole LightApp ResExporter TOOLSGUI Session SalomeApp SALOME_SWIG SALOME_PY SALOME_PYQT

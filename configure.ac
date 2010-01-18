@@ -633,6 +633,7 @@ AC_OUTPUT([ \
   src/ResExporter/Makefile \
   src/TOOLSGUI/Makefile \
   src/Event/Makefile \
+  src/OpenGLUtils/Makefile \
   src/Session/Makefile \
   src/SalomeApp/Makefile \
   src/SalomeApp/Test/Makefile \

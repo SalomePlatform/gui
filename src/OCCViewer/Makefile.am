@@ -106,7 +106,7 @@ nodist_salomeres_DATA =		\
 	OCCViewer_msg_en.qm 
 
 libOCCViewer_la_CPPFLAGS = $(QT_INCLUDES) $(OGL_INCLUDES) $(CAS_CPPFLAGS) \
-	-I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
+	-I$(srcdir)/../SUIT -I$(srcdir)/../Qtx -I$(srcdir)/../OpenGLUtils
 
 libOCCViewer_la_LDFLAGS  = $(OGL_LIBS) $(QT_MT_LIBS) $(CAS_KERNEL) $(CAS_VIEWER)
-libOCCViewer_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la
+libOCCViewer_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la ../OpenGLUtils/libOpenGLUtils.la

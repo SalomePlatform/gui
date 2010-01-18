@@ -43,6 +43,8 @@
 #include <QtxMultiAction.h>
 #include <QtxRubberBand.h>
 
+#include <OpenGLUtils_FrameBuffer.h>
+
 #include <QPainter>
 #include <QTime>
 #include <QImage>
@@ -1432,22 +1434,49 @@ QImage OCCViewer_ViewWindow::dumpView()
   Handle(V3d_View) view = myViewPort->getView();
   if ( view.IsNull() )
     return QImage();
+  int aWidth = myViewPort->width();
+  int aHeight = myViewPort->height();
   QApplication::syncX();
   view->Update();
+
+  OpenGLUtils_FrameBuffer aFrameBuffer;
+  if( aFrameBuffer.init( aWidth, aHeight ) )
+  {
+    glPushAttrib( GL_VIEWPORT_BIT );
+    glViewport( 0, 0, aWidth, aHeight );
+    aFrameBuffer.bind();
+
+    // draw scene
+    view->Redraw();
+
+    aFrameBuffer.unbind();
+    glPopAttrib();
+
+    QImage anImage( aWidth, aHeight, QImage::Format_RGB32 );
+
+    aFrameBuffer.bind();
+    glReadPixels( 0, 0, aWidth, aHeight, GL_RGBA, GL_UNSIGNED_BYTE, anImage.bits() );
+    aFrameBuffer.unbind();
+
+    anImage = anImage.rgbSwapped();
+    anImage = anImage.mirrored();
+    return anImage;
+  }
+
+  // if frame buffers are unsupported, use old functionality
   view->Redraw();
 
-  unsigned char* data = new unsigned char[ (myViewPort->width()*myViewPort->height())*4 ];
+  unsigned char* data = new unsigned char[ aWidth*aHeight*4 ];
 
   QPoint p = myViewPort->mapFromParent(myViewPort->geometry().topLeft());
 
-  glReadPixels( p.x(), p.y(), myViewPort->width(), myViewPort->height(), GL_RGBA, GL_UNSIGNED_BYTE,
+  glReadPixels( p.x(), p.y(), aWidth, aHeight, GL_RGBA, GL_UNSIGNED_BYTE,
                 data);
 
-  QImage anImage( data, myViewPort->width(), myViewPort->height(), QImage::Format_ARGB32 );
+  QImage anImage( data, aWidth, aHeight, QImage::Format_ARGB32 );
   anImage = anImage.mirrored();
   anImage = anImage.rgbSwapped();
   return anImage;
-
 }
 
 bool OCCViewer_ViewWindow::dumpViewToFormat( const QImage& img, 

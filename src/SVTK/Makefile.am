@@ -144,7 +144,8 @@ libSVTK_la_CPPFLAGS =		\
 	-I$(srcdir)/../SUIT	\
 	-I$(srcdir)/../OBJECT	\
 	-I$(srcdir)/../Prs 	\
-	-I$(srcdir)/../VTKViewer
+	-I$(srcdir)/../VTKViewer \
+	-I$(srcdir)/../OpenGLUtils
 
 libSVTK_la_LDFLAGS =			\
 	$(VTK_LIBS) $(OGL_LIBS)		\
@@ -153,7 +154,8 @@ libSVTK_la_LDFLAGS =			\
 
 
 libSVTK_la_LIBADD = ../Qtx/libqtx.la ../SUIT/libsuit.la ../OBJECT/libSalomeObject.la \
-		    ../Prs/libSalomePrs.la ../VTKViewer/libVTKViewer.la
+		    ../Prs/libSalomePrs.la ../VTKViewer/libVTKViewer.la \
+		    ../OpenGLUtils/libOpenGLUtils.la
 
 # Executable
 bin_PROGRAMS = SVTK

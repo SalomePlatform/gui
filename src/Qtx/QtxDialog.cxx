@@ -440,7 +440,7 @@ QSize QtxDialog::Border::minimumSizeHint() const
   \param wf dialog box flags (Qt::WindowFlags)
 */
 QtxDialog::QtxDialog( QWidget* parent, bool modal, bool allowResize, const int f, Qt::WindowFlags wf )
-: QDialog( parent, (Qt::WindowFlags)( wf | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::Dialog |
+: QDialog( parent, (Qt::WindowFlags)( wf | Qt::WindowTitleHint | Qt::WindowSystemMenuHint | Qt::WindowCloseButtonHint | Qt::Dialog |
 #ifdef WIN32
            ( allowResize ? 0 : Qt::FramelessWindowHint ) |
 #endif

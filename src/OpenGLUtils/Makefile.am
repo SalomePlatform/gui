@@ -29,6 +29,7 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 lib_LTLIBRARIES = libOpenGLUtils.la
 
 salomeinclude_HEADERS =	\
+	OpenGLUtils.h \
 	OpenGLUtils_FrameBuffer.h
 
 dist_libOpenGLUtils_la_SOURCES = \

@@ -278,7 +278,10 @@ void VTKViewer_ExtractUnstructuredGrid::Execute()
     vtkUnsignedCharArray* aCellTypesArray = vtkUnsignedCharArray::New();
     aCellTypesArray->SetNumberOfComponents(1);
     aCellTypesArray->Allocate(aNbElems*aCellTypesArray->GetNumberOfComponents());
-    if(myChangeMode == ePassAll || myCellIds.empty() && myCellTypes.empty() && myChangeMode == eRemoving){
+    // additional condition has been added to treat a case described in IPAL21372
+    // note that it is significant only when myExtractionMode == ePoints
+    if(myChangeMode == ePassAll || myCellIds.empty() && myCellTypes.empty() && myChangeMode == eRemoving ||
+       !anInput->GetCellTypesArray()){
       if(myStoreMapping) myOut2InId.reserve(aNbElems);
       for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
         InsertPointCell(aConnectivity,aCellTypesArray,aCellId,anIdList,

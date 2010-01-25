@@ -230,6 +230,7 @@ protected:
   void                                updateWindows();
   void                                updateViewManagers();
   void                                updateModuleActions();
+  void                                removeModuleAction( const QString& );
 
   void                                loadDockWindowsState();
   void                                saveDockWindowsState();

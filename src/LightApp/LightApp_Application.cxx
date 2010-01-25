@@ -543,7 +543,7 @@ void LightApp_Application::createActions()
   
   QStringList modList;
   modules( modList, false );
-  
+
   if ( modList.count() > 1 )
   {
     LightApp_ModuleAction* moduleAction =
@@ -562,7 +562,7 @@ void LightApp_Application::createActions()
       
       QString modName = moduleName( *it );
 
-      if (!isModuleAccessible(modName))
+      if ( !isModuleAccessible( *it ) )
 	continue;
 
       QString iconName;
@@ -2525,13 +2525,30 @@ void LightApp_Application::afterCloseDoc()
 void LightApp_Application::updateModuleActions()
 {
   QString modName;
-  if ( activeModule() )
+  if ( activeModule() ) {
     modName = activeModule()->moduleName();
+    if ( !isModuleAccessible( modName ) ) {
+      QList<SUIT_Application*> apps = SUIT_Session::session()->applications();
+      foreach( SUIT_Application* app, apps ) {
+	LightApp_Application* lapp = dynamic_cast<LightApp_Application*>( app );
+	if ( lapp && lapp != this )
+	  lapp->removeModuleAction( modName );
+      }
+    }
+  }
 
   LightApp_ModuleAction* moduleAction =
     qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
   if ( moduleAction )
     moduleAction->setActiveModule( modName );
+}
+
+void LightApp_Application::removeModuleAction( const QString& modName )
+{
+  LightApp_ModuleAction* moduleAction =
+    qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
+  if ( moduleAction )
+    moduleAction->removeModule( modName );
 }
 
 /*!

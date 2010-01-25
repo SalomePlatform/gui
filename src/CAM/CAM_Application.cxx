@@ -238,7 +238,7 @@ void CAM_Application::loadModules()
 {
   for ( ModuleInfoList::const_iterator it = myInfoList.begin(); it != myInfoList.end(); ++it )
   {
-    if (!isModuleAccessible((*it).name)) {
+    if ( !isModuleAccessible( (*it).title ) ) {
       continue;
     }
     CAM_Module* mod = loadModule( (*it).title );
@@ -270,6 +270,11 @@ CAM_Module* CAM_Application::loadModule( const QString& modName, const bool show
   if ( myInfoList.isEmpty() )
   {
     qWarning( qPrintable( tr( "Modules configuration is not defined." ) ) );
+    return 0;
+  }
+
+  if ( !isModuleAccessible( modName ) ) {
+    qWarning( qPrintable( tr( "Module \"%1\" cannot be loaded in this application." ).arg( modName ) ) );
     return 0;
   }
 
@@ -520,16 +525,30 @@ QString CAM_Application::moduleIcon( const QString& name ) const
   \brief Returns \c true if module is accessible for the current application.
   Singleton module can be loaded only in one application object. In other application
   objects this module will be unavailable.
+  \param title module title (user name)
+  \return \c true if module is accessible (can be loaded) or \c false otherwise
  */
-bool CAM_Application::isModuleAccessible( const QString& name ) const
+bool CAM_Application::isModuleAccessible( const QString& title ) const
 {
   bool found   = false;
   bool blocked = false;
-  int aAppsNb = SUIT_Session::session()->applications().count();
+  
+  QStringList somewhereLoaded;
+  QList<SUIT_Application*> apps = SUIT_Session::session()->applications();
+  foreach( SUIT_Application* app, apps ) {
+    CAM_Application* camApp = dynamic_cast<CAM_Application*>( app );
+    if ( !camApp ) continue;
+    QStringList loaded;
+    camApp->modules( loaded, true );
+    foreach( QString lm, loaded ) {
+      if ( !somewhereLoaded.contains( lm ) ) somewhereLoaded << lm;
+    }
+  }
+
   for ( ModuleInfoList::const_iterator it = myInfoList.begin(); it != myInfoList.end() && !found; ++it )
   {
-    found = (*it).name == name;
-    if ( found ) blocked = (*it).isSingleton && (aAppsNb > 1);
+    found = (*it).title == title;
+    blocked = (*it).isSingleton && somewhereLoaded.contains((*it).title);
   }
   return found && !blocked;
 }

@@ -162,7 +162,7 @@ private:
 
 private:
   SalomeApp_NoteBookDlg*              myNoteBook;
-  QMap<long, QAction*>                myExtActions; // Map <AttributeLocalID, QAction>
+  QMap<QString, QAction*>             myExtActions; // Map <AttributeUserID, QAction>
 };
 
 #ifdef WIN32

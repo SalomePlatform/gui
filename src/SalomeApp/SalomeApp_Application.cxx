@@ -85,6 +85,7 @@
 #include <QMenu>
 
 #include <SALOMEDSClient_ClientFactory.hxx>
+#include <Basics_Utils.hxx>
 
 #include <SALOME_ListIteratorOfListIO.hxx>
 #include <SALOME_ListIO.hxx>
@@ -1195,9 +1196,11 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QMenu* thePop
 	_PTR(SObject) aSO = stdDS->FindObjectID( aIObj->getEntry() );
 	if ( aSO ) {
 	  _PTR( GenericAttribute ) anAttr;
-	  if ( aSO->FindAttribute( anAttr, "AttributeLocalID" ) ) {
-	    _PTR(AttributeLocalID) aAttrID = anAttr;
-	    long aId = aAttrID->Value();
+	  std::string auid = "AttributeUserID";
+	  auid += Kernel_Utils::GetGUID(Kernel_Utils::ObjectdID);
+	  if ( aSO->FindAttribute( anAttr, auid ) ) {
+	    _PTR(AttributeUserID) aAttrID = anAttr;
+	    QString aId = aAttrID->Value().c_str();
 	    if ( myExtActions.contains( aId ) ) {
 	      thePopup->addAction(myExtActions[aId]);
 	    }
@@ -1554,10 +1557,10 @@ void SalomeApp_Application::createExtraActions()
     if (!aSectionStr.isNull()) {
       QStringList aSections = aSectionStr.split(':');
       foreach(QString aSection, aSections) {
-        QString aTitle = resMgr->stringValue(aSection, "title", QString());
-        int aId = resMgr->integerValue(aSection, "attributelocalid", -1);
-        QString aSlot = resMgr->stringValue(aSection, "method", QString());
-        if (aTitle.isNull() || aSlot.isNull() || (aId == -1))
+        QString aTitle = resMgr->stringValue(aSection, "title",    QString());
+        QString aId    = resMgr->stringValue(aSection, "objectid", QString());
+        QString aSlot  = resMgr->stringValue(aSection, "method",   QString());
+        if (aTitle.isEmpty() || aSlot.isEmpty() || aId.isEmpty())
           continue;
         
         QString aModuleName = resMgr->stringValue(aSection, "module", QString());

@@ -1540,7 +1540,7 @@ SalomeApp_NoteBookDlg* SalomeApp_Application::getNoteBook() const
  * </section>
  * <section name="importmed">
  *   <parameter name="title" value="My menu"/>
- *   <parameter name="attributelocalid" value="19"/>
+ *   <parameter name="objectid" value="VISU.Result"/>
  *   <parameter name="method" value="nameOfModuleMethod"/>
  * </section>
  */

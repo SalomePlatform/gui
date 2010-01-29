@@ -71,9 +71,9 @@ public:
   virtual void          zoom( int, int, int, int );
   virtual void          fitAll( bool keepScale = false, bool withZ = true, bool upd = true );
 
-  void                  startRotation( int, int, int, const gp_Pnt& );
-  void                  rotate( int, int, int, const gp_Pnt& );
-  void                  endRotation();
+  virtual void          startRotation( int, int, int, const gp_Pnt& );
+  virtual void          rotate( int, int, int, const gp_Pnt& );
+  virtual void          endRotation();
   bool                  isBusy() {return myBusy;} // check that View Port is fully initialized
 
 protected:

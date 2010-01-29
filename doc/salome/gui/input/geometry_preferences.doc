@@ -31,6 +31,9 @@ vertices.</li>
 isolines.</li>
 <li><b>Step Value for Spin Boxes</b> - allows to define the increment
 of values set in spin boxes.</li>
+<li><b>Deflection coefficient</b> - allows to define default deflection
+coefficient for lines and surfaces. A smaller coefficient provides
+better quality of a shape in the viewer.</li>
 </ul>
 </ul>
 

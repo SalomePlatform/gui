@@ -472,6 +472,7 @@ public:
   virtual ~QtxPagePrefSpinItem();
 
   QVariant         step() const;
+  QVariant         precision() const;
   QVariant         minimum() const;
   QVariant         maximum() const;
 
@@ -480,6 +481,7 @@ public:
   QString          specialValueText() const;
 
   void             setStep( const QVariant& );
+  void             setPrecision( const QVariant& );
   void             setMinimum( const QVariant& );
   void             setMaximum( const QVariant& );
 

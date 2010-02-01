@@ -2672,6 +2672,19 @@ QVariant QtxPagePrefSpinItem::step() const
 }
 
 /*!
+  \brief Get double spin box preference item precision value.
+  \return double spin box precision
+  \sa setPrecision()
+*/
+QVariant QtxPagePrefSpinItem::precision() const
+{
+  if ( QtxDoubleSpinBox* dsb = ::qobject_cast<QtxDoubleSpinBox*>( control() ) )
+    return dsb->decimals();
+  else
+    return QVariant();
+}
+
+/*!
   \brief Get spin box preference item minimum value.
   \return spin box minimum value
   \sa setMinimum()
@@ -2762,6 +2775,22 @@ void QtxPagePrefSpinItem::setStep( const QVariant& step )
   {
     if ( step.canConvert( QVariant::Double ) )
       dsb->setSingleStep( step.toDouble() );
+  }
+}
+
+/*!
+  \brief Set double spin box preference item precision value.
+  \param step new double spin box precision value
+  \sa precision()
+*/
+void QtxPagePrefSpinItem::setPrecision( const QVariant& prec )
+{
+  if ( QtxDoubleSpinBox* dsb = ::qobject_cast<QtxDoubleSpinBox*>( control() ) )
+  {
+    if ( prec.canConvert( QVariant::Int ) ) {
+      dsb->setDecimals( prec.toInt() );
+      dsb->setPrecision( prec.toInt() );
+    }
   }
 }
 
@@ -2882,6 +2911,8 @@ QVariant QtxPagePrefSpinItem::optionValue( const QString& name ) const
     return maximum();
   else if ( name == "step" )
     return step();
+  else if ( name == "precision" )
+    return precision();
   else if ( name == "prefix" )
     return prefix();
   else if ( name == "suffix" )
@@ -2911,6 +2942,8 @@ void QtxPagePrefSpinItem::setOptionValue( const QString& name, const QVariant& v
     setMaximum( val );
   else if ( name == "step" )
     setStep( val );
+  else if ( name == "precision" )
+    setPrecision( val );
   else if ( name == "prefix" )
   {
     if ( val.canConvert( QVariant::String ) )
@@ -2937,6 +2970,7 @@ void QtxPagePrefSpinItem::updateSpinBox()
 {
   QVariant val;
   QVariant stp = step();
+  QVariant prec = precision();
   QVariant min = minimum();
   QVariant max = maximum();
 
@@ -2960,6 +2994,7 @@ void QtxPagePrefSpinItem::updateSpinBox()
   control()->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
 
   setStep( stp );
+  setPrecision( prec );
   setMinimum( min );
   setMaximum( max );
 

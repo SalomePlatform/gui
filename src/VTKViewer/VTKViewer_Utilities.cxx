@@ -160,7 +160,8 @@ ComputeVisiblePropBounds(vtkRenderer* theRenderer,
       if ( aBounds != NULL &&
 	   aBounds[0] > -MAX_DISTANCE && aBounds[1] < MAX_DISTANCE &&
 	   aBounds[2] > -MAX_DISTANCE && aBounds[3] < MAX_DISTANCE &&
-	   aBounds[4] > -MAX_DISTANCE && aBounds[5] < MAX_DISTANCE )
+	   aBounds[4] > -MAX_DISTANCE && aBounds[5] < MAX_DISTANCE &&
+           vtkMath::AreBoundsInitialized( aBounds ) )
       {
 	aCount++;
 

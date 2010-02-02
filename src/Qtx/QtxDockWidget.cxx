@@ -218,13 +218,13 @@ void QtxDockWidget::Watcher::hideContainer()
 */
 void QtxDockWidget::Watcher::customEvent( QEvent* e )
 {
-  if ( e->type() == Update )
+  if ( e->type() == (QEvent::Type)Update )
   {
     updateIcon();
     updateCaption();
     updateVisibility();
   }
-  else if ( myCont && e->type() == Remove && !myCont->widget() )
+  else if ( myCont && e->type() == (QEvent::Type)Remove && !myCont->widget() )
   {
     myCont->deleteLater();
     myCont = 0;

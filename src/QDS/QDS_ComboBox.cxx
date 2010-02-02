@@ -335,7 +335,6 @@ void QDS_ComboBox::setValues( const QStringList& names )
 */
 void QDS_ComboBox::reset()
 {
-  int id = -1;
   QString aDefValue = defaultValue();
   if ( !aDefValue.isEmpty() )
     setString( aDefValue );

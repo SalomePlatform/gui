@@ -1193,18 +1193,18 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QMenu* thePop
     if ( study ) {
       _PTR(Study) stdDS = study->studyDS();
       if ( stdDS ) { 
-	_PTR(SObject) aSO = stdDS->FindObjectID( aIObj->getEntry() );
-	if ( aSO ) {
-	  _PTR( GenericAttribute ) anAttr;
-	  std::string auid = "AttributeUserID";
-	  auid += Kernel_Utils::GetGUID(Kernel_Utils::ObjectdID);
-	  if ( aSO->FindAttribute( anAttr, auid ) ) {
-	    _PTR(AttributeUserID) aAttrID = anAttr;
-	    QString aId = aAttrID->Value().c_str();
-	    if ( myExtActions.contains( aId ) ) {
-	      thePopup->addAction(myExtActions[aId]);
-	    }
-	  }
+        _PTR(SObject) aSO = stdDS->FindObjectID( aIObj->getEntry() );
+        if ( aSO ) {
+          _PTR( GenericAttribute ) anAttr;
+          std::string auid = "AttributeUserID";
+          auid += Kernel_Utils::GetGUID(Kernel_Utils::ObjectdID);
+          if ( aSO->FindAttribute( anAttr, auid ) ) {
+            _PTR(AttributeUserID) aAttrID = anAttr;
+            QString aId = aAttrID->Value().c_str();
+            if ( myExtActions.contains( aId ) ) {
+              thePopup->addAction(myExtActions[aId]);
+            }
+          }
         }
       }
     }

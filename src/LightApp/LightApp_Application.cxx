@@ -563,7 +563,7 @@ void LightApp_Application::createActions()
       QString modName = moduleName( *it );
 
       if ( !isModuleAccessible( *it ) )
-	continue;
+        continue;
 
       QString iconName;
       if ( iconMap.contains( *it ) )
@@ -574,9 +574,9 @@ void LightApp_Application::createActions()
       {
         icon = modIcon;
         INFOS ( "****************************************************************" << std::endl
-		<<  "*    Icon for " << (*it).toLatin1().constData() 
-		<< " not found. Using the default one." << std::endl
-		<< "****************************************************************" << std::endl );
+                <<  "*    Icon for " << (*it).toLatin1().constData() 
+                << " not found. Using the default one." << std::endl
+                << "****************************************************************" << std::endl );
       }
 
       icon = Qtx::scaleIcon( icon, iconSize );
@@ -585,7 +585,7 @@ void LightApp_Application::createActions()
     }
 
     connect( moduleAction, SIGNAL( moduleActivated( const QString& ) ), 
-	     this, SLOT( onModuleActivation( const QString& ) ) );
+             this, SLOT( onModuleActivation( const QString& ) ) );
     registerAction( ModulesListId, moduleAction );
   }
 
@@ -2530,9 +2530,9 @@ void LightApp_Application::updateModuleActions()
     if ( !isModuleAccessible( modName ) ) {
       QList<SUIT_Application*> apps = SUIT_Session::session()->applications();
       foreach( SUIT_Application* app, apps ) {
-	LightApp_Application* lapp = dynamic_cast<LightApp_Application*>( app );
-	if ( lapp && lapp != this )
-	  lapp->removeModuleAction( modName );
+        LightApp_Application* lapp = dynamic_cast<LightApp_Application*>( app );
+        if ( lapp && lapp != this )
+          lapp->removeModuleAction( modName );
       }
     }
   }

@@ -10,7 +10,7 @@ button.
 \image html occviewer_toolbar.png "Viewer Toolbar"
 
 <hr>
-\image html image77.png
+\image html image103.png
 \n <center><b>Dump View</b> - exports an object from the viewer in bmp, png, jpg
 or jpeg image format.</center>
 <hr>
@@ -79,7 +79,7 @@ mouse.</center>
 objects in the scene.</center>
 <hr>
 
-\image html image103.png
+\image html image104.png
 \n <center><b>Memorise view</b> - saves the current position of
 objects in the scene.</center>
 <hr>

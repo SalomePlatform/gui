@@ -101,8 +101,14 @@ void LightApp_Selection::init( const QString& client, LightApp_SelectionMgr* mgr
         entries.insert( entry, 0 );
         myEntries.insert( num, entry );
         myIsReferences.insert( num, sowner->entry() != entry );
-        processOwner( sowner );
-        num++;
+        if (processOwner( sowner )) {
+          num++;
+        }
+        else {
+          entries.remove( entry );
+          myEntries.remove( num );
+          myIsReferences.remove( num );
+        }
       }
     }
   }
@@ -204,10 +210,17 @@ QVariant LightApp_Selection::parameter( const QString& p ) const
 }
 
 /*!
-  Do nothing. To be redefined by successors
+  Perform additional processing of the selected item (to be redefined by successors if necessary).
+  Returns \c true by default.
+  Note: if this method returns \c false, the item will be removed from the items list and
+  not taken into account when showing popup menu.
+
+  \param owner a data owner being processed
+  \return \c true if the owner should be collected and \c false otherwise
 */
-void LightApp_Selection::processOwner( const LightApp_DataOwner* )
+bool LightApp_Selection::processOwner( const LightApp_DataOwner* /*owner*/ )
 {
+  return true;
 }
 
 /*!

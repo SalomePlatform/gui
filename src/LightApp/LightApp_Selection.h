@@ -50,7 +50,7 @@ public:
   virtual ~LightApp_Selection();
 
   virtual void                   init( const QString&, LightApp_SelectionMgr* );
-  virtual void                   processOwner( const LightApp_DataOwner* );
+  virtual bool                   processOwner( const LightApp_DataOwner* );
 
   virtual int                    count() const;
   virtual QVariant               parameter( const int, const QString& ) const;

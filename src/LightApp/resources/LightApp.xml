@@ -157,4 +157,20 @@
     <parameter name="Title"      value="63, 213, 255"  />
     <parameter name="NodeBody"   value="255, 249, 147" />
   </section>
+  <section name="GUI" >
+    <parameter name="documentation" value="HELP_GUI"/>
+  </section>
+  <section name="KERNEL" >
+    <parameter name="documentation" value="HELP_KERNEL"/>
+  </section>
+  <section name="HELP_GUI" >
+    <parameter name="sub_menu" value="%1"/>
+    <parameter name="GUI User's Documentation" value="${GUI_ROOT_DIR}/share/doc/salome/gui/GUI/index.html"/>
+    <parameter name="GUI Developer's Documentation" value="${GUI_ROOT_DIR}/share/doc/salome/tui/GUI/index.html"/>
+  </section>
+  <section name="HELP_KERNEL" >
+    <parameter name="sub_menu" value="%1"/>
+    <parameter name="KERNEL User's Documentation" value="${KERNEL_ROOT_DIR}/share/doc/salome/gui/KERNEL/index.html"/>
+    <parameter name="KERNEL Developer's Documentation" value="${KERNEL_ROOT_DIR}/share/doc/salome/tui/KERNEL/index.html"/>
+  </section>
 </document>

@@ -24,9 +24,6 @@
 //
 #include "OpenGLUtils_FrameBuffer.h"
 
-#define GL_GLEXT_PROTOTYPES
-#include <GL/glext.h>
-
 #ifndef WNT
 # ifndef GLX_GLXEXT_LEGACY
 #  define GLX_GLXEXT_LEGACY
@@ -37,16 +34,54 @@
 # include <wingdi.h>
 #endif
 
-PFNGLGENFRAMEBUFFERSEXTPROC vglGenFramebuffersEXT = NULL;
-PFNGLBINDFRAMEBUFFEREXTPROC vglBindFramebufferEXT = NULL;
-PFNGLFRAMEBUFFERTEXTURE2DEXTPROC vglFramebufferTexture2DEXT = NULL;
-PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC vglCheckFramebufferStatusEXT = NULL;
-PFNGLDELETEFRAMEBUFFERSEXTPROC vglDeleteFramebuffersEXT = NULL;
-PFNGLGENRENDERBUFFERSEXTPROC vglGenRenderbuffersEXT = NULL;
-PFNGLBINDRENDERBUFFEREXTPROC vglBindRenderbufferEXT = NULL;
-PFNGLRENDERBUFFERSTORAGEEXTPROC vglRenderbufferStorageEXT = NULL;
-PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC vglFramebufferRenderbufferEXT = NULL;
-PFNGLDELETEFRAMEBUFFERSEXTPROC vglDeleteRenderbuffersEXT = NULL;
+#ifndef APIENTRY
+#define APIENTRY
+#endif
+#ifndef APIENTRYP
+#define APIENTRYP APIENTRY *
+#endif
+
+#ifndef GL_FRAMEBUFFER_EXT
+#define GL_FRAMEBUFFER_EXT                0x8D40
+#endif
+
+#ifndef GL_RENDERBUFFER_EXT
+#define GL_RENDERBUFFER_EXT               0x8D41
+#endif
+
+#ifndef GL_COLOR_ATTACHMENT0_EXT
+#define GL_COLOR_ATTACHMENT0_EXT          0x8CE0
+#endif
+
+#ifndef GL_DEPTH_ATTACHMENT_EXT
+#define GL_DEPTH_ATTACHMENT_EXT           0x8D00
+#endif
+
+#ifndef GL_FRAMEBUFFER_COMPLETE_EXT
+#define GL_FRAMEBUFFER_COMPLETE_EXT       0x8CD5
+#endif
+
+typedef void (APIENTRYP PFNGLGENFRAMEBUFFERSEXTPROC) (GLsizei n, GLuint *framebuffers);
+typedef void (APIENTRYP PFNGLBINDFRAMEBUFFEREXTPROC) (GLenum target, GLuint framebuffer);
+typedef void (APIENTRYP PFNGLFRAMEBUFFERTEXTURE2DEXTPROC) (GLenum target, GLenum attachment, GLenum textarget, GLuint texture, GLint level);
+typedef GLenum (APIENTRYP PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC) (GLenum target);
+typedef void (APIENTRYP PFNGLDELETEFRAMEBUFFERSEXTPROC) (GLsizei n, const GLuint *framebuffers);
+typedef void (APIENTRYP PFNGLGENRENDERBUFFERSEXTPROC) (GLsizei n, GLuint *renderbuffers);
+typedef void (APIENTRYP PFNGLBINDRENDERBUFFEREXTPROC) (GLenum target, GLuint renderbuffer);
+typedef void (APIENTRYP PFNGLRENDERBUFFERSTORAGEEXTPROC) (GLenum target, GLenum internalformat, GLsizei width, GLsizei height);
+typedef void (APIENTRYP PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC) (GLenum target, GLenum attachment, GLenum renderbuffertarget, GLuint renderbuffer);
+typedef void (APIENTRYP PFNGLDELETERENDERBUFFERSEXTPROC) (GLsizei n, const GLuint *renderbuffers);
+
+static PFNGLGENFRAMEBUFFERSEXTPROC vglGenFramebuffersEXT = NULL;
+static PFNGLBINDFRAMEBUFFEREXTPROC vglBindFramebufferEXT = NULL;
+static PFNGLFRAMEBUFFERTEXTURE2DEXTPROC vglFramebufferTexture2DEXT = NULL;
+static PFNGLCHECKFRAMEBUFFERSTATUSEXTPROC vglCheckFramebufferStatusEXT = NULL;
+static PFNGLDELETEFRAMEBUFFERSEXTPROC vglDeleteFramebuffersEXT = NULL;
+static PFNGLGENRENDERBUFFERSEXTPROC vglGenRenderbuffersEXT = NULL;
+static PFNGLBINDRENDERBUFFEREXTPROC vglBindRenderbufferEXT = NULL;
+static PFNGLRENDERBUFFERSTORAGEEXTPROC vglRenderbufferStorageEXT = NULL;
+static PFNGLFRAMEBUFFERRENDERBUFFEREXTPROC vglFramebufferRenderbufferEXT = NULL;
+static PFNGLDELETERENDERBUFFERSEXTPROC vglDeleteRenderbuffersEXT = NULL;
 
 #ifndef WNT
 #define GL_GetProcAddress( x ) glXGetProcAddressARB( (const GLubyte*)x )

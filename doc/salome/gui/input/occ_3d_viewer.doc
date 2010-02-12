@@ -17,7 +17,7 @@ or jpeg image format.</center>
 
 \image html image110.png
 \n <center><b>Interaction style switch</b> - allows to switch between standard and
-"keyboard free" interaction styles. "Keyboard free" style allow to process all
+"keyboard free" interaction styles. "Keyboard free" style allows to process all
 view transformations without using keyboard (only by mouse) and perform selection
 in view by pressing "S" key. By default, rotation in this mode is performed by
 left mouse button, panning - by middle mouse button, zooming - by left and middle

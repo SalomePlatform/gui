@@ -202,7 +202,7 @@
     </message>
     <message>
         <source>DSC_SVTK_STYLE_SWITCH</source>
-        <translation>Interactiion style switch</translation>
+        <translation>Interaction style switch</translation>
     </message>
     <message>
         <source>MNU_SVTK_STYLE_SWITCH</source>

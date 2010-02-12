@@ -48,6 +48,7 @@
 #include <QPainter>
 #include <QTime>
 #include <QImage>
+#include <QKeyEvent>
 #include <QMouseEvent>
 #include <QApplication>
 
@@ -214,6 +215,8 @@ OCCViewer_ViewWindow::OCCViewer_ViewWindow( SUIT_Desktop*     theDesktop,
 
   mypSketcher = 0;
   myCurSketch = -1;
+
+  myInteractionStyle = SUIT_ViewModel::STANDARD;
 }
 
 /*!
@@ -255,17 +258,18 @@ void OCCViewer_ViewWindow::initLayout()
   \return type of the operation
 */
 OCCViewer_ViewWindow::OperationType
-OCCViewer_ViewWindow::getButtonState( QMouseEvent* theEvent )
+OCCViewer_ViewWindow::getButtonState( QMouseEvent* theEvent, int theInteractionStyle )
 {
   OperationType aOp = NOTHING;
-  if( (theEvent->modifiers() == SUIT_ViewModel::myStateMap[SUIT_ViewModel::ZOOM]) &&
-      (theEvent->button() == SUIT_ViewModel::myButtonMap[SUIT_ViewModel::ZOOM]) )
+  SUIT_ViewModel::InteractionStyle aStyle = (SUIT_ViewModel::InteractionStyle)theInteractionStyle;
+  if( (theEvent->modifiers() == SUIT_ViewModel::myStateMap[aStyle][SUIT_ViewModel::ZOOM]) &&
+      (theEvent->buttons() == SUIT_ViewModel::myButtonMap[aStyle][SUIT_ViewModel::ZOOM]) )
     aOp = ZOOMVIEW;
-  else if( (theEvent->modifiers() == SUIT_ViewModel::myStateMap[SUIT_ViewModel::PAN]) &&
-           (theEvent->button() == SUIT_ViewModel::myButtonMap[SUIT_ViewModel::PAN]) )
+  else if( (theEvent->modifiers() == SUIT_ViewModel::myStateMap[aStyle][SUIT_ViewModel::PAN]) &&
+           (theEvent->buttons() == SUIT_ViewModel::myButtonMap[aStyle][SUIT_ViewModel::PAN]) )
     aOp = PANVIEW;
-  else if( (theEvent->modifiers()  == SUIT_ViewModel::myStateMap[SUIT_ViewModel::ROTATE]) &&
-           (theEvent->button() == SUIT_ViewModel::myButtonMap[SUIT_ViewModel::ROTATE]) )
+  else if( (theEvent->modifiers()  == SUIT_ViewModel::myStateMap[aStyle][SUIT_ViewModel::ROTATE]) &&
+           (theEvent->buttons() == SUIT_ViewModel::myButtonMap[aStyle][SUIT_ViewModel::ROTATE]) )
     aOp = ROTATE;
 
   return aOp;
@@ -315,6 +319,10 @@ bool OCCViewer_ViewWindow::eventFilter( QObject* watched, QEvent* e )
       }
       return true;
 
+    case QEvent::KeyPress:
+      emit keyPressed(this, (QKeyEvent*) e);
+      return true;
+
     default:
       break;
     }
@@ -339,6 +347,17 @@ void OCCViewer_ViewWindow::vpMousePressEvent( QMouseEvent* theEvent )
 {
   myStartX = theEvent->x();
   myStartY = theEvent->y();
+  int anInteractionStyle = interactionStyle();
+
+  // in "key free" interaction style zoom operation is activated by two buttons (simultaneously pressed),
+  // which are assigned for pan and rotate - these operations are activated immediately after pressing 
+  // of the first button, so it is necessary to switch to zoom when the second button is pressed
+  bool aSwitchToZoom = false;
+  if ( anInteractionStyle == SUIT_ViewModel::KEY_FREE && 
+       ( myOperation == PANVIEW || myOperation == ROTATE ) ) {
+    aSwitchToZoom = getButtonState( theEvent, anInteractionStyle ) == ZOOMVIEW;
+  }
+
   switch ( myOperation ) {
   case WINDOWFIT:
     if ( theEvent->button() == Qt::LeftButton )
@@ -356,20 +375,24 @@ void OCCViewer_ViewWindow::vpMousePressEvent( QMouseEvent* theEvent )
     break;
 
   case PANVIEW:
-    if ( theEvent->button() == Qt::LeftButton )
+    if ( aSwitchToZoom )
+      activateZoom();
+    else if ( theEvent->button() == Qt::LeftButton )
       emit vpTransformationStarted ( PANVIEW );
     break;
 
   case ROTATE:
-    if ( theEvent->button() == Qt::LeftButton ) {
-            myViewPort->startRotation(myStartX, myStartY, myCurrPointType, mySelectedPoint);
-            emit vpTransformationStarted ( ROTATE );
-          }
+    if ( aSwitchToZoom )
+      activateZoom();
+    else if ( theEvent->button() == Qt::LeftButton ) {
+      myViewPort->startRotation(myStartX, myStartY, myCurrPointType, mySelectedPoint);
+      emit vpTransformationStarted ( ROTATE );
+    }
     break;
 
   default:
   /*  Try to activate a transformation */
-    switch ( getButtonState(theEvent) ) {
+    switch ( getButtonState(theEvent, anInteractionStyle) ) {
     case ZOOMVIEW:
             activateZoom();
       break;
@@ -743,7 +766,9 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent( QMouseEvent* theEvent )
     {
       int aState = theEvent->modifiers();
       int aButton = theEvent->buttons();
-      if ( aButton == Qt::LeftButton && ( aState == Qt::NoModifier || Qt::ShiftModifier ) ) {
+      int anInteractionStyle = interactionStyle();
+      if ( anInteractionStyle == SUIT_ViewModel::STANDARD && 
+           aButton == Qt::LeftButton && ( aState == Qt::NoModifier || Qt::ShiftModifier ) ) {
         myDrawRect = myEnableDrawMode;
         if ( myDrawRect ) {
           drawRect();
@@ -755,7 +780,8 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent( QMouseEvent* theEvent )
           }
         }
       }
-      else if ( aButton == Qt::RightButton && ( aState == Qt::NoModifier || Qt::ShiftModifier ) ) {
+      else if ( anInteractionStyle == SUIT_ViewModel::STANDARD && 
+                aButton == Qt::RightButton && ( aState == Qt::NoModifier || Qt::ShiftModifier ) ) {
         OCCViewer_ViewSketcher* sketcher = 0;
         QList<OCCViewer_ViewSketcher*>::Iterator it;
         for ( it = mySketchers.begin(); it != mySketchers.end() && !sketcher; ++it )
@@ -1099,6 +1125,14 @@ void OCCViewer_ViewWindow::createActions()
   aAction->setStatusTip(tr("DSC_AMBIENT"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onAmbientToogle()));
   toolMgr()->registerAction( aAction, AmbientId );
+
+  // Switch between interaction styles
+  aAction = new QtxAction(tr("MNU_STYLE_SWITCH"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_SVTK_STYLE_SWITCH" ) ),
+                          tr( "MNU_STYLE_SWITCH" ), 0, this);
+  aAction->setStatusTip(tr("DSC_STYLE_SWITCH"));
+  aAction->setCheckable(true);
+  connect(aAction, SIGNAL(toggled(bool)), this, SLOT(onSwitchInteractionStyle(bool)));
+  toolMgr()->registerAction( aAction, SwitchInteractionStyleId );
 }
 
 /*!
@@ -1109,6 +1143,7 @@ void OCCViewer_ViewWindow::createToolBar()
   int tid = toolMgr()->createToolBar( tr( "LBL_TOOLBAR_LABEL" ), false );
 
   toolMgr()->append( DumpId, tid );
+  toolMgr()->append( SwitchInteractionStyleId, tid );
   if( myModel->trihedronActivated() ) 
     toolMgr()->append( TrihedronShowId, tid );
 
@@ -1423,6 +1458,37 @@ void OCCViewer_ViewWindow::setRestoreFlag()
 void OCCViewer_ViewWindow::onTrihedronShow()
 {
   myModel->toggleTrihedron();
+}
+
+/*!
+  \brief Switches "keyboard free" interaction style on/off
+*/
+void OCCViewer_ViewWindow::onSwitchInteractionStyle( bool on )
+{
+  myInteractionStyle = on ? (int)SUIT_ViewModel::KEY_FREE : (int)SUIT_ViewModel::STANDARD;
+
+  // update action state if method is called outside
+  QtxAction* a = dynamic_cast<QtxAction*>( toolMgr()->action( SwitchInteractionStyleId ) );
+  if ( a->isChecked() != on )
+    a->setChecked( on );
+}
+
+/*!
+  \brief Get current interaction style
+  \return interaction style
+*/
+int OCCViewer_ViewWindow::interactionStyle() const
+{
+  return myInteractionStyle;
+}
+
+/*!
+  \brief Set current interaction style
+  \param theStyle interaction style
+*/
+void OCCViewer_ViewWindow::setInteractionStyle( const int theStyle )
+{
+  onSwitchInteractionStyle( theStyle == (int)SUIT_ViewModel::KEY_FREE );
 }
 
 /*!

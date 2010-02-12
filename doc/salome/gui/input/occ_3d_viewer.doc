@@ -15,6 +15,15 @@ button.
 or jpeg image format.</center>
 <hr>
 
+\image html image110.png
+\n <center><b>Interaction style switch</b> - allows to switch between standard and
+"keyboard free" interaction styles. "Keyboard free" style allow to process all
+view transformations without using keyboard (only by mouse) and perform selection
+in view by pressing "S" key. By default, rotation in this mode is performed by
+left mouse button, panning - by middle mouse button, zooming - by left and middle
+mouse buttons pressed simultaneously.</center>
+<hr>
+
 \image html image88.png
 \n <center><b>Show/Hide Trihedron</b> - shows or hides coordinate axes.</center>
 <hr>

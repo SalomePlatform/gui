@@ -116,5 +116,9 @@
         <source>ICON_OCCVIEWER_AMBIENT</source>
         <translation>occ_view_ambient.png</translation>
     </message>
+    <message>
+        <source>ICON_OCCVIEWER_STYLE_SWITCH</source>
+        <translation>occ_view_style_switch.png</translation>
+    </message>
 </context>
 </TS>

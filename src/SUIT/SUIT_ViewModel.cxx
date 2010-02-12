@@ -24,8 +24,8 @@
 #include "SUIT_ViewModel.h"
 #include "SUIT_ViewWindow.h"
 
-SUIT_ViewModel::StatesMap SUIT_ViewModel::myStateMap;
-SUIT_ViewModel::ButtonsMap SUIT_ViewModel::myButtonMap;
+SUIT_ViewModel::InteractionStyle2StatesMap SUIT_ViewModel::myStateMap;
+SUIT_ViewModel::InteractionStyle2ButtonsMap SUIT_ViewModel::myButtonMap;
 
 static bool isInitialized = false;
 
@@ -36,17 +36,31 @@ SUIT_ViewModel::SUIT_ViewModel()
   {
     isInitialized = true;
 
-    SUIT_ViewModel::myStateMap[ZOOM]  = Qt::ControlModifier;
-    SUIT_ViewModel::myButtonMap[ZOOM] = Qt::LeftButton;
+    // standard interaction style
+    SUIT_ViewModel::myStateMap[STANDARD][ZOOM]  = Qt::ControlModifier;
+    SUIT_ViewModel::myButtonMap[STANDARD][ZOOM] = Qt::LeftButton;
 
-    SUIT_ViewModel::myStateMap[PAN]   = Qt::ControlModifier;
-    SUIT_ViewModel::myButtonMap[PAN]  = Qt::MidButton;
+    SUIT_ViewModel::myStateMap[STANDARD][PAN]   = Qt::ControlModifier;
+    SUIT_ViewModel::myButtonMap[STANDARD][PAN]  = Qt::MidButton;
 
-    SUIT_ViewModel::myStateMap[ROTATE]  = Qt::ControlModifier;
-    SUIT_ViewModel::myButtonMap[ROTATE] = Qt::RightButton;
+    SUIT_ViewModel::myStateMap[STANDARD][ROTATE]  = Qt::ControlModifier;
+    SUIT_ViewModel::myButtonMap[STANDARD][ROTATE] = Qt::RightButton;
 
-    SUIT_ViewModel::myStateMap[FIT_AREA]  = Qt::ControlModifier;
-    SUIT_ViewModel::myButtonMap[FIT_AREA] = Qt::RightButton;
+    SUIT_ViewModel::myStateMap[STANDARD][FIT_AREA]  = Qt::ControlModifier;
+    SUIT_ViewModel::myButtonMap[STANDARD][FIT_AREA] = Qt::RightButton;
+
+    // "key free" interaction style
+    SUIT_ViewModel::myStateMap[KEY_FREE][ZOOM]  = Qt::NoModifier;
+    SUIT_ViewModel::myButtonMap[KEY_FREE][ZOOM] = Qt::LeftButton | Qt::MidButton;
+
+    SUIT_ViewModel::myStateMap[KEY_FREE][PAN]   = Qt::NoModifier;
+    SUIT_ViewModel::myButtonMap[KEY_FREE][PAN]  = Qt::MidButton;
+
+    SUIT_ViewModel::myStateMap[KEY_FREE][ROTATE]  = Qt::NoModifier;
+    SUIT_ViewModel::myButtonMap[KEY_FREE][ROTATE] = Qt::LeftButton;
+
+    SUIT_ViewModel::myStateMap[KEY_FREE][FIT_AREA]  = Qt::NoModifier; // unused
+    SUIT_ViewModel::myButtonMap[KEY_FREE][FIT_AREA] = Qt::NoButton;   // unused
   }
   myViewManager = 0;
 }
@@ -85,10 +99,11 @@ SUIT_ViewManager* SUIT_ViewModel::getViewManager() const
  *\param theState - adding state to state map operations.
  *\param theButton - adding state to button map operations.
  */
-void SUIT_ViewModel::setHotButton( HotOperation theOper, Qt::KeyboardModifier theState, Qt::MouseButton theButton )
+void SUIT_ViewModel::setHotButton( InteractionStyle theInteractionStyle, HotOperation theOper,
+                                   Qt::KeyboardModifiers theState, Qt::MouseButtons theButton )
 {
-  myStateMap[theOper]  = theState;
-  myButtonMap[theOper] = theButton;
+  myStateMap[theInteractionStyle][theOper]  = theState;
+  myButtonMap[theInteractionStyle][theOper] = theButton;
 }
 
 /*! Gets hot button for operation \a theOper.
@@ -96,8 +111,9 @@ void SUIT_ViewModel::setHotButton( HotOperation theOper, Qt::KeyboardModifier th
  *\param theState - output state from state map operations.
  *\param theButton - output state from button map operations.
 */
-void SUIT_ViewModel::getHotButton( HotOperation theOper, Qt::KeyboardModifier& theState, Qt::MouseButton& theButton )
+void SUIT_ViewModel::getHotButton( InteractionStyle theInteractionStyle, HotOperation theOper,
+                                   Qt::KeyboardModifiers& theState, Qt::MouseButtons& theButton )
 {
-  theState  = myStateMap[theOper];
-  theButton = myButtonMap[theOper];
+  theState  = myStateMap[theInteractionStyle][theOper];
+  theButton = myButtonMap[theInteractionStyle][theOper];
 }

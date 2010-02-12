@@ -33,6 +33,7 @@
 #include <AIS_Trihedron.hxx>
 #include <AIS_InteractiveContext.hxx>
 
+class QKeyEvent;
 class QMouseEvent;
 
 class SUIT_ViewWindow;
@@ -124,6 +125,9 @@ public:
   Handle(AIS_InteractiveContext)  getAISContext()  const { return myAISContext; }
   Handle(AIS_Trihedron)           getTrihedron()   const { return myTrihedron; }
 
+  int                             interactionStyle() const;
+  void                            setInteractionStyle( const int );
+
   void                            enableSelection(bool isEnabled);
   bool                            isSelectionEnabled() const { return mySelectionEnabled; }
 
@@ -156,6 +160,7 @@ protected slots:
   void onMousePress(SUIT_ViewWindow*, QMouseEvent*);
   void onMouseMove(SUIT_ViewWindow*, QMouseEvent*);
   void onMouseRelease(SUIT_ViewWindow*, QMouseEvent*);
+  void onKeyPress(SUIT_ViewWindow*, QKeyEvent*);
 
   void onDumpView();
   void onChangeBgColor();
@@ -168,6 +173,8 @@ private:
   Handle(AIS_InteractiveContext)  myAISContext;
 
   viewAspectList                  myViewAspects;
+
+  int                             myInteractionStyle;
 
   bool                            mySelectionEnabled;
   bool                            myMultiSelectionEnabled;

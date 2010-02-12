@@ -47,9 +47,13 @@ class SUIT_EXPORT SUIT_ViewModel : public QObject
         Q_OBJECT
 public:
   enum HotOperation { PAN, ZOOM, ROTATE, FIT_AREA };
+  enum InteractionStyle { STANDARD, KEY_FREE };
 
-  typedef QMap<HotOperation, Qt::KeyboardModifier> StatesMap;
-  typedef QMap<HotOperation, Qt::MouseButton>      ButtonsMap;
+  typedef QMap<HotOperation, Qt::KeyboardModifiers> StatesMap;
+  typedef QMap<HotOperation, Qt::MouseButtons>      ButtonsMap;
+
+  typedef QMap<InteractionStyle, StatesMap>         InteractionStyle2StatesMap;
+  typedef QMap<InteractionStyle, ButtonsMap>        InteractionStyle2ButtonsMap;
   
   SUIT_ViewModel();
   virtual ~SUIT_ViewModel();
@@ -63,17 +67,17 @@ public:
 
   virtual void      contextMenuPopup( QMenu* ) {}
 
-  static void       setHotButton( HotOperation theOper, Qt::KeyboardModifier theState,
-                                  Qt::MouseButton theButton );
-  static void       getHotButton( HotOperation theOper, Qt::KeyboardModifier& theState,
-                                  Qt::MouseButton& theButton );
+  static void       setHotButton( InteractionStyle theInteractionStyle, HotOperation theOper,
+                                  Qt::KeyboardModifiers theState, Qt::MouseButtons theButton );
+  static void       getHotButton( InteractionStyle theInteractionStyle, HotOperation theOper,
+                                  Qt::KeyboardModifiers& theState, Qt::MouseButtons& theButton );
 
 protected:
   SUIT_ViewManager* myViewManager;
 
 public:
-  static StatesMap  myStateMap;
-  static ButtonsMap myButtonMap;
+  static InteractionStyle2StatesMap  myStateMap;
+  static InteractionStyle2ButtonsMap myButtonMap;
 };
 
 #ifdef WIN32

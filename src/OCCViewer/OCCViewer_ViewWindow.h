@@ -49,7 +49,7 @@ public:
   enum { DumpId, FitAllId, FitRectId, ZoomId, PanId, GlobalPanId,
          ChangeRotationPointId, RotationId,
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, CloneId, ClippingId, MemId, RestoreId,
-         TrihedronShowId, AxialScaleId, AmbientId };
+         TrihedronShowId, AxialScaleId, AmbientId, SwitchInteractionStyleId };
 
   enum OperationType{ NOTHING, PANVIEW, ZOOMVIEW, ROTATE, 
                       PANGLOBAL, WINDOWFIT, FITALLVIEW, RESETVIEW,
@@ -84,6 +84,9 @@ public:
   OCCViewer_ViewSketcher* getSketcher( const int );
 
   void                    activateSketching( int );
+
+  int                     interactionStyle() const;
+  void                    setInteractionStyle( const int );
  
 public slots:
   void onFrontView();
@@ -109,6 +112,7 @@ public slots:
   void onRestoreView();
   void onTrihedronShow();
   void setRestoreFlag();
+  void onSwitchInteractionStyle( bool on );
 
   void activateSetRotationGravity();
   void activateSetRotationSelected( double theX, double theY, double theZ );
@@ -151,7 +155,7 @@ protected:
   void createActions();
   void createToolBar();
  
-  virtual OperationType getButtonState(QMouseEvent* theEvent);
+  virtual OperationType getButtonState(QMouseEvent* theEvent, int theInteractionStyle);
 
   viewAspect getViewParams() const;
 
@@ -203,6 +207,8 @@ private:
   QtxAction* mySetRotationPointAction;
 
   QtxRectRubberBand* myRectBand; //!< selection rectangle rubber band
+
+  int myInteractionStyle;
 };
 
 #ifdef WIN32

@@ -1349,6 +1349,7 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
     u = resMgr->integerValue( "OCCViewer", "iso_number_u", u );
     v = resMgr->integerValue( "OCCViewer", "iso_number_v", v );
     vm->setIsos( u, v );
+    vm->setInteractionStyle( resMgr->integerValue( "OCCViewer", "navigation_mode", vm->interactionStyle() ) );
     viewMgr->setViewModel( vm );// custom view model, which extends SALOME_View interface
     new LightApp_OCCSelector( (OCCViewer_Viewer*)viewMgr->getViewModel(), mySelMgr );
   }
@@ -1914,6 +1915,19 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "min", 0, isoV );
   pref->setItemProperty( "max", 100000, isoV );
 
+  int occStyleMode = pref->addPreference( tr( "PREF_NAVIGATION" ), occGroup,
+                                          LightApp_Preferences::Selector, "OCCViewer", "navigation_mode" );
+  QStringList aStyleModeList;
+  aStyleModeList.append( tr("PREF_STANDARD_STYLE") );
+  aStyleModeList.append( tr("PREF_KEYFREE_STYLE") );
+
+  QList<QVariant> aModeIndexesList;
+  aModeIndexesList.append(0);
+  aModeIndexesList.append(1);
+
+  pref->setItemProperty( "strings", aStyleModeList, occStyleMode );
+  pref->setItemProperty( "indexes", aModeIndexesList, occStyleMode );
+
   // VTK Viewer
   int vtkGen = pref->addPreference( "", vtkGroup, LightApp_Preferences::Frame );
   pref->setItemProperty( "columns", 2, vtkGen );
@@ -1923,10 +1937,6 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   QStringList aProjModeList;
   aProjModeList.append( tr("PREF_ORTHOGRAPHIC") );
   aProjModeList.append( tr("PREF_PERSPECTIVE") );
-
-  QList<QVariant> aModeIndexesList;
-  aModeIndexesList.append(0);
-  aModeIndexesList.append(1);
 
   pref->setItemProperty( "strings", aProjModeList, vtkProjMode );
   pref->setItemProperty( "indexes", aModeIndexesList, vtkProjMode );
@@ -1944,9 +1954,6 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   int vtkStyleMode = pref->addPreference( tr( "PREF_NAVIGATION" ), vtkGen,
                                           LightApp_Preferences::Selector, "VTKViewer", "navigation_mode" );
-  QStringList aStyleModeList;
-  aStyleModeList.append( tr("PREF_STANDARD_STYLE") );
-  aStyleModeList.append( tr("PREF_KEYFREE_STYLE") );
 
   pref->setItemProperty( "strings", aStyleModeList, vtkStyleMode );
   pref->setItemProperty( "indexes", aModeIndexesList, vtkStyleMode );
@@ -2176,6 +2183,25 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
       OCCViewer_Viewer* occVM = (OCCViewer_Viewer*)vm;
       occVM->setTrihedronSize( sz );
       occVM->getAISContext()->UpdateCurrentViewer();
+    }
+  }
+#endif
+
+#ifndef DISABLE_OCCVIEWER
+  if ( sec == QString( "OCCViewer" ) && param == QString( "navigation_mode" ) )
+  {
+    int mode = resMgr->integerValue( "OCCViewer", "navigation_mode", 0 );
+    QList<SUIT_ViewManager*> lst;
+    viewManagers( OCCViewer_Viewer::Type(), lst );
+    QListIterator<SUIT_ViewManager*> it( lst );
+    while ( it.hasNext() )
+    {
+      SUIT_ViewModel* vm = it.next()->getViewModel();
+      if ( !vm || !vm->inherits( "OCCViewer_Viewer" ) )
+        continue;
+
+      OCCViewer_Viewer* occVM = (OCCViewer_Viewer*)vm;
+      occVM->setInteractionStyle( mode );
     }
   }
 #endif

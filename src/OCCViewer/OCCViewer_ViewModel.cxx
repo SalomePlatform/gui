@@ -35,6 +35,7 @@
 #include <QApplication>
 #include <QColorDialog>
 #include <QPalette>
+#include <QKeyEvent>
 #include <QMenu>
 #include <QMouseEvent>
 #include <QToolBar>
@@ -114,6 +115,9 @@ OCCViewer_Viewer::OCCViewer_Viewer( bool DisplayTrihedron, bool DisplayStaticTri
     myAISContext->Deactivate(myTrihedron);
   }
 
+  // set interaction style to standard
+  myInteractionStyle = 0;
+
   // selection
   mySelectionEnabled = true;
   myMultiSelectionEnabled = true;
@@ -153,6 +157,7 @@ void OCCViewer_Viewer::initView( OCCViewer_ViewWindow* view )
   if ( view ) {
     view->initLayout();
     view->initSketchers();
+    view->setInteractionStyle( interactionStyle() );
     
     OCCViewer_ViewPort3d* vp3d = view->getViewPort();
     if ( vp3d )
@@ -187,6 +192,9 @@ void OCCViewer_Viewer::setViewManager(SUIT_ViewManager* theViewManager)
 
     connect(theViewManager, SIGNAL(mouseRelease(SUIT_ViewWindow*, QMouseEvent*)), 
             this, SLOT(onMouseRelease(SUIT_ViewWindow*, QMouseEvent*)));
+
+    connect(theViewManager, SIGNAL(keyPress(SUIT_ViewWindow*, QKeyEvent*)), 
+            this, SLOT(onKeyPress(SUIT_ViewWindow*, QKeyEvent*)));
   }
 }
 
@@ -228,9 +236,11 @@ void OCCViewer_Viewer::onMouseRelease(SUIT_ViewWindow* theWindow, QMouseEvent* t
   if (theEvent->button() != Qt::LeftButton) return;
   if (!theWindow->inherits("OCCViewer_ViewWindow")) return;
 
+  OCCViewer_ViewWindow* aView = (OCCViewer_ViewWindow*) theWindow;
+  if (!aView || aView->interactionStyle() != SUIT_ViewModel::STANDARD)
+    return;
 
   myEndPnt.setX(theEvent->x()); myEndPnt.setY(theEvent->y());
-  OCCViewer_ViewWindow* aView = (OCCViewer_ViewWindow*) theWindow;
   bool aHasShift = (theEvent->modifiers() & Qt::ShiftModifier);
   
   if (!aHasShift) emit deselection();
@@ -270,6 +280,52 @@ void OCCViewer_Viewer::onMouseRelease(SUIT_ViewWindow* theWindow, QMouseEvent* t
   emit selectionChanged();
 }
 
+/*!
+  SLOT: called on key press, processes selection in "key free" interaction style
+*/
+void OCCViewer_Viewer::onKeyPress(SUIT_ViewWindow* theWindow, QKeyEvent* theEvent)
+{
+  if (!mySelectionEnabled) return;
+  if (theEvent->key() != Qt::Key_S) return;
+  if (!theWindow->inherits("OCCViewer_ViewWindow")) return;
+
+  OCCViewer_ViewWindow* aView = (OCCViewer_ViewWindow*) theWindow;
+  if (!aView || aView->interactionStyle() != SUIT_ViewModel::KEY_FREE)
+    return;
+
+  emit deselection();
+  myAISContext->Select();
+
+  emit selectionChanged();
+}
+
+/*!
+  \return interaction style
+*/
+int OCCViewer_Viewer::interactionStyle() const
+{
+  return myInteractionStyle;
+}
+
+/*!
+  Sets interaction style: 0 - standard, 1 - keyboard free interaction
+  \param theStyle - new interaction style
+*/
+void OCCViewer_Viewer::setInteractionStyle( const int theStyle )
+{
+  myInteractionStyle = theStyle;
+  //!! To be done for view windows
+  if ( !myViewManager )
+    return;
+
+  QVector<SUIT_ViewWindow*> wins = myViewManager->getViews();
+  for ( int i = 0; i < (int)wins.count(); i++ )
+  {
+    OCCViewer_ViewWindow* win = ::qobject_cast<OCCViewer_ViewWindow*>( wins.at( i ) );
+    if ( win )
+      win->setInteractionStyle( theStyle );
+  }
+}
 
 /*!
   Sets selection enabled status

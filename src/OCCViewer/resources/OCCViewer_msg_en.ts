@@ -237,6 +237,14 @@
         <translation>Toogle keep only ambient light</translation>
     </message>
     <message>
+        <source>DSC_STYLE_SWITCH</source>
+        <translation>Interaction style switch</translation>
+    </message>
+    <message>
+        <source>MNU_STYLE_SWITCH</source>
+        <translation>Interaction style switch</translation>
+    </message>
+    <message>
         <source>OCC_IMAGE_FILES</source>
         <translation>Images Files (*.bmp *.png *.jpg *.jpeg)</translation>
     </message>

@@ -501,7 +501,7 @@ void LightApp_Application::createActions()
           if ( fi.isRelative() && !modDir.isEmpty() )
             valueStr = Qtx::addSlash( modDir ) + valueStr;
           if ( QFile::exists( valueStr ) )
-            helpData.insert( paramName, valueStr );
+            helpData.insert( paramName.arg( aModule ), valueStr );
         }
       }
     }

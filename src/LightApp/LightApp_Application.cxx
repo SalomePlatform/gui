@@ -452,11 +452,6 @@ void LightApp_Application::createActionForViewer( const int id,
 
 /*!Create actions:*/
 
-typedef struct {
-  QString filePath;
-  QString subMenu;
-} helpInfoStruct;
-
 void LightApp_Application::createActions()
 {
   STD_Application::createActions();
@@ -472,7 +467,6 @@ void LightApp_Application::createActions()
   //! Help for modules
   int helpMenu = createMenu( tr( "MEN_DESK_HELP" ), -1, -1, 1000 );
   createMenu( separator(), helpMenu, -1, 1 );
-  helpInfoStruct helpData; 
   QStringList aModuleList;
   modules( aModuleList, false );
   aModuleList.prepend( "GUI" );
@@ -486,54 +480,50 @@ void LightApp_Application::createActions()
   foreach( aModule, aModuleList ) {
     if ( aModule.isEmpty() )                                         // module title (user name)
       continue;
+    IMap <QString, QString> helpData;                                // list of help files for the module
+    QString helpSubMenu;                                             // help submenu name (empty if not needed)
     QString modName = moduleName( aModule );                         // module name
-    IMap <QString, helpInfoStruct > paramValue;
     if ( modName.isEmpty() ) modName = aModule;                      // for KERNEL and GUI
     QString rootDir = QString( "%1_ROOT_DIR" ).arg( modName );       // module root dir variable
     QString modDir  = getenv( rootDir.toLatin1().constData() );      // module root dir
     QString docSection;
     if (resMgr->hasValue( modName, "documentation" ) )
-      docSection  = resMgr->stringValue(modName, "documentation");
+      docSection = resMgr->stringValue(modName, "documentation");
     else if ( resMgr->hasSection( modName + "_documentation" ) )
       docSection = modName + "_documentation";
     if ( !docSection.isEmpty() ) {
-      helpData.subMenu = resMgr->stringValue( docSection, "sub_menu", "" ).arg( modName );
+      helpSubMenu = resMgr->stringValue( docSection, "sub_menu", "" ).arg( aModule );
       QStringList listOfParam = resMgr->parameters( docSection );
-      foreach( QString paramName, listOfParam ){
+      foreach( QString paramName, listOfParam ) {
         QString valueStr = resMgr->stringValue( docSection, paramName );
         if ( !valueStr.isEmpty() ) {
           QFileInfo fi( valueStr );
           if ( fi.isRelative() && !modDir.isEmpty() )
             valueStr = Qtx::addSlash( modDir ) + valueStr;
-          if ( QFile::exists( valueStr ) ){
-            helpData.filePath = valueStr;
-            paramValue.insert( paramName, helpData );
-          }
+          if ( QFile::exists( valueStr ) )
+            helpData.insert( paramName, valueStr );
         }
       }
     }
 
-    if ( paramValue.isEmpty() && !modDir.isEmpty() ) {
+    if ( helpData.isEmpty() && !modDir.isEmpty() ) {
       QStringList idxLst = QStringList() << modDir << "share" << "doc" << "salome" << "gui" << modName << "index.html";
       QString indexFile = idxLst.join( QDir::separator() );          // index file
-      if ( QFile::exists( indexFile ) ){
-        helpData.filePath = indexFile;
-        paramValue.insert( tr( "%1 Help" ).arg( aModule ), helpData );
-      }
+      if ( QFile::exists( indexFile ) )
+        helpData.insert( tr( "%1 module Users's Guide" ).arg( aModule ), indexFile );
     }
     
-    IMapConstIterator<QString, helpInfoStruct > fileIt;
-    for ( fileIt = paramValue.begin(); fileIt != paramValue.end(); fileIt++ ) {
+    IMapConstIterator<QString, QString > fileIt;
+    for ( fileIt = helpData.begin(); fileIt != helpData.end(); fileIt++ ) {
       QString helpFileName = fileIt.key();
-      helpData = fileIt.value();
       QAction* a = createAction( id, helpFileName,
                                  resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false ),
                                  helpFileName, helpFileName,
                                  0, desk, false, this, SLOT( onHelpContentsModule() ) );
-      a->setData( helpData.filePath );
-      if ( !helpData.subMenu.isEmpty() ){
-        int helpSubMenu = createMenu( helpData.subMenu, helpMenu, -1, 0 );
-        createMenu( a, helpSubMenu, -1 ); 
+      a->setData( fileIt.value() );
+      if ( !helpSubMenu.isEmpty() ){
+        int helpSubMenuId = createMenu( helpSubMenu, helpMenu, -1, 0 );
+        createMenu( a, helpSubMenuId, -1 ); 
       }
       else
         createMenu( a, helpMenu, -1, 0 );

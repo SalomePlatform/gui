@@ -84,7 +84,7 @@ size of the area displayed in 3D Viewer.</li>
 <li><b>Projection mode</b> - allows choosing between \b Orthogonal and
 \b Perspective projection mode. </b>
 <li><b>Navigation mode</b> - this option allows to choose one of the
-modes of work with mouse in VTK viewer.</li>
+modes of work with mouse in OCC and VTK 3D viewers.</li>
 <ul>
 <li><b>Salome Standard Controls</b> - allows to manipulate objects in the
 viewer with the mouse and locked Ctrl button: increase or decrease the

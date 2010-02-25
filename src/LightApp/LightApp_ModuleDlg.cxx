@@ -178,6 +178,8 @@ LightApp_ModuleDlg::LightApp_ModuleDlg( QWidget*       parent,
 
   // <Cancel>
   QPushButton* cancelBtn = new QPushButton( tr( "CANCEL" ), this );
+  cancelBtn->setAutoDefault( true );
+
   myButtonLayout->addSpacing( 70 );
   myButtonLayout->addStretch();
   myButtonLayout->addWidget( cancelBtn );
@@ -223,8 +225,12 @@ int LightApp_ModuleDlg::addButton( const QString& button, const int id )
   }
 
   QPushButton* newButton = new QPushButton( button, this );
+  newButton->setAutoDefault( true );
 
-  if ( myButtons.empty() ) newButton->setDefault( true );
+  if ( myButtons.empty() ) {
+	newButton->setDefault( true );
+	newButton->setFocus();
+  }
 
   myButtons.insert( newButton, bid );
   myButtonLayout->insertWidget( myButtonLayout->count()-3, newButton );

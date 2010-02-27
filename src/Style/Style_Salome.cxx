@@ -259,6 +259,7 @@ void Style_Salome::apply()
     // set SALOME style
     QApplication::style()->setParent( 0 );           // avoid deleting original application style
     QApplication::setStyle( new Style_Salome() );    // set style
+    QApplication::setDesktopSettingsAware(false);    // prevent the style changing from another tools
   }
   update();                                          // update style
 }
@@ -275,6 +276,9 @@ void Style_Salome::restore()
   // check if SALOME style is set to the application
   if ( !isActive() )
     return;
+
+  QApplication::setDesktopSettingsAware(true);
+
   // restore previous style
   model()->restore();
 }

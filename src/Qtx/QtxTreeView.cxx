@@ -322,18 +322,6 @@ void QtxTreeView::selectionChanged( const QItemSelection& selected,
 }
 
 /*!
-  \brief Called when rows are about to be removed.
-  \param parent model index
-  \param start first row to remove
-  \param end last row to remove
-*/
-void QtxTreeView::rowsAboutToBeRemoved( const QModelIndex& parent, int start, int end )
-{
-  setCurrentIndex( QModelIndex() );
-  QTreeView::rowsAboutToBeRemoved( parent, start, end );
-}
-
-/*!
   \brief Expand/collapse the specified item (recursively).
   \param index model index
   \param levels number of levels to be expanded/collapsed

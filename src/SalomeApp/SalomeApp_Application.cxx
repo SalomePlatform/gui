@@ -973,29 +973,32 @@ int SalomeApp_Application::openChoice( const QString& aName )
 {
   int choice = LightApp_Application::openChoice( aName );
 
-  if ( choice == OpenNew ) // The document isn't already open.
-  {
-    bool exist = false;
-    std::vector<std::string> lst = studyMgr()->GetOpenStudies();
-    for ( uint i = 0; i < lst.size() && !exist; i++ )
-    {
-      if ( aName == QString( lst[i].c_str() ) )
-        exist = true;
+  if ( QFileInfo( aName ).exists() ) {
+    if ( choice == OpenNew ) { // The document isn't already open.
+      bool exist = false;
+      std::vector<std::string> lst = studyMgr()->GetOpenStudies();
+      for ( uint i = 0; i < lst.size() && !exist; i++ ) {
+        if ( aName == QString( lst[i].c_str() ) )
+          exist = true;
+      }
+      // The document already exists in the study manager.
+      // Do you want to reload it?
+      if ( exist ) {
+        int answer = SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "QUE_DOC_ALREADYEXIST" ).arg( aName ),
+                                                SUIT_MessageBox::Yes | SUIT_MessageBox::No, SUIT_MessageBox::No );
+        if ( answer == SUIT_MessageBox::Yes )
+          choice = OpenRefresh;
+        else
+          choice = OpenCancel;
+      }
     }
-
-    // The document already exists in the study manager.
-    // Do you want to reload it?
-    if ( exist )
-    {
-      int answer = SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "QUE_DOC_ALREADYEXIST" ).arg( aName ),
-                                              SUIT_MessageBox::Yes | SUIT_MessageBox::No, SUIT_MessageBox::No );
-      if ( answer == SUIT_MessageBox::Yes )
-        choice = OpenRefresh;
-      else
-        choice = OpenCancel;
-    }
+  } else { // file is not exist on disk
+    SUIT_MessageBox::warning( desktop(),
+                              QObject::tr("WRN_WARNING"),
+                              QObject::tr("WRN_FILE_NOT_EXIST").arg(aName.toLatin1().data()));
+    return false;
   }
-
+  
   return choice;
 }
 

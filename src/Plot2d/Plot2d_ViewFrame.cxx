@@ -844,10 +844,10 @@ void Plot2d_ViewFrame::getFitRangeByCurves(double& xMin,  double& xMax,
 	  xMax = yMax = y2Max = -1e150;
 	}
 	empty = false;
-	xMin = std::min( xMin, it.value()->getMinX() );
-	xMax = std::max( xMax, it.value()->getMaxX() );
-	yMin = std::min( yMin, it.value()->getMinY() );
-	yMax = std::max( yMax, it.value()->getMaxY() );
+	xMin = qMin( xMin, it.value()->getMinX() );
+	xMax = qMax( xMax, it.value()->getMaxX() );
+	yMin = qMin( yMin, it.value()->getMinY() );
+	yMax = qMax( yMax, it.value()->getMaxY() );
       }
     }
     if ( xMin == xMax ) {

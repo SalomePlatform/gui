@@ -829,33 +829,39 @@ void Plot2d_ViewFrame::getFitRanges(double& xMin,double& xMax,
 /*!
   Gets current fit ranges by Curves
 */
-void Plot2d_ViewFrame::getFitRangeByCurves(double& xMin,double& xMax,
-                                           double& yMin, double& yMax,
+void Plot2d_ViewFrame::getFitRangeByCurves(double& xMin,  double& xMax,
+                                           double& yMin,  double& yMax,
                                            double& y2Min, double& y2Max)
 {
   CurveDict cdict = getCurves();
+  bool empty = true;
   if ( !cdict.isEmpty() ) {
     CurveDict::const_iterator it = myPlot->getCurves().begin();
-    xMin = yMin = y2Min = 1e150;
-    xMax = yMax = y2Max = -1e150;
     for ( ; it != myPlot->getCurves().end(); it++ ) {
-      if ( xMin > it.value()->getMinX() ) xMin = it.value()->getMinX();
-      if ( xMax < it.value()->getMaxX() ) xMax = it.value()->getMaxX();
-      if ( yMin > it.value()->getMinY() ) yMin = it.value()->getMinY();
-      if ( yMax < it.value()->getMaxY() ) yMax = it.value()->getMaxY();
+      if ( !it.value()->isEmpty() ) {
+	if ( empty ) {
+	  xMin = yMin = y2Min = 1e150;
+	  xMax = yMax = y2Max = -1e150;
+	}
+	empty = false;
+	xMin = std::min( xMin, it.value()->getMinX() );
+	xMax = std::max( xMax, it.value()->getMaxX() );
+	yMin = std::min( yMin, it.value()->getMinY() );
+	yMax = std::max( yMax, it.value()->getMaxY() );
+      }
     }
     if ( xMin == xMax ) {
-      xMin -= xMin/10.;
-      xMax += xMax/10.;
+      xMin = xMin == 0. ? -1. : xMin - xMin/10.;
+      xMax = xMax == 0. ?  1. : xMax + xMax/10.;
     }
     if ( yMin == yMax ) {
-      yMin -= yMin/10.;
-      yMax += yMax/10.;
+      yMin = yMin == 0. ? -1. : yMin - yMin/10.;
+      yMax = yMax == 0. ?  1  : yMax + yMax/10.;
     }
     y2Min = yMin;
     y2Max = yMax;
   }
-  else {
+  if ( empty )  {
     // default values
     xMin = isModeHorLinear() ? 0.    : 1.;
     xMax = isModeHorLinear() ? 1000. : 1e5;

@@ -287,6 +287,11 @@ class VTKVIEWER_EXPORT VTKViewer_Actor : public vtkLODActor
   bool
   isHighlighted();
 
+  //! Ask, if the VTKViewer_Actor is already preselected
+  virtual
+  bool
+  isPreselected();
+
   //! Set preselection mode
   virtual
   void

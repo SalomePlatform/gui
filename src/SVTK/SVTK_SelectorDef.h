@@ -170,7 +170,7 @@ public:
 
   //----------------------------------------------------------------------------
   virtual
-  SALOME_Actor*
+  vtkActorCollection*
   Pick(const SVTK_SelectionEvent* theEvent, vtkRenderer* theRenderer) const;
 
   virtual

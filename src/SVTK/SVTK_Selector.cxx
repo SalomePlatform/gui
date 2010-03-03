@@ -43,24 +43,6 @@
 
 
 /*!
-  Find first SALOME_Actor from the end of actors collection
-*/
-inline
-SALOME_Actor* 
-GetLastSALOMEActor(vtkActorCollection* theCollection)
-{
-  if (theCollection) {
-    for (int i = theCollection->GetNumberOfItems() - 1; i >= 0; i--) {
-      if (SALOME_Actor* anActor = dynamic_cast<SALOME_Actor*>(theCollection->GetItemAsObject(i)))
-        if (anActor->hasIO())
-          return anActor;
-    }
-  }
-  return NULL;
-}
-
-
-/*!
   \return new SVTK_Selector
 */
 SVTK_Selector* 
@@ -544,7 +526,7 @@ SVTK_SelectorDef
   return Handle(VTKViewer_Filter)();
 }
 
-SALOME_Actor*
+vtkActorCollection*
 SVTK_SelectorDef
 ::Pick(const SVTK_SelectionEvent* theEvent, vtkRenderer* theRenderer) const
 {
@@ -553,7 +535,6 @@ SVTK_SelectorDef
   if ( aResourceMgr )
     anAdvancedSelectionAlgorithm = aResourceMgr->booleanValue( "VTKViewer", "use_advanced_selection_algorithm", true );
 
-  SALOME_Actor* anActor = NULL;
   vtkActorCollection* aListActors = NULL;
   if ( anAdvancedSelectionAlgorithm ) {
     myCellPicker->Pick(theEvent->myX,
@@ -562,19 +543,17 @@ SVTK_SelectorDef
                        theRenderer);
   
     aListActors = myCellPicker->GetActors();
-    anActor = GetLastSALOMEActor(aListActors);
   }
 
-  if ( !anActor ) {
+  if ( !aListActors || !aListActors->GetNumberOfItems() ) {
     myPicker->Pick(theEvent->myX,
                    theEvent->myY, 
                    0.0,
                    theRenderer);
     aListActors = myPicker->GetActors();
-    anActor = GetLastSALOMEActor(aListActors);
   }
   
-  return anActor;
+  return aListActors;
 }
 
 void

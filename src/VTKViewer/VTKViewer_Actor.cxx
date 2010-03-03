@@ -654,6 +654,16 @@ VTKViewer_Actor
 }
 
 /*!
+  \return true if the VTKViewer_Actor is already preselected
+*/
+bool
+VTKViewer_Actor
+::isPreselected() 
+{ 
+  return myIsPreselected; 
+}
+
+/*!
   Set preselection mode
 */
 void

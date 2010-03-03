@@ -41,6 +41,7 @@ class Handle(VTKViewer_Filter);
 
 class SALOME_Actor;
 class SVTK_SelectionEvent;
+class vtkActorCollection;
 class vtkRenderer;
 class Handle(SALOME_InteractiveObject);
 
@@ -210,7 +211,7 @@ public:
 
   //----------------------------------------------------------------------------
   virtual
-  SALOME_Actor*
+  vtkActorCollection*
   Pick(const SVTK_SelectionEvent* theEvent, vtkRenderer* theRenderer) const = 0;
 
   virtual

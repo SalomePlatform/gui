@@ -1050,8 +1050,7 @@ void SVTK_InteractorStyle::onFinishOperation()
               {
                 if( SALOME_Actor* anActor = SALOME_Actor::SafeDownCast( aVTKActor ) )
                 {
-                  if( anActor->Highlight( this, aSelectionEvent, true ) &&
-                      anActor->isHighlighted() )
+                  if( anActor->Highlight( this, aSelectionEvent, true ) )
                   {
                     aHighlightedActor = anActor;
                     break;

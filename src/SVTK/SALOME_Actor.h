@@ -274,7 +274,7 @@ class SVTK_EXPORT SALOME_Actor : public VTKViewer_Actor
 
 namespace SVTK
 {
-  class TPickLimiter
+  class SVTK_EXPORT TPickLimiter
   {
     vtkAbstractPicker* myPicker;
   public:

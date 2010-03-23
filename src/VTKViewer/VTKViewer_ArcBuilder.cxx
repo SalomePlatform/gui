@@ -452,8 +452,8 @@ vtkUnstructuredGrid* VTKViewer_ArcBuilder::BuildArc(std::vector<double>& theScal
   else 
     yCenter =  (-1/K1)*(xCenter - (x1+x2)/2.0) + (y1 + y2)/2.0;
   
-  double zCenter = z;
 #ifdef _MY_DEBUG_   
+  double zCenter = z;
   std::cout<<"xCenter : "<<xCenter<<endl;
   std::cout<<"yCenter : "<<yCenter<<endl;
   std::cout<<"zCenter : "<<zCenter<<endl;

@@ -570,7 +570,7 @@ void VTKViewer_RenderWindowInteractor::Remove( VTKViewer_Actor* SActor, bool upd
 {
   if ( SActor != 0 )
   {
-    GetRenderer()->RemoveProp( SActor );
+    GetRenderer()->RemoveViewProp( SActor );
     if ( updateViewer )
       emit RenderWindowModified();
   }

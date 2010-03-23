@@ -424,7 +424,7 @@ SVTK_RectPicker
   if ( this->PickFromList ) 
     aProps = this->GetPickList();
   else 
-    aProps = theRenderer->GetProps();
+    aProps = theRenderer->GetViewProps();
 
   aProps->InitTraversal();
   while ( vtkProp* aProp = aProps->GetNextProp() ) {
@@ -433,7 +433,7 @@ SVTK_RectPicker
       vtkMapper *aMapper = NULL;
       bool anIsPickable = false;
       vtkActor* anActor = NULL;
-      vtkProp *aPropCandidate = aPath->GetLastNode()->GetProp();
+      vtkProp *aPropCandidate = aPath->GetLastNode()->GetViewProp();
       if ( aPropCandidate->GetPickable() && aPropCandidate->GetVisibility() ) {
         anIsPickable = true;
         anActor = vtkActor::SafeDownCast(aPropCandidate);

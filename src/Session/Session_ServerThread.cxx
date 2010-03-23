@@ -297,7 +297,7 @@ void Session_ServerThread::ActivateContainerManager(int argc,
   try {
     PortableServer::POA_var root_poa=PortableServer::POA::_the_root_poa();
     cout << "Activate SalomeLauncher ......!!!! " << endl;
-    SALOME_Launcher * myContainer = new SALOME_Launcher(_orb,root_poa);
+    new SALOME_Launcher(_orb,root_poa);
   }
   catch(CORBA::SystemException&) {
     INFOS("Caught CORBA::SystemException.");
@@ -370,8 +370,7 @@ void Session_ServerThread::ActivateContainer(int argc,
       containerName = argv[1];
     }
     
-    Engines_Container_i * myContainer 
-      = new Engines_Container_i(_orb, _root_poa, containerName , argc , argv , true , false);
+    new Engines_Container_i(_orb, _root_poa, containerName , argc , argv , true , false);
   }
   catch(CORBA::SystemException&) {
     INFOS("Caught CORBA::SystemException.");

@@ -93,29 +93,29 @@ static QString salomeVersion()
   return ver;
 }
 
-static void MessageOutput( QtMsgType type, const char* msg )
-{
-  switch ( type )
-  {
-  case QtDebugMsg:
-#ifdef _DEBUG_
-    printf( "Debug: %s\n", msg );
-#endif
-    break;
-  case QtWarningMsg:
-#ifdef _DEBUG_
-    printf( "Warning: %s\n", msg );
-#endif
-    break;
-  case QtFatalMsg:
-#ifdef _DEBUG_
-    printf( "Fatal: %s\n", msg );
-#endif
-    break;
-  default:
-    break;
-  }
-}
+// static void MessageOutput( QtMsgType type, const char* msg )
+// {
+//   switch ( type )
+//   {
+//   case QtDebugMsg:
+// #ifdef _DEBUG_
+//     printf( "Debug: %s\n", msg );
+// #endif
+//     break;
+//   case QtWarningMsg:
+// #ifdef _DEBUG_
+//     printf( "Warning: %s\n", msg );
+// #endif
+//     break;
+//   case QtFatalMsg:
+// #ifdef _DEBUG_
+//     printf( "Fatal: %s\n", msg );
+// #endif
+//     break;
+//   default:
+//     break;
+//   }
+// }
 
 /* XPM */
 static const char* pixmap_not_found_xpm[] = {

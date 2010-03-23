@@ -35,6 +35,9 @@
 #ifdef VERSION
 #undef VERSION
 #endif
+#ifdef HAVE_FINITE
+#undef HAVE_FINITE
+#endif
 #include <Standard.hxx>
 #endif
 #ifndef _Handle_SALOME_InteractiveObject_HeaderFile

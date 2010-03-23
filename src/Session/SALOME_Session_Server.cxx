@@ -597,7 +597,7 @@ int main( int argc, char **argv )
     // std::cerr << "Caught unexpected exception on destroy : ignored !!" << std::endl;
   }
 
-  PyGILState_STATE gstate = PyGILState_Ensure();
+  PyGILState_Ensure();
   //Destroy orb from python (for chasing memory leaks)
   //PyRun_SimpleString("from omniORB import CORBA");
   //PyRun_SimpleString("orb=CORBA.ORB_init([''], CORBA.ORB_ID)");

@@ -24,6 +24,7 @@
 
 #include <list>
 #include <map>
+#include <string>
 
 namespace VTK
 {

@@ -50,7 +50,13 @@ salomeinclude_HEADERS =				\
 	VTKViewer_ViewModel.h			\
 	VTKViewer_ViewWindow.h			\
 	VTKViewer_Functor.h                     \
-	VTKViewer_ArcBuilder.h
+	VTKViewer_ArcBuilder.h                  \
+	VTKViewer_MarkerDef.h                   \
+	VTKViewer_MarkerUtils.h                 \
+	VTKViewer_MarkerWidget.h                \
+	VTKViewer_MarkerDlg.h                   \
+	VTKViewer_PolyDataMapper.h              \
+	VTKViewer_DataSetMapper.h
 
 dist_libVTKViewer_la_SOURCES =			\
 	VTKViewer_CellLocationsArray.cxx	\
@@ -73,15 +79,26 @@ dist_libVTKViewer_la_SOURCES =			\
 	VTKViewer_ViewModel.cxx			\
 	VTKViewer_ConvexTool.cxx		\
 	VTKViewer_ViewWindow.cxx 		\
-	VTKViewer_ArcBuilder.cxx
+	VTKViewer_ArcBuilder.cxx                \
+	VTKViewer_MarkerUtils.cxx               \
+	VTKViewer_MarkerWidget.cxx              \
+	VTKViewer_MarkerDlg.cxx                 \
+	VTKViewer_PolyDataMapper.cxx            \
+	VTKViewer_DataSetMapper.cxx
 
 MOC_FILES =						\
 	VTKViewer_RenderWindow_moc.cxx			\
 	VTKViewer_RenderWindowInteractor_moc.cxx	\
 	VTKViewer_ViewManager_moc.cxx			\
 	VTKViewer_ViewModel_moc.cxx			\
-	VTKViewer_ViewWindow_moc.cxx 
-nodist_libVTKViewer_la_SOURCES = $(MOC_FILES)
+	VTKViewer_ViewWindow_moc.cxx                    \
+	VTKViewer_MarkerWidget_moc.cxx                      \
+	VTKViewer_MarkerDlg_moc.cxx
+
+QRC_FILES = \
+	qrc_VTKViewer.cxx
+
+nodist_libVTKViewer_la_SOURCES = $(MOC_FILES) $(QRC_FILES)
 
 dist_salomeres_DATA =				\
 	resources/vtk_view_back.png		\
@@ -98,7 +115,16 @@ dist_salomeres_DATA =				\
 	resources/vtk_view_rotate.png		\
 	resources/vtk_view_top.png		\
 	resources/vtk_view_triedre.png		\
-	resources/vtk_view_zoom.png
+	resources/vtk_view_zoom.png             \
+	resources/marker_1.png                  \
+	resources/marker_2.png                  \
+	resources/marker_3.png                  \
+	resources/marker_4.png                  \
+	resources/marker_5.png                  \
+	resources/marker_6.png                  \
+	resources/marker_7.png                  \
+	resources/marker_8.png                  \
+	resources/marker_9.png
 
 nodist_salomeres_DATA =		\
 	VTKViewer_images.qm	\

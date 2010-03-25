@@ -164,6 +164,8 @@ selecting lines or arcs for representation of quadratic elements.</li>
 application to build arcs. </li>
 <li><b>Edge Color</b> - allows selecting the color for representation
 of edges. </li>
+<li><b>Type of marker</b> - allows to choose a shape of point markers.</li>
+<li><b>Scale of marker</b> - allows to choose a scale of point markers.</li>
 <li><b>Use Shading</b> - when this option is checked, the objects will
 be displayed with shading.</li>
 <li><b>Display only on creation</b> - when this option is checked, all

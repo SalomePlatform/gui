@@ -39,8 +39,8 @@
 #include <vtkPolyData.h>
 #include <vtkUnstructuredGrid.h>
 
-#include <vtkPolyDataMapper.h>
-#include <vtkDataSetMapper.h>
+#include <VTKViewer_PolyDataMapper.h>
+#include <VTKViewer_DataSetMapper.h>
 
 #include <vtkPassThroughFilter.h>
 
@@ -68,7 +68,7 @@ SVTK_DeviceActor
   vtkMapper::GetResolveCoincidentTopologyPolygonOffsetParameters(myPolygonOffsetFactor,
                                                                  myPolygonOffsetUnits);
 
-  myMapper = vtkDataSetMapper::New();
+  myMapper = VTKViewer_DataSetMapper::New();
 
   myShrinkFilter = vtkShrinkFilter::New();
 
@@ -141,9 +141,9 @@ SVTK_DeviceActor
     myPassFilter[ anId + 1 ]->SetInput( myPassFilter[ anId ]->GetOutput() );
 
     anId++; // 5
-    if(vtkDataSetMapper* aMapper = dynamic_cast<vtkDataSetMapper*>(theMapper)){
+    if(VTKViewer_DataSetMapper* aMapper = dynamic_cast<VTKViewer_DataSetMapper*>(theMapper)){
       aMapper->SetInput(myPassFilter[anId]->GetOutput());
-    }else if(vtkPolyDataMapper* aMapper = dynamic_cast<vtkPolyDataMapper*>(theMapper)){
+    }else if(VTKViewer_PolyDataMapper* aMapper = dynamic_cast<VTKViewer_PolyDataMapper*>(theMapper)){
       aMapper->SetInput(myPassFilter[anId]->GetPolyDataOutput());
     }
   }
@@ -507,6 +507,8 @@ SVTK_DeviceActor
     break;
   }
 
+  SetMarkerEnabled( theMode == Points );
+
   myRepresentation = theMode;
 }
 
@@ -652,7 +654,7 @@ SVTK_DeviceActor
   units = myPolygonOffsetUnits;
 }
 
-vtkDataSetMapper* SVTK_DeviceActor::GetDataSetMapper()
+VTKViewer_DataSetMapper* SVTK_DeviceActor::GetDataSetMapper()
 {
   return myMapper;
 }
@@ -682,4 +684,60 @@ void SVTK_DeviceActor::SetQuadraticArcAngle(vtkFloatingPointType theMaxAngle){
  */
 vtkFloatingPointType SVTK_DeviceActor::GetQuadraticArcAngle(){
   return myGeomFilter->GetQuadraticArcAngle();
+}
+
+/*!
+ * Set point marker enabled
+ * \param theMarkerEnabled flag to enable/disable point marker
+ */
+void SVTK_DeviceActor::SetMarkerEnabled( bool theMarkerEnabled )
+{
+  myMapper->SetMarkerEnabled( theMarkerEnabled );
+}
+
+/*!
+ * Set standard point marker
+ * \param theMarkerType type of the marker
+ * \param theMarkerScale scale of the marker
+ */
+void SVTK_DeviceActor::SetMarkerStd( VTK::MarkerType theMarkerType, VTK::MarkerScale theMarkerScale )
+{
+  myMapper->SetMarkerStd( theMarkerType, theMarkerScale );
+}
+
+/*!
+ * Set custom point marker
+ * \param theMarkerId id of the marker texture
+ * \param theMarkerTexture marker texture
+ */
+void SVTK_DeviceActor::SetMarkerTexture( int theMarkerId, VTK::MarkerTexture theMarkerTexture )
+{
+  myMapper->SetMarkerTexture( theMarkerId, theMarkerTexture );
+}
+
+/*!
+ * Get type of the point marker
+ * \return type of the point marker
+ */
+VTK::MarkerType SVTK_DeviceActor::GetMarkerType()
+{
+  return myMapper->GetMarkerType();
+}
+
+/*!
+  Get scale of the point marker
+  \return scale of the point marker
+*/
+VTK::MarkerScale SVTK_DeviceActor::GetMarkerScale()
+{
+  return myMapper->GetMarkerScale();
+}
+
+/*!
+ * Get texture identifier of the point marker
+ * \return texture identifier of the point marker
+ */
+int SVTK_DeviceActor::GetMarkerTexture()
+{
+  return myMapper->GetMarkerTexture();
 }

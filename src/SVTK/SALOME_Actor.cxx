@@ -269,12 +269,15 @@ void
 SALOME_Actor
 ::AddToRender(vtkRenderer* theRenderer)
 {
+  // these two actors have to be added first
+  // for correct visualization of selection 
+  theRenderer->AddActor( myHighlightActor.GetPointer() );
+  theRenderer->AddActor( myPreHighlightActor.GetPointer() );
+
   Superclass::AddToRender(theRenderer);
 
   myRenderer = theRenderer;
 
-  theRenderer->AddActor( myPreHighlightActor.GetPointer() );
-  theRenderer->AddActor( myHighlightActor.GetPointer() );
   theRenderer->AddActor( myOutlineActor.GetPointer() );
   theRenderer->AddActor( myNameActor.GetPointer() );
 }
@@ -286,10 +289,11 @@ void
 SALOME_Actor
 ::RemoveFromRender(vtkRenderer* theRenderer)
 {
+  theRenderer->RemoveActor( myHighlightActor.GetPointer() );
+  theRenderer->RemoveActor( myPreHighlightActor.GetPointer() );
+
   Superclass::RemoveFromRender(theRenderer);
 
-  theRenderer->RemoveActor( myPreHighlightActor.GetPointer() );
-  theRenderer->RemoveActor( myHighlightActor.GetPointer() );
   theRenderer->RemoveActor( myOutlineActor.GetPointer() );
   theRenderer->RemoveActor( myNameActor.GetPointer() );
 }
@@ -486,6 +490,8 @@ SALOME_Actor
   Selection_Mode aSelectionMode = theSelectionEvent->mySelectionMode;
   bool anIsChanged = (mySelectionMode != aSelectionMode);
 
+  myPreHighlightActor->SetMarkerEnabled( aSelectionMode == NodeSelection );
+
   vtkFloatingPointType x = theSelectionEvent->myX;
   vtkFloatingPointType y = theSelectionEvent->myY;
   vtkFloatingPointType z = 0.0;
@@ -639,6 +645,8 @@ SALOME_Actor
 
   if ( !theIsHighlight )
     return true;
+
+  myHighlightActor->SetMarkerEnabled( aSelectionMode == NodeSelection );
 
   vtkFloatingPointType x = theSelectionEvent->myX;
   vtkFloatingPointType y = theSelectionEvent->myY;
@@ -978,4 +986,63 @@ SALOME_Actor
 ::SetHighlightProperty(vtkProperty* theProperty) 
 {
   myHighlightActor->SetProperty(theProperty);
+}
+
+/*!
+  Set standard point marker
+  \param theMarkerType type of the marker
+  \param theMarkerScale scale of the marker
+*/
+void
+SALOME_Actor
+::SetMarkerStd( VTK::MarkerType theMarkerType, VTK::MarkerScale theMarkerScale )
+{
+  myPreHighlightActor->SetMarkerStd( theMarkerType, theMarkerScale );
+  myHighlightActor->SetMarkerStd( theMarkerType, theMarkerScale );
+}
+
+/*!
+  Set custom point marker
+  \param theMarkerId id of the marker texture
+  \param theMarkerTexture marker texture
+*/
+void
+SALOME_Actor
+::SetMarkerTexture( int theMarkerId, VTK::MarkerTexture theMarkerTexture )
+{
+  myPreHighlightActor->SetMarkerTexture( theMarkerId, theMarkerTexture );
+  myHighlightActor->SetMarkerTexture( theMarkerId, theMarkerTexture );
+}
+
+/*!
+  Get type of the point marker
+  \return type of the point marker
+*/
+VTK::MarkerType
+SALOME_Actor
+::GetMarkerType()
+{
+  return myPreHighlightActor->GetMarkerType();
+}
+
+/*!
+  Get scale of the point marker
+  \return scale of the point marker
+*/
+VTK::MarkerScale
+SALOME_Actor
+::GetMarkerScale()
+{
+  return myPreHighlightActor->GetMarkerScale();
+}
+
+/*!
+  Get texture identifier of the point marker
+  \return texture identifier of the point marker
+ */
+int
+SALOME_Actor
+::GetMarkerTexture()
+{
+  return myPreHighlightActor->GetMarkerTexture();
 }

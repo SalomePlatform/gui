@@ -39,7 +39,8 @@ class Handle(SALOME_InteractiveObject);
 #undef min
 #undef max
 
-#include "VTKViewer_Actor.h"
+#include <VTKViewer_Actor.h>
+#include <VTKViewer_MarkerDef.h>
 
 #include <vtkSmartPointer.h>
 
@@ -213,6 +214,32 @@ class SVTK_EXPORT SALOME_Actor : public VTKViewer_Actor
   virtual
   void
   UpdateNameActors();
+
+  //----------------------------------------------------------------------------
+  //! Set standard point marker
+  virtual
+  void
+  SetMarkerStd( VTK::MarkerType, VTK::MarkerScale );
+
+  //! Set custom point marker
+  virtual
+  void
+  SetMarkerTexture( int, VTK::MarkerTexture );
+
+  //! Get type of the point marker
+  virtual
+  VTK::MarkerType
+  GetMarkerType();
+
+  //! Get scale of the point marker
+  virtual
+  VTK::MarkerScale
+  GetMarkerScale();
+
+  //! Get texture identifier of the point marker
+  virtual
+  int
+  GetMarkerTexture();
 
   //----------------------------------------------------------------------------
   //! To set up a picker for nodal selection (initialized by #SVTK_Renderer::AddActor)

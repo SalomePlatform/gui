@@ -73,7 +73,8 @@ number of segments on each edge</li>
 <li><b>Color</b> -  allows to select the color of nodes. Click on the
 colored line to access to the \ref select_color_and_font_page "Select Color" 
 dialog box.</li>
-<li><b>Size</b> - allows to define the size of nodes.</li>
+<li><b>Type of marker</b> - allows to define the shape of nodes.</li>
+<li><b>Scale of marker</b> - allows to define the size of nodes.</li>
 </ul>
 <li><b>Elements</b></li>
 <ul>

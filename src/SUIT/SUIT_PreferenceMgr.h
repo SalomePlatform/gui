@@ -39,7 +39,7 @@ class SUIT_EXPORT SUIT_PreferenceMgr : public QtxPagePrefMgr
 public:
   typedef enum { Auto, Space, Bool, Color, String, Selector,
                  DblSpin, IntSpin, Double, Integer,
-                 GroupBox, Tab, Frame, Font, DirList, File } PrefItemType;
+                 GroupBox, Tab, Frame, Font, DirList, File, Slider } PrefItemType;
 
 public:
   SUIT_PreferenceMgr( QtxResourceMgr*, QWidget* = 0 );

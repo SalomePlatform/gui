@@ -51,6 +51,7 @@ class QListWidget;
 class QFileDialog;
 class QDateTimeEdit;
 class QStackedWidget;
+class QSlider;
 
 class QTX_EXPORT QtxPagePrefMgr : public QFrame, public QtxPreferenceMgr
 {
@@ -416,6 +417,37 @@ private:
 private:
   int              myType;
   QLineEdit*       myEditor;
+};
+
+class QTX_EXPORT QtxPagePrefSliderItem : public QtxPageNamedPrefItem
+{
+public:
+  QtxPagePrefSliderItem( const QString&, QtxPreferenceItem* = 0,
+                         const QString& = QString(), const QString& = QString() );
+  virtual ~QtxPagePrefSliderItem();
+
+  int              singleStep() const;
+  int              pageStep() const;
+  int              minimum() const;
+  int              maximum() const;
+
+  void             setSingleStep( const int& );
+  void             setPageStep( const int& );
+  void             setMinimum( const int& );
+  void             setMaximum( const int& );
+
+  virtual void     store();
+  virtual void     retrieve();
+
+protected:
+  virtual QVariant optionValue( const QString& ) const;
+  virtual void     setOptionValue( const QString&, const QVariant& );
+
+private:
+  void             updateSlider();
+
+private:
+  QSlider*         mySlider;
 };
 
 class QTX_EXPORT QtxPagePrefSelectItem : public QtxPageNamedPrefItem

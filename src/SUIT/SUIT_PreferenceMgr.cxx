@@ -132,6 +132,9 @@ int SUIT_PreferenceMgr::addItem( const QString& title, const int pId,
   case Integer:
     item = new QtxPagePrefEditItem( QtxPagePrefEditItem::Integer, title, parent, sect, param );
     break;
+  case Slider:
+    item = new QtxPagePrefSliderItem( title, parent, sect, param );
+    break;
   case GroupBox:
     item = new QtxPagePrefGroupItem( title, parent, sect, param );
     break;

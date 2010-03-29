@@ -44,6 +44,7 @@
 #include <QApplication>
 #include <QDateTimeEdit>
 #include <QStackedWidget>
+#include <QSlider>
 
 #include <stdio.h>
 
@@ -2208,6 +2209,201 @@ void QtxPagePrefEditItem::updateEditor()
 
   delete myEditor->validator();
   myEditor->setValidator( val );
+}
+
+/*!
+  \class QtxPagePrefSliderItem
+*/
+
+/*!
+  \brief Constructor.
+
+  Creates preference item with slider widget
+
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
+QtxPagePrefSliderItem::QtxPagePrefSliderItem( const QString& title, QtxPreferenceItem* parent,
+                                              const QString& sect, const QString& param )
+: QtxPageNamedPrefItem( title, parent, sect, param )
+{
+  setControl( mySlider = new QSlider( Qt::Horizontal ) );
+  mySlider->setTickPosition( QSlider::TicksBothSides );
+
+  updateSlider();
+}
+
+/*!
+  \brief Destructor.
+*/
+QtxPagePrefSliderItem::~QtxPagePrefSliderItem()
+{
+}
+
+/*!
+  \brief Get slider preference item step value.
+  \return slider single step value
+  \sa setSingleStep()
+*/
+int QtxPagePrefSliderItem::singleStep() const
+{
+  return mySlider->singleStep();
+}
+
+/*!
+  \brief Get slider preference item step value.
+  \return slider page step value
+  \sa setPageStep()
+*/
+int QtxPagePrefSliderItem::pageStep() const
+{
+  return mySlider->pageStep();
+}
+
+/*!
+  \brief Get slider preference item minimum value.
+  \return slider minimum value
+  \sa setMinimum()
+*/
+int QtxPagePrefSliderItem::minimum() const
+{
+    return mySlider->minimum();
+}
+
+/*!
+  \brief Get slider preference item maximum value.
+  \return slider maximum value
+  \sa setMaximum()
+*/
+int QtxPagePrefSliderItem::maximum() const
+{
+    return mySlider->maximum();
+}
+
+/*!
+  \brief Set slider preference item step value.
+  \param step new slider single step value
+  \sa step()
+*/
+void QtxPagePrefSliderItem::setSingleStep( const int& step )
+{
+  mySlider->setSingleStep( step );
+}
+
+/*!
+  \brief Set slider preference item step value.
+  \param step new slider single step value
+  \sa step()
+*/
+void QtxPagePrefSliderItem::setPageStep( const int& step )
+{
+  mySlider->setPageStep( step );
+}
+
+/*!
+  \brief Set slider preference item minimum value.
+  \param min new slider minimum value
+  \sa minimum()
+*/
+void QtxPagePrefSliderItem::setMinimum( const int& min )
+{
+  mySlider->setMinimum( min );
+}
+
+/*!
+  \brief Set slider preference item maximum value.
+  \param min new slider maximum value
+  \sa maximum()
+*/
+void QtxPagePrefSliderItem::setMaximum( const int& max )
+{
+  mySlider->setMaximum( max );
+}
+
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
+void QtxPagePrefSliderItem::store()
+{
+  setInteger( mySlider->value() );
+}
+
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
+void QtxPagePrefSliderItem::retrieve()
+{
+  mySlider->setValue( getInteger( mySlider->value() ) );
+}
+
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null integer if option is not set
+  \sa setOptionValue()
+*/
+QVariant QtxPagePrefSliderItem::optionValue( const QString& name ) const
+{
+  if ( name == "minimum" || name == "min" )
+    return minimum();
+  else if ( name == "maximum" || name == "max" )
+    return maximum();
+  else if ( name == "single_step" )
+    return singleStep();
+  else if ( name == "page_step" )
+    return pageStep();
+  else
+    return QtxPageNamedPrefItem::optionValue( name );
+}
+
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
+void QtxPagePrefSliderItem::setOptionValue( const QString& name, const QVariant& val )
+{
+  if ( val.canConvert( QVariant::Int ) )
+  {
+    if ( name == "minimum" || name == "min" )
+      setMinimum( val.toInt() );
+    else if ( name == "maximum" || name == "max" )
+      setMaximum( val.toInt() );
+    else if ( name == "single_step" )
+      setSingleStep( val.toInt() );
+    else if ( name == "page_step" )
+      setPageStep( val.toInt() );
+    else
+      QtxPageNamedPrefItem::setOptionValue( name, val );
+  }
+  else
+    QtxPageNamedPrefItem::setOptionValue( name, val );
+}
+
+/*!
+  \brief Update slider widget.
+*/
+void QtxPagePrefSliderItem::updateSlider()
+{
+  int val = mySlider->value();
+  int stp = singleStep();
+  int ptp = pageStep();
+  int min = minimum();
+  int max = maximum();
+
+  control()->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
+  mySlider->setFocusPolicy(Qt::StrongFocus);
+  
+  mySlider->setValue( val );
+  setSingleStep( stp );
+  setPageStep( ptp );
+  setMinimum( min );
+  setMaximum( max );
 }
 
 /*!

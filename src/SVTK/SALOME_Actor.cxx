@@ -269,15 +269,12 @@ void
 SALOME_Actor
 ::AddToRender(vtkRenderer* theRenderer)
 {
-  // these two actors have to be added first
-  // for correct visualization of selection 
-  theRenderer->AddActor( myHighlightActor.GetPointer() );
-  theRenderer->AddActor( myPreHighlightActor.GetPointer() );
-
   Superclass::AddToRender(theRenderer);
 
   myRenderer = theRenderer;
 
+  theRenderer->AddActor( myPreHighlightActor.GetPointer() );
+  theRenderer->AddActor( myHighlightActor.GetPointer() );
   theRenderer->AddActor( myOutlineActor.GetPointer() );
   theRenderer->AddActor( myNameActor.GetPointer() );
 }
@@ -289,11 +286,10 @@ void
 SALOME_Actor
 ::RemoveFromRender(vtkRenderer* theRenderer)
 {
-  theRenderer->RemoveActor( myHighlightActor.GetPointer() );
-  theRenderer->RemoveActor( myPreHighlightActor.GetPointer() );
-
   Superclass::RemoveFromRender(theRenderer);
 
+  theRenderer->RemoveActor( myPreHighlightActor.GetPointer() );
+  theRenderer->RemoveActor( myHighlightActor.GetPointer() );
   theRenderer->RemoveActor( myOutlineActor.GetPointer() );
   theRenderer->RemoveActor( myNameActor.GetPointer() );
 }

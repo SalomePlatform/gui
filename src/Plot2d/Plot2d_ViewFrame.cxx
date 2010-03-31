@@ -148,6 +148,40 @@ const char* imageCrossCursor[] = {
   "................................",
   "................................"};
   
+const char* yAxisLeft[] = {
+  "12 12 2 1",
+  "  c None",
+  ". c #000000",
+  "            ",
+  "   .        ",
+  "  ...       ",
+  " . . .      ",
+  "   .        ",
+  "   .        ",
+  "   .    .   ",
+  "   .     .  ",
+  "   ........ ",
+  "         .  ",
+  "        .   ",
+  "            "};
+
+const char* yAxisRight[] = {
+  "12 12 2 1",
+  "  c None",
+  ". c #000000",
+  "            ",
+  "        .   ",
+  "       ...  ",
+  "      . . . ",
+  "        .   ",
+  "        .   ",
+  "   .    .   ",
+  "  .     .   ",
+  " ........   ",
+  "  .         ",
+  "   .        ",
+  "            "};
+
 
 /*!
   Constructor
@@ -272,14 +306,7 @@ void Plot2d_ViewFrame::Display( const Plot2d_Prs* prs )
   if ( !prs || prs->IsNull() )
     return;
 
-  if (prs->isSecondY()) {
-    myPlot->enableAxis(QwtPlot::yRight, true);
-    mySecondY = true;
-  }
-  else {
-    myPlot->enableAxis(QwtPlot::yRight, false);
-    mySecondY = false;
-  }
+  mySecondY = prs->isSecondY();
 
   // display all curves from presentation
   curveList aCurves = prs->getCurves();
@@ -548,6 +575,9 @@ void Plot2d_ViewFrame::displayCurve( Plot2d_Curve* curve, bool update )
   if ( !curve )
     return;
 
+  if ( curve->getYAxis() == QwtPlot::yRight )
+    mySecondY = true;
+
   // san -- Protection against QwtCurve bug in Qwt 0.4.x: 
   // it crashes if switched to X/Y logarithmic mode, when one or more points have
   // non-positive X/Y coordinate
@@ -560,9 +590,9 @@ void Plot2d_ViewFrame::displayCurve( Plot2d_Curve* curve, bool update )
     updateCurve( curve, update );
   }
   else {
-    QwtPlotCurve* aPCurve = new QwtPlotCurve( curve->getVerTitle() );
+    Plot2d_QwtPlotCurve* aPCurve = new Plot2d_QwtPlotCurve( curve->getVerTitle(), curve->getYAxis() );
     aPCurve->attach( myPlot );
-    //myPlot->setCurveYAxis(curveKey, curve->getYAxis());
+    aPCurve->setYAxis( curve->getYAxis() );
 
     myPlot->getCurves().insert( aPCurve, curve );
     if ( curve->isAutoAssign() ) {
@@ -593,6 +623,7 @@ void Plot2d_ViewFrame::displayCurve( Plot2d_Curve* curve, bool update )
     aPCurve->setData( curve->horData(), curve->verData(), curve->nbPoints() );
   }
   updateTitles();
+  myPlot->updateYAxisIdentifiers();
   if ( update )
     myPlot->replot();
 }
@@ -629,6 +660,7 @@ void Plot2d_ViewFrame::eraseCurve( Plot2d_Curve* curve, bool update )
     aPCurve->detach();
     myPlot->getCurves().remove( aPCurve );
     updateTitles();
+    myPlot->updateYAxisIdentifiers();
     if ( update )
       myPlot->replot();
   }
@@ -750,7 +782,6 @@ void Plot2d_ViewFrame::fitAll()
   if (mySecondY) {
     myPlot->setAxisAutoScale( QwtPlot::yRight );
     myPlot->replot();
-    QwtScaleMap yMap2 = myPlot->canvasMap( QwtPlot::yRight );
     myPlot->setAxisScale( QwtPlot::yRight, y2min, y2max );
   }
   myPlot->replot();
@@ -834,20 +865,35 @@ void Plot2d_ViewFrame::getFitRangeByCurves(double& xMin,  double& xMax,
                                            double& y2Min, double& y2Max)
 {
   CurveDict cdict = getCurves();
-  bool empty = true;
+  bool emptyV1 = true, emptyV2 = true;
   if ( !cdict.isEmpty() ) {
     CurveDict::const_iterator it = myPlot->getCurves().begin();
     for ( ; it != myPlot->getCurves().end(); it++ ) {
+      bool isV2 = it.value()->getYAxis() == QwtPlot::yRight;
       if ( !it.value()->isEmpty() ) {
-	if ( empty ) {
-	  xMin = yMin = y2Min = 1e150;
-	  xMax = yMax = y2Max = -1e150;
+	if ( emptyV1 && emptyV2 ) {
+	  xMin = 1e150;
+	  xMax = -1e150;
 	}
-	empty = false;
+	if ( emptyV1 ) {
+	  yMin = 1e150;
+	  yMax = -1e150;
+	}
+	if ( emptyV2 ) {
+	  y2Min = 1e150;
+	  y2Max = -1e150;
+	}
+	isV2 ? emptyV2 = false : emptyV1 = false;
 	xMin = qMin( xMin, it.value()->getMinX() );
 	xMax = qMax( xMax, it.value()->getMaxX() );
-	yMin = qMin( yMin, it.value()->getMinY() );
-	yMax = qMax( yMax, it.value()->getMaxY() );
+        if ( isV2 ) {
+          y2Min = qMin( y2Min, it.value()->getMinY() );
+          y2Max = qMax( y2Max, it.value()->getMaxY() );
+        }
+        else {
+          yMin = qMin( yMin, it.value()->getMinY() );
+          yMax = qMax( yMax, it.value()->getMaxY() );
+        }
       }
     }
     if ( xMin == xMax ) {
@@ -858,15 +904,23 @@ void Plot2d_ViewFrame::getFitRangeByCurves(double& xMin,  double& xMax,
       yMin = yMin == 0. ? -1. : yMin - yMin/10.;
       yMax = yMax == 0. ?  1  : yMax + yMax/10.;
     }
-    y2Min = yMin;
-    y2Max = yMax;
+    if ( y2Min == y2Max ) {
+      y2Min = y2Min == 0. ? -1. : y2Min - y2Min/10.;
+      y2Max = y2Max == 0. ?  1  : y2Max + y2Max/10.;
+    }
   }
-  if ( empty )  {
-    // default values
+  // default values
+  if ( emptyV1 && emptyV2 ) {
     xMin = isModeHorLinear() ? 0.    : 1.;
     xMax = isModeHorLinear() ? 1000. : 1e5;
-    yMin = y2Min = isModeVerLinear() ? 0.   : 1.;
-    yMax = y2Max = isModeVerLinear() ? 1000 : 1e5;
+  }
+  if ( emptyV1  ) {
+    yMin = isModeVerLinear() ? 0.    : 1.;
+    yMax = isModeVerLinear() ? 1000. : 1e5;
+  }
+  if ( emptyV2  ) {
+    y2Min = isModeVerLinear() ? 0.    : 1.;
+    y2Max = isModeVerLinear() ? 1000. : 1e5;
   }
 }
 
@@ -1698,6 +1752,25 @@ void Plot2d_Plot2d::setLogScale( int axisId, bool log10 )
 */
 void Plot2d_Plot2d::replot()
 {
+  // the following code is intended to enable only axes
+  // that are really used by displayed curves
+  bool enableXBottom = false, enableXTop = false;
+  bool enableYLeft = false, enableYRight = false;
+  CurveDict::iterator it = myCurves.begin();
+  for( ; it != myCurves.end(); it++ ) {
+    QwtPlotCurve* aCurve = it.key();
+    if( aCurve ) {
+      enableXBottom |= aCurve->xAxis() == QwtPlot::xBottom;
+      enableXTop    |= aCurve->xAxis() == QwtPlot::xTop;
+      enableYLeft   |= aCurve->yAxis() == QwtPlot::yLeft;
+      enableYRight  |= aCurve->yAxis() == QwtPlot::yRight;
+    }
+  }
+  enableAxis( QwtPlot::xBottom, enableXBottom );
+  enableAxis( QwtPlot::xTop,    enableXTop );
+  enableAxis( QwtPlot::yLeft,   enableYLeft );
+  enableAxis( QwtPlot::yRight,  enableYRight );
+
   updateLayout();  // to fix bug(?) of Qwt - view is not updated when title is changed
   QwtPlot::replot(); 
 }
@@ -1922,6 +1995,36 @@ void Plot2d_Plot2d::onScaleDivChanged()
 }
 
 /*!
+  Updates identifiers of Y axis type in the legend.
+*/
+void Plot2d_Plot2d::updateYAxisIdentifiers()
+{
+  bool enableYLeft = false, enableYRight = false;
+  CurveDict::iterator it = myCurves.begin();
+  for( ; it != myCurves.end(); it++ ) {
+    QwtPlotCurve* aCurve = it.key();
+    if( aCurve ) {
+      enableYLeft  |= aCurve->yAxis() == QwtPlot::yLeft;
+      enableYRight |= aCurve->yAxis() == QwtPlot::yRight;
+    }
+  }
+
+  // if several curves are attached to different axes
+  // display corresponding identifiers in the legend,
+  // otherwise hide them
+  for( it = myCurves.begin(); it != myCurves.end(); it++ )
+    if( Plot2d_QwtPlotCurve* aPCurve = dynamic_cast<Plot2d_QwtPlotCurve*>( it.key() ) )
+      aPCurve->setYAxisIdentifierEnabled( enableYLeft && enableYRight );
+
+  const QwtPlotItemList& anItemList = itemList();
+  for( QwtPlotItemIterator anItemIter = anItemList.begin(); anItemIter != anItemList.end(); ++anItemIter ) {
+    QwtPlotItem* anItem = *anItemIter;
+    if( anItem && anItem->isVisible() )
+      anItem->updateLegend( legend() );
+  }
+}
+
+/*!
   Sets the flag saying that QwtPlot geometry has been fully defined.
 */
 void Plot2d_Plot2d::polish()
@@ -1989,8 +2092,10 @@ void Plot2d_ViewFrame::updateTitles()
   //QIntDictIterator<Plot2d_Curve> it( myCurves );
   QStringList aXTitles;
   QStringList aYTitles;
+  QStringList aY2Titles;
   QStringList aXUnits;
   QStringList aYUnits;
+  QStringList aY2Units;
   QStringList aTables;
   int i = 0;
 
@@ -2002,14 +2107,22 @@ void Plot2d_ViewFrame::updateTitles()
     QString yTitle = aCurve->getVerTitle().trimmed();
     QString xUnits = aCurve->getHorUnits().trimmed();
     QString yUnits = aCurve->getVerUnits().trimmed();
+    bool isY2 = aCurve->getYAxis() == QwtPlot::yRight;
     
-    aYTitles.append( yTitle );
     if ( !aXTitles.contains( xTitle ) )
       aXTitles.append( xTitle );
     if ( !aXUnits.contains( xUnits ) )
       aXUnits.append( xUnits );
-    if ( !aYUnits.contains( yUnits ) )
-      aYUnits.append( yUnits );
+    if ( isY2 ) {
+      aY2Titles.append( yTitle );
+      if ( !aY2Units.contains( yUnits ) )
+        aY2Units.append( yUnits );
+    }
+    else {
+      aYTitles.append( yTitle );
+      if ( !aYUnits.contains( yUnits ) )
+        aYUnits.append( yUnits );
+    }
 
     QString aName = aCurve->getTableTitle();
     if( !aName.isEmpty() && !aTables.contains( aName ) )
@@ -2017,24 +2130,32 @@ void Plot2d_ViewFrame::updateTitles()
     ++i;
   }
   // ... and update plot 2d view
-  QString xUnits, yUnits;
+  QString xUnits, yUnits, y2Units;
   if ( aXUnits.count() == 1 && !aXUnits[0].isEmpty() )
     xUnits = BRACKETIZE( aXUnits[0] );
   if ( aYUnits.count() == 1 && !aYUnits[0].isEmpty())
     yUnits = BRACKETIZE( aYUnits[0] );
-  QString xTitle, yTitle;
+  if ( aY2Units.count() == 1 && !aY2Units[0].isEmpty())
+    y2Units = BRACKETIZE( aY2Units[0] );
+  QString xTitle, yTitle, y2Title;
   if ( aXTitles.count() == 1 && aXUnits.count() == 1 )
     xTitle = aXTitles[0];
   if ( aYTitles.count() == 1 )
     yTitle = aYTitles[0];
+  if ( aY2Titles.count() == 1 )
+    y2Title = aY2Titles[0];
 
   if ( !xTitle.isEmpty() && !xUnits.isEmpty() )
     xTitle += " ";
   if ( !yTitle.isEmpty() && !yUnits.isEmpty() )
     yTitle += " ";
+  if ( !y2Title.isEmpty() && !y2Units.isEmpty() )
+    y2Title += " ";
 
   setTitle( myXTitleEnabled, xTitle + xUnits, XTitle, true );
   setTitle( myYTitleEnabled, yTitle + yUnits, YTitle, true );
+  if ( mySecondY )
+    setTitle( myY2TitleEnabled, y2Title + y2Units, Y2Title, true );
   setTitle( true, aTables.join("; "), MainTitle, true );
 }
 
@@ -2254,4 +2375,102 @@ QwtText Plot2d_ScaleDraw::label( double value ) const
   }
 
   return QwtScaleDraw::label( value );
+}
+
+/*!
+  Constructor of Plot2d_QwtLegendItem
+*/
+Plot2d_QwtLegendItem::Plot2d_QwtLegendItem( QWidget* parent ) :
+  QwtLegendItem( parent ),
+  myYAxisIdentifierMode( IM_None )
+{
+  myYAxisLeftIcon = yAxisLeft;
+  myYAxisRightIcon = yAxisRight;
+  int anIconWidth = qMax( myYAxisLeftIcon.width(), myYAxisRightIcon.width() );
+
+  mySpacingCollapsed = spacing();
+  mySpacingExpanded = anIconWidth - mySpacingCollapsed;
+}
+
+/*!
+  Destructor of Plot2d_QwtLegendItem
+*/
+Plot2d_QwtLegendItem::~Plot2d_QwtLegendItem()
+{
+}
+
+/*!
+  Set Y axis identifier displaying mode
+*/
+void Plot2d_QwtLegendItem::setYAxisIdentifierMode( const int theMode )
+{
+  myYAxisIdentifierMode = theMode;
+  setSpacing( theMode == IM_None ? mySpacingCollapsed : mySpacingExpanded );
+}
+
+/*!
+  Redefined method of drawing identifier of legend item
+*/
+void Plot2d_QwtLegendItem::drawIdentifier( QPainter* painter, const QRect& rect ) const
+{
+  QwtLegendItem::drawIdentifier( painter, rect );
+
+  if( myYAxisIdentifierMode != IM_None ) {
+    QPixmap aPixmap( myYAxisIdentifierMode == IM_Left ? yAxisLeft : yAxisRight );
+    painter->save();
+    painter->drawPixmap( rect.topRight() + QPoint( mySpacingExpanded/2, mySpacingExpanded/2 ), aPixmap );
+    painter->restore();
+  }
+}
+
+/*!
+  Constructor of Plot2d_QwtPlotCurve
+*/
+Plot2d_QwtPlotCurve::Plot2d_QwtPlotCurve( const QString& title,
+                                          QwtPlot::Axis yAxis /*const int index*/ ) :
+  QwtPlotCurve( title ),
+  myYAxis( yAxis ),
+  myYAxisIdentifierEnabled( false )
+{
+}
+
+/*!
+  Destructor of Plot2d_QwtPlotCurve
+*/
+Plot2d_QwtPlotCurve::~Plot2d_QwtPlotCurve()
+{
+}
+
+/*!
+  Enable / disable Y axis identifier
+*/
+void Plot2d_QwtPlotCurve::setYAxisIdentifierEnabled( const bool on )
+{
+  myYAxisIdentifierEnabled = on;
+}
+
+/*!
+  Redefined method, which updates legend of the curve
+*/
+void Plot2d_QwtPlotCurve::updateLegend( QwtLegend* legend ) const
+{
+  QwtPlotCurve::updateLegend( legend );
+
+  QWidget* widget = legend->find( this );
+  if( Plot2d_QwtLegendItem* anItem = dynamic_cast<Plot2d_QwtLegendItem*>( widget ) ) {
+    int aMode = Plot2d_QwtLegendItem::IM_None;
+    if( myYAxisIdentifierEnabled )
+      aMode = myYAxis == QwtPlot::yRight ?
+        Plot2d_QwtLegendItem::IM_Right :
+        Plot2d_QwtLegendItem::IM_Left;
+    anItem->setYAxisIdentifierMode( aMode );
+  }
+}
+
+/*!
+  Redefined method, which creates and returns legend item of the curve
+*/
+QWidget* Plot2d_QwtPlotCurve::legendItem() const
+{
+  return new Plot2d_QwtLegendItem;
 }

@@ -131,6 +131,19 @@ Cache</li>
 <li><b>Cycled animation</b> - allows to start a cycled animation of the presentation.</li>
 <li><b>Use proportional timing</b> - allows to render the animation with proportional periods of time between every frame (not depending on the time stamps).</li>
 <li><b>Clean memory at each frame</b> - this option allows to optimize the performance of the operation.</li>
+<li><b>Dump mode</b> - this option allows to choose a mode of dumping
+the animation process. Three modes are available:
+<ul>
+<li><b>No dump</b> - disables dumping.</li>
+<li><b>Save pictures to directory</b> - dumps the animation
+to set of pictures corresponding to each timestamp.</li>
+<li><b>Save animation to AVI file</b> - generates a movie that
+reproduces the animation process.</li>
+</ul></li>
+<li><b>Time stamp frequency</b> - this option is available if
+<b>Save animation to AVI file</b> mode is turned on. It provides a
+possibility to capture only timestamps with indices divisable by the
+specified frequency, that allows to generate less voluminous films.</li>
 </ul>
 
 <li><b>Sweeping preferences</b></li>

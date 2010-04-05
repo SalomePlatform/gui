@@ -33,6 +33,8 @@
 
 #include <QKeyEvent>
 #include <QLineEdit>
+#include <QToolTip>
+#include <QRegExp>
 
 #include <string>
 
@@ -54,7 +56,9 @@ SalomeApp_DoubleSpinBox::SalomeApp_DoubleSpinBox( QWidget* parent )
   myDefaultValue( 0.0 ),
   myIsRangeSet( false ),
   myMinimum( 0.0 ),
-  myMaximum( 99.99 )
+  myMaximum( 99.99 ),
+  myAcceptNames( true ),
+  myShowTip( true )
 {
   connectSignalsAndSlots();
 }
@@ -76,7 +80,9 @@ SalomeApp_DoubleSpinBox::SalomeApp_DoubleSpinBox( double min, double max, double
   myDefaultValue( 0.0 ),
   myIsRangeSet( false ),
   myMinimum( min ),
-  myMaximum( max )
+  myMaximum( max ),
+  myAcceptNames( true ),
+  myShowTip( true )
 {
   connectSignalsAndSlots();
 }
@@ -92,13 +98,24 @@ SalomeApp_DoubleSpinBox::SalomeApp_DoubleSpinBox( double min, double max, double
   \param max spin box maximum possible value
   \param step spin box increment/decrement value
   \param parent parent object
+  \param acceptNames if true, enables variable names in the spin box
+  \param showTip if true, makes the widget show a tooltip when invalid text is entered by the user
 */
-SalomeApp_DoubleSpinBox::SalomeApp_DoubleSpinBox( double min, double max, double step, int prec, int dec, QWidget* parent )
+SalomeApp_DoubleSpinBox::SalomeApp_DoubleSpinBox( double min, 
+                                                  double max, 
+                                                  double step, 
+                                                  int prec, 
+                                                  int dec, 
+                                                  QWidget* parent,
+                                                  bool acceptNames,
+                                                  bool showTip )
 : QtxDoubleSpinBox( min, max, step, prec, dec, parent ),
   myDefaultValue( 0.0 ),
   myIsRangeSet( false ),
   myMinimum( min ),
-  myMaximum( max )
+  myMaximum( max ),
+  myAcceptNames( acceptNames ),
+  myShowTip( showTip )
 {
   connectSignalsAndSlots();
 }
@@ -108,6 +125,33 @@ SalomeApp_DoubleSpinBox::SalomeApp_DoubleSpinBox( double min, double max, double
 */
 SalomeApp_DoubleSpinBox::~SalomeApp_DoubleSpinBox()
 {
+}
+
+/*!
+  \brief Perform \a steps increment/decrement steps.
+  
+  Re-implemented to handle cases when Notebook variable
+  name is specified by the user as the widget text.  
+  Otherwise, simply calls the base implementation.
+
+  \param steps number of increment/decrement steps
+*/
+void SalomeApp_DoubleSpinBox::stepBy( int steps )
+{
+  QString str  = text();
+  QString pref = prefix();
+  QString suff = suffix();
+  
+  if ( pref.length() && str.startsWith( pref ) )
+    str = str.right( str.length() - pref.length() );
+  if ( suff.length() && str.endsWith( suff ) )
+    str = str.left( str.length() - suff.length() );
+  
+  QRegExp varNameMask( "([a-z]|[A-Z]|_).*" );
+  if ( varNameMask.exactMatch( str ) )
+    return;
+
+  QtxDoubleSpinBox::stepBy( steps );
 }
 
 /*!
@@ -187,7 +231,67 @@ QString SalomeApp_DoubleSpinBox::textFromValue( double val ) const
 */
 QValidator::State SalomeApp_DoubleSpinBox::validate( QString& str, int& pos ) const
 {
-  return QValidator::Acceptable;
+  QValidator::State res = QValidator::Invalid;
+
+  // Considering the input text as a variable name
+  // Applying Python identifier syntax:
+  // either a string starting with a letter, or a string starting with
+  // an underscore followed by at least one alphanumeric character
+  if ( isAcceptNames() ){
+    QRegExp varNameMask( "(([a-z]|[A-Z])([a-z]|[A-Z]|[0-9]|_)*)|(_([a-z]|[A-Z]|[0-9])+([a-z]|[A-Z]|[0-9]|_)*)" );
+    if ( varNameMask.exactMatch( str ) )
+      res = QValidator::Acceptable;
+  
+    if ( res == QValidator::Invalid ){
+      varNameMask.setPattern( "_" );
+      if ( varNameMask.exactMatch( str ) )  
+        res = QValidator::Intermediate;
+    }
+  }
+  
+  // Trying to interpret the current input text as a numeric value
+  if ( res == QValidator::Invalid )
+    res = QtxDoubleSpinBox::validate( str, pos );  
+  
+  // Show tooltip in case of invalid manual input
+  if ( isShowTipOnValidate() && lineEdit()->hasFocus() ){
+    if ( res != QValidator::Acceptable ){ // san: do we need to warn the user in Intermediate state???
+      SalomeApp_DoubleSpinBox* that = const_cast<SalomeApp_DoubleSpinBox*>( this );
+      QPoint pos( size().width(), 0. );
+      QPoint globalPos = mapToGlobal( pos );
+      QString minVal = textFromValue( minimum() );
+      QString maxVal = textFromValue( maximum() );
+      
+      // Same stuff as in QtxDoubleSpinBox::textFromValue()
+      int digits = getPrecision();
+      
+      // For 'g' format, max. number of digits after the decimal point is getPrecision() - 1
+      // See also QtxDoubleSpinBox::validate()
+      if ( digits < 0 )
+        digits = qAbs( digits ) - 1;
+      
+      QString templ( isAcceptNames() ? tr( "VALID_RANGE_VAR_MSG" ) : tr( "VALID_RANGE_NOVAR_MSG" ) );
+      QString msg( templ.arg( minVal ).arg( maxVal ).arg( digits ) );
+      
+      // Add extra hints to the message (if any passed through dynamic properties)
+      QVariant propVal = property( "validity_tune_hint" );
+      if ( propVal.isValid() ){
+        QString extraInfo = propVal.toString();
+        if ( !extraInfo.isEmpty() ){
+          msg += "\n";
+          msg += extraInfo;
+        }
+      }
+      
+      QToolTip::showText( globalPos, 
+                          msg, 
+                          that );
+    }
+    else
+      QToolTip::hideText();
+  }
+      
+  return res;
 }
 
 /*!
@@ -371,4 +475,40 @@ void SalomeApp_DoubleSpinBox::keyPressEvent( QKeyEvent* e )
 void SalomeApp_DoubleSpinBox::showEvent( QShowEvent* )
 {
   setText( myTextValue );
+}
+
+/*!
+  \brief Enables or disables variable names in the spin box.
+         By default, variable names are enabled.
+  \param flag If true, variable names are enabled.
+*/
+void SalomeApp_DoubleSpinBox::setAcceptNames( const bool flag )
+{
+  myAcceptNames = flag;
+}
+
+/*!
+  \brief Returns true if the spin box accepts variable names.
+*/
+bool SalomeApp_DoubleSpinBox::isAcceptNames() const
+{
+  return myAcceptNames;
+}
+
+/*!
+  \brief Enables or disables  tooltips in case of invalid or intermediate-state input.
+         Tooltips are enabled by default.
+  \param flag If true, tooltips are enabled.
+*/
+void SalomeApp_DoubleSpinBox::setShowTipOnValidate( const bool flag )
+{
+  myShowTip = myShowTip;
+}
+
+/*!
+  \brief Returns true if tooltip should be shown in case of invalid or intermediate-state input.
+*/
+bool SalomeApp_DoubleSpinBox::isShowTipOnValidate() const
+{
+  return myShowTip;
 }

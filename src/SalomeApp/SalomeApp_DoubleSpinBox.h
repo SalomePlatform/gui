@@ -38,8 +38,10 @@ class SALOMEAPP_EXPORT SalomeApp_DoubleSpinBox : public QtxDoubleSpinBox
 public:
   SalomeApp_DoubleSpinBox( QWidget* = 0 );
   SalomeApp_DoubleSpinBox( double, double, double = 1, QWidget* = 0 );
-  SalomeApp_DoubleSpinBox( double, double, double, int, int, QWidget* = 0 );
+  SalomeApp_DoubleSpinBox( double, double, double, int, int, QWidget* = 0, bool = true, bool = true );
   virtual ~SalomeApp_DoubleSpinBox();
+
+  virtual void              stepBy( int );
 
   virtual double            valueFromText( const QString& ) const;
   virtual QString           textFromValue( double ) const;
@@ -54,6 +56,12 @@ public:
   virtual void              setValue( double );
 
   virtual void              setText(const QString& );
+
+  void                      setAcceptNames( const bool );
+  bool                      isAcceptNames() const;
+
+  void                      setShowTipOnValidate( const bool );
+  bool                      isShowTipOnValidate() const;
 
 signals:
   void                      textChanged( const QString& );
@@ -86,6 +94,9 @@ private:
 
   QString                   myCorrectValue;
   QString                   myTextValue;
+
+  bool                      myAcceptNames;
+  bool                      myShowTip;
 };
 
 #endif

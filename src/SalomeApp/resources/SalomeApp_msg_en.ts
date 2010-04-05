@@ -453,4 +453,30 @@ Please edit its parameters or remove it from table.</translation>
            <translation>Failed to update study!</translation>
 	</message>
 </context>
+<context>
+    <name>SalomeApp_DoubleSpinBox</name>  
+        <message>
+            <source>VALID_RANGE_VAR_MSG</source>
+            <translation>Specify either a variable name or
+a floating-point value in range ( %1; %2 )
+with %3-digit precision</translation>
+        </message>   
+        <message>
+            <source>VALID_RANGE_NOVAR_MSG</source>
+            <translation>Specify a floating-point value in range ( %1; %2 )
+with %3-digit precision</translation>
+        </message>
+</context>
+<context>
+    <name>SalomeApp_IntSpinBox</name>  
+        <message>
+            <source>VALID_RANGE_VAR_MSG</source>
+            <translation>Specify either a variable name or
+an integer value in range ( %1; %2 )</translation>
+        </message>   
+        <message>
+            <source>VALID_RANGE_NOVAR_MSG</source>
+            <translation>Specify an integer value in range ( %1; %2 )</translation>
+        </message>
+</context>
 </TS>

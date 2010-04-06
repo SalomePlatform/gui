@@ -26,7 +26,7 @@
 
 #include <SUIT_Selector.h>
 #include <SUIT_DataOwner.h>
-#include <SPlot2d_ViewModel.h>
+#include <Plot2d_ViewModel.h>
 
 class LightApp_DataObject;
 
@@ -39,7 +39,7 @@ class LIGHTAPP_EXPORT LightApp_Plot2dSelector : public QObject, public SUIT_Sele
   Q_OBJECT
 
 public:
-  LightApp_Plot2dSelector( SPlot2d_Viewer*, SUIT_SelectionMgr* );
+  LightApp_Plot2dSelector( Plot2d_Viewer*, SUIT_SelectionMgr* );
   virtual ~LightApp_Plot2dSelector();
 
   /*!Return "ObjectBrowser"*/

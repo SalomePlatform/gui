@@ -28,7 +28,7 @@
 /*!
   Constructor
 */
-LightApp_Plot2dSelector::LightApp_Plot2dSelector( SPlot2d_Viewer* v, SUIT_SelectionMgr* mgr )
+LightApp_Plot2dSelector::LightApp_Plot2dSelector( Plot2d_Viewer* v, SUIT_SelectionMgr* mgr )
 : SUIT_Selector( mgr, v )
 {
   if ( v )

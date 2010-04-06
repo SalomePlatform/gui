@@ -42,7 +42,8 @@ salomeinclude_HEADERS =				\
 	OCCViewer_ClippingDlg.h			\
 	OCCViewer_AxialScaleDlg.h		\
 	OCCViewer_SetRotationPointDlg.h		\
-	OCCViewer_Trihedron.h
+	OCCViewer_Trihedron.h                   \
+	OCCViewer_ToolTip.h
 
 dist_libOCCViewer_la_SOURCES =			\
 	OCCViewer_AISSelector.cxx		\

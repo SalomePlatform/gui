@@ -167,6 +167,9 @@ public slots:
   virtual void                        onOpenDoc();
   virtual void                        onHelpAbout();
   virtual bool                        onOpenDoc( const QString& );
+  virtual void                        onCopy();
+  virtual void                        onPaste();
+  virtual void                        onSelectionChanged();
 
 protected:
   virtual void                        createActions();
@@ -181,7 +184,6 @@ protected:
 
   virtual void                        setActiveStudy( SUIT_Study* );
   virtual void                        updateCommandsStatus();
-  virtual void                        onSelectionChanged();
 
   virtual void                        beforeCloseDoc( SUIT_Study* );
   virtual void                        afterCloseDoc();

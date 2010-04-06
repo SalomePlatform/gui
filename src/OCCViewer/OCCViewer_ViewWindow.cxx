@@ -468,8 +468,8 @@ void OCCViewer_ViewWindow::activateZoom()
   if ( myOperation != ZOOMVIEW ) {
     QPixmap zoomPixmap (imageZoomCursor);
     QCursor zoomCursor (zoomPixmap);
-    setTransformRequested ( ZOOMVIEW );
-    myViewPort->setCursor( zoomCursor );
+    if( setTransformRequested ( ZOOMVIEW ) )
+      myViewPort->setCursor( zoomCursor );
   }
 }
 
@@ -486,8 +486,8 @@ void OCCViewer_ViewWindow::activatePanning()
 
   if ( myOperation != PANVIEW ) {
     QCursor panCursor (Qt::SizeAllCursor);
-    setTransformRequested ( PANVIEW );
-    myViewPort->setCursor( panCursor );
+    if( setTransformRequested ( PANVIEW ) )
+      myViewPort->setCursor( panCursor );
   }
 }
 
@@ -504,8 +504,8 @@ void OCCViewer_ViewWindow::activateRotation()
   if ( myOperation != ROTATE ) {
     QPixmap rotatePixmap (imageRotateCursor);
     QCursor rotCursor (rotatePixmap);
-    setTransformRequested ( ROTATE );
-    myViewPort->setCursor( rotCursor );
+    if( setTransformRequested ( ROTATE ) )
+      myViewPort->setCursor( rotCursor );
   }
 }
 
@@ -693,8 +693,8 @@ void OCCViewer_ViewWindow::activateGlobalPanning()
     aView3d->FitAll(0.01, false);
     myCursor = cursor();                // save old cursor
     myViewPort->fitAll(); // fits view before selecting a new scene center
-    setTransformRequested( PANGLOBAL );
-    myViewPort->setCursor( glPanCursor );
+    if( setTransformRequested( PANGLOBAL ) )
+      myViewPort->setCursor( glPanCursor );
   }
 }
 
@@ -710,21 +710,24 @@ void OCCViewer_ViewWindow::activateWindowFit()
 
   if ( myOperation != WINDOWFIT ) {
     QCursor handCursor (Qt::PointingHandCursor);
-    setTransformRequested ( WINDOWFIT );
-    myViewPort->setCursor ( handCursor );
-    myCursorIsHand = true;
+    if( setTransformRequested ( WINDOWFIT ) )
+    {
+      myViewPort->setCursor ( handCursor );
+      myCursorIsHand = true;
+    }
   }
 }
 
 /*!
   \brief Start delayed viewer operation.
 */
-void OCCViewer_ViewWindow::setTransformRequested( OperationType op )
+bool OCCViewer_ViewWindow::setTransformRequested( OperationType op )
 {
-  myOperation = op;
-  myViewPort->setMouseTracking( myOperation == NOTHING );
+  bool ok = transformEnabled( op );
+  myOperation = ok ? op : NOTHING;
+  myViewPort->setMouseTracking( myOperation == NOTHING );  
+  return ok;
 }
-
 
 /*!
   \brief Handle mouse move event.
@@ -1906,4 +1909,20 @@ bool OCCViewer_ViewWindow::transformInProcess() const
 void OCCViewer_ViewWindow::setTransformInProcess( bool bOn )
 {
   myEventStarted = bOn;
+}
+
+/*!
+  Set enabled state of transformation (rotate, zoom, etc)
+*/
+void OCCViewer_ViewWindow::setTransformEnabled( const OperationType id, const bool on )
+{
+  if ( id != NOTHING ) myStatus.insert( id, on );
+}
+
+/*!
+  \return enabled state of transformation (rotate, zoom, etc)
+*/
+bool OCCViewer_ViewWindow::transformEnabled( const OperationType id ) const
+{
+  return myStatus.contains( id ) ? myStatus[ id ] : true;
 }

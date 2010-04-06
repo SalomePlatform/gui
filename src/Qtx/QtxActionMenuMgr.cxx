@@ -491,8 +491,19 @@ void QtxActionMenuMgr::remove( const int id, const int pId, const int group )
       delNodes.append( *it );
   }
 
+  QWidget* mW = menuWidget( pNode );
   for ( NodeList::iterator itr = delNodes.begin(); itr != delNodes.end(); ++itr )
+  {
+    int id = (*itr)->id;
+    if( mW && menuAction( id ) )
+    {
+      mW->removeAction( menuAction( id ) );
+      myMenus.remove( id );
+    }
+    else if( mW && itemAction( id ) )
+      mW->removeAction( itemAction( id ) );
     pNode->children.removeAll( *itr );
+  }
 
   triggerUpdate( pNode->id, false );
 }
@@ -984,8 +995,10 @@ bool QtxActionMenuMgr::ownAction( QAction* a, MenuNode* node ) const
   for ( NodeList::const_iterator iter = node->children.begin(); iter != node->children.end(); ++iter )
   {
     QAction* mya = itemAction( (*iter)->id );
-    if ( !mya ) mya = menuAction( (*iter)->id );
-    if ( mya && mya == a ) return true;
+    if ( !mya )
+      mya = menuAction( (*iter)->id );
+    if ( mya && mya == a )
+      return true;
   }
   return false;
 }

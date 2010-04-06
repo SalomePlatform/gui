@@ -19,28 +19,28 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-#if defined WIN32
+//#if defined WIN32
 
-#ifdef SUIT_ENABLE_PYTHON
-#undef SUIT_ENABLE_PYTHON
-#endif
+//#ifdef SUIT_ENABLE_PYTHON
+//#undef SUIT_ENABLE_PYTHON
+//#endif
 
-#else //#if defined WIN32
+//#else //#if defined WIN32
 
-#ifndef SUIT_ENABLE_PYTHON
+//#ifndef SUIT_ENABLE_PYTHON
 // NOTE: DO NOT DELETE THIS DEFINITION ON LINUX
 // or make sure Python is initialized in main() in any case
 // Otherwise, application based on light SALOME and using Python 
 // are unlikely to work properly.
-#define SUIT_ENABLE_PYTHON
-#include <Python.h>
-#endif
+//#define SUIT_ENABLE_PYTHON
+//#include <Python.h>
+//#endif
 
 #ifdef SUIT_ENABLE_PYTHON
 #include "SUITApp_init_python.hxx"
 #endif
 
-#endif //#if defined WIN32
+//#endif //#if defined WIN32
 
 #include "SUITApp_Application.h"
 
@@ -287,7 +287,7 @@ int main( int argc, char* argv[] )
     PyEval_RestoreThread( SUIT_PYTHON::_gtstate );
     
     if ( !SUIT_PYTHON::salome_shared_modules_module ) // import only once
-      SUIT_PYTHON::salome_shared_modules_module = PyImport_ImportModule( "salome_shared_modules" );
+      SUIT_PYTHON::salome_shared_modules_module = PyImport_ImportModule( (char*)"salome_shared_modules" );
     if ( !SUIT_PYTHON::salome_shared_modules_module ) 
       PyErr_Print();
     

@@ -61,7 +61,6 @@ signals:
   void         activatedId( int );
 
 private slots:
-  void         onActivated( int );
   void         onCurrentChanged( int );
 
 protected:

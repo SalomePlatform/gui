@@ -649,3 +649,37 @@ bool LightApp_Module::reusableOperation( const int id )
 {
  return true;
 } 
+
+/*!
+  virtual method
+  \return true if module can copy the current selection
+*/
+bool LightApp_Module::canCopy() const
+{
+  return false;
+}
+
+/*!
+  virtual method
+  \return true if module can paste previously copied data
+*/
+bool LightApp_Module::canPaste() const
+{
+  return false;
+}
+
+/*!
+  virtual method
+  \brief Copies the current selection into clipboard
+*/
+void LightApp_Module::copy()
+{
+}
+
+/*!
+  virtual method
+  \brief Pastes the current data in the clipboard
+*/
+void LightApp_Module::paste()
+{
+}

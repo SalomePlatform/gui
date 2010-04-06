@@ -88,6 +88,9 @@ public:
   int                     interactionStyle() const;
   void                    setInteractionStyle( const int );
  
+  void setTransformEnabled( const OperationType, const bool );
+  bool transformEnabled( const OperationType ) const;
+
 public slots:
   void onFrontView();
   void onViewFitAll();
@@ -138,7 +141,7 @@ protected:
 
   /* Transformation selected but not started yet */
   bool transformRequested() const;
-  void setTransformRequested ( OperationType );
+  bool setTransformRequested ( OperationType );
 
   /* Transformation is selected and already started */
   bool          transformInProcess() const;
@@ -209,6 +212,9 @@ private:
   QtxRectRubberBand* myRectBand; //!< selection rectangle rubber band
 
   int myInteractionStyle;
+
+  typedef QMap<OperationType, bool> MapOfTransformStatus;
+  MapOfTransformStatus myStatus;
 };
 
 #ifdef WIN32

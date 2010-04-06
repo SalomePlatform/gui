@@ -92,6 +92,11 @@ public:
   virtual LightApp_Displayer*         displayer();
   virtual LightApp_Selection*         createSelection() const;
 
+  virtual bool                        canCopy() const;
+  virtual bool                        canPaste() const;
+  virtual void                        copy();
+  virtual void                        paste();
+
 public slots:
   virtual bool                        activateModule( SUIT_Study* );
   virtual bool                        deactivateModule( SUIT_Study* );

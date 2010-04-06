@@ -605,8 +605,10 @@ AC_OUTPUT([ \
   doc/salome/Makefile \
   doc/salome/gui/Makefile \
   doc/salome/gui/doxyfile \
+  doc/salome/gui/static/header.html \
   doc/salome/tui/Makefile \
   doc/salome/tui/doxyfile \
+  doc/salome/tui/static/header.html \
   src/Makefile \
   src/CASCatch/Makefile \
   src/Qtx/Makefile \

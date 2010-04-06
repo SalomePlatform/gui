@@ -25,7 +25,10 @@
 #
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-EXTRA_DIST += images input static
+EXTRA_DIST += images input static/footer.html static/doxygen.css
+
+guidocdir = $(docdir)/gui/GUI
+guidoc_DATA = images/head.png
 
 usr_docs: doxyfile
 	echo "Running doxygen in directory: "`pwd`; \

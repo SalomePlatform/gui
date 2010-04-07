@@ -462,6 +462,7 @@ void LightApp_ModuleAction::update( QtxComboBox* cb )
   if ( !cb )
     return;
 
+  bool blocked = cb->blockSignals( true );
   int curId = mySet->moduleId( active() );
   QList<QAction*> alist = mySet->actions();
   cb->clear();
@@ -478,6 +479,7 @@ void LightApp_ModuleAction::update( QtxComboBox* cb )
   }
 
   cb->setCurrentId( curId );
+  cb->blockSignals( blocked );
 }
 
 /*!

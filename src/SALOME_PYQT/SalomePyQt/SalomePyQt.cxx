@@ -1521,7 +1521,7 @@ public:
   CrMenu( QAction* action, const QString& menu, const int id, const int group, const int idx ) 
     : myCase( 5 ), myAction( action ), myMenuName( menu ), myId( id ), myGroup( group ), myIndex( idx ) {}
 
-  int execute( SALOME_PYQT_ModuleLight* module ) const
+  int execute( LightApp_Module* module ) const
   {
     if ( module ) {
       switch ( myCase ) {
@@ -1562,9 +1562,12 @@ public:
     : myResult( -1 ), myCrMenu( crMenu ) {}
   virtual void Execute()
   {
-    SALOME_PYQT_ModuleLight* module = getActiveModule();
-    if ( module )
-      myResult = myCrMenu.execute( module );
+    if ( LightApp_Application* anApp = getApplication() ) 
+      {
+        LightApp_Module* module = dynamic_cast<LightApp_Module*>( anApp->activeModule() );
+        if ( module )
+          myResult = myCrMenu.execute( module );
+      }
   }
 };
 

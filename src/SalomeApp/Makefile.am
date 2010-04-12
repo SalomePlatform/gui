@@ -94,6 +94,9 @@ MOC_FILES =					\
 
 nodist_libSalomeApp_la_SOURCES = $(MOC_FILES)
 
+# python modules
+salomepython_PYTHON = salome_pluginsmanager.py
+
 dist_salomeres_DATA =		\
 	resources/SalomeApp.ini	\
 	resources/SalomeApp.xml

@@ -305,6 +305,17 @@ void SalomeApp_Application::createActions()
   createMenu( separator(), toolsMenu, -1, 15, -1 );
 
   createExtraActions();
+
+  // import Python module that manages SALOME plugins
+  PyGILState_STATE gstate = PyGILState_Ensure();
+  PyObject* pluginsmanager=PyImport_ImportModule((char*)"salome_pluginsmanager");
+  PyObject* res=PyObject_CallMethod( pluginsmanager, (char*)"initialize", (char*)"isss",0,"salome","Tools","Plugins");
+  if(res==NULL)
+    PyErr_Print();
+  Py_XDECREF(res);
+  PyGILState_Release(gstate);
+  // end of SALOME plugins loading
+
 }
 
 /*!

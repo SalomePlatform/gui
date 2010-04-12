@@ -58,6 +58,7 @@
 #include "Session_ServerLauncher.hxx"
 #include "Session_ServerCheck.hxx"
 
+#include <Qtx.h>
 #include <QtxSplash.h>
 #include <Style_Salome.h>
 #include <SUIT_Tools.h>
@@ -257,7 +258,15 @@ public:
 #ifdef ENABLE_TESTRECORDER
   SALOME_QApplication( int& argc, char** argv ) : TestApplication( argc, argv ), myHandler ( 0 ) {}
 #else
-  SALOME_QApplication( int& argc, char** argv ) : QApplication( argc, argv ), myHandler ( 0 ) {}
+  SALOME_QApplication( int& argc, char** argv )
+#ifndef WIN32
+  // san: Opening an X display and choosing a visual most suitable for 3D visualization
+  // in order to make SALOME viewers work with non-native X servers
+  : QApplication( (Display*)Qtx::getDisplay(), argc, argv, Qtx::getVisual() ),
+#else
+  : QApplication( argc, argv ), 
+#endif
+    myHandler ( 0 ) {}
 #endif
 
   virtual bool notify( QObject* receiver, QEvent* e )

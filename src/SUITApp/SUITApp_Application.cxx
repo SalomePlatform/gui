@@ -24,6 +24,8 @@
 #include <SUIT_Tools.h>
 #include <SUIT_ExceptionHandler.h>
 
+#include <Qtx.h>
+
 #include <QDir>
 #include <QTranslator>
 
@@ -41,7 +43,13 @@ SUITApp_Application::SUITApp_Application( int& argc, char** argv, SUIT_Exception
 #ifdef ENABLE_TESTRECORDER
   : TestApplication( argc, argv ),
 #else
-  : QApplication( argc, argv ),
+#ifndef WIN32
+  // san: Opening an X display and choosing a visual most suitable for 3D visualization
+  // in order to make SALOME viewers work with non-native X servers
+  : QApplication( (Display*)Qtx::getDisplay(), argc, argv, Qtx::getVisual() ),
+#else
+  : QApplication( argc, argv ), 
+#endif
 #endif
 myExceptHandler( hand )
 {

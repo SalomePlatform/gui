@@ -26,6 +26,7 @@
 
 #include <QLineEdit>
 #include <QDoubleValidator>
+#include <QVariant>
 
 #include <limits>
 
@@ -320,12 +321,17 @@ QValidator::State QtxDoubleSpinBox::validate( QString& str, int& pos ) const
     }
 
   // Treat values ouside (min; max) range as Invalid
+  // This check is enabled by assigning "strict_validity_check" dynamic property
+  // with value "true" to the spin box instance.
   if ( state == QValidator::Intermediate ){
     bool isOk;
     double val = str.toDouble( &isOk );
     if ( isOk ){
-      if ( val < minimum() || val > maximum() )
-        state = QValidator::Invalid;
+      QVariant propVal = property( "strict_validity_check" );
+      if ( propVal.isValid() && propVal.canConvert( QVariant::Bool ) && propVal.toBool() ){
+        if ( val < minimum() || val > maximum() )
+          state = QValidator::Invalid;
+      }
     }
     else if ( myPrecision < 0 ){
       // Consider too large negative exponent as Invalid

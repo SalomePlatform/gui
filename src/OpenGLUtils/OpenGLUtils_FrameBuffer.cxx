@@ -165,6 +165,9 @@ bool OpenGLUtils_FrameBuffer::init( const GLsizei& xSize, const GLsizei& ySize )
 
 void OpenGLUtils_FrameBuffer::release()
 {
+  if( !IsEXTInitialized )
+    return;
+
   glDeleteTextures( 1, &textureId );
   textureId = 0;
 
@@ -177,10 +180,16 @@ void OpenGLUtils_FrameBuffer::release()
 
 void OpenGLUtils_FrameBuffer::bind()
 {
+  if( !IsEXTInitialized )
+    return;
+
   vglBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fboId );
 }
 
 void OpenGLUtils_FrameBuffer::unbind()
 {
+  if( !IsEXTInitialized )
+    return;
+
   vglBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
 }

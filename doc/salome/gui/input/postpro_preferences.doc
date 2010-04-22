@@ -192,6 +192,25 @@ in the visible area.</li>
 </ul>
 </ul>
 
+<br><h2>Tables</h2>
+
+\image html pref35.png
+
+<ul>
+<li><b>Enable editing</b></li> - allows to edit contents of the tables
+(in particular, to sort table data by clicking on the column header).
+<li><b>Sort policy</b></li> - specify how the empty cells will be processed
+during the sort procedure. The following options are available:
+</li>
+<ul>
+<li><b>Empty cells are considered as lowest values</b></li>
+<li><b>Empty cells are considered as highest values</b></li>
+<li><b>Empty cells are always first</b></li>
+<li><b>Empty cells are always last</b></li>
+<li><b>Empty cells are ignored</b> (means that positions of the empty cells
+will not change after sorting)</li>
+</ul>
+</ul>
 
 <br><h2>Feature Edges</h2>
 

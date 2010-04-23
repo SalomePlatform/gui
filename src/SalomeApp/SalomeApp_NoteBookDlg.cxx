@@ -74,8 +74,9 @@ using namespace std;
  *  Purpose  : Constructor
  */
 //============================================================================
-NoteBook_TableRow::NoteBook_TableRow(int index, QWidget* parent):
+NoteBook_TableRow::NoteBook_TableRow(int index, NoteBook_Table* parentTable, QWidget* parent):
   QWidget(parent),
+  myParentTable(parentTable),
   myIndex(index),
   myRowHeader(new QTableWidgetItem()),
   myVariableName(new QTableWidgetItem()),
@@ -280,7 +281,28 @@ bool NoteBook_TableRow::IsIntegerValue(const QString theValue, int* theResult)
 //============================================================================
 bool NoteBook_TableRow::IsValidStringValue(const QString theValue)
 {
-  return true;
+  int aNumRows = myParentTable->myRows.count();
+  if( aNumRows == 0 )
+    return true;
+
+  bool aLastRowIsEmpty = myParentTable->myRows[ aNumRows - 1 ]->GetName().isEmpty() &&
+                         myParentTable->myRows[ aNumRows - 1 ]->GetValue().isEmpty();
+
+  SalomeApp_Application* app = dynamic_cast<SalomeApp_Application*>( SUIT_Session::session()->activeApplication() );
+  PyConsole_Console* pyConsole = app->pythonConsole();
+  PyConsole_Interp* pyInterp = pyConsole->getInterp();
+  PyLockWrapper aLock = pyInterp->GetLockWrapper();
+  string command = "import salome_notebook ; ";
+  command += "salome_notebook.checkThisNoteBook(";
+  for( int i = 0, n = aLastRowIsEmpty ? aNumRows - 1 : aNumRows; i < n; i++ ) {
+    command += myParentTable->myRows[i]->GetName().toStdString();
+    command += "=\"";
+    command += myParentTable->myRows[i]->GetValue().toStdString();
+    command += "\", ";
+  }
+  command += ") ";
+  bool aResult = pyInterp->run(command.c_str());
+  return !aResult;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -451,8 +473,7 @@ bool NoteBook_Table::IsValid() const
     }
   command += ")";
   bool aResult = pyInterp->run(command.c_str());
-  aResult = !aResult;
-  return aResult;
+  return !aResult;
 }
 
 //============================================================================
@@ -474,7 +495,7 @@ void NoteBook_Table::RenamberRowItems(){
 void NoteBook_Table::AddRow(const QString& theName, const QString& theValue)
 {
   int anIndex = getUniqueIndex();
-  NoteBook_TableRow* aRow = new NoteBook_TableRow(anIndex, this);
+  NoteBook_TableRow* aRow = new NoteBook_TableRow(anIndex, this, this);
   aRow->SetName(theName);
   aRow->SetValue(theValue);
   aRow->AddToTable(this);
@@ -920,7 +941,7 @@ void SalomeApp_NoteBookDlg::onApply()
       else if( NoteBook_TableRow::IsBooleanValue(aValue,&aBVal) )
         myStudy->SetBoolean(string(aName.toLatin1().constData()),aBVal);
     
-      else if( NoteBook_TableRow::IsValidStringValue(aValue) )
+      else
         myStudy->SetString(string(aName.toLatin1().constData()),aValue.toStdString());
     }
   }

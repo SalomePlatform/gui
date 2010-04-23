@@ -36,6 +36,7 @@
 class QWidget;
 class QPushButton;
 class QTableWidgetItem;
+class NoteBook_Table;
 
 struct NoteBoox_Variable
 {
@@ -54,7 +55,7 @@ typedef QMap< int, NoteBoox_Variable > VariableMap;
 class SALOMEAPP_EXPORT NoteBook_TableRow : public QWidget
 {
  public:
-  NoteBook_TableRow(int, QWidget* parent=0);
+  NoteBook_TableRow(int, NoteBook_Table* parentTable, QWidget* parent=0 );
   virtual ~NoteBook_TableRow();
 
   int  GetIndex() const { return myIndex; }
@@ -77,10 +78,11 @@ class SALOMEAPP_EXPORT NoteBook_TableRow : public QWidget
   static bool IsRealValue(const QString theValue, double* theResult = 0);
   static bool IsIntegerValue(const QString theValue, int* theResult = 0);
   static bool IsBooleanValue(const QString theValue, bool* theResult = 0);
-  static bool IsValidStringValue(const QString theName);
+  bool IsValidStringValue(const QString theName);
   
  private:
   int               myIndex;
+  NoteBook_Table*   myParentTable;
   QTableWidgetItem* myRowHeader;
   QTableWidgetItem* myVariableName;
   QTableWidgetItem* myVariableValue;
@@ -120,6 +122,8 @@ class SALOMEAPP_EXPORT NoteBook_Table : public QTableWidget
 
   void ResetMaps();
 
+  QList<NoteBook_TableRow*>          myRows;
+
   public slots:
     void onItemChanged(QTableWidgetItem* theItem);
 
@@ -128,7 +132,6 @@ class SALOMEAPP_EXPORT NoteBook_Table : public QTableWidget
     
  private:
   bool isProcessItemChangedSignal;
-  QList<NoteBook_TableRow*>          myRows;
 
   bool        myIsModified;
   QList<int>  myRemovedRows;

@@ -22,6 +22,10 @@
 //
 #include "OpenGLUtils_FrameBuffer.h"
 
+#include <utilities.h>
+
+#include <string>
+
 #ifndef WNT
 # ifndef GLX_GLXEXT_LEGACY
 #  define GLX_GLXEXT_LEGACY
@@ -124,8 +128,13 @@ OpenGLUtils_FrameBuffer::~OpenGLUtils_FrameBuffer()
 
 bool OpenGLUtils_FrameBuffer::init( const GLsizei& xSize, const GLsizei& ySize )
 {
-  if( !IsEXTInitialized )
+  char* ext = (char*)glGetString( GL_EXTENSIONS );
+  if( !IsEXTInitialized ||
+      strstr( ext, "GL_EXT_framebuffer_object" ) == NULL )
+  {
+    MESSAGE( "Initializing OpenGL FrameBuffer extension failed" );
     return false;
+  }
 
   // create a texture object
   glEnable( GL_TEXTURE_2D );

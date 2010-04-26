@@ -34,4 +34,6 @@ dist_libOpenGLUtils_la_SOURCES = \
 	OpenGLUtils_FrameBuffer.cxx
 
 libOpenGLUtils_la_CPPFLAGS = $(OGL_INCLUDES)
-libOpenGLUtils_la_LDFLAGS  = $(OGL_LIBS)
+libOpenGLUtils_la_LDFLAGS  = $(KERNEL_LDFLAGS)
+
+libOpenGLUtils_la_LIBADD = $(OGL_LIBS) -lSALOMELocalTrace

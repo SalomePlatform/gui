@@ -71,9 +71,11 @@
 */
 QtxDoubleSpinBox::QtxDoubleSpinBox( QWidget* parent )
 : QDoubleSpinBox( parent ),
-  myCleared( false ),
-  myPrecision(0)
+  myCleared( false )
 {
+  // Use precision equal to default Qt decimals
+  myPrecision = decimals();
+  
   connect( lineEdit(), SIGNAL( textChanged( const QString& ) ), 
            this, SLOT( onTextChanged( const QString& ) ) );
 }
@@ -92,9 +94,11 @@ QtxDoubleSpinBox::QtxDoubleSpinBox( QWidget* parent )
 */
 QtxDoubleSpinBox::QtxDoubleSpinBox( double min, double max, double step, QWidget* parent )
 : QDoubleSpinBox( parent ),
-  myCleared( false ),
-  myPrecision( 0 )
+  myCleared( false )
 {
+  // Use precision equal to default Qt decimals
+  myPrecision = decimals();
+  
   setMinimum( min );
   setMaximum( max );
   setSingleStep( step );

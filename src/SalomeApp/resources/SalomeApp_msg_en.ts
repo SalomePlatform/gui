@@ -406,7 +406,7 @@ Do you really want to rename it?</translation>
 	</message>
         <message>	
            <source>VARNAME_INCORRECT</source>
-           <translation>Valiable Name Incorrect :%1</translation>
+           <translation>Variable Name Incorrect :%1</translation>
 	</message>
         <message>	
            <source>VARNAME_EXISTS</source>

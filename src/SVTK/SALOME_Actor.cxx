@@ -816,7 +816,7 @@ SALOME_Actor
         mySelector->AddIObject( this );
         anIndexes.Clear();
       }
-      else
+      else if ( !anIsShift )
         mySelector->RemoveIObject( this );
     }
     default:

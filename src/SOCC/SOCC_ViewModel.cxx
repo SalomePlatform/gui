@@ -59,6 +59,8 @@
 
 #include <AIS_TypeOfIso.hxx>
 
+#include <Precision.hxx>
+
 // in order NOT TO link with SalomeApp, here the code returns SALOMEDS_Study.
 // SalomeApp_Study::studyDS() does it as well, but -- here it is retrieved from 
 // SALOMEDS::StudyManager - no linkage with SalomeApp. 
@@ -673,6 +675,12 @@ bool SOCC_Viewer::getTrihedronSize( double& theNewSize, double& theSize )
   aMaxSide = Xmax - Xmin;
   if ( aMaxSide < Ymax -Ymin ) aMaxSide = Ymax -Ymin;
   if ( aMaxSide < Zmax -Zmin ) aMaxSide = Zmax -Zmin;
+
+  // IPAL21687
+  // The boundary box of the view may be initialized but nullified
+  // (case of infinite objects)
+  if ( aMaxSide < Precision::Confusion() )
+    return false;
 
   float aSizeInPercents = SUIT_Session::session()->resourceMgr()->doubleValue("Viewer","TrihedronSize", 105.);
 

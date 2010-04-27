@@ -119,7 +119,7 @@ static Colormap choose_cmap( Display *dpy, XVisualInfo *vi )
   if ( vi->visualid == XVisualIDFromVisual( (Visual*)QX11Info::appVisual() ) )
   {
 #ifdef DEBUG
-    cout << "Using x11AppColormap" << endl;
+//    cout << "Using x11AppColormap" << endl;
 #endif
     return QX11Info::appColormap();
   }

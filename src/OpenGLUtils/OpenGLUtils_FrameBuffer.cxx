@@ -24,7 +24,7 @@
 
 #include <utilities.h>
 
-#include <string>
+#include <cstring>
 
 #ifndef WNT
 # ifndef GLX_GLXEXT_LEGACY

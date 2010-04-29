@@ -410,7 +410,7 @@ Do you really want to rename it?</translation>
 	</message>
         <message>	
            <source>VARNAME_EXISTS</source>
-           <translation>Valiable with name "%1" exists</translation>
+           <translation>Variable with name "%1" exists</translation>
 	</message>
 </context>
 <context>

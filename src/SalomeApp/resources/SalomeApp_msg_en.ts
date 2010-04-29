@@ -31,7 +31,7 @@ Python file must include only letters, digits and underscores and start from let
     </message>
     <message>
         <source>WRN_FILE_NOT_EXIST</source>
-        <translation>The file %1 dose not exist.</translation>
+        <translation>The file %1 does not exist.</translation>
     </message>
     <message>
         <source>CLOSE_LOCKED_STUDY</source>

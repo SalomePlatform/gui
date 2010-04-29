@@ -384,6 +384,7 @@ void OCCViewer_ViewPort3d::startRotation( int x, int y,
     default:
       break;
     }
+    activeView()->DepthFitAll();
   }
 }
 

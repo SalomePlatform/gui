@@ -67,7 +67,7 @@ nodist_libSalomePyQtGUILight_la_SOURCES = $(MOC_FILES) $(SIP_SRC)
 libSalomePyQtGUILight_la_CPPFLAGS =  $(QT_INCLUDES) $(SIP_INCLUDES) $(PYTHON_INCLUDES)	\
 	$(CAS_CPPFLAGS) $(VTK_INCLUDES) $(OGL_INCLUDES) $(BOOST_CPPFLAGS)		\
 	-DHAVE_CONFIG_H @KERNEL_CXXFLAGS@ -DCALL_OLD_METHODS				\
-	-I@builddir@ -I$(srcdir)/../../PyInterp -I$(srcdir)/../../PyConsole		\
+	-I. -I$(srcdir)/../../PyInterp -I$(srcdir)/../../PyConsole		\
 	-I$(srcdir)/../../SUIT -I$(srcdir)/../../Qtx -I$(srcdir)/../../LightApp		\
 	-I$(srcdir)/../../Plot2d -I$(srcdir)/../../OCCViewer				\
 	-I$(srcdir)/../../CAM -I$(srcdir)/../../STD		                        \

@@ -49,7 +49,7 @@ nodist_libSalomePyQtGUI_la_SOURCES = $(MOC_FILES)
 libSalomePyQtGUI_la_CPPFLAGS = $(QT_INCLUDES) $(SIP_INCLUDES) $(PYTHON_INCLUDES)	\
 	$(CAS_CPPFLAGS) $(VTK_INCLUDES) $(OGL_INCLUDES) $(BOOST_CPPFLAGS)		\
 	-DHAVE_CONFIG_H @KERNEL_CXXFLAGS@ -DCALL_OLD_METHODS				\
-	-I@builddir@ -I$(srcdir)/../../PyInterp -I$(srcdir)/../../SalomeApp		\
+	-I. -I$(srcdir)/../../PyInterp -I$(srcdir)/../../SalomeApp		\
 	-I$(srcdir)/../../SUIT -I$(srcdir)/../../Qtx -I$(srcdir)/../../LightApp		\
 	-I$(srcdir)/../SALOME_PYQT_GUILight                                             \
 	-I$(srcdir)/../../Plot2d -I$(srcdir)/../../OCCViewer				\

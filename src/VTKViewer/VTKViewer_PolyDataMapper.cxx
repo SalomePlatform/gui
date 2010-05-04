@@ -20,6 +20,8 @@
 #include "VTKViewer_PolyDataMapper.h"
 #include "VTKViewer_MarkerUtils.h"
 
+#include <utilities.h>
+
 #include <QString>
 
 #include <vtkCellArray.h>
@@ -230,7 +232,7 @@ bool VTKViewer_PolyDataMapper::InitExtensions()
       strstr( ext, "GL_ARB_point_sprite" ) == NULL ||
       strstr( ext, "GL_ARB_vertex_buffer_object" ) == NULL )
   {
-    vtkWarningMacro(<<"Initializing ARB extensions failed");
+    INFOS("Initializing ARB extensions failed");
     return false;
   }
 

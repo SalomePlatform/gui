@@ -135,8 +135,10 @@ nodist_salomeres_DATA =		\
 
 libVTKViewer_la_CPPFLAGS = $(QT_INCLUDES) $(VTK_INCLUDES) $(CAS_CPPFLAGS)	\
 	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT
-libVTKViewer_la_LDFLAGS = $(VTK_LIBS) $(QT_MT_LIBS) $(CAS_KERNEL) $(OGL_LIBS)	\
-	../Qtx/libqtx.la ../SUIT/libsuit.la
+libVTKViewer_la_LDFLAGS = $(KERNEL_LDFLAGS) $(VTK_LIBS) $(QT_MT_LIBS)           \
+	$(CAS_KERNEL) $(OGL_LIBS) ../Qtx/libqtx.la ../SUIT/libsuit.la
+
+libVTKViewer_la_LIBADD = -lSALOMELocalTrace
 
 # Executable
 

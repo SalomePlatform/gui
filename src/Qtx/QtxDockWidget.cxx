@@ -24,6 +24,7 @@
 #include <QAction>
 #include <QApplication>
 #include <QHBoxLayout>
+#include <QVBoxLayout>
 #include <QLabel>
 #include <QLayout>
 #include <QMainWindow>
@@ -31,7 +32,113 @@
 #include <QStyleOption>
 #include <QStylePainter>
 #include <QToolButton>
+#include <QWindowsStyle>
 
+/*!
+  \class QtxDockTitleStyle
+  \internal
+  \brief Internal class that implements customizable label style for a dock widget.
+*/
+class QtxDockTitleStyle : public QWindowsStyle
+{
+  Q_OBJECT
+public:
+  QtxDockTitleStyle( const bool& isVertical ) : QWindowsStyle(), m_bIsVertical( isVertical ) {};
+  virtual ~QtxDockTitleStyle() {};
+
+  void   setVertical( const bool& isVertical ) { m_bIsVertical = isVertical; }
+  bool   isVertical() const { return m_bIsVertical; }
+
+  virtual void drawItemText( QPainter* painter, const QRect& rectangle,
+                      int alignment, const QPalette& palette,
+                      bool enabled, const QString& text,
+                      QPalette::ColorRole textRole = QPalette::NoRole ) const
+  {
+    QRect r = rectangle;
+    if ( isVertical() ) {
+      QSize s = r.size();
+      s.transpose();
+      r.setSize( s );
+      painter->save();
+      painter->translate( r.left(), r.top() + r.width() );
+      painter->rotate( -90 );
+      painter->translate( -r.left(), -r.top() );
+
+    }
+    QWindowsStyle::drawItemText( painter, r, alignment, palette,
+                                 enabled, text, textRole );
+    if ( isVertical() )
+      painter->restore();
+  }
+
+private:
+  bool   m_bIsVertical;
+};
+
+/*!
+  \class QtxDockTitleLabel
+  \internal
+  \brief Internal class that implements customizable title label for a dock widget.
+*/
+class QtxDockTitleLabel : public QLabel
+{
+  Q_OBJECT
+public:
+
+  QtxDockTitleLabel( const QString& theText, QWidget* theParent );
+  virtual ~QtxDockTitleLabel() {}
+
+  void          setVertical( const bool& isVertical );
+  bool          isVertical() const { return m_bIsVertical; }
+
+  virtual QSize sizeHint() const;
+  virtual QSize minimumSizeHint() const;
+
+private:
+  bool          m_bIsVertical;
+  bool          m_bIsModified;
+};
+
+
+QtxDockTitleLabel::QtxDockTitleLabel( const QString& theText, QWidget* theParent )
+: QLabel( theText, theParent ), m_bIsVertical( false ), m_bIsModified( false )
+{
+  setStyle( new QtxDockTitleStyle( m_bIsVertical ) );
+}
+
+void QtxDockTitleLabel::setVertical( const bool& isVertical )
+{
+  m_bIsVertical = isVertical;
+
+  QtxDockTitleStyle* aLblStyle = dynamic_cast<QtxDockTitleStyle*>( style() );
+  if ( aLblStyle )
+    aLblStyle->setVertical( isVertical );
+
+  m_bIsModified = true;
+  updateGeometry();
+}
+
+QSize QtxDockTitleLabel::sizeHint() const
+{
+  QSize aSize;
+  if ( !m_bIsModified )
+    aSize = QLabel::sizeHint();
+  else {
+    aSize = QLabel::minimumSizeHint();
+    if ( isVertical() )
+      aSize.transpose();
+    if ( m_bIsModified ) {
+      QtxDockTitleLabel* aThis = (QtxDockTitleLabel*)this;
+      aThis->m_bIsModified = false;
+    }
+  }
+  return aSize;
+}
+
+QSize QtxDockTitleLabel::minimumSizeHint() const
+{
+  return QSize( 0, 0 );
+}
 
 /*!
   \class QtxDockWidgetTitle
@@ -54,18 +161,23 @@ public:
   virtual ~QtxDockWidgetTitle();
 
   QWidget*            widget( const int ) const;
+  int                 role( QWidget* ) const;
+
   void                insertWidget( const int, QWidget* widget, const int = QtxDockWidget::Last );
   void                removeWidget( const int );
 
 protected:
   virtual void        paintEvent ( QPaintEvent* event );
 
-private slots:
+public slots:
   virtual void        updateTitleBar();
 
 private:
   void                initStyleOption( QStyleOptionDockWidget* ) const;
   void                setupButton( QToolButton*, const int, QStyleOptionDockWidget*, QDockWidget* );
+  void                setLayout( const bool& );
+  void                fillLayout();
+
 
 private:
   typedef QPair< int, QWidget* > RoleWidget;
@@ -82,18 +194,10 @@ QtxDockWidgetTitle::QtxDockWidgetTitle( QtxDockWidget* parent )
 {
   setAttribute( Qt::WA_NoSystemBackground );
 
-  // TODO: vertical title bar not yet implemented
-  QHBoxLayout* hbox = new QHBoxLayout( this );
-  const int titleMargin  = 3;
-  const int titleSpacing = 1;
-  hbox->setContentsMargins( titleMargin, titleMargin, titleMargin, titleMargin );
-  hbox->setSpacing( titleSpacing );
-
   QStyleOptionDockWidgetV2 opt;
   initStyleOption( &opt );
 
-  QLabel* titleLab = new QLabel( parent->windowTitle(), this );
-  titleLab->setSizePolicy( QSizePolicy::Ignored, QSizePolicy::Fixed );
+  QtxDockTitleLabel* titleLab = new QtxDockTitleLabel( parent->windowTitle(), this );
   myWidgets.push_back( RoleWidget( QtxDockWidget::TitleText, titleLab ) );
 
   QToolButton* btn;
@@ -103,10 +207,8 @@ QtxDockWidgetTitle::QtxDockWidgetTitle( QtxDockWidget* parent )
     myWidgets.push_back( RoleWidget( i, btn ) );
   }
 
-  RoleWidgetList::const_iterator anIt  = myWidgets.begin();
-  RoleWidgetList::const_iterator anEnd = myWidgets.end();
-  for ( ; anIt != anEnd; anIt++ )
-    hbox->addWidget( (*anIt).second );
+  QDockWidget* aDock = qobject_cast<QDockWidget*>( parent );
+  setLayout( hasFeature(aDock, QDockWidget::DockWidgetVerticalTitleBar ) );
 
   btn = qobject_cast<QToolButton*>( widget( QtxDockWidget::Undock ) );
   connect( btn, SIGNAL( clicked( bool ) ), parent, SLOT( toggleTopLevel() ) );
@@ -134,9 +236,19 @@ QWidget* QtxDockWidgetTitle::widget( const int role ) const
   return 0;
 }
 
+int QtxDockWidgetTitle::role( QWidget* w ) const
+{
+  RoleWidgetList::const_iterator anIt  = myWidgets.begin();
+  RoleWidgetList::const_iterator anEnd = myWidgets.end();
+  for ( ; anIt != anEnd; anIt++ )
+    if ( (*anIt).second == w )
+      return (*anIt).first;
+  return 0;
+}
+
 void QtxDockWidgetTitle::insertWidget( const int role, QWidget* widget, const int beforeRole )
 {
-  QHBoxLayout* hbox = qobject_cast<QHBoxLayout*>( layout() );
+  QBoxLayout* aBoxLay = qobject_cast<QBoxLayout*>( layout() );
 
   removeWidget( role );
 
@@ -145,7 +257,7 @@ void QtxDockWidgetTitle::insertWidget( const int role, QWidget* widget, const in
   RoleWidgetList::iterator anEnd = myWidgets.end();
   RoleWidgetList::iterator insertIt = myWidgets.end();
   for ( ; anIt != anEnd; anIt++ ){
-    hbox->removeWidget( (*anIt).second );
+    aBoxLay->removeWidget( (*anIt).second );
     if ( (*anIt).first == beforeRole )
       insertIt = anIt;
   }
@@ -155,18 +267,15 @@ void QtxDockWidgetTitle::insertWidget( const int role, QWidget* widget, const in
   // NOTE: reparent the widget!
   widget->setParent( this );
 
-  anIt  = myWidgets.begin();
-  anEnd = myWidgets.end();
-  for ( ; anIt != anEnd; anIt++ )
-    hbox->addWidget( (*anIt).second );
+  fillLayout();
 
-  hbox->invalidate();
+  aBoxLay->invalidate();
   update();
 }
 
 void QtxDockWidgetTitle::removeWidget( const int role )
 {
-  QHBoxLayout* hbox = qobject_cast<QHBoxLayout*>( layout() );
+  QBoxLayout* aBoxLay = qobject_cast<QBoxLayout*>( layout() );
 
   RoleWidgetList::iterator anIt  = myWidgets.begin();
   RoleWidgetList::iterator anEnd = myWidgets.end();
@@ -174,12 +283,12 @@ void QtxDockWidgetTitle::removeWidget( const int role )
     if ( (*anIt).first == role ){
       QWidget* w = (*anIt).second;
       myWidgets.erase( anIt );
-      hbox->removeWidget( w );
+      aBoxLay->removeWidget( w );
       w->deleteLater();
       break;
     }
 
-  hbox->invalidate();
+  aBoxLay->invalidate();
   update();
 }
 
@@ -208,8 +317,8 @@ void QtxDockWidgetTitle::initStyleOption( QStyleOptionDockWidget* titleOpt ) con
   titleOpt->movable          = hasFeature(aDock, QDockWidget::DockWidgetMovable);
   titleOpt->floatable        = hasFeature(aDock, QDockWidget::DockWidgetFloatable);
   QStyleOptionDockWidgetV2 *v2 = qstyleoption_cast<QStyleOptionDockWidgetV2*>(titleOpt);
-  if (v2 != 0) // TODO: Custom vertical title bar not supported yet
-    v2->verticalTitleBar     = false;
+  if (v2 != 0)
+    v2->verticalTitleBar     = hasFeature(aDock, QDockWidget::DockWidgetVerticalTitleBar );
 }
 
 void QtxDockWidgetTitle::setupButton( QToolButton* btn, 
@@ -241,15 +350,51 @@ void QtxDockWidgetTitle::setupButton( QToolButton* btn,
   btn->setFocusPolicy( Qt::NoFocus );
 }
 
+void QtxDockWidgetTitle::setLayout( const bool& isVertical )
+{
+  QLayout* aPrevLay = layout();
+  QHBoxLayout* aHLay = dynamic_cast<QHBoxLayout*>( aPrevLay );
+  if ( isVertical == !aHLay )
+    return;
+
+  if ( aPrevLay )
+    delete aPrevLay;
+
+  QBoxLayout* aBoxLay;
+  if ( isVertical )
+    aBoxLay = new QVBoxLayout( this );
+  else
+    aBoxLay = new QHBoxLayout( this );
+  const int titleMargin  = 3;
+  const int titleSpacing = 1;
+  aBoxLay->setContentsMargins( titleMargin, titleMargin, titleMargin, titleMargin );
+  aBoxLay->setSpacing( titleSpacing );
+
+  fillLayout();
+}
+
+/*!
+  \brief Fill the dock widget layout with the custom widgets
+*/
+void QtxDockWidgetTitle::fillLayout()
+{
+  QBoxLayout* aBoxLay = qobject_cast<QBoxLayout*>( layout() );
+
+  RoleWidgetList::const_iterator anIt  = myWidgets.begin();
+  RoleWidgetList::const_iterator anEnd = myWidgets.end();
+  Qt::Alignment anAlign = 0;
+
+  for ( ; anIt != anEnd; anIt++ ) {
+    anAlign = 0;
+    if ( (*anIt).first == QtxDockWidget::TitleText )
+      anAlign = Qt::AlignVCenter;
+    aBoxLay->addWidget( (*anIt).second, 0, anAlign );
+  }
+}
+
 void QtxDockWidgetTitle::updateTitleBar()
 {
   QtxDockWidget* w = qobject_cast<QtxDockWidget*>( parentWidget() );
-
-  // Suicide - we do not support custom vertical title bar yet
-  if ( hasFeature( w, QDockWidget::DockWidgetVerticalTitleBar ) ){
-    w->enableCustomTitleBar( false );
-    return;
-  }
 
   bool canClose = hasFeature( w, QDockWidget::DockWidgetClosable );
   bool canFloat = hasFeature( w, QDockWidget::DockWidgetFloatable ) && !w->isFloating();
@@ -261,9 +406,15 @@ void QtxDockWidgetTitle::updateTitleBar()
     f.setBold( w->isFloating() );
     caption->setFont( f );
     caption->setForegroundRole( w->isFloating() ? QPalette::HighlightedText : QPalette::Text );
+
+    QtxDockTitleLabel* aCustomCaption = dynamic_cast<QtxDockTitleLabel*>( caption );
+    if ( aCustomCaption )
+      aCustomCaption->setVertical( hasFeature( w, QDockWidget::DockWidgetVerticalTitleBar ) );
   }
   widget( QtxDockWidget::Undock )->setVisible( canFloat );
   widget( QtxDockWidget::Close  )->setVisible( canClose );
+
+  setLayout( hasFeature( w, QDockWidget::DockWidgetVerticalTitleBar ) );
 }
 
 //=================================================================================
@@ -710,9 +861,6 @@ Qt::Orientation QtxDockWidget::orientation() const
 */
 void QtxDockWidget::enableCustomTitleBar( const bool enable )
 {
-  // TODO: Custom vertical title bar not yet supported...
-  if ( hasFeature( this, QDockWidget::DockWidgetVerticalTitleBar ) )
-    return;
   if ( enable == customTitleBarEnabled() )
     return;
 
@@ -761,6 +909,18 @@ QWidget* QtxDockWidget::customTitleBarWidget( const int role ) const
 }
 
 /*!
+  \brief Query custom title bar role for a given widget.
+  \param w widget in the custom title bar.
+  \return Role for a given widget, or Last value if it does not exist.
+*/
+int QtxDockWidget::customTitleBarRole( QWidget* w ) const
+{
+  if ( !customTitleBarEnabled() || !w )
+    return Last;
+  return qobject_cast<QtxDockWidgetTitle*>( titleBarWidget() )->role( w );
+}
+
+/*!
   \brief Insert a custom title bar widget for a given role. The title bar takes ownership of the inserted widget.
   \param role Role for widget to be inserted, should be unique
   \param w Widget to be inserted
@@ -782,6 +942,16 @@ void QtxDockWidget::removeCustomTitleBarWidget( const int role )
   if ( !customTitleBarEnabled() )
     return;
   qobject_cast<QtxDockWidgetTitle*>( titleBarWidget() )->removeWidget( role );
+}
+
+/*!
+  \brief Update title bar of the dock widget
+*/
+void QtxDockWidget::updateCustomTitleBar()
+{
+  if ( !customTitleBarEnabled() )
+    return;
+  qobject_cast<QtxDockWidgetTitle*>( titleBarWidget() )->updateTitleBar(); 
 }
 
 /*!

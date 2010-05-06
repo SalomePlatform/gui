@@ -54,8 +54,11 @@ public:
   void            enableCustomTitleBar( const bool );
   bool            customTitleBarEnabled() const;
   QWidget*        customTitleBarWidget( const int ) const;
+  int             customTitleBarRole( QWidget* ) const;
   void            insertCustomTitleBarWidget( const int, QWidget*, const int = Last );
   void            removeCustomTitleBarWidget( const int );
+
+  void            updateCustomTitleBar();
 
 signals:
   void            orientationChanged( Qt::Orientation );

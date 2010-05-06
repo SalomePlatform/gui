@@ -694,9 +694,29 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
             }
             else {
               QRect r = dwOpt->rect.adjusted(0, 0, -1, -1); 
+              QRect aRect = dwOpt->rect;
+
+              const QStyleOptionDockWidgetV2 *v2
+                  = qstyleoption_cast<const QStyleOptionDockWidgetV2*>(opt);
+              bool verticalTitleBar = v2 == 0 ? false : v2->verticalTitleBar;
+
+              if (verticalTitleBar) {
+                QSize s = r.size();
+                s.transpose();
+                r.setSize(s);
+
+                QSize aSize = aRect.size();
+                aSize.transpose();
+                aRect.setSize(aSize);
+
+                p->save();
+                p->translate(r.left(), r.top() + r.width());
+                p->rotate(-90);
+                p->translate(-r.left(), -r.top());
+              }
+
               QColor bottom = opt->palette.color( QPalette::Window ),
                      top =    bottom.dark( BUT_PERCENT_COL );
-              QRect aRect = dwOpt->rect;
               QLinearGradient gr( aRect.x(), aRect.y(), aRect.x(), aRect.y()+aRect.height() );
               gr.setColorAt( 0.0, top );
               gr.setColorAt( 0.4, bottom );
@@ -712,6 +732,9 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
               p->setPen( aBrdBotCol );
               p->drawLine( r.x(), r.bottom(), r.right(), r.bottom() );
               p->drawLine( r.right(), r.bottom(), r.right(), r.y() );
+
+              if (verticalTitleBar)
+                p->restore();
             }
           }
           p->setPen(dwOpt->palette.color(QPalette::Light));
@@ -726,6 +749,21 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
             aPxm = standardPixmap( SP_TitleBarNormalButton, opt, w);
             aWidth = aWidth - aPxm.width()-2/*button margins*/;
             r = QRect( r.x(), r.y(), aWidth-aMargin-2/*buttons separator*/-2/*margin from text*/, r.height() );
+
+            const QStyleOptionDockWidgetV2 *v2
+                = qstyleoption_cast<const QStyleOptionDockWidgetV2*>(opt);
+            bool verticalTitleBar = v2 == 0 ? false : v2->verticalTitleBar;
+
+            if (verticalTitleBar) {
+              QSize s = r.size();
+              s.transpose();
+              r.setSize(s);
+
+              p->save();
+              p->translate(r.left(), r.top() + r.width());
+              p->rotate(-90);
+              p->translate(-r.left(), -r.top());
+            }
 
             QFont oldFont = p->font();
             QFont font = oldFont;
@@ -743,6 +781,9 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
                          dwOpt->state & State_Enabled, aTitle,
                          floating ? (active ? QPalette::BrightText : QPalette::Window) : QPalette::WindowText);
             p->setFont(oldFont);
+
+            if (verticalTitleBar)
+              p->restore();
 	  }
 	  break;
         }

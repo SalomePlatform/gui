@@ -553,7 +553,11 @@ void QDS_ComboBox::onTextChanged( const QString& /*txt*/ )
 void QDS_ComboBox::onActivated( int idx )
 {
   if ( comboBox() )
-    comboBox()->setCurrentIndex( comboBox()->currentIndex() );
+  {
+    int ind = comboBox()->currentIndex();
+    comboBox()->setCurrentIndex( -1 );
+    comboBox()->setCurrentIndex( ind );
+  }
 
   int id = getId( idx );
   if ( id != -1 )

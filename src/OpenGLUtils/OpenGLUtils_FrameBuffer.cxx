@@ -1,7 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
-//
-//  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-//  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -19,10 +16,15 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 //  File   : OpenGLUtils_FrameBuffer.cxx
 //  Module : SALOME
 //
 #include "OpenGLUtils_FrameBuffer.h"
+
+#include <utilities.h>
+
+#include <cstring>
 
 #ifndef WNT
 # ifndef GLX_GLXEXT_LEGACY
@@ -126,8 +128,13 @@ OpenGLUtils_FrameBuffer::~OpenGLUtils_FrameBuffer()
 
 bool OpenGLUtils_FrameBuffer::init( const GLsizei& xSize, const GLsizei& ySize )
 {
-  if( !IsEXTInitialized )
+  char* ext = (char*)glGetString( GL_EXTENSIONS );
+  if( !IsEXTInitialized ||
+      strstr( ext, "GL_EXT_framebuffer_object" ) == NULL )
+  {
+    INFOS( "Initializing OpenGL FrameBuffer extension failed" );
     return false;
+  }
 
   // create a texture object
   glEnable( GL_TEXTURE_2D );
@@ -165,6 +172,9 @@ bool OpenGLUtils_FrameBuffer::init( const GLsizei& xSize, const GLsizei& ySize )
 
 void OpenGLUtils_FrameBuffer::release()
 {
+  if( !IsEXTInitialized )
+    return;
+
   glDeleteTextures( 1, &textureId );
   textureId = 0;
 
@@ -177,10 +187,16 @@ void OpenGLUtils_FrameBuffer::release()
 
 void OpenGLUtils_FrameBuffer::bind()
 {
+  if( !IsEXTInitialized )
+    return;
+
   vglBindFramebufferEXT( GL_FRAMEBUFFER_EXT, fboId );
 }
 
 void OpenGLUtils_FrameBuffer::unbind()
 {
+  if( !IsEXTInitialized )
+    return;
+
   vglBindFramebufferEXT( GL_FRAMEBUFFER_EXT, 0 );
 }

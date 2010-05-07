@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 #ifndef LIGHTAPP_OCCSELECTOR_H
 #define LIGHTAPP_OCCSELECTOR_H
 
@@ -66,7 +67,7 @@ protected:
   virtual void      setSelection( const SUIT_DataOwnerPtrList& );
 
 #ifndef DISABLE_OCCVIEWER
-  QString           entry( const Handle_AIS_InteractiveObject& ) const;
+  virtual QString   entry( const Handle_AIS_InteractiveObject& ) const;
 #endif
 
   SUIT_DataOwnerPtrList mySelectedExternals;

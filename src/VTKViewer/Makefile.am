@@ -1,4 +1,4 @@
-#  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+#  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 #
 #  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 #  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,11 +19,14 @@
 #
 #  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
+
 #  File   : Makefile.in
 #  Author : Vladimir Klyachin (OCN)
 #  Module : VTKViewer
-
+#
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
+
+EXTRA_DIST += textures
 
 lib_LTLIBRARIES = libVTKViewer.la
 
@@ -132,8 +135,10 @@ nodist_salomeres_DATA =		\
 
 libVTKViewer_la_CPPFLAGS = $(QT_INCLUDES) $(VTK_INCLUDES) $(CAS_CPPFLAGS)	\
 	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT
-libVTKViewer_la_LDFLAGS = $(VTK_LIBS) $(QT_MT_LIBS) $(CAS_KERNEL) $(OGL_LIBS)	\
-	../Qtx/libqtx.la ../SUIT/libsuit.la
+libVTKViewer_la_LDFLAGS = $(KERNEL_LDFLAGS) $(VTK_LIBS) $(QT_MT_LIBS)           \
+	$(CAS_KERNEL) $(OGL_LIBS) ../Qtx/libqtx.la ../SUIT/libsuit.la
+
+libVTKViewer_la_LIBADD = -lSALOMELocalTrace
 
 # Executable
 
@@ -142,5 +147,6 @@ bin_PROGRAMS = VTKViewer
 dist_VTKViewer_SOURCES = VTKViewer.cxx
 
 VTKViewer_CPPFLAGS = $(libVTKViewer_la_CPPFLAGS)
-VTKViewer_LDADD    = libVTKViewer.la $(libVTKViewer_la_LDFLAGS)
+VTKViewer_LDFLAGS = $(libVTKViewer_la_LDFLAGS)
+VTKViewer_LDADD = libVTKViewer.la $(libVTKViewer_la_LIBADD)
 

@@ -1,25 +1,26 @@
-// Copyright (C) 2008  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
-// This library is free software; you can redistribute it and/or
-// modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either
-// version 2.1 of the License.
+//  This library is free software; you can redistribute it and/or
+//  modify it under the terms of the GNU Lesser General Public
+//  License as published by the Free Software Foundation; either
+//  version 2.1 of the License.
 //
-// This library is distributed in the hope that it will be useful
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-// Lesser General Public License for more details.
+//  This library is distributed in the hope that it will be useful,
+//  but WITHOUT ANY WARRANTY; without even the implied warranty of
+//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//  Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public
-// License along with this library; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+//  You should have received a copy of the GNU Lesser General Public
+//  License along with this library; if not, write to the Free Software
+//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File:    SalomeApp_NoteBookDlg.cxx
 // Author : Roman NIKOLAEV, Open CASCADE S.A.S.
 // Module : GUI
-
+//
 #include <PyConsole_Interp.h> // this include must be first (see PyInterp_base.h)!
 #include <PyConsole_Console.h>
 
@@ -73,8 +74,9 @@ using namespace std;
  *  Purpose  : Constructor
  */
 //============================================================================
-NoteBook_TableRow::NoteBook_TableRow(int index, QWidget* parent):
+NoteBook_TableRow::NoteBook_TableRow(int index, NoteBook_Table* parentTable, QWidget* parent):
   QWidget(parent),
+  myParentTable(parentTable),
   myIndex(index),
   myRowHeader(new QTableWidgetItem()),
   myVariableName(new QTableWidgetItem()),
@@ -279,7 +281,28 @@ bool NoteBook_TableRow::IsIntegerValue(const QString theValue, int* theResult)
 //============================================================================
 bool NoteBook_TableRow::IsValidStringValue(const QString theValue)
 {
-  return true;
+  int aNumRows = myParentTable->myRows.count();
+  if( aNumRows == 0 )
+    return true;
+
+  bool aLastRowIsEmpty = myParentTable->myRows[ aNumRows - 1 ]->GetName().isEmpty() &&
+                         myParentTable->myRows[ aNumRows - 1 ]->GetValue().isEmpty();
+
+  SalomeApp_Application* app = dynamic_cast<SalomeApp_Application*>( SUIT_Session::session()->activeApplication() );
+  PyConsole_Console* pyConsole = app->pythonConsole();
+  PyConsole_Interp* pyInterp = pyConsole->getInterp();
+  PyLockWrapper aLock = pyInterp->GetLockWrapper();
+  string command = "import salome_notebook ; ";
+  command += "salome_notebook.checkThisNoteBook(";
+  for( int i = 0, n = aLastRowIsEmpty ? aNumRows - 1 : aNumRows; i < n; i++ ) {
+    command += myParentTable->myRows[i]->GetName().toStdString();
+    command += "=\"";
+    command += myParentTable->myRows[i]->GetValue().toStdString();
+    command += "\", ";
+  }
+  command += ") ";
+  bool aResult = pyInterp->run(command.c_str());
+  return !aResult;
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -450,8 +473,7 @@ bool NoteBook_Table::IsValid() const
     }
   command += ")";
   bool aResult = pyInterp->run(command.c_str());
-  aResult = !aResult;
-  return aResult;
+  return !aResult;
 }
 
 //============================================================================
@@ -473,7 +495,7 @@ void NoteBook_Table::RenamberRowItems(){
 void NoteBook_Table::AddRow(const QString& theName, const QString& theValue)
 {
   int anIndex = getUniqueIndex();
-  NoteBook_TableRow* aRow = new NoteBook_TableRow(anIndex, this);
+  NoteBook_TableRow* aRow = new NoteBook_TableRow(anIndex, this, this);
   aRow->SetName(theName);
   aRow->SetValue(theValue);
   aRow->AddToTable(this);
@@ -919,7 +941,7 @@ void SalomeApp_NoteBookDlg::onApply()
       else if( NoteBook_TableRow::IsBooleanValue(aValue,&aBVal) )
         myStudy->SetBoolean(string(aName.toLatin1().constData()),aBVal);
     
-      else if( NoteBook_TableRow::IsValidStringValue(aValue) )
+      else
         myStudy->SetString(string(aName.toLatin1().constData()),aValue.toStdString());
     }
   }

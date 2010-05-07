@@ -62,6 +62,10 @@ Help for the GUI module provides information about standard
 </ul>
 
 \subpage setting_preferences_page "Preferences" for all Salome modules
-are also described in this section of Salome GUI Help.
+are also described in this section of SALOME GUI Help.
+
+\subpage using_input_widgets_page "Using input widgets" sub-section
+covers specific aspects of behavior of certain kinds of SALOME GUI
+input fields.
 
 */

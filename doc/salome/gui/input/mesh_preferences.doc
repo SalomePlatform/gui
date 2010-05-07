@@ -21,10 +21,9 @@ viewer automatically updated whenever you make changes in it.</li>
 object will be displayed in the viewer by default.</li>
 <li>If you toggle <b>Use precision</b> checkbox, you can display numbers in
 <b>Quality Control</b> diagrams at the necessary level of precision.</li>
-</ul>
-<li><b>Precision</b> - can be defined by the <b>Number of digits after point</b> in
-the corresponding field. By default, numbers in <b>Quality Control</b>
+<li><b>Number of digits after point</b> - defines precision for <b>Quality Controls</b>. By default, numbers in <b>Quality Control</b>
 diagrams are presented as integers.</li>
+</ul>
 <li><b>Display mode</b> - allows to set Wireframe, Shading, Nodes or Shrink
 presentation mode as default.</li>
 <li><b>Representation of the 2D quadratic elements</b></li>
@@ -60,6 +59,16 @@ used for automatic meshing: ratio between the bounding box of the
 meshed object and the Max Size of segments.</li>
 <li><b>Default Number of Segments</b> - allows defining the default
 number of segments on each edge</li>
+</ul>
+</ul>
+<li><b>Input fields precision</b></li>
+<ul>
+<li><b>Length precision</b> - allows to adjust input precision of coordinates and dimensions.</li>
+<li><b>Angular precision</b> - allows to adjust input precision of angles.</li>
+<li><b>Length tolerance precision</b> - allows to adjust input precision of tolerance of coordinates and dimensions.</li>
+<li><b>Parametric precision</b> - allows to adjust input precision of parametric values.</li>
+<li><b>Area precision</b> - allows to adjust input precision of mesh element area.</li>
+<li><b>Volume precision</b> - allows to adjust input precision of mesh element volume.</li>
 </ul>
 </ul>
 

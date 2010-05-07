@@ -5,6 +5,22 @@
 In the Post-Pro module you can set preferences, default settings,
 which can be used in later sessions with this module.
 
+<h2>General Preferences</h2>
+
+\image html ppref0.png
+
+<ul>
+<li><b>Input fields precision</b></li>
+<ul>
+<li><b>Visual data precision</b> - allows to adjust precision of scalar data displayed as text, data values round-up, various visualization options.</li>
+<li><b>Length precision</b> - allows to adjust input precision of coordinates and dimensions.</li>
+<li><b>Angular precision</b> - allows to adjust input precision of angles.</li>
+<li><b>Length tolerance precision</b> - allows to adjust input precision of tolerance of coordinates and dimensions.</li>
+<li><b>Parametric precision</b> - allows to adjust input precision of parametric values.</li>
+<li><b>Memory size precision</b> - allows to adjust input precision of memory size.</li>
+</ul>
+</ul>
+
 <h2>MED import Preferences</h2>
 
 \image html ppref1.png
@@ -192,6 +208,25 @@ in the visible area.</li>
 </ul>
 </ul>
 
+<br><h2>Tables</h2>
+
+\image html pref35.png
+
+<ul>
+<li><b>Enable editing</b></li> - allows to edit contents of the tables
+(in particular, to sort table data by clicking on the column header).
+<li><b>Sort policy</b></li> - specify how the empty cells will be processed
+during the sort procedure. The following options are available:
+</li>
+<ul>
+<li><b>Empty cells are considered as lowest values</b></li>
+<li><b>Empty cells are considered as highest values</b></li>
+<li><b>Empty cells are always first</b></li>
+<li><b>Empty cells are always last</b></li>
+<li><b>Empty cells are ignored</b> (means that positions of the empty cells
+will not change after sorting)</li>
+</ul>
+</ul>
 
 <br><h2>Feature Edges</h2>
 

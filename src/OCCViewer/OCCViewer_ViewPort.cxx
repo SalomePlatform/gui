@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 #if !defined WNT
 #define QT_CLEAN_NAMESPACE         /* avoid definition of INT32 and INT8 */
 #endif
@@ -118,7 +119,7 @@ static Colormap choose_cmap( Display *dpy, XVisualInfo *vi )
   if ( vi->visualid == XVisualIDFromVisual( (Visual*)QX11Info::appVisual() ) )
   {
 #ifdef DEBUG
-    cout << "Using x11AppColormap" << endl;
+//    cout << "Using x11AppColormap" << endl;
 #endif
     return QX11Info::appColormap();
   }

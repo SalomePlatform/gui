@@ -1,4 +1,4 @@
-#  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+#  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 #
 #  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 #  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 #
 #  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
+
 #  File   : Makefile.in
 #  Author : Alexander Solovyov(OCN)
 #  Module : SVTK
@@ -150,12 +151,13 @@ libSVTK_la_CPPFLAGS =		\
 libSVTK_la_LDFLAGS =			\
 	$(VTK_LIBS) $(OGL_LIBS)		\
 	$(QT_MT_LIBS)			\
-	$(CAS_KERNEL) $(CAS_VIEWER)
+	$(CAS_KERNEL) $(CAS_VIEWER)     \
+	$(KERNEL_LDFLAGS)
 
 
 libSVTK_la_LIBADD = ../Qtx/libqtx.la ../SUIT/libsuit.la ../OBJECT/libSalomeObject.la \
 		    ../Prs/libSalomePrs.la ../VTKViewer/libVTKViewer.la \
-		    ../OpenGLUtils/libOpenGLUtils.la
+		    ../OpenGLUtils/libOpenGLUtils.la -lSALOMELocalTrace
 
 # Executable
 bin_PROGRAMS = SVTK

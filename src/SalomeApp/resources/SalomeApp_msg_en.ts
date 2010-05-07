@@ -1,6 +1,6 @@
 <!DOCTYPE TS><TS>
 <!--
-  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 
   Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
   CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -31,7 +31,7 @@ Python file must include only letters, digits and underscores and start from let
     </message>
     <message>
         <source>WRN_FILE_NOT_EXIST</source>
-        <translation>The file %1 dose not exist.</translation>
+        <translation>The file %1 does not exist.</translation>
     </message>
     <message>
         <source>CLOSE_LOCKED_STUDY</source>
@@ -406,11 +406,11 @@ Do you really want to rename it?</translation>
 	</message>
         <message>	
            <source>VARNAME_INCORRECT</source>
-           <translation>Valiable Name Incorrect :%1</translation>
+           <translation>Variable Name Incorrect :%1</translation>
 	</message>
         <message>	
            <source>VARNAME_EXISTS</source>
-           <translation>Valiable with name "%1" exists</translation>
+           <translation>Variable with name "%1" exists</translation>
 	</message>
 </context>
 <context>

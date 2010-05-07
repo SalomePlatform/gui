@@ -1,4 +1,4 @@
-#  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+#  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 #
 #  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 #  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 #
 #  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
+
 #  File   : Makefile.in
 #  Author : Nicolas REJNERI
 #  Module : SALOME
@@ -48,7 +49,7 @@ nodist_libSalomePyQtGUI_la_SOURCES = $(MOC_FILES)
 libSalomePyQtGUI_la_CPPFLAGS = $(QT_INCLUDES) $(SIP_INCLUDES) $(PYTHON_INCLUDES)	\
 	$(CAS_CPPFLAGS) $(VTK_INCLUDES) $(OGL_INCLUDES) $(BOOST_CPPFLAGS)		\
 	-DHAVE_CONFIG_H @KERNEL_CXXFLAGS@ -DCALL_OLD_METHODS				\
-	-I@builddir@ -I$(srcdir)/../../PyInterp -I$(srcdir)/../../SalomeApp		\
+	-I. -I$(srcdir)/../../PyInterp -I$(srcdir)/../../SalomeApp		\
 	-I$(srcdir)/../../SUIT -I$(srcdir)/../../Qtx -I$(srcdir)/../../LightApp		\
 	-I$(srcdir)/../SALOME_PYQT_GUILight                                             \
 	-I$(srcdir)/../../Plot2d -I$(srcdir)/../../OCCViewer				\

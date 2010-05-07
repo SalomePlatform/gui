@@ -1,7 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
-//
-//  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-//  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -19,6 +16,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File:      QtxDoubleSpinBox.cxx
 // Author:    Sergey TELKOV
 //
@@ -73,9 +71,11 @@
 */
 QtxDoubleSpinBox::QtxDoubleSpinBox( QWidget* parent )
 : QDoubleSpinBox( parent ),
-  myCleared( false ),
-  myPrecision(0)
+  myCleared( false )
 {
+  // Use precision equal to default Qt decimals
+  myPrecision = decimals();
+  
   connect( lineEdit(), SIGNAL( textChanged( const QString& ) ), 
            this, SLOT( onTextChanged( const QString& ) ) );
 }
@@ -94,9 +94,11 @@ QtxDoubleSpinBox::QtxDoubleSpinBox( QWidget* parent )
 */
 QtxDoubleSpinBox::QtxDoubleSpinBox( double min, double max, double step, QWidget* parent )
 : QDoubleSpinBox( parent ),
-  myCleared( false ),
-  myPrecision( 0 )
+  myCleared( false )
 {
+  // Use precision equal to default Qt decimals
+  myPrecision = decimals();
+  
   setMinimum( min );
   setMaximum( max );
   setSingleStep( step );

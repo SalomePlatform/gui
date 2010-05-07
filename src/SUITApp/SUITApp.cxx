@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,14 +19,12 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//#if defined WIN32
 
+//#if defined WIN32
 //#ifdef SUIT_ENABLE_PYTHON
 //#undef SUIT_ENABLE_PYTHON
 //#endif
-
 //#else //#if defined WIN32
-
 //#ifndef SUIT_ENABLE_PYTHON
 // NOTE: DO NOT DELETE THIS DEFINITION ON LINUX
 // or make sure Python is initialized in main() in any case
@@ -35,7 +33,7 @@
 //#define SUIT_ENABLE_PYTHON
 //#include <Python.h>
 //#endif
-
+//
 #ifdef SUIT_ENABLE_PYTHON
 #include "SUITApp_init_python.hxx"
 #endif

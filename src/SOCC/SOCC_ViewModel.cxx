@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 #include "SOCC_ViewModel.h"
 
 #include "SOCC_Prs.h"
@@ -57,6 +58,8 @@
 //#include "SALOMEDS_StudyManager.hxx"
 
 #include <AIS_TypeOfIso.hxx>
+
+#include <Precision.hxx>
 
 // in order NOT TO link with SalomeApp, here the code returns SALOMEDS_Study.
 // SalomeApp_Study::studyDS() does it as well, but -- here it is retrieved from 
@@ -672,6 +675,12 @@ bool SOCC_Viewer::getTrihedronSize( double& theNewSize, double& theSize )
   aMaxSide = Xmax - Xmin;
   if ( aMaxSide < Ymax -Ymin ) aMaxSide = Ymax -Ymin;
   if ( aMaxSide < Zmax -Zmin ) aMaxSide = Zmax -Zmin;
+
+  // IPAL21687
+  // The boundary box of the view may be initialized but nullified
+  // (case of infinite objects)
+  if ( aMaxSide < Precision::Confusion() )
+    return false;
 
   float aSizeInPercents = SUIT_Session::session()->resourceMgr()->doubleValue("Viewer","TrihedronSize", 105.);
 

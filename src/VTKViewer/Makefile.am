@@ -147,6 +147,6 @@ bin_PROGRAMS = VTKViewer
 dist_VTKViewer_SOURCES = VTKViewer.cxx
 
 VTKViewer_CPPFLAGS = $(libVTKViewer_la_CPPFLAGS)
-VTKViewer_LDFLAGS = $((libVTKViewer_la_LDFLAGS)
+VTKViewer_LDFLAGS = $(libVTKViewer_la_LDFLAGS)
 VTKViewer_LDADD = libVTKViewer.la $(libVTKViewer_la_LIBADD)
 

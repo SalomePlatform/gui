@@ -2228,8 +2228,16 @@ QtxPagePrefSliderItem::QtxPagePrefSliderItem( const QString& title, QtxPreferenc
 : QtxPageNamedPrefItem( title, parent, sect, param )
 {
   setControl( mySlider = new QSlider( Qt::Horizontal ) );
+  widget()->layout()->addWidget( myLabel = new QLabel( ) );
+    
+  setMinimum( 0 );
+  setMaximum( 0 );
+  setSingleStep( 1 );
+  setPageStep( 1 );
+  
   mySlider->setTickPosition( QSlider::TicksBothSides );
-
+  
+  connect (mySlider, SIGNAL(valueChanged(int)), this, SLOT(setIcon(int)));
   updateSlider();
 }
 
@@ -2281,6 +2289,16 @@ int QtxPagePrefSliderItem::maximum() const
 }
 
 /*!
+  \brief Get the list of the icons associated with the selection widget items
+  \return list of icons
+  \sa setIcons()
+*/
+QList<QIcon> QtxPagePrefSliderItem::icons() const
+{
+  return myIcons;
+}
+
+/*!
   \brief Set slider preference item step value.
   \param step new slider single step value
   \sa step()
@@ -2308,16 +2326,39 @@ void QtxPagePrefSliderItem::setPageStep( const int& step )
 void QtxPagePrefSliderItem::setMinimum( const int& min )
 {
   mySlider->setMinimum( min );
+  setIcon( mySlider->value() );
 }
 
 /*!
   \brief Set slider preference item maximum value.
-  \param min new slider maximum value
+  \param max new slider maximum value
   \sa maximum()
 */
 void QtxPagePrefSliderItem::setMaximum( const int& max )
 {
   mySlider->setMaximum( max );
+  setIcon( mySlider->value() );
+}
+
+/*!
+  \brief Set the list of the icons to the selection widget items
+  \param icns new list of icons
+  \sa icons()
+*/
+void QtxPagePrefSliderItem::setIcons( const QList<QIcon>& icns )
+{
+  if ( icns.isEmpty() ) 
+    return;
+  myIcons = icns;
+  
+  QSize maxsize(0, 0); 
+  for ( QList<QIcon>::const_iterator it = myIcons.begin(); it != myIcons.end(); ++it ) {
+    if ( (*it).isNull() ) continue;
+    maxsize = maxsize.expandedTo( (*it).availableSizes().first() );
+  }
+  myLabel->setFixedSize( maxsize );
+  
+  updateSlider();
 }
 
 /*!
@@ -2354,6 +2395,14 @@ QVariant QtxPagePrefSliderItem::optionValue( const QString& name ) const
     return singleStep();
   else if ( name == "page_step" )
     return pageStep();
+  else if ( name == "icons" || name == "pixmaps" )
+  {
+    QList<QVariant> lst;
+    QList<QIcon> ics = icons();
+    for ( QList<QIcon>::const_iterator it = ics.begin(); it != ics.end(); ++it )
+      lst.append( *it );
+    return lst;
+  }
   else
     return QtxPageNamedPrefItem::optionValue( name );
 }
@@ -2379,8 +2428,19 @@ void QtxPagePrefSliderItem::setOptionValue( const QString& name, const QVariant&
     else
       QtxPageNamedPrefItem::setOptionValue( name, val );
   }
+  else if ( name == "icons" || name == "pixmaps" )
+    setIcons( val );
   else
     QtxPageNamedPrefItem::setOptionValue( name, val );
+}
+
+void QtxPagePrefSliderItem::setIcon( int pos )
+{
+  int index = pos - mySlider->minimum();
+  if ( !myIcons.isEmpty() && index >= 0 && index < myIcons.size() && !myIcons[index].isNull() )
+    myLabel->setPixmap( myIcons[index].pixmap( myIcons[index].availableSizes().first() ) );
+  else
+    myLabel->clear();
 }
 
 /*!
@@ -2402,6 +2462,33 @@ void QtxPagePrefSliderItem::updateSlider()
   setPageStep( ptp );
   setMinimum( min );
   setMaximum( max );
+  
+  myLabel->setVisible( !myIcons.empty() );
+  widget()->layout()->setSpacing( !myIcons.empty() ? 6 : 0 );
+}
+
+/*!
+  \brief Set the list of the icons from the resource manager.
+  \param var new icons list
+  \internal
+*/
+void  QtxPagePrefSliderItem::setIcons( const QVariant& var )
+{
+  if ( var.type() != QVariant::List )
+    return;
+
+  QList<QIcon> lst;
+  QList<QVariant> varList = var.toList();
+  for ( QList<QVariant>::const_iterator it = varList.begin(); it != varList.end(); ++it )
+  {
+    if ( (*it).canConvert<QIcon>() )
+      lst.append( (*it).value<QIcon>() );
+    else if ( (*it).canConvert<QPixmap>() )
+      lst.append( (*it).value<QPixmap>() );
+    else
+      lst.append( QIcon() );
+  }
+  setIcons( lst );
 }
 
 /*!

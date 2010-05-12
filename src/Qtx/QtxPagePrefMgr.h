@@ -417,8 +417,10 @@ private:
   QLineEdit*       myEditor;
 };
 
-class QTX_EXPORT QtxPagePrefSliderItem : public QtxPageNamedPrefItem
+class QTX_EXPORT QtxPagePrefSliderItem : public QObject,public QtxPageNamedPrefItem
 {
+  Q_OBJECT
+
 public:
   QtxPagePrefSliderItem( const QString&, QtxPreferenceItem* = 0,
                          const QString& = QString(), const QString& = QString() );
@@ -428,11 +430,13 @@ public:
   int              pageStep() const;
   int              minimum() const;
   int              maximum() const;
+  QList<QIcon>     icons() const; 
 
   void             setSingleStep( const int& );
   void             setPageStep( const int& );
   void             setMinimum( const int& );
   void             setMaximum( const int& );
+  void             setIcons( const QList<QIcon>& );
 
   virtual void     store();
   virtual void     retrieve();
@@ -441,11 +445,17 @@ protected:
   virtual QVariant optionValue( const QString& ) const;
   virtual void     setOptionValue( const QString&, const QVariant& );
 
+private slots:
+ void             setIcon( int );
+
 private:
   void             updateSlider();
+  void             setIcons( const QVariant& );
 
 private:
   QSlider*         mySlider;
+  QLabel*          myLabel;
+  QList<QIcon>     myIcons;
 };
 
 class QTX_EXPORT QtxPagePrefSelectItem : public QtxPageNamedPrefItem

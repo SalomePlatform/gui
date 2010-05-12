@@ -66,11 +66,12 @@ public slots:
   void           clear();
   void           handleReturn();
   void           onPyInterpChanged( PyConsole_Interp* );
+  void           dump();
   
 private:
   PyConsole_Interp* myInterp;           //!< python interpreter
 
-  QString           myCommandBuffer;    //!< python comman buffer
+  QString           myCommandBuffer;    //!< python command buffer
   QString           myCurrentCommand;   //!< currently being printed command
   QString           myPrompt;           //!< current command line prompt
   int               myCmdInHistory;     //!< current history command index

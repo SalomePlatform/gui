@@ -45,5 +45,21 @@
         <source>EDIT_SELECTALL_CMD</source>
         <translation>Select &amp;All</translation>
     </message>
+    <message>
+        <source>EDIT_DUMPCOMMANDS_CMD</source>
+        <translation>D&amp;ump commands</translation>
+    </message>
+</context>
+
+<context>
+    <name>PyConsole_Editor</name>
+    <message>
+        <source>TOT_DUMP_PYCOMMANDS</source>
+        <translation>Dump commands</translation>
+    </message>
+    <message>
+       <source>PYTHON_FILES_FILTER</source>
+       <translation>PYTHON Files (*.py)</translation>
+    </message>
 </context>
 </TS>

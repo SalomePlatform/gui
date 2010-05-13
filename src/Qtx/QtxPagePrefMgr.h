@@ -664,4 +664,33 @@ private:
   QDateTimeEdit*   myDateTime;
 };
 
+
+class QtxUserDefinedContent: public QWidget
+{
+ public:
+  QtxUserDefinedContent(QWidget* parent = 0, Qt::WindowFlags f = 0 ):QWidget(parent, f) {};
+  virtual void store(QtxResourceMgr* theRes, QtxPreferenceMgr* thePref) = 0;
+  virtual void retrieve(QtxResourceMgr* theRes, QtxPreferenceMgr* thePref) = 0;
+};
+
+
+class QTX_EXPORT QtxUserDefinedItem : public QtxPageNamedPrefItem
+{
+public:
+  QtxUserDefinedItem( QtxPreferenceItem* parent );
+
+  void setContent( QtxUserDefinedContent* theContent );
+
+  virtual void store();
+  virtual void retrieve();
+
+protected:
+  virtual QVariant optionValue( const QString& theName ) const;
+  virtual void     setOptionValue( const QString& theName, const QVariant& theVal );
+
+private:
+  QtxUserDefinedContent* myContent;
+};
+
+
 #endif

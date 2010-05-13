@@ -3909,3 +3909,81 @@ void QtxPagePrefDateTimeItem::updateDateTime()
 
   myDateTime->setDisplayFormat( dispFmt );
 }
+
+
+
+/*!
+  \brief Constructor.
+
+  Creates preference item of user defined widget. The item widget has to be inherited from 
+  QtxUserDefinedContent class. An instance of this class has to be installed into the item
+  with help of setContent method. Methods optionValue and setOptionValue use pointer on the 
+  content widget an qint64 value.
+
+  \param parent parent preference item
+*/
+QtxUserDefinedItem::QtxUserDefinedItem( QtxPreferenceItem* parent )
+  : QtxPageNamedPrefItem(QString(), parent), myContent(0)
+{
+}
+  
+/*!
+  \brief Lets to Store preferences for content instance
+  \sa retrieve()
+*/
+void QtxUserDefinedItem::store()
+{
+  if (myContent) {
+    myContent->store( resourceMgr(), preferenceMgr());
+  }
+}
+
+/*!
+  \brief Lets to Retrieve preferences for content instance
+  \sa store()
+*/
+void QtxUserDefinedItem::retrieve()
+{
+  if (myContent) {
+    myContent->retrieve( resourceMgr(), preferenceMgr());
+  }
+}
+
+/*!
+ * \brief Returns option value
+ * \param theName is a string "content"
+ * \return pointer on QtxUserDefinedContent class instance as a qint64 value
+ */
+QVariant QtxUserDefinedItem::optionValue( const QString& theName ) const
+{
+  if ( theName == "content" )
+    return (qint64) myContent;
+  else
+    return QtxPreferenceItem::optionValue( theName );
+}
+
+/*!
+ * \brief Sets option value
+ * \param theName is a string "content" 
+ * \param theVal is a pointer on QtxUserDefinedContent class instance represented as qint64 value
+ */
+void QtxUserDefinedItem::setOptionValue( const QString& theName, const QVariant& theVal)
+{
+  if ( theName == "content" ) {
+    if ( theVal.canConvert( QVariant::ULongLong ) ) {
+      setContent( (QtxUserDefinedContent*)theVal.toULongLong() );
+    }
+  } else
+    QtxPreferenceItem::setOptionValue( theName, theVal );
+}
+  
+/*!
+ * \brief Defines content of the property item as a Widget which has to be inherited from 
+ * QtxUserDefinedContent class.
+ * \param theContent is an QtxUserDefinedContent class instance.
+ */
+void QtxUserDefinedItem::setContent( QtxUserDefinedContent* theContent ) 
+{ 
+  myContent = theContent; 
+  setControl(myContent);
+}

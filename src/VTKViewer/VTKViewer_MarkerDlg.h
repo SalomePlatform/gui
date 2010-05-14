@@ -39,6 +39,9 @@ public:
   VTKViewer_MarkerDlg( QWidget* = 0 );
   virtual ~VTKViewer_MarkerDlg();
 
+  void                    setHelpData( const QString& theModuleName,
+                                       const QString& theHelpFileName );
+
   void                    setCustomMarkerMap( VTK::MarkerMap );
   VTK::MarkerMap          getCustomMarkerMap();
 
@@ -48,8 +51,17 @@ public:
   VTK::MarkerScale        getStandardMarkerScale() const;
   int                     getCustomMarkerID() const;
 
+protected:
+  void                    keyPressEvent( QKeyEvent* );
+
+private slots:
+  void                    onHelp();
+
 private:
   VTKViewer_MarkerWidget* myMarkerWidget;
+
+  QString                 myModuleName;
+  QString                 myHelpFileName;
 };
 
 #endif

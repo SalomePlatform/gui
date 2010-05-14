@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 //  SALOME OBJECT : implementation of interactive object visualization for OCC and VTK viewers
 //  File   : SALOME_Actor.cxx
 //  Author : Nicolas REJNERI
@@ -122,29 +123,27 @@ namespace
     };
     return false;
   }
+}
 
-  class TPickLimiter
+namespace SVTK
+{
+  /*!
+    Make picker work with this actor only
+  */
+  TPickLimiter::TPickLimiter(vtkAbstractPicker* picker, SALOME_Actor* actor):myPicker(picker)
   {
-    vtkAbstractPicker* myPicker;
-  public:
-    /*!
-      Make picker work with this actor only
-    */
-    TPickLimiter(vtkAbstractPicker* picker, SALOME_Actor* actor):myPicker(picker)
-    {
-      myPicker->InitializePickList();
-      myPicker->AddPickList( actor );
-      myPicker->SetPickFromList( true );
-    }
-    /*!
-      Unlimit picking
-    */
-    ~TPickLimiter()
-    {
-      myPicker->SetPickFromList( false );
-      myPicker->InitializePickList();
-    }
-  };
+    myPicker->InitializePickList();
+    myPicker->AddPickList( actor );
+    myPicker->SetPickFromList( true );
+  }
+  /*!
+    Unlimit picking
+  */
+  TPickLimiter::~TPickLimiter()
+  {
+    myPicker->SetPickFromList( false );
+    myPicker->InitializePickList();
+  }
 }
 
 
@@ -488,6 +487,8 @@ SALOME_Actor
   Selection_Mode aSelectionMode = theSelectionEvent->mySelectionMode;
   bool anIsChanged = (mySelectionMode != aSelectionMode);
 
+  myPreHighlightActor->SetMarkerEnabled( aSelectionMode == NodeSelection );
+
   vtkFloatingPointType x = theSelectionEvent->myX;
   vtkFloatingPointType y = theSelectionEvent->myY;
   vtkFloatingPointType z = 0.0;
@@ -506,7 +507,7 @@ SALOME_Actor
     switch(aSelectionMode) {
     case NodeSelection: 
     {
-      TPickLimiter( myPointPicker, this );
+      SVTK::TPickLimiter aPickLimiter( myPointPicker, this );
       myPointPicker->Pick( x, y, z, aRenderer );
       
       int aVtkId = myPointPicker->GetPointId();
@@ -534,7 +535,7 @@ SALOME_Actor
     case FaceSelection:
     case VolumeSelection: 
     {
-      TPickLimiter( myCellPicker, this );
+      SVTK::TPickLimiter aPickLimiter( myCellPicker, this );
       myCellPicker->Pick( x, y, z, aRenderer );
       
       int aVtkId = myCellPicker->GetCellId();
@@ -561,7 +562,7 @@ SALOME_Actor
     }
     case EdgeOfCellSelection:
     {
-      TPickLimiter( myCellPicker, this );
+      SVTK::TPickLimiter aPickLimiter( myCellPicker, this );
       myCellPicker->Pick( x, y, z, aRenderer );
       
       int aVtkId = myCellPicker->GetCellId();
@@ -642,6 +643,8 @@ SALOME_Actor
   if ( !theIsHighlight )
     return true;
 
+  myHighlightActor->SetMarkerEnabled( aSelectionMode == NodeSelection );
+
   vtkFloatingPointType x = theSelectionEvent->myX;
   vtkFloatingPointType y = theSelectionEvent->myY;
   vtkFloatingPointType z = 0.0;
@@ -649,7 +652,7 @@ SALOME_Actor
   if( !theSelectionEvent->myIsRectangle ) {
     switch(aSelectionMode){
     case NodeSelection: {
-      TPickLimiter( myPointPicker, this );
+      SVTK::TPickLimiter aPickLimiter( myPointPicker, this );
       myPointPicker->Pick( x, y, z, aRenderer );
 
       int aVtkId = myPointPicker->GetPointId();
@@ -667,7 +670,7 @@ SALOME_Actor
     case FaceSelection:
     case VolumeSelection: 
     {
-      TPickLimiter( myCellPicker, this );
+      SVTK::TPickLimiter aPickLimiter( myCellPicker, this );
       myCellPicker->Pick( x, y, z, aRenderer );
     
       int aVtkId = myCellPicker->GetCellId();
@@ -684,7 +687,7 @@ SALOME_Actor
     }
     case EdgeOfCellSelection: 
     {
-      TPickLimiter( myCellPicker, this );
+      SVTK::TPickLimiter aPickLimiter( myCellPicker, this );
       myCellPicker->Pick( x, y, z, aRenderer );
     
       int aVtkId = myCellPicker->GetCellId();
@@ -728,7 +731,7 @@ SALOME_Actor
     switch(aSelectionMode){
     case NodeSelection: {
 
-      TPickLimiter( myPointRectPicker, this );
+      SVTK::TPickLimiter aPickLimiter( myPointRectPicker, this );
       myPointRectPicker->Pick( x1, y1, z1, x2, y2, z2, aRenderer );
 
       const SVTK_RectPicker::TVectorIdsMap& aVectorIdsMap = myPointRectPicker->GetPointIdsMap();
@@ -751,7 +754,7 @@ SALOME_Actor
         mySelector->AddIObject( this );
         anIndexes.Clear();
       }
-      else
+      else if ( !anIsShift )
         mySelector->RemoveIObject( this );
 
       break;
@@ -787,7 +790,7 @@ SALOME_Actor
     case FaceSelection:
     case VolumeSelection: 
     {
-      TPickLimiter( myCellRectPicker, this );
+      SVTK::TPickLimiter aPickLimiter( myCellRectPicker, this );
       myCellRectPicker->Pick( x1, y1, z1, x2, y2, z2, aRenderer );
 
       const SVTK_RectPicker::TVectorIdsMap& aVectorIdsMap = myCellRectPicker->GetCellIdsMap();
@@ -813,7 +816,7 @@ SALOME_Actor
         mySelector->AddIObject( this );
         anIndexes.Clear();
       }
-      else
+      else if ( !anIsShift )
         mySelector->RemoveIObject( this );
     }
     default:
@@ -980,4 +983,63 @@ SALOME_Actor
 ::SetHighlightProperty(vtkProperty* theProperty) 
 {
   myHighlightActor->SetProperty(theProperty);
+}
+
+/*!
+  Set standard point marker
+  \param theMarkerType type of the marker
+  \param theMarkerScale scale of the marker
+*/
+void
+SALOME_Actor
+::SetMarkerStd( VTK::MarkerType theMarkerType, VTK::MarkerScale theMarkerScale )
+{
+  myPreHighlightActor->SetMarkerStd( theMarkerType, theMarkerScale );
+  myHighlightActor->SetMarkerStd( theMarkerType, theMarkerScale );
+}
+
+/*!
+  Set custom point marker
+  \param theMarkerId id of the marker texture
+  \param theMarkerTexture marker texture
+*/
+void
+SALOME_Actor
+::SetMarkerTexture( int theMarkerId, VTK::MarkerTexture theMarkerTexture )
+{
+  myPreHighlightActor->SetMarkerTexture( theMarkerId, theMarkerTexture );
+  myHighlightActor->SetMarkerTexture( theMarkerId, theMarkerTexture );
+}
+
+/*!
+  Get type of the point marker
+  \return type of the point marker
+*/
+VTK::MarkerType
+SALOME_Actor
+::GetMarkerType()
+{
+  return myPreHighlightActor->GetMarkerType();
+}
+
+/*!
+  Get scale of the point marker
+  \return scale of the point marker
+*/
+VTK::MarkerScale
+SALOME_Actor
+::GetMarkerScale()
+{
+  return myPreHighlightActor->GetMarkerScale();
+}
+
+/*!
+  Get texture identifier of the point marker
+  \return texture identifier of the point marker
+ */
+int
+SALOME_Actor
+::GetMarkerTexture()
+{
+  return myPreHighlightActor->GetMarkerTexture();
 }

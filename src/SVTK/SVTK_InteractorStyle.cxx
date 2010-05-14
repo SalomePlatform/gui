@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : 
 //  Author : 
@@ -455,48 +456,48 @@ void SVTK_InteractorStyle::OnLeftButtonDown(int ctrl, int shift,
     {
       SVTK_SelectionEvent* aSelectionEvent = GetSelectionEventFlipY();
 
-      SALOME_Actor* anActor = GetSelector()->Pick(aSelectionEvent, GetCurrentRenderer());
+      bool isPicked = false;
+      vtkActorCollection* anActorCollection = GetSelector()->Pick(aSelectionEvent, GetCurrentRenderer());
       
-      if ( anActor )
+      if( anActorCollection )
       {
-        myPointPicker->Pick( aSelectionEvent->myX,
-                             aSelectionEvent->myY, 
-                             0.0, 
-                             GetCurrentRenderer() );
-        int aVtkId = myPointPicker->GetPointId();
-        if ( aVtkId >= 0 )
+        anActorCollection->InitTraversal();
+        while( vtkActor* aVTKActor = anActorCollection->GetNextActor() )
         {
-          int anObjId = anActor->GetNodeObjId( aVtkId );
-          vtkFloatingPointType* aCoords = anActor->GetNodeCoord(anObjId);
-          
-          if (myCurrRotationPointType == SVTK::StartPointSelection) {
-            myCurrRotationPointType = SVTK::SetRotateSelected;
-          
-            // invoke event for update coordinates in SVTK_SetRotationPointDlg
-            InvokeEvent(SVTK::RotationPointChanged,(void*)aCoords);
-          }
-          else if (myCurrFocalPointType == SVTK::StartFocalPointSelection) {
-            myCurrFocalPointType = SVTK::SetFocalPointSelected;
-          
-            // invoke event for update coordinates in SVTK_ViewParameterDlg
-            InvokeEvent(SVTK::FocalPointChanged,(void*)aCoords);
-          }
-        }
-        else
-        {
-          if (myCurrRotationPointType == SVTK::StartPointSelection) {
-            // invoke event with no data (for SVTK_SetRotationPointDlg)
-            InvokeEvent(SVTK::RotationPointChanged,0);
-            myCurrRotationPointType = myPrevRotationPointType;
-          }
-          else if (myCurrFocalPointType == SVTK::StartFocalPointSelection) {
-            // invoke event with no data (for SVTK_ViewParameterDlg)
-            InvokeEvent(SVTK::FocalPointChanged,0);
-            myCurrFocalPointType = myPrevFocalPointType;
+          if( SALOME_Actor* anActor = SALOME_Actor::SafeDownCast( aVTKActor ) )
+          {
+            SVTK::TPickLimiter aPickLimiter( myPointPicker, anActor );
+            myPointPicker->Pick( aSelectionEvent->myX,
+                                 aSelectionEvent->myY, 
+                                 0.0, 
+                                 GetCurrentRenderer() );
+            int aVtkId = myPointPicker->GetPointId();
+            if ( aVtkId >= 0 )
+            {
+              int anObjId = anActor->GetNodeObjId( aVtkId );
+              vtkFloatingPointType* aCoords = anActor->GetNodeCoord(anObjId);
+              
+              if (myCurrRotationPointType == SVTK::StartPointSelection) {
+                myCurrRotationPointType = SVTK::SetRotateSelected;
+                
+                // invoke event for update coordinates in SVTK_SetRotationPointDlg
+                InvokeEvent(SVTK::RotationPointChanged,(void*)aCoords);
+              }
+              else if (myCurrFocalPointType == SVTK::StartFocalPointSelection) {
+                myCurrFocalPointType = SVTK::SetFocalPointSelected;
+                
+                // invoke event for update coordinates in SVTK_ViewParameterDlg
+                InvokeEvent(SVTK::FocalPointChanged,(void*)aCoords);
+              }
+
+              isPicked = true;
+              break;
+            }
           }
         }
       }
-      else
+
+      if( !isPicked )
       {
         if (myCurrRotationPointType == SVTK::StartPointSelection) {
           // invoke event with no data (for SVTK_SetRotationPointDlg)
@@ -1035,23 +1036,36 @@ void SVTK_InteractorStyle::onFinishOperation()
             this->FindPokedRenderer(aSelectionEvent->myX, aSelectionEvent->myY);
             Interactor->StartPickCallback();
             
-            SALOME_Actor* anActor = GetSelector()->Pick(aSelectionEvent, GetCurrentRenderer());
+            SALOME_Actor* aHighlightedActor = NULL;
+            vtkActorCollection* anActorCollection = GetSelector()->Pick(aSelectionEvent, GetCurrentRenderer());
 
             aSelectionEvent->myIsRectangle = false;
 
             if(!myShiftState)
               GetSelector()->ClearIObjects();
 
-            if(anActor)
+            if( anActorCollection )
+            {
+              anActorCollection->InitTraversal();
+              while( vtkActor* aVTKActor = anActorCollection->GetNextActor() )
               {
-                anActor->Highlight( this, aSelectionEvent, true );
+                if( SALOME_Actor* anActor = SALOME_Actor::SafeDownCast( aVTKActor ) )
+                {
+                  if( anActor->Highlight( this, aSelectionEvent, true ) )
+                  {
+                    aHighlightedActor = anActor;
+                    break;
+                  }
+                }
               }
-            else
-              {
-                if(myLastHighlitedActor.GetPointer() && myLastHighlitedActor.GetPointer() != anActor)
-                  myLastHighlitedActor->Highlight( this, aSelectionEvent, false );
-              }
-            myLastHighlitedActor = anActor;
+            }
+
+            if( !aHighlightedActor )
+            {
+              if(myLastHighlitedActor.GetPointer() && myLastHighlitedActor.GetPointer() != aHighlightedActor)
+                myLastHighlitedActor->Highlight( this, aSelectionEvent, false );
+            }
+            myLastHighlitedActor = aHighlightedActor;
           } 
         else 
           {
@@ -1166,40 +1180,63 @@ void SVTK_InteractorStyle::onCursorMove(QPoint mousePos)
 
   bool anIsChanged = false;
 
-  SALOME_Actor *anActor = GetSelector()->Pick(aSelectionEvent, GetCurrentRenderer());
+  SALOME_Actor* aPreHighlightedActor = NULL;
+  vtkActorCollection* anActorCollection = GetSelector()->Pick(aSelectionEvent, GetCurrentRenderer());
 
   if ( myCurrRotationPointType == SVTK::StartPointSelection ||
        myCurrFocalPointType == SVTK::StartFocalPointSelection )
   {
     myHighlightSelectionPointActor->SetVisibility( false );
 
-    if ( anActor )
+    if( anActorCollection )
     {
-      myPointPicker->Pick( aSelectionEvent->myX, aSelectionEvent->myY, 0.0, GetCurrentRenderer() );
-      int aVtkId = myPointPicker->GetPointId();
-      if ( aVtkId >= 0 ) {
-        int anObjId = anActor->GetNodeObjId( aVtkId );
+      anActorCollection->InitTraversal();
+      while( vtkActor* aVTKActor = anActorCollection->GetNextActor() )
+      {
+        if( SALOME_Actor* anActor = SALOME_Actor::SafeDownCast( aVTKActor ) )
+        {
+          SVTK::TPickLimiter aPickLimiter( myPointPicker, anActor );
+          myPointPicker->Pick( aSelectionEvent->myX, aSelectionEvent->myY, 0.0, GetCurrentRenderer() );
+          int aVtkId = myPointPicker->GetPointId();
+          if ( aVtkId >= 0 ) {
+            int anObjId = anActor->GetNodeObjId( aVtkId );
 
-        TColStd_IndexedMapOfInteger aMapIndex;
-        aMapIndex.Add( anObjId );
-        myHighlightSelectionPointActor->MapPoints( anActor, aMapIndex );
+            TColStd_IndexedMapOfInteger aMapIndex;
+            aMapIndex.Add( anObjId );
+            myHighlightSelectionPointActor->MapPoints( anActor, aMapIndex );
 
-        myHighlightSelectionPointActor->SetVisibility( true );
-        anIsChanged = true;
+            myHighlightSelectionPointActor->SetVisibility( true );
+            anIsChanged = true;
+            break;
+          }
+        }
       }
     }
   }
   else {
-    if (anActor){
-      anIsChanged |= anActor->PreHighlight( this, aSelectionEvent, true );
+    if( anActorCollection )
+    {
+      anActorCollection->InitTraversal();
+      while( vtkActor* aVTKActor = anActorCollection->GetNextActor() )
+      {
+        if( SALOME_Actor* anActor = SALOME_Actor::SafeDownCast( aVTKActor ) )
+        {
+          anIsChanged = anActor->PreHighlight( this, aSelectionEvent, true );
+          if( anActor->isPreselected() )
+          {
+            aPreHighlightedActor = anActor;
+            break;
+          }
+        }
+      }
     }
 
-    if(myLastPreHighlitedActor.GetPointer() && myLastPreHighlitedActor.GetPointer() != anActor)
+    if(myLastPreHighlitedActor.GetPointer() && myLastPreHighlitedActor.GetPointer() != aPreHighlightedActor)
       anIsChanged |= myLastPreHighlitedActor->PreHighlight( this, aSelectionEvent, false );   
 
   }
   
-  myLastPreHighlitedActor = anActor;
+  myLastPreHighlitedActor = aPreHighlightedActor;
 
   if(anIsChanged)
     this->Render();

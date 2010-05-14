@@ -1,7 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
-//
-//  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-//  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -19,10 +16,12 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File   : Style_Model.cxx
 // Author : Vadim SANDLER, Open CASCADE S.A.S (vadim.sandler@opencascade.com)
 //
 #include "Style_Model.h"
+#include "Style_Salome.h"
 
 #include <QtxResourceMgr.h>
 
@@ -106,10 +105,11 @@ void Style_Model::fromApplication( bool reset )
   if ( !QApplication::instance() )  // application object is not created yet
     return;
 
-  if ( !myAppData )  {
-    // if not yes initialized from the application,
-    // store current application's style, palette, etc
+  if ( !myAppData ) // if not yes initialized from the application init myAppData
     myAppData = new AppData;
+
+  // store original application's style, palette, etc
+  if ( !Style_Salome::isActive() ) {
     myAppData->myStyle   = QApplication::style();
     myAppData->myPalette = QApplication::palette();
     myAppData->myFont    = QApplication::font();

@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 //  SALOME OBJECT : implementation of interactive object visualization for OCC and VTK viewers
 //  File   : SALOME_Actor.h
 //  Author : Nicolas REJNERI
@@ -39,10 +40,12 @@ class Handle(SALOME_InteractiveObject);
 #undef min
 #undef max
 
-#include "VTKViewer_Actor.h"
+#include <VTKViewer_Actor.h>
+#include <VTKViewer_MarkerDef.h>
 
 #include <vtkSmartPointer.h>
 
+class vtkAbstractPicker;
 class vtkPointPicker;
 class vtkCellPicker;
 class vtkOutlineSource;
@@ -214,6 +217,32 @@ class SVTK_EXPORT SALOME_Actor : public VTKViewer_Actor
   UpdateNameActors();
 
   //----------------------------------------------------------------------------
+  //! Set standard point marker
+  virtual
+  void
+  SetMarkerStd( VTK::MarkerType, VTK::MarkerScale );
+
+  //! Set custom point marker
+  virtual
+  void
+  SetMarkerTexture( int, VTK::MarkerTexture );
+
+  //! Get type of the point marker
+  virtual
+  VTK::MarkerType
+  GetMarkerType();
+
+  //! Get scale of the point marker
+  virtual
+  VTK::MarkerScale
+  GetMarkerScale();
+
+  //! Get texture identifier of the point marker
+  virtual
+  int
+  GetMarkerTexture();
+
+  //----------------------------------------------------------------------------
   //! To set up a picker for nodal selection (initialized by #SVTK_Renderer::AddActor)
   void
   SetPointPicker(vtkPointPicker* thePointPicker); 
@@ -270,6 +299,17 @@ class SVTK_EXPORT SALOME_Actor : public VTKViewer_Actor
   bool myIsDisplayNameActor;
   vtkSmartPointer<VTKViewer_FramedTextActor> myNameActor;
 };
+
+namespace SVTK
+{
+  class SVTK_EXPORT TPickLimiter
+  {
+    vtkAbstractPicker* myPicker;
+  public:
+    TPickLimiter(vtkAbstractPicker*, SALOME_Actor*);
+    ~TPickLimiter();
+  };
+}
 
 #ifdef WIN32
 #pragma warning ( default:4251 )

@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 //  SALOME Session : implementation of Session_ServerThread.cxx
 //  File   : Session_ServerThread.cxx
 //  Author : Paul RASCLE, EDF
@@ -297,7 +298,7 @@ void Session_ServerThread::ActivateContainerManager(int argc,
   try {
     PortableServer::POA_var root_poa=PortableServer::POA::_the_root_poa();
     cout << "Activate SalomeLauncher ......!!!! " << endl;
-    SALOME_Launcher * myContainer = new SALOME_Launcher(_orb,root_poa);
+    new SALOME_Launcher(_orb,root_poa);
   }
   catch(CORBA::SystemException&) {
     INFOS("Caught CORBA::SystemException.");
@@ -370,8 +371,7 @@ void Session_ServerThread::ActivateContainer(int argc,
       containerName = argv[1];
     }
     
-    Engines_Container_i * myContainer 
-      = new Engines_Container_i(_orb, _root_poa, containerName , argc , argv , true , false);
+    new Engines_Container_i(_orb, _root_poa, containerName , argc , argv , true , false);
   }
   catch(CORBA::SystemException&) {
     INFOS("Caught CORBA::SystemException.");

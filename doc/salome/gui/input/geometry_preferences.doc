@@ -5,6 +5,8 @@
 In the \b Geometry module you can set preferences for visualisation of
 geometrical figures which can be used in later sessions with this
 module.
+There is also a special group of preferences controlling input precision for floating-point
+data.
 
 \image html pref15.png
 
@@ -34,6 +36,20 @@ of values set in spin boxes.</li>
 <li><b>Deflection coefficient</b> - allows to define default deflection
 coefficient for lines and surfaces. A smaller coefficient provides
 better quality of a shape in the viewer.</li>
+</ul>
+</ul>
+
+<ul>
+<li><b>Input fields precision</b></li>
+<ul>
+<li><b>Length precision</b> - allows to ajust input precision of coordinates and dimensions.</li>
+<li><b>Angular precision</b> - allows to ajust input precision of angles.</li>
+<li><b>Length tolerance precision</b> - allows to ajust input precision of tolerance of coordinates and dimensions.</li>
+<li><b>Angular tolerance precision</b> - allows to ajust input precision of tolerance of angles.</li>
+<li><b>Weight precision</b> - allows to ajust input precision of weight and mass.</li>
+<li><b>Density precision</b> - allows to ajust input precision of density.</li>
+<li><b>Parametric precision</b> - allows to ajust input precision of parametric values.</li>
+<li><b>Parametric tolerance precision</b> - allows to ajust input precision of tolerance in parametric space.</li>
 </ul>
 </ul>
 

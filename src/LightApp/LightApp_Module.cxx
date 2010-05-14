@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File:      LightApp_Module.cxx
 // Created:   6/20/2005 16:30:56 AM
 // Author:    OCC team
@@ -649,3 +650,63 @@ bool LightApp_Module::reusableOperation( const int id )
 {
  return true;
 } 
+
+/*!
+  virtual method
+  \return true if module can copy the current selection
+*/
+bool LightApp_Module::canCopy() const
+{
+  return false;
+}
+
+/*!
+  virtual method
+  \return true if module can paste previously copied data
+*/
+bool LightApp_Module::canPaste() const
+{
+  return false;
+}
+
+/*!
+  virtual method
+  \brief Copies the current selection into clipboard
+*/
+void LightApp_Module::copy()
+{
+}
+
+/*!
+  virtual method
+  \brief Pastes the current data in the clipboard
+*/
+void LightApp_Module::paste()
+{
+}
+
+
+int LightApp_Module::createMenu( const QString& subMenu, const int menu, const int id, const int group, const int idx )
+{
+  return CAM_Module::createMenu( subMenu, menu, id, group, idx );
+}
+int LightApp_Module::createMenu( const QString& subMenu, const QString& menu, const int id, const int group, const int idx )
+{
+  return CAM_Module::createMenu( subMenu, menu, id, group, idx );
+}
+int LightApp_Module::createMenu( const int id, const int menu, const int group, const int idx )
+{
+  return CAM_Module::createMenu( id, menu, group, idx );
+}
+int LightApp_Module::createMenu( const int id, const QString& menu, const int group, const int idx )
+{
+  return CAM_Module::createMenu( id, menu, group, idx );
+}
+int LightApp_Module::createMenu( QAction* a, const int menu, const int id, const int group, const int idx )
+{
+  return CAM_Module::createMenu( a, menu, id, group, idx );
+}
+int LightApp_Module::createMenu( QAction* a, const QString& menu, const int id, const int group, const int idx )
+{
+  return CAM_Module::createMenu( a, menu, id, group, idx );
+}

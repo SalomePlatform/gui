@@ -1,4 +1,4 @@
-#  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+#  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 #
 #  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 #  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 #
 #  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
+
 #  File   : Makefile.in
 #  Author : Vladimir Klyachin (OCN)
 #  Module : OCCViewer
@@ -42,7 +43,8 @@ salomeinclude_HEADERS =				\
 	OCCViewer_ClippingDlg.h			\
 	OCCViewer_AxialScaleDlg.h		\
 	OCCViewer_SetRotationPointDlg.h		\
-	OCCViewer_Trihedron.h
+	OCCViewer_Trihedron.h                   \
+	OCCViewer_ToolTip.h
 
 dist_libOCCViewer_la_SOURCES =			\
 	OCCViewer_AISSelector.cxx		\

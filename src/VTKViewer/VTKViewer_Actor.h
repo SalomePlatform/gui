@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 //  SALOME OBJECT : implementation of interactive object visualization for OCC and VTK viewers
 //  File   : SALOME_Actor.h
 //  Author : Nicolas REJNERI
@@ -286,6 +287,11 @@ class VTKVIEWER_EXPORT VTKViewer_Actor : public vtkLODActor
   virtual
   bool
   isHighlighted();
+
+  //! Ask, if the VTKViewer_Actor is already preselected
+  virtual
+  bool
+  isPreselected();
 
   //! Set preselection mode
   virtual

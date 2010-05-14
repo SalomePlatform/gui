@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 //  SALOME SALOMEGUI : implementation of desktop and GUI kernel
 //  File   : SALOME_Selection.cxx
 //  Author : Nicolas REJNERI
@@ -40,24 +41,6 @@
 #include <vtkCallbackCommand.h>
 #include <vtkActorCollection.h>
 #include <vtkCellPicker.h>
-
-
-/*!
-  Find first SALOME_Actor from the end of actors collection
-*/
-inline
-SALOME_Actor* 
-GetLastSALOMEActor(vtkActorCollection* theCollection)
-{
-  if (theCollection) {
-    for (int i = theCollection->GetNumberOfItems() - 1; i >= 0; i--) {
-      if (SALOME_Actor* anActor = dynamic_cast<SALOME_Actor*>(theCollection->GetItemAsObject(i)))
-        if (anActor->hasIO())
-          return anActor;
-    }
-  }
-  return NULL;
-}
 
 
 /*!
@@ -544,7 +527,7 @@ SVTK_SelectorDef
   return Handle(VTKViewer_Filter)();
 }
 
-SALOME_Actor*
+vtkActorCollection*
 SVTK_SelectorDef
 ::Pick(const SVTK_SelectionEvent* theEvent, vtkRenderer* theRenderer) const
 {
@@ -553,7 +536,6 @@ SVTK_SelectorDef
   if ( aResourceMgr )
     anAdvancedSelectionAlgorithm = aResourceMgr->booleanValue( "VTKViewer", "use_advanced_selection_algorithm", true );
 
-  SALOME_Actor* anActor = NULL;
   vtkActorCollection* aListActors = NULL;
   if ( anAdvancedSelectionAlgorithm ) {
     myCellPicker->Pick(theEvent->myX,
@@ -562,19 +544,17 @@ SVTK_SelectorDef
                        theRenderer);
   
     aListActors = myCellPicker->GetActors();
-    anActor = GetLastSALOMEActor(aListActors);
   }
 
-  if ( !anActor ) {
+  if ( !aListActors || !aListActors->GetNumberOfItems() ) {
     myPicker->Pick(theEvent->myX,
                    theEvent->myY, 
                    0.0,
                    theRenderer);
     aListActors = myPicker->GetActors();
-    anActor = GetLastSALOMEActor(aListActors);
   }
   
-  return anActor;
+  return aListActors;
 }
 
 void

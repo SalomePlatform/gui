@@ -1,7 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
-//
-//  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-//  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -19,6 +16,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File   : Style_Salome.cxx
 // Author : Natalia Ermolaeva, Open CASCADE S.A.S.
 //
@@ -259,6 +257,7 @@ void Style_Salome::apply()
     // set SALOME style
     QApplication::style()->setParent( 0 );           // avoid deleting original application style
     QApplication::setStyle( new Style_Salome() );    // set style
+    QApplication::setDesktopSettingsAware(false);    // prevent the style changing from another tools
   }
   update();                                          // update style
 }
@@ -275,6 +274,9 @@ void Style_Salome::restore()
   // check if SALOME style is set to the application
   if ( !isActive() )
     return;
+
+  QApplication::setDesktopSettingsAware(true);
+
   // restore previous style
   model()->restore();
 }

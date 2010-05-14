@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 #ifndef PLOT2D_VIEWFRAME_H
 #define PLOT2D_VIEWFRAME_H
 
@@ -26,6 +27,8 @@
 #include <QWidget>
 #include <QMultiHash>
 #include <QList>
+#include <qwt_legend_item.h>
+#include <qwt_plot_curve.h>
 #include <qwt_symbol.h>
 #include <qwt_scale_draw.h>
 
@@ -227,6 +230,8 @@ public:
   CurveDict& getCurves() { return myCurves; }
   Plot2d_Curve*       getClosestCurve( QPoint p, double& distance, int& index );
 
+  virtual void        updateYAxisIdentifiers();
+
 public slots:
   virtual void polish();
 
@@ -257,6 +262,47 @@ public:
 private:
   char myFormat;
   int  myPrecision;
+};
+
+class Plot2d_QwtLegendItem : public QwtLegendItem
+{
+public:
+  enum YAxisIdentifierMode { IM_None = 0, IM_Left, IM_Right };
+
+public:
+  Plot2d_QwtLegendItem( QWidget* = 0 );
+  virtual ~Plot2d_QwtLegendItem();
+
+public:
+  void             setYAxisIdentifierMode( const int );
+
+protected:
+  virtual void     drawIdentifier( QPainter*, const QRect& ) const;
+
+private:
+  int              myYAxisIdentifierMode;
+  QPixmap          myYAxisLeftIcon;
+  QPixmap          myYAxisRightIcon;
+  int              mySpacingCollapsed;
+  int              mySpacingExpanded;
+};
+
+class Plot2d_QwtPlotCurve : public QwtPlotCurve
+{
+public:
+  Plot2d_QwtPlotCurve( const QString&, QwtPlot::Axis = QwtPlot::yLeft );
+  virtual ~Plot2d_QwtPlotCurve();
+
+public:
+  virtual void     setYAxisIdentifierEnabled( const bool );
+
+protected:
+  virtual void     updateLegend( QwtLegend* ) const;
+  virtual QWidget* legendItem() const;
+
+private:
+  QwtPlot::Axis    myYAxis;
+  bool             myYAxisIdentifierEnabled;
 };
 
 #endif

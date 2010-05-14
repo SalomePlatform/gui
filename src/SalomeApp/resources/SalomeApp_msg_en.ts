@@ -1,6 +1,6 @@
 <!DOCTYPE TS><TS>
 <!--
-  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 
   Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
   CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -28,6 +28,10 @@
         <source>WRN_FILE_NAME_BAD</source>
         <translation>Please enter correct file name.
 Python file must include only letters, digits and underscores and start from letter or underscore.</translation>
+    </message>
+    <message>
+        <source>WRN_FILE_NOT_EXIST</source>
+        <translation>The file %1 does not exist.</translation>
     </message>
     <message>
         <source>CLOSE_LOCKED_STUDY</source>
@@ -402,11 +406,11 @@ Do you really want to rename it?</translation>
 	</message>
         <message>	
            <source>VARNAME_INCORRECT</source>
-           <translation>Valiable Name Incorrect :%1</translation>
+           <translation>Variable Name Incorrect :%1</translation>
 	</message>
         <message>	
            <source>VARNAME_EXISTS</source>
-           <translation>Valiable with name "%1" exists</translation>
+           <translation>Variable with name "%1" exists</translation>
 	</message>
 </context>
 <context>
@@ -448,5 +452,31 @@ Please edit its parameters or remove it from table.</translation>
            <source>ERR_UPDATE_STUDY_FAILED</source>
            <translation>Failed to update study!</translation>
 	</message>
+</context>
+<context>
+    <name>SalomeApp_DoubleSpinBox</name>  
+        <message>
+            <source>VALID_RANGE_VAR_MSG</source>
+            <translation>Specify either a variable name or
+a floating-point value in range ( %1; %2 )
+with %3-digit precision</translation>
+        </message>   
+        <message>
+            <source>VALID_RANGE_NOVAR_MSG</source>
+            <translation>Specify a floating-point value in range ( %1; %2 )
+with %3-digit precision</translation>
+        </message>
+</context>
+<context>
+    <name>SalomeApp_IntSpinBox</name>  
+        <message>
+            <source>VALID_RANGE_VAR_MSG</source>
+            <translation>Specify either a variable name or
+an integer value in range ( %1; %2 )</translation>
+        </message>   
+        <message>
+            <source>VALID_RANGE_NOVAR_MSG</source>
+            <translation>Specify an integer value in range ( %1; %2 )</translation>
+        </message>
 </context>
 </TS>

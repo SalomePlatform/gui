@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File:      LightApp_Application.h
 // Created:   6/20/2005 18:39:25 PM
 // Author:    OCC team
@@ -167,6 +168,9 @@ public slots:
   virtual void                        onOpenDoc();
   virtual void                        onHelpAbout();
   virtual bool                        onOpenDoc( const QString& );
+  virtual void                        onCopy();
+  virtual void                        onPaste();
+  virtual void                        onSelectionChanged();
 
 protected:
   virtual void                        createActions();
@@ -181,7 +185,6 @@ protected:
 
   virtual void                        setActiveStudy( SUIT_Study* );
   virtual void                        updateCommandsStatus();
-  virtual void                        onSelectionChanged();
 
   virtual void                        beforeCloseDoc( SUIT_Study* );
   virtual void                        afterCloseDoc();

@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File:      QtxActionMenuMgr.cxx
 // Author:    Alexander SOLOVYOV, Sergey TELKOV
 //
@@ -491,8 +492,19 @@ void QtxActionMenuMgr::remove( const int id, const int pId, const int group )
       delNodes.append( *it );
   }
 
+  QWidget* mW = menuWidget( pNode );
   for ( NodeList::iterator itr = delNodes.begin(); itr != delNodes.end(); ++itr )
+  {
+    int id = (*itr)->id;
+    if( mW && menuAction( id ) )
+    {
+      mW->removeAction( menuAction( id ) );
+      myMenus.remove( id );
+    }
+    else if( mW && itemAction( id ) )
+      mW->removeAction( itemAction( id ) );
     pNode->children.removeAll( *itr );
+  }
 
   triggerUpdate( pNode->id, false );
 }
@@ -984,8 +996,10 @@ bool QtxActionMenuMgr::ownAction( QAction* a, MenuNode* node ) const
   for ( NodeList::const_iterator iter = node->children.begin(); iter != node->children.end(); ++iter )
   {
     QAction* mya = itemAction( (*iter)->id );
-    if ( !mya ) mya = menuAction( (*iter)->id );
-    if ( mya && mya == a ) return true;
+    if ( !mya )
+      mya = menuAction( (*iter)->id );
+    if ( mya && mya == a )
+      return true;
   }
   return false;
 }

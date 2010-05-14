@@ -1,7 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
-//
-//  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-//  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -19,6 +16,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 //  File   : VTKViewer_ArcBuilder.cxx
 //  Author : Roman NIKOLAEV
 //  Module : GUI
@@ -452,8 +450,8 @@ vtkUnstructuredGrid* VTKViewer_ArcBuilder::BuildArc(std::vector<double>& theScal
   else 
     yCenter =  (-1/K1)*(xCenter - (x1+x2)/2.0) + (y1 + y2)/2.0;
   
-  double zCenter = z;
 #ifdef _MY_DEBUG_   
+  double zCenter = z;
   std::cout<<"xCenter : "<<xCenter<<endl;
   std::cout<<"yCenter : "<<yCenter<<endl;
   std::cout<<"zCenter : "<<zCenter<<endl;

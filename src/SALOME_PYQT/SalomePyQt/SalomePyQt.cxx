@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File   : SalomePyQt.cxx
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 //
@@ -1521,7 +1522,7 @@ public:
   CrMenu( QAction* action, const QString& menu, const int id, const int group, const int idx ) 
     : myCase( 5 ), myAction( action ), myMenuName( menu ), myId( id ), myGroup( group ), myIndex( idx ) {}
 
-  int execute( SALOME_PYQT_ModuleLight* module ) const
+  int execute( LightApp_Module* module ) const
   {
     if ( module ) {
       switch ( myCase ) {
@@ -1562,9 +1563,12 @@ public:
     : myResult( -1 ), myCrMenu( crMenu ) {}
   virtual void Execute()
   {
-    SALOME_PYQT_ModuleLight* module = getActiveModule();
-    if ( module )
-      myResult = myCrMenu.execute( module );
+    if ( LightApp_Application* anApp = getApplication() ) 
+      {
+        LightApp_Module* module = dynamic_cast<LightApp_Module*>( anApp->activeModule() );
+        if ( module )
+          myResult = myCrMenu.execute( module );
+      }
   }
 };
 

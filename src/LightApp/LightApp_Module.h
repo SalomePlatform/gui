@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File:      LightApp_Module.h
 // Created:   6/20/2005 16:25:06 AM
 // Author:    OCC team
@@ -91,6 +92,18 @@ public:
 
   virtual LightApp_Displayer*         displayer();
   virtual LightApp_Selection*         createSelection() const;
+
+  virtual bool                        canCopy() const;
+  virtual bool                        canPaste() const;
+  virtual void                        copy();
+  virtual void                        paste();
+
+  int                    createMenu( const QString&, const int, const int = -1, const int = -1, const int = -1 );
+  int                    createMenu( const QString&, const QString&, const int = -1, const int = -1, const int = -1 );
+  int                    createMenu( const int, const int, const int = -1, const int = -1 );
+  int                    createMenu( const int, const QString&, const int = -1, const int = -1 );
+  int                    createMenu( QAction*, const int, const int = -1, const int = -1, const int = -1 );
+  int                    createMenu( QAction*, const QString&, const int = -1, const int = -1, const int = -1 );
 
 public slots:
   virtual bool                        activateModule( SUIT_Study* );

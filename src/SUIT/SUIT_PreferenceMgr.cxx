@@ -1,7 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
-//
-//  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-//  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -19,6 +16,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File:      SUIT_PreferenceMgr.cxx
 // Author:    Sergey TELKOV
 //
@@ -131,6 +129,9 @@ int SUIT_PreferenceMgr::addItem( const QString& title, const int pId,
     break;
   case Integer:
     item = new QtxPagePrefEditItem( QtxPagePrefEditItem::Integer, title, parent, sect, param );
+    break;
+  case Slider:
+    item = new QtxPagePrefSliderItem( title, parent, sect, param );
     break;
   case GroupBox:
     item = new QtxPagePrefGroupItem( title, parent, sect, param );

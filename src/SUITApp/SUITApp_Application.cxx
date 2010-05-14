@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,10 +19,13 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 #include "SUITApp_Application.h"
 
 #include <SUIT_Tools.h>
 #include <SUIT_ExceptionHandler.h>
+
+#include <Qtx.h>
 
 #include <QDir>
 #include <QTranslator>
@@ -41,7 +44,13 @@ SUITApp_Application::SUITApp_Application( int& argc, char** argv, SUIT_Exception
 #ifdef ENABLE_TESTRECORDER
   : TestApplication( argc, argv ),
 #else
-  : QApplication( argc, argv ),
+#ifndef WIN32
+  // san: Opening an X display and choosing a visual most suitable for 3D visualization
+  // in order to make SALOME viewers work with non-native X servers
+  : QApplication( (Display*)Qtx::getDisplay(), argc, argv, Qtx::getVisual() ),
+#else
+  : QApplication( argc, argv ), 
+#endif
 #endif
 myExceptHandler( hand )
 {

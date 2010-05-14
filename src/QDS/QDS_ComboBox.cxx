@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 #include "QDS_ComboBox.h"
 
 #include <QtxComboBox.h>
@@ -302,7 +303,7 @@ void QDS_ComboBox::setValues( const QList<int>& ids, const QStringList& names )
   myUserIds = ids;
   myUserNames = names;
 
-  unitSystemChanged( "" );
+  //unitSystemChanged( "" );
 }
 
 /*!
@@ -552,7 +553,11 @@ void QDS_ComboBox::onTextChanged( const QString& /*txt*/ )
 void QDS_ComboBox::onActivated( int idx )
 {
   if ( comboBox() )
-    comboBox()->setCurrentIndex( comboBox()->currentIndex() );
+  {
+    int ind = comboBox()->currentIndex();
+    comboBox()->setCurrentIndex( -1 );
+    comboBox()->setCurrentIndex( ind );
+  }
 
   int id = getId( idx );
   if ( id != -1 )

@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File:      Qtx.cxx
 // Author:    Sergey TELKOV
 //
@@ -39,6 +40,7 @@
 #include <QLinearGradient>
 #include <QRadialGradient>
 #include <QConicalGradient>
+#include <QtDebug>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -1381,3 +1383,70 @@ bool Qtx::stringToConicalGradient( const QString& str, QConicalGradient& gradien
   }
   return success;
 }
+
+#ifndef WIN32
+
+#include <X11/Xlib.h>
+#include <GL/glx.h>
+
+/*!
+  \brief Open the default X display and returns pointer to it.
+         This method is available on Linux only.
+  \return Pointer to X display.
+  \sa getVisual()
+*/
+void* Qtx::getDisplay()
+{
+  static Display* pDisplay = NULL;
+  if ( !pDisplay )
+    pDisplay = XOpenDisplay( NULL );
+  return pDisplay;
+}
+
+/*!
+  \brief Returns pointer to X visual suitable for 3D rendering.
+         This method is available on Linux only.
+  \return Pointer to X visual.
+  \sa getDisplay()
+*/
+Qt::HANDLE Qtx::getVisual()
+{
+  Qt::HANDLE res = NULL;
+
+  Display* pDisplay = (Display*)getDisplay();
+  if ( !pDisplay )
+    return res;
+
+  int errorBase;
+  int eventBase;
+
+  // Make sure OpenGL's GLX extension supported
+  if( !glXQueryExtension( pDisplay, &errorBase, &eventBase ) ){
+    qCritical( "Could not find glx extension" );
+    return res;
+  }
+
+  // Find an appropriate visual
+
+  int doubleBufferVisual[]  = {
+    GLX_RGBA,           // Needs to support OpenGL
+    GLX_DEPTH_SIZE, 16, // Needs to support a 16 bit depth buffer
+    GLX_DOUBLEBUFFER,   // Needs to support double-buffering
+    None                // end of list
+  };
+
+  // Try for the double-bufferd visual first
+  XVisualInfo *visualInfo = NULL;
+  visualInfo = glXChooseVisual( pDisplay, DefaultScreen(pDisplay), doubleBufferVisual );
+
+  if( visualInfo == NULL ){
+    qCritical( "Could not find matching glx visual" );
+    return res;
+  }
+
+  qDebug() << "Picked visual 0x" << hex << XVisualIDFromVisual( visualInfo->visual );
+  res = (Qt::HANDLE)( visualInfo->visual );
+ 
+  return res;
+}
+#endif // WIN32

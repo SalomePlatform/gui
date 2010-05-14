@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 #ifndef OCCVIEWER_VIEWWINDOW_H
 #define OCCVIEWER_VIEWWINDOW_H
 
@@ -88,6 +89,9 @@ public:
   int                     interactionStyle() const;
   void                    setInteractionStyle( const int );
  
+  void setTransformEnabled( const OperationType, const bool );
+  bool transformEnabled( const OperationType ) const;
+
 public slots:
   void onFrontView();
   void onViewFitAll();
@@ -138,7 +142,7 @@ protected:
 
   /* Transformation selected but not started yet */
   bool transformRequested() const;
-  void setTransformRequested ( OperationType );
+  bool setTransformRequested ( OperationType );
 
   /* Transformation is selected and already started */
   bool          transformInProcess() const;
@@ -209,6 +213,9 @@ private:
   QtxRectRubberBand* myRectBand; //!< selection rectangle rubber band
 
   int myInteractionStyle;
+
+  typedef QMap<OperationType, bool> MapOfTransformStatus;
+  MapOfTransformStatus myStatus;
 };
 
 #ifdef WIN32

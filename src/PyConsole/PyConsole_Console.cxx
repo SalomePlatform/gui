@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File   : PyConsole_Console.cxx
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 //
@@ -185,6 +186,8 @@ void PyConsole_Console::contextMenuPopup( QMenu* menu )
   menu->addAction( myActions[ClearId] );
   menu->addSeparator();
   menu->addAction( myActions[SelectAllId] );
+  menu->addSeparator();
+  menu->addAction( myActions[DumpCommandsId] );
 
   Qtx::simplifySeparators( menu );
 
@@ -205,6 +208,7 @@ void PyConsole_Console::setMenuActions( const int flags )
   myActions[PasteId]->setVisible( flags & PasteId );
   myActions[ClearId]->setVisible( flags & ClearId );
   myActions[SelectAllId]->setVisible( flags & SelectAllId );
+  myActions[DumpCommandsId]->setVisible( flags & DumpCommandsId );
 }
 
 /*!
@@ -219,6 +223,7 @@ int PyConsole_Console::menuActions() const
   ret = ret | ( myActions[PasteId]->isVisible() ? PasteId : 0 );
   ret = ret | ( myActions[ClearId]->isVisible() ? ClearId : 0 );
   ret = ret | ( myActions[SelectAllId]->isVisible() ? SelectAllId : 0 );
+  ret = ret | ( myActions[DumpCommandsId]->isVisible() ? DumpCommandsId : 0 );
   return ret;
 }
 
@@ -248,6 +253,11 @@ void PyConsole_Console::createActions()
   a->setStatusTip( tr( "EDIT_SELECTALL_CMD" ) );
   connect( a, SIGNAL( triggered( bool ) ), myEditor, SLOT( selectAll() ) );
   myActions.insert( SelectAllId, a );
+  
+  a = new QAction( tr( "EDIT_DUMPCOMMANDS_CMD" ), this );
+  a->setStatusTip( tr( "EDIT_DUMPCOMMANDS_CMD" ) );
+  connect( a, SIGNAL( triggered( bool ) ), myEditor, SLOT( dump() ) );
+  myActions.insert( DumpCommandsId, a );
 }
 
 /*!

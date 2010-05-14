@@ -1,7 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
-//
-//  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-//  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -19,6 +16,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 #include "LightApp_Plot2dSelector.h"
 
 #include "LightApp_DataOwner.h"
@@ -28,7 +26,7 @@
 /*!
   Constructor
 */
-LightApp_Plot2dSelector::LightApp_Plot2dSelector( SPlot2d_Viewer* v, SUIT_SelectionMgr* mgr )
+LightApp_Plot2dSelector::LightApp_Plot2dSelector( Plot2d_Viewer* v, SUIT_SelectionMgr* mgr )
 : SUIT_Selector( mgr, v )
 {
   if ( v )

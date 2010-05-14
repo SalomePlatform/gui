@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 //  SALOME SALOMEGUI : implementation of desktop and GUI kernel
 // File   : PyConsole_Editor.h
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
@@ -65,11 +66,12 @@ public slots:
   void           clear();
   void           handleReturn();
   void           onPyInterpChanged( PyConsole_Interp* );
+  void           dump();
   
 private:
   PyConsole_Interp* myInterp;           //!< python interpreter
 
-  QString           myCommandBuffer;    //!< python comman buffer
+  QString           myCommandBuffer;    //!< python command buffer
   QString           myCurrentCommand;   //!< currently being printed command
   QString           myPrompt;           //!< current command line prompt
   int               myCmdInHistory;     //!< current history command index

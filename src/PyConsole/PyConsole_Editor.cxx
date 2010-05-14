@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 //  SALOME SALOMEGUI : implementation of desktop and GUI kernel
 // File   : PyConsole_Editor.cxx
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
@@ -97,6 +98,9 @@
 #include <PyInterp_Dispatcher.h>
 
 #include <SUIT_Tools.h>
+#include <SUIT_FileDlg.h>
+#include <SUIT_MessageBox.h>
+#include <SUIT_FileValidator.h>
 
 #include <QApplication>
 #include <QClipboard>
@@ -108,12 +112,34 @@
 #include <QTextBlock>
 #include <QTextCursor>
 #include <QTextDocument>
+#include <QTextStream>
 
 static QString READY_PROMPT = ">>> ";
 static QString DOTS_PROMPT  = "... ";
 #define PROMPT_SIZE myPrompt.length()
 
 #define PRINT_EVENT 65432
+
+
+class DumpCommandsFileValidator : public SUIT_FileValidator
+{
+ public:
+  DumpCommandsFileValidator( QWidget* parent = 0 ) : SUIT_FileValidator ( parent ) {};
+  virtual ~DumpCommandsFileValidator() {};
+  virtual bool canSave( const QString& file, bool permissions );
+};
+
+bool DumpCommandsFileValidator::canSave(const QString& file, bool permissions)
+{
+  QFileInfo fi( file );
+  if ( !QRegExp( "[A-Za-z_][A-Za-z0-9_]*" ).exactMatch( fi.completeBaseName() ) ) {
+    SUIT_MessageBox::critical( parent(),
+                               QObject::tr("WRN_WARNING"),
+                               QObject::tr("WRN_FILE_NAME_BAD") );
+    return false;
+  }
+  return SUIT_FileValidator::canSave( file, permissions);
+}
 
 /*!
   \class ExecCommand
@@ -1074,4 +1100,29 @@ void PyConsole_Editor::clear()
   addText( myBanner );
   myPrompt = READY_PROMPT;
   addText( myPrompt );
+}
+
+/*!
+  \brief "Dump commands" operation.
+ */
+void PyConsole_Editor::dump()
+{
+  QStringList aFilters;
+  aFilters.append( tr( "PYTHON_FILES_FILTER" ) );
+  
+  QString fileName = SUIT_FileDlg::getFileName( this, QString(),
+  	  	     		     aFilters, tr( "TOT_DUMP_PYCOMMANDS" ),
+ 	    			     false, true, new DumpCommandsFileValidator( this ) );
+  if ( fileName != "" ) {
+    QFile file( fileName ); 
+    if ( !file.open( QFile::WriteOnly ) )
+      return;
+
+    QTextStream out (&file);
+  
+    for( int i=0; i<myHistory.count(); i++ ) {
+         out<<myHistory[i]<<endl;
+    }
+    file.close();
+  }
 }

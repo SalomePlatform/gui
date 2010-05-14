@@ -1,4 +1,4 @@
-#  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+#  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 #
 #  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 #  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 #
 #  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
+
 #  File   : Makefile.in
 #  Author : Vladimir Klyachin (OCN)
 #  Module : suitApp
@@ -29,13 +30,16 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 lib_LTLIBRARIES = libSUITApp.la
 
 salomeinclude_HEADERS =		\
-	SUITApp_Application.h   \
-	SUITApp_init_python.hxx
+	SUITApp_Application.h
 
 dist_libSUITApp_la_SOURCES =	\
 	SUITApp.cxx		\
-	SUITApp_Application.cxx \
-	SUITApp_init_python.cxx 
+	SUITApp_Application.cxx
+
+if ENABLE_PYCONSOLE
+  salomeinclude_HEADERS += SUITApp_init_python.hxx
+  dist_libSUITApp_la_SOURCES += SUITApp_init_python.cxx 
+endif
 
 MOC_FILES =				\
 	SUITApp_Application_moc.cxx
@@ -61,8 +65,7 @@ endif
 libSUITApp_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la ../Style/libSalomeStyle.la
 
 if ENABLE_PYCONSOLE
-libSUITApp_la_LDFLAGS += -Xlinker -export-dynamic $(PYTHON_LIBS)
-AM_CPPFLAGS+=-DSUIT_ENABLE_PYTHON
+  libSUITApp_la_LDFLAGS += -Xlinker -export-dynamic $(PYTHON_LIBS)
 endif
 
 # Executable

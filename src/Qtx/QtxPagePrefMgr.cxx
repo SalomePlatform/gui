@@ -1,7 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
-//
-//  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-//  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -19,6 +16,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File:      QtxPagePrefMgr.cxx
 // Author:    Sergey TELKOV
 //
@@ -44,6 +42,7 @@
 #include <QApplication>
 #include <QDateTimeEdit>
 #include <QStackedWidget>
+#include <QSlider>
 
 #include <stdio.h>
 
@@ -2208,6 +2207,288 @@ void QtxPagePrefEditItem::updateEditor()
 
   delete myEditor->validator();
   myEditor->setValidator( val );
+}
+
+/*!
+  \class QtxPagePrefSliderItem
+*/
+
+/*!
+  \brief Constructor.
+
+  Creates preference item with slider widget
+
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
+QtxPagePrefSliderItem::QtxPagePrefSliderItem( const QString& title, QtxPreferenceItem* parent,
+                                              const QString& sect, const QString& param )
+: QtxPageNamedPrefItem( title, parent, sect, param )
+{
+  setControl( mySlider = new QSlider( Qt::Horizontal ) );
+  widget()->layout()->addWidget( myLabel = new QLabel( ) );
+    
+  setMinimum( 0 );
+  setMaximum( 0 );
+  setSingleStep( 1 );
+  setPageStep( 1 );
+  
+  mySlider->setTickPosition( QSlider::TicksBothSides );
+  
+  connect (mySlider, SIGNAL(valueChanged(int)), this, SLOT(setIcon(int)));
+  updateSlider();
+}
+
+/*!
+  \brief Destructor.
+*/
+QtxPagePrefSliderItem::~QtxPagePrefSliderItem()
+{
+}
+
+/*!
+  \brief Get slider preference item step value.
+  \return slider single step value
+  \sa setSingleStep()
+*/
+int QtxPagePrefSliderItem::singleStep() const
+{
+  return mySlider->singleStep();
+}
+
+/*!
+  \brief Get slider preference item step value.
+  \return slider page step value
+  \sa setPageStep()
+*/
+int QtxPagePrefSliderItem::pageStep() const
+{
+  return mySlider->pageStep();
+}
+
+/*!
+  \brief Get slider preference item minimum value.
+  \return slider minimum value
+  \sa setMinimum()
+*/
+int QtxPagePrefSliderItem::minimum() const
+{
+    return mySlider->minimum();
+}
+
+/*!
+  \brief Get slider preference item maximum value.
+  \return slider maximum value
+  \sa setMaximum()
+*/
+int QtxPagePrefSliderItem::maximum() const
+{
+    return mySlider->maximum();
+}
+
+/*!
+  \brief Get the list of the icons associated with the selection widget items
+  \return list of icons
+  \sa setIcons()
+*/
+QList<QIcon> QtxPagePrefSliderItem::icons() const
+{
+  return myIcons;
+}
+
+/*!
+  \brief Set slider preference item step value.
+  \param step new slider single step value
+  \sa step()
+*/
+void QtxPagePrefSliderItem::setSingleStep( const int& step )
+{
+  mySlider->setSingleStep( step );
+}
+
+/*!
+  \brief Set slider preference item step value.
+  \param step new slider single step value
+  \sa step()
+*/
+void QtxPagePrefSliderItem::setPageStep( const int& step )
+{
+  mySlider->setPageStep( step );
+}
+
+/*!
+  \brief Set slider preference item minimum value.
+  \param min new slider minimum value
+  \sa minimum()
+*/
+void QtxPagePrefSliderItem::setMinimum( const int& min )
+{
+  mySlider->setMinimum( min );
+  setIcon( mySlider->value() );
+}
+
+/*!
+  \brief Set slider preference item maximum value.
+  \param max new slider maximum value
+  \sa maximum()
+*/
+void QtxPagePrefSliderItem::setMaximum( const int& max )
+{
+  mySlider->setMaximum( max );
+  setIcon( mySlider->value() );
+}
+
+/*!
+  \brief Set the list of the icons to the selection widget items
+  \param icns new list of icons
+  \sa icons()
+*/
+void QtxPagePrefSliderItem::setIcons( const QList<QIcon>& icns )
+{
+  if ( icns.isEmpty() ) 
+    return;
+  myIcons = icns;
+  
+  QSize maxsize(0, 0); 
+  for ( QList<QIcon>::const_iterator it = myIcons.begin(); it != myIcons.end(); ++it ) {
+    if ( (*it).isNull() ) continue;
+    maxsize = maxsize.expandedTo( (*it).availableSizes().first() );
+  }
+  myLabel->setFixedSize( maxsize );
+  
+  updateSlider();
+}
+
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
+void QtxPagePrefSliderItem::store()
+{
+  setInteger( mySlider->value() );
+}
+
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
+void QtxPagePrefSliderItem::retrieve()
+{
+  mySlider->setValue( getInteger( mySlider->value() ) );
+}
+
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null integer if option is not set
+  \sa setOptionValue()
+*/
+QVariant QtxPagePrefSliderItem::optionValue( const QString& name ) const
+{
+  if ( name == "minimum" || name == "min" )
+    return minimum();
+  else if ( name == "maximum" || name == "max" )
+    return maximum();
+  else if ( name == "single_step" )
+    return singleStep();
+  else if ( name == "page_step" )
+    return pageStep();
+  else if ( name == "icons" || name == "pixmaps" )
+  {
+    QList<QVariant> lst;
+    QList<QIcon> ics = icons();
+    for ( QList<QIcon>::const_iterator it = ics.begin(); it != ics.end(); ++it )
+      lst.append( *it );
+    return lst;
+  }
+  else
+    return QtxPageNamedPrefItem::optionValue( name );
+}
+
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
+void QtxPagePrefSliderItem::setOptionValue( const QString& name, const QVariant& val )
+{
+  if ( val.canConvert( QVariant::Int ) )
+  {
+    if ( name == "minimum" || name == "min" )
+      setMinimum( val.toInt() );
+    else if ( name == "maximum" || name == "max" )
+      setMaximum( val.toInt() );
+    else if ( name == "single_step" )
+      setSingleStep( val.toInt() );
+    else if ( name == "page_step" )
+      setPageStep( val.toInt() );
+    else
+      QtxPageNamedPrefItem::setOptionValue( name, val );
+  }
+  else if ( name == "icons" || name == "pixmaps" )
+    setIcons( val );
+  else
+    QtxPageNamedPrefItem::setOptionValue( name, val );
+}
+
+void QtxPagePrefSliderItem::setIcon( int pos )
+{
+  int index = pos - mySlider->minimum();
+  if ( !myIcons.isEmpty() && index >= 0 && index < myIcons.size() && !myIcons[index].isNull() )
+    myLabel->setPixmap( myIcons[index].pixmap( myIcons[index].availableSizes().first() ) );
+  else
+    myLabel->clear();
+}
+
+/*!
+  \brief Update slider widget.
+*/
+void QtxPagePrefSliderItem::updateSlider()
+{
+  int val = mySlider->value();
+  int stp = singleStep();
+  int ptp = pageStep();
+  int min = minimum();
+  int max = maximum();
+
+  control()->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
+  mySlider->setFocusPolicy(Qt::StrongFocus);
+  
+  mySlider->setValue( val );
+  setSingleStep( stp );
+  setPageStep( ptp );
+  setMinimum( min );
+  setMaximum( max );
+  
+  myLabel->setVisible( !myIcons.empty() );
+  widget()->layout()->setSpacing( !myIcons.empty() ? 6 : 0 );
+}
+
+/*!
+  \brief Set the list of the icons from the resource manager.
+  \param var new icons list
+  \internal
+*/
+void  QtxPagePrefSliderItem::setIcons( const QVariant& var )
+{
+  if ( var.type() != QVariant::List )
+    return;
+
+  QList<QIcon> lst;
+  QList<QVariant> varList = var.toList();
+  for ( QList<QVariant>::const_iterator it = varList.begin(); it != varList.end(); ++it )
+  {
+    if ( (*it).canConvert<QIcon>() )
+      lst.append( (*it).value<QIcon>() );
+    else if ( (*it).canConvert<QPixmap>() )
+      lst.append( (*it).value<QPixmap>() );
+    else
+      lst.append( QIcon() );
+  }
+  setIcons( lst );
 }
 
 /*!

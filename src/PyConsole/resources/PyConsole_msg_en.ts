@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS><TS version="1.1">
 <!--
-  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 
   Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
   CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -44,6 +44,22 @@
         <location filename="../PyConsole_Console.cxx" line="231"/>
         <source>EDIT_SELECTALL_CMD</source>
         <translation>Select &amp;All</translation>
+    </message>
+    <message>
+        <source>EDIT_DUMPCOMMANDS_CMD</source>
+        <translation>D&amp;ump commands</translation>
+    </message>
+</context>
+
+<context>
+    <name>PyConsole_Editor</name>
+    <message>
+        <source>TOT_DUMP_PYCOMMANDS</source>
+        <translation>Dump commands</translation>
+    </message>
+    <message>
+       <source>PYTHON_FILES_FILTER</source>
+       <translation>PYTHON Files (*.py)</translation>
     </message>
 </context>
 </TS>

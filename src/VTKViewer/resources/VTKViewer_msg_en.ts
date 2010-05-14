@@ -1,6 +1,6 @@
 <!DOCTYPE TS><TS>
 <!--
-  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 
   Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
   CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -163,6 +163,44 @@
     <message>
         <source>DSC_BACK_VIEW</source>
         <translation>Back View</translation>
+    </message>
+</context>
+<context>
+    <name>VTKViewer_MarkerDlg</name>
+    <message>
+        <source>SET_MARKER_TLT</source>
+        <translation>Set Point Marker</translation>
+    </message>
+</context>
+<context>
+    <name>VTKViewer_MarkerWidget</name>
+    <message>
+        <source>STANDARD_MARKER</source>
+        <translation>Standard</translation>
+    </message>
+    <message>
+        <source>CUSTOM_MARKER</source>
+        <translation>Custom</translation>
+    </message>
+    <message>
+        <source>TYPE</source>
+        <translation>Type:</translation>
+    </message>
+    <message>
+        <source>SCALE</source>
+        <translation>Scale:</translation>
+    </message>
+    <message>
+        <source>CUSTOM</source>
+        <translation>Texture:</translation>
+    </message>
+    <message>
+        <source>BROWSE</source>
+        <translation>Browse...</translation>
+    </message>
+    <message>
+        <source>LOAD_TEXTURE_TLT</source>
+        <translation>Load Texture</translation>
     </message>
 </context>
 <context>

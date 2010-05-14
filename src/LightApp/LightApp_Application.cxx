@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File:      LightApp_Application.cxx
 // Created:   6/20/2005 18:39:45 PM
 // Author:    Natalia Donis
@@ -27,8 +28,10 @@
 // E.A. : On windows with python 2.6, there is a conflict
 // E.A. : between pymath.h and Standard_math.h which define
 // E.A. : some same symbols : acosh, asinh, ...
-#include <Standard_math.hxx>
-#include <pymath.h>
+  #include <Standard_math.hxx>
+  #ifndef DISABLE_PYCONSOLE
+    #include <pymath.h>
+  #endif
 #endif
 
 #ifndef DISABLE_PYCONSOLE
@@ -95,6 +98,8 @@
 #ifndef DISABLE_PLOT2DVIEWER
   #include <Plot2d_ViewManager.h>
   #include <Plot2d_ViewModel.h>
+  #include <Plot2d_ViewWindow.h>
+  #include <Plot2d_ViewFrame.h>
   #include "LightApp_Plot2dSelector.h"
 #ifndef DISABLE_SALOMEOBJECT
   #include <SPlot2d_ViewModel.h>
@@ -1013,6 +1018,12 @@ void LightApp_Application::onHelpContextModule( const QString& theComponentName,
 */
 void LightApp_Application::onSelectionChanged()
 {
+  LightApp_Module* m = dynamic_cast<LightApp_Module*>( activeModule() );
+  bool canCopy  = m ? m->canCopy() : false;
+  bool canPaste = m ? m->canPaste() : false;
+
+  action( EditCopyId )->setEnabled(canCopy);
+  action( EditPasteId )->setEnabled(canPaste);
 }
 
 /*!
@@ -3247,4 +3258,24 @@ void LightApp_Application::clearKnownViewManagers()
     if (aTypesList.contains(aMgr->getType()))
       removeViewManager(aMgr);
   }
+}
+
+/*!
+  Copy of current selection 
+ */
+void LightApp_Application::onCopy()
+{
+  LightApp_Module* m = dynamic_cast<LightApp_Module*>( activeModule() );
+  if( m )
+    m->copy();
+}
+
+/*!
+  Paste of current data in clipboard
+ */
+void LightApp_Application::onPaste()
+{
+  LightApp_Module* m = dynamic_cast<LightApp_Module*>( activeModule() );
+  if( m )
+    m->paste();
 }

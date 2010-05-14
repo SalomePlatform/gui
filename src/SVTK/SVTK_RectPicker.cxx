@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : SVTK_RectPicker.cxx
 //  Author : 
@@ -424,7 +425,7 @@ SVTK_RectPicker
   if ( this->PickFromList ) 
     aProps = this->GetPickList();
   else 
-    aProps = theRenderer->GetProps();
+    aProps = theRenderer->GetViewProps();
 
   aProps->InitTraversal();
   while ( vtkProp* aProp = aProps->GetNextProp() ) {
@@ -433,7 +434,7 @@ SVTK_RectPicker
       vtkMapper *aMapper = NULL;
       bool anIsPickable = false;
       vtkActor* anActor = NULL;
-      vtkProp *aPropCandidate = aPath->GetLastNode()->GetProp();
+      vtkProp *aPropCandidate = aPath->GetLastNode()->GetViewProp();
       if ( aPropCandidate->GetPickable() && aPropCandidate->GetVisibility() ) {
         anIsPickable = true;
         anActor = vtkActor::SafeDownCast(aPropCandidate);

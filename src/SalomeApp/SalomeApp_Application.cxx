@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File:      SalomeApp_Application.cxx
 // Created:   10/22/2004 3:23:45 PM
 // Author:    Sergey LITONIN
@@ -305,6 +306,17 @@ void SalomeApp_Application::createActions()
   createMenu( separator(), toolsMenu, -1, 15, -1 );
 
   createExtraActions();
+
+  // import Python module that manages SALOME plugins
+  PyGILState_STATE gstate = PyGILState_Ensure();
+  PyObject* pluginsmanager=PyImport_ImportModule((char*)"salome_pluginsmanager");
+  PyObject* res=PyObject_CallMethod( pluginsmanager, (char*)"initialize", (char*)"isss",0,"salome","Tools","Plugins");
+  if(res==NULL)
+    PyErr_Print();
+  Py_XDECREF(res);
+  PyGILState_Release(gstate);
+  // end of SALOME plugins loading
+
 }
 
 /*!
@@ -973,29 +985,32 @@ int SalomeApp_Application::openChoice( const QString& aName )
 {
   int choice = LightApp_Application::openChoice( aName );
 
-  if ( choice == OpenNew ) // The document isn't already open.
-  {
-    bool exist = false;
-    std::vector<std::string> lst = studyMgr()->GetOpenStudies();
-    for ( uint i = 0; i < lst.size() && !exist; i++ )
-    {
-      if ( aName == QString( lst[i].c_str() ) )
-        exist = true;
+  if ( QFileInfo( aName ).exists() ) {
+    if ( choice == OpenNew ) { // The document isn't already open.
+      bool exist = false;
+      std::vector<std::string> lst = studyMgr()->GetOpenStudies();
+      for ( uint i = 0; i < lst.size() && !exist; i++ ) {
+        if ( aName == QString( lst[i].c_str() ) )
+          exist = true;
+      }
+      // The document already exists in the study manager.
+      // Do you want to reload it?
+      if ( exist ) {
+        int answer = SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "QUE_DOC_ALREADYEXIST" ).arg( aName ),
+                                                SUIT_MessageBox::Yes | SUIT_MessageBox::No, SUIT_MessageBox::No );
+        if ( answer == SUIT_MessageBox::Yes )
+          choice = OpenRefresh;
+        else
+          choice = OpenCancel;
+      }
     }
-
-    // The document already exists in the study manager.
-    // Do you want to reload it?
-    if ( exist )
-    {
-      int answer = SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "QUE_DOC_ALREADYEXIST" ).arg( aName ),
-                                              SUIT_MessageBox::Yes | SUIT_MessageBox::No, SUIT_MessageBox::No );
-      if ( answer == SUIT_MessageBox::Yes )
-        choice = OpenRefresh;
-      else
-        choice = OpenCancel;
-    }
+  } else { // file is not exist on disk
+    SUIT_MessageBox::warning( desktop(),
+                              QObject::tr("WRN_WARNING"),
+                              QObject::tr("WRN_FILE_NOT_EXIST").arg(aName.toLatin1().data()));
+    return false;
   }
-
+  
   return choice;
 }
 

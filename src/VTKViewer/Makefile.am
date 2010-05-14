@@ -1,4 +1,4 @@
-#  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+#  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 #
 #  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 #  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,11 +19,14 @@
 #
 #  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
+
 #  File   : Makefile.in
 #  Author : Vladimir Klyachin (OCN)
 #  Module : VTKViewer
-
+#
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
+
+EXTRA_DIST += textures
 
 lib_LTLIBRARIES = libVTKViewer.la
 
@@ -50,7 +53,13 @@ salomeinclude_HEADERS =				\
 	VTKViewer_ViewModel.h			\
 	VTKViewer_ViewWindow.h			\
 	VTKViewer_Functor.h                     \
-	VTKViewer_ArcBuilder.h
+	VTKViewer_ArcBuilder.h                  \
+	VTKViewer_MarkerDef.h                   \
+	VTKViewer_MarkerUtils.h                 \
+	VTKViewer_MarkerWidget.h                \
+	VTKViewer_MarkerDlg.h                   \
+	VTKViewer_PolyDataMapper.h              \
+	VTKViewer_DataSetMapper.h
 
 dist_libVTKViewer_la_SOURCES =			\
 	VTKViewer_CellLocationsArray.cxx	\
@@ -73,15 +82,26 @@ dist_libVTKViewer_la_SOURCES =			\
 	VTKViewer_ViewModel.cxx			\
 	VTKViewer_ConvexTool.cxx		\
 	VTKViewer_ViewWindow.cxx 		\
-	VTKViewer_ArcBuilder.cxx
+	VTKViewer_ArcBuilder.cxx                \
+	VTKViewer_MarkerUtils.cxx               \
+	VTKViewer_MarkerWidget.cxx              \
+	VTKViewer_MarkerDlg.cxx                 \
+	VTKViewer_PolyDataMapper.cxx            \
+	VTKViewer_DataSetMapper.cxx
 
 MOC_FILES =						\
 	VTKViewer_RenderWindow_moc.cxx			\
 	VTKViewer_RenderWindowInteractor_moc.cxx	\
 	VTKViewer_ViewManager_moc.cxx			\
 	VTKViewer_ViewModel_moc.cxx			\
-	VTKViewer_ViewWindow_moc.cxx 
-nodist_libVTKViewer_la_SOURCES = $(MOC_FILES)
+	VTKViewer_ViewWindow_moc.cxx                    \
+	VTKViewer_MarkerWidget_moc.cxx                      \
+	VTKViewer_MarkerDlg_moc.cxx
+
+QRC_FILES = \
+	qrc_VTKViewer.cxx
+
+nodist_libVTKViewer_la_SOURCES = $(MOC_FILES) $(QRC_FILES)
 
 dist_salomeres_DATA =				\
 	resources/vtk_view_back.png		\
@@ -98,7 +118,16 @@ dist_salomeres_DATA =				\
 	resources/vtk_view_rotate.png		\
 	resources/vtk_view_top.png		\
 	resources/vtk_view_triedre.png		\
-	resources/vtk_view_zoom.png
+	resources/vtk_view_zoom.png             \
+	resources/marker_1.png                  \
+	resources/marker_2.png                  \
+	resources/marker_3.png                  \
+	resources/marker_4.png                  \
+	resources/marker_5.png                  \
+	resources/marker_6.png                  \
+	resources/marker_7.png                  \
+	resources/marker_8.png                  \
+	resources/marker_9.png
 
 nodist_salomeres_DATA =		\
 	VTKViewer_images.qm	\
@@ -106,8 +135,10 @@ nodist_salomeres_DATA =		\
 
 libVTKViewer_la_CPPFLAGS = $(QT_INCLUDES) $(VTK_INCLUDES) $(CAS_CPPFLAGS)	\
 	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT
-libVTKViewer_la_LDFLAGS = $(VTK_LIBS) $(QT_MT_LIBS) $(CAS_KERNEL) $(OGL_LIBS)	\
-	../Qtx/libqtx.la ../SUIT/libsuit.la
+libVTKViewer_la_LDFLAGS = $(KERNEL_LDFLAGS) $(VTK_LIBS) $(QT_MT_LIBS)           \
+	$(CAS_KERNEL) $(OGL_LIBS) ../Qtx/libqtx.la ../SUIT/libsuit.la
+
+libVTKViewer_la_LIBADD = -lSALOMELocalTrace
 
 # Executable
 
@@ -116,5 +147,6 @@ bin_PROGRAMS = VTKViewer
 dist_VTKViewer_SOURCES = VTKViewer.cxx
 
 VTKViewer_CPPFLAGS = $(libVTKViewer_la_CPPFLAGS)
-VTKViewer_LDADD    = libVTKViewer.la $(libVTKViewer_la_LDFLAGS)
+VTKViewer_LDFLAGS = $(libVTKViewer_la_LDFLAGS)
+VTKViewer_LDADD = libVTKViewer.la $(libVTKViewer_la_LIBADD)
 

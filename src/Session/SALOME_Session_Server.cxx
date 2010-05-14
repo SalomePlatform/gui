@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 //  SALOME Session : implementation of Session.idl
 //  File : SALOME_Session_Server.cxx
 //  Author : Paul RASCLE, EDF
@@ -58,6 +59,7 @@
 #include "Session_ServerLauncher.hxx"
 #include "Session_ServerCheck.hxx"
 
+#include <Qtx.h>
 #include <QtxSplash.h>
 #include <Style_Salome.h>
 #include <SUIT_Tools.h>
@@ -257,7 +259,15 @@ public:
 #ifdef ENABLE_TESTRECORDER
   SALOME_QApplication( int& argc, char** argv ) : TestApplication( argc, argv ), myHandler ( 0 ) {}
 #else
-  SALOME_QApplication( int& argc, char** argv ) : QApplication( argc, argv ), myHandler ( 0 ) {}
+  SALOME_QApplication( int& argc, char** argv )
+#ifndef WIN32
+  // san: Opening an X display and choosing a visual most suitable for 3D visualization
+  // in order to make SALOME viewers work with non-native X servers
+  : QApplication( (Display*)Qtx::getDisplay(), argc, argv, Qtx::getVisual() ),
+#else
+  : QApplication( argc, argv ), 
+#endif
+    myHandler ( 0 ) {}
 #endif
 
   virtual bool notify( QObject* receiver, QEvent* e )
@@ -597,7 +607,7 @@ int main( int argc, char **argv )
     // std::cerr << "Caught unexpected exception on destroy : ignored !!" << std::endl;
   }
 
-  PyGILState_STATE gstate = PyGILState_Ensure();
+  PyGILState_Ensure();
   //Destroy orb from python (for chasing memory leaks)
   //PyRun_SimpleString("from omniORB import CORBA");
   //PyRun_SimpleString("orb=CORBA.ORB_init([''], CORBA.ORB_ID)");

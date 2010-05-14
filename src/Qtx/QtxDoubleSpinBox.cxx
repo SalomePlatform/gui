@@ -1,7 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
-//
-//  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-//  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  This library is free software; you can redistribute it and/or
 //  modify it under the terms of the GNU Lesser General Public
@@ -19,6 +16,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File:      QtxDoubleSpinBox.cxx
 // Author:    Sergey TELKOV
 //
@@ -26,6 +24,9 @@
 
 #include <QLineEdit>
 #include <QDoubleValidator>
+#include <QVariant>
+
+#include <limits>
 
 /*!
   \class QtxDoubleSpinBox
@@ -48,6 +49,15 @@
     ... // process entered value
   }
   \endcode
+
+  Another useful feature is possibility to use scientific notation (e.g. 1.234e+18) 
+  for the widegt text. To enable this, negative precision should be specified either
+  through a constructor or using setPrecision() method.
+
+  Note that "decimals" property of QDoubleSpinBox is almost completely substituted
+  by "myPrecision" field of QtxDoubleSpinBox class. "decimals" is still used 
+  for proper size hint calculation and for rounding minimum and maximum bounds of
+  the spin box range.
 */
 
 /*!
@@ -61,9 +71,11 @@
 */
 QtxDoubleSpinBox::QtxDoubleSpinBox( QWidget* parent )
 : QDoubleSpinBox( parent ),
-  myCleared( false ),
-  myPrecision(0)
+  myCleared( false )
 {
+  // Use precision equal to default Qt decimals
+  myPrecision = decimals();
+  
   connect( lineEdit(), SIGNAL( textChanged( const QString& ) ), 
            this, SLOT( onTextChanged( const QString& ) ) );
 }
@@ -82,9 +94,11 @@ QtxDoubleSpinBox::QtxDoubleSpinBox( QWidget* parent )
 */
 QtxDoubleSpinBox::QtxDoubleSpinBox( double min, double max, double step, QWidget* parent )
 : QDoubleSpinBox( parent ),
-  myCleared( false ),
-  myPrecision( 0 )
+  myCleared( false )
 {
+  // Use precision equal to default Qt decimals
+  myPrecision = decimals();
+  
   setMinimum( min );
   setMaximum( max );
   setSingleStep( step );
@@ -97,12 +111,15 @@ QtxDoubleSpinBox::QtxDoubleSpinBox( double min, double max, double step, QWidget
   \brief Constructor.
 
   Constructs a spin box with specified minimum, maximum and step value.
-  The precision is set to 2 decimal places. 
+  The precision is set to <prec> decimal places. 
   The value is initially set to the minimum value.
 
   \param min spin box minimum possible value
   \param max spin box maximum possible value
   \param step spin box increment/decrement value
+  \param prec non-negative values means the number of digits after the decimal point, 
+              negative value means the maximum number of significant digits for the scientific notation
+  \param dec number of digits after the decimal point passed to base Qt class (used for correct control sizing only!)
   \param parent parent object
 */
 QtxDoubleSpinBox::QtxDoubleSpinBox( double min, double max, double step, int prec, int dec, QWidget* parent )
@@ -202,7 +219,7 @@ double QtxDoubleSpinBox::valueFromText( const QString& text ) const
 */
 QString QtxDoubleSpinBox::textFromValue( double val ) const
 {
-  QString s = QLocale().toString( val, myPrecision >= 0 ? 'f' : 'g', myPrecision == 0 ? 6 : qAbs( myPrecision ) );
+  QString s = QLocale().toString( val, myPrecision >= 0 ? 'f' : 'g', qAbs( myPrecision ) );
   return removeTrailingZeroes( s );
 }
 
@@ -256,19 +273,23 @@ void QtxDoubleSpinBox::stepBy( int steps )
 */
 QValidator::State QtxDoubleSpinBox::validate( QString& str, int& pos ) const
 {
-  if (myPrecision >= 0)
-    return QDoubleSpinBox::validate(str, pos);
-
   QString pref = this->prefix();
   QString suff = this->suffix();
   uint overhead = pref.length() + suff.length();
   QValidator::State state = QValidator::Invalid;
-
+  
   QDoubleValidator v (NULL);
-  v.setDecimals( decimals() );
+  
+  // If 'g' format is used (myPrecision < 0), then
+  // myPrecision - 1 digits are allowed after the decimal point.
+  // Otherwise, expect myPrecision digits after the decimal point.
+  int decs = myPrecision < 0 ? qAbs( myPrecision ) - 1 : myPrecision;
+ 
+  v.setDecimals( decs );
   v.setBottom( minimum() );
   v.setTop( maximum() );
-  v.setNotation( QDoubleValidator::ScientificNotation );
+  v.setNotation( myPrecision >= 0 ? QDoubleValidator::StandardNotation : 
+                                    QDoubleValidator::ScientificNotation );
 
   if ( overhead == 0 )
     state = v.validate( str, pos );
@@ -300,6 +321,34 @@ QValidator::State QtxDoubleSpinBox::validate( QString& str, int& pos ) const
             }
         }
     }
+
+  // Treat values ouside (min; max) range as Invalid
+  // This check is enabled by assigning "strict_validity_check" dynamic property
+  // with value "true" to the spin box instance.
+  if ( state == QValidator::Intermediate ){
+    bool isOk;
+    double val = str.toDouble( &isOk );
+    if ( isOk ){
+      QVariant propVal = property( "strict_validity_check" );
+      if ( propVal.isValid() && propVal.canConvert( QVariant::Bool ) && propVal.toBool() ){
+        if ( val < minimum() || val > maximum() )
+          state = QValidator::Invalid;
+      }
+    }
+    else if ( myPrecision < 0 ){
+      // Consider too large negative exponent as Invalid
+      QChar e( QLocale().exponential() );
+      int epos = str.indexOf( e, 0, Qt::CaseInsensitive );
+      if ( epos != -1 ){
+        epos++; // Skip exponential symbol itself
+        QString exponent = str.right( str.length() - epos );
+        int expValue = exponent.toInt( &isOk );
+        if ( isOk && expValue < std::numeric_limits<double>::min_exponent10 )
+          state = QValidator::Invalid;
+      }
+    }
+  }
+
   return state;
 }
 

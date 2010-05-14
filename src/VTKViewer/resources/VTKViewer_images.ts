@@ -1,6 +1,6 @@
 <!DOCTYPE TS><TS>
 <!--
-  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 
   Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
   CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -23,6 +23,42 @@
 -->
 <context>
     <name>@default</name>
+    <message>
+        <source>ICON_VERTEX_MARKER_1</source>
+        <translation>marker_1.png</translation>
+    </message>
+    <message>
+        <source>ICON_VERTEX_MARKER_2</source>
+        <translation>marker_2.png</translation>
+    </message>
+    <message>
+        <source>ICON_VERTEX_MARKER_3</source>
+        <translation>marker_3.png</translation>
+    </message>
+    <message>
+        <source>ICON_VERTEX_MARKER_4</source>
+        <translation>marker_4.png</translation>
+    </message>
+    <message>
+        <source>ICON_VERTEX_MARKER_5</source>
+        <translation>marker_5.png</translation>
+    </message>
+    <message>
+        <source>ICON_VERTEX_MARKER_6</source>
+        <translation>marker_6.png</translation>
+    </message>
+    <message>
+        <source>ICON_VERTEX_MARKER_7</source>
+        <translation>marker_7.png</translation>
+    </message>
+    <message>
+        <source>ICON_VERTEX_MARKER_8</source>
+        <translation>marker_8.png</translation>
+    </message>
+    <message>
+        <source>ICON_VERTEX_MARKER_9</source>
+        <translation>marker_9.png</translation>
+    </message>
     <message>
         <source>ICON_VTKVIEWER_VIEW_GLOBALPAN</source>
         <translation>vtk_view_glpan.png</translation>

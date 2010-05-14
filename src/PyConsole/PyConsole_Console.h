@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File   : PyConsole_Console.h
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 //
@@ -42,11 +43,12 @@ public:
   //! Context popup menu actions flags
   enum
   {
-    CopyId      = 0x01,                            //!< "Copy" menu action
-    PasteId     = 0x02,                            //!< "Paste" menu action
-    ClearId     = 0x04,                            //!< "Clear" menu action
-    SelectAllId = 0x08,                            //!< "Select All" menu action
-    All = CopyId | PasteId | ClearId | SelectAllId //!< all menu actions
+    CopyId         = 0x01,                                           //!< "Copy" menu action
+    PasteId        = 0x02,                                           //!< "Paste" menu action
+    ClearId        = 0x04,                                           //!< "Clear" menu action
+    SelectAllId    = 0x08,                                           //!< "Select All" menu action
+    DumpCommandsId = 0x16,                                           //!< "DumpCommands" menu action
+    All = CopyId | PasteId | ClearId | SelectAllId | DumpCommandsId  //!< all menu actions
   };
 
 public:

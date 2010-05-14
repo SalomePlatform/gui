@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 //  SVTK OBJECT : interactive object for SVTK visualization
 //  File   : SVTK_DeviceActor.h
 //  Author : 
@@ -30,6 +31,7 @@
 
 #include "SVTK.h"
 #include "VTKViewer.h"
+#include "VTKViewer_MarkerDef.h"
 
 #include <vector>
 
@@ -44,7 +46,7 @@ class vtkCell;
 class vtkDataSet;
 class vtkShrinkFilter;
 class vtkFeatureEdges;
-class vtkDataSetMapper;
+class VTKViewer_DataSetMapper;
 class vtkPassThroughFilter;
 
 namespace SVTK
@@ -219,11 +221,31 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
   SetShaded(bool theShaded);
   //@}
 
+  /** @name For marker management purpose */
+  void
+  SetMarkerEnabled( bool );
+
+  void
+  SetMarkerStd( VTK::MarkerType, VTK::MarkerScale );
+
+  void
+  SetMarkerTexture( int, VTK::MarkerTexture );
+
+  VTK::MarkerType
+  GetMarkerType();
+
+  VTK::MarkerScale
+  GetMarkerScale();
+
+  int
+  GetMarkerTexture();
+  //@}
+
   virtual
   void
   Render(vtkRenderer *, vtkMapper *);
 
-  vtkDataSetMapper* GetDataSetMapper();
+  VTKViewer_DataSetMapper* GetDataSetMapper();
 
   //----------------------------------------------------------------------------
   //! Setting for displaying quadratic elements
@@ -247,7 +269,7 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
   std::vector<vtkPassThroughFilter*> myPassFilter;
   vtkShrinkFilter* myShrinkFilter;
   vtkFeatureEdges* myFeatureEdges;
-  vtkDataSetMapper* myMapper;
+  VTKViewer_DataSetMapper* myMapper;
 
   bool myIsShrinkable;
   bool myIsShrunk;

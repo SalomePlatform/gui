@@ -1,4 +1,4 @@
-//  Copyright (C) 2007-2008  CEA/DEN, EDF R&D, OPEN CASCADE
+//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 //  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -19,6 +19,7 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+
 // File:      QtxComboBox.cxx
 // Author:    Sergey TELKOV
 //
@@ -133,7 +134,6 @@ QtxComboBox::QtxComboBox( QWidget* parent )
 : QComboBox( parent ),
   myCleared( false )
 {
-  connect( this, SIGNAL( activated( int ) ),            this, SLOT( onActivated( int ) ) );
   connect( this, SIGNAL( currentIndexChanged( int ) ),  this, SLOT( onCurrentChanged( int ) ) );
   setModel( new Model( this ) );
 }
@@ -236,23 +236,16 @@ void QtxComboBox::customEvent( QEvent* e )
 }
 
 /*!
-  \brief Called when any item is activated by the user.
-  \param idx activated item index
-*/
-void QtxComboBox::onActivated( int idx )
-{
-  resetClear();
-  emit activatedId( id( idx ) );
-}
-
-/*!
   \brief Called when current item is chaned (by the user or programmatically).
   \param idx item being set current
 */
 void QtxComboBox::onCurrentChanged( int idx )
 {
   if ( idx != -1 )
+  {
     resetClear();
+    emit activatedId( id( idx ) );
+  }
 }
 
 /*!

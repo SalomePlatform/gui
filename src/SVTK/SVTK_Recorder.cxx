@@ -322,7 +322,7 @@ int
 GetFrameIndex(double theStartTime,
               double theFPS)
 {
-  double aTimeNow = vtkTimerLog::GetCurrentTime();
+  double aTimeNow = vtkTimerLog::GetUniversalTime();
   double aDelta = aTimeNow - theStartTime;
   return int(aDelta*theFPS);
 }
@@ -336,7 +336,7 @@ SVTK_Recorder
 
   if(myFrameIndex < 0){
     myFrameIndex = 0;
-    myTimeStart = vtkTimerLog::GetCurrentTime();
+    myTimeStart = vtkTimerLog::GetUniversalTime();
   }else{
     int aFrameIndex = GetFrameIndex(myTimeStart,myNbFPS);
     if(aFrameIndex <= myFrameIndex)

@@ -22,11 +22,11 @@ dnl
 
 dnl  OPTIONS_VTK
 dnl  ------------------------------------------------------------------------
-dnl  Adds the --with-vtk=path and --with-vtk-version configure options
+dnl  Adds the --with-vtk=path, --with-vtk-version and --with-paraview configure options
 dnl
 AC_DEFUN([OPTIONS_VTK], [
   AC_ARG_WITH([vtk],
-              [AC_HELP_STRING([--with-vtk], [The prefix where VTK is installed (default "" means taking from environment variable)])],
+              [AC_HELP_STRING([--with-vtk], [The prefix where VTK is installed (default "" means taking from environment variable unless VTK from ParaView is detected)])],
               [with_vtk=$withval], [with_vtk=""])
 
   AC_ARG_WITH([vtk-version],
@@ -34,7 +34,7 @@ AC_DEFUN([OPTIONS_VTK], [
               [vtk_suffix=$withval], [vtk_suffix="yes"])
 
   AC_ARG_WITH([paraview],
-              [AC_HELP_STRING([--with-paraview], [ParaView from the specified location is used instead of VTK (default "" means ParaView should not be used)])])
+              [AC_HELP_STRING([--with-paraview], [ParaView from the specified location is used instead of VTK (default "" means taking from environment variable)])])
 ])
 
 dnl
@@ -49,8 +49,6 @@ AC_REQUIRE([AC_PROG_CXXCPP])dnl
 AC_REQUIRE([AC_LINKER_OPTIONS])dnl
 
 AC_REQUIRE([OPTIONS_VTK])dnl
-
-AC_CHECKING(for VTK)
 
 AC_LANG_SAVE
 AC_LANG_CPLUSPLUS
@@ -95,7 +93,7 @@ dnl VTK version suffix
 if test -z $vtk_suffix ; then
   vtk_suffix="yes"
 fi
-if test "x$vtk_suffix" == "xno" ; then
+if test "x$vtk_suffix" = "xno" ; then
   dnl in case user wrote --with-vtk-version=no, use empty suffix
   vtk_suffix=""
 fi
@@ -108,125 +106,271 @@ else
   fi
 fi
 
-dnl VTK install dir
+dnl
+dnl Use VTK from ParaView unless --with-paraview=no is given
+dnl
+
+pv_vtk_ok=no
+
+case "x$with_paraview" in
+
+  xno )
+    PVHOME=""
+    ;;
+
+  xyes | x )
+  
+    if test -z $PVHOME ; then
+      AC_PATH_PROG(para_path, paraview)
+      if test "x$para_path" != "x" ; then
+         para_path=`dirname $para_path`
+         PVHOME=`dirname $para_path`
+      else
+        for d in /usr/local /usr ; do
+          if test -f ${d}/include/paraview${PVVERSION}/pqDialog.h ; then
+            AC_MSG_RESULT(trying ${d})
+            PVHOME="${d}"
+            break
+          fi
+          if test -f ${d}/include/paraview-3.7/pqDialog.h ; then
+            AC_MSG_RESULT(trying ${d})
+            PVHOME="${d}"
+            PVVERSION="-3.7"
+            break
+          fi
+          if test -f ${d}/include/paraview-3.8/pqDialog.h ; then
+            AC_MSG_RESULT(trying ${d})
+            PVHOME="${d}"
+            PVVERSION="-3.8"
+            break
+          fi
+          if test -f ${d}/include/paraview/pqDialog.h ; then
+            AC_MSG_RESULT(trying ${d})
+            PVHOME="${d}"
+            PVVERSION=""
+            break
+          fi
+        done
+      fi
+    fi
+    ;;
+
+  * )
+    PVHOME=${with_paraview}
+    ;;
+esac
+
+dnl Check VTK from ParaView.
+
+if test "x$PVHOME" != "x" ; then
+
+  if test "x$PVVERSION" = "x" ; then
+    PVVERSION=`basename $PVHOME | sed -e "s,[[^-]]*,,"`
+  else
+    if test "${PVVERSION:0:1}" != "-" ; then
+      PVVERSION="-$PVVERSION"
+    fi
+  fi
+
+  AC_CHECKING(for VTK from ParaView)
+
+  PV_LOCAL_INCLUDES="-I$PVHOME/include/paraview$PVVERSION $LOCAL_INCLUDES"
+  PV_LOCAL_LIBS="-L$PVHOME/lib/paraview$PVVERSION -lvtksys -lvtkzlib -lvtkpng -lvtkjpeg -lvtktiff -lvtkexpat -lvtksqlite -lvtkmetaio -lvtkverdict -lvtkNetCDF -lvtkDICOMParser -lvtkfreetype -lvtkftgl -lvtkexoIIc $LOCAL_LIBS"
+  PV_TRY_LINK_LIBS="-L$PVHOME/lib/paraview$PVVERSION -lvtksys $TRY_LINK_LIBS"
+
+  dnl vtk headers
+  CPPFLAGS_old="$CPPFLAGS"
+  CPPFLAGS="$CPPFLAGS $PV_LOCAL_INCLUDES"
+  
+  AC_CHECK_HEADER(vtkPoints.h,pv_vtk_ok="yes",pv_vtk_ok="no")
+  
+  CPPFLAGS="$CPPFLAGS_old"
+  
+  if test "x$pv_vtk_ok" = "xyes"; then
+
+     dnl vtk libraries
+  
+     AC_MSG_CHECKING(linking VTK library from ParaView)
+  
+     LIBS_old="$LIBS"
+     LIBS="$LIBS $PV_TRY_LINK_LIBS"
+     CPPFLAGS_old="$CPPFLAGS"
+     CPPFLAGS="$CPPFLAGS $PV_LOCAL_INCLUDES"
+  
+     AC_CACHE_VAL(salome_cv_lib_pvvtk,[
+       AC_TRY_LINK([#include "vtkPoints.h"
+                   ],
+  		 [vtkPoints::New()],
+  		 [salome_cv_lib_pvvtk=yes],
+  		 [salome_cv_lib_pvvtk=no])
+     ])
+     pv_vtk_ok="$salome_cv_lib_pvvtk"
+     LIBS="$LIBS_old"
+     CPPFLAGS="$CPPFLAGS_old"
+     AC_MSG_RESULT($pv_vtk_ok)
+  fi
+
+  dnl Find out version of VTK from ParaView
+  PVVTKVERSION=" Undefined"
+  if test "x$pv_vtk_ok" = "xyes"; then
+     AC_MSG_CHECKING(VTK version)
+     PVVTKVERSION=`grep VTK_VERSION $PVHOME/include/paraview$PVVERSION/vtkConfigure.h`
+     AC_MSG_RESULT(${PVVTKVERSION:20:10})
+  fi
+fi
+
+dnl
+dnl Use regular VTK if no ParaView found or a newer version is provided via --with-vtk
+dnl 
+
+try_regular_vtk=no
+if test "$pv_vtk_ok" = "no"; then
+  try_regular_vtk=yes
+fi
+
 if test -z $with_vtk ; then
   with_vtk=""
 fi
-if test "x$with_vtk" = "xyes" ; then
-  dnl in case user wrote --with-vtk=yes
-  with_vtk=""
-fi
-if test "x$with_vtk" = "xno" ; then
-  dnl in case user wrote --with-vtk=no
-  with_vtk=""
-  AC_MSG_WARN(Value "no", specified for option --with-vtk, is not supported)
-fi
+case "x$with_vtk" in
+  xyes)
+    dnl in case user wrote --with-vtk=yes
+    with_vtk=""
+    ;;
+  xno)
+    dnl in case user wrote --with-vtk=no
+    with_vtk=""
+    AC_MSG_WARN(Value "no", specified for option --with-vtk, is not supported)
+    ;;
+  x)
+    ;;
+  *)
+    try_regular_vtk=yes
+    ;;
+esac
 
-if test "x$with_vtk" != "x" ; then
-  VTKHOME="$with_vtk"
-else
-  if test -z $VTKHOME ; then
-    AC_MSG_WARN(undefined VTKHOME variable which specify where vtk was compiled)
-    for d in /usr/local /usr ; do
-      if test -f ${d}/include/vtk${VTKSUFFIX}/vtkPlane.h ; then
-        AC_MSG_RESULT(trying ${d})
-        VTKHOME="${d}"
-        break
-      fi
-      if test -f ${d}/include/vtk-5.0/vtkPlane.h ; then
-        AC_MSG_RESULT(trying ${d})
-        VTKHOME="${d}"
-        VTKSUFFIX="-5.0"
-        break
-      fi
-      if test -f ${d}/include/vtk-5.2/vtkPlane.h ; then
-        AC_MSG_RESULT(trying ${d})
-        VTKHOME="${d}"
-        VTKSUFFIX="-5.2"
-        break
-      fi
-      if test -f ${d}/include/vtk/vtkPlane.h ; then
-        AC_MSG_RESULT(trying ${d})
-        VTKHOME="${d}"
-        VTKSUFFIX=""
-        break
-      fi
-    done
-  fi
-fi
+if test "$try_regular_vtk" = "yes"; then
 
-# Using regular VTK installation
-if test "x$with_paraview" = "x" ; then
-  LOCAL_INCLUDES="-I$VTKHOME/include/vtk${VTKSUFFIX} $LOCAL_INCLUDES"
-  LOCAL_LIBS="-L$VTKHOME/lib${LIB_LOCATION_SUFFIX}/vtk${VTKSUFFIX} $LOCAL_LIBS"
-  TRY_LINK_LIBS="-L$VTKHOME/lib${LIB_LOCATION_SUFFIX} -L$VTKHOME/lib${LIB_LOCATION_SUFFIX}/vtk${VTKSUFFIX} $TRY_LINK_LIBS"
-  if test "x$VTKHOME" != "x/usr" ; then
-    LOCAL_LIBS="-L$VTKHOME/lib${LIB_LOCATION_SUFFIX} $LOCAL_LIBS"
-  fi
-else
-# VTK from ParaView overrides other VTK versions
-  if test "${with_paraview}" = "yes" ; then
-    if test -z $PVHOME ; then
-      PVHOME="/usr"
-    fi
+  dnl Check regular VTK installation
+  AC_CHECKING(for regular VTK)
+  
+  dnl VTK install dir
+
+  if test "x$with_vtk" != "x" ; then
+    VTKHOME="$with_vtk"
   else
-    PVHOME=${with_paraview}
+    if test -z $VTKHOME ; then
+      AC_MSG_WARN(undefined VTKHOME variable which specify where vtk was compiled)
+      for d in /usr/local /usr ; do
+        if test -f ${d}/include/vtk${VTKSUFFIX}/vtkPlane.h ; then
+          AC_MSG_RESULT(trying ${d})
+          VTKHOME="${d}"
+          break
+        fi
+        if test -f ${d}/include/vtk-5.0/vtkPlane.h ; then
+          AC_MSG_RESULT(trying ${d})
+          VTKHOME="${d}"
+          VTKSUFFIX="-5.0"
+          break
+        fi
+        if test -f ${d}/include/vtk-5.2/vtkPlane.h ; then
+          AC_MSG_RESULT(trying ${d})
+          VTKHOME="${d}"
+          VTKSUFFIX="-5.2"
+          break
+        fi
+        if test -f ${d}/include/vtk/vtkPlane.h ; then
+          AC_MSG_RESULT(trying ${d})
+          VTKHOME="${d}"
+          VTKSUFFIX=""
+          break
+        fi
+      done
+    fi
   fi
-
-
-  LOCAL_INCLUDES="-I$PVHOME/include/paraview-$PVVERSION $LOCAL_INCLUDES"
-
-  LOCAL_LIBS="-L$PVHOME/lib/paraview-$PVVERSION -lvtksys -lvtkzlib -lvtkpng -lvtkjpeg -lvtktiff -lvtkexpat -lvtksqlite -lvtkmetaio -lvtkverdict -lvtkNetCDF -lvtkDICOMParser -lvtkfreetype -lvtkftgl -lvtkexoIIc $LOCAL_LIBS"
-  TRY_LINK_LIBS="-L$PVHOME/lib/paraview-$PVVERSION -lvtksys $TRY_LINK_LIBS"
+  
+  VTK_LOCAL_INCLUDES="-I$VTKHOME/include/vtk${VTKSUFFIX} $LOCAL_INCLUDES"
+  VTK_LOCAL_LIBS="-L$VTKHOME/lib${LIB_LOCATION_SUFFIX}/vtk${VTKSUFFIX} $LOCAL_LIBS"
+  VTK_TRY_LINK_LIBS="-L$VTKHOME/lib${LIB_LOCATION_SUFFIX} -L$VTKHOME/lib${LIB_LOCATION_SUFFIX}/vtk${VTKSUFFIX} $TRY_LINK_LIBS"
+  if test "x$VTKHOME" != "x/usr" ; then
+    VTK_LOCAL_LIBS="-L$VTKHOME/lib${LIB_LOCATION_SUFFIX} $LOCAL_LIBS"
+  fi
+  
+  dnl vtk headers
+  CPPFLAGS_old="$CPPFLAGS"
+  CPPFLAGS="$CPPFLAGS $VTK_LOCAL_INCLUDES"
+  
+  AC_CHECK_HEADER(vtkPlane.h,vtk_ok="yes",vtk_ok="no")
+  
+  CPPFLAGS="$CPPFLAGS_old"
+  
+  if test "x$vtk_ok" = "xyes"; then
+  
+  #   VTK_INCLUDES="$LOCAL_INCLUDES"
+  
+     dnl vtk libraries
+  
+     AC_MSG_CHECKING(linking regular VTK library)
+  
+     LIBS_old="$LIBS"
+     LIBS="$LIBS $VTK_TRY_LINK_LIBS"
+     CPPFLAGS_old="$CPPFLAGS"
+     CPPFLAGS="$CPPFLAGS $VTK_LOCAL_INCLUDES"
+  
+     dnl VTKPY_MODULES="$VTKHOME/python"
+  
+     AC_CACHE_VAL(salome_cv_lib_vtk,[
+       AC_TRY_LINK([#include "vtkPlane.h"
+                   ],
+  		 [vtkPlane::New()],
+  		 [salome_cv_lib_vtk=yes],
+  		 [salome_cv_lib_vtk=no])
+     ])
+     vtk_ok="$salome_cv_lib_vtk"
+     LIBS="$LIBS_old"
+     CPPFLAGS="$CPPFLAGS_old"
+     AC_MSG_RESULT($vtk_ok)
+  fi
+  
+  VTKVERSION=" Undefined"
+  if test "x$vtk_ok" = "xyes"; then
+     AC_MSG_CHECKING(VTK version)
+     VTKVERSION=`grep VTK_VERSION $VTKHOME/include/vtk${VTKSUFFIX}/vtkConfigure.h`
+     AC_MSG_RESULT(${VTKVERSION:20:10})
+  fi
 fi
 
-dnl vtk headers
-CPPFLAGS_old="$CPPFLAGS"
-CPPFLAGS="$CPPFLAGS $LOCAL_INCLUDES"
+dnl Select either of VTKs
+if  test "x$pv_vtk_ok" = "xyes" ; then
+  if test "x$vtk_ok" = "xyes" ; then
+     if test "$VTKVERSION" \> "$PVVTKVERSION" ; then
+       AC_MSG_RESULT([VTK from ParaView is older, ignored])
+       pv_vtk_ok=no
+     else
+       AC_MSG_RESULT([regular VTK is older, ignored])
+       vtk_ok=no
+     fi
+  fi
+fi  
 
-AC_CHECK_HEADER(vtkPlane.h,vtk_ok="yes",vtk_ok="no")
-
-CPPFLAGS="$CPPFLAGS_old"
-
-if test "x$vtk_ok" = "xyes"
-then
-   VTK_INCLUDES="$LOCAL_INCLUDES"
-
-   dnl vtk libraries
-
-   AC_MSG_CHECKING(linking VTK library)
-
-   LIBS_old="$LIBS"
-   LIBS="$LIBS $TRY_LINK_LIBS"
-   #LIBS="$LIBS $LOCAL_LIBS"
-   CPPFLAGS_old="$CPPFLAGS"
-   CPPFLAGS="$CPPFLAGS $VTK_INCLUDES"
-
-   dnl VTKPY_MODULES="$VTKHOME/python"
-
-   AC_CACHE_VAL(salome_cv_lib_vtk,[
-     AC_TRY_LINK([#include "vtkPlane.h"
-                 ],
-		 [vtkPlane::New()],
-		 [salome_cv_lib_vtk=yes],
-		 [salome_cv_lib_vtk=no])
-   ])
-   vtk_ok="$salome_cv_lib_vtk"
-   LIBS="$LIBS_old"
-   CPPFLAGS="$CPPFLAGS_old"
-fi
-
-if  test "x$vtk_ok" = "xno"
-then
-  AC_MSG_RESULT(no)
-  AC_MSG_WARN(unable to link with vtk library)
+if  test "x$pv_vtk_ok" = "xyes" ; then
+  AC_MSG_RESULT(for VTK: yes)
+  VTK_INCLUDES="$PV_LOCAL_INCLUDES"
+  VTK_LIBS="$PV_LOCAL_LIBS"
+  VTK_MT_LIBS="$VTK_LIBS"
+  #VTKPY_MODULES=
+  vtk_ok=yes
 else
-  AC_MSG_RESULT(yes)
-  VTK_LIBS="$LOCAL_LIBS"
-  VTK_MT_LIBS="$LOCAL_LIBS"
+    if  test "x$vtk_ok" = "xyes" ; then
+      AC_MSG_RESULT(for VTK: yes)
+      VTK_INCLUDES="$VTK_LOCAL_INCLUDES"
+      VTK_LIBS="$VTK_LOCAL_LIBS"
+      VTK_MT_LIBS="$VTK_LIBS"
+      #VTKPY_MODULES=
+    else
+      AC_MSG_RESULT(for VTK: no)
+      AC_MSG_WARN(unable to link with vtk library)
+    fi
 fi
-
-AC_MSG_RESULT(for VTK: $vtk_ok)
 
 AC_LANG_RESTORE
 

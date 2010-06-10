@@ -126,7 +126,7 @@ VTKViewer_PolyDataMapper::VTKViewer_PolyDataMapper()
 {
   Q_INIT_RESOURCE( VTKViewer );
 
-  this->ExtensionsInitialized     = 0;
+  this->ExtensionsInitialized     = ES_None;
 
   this->PointSpriteTexture        = 0;
 
@@ -220,24 +220,18 @@ int VTKViewer_PolyDataMapper::GetMarkerTexture()
 }
 
 //-----------------------------------------------------------------------------
-bool VTKViewer_PolyDataMapper::InitExtensions()
+int VTKViewer_PolyDataMapper::InitExtensions()
 {
-  if( this->ExtensionsInitialized )
-    return true;
-
-  InitializeBufferExtensions();
-
   char* ext = (char*)glGetString( GL_EXTENSIONS );
   if( !IsBufferExtensionsInitialized ||
       strstr( ext, "GL_ARB_point_sprite" ) == NULL ||
       strstr( ext, "GL_ARB_vertex_buffer_object" ) == NULL )
   {
-    INFOS("Initializing ARB extensions failed");
-    return false;
+    MESSAGE("Initializing ARB extensions failed");
+    return ES_Error;
   }
 
-  this->ExtensionsInitialized = 1;
-  return true;
+  return ES_Ok;
 }
 
 //-----------------------------------------------------------------------------
@@ -296,7 +290,8 @@ void VTKViewer_PolyDataMapper::RenderPiece( vtkRenderer* ren, vtkActor* act )
   bool isUsePointSprites = this->MarkerEnabled && this->MarkerType != VTK::MT_NONE;
   if( isUsePointSprites )
   {
-    this->InitExtensions();
+    if( this->ExtensionsInitialized == ES_None )
+      this->ExtensionsInitialized = this->InitExtensions();
     this->InitPointSprites();
     this->InitTextures();
   }
@@ -542,7 +537,7 @@ int VTKViewer_PolyDataMapper::Draw( vtkRenderer* ren, vtkActor* act )
         delete aColorFunctor;
       }
 
-      if( this->ExtensionsInitialized ) {
+      if( this->ExtensionsInitialized == ES_Ok ) {
         GLuint aBufferObjectID = 0;
         vglGenBuffersARB( 1, &aBufferObjectID );
         vglBindBufferARB( GL_ARRAY_BUFFER_ARB, aBufferObjectID );

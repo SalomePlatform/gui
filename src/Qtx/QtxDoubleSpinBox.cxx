@@ -28,6 +28,8 @@
 
 #include <limits>
 
+const double PSEUDO_ZERO = 1.e-20;
+
 /*!
   \class QtxDoubleSpinBox
   \brief Enhanced version of the Qt's double spin box.
@@ -263,6 +265,11 @@ void QtxDoubleSpinBox::stepBy( int steps )
   myCleared = false;
 
   QDoubleSpinBox::stepBy( steps );
+  double tmpval = value();
+  if ( qAbs( tmpval ) < PSEUDO_ZERO ) tmpval = 0.;
+  if ( tmpval < minimum() ) tmpval = minimum();
+  else if ( tmpval > maximum() ) tmpval = maximum();
+  setValue( tmpval );
 }
 
 /*!

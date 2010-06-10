@@ -56,6 +56,9 @@ class vtkImageData;
 class VTKVIEWER_EXPORT VTKViewer_PolyDataMapper : public MAPPER_SUPERCLASS
 {
 public:
+  enum ExtensionsState { ES_None = 0, ES_Error, ES_Ok };
+
+public:
   static VTKViewer_PolyDataMapper* New();
   vtkTypeRevisionMacro( VTKViewer_PolyDataMapper, MAPPER_SUPERCLASS );
 
@@ -88,7 +91,7 @@ protected:
   ~VTKViewer_PolyDataMapper();
 
   //! Initializing OpenGL extensions.
-  bool              InitExtensions();
+  int               InitExtensions();
 
   //! Activate Point Sprites.
   void              InitPointSprites();

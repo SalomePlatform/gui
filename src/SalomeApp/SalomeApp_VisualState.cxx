@@ -108,6 +108,10 @@ int SalomeApp_VisualState::storeState()
   if ( !study )
     return -1;
 
+  // unlock study if it is locked
+  bool aLocked = study->studyDS()->GetProperties()->IsLocked();
+  if (aLocked) study->studyDS()->GetProperties()->SetLocked(false);
+
   int savePoint = 1;
   std::vector<int> savePoints = study->getSavePoints();
   //Calculate a new savePoint number = the last save point number + 1
@@ -181,6 +185,8 @@ int SalomeApp_VisualState::storeState()
 
   // set default name of new savePoint
   study->setNameOfSavePoint( savePoint, QObject::tr( "SAVE_POINT_DEF_NAME" ) + QString::number( savePoint ) );
+
+  if (aLocked) study->studyDS()->GetProperties()->SetLocked(true);
 
   return savePoint;
 }

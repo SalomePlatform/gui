@@ -122,6 +122,18 @@ structure of the study and can be visualized in a XY plot.</li>
 </ul>
 </ul>
 
+<br><h2>Stream Lines Preferences</h2>
+
+\image html pref32.png
+
+<ul>
+<li><b>Stream Lines Preferences</b></li>
+<ul>
+<li><b>Used points</b> - allows to define a default value of percentage
+of points used for building the Stream Lines presentation.</li>
+</ul>
+</ul>
+
 <br><h2>Sweep and Animation Preferences</h2>
 
 \image html ppref3.png

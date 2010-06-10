@@ -48,7 +48,7 @@ public:
   virtual int       id() const;
 
   SUIT_DataObject*  root() const;
-  QString           studyName() const;
+  virtual QString   studyName() const;
   SUIT_Application* application() const;
 
   virtual bool      isSaved()  const;

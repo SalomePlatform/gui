@@ -42,6 +42,7 @@ public:
   virtual ~SalomeApp_Study();
 
   virtual int         id() const;
+  virtual QString     studyName() const;
 
   virtual bool        createDocument( const QString& );
   virtual bool        openDocument( const QString& );

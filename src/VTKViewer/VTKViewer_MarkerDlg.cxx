@@ -20,8 +20,14 @@
 #include "VTKViewer_MarkerDlg.h"
 #include "VTKViewer_MarkerWidget.h"
 
+#include <SUIT_Application.h>
+#include <SUIT_MessageBox.h>
+#include <SUIT_ResourceMgr.h>
+#include <SUIT_Session.h>
+
 #include <QFrame>
 #include <QHBoxLayout>
+#include <QKeyEvent>
 
 /*!
  * Class       : VTKViewer_MarkerDlg
@@ -42,6 +48,8 @@ VTKViewer_MarkerDlg::VTKViewer_MarkerDlg( QWidget* theParent )
   aTopLayout->setSpacing( 0 );
   aTopLayout->setMargin( 0 );
   aTopLayout->addWidget( myMarkerWidget );
+
+  connect( this, SIGNAL( dlgHelp() ), this, SLOT( onHelp() ) );
 }
 
 /*!
@@ -49,6 +57,48 @@ VTKViewer_MarkerDlg::VTKViewer_MarkerDlg( QWidget* theParent )
 */
 VTKViewer_MarkerDlg::~VTKViewer_MarkerDlg()
 {
+}
+
+void VTKViewer_MarkerDlg::setHelpData( const QString& theModuleName,
+                                       const QString& theHelpFileName )
+{
+  myModuleName = theModuleName;
+  myHelpFileName = theHelpFileName;
+}
+
+void VTKViewer_MarkerDlg::keyPressEvent( QKeyEvent* e )
+{
+  QtxDialog::keyPressEvent( e );
+  if ( e->isAccepted() )
+    return;
+
+  if ( e->key() == Qt::Key_F1 ) {
+    e->accept();
+    onHelp();
+  }
+}
+
+void VTKViewer_MarkerDlg::onHelp()
+{
+  if( myModuleName.isNull() || myHelpFileName.isNull() )
+    return;
+
+  SUIT_Application* app = SUIT_Session::session()->activeApplication();
+  if (app) 
+    app->onHelpContextModule(myModuleName, myHelpFileName);
+  else {
+    QString platform;
+#ifdef WIN32
+    platform = "winapplication";
+#else
+    platform = "application";
+#endif
+    SUIT_MessageBox::warning(this, tr("WRN_WARNING"),
+                             tr("EXTERNAL_BROWSER_CANNOT_SHOW_PAGE").
+                             arg(app->resourceMgr()->stringValue("ExternalBrowser", 
+                                                                 platform)).
+                             arg(myHelpFileName));
+  }
 }
 
 void VTKViewer_MarkerDlg::setCustomMarkerMap( VTK::MarkerMap theMarkerMap )

@@ -2097,63 +2097,6 @@ QStringList QtxResourceMgr::sections() const
 }
 
 /*!
-  \brief Get all sections names matching specified regular expression.
-  \param re searched regular expression
-  \return list of sections names
-*/
-QStringList QtxResourceMgr::sections(const QRegExp& re) const
-{
-  return sections().filter( re );
-}
-
-/*!
-  \brief Get all sections names with the prefix specified by passed
-  list of parent sections names. 
-
-  Sub-sections are separated inside the section name by the sections 
-  separator token, for example "splash:color:label".
-
-  \param names parent sub-sections names 
-  \return list of sections names
-*/
-QStringList QtxResourceMgr::sections(const QStringList& names) const
-{
-  QStringList nm = names;
-  nm << ".+";
-  QRegExp re( QString( "^%1$" ).arg( nm.join( sectionsToken() ) ) );
-  return sections( re );
-}
-
-/*!
-  \brief Get list of sub-sections names for the specified parent section name.
-
-  Sub-sections are separated inside the section name by the sections 
-  separator token, for example "splash:color:label".
-
-  \param section parent sub-section name
-  \param full if \c true return full names of child sub-sections, if \c false,
-         return only top-level sub-sections names
-  \return list of sub-sections names
-*/
-QStringList QtxResourceMgr::subSections(const QString& section, const bool full) const
-{
-  QStringList names = sections( QStringList() << section );
-  QMutableListIterator<QString> it( names );
-  while ( it.hasNext() ) {
-    QString name = it.next().mid( section.size() ).trimmed();
-    if ( name.isEmpty() ) {
-      it.remove();
-      continue;
-    }
-    if ( !full ) name = name.split( sectionsToken() ).first();
-    it.setValue( name );
-  }
-  names.removeDuplicates();
-  names.sort();
-  return names;
-}
-
-/*!
   \brief Get all parameters name in specified section.
   \param sec section name
   \return list of settings names
@@ -2220,7 +2163,7 @@ QString QtxResourceMgr::path( const QString& sect, const QString& prefix, const 
   \brief Get application resources section name.
 
   By default, application resources section name is "resources" but
-  it can be changed by setting the "res_section_name" resources manager option.
+  it can be changed by setting the corresponding resources manager option.
   
   \return section corresponding to the resources directories
   \sa option(), setOption()
@@ -2237,7 +2180,7 @@ QString QtxResourceMgr::resSection() const
   \brief Get application language section name.
 
   By default, application language section name is "language" but
-  it can be changed by setting the "lang_section_name" resources manager option.
+  it can be changed by setting the corresponding resources manager option.
   
   \return section corresponding to the application language settings
   \sa option(), setOption()
@@ -2247,23 +2190,6 @@ QString QtxResourceMgr::langSection() const
   QString res = option( "lang_section_name" );
   if ( res.isEmpty() )
     res = QString( "language" );
-  return res;
-}
-
-/*!
-  \brief Get sections separator token.
-
-  By default, sections separator token is colon symbol ":" but
-  it can be changed by setting the "section_token" resources manager option.
-  
-  \return string corresponding to the current section separator token
-  \sa option(), setOption()
-*/
-QString QtxResourceMgr::sectionsToken() const
-{
-  QString res = option( "section_token" );
-  if ( res.isEmpty() )
-    res = QString( ":" );
   return res;
 }
 

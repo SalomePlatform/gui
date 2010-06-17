@@ -143,6 +143,7 @@ public:
 
   QString          resSection() const;
   QString          langSection() const;
+  QString          sectionsToken() const;
 
   QPixmap          loadPixmap( const QString&, const QString& ) const;
   QPixmap          loadPixmap( const QString&, const QString&, const bool ) const;
@@ -161,6 +162,9 @@ public:
   bool             save();
 
   QStringList      sections() const;
+  QStringList      sections(const QRegExp&) const;
+  QStringList      sections(const QStringList&) const;
+  QStringList      subSections(const QString&, const bool = true) const;
   QStringList      parameters( const QString& ) const;
 
   void             refresh();

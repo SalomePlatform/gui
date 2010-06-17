@@ -75,6 +75,7 @@ SVTK_Viewer::SVTK_Viewer()
 {
   myTrihedronSize = 105;
   myTrihedronRelative = true;
+  myIsStaticTrihedronVisible = true;
   myIncrementSpeed = 10;
   myIncrementMode = 0;
   myProjMode = 0;
@@ -130,6 +131,7 @@ SUIT_ViewWindow* SVTK_Viewer::createView( SUIT_Desktop* theDesktop )
 
   aViewWindow->setBackgroundColor( backgroundColor() );
   aViewWindow->SetTrihedronSize( trihedronSize(), trihedronRelative() );
+  aViewWindow->SetStaticTrihedronVisible( isStaticTrihedronVisible() );
   aViewWindow->SetProjectionMode( projectionMode() );
   aViewWindow->SetInteractionStyle( interactionStyle() );
   aViewWindow->SetIncrementalSpeed( incrementalSpeed(), incrementalSpeedMode() );
@@ -179,6 +181,31 @@ void SVTK_Viewer::setTrihedronSize( const vtkFloatingPointType theSize, const bo
   }
 }
 
+/*!
+  \return visibility status of the static trihedron
+*/
+bool SVTK_Viewer::isStaticTrihedronVisible() const
+{
+  return myIsStaticTrihedronVisible;
+}
+
+/*!
+  Sets visibility status of the static trihedron
+  \param theIsVisible - new visibility status
+*/
+void SVTK_Viewer::setStaticTrihedronVisible( const bool theIsVisible )
+{
+  myIsStaticTrihedronVisible = theIsVisible;
+
+  if (SUIT_ViewManager* aViewManager = getViewManager()) {
+    QVector<SUIT_ViewWindow*> aViews = aViewManager->getViews();
+    for ( uint i = 0; i < aViews.count(); i++ )
+    {
+      if ( TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at( i )) )
+        aView->SetStaticTrihedronVisible( theIsVisible );
+    }
+  }
+}
 
 /*!
   \return projection mode

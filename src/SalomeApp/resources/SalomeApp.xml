@@ -144,6 +144,7 @@
     <parameter name="navigation_mode" value="0"/>
     <parameter name="speed_mode" value="0"/>
     <parameter name="speed_value" value="10"/>
+    <parameter name="show_static_trihedron" value="true" />
     <parameter name="spacemouse_func1_btn" value="1"/>
     <parameter name="spacemouse_func2_btn" value="2"/>
     <parameter name="spacemouse_func5_btn" value="5"/>

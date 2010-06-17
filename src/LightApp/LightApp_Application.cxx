@@ -1371,6 +1371,7 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
       vm->setBackgroundColor( resMgr->colorValue( "VTKViewer", "background", vm->backgroundColor() ) );
       vm->setTrihedronSize( resMgr->doubleValue( "VTKViewer", "trihedron_size", vm->trihedronSize() ),
                             resMgr->booleanValue( "VTKViewer", "relative_size", vm->trihedronRelative() ) );
+      vm->setStaticTrihedronVisible( resMgr->booleanValue( "VTKViewer", "show_static_trihedron", vm->isStaticTrihedronVisible() ) );
       vm->setInteractionStyle( resMgr->integerValue( "VTKViewer", "navigation_mode", vm->interactionStyle() ) );
       vm->setIncrementalSpeed( resMgr->integerValue( "VTKViewer", "speed_value", vm->incrementalSpeed() ),
                                resMgr->integerValue( "VTKViewer", "speed_mode", vm->incrementalSpeedMode() ) );
@@ -1976,6 +1977,8 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "strings", aSpeedModeList, vtkSpeedMode );
   pref->setItemProperty( "indexes", aModeIndexesList, vtkSpeedMode );
 
+  pref->addPreference( tr( "PREF_SHOW_STATIC_TRIHEDRON" ), vtkGen, LightApp_Preferences::Bool, "VTKViewer", "show_static_trihedron" );
+
   int vtkSM = pref->addPreference( tr( "PREF_FRAME_SPACEMOUSE" ), vtkGroup, LightApp_Preferences::GroupBox );
   pref->setItemProperty( "columns", 2, vtkSM );
   int spacemousePref1 = pref->addPreference( tr( "PREF_SPACEMOUSE_FUNC_1" ), vtkSM,
@@ -2292,6 +2295,31 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 
       SVTK_Viewer* vtkVM = dynamic_cast<SVTK_Viewer*>( vm );
       if( vtkVM ) vtkVM->setInteractionStyle( mode );
+    }
+#endif
+  }
+#endif
+
+#ifndef DISABLE_VTKVIEWER
+  if ( sec == QString( "VTKViewer" ) && param == QString( "show_static_trihedron" ) )
+  {
+    bool isVisible = resMgr->booleanValue( "VTKViewer", "show_static_trihedron", true );
+    QList<SUIT_ViewManager*> lst;
+#ifndef DISABLE_SALOMEOBJECT
+    viewManagers( SVTK_Viewer::Type(), lst );
+    QListIterator<SUIT_ViewManager*> it( lst );
+    while ( it.hasNext() )
+    {
+      SUIT_ViewModel* vm = it.next()->getViewModel();
+      if ( !vm || !vm->inherits( "SVTK_Viewer" ) )
+        continue;
+
+      SVTK_Viewer* vtkVM = dynamic_cast<SVTK_Viewer*>( vm );
+      if( vtkVM )
+      {
+        vtkVM->setStaticTrihedronVisible( isVisible );
+        vtkVM->Repaint();
+      }
     }
 #endif
   }

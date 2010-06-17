@@ -78,6 +78,12 @@ public:
   //! Set size of trihedron of the viewer (see #SVTK_Renderer::SetTrihedronSize)
   void setTrihedronSize( const vtkFloatingPointType, const bool = true );
 
+  //! Get visibility status of the static trihedron
+  bool isStaticTrihedronVisible() const;
+
+  //! Set visibility status of the static trihedron
+  void setStaticTrihedronVisible( const bool );
+
   //! Gets projection mode
   int projectionMode() const;
 
@@ -162,6 +168,7 @@ private:
   QColor myBgColor;
   vtkFloatingPointType myTrihedronSize;
   bool   myTrihedronRelative;
+  bool   myIsStaticTrihedronVisible;
   bool   mySelectionEnabled;
   bool   myMultiSelectionEnabled;
   int    myIncrementSpeed;

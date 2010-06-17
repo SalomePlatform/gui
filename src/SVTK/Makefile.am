@@ -93,7 +93,9 @@ dist_libSVTK_la_SOURCES= \
 	SVTK_Recorder.cxx \
 	SVTK_RecorderDlg.cxx \
 	SVTK_ImageWriter.cxx \
-	SVTK_ImageWriterMgr.cxx
+	SVTK_ImageWriterMgr.cxx \
+	vtkPVAxesActor.cxx \
+	vtkPVAxesWidget.cxx
 
 
 # internal headers

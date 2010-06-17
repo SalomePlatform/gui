@@ -102,6 +102,8 @@ which the speed increases or respectively decreases after pressing [+]
 or [-] keyboard buttons.</li>
 <li><b>Modification Mode</b> - allows choosing between \b Arithmetic
 and \b Geometrical progression used for zooming</li> 
+<li><b>Show static trihedron</b> - allows to show/hide static trihedron
+located in the bottom-left corner of the viewer.
 </ul>
 <li><b>Spacemouse</b> - a mouse-like manipulator device specially designed
 for working with 3D presentations, objects, etc. You can reassign the

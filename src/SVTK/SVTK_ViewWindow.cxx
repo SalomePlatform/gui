@@ -44,6 +44,7 @@
 #include <vtkAxisActor2D.h>
 #include <vtkGL2PSExporter.h>
 #include <vtkInteractorStyle.h>
+#include <vtkProperty.h>
 
 #include "QtxAction.h"
 
@@ -77,6 +78,9 @@
 #include "SVTK_Selector.h"
 #include "SVTK_Recorder.h"
 #include "SVTK_RecorderDlg.h"
+
+#include "vtkPVAxesWidget.h"
+#include "vtkPVAxesActor.h"
 
 #include "SALOME_ListIteratorOfListIO.hxx"
 
@@ -180,6 +184,24 @@ void SVTK_ViewWindow::Initialize(SVTK_ViewModelBase* theModel)
   
   setCentralWidget(myInteractor);
   
+  myAxesWidget = vtkPVAxesWidget::New();
+  myAxesWidget->SetParentRenderer(aRenderer->GetDevice());
+  myAxesWidget->SetViewport(0, 0, 0.25, 0.25);
+  myAxesWidget->SetInteractor(myInteractor->GetDevice());
+  myAxesWidget->SetEnabled(1);
+  myAxesWidget->SetInteractive(0);
+
+  vtkPVAxesActor* anAxesActor = myAxesWidget->GetAxesActor();
+  anAxesActor->GetXAxisTipProperty()->SetColor(   1.0, 0.0, 0.0 );
+  anAxesActor->GetXAxisShaftProperty()->SetColor( 1.0, 0.0, 0.0 );
+  anAxesActor->GetXAxisLabelProperty()->SetColor( 1.0, 0.0, 0.0 );
+  anAxesActor->GetYAxisTipProperty()->SetColor(   0.0, 1.0, 0.0 );
+  anAxesActor->GetYAxisShaftProperty()->SetColor( 0.0, 1.0, 0.0 );
+  anAxesActor->GetYAxisLabelProperty()->SetColor( 0.0, 1.0, 0.0 );
+  anAxesActor->GetZAxisTipProperty()->SetColor(   0.0, 0.0, 1.0 );
+  anAxesActor->GetZAxisShaftProperty()->SetColor( 0.0, 0.0, 1.0 );
+  anAxesActor->GetZAxisLabelProperty()->SetColor( 0.0, 0.0, 1.0 );
+
   myView = new SVTK_View(this);
   Initialize(myView,theModel);
   
@@ -955,6 +977,22 @@ void SVTK_ViewWindow::SetSelectionTolerance(const double& theTolNodes,
                                             const double& theTolObjects)
 {
   myView->SetSelectionTolerance(theTolNodes, theTolItems, theTolObjects);
+}
+
+/*!
+  Get visibility status of the static trihedron
+*/
+bool SVTK_ViewWindow::IsStaticTrihedronVisible() const
+{
+  return (bool)myAxesWidget->GetEnabled();
+}
+
+/*!
+  Set visibility status of the static trihedron
+*/
+void SVTK_ViewWindow::SetStaticTrihedronVisible( const bool theIsVisible )
+{
+  myAxesWidget->SetEnabled( (int)theIsVisible );
 }
 
 /*!

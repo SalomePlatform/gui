@@ -171,6 +171,10 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>Spacemouse</translation>
     </message>
     <message>
+        <source>PREF_SHOW_STATIC_TRIHEDRON</source>
+        <translation>Show static trihedron</translation>
+    </message>
+    <message>
         <source>PREF_SPACEMOUSE_FUNC_1</source>
         <translation>Decrease speed increment</translation>
     </message>

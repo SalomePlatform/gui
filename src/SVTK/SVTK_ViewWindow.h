@@ -63,6 +63,8 @@ class SVTK_KeyFreeInteractorStyle;
 class SVTK_ViewParameterDlg;
 class SVTK_Recorder;
 
+class vtkPVAxesWidget;
+
 class vtkObject;
 class QtxAction;
 
@@ -238,6 +240,12 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
                                      const double& theTolCell = 0.001,
                                      const double& theTolObjects = 0.025);
 
+  //! Get visibility status of the static trihedron
+  bool IsStaticTrihedronVisible() const;
+
+  //! Set visibility status of the static trihedron
+  virtual void SetStaticTrihedronVisible( const bool );
+
   //! Methods to save/restore visual parameters of a view (pan, zoom, etc.)
   virtual QString getVisualParameters();
   
@@ -396,6 +404,8 @@ protected:
 
   int myToolBar;
   int myRecordingToolBar;
+
+  vtkPVAxesWidget* myAxesWidget;
 
 private:
   QImage myDumpImage;

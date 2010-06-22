@@ -40,14 +40,6 @@ better quality of a shape in the viewer.</li>
 </ul>
 
 <ul>
-<li><b>Automatically created objects</b> - allows to automatically create a point of origin
-and three base vectors of the rectangular coordinate system immediately after activation of the module.</li>
-<ul>
-<li><b>Length of vectors</b> - allows to define a length of the base vectors.</li>
-</ul>
-</ul>
-
-<ul>
 <li><b>Input fields precision</b></li>
 <ul>
 <li><b>Length precision</b> - allows to ajust input precision of coordinates and dimensions.</li>
@@ -68,6 +60,17 @@ and three base vectors of the rectangular coordinate system immediately after ac
 points (cross, asterisk, etc.).</li>
 <li><b>Size</b> - allows to define the size of the marker from 1
 (smallest) to 7 (largest).</li>
+</ul>
+</ul>
+
+<ul>
+<li><b>Origin and base vectors</b></li>
+<ul>
+<li><b>Length of base vectors</b> - allows to define a length
+of base vectors.</li>
+<li><b>Auto create</b> - allows to automatically create a point
+of origin and three base vectors of the rectangular coordinate
+system immediately after activation of the module.</li>
 </ul>
 </ul>
 

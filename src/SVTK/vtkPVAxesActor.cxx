@@ -257,8 +257,8 @@ int vtkPVAxesActor::RenderOpaqueGeometry(vtkViewport *vp)
 }
 
 //-----------------------------------------------------------------------------
+#if (VTK_MINOR_VERSION>=2)
 // porting to VTK 5.0.x
-/*
 int vtkPVAxesActor::RenderTranslucentPolygonalGeometry(vtkViewport *vp)
 {
   int renderedSomething=0; 
@@ -279,11 +279,9 @@ int vtkPVAxesActor::RenderTranslucentPolygonalGeometry(vtkViewport *vp)
   
   return renderedSomething;
 }
-*/
 
 //-----------------------------------------------------------------------------
 // porting to VTK 5.0.x
-/*
 int vtkPVAxesActor::HasTranslucentPolygonalGeometry()
 {
   int result = 0; 
@@ -304,8 +302,8 @@ int vtkPVAxesActor::HasTranslucentPolygonalGeometry()
   
   return result;
 }
-*/
 
+#else
 //-----------------------------------------------------------------------------
 // porting to VTK 5.0.x
 int vtkPVAxesActor::RenderTranslucentGeometry(vtkViewport *vp)
@@ -328,6 +326,7 @@ int vtkPVAxesActor::RenderTranslucentGeometry(vtkViewport *vp)
   
   return renderedSomething;
 }
+#endif
 
 //-----------------------------------------------------------------------------
 void vtkPVAxesActor::ReleaseGraphicsResources(vtkWindow *win)

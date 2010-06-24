@@ -73,9 +73,12 @@ public:
   // Description:
   // Support the standard render methods.
   virtual int RenderOpaqueGeometry(vtkViewport *viewport);
-  //virtual int RenderTranslucentPolygonalGeometry(vtkViewport *viewport); // porting to VTK 5.0.x
-  //virtual int HasTranslucentPolygonalGeometry();                         // porting to VTK 5.0.x
+#if (VTK_MINOR_VERSION>=2)
+  virtual int RenderTranslucentPolygonalGeometry(vtkViewport *viewport); // porting to VTK 5.0.x
+  virtual int HasTranslucentPolygonalGeometry();                         // porting to VTK 5.0.x
+#else
   virtual int RenderTranslucentGeometry(vtkViewport *viewport);            // porting to VTK 5.0.x
+#endif
 
   // Description:
   // Shallow copy of an axes actor. Overloads the virtual vtkProp method.

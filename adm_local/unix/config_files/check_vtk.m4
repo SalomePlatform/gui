@@ -165,6 +165,14 @@ dnl Check VTK from ParaView.
 if test "x$PVHOME" != "x" ; then
 
   if test "x$PVVERSION" = "x" ; then
+    for suffix in 3.7 3.8 ; do
+      if test -f $PVHOME/include/paraview-$suffix/vtkPVConfig.h ; then
+       	PVVERSION=$suffix
+        break;
+      fi
+    done
+  fi	
+  if test "x$PVVERSION" = "x" ; then
     PVVERSION=`basename $PVHOME | sed -e "s,[[^-]]*,,"`
   else
     if test "${PVVERSION:0:1}" != "-" ; then

@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -27,6 +27,7 @@
 #include <QFrame>
 
 class QLineEdit;
+class QValidator;
 
 class QTX_EXPORT QtxPathEdit : public QFrame
 {
@@ -37,29 +38,31 @@ public:
   QtxPathEdit( QWidget* = 0 );
   virtual ~QtxPathEdit();
 
-  QString       path() const;
-  void          setPath( const QString& );
+  QString           path() const;
+  void              setPath( const QString& );
 
-  Qtx::PathType pathType() const;
-  void          setPathType( const Qtx::PathType );
+  Qtx::PathType     pathType() const;
+  void              setPathType( const Qtx::PathType );
 
-  QString       pathFilter() const;
-  void          setPathFilter( const QString& );
+  QString           pathFilter() const;
+  void              setPathFilter( const QString& );
+
+  QLineEdit*        lineEdit() const;
+
+  const QValidator* validator() const;
+  void              setValidator( QValidator* );
 
 private slots:
-  void          onBrowse( bool = false );
-
-protected:
-  QLineEdit*    lineEdit() const;
+  void              onBrowse( bool = false );
 
 private:
-  void          initialize();
-  void          updateState();
+  void              initialize();
+  void              updateState();
 
 private:
-  QLineEdit*    myPath;
-  Qtx::PathType myType;
-  QString       myFilter;
+  QLineEdit*        myPath;
+  Qtx::PathType     myType;
+  QString           myFilter;
 };
 
 #endif

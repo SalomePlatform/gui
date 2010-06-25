@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -59,14 +59,14 @@ static const char* browse_icon[] = {
   \brief The QtxPathEdit class represents a widget for file or directory
   path preference items editing.
 
-  The path preference item is represented as the line edit box for the 
+  The path preference item is represented as the line edit box for the
   direct path editing and small button clicking on which invokes browse
-  dialog box. The widget can be used in different modes: "Open File", 
+  dialog box. The widget can be used in different modes: "Open File",
   "Save File", "Select Directory". The mode defines the type of the
   standard browse dialog box which is invoked on the button clicking.
 
   Initial path value can be set with setPath() method. Chosen path
-  can be retrieved with the path() method. The widget mode can be set 
+  can be retrieved with the path() method. The widget mode can be set
   with setPathType() and retrieved with pathType() method.
 
   In addition, file/direcrory filters (wildcards) can be set with the
@@ -144,7 +144,7 @@ QString QtxPathEdit::path() const
 
 /*!
   \brief Set path.
-  \param txt file or directory path 
+  \param txt file or directory path
   \sa path()
 */
 void QtxPathEdit::setPath( const QString& txt )
@@ -177,7 +177,27 @@ void QtxPathEdit::setPathFilter( const QString& f )
 }
 
 /*!
-  \brief Called when user clicks "Browse" button. 
+  \brief Get currently used validator.
+  \return validator
+  \sa setValidator()
+*/
+const QValidator* QtxPathEdit::validator() const
+{
+  return lineEdit()->validator();
+}
+
+/*!
+  \brief Set validator.
+  \param v new validator
+  \sa validator()
+*/
+void QtxPathEdit::setValidator( QValidator* v )
+{
+  lineEdit()->setValidator( v );
+}
+
+/*!
+  \brief Called when user clicks "Browse" button.
 
   Invokes standard browsng dialog box depending on the used widget mode.
 
@@ -202,7 +222,7 @@ void QtxPathEdit::onBrowse( bool /*on*/ )
   }
 
   if ( !path.isEmpty() )
-    myPath->setText( QDir::convertSeparators( path ) ); 
+    myPath->setText( QDir::convertSeparators( path ) );
 
   myPath->setFocus();
 }

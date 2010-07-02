@@ -832,6 +832,14 @@ void SUIT_DataObject::dump( const int indent ) const
 }
 
 /*!
+  \brief Notify the data model about data object changes.
+*/
+void SUIT_DataObject::dataChanged()
+{
+  signal()->emitChanged( this );
+}
+
+/*!
   \class SUIT_DataObject::Signal
   \brief Watcher class, responsible for the emitting signals on behalf of
   the data objects.
@@ -888,6 +896,16 @@ void SUIT_DataObject::Signal::emitCreated( SUIT_DataObject* object )
 {
   if ( object )
     emit created( object );
+}
+
+/*!
+  \brief Emit signal about data object changes.
+  \param object data object being changed
+*/
+void SUIT_DataObject::Signal::emitChanged( SUIT_DataObject* object )
+{
+  if ( object )
+    emit changed( object );
 }
 
 /*!

@@ -116,7 +116,7 @@ void OB_Browser::ToolTip::maybeTip( const QPoint& pos )
 
   The class OB_Browser implements public API of an object browser widget
   that can be used to display arbitrary application data in a hierarchical form.
-  It is based on Qt4 model/view architecture. 
+  It is based on Qt4 model/view architecture.
 
   Object browser can be used with conjuction of any custom item model inherited
   from QAbstractItemModel class (see Qt 4 reference manual).
@@ -143,7 +143,7 @@ OB_Browser::OB_Browser( QWidget* parent, QAbstractItemModel* model )
   mySearchTool->setFrameStyle( QFrame::NoFrame | QFrame::Plain );
   mySearchTool->setActivators( QtxSearchTool::StandardKey | QtxSearchTool::SlashKey );
   mySearchTool->setSearcher( new QtxTreeViewSearcher( myView ) );
-  
+
   QVBoxLayout* main = new QVBoxLayout( this );
   main->addWidget( myView );
   main->addWidget( mySearchTool );
@@ -322,7 +322,7 @@ void OB_Browser::setAutoOpenLevel( const int levels )
   \brief Expand all branches to the specified number of levels.
 
   If \a levels value is negative, then autoOpenLevel() value is used instead.
-  
+
   \param levels number of levels to be expanded
   \sa autoOpenLevel()
 */
@@ -386,7 +386,7 @@ const QItemSelection OB_Browser::selection() const
   \brief Select/deselect specified model index.
   \param index model index to be selected/deselected
   \param on if \c true, the index will be selected, otherwise - deselected
-  \param keepSelection if \c true (default) the previous selection is kept, 
+  \param keepSelection if \c true (default) the previous selection is kept,
   otherwise it is first cleared
 */
 void OB_Browser::select( const QModelIndex& index, const bool on, const bool keepSelection )
@@ -405,7 +405,7 @@ void OB_Browser::select( const QModelIndex& index, const bool on, const bool kee
   \brief Select/deselect specified model indices.
   \param indexes model indices to be selected/deselected
   \param on if \c true, the indices will be selected, otherwise - deselected
-  \param keepSelection if \c true (default) the previous selection is kept, 
+  \param keepSelection if \c true (default) the previous selection is kept,
   otherwise it is first cleared
 */
 void OB_Browser::select( const QModelIndexList& indexes, const bool on, const bool keepSelection )
@@ -450,6 +450,15 @@ bool OB_Browser::isOpen( const QModelIndex& index ) const
 void OB_Browser::setOpen( const QModelIndex& index, const bool open )
 {
   myView->setExpanded( index, open );  // hasChildren() ???
+}
+
+/*!
+  \brief Expand the all parent items of item specifed by the \index.
+  \param index model index to be opened
+*/
+void OB_Browser::expandTo( const QModelIndex& index )
+{
+  myView->expandTo( index );
 }
 
 /*!
@@ -821,7 +830,7 @@ QtxTreeView* OB_Browser::treeView() const
 void OB_Browser::contextMenuEvent( QContextMenuEvent* e )
 {
   QMenu* popup = new QMenu();
-  
+
   createPopupMenu( popup );
 
   Qtx::simplifySeparators( popup );
@@ -836,8 +845,8 @@ void OB_Browser::contextMenuEvent( QContextMenuEvent* e )
   \return latest updating time
 */
 unsigned long OB_Browser::getModifiedTime() const
-{ 
-  return myModifiedTime; 
+{
+  return myModifiedTime;
 }
 
 /*!
@@ -850,7 +859,7 @@ void OB_Browser::setModified()
 
 /*!
   \brief Called when "Expand all" popup menu command is activated.
-  
+
   Expands all selected items recursively.
 */
 void OB_Browser::onExpandAll()
@@ -865,7 +874,7 @@ void OB_Browser::onExpandAll()
 
 /*!
   \brief Called when "Collapse all" popup menu command is activated.
-  
+
   Collapse all selected items recursively.
 */
 void OB_Browser::onCollapseAll()
@@ -982,13 +991,13 @@ void OB_Browser::createPopupMenu( QMenu* menu )
   QModelIndexList indexes = selectedIndexes();
 
   bool closed = false, opened = false;
-  
-  for ( QModelIndexList::Iterator it = indexes.begin(); 
+
+  for ( QModelIndexList::Iterator it = indexes.begin();
 	it != indexes.end() && !closed; ++it ) {
     closed = hasCollased( *it );
   }
 
-  for ( QModelIndexList::Iterator it = indexes.begin(); 
+  for ( QModelIndexList::Iterator it = indexes.begin();
 	it != indexes.end() && !opened; ++it ) {
     opened = hasExpanded( *it );
   }

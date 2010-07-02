@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -49,7 +49,7 @@ private:
   class TreeSync;
   typedef SUIT_DataObject*          ObjPtr;
   typedef SUIT_TreeModel::TreeItem* ItemPtr;
- 
+
 public:
   //! Data role
   typedef enum {
@@ -109,7 +109,7 @@ public slots:
   virtual void           updateTree( SUIT_DataObject* = 0 );
 
 signals:
-  void modelUpdated();
+  void                   modelUpdated();
 
 private:
   void                   initialize();
@@ -120,18 +120,19 @@ private:
   SUIT_DataObject*       object( const TreeItem* ) const;
 
   TreeItem*              createItem( SUIT_DataObject*,
-				     TreeItem* = 0, 
+				     TreeItem* = 0,
 				     TreeItem* = 0 );
   void                   updateItem( TreeItem* );
   void                   removeItem( TreeItem* );
 
 private slots:
+  void                   onChanged( SUIT_DataObject* );
   void                   onInserted( SUIT_DataObject*, SUIT_DataObject* );
   void                   onRemoved( SUIT_DataObject*, SUIT_DataObject* );
 
 private:
   typedef QMap<SUIT_DataObject*, TreeItem*> ItemMap;
-  
+
   SUIT_DataObject*       myRoot;
   TreeItem*              myRootItem;
   ItemMap                myItems;
@@ -162,7 +163,7 @@ public:
 
   bool                   autoUpdate() const;
   void                   setAutoUpdate( const bool, const bool = true );
- 
+
   QAbstractItemDelegate* delegate() const;
 
 public slots:
@@ -182,7 +183,7 @@ class SUIT_EXPORT SUIT_ItemDelegate : public QItemDelegate
 
 public:
   SUIT_ItemDelegate( QObject* = 0 );
-  
+
   virtual void paint( QPainter*, const QStyleOptionViewItem&,
 		      const QModelIndex& ) const;
 };

@@ -1,24 +1,24 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File   : SUIT_DataBrowser.h
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
-// 
+//
 
 #ifndef SUIT_DATABROWSER_H
 #define SUIT_DATABROWSER_H
@@ -26,7 +26,10 @@
 #include "SUIT.h"
 #include "SUIT_PopupClient.h"
 #include "SUIT_DataObject.h"
+
 #include <OB_Browser.h>
+
+#include <QAbstractItemView>
 
 class QShortcut;
 
@@ -57,6 +60,9 @@ public:
 
   void             setSelected( const SUIT_DataObject*, const bool = false );
   void             setSelected( const DataObjectList&, const bool = false );
+
+  void             expandTo( const SUIT_DataObject* );
+  void             scrollTo( const SUIT_DataObject*, QAbstractItemView::ScrollHint = QAbstractItemView::EnsureVisible );
 
   virtual void     contextMenuPopup( QMenu* );
 

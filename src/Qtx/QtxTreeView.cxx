@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -192,7 +192,7 @@ bool QtxTreeView::Header::multiSortEnabled() const
   \param orders orders[i] contains sort order for section logicalIndices[i]
   \internal
 */
-void QtxTreeView::Header::setSortIndicators( const QVector<int>& logicalIndices, 
+void QtxTreeView::Header::setSortIndicators( const QVector<int>& logicalIndices,
                                              const QVector<Qt::SortOrder>& orders )
 {
   mySortSections = logicalIndices;
@@ -205,12 +205,12 @@ void QtxTreeView::Header::setSortIndicators( const QVector<int>& logicalIndices,
   \param orders Out parameter, orders[i] contains the current sort order for section logicalIndices[i]
   \internal
 */
-void QtxTreeView::Header::sortIndicators( QVector<int>& logicalIndices, 
+void QtxTreeView::Header::sortIndicators( QVector<int>& logicalIndices,
                                           QVector<Qt::SortOrder>& orders ) const
 {
   logicalIndices.clear();
   orders.clear();
-  
+
   if ( isSortIndicatorShown() ){
     logicalIndices.push_back( sortIndicatorSection() );
     orders.push_back        ( sortIndicatorOrder  () );
@@ -334,7 +334,7 @@ void QtxTreeView::Header::paintSection( QPainter* painter, const QRect& rect, in
     style()->drawItemText( painter,
                            //rect,
                            QRect( rect.left(), rect.top(), rect.width() - 2, rect.height() ),
-                           Qt::AlignRight, 
+                           Qt::AlignRight,
                            opt.palette,
                            ( opt.state & QStyle::State_Enabled ),
                            QString( "%1" ).arg( ++sortIndex ),
@@ -414,7 +414,7 @@ void QtxTreeView::Header::contextMenuEvent( QContextMenuEvent* e )
       else if ( qVariantCanConvert<QPixmap>( iconData ) )
 	icon = qVariantValue<QPixmap>( iconData );
     }
-    if ( ( !lab.isEmpty() || !icon.isNull() ) && 
+    if ( ( !lab.isEmpty() || !icon.isNull() ) &&
 	 appropriate.isValid() ? appropriate.toBool() : true ) {
       QAction* a = menu.addAction( icon, lab );
       a->setCheckable( true );
@@ -453,7 +453,7 @@ void QtxTreeView::Header::contextMenuEvent( QContextMenuEvent* e )
   \brief Tree view class with possibility to display columns popup menu.
 
   The QtxTreeView class represents a customized tree view class. In addition to the
-  base functionality inherited from the QTreeView class, clicking at the tree view 
+  base functionality inherited from the QTreeView class, clicking at the tree view
   header with the right mouse button displays the popup menu allowing the user
   to show/hide specified columns.
 
@@ -462,7 +462,7 @@ void QtxTreeView::Header::contextMenuEvent( QContextMenuEvent* e )
   the data model (see QAbstractItemModel class). The custom model should implement
   headerData() method and return \c true for the Qtx::AppropriateRole role for
   those columns which should be available in the popup menu and \c false for the columns
-  which should not be added to it. 
+  which should not be added to it.
 */
 
 /*!
@@ -495,7 +495,7 @@ QtxTreeView::~QtxTreeView()
 
 /*!
   \brief Expand all branches for specified number of levels.
-  
+
   If \c levels < 0, all branches are expanded (the same results can
   be achieved with expandAll() method).
 
@@ -509,7 +509,7 @@ void QtxTreeView::expandLevels( const int levels )
 
 /*!
   \brief Collapse all branches for specified number of levels.
-  
+
   If \c levels < 0, all branches are collapsed (the same results can
   be achieved with collapseAll() method).
 
@@ -541,6 +541,23 @@ void QtxTreeView::expandAll( const QModelIndex& index )
 void QtxTreeView::collapseAll( const QModelIndex& index )
 {
   setOpened( index, -1, false );
+}
+
+/*!
+  \brief Expand the all parent items of item specifed by the \index.
+  \param index model index to be opened
+  \sa expandAll()
+*/
+void QtxTreeView::expandTo( const QModelIndex& index )
+{
+  if ( !index.isValid() )
+    return;
+
+  QModelIndex idx = index.parent();
+  while ( idx.isValid() ) {
+    expand( idx );
+    idx = idx.parent();
+  }
 }
 
 /*
@@ -605,7 +622,7 @@ void QtxTreeView::resizeColumnToEncloseContents( int column )
 void QtxTreeView::setSortingEnabled( const bool enable )
 {
   Header* h = dynamic_cast<Header*>( header() );
-  if ( h ) 
+  if ( h )
     h->setSortingEnabled( enable );
 }
 
@@ -622,7 +639,7 @@ bool QtxTreeView::sortingEnabled() const
 
 /*!
   \brief Enables multi-column sorting.
-  As soon as multi-column sorting is enabled, the user can click 
+  As soon as multi-column sorting is enabled, the user can click
   several header sections in required order while holding <Ctrl> key so as to sort the contents
   of the tree view on a basis of these columns' values. The column clicked first
   has maximum sort priority, the column clicked last has minimum sort priority.
@@ -673,13 +690,13 @@ void QtxTreeView::onHeaderClicked()
 
 /*!
   \brief Called when the selection is changed.
-  
+
   Emits selectionChanged() signal.
-  
+
   \param selected new selection
   \param deselected previous selection
 */
-void QtxTreeView::selectionChanged( const QItemSelection& selected, 
+void QtxTreeView::selectionChanged( const QItemSelection& selected,
 				    const QItemSelection& deselected )
 {
   QTreeView::selectionChanged( selected, deselected );

@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -48,7 +48,7 @@ public:
   QList<TreeItem*>      children() const;
   TreeItem*             nextSibling() const;
   TreeItem*             prevSibling() const;
-  
+
 private:
   TreeItem*             myParent;
   QList<TreeItem*>      myChildren;
@@ -62,7 +62,7 @@ private:
   \param parent parent item
   \param after tree item after each this one should be inserted
 */
-SUIT_TreeModel::TreeItem::TreeItem( SUIT_DataObject*          obj, 
+SUIT_TreeModel::TreeItem::TreeItem( SUIT_DataObject*          obj,
 				    SUIT_TreeModel::TreeItem* parent,
 				    SUIT_TreeModel::TreeItem* after )
 : myParent( parent ),
@@ -95,7 +95,7 @@ SUIT_TreeModel::TreeItem::~TreeItem()
   \param child child item being inserted
   \param after tree item after each \a child should be inserted
 */
-void SUIT_TreeModel::TreeItem::insertChild( SUIT_TreeModel::TreeItem* child, 
+void SUIT_TreeModel::TreeItem::insertChild( SUIT_TreeModel::TreeItem* child,
 					    SUIT_TreeModel::TreeItem* after )
 {
   if ( !child )
@@ -200,7 +200,7 @@ SUIT_TreeModel::TreeItem* SUIT_TreeModel::TreeItem::prevSibling() const
 
 /*!
   \class SUIT_TreeModel::TreeSync
-  \brief Functor class for synchronizing data tree and tree model 
+  \brief Functor class for synchronizing data tree and tree model
          when the data tree is changed outside the model.
   \internal
 */
@@ -237,7 +237,7 @@ SUIT_TreeModel::TreeSync::TreeSync( SUIT_TreeModel* model )
   \brief Check if item corresponds to the specified data object.
   \internal
   \param obj data object
-  \param item tree item 
+  \param item tree item
   \return \c true if item corresponds to the data object
 */
 bool SUIT_TreeModel::TreeSync::isEqual( const ObjPtr& obj, const ItemPtr& item ) const
@@ -276,7 +276,7 @@ SUIT_TreeModel::ItemPtr SUIT_TreeModel::TreeSync::nullTrg() const
   \return created item
 */
 SUIT_TreeModel::ItemPtr SUIT_TreeModel::TreeSync::createItem( const ObjPtr&  obj,
-							      const ItemPtr& parent, 
+							      const ItemPtr& parent,
 							      const ItemPtr& after ) const
 {
   ItemPtr item = myModel ? myModel->createItem( obj, parent, after ) : 0;
@@ -297,7 +297,7 @@ void SUIT_TreeModel::TreeSync::updateItem( const ObjPtr& obj, const ItemPtr& ite
 {
   if( obj )
     obj->update();
-  if ( item && needUpdate( item ) ) 
+  if ( item && needUpdate( item ) )
     myModel->updateItem( item );
 }
 
@@ -335,7 +335,7 @@ QList<SUIT_TreeModel::ObjPtr> SUIT_TreeModel::TreeSync::children( const ObjPtr& 
 QList<SUIT_TreeModel::ItemPtr> SUIT_TreeModel::TreeSync::children( const ItemPtr& item ) const
 {
   QList<ItemPtr> ch;
-  if ( item ) 
+  if ( item )
     ch = item->children();
   return ch;
 }
@@ -373,12 +373,12 @@ bool SUIT_TreeModel::TreeSync::needUpdate( const ItemPtr& item ) const
       // 1. check text
 /*      update = ( item->text( 0 ) != obj->name() ) || myBrowser->needToUpdateTexts( item );
 
-      if ( !update ) { 
+      if ( !update ) {
 	// 2. check pixmap (compare serialNumber()-s)
 	QPixmap objPix = obj->icon();
 	const QPixmap* itemPix = item->pixmap( 0 );
-	update = (  objPix.isNull() && (  itemPix && !itemPix->isNull() ) ) || 
-	         ( !objPix.isNull() && ( !itemPix ||  itemPix->isNull() ) ); 
+	update = (  objPix.isNull() && (  itemPix && !itemPix->isNull() ) ) ||
+	         ( !objPix.isNull() && ( !itemPix ||  itemPix->isNull() ) );
 	if ( !update && !objPix.isNull() && itemPix && !itemPix->isNull() ) {
 	  int aIconW = objPix.width();
 	  if( aIconW > 20 ) {
@@ -400,8 +400,8 @@ bool SUIT_TreeModel::TreeSync::needUpdate( const ItemPtr& item ) const
   \brief Implementation of the model/view API based on the tree of SUIT_DataObject class
   instances.
 
-  The SUIT_TreeModel class does not support insertion/removal of rows. It is synchronized 
-  automatically with the tree of data objects used by SUIT-based applications to 
+  The SUIT_TreeModel class does not support insertion/removal of rows. It is synchronized
+  automatically with the tree of data objects used by SUIT-based applications to
   expose their data in a hierarchical form to the user.
 */
 
@@ -506,86 +506,86 @@ QVariant SUIT_TreeModel::data( const QModelIndex& index, int role ) const
     switch ( role ) {
     case DisplayRole:
       // data object text for the specified column
-      val = obj->text( index.column() ); 
+      val = obj->text( index.column() );
       break;
     case DecorationRole:
       // data object icon for the specified column
-      val = obj->icon( index.column() ); 
+      val = obj->icon( index.column() );
       break;
     case ToolTipRole:
       // data object tooltip for the specified column
-      val = obj->toolTip( index.column() ); 
+      val = obj->toolTip( index.column() );
       break;
     case StatusTipRole:
       // data object status tip for the specified column
-      val = obj->statusTip( index.column() ); 
+      val = obj->statusTip( index.column() );
       break;
     case WhatsThisRole:
       // data object what's this info for the specified column
-      val = obj->whatsThis( index.column() ); 
+      val = obj->whatsThis( index.column() );
       break;
     case FontRole:
       // data object font for the specified column
-      val = obj->font( index.column() ); 
+      val = obj->font( index.column() );
       break;
     case TextAlignmentRole:
       // data object text alignment for the specified column
-      val = obj->alignment( index.column() ); 
+      val = obj->alignment( index.column() );
       break;
     case BackgroundRole:
       // data background color for the specified column
       c = obj->color( SUIT_DataObject::Background, index.column() );
       // NOTE by san: Zero alpha is treated as fully transparent, therefore no background
       // is drawn at all (that is, the base color will appear instead of the custom backround).
-      // However, maximum alpha (each QColor has alpha == 1.0f by default) might be also unacceptable 
-      // since it disables blending effects that might be used by a custom style. 
+      // However, maximum alpha (each QColor has alpha == 1.0f by default) might be also unacceptable
+      // since it disables blending effects that might be used by a custom style.
       // Thus applications should choose color's alpha themselves to get required visual result.
       if ( !c.isValid() ){ // default value, should be fully transparent
 	c = QApplication::palette().color( QPalette::Base );
         c.setAlpha( 0 );
       }
-      val = c; 
+      val = c;
       break;
     case ForegroundRole:
       // data foreground (text) color for the specified column
       c = obj->color( SUIT_DataObject::Foreground, index.column() );
       if ( !c.isValid() ) // default value
 	c = QApplication::palette().color( QPalette::Foreground );
-      val = c; 
+      val = c;
       break;
     case BaseColorRole:
       // editor background color for the specified column
       c = obj->color( SUIT_DataObject::Base, index.column() );
       if ( !c.isValid() ) // default value
 	c = QApplication::palette().color( QPalette::Base );
-      val = c; 
+      val = c;
       break;
     case TextColorRole:
       // editor foreground (text) color for the specified column
       c = obj->color( SUIT_DataObject::Text, index.column() );
       if ( !c.isValid() ) // default value
 	c = QApplication::palette().color( QPalette::Text );
-      val = c; 
+      val = c;
       break;
     case HighlightRole:
       // adta object highlighted background color for the specified column
       c = obj->color( SUIT_DataObject::Highlight, index.column() );
       if ( !c.isValid() ) // default value
 	c = QApplication::palette().color( QPalette::Highlight );
-      val = c; 
+      val = c;
       break;
     case HighlightedTextRole:
       // data object highlighted foreground (text) color for the specified column
       c = obj->color( SUIT_DataObject::HighlightedText, index.column() );
       if ( !c.isValid() ) // default value
 	c = QApplication::palette().color( QPalette::HighlightedText );
-      val = c; 
+      val = c;
       break;
     case CheckStateRole:
       // data object checked state for the specified column
       // NOTE! three-state check is not supported currently
       if ( obj->isCheckable( index.column() ) )
-	val = obj->isOn( index.column() ) ? Qt::Checked : Qt::Unchecked; 
+	val = obj->isOn( index.column() ) ? Qt::Checked : Qt::Unchecked;
       break;
     case SizeHintRole:
       // data size hint
@@ -606,7 +606,7 @@ QVariant SUIT_TreeModel::data( const QModelIndex& index, int role ) const
   \return \c true if data is set
   \sa data()
 */
-bool SUIT_TreeModel::setData( const QModelIndex& index, 
+bool SUIT_TreeModel::setData( const QModelIndex& index,
 			      const QVariant& value, int role )
 {
   if ( index.isValid() && value.isValid() ) {
@@ -699,7 +699,7 @@ QVariant SUIT_TreeModel::headerData( int column, Qt::Orientation orientation,
   \param parent parent model index
   \return model index
 */
-QModelIndex SUIT_TreeModel::index( int row, int column, 
+QModelIndex SUIT_TreeModel::index( int row, int column,
 				   const QModelIndex& parent ) const
 {
   if ( hasIndex( row, column, parent ) ) {
@@ -924,8 +924,8 @@ void SUIT_TreeModel::updateTree( SUIT_DataObject* obj )
   else if ( obj->root() != root() )
     return;
 
-  synchronize<ObjPtr,ItemPtr,SUIT_TreeModel::TreeSync>( obj, 
-							treeItem( obj ), 
+  synchronize<ObjPtr,ItemPtr,SUIT_TreeModel::TreeSync>( obj,
+							treeItem( obj ),
 							SUIT_TreeModel::TreeSync( this ) );
   emit modelUpdated();
 }
@@ -999,7 +999,7 @@ SUIT_DataObject* SUIT_TreeModel::object( const SUIT_TreeModel::TreeItem* item ) 
 {
   if ( item == rootItem() )
     return root();
- 
+
   SUIT_DataObject* obj = item ? item->dataObject() : 0;
   return myItems.contains( obj ) ? obj : 0;
 }
@@ -1012,7 +1012,7 @@ SUIT_DataObject* SUIT_TreeModel::object( const SUIT_TreeModel::TreeItem* item ) 
   \return created tree item or 0 if item could not be created
 */
 SUIT_TreeModel::TreeItem* SUIT_TreeModel::createItem( SUIT_DataObject* obj,
-						      SUIT_TreeModel::TreeItem* parent, 
+						      SUIT_TreeModel::TreeItem* parent,
 						      SUIT_TreeModel::TreeItem* after )
 {
   if ( !obj )
@@ -1041,11 +1041,11 @@ void SUIT_TreeModel::updateItem( SUIT_TreeModel::TreeItem* item )
 {
   if ( !item )
     return;
-  
+
   SUIT_DataObject* obj = object( item );
   if ( !obj )
     return;
-  
+
   // update all columns corresponding to the given data object
   QModelIndex firstIdx = index( obj, 0 );
   QModelIndex lastIdx  = index( obj, obj->columnCount() - 1 );
@@ -1068,13 +1068,13 @@ void SUIT_TreeModel::removeItem( SUIT_TreeModel::TreeItem* item )
     removeItem( item->child( 0 ) );
 
   SUIT_DataObject* obj = object( item );
-  
+
   // Warning! obj can be deleted at this point!
 
   SUIT_DataObject* parentObj = object( item->parent() );
   QModelIndex parentIdx = index( parentObj, 0 );
   int row = item->position();
-  
+
   beginRemoveRows( parentIdx, row, row );
   myItems.remove( obj );
 
@@ -1097,6 +1097,17 @@ void SUIT_TreeModel::onInserted( SUIT_DataObject* /*object*/, SUIT_DataObject* p
 {
   if ( autoUpdate() )
     updateTree( parent );
+}
+
+/*!
+  \brief Called when the data object is changed.
+  \param object data object being changed
+*/
+void SUIT_TreeModel::onChanged( SUIT_DataObject* obj )
+{
+  QModelIndex idx = index( obj );
+  if ( idx.isValid() )
+    emit dataChanged( idx, idx );
 }
 
 /*!
@@ -1317,7 +1328,7 @@ SUIT_TreeModel* SUIT_ProxyModel::treeModel() const
 
   This class can be used to render the SUIT_DataObject-based item
   in the widgets like QTreeView and others.
-  Refer to the Qt 4 documentation, model/view architecture 
+  Refer to the Qt 4 documentation, model/view architecture
   section for more details).
 */
 
@@ -1339,7 +1350,7 @@ SUIT_ItemDelegate::SUIT_ItemDelegate( QObject* parent )
   \param option painting option
   \param index model index being rendered
 */
-void SUIT_ItemDelegate::paint( QPainter* painter, 
+void SUIT_ItemDelegate::paint( QPainter* painter,
 			       const QStyleOptionViewItem& option,
 			       const QModelIndex& index ) const
 {

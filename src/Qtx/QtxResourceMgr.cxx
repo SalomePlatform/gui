@@ -387,11 +387,19 @@ QTranslator* QtxResourceMgr::Resources::loadTranslator( const QString& sect, con
 {
   QTranslator* trans = new QtxTranslator( 0 );
   QString fname = fileName( sect, prefix, name );
+  if ( fname.isEmpty() )
+    return 0;
+
   if ( !trans->load( Qtx::file( fname, false ), Qtx::dir( fname ) ) )
   {
+    qDebug( "Can't to load translation file '%s'", (const char*)fname.toLatin1() );
     delete trans;
     trans = 0;
   }
+  else {
+    qDebug( "Translation file '%s' is loaded successfully", (const char*)fname.toLatin1() );
+  }
+
   return trans;
 }
 
@@ -681,7 +689,7 @@ bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Sectio
   QFile file( fname );
   if ( !file.open( QFile::ReadOnly ) )
   {
-    qDebug( "File cannot be opened" );
+    qDebug( "File '%s' cannot be opened", (const char*)fname.toLatin1() );
     return false;
   }
 
@@ -2406,7 +2414,7 @@ void QtxResourceMgr::loadTranslators( const QString& prefix, const QStringList& 
     lst.prepend( *iter );
 
   QTranslator* trans = 0;
-  
+
   for ( ResList::Iterator it = lst.begin(); it != lst.end(); ++it )
   {
     for ( QStringList::ConstIterator itr = translators.begin(); itr != translators.end(); ++itr )

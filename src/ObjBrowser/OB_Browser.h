@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -67,7 +67,7 @@ public:
   QtxSearchTool*         searchTool() const;
   bool                   isSearchToolEnabled() const;
   void                   setSearchToolEnabled( const bool );
-  
+
   int                    autoOpenLevel() const;
   void                   setAutoOpenLevel( const int );
   void                   openLevels( const int = -1 );
@@ -84,6 +84,8 @@ public:
 
   bool                   isOpen( const QModelIndex& ) const;
   virtual void           setOpen( const QModelIndex& theObject, const bool theOpen = true );
+
+  void                   expandTo( const QModelIndex& );
 
   void                   adjustWidth();
   void                   adjustFirstColumnWidth();
@@ -102,7 +104,7 @@ public:
 
   unsigned long          getModifiedTime() const;
   void                   setModified();
-  
+
   // san - moved to SUIT_TreeModel
   //OB_Updater*       getUpdater() const;
   //virtual void      setUpdater( OB_Updater* theUpdate = 0 );
@@ -120,7 +122,7 @@ private slots:
   //void              onDestroyed( SUIT_DataObject* );
   //void              onDoubleClicked ( QListViewItem* );
   //void              onDropped( QPtrList<QListViewItem>, QListViewItem*, int );
-  
+
 protected:
   //void              adjustWidth( QListViewItem* );
   //virtual void      updateText();

@@ -1,30 +1,31 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 // File   : SUIT_DataBrowser.cxx
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
-// 
+//
 
 #include "SUIT_DataBrowser.h"
 #include <SUIT_TreeModel.h>
 #include <QtxTreeView.h>
 
 #include <QShortcut>
+#include <QModelIndex>
 
 /*!
   \class SUIT_DataBrowser
@@ -85,7 +86,7 @@ SUIT_DataObject* SUIT_DataBrowser::root() const
 void SUIT_DataBrowser::setRoot( SUIT_DataObject* r )
 {
   SUIT_ProxyModel* m = qobject_cast<SUIT_ProxyModel*>( model() );
-  if ( m ) 
+  if ( m )
     m->setRoot( r );
 }
 
@@ -114,7 +115,7 @@ bool SUIT_DataBrowser::autoUpdate() const
 void SUIT_DataBrowser::setAutoUpdate( const bool on, const bool updateImmediately )
 {
   SUIT_ProxyModel* m = qobject_cast<SUIT_ProxyModel*>( model() );
-  if ( m ) 
+  if ( m )
     m->setAutoUpdate( on, updateImmediately );
 }
 
@@ -139,7 +140,7 @@ void SUIT_DataBrowser::updateTree( SUIT_DataObject* obj, const bool autoOpen )
 }
 
 /*!
-  \brief Get current key accelerator used for the 
+  \brief Get current key accelerator used for the
   object browser update operation.
   \return current key accelerator
   \sa setUpdateKey(), requestUpdate()
@@ -150,7 +151,7 @@ int SUIT_DataBrowser::updateKey() const
 }
 
 /*!
-  \brief Assign the key accelerator to be used for the 
+  \brief Assign the key accelerator to be used for the
   object browser update operation.
 
   By default, \c [F5] key is assigned for the update operation.
@@ -189,7 +190,7 @@ void SUIT_DataBrowser::getSelected( DataObjectList& lst ) const
   if ( m ) {
     QModelIndexList sel = selectedIndexes();
     QModelIndex idx;
-  
+
     foreach( idx, sel ) {
       SUIT_DataObject* obj = m->object( idx );
       if ( obj )
@@ -239,6 +240,37 @@ void SUIT_DataBrowser::setSelected( const DataObjectList& lst, const bool append
 }
 
 /*!
+  \brief Expand the all parent items of item specifed by the \obj.
+  \param obj data object to be opened
+*/
+void SUIT_DataBrowser::expandTo( const SUIT_DataObject* obj )
+{
+  SUIT_ProxyModel* m = qobject_cast<SUIT_ProxyModel*>( model() );
+
+  if ( m ) {
+    QModelIndex index = m->index( obj );
+    if ( index.isValid() )
+      OB_Browser::expandTo( index );
+  }
+}
+
+/*!
+  \brief Scroll the contents of the object browser until the given data object \obj is visible.
+  The \hint parameter specifies where the object should be located after the operation.
+  \param obj data object to be visible
+*/
+void SUIT_DataBrowser::scrollTo( const SUIT_DataObject* obj, QAbstractItemView::ScrollHint hint )
+{
+  SUIT_ProxyModel* m = qobject_cast<SUIT_ProxyModel*>( model() );
+
+  if ( m ) {
+    QModelIndex index = m->index( obj );
+    if ( index.isValid() )
+      treeView()->scrollTo( index, hint );
+  }
+}
+
+/*!
   \brief Add custom actions to the popup menu.
   \param menu popup menu
 */
@@ -264,7 +296,7 @@ void SUIT_DataBrowser::setAutoSizeFirstColumn( const bool on )
 /*!
   \brief Set 'auto-size columns' flag value.
 
-  If this flag is set to \c true (by default is false), columns width except 
+  If this flag is set to \c true (by default is false), columns width except
   the first column is resized to its contents.
 
   \param on 'auto-size columns' flag value
@@ -305,14 +337,14 @@ void SUIT_DataBrowser::init( SUIT_DataObject* root )
 {
   SUIT_ProxyModel* m = new SUIT_ProxyModel( root, this );
   connect( m, SIGNAL( modelUpdated() ), this, SLOT( onModelUpdated() ) );
-  
+
   setModel( m );
   setItemDelegate( qobject_cast<SUIT_ProxyModel*>( model() )->delegate() );
-  connect( treeView(), SIGNAL( sortingEnabled( bool ) ), 
+  connect( treeView(), SIGNAL( sortingEnabled( bool ) ),
 	   model(),    SLOT( setSortingEnabled( bool ) ) );
-  connect( treeView(), SIGNAL( doubleClicked( const QModelIndex& ) ), 
+  connect( treeView(), SIGNAL( doubleClicked( const QModelIndex& ) ),
 	   this,       SLOT( onDblClicked( const QModelIndex& ) ) );
-  connect( treeView(), SIGNAL( expanded( const QModelIndex& ) ), 
+  connect( treeView(), SIGNAL( expanded( const QModelIndex& ) ),
 	   this,       SLOT( onExpanded( const QModelIndex& ) ) );
   myShortcut = new QShortcut( Qt::Key_F5, this, SIGNAL( requestUpdate() ), SIGNAL( requestUpdate() ) );
 
@@ -353,7 +385,7 @@ void SUIT_DataBrowser::onModelUpdated()
 /*!
   \brief Called when item is double-clicked in the tree view
   \internal
-  
+
   Emits signal doubleClicked( SUIT_DataObject* );
 */
 void SUIT_DataBrowser::onDblClicked( const QModelIndex& index )

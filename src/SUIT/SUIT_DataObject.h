@@ -135,6 +135,9 @@ public:
 
   void                        dump( const int indent = 2 ) const; // dump to cout
 
+protected:
+  void                        dataChanged();
+
 private:
   SUIT_DataObject*            myParent;
   bool                        myOpen;
@@ -158,6 +161,7 @@ public:
 
 private:
   void emitCreated( SUIT_DataObject* );
+  void emitChanged( SUIT_DataObject* );
   void emitDestroyed( SUIT_DataObject* );
   void emitInserted( SUIT_DataObject*, SUIT_DataObject* );
   void emitRemoved( SUIT_DataObject*, SUIT_DataObject* );
@@ -166,9 +170,10 @@ private:
 
 signals:
   void created( SUIT_DataObject* );
+  void changed( SUIT_DataObject* );
   void destroyed( SUIT_DataObject* );
-  void inserted( SUIT_DataObject*, SUIT_DataObject* );
   void removed( SUIT_DataObject*, SUIT_DataObject* );
+  void inserted( SUIT_DataObject*, SUIT_DataObject* );
 
   friend class SUIT_DataObject;
 

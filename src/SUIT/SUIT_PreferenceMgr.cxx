@@ -151,6 +151,13 @@ int SUIT_PreferenceMgr::addItem( const QString& title, const int pId,
   case DirList:
     item = new QtxPagePrefPathListItem( Qtx::PT_Directory, title, parent, sect, param );
     break;
+  case Shortcut:
+    item = new QtxPagePrefShortcutBtnsItem( title, parent, sect, param );
+    break;
+  case ShortcutTree:
+    item = new QtxPagePrefShortcutTreeItem( title, parent, sect, param );
+    break;
+		  
   }
 
   return item ? item->id() : -1;

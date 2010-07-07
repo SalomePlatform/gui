@@ -67,6 +67,7 @@ salomeinclude_HEADERS =		\
 	QtxResourceMgr.h	\
 	QtxRubberBand.h         \
 	QtxSearchTool.h		\
+	QtxShortcutEdit.h       \	
 	QtxSplash.h		\
 	QtxToolBar.h		\
 	QtxToolTip.h		\
@@ -123,6 +124,7 @@ dist_libqtx_la_SOURCES =	\
 	QtxResourceMgr.cxx	\
 	QtxRubberBand.cxx       \
 	QtxSearchTool.cxx	\
+	QtxShortcutEdit.cxx     \
 	QtxSplash.cxx		\
 	QtxToolBar.cxx		\
 	QtxToolTip.cxx		\
@@ -171,6 +173,7 @@ MOC_FILES =				\
 	QtxPopupMgr_moc.cxx		\
 	QtxRubberBand_moc.cxx           \
 	QtxSearchTool_moc.cxx		\
+	QtxShortcutEdit_moc.cxx         \
 	QtxSplash_moc.cxx		\
 	QtxToolBar_moc.cxx		\
 	QtxToolTip_moc.cxx		\

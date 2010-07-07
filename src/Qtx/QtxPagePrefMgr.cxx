@@ -29,6 +29,8 @@
 #include "QtxIntSpinBox.h"
 #include "QtxColorButton.h"
 #include "QtxDoubleSpinBox.h"
+#include "QtxShortcutEdit.h"
+#include "QtxResourceMgr.h"
 
 #include <QEvent>
 #include <QLayout>
@@ -4190,3 +4192,108 @@ void QtxPagePrefDateTimeItem::updateDateTime()
 
   myDateTime->setDisplayFormat( dispFmt );
 }
+
+/*!
+  \brief Constructor.
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
+QtxPagePrefShortcutBtnsItem::QtxPagePrefShortcutBtnsItem( const QString& title, QtxPreferenceItem* parent, const QString& sect,
+                                                          const QString& param ): QtxPageNamedPrefItem( title, parent, sect, param )
+{
+  setControl( myShortcut = new QtxShortcutEdit() );
+}
+
+/*!
+  \brief Destructor.
+*/  
+QtxPagePrefShortcutBtnsItem::~QtxPagePrefShortcutBtnsItem()
+{
+}
+
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
+void QtxPagePrefShortcutBtnsItem::store()
+{
+  setString( myShortcut->shortcut().toString() );
+}
+
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
+void QtxPagePrefShortcutBtnsItem::retrieve()
+{
+  myShortcut->setShortcut( QKeySequence::fromString( getString() ) );
+}
+
+/*!
+  \brief Constructor.
+
+  Creates preference item for editing of key bindings
+
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
+QtxPagePrefShortcutTreeItem::QtxPagePrefShortcutTreeItem( const QString& title, QtxPreferenceItem* parent, const QString& sect, 
+                                                          const QString& param ): QtxPageNamedPrefItem( title, parent, sect, "" )
+{
+  mySection = sect;
+  myShortcutTree = new QtxShortcutTree();
+  setControl( myShortcutTree );
+}
+
+/*!
+  \brief Destructor.
+*/
+QtxPagePrefShortcutTreeItem::~QtxPagePrefShortcutTreeItem()
+{
+}
+						    
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
+void QtxPagePrefShortcutTreeItem::retrieve()
+{
+  QtxResourceMgr* resMgr = resourceMgr();
+  if ( resMgr ){
+    QStringList secLst = resMgr->subSections( mySection, false );
+    ShortcutMap aMap; QStringList paramLst;
+    for( int i = 0; i < secLst.size(); i++ ) {
+      paramLst = resMgr->parameters( QStringList() << mySection << secLst.at( i ) );
+      for( int j = 0; j < paramLst.size(); j++ )
+        resMgr->value( mySection + resMgr->sectionsToken() + secLst.at( i ), paramLst.at( j ),aMap[ paramLst.at( j ) ], false );
+      myShortcutTree->setBindings( secLst.at( i ), aMap );
+      aMap.clear();
+    }
+  }
+}
+	      
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
+void QtxPagePrefShortcutTreeItem::store()
+{
+  QStringList lst = myShortcutTree->sections();
+  QString aSection;
+  QtxResourceMgr* resMgr = resourceMgr();
+  
+  if ( resMgr ) {
+    for( int i = 0; i < lst.size(); i++ ) {
+      ShortcutMap* aMap( myShortcutTree->bindings( lst.at( i ) ) );
+      aSection = mySection + resMgr->sectionsToken() + lst.at( i );
+      for( ShortcutMap::const_iterator it = aMap->constBegin(); it != aMap->constEnd(); ++it )
+	resMgr->setValue( aSection, it.key(), it.value() );
+    }
+  }
+}
+			    
+			    

@@ -38,6 +38,8 @@ class QtxFontEdit;
 class QtxGroupBox;
 class QtxComboBox;
 class QtxColorButton;
+class QtxShortcutEdit;
+class QtxShortcutTree;
 
 class QToolBox;
 class QLineEdit;
@@ -50,6 +52,7 @@ class QFileDialog;
 class QDateTimeEdit;
 class QStackedWidget;
 class QSlider;
+class QTreeWidget;
 
 class QTX_EXPORT QtxPagePrefMgr : public QFrame, public QtxPreferenceMgr
 {
@@ -702,6 +705,33 @@ private:
 private:
   int              myType;
   QDateTimeEdit*   myDateTime;
+};
+
+class QTX_EXPORT QtxPagePrefShortcutBtnsItem : public QtxPageNamedPrefItem
+{
+public:
+  QtxPagePrefShortcutBtnsItem( const QString&, QtxPreferenceItem* = 0,
+                               const QString& = QString(), const QString& = QString() );
+  virtual ~QtxPagePrefShortcutBtnsItem();
+  virtual void     store();
+  virtual void     retrieve();
+
+private:
+  QtxShortcutEdit* myShortcut;
+};
+
+class QTX_EXPORT QtxPagePrefShortcutTreeItem : public QtxPageNamedPrefItem
+{
+public:
+  QtxPagePrefShortcutTreeItem( const QString&, QtxPreferenceItem* = 0, 
+                               const QString& = QString(), const QString& = QString() );
+  virtual ~QtxPagePrefShortcutTreeItem();
+  virtual void     store();
+  virtual void     retrieve();
+								   
+private:
+  QtxShortcutTree* myShortcutTree;
+  QString          mySection;
 };
 
 #endif

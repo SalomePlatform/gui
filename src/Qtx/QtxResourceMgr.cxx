@@ -2140,7 +2140,7 @@ QStringList QtxResourceMgr::subSections(const QString& section, const bool full)
   QStringList names = sections( QStringList() << section );
   QMutableListIterator<QString> it( names );
   while ( it.hasNext() ) {
-    QString name = it.next().mid( section.size() ).trimmed();
+    QString name = it.next().mid( section.size() + 1 ).trimmed();
     if ( name.isEmpty() ) {
       it.remove();
       continue;
@@ -2187,6 +2187,21 @@ QStringList QtxResourceMgr::parameters( const QString& sec ) const
   }
 
   return pmap.keys();
+}
+
+/*!
+  \brief Get all parameters name in specified
+  list of sub-sections names. 
+
+  Sub-sections are separated inside the section name by the sections 
+  separator token, for example "splash:color:label".
+
+  \param names parent sub-sections names 
+  \return list of settings names
+*/
+QStringList QtxResourceMgr::parameters( const QStringList& names ) const
+{
+  return parameters( names.join( sectionsToken() ) );
 }
 
 /*!

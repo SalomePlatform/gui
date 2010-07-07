@@ -166,6 +166,7 @@ public:
   QStringList      sections(const QStringList&) const;
   QStringList      subSections(const QString&, const bool = true) const;
   QStringList      parameters( const QString& ) const;
+  QStringList      parameters( const QStringList& ) const;
 
   void             refresh();
 

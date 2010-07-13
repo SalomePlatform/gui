@@ -276,7 +276,7 @@ void QtxToolBar::Watcher::updateVisibility()
     }
   }
 
-  vis = !empty && isVisible();
+  vis = vis || (!empty && isVisible());
   if ( vis != myCont->isVisibleTo( myCont->parentWidget() ) )
     vis ? showContainer() : hideContainer();
 }

@@ -54,7 +54,7 @@ QtxColorButton::QtxColorButton( QWidget* parent )
 : QToolButton( parent )
 {
   setCheckable( false );
-  setPopupMode( MenuButtonPopup );
+  setPopupMode( InstantPopup );
 
   QMenu* pm = new QMenu( this );
   QGridLayout* grid = new QGridLayout( pm );

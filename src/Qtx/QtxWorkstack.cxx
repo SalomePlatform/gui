@@ -514,10 +514,10 @@ void QtxWorkstackArea::removeWidget( QWidget* wid, const bool del )
   if ( !myList.contains( wid ) )
     return;
 
+  myStack->removeWidget( child( wid ) );
+
   if ( myBar->indexOf( widgetId( wid ) ) != -1 )
     myBar->removeTab( myBar->indexOf( widgetId( wid ) ) );
-
-  myStack->removeWidget( child( wid ) );
 
   myList.removeAll( wid );
   myInfo.remove( wid );

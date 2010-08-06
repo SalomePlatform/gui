@@ -261,7 +261,7 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
     return;
   }
 
-  const QPalette& pal = w->palette();
+  const QPalette& pal = w ? w->palette() : QPalette();
   switch( cc ) {
     case CC_SpinBox:
       if (const QStyleOptionSpinBox *spin = qstyleoption_cast<const QStyleOptionSpinBox *>(opt)) {

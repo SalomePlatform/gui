@@ -363,6 +363,10 @@ bool Plot2d_ViewFrame::eventFilter( QObject* watched, QEvent* e )
         }
         break;
       }
+    case QEvent::ContextMenu:
+      // Fix from SLN
+      // Do nothing because context menu is called from MouseRelease
+      return true;
     }
   }
   return QWidget::eventFilter( watched, e );

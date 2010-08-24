@@ -67,7 +67,7 @@ salomeinclude_HEADERS =		\
 	QtxResourceMgr.h	\
 	QtxRubberBand.h         \
 	QtxSearchTool.h		\
-	QtxShortcutEdit.h       \	
+	QtxShortcutEdit.h       \
 	QtxSplash.h		\
 	QtxToolBar.h		\
 	QtxToolTip.h		\

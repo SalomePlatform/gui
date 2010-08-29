@@ -27,6 +27,10 @@
 #
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
+EXTRA_DIST += images
+
+QRC_FILES = qrc_LightApp.cxx
+
 lib_LTLIBRARIES = libLightApp.la
 
 salomeinclude_HEADERS =			\
@@ -157,8 +161,7 @@ endif
 if ENABLE_PLOT2DVIEWER
   MOC_FILES += LightApp_Plot2dSelector_moc.cxx
 endif
-nodist_libLightApp_la_SOURCES = $(MOC_FILES)
-
+nodist_libLightApp_la_SOURCES = $(MOC_FILES) $(QRC_FILES)
 dist_salomeres_DATA =			\
 	resources/icon_about.png	\
 	resources/icon_applogo.png	\
@@ -171,7 +174,8 @@ dist_salomeres_DATA =			\
 
 nodist_salomeres_DATA =		\
 	LightApp_images.qm	\
-	LightApp_msg_en.qm
+	LightApp_msg_en.qm	\
+	LightApp_msg_fr.qm
 
 libLightApp_la_CPPFLAGS = $(PYTHON_INCLUDES) $(QT_INCLUDES) $(CAS_CPPFLAGS)		\
 	$(HDF5_INCLUDES) @KERNEL_CXXFLAGS@ -I$(srcdir)/../SUIT -I$(srcdir)/../STD	\

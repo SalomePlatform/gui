@@ -124,7 +124,7 @@ void QtxTreeView::Header::contextMenuEvent( QContextMenuEvent* e )
   QAction* sortAction = 0;
   if ( count() > 0 && myEnableSortMenu ) {
     menu.addSeparator();
-    sortAction = menu.addAction( tr( "Enable sorting" ) );
+    sortAction = menu.addAction( QtxTreeView::tr( "Enable sorting" ) );
     sortAction->setCheckable( true );
     sortAction->setChecked( isSortIndicatorShown() );
   }

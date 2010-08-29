@@ -111,7 +111,8 @@ dist_salomeres_DATA =			\
 
 nodist_salomeres_DATA =		\
 	GLViewer_images.qm	\
-	GLViewer_msg_en.qm
+	GLViewer_msg_en.qm	\
+	GLViewer_msg_fr.qm
 
 libGLViewer_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 libGLViewer_la_LDFLAGS  = $(QT_MT_LIBS) $(CAS_KERNEL) $(OGL_LIBS)

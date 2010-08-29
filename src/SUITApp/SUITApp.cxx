@@ -248,7 +248,7 @@ int main( int argc, char* argv[] )
     {
       if ( resMgr )
       {
-        resMgr->loadLanguage( false );
+        resMgr->loadLanguage();
 
         splash = QtxSplash::splash( QPixmap() );
         splash->readSettings( resMgr );

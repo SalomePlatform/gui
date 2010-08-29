@@ -131,7 +131,8 @@ dist_salomeres_DATA =				\
 
 nodist_salomeres_DATA =		\
 	VTKViewer_images.qm	\
-	VTKViewer_msg_en.qm
+	VTKViewer_msg_en.qm	\
+	VTKViewer_msg_fr.qm
 
 libVTKViewer_la_CPPFLAGS = $(QT_INCLUDES) $(VTK_INCLUDES) $(CAS_CPPFLAGS)	\
 	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT

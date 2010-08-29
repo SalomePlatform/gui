@@ -63,7 +63,8 @@ dist_salomeres_DATA =			\
 
 nodist_salomeres_DATA =		\
 	QxGraph_images.qm	\
-	QxGraph_msg_en.qm  
+	QxGraph_msg_en.qm  	\
+	QxGraph_msg_fr.qm  
 
 libQxGraph_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) $(PYTHON_INCLUDES) $(BOOST_CPPFLAGS) \
 	                 -I$(srcdir)/../Qtx -I$(srcdir)/../SUIT

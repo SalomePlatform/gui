@@ -46,7 +46,7 @@ MOC_FILES =				\
 
 nodist_libSUITApp_la_SOURCES = $(MOC_FILES)
 
-nodist_salomeres_DATA = SUITApp_msg_en.qm
+nodist_salomeres_DATA = SUITApp_msg_en.qm SUITApp_msg_fr.qm
 
 libSUITApp_la_CPPFLAGS = $(QT_INCLUDES) $(PYTHON_INCLUDES) \
                          -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx -I$(srcdir)/../Style

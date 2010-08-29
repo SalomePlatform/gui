@@ -55,7 +55,8 @@ dist_salomeres_DATA= \
 
 nodist_salomeres_DATA= \
 	QxSceneViewer_images.qm \
-	QxSceneViewer_msg_en.qm  
+	QxSceneViewer_msg_en.qm \
+	QxSceneViewer_msg_fr.qm
 
 libQxScene_la_CPPFLAGS=$(QT_INCLUDES) $(CAS_CPPFLAGS) $(PYTHON_INCLUDES) $(BOOST_CPPFLAGS) \
 	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT

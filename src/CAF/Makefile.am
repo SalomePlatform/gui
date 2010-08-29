@@ -49,7 +49,8 @@ MOC_FILES =			\
 nodist_libcaf_la_SOURCES = $(MOC_FILES)
 
 nodist_salomeres_DATA = \
-	CAF_msg_en.qm
+	CAF_msg_en.qm \
+	CAF_msg_fr.qm
 
 libcaf_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) -I$(srcdir)/../STD -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 libcaf_la_LDFLAGS  = $(QT_MT_LIBS) $(CAS_OCAF) $(CAS_OCAFVIS)

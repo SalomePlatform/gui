@@ -106,7 +106,8 @@ dist_salomeres_DATA =		\
 
 nodist_salomeres_DATA =		\
 	SalomeApp_images.qm	\
-	SalomeApp_msg_en.qm
+	SalomeApp_msg_en.qm	\
+	SalomeApp_msg_fr.qm
 
 libSalomeApp_la_CPPFLAGS = $(PYTHON_INCLUDES) $(QT_INCLUDES) $(QWT_INCLUDES)	\
 	$(CAS_CPPFLAGS) $(VTK_INCLUDES) $(BOOST_CPPFLAGS) @KERNEL_CXXFLAGS@	\

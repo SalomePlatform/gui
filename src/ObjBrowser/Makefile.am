@@ -45,7 +45,7 @@ MOC_FILES =			\
 
 nodist_libObjBrowser_la_SOURCES = $(MOC_FILES)
 
-nodist_salomeres_DATA = OB_msg_en.qm
+nodist_salomeres_DATA = OB_msg_en.qm OB_msg_fr.qm
 
 libObjBrowser_la_CPPFLAGS = $(QT_INCLUDES) -I$(srcdir)/../Qtx
 libObjBrowser_la_LDFLAGS  = $(QT_MT_LIBS)

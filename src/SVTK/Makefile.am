@@ -136,6 +136,7 @@ dist_salomeres_DATA=\
 
 nodist_salomeres_DATA =	\
 	SVTK_msg_en.qm	\
+	SVTK_msg_fr.qm	\
 	SVTK_images.qm
 
 libSVTK_la_CPPFLAGS =		\

@@ -33,6 +33,7 @@
   </section>
   <section name="language">
     <!-- Language settings (resource manager)-->
+    <parameter name="languages"   value="en,fr"/>
     <parameter name="language"    value="en"/>
     <parameter name="translators" value="%P_msg_%L.qm|%P_icons.qm|%P_images.qm"/>
   </section>
@@ -55,6 +56,8 @@
   </section>
   <section name="resources">
     <!-- Resource directories (resource manager)-->
+    <parameter name="Qtx"          value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
+    <parameter name="Style"        value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
     <parameter name="SUIT"         value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
     <parameter name="STD"          value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
     <parameter name="Plot2d"       value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>

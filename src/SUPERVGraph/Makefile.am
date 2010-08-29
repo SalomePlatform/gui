@@ -49,7 +49,8 @@ dist_salomeres_DATA =			\
 
 nodist_salomeres_DATA =		\
 	SUPERVGraph_images.qm	\
-	SUPERVGraph_msg_en.qm  
+	SUPERVGraph_msg_en.qm   \
+	SUPERVGraph_msg_fr.qm  
 
 libSUPERVGraph_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) $(PYTHON_INCLUDES) $(BOOST_CPPFLAGS) \
 	                     -I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../OBJECT

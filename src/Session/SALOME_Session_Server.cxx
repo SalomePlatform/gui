@@ -376,7 +376,7 @@ int main( int argc, char **argv )
     SUIT_ResourceMgr resMgr( "SalomeApp", QString( "%1Config" ) );
     resMgr.setCurrentFormat( "xml" );
     resMgr.setWorkingMode( QtxResourceMgr::IgnoreUserValues );
-    resMgr.loadLanguage( "LightApp", "en" );
+    resMgr.loadLanguage( "LightApp" );
     //
     splash = QtxSplash::splash( QPixmap() );
     splash->readSettings( &resMgr );

@@ -87,7 +87,8 @@ dist_salomeres_DATA =				\
 
 nodist_salomeres_DATA =		\
 	Plot2d_images.qm	\
-	Plot2d_msg_en.qm 
+	Plot2d_msg_en.qm 	\
+	Plot2d_msg_fr.qm 
 
 libPlot2d_la_CPPFLAGS = $(QT_INCLUDES) $(PYTHON_INCLUDES) $(QWT_INCLUDES) \
 	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT

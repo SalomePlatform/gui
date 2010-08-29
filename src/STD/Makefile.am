@@ -71,7 +71,8 @@ dist_salomeres_DATA =			\
 
 nodist_salomeres_DATA =	\
 	STD_images.qm	\
-	STD_msg_en.qm
+	STD_msg_en.qm	\
+	STD_msg_fr.qm
 
 libstd_la_CPPFLAGS = $(QT_INCLUDES) -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 libstd_la_LDFLAGS  = $(QT_MT_LIBS)

@@ -37,7 +37,8 @@ MOC_FILES = LogWindow_moc.cxx
 nodist_libLogWindow_la_SOURCES = $(MOC_FILES)
 
 nodist_salomeres_DATA = \
-	LogWindow_msg_en.qm
+	LogWindow_msg_en.qm \
+	LogWindow_msg_fr.qm
 
 libLogWindow_la_CPPFLAGS = $(QT_INCLUDES) -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 libLogWindow_la_LDFLAGS  = $(QT_MT_LIBS)

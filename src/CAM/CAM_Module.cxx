@@ -835,9 +835,10 @@ int CAM_Module::actionId( const QAction* a ) const
 */
 QAction* CAM_Module::createAction( const int id, const QString& text, const QIcon& icon,
                                    const QString& menu, const QString& tip, const int key,
-                                   QObject* parent, const bool toggle, QObject* reciever, const char* member )
+                                   QObject* parent, const bool toggle, QObject* reciever,
+				   const char* member, const QString& shortcutAction )
 {
-  QtxAction* a = new QtxAction( text, icon, menu, key, parent, toggle );
+  QtxAction* a = new QtxAction( text, icon, menu, key, parent, toggle, shortcutAction );
   a->setStatusTip( tip );
 
   if ( reciever && member )

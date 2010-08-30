@@ -70,6 +70,7 @@
 #include <SUIT_Study.h>
 #include <SUIT_FileDlg.h>
 #include <SUIT_ResourceMgr.h>
+#include <SUIT_ShortcutMgr.h>
 #include <SUIT_Tools.h>
 #include <SUIT_Accel.h>
 #include <SUIT_MessageBox.h>
@@ -1596,6 +1597,9 @@ void LightApp_Application::showPreferences( const QString& itemText )
     if ( desktop() )
       resourceMgr()->setValue( "desktop", "geometry", desktop()->storeGeometry() );
     resourceMgr()->save();
+
+    // Update shortcuts
+    shortcutMgr()->updateShortcuts();
   }
 
   delete prefDlg;
@@ -2155,6 +2159,12 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
                        "ObjectBrowser", "auto_size" );
   pref->addPreference( tr( "PREF_RESIZE_ON_EXPAND_ITEM" ), objSetGroup, LightApp_Preferences::Bool,
                        "ObjectBrowser", "resize_on_expand_item" );
+
+  // Shortcuts preferences
+  int shortcutTab = pref->addPreference( tr( "PREF_TAB_SHORTCUTS" ), salomeCat );
+  int shortcutGroup = pref->addPreference( tr( "PREF_GROUP_SHORTCUTS" ), shortcutTab );
+  pref->addPreference( tr( "" ), shortcutGroup,
+                       LightApp_Preferences::ShortcutTree, "shortcuts" );
 
   // MRU preferences
   int mruGroup = pref->addPreference( tr( "PREF_GROUP_MRU" ), genTab, LightApp_Preferences::Auto, "MRU", "show_mru" );

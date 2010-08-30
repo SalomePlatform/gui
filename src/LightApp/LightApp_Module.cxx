@@ -46,6 +46,7 @@
 #include <SUIT_Operation.h>
 #include <SUIT_ViewManager.h>
 #include <SUIT_ResourceMgr.h>
+#include <SUIT_ShortcutMgr.h>
 #include <SUIT_Desktop.h>
 #include <SUIT_TreeModel.h>
 
@@ -220,6 +221,12 @@ bool LightApp_Module::activateModule( SUIT_Study* study )
   if ( mySwitchOp == 0 )
     mySwitchOp = new LightApp_SwitchOp( this );
 
+  // Enable Display and Erase actions
+  action(myDisplay)->setEnabled(true);
+  action(myErase)->setEnabled(true);
+
+  application()->shortcutMgr()->setSectionEnabled( moduleName() );
+
   /*  BUG 0020498 : The Entry column is always shown at module activation
       The registration of column is moved into LightApp_Application
 
@@ -251,6 +258,12 @@ bool LightApp_Module::deactivateModule( SUIT_Study* study )
     anIt.value()->abort();
   }
 
+  // Disable Display and Erase action
+  action(myDisplay)->setEnabled(false);
+  action(myErase)->setEnabled(false);
+
+  application()->shortcutMgr()->setSectionEnabled( moduleName(), false );
+  
   /*  BUG 0020498 : The Entry column is always shown at module activation
   QString EntryCol = QObject::tr( "ENTRY_COLUMN" );
   LightApp_DataModel* m = dynamic_cast<LightApp_DataModel*>( dataModel() );
@@ -386,9 +399,9 @@ QtxPopupMgr* LightApp_Module::popupMgr()
     
     QAction 
       *disp = createAction( -1, tr( "TOP_SHOW" ), p, tr( "MEN_SHOW" ), tr( "STB_SHOW" ),
-                            0, d, false, this, SLOT( onShowHide() ) ),
+                            0, d, false, this, SLOT( onShowHide() ), QString("General:Show object(s)") ),
       *erase = createAction( -1, tr( "TOP_HIDE" ), p, tr( "MEN_HIDE" ), tr( "STB_HIDE" ),
-                             0, d, false, this, SLOT( onShowHide() ) ),
+                             0, d, false, this, SLOT( onShowHide() ) , QString("General:Hide object(s)") ),
       *dispOnly = createAction( -1, tr( "TOP_DISPLAY_ONLY" ), p, tr( "MEN_DISPLAY_ONLY" ), tr( "STB_DISPLAY_ONLY" ),
                                 0, d, false, this, SLOT( onShowHide() ) ),
       *eraseAll = createAction( -1, tr( "TOP_ERASE_ALL" ), p, tr( "MEN_ERASE_ALL" ), tr( "STB_ERASE_ALL" ),

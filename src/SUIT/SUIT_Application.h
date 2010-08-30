@@ -37,6 +37,7 @@ class QWidget;
 class SUIT_Desktop;
 class SUIT_ViewModel;
 class SUIT_ResourceMgr;
+class SUIT_ShortcutMgr;
 class SUIT_Study;
 
 #ifdef WIN32
@@ -96,6 +97,8 @@ public:
   virtual int           getNbStudies() const;
 
   SUIT_ResourceMgr*     resourceMgr() const;
+
+  SUIT_ShortcutMgr*     shortcutMgr() const;
 
   //! Puts the message to the status bar  
   void putInfo ( const QString&, const int = 0 );
@@ -164,7 +167,8 @@ protected:
   int                   registerAction( const int, QAction* );
   QAction*              createAction( const int, const QString&, const QIcon&, const QString&,
                                       const QString&, const int, QObject* = 0,
-                                      const bool = false, QObject* = 0, const char* = 0 );
+                                      const bool = false, QObject* = 0, const char* = 0,
+				      const QString& = QString() );
 
 protected slots:
   virtual void          onDesktopActivated();
@@ -173,6 +177,7 @@ private:
   SUIT_Study*           myStudy;
   SUIT_Desktop*         myDesktop;
   QMap<int, QAction*>   myActionMap;
+  SUIT_ShortcutMgr*     myShortcutMgr;
 
   QLabel*               myStatusLabel;
 };

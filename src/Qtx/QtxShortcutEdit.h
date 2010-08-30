@@ -69,16 +69,19 @@ public:
   void                      setBindings( const QString&, const ShortcutMap& );
   ShortcutMap*              bindings( const QString& ) const;
   QStringList               sections() const;
+  void                      setGeneralSections( const QStringList& );
 
 protected:
   virtual bool              eventFilter( QObject*, QEvent* );
   virtual void              focusOutEvent( QFocusEvent* );
+  virtual bool              checkUniqueness( QTreeWidgetItem*, const QString& );
 
 private slots:
   void                      onCurrentItemChanged( QTreeWidgetItem*, QTreeWidgetItem* );
 
 private:
   QMap< QString, ShortcutMap > myPrevBindings;
+  QStringList myGeneralSections;
 };
 
 #endif // QTXSHORTCUTEDIT_H

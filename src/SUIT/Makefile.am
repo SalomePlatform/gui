@@ -61,7 +61,8 @@ salomeinclude_HEADERS =			\
 	SUIT_TreeModel.h		\
 	SUIT_ViewManager.h		\
 	SUIT_ViewModel.h		\
-	SUIT_ViewWindow.h
+	SUIT_ViewWindow.h		\
+	SUIT_ShortcutMgr.h
 
 dist_libsuit_la_SOURCES =		\
 	SUIT_Accel.cxx			\
@@ -92,7 +93,8 @@ dist_libsuit_la_SOURCES =		\
 	SUIT_TreeModel.cxx		\
 	SUIT_ViewManager.cxx		\
 	SUIT_ViewModel.cxx		\
-	SUIT_ViewWindow.cxx
+	SUIT_ViewWindow.cxx		\
+	SUIT_ShortcutMgr.cxx
 
 MOC_FILES =				\
 	SUIT_Accel_moc.cxx		\
@@ -113,7 +115,8 @@ MOC_FILES =				\
 	SUIT_TreeModel_moc.cxx		\
 	SUIT_ViewManager_moc.cxx	\
 	SUIT_ViewModel_moc.cxx		\
-	SUIT_ViewWindow_moc.cxx
+	SUIT_ViewWindow_moc.cxx		\
+	SUIT_ShortcutMgr_moc.cxx
 
 nodist_libsuit_la_SOURCES = $(MOC_FILES)
 

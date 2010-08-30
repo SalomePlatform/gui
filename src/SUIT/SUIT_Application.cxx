@@ -26,6 +26,7 @@
 #include "SUIT_Session.h"
 #include "SUIT_Desktop.h"
 #include "SUIT_ResourceMgr.h"
+#include "SUIT_ShortcutMgr.h"
 
 #include <QTimer>
 #include <QLabel>
@@ -36,6 +37,7 @@
 #include <QtxAction.h>
 #include <QtxActionMenuMgr.h>
 #include <QtxActionToolMgr.h>
+
 
 /*!
   \class StatusLabel
@@ -123,6 +125,9 @@ void SUIT_Application::start()
 {
   if ( desktop() )
     desktop()->show();
+
+  // Initialize shortcut manager
+  SUIT_ShortcutMgr::Init();
 }
 
 /*!
@@ -172,6 +177,15 @@ SUIT_ResourceMgr* SUIT_Application::resourceMgr() const
     return 0;
 
   return SUIT_Session::session()->resourceMgr();
+}
+
+/*!
+  \brief Get access to shortcut manager.
+  \return global shortcut manager
+*/
+SUIT_ShortcutMgr* SUIT_Application::shortcutMgr() const
+{
+  return SUIT_ShortcutMgr::getShortcutMgr();
 }
 
 #define DEFAULT_MESSAGE_DELAY 3000
@@ -612,9 +626,10 @@ QList<int> SUIT_Application::actionIds() const
 */
 QAction* SUIT_Application::createAction( const int id, const QString& text, const QIcon& icon,
                                          const QString& menu, const QString& tip, const int key,
-                                         QObject* parent, const bool toggle, QObject* reciever, const char* member )
+                                         QObject* parent, const bool toggle, QObject* reciever, 
+					 const char* member, const QString& shortcutAction )
 {
-  QtxAction* a = new QtxAction( text, icon, menu, key, parent, toggle );
+  QtxAction* a = new QtxAction( text, icon, menu, key, parent, toggle, shortcutAction );
   a->setStatusTip( tip );
 
   if ( reciever && member )

@@ -178,4 +178,27 @@
     <parameter name="User's Guide"      value="${KERNEL_ROOT_DIR}/share/doc/salome/gui/KERNEL/index.html"/>
     <parameter name="Developer's Guide" value="${KERNEL_ROOT_DIR}/share/doc/salome/tui/KERNEL/index.html"/>
   </section>
+  <!--Salome shortcut settings-->
+  <section name="shortcuts_settings">
+    <parameter name="general_sections" value="General;Viewers"/>
+  </section>
+  <section name="shortcuts:General">
+    <parameter name="Show object(s)" value="Ctrl+S"/>
+    <parameter name="Hide object(s)" value="Ctrl+H" />
+  </section>
+  <section name="shortcuts:Viewers">
+    <parameter name="Front view" value="Ctrl+Alt+F"/>
+    <parameter name="Back view" value="Ctrl+Alt+B"/>
+    <parameter name="Top view" value="Ctrl+Alt+T"/>
+    <parameter name="Bottom view" value="Ctrl+Alt+B"/>
+    <parameter name="Left view" value="Ctrl+Alt+L"/>
+    <parameter name="Right view" value="Ctrl+Alt+R"/>
+    <parameter name="Reset view" value="Ctrl+Alt+E"/>
+  </section>
+  <section name="shortcuts:Geometry">
+    <parameter name="Increase number of isolines" value="Meta+I"/>
+    <parameter name="Decrease number of isolines" value="Ctrl+Alt+G"/>
+    <parameter name="Increase transparency" value="Ctrl+Alt+T"/>
+    <parameter name="Decrease transparency" value="Alt+T"/>
+  </section>
 </document>

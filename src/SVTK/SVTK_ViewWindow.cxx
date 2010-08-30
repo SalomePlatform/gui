@@ -1634,52 +1634,59 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
   // Projections
   anAction = new QtxAction(tr("MNU_FRONT_VIEW"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_FRONT" ) ),
-                           tr( "MNU_FRONT_VIEW" ), 0, this);
+                           tr( "MNU_FRONT_VIEW" ), 0, this, false, "Viewers:Front view");
   anAction->setStatusTip(tr("DSC_FRONT_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onFrontView()));
+  this->addAction(anAction);
   mgr->registerAction( anAction, FrontId );
 
   anAction = new QtxAction(tr("MNU_BACK_VIEW"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_BACK" ) ),
-                           tr( "MNU_BACK_VIEW" ), 0, this);
+                           tr( "MNU_BACK_VIEW" ), 0, this, false, "Viewers:Back view");
   anAction->setStatusTip(tr("DSC_BACK_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onBackView()));
+  this->addAction(anAction);
   mgr->registerAction( anAction, BackId );
 
   anAction = new QtxAction(tr("MNU_TOP_VIEW"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_TOP" ) ),
-                           tr( "MNU_TOP_VIEW" ), 0, this);
+                           tr( "MNU_TOP_VIEW" ), 0, this, false, "Viewers:Top view");
   anAction->setStatusTip(tr("DSC_TOP_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onTopView()));
+  this->addAction(anAction);
   mgr->registerAction( anAction, TopId );
 
   anAction = new QtxAction(tr("MNU_BOTTOM_VIEW"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_BOTTOM" ) ),
-                           tr( "MNU_BOTTOM_VIEW" ), 0, this);
+                           tr( "MNU_BOTTOM_VIEW" ), 0, this, false, "Viewers:Bottom view");
   anAction->setStatusTip(tr("DSC_BOTTOM_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onBottomView()));
+  this->addAction(anAction);
   mgr->registerAction( anAction, BottomId );
 
   anAction = new QtxAction(tr("MNU_LEFT_VIEW"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_LEFT" ) ),
-                           tr( "MNU_LEFT_VIEW" ), 0, this);
+                           tr( "MNU_LEFT_VIEW" ), 0, this, false, "Viewers:Left view");
   anAction->setStatusTip(tr("DSC_LEFT_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onLeftView()));
+  this->addAction(anAction);
   mgr->registerAction( anAction, LeftId );
 
   anAction = new QtxAction(tr("MNU_RIGHT_VIEW"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_RIGHT" ) ),
-                           tr( "MNU_RIGHT_VIEW" ), 0, this);
+                           tr( "MNU_RIGHT_VIEW" ), 0, this, false, "Viewers:Right view");
   anAction->setStatusTip(tr("DSC_RIGHT_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onRightView()));
+  this->addAction(anAction);
   mgr->registerAction( anAction, RightId );
 
   // Reset
   anAction = new QtxAction(tr("MNU_RESET_VIEW"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_RESET" ) ),
-                           tr( "MNU_RESET_VIEW" ), 0, this);
+                           tr( "MNU_RESET_VIEW" ), 0, this, false, "Viewers:Reset view");
   anAction->setStatusTip(tr("DSC_RESET_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onResetView()));
+  this->addAction(anAction);
   mgr->registerAction( anAction, ResetId );
 
   // onViewTrihedron: Shows - Hides Trihedron

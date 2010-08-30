@@ -1039,46 +1039,54 @@ void OCCViewer_ViewWindow::createActions()
 
   // Projections
   aAction = new QtxAction(tr("MNU_FRONT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_FRONT" ) ),
-                           tr( "MNU_FRONT_VIEW" ), 0, this);
+                           tr( "MNU_FRONT_VIEW" ), 0, this, false, "Viewers:Front view");
   aAction->setStatusTip(tr("DSC_FRONT_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onFrontView()));
+  this->addAction(aAction);
   toolMgr()->registerAction( aAction, FrontId );
 
   aAction = new QtxAction(tr("MNU_BACK_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_BACK" ) ),
-                           tr( "MNU_BACK_VIEW" ), 0, this);
+                           tr( "MNU_BACK_VIEW" ), 0, this, false, "Viewers:Back view");
   aAction->setStatusTip(tr("DSC_BACK_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onBackView()));
+  this->addAction(aAction);
   toolMgr()->registerAction( aAction, BackId );
 
   aAction = new QtxAction(tr("MNU_TOP_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_TOP" ) ),
-                           tr( "MNU_TOP_VIEW" ), 0, this);
+                           tr( "MNU_TOP_VIEW" ), 0, this, false, "Viewers:Top view");
   aAction->setStatusTip(tr("DSC_TOP_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onTopView()));
+  this->addAction(aAction);
   toolMgr()->registerAction( aAction, TopId );
 
   aAction = new QtxAction(tr("MNU_BOTTOM_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_BOTTOM" ) ),
-                           tr( "MNU_BOTTOM_VIEW" ), 0, this);
+                           tr( "MNU_BOTTOM_VIEW" ), 0, this, false, "Viewers:Bottom view");
   aAction->setStatusTip(tr("DSC_BOTTOM_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onBottomView()));
+  this->addAction(aAction);
+  this->addAction(aAction);
   toolMgr()->registerAction( aAction, BottomId );
-
+  
   aAction = new QtxAction(tr("MNU_LEFT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_LEFT" ) ),
-                           tr( "MNU_LEFT_VIEW" ), 0, this);
+                           tr( "MNU_LEFT_VIEW" ), 0, this, false, "Viewers:Left view");
   aAction->setStatusTip(tr("DSC_LEFT_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onLeftView()));
+  this->addAction(aAction);
   toolMgr()->registerAction( aAction, LeftId );
 
   aAction = new QtxAction(tr("MNU_RIGHT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_RIGHT" ) ),
-                           tr( "MNU_RIGHT_VIEW" ), 0, this);
+                           tr( "MNU_RIGHT_VIEW" ), 0, this, false, "Viewers:Right view");
   aAction->setStatusTip(tr("DSC_RIGHT_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onRightView()));
+  this->addAction(aAction);
   toolMgr()->registerAction( aAction, RightId );
 
   // Reset
   aAction = new QtxAction(tr("MNU_RESET_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_RESET" ) ),
-                           tr( "MNU_RESET_VIEW" ), 0, this);
+                           tr( "MNU_RESET_VIEW" ), 0, this, false, "Viewers:Reset view");
   aAction->setStatusTip(tr("DSC_RESET_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onResetView()));
+  this->addAction(aAction);
   toolMgr()->registerAction( aAction, ResetId );
 
   // Clone

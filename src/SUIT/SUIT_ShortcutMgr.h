@@ -20,51 +20,52 @@
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-// File:      QtxAction.h
-// Author:    Sergey TELKOV
-//
-#ifndef QTXACTION_H
-#define QTXACTION_H
+#ifndef SUIT_SHORTCUTMGR_H
+#define SUIT_SHORTCUTMGR_H
 
-#include "Qtx.h"
+#include "SUIT.h"
 
-#include <QWidgetAction>
+#include <QObject>
+#include <QMap>
 
-class QIcon;
+class QtxAction;
 
-#ifdef WIN32
-#pragma warning ( disable:4251 )
+class QKeySequence;
+
+#if defined WIN32
+#pragma warning( disable: 4251 )
 #endif
 
-class QTX_EXPORT QtxAction : public QWidgetAction
+/*!
+  \class SUIT_ShortcutMgr
+  \brief Class which manages shortcuts customization.
+*/
+class SUIT_EXPORT SUIT_ShortcutMgr: public QObject 
 {
-  Q_OBJECT
-
-  class ActionNotify;
-
 public:
-  QtxAction( QObject* = 0, bool = false, const QString& = QString() );
-  QtxAction( const QString&, const QString&, int, QObject*, bool = false, const QString& = QString() );
-  QtxAction( const QString&, const QIcon&, const QString&, int, QObject*, bool = false, const QString& = QString() );
-  virtual ~QtxAction();
+  static void Init();
+  static SUIT_ShortcutMgr* getShortcutMgr();
 
-  virtual bool eventFilter( QObject*, QEvent* );
-
-  QString shortcutActionName() const;
-  void setShortcutActionName( const QString& );
+  void setSectionEnabled( const QString&, const bool = true );
+  void updateShortcuts();
 
 protected:
-  virtual void addedTo( QWidget* );
-  virtual void removedFrom( QWidget* );
-
-  virtual void customEvent( QEvent* );
+  SUIT_ShortcutMgr();
+  virtual ~SUIT_ShortcutMgr();
 
 private:
-  QString myShortcutActionName;
+  virtual bool eventFilter( QObject* o, QEvent* e );
+
+  void processAction( QtxAction* );
+  QKeySequence getShortcutByActionName( const QString& ) const;
+
+private:
+  static SUIT_ShortcutMgr* myShortcutMgr;
+  QMap<QString, QtxAction*> myShortcutActions;
 };
 
-#ifdef WIN32
-#pragma warning ( default:4251 )
+#if defined WIN32
+#pragma warning( default: 4251 )
 #endif
 
 #endif

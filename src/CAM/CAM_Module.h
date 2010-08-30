@@ -128,7 +128,7 @@ protected:
   bool                   unregisterAction( QAction* );
   QAction*               createAction( const int, const QString&, const QIcon&, const QString&,
                                        const QString&, const int, QObject* = 0,
-                                       const bool = false, QObject* = 0, const char* = 0 );
+                                       const bool = false, QObject* = 0, const char* = 0, const QString& = QString() );
 
 private:
   CAM_Application*       myApp;             //!< parent application object

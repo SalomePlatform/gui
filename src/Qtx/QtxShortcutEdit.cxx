@@ -26,6 +26,7 @@
 #include <QToolButton>
 #include <QLineEdit>
 #include <QTableWidgetItem>
+#include <QMessageBox>
 
 #include <QKeyEvent>
 #include <QKeySequence>
@@ -251,13 +252,14 @@ bool QtxShortcutTree::eventFilter(QObject* obj, QEvent* event)
       if ( keyEvent->key() == Qt::Key_Delete || keyEvent->key() == Qt::Key_Backspace )
         currentItem()->setText( 1, "" );
       if ( text != "" ) {
-        currentItem()->setText( 1, text );
+	if ( text.endsWith( "+" ) || checkUniqueness( currentItem(), text ) )
+	   currentItem()->setText( 1, text );
       }
       return true;
     }
     if ( event->type() == QEvent::KeyRelease ) {
       if ( currentItem()->text( 1 ).endsWith( "+" ) )
-        currentItem()->setText( 1, myPrevBindings[ currentItem()->parent()->text( 0 ) ][ currentItem()->text( 0 ) ] );
+	currentItem()->setText( 1, myPrevBindings[ currentItem()->parent()->text( 0 ) ][ currentItem()->text( 0 ) ] );
       else myPrevBindings[ currentItem()->parent()->text( 0 ) ][ currentItem()->text( 0 ) ] = currentItem()->text( 1 );
 
       return true;
@@ -277,7 +279,6 @@ void QtxShortcutTree::onCurrentItemChanged( QTreeWidgetItem* cur, QTreeWidgetIte
       prev->setText( 1, myPrevBindings[ prev->parent()->text( 0 ) ][ prev->text( 0 ) ] );
 }
 
-
 /*!
   \brief Set key bindings to the tree
   \param title the name of top-level item
@@ -286,8 +287,12 @@ void QtxShortcutTree::onCurrentItemChanged( QTreeWidgetItem* cur, QTreeWidgetIte
 void QtxShortcutTree::setBindings( const QString& title, const ShortcutMap& theShortcutMap )
 {
   QTreeWidgetItem* item= new QTreeWidgetItem();
+  QFont font = item->font(0);
+  font.setBold(true);
+  
   if ( findItems( title, Qt::MatchFixedString ).isEmpty()  ) {
     item->setText( 0, title );
+    item->setFont( 0, font );
     addTopLevelItem( item );
     item->setFlags( Qt::ItemIsEnabled );
   } else {
@@ -315,10 +320,12 @@ ShortcutMap* QtxShortcutTree::bindings( const QString& sec ) const
 {
   ShortcutMap* aMap = new ShortcutMap();
   QTreeWidgetItem* item = findItems( sec, Qt::MatchFixedString ).first();
-  QList< QTreeWidgetItem* > childLst = item->takeChildren();
+  int nbChildren = item->childCount();
 
-  for( int i = 0; i < childLst.size(); i++ ) 
-    aMap->insert( childLst.at(i)->text( 0 ), childLst.at(i)->text(1) );
+  for( int i = 0; i < nbChildren; i++ ) {
+    QTreeWidgetItem* child =  item->child(i);
+    aMap->insert( child->text( 0 ), child->text( 1 ) );
+  }
 
   return aMap;
 }
@@ -326,6 +333,72 @@ ShortcutMap* QtxShortcutTree::bindings( const QString& sec ) const
 void QtxShortcutTree::focusOutEvent ( QFocusEvent* event )
 {
   QWidget::focusOutEvent( event );
-  if ( currentItem()->isSelected() )
+  if ( currentItem() && currentItem()->isSelected() )
     currentItem()->setText( 1, myPrevBindings[ currentItem()->parent()->text( 0 ) ][ currentItem()->text( 0 ) ] );
+}
+
+/*!
+  \brief Set the list of shortcuts general sections.
+  
+  Key combinations in general sections should not intersect
+  with any other key combinations.
+
+  \param sectionsList list of common section names
+*/
+void QtxShortcutTree::setGeneralSections( const QStringList& sectionsList )
+{
+  myGeneralSections = sectionsList;
+}
+
+/*!
+  \brief Check uniqueness of the shortcut.
+  \param item current item of the shortcut tree
+  \param shortcut shortcut appointed for the current item
+  \return \c true if the given shortcut is allowed
+*/
+bool QtxShortcutTree::checkUniqueness( QTreeWidgetItem* item, const QString& shortcut )
+{
+  // List of sections to check shortcut intersections
+  QStringList sectionsList;
+
+  // Current section
+  QString currentSection = currentItem()->parent()->text( 0 );
+
+  // If the current section is general 
+  if ( myGeneralSections.contains(currentSection) ) {
+    sectionsList = sections();
+    int currentSectionIndex = sectionsList.indexOf(currentSection);
+    sectionsList.move( currentSectionIndex, 0);
+  } 
+  else {
+    sectionsList = myGeneralSections;
+    sectionsList.prepend(currentSection);
+  }
+
+  // Iterate on sections
+  QStringList::const_iterator it;
+  for( it = sectionsList.constBegin(); it != sectionsList.constEnd(); ++it ) {
+    QString section = *it;
+
+    // Iterate on actual section
+    QTreeWidgetItem* sectionRoot = findItems( section, Qt::MatchFixedString ).first();
+    int nbChildren = sectionRoot->childCount();
+
+    for( int i = 0; i < nbChildren; i++ ) {
+      QTreeWidgetItem* child =  sectionRoot->child(i);
+      
+      if ( (child != item) && (shortcut == child->text( 1 )) ) {
+	bool res = QMessageBox::warning( parentWidget(), tr("Warning"), 
+					 tr("The \"%1\" shortcut has already used by the \"%2\" action.\n")
+					 .arg(shortcut, section + ":" + child->text( 0 ) ) +
+					 tr("Do you want to reassign it from that action to the current one?"),
+					 QMessageBox::Yes, QMessageBox::No ) == QMessageBox::Yes;
+	if (res) 
+	  child->setText( 1, "" );
+	return res;	
+      }
+    }
+  }
+
+  return true;
 }

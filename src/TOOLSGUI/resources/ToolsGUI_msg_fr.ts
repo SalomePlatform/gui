@@ -108,115 +108,115 @@ Le fichier n&apos;existe pas</translation>
     <name>ToolsGUI_RegWidget</name>
     <message>
         <source>TLT_REFRESH_INTERVAL</source>
-        <translation type="unfinished">Refresh Interval</translation>
+        <translation>Fréquence d&apos;actualisation</translation>
     </message>
     <message>
         <source>LAB_REFRESH_INTERVAL</source>
-        <translation type="unfinished">New refresh interval (in seconds)</translation>
+        <translation>Nouvelle fréquence d&apos;actualisation (en secondes)</translation>
     </message>
     <message>
         <source>TLT_REGISTRY</source>
-        <translation type="unfinished">Registry</translation>
+        <translation>Registre</translation>
     </message>
     <message>
         <source>MNU_ACTIONS</source>
-        <translation type="unfinished">Actions</translation>
+        <translation>Actions</translation>
     </message>
     <message>
         <source>TB_ACTIONS</source>
-        <translation type="unfinished">Actions</translation>
+        <translation>Actions</translation>
     </message>
     <message>
         <source>MEN_REFRESH</source>
-        <translation type="unfinished">Refresh</translation>
+        <translation>Refresh</translation>
     </message>
     <message>
         <source>STB_REFRESH</source>
-        <translation type="unfinished">Immediately updates list of components</translation>
+        <translation>Met à jour toutb de suite la liste des composants</translation>
     </message>
     <message>
         <source>MEN_INTERVAL</source>
-        <translation type="unfinished">Refresh interval...</translation>
+        <translation>Fréquence d&apos;actualisation...</translation>
     </message>
     <message>
         <source>STB_INTERVAL</source>
-        <translation type="unfinished">Change refresh interval</translation>
+        <translation>Changer la fréquence d&apos;actualisation</translation>
     </message>
     <message>
         <source>MEN_CLOSE</source>
-        <translation type="unfinished">Close</translation>
+        <translation>Fermer</translation>
     </message>
     <message>
         <source>STB_CLOSE</source>
-        <translation type="unfinished">Close Registry window</translation>
+        <translation>Fermer la fenêtre du Registre</translation>
     </message>
     <message>
         <source>TAB_RUNNING</source>
-        <translation type="unfinished">Running</translation>
+        <translation>En cours</translation>
     </message>
     <message>
         <source>TAB_HISTORY</source>
-        <translation type="unfinished">History</translation>
+        <translation>Historique</translation>
     </message>
     <message>
         <source>HDR_COMPONENT</source>
-        <translation type="unfinished">Component</translation>
+        <translation>Composant</translation>
     </message>
     <message>
         <source>HDR_PID</source>
-        <translation type="unfinished">PID</translation>
+        <translation>PID</translation>
     </message>
     <message>
         <source>HDR_USERNAME</source>
-        <translation type="unfinished">User name</translation>
+        <translation>Nom de l&apos;utilisateur</translation>
     </message>
     <message>
         <source>HDR_HOSTNAME</source>
-        <translation type="unfinished">Host name</translation>
+        <translation>Nom de l&apos;hôte</translation>
     </message>
     <message>
         <source>HDR_STARTED</source>
-        <translation type="unfinished">Started</translation>
+        <translation>Commencé</translation>
     </message>
     <message>
         <source>HDR_FINISHED</source>
-        <translation type="unfinished">Finished</translation>
+        <translation>Fini</translation>
     </message>
     <message>
         <source>HDR_HELLO</source>
-        <translation type="unfinished">Last ping</translation>
+        <translation>Dernier ping</translation>
     </message>
     <message>
         <source>ERR_NO_REGISTRY</source>
-        <translation type="unfinished">Error: Registry Server is not found</translation>
+        <translation>Erreur: le Serveur du Registre n&apos;est pas trouvé</translation>
     </message>
     <message>
         <source>INFO_SERVICE</source>
-        <translation type="unfinished">Service : %1</translation>
+        <translation>Service : %1</translation>
     </message>
     <message>
         <source>INFO_PROCESS</source>
-        <translation type="unfinished">Process ( PID : %1 ) on the machine %2 ( ip address : %3 ); launched by the user %4 ( UID : %5 ) in directory %6.</translation>
+        <translation>Le procédé ( PID : %1 ) sur la station %2 ( ip adresse : %3 ); lancé par l&apos;utilisateur %4 ( UID : %5 ) au répertoire %6.</translation>
     </message>
     <message>
         <source>INFO_STARTED</source>
-        <translation type="unfinished">Started : %1</translation>
+        <translation>Commencé : %1</translation>
     </message>
     <message>
         <source>INFO_LAST_PING</source>
-        <translation type="unfinished">Last signal : %1</translation>
+        <translation>Dernier signal : %1</translation>
     </message>
     <message>
         <source>INFO_FINISHED</source>
-        <translation type="unfinished">Finished : %1</translation>
+        <translation>Fini : %1</translation>
     </message>
     <message>
         <source>INFO_RUNNING</source>
-        <translation type="unfinished">Still running</translation>
+        <translation>Demeure en cours</translation>
     </message>
     <message>
         <source>INFO_TIME_DIFF</source>
-        <translation type="unfinished">Time on %1 differs from server&apos;s time. The difference is %2 seconds.</translation>
+        <translation>Le temps de la station %1 est différent du temps du serveur. La différence est %2 secondes.</translation>
     </message>
 </context>
 </TS>

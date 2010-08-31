@@ -5,283 +5,283 @@
     <name>Style_PrefDlg</name>
     <message>
         <source>Quick</source>
-        <translation type="unfinished"></translation>
+        <translation>Rapide</translation>
     </message>
     <message>
         <source>Auto</source>
-        <translation type="unfinished"></translation>
+        <translation>Auto</translation>
     </message>
     <message>
         <source>Base colors</source>
-        <translation type="unfinished"></translation>
+        <translation>Couleurs de base</translation>
     </message>
     <message>
         <source>Additional colors</source>
-        <translation type="unfinished"></translation>
+        <translation>Couleurs supplémentaires</translation>
     </message>
     <message>
         <source>Active</source>
-        <translation type="unfinished"></translation>
+        <translation>Actif</translation>
     </message>
     <message>
         <source>Inactive</source>
-        <translation type="unfinished"></translation>
+        <translation>Désactivé</translation>
     </message>
     <message>
         <source>Disabled</source>
-        <translation type="unfinished"></translation>
+        <translation>Désactivé</translation>
     </message>
     <message>
         <source>Window text</source>
-        <translation type="unfinished"></translation>
+        <translation>Texte du fenêtre</translation>
     </message>
     <message>
         <source>Button</source>
-        <translation type="unfinished"></translation>
+        <translation>Touche</translation>
     </message>
     <message>
         <source>Light</source>
-        <translation type="unfinished"></translation>
+        <translation>Clair</translation>
     </message>
     <message>
         <source>Midlight</source>
-        <translation type="unfinished"></translation>
+        <translation>Demi-clair</translation>
     </message>
     <message>
         <source>Dark</source>
-        <translation type="unfinished"></translation>
+        <translation>Foncé</translation>
     </message>
     <message>
         <source>Mid</source>
-        <translation type="unfinished"></translation>
+        <translation>Moyen</translation>
     </message>
     <message>
         <source>Text</source>
-        <translation type="unfinished"></translation>
+        <translation>Texte</translation>
     </message>
     <message>
         <source>Bright text</source>
-        <translation type="unfinished"></translation>
+        <translation>Texte éclairé</translation>
     </message>
     <message>
         <source>Button text</source>
-        <translation type="unfinished"></translation>
+        <translation>Texte de la touche</translation>
     </message>
     <message>
         <source>Base</source>
-        <translation type="unfinished"></translation>
+        <translation>Base</translation>
     </message>
     <message>
         <source>Window</source>
-        <translation type="unfinished"></translation>
+        <translation>Fenêtre</translation>
     </message>
     <message>
         <source>Shadow</source>
-        <translation type="unfinished"></translation>
+        <translation>Ombre</translation>
     </message>
     <message>
         <source>Highlight</source>
-        <translation type="unfinished"></translation>
+        <translation>Surligner</translation>
     </message>
     <message>
         <source>Highlighted text</source>
-        <translation type="unfinished"></translation>
+        <translation>Texte surligné</translation>
     </message>
     <message>
         <source>Link</source>
-        <translation type="unfinished"></translation>
+        <translation>Lien</translation>
     </message>
     <message>
         <source>Visited link</source>
-        <translation type="unfinished"></translation>
+        <translation>Lien visité</translation>
     </message>
     <message>
         <source>Alternate base</source>
-        <translation type="unfinished"></translation>
+        <translation>Base alternative</translation>
     </message>
     <message>
         <source>Tooltip base</source>
-        <translation type="unfinished"></translation>
+        <translation>Base d&apos;infobulle</translation>
     </message>
     <message>
         <source>Tooltip text</source>
-        <translation type="unfinished"></translation>
+        <translation>Texte d&apos;infobulle</translation>
     </message>
     <message>
         <source>Border top</source>
-        <translation type="unfinished"></translation>
+        <translation>Frontière de dessus</translation>
     </message>
     <message>
         <source>Border bottom</source>
-        <translation type="unfinished"></translation>
+        <translation>Frontière de dessous</translation>
     </message>
     <message>
         <source>Tab border top</source>
-        <translation type="unfinished"></translation>
+        <translation>Frontière de dessus de l&apos;onglet</translation>
     </message>
     <message>
         <source>Tab border bottom</source>
-        <translation type="unfinished"></translation>
+        <translation>Frontière de dessous de l&apos;onglet</translation>
     </message>
     <message>
         <source>Field light</source>
-        <translation type="unfinished"></translation>
+        <translation>Champ clair</translation>
     </message>
     <message>
         <source>Field dark</source>
-        <translation type="unfinished"></translation>
+        <translation>Champ foncé</translation>
     </message>
     <message>
         <source>Slider</source>
-        <translation type="unfinished"></translation>
+        <translation>Barre de défilement</translation>
     </message>
     <message>
         <source>Lines</source>
-        <translation type="unfinished"></translation>
+        <translation>Lignes</translation>
     </message>
     <message>
         <source>Widget center</source>
-        <translation type="unfinished"></translation>
+        <translation>Centre de l&apos;objet-fenêtre</translation>
     </message>
     <message>
         <source>Widget border</source>
-        <translation type="unfinished"></translation>
+        <translation>Frontière de l&apos;objet-fenêtre</translation>
     </message>
     <message>
         <source>Header</source>
-        <translation type="unfinished"></translation>
+        <translation>Titre</translation>
     </message>
     <message>
         <source>Progress bar</source>
-        <translation type="unfinished"></translation>
+        <translation>Barre de progrès</translation>
     </message>
     <message>
         <source>Pointer</source>
-        <translation type="unfinished"></translation>
+        <translation>Pointeur</translation>
     </message>
     <message>
         <source>Checked</source>
-        <translation type="unfinished"></translation>
+        <translation>Coché</translation>
     </message>
     <message>
         <source>Table grid</source>
-        <translation type="unfinished"></translation>
+        <translation>Maillage de la table</translation>
     </message>
     <message>
         <source>SALOME style preferences</source>
-        <translation type="unfinished"></translation>
+        <translation>Préférences de style Salomé</translation>
     </message>
     <message>
         <source>Enable SALOME Style</source>
-        <translation type="unfinished"></translation>
+        <translation>Activer le style Salomé</translation>
     </message>
     <message>
         <source>Font</source>
-        <translation type="unfinished"></translation>
+        <translation>Caractères</translation>
     </message>
     <message>
         <source>Type</source>
-        <translation type="unfinished"></translation>
+        <translation>Type</translation>
     </message>
     <message>
         <source>None</source>
-        <translation type="unfinished"></translation>
+        <translation>Aucun</translation>
     </message>
     <message>
         <source>Horizontal</source>
-        <translation type="unfinished"></translation>
+        <translation>Horisontal</translation>
     </message>
     <message>
         <source>Inclined</source>
-        <translation type="unfinished"></translation>
+        <translation>Incliné</translation>
     </message>
     <message>
         <source>Transparency</source>
-        <translation type="unfinished"></translation>
+        <translation>Transparence</translation>
     </message>
     <message>
         <source>Widgets rounding</source>
-        <translation type="unfinished"></translation>
+        <translation>Arrondi des objets-fenêtres</translation>
     </message>
     <message>
         <source>Buttons</source>
-        <translation type="unfinished"></translation>
+        <translation>Touches</translation>
     </message>
     <message>
         <source>Edit boxes</source>
-        <translation type="unfinished"></translation>
+        <translation>Editer les boîtes</translation>
     </message>
     <message>
         <source>Frames</source>
-        <translation type="unfinished"></translation>
+        <translation>Cadres</translation>
     </message>
     <message>
         <source>Sliders</source>
-        <translation type="unfinished"></translation>
+        <translation>Barres de défilement</translation>
     </message>
     <message>
         <source>Anti-aliased borders</source>
-        <translation type="unfinished"></translation>
+        <translation>Frontières d&apos;anticrénelage</translation>
     </message>
     <message>
         <source>Handle</source>
-        <translation type="unfinished"></translation>
+        <translation>Pointeur</translation>
     </message>
     <message>
         <source>Horizontal spacin</source>
-        <translation type="unfinished"></translation>
+        <translation>Espacement horisontal</translation>
     </message>
     <message>
         <source>Vertical spacing</source>
-        <translation type="unfinished"></translation>
+        <translation>Espacement vertical</translation>
     </message>
     <message>
         <source>Splitter handle size</source>
-        <translation type="unfinished"></translation>
+        <translation>Taille du pointeur du diviseur</translation>
     </message>
     <message>
         <source>Slider handle size</source>
-        <translation type="unfinished"></translation>
+        <translation>Taille du curseur de la barre de défilement</translation>
     </message>
     <message>
         <source>Widget effect</source>
-        <translation type="unfinished"></translation>
+        <translation>Effet de l&apos;objet-fenêtre</translation>
     </message>
     <message>
         <source>Highlight widgets</source>
-        <translation type="unfinished"></translation>
+        <translation>Surligner les objets fenêtres</translation>
     </message>
     <message>
         <source>Auto raise widgets</source>
-        <translation type="unfinished"></translation>
+        <translation>Activer l&apos;objet fenêtre automatiquement</translation>
     </message>
     <message>
         <source>Colors</source>
-        <translation type="unfinished"></translation>
+        <translation>Couleurs</translation>
     </message>
     <message>
         <source>Properties</source>
-        <translation type="unfinished"></translation>
+        <translation>Paramètres</translation>
     </message>
     <message>
         <source>[ Current ]</source>
-        <translation type="unfinished"></translation>
+        <translation>[ Actuel ]</translation>
     </message>
     <message>
         <source>[ Default ]</source>
-        <translation type="unfinished"></translation>
+        <translation>[ Défaut ]</translation>
     </message>
     <message>
         <source>Delete user theme</source>
-        <translation type="unfinished"></translation>
+        <translation>Supprimer la thème d&apos;utilisateur</translation>
     </message>
     <message>
         <source>Remove theme %1?</source>
-        <translation type="unfinished"></translation>
+        <translation>Supprimer la thème %1?</translation>
     </message>
     <message>
         <source>Custom schema</source>
-        <translation type="unfinished"></translation>
+        <translation>Schéma actuel</translation>
     </message>
 </context>
 </TS>

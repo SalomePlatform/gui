@@ -38,6 +38,11 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
 <context>
     <name>LightApp_Application</name>
     <message>
+        <source>LANG_CHANGED</source>
+        <translation>La langue de l&apos;application a été modifié.
+Les modifications seront appliquées à la suivante session de l&apos;application.</translation>
+    </message>
+    <message>
         <source>MEN_DESK_THEME</source>
         <translation>T&amp;hème</translation>
     </message>
@@ -123,7 +128,7 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
     </message>
     <message>
         <source>PREF_STANDARD_STYLE</source>
-        <translation type="unfinished">Contrôls standards Salomé</translation>
+        <translation>Contrôles types Salomé</translation>
     </message>
     <message>
         <source>PREF_KEYFREE_STYLE</source>
@@ -439,7 +444,15 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
     </message>
     <message>
         <source>PREF_HOR_AXIS_SCALE</source>
-        <translation>Echelle de l&apos;axe horizontale:</translation>
+        <translation>Echelle de l&apos;axe horisontale:</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_LANGUAGE</source>
+        <translation>Langue</translation>
+    </message>
+    <message>
+        <source>PREF_CURRENT_LANGUAGE</source>
+        <translation>Langue actuel</translation>
     </message>
     <message>
         <source>PREF_GROUP_STUDY</source>
@@ -621,6 +634,14 @@ Le fichier n&apos;existe pas</translation>
     <message>
         <source>PREFERENCES_NOT_SUPPORTED</source>
         <translation>Les préférences du module &quot;%1&quot; ne sont pas supportées</translation>
+    </message>
+    <message>
+    	<source>PREF_TAB_SHORTCUTS</source>
+        <translation type="unfinished">Shortcuts</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_SHORTCUTS</source>
+        <translation type="unfinished">Shortcuts settings</translation>
     </message>
 </context>
 <context>

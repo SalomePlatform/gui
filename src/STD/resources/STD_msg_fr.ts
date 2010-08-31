@@ -435,56 +435,56 @@ Voulez-vous le réécrire?</translation>
     <name>STD_Application</name>
     <message>
         <source>INF_DOC_MODIFIED</source>
-        <translation type="unfinished">Document has been modified.
-Do you want to save changes?</translation>
+        <translation>Le document a été modifié.
+Voulez-vous sauvegarder les modifications?</translation>
     </message>
     <message>
         <source>INF_DOC_SAVING</source>
-        <translation type="unfinished">Saving study </translation>
+        <translation>Sauvegarder l&apos;étude</translation>
     </message>
     <message>
         <source>INF_DOC_SAVED</source>
-        <translation type="unfinished">Study %1 saved</translation>
+        <translation>L&apos;étude %1 est sauvegardée</translation>
     </message>
     <message>
         <source>TOT_DOCK_WINDOWS</source>
-        <translation type="unfinished">Show / hide dockable windows and toolbars</translation>
+        <translation>Montrer / cacher les fenêtres encrables et les barres d&apos;outils</translation>
     </message>
     <message>
         <source>MEN_DOCK_WINDOWS</source>
-        <translation type="unfinished">Windows and Toolbars</translation>
+        <translation>Fenêtres et Barres d&apos;outils</translation>
     </message>
     <message>
         <source>ABOUT_INFO</source>
-        <translation type="unfinished">SUIT Std application</translation>
+        <translation>SUIT Std application</translation>
     </message>
     <message>
         <source>INF_DOC_SAVING_FAILS</source>
-        <translation type="unfinished">Can&apos;t save file &quot;%1&quot;.
-Possible reason is permission denied or disc full.
-Try to use another file name.</translation>
+        <translation>Impossible de sauvegarder le fichier &quot;%1&quot;.
+Probablement, l&apos;action n&apos;est pas authorisée ou la disque est remplie.
+Essayez d&apos;utiliser un autre nom de fichier.</translation>
     </message>
     <message>
         <source>INF_DOCUMENT_MODIFIED</source>
-        <translation type="unfinished">Document &quot;%1&quot; has been modified.
-Do you want to save changes?</translation>
+        <translation>Le document &quot;%1&quot; a été modifié.
+Voulez-vous sauvegarder les changements?</translation>
     </message>
     <message>
         <source>CLOSE_STUDY</source>
-        <translation type="unfinished">Close active study</translation>
+        <translation>Fermer l&apos;étude actuelle</translation>
     </message>
     <message>
         <source>CLOSE_QUESTION</source>
-        <translation type="unfinished">Do you want to save study before closing?</translation>
+        <translation>Voulez-vous sauvegarder l&apos;étude avant de la fermer?</translation>
     </message>
     <message>
         <source>REOPEN_STUDY</source>
-        <translation type="unfinished">Reopen study</translation>
+        <translation>Rouvrir l&apos;étude</translation>
     </message>
     <message>
         <source>REOPEN_QUESTION</source>
-        <translation type="unfinished">Do you really want to re-open study?
-All the changes made since last saving will be lost.</translation>
+        <translation>Voulez-vous rouvrir l&apos;étude?
+Toutes les modifications introduites après le dernier enregistrement seront perdues.</translation>
     </message>
 </context>
 </TS>

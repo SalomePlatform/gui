@@ -635,14 +635,6 @@ File does not exist</translation>
         <source>PREFERENCES_NOT_SUPPORTED</source>
         <translation>Preferences for module &quot;%1&quot; not supported</translation>
     </message>
-    <message>
-    	<source>PREF_TAB_SHORTCUTS</source>
-        <translation>Shortcuts</translation>
-    </message>
-    <message>
-        <source>PREF_GROUP_SHORTCUTS</source>
-        <translation>Shortcuts settings</translation>
-    </message>
 </context>
 <context>
     <name>LightApp_Module</name>

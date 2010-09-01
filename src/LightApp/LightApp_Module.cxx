@@ -222,8 +222,10 @@ bool LightApp_Module::activateModule( SUIT_Study* study )
     mySwitchOp = new LightApp_SwitchOp( this );
 
   // Enable Display and Erase actions
-  action(myDisplay)->setEnabled(true);
-  action(myErase)->setEnabled(true);
+  if ( action(myDisplay) )
+    action(myDisplay)->setEnabled(true);
+  if ( action(myErase) )
+    action(myErase)->setEnabled(true);
 
   application()->shortcutMgr()->setSectionEnabled( moduleName() );
 
@@ -259,8 +261,10 @@ bool LightApp_Module::deactivateModule( SUIT_Study* study )
   }
 
   // Disable Display and Erase action
-  action(myDisplay)->setEnabled(false);
-  action(myErase)->setEnabled(false);
+  if ( action(myDisplay) )
+    action(myDisplay)->setEnabled(false);
+  if ( action(myErase) )
+    action(myErase)->setEnabled(false);
 
   application()->shortcutMgr()->setSectionEnabled( moduleName(), false );
   

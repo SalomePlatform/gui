@@ -94,6 +94,8 @@ public:
   bool                  exitConfirmation() const;
   void                  setExitConfirmation( const bool );
 
+  virtual void          updateDesktopTitle();
+
 signals:
   /*!emit that view manager added*/
   void                  viewManagerAdded( SUIT_ViewManager* );
@@ -140,7 +142,6 @@ protected:
 
 protected:
   virtual void          createActions();
-  virtual void          updateDesktopTitle();
   virtual void          updateCommandsStatus();
 
   virtual void          setDesktop( SUIT_Desktop* );

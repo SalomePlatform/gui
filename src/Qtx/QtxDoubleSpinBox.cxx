@@ -75,6 +75,12 @@ QtxDoubleSpinBox::QtxDoubleSpinBox( QWidget* parent )
 : QDoubleSpinBox( parent ),
   myCleared( false )
 {
+  // VSR 01/07/2010: Disable thousands separator for spin box
+  // (to avoid incosistency of double-2-string and string-2-double conversion)
+  QLocale loc;
+  loc.setNumberOptions(loc.numberOptions() | QLocale::OmitGroupSeparator | QLocale::RejectGroupSeparator);
+  setLocale(loc);
+
   // Use precision equal to default Qt decimals
   myPrecision = decimals();
   
@@ -98,6 +104,12 @@ QtxDoubleSpinBox::QtxDoubleSpinBox( double min, double max, double step, QWidget
 : QDoubleSpinBox( parent ),
   myCleared( false )
 {
+  // VSR 01/07/2010: Disable thousands separator for spin box
+  // (to avoid incosistency of double-2-string and string-2-double conversion)
+  QLocale loc;
+  loc.setNumberOptions(loc.numberOptions() | QLocale::OmitGroupSeparator | QLocale::RejectGroupSeparator);
+  setLocale(loc);
+
   // Use precision equal to default Qt decimals
   myPrecision = decimals();
   
@@ -129,6 +141,12 @@ QtxDoubleSpinBox::QtxDoubleSpinBox( double min, double max, double step, int pre
   myCleared( false ),
   myPrecision( prec )
 {
+  // VSR 01/07/2010: Disable thousands separator for spin box
+  // (to avoid incosistency of double-2-string and string-2-double conversion)
+  QLocale loc;
+  loc.setNumberOptions(loc.numberOptions() | QLocale::OmitGroupSeparator | QLocale::RejectGroupSeparator);
+  setLocale(loc);
+
   setDecimals( dec );
   setMinimum( min );
   setMaximum( max );
@@ -221,7 +239,7 @@ double QtxDoubleSpinBox::valueFromText( const QString& text ) const
 */
 QString QtxDoubleSpinBox::textFromValue( double val ) const
 {
-  QString s = QLocale().toString( val, myPrecision >= 0 ? 'f' : 'g', qAbs( myPrecision ) );
+  QString s = locale().toString( val, myPrecision >= 0 ? 'f' : 'g', qAbs( myPrecision ) );
   return removeTrailingZeroes( s );
 }
 
@@ -232,7 +250,7 @@ QString QtxDoubleSpinBox::textFromValue( double val ) const
 */
 QString QtxDoubleSpinBox::removeTrailingZeroes( const QString& src ) const
 {
-  QString delim( QLocale().decimalPoint() );
+  QString delim( locale().decimalPoint() );
 
   int idx = src.lastIndexOf( delim );
   if ( idx == -1 )
@@ -298,8 +316,9 @@ QValidator::State QtxDoubleSpinBox::validate( QString& str, int& pos ) const
   v.setNotation( myPrecision >= 0 ? QDoubleValidator::StandardNotation : 
                                     QDoubleValidator::ScientificNotation );
 
-  if ( overhead == 0 )
+  if ( overhead == 0 ) {
     state = v.validate( str, pos );
+  }
   else
     {
       if ( str.length() >= overhead && str.startsWith( pref ) &&
@@ -344,7 +363,7 @@ QValidator::State QtxDoubleSpinBox::validate( QString& str, int& pos ) const
     }
     else if ( myPrecision < 0 ){
       // Consider too large negative exponent as Invalid
-      QChar e( QLocale().exponential() );
+      QChar e( locale().exponential() );
       int epos = str.indexOf( e, 0, Qt::CaseInsensitive );
       if ( epos != -1 ){
         epos++; // Skip exponential symbol itself

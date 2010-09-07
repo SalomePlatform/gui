@@ -61,7 +61,8 @@ OCCViewer_ViewPort3d::OCCViewer_ViewPort3d( QWidget* parent, const Handle( V3d_V
     myAnimate( false ),
     myBusy( true )
 {
-  selectVisualId();
+  // VSR: 01/07/2010 commented to avoid SIGSEGV at SALOME exit
+  //selectVisualId();
 
   if ( type == V3d_ORTHOGRAPHIC ) {
     myOrthoView = new V3d_OrthographicView( viewer );

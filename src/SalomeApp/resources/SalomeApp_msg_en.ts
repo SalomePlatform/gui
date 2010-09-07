@@ -165,6 +165,10 @@ Do you want to reload it ?</translation>
         <translation>Catalog generator</translation>
     </message>
     <message>
+        <source>TOT_DESK_ADD_VARS_TO_NOTEBOOK</source>
+        <translation>Add vars to notebook</translation>
+    </message>
+    <message>
         <source>PUBLISH_IN_STUDY</source>
         <translation>Publish in study</translation>
     </message>
@@ -257,6 +261,10 @@ Do you want to reload it ?</translation>
         <translation>Generates XML catalog of a component&apos;s interface</translation>
     </message>
     <message>
+        <source>PRP_DESK_ADD_VARS_TO_NOTEBOOK</source>
+        <translation>Add variables of the study to the notebook</translation>
+    </message>
+    <message>
         <source>PRP_DESK_FILE_DUMP_STUDY</source>
         <translation>Dumps study to the python script</translation>
     </message>
@@ -287,6 +295,10 @@ Do you want to reload it ?</translation>
     <message>
         <source>MEN_DESK_CATALOG_GENERATOR</source>
         <translation>Catalog &amp;Generator</translation>
+    </message>
+    <message>
+        <source>MEN_DESK_ADD_VARS_TO_NOTEBOOK</source>
+        <translation>Add vars to NoteBook</translation>
     </message>
     <message>
         <source>APPCLOSE_CAPTION</source>

@@ -209,4 +209,16 @@ resizing columns on expanding an object browser item.</li>
 <b>Entry</b>, <b>IOR</b> and <b>Reference entry</b> columns in the Object Browser.</li>
 </ul>
 
+<br><h2>Shortcuts Preferences</h2>
+
+\image html pref41.png
+
+<ul>
+<li>
+<b>Shortcuts settings</b> widget allows to define custom shortcuts for the presented actions.
+<br>To change keyboard sequence for the certain action - select the action and press desirable 
+keys combination.
+</li>
+</ul>
+
 */

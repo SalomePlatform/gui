@@ -119,9 +119,11 @@ void SUIT_ShortcutMgr::processAction( QtxAction* action )
  
   if ( !shortcutActionName.isEmpty() ) {
     // Add action to the actions map
-    QList<QtxAction*> actions = myShortcutActions.values( shortcutActionName );
-    if ( !actions.contains(action) )
-      myShortcutActions.insertMulti( shortcutActionName, action );
+    if ( !myShortcutActions.contains( shortcutActionName, action ) ) {
+      myShortcutActions.insert( shortcutActionName, action );
+      connect( action, SIGNAL( destroyed( QObject* ) ), 
+	       this, SLOT ( onActionDestroyed( QObject* ) ) );
+    }
 
     QKeySequence keySeq = getShortcutByActionName( shortcutActionName );
     action->setShortcut( keySeq );
@@ -167,4 +169,19 @@ void SUIT_ShortcutMgr::updateShortcuts()
     QKeySequence keySeq = getShortcutByActionName( action->shortcutActionName() );
     action->setShortcut( keySeq );
   }
+}
+
+/*!
+  \brief Called when the corresponding action is destroyed.
+  
+  Removes destroyed action from the actions list.
+
+  \param obj action being destroyed
+*/
+void SUIT_ShortcutMgr::onActionDestroyed( QObject* obj )
+{
+  QtxAction* anAction = (QtxAction*)obj;
+  
+  if ( anAction )
+    myShortcutActions.remove( anAction->shortcutActionName(), anAction );
 }

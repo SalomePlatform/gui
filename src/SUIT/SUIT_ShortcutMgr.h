@@ -26,7 +26,7 @@
 #include "SUIT.h"
 
 #include <QObject>
-#include <QMap>
+#include <QMultiMap>
 
 class QtxAction;
 
@@ -42,6 +42,7 @@ class QKeySequence;
 */
 class SUIT_EXPORT SUIT_ShortcutMgr: public QObject 
 {
+  Q_OBJECT
 public:
   static void Init();
   static SUIT_ShortcutMgr* getShortcutMgr();
@@ -53,6 +54,9 @@ protected:
   SUIT_ShortcutMgr();
   virtual ~SUIT_ShortcutMgr();
 
+private slots:
+  void onActionDestroyed( QObject* );
+
 private:
   virtual bool eventFilter( QObject* o, QEvent* e );
 
@@ -61,7 +65,7 @@ private:
 
 private:
   static SUIT_ShortcutMgr* myShortcutMgr;
-  QMap<QString, QtxAction*> myShortcutActions;
+  QMultiMap<QString, QtxAction*> myShortcutActions;
 };
 
 #if defined WIN32

@@ -3071,7 +3071,7 @@ void QtxPagePrefSpinItem::setPrecision( const QVariant& prec )
   if ( QtxDoubleSpinBox* dsb = ::qobject_cast<QtxDoubleSpinBox*>( control() ) )
   {
     if ( prec.canConvert( QVariant::Int ) ) {
-      dsb->setDecimals( prec.toInt() );
+      dsb->setDecimals( qAbs( prec.toInt() ) );
       dsb->setPrecision( prec.toInt() );
     }
   }

@@ -59,7 +59,8 @@ salomeinclude_HEADERS =				\
 	VTKViewer_MarkerWidget.h                \
 	VTKViewer_MarkerDlg.h                   \
 	VTKViewer_PolyDataMapper.h              \
-	VTKViewer_DataSetMapper.h
+	VTKViewer_DataSetMapper.h               \
+	VTKViewer_CellCenters.h
 
 dist_libVTKViewer_la_SOURCES =			\
 	VTKViewer_CellLocationsArray.cxx	\
@@ -87,7 +88,8 @@ dist_libVTKViewer_la_SOURCES =			\
 	VTKViewer_MarkerWidget.cxx              \
 	VTKViewer_MarkerDlg.cxx                 \
 	VTKViewer_PolyDataMapper.cxx            \
-	VTKViewer_DataSetMapper.cxx
+	VTKViewer_DataSetMapper.cxx             \
+	VTKViewer_CellCenters.cxx
 
 MOC_FILES =						\
 	VTKViewer_RenderWindow_moc.cxx			\

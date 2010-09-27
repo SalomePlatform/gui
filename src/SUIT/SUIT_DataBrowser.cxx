@@ -24,6 +24,7 @@
 #include <SUIT_TreeModel.h>
 #include <QtxTreeView.h>
 
+#include <QTimer>
 #include <QShortcut>
 #include <QModelIndex>
 
@@ -48,9 +49,12 @@ SUIT_DataBrowser::SUIT_DataBrowser( QWidget* parent )
   \param parent parent widget
 */
 SUIT_DataBrowser::SUIT_DataBrowser( SUIT_DataObject* root, QWidget* parent )
-: OB_Browser( parent )
+  : OB_Browser( parent )
 {
   init( root );
+
+  myExpandTimer = new QTimer( this );
+  connect( myExpandTimer, SIGNAL( timeout() ), this, SLOT( onExpandUpdate() ) );
 }
 
 /*!
@@ -404,9 +408,26 @@ void SUIT_DataBrowser::onDblClicked( const QModelIndex& index )
 */
 void SUIT_DataBrowser::onExpanded( const QModelIndex& index )
 {
-  if (myResizeOnExpandItem) {
-    adjustFirstColumnWidth();
-    adjustColumnsWidth();
-  }
+  if ( myResizeOnExpandItem )
+    triggerExpandUpdate();
 }
 
+/*!
+  \brief Set the delayed update for expanding items event.
+  \internal
+*/
+void SUIT_DataBrowser::triggerExpandUpdate()
+{
+  myExpandTimer->stop();
+  myExpandTimer->start( 0 );
+}
+
+/*!
+  \brief Update for expanding items event. Called after the required items were expanded.
+  \internal
+*/
+void SUIT_DataBrowser::onExpandUpdate()
+{
+  adjustFirstColumnWidth();
+  adjustColumnsWidth();
+}

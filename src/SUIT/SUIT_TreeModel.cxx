@@ -444,6 +444,7 @@ SUIT_TreeModel::~SUIT_TreeModel()
 				 this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
     SUIT_DataObject::disconnect( SIGNAL( removed( SUIT_DataObject*, SUIT_DataObject* ) ),
 				 this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
+    SUIT_DataObject::disconnect( SIGNAL( changed( SUIT_DataObject* ) ), this, SLOT( onChanged( SUIT_DataObject* ) ) );
     delete myRoot;
   }
 
@@ -475,6 +476,7 @@ void SUIT_TreeModel::setRoot( SUIT_DataObject* r )
 				 this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
     SUIT_DataObject::disconnect( SIGNAL( removed( SUIT_DataObject*, SUIT_DataObject* ) ),
 				 this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
+    SUIT_DataObject::disconnect( SIGNAL( changed( SUIT_DataObject* ) ), this, SLOT( onChanged( SUIT_DataObject* ) ) );
     delete myRoot;
   }
 
@@ -839,6 +841,8 @@ void SUIT_TreeModel::setAutoUpdate( const bool on, const bool updateImmediately 
 			       this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
   SUIT_DataObject::disconnect( SIGNAL( removed( SUIT_DataObject*, SUIT_DataObject* ) ),
 			       this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
+  SUIT_DataObject::disconnect( SIGNAL( changed( SUIT_DataObject* ) ), this, SLOT( onChanged( SUIT_DataObject* ) ) );
+
   myAutoUpdate = on;
 
   if ( myAutoUpdate ) {
@@ -846,6 +850,7 @@ void SUIT_TreeModel::setAutoUpdate( const bool on, const bool updateImmediately 
 			      this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
     SUIT_DataObject::connect( SIGNAL( removed( SUIT_DataObject*, SUIT_DataObject* ) ),
 			      this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
+    SUIT_DataObject::connect( SIGNAL( changed( SUIT_DataObject* ) ), this, SLOT( onChanged( SUIT_DataObject* ) ) );
 
     if ( updateImmediately )
       updateTree();
@@ -939,11 +944,13 @@ void SUIT_TreeModel::initialize()
 			       this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
   SUIT_DataObject::disconnect( SIGNAL( removed( SUIT_DataObject*, SUIT_DataObject* ) ),
 			       this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
+  SUIT_DataObject::disconnect( SIGNAL( changed( SUIT_DataObject* ) ), this, SLOT( onChanged( SUIT_DataObject* ) ) );
   if ( autoUpdate() ) {
     SUIT_DataObject::connect( SIGNAL( inserted( SUIT_DataObject*, SUIT_DataObject* ) ),
 			      this, SLOT( onInserted( SUIT_DataObject*, SUIT_DataObject* ) ) );
     SUIT_DataObject::connect( SIGNAL( removed( SUIT_DataObject*, SUIT_DataObject* ) ),
 			      this, SLOT( onRemoved( SUIT_DataObject*, SUIT_DataObject* ) ) );
+    SUIT_DataObject::connect( SIGNAL( changed( SUIT_DataObject* ) ), this, SLOT( onChanged( SUIT_DataObject* ) ) );
   }
 
   myItems.clear(); // ????? is it really necessary

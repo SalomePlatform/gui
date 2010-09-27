@@ -31,6 +31,7 @@
 
 #include <QAbstractItemView>
 
+class QTimer;
 class QShortcut;
 
 class SUIT_EXPORT SUIT_DataBrowser : public OB_Browser, public SUIT_PopupClient
@@ -74,6 +75,7 @@ protected:
   virtual void     contextMenuEvent( QContextMenuEvent* );
 
 private:
+  void             triggerExpandUpdate();
   void             init( SUIT_DataObject* );
 
 signals:
@@ -84,9 +86,11 @@ private slots:
   void             onModelUpdated();
   void             onDblClicked( const QModelIndex& );
   void             onExpanded( const QModelIndex& );
+  void             onExpandUpdate();
 
 private:
   QShortcut*       myShortcut;
+  QTimer*          myExpandTimer;
 
   bool             myAutoSizeFirstColumn;
   bool             myAutoSizeColumns;

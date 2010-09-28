@@ -94,7 +94,7 @@ static int errorCallback( Display *display, XErrorEvent *Error )
   char msg[ 128 ];
   if ( Error->error_code != BadWindow ) {
     XGetErrorText( display,Error->error_code,msg,sizeof( msg ) );
-    fprintf( stderr, "SpaceMouse reported error = %s. Exit ... \n", msg );
+    //fprintf( stderr, "SpaceMouse reported error = %s. Exit ... \n", msg );
   }
   return 0;
 }

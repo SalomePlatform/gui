@@ -246,7 +246,7 @@ void QtxPathEdit::initialize()
   base->setSpacing( 5 );
 
   base->addWidget( myPath = new QLineEdit( this ) );
-  myPath->setValidator( new QRegExpValidator( QRegExp( "^([\\w\\./]{2}|[A-Z]:)[^:;\\*\\?]*[\\w\\\\/\\.]$" ), myPath ) );
+  myPath->setValidator( new QRegExpValidator( QRegExp( "^([\\w\\./]{2}|[A-Z]:)?[^:;\\*\\?]*[\\w\\\\/\\.]$" ), myPath ) );
 
   QToolButton* browse = new QToolButton( this );
   browse->setIcon( QPixmap( browse_icon ) );

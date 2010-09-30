@@ -36,7 +36,6 @@ salomeinclude_HEADERS= \
 	SALOME_Actor.h \
 	SVTK_RectPicker.h \
 	SVTK_DeviceActor.h \
-	SVTK_DialogBase.h \
 	SVTK_FontWidget.h \
 	SVTK_CubeAxesActor2D.h \
 	SVTK_Functor.h \
@@ -73,7 +72,6 @@ dist_libSVTK_la_SOURCES= \
 	SVTK_NonIsometricDlg.cxx \
 	SVTK_UpdateRateDlg.cxx \
 	SVTK_CubeAxesDlg.cxx \
-	SVTK_DialogBase.cxx \
 	SVTK_FontWidget.cxx \
 	SVTK_Trihedron.cxx \
 	SVTK_View.cxx \
@@ -110,7 +108,6 @@ MOC_FILES= \
 	SVTK_UpdateRateDlg_moc.cxx \
 	SVTK_CubeAxesDlg_moc.cxx \
 	SVTK_FontWidget_moc.cxx \
-	SVTK_DialogBase_moc.cxx \
 	SVTK_ViewModelBase_moc.cxx \
 	SVTK_ViewManager_moc.cxx \
 	SVTK_ViewWindow_moc.cxx \
@@ -148,6 +145,7 @@ libSVTK_la_CPPFLAGS =		\
 	$(BOOST_CPPFLAGS)	\
 	-I$(srcdir)/../Qtx	\
 	-I$(srcdir)/../SUIT	\
+	-I$(srcdir)/../ViewerTools \
 	-I$(srcdir)/../OBJECT	\
 	-I$(srcdir)/../Prs 	\
 	-I$(srcdir)/../VTKViewer \
@@ -160,9 +158,10 @@ libSVTK_la_LDFLAGS =			\
 	$(KERNEL_LDFLAGS)
 
 
-libSVTK_la_LIBADD = ../Qtx/libqtx.la ../SUIT/libsuit.la ../OBJECT/libSalomeObject.la \
-		    ../Prs/libSalomePrs.la ../VTKViewer/libVTKViewer.la \
-		    ../OpenGLUtils/libOpenGLUtils.la -lSALOMELocalTrace
+libSVTK_la_LIBADD = ../Qtx/libqtx.la ../SUIT/libsuit.la ../ViewerTools/libViewerTools.la \
+		    ../OBJECT/libSalomeObject.la ../Prs/libSalomePrs.la \
+		    ../VTKViewer/libVTKViewer.la ../OpenGLUtils/libOpenGLUtils.la \
+		    -lSALOMELocalTrace
 
 # Executable
 bin_PROGRAMS = SVTK

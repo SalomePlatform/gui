@@ -35,6 +35,7 @@ class OCCViewer_ClippingDlg;
 class OCCViewer_AxialScaleDlg;
 class OCCViewer_SetRotationPointDlg;
 class OCCViewer_Viewer;
+class OCCViewer_CubeAxesDlg;
 class viewAspect;
 class QtxAction;
 
@@ -50,7 +51,7 @@ public:
   enum { DumpId, FitAllId, FitRectId, ZoomId, PanId, GlobalPanId,
          ChangeRotationPointId, RotationId,
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, CloneId, ClippingId, MemId, RestoreId,
-         TrihedronShowId, AxialScaleId, AmbientId, SwitchInteractionStyleId };
+         TrihedronShowId, AxialScaleId, GraduatedAxesId, AmbientId, SwitchInteractionStyleId };
 
   enum OperationType{ NOTHING, PANVIEW, ZOOMVIEW, ROTATE, 
                       PANGLOBAL, WINDOWFIT, FITALLVIEW, RESETVIEW,
@@ -111,6 +112,7 @@ public slots:
   void onCloneView();
   void onClipping( bool on );
   void onAxialScale();
+  void onGraduatedAxes();
   void onAmbientToogle();
   void onMemorizeView();
   void onRestoreView();
@@ -178,6 +180,8 @@ protected:
   OperationType         myOperation;
   OCCViewer_Viewer*     myModel;
   OCCViewer_ViewPort3d* myViewPort;
+
+  OCCViewer_CubeAxesDlg* myCubeAxesDlg;
 
   RotationPointType     myCurrPointType;
   RotationPointType     myPrevPointType;

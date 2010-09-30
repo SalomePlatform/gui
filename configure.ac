@@ -625,6 +625,7 @@ AC_OUTPUT([ \
   src/ObjBrowser/Makefile \
   src/Prs/Makefile \
   src/OBJECT/Makefile \
+  src/ViewerTools/Makefile \
   src/GLViewer/Makefile \
   src/VTKViewer/Makefile \
   src/SVTK/Makefile \

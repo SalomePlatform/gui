@@ -20,51 +20,52 @@
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-//  SALOME VTKViewer : build VTK viewer into Salome desktop
-//  File   : 
-//  Author : 
-//  Module : SALOME
-//  $Header$
-//
-#ifndef SVTK_NONISOMETRICDLG_H
-#define SVTK_NONISOMETRICDLG_H
+#ifndef VIEWERTOOLS_FONTWIDGETBASE_H
+#define VIEWERTOOLS_FONTWIDGETBASE_H
 
-#include <ViewerTools_DialogBase.h>
+#include "ViewerTools.h"
 
-class SVTK_ViewWindow;
+#include <QWidget>
 
-class QtxDoubleSpinBox;
-class QtxAction;
+class QToolButton;
+class QComboBox;
+class QCheckBox;
+class QColor;
 
-class QPushButton;
-
-
-class SVTK_NonIsometricDlg : public ViewerTools_DialogBase
+/*!
+ * Class       : ViewerTools_FontWidgetBase
+ * Description : Dialog for specifying font
+ */
+class VIEWERTOOLS_EXPORT ViewerTools_FontWidgetBase : public QWidget
 {
-  Q_OBJECT;
+  Q_OBJECT
 
 public:
-  SVTK_NonIsometricDlg(QtxAction* theAction,
-                       SVTK_ViewWindow* theParent,
-                       const char* theName);
+                ViewerTools_FontWidgetBase( QWidget* );
+  virtual       ~ViewerTools_FontWidgetBase();
 
-  ~SVTK_NonIsometricDlg();
+  void          SetColor( const QColor& );
+  QColor        GetColor() const;
 
-  void Update();
+  virtual void  SetData( const QColor&, const int, const bool, const bool, const bool );
+
+  virtual void  GetData( QColor&, int&, bool&, bool&, bool& ) const;
+
+public:
+  virtual void  Initialize();
 
 protected:
-  SVTK_ViewWindow *m_MainWindow;
-
-  QtxDoubleSpinBox* m_sbXcoeff;
-  QtxDoubleSpinBox* m_sbYcoeff;
-  QtxDoubleSpinBox* m_sbZcoeff;
-  QPushButton* m_bReset;
+  virtual void  InitializeFamilies() = 0;
 
 protected slots:
-  void onClickApply();
-  void onClickReset();
-  void onClickOk();
-  void onClickClose();
+  void          onColor();
+
+protected:
+  QToolButton*  myColorBtn;
+  QComboBox*    myFamily;
+  QCheckBox*    myBold;
+  QCheckBox*    myItalic;
+  QCheckBox*    myShadow;
 };
 
-#endif // SVTK_NONISOMETRICDLG_H
+#endif

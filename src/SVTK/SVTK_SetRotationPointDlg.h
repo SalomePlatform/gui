@@ -31,7 +31,7 @@
 
 #include "SVTK.h"
 
-#include "SVTK_DialogBase.h"
+#include <ViewerTools_DialogBase.h>
 
 #include <vtkSmartPointer.h>
 
@@ -48,7 +48,7 @@ class QCheckBox;
 class vtkCallbackCommand;
 class vtkObject;
 
-class SVTK_EXPORT SVTK_SetRotationPointDlg : public SVTK_DialogBase
+class SVTK_EXPORT SVTK_SetRotationPointDlg : public ViewerTools_DialogBase
 {
   Q_OBJECT;
 

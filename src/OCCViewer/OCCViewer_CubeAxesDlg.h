@@ -20,53 +20,69 @@
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-//  File   : SVTK_CubeAxesDlg.h
-//  Author : Sergey LITONIN
-//  Module : VISU
-//
-#ifndef SVTK_CubeAxesDlg_H
-#define SVTK_CubeAxesDlg_H
+#ifndef OCCVIEWER_CUBEAXESDLG_H
+#define OCCVIEWER_CUBEAXESDLG_H
 
-#include "SVTK.h"
+#include "OCCViewer.h"
 
 #include <ViewerTools_CubeAxesDlgBase.h>
 
-class SVTK_ViewWindow;
-class SVTK_CubeAxesActor2D;
+#include <V3d_View.hxx>
 
-class vtkAxisActor2D;
+class OCCViewer_ViewWindow;
 
 /*!
- * Class       : SVTK_AxisWidget
+ * Class       : OCCViewer_AxisWidget
  * Description : Axis tab widget of the "Graduated axis" dialog box
 */
-class SVTK_EXPORT SVTK_AxisWidget : public ViewerTools_AxisWidgetBase
+class OCCVIEWER_EXPORT OCCViewer_AxisWidget : public ViewerTools_AxisWidgetBase
 {
 public:
-  SVTK_AxisWidget( QWidget* );
-  ~SVTK_AxisWidget();
+  struct AxisData
+  {
+    bool    DrawName;
+    QString Name;
+    QColor  NameColor;
+    bool    DrawValues;
+    int     NbValues;
+    int     Offset;
+    QColor  Color;
+    bool    DrawTickmarks;
+    int     TickmarkLength;
+  };
 
 public:
-  bool             ReadData( vtkAxisActor2D* );
-  bool             Apply( vtkAxisActor2D* );
+  OCCViewer_AxisWidget( QWidget* );
+  ~OCCViewer_AxisWidget();
+
+public:
+  void             SetData( const AxisData& );
+  void             GetData( AxisData& );
 
 protected:
   virtual ViewerTools_FontWidgetBase* createFontWidget( QWidget* );
 };
 
 /*!
- * Class       : SVTK_CubeAxesDlg
+ * Class       : OCCViewer_CubeAxesDlg
  * Description : Dialog for specifynig cube axes properties
  */
-class SVTK_EXPORT SVTK_CubeAxesDlg : public ViewerTools_CubeAxesDlgBase
+class OCCVIEWER_EXPORT OCCViewer_CubeAxesDlg : public ViewerTools_CubeAxesDlgBase
 {
   Q_OBJECT
 
 public:
-                  SVTK_CubeAxesDlg(QtxAction* theAction,
-                                   SVTK_ViewWindow* theParent,
-                                   const char* theName);
-  virtual         ~SVTK_CubeAxesDlg();
+                  OCCViewer_CubeAxesDlg(QtxAction* theAction,
+                                        OCCViewer_ViewWindow* theParent,
+                                        const char* theName);
+  virtual         ~OCCViewer_CubeAxesDlg();
+
+  virtual void    initialize();
+
+  void            GetData( bool& theIsVisible, OCCViewer_AxisWidget::AxisData theAxisData[3] );
+  void            SetData( bool theIsVisible, OCCViewer_AxisWidget::AxisData theAxisData[3] );
+
+  void            ApplyData( const Handle(V3d_View)& theView );
 
   virtual void    Update();
 
@@ -77,8 +93,7 @@ private:
   virtual ViewerTools_AxisWidgetBase* createAxisWidget( QWidget* );
 
 private:
-  SVTK_ViewWindow*      myMainWindow;
-  SVTK_CubeAxesActor2D* myActor;
+  OCCViewer_ViewWindow* myMainWindow;
 };
 
 #endif

@@ -20,51 +20,31 @@
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-//  SALOME VTKViewer : build VTK viewer into Salome desktop
-//  File   : 
-//  Author : 
-//  Module : SALOME
-//  $Header$
-//
-#ifndef SVTK_NONISOMETRICDLG_H
-#define SVTK_NONISOMETRICDLG_H
+#ifndef OCCVIEWER_FONTWIDGET_H
+#define OCCVIEWER_FONTWIDGET_H
 
-#include <ViewerTools_DialogBase.h>
+#include "OCCViewer.h"
 
-class SVTK_ViewWindow;
+#include <ViewerTools_FontWidgetBase.h>
 
-class QtxDoubleSpinBox;
-class QtxAction;
-
-class QPushButton;
-
-
-class SVTK_NonIsometricDlg : public ViewerTools_DialogBase
+/*!
+ * Class       : OCCViewer_FontWidget
+ * Description : Dialog for specifynig font
+ */
+class OCCVIEWER_EXPORT OCCViewer_FontWidget : public ViewerTools_FontWidgetBase
 {
-  Q_OBJECT;
+  Q_OBJECT
 
 public:
-  SVTK_NonIsometricDlg(QtxAction* theAction,
-                       SVTK_ViewWindow* theParent,
-                       const char* theName);
+                OCCViewer_FontWidget( QWidget* );
+  virtual       ~OCCViewer_FontWidget();
 
-  ~SVTK_NonIsometricDlg();
+  virtual void  SetData( const QColor&, const int, const bool, const bool, const bool );
 
-  void Update();
+  virtual void  GetData( QColor&, int&, bool&, bool&, bool& ) const;
 
 protected:
-  SVTK_ViewWindow *m_MainWindow;
-
-  QtxDoubleSpinBox* m_sbXcoeff;
-  QtxDoubleSpinBox* m_sbYcoeff;
-  QtxDoubleSpinBox* m_sbZcoeff;
-  QPushButton* m_bReset;
-
-protected slots:
-  void onClickApply();
-  void onClickReset();
-  void onClickOk();
-  void onClickClose();
+  virtual void  InitializeFamilies();
 };
 
-#endif // SVTK_NONISOMETRICDLG_H
+#endif

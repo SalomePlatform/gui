@@ -208,6 +208,14 @@
         <translation>Scaling</translation>
     </message>
     <message>
+        <source>DSC_GRADUATED_AXES</source>
+        <translation>Graduated axes</translation>
+    </message>
+    <message>
+        <source>MNU_GRADUATED_AXES</source>
+        <translation>Graduated axes</translation>
+    </message>
+    <message>
         <source>DSC_AMBIENT</source>
         <translation>Toogle keep only ambient light</translation>
     </message>

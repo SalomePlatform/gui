@@ -165,6 +165,7 @@ void SVTK_ViewWindow::Initialize(SVTK_ViewModelBase* theModel)
   myUpdateRateDlg = new SVTK_UpdateRateDlg( getAction( UpdateRate ), this, "SVTK_UpdateRateDlg" );
   myNonIsometricDlg = new SVTK_NonIsometricDlg( getAction( NonIsometric ), this, "SVTK_NonIsometricDlg" );
   myCubeAxesDlg = new SVTK_CubeAxesDlg( getAction( GraduatedAxes ), this, "SVTK_CubeAxesDlg" );
+  myCubeAxesDlg->initialize();
   mySetRotationPointDlg = new SVTK_SetRotationPointDlg
     ( getAction( ChangeRotationPointId ), this, "SVTK_SetRotationPointDlg" );
   myViewParameterDlg = new SVTK_ViewParameterDlg

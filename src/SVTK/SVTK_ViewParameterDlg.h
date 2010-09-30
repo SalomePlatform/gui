@@ -28,7 +28,7 @@
 
 #include "SVTK.h"
 
-#include "SVTK_DialogBase.h"
+#include <ViewerTools_DialogBase.h>
 
 #include <vtkSmartPointer.h>
 #include <vtkTimeStamp.h>
@@ -47,7 +47,7 @@ class QButtonGroup;
 class vtkCallbackCommand;
 class vtkObject;
 
-class SVTK_EXPORT SVTK_ViewParameterDlg : public SVTK_DialogBase
+class SVTK_EXPORT SVTK_ViewParameterDlg : public ViewerTools_DialogBase
 {
   Q_OBJECT;
 

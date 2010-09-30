@@ -47,9 +47,9 @@ SVTK_NonIsometricDlg
 ::SVTK_NonIsometricDlg(QtxAction* theAction,
                        SVTK_ViewWindow* theParent,
                        const char* theName):
-  SVTK_DialogBase(theAction,
-                  theParent, 
-                  theName),
+  ViewerTools_DialogBase(theAction,
+                         theParent, 
+                         theName),
   m_MainWindow(theParent)
 {
   setWindowTitle(tr("DLG_TITLE"));

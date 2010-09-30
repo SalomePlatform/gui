@@ -44,6 +44,8 @@ salomeinclude_HEADERS =				\
 	OCCViewer_AxialScaleDlg.h		\
 	OCCViewer_SetRotationPointDlg.h		\
 	OCCViewer_Trihedron.h                   \
+	OCCViewer_FontWidget.h                  \
+	OCCViewer_CubeAxesDlg.h                 \
 	OCCViewer_ToolTip.h
 
 dist_libOCCViewer_la_SOURCES =			\
@@ -60,6 +62,8 @@ dist_libOCCViewer_la_SOURCES =			\
 	OCCViewer_ClippingDlg.cxx		\
 	OCCViewer_AxialScaleDlg.cxx		\
 	OCCViewer_Trihedron.cxx			\
+	OCCViewer_FontWidget.cxx                \
+	OCCViewer_CubeAxesDlg.cxx               \
 	OCCViewer_ToolTip.cxx
 
 MOC_FILES =					\
@@ -74,8 +78,10 @@ MOC_FILES =					\
 	OCCViewer_SetRotationPointDlg_moc.cxx	\
 	OCCViewer_ClippingDlg_moc.cxx		\
 	OCCViewer_AxialScaleDlg_moc.cxx		\
+	OCCViewer_FontWidget_moc.cxx            \
+	OCCViewer_CubeAxesDlg_moc.cxx           \
 	OCCViewer_ToolTip_moc.cxx
-	
+
 nodist_libOCCViewer_la_SOURCES = $(MOC_FILES)
 
 dist_salomeres_DATA =				\
@@ -86,6 +92,7 @@ dist_salomeres_DATA =				\
 	resources/occ_view_clipping.png		\
 	resources/occ_view_clipping_pressed.png	\
 	resources/occ_view_scaling.png		\
+	resources/occ_view_graduated_axes.png	\
 	resources/occ_view_ambient.png		\
 	resources/occ_view_fitall.png		\
 	resources/occ_view_fitarea.png		\
@@ -109,7 +116,9 @@ nodist_salomeres_DATA =		\
 	OCCViewer_msg_fr.qm 
 
 libOCCViewer_la_CPPFLAGS = $(QT_INCLUDES) $(OGL_INCLUDES) $(CAS_CPPFLAGS) \
-	-I$(srcdir)/../SUIT -I$(srcdir)/../Qtx -I$(srcdir)/../OpenGLUtils
+	-I$(srcdir)/../SUIT -I$(srcdir)/../ViewerTools -I$(srcdir)/../Qtx \
+	-I$(srcdir)/../OpenGLUtils
 
 libOCCViewer_la_LDFLAGS  = $(OGL_LIBS) $(QT_MT_LIBS) $(CAS_KERNEL) $(CAS_VIEWER)
-libOCCViewer_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la ../OpenGLUtils/libOpenGLUtils.la
+libOCCViewer_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la \
+	../ViewerTools/libViewerTools.la ../OpenGLUtils/libOpenGLUtils.la

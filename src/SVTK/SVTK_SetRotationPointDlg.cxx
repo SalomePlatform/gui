@@ -55,9 +55,9 @@ SVTK_SetRotationPointDlg
 ::SVTK_SetRotationPointDlg(QtxAction* theAction,
                            SVTK_ViewWindow* theParent,
                            const char* theName):
-  SVTK_DialogBase(theAction,
-                  theParent, 
-                  theName),
+  ViewerTools_DialogBase(theAction,
+                         theParent, 
+                         theName),
   myMainWindow(theParent),
   myPriority(0.0),
   myEventCallbackCommand(vtkCallbackCommand::New()),

@@ -20,26 +20,21 @@
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-//  VISU VISUGUI : GUI for SMESH component
-//  File   : 
-//  Author : Sergey LITONIN
-//  Module : 
-//
-#include "SVTK_FontWidget.h"
+#include "OCCViewer_FontWidget.h"
 
 #include <QComboBox>
 
-#include <vtkTextProperty.h>
+//#include <vtkTextProperty.h>
 
 /*!
- * Class       : SVTK_FontWidget
+ * Class       : OCCViewer_FontWidget
  * Description : Dialog for specifynig font
  */
 
 /*!
   Constructor
 */
-SVTK_FontWidget::SVTK_FontWidget( QWidget* theParent )
+OCCViewer_FontWidget::OCCViewer_FontWidget( QWidget* theParent )
 : ViewerTools_FontWidgetBase( theParent )
 {
 }
@@ -47,22 +42,22 @@ SVTK_FontWidget::SVTK_FontWidget( QWidget* theParent )
 /*!
   Destructor
 */
-SVTK_FontWidget::~SVTK_FontWidget()
+OCCViewer_FontWidget::~OCCViewer_FontWidget()
 {
 }
 
-void SVTK_FontWidget::InitializeFamilies()
+void OCCViewer_FontWidget::InitializeFamilies()
 {
-  myFamily->insertItem( myFamily->count(), tr( "ARIAL" ) );
-  myFamily->insertItem( myFamily->count(), tr( "COURIER" ) );
-  myFamily->insertItem( myFamily->count(), tr( "TIMES" ) );
+  //myFamily->insertItem( myFamily->count(), tr( "ARIAL" ) );
+  //myFamily->insertItem( myFamily->count(), tr( "COURIER" ) );
+  //myFamily->insertItem( myFamily->count(), tr( "TIMES" ) );
 }
 
-void SVTK_FontWidget::SetData( const QColor& theColor,
-                               const int theFamily,
-                               const bool theBold,
-                               const bool theItalic,
-                               const bool theShadow )
+void OCCViewer_FontWidget::SetData( const QColor& theColor,
+                                    const int theFamily,
+                                    const bool theBold,
+                                    const bool theItalic,
+                                    const bool theShadow )
 {
   ViewerTools_FontWidgetBase::SetData( theColor,
                                        theFamily,
@@ -70,19 +65,21 @@ void SVTK_FontWidget::SetData( const QColor& theColor,
                                        theItalic,
                                        theShadow );
 
+  /*
   if ( theFamily == VTK_ARIAL )
     myFamily->setCurrentIndex( 0 );
   else if ( theFamily == VTK_COURIER )
     myFamily->setCurrentIndex( 1 );
   else
     myFamily->setCurrentIndex( 2 );
+  */
 }
 
-void SVTK_FontWidget::GetData( QColor& theColor,
-                               int& theFamily,
-                               bool& theBold,
-                               bool& theItalic,
-                               bool& theShadow ) const
+void OCCViewer_FontWidget::GetData( QColor& theColor,
+                                    int& theFamily,
+                                    bool& theBold,
+                                    bool& theItalic,
+                                    bool& theShadow ) const
 {
   ViewerTools_FontWidgetBase::GetData( theColor,
                                        theFamily,
@@ -90,6 +87,7 @@ void SVTK_FontWidget::GetData( QColor& theColor,
                                        theItalic,
                                        theShadow );
 
+  /*
   int anItem = myFamily->currentIndex();
   if ( anItem == 0 )
     theFamily = VTK_ARIAL;
@@ -97,4 +95,5 @@ void SVTK_FontWidget::GetData( QColor& theColor,
     theFamily = VTK_COURIER;
   else
     theFamily = VTK_TIMES;
+  */
 }

@@ -20,51 +20,22 @@
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-//  SALOME VTKViewer : build VTK viewer into Salome desktop
-//  File   : 
-//  Author : 
-//  Module : SALOME
-//  $Header$
-//
-#ifndef SVTK_NONISOMETRICDLG_H
-#define SVTK_NONISOMETRICDLG_H
+#ifndef VIEWERTOOLS_H
+#define VIEWERTOOLS_H
 
-#include <ViewerTools_DialogBase.h>
+#ifdef WIN32
+#  if defined VIEWERTOOLS_EXPORTS
+#    define VIEWERTOOLS_EXPORT __declspec(dllexport)
+#  else
+#   define VIEWERTOOLS_EXPORT __declspec(dllimport)
+#  endif
+#else
+#  define VIEWERTOOLS_EXPORT
+#endif
 
-class SVTK_ViewWindow;
+#if defined WIN32
+#pragma warning ( disable: 4251 )
+#pragma warning ( disable: 4786 )
+#endif
 
-class QtxDoubleSpinBox;
-class QtxAction;
-
-class QPushButton;
-
-
-class SVTK_NonIsometricDlg : public ViewerTools_DialogBase
-{
-  Q_OBJECT;
-
-public:
-  SVTK_NonIsometricDlg(QtxAction* theAction,
-                       SVTK_ViewWindow* theParent,
-                       const char* theName);
-
-  ~SVTK_NonIsometricDlg();
-
-  void Update();
-
-protected:
-  SVTK_ViewWindow *m_MainWindow;
-
-  QtxDoubleSpinBox* m_sbXcoeff;
-  QtxDoubleSpinBox* m_sbYcoeff;
-  QtxDoubleSpinBox* m_sbZcoeff;
-  QPushButton* m_bReset;
-
-protected slots:
-  void onClickApply();
-  void onClickReset();
-  void onClickOk();
-  void onClickClose();
-};
-
-#endif // SVTK_NONISOMETRICDLG_H
+#endif

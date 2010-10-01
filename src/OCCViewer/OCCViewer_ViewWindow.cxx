@@ -1821,73 +1821,73 @@ viewAspect OCCViewer_ViewWindow::getViewParams() const
 QString OCCViewer_ViewWindow::getVisualParameters()
 {
   viewAspect params = getViewParams();
-  QString retStr;
 
-  retStr += QString().sprintf( "scale=%.12e*", params.scale );
-  retStr += QString().sprintf( "centerX=%.12e*", params.centerX );
-  retStr += QString().sprintf( "centerY=%.12e*", params.centerY );
-  retStr += QString().sprintf( "projX=%.12e*", params.projX );
-  retStr += QString().sprintf( "projY=%.12e*", params.projY );
-  retStr += QString().sprintf( "projZ=%.12e*", params.projZ );
-  retStr += QString().sprintf( "twist=%.12e*", params.twist );
-  retStr += QString().sprintf( "atX=%.12e*", params.atX );
-  retStr += QString().sprintf( "atY=%.12e*", params.atY );
-  retStr += QString().sprintf( "atZ=%.12e*", params.atZ );
-  retStr += QString().sprintf( "eyeX=%.12e*", params.eyeX );
-  retStr += QString().sprintf( "eyeY=%.12e*", params.eyeY );
-  retStr += QString().sprintf( "eyeZ=%.12e*", params.eyeZ );
-  retStr += QString().sprintf( "scaleX=%.12e*", params.scaleX );
-  retStr += QString().sprintf( "scaleY=%.12e*", params.scaleY );
-  retStr += QString().sprintf( "scaleZ=%.12e*", params.scaleZ );
+  QStringList data;
 
-  retStr += QString().sprintf( "isVisible=%.u*", params.isVisible );
-  retStr += QString().sprintf( "size=%.2f", params.size );
+  data << QString( "scale=%1" )    .arg( params.scale,   0, 'e', 12 );
+  data << QString( "centerX=%1" )  .arg( params.centerX, 0, 'e', 12 );
+  data << QString( "centerY=%1" )  .arg( params.centerY, 0, 'e', 12 );
+  data << QString( "projX=%1" )    .arg( params.projX,   0, 'e', 12 );
+  data << QString( "projY=%1" )    .arg( params.projY,   0, 'e', 12 );
+  data << QString( "projZ=%1" )    .arg( params.projZ,   0, 'e', 12 );
+  data << QString( "twist=%1" )    .arg( params.twist,   0, 'e', 12 );
+  data << QString( "atX=%1" )      .arg( params.atX,     0, 'e', 12 );
+  data << QString( "atY=%1" )      .arg( params.atY,     0, 'e', 12 );
+  data << QString( "atZ=%1" )      .arg( params.atZ,     0, 'e', 12 );
+  data << QString( "eyeX=%1" )     .arg( params.eyeX,    0, 'e', 12 );
+  data << QString( "eyeY=%1" )     .arg( params.eyeY,    0, 'e', 12 );
+  data << QString( "eyeZ=%1" )     .arg( params.eyeZ,    0, 'e', 12 );
+  data << QString( "scaleX=%1" )   .arg( params.scaleX,  0, 'e', 12 );
+  data << QString( "scaleY=%1" )   .arg( params.scaleY,  0, 'e', 12 );
+  data << QString( "scaleZ=%1" )   .arg( params.scaleZ,  0, 'e', 12 );
+  data << QString( "isVisible=%1" ).arg( params.isVisible );
+  data << QString( "size=%1" )     .arg( params.size,    0, 'f',  2 );
 
-#if OCC_VERSION_LARGE > 0x06030009 // available only with OCC-6.3-sp10 and higher version
+#if OCC_VERSION_LARGE > 0x06030009 // available only with OCC-6.3-sp10 or newer version
   // graduated trihedron
-  retStr += QString().sprintf( "*gtIsVisible=%u*", params.gtIsVisible );
-  retStr += QString().sprintf( "gtDrawNameX=%u*", params.gtDrawNameX );
-  retStr += QString().sprintf( "gtDrawNameY=%u*", params.gtDrawNameY );
-  retStr += QString().sprintf( "gtDrawNameZ=%u*", params.gtDrawNameZ );
-  retStr += QString().sprintf( "gtNameX=%s*", params.gtNameX.toLatin1().constData() );
-  retStr += QString().sprintf( "gtNameY=%s*", params.gtNameY.toLatin1().constData() );
-  retStr += QString().sprintf( "gtNameZ=%s*", params.gtNameZ.toLatin1().constData() );
-  retStr += QString().sprintf( "gtNameColorRX=%u*", params.gtNameColorRX );
-  retStr += QString().sprintf( "gtNameColorGX=%u*", params.gtNameColorGX );
-  retStr += QString().sprintf( "gtNameColorBX=%u*", params.gtNameColorBX );
-  retStr += QString().sprintf( "gtNameColorRY=%u*", params.gtNameColorRY );
-  retStr += QString().sprintf( "gtNameColorGY=%u*", params.gtNameColorGY );
-  retStr += QString().sprintf( "gtNameColorBY=%u*", params.gtNameColorBY );
-  retStr += QString().sprintf( "gtNameColorRZ=%u*", params.gtNameColorRZ );
-  retStr += QString().sprintf( "gtNameColorGZ=%u*", params.gtNameColorGZ );
-  retStr += QString().sprintf( "gtNameColorBZ=%u*", params.gtNameColorBZ );
-  retStr += QString().sprintf( "gtDrawValuesX=%u*", params.gtDrawValuesX );
-  retStr += QString().sprintf( "gtDrawValuesY=%u*", params.gtDrawValuesY );
-  retStr += QString().sprintf( "gtDrawValuesZ=%u*", params.gtDrawValuesZ );
-  retStr += QString().sprintf( "gtNbValuesX=%u*", params.gtNbValuesX );
-  retStr += QString().sprintf( "gtNbValuesY=%u*", params.gtNbValuesY );
-  retStr += QString().sprintf( "gtNbValuesZ=%u*", params.gtNbValuesZ );
-  retStr += QString().sprintf( "gtOffsetX=%u*", params.gtOffsetX );
-  retStr += QString().sprintf( "gtOffsetY=%u*", params.gtOffsetY );
-  retStr += QString().sprintf( "gtOffsetZ=%u*", params.gtOffsetZ );
-  retStr += QString().sprintf( "gtColorRX=%u*", params.gtColorRX );
-  retStr += QString().sprintf( "gtColorGX=%u*", params.gtColorGX );
-  retStr += QString().sprintf( "gtColorBX=%u*", params.gtColorBX );
-  retStr += QString().sprintf( "gtColorRY=%u*", params.gtColorRY );
-  retStr += QString().sprintf( "gtColorGY=%u*", params.gtColorGY );
-  retStr += QString().sprintf( "gtColorBY=%u*", params.gtColorBY );
-  retStr += QString().sprintf( "gtColorRZ=%u*", params.gtColorRZ );
-  retStr += QString().sprintf( "gtColorGZ=%u*", params.gtColorGZ );
-  retStr += QString().sprintf( "gtColorBZ=%u*", params.gtColorBZ );
-  retStr += QString().sprintf( "gtDrawTickmarksX=%u*", params.gtDrawTickmarksX );
-  retStr += QString().sprintf( "gtDrawTickmarksY=%u*", params.gtDrawTickmarksY );
-  retStr += QString().sprintf( "gtDrawTickmarksZ=%u*", params.gtDrawTickmarksZ );
-  retStr += QString().sprintf( "gtTickmarkLengthX=%u*", params.gtTickmarkLengthX );
-  retStr += QString().sprintf( "gtTickmarkLengthY=%u*", params.gtTickmarkLengthY );
-  retStr += QString().sprintf( "gtTickmarkLengthZ=%u", params.gtTickmarkLengthZ );
+  data << QString( "gtIsVisible=%1" )      .arg( params.gtIsVisible );
+  data << QString( "gtDrawNameX=%1" )      .arg( params.gtDrawNameX );
+  data << QString( "gtDrawNameY=%1" )      .arg( params.gtDrawNameY );
+  data << QString( "gtDrawNameZ=%1" )      .arg( params.gtDrawNameZ );
+  data << QString( "gtNameX=%1" )          .arg( params.gtNameX );
+  data << QString( "gtNameY=%1" )          .arg( params.gtNameY );
+  data << QString( "gtNameZ=%1" )          .arg( params.gtNameZ );
+  data << QString( "gtNameColorRX=%1" )    .arg( params.gtNameColorRX );
+  data << QString( "gtNameColorGX=%1" )    .arg( params.gtNameColorGX );
+  data << QString( "gtNameColorBX=%1" )    .arg( params.gtNameColorBX );
+  data << QString( "gtNameColorRY=%1" )    .arg( params.gtNameColorRY );
+  data << QString( "gtNameColorGY=%1" )    .arg( params.gtNameColorGY );
+  data << QString( "gtNameColorBY=%1" )    .arg( params.gtNameColorBY );
+  data << QString( "gtNameColorRZ=%1" )    .arg( params.gtNameColorRZ );
+  data << QString( "gtNameColorGZ=%1" )    .arg( params.gtNameColorGZ );
+  data << QString( "gtNameColorBZ=%1" )    .arg( params.gtNameColorBZ );
+  data << QString( "gtDrawValuesX=%1" )    .arg( params.gtDrawValuesX );
+  data << QString( "gtDrawValuesY=%1" )    .arg( params.gtDrawValuesY );
+  data << QString( "gtDrawValuesZ=%1" )    .arg( params.gtDrawValuesZ );
+  data << QString( "gtNbValuesX=%1" )      .arg( params.gtNbValuesX );
+  data << QString( "gtNbValuesY=%1" )      .arg( params.gtNbValuesY );
+  data << QString( "gtNbValuesZ=%1" )      .arg( params.gtNbValuesZ );
+  data << QString( "gtOffsetX=%1" )        .arg( params.gtOffsetX );
+  data << QString( "gtOffsetY=%1" )        .arg( params.gtOffsetY );
+  data << QString( "gtOffsetZ=%1" )        .arg( params.gtOffsetZ );
+  data << QString( "gtColorRX=%1" )        .arg( params.gtColorRX );
+  data << QString( "gtColorGX=%1" )        .arg( params.gtColorGX );
+  data << QString( "gtColorBX=%1" )        .arg( params.gtColorBX );
+  data << QString( "gtColorRY=%1" )        .arg( params.gtColorRY );
+  data << QString( "gtColorGY=%1" )        .arg( params.gtColorGY );
+  data << QString( "gtColorBY=%1" )        .arg( params.gtColorBY );
+  data << QString( "gtColorRZ=%1" )        .arg( params.gtColorRZ );
+  data << QString( "gtColorGZ=%1" )        .arg( params.gtColorGZ );
+  data << QString( "gtColorBZ=%1" )        .arg( params.gtColorBZ );
+  data << QString( "gtDrawTickmarksX=%1" ) .arg( params.gtDrawTickmarksX );
+  data << QString( "gtDrawTickmarksY=%1" ) .arg( params.gtDrawTickmarksY );
+  data << QString( "gtDrawTickmarksZ=%1" ) .arg( params.gtDrawTickmarksZ );
+  data << QString( "gtTickmarkLengthX=%1" ).arg( params.gtTickmarkLengthX );
+  data << QString( "gtTickmarkLengthY=%1" ).arg( params.gtTickmarkLengthY );
+  data << QString( "gtTickmarkLengthZ=%1" ).arg( params.gtTickmarkLengthZ );
 #endif
 
-  return retStr;
+  return data.join("*");
 }
 
 /*!
@@ -1897,106 +1897,95 @@ QString OCCViewer_ViewWindow::getVisualParameters()
 void OCCViewer_ViewWindow::setVisualParameters( const QString& parameters )
 {
   viewAspect params;
-  QStringList paramsLst = parameters.split( '*' );
-  if( parameters.contains( '=' )  ) // new format - "scale=1.000e+00*centerX=0.000e+00..."
+
+  QStringList data = parameters.split( '*' );
+  if ( parameters.contains( '=' )  ) // new format - "scale=1.000e+00*centerX=0.000e+00..."
   {
-    QStringList::const_iterator it = paramsLst.begin(), itEnd = paramsLst.end();
-    for( ; it != itEnd; it++ ) {
-      QString param = *it;
-      QString paramName = param.section( '=', 0, 0 );
-      QString paramStr = param.section( '=', 1, 1 );
-      double paramDouble = paramStr.toDouble();
-      int paramInt = paramStr.toInt();
-      if( paramName == "scale" )          params.scale = paramDouble;
-      else if( paramName == "centerX" )   params.centerX = paramDouble;
-      else if( paramName == "centerY" )   params.centerY = paramDouble;
-      else if( paramName == "projX" )     params.projX = paramDouble;
-      else if( paramName == "projY" )     params.projY = paramDouble;
-      else if( paramName == "projZ" )     params.projZ = paramDouble;
-      else if( paramName == "twist" )     params.twist = paramDouble;
-      else if( paramName == "atX" )       params.atX = paramDouble;
-      else if( paramName == "atY" )       params.atY = paramDouble;
-      else if( paramName == "atZ" )       params.atZ = paramDouble;
-      else if( paramName == "eyeX" )      params.eyeX = paramDouble;
-      else if( paramName == "eyeY" )      params.eyeY = paramDouble;
-      else if( paramName == "eyeZ" )      params.eyeZ = paramDouble;
-      else if( paramName == "scaleX" )    params.scaleX = paramDouble;
-      else if( paramName == "scaleY" )    params.scaleY = paramDouble;
-      else if( paramName == "scaleZ" )    params.scaleZ = paramDouble;
-      else if( paramName == "isVisible" ) params.isVisible = paramInt;
-      else if( paramName == "size" )      params.size = paramDouble;
+    foreach( QString param, data ) {
+      QString paramName  = param.section( '=', 0, 0 ).trimmed();
+      QString paramValue = param.section( '=', 1, 1 ).trimmed();
+      if      ( paramName == "scale" )             params.scale             = paramValue.toDouble();
+      else if ( paramName == "centerX" )           params.centerX           = paramValue.toDouble();
+      else if ( paramName == "centerY" )           params.centerY           = paramValue.toDouble();
+      else if ( paramName == "projX" )             params.projX             = paramValue.toDouble();
+      else if ( paramName == "projY" )             params.projY             = paramValue.toDouble();
+      else if ( paramName == "projZ" )             params.projZ             = paramValue.toDouble();
+      else if ( paramName == "twist" )             params.twist             = paramValue.toDouble();
+      else if ( paramName == "atX" )               params.atX               = paramValue.toDouble();
+      else if ( paramName == "atY" )               params.atY               = paramValue.toDouble();
+      else if ( paramName == "atZ" )               params.atZ               = paramValue.toDouble();
+      else if ( paramName == "eyeX" )              params.eyeX              = paramValue.toDouble();
+      else if ( paramName == "eyeY" )              params.eyeY              = paramValue.toDouble();
+      else if ( paramName == "eyeZ" )              params.eyeZ              = paramValue.toDouble();
+      else if ( paramName == "scaleX" )            params.scaleX            = paramValue.toDouble();
+      else if ( paramName == "scaleY" )            params.scaleY            = paramValue.toDouble();
+      else if ( paramName == "scaleZ" )            params.scaleZ            = paramValue.toDouble();
+      else if ( paramName == "isVisible" )         params.isVisible         = paramValue.toInt();
+      else if ( paramName == "size" )              params.size              = paramValue.toDouble();
       // graduated trihedron
-      else if( paramName == "gtIsVisible" )       params.gtIsVisible = paramInt;
-      else if( paramName == "gtDrawNameX" )       params.gtDrawNameX = paramInt;
-      else if( paramName == "gtDrawNameY" )       params.gtDrawNameY = paramInt;
-      else if( paramName == "gtDrawNameZ" )       params.gtDrawNameZ = paramInt;
-      else if( paramName == "gtNameX" )           params.gtNameX = paramStr;
-      else if( paramName == "gtNameY" )           params.gtNameY = paramStr;
-      else if( paramName == "gtNameZ" )           params.gtNameZ = paramStr;
-      else if( paramName == "gtNameColorRX" )     params.gtNameColorRX = paramInt;
-      else if( paramName == "gtNameColorGX" )     params.gtNameColorGX = paramInt;
-      else if( paramName == "gtNameColorBX" )     params.gtNameColorBX = paramInt;
-      else if( paramName == "gtNameColorRY" )     params.gtNameColorRY = paramInt;
-      else if( paramName == "gtNameColorGY" )     params.gtNameColorGY = paramInt;
-      else if( paramName == "gtNameColorBY" )     params.gtNameColorBY = paramInt;
-      else if( paramName == "gtNameColorRZ" )     params.gtNameColorRZ = paramInt;
-      else if( paramName == "gtNameColorGZ" )     params.gtNameColorGZ = paramInt;
-      else if( paramName == "gtNameColorBZ" )     params.gtNameColorBZ = paramInt;
-      else if( paramName == "gtDrawValuesX" )     params.gtDrawValuesX = paramInt;
-      else if( paramName == "gtDrawValuesY" )     params.gtDrawValuesY = paramInt;
-      else if( paramName == "gtDrawValuesZ" )     params.gtDrawValuesZ = paramInt;
-      else if( paramName == "gtNbValuesX" )       params.gtNbValuesX = paramInt;
-      else if( paramName == "gtNbValuesY" )       params.gtNbValuesY = paramInt;
-      else if( paramName == "gtNbValuesZ" )       params.gtNbValuesZ = paramInt;
-      else if( paramName == "gtOffsetX" )         params.gtOffsetX = paramInt;
-      else if( paramName == "gtOffsetY" )         params.gtOffsetY = paramInt;
-      else if( paramName == "gtOffsetZ" )         params.gtOffsetZ = paramInt;
-      else if( paramName == "gtColorRX" )         params.gtColorRX = paramInt;
-      else if( paramName == "gtColorGX" )         params.gtColorGX = paramInt;
-      else if( paramName == "gtColorBX" )         params.gtColorBX = paramInt;
-      else if( paramName == "gtColorRY" )         params.gtColorRY = paramInt;
-      else if( paramName == "gtColorGY" )         params.gtColorGY = paramInt;
-      else if( paramName == "gtColorBY" )         params.gtColorBY = paramInt;
-      else if( paramName == "gtColorRZ" )         params.gtColorRZ = paramInt;
-      else if( paramName == "gtColorGZ" )         params.gtColorGZ = paramInt;
-      else if( paramName == "gtColorBZ" )         params.gtColorBZ = paramInt;
-      else if( paramName == "gtDrawTickmarksX" )  params.gtDrawTickmarksX = paramInt;
-      else if( paramName == "gtDrawTickmarksY" )  params.gtDrawTickmarksY = paramInt;
-      else if( paramName == "gtDrawTickmarksZ" )  params.gtDrawTickmarksZ = paramInt;
-      else if( paramName == "gtTickmarkLengthX" ) params.gtTickmarkLengthX = paramInt;
-      else if( paramName == "gtTickmarkLengthY" ) params.gtTickmarkLengthY = paramInt;
-      else if( paramName == "gtTickmarkLengthZ" ) params.gtTickmarkLengthZ = paramInt;
+      else if ( paramName == "gtIsVisible" )       params.gtIsVisible       = paramValue.toInt();
+      else if ( paramName == "gtDrawNameX" )       params.gtDrawNameX       = paramValue.toInt();
+      else if ( paramName == "gtDrawNameY" )       params.gtDrawNameY       = paramValue.toInt();
+      else if ( paramName == "gtDrawNameZ" )       params.gtDrawNameZ       = paramValue.toInt();
+      else if ( paramName == "gtNameX" )           params.gtNameX           = paramValue;
+      else if ( paramName == "gtNameY" )           params.gtNameY           = paramValue;
+      else if ( paramName == "gtNameZ" )           params.gtNameZ           = paramValue;
+      else if ( paramName == "gtNameColorRX" )     params.gtNameColorRX     = paramValue.toInt();
+      else if ( paramName == "gtNameColorGX" )     params.gtNameColorGX     = paramValue.toInt();
+      else if ( paramName == "gtNameColorBX" )     params.gtNameColorBX     = paramValue.toInt();
+      else if ( paramName == "gtNameColorRY" )     params.gtNameColorRY     = paramValue.toInt();
+      else if ( paramName == "gtNameColorGY" )     params.gtNameColorGY     = paramValue.toInt();
+      else if ( paramName == "gtNameColorBY" )     params.gtNameColorBY     = paramValue.toInt();
+      else if ( paramName == "gtNameColorRZ" )     params.gtNameColorRZ     = paramValue.toInt();
+      else if ( paramName == "gtNameColorGZ" )     params.gtNameColorGZ     = paramValue.toInt();
+      else if ( paramName == "gtNameColorBZ" )     params.gtNameColorBZ     = paramValue.toInt();
+      else if ( paramName == "gtDrawValuesX" )     params.gtDrawValuesX     = paramValue.toInt();
+      else if ( paramName == "gtDrawValuesY" )     params.gtDrawValuesY     = paramValue.toInt();
+      else if ( paramName == "gtDrawValuesZ" )     params.gtDrawValuesZ     = paramValue.toInt();
+      else if ( paramName == "gtNbValuesX" )       params.gtNbValuesX       = paramValue.toInt();
+      else if ( paramName == "gtNbValuesY" )       params.gtNbValuesY       = paramValue.toInt();
+      else if ( paramName == "gtNbValuesZ" )       params.gtNbValuesZ       = paramValue.toInt();
+      else if ( paramName == "gtOffsetX" )         params.gtOffsetX         = paramValue.toInt();
+      else if ( paramName == "gtOffsetY" )         params.gtOffsetY         = paramValue.toInt();
+      else if ( paramName == "gtOffsetZ" )         params.gtOffsetZ         = paramValue.toInt();
+      else if ( paramName == "gtColorRX" )         params.gtColorRX         = paramValue.toInt();
+      else if ( paramName == "gtColorGX" )         params.gtColorGX         = paramValue.toInt();
+      else if ( paramName == "gtColorBX" )         params.gtColorBX         = paramValue.toInt();
+      else if ( paramName == "gtColorRY" )         params.gtColorRY         = paramValue.toInt();
+      else if ( paramName == "gtColorGY" )         params.gtColorGY         = paramValue.toInt();
+      else if ( paramName == "gtColorBY" )         params.gtColorBY         = paramValue.toInt();
+      else if ( paramName == "gtColorRZ" )         params.gtColorRZ         = paramValue.toInt();
+      else if ( paramName == "gtColorGZ" )         params.gtColorGZ         = paramValue.toInt();
+      else if ( paramName == "gtColorBZ" )         params.gtColorBZ         = paramValue.toInt();
+      else if ( paramName == "gtDrawTickmarksX" )  params.gtDrawTickmarksX  = paramValue.toInt();
+      else if ( paramName == "gtDrawTickmarksY" )  params.gtDrawTickmarksY  = paramValue.toInt();
+      else if ( paramName == "gtDrawTickmarksZ" )  params.gtDrawTickmarksZ  = paramValue.toInt();
+      else if ( paramName == "gtTickmarkLengthX" ) params.gtTickmarkLengthX = paramValue.toInt();
+      else if ( paramName == "gtTickmarkLengthY" ) params.gtTickmarkLengthY = paramValue.toInt();
+      else if ( paramName == "gtTickmarkLengthZ" ) params.gtTickmarkLengthZ = paramValue.toInt();
     }
   }
   else // old format - "1.000e+00*0.000e+00..."
   {
-    if ( paramsLst.size() >= 15 ) {
-      params.scale    = paramsLst[0].toDouble();
-      params.centerX  = paramsLst[1].toDouble();
-      params.centerY  = paramsLst[2].toDouble();
-      params.projX    = paramsLst[3].toDouble();
-      params.projY    = paramsLst[4].toDouble();
-      params.projZ    = paramsLst[5].toDouble();
-      params.twist    = paramsLst[6].toDouble();
-      params.atX      = paramsLst[7].toDouble();
-      params.atY      = paramsLst[8].toDouble();
-      params.atZ      = paramsLst[9].toDouble();
-      params.eyeX     = paramsLst[10].toDouble();
-      params.eyeY     = paramsLst[11].toDouble();
-      params.eyeZ     = paramsLst[12].toDouble();
-      if ( paramsLst.size() == 18 ) {
-        params.scaleX    = paramsLst[13].toDouble();
-        params.scaleY    = paramsLst[14].toDouble();
-        params.scaleZ    = paramsLst[15].toDouble();
-        params.isVisible = paramsLst[16].toDouble();
-        params.size      = paramsLst[17].toDouble();
-      } 
-      else {
-        params.scaleX    = 1.;
-        params.scaleY    = 1.;
-        params.scaleZ    = 1.;
-      }
-    }
+    int idx = 0;
+    params.scale     = data.count() > idx ? data[idx++].toDouble() : 1.0;
+    params.centerX   = data.count() > idx ? data[idx++].toDouble() : 0.0;
+    params.centerY   = data.count() > idx ? data[idx++].toDouble() : 0.0;
+    params.projX     = data.count() > idx ? data[idx++].toDouble() : sqrt(1./3);
+    params.projY     = data.count() > idx ? data[idx++].toDouble() : -sqrt(1./3);
+    params.projZ     = data.count() > idx ? data[idx++].toDouble() : sqrt(1./3);
+    params.twist     = data.count() > idx ? data[idx++].toDouble() : 0.0;
+    params.atX       = data.count() > idx ? data[idx++].toDouble() : 0.0;
+    params.atY       = data.count() > idx ? data[idx++].toDouble() : 0.0;
+    params.atZ       = data.count() > idx ? data[idx++].toDouble() : 0.0;
+    params.eyeX      = data.count() > idx ? data[idx++].toDouble() : sqrt(250000./3);
+    params.eyeY      = data.count() > idx ? data[idx++].toDouble() : -sqrt(250000./3);
+    params.eyeZ      = data.count() > idx ? data[idx++].toDouble() : sqrt(250000./3);
+    params.scaleX    = data.count() > idx ? data[idx++].toDouble() : 1.0;
+    params.scaleY    = data.count() > idx ? data[idx++].toDouble() : 1.0;
+    params.scaleZ    = data.count() > idx ? data[idx++].toDouble() : 1.0;
+    params.isVisible = data.count() > idx ? data[idx++].toInt()    : 1;
+    params.size      = data.count() > idx ? data[idx++].toDouble() : 100.0;
   }
   performRestoring( params );
 }

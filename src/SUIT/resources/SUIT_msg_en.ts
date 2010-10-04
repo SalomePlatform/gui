@@ -74,7 +74,7 @@ Do you want to overwrite it?</translation>
     </message>
     <message>
         <source>PRP_DESK_WINDOW_TILE</source>
-        <translation>Arranges the windows as nonoverlapping tiles</translation>
+        <translation>Arranges the windows as non-overlapping tiles</translation>
     </message>
     <message>
         <source>MEN_DESK_WINDOW_VTILE</source>
@@ -86,7 +86,7 @@ Do you want to overwrite it?</translation>
     </message>
     <message>
         <source>PRP_DESK_WINDOW_VTILE</source>
-        <translation>Arranges the windows as nonoverlapping vertical tiles</translation>
+        <translation>Arranges the windows as non-overlapping vertical tiles</translation>
     </message>
     <message>
         <source>MEN_DESK_WINDOW_TILE</source>

@@ -94,7 +94,7 @@ Style_Model::Style_Model()
   fillValue( ver_handle_delta, "ver-handle-delta", "Ver spacing of handle", grp_value, DblSpin );
   fillValue( split_handle_len, "split-handle-len", "Length of splitter handle", grp_value, DblSpin );
   fillValue( slider_increase, "slider-increase", "Slider increase", grp_value, IntSpin );
-  fillValue( all_antialized, "all-antialized", "All borders antialized", grp_value, Bool );
+  fillValue( all_antialized, "all-antialized", "All borders anti-aliased", grp_value, Bool );
 
   fillGroup( grp_style,      tab_value, "Predefined style", 1 );
   fillGroup( grp_color,      tab_color, "Colors", 3 );

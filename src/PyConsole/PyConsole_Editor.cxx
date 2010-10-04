@@ -226,7 +226,8 @@ private:
 
 void staticCallback( void* data, char* c )
 {
-  QApplication::postEvent( (PyConsole_Editor*)data, new PrintEvent( c ) ); 
+	if(!((PyConsole_Editor*)data)->isSuppressOutput())
+		QApplication::postEvent( (PyConsole_Editor*)data, new PrintEvent( c ) ); 
 }
 
 /*!
@@ -242,7 +243,8 @@ PyConsole_Editor::PyConsole_Editor( PyConsole_Interp* theInterp,
   myInterp( 0 ),
   myCmdInHistory( -1 ),
   myEventLoop( 0 ),
-  myIsSync( false )
+  myIsSync( false ),
+  myIsSuppressOutput(false)
 {
   QString fntSet( "" );
   QFont aFont = SUIT_Tools::stringToFont( fntSet );
@@ -294,6 +296,30 @@ bool PyConsole_Editor::isSync() const
 void PyConsole_Editor::setIsSync( const bool on )
 {
   myIsSync = on;
+}
+
+/*!
+  \brief Get suppress output flag value.
+  
+  \sa setIsSuppressOutput()
+  \return True if python console output is suppressed.
+*/
+bool PyConsole_Editor::isSuppressOutput() const
+{
+  return myIsSuppressOutput;
+}
+
+/*!
+  \brief Set suppress output flag value.
+
+  In case if suppress output flag is true, the python 
+  console output suppressed.
+
+  \param on suppress output flag
+*/
+void PyConsole_Editor::setIsSuppressOutput( const bool on )
+{
+  myIsSuppressOutput = on;
 }
 
 /*!

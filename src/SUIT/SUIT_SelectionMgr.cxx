@@ -96,6 +96,8 @@ void SUIT_SelectionMgr::selected( SUIT_DataOwnerPtrList& lst, const QString& typ
 
   for ( SelectorList::const_iterator it = mySelectors.begin(); it != mySelectors.end(); ++it )
   {
+	if ( !(*it)->isEnabled() )
+	  continue;
     if ( !type.isEmpty() && (*it)->type() != type )
       continue;
 

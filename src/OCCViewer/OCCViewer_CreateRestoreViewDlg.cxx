@@ -181,25 +181,38 @@ viewAspect OCCViewer_CreateRestoreViewDlg::currentItem() const
 */
 void OCCViewer_CreateRestoreViewDlg::deleteSelectedItems()
 {
-  if( myListBox->count() )
+  QList<QListWidgetItem*> selectedItems = myListBox->selectedItems();
+  if( myListBox->count() && selectedItems.count())
   {
     int curIndex = -1;
-    for( int i = 0; i < (int)myListBox->count(); i++ )
-      if( myListBox->item( i )->isSelected() && ( myListBox->item( i )->flags() & Qt::ItemIsEditable ) )
+    // Iterate by all selected items
+    for(int i = 0; i < selectedItems.count(); i++) 
+    {
+      QListWidgetItem* item =  selectedItems.at(i);
+      // get position of the selected item in the list
+      int position = myListBox->row(item);
+
+      //Calculate current index in case if "item" is last selected item.
+      if(i == selectedItems.count() - 1)
       {
-        QListWidgetItem* anItemToDelete = myListBox->takeItem( i );
-        delete anItemToDelete;
-        for( int j = i; j < (int)myParametersMap.count(); j++ )
-          if( j != myParametersMap.count() - 1 )
-            myParametersMap[ j ] = myParametersMap[ j + 1 ];
-          else
-            myParametersMap.removeAt( j );
-        if( i != myListBox->count() )
-          curIndex = i;
-        else
-          curIndex = i - 1;
-        i--;
+	if(position != myListBox->count() - 1)
+	  curIndex = position;
+	else 
+	  curIndex = position - 1;
       }
+
+      //Delete item
+      delete item;
+
+      //Shift parameters in the map
+      for( int j = position; j < (int)myParametersMap.count(); j++ )
+      {
+	if( j != myParametersMap.count() - 1 )
+	  myParametersMap[ j ] = myParametersMap[ j + 1 ];
+	else
+	  myParametersMap.removeAt( j );
+      }
+    }
     if( curIndex >= 0 )
     {
       myListBox->setCurrentItem( myListBox->item( curIndex ) );
@@ -208,8 +221,7 @@ void OCCViewer_CreateRestoreViewDlg::deleteSelectedItems()
   }
   if( !myListBox->count() )
   {
-    myListBox->clear();
-    myListBox->insertItem( 0, "No Items" );
+    clearList();
   }
 }
 
@@ -220,8 +232,10 @@ void OCCViewer_CreateRestoreViewDlg::clearList()
 {
   myListBox->clear();
   myListBox->insertItem( 0, "No Items" );
-  
   myParametersMap.clear();
+	
+  //Clear view
+  myCurViewPort->reset();
 }
 
 /*!

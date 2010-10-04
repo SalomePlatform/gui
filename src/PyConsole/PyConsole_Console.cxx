@@ -129,6 +129,30 @@ void PyConsole_Console::setIsSync( const bool on )
 }
 
 /*!
+  \brief Get suppress output flag value.
+  
+  \sa setIsSuppressOutput()
+  \return True if python console output is suppressed.
+*/
+bool PyConsole_Console::isSuppressOutput() const
+{
+  return myEditor->isSuppressOutput();
+}
+
+/*!
+  \brief Set suppress output flag value.
+
+  In case if suppress output flag is true, the python 
+  console output suppressed.
+
+  \param on suppress output flag
+*/
+void PyConsole_Console::setIsSuppressOutput( const bool on )
+{
+  myEditor->setIsSuppressOutput(on);
+}
+
+/*!
   \brief Change the python console's font.
   \param f new font
 */

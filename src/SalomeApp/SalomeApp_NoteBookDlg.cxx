@@ -301,7 +301,12 @@ bool NoteBook_TableRow::IsValidStringValue(const QString theValue)
     command += "\", ";
   }
   command += ") ";
+
+  //rnv: fix for bug 21947 WinTC5.1.4: Wrong error management of "Salome NoteBook"
+  bool oldSuppressValue = pyConsole->isSuppressOutput();
+  pyConsole->setIsSuppressOutput(true);	
   bool aResult = pyInterp->run(command.c_str());
+  pyConsole->setIsSuppressOutput(oldSuppressValue);	
   return !aResult;
 }
 
@@ -472,7 +477,13 @@ bool NoteBook_Table::IsValid() const
       command += "\",";
     }
   command += ")";
+
+  //rnv: fix for bug 21947 WinTC5.1.4: Wrong error management of "Salome NoteBook"
+  bool oldSuppressValue = pyConsole->isSuppressOutput();
+  pyConsole->setIsSuppressOutput(true);	
   bool aResult = pyInterp->run(command.c_str());
+  pyConsole->setIsSuppressOutput(oldSuppressValue);	
+
   return !aResult;
 }
 
@@ -481,7 +492,7 @@ bool NoteBook_Table::IsValid() const
  *  Purpose  : renumber row items
  */
 //============================================================================
-void NoteBook_Table::RenamberRowItems(){
+void NoteBook_Table::RenamberRowItems() {
   for(int i=0; i<myRows.size();i++){
     myRows[i]->GetHeaderItem()->setText(QString::number(i+1));
   }

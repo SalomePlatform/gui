@@ -110,6 +110,9 @@ QtxMainWindow::QtxMainWindow( QWidget* parent, Qt::WindowFlags f )
   myMenuBar( 0 ),
   myStatusBar( 0 )
 {
+	//rnv: Enables tooltips for inactive windows.
+	//rnv: For details see http://bugtracker.opencascade.com/show_bug.cgi?id=20893
+	setAttribute(Qt::WA_AlwaysShowToolTips);
 }
 
 /*!

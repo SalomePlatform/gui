@@ -24,7 +24,7 @@
 #define VIEWERTOOLS_H
 
 #ifdef WIN32
-#  if defined VIEWERTOOLS_EXPORTS
+#  if defined VIEWERTOOLS_EXPORTS || defined ViewerTools_EXPORTS
 #    define VIEWERTOOLS_EXPORT __declspec(dllexport)
 #  else
 #   define VIEWERTOOLS_EXPORT __declspec(dllimport)

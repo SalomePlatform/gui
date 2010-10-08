@@ -54,6 +54,7 @@ SUIT_DataBrowser::SUIT_DataBrowser( SUIT_DataObject* root, QWidget* parent )
   init( root );
 
   myExpandTimer = new QTimer( this );
+  myExpandTimer->setSingleShot( true );
   connect( myExpandTimer, SIGNAL( timeout() ), this, SLOT( onExpandUpdate() ) );
 }
 

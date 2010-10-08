@@ -495,14 +495,15 @@ SALOME_Actor
 
   if( !theIsHighlight ) {
     SetPreSelected( false );
-    VTK::ActorCollectionCopy aCopy(aRenderer->GetActors());
-    vtkActorCollection* theActors = aCopy.GetActors();
-    theActors->InitTraversal();
-    while( vtkActor *ac = theActors->GetNextActor() )
-      if( SALOME_Actor* anActor = SALOME_Actor::SafeDownCast( ac ) )
-        if( anActor->hasIO() && myIO->isSame( anActor->getIO() ) )
-          anActor->SetPreSelected( false );
-
+    if ( hasIO() ) {
+      VTK::ActorCollectionCopy aCopy(aRenderer->GetActors());
+      vtkActorCollection* theActors = aCopy.GetActors();
+      theActors->InitTraversal();
+      while( vtkActor *ac = theActors->GetNextActor() )
+	if( SALOME_Actor* anActor = SALOME_Actor::SafeDownCast( ac ) )
+	  if( anActor->hasIO() && myIO->isSame( anActor->getIO() ) )
+	    anActor->SetPreSelected( false );
+    }
   }else{
     switch(aSelectionMode) {
     case NodeSelection: 
@@ -595,15 +596,17 @@ SALOME_Actor
       if( !mySelector->IsSelected( myIO ) ) {
         SetPreSelected( true );
 
-        VTK::ActorCollectionCopy aCopy(aRenderer->GetActors());
-        vtkActorCollection* theActors = aCopy.GetActors();
-        theActors->InitTraversal();
-        while( vtkActor *anAct = theActors->GetNextActor() ) {
-          if( anAct != this )
-            if( SALOME_Actor* anActor = SALOME_Actor::SafeDownCast( anAct ) )
-              if( anActor->hasIO() && myIO->isSame( anActor->getIO() ) )
-                anActor->SetPreSelected( true );
-        }
+	if ( hasIO() ) {
+	  VTK::ActorCollectionCopy aCopy(aRenderer->GetActors());
+	  vtkActorCollection* theActors = aCopy.GetActors();
+	  theActors->InitTraversal();
+	  while( vtkActor *anAct = theActors->GetNextActor() ) {
+	    if( anAct != this )
+	      if( SALOME_Actor* anActor = SALOME_Actor::SafeDownCast( anAct ) )
+		if( anActor->hasIO() && myIO->isSame( anActor->getIO() ) )
+		  anActor->SetPreSelected( true );
+	  }
+	}
       }
     }
     default:
@@ -658,7 +661,7 @@ SALOME_Actor
       int aVtkId = myPointPicker->GetPointId();
       if( aVtkId >= 0 && mySelector->IsValid( this, aVtkId, true ) ) {
         int anObjId = GetNodeObjId( aVtkId );
-        if( anObjId >= 0 ) {
+        if( hasIO() && anObjId >= 0 ) {
           mySelector->AddOrRemoveIndex( myIO, anObjId, anIsShift );
           mySelector->AddIObject( this );
         }
@@ -677,7 +680,7 @@ SALOME_Actor
       if( aVtkId >= 0 && mySelector->IsValid( this, aVtkId ) ) {
         int anObjId = GetElemObjId( aVtkId );
         if( anObjId >= 0 ) {
-          if ( CheckDimensionId(aSelectionMode,this,anObjId) ) {
+          if ( hasIO() && CheckDimensionId(aSelectionMode,this,anObjId) ) {
             mySelector->AddOrRemoveIndex( myIO, anObjId, anIsShift );
             mySelector->AddIObject( this );
           }
@@ -695,7 +698,7 @@ SALOME_Actor
         int anObjId = GetElemObjId( aVtkId );
         if( anObjId >= 0 ) {
           int anEdgeId = GetEdgeId(this,myCellPicker.GetPointer(),anObjId);
-          if( anEdgeId < 0 ) {
+          if( hasIO() && anEdgeId < 0 ) {
             mySelector->AddOrRemoveIndex( myIO, anObjId, false );
             mySelector->AddOrRemoveIndex( myIO, anEdgeId, true );
             mySelector->AddIObject( this );
@@ -706,10 +709,12 @@ SALOME_Actor
     }
     case ActorSelection : 
     {
-      if( mySelector->IsSelected( myIO ) && anIsShift )
-        mySelector->RemoveIObject( this );
-      else {
-        mySelector->AddIObject( this );
+      if ( hasIO() ) {
+	if( mySelector->IsSelected( myIO ) && anIsShift )
+	  mySelector->RemoveIObject( this );
+	else {
+	  mySelector->AddIObject( this );
+	}
       }
       break;
     }
@@ -749,14 +754,15 @@ SALOME_Actor
         }
       }
       
-      if( !anIndexes.IsEmpty() ) {
-        mySelector->AddOrRemoveIndex( myIO, anIndexes, anIsShift );
-        mySelector->AddIObject( this );
-        anIndexes.Clear();
+      if ( hasIO() ) {
+	if( !anIndexes.IsEmpty() ) {
+	  mySelector->AddOrRemoveIndex( myIO, anIndexes, anIsShift );
+	  mySelector->AddIObject( this );
+	  anIndexes.Clear();
+	}
+	else if ( !anIsShift )
+	  mySelector->RemoveIObject( this );
       }
-      else if ( !anIsShift )
-        mySelector->RemoveIObject( this );
-
       break;
     }
     case ActorSelection :
@@ -811,13 +817,16 @@ SALOME_Actor
             }
         }
       }
-      if( !anIndexes.IsEmpty() ) {
-        mySelector->AddOrRemoveIndex( myIO, anIndexes, anIsShift );
-        mySelector->AddIObject( this );
-        anIndexes.Clear();
+      
+      if ( hasIO() ) {
+	if( !anIndexes.IsEmpty() ) {
+	  mySelector->AddOrRemoveIndex( myIO, anIndexes, anIsShift );
+	  mySelector->AddIObject( this );
+	  anIndexes.Clear();
+	}
+	else if ( !anIsShift )
+	  mySelector->RemoveIObject( this );
       }
-      else if ( !anIsShift )
-        mySelector->RemoveIObject( this );
     }
     default:
       break;

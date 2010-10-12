@@ -68,7 +68,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_MULTI_FILE</source>
-        <translation>Sauvegarder multi-fichier</translation>
+        <translation>Sauvegarde multi-fichiers</translation>
     </message>
     <message>
         <source>MEN_DESK_PREFERENCES</source>
@@ -76,11 +76,11 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_TRIHEDRON_SHOW</source>
-        <translation>Montrer le trièdre</translation>
+        <translation>Afficher le trièdre</translation>
     </message>
     <message>
         <source>PREF_TRIHEDRON_SIZE</source>
-        <translation>Taille du Trièdre</translation>
+        <translation>Taille du trièdre</translation>
     </message>
     <message>
         <source>OBJECT_BROWSER</source>
@@ -100,7 +100,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_STORE_POS</source>
-        <translation>Retenir les positions des fenêtres</translation>
+        <translation>Enregistrer la position des fenêtres</translation>
     </message>
     <message>
         <source>PREF_AUTO_SAVE</source>
@@ -128,7 +128,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_STANDARD_STYLE</source>
-        <translation>Contrôles types Salomé</translation>
+        <translation>Contrôles type Salomé</translation>
     </message>
     <message>
         <source>PREF_KEYFREE_STYLE</source>
@@ -140,19 +140,19 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_INCREMENTAL_SPEED_MODE</source>
-        <translation>Mode de Modification:</translation>
+        <translation>Mode de modification:</translation>
     </message>
     <message>
         <source>PREF_ARITHMETIC</source>
-        <translation>Progression Arithmétique </translation>
+        <translation>Progression arithmétique</translation>
     </message>
     <message>
         <source>PREF_GEOMETRICAL</source>
-        <translation>Progression Géométrique</translation>
+        <translation>Progression géométrique</translation>
     </message>
     <message>
         <source>PREF_FRAME_SPACEMOUSE</source>
-        <translation>Souris Spaciale</translation>
+        <translation>Souris spaciale</translation>
     </message>
     <message>
         <source>PREF_SHOW_STATIC_TRIHEDRON</source>
@@ -160,15 +160,15 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_SPACEMOUSE_FUNC_1</source>
-        <translation>Rediure l&apos;incrément de vitesse</translation>
+        <translation>Réduire l&apos;incrément de vitesse</translation>
     </message>
     <message>
         <source>PREF_SPACEMOUSE_FUNC_2</source>
-        <translation>Rediure l&apos;incrément de vitesse</translation>
+        <translation>Augmenter l&apos;incrément de vitesse</translation>
     </message>
     <message>
         <source>PREF_SPACEMOUSE_FUNC_3</source>
-        <translation>Changement Dominant / Combiné</translation>
+        <translation>Changement Dominant/Combiné</translation>
     </message>
     <message>
         <source>PREF_SPACEMOUSE_BTN_1</source>
@@ -216,7 +216,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_FRAME_RECORDING</source>
-        <translation>Renregistrement AVI</translation>
+        <translation>Enregistrement AVI</translation>
     </message>
     <message>
         <source>PREF_ALL_DISLPAYED_FRAMES</source>
@@ -232,7 +232,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_PROGRESSIVE</source>
-        <translation>Progressive</translation>
+        <translation>Progressif</translation>
     </message>
     <message>
         <source>PREF_QUALITY</source>
@@ -244,7 +244,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_SKIPPED_FRAMES</source>
-        <translation>Enregistrer aux FPS donnés</translation>
+        <translation>Enregistrer à FPS donné</translation>
     </message>
     <message>
         <source>PREF_FRAME_GROUP_NAMES</source>
@@ -252,7 +252,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_GROUP_NAMES_TEXT_COLOR</source>
-        <translation>Couleur du Texte</translation>
+        <translation>Couleur du texte</translation>
     </message>
     <message>
         <source>PREF_GROUP_NAMES_TRANSPARENCY</source>
@@ -268,11 +268,11 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_ISOS_U</source>
-        <translation>Numéro des isolignes au long de U</translation>
+        <translation>Nombre d'isolignes selon U</translation>
     </message>
     <message>
         <source>PREF_ISOS_V</source>
-        <translation>Numéro des isolignes au long de V</translation>
+        <translation>Nombre d'isolignes selon V</translation>
     </message>
     <message>
         <source>PREF_POINTS</source>
@@ -280,7 +280,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PRP_MODULE</source>
-        <translation>Changer au module &quot;%1&quot;</translation>
+        <translation>Basculer vers le module &quot;%1&quot;</translation>
     </message>
     <message>
         <source>PREF_ASCII_FILE</source>
@@ -288,7 +288,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREFERENCES_NOT_LOADED</source>
-        <translation>Les préférences du module &quot;&lt;b&gt;%N&lt;/b&gt;&quot; seront accessibles aussitôt que le module soit choisi</translation>
+        <translation>Les préférences du module &quot;&lt;b&gt;%N&lt;/b&gt;&quot; seront accessibles quand le module sera chargé</translation>
     </message>
     <message>
         <source>PREF_LINEAR</source>
@@ -296,7 +296,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>DATA_MODELS</source>
-        <translation>Modèles de Données</translation>
+        <translation>Modèles de données</translation>
     </message>
     <message>
         <source>PRP_RENAME</source>
@@ -308,7 +308,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>LOG_WINDOW</source>
-        <translation>Fenêtre de Messages</translation>
+        <translation>Fenêtre de messages</translation>
     </message>
     <message>
         <source>PREF_SPLINE</source>
@@ -320,19 +320,19 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_AUTO_HIDE_SEARCH_TOOL</source>
-        <translation>Activer auto-cacher</translation>
+        <translation>Cacher automatiquement</translation>
     </message>
     <message>
         <source>PREF_OBJ_BROWSER_SETTINGS</source>
-        <translation>Paramètres du Navigateur d&apos;Objets</translation>
+        <translation>Paramètres du navigateur d&apos;objets</translation>
     </message>
     <message>
         <source>PRP_APP_MODULE</source>
-        <translation>Tourner au point neutre de la plate-forme SALOME</translation>
+        <translation>Basculer au point neutre de la plate-forme SALOME</translation>
     </message>
     <message>
         <source>PREF_GROUP_PY_CONSOLE</source>
-        <translation>Propriétés du console Python</translation>
+        <translation>Propriétés de la console Python</translation>
     </message>
     <message>
         <source>PREF_GROUP_STYLE</source>
@@ -340,7 +340,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_USE_SALOME_STYLE</source>
-        <translation>Utiliser le style Salome </translation>
+        <translation>Utiliser le style Salomé</translation>
     </message>
     <message>
         <source>PREF_MARKER_SIZE</source>
@@ -637,11 +637,11 @@ Le fichier n&apos;existe pas</translation>
     </message>
     <message>
     	<source>PREF_TAB_SHORTCUTS</source>
-        <translation type="unfinished">Shortcuts</translation>
+        <translation type="unfinished">Raccourcis clavier</translation>
     </message>
     <message>
         <source>PREF_GROUP_SHORTCUTS</source>
-        <translation type="unfinished">Shortcuts settings</translation>
+        <translation type="unfinished">Réglage des raccourcis clavier</translation>
     </message>
 </context>
 <context>

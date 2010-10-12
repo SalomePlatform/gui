@@ -261,6 +261,11 @@ void OCCViewer_CubeAxesDlg::ApplyData( const Handle(V3d_View)& theView )
       if( OCCViewer_AxisWidget* anAxisWidget = dynamic_cast<OCCViewer_AxisWidget*>( myAxes[ i ] ) )
         anAxisWidget->GetData( anAxisData[i] );
 
+    // A gap used offset of axis names' offset
+    // (this hard-coded value will be removed when the
+    // font support will be introduced in OCC-6.4)
+    int aGap = 20;
+
     theView->GraduatedTrihedronDisplay(
       anAxisData[0].Name.toLatin1().constData(),
       anAxisData[1].Name.toLatin1().constData(),
@@ -272,15 +277,16 @@ void OCCViewer_CubeAxesDlg::ApplyData( const Handle(V3d_View)& theView )
       anAxisData[1].DrawValues,
       anAxisData[2].DrawValues,
       Standard_True, // draw grid
+      Standard_False, // draw axes
       anAxisData[0].NbValues - 1,
       anAxisData[1].NbValues - 1,
       anAxisData[2].NbValues - 1,
       anAxisData[0].Offset,
       anAxisData[1].Offset,
       anAxisData[2].Offset,
-      anAxisData[0].Offset + 20, // tmp
-      anAxisData[1].Offset + 20, // tmp
-      anAxisData[2].Offset + 20, // tmp
+      anAxisData[0].Offset + aGap, // see above
+      anAxisData[1].Offset + aGap, // see above
+      anAxisData[2].Offset + aGap, // see above
       anAxisData[0].DrawTickmarks,
       anAxisData[1].DrawTickmarks,
       anAxisData[2].DrawTickmarks,

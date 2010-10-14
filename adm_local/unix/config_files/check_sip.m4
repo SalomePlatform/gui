@@ -74,6 +74,9 @@ if test "x$sip_ok" = "xyes" ; then
     TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib${LIB_LOCATION_SUFFIX} /usr/lib${LIB_LOCATION_SUFFIX}/python${PYTHON_VERSION}/site-packages"
     TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib${LIB_LOCATION_SUFFIX}/python${PYTHON_VERSION}/dist-packages/PyQt4"
     TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib${LIB_LOCATION_SUFFIX}/pymodules/python${PYTHON_VERSION}"
+    if test "${build_cpu::6}" = "x86_64" ; then
+      TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib64/python${PYTHON_VERSION}/site-packages"
+    fi
     dnl Search sip.h file
     sip_ok=no
     for d in ${TEST_INC_DIRS} ; do

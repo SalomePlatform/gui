@@ -144,12 +144,20 @@ void SUIT_SelectionMgr::selectionChanged( SUIT_Selector* sel )
   SUIT_DataOwnerPtrList newOwners;
   filterOwners( owners, newOwners );
 
+  QMap<SUIT_DataOwnerPtr, int> map;
+  for ( SUIT_DataOwnerPtrList::iterator itr = owners.begin(); itr != owners.end(); ++itr )
+    map.insert( *itr, 0 );
+
+  for ( SUIT_DataOwnerPtrList::iterator nitr = newOwners.begin(); nitr != newOwners.end(); ++nitr )
+    map.remove( *nitr );
+
+  bool filtered = !map.isEmpty();
+
   for ( int i = 0; i < myIterations; i++ )
   {
     for ( SelectorList::iterator it = mySelectors.begin(); it != mySelectors.end(); ++it )
     {
-      // Temporary action(to avoid selection of the objects which don't pass the filters):
-      //if ( *it != sel )
+      if ( *it != sel || filtered )
 	(*it)->setSelected( newOwners );
     }
   }

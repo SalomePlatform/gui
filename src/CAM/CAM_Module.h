@@ -94,6 +94,7 @@ private slots:
   void                   onInfoChanged( QString );
 
 protected: 
+  virtual void           setApplication( CAM_Application* );
   virtual bool           isSelectionCompatible();
 
   virtual CAM_DataModel* createDataModel();

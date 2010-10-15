@@ -91,7 +91,7 @@ CAM_Module::~CAM_Module()
 */
 void CAM_Module::initialize( CAM_Application* app )
 {
-  myApp = app;
+  setApplication( app );
   if ( myApp )
   {
     SUIT_Session* aSession = SUIT_Session::session();
@@ -100,6 +100,19 @@ void CAM_Module::initialize( CAM_Application* app )
 
     connect( myApp, SIGNAL( infoChanged( QString ) ), this, SLOT( onInfoChanged( QString ) ) );
   }
+}
+/*!
+  \brief Sets the application instance that owns this module.
+
+  This protected method allows derived module classes to set application object
+  from methods different from initalize(). This is used e.g. when
+  a module instance is created but not intialized by custom application class, 
+  still the module needs some minimal link to application.
+  \sa initialize()
+*/
+void CAM_Module::setApplication( CAM_Application* app )
+{
+  myApp = app;
 }
 
 /*!

@@ -896,6 +896,7 @@ void QtxSearchTool::init()
   myClose = new QToolButton( myBtnWidget );
   myClose->setIcon( QIcon( close_xpm ) );
   myClose->setAutoRaise( true );
+  myClose->setToolTip( tr( "Close the Find Bar" ) );
   myBtnWidget_layout->addWidget( wrapWidget( myBtnWidget, myClose ) );
   connect( myClose, SIGNAL( clicked() ), this, SLOT( hide() ) );
 
@@ -909,6 +910,7 @@ void QtxSearchTool::init()
   myToFirst = new QToolButton( myBtnWidget );
   myToFirst->setIcon( QIcon( first_xpm ) );
   myToFirst->setAutoRaise( true );
+  myToFirst->setToolTip( tr( "First" ) );
   myBtnWidget_layout->addWidget( wrapWidget( myBtnWidget, myToFirst ), 0 );
   connect( myToFirst, SIGNAL( clicked() ), this, SLOT( findFirst() ) );
   myToFirst->installEventFilter( this );
@@ -916,6 +918,7 @@ void QtxSearchTool::init()
   myPrev = new QToolButton( myBtnWidget );
   myPrev->setIcon( QIcon( prev_xpm ) );
   myPrev->setAutoRaise( true );
+  myPrev->setToolTip( tr( "Previous" ) );
   myBtnWidget_layout->addWidget( wrapWidget( myBtnWidget, myPrev ), 0 );
   connect( myPrev, SIGNAL( clicked() ), this, SLOT( findPrevious() ) );
   myPrev->installEventFilter( this );
@@ -923,6 +926,7 @@ void QtxSearchTool::init()
   myNext = new QToolButton( myBtnWidget );
   myNext->setIcon( QIcon( next_xpm ) );
   myNext->setAutoRaise( true );
+  myNext->setToolTip( tr( "Next" ) );
   myBtnWidget_layout->addWidget( wrapWidget( myBtnWidget, myNext ), 0 );
   connect( myNext, SIGNAL( clicked() ), this, SLOT( findNext() ) );
   myNext->installEventFilter( this );
@@ -930,6 +934,7 @@ void QtxSearchTool::init()
   myToLast = new QToolButton( myBtnWidget );
   myToLast->setIcon( QIcon( last_xpm ) );
   myToLast->setAutoRaise( true );
+  myToLast->setToolTip( tr( "Last" ) );
   myBtnWidget_layout->addWidget( wrapWidget( myBtnWidget, myToLast ), 0 );
   connect( myToLast, SIGNAL( clicked() ), this, SLOT( findLast() ) );
   myToLast->installEventFilter( this );

@@ -2049,7 +2049,9 @@ QRect Style_Salome::subControlRect( ComplexControl cc, const QStyleOptionComplex
         res.setWidth( h );
       }
       else if ( sc==QStyle::SC_SpinBoxEditField ) {
-        res.setWidth( w-h );
+        //res.setWidth( w-h );
+        QRect arrowsRect = subControlRect( cc, opt, SC_SpinBoxUp, wid );
+        res.setWidth( arrowsRect.x() - x );
         res.setTopLeft( QPoint( res.x(), res.y()-SHADOW ) );
       }
       break;

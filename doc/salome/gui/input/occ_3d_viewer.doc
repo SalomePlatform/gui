@@ -129,8 +129,8 @@ stuffed) along the axes of coordinates.</center>
 <hr>
 
 \image html image109.png
-\n <center><b>Graduated axes</b> - allows to define parameters of axes
-and graduate them (available only with Open CASCADE 6.3 service pack 10)</center>
+\n <center><b>Graduated axes</b> - allows to define axes parameters 
+and graduate them.</center>
 
 \image html graduatedaxes2.png
 
@@ -139,9 +139,8 @@ and graduate them (available only with Open CASCADE 6.3 service pack 10)</center
 <ul>
 <li><b>Is visible</b> - if checked the axis name is displayed in the
 viewer.</li>
-<li><b>Name</b> - allows to redefine the name of the axis.</li>
-<li><b>Font</b> - allows to define color of the font of
-axis name.</li>
+<li><b>Name</b> - allows to redefine the axis name.</li>
+<li><b>Font</b> - allows to define the font color of the axis name.</li>
 </ul>
 <li><b>Labels</b></li>
 <ul>
@@ -149,8 +148,7 @@ axis name.</li>
 viewer.</li>
 <li><b>Number</b> - allows to define the number of labels.</li>
 <li><b>Offset</b> - allows to define the distance between labels.</li>
-<li><b>Font</b> - allows to define color of the font of
-labels names.</li>
+<li><b>Font</b> - allows to define the font color of labels names.</li>
 </ul>
 <li><b>Tick marks</b></li>
 <ul>

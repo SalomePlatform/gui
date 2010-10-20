@@ -102,7 +102,7 @@ which the speed increases or respectively decreases after pressing [+]
 or [-] keyboard buttons.</li>
 <li><b>Modification Mode</b> - allows choosing between \b Arithmetic
 and \b Geometrical progression used for zooming</li> 
-<li><b>Show static trihedron</b> - allows to show/hide static trihedron
+<li><b>Show static trihedron</b> - allows to show/hide the static trihedron
 located in the bottom-left corner of the viewer.
 </ul>
 <li><b>Spacemouse</b> - a mouse-like manipulator device specially designed
@@ -215,9 +215,10 @@ resizing columns on expanding an object browser item.</li>
 
 <ul>
 <li>
-<b>Shortcuts settings</b> widget allows to define custom shortcuts for the presented actions.
-<br>To change keyboard sequence for the certain action - select the action and press desirable 
-keys combination.
+<b>Shortcuts settings</b> widget allows to define custom shortcuts for
+various operations.
+<br>To change keyboard sequence for a certain action - select the
+action and press the custom keys combination.
 </li>
 </ul>
 

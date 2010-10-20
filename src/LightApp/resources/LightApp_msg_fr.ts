@@ -268,11 +268,11 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_ISOS_U</source>
-        <translation>Nombre d'isolignes selon U</translation>
+        <translation>Nombre d&apos;isolignes selon U</translation>
     </message>
     <message>
         <source>PREF_ISOS_V</source>
-        <translation>Nombre d'isolignes selon V</translation>
+        <translation>Nombre d&apos;isolignes selon V</translation>
     </message>
     <message>
         <source>PREF_POINTS</source>
@@ -636,12 +636,12 @@ Le fichier n&apos;existe pas</translation>
         <translation>Les préférences du module &quot;%1&quot; ne sont pas supportées</translation>
     </message>
     <message>
-    	<source>PREF_TAB_SHORTCUTS</source>
-        <translation type="unfinished">Raccourcis clavier</translation>
+        <source>PREF_TAB_SHORTCUTS</source>
+        <translation>Raccourcis clavier</translation>
     </message>
     <message>
         <source>PREF_GROUP_SHORTCUTS</source>
-        <translation type="unfinished">Réglage des raccourcis clavier</translation>
+        <translation>Réglage des raccourcis clavier</translation>
     </message>
 </context>
 <context>

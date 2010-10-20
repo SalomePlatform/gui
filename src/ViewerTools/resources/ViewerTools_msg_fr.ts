@@ -1,27 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
-<TS version="2.0" language="en_US">
+<TS version="2.0" language="fr_FR">
 <context>
     <name>ViewerTools_CubeAxesDlgBase</name>
     <message>
         <source>X_AXIS</source>
-        <translation>X axis</translation>
+        <translation>Axe X</translation>
     </message>
     <message>
         <source>Y_AXIS</source>
-        <translation>Y axis</translation>
+        <translation>Axe Y</translation>
     </message>
     <message>
         <source>Z_AXIS</source>
-        <translation>Z axis</translation>
+        <translation>Axe Z</translation>
     </message>
     <message>
         <source>CAPTION</source>
-        <translation>Graduated axes</translation>
+        <translation>Axes Graduées</translation>
     </message>
     <message>
         <source>IS_VISIBLE</source>
-        <translation>Is visible</translation>
+        <translation>Est visible</translation>
     </message>
     <message>
         <source>FONT</source>
@@ -29,46 +29,46 @@
     </message>
     <message>
         <source>NAME</source>
-        <translation>Name</translation>
+        <translation>Nom</translation>
     </message>
     <message>
         <source>TICK_MARKS</source>
-        <translation>Tick marks</translation>
+        <translation>Marques de Graduation</translation>
     </message>
     <message>
         <source>LABELS</source>
-        <translation>Labels</translation>
+        <translation>Repères</translation>
     </message>
     <message>
         <source>LENGTH</source>
-        <translation>Length</translation>
+        <translation>Longueur</translation>
     </message>
     <message>
         <source>NUMBER</source>
-        <translation>Number</translation>
+        <translation>Numéro</translation>
     </message>
     <message>
         <source>OFFSET</source>
-        <translation>Offset</translation>
+        <translation>Décalage</translation>
     </message>
     <message>
         <source>AXIS_NAME</source>
-        <translation>Axis name</translation>
+        <translation>Nom de l&apos;Axe </translation>
     </message>
 </context>
 <context>
     <name>ViewerTools_FontWidgetBase</name>
     <message>
         <source>BOLD</source>
-        <translation>Bold</translation>
+        <translation>Gras</translation>
     </message>
     <message>
         <source>ITALIC</source>
-        <translation>Italic</translation>
+        <translation>Italique</translation>
     </message>
     <message>
         <source>SHADOW</source>
-        <translation>Shadow</translation>
+        <translation>Ombré</translation>
     </message>
 </context>
 </TS>

@@ -165,6 +165,10 @@ Allez-vous rouvrir ce document ?</translation>
         <translation>Générateur du Catalogue</translation>
     </message>
     <message>
+        <source>TOT_DESK_ADD_VARS_TO_NOTEBOOK</source>
+        <translation>Ajouter les Variables au Carnet</translation>
+    </message>
+    <message>
         <source>PUBLISH_IN_STUDY</source>
         <translation>Publier dans l&apos;étude</translation>
     </message>
@@ -257,6 +261,10 @@ Allez-vous rouvrir ce document ?</translation>
         <translation>Générer une catalogue XML  de l&apos;interface du composant</translation>
     </message>
     <message>
+        <source>PRP_DESK_ADD_VARS_TO_NOTEBOOK</source>
+        <translation>Ajouter les variables de l&apos;étude au carnet</translation>
+    </message>
+    <message>
         <source>PRP_DESK_FILE_DUMP_STUDY</source>
         <translation>Clicher l&apos;étude au script python</translation>
     </message>
@@ -287,6 +295,10 @@ Allez-vous rouvrir ce document ?</translation>
     <message>
         <source>MEN_DESK_CATALOG_GENERATOR</source>
         <translation>Catalogue &amp;Générateur</translation>
+    </message>
+    <message>
+        <source>MEN_DESK_ADD_VARS_TO_NOTEBOOK</source>
+        <translation>Ajouter les Variables au Carnet</translation>
     </message>
     <message>
         <source>APPCLOSE_CAPTION</source>

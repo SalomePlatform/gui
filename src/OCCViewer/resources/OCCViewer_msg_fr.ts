@@ -208,6 +208,14 @@
         <translation>Changer l&apos;échelle</translation>
     </message>
     <message>
+        <source>DSC_GRADUATED_AXES</source>
+        <translation>Axes Gradués</translation>
+    </message>
+    <message>
+        <source>MNU_GRADUATED_AXES</source>
+        <translation>Axes Gradués</translation>
+    </message>
+    <message>
         <source>DSC_AMBIENT</source>
         <translation>Ne montrer que la lumière d&apos;ambiance</translation>
     </message>

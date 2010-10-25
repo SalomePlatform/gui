@@ -124,6 +124,9 @@ protected:
   //! Creates a new Study instance. Must be redefined in new application according to its Study type.
   virtual SUIT_Study*   createNewStudy();
   virtual void          setActiveStudy( SUIT_Study* );
+
+  //! Prepares the contents of the application's main widget, does nothing by default.
+  virtual void          initialize();  
   
   /** @name Create tool functions*/ //@{
   int                   createTool( const QString& );

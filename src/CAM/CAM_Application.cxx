@@ -91,18 +91,18 @@ CAM_Application::~CAM_Application()
 }
 
 /*! 
-  \brief Start an application.
+  \brief Initializes an application.
 
   Load all modules, if "auto loading" flag has been set to \c true.
 
   \sa CAM_Application()
 */
-void CAM_Application::start()
+void CAM_Application::initialize()
 {
+  STD_Application::initialize();
+
   if ( myAutoLoad )
     loadModules();
-
-  STD_Application::start();
 }
 
 /*!

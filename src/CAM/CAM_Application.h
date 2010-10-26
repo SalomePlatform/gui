@@ -45,6 +45,8 @@ public:
   CAM_Application( const bool = true );
   virtual ~CAM_Application();
 
+  virtual void        start();
+
   CAM_Module*         activeModule() const;
   CAM_Module*         module( const QString& ) const;
 
@@ -68,7 +70,6 @@ public:
   virtual void        createEmptyStudy();
 
 protected:
-  virtual void        initialize();  
   virtual SUIT_Study* createNewStudy();
   virtual void        updateCommandsStatus();
 

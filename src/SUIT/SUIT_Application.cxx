@@ -117,17 +117,8 @@ QString SUIT_Application::applicationVersion() const
 */
 void SUIT_Application::start()
 {
-  initialize();
-  
   if ( desktop() )
     desktop()->show();
-}
-
-/*!
-  Prepares the contents of the application's main widget, does nothing by default.
-*/
-void SUIT_Application::initialize()
-{
 }
 
 /*!

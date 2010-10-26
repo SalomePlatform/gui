@@ -78,11 +78,9 @@ QString STD_Application::applicationName() const
   return QString( "StdApplication" );
 }
 
-/*!Prepare STD_Application*/
-void STD_Application::initialize()
+/*!Start STD_Application*/
+void STD_Application::start()
 {
-  SUIT_Application::initialize();
-  
   createActions();
 
   updateDesktopTitle();
@@ -90,15 +88,7 @@ void STD_Application::initialize()
   setEditEnabled( myEditEnabled );
 
   loadPreferences();
-}
 
-/*!Start STD_Application*/
-void STD_Application::start()
-{
-  // san: Need this simple implementation, as some applications
-  // call STD_Application::start() explicitly
-  // so we need to provide at least some implementation at this level
-  // to avoid link errors
   SUIT_Application::start();
 }
 

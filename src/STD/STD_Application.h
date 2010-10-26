@@ -141,7 +141,6 @@ protected:
   enum { CloseCancel, CloseSave, CloseDiscard };
 
 protected:
-  virtual void          initialize();  
   virtual void          createActions();
   virtual void          updateCommandsStatus();
 

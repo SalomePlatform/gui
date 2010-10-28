@@ -250,6 +250,7 @@ void QtxPathEdit::initialize()
 
   QToolButton* browse = new QToolButton( this );
   browse->setIcon( QPixmap( browse_icon ) );
+  browse->setFocusPolicy( Qt::StrongFocus );
   base->addWidget( browse );
 
   connect( browse, SIGNAL( clicked( bool ) ), this, SLOT( onBrowse( bool ) ) );

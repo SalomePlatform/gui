@@ -36,6 +36,7 @@ class QShortcut;
 class QTimer;
 class QToolButton;
 class QTreeView;
+class QAbstractItemView;
 
 class QTX_EXPORT QtxSearchTool : public QFrame
 {
@@ -209,6 +210,37 @@ private:
 
 private:
   QTreeView*             myView;
+  int                    myColumn;
+  QPersistentModelIndex  myIndex;
+};
+
+class QTX_EXPORT QtxItemViewSearcher : public QtxSearchTool::Searcher
+{
+public:
+  QtxItemViewSearcher( QAbstractItemView*, int = 0 );
+  virtual ~QtxItemViewSearcher();
+
+  int                    searchColumn() const;
+  void                   setSearchColumn( int );
+
+  virtual bool           find( const QString&, QtxSearchTool* );
+  virtual bool           findNext( const QString&, QtxSearchTool* );
+  virtual bool           findPrevious( const QString&, QtxSearchTool* );
+  virtual bool           findFirst( const QString&, QtxSearchTool* );
+  virtual bool           findLast( const QString&, QtxSearchTool* );
+
+protected:
+  virtual Qt::MatchFlags matchFlags( QtxSearchTool* ) const;
+  
+private:
+  QModelIndexList        findItems( const QString&, QtxSearchTool* );
+  QModelIndex            findNearest( const QModelIndex&, const QModelIndexList&, bool );
+  void                   showItem( const QModelIndex& );
+  QString                getId( const QModelIndex& );
+  int                    compareIndices( const QModelIndex&, const QModelIndex& );
+
+private:
+  QAbstractItemView*     myView;
   int                    myColumn;
   QPersistentModelIndex  myIndex;
 };

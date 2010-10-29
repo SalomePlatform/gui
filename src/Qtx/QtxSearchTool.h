@@ -236,8 +236,8 @@ private:
   QModelIndexList        findItems( const QString&, QtxSearchTool* );
   QModelIndex            findNearest( const QModelIndex&, const QModelIndexList&, bool );
   void                   showItem( const QModelIndex& );
-  QString                getId( const QModelIndex& );
-  int                    compareIndices( const QModelIndex&, const QModelIndex& );
+  QModelIndexList        getId( const QModelIndex& ) const;
+  int                    compareIndices( const QModelIndex&, const QModelIndex& ) const;
 
 private:
   QAbstractItemView*     myView;

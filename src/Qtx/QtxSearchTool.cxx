@@ -1873,17 +1873,16 @@ void QtxItemViewSearcher::showItem( const QModelIndex& index )
   \param index model index
   \return item ID
 */
-QString QtxItemViewSearcher::getId( const QModelIndex& index )
+QModelIndexList QtxItemViewSearcher::getId( const QModelIndex& index ) const
 {
-  QStringList ids;
+  QModelIndexList idxList;
   QModelIndex p = index;
   while ( p.isValid() )
   {
-    ids.prepend( QString::number( p.row() ) );
+    idxList.prepend( p );
     p = p.parent();
   }
-  ids.prepend( "0" );
-  return ids.join( ":" );
+  return idxList;
 }
 
 /*!
@@ -1895,20 +1894,18 @@ QString QtxItemViewSearcher::getId( const QModelIndex& index )
   and positive value otherwise
 */
 int QtxItemViewSearcher::compareIndices( const QModelIndex& left,
-					 const QModelIndex& right )
+					 const QModelIndex& right ) const
 {
-  QString leftId = getId( left );
-  QString rightId = getId( right );
-
-  QStringList idsLeft  = leftId.split( ":", QString::SkipEmptyParts );
-  QStringList idsRight = rightId.split( ":", QString::SkipEmptyParts );
-
+  QModelIndexList idsLeft = getId( left );
+  QModelIndexList idsRight = getId( right );
   for ( int i = 0; i < idsLeft.count() && i < idsRight.count(); i++ )
   {
-    int lid = idsLeft[i].toInt();
-    int rid = idsRight[i].toInt();
-    if ( lid != rid )
-      return lid - rid;
+    QModelIndex lid = idsLeft[i];
+    QModelIndex rid = idsRight[i];
+    if ( lid.row() != rid.row() )
+      return lid.row() - rid.row();
+    else if ( lid.column() != rid.column() )
+      return lid.column() - rid.column();
   }
   return idsLeft.count() < idsRight.count() ? -1 :
     ( idsLeft.count() == idsRight.count() ? 0 : 1 );

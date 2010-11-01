@@ -326,6 +326,26 @@ private:
   QtxGroupBox*     myGroup;
 };
 
+class QTX_EXPORT QtxPagePrefLabelItem : public QtxPagePrefItem
+{
+public:
+  QtxPagePrefLabelItem( const QString&, QtxPreferenceItem* = 0 );
+  QtxPagePrefLabelItem( Qt::Alignment, const QString&, QtxPreferenceItem* = 0 );
+  virtual ~QtxPagePrefLabelItem();
+
+  virtual void      setTitle( const QString& );
+
+  Qt::Alignment     alignment() const;
+  void              setAlignment( Qt::Alignment );
+
+protected:
+  virtual QVariant optionValue( const QString& ) const;
+  virtual void     setOptionValue( const QString&, const QVariant& );
+
+private:
+  QPointer<QLabel>  myLabel;
+};
+
 class QTX_EXPORT QtxPagePrefSpaceItem : public QtxPagePrefItem
 {
 public:

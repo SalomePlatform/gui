@@ -1384,6 +1384,45 @@ bool Qtx::stringToConicalGradient( const QString& str, QConicalGradient& gradien
   return success;
 }
 
+/*!
+  \class Qtx::Localizer
+  \brief Localization helper
+
+  This helper class can be used to solve the localization problems,
+  usually related to the textual files reading/writing, namely when
+  floating point values are read / written with API functions.
+  The problem relates to such locale specific settings as decimal point
+  separator, thousands separator, etc.
+  
+  To use the Localizer class, just create a local variable in the beginning
+  of the code where you need to read / write data from textual file(s).
+  The constructor of the class forces setting "C" locale temporariy.
+  The destructor switches back to the initial locale.
+
+  \code
+  Qtx::Localizer loc;
+  readSomething();
+  writeSomething();
+  \endcode
+*/
+
+/*!
+  \brief Constructor. Forces "C" locale to be set.
+*/
+Qtx::Localizer::Localizer()
+{
+  myCurLocale = setlocale( LC_NUMERIC, 0 );
+  setlocale( LC_NUMERIC, "C" );
+}
+
+/*!
+  \brief Destructor. Reverts back to the initial locale.
+*/
+Qtx::Localizer::~Localizer()
+{
+  setlocale( LC_NUMERIC, myCurLocale.toLatin1().constData() );
+}
+
 #ifndef WIN32
 
 #include <X11/Xlib.h>

@@ -221,8 +221,11 @@ void QtxPathEdit::onBrowse( bool /*on*/ )
     break;
   }
 
-  if ( !path.isEmpty() )
-    myPath->setText( QDir::convertSeparators( path ) );
+  if ( !path.isEmpty() ) {
+    QString txt = QDir::convertSeparators( path );
+    emit pathSelected( txt );
+    myPath->setText( txt );
+  }
 
   myPath->setFocus();
 }
@@ -254,6 +257,7 @@ void QtxPathEdit::initialize()
   base->addWidget( browse );
 
   connect( browse, SIGNAL( clicked( bool ) ), this, SLOT( onBrowse( bool ) ) );
+  connect( myPath, SIGNAL( textChanged( const QString& ) ), this, SIGNAL( pathChanged( const QString& ) ) );
 
   setFocusProxy( myPath );
 

@@ -52,6 +52,10 @@ public:
   const QValidator* validator() const;
   void              setValidator( QValidator* );
 
+signals:
+  void              pathChanged( const QString& );
+  void              pathSelected( const QString& );
+
 private slots:
   void              onBrowse( bool = false );
 

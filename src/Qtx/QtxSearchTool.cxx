@@ -1150,16 +1150,28 @@ QtxSearchTool::Searcher::~Searcher()
   \sa find(), findNext(), findPrevious(), findFirst()
 */
 
-/*!
-  \class QtxTreeViewSearcher
-  \brief A QTreeView class based searcher.
 
-  The class QtxTreeViewSearcher can be used to find the items in the
-  QTreeView widget.
+//------------------------------------------------------------------------------
+
+
+
+/*!
+  \class QtxViewSearcher
+  \brief Abstract base class for all searchers based on QAbstractItemModel.
+
+  Derived classes should implement the following methods:
+  - void showItem( const QModelIndex& ) that highlights the found item 
+    in the target view,
+  - QModelIndexList selectedItems() that returns the current selection 
+    in the target view,
+  - QAbstractItemModel* model() that returns the underlying QAbstractItemModel 
+    the target view works with.
 
   The column for which data should be searched can be get/set with the
   searchColumn(), setSearchColumn() methods.
   By default, column 0 is used.
+
+  \sa QtxTreeViewSearcher, QtxItemViewSearcher
 */
 
 /*!
@@ -1168,15 +1180,15 @@ QtxSearchTool::Searcher::~Searcher()
   \param col column for which search to be performed (0 by default)
   \sa setSearchColumn()
 */
-QtxTreeViewSearcher::QtxTreeViewSearcher( QTreeView* view, int col )
-  : myView( view ), myColumn( col )
+QtxViewSearcher::QtxViewSearcher( int col )
+  : myColumn( col )
 {
 }
 
 /*!
   \brief Destructor.
 */
-QtxTreeViewSearcher::~QtxTreeViewSearcher()
+QtxViewSearcher::~QtxViewSearcher()
 {
 }
 
@@ -1185,7 +1197,7 @@ QtxTreeViewSearcher::~QtxTreeViewSearcher()
   \return column number
   \sa setSearchColumn()
 */
-int QtxTreeViewSearcher::searchColumn() const
+int QtxViewSearcher::searchColumn() const
 {
   return myColumn;
 }
@@ -1195,7 +1207,7 @@ int QtxTreeViewSearcher::searchColumn() const
   \param column column number
   \sa searchColumn()
 */
-void QtxTreeViewSearcher::setSearchColumn( int column )
+void QtxViewSearcher::setSearchColumn( int column )
 {
   myColumn = column;
 }
@@ -1206,13 +1218,9 @@ void QtxTreeViewSearcher::setSearchColumn( int column )
   \param st search tool widget
   \sa findNext(), findPrevious(), findFirst(), findLast()
 */
-bool QtxTreeViewSearcher::find( const QString& text, QtxSearchTool* st )
+bool QtxViewSearcher::find( const QString& text, QtxSearchTool* st )
 {
-  if ( !myView )
-    return false;
-
-  const QModelIndexList& l = myView->selectionModel() ?
-    myView->selectionModel()->selectedIndexes() : QModelIndexList();
+  QModelIndexList l = selectedItems();
 
   QModelIndex current;
   if ( l.count() > 0 )
@@ -1259,13 +1267,9 @@ bool QtxTreeViewSearcher::find( const QString& text, QtxSearchTool* st )
   \param st search tool widget
   \sa find(), findPrevious(), findFirst(), findLast()
 */
-bool QtxTreeViewSearcher::findNext( const QString& text, QtxSearchTool* st )
+bool QtxViewSearcher::findNext( const QString& text, QtxSearchTool* st )
 {
-  if ( !myView )
-    return false;
-
-  const QModelIndexList& l = myView->selectionModel() ?
-    myView->selectionModel()->selectedIndexes() : QModelIndexList();
+  QModelIndexList l = selectedItems();
 
   QModelIndex current;
   if ( l.count() > 0 )
@@ -1308,13 +1312,9 @@ bool QtxTreeViewSearcher::findNext( const QString& text, QtxSearchTool* st )
   \param st search tool widget
   \sa find(), findNext(), findFirst(), findLast()
 */
-bool QtxTreeViewSearcher::findPrevious( const QString& text, QtxSearchTool* st )
+bool QtxViewSearcher::findPrevious( const QString& text, QtxSearchTool* st )
 {
-  if ( !myView )
-    return false;
-
-  const QModelIndexList& l = myView->selectionModel() ?
-    myView->selectionModel()->selectedIndexes() : QModelIndexList();
+  QModelIndexList l = selectedItems();
 
   QModelIndex current;
   if ( l.count() > 0 )
@@ -1357,7 +1357,7 @@ bool QtxTreeViewSearcher::findPrevious( const QString& text, QtxSearchTool* st )
   \param st search tool widget
   \sa find(), findNext(), findPrevious(), findLast()
 */
-bool QtxTreeViewSearcher::findFirst( const QString& text, QtxSearchTool* st )
+bool QtxViewSearcher::findFirst( const QString& text, QtxSearchTool* st )
 {
   QModelIndexList found = findItems( text, st );
 
@@ -1376,7 +1376,7 @@ bool QtxTreeViewSearcher::findFirst( const QString& text, QtxSearchTool* st )
   \param st search tool widget
   \sa find(), findNext(), findPrevious(), findFirst()
 */
-bool QtxTreeViewSearcher::findLast( const QString& text, QtxSearchTool* st )
+bool QtxViewSearcher::findLast( const QString& text, QtxSearchTool* st )
 {
   QModelIndexList found = findItems( text, st );
 
@@ -1393,7 +1393,7 @@ bool QtxTreeViewSearcher::findLast( const QString& text, QtxSearchTool* st )
   \brief Get match flags to be used by the searcher.
   \param st search tool widget
 */
-Qt::MatchFlags QtxTreeViewSearcher::matchFlags( QtxSearchTool* st ) const
+Qt::MatchFlags QtxViewSearcher::matchFlags( QtxSearchTool* st ) const
 {
   Qt::MatchFlags fl = Qt::MatchRecursive;
 
@@ -1413,7 +1413,7 @@ Qt::MatchFlags QtxTreeViewSearcher::matchFlags( QtxSearchTool* st ) const
   \param text text to be found
   \param st search tool widget
 */
-QModelIndexList QtxTreeViewSearcher::findItems( const QString& text, QtxSearchTool* st )
+QModelIndexList QtxViewSearcher::findItems( const QString& text, QtxSearchTool* st )
 {
   QString s = text;
 
@@ -1425,10 +1425,10 @@ QModelIndexList QtxTreeViewSearcher::findItems( const QString& text, QtxSearchTo
       s.append( ".*" );
   }
 
-  if ( myView->model() )
-    return myView->model()->match( myView->model()->index( 0, myColumn ),
-				   Qt::DisplayRole,
-				   s, -1, fl );
+  if ( model() )
+    return model()->match( model()->index( 0, myColumn ),
+			   Qt::DisplayRole,
+			   s, -1, fl );
   return QModelIndexList();
 }
 
@@ -1440,9 +1440,9 @@ QModelIndexList QtxTreeViewSearcher::findItems( const QString& text, QtxSearchTo
   \param direction if \c true find next appropriate item, otherwise find privious
   appropriate item
 */
-QModelIndex QtxTreeViewSearcher::findNearest( const QModelIndex& index,
-					      const QModelIndexList& lst,
-					      bool direction )
+QModelIndex QtxViewSearcher::findNearest( const QModelIndex& index,
+					  const QModelIndexList& lst,
+					  bool direction )
 {
   if ( direction )
   {
@@ -1469,411 +1469,29 @@ QModelIndex QtxTreeViewSearcher::findNearest( const QModelIndex& index,
 }
 
 /*!
+  \fn QtxViewSearcher::selectedItems() const
+  \brief Returns the currently selected model indices
+  \return List of model indices, empty list if nothing is selected
+*/
+
+/*!
+  \fn QtxViewSearcher::showItem( const QModelIndex& index )
   \brief Ensure the found item to become visible and selected.
-  \internal
   \param index item to be shown
 */
-void QtxTreeViewSearcher::showItem( const QModelIndex& index )
-{
-  if ( myView && index.isValid() && myView->selectionModel() )
-  {
-    QItemSelectionModel::SelectionFlags f =
-      QItemSelectionModel::Select | QItemSelectionModel::Rows | QItemSelectionModel::Clear;
-    myView->selectionModel()->select( index, f );
-    myView->scrollTo( index );
-    myIndex = index;
-  }
-}
+
+/*!
+  \fn QtxViewSearcher::model() const
+  \brief Returns an instance of QAbstractItemModel used by the view
+  \return Pointer to QAbstractItemModel instance
+*/
 
 /*!
   \brief Get unique item ID.
-  \internal
   \param index model index
   \return item ID
 */
-QString QtxTreeViewSearcher::getId( const QModelIndex& index )
-{
-  QStringList ids;
-  QModelIndex p = index;
-  while ( p.isValid() )
-  {
-    ids.prepend( QString::number( p.row() ) );
-    p = p.parent();
-  }
-  ids.prepend( "0" );
-  return ids.join( ":" );
-}
-
-/*!
-  \brief Compare items.
-  \internal
-  \param left first model index to be compared
-  \param right last model index to be compared
-  \return 0 if items are equal, negative value if left item is less than right one
-  and positive value otherwise
-*/
-int QtxTreeViewSearcher::compareIndices( const QModelIndex& left,
-					 const QModelIndex& right )
-{
-  QString leftId = getId( left );
-  QString rightId = getId( right );
-
-  QStringList idsLeft  = leftId.split( ":", QString::SkipEmptyParts );
-  QStringList idsRight = rightId.split( ":", QString::SkipEmptyParts );
-
-  for ( int i = 0; i < idsLeft.count() && i < idsRight.count(); i++ )
-  {
-    int lid = idsLeft[i].toInt();
-    int rid = idsRight[i].toInt();
-    if ( lid != rid )
-      return lid - rid;
-  }
-  return idsLeft.count() < idsRight.count() ? -1 :
-    ( idsLeft.count() == idsRight.count() ? 0 : 1 );
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-/*!
-  \brief Constructor.
-  \param view tree view widget
-  \param col column for which search to be performed (0 by default)
-  \sa setSearchColumn()
-*/
-QtxItemViewSearcher::QtxItemViewSearcher( QAbstractItemView* view, int col )
-  : myView( view ), myColumn( col )
-{
-}
-
-/*!
-  \brief Destructor.
-*/
-QtxItemViewSearcher::~QtxItemViewSearcher()
-{
-}
-
-/*!
-  \brief Get column for which search is performed.
-  \return column number
-  \sa setSearchColumn()
-*/
-int QtxItemViewSearcher::searchColumn() const
-{
-  return myColumn;
-}
-
-/*!
-  \brief Set column for which search should be performed.
-  \param column column number
-  \sa searchColumn()
-*/
-void QtxItemViewSearcher::setSearchColumn( int column )
-{
-  myColumn = column;
-}
-
-/*!
-  \brief Start new search.
-  \param text text to be found
-  \param st search tool widget
-  \sa findNext(), findPrevious(), findFirst(), findLast()
-*/
-bool QtxItemViewSearcher::find( const QString& text, QtxSearchTool* st )
-{
-  if ( !myView )
-    return false;
-
-  const QModelIndexList& l = myView->selectionModel() ?
-    myView->selectionModel()->selectedIndexes() : QModelIndexList();
-
-  QModelIndex current;
-  if ( l.count() > 0 )
-    current = l.first();
-
-  bool wrapSearch = st->isSearchWrapped();
-
-  QModelIndexList found = findItems( text, st );
-
-  if ( found.count() > 0 )
-  {
-    if ( !current.isValid() )
-    {
-      showItem( found.first() );
-      return true;
-    }
-
-    if ( found.contains( current ) )
-    {
-      showItem( current );
-      return true;
-    }
-
-    QModelIndex next = findNearest( current, found, true );
-    if ( next.isValid() )
-    {
-      showItem( next );
-      return true;
-    }
-
-    if ( wrapSearch )
-    {
-      showItem( found.first() );
-      return true;
-    }
-  }
-
-  return false;
-}
-
-/*!
-  \brief Search next appropriate item.
-  \param text text to be found
-  \param st search tool widget
-  \sa find(), findPrevious(), findFirst(), findLast()
-*/
-bool QtxItemViewSearcher::findNext( const QString& text, QtxSearchTool* st )
-{
-  if ( !myView )
-    return false;
-
-  const QModelIndexList& l = myView->selectionModel() ?
-    myView->selectionModel()->selectedIndexes() : QModelIndexList();
-
-  QModelIndex current;
-  if ( l.count() > 0 )
-    current = l.first();
-  else if ( myIndex.isValid() )
-    current = myIndex;
-
-  bool wrapSearch = st->isSearchWrapped();
-
-  QModelIndexList found = findItems( text, st );
-
-  if ( found.count() > 0 )
-  {
-    if ( !current.isValid() )
-    {
-      showItem( found.first() );
-      return true;
-    }
-
-    QModelIndex next = findNearest( current, found, true );
-    if ( next.isValid() )
-    {
-      showItem( next );
-      return true;
-    }
-
-    if ( wrapSearch )
-    {
-      showItem( found.first() );
-      return true;
-    }
-  }
-
-  return false;
-}
-
-/*!
-  \brief Search previous appropriate item.
-  \param text text to be found
-  \param st search tool widget
-  \sa find(), findNext(), findFirst(), findLast()
-*/
-bool QtxItemViewSearcher::findPrevious( const QString& text, QtxSearchTool* st )
-{
-  if ( !myView )
-    return false;
-
-  const QModelIndexList& l = myView->selectionModel() ?
-    myView->selectionModel()->selectedIndexes() : QModelIndexList();
-
-  QModelIndex current;
-  if ( l.count() > 0 )
-    current = l.first();
-  else if ( myIndex.isValid() )
-    current = myIndex;
-
-  bool wrapSearch = st->isSearchWrapped();
-
-  QModelIndexList found = findItems( text, st );
-
-  if ( found.count() > 0 )
-  {
-    if ( !current.isValid() )
-    {
-      showItem( found.first() );
-      return true;
-    }
-
-    QModelIndex next = findNearest( current, found, false );
-    if ( next.isValid() )
-    {
-      showItem( next );
-      return true;
-    }
-
-    if ( wrapSearch )
-    {
-      showItem( found.last() );
-      return true;
-    }
-  }
-
-  return false;
-}
-
-/*!
-  \brief Search first appropriate item.
-  \param text text to be found
-  \param st search tool widget
-  \sa find(), findNext(), findPrevious(), findLast()
-*/
-bool QtxItemViewSearcher::findFirst( const QString& text, QtxSearchTool* st )
-{
-  QModelIndexList found = findItems( text, st );
-
-  if ( found.count() > 0 )
-  {
-    showItem( found.first() );
-    return true;
-  }
-
-  return false;
-}
-
-/*!
-  \brief Search last appropriate item.
-  \param text text to be found
-  \param st search tool widget
-  \sa find(), findNext(), findPrevious(), findFirst()
-*/
-bool QtxItemViewSearcher::findLast( const QString& text, QtxSearchTool* st )
-{
-  QModelIndexList found = findItems( text, st );
-
-  if ( found.count() > 0 )
-  {
-    showItem( found.last() );
-    return true;
-  }
-
-  return false;
-}
-
-/*!
-  \brief Get match flags to be used by the searcher.
-  \param st search tool widget
-*/
-Qt::MatchFlags QtxItemViewSearcher::matchFlags( QtxSearchTool* st ) const
-{
-  Qt::MatchFlags fl = Qt::MatchRecursive;
-
-  if ( st->isCaseSensitive() )
-    fl = fl | Qt::MatchCaseSensitive;
-  if ( st->isRegExpSearch() )
-    fl = fl | Qt::MatchRegExp;
-  else
-    fl = fl | Qt::MatchContains;
-
-  return fl;
-}
-
-/*!
-  \brief Find all appropriate items.
-  \internal
-  \param text text to be found
-  \param st search tool widget
-*/
-QModelIndexList QtxItemViewSearcher::findItems( const QString& text, QtxSearchTool* st )
-{
-  QString s = text;
-
-  Qt::MatchFlags fl = matchFlags( st );
-  if ( fl & Qt::MatchRegExp ) {
-    if ( !s.startsWith( "^" ) && !s.startsWith( ".*" ) )
-      s.prepend( ".*" );
-    if ( !s.endsWith( "$" ) && !s.endsWith( ".*" ) )
-      s.append( ".*" );
-  }
-
-  if ( myView->model() )
-    return myView->model()->match( myView->model()->index( 0, myColumn ),
-				   Qt::DisplayRole,
-				   s, -1, fl );
-  return QModelIndexList();
-}
-
-/*!
-  \brief Find model index from the list nearest to the specified index.
-  \internal
-  \param index model index for which a nearest item is searched
-  \param lst list of model indices
-  \param direction if \c true find next appropriate item, otherwise find privious
-  appropriate item
-*/
-QModelIndex QtxItemViewSearcher::findNearest( const QModelIndex& index,
-					      const QModelIndexList& lst,
-					      bool direction )
-{
-  if ( direction )
-  {
-    QListIterator<QModelIndex> it( lst );
-    while ( it.hasNext() )
-    {
-      QModelIndex found = it.next();
-      if ( compareIndices( found, index ) > 0 )
-	return found;
-    }
-  }
-  else
-  {
-    QListIterator<QModelIndex> it( lst );
-    it.toBack();
-    while ( it.hasPrevious() )
-    {
-      QModelIndex found = it.previous();
-      if ( compareIndices( found, index ) < 0 )
-	return found;
-    }
-  }
-  return QModelIndex();
-}
-
-/*!
-  \brief Ensure the found item to become visible and selected.
-  \internal
-  \param index item to be shown
-*/
-void QtxItemViewSearcher::showItem( const QModelIndex& index )
-{
-  if ( myView && index.isValid() && myView->selectionModel() )
-  {
-    QItemSelectionModel::SelectionFlags f =
-      QItemSelectionModel::Select | QItemSelectionModel::Clear;
-    myView->selectionModel()->select( index, f );
-    myView->scrollTo( index );
-    myIndex = index;
-  }
-}
-
-/*!
-  \brief Get unique item ID.
-  \internal
-  \param index model index
-  \return item ID
-*/
-QModelIndexList QtxItemViewSearcher::getId( const QModelIndex& index ) const
+QModelIndexList QtxViewSearcher::getId( const QModelIndex& index ) const
 {
   QModelIndexList idxList;
   QModelIndex p = index;
@@ -1887,14 +1505,13 @@ QModelIndexList QtxItemViewSearcher::getId( const QModelIndex& index ) const
 
 /*!
   \brief Compare items.
-  \internal
   \param left first model index to be compared
   \param right last model index to be compared
   \return 0 if items are equal, negative value if left item is less than right one
   and positive value otherwise
 */
-int QtxItemViewSearcher::compareIndices( const QModelIndex& left,
-					 const QModelIndex& right ) const
+int QtxViewSearcher::compareIndices( const QModelIndex& left,
+				     const QModelIndex& right ) const
 {
   QModelIndexList idsLeft = getId( left );
   QModelIndexList idsRight = getId( right );
@@ -1909,4 +1526,187 @@ int QtxItemViewSearcher::compareIndices( const QModelIndex& left,
   }
   return idsLeft.count() < idsRight.count() ? -1 :
     ( idsLeft.count() == idsRight.count() ? 0 : 1 );
+}
+
+//------------------------------------------------------------------------------
+
+
+/*!
+  \class QtxTreeViewSearcher
+  \brief A QTreeView class based searcher.
+
+  The class QtxTreeViewSearcher can be used to find the items in the
+  QTreeView widget. 
+  QtxTreeViewSearcher is provided for backward compatibility only,
+  QtxItemViewSearcher class is a more generic tool that works with any
+  QAbstractItemView-derived class.
+
+  The column for which data should be searched can be get/set with the
+  searchColumn(), setSearchColumn() methods.
+  By default, column 0 is used.
+
+  \sa QtxViewSearcher, QtxItemViewSearcher
+*/
+
+/*!
+  \brief Constructor.
+  \param view tree view widget
+  \param col column for which search to be performed (0 by default)
+  \sa setSearchColumn()
+*/
+QtxTreeViewSearcher::QtxTreeViewSearcher( QTreeView* view, int col )
+  : QtxViewSearcher( col ), 
+    myView( view )
+{
+}
+
+/*!
+  \brief Destructor.
+*/
+QtxTreeViewSearcher::~QtxTreeViewSearcher()
+{
+}
+
+/*!
+  \brief Provided for compatibility.
+*/
+bool QtxTreeViewSearcher::find( const QString& text, QtxSearchTool* st )
+{
+  return QtxViewSearcher::find( text, st );
+}
+
+/*!
+  \brief Provided for compatibility.
+*/
+bool QtxTreeViewSearcher::findNext( const QString& text, QtxSearchTool* st )
+{
+  return QtxViewSearcher::findNext( text, st );
+}
+
+/*!
+  \brief Provided for compatibility.
+*/
+bool QtxTreeViewSearcher::findPrevious( const QString& text, QtxSearchTool* st )
+{
+  return QtxViewSearcher::findPrevious( text, st );
+}
+
+/*!
+  \brief Provided for compatibility.
+*/
+bool QtxTreeViewSearcher::findFirst( const QString& text, QtxSearchTool* st )
+{
+  return QtxViewSearcher::findFirst( text, st );
+}
+
+/*!
+  \brief Provided for compatibility.
+*/
+bool QtxTreeViewSearcher::findLast( const QString& text, QtxSearchTool* st )
+{
+  return QtxViewSearcher::findLast( text, st );
+}
+
+/*!
+  \brief Ensure the found item to become visible and selected.
+  \param index item to be shown
+*/
+void QtxTreeViewSearcher::showItem( const QModelIndex& index )
+{
+  if ( myView && index.isValid() && myView->selectionModel() )
+  {
+    QItemSelectionModel::SelectionFlags f =
+      QItemSelectionModel::Select | QItemSelectionModel::Rows | QItemSelectionModel::Clear;
+    myView->selectionModel()->select( index, f );
+    myView->scrollTo( index );
+    setCurrentIndex( index );
+  }
+}
+
+/*!
+  \brief Returns a list of model indices selected in myView
+  \return A list of model indices
+*/
+QModelIndexList QtxTreeViewSearcher::selectedItems() const
+{
+  return ( myView && myView->selectionModel() ) ?
+    myView->selectionModel()->selectedIndexes() : 
+    QModelIndexList();
+}
+
+/*!
+  \brief Returns the model displayed in myView
+  \return Pointer to the model
+*/
+QAbstractItemModel* QtxTreeViewSearcher::model() const
+{
+  return myView ? myView->model() : 0; 
+}
+
+//------------------------------------------------------------------------------
+
+
+/*!
+  \class QtxItemViewSearcher
+  \brief A generic QAbstractItemView class based searcher.
+
+  The class QtxItemViewSearcher can be used to find the items in 
+  any widget derived from QAbstractItemView class. 
+
+  \sa QtxViewSearcher, QtxItemViewSearcher
+*/
+
+/*!
+  \brief Constructor.
+  \param view tree view widget
+  \param col column for which search to be performed (0 by default)
+  \sa setSearchColumn()
+*/
+QtxItemViewSearcher::QtxItemViewSearcher( QAbstractItemView* view, int col )
+  : QtxViewSearcher( col ), 
+    myView( view )
+{
+}
+
+/*!
+  \brief Destructor.
+*/
+QtxItemViewSearcher::~QtxItemViewSearcher()
+{
+}
+
+/*!
+  \brief Ensure the found item to become visible and selected.
+  \param index item to be shown
+*/
+void QtxItemViewSearcher::showItem( const QModelIndex& index )
+{
+  if ( myView && index.isValid() && myView->selectionModel() )
+  {
+    QItemSelectionModel::SelectionFlags f =
+      QItemSelectionModel::Select | QItemSelectionModel::Clear;
+    myView->selectionModel()->select( index, f );
+    myView->scrollTo( index );
+    setCurrentIndex( index );
+  }
+}
+
+/*!
+  \brief Returns a list of model indices selected in myView
+  \return A list of model indices
+*/
+QModelIndexList QtxItemViewSearcher::selectedItems() const
+{
+  return ( myView && myView->selectionModel() ) ?
+    myView->selectionModel()->selectedIndexes() : 
+    QModelIndexList();
+}
+
+/*!
+  \brief Returns the model displayed in myView
+  \return Pointer to the model
+*/
+QAbstractItemModel* QtxItemViewSearcher::model() const
+{
+  return myView ? myView->model() : 0; 
 }

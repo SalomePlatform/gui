@@ -183,66 +183,87 @@ signals:
   void         resultChanged( bool );
 };
 
-class QTX_EXPORT QtxTreeViewSearcher : public QtxSearchTool::Searcher
+
+class QTX_EXPORT QtxViewSearcher : public QtxSearchTool::Searcher
+{
+public:
+  QtxViewSearcher( int column = 0 );
+  virtual ~QtxViewSearcher();
+
+  int                     searchColumn() const;
+  void                    setSearchColumn( int );
+
+  virtual bool            find( const QString&, QtxSearchTool* );
+  virtual bool            findNext( const QString&, QtxSearchTool* );
+  virtual bool            findPrevious( const QString&, QtxSearchTool* );
+  virtual bool            findFirst( const QString&, QtxSearchTool* );
+  virtual bool            findLast( const QString&, QtxSearchTool* );
+
+protected:
+  virtual Qt::MatchFlags  matchFlags( QtxSearchTool* ) const;
+  virtual void            showItem( const QModelIndex& ) = 0;
+  virtual QModelIndexList selectedItems() const = 0;
+  virtual QAbstractItemModel* model() const = 0;
+
+  inline void             setCurrentIndex( const QModelIndex& index );
+  inline const QPersistentModelIndex& currentIndex() const;
+  
+private:
+  QModelIndexList         findItems( const QString&, QtxSearchTool* );
+  QModelIndex             findNearest( const QModelIndex&, const QModelIndexList&, bool );
+  QModelIndexList         getId( const QModelIndex& ) const;
+  int                     compareIndices( const QModelIndex&, const QModelIndex& ) const;
+
+private:
+  int                     myColumn;
+  QPersistentModelIndex   myIndex;
+};
+
+
+void QtxViewSearcher::setCurrentIndex( const QModelIndex& index )
+{
+  myIndex = index;
+}
+
+const QPersistentModelIndex& QtxViewSearcher::currentIndex() const
+{
+  return myIndex;
+}
+
+class QTX_EXPORT QtxTreeViewSearcher : public QtxViewSearcher
 {
 public:
   QtxTreeViewSearcher( QTreeView*, int = 0 );
   virtual ~QtxTreeViewSearcher();
 
-  int                    searchColumn() const;
-  void                   setSearchColumn( int );
-  
-  virtual bool           find( const QString&, QtxSearchTool* );
-  virtual bool           findNext( const QString&, QtxSearchTool* );
-  virtual bool           findPrevious( const QString&, QtxSearchTool* );
-  virtual bool           findFirst( const QString&, QtxSearchTool* );
-  virtual bool           findLast( const QString&, QtxSearchTool* );
+  virtual bool            find( const QString&, QtxSearchTool* );
+  virtual bool            findNext( const QString&, QtxSearchTool* );
+  virtual bool            findPrevious( const QString&, QtxSearchTool* );
+  virtual bool            findFirst( const QString&, QtxSearchTool* );
+  virtual bool            findLast( const QString&, QtxSearchTool* );
 
 protected:
-  virtual Qt::MatchFlags matchFlags( QtxSearchTool* ) const;
-  
-private:
-  QModelIndexList        findItems( const QString&, QtxSearchTool* );
-  QModelIndex            findNearest( const QModelIndex&, const QModelIndexList&, bool );
-  void                   showItem( const QModelIndex& );
-  QString                getId( const QModelIndex& );
-  int                    compareIndices( const QModelIndex&, const QModelIndex& );
+  virtual void            showItem( const QModelIndex& );
+  virtual QModelIndexList selectedItems() const;
+  virtual QAbstractItemModel* model() const;
 
 private:
-  QTreeView*             myView;
-  int                    myColumn;
-  QPersistentModelIndex  myIndex;
+  QTreeView*              myView;
 };
 
-class QTX_EXPORT QtxItemViewSearcher : public QtxSearchTool::Searcher
+class QTX_EXPORT QtxItemViewSearcher : public QtxViewSearcher
 {
 public:
   QtxItemViewSearcher( QAbstractItemView*, int = 0 );
   virtual ~QtxItemViewSearcher();
 
-  int                    searchColumn() const;
-  void                   setSearchColumn( int );
-
-  virtual bool           find( const QString&, QtxSearchTool* );
-  virtual bool           findNext( const QString&, QtxSearchTool* );
-  virtual bool           findPrevious( const QString&, QtxSearchTool* );
-  virtual bool           findFirst( const QString&, QtxSearchTool* );
-  virtual bool           findLast( const QString&, QtxSearchTool* );
-
 protected:
-  virtual Qt::MatchFlags matchFlags( QtxSearchTool* ) const;
-  
-private:
-  QModelIndexList        findItems( const QString&, QtxSearchTool* );
-  QModelIndex            findNearest( const QModelIndex&, const QModelIndexList&, bool );
-  void                   showItem( const QModelIndex& );
-  QModelIndexList        getId( const QModelIndex& ) const;
-  int                    compareIndices( const QModelIndex&, const QModelIndex& ) const;
+  virtual void            showItem( const QModelIndex& );
+  virtual QModelIndexList selectedItems() const;
+  virtual QAbstractItemModel* model() const;
 
 private:
-  QAbstractItemView*     myView;
-  int                    myColumn;
-  QPersistentModelIndex  myIndex;
+  QAbstractItemView*      myView;
 };
 
 #endif // QTXSEARCHTOOL_H

@@ -113,7 +113,7 @@ public:
         Auto    //!< substitute environment variable by it's value if variable exists, and keep it as is otherwise
   } SubstMode;
 
-  class Localizer
+  class QTX_EXPORT Localizer
   {
   public:
     Localizer();

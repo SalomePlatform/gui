@@ -53,6 +53,7 @@ public:
   void              setValidator( QValidator* );
 
 signals:
+  void              returnPressed();
   void              pathChanged( const QString& );
   void              pathSelected( const QString& );
 

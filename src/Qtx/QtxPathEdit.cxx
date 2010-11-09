@@ -257,6 +257,7 @@ void QtxPathEdit::initialize()
   base->addWidget( browse );
 
   connect( browse, SIGNAL( clicked( bool ) ), this, SLOT( onBrowse( bool ) ) );
+  connect( myPath, SIGNAL( returnPressed() ), this, SIGNAL( returnPressed() ) );
   connect( myPath, SIGNAL( textChanged( const QString& ) ), this, SIGNAL( pathChanged( const QString& ) ) );
 
   setFocusProxy( myPath );

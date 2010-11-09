@@ -13,11 +13,11 @@
     </message>
     <message>
         <source>MNU_DUMP_VIEW</source>
-        <translation>Clicher</translation>
+        <translation>Sauvegarder</translation>
     </message>
     <message>
         <source>MNU_PAN_VIEW</source>
-        <translation>Redimensionnement</translation>
+        <translation>Déplacement</translation>
     </message>
     <message>
         <source>DSC_GLOBALPAN_VIEW</source>
@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>DSC_PAN_VIEW</source>
-        <translation>Redimensionner la vue</translation>
+        <translation>Déplacer la vue</translation>
     </message>
     <message>
         <source>DSC_FITALL</source>
@@ -37,19 +37,19 @@
     </message>
     <message>
         <source>MNU_FITALL</source>
-        <translation>Montrer Tous</translation>
+        <translation>Tout afficher</translation>
     </message>
     <message>
         <source>MNU_GLOBALPAN_VIEW</source>
-        <translation>Redimensionnement Global</translation>
+        <translation>Déplacement global</translation>
     </message>
     <message>
         <source>INF_APP_DUMP_VIEW</source>
-        <translation>Clicher la vue</translation>
+        <translation>Sauvegarder la vue</translation>
     </message>
     <message>
         <source>GL_IMAGE_FILES</source>
-        <translation>Fichiers Images (*.bmp *.png)</translation>
+        <translation>Fichiers images (*.bmp *.png)</translation>
     </message>
     <message>
         <source>MNU_RESET_VIEW</source>
@@ -61,19 +61,19 @@
     </message>
     <message>
         <source>MNU_FITRECT</source>
-        <translation>Montrer la zone</translation>
+        <translation>Afficher la zone</translation>
     </message>
     <message>
         <source>CHANGE_BGCOLOR</source>
-        <translation>Changee la couleur d&apos;arrier-plan...</translation>
+        <translation>Changer la couleur d&apos;arrière-plan...</translation>
     </message>
     <message>
         <source>DSC_DUMP_VIEW</source>
-        <translation>Sauvegarder la vue en cours au fichier image</translation>
+        <translation>Sauvegarder la vue en cours dans un fichier image</translation>
     </message>
     <message>
         <source>MNU_FITSELECT</source>
-        <translation>Montrer la Sélection</translation>
+        <translation>Afficher la sélection</translation>
     </message>
     <message>
         <source>DSC_ZOOM_VIEW</source>
@@ -81,7 +81,7 @@
     </message>
     <message>
         <source>DSC_RESET_VIEW</source>
-        <translation>Restaurer le Point de Vue</translation>
+        <translation>Restaurer le point de vue</translation>
     </message>
     <message>
         <source>ERR_DOC_CANT_SAVE_FILE</source>
@@ -89,18 +89,18 @@
     </message>
     <message>
         <source>LBL_TOOLBAR_LABEL</source>
-        <translation>Opérations de Visualisation</translation>
+        <translation>Opérations de visualisation</translation>
     </message>
 </context>
 <context>
     <name>GLViewer_ViewFrame</name>
     <message>
         <source>DUMP_VIEW_SAVE_FILE_DLG_CAPTION</source>
-        <translation>Sauvegarder la Vue Clichée au Fichier</translation>
+        <translation>Sauvegarder la vue dans le fichier</translation>
     </message>
     <message>
         <source>DUMP_VIEW_ERROR_DLG_TEXT</source>
-        <translation>Impossible de Sauvegarder la Vue Clichée au Fichier</translation>
+        <translation>Impossible de sauvegarder la vue dans le fichier</translation>
     </message>
     <message>
         <source>DUMP_VIEW_ERROR_DLG_CAPTION</source>
@@ -111,7 +111,7 @@
     <name>GLViewer_ViewManager</name>
     <message>
         <source>GL_VIEW_TITLE</source>
-        <translation>GL Scène:%M - visualisateur:%V</translation>
+        <translation>Scène GL:%M - visualiseur:%V</translation>
     </message>
 </context>
 </TS>

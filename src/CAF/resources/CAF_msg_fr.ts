@@ -9,11 +9,11 @@
     </message>
     <message>
         <source>INF_ALL_FILTER</source>
-        <translation>Tous les Fichiers (*.*)</translation>
+        <translation>Tous les fichiers (*.*)</translation>
     </message>
     <message>
         <source>INF_ALL_DOCUMENTS_FILTER</source>
-        <translation>Tous les Documents Lisibles</translation>
+        <translation>Tous les documents lisibles</translation>
     </message>
     <message>
         <source>MEN_DESK_EDIT</source>
@@ -53,7 +53,7 @@
     </message>
     <message>
         <source>ABOUT_INFO</source>
-        <translation>SUIT Caf application</translation>
+        <translation>Application SUIT Caf</translation>
     </message>
 </context>
 </TS>

@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>MNU_FRONT_VIEW</source>
-        <translation>Devant</translation>
+        <translation>Avant</translation>
     </message>
     <message>
         <source>ERROR</source>
@@ -29,11 +29,11 @@
     </message>
     <message>
         <source>DSC_SHOW_TRIHEDRE</source>
-        <translation>Monter/Cacher les axes de coordonnées dans la scène</translation>
+        <translation>Afficher/cacher le trièdre dans la scène</translation>
     </message>
     <message>
         <source>MNU_SHOW_TRIHEDRE</source>
-        <translation>Monter/Cacher les axes de coordonnées</translation>
+        <translation>Afficher/cacher le trièdre</translation>
     </message>
     <message>
         <source>MNU_TOP_VIEW</source>
@@ -41,7 +41,7 @@
     </message>
     <message>
         <source>DSC_GLOBALPAN_VIEW</source>
-        <translation>Sélection d&apos;un nouveau centre de la vue</translation>
+        <translation>Sélection d&apos;un nouveau centre de vue</translation>
     </message>
     <message>
         <source>DSC_ROTATE_VIEW</source>
@@ -53,7 +53,7 @@
     </message>
     <message>
         <source>DSC_PAN_VIEW</source>
-        <translation>Redimensionner la vue</translation>
+        <translation>Déplacer la vue</translation>
     </message>
     <message>
         <source>DSC_LEFT_VIEW</source>
@@ -61,7 +61,7 @@
     </message>
     <message>
         <source>DSC_SHOOT_VIEW</source>
-        <translation>Memorizer l&apos;état courant de la scène et l&apos;ajouter dans la liste</translation>
+        <translation>Memoriser l&apos;état courant de la scène et l&apos;ajouter dans la liste</translation>
     </message>
     <message>
         <source>DSC_FITALL</source>
@@ -69,7 +69,7 @@
     </message>
     <message>
         <source>MNU_FITALL</source>
-        <translation>Montrer tous</translation>
+        <translation>Tout afficher</translation>
     </message>
     <message>
         <source>MNU_ROTATE_VIEW</source>
@@ -85,15 +85,15 @@
     </message>
     <message>
         <source>MNU_GLOBALPAN_VIEW</source>
-        <translation>Panoramique globale</translation>
+        <translation>Panoramique global</translation>
     </message>
     <message>
         <source>INF_APP_DUMP_VIEW</source>
-        <translation>Clicher la vue</translation>
+        <translation>Sauvegarder la vue</translation>
     </message>
     <message>
         <source>DSC_CLIPPING</source>
-        <translation>Définir le plan de découpe</translation>
+        <translation>Définir le plan de coupe</translation>
     </message>
     <message>
         <source>DSC_CLONE_VIEW</source>
@@ -101,7 +101,7 @@
     </message>
     <message>
         <source>INF_APP_SHOOT_VIEW</source>
-        <translation>Sauvegarder la scène</translation>
+        <translation>Mémoriser la scène</translation>
     </message>
     <message>
         <source>MNU_CLIPPING</source>
@@ -113,11 +113,11 @@
     </message>
     <message>
         <source>MNU_SHOOT_VIEW</source>
-        <translation>Memorizer la Vue</translation>
+        <translation>Memoriser la vue</translation>
     </message>
     <message>
         <source>DSC_CHANGINGROTATIONPOINT_VIEW</source>
-        <translation>Changer le point, autour duquel la scène est tournée</translation>
+        <translation>Changer le point autour duquel la scène est tournée</translation>
     </message>
     <message>
         <source>MNU_BOTTOM_VIEW</source>
@@ -133,7 +133,7 @@
     </message>
     <message>
         <source>DSC_RIGHT_VIEW</source>
-        <translation>Vue de droit</translation>
+        <translation>Vue de droite</translation>
     </message>
     <message>
         <source>MNU_CHANGINGROTATIONPOINT_VIEW</source>
@@ -145,7 +145,7 @@
     </message>
     <message>
         <source>MNU_FITRECT</source>
-        <translation>Montrer l&apos;encadré</translation>
+        <translation>Afficher la zone</translation>
     </message>
     <message>
         <source>DSC_BOTTOM_VIEW</source>
@@ -153,7 +153,7 @@
     </message>
     <message>
         <source>DSC_DUMP_VIEW</source>
-        <translation>Sauvegarder la scène en cours au fichier image</translation>
+        <translation>Sauvegarder la scène en cours dans un fichier image</translation>
     </message>
     <message>
         <source>DSC_ZOOM_VIEW</source>
@@ -173,11 +173,11 @@
     </message>
     <message>
         <source>ERR_DOC_CANT_SAVE_FILE</source>
-        <translation>Il est impossible de sauvegarder le fichier</translation>
+        <translation>Impossible de sauvegarder le fichier</translation>
     </message>
     <message>
         <source>DSC_PRESETS_VIEW</source>
-        <translation>Restaurer l&apos;état mémorisé de la scène courante</translation>
+        <translation>Restaurer d&apos;un état mémorisé de la scène courante</translation>
     </message>
     <message>
         <source>MNU_PRESETS_VIEW</source>
@@ -197,7 +197,7 @@
     </message>
     <message>
         <source>DSC_BACK_VIEW</source>
-        <translation>Vue d&apos;arrière</translation>
+        <translation>Vue arrière</translation>
     </message>
     <message>
         <source>DSC_SCALING</source>
@@ -209,11 +209,11 @@
     </message>
     <message>
         <source>DSC_GRADUATED_AXES</source>
-        <translation>Axes Gradués</translation>
+        <translation>Axes gradués</translation>
     </message>
     <message>
         <source>MNU_GRADUATED_AXES</source>
-        <translation>Axes Gradués</translation>
+        <translation>Axes gradués</translation>
     </message>
     <message>
         <source>DSC_AMBIENT</source>
@@ -233,7 +233,7 @@
     </message>
     <message>
         <source>OCC_IMAGE_FILES</source>
-        <translation>Fichiers Images (*.bmp *.png *.jpg *.jpeg)</translation>
+        <translation>Fichiers images (*.bmp *.png *.jpg *.jpeg)</translation>
     </message>
 </context>
 <context>
@@ -259,11 +259,11 @@
     </message>
     <message>
         <source>USE_BBCENTER</source>
-        <translation>Utiliser le Centre du Cadre d&apos;Objet</translation>
+        <translation>Utiliser le centre de la boîte englobante</translation>
     </message>
     <message>
         <source>LBL_TOORIGIN</source>
-        <translation>Implanter á l&apos;Origine</translation>
+        <translation>Définir à l&apos;origine</translation>
     </message>
     <message>
         <source>CAPTION</source>
@@ -271,14 +271,14 @@
     </message>
     <message>
         <source>LBL_SELECTPOINT</source>
-        <translation>Choisir le Point dans la Vue</translation>
+        <translation>Choisir le point dans la vue</translation>
     </message>
 </context>
 <context>
     <name>OCCViewer_ViewManager</name>
     <message>
         <source>OCC_VIEW_TITLE</source>
-        <translation>Scène OCC :%M - visualisateur:%V</translation>
+        <translation>Scène OCC :%M - visualiseur:%V</translation>
     </message>
 </context>
 <context>
@@ -293,7 +293,7 @@
     </message>
     <message>
         <source>MEN_CHANGE_BACKGROUD</source>
-        <translation>Changer l&apos;Arrière Plan</translation>
+        <translation>Changer l&apos;arrière-plan</translation>
     </message>
 </context>
 <context>

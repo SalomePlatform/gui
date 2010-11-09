@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>MNU_FRONT_VIEW</source>
-        <translation>Devant</translation>
+        <translation>Avant</translation>
     </message>
     <message>
         <source>ERROR</source>
@@ -13,7 +13,7 @@
     </message>
     <message>
         <source>MNU_DUMP_VIEW</source>
-        <translation>Clipper une vue...</translation>
+        <translation>Enregistrer la vue...</translation>
     </message>
     <message>
         <source>DSC_TOP_VIEW</source>
@@ -21,7 +21,7 @@
     </message>
     <message>
         <source>MNU_PAN_VIEW</source>
-        <translation>Panoramique</translation>
+        <translation>Déplacement</translation>
     </message>
     <message>
         <source>MNU_TOP_VIEW</source>
@@ -29,7 +29,7 @@
     </message>
     <message>
         <source>DSC_GLOBALPAN_VIEW</source>
-        <translation>Sélection d&apos;un nouveau centre de la vue</translation>
+        <translation>Sélection d&apos;un nouveau centre de vue</translation>
     </message>
     <message>
         <source>DSC_ROTATE_VIEW</source>
@@ -41,7 +41,7 @@
     </message>
     <message>
         <source>DSC_PAN_VIEW</source>
-        <translation>Redimensionner la vue</translation>
+        <translation>Déplacer la vue</translation>
     </message>
     <message>
         <source>DSC_LEFT_VIEW</source>
@@ -53,7 +53,7 @@
     </message>
     <message>
         <source>MNU_FITALL</source>
-        <translation>Montrer tous</translation>
+        <translation>Ajuster tout</translation>
     </message>
     <message>
         <source>MNU_ROTATE_VIEW</source>
@@ -61,19 +61,19 @@
     </message>
     <message>
         <source>DSC_SHOW_TRIHEDRON</source>
-        <translation>Montrer/Cacher les axes de coordonnées dans la scène</translation>
+        <translation>Montrer/Cacher le trièdre dans la vue actuelle</translation>
     </message>
     <message>
         <source>DSC_FRONT_VIEW</source>
-        <translation>Vue de Devant</translation>
+        <translation>Vue de face</translation>
     </message>
     <message>
         <source>MNU_GLOBALPAN_VIEW</source>
-        <translation>Panoramique Globale</translation>
+        <translation>Déplacement global</translation>
     </message>
     <message>
         <source>INF_APP_DUMP_VIEW</source>
-        <translation>Clicher la vue</translation>
+        <translation>Enregistrer la vue</translation>
     </message>
     <message>
         <source>MNU_BACK_VIEW</source>
@@ -81,7 +81,7 @@
     </message>
     <message>
         <source>MNU_SHOW_TRIHEDRON</source>
-        <translation>Montrer/Cacher les axes de coordonnées</translation>
+        <translation>Montrer/Cacher le trièdre</translation>
     </message>
     <message>
         <source>MNU_BOTTOM_VIEW</source>
@@ -97,23 +97,23 @@
     </message>
     <message>
         <source>DSC_RIGHT_VIEW</source>
-        <translation>Veu de Droit</translation>
+        <translation>Vue de droite</translation>
     </message>
     <message>
         <source>DSC_FITRECT</source>
-        <translation>Redimensionner la scène pour ne montrer que la partie choisie par l&apos;encadré</translation>
+        <translation>Redimensionner la scène à la zone choisie par l&apos;encadré</translation>
     </message>
     <message>
         <source>MNU_FITRECT</source>
-        <translation>Montrer l&apos;encadré</translation>
+        <translation>Ajuster à la zone</translation>
     </message>
     <message>
         <source>DSC_BOTTOM_VIEW</source>
-        <translation>Vue de Dessous</translation>
+        <translation>Vue de dessous</translation>
     </message>
     <message>
         <source>DSC_DUMP_VIEW</source>
-        <translation>Sauvegarder la scène en cours au fichier image</translation>
+        <translation>Sauvegarde la scène en cours dans un fichier image</translation>
     </message>
     <message>
         <source>DSC_ZOOM_VIEW</source>
@@ -121,7 +121,7 @@
     </message>
     <message>
         <source>VTK_IMAGE_FILES</source>
-        <translation>Fichiers Images (*.bmp *.png *.jpg *.jpeg)</translation>
+        <translation>Fichiers images (*.bmp *.png *.jpg *.jpeg)</translation>
     </message>
     <message>
         <source>DSC_RESET_VIEW</source>
@@ -129,26 +129,26 @@
     </message>
     <message>
         <source>ERR_DOC_CANT_SAVE_FILE</source>
-        <translation>Il est impossible de sauvegarder le fichier</translation>
+        <translation>Impossible de sauvegarder le fichier</translation>
     </message>
     <message>
         <source>MNU_RIGHT_VIEW</source>
-        <translation>Droit</translation>
+        <translation>Droite</translation>
     </message>
     <message>
         <source>LBL_TOOLBAR_LABEL</source>
-        <translation>Visualiser les Opérations</translation>
+        <translation>Opérations de visualisation</translation>
     </message>
     <message>
         <source>DSC_BACK_VIEW</source>
-        <translation>Vue d&apos;Arrière</translation>
+        <translation>Vue de derrière</translation>
     </message>
 </context>
 <context>
     <name>VTKViewer_MarkerDlg</name>
     <message>
         <source>SET_MARKER_TLT</source>
-        <translation>Définir le Repère Point</translation>
+        <translation>Définir le symbole du point</translation>
     </message>
 </context>
 <context>
@@ -179,29 +179,29 @@
     </message>
     <message>
         <source>LOAD_TEXTURE_TLT</source>
-        <translation>Charger une Texture</translation>
+        <translation>Charger une texture</translation>
     </message>
 </context>
 <context>
     <name>VTKViewer_ViewManager</name>
     <message>
         <source>VTK_VIEW_TITLE</source>
-        <translation>VTK scène:%M - visualisateur:%V</translation>
+        <translation>VTK scène:%M - visualiseur:%V</translation>
     </message>
 </context>
 <context>
     <name>VTKViewer_Viewer</name>
     <message>
         <source>MEN_DUMP_VIEW</source>
-        <translation>Clicher la Vue...</translation>
+        <translation>Enregistrer la vue...</translation>
     </message>
     <message>
         <source>MEN_SHOW_TOOLBAR</source>
-        <translation>Montrer la Barre d&apos;Outils</translation>
+        <translation>Afficher la barre d&apos;outils</translation>
     </message>
     <message>
         <source>MEN_CHANGE_BACKGROUD</source>
-        <translation>Changer l&apos;Arrière-Plan...</translation>
+        <translation>Changer l&apos;arrière-plan...</translation>
     </message>
 </context>
 </TS>

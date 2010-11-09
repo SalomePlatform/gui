@@ -17,15 +17,15 @@
     </message>
     <message>
         <source>CAPTION</source>
-        <translation>Axes Graduées</translation>
+        <translation>Axes gradués</translation>
     </message>
     <message>
         <source>IS_VISIBLE</source>
-        <translation>Est visible</translation>
+        <translation>Visible</translation>
     </message>
     <message>
         <source>FONT</source>
-        <translation>Font</translation>
+        <translation>Couleur</translation>
     </message>
     <message>
         <source>NAME</source>
@@ -33,11 +33,11 @@
     </message>
     <message>
         <source>TICK_MARKS</source>
-        <translation>Marques de Graduation</translation>
+        <translation>Marques de graduation</translation>
     </message>
     <message>
         <source>LABELS</source>
-        <translation>Repères</translation>
+        <translation>Etiquettes</translation>
     </message>
     <message>
         <source>LENGTH</source>
@@ -45,7 +45,7 @@
     </message>
     <message>
         <source>NUMBER</source>
-        <translation>Numéro</translation>
+        <translation>Nombre</translation>
     </message>
     <message>
         <source>OFFSET</source>
@@ -53,7 +53,7 @@
     </message>
     <message>
         <source>AXIS_NAME</source>
-        <translation>Nom de l&apos;Axe </translation>
+        <translation>Nom de l&apos;axe </translation>
     </message>
 </context>
 <context>

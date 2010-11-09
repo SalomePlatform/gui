@@ -9,11 +9,11 @@
     </message>
     <message>
         <source>ERR_CANT_DUMP_VIEW</source>
-        <translation>Impossible de clicher le contenu de la vue au fichier.</translation>
+        <translation>Impossible de sauvegarder le contenu de la vue dans le fichier.</translation>
     </message>
     <message>
         <source>TLT_IMAGE_FILES</source>
-        <translation>Fichiers Images (*.bmp *.png *.jpg *.jpeg)</translation>
+        <translation>Fichiers images (*.bmp *.png *.jpg *.jpeg)</translation>
     </message>
     <message>
         <source>MEN_DESK_WINDOW_CASCADE</source>
@@ -21,15 +21,15 @@
     </message>
     <message>
         <source>PRP_DESK_WINDOW_CASCADE</source>
-        <translation>Superposer les fenêtres</translation>
+        <translation>Superpose les fenêtres</translation>
     </message>
     <message>
         <source>ERR_DIR_NOT_EXIST</source>
-        <translation>Le répertoire &quot;%1&quot; n&apos;existe pas!</translation>
+        <translation>Le répertoire &quot;%1&quot; n&apos;existe pas !</translation>
     </message>
     <message>
         <source>ERR_FILE_NOT_DIR</source>
-        <translation>&quot;%1&quot; n&apos;est pas un répertoire!</translation>
+        <translation>&quot;%1&quot; n&apos;est pas un répertoire !</translation>
     </message>
     <message>
         <source>CONTINUE</source>
@@ -41,15 +41,16 @@
     </message>
     <message>
         <source>ERR_FILE_NOT_EXIST</source>
-        <translation>Le fichier &quot;%1&quot; n&apos;existe pas!</translation>
+        <translation>Le fichier &quot;%1&quot; n&apos;existe pas !</translation>
     </message>
     <message>
         <source>QUE_DOC_FILEEXISTS</source>
-        <translation>Le fichier %1 déjà existe. Faut-il le réécrire?</translation>
+        <translation>Le fichier %1 existe déjà.
+Voulez-vous l&apos;écraser ?</translation>
     </message>
     <message>
         <source>PRP_DESK_WINDOW_ACTIVATE</source>
-        <translation>Activer la fenêtre</translation>
+        <translation>Active la fenêtre</translation>
     </message>
     <message>
         <source>ERR_PERMISSION_DENIED</source>
@@ -58,17 +59,17 @@ Autorisation interdite.</translation>
     </message>
     <message>
         <source>ERR_OPEN_PERMISSION_DENIED</source>
-        <translation>Impossible de sauvegarder le fichier &quot;%1&quot;.
+        <translation>Impossible d&apos;ouvrir le fichier &quot;%1&quot;.
 Autorisation interdite.</translation>
     </message>
     <message>
         <source>ERR_DIR_READ_PERMISSION_DENIED</source>
-        <translation>Impossible de sauvegarder le répertoire &quot;%1&quot;.
+        <translation>Impossible de lire le répertoire &quot;%1&quot;.
 Autorisation interdite.</translation>
     </message>
     <message>
         <source>ERR_DIR_WRITE_PERMISSION_DENIED</source>
-        <translation>Impossible de sauvegarder le répertoire &quot;%1&quot;.
+        <translation>Impossible d&apos;écrire dans le répertoire &quot;%1&quot;.
 Autorisation interdite.</translation>
     </message>
     <message>
@@ -77,8 +78,8 @@ Autorisation interdite.</translation>
     </message>
     <message>
         <source>QUE_FILE_EXISTS</source>
-        <translation>Le fichier &quot;%1&quot; déjà existe.
-Faut-il le réécrire?</translation>
+        <translation>Le fichier %1 existe déjà.
+Voulez-vous l&apos;écraser ?</translation>
     </message>
     <message>
         <source>WRN_WARNING</source>
@@ -86,15 +87,15 @@ Faut-il le réécrire?</translation>
     </message>
     <message>
         <source>TLT_DUMP_VIEW</source>
-        <translation>Clicher la Vue au Fichier</translation>
+        <translation>Enregistrer la vue dans le fichier</translation>
     </message>
     <message>
         <source>PRP_DESK_WINDOW_TILE</source>
-        <translation>Placer les fenêtres sans superposition</translation>
+        <translation>Place les fenêtres en mosaïque</translation>
     </message>
     <message>
         <source>MEN_DESK_WINDOW_VTILE</source>
-        <translation>Paver &amp;Verticalement</translation>
+        <translation>Mosaïque &amp;verticale</translation>
     </message>
     <message>
         <source>INF_DIRECTORIES_FILTER</source>
@@ -102,11 +103,11 @@ Faut-il le réécrire?</translation>
     </message>
     <message>
         <source>PRP_DESK_WINDOW_VTILE</source>
-        <translation>Placer les fenêtres verticalement et sans superposition</translation>
+        <translation>Place les fenêtres en mosaïque verticale</translation>
     </message>
     <message>
         <source>MEN_DESK_WINDOW_TILE</source>
-        <translation>&amp;Paver</translation>
+        <translation>&amp;Mosaïque</translation>
     </message>
     <message>
         <source>NAME_COLUMN</source>
@@ -117,7 +118,7 @@ Faut-il le réécrire?</translation>
     <name>SUIT_Study</name>
     <message>
         <source>OPERATION_LAUNCH</source>
-        <translation>Lancer l&apos;Opération</translation>
+        <translation>Lancer l&apos;opération</translation>
     </message>
     <message>
         <source>PREVIOUS_NOT_FINISHED</source>
@@ -128,7 +129,7 @@ Faut-il le réécrire?</translation>
     <name>SUIT_FileDlg</name>
     <message>
         <source>LAB_QUICK_PATH</source>
-        <translation>Chemin Court:</translation>
+        <translation>Emplacement :</translation>
     </message>
     <message>
         <source>BUT_ADD_PATH</source>
@@ -136,15 +137,15 @@ Faut-il le réécrire?</translation>
     </message>
     <message>
         <source>INF_DESK_DOC_OPEN</source>
-        <translation>Ouvrir un Fichier</translation>
+        <translation>Ouvrir un fichier</translation>
     </message>
     <message>
         <source>INF_DESK_DOC_SAVE</source>
-        <translation>Sauvegarder un Fichier</translation>
+        <translation>Sauvegarder un fichier</translation>
     </message>
     <message>
         <source>ALL_FILES_FILTER</source>
-        <translation>Tous les Fichiers (*)</translation>
+        <translation>Tous les fichiers (*)</translation>
     </message>
 </context>
 </TS>

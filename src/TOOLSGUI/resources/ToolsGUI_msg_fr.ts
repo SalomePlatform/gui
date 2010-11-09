@@ -9,7 +9,7 @@
     </message>
     <message>
         <source>TOOLS_BUT_BROWSE</source>
-        <translation>Naviquer...</translation>
+        <translation>Naviguer...</translation>
     </message>
     <message>
         <source>TOOLS_ERR_ERROR</source>
@@ -65,23 +65,23 @@ Le fichier n&apos;existe pas</translation>
     </message>
     <message>
         <source>TOOLS_SUPPLEMENT</source>
-        <translation>Données du Composant Supplémentaires</translation>
+        <translation>Données supplémentaires du composant</translation>
     </message>
     <message>
         <source>TOOLS_AUTHOR</source>
-        <translation>Autheur : </translation>
+        <translation>Auteur : </translation>
     </message>
     <message>
         <source>TOOLS_COMP_MULTISTD</source>
-        <translation>Multiétude : </translation>
+        <translation>Multi-étude : </translation>
     </message>
     <message>
         <source>TOOLS_COMP_USERNAME</source>
-        <translation>NomUtilisateur : </translation>
+        <translation>Nom utilisateur : </translation>
     </message>
     <message>
         <source>TOOLS_CATALOG_GENERATOR</source>
-        <translation>Générateur du Catalogue</translation>
+        <translation>Générateur du catalogue</translation>
     </message>
     <message>
         <source>TOOLS_FILES</source>
@@ -128,11 +128,11 @@ Le fichier n&apos;existe pas</translation>
     </message>
     <message>
         <source>MEN_REFRESH</source>
-        <translation>Refresh</translation>
+        <translation>Actualiser</translation>
     </message>
     <message>
         <source>STB_REFRESH</source>
-        <translation>Met à jour toutb de suite la liste des composants</translation>
+        <translation>Met à jour la liste des composants</translation>
     </message>
     <message>
         <source>MEN_INTERVAL</source>
@@ -180,7 +180,7 @@ Le fichier n&apos;existe pas</translation>
     </message>
     <message>
         <source>HDR_FINISHED</source>
-        <translation>Fini</translation>
+        <translation>Terminé</translation>
     </message>
     <message>
         <source>HDR_HELLO</source>
@@ -188,7 +188,7 @@ Le fichier n&apos;existe pas</translation>
     </message>
     <message>
         <source>ERR_NO_REGISTRY</source>
-        <translation>Erreur: le Serveur du Registre n&apos;est pas trouvé</translation>
+        <translation>Erreur: le serveur de registre n&apos;est pas trouvé</translation>
     </message>
     <message>
         <source>INFO_SERVICE</source>
@@ -196,7 +196,7 @@ Le fichier n&apos;existe pas</translation>
     </message>
     <message>
         <source>INFO_PROCESS</source>
-        <translation>Le procédé ( PID : %1 ) sur la station %2 ( ip adresse : %3 ); lancé par l&apos;utilisateur %4 ( UID : %5 ) au répertoire %6.</translation>
+        <translation>Le procédé ( PID : %1 ) sur la station %2 ( adresse IP : %3 ); lancé par l&apos;utilisateur %4 ( UID : %5 ) au répertoire %6.</translation>
     </message>
     <message>
         <source>INFO_STARTED</source>
@@ -212,7 +212,7 @@ Le fichier n&apos;existe pas</translation>
     </message>
     <message>
         <source>INFO_RUNNING</source>
-        <translation>Demeure en cours</translation>
+        <translation>En cours</translation>
     </message>
     <message>
         <source>INFO_TIME_DIFF</source>

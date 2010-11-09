@@ -25,7 +25,7 @@
     </message>
     <message>
         <source>Inactive</source>
-        <translation>Désactivé</translation>
+        <translation>Inactif</translation>
     </message>
     <message>
         <source>Disabled</source>
@@ -33,11 +33,11 @@
     </message>
     <message>
         <source>Window text</source>
-        <translation>Texte du fenêtre</translation>
+        <translation>Texte de la fenêtre</translation>
     </message>
     <message>
         <source>Button</source>
-        <translation>Touche</translation>
+        <translation>Bouton</translation>
     </message>
     <message>
         <source>Light</source>
@@ -65,7 +65,7 @@
     </message>
     <message>
         <source>Button text</source>
-        <translation>Texte de la touche</translation>
+        <translation>Texte du bouton</translation>
     </message>
     <message>
         <source>Base</source>
@@ -141,11 +141,11 @@
     </message>
     <message>
         <source>Widget center</source>
-        <translation>Centre de l&apos;objet-fenêtre</translation>
+        <translation>Composant central</translation>
     </message>
     <message>
         <source>Widget border</source>
-        <translation>Frontière de l&apos;objet-fenêtre</translation>
+        <translation>Composant de frontière</translation>
     </message>
     <message>
         <source>Header</source>
@@ -153,7 +153,7 @@
     </message>
     <message>
         <source>Progress bar</source>
-        <translation>Barre de progrès</translation>
+        <translation>Barre d&apos;avancement</translation>
     </message>
     <message>
         <source>Pointer</source>
@@ -165,7 +165,7 @@
     </message>
     <message>
         <source>Table grid</source>
-        <translation>Maillage de la table</translation>
+        <translation>Quadrillage du tableau</translation>
     </message>
     <message>
         <source>SALOME style preferences</source>
@@ -189,7 +189,7 @@
     </message>
     <message>
         <source>Horizontal</source>
-        <translation>Horisontal</translation>
+        <translation>Horizontal</translation>
     </message>
     <message>
         <source>Inclined</source>
@@ -205,11 +205,11 @@
     </message>
     <message>
         <source>Buttons</source>
-        <translation>Touches</translation>
+        <translation>Boutons</translation>
     </message>
     <message>
         <source>Edit boxes</source>
-        <translation>Editer les boîtes</translation>
+        <translation>Champs d&apos;édition</translation>
     </message>
     <message>
         <source>Frames</source>
@@ -221,15 +221,15 @@
     </message>
     <message>
         <source>Anti-aliased borders</source>
-        <translation>Frontières d&apos;anticrénelage</translation>
+        <translation>Frontières anticrénelées</translation>
     </message>
     <message>
         <source>Handle</source>
-        <translation>Pointeur</translation>
+        <translation>Poignée</translation>
     </message>
     <message>
-        <source>Horizontal spacin</source>
-        <translation>Espacement horisontal</translation>
+        <source>Horizontal spacing</source>
+        <translation>Espacement horizontal</translation>
     </message>
     <message>
         <source>Vertical spacing</source>
@@ -237,23 +237,23 @@
     </message>
     <message>
         <source>Splitter handle size</source>
-        <translation>Taille du pointeur du diviseur</translation>
+        <translation>Taille de poignée du diviseur</translation>
     </message>
     <message>
         <source>Slider handle size</source>
-        <translation>Taille du curseur de la barre de défilement</translation>
+        <translation>Taille de poignée de la barre de défilement</translation>
     </message>
     <message>
         <source>Widget effect</source>
-        <translation>Effet de l&apos;objet-fenêtre</translation>
+        <translation>Effet des composants</translation>
     </message>
     <message>
         <source>Highlight widgets</source>
-        <translation>Surligner les objets fenêtres</translation>
+        <translation>Mettre en valeur les composants</translation>
     </message>
     <message>
         <source>Auto raise widgets</source>
-        <translation>Activer l&apos;objet fenêtre automatiquement</translation>
+        <translation>Activer les composants automatiquement</translation>
     </message>
     <message>
         <source>Colors</source>
@@ -273,15 +273,15 @@
     </message>
     <message>
         <source>Delete user theme</source>
-        <translation>Supprimer la thème d&apos;utilisateur</translation>
+        <translation>Supprimer le thème utilisateur</translation>
     </message>
     <message>
         <source>Remove theme %1?</source>
-        <translation>Supprimer la thème %1?</translation>
+        <translation>Supprimer le thème %1?</translation>
     </message>
     <message>
         <source>Custom schema</source>
-        <translation>Schéma actuel</translation>
+        <translation>Schéma personnalisé</translation>
     </message>
 </context>
 </TS>

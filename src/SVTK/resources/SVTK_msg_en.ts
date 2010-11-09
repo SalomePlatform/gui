@@ -464,7 +464,7 @@ Please, refer to the documentation.</translation>
     </message>
     <message>
         <source>WORLD_COORDINATES</source>
-        <translation>World Coordinates</translation>
+        <translation>Absolute Coordinates</translation>
     </message>
     <message>
         <source>FOCAL_RELATIVE</source>

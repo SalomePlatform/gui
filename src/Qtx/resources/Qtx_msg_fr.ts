@@ -5,14 +5,14 @@
     <name>QtxTreeView</name>
     <message>
         <source>Enable sorting</source>
-        <translation>Activer le triage</translation>
+        <translation>Autoriser le tri</translation>
     </message>
 </context>
 <context>
     <name>QtxWorkspaceAction</name>
     <message>
         <source>Arranges the windows as overlapping tiles</source>
-        <translation>Ranger les fenêtres en pavés superposés</translation>
+        <translation>Ranger les fenêtres en les superposant</translation>
     </message>
     <message>
         <source>Cascade</source>
@@ -20,27 +20,27 @@
     </message>
     <message>
         <source>Arranges the windows as nonoverlapping tiles</source>
-        <translation>Ranger les fenêtres en pavés sans superposition</translation>
+        <translation>Ranger les fenêtres sans les superposer</translation>
     </message>
     <message>
         <source>Tile</source>
-        <translation>Pavé</translation>
+        <translation>Mosaïque</translation>
     </message>
     <message>
         <source>Arranges the windows as nonoverlapping horizontal tiles</source>
-        <translation>Ranger les fenêtres en pavés à l&apos;horisontale et sans superposition</translation>
+        <translation>Ranger les fenêtres en mosaïque horizontale</translation>
     </message>
     <message>
         <source>Tile horizontally</source>
-        <translation>Ranger à l&apos;horisontale</translation>
+        <translation>Mosaïque horizontale</translation>
     </message>
     <message>
         <source>Arranges the windows as nonoverlapping vertical tiles</source>
-        <translation>Ranger les fenêtres en pavés à la verticale et sans superposition</translation>
+        <translation>Ranger les fenêtres en mosaïque verticale</translation>
     </message>
     <message>
         <source>Tile vertically</source>
-        <translation>Ranger au verticale</translation>
+        <translation>Mosaïque verticale</translation>
     </message>
 </context>
 <context>
@@ -78,7 +78,7 @@
     </message>
     <message>
         <source>File \&quot;%1\&quot; already exist. Do you want to overwrite it?</source>
-        <translation>Le fichier \&quot;%1\&quot; déjà existe. Voulez-vous le réécrire?</translation>
+        <translation>Le fichier \&quot;%1\&quot; existe déjà. Voulez-vous l&apos;écraser ?</translation>
     </message>
     <message>
         <source>Directory \&quot;%1\&quot; does not exist</source>
@@ -86,15 +86,15 @@
     </message>
     <message>
         <source>Directory \&quot;%1\&quot; can&apos;t be created because file with the same name exist</source>
-        <translation>Il est impossible de créer le répertoire \&quot;%1\&quot; parce qu&apos;un fichier avec ce nom déjà existe</translation>
+        <translation>Il est impossible de créer le répertoire \&quot;%1\&quot; parce qu&apos;un fichier avec ce nom existe déjà</translation>
     </message>
     <message>
         <source>Directory \&quot;%1\&quot; not empty. Do you want to remove all files in this directory?</source>
-        <translation>Le répertoire \&quot;%1\&quot; n&apos;est pas vide. Voulez-vous supprimer tous les fichier dans ce répertoire?</translation>
+        <translation>Le répertoire \&quot;%1\&quot; n&apos;est pas vide. Voulez-vous supprimer tous les fichiers dans ce répertoire?</translation>
     </message>
     <message>
         <source>File dialog</source>
-        <translation>Dialogue de fichier</translation>
+        <translation>Fenêtre de dialogue de fichiers</translation>
     </message>
     <message>
         <source>All files (*.*)</source>
@@ -140,15 +140,15 @@
     </message>
     <message>
         <source>Location \&quot;%1\&quot; doesn&apos;t point to file</source>
-        <translation>La location \&quot;%1\&quot; ne contient pas d&apos;indication du fichier</translation>
+        <translation>L&apos;emplacement \&quot;%1\&quot; ne pointe sur aucun fichier</translation>
     </message>
     <message>
         <source>Location \&quot;%1\&quot; doesn&apos;t point to directory</source>
-        <translation>La location \&quot;%1\&quot; ne contient pas d&apos;indication du répertoire</translation>
+        <translation>L&apos;emplacement \&quot;%1\&quot; ne pointe sur aucun répertoire</translation>
     </message>
     <message>
         <source>Path \&quot;%1\&quot; already exist in the list</source>
-        <translation>Le chemin \&quot;%1\&quot; déjà existe dans la liste</translation>
+        <translation>Le chemin \&quot;%1\&quot; existe déjà dans la liste</translation>
     </message>
 </context>
 <context>
@@ -205,7 +205,7 @@
     </message>
     <message>
         <source>Regular expression</source>
-        <translation>Expression régulaire</translation>
+        <translation>Expression régulière</translation>
     </message>
     <message>
         <source>Wrap search</source>
@@ -243,7 +243,7 @@
     </message>
     <message>
         <source>Enter new name:</source>
-        <translation>Indiquer un nouveau nom</translation>
+        <translation>Indiquer un nouveau nom:</translation>
     </message>
 </context>
 <context>
@@ -254,15 +254,15 @@
     </message>
     <message>
         <source>Split vertically</source>
-        <translation>Diviser à la verticale</translation>
+        <translation>Diviser verticalement</translation>
     </message>
     <message>
         <source>Split the active window on two horizontal parts</source>
-        <translation>Diviser la fenêtre actuelle en deux parties horisontales</translation>
+        <translation>Diviser la fenêtre actuelle en deux parties horizontales</translation>
     </message>
     <message>
         <source>Split horizontally</source>
-        <translation>Diviser à l&apos;horisontale</translation>
+        <translation>Diviser horizontalement</translation>
     </message>
 </context>
 <context>

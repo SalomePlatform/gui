@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>TOT_DESK_EDIT_CUT</source>
-        <translation>Découpe</translation>
+        <translation>Couper</translation>
     </message>
     <message>
         <source>PRP_DESK_EDIT_CUT</source>
@@ -13,7 +13,7 @@
     </message>
     <message>
         <source>MEN_DESK_EDIT_CUT</source>
-        <translation>&amp;Découper</translation>
+        <translation>Co&amp;uper</translation>
     </message>
     <message>
         <source>ERR_APP_NOAPP</source>
@@ -29,15 +29,15 @@
     </message>
     <message>
         <source>MEN_DESK_WINDOW_CASCADE</source>
-        <translation>&amp;Cascade</translation>
+        <translation>Cascade</translation>
     </message>
     <message>
         <source>PRP_DESK_EDIT_COPY</source>
-        <translation>Copier la sélection dans la presse-papiers</translation>
+        <translation>Copier la sélection dans le presse-papiers</translation>
     </message>
     <message>
         <source>PRP_DESK_WINDOW_CASCADE</source>
-        <translation>Ranger les fenêtres en pavés superposés</translation>
+        <translation>Ranger les fenêtres en cascade</translation>
     </message>
     <message>
         <source>TOT_DESK_FILE_SAVEAS</source>
@@ -57,7 +57,7 @@
     </message>
     <message>
         <source>ALL_FILES</source>
-        <translation>Tous les Fichiers (*.*)</translation>
+        <translation>Tous les fichiers (*.*)</translation>
     </message>
     <message>
         <source>DESK_DEFAULTTITLE</source>
@@ -65,7 +65,7 @@
     </message>
     <message>
         <source>QUE_DESK_EXIT</source>
-        <translation>Etes-vous sûr que vous voulez abandonner?</translation>
+        <translation>Voulez-vous vraiment quitter ?</translation>
     </message>
     <message>
         <source>INF_INFO</source>
@@ -73,7 +73,7 @@
     </message>
     <message>
         <source>ERR_DOC_UNKNOWNTYPE_OPEN</source>
-        <translation>Vous essayez d&apos;ouvrir le document d&apos;un type inconnu
+        <translation>Vous essayez d&apos;ouvrir un document de type inconnu
 ( %1 )</translation>
     </message>
     <message>
@@ -95,15 +95,15 @@
     </message>
     <message>
         <source>PRP_DESK_NEWWINDOW</source>
-        <translation>Créer une nouvelle Fenêtre</translation>
+        <translation>Créer une nouvelle fenêtre</translation>
     </message>
     <message>
         <source>MEN_DESK_VIEW_STATUSBAR</source>
-        <translation>&amp;Barre de Status</translation>
+        <translation>&amp;Barre de status</translation>
     </message>
     <message>
         <source>MEN_DESK_NEWWINDOW</source>
-        <translation>&amp;Nouvelle Fenêtre</translation>
+        <translation>&amp;Nouvelle fenêtre</translation>
     </message>
     <message>
         <source>PRP_DESK_VIEW_STATUSBAR</source>
@@ -112,7 +112,7 @@
     <message>
         <source>ERR_DOC_DIRWITHNAMEEXIST_SAVE</source>
         <translation>Impossible de sauvegarder le fichier %1.
-Le répertoir avec ce nom existe sur la disque. Essayez d&apos;utiliser un autre nom</translation>
+Un répertoire avec ce nom existe déjà sur le disque. Essayez d&apos;utiliser un autre nom</translation>
     </message>
     <message>
         <source>BUT_NO</source>
@@ -124,7 +124,7 @@ Le répertoir avec ce nom existe sur la disque. Essayez d&apos;utiliser un autre
     </message>
     <message>
         <source>FILTER_FILES</source>
-        <translation>%1 Fichiers (%2)</translation>
+        <translation>Fichiers %1 (%2)</translation>
     </message>
     <message>
         <source>PRP_DESK_WINDOW_ACTIVATE</source>
@@ -144,11 +144,11 @@ Le répertoir avec ce nom existe sur la disque. Essayez d&apos;utiliser un autre
     </message>
     <message>
         <source>PRP_DESK_FILE_NEW</source>
-        <translation>Créer un nouveau document</translation>
+        <translation>Crée un nouveau document</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_MRU</source>
-        <translation>Ouvrir un document</translation>
+        <translation>Ouvre un document</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_NEW</source>
@@ -156,7 +156,7 @@ Le répertoir avec ce nom existe sur la disque. Essayez d&apos;utiliser un autre
     </message>
     <message>
         <source>MEN_DESK_FILE_MRU</source>
-        <translation>&amp;Fichiers Recents</translation>
+        <translation>&amp;Fichiers récents</translation>
     </message>
     <message>
         <source>TOT_DESK_EDIT_PASTE</source>
@@ -164,7 +164,7 @@ Le répertoir avec ce nom existe sur la disque. Essayez d&apos;utiliser un autre
     </message>
     <message>
         <source>MEN_DESK_VIEW_DOCKWINDOWS</source>
-        <translation>W&amp;indows</translation>
+        <translation>Fenêtres</translation>
     </message>
     <message>
         <source>BUT_YES</source>
@@ -176,7 +176,7 @@ Le répertoir avec ce nom existe sur la disque. Essayez d&apos;utiliser un autre
     </message>
     <message>
         <source>PRP_DESK_HELP_ABOUT</source>
-        <translation>Montre la dialogue &apos;A propos&apos;</translation>
+        <translation>Montre la boîte de dialogue &apos;A propos&apos;</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE</source>
@@ -196,7 +196,7 @@ Le répertoir avec ce nom existe sur la disque. Essayez d&apos;utiliser un autre
     </message>
     <message>
         <source>ERR_DESK_NOAPP</source>
-        <translation>Pas d&apos;applications enregistrées</translation>
+        <translation>Pas d&apos;application enregistrée</translation>
     </message>
     <message>
         <source>INF_DESK_DOC_CREATE</source>
@@ -205,7 +205,7 @@ Le répertoir avec ce nom existe sur la disque. Essayez d&apos;utiliser un autre
     <message>
         <source>QUE_DOC_ALREADYOPEN</source>
         <translation>Le document %1 est déjà ouvert.
-Voulez-vous le rouvrir?</translation>
+Voulez-vous le réouvrir?</translation>
     </message>
     <message>
         <source>BUT_APPLY</source>
@@ -217,11 +217,11 @@ Voulez-vous le rouvrir?</translation>
     </message>
     <message>
         <source>INF_DESK_EXIT</source>
-        <translation>Abandonner</translation>
+        <translation>&amp;Quitter</translation>
     </message>
     <message>
         <source>ERR_UNKNOWN</source>
-        <translation>Erreur Inconnue</translation>
+        <translation>Erreur inconnue</translation>
     </message>
     <message>
         <source>BUT_HELP</source>
@@ -229,11 +229,11 @@ Voulez-vous le rouvrir?</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_CLOSE</source>
-        <translation>Fermer le document actuel</translation>
+        <translation>Ferme le document actuel</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_PRINT</source>
-        <translation>imprimer le document actuel</translation>
+        <translation>Imprime le document actuel</translation>
     </message>
     <message>
         <source>WRN_WARNING</source>
@@ -245,7 +245,7 @@ Voulez-vous le rouvrir?</translation>
     </message>
     <message>
         <source>MEN_DESK_VIEW_TOOLBARS</source>
-        <translation>Barres d&apos;&amp;Outils</translation>
+        <translation>Barres d&apos;&amp;outils</translation>
     </message>
     <message>
         <source>PRP_DESK_WINDOW_HSPLIT</source>
@@ -253,15 +253,15 @@ Voulez-vous le rouvrir?</translation>
     </message>
     <message>
         <source>MEN_DESK_WINDOW_HSPLIT</source>
-        <translation>Division &amp;Horizontale</translation>
+        <translation>Séparation horizontale</translation>
     </message>
     <message>
         <source>PRP_DESK_EDIT_PASTE</source>
-        <translation>Insérer le contenu du Presse-papiers au point d&apos;insertion</translation>
+        <translation>Insérer le contenu du presse-papiers au point d&apos;insertion</translation>
     </message>
     <message>
         <source>DLG_LOAD_STUDY_CAPTION</source>
-        <translation>Ouvrir une Etude</translation>
+        <translation>Ouvrir une étude</translation>
     </message>
     <message>
         <source>PRP_DESK_HELP_SEARCH</source>
@@ -285,11 +285,11 @@ Voulez-vous le rouvrir?</translation>
     </message>
     <message>
         <source>MEN_DESK_WINDOW_VSPLIT</source>
-        <translation>Division &amp;Verticale</translation>
+        <translation>Séparation verticale</translation>
     </message>
     <message>
         <source>PRP_DESK_WINDOW_TILE</source>
-        <translation>Ranger les fenêtres en pavés non-superposés</translation>
+        <translation>Ranger les fenêtres en mosaïque</translation>
     </message>
     <message>
         <source>MEN_DESK_HELP_CONTENTS</source>
@@ -297,24 +297,24 @@ Voulez-vous le rouvrir?</translation>
     </message>
     <message>
         <source>PRP_DESK_HELP_CONTENTS</source>
-        <translation>Montre le sommaire de la référence documentaire</translation>
+        <translation>Afficher le sommaire de la référence documentaire</translation>
     </message>
     <message>
         <source>MEN_DESK_WINDOW_HTILE</source>
-        <translation>&amp;Paver Horizontalement</translation>
+        <translation>Mosaïque horizontale</translation>
     </message>
     <message>
         <source>MEN_DESK_WINDOW_VTILE</source>
-        <translation>Paver Vertica&amp;lement</translation>
+        <translation>Mosaïque verticale</translation>
     </message>
     <message>
         <source>ERR_DOC_PERMISSIONDENIED_SAVE</source>
-        <translation>Impossible de sauvegardet le fichier %1. Authorisaton refusée.</translation>
+        <translation>Impossible de sauvegarder le fichier %1. Autorisaton refusée.</translation>
     </message>
     <message>
         <source>INF_DESK_DOCALREADYOPEN</source>
-        <translation>Impossible de sauvegarder le document sous un nom du document déjà ouvert.
-Indiquez un autre nom du document que vous allez sauvegarder.
+        <translation>Impossible de sauvegarder le document sous le nom d&apos;un document déjà ouvert.
+Indiquez un autre nom pour le document que vous voulez sauvegarder.
 ( %1 )</translation>
     </message>
     <message>
@@ -327,8 +327,8 @@ Indiquez un autre nom du document que vous allez sauvegarder.
     </message>
     <message>
         <source>MSG_FILE_EXISTS</source>
-        <translation>Le Fichier &quot;%1&quot; déjà existe.
-Voulez-vous le réécrire?</translation>
+        <translation>Le fichier &quot;%1&quot; existe déjà.
+Voulez-vous l&apos;écraser ?</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_PRINT</source>
@@ -344,23 +344,23 @@ Voulez-vous le réécrire?</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_SAVEAS</source>
-        <translation>Enre&amp;gistrer Sous...</translation>
+        <translation>Enre&amp;gistrer sous...</translation>
     </message>
     <message>
         <source>PRP_DESK_VIEW_STDTOOLBAR</source>
-        <translation>Activer ou désactiver la barre usuelle</translation>
+        <translation>Activer ou désactiver la barre standard</translation>
     </message>
     <message>
         <source>TOT_DESK_FILE_SAVE</source>
-        <translation>Enregistrer un document</translation>
+        <translation>Enregistrer le document</translation>
     </message>
     <message>
         <source>TOT_DESK_FILE_EXIT</source>
-        <translation>Abandonner l&apos;application</translation>
+        <translation>Quitter l&apos;application</translation>
     </message>
     <message>
         <source>TOT_DESK_FILE_LOAD</source>
-        <translation>Ouvrir le document</translation>
+        <translation>Charger le document</translation>
     </message>
     <message>
         <source>TOT_DESK_FILE_OPEN</source>
@@ -368,19 +368,19 @@ Voulez-vous le réécrire?</translation>
     </message>
     <message>
         <source>TOT_DESK_FILE_REOPEN</source>
-        <translation>Rouvrir un document</translation>
+        <translation>Réouvrir un document</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_EXIT</source>
-        <translation>Abandonner l&apos;application</translation>
+        <translation>Quitte l&apos;application</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_OPEN</source>
-        <translation>Ouvrir un document</translation>
+        <translation>Ouvre un document existant</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_REOPEN</source>
-        <translation>Rouvrir le document actuel d&apos;un fichier</translation>
+        <translation>Réouvrir le document actuel à partir d&apos;un fichier</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_SAVE</source>
@@ -388,23 +388,23 @@ Voulez-vous le réécrire?</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_LOAD</source>
-        <translation>Ouvrir un document</translation>
+        <translation>Charge un document</translation>
     </message>
     <message>
         <source>PRP_DESK_WINDOW_HTILE</source>
-        <translation>Ranger les fenêtres en pavés horizontales non-superposés</translation>
+        <translation>Ranger les fenêtres en mosaïque horizontale</translation>
     </message>
     <message>
         <source>PRP_DESK_WINDOW_VTILE</source>
-        <translation>Ranger les fenêtres en pavés verticales non-superposés</translation>
+        <translation>Ranger les fenêtres en mosaïque verticale</translation>
     </message>
     <message>
         <source>MEN_DESK_WINDOW_TILE</source>
-        <translation>&amp;Pavé</translation>
+        <translation>Mosaïque</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_EXIT</source>
-        <translation>A&amp;bandonner</translation>
+        <translation>&amp;Quitter</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_OPEN</source>
@@ -412,7 +412,7 @@ Voulez-vous le réécrire?</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_REOPEN</source>
-        <translation>&amp;Rouvrir</translation>
+        <translation>&amp;Réouvrir</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_LOAD</source>
@@ -428,7 +428,7 @@ Voulez-vous le réécrire?</translation>
     </message>
     <message>
         <source>MEN_STUDIES_CHOICE</source>
-        <translation>Choisir l&apos;Etude Existante</translation>
+        <translation>Choisir une étude existante</translation>
     </message>
 </context>
 <context>
@@ -440,7 +440,7 @@ Voulez-vous sauvegarder les modifications?</translation>
     </message>
     <message>
         <source>INF_DOC_SAVING</source>
-        <translation>Sauvegarder l&apos;étude</translation>
+        <translation>Sauvegarde de l&apos;étude en cours</translation>
     </message>
     <message>
         <source>INF_DOC_SAVED</source>
@@ -448,7 +448,7 @@ Voulez-vous sauvegarder les modifications?</translation>
     </message>
     <message>
         <source>TOT_DOCK_WINDOWS</source>
-        <translation>Montrer / cacher les fenêtres encrables et les barres d&apos;outils</translation>
+        <translation>Montrer / cacher les fenêtres ancrables et les barres d&apos;outils</translation>
     </message>
     <message>
         <source>MEN_DOCK_WINDOWS</source>
@@ -456,12 +456,12 @@ Voulez-vous sauvegarder les modifications?</translation>
     </message>
     <message>
         <source>ABOUT_INFO</source>
-        <translation>SUIT Std application</translation>
+        <translation>Application SUIT Std</translation>
     </message>
     <message>
         <source>INF_DOC_SAVING_FAILS</source>
         <translation>Impossible de sauvegarder le fichier &quot;%1&quot;.
-Probablement, l&apos;action n&apos;est pas authorisée ou la disque est remplie.
+Il peut y avoir un problème de droit ou l&apos;espace disque restant est insuffisant.
 Essayez d&apos;utiliser un autre nom de fichier.</translation>
     </message>
     <message>
@@ -479,11 +479,11 @@ Voulez-vous sauvegarder les changements?</translation>
     </message>
     <message>
         <source>REOPEN_STUDY</source>
-        <translation>Rouvrir l&apos;étude</translation>
+        <translation>Réouvrir l&apos;étude</translation>
     </message>
     <message>
         <source>REOPEN_QUESTION</source>
-        <translation>Voulez-vous rouvrir l&apos;étude?
+        <translation>Voulez-vous vraiment réouvrir l&apos;étude?
 Toutes les modifications introduites après le dernier enregistrement seront perdues.</translation>
     </message>
 </context>

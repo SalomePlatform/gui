@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>MNU_FRONT_VIEW</source>
-        <translation>Arrière</translation>
+        <translation>Avant</translation>
     </message>
     <message>
         <source>ERROR</source>
@@ -13,7 +13,7 @@
     </message>
     <message>
         <source>MNU_DUMP_VIEW</source>
-        <translation>Clicher la scène...</translation>
+        <translation>Sauvegarder la scène...</translation>
     </message>
     <message>
         <source>DSC_TOP_VIEW</source>
@@ -21,11 +21,11 @@
     </message>
     <message>
         <source>MNU_PAN_VIEW</source>
-        <translation>Panoramique</translation>
+        <translation>Déplacement</translation>
     </message>
     <message>
         <source>MNU_TOP_VIEW</source>
-        <translation>Devant</translation>
+        <translation>Dessus</translation>
     </message>
     <message>
         <source>DSC_GLOBALPAN_VIEW</source>
@@ -41,7 +41,7 @@
     </message>
     <message>
         <source>DSC_PAN_VIEW</source>
-        <translation>Redimensionner la vue</translation>
+        <translation>Déplacer la vue</translation>
     </message>
     <message>
         <source>DSC_LEFT_VIEW</source>
@@ -53,7 +53,7 @@
     </message>
     <message>
         <source>MNU_FITALL</source>
-        <translation>Montrer Tous</translation>
+        <translation>Tout afficher</translation>
     </message>
     <message>
         <source>MNU_ROTATE_VIEW</source>
@@ -61,19 +61,19 @@
     </message>
     <message>
         <source>DSC_SHOW_TRIHEDRON</source>
-        <translation>Montrer/Cacher les axes de coordonnées dans la scène</translation>
+        <translation>Montrer/cacher le trièdre</translation>
     </message>
     <message>
         <source>DSC_FRONT_VIEW</source>
-        <translation>Vue de devant</translation>
+        <translation>Vue de face</translation>
     </message>
     <message>
         <source>MNU_GLOBALPAN_VIEW</source>
-        <translation>Panoramique globale</translation>
+        <translation>Panoramique global</translation>
     </message>
     <message>
         <source>INF_APP_DUMP_VIEW</source>
-        <translation>Clicher la vue</translation>
+        <translation>Sauvegarder la vue</translation>
     </message>
     <message>
         <source>MNU_BACK_VIEW</source>
@@ -81,11 +81,11 @@
     </message>
     <message>
         <source>MNU_SHOW_TRIHEDRON</source>
-        <translation>Montrer les axes de coordonnées</translation>
+        <translation>Afficher/cacher le trièdre</translation>
     </message>
     <message>
         <source>DSC_CHANGINGROTATIONPOINT_VIEW</source>
-        <translation>Changer le point, autour duquel la scène est tournée</translation>
+        <translation>Changer le point autour duquel la scène est tournée</translation>
     </message>
     <message>
         <source>MNU_BOTTOM_VIEW</source>
@@ -101,11 +101,11 @@
     </message>
     <message>
         <source>DSC_RIGHT_VIEW</source>
-        <translation>Vue de droit</translation>
+        <translation>Vue de droite</translation>
     </message>
     <message>
         <source>MNU_CHANGINGROTATIONPOINT_VIEW</source>
-        <translation>Changer le Point de Rotation</translation>
+        <translation>Changer le point de rotation</translation>
     </message>
     <message>
         <source>DSC_FITRECT</source>
@@ -113,7 +113,7 @@
     </message>
     <message>
         <source>MNU_FITRECT</source>
-        <translation>Montrer l&apos;encadré</translation>
+        <translation>Afficher la zone</translation>
     </message>
     <message>
         <source>DSC_BOTTOM_VIEW</source>
@@ -121,7 +121,7 @@
     </message>
     <message>
         <source>DSC_DUMP_VIEW</source>
-        <translation>Sauvegarder la scène actuelle au fichier image</translation>
+        <translation>Sauvegarder la scène actuelle dans un fichier image</translation>
     </message>
     <message>
         <source>DSC_ZOOM_VIEW</source>
@@ -129,11 +129,11 @@
     </message>
     <message>
         <source>VTK_IMAGE_FILES</source>
-        <translation>Fichiers Images (*.bmp *.png *.jpg *.jpeg)</translation>
+        <translation>Fichiers images (*.bmp *.png *.jpg *.jpeg)</translation>
     </message>
     <message>
         <source>DSC_RESET_VIEW</source>
-        <translation>Restaurer le Point de Vue</translation>
+        <translation>Restaurer le point de vue</translation>
     </message>
     <message>
         <source>ERR_DOC_CANT_SAVE_FILE</source>
@@ -141,23 +141,23 @@
     </message>
     <message>
         <source>MNU_RIGHT_VIEW</source>
-        <translation>Droit</translation>
+        <translation>Droite</translation>
     </message>
     <message>
         <source>LBL_TOOLBAR_LABEL</source>
-        <translation>Opérations de Visualisation </translation>
+        <translation>Opérations de visualisation</translation>
     </message>
     <message>
         <source>DSC_BACK_VIEW</source>
-        <translation>Vue d&apos;arrière</translation>
+        <translation>Vue arrière</translation>
     </message>
     <message>
         <source>SVTK_IMAGE_FILES</source>
-        <translation>Fichiers Images (*.bmp *.png *.jpg *.jpeg *.pdf *.ps *.eps)</translation>
+        <translation>Fichiers images (*.bmp *.png *.jpg *.jpeg *.pdf *.ps *.eps)</translation>
     </message>
     <message>
         <source>MNU_VIEWPARAMETERS_VIEW</source>
-        <translation>Changer les Paramètres de Visualisation</translation>
+        <translation>Changer les paramètres de visualisation</translation>
     </message>
     <message>
         <source>DSC_VIEWPARAMETERS_VIEW</source>
@@ -165,7 +165,7 @@
     </message>
     <message>
         <source>MNU_SVTK_PARALLEL_MODE</source>
-        <translation>Mode Orthogonal</translation>
+        <translation>Mode orthogonal</translation>
     </message>
     <message>
         <source>DSC_SVTK_PARALLEL_MODE</source>
@@ -173,11 +173,11 @@
     </message>
     <message>
         <source>MNU_SVTK_PERSPECTIVE_MODE</source>
-        <translation>Mode Perspective</translation>
+        <translation>Mode perspective</translation>
     </message>
     <message>
         <source>DSC_SVTK_PERSPECTIVE_MODE</source>
-        <translation>Choisir la projection perspective</translation>
+        <translation>Choisir la projection en perspective</translation>
     </message>
     <message>
         <source>DSC_SVTK_STYLE_SWITCH</source>
@@ -185,7 +185,7 @@
     </message>
     <message>
         <source>MNU_SVTK_STYLE_SWITCH</source>
-        <translation>Changer le Style d&apos;Interaction</translation>
+        <translation>Changer le style d&apos;interaction</translation>
     </message>
 </context>
 <context>
@@ -215,15 +215,15 @@
     </message>
     <message>
         <source>MNU_SVTK_SCALING</source>
-        <translation>Echelle</translation>
+        <translation>Mise à l&apos;échelle</translation>
     </message>
     <message>
         <source>MNU_SVTK_GRADUATED_AXES</source>
-        <translation>Axes Graduées</translation>
+        <translation>Axes gradués</translation>
     </message>
     <message>
         <source>DSC_SVTK_GRADUATED_AXES</source>
-        <translation>Axes Graduées</translation>
+        <translation>Axes gradués</translation>
     </message>
     <message>
         <source>MNU_SVTK_UPDATE_RATE</source>
@@ -235,23 +235,23 @@
     </message>
     <message>
         <source>MNU_SVTK_RECORDING_START</source>
-        <translation>Commencer</translation>
+        <translation>Commencer l&apos;enregistrement</translation>
     </message>
     <message>
         <source>DSC_SVTK_RECORDING_PLAY</source>
-        <translation>Reprendre l&apos;enregistrement</translation>
+        <translation>Jouer l&apos;enregistrement</translation>
     </message>
     <message>
         <source>MNU_SVTK_RECORDING_PLAY</source>
-        <translation>Reprendre</translation>
+        <translation>Jouer l&apos;enregistrement</translation>
     </message>
     <message>
         <source>DSC_SVTK_RECORDING_PAUSE</source>
-        <translation>Pauser l&apos;enregistrement</translation>
+        <translation>Mettre en pause l&apos;enregistrement</translation>
     </message>
     <message>
         <source>MNU_SVTK_RECORDING_PAUSE</source>
-        <translation>Pauser</translation>
+        <translation>Mettre en pause l&apos;enregistrement</translation>
     </message>
     <message>
         <source>DSC_SVTK_RECORDING_STOP</source>
@@ -259,16 +259,16 @@
     </message>
     <message>
         <source>MNU_SVTK_RECORDING_STOP</source>
-        <translation>Arrêter</translation>
+        <translation>Arrêter l&apos;enregistrement</translation>
     </message>
     <message>
         <source>LBL_TOOLBAR_RECORD_LABEL</source>
-        <translation>Opérations d&apos;Enregistrement</translation>
+        <translation>Opérations d&apos;enregistrement</translation>
     </message>
     <message>
         <source>MSG_NO_AVI_MAKER</source>
-        <translation>l&apos;outil jpeg2yuv, requis pour enregistrer les fichiers AVI, n&apos;est pas disponible.
-Adressez-vous à la documentation.</translation>
+        <translation>L&apos;outil jpeg2yuv, requis pour enregistrer les fichiers AVI, n&apos;est pas disponible.
+Consultez la documentation.</translation>
     </message>
 </context>
 <context>
@@ -298,7 +298,7 @@ Adressez-vous à la documentation.</translation>
     <name>SVTK_RecorderDlg</name>
     <message>
         <source>ALL_DISLPAYED_FRAMES</source>
-        <translation>Enregistrer tous les cadres visualisés</translation>
+        <translation>Enregistrer toutes les images affichées</translation>
     </message>
     <message>
         <source>CLOSE</source>
@@ -306,15 +306,15 @@ Adressez-vous à la documentation.</translation>
     </message>
     <message>
         <source>DLG_RECORDER_TITLE</source>
-        <translation>Enregistrer</translation>
+        <translation>Magnéto</translation>
     </message>
     <message>
         <source>FILE_NAME</source>
-        <translation>Sauvegarder au fichier : </translation>
+        <translation>Sauvegarder dans le fichier : </translation>
     </message>
     <message>
         <source>FLT_ALL_FILES</source>
-        <translation>Tous les Fichiers (*.*)</translation>
+        <translation>Tous les fichiers (*.*)</translation>
     </message>
     <message>
         <source>FLT_AVI_FILES</source>
@@ -342,11 +342,11 @@ Adressez-vous à la documentation.</translation>
     </message>
     <message>
         <source>SETTINGS</source>
-        <translation>Paramètres</translation>
+        <translation>Réglages</translation>
     </message>
     <message>
         <source>SKIPPED_FRAMES</source>
-        <translation>Enregistrer avec FPS donné</translation>
+        <translation>Enregistrer à FPS donné</translation>
     </message>
     <message>
         <source>START</source>
@@ -377,7 +377,7 @@ Adressez-vous à la documentation.</translation>
     </message>
     <message>
         <source>USE_BBCENTER</source>
-        <translation>Utiliser le Centre de la boîte englobante</translation>
+        <translation>Utiliser le centre de la boîte englobante</translation>
     </message>
     <message>
         <source>LBL_ORIGIN</source>
@@ -385,19 +385,19 @@ Adressez-vous à la documentation.</translation>
     </message>
     <message>
         <source>LBL_SELECTED_POINT</source>
-        <translation>Point Choisi</translation>
+        <translation>Point sélectionné</translation>
     </message>
     <message>
         <source>LBL_TOORIGIN</source>
-        <translation>Réinitialiser</translation>
+        <translation>Réinitialiser à l&apos;origine</translation>
     </message>
     <message>
         <source>LBL_SELECTPOINT</source>
-        <translation>Choisir un Point dans la Vue</translation>
+        <translation>Choisir un point dans la vue</translation>
     </message>
     <message>
         <source>DLG_TITLE</source>
-        <translation>Définir le Point de Rotation </translation>
+        <translation>Définir le point de rotation </translation>
     </message>
 </context>
 <context>
@@ -428,7 +428,7 @@ Adressez-vous à la documentation.</translation>
     </message>
     <message>
         <source>PROJECTION_MODE</source>
-        <translation>Mode de Projection </translation>
+        <translation>Mode de projection </translation>
     </message>
     <message>
         <source>ORTHOGONAL_MODE</source>
@@ -440,47 +440,47 @@ Adressez-vous à la documentation.</translation>
     </message>
     <message>
         <source>USE_BBCENTER</source>
-        <translation>Utiliser le Centre de la Boîte Englobante</translation>
+        <translation>Utiliser le centre de la boîte englobante</translation>
     </message>
     <message>
         <source>LBL_TOBBCENTER</source>
-        <translation>Initialiser au Centre de la Boîte Englobante</translation>
+        <translation>Définir au centre de la boîte englobante</translation>
     </message>
     <message>
         <source>LBL_TOORIGIN</source>
-        <translation>Initialiser à l&apos;Origine</translation>
+        <translation>Initialiser à l&apos;origine</translation>
     </message>
     <message>
         <source>LBL_SELECTPOINT</source>
-        <translation>Choisir un Point de la Vue</translation>
+        <translation>Choisir un point de la vue</translation>
     </message>
     <message>
         <source>FOCAL_POINT</source>
-        <translation>Point Focal </translation>
+        <translation>Point focal </translation>
     </message>
     <message>
         <source>CAMERA_POSITION</source>
-        <translation>Position de la Caméra </translation>
+        <translation>Position de la caméra</translation>
     </message>
     <message>
         <source>WORLD_COORDINATES</source>
-        <translation>Coordonnées du Monde </translation>
+        <translation>Coordonnées obsolues</translation>
     </message>
     <message>
         <source>FOCAL_RELATIVE</source>
-        <translation>Relative au Point Focal</translation>
+        <translation>Relatif au point focal</translation>
     </message>
     <message>
         <source>PROJECTION_DIRECTION</source>
-        <translation>Direction de la Projection :</translation>
+        <translation>Direction de la projection :</translation>
     </message>
     <message>
         <source>FOCAL_DISTANCE</source>
-        <translation>Distance Focale :</translation>
+        <translation>Distance focale :</translation>
     </message>
     <message>
         <source>VIEW_UP_DIRECTION</source>
-        <translation>Direction du Regard en Haut:</translation>
+        <translation>Direction pour la vue verticale :</translation>
     </message>
     <message>
         <source>ZOOMING</source>
@@ -492,22 +492,22 @@ Adressez-vous à la documentation.</translation>
     </message>
     <message>
         <source>LBL_VIEW_ANGLE</source>
-        <translation>Angle de Visualisation</translation>
+        <translation>Angle de visualisation</translation>
     </message>
     <message>
         <source>DLG_TITLE</source>
-        <translation>Paramètres de la Visualisation</translation>
+        <translation>Paramètres de visualisation</translation>
     </message>
 </context>
 <context>
     <name>SVTK_UpdateRateDlg</name>
     <message>
         <source>INFORMATION_FRAME_TITLE</source>
-        <translation>Information sur le Rendu</translation>
+        <translation>Informations</translation>
     </message>
     <message>
         <source>STILL</source>
-        <translation>La fréquence réduite de mise à jour , FPS</translation>
+        <translation>Fréquence réduite de mise à jour , FPS</translation>
     </message>
     <message>
         <source>INPUT_FRAME_TITLE</source>
@@ -515,15 +515,15 @@ Adressez-vous à la documentation.</translation>
     </message>
     <message>
         <source>NUMBER_CELLS</source>
-        <translation>Nombre de Cellules, -</translation>
+        <translation>Nombre de cellules, -</translation>
     </message>
     <message>
         <source>DESIRED</source>
-        <translation>La fréquence de mise à jour requise, FPS</translation>
+        <translation>Fréquence de mise à jour requise, FPS</translation>
     </message>
     <message>
         <source>CURRENT_FPS</source>
-        <translation>La fréquence actuelle de mise à jour , FPS</translation>
+        <translation>Fréquence actuelle de mise à jour , FPS</translation>
     </message>
     <message>
         <source>DLG_TITLE</source>
@@ -534,14 +534,14 @@ Adressez-vous à la documentation.</translation>
     <name>SVTK_ViewManager</name>
     <message>
         <source>VTK_VIEW_TITLE</source>
-        <translation>VTK scène:%1 - visualisateur:%2</translation>
+        <translation>Scène VTK:%1 - visualiseur:%2</translation>
     </message>
 </context>
 <context>
     <name>SVTK_Viewer</name>
     <message>
         <source>MEN_DUMP_VIEW</source>
-        <translation>Clicher la Vue...</translation>
+        <translation>Sauvegarder la vue...</translation>
     </message>
     <message>
         <source>MEN_SHOW_TOOLBAR</source>

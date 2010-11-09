@@ -5,7 +5,7 @@
     <name>@default</name>
     <message>
         <source>EXTERNAL_BROWSER_CANNOT_SHOW_PAGE</source>
-        <translation>Le navigateur externe &quot;%1&quot; ne peut pas trouver la page de référence &quot;%2&quot;. Voulez-vous changer sa location dans les préférences?</translation>
+        <translation>Le navigateur externe &quot;%1&quot; ne peut pas trouver la page d&apos;aide &quot;%2&quot;. Voulez-vous le modifierdans les préférences ?</translation>
     </message>
     <message>
         <source>ABOUT_COPYRIGHT</source>
@@ -40,7 +40,7 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
     <message>
         <source>LANG_CHANGED</source>
         <translation>La langue de l&apos;application a été modifié.
-Les modifications seront appliquées à la suivante session de l&apos;application.</translation>
+Les modifications seront appliquées à la prochaine session.</translation>
     </message>
     <message>
         <source>MEN_DESK_THEME</source>
@@ -84,7 +84,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>OBJECT_BROWSER</source>
-        <translation>Navigateur d&apos;Objets</translation>
+        <translation>Arbre d&apos;étude</translation>
     </message>
     <message>
         <source>PRP_DESK_PREFERENCES</source>
@@ -92,11 +92,11 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_GROUP_DIRECTORIES</source>
-        <translation>Liste rapide de répertoires</translation>
+        <translation>Liste des répertoires</translation>
     </message>
     <message>
         <source>PREF_GROUP_VTKVIEWER</source>
-        <translation>Visualisateur VTK 3D</translation>
+        <translation>Visualiseur VTK 3D</translation>
     </message>
     <message>
         <source>PREF_STORE_POS</source>
@@ -104,7 +104,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_AUTO_SAVE</source>
-        <translation>Intervale d&apos;enregistrement automatique (min)</translation>
+        <translation>Intervalle d&apos;enregistrement automatique (min)</translation>
     </message>
     <message>
         <source>PREF_AUTO_SAVE_DISABLED</source>
@@ -112,7 +112,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_PROJECTION_MODE</source>
-        <translation>Mode de Projection:</translation>
+        <translation>Mode de projection:</translation>
     </message>
     <message>
         <source>PREF_ORTHOGRAPHIC</source>
@@ -128,7 +128,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_STANDARD_STYLE</source>
-        <translation>Contrôles type Salomé</translation>
+        <translation>Style de contrôles type Salomé</translation>
     </message>
     <message>
         <source>PREF_KEYFREE_STYLE</source>
@@ -152,7 +152,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_FRAME_SPACEMOUSE</source>
-        <translation>Souris spaciale</translation>
+        <translation>Spacemouse</translation>
     </message>
     <message>
         <source>PREF_SHOW_STATIC_TRIHEDRON</source>
@@ -220,7 +220,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_ALL_DISLPAYED_FRAMES</source>
-        <translation>Enregistrer tous les cadres visualisés</translation>
+        <translation>Enregistrer toutes les images affichées</translation>
     </message>
     <message>
         <source>PREF_FPS</source>
@@ -248,7 +248,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_FRAME_GROUP_NAMES</source>
-        <translation>Noms des groupes</translation>
+        <translation>Nom des groupes</translation>
     </message>
     <message>
         <source>PREF_GROUP_NAMES_TEXT_COLOR</source>
@@ -264,7 +264,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_CURVE_TYPE</source>
-        <translation>Type de Courbe:</translation>
+        <translation>Type de courbe:</translation>
     </message>
     <message>
         <source>PREF_ISOS_U</source>
@@ -324,7 +324,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_OBJ_BROWSER_SETTINGS</source>
-        <translation>Paramètres du navigateur d&apos;objets</translation>
+        <translation>Paramètres de l&apos;arbre d&apos;étude</translation>
     </message>
     <message>
         <source>PRP_APP_MODULE</source>
@@ -348,7 +348,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_TAB_VIEWERS</source>
-        <translation>Visualisateurs</translation>
+        <translation>Visualiseurs</translation>
     </message>
     <message>
         <source>PREF_APP</source>
@@ -368,15 +368,15 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_RESIZE_ON_EXPAND_ITEM</source>
-        <translation>Redimensionner les colonnes de l&apos;objet agrandi</translation>
+        <translation>Redimensionner les colonnes quand l&apos;objet est déplié</translation>
     </message>
     <message>
         <source>PREF_GROUP_SUPERV</source>
-        <translation>Superviseur des Graphes</translation>
+        <translation>Superviseur des graphes</translation>
     </message>
     <message>
         <source>PREF_TAB_OBJBROWSER</source>
-        <translation>Navigateur d&apos;objets</translation>
+        <translation>Arbre d&apos;étude</translation>
     </message>
     <message>
         <source>PREF_TAB_GENERAL</source>
@@ -424,7 +424,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_FONT</source>
-        <translation>Font</translation>
+        <translation>Police</translation>
     </message>
     <message>
         <source>PREF_LEFT</source>
@@ -432,19 +432,19 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_TAB_DIRECTORIES</source>
-        <translation>Répertoires</translation>
+        <translation>Emplacements</translation>
     </message>
     <message>
         <source>ACTIVATING_MODULE</source>
-        <translation>Essayer d&apos;activer le module &quot;%1&quot;</translation>
+        <translation>Activation du module &quot;%1&quot; en cours</translation>
     </message>
     <message>
         <source>PREF_VERT_AXIS_SCALE</source>
-        <translation>Echelle de l&apos;axe verticale:</translation>
+        <translation>Echelle de l&apos;axe vertical :</translation>
     </message>
     <message>
         <source>PREF_HOR_AXIS_SCALE</source>
-        <translation>Echelle de l&apos;axe horisontale:</translation>
+        <translation>Echelle de l&apos;axe horizontal :</translation>
     </message>
     <message>
         <source>PREF_GROUP_LANGUAGE</source>
@@ -456,7 +456,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_GROUP_STUDY</source>
-        <translation>Propiétés d&apos;une Etude</translation>
+        <translation>Propiétés de l&apos;étude</translation>
     </message>
     <message>
         <source>PREF_CATEGORY_SALOME</source>
@@ -464,7 +464,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_GROUP_OCCVIEWER</source>
-        <translation>Visualisateur OCC 3D</translation>
+        <translation>Visualiseur OCC 3D</translation>
     </message>
     <message>
         <source>PREF_LOGARITHMIC</source>
@@ -476,7 +476,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_SUPERV_TITLE_COLOR</source>
-        <translation>Couleur titre</translation>
+        <translation>Couleur de titre</translation>
     </message>
     <message>
         <source>PREF_PARAM</source>
@@ -484,7 +484,7 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_RIGHT</source>
-        <translation>Droit</translation>
+        <translation>Droite</translation>
     </message>
     <message>
         <source>PREF_LINES</source>
@@ -496,23 +496,23 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PREF_GROUP_EXT_BROWSER</source>
-        <translation>Navigateur Externe</translation>
+        <translation>Navigateur externe</translation>
     </message>
     <message>
         <source>PREF_SUPERV_CTRL_COLOR</source>
-        <translation>Couleur alternatif</translation>
+        <translation>Couleur de contrôle</translation>
     </message>
     <message>
         <source>PREF_GROUP_DEF_COLUMNS</source>
-        <translation>Colonnnes de Défaut </translation>
+        <translation>Colonnnes par défaut </translation>
     </message>
     <message>
         <source>PREF_GROUP_PLOT2DVIEWER</source>
-        <translation>Visualisateur Plot2d</translation>
+        <translation>Visualiseur Plot2d</translation>
     </message>
     <message>
         <source>MEN_DESK_MRU</source>
-        <translation>&amp;Récemment Utilisés</translation>
+        <translation>&amp;Récemment utilisés</translation>
     </message>
     <message>
         <source>TOT_DESK_PREFERENCES</source>
@@ -540,11 +540,11 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>PYTHON_CONSOLE</source>
-        <translation>Console Python </translation>
+        <translation>Console Python</translation>
     </message>
     <message>
         <source>PREF_USE_ADVANCED_SELECTION_ALGORITHM</source>
-        <translation>Utiliser l&apos;Algorithme Avancé de Sélection </translation>
+        <translation>Utiliser l&apos;algorithme de sélection avancée</translation>
     </message>
     <message>
         <source>TOT_CLOSE</source>
@@ -560,11 +560,11 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>TOT_CLOSE_ALL</source>
-        <translation>Fermer tous</translation>
+        <translation>Tout fermer</translation>
     </message>
     <message>
         <source>MEN_DESK_CLOSE_ALL</source>
-        <translation>Fermer &amp;Tous</translation>
+        <translation>&amp;Tout fermer</translation>
     </message>
     <message>
         <source>PRP_CLOSE_ALL</source>
@@ -572,11 +572,11 @@ Les modifications seront appliquées à la suivante session de l&apos;applicatio
     </message>
     <message>
         <source>TOT_GROUP_ALL</source>
-        <translation>Grouper Tous</translation>
+        <translation>Tout grouper</translation>
     </message>
     <message>
         <source>MEN_DESK_GROUP_ALL</source>
-        <translation>&amp;Grouper Tous</translation>
+        <translation>Tout &amp;grouper</translation>
     </message>
     <message>
         <source>PRP_GROUP_ALL</source>
@@ -589,19 +589,19 @@ Le fichier n&apos;existe pas</translation>
     </message>
     <message>
         <source>PREF_GROUP_MRU</source>
-        <translation>Montrer les objets MRU</translation>
+        <translation>Montrer les études récemment utilisées</translation>
     </message>
     <message>
         <source>PREF_MRU_VISIBLE_COUNT</source>
-        <translation>Numéro d&apos;objets MRU</translation>
+        <translation>Nombre d&apos;études</translation>
     </message>
     <message>
         <source>PREF_MRU_INSERT_MODE</source>
-        <translation>Mode d&apos;Insértion </translation>
+        <translation>Mode d&apos;insertion</translation>
     </message>
     <message>
         <source>PREF_MRU_MOVE_FIRST</source>
-        <translation>Placer au commencement</translation>
+        <translation>Placer au début</translation>
     </message>
     <message>
         <source>PREF_MRU_MOVE_LAST</source>
@@ -609,7 +609,7 @@ Le fichier n&apos;existe pas</translation>
     </message>
     <message>
         <source>PREF_MRU_ADD_FIRST</source>
-        <translation>Ajouter au commencement</translation>
+        <translation>Ajouter au début</translation>
     </message>
     <message>
         <source>PREF_MRU_ADD_LAST</source>
@@ -617,7 +617,7 @@ Le fichier n&apos;existe pas</translation>
     </message>
     <message>
         <source>PREF_MRU_LINK_TYPE</source>
-        <translation>Référence type</translation>
+        <translation>Type de lien</translation>
     </message>
     <message>
         <source>PREF_MRU_LINK_AUTO</source>
@@ -652,15 +652,15 @@ Le fichier n&apos;existe pas</translation>
     </message>
     <message>
         <source>TOP_DISPLAY_ONLY</source>
-        <translation>Montrer seulement</translation>
+        <translation>Afficher uniquement</translation>
     </message>
     <message>
         <source>STB_DISPLAY_ONLY</source>
-        <translation>Montrer seulement</translation>
+        <translation>Afficher uniquement</translation>
     </message>
     <message>
         <source>MEN_DISPLAY_ONLY</source>
-        <translation>Montrer Seulement</translation>
+        <translation>Afficher uniquement</translation>
     </message>
     <message>
         <source>TOP_HIDE</source>
@@ -668,7 +668,7 @@ Le fichier n&apos;existe pas</translation>
     </message>
     <message>
         <source>MEN_ERASE_ALL</source>
-        <translation>Cacher tous</translation>
+        <translation>Tout cacher</translation>
     </message>
     <message>
         <source>STB_HIDE</source>
@@ -676,23 +676,23 @@ Le fichier n&apos;existe pas</translation>
     </message>
     <message>
         <source>STB_SHOW</source>
-        <translation>Montrer</translation>
+        <translation>Afficher</translation>
     </message>
     <message>
         <source>TOP_SHOW</source>
-        <translation>Montrer</translation>
+        <translation>Afficher</translation>
     </message>
     <message>
         <source>MEN_SHOW</source>
-        <translation>Montrer</translation>
+        <translation>Afficher</translation>
     </message>
     <message>
         <source>STB_ERASE_ALL</source>
-        <translation>Cacher tous</translation>
+        <translation>Tout cacher</translation>
     </message>
     <message>
         <source>TOP_ERASE_ALL</source>
-        <translation>Cacher Tous</translation>
+        <translation>Tout cacher</translation>
     </message>
 </context>
 <context>
@@ -700,7 +700,7 @@ Le fichier n&apos;existe pas</translation>
     <message>
         <source>DESCRIPTION</source>
         <translation>Vous activez le module
-	&lt;b&gt;%1&lt;/b&gt;.&lt;br&gt;Choisissez l&apos;action nécessaire avec la touche correspondante ci-dessous</translation>
+	&lt;b&gt;%1&lt;/b&gt;.&lt;br&gt;Choisissez l&apos;action nécessaire avec le bouton correspondant ci-dessous</translation>
     </message>
     <message>
         <source>CANCEL</source>
@@ -742,11 +742,11 @@ Le fichier n&apos;existe pas</translation>
     </message>
     <message>
         <source>DEFAULT_QUESTION</source>
-        <translation>Voulez-vous restaurer les préférences de défaut?</translation>
+        <translation>Voulez-vous restaurer les préférences par défaut ?</translation>
     </message>
     <message>
         <source>DEFAULT_BTN_TEXT</source>
-        <translation>Defauts</translation>
+        <translation>Défauts</translation>
     </message>
 </context>
 </TS>

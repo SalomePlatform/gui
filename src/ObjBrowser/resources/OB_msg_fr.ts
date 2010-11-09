@@ -5,11 +5,11 @@
     <name>OB_Browser</name>
     <message>
         <source>MEN_EXPAND_ALL</source>
-        <translation>Afficher Tous</translation>
+        <translation>Tout déplier</translation>
     </message>
     <message>
         <source>MEN_COLLAPSE_ALL</source>
-        <translation>Réduire Tous</translation>
+        <translation>Tout réduire</translation>
     </message>
     <message>
         <source>MEN_FIND</source>
@@ -32,7 +32,7 @@
     </message>
     <message>
         <source>IS_REG_EXP</source>
-        <translation>Expression Régulaire</translation>
+        <translation>Expression régulière</translation>
     </message>
 </context>
 </TS>

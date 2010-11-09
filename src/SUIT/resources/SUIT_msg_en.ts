@@ -78,7 +78,7 @@ Permission denied.</translation>
     </message>
     <message>
         <source>QUE_FILE_EXISTS</source>
-        <translation>The file &quot;%1&quot; already exists.
+        <translation>The file %1 already exists.
 Do you want to overwrite it?</translation>
     </message>
     <message>

@@ -5,8 +5,8 @@
     <name>@default</name>
     <message>
         <source>WRN_FILE_NAME_BAD</source>
-        <translation>Indiquez le nom de fichier correctement.
-Le fichier Python ne devrait inclure que de lettres, chiffres et soulignages et commencer avec une lettre ou soulignage.</translation>
+        <translation>Indiquez un nom de fichier correct.
+Un fichier Python ne doit être composé que de lettres, chiffres et tirets bas et doit commencer avec une lettre ou un tiret bas.</translation>
     </message>
     <message>
         <source>WRN_FILE_NOT_EXIST</source>
@@ -14,7 +14,7 @@ Le fichier Python ne devrait inclure que de lettres, chiffres et soulignages et 
     </message>
     <message>
         <source>CLOSE_LOCKED_STUDY</source>
-        <translation>Fermer l&apos;étude?</translation>
+        <translation>Fermer l&apos;étude verrouillée?</translation>
     </message>
     <message>
         <source>PUBLISH_IN_STUDY</source>
@@ -46,11 +46,11 @@ Le fichier Python ne devrait inclure que de lettres, chiffres et soulignages et 
     </message>
     <message>
         <source>SAVE_POINT_OBJECT_TOOLTIP</source>
-        <translation>Sauvegarder l&apos;état d&apos;IHM: %1</translation>
+        <translation>Etat d&apos;IHM: %1 sauvegardé</translation>
     </message>
     <message>
         <source>SAVE_POINT_DEF_NAME</source>
-        <translation>L&apos;état d&apos;IHM: </translation>
+        <translation>Etat d&apos;IHM: </translation>
     </message>
     <message>
         <source>VALUE_COLUMN</source>
@@ -62,11 +62,11 @@ Le fichier Python ne devrait inclure que de lettres, chiffres et soulignages et 
     </message>
     <message>
         <source>REFENTRY_COLUMN</source>
-        <translation>Ref.Entrée</translation>
+        <translation>Entrée de réf.</translation>
     </message>
     <message>
         <source>ERR_INCOMPATIBLE_TYPE</source>
-        <translation>Le tupe numérique de la variable &quot;%1&quot; n&apos;est pas compatible</translation>
+        <translation>Le type numérique de la variable &quot;%1&quot; n&apos;est pas compatible</translation>
     </message>
     <message>
         <source>ERR_INVALID_VALUE</source>
@@ -85,11 +85,11 @@ Le fichier Python ne devrait inclure que de lettres, chiffres et soulignages et 
     </message>
     <message>
         <source>APPCLOSE_UNLOAD</source>
-        <translation>V&amp;ider</translation>
+        <translation>&amp;Déconnecter</translation>
     </message>
     <message>
         <source>APPCLOSE_CLOSE</source>
-        <translation>&amp;Fermer sans modifications</translation>
+        <translation>&amp;Fermer sans sauvegarder</translation>
     </message>
     <message>
         <source>MEN_WINDOWS_NEW</source>
@@ -113,7 +113,7 @@ Le fichier Python ne devrait inclure que de lettres, chiffres et soulignages et 
     </message>
     <message>
         <source>MEN_DESK_REGISTRY_DISPLAY</source>
-        <translation>Enregistrer &amp;Visualiser</translation>
+        <translation>Affichage du registre CORBA</translation>
     </message>
     <message>
         <source>APPCLOSE_SAVE</source>
@@ -121,7 +121,7 @@ Le fichier Python ne devrait inclure que de lettres, chiffres et soulignages et 
     </message>
     <message>
         <source>TOT_DESK_FILE_LOAD_SCRIPT</source>
-        <translation>Ouvrit un script python </translation>
+        <translation>Exécuter un script python</translation>
     </message>
     <message>
         <source>PREF_STORE_VISUAL_STATE</source>
@@ -129,7 +129,7 @@ Le fichier Python ne devrait inclure que de lettres, chiffres et soulignages et 
     </message>
     <message>
         <source>PRP_DESK_FILE_SAVE_GUI_STATE</source>
-        <translation>Sauvegarder l&apos;état actuel des visualisateurs, des scènes, etc.</translation>
+        <translation>Sauvegarder l&apos;état actuel des vues 3D, des objets affichés, etc.</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_SAVE_GUI_STATE</source>
@@ -145,7 +145,7 @@ Le fichier Python ne devrait inclure que de lettres, chiffres et soulignages et 
     </message>
     <message>
         <source>WRN_DUMP_STUDY_FAILED</source>
-        <translation>Impossible de clipper l&apos;Sauvegarder l&apos;étude</translation>
+        <translation>Impossible de générer le script de l&apos;étude</translation>
     </message>
     <message>
         <source>MEN_DESK_PROPERTIES</source>
@@ -153,8 +153,8 @@ Le fichier Python ne devrait inclure que de lettres, chiffres et soulignages et 
     </message>
     <message>
         <source>QUE_DOC_ALREADYEXIST</source>
-        <translation>Ce document %1 déjà existe dans l&apos;étude.
-Allez-vous rouvrir ce document ?</translation>
+        <translation>Le document %1 existe déjà dans le gestionnaire d&apos;études.
+Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>MEN_RENAME_VS</source>
@@ -162,11 +162,11 @@ Allez-vous rouvrir ce document ?</translation>
     </message>
     <message>
         <source>TOT_DESK_CATALOG_GENERATOR</source>
-        <translation>Générateur du Catalogue</translation>
+        <translation>Générateur de catalogue</translation>
     </message>
     <message>
         <source>TOT_DESK_ADD_VARS_TO_NOTEBOOK</source>
-        <translation>Ajouter les Variables au Carnet</translation>
+        <translation>Ajouter les variables au registre</translation>
     </message>
     <message>
         <source>PUBLISH_IN_STUDY</source>
@@ -178,7 +178,7 @@ Allez-vous rouvrir ce document ?</translation>
     </message>
     <message>
         <source>PRP_DESK_REGISTRY_DISPLAY</source>
-        <translation>Visualiser le contenu du Registre du serveur CORBA</translation>
+        <translation>Visualiser le contenu du registre du serveur CORBA</translation>
     </message>
     <message>
         <source>PYTHON_FILES_FILTER</source>
@@ -186,7 +186,7 @@ Allez-vous rouvrir ce document ?</translation>
     </message>
     <message>
         <source>APPCLOSE_DESCRIPTION</source>
-        <translation>Voulez-vous fermer ou vider l&apos;étude avant de la fermer?</translation>
+        <translation>Voulez-vous fermer ou décharger l&apos;étude avant de la fermer?</translation>
     </message>
     <message>
         <source>PRP_DESK_PROPERTIES</source>
@@ -194,11 +194,11 @@ Allez-vous rouvrir ce document ?</translation>
     </message>
     <message>
         <source>PREF_TAB_OBJBROWSER</source>
-        <translation>Navigateur d&apos;Objets</translation>
+        <translation>Arbre d&apos;étude</translation>
     </message>
     <message>
         <source>STUDY_LOCKED</source>
-        <translation>BLOQUEE</translation>
+        <translation>VERROUILLEE</translation>
     </message>
     <message>
         <source>APPCLOSE_CANCEL</source>
@@ -210,7 +210,7 @@ Allez-vous rouvrir ce document ?</translation>
     </message>
     <message>
         <source>TOT_DESK_REGISTRY_DISPLAY</source>
-        <translation>Visualiser Registre</translation>
+        <translation>Visualiser le registre CORBA</translation>
     </message>
     <message>
         <source>OBJ_BROWSER_COLUMN_0</source>
@@ -226,7 +226,7 @@ Allez-vous rouvrir ce document ?</translation>
     </message>
     <message>
         <source>OBJ_BROWSER_COLUMN_3</source>
-        <translation>Entrée de Référence</translation>
+        <translation>Entrée de référence</translation>
     </message>
     <message>
         <source>PREF_CATEGORY_SALOME</source>
@@ -238,7 +238,7 @@ Allez-vous rouvrir ce document ?</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_LOAD_SCRIPT</source>
-        <translation>Ouvrir Scrip&amp;t...</translation>
+        <translation>Exécuter un scrip&amp;t...</translation>
     </message>
     <message>
         <source>MEN_DESK_TOOLS</source>
@@ -246,39 +246,39 @@ Allez-vous rouvrir ce document ?</translation>
     </message>
     <message>
         <source>TOT_DESK_FILE_DUMP_STUDY</source>
-        <translation>Clicher l&apos;étude</translation>
+        <translation>Générer le script de l&apos;étude</translation>
     </message>
     <message>
         <source>MEN_VIEW_WNDS</source>
-        <translation>Windows</translation>
+        <translation>Fenêtres</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_DUMP_STUDY</source>
-        <translation>&amp;Clicher l&apos;étude...</translation>
+        <translation>&amp;Générer le script de l&apos;étude...</translation>
     </message>
     <message>
         <source>PRP_DESK_CATALOG_GENERATOR</source>
-        <translation>Générer une catalogue XML  de l&apos;interface du composant</translation>
+        <translation>Génére un catalogue XML de l&apos;interface du composant</translation>
     </message>
     <message>
         <source>PRP_DESK_ADD_VARS_TO_NOTEBOOK</source>
-        <translation>Ajouter les variables de l&apos;étude au carnet</translation>
+        <translation>Ajouter les variables de l&apos;étude au registre</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_DUMP_STUDY</source>
-        <translation>Clicher l&apos;étude au script python</translation>
+        <translation>Génère le script python de l&apos;étude</translation>
     </message>
     <message>
         <source>TOT_DESK_FILE_NOTEBOOK</source>
-        <translation>Ouvrir le Carnet</translation>
+        <translation>Ouvrir le Registre</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_NOTEBOOK</source>
-        <translation>Car&amp;net...</translation>
+        <translation>Re&amp;gistre...</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_NOTEBOOK</source>
-        <translation>Ouvrir le Carnet</translation>
+        <translation>Ouvrir le Registre</translation>
     </message>
     <message>
         <source>TOT_DESK_PROPERTIES</source>
@@ -286,19 +286,19 @@ Allez-vous rouvrir ce document ?</translation>
     </message>
     <message>
         <source>PREF_GROUP_DEF_COLUMNS</source>
-        <translation>Colonnes de Défaut</translation>
+        <translation>Colonnes par défaut</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_LOAD_SCRIPT</source>
-        <translation>Ouvrir le script python du fichier</translation>
+        <translation>Exécute un script Python à partir d&apos;un fichier</translation>
     </message>
     <message>
         <source>MEN_DESK_CATALOG_GENERATOR</source>
-        <translation>Catalogue &amp;Générateur</translation>
+        <translation>&amp;Genérateur de Catalogue</translation>
     </message>
     <message>
         <source>MEN_DESK_ADD_VARS_TO_NOTEBOOK</source>
-        <translation>Ajouter les Variables au Carnet</translation>
+        <translation>Ajouter les variables au Registre</translation>
     </message>
     <message>
         <source>APPCLOSE_CAPTION</source>
@@ -306,11 +306,11 @@ Allez-vous rouvrir ce document ?</translation>
     </message>
     <message>
         <source>MEN_DESK_MRU</source>
-        <translation>Le plus recemment utilisé</translation>
+        <translation>Dernières études ouvertes</translation>
     </message>
     <message>
         <source>TOT_DESK_MRU</source>
-        <translation>Le plus recemment utilisé</translation>
+        <translation>Dernières études ouvertes</translation>
     </message>
     <message>
         <source>ACTIVATE_MODULE_OP_LOAD</source>
@@ -325,11 +325,11 @@ Allez-vous rouvrir ce document ?</translation>
     </message>
     <message>
         <source>PRP_AUTHOR</source>
-        <translation>Autheur</translation>
+        <translation>Auteur</translation>
     </message>
     <message>
         <source>PRP_LOCKED</source>
-        <translation>Bloqué</translation>
+        <translation>Verrouillée</translation>
     </message>
     <message>
         <source>PRP_MODIFICATIONS</source>
@@ -345,11 +345,11 @@ Allez-vous rouvrir ce document ?</translation>
     </message>
     <message>
         <source>PRP_MODIFIED</source>
-        <translation>Modifié</translation>
+        <translation>Modifiée</translation>
     </message>
     <message>
         <source>PRP_DATE</source>
-        <translation>Crée</translation>
+        <translation>Créée</translation>
     </message>
     <message>
         <source>PRP_MODE</source>
@@ -368,7 +368,7 @@ Allez-vous rouvrir ce document ?</translation>
     <name>SalomeApp_ExitDlg</name>
     <message>
         <source>SHUTDOWN_SERVERS</source>
-        <translation>Arreter les serveurs autonomes</translation>
+        <translation>Arrêter les serveurs autonomes</translation>
     </message>
 </context>
 <context>
@@ -376,39 +376,39 @@ Allez-vous rouvrir ce document ?</translation>
     <message>
         <source>REMOVE_VARIABLE_IS_USED</source>
         <translation>La variable &quot;%1&quot; est utilisée dans l&apos;étude.
-Est-ce que vous allez vraiment la supprimer?</translation>
+Voulez-vous vraiment la supprimer?</translation>
     </message>
     <message>
         <source>RENAME_VARIABLE_IS_USED</source>
         <translation>La variable &quot;%1&quot; est utilisée dans l&apos;étude.
-Est-ce que vous allez vraiment la renommer?</translation>
+Voulez-vous vraiment la renommer?</translation>
     </message>
     <message>
         <source>VARNAME_COLUMN</source>
-        <translation>Nom de la Variable</translation>
+        <translation>Nom de la variable</translation>
     </message>
     <message>
         <source>VARVALUE_COLUMN</source>
-        <translation>Valeur de la Variable</translation>
+        <translation>Valeur de la variable</translation>
     </message>
     <message>
         <source>VARVALUE_INCORRECT</source>
-        <translation>La Valeur de la Variable n&apos;est pas correcte: %1</translation>
+        <translation>La valeur de la variable n&apos;est pas correcte: %1</translation>
     </message>
     <message>
         <source>VARNAME_INCORRECT</source>
-        <translation>Le Nom de la Variable n&apos;est pas correct: %1</translation>
+        <translation>Le nom de la variable n&apos;est pas correct: %1</translation>
     </message>
     <message>
         <source>VARNAME_EXISTS</source>
-        <translation>La Variable &quot;%1&quot; existe</translation>
+        <translation>La variable &quot;%1&quot; existe</translation>
     </message>
 </context>
 <context>
     <name>SalomeApp_NoteBookDlg</name>
     <message>
         <source>NOTEBOOK_TITLE</source>
-        <translation>Carnet Salome</translation>
+        <translation>Registre Salome</translation>
     </message>
     <message>
         <source>BUT_UPDATE_STUDY</source>
@@ -428,16 +428,16 @@ Est-ce que vous allez vraiment la renommer?</translation>
     </message>
     <message>
         <source>CLOSE_CAPTION</source>
-        <translation>Fermer le Carnet</translation>
+        <translation>Fermer le Registre</translation>
     </message>
     <message>
         <source>CLOSE_DESCRIPTION</source>
-        <translation>Allez-vous sauvegarder les changements faits au Carnet?</translation>
+        <translation>Voulez-vous sauvegarder les changements faits au Registre?</translation>
     </message>
     <message>
         <source>INCORRECT_DATA</source>
         <translation>Au moins une variable a été définie incorrectement.
-Editez ses paramètres ou l&apos;éliminez de la table.</translation>
+Editez ses paramètres ou retirez la de la liste.</translation>
     </message>
     <message>
         <source>ERR_UPDATE_STUDY_FAILED</source>
@@ -448,26 +448,26 @@ Editez ses paramètres ou l&apos;éliminez de la table.</translation>
     <name>SalomeApp_DoubleSpinBox</name>
     <message>
         <source>VALID_RANGE_VAR_MSG</source>
-        <translation>Indiquez le nom de la variable ou
-la valeur du point flottant au diapason ( %1; %2 )
-avec la précision de %3 chiffres</translation>
+        <translation>Indiquez un nom de variable ou
+une valeur réelle dans l&apos;intervalle ( %1; %2 )
+avec une précision de %3 décimales</translation>
     </message>
     <message>
         <source>VALID_RANGE_NOVAR_MSG</source>
-        <translation>Indiquez la valeur du point flottant au diapason ( %1; %2 )
-avec la précision de %3 chiffres</translation>
+        <translation>Indiquez une valeur réelle dans l&apos;intervalle ( %1; %2 )
+avec une précision de %3 décimales</translation>
     </message>
 </context>
 <context>
     <name>SalomeApp_IntSpinBox</name>
     <message>
         <source>VALID_RANGE_VAR_MSG</source>
-        <translation>Indiquez le nom de la variable ou
-une valeur entière au diapason ( %1; %2 )</translation>
+        <translation>Indiquez un nom de variable ou
+une valeur entière dans l&apos;intervalle ( %1; %2 )</translation>
     </message>
     <message>
         <source>VALID_RANGE_NOVAR_MSG</source>
-        <translation>Indiquez une valeur entière au diapason ( %1; %2 )</translation>
+        <translation>Indiquez une valeur entière dans l&apos;intervalle ( %1; %2 )</translation>
     </message>
 </context>
 </TS>

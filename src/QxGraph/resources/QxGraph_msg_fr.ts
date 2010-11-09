@@ -5,15 +5,15 @@
     <name>@default</name>
     <message>
         <source>MEN_CHANGE_BACKGROUND</source>
-        <translation>Changer l&apos;arrier-plan...</translation>
+        <translation>Changer l&apos;arrière-plan...</translation>
     </message>
     <message>
         <source>MNU_PAN_VIEW</source>
-        <translation>Redimensionnement</translation>
+        <translation>Déplacement</translation>
     </message>
     <message>
         <source>DSC_PAN_VIEW</source>
-        <translation>Redimensionner la vue</translation>
+        <translation>Déplacer la vue</translation>
     </message>
     <message>
         <source>MNU_RESET_VIEW</source>
@@ -21,7 +21,7 @@
     </message>
     <message>
         <source>DSC_RESET_VIEW</source>
-        <translation>Restaurer le Point de Vue</translation>
+        <translation>Restaurer le point de vue</translation>
     </message>
     <message>
         <source>LBL_TOOLBAR_LABEL</source>

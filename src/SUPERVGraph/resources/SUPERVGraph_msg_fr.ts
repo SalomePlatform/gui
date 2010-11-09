@@ -5,11 +5,11 @@
     <name>@default</name>
     <message>
         <source>MNU_PAN_VIEW</source>
-        <translation>Redimensionnement</translation>
+        <translation>Déplacement</translation>
     </message>
     <message>
         <source>DSC_PAN_VIEW</source>
-        <translation>Redimensionnement de la vue</translation>
+        <translation>Déplacement de la vue</translation>
     </message>
     <message>
         <source>MNU_RESET_VIEW</source>
@@ -17,11 +17,11 @@
     </message>
     <message>
         <source>DSC_RESET_VIEW</source>
-        <translation>Restaurer le Point de Vue</translation>
+        <translation>Restaurer le point de vue</translation>
     </message>
     <message>
         <source>LBL_TOOLBAR_LABEL</source>
-        <translation>Opérations de Visualisation</translation>
+        <translation>Opérations de visualisation</translation>
     </message>
 </context>
 </TS>

@@ -388,7 +388,7 @@ Do you want to overwrite it?</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_LOAD</source>
-        <translation>Load a document</translation>
+        <translation>Loads a document</translation>
     </message>
     <message>
         <source>PRP_DESK_WINDOW_HTILE</source>

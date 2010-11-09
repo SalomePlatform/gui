@@ -77,7 +77,7 @@ File doesn&apos;t exist</translation>
     </message>
     <message>
         <source>TOOLS_COMP_USERNAME</source>
-        <translation>UserName : </translation>
+        <translation>User name : </translation>
     </message>
     <message>
         <source>TOOLS_CATALOG_GENERATOR</source>

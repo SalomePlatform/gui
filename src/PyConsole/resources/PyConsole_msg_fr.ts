@@ -21,18 +21,18 @@
     <message>
         <location filename="../PyConsole_Console.cxx" line="231"/>
         <source>EDIT_SELECTALL_CMD</source>
-        <translation>Choisir &amp;Tous</translation>
+        <translation>&amp;Tout sélectionner</translation>
     </message>
     <message>
         <source>EDIT_DUMPCOMMANDS_CMD</source>
-        <translation>C&amp;licher les commandes</translation>
+        <translation>&amp;Générer le script des commandes</translation>
     </message>
 </context>
 <context>
     <name>PyConsole_Editor</name>
     <message>
         <source>TOT_DUMP_PYCOMMANDS</source>
-        <translation>C&amp;licher les commandes</translation>
+        <translation>&amp;Générer le script des commandes</translation>
     </message>
     <message>
         <source>PYTHON_FILES_FILTER</source>

@@ -245,8 +245,8 @@ Voulez-vous le recharger ?</translation>
         <translation>&amp;Outils</translation>
     </message>
     <message>
-        <source>MEN_DESK_TOOLS2</source>
-        <translation>Outils</translation>
+        <source>MEN_DESK_PLUGINS_TOOLS</source>
+	<translation>Outils</translation>
     </message>
     <message>
         <source>MEN_DESK_PLUGINS</source>

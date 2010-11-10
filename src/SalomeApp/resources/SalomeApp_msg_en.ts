@@ -245,7 +245,7 @@ Do you want to reload it ?</translation>
         <translation>&amp;Tools</translation>
     </message>
     <message>
-        <source>MEN_DESK_TOOLS2</source>
+        <source>MEN_DESK_PLUGINS_TOOLS</source>
         <translation>Tools</translation>
     </message>
     <message>

@@ -330,7 +330,7 @@ void SalomeApp_Application::createActions()
   // import Python module that manages SALOME plugins
   PyGILState_STATE gstate = PyGILState_Ensure();
   PyObject* pluginsmanager=PyImport_ImportModule((char*)"salome_pluginsmanager");
-  PyObject* res=PyObject_CallMethod( pluginsmanager, (char*)"initialize", (char*)"isss",0,"salome",tr("MEN_DESK_TOOLS2").toStdString().c_str(),tr("MEN_DESK_PLUGINS").toStdString().c_str());
+  PyObject* res=PyObject_CallMethod( pluginsmanager, (char*)"initialize", (char*)"isss",0,"salome",tr("MEN_DESK_PLUGINS_TOOLS").toStdString().c_str(),tr("MEN_DESK_PLUGINS").toStdString().c_str());
   if(res==NULL)
     PyErr_Print();
   Py_XDECREF(res);

@@ -647,7 +647,7 @@ void Plot2d_ViewFrame::displayCurves( const curveList& curves, bool update )
   }
   fitAll();
   //myPlot->setUpdatesEnabled( true );
-// update legend
+  // update legend
   if ( update )
     myPlot->replot();
 }
@@ -1159,19 +1159,21 @@ void Plot2d_ViewFrame::setLegendPos( int pos )
 {
   myLegendPos = pos;
   QwtLegend* legend = myPlot->legend();
-  switch( pos ) {
-  case 0:
-    myPlot->insertLegend( legend, QwtPlot::LeftLegend );
-    break;
-  case 1:
-    myPlot->insertLegend( legend, QwtPlot::RightLegend );
-    break;
-  case 2:
-    myPlot->insertLegend( legend, QwtPlot::TopLegend );
-    break;
-  case 3:
-    myPlot->insertLegend( legend, QwtPlot::BottomLegend );
-    break;
+  if ( legend ) {
+    switch( pos ) {
+    case 0:
+      myPlot->insertLegend( legend, QwtPlot::LeftLegend );
+      break;
+    case 1:
+      myPlot->insertLegend( legend, QwtPlot::RightLegend );
+      break;
+    case 2:
+      myPlot->insertLegend( legend, QwtPlot::TopLegend );
+      break;
+    case 3:
+      myPlot->insertLegend( legend, QwtPlot::BottomLegend );
+      break;
+    }
   }
 }
 
@@ -2461,14 +2463,16 @@ void Plot2d_QwtPlotCurve::updateLegend( QwtLegend* legend ) const
 {
   QwtPlotCurve::updateLegend( legend );
 
-  QWidget* widget = legend->find( this );
-  if( Plot2d_QwtLegendItem* anItem = dynamic_cast<Plot2d_QwtLegendItem*>( widget ) ) {
-    int aMode = Plot2d_QwtLegendItem::IM_None;
-    if( myYAxisIdentifierEnabled )
-      aMode = myYAxis == QwtPlot::yRight ?
-        Plot2d_QwtLegendItem::IM_Right :
-        Plot2d_QwtLegendItem::IM_Left;
-    anItem->setYAxisIdentifierMode( aMode );
+  if ( legend ) {
+    QWidget* widget = legend->find( this );
+    if( Plot2d_QwtLegendItem* anItem = dynamic_cast<Plot2d_QwtLegendItem*>( widget ) ) {
+      int aMode = Plot2d_QwtLegendItem::IM_None;
+      if( myYAxisIdentifierEnabled )
+	aMode = myYAxis == QwtPlot::yRight ?
+	  Plot2d_QwtLegendItem::IM_Right :
+	  Plot2d_QwtLegendItem::IM_Left;
+      anItem->setYAxisIdentifierMode( aMode );
+    }
   }
 }
 

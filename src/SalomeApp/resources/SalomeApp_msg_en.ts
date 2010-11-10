@@ -245,6 +245,14 @@ Do you want to reload it ?</translation>
         <translation>&amp;Tools</translation>
     </message>
     <message>
+        <source>MEN_DESK_TOOLS2</source>
+        <translation>Tools</translation>
+    </message>
+    <message>
+        <source>MEN_DESK_PLUGINS</source>
+        <translation>Plugins</translation>
+    </message>
+    <message>
         <source>TOT_DESK_FILE_DUMP_STUDY</source>
         <translation>Dump study</translation>
     </message>

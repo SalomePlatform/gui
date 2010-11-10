@@ -245,6 +245,14 @@ Voulez-vous le recharger ?</translation>
         <translation>&amp;Outils</translation>
     </message>
     <message>
+        <source>MEN_DESK_TOOLS2</source>
+        <translation>Outils</translation>
+    </message>
+    <message>
+        <source>MEN_DESK_PLUGINS</source>
+        <translation>Extensions</translation>
+    </message>
+    <message>
         <source>TOT_DESK_FILE_DUMP_STUDY</source>
         <translation>Générer le script de l&apos;étude</translation>
     </message>

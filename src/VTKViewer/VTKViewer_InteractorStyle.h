@@ -150,6 +150,7 @@ class VTKVIEWER_EXPORT VTKViewer_InteractorStyle : public QObject, public vtkInt
   void startRotate();
   void startFitArea();
   void startSpin();
+  void SetTDxStyle(vtkTDxInteractorStyle *tdxStyle) {}
   bool needsRedrawing();
 
  protected:

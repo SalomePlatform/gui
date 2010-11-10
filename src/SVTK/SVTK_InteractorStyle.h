@@ -159,7 +159,7 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
 
   typedef boost::shared_ptr<SVTK_SelectionEvent> PSelectionEvent;
 
-  
+  void SetTDxStyle(vtkTDxInteractorStyle*){} 
 
   //! Generate special #SVTK_SelectionEvent
   virtual SVTK_SelectionEvent* GetSelectionEvent();

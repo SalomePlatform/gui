@@ -229,6 +229,7 @@ public:
   QwtPlotGrid*        grid() { return myGrid; };
   CurveDict& getCurves() { return myCurves; }
   Plot2d_Curve*       getClosestCurve( QPoint p, double& distance, int& index );
+  QwtPlotZoomer*      zoomer() const { return myPlotZoomer; }
 
   virtual void        updateYAxisIdentifiers();
 

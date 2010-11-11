@@ -786,6 +786,7 @@ void Plot2d_ViewFrame::fitAll()
     myPlot->setAxisScale( QwtPlot::yRight, y2min, y2max );
   }
   myPlot->replot();
+  if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
 }
 
 /*!
@@ -813,6 +814,7 @@ void Plot2d_ViewFrame::fitArea( const QRect& area )
             myPlot->invTransform( QwtPlot::xBottom, rect.left() ), 
             myPlot->invTransform( QwtPlot::xBottom, rect.right() ) );
   myPlot->replot();
+  if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
 }
 
 /*!
@@ -831,6 +833,7 @@ void Plot2d_ViewFrame::fitData(const int mode,
   if ( mode == 0 || mode == 1 ) 
     myPlot->setAxisScale( QwtPlot::xBottom, xMin, xMax ); 
   myPlot->replot();
+  if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
 }
 
 /*!
@@ -1700,6 +1703,11 @@ Plot2d_Plot2d::Plot2d_Plot2d( QWidget* parent )
   : QwtPlot( parent ),
     myIsPolished( false )
 {
+  // Create alternative scales
+  setAxisScaleDraw( QwtPlot::yLeft,   new Plot2d_ScaleDraw() );
+  setAxisScaleDraw( QwtPlot::xBottom, new Plot2d_ScaleDraw() );
+  setAxisScaleDraw( QwtPlot::yRight,  new Plot2d_ScaleDraw() );
+
   myPlotZoomer = new Plot2d_QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, canvas() );
   myPlotZoomer->setSelectionFlags( QwtPicker::DragSelection | QwtPicker::CornerToCorner );
   myPlotZoomer->setTrackerMode( QwtPicker::AlwaysOff );
@@ -1707,11 +1715,6 @@ Plot2d_Plot2d::Plot2d_Plot2d( QWidget* parent )
   myPlotZoomer->setRubberBandPen( QColor( Qt::green ) );
 
   defaultPicker();
-
-  // Create alternative scales
-  setAxisScaleDraw( QwtPlot::yLeft,   new Plot2d_ScaleDraw() );
-  setAxisScaleDraw( QwtPlot::xBottom, new Plot2d_ScaleDraw() );
-  setAxisScaleDraw( QwtPlot::yRight,  new Plot2d_ScaleDraw() );
 
   // auto scaling by default
   setAxisAutoScale( QwtPlot::yLeft );

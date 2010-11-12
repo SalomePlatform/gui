@@ -676,7 +676,7 @@ bool QtxSearchTool::event( QEvent* e )
     if ( ke->key() == Qt::Key_Escape )
       hide();
   }
-  else if ( e->type() == QEvent::Hide && myWatched )
+  else if ( e->type() == QEvent::Hide && myWatched && myWatched->isVisible() )
   {
     myWatched->setFocus();
   }

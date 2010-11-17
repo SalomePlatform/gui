@@ -63,6 +63,11 @@ public:
 
   void     expandTo( const QModelIndex& );
 
+  bool     isKeyboardSearchEnabled() const;
+  void     setKeyboardSearchEnabled( bool );
+
+  void     keyboardSearch( const QString& );
+
 protected slots:
   void     onHeaderClicked();
   void     rowsAboutToBeRemoved( const QModelIndex&, int, int );
@@ -81,6 +86,9 @@ signals:
 
 private:
   void     emitSortingEnabled( bool );
+
+ private:
+  bool     myKeySearchEnabled;
 
   friend class QtxTreeView::Header;
 };

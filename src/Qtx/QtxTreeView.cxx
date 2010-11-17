@@ -470,7 +470,8 @@ void QtxTreeView::Header::contextMenuEvent( QContextMenuEvent* e )
   \param parent parent widget
 */
 QtxTreeView::QtxTreeView( QWidget* parent )
-: QTreeView( parent )
+  : QTreeView( parent ),
+    myKeySearchEnabled( true )
 {
   setHeader( new Header( false, this ) );
 }
@@ -481,7 +482,9 @@ QtxTreeView::QtxTreeView( QWidget* parent )
   \param parent parent widget
 */
 QtxTreeView::QtxTreeView( const bool enableSortMenu, QWidget* parent )
-: QTreeView( parent )
+  : QTreeView( parent ),
+    myKeySearchEnabled( true )
+
 {
   setHeader( new Header( enableSortMenu, this ) );
 }
@@ -770,6 +773,33 @@ void QtxTreeView::setOpened( const QModelIndex& index, const int levels, bool op
 void QtxTreeView::emitSortingEnabled( bool enabled )
 {
   emit( sortingEnabled( enabled ) );
+}
+
+/*!
+  \brief Returns true if the keyboard search is enabled.
+*/
+bool QtxTreeView::isKeyboardSearchEnabled() const
+{
+  return myKeySearchEnabled;
+}
+
+/*!
+  \brief Enable/disable the keyboard search.
+*/
+void QtxTreeView::setKeyboardSearchEnabled( bool on )
+{
+  myKeySearchEnabled = on;
+}
+
+/*!
+  \brief Moves to and selects the item best matching the string search.
+  If keyboard search is disabled or no item is found nothing happens.
+  \param search is pattern string
+*/
+void QtxTreeView::keyboardSearch( const QString& search )
+{
+  if ( isKeyboardSearchEnabled() )
+    QAbstractItemView::keyboardSearch( search );
 }
 
 #include <QtxTreeView.moc>

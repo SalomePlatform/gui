@@ -694,66 +694,32 @@ bool QtxSearchTool::eventFilter( QObject* o, QEvent* e )
   switch ( e->type() )
   {
   case QEvent::KeyPress:
-    if ( myWatched && o == myWatched )
-    {
+    if ( o == myWatched ) {
       QKeyEvent* ke = (QKeyEvent*)e;
-      int key = ke->key();
-      QString ttf = myData->text();
       QString text = ke->text();
 
-      if ( isVisible() )
-      {
-        switch ( key )
-        {
-        case Qt::Key_Escape:
-          hide();
-          return true;
-        case Qt::Key_Backspace:
-          ttf.chop( 1 );
-          break;
-        case Qt::Key_Return:
-        case Qt::Key_Enter:
-          findNext();
-          return true;
-        default:
-          if ( text.isEmpty() || !text[0].isPrint() )
-            return QFrame::eventFilter( o, e );
-          ttf += text;
-        }
-      }
-      else
-      {
-        if ( text.isEmpty() || !isEnabled() || !text[0].isPrint() || myActivators == None )
-          return QFrame::eventFilter( o, e );
-
+      if ( !isVisible() ) {
         if ( text.startsWith( '/' ) && myActivators & SlashKey )
         {
           myData->clear();
           find();
           return true;
         }
-        else if ( !( myActivators & PrintKey ) )
+        else if ( myActivators & PrintKey && text[0].isPrint() )
         {
-          return QFrame::eventFilter( o, e );
-        }
-
-        ttf = text;
-        show();
+	  myData->setText( text );
+	  find( text );
+          return true;
+	}
       }
-      myData->setText( ttf );
-      find( ttf );
     }
-    break; // case QEvent::KeyPress
+    break;
   case QEvent::FocusIn:
   case QEvent::FocusOut:
     if ( focused() )
-    {
       myAutoHideTimer->stop();
-    }
     else if ( isVisible() && isAutoHideEnabled() )
-    {
       myAutoHideTimer->start();
-    }
     break;
   default:
     break;

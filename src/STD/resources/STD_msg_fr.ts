@@ -172,7 +172,7 @@ Un répertoire avec ce nom existe déjà sur le disque. Essayez d&apos;utiliser 
     </message>
     <message>
         <source>MEN_DESK_VIEW</source>
-        <translation>&amp;Vue</translation>
+        <translation>&amp;Affichage</translation>
     </message>
     <message>
         <source>PRP_DESK_HELP_ABOUT</source>
@@ -184,7 +184,7 @@ Un répertoire avec ce nom existe déjà sur le disque. Essayez d&apos;utiliser 
     </message>
     <message>
         <source>MEN_DESK_EDIT</source>
-        <translation>&amp;Editer</translation>
+        <translation>&amp;Edition</translation>
     </message>
     <message>
         <source>MEN_DESK_HELP</source>

@@ -77,12 +77,21 @@ plugins={}
 current_plugins_manager=None
 
 def initialize(module,name,basemenuname,menuname):
-  if plugins.has_key(name):return
-  plugins[name]=PluginsManager(module,name,basemenuname,menuname)
+  if not plugins.has_key(name):
+    if module:
+      plugins[name]={}
+    else:
+      plugins[name]=[]
+  if module:
+    studyId=sg.getActiveStudyId()
+    if plugins[name].has_key(studyId):return
+    plugins[name][studyId]=PluginsManager(module,name,basemenuname,menuname)
+  else:
+    plugins[name].append(PluginsManager(module,name,basemenuname,menuname))
 
 class Context:
-    def __init__(self,sg):
-        self.sg=sg
+    def __init__(self,sgpyqt):
+        self.sg=sgpyqt
         self.studyId=salome.sg.getActiveStudyId()
         self.study= salome.myStudyManager.GetStudyByID(self.studyId)
 

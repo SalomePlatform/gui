@@ -1553,6 +1553,7 @@ void Plot2d_ViewFrame::wheelEvent(QWheelEvent* event)
     myPlot->setAxisScale( QwtPlot::yRight, y2Map.s1(), y2Map.s1() + aScale*(y2Map.s2() - y2Map.s1()) );
   }
   myPlot->replot();
+  if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
   myPnt = event->pos();
 }
 

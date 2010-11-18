@@ -49,6 +49,8 @@
 #include <SVTK_ViewManager.h>
 #include <SVTK_ViewWindow.h>
 
+#define VTK_XVERSION (VTK_MAJOR_VERSION*10000+VTK_MINOR_VERSION*100+VTK_BUILD_VERSION)
+
 /*!
   \brief Python wrappings for VTK viewer of the SALOME desktop.
 
@@ -206,7 +208,11 @@ public:
       ::GetVTKViewWindow( myCreate ? __Create : __FindOrCreate );
     if( aVTKViewWindow && aPyClass ) {
       vtkRenderer* aVTKObject = aVTKViewWindow->getRenderer();
+#if VTK_XVERSION < 50700
       myResult = PyVTKObject_New( aPyClass, aVTKObject );
+#else
+      myResult = PyVTKObject_New( aPyClass, NULL, aVTKObject );
+#endif
     }
   }
 };
@@ -255,7 +261,11 @@ public:
       ::GetVTKViewWindow( myCreate ? __Create : __FindOrCreate );
     if( aVTKViewWindow && aPyClass ) {
       vtkRenderWindow* aVTKObject = aVTKViewWindow->getRenderWindow();
+#if VTK_XVERSION < 50700
       myResult = PyVTKObject_New( aPyClass, aVTKObject );
+#else
+      myResult = PyVTKObject_New( aPyClass, NULL, aVTKObject );
+#endif
     }
   }
 };
@@ -304,7 +314,11 @@ public:
       ::GetVTKViewWindow( myCreate ? __Create : __FindOrCreate );
     if( aVTKViewWindow && aPyClass ) {
       vtkRenderWindowInteractor* aVTKObject = aVTKViewWindow->getInteractor();
+#if VTK_XVERSION < 50700
       myResult = PyVTKObject_New( aPyClass, aVTKObject );
+#else
+      myResult = PyVTKObject_New( aPyClass, NULL, aVTKObject );
+#endif
     }
   }
 };

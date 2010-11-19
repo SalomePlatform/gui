@@ -282,6 +282,7 @@ void Plot2d_ViewFrame::DisplayAll()
     updateCurve( clist.at( i ), false );
   }
   myPlot->replot();
+  if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
 }
 /*!
    Removes all curves from the view
@@ -291,6 +292,7 @@ void Plot2d_ViewFrame::EraseAll()
   myPlot->clear();
   myPlot->getCurves().clear();
   myPlot->replot();
+  if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
 }
 /*!
   Redraws viewframe contents
@@ -315,6 +317,7 @@ void Plot2d_ViewFrame::Display( const Plot2d_Prs* prs )
   setXGrid( myXGridMajorEnabled, myXGridMaxMajor, myXGridMinorEnabled, myXGridMaxMinor, true );
   setYGrid( myYGridMajorEnabled, myYGridMaxMajor, myYGridMinorEnabled, myYGridMaxMinor,
             myY2GridMajorEnabled, myY2GridMaxMajor, myY2GridMinorEnabled, myY2GridMaxMinor, true );
+  if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
 }
 
 /*!
@@ -328,6 +331,7 @@ void Plot2d_ViewFrame::Erase( const Plot2d_Prs* prs, const bool )
   // erase all curves from presentation
   curveList aCurves = prs->getCurves();
   eraseCurves( aCurves );
+  if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
 }
 
 bool Plot2d_ViewFrame::eventFilter( QObject* watched, QEvent* e )
@@ -631,6 +635,7 @@ void Plot2d_ViewFrame::displayCurve( Plot2d_Curve* curve, bool update )
   myPlot->updateYAxisIdentifiers();
   if ( update )
     myPlot->replot();
+  if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
 }
 
 /*!
@@ -669,6 +674,7 @@ void Plot2d_ViewFrame::eraseCurve( Plot2d_Curve* curve, bool update )
     if ( update )
       myPlot->replot();
   }
+  if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
 }
 
 /*!
@@ -685,6 +691,7 @@ void Plot2d_ViewFrame::eraseCurves( const curveList& curves, bool update )
 //  fitAll();
   if ( update )
     myPlot->replot();
+  if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
 }
 
 /*!
@@ -695,7 +702,7 @@ void Plot2d_ViewFrame::updateCurve( Plot2d_Curve* curve, bool update )
   if ( !curve )
     return;
   if ( hasPlotCurve( curve ) ) {
-  QwtPlotCurve* aPCurve = getPlotCurve( curve );
+    QwtPlotCurve* aPCurve = getPlotCurve( curve );
     if ( !curve->isAutoAssign() ) {
       Qt::PenStyle     ps = Plot2d::plot2qwtLine( curve->getLine() );
       QwtSymbol::Style ms = Plot2d::plot2qwtMarker( curve->getMarker() );
@@ -710,6 +717,7 @@ void Plot2d_ViewFrame::updateCurve( Plot2d_Curve* curve, bool update )
     aPCurve->setVisible( true );
     if ( update )
       myPlot->replot();
+    if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
   }
 }
 
@@ -1745,6 +1753,7 @@ Plot2d_Plot2d::Plot2d_Plot2d( QWidget* parent )
   canvas()->setMouseTracking( true );
 
   myPlotZoomer->setEnabled( true );
+  myPlotZoomer->setZoomBase();
 }
 
 /*!

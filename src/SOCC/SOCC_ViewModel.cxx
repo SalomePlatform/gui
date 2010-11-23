@@ -706,9 +706,18 @@ void SOCC_Viewer::Repaint()
 /*!
   create SOCC_ViewWindow
 */
-SUIT_ViewWindow* SOCC_Viewer::createView( SUIT_Desktop* theDesktop )
+/*SUIT_ViewWindow* SOCC_Viewer::createView( SUIT_Desktop* theDesktop )
 {
   SOCC_ViewWindow* view = new SOCC_ViewWindow(theDesktop, this);
-  initView( view );
+  //initView( view );
+  initView( view->getView(OCCViewer_ViewFrame::MAIN_VIEW) );
   return view;
+  }*/
+
+/* 
+ * Returns a new OCCViewer_ViewWindow instance which will be placed as a sub window in ViewFrame
+ */
+OCCViewer_ViewWindow* SOCC_Viewer::createSubWindow()
+{
+  return new SOCC_ViewWindow( 0,  this);
 }

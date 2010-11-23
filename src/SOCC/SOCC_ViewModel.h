@@ -51,7 +51,8 @@ public:
 
   void      rename( const Handle(SALOME_InteractiveObject)&, const QString& );
 
-  virtual   SUIT_ViewWindow* createView(SUIT_Desktop* theDesktop);
+  //virtual   SUIT_ViewWindow* createView(SUIT_Desktop* theDesktop);
+  virtual OCCViewer_ViewWindow* createSubWindow();
 
   /* Reimplemented from SALOME_View */
   virtual void                Display( const SALOME_OCCPrs* );

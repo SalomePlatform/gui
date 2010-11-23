@@ -157,7 +157,8 @@ void SUIT_ViewWindow::contextMenuEvent( QContextMenuEvent* e )
 */
 void SUIT_ViewWindow::onDumpView()
 {
-  QApplication::postEvent( this, new QPaintEvent( QRect( 0, 0, width(), height() ) ) );
+  // VSV (TRIPOLI dev): next line commented: causes error messages
+  //QApplication::postEvent( this, new QPaintEvent( QRect( 0, 0, width(), height() ) ) );
   QApplication::postEvent( this, new QEvent( (QEvent::Type)DUMP_EVENT ) );
 }
 
@@ -178,18 +179,17 @@ bool SUIT_ViewWindow::event( QEvent* e )
     bool bOk = false;
     if ( myManager && myManager->study() && myManager->study()->application() )
     {
-      QImage im = dumpView();
-
       // get file name
       SUIT_Application* app = myManager->study()->application();
       QString fileName = app->getFileName( false, QString(), filter(), tr( "TLT_DUMP_VIEW" ), 0 );
       if ( !fileName.isEmpty() )
       {
-              QString fmt = SUIT_Tools::extension( fileName ).toUpper();
-              bOk = dumpViewToFormat( im, fileName, fmt );
+        QImage im = dumpView();
+        QString fmt = SUIT_Tools::extension( fileName ).toUpper();
+        bOk = dumpViewToFormat( im, fileName, fmt );
       }
       else
-              bOk = true; // cancelled
+        bOk = true; // cancelled
     }
     if ( !bOk )
       SUIT_MessageBox::critical( this, tr( "ERROR" ), tr( "ERR_CANT_DUMP_VIEW" ) );

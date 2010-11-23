@@ -39,8 +39,8 @@
   \param view - view window
   \param parent - parent widget
 */
-OCCViewer_AxialScaleDlg::OCCViewer_AxialScaleDlg( OCCViewer_ViewWindow* view, QWidget* parent )
-  : QDialog( parent ),
+OCCViewer_AxialScaleDlg::OCCViewer_AxialScaleDlg( OCCViewer_ViewWindow* view )
+  : QDialog( view ),
     myView( view )
 {
   setWindowTitle( tr( "DLG_SCALING" ) );

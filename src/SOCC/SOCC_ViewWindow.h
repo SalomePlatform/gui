@@ -28,7 +28,7 @@
 #endif
 
 #include "SOCC.h"
-#include "OCCViewer_ViewWindow.h"
+#include "OCCViewer_ViewFrame.h"
 
 class SOCC_EXPORT SOCC_ViewWindow : public OCCViewer_ViewWindow
 {

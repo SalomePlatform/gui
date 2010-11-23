@@ -110,6 +110,7 @@
 
 #ifndef DISABLE_OCCVIEWER
   #include <OCCViewer_ViewManager.h>
+  #include <OCCViewer_ViewFrame.h>
 #ifndef DISABLE_SALOMEOBJECT
   #include <SOCC_ViewModel.h>
 #else
@@ -1343,7 +1344,16 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
 #else
     vm = new OCCViewer_Viewer( true, resMgr->booleanValue( "OCCViewer", "static_trihedron", true ) );
 #endif
-    vm->setBackgroundColor( resMgr->colorValue( "OCCViewer", "background", vm->backgroundColor() ) );
+    vm->setBackgroundColor( OCCViewer_ViewFrame::TOP_LEFT, 
+                            resMgr->colorValue( "OCCViewer", "xz_background", vm->backgroundColor() ) );
+    vm->setBackgroundColor( OCCViewer_ViewFrame::TOP_RIGHT, 
+			    resMgr->colorValue( "OCCViewer", "yz_background", vm->backgroundColor() ) );
+    
+    vm->setBackgroundColor( OCCViewer_ViewFrame::BOTTOM_LEFT,
+                            resMgr->colorValue( "OCCViewer", "xy_background", vm->backgroundColor() ) );
+    vm->setBackgroundColor( OCCViewer_ViewFrame::BOTTOM_RIGHT, 
+			    resMgr->colorValue( "OCCViewer", "background", vm->backgroundColor() ) );
+    
     vm->setTrihedronSize( resMgr->doubleValue( "OCCViewer", "trihedron_size", vm->trihedronSize() ) );
     int u( 1 ), v( 1 );
     vm->isos( u, v );
@@ -1902,22 +1912,32 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "min", 1.0E-06, occTS );
   pref->setItemProperty( "max", 1000, occTS );
 
+  int occStyleMode = pref->addPreference( tr( "PREF_NAVIGATION" ), occGroup,
+                                          LightApp_Preferences::Selector, "OCCViewer", "navigation_mode" );
+
 
   int isoU = pref->addPreference( tr( "PREF_ISOS_U" ), occGroup,
                                   LightApp_Preferences::IntSpin, "OCCViewer", "iso_number_u" );
   pref->setItemProperty( "min", 0, isoU );
   pref->setItemProperty( "max", 100000, isoU );
 
-  pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), occGroup,
-                       LightApp_Preferences::Color, "OCCViewer", "background" );
-
   int isoV = pref->addPreference( tr( "PREF_ISOS_V" ), occGroup,
                                   LightApp_Preferences::IntSpin, "OCCViewer", "iso_number_v" );
   pref->setItemProperty( "min", 0, isoV );
   pref->setItemProperty( "max", 100000, isoV );
 
-  int occStyleMode = pref->addPreference( tr( "PREF_NAVIGATION" ), occGroup,
-                                          LightApp_Preferences::Selector, "OCCViewer", "navigation_mode" );
+  //pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), occGroup,
+  //                     LightApp_Preferences::Color, "OCCViewer", "background" );
+  pref->addPreference( tr( "PREF_XZVIEWER_BACKGROUND" ), occGroup,
+                       LightApp_Preferences::Color, "OCCViewer", "xz_background" );
+  pref->addPreference( tr( "PREF_YZVIEWER_BACKGROUND" ), occGroup,
+                       LightApp_Preferences::Color, "OCCViewer", "yz_background" );
+
+  pref->addPreference( tr( "PREF_XYVIEWER_BACKGROUND" ), occGroup,
+                       LightApp_Preferences::Color, "OCCViewer", "xy_background" );
+  pref->addPreference( tr( "PREF_3DVIEWER_BACKGROUND" ), occGroup,
+                       LightApp_Preferences::Color, "OCCViewer", "background" );
+
   QStringList aStyleModeList;
   aStyleModeList.append( tr("PREF_STANDARD_STYLE") );
   aStyleModeList.append( tr("PREF_KEYFREE_STYLE") );

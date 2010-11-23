@@ -120,5 +120,13 @@
         <source>ICON_OCCVIEWER_STYLE_SWITCH</source>
         <translation>occ_view_style_switch.png</translation>
     </message>
+    <message>
+        <source>ICON_OCCVIEWER_MAXIMIZE</source>
+        <translation>occ_view_maximized.png</translation>
+    </message>
+    <message>
+        <source>ICON_OCCVIEWER_MINIMIZE</source>
+        <translation>occ_view_minimized.png</translation>
+    </message>
 </context>
 </TS>

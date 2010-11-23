@@ -43,7 +43,7 @@ public:
   SUIT_ViewWindow( SUIT_Desktop* );
   virtual ~SUIT_ViewWindow();
 
-  void              setViewManager( SUIT_ViewManager* );
+  virtual void      setViewManager( SUIT_ViewManager* );
   SUIT_ViewManager* getViewManager() const;
 
   bool              event(QEvent*);

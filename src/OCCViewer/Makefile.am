@@ -44,7 +44,8 @@ salomeinclude_HEADERS =				\
 	OCCViewer_AxialScaleDlg.h		\
 	OCCViewer_SetRotationPointDlg.h		\
 	OCCViewer_Trihedron.h                   \
-	OCCViewer_ToolTip.h
+	OCCViewer_ToolTip.h \
+	OCCViewer_ViewFrame.h
 
 dist_libOCCViewer_la_SOURCES =			\
 	OCCViewer_AISSelector.cxx		\
@@ -60,7 +61,8 @@ dist_libOCCViewer_la_SOURCES =			\
 	OCCViewer_ClippingDlg.cxx		\
 	OCCViewer_AxialScaleDlg.cxx		\
 	OCCViewer_Trihedron.cxx			\
-	OCCViewer_ToolTip.cxx
+	OCCViewer_ToolTip.cxx \
+	OCCViewer_ViewFrame.cxx
 
 MOC_FILES =					\
 	OCCViewer_AISSelector_moc.cxx		\
@@ -74,8 +76,9 @@ MOC_FILES =					\
 	OCCViewer_SetRotationPointDlg_moc.cxx	\
 	OCCViewer_ClippingDlg_moc.cxx		\
 	OCCViewer_AxialScaleDlg_moc.cxx		\
-	OCCViewer_ToolTip_moc.cxx
-	
+	OCCViewer_ToolTip_moc.cxx \
+	OCCViewer_ViewFrame_moc.cxx
+
 nodist_libOCCViewer_la_SOURCES = $(MOC_FILES)
 
 dist_salomeres_DATA =				\
@@ -101,7 +104,9 @@ dist_salomeres_DATA =				\
 	resources/occ_view_top.png		\
 	resources/occ_view_triedre.png		\
 	resources/occ_view_zoom.png		\
-	resources/occ_view_rotation_point.png
+	resources/occ_view_rotation_point.png \
+	resources/occ_view_maximized.png \
+	resources/occ_view_minimized.png
 
 nodist_salomeres_DATA =		\
 	OCCViewer_images.qm	\

@@ -435,6 +435,22 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>Background color</translation>
     </message>
     <message>
+        <source>PREF_XYVIEWER_BACKGROUND</source>
+        <translation>XY View background color</translation>
+    </message>
+    <message>
+        <source>PREF_XZVIEWER_BACKGROUND</source>
+        <translation>XZ View background color</translation>
+    </message>
+    <message>
+        <source>PREF_YZVIEWER_BACKGROUND</source>
+        <translation>YZ View background color</translation>
+    </message>
+    <message>
+        <source>PREF_3DVIEWER_BACKGROUND</source>
+        <translation>3D View background color</translation>
+    </message>
+    <message>
         <source>PREF_FONT</source>
         <translation>Font</translation>
     </message>

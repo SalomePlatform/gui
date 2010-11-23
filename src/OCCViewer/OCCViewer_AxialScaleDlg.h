@@ -33,7 +33,7 @@ class OCCVIEWER_EXPORT OCCViewer_AxialScaleDlg : public QDialog
   Q_OBJECT
 
 public:
-  OCCViewer_AxialScaleDlg( OCCViewer_ViewWindow*, QWidget* = 0 );
+  OCCViewer_AxialScaleDlg( OCCViewer_ViewWindow* );
   ~OCCViewer_AxialScaleDlg();
 
   void Update();

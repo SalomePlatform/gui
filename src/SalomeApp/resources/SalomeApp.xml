@@ -121,7 +121,10 @@
   </section>
   <section name="OCCViewer" >
     <!-- OCC viewer preferences -->
-    <parameter name="background"     value="35, 136, 145" />
+    <parameter name="xz_background"     value="35, 136, 145" />
+    <parameter name="yz_background"     value="35, 136, 145" />
+    <parameter name="xy_background"     value="35, 136, 145" />
+    <parameter name="background"        value="35, 136, 145" />
     <parameter name="iso_number_u"   value="1" />
     <parameter name="iso_number_v"   value="1" />
     <parameter name="trihedron_size" value="100" />

@@ -119,7 +119,7 @@ bool OCCViewer_ViewPort3d::mapView( const Handle(V3d_View)& view )
   }
 
   /* create static trihedron (16551: EDF PAL 501) */
-  OCCViewer_ViewWindow* aVW = dynamic_cast<OCCViewer_ViewWindow*>( parentWidget() );
+  OCCViewer_ViewWindow* aVW = dynamic_cast<OCCViewer_ViewWindow*>( parentWidget()->parentWidget()->parentWidget() );
   if ( aVW ) {
     OCCViewer_Viewer* aViewModel = dynamic_cast<OCCViewer_Viewer*>( aVW->getViewManager()->getViewModel() );
     if ( aViewModel && aViewModel->isStaticTrihedronDisplayed() ){

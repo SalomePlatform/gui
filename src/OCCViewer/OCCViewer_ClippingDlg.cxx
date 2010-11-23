@@ -62,8 +62,8 @@
   \param modal - is this dialog modal
   \param fl - flags
 */
-OCCViewer_ClippingDlg::OCCViewer_ClippingDlg( OCCViewer_ViewWindow* view, QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl )
-: QDialog( parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint ),
+OCCViewer_ClippingDlg::OCCViewer_ClippingDlg( OCCViewer_ViewWindow* view, const char* name, bool modal, Qt::WindowFlags fl )
+: QDialog( view, Qt::WindowTitleHint | Qt::WindowSystemMenuHint ),
   myView( view )
 {
   setObjectName( "OCCViewer_ClippingDlg" );
@@ -266,9 +266,9 @@ void OCCViewer_ClippingDlg::closeEvent( QCloseEvent* e )
   erasePreview();
   
   // Set the clipping plane back
-  Handle(V3d_View) aView3d = myView->getViewPort()->getView();
+  /*Handle(V3d_View) aView3d = myView->getViewPort()->getView();
   if ( !aView3d.IsNull() && !myClippingPlane.IsNull() )
-    aView3d->SetPlaneOn( myClippingPlane );
+  aView3d->SetPlaneOn( myClippingPlane );*/
   
   myAction->setChecked( false );
   
@@ -281,7 +281,7 @@ void OCCViewer_ClippingDlg::closeEvent( QCloseEvent* e )
 */
 void OCCViewer_ClippingDlg::showEvent( QShowEvent* e )
 {
-  ReserveClippingPlane();
+  //ReserveClippingPlane();
   
   QDialog::showEvent( e );
   onPreview( PreviewChB->isChecked() );
@@ -306,10 +306,10 @@ void OCCViewer_ClippingDlg::ClickOnClose()
   erasePreview();
 
   // Set the clipping plane back
-  Handle(V3d_View) aView3d = myView->getViewPort()->getView();
+  /*Handle(V3d_View) aView3d = myView->getViewPort()->getView();
   if ( !aView3d.IsNull() && !myClippingPlane.IsNull() )
     aView3d->SetPlaneOn( myClippingPlane );
-
+  */
   myAction->setChecked( false );
   
   reject();
@@ -332,7 +332,7 @@ void OCCViewer_ClippingDlg::ClickOnApply()
   
   erasePreview();
   
-  ReserveClippingPlane();
+  //ReserveClippingPlane();
 }
 
 /*!
@@ -504,7 +504,8 @@ void OCCViewer_ClippingDlg::displayPreview()
   myPreviewPlane->SetSize( aSize, aSize );
   
   // Deactivate clipping planes
-  myView->getViewPort()->getView()->SetPlaneOff();
+  //myView->getViewPort()->getView()->SetPlaneOff();
+  //myView->setPlaneOff();
 
   ic->Display( myPreviewPlane, 1, -1, false );
   ic->SetWidth( myPreviewPlane, 10, false );
@@ -575,13 +576,13 @@ bool OCCViewer_ClippingDlg::isValid()
 */
 void OCCViewer_ClippingDlg::ReserveClippingPlane()
 {
-  Handle(V3d_View) aView3d = myView->getViewPort()->getView();
+  /*Handle(V3d_View) aView3d = myView->getViewPort()->getView();
   if ( !aView3d.IsNull() )
     {
       aView3d->InitActivePlanes();
       if ( aView3d->MoreActivePlanes() )
         myClippingPlane = aView3d->ActivePlane();
-    }
+        }*/
 }
 
 void OCCViewer_ClippingDlg::onViewShow()

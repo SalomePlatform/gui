@@ -43,8 +43,8 @@
   \param modal - is this dialog modal
   \param fl - flags
 */
-OCCViewer_SetRotationPointDlg::OCCViewer_SetRotationPointDlg( OCCViewer_ViewWindow* view, QWidget* parent, const char* name, bool modal, Qt::WindowFlags fl )
-: QDialog( parent, Qt::WindowTitleHint | Qt::WindowSystemMenuHint ),
+OCCViewer_SetRotationPointDlg::OCCViewer_SetRotationPointDlg( OCCViewer_ViewWindow* view, const char* name, bool modal, Qt::WindowFlags fl )
+: QDialog( view, Qt::WindowTitleHint | Qt::WindowSystemMenuHint ),
   myView( view )
 {
   setObjectName( "OCCViewer_SetRotationPointDlg" );

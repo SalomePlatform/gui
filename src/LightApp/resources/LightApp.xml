@@ -33,6 +33,7 @@
   </section>
   <section name="language">
     <!-- Language settings (resource manager)-->
+    <parameter name="languages"   value="en,fr"/>
     <parameter name="language"    value="en"/>
     <parameter name="translators" value="%P_msg_%L.qm|%P_icons.qm|%P_images.qm"/>
   </section>
@@ -55,8 +56,11 @@
   </section>
   <section name="resources">
     <!-- Resource directories (resource manager)-->
+    <parameter name="Qtx"          value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
+    <parameter name="Style"        value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
     <parameter name="SUIT"         value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
     <parameter name="STD"          value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
+    <parameter name="ViewerTools"  value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
     <parameter name="Plot2d"       value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
     <parameter name="SPlot2d"      value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
     <parameter name="GLViewer"     value="${GUI_ROOT_DIR}/share/salome/resources/gui"/>
@@ -122,6 +126,7 @@
     <parameter name="iso_number_v"   value="1" />
     <parameter name="trihedron_size" value="100" />
     <parameter name="navigation_mode" value="0" />
+    <parameter name="zooming_mode"   value="0" />
  </section>
  <section name="VTKViewer" >
     <!-- VTK viewer preferences -->
@@ -131,8 +136,10 @@
     <parameter name="relative_size"  value="true" />
     <parameter name="use_advanced_selection_algorithm" value="true" />
     <parameter name="navigation_mode" value="0" />
+    <parameter name="zooming_mode" value="0" />
     <parameter name="speed_value" value="10" />
     <parameter name="speed_mode" value="0" />
+    <parameter name="show_static_trihedron" value="true" />
     <parameter name="spacemouse_func1_btn" value="1" />
     <parameter name="spacemouse_func2_btn" value="2" />
     <parameter name="spacemouse_func5_btn" value="9" />
@@ -176,5 +183,28 @@
     <parameter name="sub_menu"          value="%1 module"/>
     <parameter name="User's Guide"      value="${KERNEL_ROOT_DIR}/share/doc/salome/gui/KERNEL/index.html"/>
     <parameter name="Developer's Guide" value="${KERNEL_ROOT_DIR}/share/doc/salome/tui/KERNEL/index.html"/>
+  </section>
+  <!--Salome shortcut settings-->
+  <section name="shortcuts_settings">
+    <parameter name="general_sections" value="General;Viewers"/>
+  </section>
+  <section name="shortcuts:General">
+    <parameter name="Show object(s)" value="Ctrl+Alt+S"/>
+    <parameter name="Hide object(s)" value="Ctrl+Alt+H"/>
+  </section>
+  <section name="shortcuts:Viewers">
+    <parameter name="Front view" value="Ctrl+Alt+F"/>
+    <parameter name="Back view" value="Ctrl+Alt+B"/>
+    <parameter name="Top view" value="Ctrl+Alt+T"/>
+    <parameter name="Bottom view" value="Ctrl+Alt+O"/>
+    <parameter name="Left view" value="Ctrl+Alt+K"/>
+    <parameter name="Right view" value="Ctrl+Alt+R"/>
+    <parameter name="Reset view" value="Ctrl+Alt+E"/>
+  </section>
+  <section name="shortcuts:Geometry">
+    <parameter name="Increase number of isolines" value="Meta+I"/>
+    <parameter name="Decrease number of isolines" value="Meta+D"/>
+    <parameter name="Increase transparency" value="Meta+Y"/>
+    <parameter name="Decrease transparency" value="Meta+T"/>
   </section>
 </document>

@@ -1,27 +1,6 @@
-<!DOCTYPE TS><TS>
-<!--
-  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
-
-  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
-
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License.
-
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-
-  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-
--->
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0" language="en_US">
 <context>
     <name>@default</name>
     <message>
@@ -87,15 +66,15 @@ Python file must include only letters, digits and underscores and start from let
     </message>
     <message>
         <source>ERR_INCOMPATIBLE_TYPE</source>
-        <translation>Variable with name "%1" has incompatible numeric type</translation>
+        <translation>Variable with name &quot;%1&quot; has incompatible numeric type</translation>
     </message>
     <message>
         <source>ERR_INVALID_VALUE</source>
-        <translation>Value hasn't been validated</translation>
+        <translation>Value hasn&apos;t been validated</translation>
     </message>
     <message>
         <source>ERR_NO_VARIABLE</source>
-        <translation>Variable with name "%1" doesn't exist</translation>
+        <translation>Variable with name &quot;%1&quot; doesn&apos;t exist</translation>
     </message>
 </context>
 <context>
@@ -186,6 +165,10 @@ Do you want to reload it ?</translation>
         <translation>Catalog generator</translation>
     </message>
     <message>
+        <source>TOT_DESK_ADD_VARS_TO_NOTEBOOK</source>
+        <translation>Add vars to notebook</translation>
+    </message>
+    <message>
         <source>PUBLISH_IN_STUDY</source>
         <translation>Publish in study</translation>
     </message>
@@ -262,6 +245,14 @@ Do you want to reload it ?</translation>
         <translation>&amp;Tools</translation>
     </message>
     <message>
+        <source>MEN_DESK_PLUGINS_TOOLS</source>
+        <translation>Tools</translation>
+    </message>
+    <message>
+        <source>MEN_DESK_PLUGINS</source>
+        <translation>Plugins</translation>
+    </message>
+    <message>
         <source>TOT_DESK_FILE_DUMP_STUDY</source>
         <translation>Dump study</translation>
     </message>
@@ -276,6 +267,10 @@ Do you want to reload it ?</translation>
     <message>
         <source>PRP_DESK_CATALOG_GENERATOR</source>
         <translation>Generates XML catalog of a component&apos;s interface</translation>
+    </message>
+    <message>
+        <source>PRP_DESK_ADD_VARS_TO_NOTEBOOK</source>
+        <translation>Add variables of the study to the notebook</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_DUMP_STUDY</source>
@@ -308,6 +303,10 @@ Do you want to reload it ?</translation>
     <message>
         <source>MEN_DESK_CATALOG_GENERATOR</source>
         <translation>Catalog &amp;Generator</translation>
+    </message>
+    <message>
+        <source>MEN_DESK_ADD_VARS_TO_NOTEBOOK</source>
+        <translation>Add vars to NoteBook</translation>
     </message>
     <message>
         <source>APPCLOSE_CAPTION</source>
@@ -382,101 +381,101 @@ Do you want to reload it ?</translation>
 </context>
 <context>
     <name>NoteBook_Table</name>
-        <message>
-           <source>REMOVE_VARIABLE_IS_USED</source>
-           <translation>Variable with name "%1" is used in the study.
+    <message>
+        <source>REMOVE_VARIABLE_IS_USED</source>
+        <translation>Variable with name &quot;%1&quot; is used in the study.
 Do you really want to remove it?</translation>
-	</message>
-        <message>
-           <source>RENAME_VARIABLE_IS_USED</source>
-           <translation>Variable with name "%1" is used in the study.
+    </message>
+    <message>
+        <source>RENAME_VARIABLE_IS_USED</source>
+        <translation>Variable with name &quot;%1&quot; is used in the study.
 Do you really want to rename it?</translation>
-	</message>
-        <message>
-           <source>VARNAME_COLUMN</source>
-           <translation>Variable Name</translation>
-	 </message>
-        <message>	
-           <source>VARVALUE_COLUMN</source>
-           <translation>Variable Value</translation>
-	</message>
-        <message>	
-           <source>VARVALUE_INCORRECT</source>
-           <translation>Variable Value Incorrect: %1</translation>
-	</message>
-        <message>	
-           <source>VARNAME_INCORRECT</source>
-           <translation>Variable Name Incorrect :%1</translation>
-	</message>
-        <message>	
-           <source>VARNAME_EXISTS</source>
-           <translation>Variable with name "%1" exists</translation>
-	</message>
+    </message>
+    <message>
+        <source>VARNAME_COLUMN</source>
+        <translation>Variable Name</translation>
+    </message>
+    <message>
+        <source>VARVALUE_COLUMN</source>
+        <translation>Variable Value</translation>
+    </message>
+    <message>
+        <source>VARVALUE_INCORRECT</source>
+        <translation>Variable Value Incorrect: %1</translation>
+    </message>
+    <message>
+        <source>VARNAME_INCORRECT</source>
+        <translation>Variable Name Incorrect :%1</translation>
+    </message>
+    <message>
+        <source>VARNAME_EXISTS</source>
+        <translation>Variable with name &quot;%1&quot; exists</translation>
+    </message>
 </context>
 <context>
     <name>SalomeApp_NoteBookDlg</name>
-        <message>
-           <source>NOTEBOOK_TITLE</source>
-           <translation>Salome NoteBook</translation>
-	 </message>
-        <message>
-           <source>BUT_UPDATE_STUDY</source>
-           <translation>&amp;Update Study</translation>
-	</message>
-        <message>
-           <source>BUT_REMOVE</source>
-           <translation>&amp;Remove</translation>
-	</message>
-        <message>
-           <source>BUT_APPLY_AND_CLOSE</source>
-           <translation>A&amp;pply and Close</translation>
-	</message>
-        <message>
-           <source>BUT_HELP</source>
-           <translation>&amp;Help</translation>
-	</message>
-        <message>
-            <source>CLOSE_CAPTION</source>
-            <translation>Close NoteBook</translation>
-        </message>
-        <message>
-            <source>CLOSE_DESCRIPTION</source>
-            <translation>Do you want to save changes you made to NoteBook?</translation>
-        </message>
-        <message>
-           <source>INCORRECT_DATA</source>
-           <translation>At least one variable has been defined incorrectly.
+    <message>
+        <source>NOTEBOOK_TITLE</source>
+        <translation>Salome NoteBook</translation>
+    </message>
+    <message>
+        <source>BUT_UPDATE_STUDY</source>
+        <translation>&amp;Update Study</translation>
+    </message>
+    <message>
+        <source>BUT_REMOVE</source>
+        <translation>&amp;Remove</translation>
+    </message>
+    <message>
+        <source>BUT_APPLY_AND_CLOSE</source>
+        <translation>A&amp;pply and Close</translation>
+    </message>
+    <message>
+        <source>BUT_HELP</source>
+        <translation>&amp;Help</translation>
+    </message>
+    <message>
+        <source>CLOSE_CAPTION</source>
+        <translation>Close NoteBook</translation>
+    </message>
+    <message>
+        <source>CLOSE_DESCRIPTION</source>
+        <translation>Do you want to save changes you made to NoteBook?</translation>
+    </message>
+    <message>
+        <source>INCORRECT_DATA</source>
+        <translation>At least one variable has been defined incorrectly.
 Please edit its parameters or remove it from table.</translation>
-	</message>
-        <message>
-           <source>ERR_UPDATE_STUDY_FAILED</source>
-           <translation>Failed to update study!</translation>
-	</message>
+    </message>
+    <message>
+        <source>ERR_UPDATE_STUDY_FAILED</source>
+        <translation>Failed to update study!</translation>
+    </message>
 </context>
 <context>
-    <name>SalomeApp_DoubleSpinBox</name>  
-        <message>
-            <source>VALID_RANGE_VAR_MSG</source>
-            <translation>Specify either a variable name or
+    <name>SalomeApp_DoubleSpinBox</name>
+    <message>
+        <source>VALID_RANGE_VAR_MSG</source>
+        <translation>Specify either a variable name or
 a floating-point value in range ( %1; %2 )
 with %3-digit precision</translation>
-        </message>   
-        <message>
-            <source>VALID_RANGE_NOVAR_MSG</source>
-            <translation>Specify a floating-point value in range ( %1; %2 )
+    </message>
+    <message>
+        <source>VALID_RANGE_NOVAR_MSG</source>
+        <translation>Specify a floating-point value in range ( %1; %2 )
 with %3-digit precision</translation>
-        </message>
+    </message>
 </context>
 <context>
-    <name>SalomeApp_IntSpinBox</name>  
-        <message>
-            <source>VALID_RANGE_VAR_MSG</source>
-            <translation>Specify either a variable name or
+    <name>SalomeApp_IntSpinBox</name>
+    <message>
+        <source>VALID_RANGE_VAR_MSG</source>
+        <translation>Specify either a variable name or
 an integer value in range ( %1; %2 )</translation>
-        </message>   
-        <message>
-            <source>VALID_RANGE_NOVAR_MSG</source>
-            <translation>Specify an integer value in range ( %1; %2 )</translation>
-        </message>
+    </message>
+    <message>
+        <source>VALID_RANGE_NOVAR_MSG</source>
+        <translation>Specify an integer value in range ( %1; %2 )</translation>
+    </message>
 </context>
 </TS>

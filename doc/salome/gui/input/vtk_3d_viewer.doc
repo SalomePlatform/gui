@@ -24,6 +24,13 @@ left mouse button, panning - by middle mouse button, zooming - by left and middl
 mouse buttons pressed simultaneously.</center>
 <hr>
 
+\image html image111.png
+\n <center><b>Zooming style switch</b> - allows to switch between standard
+(zooming at the center of the view) and advanced (zooming at the current cursor
+position) zooming styles. The second mode is available only for parallel
+(non-perspective) view's mode.</center>
+<hr>
+
 \image html image88.png
 \n <center><b>Show/Hide Trihedron</b> - shows or hides coordinate axes.</center>
 <hr>

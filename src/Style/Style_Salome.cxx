@@ -413,7 +413,8 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
       if (const QStyleOptionSpinBox *spin = qstyleoption_cast<const QStyleOptionSpinBox *>(opt)) {
         bool hover = hasHover() && (opt->state & State_Enabled) && (opt->state & State_MouseOver);
         QRect optr = opt->rect, arUp =   subControlRect( cc, spin, SC_SpinBoxUp, w );
-        optr.setWidth( arUp.x()-optr.x()+1 );
+        if (spin->buttonSymbols != QAbstractSpinBox::NoButtons)
+          optr.setWidth( arUp.x()-optr.x()+1 );
         double aRad = model()->widgetRounding( Style_Model::EditRadius );
         bool antialized = model()->antialiasing();
         QColor aBrdTopCol = model()->color( Style_Model::BorderTop );    // Style_Model::border_top_clr

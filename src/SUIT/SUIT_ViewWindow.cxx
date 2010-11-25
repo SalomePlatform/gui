@@ -119,6 +119,7 @@ bool SUIT_ViewWindow::dumpViewToFormat( const QImage& img, const QString& fileNa
 */
 bool SUIT_ViewWindow::dumpViewToFormat( const QString& fileName, const QString& format )
 {
+  Qtx::Localizer loc;
   return dumpViewToFormat( dumpView(), fileName, format );
 }
 
@@ -135,7 +136,8 @@ void SUIT_ViewWindow::setDestructiveClose( const bool on )
 void SUIT_ViewWindow::closeEvent( QCloseEvent* e )
 {
   e->ignore();
-  emit closing( this );
+  emit tryClosing( this );
+  if ( closable() ) emit closing( this );
 }
 
 /*! Context menu requested for event \a e.
@@ -185,11 +187,12 @@ bool SUIT_ViewWindow::event( QEvent* e )
       if ( !fileName.isEmpty() )
       {
         QImage im = dumpView();
-        QString fmt = SUIT_Tools::extension( fileName ).toUpper();
-        bOk = dumpViewToFormat( im, fileName, fmt );
+	QString fmt = SUIT_Tools::extension( fileName ).toUpper();
+	Qtx::Localizer loc;
+	bOk = dumpViewToFormat( im, fileName, fmt );
       }
       else
-        bOk = true; // cancelled
+	bOk = true; // cancelled
     }
     if ( !bOk )
       SUIT_MessageBox::critical( this, tr( "ERROR" ), tr( "ERR_CANT_DUMP_VIEW" ) );
@@ -213,10 +216,25 @@ bool SUIT_ViewWindow::action( const int  )
   return true;
 }
 
+/*! Returns \c true if view window can be closed by the user
+*/
+bool SUIT_ViewWindow::closable() const
+{
+  QVariant val = property( "closable" );
+  return !val.isValid() || val.toBool();
+}
+
+/*! Set / reset "closable" option of the view window
+*/
+bool SUIT_ViewWindow::setClosable( const bool on )
+{
+  setProperty( "closable", on );
+}
+
 /*!
   \return string containing visual parameters of window
 */
-QString   SUIT_ViewWindow::getVisualParameters()
+QString SUIT_ViewWindow::getVisualParameters()
 {
   return "empty";
 }

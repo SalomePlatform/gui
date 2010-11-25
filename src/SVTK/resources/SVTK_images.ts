@@ -57,6 +57,10 @@
         <translation>vtk_view_style_switch.png</translation>
     </message>
     <message>
+        <source>ICON_SVTK_ZOOMING_STYLE_SWITCH</source>
+        <translation>vtk_view_zooming_style_switch.png</translation>
+    </message>
+    <message>
         <source>ICON_SVTK_RECORDING_START</source>
         <translation>vtk_view_recording_start.png</translation>
     </message>

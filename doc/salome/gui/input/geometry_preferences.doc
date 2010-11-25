@@ -63,4 +63,15 @@ points (cross, asterisk, etc.).</li>
 </ul>
 </ul>
 
+<ul>
+<li><b>Origin and base vectors</b></li>
+<ul>
+<li><b>Length of base vectors</b> - allows to define the length
+of base vectors.</li>
+<li><b>Auto create</b> - allows to automatically create a point
+of origin and three base vectors of the rectangular coordinate
+system immediately after the module activation.</li>
+</ul>
+</ul>
+
 */

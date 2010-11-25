@@ -113,6 +113,15 @@ public:
         Auto    //!< substitute environment variable by it's value if variable exists, and keep it as is otherwise
   } SubstMode;
 
+  class QTX_EXPORT Localizer
+  {
+  public:
+    Localizer();
+    ~Localizer();
+  private:
+    QString myCurLocale;
+  };
+
   static QString     toQString( const char*, const int = -1 );
   static QString     toQString( const short*, const int = -1 );
   static QString     toQString( const unsigned char*, const int = -1 );

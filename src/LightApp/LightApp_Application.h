@@ -35,6 +35,7 @@
 #include <CAM_Application.h>
 
 #include <QPointer>
+#include <QStringList>
 
 class LogWindow;
 #ifndef DISABLE_PYCONSOLE
@@ -124,6 +125,7 @@ public:
   virtual void                        addViewManager( SUIT_ViewManager* );
   virtual void                        removeViewManager( SUIT_ViewManager* );
   virtual SUIT_ViewManager*           createViewManager( const QString& vmType );
+  virtual SUIT_ViewManager*           createViewManager( const QString& vmType, QWidget* w );
 
   QWidget*                            getWindow( const int, const int = -1 );
   QWidget*                            dockWindow( const int ) const;
@@ -285,6 +287,7 @@ protected:
   static LightApp_Preferences*        _prefs_;
 
   static int                          lastStudyId;
+  QStringList                         myUserWmTypes;
 };
 
 #ifdef WIN32

@@ -65,3 +65,5 @@ libSalomeStyle_la_LDFLAGS  = $(QT_MT_LIBS)	\
 	../Qtx/libqtx.la
 
 dist_salomeres_DATA = resources/SalomeStyle.xml
+
+nodist_salomeres_DATA = Style_msg_fr.qm

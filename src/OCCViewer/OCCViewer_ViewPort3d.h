@@ -69,6 +69,7 @@ public:
   virtual void          pan( int , int );
   virtual void          setCenter( int , int );
   virtual void          fitRect( const QRect& );
+  virtual void          startZoomAtPoint( int, int );
   virtual void          zoom( int, int, int, int );
   virtual void          fitAll( bool keepScale = false, bool withZ = true, bool upd = true );
 
@@ -76,6 +77,9 @@ public:
   virtual void          rotate( int, int, int, const gp_Pnt& );
   virtual void          endRotation();
   bool                  isBusy() {return myBusy;} // check that View Port is fully initialized
+
+  void                  setAdvancedZoomingEnabled( const bool theState ) { myIsAdvancedZoomingEnabled = theState; }
+  bool                  isAdvancedZoomingEnabled() const { return myIsAdvancedZoomingEnabled; }
 
 protected:
     // EVENTS
@@ -100,6 +104,7 @@ private:
   bool                  myAnimate;
   bool                  myBusy;
   double                myScale;
+  bool                  myIsAdvancedZoomingEnabled;
 };
 
 #ifdef WIN32

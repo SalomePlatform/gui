@@ -1,27 +1,6 @@
-<!DOCTYPE TS><TS>
-<!--
-  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
-
-  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
-
-  This library is free software; you can redistribute it and/or
-  modify it under the terms of the GNU Lesser General Public
-  License as published by the Free Software Foundation; either
-  version 2.1 of the License.
-
-  This library is distributed in the hope that it will be useful,
-  but WITHOUT ANY WARRANTY; without even the implied warranty of
-  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-  Lesser General Public License for more details.
-
-  You should have received a copy of the GNU Lesser General Public
-  License along with this library; if not, write to the Free Software
-  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
-
-  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-
--->
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS>
+<TS version="2.0" language="en_US">
 <context>
     <name>@default</name>
     <message>
@@ -58,6 +37,11 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
 </context>
 <context>
     <name>LightApp_Application</name>
+    <message>
+        <source>LANG_CHANGED</source>
+        <translation>Application language has been changed.
+The changes will be applied on the next application session.</translation>
+    </message>
     <message>
         <source>MEN_DESK_THEME</source>
         <translation>Theme</translation>
@@ -151,6 +135,18 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>Keyboard free style</translation>
     </message>
     <message>
+        <source>PREF_ZOOMING</source>
+        <translation>Zooming:</translation>
+    </message>
+    <message>
+        <source>PREF_ZOOMING_AT_CENTER</source>
+        <translation>Relative to the view's center</translation>
+    </message>
+    <message>
+        <source>PREF_ZOOMING_AT_CURSOR</source>
+        <translation>Relative to the cursor</translation>
+    </message>
+    <message>
         <source>PREF_INCREMENTAL_SPEED</source>
         <translation>Speed increment:</translation>
     </message>
@@ -169,6 +165,10 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
     <message>
         <source>PREF_FRAME_SPACEMOUSE</source>
         <translation>Spacemouse</translation>
+    </message>
+    <message>
+        <source>PREF_SHOW_STATIC_TRIHEDRON</source>
+        <translation>Show static trihedron</translation>
     </message>
     <message>
         <source>PREF_SPACEMOUSE_FUNC_1</source>
@@ -475,6 +475,14 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>Horizontal axis scale:</translation>
     </message>
     <message>
+        <source>PREF_GROUP_LANGUAGE</source>
+        <translation>Language</translation>
+    </message>
+    <message>
+        <source>PREF_CURRENT_LANGUAGE</source>
+        <translation>Current language</translation>
+    </message>
+    <message>
         <source>PREF_GROUP_STUDY</source>
         <translation>Study properties</translation>
     </message>
@@ -653,7 +661,15 @@ File does not exist</translation>
     </message>
     <message>
         <source>PREFERENCES_NOT_SUPPORTED</source>
-        <translation>Preferences for module "%1" not supported</translation>
+        <translation>Preferences for module &quot;%1&quot; not supported</translation>
+    </message>
+    <message>
+    	<source>PREF_TAB_SHORTCUTS</source>
+        <translation>Shortcuts</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_SHORTCUTS</source>
+        <translation>Shortcuts settings</translation>
     </message>
 </context>
 <context>
@@ -711,7 +727,7 @@ File does not exist</translation>
     <name>LightApp_ModuleDlg</name>
     <message>
         <source>DESCRIPTION</source>
-        <translation>You're activating module
+        <translation>You&apos;re activating module
 	&lt;b&gt;%1&lt;/b&gt;.&lt;br&gt;Please, select required action by pressing the corresponding button below.</translation>
     </message>
     <message>

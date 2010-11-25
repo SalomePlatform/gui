@@ -44,6 +44,7 @@
 #include <vtkAxisActor2D.h>
 #include <vtkGL2PSExporter.h>
 #include <vtkInteractorStyle.h>
+#include <vtkProperty.h>
 
 #include "QtxAction.h"
 
@@ -77,6 +78,9 @@
 #include "SVTK_Selector.h"
 #include "SVTK_Recorder.h"
 #include "SVTK_RecorderDlg.h"
+
+#include "vtkPVAxesWidget.h"
+#include "vtkPVAxesActor.h"
 
 #include "SALOME_ListIteratorOfListIO.hxx"
 
@@ -161,14 +165,15 @@ void SVTK_ViewWindow::Initialize(SVTK_ViewModelBase* theModel)
   myUpdateRateDlg = new SVTK_UpdateRateDlg( getAction( UpdateRate ), this, "SVTK_UpdateRateDlg" );
   myNonIsometricDlg = new SVTK_NonIsometricDlg( getAction( NonIsometric ), this, "SVTK_NonIsometricDlg" );
   myCubeAxesDlg = new SVTK_CubeAxesDlg( getAction( GraduatedAxes ), this, "SVTK_CubeAxesDlg" );
+  myCubeAxesDlg->initialize();
   mySetRotationPointDlg = new SVTK_SetRotationPointDlg
     ( getAction( ChangeRotationPointId ), this, "SVTK_SetRotationPointDlg" );
   myViewParameterDlg = new SVTK_ViewParameterDlg
     ( getAction( ViewParametersId ), this, "SVTK_ViewParameterDlg" );
   
-  SVTK_InteractorStyle* aStyle = SVTK_InteractorStyle::New();
-  myInteractor->PushInteractorStyle(aStyle);
-  aStyle->Delete();
+  myDefaultInteractorStyle = SVTK_InteractorStyle::New();
+  myInteractor->PushInteractorStyle(myDefaultInteractorStyle);
+  myDefaultInteractorStyle->Delete();
   
   myRecorder = SVTK_Recorder::New();
   
@@ -180,6 +185,24 @@ void SVTK_ViewWindow::Initialize(SVTK_ViewModelBase* theModel)
   
   setCentralWidget(myInteractor);
   
+  myAxesWidget = vtkPVAxesWidget::New();
+  myAxesWidget->SetParentRenderer(aRenderer->GetDevice());
+  myAxesWidget->SetViewport(0, 0, 0.25, 0.25);
+  myAxesWidget->SetInteractor(myInteractor->GetDevice());
+  myAxesWidget->SetEnabled(1);
+  myAxesWidget->SetInteractive(0);
+
+  vtkPVAxesActor* anAxesActor = myAxesWidget->GetAxesActor();
+  anAxesActor->GetXAxisTipProperty()->SetColor(   1.0, 0.0, 0.0 );
+  anAxesActor->GetXAxisShaftProperty()->SetColor( 1.0, 0.0, 0.0 );
+  anAxesActor->GetXAxisLabelProperty()->SetColor( 1.0, 0.0, 0.0 );
+  anAxesActor->GetYAxisTipProperty()->SetColor(   0.0, 1.0, 0.0 );
+  anAxesActor->GetYAxisShaftProperty()->SetColor( 0.0, 1.0, 0.0 );
+  anAxesActor->GetYAxisLabelProperty()->SetColor( 0.0, 1.0, 0.0 );
+  anAxesActor->GetZAxisTipProperty()->SetColor(   0.0, 0.0, 1.0 );
+  anAxesActor->GetZAxisShaftProperty()->SetColor( 0.0, 0.0, 1.0 );
+  anAxesActor->GetZAxisLabelProperty()->SetColor( 0.0, 0.0, 1.0 );
+
   myView = new SVTK_View(this);
   Initialize(myView,theModel);
   
@@ -658,6 +681,15 @@ void SVTK_ViewWindow::SetInteractionStyle(const int theStyle)
 }
 
 /*!
+  Sets actual zooming style
+  \param theStyle - type of zooming style ( 0 - standard, 1 - advanced (at cursor) )
+*/
+void SVTK_ViewWindow::SetZoomingStyle(const int theStyle)
+{
+  onSwitchZoomingStyle( theStyle==1 );
+}
+
+/*!
   Switches "keyboard free" interaction style on/off
 */
 void SVTK_ViewWindow::onSwitchInteractionStyle(bool theOn)
@@ -685,6 +717,22 @@ void SVTK_ViewWindow::onSwitchInteractionStyle(bool theOn)
   // update action state if method is called outside
   QtxAction* a = getAction( SwitchInteractionStyleId );
   if ( a->isChecked() != theOn ) a->setChecked( theOn );
+}
+
+/*!
+  Toogles advanced zooming style (relatively to the cursor position) on/off
+*/
+void SVTK_ViewWindow::onSwitchZoomingStyle( bool theOn )
+{
+  if( myDefaultInteractorStyle.GetPointer() )
+    myDefaultInteractorStyle->SetAdvancedZoomingEnabled( theOn );
+  if( myKeyFreeInteractorStyle.GetPointer() )
+    myKeyFreeInteractorStyle->SetAdvancedZoomingEnabled( theOn );
+
+  // update action state if method is called outside
+  QtxAction* a = getAction( SwitchZoomingStyleId );
+  if ( a->isChecked() != theOn )
+    a->setChecked( theOn );
 }
 
 /*!
@@ -955,6 +1003,22 @@ void SVTK_ViewWindow::SetSelectionTolerance(const double& theTolNodes,
                                             const double& theTolObjects)
 {
   myView->SetSelectionTolerance(theTolNodes, theTolItems, theTolObjects);
+}
+
+/*!
+  Get visibility status of the static trihedron
+*/
+bool SVTK_ViewWindow::IsStaticTrihedronVisible() const
+{
+  return (bool)myAxesWidget->GetEnabled();
+}
+
+/*!
+  Set visibility status of the static trihedron
+*/
+void SVTK_ViewWindow::SetStaticTrihedronVisible( const bool theIsVisible )
+{
+  myAxesWidget->SetEnabled( (int)theIsVisible );
 }
 
 /*!
@@ -1510,8 +1574,14 @@ void SVTK_ViewWindow::activateStartPointSelection()
 */
 void SVTK_ViewWindow::onPerspectiveMode()
 {
+  bool anIsParallelMode = toolMgr()->action( ParallelModeId )->isChecked();
+
+  // advanced zooming is not available in perspective mode
+  if( QtxAction* anAction = getAction( SwitchZoomingStyleId ) )
+    anAction->setEnabled( anIsParallelMode );
+
   vtkCamera* aCamera = getRenderer()->GetActiveCamera();
-  aCamera->SetParallelProjection(toolMgr()->action( ParallelModeId )->isChecked());
+  aCamera->SetParallelProjection(anIsParallelMode);
   GetInteractor()->GetDevice()->CreateTimer(VTKI_TIMER_FIRST);
 }
 
@@ -1596,52 +1666,59 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
   // Projections
   anAction = new QtxAction(tr("MNU_FRONT_VIEW"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_FRONT" ) ),
-                           tr( "MNU_FRONT_VIEW" ), 0, this);
+                           tr( "MNU_FRONT_VIEW" ), 0, this, false, "Viewers:Front view");
   anAction->setStatusTip(tr("DSC_FRONT_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onFrontView()));
+  this->addAction(anAction);
   mgr->registerAction( anAction, FrontId );
 
   anAction = new QtxAction(tr("MNU_BACK_VIEW"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_BACK" ) ),
-                           tr( "MNU_BACK_VIEW" ), 0, this);
+                           tr( "MNU_BACK_VIEW" ), 0, this, false, "Viewers:Back view");
   anAction->setStatusTip(tr("DSC_BACK_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onBackView()));
+  this->addAction(anAction);
   mgr->registerAction( anAction, BackId );
 
   anAction = new QtxAction(tr("MNU_TOP_VIEW"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_TOP" ) ),
-                           tr( "MNU_TOP_VIEW" ), 0, this);
+                           tr( "MNU_TOP_VIEW" ), 0, this, false, "Viewers:Top view");
   anAction->setStatusTip(tr("DSC_TOP_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onTopView()));
+  this->addAction(anAction);
   mgr->registerAction( anAction, TopId );
 
   anAction = new QtxAction(tr("MNU_BOTTOM_VIEW"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_BOTTOM" ) ),
-                           tr( "MNU_BOTTOM_VIEW" ), 0, this);
+                           tr( "MNU_BOTTOM_VIEW" ), 0, this, false, "Viewers:Bottom view");
   anAction->setStatusTip(tr("DSC_BOTTOM_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onBottomView()));
+  this->addAction(anAction);
   mgr->registerAction( anAction, BottomId );
 
   anAction = new QtxAction(tr("MNU_LEFT_VIEW"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_LEFT" ) ),
-                           tr( "MNU_LEFT_VIEW" ), 0, this);
+                           tr( "MNU_LEFT_VIEW" ), 0, this, false, "Viewers:Left view");
   anAction->setStatusTip(tr("DSC_LEFT_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onLeftView()));
+  this->addAction(anAction);
   mgr->registerAction( anAction, LeftId );
 
   anAction = new QtxAction(tr("MNU_RIGHT_VIEW"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_RIGHT" ) ),
-                           tr( "MNU_RIGHT_VIEW" ), 0, this);
+                           tr( "MNU_RIGHT_VIEW" ), 0, this, false, "Viewers:Right view");
   anAction->setStatusTip(tr("DSC_RIGHT_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onRightView()));
+  this->addAction(anAction);
   mgr->registerAction( anAction, RightId );
 
   // Reset
   anAction = new QtxAction(tr("MNU_RESET_VIEW"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_RESET" ) ),
-                           tr( "MNU_RESET_VIEW" ), 0, this);
+                           tr( "MNU_RESET_VIEW" ), 0, this, false, "Viewers:Reset view");
   anAction->setStatusTip(tr("DSC_RESET_VIEW"));
   connect(anAction, SIGNAL(activated()), this, SLOT(onResetView()));
+  this->addAction(anAction);
   mgr->registerAction( anAction, ResetId );
 
   // onViewTrihedron: Shows - Hides Trihedron
@@ -1718,6 +1795,15 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onSwitchInteractionStyle(bool)));
   mgr->registerAction( anAction, SwitchInteractionStyleId );
 
+  // Switch between zomming styles
+  anAction = new QtxAction(tr("MNU_SVTK_ZOOMING_STYLE_SWITCH"), 
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_ZOOMING_STYLE_SWITCH" ) ),
+                           tr( "MNU_SVTK_ZOOMING_STYLE_SWITCH" ), 0, this);
+  anAction->setStatusTip(tr("DSC_SVTK_ZOOMING_STYLE_SWITCH"));
+  anAction->setCheckable(true);
+  connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onSwitchZoomingStyle(bool)));
+  mgr->registerAction( anAction, SwitchZoomingStyleId );
+
   // Start recording
   myStartAction = new QtxAction(tr("MNU_SVTK_RECORDING_START"), 
                                 theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_RECORDING_START" ) ),
@@ -1763,6 +1849,7 @@ void SVTK_ViewWindow::createToolBar()
   
   mgr->append( DumpId, myToolBar );
   mgr->append( SwitchInteractionStyleId, myToolBar );
+  mgr->append( SwitchZoomingStyleId, myToolBar );
   mgr->append( ViewTrihedronId, myToolBar );
 
   QtxMultiAction* aScaleAction = new QtxMultiAction( this );

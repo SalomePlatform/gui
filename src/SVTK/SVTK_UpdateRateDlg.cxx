@@ -169,9 +169,9 @@ SVTK_UpdateRateDlg
 ::SVTK_UpdateRateDlg(QtxAction* theAction,
                      SVTK_ViewWindow* theParent,
                      const char* theName):
-  SVTK_DialogBase(theAction,
-                  theParent, 
-                  theName),
+  ViewerTools_DialogBase(theAction,
+                         theParent, 
+                         theName),
   myPriority(0.0),
   myEventCallbackCommand(vtkCallbackCommand::New()),
   myRWInteractor(theParent->GetInteractor()),

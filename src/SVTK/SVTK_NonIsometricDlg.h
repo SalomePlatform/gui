@@ -29,7 +29,7 @@
 #ifndef SVTK_NONISOMETRICDLG_H
 #define SVTK_NONISOMETRICDLG_H
 
-#include "SVTK_DialogBase.h"
+#include <ViewerTools_DialogBase.h>
 
 class SVTK_ViewWindow;
 
@@ -39,7 +39,7 @@ class QtxAction;
 class QPushButton;
 
 
-class SVTK_NonIsometricDlg : public SVTK_DialogBase
+class SVTK_NonIsometricDlg : public ViewerTools_DialogBase
 {
   Q_OBJECT;
 

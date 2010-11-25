@@ -36,7 +36,6 @@ salomeinclude_HEADERS= \
 	SALOME_Actor.h \
 	SVTK_RectPicker.h \
 	SVTK_DeviceActor.h \
-	SVTK_DialogBase.h \
 	SVTK_FontWidget.h \
 	SVTK_CubeAxesActor2D.h \
 	SVTK_Functor.h \
@@ -73,7 +72,6 @@ dist_libSVTK_la_SOURCES= \
 	SVTK_NonIsometricDlg.cxx \
 	SVTK_UpdateRateDlg.cxx \
 	SVTK_CubeAxesDlg.cxx \
-	SVTK_DialogBase.cxx \
 	SVTK_FontWidget.cxx \
 	SVTK_Trihedron.cxx \
 	SVTK_View.cxx \
@@ -93,7 +91,11 @@ dist_libSVTK_la_SOURCES= \
 	SVTK_Recorder.cxx \
 	SVTK_RecorderDlg.cxx \
 	SVTK_ImageWriter.cxx \
-	SVTK_ImageWriterMgr.cxx
+	SVTK_ImageWriterMgr.cxx \
+	vtkPVAxesActor.h \
+	vtkPVAxesActor.cxx \
+	vtkPVAxesWidget.h \
+	vtkPVAxesWidget.cxx
 
 
 # internal headers
@@ -106,7 +108,6 @@ MOC_FILES= \
 	SVTK_UpdateRateDlg_moc.cxx \
 	SVTK_CubeAxesDlg_moc.cxx \
 	SVTK_FontWidget_moc.cxx \
-	SVTK_DialogBase_moc.cxx \
 	SVTK_ViewModelBase_moc.cxx \
 	SVTK_ViewManager_moc.cxx \
 	SVTK_ViewWindow_moc.cxx \
@@ -127,6 +128,7 @@ dist_salomeres_DATA=\
 	resources/vtk_view_perspective.png \
 	resources/vtk_view_parameters.png \
 	resources/vtk_view_style_switch.png \
+	resources/vtk_view_zooming_style_switch.png \
 	resources/vtk_view_recording_start.png \
 	resources/vtk_view_recording_play.png \
 	resources/vtk_view_recording_pause.png \
@@ -134,6 +136,7 @@ dist_salomeres_DATA=\
 
 nodist_salomeres_DATA =	\
 	SVTK_msg_en.qm	\
+	SVTK_msg_fr.qm	\
 	SVTK_images.qm
 
 libSVTK_la_CPPFLAGS =		\
@@ -143,6 +146,7 @@ libSVTK_la_CPPFLAGS =		\
 	$(BOOST_CPPFLAGS)	\
 	-I$(srcdir)/../Qtx	\
 	-I$(srcdir)/../SUIT	\
+	-I$(srcdir)/../ViewerTools \
 	-I$(srcdir)/../OBJECT	\
 	-I$(srcdir)/../Prs 	\
 	-I$(srcdir)/../VTKViewer \
@@ -155,9 +159,10 @@ libSVTK_la_LDFLAGS =			\
 	$(KERNEL_LDFLAGS)
 
 
-libSVTK_la_LIBADD = ../Qtx/libqtx.la ../SUIT/libsuit.la ../OBJECT/libSalomeObject.la \
-		    ../Prs/libSalomePrs.la ../VTKViewer/libVTKViewer.la \
-		    ../OpenGLUtils/libOpenGLUtils.la -lSALOMELocalTrace
+libSVTK_la_LIBADD = ../Qtx/libqtx.la ../SUIT/libsuit.la ../ViewerTools/libViewerTools.la \
+		    ../OBJECT/libSalomeObject.la ../Prs/libSalomePrs.la \
+		    ../VTKViewer/libVTKViewer.la ../OpenGLUtils/libOpenGLUtils.la \
+		    -lSALOMELocalTrace
 
 # Executable
 bin_PROGRAMS = SVTK

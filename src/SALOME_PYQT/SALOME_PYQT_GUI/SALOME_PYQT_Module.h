@@ -54,6 +54,7 @@ public slots:
   void                       onGUIEvent();
   void                       onActiveViewChanged( SUIT_ViewWindow* );
   void                       onViewClosed( SUIT_ViewWindow* );
+  void                       onViewTryClose( SUIT_ViewWindow* );
   void                       onViewCloned( SUIT_ViewWindow* );
 
 protected:

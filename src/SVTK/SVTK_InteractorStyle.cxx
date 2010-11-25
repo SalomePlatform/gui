@@ -93,7 +93,8 @@ SVTK_InteractorStyle::SVTK_InteractorStyle():
   myControllerIncrement(SVTK_ControllerIncrement::New()),
   myControllerOnKeyDown(SVTK_ControllerOnKeyDown::New()),
   myHighlightSelectionPointActor(SVTK_Actor::New()),
-  myRectBand(0)
+  myRectBand(0),
+  myIsAdvancedZoomingEnabled(false)
 {
   myPointPicker->Delete();
 
@@ -289,8 +290,22 @@ void SVTK_InteractorStyle::DollyXY(int dx, int dy)
   double zoomFactor = pow((double)1.1, dxf + dyf);
   
   vtkCamera *aCam = GetCurrentRenderer()->GetActiveCamera();
-  if (aCam->GetParallelProjection())
+  if (aCam->GetParallelProjection()) {
+    int x0 = 0, y0 = 0, x1 = 0, y1 = 0;
+    if( IsAdvancedZoomingEnabled() ) { // zoom relatively to the cursor
+      int* aSize = GetCurrentRenderer()->GetRenderWindow()->GetSize();
+      int w = aSize[0];
+      int h = aSize[1];
+      x0 = w / 2;
+      y0 = h / 2;
+      x1 = myOtherPoint.x();
+      y1 = h - myOtherPoint.y();
+      TranslateView( x0, y0, x1, y1 );
+    }
     aCam->SetParallelScale(aCam->GetParallelScale()/zoomFactor);
+    if( IsAdvancedZoomingEnabled() )
+      TranslateView( x1, y1, x0, y0 );
+  }
   else{
     aCam->Dolly(zoomFactor); // Move camera in/out along projection direction
     GetCurrentRenderer()->ResetCameraClippingRange(); 

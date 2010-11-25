@@ -75,10 +75,12 @@ SVTK_Viewer::SVTK_Viewer()
 {
   myTrihedronSize = 105;
   myTrihedronRelative = true;
+  myIsStaticTrihedronVisible = true;
   myIncrementSpeed = 10;
   myIncrementMode = 0;
   myProjMode = 0;
   myStyle = 0;
+  myZoomingStyle = 0;
   mySpaceBtn[0] = 1;
   mySpaceBtn[1] = 2;
   mySpaceBtn[2] = 9;
@@ -130,8 +132,10 @@ SUIT_ViewWindow* SVTK_Viewer::createView( SUIT_Desktop* theDesktop )
 
   aViewWindow->setBackgroundColor( backgroundColor() );
   aViewWindow->SetTrihedronSize( trihedronSize(), trihedronRelative() );
+  aViewWindow->SetStaticTrihedronVisible( isStaticTrihedronVisible() );
   aViewWindow->SetProjectionMode( projectionMode() );
   aViewWindow->SetInteractionStyle( interactionStyle() );
+  aViewWindow->SetZoomingStyle( zoomingStyle() );
   aViewWindow->SetIncrementalSpeed( incrementalSpeed(), incrementalSpeedMode() );
   aViewWindow->SetSpacemouseButtons( spacemouseBtn(1), spacemouseBtn(2), spacemouseBtn(3) );
 
@@ -179,6 +183,31 @@ void SVTK_Viewer::setTrihedronSize( const vtkFloatingPointType theSize, const bo
   }
 }
 
+/*!
+  \return visibility status of the static trihedron
+*/
+bool SVTK_Viewer::isStaticTrihedronVisible() const
+{
+  return myIsStaticTrihedronVisible;
+}
+
+/*!
+  Sets visibility status of the static trihedron
+  \param theIsVisible - new visibility status
+*/
+void SVTK_Viewer::setStaticTrihedronVisible( const bool theIsVisible )
+{
+  myIsStaticTrihedronVisible = theIsVisible;
+
+  if (SUIT_ViewManager* aViewManager = getViewManager()) {
+    QVector<SUIT_ViewWindow*> aViews = aViewManager->getViews();
+    for ( uint i = 0; i < aViews.count(); i++ )
+    {
+      if ( TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at( i )) )
+        aView->SetStaticTrihedronVisible( theIsVisible );
+    }
+  }
+}
 
 /*!
   \return projection mode
@@ -231,6 +260,32 @@ void SVTK_Viewer::setInteractionStyle( const int theStyle )
     {
       if ( TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at( i )) )
         aView->SetInteractionStyle( theStyle );
+    }
+  }
+}
+
+/*!
+  \return zooming style
+*/
+int SVTK_Viewer::zoomingStyle() const
+{
+  return myZoomingStyle;
+}
+
+/*!
+  Sets zooming style: 0 - standard, 1 - advanced (at cursor)
+  \param theStyle - new zooming style
+*/
+void SVTK_Viewer::setZoomingStyle( const int theStyle )
+{
+  myZoomingStyle = theStyle;
+  
+  if (SUIT_ViewManager* aViewManager = getViewManager()) {
+    QVector<SUIT_ViewWindow*> aViews = aViewManager->getViews();
+    for ( uint i = 0; i < aViews.count(); i++ )
+    {
+      if ( TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at( i )) )
+        aView->SetZoomingStyle( theStyle );
     }
   }
 }

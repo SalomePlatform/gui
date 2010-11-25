@@ -129,7 +129,7 @@ structure of the study and can be visualized in a XY plot.</li>
 <ul>
 <li><b>Stream Lines Preferences</b></li>
 <ul>
-<li><b>Used points</b> - allows to define a default value of percentage
+<li><b>Used points</b> - allows to define a default percentage
 of points used for building the Stream Lines presentation.</li>
 </ul>
 </ul>

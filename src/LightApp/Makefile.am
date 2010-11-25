@@ -27,6 +27,10 @@
 #
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
+EXTRA_DIST += images
+
+QRC_FILES = qrc_LightApp.cxx
+
 lib_LTLIBRARIES = libLightApp.la
 
 salomeinclude_HEADERS =			\
@@ -55,7 +59,8 @@ salomeinclude_HEADERS =			\
 	LightApp_SwitchOp.h		\
 	LightApp_Preferences.h		\
 	LightApp_PreferencesDlg.h	\
-	LightApp_UpdateFlags.h
+	LightApp_UpdateFlags.h		\
+	LightApp_WgViewModel.h
 
 if ENABLE_PYCONSOLE
   salomeinclude_HEADERS += LightApp_PyInterp.h
@@ -102,7 +107,8 @@ dist_libLightApp_la_SOURCES =		\
 	LightApp_Study.cxx		\
 	LightApp_SwitchOp.cxx		\
 	LightApp_Preferences.cxx	\
-	LightApp_PreferencesDlg.cxx
+	LightApp_PreferencesDlg.cxx	\
+	LightApp_WgViewModel.cxx
 
 if ENABLE_PYCONSOLE
   dist_libLightApp_la_SOURCES += LightApp_PyInterp.cxx
@@ -141,7 +147,8 @@ MOC_FILES =				\
 	LightApp_Study_moc.cxx		\
 	LightApp_SwitchOp_moc.cxx	\
 	LightApp_Preferences_moc.cxx	\
-	LightApp_PreferencesDlg_moc.cxx
+	LightApp_PreferencesDlg_moc.cxx	\
+	LightApp_WgViewModel_moc.cxx
 
 if ENABLE_VTKVIEWER
 if ENABLE_SALOMEOBJECT
@@ -157,8 +164,7 @@ endif
 if ENABLE_PLOT2DVIEWER
   MOC_FILES += LightApp_Plot2dSelector_moc.cxx
 endif
-nodist_libLightApp_la_SOURCES = $(MOC_FILES)
-
+nodist_libLightApp_la_SOURCES = $(MOC_FILES) $(QRC_FILES)
 dist_salomeres_DATA =			\
 	resources/icon_about.png	\
 	resources/icon_applogo.png	\
@@ -171,7 +177,8 @@ dist_salomeres_DATA =			\
 
 nodist_salomeres_DATA =		\
 	LightApp_images.qm	\
-	LightApp_msg_en.qm
+	LightApp_msg_en.qm	\
+	LightApp_msg_fr.qm
 
 libLightApp_la_CPPFLAGS = $(PYTHON_INCLUDES) $(QT_INCLUDES) $(CAS_CPPFLAGS)		\
 	$(HDF5_INCLUDES) @KERNEL_CXXFLAGS@ -I$(srcdir)/../SUIT -I$(srcdir)/../STD	\

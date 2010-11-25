@@ -127,6 +127,7 @@ class SVTK_EXPORT SVTK_ControllerOnKeyDown : public vtkObject{
 };
 
 class vtkPointPicker;
+class vtkTDxInteractorStyle;
 
 class SALOME_Actor;
 
@@ -227,6 +228,9 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
   SVTK_Selector* GetSelector();
 
   int   CurrentState() const { return State; }
+
+  void SetAdvancedZoomingEnabled( const bool theState ) { myIsAdvancedZoomingEnabled = theState; }
+  bool IsAdvancedZoomingEnabled() const { return myIsAdvancedZoomingEnabled; }
 
   protected:
   SVTK_InteractorStyle();
@@ -350,6 +354,8 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
   bool                            myBBFirstCheck;
 
   QRubberBand*                    myRectBand; //!< selection rectangle rubber band
+
+  bool                            myIsAdvancedZoomingEnabled;
 };
 
 #ifdef WIN32

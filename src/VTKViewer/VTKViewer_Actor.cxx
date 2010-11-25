@@ -67,6 +67,7 @@ vtkStandardNewMacro(VTKViewer_Actor);
 */
 VTKViewer_Actor
 ::VTKViewer_Actor():
+  myOpacity(1.0),
   myIsHighlighted(false),
   myIsPreselected(false),
   myRepresentation(VTK_SURFACE),

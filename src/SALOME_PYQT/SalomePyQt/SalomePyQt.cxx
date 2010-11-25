@@ -2366,6 +2366,45 @@ int SalomePyQt::createView( const QString& type )
 }
 
 /*!
+  \fn int SalomePyQt::createView( const QString& type, QWidget* w )
+  \brief Create new view with custom widget embedded and activate it
+  \param type viewer type
+  \param w custom widget
+  \return integer identifier of created view (or -1 if view could not be created)
+*/
+
+class TCreateViewWg: public SALOME_Event
+{
+public:
+  typedef int TResult;
+  TResult myResult;
+  QString myType;
+  QWidget* myWidget;
+  TCreateViewWg( const QString& theType, QWidget* w )
+    : myResult( -1 ),
+      myType( theType ),
+      myWidget( w ) {}
+  virtual void Execute() 
+  {
+    LightApp_Application* app  = getApplication();
+    if ( app )
+    {
+      SUIT_ViewManager* viewMgr = app->createViewManager( myType, myWidget );
+      if ( viewMgr )
+      {
+        SUIT_ViewWindow* wnd = viewMgr->getActiveView();
+        if ( wnd )
+          myResult = wnd->getId();
+      }
+    }
+  }
+};
+int SalomePyQt::createView( const QString& type, QWidget* w )
+{
+  return ProcessEvent( new TCreateViewWg( type, w ) );
+}
+
+/*!
   \fn bool SalomePyQt::closeView( const int id )
   \brief Close view
   \param id window identifier
@@ -2483,6 +2522,61 @@ bool SalomePyQt::isViewVisible( const int id )
   return ProcessEvent( new TIsViewVisible( id ) );
 }
   
+/*!
+  \fn bool SalomePyQt::setViewClosable( const int id, const bool on )
+  \brief Set / clear view's "closable" option. By default any view is closable
+        (i.e. can be closed by the user).
+  \param id window identifier
+  \param on new "closable" option's value
+*/
+
+void SalomePyQt::setViewClosable( const int id, const bool on )
+{
+  class TEvent: public SALOME_Event
+  {
+    int myWndId;
+    bool myOn;
+  public:
+    TEvent( const int id, const bool on )
+      : myWndId( id ), myOn( on ) {}
+    virtual void Execute()
+    {
+      SUIT_ViewWindow* wnd = getWnd( myWndId );
+      if ( wnd ) wnd->setClosable( myOn );
+    }
+  };
+  ProcessVoidEvent( new TEvent( id, on ) );
+}
+
+/*!
+  \fn bool SalomePyQt::isViewClosable( const int id )
+  \brief Check whether view is closable (i.e. can be closed by the user)
+  \param id window identifier
+  \return \c true if view is closable or \c false otherwise 
+*/
+
+class TIsViewClosable: public SALOME_Event
+{
+public:
+  typedef bool TResult;
+  TResult myResult;
+  int myWndId;
+  TIsViewClosable( const int id )
+    : myResult( true ),
+      myWndId( id ) {}
+  virtual void Execute() 
+  {
+    SUIT_ViewWindow* wnd = getWnd( myWndId );
+    if ( wnd )
+      myResult = wnd->closable();
+  }
+};
+
+bool SalomePyQt::isViewClosable( const int id )
+{
+  return ProcessEvent( new TIsViewClosable( id ) );
+}
+
 /*!
   \fn bool SalomePyQt::groupAllViews()
   \brief Group all views to the single tab area

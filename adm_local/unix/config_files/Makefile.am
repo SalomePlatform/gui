@@ -37,7 +37,6 @@ check_qwt.m4			\
 check_SalomeObject.m4		\
 check_sip.m4			\
 check_SupervGraphViewer.m4	\
-check_vtk.m4			\
 check_VTKViewer.m4		\
 check_QxGraphViewer.m4          \
 check_TestRecorder.m4

@@ -113,12 +113,20 @@
         <translation>occ_view_scaling.png</translation>
     </message>
     <message>
+        <source>ICON_OCCVIEWER_GRADUATED_AXES</source>
+        <translation>occ_view_graduated_axes.png</translation>
+    </message>
+    <message>
         <source>ICON_OCCVIEWER_AMBIENT</source>
         <translation>occ_view_ambient.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_STYLE_SWITCH</source>
         <translation>occ_view_style_switch.png</translation>
+    </message>
+    <message>
+        <source>ICON_OCCVIEWER_ZOOMING_STYLE_SWITCH</source>
+        <translation>occ_view_zooming_style_switch.png</translation>
     </message>
     <message>
         <source>ICON_OCCVIEWER_MAXIMIZE</source>

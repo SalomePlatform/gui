@@ -89,6 +89,7 @@ public slots:
 
 signals:
   void             lastViewClosed(SUIT_ViewManager*);
+  void             tryCloseView(SUIT_ViewWindow*);
   void             deleteView(SUIT_ViewWindow*);
   void             viewCreated(SUIT_ViewWindow*);
   void             mousePress(SUIT_ViewWindow*, QMouseEvent*);

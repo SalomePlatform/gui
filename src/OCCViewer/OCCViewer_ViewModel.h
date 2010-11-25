@@ -66,6 +66,47 @@ public:
         QString    name;
         bool     isVisible;
         double   size;
+        // graduated trihedron
+        bool    gtIsVisible;
+        bool    gtDrawNameX;
+        bool    gtDrawNameY;
+        bool    gtDrawNameZ;
+        QString gtNameX;
+        QString gtNameY;
+        QString gtNameZ;
+        int     gtNameColorRX;
+        int     gtNameColorGX;
+        int     gtNameColorBX;
+        int     gtNameColorRY;
+        int     gtNameColorGY;
+        int     gtNameColorBY;
+        int     gtNameColorRZ;
+        int     gtNameColorGZ;
+        int     gtNameColorBZ;
+        bool    gtDrawValuesX;
+        bool    gtDrawValuesY;
+        bool    gtDrawValuesZ;
+        int     gtNbValuesX;
+        int     gtNbValuesY;
+        int     gtNbValuesZ;
+        int     gtOffsetX;
+        int     gtOffsetY;
+        int     gtOffsetZ;
+        int     gtColorRX;
+        int     gtColorGX;
+        int     gtColorBX;
+        int     gtColorRY;
+        int     gtColorGY;
+        int     gtColorBY;
+        int     gtColorRZ;
+        int     gtColorGZ;
+        int     gtColorBZ;
+        bool    gtDrawTickmarksX;
+        bool    gtDrawTickmarksY;
+        bool    gtDrawTickmarksZ;
+        int     gtTickmarkLengthX;
+        int     gtTickmarkLengthY;
+        int     gtTickmarkLengthZ;
 };
 
 typedef QList<viewAspect> viewAspectList;
@@ -135,6 +176,9 @@ public:
   int                             interactionStyle() const;
   void                            setInteractionStyle( const int );
 
+  int                             zoomingStyle() const;
+  void                            setZoomingStyle( const int );
+
   void                            enableSelection(bool isEnabled);
   bool                            isSelectionEnabled() const { return mySelectionEnabled; }
 
@@ -183,6 +227,7 @@ private:
   viewAspectList                  myViewAspects;
 
   int                             myInteractionStyle;
+  int                             myZoomingStyle;
 
   bool                            mySelectionEnabled;
   bool                            myMultiSelectionEnabled;

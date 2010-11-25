@@ -53,6 +53,9 @@ public:
 
   bool              onAccelAction( int );
 
+  bool              closable() const;
+  bool              setClosable( const bool );
+
   virtual QString   getVisualParameters();
   virtual void      setVisualParameters( const QString& parameters );
 
@@ -70,6 +73,7 @@ public slots:
   virtual void      onDumpView();
 
 signals:
+  void              tryClosing( SUIT_ViewWindow* );
   void              closing( SUIT_ViewWindow* );
   void              mousePressed( SUIT_ViewWindow*, QMouseEvent* );
   void              mouseReleased( SUIT_ViewWindow*, QMouseEvent* );
@@ -95,4 +99,4 @@ private:
   QMap<QString, QVariant> myCustomData;
 };
 
-#endif // !defined(AFX_SUIT_VIEWWINDOW_H__82C3D51A_6F10_45B0_BCFE_3CB3EF596A4D__INCLUDED_)
+#endif // SUIT_VIEWWINDOW_H

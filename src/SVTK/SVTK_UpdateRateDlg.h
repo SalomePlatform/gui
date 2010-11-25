@@ -29,7 +29,7 @@
 #ifndef SVTK_UPDATERATEDLG_H
 #define SVTK_UPDATERATEDLG_H
 
-#include "SVTK_DialogBase.h"
+#include <ViewerTools_DialogBase.h>
 
 #include <vtkSmartPointer.h>
 
@@ -46,7 +46,7 @@ class vtkCallbackCommand;
 class vtkObject;
 
 
-class SVTK_UpdateRateDlg : public SVTK_DialogBase
+class SVTK_UpdateRateDlg : public ViewerTools_DialogBase
 {
   Q_OBJECT;
 

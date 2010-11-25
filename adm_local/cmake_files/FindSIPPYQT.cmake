@@ -63,8 +63,11 @@ SET(PYQT_INCLUDES ${PYQT_INCLUDES} -I${PYQT_SIPS}/QtAssistant -I${PYQT_SIPS}/QtD
 SET(PYQT_INCLUDES ${PYQT_INCLUDES} -I${PYQT_SIPS}/QtNetwork -I${PYQT_SIPS}/QtSql)
 SET(PYQT_INCLUDES ${PYQT_INCLUDES} -I${PYQT_SIPS}/QtSvg -I${PYQT_SIPS}/QtTest)
 
-SET(qt_flag ${QTVERSION})
-STRING(REPLACE "." "_" qt_flag ${qt_flag})
+file(READ ${PYQT_SIPS}/QtCore/QtCoremod.sip SUPPORTED)
+STRING(REGEX MATCH "Qt_[0-9]_[0-9]_[0-9]}" SUPPORTED ${SUPPORTED})
+STRING(LENGTH ${SUPPORTED} len)
+MATH(EXPR len "${len}-1")
+STRING(SUBSTRING ${SUPPORTED} 0 ${len} SUPPORTED)
 
 IF(WINDOWS)
   SET(ws_flag WS_WIN)
@@ -72,5 +75,5 @@ ELSE(WINDOWS)
   SET(ws_flag WS_X11)
 ENDIF(WINDOWS)
 
-SET(PYQT_SIPFLAGS -x VendorID -x PyQt_NoPrintRangeBug -t ${ws_flag} -t Qt_${qt_flag} -g -s .cc -c .)
+SET(PYQT_SIPFLAGS -x VendorID -x PyQt_NoPrintRangeBug -t ${ws_flag} -t ${SUPPORTED} -g -s .cc -c .)
 SET(PYQT_SIPFLAGS ${PYQT_SIPFLAGS} ${PYQT_INCLUDES})

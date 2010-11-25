@@ -230,10 +230,13 @@ public:
   static QList<int>        findViews( const QString& );
   static bool              activateView( const int );
   static int               createView( const QString& );
+  static int               createView( const QString&, QWidget* );
   static bool              closeView( const int );
   static int               cloneView( const int );
-  static bool              isViewVisible( const int id );
-  
+  static bool              isViewVisible( const int );
+  static void              setViewClosable( const int, const bool );
+  static bool              isViewClosable( const int );
+
   static bool              groupAllViews();
   static bool              splitView( const int, const Orientation, const Action );
   static bool              moveView( const int, const int, const bool );

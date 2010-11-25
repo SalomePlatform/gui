@@ -32,6 +32,7 @@
 
 class vtkCell;
 class vtkRenderWindowInteractor;
+class vtkTDxInteractorStyle;
 
 #include <QObject>
 #include <QCursor>

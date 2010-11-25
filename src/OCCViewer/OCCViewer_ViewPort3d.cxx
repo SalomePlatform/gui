@@ -51,6 +51,14 @@ static int sx = 0;
 static int sy = 0;
 static Standard_Boolean zRotation = Standard_False;
 
+#include <Standard_Version.hxx>
+
+#ifdef OCC_VERSION_SERVICEPACK
+#define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8 | OCC_VERSION_SERVICEPACK)
+#else
+#define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8)
+#endif
+
 /*!
   Constructor
 */
@@ -59,7 +67,8 @@ OCCViewer_ViewPort3d::OCCViewer_ViewPort3d( QWidget* parent, const Handle( V3d_V
     myScale( 1.0 ),
     myDegenerated( true ),
     myAnimate( false ),
-    myBusy( true )
+    myBusy( true ),
+    myIsAdvancedZoomingEnabled( false )
 {
   // VSR: 01/07/2010 commented to avoid SIGSEGV at SALOME exit
   //selectVisualId();
@@ -310,6 +319,17 @@ void OCCViewer_ViewPort3d::fitRect( const QRect& rect )
 }
 
 /*!
+  Inits 'zoom' transformation. [ protected ]
+*/
+void OCCViewer_ViewPort3d::startZoomAtPoint( int x, int y )
+{
+#if OCC_VERSION_LARGE > 0x06030010 // available only with OCC-6.3-sp11 and higher version
+  if ( !activeView().IsNull() && isAdvancedZoomingEnabled() )
+    activeView()->StartZoomAtPoint( x, y );
+#endif
+}
+
+/*!
   Called at 'zoom' transformation. [ virtual protected ]
 */
 void OCCViewer_ViewPort3d::zoom( int x0, int y0, int x, int y )
@@ -318,7 +338,12 @@ void OCCViewer_ViewPort3d::zoom( int x0, int y0, int x, int y )
     // as OCCT respects a sign of only dx,
     // but we want both signes to be taken into account
     //activeView()->Zoom( x0, y0, x, y );
-    activeView()->Zoom( x0 + y0, 0, x + y, 0 );
+#if OCC_VERSION_LARGE > 0x06030010 // available only with OCC-6.3-sp11 and higher version
+    if ( isAdvancedZoomingEnabled() )
+      activeView()->ZoomAtPoint( x0, y0, x, y );
+    else
+#endif
+      activeView()->Zoom( x0 + y0, 0, x + y, 0 );
   }
 }
 

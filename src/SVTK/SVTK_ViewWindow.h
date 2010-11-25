@@ -59,9 +59,12 @@ class SVTK_NonIsometricDlg;
 class SVTK_UpdateRateDlg;
 class SVTK_CubeAxesDlg;
 class SVTK_SetRotationPointDlg;
+class SVTK_InteractorStyle;
 class SVTK_KeyFreeInteractorStyle;
 class SVTK_ViewParameterDlg;
 class SVTK_Recorder;
+
+class vtkPVAxesWidget;
 
 class vtkObject;
 class QtxAction;
@@ -218,6 +221,9 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
   //! Redirect the request to #SVTK_MainWindow::SetInteractionStyle
   virtual void SetInteractionStyle( const int );
 
+  //! Redirect the request to #SVTK_MainWindow::SetZoomingStyle
+  virtual void SetZoomingStyle( const int );
+
   //! Redirect the request to #SVTK_MainWindow::SetSpacemouseButtons
   virtual void SetSpacemouseButtons( const int, const int, const int );
 
@@ -237,6 +243,12 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
   virtual void SetSelectionTolerance(const double& theTolNodes = 0.025, 
                                      const double& theTolCell = 0.001,
                                      const double& theTolObjects = 0.025);
+
+  //! Get visibility status of the static trihedron
+  bool IsStaticTrihedronVisible() const;
+
+  //! Set visibility status of the static trihedron
+  virtual void SetStaticTrihedronVisible( const bool );
 
   //! Methods to save/restore visual parameters of a view (pan, zoom, etc.)
   virtual QString getVisualParameters();
@@ -286,6 +298,7 @@ public slots:
   void onViewParameters(bool theIsActivate);
 
   void onSwitchInteractionStyle(bool theOn);
+  void onSwitchZoomingStyle(bool theOn);
 
   void onStartRecording();
   void onPlayRecording();
@@ -365,6 +378,7 @@ protected:
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, 
          ViewTrihedronId, NonIsometric, GraduatedAxes, UpdateRate,
          ParallelModeId, ProjectionModeId, ViewParametersId, SwitchInteractionStyleId,
+         SwitchZoomingStyleId,
          StartRecordingId, PlayRecordingId, PauseRecordingId, StopRecordingId };
 
 
@@ -373,6 +387,7 @@ protected:
   SVTK_ViewModelBase* myModel;
 
   SVTK_RenderWindowInteractor* myInteractor;
+  vtkSmartPointer<SVTK_InteractorStyle> myDefaultInteractorStyle;
   vtkSmartPointer<SVTK_KeyFreeInteractorStyle> myKeyFreeInteractorStyle;
 
   QString myVisualParams; // used for delayed setting of view parameters 
@@ -396,6 +411,8 @@ protected:
 
   int myToolBar;
   int myRecordingToolBar;
+
+  vtkPVAxesWidget* myAxesWidget;
 
 private:
   QImage myDumpImage;

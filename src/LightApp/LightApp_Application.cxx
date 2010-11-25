@@ -54,6 +54,7 @@
 #include "LightApp_OBSelector.h"
 #include "LightApp_SelectionMgr.h"
 #include "LightApp_DataObject.h"
+#include "LightApp_WgViewModel.h"
 
 #include <SALOME_Event.h>
 
@@ -70,6 +71,7 @@
 #include <SUIT_Study.h>
 #include <SUIT_FileDlg.h>
 #include <SUIT_ResourceMgr.h>
+#include <SUIT_ShortcutMgr.h>
 #include <SUIT_Tools.h>
 #include <SUIT_Accel.h>
 #include <SUIT_MessageBox.h>
@@ -176,6 +178,14 @@
   #include <SALOME_ListIO.hxx>
 #endif
 
+#include <Standard_Version.hxx>
+
+#ifdef OCC_VERSION_SERVICEPACK
+#define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8 | OCC_VERSION_SERVICEPACK)
+#else
+#define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8)
+#endif
+
 #define ToolBarMarker    0
 #define DockWidgetMarker 1
 
@@ -232,6 +242,8 @@ LightApp_Application::LightApp_Application()
 : CAM_Application( false ),
   myPrefs( 0 )
 {
+  Q_INIT_RESOURCE( LightApp );
+
   STD_TabDesktop* desk = new STD_TabDesktop();
 
   setDesktop( desk );
@@ -1361,6 +1373,7 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
     v = resMgr->integerValue( "OCCViewer", "iso_number_v", v );
     vm->setIsos( u, v );
     vm->setInteractionStyle( resMgr->integerValue( "OCCViewer", "navigation_mode", vm->interactionStyle() ) );
+    vm->setZoomingStyle( resMgr->integerValue( "OCCViewer", "zooming_mode", vm->zoomingStyle() ) );
     viewMgr->setViewModel( vm );// custom view model, which extends SALOME_View interface
     new LightApp_OCCSelector( (OCCViewer_Viewer*)viewMgr->getViewModel(), mySelMgr );
   }
@@ -1381,7 +1394,9 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
       vm->setBackgroundColor( resMgr->colorValue( "VTKViewer", "background", vm->backgroundColor() ) );
       vm->setTrihedronSize( resMgr->doubleValue( "VTKViewer", "trihedron_size", vm->trihedronSize() ),
                             resMgr->booleanValue( "VTKViewer", "relative_size", vm->trihedronRelative() ) );
+      vm->setStaticTrihedronVisible( resMgr->booleanValue( "VTKViewer", "show_static_trihedron", vm->isStaticTrihedronVisible() ) );
       vm->setInteractionStyle( resMgr->integerValue( "VTKViewer", "navigation_mode", vm->interactionStyle() ) );
+      vm->setZoomingStyle( resMgr->integerValue( "VTKViewer", "zooming_mode", vm->zoomingStyle() ) );
       vm->setIncrementalSpeed( resMgr->integerValue( "VTKViewer", "speed_value", vm->incrementalSpeed() ),
                                resMgr->integerValue( "VTKViewer", "speed_mode", vm->incrementalSpeedMode() ) );
       vm->setSpacemouseButtons( resMgr->integerValue( "VTKViewer", "spacemouse_func1_btn", vm->spacemouseBtn(1) ),
@@ -1408,6 +1423,24 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
     viewWin->resize( (int)( desktop()->width() * 0.6 ), (int)( desktop()->height() * 0.6 ) );
 
   return viewMgr;
+}
+
+SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType, QWidget* w )
+{
+  SUIT_ViewManager* vm = new SUIT_ViewManager( activeStudy(), 
+					       desktop(),
+					       new LightApp_WgViewModel( vmType, w ) );
+  vm->setTitle( QString( "%1: %M - viewer %V" ).arg( vmType ) );
+ 
+  addViewManager( vm );
+  SUIT_ViewWindow* vw = vm->createViewWindow();
+  if ( vw && desktop() )
+    vw->resize( (int)( desktop()->width() * 0.6 ), (int)( desktop()->height() * 0.6 ) );
+
+  if ( !vmType.isEmpty() && !myUserWmTypes.contains( vmType ) )
+    myUserWmTypes << vmType;
+
+  return vm;
 }
 
 /*!
@@ -1603,6 +1636,9 @@ void LightApp_Application::showPreferences( const QString& itemText )
     if ( desktop() )
       resourceMgr()->setValue( "desktop", "geometry", desktop()->storeGeometry() );
     resourceMgr()->save();
+
+    // Update shortcuts
+    shortcutMgr()->updateShortcuts();
   }
 
   delete prefDlg;
@@ -1861,6 +1897,19 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemIcon( salomeCat, Qtx::scaleIcon( resourceMgr()->loadPixmap( "LightApp", tr( "APP_DEFAULT_ICO" ), false ), 20 ) );
 
   int genTab = pref->addPreference( tr( "PREF_TAB_GENERAL" ), salomeCat );
+
+  int langGroup = pref->addPreference( tr( "PREF_GROUP_LANGUAGE" ), genTab );
+  pref->setItemProperty( "columns", 2, langGroup );
+  int curLang = pref->addPreference( tr( "PREF_CURRENT_LANGUAGE" ), langGroup,
+                                          LightApp_Preferences::Selector, "language", "language" );
+  QStringList aLangs = SUIT_Session::session()->resourceMgr()->stringValue( "language", "languages", "en" ).split( "," );
+  QList<QVariant> aIcons;
+  foreach ( QString aLang, aLangs ) {
+    aIcons << QPixmap( QString( ":/images/%1" ).arg( aLang ) );
+  }
+  pref->setItemProperty( "strings", aLangs, curLang );
+  pref->setItemProperty( "icons",   aIcons, curLang );
+
   int studyGroup = pref->addPreference( tr( "PREF_GROUP_STUDY" ), genTab );
 
   pref->setItemProperty( "columns", 2, studyGroup );
@@ -1949,6 +1998,17 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "strings", aStyleModeList, occStyleMode );
   pref->setItemProperty( "indexes", aModeIndexesList, occStyleMode );
 
+#if OCC_VERSION_LARGE > 0x06030010 // available only with OCC-6.3-sp11 and higher version
+  int occZoomingStyleMode = pref->addPreference( tr( "PREF_ZOOMING" ), occGroup,
+                                                 LightApp_Preferences::Selector, "OCCViewer", "zooming_mode" );
+  QStringList anOCCZoomingStyleModeList;
+  anOCCZoomingStyleModeList.append( tr("PREF_ZOOMING_AT_CENTER") );
+  anOCCZoomingStyleModeList.append( tr("PREF_ZOOMING_AT_CURSOR") );
+
+  pref->setItemProperty( "strings", anOCCZoomingStyleModeList, occZoomingStyleMode );
+  pref->setItemProperty( "indexes", aModeIndexesList, occZoomingStyleMode );
+#endif
+
   // VTK Viewer
   int vtkGen = pref->addPreference( "", vtkGroup, LightApp_Preferences::Frame );
   pref->setItemProperty( "columns", 2, vtkGen );
@@ -1979,7 +2039,15 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "strings", aStyleModeList, vtkStyleMode );
   pref->setItemProperty( "indexes", aModeIndexesList, vtkStyleMode );
 
-  pref->addPreference( "", vtkGroup, LightApp_Preferences::Space );
+  int vtkZoomingStyleMode = pref->addPreference( tr( "PREF_ZOOMING" ), vtkGen,
+                                                 LightApp_Preferences::Selector, "VTKViewer", "zooming_mode" );
+
+  QStringList aVTKZoomingStyleModeList;
+  aVTKZoomingStyleModeList.append( tr("PREF_ZOOMING_AT_CENTER") );
+  aVTKZoomingStyleModeList.append( tr("PREF_ZOOMING_AT_CURSOR") );
+
+  pref->setItemProperty( "strings", aVTKZoomingStyleModeList, vtkZoomingStyleMode );
+  pref->setItemProperty( "indexes", aModeIndexesList, vtkZoomingStyleMode );
 
   int vtkSpeed = pref->addPreference( tr( "PREF_INCREMENTAL_SPEED" ), vtkGen,
                                       LightApp_Preferences::IntSpin, "VTKViewer", "speed_value" );
@@ -1995,6 +2063,8 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   pref->setItemProperty( "strings", aSpeedModeList, vtkSpeedMode );
   pref->setItemProperty( "indexes", aModeIndexesList, vtkSpeedMode );
+
+  pref->addPreference( tr( "PREF_SHOW_STATIC_TRIHEDRON" ), vtkGen, LightApp_Preferences::Bool, "VTKViewer", "show_static_trihedron" );
 
   int vtkSM = pref->addPreference( tr( "PREF_FRAME_SPACEMOUSE" ), vtkGroup, LightApp_Preferences::GroupBox );
   pref->setItemProperty( "columns", 2, vtkSM );
@@ -2158,6 +2228,12 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "PREF_RESIZE_ON_EXPAND_ITEM" ), objSetGroup, LightApp_Preferences::Bool,
                        "ObjectBrowser", "resize_on_expand_item" );
 
+  // Shortcuts preferences
+  int shortcutTab = pref->addPreference( tr( "PREF_TAB_SHORTCUTS" ), salomeCat );
+  int shortcutGroup = pref->addPreference( tr( "PREF_GROUP_SHORTCUTS" ), shortcutTab );
+  pref->addPreference( tr( "" ), shortcutGroup,
+                       LightApp_Preferences::ShortcutTree, "shortcuts" );
+
   // MRU preferences
   int mruGroup = pref->addPreference( tr( "PREF_GROUP_MRU" ), genTab, LightApp_Preferences::Auto, "MRU", "show_mru" );
   pref->setItemProperty( "columns", 4, mruGroup );
@@ -2223,6 +2299,25 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 
       OCCViewer_Viewer* occVM = (OCCViewer_Viewer*)vm;
       occVM->setInteractionStyle( mode );
+    }
+  }
+#endif
+
+#ifndef DISABLE_OCCVIEWER
+  if ( sec == QString( "OCCViewer" ) && param == QString( "zooming_mode" ) )
+  {
+    int mode = resMgr->integerValue( "OCCViewer", "zooming_mode", 0 );
+    QList<SUIT_ViewManager*> lst;
+    viewManagers( OCCViewer_Viewer::Type(), lst );
+    QListIterator<SUIT_ViewManager*> it( lst );
+    while ( it.hasNext() )
+    {
+      SUIT_ViewModel* vm = it.next()->getViewModel();
+      if ( !vm || !vm->inherits( "OCCViewer_Viewer" ) )
+        continue;
+
+      OCCViewer_Viewer* occVM = (OCCViewer_Viewer*)vm;
+      occVM->setZoomingStyle( mode );
     }
   }
 #endif
@@ -2312,6 +2407,52 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 
       SVTK_Viewer* vtkVM = dynamic_cast<SVTK_Viewer*>( vm );
       if( vtkVM ) vtkVM->setInteractionStyle( mode );
+    }
+#endif
+  }
+#endif
+
+#ifndef DISABLE_VTKVIEWER
+  if ( sec == QString( "VTKViewer" ) && param == QString( "zooming_mode" ) )
+  {
+    int mode = resMgr->integerValue( "VTKViewer", "zooming_mode", 0 );
+    QList<SUIT_ViewManager*> lst;
+#ifndef DISABLE_SALOMEOBJECT
+    viewManagers( SVTK_Viewer::Type(), lst );
+    QListIterator<SUIT_ViewManager*> it( lst );
+    while ( it.hasNext() )
+    {
+      SUIT_ViewModel* vm = it.next()->getViewModel();
+      if ( !vm || !vm->inherits( "SVTK_Viewer" ) )
+        continue;
+
+      SVTK_Viewer* vtkVM = dynamic_cast<SVTK_Viewer*>( vm );
+      if( vtkVM ) vtkVM->setZoomingStyle( mode );
+    }
+#endif
+  }
+#endif
+
+#ifndef DISABLE_VTKVIEWER
+  if ( sec == QString( "VTKViewer" ) && param == QString( "show_static_trihedron" ) )
+  {
+    bool isVisible = resMgr->booleanValue( "VTKViewer", "show_static_trihedron", true );
+    QList<SUIT_ViewManager*> lst;
+#ifndef DISABLE_SALOMEOBJECT
+    viewManagers( SVTK_Viewer::Type(), lst );
+    QListIterator<SUIT_ViewManager*> it( lst );
+    while ( it.hasNext() )
+    {
+      SUIT_ViewModel* vm = it.next()->getViewModel();
+      if ( !vm || !vm->inherits( "SVTK_Viewer" ) )
+        continue;
+
+      SVTK_Viewer* vtkVM = dynamic_cast<SVTK_Viewer*>( vm );
+      if( vtkVM )
+      {
+        vtkVM->setStaticTrihedronVisible( isVisible );
+        vtkVM->Repaint();
+      }
     }
 #endif
   }
@@ -2424,6 +2565,10 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
       else if ( param == "show_mru" )
         mru->setVisible( resMgr->booleanValue( "MRU", "show_mru", false ) );          // do not show MRU menu item by default
     }
+  }
+  if ( sec == "language" && param == "language" )
+  {
+    SUIT_MessageBox::information( desktop(), tr( "WRN_WARNING" ), tr( "LANG_CHANGED" ) );
   }
 }
 
@@ -3244,6 +3389,7 @@ bool LightApp_Application::openAction( const int choice, const QString& aName )
 QStringList LightApp_Application::viewManagersTypes() const
 {
   QStringList aTypesList;
+  aTypesList += myUserWmTypes;
 #ifndef DISABLE_GLVIEWER
   aTypesList<<GLViewer_Viewer::Type();
 #endif

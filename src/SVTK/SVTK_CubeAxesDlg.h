@@ -27,29 +27,40 @@
 #ifndef SVTK_CubeAxesDlg_H
 #define SVTK_CubeAxesDlg_H
 
-#include "SVTK_DialogBase.h"
+#include "SVTK.h"
 
-class QWidget;
-class QPushButton;
-class QTabWidget;
-class QCheckBox;
+#include <ViewerTools_CubeAxesDlgBase.h>
 
-class QtxAction;
+class SVTK_ViewWindow;
 class SVTK_CubeAxesActor2D;
 
-class SVTK_FontWidget;
-class SVTK_AxisWidget;
-class SVTK_ViewWindow;
+class vtkAxisActor2D;
+
+/*!
+ * Class       : SVTK_AxisWidget
+ * Description : Axis tab widget of the "Graduated axis" dialog box
+*/
+class SVTK_EXPORT SVTK_AxisWidget : public ViewerTools_AxisWidgetBase
+{
+public:
+  SVTK_AxisWidget( QWidget* );
+  ~SVTK_AxisWidget();
+
+public:
+  bool             ReadData( vtkAxisActor2D* );
+  bool             Apply( vtkAxisActor2D* );
+
+protected:
+  virtual ViewerTools_FontWidgetBase* createFontWidget( QWidget* );
+};
 
 /*!
  * Class       : SVTK_CubeAxesDlg
  * Description : Dialog for specifynig cube axes properties
  */
-class SVTK_CubeAxesDlg : public SVTK_DialogBase
+class SVTK_EXPORT SVTK_CubeAxesDlg : public ViewerTools_CubeAxesDlgBase
 {
   Q_OBJECT
-
-  class AxisWidget;
 
 public:
                   SVTK_CubeAxesDlg(QtxAction* theAction,
@@ -57,29 +68,17 @@ public:
                                    const char* theName);
   virtual         ~SVTK_CubeAxesDlg();
 
-  void            Update();
+  virtual void    Update();
 
 private slots:
-  void            onOk();
-  bool            onApply();
-  void            onClose();
+  virtual bool    onApply();
 
 private:
-  QWidget*        createButtonFrame( QWidget* );
-  QWidget*        createMainFrame  ( QWidget* );
-  bool            isValid() const;
+  virtual ViewerTools_AxisWidgetBase* createAxisWidget( QWidget* );
 
 private:
-  SVTK_ViewWindow *myMainWindow;
+  SVTK_ViewWindow*      myMainWindow;
   SVTK_CubeAxesActor2D* myActor;
-
-  QTabWidget*     myTabWg;
-  QCheckBox*      myIsVisible;
-
-  QPushButton*    myOkBtn;
-  QPushButton*    myApplyBtn;
-  QPushButton*    myCloseBtn;
-  AxisWidget*     myAxes[ 3 ];
 };
 
 #endif

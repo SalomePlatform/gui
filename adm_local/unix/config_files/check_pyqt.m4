@@ -151,6 +151,9 @@ if test "x$pyqt_ok" == "xyes" ; then
     TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib${LIB_LOCATION_SUFFIX}/python${PYTHON_VERSION}/site-packages/PyQt4"
     TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib${LIB_LOCATION_SUFFIX}/python${PYTHON_VERSION}/dist-packages/PyQt4"
     TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib${LIB_LOCATION_SUFFIX}/pymodules/python${PYTHON_VERSION}/PyQt4"
+    if test "${build_cpu::6}" = "x86_64" ; then
+      TEST_LIB_DIRS="${TEST_LIB_DIRS} /usr/lib64/python2.6/site-packages/PyQt4"
+    fi
     TEST_SIPS_DIRS="${TEST_SIPS_DIRS} /usr/share/sip"
     TEST_SIPS_DIRS="${TEST_SIPS_DIRS} /usr/share/sip/PyQt4"
 

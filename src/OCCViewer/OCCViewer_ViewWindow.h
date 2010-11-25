@@ -36,6 +36,7 @@ class OCCViewer_ClippingDlg;
 class OCCViewer_AxialScaleDlg;
 class OCCViewer_SetRotationPointDlg;
 class OCCViewer_Viewer;
+class OCCViewer_CubeAxesDlg;
 struct viewAspect;
 class QtxAction;
 
@@ -51,7 +52,8 @@ public:
   enum { DumpId, FitAllId, FitRectId, ZoomId, PanId, GlobalPanId,
          ChangeRotationPointId, RotationId,
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, CloneId, ClippingId, MemId, RestoreId,
-         TrihedronShowId, AxialScaleId, AmbientId, SwitchInteractionStyleId, MaximizedId, UserId };
+         TrihedronShowId, AxialScaleId, GraduatedAxesId, AmbientId,
+	 SwitchInteractionStyleId, SwitchZoomingStyleId, MaximizedId, UserId };
 
   enum OperationType{ NOTHING, PANVIEW, ZOOMVIEW, ROTATE, 
                       PANGLOBAL, WINDOWFIT, FITALLVIEW, RESETVIEW,
@@ -95,6 +97,9 @@ public:
   virtual int                     interactionStyle() const;
   virtual void                    setInteractionStyle( const int );
  
+  int                     zoomingStyle() const;
+  void                    setZoomingStyle( const int );
+ 
   void setTransformEnabled( const OperationType, const bool );
   bool transformEnabled( const OperationType ) const;
 
@@ -128,12 +133,14 @@ public slots:
   virtual void onCloneView();
   virtual void onClipping( bool on );
   virtual void onAxialScale();
+  virtual void onGraduatedAxes();
   virtual void onAmbientToogle();
   virtual void onMemorizeView();
   virtual void onRestoreView();
   virtual void onTrihedronShow();
   virtual void setRestoreFlag();
   virtual void onSwitchInteractionStyle( bool on );
+  virtual void onSwitchZoomingStyle( bool on );
 
   virtual void activateSetRotationGravity();
   virtual void activateSetRotationSelected( double theX, double theY, double theZ );
@@ -143,8 +150,7 @@ public slots:
   virtual void showEvent( QShowEvent * );
   virtual void hideEvent( QHideEvent * );
 
-  void onMaximizedView();
-
+  virtual void onMaximizedView();
 
 signals:
   void vpTransformationStarted(OCCViewer_ViewWindow::OperationType type);
@@ -198,6 +204,8 @@ protected:
   OperationType         myOperation;
   OCCViewer_Viewer*     myModel;
   OCCViewer_ViewPort3d* myViewPort;
+
+  OCCViewer_CubeAxesDlg* myCubeAxesDlg;
 
   RotationPointType     myCurrPointType;
   RotationPointType     myPrevPointType;

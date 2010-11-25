@@ -52,6 +52,9 @@ public:
   bool           isSync() const;
   void           setIsSync( const bool );
 
+  bool           isSuppressOutput() const;
+  void           setIsSuppressOutput(const bool);
+
 protected:
   virtual void   dropEvent( QDropEvent* event );
   virtual void   mouseReleaseEvent( QMouseEvent* event );
@@ -80,6 +83,7 @@ private:
   QString           myBanner;           //!< current banner
   QStringList       myQueue;            //!< python commands queue
   bool              myIsSync;           //!< synchronous mode flag
+  bool              myIsSuppressOutput; //!< suppress output flag
 };
 
 #endif // PYCONSOLE_EDITOR_H

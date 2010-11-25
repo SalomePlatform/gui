@@ -176,7 +176,7 @@ void LightApp_SelectionMgr::selectionChanged( SUIT_Selector* theSel )
 /*!
   get map of indexes for the given SALOME_InteractiveObject
 */
-void LightApp_SelectionMgr::GetIndexes( const Handle(SALOME_InteractiveObject)& IObject, 
+void LightApp_SelectionMgr::GetIndexes( const Handle(SALOME_InteractiveObject)& IObject,
                                         TColStd_IndexedMapOfInteger& theIndex)
 {
   theIndex.Clear();
@@ -186,12 +186,10 @@ void LightApp_SelectionMgr::GetIndexes( const Handle(SALOME_InteractiveObject)& 
 
   for ( SUIT_DataOwnerPtrList::const_iterator itr = aList.begin(); itr != aList.end(); ++itr )
   {
-    const LightApp_DataSubOwner* subOwner = dynamic_cast<const LightApp_DataSubOwner*>( (*itr).operator->() );
-    if ( subOwner )
-      if ( subOwner->entry() == QString(IObject->getEntry()) )
-        theIndex.Add( subOwner->index() );
+    LightApp_DataSubOwner* subOwner = dynamic_cast<LightApp_DataSubOwner*>( (*itr).operator->() );
+    if ( subOwner && subOwner->entry() == QString(IObject->getEntry()) )
+      theIndex.Add( subOwner->index() );
   }
-  
 }
 
 /*!
@@ -223,12 +221,12 @@ void LightApp_SelectionMgr::AddOrRemoveIndex( const Handle(SALOME_InteractiveObj
                                               bool modeShift)
 {
   SUIT_DataOwnerPtrList remainsOwners;
-  
+
   SUIT_DataOwnerPtrList aList;
   selected( aList );
-  
+
   QString ioEntry (IObject->getEntry());
-  
+
   if ( !modeShift ) {
     for ( SUIT_DataOwnerPtrList::const_iterator itr = aList.begin(); itr != aList.end(); ++itr )
     {
@@ -253,7 +251,7 @@ void LightApp_SelectionMgr::AddOrRemoveIndex( const Handle(SALOME_InteractiveObj
   It.Initialize(theIndexes);
   for(;It.More();It.Next())
     remainsOwners.append( new LightApp_DataSubOwner( ioEntry, It.Key() ) );
-  
+
   bool append = false;
   setSelected( remainsOwners, append );
 
@@ -268,7 +266,7 @@ void LightApp_SelectionMgr::AddOrRemoveIndex( const Handle(SALOME_InteractiveObj
 /*!
   select 'subobjects' with given indexes
 */
-void LightApp_SelectionMgr::selectObjects( const Handle(SALOME_InteractiveObject)& IObject, 
+void LightApp_SelectionMgr::selectObjects( const Handle(SALOME_InteractiveObject)& IObject,
                                             TColStd_IndexedMapOfInteger theIndex, bool append )
 {
   SUIT_DataOwnerPtrList aList;
@@ -294,7 +292,7 @@ void LightApp_SelectionMgr::selectObjects( MapIOOfMapOfInteger theMapIO, bool ap
   SUIT_DataOwnerPtrList aList;
 
   MapIOOfMapOfInteger::Iterator it(theMapIO);
-  for ( ; it.More(); it.Next() ) 
+  for ( ; it.More(); it.Next() )
     {
       if ( it.Value().IsEmpty() )
         aList.append( new LightApp_DataOwner( QString(it.Key()->getEntry()) ) );
@@ -305,7 +303,7 @@ void LightApp_SelectionMgr::selectObjects( MapIOOfMapOfInteger theMapIO, bool ap
             aList.append( new LightApp_DataSubOwner( QString(it.Key()->getEntry()), it.Value()( i ) ) );
         }
     }
-  
+
   setSelected( aList, append );
 
 }
@@ -326,13 +324,13 @@ void LightApp_SelectionMgr::selectedSubOwners( MapEntryOfMapOfInteger& theMap )
   {
     const LightApp_DataSubOwner* subOwner =
       dynamic_cast<const LightApp_DataSubOwner*>( (*itr).operator->() );
-    if ( subOwner ) 
+    if ( subOwner )
     {
-#ifndef WNT
+//#ifndef WNT
       if ( !theMap.IsBound( TCollection_AsciiString(subOwner->entry().toLatin1().data()) ) )
-#else
-      if ( !theMap.IsBound( subOwner->entry().toLatin1().data() ) )
-#endif
+//#else
+//      if ( !theMap.IsBound( subOwner->entry().toLatin1().data() ) )
+//#endif
       {
         anIndexes.Clear();
         //Bug 17269: GetIndexes( subOwner->entry(), anIndexes );

@@ -78,6 +78,12 @@ public:
   //! Set size of trihedron of the viewer (see #SVTK_Renderer::SetTrihedronSize)
   void setTrihedronSize( const vtkFloatingPointType, const bool = true );
 
+  //! Get visibility status of the static trihedron
+  bool isStaticTrihedronVisible() const;
+
+  //! Set visibility status of the static trihedron
+  void setStaticTrihedronVisible( const bool );
+
   //! Gets projection mode
   int projectionMode() const;
 
@@ -89,6 +95,12 @@ public:
 
   //! Sets interaction style
   void setInteractionStyle( const int );
+
+  //! Gets zooming style
+  int zoomingStyle() const;
+
+  //! Sets zooming style
+  void setZoomingStyle( const int );
 
   //! Get incremental speed (see #SVTK_InteractorStyle::ControllerIncrement)
   int incrementalSpeed() const;
@@ -162,12 +174,14 @@ private:
   QColor myBgColor;
   vtkFloatingPointType myTrihedronSize;
   bool   myTrihedronRelative;
+  bool   myIsStaticTrihedronVisible;
   bool   mySelectionEnabled;
   bool   myMultiSelectionEnabled;
   int    myIncrementSpeed;
   int    myIncrementMode;
   int    myProjMode;
   int    myStyle;
+  int    myZoomingStyle;
   int    mySpaceBtn[3];
 };
 

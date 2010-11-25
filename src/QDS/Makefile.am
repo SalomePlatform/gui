@@ -82,7 +82,7 @@ MOC_FILES =			\
 
 nodist_libQDS_la_SOURCES = $(MOC_FILES)
 
-nodist_salomeres_DATA = QDS_msg_en.qm
+nodist_salomeres_DATA = QDS_msg_en.qm QDS_msg_fr.qm
 
 libQDS_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) \
                    -I$(srcdir)/../Qtx -I$(srcdir)/../DDS

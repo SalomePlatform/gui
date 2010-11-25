@@ -98,13 +98,16 @@ nodist_libSalomeApp_la_SOURCES = $(MOC_FILES)
 # python modules
 salomepython_PYTHON = salome_pluginsmanager.py
 
+dist_salomescript_DATA = addvars2notebook.py
+
 dist_salomeres_DATA =		\
 	resources/SalomeApp.ini	\
 	resources/SalomeApp.xml
 
 nodist_salomeres_DATA =		\
 	SalomeApp_images.qm	\
-	SalomeApp_msg_en.qm
+	SalomeApp_msg_en.qm	\
+	SalomeApp_msg_fr.qm
 
 libSalomeApp_la_CPPFLAGS = $(PYTHON_INCLUDES) $(QT_INCLUDES) $(QWT_INCLUDES)	\
 	$(CAS_CPPFLAGS) $(VTK_INCLUDES) $(BOOST_CPPFLAGS) @KERNEL_CXXFLAGS@	\

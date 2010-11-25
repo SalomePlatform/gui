@@ -43,18 +43,24 @@ class QTX_EXPORT QtxAction : public QWidgetAction
   class ActionNotify;
 
 public:
-  QtxAction( QObject* = 0, bool = false );
-  QtxAction( const QString&, const QString&, int, QObject*, bool = false );
-  QtxAction( const QString&, const QIcon&, const QString&, int, QObject*, bool = false );
+  QtxAction( QObject* = 0, bool = false, const QString& = QString() );
+  QtxAction( const QString&, const QString&, int, QObject*, bool = false, const QString& = QString() );
+  QtxAction( const QString&, const QIcon&, const QString&, int, QObject*, bool = false, const QString& = QString() );
   virtual ~QtxAction();
 
   virtual bool eventFilter( QObject*, QEvent* );
+
+  QString shortcutActionName() const;
+  void setShortcutActionName( const QString& );
 
 protected:
   virtual void addedTo( QWidget* );
   virtual void removedFrom( QWidget* );
 
   virtual void customEvent( QEvent* );
+
+private:
+  QString myShortcutActionName;
 };
 
 #ifdef WIN32

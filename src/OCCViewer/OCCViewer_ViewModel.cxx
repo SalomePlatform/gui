@@ -120,6 +120,9 @@ OCCViewer_Viewer::OCCViewer_Viewer( bool DisplayTrihedron, bool DisplayStaticTri
   // set interaction style to standard
   myInteractionStyle = 0;
 
+  // set zooming style to standard
+  myZoomingStyle = 0;
+
   // selection
   mySelectionEnabled = true;
   myMultiSelectionEnabled = true;
@@ -159,6 +162,7 @@ void OCCViewer_Viewer::initView( OCCViewer_ViewWindow* view )
     view->initLayout();
     view->initSketchers();
     view->setInteractionStyle( interactionStyle() );
+    view->setZoomingStyle( zoomingStyle() );
     
     OCCViewer_ViewPort3d* vp3d = view->getViewPort();
     if ( vp3d )
@@ -330,6 +334,34 @@ void OCCViewer_Viewer::setInteractionStyle( const int theStyle )
     OCCViewer_ViewWindow* win = ::qobject_cast<OCCViewer_ViewWindow*>( wins.at( i ) );
     if ( win )
       win->setInteractionStyle( theStyle );
+  }
+}
+
+/*!
+  \return zooming style
+*/
+int OCCViewer_Viewer::zoomingStyle() const
+{
+  return myZoomingStyle;
+}
+
+/*!
+  Sets zooming style: 0 - standard, 1 - advanced (at cursor)
+  \param theStyle - new zooming style
+*/
+void OCCViewer_Viewer::setZoomingStyle( const int theStyle )
+{
+  myZoomingStyle = theStyle;
+  //!! To be done for view windows
+  if ( !myViewManager )
+    return;
+
+  QVector<SUIT_ViewWindow*> wins = myViewManager->getViews();
+  for ( int i = 0; i < (int)wins.count(); i++ )
+  {
+    OCCViewer_ViewWindow* win = ::qobject_cast<OCCViewer_ViewWindow*>( wins.at( i ) );
+    if ( win )
+      win->setZoomingStyle( theStyle );
   }
 }
 

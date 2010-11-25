@@ -97,11 +97,20 @@ operations are assigned to the buttons differently: rotation is made
 with the left button, translation with the right and zoom with both
 pressed in the same time.</li>
 </ul>
+<li><b>Zooming mode</b> - this option allows to choose a zooming mode.</li>
+<ul>
+<li><b>Relative to the view's center</b> - allows to zoom the view 
+relatively to its center.</li>
+<li><b>Relative to the cursor</b> - allows to zoom the view
+relatively to the current cursor position..</li>
+</ul>
 <li><b>[+]/[-] Speed Increment</b> - defines the number of units by
 which the speed increases or respectively decreases after pressing [+]
 or [-] keyboard buttons.</li>
 <li><b>Modification Mode</b> - allows choosing between \b Arithmetic
 and \b Geometrical progression used for zooming</li> 
+<li><b>Show static trihedron</b> - allows to show/hide the static trihedron
+located in the bottom-left corner of the viewer.
 </ul>
 <li><b>Spacemouse</b> - a mouse-like manipulator device specially designed
 for working with 3D presentations, objects, etc. You can reassign the
@@ -205,6 +214,19 @@ resizing columns on expanding an object browser item.</li>
 <ul>
 <li><b>Default columns</b> - these checkboxes allow to display or hide <b>Value</b>,
 <b>Entry</b>, <b>IOR</b> and <b>Reference entry</b> columns in the Object Browser.</li>
+</ul>
+
+<br><h2>Shortcuts Preferences</h2>
+
+\image html pref41.png
+
+<ul>
+<li>
+<b>Shortcuts settings</b> widget allows to define custom shortcuts for
+various operations.
+<br>To change keyboard sequence for a certain action - select the
+action and press the custom keys combination.
+</li>
 </ul>
 
 */

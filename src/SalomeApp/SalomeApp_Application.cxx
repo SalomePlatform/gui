@@ -84,6 +84,7 @@
 #include <QListWidget>
 #include <QGridLayout>
 #include <QMenu>
+#include <QtDebug>
 
 #include <SALOMEDSClient_ClientFactory.hxx>
 #include <Basics_Utils.hxx>
@@ -205,26 +206,45 @@ void SalomeApp_Application::start()
     // import/execute python scripts
     if ( pyfiles.count() > 0 && activeStudy() ) {
       SalomeApp_Study* appStudy = dynamic_cast<SalomeApp_Study*>( activeStudy() );
-      if ( appStudy ) {
+      PyConsole_Console* pyConsole = pythonConsole();
+      if ( appStudy && pyConsole ) {
         _PTR(Study) aStudy = appStudy->studyDS();
         if ( !aStudy->GetProperties()->IsLocked() ) {
           for (uint j = 0; j < pyfiles.count(); j++ ) {
             QFileInfo fi ( pyfiles[j] );
-            PyConsole_Console* pyConsole = pythonConsole();
-            if ( pyConsole ) {
-              QString extension = fi.suffix().toLower();
-              if ( fi.exists() ) {
-                // execute python script
-                QString command = QString( "execfile(r\"%1\")" ).arg( fi.absoluteFilePath() );
-                pyConsole->exec( command );
-              }
-              else {
-                // import python module
-                QString command = QString( "import %1" ).arg( pyfiles[j] );
-                if ( extension == "py" )
-                  command = QString( "import %1" ).arg( fi.completeBaseName() );
-                pyConsole->exec( command );
-              }
+            QFileInfo fipy ( pyfiles[j] + ".py" );
+	    QString command = QString( "execfile(r\"%1\")" );
+	    if ( fi.isAbsolute() ) {
+	      if ( fi.exists() )
+		pyConsole->exec( command.arg( fi.absoluteFilePath() ) );
+	      else if ( fipy.exists() )
+		pyConsole->exec( command.arg( fipy.absoluteFilePath() ) );
+	      else 
+		qDebug() << "Can't execute file" << pyfiles[j];
+	    }
+	    else {
+	      bool found = false;
+	      QStringList dirs;
+	      dirs << QDir::currentPath();
+	      if ( ::getenv( "PYTHONPATH" ) )
+		dirs += QString( ::getenv( "PYTHONPATH" ) ).split( QRegExp( "[:|;]" ) );
+	      foreach( QString dir, dirs ) {
+		qDebug() << "try" << QFileInfo( dir, pyfiles[j] ).absoluteFilePath();
+		qDebug() << "try" << QFileInfo( dir, pyfiles[j] + ".py" ).absoluteFilePath();
+		if ( QFileInfo( dir, pyfiles[j] ).exists() ) {
+		  pyConsole->exec( command.arg( QFileInfo( dir, pyfiles[j] ).absoluteFilePath() ) );
+		  found = true;
+		  break;
+		}
+		else if ( QFileInfo( dir, pyfiles[j] + ".py" ).exists() ) {
+		  pyConsole->exec( command.arg( QFileInfo( dir, pyfiles[j] + ".py" ).absoluteFilePath() ) );
+		  found = true;
+		  break;
+		}
+	      }
+	      if ( !found ) {
+		qDebug() << "Can't execute file" << pyfiles[j];
+	      }
             }
           }
         }
@@ -310,7 +330,7 @@ void SalomeApp_Application::createActions()
   // import Python module that manages SALOME plugins
   PyGILState_STATE gstate = PyGILState_Ensure();
   PyObject* pluginsmanager=PyImport_ImportModule((char*)"salome_pluginsmanager");
-  PyObject* res=PyObject_CallMethod( pluginsmanager, (char*)"initialize", (char*)"isss",0,"salome","Tools","Plugins");
+  PyObject* res=PyObject_CallMethod( pluginsmanager, (char*)"initialize", (char*)"isss",0,"salome",tr("MEN_DESK_PLUGINS_TOOLS").toStdString().c_str(),tr("MEN_DESK_PLUGINS").toStdString().c_str());
   if(res==NULL)
     PyErr_Print();
   Py_XDECREF(res);

@@ -27,11 +27,7 @@
 //
 #include "SVTK_FontWidget.h"
 
-#include <QToolButton>
 #include <QComboBox>
-#include <QColorDialog>
-#include <QCheckBox>
-#include <QHBoxLayout>
 
 #include <vtkTextProperty.h>
 
@@ -44,30 +40,8 @@
   Constructor
 */
 SVTK_FontWidget::SVTK_FontWidget( QWidget* theParent )
-: QWidget( theParent )
+: ViewerTools_FontWidgetBase( theParent )
 {
-  myColorBtn = new QToolButton( this );
-  myColorBtn->setMinimumWidth( 20 );
-
-  myFamily = new QComboBox( this );
-  myFamily->insertItem( myFamily->count(), tr( "ARIAL" ) );
-  myFamily->insertItem( myFamily->count(), tr( "COURIER" ) );
-  myFamily->insertItem( myFamily->count(), tr( "TIMES" ) );
-
-  myBold = new QCheckBox( tr( "BOLD" ), this );
-  myItalic = new QCheckBox( tr( "ITALIC" ), this );
-  myShadow = new QCheckBox( tr( "SHADOW" ), this );
-
-  QHBoxLayout* aHBLayout = new QHBoxLayout;
-  aHBLayout->setSpacing( 5 );
-  aHBLayout->addWidget(myColorBtn);
-  aHBLayout->addWidget(myFamily);
-  aHBLayout->addWidget(myBold);
-  aHBLayout->addWidget(myItalic);
-  aHBLayout->addWidget(myShadow);
-  this->setLayout(aHBLayout);
-
-  connect( myColorBtn, SIGNAL( clicked() ), SLOT( onColor() ) );
 }
 
 /*!
@@ -77,32 +51,24 @@ SVTK_FontWidget::~SVTK_FontWidget()
 {
 }
 
-void SVTK_FontWidget::SetColor( const QColor& theColor )
+void SVTK_FontWidget::InitializeFamilies()
 {
-  QPalette palette;
-  palette.setColor(myColorBtn->backgroundRole(), theColor);
-  myColorBtn->setPalette(palette);
-}
-
-QColor SVTK_FontWidget::GetColor() const
-{
-  return myColorBtn->palette().color( myColorBtn->backgroundRole() );
-}
-
-void SVTK_FontWidget::onColor()
-{
-  QColor aColor = QColorDialog::getColor( GetColor(), this );
-  if ( aColor.isValid() )
-    SetColor( aColor );
+  myFamily->insertItem( myFamily->count(), tr( "ARIAL" ) );
+  myFamily->insertItem( myFamily->count(), tr( "COURIER" ) );
+  myFamily->insertItem( myFamily->count(), tr( "TIMES" ) );
 }
 
 void SVTK_FontWidget::SetData( const QColor& theColor,
-                              const int theFamily,
-                              const bool theBold,
-                              const bool theItalic,
-                              const bool theShadow )
+                               const int theFamily,
+                               const bool theBold,
+                               const bool theItalic,
+                               const bool theShadow )
 {
-  SetColor( theColor );
+  ViewerTools_FontWidgetBase::SetData( theColor,
+                                       theFamily,
+                                       theBold,
+                                       theItalic,
+                                       theShadow );
 
   if ( theFamily == VTK_ARIAL )
     myFamily->setCurrentIndex( 0 );
@@ -110,10 +76,6 @@ void SVTK_FontWidget::SetData( const QColor& theColor,
     myFamily->setCurrentIndex( 1 );
   else
     myFamily->setCurrentIndex( 2 );
-
-  myBold->setChecked( theBold );
-  myItalic->setChecked( theItalic );
-  myShadow->setChecked( theShadow );
 }
 
 void SVTK_FontWidget::GetData( QColor& theColor,
@@ -122,17 +84,17 @@ void SVTK_FontWidget::GetData( QColor& theColor,
                                bool& theItalic,
                                bool& theShadow ) const
 {
-  theColor = GetColor();
+  ViewerTools_FontWidgetBase::GetData( theColor,
+                                       theFamily,
+                                       theBold,
+                                       theItalic,
+                                       theShadow );
 
-  int anItem =myFamily->currentIndex();
+  int anItem = myFamily->currentIndex();
   if ( anItem == 0 )
     theFamily = VTK_ARIAL;
   else if ( anItem == 1 )
     theFamily = VTK_COURIER;
   else
     theFamily = VTK_TIMES;
-
-  theBold = myBold->isChecked();
-  theItalic = myItalic->isChecked();
-  theShadow = myShadow->isChecked();
 }

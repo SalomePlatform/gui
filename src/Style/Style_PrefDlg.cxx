@@ -127,7 +127,7 @@ void Style_PrefDlg::PaletteEditor::addColumn( const QString& title )
 
   l->addWidget( myActiveLab   = new QLabel( tr( "Active" ),   myContainer ), myCurrentRow, myCurrentColumn*4+1 );
   l->addWidget( myInactiveLab = new QLabel( tr( "Inactive" ), myContainer ), myCurrentRow, myCurrentColumn*4+2 );
-  l->addWidget( myDisabledLab = new QLabel( tr( "Disable" ),  myContainer ), myCurrentRow, myCurrentColumn*4+3 );
+  l->addWidget( myDisabledLab = new QLabel( tr( "Disabled" ), myContainer ), myCurrentRow, myCurrentColumn*4+3 );
   int w = 0;
   w = qMax( w, myActiveLab->sizeHint().width() );
   w = qMax( w, myInactiveLab->sizeHint().width() );
@@ -376,7 +376,7 @@ QString Style_PrefDlg::PaletteEditor::idToName( int id )
   case Style_Model::BrightText:        //  7
     name = tr( "Bright text" );      break;
   case Style_Model::ButtonText:        //  8
-    name = tr( "Buttont text" );      break;
+    name = tr( "Button text" );      break;
   case Style_Model::Base:              //  9
     name = tr( "Base" );             break;
   case Style_Model::Window:            // 10
@@ -496,7 +496,7 @@ Style_PrefDlg::Style_PrefDlg( QWidget* parent )
   main->setMargin( 0 ); main->setSpacing( SPACING );
 
   // create main widgets
-  myStyleCheck = new QCheckBox( tr( "Use SALOME Style" ), this );
+  myStyleCheck = new QCheckBox( tr( "Enable SALOME Style" ), this );
   QFrame* fr = new QFrame( this );
   fr->setFrameStyle( QFrame::Box | QFrame::Sunken );
 

@@ -317,9 +317,12 @@ public:
   static QList<int>        findViews( const QString& ) /ReleaseGIL/ ;
   static bool              activateView( const int ) /ReleaseGIL/ ;
   static int               createView( const QString& ) /ReleaseGIL/ ;
+  static int               createView( const QString&, QWidget* ) /ReleaseGIL/ ;
   static bool              closeView( const int ) /ReleaseGIL/ ;
   static int               cloneView( const int ) /ReleaseGIL/ ;
   static bool              isViewVisible( const int id ) /ReleaseGIL/ ;
+  static void              setViewClosable( const int id, const bool ) /ReleaseGIL/ ;
+  static bool              isViewClosable( const int id ) /ReleaseGIL/ ;
   
   static bool              groupAllViews() /ReleaseGIL/ ;
   static bool              splitView( const int, Orientation, Action ) /ReleaseGIL/ ;

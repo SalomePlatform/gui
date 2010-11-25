@@ -46,9 +46,9 @@ SUIT_ViewManager::SUIT_ViewManager( SUIT_Study* theStudy,
                                     SUIT_Desktop* theDesktop,
                                     SUIT_ViewModel* theViewModel )
 : QObject( 0 ),
-myDesktop( theDesktop ),
-myTitle( "Default: %M - viewer %V" ),
-myStudy( NULL )
+  myDesktop( theDesktop ),
+  myTitle( "Default: %M - viewer %V" ),
+  myStudy( NULL )
 {
   myViewModel = 0;
   myActiveView = 0;
@@ -209,6 +209,9 @@ bool SUIT_ViewManager::insertView(SUIT_ViewWindow* theView)
   connect(theView, SIGNAL(closing(SUIT_ViewWindow*)),
           this,    SLOT(onClosingView(SUIT_ViewWindow*)));
 
+  connect(theView, SIGNAL(tryClosing(SUIT_ViewWindow*)),
+          this,    SIGNAL(tryCloseView(SUIT_ViewWindow*)));
+
   connect(theView, SIGNAL(mousePressed(SUIT_ViewWindow*, QMouseEvent*)),
           this,    SLOT(onMousePressed(SUIT_ViewWindow*, QMouseEvent*)));
 
@@ -261,6 +264,7 @@ void SUIT_ViewManager::closeView( SUIT_ViewWindow* theView )
 
   QPointer<SUIT_ViewWindow> view( theView );
 
+  view->setClosable( false );
   view->hide();
 
   if ( !view->testAttribute( Qt::WA_DeleteOnClose ) )

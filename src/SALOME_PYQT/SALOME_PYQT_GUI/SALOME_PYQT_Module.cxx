@@ -198,6 +198,15 @@ void SALOME_PYQT_Module::onViewClosed( SUIT_ViewWindow* pview )
 }
 
 /*!
+  \brief Signal handler tryClose(SUIT_ViewWindow*) of a view
+  \param pview view user tries to close
+*/
+void SALOME_PYQT_Module::onViewTryClose( SUIT_ViewWindow* pview )
+{
+  SALOME_PYQT_ModuleLight::onViewTryClose( pview );
+}
+
+/*!
   \breif Process application preferences changing.
 
   Called when any application setting is changed.

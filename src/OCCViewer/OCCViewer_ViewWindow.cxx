@@ -32,6 +32,7 @@
 #include "OCCViewer_ClippingDlg.h"
 #include "OCCViewer_SetRotationPointDlg.h"
 #include "OCCViewer_AxialScaleDlg.h"
+#include "OCCViewer_CubeAxesDlg.h"
 
 #include <SUIT_Desktop.h>
 #include <SUIT_Session.h>
@@ -72,6 +73,14 @@
 #include <Graphic3d_MapOfStructure.hxx>
 #include <Graphic3d_Structure.hxx>
 #include <Graphic3d_ExportFormat.hxx>
+
+#include <Standard_Version.hxx>
+
+#ifdef OCC_VERSION_SERVICEPACK
+#define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8 | OCC_VERSION_SERVICEPACK)
+#else
+#define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8)
+#endif
 
 static QEvent* l_mbPressEvent = 0;
 
@@ -251,6 +260,7 @@ void OCCViewer_ViewWindow::initLayout()
 
   createActions();
   createToolBar();
+
   switch (my2dMode) {
   case XYPlane:
     onTopView();
@@ -262,6 +272,11 @@ void OCCViewer_ViewWindow::initLayout()
     onFrontView();
     break;
   }
+
+  // Graduated axes dialog
+  QtxAction* anAction = dynamic_cast<QtxAction*>( toolMgr()->action( GraduatedAxesId ) );
+  myCubeAxesDlg = new OCCViewer_CubeAxesDlg( anAction, this, "OCCViewer_CubeAxesDlg" );
+  myCubeAxesDlg->initialize();
 }
 
 /*!
@@ -384,20 +399,26 @@ void OCCViewer_ViewWindow::vpMousePressEvent( QMouseEvent* theEvent )
     break;
 
   case ZOOMVIEW:
-    if ( theEvent->button() == Qt::LeftButton )
+    if ( theEvent->button() == Qt::LeftButton ) {
+      myViewPort->startZoomAtPoint( myStartX, myStartY );
       emit vpTransformationStarted ( ZOOMVIEW );
+    }
     break;
 
   case PANVIEW:
-    if ( aSwitchToZoom )
+    if ( aSwitchToZoom ) {
+      myViewPort->startZoomAtPoint( myStartX, myStartY );
       activateZoom();
+    }
     else if ( theEvent->button() == Qt::LeftButton )
       emit vpTransformationStarted ( PANVIEW );
     break;
 
   case ROTATE:
-    if ( aSwitchToZoom )
+    if ( aSwitchToZoom ) {
+      myViewPort->startZoomAtPoint( myStartX, myStartY );
       activateZoom();
+    }
     else if ( theEvent->button() == Qt::LeftButton ) {
       myViewPort->startRotation(myStartX, myStartY, myCurrPointType, mySelectedPoint);
       emit vpTransformationStarted ( ROTATE );
@@ -408,7 +429,8 @@ void OCCViewer_ViewWindow::vpMousePressEvent( QMouseEvent* theEvent )
   /*  Try to activate a transformation */
     switch ( getButtonState(theEvent, anInteractionStyle) ) {
     case ZOOMVIEW:
-            activateZoom();
+      myViewPort->startZoomAtPoint( myStartX, myStartY );
+      activateZoom();
       break;
     case PANVIEW:
             activatePanning();
@@ -1052,46 +1074,54 @@ void OCCViewer_ViewWindow::createActions()
 
   // Projections
   aAction = new QtxAction(tr("MNU_FRONT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_FRONT" ) ),
-                           tr( "MNU_FRONT_VIEW" ), 0, this);
+                           tr( "MNU_FRONT_VIEW" ), 0, this, false, "Viewers:Front view");
   aAction->setStatusTip(tr("DSC_FRONT_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onFrontView()));
+  this->addAction(aAction);
   toolMgr()->registerAction( aAction, FrontId );
 
   aAction = new QtxAction(tr("MNU_BACK_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_BACK" ) ),
-                           tr( "MNU_BACK_VIEW" ), 0, this);
+                           tr( "MNU_BACK_VIEW" ), 0, this, false, "Viewers:Back view");
   aAction->setStatusTip(tr("DSC_BACK_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onBackView()));
+  this->addAction(aAction);
   toolMgr()->registerAction( aAction, BackId );
 
   aAction = new QtxAction(tr("MNU_TOP_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_TOP" ) ),
-                           tr( "MNU_TOP_VIEW" ), 0, this);
+                           tr( "MNU_TOP_VIEW" ), 0, this, false, "Viewers:Top view");
   aAction->setStatusTip(tr("DSC_TOP_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onTopView()));
+  this->addAction(aAction);
   toolMgr()->registerAction( aAction, TopId );
 
   aAction = new QtxAction(tr("MNU_BOTTOM_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_BOTTOM" ) ),
-                           tr( "MNU_BOTTOM_VIEW" ), 0, this);
+                           tr( "MNU_BOTTOM_VIEW" ), 0, this, false, "Viewers:Bottom view");
   aAction->setStatusTip(tr("DSC_BOTTOM_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onBottomView()));
+  this->addAction(aAction);
+  this->addAction(aAction);
   toolMgr()->registerAction( aAction, BottomId );
-
+  
   aAction = new QtxAction(tr("MNU_LEFT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_LEFT" ) ),
-                           tr( "MNU_LEFT_VIEW" ), 0, this);
+                           tr( "MNU_LEFT_VIEW" ), 0, this, false, "Viewers:Left view");
   aAction->setStatusTip(tr("DSC_LEFT_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onLeftView()));
+  this->addAction(aAction);
   toolMgr()->registerAction( aAction, LeftId );
 
   aAction = new QtxAction(tr("MNU_RIGHT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_RIGHT" ) ),
-                           tr( "MNU_RIGHT_VIEW" ), 0, this);
+                           tr( "MNU_RIGHT_VIEW" ), 0, this, false, "Viewers:Right view");
   aAction->setStatusTip(tr("DSC_RIGHT_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onRightView()));
+  this->addAction(aAction);
   toolMgr()->registerAction( aAction, RightId );
 
   // Reset
   aAction = new QtxAction(tr("MNU_RESET_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_RESET" ) ),
-                           tr( "MNU_RESET_VIEW" ), 0, this);
+                           tr( "MNU_RESET_VIEW" ), 0, this, false, "Viewers:Reset view");
   aAction->setStatusTip(tr("DSC_RESET_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onResetView()));
+  this->addAction(aAction);
   toolMgr()->registerAction( aAction, ResetId );
 
   // Clone
@@ -1136,6 +1166,13 @@ void OCCViewer_ViewWindow::createActions()
   connect(aAction, SIGNAL(triggered()), this, SLOT(onAxialScale()));
   toolMgr()->registerAction( aAction, AxialScaleId );
 
+  // Graduated axes 
+  aAction = new QtxAction(tr("MNU_GRADUATED_AXES"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_GRADUATED_AXES" ) ),
+                           tr( "MNU_GRADUATED_AXES" ), 0, this);
+  aAction->setStatusTip(tr("DSC_GRADUATED_AXES"));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onGraduatedAxes()));
+  toolMgr()->registerAction( aAction, GraduatedAxesId );
+
   // Active only ambient light or not
   aAction = new QtxAction(tr("MNU_AMBIENT"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_AMBIENT" ) ),
                            tr( "MNU_AMBIENT" ), 0, this);
@@ -1144,14 +1181,22 @@ void OCCViewer_ViewWindow::createActions()
   toolMgr()->registerAction( aAction, AmbientId );
 
   // Switch between interaction styles
-  aAction = new QtxAction(tr("MNU_STYLE_SWITCH"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_SVTK_STYLE_SWITCH" ) ),
+  aAction = new QtxAction(tr("MNU_STYLE_SWITCH"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_STYLE_SWITCH" ) ),
                           tr( "MNU_STYLE_SWITCH" ), 0, this);
   aAction->setStatusTip(tr("DSC_STYLE_SWITCH"));
   aAction->setCheckable(true);
   connect(aAction, SIGNAL(toggled(bool)), this, SLOT(onSwitchInteractionStyle(bool)));
   toolMgr()->registerAction( aAction, SwitchInteractionStyleId );
 
- // Maximized view
+  // Switch between zooming styles
+  aAction = new QtxAction(tr("MNU_ZOOMING_STYLE_SWITCH"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_ZOOMING_STYLE_SWITCH" ) ),
+                          tr( "MNU_ZOOMING_STYLE_SWITCH" ), 0, this);
+  aAction->setStatusTip(tr("DSC_ZOOMING_STYLE_SWITCH"));
+  aAction->setCheckable(true);
+  connect(aAction, SIGNAL(toggled(bool)), this, SLOT(onSwitchZoomingStyle(bool)));
+  toolMgr()->registerAction( aAction, SwitchZoomingStyleId );
+
+  // Maximized view
   aAction = new QtxAction(tr("MNU_MINIMIZE_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_MINIMIZE" ) ),
                           tr( "MNU_MINIMIZE_VIEW" ), 0, this );
   aAction->setStatusTip(tr("DSC_MINIMIZE_VIEW"));
@@ -1183,6 +1228,9 @@ void OCCViewer_ViewWindow::createToolBar()
 
   toolMgr()->append( DumpId, tid );
   toolMgr()->append( SwitchInteractionStyleId, tid );
+#if OCC_VERSION_LARGE > 0x06030010 // available only with OCC-6.3-sp11 and higher version
+  toolMgr()->append( SwitchZoomingStyleId, tid );
+#endif
   if( myModel->trihedronActivated() && (my2dMode == No2dMode) )
     toolMgr()->append( TrihedronShowId, tid );
 
@@ -1223,6 +1271,9 @@ void OCCViewer_ViewWindow::createToolBar()
     toolMgr()->append( toolMgr()->separator(), tid );
     toolMgr()->append( ClippingId, tid );
     toolMgr()->append( AxialScaleId, tid );
+#if OCC_VERSION_LARGE > 0x06030009 // available only with OCC-6.3-sp10 and higher version
+    toolMgr()->append( GraduatedAxesId, tid );
+#endif
     toolMgr()->append( AmbientId, tid );
   } else {
     toolMgr()->append( AxialScaleId, tid );
@@ -1429,6 +1480,15 @@ void OCCViewer_ViewWindow::onAxialScale()
     myScalingDlg->show();
 }
 
+/*!
+  Shows Graduated Axes dialog
+*/
+void OCCViewer_ViewWindow::onGraduatedAxes()
+{
+  myCubeAxesDlg->Update();
+  myCubeAxesDlg->show();
+}
+
 void OCCViewer_ViewWindow::onAmbientToogle()
 {
   Handle(V3d_Viewer) viewer = myViewPort->getViewer();
@@ -1488,6 +1548,54 @@ void OCCViewer_ViewWindow::performRestoring( const viewAspect& anItem )
   myModel->setTrihedronShown( anItem.isVisible );
   myModel->setTrihedronSize( anItem.size );
         
+#if OCC_VERSION_LARGE > 0x06030009 // available only with OCC-6.3-sp10 and higher version
+  // graduated trihedron
+  bool anIsVisible = anItem.gtIsVisible;
+  OCCViewer_AxisWidget::AxisData anAxisData[3];
+  anAxisData[0].DrawName = anItem.gtDrawNameX;
+  anAxisData[1].DrawName = anItem.gtDrawNameZ;
+  anAxisData[2].DrawName = anItem.gtDrawNameZ;
+  anAxisData[0].Name = anItem.gtNameX;
+  anAxisData[1].Name = anItem.gtNameZ;
+  anAxisData[2].Name = anItem.gtNameZ;
+  anAxisData[0].NameColor = QColor( anItem.gtNameColorRX,
+                                    anItem.gtNameColorGX,
+                                    anItem.gtNameColorBX );
+  anAxisData[1].NameColor = QColor( anItem.gtNameColorRY,
+                                    anItem.gtNameColorGY,
+                                    anItem.gtNameColorBY );
+  anAxisData[2].NameColor = QColor( anItem.gtNameColorRZ,
+                                    anItem.gtNameColorGZ,
+                                    anItem.gtNameColorBZ );
+  anAxisData[0].DrawValues = anItem.gtDrawValuesX;
+  anAxisData[1].DrawValues = anItem.gtDrawValuesY;
+  anAxisData[2].DrawValues = anItem.gtDrawValuesZ;
+  anAxisData[0].NbValues = anItem.gtNbValuesX;
+  anAxisData[1].NbValues = anItem.gtNbValuesY;
+  anAxisData[2].NbValues = anItem.gtNbValuesZ;
+  anAxisData[0].Offset = anItem.gtOffsetX;
+  anAxisData[1].Offset = anItem.gtOffsetY;
+  anAxisData[2].Offset = anItem.gtOffsetZ;
+  anAxisData[0].Color = QColor( anItem.gtColorRX,
+                                anItem.gtColorGX,
+                                anItem.gtColorBX );
+  anAxisData[1].Color = QColor( anItem.gtColorRY,
+                                anItem.gtColorGY,
+                                anItem.gtColorBY );
+  anAxisData[2].Color = QColor( anItem.gtColorRZ,
+                                anItem.gtColorGZ,
+                                anItem.gtColorBZ );
+  anAxisData[0].DrawTickmarks = anItem.gtDrawTickmarksX;
+  anAxisData[1].DrawTickmarks = anItem.gtDrawTickmarksY;
+  anAxisData[2].DrawTickmarks = anItem.gtDrawTickmarksZ;
+  anAxisData[0].TickmarkLength = anItem.gtTickmarkLengthX;
+  anAxisData[1].TickmarkLength = anItem.gtTickmarkLengthY;
+  anAxisData[2].TickmarkLength = anItem.gtTickmarkLengthZ;
+
+  myCubeAxesDlg->SetData( anIsVisible, anAxisData );
+  myCubeAxesDlg->ApplyData( aView3d );
+#endif
+
   myRestoreFlag = 0;
 }
 
@@ -1521,6 +1629,19 @@ void OCCViewer_ViewWindow::onSwitchInteractionStyle( bool on )
 }
 
 /*!
+  \brief Toogles advanced zooming style (relatively to the cursor position) on/off
+*/
+void OCCViewer_ViewWindow::onSwitchZoomingStyle( bool on )
+{
+  myViewPort->setAdvancedZoomingEnabled( on );
+
+  // update action state if method is called outside
+  QtxAction* a = dynamic_cast<QtxAction*>( toolMgr()->action( SwitchZoomingStyleId ) );
+  if ( a->isChecked() != on )
+    a->setChecked( on );
+}
+
+/*!
   \brief Get current interaction style
   \return interaction style
 */
@@ -1536,6 +1657,24 @@ int OCCViewer_ViewWindow::interactionStyle() const
 void OCCViewer_ViewWindow::setInteractionStyle( const int theStyle )
 {
   onSwitchInteractionStyle( theStyle == (int)SUIT_ViewModel::KEY_FREE );
+}
+
+/*!
+  \brief Get current zooming style
+  \return zooming style
+*/
+int OCCViewer_ViewWindow::zoomingStyle() const
+{
+  return myViewPort->isAdvancedZoomingEnabled() ? 1 : 0;
+}
+
+/*!
+  \brief Set current zooming style
+  \param theStyle zooming style
+*/
+void OCCViewer_ViewWindow::setZoomingStyle( const int theStyle )
+{
+  onSwitchZoomingStyle( theStyle == 1 );
 }
 
 /*!
@@ -1725,6 +1864,54 @@ viewAspect OCCViewer_ViewWindow::getViewParams() const
   params.isVisible= isShown;
   params.size     = size;
 
+#if OCC_VERSION_LARGE > 0x06030009 // available only with OCC-6.3-sp10 and higher version
+  // graduated trihedron
+  bool anIsVisible = false;
+  OCCViewer_AxisWidget::AxisData anAxisData[3];
+  myCubeAxesDlg->GetData( anIsVisible, anAxisData );
+
+  params.gtIsVisible = anIsVisible;
+  params.gtDrawNameX = anAxisData[0].DrawName;
+  params.gtDrawNameY = anAxisData[1].DrawName;
+  params.gtDrawNameZ = anAxisData[2].DrawName;
+  params.gtNameX = anAxisData[0].Name;
+  params.gtNameY = anAxisData[1].Name;
+  params.gtNameZ = anAxisData[2].Name;
+  params.gtNameColorRX = anAxisData[0].NameColor.red();
+  params.gtNameColorGX = anAxisData[0].NameColor.green();
+  params.gtNameColorBX = anAxisData[0].NameColor.blue();
+  params.gtNameColorRY = anAxisData[1].NameColor.red();
+  params.gtNameColorGY = anAxisData[1].NameColor.green();
+  params.gtNameColorBY = anAxisData[1].NameColor.blue();
+  params.gtNameColorRZ = anAxisData[2].NameColor.red();
+  params.gtNameColorGZ = anAxisData[2].NameColor.green();
+  params.gtNameColorBZ = anAxisData[2].NameColor.blue();
+  params.gtDrawValuesX = anAxisData[0].DrawValues;
+  params.gtDrawValuesY = anAxisData[1].DrawValues;
+  params.gtDrawValuesZ = anAxisData[2].DrawValues;
+  params.gtNbValuesX = anAxisData[0].NbValues;
+  params.gtNbValuesY = anAxisData[1].NbValues;
+  params.gtNbValuesZ = anAxisData[2].NbValues;
+  params.gtOffsetX = anAxisData[0].Offset;
+  params.gtOffsetY = anAxisData[1].Offset;
+  params.gtOffsetZ = anAxisData[2].Offset;
+  params.gtColorRX = anAxisData[0].Color.red();
+  params.gtColorGX = anAxisData[0].Color.green();
+  params.gtColorBX = anAxisData[0].Color.blue();
+  params.gtColorRY = anAxisData[1].Color.red();
+  params.gtColorGY = anAxisData[1].Color.green();
+  params.gtColorBY = anAxisData[1].Color.blue();
+  params.gtColorRZ = anAxisData[2].Color.red();
+  params.gtColorGZ = anAxisData[2].Color.green();
+  params.gtColorBZ = anAxisData[2].Color.blue();
+  params.gtDrawTickmarksX = anAxisData[0].DrawTickmarks;
+  params.gtDrawTickmarksY = anAxisData[1].DrawTickmarks;
+  params.gtDrawTickmarksZ = anAxisData[2].DrawTickmarks;
+  params.gtTickmarkLengthX = anAxisData[0].TickmarkLength;
+  params.gtTickmarkLengthY = anAxisData[1].TickmarkLength;
+  params.gtTickmarkLengthZ = anAxisData[2].TickmarkLength;
+#endif
+
   return params;
 }
 
@@ -1736,13 +1923,73 @@ viewAspect OCCViewer_ViewWindow::getViewParams() const
 QString OCCViewer_ViewWindow::getVisualParameters()
 {
   viewAspect params = getViewParams();
-  QString retStr;
-  retStr.sprintf( "%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e*%.12e", params.scale,
-                  params.centerX, params.centerY, params.projX, params.projY, params.projZ, params.twist,
-                  params.atX, params.atY, params.atZ, params.eyeX, params.eyeY, params.eyeZ,
-                  params.scaleX, params.scaleY, params.scaleZ );
-  retStr += QString().sprintf("*%u*%.2f", params.isVisible, params.size );
-  return retStr;
+
+  QStringList data;
+
+  data << QString( "scale=%1" )    .arg( params.scale,   0, 'e', 12 );
+  data << QString( "centerX=%1" )  .arg( params.centerX, 0, 'e', 12 );
+  data << QString( "centerY=%1" )  .arg( params.centerY, 0, 'e', 12 );
+  data << QString( "projX=%1" )    .arg( params.projX,   0, 'e', 12 );
+  data << QString( "projY=%1" )    .arg( params.projY,   0, 'e', 12 );
+  data << QString( "projZ=%1" )    .arg( params.projZ,   0, 'e', 12 );
+  data << QString( "twist=%1" )    .arg( params.twist,   0, 'e', 12 );
+  data << QString( "atX=%1" )      .arg( params.atX,     0, 'e', 12 );
+  data << QString( "atY=%1" )      .arg( params.atY,     0, 'e', 12 );
+  data << QString( "atZ=%1" )      .arg( params.atZ,     0, 'e', 12 );
+  data << QString( "eyeX=%1" )     .arg( params.eyeX,    0, 'e', 12 );
+  data << QString( "eyeY=%1" )     .arg( params.eyeY,    0, 'e', 12 );
+  data << QString( "eyeZ=%1" )     .arg( params.eyeZ,    0, 'e', 12 );
+  data << QString( "scaleX=%1" )   .arg( params.scaleX,  0, 'e', 12 );
+  data << QString( "scaleY=%1" )   .arg( params.scaleY,  0, 'e', 12 );
+  data << QString( "scaleZ=%1" )   .arg( params.scaleZ,  0, 'e', 12 );
+  data << QString( "isVisible=%1" ).arg( params.isVisible );
+  data << QString( "size=%1" )     .arg( params.size,    0, 'f',  2 );
+
+#if OCC_VERSION_LARGE > 0x06030009 // available only with OCC-6.3-sp10 or newer version
+  // graduated trihedron
+  data << QString( "gtIsVisible=%1" )      .arg( params.gtIsVisible );
+  data << QString( "gtDrawNameX=%1" )      .arg( params.gtDrawNameX );
+  data << QString( "gtDrawNameY=%1" )      .arg( params.gtDrawNameY );
+  data << QString( "gtDrawNameZ=%1" )      .arg( params.gtDrawNameZ );
+  data << QString( "gtNameX=%1" )          .arg( params.gtNameX );
+  data << QString( "gtNameY=%1" )          .arg( params.gtNameY );
+  data << QString( "gtNameZ=%1" )          .arg( params.gtNameZ );
+  data << QString( "gtNameColorRX=%1" )    .arg( params.gtNameColorRX );
+  data << QString( "gtNameColorGX=%1" )    .arg( params.gtNameColorGX );
+  data << QString( "gtNameColorBX=%1" )    .arg( params.gtNameColorBX );
+  data << QString( "gtNameColorRY=%1" )    .arg( params.gtNameColorRY );
+  data << QString( "gtNameColorGY=%1" )    .arg( params.gtNameColorGY );
+  data << QString( "gtNameColorBY=%1" )    .arg( params.gtNameColorBY );
+  data << QString( "gtNameColorRZ=%1" )    .arg( params.gtNameColorRZ );
+  data << QString( "gtNameColorGZ=%1" )    .arg( params.gtNameColorGZ );
+  data << QString( "gtNameColorBZ=%1" )    .arg( params.gtNameColorBZ );
+  data << QString( "gtDrawValuesX=%1" )    .arg( params.gtDrawValuesX );
+  data << QString( "gtDrawValuesY=%1" )    .arg( params.gtDrawValuesY );
+  data << QString( "gtDrawValuesZ=%1" )    .arg( params.gtDrawValuesZ );
+  data << QString( "gtNbValuesX=%1" )      .arg( params.gtNbValuesX );
+  data << QString( "gtNbValuesY=%1" )      .arg( params.gtNbValuesY );
+  data << QString( "gtNbValuesZ=%1" )      .arg( params.gtNbValuesZ );
+  data << QString( "gtOffsetX=%1" )        .arg( params.gtOffsetX );
+  data << QString( "gtOffsetY=%1" )        .arg( params.gtOffsetY );
+  data << QString( "gtOffsetZ=%1" )        .arg( params.gtOffsetZ );
+  data << QString( "gtColorRX=%1" )        .arg( params.gtColorRX );
+  data << QString( "gtColorGX=%1" )        .arg( params.gtColorGX );
+  data << QString( "gtColorBX=%1" )        .arg( params.gtColorBX );
+  data << QString( "gtColorRY=%1" )        .arg( params.gtColorRY );
+  data << QString( "gtColorGY=%1" )        .arg( params.gtColorGY );
+  data << QString( "gtColorBY=%1" )        .arg( params.gtColorBY );
+  data << QString( "gtColorRZ=%1" )        .arg( params.gtColorRZ );
+  data << QString( "gtColorGZ=%1" )        .arg( params.gtColorGZ );
+  data << QString( "gtColorBZ=%1" )        .arg( params.gtColorBZ );
+  data << QString( "gtDrawTickmarksX=%1" ) .arg( params.gtDrawTickmarksX );
+  data << QString( "gtDrawTickmarksY=%1" ) .arg( params.gtDrawTickmarksY );
+  data << QString( "gtDrawTickmarksZ=%1" ) .arg( params.gtDrawTickmarksZ );
+  data << QString( "gtTickmarkLengthX=%1" ).arg( params.gtTickmarkLengthX );
+  data << QString( "gtTickmarkLengthY=%1" ).arg( params.gtTickmarkLengthY );
+  data << QString( "gtTickmarkLengthZ=%1" ).arg( params.gtTickmarkLengthZ );
+#endif
+
+  return data.join("*");
 }
 
 /*!
@@ -1751,36 +1998,98 @@ QString OCCViewer_ViewWindow::getVisualParameters()
 */
 void OCCViewer_ViewWindow::setVisualParameters( const QString& parameters )
 {
-  QStringList paramsLst = parameters.split( '*' );
-  if ( paramsLst.size() >= 15 ) {
-    viewAspect params;
-    params.scale    = paramsLst[0].toDouble();
-    params.centerX  = paramsLst[1].toDouble();
-    params.centerY  = paramsLst[2].toDouble();
-    params.projX    = paramsLst[3].toDouble();
-    params.projY    = paramsLst[4].toDouble();
-    params.projZ    = paramsLst[5].toDouble();
-    params.twist    = paramsLst[6].toDouble();
-    params.atX      = paramsLst[7].toDouble();
-    params.atY      = paramsLst[8].toDouble();
-    params.atZ      = paramsLst[9].toDouble();
-    params.eyeX     = paramsLst[10].toDouble();
-    params.eyeY     = paramsLst[11].toDouble();
-    params.eyeZ     = paramsLst[12].toDouble();
-    if ( paramsLst.size() == 18 ) {
-      params.scaleX    = paramsLst[13].toDouble();
-      params.scaleY    = paramsLst[14].toDouble();
-      params.scaleZ    = paramsLst[15].toDouble();
-      params.isVisible = paramsLst[16].toDouble();
-      params.size      = paramsLst[17].toDouble();
-    } 
-    else {
-      params.scaleX    = 1.;
-      params.scaleY    = 1.;
-      params.scaleZ    = 1.;
+  viewAspect params;
+
+  QStringList data = parameters.split( '*' );
+  if ( parameters.contains( '=' )  ) // new format - "scale=1.000e+00*centerX=0.000e+00..."
+  {
+    foreach( QString param, data ) {
+      QString paramName  = param.section( '=', 0, 0 ).trimmed();
+      QString paramValue = param.section( '=', 1, 1 ).trimmed();
+      if      ( paramName == "scale" )             params.scale             = paramValue.toDouble();
+      else if ( paramName == "centerX" )           params.centerX           = paramValue.toDouble();
+      else if ( paramName == "centerY" )           params.centerY           = paramValue.toDouble();
+      else if ( paramName == "projX" )             params.projX             = paramValue.toDouble();
+      else if ( paramName == "projY" )             params.projY             = paramValue.toDouble();
+      else if ( paramName == "projZ" )             params.projZ             = paramValue.toDouble();
+      else if ( paramName == "twist" )             params.twist             = paramValue.toDouble();
+      else if ( paramName == "atX" )               params.atX               = paramValue.toDouble();
+      else if ( paramName == "atY" )               params.atY               = paramValue.toDouble();
+      else if ( paramName == "atZ" )               params.atZ               = paramValue.toDouble();
+      else if ( paramName == "eyeX" )              params.eyeX              = paramValue.toDouble();
+      else if ( paramName == "eyeY" )              params.eyeY              = paramValue.toDouble();
+      else if ( paramName == "eyeZ" )              params.eyeZ              = paramValue.toDouble();
+      else if ( paramName == "scaleX" )            params.scaleX            = paramValue.toDouble();
+      else if ( paramName == "scaleY" )            params.scaleY            = paramValue.toDouble();
+      else if ( paramName == "scaleZ" )            params.scaleZ            = paramValue.toDouble();
+      else if ( paramName == "isVisible" )         params.isVisible         = paramValue.toInt();
+      else if ( paramName == "size" )              params.size              = paramValue.toDouble();
+      // graduated trihedron
+      else if ( paramName == "gtIsVisible" )       params.gtIsVisible       = paramValue.toInt();
+      else if ( paramName == "gtDrawNameX" )       params.gtDrawNameX       = paramValue.toInt();
+      else if ( paramName == "gtDrawNameY" )       params.gtDrawNameY       = paramValue.toInt();
+      else if ( paramName == "gtDrawNameZ" )       params.gtDrawNameZ       = paramValue.toInt();
+      else if ( paramName == "gtNameX" )           params.gtNameX           = paramValue;
+      else if ( paramName == "gtNameY" )           params.gtNameY           = paramValue;
+      else if ( paramName == "gtNameZ" )           params.gtNameZ           = paramValue;
+      else if ( paramName == "gtNameColorRX" )     params.gtNameColorRX     = paramValue.toInt();
+      else if ( paramName == "gtNameColorGX" )     params.gtNameColorGX     = paramValue.toInt();
+      else if ( paramName == "gtNameColorBX" )     params.gtNameColorBX     = paramValue.toInt();
+      else if ( paramName == "gtNameColorRY" )     params.gtNameColorRY     = paramValue.toInt();
+      else if ( paramName == "gtNameColorGY" )     params.gtNameColorGY     = paramValue.toInt();
+      else if ( paramName == "gtNameColorBY" )     params.gtNameColorBY     = paramValue.toInt();
+      else if ( paramName == "gtNameColorRZ" )     params.gtNameColorRZ     = paramValue.toInt();
+      else if ( paramName == "gtNameColorGZ" )     params.gtNameColorGZ     = paramValue.toInt();
+      else if ( paramName == "gtNameColorBZ" )     params.gtNameColorBZ     = paramValue.toInt();
+      else if ( paramName == "gtDrawValuesX" )     params.gtDrawValuesX     = paramValue.toInt();
+      else if ( paramName == "gtDrawValuesY" )     params.gtDrawValuesY     = paramValue.toInt();
+      else if ( paramName == "gtDrawValuesZ" )     params.gtDrawValuesZ     = paramValue.toInt();
+      else if ( paramName == "gtNbValuesX" )       params.gtNbValuesX       = paramValue.toInt();
+      else if ( paramName == "gtNbValuesY" )       params.gtNbValuesY       = paramValue.toInt();
+      else if ( paramName == "gtNbValuesZ" )       params.gtNbValuesZ       = paramValue.toInt();
+      else if ( paramName == "gtOffsetX" )         params.gtOffsetX         = paramValue.toInt();
+      else if ( paramName == "gtOffsetY" )         params.gtOffsetY         = paramValue.toInt();
+      else if ( paramName == "gtOffsetZ" )         params.gtOffsetZ         = paramValue.toInt();
+      else if ( paramName == "gtColorRX" )         params.gtColorRX         = paramValue.toInt();
+      else if ( paramName == "gtColorGX" )         params.gtColorGX         = paramValue.toInt();
+      else if ( paramName == "gtColorBX" )         params.gtColorBX         = paramValue.toInt();
+      else if ( paramName == "gtColorRY" )         params.gtColorRY         = paramValue.toInt();
+      else if ( paramName == "gtColorGY" )         params.gtColorGY         = paramValue.toInt();
+      else if ( paramName == "gtColorBY" )         params.gtColorBY         = paramValue.toInt();
+      else if ( paramName == "gtColorRZ" )         params.gtColorRZ         = paramValue.toInt();
+      else if ( paramName == "gtColorGZ" )         params.gtColorGZ         = paramValue.toInt();
+      else if ( paramName == "gtColorBZ" )         params.gtColorBZ         = paramValue.toInt();
+      else if ( paramName == "gtDrawTickmarksX" )  params.gtDrawTickmarksX  = paramValue.toInt();
+      else if ( paramName == "gtDrawTickmarksY" )  params.gtDrawTickmarksY  = paramValue.toInt();
+      else if ( paramName == "gtDrawTickmarksZ" )  params.gtDrawTickmarksZ  = paramValue.toInt();
+      else if ( paramName == "gtTickmarkLengthX" ) params.gtTickmarkLengthX = paramValue.toInt();
+      else if ( paramName == "gtTickmarkLengthY" ) params.gtTickmarkLengthY = paramValue.toInt();
+      else if ( paramName == "gtTickmarkLengthZ" ) params.gtTickmarkLengthZ = paramValue.toInt();
     }
-    performRestoring( params );
   }
+  else // old format - "1.000e+00*0.000e+00..."
+  {
+    int idx = 0;
+    params.scale     = data.count() > idx ? data[idx++].toDouble() : 1.0;
+    params.centerX   = data.count() > idx ? data[idx++].toDouble() : 0.0;
+    params.centerY   = data.count() > idx ? data[idx++].toDouble() : 0.0;
+    params.projX     = data.count() > idx ? data[idx++].toDouble() : sqrt(1./3);
+    params.projY     = data.count() > idx ? data[idx++].toDouble() : -sqrt(1./3);
+    params.projZ     = data.count() > idx ? data[idx++].toDouble() : sqrt(1./3);
+    params.twist     = data.count() > idx ? data[idx++].toDouble() : 0.0;
+    params.atX       = data.count() > idx ? data[idx++].toDouble() : 0.0;
+    params.atY       = data.count() > idx ? data[idx++].toDouble() : 0.0;
+    params.atZ       = data.count() > idx ? data[idx++].toDouble() : 0.0;
+    params.eyeX      = data.count() > idx ? data[idx++].toDouble() : sqrt(250000./3);
+    params.eyeY      = data.count() > idx ? data[idx++].toDouble() : -sqrt(250000./3);
+    params.eyeZ      = data.count() > idx ? data[idx++].toDouble() : sqrt(250000./3);
+    params.scaleX    = data.count() > idx ? data[idx++].toDouble() : 1.0;
+    params.scaleY    = data.count() > idx ? data[idx++].toDouble() : 1.0;
+    params.scaleZ    = data.count() > idx ? data[idx++].toDouble() : 1.0;
+    params.isVisible = data.count() > idx ? data[idx++].toInt()    : 1;
+    params.size      = data.count() > idx ? data[idx++].toDouble() : 100.0;
+  }
+  performRestoring( params );
 }
 
 /*!

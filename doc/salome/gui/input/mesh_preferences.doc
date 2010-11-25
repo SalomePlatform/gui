@@ -10,10 +10,15 @@ later sessions with this module.
 \image html pref21.png
 
 <ul>
-<li><b>Update</b></li>
+<li><b>Automatic Update</b></li>
 <ul>
 <li>If you toggle <b>Automatic Update</b> checkbox, the model in your
 viewer automatically updated whenever you make changes in it.</li>
+<li><b>Size limit (elements)</b> - allows to specify the maximum
+number of elements in the resulting mesh for which the automatic updating
+of the presentation is performed. This option affects only
+<b>Compute</b> operation. Zero value means "no limit". Default value
+is 500 000 mesh elements.
 </ul>
 <li><b>Quality Controls</b></li>
 <ul>

@@ -158,12 +158,13 @@ public slots:
   void                       onGUIEvent();
 
   void                       onActiveViewChanged( SUIT_ViewWindow* );
+  void                       onViewTryClose( SUIT_ViewWindow* );
   void                       onViewClosed( SUIT_ViewWindow* );
   void                       onViewCloned( SUIT_ViewWindow* );
 
 protected:
   /* create data model */
-  virtual CAM_DataModel*          createDataModel();
+  virtual CAM_DataModel*     createDataModel();
 
 private:
   void                       init( CAM_Application* );
@@ -182,6 +183,7 @@ private:
   void                       setWorkSpace();
   
   void                       activeViewChanged( const SUIT_ViewWindow* );
+  void                       viewTryClose( const SUIT_ViewWindow* );
   void                       viewClosed( const SUIT_ViewWindow* );
   void                       viewCloned( const SUIT_ViewWindow* );
   void                       connectView( const SUIT_ViewWindow* );

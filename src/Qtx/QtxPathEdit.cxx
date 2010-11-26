@@ -223,8 +223,11 @@ void QtxPathEdit::onBrowse( bool /*on*/ )
 
   if ( !path.isEmpty() ) {
     QString txt = QDir::convertSeparators( path );
-    emit pathSelected( txt );
+    bool block = myPath->signalsBlocked();
+    myPath->blockSignals( true );
     myPath->setText( txt );
+    myPath->blockSignals( block );
+    emit pathSelected( txt );
   }
 
   myPath->setFocus();

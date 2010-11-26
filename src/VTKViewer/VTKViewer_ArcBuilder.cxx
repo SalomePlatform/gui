@@ -24,6 +24,7 @@
 #include "VTKViewer_ArcBuilder.h"
 
 #include <math.h>
+#include <float.h>
 
 //VTK includes
 #include <vtkMath.h>
@@ -425,19 +426,23 @@ vtkUnstructuredGrid* VTKViewer_ArcBuilder::BuildArc(std::vector<double>& theScal
 
   theScalarValues.clear();
 
-  double K1;
-  double K2;
-  K1 = (y2 - y1)/(x2 - x1);
-  K2 = (y3 - y2)/(x3 - x2);
+  double K1 = 0;
+  double K2 = 0;
+  bool okK1 = false, okK2 = false;
+  if ( fabs(x2 - x1) > DBL_MIN )
+    K1 = (y2 - y1)/(x2 - x1), okK1 = true;
+  if ( fabs(x3 - x2) > DBL_MIN )
+    K2 = (y3 - y2)/(x3 - x2), okK2 = true;
+  
 #ifdef _MY_DEBUG_   
   std::cout<<"K1 : "<< K1 <<endl; 
   std::cout<<"K2 : "<< K2 <<endl; 
 #endif
   double xCenter;
-  if(x3 == x2) //K2 --> infinity
+  if( !okK2 ) //K2 --> infinity
     xCenter = (K1*(y1-y3) + (x1+x2))/2.0;
   
-  else if(x2 == x1) //K1 --> infinity
+  else if( !okK1 ) //K1 --> infinity
     xCenter = (K2*(y1-y3) - (x2+x3))/(-2.0);
   
   else 

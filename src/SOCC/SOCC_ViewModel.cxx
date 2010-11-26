@@ -335,13 +335,6 @@ void SOCC_Viewer::Display( const SALOME_OCCPrs* prs )
   // get context
   Handle (AIS_InteractiveContext) ic = getAISContext();
 
-  // get all displayed objects
-  AIS_ListOfInteractive List;
-  ic->DisplayedObjects( List );
-  // get objects in the collector
-  AIS_ListOfInteractive ListCollector;
-  ic->ObjectsInCollector( ListCollector );
-
   // get objects to be displayed
   AIS_ListOfInteractive anAISObjects;
   anOCCPrs->GetObjects( anAISObjects );
@@ -353,40 +346,23 @@ void SOCC_Viewer::Display( const SALOME_OCCPrs* prs )
     if ( !anAIS.IsNull() )
     {
       // try to find presentation in the viewer
-      bool bDisplayed = false;
-      AIS_ListIteratorOfListOfInteractive ite( List );
-      for ( ; ite.More(); ite.Next() )
-      {
-        // compare presentations by handles
-        // if the object is already displayed - nothing to do more
-        if ( ite.Value() == anAIS )
+
+      // if the object is already displayed - nothing to do more
+      if(ic->IsDisplayed(anAIS))
         {
           // Deactivate object if necessary
           if ( !anOCCPrs->ToActivate() )
             ic->Deactivate( anAIS );
-          bDisplayed = true;
-          break;
+          continue;
         }
-      }
-
-      if ( bDisplayed )
-        continue;
 
       // then try to find presentation in the collector
-      bDisplayed = false;
-      ite.Initialize( ListCollector );
-      for ( ; ite.More(); ite.Next() )
-      {
-        // compare presentations by handles
-        // if the object is in collector - display it
-        if ( ite.Value() == anAIS )
+      if(ic->IsInCollector(anAIS))
         {
           ic->DisplayFromCollector( anAIS, false );
-
           // Deactivate object if necessary
           if ( !anOCCPrs->ToActivate() )
             ic->Deactivate( anAIS );
-          bDisplayed = true;
 
           // Set visibility flag
           // Temporarily commented to avoid awful dependecy on SALOMEDS
@@ -399,11 +375,8 @@ void SOCC_Viewer::Display( const SALOME_OCCPrs* prs )
           //  if ( study )
           //    ToolsGUI::SetVisibility( study, anObj->getEntry(), true, this );
           //}
-          break;
+          continue;
         }
-      }
-      if ( bDisplayed )
-        continue;
 
       // if object is not displayed and not found in the collector - display it
       if ( anAIS->IsKind( STANDARD_TYPE(AIS_Trihedron) ) )

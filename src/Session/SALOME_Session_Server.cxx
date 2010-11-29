@@ -96,7 +96,7 @@ void MessageOutput( QtMsgType type, const char* msg )
   switch ( type )
   {
   case QtDebugMsg:
-    MESSAGE( "Debug: " << msg );
+    //MESSAGE( "Debug: " << msg );
     break;
   case QtWarningMsg:
     MESSAGE( "Warning: " << msg );

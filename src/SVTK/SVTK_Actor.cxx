@@ -32,7 +32,11 @@
 #include <vtkRenderer.h>
 
 #include <vtkCell.h>
+#include <vtkPolyhedron.h>
 #include <vtkPolyData.h>
+
+#include "Utils_SALOME_Exception.hxx"
+#include "utilities.h"
 
 using namespace std;
 
@@ -125,7 +129,18 @@ SVTK_Actor
   for(int ind = 1; ind <= aNbOfParts; ind++){
     int aPartId = theMapIndex( ind );
     if(vtkCell* aCell = theMapActor->GetElemCell(aPartId))
-      myUnstructuredGrid->InsertNextCell(aCell->GetCellType(),aCell->GetPointIds());
+      {
+      if (aCell->GetCellType() != VTK_POLYHEDRON)
+        myUnstructuredGrid->InsertNextCell(aCell->GetCellType(),aCell->GetPointIds());
+      else
+        {
+          vtkPolyhedron *polyhedron = dynamic_cast<vtkPolyhedron*>(aCell);
+          if (!polyhedron)
+            throw SALOME_Exception(LOCALIZED ("not a polyhedron"));
+          vtkIdType *pts = polyhedron->GetFaces();
+          myUnstructuredGrid->InsertNextCell(aCell->GetCellType(),pts[0], pts+1);
+        }
+      }
   }
 
   UnShrink();

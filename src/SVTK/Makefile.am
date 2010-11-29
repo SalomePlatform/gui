@@ -162,7 +162,7 @@ libSVTK_la_LDFLAGS =			\
 libSVTK_la_LIBADD = ../Qtx/libqtx.la ../SUIT/libsuit.la ../ViewerTools/libViewerTools.la \
 		    ../OBJECT/libSalomeObject.la ../Prs/libSalomePrs.la \
 		    ../VTKViewer/libVTKViewer.la ../OpenGLUtils/libOpenGLUtils.la \
-		    -lSALOMELocalTrace
+		    -lSALOMELocalTrace -lOpUtil
 
 # Executable
 bin_PROGRAMS = SVTK

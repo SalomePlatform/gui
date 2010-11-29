@@ -37,6 +37,8 @@
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
 
+#include "utilities.h"
+
 using namespace std;
 
 #if defined __GNUC__
@@ -66,6 +68,7 @@ void VTKViewer_ExtractUnstructuredGrid::RegisterCell(vtkIdType theCellId){
 void VTKViewer_ExtractUnstructuredGrid::RegisterCellsWithType(vtkIdType theCellType){
 //  if(0 && MYDEBUG) MESSAGE("RegisterCellsWithType - theCellType = "<<theCellType);
   myCellTypes.insert(theCellType);
+  //MESSAGE("myCellTypes.insert " << theCellType);
   Modified();
 }
 
@@ -96,6 +99,8 @@ vtkIdType VTKViewer_ExtractUnstructuredGrid::GetOutputId(int theInId) const{
 inline void InsertCell(vtkUnstructuredGrid *theInput,
                        vtkCellArray *theConnectivity, 
                        vtkUnsignedCharArray* theCellTypesArray,
+                       vtkIdTypeArray*& theFaces,
+                       vtkIdTypeArray*& theFaceLocations,
                        vtkIdType theCellId, 
                        vtkIdList *theIdList,
                        bool theStoreMapping,
@@ -110,9 +115,40 @@ inline void InsertCell(vtkUnstructuredGrid *theInput,
   for(vtkIdType i = 0; i < aNbIds; i++){
     theIdList->SetId(i,aPntIds->GetId(i));
   }
-  theConnectivity->InsertNextCell(theIdList);
-
   vtkIdType aCellType = aCell->GetCellType();
+  if (aCellType != VTK_POLYHEDRON)
+    {
+      theConnectivity->InsertNextCell(theIdList);
+      if (theFaceLocations)
+        theFaceLocations->InsertNextValue(-1);
+    }
+  else
+    {
+      //MESSAGE("InsertCell type VTK_POLYHEDRON " << theStoreMapping);
+      if (!theFaces)
+        {
+          theFaces = vtkIdTypeArray::New();
+          theFaces->Allocate(theCellTypesArray->GetSize());
+          theFaceLocations = vtkIdTypeArray::New();
+          theFaceLocations->Allocate(theCellTypesArray->GetSize());
+          // FaceLocations must be padded until the current position
+          for (vtkIdType i = 0; i <= theCellTypesArray->GetMaxId(); i++)
+            {
+              theFaceLocations->InsertNextValue(-1);
+            }
+        }
+      // insert face location
+      theFaceLocations->InsertNextValue(theFaces->GetMaxId() + 1);
+
+      // insert cell connectivity and faces stream
+      vtkIdType nfaces;
+      vtkIdType* face;
+      vtkIdType realnpts;
+      theInput->GetFaceStream(theCellId, nfaces, face);
+      vtkUnstructuredGrid::DecomposeAPolyhedronCell(
+          nfaces, face, realnpts, theConnectivity, theFaces);
+    }
+
   theCellTypesArray->InsertNextValue(aCellType);
   if(theStoreMapping){
     theOut2InId.push_back(theCellId);
@@ -122,7 +158,7 @@ inline void InsertCell(vtkUnstructuredGrid *theInput,
 
 inline void InsertPointCell(vtkCellArray *theConnectivity, 
                             vtkUnsignedCharArray* theCellTypesArray,
-                            vtkIdType theCellId, 
+                            vtkIdType theCellId,
                             vtkIdList *theIdList,
                             bool theStoreMapping,
                             vtkIdType theOutId, 
@@ -190,19 +226,23 @@ void VTKViewer_ExtractUnstructuredGrid::Execute()
       vtkUnsignedCharArray* aCellTypesArray = vtkUnsignedCharArray::New();
       aCellTypesArray->SetNumberOfComponents(1);
       aCellTypesArray->Allocate(aNbElems*aCellTypesArray->GetNumberOfComponents());
+
+      vtkIdTypeArray *newFaces = 0;
+      vtkIdTypeArray *newFaceLocations = 0;
+
       if(!myCellIds.empty() && myCellTypes.empty()){
         if(myStoreMapping) myOut2InId.reserve(myCellIds.size());
         if(myChangeMode == eAdding){
           for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
             if(myCellIds.find(aCellId) != myCellIds.end()){
-              InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
+              InsertCell(anInput,aConnectivity,aCellTypesArray,newFaces,newFaceLocations,aCellId,anIdList,
                          myStoreMapping,anOutId,myOut2InId,myIn2OutId);
             }
           }
         }else{
           for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
             if(myCellIds.find(aCellId) == myCellIds.end()){
-              InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
+              InsertCell(anInput,aConnectivity,aCellTypesArray,newFaces,newFaceLocations,aCellId,anIdList,
                          myStoreMapping,anOutId,myOut2InId,myIn2OutId);
             }
           }
@@ -212,7 +252,7 @@ void VTKViewer_ExtractUnstructuredGrid::Execute()
           for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
             vtkIdType aType = anInput->GetCellType(aCellId);
             if(myCellTypes.find(aType) != myCellTypes.end()){
-              InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
+              InsertCell(anInput,aConnectivity,aCellTypesArray,newFaces,newFaceLocations,aCellId,anIdList,
                          myStoreMapping,anOutId,myOut2InId,myIn2OutId);
             }
           }
@@ -220,7 +260,7 @@ void VTKViewer_ExtractUnstructuredGrid::Execute()
           for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
             vtkIdType aType = anInput->GetCellType(aCellId);
             if(myCellTypes.find(aType) == myCellTypes.end()){
-              InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
+              InsertCell(anInput,aConnectivity,aCellTypesArray,newFaces,newFaceLocations,aCellId,anIdList,
                          myStoreMapping,anOutId,myOut2InId,myIn2OutId);
             }
           }
@@ -231,7 +271,7 @@ void VTKViewer_ExtractUnstructuredGrid::Execute()
             vtkIdType aType = anInput->GetCellType(aCellId);
             if(myCellTypes.find(aType) != myCellTypes.end()){
               if(myCellIds.find(aCellId) != myCellIds.end()){
-                InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
+                InsertCell(anInput,aConnectivity,aCellTypesArray,newFaces,newFaceLocations,aCellId,anIdList,
                            myStoreMapping,anOutId,myOut2InId,myIn2OutId);
               }
             }
@@ -241,7 +281,7 @@ void VTKViewer_ExtractUnstructuredGrid::Execute()
             vtkIdType aType = anInput->GetCellType(aCellId);
             if(myCellTypes.find(aType) == myCellTypes.end()){
               if(myCellIds.find(aCellId) == myCellIds.end()){
-                InsertCell(anInput,aConnectivity,aCellTypesArray,aCellId,anIdList,
+                InsertCell(anInput,aConnectivity,aCellTypesArray,newFaces,newFaceLocations,aCellId,anIdList,
                            myStoreMapping,anOutId,myOut2InId,myIn2OutId);
               }
             }
@@ -256,7 +296,7 @@ void VTKViewer_ExtractUnstructuredGrid::Execute()
         for(vtkIdType i = 0, *pts, npts; aConnectivity->GetNextCell(npts,pts); i++){
           aCellLocationsArray->SetValue(i,aConnectivity->GetTraversalLocation(npts));
         }
-        anOutput->SetCells(aCellTypesArray,aCellLocationsArray,aConnectivity);
+        anOutput->SetCells(aCellTypesArray,aCellLocationsArray,aConnectivity,newFaceLocations,newFaces);
         anOutput->SetPoints(anInput->GetPoints());
         aCellLocationsArray->Delete();
       }
@@ -348,7 +388,7 @@ void VTKViewer_ExtractUnstructuredGrid::Execute()
       for(vtkIdType i = 0, *pts, npts; aConnectivity->GetNextCell(npts,pts); i++){
         aCellLocationsArray->SetValue(i,aConnectivity->GetTraversalLocation(npts));
       }
-      anOutput->SetCells(aCellTypesArray,aCellLocationsArray,aConnectivity);
+      anOutput->SetCells(aCellTypesArray,aCellLocationsArray,aConnectivity,0, 0);
       anOutput->SetPoints(anInput->GetPoints());
       aCellLocationsArray->Delete();
     }

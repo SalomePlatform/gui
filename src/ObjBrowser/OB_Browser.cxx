@@ -415,12 +415,18 @@ void OB_Browser::select( const QModelIndexList& indexes, const bool on, const bo
   myView->blockSignals( true );
 
   QModelIndex idx;
-  bool first = true;
 
   if ( !indexes.isEmpty() ) {
+    QItemSelection mysel;
     foreach( idx, indexes ) {
-      select( idx, on, first ? keepSelection : true );
-      first = false;
+      mysel.select(idx,idx);
+    }
+    if ( myView->selectionModel() ) {
+      QItemSelectionModel::SelectionFlags f = on ? QItemSelectionModel::Select : QItemSelectionModel::Deselect;
+      f = f | QItemSelectionModel::Rows;
+      if ( !keepSelection )
+        f = f | QItemSelectionModel::Clear;
+      myView->selectionModel()->select( mysel, f );
     }
   }
   else if ( !keepSelection ) {

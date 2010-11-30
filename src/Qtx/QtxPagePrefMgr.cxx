@@ -569,7 +569,8 @@ void QtxPageNamedPrefItem::adjustLabels( QtxPagePrefItem* parent )
 QtxPagePrefListItem::QtxPagePrefListItem( const QString& title, QtxPreferenceItem* parent,
                                           const QString& sect, const QString& param )
 : QtxPagePrefItem( title, parent, sect, param ),
-  myFix( false )
+  myFix( false ),
+  mySingle( true )
 {
   QSplitter* main = new QSplitter( Qt::Horizontal );
   main->setChildrenCollapsible( false );
@@ -645,6 +646,30 @@ void QtxPagePrefListItem::setFixedSize( const bool on )
 }
 
 /*!
+  \brief Check if the list will be shown even has only 1 item.
+  \return \c true if the list has be shown with 1 item.
+  \sa setShowSingle()
+*/
+bool QtxPagePrefListItem::isShowSingle() const
+{
+  return mySingle;
+}
+
+/*!
+  \brief Set the list will be shown even has only 1 item.
+  \param on if \c true, the list will be shown always (even has only 1 item).
+  \sa isShowSingle()
+*/
+void QtxPagePrefListItem::setShowSingle( const bool on )
+{
+  if ( mySingle == on )
+    return;
+
+  mySingle = on;
+  updateVisible();
+}
+
+/*!
   \brief Update widget contents.
 */
 void QtxPagePrefListItem::updateContents()
@@ -663,6 +688,8 @@ QVariant QtxPagePrefListItem::optionValue( const QString& name ) const
 {
   if ( name == "fixed_size" )
     return isFixedSize();
+  else if ( name == "show_single" )
+    return isShowSingle();
   else if ( name == "empty_info" || name == "info" )
     return emptyInfo();
   else
@@ -681,6 +708,11 @@ void QtxPagePrefListItem::setOptionValue( const QString& name, const QVariant& v
   {
     if ( val.canConvert( QVariant::Bool ) )
       setFixedSize( val.toBool() );
+  }
+  else if ( name == "show_single" )
+  {
+    if ( val.canConvert( QVariant::Bool ) )
+      setShowSingle( val.toBool() );
   }
   else if ( name == "empty_info" || name == "info" )
   {
@@ -791,7 +823,7 @@ void QtxPagePrefListItem::updateVisible()
   if ( selected() == -1 && myList->count() )
     setSelected( myList->item( 0 )->data( Qt::UserRole ).toInt() );
 
-  //myList->setVisible( myList->count() > 1 );
+  myList->setVisible( myList->count() > 1 || isShowSingle() );
 
   updateState();
   updateGeom();

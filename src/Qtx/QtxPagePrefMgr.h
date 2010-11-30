@@ -163,6 +163,9 @@ public:
   bool             isFixedSize() const;
   void             setFixedSize( const bool );
 
+  bool             isShowSingle() const;
+  void             setShowSingle( const bool );
+
 private slots:
   void             onItemSelectionChanged();
 
@@ -187,6 +190,7 @@ private:
   bool             myFix;
   QListWidget*     myList;
   QStackedWidget*  myStack;
+  bool             mySingle;
 
   QString          myInfText;
   QLabel*          myInfLabel;

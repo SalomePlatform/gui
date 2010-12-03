@@ -38,6 +38,8 @@
 #include <QAbstractItemModel>
 #include <QAbstractItemDelegate>
 #include <QHeaderView>
+// MTN. Fix for kallisto internal 265
+#include <QApplication>
 
 #include <time.h>
 
@@ -864,12 +866,16 @@ void OB_Browser::setModified()
 */
 void OB_Browser::onExpandAll()
 {
+// MTN. Fix for kallisto internal 265
+  QApplication::setOverrideCursor( Qt::WaitCursor );
   QModelIndexList indexes = selectedIndexes();
   QModelIndex index;
 
   foreach ( index, indexes ) {
     myView->expandAll( index );
   }
+// MTN. Fix for kallisto internal 265
+  QApplication::restoreOverrideCursor();
 }
 
 /*!
@@ -879,12 +885,16 @@ void OB_Browser::onExpandAll()
 */
 void OB_Browser::onCollapseAll()
 {
+// MTN. Fix for kallisto internal 265
+  QApplication::setOverrideCursor( Qt::WaitCursor );
   QModelIndexList indexes = selectedIndexes();
   QModelIndex index;
 
   foreach ( index, indexes ) {
     myView->collapseAll( index );
   }
+// MTN. Fix for kallisto internal 265
+  QApplication::restoreOverrideCursor();
 }
 
 /*!

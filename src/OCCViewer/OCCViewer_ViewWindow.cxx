@@ -1228,7 +1228,7 @@ void OCCViewer_ViewWindow::createToolBar()
 
   toolMgr()->append( DumpId, tid );
   toolMgr()->append( SwitchInteractionStyleId, tid );
-#if OCC_VERSION_LARGE > 0x06030010 // available only with OCC-6.3-sp11 and higher version
+#if OCC_VERSION_LARGE > 0x0603000A // available only with OCC-6.3-sp11 and higher version
   toolMgr()->append( SwitchZoomingStyleId, tid );
 #endif
   if( myModel->trihedronActivated() && (my2dMode == No2dMode) )

@@ -1998,7 +1998,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "strings", aStyleModeList, occStyleMode );
   pref->setItemProperty( "indexes", aModeIndexesList, occStyleMode );
 
-#if OCC_VERSION_LARGE > 0x06030010 // available only with OCC-6.3-sp11 and higher version
+#if OCC_VERSION_LARGE > 0x0603000A // available only with OCC-6.3-sp11 and higher version
   int occZoomingStyleMode = pref->addPreference( tr( "PREF_ZOOMING" ), occGroup,
                                                  LightApp_Preferences::Selector, "OCCViewer", "zooming_mode" );
   QStringList anOCCZoomingStyleModeList;

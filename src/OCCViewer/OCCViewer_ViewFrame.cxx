@@ -161,6 +161,13 @@ void OCCViewer_ViewFrame::setInteractionStyle( const int i )
   }
 }
 
+//**************************************************************************************
+void OCCViewer_ViewFrame::setZoomingStyle( const int i ) 
+{ 
+  foreach (OCCViewer_ViewWindow* aView, myViews) {
+    aView->setZoomingStyle(i); 
+  }
+}
   
 //**************************************************************************************
 void OCCViewer_ViewFrame::connectViewSignals(OCCViewer_ViewWindow* theView)

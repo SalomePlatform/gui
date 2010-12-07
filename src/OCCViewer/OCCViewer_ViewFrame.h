@@ -67,6 +67,9 @@ public:
   virtual int  interactionStyle() const { return getView(MAIN_VIEW)->interactionStyle(); }
   virtual void setInteractionStyle( const int i );
 
+  virtual int  zoomingStyle() const { return getView(MAIN_VIEW)->zoomingStyle(); }
+  virtual void setZoomingStyle( const int );
+
   virtual void setViewManager( SUIT_ViewManager* );
 
   virtual bool eventFilter(QObject* watched, QEvent* e) { return SUIT_ViewWindow::eventFilter(watched, e); }

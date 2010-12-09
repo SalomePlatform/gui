@@ -389,6 +389,26 @@ void SOCC_Viewer::Display( const SALOME_OCCPrs* prs )
 
       ic->Display( anAIS, false );
 
+      //Register anAIS (if it has an entry) in entry2aisobjects map
+      Handle(SALOME_InteractiveObject) anObj = Handle(SALOME_InteractiveObject)::DownCast( anAIS->GetOwner() );
+      if ( !anObj.IsNull() && anObj->hasEntry())
+        {
+          std::vector<Handle(AIS_InteractiveObject)>& List = entry2aisobjects[anObj->getEntry()];
+          int found=0;
+          for ( unsigned int ind = 0; ind < List.size(); ind++ )
+          {
+            if(List[ind] == anAIS)
+              {
+                found=1;
+                break;
+              }
+          }
+          if(!found)
+            {
+              List.push_back(anAIS);
+            }
+        }
+
       // Set visibility flag
       // Temporarily commented to avoid awful dependecy on SALOMEDS
       // TODO: better mechanism of storing display/erse status in a study
@@ -483,7 +503,7 @@ void SOCC_Viewer::EraseAll( const bool forced )
   ic->DisplayedObjects( aList );
   AIS_ListIteratorOfListOfInteractive anIter( aList );
   for ( ; anIter.More(); anIter.Next() ) {
-    if ( isTrihedronDisplayed && anIter.Value()->DynamicType() == STANDARD_TYPE( AIS_Trihedron ) ||
+    if ( (isTrihedronDisplayed && anIter.Value()->DynamicType() == STANDARD_TYPE( AIS_Trihedron )) ||
          anIter.Value()->DynamicType() == STANDARD_TYPE( OCCViewer_Trihedron ))
       continue;
 
@@ -518,26 +538,22 @@ SALOME_Prs* SOCC_Viewer::CreatePrs( const char* entry )
   SOCC_Prs* prs = new SOCC_Prs();
   if ( entry )
   {
-    // get context
-    Handle(AIS_InteractiveContext) ic = getAISContext();
-
-    // get displayed objects
-    AIS_ListOfInteractive List;
-    ic->DisplayedObjects( List );
-    // get objects in the collector
-    AIS_ListOfInteractive ListCollector;
-    ic->ObjectsInCollector( ListCollector );
-    List.Append( ListCollector );
-
-    AIS_ListIteratorOfListOfInteractive ite( List );
-    for ( ; ite.More(); ite.Next() )
-    {
-      Handle(SALOME_InteractiveObject) anObj =
-        Handle(SALOME_InteractiveObject)::DownCast( ite.Value()->GetOwner() );
-
-      if ( !anObj.IsNull() && anObj->hasEntry() && strcmp( anObj->getEntry(), entry ) == 0 )
-        prs->AddObject( ite.Value() );
-    }
+    if(entry2aisobjects.count(entry)>0)
+      {
+        //ais object exists
+        std::vector<Handle(AIS_InteractiveObject)> List = entry2aisobjects[entry];
+        // get context
+        Handle(AIS_InteractiveContext) ic = getAISContext();
+        //add all ais
+        for ( unsigned int ind = 0; ind < List.size(); ind++ )
+          {
+            Handle(AIS_InteractiveObject) anAIS=List[ind];
+            if(ic->IsDisplayed(anAIS)||ic->IsInCollector(anAIS))
+              {
+                prs->AddObject( anAIS );
+              }
+          }
+      }
   }
   return prs;
 }

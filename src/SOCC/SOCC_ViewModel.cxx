@@ -207,21 +207,21 @@ bool SOCC_Viewer::isVisible( const Handle(SALOME_InteractiveObject)& obj )
 void SOCC_Viewer::setColor( const Handle(SALOME_InteractiveObject)& obj,
                             const QColor& color, bool update )
 {
-  AIS_ListOfInteractive List;
-  getAISContext()->DisplayedObjects(List);
-  
-  AIS_ListIteratorOfListOfInteractive ite(List);
-  for ( ; ite.More(); ite.Next() )
-  {
-    Handle(SALOME_InteractiveObject) anObj =
-        Handle(SALOME_InteractiveObject)::DownCast( ite.Value()->GetOwner() );
+  if(obj.IsNull() || !obj->hasEntry() )
+    return;
 
-    if ( !anObj.IsNull() && anObj->hasEntry() && anObj->isSame( obj ) )
+  if(entry2aisobjects.count(obj->getEntry())>0)
     {
-      OCCViewer_Viewer::setColor( ite.Value(), color, update );
-      return;
+      // get context
+      Handle (AIS_InteractiveContext) ic = getAISContext();
+      std::vector<Handle(AIS_InteractiveObject)>& List = entry2aisobjects[obj->getEntry()];
+      for( unsigned int ind = 0; ind < List.size(); ind++ )
+        {
+          Handle(AIS_InteractiveObject) anAIS=List[ind];
+          if( !anAIS.IsNull() && ic->IsDisplayed(anAIS))
+            OCCViewer_Viewer::setColor( anAIS, color, update );
+        }
     }
-  }
 }
 
 /*!
@@ -233,21 +233,21 @@ void SOCC_Viewer::setColor( const Handle(SALOME_InteractiveObject)& obj,
 void SOCC_Viewer::switchRepresentation( const Handle(SALOME_InteractiveObject)& obj,
                                         int mode, bool update )
 {
-  AIS_ListOfInteractive List;
-  getAISContext()->DisplayedObjects(List);
-  
-  AIS_ListIteratorOfListOfInteractive ite(List);
-  for ( ; ite.More(); ite.Next() )
-  {
-    Handle(SALOME_InteractiveObject) anObj =
-        Handle(SALOME_InteractiveObject)::DownCast( ite.Value()->GetOwner() );
+  if(obj.IsNull() || !obj->hasEntry() )
+    return;
 
-    if ( !anObj.IsNull() && anObj->hasEntry() && anObj->isSame( obj ) )
+  if(entry2aisobjects.count(obj->getEntry())>0)
     {
-      OCCViewer_Viewer::switchRepresentation( ite.Value(), mode, update );
-      return;
+      // get context
+      Handle (AIS_InteractiveContext) ic = getAISContext();
+      std::vector<Handle(AIS_InteractiveObject)>& List = entry2aisobjects[obj->getEntry()];
+      for( unsigned int ind = 0; ind < List.size(); ind++ )
+        {
+          Handle(AIS_InteractiveObject) anAIS=List[ind];
+          if( !anAIS.IsNull() && ic->IsDisplayed(anAIS))
+            OCCViewer_Viewer::switchRepresentation( anAIS, mode, update );
+        }
     }
-  }
 }
 
 /*!
@@ -259,21 +259,21 @@ void SOCC_Viewer::switchRepresentation( const Handle(SALOME_InteractiveObject)& 
 void SOCC_Viewer::setTransparency( const Handle(SALOME_InteractiveObject)& obj,
                                    float trans, bool update )
 {
-  AIS_ListOfInteractive List;
-  getAISContext()->DisplayedObjects( List );
-  
-  AIS_ListIteratorOfListOfInteractive ite( List );
-  for ( ; ite.More(); ite.Next() )
-  {
-    Handle(SALOME_InteractiveObject) anObj =
-        Handle(SALOME_InteractiveObject)::DownCast( ite.Value()->GetOwner() );
+  if(obj.IsNull() || !obj->hasEntry() )
+    return;
 
-    if ( !anObj.IsNull() && anObj->hasEntry() && anObj->isSame( obj ) )
+  if(entry2aisobjects.count(obj->getEntry())>0)
     {
-      OCCViewer_Viewer::setTransparency( ite.Value(), trans, update );
-      return;
+      // get context
+      Handle (AIS_InteractiveContext) ic = getAISContext();
+      std::vector<Handle(AIS_InteractiveObject)>& List = entry2aisobjects[obj->getEntry()];
+      for( unsigned int ind = 0; ind < List.size(); ind++ )
+        {
+          Handle(AIS_InteractiveObject) anAIS=List[ind];
+          if( !anAIS.IsNull() && ic->IsDisplayed(anAIS))
+            OCCViewer_Viewer::setTransparency( anAIS, trans, update );
+        }
     }
-  }
 }
 
 /*!

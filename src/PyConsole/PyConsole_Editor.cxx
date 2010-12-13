@@ -486,7 +486,7 @@ void PyConsole_Editor::mouseReleaseEvent( QMouseEvent* event )
 {
   if ( event->button() == Qt::LeftButton ) {
     QTextEdit::mouseReleaseEvent( event );
-    copy();
+    //copy();
   }
   else if ( event->button() == Qt::MidButton ) {
     QString text;

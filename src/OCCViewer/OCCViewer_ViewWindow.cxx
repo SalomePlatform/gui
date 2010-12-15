@@ -334,9 +334,13 @@ bool OCCViewer_ViewWindow::eventFilter( QObject* watched, QEvent* e )
     case QEvent::Wheel:
       {
         QWheelEvent* aEvent = (QWheelEvent*) e;
-        double aDelta = aEvent->delta();
-        double aScale = (aDelta < 0) ? 100./(-aDelta) : aDelta/100.;
-        myViewPort->getView()->SetZoom(aScale);
+	myViewPort->startZoomAtPoint( aEvent->x(), aEvent->y() );
+	double delta = (double)( aEvent->delta() ) / ( 15 * 8 );
+	int x  = aEvent->x();
+	int y  = aEvent->y();
+	int x1 = (int)( aEvent->x() + width()*delta/100 );
+	int y1 = (int)( aEvent->y() + height()*delta/100 );
+	myViewPort->zoom( x, y, x1, y1 );
       }
       return true;
 

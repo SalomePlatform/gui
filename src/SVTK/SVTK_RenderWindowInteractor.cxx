@@ -320,6 +320,14 @@ QVTK_RenderWindowInteractor
 {
   activateWindow();
   setFocus();
+  GetDevice()->SetEventInformationFlipY(event->x(), 
+                                        event->y(),
+                                        event->modifiers() & Qt::ControlModifier,
+                                        event->modifiers() & Qt::ShiftModifier);
+  if ( event->delta()>0)
+    GetDevice()->MouseWheelForwardEvent();
+  else
+    GetDevice()->MouseWheelBackwardEvent();
 }
 
 

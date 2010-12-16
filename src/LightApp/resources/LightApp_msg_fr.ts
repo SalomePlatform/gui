@@ -135,6 +135,18 @@ Les modifications seront appliquées à la prochaine session.</translation>
         <translation>Style sans clavier</translation>
     </message>
     <message>
+        <source>PREF_ZOOMING</source>
+        <translation>Mode de zoom:</translation>
+    </message>
+    <message>
+        <source>PREF_ZOOMING_AT_CENTER</source>
+        <translation>Relatif au centre de la vue</translation>
+    </message>
+    <message>
+        <source>PREF_ZOOMING_AT_CURSOR</source>
+        <translation>Relatif au curseur</translation>
+    </message>
+    <message>
         <source>PREF_INCREMENTAL_SPEED</source>
         <translation>Incrément de vitesse:</translation>
     </message>
@@ -421,6 +433,22 @@ Les modifications seront appliquées à la prochaine session.</translation>
     <message>
         <source>PREF_VIEWER_BACKGROUND</source>
         <translation>Couleur de l&apos;arrière-plan</translation>
+    </message>
+    <message>
+        <source>PREF_XYVIEWER_BACKGROUND</source>
+        <translation>Couleur de l&apos;arrière-plan (vue XY)</translation>
+    </message>
+    <message>
+        <source>PREF_XZVIEWER_BACKGROUND</source>
+        <translation>Couleur de l&apos;arrière-plan (vue XZ)</translation>
+    </message>
+    <message>
+        <source>PREF_YZVIEWER_BACKGROUND</source>
+        <translation>Couleur de l&apos;arrière-plan (vue YZ)</translation>
+    </message>
+    <message>
+        <source>PREF_3DVIEWER_BACKGROUND</source>
+        <translation>3D View background color</translation>
     </message>
     <message>
         <source>PREF_FONT</source>

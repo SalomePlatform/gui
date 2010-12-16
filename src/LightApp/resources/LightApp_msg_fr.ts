@@ -448,7 +448,7 @@ Les modifications seront appliquées à la prochaine session.</translation>
     </message>
     <message>
         <source>PREF_3DVIEWER_BACKGROUND</source>
-        <translation>3D View background color</translation>
+        <translation>Couleur de l&apos;arrière-plan (vue 3D)</translation>
     </message>
     <message>
         <source>PREF_FONT</source>

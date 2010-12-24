@@ -33,6 +33,7 @@
 #include <SUIT_DataObjectIterator.h>
 #include <CAM_DataModel.h>
 #include <LightApp_Application.h>
+#include <LightApp_Displayer.h>
 #include <LightApp_Study.h>
 #include <LightApp_Module.h>
 #include <LightApp_DataObject.h>
@@ -416,8 +417,6 @@ void SALOMEGUI_Swig::ClearIObjects()
   The presentable object should be previously created and
   displayed in this viewer.
 
-  For the current moment implemented for OCC and VTK viewers only.
-
   \param theEntry object entry
 */              
 void SALOMEGUI_Swig::Display( const char* theEntry )
@@ -428,13 +427,20 @@ void SALOMEGUI_Swig::Display( const char* theEntry )
   public:
     TEvent( const char* theEntry ) : myEntry( theEntry ) {}
     virtual void Execute() {
-      if ( LightApp_Application* anApp = getApplication() ) {
-        SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
-        if ( window ) {
-          SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
-          if ( view )
-            view->Display( view->CreatePrs( myEntry.toLatin1() ) );
-        }
+      LightApp_Application* anApp  = getApplication();
+      LightApp_Study*       aStudy = getActiveStudy();
+      if ( anApp && aStudy ) {
+	QString mname = anApp->moduleTitle( aStudy->componentDataType( myEntry ) );
+	LightApp_Displayer* d = LightApp_Displayer::FindDisplayer( mname, true );
+	if ( d ) {
+	  QStringList entries;
+	  if( aStudy->isComponent( myEntry ) )
+	    aStudy->children( myEntry, entries );
+	  else
+	    entries.append( myEntry );
+	  foreach( QString entry, entries )
+	    d->Display( aStudy->referencedToEntry( entry ), false, 0 );
+	}
       }
     }
   };
@@ -448,8 +454,6 @@ void SALOMEGUI_Swig::Display( const char* theEntry )
   The presentable object should be previously created and 
   displayed in this viewer.
 
-  For the current moment implemented for OCC and VTK viewers only.
-  
   \param theEntry object entry
 */
 void SALOMEGUI_Swig::DisplayOnly( const char* theEntry )
@@ -461,15 +465,27 @@ void SALOMEGUI_Swig::DisplayOnly( const char* theEntry )
     TEvent( const char* theEntry ) : myEntry( theEntry ) {}
     virtual void Execute()
     {
-      if ( LightApp_Application* anApp = getApplication() ) {
-        SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
-        if ( window ) {
-          SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
-          if ( view ) {
-            view->EraseAll( false );
-            view->Display( view->CreatePrs( myEntry.toLatin1() ) );
-          }
-        }
+      LightApp_Application* anApp  = getApplication();
+      LightApp_Study*       aStudy = getActiveStudy();
+      if ( anApp && aStudy ) {
+	QStringList comps;
+	aStudy->components( comps );
+	foreach( QString comp, comps ) {
+	  LightApp_Displayer* d = LightApp_Displayer::FindDisplayer( anApp->moduleTitle( comp ), true );
+	  if ( d ) d->EraseAll( false, false, 0 );
+	}
+
+	QString mname = anApp->moduleTitle( aStudy->componentDataType( myEntry ) );
+	LightApp_Displayer* d = LightApp_Displayer::FindDisplayer( mname, true );
+	if ( d ) {
+	  QStringList entries;
+	  if( aStudy->isComponent( myEntry ) )
+	    aStudy->children( myEntry, entries );
+	  else
+	    entries.append( myEntry );
+	  foreach( QString entry, entries )
+	    d->Display( aStudy->referencedToEntry( entry ), false, 0 );
+	}
       }
     }
   };
@@ -482,8 +498,6 @@ void SALOMEGUI_Swig::DisplayOnly( const char* theEntry )
   The presentable object should be previously created and 
   displayed in this viewer.
 
-  For the current moment implemented for OCC and VTK viewers only.
-
   \param theEntry object entry
 */              
 void SALOMEGUI_Swig::Erase( const char* theEntry )
@@ -495,13 +509,20 @@ void SALOMEGUI_Swig::Erase( const char* theEntry )
     TEvent( const char* theEntry ) : myEntry( theEntry ) {}
     virtual void Execute()
     {
-      if ( LightApp_Application* anApp = getApplication() ) {
-        SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
-        if ( window ) {
-          SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
-          if ( view )
-            view->Erase( view->CreatePrs( myEntry.toLatin1() ) );
-        }
+      LightApp_Application* anApp  = getApplication();
+      LightApp_Study*       aStudy = getActiveStudy();
+      if ( anApp && aStudy ) {
+	QString mname = anApp->moduleTitle( aStudy->componentDataType( myEntry ) );
+	LightApp_Displayer* d = LightApp_Displayer::FindDisplayer( mname, true );
+	if ( d ) {
+	  QStringList entries;
+	  if( aStudy->isComponent( myEntry ) )
+	    aStudy->children( myEntry, entries );
+	  else
+	    entries.append( myEntry );
+	  foreach( QString entry, entries )
+	    d->Erase( aStudy->referencedToEntry( entry ), false, false, 0 );
+	}
       }
     }
   };
@@ -514,8 +535,6 @@ void SALOMEGUI_Swig::Erase( const char* theEntry )
   
   The presentable objects should be previously created and
   displayed in this viewer.
-
-  For the current moment implemented for OCC and VTK viewers only.
 */
 void SALOMEGUI_Swig::DisplayAll()
 {
@@ -525,20 +544,20 @@ void SALOMEGUI_Swig::DisplayAll()
     TEvent() {}
     virtual void Execute()
     {
-      if ( LightApp_Application* anApp = getApplication() ) {
-        LightApp_Study*  study        = dynamic_cast<LightApp_Study*>( anApp->activeStudy() ); // for sure!
-        SUIT_ViewWindow*  window       = anApp->desktop()->activeWindow();
-        LightApp_Module* activeModule = dynamic_cast<LightApp_Module*>( anApp->activeModule() );
-        if ( study && window && activeModule ) {
-          SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
-          if ( view ) {
-            for ( SUIT_DataObjectIterator it( activeModule->dataModel()->root(), SUIT_DataObjectIterator::DepthLeft ); it.current(); ++it ) {
-              LightApp_DataObject* obj = dynamic_cast<LightApp_DataObject*>( it.current() );
-              if ( obj && !obj->entry().isEmpty() )
-                view->Display( view->CreatePrs( obj->entry().toLatin1() ) );
-            }
-          }
-        }
+      LightApp_Application* anApp  = getApplication();
+      LightApp_Study*       aStudy = getActiveStudy();
+      if ( anApp && aStudy ) {
+	QStringList comps;
+	aStudy->components( comps );
+	foreach( QString comp, comps ) {
+	  LightApp_Displayer* d = LightApp_Displayer::FindDisplayer( anApp->moduleTitle( comp ), true );
+	  if ( d ) {
+	    QStringList entries;
+	    aStudy->children( aStudy->centry( comp ), entries );
+	    foreach( QString entry, entries )
+	      d->Display( aStudy->referencedToEntry( entry ), false, 0 );
+	  }
+	}
       }
     }
   };
@@ -547,8 +566,6 @@ void SALOMEGUI_Swig::DisplayAll()
 
 /*!
   \brief Erase all objects from the current view window.
-  
-  For the current moment implemented for OCC and VTK viewers only.
 */
 void SALOMEGUI_Swig::EraseAll()
 {
@@ -558,13 +575,15 @@ void SALOMEGUI_Swig::EraseAll()
     TEvent() {}
     virtual void Execute()
     {
-      if ( LightApp_Application* anApp = getApplication() ) {
-        SUIT_ViewWindow* window = anApp->desktop()->activeWindow();
-        if ( window ) {
-          SALOME_View* view = dynamic_cast<SALOME_View*>( window->getViewManager()->getViewModel() );
-          if ( view )
-            view->EraseAll( false );
-        }
+      LightApp_Application* anApp  = getApplication();
+      LightApp_Study*       aStudy = getActiveStudy();
+      if ( anApp && aStudy ) {
+	QStringList comps;
+	aStudy->components( comps );
+	foreach( QString comp, comps ) {
+	  LightApp_Displayer* d = LightApp_Displayer::FindDisplayer( anApp->moduleTitle( comp ), true );
+	  if ( d ) d->EraseAll( false, false, 0 );
+	}
       }
     }
   };

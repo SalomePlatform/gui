@@ -707,6 +707,23 @@ void SalomeApp_Study::components( QStringList& comps ) const
 }
 
 /*!
+  Get the entry for the given module
+  \param comp - list to be filled
+  \return module root's entry
+*/
+QString SalomeApp_Study::centry( const QString& comp ) const
+{
+  QString e;
+  for( _PTR(SComponentIterator) it ( studyDS()->NewComponentIterator() ); it->More() && e.isEmpty(); it->Next() ) 
+  {
+    _PTR(SComponent) aComponent ( it->Value() );
+    if ( aComponent && comp == aComponent->ComponentDataType().c_str() )
+      e = aComponent->GetID().c_str();
+  }
+  return e;
+}
+
+/*!
   \return a list of saved points' IDs
 */
 std::vector<int> SalomeApp_Study::getSavePoints()

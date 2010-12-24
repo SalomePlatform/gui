@@ -71,6 +71,7 @@ public:
   virtual bool        isComponent( const QString& ) const;
   virtual void        children( const QString&, QStringList& ) const;
   virtual void        components( QStringList& ) const;
+  virtual QString     centry( const QString& ) const;
 
   std::vector<int>    getSavePoints();
   void                removeSavePoint(int savePoint);

@@ -462,3 +462,24 @@ void LightApp_Study::components( QStringList& comp ) const
       comp.append( obj->entry() );
   }
 }
+
+/*!
+  Get the entry for the given module
+  \param comp - list to be filled
+  \return module root's entry
+*/
+QString LightApp_Study::centry( const QString& comp ) const
+{
+  QString e;
+  ModelList dmlist;
+  dataModels( dmlist );
+  QListIterator<CAM_DataModel*> it( dmlist );
+  while ( it.hasNext() && e.isEmpty() ) {
+    CAM_DataModel* dm = it.next();
+    if ( dm->module() && dm->module()->name() == comp ) {
+      LightApp_DataObject* r = dynamic_cast<LightApp_DataObject*>( dm->root() );
+      if ( r ) e = r->entry();
+    }
+  }
+  return e;
+}

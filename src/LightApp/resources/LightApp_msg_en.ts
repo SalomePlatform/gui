@@ -140,7 +140,7 @@ The changes will be applied on the next application session.</translation>
     </message>
     <message>
         <source>PREF_ZOOMING_AT_CENTER</source>
-        <translation>Relative to the view's center</translation>
+        <translation>Relative to the view&apos;s center</translation>
     </message>
     <message>
         <source>PREF_ZOOMING_AT_CURSOR</source>
@@ -664,7 +664,7 @@ File does not exist</translation>
         <translation>Preferences for module &quot;%1&quot; not supported</translation>
     </message>
     <message>
-    	<source>PREF_TAB_SHORTCUTS</source>
+        <source>PREF_TAB_SHORTCUTS</source>
         <translation>Shortcuts</translation>
     </message>
     <message>

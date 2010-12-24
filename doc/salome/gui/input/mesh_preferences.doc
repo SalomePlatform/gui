@@ -164,6 +164,11 @@ placement (<b>X</b> and <b>Y</b>) and lookout (<b>Width</b> and
 side)</li>
 <li><b>Y</b>: ordinate of the origin of the bar (from the bottom)</li>
 </ul>
+<li><b>Distribution</b> in this menu you can Show/Hide distribution histogram of the values of the <b>Scalar Bar</b> and specify the <b>Coloring Type</b> of the histogram</li>
+<ul>
+<li><b>Multicolor</b> the histogram is colored as <b>Scalar Bar</b></li>
+<li><b>Monocolor</b> the histogram is colored as selected with <b>Distribution color</b> selector</li>
+<ul>
 </ul>
 
 */

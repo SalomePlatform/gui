@@ -201,6 +201,12 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
   //! To handle right mouse button up event (reimplemented from #vtkInteractorStyle)
   virtual void OnRightButtonUp();
 
+  //! To handle mouse wheel forward event (reimplemented from #vtkInteractorStyle)
+  virtual void OnMouseWheelForward();
+
+  //! To handle mouse wheel backward event (reimplemented from #vtkInteractorStyle)
+  virtual void OnMouseWheelBackward();
+
   //! To handle keyboard event (reimplemented from #vtkInteractorStyle)
   virtual void OnChar();
 

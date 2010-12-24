@@ -431,6 +431,26 @@ void SVTK_InteractorStyle::OnRightButtonUp()
 }
 
 /*!
+  To handle mouse wheel forward event (reimplemented from #vtkInteractorStyle)
+*/
+void SVTK_InteractorStyle::OnMouseWheelForward()
+{
+  int x, y;
+  GetEventPosition( this->Interactor, x, y );
+  myOtherPoint = QPoint(x, y);
+}
+
+/*!
+  To handle mouse wheel backward event (reimplemented from #vtkInteractorStyle)
+*/
+void SVTK_InteractorStyle::OnMouseWheelBackward()
+{
+  int x, y;
+  GetEventPosition( this->Interactor, x, y );
+  myOtherPoint = QPoint(x, y);
+}
+
+/*!
   To handle mouse move event
 */
 void SVTK_InteractorStyle::OnMouseMove(int vtkNotUsed(ctrl), 

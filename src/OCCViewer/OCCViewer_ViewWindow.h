@@ -97,8 +97,8 @@ public:
   virtual int                     interactionStyle() const;
   virtual void                    setInteractionStyle( const int );
  
-  int                     zoomingStyle() const;
-  void                    setZoomingStyle( const int );
+  virtual int                     zoomingStyle() const;
+  virtual void                    setZoomingStyle( const int );
  
   void setTransformEnabled( const OperationType, const bool );
   bool transformEnabled( const OperationType ) const;

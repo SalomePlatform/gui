@@ -852,9 +852,10 @@ void SVTK_ViewWindow::onMouseDoubleClicked( QMouseEvent* event )
   Redirect the request to #SVTK_Renderer::AddActor
 */
 void SVTK_ViewWindow::AddActor( VTKViewer_Actor* theActor, 
-                                bool theUpdate )
+                                bool theUpdate,
+                                bool theIsAdjustActors )
 {
-  GetRenderer()->AddActor(theActor);
+  GetRenderer()->AddActor(theActor, theIsAdjustActors);
   if(theUpdate) 
     Repaint();
   emit actorAdded(theActor);
@@ -864,9 +865,10 @@ void SVTK_ViewWindow::AddActor( VTKViewer_Actor* theActor,
   Redirect the request to #SVTK_Renderer::RemoveActor
 */
 void SVTK_ViewWindow::RemoveActor( VTKViewer_Actor* theActor, 
-                                   bool theUpdate )
+                                   bool theUpdate,
+                                   bool theIsAdjustActors )
 {
-  GetRenderer()->RemoveActor(theActor);
+  GetRenderer()->RemoveActor(theActor, theIsAdjustActors);
   if(theUpdate) 
     Repaint();
   emit actorRemoved(theActor);

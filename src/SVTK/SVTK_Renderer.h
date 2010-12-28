@@ -84,12 +84,12 @@ class SVTK_EXPORT SVTK_Renderer : public vtkObject
   //! Publishes pointed actor into the renderer
   virtual
   void 
-  AddActor(VTKViewer_Actor* theActor);
+  AddActor(VTKViewer_Actor* theActor, bool theIsAdjustActors = true);
 
   //! Removes pointed actor from the renderer
   virtual
   void 
-  RemoveActor(VTKViewer_Actor* theActor);
+  RemoveActor(VTKViewer_Actor* theActor, bool theIsAdjustActors = true);
 
   //! Get special container that keeps scaling of the scene 
   VTKViewer_Transform* 

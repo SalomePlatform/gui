@@ -236,7 +236,7 @@ SVTK_Renderer
 */
 void
 SVTK_Renderer
-::AddActor(VTKViewer_Actor* theActor)
+::AddActor(VTKViewer_Actor* theActor, bool theIsAdjustActors)
 {
   if(SALOME_Actor* anActor = dynamic_cast<SALOME_Actor*>(theActor)){
     anActor->SetInteractor(myInteractor);
@@ -254,7 +254,9 @@ SVTK_Renderer
 
     anActor->AddToRender(GetDevice());
     anActor->UpdateNameActors();
-    AdjustActors();
+
+    if(theIsAdjustActors)
+      AdjustActors();
   }
 }
 
@@ -263,7 +265,7 @@ SVTK_Renderer
 */
 void
 SVTK_Renderer
-::RemoveActor(VTKViewer_Actor* theActor)
+::RemoveActor(VTKViewer_Actor* theActor, bool theIsAdjustActors)
 {
   if(SALOME_Actor* anActor = dynamic_cast<SALOME_Actor*>(theActor)){
     // Order of the calls are important because VTKViewer_Actor::RemoveFromRender
@@ -282,7 +284,9 @@ SVTK_Renderer
     anActor->SetHighlightProperty(NULL);
 
     anActor->RemoveFromRender(GetDevice());
-    AdjustActors();
+
+    if(theIsAdjustActors)
+      AdjustActors();
   }
 }
 

@@ -190,11 +190,13 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
 
   //! Redirect the request to #SVTK_Renderer::AddActor
   virtual void AddActor(VTKViewer_Actor* theActor,
-                        bool theIsUpdate = false);
+                        bool theIsUpdate = false,
+                        bool theIsAdjustActors = true);
 
   //! Redirect the request to #SVTK_Renderer::RemoveActor
   virtual void RemoveActor(VTKViewer_Actor* theActor,
-                           bool theIsUpdate = false);
+                           bool theIsUpdate = false,
+                           bool theIsAdjustActors = true);
 
   //----------------------------------------------------------------------------
   //! Redirect the request to #SVTK_Renderer::AdjustActors

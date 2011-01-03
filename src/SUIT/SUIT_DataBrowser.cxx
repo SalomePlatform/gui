@@ -117,6 +117,27 @@ void SUIT_DataBrowser::setAutoUpdate( const bool on )
 }
 
 /*!
+  \brief Get 'updateModified' flag value.
+  \return 'updateModified' flag value
+*/
+bool SUIT_DataBrowser::updateModified() const
+{
+  SUIT_ProxyModel* m = qobject_cast<SUIT_ProxyModel*>( model() );
+  return m ? m->updateModified() : false;
+}
+
+/*!
+  \brief Set 'updateModified' flag value.
+  \param on 'updateModified' flag value
+*/
+void SUIT_DataBrowser::setUpdateModified( const bool on )
+{
+  SUIT_ProxyModel* m = qobject_cast<SUIT_ProxyModel*>( model() );
+  if ( m ) 
+    m->setUpdateModified( on );
+}
+
+/*!
   \brief Update object browser starting from the object \obj;
   open all branches automatically if \a autoOpen is \c true.
   \param obj starting object for updating

@@ -106,6 +106,9 @@ private:
 
 private:
   _PTR(Study)         myStudyDS;
+
+private:
+  SALOMEDS::Observer_var            myObserver;
 };
 
 #ifdef WIN32

@@ -95,6 +95,10 @@ public:
 
   virtual SUIT_DataObject*    parent() const;
   virtual void                setParent( SUIT_DataObject* );
+  virtual void                assignParent( SUIT_DataObject* );
+  void                        insertChildAtPos( SUIT_DataObject* obj, int position );
+  bool                        modified(){return _modified;};
+  void                        setModified(bool modified){_modified = modified;};
 
   virtual QString             name() const;
   virtual QString             text( const int = NameId ) const;
@@ -140,6 +144,7 @@ private:
   bool                        myCheck;
   bool                        myAutoDel;
   DataObjectList              myChildren;
+  bool                        _modified;
 
   static Signal*              mySignal;
 

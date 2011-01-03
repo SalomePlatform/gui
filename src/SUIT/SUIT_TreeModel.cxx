@@ -68,6 +68,7 @@ public:
   SUIT_DataObject*      dataObject() const;
   TreeItem*             parent() const;
   int                   position() const;
+  void                  setPosition(int position) {_position=position;};
   int                   childCount() const;
   TreeItem*             child( const int i );
   QList<TreeItem*>      children() const;
@@ -78,6 +79,7 @@ private:
   TreeItem*             myParent;
   QList<TreeItem*>      myChildren;
   SUIT_DataObject*      myObj;
+  int _position;
 };
 
 /*!
@@ -91,7 +93,8 @@ SUIT_TreeModel::TreeItem::TreeItem( SUIT_DataObject*          obj,
                                     SUIT_TreeModel::TreeItem* parent,
                                     SUIT_TreeModel::TreeItem* after )
 : myParent( parent ),
-  myObj( obj )
+  myObj( obj ),
+  _position(-1)
 {
   // Add <this> to the parent's children list
   if ( myParent )
@@ -126,7 +129,7 @@ void SUIT_TreeModel::TreeItem::insertChild( SUIT_TreeModel::TreeItem* child,
   if ( !child )
     return;
 
-  int index = after ? myChildren.indexOf( after ) + 1 : 0;
+  int index = after ? after->position() + 1 : 0;
   myChildren.insert( index, child );
 }
 
@@ -169,7 +172,7 @@ SUIT_TreeModel::TreeItem* SUIT_TreeModel::TreeItem::parent() const
 */
 int SUIT_TreeModel::TreeItem::position() const
 {
-  return myParent ? myParent->myChildren.indexOf( (TreeItem*)this ) : -1;
+  return _position;
 }
 
 /*!
@@ -439,7 +442,8 @@ SUIT_TreeModel::SUIT_TreeModel( QObject* parent )
   myRoot( 0 ),
   myRootItem( 0 ),
   myAutoDeleteTree( false ),
-  myAutoUpdate( true )
+  myAutoUpdate( true ),
+  myUpdateModified( false )
 {
   initialize();
 }
@@ -454,7 +458,8 @@ SUIT_TreeModel::SUIT_TreeModel( SUIT_DataObject* root, QObject* parent )
   myRoot( root ),
   myRootItem( 0 ),
   myAutoDeleteTree( false ),
-  myAutoUpdate( true )
+  myAutoUpdate( true ),
+  myUpdateModified( false )
 {
   initialize();
 }
@@ -1019,6 +1024,22 @@ void SUIT_TreeModel::setAutoUpdate( const bool on )
   }
 }
 
+/*!
+  \brief Get 'updateModified' flag value.
+  \return 'updateModified' flag value
+*/
+bool SUIT_TreeModel::updateModified() const
+{
+  return myUpdateModified;
+}
+/*!
+  \brief Set 'updateModified' flag value.
+  \param on 'updateModified' flag value
+*/
+void SUIT_TreeModel::setUpdateModified(const bool on)
+{
+  myUpdateModified=on;
+}
 
 /*!
   \brief Check if the specified column supports custom sorting.
@@ -1073,6 +1094,68 @@ void SUIT_TreeModel::updateTree( const QModelIndex& index )
   updateTree( object( index ) );
 }
 
+
+void SUIT_TreeModel::updateTreeModel(SUIT_DataObject* obj,TreeItem* item)
+{
+  int kobj=0;
+  int kitem=0;
+  int nobjchild=obj->childCount();
+  SUIT_DataObject* sobj=obj->childObject(kobj);
+  TreeItem* sitem = item->child(kitem);
+
+  while(kobj < nobjchild)
+    {
+      if(sitem==0)
+        {
+          //end of item list
+          if(kitem==0)
+            sitem=createItemAtPos(sobj,item,0);
+          else
+            sitem=createItemAtPos(sobj,item,kitem);
+          updateTreeModel(sobj,sitem);
+          kobj++;
+          kitem++;
+          sobj=obj->childObject(kobj);
+          sitem = item->child(kitem);
+        }
+      else if(sitem->dataObject() != sobj)
+        {
+          if(treeItem(sobj))
+            {
+              // item : to remove
+              removeItem(sitem);
+              sitem = item->child(kitem);
+            }
+          else
+            {
+              // obj : new object
+              createItemAtPos(sobj,item,kitem);
+              kobj++;
+              kitem++;
+              sobj=obj->childObject(kobj);
+              sitem = item->child(kitem);
+            }
+        }
+      else
+        {
+          //obj and item are synchronised : go to next ones
+          updateTreeModel(sobj,sitem);
+          if(sobj->modified()) updateItem(sitem);
+          if( sobj ) sobj->update();
+          kobj++;
+          kitem++;
+          sobj=obj->childObject(kobj);
+          sitem = item->child(kitem);
+        }
+    }
+  //remove remaining items
+  for(int i = item->childCount(); i > kitem;i--)
+    {
+      sitem = item->child(i-1);
+      removeItem(sitem);
+    }
+}
+
 /*!
   \brief Update tree model.
 
@@ -1091,9 +1174,16 @@ void SUIT_TreeModel::updateTree( SUIT_DataObject* obj )
   else if ( obj->root() != root() )
     return;
 
-  synchronize<ObjPtr,ItemPtr,SUIT_TreeModel::TreeSync>( obj, 
-                                                        treeItem( obj ), 
-                                                        SUIT_TreeModel::TreeSync( this ) );
+  if(updateModified())
+    {
+      updateTreeModel(obj,treeItem( obj ));
+    }
+  else
+    {
+      synchronize<ObjPtr,ItemPtr,SUIT_TreeModel::TreeSync>( obj,
+                                                            treeItem( obj ),
+                                                            SUIT_TreeModel::TreeSync( this ) );
+    }
   emit modelUpdated();
 }
 
@@ -1196,9 +1286,49 @@ SUIT_TreeModel::TreeItem* SUIT_TreeModel::createItem( SUIT_DataObject* obj,
 
   myItems[ obj ] = new TreeItem( obj, parent, after );
 
+  for(int pos=row;pos < parent->childCount();pos++)
+    parent->child(pos)->setPosition(pos);
+
   endInsertRows();
 
+  obj->setModified(false);
+
   return myItems[ obj ];
+}
+
+/*!
+  \brief Create an item corresponding to the data object.
+  \param obj source data object
+  \param parent parent tree item
+  \param pos tree item position into which new item should be inserted
+  \return created tree item or 0 if item could not be created
+*/
+SUIT_TreeModel::TreeItem* SUIT_TreeModel::createItemAtPos( SUIT_DataObject* obj,
+                                                           SUIT_TreeModel::TreeItem* parent,
+                                                           int pos )
+{
+  if ( !obj )
+    return 0;
+
+  SUIT_DataObject* parentObj = object( parent );
+  QModelIndex parentIdx = index( parentObj );
+
+  int row = pos ;
+  SUIT_TreeModel::TreeItem* after = pos>0 ? parent->child(pos-1) : 0 ;
+
+  beginInsertRows( parentIdx, row, row );
+
+  SUIT_TreeModel::TreeItem* item = new TreeItem( obj, parent, after );
+  myItems[ obj ] = item;
+
+  for(int pos=row;pos < parent->childCount();pos++)
+    parent->child(pos)->setPosition(pos);
+
+  endInsertRows();
+
+  obj->setModified(false);
+
+  return item;
 }
 
 /*!
@@ -1218,6 +1348,7 @@ void SUIT_TreeModel::updateItem( SUIT_TreeModel::TreeItem* item )
   QModelIndex firstIdx = index( obj, 0 );
   QModelIndex lastIdx  = index( obj, columnCount() - 1 );
   emit dataChanged( firstIdx, lastIdx );
+  obj->setModified(false);
 }
 
 /*!
@@ -1239,7 +1370,8 @@ void SUIT_TreeModel::removeItem( SUIT_TreeModel::TreeItem* item )
   
   // Warning! obj can be deleted at this point!
 
-  SUIT_DataObject* parentObj = object( item->parent() );
+  TreeItem* parent=item->parent();
+  SUIT_DataObject* parentObj = object( parent );
   QModelIndex parentIdx = index( parentObj, 0 );
   int row = item->position();
   
@@ -1248,8 +1380,12 @@ void SUIT_TreeModel::removeItem( SUIT_TreeModel::TreeItem* item )
 
   if ( obj == root() )
     setRoot( 0 );
-  else if ( item->parent() )
-    item->parent()->removeChild( item );
+  else if ( parent )
+    {
+      parent->removeChild( item );
+      for(int pos=row;pos < parent->childCount();pos++)
+        parent->child(pos)->setPosition(pos);
+    }
 
   delete item;
 
@@ -1410,6 +1546,28 @@ void SUIT_ProxyModel::setAutoDeleteTree( const bool on )
 bool SUIT_ProxyModel::autoUpdate() const
 {
   return treeModel() ? treeModel()->autoUpdate() : false;
+}
+
+/*!
+  \brief Get 'updateModified' flag value.
+  \return 'updateModified' flag value
+*/
+bool SUIT_ProxyModel::updateModified() const
+{
+  return treeModel() ? treeModel()->updateModified() : false;
+}
+/*!
+  \brief Set 'updateModified' flag value.
+
+  If this flag is set to \c true (default=false), the model is updated by updateTreeModel that 
+  uses the isModified flag to update only modified objects
+
+  \param on 'updateModified' flag value
+*/
+void SUIT_ProxyModel::setUpdateModified( const bool on )
+{
+  if ( treeModel() )
+    treeModel()->setUpdateModified( on );
 }
 
 /*!

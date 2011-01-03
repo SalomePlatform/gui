@@ -97,6 +97,9 @@
 
 #include <vector>
 
+//To activate update of Object Browser with SALOMEDS::Observer uncomment following line
+#define WITH_SALOMEDS_OBSERVER
+
 /*!Internal class that updates object browser item properties */
 // temporary commented
 /*class SalomeApp_Updater : public OB_Updater
@@ -851,6 +854,13 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
     if ( ob ) {
       // temporary commented
       //ob->setUpdater( new SalomeApp_Updater() );
+
+#ifdef WITH_SALOMEDS_OBSERVER
+      //do not activate the automatic update of Qt tree through signal/slot
+      ob->setAutoUpdate(false);
+      //activate update of modified objects only
+      ob->setUpdateModified(true);
+#endif
 
       connect( ob, SIGNAL( doubleClicked( SUIT_DataObject* ) ), this, SLOT( onDblClick( SUIT_DataObject* ) ) );
 

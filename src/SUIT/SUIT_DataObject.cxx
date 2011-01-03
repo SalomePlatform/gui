@@ -283,6 +283,19 @@ void SUIT_DataObject::insertChild( SUIT_DataObject* obj, int position )
 }
 
 /*!
+  \brief Insert new child object into the list of the children (faster version of insertChild without signal).
+  \param obj child object being added
+  \param position child position
+*/
+void SUIT_DataObject::insertChildAtPos( SUIT_DataObject* obj, int position )
+{
+  if ( !obj )return;
+  int pos = position < 0 ? myChildren.count() : position;
+  myChildren.insert( qMin( pos, (int)myChildren.count() ), obj );
+  obj->assignParent( this );
+}
+
+/*!
   \brief Remove the specified child object reference.
   \param obj child object being removed
   \param del if \c true, the child object is destroyed
@@ -373,6 +386,14 @@ void SUIT_DataObject::setParent( SUIT_DataObject* p )
 
   if ( parent() )
     parent()->appendChild( this );
+}
+
+void SUIT_DataObject::assignParent( SUIT_DataObject* p )
+{
+  if ( p == myParent )
+    return;
+
+  myParent = p;
 }
 
 /*!

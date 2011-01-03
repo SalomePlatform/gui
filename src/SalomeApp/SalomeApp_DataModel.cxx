@@ -38,6 +38,9 @@
 #include <SALOMEconfig.h>
 #include CORBA_SERVER_HEADER(SALOME_Exception)
 
+//To activate update of Object Browser with SALOMEDS::Observer uncomment following line
+#define WITH_SALOMEDS_OBSERVER
+
 typedef _PTR(SObject)     kerPtr;
 typedef SUIT_DataObject*  suitPtr;
 
@@ -348,12 +351,24 @@ SUIT_DataObject* SalomeApp_DataModel::synchronize( const _PTR( SComponent )& sob
     }
   }
 
+#ifdef WITH_SALOMEDS_OBSERVER
+  SalomeApp_RootObject* root=dynamic_cast<SalomeApp_RootObject*>(study->root());
+  if(!(root->toSynchronize()))
+    return suitObj;
+#endif
+
   SalomeApp_DataModelSync sync( study->studyDS(), study->root() );
 
   if( !suitObj || dynamic_cast<SalomeApp_DataObject*>( suitObj ) )
-    return ::synchronize<kerPtr,suitPtr,SalomeApp_DataModelSync>( sobj, suitObj, sync );
+    suitObj= ::synchronize<kerPtr,suitPtr,SalomeApp_DataModelSync>( sobj, suitObj, sync );
   else
-    return 0;
+    suitObj= 0;
+
+#ifdef WITH_SALOMEDS_OBSERVER
+  root->setToSynchronize(false);
+#endif
+
+  return suitObj;
 }
 
 /*!

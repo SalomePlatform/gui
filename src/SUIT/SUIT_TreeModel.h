@@ -57,6 +57,8 @@ public:
   virtual void             setAutoDeleteTree( const bool ) = 0;
   virtual bool             autoUpdate() const = 0;
   virtual void             setAutoUpdate( const bool ) = 0;
+  virtual bool             updateModified() const = 0;
+  virtual void             setUpdateModified( const bool ) = 0;
   virtual QAbstractItemDelegate* delegate() const = 0;
   virtual bool             customSorting( const int ) const = 0;
   virtual bool             lessThan( const QModelIndex& left, const QModelIndex& right ) const = 0;
@@ -138,10 +140,15 @@ public:
   bool                   autoUpdate() const;
   void                   setAutoUpdate( const bool );
 
+  bool                   updateModified() const;
+  void                   setUpdateModified( const bool );
+
   virtual bool           customSorting( const int ) const;
   virtual bool           lessThan( const QModelIndex& left, const QModelIndex& right ) const;
 
   QAbstractItemDelegate* delegate() const;
+
+  virtual void           updateTreeModel(SUIT_DataObject*,TreeItem*);
 
 public slots:
   virtual void           updateTree( const QModelIndex& );
@@ -159,6 +166,7 @@ private:
   SUIT_DataObject*       object( const TreeItem* ) const;
 
   TreeItem*              createItem( SUIT_DataObject*, TreeItem* = 0, TreeItem* = 0 );
+  TreeItem*              createItemAtPos( SUIT_DataObject*, TreeItem* = 0, int pos=0 );
   void                   updateItem( TreeItem* );
   void                   removeItem( TreeItem* );
 
@@ -182,6 +190,7 @@ private:
   ItemMap             myItems;
   bool                myAutoDeleteTree;
   bool                myAutoUpdate;
+  bool                myUpdateModified;
   QVector<ColumnInfo> myColumns;
 
   friend class SUIT_TreeModel::TreeSync;
@@ -208,7 +217,10 @@ public:
 
   bool                   autoUpdate() const;
   void                   setAutoUpdate( const bool );
- 
+
+  bool                   updateModified() const;
+  void                   setUpdateModified( const bool );
+
   bool                   isSortingEnabled() const;
   bool                   customSorting( const int ) const;
 

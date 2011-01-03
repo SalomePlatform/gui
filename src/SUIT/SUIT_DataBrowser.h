@@ -47,6 +47,9 @@ public:
   bool             autoUpdate() const;
   void             setAutoUpdate( const bool );
 
+  bool             updateModified() const;
+  void             setUpdateModified( const bool );
+
   void             updateTree( SUIT_DataObject* = 0, const bool = true );
 
   int              updateKey() const;

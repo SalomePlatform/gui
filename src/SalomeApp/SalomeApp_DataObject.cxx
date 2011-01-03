@@ -557,6 +557,27 @@ QString SalomeApp_DataObject::value( const _PTR(SObject)& obj ) const
   return val;
 }
 
+void SalomeApp_DataObject::insertChildAtTag(SalomeApp_DataObject* obj,int tag)
+{
+  int pos=0;
+  int npos=std::min(tag-1,childCount());
+  for (int i=npos;i>0;i--)
+    {
+      if((dynamic_cast<SalomeApp_DataObject*>(childObject(i-1)))->object()->Tag() < tag)
+        {
+          pos=i-1;
+          break;
+        }
+    }
+  insertChildAtPos(obj,pos+1);
+}
+
+void SalomeApp_DataObject::updateItem()
+{
+  if(modified())return;
+  setModified(true);
+}
+
 /*!
   \class SalomeApp_ModuleObject
   \brief This class is used for optimized access to the SALOMEDS-based 
@@ -660,7 +681,8 @@ SalomeApp_RootObject::SalomeApp_RootObject( LightApp_Study* study )
 : CAM_DataObject( 0 ),
   LightApp_DataObject( 0 ),
   SalomeApp_DataObject( 0 ),
-  LightApp_RootObject( study )
+  LightApp_RootObject( study ),
+  _toSynchronize(true)
 {
 }
 

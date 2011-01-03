@@ -69,6 +69,9 @@ public:
   virtual bool           customSorting( const int = NameId ) const;
   virtual bool           compare( const QVariant&, const QVariant&, const int = NameId ) const;
 
+  virtual void           insertChildAtTag( SalomeApp_DataObject*, int );
+  virtual void           updateItem();
+
 private:
   QString                ior( const _PTR(SObject)& ) const;
   QString                entry( const _PTR(SObject)& ) const;
@@ -105,6 +108,10 @@ public:
   QPixmap                icon( const int = NameId ) const;
   QColor                 color( const ColorRole, const int = NameId ) const;
   QString                toolTip( const int = NameId ) const;
+  void                   setToSynchronize(bool value){_toSynchronize=value;};
+  bool                   toSynchronize() const {return _toSynchronize;};
+protected:
+  bool _toSynchronize;
 };
 
 class SALOMEAPP_EXPORT SalomeApp_SavePointObject : public virtual LightApp_DataObject

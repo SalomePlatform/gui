@@ -36,6 +36,7 @@
 #include <vtkCell.h>
 #include <vtkInformation.h>
 #include <vtkInformationVector.h>
+#include <vtkVersion.h>
 
 #include "utilities.h"
 
@@ -46,6 +47,8 @@ using namespace std;
     #define __GNUC_2__
   #endif
 #endif
+
+#define VTK_XVERSION (VTK_MAJOR_VERSION*10000+VTK_MINOR_VERSION*100+VTK_BUILD_VERSION)
 
 vtkStandardNewMacro(VTKViewer_ExtractUnstructuredGrid);
 
@@ -116,11 +119,14 @@ inline void InsertCell(vtkUnstructuredGrid *theInput,
     theIdList->SetId(i,aPntIds->GetId(i));
   }
   vtkIdType aCellType = aCell->GetCellType();
+#if VTK_XVERSION > 50700
   if (aCellType != VTK_POLYHEDRON)
     {
+#endif
       theConnectivity->InsertNextCell(theIdList);
       if (theFaceLocations)
         theFaceLocations->InsertNextValue(-1);
+#if VTK_XVERSION > 50700
     }
   else
     {
@@ -148,6 +154,7 @@ inline void InsertCell(vtkUnstructuredGrid *theInput,
       vtkUnstructuredGrid::DecomposeAPolyhedronCell(
           nfaces, face, realnpts, theConnectivity, theFaces);
     }
+#endif
 
   theCellTypesArray->InsertNextValue(aCellType);
   if(theStoreMapping){
@@ -207,7 +214,7 @@ void VTKViewer_ExtractUnstructuredGrid::Execute()
     MESSAGE("Execute - myChangeMode = "<<myChangeMode);
   }*/
   if(myExtractionMode == eCells){
-    if(myChangeMode == ePassAll || myCellIds.empty() && myCellTypes.empty() && myChangeMode == eRemoving){
+    if(myChangeMode == ePassAll || (myCellIds.empty() && myCellTypes.empty() && myChangeMode == eRemoving)){
       if(vtkIdType aNbElems = anInput->GetNumberOfCells()){
         if(myStoreMapping) myOut2InId.reserve(aNbElems);
         anOutput->ShallowCopy(anInput);
@@ -296,7 +303,11 @@ void VTKViewer_ExtractUnstructuredGrid::Execute()
         for(vtkIdType i = 0, *pts, npts; aConnectivity->GetNextCell(npts,pts); i++){
           aCellLocationsArray->SetValue(i,aConnectivity->GetTraversalLocation(npts));
         }
+#if VTK_XVERSION > 50700
         anOutput->SetCells(aCellTypesArray,aCellLocationsArray,aConnectivity,newFaceLocations,newFaces);
+#else
+        anOutput->SetCells(aCellTypesArray,aCellLocationsArray,aConnectivity);
+#endif
         anOutput->SetPoints(anInput->GetPoints());
         aCellLocationsArray->Delete();
       }
@@ -315,7 +326,7 @@ void VTKViewer_ExtractUnstructuredGrid::Execute()
     aCellTypesArray->Allocate(aNbElems*aCellTypesArray->GetNumberOfComponents());
     // additional condition has been added to treat a case described in IPAL21372
     // note that it is significant only when myExtractionMode == ePoints
-    if(myChangeMode == ePassAll || myCellIds.empty() && myCellTypes.empty() && myChangeMode == eRemoving ||
+    if(myChangeMode == ePassAll || (myCellIds.empty() && myCellTypes.empty() && myChangeMode == eRemoving) ||
        !anInput->GetCellTypesArray()){
       if(myStoreMapping) myOut2InId.reserve(aNbElems);
       for(vtkIdType aCellId = 0, anOutId = 0; aCellId < aNbElems; aCellId++,anOutId++){
@@ -388,7 +399,11 @@ void VTKViewer_ExtractUnstructuredGrid::Execute()
       for(vtkIdType i = 0, *pts, npts; aConnectivity->GetNextCell(npts,pts); i++){
         aCellLocationsArray->SetValue(i,aConnectivity->GetTraversalLocation(npts));
       }
+#if VTK_XVERSION > 50700
       anOutput->SetCells(aCellTypesArray,aCellLocationsArray,aConnectivity,0, 0);
+#else
+      anOutput->SetCells(aCellTypesArray,aCellLocationsArray,aConnectivity);
+#endif
       anOutput->SetPoints(anInput->GetPoints());
       aCellLocationsArray->Delete();
     }

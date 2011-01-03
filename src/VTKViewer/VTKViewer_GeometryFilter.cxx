@@ -63,6 +63,8 @@
   #endif
 #endif
 
+#define VTK_XVERSION (VTK_MAJOR_VERSION*10000+VTK_MINOR_VERSION*100+VTK_BUILD_VERSION)
+
 //#define __MYDEBUG__
 //#define USE_ROBUST_TRIANGULATION
 
@@ -483,6 +485,7 @@ VTKViewer_GeometryFilter
           break;
         }
 
+#if VTK_XVERSION > 50700
         case VTK_POLYHEDRON:
           {
             //MESSAGE("VTK_POLYHEDRON geometry filter");
@@ -529,6 +532,7 @@ VTKViewer_GeometryFilter
               }
             break;
           }
+#endif
         //Quadratic cells
         case VTK_QUADRATIC_EDGE:
         case VTK_QUADRATIC_TRIANGLE:

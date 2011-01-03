@@ -32,7 +32,10 @@
 #include <vtkRenderer.h>
 
 #include <vtkCell.h>
+#define VTK_XVERSION (VTK_MAJOR_VERSION*10000+VTK_MINOR_VERSION*100+VTK_BUILD_VERSION)
+#if VTK_XVERSION > 50700
 #include <vtkPolyhedron.h>
+#endif
 #include <vtkPolyData.h>
 
 #include "Utils_SALOME_Exception.hxx"
@@ -130,8 +133,11 @@ SVTK_Actor
     int aPartId = theMapIndex( ind );
     if(vtkCell* aCell = theMapActor->GetElemCell(aPartId))
       {
+#if VTK_XVERSION > 50700
       if (aCell->GetCellType() != VTK_POLYHEDRON)
+#endif
         myUnstructuredGrid->InsertNextCell(aCell->GetCellType(),aCell->GetPointIds());
+#if VTK_XVERSION > 50700
       else
         {
           vtkPolyhedron *polyhedron = dynamic_cast<vtkPolyhedron*>(aCell);
@@ -140,6 +146,7 @@ SVTK_Actor
           vtkIdType *pts = polyhedron->GetFaces();
           myUnstructuredGrid->InsertNextCell(aCell->GetCellType(),pts[0], pts+1);
         }
+#endif
       }
   }
 

@@ -66,7 +66,8 @@ class Observer_i : public virtual POA_SALOMEDS::Observer
 
         if (event == 1) // add sobject
           {
-            if (entry2SuitObject.count(theID)>0)
+            std::map<std::string,SalomeApp_DataObject*>::iterator it0 = entry2SuitObject.find(theID);
+            if (it0 != entry2SuitObject.end())
               {
                 std::cerr << "entry " << theID << " is already added. Problem ??" << std::endl;
                 return;
@@ -89,9 +90,10 @@ class Observer_i : public virtual POA_SALOMEDS::Observer
             else
               suit_obj=new SalomeApp_DataObject(obj,0);
 
-            if (entry2SuitObject.count(parent_id)>0)
+            std::map<std::string,SalomeApp_DataObject*>::iterator it=entry2SuitObject.find(parent_id);
+            if (it != entry2SuitObject.end())
               {
-                SalomeApp_DataObject* father=entry2SuitObject[parent_id];
+                SalomeApp_DataObject* father=it->second;
                 int tag=atoi(pos_in_parent.c_str());
                 father->insertChildAtTag(suit_obj,tag);
               }
@@ -124,14 +126,15 @@ class Observer_i : public virtual POA_SALOMEDS::Observer
                             break;
                           }
                         anID=root_id+obj_id.substr(0,fin);
-                        if (entry2SuitObject.count(anID) == 0)
+                        std::map<std::string,SalomeApp_DataObject*>::iterator it2=entry2SuitObject.find(anID);
+                        if (it2 == entry2SuitObject.end())
                           {
                             //the ID is not known in entry2SuitObject
                             anObj = dynamic_cast<SalomeApp_DataObject*>(anObj->childObject(atoi(obj_id.substr(debut,fin-debut).c_str())-1));
                             entry2SuitObject[anID]=anObj;
                           }
                         else
-                          anObj=entry2SuitObject[anID];
+                          anObj= it2->second;
                         debut=fin+1;
                       }
                     int tag=atoi(pos_in_parent.c_str());
@@ -142,13 +145,14 @@ class Observer_i : public virtual POA_SALOMEDS::Observer
           }
         else if (event == 2) // remove sobject
           {
-            if (entry2SuitObject.count(theID)>0)
+            std::map<std::string,SalomeApp_DataObject*>::iterator it=entry2SuitObject.find(theID);
+            if (it != entry2SuitObject.end())
               {
-                suit_obj= entry2SuitObject[theID];
+                suit_obj= it->second;
                 SUIT_DataObject* father=suit_obj->parent();
                 if(father)
                   father->removeChild(suit_obj);
-                entry2SuitObject.erase(theID);
+                entry2SuitObject.erase(it);
               }
             else
               {
@@ -157,9 +161,10 @@ class Observer_i : public virtual POA_SALOMEDS::Observer
           }
         else if (event == 0) //modify sobject
           {
-            if (entry2SuitObject.count(theID)>0)
+            std::map<std::string,SalomeApp_DataObject*>::iterator it=entry2SuitObject.find(theID);
+            if (it != entry2SuitObject.end())
               {
-                suit_obj= entry2SuitObject[theID];
+                suit_obj= it->second;
                 suit_obj->updateItem();
               }
             else
@@ -176,7 +181,7 @@ class Observer_i : public virtual POA_SALOMEDS::Observer
   private:
     _PTR(Study) myStudyDS;
     SalomeApp_Study* myStudy;
-    map<string,SalomeApp_DataObject*> entry2SuitObject;
+    std::map<std::string,SalomeApp_DataObject*> entry2SuitObject;
 };
 
 

@@ -235,6 +235,18 @@ void SUIT_DataBrowser::setSelected( const SUIT_DataObject* obj, const bool appen
 }
 
 /*!
+  \brief function to sort QModelIndexList with qSort
+*/
+bool modelIndexLessThan(const QModelIndex& lhs, const QModelIndex& rhs)
+{
+  QModelIndex lhs_parent=lhs.parent();
+  QModelIndex rhs_parent=rhs.parent();
+  if(lhs_parent < rhs_parent)return true;
+  if(lhs_parent == rhs_parent) return lhs < rhs;
+  return false;
+}
+
+/*!
   \brief Set list of selected data objects.
   \param lst list of the data object to set selected
   \param append if \c true, the objects are added to the current selection;
@@ -253,6 +265,8 @@ void SUIT_DataBrowser::setSelected( const DataObjectList& lst, const bool append
       if ( index.isValid() )
         indexes.append( index );
     }
+    qSort(indexes.begin(), indexes.end(), modelIndexLessThan);
+
     select( indexes, true, append ); // if !indexes.isEmpty() ???
   }
 }

@@ -182,17 +182,19 @@ bool SOCC_Viewer::isInViewer( const Handle(SALOME_InteractiveObject)& obj,
 */
 bool SOCC_Viewer::isVisible( const Handle(SALOME_InteractiveObject)& obj )
 {
-  AIS_ListOfInteractive List;
-  getAISContext()->DisplayedObjects( List );
 
-  AIS_ListIteratorOfListOfInteractive ite( List );
-  for ( ; ite.More(); ite.Next() )
-  {
-    Handle(SALOME_InteractiveObject) anObj =
-      Handle(SALOME_InteractiveObject)::DownCast( ite.Value()->GetOwner() );
-
-    if ( !anObj.IsNull() && anObj->hasEntry() && anObj->isSame( obj ) )
-      return getAISContext()->IsDisplayed( ite.Value() );
+  std::map< std::string , std::vector<Handle(AIS_InteractiveObject)> >::iterator it=entry2aisobjects.find(obj->getEntry());
+  if(it != entry2aisobjects.end())
+    {
+      // get context
+      Handle (AIS_InteractiveContext) ic = getAISContext();
+      std::vector<Handle(AIS_InteractiveObject)>& List = it->second;
+      for( unsigned int ind = 0; ind < List.size(); ind++ )
+        {
+          Handle(AIS_InteractiveObject) anAIS=List[ind];
+          if(ic->IsDisplayed(anAIS))
+            return true;
+        }
   }
   
   return false;

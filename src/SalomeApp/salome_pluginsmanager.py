@@ -25,7 +25,7 @@ name : the name of the plugins manager. This name is used to build the name of t
 basemenuname : the name of the menu into we want to add the menu of the plugins ("Tools" for example)
 menuname : the name of plugins menu
 
-A plugins manager is created at when calling initialize.
+A plugins manager is created when calling initialize.
 
 The plugins manager creates a submenu <menuname> in the <basemenuname> menu.
 
@@ -44,14 +44,28 @@ Example of a plugins manager with name salome. It searches files with name salom
 
   salome_pluginsmanager.AddFunction('About plugins','About SALOME pluginmanager',about)
 
-First you need to import the python module salome_pluginsmanager
-Second write a function with one argument context (it's an object with 3 attributes)
-Third register the function with a call to AddFunction (entry in menu plugins, tooltip, function)
+All entries in menu are added in the same order as the calls to AddFunction.
+It is possible to customize this presentation by getting the entries list (salome_pluginsmanager.entries()) and modifying
+it in place. For example, you can do that : salome_pluginsmanager.entries().sort() to order them alphabetically
+or salome_pluginsmanager.entries().remove("a") to remove the entry named "a".
+
+It is possible to put entries in submenus. You only need to give a name with / to the entry. for example::
+
+  salome_pluginsmanager.AddFunction('a/b/About','About SALOME pluginmanager',about)
+
+will add 2 submenus a and b before creating the entry.
+
+In short to add a plugin:
+
+  1. import the python module salome_pluginsmanager (in your salome_plugins.py or <module>_plugins.py)
+  2. write a function with one argument context (it's an object with 3 attributes)
+  3. register the function with a call to AddFunction (entry in menu plugins, tooltip, function)
 
 context attributes:
-- sg : the SALOME Swig interface
-- studyId : the SALOME studyId that must be used to execute the plugin
-- study : the SALOME study object that must be used to execute the plugin
+
+  - sg : the SALOME Swig interface
+  - studyId : the SALOME studyId that must be used to execute the plugin
+  - study : the SALOME study object that must be used to execute the plugin
 
 """
 
@@ -117,6 +131,7 @@ class PluginsManager:
         self.module=module
         self.registry={}
         self.handlers={}
+        self.entries=[]
         self.lasttime=0
         self.plugindirs=[]
         self.plugins_files=[]
@@ -154,6 +169,7 @@ class PluginsManager:
         """ Add a plugin function
         """
         self.registry[name]=script,description
+        self.entries.append(name)
 
         def handler(obj=self,script=script):
           try:
@@ -189,6 +205,7 @@ class PluginsManager:
         if not plugins_files:
           self.registry.clear()
           self.handlers.clear()
+          self.entries=[]
           self.lasttime=0
           self.menu.clear()
           self.menu.menuAction().setVisible(False)
@@ -199,6 +216,7 @@ class PluginsManager:
           current_plugins_manager=self
           self.registry.clear()
           self.handlers.clear()
+          self.entries=[]
           self.lasttime=lasttime
           for directory,plugins_file in plugins_files:
             if directory not in sys.path:
@@ -214,9 +232,32 @@ class PluginsManager:
     def updateMenu(self):
         """Update the Plugins menu"""
         self.menu.clear()
-        for name,handler in self.handlers.items():
-          act=self.menu.addAction(name,handler)
-          act.setStatusTip(self.registry[name][1])
+        for entry in self.entries:
+          names=entry.split("/")
+          if len(names) < 1:continue
+          parentMenu=self.menu
+
+          if len(names) > 1:
+            #create or get submenus
+            submenus={}
+            for action in parentMenu.actions():
+              menu=action.menu()
+              if menu:
+                submenus[str(menu.title())]=menu
+            while len(names) > 1:
+              name=names.pop(0)
+              if submenus.has_key(name):
+                amenu=submenus[name]
+              else:
+                amenu=QtGui.QMenu(name,parentMenu)
+                parentMenu.addMenu(amenu)
+                submenus[name]=amenu
+              parentMenu=amenu
+
+          name=names.pop(0)
+          act=parentMenu.addAction(name,self.handlers[entry])
+          act.setStatusTip(self.registry[entry][1])
+
         self.menu.menuAction().setVisible(True)
 
 def AddFunction(name,description,script):
@@ -224,3 +265,7 @@ def AddFunction(name,description,script):
        Called by a user to register a function (script)
    """
    return current_plugins_manager.AddFunction(name,description,script)
+
+def entries():
+  """ Return the list of entries in menu: can be sorted or modified in place to customize menu content """
+  return current_plugins_manager.entries

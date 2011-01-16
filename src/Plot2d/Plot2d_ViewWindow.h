@@ -53,10 +53,10 @@ public:
          MoveOpId, PanId, GlobalPanId,
          PModeXLinearId, PModeXLogarithmicId, 
          PModeYLinearId, PModeYLogarithmicId,
-         CurvPointsId, CurvLinesId, CurvSplinesId, 
-         LegendId,
-         CurvSettingsId,
-         CloneId };
+	 CurvPointsId, CurvLinesId, CurvSplinesId, 
+	 LegendId,
+	 CurvSettingsId,
+	 CloneId, PrintId };
 
 public:
   Plot2d_ViewWindow( SUIT_Desktop*, Plot2d_Viewer* );
@@ -66,6 +66,7 @@ public:
   void              putInfo( const QString&);
   Plot2d_ViewFrame* getViewFrame();
   QToolBar*         getToolBar();
+  virtual void      initLayout();
   void              contextMenuPopup( QMenu* );
 
   virtual bool      eventFilter( QObject*, QEvent* );
@@ -95,6 +96,7 @@ public slots:
   void              onCurves();
 
   void              onDumpView();
+  void              onPrintView();
 
 protected:
   virtual QImage    dumpView();

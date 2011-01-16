@@ -20,13 +20,6 @@
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-//  SALOME OCCViewer : build OCC Viewer into Salome desktop
-//  File   : Plot2d_Prs.cxx
-//  Author : Sergey ANIKIN
-//  Module : SALOME
-//  $Header$
-//
-#include <qwt_plot.h>
 #include "Plot2d_Prs.h"
 
 /*!
@@ -40,7 +33,7 @@ Plot2d_Prs::Plot2d_Prs( bool theDelete )
 /*!
   Standard constructor
 */
-Plot2d_Prs::Plot2d_Prs( const Plot2d_Curve* obj, bool theDelete )
+Plot2d_Prs::Plot2d_Prs( Plot2d_Object* obj, bool theDelete )
 : mySecondY( false), myIsAutoDel( theDelete )
 {
   AddObject( obj ); 
@@ -52,23 +45,23 @@ Plot2d_Prs::Plot2d_Prs( const Plot2d_Curve* obj, bool theDelete )
 Plot2d_Prs::~Plot2d_Prs()
 { 
   if ( myIsAutoDel )
-    qDeleteAll( myCurves );
+    qDeleteAll( myObjects );
 }
 
 /*!
-  Get curves list
+  Get objects list
 */
-curveList Plot2d_Prs::getCurves() const
+objectList Plot2d_Prs::getObjects() const
 {
-  return myCurves;
+  return myObjects;
 }
 
 /*!
   Add curve
 */
-void Plot2d_Prs::AddObject( const Plot2d_Curve* obj )
+void Plot2d_Prs::AddObject( Plot2d_Object* obj )
 {
-  myCurves.append((Plot2d_Curve*)obj);
+  myObjects.append(obj);
 
   if (obj->getYAxis() == QwtPlot::yRight)
     mySecondY = true;
@@ -79,7 +72,7 @@ void Plot2d_Prs::AddObject( const Plot2d_Curve* obj )
 */
 bool Plot2d_Prs::IsNull() const 
 { 
-  return myCurves.isEmpty();
+  return myObjects.isEmpty();
 }
 
 /*!

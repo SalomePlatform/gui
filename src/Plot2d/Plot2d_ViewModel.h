@@ -25,7 +25,7 @@
 
 #include "Plot2d.h"
 #include "SUIT_ViewModel.h"
-#include "qwt_plot.h"
+#include <qwt_plot_item.h>
 
 class SUIT_ViewWindow;
 class SUIT_Desktop;

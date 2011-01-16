@@ -23,163 +23,180 @@
 #ifndef PLOT2D_VIEWFRAME_H
 #define PLOT2D_VIEWFRAME_H
 
+#include "Plot2d.h"
 #include "Plot2d_Curve.h"
+
 #include <QWidget>
 #include <QMultiHash>
 #include <QList>
-#include <qwt_legend_item.h>
-#include <qwt_plot_curve.h>
 #include <qwt_symbol.h>
 #include <qwt_scale_draw.h>
 
 class Plot2d_Plot2d;
 class Plot2d_Prs;
+class Plot2d_Curve;
+class Plot2d_Object;
 class QCustomEvent;
+class QwtPlotItem;
 class QwtPlotCurve;
 class QwtPlotGrid;
 class QwtPlotZoomer;
 
-typedef QMultiHash<QwtPlotCurve*, Plot2d_Curve*> CurveDict;
+typedef QMultiHash<QwtPlotCurve*, Plot2d_Curve*>  CurveDict;
+typedef QMultiHash<QwtPlotItem*,  Plot2d_Object*> ObjectDict;
 
 class PLOT2D_EXPORT Plot2d_ViewFrame : public QWidget
 { 
   Q_OBJECT
-
+  
   enum { NoOpId, FitAreaId, ZoomId, PanId, GlPanId, DumpId, 
-   ModeXLinearId, ModeXLogarithmicId, ModeYLinearId, ModeYLogarithmicId,
-   LegendId, CurvePointsId, CurveLinesId, CurveSplinesId };
+	 ModeXLinearId, ModeXLogarithmicId, ModeYLinearId, ModeYLogarithmicId,
+	 LegendId, CurvePointsId, CurveLinesId, CurveSplinesId };
 public:
   /* Construction/destruction */
-  Plot2d_ViewFrame( QWidget* parent, const QString& title = "" );
+  Plot2d_ViewFrame( QWidget*, const QString& = "" );
   virtual ~Plot2d_ViewFrame();
 
   enum ObjectType { MainTitle, XTitle, YTitle, Y2Title, XAxis, YAxis, Y2Axis };
 
-public:
-  QWidget* getViewWidget();
+  QWidget*       getViewWidget();
 
   /* display */
-  void    DisplayAll();
-  void    EraseAll();
-  void    Repaint();
+  virtual void   DisplayAll();
+  virtual void   EraseAll();
+  void           Repaint();
 
-  void    Display( const Plot2d_Prs* );
-  void    Erase( const Plot2d_Prs*, const bool = false );
-  Plot2d_Prs* CreatePrs( const char* entry = 0 );
+  void           Display( const Plot2d_Prs* );
+  void           Erase( const Plot2d_Prs*, const bool = false );
+  Plot2d_Prs*    CreatePrs( const char* = 0 );
 
-  virtual bool eventFilter(QObject* watched, QEvent* e);
+  virtual bool   eventFilter( QObject*, QEvent* );
 
   /* operations */
-  void    updateTitles();
-  void    setTitle( const QString& title );
-  QString getTitle() const { return myTitle; }
-  void    displayCurve( Plot2d_Curve* curve, bool update = false );
-  void    displayCurves( const curveList& curves, bool update = false );
-  void    eraseCurve( Plot2d_Curve* curve, bool update = false );
-  void    eraseCurves( const curveList& curves, bool update = false );
-  int     getCurves( curveList& clist );
-  const   CurveDict& getCurves();
-  bool    isVisible( Plot2d_Curve* curve );
-  void    updateCurve( Plot2d_Curve* curve, bool update = false );
-  void    updateLegend( const Plot2d_Prs* prs );
-  void    fitAll();
-  void    fitArea( const QRect& area );
-  void    fitData(const int mode,
-                  const double xMin, const double xMax,
-                  const double yMin, const double yMax,
-                  const double y2Min = 0, const double y2Max = 0);
+  void           updateTitles();
+  void           setTitle( const QString& );
+  QString        getTitle() const;
 
-  void    getFitRanges(double& xMin, double& xMax,
-                       double& yMin, double& yMax,
-                       double& y2Min, double& y2Max);
+  /* curves operations [ obsolete ] */
+  void           displayCurve( Plot2d_Curve*, bool = false );
+  void           displayCurves( const curveList&, bool = false );
+  void           eraseCurve( Plot2d_Curve*, bool = false );
+  void           eraseCurves( const curveList&, bool = false );
+  int            getCurves( curveList& ) const;
+  CurveDict      getCurves() const;
+  void           updateCurve( Plot2d_Curve*, bool = false );
 
-  void    getFitRangeByCurves(double& xMin, double& xMax,
-                              double& yMin, double& yMax,
-                              double& y2Min, double& y2Max);
+  /* objects operations */
+  void           displayObject( Plot2d_Object*, bool = false );
+  void           displayObjects( const objectList&, bool = false );
+  void           eraseObject( Plot2d_Object*, bool = false );
+  void           eraseObjects( const objectList&, bool = false );
+  int            getObjects( objectList& ) const;
+  bool           isVisible( Plot2d_Object* ) const;
+  void           updateObject( Plot2d_Object*, bool = false );
+
+  void           updateLegend( const Plot2d_Prs* );
+  void           fitAll();
+  void           fitArea( const QRect& );
+  void           fitData( const int, const double, const double,
+			  const double, const double,
+			  const double = 0, const double = 0 );
+  
+  void           getFitRanges( double&, double&, double&, double&,
+			       double&, double&);
+  
+  void           getFitRangeByCurves( double&, double&, double&, double&,
+				      double&, double& );
 
   /* view parameters */
-  void    copyPreferences( Plot2d_ViewFrame* );
-  void    setCurveType( int curveType, bool update = true );
-  int     getCurveType() const { return myCurveType; }
-  void    setCurveTitle( Plot2d_Curve* curve, const QString& title );
-  void    showLegend( bool show, bool update = true );
-  void    setLegendPos( int pos );
-  int     getLegendPos() const { return myLegendPos; }
-  void    setMarkerSize( const int size, bool update = true  );
-  int     getMarkerSize() const { return myMarkerSize; }
-  void    setBackgroundColor( const QColor& color );
-  QColor  backgroundColor() const;
-  void    setXGrid( bool xMajorEnabled, const int xMajorMax,
-                    bool xMinorEnabled, const int xMinorMax, bool update = true );
-  void    setYGrid( bool yMajorEnabled, const int yMajorMax,
-                    bool yMinorEnabled, const int yMinorMax,
-                    bool y2MajorEnabled, const int y2MajorMax,
-                    bool y2MinorEnabled, const int y2MinorMax, bool update = true );
-  void    setTitle( bool enabled, const QString& title, ObjectType type, bool update = true );
-  QString getTitle( ObjectType type ) const;
+  void           copyPreferences( Plot2d_ViewFrame* );
+  void           setCurveType( int, bool = true );
+  int            getCurveType() const;
+  void           setCurveTitle( Plot2d_Curve*, const QString& );
+  void           setObjectTitle( Plot2d_Object*, const QString& );
+  void           showLegend( bool, bool = true );
+  void           setLegendPos( int );
+  int            getLegendPos() const;
+  void           setMarkerSize( const int, bool = true  );
+  int            getMarkerSize() const;
+  void           setBackgroundColor( const QColor& );
+  QColor         backgroundColor() const;
+  void           setXGrid( bool, const int, bool, const int, bool = true );
+  void           setYGrid( bool, const int, bool, const int,
+			   bool, const int, bool, const int, bool = true );
+  void           setTitle( bool, const QString&, ObjectType, bool = true );
+  QString        getTitle( ObjectType ) const;
 
-  void    setFont( const QFont& font, ObjectType type, bool update = true );
-  void    setHorScaleMode( const int mode, bool update = true );
-  int     getHorScaleMode() const { return myXMode; }
-  void    setVerScaleMode( const int mode, bool update = true );
-  int     getVerScaleMode() const { return myYMode; }
+  void           setFont( const QFont&, ObjectType, bool = true );
+  void           setHorScaleMode( const int, bool = true );
+  int            getHorScaleMode() const;
+  void           setVerScaleMode( const int, bool = true );
+  int            getVerScaleMode() const;
 
-  bool    isModeHorLinear();
-  bool    isModeVerLinear();
-  bool    isLegendShow() { return myShowLegend; };
+  bool           isModeHorLinear();
+  bool           isModeVerLinear();
+  bool           isLegendShow() const;
 
   // Protection against QwtCurve::drawLines() bug in Qwt 0.4.x: 
   // it crashes if switched to X/Y logarithmic mode, when one or more points have
   // non-positive X/Y coordinate
-  bool    isXLogEnabled() const;
-  bool    isYLogEnabled() const;
+  bool           isXLogEnabled() const;
+  bool           isYLogEnabled() const;
+  void           setEnableAxis( QwtPlot::Axis, bool );
 
-  virtual bool print( const QString& file, const QString& format ) const;
+  virtual bool   print( const QString&, const QString& ) const;
+  void           printPlot( QPainter*, const QRect&,
+			    const QwtPlotPrintFilter& = QwtPlotPrintFilter() ) const;
 
-  QString getVisualParameters();
-  void    setVisualParameters( const QString& parameters );
+  QString        getVisualParameters();
+  void           setVisualParameters( const QString& );
 
-  void    incrementalPan ( const int incrX, const int incrY );
-  void    incrementalZoom( const int incrX, const int incrY );
+  void           incrementalPan ( const int, const int );
+  void           incrementalZoom( const int, const int );
+
+  QwtPlotCanvas* getPlotCanvas() const;
+  Plot2d_Curve*  getClosestCurve( QPoint, double&, int& ) const;
 
 protected:
-  int     testOperation( const QMouseEvent& );
-  void    readPreferences();
-  void    writePreferences();
-  QString getInfo( const QPoint& pnt );
-  virtual void wheelEvent( QWheelEvent* );
-  QwtPlotCurve* getPlotCurve( Plot2d_Curve* curve );
-  bool    hasPlotCurve( Plot2d_Curve* curve );
-  void    setCurveType( QwtPlotCurve* curve, int curveType );
+  int            testOperation( const QMouseEvent& );
+  void           readPreferences();
+  void           writePreferences();
+  QString        getInfo( const QPoint& );
+  virtual void   wheelEvent( QWheelEvent* );
+  QwtPlotCurve*  getPlotCurve( Plot2d_Curve* ) const;
+  bool           hasPlotCurve( Plot2d_Curve* ) const;
+  void           setCurveType( QwtPlotCurve*, int );
+  QwtPlotItem*   getPlotObject( Plot2d_Object* ) const;
+  bool           hasPlotObject( Plot2d_Object* ) const;
 
 public slots:
-  void    onViewPan(); 
-  void    onViewZoom();
-  void    onViewFitAll();
-  void    onViewFitArea();
-  void    onViewGlobalPan(); 
-  void    onSettings();
-  void    onFitData();
-  void    onChangeBackground();
-  void    onPanLeft();
-  void    onPanRight();
-  void    onPanUp();
-  void    onPanDown();
-  void    onZoomIn();
-  void    onZoomOut();
+  void           onViewPan(); 
+  void           onViewZoom();
+  void           onViewFitAll();
+  void           onViewFitArea();
+  void           onViewGlobalPan(); 
+  void           onSettings();
+  void           onFitData();
+  void           onChangeBackground();
+  void           onPanLeft();
+  void           onPanRight();
+  void           onPanUp();
+  void           onPanDown();
+  void           onZoomIn();
+  void           onZoomOut();
 
 protected:
-  virtual void customEvent( QEvent* );
-  void    plotMousePressed( const QMouseEvent& );
-  bool    plotMouseMoved( const QMouseEvent& );
-  void    plotMouseReleased( const QMouseEvent& );
+  virtual void   customEvent( QEvent* );
+  void           plotMousePressed( const QMouseEvent& );
+  bool           plotMouseMoved( const QMouseEvent& );
+  void           plotMouseReleased( const QMouseEvent& );
 
 signals:
-  void    vpModeHorChanged();
-  void    vpModeVerChanged();
-  void    vpCurveChanged();
-  void    contextMenuRequested( QContextMenuEvent *e );
-  void    legendClicked( QwtPlotItem* );
+  void           vpModeHorChanged();
+  void           vpModeVerChanged();
+  void           vpCurveChanged();
+  void           contextMenuRequested( QContextMenuEvent* );
+  void           legendClicked( QwtPlotItem* );
 
 protected:
   Plot2d_Plot2d* myPlot;
@@ -200,54 +217,43 @@ protected:
   int            myXMode, myYMode;
   double         myXDistance, myYDistance, myYDistance2;
   bool           mySecondY;
+  ObjectDict     myObjects;
+  bool           myIsDefTitle;
 };
 
 class Plot2d_Plot2d : public QwtPlot 
 {
   Q_OBJECT
 public:
-  Plot2d_Plot2d( QWidget* parent );
+  Plot2d_Plot2d( QWidget* );
+  virtual ~Plot2d_Plot2d();
 
-  void       setLogScale( int axisId, bool log10 );
+  void           setLogScale( int, bool );
 
-  void       replot();
-  void       getNextMarker( QwtSymbol::Style& typeMarker, QColor& color, Qt::PenStyle& typeLine );
-  QwtLegend* getLegend() {
-#if QWT_VERSION < 0x040200
-     return d_legend;
-#else  
-     return legend(); /* mpv: porting to the Qwt 4.2.0 */
-#endif
-  }
-  virtual QSize       sizeHint() const;
-  virtual QSizePolicy sizePolicy() const;
-  virtual QSize       minimumSizeHint() const;
-  void                defaultPicker();
-  void                setPickerMousePattern( int button, int state = Qt::NoButton );
+  void           replot();
+  QwtLegend*     getLegend();
+  QSize          sizeHint() const;
+  QSize          minimumSizeHint() const;
+  void           defaultPicker();
+  void           setPickerMousePattern( int, int = Qt::NoButton );
 
-  bool                polished() const { return myIsPolished; }
-  QwtPlotGrid*        grid() { return myGrid; };
-  CurveDict& getCurves() { return myCurves; }
-  Plot2d_Curve*       getClosestCurve( QPoint p, double& distance, int& index );
-  QwtPlotZoomer*      zoomer() const { return myPlotZoomer; }
+  bool           polished() const;
+  QwtPlotGrid*   grid() const;
+  QwtPlotZoomer* zoomer() const;
 
-  virtual void        updateYAxisIdentifiers();
+  virtual void   updateYAxisIdentifiers();
 
 public slots:
-  virtual void polish();
-
-protected:
-  bool       existMarker( const QwtSymbol::Style typeMarker, const QColor& color, const Qt::PenStyle typeLine );
+  virtual void   polish();
 
 protected slots:
-  void onScaleDivChanged();
+  void           onScaleDivChanged();
 
 protected:
-  CurveDict          myCurves;
-  QwtPlotGrid*       myGrid;
-  QList<QColor>      myColors;
-  bool               myIsPolished;
-  QwtPlotZoomer*     myPlotZoomer;
+  QwtPlotGrid*   myGrid;
+  QList<QColor>  myColors;
+  bool           myIsPolished;
+  QwtPlotZoomer* myPlotZoomer;
 };
 
 class Plot2d_ScaleDraw: public QwtScaleDraw
@@ -263,47 +269,6 @@ public:
 private:
   char myFormat;
   int  myPrecision;
-};
-
-class Plot2d_QwtLegendItem : public QwtLegendItem
-{
-public:
-  enum YAxisIdentifierMode { IM_None = 0, IM_Left, IM_Right };
-
-public:
-  Plot2d_QwtLegendItem( QWidget* = 0 );
-  virtual ~Plot2d_QwtLegendItem();
-
-public:
-  void             setYAxisIdentifierMode( const int );
-
-protected:
-  virtual void     drawIdentifier( QPainter*, const QRect& ) const;
-
-private:
-  int              myYAxisIdentifierMode;
-  QPixmap          myYAxisLeftIcon;
-  QPixmap          myYAxisRightIcon;
-  int              mySpacingCollapsed;
-  int              mySpacingExpanded;
-};
-
-class Plot2d_QwtPlotCurve : public QwtPlotCurve
-{
-public:
-  Plot2d_QwtPlotCurve( const QString&, QwtPlot::Axis = QwtPlot::yLeft );
-  virtual ~Plot2d_QwtPlotCurve();
-
-public:
-  virtual void     setYAxisIdentifierEnabled( const bool );
-
-protected:
-  virtual void     updateLegend( QwtLegend* ) const;
-  virtual QWidget* legendItem() const;
-
-private:
-  QwtPlot::Axis    myYAxis;
-  bool             myYAxisIdentifierEnabled;
 };
 
 #endif

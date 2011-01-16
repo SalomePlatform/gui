@@ -19,10 +19,9 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+//  File   : Plot2d_ToolTip.h
+//  Author : Alexandre SOLOVYOV, Open CASCADE S.A.S. (alexander.solovyov@opencascade.com)
 
-// File:      Plot2d_ToolTip.h
-// Author:    Alexandre SOLOVYOV
-//
 #ifndef PLOT2D_TOOLTIP_H
 #define PLOT2D_TOOLTIP_H
 
@@ -30,14 +29,13 @@
 #include <QtxToolTip.h>
 
 class Plot2d_ViewFrame;
-class Plot2d_Plot2d;
 
 class PLOT2D_EXPORT Plot2d_ToolTip : public QtxToolTip
 {
   Q_OBJECT
 
 public:
-  Plot2d_ToolTip( Plot2d_ViewFrame*, Plot2d_Plot2d* );
+  Plot2d_ToolTip( Plot2d_ViewFrame* );
   virtual ~Plot2d_ToolTip();
 
   virtual bool eventFilter( QObject*, QEvent* );
@@ -47,7 +45,6 @@ public slots:
 
 private:
   Plot2d_ViewFrame* myFrame;
-  Plot2d_Plot2d*    myPlot;
 };
 
-#endif
+#endif // PLOT2D_TOOLTIP_H

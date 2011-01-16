@@ -32,7 +32,10 @@ lib_LTLIBRARIES = libPlot2d.la
 # header files 
 salomeinclude_HEADERS =		\
 	Plot2d.h		\
+	Plot2d_PlotItems.h	\
+	Plot2d_Object.h		\
 	Plot2d_Curve.h		\
+	Plot2d_Histogram.h	\
 	Plot2d_FitDataDlg.h	\
 	Plot2d_Prs.h		\
 	Plot2d_SetupViewDlg.h	\
@@ -45,7 +48,10 @@ salomeinclude_HEADERS =		\
 
 dist_libPlot2d_la_SOURCES =		\
 	Plot2d.cxx			\
+	Plot2d_PlotItems.cxx		\
+	Plot2d_Object.cxx		\
 	Plot2d_Curve.cxx		\
+	Plot2d_Histogram.cxx		\
 	Plot2d_FitDataDlg.cxx		\
 	Plot2d_Prs.cxx			\
 	Plot2d_SetupViewDlg.cxx		\
@@ -81,6 +87,7 @@ dist_salomeres_DATA =				\
 	resources/plot2d_log_y.png		\
 	resources/plot2d_pan.png		\
 	resources/plot2d_points.png		\
+	resources/plot2d_print.png		\
 	resources/plot2d_settings.png		\
 	resources/plot2d_splines.png		\
 	resources/plot2d_zoom.png

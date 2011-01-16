@@ -19,60 +19,50 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  File   : Plot2d_Curve.h
-//  Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
+//  File   : Plot2d_Histogram.h
+//  Author : Natalia ERMOLAEVA, Open CASCADE S.A.S. (natalia.donis@opencascade.com)
 
-#ifndef PLOT2D_CURVE_H
-#define PLOT2D_CURVE_H
+#ifndef PLOT2D_HISTOGRAM_H
+#define PLOT2D_HISTOGRAM_H
 
 #include "Plot2d.h"
 #include "Plot2d_Object.h"
 
-//#include <qwt_plot_curve.h>
+#include <qwt_interval_data.h>
 
-class PLOT2D_EXPORT Plot2d_Curve : public Plot2d_Object
+class PLOT2D_EXPORT Plot2d_Histogram : public Plot2d_Object
 {
 public:
-  Plot2d_Curve();
-  Plot2d_Curve( const Plot2d_Curve& );
+  Plot2d_Histogram();
+  Plot2d_Histogram( const Plot2d_Histogram& );
 
-  virtual ~Plot2d_Curve();
-  Plot2d_Curve& operator= ( const Plot2d_Curve& );
+  virtual ~Plot2d_Histogram();
+  Plot2d_Histogram& operator= ( const Plot2d_Histogram& );
 
   virtual int          rtti();
   virtual QwtPlotItem* createPlotItem();
   virtual void         autoFill( const QwtPlot* );
   virtual void         updatePlotItem( QwtPlotItem* );
 
+  void                 setData( const QList<double>&, const QList<double>& );
+  QwtIntervalData      getData() const;
+
   void                 setColor( const QColor& );
   QColor               getColor() const;
 
-  void                 setMarker( Plot2d::MarkerType, const int );
-  void                 setMarker( Plot2d::MarkerType );
-  Plot2d::MarkerType   getMarker() const;
-  void                 setMarkerSize( const int );
-  int                  getMarkerSize() const;
+  void                 setWidth( const double );
+  double               getWidth( const bool ) const;
 
-  void                 setLine( Plot2d::LineType, const int );
-  void                 setLine( Plot2d::LineType );
-  Plot2d::LineType     getLine() const;
-  void                 setLineWidth( const int );
-  int                  getLineWidth() const;
+  static double        getMinInterval( const QList<double>& );
 
 protected:
-  void                 getNextMarker( const QwtPlot*, QwtSymbol::Style&,
-				      QColor&, Qt::PenStyle& );
-  bool                 existMarker( const QwtPlot*, const QwtSymbol::Style,
-				    const QColor&, const Qt::PenStyle );
+  QColor               getNextColor( const QwtPlot* );
+  bool                 existColor( const QwtPlot*, const QColor& );
 
-protected:
+private:
   QColor               myColor;
-  Plot2d::MarkerType   myMarker;
-  int                  myMarkerSize;
-  Plot2d::LineType     myLine;
-  int                  myLineWidth;
+  double               myWidth;
+  double               myDefWidth;
 };
 
-typedef QList<Plot2d_Curve*> curveList;
-
-#endif
+#endif // PLOT2D_HISTOGRAM_H

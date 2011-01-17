@@ -860,9 +860,9 @@ void SalomeApp_Study::components( QStringList& comps ) const
   for( _PTR(SComponentIterator) it ( studyDS()->NewComponentIterator() ); it->More(); it->Next() ) 
   {
     _PTR(SComponent) aComponent ( it->Value() );
-    if( aComponent && aComponent->ComponentDataType() == "Interface Applicative" )
-      continue; // skip the magic "Interface Applicative" component
-    comps.append( aComponent->ComponentDataType().c_str() );
+    // skip the magic "Interface Applicative" component
+    if ( aComponent && aComponent->ComponentDataType() != getVisualComponentName().toLatin1().constData() )
+      comps.append( aComponent->ComponentDataType().c_str() );
   }
 }
 
@@ -890,7 +890,7 @@ std::vector<int> SalomeApp_Study::getSavePoints()
 {
   std::vector<int> v;
 
-  _PTR(SObject) so = studyDS()->FindComponent("Interface Applicative");
+  _PTR(SObject) so = studyDS()->FindComponent( getVisualComponentName().toLatin1().constData() );
   if(!so) return v;
 
   _PTR(StudyBuilder) builder = studyDS()->NewBuilder();
@@ -911,7 +911,7 @@ std::vector<int> SalomeApp_Study::getSavePoints()
 void SalomeApp_Study::removeSavePoint(int savePoint)
 {
   if(savePoint <= 0) return;
- _PTR(AttributeParameter) AP = studyDS()->GetCommonParameters(getVisualComponentName(), savePoint);
+ _PTR(AttributeParameter) AP = studyDS()->GetCommonParameters(getVisualComponentName().toLatin1().constData(), savePoint);
   _PTR(SObject) so = AP->GetSObject();
   _PTR(StudyBuilder) builder = studyDS()->NewBuilder();
   builder->RemoveObjectWithChildren(so);
@@ -922,7 +922,7 @@ void SalomeApp_Study::removeSavePoint(int savePoint)
 */
 QString SalomeApp_Study::getNameOfSavePoint(int savePoint)
 {
-  _PTR(AttributeParameter) AP = studyDS()->GetCommonParameters(getVisualComponentName(), savePoint);
+  _PTR(AttributeParameter) AP = studyDS()->GetCommonParameters(getVisualComponentName().toLatin1().constData(), savePoint);
   _PTR(IParameters) ip = ClientFactory::getIParameters(AP);
   return ip->getProperty("AP_SAVEPOINT_NAME").c_str();
 }
@@ -932,17 +932,9 @@ QString SalomeApp_Study::getNameOfSavePoint(int savePoint)
 */
 void SalomeApp_Study::setNameOfSavePoint(int savePoint, const QString& nameOfSavePoint)
 {
-  _PTR(AttributeParameter) AP = studyDS()->GetCommonParameters(getVisualComponentName(), savePoint);
+  _PTR(AttributeParameter) AP = studyDS()->GetCommonParameters(getVisualComponentName().toLatin1().constData(), savePoint);
   _PTR(IParameters) ip = ClientFactory::getIParameters(AP);
   ip->setProperty("AP_SAVEPOINT_NAME", nameOfSavePoint.toStdString());
-}
-
-/*!
-  \return a name of the component where visual parameters are stored
-*/
-std::string SalomeApp_Study::getVisualComponentName()
-{
-  return "Interface Applicative";
 }
 
 /*!

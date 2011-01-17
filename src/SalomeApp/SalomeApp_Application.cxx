@@ -1285,7 +1285,7 @@ void SalomeApp_Application::updateObjectBrowser( const bool updateModels )
       {
         _PTR(SComponent) aComponent ( it->Value() );
 
-        if ( aComponent->ComponentDataType() == "Interface Applicative" )
+        if ( aComponent->ComponentDataType() == study->getVisualComponentName().toLatin1().constData() )
           continue; // skip the magic "Interface Applicative" component
 
         if ( !objectBrowser() )

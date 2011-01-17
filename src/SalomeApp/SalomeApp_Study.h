@@ -77,7 +77,6 @@ public:
   void                removeSavePoint(int savePoint);
   QString             getNameOfSavePoint(int savePoint);
   void                setNameOfSavePoint(int savePoint, const QString& nameOfSavePoint);
-  virtual std::string getVisualComponentName();
 
   virtual void        restoreState(int savePoint);
   void                markAsSavedIn(QString theFileName);

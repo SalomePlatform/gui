@@ -118,7 +118,8 @@ int SalomeApp_VisualState::storeState()
   if ( savePoints.size() > 0)
     savePoint = savePoints[savePoints.size()-1] + 1;
 
-  _PTR(AttributeParameter) ap = study->studyDS()->GetCommonParameters( study->getVisualComponentName(), savePoint );
+  _PTR(AttributeParameter) ap = study->studyDS()->GetCommonParameters( study->getVisualComponentName().toLatin1().constData(), 
+								       savePoint );
   _PTR(IParameters) ip = ClientFactory::getIParameters( ap );
 
   ViewManagerList lst;
@@ -200,7 +201,8 @@ void SalomeApp_VisualState::restoreState(int savePoint)
   if ( !study )
     return;
 
-  _PTR(AttributeParameter) ap = study->studyDS()->GetCommonParameters( study->getVisualComponentName(), savePoint );
+  _PTR(AttributeParameter) ap = study->studyDS()->GetCommonParameters( study->getVisualComponentName().toLatin1().constData(),
+								       savePoint );
   _PTR(IParameters) ip = ClientFactory::getIParameters(ap);
 
   qApp->installEventFilter( this );

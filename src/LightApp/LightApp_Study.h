@@ -71,6 +71,8 @@ public:
   virtual void        components( QStringList& ) const;
   virtual QString     centry( const QString& ) const;
 
+  virtual QString     getVisualComponentName() const;
+
 protected:
   virtual void        saveModuleData ( QString theModuleName, QStringList theListOfFiles );
   virtual void        openModuleData ( QString theModuleName, QStringList& theListOfFiles );

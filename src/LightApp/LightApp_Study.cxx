@@ -458,7 +458,7 @@ void LightApp_Study::components( QStringList& comp ) const
   for( ; anIt!=aLast; anIt++ )
   {
     LightApp_DataObject* obj = dynamic_cast<LightApp_DataObject*>( *anIt );
-    if( obj && obj->entry()!="Interface Applicative" )
+    if ( obj && obj->entry() != getVisualComponentName() )
       comp.append( obj->entry() );
   }
 }
@@ -483,3 +483,12 @@ QString LightApp_Study::centry( const QString& comp ) const
   }
   return e;
 }
+
+/*!
+  \return a name of the component where visual parameters are stored
+*/
+QString LightApp_Study::getVisualComponentName() const
+{
+  return "Interface Applicative";
+}
+

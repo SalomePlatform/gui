@@ -27,12 +27,14 @@ lib_LTLIBRARIES = libSPlot2d.la
 salomeinclude_HEADERS =		\
 	SPlot2d.h		\
 	SPlot2d_Curve.h		\
+	SPlot2d_Histogram.h	\
 	SPlot2d_Prs.h		\
 	SPlot2d_ViewModel.h	\
 	SPlot2d_ViewWindow.h
 
 dist_libSPlot2d_la_SOURCES =	\
 	SPlot2d_Curve.cxx	\
+	SPlot2d_Histogram.cxx	\
 	SPlot2d_Prs.cxx		\
 	SPlot2d_ViewModel.cxx	\
 	SPlot2d_ViewWindow.cxx

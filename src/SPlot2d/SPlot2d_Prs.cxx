@@ -19,15 +19,10 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-
 //  File   : SPlot2d_Prs.cxx
-//  Author : Sergey RUIN
-//  Module : SUIT
-//
+//  Author : Sergey RUIN, Open CASCADE S.A.S. (sergey.ruin@opencascade.com)
+
 #include "SPlot2d_Prs.h"
-#ifndef WIN32
-using namespace std;
-#endif
 
 /*!
  Default constructor
@@ -40,7 +35,7 @@ SPlot2d_Prs::SPlot2d_Prs()
 /*!
  Standard constructor
 */
-SPlot2d_Prs::SPlot2d_Prs( const Plot2d_Curve* obj )
+SPlot2d_Prs::SPlot2d_Prs( const Plot2d_Object* obj )
 :Plot2d_Prs(obj)
 { 
 }
@@ -51,7 +46,8 @@ SPlot2d_Prs::SPlot2d_Prs( const Plot2d_Curve* obj )
 SPlot2d_Prs::SPlot2d_Prs( const Plot2d_Prs* prs )
 {
   mySecondY = prs->isSecondY();
-  myCurves = prs->getCurves();
+  myObjects = prs->getObjects();
+  myIsAutoDel = false;          // VSR: error? should auto-delete flag be removed
 }
 
 /*!
@@ -62,3 +58,18 @@ SPlot2d_Prs::~SPlot2d_Prs()
 }
 
 
+/*!
+  Check if the presentation is empty
+*/
+bool SPlot2d_Prs::IsNull() const
+{
+  return Plot2d_Prs::IsNull();
+}
+
+/*!
+  Get contained objects
+*/
+objectList SPlot2d_Prs::GetObjects() const
+{
+  return getObjects();
+}

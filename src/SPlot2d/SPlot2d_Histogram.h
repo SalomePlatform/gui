@@ -19,42 +19,36 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  File   : SPlot2d_Curve.h
-//  Author : Sergey RUIN, Open CASCADE S.A.S. (sergey.ruin@opencascade.com)
+//  File   : SPlot2d_Histogram.h
+//  Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 
-#ifndef SPlot2d_Curve_h
-#define SPlot2d_Curve_h
+#ifndef SPlot2d_Histogram_h
+#define SPlot2d_Histogram_h
 
 #include "SPlot2d.h"  
-#include "Plot2d_Curve.h"
+
+#include "Plot2d_Histogram.h"
 
 #ifndef _Handle_SALOME_InteractiveObject_HeaderFile
 #include <Handle_SALOME_InteractiveObject.hxx>
 #endif
 #include "SALOME_InteractiveObject.hxx"
 
-class SPLOT2D_EXPORT SPlot2d_Curve : public Plot2d_Curve
+class SPLOT2D_EXPORT SPlot2d_Histogram : public Plot2d_Histogram
 {
 public:
 
-  SPlot2d_Curve();
-  virtual ~SPlot2d_Curve();
-  SPlot2d_Curve( const SPlot2d_Curve& curve );
-  SPlot2d_Curve& operator= ( const SPlot2d_Curve& curve );
-
-  virtual QString                          getTableTitle() const;
+  SPlot2d_Histogram();
+  virtual ~SPlot2d_Histogram();
+  SPlot2d_Histogram( const SPlot2d_Histogram& hist );
+  SPlot2d_Histogram& operator= ( const SPlot2d_Histogram& hist );
 
   virtual bool                             hasIO() const;
   virtual Handle(SALOME_InteractiveObject) getIO() const;
   virtual void                             setIO( const Handle(SALOME_InteractiveObject)& );
-
-  virtual bool                             hasTableIO() const;
-  virtual Handle(SALOME_InteractiveObject) getTableIO() const;
-  virtual void                             setTableIO( const Handle(SALOME_InteractiveObject)& );
   
 private:
   Handle(SALOME_InteractiveObject) myIO;
-  Handle(SALOME_InteractiveObject) myTableIO;
 };
 
-#endif // SPlot2d_Curve_h
+#endif // SPlot2d_Histogram_h

@@ -19,11 +19,9 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-
 //  File   : SPlot2d_Prs.h
-//  Author : Sergey RUIN
-//  Module : SUIT
-//
+//  Author : Sergey RUIN, Open CASCADE S.A.S. (sergey.ruin@opencascade.com)
+
 #ifndef SPLOT2D_PRS_H
 #define SPLOT2D_PRS_H
 
@@ -36,24 +34,22 @@ class Plot2d_Curve;
 class SPLOT2D_EXPORT SPlot2d_Prs : public SALOME_Prs2d, public Plot2d_Prs
 {
 public:
-
   // Default constructor 
   SPlot2d_Prs();
 
   // Standard constructor    
-  SPlot2d_Prs( const Plot2d_Curve* obj );
+  SPlot2d_Prs( const Plot2d_Object* obj );
 
   SPlot2d_Prs( const Plot2d_Prs* prs );
 
   // Destructor
   ~SPlot2d_Prs();
 
-  virtual bool IsNull() const { return Plot2d_Prs::IsNull(); }
+  virtual bool IsNull() const;
 
   // Get curves list
-  // Note: Depricated method, use method getCurves     
-  curveList GetObjects() const { return getCurves(); }
-
+  // Note: Deprecated method, use method getCurves     
+  objectList GetObjects() const;
 };
 
 #endif

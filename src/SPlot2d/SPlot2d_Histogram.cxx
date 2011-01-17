@@ -19,51 +19,49 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  File   : SPlot2d_Curve.cxx
-//  Author : Sergey RUIN, Open CASCADE S.A.S. (sergey.ruin@opencascade.com)
+//  File   : SPlot2d_Histogram.cxx
+//  Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 
-#include "SPlot2d_Curve.h"
+#include "SPlot2d_Histogram.h"
 
 /*!
   Constructor
 */
-SPlot2d_Curve::SPlot2d_Curve()
-:Plot2d_Curve() 
+SPlot2d_Histogram::SPlot2d_Histogram()
+:Plot2d_Histogram() 
 {
 }
 
 /*!
   Destructor
 */
-SPlot2d_Curve::~SPlot2d_Curve()
+SPlot2d_Histogram::~SPlot2d_Histogram()
 {
 }
 
 /*!
   Copy constructor. Makes deep copy of data.
 */
-SPlot2d_Curve::SPlot2d_Curve( const SPlot2d_Curve& curve )
-: Plot2d_Curve( curve )
+SPlot2d_Histogram::SPlot2d_Histogram( const SPlot2d_Histogram& hist )
+: Plot2d_Histogram( hist )
 {
-  myIO      = curve.getIO();
-  myTableIO = curve.getTableIO();
+  myIO      = hist.getIO();
 }
 
 /*!
   operator=. Makes deep copy of data.
 */
-SPlot2d_Curve& SPlot2d_Curve::operator=( const SPlot2d_Curve& curve )
+SPlot2d_Histogram& SPlot2d_Histogram::operator=( const SPlot2d_Histogram& hist )
 {
-  Plot2d_Curve::operator=(curve);
-  myIO         = curve.getIO();
-  myTableIO    = curve.getTableIO();
+  Plot2d_Histogram::operator=(hist);
+  myIO         = hist.getIO();
   return *this;
 }
 
 /*!
   \return corresponding SALOME_InteractiveObject
 */
-Handle(SALOME_InteractiveObject) SPlot2d_Curve::getIO() const
+Handle(SALOME_InteractiveObject) SPlot2d_Histogram::getIO() const
 {
   return myIO;
 }
@@ -72,51 +70,15 @@ Handle(SALOME_InteractiveObject) SPlot2d_Curve::getIO() const
   Sets corresponding SALOME_InteractiveObject
   \param io - SALOME_InteractiveObject
 */
-void SPlot2d_Curve::setIO( const Handle(SALOME_InteractiveObject)& io )
+void SPlot2d_Histogram::setIO( const Handle(SALOME_InteractiveObject)& io )
 {
   myIO = io;
 }
 
 /*!
-  \return true if curve has table interactive object
-*/
-bool SPlot2d_Curve::hasTableIO() const
-{
-  return !myTableIO.IsNull();
-}
-
-/*!
-  \return table interactive object of curve
-*/
-Handle(SALOME_InteractiveObject) SPlot2d_Curve::getTableIO() const
-{
-  return myTableIO;
-}
-
-/*!
-  Sets table interactive object of curve
-  \param io - SALOME_InteractiveObject
-*/
-void SPlot2d_Curve::setTableIO( const Handle(SALOME_InteractiveObject)& io )
-{
-  myTableIO = io;
-}
-
-/*!
   \return SALOME_InteractiveObject
 */
-bool SPlot2d_Curve::hasIO() const
+bool SPlot2d_Histogram::hasIO() const
 {
   return !myIO.IsNull();
-}
-
-/*!
-  \return table title
-*/
-QString SPlot2d_Curve::getTableTitle() const
-{
-  QString title;
-  if( hasTableIO() )
-    title = getTableIO()->getName();
-  return title;
 }

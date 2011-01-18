@@ -125,6 +125,16 @@ int LightApp_DataObject::groupId() const
 }
 
 /*!
+  \brief Check if the object is visible.
+  \return \c true if this object is displayable or \c false otherwise
+*/
+bool LightApp_DataObject::isVisible() const
+{
+  LightApp_RootObject* r = dynamic_cast<LightApp_RootObject*>( root() );
+  return r && r->study() && componentDataType() != r->study()->getVisualComponentName();
+}
+
+/*!
   \brief Get object string identifier.
 
   This method should be reimplemented in the subclasses.

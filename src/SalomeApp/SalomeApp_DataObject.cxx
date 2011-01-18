@@ -394,6 +394,22 @@ bool SalomeApp_DataObject::expandable() const
 }
 
 /*!
+  \brief Check if the object is visible.
+  \return \c true if this object is displayable or \c false otherwise
+*/
+bool SalomeApp_DataObject::isVisible() const
+{
+  bool isDraw = true;
+  _PTR(GenericAttribute) anAttr;
+  if ( myObject && myObject->FindAttribute(anAttr, "AttributeDrawable") ) 
+  {
+    _PTR(AttributeDrawable) aAttrDraw = anAttr;
+    isDraw = aAttrDraw->IsDrawable(); 
+  }
+  return isDraw && LightApp_DataObject::isVisible() && ( !name().isEmpty() || isReference() );
+}
+
+/*!
   \brief Check if the specified column supports custom sorting.
   \param id column id
   \return \c true if column sorting should be customized

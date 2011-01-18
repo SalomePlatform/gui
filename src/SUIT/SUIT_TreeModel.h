@@ -244,6 +244,7 @@ signals:
 
 protected:
   SUIT_AbstractModel*    treeModel() const;
+  virtual bool           filterAcceptsRow( int, const QModelIndex& ) const;
 
 private:
   bool                   mySortingEnabled;

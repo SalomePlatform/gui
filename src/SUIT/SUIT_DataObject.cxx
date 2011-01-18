@@ -544,6 +544,19 @@ int SUIT_DataObject::alignment( const int /*id*/ ) const
 }
 
 /*!
+  \brief Check if the object is visible.
+
+  This method can be re-implemented in the subclasses.
+  Default implementation returns \c true (all objects are visible by default).
+
+  \return \c true if this object is displayable or \c false otherwise
+*/
+bool SUIT_DataObject::isVisible() const
+{
+  return true;
+}
+
+/*!
   \brief Check if the object is draggable.
 
   This method can be re-implemented in the subclasses.

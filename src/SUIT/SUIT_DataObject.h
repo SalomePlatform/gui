@@ -110,6 +110,7 @@ public:
   virtual QFont               font( const int = NameId ) const;
   virtual int                 alignment( const int = NameId ) const;
 
+  virtual bool                isVisible() const;
   virtual bool                isDragable() const;
   virtual bool                isDropAccepted( SUIT_DataObject* obj );
 

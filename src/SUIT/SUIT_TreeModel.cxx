@@ -1685,6 +1685,18 @@ SUIT_AbstractModel* SUIT_ProxyModel::treeModel() const
 }
 
 /*!
+  \brief Filter rows
+  \param sourceRow row index of the source data model
+  \param sourceParent parent model index of the source data model
+  \return \c true if the specified row should be filtered out (i.e. not displayed) or \c false otherwise
+*/
+bool SUIT_ProxyModel::filterAcceptsRow( int sourceRow, const QModelIndex& sourceParent ) const
+{
+  SUIT_DataObject* o = treeModel()->object( sourceModel()->index( sourceRow, 0, sourceParent ) );
+  return o && o->isVisible();
+}
+
+/*!
   \brief Register new column in the model
   \param group_id - unique data object identificator allowing the classification of objects 
   \param name - translated column name

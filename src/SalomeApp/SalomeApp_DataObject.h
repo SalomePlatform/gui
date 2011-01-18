@@ -64,6 +64,8 @@ public:
   bool                   hasChildren() const;
   bool                   expandable() const;
 
+  virtual bool           isVisible() const;
+
   virtual QString        componentDataType() const;
 
   virtual bool           customSorting( const int = NameId ) const;

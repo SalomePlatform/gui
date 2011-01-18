@@ -58,6 +58,8 @@ public:
   virtual bool                    compare( const QVariant&, const QVariant&, const int = NameId ) const;
   virtual int                     groupId() const;
 
+  virtual bool                    isVisible() const;
+
 protected:
   QString                         myCompDataType;
   SUIT_DataObject*                myCompObject;

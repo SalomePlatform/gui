@@ -376,6 +376,7 @@ SPlot2d_Curve* SPlot2d_Viewer::getCurveByIO( const Handle(SALOME_InteractiveObje
 SUIT_ViewWindow* SPlot2d_Viewer::createView( SUIT_Desktop* theDesktop )
 {
   SPlot2d_ViewWindow* aPlot2dView = new SPlot2d_ViewWindow(theDesktop, this);
+  aPlot2dView->initLayout();
   if (getPrs())
     aPlot2dView->getViewFrame()->Display(getPrs());
   return aPlot2dView;

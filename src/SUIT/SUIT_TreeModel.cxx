@@ -1435,6 +1435,7 @@ SUIT_ProxyModel::SUIT_ProxyModel( QObject* parent )
   SUIT_TreeModel* model = new SUIT_TreeModel( this );
   connect( model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
   setSourceModel( model );
+  setDynamicSortFilter( true );
 }
 
 /*!
@@ -1449,6 +1450,7 @@ SUIT_ProxyModel::SUIT_ProxyModel( SUIT_DataObject* root, QObject* parent )
   SUIT_TreeModel* model = new SUIT_TreeModel( root, this );
   connect( model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
   setSourceModel( model );
+  setDynamicSortFilter( true );
 }
 
 /*!
@@ -1462,6 +1464,7 @@ SUIT_ProxyModel::SUIT_ProxyModel( SUIT_AbstractModel* model, QObject* parent )
 {
   connect( *model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
   setSourceModel( *model );
+  setDynamicSortFilter( true );
 }
 
 /*!

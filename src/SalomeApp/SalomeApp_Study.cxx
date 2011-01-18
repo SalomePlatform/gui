@@ -256,7 +256,9 @@ bool SalomeApp_Study::createDocument( const QString& theStr )
 
   // create myRoot
   SalomeApp_RootObject* aRoot=new SalomeApp_RootObject( this );
+#ifdef WITH_SALOMEDS_OBSERVER
   aRoot->setToSynchronize(false);
+#endif
   setRoot( aRoot );
 
   bool aRet = CAM_Study::createDocument( theStr );
@@ -301,6 +303,7 @@ bool SalomeApp_Study::openDocument( const QString& theFileName )
   ((SalomeApp_Application*)application())->updateObjectBrowser( false ); 
 
 #ifdef WITH_SALOMEDS_OBSERVER
+  dynamic_cast<SalomeApp_RootObject*>( root() )->setToSynchronize(false);
   Observer_i* myObserver_i = new Observer_i(myStudyDS,this);
   //attach an observer to the study with notification of modifications 
   myStudyDS->attach(myObserver_i->_this(),true);
@@ -355,6 +358,7 @@ bool SalomeApp_Study::loadDocument( const QString& theStudyName )
   ((SalomeApp_Application*)application())->updateObjectBrowser( false ); 
 
 #ifdef WITH_SALOMEDS_OBSERVER
+  dynamic_cast<SalomeApp_RootObject*>( root() )->setToSynchronize(false);
   Observer_i* myObserver_i = new Observer_i(myStudyDS,this);
   //attach an observer to the study with notification of modifications 
   myStudyDS->attach(myObserver_i->_this(),true);

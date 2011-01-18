@@ -115,6 +115,7 @@ suitPtr SalomeApp_DataModelSync::createItem( const kerPtr& so,
   _PTR(SComponent) aSComp( so );
   suitPtr nitem = aSComp ? new SalomeApp_ModuleObject( aSComp, 0 ) :
                            new SalomeApp_DataObject( so, 0 );
+
   if( parent ) {
     int pos = after ? parent->childPos( after ) : 0;
     parent->insertChild( nitem, pos+1 );
@@ -363,10 +364,6 @@ SUIT_DataObject* SalomeApp_DataModel::synchronize( const _PTR( SComponent )& sob
     suitObj= ::synchronize<kerPtr,suitPtr,SalomeApp_DataModelSync>( sobj, suitObj, sync );
   else
     suitObj= 0;
-
-#ifdef WITH_SALOMEDS_OBSERVER
-  root->setToSynchronize(false);
-#endif
 
   return suitObj;
 }

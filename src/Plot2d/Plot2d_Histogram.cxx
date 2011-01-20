@@ -127,7 +127,7 @@ void Plot2d_Histogram::setData( const QList<double>& theXVals,
   setPointList( aPoints );
 
   myDefWidth = getMinInterval( theXVals )*(2./3.);
-  myWidth = myDefWidth;
+  myWidth = 0; // myDefWidth // VSR: width should not be automatically reset to myDefWidth
 }
 
 /*!
@@ -141,7 +141,7 @@ QwtIntervalData Plot2d_Histogram::getData() const
   QwtArray<QwtDoubleInterval> anIntervals( aSize );
   QwtArray<double> aValues( aSize );
   double aX;
-  double aWidth = isAutoAssign() ? myDefWidth : myWidth;
+  double aWidth = myWidth <= 0 ? myDefWidth : myWidth; // VSR: width is either manually assigned or auto-calculated
   for ( int i = 0; i < aSize; i++ ) {
     aX = aPoints[i].x;
     anIntervals[i] = QwtDoubleInterval( aX - aWidth/2, aX + aWidth/2 );
@@ -169,16 +169,16 @@ QColor Plot2d_Histogram::getColor() const
 }
 
 /*!
-  Sets width of a histogram bar
+  Sets custom width of a histogram bar
 */
 void Plot2d_Histogram::setWidth( const double theWidth )
 {
   myWidth = theWidth;
-  setAutoAssign( false );
+  //setAutoAssign( false ); // VSR: width attribute is not auto-assigned
 }
 
 /*!
-  Returns width for a histogram bar
+  Returns custom or automatic width for a histogram bar
 */
 double Plot2d_Histogram::getWidth( const bool isDef ) const
 {

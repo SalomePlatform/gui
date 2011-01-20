@@ -644,12 +644,13 @@ void Plot2d_ViewFrame::displayObject( Plot2d_Object* object, bool update )
   if ( myYMode && object->getMinY() <= 0. )
     setVerScaleMode( 0, false );
 
+  if ( object->isAutoAssign() )
+    object->autoFill( myPlot );
+  
   if ( hasPlotObject( object ) ) {
     updateObject( object, update );
   }
   else {
-    if ( object->isAutoAssign() )
-      object->autoFill( myPlot );
     QwtPlotItem* anItem = object->createPlotItem();
     anItem->attach( myPlot );
     myObjects.insert( anItem, object );
@@ -2386,6 +2387,22 @@ void Plot2d_ViewFrame::customEvent( QEvent* ce )
     fitAll();
 }
 
+
+/*!
+ * Return Plot2d_Object by the QwtPlotItem
+ *
+*/
+Plot2d_Object* Plot2d_ViewFrame::getPlotObject( QwtPlotItem* plotItem ) const {
+  
+  ObjectDict::const_iterator it = myObjects.begin();
+  for( ; it != myObjects.end(); ++it ) {
+    if ( it.key() == plotItem ) {
+      return it.value();
+    }
+  }
+  return 0;
+}
+
 Plot2d_ScaleDraw::Plot2d_ScaleDraw( char f, int prec )
   : QwtScaleDraw(),
     myFormat(f),
@@ -2420,3 +2437,5 @@ QwtText Plot2d_ScaleDraw::label( double value ) const
 
   return QwtScaleDraw::label( value );
 }
+
+

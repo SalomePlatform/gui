@@ -156,6 +156,8 @@ public:
 
   QwtPlotCanvas* getPlotCanvas() const;
   Plot2d_Curve*  getClosestCurve( QPoint, double&, int& ) const;
+  
+  Plot2d_Object* getPlotObject( QwtPlotItem* ) const;
 
 protected:
   int            testOperation( const QMouseEvent& );
@@ -168,6 +170,10 @@ protected:
   void           setCurveType( QwtPlotCurve*, int );
   QwtPlotItem*   getPlotObject( Plot2d_Object* ) const;
   bool           hasPlotObject( Plot2d_Object* ) const;
+
+
+  
+  
 
 public slots:
   void           onViewPan(); 

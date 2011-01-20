@@ -29,6 +29,7 @@
 #include "SPlot2d_ViewWindow.h"
 
 #include "SPlot2d_Prs.h"
+#include "SPlot2d_Histogram.h"
 #include "SUIT_Session.h"
 #include "SUIT_Application.h"
 #include "SUIT_ViewManager.h"
@@ -391,19 +392,22 @@ void SPlot2d_Viewer::onLegendClicked( QwtPlotItem* plotItem )
   Plot2d_ViewFrame* aViewFrame = getActiveViewFrame();
   if(aViewFrame == NULL) return;
 
-  CurveDict aCurves = aViewFrame->getCurves();
-  SPlot2d_Curve* aSCurve;
-  CurveDict::Iterator it = aCurves.begin();
-  for( ; it != aCurves.end(); ++it )
-  {
-    if ( it.key() == plotItem ) {
-      aSCurve = dynamic_cast<SPlot2d_Curve*>( it.value() );
-      break;
+
+  Plot2d_Object* anObject = aViewFrame->getPlotObject(plotItem);
+  
+  if(anObject) {
+    
+    // Highlight object in Object Browser
+    QString anEntry;
+    if(SPlot2d_Curve* aSCurve = dynamic_cast<SPlot2d_Curve*>(anObject)) {
+      if(aSCurve->hasIO())
+	anEntry = aSCurve->getIO()->getEntry();
+    } else if( SPlot2d_Histogram* aSHisto = dynamic_cast<SPlot2d_Histogram*>(anObject)) {
+      if(aSHisto->hasIO())
+	anEntry = aSHisto->getIO()->getEntry();
     }
-  }
-  // Highlight curve in Object Browser
-  if(aSCurve && aSCurve->hasIO()) {
-    QString anEntry = aSCurve->getIO()->getEntry();
-    emit legendSelected( anEntry );
+    
+    if(!anEntry.isEmpty())
+      emit legendSelected( anEntry );
   }
 }

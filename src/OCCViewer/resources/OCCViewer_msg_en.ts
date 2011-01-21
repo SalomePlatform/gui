@@ -261,7 +261,7 @@
     </message>
     <message>
         <source>DSC_MINIMIZE_VIEW</source>
-        <translation>Set axonometric projections</translation>
+        <translation>Minimize view</translation>
     </message>
     <message>
         <source>MNU_MAXIMIZE_VIEW</source>
@@ -269,7 +269,7 @@
     </message>
     <message>
         <source>MNU_MINIMIZE_VIEW</source>
-        <translation>Axonometric views</translation>
+        <translation>Minimize</translation>
     </message>
 </context>
 <context>

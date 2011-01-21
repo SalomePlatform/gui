@@ -192,8 +192,20 @@
         <translation>Restaurer la scène</translation>
     </message>
     <message>
-        <source>LBL_TOOLBAR_LABEL</source>
-        <translation>Opérations de visualisation</translation>
+        <source>LBL_XYTOOLBAR_LABEL</source>
+        <translation>Opérations sur la vue XY</translation>
+    </message>
+    <message>
+        <source>LBL_XZTOOLBAR_LABEL</source>
+        <translation>Opérations sur la vue XZ</translation>
+    </message>
+    <message>
+        <source>LBL_YZTOOLBAR_LABEL</source>
+        <translation>Opérations sur la vue YZ</translation>
+    </message>
+    <message>
+        <source>LBL_3DTOOLBAR_LABEL</source>
+        <translation>Opérations sur la vue 3D</translation>
     </message>
     <message>
         <source>DSC_BACK_VIEW</source>
@@ -232,8 +244,32 @@
         <translation>Changer le style d&apos;intéraction</translation>
     </message>
     <message>
+        <source>DSC_ZOOMING_STYLE_SWITCH</source>
+        <translation>Changer le style de zoom</translation>
+    </message>
+    <message>
+        <source>MNU_ZOOMING_STYLE_SWITCH</source>
+        <translation>Changer le style de zoom</translation>
+    </message>
+    <message>
         <source>OCC_IMAGE_FILES</source>
         <translation>Fichiers images (*.bmp *.png *.jpg *.jpeg)</translation>
+    </message>
+    <message>
+        <source>DSC_MAXIMIZE_VIEW</source>
+        <translation>Maximiser la vue</translation>
+    </message>
+    <message>
+        <source>DSC_MINIMIZE_VIEW</source>
+        <translation>Minimiser la vue</translation>
+    </message>
+    <message>
+        <source>MNU_MAXIMIZE_VIEW</source>
+        <translation>Maximiser</translation>
+    </message>
+    <message>
+        <source>MNU_MINIMIZE_VIEW</source>
+        <translation>Minimiser</translation>
     </message>
 </context>
 <context>

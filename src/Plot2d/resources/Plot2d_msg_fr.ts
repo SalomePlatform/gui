@@ -40,6 +40,10 @@
         <translation>Dupliquer la vue</translation>
     </message>
     <message>
+        <source>MNU_PRINT_VIEW</source>
+        <translation>Imprimer la vue</translation>
+    </message>
+    <message>
         <source>POSTSCRIPT_FILES</source>
         <translation>Fichiers PostScript (*.ps)</translation>
     </message>
@@ -142,6 +146,10 @@
     <message>
         <source>DSC_CLONE_VIEW</source>
         <translation>Ouvrir un nouveau visualiseur OCC pour la scène actuelle</translation>
+    </message>
+    <message>
+        <source>DSC_PRINT_VIEW</source>
+        <translation>Imprimer la vue actuelle</translation>
     </message>
     <message>
         <source>DASH_LINE_LBL</source>
@@ -506,6 +514,74 @@ L&apos;échelle logarithmique de l&apos;ordonnée n&apos;est pas permise.</trans
     <message>
         <source>PLOT2D_VIEW_TITLE</source>
         <translation>Scène Plot2d:%M - visualiseur:%V</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_PLOT2DVIEWER</source>
+        <translation>Visualiseur Plot2d</translation>
+    </message>
+    <message>
+        <source>PREF_SHOW_LEGEND</source>
+        <translation>Afficher la légende</translation>
+    </message>
+    <message>
+        <source>PREF_LEGEND_POSITION</source>
+        <translation>Position de la légende:</translation>
+    </message>
+    <message>
+        <source>PREF_LEFT</source>
+        <translation>Gauche</translation>
+    </message>
+    <message>
+        <source>PREF_RIGHT</source>
+        <translation>Droite</translation>
+    </message>
+    <message>
+        <source>PREF_TOP</source>
+        <translation>Haut</translation>
+    </message>
+    <message>
+        <source>PREF_BOTTOM</source>
+        <translation>Bas</translation>
+    </message>
+    <message>
+        <source>PREF_CURVE_TYPE</source>
+        <translation>Type de courbe:</translation>
+    </message>
+    <message>
+        <source>PREF_POINTS</source>
+        <translation>Points</translation>
+    </message>
+    <message>
+        <source>PREF_LINES</source>
+        <translation>Lignes</translation>
+    </message>
+    <message>
+        <source>PREF_SPLINE</source>
+        <translation>Spline</translation>
+    </message>
+    <message>
+        <source>PREF_MARKER_SIZE</source>
+        <translation>Taille du repère:</translation>
+    </message>
+    <message>
+        <source>PREF_LINEAR</source>
+        <translation>Linéaire</translation>
+    </message>
+    <message>
+        <source>PREF_LOGARITHMIC</source>
+        <translation>Logarithmique</translation>
+    </message>
+    <message>
+        <source>PREF_HOR_AXIS_SCALE</source>
+        <translation>Echelle de l'axe horizontal:</translation>
+    </message>
+    <message>
+        <source>PREF_VERT_AXIS_SCALE</source>
+        <translation>Echelle de l'axe vertical:</translation>
+    </message>
+    <message>
+        <source>PREF_VIEWER_BACKGROUND</source>
+        <translation>Couleur du fond</translation>
     </message>
 </context>
 </TS>

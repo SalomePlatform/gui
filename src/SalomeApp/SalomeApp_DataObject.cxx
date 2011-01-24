@@ -573,25 +573,25 @@ QString SalomeApp_DataObject::value( const _PTR(SObject)& obj ) const
   return val;
 }
 
-void SalomeApp_DataObject::insertChildAtTag(SalomeApp_DataObject* obj,int tag)
+void SalomeApp_DataObject::insertChildAtTag( SalomeApp_DataObject* obj, int tag )
 {
-  int pos=0;
-  int npos=std::min(tag-1,childCount());
-  for (int i=npos;i>0;i--)
+  int pos = 0;
+  int npos = qMin( tag-1,childCount() );
+  for ( int i = npos; i > 0; i-- )
+  {
+    if ( (dynamic_cast<SalomeApp_DataObject*>( childObject( i-1 ) ) )->object()->Tag() < tag )
     {
-      if((dynamic_cast<SalomeApp_DataObject*>(childObject(i-1)))->object()->Tag() < tag)
-        {
-          pos=i-1;
-          break;
-        }
+      pos = i;
+      break;
     }
-  insertChildAtPos(obj,pos+1);
+  }
+  insertChildAtPos( obj, pos );
 }
 
 void SalomeApp_DataObject::updateItem()
 {
-  if(modified())return;
-  setModified(true);
+  if ( modified() ) return;
+  setModified( true );
 }
 
 /*!

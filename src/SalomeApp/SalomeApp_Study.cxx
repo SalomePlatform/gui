@@ -78,6 +78,7 @@ class SalomeApp_Study::Observer_i : public virtual POA_SALOMEDS::Observer
       int last2Pnt_pos = entry_str.rfind(":");
       std::string parent_id=entry_str.substr(0,last2Pnt_pos);
       std::string pos_in_parent=entry_str.substr(last2Pnt_pos+1);
+      int tag=atoi(pos_in_parent.c_str());
       
       if(parent_id.length() == 3 )
       {
@@ -97,7 +98,6 @@ class SalomeApp_Study::Observer_i : public virtual POA_SALOMEDS::Observer
       if (it != entry2SuitObject.end())
       {
 	SalomeApp_DataObject* father=it->second;
-	int tag=atoi(pos_in_parent.c_str());
 	father->insertChildAtTag(suit_obj,tag);
       }
       else
@@ -140,7 +140,6 @@ class SalomeApp_Study::Observer_i : public virtual POA_SALOMEDS::Observer
 	      anObj= it2->second;
 	    debut=fin+1;
 	  }
-	  int tag=atoi(pos_in_parent.c_str());
 	  anObj->insertChildAtTag(suit_obj,tag);
 	}
       }
@@ -152,10 +151,13 @@ class SalomeApp_Study::Observer_i : public virtual POA_SALOMEDS::Observer
       if (it != entry2SuitObject.end())
       {
 	suit_obj= it->second;
-	SUIT_DataObject* father=suit_obj->parent();
-	if(father)
-	  father->removeChild(suit_obj);
-	entry2SuitObject.erase(it);
+	// VSR: object is not removed, since SALOMEDS::SObject is not actually removed, only its attributes are cleared;
+	//      thus, the object can be later reused
+	suit_obj->updateItem();
+	//SUIT_DataObject* father=suit_obj->parent();
+	//if(father)
+	//  father->removeChild(suit_obj);
+	//entry2SuitObject.erase(it);
       }
       else
       {

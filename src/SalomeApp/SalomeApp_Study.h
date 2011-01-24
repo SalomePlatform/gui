@@ -37,6 +37,8 @@ class SALOMEAPP_EXPORT SalomeApp_Study : public LightApp_Study
 {
   Q_OBJECT
 
+  class Observer_i;
+
 public:
   SalomeApp_Study( SUIT_Application* );
   virtual ~SalomeApp_Study();
@@ -105,9 +107,7 @@ private:
 
 private:
   _PTR(Study)         myStudyDS;
-
-private:
-  SALOMEDS::Observer_var            myObserver;
+  Observer_i*         myObserver;
 };
 
 #ifdef WIN32

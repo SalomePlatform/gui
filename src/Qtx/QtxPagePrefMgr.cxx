@@ -2097,7 +2097,8 @@ QtxPagePrefEditItem::QtxPagePrefEditItem( const QString& title, QtxPreferenceIte
                                           const QString& sect, const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param ),
   myType( String ),
-  myDecimals( 1000 )
+  myDecimals( 1000 ),
+  myEchoMode( 0 )
 {
   setControl( myEditor = new QLineEdit() );
   updateEditor();
@@ -2120,7 +2121,8 @@ QtxPagePrefEditItem::QtxPagePrefEditItem( const int type, const QString& title,
                                           const QString& param )
 : QtxPageNamedPrefItem( title, parent, sect, param ),
   myType( type ),
-  myDecimals( 1000 )
+  myDecimals( 1000 ),
+  myEchoMode( 0 )
 {
   setControl( myEditor = new QLineEdit() );
   updateEditor();
@@ -2182,6 +2184,30 @@ void QtxPagePrefEditItem::setDecimals( const int dec )
 }
 
 /*!
+  \brief Get the line edit's echo mode
+  \return preference item echo mode value
+  \sa setEchoMode()
+*/
+int QtxPagePrefEditItem::echoMode() const
+{
+  return myEchoMode;
+}
+
+/*!
+  \brief Set the line edit's echo mode
+  \param echo new preference item echo mode value
+  \sa echoMode()
+*/
+void QtxPagePrefEditItem::setEchoMode( const int echo )
+{   
+  if ( myEchoMode == echo )
+    return;
+  
+  myEchoMode = echo;
+  updateEditor();
+}
+
+/*!
   \brief Store preference item to the resource manager.
   \sa retrieve()
 */
@@ -2212,6 +2238,8 @@ QVariant QtxPagePrefEditItem::optionValue( const QString& name ) const
     return inputType();
   else if ( name == "precision" || name == "prec" || name == "decimals" )
     return decimals();
+  else if ( name == "echo" || name == "echo_mode" || name == "echomode")
+    return echoMode();
   else
     return QtxPageNamedPrefItem::optionValue( name );
 }
@@ -2233,6 +2261,10 @@ void QtxPagePrefEditItem::setOptionValue( const QString& name, const QVariant& v
     if ( val.canConvert( QVariant::Int ) )
       setDecimals( val.toInt() );
   }
+  else if ( name == "echo" || name == "echo_mode" || name == "echomode") {
+    if ( val.canConvert( QVariant::Int ) )
+      setEchoMode( val.toInt() );
+  }
   else
     QtxPageNamedPrefItem::setOptionValue( name, val );
 }
@@ -2242,6 +2274,24 @@ void QtxPagePrefEditItem::setOptionValue( const QString& name, const QVariant& v
 */
 void QtxPagePrefEditItem::updateEditor()
 {
+  switch (myEchoMode)
+  {
+    case 0:
+      myEditor->setEchoMode(QLineEdit::Normal);
+      break;
+    case 1:
+      myEditor->setEchoMode(QLineEdit::NoEcho);
+      break;
+    case 2:
+      myEditor->setEchoMode(QLineEdit::Password);
+      break;
+    case 3:
+      myEditor->setEchoMode(QLineEdit::PasswordEchoOnEdit);
+      break;
+    default:
+      myEditor->setEchoMode(QLineEdit::Normal);
+  }
+  
   QValidator* val = 0;
   switch ( inputType() )
   {

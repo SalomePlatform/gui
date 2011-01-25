@@ -407,6 +407,9 @@ public:
 
   int              decimals() const;
   void             setDecimals( const int );
+  
+  int              echoMode() const;
+  void             setEchoMode( const int );
 
   virtual void     store();
   virtual void     retrieve();
@@ -421,6 +424,7 @@ private:
 private:
   int              myType;
   int              myDecimals;
+  int              myEchoMode;
   QLineEdit*       myEditor;
 };
 

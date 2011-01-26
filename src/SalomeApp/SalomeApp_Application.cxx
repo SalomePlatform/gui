@@ -97,9 +97,6 @@
 
 #include <vector>
 
-//To activate update of Object Browser with SALOMEDS::Observer uncomment following line
-#define WITH_SALOMEDS_OBSERVER
-
 /*!Internal class that updates object browser item properties */
 // temporary commented
 /*class SalomeApp_Updater : public OB_Updater

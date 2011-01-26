@@ -587,6 +587,8 @@ if test "$DISABLE_PYCONSOLE" = "no" ; then
   AC_DEFINE(SUIT_ENABLE_PYTHON)
 fi
 
+dnl Build with GUI observers feature
+AC_DEFINE(WITH_SALOMEDS_OBSERVER)
 
 echo
 echo ---------------------------------------------

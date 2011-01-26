@@ -38,9 +38,6 @@
 #include <SALOMEconfig.h>
 #include CORBA_SERVER_HEADER(SALOME_Exception)
 
-//To activate update of Object Browser with SALOMEDS::Observer uncomment following line
-#define WITH_SALOMEDS_OBSERVER
-
 typedef _PTR(SObject)     kerPtr;
 typedef SUIT_DataObject*  suitPtr;
 

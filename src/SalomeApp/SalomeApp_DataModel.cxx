@@ -85,6 +85,10 @@ SalomeApp_DataModelSync::SalomeApp_DataModelSync( _PTR( Study ) aStudy, SUIT_Dat
 */
 bool SalomeApp_DataModelSync::isCorrect( const kerPtr& so ) const
 {
+#ifdef WITH_SALOMEDS_OBSERVER
+  // with GUI observers this function is not needed anymore
+  return true;
+#endif
   kerPtr refObj;
   QString name = so->GetName().c_str();
   _PTR( GenericAttribute ) anAttr;

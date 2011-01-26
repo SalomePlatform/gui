@@ -1285,9 +1285,11 @@ void SalomeApp_Application::updateObjectBrowser( const bool updateModels )
       {
         _PTR(SComponent) aComponent ( it->Value() );
 
+#ifndef WITH_SALOMEDS_OBSERVER
+	// with GUI observers this check is not needed anymore
         if ( aComponent->ComponentDataType() == study->getVisualComponentName().toLatin1().constData() )
           continue; // skip the magic "Interface Applicative" component
-
+#endif
         if ( !objectBrowser() )
           getWindow( WT_ObjectBrowser );
         const bool isAutoUpdate = objectBrowser()->autoUpdate();

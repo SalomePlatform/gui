@@ -50,7 +50,7 @@ SUIT_ViewWindow::SUIT_ViewWindow( SUIT_Desktop* theDesktop )
 {
   myDesktop = theDesktop;
 
-  setWindowIcon( myDesktop->windowIcon() );
+  setWindowIcon( myDesktop ? myDesktop->windowIcon() : QApplication::windowIcon() );
 
   setAttribute( Qt::WA_DeleteOnClose );
 

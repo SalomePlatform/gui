@@ -228,7 +228,9 @@ bool SUIT_ViewWindow::closable() const
 */
 bool SUIT_ViewWindow::setClosable( const bool on )
 {
+  bool prev = closable();
   setProperty( "closable", on );
+  return prev;
 }
 
 /*!

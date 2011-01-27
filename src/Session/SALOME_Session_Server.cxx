@@ -290,8 +290,18 @@ public:
     return myHandler ? myHandler->handle( receiver, e ) :
       TestApplication::notify( receiver, e );
 #else
-    return myHandler ? myHandler->handle( receiver, e ) :
-      QApplication::notify( receiver, e );
+    try
+      {
+        return myHandler ? myHandler->handle( receiver, e ) : QApplication::notify( receiver, e );
+      }
+    catch(std::exception& e)
+      {
+        std::cerr << e.what()  << std::endl;
+      }
+    catch(...)
+      {
+        std::cerr << "Unknown exception caught in Qt handler: it's probably a bug in SALOME platform" << std::endl;
+      }
 #endif
   }
   SUIT_ExceptionHandler* handler() const { return myHandler; }
@@ -604,7 +614,10 @@ int main( int argc, char **argv )
     // exception is raised when orb->destroy() is called and
     // cpp continer is launched in the embedded mode
     //////////////////////////////////////////////////////////////
-    // std::cerr << "Caught unexpected exception on destroy : ignored !!" << std::endl;
+    // std::cerr << "Caught unexpected exception on shutdown : ignored !!" << std::endl;
+    if ( shutdown )
+      killOmniNames();
+    abort(); //abort program to avoid deadlock in destructors or atexit when shutdown has been interrupted
   }
 
   PyGILState_Ensure();

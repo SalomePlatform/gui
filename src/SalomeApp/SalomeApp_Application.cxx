@@ -403,6 +403,33 @@ void SalomeApp_Application::onLoadDoc()
   }
 }
 
+/*!SLOT. Create new study and load script*/
+void SalomeApp_Application::onNewWithScript()
+{
+  QStringList filtersList;
+  filtersList.append(tr("PYTHON_FILES_FILTER"));
+  filtersList.append(tr("ALL_FILES_FILTER"));
+  
+  QString anInitialPath = "";
+  if ( SUIT_FileDlg::getLastVisitedPath().isEmpty() )
+    anInitialPath = QDir::currentPath();
+
+  QString aFile = SUIT_FileDlg::getFileName( desktop(), anInitialPath, filtersList, tr( "TOT_DESK_FILE_LOAD_SCRIPT" ), true, true );
+
+  if ( !aFile.isEmpty() )
+  {
+    onNewDoc();
+
+    QString command = QString("execfile(r\"%1\")").arg(aFile);
+
+    PyConsole_Console* pyConsole = pythonConsole();
+
+    if ( pyConsole )
+      pyConsole->exec( command );
+  }
+}
+
+
 /*!SLOT. Load document with \a aName.*/
 bool SalomeApp_Application::onLoadDoc( const QString& aName )
 {
@@ -1082,7 +1109,8 @@ bool SalomeApp_Application::openAction( const int aChoice, const QString& aName 
 QMap<int, QString> SalomeApp_Application::activateModuleActions() const
 {
   QMap<int, QString> opmap = LightApp_Application::activateModuleActions();
-  opmap.insert( LoadStudyId,  tr( "ACTIVATE_MODULE_OP_LOAD" ) );
+  opmap.insert( LoadStudyId,     tr( "ACTIVATE_MODULE_OP_LOAD" ) );
+  opmap.insert( NewAndScriptId,  tr( "ACTIVATE_MODULE_OP_SCRIPT" ) );
   return opmap;
 }
 
@@ -1097,10 +1125,17 @@ QMap<int, QString> SalomeApp_Application::activateModuleActions() const
 */
 void SalomeApp_Application::moduleActionSelected( const int id )
 {
-  if ( id == LoadStudyId )
+  switch ( id ) {
+  case LoadStudyId:
     onLoadDoc();
-  else
+    break;
+  case NewAndScriptId:
+    onNewWithScript();
+    break;
+  default:
     LightApp_Application::moduleActionSelected( id );
+    break;
+  }
 }
 
 /*!Gets CORBA::ORB_var*/

@@ -71,7 +71,7 @@ public:
 protected:
   enum { OpenRefresh = LightApp_Application::OpenReload + 1 };
   enum { CloseUnload = LightApp_Application::CloseDiscard + 1 };
-  enum { LoadStudyId = LightApp_Application::OpenStudyId + 1 };
+  enum { LoadStudyId = LightApp_Application::OpenStudyId + 1, NewAndScriptId };
 
 public:
   SalomeApp_Application();
@@ -106,6 +106,7 @@ public:
 
 public slots:
   virtual void                        onLoadDoc();
+  virtual void                        onNewWithScript();
   virtual bool                        onLoadDoc( const QString& );
   virtual void                        onCloseDoc( bool ask = true);
 

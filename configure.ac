@@ -676,6 +676,7 @@ AC_OUTPUT([ \
   src/SALOME_PYQT/SALOME_PYQT_GUI/Makefile \
   src/SALOME_PYQT/SALOME_PYQT_GUILight/Makefile \
   src/SALOME_PYQT/SalomePyQt/Makefile \
+  src/GUI_PY/Makefile \
   resources/Makefile \
   idl/Makefile \
   Makefile

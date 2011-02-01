@@ -324,6 +324,10 @@ Voulez-vous le recharger ?</translation>
         <source>ACTIVATE_MODULE_OP_LOAD</source>
         <translation>&amp;Charger...</translation>
     </message>
+    <message>
+        <source>ACTIVATE_MODULE_OP_SCRIPT</source>
+        <translation>Charger un &amp;script...</translation>
+    </message>
 </context>
 <context>
     <name>SalomeApp_StudyPropertiesDlg</name>

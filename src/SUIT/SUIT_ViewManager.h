@@ -83,6 +83,8 @@ public:
 
   int              getId() const;
 
+  int              getGlobalId() const;
+
 public slots:
   void             createView();
   void             closeAllViews();

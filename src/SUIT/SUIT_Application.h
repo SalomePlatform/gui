@@ -35,7 +35,7 @@ class QAction;
 class QWidget;
 
 class SUIT_Desktop;
-class SUIT_ViewModel;
+class SUIT_ViewManager;
 class SUIT_ResourceMgr;
 class SUIT_ShortcutMgr;
 class SUIT_Study;
@@ -109,6 +109,9 @@ public:
 
   //! Invokes application-specific "Select Directory" dialog and returns the selected directory name.
   virtual QString getDirectory( const QString& initial, const QString& caption, QWidget* parent ) = 0;
+
+
+  virtual int     viewManagerId ( const SUIT_ViewManager* ) const = 0;
 
 signals:
   void                  applicationClosed( SUIT_Application* );

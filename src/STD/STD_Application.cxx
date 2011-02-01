@@ -983,3 +983,12 @@ void STD_Application::studySaved( SUIT_Study* )
   updateDesktopTitle();
   updateCommandsStatus();
 }
+
+/*!
+  Return index of the view ma
+*/
+int STD_Application::viewManagerId( const SUIT_ViewManager* theManager) const
+{
+  return myViewMgrs.indexOf(const_cast<SUIT_ViewManager*>(theManager));
+}
+

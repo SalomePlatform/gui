@@ -26,6 +26,7 @@
 #include "SUIT_ViewModel.h"
 #include "SUIT_ViewWindow.h"
 #include "SUIT_Study.h"
+#include "SUIT_Session.h"
 
 #include <QMap>
 #include <QRegExp>
@@ -81,6 +82,16 @@ int SUIT_ViewManager::useNewId( const QString& type )
 
   int id = _ViewMgrId[type];
   _ViewMgrId[type]++;
+  return id;
+}
+
+
+int SUIT_ViewManager::getGlobalId() const {
+  int id = -1;
+  SUIT_Application* app = SUIT_Session::session()->activeApplication();
+  if(app) {
+    id = app->viewManagerId(this);
+  }
   return id;
 }
 

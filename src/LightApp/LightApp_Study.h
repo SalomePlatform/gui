@@ -31,9 +31,28 @@
 #include "string"
 #include "vector"
 
+#include <QMap>
+#include <QVariant>
+
 class SUIT_Study;
 class SUIT_Application;
 class CAM_DataModel;
+
+//Map to store visual property of the object.
+//Key:   Name of the visual property of the object.
+//Value: value of the visual property.
+typedef QMap<QString, QVariant> PropMap;
+
+//Map to store objects with it's visual properties.
+//Key:   Entry of the object.
+//Value: Map of the visual properties of the object.
+typedef QMap<QString, PropMap> ObjMap;
+
+//Map to store view managers and all objects which displayed in views of the view managers.
+//Key:   Id of the viewer.
+//Value: Map of the objects with it's visual properties.
+typedef QMap<int, ObjMap> ViewMgrMap;
+
 
 /*!
   Custom study, using for open/close of documents HDF format.
@@ -73,6 +92,17 @@ public:
 
   virtual QString     getVisualComponentName() const;
 
+  virtual void              setObjectProperty  ( int theViewMgrId, QString theEntry, QString thePropName, QVariant theValue );
+  virtual QVariant          getObjectProperty  ( int theViewMgrId, QString theEntry, QString thePropName, QVariant theDefValue ) const;
+  virtual void              removeViewMgr      ( int theViewMgrId );
+  virtual void              setObjectPropMap   ( int theViewMgrId, QString theEntry, PropMap thePropMap );
+  virtual const PropMap&    getObjectPropMap   ( int theViewMgrId, QString theEntry ) ;
+  virtual void              removeObjectFromAll( QString theEntry );
+  virtual const ObjMap&     getObjectMap       ( int theViewMgrId );
+  virtual const ViewMgrMap& getViewMgrMap      ( int theViewMgrId ) { return myViewMgrMap; };
+
+
+
 protected:
   virtual void        saveModuleData ( QString theModuleName, QStringList theListOfFiles );
   virtual void        openModuleData ( QString theModuleName, QStringList& theListOfFiles );
@@ -97,6 +127,7 @@ signals:
 
 private:
   LightApp_Driver*    myDriver;
+  ViewMgrMap          myViewMgrMap;
 
   friend class LightApp_Application;
 };

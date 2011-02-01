@@ -33,7 +33,6 @@
 #include "SUIT_DataObjectIterator.h"
 
 #include <set>
-#include <QString>
 
 /*!
   Constructor.
@@ -492,3 +491,154 @@ QString LightApp_Study::getVisualComponentName() const
   return "Interface Applicative";
 }
 
+
+
+
+
+/*!
+  Set a visual property of the object
+  \param theViewId - Id of the viewer namager
+  \param theEntry - Entry of the object
+  \param thePropName - the name of the visual property
+  \param theValue - the value of the visual property
+*/
+void LightApp_Study::setObjectProperty(int theViewId, QString theEntry, QString thePropName, QVariant theValue) {
+  
+  //Try to find viewer manager in the map
+  ViewMgrMap::Iterator v_it = myViewMgrMap.find(theViewId);
+  if(v_it == myViewMgrMap.end()) {
+
+    //1) Create property map
+    PropMap aPropMap;
+    aPropMap.insert(thePropName, theValue);
+    
+    //2) Create object map
+    ObjMap anObjMap;
+    anObjMap.insert(theEntry,aPropMap);
+
+    //3) Insert in the view manager map
+    myViewMgrMap.insert(theViewId, anObjMap);
+    
+  } else {
+    ObjMap& anObjMap = v_it.value();
+    ObjMap::Iterator o_it = anObjMap.find(theEntry);
+    if(o_it == anObjMap.end()) {
+      //1) Create property map
+      PropMap aPropMap;
+      aPropMap.insert(thePropName, theValue);
+      
+      //2) Insert in the object map
+      anObjMap.insert(theEntry, aPropMap);
+    } else {
+      PropMap& aPropMap = o_it.value();
+      aPropMap.insert(thePropName, theValue);
+    }
+  }
+}
+
+/*!
+  Get a visual property of the object identified by theViewMgrId, theEntry and thePropName.
+  \param theViewMgrId - Id of the viewer manager.
+  \param theEntry - Entry of the object.
+  \param thePropName - the name of the visual property.
+  \param theDefValue - the default value of the visual property.
+  \return value of the visual propetry. If value is't found then return theDefValue.
+*/
+QVariant LightApp_Study::getObjectProperty(int theViewMgrId, QString theEntry, QString thePropName, QVariant theDefValue) const {
+  QVariant& aResult = theDefValue;
+  ViewMgrMap::ConstIterator v_it = myViewMgrMap.find(theViewMgrId);
+  if(v_it != myViewMgrMap.end()){
+    const ObjMap& anOnjectMap = v_it.value();
+    ObjMap::ConstIterator o_it = anOnjectMap.find(theEntry);
+    if(o_it != anOnjectMap.end()) {
+      const PropMap& aPropMap = o_it.value();
+      PropMap::ConstIterator p_it = aPropMap.find(thePropName);
+      if(p_it != aPropMap.end()) {
+	aResult = p_it.value();
+      }
+    }
+  }
+  return aResult;
+}
+
+/*!
+  Remove view manager with all objects.
+  \param theViewMgrId - Id of the viewer manager.
+*/
+void LightApp_Study::removeViewMgr( int theViewMgrId ) { 
+  myViewMgrMap.remove(theViewMgrId);
+}
+
+
+/*!
+  Get a map of the properties of the object identified by theViewMgrId and theEntry.
+  \param theViewMgrId - Id of the viewer manager.
+  \param theEntry - Entry of the object.
+  \return a map of the properties of the object.
+*/
+const PropMap& LightApp_Study::getObjectPropMap(int theViewMgrId, QString theEntry) {
+  ViewMgrMap::Iterator v_it = myViewMgrMap.find(theViewMgrId);
+  if(v_it != myViewMgrMap.end()){
+    ObjMap& anOnjectMap = v_it.value();
+    ObjMap::Iterator o_it = anOnjectMap.find(theEntry);
+    if(o_it != anOnjectMap.end()) {
+      return o_it.value();
+    } else {
+      PropMap aPropMap;
+      anOnjectMap.insert(theEntry, aPropMap);
+      return anOnjectMap.find(theEntry).value();
+    }
+  } else {
+    PropMap aPropMap;
+    ObjMap anObjMap;
+    anObjMap.insert(theEntry,aPropMap);
+    myViewMgrMap.insert(theViewMgrId, anObjMap);
+    return anObjMap.find(theEntry).value();
+  }
+}
+
+/*!
+  Set a map of the properties of the object identified by theViewMgrId and theEntry.
+  \param theViewMgrId - Id of the viewer manager.
+  \param theEntry - Entry of the object.
+*/
+void LightApp_Study::setObjectPropMap(int theViewMgrId, QString theEntry, PropMap thePropMap) {
+  //Try to find viewer manager in the map
+  ViewMgrMap::Iterator v_it = myViewMgrMap.find(theViewMgrId);
+  if(v_it == myViewMgrMap.end()) {
+    
+    //1) Create object map
+    ObjMap anObjMap;
+    anObjMap.insert(theEntry,thePropMap);
+
+    //3) Insert in the view manager map
+    myViewMgrMap.insert(theViewMgrId, anObjMap);
+  } else {
+    ObjMap& anObjMap = v_it.value();
+    anObjMap.insert(theEntry,thePropMap);
+  }
+}
+
+/*!
+   Remove object's properties from all view managers.
+  \param theEntry - Entry of the object.
+*/
+void LightApp_Study::removeObjectFromAll( QString theEntry ) {
+  ViewMgrMap::Iterator v_it = myViewMgrMap.begin();
+  for( ;v_it != myViewMgrMap.end(); v_it++ ) {
+    v_it.value().remove(theEntry);
+  }
+}
+/*!
+  Get all objects and it's properties from view manager identified by theViewMgrId.
+  \param theEntry - Entry of the object.
+*/
+const ObjMap& LightApp_Study::getObjectMap ( int theViewMgrId ) {
+  ViewMgrMap::Iterator v_it = myViewMgrMap.find(theViewMgrId);
+  if( v_it == myViewMgrMap.end() ) {
+    ObjMap anObjMap;
+    myViewMgrMap.insert(theViewMgrId , anObjMap);
+    return myViewMgrMap.find(theViewMgrId).value();
+  }
+  return v_it.value();
+}

@@ -86,7 +86,7 @@ public:
       {
 	// It's probably a SComponent
 	_PTR(SComponent) aSComp = obj->GetFatherComponent();
-	if ( aSComp->GetID() == entry_str )
+	if ( aSComp && !aSComp->IsNull() && aSComp->GetID() == entry_str )
 	  suit_obj = new SalomeApp_ModuleObject( aSComp );
 	else
 	  suit_obj = new SalomeApp_DataObject( obj );

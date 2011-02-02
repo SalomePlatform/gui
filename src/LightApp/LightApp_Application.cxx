@@ -1795,7 +1795,7 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
   connect( myPrefs, SIGNAL( preferenceChanged( QString&, QString&, QString& ) ),
            this, SLOT( onPreferenceChanged( QString&, QString&, QString& ) ) );
 
-  if ( !toCreate )
+  if ( !crt )
     return myPrefs;
 
   SUIT_ResourceMgr* resMgr = resourceMgr();
@@ -1815,7 +1815,7 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
 
     for ( QStringList::const_iterator it = modNameList.begin(); it != modNameList.end(); ++it )
     {
-      if ( !app->isLibExists( *it ) )
+      if ( !app->isLibExists( *it ) || _prefs_->hasModule( *it ) )
         continue;
 
       int modId = _prefs_->addPreference( *it );

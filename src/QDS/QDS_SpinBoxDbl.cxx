@@ -70,9 +70,9 @@ QString QDS_SpinBoxDbl::getString() const
   QtxDoubleSpinBox* sb = spinBox();
   if ( sb && !sb->isCleared() )
   {
-    bool hasFocus = sb->hasFocus();
+    /*bool hasFocus = sb->hasFocus();
     if ( hasFocus )
-      sb->clearFocus();
+      sb->clearFocus();*/
     
     res = sb->text();
     if ( !sb->suffix().isEmpty() )
@@ -80,8 +80,8 @@ QString QDS_SpinBoxDbl::getString() const
     if ( !sb->prefix().isEmpty() )
       res.remove( res.indexOf( sb->prefix() ), sb->prefix().length() );
     
-    if ( hasFocus )
-      sb->setFocus();
+    /*if ( hasFocus )
+      sb->setFocus();*/
   }
 
   return res;

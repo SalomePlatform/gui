@@ -34,6 +34,7 @@ class QLabel;
 class QLineEdit;
 class QComboBox;
 class QPushButton;
+class QUrl;
 class SUIT_FileValidator;
 
 class SUIT_EXPORT SUIT_FileDlg : public QFileDialog
@@ -118,6 +119,7 @@ private:
   SUIT_FileValidator* myValidator;        //!< file validator
   QLabel*             myQuickLab;         //!< quick dir combo box
   QComboBox*          myQuickCombo;       //!< quick dir combo box
+  QList<QUrl>         myUrls;             //!< quick dir Sidebar Urls
   QPushButton*        myQuickButton;      //!< quick dir add button
   bool                myCheckPermissions; //!< check permissions option
   static QString      myLastVisitedPath;  //!< last visited path

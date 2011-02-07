@@ -92,6 +92,9 @@
 #include <QApplication>
 #include <QListView>
 #include <QLineEdit>
+// GDD
+#include <QUrl>
+#include <QDesktopServices>
 
 /*!
   \brief Defines extension behavior.
@@ -127,6 +130,11 @@ SUIT_FileDlg::SUIT_FileDlg( QWidget* parent, bool open, bool showQuickDir, bool 
   if ( parent )
     setWindowIcon( parent->windowIcon() );
 
+  // GDD
+  myUrls.insert(0,QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::ApplicationsLocation)));
+  myUrls.insert(0,QUrl::fromLocalFile(QDesktopServices::storageLocation(QDesktopServices::HomeLocation)));
+  setSidebarUrls(myUrls);
+
   // add quick directories widgets
   if ( showQuickDir ) {
     myQuickLab    = new QLabel( tr( "LAB_QUICK_PATH" ), this );
@@ -146,8 +154,15 @@ SUIT_FileDlg::SUIT_FileDlg( QWidget* parent, bool open, bool showQuickDir, bool 
       if ( dirList.isEmpty() ) 
         dirList << QDir::homePath();
 
-      for ( int i = 0; i < dirList.count(); i++ )
+      // GDD
+      for ( int i = 0; i < dirList.count(); i++ ) {
         myQuickCombo->addItem( dirList[i] );
+        myUrls.append(QUrl::fromLocalFile(dirList[i]));
+      }
+
+      // GDD
+      setSidebarUrls(myUrls);
+      
     }
     else {
       delete myQuickLab;    myQuickLab = 0;
@@ -668,8 +683,12 @@ void SUIT_FileDlg::addQuickDir()
     if ( !found ) {
       dirList.append( dp );
       resMgr->setValue( "FileDlg", "QuickDirList", dirList.join( ";" ) );
-      if ( !emptyAndHome )
+      // GDD
+      if ( !emptyAndHome ) {
         myQuickCombo->addItem( dp );
+        myUrls.append(QUrl::fromLocalFile( dp ));
+        setSidebarUrls(myUrls);
+      }
     }
   }
 }

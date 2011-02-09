@@ -26,12 +26,15 @@
 #include "QtxResourceMgr.h"
 #include "QtxTranslator.h"
 
+#include <QSet>
 #include <QDir>
 #include <QFile>
+#include <QFileInfo>
 #include <QRegExp>
 #include <QTextStream>
 #include <QApplication>
 #include <QLibraryInfo>
+#include <QtDebug>
 #ifndef QT_NO_DOM
 #include <QDomDocument>
 #include <QDomElement>
@@ -464,6 +467,9 @@ public:
 protected:
   virtual bool load( const QString&, QMap<QString, Section>& );
   virtual bool save( const QString&, const QMap<QString, Section>& );
+
+private:
+  bool         load( const QString&, QMap<QString, Section>&, QSet<QString>& );
 };
 
 /*!
@@ -489,9 +495,41 @@ QtxResourceMgr::IniFormat::~IniFormat()
 */
 bool QtxResourceMgr::IniFormat::load( const QString& fname, QMap<QString, Section>& secMap )
 {
-  QFile file( fname );
+  QSet<QString> importHistory;
+  return load( fname, secMap, importHistory );
+}
+
+
+/*!
+  \brief Load resources from xml-file.
+  \param fname resources file name
+  \param secMap resources map to be filled in
+  \param importHistory list of already imported resources files (to prevent import loops)
+  \return \c true on success or \c false on error
+*/
+bool QtxResourceMgr::IniFormat::load( const QString& fname, QMap<QString, Section>& secMap, QSet<QString>& importHistory)
+{
+  QString aFName = fname.trimmed();
+  if ( !QFileInfo( aFName ).exists() )
+  {
+    if ( QFileInfo( aFName + ".ini" ).exists() )
+      aFName += ".ini";
+    else if ( QFileInfo( aFName + ".INI" ).exists() )
+      aFName += ".INI";
+    else
+      return false; // file does not exist
+  }
+  QFileInfo aFinfo( aFName );
+  aFName = aFinfo.canonicalFilePath();
+
+  if ( !importHistory.contains( aFName ) )
+    importHistory.insert( aFName );
+  else
+    return true;   // already imported (prevent import loops)
+
+  QFile file( aFName );
   if ( !file.open( QFile::ReadOnly ) )
-    return false;
+    return false;  // file is not accessible
 
   QTextStream ts( &file );
 
@@ -530,26 +568,63 @@ bool QtxResourceMgr::IniFormat::load( const QString& fname, QMap<QString, Sectio
       if ( section.isEmpty() )
       {
         res = false;
-        qWarning( "Empty section in line %d", line );
+        qWarning() << "QtxResourceMgr: Empty section in line:" << line;
       }
     }
-    else if ( data.contains( "=" ) && !section.isEmpty() )
+    else if ( data.contains( separator ) && !section.isEmpty() )
     {
       int pos = data.indexOf( separator );
       QString key = data.left( pos ).trimmed();
       QString val = data.mid( pos + 1 ).trimmed();
       secMap[section].insert( key, val );
     }
+    else if ( section == "import" )
+    {
+      QFileInfo impFInfo( data );
+      if ( impFInfo.isRelative() )
+	impFInfo.setFile( aFinfo.absoluteDir(), data );
+    
+      QMap<QString, Section> impMap;
+      if ( !load( impFInfo.absoluteFilePath(), impMap, importHistory ) )
+      {
+        qDebug() << "QtxResourceMgr: Error with importing file:" << data;
+      }
+      else 
+      {
+	QMap<QString, Section>::const_iterator it = impMap.constBegin();
+	for ( ; it != impMap.constEnd() ; ++it )
+	{ 
+	  if ( !secMap.contains( it.key() ) )
+	  {
+	    // insert full section
+	    secMap.insert( it.key(), it.value() );
+	  }
+	  else
+	  {
+	    // insert all parameters from the section
+	    Section::ConstIterator paramIt = it.value().begin();
+	    for ( ; paramIt != it.value().end() ; ++paramIt )
+	    {
+	      if ( !secMap[it.key()].contains( paramIt.key() ) )
+		secMap[it.key()].insert( paramIt.key(), paramIt.value() );
+	    }
+	  }
+	}
+      }
+    }
     else
     {
       res = false;
-      section.isEmpty() ? qWarning( "Current section is empty" ) : qWarning( "Error in line: %d", line );
+      if ( section.isEmpty() )
+	qWarning() << "QtxResourceMgr: Current section is empty";
+      else
+	qWarning() << "QtxResourceMgr: Error in line:" << line;
     }
   }
 
   file.close();
 
-  return res;
+  return res; 
 }
 
 /*!
@@ -603,8 +678,11 @@ private:
   QString      docTag() const;
   QString      sectionTag() const;
   QString      parameterTag() const;
+  QString      importTag() const;
   QString      nameAttribute() const;
   QString      valueAttribute() const;
+
+  bool         load( const QString&, QMap<QString, Section>&, QSet<QString>& );
 };
 
 /*!
@@ -630,14 +708,45 @@ QtxResourceMgr::XmlFormat::~XmlFormat()
 */
 bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Section>& secMap )
 {
+  QSet<QString> importHistory;
+  return load( fname, secMap, importHistory );
+}
+
+/*!
+  \brief Load resources from xml-file.
+  \param fname resources file name
+  \param secMap resources map to be filled in
+  \param importHistory list of already imported resources files (to prevent import loops)
+  \return \c true on success and \c false on error
+*/
+bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Section>& secMap, QSet<QString>& importHistory )
+{
+  QString aFName = fname.trimmed();
+  if ( !QFileInfo( aFName ).exists() )
+  {
+    if ( QFileInfo( aFName + ".xml" ).exists() )
+      aFName += ".xml";
+    else if ( QFileInfo( aFName + ".XML" ).exists() )
+      aFName += ".XML";
+    else
+      return false; // file does not exist
+  }
+  QFileInfo aFinfo( aFName );
+  aFName = aFinfo.canonicalFilePath();
+
+  if ( !importHistory.contains(  aFName ) )
+    importHistory.insert( aFName );
+  else
+    return true;   // already imported (prevent import loops)
+
   bool res = false;
 
 #ifndef QT_NO_DOM
 
-  QFile file( fname );
+  QFile file( aFName );
   if ( !file.open( QFile::ReadOnly ) )
   {
-    qDebug( "File cannot be opened" );
+    qDebug() << "QtxResourceMgr: File is not accessible:" << aFName;
     return false;
   }
 
@@ -648,14 +757,14 @@ bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Sectio
 
   if ( !res )
   {
-    qDebug( "File is empty" );
+    qDebug() << "QtxResourceMgr: File is empty:" << aFName;
     return false;
   }
 
   QDomElement root = doc.documentElement();
   if ( root.isNull() || root.tagName() != docTag() )
   {
-    qDebug( "Invalid root" );
+    qDebug() << "QtxResourceMgr: Invalid root in file:" << aFName;
     return false;
   }
 
@@ -681,12 +790,11 @@ bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Sectio
             {
               QString paramName = paramElem.attribute( nameAttribute() );
               QString paramValue = paramElem.attribute( valueAttribute() );
-
               secMap[section].insert( paramName, paramValue );
             }
             else
             {
-              qDebug( "Invalid parameter element" );
+              qDebug() << "QtxResourceMgr: Invalid parameter element in file:" << aFName;
               res = false;
             }
           }
@@ -694,32 +802,66 @@ bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Sectio
           {
             res = paramNode.isComment();
             if( !res )
-              qDebug( "Node isn't element nor comment" );
+              qDebug() << "QtxResourceMgr: Node is neither element nor comment in file:" << aFName;
           }
 
           paramNode = paramNode.nextSibling();
         }
       }
+      else if ( sectElem.tagName() == importTag() && sectElem.hasAttribute( nameAttribute() ) )
+      {
+	QFileInfo impFInfo( sectElem.attribute( nameAttribute() ) );
+	if ( impFInfo.isRelative() )
+	  impFInfo.setFile( aFinfo.absoluteDir(), sectElem.attribute( nameAttribute() ) );
+
+        QMap<QString, Section> impMap;
+        if ( !load( impFInfo.absoluteFilePath(), impMap, importHistory ) )
+	{
+          qDebug() << "QtxResourceMgr: Error with importing file:" << sectElem.attribute( nameAttribute() );
+	}
+	else
+	{
+	  QMap<QString, Section>::const_iterator it = impMap.constBegin();
+	  for ( ; it != impMap.constEnd() ; ++it )
+	  {
+	    if ( !secMap.contains( it.key() ) )
+	    {
+	    // insert full section
+	      secMap.insert( it.key(), it.value() );
+	    }
+	    else
+	    {
+	      // insert all parameters from the section
+	      Section::ConstIterator paramIt = it.value().begin();
+	      for ( ; paramIt != it.value().end() ; ++paramIt )
+	      {
+		if ( !secMap[it.key()].contains( paramIt.key() ) )
+		  secMap[it.key()].insert( paramIt.key(), paramIt.value() );
+	      }
+	    }
+	  }
+        }
+      }
       else
       {
-        qDebug( "Invalid section" );
+        qDebug() << "QtxResourceMgr: Invalid section in file:" << aFName;
         res = false;
       }
     }
     else
     {
       res = sectNode.isComment(); // if it's a comment -- let it be, pass it..
-      if( !res )
-        qDebug( "Node isn't element nor comment" );
+      if ( !res )
+        qDebug() << "QtxResourceMgr: Node is neither element nor comment in file:" << aFName;
     }
 
     sectNode = sectNode.nextSibling();
   }
 
 #endif
-
+  
   if ( res )
-    qDebug( "File '%s' is loaded successfully", (const char*)fname.toLatin1() );
+    qDebug() << "QtxResourceMgr: File" << fname << "is loaded successfully";
   return res;
 }
 
@@ -802,6 +944,18 @@ QString QtxResourceMgr::XmlFormat::parameterTag() const
   QString tag = option( "parameter_tag" );
   if ( tag.isEmpty() )
     tag = QString( "parameter" );
+  return tag;
+}
+
+/*!
+  \brief Get import tag name
+  \return XML import tag name
+*/
+QString QtxResourceMgr::XmlFormat::importTag() const
+{
+  QString tag = option( "import_tag" );
+  if ( tag.isEmpty() )
+   tag = QString( "import" );
   return tag;
 }
 
@@ -909,7 +1063,7 @@ bool QtxResourceMgr::Format::load( Resources* res )
   if ( status )
     res->mySections = sections;
   else
-    qDebug( "QtxResourceMgr: Could not load resource file \"%s\"", (const char*)res->myFileName.toLatin1() );
+    qDebug() << "QtxResourceMgr: Can't load resource file:" << res->myFileName;
 
   return status;
 }
@@ -2406,7 +2560,7 @@ void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
   if ( lang.isEmpty() )
   {
     lang = QString( "en" );
-    qWarning( "Language not specified. Assumed: %s", (const char*)lang.toLatin1() );
+    qWarning() << "QtxResourceMgr: Language not specified. Assumed:" << lang;
   }
 
   substMap.insert( 'L', lang );
@@ -2428,7 +2582,7 @@ void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
   if ( trList.isEmpty() )
   {
     trList.append( "%P_msg_%L.qm" );
-    qWarning( "Translators not defined. Assumed: %s", (const char*)trList[0].toLatin1() );
+    qWarning() << "QtxResourceMgr: Translators not defined. Assumed:" << trList[0];
   }
 
   QStringList prefixList;

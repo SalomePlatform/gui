@@ -118,7 +118,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_8">
+        <widget class="QPushButton" name="newInputVarButton">
          <property name="text">
           <string>New...</string>
          </property>
@@ -215,7 +215,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pushButton_4">
+        <widget class="QPushButton" name="newOutputVarButton">
          <property name="text">
           <string>New...</string>
          </property>

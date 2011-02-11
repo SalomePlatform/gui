@@ -21,6 +21,7 @@
 #
 
 from PyQt4 import QtGui, QtCore
+from PyQt4.QtCore import Qt
 
 import salome
 from salome.kernel.studyedit import getStudyEditor
@@ -42,9 +43,11 @@ class MySelectVarsDialog(Ui_SelectVarsDialog, QtGui.QDialog):
         self.connect(self.selectButton, QtCore.SIGNAL("clicked()"), self.initSelectedVarList)
         self.connect(self.addInputVarButton, QtCore.SIGNAL("clicked()"), self.addSelectedInputVar)
         self.connect(self.removeInputVarButton, QtCore.SIGNAL("clicked()"), self.removeSelectedInputVar)
+        self.connect(self.newInputVarButton, QtCore.SIGNAL("clicked()"), self.newInputVar)
         self.connect(self.addOutputVarButton, QtCore.SIGNAL("clicked()"), self.addSelectedOutputVar)
         self.connect(self.removeOutputVarButton, QtCore.SIGNAL("clicked()"), self.removeSelectedOutputVar)
-    
+        self.connect(self.newOutputVarButton, QtCore.SIGNAL("clicked()"), self.newOutputVar)
+
     def initSelectedVarList(self):
         entries = salome.sg.getAllSelected()
         if len(entries) != 1 :
@@ -75,6 +78,11 @@ class MySelectVarsDialog(Ui_SelectVarsDialog, QtGui.QDialog):
         for item in self.selectedInputVarListWidget.selectedItems():
             self.selectedInputVarListWidget.takeItem(self.selectedInputVarListWidget.row(item))
 
+    def newInputVar(self):
+        newItem = QtGui.QListWidgetItem("TO EDIT!")
+        newItem.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEditable|Qt.ItemIsUserCheckable|Qt.ItemIsEnabled)
+        self.selectedInputVarListWidget.addItem(newItem);
+
     def addSelectedOutputVar(self):
         for item in self.allOutputVarListWidget.selectedItems():
             self.selectedOutputVarListWidget.addItem(QtGui.QListWidgetItem(item))
@@ -82,6 +90,11 @@ class MySelectVarsDialog(Ui_SelectVarsDialog, QtGui.QDialog):
     def removeSelectedOutputVar(self):
         for item in self.selectedOutputVarListWidget.selectedItems():
             self.selectedOutputVarListWidget.takeItem(self.selectedOutputVarListWidget.row(item))
+
+    def newOutputVar(self):
+        newItem = QtGui.QListWidgetItem("TO EDIT!")
+        newItem.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEditable|Qt.ItemIsUserCheckable|Qt.ItemIsEnabled)
+        self.selectedOutputVarListWidget.addItem(newItem);
 
     def getSelectedVarLists(self):
         inputVarList = []

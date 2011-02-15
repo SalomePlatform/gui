@@ -63,7 +63,11 @@ SET(PYQT_INCLUDES ${PYQT_INCLUDES} -I${PYQT_SIPS}/QtAssistant -I${PYQT_SIPS}/QtD
 SET(PYQT_INCLUDES ${PYQT_INCLUDES} -I${PYQT_SIPS}/QtNetwork -I${PYQT_SIPS}/QtSql)
 SET(PYQT_INCLUDES ${PYQT_INCLUDES} -I${PYQT_SIPS}/QtSvg -I${PYQT_SIPS}/QtTest)
 
-EXECUTE_PROCESS(COMMAND ${PYTHON_EXECUTABLE} -c "import re, pyqtconfig; s=pyqtconfig.Configuration().pyqt_sip_flags;m=re.search('(Qt_[0-9_]+)',s);print m.group(1)" OUTPUT_VARIABLE SUPPORTED)
+EXECUTE_PROCESS(
+  COMMAND ${PYTHON_EXECUTABLE} -c "import re, PyQt4.pyqtconfig ; s = PyQt4.pyqtconfig.Configuration().pyqt_sip_flags ; m = re.search('(Qt_[0-9_]+)',s) ; print m.group(1)"
+  OUTPUT_VARIABLE SUPPORTED
+  OUTPUT_STRIP_TRAILING_WHITESPACE
+  )
 
 IF(WINDOWS)
   SET(ws_flag WS_WIN)

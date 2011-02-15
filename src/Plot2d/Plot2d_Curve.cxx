@@ -23,7 +23,7 @@
 //  Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 
 #include "Plot2d_Curve.h"
-#include <Plot2d_PlotItems.h>
+#include "Plot2d_PlotItems.h"
 #include <qwt_plot_curve.h>
 
 const int DEFAULT_LINE_WIDTH  =  0;     // (default) line width

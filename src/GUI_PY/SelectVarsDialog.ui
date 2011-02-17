@@ -32,7 +32,7 @@
      <item>
       <widget class="QLabel" name="label">
        <property name="text">
-        <string>Variables List</string>
+        <string>Potential Variables List</string>
        </property>
       </widget>
      </item>

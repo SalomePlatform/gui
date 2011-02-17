@@ -25,6 +25,7 @@ from PyQt4.QtCore import Qt
 
 import salome
 from salome.kernel.studyedit import getStudyEditor
+from salome.kernel import varlist
 
 # ---------------------------------- #
 # Dialog box for variables selection #
@@ -40,35 +41,48 @@ class MySelectVarsDialog(Ui_SelectVarsDialog, QtGui.QDialog):
         self.setupUi(self)
         self.connect(self.cancelButton, QtCore.SIGNAL("clicked()"), self.close)
         self.connect(self.OKButton, QtCore.SIGNAL("clicked()"), self.accept)
-        self.connect(self.selectButton, QtCore.SIGNAL("clicked()"), self.initSelectedVarList)
+        self.connect(self.selectButton, QtCore.SIGNAL("clicked()"), self.initPotentialVariablesFromSelection)
         self.connect(self.addInputVarButton, QtCore.SIGNAL("clicked()"), self.addSelectedInputVar)
         self.connect(self.removeInputVarButton, QtCore.SIGNAL("clicked()"), self.removeSelectedInputVar)
         self.connect(self.newInputVarButton, QtCore.SIGNAL("clicked()"), self.newInputVar)
         self.connect(self.addOutputVarButton, QtCore.SIGNAL("clicked()"), self.addSelectedOutputVar)
         self.connect(self.removeOutputVarButton, QtCore.SIGNAL("clicked()"), self.removeSelectedOutputVar)
         self.connect(self.newOutputVarButton, QtCore.SIGNAL("clicked()"), self.newOutputVar)
+        self.refEntry = None
 
-    def initSelectedVarList(self):
+    def setExchangeVariables(self, exchangeVariables):
+        if exchangeVariables.refEntry is not None:
+            self._initPotentialVariables(exchangeVariables.refEntry)
+        self.selectedInputVarListWidget.addItems([x.name for x in exchangeVariables.inputVarList])
+        self.selectedOutputVarListWidget.addItems([x.name for x in exchangeVariables.outputVarList])
+
+    def initPotentialVariablesFromSelection(self):
         entries = salome.sg.getAllSelected()
         if len(entries) != 1 :
             QtGui.QMessageBox.warning(self, self.tr("Error"),
                                       self.tr("One item must be selected in the object browser"))
             return
         selectedEntry = entries[0]
-        sobj = getStudyEditor().study.FindObjectID(selectedEntry)
-        from salome.kernel import varlist
-        (inputVarList, outputVarList) = varlist.getVarList(sobj)
-        if inputVarList is None and outputVarList is None:
+        self._initPotentialVariables(selectedEntry)
+
+    def _initPotentialVariables(self, entry):
+        sobj = getStudyEditor().study.FindObjectID(entry)
+        if sobj is None:
             QtGui.QMessageBox.warning(self, self.tr("Error"),
-                                      self.tr('Selected item is not a valid "Variable List" object'))
+                                      self.tr('No item at entry %s' % entry))
             return
+        exchangeVariables = varlist.getExchangeVariablesFromSObject(sobj)
+        if exchangeVariables is None:
+            QtGui.QMessageBox.warning(self, self.tr("Error"),
+                                      self.tr('Item at entry %s is not a valid '
+                                              '"Variable List" object' % entry))
+            return
+        self.refEntry = entry
         self.varListObjLineEdit.setText(sobj.GetName())
         self.allInputVarListWidget.clear()
         self.allOutputVarListWidget.clear()
-        if inputVarList is not None:
-            self.allInputVarListWidget.addItems(inputVarList)
-        if outputVarList is not None:
-            self.allOutputVarListWidget.addItems(outputVarList)
+        self.allInputVarListWidget.addItems([x.name for x in exchangeVariables.inputVarList])
+        self.allOutputVarListWidget.addItems([x.name for x in exchangeVariables.outputVarList])
 
     def addSelectedInputVar(self):
         for item in self.allInputVarListWidget.selectedItems():
@@ -96,11 +110,11 @@ class MySelectVarsDialog(Ui_SelectVarsDialog, QtGui.QDialog):
         newItem.setFlags(Qt.ItemIsSelectable|Qt.ItemIsEditable|Qt.ItemIsUserCheckable|Qt.ItemIsEnabled)
         self.selectedOutputVarListWidget.addItem(newItem);
 
-    def getSelectedVarLists(self):
+    def getSelectedExchangeVariables(self):
         inputVarList = []
         outputVarList = []
         for row in range(self.selectedInputVarListWidget.count()):
-            inputVarList.append(str(self.selectedInputVarListWidget.item(row).text()))
+            inputVarList.append(varlist.Variable(str(self.selectedInputVarListWidget.item(row).text())))
         for row in range(self.selectedOutputVarListWidget.count()):
-            outputVarList.append(str(self.selectedOutputVarListWidget.item(row).text()))
-        return (inputVarList, outputVarList)
+            outputVarList.append(varlist.Variable(str(self.selectedOutputVarListWidget.item(row).text())))
+        return varlist.ExchangeVariables(inputVarList, outputVarList, self.refEntry)

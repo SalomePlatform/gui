@@ -29,8 +29,8 @@
 
 #include <VTKViewer_Functor.h>
 
-#include "SALOME_InteractiveObject.hxx"
-
+#include <SALOME_InteractiveObject.hxx>
+#include <SALOME_ListIO.hxx>
 /*!
   \file SVTK_Functor.h
   This file contains numbers of functors that allows user to perform corresponding operations with existing presentations.
@@ -107,6 +107,25 @@ namespace SVTK
     }
   };
 
+
+  //----------------------------------------------------------------
+  /*!
+    This collect visible IO in list
+  */
+  template<class TActor> 
+    struct TCollectIfVisible
+    {
+      SALOME_ListIO& myList;
+      //! To construct the functor
+      TCollectIfVisible (SALOME_ListIO& theList) : myList(theList)
+      {}
+      //! To calculate the functor
+      void operator()(TActor* theActor) 
+      {
+	if(theActor->GetVisibility() && theActor->hasIO())
+	  myList.Append( theActor->getIO() );
+      }
+    };
 }
 
 

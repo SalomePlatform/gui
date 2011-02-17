@@ -36,10 +36,11 @@ class SalomeApp_Application;
 class LightApp_Selection;
 class SALOME_ListIO;
 class QString;
+class SUIT_DataObject;
 
 /*!
  * \brief Base class for all salome modules
-*/
+ */
 class SALOMEAPP_EXPORT SalomeApp_Module : virtual public LightApp_Module
 {
   Q_OBJECT
@@ -62,10 +63,19 @@ public:
   virtual void                        storeVisualParameters(int savePoint);
   virtual void                        restoreVisualParameters(int savePoint);
   virtual LightApp_Selection*         createSelection() const;
+  
+  public slots:
+  virtual bool                        activateModule( SUIT_Study* );
+  virtual void                        studyClosed( SUIT_Study* );
+  virtual void                        onObjectClicked( SUIT_DataObject*, int );
 
 protected:
   virtual CAM_DataModel*              createDataModel();
   virtual void                        extractContainers( const SALOME_ListIO&, SALOME_ListIO& ) const;
+
+
+ protected:
+  bool myIsFirstActivate;
 };
 
 #endif

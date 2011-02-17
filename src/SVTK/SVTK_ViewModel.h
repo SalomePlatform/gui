@@ -26,8 +26,9 @@
 #include "SVTK.h"
 #include "SVTK_ViewModelBase.h"
 
-#include "SALOME_Prs.h"
-#include "SALOME_InteractiveObject.hxx"
+#include <SALOME_Prs.h>
+#include <SALOME_InteractiveObject.hxx>
+#include <SALOME_ListIO.hxx>
 
 #include <QColor>
 #include <QMap>
@@ -136,6 +137,9 @@ public:
 
   //! See #SALOME_View::EraseAll( const bool = false )
   void EraseAll( const bool = false );
+
+  //! See #SALOME_View::getVisible( SALOME_ListIO& )
+  virtual void GetVisible( SALOME_ListIO& );
 
   //! See #SALOME_View::CreatePrs( const char* entry = 0 )
   SALOME_Prs* CreatePrs( const char* entry = 0 );

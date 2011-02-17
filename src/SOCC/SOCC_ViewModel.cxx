@@ -45,6 +45,7 @@
 #include <SALOME_AISShape.hxx>
 #include <SALOME_AISObject.hxx>
 #include <SALOME_InteractiveObject.hxx>
+#include <SALOME_ListIO.hxx>
 
 // Temporarily commented to avoid awful dependecy on SALOMEDS
 // TODO: better mechanism of storing display/erse status in a study
@@ -58,7 +59,6 @@
 //#include "SALOMEDS_StudyManager.hxx"
 
 #include <AIS_TypeOfIso.hxx>
-
 #include <Precision.hxx>
 
 // in order NOT TO link with SalomeApp, here the code returns SALOMEDS_Study.
@@ -683,6 +683,25 @@ bool SOCC_Viewer::getTrihedronSize( double& theNewSize, double& theSize )
          fabs( theNewSize - theSize) > theNewSize * EPS;
 }
 
+/*!
+  \Collect objects visible in viewer
+  \param theList - visible objects collection
+*/
+void SOCC_Viewer::GetVisible( SALOME_ListIO& theList )
+{
+  AIS_ListOfInteractive List;
+  getAISContext()->DisplayedObjects(List);
+  
+  AIS_ListIteratorOfListOfInteractive ite(List);
+  for ( ; ite.More(); ite.Next() )
+  {
+    Handle(SALOME_InteractiveObject) anObj =
+        Handle(SALOME_InteractiveObject)::DownCast( ite.Value()->GetOwner() );
+
+    if ( !anObj.IsNull() && anObj->hasEntry() )
+      theList.Append( anObj );
+  }
+}
 
 /*!
   Updates current viewer

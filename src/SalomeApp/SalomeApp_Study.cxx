@@ -28,13 +28,15 @@
 #include "SalomeApp_Application.h"
 #include "SalomeApp_Engine_i.hxx"
 #include "SalomeApp_VisualState.h"
-#include "SUIT_TreeModel.h"
-#include "SUIT_DataBrowser.h"
 
 // temporary commented
 //#include <OB_Browser.h>
 
 #include <SUIT_ResourceMgr.h>
+#include <SUIT_TreeModel.h>
+#include <SUIT_DataBrowser.h>
+
+#include <LightApp_Displayer.h>
 
 #include "utilities.h"
 
@@ -63,129 +65,152 @@ public:
   
   virtual void notifyObserverID(const char* theID, CORBA::Long event)
   {
-    // MESSAGE("notifyObserverID: theID:" << theID << " event:" << event);
-
     SalomeApp_DataObject* suit_obj;
     
-    if ( event == 1 ) // add sobject
-    {
-      EntryMapIter it = entry2SuitObject.find( theID );
-      if ( it != entry2SuitObject.end() )
-      {
-	MESSAGE("Entry " << theID << " is already added. Problem ??");
-	return;
-      }
-
-      _PTR(SObject) obj = myStudyDS->FindObjectID( theID );
-      std::string entry_str = theID;
-      int last2Pnt_pos = entry_str.rfind( ":" );
-      std::string parent_id = entry_str.substr( 0, last2Pnt_pos );
-      int tag = atoi( entry_str.substr( last2Pnt_pos+1 ).c_str() );
+    switch(event) {      
+    case 1: 
+      { //Add sobject
+	EntryMapIter it = entry2SuitObject.find( theID );
+	if ( it != entry2SuitObject.end() ) 
+	{
+	  MESSAGE("Entry " << theID << " is already added. Problem ??");
+	  return;
+	}
+	_PTR(SObject) obj = myStudyDS->FindObjectID( theID );
+	std::string entry_str = theID;
+	int last2Pnt_pos = entry_str.rfind( ":" );
+	std::string parent_id = entry_str.substr( 0, last2Pnt_pos );
+	int tag = atoi( entry_str.substr( last2Pnt_pos+1 ).c_str() );
       
-      if ( parent_id.length() == 3 ) // "0:1" - root item?
-      {
-	// It's probably a SComponent
-	_PTR(SComponent) aSComp = obj->GetFatherComponent();
-	if ( aSComp && !aSComp->IsNull() && aSComp->GetID() == entry_str )
-	  suit_obj = new SalomeApp_ModuleObject( aSComp );
-	else
-	  suit_obj = new SalomeApp_DataObject( obj );
-      }
-      else
-      {
-	suit_obj = new SalomeApp_DataObject( obj );
-      }
-      
-      it = entry2SuitObject.find( parent_id );
-      if ( it != entry2SuitObject.end() )
-      {
-	SalomeApp_DataObject* father = it->second;
-	father->insertChildAtTag( suit_obj, tag );
-      }
-      else
-      {
 	if ( parent_id.length() == 3 ) // "0:1" - root item?
 	{
-	  // This should be for a module
-	  SUIT_DataObject* father=myStudy->root();
-	  father->appendChild(suit_obj);
+	  // It's probably a SComponent
+	  _PTR(SComponent) aSComp = obj->GetFatherComponent();
+	  if ( aSComp && !aSComp->IsNull() && aSComp->GetID() == entry_str )
+	    suit_obj = new SalomeApp_ModuleObject( aSComp );
+	  else
+	    suit_obj = new SalomeApp_DataObject( obj );
 	}
 	else
 	{
-	  MESSAGE("SHOULD NEGER GET HERE!!!");
-
-	  //Try to find the SalomeApp_DataObject object parent
-	  std::string root_id = parent_id.substr( 0, 4 );
-	  std::string obj_id = parent_id.substr( 4 );
-	  
-	  std::string anID;
-	  string::size_type debut = 0;
-	  string::size_type fin;
-	  SalomeApp_DataObject* anObj = dynamic_cast<SalomeApp_DataObject*>( myStudy->root() );
-	  while ( 1 )
-	  {
-	    fin = obj_id.find_first_of( ':', debut );
-	    if ( fin == std::string::npos )
-	    {
-	      //last id
-	      anObj = dynamic_cast<SalomeApp_DataObject*>( anObj->childObject( atoi( obj_id.substr( debut ).c_str() )-1 ) );
-	      entry2SuitObject[parent_id] = anObj;
-	      break;
-	    }
-	    anID = root_id + obj_id.substr( 0, fin );
-	    EntryMapIter it2 = entry2SuitObject.find( anID );
-	    if ( it2 == entry2SuitObject.end() )
-	    {
-	      //the ID is not known in entry2SuitObject
-	      anObj = dynamic_cast<SalomeApp_DataObject*>( anObj->childObject( atoi( obj_id.substr( debut, fin-debut ).c_str() )-1 ) );
-	      entry2SuitObject[anID] = anObj;
-	    }
-	    else
-	      anObj = it2->second;
-	    debut = fin+1;
-	  }
-	  anObj->insertChildAtTag( suit_obj, tag );
+	  suit_obj = new SalomeApp_DataObject( obj );
 	}
+      
+	it = entry2SuitObject.find( parent_id );
+	if ( it != entry2SuitObject.end() )
+	{
+	  SalomeApp_DataObject* father = it->second;
+	  father->insertChildAtTag( suit_obj, tag );
+	}
+	else
+	{
+	  if ( parent_id.length() == 3 ) // "0:1" - root item?
+	  {
+	    // This should be for a module
+	    SUIT_DataObject* father=myStudy->root();
+	    father->appendChild(suit_obj);
+	  }
+	  else
+	  {
+	    MESSAGE("SHOULD NEGER GET HERE!!!");
+
+	    //Try to find the SalomeApp_DataObject object parent
+	    std::string root_id = parent_id.substr( 0, 4 );
+	    std::string obj_id = parent_id.substr( 4 );
+	    
+	    std::string anID;
+	    string::size_type debut = 0;
+	    string::size_type fin;
+	    SalomeApp_DataObject* anObj = dynamic_cast<SalomeApp_DataObject*>( myStudy->root() );
+	    while ( 1 )
+	    {
+	      fin = obj_id.find_first_of( ':', debut );
+	      if ( fin == std::string::npos )
+	      {
+		//last id
+		anObj = dynamic_cast<SalomeApp_DataObject*>( anObj->childObject( atoi( obj_id.substr( debut ).c_str() )-1 ) );
+		entry2SuitObject[parent_id] = anObj;
+		break;
+	      }
+	      anID = root_id + obj_id.substr( 0, fin );
+	      EntryMapIter it2 = entry2SuitObject.find( anID );
+	      if ( it2 == entry2SuitObject.end() )
+	      {
+		//the ID is not known in entry2SuitObject
+		anObj = dynamic_cast<SalomeApp_DataObject*>( anObj->childObject( atoi( obj_id.substr( debut, fin-debut ).c_str() )-1 ) );
+		entry2SuitObject[anID] = anObj;
+	      }
+	      else
+		anObj = it2->second;
+	      debut = fin+1;
+	    }
+	    anObj->insertChildAtTag( suit_obj, tag );
+	  }
+	}
+	entry2SuitObject[theID] = suit_obj;
+	break;
+      }      
+    case 2: 
+      { // Remove sobject
+	EntryMapIter it = entry2SuitObject.find( theID );
+	if ( it != entry2SuitObject.end() )
+	{
+	  suit_obj = it->second;
+	  // VSR: object is not removed, since SALOMEDS::SObject is not actually removed, only its attributes are cleared;
+	  //      thus, the object can be later reused
+	  suit_obj->updateItem();
+	  //SUIT_DataObject* father=suit_obj->parent();
+	  //if(father)
+	  //  father->removeChild(suit_obj);
+	  //entry2SuitObject.erase(it);
+	}
+	else
+        {
+	  MESSAGE("Want to remove an unknown object" << theID);
+	}
+	break;
       }
-      entry2SuitObject[theID] = suit_obj;
-    }
-    else if ( event == 2 ) // remove sobject
-    {
-      EntryMapIter it = entry2SuitObject.find( theID );
-      if ( it != entry2SuitObject.end() )
+    case 0:  
+      { //modify sobject
+	MESSAGE("Want to modify an object "  << theID);
+	EntryMapIter it = entry2SuitObject.find( theID );
+	if ( it != entry2SuitObject.end() )
+	{
+	  suit_obj = it->second;
+	  suit_obj->updateItem();
+	}
+	else
+	{
+	  MESSAGE("Want to modify an unknown object"  << theID);
+	}
+	break;
+      }
+    case 5: //IOR of the object modified
       {
-	suit_obj = it->second;
-	// VSR: object is not removed, since SALOMEDS::SObject is not actually removed, only its attributes are cleared;
-	//      thus, the object can be later reused
-	suit_obj->updateItem();
-	//SUIT_DataObject* father=suit_obj->parent();
-	//if(father)
-	//  father->removeChild(suit_obj);
-	//entry2SuitObject.erase(it);
+	EntryMapIter it = entry2SuitObject.find( theID );
+	if ( it != entry2SuitObject.end() ) 
+	  suit_obj = it->second;
+	
+	/* Define visibility state */
+	if( suit_obj ) {
+	  QString moduleTitle = ((CAM_Application*)myStudy->application())->moduleTitle(suit_obj->componentDataType());
+	  if(!moduleTitle.isEmpty()) {
+	    LightApp_Displayer* aDisplayer = LightApp_Displayer::FindDisplayer(moduleTitle,false);
+	    
+	    if(aDisplayer && !myStudy->isComponent(theID)) {
+	      if(aDisplayer->canBeDisplayed(theID)) {
+		myStudy->setVisibilityState( theID, Qtx::HiddenState );
+		MESSAGE("Object with entry : "<< theID <<" CAN be displayed !!!");
+	      } else 
+		MESSAGE("Object with entry : "<< theID <<" CAN'T be displayed !!!");
+	    }
+	  }
+	}
+	break;
       }
-      else
-      {
-	MESSAGE("Want to remove an unknown object" << theID);
-      }
-    }
-    else if ( event == 0 ) //modify sobject
-    {
-      EntryMapIter it = entry2SuitObject.find( theID );
-      if ( it != entry2SuitObject.end() )
-      {
-	suit_obj = it->second;
-	suit_obj->updateItem();
-      }
-      else
-      {
-	MESSAGE("Want to modify an unknown object"  << theID);
-      }
-    }
-    else
-    {
-      MESSAGE("Unknown event: "  << event);
-    }
-  }
+    default:MESSAGE("Unknown event: "  << event);break;
+    } //switch
+  } //notifyObserverID
 
 private:  
   void fillEntryMap()

@@ -31,6 +31,7 @@
 #include "SALOME_Prs.h"
 #include "OCCViewer_ViewModel.h"
 
+class SALOME_ListIO;
 class Handle(SALOME_InteractiveObject);
 
 class SOCC_EXPORT SOCC_Viewer: public OCCViewer_Viewer, public SALOME_View
@@ -64,6 +65,7 @@ public:
   virtual void                LocalSelection( const SALOME_OCCPrs*, const int );
   virtual void                GlobalSelection( const bool = false ) const;
   virtual bool                isVisible( const Handle(SALOME_InteractiveObject)& );
+  virtual void                GetVisible( SALOME_ListIO& );
   virtual void                Repaint();
 
   // a utility function, used by SALOME_View_s methods

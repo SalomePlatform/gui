@@ -142,15 +142,18 @@ void LightApp_ShowHideOp::startOperation()
       else
         entries.append( entry );
     }
-
-  for( QStringList::const_iterator it = entries.begin(), last = entries.end(); it!=last; it++ )
-  {
-    QString e = study->referencedToEntry( *it );
-    if( myActionType==DISPLAY || myActionType==DISPLAY_ONLY )
-      d->Display( e, false, 0 );
-    else if( myActionType==ERASE )
-      d->Erase( e, false, false, 0 );
-  }
+  
+  // be sure to use real obejct entries
+  QStringList objEntries;
+  QStringList::const_iterator it = entries.begin(), last = entries.end();
+  for ( ; it!=last; ++it )
+    objEntries.append( study->referencedToEntry( *it ) ); 
+  
+  if( myActionType==DISPLAY || myActionType==DISPLAY_ONLY )
+    d->Display( objEntries, false, 0 );
+  else if( myActionType==ERASE )
+    d->Erase( objEntries, false, false, 0 );
+  
   d->UpdateViewer();
   commit();
 }

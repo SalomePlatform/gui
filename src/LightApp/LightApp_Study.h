@@ -30,6 +30,7 @@
 
 #include "string"
 #include "vector"
+#include <Qtx.h>
 
 #include <QMap>
 #include <QVariant>
@@ -101,7 +102,9 @@ public:
   virtual const ObjMap&     getObjectMap       ( int theViewMgrId );
   virtual const ViewMgrMap& getViewMgrMap      ( int theViewMgrId ) { return myViewMgrMap; };
 
-
+  virtual void                  setVisibilityState(const QString& theEntry, Qtx::VisibilityState theState);
+  virtual Qtx::VisibilityState  visibilityState(const QString& theEntry) const;
+  virtual void                  setVisibilityStateForAll(Qtx::VisibilityState theState);
 
 protected:
   virtual void        saveModuleData ( QString theModuleName, QStringList theListOfFiles );

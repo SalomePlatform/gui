@@ -113,6 +113,27 @@ public:
         Auto    //!< substitute environment variable by it's value if variable exists, and keep it as is otherwise
   } SubstMode;
 
+  //! object visibility state
+  typedef enum {
+    ShownState,             //!< Object is shown in viewer
+    HiddenState,            //!< Object is hidden in viewer
+    UnpresentableState,     //!< Unpresentable object
+  } VisibilityState;
+
+  //! Header view flags
+  typedef enum {
+    ShowText = 0x001,                //!< Show only text in the header
+    ShowIcon = 0x010,                //!< Show only icon in the header
+    ShowAll  = ShowText | ShowIcon   //!< Show icon and text in the header
+  } HeaderViewFlags;
+
+  //Type of the custom data
+  typedef enum {
+    IdType
+  } CustomDataType;
+
+
+
   class QTX_EXPORT Localizer
   {
   public:

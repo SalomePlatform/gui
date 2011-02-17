@@ -149,6 +149,9 @@
   #include <QxScene_ViewWindow.h>
 #endif
 
+
+#define VISIBILITY_COLUMN_WIDTH 25
+
 #include <QDir>
 #include <QImage>
 #include <QString>
@@ -168,6 +171,8 @@
 #include <QMenu>
 #include <QProcess>
 #include <QTimer>
+#include <QHeaderView>
+#include <QTreeView>
 
 #include <utilities.h>
 
@@ -1728,6 +1733,10 @@ QWidget* LightApp_Application::createWindow( const int flag )
 
     // Create OBSelector
     new LightApp_OBSelector( ob, mySelMgr );
+
+    ob->treeView()->header()->setResizeMode(SUIT_DataObject::VisibilityId, QHeaderView::Fixed);
+    ob->treeView()->header()->moveSection(SUIT_DataObject::NameId,SUIT_DataObject::VisibilityId);
+    ob->treeView()->setColumnWidth(SUIT_DataObject::VisibilityId, VISIBILITY_COLUMN_WIDTH);
 
     wid = ob;
 

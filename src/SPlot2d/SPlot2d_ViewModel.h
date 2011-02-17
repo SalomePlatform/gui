@@ -27,14 +27,15 @@
 #ifndef SPlot2d_ViewModel_H
 #define SPlot2d_ViewModel_H
 
-#include "SPlot2d.h"  
-
-#include "SALOME_Prs.h"
+#include "SPlot2d.h"
+#include "SPlot2d_Curve.h"
 #include "Plot2d_ViewModel.h"
-#include "SALOME_InteractiveObject.hxx"
 #include "Plot2d_ViewFrame.h"
 #include "Plot2d_ViewWindow.h"
-#include "SPlot2d_Curve.h"
+
+#include <SALOME_Prs.h>
+#include <SALOME_InteractiveObject.hxx>
+#include <SALOME_ListIO.hxx>
 
 class SPLOT2D_EXPORT SPlot2d_Viewer : public Plot2d_Viewer, public SALOME_View
 { 
@@ -73,6 +74,7 @@ public:
   virtual void         BeforeDisplay( SALOME_Displayer* d );
   virtual void         AfterDisplay ( SALOME_Displayer* d );
   virtual bool         isVisible( const Handle(SALOME_InteractiveObject)& IObject );
+  virtual void         GetVisible( SALOME_ListIO& theList );
 
 
   /* operations */

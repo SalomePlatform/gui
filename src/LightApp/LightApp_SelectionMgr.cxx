@@ -71,6 +71,9 @@ LightApp_Application* LightApp_SelectionMgr::application() const
 void LightApp_SelectionMgr::selectedObjects( SALOME_ListIO& theList, const QString& theType,
                                              const bool convertReferences ) const
 {
+  LightApp_Study* study = dynamic_cast<LightApp_Study*>( application()->activeStudy() );
+  if ( !study )
+    return;
   theList.Clear();
 
   SUIT_DataOwnerPtrList aList;
@@ -84,10 +87,6 @@ void LightApp_SelectionMgr::selectedObjects( SALOME_ListIO& theList, const QStri
     const LightApp_DataOwner* owner = dynamic_cast<const LightApp_DataOwner*>( (*itr).operator->() );
     if( !owner )
       continue;
-
-    LightApp_Study* study = dynamic_cast<LightApp_Study*>( application()->activeStudy() );
-    if ( !study )
-      return;
 
     entry = owner->entry();
     // Entry to check object uniqueness.
@@ -137,6 +136,10 @@ void LightApp_SelectionMgr::setSelectedObjects( const SALOME_ListIO& lst, const 
 void LightApp_SelectionMgr::selectedObjects( QStringList& theList, const QString& theType,
                                              const bool convertReferences ) const
 {
+  LightApp_Study* study = dynamic_cast<LightApp_Study*>( application()->activeStudy() );
+  if ( !study )
+    return;
+  
   theList.clear();
 
   SUIT_DataOwnerPtrList aList;
@@ -148,10 +151,6 @@ void LightApp_SelectionMgr::selectedObjects( QStringList& theList, const QString
     const LightApp_DataOwner* owner = dynamic_cast<const LightApp_DataOwner*>( (*itr).operator->() );
     if( !owner )
       continue;
-
-    LightApp_Study* study = dynamic_cast<LightApp_Study*>( application()->activeStudy() );
-    if ( !study )
-      return;
 
     entry = owner->entry();
     if( !theList.contains( entry ) )

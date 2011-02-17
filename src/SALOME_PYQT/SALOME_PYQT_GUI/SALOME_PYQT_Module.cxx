@@ -142,6 +142,15 @@ QString SALOME_PYQT_Module::engineIOR() const
   return myIOR;
 }
 
+
+/*!
+ * Redefined to invokec correct version
+ */
+bool SALOME_PYQT_Module::activateModule( SUIT_Study* study )
+{
+  return SalomeApp_Module::activateModule( study );
+}
+
 /*!
  * Tries to get engine IOR from the Python module using engineIOR() function.
  * That function can load module engine using appropriate container if required.

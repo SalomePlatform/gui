@@ -23,6 +23,9 @@
 // File   : SUIT_DataObject.cxx
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 //
+
+#include <QVariant>
+
 #include "SUIT_DataObject.h"
 #include "SUIT_DataObjectKey.h"
 #include <cstdio>
@@ -930,7 +933,12 @@ int SUIT_DataObject::groupId() const
 {
   return 0;
 }
-
+/*!
+  \brief return custom data for data object.
+ */
+QVariant SUIT_DataObject::customData(Qtx::CustomDataType /*type*/) {
+  return QVariant();
+}
 /*!
   \fn void SUIT_DataObject::Signal::created( SUIT_DataObject* object );
   \brief Emitted when data object is created.

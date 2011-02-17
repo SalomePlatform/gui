@@ -48,6 +48,7 @@ public:
   virtual QString            engineIOR() const;
 
 public slots:
+  virtual bool               activateModule( SUIT_Study* );
   void                       preferenceChanged( const QString&, 
                                                 const QString&, 
                                                 const QString& );

@@ -31,6 +31,8 @@
 
 #include "SUIT_ResourceMgr.h"
 #include "SUIT_DataObjectIterator.h"
+#include "SUIT_DataBrowser.h"
+#include "SUIT_TreeModel.h"
 
 #include <set>
 
@@ -629,6 +631,7 @@ void LightApp_Study::removeObjectFromAll( QString theEntry ) {
     v_it.value().remove(theEntry);
   }
 }
+
 /*!
   Get all objects and it's properties from view manager identified by theViewMgrId.
   \param theEntry - Entry of the object.
@@ -641,4 +644,61 @@ const ObjMap& LightApp_Study::getObjectMap ( int theViewMgrId ) {
     return myViewMgrMap.find(theViewMgrId).value();
   }
   return v_it.value();
+}
+
+/*!
+  Set 'visibility state' property of the object.
+  \param theEntry - Entry of the object.
+  \param theState - visibility status
+*/
+void LightApp_Study::setVisibilityState(const QString& theEntry, Qtx::VisibilityState theState) {
+  LightApp_Application* app = (LightApp_Application*)application();
+  if(!app)
+    return;
+  SUIT_DataBrowser* db = app->objectBrowser();
+  if(!db)
+    return;
+
+  SUIT_AbstractModel* treeModel = dynamic_cast<SUIT_AbstractModel*>(db->model());
+  
+  if(treeModel)
+    treeModel->setVisibilityState(theEntry,theState);
+}
+
+/*!
+  Set 'visibility state' property for all object.
+  \param theEntry - Entry of the object.
+*/
+void LightApp_Study::setVisibilityStateForAll(Qtx::VisibilityState theState) {
+  
+  LightApp_Application* app = (LightApp_Application*)application();
+  if(!app)
+    return;
+  SUIT_DataBrowser* db = app->objectBrowser();
+  if(!db)
+    return;
+
+  SUIT_AbstractModel* treeModel = dynamic_cast<SUIT_AbstractModel*>(db->model());
+  
+  if(treeModel)
+    treeModel->setVisibilityStateForAll(theState);
+}
+
+/*!
+  Get 'visibility state' property of the object.
+  \param theEntry - Entry of the object.
+  \return 'visibility state' property of the object.
+*/
+Qtx::VisibilityState LightApp_Study::visibilityState(const QString& theEntry) const {
+  LightApp_Application* app = (LightApp_Application*)application();
+  if(app) {
+    
+    SUIT_DataBrowser* db = app->objectBrowser();
+    if(db) {
+      SUIT_AbstractModel* treeModel = dynamic_cast<SUIT_AbstractModel*>(db->model());
+      if(treeModel)
+	return treeModel->visibilityState(theEntry);
+    }
+  }
+  return Qtx::UnpresentableState;
 }

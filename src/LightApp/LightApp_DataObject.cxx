@@ -125,6 +125,20 @@ int LightApp_DataObject::groupId() const
 }
 
 /*!
+  \brief return custom data for data object
+*/
+QVariant LightApp_DataObject::customData(Qtx::CustomDataType type) {
+  switch(type) {
+  case Qtx::IdType: 
+    return EntryId;
+    break;
+  default:
+    return QVariant();
+    break;
+  }
+}
+
+/*!
   \brief Check if the object is visible.
   \return \c true if this object is displayable or \c false otherwise
 */

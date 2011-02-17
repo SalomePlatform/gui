@@ -23,6 +23,7 @@
 #include "LightApp_Displayer.h"
 #include "LightApp_Application.h"
 #include "LightApp_Module.h"
+#include "LightApp_Study.h"
 
 #include <CAM_Study.h>
 
@@ -32,6 +33,7 @@
 #include <SUIT_ViewModel.h>
 #include <SUIT_ViewWindow.h>
 
+#include <QStringList>
 #include <QString>
 #ifndef DISABLE_SALOMEOBJECT
   #include "SALOME_InteractiveObject.hxx"
@@ -57,23 +59,44 @@ LightApp_Displayer::~LightApp_Displayer()
   \param updateViewer - is it necessary to update viewer
   \param theViewFrame - view
 */
-void LightApp_Displayer::Display( const QString& entry, const bool updateViewer, SALOME_View* theViewFrame )
+void LightApp_Displayer::Display( const QString& entry, const bool updateViewer,
+                                  SALOME_View* theViewFrame )
 {
-  SALOME_Prs* prs = buildPresentation( entry, theViewFrame );
-  if ( prs )
+  QStringList aList;
+  aList.append( entry );
+  Display( aList, updateViewer, theViewFrame );
+}
+
+/*!
+  Displays object in view
+  \param list - object entries
+  \param updateViewer - is it necessary to update viewer
+  \param theViewFrame - view
+*/
+void LightApp_Displayer::Display( const QStringList& list, const bool updateViewer,
+                                  SALOME_View* theViewFrame )
+{
+  SALOME_View* vf = theViewFrame ? theViewFrame : GetActiveView();
+  QStringList::const_iterator it = list.constBegin();
+  for ( ; it != list.constEnd(); ++it)
   {
-    SALOME_View* vf = theViewFrame ? theViewFrame : GetActiveView();
-    if ( vf )
+    SALOME_Prs* prs = buildPresentation( *it, vf );
+    if ( prs )
     {
-      vf->BeforeDisplay( this );
-      vf->Display( prs );
-      vf->AfterDisplay( this );
 
-      if ( updateViewer )
-        vf->Repaint();
+      if ( vf )
+      {
+        vf->BeforeDisplay( this );
+        vf->Display( prs );
+        vf->AfterDisplay( this );
 
+        if ( updateViewer )
+          vf->Repaint();
+      }
       delete prs;  // delete presentation because displayer is its owner
+      setVisibilityState(*it, Qtx::ShownState);
     }
+
   }
 }
 
@@ -119,17 +142,40 @@ void LightApp_Displayer::Redisplay( const QString& entry, const bool updateViewe
   \param theViewFrame - view
 */
 void LightApp_Displayer::Erase( const QString& entry, const bool forced,
-                                const bool updateViewer, SALOME_View* theViewFrame )
+                                const bool updateViewer,
+                                SALOME_View* theViewFrame )
+{
+  QStringList aList;
+  aList.append( entry );
+  Erase( aList, forced, updateViewer, theViewFrame );
+}
+
+/*!
+  Erases object in view
+  \param list - object entries
+  \param forced - deletes object from viewer (otherwise it will be erased, but cached)
+  \param updateViewer - is it necessary to update viewer
+  \param theViewFrame - view
+*/
+void LightApp_Displayer::Erase( const QStringList& list, const bool forced,
+                                const bool updateViewer,
+                                SALOME_View* theViewFrame )
 {
   SALOME_View* vf = theViewFrame ? theViewFrame : GetActiveView();
 
-  if ( vf ) {
-    SALOME_Prs* prs = vf->CreatePrs( entry.toLatin1() );
+  if ( !vf )
+    return;
+
+  QStringList::const_iterator it = list.constBegin();
+  for ( ; it != list.constEnd(); ++it)
+  {
+    SALOME_Prs* prs = vf->CreatePrs( (*it).toLatin1().data() );
     if ( prs ) {
       vf->Erase( prs, forced );
       if ( updateViewer )
         vf->Repaint();
       delete prs;  // delete presentation because displayer is its owner
+      setVisibilityState(*it,Qtx::HiddenState);
     }
   }
 }
@@ -149,6 +195,11 @@ void LightApp_Displayer::EraseAll( const bool forced, const bool updateViewer, S
     if ( updateViewer )
       vf->Repaint();
   }
+
+  LightApp_Application* app = dynamic_cast<LightApp_Application*>( SUIT_Session::session()->activeApplication() );
+  LightApp_Study* study = app ? dynamic_cast<LightApp_Study*>( app->activeStudy() ) : 0;  
+  if(study)
+    study->setVisibilityStateForAll(Qtx::HiddenState);
 }
 
 /*!
@@ -266,11 +317,26 @@ LightApp_Displayer* LightApp_Displayer::FindDisplayer( const QString& mod_name, 
   if( m )
   {
     m->connectToStudy( dynamic_cast<CAM_Study*>( app->activeStudy() ) );
-    if( m!=app->activeModule() && load )
-    {
-      m->setMenuShown( false );
-      m->setToolShown( false );
-    }
+    //rnv: Implementation of the 20830: EDF 1357 GUI : Hide/Show Icon
+    // Seems it is not necessary hide icons:
+    //    if( m!=app->activeModule() && load )
+    //    {
+    //      m->setMenuShown( false );
+    //      m->setToolShown( false );
+    //    }
   }
   return m ? m->displayer() : 0;
+}
+
+/*!
+  Find the active study and set the 'visibility state' property of the object
+  \param mod_name - name of module
+  \param load - is module has to be forced loaded
+*/
+void LightApp_Displayer::setVisibilityState( const QString& theEntry, Qtx::VisibilityState theState) const {
+  LightApp_Application* app = dynamic_cast<LightApp_Application*>( SUIT_Session::session()->activeApplication() );
+  LightApp_Study* study = app ? dynamic_cast<LightApp_Study*>( app->activeStudy() ) : 0;
+  
+  if(study)
+    study->setVisibilityState( theEntry, theState);
 }

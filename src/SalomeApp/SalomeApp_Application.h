@@ -34,6 +34,8 @@
 #include "SalomeApp.h"
 #include <LightApp_Application.h>
 
+#include <SUIT_DataObject.h>
+
 #include <CORBA.h>
 
 //#include <SALOMEconfig.h>
@@ -45,8 +47,9 @@
 class LightApp_Preferences;
 class SalomeApp_Study;
 class SalomeApp_NoteBookDlg;
-class SUIT_DataObject;
+class SUIT_Desktop;
 
+class SUIT_ViewModel;
 class SALOME_LifeCycleCORBA;
 
 
@@ -87,6 +90,8 @@ public:
 
   virtual bool                        checkDataObject(LightApp_DataObject* theObj);
 
+  virtual void                        setDesktop( SUIT_Desktop* );
+
   static CORBA::ORB_var               orb();
   static SALOMEDSClient_StudyManager* studyMgr();
   static SALOME_NamingService*        namingService();
@@ -104,6 +109,10 @@ public:
   virtual void                        setNoteBook(SalomeApp_NoteBookDlg* theNoteBook);
   virtual SalomeApp_NoteBookDlg*      getNoteBook() const;
 
+ //! update visibility state of objects
+  void                                updateVisibilityState( DataObjectList& theList,
+                                                             SUIT_ViewModel* theViewModel );
+
 public slots:
   virtual void                        onLoadDoc();
   virtual void                        onNewWithScript();
@@ -120,6 +129,9 @@ protected slots:
   void                                onStudySaved( SUIT_Study* );
   void                                onStudyOpened( SUIT_Study* );
   void                                onDesktopMessage( const QString& );
+  void                                onStudyClosed( SUIT_Study* );
+  
+  void                                onViewManagerRemoved( SUIT_ViewManager* );
 
 protected:
   virtual void                        createActions();
@@ -158,6 +170,8 @@ private slots:
   void                                onRegDisplay();
   void                                onOpenWith();
   void                                onExtAction();
+
+  void                                onWindowActivated( SUIT_ViewWindow* theViewWindow );
 
 private:
   void                                createExtraActions();

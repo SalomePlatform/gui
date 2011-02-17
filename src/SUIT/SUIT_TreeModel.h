@@ -32,6 +32,7 @@
 #include <QModelIndex>
 #include <QItemDelegate>
 #include <QVariant>
+#include <QMap>
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -49,29 +50,36 @@ public:
   operator QAbstractItemModel*();
   operator const QObject*() const;
 
-  virtual SUIT_DataObject* root() const = 0;
-  virtual void             setRoot( SUIT_DataObject* ) = 0;
-  virtual SUIT_DataObject* object( const QModelIndex& = QModelIndex() ) const = 0;
-  virtual QModelIndex      index( const SUIT_DataObject*, int = 0 ) const = 0;
-  virtual bool             autoDeleteTree() const = 0;
-  virtual void             setAutoDeleteTree( const bool ) = 0;
-  virtual bool             autoUpdate() const = 0;
-  virtual void             setAutoUpdate( const bool ) = 0;
-  virtual bool             updateModified() const = 0;
-  virtual void             setUpdateModified( const bool ) = 0;
+  virtual SUIT_DataObject*      root() const = 0;
+  virtual void                  setRoot( SUIT_DataObject* ) = 0;
+  virtual SUIT_DataObject*      object( const QModelIndex& = QModelIndex() ) const = 0;
+  virtual QModelIndex           index( const SUIT_DataObject*, int = 0 ) const = 0;
+  virtual bool                  autoDeleteTree() const = 0;
+  virtual void                  setAutoDeleteTree( const bool ) = 0;
+  virtual bool                  autoUpdate() const = 0;
+  virtual void                  setAutoUpdate( const bool ) = 0;
+  virtual bool                  updateModified() const = 0;
+  virtual void                  setUpdateModified( const bool ) = 0;
   virtual QAbstractItemDelegate* delegate() const = 0;
-  virtual bool             customSorting( const int ) const = 0;
-  virtual bool             lessThan( const QModelIndex& left, const QModelIndex& right ) const = 0;
+  virtual bool                  customSorting( const int ) const = 0;
+  virtual bool                  lessThan( const QModelIndex& left, const QModelIndex& right ) const = 0;
 
-  virtual void             updateTree( const QModelIndex& ) = 0;
-  virtual void             updateTree( SUIT_DataObject* = 0 ) = 0;
+  virtual void                  updateTree( const QModelIndex& ) = 0;
+  virtual void                  updateTree( SUIT_DataObject* = 0 ) = 0;
 
-  virtual void             registerColumn( const int group_id, const QString& name, const int custom_id ) = 0;
-  virtual void             unregisterColumn( const int group_id, const QString& name ) = 0;
-  virtual void             setColumnIcon( const QString& name, const QPixmap& icon ) = 0;
-  virtual QPixmap          columnIcon( const QString& name ) const = 0;
-  virtual void             setAppropriate( const QString& name, const Qtx::Appropriate appr ) = 0;
-  virtual Qtx::Appropriate appropriate( const QString& name ) const = 0;
+  virtual void                  registerColumn( const int group_id, const QString& name, const int custom_id ) = 0;
+  virtual void                  unregisterColumn( const int group_id, const QString& name ) = 0;
+  virtual void                  setColumnIcon( const QString& name, const QPixmap& icon ) = 0;
+  virtual QPixmap               columnIcon( const QString& name ) const = 0;
+  virtual void                  setAppropriate( const QString& name, const Qtx::Appropriate appr ) = 0;
+  virtual Qtx::Appropriate      appropriate( const QString& name ) const = 0;
+  virtual void                  setVisibilityState(const QString& id, Qtx::VisibilityState state) = 0;
+  virtual void                  setVisibilityStateForAll(Qtx::VisibilityState state) = 0;
+  virtual Qtx::VisibilityState  visibilityState(const QString& id) const = 0;
+  virtual void                  setHeaderFlags( const QString& name, const Qtx::HeaderViewFlags flags ) = 0;
+  virtual Qtx::HeaderViewFlags  headerFlags( const QString& name ) const = 0;
+  virtual void           emitClicked( SUIT_DataObject* obj, const QModelIndex& index) = 0;
+
 };
 
 
@@ -130,6 +138,13 @@ public:
   virtual QPixmap          columnIcon( const QString& name ) const;
   virtual void             setAppropriate( const QString& name, const Qtx::Appropriate appr );
   virtual Qtx::Appropriate appropriate( const QString& name ) const;
+  virtual void                  setVisibilityState(const QString& id, Qtx::VisibilityState state);
+  virtual void                  setVisibilityStateForAll(Qtx::VisibilityState state);
+  virtual Qtx::VisibilityState  visibilityState(const QString& id) const;
+  virtual void                  setHeaderFlags( const QString& name, const Qtx::HeaderViewFlags flags );
+  virtual Qtx::HeaderViewFlags  headerFlags( const QString& name ) const;
+  virtual void           emitClicked( SUIT_DataObject* obj, const QModelIndex& index);
+
 
   SUIT_DataObject*       object( const QModelIndex& = QModelIndex() ) const;
   QModelIndex            index( const SUIT_DataObject*, int = 0 ) const;
@@ -148,6 +163,7 @@ public:
 
   QAbstractItemDelegate* delegate() const;
 
+
   virtual void           updateTreeModel(SUIT_DataObject*,TreeItem*);
 
 public slots:
@@ -156,6 +172,7 @@ public slots:
 
 signals:
   void modelUpdated();
+  void clicked( SUIT_DataObject*, int );
 
 private:
   void                   initialize();
@@ -181,13 +198,17 @@ private:
     QString myName;
         QMap<int,int> myIds;
         QPixmap myIcon;
+        Qtx::HeaderViewFlags myHeaderFlags;
         Qtx::Appropriate myAppropriate;
 
   } ColumnInfo;
+
+  typedef QMap<QString,Qtx::VisibilityState> VisibilityMap;
   
   SUIT_DataObject*    myRoot;
   TreeItem*           myRootItem;
   ItemMap             myItems;
+  VisibilityMap       myVisibilityMap;
   bool                myAutoDeleteTree;
   bool                myAutoUpdate;
   bool                myUpdateModified;
@@ -231,6 +252,13 @@ public:
   virtual QPixmap          columnIcon( const QString& name ) const;
   virtual void             setAppropriate( const QString& name, const Qtx::Appropriate appr );
   virtual Qtx::Appropriate appropriate( const QString& name ) const;
+  virtual void                  setVisibilityState(const QString& id, Qtx::VisibilityState state);
+  virtual void                  setVisibilityStateForAll(Qtx::VisibilityState state);
+  virtual Qtx::VisibilityState  visibilityState(const QString& id) const;
+  virtual void                  setHeaderFlags( const QString& name, const Qtx::HeaderViewFlags flags );
+  virtual Qtx::HeaderViewFlags  headerFlags( const QString& name ) const;
+  virtual void             emitClicked( SUIT_DataObject* obj, const QModelIndex& index);
+
 
   QAbstractItemDelegate* delegate() const;
 
@@ -241,6 +269,7 @@ public slots:
 
 signals:
   void modelUpdated();
+  void clicked( SUIT_DataObject*, int );
 
 protected:
   SUIT_AbstractModel*    treeModel() const;

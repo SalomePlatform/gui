@@ -28,6 +28,8 @@
 
 #include "SUIT.h"
 
+#include <Qtx.h>
+
 #include <QList>
 #include <QObject>
 #include <QString>
@@ -61,7 +63,8 @@ public:
   //! Column id
   enum
   { 
-    NameId            //!< name column
+    NameId,          //!< name column
+    VisibilityId     //!< visibility state column
   };
 
   SUIT_DataObject( SUIT_DataObject* = 0 );
@@ -130,6 +133,7 @@ public:
 
   virtual SUIT_DataObjectKey* key() const;
   virtual int groupId() const;
+  virtual QVariant            customData(Qtx::CustomDataType /*type*/);
 
   static Signal*              signal();
   static bool                 connect( const char*, QObject*, const char* );

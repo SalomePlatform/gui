@@ -122,7 +122,13 @@ nodist_libsuit_la_SOURCES = $(MOC_FILES)
 
 nodist_salomeres_DATA =			\
 	SUIT_msg_en.qm			\
-	SUIT_msg_fr.qm
+	SUIT_msg_fr.qm                  \
+	SUIT_images.qm
+		
+dist_salomeres_DATA =                     \
+	resources/icon_visibility_on.png  \
+	resources/icon_visibility_off.png
+				
 
 libsuit_la_CPPFLAGS = $(QT_INCLUDES) -I$(srcdir)/../Qtx -I$(srcdir)/../ObjBrowser
 

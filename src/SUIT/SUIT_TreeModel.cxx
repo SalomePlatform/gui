@@ -20,9 +20,12 @@
 // File:   SUIT_TreeModel.cxx
 // Author: Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 //
+#include "SUIT_Session.h"
 #include "SUIT_TreeModel.h"
 #include "SUIT_TreeSync.h"
 #include "SUIT_DataObject.h"
+#include "SUIT_ResourceMgr.h"
+
 
 #include <QApplication>
 #include <QHash>
@@ -501,6 +504,7 @@ void SUIT_TreeModel::registerColumn( const int group_id, const QString& name, co
         inf.myName = name;
         inf.myIds.insert( group_id, custom_id );
         inf.myAppropriate = Qtx::Shown;
+	inf.myHeaderFlags = Qtx::ShowAll;
         int n = myColumns.size();
         myColumns.resize( n+1 );
         myColumns[n] = inf;
@@ -615,6 +619,114 @@ Qtx::Appropriate SUIT_TreeModel::appropriate( const QString& name ) const
 
 
 /*!
+  \brief Set header flags.
+  
+  These flags allow show in the header of the column text (name of the column),
+  icon or both text and icon.
+  
+  \param name - column name
+  \param flags - header flags
+
+*/
+void SUIT_TreeModel::setHeaderFlags( const QString& name, const Qtx::HeaderViewFlags flags ) {
+  for( int i=0, n=myColumns.size(); i<n; i++ )
+    if( myColumns[i].myName==name && myColumns[i].myHeaderFlags != flags )
+    {
+      myColumns[i].myHeaderFlags = flags;
+      emit headerDataChanged( Qt::Horizontal, i, i );
+      break;
+    }
+}
+
+/*!
+  \brief Get the  header flags.
+  
+  These flags allow show in the header of the column text (name of the column),
+  icon or both text and icon.
+  
+  \param name - column name
+  \return header flags
+*/
+Qtx::HeaderViewFlags SUIT_TreeModel::headerFlags( const QString& name ) const {
+  Qtx::HeaderViewFlags flags;
+  for( int i=0, n=myColumns.size(); i<n; i++ )
+    if( myColumns[i].myName==name )
+      {
+	flags = myColumns[i].myHeaderFlags;
+	break;
+      }
+  return flags;
+}
+
+/*!
+  \brief Set visibility state of the object.
+  
+  \param id - column name
+  \param state - visible state
+*/
+void SUIT_TreeModel::setVisibilityState(const QString& id, Qtx::VisibilityState state) {
+  bool needSignal = false;
+  if(state != Qtx::UnpresentableState) {
+    myVisibilityMap.insert(id, state);
+    needSignal = true;
+  }
+  else {
+    int nb = myVisibilityMap.remove(id);
+    if(nb > 0)
+      needSignal = true;
+  }
+  if(needSignal) {
+    QModelIndexList lst = match(index(0,root()->customData(Qtx::IdType).toInt()), DisplayRole, id, 1, Qt::MatchExactly | Qt::MatchRecursive);
+    if(!lst.isEmpty()) {
+      QModelIndex idx = index(lst[0].row(), SUIT_DataObject::VisibilityId ,lst[0].parent());
+      emit dataChanged(idx,idx);
+    }
+  }
+}
+
+/*!
+  \brief Set visibility state for all objects.
+  
+  \param id - column name
+  \param state - visible state
+*/
+void SUIT_TreeModel::setVisibilityStateForAll(Qtx::VisibilityState state) {
+  if(state != Qtx::UnpresentableState) {
+    VisibilityMap::ConstIterator it = myVisibilityMap.begin();
+    while(it != myVisibilityMap.end() ) {
+      if(it.value() != state)
+	setVisibilityState(it.key(), state);
+      it++;
+    }
+  } else {
+    QList<QString> anIds = myVisibilityMap.keys();
+    myVisibilityMap.clear();
+    QList<QString>::ConstIterator it = anIds.begin();
+    while(it != anIds.end()){
+      QModelIndexList lst = match(index(0,root()->customData(Qtx::IdType).toInt()), DisplayRole, (*it), 1, Qt::MatchExactly | Qt::MatchRecursive);
+      if(!lst.isEmpty()) {
+	QModelIndex idx = index(lst[0].row(), SUIT_DataObject::VisibilityId ,lst[0].parent());
+	emit dataChanged(idx,idx);
+      }
+      it++;
+    }
+  }
+}
+
+/*!
+  \brief Get visibility state of the object.
+  
+  \param id - column name
+  \return visible state
+*/
+Qtx::VisibilityState SUIT_TreeModel::visibilityState(const QString& id) const {
+  if(myVisibilityMap.contains(id))
+    return myVisibilityMap.value(id);
+  else 
+    return Qtx::UnpresentableState;
+}
+
+/*!
   \brief Get data tree root object.
   \return data tree root
   \sa setRoot()
@@ -684,12 +796,24 @@ QVariant SUIT_TreeModel::data( const QModelIndex& index, int role ) const
         {
     case DisplayRole:
       // data object text for the specified column
-      val = obj->text( id ); 
+      val = obj->text( id );
       break;
-    case DecorationRole:
-      // data object icon for the specified column
-      val = obj->icon( id ); 
+    case DecorationRole: {
+      if(id == SUIT_DataObject::VisibilityId) {
+	int anId = obj->customData(Qtx::IdType).toInt(); 
+	QString objId = data(createIndex(index.row(),anId,index.internalPointer())).toString();
+	if(myVisibilityMap.contains(objId)) {
+	  SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();	  
+	  val  = (myVisibilityMap.value(objId) == Qtx::ShownState) ? 
+	    resMgr->loadPixmap( "SUIT", tr( "ICON_DATAOBJ_VISIBLE" )) : resMgr->loadPixmap( "SUIT", tr( "ICON_DATAOBJ_INVISIBLE" ));
+	} else {
+	  val = QIcon();
+	}
+      } else {
+	val = obj->icon( id );
+      }
       break;
+    }
     case ToolTipRole:
       // data object tooltip for the specified column
       val = obj->toolTip( id ); 
@@ -848,11 +972,19 @@ QVariant SUIT_TreeModel::headerData( int column, Qt::Orientation orientation, in
         {
     case DisplayRole:
       // column title
-      d = myColumns[column].myName;
+      if((myColumns[column].myHeaderFlags & Qtx::ShowText) || 
+	 (myColumns[column].myHeaderFlags == Qtx::ShowAll)) 
+	d = myColumns[column].myName;
+      else
+	d = QString();
       break;
     case DecorationRole:
       // column icon
-      d = myColumns[column].myIcon;
+      if((myColumns[column].myHeaderFlags & Qtx::ShowIcon) || 
+	 (myColumns[column].myHeaderFlags == Qtx::ShowAll)) 
+	d = myColumns[column].myIcon;
+      else
+	d = QIcon();      
       break;
     case AppropriateRole:
       // appropriate flag (can column be hidden via context popup menu)
@@ -926,8 +1058,10 @@ int SUIT_TreeModel::columnCount( const QModelIndex& /*parent*/ ) const
 */
 int SUIT_TreeModel::rowCount( const QModelIndex& parent ) const
 {
-  if ( parent.column() > 0 )
-    return 0;
+  // Commented by rnv in the frame of the 
+  // "20830: EDF 1357 GUI : Hide/Show Icon" imp
+  // if ( parent.column() > 0 )
+  // return 0;
 
   TreeItem* parentItem = treeItem( parent );
 
@@ -1079,6 +1213,19 @@ QAbstractItemDelegate* SUIT_TreeModel::delegate() const
   return new SUIT_ItemDelegate( const_cast<SUIT_TreeModel*>( this ) );
 }
 
+
+void SUIT_TreeModel::emitClicked( SUIT_DataObject* obj, const QModelIndex& index) {
+  int obj_group_id = obj->groupId();
+  const ColumnInfo& inf = myColumns[index.column()];
+
+  int id = -1;
+  if( inf.myIds.contains( 0 ) )
+    id = inf.myIds[0];
+  if( inf.myIds.contains( obj_group_id ) )
+    id = inf.myIds[obj_group_id];
+  emit clicked(obj, id);
+}
+
 /*!
   \brief Update tree model.
 
@@ -1209,6 +1356,14 @@ void SUIT_TreeModel::initialize()
     myRootItem = new TreeItem( 0 );
 
   registerColumn( 0, QObject::tr( "NAME_COLUMN" ), SUIT_DataObject::NameId );
+
+  QString visCol = QObject::tr( "VISIBILITY_COLUMN" );
+  registerColumn( 0, visCol, SUIT_DataObject::VisibilityId );
+
+  SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+  setColumnIcon( visCol, resMgr->loadPixmap( "SUIT", tr( "ICON_DATAOBJ_VISIBLE" ) ));
+  setHeaderFlags( visCol, Qtx::ShowIcon);
+
   updateTree();
 }
 
@@ -1434,6 +1589,7 @@ SUIT_ProxyModel::SUIT_ProxyModel( QObject* parent )
 {
   SUIT_TreeModel* model = new SUIT_TreeModel( this );
   connect( model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
+  connect( model, SIGNAL( clicked(SUIT_DataObject*, int) ), this, SIGNAL(clicked(SUIT_DataObject*, int) ) );
   setSourceModel( model );
   setDynamicSortFilter( true );
 }
@@ -1449,6 +1605,7 @@ SUIT_ProxyModel::SUIT_ProxyModel( SUIT_DataObject* root, QObject* parent )
 {
   SUIT_TreeModel* model = new SUIT_TreeModel( root, this );
   connect( model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
+  connect( model, SIGNAL( clicked(SUIT_DataObject*, int) ), this, SIGNAL(clicked(SUIT_DataObject*, int) ) );
   setSourceModel( model );
   setDynamicSortFilter( true );
 }
@@ -1463,6 +1620,7 @@ SUIT_ProxyModel::SUIT_ProxyModel( SUIT_AbstractModel* model, QObject* parent )
   mySortingEnabled( true )
 {
   connect( *model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
+  connect( *model, SIGNAL( clicked(SUIT_DataObject*, int) ), this, SIGNAL(clicked(SUIT_DataObject*, int) ) );
   setSourceModel( *model );
   setDynamicSortFilter( true );
 }
@@ -1784,10 +1942,70 @@ Qtx::Appropriate SUIT_ProxyModel::appropriate( const QString& name ) const
   return treeModel() ? treeModel()->appropriate( name ) : Qtx::Shown;
 }
 
+/*!
+  \brief Set header flags.
+  
+  These flags allow show in the header of the column text (name of the column),
+  icon or both text and icon.
+  
+  \param name - column name
+  \param flags - header flags
 
+*/
+void SUIT_ProxyModel::setHeaderFlags( const QString& name, const Qtx::HeaderViewFlags flags ) {
+  if(treeModel())
+    treeModel()->setHeaderFlags(name, flags);
+}
 
+/*!
+  \brief Get the  header flags.
+  
+  These flags allow show in the header of the column text (name of the column),
+  icon or both text and icon.
+  
+  \param name - column name
+  \return header flags
+*/
+Qtx::HeaderViewFlags SUIT_ProxyModel::headerFlags( const QString& name ) const {
+  return treeModel() ? treeModel()->headerFlags( name ) : Qtx::ShowAll;
+}
 
+/*!
+  \brief Set visibility state of the object.
+  
+  \param id - column name
+  \param state - visible state
+*/
+void SUIT_ProxyModel::setVisibilityState(const QString& id, Qtx::VisibilityState state) {
+  if(treeModel())
+    treeModel()->setVisibilityState(id,state);
+}
 
+/*!
+  \brief Set visibility state for all objects.
+  
+  \param id - column name
+  \param state - visible state
+*/
+void SUIT_ProxyModel::setVisibilityStateForAll(Qtx::VisibilityState state) {
+  if(treeModel())
+    treeModel()->setVisibilityStateForAll(state);
+}
+
+/*!
+  \brief Get visibility state of the object.
+  
+  \param id - column name
+  \return visible state
+*/
+Qtx::VisibilityState SUIT_ProxyModel::visibilityState(const QString& id) const {
+  return treeModel() ? treeModel()->visibilityState(id) : Qtx::UnpresentableState;
+}
+
+void SUIT_ProxyModel::emitClicked( SUIT_DataObject* obj, const QModelIndex& index) {
+  if(treeModel())
+    treeModel()->emitClicked(obj,index);
+}
 
 /*!
   \class SUIT_ItemDelegate
@@ -1839,7 +2057,7 @@ void SUIT_ItemDelegate::paint( QPainter* painter,
       opt.palette.setBrush( QPalette::Highlight, val.value<QColor>() );
     val = index.data( SUIT_TreeModel::HighlightedTextRole );
     if ( val.isValid() && val.value<QColor>().isValid() )
-      opt.palette.setBrush( QPalette::HighlightedText, val.value<QColor>() );
+      opt.palette.setBrush( QPalette::HighlightedText, val.value<QColor>() );      
   }
   QItemDelegate::paint( painter, opt, index );
 }

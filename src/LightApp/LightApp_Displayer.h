@@ -27,6 +27,8 @@
 
 #include <SALOME_Prs.h>
 
+#include <Qtx.h>
+
 class QString;
 
 /*!
@@ -41,9 +43,16 @@ public:
   virtual ~LightApp_Displayer();
 
   void Display( const QString&, const bool = true, SALOME_View* = 0 );
+  void Display( const QStringList&, const bool = true,
+                SALOME_View* = 0 );
+
   void Redisplay( const QString&, const bool = true );
+
+  void Erase( const QStringList&, const bool forced = false,
+              const bool updateViewer = true, SALOME_View* = 0);
   void Erase( const QString&, const bool forced = false, const bool updateViewer = true, SALOME_View* = 0 );
   void EraseAll( const bool forced = false, const bool updateViewer = true, SALOME_View* = 0 ) const;
+
   bool IsDisplayed( const QString&, SALOME_View* = 0 ) const;
   void UpdateViewer() const;
 
@@ -52,6 +61,8 @@ public:
 
   virtual bool canBeDisplayed( const QString& /*entry*/, const QString& /*viewer_type*/ ) const;
           bool canBeDisplayed( const QString& /*entry*/ ) const;
+	  
+	  void setVisibilityState (const QString& entry, Qtx::VisibilityState) const;
 
 protected:
   virtual SALOME_Prs* buildPresentation( const QString&, SALOME_View* = 0 );

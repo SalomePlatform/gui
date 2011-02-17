@@ -28,7 +28,9 @@
 #endif
 
 #include "SVTK.h"
-#include "SALOME_InteractiveObject.hxx"
+
+#include <SALOME_InteractiveObject.hxx>
+#include <SALOME_ListIO.hxx>
 
 #include <QObject>
 
@@ -243,6 +245,10 @@ public:
   void
   Remove(SALOME_Actor* SActor, 
          bool updateViewer = true);
+
+  //! Collect objects visible in viewer
+  void
+  GetVisible( SALOME_ListIO& theList );
 
   //----------------------------------------------------------------------------
   //! Redirect the request to #SVTK_Renderer::SetPreselectionProp

@@ -39,7 +39,7 @@ class LIGHTAPP_EXPORT LightApp_DataObject : public virtual CAM_DataObject
 public:
   //! Column id
   enum { 
-    EntryId = NameId + 1    //!< entry column
+    EntryId = VisibilityId + 1    //!< entry column
   };
 
 public:
@@ -57,6 +57,7 @@ public:
   virtual bool                    customSorting( const int = NameId ) const;
   virtual bool                    compare( const QVariant&, const QVariant&, const int = NameId ) const;
   virtual int                     groupId() const;
+  virtual QVariant                customData(Qtx::CustomDataType type);
 
   virtual bool                    isVisible() const;
 

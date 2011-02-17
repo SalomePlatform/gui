@@ -654,6 +654,21 @@ bool SVTK_Viewer::isVisible( const Handle(SALOME_InteractiveObject)& io )
 }
 
 /*!
+  \Collect objects visible in viewer
+  \param theList - visible objects collection
+*/
+void SVTK_Viewer::GetVisible( SALOME_ListIO& theList )
+{
+  // here we collect object if it is disaplaed even one view
+  QVector<SUIT_ViewWindow*> aViews = myViewManager->getViews();
+  for(int i = 0, iEnd = aViews.size(); i < iEnd; i++)
+    if(SUIT_ViewWindow* aViewWindow = aViews.at(i))
+      if(TViewWindow* aViewWnd = dynamic_cast<TViewWindow*>(aViewWindow))
+        if(SVTK_View* aView = aViewWnd->getView())
+          aView->GetVisible( theList );
+}
+
+/*!
   Updates current viewer
 */
 void SVTK_Viewer::Repaint()

@@ -714,3 +714,14 @@ SVTK_View
   return QColor(0,0,0);
 }
 
+/*!
+  \Collect objects visible in viewer
+  \param theList - visible objects collection
+*/
+void SVTK_View::GetVisible( SALOME_ListIO& theList )
+{
+  using namespace SVTK;
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  ForEach<SALOME_Actor>(aCopy.GetActors(),
+                        TCollectIfVisible<SALOME_Actor>(theList));
+}

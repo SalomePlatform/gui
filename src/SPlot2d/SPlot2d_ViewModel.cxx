@@ -272,14 +272,20 @@ void SPlot2d_Viewer::Erase( const SALOME_Prs2d* prs, const bool )
 SALOME_Prs* SPlot2d_Viewer::CreatePrs( const char* entry )
 {
   Plot2d_ViewFrame* aViewFrame = getActiveViewFrame();
+  SPlot2d_Prs *prs = new SPlot2d_Prs();
   if(aViewFrame)
   {
-    Plot2d_Prs* prs = aViewFrame->CreatePrs(entry);
-    if( prs )
-      return new SPlot2d_Prs( prs );
+    CurveDict aCurves = aViewFrame->getCurves();
+    CurveDict::Iterator it = aCurves.begin();
+    for( ; it != aCurves.end(); ++it ) {
+      SPlot2d_Curve* aCurve = dynamic_cast<SPlot2d_Curve*>(it.value()); 
+      if ( aCurve && aCurve->hasIO() && !strcmp( aCurve->getIO()->getEntry(), entry ) ) {
+	prs->AddObject(aCurve);
+	break;
+      }
+    }  
   }
-
-  return NULL;
+  return prs;
 }
 
 /*!
@@ -308,6 +314,23 @@ bool SPlot2d_Viewer::isVisible( const Handle(SALOME_InteractiveObject)& IObject 
 
   SPlot2d_Curve* curve = getCurveByIO( IObject );
   return aViewFrame->isVisible( curve );
+}
+
+/*!
+  \Collect objects visible in viewer
+  \param theList - visible objects collection
+*/
+void SPlot2d_Viewer::GetVisible( SALOME_ListIO& theList )
+{
+  Plot2d_ViewFrame* aViewFrame = getActiveViewFrame();
+  if(aViewFrame == NULL) return;
+  CurveDict aCurves = aViewFrame->getCurves();
+  CurveDict::Iterator it = aCurves.begin();
+  for( ; it != aCurves.end(); ++it ) {
+    SPlot2d_Curve* aCurve = dynamic_cast<SPlot2d_Curve*>(it.value()); 
+    if ( aCurve && aCurve->hasIO() && aViewFrame->isVisible( aCurve ) )
+      theList.Append( aCurve->getIO() );
+  }
 }
 
 /*!

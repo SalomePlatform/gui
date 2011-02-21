@@ -208,7 +208,8 @@ bool CAF_Application::undo( CAF_Study* doc )
   bool success = false;
   if ( doc )
   {
-    if ( success = doc->undo() )
+    success = doc->undo();
+    if ( success )
       doc->update();
   }
   return success;
@@ -224,7 +225,8 @@ bool CAF_Application::redo(CAF_Study* doc)
   bool success = false;
   if ( doc )
   {
-    if ( success = doc->redo() )
+    success = doc->redo();
+    if ( success )
       doc->update();
   }
   return success;

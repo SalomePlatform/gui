@@ -56,7 +56,8 @@ bool LightApp_EventFilter::eventFilter( QObject* o, QEvent* e )
       
       while( parent )
         {
-          if ( aDesktop = dynamic_cast<SUIT_Desktop*>(parent) )
+          aDesktop = dynamic_cast<SUIT_Desktop*>(parent);
+          if ( aDesktop )
             break;
           parent = parent->parentWidget();
         }

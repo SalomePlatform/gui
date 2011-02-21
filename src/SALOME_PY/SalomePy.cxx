@@ -107,10 +107,13 @@ static PyObject* GetPyClass( const char* theClassName )
   static PyObject* aVTKModule = 0;
   PyObject* aPyClass = 0;
   if( !aVTKModule ) {
-    if ( VTK_MAJOR_VERSION > 3 )
-      aVTKModule = PyImport_ImportModule( "vtk.libvtkRenderingPython" ); 
-    else
-      aVTKModule = PyImport_ImportModule( "libVTKGraphicsPython" ); 
+#if VTK_XVERSION < 30000
+    aVTKModule = PyImport_ImportModule( "libVTKGraphicsPython" ); 
+#elif VTK_XVERSION < 50700
+    aVTKModule = PyImport_ImportModule( "vtk.libvtkRenderingPython" ); 
+#else
+    aVTKModule = PyImport_ImportModule( "vtkRenderingPython" ); 
+#endif
     if( PyErr_Occurred() ) {
       PyErr_Print();
     }

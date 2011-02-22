@@ -984,8 +984,8 @@ void SalomeApp_Application::createPreferences( LightApp_Preferences* pref )
   int defCols = pref->addPreference( tr( "PREF_GROUP_DEF_COLUMNS" ), obTab );
   for ( int i = SalomeApp_DataObject::EntryId; i <= SalomeApp_DataObject::RefEntryId; i++ )
   {
-    pref->addPreference( tr( QString().sprintf( "OBJ_BROWSER_COLUMN_%d", i-1 ).toLatin1() ), defCols,
-                         LightApp_Preferences::Bool, "ObjectBrowser", QString().sprintf( "visibility_column_id_%d", i ) );
+    pref->addPreference( tr( QString().sprintf( "OBJ_BROWSER_COLUMN_%d", i-SalomeApp_DataObject::EntryId ).toLatin1() ), defCols,
+                         LightApp_Preferences::Bool, "ObjectBrowser", QString().sprintf( "visibility_column_id_%d", i-1 ) );
   }
   pref->setItemProperty( "orientation", Qt::Vertical, defCols );
 
@@ -1626,7 +1626,7 @@ void SalomeApp_Application::objectBrowserColumnsVisibility()
   if ( objectBrowser() )
     for ( int i = SalomeApp_DataObject::EntryId; i <= SalomeApp_DataObject::RefEntryId; i++ )
     {
-      bool shown = resourceMgr()->booleanValue( "ObjectBrowser", QString( "visibility_column_id_%1" ).arg( i ), true );
+      bool shown = resourceMgr()->booleanValue( "ObjectBrowser", QString( "visibility_column_id_%1" ).arg( i-1 ), true );
       objectBrowser()->treeView()->setColumnHidden( i, !shown );
     }
 }

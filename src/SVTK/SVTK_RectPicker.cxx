@@ -116,7 +116,7 @@ namespace
     // and handle the transformation ourselves.
     vtkMatrix4x4 *aMatrix = vtkMatrix4x4::New();
     aMatrix->DeepCopy( theRenderer->GetActiveCamera()->
-                       GetCompositePerspectiveTransformMatrix( theRenderer->GetTiledAspectRatio(), 0, 1 ) );
+                       GetCompositeProjectionTransformMatrix( theRenderer->GetTiledAspectRatio(), 0, 1 ) );
 
     // We grab the z-buffer for the selection region all at once and probe the resulting array.
     float *aZPtr = theRenderer->GetRenderWindow()->
@@ -261,7 +261,7 @@ namespace
     // and handle the transformation ourselves.
     vtkMatrix4x4 *aMatrix = vtkMatrix4x4::New();
     aMatrix->DeepCopy(theRenderer->GetActiveCamera()->
-                      GetCompositePerspectiveTransformMatrix( theRenderer->GetTiledAspectRatio(), 0, 1 ) );
+                      GetCompositeProjectionTransformMatrix( theRenderer->GetTiledAspectRatio(), 0, 1 ) );
 
     for(vtkIdType aCellId = 0; aCellId < aNumCells; aCellId++){
       vtkCell* aCell = theInput->GetCell(aCellId);
@@ -496,4 +496,3 @@ SVTK_RectPicker
 {
   return myCellIdsMap;
 }
-

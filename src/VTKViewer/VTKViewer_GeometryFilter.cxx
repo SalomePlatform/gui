@@ -20,7 +20,6 @@
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-//  SALOME OBJECT : kernel of SALOME component
 //  File   : VTKViewer_GeometryFilter.cxx
 //  Author : Michael ZORIN
 //  Module : SALOME
@@ -499,7 +498,7 @@ VTKViewer_GeometryFilter
                 numFacePts = ptIds[idp];
                 //MESSAGE("numFacePts="<< numFacePts);
                 int pt0 = ++idp;
-                for (int i = 0; i < numFacePts; i++)
+                for (i = 0; i < numFacePts; i++)
                   {
                     //MESSAGE("ptIds[" << idp + i << "]=" << ptIds[idp + i]);
                     faceIds->InsertNextId(ptIds[idp + i]);

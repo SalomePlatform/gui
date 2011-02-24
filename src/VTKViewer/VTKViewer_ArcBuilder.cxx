@@ -149,7 +149,7 @@ double Vec::AngleBetween(const Vec & Other)
  * Calculate angle between vectors in degrees
  */
 double Vec::AngleBetweenInGrad(const Vec & Other){
-  return AngleBetween(Other)*vtkMath::DoubleRadiansToDegrees();
+  return AngleBetween(Other)*vtkMath::DegreesFromRadians(1.);
 }
 
 /*
@@ -468,7 +468,7 @@ vtkUnstructuredGrid* VTKViewer_ArcBuilder::BuildArc(std::vector<double>& theScal
   double angle3 = GetPointAngleOnCircle(xCenter,yCenter,x3,y3);
   
   
-  double aMaxAngle = vtkMath::DoubleDegreesToRadians()*myAngle*2;   
+  double aMaxAngle = vtkMath::RadiansFromDegrees(1.)*myAngle*2;
   
   /*  double aTotalAngle =  fabs(angle3 - angle1);
   

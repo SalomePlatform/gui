@@ -384,6 +384,21 @@ bool SALOME_PYQT_ModuleLight::activateModule( SUIT_Study* theStudy )
   if ( !res )
     return res;
 
+  // internal activation
+  return activateModuleInternal( theStudy );
+}
+
+/*!
+  \brief Perform internal activation of the module.
+
+  The only goal of this function is to extract common functionality
+  for LightApp_Module and SalomeApp_module classes requried by the
+  specific architecture aspects of "light" / "full" SALOME modes.
+
+  \sa activateModule()
+*/
+bool SALOME_PYQT_ModuleLight::activateModuleInternal( SUIT_Study* theStudy )
+{
   // reset the activation status to the default value
   myLastActivateStatus = true;
 

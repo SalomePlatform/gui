@@ -165,6 +165,7 @@ public slots:
 protected:
   /* create data model */
   virtual CAM_DataModel*     createDataModel();
+  virtual bool               activateModuleInternal( SUIT_Study* );
 
 private:
   void                       init( CAM_Application* );

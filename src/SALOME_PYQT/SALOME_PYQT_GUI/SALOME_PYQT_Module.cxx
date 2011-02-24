@@ -148,6 +148,14 @@ QString SALOME_PYQT_Module::engineIOR() const
  */
 bool SALOME_PYQT_Module::activateModule( SUIT_Study* theStudy )
 {
+  // call base implementation
+  bool res = SalomeApp_Module::activateModule( theStudy );
+
+  if ( !res )
+    return res;
+
+  // internal activation
+  return activateModuleInternal( theStudy );
 }
 
 /*!

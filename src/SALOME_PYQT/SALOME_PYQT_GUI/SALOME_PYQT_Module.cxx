@@ -146,9 +146,8 @@ QString SALOME_PYQT_Module::engineIOR() const
 /*!
  * Redefined to invokec correct version
  */
-bool SALOME_PYQT_Module::activateModule( SUIT_Study* study )
+bool SALOME_PYQT_Module::activateModule( SUIT_Study* theStudy )
 {
-  return SalomeApp_Module::activateModule( study );
 }
 
 /*!

@@ -2594,8 +2594,14 @@ void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
   if ( pref.isEmpty() && lang != "en" ) {
     // load Qt resources
     QString qt_translations = QLibraryInfo::location( QLibraryInfo::TranslationsPath );
+    QString qt_dir_trpath;
+    if ( ::getenv( "QTDIR" ) )
+      qt_dir_trpath = QString( ::getenv( "QTDIR" ) );
+    if ( !qt_dir_trpath.isEmpty() )
+      qt_dir_trpath = QDir( qt_dir_trpath ).absoluteFilePath( "translations" );
+
     QTranslator* trans = new QtxTranslator( 0 );
-    if ( trans->load( QString("qt_%1").arg( lang ), qt_translations ) )
+    if ( trans->load( QString("qt_%1").arg( lang ), qt_translations ) || trans->load( QString("qt_%1").arg( lang ), qt_dir_trpath ) )
       QApplication::instance()->installTranslator( trans );
   }
 

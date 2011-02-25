@@ -1500,10 +1500,12 @@ void SUIT_TreeModel::updateItem( SUIT_TreeModel::TreeItem* item )
     return;
   
   // update all columns corresponding to the given data object
+  emit layoutAboutToBeChanged();
   QModelIndex firstIdx = index( obj, 0 );
   QModelIndex lastIdx  = index( obj, columnCount() - 1 );
   emit dataChanged( firstIdx, lastIdx );
   obj->setModified(false);
+  emit layoutChanged();
 }
 
 /*!
@@ -1854,7 +1856,8 @@ SUIT_AbstractModel* SUIT_ProxyModel::treeModel() const
 bool SUIT_ProxyModel::filterAcceptsRow( int sourceRow, const QModelIndex& sourceParent ) const
 {
   SUIT_DataObject* o = treeModel()->object( sourceModel()->index( sourceRow, 0, sourceParent ) );
-  return o && o->isVisible();
+  SUIT_DataObject* p = o ? o->parent() : 0;
+  return ( !p || p->expandable() ) && o && o->isVisible();
 }
 
 /*!

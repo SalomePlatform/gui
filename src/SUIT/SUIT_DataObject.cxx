@@ -546,6 +546,11 @@ int SUIT_DataObject::alignment( const int /*id*/ ) const
   return Qt::AlignLeft;
 }
 
+bool SUIT_DataObject::expandable() const
+{
+  return true;
+}
+
 /*!
   \brief Check if the object is visible.
 

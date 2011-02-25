@@ -386,7 +386,7 @@ bool SalomeApp_DataObject::expandable() const
 {
   bool exp = true;
   _PTR(GenericAttribute) anAttr;
-  if ( myObject->FindAttribute( anAttr, "AttributeExpandable" ) ) {
+  if ( myObject && myObject->FindAttribute( anAttr, "AttributeExpandable" ) ) {
     _PTR(AttributeExpandable) aAttrExp = anAttr;
     exp = aAttrExp->IsExpandable();
   }

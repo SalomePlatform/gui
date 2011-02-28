@@ -19,10 +19,9 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-
 // File   : SalomeApp_DataObject.cxx
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
-//
+
 #include "SalomeApp_DataObject.h"
 #include "SalomeApp_Study.h"
 #include "SalomeApp_Application.h"
@@ -270,7 +269,7 @@ QString SalomeApp_DataObject::toolTip( const int /*id*/ ) const
       //     with any container name, on every machine available
       Engines::MachineParameters params;
       app->lcc()->preSet(params); // --- any container name, anywhere
-      Engines::Component_var aComponent =
+      Engines::EngineComponent_var aComponent =
         app->lcc()->FindComponent(params, componentDataType().toLatin1().constData() );
       
       if ( !CORBA::is_nil(aComponent) && aComponent->hasObjectInfo() ) {

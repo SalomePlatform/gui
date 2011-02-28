@@ -19,10 +19,9 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-
 // File   : SALOME_PYQT_Module.cxx
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
-//
+
 #include <PyInterp_Dispatcher.h>
 
 #include "SALOME_PYQT_Module.h"
@@ -101,9 +100,9 @@ SALOME_PYQT_Module::~SALOME_PYQT_Module()
 /*!
  * Get module engine, returns nil var if engine is not found in LifeCycleCORBA
  */
-Engines::Component_var SALOME_PYQT_Module::getEngine() const
+Engines::EngineComponent_var SALOME_PYQT_Module::getEngine() const
 {
-  Engines::Component_var comp;
+  Engines::EngineComponent_var comp;
   // temporary solution
   try {
     comp = getApp()->lcc()->FindOrLoad_Component( "FactoryServerPy", name().toLatin1() );

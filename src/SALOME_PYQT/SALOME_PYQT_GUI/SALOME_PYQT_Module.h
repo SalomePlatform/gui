@@ -19,10 +19,9 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-
 // File   : SALOME_PYQT_Module.h
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
-//
+
 #ifndef SALOME_PYQT_MODULE_H
 #define SALOME_PYQT_MODULE_H
 
@@ -62,7 +61,7 @@ protected:
   /* create data model */
   virtual CAM_DataModel*     createDataModel();
 
-  Engines::Component_var     getEngine() const;
+  Engines::EngineComponent_var getEngine() const;
 
 private:
   void                       getEngineIOR();

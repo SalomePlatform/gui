@@ -19,13 +19,11 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-
 //  SALOME Session : implementation of Session.idl
 //  File   : SALOME_Session_i.cxx
 //  Author : Paul RASCLE, EDF
 //  Module : SALOME
-//  $Header$
-//
+
 #include "utilities.h"
 
 #include "Session_Session_i.hxx"
@@ -78,16 +76,16 @@ SALOME_Session_i::SALOME_Session_i(int argc,
 /*!
   returns Visu component
 */
-Engines::Component_ptr SALOME_Session_i::GetComponent(const char* theLibraryName)
+Engines::EngineComponent_ptr SALOME_Session_i::GetComponent(const char* theLibraryName)
 {
-  typedef Engines::Component_ptr TGetImpl(CORBA::ORB_ptr,
-                                          PortableServer::POA_ptr,
-                                          SALOME_NamingService*,QMutex*);
+  typedef Engines::EngineComponent_ptr TGetImpl(CORBA::ORB_ptr,
+                                                PortableServer::POA_ptr,
+                                                SALOME_NamingService*,QMutex*);
   OSD_SharedLibrary  aSharedLibrary(const_cast<char*>(theLibraryName));
   if(aSharedLibrary.DlOpen(OSD_RTLD_LAZY))
     if(OSD_Function anOSDFun = aSharedLibrary.DlSymb("GetImpl"))
       return ((TGetImpl (*)) anOSDFun)(_orb,_poa,_NS,_GUIMutex);
-  return Engines::Component::_nil();
+  return Engines::EngineComponent::_nil();
 }
 
 /*!

@@ -19,13 +19,11 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-
 //  SALOME Session : implementation of Session.idl
 //  File   : Session_Session_i.hxx
 //  Author : Paul RASCLE, EDF
 //  Module : SALOME
-//  $Header$
-//
+
 #ifndef _SESSION_SESSION_I_HXX_
 #define _SESSION_SESSION_I_HXX_
 
@@ -55,7 +53,7 @@ public:
   void GetInterface();
 
   //! Return VISU component
-  Engines::Component_ptr GetComponent(const char* theLibraryName);
+  Engines::EngineComponent_ptr GetComponent(const char* theLibraryName);
 
   //! Stop the Session (must be idle): kill servant & server
   void StopSession();
@@ -95,4 +93,3 @@ protected:
 };
 
 #endif
-

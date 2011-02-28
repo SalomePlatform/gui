@@ -665,6 +665,9 @@ Qtx::HeaderViewFlags SUIT_TreeModel::headerFlags( const QString& name ) const {
   \param state - visible state
 */
 void SUIT_TreeModel::setVisibilityState(const QString& id, Qtx::VisibilityState state) {
+  if(myVisibilityMap.contains(id) && myVisibilityMap.value(id) == state)
+    return;
+  
   bool needSignal = false;
   if(state != Qtx::UnpresentableState) {
     myVisibilityMap.insert(id, state);

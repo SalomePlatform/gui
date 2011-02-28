@@ -53,7 +53,7 @@ public:
   void Erase( const QString&, const bool forced = false, const bool updateViewer = true, SALOME_View* = 0 );
   void EraseAll( const bool forced = false, const bool updateViewer = true, SALOME_View* = 0 ) const;
 
-  bool IsDisplayed( const QString&, SALOME_View* = 0 ) const;
+  virtual bool IsDisplayed( const QString&, SALOME_View* = 0 ) const;
   void UpdateViewer() const;
 
   static SALOME_View*        GetActiveView();
@@ -66,6 +66,8 @@ public:
 
 protected:
   virtual SALOME_Prs* buildPresentation( const QString&, SALOME_View* = 0 );
+protected:
+  QString myLastEntry; 
 };
 
 #endif

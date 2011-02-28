@@ -86,6 +86,7 @@ void LightApp_Displayer::Display( const QStringList& list, const bool updateView
 
       if ( vf )
       {
+	myLastEntry = *it;
         vf->BeforeDisplay( this );
         vf->Display( prs );
         vf->AfterDisplay( this );
@@ -171,7 +172,10 @@ void LightApp_Displayer::Erase( const QStringList& list, const bool forced,
   {
     SALOME_Prs* prs = vf->CreatePrs( (*it).toLatin1().data() );
     if ( prs ) {
+      myLastEntry = *it;
+      vf->BeforeErase(this);
       vf->Erase( prs, forced );
+      vf->AfterErase(this);
       if ( updateViewer )
         vf->Repaint();
       delete prs;  // delete presentation because displayer is its owner

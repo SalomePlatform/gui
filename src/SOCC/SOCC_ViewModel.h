@@ -62,6 +62,10 @@ public:
   virtual SALOME_Prs*         CreatePrs( const char* entry = 0 );
   virtual void                BeforeDisplay( SALOME_Displayer* d );
   virtual void                AfterDisplay ( SALOME_Displayer* d );
+
+  virtual void                BeforeErase( SALOME_Displayer* d );
+  virtual void                AfterErase ( SALOME_Displayer* d );
+
   virtual void                LocalSelection( const SALOME_OCCPrs*, const int );
   virtual void                GlobalSelection( const bool = false ) const;
   virtual bool                isVisible( const Handle(SALOME_InteractiveObject)& );

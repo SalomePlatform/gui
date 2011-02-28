@@ -278,12 +278,18 @@ SALOME_Prs* SPlot2d_Viewer::CreatePrs( const char* entry )
     CurveDict aCurves = aViewFrame->getCurves();
     CurveDict::Iterator it = aCurves.begin();
     for( ; it != aCurves.end(); ++it ) {
-      SPlot2d_Curve* aCurve = dynamic_cast<SPlot2d_Curve*>(it.value()); 
-      if ( aCurve && aCurve->hasIO() && !strcmp( aCurve->getIO()->getEntry(), entry ) ) {
-	prs->AddObject(aCurve);
-	break;
-      }
-    }  
+      SPlot2d_Curve* aCurve = dynamic_cast<SPlot2d_Curve*>(it.value());
+      OwnerSet owners = aCurve->getOwners();
+      if(aCurve) {
+	if ( 
+	    (aCurve->hasIO() && !strcmp( aCurve->getIO()->getEntry(), entry )) ||
+	    (aCurve->hasTableIO() && !strcmp( aCurve->getTableIO()->getEntry(), entry )) ||
+	    owners.contains(entry)
+	    ) {
+	  prs->AddObject(aCurve);
+	}
+      }      
+    }
   }
   return prs;
 }
@@ -302,6 +308,22 @@ void  SPlot2d_Viewer::BeforeDisplay( SALOME_Displayer* d )
 void  SPlot2d_Viewer::AfterDisplay( SALOME_Displayer* d )
 {
   d->AfterDisplay( this, SALOME_Plot2dViewType() );
+}
+
+/*!
+  Axiluary method called before erasing of objects
+*/
+void  SPlot2d_Viewer::BeforeErase( SALOME_Displayer* d )
+{
+  d->BeforeErase( this, SALOME_Plot2dViewType() );
+}
+
+/*!
+  Axiluary method called after erasing of objects
+*/
+void  SPlot2d_Viewer::AfterErase( SALOME_Displayer* d )
+{
+  d->AfterErase( this, SALOME_Plot2dViewType() );
 }
 
 /*!

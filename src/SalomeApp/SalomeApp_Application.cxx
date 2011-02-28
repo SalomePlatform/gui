@@ -1756,50 +1756,34 @@ void SalomeApp_Application::onWindowActivated( SUIT_ViewWindow* theViewWindow ) 
   Update visibility state of given objects
  */
 void SalomeApp_Application::updateVisibilityState( DataObjectList& theList,
-                                                   SUIT_ViewModel*  theViewModel )
-{
+                                                   SUIT_ViewModel*  theViewModel ) {
   LightApp_Study* aStudy = dynamic_cast<LightApp_Study*>(activeStudy());
 
   if(!theViewModel)
     return;
   
   SALOME_View* aView = dynamic_cast<SALOME_View*>( theViewModel );
-
+  
   if (theList.isEmpty() || !aView || !aStudy)
     return;
-
-  // take visibale objects from current view
-  QStringList aVisibleList;  
-  SALOME_ListIO aListOfIO;
-  aView->GetVisible( aListOfIO );
-  SALOME_ListIteratorOfListIO anIter(aListOfIO);
-  for(; anIter.More(); anIter.Next()) {
-    Handle_SALOME_InteractiveObject& anObj = anIter.Value();
-    if (!anObj.IsNull() && anObj->hasEntry())
-      aVisibleList.append(anObj->getEntry());
-  }
-
-  for ( DataObjectList::iterator itr = theList.begin(); itr != theList.end(); ++itr )
-  {
+  
+  for ( DataObjectList::iterator itr = theList.begin(); itr != theList.end(); ++itr ) {
     LightApp_DataObject* obj = dynamic_cast<LightApp_DataObject*>(*itr);
-    if (!obj ) continue;
-
-    //if object is visible in aView => set Qtx::ShownState status 
-    if ( aVisibleList.contains( obj->entry() ) )
-      aStudy->setVisibilityState( obj->entry(), Qtx::ShownState );
-    else {
-      //check that object can be displayed in the aView 
-      //and set Qtx::HiddenState 
-      Qtx::VisibilityState anObjState = Qtx::UnpresentableState;
-      LightApp_Module* anObjModule = dynamic_cast<LightApp_Module*>(obj->module());
-      
-      if(anObjModule) {
-	LightApp_Displayer* aDisplayer = anObjModule->displayer();
-	
-	if(aDisplayer && !aStudy->isComponent(obj->entry())) {
-	  if(aDisplayer->canBeDisplayed(obj->entry(), theViewModel->getType())) {
+    
+    if (aStudy->isComponent(obj->entry()) || !obj) 
+      continue;
+    
+    LightApp_Module* anObjModule = dynamic_cast<LightApp_Module*>(obj->module());
+    Qtx::VisibilityState anObjState = Qtx::UnpresentableState;
+    
+    if(anObjModule) {
+      LightApp_Displayer* aDisplayer = anObjModule->displayer();      
+      if(aDisplayer) {
+	if( aDisplayer->canBeDisplayed(obj->entry(), theViewModel->getType()) ) {
+	  if(aDisplayer->IsDisplayed(obj->entry(),aView))
+	    anObjState = Qtx::ShownState;
+	  else
 	    anObjState = Qtx::HiddenState;
-	  }	  
 	}
       }
       aStudy->setVisibilityState( obj->entry(), anObjState );

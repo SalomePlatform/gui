@@ -120,3 +120,37 @@ QString SPlot2d_Curve::getTableTitle() const
     title = getTableIO()->getName();
   return title;
 }
+
+/*!
+  Add owner of the curve.
+  \param owner  - owner of the curve
+*/
+void SPlot2d_Curve::addOwner(const QString& owner) {
+  myOwners.insert(owner);
+}
+
+/*!
+  Remove owner of the curve.
+  \param owner  - owner of the curve
+*/
+void SPlot2d_Curve::removeOwner(const QString& owner) {
+  myOwners.insert(owner);
+}
+
+/*!
+  Get all owners of the curve.
+  \return owners of the curve.
+*/
+OwnerSet SPlot2d_Curve::getOwners() const {
+  return myOwners;
+}
+
+
+/*!
+  Add owners of the curve.
+  \param owners  - owners of the curve
+*/
+void SPlot2d_Curve::addOwners(OwnerSet& owners) {
+  myOwners = myOwners|=owners;
+}
+

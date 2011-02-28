@@ -635,6 +635,23 @@ void SOCC_Viewer::AfterDisplay( SALOME_Displayer* d )
   d->AfterDisplay( this, SALOME_OCCViewType() );
 }
 
+
+/*!
+  Auxiliary method called before erasing of objects
+*/
+void  SOCC_Viewer::BeforeErase( SALOME_Displayer* d )
+{
+  d->BeforeErase( this, SALOME_OCCViewType() );
+}
+
+/*!
+  Auxiliary method called after erase of objects
+*/
+void SOCC_Viewer::AfterErase( SALOME_Displayer* d )
+{
+  d->AfterErase( this, SALOME_OCCViewType() );
+}
+
 /*!
   Get new and current trihedron size corresponding to the current model size
 */

@@ -73,6 +73,10 @@ public:
   virtual SALOME_Prs*  CreatePrs( const char* entry = 0 );
   virtual void         BeforeDisplay( SALOME_Displayer* d );
   virtual void         AfterDisplay ( SALOME_Displayer* d );
+
+  virtual void         BeforeErase( SALOME_Displayer* d );
+  virtual void         AfterErase ( SALOME_Displayer* d );
+
   virtual bool         isVisible( const Handle(SALOME_InteractiveObject)& IObject );
   virtual void         GetVisible( SALOME_ListIO& theList );
 

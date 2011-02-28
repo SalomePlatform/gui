@@ -636,6 +636,24 @@ void SVTK_Viewer::AfterDisplay( SALOME_Displayer* d )
   d->AfterDisplay( this, SALOME_VTKViewType() );
 }
 
+
+/*!
+  Auxiliary method called before erasing of objects
+*/
+void SVTK_Viewer::BeforeErase( SALOME_Displayer* d )
+{
+  d->BeforeErase( this, SALOME_VTKViewType() );
+}
+
+/*!
+  Auxiliary method called after displaying of objects
+*/
+void SVTK_Viewer::AfterErase( SALOME_Displayer* d )
+{
+  d->AfterErase( this, SALOME_VTKViewType() );
+}
+
+
 /*!
   \return true if object is displayed in viewer
   \param obj - object to be checked

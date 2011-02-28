@@ -150,6 +150,12 @@ public:
   //! See #SALOME_View::AfterDisplay( SALOME_Displayer* d )
   virtual void AfterDisplay( SALOME_Displayer* d );
 
+  //! See #SALOME_View::BeforeDisplay( SALOME_Displayer* d )
+  virtual void BeforeErase( SALOME_Displayer* d );
+
+  //! See #SALOME_View::AfterDisplay( SALOME_Displayer* d )
+  virtual void AfterErase( SALOME_Displayer* d );	  
+
   //! See #SALOME_View::isVisible( const Handle(SALOME_InteractiveObject)& )
   virtual bool isVisible( const Handle(SALOME_InteractiveObject)& );
 

@@ -28,10 +28,15 @@
 #include "SPlot2d.h"  
 #include "Plot2d_Curve.h"
 
+
+#include <QSet>
+
 #ifndef _Handle_SALOME_InteractiveObject_HeaderFile
 #include <Handle_SALOME_InteractiveObject.hxx>
 #endif
 #include "SALOME_InteractiveObject.hxx"
+
+typedef QSet<QString> OwnerSet;
 
 class SPLOT2D_EXPORT SPlot2d_Curve : public Plot2d_Curve
 {
@@ -52,9 +57,15 @@ public:
   virtual Handle(SALOME_InteractiveObject) getTableIO() const;
   virtual void                             setTableIO( const Handle(SALOME_InteractiveObject)& );
   
+  virtual void                             addOwner(const QString& owner);
+  virtual void                             removeOwner(const QString& owner);
+  virtual OwnerSet                         getOwners() const;
+  virtual void                             addOwners (OwnerSet& owners);
+  
 private:
   Handle(SALOME_InteractiveObject) myIO;
   Handle(SALOME_InteractiveObject) myTableIO;
+  OwnerSet                         myOwners;
 };
 
 #endif // SPlot2d_Curve_h

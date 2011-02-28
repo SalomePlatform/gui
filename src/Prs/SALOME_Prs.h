@@ -196,6 +196,11 @@ public:
   virtual void BeforeDisplay( SALOME_Displayer* ) {} //!< Null body here
   virtual void AfterDisplay ( SALOME_Displayer* ) {} //!< Null body here
 
+  // Axiluary methods called before and after erasing of objects
+  virtual void BeforeErase( SALOME_Displayer* ) {} //!< Null body here
+  virtual void AfterErase ( SALOME_Displayer* ) {} //!< Null body here
+
+
   // New methods (asv)
   //! \retval Return false.
   virtual bool isVisible( const Handle_SALOME_InteractiveObject& ){ return false; }
@@ -241,6 +246,15 @@ public:
   virtual void AfterDisplay ( SALOME_View*, const SALOME_VTKViewType&    ){/*! Null body here*/};
   virtual void BeforeDisplay( SALOME_View*, const SALOME_Plot2dViewType& ){/*! Null body here*/};
   virtual void AfterDisplay ( SALOME_View*, const SALOME_Plot2dViewType& ){/*! Null body here*/};
+
+  // Axiluary methods called before and after erasing of objects
+  virtual void BeforeErase( SALOME_View*, const SALOME_OCCViewType&    ){/*! Null body here*/};
+  virtual void AfterErase ( SALOME_View*, const SALOME_OCCViewType&    ){/*! Null body here*/};
+  virtual void BeforeErase( SALOME_View*, const SALOME_VTKViewType&    ){/*! Null body here*/};
+  virtual void AfterErase ( SALOME_View*, const SALOME_VTKViewType&    ){/*! Null body here*/};
+  virtual void BeforeErase( SALOME_View*, const SALOME_Plot2dViewType& ){/*! Null body here*/};
+  virtual void AfterErase ( SALOME_View*, const SALOME_Plot2dViewType& ){/*! Null body here*/};
+
 };
 
 #endif

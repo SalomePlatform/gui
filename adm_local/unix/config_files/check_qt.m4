@@ -152,6 +152,8 @@ fi
 #
 # check moc presence (meta-object compiler)
 #
+qt_add=no
+
 if  test "x$qt_ok" = "xyes"
 then
   if test -f ${QTDIR}/bin/moc
@@ -172,7 +174,7 @@ then
   if test "x$qt_ok" = "xyes"
   then
     dnl check moc version
-    AC_MSG_CHECKING(cheching equality Qt and moc tool version)
+    AC_MSG_CHECKING( equality Qt and moc tool version)
     MOC_VERSION=`$MOC -v 2>&1 | awk 'BEGIN{FS="[[ ()]]"};{print $(NF-1)}'`
     if test "x$QT_VERSION" = "x$MOC_VERSION"
     then
@@ -180,22 +182,50 @@ then
       qt_ok=yes
     else
       AC_MSG_RESULT(moc tool and Qt product are incompatible $MOC_VERSION)
-      qt_ok=no
+      QT_VERSION_MAJ=`echo $QT_VERSION | awk -F. '{v=$[1];print v}'`
+      AC_MSG_CHECKING(for moc-qt$QT_VERSION_MAJ compatible version)
+      if test -f ${QTDIR}/bin/moc-qt$QT_VERSION_MAJ
+      then
+	MOC=${QTDIR}/bin/moc-qt$QT_VERSION_MAJ
+        qt_ok=yes
+	qt_add=$QT_VERSION_MAJ
+        AC_MSG_RESULT(yes)
+      else
+        AC_MSG_RESULT(no)
+        qt_ok=no
+      fi
     fi
   fi
 fi
+AC_MSG_CHECKING(moc tool and Qt product done)
+AC_MSG_RESULT(yes)
 
 #
 # check uic presence (user interface compiler)
 #
 if  test "x$qt_ok" = "xyes"
 then
-  if test -f ${QTDIR}/bin/uic
+  if test "x$qt_add" = "xno"
   then
-    UIC=${QTDIR}/bin/uic
+     AC_MSG_CHECKING(uic)
+     if test -f ${QTDIR}/bin/uic
+     then
+       UIC=${QTDIR}/bin/uic
+     else
+       AC_PATH_PROG(UIC, uic)
+     fi
+     AC_MSG_RESULT(yes)
   else
-    AC_PATH_PROG(UIC, uic)
+     AC_MSG_CHECKING(uic-qt$qt_add)
+     if test -f ${QTDIR}/bin/uic-qt$qt_add
+     then
+       UIC=${QTDIR}/bin/uic-qt$qt_add
+     else
+       AC_PATH_PROG(UIC, uic)
+     fi
+     AC_MSG_RESULT(yes)
   fi
+
   if test "x$UIC" = "x"
   then
     qt_ok=no
@@ -204,6 +234,21 @@ then
     qt_ok=yes
     AC_MSG_RESULT(uic (Qt user interface compiler) is found)
   fi
+
+  if test "x$qt_ok" = "xyes"
+  then
+    dnl check uic version
+    AC_MSG_CHECKING(cheching equality Qt and uic tool version)
+    UIC_VERSION=`$UIC -version 2>&1 | awk '{print $NF}'`
+    if test "x$QT_VERSION" = "x$UIC_VERSION"
+    then
+      AC_MSG_RESULT(yes)
+      qt_ok=yes
+    else
+      AC_MSG_RESULT(uic tool and Qt product are incompatible)
+      qt_ok=no
+    fi
+  fi
 fi
 
 #
@@ -211,11 +256,21 @@ fi
 #
 if  test "x$qt_ok" = "xyes"
 then
-  if test -f ${QTDIR}/bin/rcc
+  if test "x$qt_add" = "xno"
   then
-    QRCC=${QTDIR}/bin/rcc
+     if test -f ${QTDIR}/bin/rcc
+     then
+       QRCC=${QTDIR}/bin/rcc
+     else
+       AC_PATH_PROG(QRCC, rcc)
+     fi
   else
-    AC_PATH_PROG(QRCC, rcc)
+     if test -f ${QTDIR}/bin/rcc-qt$qt_add
+     then
+       QRCC=${QTDIR}/bin/rcc-qt$qt_add
+     else
+       AC_PATH_PROG(QRCC, rcc)
+     fi
   fi
   if test "x$QRCC" = "x"
   then
@@ -247,11 +302,21 @@ fi
 #
 if  test "x$qt_ok" = "xyes"
 then
-  if test -f ${QTDIR}/bin/lrelease
+  if test "x$qt_add" = "xno"
   then
-    LRELEASE=${QTDIR}/bin/lrelease
+     if test -f ${QTDIR}/bin/lrelease
+     then
+       LRELEASE=${QTDIR}/bin/lrelease
+     else
+       AC_PATH_PROG(LRELEASE, lrelease)
+     fi
   else
-    AC_PATH_PROG(LRELEASE, lrelease)
+     if test -f ${QTDIR}/bin/lrelease-qt$qt_add
+     then
+       LRELEASE=${QTDIR}/bin/lrelease-qt$qt_add
+     else
+       AC_PATH_PROG(LRELEASE, lrelease)
+     fi
   fi
   if test "x$LRELEASE" = "x"
   then

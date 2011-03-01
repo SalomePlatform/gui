@@ -116,7 +116,7 @@ SVTK_Recorder
   myErrorStatus = 0;
   using namespace std;
   ostringstream aStream;
-  aStream<<"which "<<myNameAVIMaker<<" >& /dev/null";
+  aStream<<"which "<<myNameAVIMaker<<" 2> /dev/null";
   std::string anAVIMakeCheck = aStream.str();
   int iErr = system(anAVIMakeCheck.c_str());
   if(iErr != 0)

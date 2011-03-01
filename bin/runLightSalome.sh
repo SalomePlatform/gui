@@ -137,7 +137,7 @@ if [ "${MY_PATH}" != "" ] ; then
     export PATH=${MY_PATH}:${PATH}
 fi
 if [ "${MY_LD_LIBRARY_PATH}" != "" ] ; then
-    export LD_LIBRARY_PATH=${MY_LD_LIBRARY_PATH}:${LD_LIBRARY_PATH}
+    export LD_LIBRARY_PATH=${MY_LD_LIBRARY_PATH}${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
 fi
 if [ "${PYTHONPATH}" != "" ] ; then
     export PYTHONPATH=${MY_PYTHONPATH}:${PYTHONPATH}

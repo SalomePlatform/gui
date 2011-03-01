@@ -1770,7 +1770,7 @@ void SalomeApp_Application::updateVisibilityState( DataObjectList& theList,
   for ( DataObjectList::iterator itr = theList.begin(); itr != theList.end(); ++itr ) {
     LightApp_DataObject* obj = dynamic_cast<LightApp_DataObject*>(*itr);
     
-    if (aStudy->isComponent(obj->entry()) || !obj) 
+    if (!obj || aStudy->isComponent(obj->entry()))
       continue;
     
     LightApp_Module* anObjModule = dynamic_cast<LightApp_Module*>(obj->module());

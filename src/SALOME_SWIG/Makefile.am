@@ -54,8 +54,9 @@ SWIG_SOURCES  = libSALOME_Swig.i
 
 libSALOME_Swig.py: swig_wrap.cpp
 
-# library
-lib_LTLIBRARIES = _libSALOME_Swig.la
+salomepython_PYTHON = libSALOME_Swig.py
+salomepyexec_LTLIBRARIES = _libSALOME_Swig.la
+
 _libSALOME_Swig_la_SOURCES = $(SWIG_SOURCES) SALOMEGUI_Swig.cxx
 nodist__libSALOME_Swig_la_SOURCES = swig_wrap.cpp
 salomeinclude_HEADERS = $(SWIG_SOURCES) SALOMEGUI_Swig.hxx SALOMEGUI_Swig.i

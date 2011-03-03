@@ -40,7 +40,7 @@ docs: usr_docs
 clean-local:
 	-rm -fr GUI doxygen.bak
 
-install-data-local:
+install-data-local: usr_docs
 	if test -d GUI; then \
 	$(INSTALL) -d $(DESTDIR)$(docdir)/gui ; \
 	cp -rp GUI $(DESTDIR)$(docdir)/gui ; \

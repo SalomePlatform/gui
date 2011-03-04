@@ -172,7 +172,7 @@ public:
       }
     case 0:  
       { //modify sobject
-	MESSAGE("Want to modify an object "  << theID);
+	//MESSAGE("Want to modify an object "  << theID);
 	EntryMapIter it = entry2SuitObject.find( theID );
 	if ( it != entry2SuitObject.end() )
 	{

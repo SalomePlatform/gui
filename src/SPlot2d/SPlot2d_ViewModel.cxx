@@ -295,38 +295,6 @@ SALOME_Prs* SPlot2d_Viewer::CreatePrs( const char* entry )
 }
 
 /*!
-  Axiluary method called before displaying of objects
-*/
-void  SPlot2d_Viewer::BeforeDisplay( SALOME_Displayer* d )
-{
-  d->BeforeDisplay( this, SALOME_Plot2dViewType() );
-}
-
-/*!
-  Axiluary method called after displaying of objects
-*/
-void  SPlot2d_Viewer::AfterDisplay( SALOME_Displayer* d )
-{
-  d->AfterDisplay( this, SALOME_Plot2dViewType() );
-}
-
-/*!
-  Axiluary method called before erasing of objects
-*/
-void  SPlot2d_Viewer::BeforeErase( SALOME_Displayer* d )
-{
-  d->BeforeErase( this, SALOME_Plot2dViewType() );
-}
-
-/*!
-  Axiluary method called after erasing of objects
-*/
-void  SPlot2d_Viewer::AfterErase( SALOME_Displayer* d )
-{
-  d->AfterErase( this, SALOME_Plot2dViewType() );
-}
-
-/*!
   Returns true if interactive object is presented in the viewer and displayed
 */
 bool SPlot2d_Viewer::isVisible( const Handle(SALOME_InteractiveObject)& IObject ) 

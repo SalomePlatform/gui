@@ -620,39 +620,6 @@ void SOCC_Viewer::GlobalSelection( const bool update ) const
 }
 
 /*!
-  Auxiliary method called before displaying of objects
-*/
-void  SOCC_Viewer::BeforeDisplay( SALOME_Displayer* d )
-{
-  d->BeforeDisplay( this, SALOME_OCCViewType() );
-}
-
-/*!
-  Auxiliary method called after displaying of objects
-*/
-void SOCC_Viewer::AfterDisplay( SALOME_Displayer* d )
-{
-  d->AfterDisplay( this, SALOME_OCCViewType() );
-}
-
-
-/*!
-  Auxiliary method called before erasing of objects
-*/
-void  SOCC_Viewer::BeforeErase( SALOME_Displayer* d )
-{
-  d->BeforeErase( this, SALOME_OCCViewType() );
-}
-
-/*!
-  Auxiliary method called after erase of objects
-*/
-void SOCC_Viewer::AfterErase( SALOME_Displayer* d )
-{
-  d->AfterErase( this, SALOME_OCCViewType() );
-}
-
-/*!
   Get new and current trihedron size corresponding to the current model size
 */
 bool SOCC_Viewer::getTrihedronSize( double& theNewSize, double& theSize )

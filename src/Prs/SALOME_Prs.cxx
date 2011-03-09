@@ -48,6 +48,38 @@ void SALOME_OCCPrs::EraseIn( SALOME_View* v, const bool forced ) const
 }
 
 /*!
+  Dispatches display operation to proper BeforeDisplay() method of SALOME_Displayer
+*/
+void SALOME_OCCPrs::BeforeDisplayIn( SALOME_Displayer* d, SALOME_View* v ) const
+{
+  d->BeforeDisplay( v, this );
+}
+
+/*!
+  Dispatches display operation to proper AfterDisplay() method of SALOME_Displayer
+*/
+void SALOME_OCCPrs::AfterDisplayIn( SALOME_Displayer* d, SALOME_View* v ) const
+{
+  d->AfterDisplay( v, this );
+}
+
+/*!
+  Dispatches display operation to proper BeforeErase() method of SALOME_Displayer
+*/
+void SALOME_OCCPrs::BeforeEraseIn( SALOME_Displayer* d, SALOME_View* v ) const
+{
+  d->BeforeErase( v, this );
+}
+
+/*!
+  Dispatches display operation to proper AfterErase() method of SALOME_Displayer
+*/
+void SALOME_OCCPrs::AfterEraseIn( SALOME_Displayer* d, SALOME_View* v ) const
+{
+  d->AfterErase( v, this );
+}
+
+/*!
   Dispatches operation to proper LocalSelectionIn() method of SALOME_View
 */
 void SALOME_OCCPrs::LocalSelectionIn( SALOME_View* v, const int mode ) const
@@ -80,6 +112,38 @@ void SALOME_VTKPrs::EraseIn( SALOME_View* v, const bool forced ) const
 }
 
 /*!
+  Dispatches display operation to proper BeforeDisplay() method of SALOME_Displayer
+*/
+void SALOME_VTKPrs::BeforeDisplayIn( SALOME_Displayer* d, SALOME_View* v ) const
+{
+  d->BeforeDisplay( v, this );
+}
+
+/*!
+  Dispatches display operation to proper AfterDisplay() method of SALOME_Displayer
+*/
+void SALOME_VTKPrs::AfterDisplayIn( SALOME_Displayer* d, SALOME_View* v ) const
+{
+  d->AfterDisplay( v, this );
+}
+
+/*!
+  Dispatches display operation to proper BeforeErase() method of SALOME_Displayer
+*/
+void SALOME_VTKPrs::BeforeEraseIn( SALOME_Displayer* d, SALOME_View* v ) const
+{
+  d->BeforeErase( v, this );
+}
+
+/*!
+  Dispatches display operation to proper AfterErase() method of SALOME_Displayer
+*/
+void SALOME_VTKPrs::AfterEraseIn( SALOME_Displayer* d, SALOME_View* v ) const
+{
+  d->AfterErase( v, this );
+}
+
+/*!
   Dispatches operation to proper LocalSelectionIn() method of SALOME_View
 */
 void SALOME_VTKPrs::LocalSelectionIn( SALOME_View* v, const int mode ) const
@@ -109,6 +173,38 @@ void SALOME_Prs2d::DisplayIn( SALOME_View* v ) const
 void SALOME_Prs2d::EraseIn( SALOME_View* v, const bool forced ) const
 {
   if ( v ) v->Erase( this, forced );
+}
+
+/*!
+  Dispatches display operation to proper BeforeDisplay() method of SALOME_Displayer
+*/
+void SALOME_Prs2d::BeforeDisplayIn( SALOME_Displayer* d, SALOME_View* v ) const
+{
+  d->BeforeDisplay( v, this );
+}
+
+/*!
+  Dispatches display operation to proper AfterDisplay() method of SALOME_Displayer
+*/
+void SALOME_Prs2d::AfterDisplayIn( SALOME_Displayer* d, SALOME_View* v ) const
+{
+  d->AfterDisplay( v, this );
+}
+
+/*!
+  Dispatches display operation to proper BeforeErase() method of SALOME_Displayer
+*/
+void SALOME_Prs2d::BeforeEraseIn( SALOME_Displayer* d, SALOME_View* v ) const
+{
+  d->BeforeErase( v, this );
+}
+
+/*!
+  Dispatches display operation to proper AfterErase() method of SALOME_Displayer
+*/
+void SALOME_Prs2d::AfterEraseIn( SALOME_Displayer* d, SALOME_View* v ) const
+{
+  d->AfterErase( v, this );
 }
 
 /*!
@@ -241,6 +337,26 @@ void SALOME_View::GlobalSelection( const bool ) const
 {
 //  MESSAGE( "SALOME_View::GlobalSelection() called!
 //   Probably, selection is being activated in uncompatible viewframe." );
+}
+
+void SALOME_View::BeforeDisplay( SALOME_Displayer* d, const SALOME_Prs* p )
+{
+  p->BeforeDisplayIn( d, this );
+}
+
+void SALOME_View::AfterDisplay( SALOME_Displayer* d, const SALOME_Prs* p )
+{
+  p->AfterDisplayIn( d, this );
+}
+
+void SALOME_View::BeforeErase( SALOME_Displayer* d, const SALOME_Prs* p )
+{
+  p->BeforeEraseIn( d, this );
+}
+
+void SALOME_View::AfterErase ( SALOME_Displayer* d, const SALOME_Prs* p )
+{
+  p->AfterEraseIn( d, this );
 }
 
 /*!

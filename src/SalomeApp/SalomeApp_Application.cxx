@@ -940,6 +940,7 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
       ob->setAutoSizeFirstColumn(autoSizeFirst);
       ob->setAutoSizeColumns(autoSize);
       ob->setResizeOnExpandItem(resizeOnExpandItem);
+      ob->setProperty( "shortcut", QKeySequence( "Alt+Shift+O" ) );
 
       // temporary commented
       /*
@@ -964,8 +965,10 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
     PyConsole_Console* pyCons = new PyConsole_Console( desktop(), new SalomeApp_PyInterp() );
     pyCons->setWindowTitle( tr( "PYTHON_CONSOLE" ) );
     pyCons->setFont(resourceMgr()->fontValue( "PyConsole", "font" ));
+    pyCons->setIsShowBanner(resourceMgr()->booleanValue( "PyConsole", "show_banner", true ));
+    pyCons->setProperty( "shortcut", QKeySequence( "Alt+Shift+P" ) );
     wid = pyCons;
-    pyCons->resize( pyCons->width(), desktop()->height()/4 );
+    //pyCons->resize( pyCons->width(), desktop()->height()/4 );
     pyCons->connectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
   }
   return wid;

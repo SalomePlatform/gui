@@ -226,8 +226,8 @@ private:
 
 void staticCallback( void* data, char* c )
 {
-	if(!((PyConsole_Editor*)data)->isSuppressOutput())
-		QApplication::postEvent( (PyConsole_Editor*)data, new PrintEvent( c ) ); 
+  if(!((PyConsole_Editor*)data)->isSuppressOutput())
+    QApplication::postEvent( (PyConsole_Editor*)data, new PrintEvent( c ) ); 
 }
 
 /*!
@@ -243,8 +243,9 @@ PyConsole_Editor::PyConsole_Editor( PyConsole_Interp* theInterp,
   myInterp( 0 ),
   myCmdInHistory( -1 ),
   myEventLoop( 0 ),
+  myShowBanner( true ),
   myIsSync( false ),
-  myIsSuppressOutput(false)
+  myIsSuppressOutput( false )
 {
   QString fntSet( "" );
   QFont aFont = SUIT_Tools::stringToFont( fntSet );
@@ -302,7 +303,7 @@ void PyConsole_Editor::setIsSync( const bool on )
   \brief Get suppress output flag value.
   
   \sa setIsSuppressOutput()
-  \return True if python console output is suppressed.
+  \return \c true if python console output is suppressed.
 */
 bool PyConsole_Editor::isSuppressOutput() const
 {
@@ -320,6 +321,45 @@ bool PyConsole_Editor::isSuppressOutput() const
 void PyConsole_Editor::setIsSuppressOutput( const bool on )
 {
   myIsSuppressOutput = on;
+}
+
+/*!
+  \brief Get 'show banner' flag value.
+  
+  \sa setIsShowBanner()
+  \return \c true if python console shows banner
+*/
+bool PyConsole_Editor::isShowBanner() const
+{
+  return myShowBanner;
+}
+
+/*!
+  \brief Set 'show banner' flag value.
+
+  The banner is shown in the top of the python console window.
+
+  \sa isShowBanner()
+  \param on 'show banner' flag
+*/
+void PyConsole_Editor::setIsShowBanner( const bool on )
+{
+  if ( myShowBanner != on ) {
+    myShowBanner = on;
+    clear();
+  }
+}
+
+/*!
+  \brief Get size hint for the Python console window
+  \return size hint value
+*/
+QSize PyConsole_Editor::sizeHint() const
+{
+  QFontMetrics fm( font() );
+  int nbLines = ( isShowBanner() ? myBanner.split("\n").count() : 0 ) + 1;
+  QSize s(100, fm.lineSpacing()*nbLines);
+  return s;
 }
 
 /*!
@@ -1036,7 +1076,8 @@ void PyConsole_Editor::onPyInterpChanged( PyConsole_Interp* interp )
     if ( myInterp ) {
       // print banner
       myBanner = myInterp->getbanner().c_str();
-      addText( myBanner );
+      if ( isShowBanner() )
+	addText( myBanner );
       // clear command buffer
       myCommandBuffer.truncate(0);
       // unset read-only state
@@ -1123,7 +1164,8 @@ void PyConsole_Editor::paste()
 void PyConsole_Editor::clear()
 {
   QTextEdit::clear();
-  addText( myBanner );
+  if ( isShowBanner() )
+    addText( myBanner );
   myPrompt = READY_PROMPT;
   addText( myPrompt );
 }

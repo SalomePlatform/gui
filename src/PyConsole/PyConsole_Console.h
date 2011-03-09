@@ -66,6 +66,8 @@ public:
   bool                isSuppressOutput() const;
   void                setIsSuppressOutput( const bool );
 
+  bool                isShowBanner() const;
+  void                setIsShowBanner( const bool );
 
   void                exec( const QString& );
   void                execAndWait( const QString& );

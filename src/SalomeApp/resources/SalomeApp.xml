@@ -120,6 +120,7 @@
   </section>
   <section name="PyConsole">
     <!-- Python console preferences -->
+    <parameter name="show_banner"         value="true" />
     <parameter name="font"                value="Helvetic,12" />
     <parameter name="additional_families" value="Helvetic;Helvetica;Helvetica[Adobe];Times;Times[Adobe];Sans Serif;Serif;Monospace;Lucida"/>
   </section>

@@ -347,6 +347,10 @@ The changes will be applied on the next application session.</translation>
         <translation>Python console properties</translation>
     </message>
     <message>
+        <source>PREF_SHOW_BANNER</source>
+        <translation>Show banner</translation>
+    </message>
+    <message>
         <source>PREF_GROUP_STYLE</source>
         <translation>Salome style</translation>
     </message>

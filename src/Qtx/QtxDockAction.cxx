@@ -96,6 +96,14 @@ QtxDockAction::~QtxDockAction()
 }
 
 /*!
+  \brief Update associated menu
+*/
+void QtxDockAction::update()
+{
+  updateMenu();
+}
+
+/*!
   \brief Get parent main window.
   \return main window pointer.
 */

@@ -55,6 +55,11 @@ public:
   bool           isSuppressOutput() const;
   void           setIsSuppressOutput(const bool);
 
+  bool           isShowBanner() const;
+  void           setIsShowBanner( const bool );
+
+  virtual QSize  sizeHint() const;
+
 protected:
   virtual void   dropEvent( QDropEvent* event );
   virtual void   mouseReleaseEvent( QMouseEvent* event );
@@ -81,6 +86,7 @@ private:
   QStringList       myHistory;          //!< commands history buffer
   QEventLoop*       myEventLoop;        //!< internal event loop
   QString           myBanner;           //!< current banner
+  bool              myShowBanner;       //!< 'show banner' flag
   QStringList       myQueue;            //!< python commands queue
   bool              myIsSync;           //!< synchronous mode flag
   bool              myIsSuppressOutput; //!< suppress output flag

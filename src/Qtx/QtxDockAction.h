@@ -57,6 +57,8 @@ public:
   QtxDockAction( const QString&, const QIcon&, const QString&, QMainWindow* );
   virtual ~QtxDockAction();
 
+  void         update();
+
   int          dockType() const;
   void         setDockType( const int );
 

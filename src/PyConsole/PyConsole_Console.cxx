@@ -153,6 +153,30 @@ void PyConsole_Console::setIsSuppressOutput( const bool on )
 }
 
 /*!
+  \brief Get 'show banner' flag value.
+  
+  \sa setIsShowBanner()
+  \return \c true if python console shows banner
+*/
+bool PyConsole_Console::isShowBanner() const
+{
+  return myEditor->isShowBanner();
+}
+
+/*!
+  \brief Set 'show banner' flag value.
+
+  The banner is shown in the top of the python console window.
+
+  \sa isShowBanner()
+  \param on 'show banner' flag
+*/
+void PyConsole_Console::setIsShowBanner( const bool on )
+{
+  myEditor->setIsShowBanner( on );
+}
+
+/*!
   \brief Change the python console's font.
   \param f new font
 */

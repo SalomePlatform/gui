@@ -328,15 +328,15 @@ LightApp_Application::LightApp_Application()
   QStringList anAddFamilies = aResMgr->stringValue( "PyConsole", "additional_families" ).split( ";", QString::SkipEmptyParts );
   QString aFamily;
   for ( QStringList::Iterator it = anAddFamilies.begin(); it != anAddFamilies.end(); ++it )
+  {
+    aFamily = *it;
+    if ( famdb.contains(aFamily) )
     {
-      aFamily = *it;
-      if ( famdb.contains(aFamily) )
-        {
-          f.setFamily( aFamily );
-          aResMgr->setValue( "PyConsole", "font", f );
-          break;
-        }
+      f.setFamily( aFamily );
+      aResMgr->setValue( "PyConsole", "font", f );
+      break;
     }
+  }
 }
 
 /*!Destructor.
@@ -1151,6 +1151,11 @@ void LightApp_Application::insertDockWindow( const int id, QWidget* wid )
   dock->setFeatures( QDockWidget::AllDockWidgetFeatures );
   dock->setObjectName( QString( "window_%1" ).arg( id ) );
   dock->setWidget( wid );
+
+  QKeySequence accel = wid->property( "shortcut" ).value<QKeySequence>();
+  if ( !accel.isEmpty() )
+    dock->toggleViewAction()->setShortcut( accel );
+
   dock->show();
 }
 
@@ -1175,8 +1180,11 @@ void LightApp_Application::removeDockWindow( const int id )
 void LightApp_Application::placeDockWindow( const int id, Qt::DockWidgetArea place )
 {
   QDockWidget* dock = windowDock( dockWindow( id ) );
-  if ( dock && desktop() )
+  if ( dock && desktop() ) {
     desktop()->addDockWidget( place, dock );
+    QtxDockAction* a = qobject_cast<QtxDockAction*>( action( ViewWindowsId ) );
+    if ( a ) a->update();
+  }
 }
 
 /*!
@@ -1737,9 +1745,8 @@ QWidget* LightApp_Application::createWindow( const int flag )
     ob->treeView()->header()->setResizeMode(SUIT_DataObject::VisibilityId, QHeaderView::Fixed);
     ob->treeView()->header()->moveSection(SUIT_DataObject::NameId,SUIT_DataObject::VisibilityId);
     ob->treeView()->setColumnWidth(SUIT_DataObject::VisibilityId, VISIBILITY_COLUMN_WIDTH);
-
+    ob->setProperty( "shortcut", QKeySequence( "Alt+Shift+O" ) );
     wid = ob;
-
     ob->connectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
   }
 #ifndef DISABLE_PYCONSOLE
@@ -1748,6 +1755,9 @@ QWidget* LightApp_Application::createWindow( const int flag )
     PyConsole_Console* pyCons = new PyConsole_Console( desktop(),new LightApp_PyInterp());
     pyCons->setWindowTitle( tr( "PYTHON_CONSOLE" ) );
     pyCons->setFont(resourceMgr()->fontValue( "PyConsole", "font" ));
+    pyCons->setIsShowBanner(resourceMgr()->booleanValue( "PyConsole", "show_banner", true ));
+    pyCons->setProperty( "shortcut", QKeySequence( "Alt+Shift+P" ) );
+
     wid = pyCons;
     pyCons->connectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
   }
@@ -1756,6 +1766,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
   {
     LogWindow* logWin = new LogWindow( desktop() );
     logWin->setWindowTitle( tr( "LOG_WINDOW" ) );
+    logWin->setProperty( "shortcut", QKeySequence( "Alt+Shift+L" ) );
     wid = logWin;
     logWin->connectPopupRequest( this, SLOT( onConnectPopupRequest( SUIT_PopupClient*, QContextMenuEvent* ) ) );
   }
@@ -1947,6 +1958,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   int pythonConsoleGroup = pref->addPreference( tr( "PREF_GROUP_PY_CONSOLE" ), genTab );
   pref->addPreference( tr( "PREF_FONT" ), pythonConsoleGroup, LightApp_Preferences::Font, "PyConsole", "font" );
+  pref->addPreference( tr( "PREF_SHOW_BANNER" ), pythonConsoleGroup, LightApp_Preferences::Bool, "PyConsole", "show_banner" );
 
   int viewTab = pref->addPreference( tr( "PREF_TAB_VIEWERS" ), salomeCat );
 
@@ -2549,11 +2561,14 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
   }
 
 #ifndef DISABLE_PYCONSOLE
-  if( sec=="PyConsole" )
+  if( sec=="PyConsole" && pythonConsole() )
   {
-    if( param=="font" )
-      if( pythonConsole() )
-        pythonConsole()->setFont( resMgr->fontValue( "PyConsole", "font" ) );
+    if ( param=="font" ) {
+      pythonConsole()->setFont( resMgr->fontValue( "PyConsole", "font" ) );
+    }
+    else if ( param=="show_banner" ) {
+      pythonConsole()->setIsShowBanner( resMgr->booleanValue( "PyConsole", "show_banner", true ) );
+    }
   }
 #endif
 

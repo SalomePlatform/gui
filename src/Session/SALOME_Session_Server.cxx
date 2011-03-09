@@ -290,18 +290,16 @@ public:
     return myHandler ? myHandler->handle( receiver, e ) :
       TestApplication::notify( receiver, e );
 #else
-    try
-      {
-        return myHandler ? myHandler->handle( receiver, e ) : QApplication::notify( receiver, e );
-      }
-    catch(std::exception& e)
-      {
-        std::cerr << e.what()  << std::endl;
-      }
-    catch(...)
-      {
-        std::cerr << "Unknown exception caught in Qt handler: it's probably a bug in SALOME platform" << std::endl;
-      }
+    try {
+      return myHandler ? myHandler->handle( receiver, e ) : QApplication::notify( receiver, e );
+    }
+    catch (std::exception& e) {
+      std::cerr << e.what()  << std::endl;
+    }
+    catch (...) {
+      std::cerr << "Unknown exception caught in Qt handler: it's probably a bug in SALOME platform" << std::endl;
+    }
+    return false;  // return false when exception is caught
 #endif
   }
   SUIT_ExceptionHandler* handler() const { return myHandler; }

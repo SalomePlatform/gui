@@ -46,12 +46,14 @@
 #include <QtxActionMenuMgr.h>
 #include <QtxActionGroup.h>
 #include <QtxWorkstack.h>
+#include <QtxTreeView.h>
 #include <SUIT_Session.h>
 #include <SUIT_Desktop.h>
 #include <SUIT_ResourceMgr.h>
 #include <SUIT_Tools.h>
 #include <SUIT_ViewManager.h>
 #include <SUIT_ViewWindow.h>
+#include <SUIT_DataBrowser.h>
 #include <STD_TabDesktop.h>
 #include <LightApp_Application.h>
 #include <LightApp_Study.h>
@@ -144,6 +146,7 @@ SALOME_Selection::SALOME_Selection( QObject* p ) : QObject( 0 ), mySelMgr( 0 )
     connect( mySelMgr, SIGNAL( destroyed() ),        this, SLOT  ( onSelMgrDestroyed() ) );
   }
 }
+
 /*!
   \brief Destructor.
 */
@@ -305,7 +308,7 @@ QMenuBar* SalomePyQt::getMainMenuBar()
 }
 
 /*!
-  QMenu* SalomePyQt::getPopupMenu( const MenuName menu );
+  \fn QMenu* SalomePyQt::getPopupMenu( const MenuName menu );
   \brief Get main menu's child popup submenu by its identifier.
   
   This function is obsolete. 
@@ -316,7 +319,7 @@ QMenuBar* SalomePyQt::getMainMenuBar()
 */
 
 /*!
-  QMenu* SalomePyQt::getPopupMenu( const QString& menu );
+  \fn QMenu* SalomePyQt::getPopupMenu( const QString& menu );
   \brief Get main menu's child popup submenu by its name.
   
   The function creates menu if it does not exist.
@@ -342,6 +345,12 @@ public:
   }
 };
 
+/*!
+  \brief Get menu item title
+  \internal
+  \param menuId menu identifier
+  \return menu title (localized)
+*/
 static QString getMenuName( const QString& menuId )
 {
   QStringList contexts;
@@ -377,6 +386,31 @@ QMenu* SalomePyQt::getPopupMenu( const MenuName menu )
 QMenu* SalomePyQt::getPopupMenu( const QString& menu )
 {
   return ProcessEvent( new TGetPopupMenuEvent( menu ) );
+}
+
+/*!
+  \fn QTreeView* SalomePyQt::getObjectBrowser();
+  \brief Get object browser
+  \return object browser for the active study or 0 in case of error
+*/
+
+class TGetObjectBrowserEvent: public SALOME_Event
+{
+public:
+  typedef QTreeView* TResult;
+  TResult myResult;
+  TGetObjectBrowserEvent() : myResult( 0 ) {}
+  virtual void Execute()
+  {
+    LightApp_Application* anApp = getApplication();
+    if ( anApp ) {
+      myResult = anApp->objectBrowser()->treeView();
+    }
+  }
+};
+QTreeView* SalomePyQt::getObjectBrowser()
+{
+  return ProcessEvent( new TGetObjectBrowserEvent() );
 }
 
 /*!

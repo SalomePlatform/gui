@@ -39,6 +39,7 @@ class QMenuBar;
 class QMenu;
 class QWidget;
 class QAction;
+class QTreeView;
 class QtxActionGroup;
 
 class SALOME_Selection : public QObject
@@ -121,6 +122,7 @@ public:
   static QMenuBar*         getMainMenuBar();
   static QMenu*            getPopupMenu( const MenuName );
   static QMenu*            getPopupMenu( const QString& );
+  static QTreeView*        getObjectBrowser();
   static SALOME_Selection* getSelection();
   static int               getStudyId();
   static void              putInfo( const QString&, const int = 0 );

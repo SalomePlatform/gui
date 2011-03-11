@@ -321,13 +321,6 @@ LightApp_Displayer* LightApp_Displayer::FindDisplayer( const QString& mod_name, 
   if( m )
   {
     m->connectToStudy( dynamic_cast<CAM_Study*>( app->activeStudy() ) );
-    //rnv: Implementation of the 20830: EDF 1357 GUI : Hide/Show Icon
-    // Seems it is not necessary hide icons:
-    //    if( m!=app->activeModule() && load )
-    //    {
-    //      m->setMenuShown( false );
-    //      m->setToolShown( false );
-    //    }
   }
   return m ? m->displayer() : 0;
 }

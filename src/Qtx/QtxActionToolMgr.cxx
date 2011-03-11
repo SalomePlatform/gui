@@ -131,6 +131,7 @@ int QtxActionToolMgr::createToolBar( const QString& title, bool floatable, Qt::T
   if ( !tb )
   {
     tb = new QtxToolBar( true, tbw );
+    tb->setVisible( false );  // VSR: create toolbar visible initially
     tb->setFloatable( floatable );
     tb->setAllowedAreas( dockAreas );
     tb->setMovable( dockAreas & Qt::AllToolBarAreas );

@@ -41,6 +41,24 @@
   Provides support of menu/toolbars management.
 */
 
+class ActionMgrLocker
+{
+public:
+  ActionMgrLocker( QtxActionMgr* m ) : myMgr( m )
+  {
+    myUpdEnabled = myMgr->isUpdatesEnabled();
+    myMgr->setUpdatesEnabled( false );
+  }
+  ~ActionMgrLocker()
+  {
+    myMgr->setUpdatesEnabled( myUpdEnabled );
+    //myMgr->update();
+  }
+
+  QtxActionMgr* myMgr;
+  bool myUpdEnabled;
+};
+
 /*!
   \brief Default constructor.
 
@@ -376,6 +394,8 @@ int CAM_Module::createTool( const QString& name )
   if ( !toolMgr() )
     return -1;
 
+  ActionMgrLocker lock( toolMgr() );
+
   return toolMgr()->createToolBar( name );
 }
 
@@ -403,8 +423,13 @@ int CAM_Module::createTool( QAction* a, const int tBar, const int id, const int 
   if ( !toolMgr() )
     return -1;
 
+  ActionMgrLocker lock( toolMgr() );
+
   int regId = registerAction( id, a );
   int intId = toolMgr()->insert( a, tBar, idx );
+
+  setToolShown( a, false );
+
   return intId != -1 ? regId : -1;
 }
 
@@ -432,8 +457,13 @@ int CAM_Module::createTool( QAction* a, const QString& tBar, const int id, const
   if ( !toolMgr() )
     return -1;
 
+  ActionMgrLocker lock( toolMgr() );
+
   int regId = registerAction( id, a );
   int intId = toolMgr()->insert( a, tBar, idx );
+
+  setToolShown( a, false );
+
   return intId != -1 ? regId : -1;
 }
 
@@ -460,7 +490,12 @@ int CAM_Module::createTool( const int id, const int tBar, const int idx )
   if ( !toolMgr() )
     return -1;
 
+  ActionMgrLocker lock( toolMgr() );
+
   int intId = toolMgr()->insert( action( id ), tBar, idx );
+
+  setToolShown( action( id ), false );
+
   return intId != -1 ? id : -1;
 }
 
@@ -487,7 +522,12 @@ int CAM_Module::createTool( const int id, const QString& tBar, const int idx )
   if ( !toolMgr() )
     return -1;
 
+  ActionMgrLocker lock( toolMgr() );
+
   int intId = toolMgr()->insert( action( id ), tBar, idx );
+
+  setToolShown( action( id ), false );
+
   return intId != -1 ? id : -1;
 }
 
@@ -521,7 +561,7 @@ int CAM_Module::createMenu( const QString& subMenu, const int menu,
 {
   if ( !menuMgr() )
     return -1;
-
+  
   return menuMgr()->insert( subMenu, menu, group, id, idx );
 }
 
@@ -585,9 +625,14 @@ int CAM_Module::createMenu( QAction* a, const int menu, const int id, const int 
 {
   if ( !a || !menuMgr() )
     return -1;
+  
+  ActionMgrLocker lock( menuMgr() );
 
   int regId = registerAction( id, a );
   int intId = menuMgr()->insert( a, menu, group, idx );
+
+  setMenuShown( a, false );
+
   return intId != -1 ? regId : -1;
 }
 
@@ -622,8 +667,13 @@ int CAM_Module::createMenu( QAction* a, const QString& menu, const int id, const
   if ( !a || !menuMgr() )
     return -1;
 
+  ActionMgrLocker lock( menuMgr() );
+
   int regId = registerAction( id, a );
   int intId = menuMgr()->insert( a, menu, group, idx );
+
+  setMenuShown( a, false );
+
   return intId != -1 ? regId : -1;
 }
 
@@ -653,7 +703,12 @@ int CAM_Module::createMenu( const int id, const int menu, const int group, const
   if ( !menuMgr() )
     return -1;
 
+  ActionMgrLocker lock( menuMgr() );
+
   int intId = menuMgr()->insert( action( id ), menu, group, idx );
+
+  setMenuShown( action( id ), false );
+
   return intId != -1 ? id : -1;
 }
 
@@ -687,7 +742,12 @@ int CAM_Module::createMenu( const int id, const QString& menu, const int group, 
   if ( !menuMgr() )
     return -1;
 
+  ActionMgrLocker lock( menuMgr() );
+
   int intId = menuMgr()->insert( action( id ), menu, group, idx );
+
+  setMenuShown( action( id ), false );
+
   return intId != -1 ? id : -1;
 }
 

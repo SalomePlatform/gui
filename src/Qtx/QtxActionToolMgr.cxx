@@ -28,6 +28,8 @@
 #include "QtxAction.h"
 #include "QtxToolBar.h"
 
+#include <QApplication>
+#include <QHideEvent>
 #include <QMainWindow>
 
 /*!
@@ -131,7 +133,7 @@ int QtxActionToolMgr::createToolBar( const QString& title, bool floatable, Qt::T
   if ( !tb )
   {
     tb = new QtxToolBar( true, tbw );
-    tb->setVisible( false );  // VSR: create toolbar visible initially
+    //tb->setVisible( false );  // VSR: create toolbar visible initially
     tb->setFloatable( floatable );
     tb->setAllowedAreas( dockAreas );
     tb->setMovable( dockAreas & Qt::AllToolBarAreas );
@@ -139,6 +141,7 @@ int QtxActionToolMgr::createToolBar( const QString& title, bool floatable, Qt::T
     tb->setWindowTitle( title );
     tb->setObjectName( title );
     tb->setToolTip( title );
+    QApplication::postEvent( tb, new QHideEvent());
    }
 
   tInfo.toolBar = tb;

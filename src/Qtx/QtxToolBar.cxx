@@ -101,8 +101,9 @@ bool QtxToolBar::Watcher::eventFilter( QObject* o, QEvent* e )
 
   bool updVis = ( o != myCont && ( e->type() == QEvent::Show || e->type() == QEvent::ShowToParent ||
                                    e->type() == QEvent::Hide || e->type() == QEvent::HideToParent ) ) ||
-                ( o == myCont && ( e->type() == QEvent::ChildRemoved || e->type() == QEvent::Show ||
-                                   e->type() == QEvent::ShowToParent || e->type() == QEvent::ActionAdded ||
+                ( o == myCont && ( e->type() == QEvent::ChildAdded   || e->type() == QEvent::ChildRemoved || e->type() == QEvent::Show ||
+                                   e->type() == QEvent::ShowToParent || e->type() == QEvent::Hide ||
+				   e->type() == QEvent::HideToParent || e->type() == QEvent::ActionAdded ||
                                    e->type() == QEvent::ActionRemoved ) );
 
   if ( updVis )
@@ -276,7 +277,7 @@ void QtxToolBar::Watcher::updateVisibility()
     }
   }
 
-  vis = vis || (!empty && isVisible());
+  vis = (!isEmpty() && isVisible());
   if ( vis != myCont->isVisibleTo( myCont->parentWidget() ) )
     vis ? showContainer() : hideContainer();
 }
@@ -363,6 +364,7 @@ QtxToolBar::~QtxToolBar()
 */
 void QtxToolBar::setVisible( bool visible )
 {
+  if ( isVisible() == visible ) return;
   if ( myWatcher )
   {
     if ( visible )

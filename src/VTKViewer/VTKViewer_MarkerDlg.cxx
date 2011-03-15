@@ -135,3 +135,8 @@ int VTKViewer_MarkerDlg::getCustomMarkerID() const
 {
   return myMarkerWidget->getCustomMarkerID();
 }
+
+void VTKViewer_MarkerDlg::addExtraStdMarker( VTK::MarkerType theMarkerType, const QPixmap& thePixmap )
+{
+  myMarkerWidget->addExtraStdMarker( theMarkerType, thePixmap );
+}

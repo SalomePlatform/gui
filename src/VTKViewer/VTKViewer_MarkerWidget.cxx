@@ -119,7 +119,8 @@ VTKViewer_MarkerWidget::VTKViewer_MarkerWidget( QWidget* theParent )
   // ---
 
   connect( myTypeGroup, SIGNAL( buttonClicked( int ) ), myWGStack, SLOT( setCurrentIndex( int ) ) );
-  connect( aBrowseBtn,  SIGNAL( clicked() ), this, SLOT( browse() ) );
+  connect( myStdTypeCombo, SIGNAL( currentIndexChanged( int ) ), this, SLOT( onStdMarkerChanged( int ) ) );
+  connect( aBrowseBtn,  SIGNAL( clicked() ), this, SLOT( onBrowse() ) );
 
   // ---
 
@@ -159,12 +160,13 @@ VTK::MarkerMap VTKViewer_MarkerWidget::getCustomMarkerMap()
 
 void VTKViewer_MarkerWidget::setStandardMarker( VTK::MarkerType theMarkerType, VTK::MarkerScale theMarkerScale )
 {
-  if ( theMarkerType > VTK::MT_NONE && theMarkerType < VTK::MT_USER ) {
+  if ( theMarkerType > VTK::MT_NONE && theMarkerType < VTK::MT_USER ||
+       myExtraMarkerList.contains( theMarkerType ) ) {
     myTypeGroup->button( 0 )->setChecked( true );
     myWGStack->setCurrentIndex( 0 );
-    myStdTypeCombo->setCurrentIndex( (int)theMarkerType-1 );
+    myStdTypeCombo->setCurrentId( theMarkerType );
     int aMarkerScale = std::max( (int)VTK::MS_10, std::min( (int)VTK::MS_70, (int)theMarkerScale ) );
-    myStdScaleCombo->setCurrentIndex( aMarkerScale-1 );
+    myStdScaleCombo->setCurrentId( aMarkerScale );
   }
 }
 
@@ -191,6 +193,16 @@ VTK::MarkerScale VTKViewer_MarkerWidget::getStandardMarkerScale() const
 int VTKViewer_MarkerWidget::getCustomMarkerID() const
 {
   return myWGStack->currentIndex() == 1 ? myCustomTypeCombo->currentId() : 0;
+}
+
+void VTKViewer_MarkerWidget::addExtraStdMarker( VTK::MarkerType theMarkerType, const QPixmap& thePixmap )
+{
+  if( myExtraMarkerList.isEmpty() )
+    myStdTypeCombo->insertSeparator( myStdTypeCombo->count() );
+  myStdTypeCombo->addItem( thePixmap, QString() );
+  myStdTypeCombo->setId( myStdTypeCombo->count()-1, theMarkerType );
+
+  myExtraMarkerList.append( theMarkerType );
 }
 
 void VTKViewer_MarkerWidget::init()
@@ -236,7 +248,14 @@ QPixmap VTKViewer_MarkerWidget::markerFromData( const VTK::MarkerData& theMarker
   return QPixmap::fromImage( anImage );
 }
 
-void VTKViewer_MarkerWidget::browse()
+void VTKViewer_MarkerWidget::onStdMarkerChanged( int index )
+{
+  VTK::MarkerType aMarkerType = (VTK::MarkerType)myStdTypeCombo->id( index );
+  bool anIsExtraMarker = myExtraMarkerList.contains( aMarkerType );
+  myStdScaleCombo->setEnabled( !anIsExtraMarker );
+}
+
+void VTKViewer_MarkerWidget::onBrowse()
 {
   QStringList filters;
   filters << tr( "Texture files (*.dat)" ) << tr( "All files (*)" );

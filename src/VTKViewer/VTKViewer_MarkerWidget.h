@@ -51,13 +51,16 @@ public:
   VTK::MarkerScale getStandardMarkerScale() const;
   int              getCustomMarkerID() const;
 
+  void             addExtraStdMarker( VTK::MarkerType, const QPixmap& );
+
 private:
   void             init();
   void             addTexture( int, bool = false );
   QPixmap          markerFromData( const VTK::MarkerData& );
 
 private slots:
-  void             browse();
+  void             onStdMarkerChanged( int );
+  void             onBrowse();
 
 private:
   QButtonGroup*    myTypeGroup;
@@ -67,6 +70,8 @@ private:
   QtxComboBox*     myCustomTypeCombo;
 
   VTK::MarkerMap   myCustomMarkerMap;
+
+  QList<VTK::MarkerType> myExtraMarkerList;
 };
 
 #endif

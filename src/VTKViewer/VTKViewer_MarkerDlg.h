@@ -51,6 +51,8 @@ public:
   VTK::MarkerScale        getStandardMarkerScale() const;
   int                     getCustomMarkerID() const;
 
+  void                    addExtraStdMarker( VTK::MarkerType, const QPixmap& );
+
 protected:
   void                    keyPressEvent( QKeyEvent* );
 

@@ -72,7 +72,7 @@ dialog box press the &quot;<b>...</b>&quot; button(see the picture below).
 - <b>Common</b>
   - <b>Drop-down buttons in toolbars for action groups</b> - when
   checked, the action groups are represented in the viewer toolbars
-  as a single drop-down button, switchable by the used. Otherwise,
+  as a single drop-down button, switchable by the user. Otherwise,
   all the buttons from the action groups are displayed in the toolbar.
 - <b>OCC Viewer 3d</b>
   - <b>Trihedron size</b> - this submenu allows to set the size of

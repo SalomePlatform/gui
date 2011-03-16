@@ -98,12 +98,12 @@ mouse.</center>
 <hr>
 
 \image html vtk_view_anticlockwise.png
-<br><center><b>Rotate counterclockwise</b> - rotates view 90 degrees
+<br><center><b>Rotate counterclockwise</b> - rotates view 90°
 counterclockwise.</center>
 <hr>
 
 \image html vtk_view_clockwise.png
-<br><center><b>Rotate clockwise</b> - rotates view 90 degrees
+<br><center><b>Rotate clockwise</b> - rotates view 90°
 clockwise.</center>
 <hr>
 

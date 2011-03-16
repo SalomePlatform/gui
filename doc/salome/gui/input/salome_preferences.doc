@@ -69,105 +69,103 @@ dialog box press the &quot;<b>...</b>&quot; button(see the picture below).
 
 \image html pref12.png
 
-<ul>
-<li><b>OCC and VTK 3D Viewers</b></li>
-<ul>
-<li><b>Trihedron size</b> - this submenu allows to set the size of
-coordinate axes displayed in the viewer.</li>
-<li><b>Background Color</b> - this submenu allows to select background
-color. Click on the colored line to access to the 
-\ref select_color_and_font_page "Select Color" dialog box.</li>
-<li><b>Number of isolines along U</b> (or <b>V</b>) - this submenu allows to specify
-the number of isolines along the axes of coordinates.</li>
-<li><b>Relative size</b> - if checked in, trihedron axes scale to fit the
-size of the area displayed in 3D Viewer.</li>
-<li><b>Projection mode</b> - allows choosing between \b Orthogonal and
-\b Perspective projection mode. </b>
-<li><b>Navigation mode</b> - this option allows to choose one of the
-modes of work with mouse in OCC and VTK 3D viewers.</li>
-<ul>
-<li><b>Salome Standard Controls</b> - allows to manipulate objects in the
-viewer with the mouse and locked Ctrl button: increase or decrease the
-zoom ratio with the left mouse button, translate object in any
-direction with the central mouse button or rotate it with the right
-mouse button.</li>
-<li><b>Keyboard Free</b> - allows to manipulate objects in the viewer
-with the mouse without locking Ctrl button. In this case the
-operations are assigned to the buttons differently: rotation is made
-with the left button, translation with the right and zoom with both
-pressed in the same time.</li>
-</ul>
-<li><b>Zooming mode</b> - this option allows to choose a zooming mode.</li>
-<ul>
-<li><b>Relative to the view's center</b> - allows to zoom the view 
-relatively to its center.</li>
-<li><b>Relative to the cursor</b> - allows to zoom the view
-relatively to the current cursor position..</li>
-</ul>
-<li><b>[+]/[-] Speed Increment</b> - defines the number of units by
-which the speed increases or respectively decreases after pressing [+]
-or [-] keyboard buttons.</li>
-<li><b>Modification Mode</b> - allows choosing between \b Arithmetic
-and \b Geometrical progression used for zooming</li> 
-<li><b>Show static trihedron</b> - allows to show/hide the static trihedron
-located in the bottom-left corner of the viewer.
-</ul>
-<li><b>Spacemouse</b> - a mouse-like manipulator device specially designed
-for working with 3D presentations, objects, etc. You can reassign the
-actions listed below to any of its buttons.</li>
-<ul>
-<li><b>Decrease Speed Increment</b> - decreases by 1 the speed increment used for the keyboard (same as [-] key).</li>
-<li><b>Increase Speed Increment</b> - increase by 1 the speed increment used for the keyboard (same as [+] key).</li>
-<li><b>Dominant / combined switch</b> - toggles button to switch to dominant or combined movements.</li>
-</ul>
-<li><b>AVI Recording</b></li>
-<ul>
-<li><b>Mode</b> - allows to choose from two recording regimes:</li>
-<ul>
-<li><b>Recording all displayed frames</b> - records exactly at the FPS rate specified by the user.</li>
-<li><b>Recording at a given FPS</b> - records only when the contents
-of the viewer change (some activity is performed).  In the AVI file
-non-recorded images are substituted with the copies of the latest
-recorded image, which produces files with lower quality but requires
-less system resources.   </li>
-</ul>
-<li><b>FPS</b> - allows to define the FPS (frames per second) rate for
-the clip. Set greater value for better quality.</li>
-<li><b>Quality</b> - allows to set the quality of the clip in the
-interval between 0 and 100.</li>
-<li><b>Progressive</b> - allows to record a progressive API
-file.</li>
-</ul>
-
-<br>
-<li><b>Plot2d Viewer</b></li>
-<ul>
-<li><b>Legend Position</b> - this submenu allows to set the default position
-of the legend, it can be located to the left, to the right, on top or
-on bottom of the graph.</li>
-<li><b>Curve Type</b> - this allows to set the representation of graphs in
-your presentations. You can see only <b>Points</b>, points connected with
-<b>Lines</b> or points connected with smooth <b>Splines</b>.</li>
-<li><b>Marker Size</b> - this submenu allows you to set the size of
-markers in your graphs</li>
-<li><b>Horizontal & Vertical Axis Scale</b> - this submenu allows you to set
-the scale for vertical and horizontal axes. It can be either <b>Linear</b> or
-<b>Logarithmic</b></li>
-<li>Background Color - this submenu allows to select the background
-color. Click on the colored line to access to the 
-\ref select_color_and_font_page "Select Color" dialog box.</li>
-</ul>
-<br>
-<li><b>Graph Supervisor</b></li>
-<ul>
-<li><b>Background Color</b> - this submenu allows to select background
-color. Click on the colored line to access to the 
-\ref select_color_and_font_page "Select Color" dialog box.</li>
-<li><b>Title Color</b> - this submenu allows to select title color. Click on
-the colored line to access to the 
-\ref select_color_and_font_page "Select Color" dialog box.</li>
-</ul>
-</ul>
+- <b>Common</b>
+  - <b>Drop-down buttons in toolbars for action groups</b> - when
+  checked, the action groups are represented in the viewer toolbars
+  as a single drop-down button, switchable by the used. Otherwise,
+  all the buttons from the action groups are displayed in the toolbar.
+- <b>OCC Viewer 3d</b>
+  - <b>Trihedron size</b> - this submenu allows to set the size of
+  coordinate axes displayed in the viewer.
+  - <b>Navigation</b> - this option allows to choose one of the
+  modes of work with mouse in OCC and VTK 3D viewers.
+    - <b>Salome Standard Controls</b> - allows to manipulate objects in the
+    viewer with the mouse and locked Ctrl button: increase or decrease the
+    zoom ratio with the left mouse button, translate object in any
+    direction with the central mouse button or rotate it with the right
+    mouse button.
+    - <b>Keyboard Free</b> - allows to manipulate objects in the viewer
+    with the mouse without locking Ctrl button. In this case the
+    operations are assigned to the buttons differently: rotation is made
+    with the left button, translation with the right and zoom with both
+    pressed in the same time.
+  - <b>Number of isolines along U</b> (or <b>V</b>) - this submenu allows to specify
+  the number of isolines along the axes of coordinates.
+  - <b>XZ</b>, <b>XY</b>, <b>YZ</b> and <b>3D View background color</b> -
+  these submenus allow to select background color. Click on the colored line
+  to access to the \ref select_color_and_font_page "Select Color" dialog box.
+  - <b>Zooming</b> - this option allows to choose a zooming mode.
+    - <b>Relative to the view's center</b> - allows to zoom the view 
+    relatively to its center.
+    - <b>Relative to the cursor</b> - allows to zoom the view
+    relatively to the current cursor position.
+- <b>VTK Viewer 3d</b>
+  - <b>Projection mode</b> - allows choosing between \b Orthogonal and
+  \b Perspective projection mode.
+  - <b>Background Color</b> - this submenu allows to select background
+  color. Click on the colored line to access to the
+  \ref select_color_and_font_page "Select Color" dialog box.
+  - <b>Trihedron size</b> - this submenu allows to set the size of
+  coordinate axes displayed in the viewer.
+    - <b>Relative size</b> - if checked in, trihedron axes scale to fit the
+    size of the area displayed in 3D Viewer.
+  - <b>Navigation</b> - this option allows to choose one of the
+  modes of work with mouse in OCC and VTK 3D viewers (for more details
+  see preferences for OCC Viewer 3d).
+  - <b>Zooming mode</b> - this option allows to choose a zooming mode
+  (for more details see preferences for OCC Viewer 3d).
+  - <b>Speed Increment</b> - defines the number of units by
+  which the speed increases or respectively decreases after pressing [+]
+  or [-] keyboard buttons.
+  - <b>Modification Mode</b> - allows choosing between \b Arithmetic
+  and \b Geometrical progression used for zooming.
+  - <b>Show static trihedron</b> - allows to show/hide the static trihedron
+  located in the bottom-left corner of the viewer.
+  - <b>Spacemouse</b> - a mouse-like manipulator device specially designed
+  for working with 3D presentations, objects, etc. You can reassign the
+  actions listed below to any of its buttons.
+    - <b>Decrease Speed Increment</b> - decreases by 1 the speed
+    increment used for the keyboard (same as [-] key).
+    - <b>Increase Speed Increment</b> - increase by 1 the speed
+    increment used for the keyboard (same as [+] key).
+    - <b>Dominant / combined switch</b> - toggles button to switch to
+    dominant or combined movements. 
+  - <b>AVI Recording</b>
+    - <b>Mode</b> - allows to choose from two recording regimes:
+      - <b>Recording all displayed frames</b> - records exactly at the
+      FPS rate specified by the user. 
+      - <b>Recording at a given FPS</b> - records only when the contents
+      of the viewer change (some activity is performed).  In the AVI file
+      non-recorded images are substituted with the copies of the latest
+      recorded image, which produces files with lower quality but requires
+      less system resources.
+    - <b>FPS</b> - allows to define the FPS (frames per second) rate for
+    the clip. Set greater value for better quality.
+    - <b>Quality</b> - allows to set the quality of the clip in the
+    interval between 0 and 100.
+    - <b>Progressive</b> - allows to record a progressive API
+    file.
+  - <b>Names of groups</b> - allows to specify parameters of the
+  titles displayed in the viewer:
+    - <b>Text color</b> - titles text color
+    - <b>Transparency</b> - titles transparency value
+- <b>Plot2d Viewer</b>
+  - <b>Show legend</b> - this options specifies if it's necessary to
+  show legend by default.
+  - <b>Legend Position</b> - this submenu allows to set the default position
+  of the legend, it can be located to the left, to the right, on top or
+  on bottom of the graph.
+  - <b>Curve Type</b> - this allows to set the representation of graphs in
+  your presentations. You can see only <b>Points</b>, points connected with
+  <b>Lines</b> or points connected with smooth <b>Splines</b>.
+  - <b>Marker Size</b> - this submenu allows you to set the size of
+  markers in your graphs.
+  - <b>Horizontal</b> and <b>Vertical axis scale</b> - this submenu allows you to set
+  the scale for vertical and horizontal axes. It can be either <b>Linear</b> or
+  <b>Logarithmic</b>.
+  - <b>Background Color</b> - this submenu allows to select the background
+  color. Click on the colored line to access to the 
+  \ref select_color_and_font_page "Select Color" dialog box.
 
 <br><h2>Directories Preferences</h2>
 

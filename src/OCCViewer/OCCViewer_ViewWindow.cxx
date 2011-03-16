@@ -1103,7 +1103,6 @@ void OCCViewer_ViewWindow::createActions()
   aAction->setStatusTip(tr("DSC_BOTTOM_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onBottomView()));
   this->addAction(aAction);
-  this->addAction(aAction);
   toolMgr()->registerAction( aAction, BottomId );
   
   aAction = new QtxAction(tr("MNU_LEFT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_LEFT" ) ),
@@ -1119,6 +1118,22 @@ void OCCViewer_ViewWindow::createActions()
   connect(aAction, SIGNAL(triggered()), this, SLOT(onRightView()));
   this->addAction(aAction);
   toolMgr()->registerAction( aAction, RightId );
+
+  // rotate anticlockwise
+  aAction = new QtxAction(tr("MNU_ANTICLOCKWISE_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_ANTICLOCKWISE" ) ),
+                           tr( "MNU_ANTICLOCKWISE_VIEW" ), 0, this, false, "Viewers:Rotate anticlockwise");
+  aAction->setStatusTip(tr("DSC_ANTICLOCKWISE_VIEW"));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onAntiClockWiseView()));
+  this->addAction(aAction);
+  toolMgr()->registerAction( aAction, AntiClockWiseId );
+
+  // rotate clockwise
+  aAction = new QtxAction(tr("MNU_CLOCKWISE_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_CLOCKWISE" ) ),
+                           tr( "MNU_CLOCKWISE_VIEW" ), 0, this, false, "Viewers:Rotate clockwise");
+  aAction->setStatusTip(tr("DSC_CLOCKWISE_VIEW"));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onClockWiseView()));
+  this->addAction(aAction);
+  toolMgr()->registerAction( aAction, ClockWiseId );
 
   // Reset
   aAction = new QtxAction(tr("MNU_RESET_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_RESET" ) ),
@@ -1261,7 +1276,10 @@ void OCCViewer_ViewWindow::createToolBar()
     aViewsAction->insertAction( toolMgr()->action( LeftId ) );
     aViewsAction->insertAction( toolMgr()->action( RightId ) );
     toolMgr()->append( aViewsAction, tid );
-  
+
+    toolMgr()->append( AntiClockWiseId, tid );
+    toolMgr()->append( ClockWiseId, tid );
+
     toolMgr()->append( ResetId, tid );
 
     QtxMultiAction* aMemAction = new QtxMultiAction( this );
@@ -1363,6 +1381,26 @@ void OCCViewer_ViewWindow::onRightView()
   if ( !aView3d.IsNull() ) aView3d->SetProj (V3d_Ypos);
   onViewFitAll();
   emit vpTransformationFinished ( RIGHTVIEW );
+}
+
+/*!
+  \brief Rotate view 90 degrees clockwise
+*/
+void OCCViewer_ViewWindow::onClockWiseView()
+{
+  emit vpTransformationStarted ( CLOCKWISEVIEW );
+  myViewPort->rotateXY( 90. );
+  emit vpTransformationFinished ( CLOCKWISEVIEW );
+}
+
+/*!
+  \brief Rotate view 90 degrees conterclockwise
+*/
+void OCCViewer_ViewWindow::onAntiClockWiseView()
+{
+  emit vpTransformationStarted ( ANTICLOCKWISEVIEW );
+  myViewPort->rotateXY( -90. );
+  emit vpTransformationFinished ( ANTICLOCKWISEVIEW );
 }
 
 /*!

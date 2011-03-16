@@ -757,6 +757,31 @@ SVTK_Renderer
   this->OnFitAll();
 }
 
+
+/*!
+  To rotate view 90 degrees clockwise
+*/
+void
+SVTK_Renderer
+::onClockWiseView()
+{
+  vtkCamera* aCamera = GetDevice()->GetActiveCamera(); 
+  aCamera->Roll(-90);
+  aCamera->OrthogonalizeViewUp();
+}
+
+/*!
+  To rotate view 90 degrees counterclockwise
+*/
+void
+SVTK_Renderer
+::onAntiClockWiseView()
+{
+  vtkCamera* aCamera = GetDevice()->GetActiveCamera(); 
+  aCamera->Roll(90);
+  aCamera->OrthogonalizeViewUp();
+}
+
 /*!
   To reset direction of the camera to right view
 */

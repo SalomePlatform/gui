@@ -136,6 +136,14 @@
         <translation>Right View</translation>
     </message>
     <message>
+        <source>DSC_ANTICLOCKWISE_VIEW</source>
+        <translation>Rotate view counterclockwise</translation>
+    </message>
+    <message>
+        <source>DSC_CLOCKWISE_VIEW</source>
+        <translation>Rotate View Clockwise</translation>
+    </message>
+    <message>
         <source>MNU_CHANGINGROTATIONPOINT_VIEW</source>
         <translation>Change Rotation Point</translation>
     </message>
@@ -182,6 +190,14 @@
     <message>
         <source>MNU_PRESETS_VIEW</source>
         <translation>Restore View</translation>
+    </message>
+    <message>
+        <source>MNU_ANTICLOCKWISE_VIEW</source>
+        <translation>Rotate counterclockwise</translation>
+    </message>
+    <message>
+        <source>MNU_CLOCKWISE_VIEW</source>
+        <translation>Rotate clockwise</translation>
     </message>
     <message>
         <source>MNU_RIGHT_VIEW</source>

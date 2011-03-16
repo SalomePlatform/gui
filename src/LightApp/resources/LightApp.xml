@@ -117,6 +117,10 @@
     <parameter name="store_positions"    value="true" />
     <parameter name="auto_save_interval" value="0" />
   </section>
+  <section name="viewers" >
+    <!-- common viewers preferences -->
+    <parameter name="drop_down_buttons"     value="true" />
+  </section>
   <section name="OCCViewer" >
     <!-- OCC viewer preferences -->
     <parameter name="xz_background"     value="35, 136, 145" />

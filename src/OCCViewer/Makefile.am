@@ -88,6 +88,8 @@ MOC_FILES =					\
 nodist_libOCCViewer_la_SOURCES = $(MOC_FILES)
 
 dist_salomeres_DATA =				\
+	resources/occ_view_anticlockwise.png	\
+	resources/occ_view_clockwise.png	\
 	resources/occ_view_back.png		\
 	resources/occ_view_bottom.png		\
 	resources/occ_view_camera_dump.png	\

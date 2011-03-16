@@ -106,6 +106,8 @@ QRC_FILES = \
 nodist_libVTKViewer_la_SOURCES = $(MOC_FILES) $(QRC_FILES)
 
 dist_salomeres_DATA =				\
+	resources/vtk_view_anticlockwise.png	\
+	resources/vtk_view_clockwise.png	\
 	resources/vtk_view_back.png		\
 	resources/vtk_view_bottom.png		\
 	resources/vtk_view_camera_dump.png	\

@@ -275,6 +275,20 @@ void VTKViewer_ViewWindow::createActions()
   connect(aAction, SIGNAL(activated()), this, SLOT(onRightView()));
   myActionsMap[ RightId ] = aAction;
 
+  // \li Rotate anticlockwise
+  aAction = new QtxAction(tr("MNU_ANTICLOCKWISE_VIEW"), aResMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_ANTICLOCKWISE" ) ),
+			  tr( "MNU_ANTICLOCKWISE_VIEW" ), 0, this);
+  aAction->setStatusTip(tr("DSC_ANTICLOCKWISE_VIEW"));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onAntiClockWiseView()));
+  myActionsMap[ AntiClockWiseId ] = aAction;
+
+  // \li Rotate clockwise
+  aAction = new QtxAction(tr("MNU_CLOCKWISE_VIEW"), aResMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_CLOCKWISE" ) ),
+			  tr( "MNU_CLOCKWISE_VIEW" ), 0, this);
+  aAction->setStatusTip(tr("DSC_CLOCKWISE_VIEW"));
+  connect(aAction, SIGNAL(triggered()), this, SLOT(onClockWiseView()));
+  myActionsMap[ ClockWiseId ] = aAction;
+
   //! \li Reset
   aAction = new QtxAction(tr("MNU_RESET_VIEW"), aResMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_RESET" ) ),
                            tr( "MNU_RESET_VIEW" ), 0, this);
@@ -317,6 +331,9 @@ void VTKViewer_ViewWindow::createToolBar()
   aViewsAction->insertAction( myActionsMap[LeftId] );
   aViewsAction->insertAction( myActionsMap[RightId] );
   myToolBar->addAction( aViewsAction );
+
+  myToolBar->addAction( myActionsMap[AntiClockWiseId] );
+  myToolBar->addAction( myActionsMap[ClockWiseId] );
 
   myToolBar->addAction( myActionsMap[ResetId] );
 }
@@ -379,6 +396,28 @@ void VTKViewer_ViewWindow::onRightView()
   camera->SetViewUp(0,0,1);
   camera->SetFocalPoint(0,0,0);
   onFitAll();
+}
+
+/*!
+  \brief Rotate view 90 degrees clockwise
+*/
+void VTKViewer_ViewWindow::onClockWiseView()
+{
+  vtkCamera* aCamera = myRenderer->GetActiveCamera(); 
+  aCamera->Roll(-90);
+  aCamera->OrthogonalizeViewUp();
+  Repaint();
+}
+
+/*!
+  \brief Rotate view 90 degrees conterclockwise
+*/
+void VTKViewer_ViewWindow::onAntiClockWiseView()
+{
+  vtkCamera* aCamera = myRenderer->GetActiveCamera(); 
+  aCamera->Roll(90);
+  aCamera->OrthogonalizeViewUp();
+  Repaint();
 }
 
 /*!On reset view slot.*/

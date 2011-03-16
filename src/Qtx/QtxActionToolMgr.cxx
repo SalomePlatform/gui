@@ -401,6 +401,15 @@ QToolBar* QtxActionToolMgr::toolBar( const QString& title ) const
 }
 
 /*!
+  \bried Get all registered toolbars identifiers
+  \return list of toolbars ids
+*/
+QIntList QtxActionToolMgr::toolBarsIds() const
+{
+  return myToolBars.keys();
+}
+
+/*!
   \brief Check if toolbar with given \a id already registered.
   \param tid toolbar ID
   \return \c true if toolbar is registered in the toolbar manager
@@ -439,6 +448,27 @@ bool QtxActionToolMgr::containsAction( const int id, const int tid ) const
     }
   }
   return false;
+}
+
+/*!
+  \brief Get index of the action \a id within the toolbar \a tid
+  \param id action ID
+  \param tid toolbar ID
+  \return index of the action in the toolbar or -1 if action is not contained in the toolbar
+*/
+int QtxActionToolMgr::index( const int id, const int tid ) const
+{
+  for ( ToolBarMap::ConstIterator it = myToolBars.begin(); it != myToolBars.end(); ++it )
+  {
+    if ( it.key() == tid )
+    {
+      const NodeList& list = it.value().nodes;
+      int idx = 0;
+      for ( NodeList::const_iterator nit = list.begin(); nit != list.end(); ++nit, ++idx )
+        if ( (*nit).id == id ) return idx;
+    }
+  }
+  return -1;
 }
 
 /*!

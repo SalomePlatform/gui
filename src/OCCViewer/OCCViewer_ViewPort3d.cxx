@@ -528,6 +528,20 @@ void OCCViewer_ViewPort3d::reset()
 }
 
 /*!
+  Rotate the view in the view plane (orthogonal to the view vector)
+*/
+void OCCViewer_ViewPort3d::rotateXY( double degrees )
+{
+  if ( activeView().IsNull() )
+    return;
+
+  int x = width()/2, y = height()/2;
+  double X, Y, Z;
+  activeView()->Convert( x, y, X, Y, Z );
+  activeView()->Rotate( 0, 0, degrees * Standard_PI180, X, Y, Z );
+}  
+  
+/*!
   Passed the handle of native window of the component to CASCADE view. [ private ]
 */
 bool OCCViewer_ViewPort3d::setWindow( const Handle(V3d_View)& view )

@@ -104,6 +104,7 @@ void OCCViewer_ViewFrame::onMaximizedView( OCCViewer_ViewWindow* theView, bool i
         myViews.append( view ); 
         aModel->initView(view);
         view->setMaximized(false, false);
+	view->setDropDownButtons( dropDownButtons() );
         connectViewSignals(view);
         view->setBackgroundColor(aModel->backgroundColor(i));
       }
@@ -252,4 +253,12 @@ void OCCViewer_ViewFrame::onDumpView()
   else {
     getView(MAIN_VIEW)->onDumpView(); 
   }
+}
+
+void OCCViewer_ViewFrame::setDropDownButtons( bool on )
+{
+  foreach( OCCViewer_ViewWindow* aView, myViews ) {
+    aView->setDropDownButtons( on );
+  }
+  OCCViewer_ViewWindow::setDropDownButtons( on );
 }

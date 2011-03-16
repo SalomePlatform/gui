@@ -72,6 +72,7 @@ public:
   virtual void          startZoomAtPoint( int, int );
   virtual void          zoom( int, int, int, int );
   virtual void          fitAll( bool keepScale = false, bool withZ = true, bool upd = true );
+  virtual void          rotateXY( double );
 
   virtual void          startRotation( int, int, int, const gp_Pnt& );
   virtual void          rotate( int, int, int, const gp_Pnt& );

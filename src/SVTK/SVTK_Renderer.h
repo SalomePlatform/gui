@@ -204,7 +204,13 @@ class SVTK_EXPORT SVTK_Renderer : public vtkObject
   //! To reset direction of the camera to left view
   void OnLeftView();     
 
- protected:
+  //! To rotate view 90 degrees clockwise
+  void onClockWiseView();
+
+  //! To rotate view 90 degrees counterclockwise
+  void onAntiClockWiseView();
+
+protected:
   SVTK_Renderer();
   ~SVTK_Renderer();
 

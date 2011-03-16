@@ -101,6 +101,14 @@
         <translation>occ_view_right.png</translation>
     </message>
     <message>
+        <source>ICON_OCCVIEWER_VIEW_CLOCKWISE</source>
+        <translation>occ_view_clockwise.png</translation>
+    </message>
+    <message>
+        <source>ICON_OCCVIEWER_VIEW_ANTICLOCKWISE</source>
+        <translation>occ_view_anticlockwise.png</translation>
+    </message>
+    <message>
         <source>ICON_OCCVIEWER_CLIPPING</source>
         <translation>occ_view_clipping.png</translation>
     </message>

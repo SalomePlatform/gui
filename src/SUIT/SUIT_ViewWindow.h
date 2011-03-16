@@ -28,18 +28,21 @@
 #include "SUIT.h"
 
 #include <QMainWindow>
+#include <QList>
 #include <QMap>
-#include <QVariant>
 
 class SUIT_Desktop;
 class SUIT_ViewManager;
 class QtxActionToolMgr;
+class QtxMultiAction;
 class QImage;
 
 class SUIT_EXPORT SUIT_ViewWindow: public QMainWindow 
 {
   Q_OBJECT
+
 public:
+
   SUIT_ViewWindow( SUIT_Desktop* );
   virtual ~SUIT_ViewWindow();
 
@@ -62,12 +65,11 @@ public:
   void              setDestructiveClose( const bool );
   
   int               getId() const;
-  
-  void              setCustomData (const QString& name, const QVariant& data);
-  
-  QVariant          getCustomData (const QString & name) const;
 
   QtxActionToolMgr* toolMgr() const;
+
+  virtual void      setDropDownButtons( bool );
+  bool              dropDownButtons() const;
 
 public slots:
   virtual void      onDumpView();
@@ -95,8 +97,11 @@ protected:
   SUIT_ViewManager* myManager;
 
 private:
+  typedef QMap< int, QList<QtxMultiAction*> > ActionsMap;
+
   QtxActionToolMgr* myToolMgr;
-  QMap<QString, QVariant> myCustomData;
+  bool              myIsDropDown;
+  ActionsMap        myMultiActions;
 };
 
 #endif // SUIT_VIEWWINDOW_H

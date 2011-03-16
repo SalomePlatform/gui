@@ -51,13 +51,15 @@ class OCCVIEWER_EXPORT OCCViewer_ViewWindow : public SUIT_ViewWindow
 public:
   enum { DumpId, FitAllId, FitRectId, ZoomId, PanId, GlobalPanId,
          ChangeRotationPointId, RotationId,
-         FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, CloneId, ClippingId, MemId, RestoreId,
+         FrontId, BackId, TopId, BottomId, LeftId, RightId, ClockWiseId, AntiClockWiseId,
+	 ResetId, CloneId, ClippingId, MemId, RestoreId,
          TrihedronShowId, AxialScaleId, GraduatedAxesId, AmbientId,
 	 SwitchInteractionStyleId, SwitchZoomingStyleId, MaximizedId, UserId };
 
   enum OperationType{ NOTHING, PANVIEW, ZOOMVIEW, ROTATE, 
                       PANGLOBAL, WINDOWFIT, FITALLVIEW, RESETVIEW,
-                      FRONTVIEW, BACKVIEW, TOPVIEW, BOTTOMVIEW, LEFTVIEW, RIGHTVIEW };
+                      FRONTVIEW, BACKVIEW, TOPVIEW, BOTTOMVIEW, LEFTVIEW, RIGHTVIEW,
+		      CLOCKWISEVIEW, ANTICLOCKWISEVIEW };
 
   enum RotationPointType{ GRAVITY, SELECTED };
 
@@ -122,6 +124,8 @@ public slots:
   virtual void onBottomView();
   virtual void onLeftView();
   virtual void onRightView();
+  virtual void onClockWiseView();
+  virtual void onAntiClockWiseView();
   virtual void onResetView();
   virtual void onFitAll();
   virtual void activateZoom();

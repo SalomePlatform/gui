@@ -495,6 +495,14 @@ The changes will be applied on the next application session.</translation>
         <translation>SALOME</translation>
     </message>
     <message>
+        <source>PREF_DROP_DOWN_BUTTONS</source>
+        <translation>Drop-down buttons in toolbars for action groups</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_COMMON</source>
+        <translation>Common</translation>
+    </message>
+    <message>
         <source>PREF_GROUP_OCCVIEWER</source>
         <translation>OCC Viewer 3d</translation>
     </message>

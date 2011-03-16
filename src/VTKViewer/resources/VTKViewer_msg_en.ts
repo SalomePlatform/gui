@@ -4,6 +4,22 @@
 <context>
     <name>@default</name>
     <message>
+        <source>DSC_ANTICLOCKWISE_VIEW</source>
+        <translation>Rotate view counterclockwise</translation>
+    </message>
+    <message>
+        <source>DSC_CLOCKWISE_VIEW</source>
+        <translation>Rotate View Clockwise</translation>
+    </message>
+    <message>
+        <source>MNU_ANTICLOCKWISE_VIEW</source>
+        <translation>Rotate counterclockwise</translation>
+    </message>
+    <message>
+        <source>MNU_CLOCKWISE_VIEW</source>
+        <translation>Rotate clockwise</translation>
+    </message>
+    <message>
         <source>MNU_FRONT_VIEW</source>
         <translation>Front</translation>
     </message>

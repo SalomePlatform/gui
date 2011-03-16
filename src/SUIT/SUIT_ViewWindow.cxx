@@ -31,6 +31,7 @@
 #include "SUIT_Application.h"
 #include "SUIT_ViewManager.h"
 #include "QtxActionToolMgr.h"
+#include "QtxMultiAction.h"
 
 #include <QEvent>
 #include <QIcon>
@@ -46,7 +47,7 @@ const int DUMP_EVENT = QEvent::User + 123;
 
 /*! Constructor.*/
 SUIT_ViewWindow::SUIT_ViewWindow( SUIT_Desktop* theDesktop )
-: QMainWindow( theDesktop )
+  : QMainWindow( theDesktop ), myIsDropDown( true )
 {
   myDesktop = theDesktop;
 
@@ -56,7 +57,7 @@ SUIT_ViewWindow::SUIT_ViewWindow( SUIT_Desktop* theDesktop )
 
   myToolMgr = new QtxActionToolMgr( this );
 
-  setCustomData(QString("VectorsMode"), QVariant(false));
+  setProperty( "VectorsMode", false );
 }
 
 /*! Destructor.*/
@@ -258,29 +259,70 @@ QtxActionToolMgr* SUIT_ViewWindow::toolMgr() const
 }
 
 /*!
+  \brief Set buttons mode to drop-down (\a on = \c true) or ligned (\a on = \c false) 
+  \param on new buttons mode
+  \sa dropDownButtons()
+*/
+void SUIT_ViewWindow::setDropDownButtons( bool on )
+{
+  if ( myIsDropDown != on ) {
+    myIsDropDown = on;
+    if ( myIsDropDown ) {
+      ActionsMap::const_iterator it;
+      for( it = myMultiActions.constBegin(); it != myMultiActions.constEnd(); ++it )
+      {
+	int tid = it.key();
+	const QList<QtxMultiAction*>& mlist = it.value();
+	QList<QtxMultiAction*>::const_iterator mit;
+	for ( mit = mlist.constBegin(); mit != mlist.constEnd(); ++mit )
+	{
+	  QtxMultiAction* ma = *mit;
+	  const QList<QAction*> alist = ma->actions();
+	  if ( alist.isEmpty() ) continue;
+	  int idx = toolMgr()->index( toolMgr()->actionId( alist[0] ), tid );
+	  if ( idx == -1 ) continue;
+	  foreach ( QAction* a, alist ) toolMgr()->remove( toolMgr()->actionId( a ), tid );
+	  toolMgr()->insert( ma, tid, idx );
+	}
+      }
+      myMultiActions.clear();
+    }
+    else {
+      QIntList tblist = toolMgr()->toolBarsIds();
+      QIntList alist  = toolMgr()->idList();
+      foreach( int aid, alist )
+      {
+	QtxMultiAction* ma = qobject_cast<QtxMultiAction*>( toolMgr()->action( aid ) );
+	if ( !ma ) continue;
+	foreach( int tid, tblist )
+	{
+	  int idx = toolMgr()->index( aid, tid );
+	  if ( idx >= 0 )
+	  {
+	    myMultiActions[ tid ].append( ma );
+	    toolMgr()->remove( aid, tid );
+	    foreach( QAction* a, ma->actions() ) toolMgr()->insert( a, tid, idx++ );
+	  }
+	}
+      }
+    }
+  }
+}
+
+/*!
+  \brief Get current buttons mode
+  \return current buttons mode
+  \sa setDropDownButtons()
+*/
+bool SUIT_ViewWindow::dropDownButtons() const
+{
+  return myIsDropDown;
+}
+
+/*!
   \return window unique identifier  
 */
 int SUIT_ViewWindow::getId() const
 {
   return int(long(this));
-}
-
-/*!
-  Assign custom data to the view window.
-  \param name castom data name
-  \param value custom data value
-*/
-void SUIT_ViewWindow::setCustomData(const QString& name, const QVariant& value)
-{
-  myCustomData[name] = value;
-}
-
-/*!
-  Get custom data assigned to the view window.
-  \param name castom data name
-  \return custom data assigned to the window
-*/
-QVariant SUIT_ViewWindow::getCustomData(const QString& name) const
-{
-  return myCustomData.contains( name ) ? myCustomData[name] : QVariant();
 }

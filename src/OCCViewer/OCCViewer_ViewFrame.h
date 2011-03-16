@@ -75,8 +75,9 @@ public:
   virtual bool eventFilter(QObject* watched, QEvent* e) { return SUIT_ViewWindow::eventFilter(watched, e); }
 
   virtual QColor backgroundColor() const;
-  virtual void    setBackgroundColor( const QColor& );
+  virtual void   setBackgroundColor( const QColor& );
 
+  virtual void   setDropDownButtons( bool );
 
 public slots:
   virtual void onFrontView() { getView(MAIN_VIEW)->onFrontView(); }
@@ -86,6 +87,8 @@ public slots:
   virtual void onBottomView() { getView(MAIN_VIEW)->onBottomView(); }
   virtual void onLeftView() { getView(MAIN_VIEW)->onLeftView(); }
   virtual void onRightView() { getView(MAIN_VIEW)->onRightView(); }
+  virtual void onClockWiseView() { getView(MAIN_VIEW)->onClockWiseView(); }
+  virtual void onAntiClockWiseView() { getView(MAIN_VIEW)->onAntiClockWiseView(); }
   virtual void onResetView() { getView(MAIN_VIEW)->onResetView(); }
   virtual void onFitAll();
   virtual void activateZoom() {}

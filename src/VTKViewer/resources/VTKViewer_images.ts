@@ -119,5 +119,13 @@
         <source>ICON_VTKVIEWER_VIEW_TRIHEDRON</source>
         <translation>vtk_view_triedre.png</translation>
     </message>
+    <message>
+        <source>ICON_VTKVIEWER_VIEW_CLOCKWISE</source>
+        <translation>occ_view_clockwise.png</translation>
+    </message>
+    <message>
+        <source>ICON_VTKVIEWER_VIEW_ANTICLOCKWISE</source>
+        <translation>occ_view_anticlockwise.png</translation>
+    </message>
 </context>
 </TS>

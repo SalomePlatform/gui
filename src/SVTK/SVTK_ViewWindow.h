@@ -331,6 +331,12 @@ public slots:
   //! Redirect the request to #SVTK_Renderer::OnLeftView
   virtual void onLeftView();     
 
+  //! Redirect the request to #SVTK_Renderer::onClockWiseView
+  virtual void onClockWiseView();
+
+  //! Redirect the request to #SVTK_Renderer::onAntiClockWiseView
+  virtual void onAntiClockWiseView();
+
   //! Redirect the request to #SVTK_Renderer::OnResetView
   virtual void onResetView();     
 
@@ -377,8 +383,8 @@ protected:
 
   enum { DumpId, FitAllId, FitRectId, ZoomId, PanId, GlobalPanId, 
          ChangeRotationPointId, RotationId,
-         FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, 
-         ViewTrihedronId, NonIsometric, GraduatedAxes, UpdateRate,
+         FrontId, BackId, TopId, BottomId, LeftId, RightId, ClockWiseId, AntiClockWiseId, ResetId,
+	 ViewTrihedronId, NonIsometric, GraduatedAxes, UpdateRate,
          ParallelModeId, ProjectionModeId, ViewParametersId, SwitchInteractionStyleId,
          SwitchZoomingStyleId,
          StartRecordingId, PlayRecordingId, PauseRecordingId, StopRecordingId };

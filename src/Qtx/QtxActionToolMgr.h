@@ -99,11 +99,13 @@ public:
 
   QToolBar*       toolBar( const int ) const;
   QToolBar*       toolBar( const QString& ) const;
+  QIntList        toolBarsIds() const;
   
   bool            hasToolBar( const int ) const;
   bool            hasToolBar( const QString& ) const;
 
   bool            containsAction( const int, const int = -1 ) const;
+  int             index( const int, const int ) const;
 
   virtual bool    load( const QString&, QtxActionMgr::Reader& );
 

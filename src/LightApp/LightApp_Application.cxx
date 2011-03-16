@@ -1432,14 +1432,18 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
   addViewManager( viewMgr );
   SUIT_ViewWindow* viewWin = viewMgr->createViewWindow();
 
-  if ( viewWin && desktop() )
+  if ( viewWin && desktop() ) {
     viewWin->resize( (int)( desktop()->width() * 0.6 ), (int)( desktop()->height() * 0.6 ) );
+    viewWin->setDropDownButtons( resMgr->booleanValue( "viewers", "drop_down_buttons", true ) );
+  }
 
   return viewMgr;
 }
 
 SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType, QWidget* w )
 {
+  SUIT_ResourceMgr* resMgr = resourceMgr();
+
   SUIT_ViewManager* vm = new SUIT_ViewManager( activeStudy(), 
 					       desktop(),
 					       new LightApp_WgViewModel( vmType, w ) );
@@ -1447,8 +1451,10 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
  
   addViewManager( vm );
   SUIT_ViewWindow* vw = vm->createViewWindow();
-  if ( vw && desktop() )
+  if ( vw && desktop() ) {
     vw->resize( (int)( desktop()->width() * 0.6 ), (int)( desktop()->height() * 0.6 ) );
+    vw->setDropDownButtons( resMgr->booleanValue( "viewers", "drop_down_buttons", true ) );
+  }
 
   if ( !vmType.isEmpty() && !myUserWmTypes.contains( vmType ) )
     myUserWmTypes << vmType;
@@ -1962,6 +1968,11 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   int viewTab = pref->addPreference( tr( "PREF_TAB_VIEWERS" ), salomeCat );
 
+  int genGroup = pref->addPreference( tr( "PREF_GROUP_COMMON" ), viewTab );
+
+  pref->addPreference( tr( "PREF_DROP_DOWN_BUTTONS" ), genGroup,
+		       LightApp_Preferences::Bool, "viewers", "drop_down_buttons" );
+  
   int occGroup = pref->addPreference( tr( "PREF_GROUP_OCCVIEWER" ), viewTab );
 
   int vtkGroup = pref->addPreference( tr( "PREF_GROUP_VTKVIEWER" ), viewTab );
@@ -2284,6 +2295,17 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
   SUIT_ResourceMgr* resMgr = resourceMgr();
   if ( !resMgr )
     return;
+
+  if ( sec == "viewers" && param == "drop_down_buttons" ) 
+  {
+    ViewManagerList vmlist = viewManagers();
+    foreach( SUIT_ViewManager* vm, vmlist )
+    {
+      QVector<SUIT_ViewWindow*> vwlist = vm->getViews();
+      foreach( SUIT_ViewWindow* vw, vwlist )
+	if ( vw ) vw->setDropDownButtons( resMgr->booleanValue( "viewers", "drop_down_buttons", true ) );
+    }
+  }
 
 #ifndef DISABLE_OCCVIEWER
   if ( sec == QString( "OCCViewer" ) && param == QString( "trihedron_size" ) )

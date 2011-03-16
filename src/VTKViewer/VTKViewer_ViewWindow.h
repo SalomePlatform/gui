@@ -84,6 +84,8 @@ public slots:
   void onBottomView();
   void onLeftView();
   void onRightView();
+  void onClockWiseView();
+  void onAntiClockWiseView();
   void onResetView();
   void onFitAll();
   void activateZoom();
@@ -111,7 +113,8 @@ private:
 
 private:
   enum { DumpId, FitAllId, FitRectId, ZoomId, PanId, GlobalPanId, RotationId,
-         FrontId, BackId, TopId, BottomId, LeftId, RightId, ResetId, TrihedronShowId };
+         FrontId, BackId, TopId, BottomId, LeftId, RightId, ClockWiseId, AntiClockWiseId,
+	 ResetId, TrihedronShowId };
   typedef QMap<int, QtxAction*> ActionsMap;
   
   void    createActions();

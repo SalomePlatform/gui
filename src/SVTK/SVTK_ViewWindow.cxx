@@ -354,6 +354,24 @@ void SVTK_ViewWindow::onRightView()
 }
 
 /*!
+  \brief Rotate view 90 degrees clockwise
+*/
+void SVTK_ViewWindow::onClockWiseView()
+{
+  GetRenderer()->onClockWiseView();
+  Repaint();
+}
+
+/*!
+  \brief Rotate view 90 degrees conterclockwise
+*/
+void SVTK_ViewWindow::onAntiClockWiseView()
+{
+  GetRenderer()->onAntiClockWiseView();
+  Repaint();
+}
+
+/*!
   Processes transformation "reset view": sets default orientation of viewport camera
 */
 void SVTK_ViewWindow::onResetView()
@@ -1714,6 +1732,24 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
   this->addAction(anAction);
   mgr->registerAction( anAction, RightId );
 
+  // rotate anticlockwise
+  anAction = new QtxAction(tr("MNU_ANTICLOCKWISE_VIEW"),
+			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_ANTICLOCKWISE" ) ),
+                           tr( "MNU_ANTICLOCKWISE_VIEW" ), 0, this, false, "Viewers:Rotate anticlockwise");
+  anAction->setStatusTip(tr("DSC_ANTICLOCKWISE_VIEW"));
+  connect(anAction, SIGNAL(triggered()), this, SLOT(onAntiClockWiseView()));
+  this->addAction(anAction);
+  mgr->registerAction( anAction, AntiClockWiseId );
+
+  // rotate clockwise
+  anAction = new QtxAction(tr("MNU_CLOCKWISE_VIEW"),
+			   theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_CLOCKWISE" ) ),
+                           tr( "MNU_CLOCKWISE_VIEW" ), 0, this, false, "Viewers:Rotate clockwise");
+  anAction->setStatusTip(tr("DSC_CLOCKWISE_VIEW"));
+  connect(anAction, SIGNAL(triggered()), this, SLOT(onClockWiseView()));
+  this->addAction(anAction);
+  mgr->registerAction( anAction, ClockWiseId );
+
   // Reset
   anAction = new QtxAction(tr("MNU_RESET_VIEW"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_VTKVIEWER_VIEW_RESET" ) ),
@@ -1877,6 +1913,9 @@ void SVTK_ViewWindow::createToolBar()
   aViewsAction->insertAction( getAction( LeftId ) );
   aViewsAction->insertAction( getAction( RightId ) );
   mgr->append( aViewsAction, myToolBar );
+
+  mgr->append( AntiClockWiseId, myToolBar );
+  mgr->append( ClockWiseId, myToolBar );
 
   mgr->append( ResetId, myToolBar );
 

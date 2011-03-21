@@ -142,17 +142,20 @@ void LightApp_ShowHideOp::startOperation()
       else
         entries.append( entry );
     }
-  
+
   // be sure to use real obejct entries
   QStringList objEntries;
   QStringList::const_iterator it = entries.begin(), last = entries.end();
   for ( ; it!=last; ++it )
     objEntries.append( study->referencedToEntry( *it ) ); 
   
-  if( myActionType==DISPLAY || myActionType==DISPLAY_ONLY )
+  if( myActionType==DISPLAY || myActionType==DISPLAY_ONLY ) {
     d->Display( objEntries, false, 0 );
-  else if( myActionType==ERASE )
+    mgr->setSelectedObjects(selObjs);
+  }
+  else if( myActionType==ERASE ) {
     d->Erase( objEntries, false, false, 0 );
+  }
   
   d->UpdateViewer();
   commit();

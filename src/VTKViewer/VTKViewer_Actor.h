@@ -315,6 +315,9 @@ class VTKVIEWER_EXPORT VTKViewer_Actor : public vtkLODActor
   virtual void   SetQuadraticArcAngle(vtkFloatingPointType theMaxAngle);
   virtual vtkFloatingPointType GetQuadraticArcAngle() const;
 
+  //----------------------------------------------------------------------------
+  //! Return pointer to the dataset, which used to calculation of the bounding box of the actor
+  virtual vtkDataSet* GetHighlightedDataSet();
 
  protected:
   //----------------------------------------------------------------------------

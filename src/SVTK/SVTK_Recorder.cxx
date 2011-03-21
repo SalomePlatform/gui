@@ -116,7 +116,11 @@ SVTK_Recorder
   myErrorStatus = 0;
   using namespace std;
   ostringstream aStream;
+#ifndef WIN32
   aStream<<"which "<<myNameAVIMaker<<" 2> /dev/null";
+#else
+  aStream<<"setlocal & set P2=.;%PATH% & (for %e in (%PATHEXT%) do @for %i in ("<<myNameAVIMaker<<"%e) do @if NOT \"%~$P2:i\"==\"\" exit /b 0) & exit /b 1";
+#endif
   std::string anAVIMakeCheck = aStream.str();
   int iErr = system(anAVIMakeCheck.c_str());
   if(iErr != 0)
@@ -430,10 +434,19 @@ SVTK_Recorder
       myNbWrittenFrames++;
       std::string anCurrentName;
       GetNameJPEG(myName,anIndex,anCurrentName);
+  #ifndef WIN32
       aStream<<"ln -s "<< anInitialName<<" "<<anCurrentName<<";";
+  #else
+      aStream<<"COPY /Y "<<QString::fromStdString(anInitialName).replace("/","\\\\").toStdString()<<
+		  " "<<QString::fromStdString(anCurrentName).replace("/","\\\\").toStdString()<<" > NUL";
+  #endif
       if(anIndex + 1 < aFinishIndex)
+  #ifndef WIN32
         aStream<<" \\";
-      aStream<<endl;
+        aStream<<endl;
+  #else
+        aStream<<" & ";
+  #endif
     }
     std::string aString(aStream.str());
     system(aString.c_str());
@@ -455,10 +468,11 @@ SVTK_Recorder
     //" -f "<<int(myNbFPS)<<" "<<
     " -f "<<myNbFPS<<" "<<
     " -n "<<myNbWrittenFrames<<" "<<
-    " -j "<<myName<<"_\%06d.jpeg "<<
-    "| yuv2lav"<<
-    " -o "<<myName;
-   
+    " -j \""<<myName<<"_\%06d.jpeg\" "<<
+    "| yuv2lav"<<" -o \""<<myName<<"\"";
+#ifdef WIN32
+  aStream<<" -f aA";   
+#endif
   std::string aString(aStream.str());
   myErrorStatus = system(aString.c_str());
 
@@ -467,12 +481,20 @@ SVTK_Recorder
   QFileInfo aFileInfo(myName.c_str());
   QString aDirPath = aFileInfo.absoluteDir().path();
   QString aBaseName = aFileInfo.fileName();
-  QString aCommand = 
-    QString("(cd ") + aDirPath + 
+  QString aCommand;
+#ifndef WIN32
+  aCommand = QString("(cd ") + aDirPath + 
     "; ls " +
     " | egrep '" + aBaseName + "_[0-9]*.jpeg'" +
     " | xargs rm " +
     ")";
+#else
+  QString tmpFile = QString("_") + aBaseName + "_tempfile";
+  QString diskName = aDirPath.split("/")[0];
+  aCommand = diskName + " && (cd " + aDirPath.replace("/","\\\\") + 
+	" && ((dir /b | findstr " + aBaseName + "_[0-9]*.jpeg > " + tmpFile + 
+	") & (for /f %i in (" + tmpFile + ") do (del \"%i\")) & (del " + tmpFile + "))) > NUL";
+#endif
 
   if(MYDEBUG) cout<<"SVTK_Recorder::MakeFileAVI - "<<(const char*)aCommand.toLatin1()<<endl;
   system((const char*)aCommand.toLatin1());

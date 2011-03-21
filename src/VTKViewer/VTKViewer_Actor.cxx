@@ -712,6 +712,13 @@ vtkFloatingPointType VTKViewer_Actor::GetQuadraticArcAngle() const{
   return myGeomFilter->GetQuadraticArcAngle();
 }
 
+/*!
+ * Return pointer to the dataset, which used to calculation of the bounding box of the actor.
+ * By default it is the input dataset.
+ */
+vtkDataSet* VTKViewer_Actor::GetHighlightedDataSet() {
+  return GetInput();
+}
 
 
 

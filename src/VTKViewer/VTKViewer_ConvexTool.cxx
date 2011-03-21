@@ -623,14 +623,17 @@ VTKViewer_OrderedTriangulator
 
     vtkFloatingPointType aBounds[6];
     myPoints->GetBounds(aBounds);
-
+    vtkFloatingPointType xSize, ySize, zSize;
+    xSize = aBounds[1] - aBounds[0];
+    ySize = aBounds[3] - aBounds[2];
+    zSize = aBounds[5] - aBounds[4];
     vtkFloatingPointType anAbsoluteCoord[3];
     vtkFloatingPointType aParamentrucCoord[3];
     for (int aPntId = 0; aPntId < aNumPts; aPntId++) {
       myPoints->GetPoint(aPntId, anAbsoluteCoord);
-      aParamentrucCoord[0] = (anAbsoluteCoord[0] - aBounds[0]) / (aBounds[1] - aBounds[0]);
-      aParamentrucCoord[1] = (anAbsoluteCoord[1] - aBounds[2]) / (aBounds[3] - aBounds[2]);
-      aParamentrucCoord[2] = (anAbsoluteCoord[2] - aBounds[4]) / (aBounds[5] - aBounds[4]);
+      aParamentrucCoord[0] = xSize==0. ? 0. : ((anAbsoluteCoord[0] - aBounds[0]) / xSize);
+      aParamentrucCoord[1] = ySize==0. ? 0. : ((anAbsoluteCoord[1] - aBounds[2]) / ySize);
+      aParamentrucCoord[2] = zSize==0. ? 0. : ((anAbsoluteCoord[2] - aBounds[4]) / zSize);
       myTriangulator->InsertPoint(aPntId, anAbsoluteCoord, aParamentrucCoord, 0);
     }
 

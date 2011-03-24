@@ -918,7 +918,7 @@ public:
   virtual void run()
   {
     if ( !myApp.isEmpty()) {
-      QString aCommand = QString( "%1 %2 %3" ).arg( myApp, myParams, myHelpFile );
+      QString aCommand = QString( "%1 %2 \"%3\"" ).arg( myApp, myParams, myHelpFile );
       if ( !myContext.isEmpty() )
         aCommand += "#" + myContext;
 

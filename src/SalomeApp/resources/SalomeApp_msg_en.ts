@@ -380,7 +380,7 @@ Do you want to reload it ?</translation>
     <name>SalomeApp_ExitDlg</name>
     <message>
         <source>SHUTDOWN_SERVERS</source>
-        <translation>Shutdown standalone servers</translation>
+        <translation>Shutdown servers</translation>
     </message>
 </context>
 <context>

@@ -380,7 +380,7 @@ Voulez-vous le recharger ?</translation>
     <name>SalomeApp_ExitDlg</name>
     <message>
         <source>SHUTDOWN_SERVERS</source>
-        <translation>Arrêter les serveurs autonomes</translation>
+        <translation>Arrêter les serveurs</translation>
     </message>
 </context>
 <context>

@@ -575,8 +575,11 @@ int main( int argc, char **argv )
 
         if ( result == SUIT_Session::NORMAL ) { // desktop is closed by user from GUI
           shutdown = aGUISession->exitFlags();
-          _SessionMutex.lock();
-          break;
+          if(shutdown)
+            {
+              _SessionMutex.lock();
+              break;
+            }
         }
       }
 

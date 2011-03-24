@@ -669,9 +669,9 @@ void SUIT_FileDlg::addQuickDir()
     if ( dirList.count() > 0 ) {
       for ( int i = 0; i < dirList.count() && !found; i++ )  {
         QDir aDir( dirList[i] );
-        if ( aDir.canonicalPath().isNull() && dirList[i] == dir.absolutePath() ||
-             !aDir.canonicalPath().isNull() && aDir.exists() && 
-             aDir.canonicalPath() == dir.canonicalPath() ) {
+        if ( ( aDir.canonicalPath().isNull() && dirList[i] == dir.absolutePath() ) ||
+             ( !aDir.canonicalPath().isNull() && aDir.exists() &&  
+             aDir.canonicalPath() == dir.canonicalPath() ) ) {
           found = true;
         }
       }

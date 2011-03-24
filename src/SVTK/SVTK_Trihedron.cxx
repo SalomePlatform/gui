@@ -53,6 +53,7 @@ SVTK_Trihedron
   int aCount = 0;
   while(vtkActor* aProp = aCollection->GetNextActor()) {
     if(aProp->GetVisibility())
+    {
       if(SALOME_Actor* anActor = SALOME_Actor::SafeDownCast(aProp)) {
         if(!anActor->IsInfinitive()) 
           aCount++;
@@ -60,6 +61,7 @@ SVTK_Trihedron
       else if ( !OwnActor( aProp ) ) {
         aCount++;
       }
+    }
   }
   return aCount;
 }

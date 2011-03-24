@@ -968,9 +968,9 @@ int SUIT_MessageBox::messageBox( Icon icon, QWidget* parent,
     QPushButton* pb = msgBox.addButton( txt, role );
     bm.insert( pb, btn );
 
-    if ( defaultButton == -1 && i == 0 || btn == defaultButton )
+    if ( ( defaultButton == -1 && i == 0 ) || btn == defaultButton )
       msgBox.setDefaultButton( pb );
-    if ( escapeButton == -1 && i == lst.count() - 1 || btn == escapeButton )
+    if ( ( escapeButton == -1 && i == lst.count() - 1 ) || btn == escapeButton )
       msgBox.setEscapeButton( pb );
   }
     

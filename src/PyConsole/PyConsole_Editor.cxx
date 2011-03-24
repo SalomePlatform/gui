@@ -587,7 +587,7 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
   // check if <Shift> is pressed
   bool shftPressed = event->modifiers() & Qt::ShiftModifier;
 
-  if ( aKey == Qt::Key_Escape || ctrlPressed && aKey == -1 ) {
+  if ( aKey == Qt::Key_Escape || ( ctrlPressed && aKey == -1 ) ) {
     // process <Ctrl>+<Break> key-binding and <Escape> key: clear current command
     myCommandBuffer.truncate( 0 );
     myPrompt = READY_PROMPT;

@@ -1175,7 +1175,7 @@ void QtxActionMenuMgr::setEmptyEnabled( const int id, const bool enable )
   if ( node && menuAction( id ) ) {
     int old = node->emptyEnabled;
     node->emptyEnabled += enable ? 1 : -1;
-    if ( old <= 0 && enable || old > 0 && !enable ) // update menu only if enabled state has been changed
+    if ( ( old <= 0 && enable ) || ( old > 0 && !enable ) ) // update menu only if enabled state has been changed
       updateMenu( node, true, true );
   }
 }

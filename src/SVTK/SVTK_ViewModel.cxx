@@ -518,7 +518,7 @@ void SVTK_Viewer::Erase( const SALOME_VTKPrs* prs, const bool forced )
     if(vtkActorCollection* anActorCollection = aPrs->GetObjects()){
       // get SALOMEDS Study
       // Temporarily commented to avoid awful dependecy on SALOMEDS
-      // TODO: better mechanism of storing display/erse status in a study
+      // TODO: better mechanism of storing display/erase status in a study
       // should be provided...
       //_PTR(Study) aStudy(getStudyDS());
       anActorCollection->InitTraversal();
@@ -526,7 +526,7 @@ void SVTK_Viewer::Erase( const SALOME_VTKPrs* prs, const bool forced )
         if(SALOME_Actor* anAct = SALOME_Actor::SafeDownCast(anActor)){
           // Set visibility flag
           // Temporarily commented to avoid awful dependecy on SALOMEDS
-          // TODO: better mechanism of storing display/erse status in a study
+          // TODO: better mechanism of storing display/erase status in a study
           // should be provided...
           //Handle(SALOME_InteractiveObject) anObj = anAct->getIO();
           //if(!anObj.IsNull() && anObj->hasEntry() && aStudy){
@@ -537,10 +537,12 @@ void SVTK_Viewer::Erase( const SALOME_VTKPrs* prs, const bool forced )
           for(int i = 0, iEnd = aViews.size(); i < iEnd; i++){
             if(SVTK_ViewWindow* aViewWindow = dynamic_cast<SVTK_ViewWindow*>(aViews.at(i)))
               if(SVTK_View* aView = aViewWindow->getView())
+              {
                 if ( forced )
                   aView->Remove(anAct,false);
                 else
                   aView->Erase(anAct,forced);
+              }
           }
         }
     }

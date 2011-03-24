@@ -1298,7 +1298,7 @@ QValidator* QDS_Datum::validator( const bool limits ) const
 bool QDS_Datum::validate( const QString& txt ) const
 {
   if ( type() == DDS_DicItem::Unknown ||
-       type() == DDS_DicItem::String && isDoubleFormat( format() ) )
+       ( type() == DDS_DicItem::String && isDoubleFormat( format() ) ) )
     return true;
 
   QValidator* aValidator = validator( true );

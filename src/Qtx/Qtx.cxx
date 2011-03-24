@@ -828,7 +828,7 @@ QPixmap Qtx::scaleIcon( const QPixmap& icon, const unsigned w, const unsigned h 
 {
   QPixmap p;
   int aw = w, ah = h <= 0 ? w : h;
-  if ( icon.isNull() || aw <= 0 || ah <= 0 || aw == icon.width() && ah == icon.height() )
+  if ( icon.isNull() || aw <= 0 || ah <= 0 || ( aw == icon.width() && ah == icon.height() ) )
     p = icon;
   else
     p = icon.fromImage( icon.toImage().scaled( aw, ah, Qt::KeepAspectRatio, Qt::SmoothTransformation ) );
@@ -1289,7 +1289,7 @@ bool Qtx::stringToRadialGradient( const QString& str, QRadialGradient& gradient 
 {
   bool success = false;
   QStringList vals = str.split( "|", QString::SkipEmptyParts );
-  if ( vals.count() > 5 && vals[0] == "radial" || vals[0] == "rg" ) 
+  if ( ( vals.count() > 5 && vals[0] == "radial" ) || vals[0] == "rg" ) 
   {
     // center, radius and focal point
     double cx, cy, r, fx, fy;
@@ -1343,7 +1343,7 @@ bool Qtx::stringToConicalGradient( const QString& str, QConicalGradient& gradien
 {
   bool success = false;
   QStringList vals = str.split( "|", QString::SkipEmptyParts );
-  if ( vals.count() > 3 && vals[0] == "conical" || vals[0] == "cg" ) 
+  if ( ( vals.count() > 3 && vals[0] == "conical" ) || vals[0] == "cg" ) 
   {
     // center and angle
     double cx, cy, a;
@@ -1450,7 +1450,7 @@ void* Qtx::getDisplay()
 */
 Qt::HANDLE Qtx::getVisual()
 {
-  Qt::HANDLE res = NULL;
+  Qt::HANDLE res = (Qt::HANDLE)NULL;
 
   Display* pDisplay = (Display*)getDisplay();
   if ( !pDisplay )

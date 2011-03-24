@@ -564,6 +564,7 @@ void LightApp_Dialog::onToggled( bool on )
       id = anIt.key();
 
   if( id!=-1 )
+  {
     if( on )
     {
       updateButtons( id );
@@ -571,6 +572,7 @@ void LightApp_Dialog::onToggled( bool on )
     }
     else
       emit objectDeactivated( id );
+  }
 }
 
 /*!

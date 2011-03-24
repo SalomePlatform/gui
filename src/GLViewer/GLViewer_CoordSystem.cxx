@@ -164,6 +164,7 @@ void GLViewer_CoordSystem::fromReference( double& x, double& y )
         double eps = 1E-8, pi = 3.14159265;
 
         if( r>eps )
+        {
             if( fabs(x)>eps )
             {
                 double arg = y/x;
@@ -175,6 +176,7 @@ void GLViewer_CoordSystem::fromReference( double& x, double& y )
                 phi = pi/2.0;
             else
                 phi = 3*pi/2.0;
+        }
 
         x = r;
         y = phi-myRotation;

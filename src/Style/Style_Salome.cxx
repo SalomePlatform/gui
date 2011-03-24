@@ -625,7 +625,7 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
         menuArea = subControlRect(cc, toolbutton, SC_ToolButtonMenu, w);
 
         if (w && ( qobject_cast<QToolBar *>(w->parentWidget() ) || 
-                   toolbutton->state & State_AutoRaise && !( toolbutton->state & State_MouseOver ) )
+                   ( toolbutton->state & State_AutoRaise && !( toolbutton->state & State_MouseOver ) ) )
             ) {
           QWindowsStyle::drawComplexControl( cc, opt, p, w );
           return;

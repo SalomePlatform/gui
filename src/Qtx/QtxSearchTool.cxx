@@ -1038,8 +1038,8 @@ void QtxSearchTool::updateShortcuts()
   ShortcutList::Iterator it;
   for ( it = myShortcuts.begin(), i = 0; it != myShortcuts.end(); ++it, i++ )
   {
-    (*it)->setEnabled( isEnabled() && ( i < 3 && myActivators & StandardKey ||
-                                        i > 2 && myActivators & HotKey ) );
+    (*it)->setEnabled( isEnabled() && ( ( i < 3 && myActivators & StandardKey ) ||
+                                        ( i > 2 && myActivators & HotKey ) ) );
   }
 }
 

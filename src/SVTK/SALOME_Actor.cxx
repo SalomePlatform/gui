@@ -519,7 +519,7 @@ SALOME_Actor
         if(myIsPreselected){
           const TColStd_IndexedMapOfInteger& aMapIndex = myPreHighlightActor->GetMapIndex();
           int anExtent = aMapIndex.Extent();
-          anIsChanged |= (anExtent == 0 || anExtent > 0 && anObjId != aMapIndex(1));
+          anIsChanged |= (anExtent == 0 || (anExtent > 0 && anObjId != aMapIndex(1)));
           if(anIsChanged){
             TColStd_IndexedMapOfInteger aMapIndex;
             aMapIndex.Add( anObjId );
@@ -548,7 +548,7 @@ SALOME_Actor
           if(myIsPreselected){
             const TColStd_IndexedMapOfInteger& aMapIndex = myPreHighlightActor->GetMapIndex();
             int anExtent = aMapIndex.Extent();
-            anIsChanged |= (anExtent == 0 || anExtent > 0 && anObjId != aMapIndex(1));
+            anIsChanged |= (anExtent == 0 || (anExtent > 0 && anObjId != aMapIndex(1)));
             if(anIsChanged){
               TColStd_IndexedMapOfInteger aMapIndex;
               aMapIndex.Add( anObjId );

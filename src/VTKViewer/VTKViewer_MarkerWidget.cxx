@@ -160,7 +160,7 @@ VTK::MarkerMap VTKViewer_MarkerWidget::getCustomMarkerMap()
 
 void VTKViewer_MarkerWidget::setStandardMarker( VTK::MarkerType theMarkerType, VTK::MarkerScale theMarkerScale )
 {
-  if ( theMarkerType > VTK::MT_NONE && theMarkerType < VTK::MT_USER ||
+  if ( ( theMarkerType > VTK::MT_NONE && theMarkerType < VTK::MT_USER ) ||
        myExtraMarkerList.contains( theMarkerType ) ) {
     myTypeGroup->button( 0 )->setChecked( true );
     myWGStack->setCurrentIndex( 0 );

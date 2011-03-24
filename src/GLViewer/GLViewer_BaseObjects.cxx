@@ -374,8 +374,8 @@ GLboolean GLViewer_MarkerSet::highlight( GLfloat x, GLfloat y, GLfloat tol, GLbo
     ydist = ( myYCoord[i] - y ) * myYScale;
 
 //    if ( isCircle && ( xdist * xdist + ydist * ydist <= radius * radius ) ||
-    if ( isCircle && ( xdist * xdist + ydist * ydist <= myMarkerSize * myMarkerSize ) ||
-    !isCircle && ( fabs( xdist ) <= radius && fabs( ydist ) <= radius ) )
+    if ( ( isCircle && ( xdist * xdist + ydist * ydist <= myMarkerSize * myMarkerSize ) ) ||
+         ( !isCircle && ( fabs( xdist ) <= radius && fabs( ydist ) <= radius ) ) )
     {
       isFound = FALSE;
       count++;
@@ -463,8 +463,8 @@ GLboolean GLViewer_MarkerSet::select( GLfloat x, GLfloat y, GLfloat tol, GLViewe
     ydist = ( myYCoord[i] - y ) * myYScale;
 
     //if ( isCircle && ( xdist * xdist + ydist * ydist <= radius * radius ) ||
-    if ( isCircle && ( xdist * xdist + ydist * ydist <= myMarkerSize * myMarkerSize ) ||
-          !isCircle && ( fabs( xdist ) <= radius && fabs( ydist ) <= radius ) )
+    if ( ( isCircle && ( xdist * xdist + ydist * ydist <= myMarkerSize * myMarkerSize ) ) ||
+         ( !isCircle && ( fabs( xdist ) <= radius && fabs( ydist ) <= radius ) ) )
     {
       count++;
       if ( isShift )

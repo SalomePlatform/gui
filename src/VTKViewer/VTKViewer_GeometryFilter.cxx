@@ -223,7 +223,7 @@ VTKViewer_GeometryFilter
          cellId++)
       {
       cellVis[cellId] = 1;
-      if ( this->CellClipping && cellId < this->CellMinimum ||
+      if ( ( this->CellClipping && cellId < this->CellMinimum ) ||
            cellId > this->CellMaximum )
         {
         cellVis[cellId] = 0;
@@ -233,12 +233,12 @@ VTKViewer_GeometryFilter
         for (i=0; i < npts; i++) 
           {
           x = p->GetPoint(pts[i]);
-          if ( (this->PointClipping && (pts[i] < this->PointMinimum ||
-                                        pts[i] > this->PointMaximum) ) ||
-               (this->ExtentClipping && 
-                (x[0] < this->Extent[0] || x[0] > this->Extent[1] ||
-                 x[1] < this->Extent[2] || x[1] > this->Extent[3] ||
-                 x[2] < this->Extent[4] || x[2] > this->Extent[5] )) )
+          if ( ( ( ( this->PointClipping && (pts[i] < this->PointMinimum ) ) ||
+                                             pts[i] > this->PointMaximum) ) ||
+               ( this->ExtentClipping && 
+                ( x[0] < this->Extent[0] || x[0] > this->Extent[1] ||
+                  x[1] < this->Extent[2] || x[1] > this->Extent[3] ||
+                  x[2] < this->Extent[4] || x[2] > this->Extent[5] )) )
             {
             cellVis[cellId] = 0;
             break;

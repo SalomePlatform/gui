@@ -91,18 +91,19 @@ To confirm your choice click \b Open.
 \image html studyproperties.png
 
 <ul>
-<li>\b Author - allows to change the name of the study author</li>
-<li>\b Created - gives the date and time of Study creation</li>
+<li>\b Author - allows to change the name of the study author.</li>
+<li><b> Creation date</b> - gives the date and time of Study creation.</li>
 <li>\b Locked - allows to lock the  study for modifications. 
-Just click on this field and choose \b Yes item. In this case your study will be locked for any modifications
+In case if \b Locked checkbox is checked your study will be locked for any modifications
 for all users. Next time you try to edit it, you will see the
 following warning message:
 \image html lockedstudy.png </li>
-<li>\b Modified - allows to see if any modifications have been
+<li><b>Modified/Not Modified</b>  - allows to see if any modifications have been
 introduced into study since its last save. </li>
+<li><b>Length units</b> - allows to change the units of the study.</li>
+<li>\b Comment - allows to change the comment of the study.</li>
 <li>\b Modifications - allows to  view the list of changes made in the study.
-In this dialog box click on the \b Modifications field and scroll it
-down. Each record contains the date and time of the
+Each record contains the date and time of the
 modification and the name of the user, who has introduced it.</li>
 </ul>
 

@@ -21,7 +21,7 @@
 //
 
 //  File   : SalomeApp_StudyPropertiesDlg.h
-//  Author : Sergey ANIKIN
+//  Author : Roman NIKOLAEV
 //  Module : SALOME
 //
 #ifndef SALOMEAPP_STUDY_PROPERTIES_DLG_H
@@ -36,45 +36,41 @@
 
 #include <SALOMEDSClient_Study.hxx>
 
-class SalomeApp_ListView;
+class QLineEdit;
+class QLabel;
+class QCheckBox;
+class QComboBox;
+class QTextEdit;
+class QTreeWidget;
 class QPushButton;
 
 class SALOMEAPP_EXPORT SalomeApp_StudyPropertiesDlg : public QDialog
 { 
   Q_OBJECT
-
-public:
-  enum {
-    prpAuthorId,
-    prpModeId,
-    prpDateId,
-    prpSavedId,
-    prpLockedId,
-    prpModificationsId,
-    prpLastId
-  };
-
 public:
   SalomeApp_StudyPropertiesDlg( QWidget* parent = 0 );
   ~SalomeApp_StudyPropertiesDlg();
 
-  bool isChanged() { return myChanged; } 
-
+  bool isChanged() { return myIsChanged; }
+  
 public slots:
-  void onOK();
-
+  void clickOnOk();
+ 
 private:
-  void initData(); 
-  bool acceptData(); 
-  bool propChanged(); 
+ void initData();
   
 private:
-  SalomeApp_ListView* myPropList;
-  QPushButton*        myOKBtn;
-  QPushButton*        myCancelBtn;
-  bool                myChanged;  
-
-  _PTR(Study)         myStudyDoc;
+ _PTR(Study)          myStudyDoc;
+ bool                 myIsChanged;
+ QLineEdit*           myAuthor;
+ QLabel*              myDate;
+ QCheckBox*           myLocked;
+ QLabel*              myModification;
+ QComboBox*           myUnits;
+ QTextEdit*           myComment;
+ QTreeWidget*         myModifications;
+ QPushButton*         myOkButton;
+ QPushButton*         myCancelButton;
 };
  
 #endif // SALOMEAPP_STUDY_PROPERTIES_DLG_H

@@ -348,6 +348,18 @@ Do you want to reload it ?</translation>
         <translation>Modifications</translation>
     </message>
     <message>
+        <source>PRP_DATE_MODIF</source>
+        <translation>Date</translation>
+    </message>        
+    <message>
+        <source>PRP_UNITS</source>
+        <translation>Length units</translation>
+   </message>			    
+    <message>
+        <source>PRP_COMMENT</source>
+        <translation>Comment</translation>
+   </message>			       
+    <message>
         <source>PRP_NO</source>
         <translation>No</translation>
     </message>
@@ -360,8 +372,12 @@ Do you want to reload it ?</translation>
         <translation>Modified</translation>
     </message>
     <message>
+            <source>PRP_NOT_MODIFIED</source>
+	    <translation>Not modified</translation>
+    </message>			    
+    <message>
         <source>PRP_DATE</source>
-        <translation>Created</translation>
+        <translation>Creation date</translation>
     </message>
     <message>
         <source>PRP_MODE</source>

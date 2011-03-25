@@ -702,3 +702,19 @@ Qtx::VisibilityState LightApp_Study::visibilityState(const QString& theEntry) co
   }
   return Qtx::UnpresentableState;
 }
+
+/*!
+  Find a data object by the specified entry.
+  \param theEntry - Entry of the object.
+  \return data object.
+*/
+LightApp_DataObject* LightApp_Study::findObjectByEntry( const QString& theEntry )
+{
+  LightApp_DataObject* aCurObj;
+  for ( SUIT_DataObjectIterator it( root(), SUIT_DataObjectIterator::DepthLeft ); it.current(); ++it ) {
+    aCurObj = dynamic_cast<LightApp_DataObject*>( it.current() );
+    if ( aCurObj && aCurObj->entry() == theEntry )
+      return aCurObj;
+  }
+  return NULL;
+}

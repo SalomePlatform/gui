@@ -97,6 +97,7 @@
     <parameter name="auto_size"             value="false" />
     <parameter name="auto_size_first"       value="true"  />
     <parameter name="resize_on_expand_item" value="false"  />
+    <parameter name="browse_published_object" value="1"  />
   </section>
   <section name="FileDlg">
     <!-- "Open/Save File" dialog box preferences-->

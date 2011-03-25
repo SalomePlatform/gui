@@ -89,6 +89,8 @@ public:
 protected:
   enum { NewStudyId = 1, OpenStudyId };
 
+  enum BrowsePolicy { BP_Never = 0, BP_ApplyAndClose, BP_Always };
+
 public:
   LightApp_Application();
   virtual ~LightApp_Application();
@@ -156,6 +158,10 @@ public:
 
   //! Removes ViewManagers only of known type
   virtual void                        clearKnownViewManagers();
+
+  virtual QString                     browseObjects( const QStringList& theEntryList,
+                                                     const bool theIsApplyAndClose = true,
+                                                     const bool theIsOptimizedBrowsing = false );
 
 signals:
   void                                studyOpened();

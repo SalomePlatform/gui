@@ -2259,6 +2259,14 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
                        "ObjectBrowser", "auto_size" );
   pref->addPreference( tr( "PREF_RESIZE_ON_EXPAND_ITEM" ), objSetGroup, LightApp_Preferences::Bool,
                        "ObjectBrowser", "resize_on_expand_item" );
+  int browsePublished = pref->addPreference( tr( "PREF_BROWSE_TO_THE_PUBLISHED_OBJECT" ), objSetGroup, LightApp_Preferences::Selector,
+                                             "ObjectBrowser", "browse_published_object" );
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList << tr( "PREF_BROWSE_NEVER" ) << tr( "PREF_BROWSE_AFTER_APPLY_AND_CLOSE_ONLY" ) << tr( "PREF_BROWSE_ALWAYS" );
+  anIndicesList << BP_Never << BP_ApplyAndClose << BP_Always;
+  pref->setItemProperty( "strings", aValuesList,   browsePublished );
+  pref->setItemProperty( "indexes", anIndicesList, browsePublished );
 
   // Shortcuts preferences
   int shortcutTab = pref->addPreference( tr( "PREF_TAB_SHORTCUTS" ), salomeCat );
@@ -3494,4 +3502,74 @@ void LightApp_Application::onPaste()
   LightApp_Module* m = dynamic_cast<LightApp_Module*>( activeModule() );
   if( m )
     m->paste();
+}
+
+/*!
+  Browse (i.e. set focus on) the published objects
+  \param theIsApplyAndClose - flag indicating that the dialog for creating objects
+                              has been accepted by Ok (or Apply & Close) button
+  \param theIsOptimizedBrowsing - flag switching to optimized browsing mode
+                                  (to select the first published object only)
+  \return entry of the selected object
+ */
+QString LightApp_Application::browseObjects( const QStringList& theEntryList,
+                                             const bool theIsApplyAndClose,
+                                             const bool theIsOptimizedBrowsing )
+{
+  QString aResult;
+  if( SUIT_ResourceMgr* aResourceMgr = resourceMgr() )
+  {
+    int aBrowsePolicy = aResourceMgr->integerValue( "ObjectBrowser", "browse_published_object", (int)BP_Never );
+    switch( aBrowsePolicy )
+    {
+      case BP_Never:
+        return aResult;
+      case BP_ApplyAndClose:
+        if( !theIsApplyAndClose )
+          return aResult;
+      case BP_Always:
+      default:
+        break;
+    }
+  }
+
+  LightApp_Study* aStudy = dynamic_cast<LightApp_Study*>( activeStudy() );
+  if( !aStudy )
+    return aResult;
+
+  SUIT_DataBrowser* anOB = objectBrowser();
+  if( !anOB )
+    return aResult;
+
+  SUIT_AbstractModel* aModel = dynamic_cast<SUIT_AbstractModel*>( anOB->model() );
+  if( !aModel )
+    return aResult;
+
+  bool anIsSelected = false;
+  QStringListIterator anIter( theEntryList );
+  while( anIter.hasNext() )
+  {
+    QString anEntry = anIter.next();
+    if( !anEntry.isEmpty() )
+    {
+      if( LightApp_DataObject* anObject = aStudy->findObjectByEntry( anEntry ) )
+      {
+        QModelIndex anIndex = aModel->index( anObject );
+        anOB->treeView()->scrollTo( anIndex );
+
+        if( !anIsSelected )
+        {
+          SUIT_DataOwnerPtrList aList;
+          aList.append( new LightApp_DataOwner( anEntry ) );
+          selectionMgr()->setSelected( aList );
+          anIsSelected = true; // always select the first object only
+          aResult = anEntry;
+        }
+
+        if( theIsOptimizedBrowsing )
+          break; // browse only the first object in this mode
+      }
+    }
+  }
+  return aResult;
 }

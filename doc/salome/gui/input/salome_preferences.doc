@@ -206,6 +206,21 @@ resizing for the first column.</li>
 automatic resizing for the other columns.</li>
 <li><b>Resize columns after expanding an item</b> - this checkbox enables
 resizing columns on expanding an object browser item.</li>
+<li><b>Browse to the published object</b> - this combobox allows to enable
+automatic browsing to the objects just published to the study (using GUI
+dialogs only). It means that the object browser will be scrolled to the
+published objects, make them visible if they are collapsed and select the
+first of them. Three modes are allowed for activating this feature:</li>
+<ul>
+<li><b>Never</b> - automatic browsing is disabled.</li>
+<li><b>After Apply & Close only</b> - browsing is activated when the
+dialog is accepted by <b>Apply & Close</b> or <b>Ok</b> buttons (or if
+the objects are published as a result of an operation activated without
+using dialog at all - for example, by clicking some context menu button)
+and not activated when the <b>Apply</b> button is pressed and therefore
+dialog stays visible.</li>
+<li><b>Always</b> - automatic browsing is always enabled.</li>
+</ul>
 </ul>
 </ul>
 

@@ -38,6 +38,7 @@
 class SUIT_Study;
 class SUIT_Application;
 class CAM_DataModel;
+class LightApp_DataObject;
 
 //Map to store visual property of the object.
 //Key:   Name of the visual property of the object.
@@ -105,6 +106,8 @@ public:
   virtual void                  setVisibilityState(const QString& theEntry, Qtx::VisibilityState theState);
   virtual Qtx::VisibilityState  visibilityState(const QString& theEntry) const;
   virtual void                  setVisibilityStateForAll(Qtx::VisibilityState theState);
+
+  virtual LightApp_DataObject* findObjectByEntry( const QString& theEntry );
 
 protected:
   virtual void        saveModuleData ( QString theModuleName, QStringList theListOfFiles );

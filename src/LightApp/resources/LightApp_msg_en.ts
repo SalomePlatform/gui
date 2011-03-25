@@ -387,6 +387,22 @@ The changes will be applied on the next application session.</translation>
         <translation>Resize columns on expand item</translation>
     </message>
     <message>
+        <source>PREF_BROWSE_TO_THE_PUBLISHED_OBJECT</source>
+        <translation>Browse to the published object</translation>
+    </message>
+    <message>
+        <source>PREF_BROWSE_NEVER</source>
+        <translation>Never</translation>
+    </message>
+    <message>
+        <source>PREF_BROWSE_AFTER_APPLY_AND_CLOSE_ONLY</source>
+        <translation>After Apply &amp; Close only</translation>
+    </message>
+    <message>
+        <source>PREF_BROWSE_ALWAYS</source>
+        <translation>Always</translation>
+    </message>
+    <message>
         <source>PREF_GROUP_SUPERV</source>
         <translation>Graph Supervisor</translation>
     </message>

@@ -348,6 +348,18 @@ Voulez-vous le recharger ?</translation>
         <translation>Modifications</translation>
     </message>
     <message>
+        <source>PRP_DATE_MODIF</source>
+        <translation>Date</translation>
+    </message>
+    <message>
+        <source>PRP_UNITS</source>
+        <translation>Unités de longueur</translation>
+    </message>
+    <message>
+        <source>PRP_COMMENT</source>
+        <translation>Commentaires</translation>
+    </message>
+    <message>
         <source>PRP_NO</source>
         <translation>Non</translation>
     </message>
@@ -358,6 +370,10 @@ Voulez-vous le recharger ?</translation>
     <message>
         <source>PRP_MODIFIED</source>
         <translation>Modifiée</translation>
+    </message>
+    <message>
+        <source>PRP_NOT_MODIFIED</source>
+        <translation>Non modifiée</translation>
     </message>
     <message>
         <source>PRP_DATE</source>

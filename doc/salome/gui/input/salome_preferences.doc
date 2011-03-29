@@ -36,6 +36,9 @@ equal to 0 ("Disabled" value is shown) the automatic saving is not performed.</l
 <li><b>Store/restore last GUI state</b> - if checked in, all GUI settings are
 saved with the rest of the data whenever you save the study. When the
 study is reopened, the GUI state is restored.</li>
+<li><b>Multi file python dump</b> - allows to generate multiple files
+(separately for each component) during the process of dumping study to python.
+If the option is disabled, the study is dumped to a single python script.</li>
 </ul>
 <li><b>External browser</b></li>
 <ul>

@@ -21,6 +21,10 @@ Python file must include only letters, digits and underscores and start from let
         <translation>Publish in study</translation>
     </message>
     <message>
+        <source>MULTI_FILE_DUMP</source>
+        <translation>Multi file dump</translation>
+    </message>
+    <message>
         <source>BUT_NEW</source>
         <translation>&amp;New</translation>
     </message>
@@ -122,6 +126,10 @@ Python file must include only letters, digits and underscores and start from let
     <message>
         <source>TOT_DESK_FILE_LOAD_SCRIPT</source>
         <translation>Load python script</translation>
+    </message>
+    <message>
+        <source>PREF_MULTI_FILE_PYTHON_DUMP</source>
+        <translation>Multi file python dump</translation>
     </message>
     <message>
         <source>PREF_STORE_VISUAL_STATE</source>

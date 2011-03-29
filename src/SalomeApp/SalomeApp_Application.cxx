@@ -729,10 +729,12 @@ public:
     {
       QWidget *hB = new QWidget( this );
       myPublishChk = new QCheckBox( tr("PUBLISH_IN_STUDY") );
+      myMultiFileChk = new QCheckBox( tr("MULTI_FILE_DUMP") );
       mySaveGUIChk = new QCheckBox( tr("SAVE_GUI_STATE") );
 
       QHBoxLayout *layout = new QHBoxLayout;
       layout->addWidget(myPublishChk);
+      layout->addWidget(myMultiFileChk);
       layout->addWidget(mySaveGUIChk);
       hB->setLayout(layout);
 
@@ -747,6 +749,7 @@ public:
     }
   }
   QCheckBox* myPublishChk;
+  QCheckBox* myMultiFileChk;
   QCheckBox* mySaveGUIChk;
 };
 
@@ -780,17 +783,23 @@ void SalomeApp_Application::onDumpStudy( )
   QStringList aFilters;
   aFilters.append( tr( "PYTHON_FILES_FILTER" ) );
 
+  bool anIsMultiFile = false;
+  if ( SUIT_ResourceMgr* aResourceMgr = resourceMgr() )
+    anIsMultiFile = aResourceMgr->booleanValue( "Study", "multi_file_dump", anIsMultiFile );
+
   DumpStudyFileDlg fd( desktop() );
   fd.setValidator( new DumpStudyFileValidator( &fd ) );
   fd.setWindowTitle( tr( "TOT_DESK_FILE_DUMP_STUDY" ) );
   fd.setFilters( aFilters );
   fd.myPublishChk->setChecked( true );
+  fd.myMultiFileChk->setChecked( anIsMultiFile );
   fd.mySaveGUIChk->setChecked( true );
   if ( fd.exec() == QDialog::Accepted )
   {
     QString aFileName = fd.selectedFile();
     
     bool toPublish = fd.myPublishChk->isChecked();
+    bool isMultiFile = fd.myMultiFileChk->isChecked();
     bool toSaveGUI = fd.mySaveGUIChk->isChecked();
     
     if ( !aFileName.isEmpty() ) {
@@ -807,7 +816,9 @@ void SalomeApp_Application::onDumpStudy( )
         savePoint = SalomeApp_VisualState( this ).storeState(); //SRN: create a temporary save point
       }
       bool res = aStudy->DumpStudy( aFileInfo.absolutePath().toStdString(),
-                                    aFileInfo.baseName().toStdString(), toPublish);
+                                    aFileInfo.baseName().toStdString(),
+                                    toPublish,
+                                    isMultiFile);
       if ( toSaveGUI )
         appStudy->removeSavePoint(savePoint); //SRN: remove the created temporary save point.
       if ( !res )
@@ -995,6 +1006,7 @@ void SalomeApp_Application::createPreferences( LightApp_Preferences* pref )
   // adding preference to LightApp_Application handled preferences..  a bit of hacking with resources..
   int genTab = pref->addPreference( LightApp_Application::tr( "PREF_TAB_GENERAL" ), salomeCat );
   int studyGroup = pref->addPreference( LightApp_Application::tr( "PREF_GROUP_STUDY" ), genTab );
+  pref->addPreference( tr( "PREF_MULTI_FILE_PYTHON_DUMP" ), studyGroup, LightApp_Preferences::Bool, "Study", "multi_file_dump" );
   pref->addPreference( tr( "PREF_STORE_VISUAL_STATE" ), studyGroup, LightApp_Preferences::Bool, "Study", "store_visual_state" );
 }
 

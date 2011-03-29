@@ -1046,6 +1046,7 @@ bool SalomeApp_NoteBookDlg::updateStudy()
   // dump study to the temporary directory
   QString aFileName( "notebook" );
   bool toPublish = true;
+  bool isMultiFile = false;
   bool toSaveGUI = true;
 
   int savePoint;
@@ -1056,7 +1057,7 @@ bool SalomeApp_NoteBookDlg::updateStudy()
     ip->setDumpPython(studyDS);
     savePoint = SalomeApp_VisualState( app ).storeState(); //SRN: create a temporary save point
   }
-  bool ok = studyDS->DumpStudy( aTmpDir.toStdString(), aFileName.toStdString(), toPublish );
+  bool ok = studyDS->DumpStudy( aTmpDir.toStdString(), aFileName.toStdString(), toPublish, isMultiFile );
   if ( toSaveGUI )
     study->removeSavePoint(savePoint); //SRN: remove the created temporary save point.
 

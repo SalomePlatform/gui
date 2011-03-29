@@ -32,6 +32,7 @@
 #endif // _MSC_VER > 1000
 
 #include "LightApp.h"
+#include <SUIT_TreeModel.h>
 #include <CAM_Application.h>
 
 #include <QPointer>
@@ -64,7 +65,7 @@ class QTimer;
   Description : Application containing only LightApp module
 */
 
-class LIGHTAPP_EXPORT LightApp_Application : public CAM_Application
+class LIGHTAPP_EXPORT LightApp_Application : public CAM_Application, public SUIT_DataSearcher
 {
   Q_OBJECT
 
@@ -162,6 +163,8 @@ public:
   virtual QString                     browseObjects( const QStringList& theEntryList,
                                                      const bool theIsApplyAndClose = true,
                                                      const bool theIsOptimizedBrowsing = false );
+
+  virtual SUIT_DataObject*            findObject( const QString& ) const;
 
 signals:
   void                                studyOpened();

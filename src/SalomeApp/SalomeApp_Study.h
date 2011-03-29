@@ -83,6 +83,8 @@ public:
   virtual void        restoreState(int savePoint);
   void                markAsSavedIn(QString theFileName);
 
+  virtual LightApp_DataObject* findObjectByEntry( const QString& theEntry );
+
 protected:
   virtual void        saveModuleData ( QString theModuleName, QStringList theListOfFiles );
   virtual void        openModuleData ( QString theModuleName, QStringList& theListOfFiles );

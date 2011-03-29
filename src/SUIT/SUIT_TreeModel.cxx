@@ -30,7 +30,7 @@
 #include <QApplication>
 #include <QHash>
 
-SUIT_AbstractModel::SUIT_AbstractModel()
+SUIT_AbstractModel::SUIT_AbstractModel() : mySearcher( 0 )
 {
 }
 
@@ -49,9 +49,15 @@ SUIT_AbstractModel::operator const QObject*() const
   return dynamic_cast<const QObject*>( this );
 }
 
+SUIT_DataSearcher* SUIT_AbstractModel::searcher() const
+{
+  return mySearcher;
+}
 
-
-
+void SUIT_AbstractModel::setSearcher( SUIT_DataSearcher* s )
+{
+  mySearcher = s;
+}
 
 
 /*!
@@ -492,23 +498,22 @@ SUIT_TreeModel::~SUIT_TreeModel()
 void SUIT_TreeModel::registerColumn( const int group_id, const QString& name, const int custom_id )
 {
   bool found = false;
-  for( int i=0, n=myColumns.size(); i<n && !found; i++ )
-    if( name==myColumns[i].myName )
-        {
-          myColumns[i].myIds.insert( group_id, custom_id );
-          found = true;
-        }
-  if( !found )
-  {
-        ColumnInfo inf;
-        inf.myName = name;
-        inf.myIds.insert( group_id, custom_id );
-        inf.myAppropriate = Qtx::Shown;
-	inf.myHeaderFlags = Qtx::ShowAll;
-        int n = myColumns.size();
-        myColumns.resize( n+1 );
-        myColumns[n] = inf;
-        reset();
+  for ( int i=0, n=myColumns.size(); i<n && !found; i++ ) {
+    if ( name == myColumns[i].myName ) {
+      myColumns[i].myIds.insert( group_id, custom_id );
+      found = true;
+    }
+  }
+  if ( !found ) {
+    ColumnInfo inf;
+    inf.myName = name;
+    inf.myIds.insert( group_id, custom_id );
+    inf.myAppropriate = Qtx::Shown;
+    inf.myHeaderFlags = Qtx::ShowAll;
+    int n = myColumns.size();
+    myColumns.resize( n+1 );
+    myColumns[n] = inf;
+    reset();
   }
 }
 
@@ -525,17 +530,16 @@ void SUIT_TreeModel::registerColumn( const int group_id, const QString& name, co
  */
 void SUIT_TreeModel::unregisterColumn( const int group_id, const QString& name )
 {
-  for( int i=0, n=myColumns.size(); i<n; i++ )
-    if( myColumns[i].myName==name )
-        {
-          myColumns[i].myIds.remove( group_id );
-          if( myColumns[i].myIds.isEmpty() )
-          {
-            myColumns.remove( i );
-                reset();
-          }
-          break;
+  for ( int i = 0, n = myColumns.size(); i < n; i++ ) {
+    if ( myColumns[i].myName == name ) {
+      myColumns[i].myIds.remove( group_id );
+      if ( myColumns[i].myIds.isEmpty() ) {
+	myColumns.remove( i );
+	reset();
+      }
+      break;
     }
+  }
 }
 
 /*!
@@ -546,12 +550,12 @@ void SUIT_TreeModel::unregisterColumn( const int group_id, const QString& name )
 */
 void SUIT_TreeModel::setColumnIcon( const QString& name, const QPixmap& icon )
 {
-  for( int i=0, n=myColumns.size(); i<n; i++ )
-    if( myColumns[i].myName==name )
-        {
-          myColumns[i].myIcon = icon;
-          break;
-        }
+  for ( int i = 0, n = myColumns.size(); i < n; i++ ) {
+    if ( myColumns[i].myName == name ) {
+      myColumns[i].myIcon = icon;
+      break;
+    }
+  }
 }
 
 /*!
@@ -563,12 +567,12 @@ void SUIT_TreeModel::setColumnIcon( const QString& name, const QPixmap& icon )
 QPixmap SUIT_TreeModel::columnIcon( const QString& name ) const
 {
   QPixmap res;
-  for( int i=0, n=myColumns.size(); i<n; i++ )
-    if( myColumns[i].myName==name )
-        {
-          res = myColumns[i].myIcon;
-          break;
-        }
+  for ( int i = 0, n = myColumns.size(); i < n; i++ ) {
+    if ( myColumns[i].myName == name ) {
+      res = myColumns[i].myIcon;
+      break;
+    }
+  }
   return res;
 }
 
@@ -586,13 +590,13 @@ QPixmap SUIT_TreeModel::columnIcon( const QString& name ) const
 */
 void SUIT_TreeModel::setAppropriate( const QString& name, const Qtx::Appropriate appr )
 {
-  for( int i=0, n=myColumns.size(); i<n; i++ )
-    if( myColumns[i].myName==name && myColumns[i].myAppropriate != appr )
-    {
+  for ( int i = 0, n = myColumns.size(); i < n; i++ ) {
+    if ( myColumns[i].myName == name && myColumns[i].myAppropriate != appr ) {
       myColumns[i].myAppropriate = appr;
       emit headerDataChanged( Qt::Horizontal, i, i );
       break;
     }
+  }
 }
 
 /*!
@@ -608,12 +612,12 @@ void SUIT_TreeModel::setAppropriate( const QString& name, const Qtx::Appropriate
 Qtx::Appropriate SUIT_TreeModel::appropriate( const QString& name ) const
 {
   Qtx::Appropriate appr = Qtx::Shown;
-  for( int i=0, n=myColumns.size(); i<n; i++ )
-    if( myColumns[i].myName==name )
-        {
-          appr = myColumns[i].myAppropriate;
-          break;
-        }
+  for ( int i = 0, n = myColumns.size(); i < n; i++ ) {
+    if ( myColumns[i].myName == name ) {
+      appr = myColumns[i].myAppropriate;
+      break;
+    }
+  }
   return appr;
 }
 
@@ -628,14 +632,15 @@ Qtx::Appropriate SUIT_TreeModel::appropriate( const QString& name ) const
   \param flags - header flags
 
 */
-void SUIT_TreeModel::setHeaderFlags( const QString& name, const Qtx::HeaderViewFlags flags ) {
-  for( int i=0, n=myColumns.size(); i<n; i++ )
-    if( myColumns[i].myName==name && myColumns[i].myHeaderFlags != flags )
-    {
+void SUIT_TreeModel::setHeaderFlags( const QString& name, const Qtx::HeaderViewFlags flags )
+{
+  for ( int i = 0, n = myColumns.size(); i < n; i++ ) {
+    if ( myColumns[i].myName == name && myColumns[i].myHeaderFlags != flags ) {
       myColumns[i].myHeaderFlags = flags;
       emit headerDataChanged( Qt::Horizontal, i, i );
       break;
     }
+  }
 }
 
 /*!
@@ -647,14 +652,15 @@ void SUIT_TreeModel::setHeaderFlags( const QString& name, const Qtx::HeaderViewF
   \param name - column name
   \return header flags
 */
-Qtx::HeaderViewFlags SUIT_TreeModel::headerFlags( const QString& name ) const {
+Qtx::HeaderViewFlags SUIT_TreeModel::headerFlags( const QString& name ) const
+{
   Qtx::HeaderViewFlags flags;
-  for( int i=0, n=myColumns.size(); i<n; i++ )
-    if( myColumns[i].myName==name )
-      {
-	flags = myColumns[i].myHeaderFlags;
-	break;
-      }
+  for ( int i = 0, n = myColumns.size(); i < n; i++ ) {
+    if ( myColumns[i].myName == name ) {
+      flags = myColumns[i].myHeaderFlags;
+      break;
+    }
+  }
   return flags;
 }
 
@@ -664,25 +670,32 @@ Qtx::HeaderViewFlags SUIT_TreeModel::headerFlags( const QString& name ) const {
   \param id - column name
   \param state - visible state
 */
-void SUIT_TreeModel::setVisibilityState(const QString& id, Qtx::VisibilityState state) {
-  if(myVisibilityMap.contains(id) && myVisibilityMap.value(id) == state)
+void SUIT_TreeModel::setVisibilityState( const QString& id, Qtx::VisibilityState state )
+{
+  VisibilityMap::const_iterator it = myVisibilityMap.find( id );
+  if ( it != myVisibilityMap.end() && it.value() == state )
     return;
   
   bool needSignal = false;
-  if(state != Qtx::UnpresentableState) {
-    myVisibilityMap.insert(id, state);
+  if ( state != Qtx::UnpresentableState ) {
+    myVisibilityMap.insert( id, state );
     needSignal = true;
   }
   else {
-    int nb = myVisibilityMap.remove(id);
-    if(nb > 0)
-      needSignal = true;
+    needSignal = myVisibilityMap.remove( id ) > 0;
   }
-  if(needSignal) {
-    QModelIndexList lst = match(index(0,root()->customData(Qtx::IdType).toInt()), DisplayRole, id, 1, Qt::MatchExactly | Qt::MatchRecursive);
-    if(!lst.isEmpty()) {
-      QModelIndex idx = index(lst[0].row(), SUIT_DataObject::VisibilityId ,lst[0].parent());
-      emit dataChanged(idx,idx);
+  if ( needSignal ) {
+    QModelIndexList lst;
+    if ( searcher() ) {
+      SUIT_DataObject* o = searcher()->findObject( id );
+      if ( o ) lst << index( o );
+    }
+    else {
+      lst = match( index( 0, root()->customData( Qtx::IdType ).toInt() ), DisplayRole, id, 1, Qt::MatchExactly | Qt::MatchRecursive );
+    }
+    if ( !lst.isEmpty() ) {
+      QModelIndex idx = index( lst.first().row(), SUIT_DataObject::VisibilityId, lst.first().parent() );
+      emit dataChanged( idx, idx );
     }
   }
 }
@@ -693,23 +706,32 @@ void SUIT_TreeModel::setVisibilityState(const QString& id, Qtx::VisibilityState 
   \param id - column name
   \param state - visible state
 */
-void SUIT_TreeModel::setVisibilityStateForAll(Qtx::VisibilityState state) {
-  if(state != Qtx::UnpresentableState) {
+void SUIT_TreeModel::setVisibilityStateForAll( Qtx::VisibilityState state )
+{
+  if ( state != Qtx::UnpresentableState ) {
     VisibilityMap::ConstIterator it = myVisibilityMap.begin();
-    while(it != myVisibilityMap.end() ) {
-      if(it.value() != state)
-	setVisibilityState(it.key(), state);
+    while ( it != myVisibilityMap.end() ) {
+      if ( it.value() != state )
+	setVisibilityState( it.key(), state );
       it++;
     }
-  } else {
+  }
+  else {
     QList<QString> anIds = myVisibilityMap.keys();
     myVisibilityMap.clear();
     QList<QString>::ConstIterator it = anIds.begin();
-    while(it != anIds.end()){
-      QModelIndexList lst = match(index(0,root()->customData(Qtx::IdType).toInt()), DisplayRole, (*it), 1, Qt::MatchExactly | Qt::MatchRecursive);
-      if(!lst.isEmpty()) {
-	QModelIndex idx = index(lst[0].row(), SUIT_DataObject::VisibilityId ,lst[0].parent());
-	emit dataChanged(idx,idx);
+    while ( it != anIds.end() ) {
+      QModelIndexList lst;
+      if ( searcher() ) {
+	SUIT_DataObject* o = searcher()->findObject( *it );
+	if ( o ) lst << index( o );
+      }
+      else {
+	lst = match( index( 0, root()->customData( Qtx::IdType ).toInt() ), DisplayRole, (*it), 1, Qt::MatchExactly | Qt::MatchRecursive );
+      }
+      if ( !lst.isEmpty() ) {
+	QModelIndex idx = index( lst.first().row(), SUIT_DataObject::VisibilityId ,lst.first().parent() );
+	emit dataChanged( idx, idx );
       }
       it++;
     }
@@ -722,11 +744,10 @@ void SUIT_TreeModel::setVisibilityStateForAll(Qtx::VisibilityState state) {
   \param id - column name
   \return visible state
 */
-Qtx::VisibilityState SUIT_TreeModel::visibilityState(const QString& id) const {
-  if(myVisibilityMap.contains(id))
-    return myVisibilityMap.value(id);
-  else 
-    return Qtx::UnpresentableState;
+Qtx::VisibilityState SUIT_TreeModel::visibilityState( const QString& id ) const
+{
+  VisibilityMap::const_iterator it = myVisibilityMap.find( id );
+  return it != myVisibilityMap.end() ? it.value() : Qtx::UnpresentableState;
 }
 
 /*!
@@ -1759,6 +1780,16 @@ void SUIT_ProxyModel::setAutoUpdate( const bool on )
 bool SUIT_ProxyModel::isSortingEnabled() const
 {
   return mySortingEnabled;
+}
+
+SUIT_DataSearcher* SUIT_ProxyModel::searcher() const
+{
+  return treeModel() ? treeModel()->searcher() : 0;
+}
+
+void SUIT_ProxyModel::setSearcher( SUIT_DataSearcher* s )
+{
+  if ( treeModel() ) treeModel()->setSearcher( s );
 }
 
 /*!

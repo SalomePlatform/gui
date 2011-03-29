@@ -41,8 +41,16 @@
 class SUIT_DataObject;
 class SUIT_TreeModel;
 
+class SUIT_EXPORT SUIT_DataSearcher
+{
+public:
+  virtual SUIT_DataObject* findObject( const QString& ) const = 0;
+};
+
 class SUIT_EXPORT SUIT_AbstractModel
 {
+  SUIT_DataSearcher* mySearcher;
+
 public:
   SUIT_AbstractModel();
 
@@ -78,8 +86,10 @@ public:
   virtual Qtx::VisibilityState  visibilityState(const QString& id) const = 0;
   virtual void                  setHeaderFlags( const QString& name, const Qtx::HeaderViewFlags flags ) = 0;
   virtual Qtx::HeaderViewFlags  headerFlags( const QString& name ) const = 0;
-  virtual void           emitClicked( SUIT_DataObject* obj, const QModelIndex& index) = 0;
+  virtual void                  emitClicked( SUIT_DataObject* obj, const QModelIndex& index) = 0;
 
+  virtual SUIT_DataSearcher*    searcher() const;
+  virtual void                  setSearcher( SUIT_DataSearcher* );
 };
 
 
@@ -259,6 +269,8 @@ public:
   virtual Qtx::HeaderViewFlags  headerFlags( const QString& name ) const;
   virtual void             emitClicked( SUIT_DataObject* obj, const QModelIndex& index);
 
+  virtual SUIT_DataSearcher*    searcher() const;
+  virtual void                  setSearcher( SUIT_DataSearcher* );
 
   QAbstractItemDelegate* delegate() const;
 

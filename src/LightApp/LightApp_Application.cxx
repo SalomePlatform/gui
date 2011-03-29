@@ -76,7 +76,6 @@
 #include <SUIT_Accel.h>
 #include <SUIT_MessageBox.h>
 #include <SUIT_ViewWindow.h>
-#include <SUIT_TreeModel.h>
 
 #include <Qtx.h>
 #include <QtxToolBar.h>
@@ -1733,6 +1732,7 @@ QWidget* LightApp_Application::createWindow( const int flag )
 
     QString EntryCol = QObject::tr( "ENTRY_COLUMN" );
     SUIT_AbstractModel* treeModel = dynamic_cast<SUIT_AbstractModel*>( ob->model() );
+    treeModel->setSearcher( this );
     treeModel->registerColumn( 0, EntryCol, LightApp_DataObject::EntryId );
     treeModel->setAppropriate( EntryCol, Qtx::Toggled );
 
@@ -3582,4 +3582,10 @@ QString LightApp_Application::browseObjects( const QStringList& theEntryList,
   }
 
   return aResult;
+}
+
+SUIT_DataObject* LightApp_Application::findObject( const QString& id ) const
+{
+  LightApp_Study* study = dynamic_cast<LightApp_Study*>( activeStudy() );
+  return study ? study->findObjectByEntry( id ) : 0;
 }

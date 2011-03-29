@@ -52,7 +52,7 @@
 #include <SALOMEconfig.h>
 #include CORBA_SERVER_HEADER(SALOME_Exception)
 
-using namespace std;
+//#define NOTIFY_BY_EVENT
 
 class ObserverEvent : public QEvent
 {
@@ -81,23 +81,33 @@ public:
     fillEntryMap();
   }
   
+  SUIT_DataObject* findObject( const char* theID ) const
+  {
+    EntryMap::const_iterator it = entry2SuitObject.find( theID );
+    return it != entry2SuitObject.end() ? it->second : 0;
+  }
+
   virtual void notifyObserverID(const char* theID, CORBA::Long event)
   {
+#ifdef NOTIFY_BY_EVENT
     QCoreApplication::postEvent(this,new ObserverEvent(theID,event));
+#else
+    notifyObserverID_real(theID,event);
+#endif
   }
 
   virtual bool event(QEvent *event)
   {
     if (event->type() == QEvent::User ) 
-      {
-        //START_TIMING(notify);
-        notifyObserverID_real(static_cast<ObserverEvent *>(event)->_anID.c_str(),static_cast<ObserverEvent *>(event)->_event);
-        //END_TIMING(notify,100);
-      }
+    {
+      //START_TIMING(notify);
+      notifyObserverID_real(static_cast<ObserverEvent *>(event)->_anID.c_str(),static_cast<ObserverEvent *>(event)->_event);
+      //END_TIMING(notify,100);
+    }
     return true;
   }
 
-  void notifyObserverID_real(const char* theID, CORBA::Long event)
+  void notifyObserverID_real(const std::string& theID, long event)
   {
     SalomeApp_DataObject* suit_obj;
     
@@ -111,16 +121,15 @@ public:
           return;
         }
         _PTR(SObject) obj = myStudyDS->FindObjectID( theID );
-        std::string entry_str = theID;
-        int last2Pnt_pos = entry_str.rfind( ":" );
-        std::string parent_id = entry_str.substr( 0, last2Pnt_pos );
-        int tag = atoi( entry_str.substr( last2Pnt_pos+1 ).c_str() );
+        int last2Pnt_pos = theID.rfind( ":" );
+        std::string parent_id = theID.substr( 0, last2Pnt_pos );
+        int tag = atoi( theID.substr( last2Pnt_pos+1 ).c_str() );
       
         if ( parent_id.length() == 3 ) // "0:1" - root item?
         {
           // It's probably a SComponent
           _PTR(SComponent) aSComp = obj->GetFatherComponent();
-          if ( aSComp && !aSComp->IsNull() && aSComp->GetID() == entry_str )
+          if ( aSComp && !aSComp->IsNull() && aSComp->GetID() == theID )
             suit_obj = new SalomeApp_ModuleObject( aSComp );
           else
             suit_obj = new SalomeApp_DataObject( obj );
@@ -153,8 +162,8 @@ public:
             std::string obj_id = parent_id.substr( 4 );
             
             std::string anID;
-            string::size_type debut = 0;
-            string::size_type fin;
+	    std::string::size_type debut = 0;
+            std::string::size_type fin;
             SalomeApp_DataObject* anObj = dynamic_cast<SalomeApp_DataObject*>( myStudy->root() );
             while ( 1 )
             {
@@ -226,14 +235,14 @@ public:
           suit_obj = it->second;
         
         /* Define visibility state */
-        if( suit_obj ) {
+	bool isComponent = dynamic_cast<SalomeApp_ModuleObject*>( suit_obj ) != 0;
+        if ( suit_obj && !isComponent ) {
           QString moduleTitle = ((CAM_Application*)myStudy->application())->moduleTitle(suit_obj->componentDataType());
-          if(!moduleTitle.isEmpty()) {
+          if (!moduleTitle.isEmpty()) {
             LightApp_Displayer* aDisplayer = LightApp_Displayer::FindDisplayer(moduleTitle,false);
-            
-            if(aDisplayer && !myStudy->isComponent(theID)) {
-              if(aDisplayer->canBeDisplayed(theID)) {
-                myStudy->setVisibilityState( theID, Qtx::HiddenState );
+            if(aDisplayer) {
+              if(aDisplayer->canBeDisplayed(theID.c_str())) {
+                myStudy->setVisibilityState( theID.c_str(), Qtx::HiddenState );
                 //MESSAGE("Object with entry : "<< theID <<" CAN be displayed !!!");
               } else 
                 MESSAGE("Object with entry : "<< theID <<" CAN'T be displayed !!!");
@@ -885,6 +894,12 @@ void SalomeApp_Study::markAsSavedIn(QString theFileName)
 {
   setStudyName(theFileName);
   setIsSaved(true);
+}
+
+LightApp_DataObject* SalomeApp_Study::findObjectByEntry( const QString& theEntry )
+{
+  LightApp_DataObject* o = dynamic_cast<LightApp_DataObject*>( myObserver ? myObserver->findObject( theEntry.toLatin1().constData() ) : 0 );
+  return o;
 }
 
 /*!

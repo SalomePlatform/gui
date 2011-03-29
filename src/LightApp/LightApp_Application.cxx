@@ -3545,31 +3545,41 @@ QString LightApp_Application::browseObjects( const QStringList& theEntryList,
   if( !aModel )
     return aResult;
 
-  bool anIsSelected = false;
   QStringListIterator anIter( theEntryList );
+  if( theIsOptimizedBrowsing )
+  {
+    // go to the last entry
+    anIter.toBack();
+    if( anIter.hasPrevious() )
+      anIter.previous();
+  }
+
+  // scroll to each entry in the list
+  // (in optimized mode - to the last entry only)
+  QString anEntry;
+  LightApp_DataObject* anObject;
   while( anIter.hasNext() )
   {
-    QString anEntry = anIter.next();
+    anEntry = anIter.next();
     if( !anEntry.isEmpty() )
     {
-      if( LightApp_DataObject* anObject = aStudy->findObjectByEntry( anEntry ) )
+      anObject = aStudy->findObjectByEntry( anEntry );
+      if( anObject )
       {
         QModelIndex anIndex = aModel->index( anObject );
         anOB->treeView()->scrollTo( anIndex );
-
-        if( !anIsSelected )
-        {
-          SUIT_DataOwnerPtrList aList;
-          aList.append( new LightApp_DataOwner( anEntry ) );
-          selectionMgr()->setSelected( aList );
-          anIsSelected = true; // always select the first object only
-          aResult = anEntry;
-        }
-
-        if( theIsOptimizedBrowsing )
-          break; // browse only the first object in this mode
       }
     }
   }
+
+  // always select the last object
+  if( anObject && !anEntry.isEmpty() )
+  {
+    SUIT_DataOwnerPtrList aList;
+    aList.append( new LightApp_DataOwner( anEntry ) );
+    selectionMgr()->setSelected( aList );
+    aResult = anEntry;
+  }
+
   return aResult;
 }

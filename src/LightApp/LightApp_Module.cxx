@@ -702,6 +702,26 @@ void LightApp_Module::paste()
 {
 }
 
+/*!
+  \brief Return \c true if object can be renamed
+*/
+bool LightApp_Module::renameAllowed( const QString& /*entry*/ ) const
+{
+  return false;
+}
+
+/*!
+  Rename object by entry.
+  \param entry entry of the object
+  \param name new name of the object
+  \brief Return \c true if rename operation finished successfully, \c false otherwise.
+*/
+bool LightApp_Module::renameObject( const QString& /*entry*/, const QString& /*name*/ )
+{
+  return false;
+}
+
+
 
 int LightApp_Module::createMenu( const QString& subMenu, const int menu, const int id, const int group, const int idx )
 {

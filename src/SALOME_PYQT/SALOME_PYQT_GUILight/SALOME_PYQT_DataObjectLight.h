@@ -47,7 +47,7 @@ class SALOME_PYQT_LIGHT_EXPORT SALOME_PYQT_DataObjectLight : public virtual Ligh
   QPixmap            icon(const int = NameId)    const;
   QString            toolTip(const int = NameId) const;
   
-  void setName(const QString& name);
+  bool setName(const QString& name);
   void setIcon(const QString& icon);
   void setToolTip(const QString& tooltip);
 

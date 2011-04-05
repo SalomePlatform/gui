@@ -319,6 +319,10 @@ The changes will be applied on the next application session.</translation>
         <translation>Rename</translation>
     </message>
     <message>
+        <source>MEN_RENAME_OBJ</source>
+        <translation>Rename</translation>
+    </message>        	
+    <message>
         <source>LOG_WINDOW</source>
         <translation>Message Window</translation>
     </message>

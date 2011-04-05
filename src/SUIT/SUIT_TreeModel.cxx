@@ -822,6 +822,10 @@ QVariant SUIT_TreeModel::data( const QModelIndex& index, int role ) const
       // data object text for the specified column
       val = obj->text( id );
       break;
+    case EditRole:
+      // data object text for the specified column (for editor)
+      val = obj->text( id );
+      break;
     case DecorationRole: {
       if(id == SUIT_DataObject::VisibilityId) {
 	int anId = obj->customData(Qtx::IdType).toInt(); 
@@ -942,6 +946,15 @@ bool SUIT_TreeModel::setData( const QModelIndex& index,
           return true;
         }
         break;
+      case EditRole: {
+	QString val = value.toString();
+        if ( !val.isEmpty() && obj->setName(val) ) {
+          emit( dataChanged( index, index ) );
+	  return true;
+	}
+	return false;
+        break;
+      }
       default:
         break;
       }
@@ -975,6 +988,10 @@ Qt::ItemFlags SUIT_TreeModel::flags( const QModelIndex& index ) const
     // data object is checkable
     if ( obj->isCheckable( index.column() ) )
       f = f | Qt::ItemIsUserCheckable;
+    
+    // data object can be renamed
+    if ( obj->renameAllowed( index.column() ) )
+      f = f | Qt::ItemIsEditable;
   }
   return f;
 }

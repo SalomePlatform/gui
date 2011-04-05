@@ -1268,8 +1268,9 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QMenu* thePop
        QString( aList.First()->getEntry() ).startsWith( tr( "SAVE_POINT_DEF_NAME" ) ) ) {
     thePopup->addSeparator();
     thePopup->addAction( tr( "MEN_RESTORE_VS" ), this, SLOT( onRestoreGUIState() ) );
-    thePopup->addAction( tr( "MEN_RENAME_VS" ),  this, SLOT( onRenameGUIState() ) );
-    thePopup->addAction( tr( "MEN_DELETE_VS" ),  this, SLOT( onDeleteGUIState() ) );
+    thePopup->addAction( tr( "MEN_RENAME_VS" ),  objectBrowser(), 
+			 SLOT( onStartEditing() ), objectBrowser()->shortcutKey(SUIT_DataBrowser::RenameShortcut) );
+    thePopup->addAction( tr( "MEN_DELETE_VS" ),  this, SLOT( onDeleteGUIState() ) );    
   }
 
   // "Delete reference" item should appear only for invalid references
@@ -1443,14 +1444,17 @@ int getSelectedSavePoint( const LightApp_SelectionMgr* selMgr )
 {
   SALOME_ListIO aList;
   selMgr->selectedObjects( aList );
-  Handle(SALOME_InteractiveObject) aIObj = aList.First();
-  QString entry( aIObj->getEntry() );
-  QString startStr = QObject::tr( "SAVE_POINT_DEF_NAME" );
-  if ( !entry.startsWith( startStr ) ) // it's a "GUI state" object
-    return -1;
-  bool ok; // conversion to integer is ok?
-  int savePoint = entry.right( entry.length() - startStr.length() ).toInt( &ok );
-  return ok ? savePoint : -1;
+  if( aList.Extent() > 0 ) {
+    Handle(SALOME_InteractiveObject) aIObj = aList.First();
+    QString entry( aIObj->getEntry() );
+    QString startStr = QObject::tr( "SAVE_POINT_DEF_NAME" );
+    if ( !entry.startsWith( startStr ) ) // it's a "GUI state" object
+      return -1;
+    bool ok; // conversion to integer is ok?
+    int savePoint = entry.right( entry.length() - startStr.length() ).toInt( &ok );
+    return ok ? savePoint : -1;
+  }
+  return -1;
 }
 
 /*!Called on Restore GUI State popup command*/
@@ -1461,26 +1465,6 @@ void SalomeApp_Application::onRestoreGUIState()
     return;
   SalomeApp_VisualState( this ).restoreState( savePoint );
 }
-
-/*!Called on Rename GUI State popup command*/
-void SalomeApp_Application::onRenameGUIState()
-{
-  int savePoint = ::getSelectedSavePoint( selectionMgr() );
-  if ( savePoint == -1 )
-    return;
-  SalomeApp_Study* study = dynamic_cast<SalomeApp_Study*>( activeStudy() );
-  if ( !study )
-    return;
-
-  QString newName = LightApp_NameDlg::getName( desktop(), study->getNameOfSavePoint( savePoint ) );
-  if ( !newName.isNull() && !newName.isEmpty() ) {
-    study->setNameOfSavePoint( savePoint, newName );
-    updateSavePointDataObjects( study );
-    // temporary commented
-    //objectBrowser()->updateTree( study->root() );
-  }
-}
-
 
 /*!Called on Delete GUI State popup command*/
 void SalomeApp_Application::onDeleteGUIState()
@@ -1820,11 +1804,33 @@ void SalomeApp_Application::onViewManagerRemoved( SUIT_ViewManager* ) {
 }
 
 /*!
-  Called then study closed
+  Checks that an object can be renamed.
+  \param entry entry of the object
+  \brief Return \c true if object can be renamed
 */
-void SalomeApp_Application::onStudyClosed( SUIT_Study* theStudy){
-  LightApp_Application::onStudyClosed(theStudy);
+bool SalomeApp_Application::renameAllowed( const QString& entry) const {
+  return entry.startsWith( tr( "SAVE_POINT_DEF_NAME") );
+}
 
-  disconnect( this, SIGNAL( viewManagerRemoved( SUIT_ViewManager* ) ),
-	      this, SLOT( onViewManagerRemoved( SUIT_ViewManager* ) ) );
+/*!
+  Rename object by entry.
+  \param entry entry of the object
+  \param name new name of the object
+  \brief Return \c true if rename operation finished successfully, \c false otherwise.
+*/
+bool SalomeApp_Application::renameObject( const QString& entry, const QString& name ) {
+  
+  SalomeApp_Study* aStudy = dynamic_cast<SalomeApp_Study*>( activeStudy() );
+  
+  int savePoint = ::getSelectedSavePoint( selectionMgr() );
+  
+  if(!aStudy || savePoint == -1)
+    return false;
+  
+  if ( !name.isNull() && !name.isEmpty() ) {
+    aStudy->setNameOfSavePoint( savePoint, name );
+    updateSavePointDataObjects( aStudy );
+    return true;
+  }
+  return false;
 }

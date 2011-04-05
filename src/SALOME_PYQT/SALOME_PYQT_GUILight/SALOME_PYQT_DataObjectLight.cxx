@@ -101,9 +101,10 @@ QString SALOME_PYQT_DataObjectLight::toolTip(const int index) const
 }
 
 
-void SALOME_PYQT_DataObjectLight::setName(const QString& name)
+bool SALOME_PYQT_DataObjectLight::setName(const QString& name)
 {
   myName = name;
+  return true;
 }
 
 void SALOME_PYQT_DataObjectLight::setIcon(const QString& iconname)

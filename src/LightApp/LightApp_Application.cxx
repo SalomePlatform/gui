@@ -3082,14 +3082,36 @@ void LightApp_Application::moduleIconNames( QMap<QString, QString>& iconMap ) co
 */
 void LightApp_Application::contextMenuPopup( const QString& type, QMenu* thePopup, QString& title )
 {
+  //Add "Rename" item 
+  LightApp_SelectionMgr* selMgr = LightApp_Application::selectionMgr();
+  SUIT_DataBrowser* ob = objectBrowser();
+    
   CAM_Application::contextMenuPopup( type, thePopup, title );
 
-  SUIT_DataBrowser* ob = objectBrowser();
   if ( ob && type == ob->popupClientType() ) {
     thePopup->addSeparator();
     QAction* a = thePopup->addAction( tr( "MEN_REFRESH" ), this, SLOT( onRefresh() ) );
-    if ( ob->updateKey() )
-      a->setShortcut( ob->updateKey() );
+    if ( ob->shortcutKey(SUIT_DataBrowser::UpdateShortcut) )
+      a->setShortcut( ob->shortcutKey(SUIT_DataBrowser::UpdateShortcut) );
+  }
+  
+  if(selMgr && ob) {
+    SALOME_ListIO selected;
+    selMgr->selectedObjects( selected );
+    if(selected.Extent() == 1){
+      Handle(SALOME_InteractiveObject) anIObject = selected.First();
+      SUIT_DataObject* obj = findObject(anIObject->getEntry());
+      if(obj && obj->renameAllowed()) {
+	QAction* a = new QAction(tr("MEN_RENAME_OBJ"), thePopup);
+	connect( a, SIGNAL( triggered(bool) ), ob, SLOT( onStartEditing() ) );
+	if ( ob->shortcutKey(SUIT_DataBrowser::RenameShortcut) )
+	  a->setShortcut( ob->shortcutKey(SUIT_DataBrowser::RenameShortcut) );	
+
+	QList<QAction*> acts = thePopup->actions();
+	QAction* firstAction = acts.count() > 0 ? acts.first() : 0;
+	thePopup->insertAction(firstAction,a);
+      }
+    }
   }
 }
 
@@ -3588,4 +3610,23 @@ SUIT_DataObject* LightApp_Application::findObject( const QString& id ) const
 {
   LightApp_Study* study = dynamic_cast<LightApp_Study*>( activeStudy() );
   return study ? study->findObjectByEntry( id ) : 0;
+}
+
+/*!
+  Checks that an object can be renamed.
+  \param entry entry of the object
+  \brief Return \c true if object can be renamed
+*/
+bool LightApp_Application::renameAllowed( const QString& /*entry*/) const {
+  return false;
+}
+
+/*!
+  Rename object by entry.
+  \param entry entry of the object
+  \param name new name of the object
+  \brief Return \c true if rename operation finished successfully, \c false otherwise.
+*/
+bool LightApp_Application::renameObject( const QString& entry, const QString& ) {
+  return false;
 }

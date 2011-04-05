@@ -26,9 +26,11 @@
 #include "LightApp_DataObject.h"
 #include "LightApp_Study.h"
 #include "LightApp_DataModel.h"
+#include "LightApp_Module.h"
+#include "LightApp_Application.h"
 
 #include <CAM_Module.h>
-#include <SUIT_DataObjectKey.h>
+#include <SUIT_DataObjectKey.h> 
 
 #include <QVariant>
 
@@ -147,6 +149,52 @@ bool LightApp_DataObject::isVisible() const
   LightApp_RootObject* r = dynamic_cast<LightApp_RootObject*>( root() );
   return r && r->study() && componentDataType() != r->study()->getVisualComponentName();
 }
+
+
+/*!
+  \brief Check if this object is can't be renamed in place
+
+  This method can be re-implemented in the subclasses.
+  Default implementation returns \c false (all objects can not be renamed).
+
+  \param id column id
+  \return \c true if the item can be renamed by the user in place (e.g. in the Object browser)
+*/
+bool LightApp_DataObject::renameAllowed( const int id ) const
+{
+  if ( id == NameId ) {
+    LightApp_Module* m = dynamic_cast<LightApp_Module*>( module() );
+    LightApp_Application* app = 0;
+    LightApp_RootObject* r = dynamic_cast<LightApp_RootObject*>( root() );
+    if(r && r->study())
+      app  = dynamic_cast<LightApp_Application*>(r->study()->application());
+    
+    return ( m && m->renameAllowed( entry() ) ) ||
+      ( app && app->renameAllowed( entry() ) );
+  }
+  return CAM_DataObject::renameAllowed( id );
+}
+
+
+/*!
+  \brief Set name of the this object.
+
+  This method can be re-implemented in the subclasses.
+  Default implementation returns \c false.
+
+  \return \c true if rename operation finished successfully, \c false otherwise.
+*/
+bool LightApp_DataObject::setName(const QString& name)
+{
+    LightApp_Module* m = dynamic_cast<LightApp_Module*>( module() );
+    LightApp_RootObject* r = dynamic_cast<LightApp_RootObject*>( root() );
+    LightApp_Application* app = (r && r->study()) ? dynamic_cast<LightApp_Application*>(r->study()->application()) : 0;
+
+    return ( m && m->renameObject( entry(), name ) ) ||
+           ( app && app->renameObject( entry(), name ) );
+  return CAM_DataObject::setName(name);
+}
+
 
 /*!
   \brief Get object string identifier.

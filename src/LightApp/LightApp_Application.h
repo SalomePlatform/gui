@@ -166,6 +166,9 @@ public:
 
   virtual SUIT_DataObject*            findObject( const QString& ) const;
 
+  virtual bool                        renameAllowed( const QString& ) const;
+  virtual bool                        renameObject( const QString&, const QString& );
+
 signals:
   void                                studyOpened();
   void                                studySaved();

@@ -121,6 +121,8 @@ public:
   virtual bool                isEnabled() const;
   virtual bool                isSelectable() const;
   virtual bool                isCheckable( const int = NameId ) const;
+  virtual bool                renameAllowed( const int = NameId ) const;
+  virtual bool                setName(const QString& name);
 
   virtual bool                isOn( const int = NameId ) const;
   virtual void                setOn( const bool, const int = NameId );

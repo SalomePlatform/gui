@@ -111,8 +111,11 @@ public:
 
  //! update visibility state of objects
   void                                updateVisibilityState( DataObjectList& theList,
-                                                             SUIT_ViewModel* theViewModel );
+                                                             SUIT_ViewModel* theViewModel );  
 
+  virtual bool                        renameAllowed( const QString& ) const;
+  virtual bool                        renameObject( const QString&, const QString& );
+  
 public slots:
   virtual void                        onLoadDoc();
   virtual void                        onNewWithScript();
@@ -164,7 +167,6 @@ private slots:
 
   void                                onDeleteGUIState();
   void                                onRestoreGUIState();
-  void                                onRenameGUIState();
 
   void                                onCatalogGen();
   void                                onRegDisplay();

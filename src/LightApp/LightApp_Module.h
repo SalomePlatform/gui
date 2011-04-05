@@ -97,6 +97,8 @@ public:
   virtual bool                        canPaste() const;
   virtual void                        copy();
   virtual void                        paste();
+  virtual bool                        renameAllowed( const QString& ) const;
+  virtual bool                        renameObject( const QString&, const QString& );
 
   int                    createMenu( const QString&, const int, const int = -1, const int = -1, const int = -1 );
   int                    createMenu( const QString&, const QString&, const int = -1, const int = -1, const int = -1 );

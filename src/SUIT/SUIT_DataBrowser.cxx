@@ -158,29 +158,27 @@ void SUIT_DataBrowser::updateTree( SUIT_DataObject* obj, const bool autoOpen )
 }
 
 /*!
-  \brief Get current key accelerator used for the 
-  object browser update operation.
+  \brief Get current key accelerator by id.
   \return current key accelerator
-  \sa setUpdateKey(), requestUpdate()
+  \sa setShortcutKey(), requestUpdate(), requestRename()
 */
-int SUIT_DataBrowser::updateKey() const
+int SUIT_DataBrowser::shortcutKey(const int id) const
 {
-  return myShortcut->key();
+  return myShortcutMap.value(id)->key();
 }
 
 /*!
-  \brief Assign the key accelerator to be used for the 
-  object browser update operation.
-
-  By default, \c [F5] key is assigned for the update operation.
-  To disable the accelerator, pass 0 to this method.
-
+  \brief Assign the key accelerator for the shortcut.
+  
+  \param id id of the shortcut
   \param key new key accelerator
-  \sa updateKey(), requestUpdate()
+  \sa shortcutKey(), requestUpdate(), requestRename()
 */
-void SUIT_DataBrowser::setUpdateKey( const int key )
-{
-  myShortcut->setKey( key );
+void SUIT_DataBrowser::setShortcutKey( const int id, const int key )
+{ 
+  ShortcutMap::iterator it = myShortcutMap.find( key );
+  if( it != myShortcutMap.end() )
+    (*it)->setKey(key);
 }
 
 /*!
@@ -349,7 +347,11 @@ void SUIT_DataBrowser::init( SUIT_DataObject* root )
            this,       SLOT( onDblClicked( const QModelIndex& ) ) );
   connect( treeView(), SIGNAL( expanded( const QModelIndex& ) ), 
            this,       SLOT( onExpanded( const QModelIndex& ) ) );
-  myShortcut = new QShortcut( Qt::Key_F5, this, SIGNAL( requestUpdate() ), SIGNAL( requestUpdate() ) );
+  connect( this      , SIGNAL( requestRename() ),
+	   this      , SLOT ( onStartEditing() ));
+
+  myShortcutMap.insert(UpdateShortcut , new QShortcut( Qt::Key_F5, this, SIGNAL( requestUpdate() ), SIGNAL( requestUpdate() ) ) );
+  myShortcutMap.insert(RenameShortcut , new QShortcut( Qt::Key_F2, this, SIGNAL( requestRename() ), SIGNAL( requestRename() ) ) );
 
   myAutoSizeFirstColumn = true;
   myAutoSizeColumns = false;
@@ -362,9 +364,9 @@ void SUIT_DataBrowser::init( SUIT_DataObject* root )
   assigned for the update operation is pressed by the user.
 
   By default, \c [F5] key is assigned for the update operation.
-  The key accelerator can be changed with the setUpdateKey() method.
+  The key accelerator can be changed with the setShortcutKey() method.
 
-  \sa updateKey(), setUpdateKey()
+  \sa shortcutKey(), setShortcutKey()
 */
 
 /*!
@@ -439,6 +441,18 @@ void SUIT_DataBrowser::onExpanded( const QModelIndex& index )
   if (myResizeOnExpandItem) {
     adjustFirstColumnWidth();
     adjustColumnsWidth();
+  }
+}
+
+/*!
+  \brief Make editable selected item in place.
+  \internal
+*/
+void SUIT_DataBrowser::onStartEditing() {
+  DataObjectList sel = getSelected();
+  SUIT_ProxyModel* m = qobject_cast<SUIT_ProxyModel*>( model() );
+  if(treeView() && m && sel.count() == 1){
+    treeView()->edit(m->index( sel.first(), SUIT_DataObject::NameId ));
   }
 }
 

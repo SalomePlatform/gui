@@ -358,7 +358,8 @@ void OB_Browser::setShowToolTips( const bool theDisplay )
 */
 int OB_Browser::numberOfSelected() const
 {
-  return myView->selectionModel() ? myView->selectionModel()->selectedIndexes().count() : 0;
+  // we take selection by rows
+  return myView->selectionModel() ? myView->selectionModel()->selectedRows().count() : 0;
 }
 
 /*!
@@ -367,7 +368,8 @@ int OB_Browser::numberOfSelected() const
 */
 QModelIndexList OB_Browser::selectedIndexes() const
 {
-  return myView->selectionModel() ? myView->selectionModel()->selectedIndexes() : QModelIndexList();
+  // we take selection by rows
+  return myView->selectionModel() ? myView->selectionModel()->selectedRows() : QModelIndexList();
 }
 
 /*!

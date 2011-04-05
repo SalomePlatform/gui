@@ -635,6 +635,32 @@ bool SUIT_DataObject::isCheckable( const int /*id*/ ) const
 }
 
 /*!
+  \brief Check if this object is can't be renamed in place
+
+  This method can be re-implemented in the subclasses.
+  Default implementation returns \c false (all objects can not be renamed).
+
+  \param id column id
+  \return \c true if the item can be renamed by the user in place (e.g. in the Object browser)
+*/
+bool SUIT_DataObject::renameAllowed( const int /*id*/ ) const
+{
+  return false;
+}
+
+/*!
+  \brief Set name of the this object.
+
+  This method can be re-implemented in the subclasses.
+  Default implementation returns \c false.
+
+  \return \c true if rename operation finished successfully, \c false otherwise.
+*/
+bool SUIT_DataObject::setName(const QString& /*name*/) {
+  return false;
+}
+
+/*!
   \brief Get the checked state of the object (if it is checkable)
   for the specified column.
 

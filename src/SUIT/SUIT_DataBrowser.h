@@ -38,6 +38,8 @@ public:
   SUIT_DataBrowser( QWidget* = 0 );
   SUIT_DataBrowser( SUIT_DataObject*, QWidget* = 0 );
   ~SUIT_DataBrowser();
+  
+  enum {UpdateShortcut = 0, RenameShortcut};
 
   virtual QString  popupClientType() const;
 
@@ -52,8 +54,8 @@ public:
 
   void             updateTree( SUIT_DataObject* = 0, const bool = true );
 
-  int              updateKey() const;
-  void             setUpdateKey( const int );
+  int              shortcutKey(const int) const;
+  void             setShortcutKey( const int, const int );
 
   DataObjectList   getSelected() const;
   void             getSelected( DataObjectList& ) const;
@@ -75,6 +77,7 @@ private:
 
 signals:
   void             requestUpdate();
+  void             requestRename();
   void             clicked( SUIT_DataObject* );
   void             doubleClicked( SUIT_DataObject* );
 
@@ -83,9 +86,11 @@ private slots:
   void             onClicked( const QModelIndex& );
   void             onDblClicked( const QModelIndex& );
   void             onExpanded( const QModelIndex& );
+  void             onStartEditing();
 
 private:
-  QShortcut*       myShortcut;
+  typedef          QMap<int, QShortcut*> ShortcutMap;
+  ShortcutMap      myShortcutMap;
 
   bool             myAutoSizeFirstColumn;
   bool             myAutoSizeColumns;

@@ -111,6 +111,9 @@ public:
 
   QByteArray          saveState( int ) const;
   bool                restoreState( const QByteArray&, int );
+  
+  void                setOpaqueResize( bool = true );
+  bool                opaqueResize() const;
 
   void Split( QWidget* wid, const Qt::Orientation o, const SplitType type );
   void Attract( QWidget* wid1, QWidget* wid2, const bool all );

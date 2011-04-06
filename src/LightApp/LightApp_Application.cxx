@@ -1936,6 +1936,9 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "strings", aLangs, curLang );
   pref->setItemProperty( "icons",   aIcons, curLang );
 
+  int lookGroup = pref->addPreference( tr( "PREF_GROUP_LOOK_AND_FEEL" ), genTab );
+  pref->addPreference( tr( "PREF_OPAQUE_RESIZE" ), lookGroup, LightApp_Preferences::Bool, "desktop", "opaque_resize" );
+
   int studyGroup = pref->addPreference( tr( "PREF_GROUP_STUDY" ), genTab );
 
   pref->setItemProperty( "columns", 2, studyGroup );
@@ -2624,6 +2627,15 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
   {
     SUIT_MessageBox::information( desktop(), tr( "WRN_WARNING" ), tr( "LANG_CHANGED" ) );
   }
+  if ( sec == "desktop" && param == "opaque_resize" ) {
+    bool opaqueResize = resMgr->booleanValue( "desktop", "opaque_resize", false );
+    QMainWindow::DockOptions dopts = desktop()->dockOptions();
+    if ( opaqueResize ) dopts |= QMainWindow::AnimatedDocks;
+    else                dopts &= ~QMainWindow::AnimatedDocks;
+    desktop()->setDockOptions( dopts );
+    if ( dynamic_cast<STD_TabDesktop*>( desktop() ) )
+      dynamic_cast<STD_TabDesktop*>( desktop() )->workstack()->setOpaqueResize( opaqueResize );
+  }
 }
 
 /*!
@@ -2672,8 +2684,16 @@ void LightApp_Application::loadPreferences()
       myWinVis.insert( *itr, arr );
   }
 
-  if ( desktop() )
+  if ( desktop() ) {
     desktop()->retrieveGeometry( aResMgr->stringValue( "desktop", "geometry" ) );
+    bool opaqueResize = aResMgr->booleanValue( "desktop", "opaque_resize", false );
+    QMainWindow::DockOptions dopts = desktop()->dockOptions();
+    if ( opaqueResize ) dopts |= QMainWindow::AnimatedDocks;
+    else                dopts &= ~QMainWindow::AnimatedDocks;
+    desktop()->setDockOptions( dopts );
+    if ( dynamic_cast<STD_TabDesktop*>( desktop() ) )
+      dynamic_cast<STD_TabDesktop*>( desktop() )->workstack()->setOpaqueResize( opaqueResize );
+  }
 }
 
 /*!

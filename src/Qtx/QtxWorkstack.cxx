@@ -3141,6 +3141,29 @@ bool QtxWorkstack::restoreState( QDataStream& stream )
 }
 
 /*!
+  \brief Set resize mode of all splitters opaque or transparent.
+  \param opaque opaque mode
+*/
+void QtxWorkstack::setOpaqueResize( bool opaque )
+{
+  QList<QSplitter*> splitList;
+  splitters( mySplit, splitList, true );
+  splitList << mySplit;
+  foreach( QSplitter* split, splitList )
+    split->setOpaqueResize( opaque );
+}
+
+/*!
+  \brief Get resize mode of all splitters: opaque (\c true) or transparent (\c false).
+  \return current opaque mode
+*/
+bool QtxWorkstack::opaqueResize() const
+{
+  return mySplit->opaqueResize();
+}
+
+
+/*!
   \fn void QtxWorkstack::windowActivated( QWidget* w )
   \brief Emitted when the workstack's child widget \w is activated.
   \param w widget being activated

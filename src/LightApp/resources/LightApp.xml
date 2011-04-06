@@ -79,7 +79,8 @@
   </section>
   <section name="desktop" >
     <!-- Default GUI desktop state, position, size -->
-    <parameter name="geometry"  value="80%%x80%%+10%%+10%%"/>
+    <parameter name="geometry"      value="80%%x80%%+10%%+10%%"/>
+    <parameter name="opaque_resize" value="false"/>
   </section>
   <section name="PyConsole">
     <!-- Python console preferences -->

@@ -507,6 +507,14 @@ The changes will be applied on the next application session.</translation>
         <translation>Current language</translation>
     </message>
     <message>
+        <source>PREF_GROUP_LOOK_AND_FEEL</source>
+        <translation>Look &amp; feel</translation>
+    </message>
+    <message>
+        <source>PREF_OPAQUE_RESIZE</source>
+        <translation>Opaque resize</translation>
+    </message>
+    <message>
         <source>PREF_GROUP_STUDY</source>
         <translation>Study properties</translation>
     </message>

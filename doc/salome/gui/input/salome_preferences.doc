@@ -14,6 +14,17 @@ whole study session.
 <h2>General Preferences</h2>
 
 <ul>
+<li><b>Language</b></li>
+<ul>
+<li><b>Current language</b> - The application's resources language used.
+Note, that if you change the language, it will come in force only
+after application restarting.</li>
+</ul>
+<li><b>Look and feel</b></li>
+<ul>
+<li><b>Opaque resize</b> - Force opaque resize mode for viewers area (tabbed workspace).
+Clear this check box for less perfomant stations.</li>
+</ul>
 <li><b>Study Properties</b></li>
 <ul>
 <li><b>MultiFile Save</b> - if checked in, your study will be saved in

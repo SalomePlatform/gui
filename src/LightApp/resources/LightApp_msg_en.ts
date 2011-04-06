@@ -508,7 +508,7 @@ The changes will be applied on the next application session.</translation>
     </message>
     <message>
         <source>PREF_GROUP_LOOK_AND_FEEL</source>
-        <translation>Look &amp; feel</translation>
+        <translation>Look and feel</translation>
     </message>
     <message>
         <source>PREF_OPAQUE_RESIZE</source>

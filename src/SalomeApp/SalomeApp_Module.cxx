@@ -28,6 +28,7 @@
 #include "SalomeApp_DataModel.h"
 #include "SalomeApp_Application.h"
 #include "SalomeApp_Study.h"
+#include "SalomeApp_DataObject.h"
 
 #include "LightApp_Selection.h"
 
@@ -41,7 +42,6 @@
 #include <SALOME_InteractiveObject.hxx>
           
 #include <LightApp_DataObject.h>
-#include <SalomeApp_DataObject.h>
 
 #include <SUIT_Session.h>
 #include <SUIT_DataBrowser.h>

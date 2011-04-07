@@ -137,6 +137,8 @@ private:
   QString                myInfo;            //!< latest info message
   CAM_DataModel*         myDataModel;       //!< data model
   QMap<int, QAction*>    myActionMap;       //!< menu actions
+  bool                   myMenuShown;       //!< menu shown flag
+  bool                   myToolShown;       //!< tool shown flag
 
   friend class CAM_Application;
 };

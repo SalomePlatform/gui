@@ -44,19 +44,24 @@
 class ActionMgrLocker
 {
 public:
-  ActionMgrLocker( QtxActionMgr* m ) : myMgr( m )
+  ActionMgrLocker( QtxActionMgr* m, bool use ) : myMgr( m ), myUseLock( use )
   {
-    myUpdEnabled = myMgr->isUpdatesEnabled();
-    myMgr->setUpdatesEnabled( false );
+    if ( myUseLock ) {
+      myUpdEnabled = myMgr->isUpdatesEnabled();
+      myMgr->setUpdatesEnabled( false );
+    }
   }
   ~ActionMgrLocker()
   {
-    myMgr->setUpdatesEnabled( myUpdEnabled );
-    //myMgr->update();
+    if ( myUseLock ) {
+      myMgr->setUpdatesEnabled( myUpdEnabled );
+      //myMgr->update();
+    }
   }
 
   QtxActionMgr* myMgr;
-  bool myUpdEnabled;
+  bool          myUseLock;
+  bool          myUpdEnabled;
 };
 
 /*!
@@ -396,7 +401,7 @@ int CAM_Module::createTool( const QString& name )
   if ( !toolMgr() )
     return -1;
 
-  ActionMgrLocker lock( toolMgr() );
+  ActionMgrLocker lock( toolMgr(), !myToolShown );
 
   return toolMgr()->createToolBar( name, myToolShown );
 }
@@ -425,7 +430,7 @@ int CAM_Module::createTool( QAction* a, const int tBar, const int id, const int 
   if ( !toolMgr() )
     return -1;
 
-  ActionMgrLocker lock( toolMgr() );
+  ActionMgrLocker lock( toolMgr(), !myToolShown );
 
   int regId = registerAction( id, a );
   int intId = toolMgr()->insert( a, tBar, idx );
@@ -460,7 +465,7 @@ int CAM_Module::createTool( QAction* a, const QString& tBar, const int id, const
   if ( !toolMgr() )
     return -1;
 
-  ActionMgrLocker lock( toolMgr() );
+  ActionMgrLocker lock( toolMgr(), !myToolShown );
 
   int regId = registerAction( id, a );
   int intId = toolMgr()->insert( a, tBar, idx );
@@ -494,7 +499,7 @@ int CAM_Module::createTool( const int id, const int tBar, const int idx )
   if ( !toolMgr() )
     return -1;
 
-  ActionMgrLocker lock( toolMgr() );
+  ActionMgrLocker lock( toolMgr(), !myToolShown );
 
   int intId = toolMgr()->insert( action( id ), tBar, idx );
 
@@ -527,7 +532,7 @@ int CAM_Module::createTool( const int id, const QString& tBar, const int idx )
   if ( !toolMgr() )
     return -1;
 
-  ActionMgrLocker lock( toolMgr() );
+  ActionMgrLocker lock( toolMgr(), !myToolShown );
 
   int intId = toolMgr()->insert( action( id ), tBar, idx );
 
@@ -632,7 +637,7 @@ int CAM_Module::createMenu( QAction* a, const int menu, const int id, const int 
   if ( !a || !menuMgr() )
     return -1;
   
-  ActionMgrLocker lock( menuMgr() );
+  ActionMgrLocker lock( menuMgr(), !myMenuShown );
 
   int regId = registerAction( id, a );
   int intId = menuMgr()->insert( a, menu, group, idx );
@@ -674,7 +679,7 @@ int CAM_Module::createMenu( QAction* a, const QString& menu, const int id, const
   if ( !a || !menuMgr() )
     return -1;
 
-  ActionMgrLocker lock( menuMgr() );
+  ActionMgrLocker lock( menuMgr(), !myMenuShown );
 
   int regId = registerAction( id, a );
   int intId = menuMgr()->insert( a, menu, group, idx );
@@ -711,7 +716,7 @@ int CAM_Module::createMenu( const int id, const int menu, const int group, const
   if ( !menuMgr() )
     return -1;
 
-  ActionMgrLocker lock( menuMgr() );
+  ActionMgrLocker lock( menuMgr(), !myMenuShown );
 
   int intId = menuMgr()->insert( action( id ), menu, group, idx );
 
@@ -751,7 +756,7 @@ int CAM_Module::createMenu( const int id, const QString& menu, const int group, 
   if ( !menuMgr() )
     return -1;
 
-  ActionMgrLocker lock( menuMgr() );
+  ActionMgrLocker lock( menuMgr(), !myMenuShown );
 
   int intId = menuMgr()->insert( action( id ), menu, group, idx );
 

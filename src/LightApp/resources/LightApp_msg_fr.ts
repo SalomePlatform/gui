@@ -319,6 +319,10 @@ Les modifications seront appliquées à la prochaine session.</translation>
         <translation>Renommer</translation>
     </message>
     <message>
+        <source>MEN_RENAME_OBJ</source>
+        <translation>Renommer</translation>
+    </message>   
+    <message>
         <source>LOG_WINDOW</source>
         <translation>Fenêtre de messages</translation>
     </message>
@@ -345,6 +349,10 @@ Les modifications seront appliquées à la prochaine session.</translation>
     <message>
         <source>PREF_GROUP_PY_CONSOLE</source>
         <translation>Propriétés de la console Python</translation>
+    </message>
+    <message>
+        <source>PREF_SHOW_BANNER</source>
+        <translation>Afficher la bannière</translation>
     </message>
     <message>
         <source>PREF_GROUP_STYLE</source>
@@ -381,6 +389,22 @@ Les modifications seront appliquées à la prochaine session.</translation>
     <message>
         <source>PREF_RESIZE_ON_EXPAND_ITEM</source>
         <translation>Redimensionner les colonnes quand l&apos;objet est déplié</translation>
+    </message>
+    <message>
+        <source>PREF_BROWSE_TO_THE_PUBLISHED_OBJECT</source>
+        <translation>Se déplacer sur l&apos;objet publié</translation>
+    </message>
+    <message>
+        <source>PREF_BROWSE_NEVER</source>
+        <translation>Jamais</translation>
+    </message>
+    <message>
+        <source>PREF_BROWSE_AFTER_APPLY_AND_CLOSE_ONLY</source>
+        <translation>Seulement après "Appliquer et Fermer"</translation>
+    </message>
+    <message>
+        <source>PREF_BROWSE_ALWAYS</source>
+        <translation>Toujours</translation>
     </message>
     <message>
         <source>PREF_GROUP_SUPERV</source>
@@ -480,7 +504,15 @@ Les modifications seront appliquées à la prochaine session.</translation>
     </message>
     <message>
         <source>PREF_CURRENT_LANGUAGE</source>
-        <translation>Langue actuel</translation>
+        <translation>Langue actuelle</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_LOOK_AND_FEEL</source>
+        <translation>Aspect</translation>
+    </message>
+    <message>
+        <source>PREF_OPAQUE_RESIZE</source>
+        <translation>Redimensionnement opaque</translation>
     </message>
     <message>
         <source>PREF_GROUP_STUDY</source>
@@ -489,6 +521,14 @@ Les modifications seront appliquées à la prochaine session.</translation>
     <message>
         <source>PREF_CATEGORY_SALOME</source>
         <translation>SALOME</translation>
+    </message>
+    <message>
+        <source>PREF_DROP_DOWN_BUTTONS</source>
+        <translation>Boutons alignés dans la barre</translation>
+    </message>
+    <message>
+        <source>PREF_GROUP_COMMON</source>
+        <translation>Commun</translation>
     </message>
     <message>
         <source>PREF_GROUP_OCCVIEWER</source>

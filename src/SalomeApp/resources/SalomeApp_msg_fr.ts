@@ -21,6 +21,10 @@ Un fichier Python ne doit être composé que de lettres, chiffres et tirets bas 
         <translation>Publier dans l&apos;étude</translation>
     </message>
     <message>
+        <source>MULTI_FILE_DUMP</source>
+        <translation>Dump multi-fichiers</translation>
+    </message>
+    <message>
         <source>BUT_NEW</source>
         <translation>&amp;Nouvelle</translation>
     </message>
@@ -122,6 +126,10 @@ Un fichier Python ne doit être composé que de lettres, chiffres et tirets bas 
     <message>
         <source>TOT_DESK_FILE_LOAD_SCRIPT</source>
         <translation>Exécuter un script python</translation>
+    </message>
+    <message>
+        <source>PREF_MULTI_FILE_PYTHON_DUMP</source>
+        <translation>Dump Python multi-fichiers</translation>
     </message>
     <message>
         <source>PREF_STORE_VISUAL_STATE</source>

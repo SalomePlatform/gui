@@ -136,6 +136,14 @@
         <translation>Vue de droite</translation>
     </message>
     <message>
+        <source>DSC_ANTICLOCKWISE_VIEW</source>
+        <translation>Tourner la vue à gauche</translation>
+    </message>
+    <message>
+        <source>DSC_CLOCKWISE_VIEW</source>
+        <translation>Tourner la vue à droite</translation>
+    </message>
+    <message>
         <source>MNU_CHANGINGROTATIONPOINT_VIEW</source>
         <translation>Changer le point de rotation</translation>
     </message>
@@ -182,6 +190,14 @@
     <message>
         <source>MNU_PRESETS_VIEW</source>
         <translation>Restaurer la vue</translation>
+    </message>
+    <message>
+        <source>MNU_ANTICLOCKWISE_VIEW</source>
+        <translation>Tourner à gauche</translation>
+    </message>
+    <message>
+        <source>MNU_CLOCKWISE_VIEW</source>
+        <translation>Tourner à droite</translation>
     </message>
     <message>
         <source>MNU_RIGHT_VIEW</source>

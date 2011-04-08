@@ -4,6 +4,22 @@
 <context>
     <name>@default</name>
     <message>
+        <source>DSC_ANTICLOCKWISE_VIEW</source>
+        <translation>Tourner la vue à gauche</translation>
+    </message>
+    <message>
+        <source>DSC_CLOCKWISE_VIEW</source>
+        <translation>Tourner la vue à droite</translation>
+    </message>
+    <message>
+        <source>MNU_ANTICLOCKWISE_VIEW</source>
+        <translation>Tourner la vue à gauche</translation>
+    </message>
+    <message>
+        <source>MNU_CLOCKWISE_VIEW</source>
+        <translation>Tourner la vue à droite</translation>
+    </message>
+    <message>
         <source>MNU_FRONT_VIEW</source>
         <translation>Avant</translation>
     </message>

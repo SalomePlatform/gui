@@ -19,18 +19,21 @@
 //
 //  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
+//  File:      QtxMainWindow.cxx
+//  Author:    Sergey TELKOV
 
-// File:      QtxMainWindow.cxx
-// Author:    Sergey TELKOV
-//
 #include "QtxMainWindow.h"
 
 #include "QtxToolBar.h"
-#include "QtxResourceMgr.h"
 
 #include <QEvent>
+#include <QPoint>
+#include <QTimer>
+#include <QLayout>
 #include <QMenuBar>
 #include <QStatusBar>
+#include <QRubberBand>
+#include <QMouseEvent>
 #include <QApplication>
 #include <QDesktopWidget>
 
@@ -93,6 +96,131 @@ bool QtxMainWindow::Filter::eventFilter( QObject* o, QEvent* e )
   return QObject::eventFilter( o, e );
 }
 
+/*!
+  \class QtxMainWindow::Resizer
+  \internal
+  \brief Internal object used to resize dock widgets.
+*/
+
+class QtxMainWindow::Resizer : public QObject
+{
+public:
+  Resizer( const QPoint&, const Qt::Orientation, QtxMainWindow* );
+  virtual ~Resizer();
+
+  QMouseEvent*    finalEvent() const;
+  void            setFinalEvent( QMouseEvent* );
+
+  void            setPosition( const QPoint& );
+  virtual bool    eventFilter( QObject*, QEvent* );
+
+private:
+  void            setFilters( bool );
+
+private:
+  QPoint          myPos;
+  QMainWindow*    myMain;
+  QRubberBand*    myRubber;
+  Qt::Orientation myOrient;
+  QMouseEvent*    myFinEvent;
+};
+
+/*!
+  \brief Constructor.
+  \param mw parent main window
+*/
+QtxMainWindow::Resizer::Resizer( const QPoint& p, const Qt::Orientation o, QtxMainWindow* mw )
+: QObject( mw ),
+  myMain( mw ),
+  myOrient( o ),
+  myFinEvent( 0 )
+{
+  setFilters( true );
+
+  myRubber = new QRubberBand( QRubberBand::Line, 0 );
+
+  setPosition( p );
+
+  myRubber->show();
+};
+
+/*!
+  \brief Destructor.
+*/
+QtxMainWindow::Resizer::~Resizer()
+{
+  delete myRubber;
+
+  setFilters( false );
+}
+
+void QtxMainWindow::Resizer::setPosition( const QPoint& pos )
+{
+  myPos = pos;
+  if ( myRubber ) {
+    QRect r;
+    QPoint min = myMain->mapToGlobal( myMain->rect().topLeft() );
+    QPoint max = myMain->mapToGlobal( myMain->rect().bottomRight() );
+    if ( myOrient == Qt::Horizontal ) {
+      int p = qMax( qMin( myPos.y(), max.y() ), min.y() );
+      r = QRect( myMain->mapToGlobal( QPoint( 0, 0 ) ).x(), p - 1, myMain->width(), 3 );
+    }
+    else {
+      int p = qMax( qMin( myPos.x(), max.x() ), min.x() );
+      r = QRect( p - 1, myMain->mapToGlobal( QPoint( 0, 0 ) ).y(), 3, myMain->height() );
+    }
+    myRubber->setGeometry( r );
+  }
+}
+
+QMouseEvent* QtxMainWindow::Resizer::finalEvent() const
+{
+  return myFinEvent;
+}
+
+void QtxMainWindow::Resizer::setFinalEvent( QMouseEvent* e )
+{
+  myFinEvent = e;
+}
+
+/*!
+  \brief Event filter.
+
+  \param o recevier object
+  \param e event
+*/
+bool QtxMainWindow::Resizer::eventFilter( QObject* o, QEvent* e )
+{
+  if ( e->type() == QEvent::Timer ) {
+    if ( !finalEvent() )
+      return true;
+
+    setFilters( false );
+    QApplication::postEvent( myMain, finalEvent() );
+    myFinEvent = 0;
+    deleteLater();
+  }
+
+  return QObject::eventFilter( o, e );
+}
+
+void QtxMainWindow::Resizer::setFilters( bool on )
+{
+  if ( myMain ) {
+    if ( on )
+      myMain->layout()->installEventFilter( this );
+    else
+      myMain->layout()->removeEventFilter( this );
+  }
+
+  QTimer* t = qFindChild<QTimer*>( myMain->layout() );
+  if ( t ) {
+    if ( on )
+      t->installEventFilter( this );
+    else
+      t->removeEventFilter( this );
+  }
+}
 
 /*!
   \class QtxMainWindow
@@ -108,11 +236,14 @@ bool QtxMainWindow::Filter::eventFilter( QObject* o, QEvent* e )
 QtxMainWindow::QtxMainWindow( QWidget* parent, Qt::WindowFlags f )
 : QMainWindow( parent, f ),
   myMenuBar( 0 ),
-  myStatusBar( 0 )
+  myStatusBar( 0 ),
+  myOpaque( true ),
+  myResizer( 0 ),
+  myMouseMove( 0 )
 {
-	//rnv: Enables tooltips for inactive windows.
-	//rnv: For details see http://bugtracker.opencascade.com/show_bug.cgi?id=20893
-	setAttribute(Qt::WA_AlwaysShowToolTips);
+  //rnv: Enables tooltips for inactive windows.
+  //rnv: For details see http://bugtracker.opencascade.com/show_bug.cgi?id=20893
+  setAttribute(Qt::WA_AlwaysShowToolTips);
 }
 
 /*!
@@ -220,6 +351,16 @@ void QtxMainWindow::setDockableStatusBar( const bool on )
   }
 }
 
+bool QtxMainWindow::isOpaqueResize() const
+{
+  return myOpaque;
+}
+
+void QtxMainWindow::setOpaqueResize( bool on )
+{
+  myOpaque = on;
+}
+
 /*!
   \brief Dump main window geometry to the string.
   \return string represenation of the window geometry
@@ -313,7 +454,7 @@ void QtxMainWindow::retrieveGeometry( const QString& str )
     if ( xOk )
     {
       if ( xp )
-        x = screen.width() * qMax( qMin( x, 100 ), 0 ) / 100;
+	x = screen.width() * qMax( qMin( x, 100 ), 0 ) / 100;
       x = ( xs > 0 ? x : screen.right() - x - rect.width() ) + frameGeometry().x() - geometry().x();
     }
 
@@ -324,7 +465,7 @@ void QtxMainWindow::retrieveGeometry( const QString& str )
     if ( yOk )
     {
       if ( yp )
-        y = screen.height() * qMax( qMin( y, 100 ), 0 ) / 100;
+	y = screen.height() * qMax( qMin( y, 100 ), 0 ) / 100;
       y = ( ys > 0 ? y : screen.bottom() - y - rect.height() ) + frameGeometry().y() - geometry().y();
     }
 
@@ -417,3 +558,53 @@ void QtxMainWindow::onDestroyed( QObject* obj )
   }
 }
 
+bool QtxMainWindow::event( QEvent* e )
+{
+  if ( myResizer && e->type() == QEvent::MouseButtonRelease ) {
+    if ( myMouseMove ) {
+      QMainWindow::event( myMouseMove );
+      delete myMouseMove;
+      myMouseMove = 0;
+    }
+
+    QMouseEvent* me = static_cast<QMouseEvent*>( e );
+    myResizer->setFinalEvent( new QMouseEvent( me->type(), me->pos(), me->globalPos(),
+					       me->button(), me->buttons(), me->modifiers() ) );
+    myResizer = 0;
+    return true;
+  }
+
+  if ( myResizer && e->type() == QEvent::MouseMove ) {
+    QMouseEvent* me = static_cast<QMouseEvent*>( e );
+    myMouseMove = new QMouseEvent( me->type(), me->pos(), me->globalPos(),
+                                   me->button(), me->buttons(), me->modifiers() );
+    myResizer->setPosition( me->globalPos() );
+  }
+
+  bool ok = QMainWindow::event( e );
+
+  if ( e->type() == QEvent::MouseButtonPress ) {
+    if ( !isOpaqueResize() && ok && testAttribute( Qt::WA_SetCursor ) ) {
+      bool status = true;
+      Qt::Orientation o;
+      switch ( cursor().shape() )
+	{
+	case Qt::SplitHCursor:
+	  o = Qt::Vertical;
+	  break;
+	case Qt::SplitVCursor:
+	  o = Qt::Horizontal;
+	  break;
+	default:
+	  status = false;
+	  break;
+	}
+      if ( status ) {
+	QMouseEvent* me = static_cast<QMouseEvent*>( e );
+	myResizer = new Resizer( me->globalPos(), o, this );
+      }
+    }
+  }
+
+  return ok;
+}

@@ -2633,6 +2633,7 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
     if ( opaqueResize ) dopts |= QMainWindow::AnimatedDocks;
     else                dopts &= ~QMainWindow::AnimatedDocks;
     desktop()->setDockOptions( dopts );
+    desktop()->setOpaqueResize( opaqueResize );
     if ( dynamic_cast<STD_TabDesktop*>( desktop() ) )
       dynamic_cast<STD_TabDesktop*>( desktop() )->workstack()->setOpaqueResize( opaqueResize );
   }
@@ -2691,6 +2692,7 @@ void LightApp_Application::loadPreferences()
     if ( opaqueResize ) dopts |= QMainWindow::AnimatedDocks;
     else                dopts &= ~QMainWindow::AnimatedDocks;
     desktop()->setDockOptions( dopts );
+    desktop()->setOpaqueResize( opaqueResize );
     if ( dynamic_cast<STD_TabDesktop*>( desktop() ) )
       dynamic_cast<STD_TabDesktop*>( desktop() )->workstack()->setOpaqueResize( opaqueResize );
   }

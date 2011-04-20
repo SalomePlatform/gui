@@ -1307,6 +1307,9 @@ void SVTK_InteractorStyle::Place(const int theX, const int theY)
 */
 void SVTK_InteractorStyle::TranslateView(int toX, int toY, int fromX, int fromY)
 {
+  if (GetCurrentRenderer() == NULL)
+    return;
+
   vtkCamera *cam = GetCurrentRenderer()->GetActiveCamera();
   double viewFocus[4], focalDepth, viewPoint[3];
   vtkFloatingPointType newPickPoint[4], oldPickPoint[4], motionVector[3];

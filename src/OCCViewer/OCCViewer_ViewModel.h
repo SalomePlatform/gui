@@ -44,73 +44,6 @@ class OCCViewer_ViewWindow;
 
 class AIS_ListOfInteractive;
 
-struct viewAspect
-{
-public:
-        double    scale;
-        double  centerX;
-        double  centerY;
-        double    projX;
-        double    projY;
-        double    projZ;
-        double    twist;
-        double      atX;
-        double      atY;
-        double      atZ;
-        double     eyeX;
-        double     eyeY;
-        double     eyeZ;
-        double   scaleX;
-        double   scaleY;
-        double   scaleZ;
-        QString    name;
-        bool     isVisible;
-        double   size;
-        // graduated trihedron
-        bool    gtIsVisible;
-        bool    gtDrawNameX;
-        bool    gtDrawNameY;
-        bool    gtDrawNameZ;
-        QString gtNameX;
-        QString gtNameY;
-        QString gtNameZ;
-        int     gtNameColorRX;
-        int     gtNameColorGX;
-        int     gtNameColorBX;
-        int     gtNameColorRY;
-        int     gtNameColorGY;
-        int     gtNameColorBY;
-        int     gtNameColorRZ;
-        int     gtNameColorGZ;
-        int     gtNameColorBZ;
-        bool    gtDrawValuesX;
-        bool    gtDrawValuesY;
-        bool    gtDrawValuesZ;
-        int     gtNbValuesX;
-        int     gtNbValuesY;
-        int     gtNbValuesZ;
-        int     gtOffsetX;
-        int     gtOffsetY;
-        int     gtOffsetZ;
-        int     gtColorRX;
-        int     gtColorGX;
-        int     gtColorBX;
-        int     gtColorRY;
-        int     gtColorGY;
-        int     gtColorBY;
-        int     gtColorRZ;
-        int     gtColorGZ;
-        int     gtColorBZ;
-        bool    gtDrawTickmarksX;
-        bool    gtDrawTickmarksY;
-        bool    gtDrawTickmarksZ;
-        int     gtTickmarkLengthX;
-        int     gtTickmarkLengthY;
-        int     gtTickmarkLengthZ;
-};
-
-typedef QList<viewAspect> viewAspectList;
-
 #ifdef WIN32
 #pragma warning( disable:4251 )
 #endif
@@ -141,11 +74,6 @@ public:
   void                            performSelectionChanged();
   // emit signal selectionChanged
 
-  virtual const viewAspectList&   getViewAspects();
-  virtual void                    appendViewAspect( const viewAspect& );
-  virtual void                    updateViewAspects( const viewAspectList& );
-  virtual void                    clearViewAspects();
-
   QColor                          backgroundColor() const;
   void                            setBackgroundColor( const QColor& );
 
@@ -164,9 +92,6 @@ public:
 
   virtual OCCViewer_ViewWindow*   createSubWindow();
 
-public slots:
-  void                            onClearViewAspects();
- 
 public:
   Handle(V3d_Viewer)              getViewer3d()    const { return myV3dViewer;}
   Handle(V3d_Viewer)              getCollector3d() const { return myV3dCollector; }
@@ -223,8 +148,6 @@ private:
 
   Handle(AIS_Trihedron)           myTrihedron;
   Handle(AIS_InteractiveContext)  myAISContext;
-
-  viewAspectList                  myViewAspects;
 
   int                             myInteractionStyle;
   int                             myZoomingStyle;

@@ -21,7 +21,6 @@
 //
 
 #include "OCCViewer_CreateRestoreViewDlg.h"
-#include "OCCViewer_ViewModel.h"
 #include "OCCViewer_ViewPort3d.h"
 
 #include <QPushButton>
@@ -34,12 +33,12 @@
 /*!
   Constructor
 */
-OCCViewer_CreateRestoreViewDlg::OCCViewer_CreateRestoreViewDlg( QWidget* aWin, OCCViewer_Viewer* curModel )
+OCCViewer_CreateRestoreViewDlg::OCCViewer_CreateRestoreViewDlg( QWidget* aWin, OCCViewer_ViewWindow* theViewWindow )
 : QDialog( aWin )
 {
   setWindowTitle( tr( "CAPTION" ) );
 
-  myParametersMap = curModel->getViewAspects();
+  myParametersMap = theViewWindow->getViewAspects();
 
   myKeyFlag = 0;
 
@@ -59,7 +58,7 @@ OCCViewer_CreateRestoreViewDlg::OCCViewer_CreateRestoreViewDlg( QWidget* aWin, O
   myListBox = new QListWidget( aWidget1 );
   myListBox->installEventFilter( this );
 
-  myCurViewPort = new OCCViewer_ViewPort3d( aWidget1, curModel->getViewer3d(), V3d_ORTHOGRAPHIC );
+  myCurViewPort = new OCCViewer_ViewPort3d( aWidget1, theViewWindow->getViewPort()->getViewer(), V3d_ORTHOGRAPHIC );
   myCurViewPort->getView()->SetBackgroundColor( Quantity_NOC_BLACK );
 
   myListBox->setEditTriggers( QAbstractItemView::DoubleClicked );

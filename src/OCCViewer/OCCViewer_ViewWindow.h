@@ -37,8 +37,74 @@ class OCCViewer_AxialScaleDlg;
 class OCCViewer_SetRotationPointDlg;
 class OCCViewer_Viewer;
 class OCCViewer_CubeAxesDlg;
-struct viewAspect;
 class QtxAction;
+
+struct viewAspect
+{
+public:
+        double    scale;
+        double  centerX;
+        double  centerY;
+        double    projX;
+        double    projY;
+        double    projZ;
+        double    twist;
+        double      atX;
+        double      atY;
+        double      atZ;
+        double     eyeX;
+        double     eyeY;
+        double     eyeZ;
+        double   scaleX;
+        double   scaleY;
+        double   scaleZ;
+        QString    name;
+        bool     isVisible;
+        double   size;
+        // graduated trihedron
+        bool    gtIsVisible;
+        bool    gtDrawNameX;
+        bool    gtDrawNameY;
+        bool    gtDrawNameZ;
+        QString gtNameX;
+        QString gtNameY;
+        QString gtNameZ;
+        int     gtNameColorRX;
+        int     gtNameColorGX;
+        int     gtNameColorBX;
+        int     gtNameColorRY;
+        int     gtNameColorGY;
+        int     gtNameColorBY;
+        int     gtNameColorRZ;
+        int     gtNameColorGZ;
+        int     gtNameColorBZ;
+        bool    gtDrawValuesX;
+        bool    gtDrawValuesY;
+        bool    gtDrawValuesZ;
+        int     gtNbValuesX;
+        int     gtNbValuesY;
+        int     gtNbValuesZ;
+        int     gtOffsetX;
+        int     gtOffsetY;
+        int     gtOffsetZ;
+        int     gtColorRX;
+        int     gtColorGX;
+        int     gtColorBX;
+        int     gtColorRY;
+        int     gtColorGY;
+        int     gtColorBY;
+        int     gtColorRZ;
+        int     gtColorGZ;
+        int     gtColorBZ;
+        bool    gtDrawTickmarksX;
+        bool    gtDrawTickmarksY;
+        bool    gtDrawTickmarksZ;
+        int     gtTickmarkLengthX;
+        int     gtTickmarkLengthY;
+        int     gtTickmarkLengthZ;
+};
+
+typedef QList<viewAspect> viewAspectList;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -115,6 +181,10 @@ public:
   virtual QColor  backgroundColor() const;
   virtual void    setBackgroundColor( const QColor& );
 
+  virtual const viewAspectList&   getViewAspects();
+  virtual void                    appendViewAspect( const viewAspect& );
+  virtual void                    updateViewAspects( const viewAspectList& );
+  virtual void                    clearViewAspects();
 
 public slots:
   virtual void onFrontView();
@@ -252,6 +322,8 @@ private:
   Mode2dType my2dMode;
 
   Handle(V3d_Plane) myReserveClippingPlane;
+
+  viewAspectList myViewAspects;
 };
 
 #ifdef WIN32

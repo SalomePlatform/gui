@@ -25,7 +25,6 @@
 
 #include "OCCViewer.h"
 
-#include "OCCViewer_ViewModel.h"
 #include "OCCViewer_ViewWindow.h"
 
 #include <QtxDialog.h>
@@ -47,7 +46,7 @@ class OCCVIEWER_EXPORT OCCViewer_CreateRestoreViewDlg : public QDialog
         Q_OBJECT
 
 public:
-        OCCViewer_CreateRestoreViewDlg( QWidget*, OCCViewer_Viewer* );
+        OCCViewer_CreateRestoreViewDlg( QWidget*, OCCViewer_ViewWindow* );
         virtual ~OCCViewer_CreateRestoreViewDlg();
 
         const viewAspectList&         parameters() const;

@@ -92,8 +92,6 @@ OCCViewer_Viewer::OCCViewer_Viewer( bool DisplayTrihedron, bool DisplayStaticTri
   drawer->AngleAspect()->SetTextAspect(ta);
   drawer->LengthAspect()->SetTextAspect(ta);
   
-  clearViewAspects();
-
   /* create trihedron */
   if( DisplayTrihedron )
   {
@@ -489,48 +487,6 @@ void OCCViewer_Viewer::setObjectsSelected(const AIS_ListOfInteractive& theList)
 void OCCViewer_Viewer::performSelectionChanged()
 {
     emit selectionChanged();
-}
-
-/*!
-  SLOT, clears view aspects
-*/
-void OCCViewer_Viewer::onClearViewAspects()
-{
-    clearViewAspects();
-}
-
-/*!
-  Clears view aspects
-*/
-void OCCViewer_Viewer::clearViewAspects()
-{
-        myViewAspects.clear();
-}
-
-/*!
-  \return const reference to list of view aspects
-*/
-const viewAspectList& OCCViewer_Viewer::getViewAspects()
-{
-        return myViewAspects;
-}
-
-/*!
-  Appends new view aspect
-  \param aParams - new view aspects
-*/
-void OCCViewer_Viewer::appendViewAspect( const viewAspect& aParams )
-{
-        myViewAspects.append( aParams );
-}
-
-/*!
-  Replaces old view aspects by new ones
-  \param aViewList - list of new view aspects
-*/
-void OCCViewer_Viewer::updateViewAspects( const viewAspectList& aViewList )
-{
-        myViewAspects = aViewList;
 }
 
 /*!

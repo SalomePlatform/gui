@@ -25,7 +25,7 @@ from PyQt4.QtCore import Qt
 
 import salome
 from salome.kernel.studyedit import getStudyEditor
-from salome.kernel import varlist
+from salome.kernel.parametric import study_exchange_vars
 
 # ---------------------------------- #
 # Dialog box for variables selection #
@@ -71,7 +71,7 @@ class MySelectVarsDialog(Ui_SelectVarsDialog, QtGui.QDialog):
             QtGui.QMessageBox.warning(self, self.tr("Error"),
                                       self.tr('No item at entry %s' % entry))
             return
-        exchangeVariables = varlist.getExchangeVariablesFromSObject(sobj)
+        exchangeVariables = study_exchange_vars.getExchangeVariablesFromSObject(sobj)
         if exchangeVariables is None:
             QtGui.QMessageBox.warning(self, self.tr("Error"),
                                       self.tr('Item at entry %s is not a valid '
@@ -114,7 +114,9 @@ class MySelectVarsDialog(Ui_SelectVarsDialog, QtGui.QDialog):
         inputVarList = []
         outputVarList = []
         for row in range(self.selectedInputVarListWidget.count()):
-            inputVarList.append(varlist.Variable(str(self.selectedInputVarListWidget.item(row).text())))
+            name = str(self.selectedInputVarListWidget.item(row).text())
+            inputVarList.append(study_exchange_vars.Variable(name))
         for row in range(self.selectedOutputVarListWidget.count()):
-            outputVarList.append(varlist.Variable(str(self.selectedOutputVarListWidget.item(row).text())))
-        return varlist.ExchangeVariables(inputVarList, outputVarList, self.refEntry)
+            name = str(self.selectedOutputVarListWidget.item(row).text())
+            outputVarList.append(study_exchange_vars.Variable(name))
+        return study_exchange_vars.ExchangeVariables(inputVarList, outputVarList, self.refEntry)

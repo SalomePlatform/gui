@@ -1541,7 +1541,7 @@ void SUIT_TreeModel::updateItem( SUIT_TreeModel::TreeItem* item )
     return;
   
   // update all columns corresponding to the given data object
-  emit layoutAboutToBeChanged();
+  //emit layoutAboutToBeChanged(); // VSR 25/04/2011: fix crash on delete objects
   QModelIndex firstIdx = index( obj, 0 );
   QModelIndex lastIdx  = index( obj, columnCount() - 1 );
   emit dataChanged( firstIdx, lastIdx );

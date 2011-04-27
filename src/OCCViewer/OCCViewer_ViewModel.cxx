@@ -418,8 +418,10 @@ void OCCViewer_Viewer::contextMenuPopup(QMenu* thePopup)
   //Support of several toolbars in the popup menu
   QList<QToolBar*> lst = qFindChildren<QToolBar*>( aView );
   QList<QToolBar*>::const_iterator it = lst.begin(), last = lst.end();
-  for( ; it!=last; it++ )
-    thePopup->addAction( (*it)->toggleViewAction() );
+  for ( ; it!=last; it++ ) {
+    if ( (*it)->parentWidget()->isVisible() )
+      thePopup->addAction( (*it)->toggleViewAction() );
+  }
 }
 
 /*!

@@ -128,7 +128,7 @@ Un fichier Python ne doit être composé que de lettres, chiffres et tirets bas 
         <translation>Exécuter un script python</translation>
     </message>
     <message>
-        <source>PREF_MULTI_FILE_PYTHON_DUMP</source>
+        <source>PREF_PYDUMP_MULTI_FILE</source>
         <translation>Dump Python multi-fichiers</translation>
     </message>
     <message>

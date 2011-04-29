@@ -176,7 +176,11 @@ dialog box press the &quot;<b>...</b>&quot; button(see the picture below).
   markers in your graphs.
   - <b>Horizontal</b> and <b>Vertical axis scale</b> - this submenu allows you to set
   the scale for vertical and horizontal axes. It can be either <b>Linear</b> or
-  <b>Logarithmic</b>.
+  <b>Logarithmic</b>. Note that the  <b>Logarithmic</b> scale can be used only
+  if the minimum value of corresponding component (abscissa or ordinate)
+  of all points displayed in the viewer is greater than zero.
+  If this condition is not met, the scale is switched to <b>Linear</b>
+  automatically, even if it is set to <b>Logarithmic</b>.
   - <b>Background Color</b> - this submenu allows to select the background
   color. Click on the colored line to access to the 
   \ref select_color_and_font_page "Select Color" dialog box.

@@ -423,22 +423,24 @@ void OB_Browser::select( const QModelIndexList& indexes, const bool on, const bo
     // select by range if indexes are contiguous
     QModelIndex first=indexes.at(0);
     QModelIndex last=first;
-    for (int i = 1; i < indexes.size(); ++i) 
+    if (indexes.size() > 1) {
+      for (int i = 1; i < indexes.size(); ++i) 
       {
         idx=indexes.at(i);
         if(idx.parent().internalId()==last.parent().internalId() && idx.row()==last.row()+1 && idx.column()==last.column())
-          {
-            // index is contiguous to last: extend the range
-            last=idx;
-          }
+        {
+          // index is contiguous to last: extend the range
+          last=idx;
+        }
         else
-          {
-            // index idx is not contiguous: create a new range
-            mysel.select(first,last);
-            first=idx;
-            last=idx;
-          }
+        {
+          // index idx is not contiguous: create a new range
+          mysel.select(first,last);
+          first=idx;
+          last=idx;
+        }
       }
+    }
     mysel.select(first,last);
 
     if ( myView->selectionModel() ) {
@@ -449,7 +451,8 @@ void OB_Browser::select( const QModelIndexList& indexes, const bool on, const bo
       myView->selectionModel()->select( mysel, f );
     }
   }
-  else if ( !keepSelection ) {
+  else if ( !keepSelection )
+  {
     myView->clearSelection();
   }
 

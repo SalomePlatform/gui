@@ -3619,10 +3619,26 @@ QString LightApp_Application::browseObjects( const QStringList& theEntryList,
   // always select the last object
   if( anObject && !anEntry.isEmpty() )
   {
-    SUIT_DataOwnerPtrList aList;
-    aList.append( new LightApp_DataOwner( anEntry ) );
-    selectionMgr()->setSelected( aList );
-    aResult = anEntry;
+    QList<SUIT_Selector*> aSelectorList;
+    selectionMgr()->selectors( "ObjectBrowser", aSelectorList );
+    if( !aSelectorList.isEmpty() )
+    {
+      if( LightApp_OBSelector* aSelector = dynamic_cast<LightApp_OBSelector*>( aSelectorList.first() ) )
+      {
+        bool anIsAutoBlock = aSelector->autoBlock();
+
+        // temporarily disable auto block, to emit LightApp_SelectionMgr::currentSelectionChanged() signal
+        aSelector->setAutoBlock( false );
+
+        SUIT_DataOwnerPtrList aList;
+        aList.append( new LightApp_DataOwner( anEntry ) );
+        selectionMgr()->setSelected( aList );
+        aResult = anEntry;
+
+        // restore auto block flag
+        aSelector->setAutoBlock( anIsAutoBlock );
+      }
+    }
   }
 
   return aResult;

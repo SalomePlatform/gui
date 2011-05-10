@@ -89,6 +89,8 @@ VTKViewer_FramedTextActor::VTKViewer_FramedTextActor()
 
   myHorizontalOffset = 0;
   myVerticalOffset = 0;
+
+  myMoveFrameFlag = 0;
 }
 
 //==================================================================
@@ -370,6 +372,29 @@ vtkFloatingPointType VTKViewer_FramedTextActor::GetDistance()const
 }
 
 //==================================================================
+// function : SetMoveFrameFlag
+// purpose  : If moveFrameFlag is true, then frame with text is moved
+//            under world point
+//==================================================================
+void VTKViewer_FramedTextActor::SetMoveFrameFlag(const int theMoveFrameFlag)
+{
+  if(myMoveFrameFlag != theMoveFrameFlag) {
+    myMoveFrameFlag = theMoveFrameFlag;
+    Modified();
+  }
+}
+
+//==================================================================
+// function : GetDistance
+// purpose  :
+//==================================================================
+int VTKViewer_FramedTextActor::GetMoveFrameFlag() const
+{
+  return myMoveFrameFlag;
+}
+
+
+//==================================================================
 // function : ReleaseGraphicsResources
 // purpose  :
 //==================================================================
@@ -449,6 +474,8 @@ VTKViewer_FramedTextActor
     theViewport->GetDisplayPoint(aSelectionPoint);
     vtkFloatingPointType u = aSelectionPoint[0];
     vtkFloatingPointType v = aSelectionPoint[1] - myDistance;
+    if(myMoveFrameFlag)
+      v -= aBarHeight/2.;
     theViewport->ViewportToNormalizedViewport(u, v);
     PositionCoordinate->SetValue(u, v);
 

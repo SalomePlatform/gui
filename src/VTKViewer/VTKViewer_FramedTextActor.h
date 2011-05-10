@@ -70,6 +70,9 @@ public:
   void                        SetDistance(const vtkFloatingPointType theDistance);
   vtkFloatingPointType        GetDistance() const;
 
+  void                        SetMoveFrameFlag(const int flag);
+  int                         GetMoveFrameFlag() const;
+
   void                        SetForegroundColor(const vtkFloatingPointType r,
                                                  const vtkFloatingPointType g,
                                                  const vtkFloatingPointType b);
@@ -109,6 +112,7 @@ protected:
 
   int                         myModePosition;
   int                         myLayoutType;
+  int                         myMoveFrameFlag;
 
   vtkFloatingPointType        myWorldPoint[4];
   vtkFloatingPointType        myDistance;

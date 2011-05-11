@@ -6,7 +6,7 @@
     <message>
         <source>WRN_FILE_NAME_BAD</source>
         <translation>Indiquez un nom de fichier correct.
-Un fichier Python ne doit Ãªtre composÃ© que de lettres, chiffres et tirets bas et doit commencer avec une lettre ou un tiret bas.</translation>
+Un fichier Python ne doit être composé que de lettres, chiffres et tirets bas et doit commencer avec une lettre ou un tiret bas.</translation>
     </message>
     <message>
         <source>WRN_FILE_NOT_EXIST</source>
@@ -14,11 +14,11 @@ Un fichier Python ne doit Ãªtre composÃ© que de lettres, chiffres et tirets bas 
     </message>
     <message>
         <source>CLOSE_LOCKED_STUDY</source>
-        <translation>Fermer l&apos;Ã©tude verrouillÃ©e?</translation>
+        <translation>Fermer l&apos;étude verrouillée?</translation>
     </message>
     <message>
         <source>PUBLISH_IN_STUDY</source>
-        <translation>Publier dans l&apos;Ã©tude</translation>
+        <translation>Publier dans l&apos;étude</translation>
     </message>
     <message>
         <source>MULTI_FILE_DUMP</source>
@@ -38,7 +38,7 @@ Un fichier Python ne doit Ãªtre composÃ© que de lettres, chiffres et tirets bas 
     </message>
     <message>
         <source>SAVE_GUI_STATE</source>
-        <translation>Sauvegarder l&apos;Ã©tat d&apos;IHM</translation>
+        <translation>Sauvegarder l&apos;état d&apos;IHM</translation>
     </message>
     <message>
         <source>BUT_LOAD</source>
@@ -50,7 +50,7 @@ Un fichier Python ne doit Ãªtre composÃ© que de lettres, chiffres et tirets bas 
     </message>
     <message>
         <source>SAVE_POINT_OBJECT_TOOLTIP</source>
-        <translation>Etat d&apos;IHM: %1 sauvegardÃ©</translation>
+        <translation>Etat d&apos;IHM: %1 sauvegardé</translation>
     </message>
     <message>
         <source>SAVE_POINT_DEF_NAME</source>
@@ -66,15 +66,15 @@ Un fichier Python ne doit Ãªtre composÃ© que de lettres, chiffres et tirets bas 
     </message>
     <message>
         <source>REFENTRY_COLUMN</source>
-        <translation>EntrÃ©e de rÃ©f.</translation>
+        <translation>Entrée de réf.</translation>
     </message>
     <message>
         <source>ERR_INCOMPATIBLE_TYPE</source>
-        <translation>Le type numÃ©rique de la variable &quot;%1&quot; n&apos;est pas compatible</translation>
+        <translation>Le type numérique de la variable &quot;%1&quot; n&apos;est pas compatible</translation>
     </message>
     <message>
         <source>ERR_INVALID_VALUE</source>
-        <translation>La valeur n&apos;a pas Ã©tÃ© validÃ©e</translation>
+        <translation>La valeur n&apos;a pas été validée</translation>
     </message>
     <message>
         <source>ERR_NO_VARIABLE</source>
@@ -89,7 +89,7 @@ Un fichier Python ne doit Ãªtre composÃ© que de lettres, chiffres et tirets bas 
     </message>
     <message>
         <source>APPCLOSE_UNLOAD</source>
-        <translation>&amp;DÃ©connecter</translation>
+        <translation>&amp;Déconnecter</translation>
     </message>
     <message>
         <source>APPCLOSE_CLOSE</source>
@@ -97,15 +97,15 @@ Un fichier Python ne doit Ãªtre composÃ© que de lettres, chiffres et tirets bas 
     </message>
     <message>
         <source>MEN_WINDOWS_NEW</source>
-        <translation>Nouvelle FenÃªtre</translation>
+        <translation>Nouvelle Fenêtre</translation>
     </message>
     <message>
         <source>MEN_DELETE_INVALID_REFERENCE</source>
-        <translation>Supprimer la RÃ©fÃ©rence Invalide</translation>
+        <translation>Supprimer la Référence Invalide</translation>
     </message>
     <message>
         <source>TOT_FILE_DESK_PREFERENCES</source>
-        <translation>PrÃ©fÃ©rences</translation>
+        <translation>Préférences</translation>
     </message>
     <message>
         <source>MEN_DELETE_VS</source>
@@ -125,27 +125,35 @@ Un fichier Python ne doit Ãªtre composÃ© que de lettres, chiffres et tirets bas 
     </message>
     <message>
         <source>TOT_DESK_FILE_LOAD_SCRIPT</source>
-        <translation>ExÃ©cuter un script python</translation>
+        <translation>Exécuter un script python</translation>
+    </message>
+    <message>
+        <source>PREF_PYDUMP_PUBLISH</source>
+        <translation>Publier dans l&apos;étude dans un scrypt en python</translation>
     </message>
     <message>
         <source>PREF_PYDUMP_MULTI_FILE</source>
         <translation>Dump Python multi-fichiers</translation>
     </message>
     <message>
+        <source>PREF_PYDUMP_SAVE_GUI</source>
+        <translation>Enregistrer l&apos;état d&apos;IHM dans un scrypt en python</translation>
+    </message>
+    <message>
         <source>PREF_STORE_VISUAL_STATE</source>
-        <translation>Sauvegarder/restaurer le dernier Ã¨tat d&apos;IHM</translation>
+        <translation>Sauvegarder/restaurer le dernier ètat d&apos;IHM</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_SAVE_GUI_STATE</source>
-        <translation>Sauvegarder l&apos;Ã©tat actuel des vues 3D, des objets affichÃ©s, etc.</translation>
+        <translation>Sauvegarder l&apos;état actuel des vues 3D, des objets affichés, etc.</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_SAVE_GUI_STATE</source>
-        <translation>Sauvegarder l&apos;Ã©tat d&apos;IHM</translation>
+        <translation>Sauvegarder l&apos;état d&apos;IHM</translation>
     </message>
     <message>
         <source>TOT_DESK_FILE_SAVE_GUI_STATE</source>
-        <translation>Sauvegarder l&apos;Ã©tat d&apos;IHM</translation>
+        <translation>Sauvegarder l&apos;état d&apos;IHM</translation>
     </message>
     <message>
         <source>MEN_RESTORE_VS</source>
@@ -153,15 +161,15 @@ Un fichier Python ne doit Ãªtre composÃ© que de lettres, chiffres et tirets bas 
     </message>
     <message>
         <source>WRN_DUMP_STUDY_FAILED</source>
-        <translation>Impossible de gÃ©nÃ©rer le script de l&apos;Ã©tude</translation>
+        <translation>Impossible de générer le script de l&apos;étude</translation>
     </message>
     <message>
         <source>MEN_DESK_PROPERTIES</source>
-        <translation>Pro&amp;priÃ©tÃ©s...</translation>
+        <translation>Pro&amp;priétés...</translation>
     </message>
     <message>
         <source>QUE_DOC_ALREADYEXIST</source>
-        <translation>Le document %1 existe dÃ©jÃ  dans le gestionnaire d&apos;Ã©tudes.
+        <translation>Le document %1 existe déjà dans le gestionnaire d&apos;études.
 Voulez-vous le recharger ?</translation>
     </message>
     <message>
@@ -170,7 +178,7 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>TOT_DESK_CATALOG_GENERATOR</source>
-        <translation>GÃ©nÃ©rateur de catalogue</translation>
+        <translation>Générateur de catalogue</translation>
     </message>
     <message>
         <source>TOT_DESK_ADD_VARS_TO_NOTEBOOK</source>
@@ -178,11 +186,11 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>PUBLISH_IN_STUDY</source>
-        <translation>Publier dans l&apos;Ã©tude</translation>
+        <translation>Publier dans l&apos;étude</translation>
     </message>
     <message>
         <source>PREF_OBJ_BROWSER_SETTINGS</source>
-        <translation>ParamÃ¨tres</translation>
+        <translation>Paramètres</translation>
     </message>
     <message>
         <source>PRP_DESK_REGISTRY_DISPLAY</source>
@@ -194,15 +202,15 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>APPCLOSE_DESCRIPTION</source>
-        <translation>Voulez-vous fermer ou dÃ©charger l&apos;Ã©tude avant de la fermer?</translation>
+        <translation>Voulez-vous fermer ou décharger l&apos;étude avant de la fermer?</translation>
     </message>
     <message>
         <source>PRP_DESK_PROPERTIES</source>
-        <translation>Editer les propriÃ©tÃ©s de l&apos;Ã©tude</translation>
+        <translation>Editer les propriétés de l&apos;étude</translation>
     </message>
     <message>
         <source>PREF_TAB_OBJBROWSER</source>
-        <translation>Arbre d&apos;Ã©tude</translation>
+        <translation>Arbre d&apos;étude</translation>
     </message>
     <message>
         <source>STUDY_LOCKED</source>
@@ -222,7 +230,7 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>OBJ_BROWSER_COLUMN_0</source>
-        <translation>EntrÃ©e</translation>
+        <translation>Entrée</translation>
     </message>
     <message>
         <source>OBJ_BROWSER_COLUMN_1</source>
@@ -234,7 +242,7 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>OBJ_BROWSER_COLUMN_3</source>
-        <translation>EntrÃ©e de rÃ©fÃ©rence</translation>
+        <translation>Entrée de référence</translation>
     </message>
     <message>
         <source>PREF_CATEGORY_SALOME</source>
@@ -246,7 +254,7 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_LOAD_SCRIPT</source>
-        <translation>ExÃ©cuter un scrip&amp;t...</translation>
+        <translation>Exécuter un scrip&amp;t...</translation>
     </message>
     <message>
         <source>MEN_DESK_TOOLS</source>
@@ -254,7 +262,7 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>MEN_DESK_PLUGINS_TOOLS</source>
-	<translation>Outils</translation>
+        <translation>Outils</translation>
     </message>
     <message>
         <source>MEN_DESK_PLUGINS</source>
@@ -262,27 +270,27 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>TOT_DESK_FILE_DUMP_STUDY</source>
-        <translation>GÃ©nÃ©rer le script de l&apos;Ã©tude</translation>
+        <translation>Générer le script de l&apos;étude</translation>
     </message>
     <message>
         <source>MEN_VIEW_WNDS</source>
-        <translation>FenÃªtres</translation>
+        <translation>Fenêtres</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_DUMP_STUDY</source>
-        <translation>&amp;GÃ©nÃ©rer le script de l&apos;Ã©tude...</translation>
+        <translation>&amp;Générer le script de l&apos;étude...</translation>
     </message>
     <message>
         <source>PRP_DESK_CATALOG_GENERATOR</source>
-        <translation>GÃ©nÃ©re un catalogue XML de l&apos;interface du composant</translation>
+        <translation>Génére un catalogue XML de l&apos;interface du composant</translation>
     </message>
     <message>
         <source>PRP_DESK_ADD_VARS_TO_NOTEBOOK</source>
-        <translation>Ajouter les variables de l&apos;Ã©tude au registre</translation>
+        <translation>Ajouter les variables de l&apos;étude au registre</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_DUMP_STUDY</source>
-        <translation>GÃ©nÃ¨re le script python de l&apos;Ã©tude</translation>
+        <translation>Génère le script python de l&apos;étude</translation>
     </message>
     <message>
         <source>TOT_DESK_FILE_NOTEBOOK</source>
@@ -298,19 +306,19 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>TOT_DESK_PROPERTIES</source>
-        <translation>PropriÃ©tÃ©s de l&apos;Ã©tude</translation>
+        <translation>Propriétés de l&apos;étude</translation>
     </message>
     <message>
         <source>PREF_GROUP_DEF_COLUMNS</source>
-        <translation>Colonnes par dÃ©faut</translation>
+        <translation>Colonnes par défaut</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_LOAD_SCRIPT</source>
-        <translation>ExÃ©cute un script Python Ã  partir d&apos;un fichier</translation>
+        <translation>Exécute un script Python à partir d&apos;un fichier</translation>
     </message>
     <message>
         <source>MEN_DESK_CATALOG_GENERATOR</source>
-        <translation>&amp;GenÃ©rateur de Catalogue</translation>
+        <translation>&amp;Genérateur de Catalogue</translation>
     </message>
     <message>
         <source>MEN_DESK_ADD_VARS_TO_NOTEBOOK</source>
@@ -318,15 +326,15 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>APPCLOSE_CAPTION</source>
-        <translation>Fermer l&apos;Ã©tude actuelle</translation>
+        <translation>Fermer l&apos;étude actuelle</translation>
     </message>
     <message>
         <source>MEN_DESK_MRU</source>
-        <translation>DerniÃ¨res Ã©tudes ouvertes</translation>
+        <translation>Dernières études ouvertes</translation>
     </message>
     <message>
         <source>TOT_DESK_MRU</source>
-        <translation>DerniÃ¨res Ã©tudes ouvertes</translation>
+        <translation>Dernières études ouvertes</translation>
     </message>
     <message>
         <source>ACTIVATE_MODULE_OP_LOAD</source>
@@ -341,7 +349,7 @@ Voulez-vous le recharger ?</translation>
     <name>SalomeApp_StudyPropertiesDlg</name>
     <message>
         <source>PRP_MODE_FROM_SCRATCH</source>
-        <translation>du dÃ©but</translation>
+        <translation>du début</translation>
     </message>
     <message>
         <source>PRP_AUTHOR</source>
@@ -349,7 +357,7 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>PRP_LOCKED</source>
-        <translation>VerrouillÃ©e</translation>
+        <translation>Verrouillée</translation>
     </message>
     <message>
         <source>PRP_MODIFICATIONS</source>
@@ -361,7 +369,7 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>PRP_UNITS</source>
-        <translation>UnitÃ©s de longueur</translation>
+        <translation>Unités de longueur</translation>
     </message>
     <message>
         <source>PRP_COMMENT</source>
@@ -377,15 +385,15 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>PRP_MODIFIED</source>
-        <translation>ModifiÃ©e</translation>
+        <translation>Modifiée</translation>
     </message>
     <message>
         <source>PRP_NOT_MODIFIED</source>
-        <translation>Non modifiÃ©e</translation>
+        <translation>Non modifiée</translation>
     </message>
     <message>
         <source>PRP_DATE</source>
-        <translation>CrÃ©Ã©e</translation>
+        <translation>Date de création</translation>
     </message>
     <message>
         <source>PRP_MODE</source>
@@ -397,26 +405,26 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>TLT_STUDY_PROPERTIES</source>
-        <translation>PropriÃ©tÃ©s de l&apos;Ã©tude</translation>
+        <translation>Propriétés de l&apos;étude</translation>
     </message>
 </context>
 <context>
     <name>SalomeApp_ExitDlg</name>
     <message>
         <source>SHUTDOWN_SERVERS</source>
-        <translation>ArrÃªter les serveurs</translation>
+        <translation>Arrêter les serveurs</translation>
     </message>
 </context>
 <context>
     <name>NoteBook_Table</name>
     <message>
         <source>REMOVE_VARIABLE_IS_USED</source>
-        <translation>La variable &quot;%1&quot; est utilisÃ©e dans l&apos;Ã©tude.
+        <translation>La variable &quot;%1&quot; est utilisée dans l&apos;étude.
 Voulez-vous vraiment la supprimer?</translation>
     </message>
     <message>
         <source>RENAME_VARIABLE_IS_USED</source>
-        <translation>La variable &quot;%1&quot; est utilisÃ©e dans l&apos;Ã©tude.
+        <translation>La variable &quot;%1&quot; est utilisée dans l&apos;étude.
 Voulez-vous vraiment la renommer?</translation>
     </message>
     <message>
@@ -448,7 +456,7 @@ Voulez-vous vraiment la renommer?</translation>
     </message>
     <message>
         <source>BUT_UPDATE_STUDY</source>
-        <translation>&amp;Mettre l&apos;Ã©tude Ã  jour</translation>
+        <translation>&amp;Mettre l&apos;étude à jour</translation>
     </message>
     <message>
         <source>BUT_REMOVE</source>
@@ -472,12 +480,12 @@ Voulez-vous vraiment la renommer?</translation>
     </message>
     <message>
         <source>INCORRECT_DATA</source>
-        <translation>Au moins une variable a Ã©tÃ© dÃ©finie incorrectement.
-Editez ses paramÃ¨tres ou retirez la de la liste.</translation>
+        <translation>Au moins une variable a été définie incorrectement.
+Editez ses paramètres ou retirez la de la liste.</translation>
     </message>
     <message>
         <source>ERR_UPDATE_STUDY_FAILED</source>
-        <translation>Impossible de mettre l&apos;Ã©tude Ã  jour!</translation>
+        <translation>Impossible de mettre l&apos;étude à jour!</translation>
     </message>
 </context>
 <context>
@@ -485,13 +493,13 @@ Editez ses paramÃ¨tres ou retirez la de la liste.</translation>
     <message>
         <source>VALID_RANGE_VAR_MSG</source>
         <translation>Indiquez un nom de variable ou
-une valeur rÃ©elle dans l&apos;intervalle ( %1; %2 )
-avec une prÃ©cision de %3 dÃ©cimales</translation>
+une valeur réelle dans l&apos;intervalle ( %1; %2 )
+avec une précision de %3 décimales</translation>
     </message>
     <message>
         <source>VALID_RANGE_NOVAR_MSG</source>
-        <translation>Indiquez une valeur rÃ©elle dans l&apos;intervalle ( %1; %2 )
-avec une prÃ©cision de %3 dÃ©cimales</translation>
+        <translation>Indiquez une valeur réelle dans l&apos;intervalle ( %1; %2 )
+avec une précision de %3 décimales</translation>
     </message>
 </context>
 <context>
@@ -499,11 +507,11 @@ avec une prÃ©cision de %3 dÃ©cimales</translation>
     <message>
         <source>VALID_RANGE_VAR_MSG</source>
         <translation>Indiquez un nom de variable ou
-une valeur entiÃ¨re dans l&apos;intervalle ( %1; %2 )</translation>
+une valeur entière dans l&apos;intervalle ( %1; %2 )</translation>
     </message>
     <message>
         <source>VALID_RANGE_NOVAR_MSG</source>
-        <translation>Indiquez une valeur entiÃ¨re dans l&apos;intervalle ( %1; %2 )</translation>
+        <translation>Indiquez une valeur entière dans l&apos;intervalle ( %1; %2 )</translation>
     </message>
 </context>
 </TS>

@@ -137,7 +137,7 @@ Un fichier Python ne doit être composé que de lettres, chiffres et tirets bas 
     </message>
     <message>
         <source>PREF_PYDUMP_SAVE_GUI</source>
-        <translation>Enregistrer l&apos;état d&apos;IHM dans un scrypt en python</translation>
+        <translation>Enregistrer l&apos;état de l&apos;IHM dans un script Python</translation>
     </message>
     <message>
         <source>PREF_STORE_VISUAL_STATE</source>

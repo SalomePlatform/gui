@@ -292,7 +292,7 @@
     <message>
         <source>MSG_NO_AVI_MAKER</source>
         <translation>L&apos;outil jpeg2yuv, requis pour enregistrer les fichiers AVI, n&apos;est pas disponible.
-Consultez la documentation, svp.</translation>
+Veuillez consulter la documentation.</translation>
     </message>
 </context>
 <context>

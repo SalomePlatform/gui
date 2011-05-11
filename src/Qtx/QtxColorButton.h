@@ -44,6 +44,9 @@ public:
 
   bool          eventFilter( QObject*, QEvent* );
 
+  bool          isColorChooserEnabled() const;
+  void          setColorChooserEnabled( bool );
+
 signals:
   void          clicked( QColor );
   void          changed( QColor );
@@ -70,6 +73,7 @@ private:
 
 private:
   ColorMap      myColors;
+  QToolButton*  myOthers;
 };
 
 #endif

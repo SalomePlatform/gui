@@ -83,14 +83,14 @@ QtxColorButton::QtxColorButton( QWidget* parent )
     }
   }
 
-  QToolButton* other = new QToolButton( pm );
-  other->setText( tr( "Other colors..." ) );
-  other->setAutoRaise( true );
-  other->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
-  grid->addWidget( other, grid->rowCount(), 0, 1, grid->columnCount() );
-  connect( other, SIGNAL( clicked( bool ) ), this, SLOT( onDialogClicked( bool ) ) );
+  myOthers = new QToolButton( pm );
+  myOthers->setText( tr( "Other colors..." ) );
+  myOthers->setAutoRaise( true );
+  myOthers->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
+  grid->addWidget( myOthers, grid->rowCount(), 0, 1, grid->columnCount() );
+  connect( myOthers, SIGNAL( clicked( bool ) ), this, SLOT( onDialogClicked( bool ) ) );
 
-  other->installEventFilter( this );
+  myOthers->installEventFilter( this );
 
   setMenu( pm );
 
@@ -142,6 +142,16 @@ bool QtxColorButton::eventFilter( QObject* o, QEvent* e )
   if ( e->type() == QEvent::Leave )
     updateButton( qobject_cast<QToolButton*>( o ) );
   return QToolButton::eventFilter( o, e );
+}
+
+bool QtxColorButton::isColorChooserEnabled() const
+{
+  return myOthers->isVisibleTo( myOthers->parentWidget() );
+}
+
+void QtxColorButton::setColorChooserEnabled( bool on )
+{
+  myOthers->setVisible( on );
 }
 
 /*!

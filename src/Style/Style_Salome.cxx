@@ -435,7 +435,6 @@ void Style_Salome::drawComplexControl( ComplexControl cc, const QStyleOptionComp
           Style_Tools::shadowRect( p, aBtnRect, aRad, 0.0, SHADOW, Style_Tools::Right,
                                   aBtnCol.light( BUT_PERCENT_COL ), aBtnCol.dark( BUT_PERCENT_COL ),
                                   aBrdTopCol, aBrdBotCol, antialized, true, aStateOn );
-        State flags = State_None;
         QStyleOptionSpinBox copy;
         PrimitiveElement pe;
         if (spin->subControls & SC_SpinBoxUp) {
@@ -1447,7 +1446,6 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
           QColor top =    aColor.light( BUT_PERCENT_ON ),
                  bottom = aColor.dark( BUT_PERCENT_ON );
           QColor aBrdTopCol = model()->color( Style_Model::BorderTop );    // Style_Model::border_top_clr
-          QColor aBrdBotCol = model()->color( Style_Model::BorderBottom ); // Style_Model::border_bot_clr
           QRect r = opt->rect;
           QPainterPath path = Style_Tools::roundRect( r, aRad,
                                                       Style_Tools::All );
@@ -1822,7 +1820,6 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
       gr.setColorAt( 0.0, aBgCol.light( BUT_PERCENT_ON ) );
       gr.setColorAt( 1.0, aBgCol );
       p->fillRect( r, gr );
-      QRect aRect = QRect( r.x(), r.y(), r.width(), r.height() );
       drawHandle( p, r, horiz, false );
       p->restore();
       break;
@@ -1853,8 +1850,6 @@ void Style_Salome::drawPrimitive( PrimitiveElement pe, const QStyleOption* opt,
         if ( tabBar )
           isLast = tabBar->currentIndex() == tabBar->count() -1;
         QColor aColor = opt->palette.color( QPalette::Window );
-        QColor aBrdTopCol = model()->color( Style_Model::TabBorderTop );    // Style_Model::border_tab_top_clr
-        QColor aBrdBotCol = model()->color( Style_Model::TabBorderBottom ); // Style_Model::border_tab_bot_clr
         bool isHover = hasHover() && (opt->state & State_Enabled) &&
                                      (opt->state & State_MouseOver);
         QPainterPath aSelPath = Style_Tools::tabRect( p, aSelRect, (int)tbb->shape,

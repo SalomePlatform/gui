@@ -89,6 +89,7 @@ protected:
 private:
   void            filterOwners( const SUIT_DataOwnerPtrList&, SUIT_DataOwnerPtrList& ) const;
 
+public: //mgn
   typedef QList<SUIT_Selector*>        SelectorList;
   typedef QList<SUIT_SelectionFilter*> SelFilterList;
 

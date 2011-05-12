@@ -109,7 +109,7 @@ public:
 
   void notifyObserverID_real(const std::string& theID, long event)
   {
-    SalomeApp_DataObject* suit_obj;
+    SalomeApp_DataObject* suit_obj = 0;
     
     switch(event) {      
     case 1: 

@@ -36,7 +36,7 @@
 #include <QMouseEvent>
 #include <QApplication>
 #include <QDesktopWidget>
-
+#include <cstdio>
 /*!
   \class QtxMainWindow::Filter
   \internal

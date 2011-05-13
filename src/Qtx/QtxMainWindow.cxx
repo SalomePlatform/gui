@@ -562,9 +562,9 @@ void QtxMainWindow::onDestroyed( QObject* obj )
 
 bool QtxMainWindow::event( QEvent* e )
 {
-  if ( e->type() == QEvent::WindowDeactivate ) {
-    printf( "----------------> Deactivated\n" );
-  }
+//   if ( e->type() == QEvent::WindowDeactivate ) {
+//     printf( "----------------> Deactivated\n" );
+//   }
 
   if ( myResizer ) {
     QMouseEvent* me = static_cast<QMouseEvent*>( e );

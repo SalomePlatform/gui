@@ -141,7 +141,7 @@ QtxMainWindow::Resizer::Resizer( const QPoint& p, const Qt::Orientation o, QtxMa
 
   setPosition( p );
 
-  myRubber->show();
+  myRubber->hide();
 };
 
 /*!
@@ -170,6 +170,8 @@ void QtxMainWindow::Resizer::setPosition( const QPoint& pos )
       r = QRect( p - 1, myMain->mapToGlobal( QPoint( 0, 0 ) ).y(), 3, myMain->height() );
     }
     myRubber->setGeometry( r );
+    if ( !myRubber->isVisible() )
+      myRubber->show();
   }
 }
 
@@ -560,22 +562,34 @@ void QtxMainWindow::onDestroyed( QObject* obj )
 
 bool QtxMainWindow::event( QEvent* e )
 {
-  if ( myResizer && e->type() == QEvent::MouseButtonRelease ) {
-    if ( myMouseMove ) {
-      QMainWindow::event( myMouseMove );
-      delete myMouseMove;
-      myMouseMove = 0;
-    }
+  if ( e->type() == QEvent::WindowDeactivate ) {
+    printf( "----------------> Deactivated\n" );
+  }
 
+  if ( myResizer ) {
     QMouseEvent* me = static_cast<QMouseEvent*>( e );
-    myResizer->setFinalEvent( new QMouseEvent( me->type(), me->pos(), me->globalPos(),
-					       me->button(), me->buttons(), me->modifiers() ) );
-    myResizer = 0;
-    return true;
+    if ( ( e->type() == QEvent::MouseButtonRelease && me->button() == Qt::LeftButton ) || 
+	 ( e->type() == QEvent::MouseButtonPress && me->button() != Qt::LeftButton ) ) {
+      if ( me->button() == Qt::LeftButton ) {
+	if ( myMouseMove ) {
+	  QMainWindow::event( myMouseMove );
+	  delete myMouseMove;
+	  myMouseMove = 0;
+	}
+
+	QMouseEvent* me = static_cast<QMouseEvent*>( e );
+	myResizer->setFinalEvent( new QMouseEvent( QEvent::MouseButtonRelease, me->pos(), me->globalPos(),
+						   Qt::LeftButton, me->buttons(), me->modifiers() ) );
+	myResizer = 0;
+	return true;
+      }
+    }
   }
 
   if ( myResizer && e->type() == QEvent::MouseMove ) {
     QMouseEvent* me = static_cast<QMouseEvent*>( e );
+    if ( myMouseMove )
+      delete myMouseMove;
     myMouseMove = new QMouseEvent( me->type(), me->pos(), me->globalPos(),
                                    me->button(), me->buttons(), me->modifiers() );
     myResizer->setPosition( me->globalPos() );
@@ -583,8 +597,9 @@ bool QtxMainWindow::event( QEvent* e )
 
   bool ok = QMainWindow::event( e );
 
-  if ( e->type() == QEvent::MouseButtonPress ) {
-    if ( !isOpaqueResize() && ok && testAttribute( Qt::WA_SetCursor ) ) {
+  if ( !myResizer && e->type() == QEvent::MouseButtonPress ) {
+    QMouseEvent* me = static_cast<QMouseEvent*>( e );
+    if ( !isOpaqueResize() && ok && testAttribute( Qt::WA_SetCursor ) && me->button() == Qt::LeftButton ) {
       bool status = true;
       Qt::Orientation o;
       switch ( cursor().shape() )
@@ -600,8 +615,9 @@ bool QtxMainWindow::event( QEvent* e )
 	  break;
 	}
       if ( status ) {
-	QMouseEvent* me = static_cast<QMouseEvent*>( e );
 	myResizer = new Resizer( me->globalPos(), o, this );
+	myMouseMove = new QMouseEvent( me->type(), me->pos(), me->globalPos(),
+				       me->button(), me->buttons(), me->modifiers() );
       }
     }
   }

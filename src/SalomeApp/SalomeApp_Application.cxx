@@ -1840,6 +1840,9 @@ bool SalomeApp_Application::renameObject( const QString& entry, const QString& n
   if ( !name.isNull() && !name.isEmpty() ) {
     aStudy->setNameOfSavePoint( savePoint, name );
     updateSavePointDataObjects( aStudy );
+
+    //Mark study as modified
+    aStudy->Modified();
     return true;
   }
   return false;

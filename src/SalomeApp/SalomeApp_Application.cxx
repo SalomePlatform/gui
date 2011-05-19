@@ -895,8 +895,7 @@ void SalomeApp_Application::onSaveGUIState()
   if ( study ) {
     SalomeApp_VisualState( this ).storeState();
     updateSavePointDataObjects( study );
-    // temporary commented
-    //objectBrowser()->updateTree( study->root() );
+    updateObjectBrowser();
   }
   updateActions();
 }
@@ -1534,10 +1533,11 @@ void SalomeApp_Application::onStudyOpened( SUIT_Study* study )
 /*! updateSavePointDataObjects: syncronize data objects that correspond to save points (gui states)*/
 void SalomeApp_Application::updateSavePointDataObjects( SalomeApp_Study* study )
 {
-  // temporary commented
-  //OB_Browser* ob = objectBrowser();
 
-  if ( !study /*|| !ob */) // temporary commented
+  SUIT_DataBrowser* ob = objectBrowser();
+  LightApp_SelectionMgr* selMgr = selectionMgr();
+
+  if ( !study || !ob || !selMgr ) 
     return;
 
   // find GUI states root object
@@ -1554,7 +1554,16 @@ void SalomeApp_Application::updateSavePointDataObjects( SalomeApp_Study* study )
   std::vector<int> savePoints = study->getSavePoints();
   // case 1: no more save points but they existed in study's tree
   if ( savePoints.empty() && guiRootObj ) {
+    //rnv : to fix bug "IPAL22450 TC6.3.0: sigsegv loop deleting the GUI state"
+    //    : set auto update to true for removing SalomeApp_SavePointRootObject from the SUIT_TreeModel
+    const bool isAutoUpdate = ob->autoUpdate();
+    selMgr->clearSelected();
+    ob->setAutoUpdate(true);
+    DataObjectList ch = guiRootObj->children();
+    for( int i = 0; i < ch.size(); i++ ) 
+      delete ch[i];
     delete guiRootObj;
+    ob->setAutoUpdate(isAutoUpdate);
     return;
   }
   // case 2: no more save points but root does not exist either
@@ -1591,8 +1600,16 @@ void SalomeApp_Application::updateSavePointDataObjects( SalomeApp_Study* study )
       mapDO.remove( savePoints[i] );
 
   // delete DataObjects that are still in the map -- their IDs were not found in data model
-  for ( QMap<int,SalomeApp_SavePointObject*>::Iterator it = mapDO.begin(); it != mapDO.end(); ++it )
-    delete it.value();
+  if( mapDO.size() > 0) {
+    //rnv : to fix bug "IPAL22450 TC6.3.0: sigsegv loop deleting the GUI state"
+    //    : set auto update to true for removing SalomeApp_SavePointObject from the SUIT_TreeModel
+    selMgr->clearSelected();
+    const bool isAutoUpdate = ob->autoUpdate();
+    ob->setAutoUpdate(true);
+    for ( QMap<int,SalomeApp_SavePointObject*>::Iterator it = mapDO.begin(); it != mapDO.end(); ++it )
+      delete it.value();
+    ob->setAutoUpdate(isAutoUpdate);
+  }
 }
 
 /*! Check data object */

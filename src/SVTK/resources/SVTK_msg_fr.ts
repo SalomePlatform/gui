@@ -263,11 +263,11 @@
     </message>
     <message>
         <source>DSC_SVTK_RECORDING_PLAY</source>
-        <translation>Jouer l&apos;enregistrement</translation>
+        <translation>Commencer l&apos;enregistrement</translation>
     </message>
     <message>
         <source>MNU_SVTK_RECORDING_PLAY</source>
-        <translation>Jouer l&apos;enregistrement</translation>
+        <translation>Commencer l&apos;enregistrement</translation>
     </message>
     <message>
         <source>DSC_SVTK_RECORDING_PAUSE</source>
@@ -292,7 +292,7 @@
     <message>
         <source>MSG_NO_AVI_MAKER</source>
         <translation>L&apos;outil jpeg2yuv, requis pour enregistrer les fichiers AVI, n&apos;est pas disponible.
-Consultez la documentation.</translation>
+Veuillez consulter la documentation.</translation>
     </message>
 </context>
 <context>

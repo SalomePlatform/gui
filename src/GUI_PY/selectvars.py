@@ -1,23 +1,23 @@
-#  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
+# Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
 #
-#  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-#  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+# Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
+# CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
 #
-#  This library is free software; you can redistribute it and/or
-#  modify it under the terms of the GNU Lesser General Public
-#  License as published by the Free Software Foundation; either
-#  version 2.1 of the License.
+# This library is free software; you can redistribute it and/or
+# modify it under the terms of the GNU Lesser General Public
+# License as published by the Free Software Foundation; either
+# version 2.1 of the License.
 #
-#  This library is distributed in the hope that it will be useful,
-#  but WITHOUT ANY WARRANTY; without even the implied warranty of
-#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-#  Lesser General Public License for more details.
+# This library is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+# Lesser General Public License for more details.
 #
-#  You should have received a copy of the GNU Lesser General Public
-#  License along with this library; if not, write to the Free Software
-#  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+# You should have received a copy of the GNU Lesser General Public
+# License along with this library; if not, write to the Free Software
+# Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
-#  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+# See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
 from PyQt4 import QtGui, QtCore
@@ -25,7 +25,7 @@ from PyQt4.QtCore import Qt
 
 import salome
 from salome.kernel.studyedit import getStudyEditor
-from salome.kernel import varlist
+from salome.kernel.parametric import study_exchange_vars
 
 # ---------------------------------- #
 # Dialog box for variables selection #
@@ -71,7 +71,7 @@ class MySelectVarsDialog(Ui_SelectVarsDialog, QtGui.QDialog):
             QtGui.QMessageBox.warning(self, self.tr("Error"),
                                       self.tr('No item at entry %s' % entry))
             return
-        exchangeVariables = varlist.getExchangeVariablesFromSObject(sobj)
+        exchangeVariables = study_exchange_vars.getExchangeVariablesFromSObject(sobj)
         if exchangeVariables is None:
             QtGui.QMessageBox.warning(self, self.tr("Error"),
                                       self.tr('Item at entry %s is not a valid '
@@ -114,7 +114,9 @@ class MySelectVarsDialog(Ui_SelectVarsDialog, QtGui.QDialog):
         inputVarList = []
         outputVarList = []
         for row in range(self.selectedInputVarListWidget.count()):
-            inputVarList.append(varlist.Variable(str(self.selectedInputVarListWidget.item(row).text())))
+            name = str(self.selectedInputVarListWidget.item(row).text())
+            inputVarList.append(study_exchange_vars.Variable(name))
         for row in range(self.selectedOutputVarListWidget.count()):
-            outputVarList.append(varlist.Variable(str(self.selectedOutputVarListWidget.item(row).text())))
-        return varlist.ExchangeVariables(inputVarList, outputVarList, self.refEntry)
+            name = str(self.selectedOutputVarListWidget.item(row).text())
+            outputVarList.append(study_exchange_vars.Variable(name))
+        return study_exchange_vars.ExchangeVariables(inputVarList, outputVarList, self.refEntry)

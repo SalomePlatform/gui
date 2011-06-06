@@ -1,23 +1,23 @@
-//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
 //
-//  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-//  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+// Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
+// CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
 //
-//  This library is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU Lesser General Public
-//  License as published by the Free Software Foundation; either
-//  version 2.1 of the License.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License.
 //
-//  This library is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//  Lesser General Public License for more details.
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with this library; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
 #ifndef OCCVIEWER_VIEWWINDOW_H
@@ -37,8 +37,74 @@ class OCCViewer_AxialScaleDlg;
 class OCCViewer_SetRotationPointDlg;
 class OCCViewer_Viewer;
 class OCCViewer_CubeAxesDlg;
-struct viewAspect;
 class QtxAction;
+
+struct viewAspect
+{
+public:
+        double    scale;
+        double  centerX;
+        double  centerY;
+        double    projX;
+        double    projY;
+        double    projZ;
+        double    twist;
+        double      atX;
+        double      atY;
+        double      atZ;
+        double     eyeX;
+        double     eyeY;
+        double     eyeZ;
+        double   scaleX;
+        double   scaleY;
+        double   scaleZ;
+        QString    name;
+        bool     isVisible;
+        double   size;
+        // graduated trihedron
+        bool    gtIsVisible;
+        bool    gtDrawNameX;
+        bool    gtDrawNameY;
+        bool    gtDrawNameZ;
+        QString gtNameX;
+        QString gtNameY;
+        QString gtNameZ;
+        int     gtNameColorRX;
+        int     gtNameColorGX;
+        int     gtNameColorBX;
+        int     gtNameColorRY;
+        int     gtNameColorGY;
+        int     gtNameColorBY;
+        int     gtNameColorRZ;
+        int     gtNameColorGZ;
+        int     gtNameColorBZ;
+        bool    gtDrawValuesX;
+        bool    gtDrawValuesY;
+        bool    gtDrawValuesZ;
+        int     gtNbValuesX;
+        int     gtNbValuesY;
+        int     gtNbValuesZ;
+        int     gtOffsetX;
+        int     gtOffsetY;
+        int     gtOffsetZ;
+        int     gtColorRX;
+        int     gtColorGX;
+        int     gtColorBX;
+        int     gtColorRY;
+        int     gtColorGY;
+        int     gtColorBY;
+        int     gtColorRZ;
+        int     gtColorGZ;
+        int     gtColorBZ;
+        bool    gtDrawTickmarksX;
+        bool    gtDrawTickmarksY;
+        bool    gtDrawTickmarksZ;
+        int     gtTickmarkLengthX;
+        int     gtTickmarkLengthY;
+        int     gtTickmarkLengthZ;
+};
+
+typedef QList<viewAspect> viewAspectList;
 
 #ifdef WIN32
 #pragma warning( disable:4251 )
@@ -115,6 +181,10 @@ public:
   virtual QColor  backgroundColor() const;
   virtual void    setBackgroundColor( const QColor& );
 
+  virtual const viewAspectList&   getViewAspects();
+  virtual void                    appendViewAspect( const viewAspect& );
+  virtual void                    updateViewAspects( const viewAspectList& );
+  virtual void                    clearViewAspects();
 
 public slots:
   virtual void onFrontView();
@@ -252,6 +322,8 @@ private:
   Mode2dType my2dMode;
 
   Handle(V3d_Plane) myReserveClippingPlane;
+
+  viewAspectList myViewAspects;
 };
 
 #ifdef WIN32

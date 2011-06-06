@@ -97,11 +97,11 @@ Un fichier Python ne doit être composé que de lettres, chiffres et tirets bas 
     </message>
     <message>
         <source>MEN_WINDOWS_NEW</source>
-        <translation>Nouvelle Fenêtre</translation>
+        <translation>Nouvelle fenêtre</translation>
     </message>
     <message>
         <source>MEN_DELETE_INVALID_REFERENCE</source>
-        <translation>Supprimer la Référence Invalide</translation>
+        <translation>Supprimer la référence invalide</translation>
     </message>
     <message>
         <source>TOT_FILE_DESK_PREFERENCES</source>
@@ -113,7 +113,7 @@ Un fichier Python ne doit être composé que de lettres, chiffres et tirets bas 
     </message>
     <message>
         <source>MEN_OPENWITH</source>
-        <translation>Activer Module %1 </translation>
+        <translation>Activer module %1 </translation>
     </message>
     <message>
         <source>MEN_DESK_REGISTRY_DISPLAY</source>
@@ -128,8 +128,16 @@ Un fichier Python ne doit être composé que de lettres, chiffres et tirets bas 
         <translation>Exécuter un script python</translation>
     </message>
     <message>
-        <source>PREF_MULTI_FILE_PYTHON_DUMP</source>
+        <source>PREF_PYDUMP_PUBLISH</source>
+        <translation>Publier dans l&apos;étude dans un scrypt en python</translation>
+    </message>
+    <message>
+        <source>PREF_PYDUMP_MULTI_FILE</source>
         <translation>Dump Python multi-fichiers</translation>
+    </message>
+    <message>
+        <source>PREF_PYDUMP_SAVE_GUI</source>
+        <translation>Enregistrer l&apos;état de l&apos;IHM dans un script Python</translation>
     </message>
     <message>
         <source>PREF_STORE_VISUAL_STATE</source>
@@ -254,7 +262,7 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>MEN_DESK_PLUGINS_TOOLS</source>
-	<translation>Outils</translation>
+        <translation>Outils</translation>
     </message>
     <message>
         <source>MEN_DESK_PLUGINS</source>
@@ -385,7 +393,7 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>PRP_DATE</source>
-        <translation>Créée</translation>
+        <translation>Date de création</translation>
     </message>
     <message>
         <source>PRP_MODE</source>

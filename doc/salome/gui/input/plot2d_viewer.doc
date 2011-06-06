@@ -64,14 +64,18 @@ spline.</center>
 <br>
 \image html plot2d_log.png
 <br><center>These buttons allow to switch horizontal axis scale to the
-linear or logarithmic mode.</center>
+linear or logarithmic mode.<br>Note that the logarithmic mode of the
+horizontal axis scale is allowed only if the minimum value of abscissa
+component of displayed points is greater than zero.</center>
 <hr>
 
 \image html plot2d_linear_y.png
 <br>
 \image html plot2d_log_y.png
 <br><center>These buttons allow to switch vertical axis scale to the
-linear or logarithmic mode.</center>
+linear or logarithmic mode.<br>Note that the logarithmic mode of the
+vertical axis scale is allowed only if the minimum value of ordinate
+component of displayed points is greater than zero.</center>
 <hr>
 
 \image html plot2d_legend.png
@@ -101,7 +105,9 @@ description table on the XY plot (to the \b Left, to the \b Right, on
 - <b>Background color</b> of the XY plot.
 - <b>Scale mode</b> here you can select the type of scaling (\b
 Linear or \b Logarithmic) for <b>X (Horizontal)</b> or <b>Y
-(Vertical)</b> axes separately.
+(Vertical)</b> axes separately. Note that the \b Logarithmic scale can
+be used only if the minimum value of corresponding component (abscissa
+or ordinate) of all points displayed in the viewer is greater than zero.
 - <b>Axis ...</b> options group allows to specify additional settings for each axis separately:
   - <b>Axis title</b> - an axis title
   - <b>Grid / Axes marks</b>  here you can define the maximum number of major

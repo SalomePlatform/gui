@@ -1,29 +1,29 @@
-//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
 //
-//  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-//  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+// Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
+// CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
 //
-//  This library is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU Lesser General Public
-//  License as published by the Free Software Foundation; either
-//  version 2.1 of the License.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License.
 //
-//  This library is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//  Lesser General Public License for more details.
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with this library; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
 // File:      SalomeApp_Application.cxx
 // Created:   10/22/2004 3:23:45 PM
 // Author:    Sergey LITONIN
-//
+
 #ifdef WNT
 // E.A. : On windows with python 2.6, there is a conflict
 // E.A. : between pymath.h and Standard_math.h which define
@@ -223,38 +223,38 @@ void SalomeApp_Application::start()
           for (uint j = 0; j < pyfiles.count(); j++ ) {
             QFileInfo fi ( pyfiles[j] );
             QFileInfo fipy ( pyfiles[j] + ".py" );
-	    QString command = QString( "execfile(r\"%1\")" );
-	    if ( fi.isAbsolute() ) {
-	      if ( fi.exists() )
-		pyConsole->exec( command.arg( fi.absoluteFilePath() ) );
-	      else if ( fipy.exists() )
-		pyConsole->exec( command.arg( fipy.absoluteFilePath() ) );
-	      else 
-		qDebug() << "Can't execute file" << pyfiles[j];
-	    }
-	    else {
-	      bool found = false;
-	      QStringList dirs;
-	      dirs << QDir::currentPath();
-	      if ( ::getenv( "PYTHONPATH" ) )
-		dirs += QString( ::getenv( "PYTHONPATH" ) ).split( QRegExp( "[:|;]" ) );
-	      foreach( QString dir, dirs ) {
-		qDebug() << "try" << QFileInfo( dir, pyfiles[j] ).absoluteFilePath();
-		qDebug() << "try" << QFileInfo( dir, pyfiles[j] + ".py" ).absoluteFilePath();
-		if ( QFileInfo( dir, pyfiles[j] ).exists() ) {
-		  pyConsole->exec( command.arg( QFileInfo( dir, pyfiles[j] ).absoluteFilePath() ) );
-		  found = true;
-		  break;
-		}
-		else if ( QFileInfo( dir, pyfiles[j] + ".py" ).exists() ) {
-		  pyConsole->exec( command.arg( QFileInfo( dir, pyfiles[j] + ".py" ).absoluteFilePath() ) );
-		  found = true;
-		  break;
-		}
-	      }
-	      if ( !found ) {
-		qDebug() << "Can't execute file" << pyfiles[j];
-	      }
+            QString command = QString( "execfile(r\"%1\")" );
+            if ( fi.isAbsolute() ) {
+              if ( fi.exists() )
+                pyConsole->exec( command.arg( fi.absoluteFilePath() ) );
+              else if ( fipy.exists() )
+                pyConsole->exec( command.arg( fipy.absoluteFilePath() ) );
+              else
+                qDebug() << "Can't execute file" << pyfiles[j];
+            }
+            else {
+              bool found = false;
+              QStringList dirs;
+              dirs << QDir::currentPath();
+              if ( ::getenv( "PYTHONPATH" ) )
+                dirs += QString( ::getenv( "PYTHONPATH" ) ).split( QRegExp( "[:|;]" ) );
+              foreach( QString dir, dirs ) {
+                qDebug() << "try" << QFileInfo( dir, pyfiles[j] ).absoluteFilePath();
+                qDebug() << "try" << QFileInfo( dir, pyfiles[j] + ".py" ).absoluteFilePath();
+                if ( QFileInfo( dir, pyfiles[j] ).exists() ) {
+                  pyConsole->exec( command.arg( QFileInfo( dir, pyfiles[j] ).absoluteFilePath() ) );
+                  found = true;
+                  break;
+                }
+                else if ( QFileInfo( dir, pyfiles[j] + ".py" ).exists() ) {
+                  pyConsole->exec( command.arg( QFileInfo( dir, pyfiles[j] + ".py" ).absoluteFilePath() ) );
+                  found = true;
+                  break;
+                }
+              }
+              if ( !found ) {
+                qDebug() << "Can't execute file" << pyfiles[j];
+              }
             }
           }
         }
@@ -358,13 +358,13 @@ void SalomeApp_Application::setDesktop( SUIT_Desktop* desk )
     return;
 
   LightApp_Application::setDesktop( desk );
-  
+
   if ( desk != 0 ) {
     connect( desk, SIGNAL( message( const QString& ) ),
              this, SLOT( onDesktopMessage( const QString& ) ), Qt::UniqueConnection);
 
     connect( desk, SIGNAL( windowActivated( SUIT_ViewWindow* ) ),
-	     this, SLOT( onWindowActivated( SUIT_ViewWindow* ) ), Qt::UniqueConnection );
+             this, SLOT( onWindowActivated( SUIT_ViewWindow* ) ), Qt::UniqueConnection );
   }
 }
 
@@ -438,7 +438,7 @@ void SalomeApp_Application::onNewWithScript()
   QStringList filtersList;
   filtersList.append(tr("PYTHON_FILES_FILTER"));
   filtersList.append(tr("ALL_FILES_FILTER"));
-  
+
   QString anInitialPath = "";
   if ( SUIT_FileDlg::getLastVisitedPath().isEmpty() )
     anInitialPath = QDir::currentPath();
@@ -694,7 +694,7 @@ void SalomeApp_Application::updateCommandsStatus()
   a = action(NoteBookId);
   if( a )
     a->setEnabled( activeStudy() );
-  
+
   // Load script menu
   a = action( LoadScriptId );
   if ( a )
@@ -783,25 +783,31 @@ void SalomeApp_Application::onDumpStudy( )
   QStringList aFilters;
   aFilters.append( tr( "PYTHON_FILES_FILTER" ) );
 
+  bool anIsPublish = true;
   bool anIsMultiFile = false;
-  if ( SUIT_ResourceMgr* aResourceMgr = resourceMgr() )
+  bool anIsSaveGUI = true;
+
+  if ( SUIT_ResourceMgr* aResourceMgr = resourceMgr() ) {
+    anIsPublish   = aResourceMgr->booleanValue( "Study", "pydump_publish", anIsPublish );
     anIsMultiFile = aResourceMgr->booleanValue( "Study", "multi_file_dump", anIsMultiFile );
+    anIsSaveGUI   = aResourceMgr->booleanValue( "Study", "pydump_save_gui", anIsSaveGUI );
+  }
 
   DumpStudyFileDlg fd( desktop() );
   fd.setValidator( new DumpStudyFileValidator( &fd ) );
   fd.setWindowTitle( tr( "TOT_DESK_FILE_DUMP_STUDY" ) );
   fd.setFilters( aFilters );
-  fd.myPublishChk->setChecked( true );
+  fd.myPublishChk->setChecked( anIsPublish );
   fd.myMultiFileChk->setChecked( anIsMultiFile );
-  fd.mySaveGUIChk->setChecked( true );
+  fd.mySaveGUIChk->setChecked( anIsSaveGUI );
   if ( fd.exec() == QDialog::Accepted )
   {
     QString aFileName = fd.selectedFile();
-    
+
     bool toPublish = fd.myPublishChk->isChecked();
     bool isMultiFile = fd.myMultiFileChk->isChecked();
     bool toSaveGUI = fd.mySaveGUIChk->isChecked();
-    
+
     if ( !aFileName.isEmpty() ) {
       QFileInfo aFileInfo(aFileName);
       if( aFileInfo.isDir() ) // IPAL19257
@@ -865,7 +871,7 @@ void SalomeApp_Application::onLoadScript( )
   QStringList filtersList;
   filtersList.append(tr("PYTHON_FILES_FILTER"));
   filtersList.append(tr("ALL_FILES_FILTER"));
-  
+
   QString anInitialPath = "";
   if ( SUIT_FileDlg::getLastVisitedPath().isEmpty() )
     anInitialPath = QDir::currentPath();
@@ -890,8 +896,7 @@ void SalomeApp_Application::onSaveGUIState()
   if ( study ) {
     SalomeApp_VisualState( this ).storeState();
     updateSavePointDataObjects( study );
-    // temporary commented
-    //objectBrowser()->updateTree( study->root() );
+    updateObjectBrowser();
   }
   updateActions();
 }
@@ -1006,8 +1011,13 @@ void SalomeApp_Application::createPreferences( LightApp_Preferences* pref )
   // adding preference to LightApp_Application handled preferences..  a bit of hacking with resources..
   int genTab = pref->addPreference( LightApp_Application::tr( "PREF_TAB_GENERAL" ), salomeCat );
   int studyGroup = pref->addPreference( LightApp_Application::tr( "PREF_GROUP_STUDY" ), genTab );
-  pref->addPreference( tr( "PREF_MULTI_FILE_PYTHON_DUMP" ), studyGroup, LightApp_Preferences::Bool, "Study", "multi_file_dump" );
   pref->addPreference( tr( "PREF_STORE_VISUAL_STATE" ), studyGroup, LightApp_Preferences::Bool, "Study", "store_visual_state" );
+  pref->addPreference( "", studyGroup, LightApp_Preferences::Space );
+  pref->addPreference( tr( "PREF_PYDUMP_PUBLISH" ), studyGroup, LightApp_Preferences::Bool, "Study", "pydump_publish" );
+  pref->addPreference( tr( "PREF_PYDUMP_MULTI_FILE" ), studyGroup, LightApp_Preferences::Bool, "Study", "multi_file_dump" );
+  pref->addPreference( tr( "PREF_PYDUMP_SAVE_GUI" ), studyGroup, LightApp_Preferences::Bool, "Study", "pydump_save_gui" );
+  pref->addPreference( "", studyGroup, LightApp_Preferences::Space );
+  pref->addPreference( "", studyGroup, LightApp_Preferences::Space );
 }
 
 /*!Update desktop title.*/
@@ -1108,7 +1118,7 @@ int SalomeApp_Application::openChoice( const QString& aName )
                               QObject::tr("WRN_FILE_NOT_EXIST").arg(aName.toLatin1().data()));
     return false;
   }
-  
+
   return choice;
 }
 
@@ -1268,9 +1278,9 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QMenu* thePop
        QString( aList.First()->getEntry() ).startsWith( tr( "SAVE_POINT_DEF_NAME" ) ) ) {
     thePopup->addSeparator();
     thePopup->addAction( tr( "MEN_RESTORE_VS" ), this, SLOT( onRestoreGUIState() ) );
-    thePopup->addAction( tr( "MEN_RENAME_VS" ),  objectBrowser(), 
-			 SLOT( onStartEditing() ), objectBrowser()->shortcutKey(SUIT_DataBrowser::RenameShortcut) );
-    thePopup->addAction( tr( "MEN_DELETE_VS" ),  this, SLOT( onDeleteGUIState() ) );    
+    thePopup->addAction( tr( "MEN_RENAME_VS" ),  objectBrowser(),
+                         SLOT( onStartEditing() ), objectBrowser()->shortcutKey(SUIT_DataBrowser::RenameShortcut) );
+    thePopup->addAction( tr( "MEN_DELETE_VS" ),  this, SLOT( onDeleteGUIState() ) );
   }
 
   // "Delete reference" item should appear only for invalid references
@@ -1314,7 +1324,7 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QMenu* thePop
     SalomeApp_Study* study = dynamic_cast<SalomeApp_Study*>(activeStudy());
     if ( study ) {
       _PTR(Study) stdDS = study->studyDS();
-      if ( stdDS ) { 
+      if ( stdDS ) {
         _PTR(SObject) aSO = stdDS->FindObjectID( aIObj->getEntry() );
         if ( aSO ) {
           _PTR( GenericAttribute ) anAttr;
@@ -1363,7 +1373,7 @@ void SalomeApp_Application::updateObjectBrowser( const bool updateModels )
         _PTR(SComponent) aComponent ( it->Value() );
 
 #ifndef WITH_SALOMEDS_OBSERVER
-	// with GUI observers this check is not needed anymore
+        // with GUI observers this check is not needed anymore
         if ( aComponent->ComponentDataType() == study->getVisualComponentName().toLatin1().constData() )
           continue; // skip the magic "Interface Applicative" component
 #endif
@@ -1415,13 +1425,13 @@ void SalomeApp_Application::onDblClick( SUIT_DataObject* theObj )
     if( sobj && sobj->ReferencedObject( ref ) )
     {
       entry = ref->GetID().c_str();
-      
+
       SUIT_DataOwnerPtrList aList;
       aList.append( new LightApp_DataOwner( entry ) );
       selectionMgr()->setSelected( aList, false );
 
       SUIT_DataBrowser* ob = objectBrowser();
-      
+
       QModelIndexList aSelectedIndexes = ob->selectedIndexes();
       if ( !aSelectedIndexes.isEmpty() )
         ob->treeView()->scrollTo( aSelectedIndexes.first() );
@@ -1484,7 +1494,7 @@ void SalomeApp_Application::onDeleteGUIState()
 void SalomeApp_Application::onStudyCreated( SUIT_Study* study )
 {
   LightApp_Application::onStudyCreated( study );
-  
+
   connect( this, SIGNAL( viewManagerRemoved( SUIT_ViewManager* ) ),
            this, SLOT( onViewManagerRemoved( SUIT_ViewManager* ) ), Qt::UniqueConnection );
 
@@ -1513,7 +1523,7 @@ void SalomeApp_Application::onStudyOpened( SUIT_Study* study )
            this, SLOT( onViewManagerRemoved( SUIT_ViewManager* ) ), Qt::UniqueConnection );
 
   objectBrowserColumnsVisibility();
-  
+
   // temporary commented
   /*if ( objectBrowser() ) {
     updateSavePointDataObjects( dynamic_cast<SalomeApp_Study*>( study ) );
@@ -1524,10 +1534,11 @@ void SalomeApp_Application::onStudyOpened( SUIT_Study* study )
 /*! updateSavePointDataObjects: syncronize data objects that correspond to save points (gui states)*/
 void SalomeApp_Application::updateSavePointDataObjects( SalomeApp_Study* study )
 {
-  // temporary commented
-  //OB_Browser* ob = objectBrowser();
 
-  if ( !study /*|| !ob */) // temporary commented
+  SUIT_DataBrowser* ob = objectBrowser();
+  LightApp_SelectionMgr* selMgr = selectionMgr();
+
+  if ( !study || !ob || !selMgr ) 
     return;
 
   // find GUI states root object
@@ -1544,7 +1555,16 @@ void SalomeApp_Application::updateSavePointDataObjects( SalomeApp_Study* study )
   std::vector<int> savePoints = study->getSavePoints();
   // case 1: no more save points but they existed in study's tree
   if ( savePoints.empty() && guiRootObj ) {
+    //rnv : to fix bug "IPAL22450 TC6.3.0: sigsegv loop deleting the GUI state"
+    //    : set auto update to true for removing SalomeApp_SavePointRootObject from the SUIT_TreeModel
+    const bool isAutoUpdate = ob->autoUpdate();
+    selMgr->clearSelected();
+    ob->setAutoUpdate(true);
+    DataObjectList ch = guiRootObj->children();
+    for( int i = 0; i < ch.size(); i++ ) 
+      delete ch[i];
     delete guiRootObj;
+    ob->setAutoUpdate(isAutoUpdate);
     return;
   }
   // case 2: no more save points but root does not exist either
@@ -1581,8 +1601,16 @@ void SalomeApp_Application::updateSavePointDataObjects( SalomeApp_Study* study )
       mapDO.remove( savePoints[i] );
 
   // delete DataObjects that are still in the map -- their IDs were not found in data model
-  for ( QMap<int,SalomeApp_SavePointObject*>::Iterator it = mapDO.begin(); it != mapDO.end(); ++it )
-    delete it.value();
+  if( mapDO.size() > 0) {
+    //rnv : to fix bug "IPAL22450 TC6.3.0: sigsegv loop deleting the GUI state"
+    //    : set auto update to true for removing SalomeApp_SavePointObject from the SUIT_TreeModel
+    selMgr->clearSelected();
+    const bool isAutoUpdate = ob->autoUpdate();
+    ob->setAutoUpdate(true);
+    for ( QMap<int,SalomeApp_SavePointObject*>::Iterator it = mapDO.begin(); it != mapDO.end(); ++it )
+      delete it.value();
+    ob->setAutoUpdate(isAutoUpdate);
+  }
 }
 
 /*! Check data object */
@@ -1643,10 +1671,10 @@ SalomeApp_NoteBookDlg* SalomeApp_Application::getNoteBook() const
 
 /*!
  * Define extra actions defined in module definition XML file.
- * Additional popup items sections can be defined by parameter "popupitems". 
- * Supported attributes: 
- * title - title of menu item, 
- * attributelocalid - AttributeLocalId defined for selected data item where menu command has to be applied, 
+ * Additional popup items sections can be defined by parameter "popupitems".
+ * Supported attributes:
+ * title - title of menu item,
+ * attributelocalid - AttributeLocalId defined for selected data item where menu command has to be applied,
  * method - method which has to be called when menu item is selected
  * Example:
  * <section name="MODULENAME">
@@ -1676,11 +1704,11 @@ void SalomeApp_Application::createExtraActions()
         QString aSlot  = resMgr->stringValue(aSection, "method",   QString());
         if (aTitle.isEmpty() || aSlot.isEmpty() || aId.isEmpty())
           continue;
-        
+
         QString aModuleName = resMgr->stringValue(aSection, "module", QString());
         if (aModuleName.isNull())
           aModuleName = aModName;
-        
+
         QAction* aAction = new QAction(aTitle, this);
         QStringList aData;
         aData<<aModuleName<<aSlot;
@@ -1712,9 +1740,9 @@ void SalomeApp_Application::onExtAction()
   const Handle(SALOME_InteractiveObject)& anIO = aListIO.First();
   if (aListIO.Extent() < 1)
     return;
-  if (!anIO->hasEntry()) 
+  if (!anIO->hasEntry())
     return;
-  
+
   QString aEntry(anIO->getEntry());
 
   QApplication::setOverrideCursor( Qt::WaitCursor );
@@ -1744,7 +1772,7 @@ void SalomeApp_Application::onWindowActivated( SUIT_ViewWindow* theViewWindow ) 
     return;
 
   DataObjectList listObj = rootObj->children( true );
-  
+
   SUIT_ViewModel* vmod = 0;
   if ( SUIT_ViewManager* vman = theViewWindow->getViewManager() )
     vmod = vman->getViewModel();
@@ -1760,30 +1788,30 @@ void SalomeApp_Application::updateVisibilityState( DataObjectList& theList,
 
   if(!theViewModel)
     return;
-  
+
   SALOME_View* aView = dynamic_cast<SALOME_View*>( theViewModel );
-  
+
   if (theList.isEmpty() || !aView || !aStudy)
     return;
-  
+
   for ( DataObjectList::iterator itr = theList.begin(); itr != theList.end(); ++itr ) {
     LightApp_DataObject* obj = dynamic_cast<LightApp_DataObject*>(*itr);
-    
+
     if (!obj || aStudy->isComponent(obj->entry()))
       continue;
-    
+
     LightApp_Module* anObjModule = dynamic_cast<LightApp_Module*>(obj->module());
     Qtx::VisibilityState anObjState = Qtx::UnpresentableState;
-    
+
     if(anObjModule) {
-      LightApp_Displayer* aDisplayer = anObjModule->displayer();      
+      LightApp_Displayer* aDisplayer = anObjModule->displayer();
       if(aDisplayer) {
-	if( aDisplayer->canBeDisplayed(obj->entry(), theViewModel->getType()) ) {
-	  if(aDisplayer->IsDisplayed(obj->entry(),aView))
-	    anObjState = Qtx::ShownState;
-	  else
-	    anObjState = Qtx::HiddenState;
-	}
+        if( aDisplayer->canBeDisplayed(obj->entry(), theViewModel->getType()) ) {
+          if(aDisplayer->IsDisplayed(obj->entry(),aView))
+            anObjState = Qtx::ShownState;
+          else
+            anObjState = Qtx::HiddenState;
+        }
       }
       aStudy->setVisibilityState( obj->entry(), anObjState );
     }
@@ -1793,7 +1821,7 @@ void SalomeApp_Application::updateVisibilityState( DataObjectList& theList,
 /*!
   Called then view manager removed
 */
-void SalomeApp_Application::onViewManagerRemoved( SUIT_ViewManager* ) {  
+void SalomeApp_Application::onViewManagerRemoved( SUIT_ViewManager* ) {
   ViewManagerList lst;
   viewManagers(lst);
   if( lst.count() == 1) { // in case if closed last view window
@@ -1819,17 +1847,20 @@ bool SalomeApp_Application::renameAllowed( const QString& entry) const {
   \brief Return \c true if rename operation finished successfully, \c false otherwise.
 */
 bool SalomeApp_Application::renameObject( const QString& entry, const QString& name ) {
-  
+
   SalomeApp_Study* aStudy = dynamic_cast<SalomeApp_Study*>( activeStudy() );
-  
+
   int savePoint = ::getSelectedSavePoint( selectionMgr() );
-  
+
   if(!aStudy || savePoint == -1)
     return false;
-  
+
   if ( !name.isNull() && !name.isEmpty() ) {
     aStudy->setNameOfSavePoint( savePoint, name );
     updateSavePointDataObjects( aStudy );
+
+    //Mark study as modified
+    aStudy->Modified();
     return true;
   }
   return false;

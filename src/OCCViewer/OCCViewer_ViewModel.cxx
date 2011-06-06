@@ -1,23 +1,23 @@
-//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
 //
-//  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-//  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+// Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
+// CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
 //
-//  This library is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU Lesser General Public
-//  License as published by the Free Software Foundation; either
-//  version 2.1 of the License.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License.
 //
-//  This library is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//  Lesser General Public License for more details.
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with this library; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
 #include "OCCViewer_ViewModel.h"
@@ -92,8 +92,6 @@ OCCViewer_Viewer::OCCViewer_Viewer( bool DisplayTrihedron, bool DisplayStaticTri
   drawer->AngleAspect()->SetTextAspect(ta);
   drawer->LengthAspect()->SetTextAspect(ta);
   
-  clearViewAspects();
-
   /* create trihedron */
   if( DisplayTrihedron )
   {
@@ -420,8 +418,10 @@ void OCCViewer_Viewer::contextMenuPopup(QMenu* thePopup)
   //Support of several toolbars in the popup menu
   QList<QToolBar*> lst = qFindChildren<QToolBar*>( aView );
   QList<QToolBar*>::const_iterator it = lst.begin(), last = lst.end();
-  for( ; it!=last; it++ )
-    thePopup->addAction( (*it)->toggleViewAction() );
+  for ( ; it!=last; it++ ) {
+    if ( (*it)->parentWidget()->isVisible() )
+      thePopup->addAction( (*it)->toggleViewAction() );
+  }
 }
 
 /*!
@@ -489,48 +489,6 @@ void OCCViewer_Viewer::setObjectsSelected(const AIS_ListOfInteractive& theList)
 void OCCViewer_Viewer::performSelectionChanged()
 {
     emit selectionChanged();
-}
-
-/*!
-  SLOT, clears view aspects
-*/
-void OCCViewer_Viewer::onClearViewAspects()
-{
-    clearViewAspects();
-}
-
-/*!
-  Clears view aspects
-*/
-void OCCViewer_Viewer::clearViewAspects()
-{
-        myViewAspects.clear();
-}
-
-/*!
-  \return const reference to list of view aspects
-*/
-const viewAspectList& OCCViewer_Viewer::getViewAspects()
-{
-        return myViewAspects;
-}
-
-/*!
-  Appends new view aspect
-  \param aParams - new view aspects
-*/
-void OCCViewer_Viewer::appendViewAspect( const viewAspect& aParams )
-{
-        myViewAspects.append( aParams );
-}
-
-/*!
-  Replaces old view aspects by new ones
-  \param aViewList - list of new view aspects
-*/
-void OCCViewer_Viewer::updateViewAspects( const viewAspectList& aViewList )
-{
-        myViewAspects = aViewList;
 }
 
 /*!

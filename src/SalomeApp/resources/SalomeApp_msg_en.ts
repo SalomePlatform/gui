@@ -128,8 +128,16 @@ Python file must include only letters, digits and underscores and start from let
         <translation>Load python script</translation>
     </message>
     <message>
-        <source>PREF_MULTI_FILE_PYTHON_DUMP</source>
+        <source>PREF_PYDUMP_PUBLISH</source>
+        <translation>Publish in study in python dump</translation>
+    </message>
+    <message>
+        <source>PREF_PYDUMP_MULTI_FILE</source>
         <translation>Multi file python dump</translation>
+    </message>
+    <message>
+        <source>PREF_PYDUMP_SAVE_GUI</source>
+        <translation>Save GUI state in python dump</translation>
     </message>
     <message>
         <source>PREF_STORE_VISUAL_STATE</source>

@@ -1,23 +1,23 @@
-//  Copyright (C) 2007-2010  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
 //
-//  Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-//  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+// Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
+// CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
 //
-//  This library is free software; you can redistribute it and/or
-//  modify it under the terms of the GNU Lesser General Public
-//  License as published by the Free Software Foundation; either
-//  version 2.1 of the License.
+// This library is free software; you can redistribute it and/or
+// modify it under the terms of the GNU Lesser General Public
+// License as published by the Free Software Foundation; either
+// version 2.1 of the License.
 //
-//  This library is distributed in the hope that it will be useful,
-//  but WITHOUT ANY WARRANTY; without even the implied warranty of
-//  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-//  Lesser General Public License for more details.
+// This library is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+// Lesser General Public License for more details.
 //
-//  You should have received a copy of the GNU Lesser General Public
-//  License along with this library; if not, write to the Free Software
-//  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
-//  See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+// See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
 // File   : OCCViewer_ViewWindow.cxx
@@ -228,6 +228,8 @@ OCCViewer_ViewWindow::OCCViewer_ViewWindow( SUIT_Desktop*     theDesktop,
   my2dMode = No2dMode;
 
   myInteractionStyle = SUIT_ViewModel::STANDARD;
+
+  clearViewAspects();
 }
 
 /*!
@@ -1250,7 +1252,7 @@ void OCCViewer_ViewWindow::createToolBar()
 #if OCC_VERSION_LARGE > 0x0603000A // available only with OCC-6.3-sp11 and higher version
   toolMgr()->append( SwitchZoomingStyleId, tid );
 #endif
-  if( myModel->trihedronActivated() && (my2dMode == No2dMode) )
+  if( myModel->trihedronActivated() )
     toolMgr()->append( TrihedronShowId, tid );
 
   QtxMultiAction* aScaleAction = new QtxMultiAction( this );
@@ -1281,26 +1283,25 @@ void OCCViewer_ViewWindow::createToolBar()
     toolMgr()->append( ClockWiseId, tid );
 
     toolMgr()->append( ResetId, tid );
-
-    QtxMultiAction* aMemAction = new QtxMultiAction( this );
-    aMemAction->insertAction( toolMgr()->action( MemId ) );
-    aMemAction->insertAction( toolMgr()->action( RestoreId ) );
-    toolMgr()->append( aMemAction, tid );
-
-    toolMgr()->append( toolMgr()->separator(), tid );
-    toolMgr()->append( CloneId, tid );
-  
-    toolMgr()->append( toolMgr()->separator(), tid );
-    toolMgr()->append( ClippingId, tid );
-    toolMgr()->append( AxialScaleId, tid );
-#if OCC_VERSION_LARGE > 0x06030009 // available only with OCC-6.3-sp10 and higher version
-    toolMgr()->append( GraduatedAxesId, tid );
-#endif
-    toolMgr()->append( AmbientId, tid );
-  } else {
-    toolMgr()->append( AxialScaleId, tid );
   }
-  toolMgr()->append( MaximizedId,  tid);
+
+  QtxMultiAction* aMemAction = new QtxMultiAction( this );
+  aMemAction->insertAction( toolMgr()->action( MemId ) );
+  aMemAction->insertAction( toolMgr()->action( RestoreId ) );
+  toolMgr()->append( aMemAction, tid );
+
+  toolMgr()->append( toolMgr()->separator(), tid );
+  toolMgr()->append( CloneId, tid );
+  
+  toolMgr()->append( toolMgr()->separator(), tid );
+  toolMgr()->append( ClippingId, tid );
+  toolMgr()->append( AxialScaleId, tid );
+#if OCC_VERSION_LARGE > 0x06030009 // available only with OCC-6.3-sp10 and higher version
+  toolMgr()->append( GraduatedAxesId, tid );
+#endif
+  toolMgr()->append( AmbientId, tid );
+
+  toolMgr()->append( MaximizedId, tid);
 }
 
 /*!
@@ -1554,7 +1555,7 @@ void OCCViewer_ViewWindow::onAmbientToogle()
 */
 void OCCViewer_ViewWindow::onMemorizeView()
 {
-  myModel->appendViewAspect( getViewParams() );
+  appendViewAspect( getViewParams() );
 }
 
 /*!
@@ -1562,10 +1563,10 @@ void OCCViewer_ViewWindow::onMemorizeView()
 */
 void OCCViewer_ViewWindow::onRestoreView()
 {
-  OCCViewer_CreateRestoreViewDlg* aDlg = new OCCViewer_CreateRestoreViewDlg( centralWidget(), myModel );
+  OCCViewer_CreateRestoreViewDlg* aDlg = new OCCViewer_CreateRestoreViewDlg( centralWidget(), this );
   connect( aDlg, SIGNAL( dlgOk() ), this, SLOT( setRestoreFlag() ) );
   aDlg->exec();
-  myModel->updateViewAspects( aDlg->parameters() );
+  updateViewAspects( aDlg->parameters() );
   if( myRestoreFlag && aDlg->parameters().count() )
     performRestoring( aDlg->currentItem() );
 }
@@ -2383,3 +2384,36 @@ void OCCViewer_ViewWindow::setBackgroundColor( const QColor& theColor)
   if ( myViewPort ) myViewPort->setBackgroundColor( theColor );
 }
 
+/*!
+  Clears view aspects
+*/
+void OCCViewer_ViewWindow::clearViewAspects()
+{
+  myViewAspects.clear();
+}
+
+/*!
+  \return const reference to list of view aspects
+*/
+const viewAspectList& OCCViewer_ViewWindow::getViewAspects()
+{
+  return myViewAspects;
+}
+
+/*!
+  Appends new view aspect
+  \param aParams - new view aspects
+*/
+void OCCViewer_ViewWindow::appendViewAspect( const viewAspect& aParams )
+{
+  myViewAspects.append( aParams );
+}
+
+/*!
+  Replaces old view aspects by new ones
+  \param aViewList - list of new view aspects
+*/
+void OCCViewer_ViewWindow::updateViewAspects( const viewAspectList& aViewList )
+{
+  myViewAspects = aViewList;
+}

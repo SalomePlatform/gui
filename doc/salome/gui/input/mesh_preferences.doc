@@ -56,7 +56,15 @@ There are 3 possible modes:</li>
 some errors during a mesh computation;</li>
 <li><b>Always</b> - show the result dialog after each mesh
 computation. This is a default mode.</li>
-</ul>
+</ul></ul>
+<li><b>Mesh information</b></li>
+<ul>
+<li><b>Mesh element information</b></li> - Change the way mesh element
+information is shown:
+<ul>
+<li><b>Simple</b> - as a plain text</li>
+<li><b>Tree</b> - in a tree-like form</li>
+</ul></ul>
 <li><b>Automatic Parameters</b></li>
 <ul>
 <li><b>Ratio Bounding Box Diagonal / Max Size</b> - this parameter is
@@ -64,7 +72,6 @@ used for automatic meshing: ratio between the bounding box of the
 meshed object and the Max Size of segments.</li>
 <li><b>Default Number of Segments</b> - allows defining the default
 number of segments on each edge</li>
-</ul>
 </ul>
 <li><b>Input fields precision</b></li>
 <ul>

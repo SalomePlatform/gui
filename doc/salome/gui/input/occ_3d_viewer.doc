@@ -173,8 +173,8 @@ light" flag on/off</center>
 \image html occ_view_minimized.png
 <br>
 \image html occ_view_maximized.png
-<br><center><b>Minimize/Maximize</b> - these buttons allow switch
-current view area to the minimized / maximized state.</center>
+<br><center><b>Minimize/Maximize</b> - these buttons allow switching
+the current view area to the minimized / maximized state.</center>
 <hr>
 
 \note OCC Viewer features a special <b>Polyline Selection</b>

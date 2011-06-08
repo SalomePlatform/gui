@@ -16,14 +16,13 @@ whole study session.
 <ul>
 <li><b>Language</b></li>
 <ul>
-<li><b>Current language</b> - The application's resources language used.
-Note, that if you change the language, it will come in force only
-after application restarting.</li>
+<li><b>Current language</b> - The language used by the application GUI.
+The language change will come in force only after the application is restarted.</li>
 </ul>
 <li><b>Look and feel</b></li>
 <ul>
 <li><b>Opaque resize</b> - Force opaque resize mode for viewers area (tabbed workspace).
-Clear this check box for less perfomant stations.</li>
+Clear this checkbox for less perfomant workstations.</li>
 </ul>
 <li><b>Study Properties</b></li>
 <ul>
@@ -48,7 +47,7 @@ equal to 0 ("Disabled" value is shown) the automatic saving is not performed.</l
 saved with the rest of the data whenever you save the study. When the
 study is reopened, the GUI state is restored.</li>
 <li><b>Multi file python dump</b> - allows to generate multiple files
-(separately for each component) during the process of dumping study to python.
+(separately for each component) for dumping of a study to a python script.
 If the option is disabled, the study is dumped to a single python script.</li>
 </ul>
 <li><b>External browser</b></li>
@@ -161,8 +160,8 @@ dialog box press the &quot;<b>...</b>&quot; button(see the picture below).
     file.
   - <b>Names of groups</b> - allows to specify parameters of the
   titles displayed in the viewer:
-    - <b>Text color</b> - titles text color
-    - <b>Transparency</b> - titles transparency value
+    - <b>Text color</b> - allows selecting the text color;
+    - <b>Transparency</b> - allows selecting the text transparency.
 - <b>Plot2d Viewer</b>
   - <b>Show legend</b> - this options specifies if it's necessary to
   show legend by default.
@@ -233,10 +232,10 @@ first of them. Three modes are allowed for activating this feature:</li>
 <li><b>Never</b> - automatic browsing is disabled.</li>
 <li><b>After Apply & Close only</b> - browsing is activated when the
 dialog is accepted by <b>Apply & Close</b> or <b>Ok</b> buttons (or if
-the objects are published as a result of an operation activated without
-using dialog at all - for example, by clicking some context menu button)
+the objects are published without using a dialog, for example, by
+clicking a context menu button)
 and not activated when the <b>Apply</b> button is pressed and therefore
-dialog stays visible.</li>
+the dialog remains visible.</li>
 <li><b>Always</b> - automatic browsing is always enabled.</li>
 </ul>
 </ul>

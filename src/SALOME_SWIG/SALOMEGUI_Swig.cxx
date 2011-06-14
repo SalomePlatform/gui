@@ -667,8 +667,8 @@ void SALOMEGUI_Swig::FitAll()
         if ( window ) {
           if ( dynamic_cast<SVTK_ViewWindow*>( window ) )
             ( dynamic_cast<SVTK_ViewWindow*>( window ) )->onFitAll();
-          else if ( dynamic_cast<SOCC_ViewWindow*>( window ) )
-            ( dynamic_cast<SOCC_ViewWindow*>( window ) )->onFitAll();
+          else if ( dynamic_cast<OCCViewer_ViewWindow*>( window ) )
+            ( dynamic_cast<OCCViewer_ViewWindow*>( window ) )->onFitAll();
           else if ( dynamic_cast<SPlot2d_ViewWindow*>( window ) )
             ( dynamic_cast<SPlot2d_ViewWindow*>( window ) )->onFitAll();
         }
@@ -694,8 +694,8 @@ void SALOMEGUI_Swig::ResetView()
         if ( window ) {
           if ( dynamic_cast<SVTK_ViewWindow*>( window ) )
             (dynamic_cast<SVTK_ViewWindow*>( window ))->onResetView();
-          else if ( dynamic_cast<SOCC_ViewWindow*>( window ) )
-            (dynamic_cast<SOCC_ViewWindow*>( window ))->onResetView();
+          else if ( dynamic_cast<OCCViewer_ViewWindow*>( window ) )
+            (dynamic_cast<OCCViewer_ViewWindow*>( window ))->onResetView();
           else if ( dynamic_cast<SPlot2d_ViewWindow*>( window ) )
             (dynamic_cast<SPlot2d_ViewWindow*>( window ))->onFitAll();
           // VSR: there is no 'ResetView' functionality for Plot2d viewer,
@@ -756,20 +756,20 @@ static void setView( int view )
               break;
             }
           }
-          else if ( dynamic_cast<SOCC_ViewWindow*>( window ) ) {
+          else if ( dynamic_cast<OCCViewer_ViewWindow*>( window ) ) {
             switch( myView ) {
             case __ViewTop:
-              (dynamic_cast<SOCC_ViewWindow*>( window ))->onTopView(); break;
+              (dynamic_cast<OCCViewer_ViewWindow*>( window ))->onTopView(); break;
             case __ViewBottom:
-              (dynamic_cast<SOCC_ViewWindow*>( window ))->onBottomView(); break;
+              (dynamic_cast<OCCViewer_ViewWindow*>( window ))->onBottomView(); break;
             case __ViewLeft:
-              (dynamic_cast<SOCC_ViewWindow*>( window ))->onLeftView(); break;
+              (dynamic_cast<OCCViewer_ViewWindow*>( window ))->onLeftView(); break;
             case __ViewRight:
-              (dynamic_cast<SOCC_ViewWindow*>( window ))->onRightView(); break;
+              (dynamic_cast<OCCViewer_ViewWindow*>( window ))->onRightView(); break;
             case __ViewFront:
-              (dynamic_cast<SOCC_ViewWindow*>( window ))->onFrontView(); break;
+              (dynamic_cast<OCCViewer_ViewWindow*>( window ))->onFrontView(); break;
             case __ViewBack:
-              (dynamic_cast<SOCC_ViewWindow*>( window ))->onBackView(); break;
+              (dynamic_cast<OCCViewer_ViewWindow*>( window ))->onBackView(); break;
             default:
               break;
             }

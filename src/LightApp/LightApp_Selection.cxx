@@ -35,6 +35,8 @@
 #include "SUIT_Desktop.h"
 #include "SUIT_Selector.h"
 
+#include <QtCore/QSet>
+
 /*!
   Constructor
 */
@@ -55,12 +57,12 @@ LightApp_Selection::~LightApp_Selection()
 */
 void LightApp_Selection::init( const QString& client, LightApp_SelectionMgr* mgr)
 {
-  myPopupClient = client;
-  
-  if( mgr )
-  {
-    if( mgr->application() )
+  myContext = client;
+
+  if ( mgr ) {
+    if ( mgr->application() )
       myStudy = dynamic_cast<LightApp_Study*>( mgr->application()->activeStudy() );
+
     if( !myStudy )
       return;
 
@@ -75,43 +77,47 @@ void LightApp_Selection::init( const QString& client, LightApp_SelectionMgr* mgr
     while ( it.hasNext() )
     {
       SUIT_Selector* selector = it.next();
-      if( selector->type() != client && selector->isEnabled() )
-      {
-        //mgr->selected( cur_sel, selector->type() );
+      if ( selector->type() != client && selector->isEnabled() ) {
         selector->selected( cur_sel );
-        SUIT_DataOwnerPtrList::const_iterator aLIt = cur_sel.begin(), aLLast = cur_sel.end();
-        for( ; aLIt!=aLLast; aLIt++ )
+
+        for ( SUIT_DataOwnerPtrList::const_iterator aLIt = cur_sel.begin(); aLIt != cur_sel.end(); ++aLIt )
           sel.append( *aLIt ); //check entry and don't append if such entry is in list already
       }
     }
 
     //3) to analyse owner and fill internal data structures
-    SUIT_DataOwnerPtrList::const_iterator anIt = sel.begin(), aLast = sel.end();
-    QMap<QString,int> entries;
-    QString entry;
-    int num=0;
-    for( ; anIt!=aLast; anIt++ )
+
+    int num = 0;
+    QSet<QString> entries;
+    myObjects.resize( sel.size() );
+    myObjects.fill( ObjectInfo() );
+    for ( SUIT_DataOwnerPtrList::const_iterator anIt = sel.begin(); anIt != sel.end(); anIt++ )
     {
       LightApp_DataOwner* sowner = dynamic_cast<LightApp_DataOwner*>( (*anIt ).get() );
-      if( sowner )
+      if ( sowner )
       {
-        entry = referencedToEntry( sowner->entry() );
-        if( entries.contains( entry ) )
+        QString entry = referencedToEntry( sowner->entry() );
+        if ( entries.contains( entry ) )
           continue;
 
-        entries.insert( entry, 0 );
-        myEntries.insert( num, entry );
-        myIsReferences.insert( num, sowner->entry() != entry );
-        if (processOwner( sowner )) {
+        entries.insert( entry );
+
+	setObjectInfo( num, OI_Entry, entry );
+	setObjectInfo( num, OI_Reference, sowner->entry() != entry );
+
+        if ( processOwner( sowner ) )
           num++;
-        }
-        else {
+        else
           entries.remove( entry );
-          myEntries.remove( num );
-          myIsReferences.remove( num );
-        }
       }
     }
+
+    myObjects.resize( num );
+    /*
+    myContextParams.clear();
+    myObjectsParams.resize( num );
+    myObjectsParams.fill( ParameterMap() );
+    */
   }
 }
 
@@ -125,89 +131,124 @@ QString LightApp_Selection::referencedToEntry( const QString& entry ) const
 */
 int LightApp_Selection::count() const
 {
-  return myEntries.count();
+  return myObjects.size();
 }
 
 /*!
-  Gets QVariant();
+  Gets global parameters.
 */
-QVariant LightApp_Selection::parameter( const int ind, const QString& p ) const
+/*
+QVariant LightApp_Selection::parameter( const QString& p ) const
 {
-  LightApp_Application* app = dynamic_cast<LightApp_Application*>( myStudy ? myStudy->application() : 0 );
-  if( !( ind>=0 && ind<count() ) || !app )
-    return QVariant();
-
-  if( p=="isVisible" )
-  {
-    QString mod_name = app->moduleTitle( parameter( ind, "component" ).toString() );
-    LightApp_Displayer* d = LightApp_Displayer::FindDisplayer( mod_name, false );
-    // false in last parameter means that now we doesn't load module, if it isn't loaded
-
-    bool vis = false;
-    if( d )
-      vis = d->IsDisplayed( myEntries[ ind ] );
-    else
-    {
-      LightApp_Displayer local_d;
-      vis = local_d.IsDisplayed( myEntries[ ind ] );
-    }
-    return QVariant( vis );
+  QVariant v;
+  if ( myContextParams.contains( p ) )
+    v = myContextParams[p];
+  else
+    v = contextParameter( p );
+    if ( !v.isValid() )
+      v = QtxPopupSelection::parameter( p );
+    LightApp_Selection* that = (LightApp_Selection*)this;
+    that->myContextParams.insert( p, v );
   }
-
-  else if( p=="component" )
-  {
-    return myStudy->componentDataType( myEntries[ ind ] );
-  }
-  
-  else if( p=="isComponent" )
-  {
-    return QVariant( myStudy->isComponent( myEntries[ ind ] ) );
-  }
-
-  else if( p=="isReference" )
-    return QVariant( isReference( ind ) );
-
-  else if( p=="displayer" )
-    return parameter( ind, "component" );
-
-  else if( p=="canBeDisplayed" )
-  {
-    QString mod_name = app->moduleTitle( parameter( ind, "component" ).toString() );
-    LightApp_Displayer* d = LightApp_Displayer::FindDisplayer( mod_name, false );
-    // false in last parameter means that now we doesn't load module, if it isn't loaded
-
-    if ( d )
-      return d->canBeDisplayed( myEntries[ ind ] );
-    else if ( myEntries[ ind ].startsWith( QObject::tr( "SAVE_POINT_DEF_NAME" ) ) ) // object is a Save Point object
-      return false;
-
-    return true;
-    //now if displayer is null, it means, that according module isn't loaded, so that we allow to all display/erase
-    //operations under object
-  }
-
-  return QVariant();
+  return v;
 }
+*/
 
+/*!
+  Gets the object parameter.
+*/
+ /*
+QVariant LightApp_Selection::parameter( const int idx, const QString& p ) const
+{
+  QVariant v;
+  if ( 0 <= idx && idx < myObjectsParams.size() ) {
+    if ( myObjectsParams[idx].contains( p ) )
+      v = myObjectsParams[idx][p];
+    else {
+      v = objectParameter( idx, p );
+      LightApp_Selection* that = (LightApp_Selection*)this;
+      that->myObjectsParams[idx].insert( p, v );
+    }
+  }
+  return v;
+}
+ */
 /*!
   Gets global parameters. client, isActiveView, activeView etc.
 */
+  //QVariant LightApp_Selection::contextParameter( const QString& p ) const
 QVariant LightApp_Selection::parameter( const QString& p ) const
 {
-  if      ( p == "client" )        return QVariant( myPopupClient );
-  else if ( p == "activeModule" )
-  {
+  QVariant v;
+
+  if ( p == "client" )
+    v = myContext;
+  else if ( p == "activeModule" ) {
     LightApp_Application* app = dynamic_cast<LightApp_Application*>( myStudy->application() );
     QString mod_name = app ? QString( app->activeModule()->name() ) : QString();
-    //cout << "activeModule : " << mod_name.latin1() << endl;
-    if( !mod_name.isEmpty() )
-      return mod_name;
-    else
-      return QVariant();
+    if ( !mod_name.isEmpty() )
+      v = mod_name;
   }
-  else if ( p == "isActiveView" )  return QVariant( (bool)activeVW() );
-  else if ( p == "activeView" )    return QVariant( activeViewType() );
-  else                             return QtxPopupSelection::parameter( p );
+  else if ( p == "isActiveView" )
+    v = activeVW() != 0;
+  else if ( p == "activeView" )
+    v = activeViewType();
+  else
+    v = QtxPopupSelection::parameter( p );
+
+  return v;
+}
+
+/*!
+  Gets the object parameter.
+*/
+//QVariant LightApp_Selection::objectParameter( const int idx, const QString& p ) const
+QVariant LightApp_Selection::parameter( const int idx, const QString& p ) const
+{
+  LightApp_Application* app = 0;
+  if ( myStudy )
+    app = dynamic_cast<LightApp_Application*>( myStudy->application() );
+
+  QVariant v;
+  if ( app ) {
+    QString e = entry( idx );
+    if ( !e.isEmpty() ) {
+      if ( p == "isVisible" ) {
+	QString mod_name = app->moduleTitle( myStudy->componentDataType( e ) );
+	LightApp_Displayer* d = LightApp_Displayer::FindDisplayer( mod_name, false );
+	// false in last parameter means that now we doesn't load module, if it isn't loaded
+
+	bool vis = false;
+	if ( d )
+	  vis = d->IsDisplayed( e );
+	else
+	  vis = LightApp_Displayer().IsDisplayed( e );
+	v = vis;
+      }
+      else if ( p == "component" || p == "displayer" )
+	v = myStudy->componentDataType( e );
+      else if ( p == "isComponent" )
+	v = myStudy->isComponent( e );
+      else if ( p == "isReference" )
+	v = isReference( idx );
+      else if ( p == "canBeDisplayed" ) {
+	QString mod_name = app->moduleTitle( myStudy->componentDataType( e ) );
+	LightApp_Displayer* d = LightApp_Displayer::FindDisplayer( mod_name, false );
+	// false in last parameter means that now we doesn't load module, if it isn't loaded
+
+	if ( d )
+	  v = d->canBeDisplayed( e );
+	else if ( e.startsWith( QObject::tr( "SAVE_POINT_DEF_NAME" ) ) ) // object is a Save Point object
+	  v = false;
+	else
+	  v = true;
+	//now if displayer is null, it means, that according module isn't loaded, so that we allow to all display/erase
+	//operations under object
+      }
+    }
+  }
+
+  return v;
 }
 
 /*!
@@ -229,9 +270,8 @@ bool LightApp_Selection::processOwner( const LightApp_DataOwner* /*owner*/ )
 */
 QString LightApp_Selection::entry( const int index ) const
 {
-  if ( index >= 0 && index < count() )
-    return myEntries[ index ];
-  return QString();
+  QVariant v = objectInfo( index, OI_Entry );
+  return v.canConvert( QVariant::String ) ? v.toString() : QString();
 }
 
 /*!
@@ -239,10 +279,8 @@ QString LightApp_Selection::entry( const int index ) const
 */
 bool LightApp_Selection::isReference( const int index ) const
 {
-  if( index >= 0 && index < count() )
-    return myIsReferences[ index ];
-  else
-    return false;
+  QVariant v = objectInfo( index, OI_Reference );
+  return v.canConvert( QVariant::Bool ) ? v.toBool() : false;
 }
 
 /*!
@@ -269,9 +307,31 @@ SUIT_ViewWindow* LightApp_Selection::activeVW() const
     SUIT_Application* app = session->activeApplication();
     if ( app ) {
       SUIT_Desktop* desk = app->desktop();
-      if ( desk ) 
+      if ( desk )
         return desk->activeWindow();
     }
   }
   return 0;
+}
+
+/*!
+  Gets specified information about object with index idx.
+*/
+QVariant LightApp_Selection::objectInfo( const int idx, const int inf ) const
+{
+  QVariant res;
+  if ( 0 <= idx && idx < myObjects.size() ) {
+    if ( myObjects[idx].contains( inf ) )
+      res = myObjects[idx][inf];
+  }
+  return res;
+}
+
+/*!
+  Sets specified information about object with index idx.
+*/
+void LightApp_Selection::setObjectInfo( const int idx, const int inf, const QVariant& val )
+{
+  if ( 0 <= idx && idx < myObjects.size() )
+    myObjects[idx].insert( inf, val );
 }

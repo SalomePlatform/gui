@@ -286,8 +286,11 @@ void QtxPopupMgr::setSelection( QtxPopupSelection* sel )
 
   mySelection = sel;
 
-  if ( mySelection )
+  if ( mySelection ) {
     mySelection->setParent( this );
+    mySelection->setPopupMgr( this );
+  }
+
   connect( mySelection, SIGNAL( destroyed( QObject* ) ), 
            this,        SLOT( onSelectionDestroyed( QObject* ) ) );
 
@@ -676,7 +679,8 @@ void QtxPopupMgr::onSelectionDestroyed( QObject* o )
   \brief Constructor.
 */
 QtxPopupSelection::QtxPopupSelection()
-: QObject( 0 )
+  : QObject( 0 ),
+    myPopupMgr( 0 )
 {
 }
 
@@ -710,6 +714,16 @@ void QtxPopupSelection::setOption( const QString& optName, const QString& opt )
   myOptions.insert( optName, opt );
 }
 
+QtxPopupMgr* QtxPopupSelection::popupMgr() const
+{
+  return myPopupMgr;
+}
+
+void QtxPopupSelection::setPopupMgr( QtxPopupMgr* pm )
+{
+  myPopupMgr = pm;
+}
+
 /*!
   \brief Get the parameter value.
   \param str parameter name
@@ -723,9 +737,11 @@ QVariant QtxPopupSelection::parameter( const QString& str ) const
   {
     QtxEvalSetSets::ValueSet set;
     QString par = str.mid( equalityParam().length() );
+
+    QtxPopupMgr* pMgr = popupMgr();
     for ( int i = 0; i < (int)count(); i++ )
     {
-      QVariant v = parameter( i, par );
+      QVariant v = pMgr ? pMgr->parameter( par, i ) : parameter( i, par );
       if ( v.isValid() )
         QtxEvalSetSets::add( set, v );
       else

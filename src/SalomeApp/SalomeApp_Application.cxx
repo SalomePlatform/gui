@@ -1261,6 +1261,10 @@ void SalomeApp_Application::onProperties()
 /*!Insert items in popup, which necessary for current application*/
 void SalomeApp_Application::contextMenuPopup( const QString& type, QMenu* thePopup, QString& title )
 {
+  LightApp_SelectionMgr* mgr = selectionMgr();
+  bool cacheIsOn = mgr->isSelectionCacheEnabled();
+  mgr->setSelectionCacheEnabled( true );
+
   LightApp_Application::contextMenuPopup( type, thePopup, title );
 
   // temporary commented
@@ -1270,7 +1274,6 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QMenu* thePop
 
   // Get selected objects
   SALOME_ListIO aList;
-  LightApp_SelectionMgr* mgr = selectionMgr();
   mgr->selectedObjects( aList, QString(), false );
 
   // add GUI state commands: restore, rename
@@ -1310,49 +1313,49 @@ void SalomeApp_Application::contextMenuPopup( const QString& type, QMenu* thePop
     return;
   }
 
-  aList.Clear();
-  mgr->selectedObjects( aList );
-
   // "Activate module" item should appear only if it's necessary
-  if (aList.Extent() != 1)
-    return;
-  Handle(SALOME_InteractiveObject) aIObj = aList.First();
+  if ( aList.Extent() == 1 ) {
+    aList.Clear();
+    mgr->selectedObjects( aList );
 
-  // add extra popup menu (defined in XML)
-  if (myExtActions.size() > 0) {
-    // Use only first selected object
-    SalomeApp_Study* study = dynamic_cast<SalomeApp_Study*>(activeStudy());
-    if ( study ) {
-      _PTR(Study) stdDS = study->studyDS();
-      if ( stdDS ) {
-        _PTR(SObject) aSO = stdDS->FindObjectID( aIObj->getEntry() );
-        if ( aSO ) {
-          _PTR( GenericAttribute ) anAttr;
-          std::string auid = "AttributeUserID";
-          auid += Kernel_Utils::GetGUID(Kernel_Utils::ObjectdID);
-          if ( aSO->FindAttribute( anAttr, auid ) ) {
-            _PTR(AttributeUserID) aAttrID = anAttr;
-            QString aId = aAttrID->Value().c_str();
-            if ( myExtActions.contains( aId ) ) {
-              thePopup->addAction(myExtActions[aId]);
-            }
-          }
-        }
+    Handle(SALOME_InteractiveObject) aIObj = aList.First();
+
+    // add extra popup menu (defined in XML)
+    if ( myExtActions.size() > 0 ) {
+      // Use only first selected object
+      SalomeApp_Study* study = dynamic_cast<SalomeApp_Study*>( activeStudy() );
+      if ( study ) {
+	_PTR(Study) stdDS = study->studyDS();
+	if ( stdDS ) {
+	  _PTR(SObject) aSO = stdDS->FindObjectID( aIObj->getEntry() );
+	  if ( aSO ) {
+	    _PTR( GenericAttribute ) anAttr;
+	    std::string auid = "AttributeUserID";
+	    auid += Kernel_Utils::GetGUID(Kernel_Utils::ObjectdID);
+	    if ( aSO->FindAttribute( anAttr, auid ) ) {
+	      _PTR(AttributeUserID) aAttrID = anAttr;
+	      QString aId = aAttrID->Value().c_str();
+	      if ( myExtActions.contains( aId ) ) {
+		thePopup->addAction(myExtActions[aId]);
+	      }
+	    }
+	  }
+	}
       }
+    }
+
+    // check if item is a "GUI state" item (also a first level object)
+    QString entry( aIObj->getEntry() );
+    if ( !entry.startsWith( tr( "SAVE_POINT_DEF_NAME" ) ) ) {
+      QString aModuleName( aIObj->getComponentDataType() );
+      QString aModuleTitle = moduleTitle( aModuleName );
+      CAM_Module* currentModule = activeModule();
+      if ( ( !currentModule || currentModule->moduleName() != aModuleTitle ) && !aModuleTitle.isEmpty() )
+	thePopup->addAction( tr( "MEN_OPENWITH" ).arg( aModuleTitle ), this, SLOT( onOpenWith() ) );
     }
   }
 
-  // check if item is a "GUI state" item (also a first level object)
-  QString entry( aIObj->getEntry() );
-  if ( entry.startsWith( tr( "SAVE_POINT_DEF_NAME" ) ) )
-    return;
-  QString aModuleName(aIObj->getComponentDataType());
-  QString aModuleTitle = moduleTitle(aModuleName);
-  CAM_Module* currentModule = activeModule();
-  if (currentModule && currentModule->moduleName() == aModuleTitle)
-    return;
-  if ( !aModuleTitle.isEmpty() )
-    thePopup->addAction( tr( "MEN_OPENWITH" ).arg( aModuleTitle ), this, SLOT( onOpenWith() ) );
+  mgr->setSelectionCacheEnabled( cacheIsOn );
 }
 
 /*!Update obect browser:

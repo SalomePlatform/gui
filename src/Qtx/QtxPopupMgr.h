@@ -105,6 +105,8 @@ private:
   RuleMap            myRules;
   CacheMap           myCache;
   QtxPopupSelection* mySelection;
+
+  friend class QtxPopupSelection;
 };
 
 class QTX_EXPORT QtxPopupSelection : public QObject
@@ -122,15 +124,20 @@ public:
   QString            option( const QString& ) const;
   void               setOption( const QString&, const QString& );
 
+  QtxPopupMgr*       popupMgr() const;
+  void               setPopupMgr( QtxPopupMgr* );
+
 private:
   QString            equalityParam() const;
   QString            selCountParam() const;
 
 private:
   typedef QMap<QString, QString> OptionsMap;
+  typedef QPointer<QtxPopupMgr>  PopupMgrPtr;
 
 private:
   OptionsMap         myOptions;
+  PopupMgrPtr        myPopupMgr;
 };
 
 #endif // QTXPOPUPMGR_H

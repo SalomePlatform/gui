@@ -138,6 +138,7 @@ void LightApp_Module::contextMenuPopup( const QString& client, QMenu* menu, QStr
 {
   LightApp_Selection* sel = createSelection();
   sel->init( client, getApp()->selectionMgr() );
+
   popupMgr()->setSelection( sel );
   popupMgr()->setMenu( menu );
   popupMgr()->updateMenu();

@@ -46,32 +46,53 @@ class SUIT_ViewWindow;
 */
 class LIGHTAPP_EXPORT LightApp_Selection : public QtxPopupSelection
 {
+protected:
+  typedef enum { OI_Entry, OI_Reference, OI_User } ObjectInformation;
+
 public:
   LightApp_Selection();
   virtual ~LightApp_Selection();
 
-  virtual void                   init( const QString&, LightApp_SelectionMgr* );
-  virtual bool                   processOwner( const LightApp_DataOwner* );
+  virtual void                    init( const QString&, LightApp_SelectionMgr* );
+  virtual bool                    processOwner( const LightApp_DataOwner* );
 
-  virtual int                    count() const;
-  virtual QVariant               parameter( const int, const QString& ) const;
-  virtual QVariant               parameter( const QString& ) const;
-  void                           setModuleName( const QString );
+  virtual int                     count() const;
+  virtual QVariant                parameter( const QString& ) const;
+  virtual QVariant                parameter( const int, const QString& ) const;
+  void                            setModuleName( const QString );
 
 protected:
-  QString                        entry( const int ) const;
-  bool                           isReference( const int ) const;
+  //  virtual QVariant                contextParameter( const QString& ) const;
+  //  virtual QVariant                objectParameter( const int, const QString& ) const;
+
+  QString                         entry( const int ) const;
+  bool                            isReference( const int ) const;
+
   /*!Gets study.*/
-  LightApp_Study*                study() const { return myStudy; }
-  QString                        activeViewType() const;
-  SUIT_ViewWindow*               activeVW() const;
-  virtual QString                referencedToEntry( const QString& ) const;
+  LightApp_Study*                 study() const { return myStudy; }
+  QString                         activeViewType() const;
+  SUIT_ViewWindow*                activeVW() const;
+  virtual QString                 referencedToEntry( const QString& ) const;
+
+  QVariant                        objectInfo( const int, const int ) const;
+  void                            setObjectInfo( const int, const int, const QVariant& );
 
 private:
-  QString                        myPopupClient;
-  QMap<int,QString>              myEntries; // entries of selected objects
-  QMap<int,bool>                 myIsReferences; // whether i-th selected object was a reference
-  LightApp_Study*                myStudy;
+  typedef QMap<int, QVariant>     ObjectInfo;
+  typedef QVector<ObjectInfo>     ObjectInfoVector;
+  /*
+  typedef QMap<QString, QVariant> ParameterMap;
+  typedef QVector<ParameterMap>   ObjectParamVector;
+  */
+private:
+  LightApp_Study*                 myStudy;
+  QString                         myContext;
+ 
+  ObjectInfoVector                myObjects;
+  /*
+  ParameterMap                    myContextParams;
+  ObjectParamVector               myObjectsParams;
+  */
 };
 
 #endif

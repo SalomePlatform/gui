@@ -3106,8 +3106,11 @@ void LightApp_Application::contextMenuPopup( const QString& type, QMenu* thePopu
 {
   //Add "Rename" item 
   LightApp_SelectionMgr* selMgr = LightApp_Application::selectionMgr();
+  bool cacheIsOn = selMgr->isSelectionCacheEnabled();
+  selMgr->setSelectionCacheEnabled( true );
+
   SUIT_DataBrowser* ob = objectBrowser();
-    
+
   CAM_Application::contextMenuPopup( type, thePopup, title );
 
   if ( ob && type == ob->popupClientType() ) {
@@ -3117,7 +3120,7 @@ void LightApp_Application::contextMenuPopup( const QString& type, QMenu* thePopu
       a->setShortcut( ob->shortcutKey(SUIT_DataBrowser::UpdateShortcut) );
   }
   
-  if(selMgr && ob) {
+  if ( selMgr && ob ) {
     SALOME_ListIO selected;
     selMgr->selectedObjects( selected );
     if(selected.Extent() == 1){
@@ -3135,6 +3138,8 @@ void LightApp_Application::contextMenuPopup( const QString& type, QMenu* thePopu
       }
     }
   }
+
+  selMgr->setSelectionCacheEnabled( cacheIsOn );
 }
 
 /*!

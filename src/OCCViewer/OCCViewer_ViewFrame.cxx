@@ -240,6 +240,24 @@ QColor OCCViewer_ViewFrame::backgroundColor() const
   return getView(MAIN_VIEW)->backgroundColor(); 
 }
 
+QImage OCCViewer_ViewFrame::dumpView()
+{
+  foreach (OCCViewer_ViewWindow* aView, myViews) {
+    if (aView->isVisible())
+      return aView->dumpView();
+  }
+  return QImage();
+}
+
+bool OCCViewer_ViewFrame::dumpViewToFormat( const QImage& image, const QString& fileName, const QString& format )
+{
+  foreach (OCCViewer_ViewWindow* aView, myViews) {
+    if (aView->isVisible())
+      return aView->dumpViewToFormat( image, fileName, format );
+  }
+  return false;
+}
+
 void OCCViewer_ViewFrame::onContextMenuRequested(QContextMenuEvent*)
 {
   myPopupRequestedView = dynamic_cast<OCCViewer_ViewWindow*>(sender());

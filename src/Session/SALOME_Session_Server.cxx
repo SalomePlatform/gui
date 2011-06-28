@@ -365,8 +365,8 @@ int main( int argc, char **argv )
   // Create Qt application instance;
   // this should be done the very first!
   SALOME_QApplication _qappl( argc, argv );
-  _qappl.setOrganizationName( "SALOME" );
-  _qappl.setApplicationName( "SALOME" );
+  _qappl.setOrganizationName( "salome" );
+  _qappl.setApplicationName( "salome" );
   _qappl.setApplicationVersion( salomeVersion() );
 
   // Add application library path (to search style plugin etc...)

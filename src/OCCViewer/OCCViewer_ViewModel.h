@@ -141,6 +141,9 @@ protected slots:
 
   void onDumpView();
   void onChangeBgColor();
+  void onChangeBgImageCentered();
+  void onChangeBgImageTiled();
+  void onChangeBgImageStretched();
 
 private:
   Handle(V3d_Viewer)              myV3dViewer;

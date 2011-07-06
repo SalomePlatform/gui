@@ -28,6 +28,7 @@
 #include <V3d_View.hxx>
 
 class QColor;
+class QString;
 class QRect;
 
 class Handle(V3d_Viewer);
@@ -55,6 +56,9 @@ public:
 
   virtual void          setBackgroundColor( const QColor& color);
   virtual QColor        backgroundColor() const;
+
+  virtual QString       backgroundImageFilename() const;
+  virtual void          setBackgroundImage( const QString& fileName , const Aspect_FillMethod& theFillMethod);
 
 //   void         setActive( V3d_TypeOfView );
   virtual bool syncronize( const OCCViewer_ViewPort3d* );
@@ -106,6 +110,7 @@ private:
   bool                  myBusy;
   double                myScale;
   bool                  myIsAdvancedZoomingEnabled;
+  QString               myBackgroundImageFilename;
 };
 
 #ifdef WIN32

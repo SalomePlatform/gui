@@ -18,7 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 #include "OCCViewer_ViewModel.h"
 #include "OCCViewer_ViewWindow.h"
@@ -36,6 +35,7 @@
 #include <QPainter>
 #include <QApplication>
 #include <QColorDialog>
+#include <QFileDialog>
 #include <QPalette>
 #include <QKeyEvent>
 #include <QMenu>
@@ -410,6 +410,10 @@ void OCCViewer_Viewer::contextMenuPopup(QMenu* thePopup)
 {
   thePopup->addAction( tr( "MEN_DUMP_VIEW" ), this, SLOT( onDumpView() ) );
   thePopup->addAction( tr( "MEN_CHANGE_BACKGROUD" ), this, SLOT( onChangeBgColor() ) );
+  QMenu * changeImageMenu=thePopup->addMenu( tr( "MEN_CHANGE_IMAGE" ));
+  changeImageMenu->addAction( tr( "CENTERED") , this, SLOT( onChangeBgImageCentered() ) );
+  changeImageMenu->addAction( tr( "TILED") , this, SLOT( onChangeBgImageTiled() ) );
+  changeImageMenu->addAction( tr( "STRETCHED") , this, SLOT( onChangeBgImageStretched() ) );
 
   thePopup->addSeparator();
 
@@ -442,11 +446,53 @@ void OCCViewer_Viewer::onChangeBgColor()
   OCCViewer_ViewWindow* aView = dynamic_cast<OCCViewer_ViewWindow*>(myViewManager->getActiveView());
   if ( !aView )
     return;
+  
   QColor selColor = QColorDialog::getColor( aView->backgroundColor(), aView );
   if ( selColor.isValid() )
     aView->setBackgroundColor(selColor);
 }
 
+/*!
+  SLOT: called if background image is to be changed changed, passes new image to view port in centered mode
+*/
+void OCCViewer_Viewer::onChangeBgImageCentered()
+{
+  OCCViewer_ViewWindow* aView = dynamic_cast<OCCViewer_ViewWindow*>(myViewManager->getActiveView());
+  if ( !aView )
+    return;
+  
+  QString selFile = QFileDialog::getOpenFileName(aView,tr( "SELECT_IMAGE"),aView->backgroundImageFilename(), tr("OCC_BG_IMAGE_FILES"));
+  if ( ! selFile.isEmpty() )
+    aView->setBackgroundImage(selFile,Aspect_FM_CENTERED);
+}
+
+/*!
+  SLOT: called if background image is to be changed changed, passes new image to view port in tiled mode
+*/
+void OCCViewer_Viewer::onChangeBgImageTiled()
+{
+  OCCViewer_ViewWindow* aView = dynamic_cast<OCCViewer_ViewWindow*>(myViewManager->getActiveView());
+  if ( !aView )
+    return;
+  
+  QString selFile = QFileDialog::getOpenFileName(aView,tr( "SELECT_IMAGE"),aView->backgroundImageFilename(), tr("OCC_BG_IMAGE_FILES"));
+  if ( ! selFile.isEmpty() )
+    aView->setBackgroundImage(selFile,Aspect_FM_TILED);
+}
+
+/*!
+  SLOT: called if background image is to be changed changed, passes new image to view port in stretched mode
+*/
+void OCCViewer_Viewer::onChangeBgImageStretched()
+{
+  OCCViewer_ViewWindow* aView = dynamic_cast<OCCViewer_ViewWindow*>(myViewManager->getActiveView());
+  if ( !aView )
+    return;
+  
+  QString selFile = QFileDialog::getOpenFileName(aView,tr( "SELECT_IMAGE"),aView->backgroundImageFilename(), tr("OCC_BG_IMAGE_FILES"));
+  if ( ! selFile.isEmpty() )
+    aView->setBackgroundImage(selFile,Aspect_FM_STRETCH);
+}
 /*!
   Updates OCC 3D viewer
 */

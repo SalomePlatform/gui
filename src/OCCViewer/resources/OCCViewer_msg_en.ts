@@ -272,6 +272,10 @@
         <translation>Images Files (*.bmp *.png *.jpg *.jpeg)</translation>
     </message>
     <message>
+        <source>OCC_BG_IMAGE_FILES</source>
+        <translation>Images Files (*.bmp *.gif *.pix *.xwd *.rgb *.rs)</translation>
+    </message>
+    <message>
         <source>DSC_MAXIMIZE_VIEW</source>
         <translation>Maximize view</translation>
     </message>
@@ -346,6 +350,26 @@
     <message>
         <source>MEN_CHANGE_BACKGROUD</source>
         <translation>Change Background...</translation>
+    </message>
+    <message>
+        <source>MEN_CHANGE_IMAGE</source>
+        <translation>Set/Change Background Image...</translation>
+    </message>
+    <message>
+        <source>SELECT_IMAGE</source>
+        <translation>Select image...</translation>
+    </message>
+    <message>
+        <source>CENTERED</source>
+        <translation>in centered mode</translation>
+    </message>
+    <message>
+        <source>TILED</source>
+        <translation>in tiled mode</translation>
+    </message>
+    <message>
+        <source>STRETCHED</source>
+        <translation>in stretched mode</translation>
     </message>
 </context>
 <context>

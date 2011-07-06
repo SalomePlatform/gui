@@ -347,6 +347,26 @@
         <source>MEN_CHANGE_BACKGROUD</source>
         <translation>Changer l&apos;arrière-plan</translation>
     </message>
+    <message>
+        <source>MEN_CHANGE_IMAGE</source>
+	<translation>Régler/Changer l'&apos;image d&apos;arrière-plan...</translation>
+    </message>
+    <message>
+        <source>SELECT_IMAGE</source>
+        <translation>Sélectionner l&apos;image</translation>
+    </message>
+    <message>
+        <source>CENTERED</source>
+        <translation>en mode centré</translation>
+    </message>
+    <message>
+        <source>TILED</source>
+        <translation>en mode pavé</translation>
+    </message>
+    <message>
+        <source>STRETCHED</source>
+        <translation>en mode étiré</translation>
+    </message>
 </context>
 <context>
     <name>OCCViewer_AxialScaleDlg</name>

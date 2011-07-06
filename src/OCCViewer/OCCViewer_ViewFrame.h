@@ -77,6 +77,9 @@ public:
   virtual QColor backgroundColor() const;
   virtual void   setBackgroundColor( const QColor& );
 
+  virtual QString backgroundImageFilename() const;
+  virtual void   setBackgroundImage( const QString& theFilename , const Aspect_FillMethod& theFillMethod);
+  
   virtual void   setDropDownButtons( bool );
 
 public slots:

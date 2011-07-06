@@ -213,6 +213,17 @@ void OCCViewer_ViewFrame::setBackgroundColor( const QColor& theColor)
   }
 }
 
+void OCCViewer_ViewFrame::setBackgroundImage( const QString& theFilename,const Aspect_FillMethod& theFillMethod)
+{
+  if (myPopupRequestedView)
+    myPopupRequestedView->setBackgroundImage(theFilename,theFillMethod); 
+  else {
+    foreach (OCCViewer_ViewWindow* aView, myViews) {
+      if (aView->isVisible())
+        aView->setBackgroundImage(theFilename,theFillMethod); 
+    }
+  }
+}
 
 void OCCViewer_ViewFrame::onViewFitAll()
 {
@@ -238,6 +249,18 @@ QColor OCCViewer_ViewFrame::backgroundColor() const
       return aView->backgroundColor(); 
   }
   return getView(MAIN_VIEW)->backgroundColor(); 
+}
+
+QString OCCViewer_ViewFrame::backgroundImageFilename() const 
+{ 
+  if (myPopupRequestedView)
+    return myPopupRequestedView->backgroundImageFilename(); 
+
+  foreach (OCCViewer_ViewWindow* aView, myViews) {
+    if (aView->isVisible())
+      return aView->backgroundImageFilename(); 
+  }
+  return getView(MAIN_VIEW)->backgroundImageFilename(); 
 }
 
 void OCCViewer_ViewFrame::onContextMenuRequested(QContextMenuEvent*)

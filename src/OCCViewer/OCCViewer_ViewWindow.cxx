@@ -2384,6 +2384,16 @@ void OCCViewer_ViewWindow::setBackgroundColor( const QColor& theColor)
   if ( myViewPort ) myViewPort->setBackgroundColor( theColor );
 }
 
+QString OCCViewer_ViewWindow::backgroundImageFilename() const
+{
+  return myViewPort ? myViewPort->backgroundImageFilename() : "";
+}
+   
+void OCCViewer_ViewWindow::setBackgroundImage( const QString& theFileName,const Aspect_FillMethod& theFillMethod)
+{
+  if ( myViewPort ) myViewPort->setBackgroundImage( theFileName ,theFillMethod);
+}
+
 /*!
   Clears view aspects
 */

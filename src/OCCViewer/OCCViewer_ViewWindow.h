@@ -181,6 +181,9 @@ public:
   virtual QColor  backgroundColor() const;
   virtual void    setBackgroundColor( const QColor& );
 
+  virtual QString backgroundImageFilename() const;
+  virtual void    setBackgroundImage( const QString& ,const Aspect_FillMethod& theFillMethod);
+  
   virtual const viewAspectList&   getViewAspects();
   virtual void                    appendViewAspect( const viewAspect& );
   virtual void                    updateViewAspects( const viewAspectList& );

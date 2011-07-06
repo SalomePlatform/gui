@@ -29,6 +29,7 @@
 #include <SUIT_ViewManager.h>
 
 #include <QColor>
+#include <QString>
 #include <QRect>
 #include <QPaintEvent>
 #include <QResizeEvent>
@@ -68,7 +69,8 @@ OCCViewer_ViewPort3d::OCCViewer_ViewPort3d( QWidget* parent, const Handle( V3d_V
     myDegenerated( true ),
     myAnimate( false ),
     myBusy( true ),
-    myIsAdvancedZoomingEnabled( false )
+    myIsAdvancedZoomingEnabled( false ),
+    myBackgroundImageFilename( "" )
 {
   // VSR: 01/07/2010 commented to avoid SIGSEGV at SALOME exit
   //selectVisualId();
@@ -285,6 +287,25 @@ void OCCViewer_ViewPort3d::setBackgroundColor( const QColor& color )
                                       color.green()/255., color.blue()/255.);
     activeView()->Update();
     emit vpChangeBGColor( color );
+  }
+}
+
+/*!
+  Returns the background image fileName[ virtual public ]
+*/
+QString OCCViewer_ViewPort3d::backgroundImageFilename() const
+{
+  return myBackgroundImageFilename;
+}
+
+/*!
+  Sets the background image [ virtual public ]
+*/
+void OCCViewer_ViewPort3d::setBackgroundImage( const QString& fileName,const Aspect_FillMethod& theFillMethod)
+{ 
+  myBackgroundImageFilename=fileName;
+  if ( !activeView().IsNull() ) {
+    activeView()->SetBackgroundImage( (Standard_CString)fileName.toLatin1().constData(),theFillMethod,true);
   }
 }
 

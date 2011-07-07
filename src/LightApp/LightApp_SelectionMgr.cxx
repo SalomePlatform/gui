@@ -460,7 +460,7 @@ QList<Handle_SALOME_InteractiveObject> LightApp_SelectionMgr::selectionCache( co
     if ( myCacheSelection.contains( *it ) ) {
       const SelList& lst = myCacheSelection[*it];
       for ( SelList::const_iterator itr = lst.begin(); itr != lst.end(); ++itr ) {
-	if ( !set.contains( (*itr)->getEntry() ) ) {
+	if ( !(*itr).IsNull() && !set.contains( (*itr)->getEntry() ) ) {
 	  res.append( *itr );
 	  set.insert( (*itr)->getEntry() );
 	}

@@ -198,14 +198,6 @@ dnl
 
 AC_CXX_HAVE_SSTREAM
 
-dnl
-dnl ---------------------------------------------
-dnl testing MPICH
-dnl ---------------------------------------------
-dnl
-
-dnl CHECK_MPICH
-
 echo
 echo ---------------------------------------------
 echo testing MPI

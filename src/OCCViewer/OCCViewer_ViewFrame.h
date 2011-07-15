@@ -115,6 +115,10 @@ public slots:
 
   virtual void onDumpView();
 
+protected:
+  virtual QImage dumpView();
+  virtual bool   dumpViewToFormat( const QImage&, const QString&, const QString& );
+
 private slots:
   void onContextMenuRequested(QContextMenuEvent*);
 

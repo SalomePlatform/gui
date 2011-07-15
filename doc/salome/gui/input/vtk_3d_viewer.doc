@@ -162,36 +162,36 @@ of the view:</center><br>
 \image html vtk_view_parameters_dlg.png
 <br>
 
-- <b>Projection Mode</b> - switch to the Orthogonal / Perspective
+- <b>Projection Mode</b> - switchs to the Orthogonal / Perspective
   projection mode
 - <b>Focal Point</b> - allows to specify the focal point of the view
-  - <b>Set to Bounding Box Center</b> - chooses center of the current
-  scence bounding box as a focal point
-  - <b>Set to Origin</b> - chooses global coordinates system origin as
-  a focal point
-  - <b>Select Point from View</b> - allows specify focal point by the
-  direct selection of some point in the view window
-  - <b>X</b>, <b>Y</b>, <b>Z</b> - input coordinates of the focal
+  - <b>Set to Bounding Box Center</b> - chooses the center of the
+  bounding box of the current scene as the focal point.
+  - <b>Set to Origin</b> - chooses the global coordinates system origin as
+  the focal point
+  - <b>Select Point from View</b> - allows to specify the focal point by the
+  direct selection of a point in the view window
+  - <b>X</b>, <b>Y</b>, <b>Z</b> - allows to input the coordinates of the focal
   point directly
-- <b>Camera Position</b> - allows to specify view camera's position:
-  - <b>Absolute Coordinates</b> - either in absolute coordinates
-  - <b>Relative to Focal Point</b> - or as a offset to the focal point
-  - <b>Projection Direction</b> - allows specify direction of the
-  projection vector
-  - <b>Focal Distance</b> - focal distance value
-  - <b>View Up Direction</b> - direction of the "view up" vector
-- <b>Zooming</b> - current zoom factor (available in the <b>Orthogonal
+- <b>Camera Position</b> - allows to specify the position of the view camera:
+  - <b>Absolute Coordinates</b> - either in absolute coordinates,
+  - <b>Relative to Focal Point</b> - or as a offset to the focal point;
+  - <b>Projection Direction</b> - allows specify the direction of the
+  projection vector;
+  - <b>Focal Distance</b> - the focal distance value;
+  - <b>View Up Direction</b> - direction of the "view up" vector.
+- <b>Zooming</b> - the current zoom factor (available in the <b>Orthogonal
   mode</b> only)
-- <b>View Angle</b> - current view angle (available in the <b>Perspective
+- <b>View Angle</b> - the current view angle (available in the <b>Perspective
   mode</b> only)
 <hr>
 
 \image html vtk_view_parallel.png
-<br><center><b>Orthogonal mode</b> - Switch view to the orthogonal mode.</center>
+<br><center><b>Orthogonal mode</b> - Switches the view to the orthogonal mode.</center>
 <hr>
 
 \image html vtk_view_perspective.png
-<br><center><b>Perspective mode</b> - Switch view to the perspective mode.</center>
+<br><center><b>Perspective mode</b> - Switches the view to the perspective mode.</center>
 <hr>
 
 \image html vtk_view_recording_start.png
@@ -200,9 +200,9 @@ of the view:</center><br>
 \image html vtk_view_recording_stop.png
 <br><center>These buttons allow recording viewing operations as a
 video file in the AVI format using external software (jpeg2yuv):</center>
-- <b>Start recording</b> - specify parameters and start recording
-- <b>Pause recording</b> - suspend recording
-- <b>Continue recording</b> - resume recording
-- <b>Stop recording</b> - stop recording
+- <b>Start recording</b> - specify parameters and start recording;
+- <b>Pause recording</b> - suspend recording;
+- <b>Continue recording</b> - resume recording;
+- <b>Stop recording</b> - stop recording.
 
 */

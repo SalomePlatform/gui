@@ -41,4 +41,4 @@ libSalomePy_la_CPPFLAGS = $(QT_INCLUDES) $(PYTHON_INCLUDES) $(VTK_INCLUDES) \
 
 libSalomePy_la_LDFLAGS = $(PYTHON_LIBS) $(QT_MT_LIBS) $(VTK_LIBS) $(OGL_LIBS) \
 	../LightApp/libLightApp.la \
-	-lvtkCommonPythonD -lvtkGraphicsPythonD -lvtkImagingPythonD
+	-lvtkCommonPythonD -lvtkGraphicsPythonD -lvtkImagingPythonD -lvtkPythonCore

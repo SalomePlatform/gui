@@ -387,10 +387,15 @@ bool CAM_Application::activateModule( CAM_Module* mod )
 
   if ( myModule )
   {
+    // VSR: 26/06/2011 bug 0021307: temporarily disable desktop's signals to prevent false module activation
+    bool signalsBlocked = desktop() && desktop()->signalsBlocked();
+    if ( desktop() ) desktop()->blockSignals( true );
     if ( !myModule->deactivateModule( activeStudy() ) )
     {
       // ....      
     }    
+    // VSR: 26/06/2011 bug 0021307: enable desktop's signals back
+    if ( desktop() ) desktop()->blockSignals( signalsBlocked );
   }     
   myModule = mod;
 

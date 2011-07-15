@@ -238,9 +238,11 @@ signals:
   void Hide( QHideEvent * );
   void maximized( OCCViewer_ViewWindow*, bool );
 
-protected:
+public:
   virtual QImage dumpView();
   virtual bool   dumpViewToFormat( const QImage&, const QString& fileName, const QString& format );
+
+protected:
   virtual QString  filter() const;
 
   /* Transformation selected but not started yet */

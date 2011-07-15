@@ -550,9 +550,9 @@ QVariant LightApp_Study::getObjectProperty(int theViewMgrId, QString theEntry, Q
   QVariant& aResult = theDefValue;
   ViewMgrMap::ConstIterator v_it = myViewMgrMap.find(theViewMgrId);
   if(v_it != myViewMgrMap.end()){
-    const ObjMap& anOnjectMap = v_it.value();
-    ObjMap::ConstIterator o_it = anOnjectMap.find(theEntry);
-    if(o_it != anOnjectMap.end()) {
+    const ObjMap& anObjectMap = v_it.value();
+    ObjMap::ConstIterator o_it = anObjectMap.find(theEntry);
+    if(o_it != anObjectMap.end()) {
       const PropMap& aPropMap = o_it.value();
       PropMap::ConstIterator p_it = aPropMap.find(thePropName);
       if(p_it != aPropMap.end()) {
@@ -580,22 +580,24 @@ void LightApp_Study::removeViewMgr( int theViewMgrId ) {
 */
 const PropMap& LightApp_Study::getObjectPropMap(int theViewMgrId, QString theEntry) {
   ViewMgrMap::Iterator v_it = myViewMgrMap.find(theViewMgrId);
-  if(v_it != myViewMgrMap.end()){
-    ObjMap& anOnjectMap = v_it.value();
-    ObjMap::Iterator o_it = anOnjectMap.find(theEntry);
-    if(o_it != anOnjectMap.end()) {
+  if (v_it != myViewMgrMap.end()) {
+    ObjMap& anObjectMap = v_it.value();
+    ObjMap::Iterator o_it = anObjectMap.find(theEntry);
+    if(o_it != anObjectMap.end()) {
       return o_it.value();
     } else {
       PropMap aPropMap;
-      anOnjectMap.insert(theEntry, aPropMap);
-      return anOnjectMap.find(theEntry).value();
+      anObjectMap.insert(theEntry, aPropMap);
+      return anObjectMap.find(theEntry).value();
     }
   } else {
     PropMap aPropMap;
     ObjMap anObjMap;
     anObjMap.insert(theEntry,aPropMap);
     myViewMgrMap.insert(theViewMgrId, anObjMap);
-    return anObjMap.find(theEntry).value();
+
+    ObjMap& anObjectMap = myViewMgrMap.find(theViewMgrId).value();
+    return anObjectMap.find(theEntry).value();
   }
 }
 

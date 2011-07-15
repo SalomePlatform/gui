@@ -52,7 +52,8 @@ SUIT_DataObject::SUIT_DataObject( SUIT_DataObject* p )
 : myParent( 0 ),
   myOpen( false ),
   myCheck( false ),
-  myAutoDel( true )
+  myAutoDel( true ),
+  _modified( false )
 {
   setParent( p );
   signal()->emitCreated( this );

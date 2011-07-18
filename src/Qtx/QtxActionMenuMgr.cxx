@@ -21,9 +21,9 @@
 
 #include "QtxActionMenuMgr.h"
 
+#include "QtxMenu.h"
 #include "QtxAction.h"
 
-#include <QMenu>
 #include <QMenuBar>
 #include <QWidget>
 #include <QMainWindow>
@@ -111,7 +111,8 @@ QtxActionMenuMgr::MenuNode::~MenuNode()
 QtxActionMenuMgr::QtxActionMenuMgr( QMainWindow* p )
 : QtxActionMgr( p ), 
   myRoot( new MenuNode() ),
-  myMenu( p ? p->menuBar() : 0 )
+  myMenu( p ? p->menuBar() : 0 ),
+  myCollapse( false )
 {
   if ( myMenu ) {
     connect( myMenu, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
@@ -126,7 +127,8 @@ QtxActionMenuMgr::QtxActionMenuMgr( QMainWindow* p )
 QtxActionMenuMgr::QtxActionMenuMgr( QWidget* mw, QObject* p )
 : QtxActionMgr( p ), 
   myRoot( new MenuNode() ),
-  myMenu( mw )
+  myMenu( mw ),
+  myCollapse( false )
 {
   if ( myMenu ) {
     connect( myMenu, SIGNAL( destroyed( QObject* ) ), this, SLOT( onDestroyed( QObject* ) ) );
@@ -329,9 +331,10 @@ int QtxActionMenuMgr::insert( const QString& title, const int pId, const int gro
 
   int gid = (id == -1 || eNode ) ? generateId() : id;
 
-  QMenu* menu = new QMenu( 0 );
+  QtxMenu* menu = new QtxMenu( 0 );
   QAction* ma = menu->menuAction();
   ma->setText( title );
+  menu->setMenuCollapsible( myCollapse );
 
   connect( ma->menu(), SIGNAL( aboutToShow() ), this, SLOT( onAboutToShow() ) );
   connect( ma->menu(), SIGNAL( aboutToHide() ), this, SLOT( onAboutToHide() ) );
@@ -1160,6 +1163,34 @@ void QtxActionMenuMgr::setEmptyEnabled( const int id, const bool enable )
     node->emptyEnabled += enable ? 1 : -1;
     if ( old <= 0 && enable || old > 0 && !enable ) // update menu only if enabled state has been changed
       updateMenu( node, true, true );
+  }
+}
+
+/*!
+  \brief Check is top level menus are collapsible
+  \return \c true if menus are collapsible
+*/
+bool QtxActionMenuMgr::menuCollapsible() const
+{
+  return myCollapse;
+}
+
+/*!
+  \brief Enable/disable collapsible menus
+  \param enable if \c true, menus are collapsible, otherwise menus always be full
+*/
+void QtxActionMenuMgr::setMenuCollapsible( bool enable )
+{
+  if ( myCollapse == enable )
+    return;
+
+  myCollapse = enable;
+
+  for ( MenuMap::iterator it = myMenus.begin(); it != myMenus.end(); ++it )
+  {
+    QtxMenu* m = ::qobject_cast<QtxMenu*>( (*it)->menu() );
+    if ( m )
+      m->setMenuCollapsible( myCollapse );
   }
 }
 

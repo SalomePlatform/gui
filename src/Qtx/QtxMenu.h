@@ -33,7 +33,16 @@ class QTX_EXPORT QtxMenu : public QMenu
 {
   Q_OBJECT
 
+  Q_PROPERTY( bool menuCollapsible READ menuCollapsible WRITE setMenuCollapsible )
+  Q_PROPERTY( int expandingDelay READ expandingDelay WRITE setExpandingDelay )
+  Q_PROPERTY( TitleMode titleMode READ titleMode WRITE setTitleMode )
+  Q_PROPERTY( Qt::Alignment titleAlignment READ titleAlignment WRITE setTitleAlignment )
+  Q_PROPERTY( int collapseLimit READ collapseLimit WRITE setCollapseLimit )
+  Q_PROPERTY( CollapseLimitMode collapseLimitMode READ collapseLimitMode WRITE setCollapseLimitMode )
+
   class Title;
+  class TitleMgr;
+  class Expander;
 
 public:
   //! Popup menu title mode
@@ -43,34 +52,84 @@ public:
     TitleOff          //!< always off (do not display title)
   } TitleMode;
 
+  typedef enum {
+    LimitFrequent,
+    LimitTotal
+  } CollapseLimitMode;
+
 public:
   QtxMenu( QWidget* = 0 );
   virtual ~QtxMenu();
 
-  QIcon                  titleIcon() const;
-  QString                titleText() const;
-
   TitleMode              titleMode() const;
   Qt::Alignment          titleAlignment() const;
-
-  virtual void           setTitleIcon( const QIcon& );
-  virtual void           setTitleText( const QString& );
 
   virtual void           setTitleMode( const TitleMode );
   virtual void           setTitleAlignment( const Qt::Alignment );
 
+  // Methods for collapsing/expanding functionality
+  bool                   menuCollapsible() const;
+  void                   setMenuCollapsible( bool );
+
+  bool                   isMenuExpanded() const;
+  bool                   isMenuCollapsed() const;
+
+  int                    expandingDelay() const;
+  void                   setExpandingDelay( int );
+
+  int                    collapseLimit() const;
+  void                   setCollapseLimit( int );
+
+  CollapseLimitMode      collapseLimitMode() const;
+  void                   setCollapseLimitMode( const CollapseLimitMode );
+
+  static int             actionPriority( QAction* );
+  static void            setActionPriority( QAction*, int );
+
 public slots:
   virtual void           setVisible( bool );
+
+private slots:
+  void                   onExpandMenu();
+  void                   onMenuActionChanged();
+  void                   onActionHovered( QAction* );
+  void                   onActionTriggered( QAction* );
+
+protected:
+  virtual void           keyPressEvent( QKeyEvent* );
+  virtual void           actionEvent( QActionEvent* );
 
 private:
   void                   updateTitle();
   void                   insertTitle();
   void                   removeTitle();
 
+  void                   expandMenu();
+  void                   collapseMenu();
+  void                   updateExpander();
+
+  QWidget*               topLevelMenu() const;
+  bool                   isTopLevelMenu() const;
+  QWidget*               topLevelMenu( const QMenu* ) const;
+
 private:
-  TitleMode              myMode;
-  Title*                 myTitle;
-  QWidgetAction*         myAction;
+  typedef QMap<QAction*, int>  PriorityMap;
+  typedef QMap<QAction*, bool> VisibilityMap;
+
+private:
+  TitleMode              myTitleMode;
+  Qt::Alignment          myTitleAlign;
+  QWidgetAction*         myTitleAction;
+
+  int                    myLimit;
+  CollapseLimitMode      myLimitMode;
+
+  QTimer*                myShortTimer;
+  QTimer*                myExpandTimer;
+  Expander*              myExpandAction;
+  VisibilityMap          myVisibilityState;
+
+  static PriorityMap     _actionPriority;
 };
 
 #endif // QTXMENU_H

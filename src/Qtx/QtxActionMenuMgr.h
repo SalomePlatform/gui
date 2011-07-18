@@ -99,6 +99,9 @@ public:
   bool         isEmptyEnabled( const int ) const;
   void         setEmptyEnabled( const int, const bool );
 
+  bool         menuCollapsible() const;
+  void         setMenuCollapsible( bool );
+
 private slots:
   void         onAboutToShow();
   void         onAboutToHide();
@@ -146,6 +149,7 @@ private:
   MenuNode*       myRoot;        //!< root menu node
   QWidget*        myMenu;        //!< menu widget
   MenuMap         myMenus;       //!< actions map
+  bool            myCollapse;
   QMap<int, bool> myUpdateIds;   //!< list of actions ID being updated
 };
 

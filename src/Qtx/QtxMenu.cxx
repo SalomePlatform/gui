@@ -37,11 +37,11 @@
 #include <QLinearGradient>
 #include <QAbstractTextDocumentLayout>
 
-static const char* expand_button_xpm[] = {
+//static const char* expand_button_xpm[] = {
 /* width height num_colors chars_per_pixel */
-"    18    18       16            1",
+//"    18    18       16            1",
 /* colors */
-"` c none",
+/*"` c none",
 ". c #f4f4f4",
 "# c #f1f1f1",
 "a c #f6f6f6",
@@ -56,9 +56,9 @@ static const char* expand_button_xpm[] = {
 "j c #e4e4e4",
 "k c #e2e2e2",
 "l c #e1e1e1",
-"m c #000000",
+"m c #000000",*/
 /* pixels */
-"``````````````````",
+/*"``````````````````",
 "``````..####``````",
 "````.aa..#bcc#````",
 "```.aaa..#bcdeb```",
@@ -76,6 +76,287 @@ static const char* expand_button_xpm[] = {
 "````djjkkklllh````",
 "``````gjklli``````",
 "``````````````````"
+};
+*/
+static const char* expand_button_xpm[] = {
+/* width height num_colors chars_per_pixel */
+"    18    18      256            2",
+/* colors */
+"`` c none",
+"`. c #fefefe",
+"`# c #fdfdfd",
+"`a c #fcfcfc",
+"`b c #fbfbfb",
+"`c c #fafafa",
+"`d c #f8f8f8",
+"`e c #f6f6f6",
+"`f c #f4f4f4",
+"`g c #f9f9f9",
+"`h c #f7f7f7",
+"`i c #f1f1f1",
+"`j c #eeeeee",
+"`k c #ececec",
+"`l c #ebebeb",
+"`m c #efefef",
+"`n c #5f5f5f",
+"`o c #5c5c5c",
+"`p c #a7a7a7",
+"`q c #f2f2f2",
+"`r c #b0b0b0",
+"`s c #181818",
+"`t c #d3d3d3",
+"`u c #eaeaea",
+"`v c #e8e8e8",
+"`w c #929292",
+"`x c #2d2d2d",
+"`y c #000000",
+"`z c #040404",
+"`A c #3d3d3d",
+"`B c #353535",
+"`C c #0f0f0f",
+"`D c #202020",
+"`E c #727272",
+"`F c #e9e9e9",
+"`G c #dddddd",
+"`H c #949494",
+"`I c #494949",
+"`J c #2a2a2a",
+"`K c #787878",
+"`L c #c4c4c4",
+"`M c #e4e4e4",
+"`N c #dbdbdb",
+"`O c #e6e6e6",
+"`P c #323232",
+"`Q c #262626",
+"`R c #6f6f6f",
+"`S c #b7b7b7",
+"`T c #f0f0f0",
+"`U c #c8c8c8",
+"`V c #797979",
+"`W c #2b2b2b",
+"`X c #cacaca",
+"`Y c #e5e5e5",
+"`Z c #e3e3e3",
+"`0 c #b8b8b8",
+"`1 c #606060",
+"`2 c #0d0d0d",
+"`3 c #0c0c0c",
+"`4 c #505050",
+"`5 c #a1a1a1",
+"`6 c #c3c3c3",
+"`7 c #7b7b7b",
+"`8 c #5e5e5e",
+".` c #a5a5a5",
+".. c #e0e0e0",
+".# c #ededed",
+".a c #e1e1e1",
+".b c #e2e2e2",
+".c c #dfdfdf",
+".d c #000000",
+".e c #000000",
+".f c #000000",
+".g c #000000",
+".h c #000000",
+".i c #000000",
+".j c #000000",
+".k c #000000",
+".l c #000000",
+".m c #000000",
+".n c #000000",
+".o c #000000",
+".p c #000000",
+".q c #000000",
+".r c #000000",
+".s c #000000",
+".t c #000000",
+".u c #000000",
+".v c #000000",
+".w c #000000",
+".x c #000000",
+".y c #000000",
+".z c #000000",
+".A c #000000",
+".B c #000000",
+".C c #000000",
+".D c #000000",
+".E c #000000",
+".F c #000000",
+".G c #000000",
+".H c #000000",
+".I c #000000",
+".J c #000000",
+".K c #000000",
+".L c #000000",
+".M c #000000",
+".N c #000000",
+".O c #000000",
+".P c #000000",
+".Q c #000000",
+".R c #000000",
+".S c #000000",
+".T c #000000",
+".U c #000000",
+".V c #000000",
+".W c #000000",
+".X c #000000",
+".Y c #000000",
+".Z c #000000",
+".0 c #000000",
+".1 c #000000",
+".2 c #000000",
+".3 c #000000",
+".4 c #000000",
+".5 c #000000",
+".6 c #000000",
+".7 c #000000",
+".8 c #000000",
+"#` c #000000",
+"#. c #000000",
+"## c #000000",
+"#a c #000000",
+"#b c #000000",
+"#c c #000000",
+"#d c #000000",
+"#e c #000000",
+"#f c #000000",
+"#g c #000000",
+"#h c #000000",
+"#i c #000000",
+"#j c #000000",
+"#k c #000000",
+"#l c #000000",
+"#m c #000000",
+"#n c #000000",
+"#o c #000000",
+"#p c #000000",
+"#q c #000000",
+"#r c #000000",
+"#s c #000000",
+"#t c #000000",
+"#u c #000000",
+"#v c #000000",
+"#w c #000000",
+"#x c #000000",
+"#y c #000000",
+"#z c #000000",
+"#A c #000000",
+"#B c #000000",
+"#C c #000000",
+"#D c #000000",
+"#E c #000000",
+"#F c #000000",
+"#G c #000000",
+"#H c #000000",
+"#I c #000000",
+"#J c #000000",
+"#K c #000000",
+"#L c #000000",
+"#M c #000000",
+"#N c #000000",
+"#O c #000000",
+"#P c #000000",
+"#Q c #000000",
+"#R c #000000",
+"#S c #000000",
+"#T c #000000",
+"#U c #000000",
+"#V c #000000",
+"#W c #000000",
+"#X c #000000",
+"#Y c #000000",
+"#Z c #000000",
+"#0 c #000000",
+"#1 c #000000",
+"#2 c #000000",
+"#3 c #000000",
+"#4 c #000000",
+"#5 c #000000",
+"#6 c #000000",
+"#7 c #000000",
+"#8 c #000000",
+"a` c #000000",
+"a. c #000000",
+"a# c #000000",
+"aa c #000000",
+"ab c #000000",
+"ac c #000000",
+"ad c #000000",
+"ae c #000000",
+"af c #000000",
+"ag c #000000",
+"ah c #000000",
+"ai c #000000",
+"aj c #000000",
+"ak c #000000",
+"al c #000000",
+"am c #000000",
+"an c #000000",
+"ao c #000000",
+"ap c #000000",
+"aq c #000000",
+"ar c #000000",
+"as c #000000",
+"at c #000000",
+"au c #000000",
+"av c #000000",
+"aw c #000000",
+"ax c #000000",
+"ay c #000000",
+"az c #000000",
+"aA c #000000",
+"aB c #000000",
+"aC c #000000",
+"aD c #000000",
+"aE c #000000",
+"aF c #000000",
+"aG c #000000",
+"aH c #000000",
+"aI c #000000",
+"aJ c #000000",
+"aK c #000000",
+"aL c #000000",
+"aM c #000000",
+"aN c #000000",
+"aO c #000000",
+"aP c #000000",
+"aQ c #000000",
+"aR c #000000",
+"aS c #000000",
+"aT c #000000",
+"aU c #000000",
+"aV c #000000",
+"aW c #000000",
+"aX c #000000",
+"aY c #000000",
+"aZ c #000000",
+"a0 c #000000",
+"a1 c #000000",
+"a2 c #000000",
+"a3 c #000000",
+"a4 c #000000",
+"a5 c #000000",
+"a6 c #000000",
+"a7 c #000000",
+"a8 c #000000",
+/* pixels */
+"````````````````````````````````````",
+"```````````.`#`a`b`c`d`d`d``````````",
+"```````````.`.`#`a`c`d`e`f`f````````",
+"`````````````.`#`a`c`g`h`f`i`j``````",
+"`````````````.`#`a`c`g`h`f`i`j`k````",
+"`````.`````.`.`#`a`c`d`e`f`i`j`l`m``",
+"```#`.`.`n`o`p`l`b`g`q`r`n`s`t`u`v``",
+"```a`#`#`w`x`y`z`A`B`C`y`D`E`F`u`v``",
+"```b`a`a`a`a`G`H`I`J`K`L`i`j`l`v`M``",
+"```g`c`c`c`c`g`g`h`e`f`q`m`N`u`O`M``",
+"```g`d`g`P`Q`R`S`T`f`U`V`W`y`X`Y`Z``",
+"```d`e`h`0`1`s`y`2`y`y`3`4`5`O`Z`Z``",
+"```h`f`f`f`f`q`6`7`8.``M`F`O`Z..`v``",
+"`````q`i`i`i`i`m`j.#`l`F`O`Z.a.b````",
+"```````j`j`j.#`k`l`u`v`O`Z.a.c``````",
+"````````.#`l`u`F`v`O`M`Z...c````````",
+"```````````q`F`F`v`Y`Y`Z`m``````````",
+"````````````````````````````````````"
 };
 
  QtxMenu::PriorityMap QtxMenu::_actionPriority;
@@ -720,17 +1001,6 @@ void QtxMenu::keyPressEvent( QKeyEvent* e )
 }
 
 /*!
-  \brief Reimplemented for internal reasons.
-*/
-void QtxMenu::actionEvent( QActionEvent* e )
-{
-  myVisibilityState.insert( e->action(),
-                            e->action()->isVisible() );
-
-  QMenu::actionEvent( e );
-}
-
-/*!
   \brief Insert title item to the popup menu.
 */
 void QtxMenu::insertTitle()
@@ -830,14 +1100,25 @@ void QtxMenu::expandMenu()
   if ( isMenuExpanded() )
     return;
 
-  QList<QAction*> lst = actions();
-  for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end(); ++it )
+  QSet<QAction*> set = actions().toSet();
+
+  QList<QAction*> bakList = myActionBackup;
+
+  for ( QList<QAction*>::iterator itr = myActionBackup.begin(); itr != myActionBackup.end(); ++itr )
   {
-    QAction* a = *it;
-    if ( a == myTitleAction || a == myExpandAction )
+    QAction* a = *itr;
+
+    if ( set.contains( a ) )
       continue;
 
-    a->setVisible( myVisibilityState.contains( a ) ? myVisibilityState[a] : false );
+    QAction* before = 0;
+    for ( QList<QAction*>::iterator it = itr; it != myActionBackup.end() && !before; ++it )
+    {
+      if ( set.contains( *it ) )
+	before = *it;
+    }
+
+    insertAction( before, a );
   }
 
   myShortTimer->stop();
@@ -846,7 +1127,7 @@ void QtxMenu::expandMenu()
   if ( myExpandAction )
     removeAction( myExpandAction );
 
-  myVisibilityState.clear();
+  myActionBackup.clear();
 }
 
 /*!
@@ -860,13 +1141,13 @@ void QtxMenu::collapseMenu()
   QSet<QAction*> visible;
   QMap<int, QList<QAction*> > freqMap;
 
-  VisibilityMap aVisBackup;
+  ActionList anActionBackup;
   QList< QPair<int, QAction*> > freqList;
 
   for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end(); ++it )
   {
     QAction* a = *it;
-    aVisBackup.insert( a, a->isVisible() );
+    anActionBackup.append( a );
 
     if ( a->isSeparator() || !a->isVisible() )
       continue;
@@ -903,9 +1184,11 @@ void QtxMenu::collapseMenu()
   {
     QAction* a = *itr;
     bool vis = a == myExpandAction || a->isSeparator() || visible.contains( a );
-    a->setVisible( vis );
-    if ( !vis && aVisBackup[a] )
+    if ( !vis && a->isVisible() )
+    {
       hidden++;
+      removeAction( a );
+    }
   }
 
   if ( myExpandAction )
@@ -916,7 +1199,7 @@ void QtxMenu::collapseMenu()
   if ( expandingDelay() > 0 )
     myExpandTimer->start();
 
-  myVisibilityState = aVisBackup;
+  myActionBackup = anActionBackup;
 }
 
 /*!

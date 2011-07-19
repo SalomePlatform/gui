@@ -97,7 +97,6 @@ private slots:
 
 protected:
   virtual void           keyPressEvent( QKeyEvent* );
-  virtual void           actionEvent( QActionEvent* );
 
 private:
   void                   updateTitle();
@@ -113,8 +112,8 @@ private:
   QWidget*               topLevelMenu( const QMenu* ) const;
 
 private:
-  typedef QMap<QAction*, int>  PriorityMap;
-  typedef QMap<QAction*, bool> VisibilityMap;
+  typedef QList<QAction*>     ActionList;
+  typedef QMap<QAction*, int> PriorityMap;
 
 private:
   TitleMode              myTitleMode;
@@ -127,7 +126,7 @@ private:
   QTimer*                myShortTimer;
   QTimer*                myExpandTimer;
   Expander*              myExpandAction;
-  VisibilityMap          myVisibilityState;
+  ActionList             myActionBackup;
 
   static PriorityMap     _actionPriority;
 };

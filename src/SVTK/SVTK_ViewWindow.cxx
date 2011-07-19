@@ -240,6 +240,7 @@ void SVTK_ViewWindow::Initialize(SVTK_View* theView,
 SVTK_ViewWindow::~SVTK_ViewWindow()
 {
   myRecorder->Delete();
+  myAxesWidget->Delete();
 }
 
 

@@ -748,7 +748,8 @@ QtxMenu::QtxMenu( QWidget* parent )
 
   myExpandTimer = new QTimer( this );
   myExpandTimer->setSingleShot( true );
-  myExpandTimer->setInterval( 5000 );
+  myExpandTimer->setInterval( 0 );
+  //  myExpandTimer->setInterval( 5000 );
 
   connect( menuAction(), SIGNAL( changed() ), this, SLOT( onMenuActionChanged() ) );
 
@@ -985,6 +986,49 @@ void QtxMenu::setVisible( bool on )
   }
 }
 
+void QtxMenu::paintEvent( QPaintEvent* e )
+{
+  QPixmap pix( rect().size() );
+  pix.fill( this, 0, 0 );
+
+  QPainter::setRedirected( this, &pix );
+  QMenu::paintEvent( e );
+  QPainter::restoreRedirected( this );
+
+  if ( isTopLevelMenu() ) {
+    QRgb bg = palette().color( QPalette::Light ).rgb();
+    QImage img = pix.toImage();
+
+    QList<QAction*> lst = actions();
+    QSet<QAction*> visible = collapsedActions();
+
+    for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end(); ++it ) {
+      QAction* a = *it;
+      QRect r = actionGeometry( a );
+
+      int x, y, w, h;
+      r.getRect( &x, &y, &w, &h );
+
+      if ( a == myExpandAction || a == myTitleAction || !visible.contains( a ) )
+	continue;
+
+      QRgb rc = img.pixel( x, y );
+      for ( int i = 0; i < w - 1; i++ ) {
+	for ( int j = 0; j < h; j++ ) {
+	  if ( img.pixel( x + i, y + j ) == rc ) {
+	    img.setPixel( x + i, y + j, bg );
+	  }
+	}
+      }
+    }
+
+    pix = QPixmap::fromImage( img );
+  }
+
+  QPainter p( this );
+  p.drawPixmap( rect(), pix );
+}
+
 /*!
   \brief Reimplemented for internal reasons.
          Activation the expand item by keys perform menu expanding.
@@ -1136,23 +1180,53 @@ void QtxMenu::expandMenu()
 */
 void QtxMenu::collapseMenu()
 {
-  QList<QAction*> lst = actions();
+  ActionList lst = actions();
+  ActionList anActionBackup = lst;
+
+  QSet<QAction*> visible = collapsedActions();
+
+  int hidden = 0;
+  for ( QList<QAction*>::iterator itr = lst.begin(); itr != lst.end(); ++itr )
+  {
+    QAction* a = *itr;
+    bool vis = a == myExpandAction || a->isSeparator() || visible.contains( a );
+    if ( !vis && a->isVisible() )
+    {
+      hidden++;
+      removeAction( a );
+    }
+  }
+
+  if ( myExpandAction )
+    myExpandAction->setVisible( hidden );
+
+  updateExpander();
+
+  if ( expandingDelay() > 0 )
+    myExpandTimer->start();
+
+  myActionBackup = anActionBackup;
+}
+
+/*!
+  \brief Returns the set of the action which will be visible in collapsed state.
+  \internal
+*/
+QSet<QAction*> QtxMenu::collapsedActions() const
+{
+  QList<QAction*> lst;
+  
+  lst = !myActionBackup.isEmpty() ? myActionBackup : actions();
 
   QSet<QAction*> visible;
   QMap<int, QList<QAction*> > freqMap;
-
-  ActionList anActionBackup;
-  QList< QPair<int, QAction*> > freqList;
-
   for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end(); ++it )
   {
     QAction* a = *it;
-    anActionBackup.append( a );
-
     if ( a->isSeparator() || !a->isVisible() )
       continue;
 
-    int priority = actionPriority( a );
+    int priority = a == defaultAction() ? -1 : actionPriority( a );
     if ( priority < 0 )
       visible.insert( a );
     else
@@ -1179,27 +1253,7 @@ void QtxMenu::collapseMenu()
     }
   }
 
-  int hidden = 0;
-  for ( QList<QAction*>::iterator itr = lst.begin(); itr != lst.end(); ++itr )
-  {
-    QAction* a = *itr;
-    bool vis = a == myExpandAction || a->isSeparator() || visible.contains( a );
-    if ( !vis && a->isVisible() )
-    {
-      hidden++;
-      removeAction( a );
-    }
-  }
-
-  if ( myExpandAction )
-    myExpandAction->setVisible( hidden );
-
-  updateExpander();
-
-  if ( expandingDelay() > 0 )
-    myExpandTimer->start();
-
-  myActionBackup = anActionBackup;
+  return visible;
 }
 
 /*!

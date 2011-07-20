@@ -96,6 +96,7 @@ private slots:
   void                   onActionTriggered( QAction* );
 
 protected:
+  virtual void           paintEvent( QPaintEvent* );
   virtual void           keyPressEvent( QKeyEvent* );
 
 private:
@@ -106,6 +107,8 @@ private:
   void                   expandMenu();
   void                   collapseMenu();
   void                   updateExpander();
+
+  QSet<QAction*>         collapsedActions() const;
 
   QWidget*               topLevelMenu() const;
   bool                   isTopLevelMenu() const;

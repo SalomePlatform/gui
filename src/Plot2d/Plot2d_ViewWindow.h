@@ -78,6 +78,12 @@ public:
   
   virtual void      RefreshDumpImage();
 
+  // JPL (le 17/09/2010) : méthode mise en public :
+  virtual bool      dumpViewToFormat( const QImage&, 
+                                      const QString&, 
+                                      const QString& );
+
+
 public slots:
   void              onChangeHorMode();
   void              onChangeVerMode();
@@ -98,9 +104,7 @@ public slots:
 
 protected:
   virtual QImage    dumpView();
-  virtual bool      dumpViewToFormat( const QImage&, 
-                                      const QString&, 
-                                      const QString& );
+
   virtual QString   filter() const;
 
 signals:

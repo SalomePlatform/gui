@@ -53,6 +53,7 @@ public:
   } TitleMode;
 
   typedef enum {
+    LimitAuto,
     LimitFrequent,
     LimitTotal
   } CollapseLimitMode;
@@ -108,6 +109,7 @@ private:
   void                   collapseMenu();
   void                   updateExpander();
 
+  int                    collapseQuantity() const;
   QSet<QAction*>         collapsedActions() const;
 
   QWidget*               topLevelMenu() const;

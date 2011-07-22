@@ -37,6 +37,8 @@
 #include <QLinearGradient>
 #include <QAbstractTextDocumentLayout>
 
+#define HIGHLIGHT_COLLAPSED
+
 //static const char* expand_button_xpm[] = {
 /* width height num_colors chars_per_pixel */
 //"    18    18       16            1",
@@ -737,7 +739,7 @@ QtxMenu::QtxMenu( QWidget* parent )
   myTitleMode( TitleOff ),
   myTitleAlign( Qt::AlignVCenter | Qt::AlignLeft ),
   myLimit( 7 ),
-  myLimitMode( LimitTotal ),
+  myLimitMode( LimitAuto ),
   myExpandAction( 0 )
 {
   myTitleAction = new TitleMgr( this );
@@ -988,45 +990,55 @@ void QtxMenu::setVisible( bool on )
 
 void QtxMenu::paintEvent( QPaintEvent* e )
 {
+#ifdef HIGHLIGHT_COLLAPSED
   QPixmap pix( rect().size() );
-  pix.fill( this, 0, 0 );
+  if ( menuCollapsible() ) {
+    pix.fill( this, 0, 0 );
 
-  QPainter::setRedirected( this, &pix );
+    QPainter::setRedirected( this, &pix );
+  }
+#endif
+
   QMenu::paintEvent( e );
-  QPainter::restoreRedirected( this );
 
-  if ( isTopLevelMenu() ) {
-    QRgb bg = palette().color( QPalette::Light ).rgb();
-    QImage img = pix.toImage();
+#ifdef HIGHLIGHT_COLLAPSED
+  if ( menuCollapsible() ) {
+    QPainter::restoreRedirected( this );
 
-    QList<QAction*> lst = actions();
-    QSet<QAction*> visible = collapsedActions();
+    if ( isTopLevelMenu() ) {
+      QRgb bg = palette().color( QPalette::Light ).rgb();
+      QImage img = pix.toImage();
 
-    for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end(); ++it ) {
-      QAction* a = *it;
-      QRect r = actionGeometry( a );
+      QList<QAction*> lst = actions();
+      QSet<QAction*> visible = collapsedActions();
+      
+      for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end(); ++it ) {
+	QAction* a = *it;
+	QRect r = actionGeometry( a );
 
-      int x, y, w, h;
-      r.getRect( &x, &y, &w, &h );
+	int x, y, w, h;
+	r.getRect( &x, &y, &w, &h );
 
-      if ( a == myExpandAction || a == myTitleAction || !visible.contains( a ) )
-	continue;
+	if ( a == myExpandAction || a == myTitleAction || !visible.contains( a ) || a == activeAction() )
+	  continue;
 
-      QRgb rc = img.pixel( x, y );
-      for ( int i = 0; i < w - 1; i++ ) {
-	for ( int j = 0; j < h; j++ ) {
-	  if ( img.pixel( x + i, y + j ) == rc ) {
-	    img.setPixel( x + i, y + j, bg );
+	QRgb rc = img.pixel( x, y );
+	for ( int i = 0; i < w - 1; i++ ) {
+	  for ( int j = 0; j < h; j++ ) {
+	    if ( img.pixel( x + i, y + j ) == rc ) {
+	      img.setPixel( x + i, y + j, bg );
+	    }
 	  }
 	}
       }
+
+      pix = QPixmap::fromImage( img );
     }
 
-    pix = QPixmap::fromImage( img );
+    QPainter p( this );
+    p.drawPixmap( rect(), pix );
   }
-
-  QPainter p( this );
-  p.drawPixmap( rect(), pix );
+#endif
 }
 
 /*!
@@ -1208,6 +1220,25 @@ void QtxMenu::collapseMenu()
   myActionBackup = anActionBackup;
 }
 
+int QtxMenu::collapseQuantity() const
+{
+  int num = collapseLimit();
+  if ( collapseLimitMode() == LimitAuto ) {
+    QList<QAction*> lst;
+    lst = !myActionBackup.isEmpty() ? myActionBackup : actions();
+
+    int count = 0;
+    for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end(); ++it ) {
+      QAction* a = *it;
+      if ( a->isVisible() && !a->isSeparator() )
+	count++;
+    }
+
+    num = qMax( 5, count * 30 / 100 );
+  }
+  return num;
+}
+
 /*!
   \brief Returns the set of the action which will be visible in collapsed state.
   \internal
@@ -1237,8 +1268,8 @@ QSet<QAction*> QtxMenu::collapsedActions() const
     }
   }
 
-  int limit = collapseLimit();
-  if ( collapseLimitMode() == LimitTotal )
+  int limit = collapseQuantity();
+  if ( collapseLimitMode() != LimitFrequent )
     limit -= visible.count();
 
   if ( limit > 0 )

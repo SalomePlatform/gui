@@ -201,7 +201,8 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
        myXGridMinorEnabled( false ), myYGridMinorEnabled( false ), myY2GridMinorEnabled( false ),
        myXGridMaxMajor( 8 ), myYGridMaxMajor( 8 ), myY2GridMaxMajor( 8 ),
        myXGridMaxMinor( 5 ), myYGridMaxMinor( 5 ), myY2GridMaxMinor( 5 ),
-       myXMode( 0 ), myYMode( 0 ), mySecondY( false )
+       myXMode( 0 ), myYMode( 0 ), mySecondY( false ),
+       myViewIsClosing(false)
 {
   setObjectName( title );
   /* Plot 2d View */
@@ -364,6 +365,9 @@ bool Plot2d_ViewFrame::eventFilter( QObject* watched, QEvent* e )
           QMouseEvent m( QEvent::MouseButtonRelease, me->pos(), me->button(),
                          me->buttons(), me->modifiers() );
           plotMouseReleased( m );
+          // YOB (le 22/09/10) : prevents from crash if the window has been closed
+          if(myViewIsClosing)
+            return true;
         }
         break;
       }
@@ -799,6 +803,7 @@ void Plot2d_ViewFrame::fitAll()
   }
   myPlot->replot();
   if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
+  emit fitAllDone();
 }
 
 /*!
@@ -1530,6 +1535,9 @@ void Plot2d_ViewFrame::plotMouseReleased( const QMouseEvent& me )
     QContextMenuEvent aEvent( QContextMenuEvent::Mouse,
                               me.pos(), me.globalPos() );
     emit contextMenuRequested( &aEvent );
+    // YOB (le 22/09/10) : prevents from crash if the window has been closed
+    if(myViewIsClosing)
+      return;
   }
   myPlot->canvas()->setCursor( QCursor( Qt::CrossCursor ) );
   myPlot->defaultPicker();
@@ -1718,10 +1726,6 @@ Plot2d_Plot2d::Plot2d_Plot2d( QWidget* parent )
   : QwtPlot( parent ),
     myIsPolished( false )
 {
-  // Create alternative scales
-  setAxisScaleDraw( QwtPlot::yLeft,   new Plot2d_ScaleDraw() );
-  setAxisScaleDraw( QwtPlot::xBottom, new Plot2d_ScaleDraw() );
-  setAxisScaleDraw( QwtPlot::yRight,  new Plot2d_ScaleDraw() );
 
   myPlotZoomer = new Plot2d_QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, canvas() );
   myPlotZoomer->setSelectionFlags( QwtPicker::DragSelection | QwtPicker::CornerToCorner );
@@ -1730,6 +1734,11 @@ Plot2d_Plot2d::Plot2d_Plot2d( QWidget* parent )
   myPlotZoomer->setRubberBandPen( QColor( Qt::green ) );
 
   defaultPicker();
+
+  // Create alternative scales
+  setAxisScaleDraw( QwtPlot::yLeft,   new Plot2d_ScaleDraw() );
+  setAxisScaleDraw( QwtPlot::xBottom, new Plot2d_ScaleDraw() );
+  setAxisScaleDraw( QwtPlot::yRight,  new Plot2d_ScaleDraw() );
 
   // auto scaling by default
   setAxisAutoScale( QwtPlot::yLeft );
@@ -1941,15 +1950,32 @@ Plot2d_Curve* Plot2d_Plot2d::getClosestCurve( QPoint p, double& distance, int& i
 {
   CurveDict::iterator it = getCurves().begin();
   QwtPlotCurve* aCurve;
-  for ( ; it != getCurves().end(); it++ ) {
+  
+  CurveDict::iterator closest;  
+  double currentDistance;
+  int    currentIndex;
+  index    = -1;
+  for ( ; it != getCurves().end() ; it++ ) {  
     aCurve = it.key();
     if ( !aCurve )
       continue;
-    index = aCurve->closestPoint( p, &distance );
-    if ( index > -1 )
-      return it.value();
+    currentIndex = aCurve->closestPoint( p, &currentDistance );
+    if ( currentIndex > -1 ){
+      if ( it == getCurves().begin() ) { //init
+        distance = currentDistance;
+        closest  = it;
+        index    = currentIndex;
+      } else if ( currentDistance < distance ) {
+        distance = currentDistance;      
+        closest = it;     
+        index    = currentIndex;
+      }
+    }     
   }
-  return 0;
+  if ( index > -1 )
+    return closest.value();
+  else
+    return 0;
 }
 
 /*!

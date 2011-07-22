@@ -141,7 +141,8 @@ public:
 
   void    incrementalPan ( const int incrX, const int incrY );
   void    incrementalZoom( const int incrX, const int incrY );
-
+  Plot2d_Plot2d* getPlot() { return myPlot; }
+  void    closingLaunched() { myViewIsClosing = true; }
 protected:
   int     testOperation( const QMouseEvent& );
   void    readPreferences();
@@ -180,7 +181,7 @@ signals:
   void    vpCurveChanged();
   void    contextMenuRequested( QContextMenuEvent *e );
   void    legendClicked( QwtPlotItem* );
-
+  void    fitAllDone();
 protected:
   Plot2d_Plot2d* myPlot;
   int            myOperation;
@@ -200,6 +201,7 @@ protected:
   int            myXMode, myYMode;
   double         myXDistance, myYDistance, myYDistance2;
   bool           mySecondY;
+  bool           myViewIsClosing;
 };
 
 class Plot2d_Plot2d : public QwtPlot 

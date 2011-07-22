@@ -796,7 +796,7 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
         break;
       }
     case CE_PushButtonBevel:
-      if ( qstyleoption_cast<const QStyleOptionButton *>(opt) ) {
+      if ( const QStyleOptionButton *btn = qstyleoption_cast<const QStyleOptionButton *>(opt) ) {
         double aRad = model()->widgetRounding( Style_Model::ButtonRadius );
         bool aStateOn = opt->state & ( State_Sunken | State_On );
         bool isAutoRaising = model()->widgetEffect() == Style_Model::AutoRaiseEffect;
@@ -819,6 +819,12 @@ void Style_Salome::drawControl( ControlElement ce, const QStyleOption* opt,
         else
           Style_Tools::shadowRect( p, r, aRad, -1, SHADOW, Style_Tools::All, top, bottom,
                                    aBrdTopCol, aBrdBotCol, antialized, true, aStateOn );
+	if (btn->features & QStyleOptionButton::HasMenu) {
+	  int mbi = pixelMetric(PM_MenuButtonIndicator, btn, w);
+	  QStyleOptionButton newBtn = *btn;
+	  newBtn.rect = QRect(r.right() - mbi-2, r.height()/2 - mbi/2, mbi, mbi);
+	  drawPrimitive(PE_IndicatorArrowDown, &newBtn, p, w);
+	}
         break;
       }
       case CE_DockWidgetTitle:

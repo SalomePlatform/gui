@@ -40,6 +40,8 @@ class QMenu;
 class QWidget;
 class QAction;
 class QtxActionGroup;
+class QGraphicsScene;
+class QMainWindow;
 
 class SALOME_Selection : public QObject
 {
@@ -178,7 +180,7 @@ public:
   static QAction*          createAction( const int, const QString&,
                                          const QString& = QString(), const QString& = QString(), 
                                          const QString& = QString(), const int = 0, const bool = false );
-  
+
   static QtxActionGroup*   createActionGroup( const int, const bool = true );
 
   static QAction*          action( const int );
@@ -221,7 +223,7 @@ public:
 
   static void              message( const QString&, bool = true );
   static void              clearMessages();
-  
+
   static QList<int>        getViews();
   static int               getActiveView();
   static QString           getViewType( const int );
@@ -233,7 +235,9 @@ public:
   static bool              closeView( const int );
   static int               cloneView( const int );
   static bool              isViewVisible( const int id );
-  
+  static QGraphicsScene*   initQxScene();
+  static QMainWindow*      getQxMainWindow( const bool create );
+
   static bool              groupAllViews();
   static bool              splitView( const int, const Orientation, const Action );
   static bool              moveView( const int, const int, const bool );

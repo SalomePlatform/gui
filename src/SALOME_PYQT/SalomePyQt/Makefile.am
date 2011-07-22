@@ -56,6 +56,7 @@ COMMON_CPP_FLAGS = $(QT_INCLUDES) $(QWT_INCLUDES) $(SIP_INCLUDES) $(PYTHON_INCLU
 	-I$(srcdir)/../../Qtx -I$(srcdir)/../../Event	                                 \
 	-I$(srcdir)/../../LogWindow			                                 \
 	-I$(srcdir)/../../VTKViewer                     				 \
+	-I$(srcdir)/../../QxScene			      				 \
 	-I$(srcdir)/../../OCCViewer -I$(srcdir)/../../Plot2d				 \
 	-I$(srcdir)/../SALOME_PYQT_GUILight -I$(srcdir)/../../PyInterp			 \
 	-I$(srcdir)/../../LightApp -I$(srcdir)/../../ObjBrowser				 \

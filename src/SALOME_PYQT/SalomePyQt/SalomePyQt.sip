@@ -320,7 +320,8 @@ public:
   static bool              closeView( const int ) /ReleaseGIL/ ;
   static int               cloneView( const int ) /ReleaseGIL/ ;
   static bool              isViewVisible( const int id ) /ReleaseGIL/ ;
-  
+  static QGraphicsScene*   initQxScene() /ReleaseGIL/ ;
+  static QMainWindow*      getQxMainWindow( const bool ) /ReleaseGIL/ ;
   static bool              groupAllViews() /ReleaseGIL/ ;
   static bool              splitView( const int, Orientation, Action ) /ReleaseGIL/ ;
   static bool              moveView( const int, const int, const bool ) /ReleaseGIL/ ;

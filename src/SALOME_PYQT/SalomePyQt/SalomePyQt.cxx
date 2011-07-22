@@ -60,6 +60,8 @@
 #include <OCCViewer_ViewWindow.h>
 #include <Plot2d_ViewManager.h>
 #include <Plot2d_ViewWindow.h>
+#include <QxScene_ViewManager.h>
+#include <QxScene_ViewWindow.h>
 
 /*!
   \brief Get the currently active application.
@@ -2363,6 +2365,81 @@ public:
 int SalomePyQt::createView( const QString& type )
 {
   return ProcessEvent( new TCreateView( type ) );
+}
+
+/*!
+  \fn QGraphicsScene* SalomePyQt::initQxScene()
+  \brief: create a scene, a view in central widget
+  \return a scene or NULL
+*/
+
+class TinitQxScene: public SALOME_Event
+{
+public:
+  typedef QGraphicsScene* TResult;
+  TResult myResult;
+
+  TinitQxScene(): myResult(NULL) {
+  }
+
+  virtual void Execute() {
+    LightApp_Application* app  = getApplication();
+    if ( app ) {
+      QxScene_ViewManager* aVM = dynamic_cast<QxScene_ViewManager*>( app->getViewManager( "QxSceneViewer", true ) );
+      if ( aVM ) {
+        QxScene_ViewWindow* view = dynamic_cast<QxScene_ViewWindow*>( aVM->getActiveView() );
+
+        QGraphicsScene* scene = new QGraphicsScene(view);
+        QGraphicsView * gView = new QGraphicsView();
+
+        view->setScene(scene);
+        view->setSceneView(gView);
+        view->setCentralWidget(gView);
+
+        gView->setScene(scene);
+        gView->setViewportUpdateMode(QGraphicsView::FullViewportUpdate);
+        gView->show();
+
+        myResult = scene;
+      }
+    }
+  }
+};
+
+QGraphicsScene* SalomePyQt::initQxScene() {
+  return ProcessEvent( new TinitQxScene() );
+}
+
+/*!
+  \fn QMainWindow* SalomePyQt::getQxMainWindow( const bool create );
+  \brief: get the active QMainWindow or created one
+  \return a QMainWindow or NULL
+*/
+
+class TgetQxMainWindow: public SALOME_Event
+{
+public:
+  typedef QMainWindow* TResult;
+  TResult myResult;
+  const bool _create;
+
+  TgetQxMainWindow(const bool create): _create(create), myResult(NULL) {
+  }
+
+  virtual void Execute() {
+    LightApp_Application* app  = getApplication();
+    if ( app ) {
+      QxScene_ViewManager* aVM = dynamic_cast<QxScene_ViewManager*>( app->getViewManager( "QxSceneViewer", _create ) );
+      if ( aVM ) {
+        QxScene_ViewWindow* view = dynamic_cast<QxScene_ViewWindow*>( aVM->getActiveView() );
+        myResult = view;
+    }
+  }
+  }
+};
+
+QMainWindow* SalomePyQt::getQxMainWindow( const bool create ) {
+  return ProcessEvent( new TgetQxMainWindow(create) );
 }
 
 /*!

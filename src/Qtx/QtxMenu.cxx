@@ -628,6 +628,8 @@ public:
   Expander( QWidget* = 0 );
   virtual ~Expander();
 
+  virtual bool     eventFilter( QObject*, QEvent* );
+
 protected:
   virtual QWidget* createWidget( QWidget* );
   virtual void     deleteWidget( QWidget* );
@@ -654,6 +656,14 @@ QtxMenu::Expander::~Expander()
 {
 }
 
+bool QtxMenu::Expander::eventFilter( QObject* o, QEvent* e )
+{
+  if ( e->type() == QEvent::Enter )
+    emit hovered();
+
+  return QWidgetAction::eventFilter( o, e );
+}
+
 /*!
   \brief Creates the expanding button when action added into menu.
   \internal
@@ -670,7 +680,7 @@ QWidget* QtxMenu::Expander::createWidget( QWidget* parent )
     virtual void resizeEvent( QResizeEvent* e )
     {
       QToolButton::resizeEvent( e );
-
+      /*
       QPixmap pix( size() );
       QPainter p( &pix );
       icon().paint( &p, rect() );
@@ -680,23 +690,25 @@ QWidget* QtxMenu::Expander::createWidget( QWidget* parent )
       {
         QBitmap bm;
         QImage img = pix.toImage();
-	      if ( img.hasAlphaChannel() )
-          bm = QPixmap::fromImage( img.createAlphaMask() );
-	      else
-          bm = QPixmap::fromImage( img.createHeuristicMask() );
+	if ( img.hasAlphaChannel() )
+	bm = QPixmap::fromImage( img.createAlphaMask() );
+	else
+	bm = QPixmap::fromImage( img.createHeuristicMask() );
 
-	      pix.setMask( bm );
-	    }
-
-      if ( !pix.mask().isNull() )
-	      setMask( pix.mask() );
+	pix.setMask( bm );
+	}
+	
+	if ( !pix.mask().isNull() )
+	setMask( pix.mask() );
+      */
     };
   };
 
-  QToolButton* tb = new Button( parent );
+  QToolButton* tb = new QToolButton( parent );
   QPixmap pix( expand_button_xpm );
   tb->setIcon( pix );
   tb->setAutoRaise( true );
+  tb->installEventFilter( this );
 
   connect( tb, SIGNAL( clicked( bool ) ), this, SIGNAL( triggered( bool ) ) );
 
@@ -750,8 +762,7 @@ QtxMenu::QtxMenu( QWidget* parent )
 
   myExpandTimer = new QTimer( this );
   myExpandTimer->setSingleShot( true );
-  myExpandTimer->setInterval( 0 );
-  //  myExpandTimer->setInterval( 5000 );
+  myExpandTimer->setInterval( 5000 );
 
   connect( menuAction(), SIGNAL( changed() ), this, SLOT( onMenuActionChanged() ) );
 
@@ -1158,17 +1169,17 @@ void QtxMenu::expandMenu()
 
   QSet<QAction*> set = actions().toSet();
 
-  QList<QAction*> bakList = myActionBackup;
+  ActionList bakList = myActionBackup;
 
-  for ( QList<QAction*>::iterator itr = myActionBackup.begin(); itr != myActionBackup.end(); ++itr )
+  for ( ActionList::iterator itr = myActionBackup.begin(); itr != myActionBackup.end(); ++itr )
   {
     QAction* a = *itr;
 
-    if ( set.contains( a ) )
+    if ( !a || set.contains( a ) )
       continue;
 
     QAction* before = 0;
-    for ( QList<QAction*>::iterator it = itr; it != myActionBackup.end() && !before; ++it )
+    for ( ActionList::iterator it = itr; it != myActionBackup.end() && !before; ++it )
     {
       if ( set.contains( *it ) )
 	before = *it;
@@ -1192,8 +1203,8 @@ void QtxMenu::expandMenu()
 */
 void QtxMenu::collapseMenu()
 {
-  ActionList lst = actions();
-  ActionList anActionBackup = lst;
+  QList<QAction*> lst = actions();
+  ActionList anActionBackup;
 
   QSet<QAction*> visible = collapsedActions();
 
@@ -1201,6 +1212,8 @@ void QtxMenu::collapseMenu()
   for ( QList<QAction*>::iterator itr = lst.begin(); itr != lst.end(); ++itr )
   {
     QAction* a = *itr;
+    anActionBackup.append( a );
+
     bool vis = a == myExpandAction || a->isSeparator() || visible.contains( a );
     if ( !vis && a->isVisible() )
     {
@@ -1225,7 +1238,13 @@ int QtxMenu::collapseQuantity() const
   int num = collapseLimit();
   if ( collapseLimitMode() == LimitAuto ) {
     QList<QAction*> lst;
-    lst = !myActionBackup.isEmpty() ? myActionBackup : actions();
+    if ( myActionBackup.isEmpty() )
+      lst = actions();
+    else {
+      for ( ActionList::const_iterator itr = myActionBackup.begin(); itr != myActionBackup.end(); ++itr )
+	if ( *itr )
+	  lst.append( *itr );
+    }
 
     int count = 0;
     for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end(); ++it ) {
@@ -1246,8 +1265,14 @@ int QtxMenu::collapseQuantity() const
 QSet<QAction*> QtxMenu::collapsedActions() const
 {
   QList<QAction*> lst;
-  
-  lst = !myActionBackup.isEmpty() ? myActionBackup : actions();
+
+  if ( myActionBackup.isEmpty() )
+    lst = actions();
+  else {
+    for ( ActionList::const_iterator itr = myActionBackup.begin(); itr != myActionBackup.end(); ++itr )
+      if ( *itr )
+	lst.append( *itr );
+  }
 
   QSet<QAction*> visible;
   QMap<int, QList<QAction*> > freqMap;
@@ -1326,8 +1351,11 @@ void QtxMenu::onExpandMenu()
 */
 void QtxMenu::onActionHovered( QAction* a )
 {
-  if ( a == myExpandAction && expandingDelay() )
-    myShortTimer->start();
+  if ( a == myExpandAction ) {
+    setActiveAction( myExpandAction );
+    if ( expandingDelay() )
+      myShortTimer->start();
+  }
   else
     myShortTimer->stop();
 }

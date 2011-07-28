@@ -26,6 +26,7 @@
 #include "Qtx.h"
 
 #include <QMenu>
+#include <QPointer>
 
 class QWidgetAction;
 
@@ -117,7 +118,8 @@ private:
   QWidget*               topLevelMenu( const QMenu* ) const;
 
 private:
-  typedef QList<QAction*>     ActionList;
+  typedef QPointer<QAction>   ActionPtr;
+  typedef QList<ActionPtr>    ActionList;
   typedef QMap<QAction*, int> PriorityMap;
 
 private:

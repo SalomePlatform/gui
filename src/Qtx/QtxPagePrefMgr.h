@@ -405,6 +405,9 @@ public:
   int              inputType() const;
   void             setInputType( const int );
 
+  int              decimals() const;
+  void             setDecimals( const int );
+
   virtual void     store();
   virtual void     retrieve();
 
@@ -417,6 +420,7 @@ private:
 
 private:
   int              myType;
+  int              myDecimals;
   QLineEdit*       myEditor;
 };
 

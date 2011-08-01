@@ -258,13 +258,19 @@ QString QtxDoubleSpinBox::removeTrailingZeroes( const QString& src ) const
 
   QString iPart = src.left( idx );
   QString fPart = src.mid( idx + 1 );
+  QString ePart = "";
+  int idx1 = fPart.lastIndexOf( QRegExp( "e[+|-]?[0-9]+" ) );
+  if ( idx1 >= 0 ) {
+    ePart = fPart.mid( idx1 );
+    fPart = fPart.left( idx1 );
+  }
 
-  while ( !fPart.isEmpty() && fPart.at( fPart.length() - 1 ) == '0' )
-    fPart.remove( fPart.length() - 1, 1 );
+  fPart.remove( QRegExp( "0+$" ) );
 
   QString res = iPart;
   if ( !fPart.isEmpty() )
     res += delim + fPart;
+  res += ePart;
 
   return res;
 }

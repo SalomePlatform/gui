@@ -40,10 +40,10 @@ public:
   MenuNode();
   MenuNode( MenuNode*, const int, const int, const int );
   ~MenuNode();
-  
+
   MenuNode* parent;       //!< parent menu node
   int       id;           //!< menu nodeID
-  int       idx;          //!< menu node index 
+  int       idx;          //!< menu node index
   int       group;        //!< menu group ID
   bool      visible;      //!< visibility status
   int       emptyEnabled; //!< enable empty menu flag
@@ -109,7 +109,7 @@ QtxActionMenuMgr::MenuNode::~MenuNode()
   \param p parent main window
 */
 QtxActionMenuMgr::QtxActionMenuMgr( QMainWindow* p )
-: QtxActionMgr( p ), 
+: QtxActionMgr( p ),
   myRoot( new MenuNode() ),
   myMenu( p ? p->menuBar() : 0 ),
   myCollapse( false )
@@ -125,7 +125,7 @@ QtxActionMenuMgr::QtxActionMenuMgr( QMainWindow* p )
   \param p parent object
 */
 QtxActionMenuMgr::QtxActionMenuMgr( QWidget* mw, QObject* p )
-: QtxActionMgr( p ), 
+: QtxActionMgr( p ),
   myRoot( new MenuNode() ),
   myMenu( mw ),
   myCollapse( false )
@@ -181,7 +181,7 @@ void QtxActionMenuMgr::setVisible( const int actId, const int place, const bool 
 /*!
   \brief Insert action to the menu.
 
-  Insert an action to the named menu. The \a menus parameter represents 
+  Insert an action to the named menu. The \a menus parameter represents
   the menu name: it can be a sequence of strings, separated by '|' symbol.
   For example, "File|Edit" means \c File->Edit submenu.
   If submenu doesn't exist, it will be created.
@@ -200,7 +200,7 @@ int QtxActionMenuMgr::insert( const int id, const QString& menus, const int grou
 /*!
   \brief Insert action to the menu.
 
-  Insert an action to the named menu. The \a menus parameter represents 
+  Insert an action to the named menu. The \a menus parameter represents
   the menu name: it can be a sequence of strings, separated by '|' symbol.
   For example, "File|Edit" means \c File->Edit submenu.
   If submenu doesn't exist, it will be created.
@@ -219,7 +219,7 @@ int QtxActionMenuMgr::insert( QAction* a, const QString& menus, const int group,
 /*!
   \brief Insert action to the menu.
 
-  Insert an action to the named menu. The \a menus parameter represents 
+  Insert an action to the named menu. The \a menus parameter represents
   the menu names list.
   For example, string list consisting from two items "File" and "Edit"
   means \c File->Edit submenu.
@@ -243,7 +243,7 @@ int QtxActionMenuMgr::insert( const int id, const QStringList& menus, const int 
 /*!
   \brief Insert action to the menu.
 
-  Insert an action to the named menu. The \a menus parameter represents 
+  Insert an action to the named menu. The \a menus parameter represents
   the menu names list.
   For example, string list consisting from two items "File" and "Edit"
   means \c File->Edit submenu.
@@ -349,7 +349,7 @@ int QtxActionMenuMgr::insert( const QString& title, const int pId, const int gro
 /*!
   \brief Create and insert menu item action to the menu.
 
-  Insert an action to the named menu. The \a menus parameter represents 
+  Insert an action to the named menu. The \a menus parameter represents
   the menu name: it can be a sequence of strings, separated by '|' symbol.
   For example, "File|Edit" means \c File->Edit submenu.
   If submenu doesn't exist, it will be created.
@@ -369,7 +369,7 @@ int QtxActionMenuMgr::insert( const QString& title, const QString& menus, const 
 /*!
   \brief Create and insert menu item action to the menu.
 
-  Insert an action to the named menu. The \a menus parameter represents 
+  Insert an action to the named menu. The \a menus parameter represents
   the menu names list.
   For example, string list consisting from two items "File" and "Edit"
   means \c File->Edit submenu.
@@ -567,7 +567,7 @@ void QtxActionMenuMgr::change( const int id, const QString& title )
 
 /*!
   \brief Called when the submenu is about to show.
-  
+
   Emits the signal menuAboutToShow(QMenu*).
 */
 void QtxActionMenuMgr::onAboutToShow()
@@ -579,7 +579,7 @@ void QtxActionMenuMgr::onAboutToShow()
 
 /*!
   \brief Called when the submenu is about to hide.
-  
+
   Emits the signal menuAboutToHide(QMenu*).
 */
 void QtxActionMenuMgr::onAboutToHide()
@@ -593,7 +593,7 @@ void QtxActionMenuMgr::onAboutToHide()
   \brief Called when the corresponding menu object is destroyed.
 
   Clears internal pointer to menu to disable crashes.
-  
+
   \param obj (menu) object being destroyed
 */
 void QtxActionMenuMgr::onDestroyed( QObject* obj )
@@ -949,7 +949,7 @@ void QtxActionMenuMgr::updateMenu( MenuNode* startNode, const bool rec, const bo
     foreach( a, formapit.value() )
       mw->insertAction( preva, a );
   }
-  
+
   // remove extra separators
   simplifySeparators( mw );
 
@@ -960,7 +960,7 @@ void QtxActionMenuMgr::updateMenu( MenuNode* startNode, const bool rec, const bo
 
 /*!
   \brief Internal update.
-  
+
   Customizes the menu update processing.
 */
 void QtxActionMenuMgr::internalUpdate()
@@ -1146,7 +1146,7 @@ bool QtxActionMenuMgr::isEmptyEnabled( const int id ) const
   MenuNode* node = find( id );
   if ( node && menuAction( id ) )
     return node->emptyEnabled > 0;
-  
+
   return false;
 }
 
@@ -1195,6 +1195,26 @@ void QtxActionMenuMgr::setMenuCollapsible( bool enable )
 }
 
 /*!
+  \brief Returns the priority for specified menu.
+  \param id - menu id.
+*/
+int QtxActionMenuMgr::menuPriority( const int id ) const
+{
+  return QtxMenu::actionPriority( menuAction( id ) );
+}
+
+/*!
+  \brief Sets the priority for specified menu. Menu with negative value of priority
+         will be always displayed in menu (permanent menus).
+  \param id - menu id.
+  \param p - priority value.
+*/
+void QtxActionMenuMgr::setMenuPriority( const int id, const int p )
+{
+  return QtxMenu::setActionPriority( menuAction( id ), p );
+}
+
+/*!
   \brief Perform delayed menu update.
   \param id menu item ID
   \param rec if \c true, perform recursive update
@@ -1218,11 +1238,11 @@ void QtxActionMenuMgr::updateContent()
 {
   // Warning: For correct updating it is necessary to update the most enclosed submenu in first turn
   //          because not updated empty submenu will be skipped. Now the submenus are iterated in
-  //          ascending order according to their identifiers. For a submenus with automatically generated 
+  //          ascending order according to their identifiers. For a submenus with automatically generated
   //          identifiers this will work correctly since the uppermost submenus have the biggest number
   //          (identifiers are generated by decrementing 1 starting from -1). In general, if any submenu
   //          have positive identifiers this method might not work correctly. In this case it would be
-  //          necessary to improve this method and to add preliminary sorting a submenus by depth of an 
+  //          necessary to improve this method and to add preliminary sorting a submenus by depth of an
   //          enclosure.
   for ( QMap<int, bool>::const_iterator it = myUpdateIds.constBegin(); it != myUpdateIds.constEnd(); ++it )
   {

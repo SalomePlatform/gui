@@ -59,6 +59,12 @@ public:
     LimitTotal
   } CollapseLimitMode;
 
+  typedef enum {
+    HighlightNone,
+    HighlightFrequent,
+    HighlightPermanent
+  } HighlightMode;
+
 public:
   QtxMenu( QWidget* = 0 );
   virtual ~QtxMenu();
@@ -84,6 +90,9 @@ public:
 
   CollapseLimitMode      collapseLimitMode() const;
   void                   setCollapseLimitMode( const CollapseLimitMode );
+
+  HighlightMode          highlightMode() const;
+  void                   setHighlightMode( HighlightMode );
 
   static int             actionPriority( QAction* );
   static void            setActionPriority( QAction*, int );
@@ -129,6 +138,7 @@ private:
 
   int                    myLimit;
   CollapseLimitMode      myLimitMode;
+  HighlightMode          myHighlightMode;
 
   QTimer*                myShortTimer;
   QTimer*                myExpandTimer;

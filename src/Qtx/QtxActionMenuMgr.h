@@ -102,6 +102,9 @@ public:
   bool         menuCollapsible() const;
   void         setMenuCollapsible( bool );
 
+  int          menuPriority( const int ) const;
+  void         setMenuPriority( const int, const int );
+
 private slots:
   void         onAboutToShow();
   void         onAboutToHide();

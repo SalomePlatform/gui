@@ -697,7 +697,7 @@ QWidget* QtxMenu::Expander::createWidget( QWidget* parent )
 
 	pix.setMask( bm );
 	}
-	
+
 	if ( !pix.mask().isNull() )
 	setMask( pix.mask() );
       */
@@ -750,8 +750,9 @@ QtxMenu::QtxMenu( QWidget* parent )
 : QMenu( parent ),
   myTitleMode( TitleOff ),
   myTitleAlign( Qt::AlignVCenter | Qt::AlignLeft ),
-  myLimit( 7 ),
-  myLimitMode( LimitAuto ),
+  myLimit( 3 ),
+  myLimitMode( LimitFrequent ),
+  myHighlightMode( HighlightFrequent ),
   myExpandAction( 0 )
 {
   myTitleAction = new TitleMgr( this );
@@ -914,6 +915,25 @@ void QtxMenu::setCollapseLimitMode( const QtxMenu::CollapseLimitMode mode )
 }
 
 /*!
+  \brief Returns highlight mode.
+*/
+QtxMenu::HighlightMode QtxMenu::highlightMode() const
+{
+  return myHighlightMode;
+}
+
+/*!
+  \brief Sets highlight items mode. If mode is 'HighlightPermanent' then permanently visible
+         menu items will be highlighted. If mode is 'HighlightFrequent' then menu will highlight
+	 frequently used menu items only. If mode is 'HighlightNone' then menu doesn't highlight any items.
+  \param mode - setted highlight mode.
+*/
+void QtxMenu::setHighlightMode( HighlightMode mode )
+{
+  myHighlightMode = mode;
+}
+
+/*!
   \brief Returns 'true' if the menu in expanded (full) state.
 */
 bool QtxMenu::isMenuExpanded() const
@@ -941,7 +961,7 @@ int QtxMenu::actionPriority( QAction* a )
   if ( _actionPriority.contains( a ) )
     p = _actionPriority[a];
 
-  if ( a->menu() )
+  if ( p >= 0 && a->menu() )
   {
     QList<QAction*> lst = a->menu()->actions();
     for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end(); ++it )
@@ -1016,13 +1036,14 @@ void QtxMenu::paintEvent( QPaintEvent* e )
   if ( menuCollapsible() ) {
     QPainter::restoreRedirected( this );
 
-    if ( isTopLevelMenu() ) {
+    HighlightMode hm = highlightMode();
+    if ( isTopLevelMenu() && hm != HighlightNone ) {
       QRgb bg = palette().color( QPalette::Light ).rgb();
       QImage img = pix.toImage();
 
       QList<QAction*> lst = actions();
       QSet<QAction*> visible = collapsedActions();
-      
+
       for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end(); ++it ) {
 	QAction* a = *it;
 	QRect r = actionGeometry( a );
@@ -1030,7 +1051,10 @@ void QtxMenu::paintEvent( QPaintEvent* e )
 	int x, y, w, h;
 	r.getRect( &x, &y, &w, &h );
 
-	if ( a == myExpandAction || a == myTitleAction || !visible.contains( a ) || a == activeAction() )
+	if ( a == myExpandAction || a == myTitleAction || a == activeAction() )
+	  continue;
+
+	if ( ( hm == HighlightPermanent ) != visible.contains( a ) )
 	  continue;
 
 	QRgb rc = img.pixel( x, y );

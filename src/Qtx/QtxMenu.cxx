@@ -1051,7 +1051,7 @@ void QtxMenu::paintEvent( QPaintEvent* e )
 	int x, y, w, h;
 	r.getRect( &x, &y, &w, &h );
 
-	if ( a == myExpandAction || a == myTitleAction || a == activeAction() )
+	if ( a == myExpandAction || a == myTitleAction || a == activeAction() || a->isSeparator() )
 	  continue;
 
 	if ( ( hm == HighlightPermanent ) != visible.contains( a ) )

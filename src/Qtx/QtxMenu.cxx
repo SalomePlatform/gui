@@ -750,7 +750,7 @@ QtxMenu::QtxMenu( QWidget* parent )
 : QMenu( parent ),
   myTitleMode( TitleOff ),
   myTitleAlign( Qt::AlignVCenter | Qt::AlignLeft ),
-  myLimit( 3 ),
+  myLimit( 2 ),
   myLimitMode( LimitFrequent ),
   myHighlightMode( HighlightFrequent ),
   myExpandAction( 0 )

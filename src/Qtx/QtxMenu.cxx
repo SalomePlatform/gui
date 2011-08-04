@@ -961,11 +961,16 @@ int QtxMenu::actionPriority( QAction* a )
   if ( _actionPriority.contains( a ) )
     p = _actionPriority[a];
 
-  if ( p >= 0 && a->menu() )
+  if ( a->menu() )
   {
     QList<QAction*> lst = a->menu()->actions();
-    for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end(); ++it )
-      p = qMax( p, _actionPriority.contains( *it ) ? _actionPriority[*it] : 0 );
+    for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end() && p >= 0; ++it ) {
+      int ap = _actionPriority.contains( *it ) ? _actionPriority[*it] : 0;
+      if ( ap < 0 )
+	p = ap;
+      else
+	p = qMax( p, ap );
+    }
   }
   return p;
 }

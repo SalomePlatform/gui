@@ -1214,6 +1214,16 @@ void QtxActionMenuMgr::setMenuPriority( const int id, const int p )
   return QtxMenu::setActionPriority( menuAction( id ), p );
 }
 
+bool QtxActionMenuMgr::isPermanentMenu( const int id ) const
+{
+  return QtxMenu::isPermanentAction( menuAction( id ) );
+}
+
+void QtxActionMenuMgr::setPermanentMenu( const int id, bool on )
+{
+  QtxMenu::setPermanentAction( menuAction( id ), on );
+}
+
 /*!
   \brief Perform delayed menu update.
   \param id menu item ID

@@ -361,7 +361,8 @@ static const char* expand_button_xpm[] = {
 "````````````````````````````````````"
 };
 
- QtxMenu::PriorityMap QtxMenu::_actionPriority;
+QtxMenu::PriorityMap QtxMenu::_actionPriority;
+QtxMenu::PermanentMap QtxMenu::_permanentActions;
 
 /*!
   \class QtxMenu::Title
@@ -958,14 +959,25 @@ bool QtxMenu::isMenuCollapsed() const
 int QtxMenu::actionPriority( QAction* a )
 {
   int p = 0;
-  if ( _actionPriority.contains( a ) )
+  if ( isPermanentAction( a ) )
+    p = -1;
+  else if ( _actionPriority.contains( a ) )
     p = _actionPriority[a];
 
   if ( a->menu() )
   {
     QList<QAction*> lst = a->menu()->actions();
     for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end() && p >= 0; ++it ) {
-      int ap = _actionPriority.contains( *it ) ? _actionPriority[*it] : 0;
+      QAction* ca = *it;
+      if ( ca->isSeparator() || !ca->isVisible() )
+        continue;
+
+      int ap = 0;
+      if ( isPermanentAction( ca ) )
+        ap = -1;
+      else
+        ap = _actionPriority.contains( ca ) ? _actionPriority[ca] : 0;
+
       if ( ap < 0 )
 	p = ap;
       else
@@ -984,6 +996,19 @@ void QtxMenu::setActionPriority( QAction* a, int p )
 {
   if ( a )
     _actionPriority.insert( a, p );
+}
+
+bool QtxMenu::isPermanentAction( QAction* a )
+{
+  return _permanentActions.contains( a );
+}
+
+void QtxMenu::setPermanentAction( QAction* a, bool on )
+{
+  if ( on )
+    _permanentActions.insert( a );
+  else
+    _permanentActions.remove( a );
 }
 
 /*!
@@ -1303,6 +1328,7 @@ QSet<QAction*> QtxMenu::collapsedActions() const
 	lst.append( *itr );
   }
 
+  int pvCount = 0;
   QSet<QAction*> visible;
   QMap<int, QList<QAction*> > freqMap;
   for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end(); ++it )
@@ -1311,9 +1337,13 @@ QSet<QAction*> QtxMenu::collapsedActions() const
     if ( a->isSeparator() || !a->isVisible() )
       continue;
 
-    int priority = a == defaultAction() ? -1 : actionPriority( a );
-    if ( priority < 0 )
+    int priority = actionPriority( a );
+    if ( a == defaultAction() )
       visible.insert( a );
+    else if ( priority < 0 ) {
+      pvCount++;
+      visible.insert( a );
+    }
     else
     {
       if ( !freqMap.contains( priority ) )
@@ -1332,6 +1362,10 @@ QSet<QAction*> QtxMenu::collapsedActions() const
     int i = freqList.count() - 1;
     for ( int c = 0; c < limit && i >= 0; i-- )
     {
+      // Skip the actions which has a zero priority (rating)
+      if ( pvCount && freqList[i] == 0 )
+        continue;
+
       QList<QAction*> lst = freqMap[freqList[i]];
       for ( QList<QAction*>::iterator it = lst.begin(); it != lst.end() && c < limit; ++it, c++ )
         visible.insert( *it );

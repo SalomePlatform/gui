@@ -105,6 +105,9 @@ public:
   int          menuPriority( const int ) const;
   void         setMenuPriority( const int, const int );
 
+  bool         isPermanentMenu( const int ) const;
+  void         setPermanentMenu( const int, bool );
+
 private slots:
   void         onAboutToShow();
   void         onAboutToHide();

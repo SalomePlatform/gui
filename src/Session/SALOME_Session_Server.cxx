@@ -18,26 +18,52 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 //  SALOME Session : implementation of Session.idl
 //  File : SALOME_Session_Server.cxx
 //  Author : Paul RASCLE, EDF
 //  Module : SALOME
-//
-#include <Container_init_python.hxx>
-#include <Utils_ORB_INIT.hxx>
-#include <Utils_SINGLETON.hxx>
+
 #include <SALOME_NamingService.hxx>
 #include <SALOME_ModuleCatalog_impl.hxx>
-#include <OpUtil.hxx>
-#include <RegistryService.hxx>
-#include <ConnectionManager_i.hxx>
 #include <SALOME_LifeCycleCORBA.hxx>
+#include <SALOME_Event.h>
+
+#include <CASCatch_OCCTVersion.hxx>
+
+#include <Container_init_python.hxx>
+#include <ConnectionManager_i.hxx>
+#include <RegistryService.hxx>
 
 #ifdef ENABLE_TESTRECORDER
   #include <TestApplication.h>
 #endif
+
+#include <OpUtil.hxx>
+#include <Utils_ORB_INIT.hxx>
+#include <Utils_SINGLETON.hxx>
+#include <Utils_SALOME_Exception.hxx>
+#include <Utils_CorbaException.hxx>
+
+#include <utilities.h>
+#include "Session_ServerLauncher.hxx"
+#include "Session_ServerCheck.hxx"
+
+#include <Qtx.h>
+#include <QtxSplash.h>
+
+#include <Style_Salome.h>
+
+#include <SUIT_Tools.h>
+#include <SUIT_Session.h>
+#include <SUIT_Application.h>
+#include <SUIT_Desktop.h>
+#include <SUIT_ResourceMgr.h>
+#include <SUIT_ExceptionHandler.h>
+
+#include <SALOMEconfig.h>
+#include CORBA_SERVER_HEADER(SALOME_Session)
+#include CORBA_SERVER_HEADER(SALOMEDS)
 
 #include <QDir>
 #include <QFile>
@@ -46,30 +72,6 @@
 #include <QWaitCondition>
 #include <QRegExp>
 #include <QTextStream>
-
-#include <Utils_SALOME_Exception.hxx>
-#include <Utils_CorbaException.hxx>
-#include <SALOME_Event.h>
-
-#include <SALOMEconfig.h>
-#include CORBA_SERVER_HEADER(SALOME_Session)
-#include CORBA_SERVER_HEADER(SALOMEDS)
-
-#include <utilities.h>
-#include "Session_ServerLauncher.hxx"
-#include "Session_ServerCheck.hxx"
-
-#include <Qtx.h>
-#include <QtxSplash.h>
-#include <Style_Salome.h>
-#include <SUIT_Tools.h>
-#include <SUIT_Session.h>
-#include <SUIT_Application.h>
-#include <SUIT_Desktop.h>
-#include <SUIT_ResourceMgr.h>
-#include <SUIT_ExceptionHandler.h>
-
-#include <Standard_Version.hxx>
 
 /*! - read arguments, define list of server to launch with their arguments.
  * - wait for naming service
@@ -272,7 +274,7 @@ public:
 
   virtual bool notify( QObject* receiver, QEvent* e )
   {
-#if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) < 0x060101
+#if OCC_VERSION_LARGE < 0x06010100
     // Disable GUI user actions while python command is executed
     if (SUIT_Session::IsPythonExecuted()) {
       // Disable mouse and keyboard events

@@ -18,14 +18,13 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-#
 
 #  SALOME Session : implementation of Session.idl
 #  File   : Makefile.in
 #  Author : Paul RASCLE, EDF
 #  Module : SALOME
 #  $Header$
-#
+
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libSalomeSession.la
@@ -52,7 +51,7 @@ libSalomeSession_la_CPPFLAGS = $(QT_MT_INCLUDES) $(PYTHON_INCLUDES)		\
 	@CORBA_CXXFLAGS@ @CORBA_INCLUDES@					\
 	-I$(top_builddir)/idl							\
 	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT -I$(srcdir)/../Event		\
-	-I$(srcdir)/../Style @LIBXML_INCLUDES@
+	-I$(srcdir)/../Style -I$(srcdir)/../CASCatch @LIBXML_INCLUDES@
 
 if ENABLE_TESTRECORDER
   libSalomeSession_la_CPPFLAGS+= -DENABLE_TESTRECORDER $(TESTRECORDER_INCLUDES)

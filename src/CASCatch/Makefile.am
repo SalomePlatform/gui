@@ -18,18 +18,18 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-#
 
 # File   : Makefile.am
 # Author : Sergey RUIN, Open CASCADE S.A.S (sergey.ruin@opencascade.com)
-#
+
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 
 salomeinclude_HEADERS = CASCatch.hxx			\
 			CASCatch_CatchSignals.hxx	\
 			CASCatch_ErrorHandler.hxx	\
-			CASCatch_Failure.hxx
+			CASCatch_Failure.hxx		\
+			CASCatch_OCCTVersion.hxx
 
 lib_LTLIBRARIES         = libCASCatch.la
 libCASCatch_la_SOURCES  =				\

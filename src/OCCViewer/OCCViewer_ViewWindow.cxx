@@ -18,11 +18,10 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 // File   : OCCViewer_ViewWindow.cxx
 // Author :
-//
+
 #include "OCCViewer_ViewWindow.h"
 #include "OCCViewer_ViewModel.h"
 #include "OCCViewer_ViewPort3d.h"
@@ -33,6 +32,8 @@
 #include "OCCViewer_SetRotationPointDlg.h"
 #include "OCCViewer_AxialScaleDlg.h"
 #include "OCCViewer_CubeAxesDlg.h"
+
+#include <CASCatch_OCCTVersion.hxx>
 
 #include <SUIT_Desktop.h>
 #include <SUIT_Session.h>
@@ -54,33 +55,28 @@
 #include <QMouseEvent>
 #include <QApplication>
 
-#include <V3d_Plane.hxx>
-#include <V3d_Light.hxx>
-#include <gp_Dir.hxx>
-#include <gp_Pln.hxx>
-#include <TColgp_Array1OfPnt2d.hxx>
-
 #include <AIS_ListOfInteractive.hxx>
 #include <AIS_ListIteratorOfListOfInteractive.hxx>
 #include <AIS_Shape.hxx>
 
 #include <BRep_Tool.hxx>
+#include <BRepBndLib.hxx>
 #include <TopoDS.hxx>
 
-#include <BRepBndLib.hxx>
 #include <Graphic3d_MapIteratorOfMapOfStructure.hxx>
-#include <Visual3d_View.hxx>
 #include <Graphic3d_MapOfStructure.hxx>
 #include <Graphic3d_Structure.hxx>
 #include <Graphic3d_ExportFormat.hxx>
 
-#include <Standard_Version.hxx>
+#include <Visual3d_View.hxx>
+#include <V3d_Plane.hxx>
+#include <V3d_Light.hxx>
 
-#ifdef OCC_VERSION_SERVICEPACK
-#define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8 | OCC_VERSION_SERVICEPACK)
-#else
-#define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8)
-#endif
+#include <gp_Dir.hxx>
+#include <gp_Pln.hxx>
+#include <TColgp_Array1OfPnt2d.hxx>
+
+#include <Standard_Version.hxx>
 
 static QEvent* l_mbPressEvent = 0;
 
@@ -1822,18 +1818,29 @@ void OCCViewer_ViewWindow::setCuttingPlane( bool on, const double x,  const doub
     // try to use already existing plane or create a new one
     Handle(V3d_Plane) clipPlane;
     view->InitActivePlanes();
-    if ( view->MoreActivePlanes() )
+
+    // calculate new a,b,c,d values for the plane
+    gp_Pln pln (gp_Pnt(x, y, z), gp_Dir(dx, dy, dz));
+    double a, b, c, d;
+    pln.Coefficients(a, b, c, d);
+
+#if OCC_VERSION_LARGE > 0x06040000 // Porting to OCCT6.5.1
+    if (view->MoreActivePlanes()) {
+      clipPlane = view->ActivePlane();
+      clipPlane->SetPlane(a, b, c, d);
+    }
+    else
+      clipPlane = new V3d_Plane (a, b, c, d);
+#else
+    if (view->MoreActivePlanes())
       clipPlane = view->ActivePlane();
     else
-      clipPlane = new V3d_Plane( viewer );
+      clipPlane = new V3d_Plane (viewer);
 
-    // set new a,b,c,d values for the plane
-    gp_Pln pln( gp_Pnt( x, y, z ), gp_Dir( dx, dy, dz ) );
-    double a, b, c, d;
-    pln.Coefficients( a, b, c, d );
-    clipPlane->SetPlane( a, b, c, d );
+    clipPlane->SetPlane(a, b, c, d);
+#endif
 
-    view->SetPlaneOn( clipPlane );
+    view->SetPlaneOn(clipPlane);
   }
   else
     view->SetPlaneOff();

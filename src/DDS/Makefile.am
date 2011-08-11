@@ -18,13 +18,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-#
 
 #  File   : Makefile.in
 #  Author : Alexander SOLOVYOV (OCN)
 #  Module : DDS
 #  $Header: /home/server/cvs/GUI/GUI_SRC/src/DDS/Makefile.in
-#
+
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libDDS.la
@@ -42,9 +41,6 @@ dist_libDDS_la_SOURCES = 	\
 	DDS_Dictionary.cxx	\
 	DDS_KeyWords.cxx
 
-libDDS_la_CPPFLAGS = $(CAS_CPPFLAGS)
+libDDS_la_CPPFLAGS = $(CAS_CPPFLAGS) -I$(srcdir)/../CASCatch
 
 libDDS_la_LDFLAGS  = $(CAS_KERNEL) $(CAS_OCAF)
-
-
-

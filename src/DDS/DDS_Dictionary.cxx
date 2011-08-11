@@ -18,11 +18,12 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 #include "DDS_Dictionary.h"
 
 #include "DDS_KeyWords.h"
+
+#include <CASCatch_OCCTVersion.hxx>
 
 #include <LDOMString.hxx>
 #include <LDOMParser.hxx>
@@ -551,7 +552,7 @@ Standard_Real DDS_Dictionary::ToSI( const Standard_Real theValue, const Standard
   if ( theUnits && *theUnits && strcmp( theUnits, "%" ) )
   {
     try {
-#if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) > 0x060100
+#if OCC_VERSION_LARGE > 0x06010000
       OCC_CATCH_SIGNALS;
 #endif
       aRetValue = UnitsAPI::AnyToSI( theValue, theUnits );
@@ -578,7 +579,7 @@ Standard_Real DDS_Dictionary::FromSI( const Standard_Real theValue, const Standa
   if ( theUnits && *theUnits && strcmp( theUnits, "%" ) )
   {
     try {
-#if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) > 0x060100
+#if OCC_VERSION_LARGE > 0x06010000
       OCC_CATCH_SIGNALS;
 #endif
       aRetValue = UnitsAPI::AnyFromSI( theValue, theUnits );

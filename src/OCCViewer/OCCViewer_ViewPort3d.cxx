@@ -18,13 +18,14 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 #include "OCCViewer_ViewPort3d.h"
 
 #include "OCCViewer_VService.h"
 #include "OCCViewer_ViewWindow.h"
 #include "OCCViewer_ViewModel.h"
+
+#include <CASCatch_OCCTVersion.hxx>
 
 #include <SUIT_ViewManager.h>
 
@@ -52,13 +53,7 @@ static int sx = 0;
 static int sy = 0;
 static Standard_Boolean zRotation = Standard_False;
 
-#include <Standard_Version.hxx>
-
-#ifdef OCC_VERSION_SERVICEPACK
-#define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8 | OCC_VERSION_SERVICEPACK)
-#else
-#define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8)
-#endif
+//#include <Standard_Version.hxx>
 
 /*!
   Constructor

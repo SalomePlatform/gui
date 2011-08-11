@@ -18,13 +18,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-#
 
 #  File   : Makefile.in
 #  Author : OCC team (OCN)
 #  Module : LightApp
 #  $Header$
-#
+
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 EXTRA_DIST += images
@@ -183,7 +182,8 @@ nodist_salomeres_DATA =		\
 libLightApp_la_CPPFLAGS = $(PYTHON_INCLUDES) $(QT_INCLUDES) $(CAS_CPPFLAGS)		\
 	$(HDF5_INCLUDES) @KERNEL_CXXFLAGS@ -I$(srcdir)/../SUIT -I$(srcdir)/../STD	\
 	-I$(srcdir)/../CAM -I$(srcdir)/../ObjBrowser -I$(srcdir)/../LogWindow		\
-	-I$(srcdir)/../Prs -I$(srcdir)/../Qtx -I$(srcdir)/../Event -I$(srcdir)/../Style
+	-I$(srcdir)/../Prs -I$(srcdir)/../Qtx -I$(srcdir)/../Event -I$(srcdir)/../Style	\
+	-I$(srcdir)/../CASCatch
 libLightApp_la_LDFLAGS = $(QT_MT_LIBS)
 
 if ENABLE_VTKVIEWER
@@ -240,7 +240,7 @@ if ENABLE_VTKVIEWER
 endif
 else !ENABLE_SALOMEOBJECT
   libLightApp_la_CPPFLAGS += -DDISABLE_SALOMEOBJECT
-  
+
 endif
 
 libLightApp_la_LIBADD = ../SUIT/libsuit.la ../STD/libstd.la ../CAM/libCAM.la			\

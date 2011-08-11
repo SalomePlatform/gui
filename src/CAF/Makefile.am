@@ -18,13 +18,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-#
 
 #  File   : Makefile.in
 #  Author : Vladimir Klyachin (OCN)
 #  Module : caf
 #  $Header$
-#
+
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libcaf.la
@@ -46,13 +45,14 @@ MOC_FILES =			\
 	CAF_Application_moc.cxx	\
 	CAF_Operation_moc.cxx	\
 	CAF_Study_moc.cxx
+
 nodist_libcaf_la_SOURCES = $(MOC_FILES)
 
 nodist_salomeres_DATA = \
 	CAF_msg_en.qm \
 	CAF_msg_fr.qm
 
-libcaf_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) -I$(srcdir)/../STD -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
+libcaf_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) -I$(srcdir)/../CASCatch	\
+	-I$(srcdir)/../STD -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 libcaf_la_LDFLAGS  = $(QT_MT_LIBS) $(CAS_OCAF) $(CAS_OCAFVIS)
 libcaf_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la ../STD/libstd.la
-

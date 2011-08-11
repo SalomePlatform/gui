@@ -18,13 +18,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-#
 
 #  File   : Makefile.in
 #  Author : Vladimir Klyachin (OCN)
 #  Module : SalomeApp
 #  $Header$
-#
+
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 if CPPUNIT_IS_OK

@@ -18,12 +18,11 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 // File:      LightApp_Application.cxx
 // Created:   6/20/2005 18:39:45 PM
 // Author:    Natalia Donis
-//
+
 #ifdef WNT
 // E.A. : On windows with python 2.6, there is a conflict
 // E.A. : between pymath.h and Standard_math.h which define
@@ -55,6 +54,8 @@
 #include "LightApp_SelectionMgr.h"
 #include "LightApp_DataObject.h"
 #include "LightApp_WgViewModel.h"
+
+#include <CASCatch_OCCTVersion.hxx>
 
 #include <SALOME_Event.h>
 
@@ -183,12 +184,6 @@
 #endif
 
 #include <Standard_Version.hxx>
-
-#ifdef OCC_VERSION_SERVICEPACK
-#define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8 | OCC_VERSION_SERVICEPACK)
-#else
-#define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8)
-#endif
 
 #define ToolBarMarker    0
 #define DockWidgetMarker 1

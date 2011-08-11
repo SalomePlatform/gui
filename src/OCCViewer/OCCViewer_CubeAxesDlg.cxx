@@ -18,7 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 #include "OCCViewer_CubeAxesDlg.h"
 
@@ -29,17 +28,11 @@
 #include "QtxAction.h"
 #include "QtxIntSpinBox.h"
 
+#include <CASCatch_OCCTVersion.hxx>
+
 #include <QCheckBox>
 #include <QGroupBox>
 #include <QLineEdit>
-
-#include <Standard_Version.hxx>
-
-#ifdef OCC_VERSION_SERVICEPACK
-#define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8 | OCC_VERSION_SERVICEPACK)
-#else
-#define OCC_VERSION_LARGE (OCC_VERSION_MAJOR << 24 | OCC_VERSION_MINOR << 16 | OCC_VERSION_MAINTENANCE << 8)
-#endif
 
 /*!
   \class OCCViewer_CubeAxesDlg::AxisWidget

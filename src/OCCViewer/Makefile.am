@@ -18,13 +18,12 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-#
 
 #  File   : Makefile.in
 #  Author : Vladimir Klyachin (OCN)
 #  Module : OCCViewer
 #  $Header$
-#
+
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 lib_LTLIBRARIES = libOCCViewer.la
@@ -126,7 +125,7 @@ nodist_salomeres_DATA =		\
 
 libOCCViewer_la_CPPFLAGS = $(QT_INCLUDES) $(OGL_INCLUDES) $(CAS_CPPFLAGS) \
 	-I$(srcdir)/../SUIT -I$(srcdir)/../ViewerTools -I$(srcdir)/../Qtx \
-	-I$(srcdir)/../OpenGLUtils
+	-I$(srcdir)/../OpenGLUtils -I$(srcdir)/../CASCatch
 
 libOCCViewer_la_LDFLAGS  = $(OGL_LIBS) $(QT_MT_LIBS) $(CAS_KERNEL) $(CAS_VIEWER)
 libOCCViewer_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la \

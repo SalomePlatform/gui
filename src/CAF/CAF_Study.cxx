@@ -18,12 +18,13 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 #include "CAF_Study.h"
 
 #include "CAF_Tools.h"
 #include "CAF_Application.h"
+
+#include <CASCatch_OCCTVersion.hxx>
 
 #include <SUIT_Desktop.h>
 #include <SUIT_MessageBox.h>
@@ -106,7 +107,7 @@ bool CAF_Study::createDocument( const QString& doc )
   if ( res && app && !app->stdApp().IsNull() )
   {
     try {
-#if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) > 0x060100
+#if OCC_VERSION_LARGE > 0x06010000
       OCC_CATCH_SIGNALS;
 #endif
       TColStd_SequenceOfExtendedString formats;
@@ -147,7 +148,7 @@ bool CAF_Study::openDocument( const QString& fname )
 
   bool status = false;
   try {
-#if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) > 0x060100
+#if OCC_VERSION_LARGE > 0x06010000
     OCC_CATCH_SIGNALS;
 #endif
     status = app->Open( CAF_Tools::toExtString( fname ), myStdDoc ) == CDF_RS_OK;
@@ -178,7 +179,7 @@ bool CAF_Study::saveDocumentAs( const QString& fname )
 
   bool status = false;
   try {
-#if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) > 0x060100
+#if OCC_VERSION_LARGE > 0x06010000
     OCC_CATCH_SIGNALS;
 #endif
     if ( save )
@@ -218,7 +219,7 @@ bool CAF_Study::openTransaction()
 
   bool res = true;
   try {
-#if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) > 0x060100
+#if OCC_VERSION_LARGE > 0x06010000
     OCC_CATCH_SIGNALS;
 #endif
     if ( myStdDoc->HasOpenCommand() )
@@ -244,7 +245,7 @@ bool CAF_Study::abortTransaction()
 
   bool res = true;
   try {
-#if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) > 0x060100
+#if OCC_VERSION_LARGE > 0x06010000
     OCC_CATCH_SIGNALS;
 #endif
     myStdDoc->AbortCommand();
@@ -267,7 +268,7 @@ bool CAF_Study::commitTransaction( const QString& name )
 
   bool res = true;
   try {
-#if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) > 0x060100
+#if OCC_VERSION_LARGE > 0x06010000
     OCC_CATCH_SIGNALS;
 #endif
     myStdDoc->CommitCommand();
@@ -372,7 +373,7 @@ bool CAF_Study::undo()
     return false;
 
   try {
-#if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) > 0x060100
+#if OCC_VERSION_LARGE > 0x06010000
     OCC_CATCH_SIGNALS;
 #endif
     myStdDoc->Undo();
@@ -396,7 +397,7 @@ bool CAF_Study::redo()
     return false;
 
   try {
-#if (OCC_VERSION_MAJOR << 16 | OCC_VERSION_MINOR << 8 | OCC_VERSION_MAINTENANCE) > 0x060100
+#if OCC_VERSION_LARGE > 0x06010000
     OCC_CATCH_SIGNALS;
 #endif
     myStdDoc->Redo();

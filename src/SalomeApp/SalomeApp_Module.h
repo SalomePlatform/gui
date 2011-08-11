@@ -72,6 +72,8 @@ public:
   virtual void                        studyClosed( SUIT_Study* );
   virtual void                        onObjectClicked( SUIT_DataObject*, int );
 
+  virtual void                        updateModuleVisibilityState();
+
 protected:
   virtual CAM_DataModel*              createDataModel();
   virtual void                        extractContainers( const SALOME_ListIO&, SALOME_ListIO& ) const;

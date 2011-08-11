@@ -150,32 +150,9 @@ bool SalomeApp_Module::activateModule( SUIT_Study* theStudy )
   if (!myIsFirstActivate)
     return state;
   
+  updateModuleVisibilityState();
+
   myIsFirstActivate = false;
-
-  // update visibility state of objects
-  SalomeApp_Application* app = dynamic_cast<SalomeApp_Application*>(application());
-  if (!app)
-    return false;
-  
-  SUIT_DataBrowser* ob = app->objectBrowser();
-  if (!ob || !ob->model())
-    return false;
-
-  // connect to click on item
-  connect( ob->model(), SIGNAL( clicked( SUIT_DataObject*, int ) ),
-           this, SLOT( onObjectClicked( SUIT_DataObject*, int ) ), Qt::UniqueConnection );
-
-
-  SUIT_DataObject* rootObj = ob->root();
-  if( !rootObj )
-    return false;
-  
-  DataObjectList listObj = rootObj->children( true );
-  
-  SUIT_ViewModel* vmod = 0;
-  if ( SUIT_ViewManager* vman = app->activeViewManager() )
-    vmod = vman->getViewModel();
-  app->updateVisibilityState( listObj, vmod );
   
   return state;
 }
@@ -290,4 +267,31 @@ bool SalomeApp_Module::renameObject( const QString& /*entry*/, const QString& /*
     }
   }
   return true;
+}
+
+void SalomeApp_Module::updateModuleVisibilityState() {
+
+  // update visibility state of objects
+  SalomeApp_Application* app = dynamic_cast<SalomeApp_Application*>(SUIT_Session::session()->activeApplication());
+  if (!app)
+    return;
+  
+  SUIT_DataBrowser* ob = app->objectBrowser();
+  if (!ob || !ob->model())
+    return;
+
+  // connect to click on item
+  connect( ob->model(), SIGNAL( clicked( SUIT_DataObject*, int ) ),
+           this, SLOT( onObjectClicked( SUIT_DataObject*, int ) ), Qt::UniqueConnection );
+
+  SUIT_DataObject* rootObj = ob->root();
+  if( !rootObj )
+    return;
+  
+  DataObjectList listObj = rootObj->children( true );
+  
+  SUIT_ViewModel* vmod = 0;
+  if ( SUIT_ViewManager* vman = app->activeViewManager() )
+    vmod = vman->getViewModel();
+  app->updateVisibilityState( listObj, vmod );
 }

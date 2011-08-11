@@ -1016,6 +1016,14 @@ QAction* CAM_Module::separator()
 }
 
 /*!
+  \brief Update visibility state of the module objects.
+*/
+void CAM_Module::updateModuleVisibilityState() {
+
+}
+
+
+/*!
   \brief Connect data model of the module to the active study
   \param camStudy CAM study object
 */

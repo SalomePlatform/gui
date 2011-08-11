@@ -311,16 +311,21 @@ LightApp_Displayer* LightApp_Displayer::FindDisplayer( const QString& mod_name, 
     return 0;
 
   LightApp_Module* m = dynamic_cast<LightApp_Module*>( app ? app->module( mod_name ) : 0 );
+  bool wasLoaded = false;
   if( !m && load )
   {
     m = dynamic_cast<LightApp_Module*>( app->loadModule( mod_name, false ) );
-    if( m )
+	if( m ) {
       app->addModule( m );
+	  wasLoaded = true;
+	}
   }
 
   if( m )
   {
     m->connectToStudy( dynamic_cast<CAM_Study*>( app->activeStudy() ) );
+	if( wasLoaded ) 
+		m->updateModuleVisibilityState();
   }
   return m ? m->displayer() : 0;
 }

@@ -80,6 +80,8 @@ public:
   void                   setToolShown( QAction*, const bool );
   void                   setToolShown( const int, const bool );
 
+  virtual void           updateModuleVisibilityState();
+
 public slots:
   virtual bool           activateModule( SUIT_Study* );
   virtual bool           deactivateModule( SUIT_Study* );

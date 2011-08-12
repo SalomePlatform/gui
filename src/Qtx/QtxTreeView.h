@@ -57,6 +57,8 @@ public:
 
   void     setSortingEnabled( const bool );
   bool     sortingEnabled() const;
+  void     setSortIndicators( const QVector<int>&, const QVector<Qt::SortOrder>& );
+  void     sortIndicators( QVector<int>&, QVector<Qt::SortOrder>& ) const;
 
   void     setMultiSortEnabled( const bool );
   bool     multiSortEnabled() const;

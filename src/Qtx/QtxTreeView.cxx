@@ -640,6 +640,22 @@ bool QtxTreeView::sortingEnabled() const
   return h && ( h->sortingEnabled() );
 }
 
+void QtxTreeView::setSortIndicators( const QVector<int>& inds, const QVector<Qt::SortOrder>& sorder)
+{
+  Header* h = dynamic_cast<Header*>( header() );
+  if( h ){
+    h->clearSortIndicators();
+    h->setSortIndicators( inds, sorder);
+  }
+}
+
+void QtxTreeView::sortIndicators( QVector<int>& inds, QVector<Qt::SortOrder>& sorder ) const
+{
+  Header* h = dynamic_cast<Header*>( header() );
+  if( h )
+    h->sortIndicators( inds, sorder);
+}
+
 /*!
   \brief Enables multi-column sorting.
   As soon as multi-column sorting is enabled, the user can click

@@ -1222,9 +1222,6 @@ void QtxMenu::expandMenu()
     return;
 
   QSet<QAction*> set = actions().toSet();
-
-  ActionList bakList = myActionBackup;
-
   for ( ActionList::iterator itr = myActionBackup.begin(); itr != myActionBackup.end(); ++itr )
   {
     QAction* a = *itr;

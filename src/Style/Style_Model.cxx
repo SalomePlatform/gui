@@ -515,6 +515,7 @@ void Style_Model::setColor( Style_Model::ColorRole role, const QColor& active,
     switch ( role ) {
     case WindowText:
     case Text:
+    case ButtonText:
       dc = color( Button ).darker();
       break;
     case Base:

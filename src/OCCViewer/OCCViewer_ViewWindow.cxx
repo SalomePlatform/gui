@@ -33,7 +33,7 @@
 #include "OCCViewer_AxialScaleDlg.h"
 #include "OCCViewer_CubeAxesDlg.h"
 
-#include <CASCatch_OCCTVersion.hxx>
+#include <Basics_OCCTVersion.hxx>
 
 #include <SUIT_Desktop.h>
 #include <SUIT_Session.h>

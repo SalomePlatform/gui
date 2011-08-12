@@ -55,7 +55,7 @@
 #include "LightApp_DataObject.h"
 #include "LightApp_WgViewModel.h"
 
-#include <CASCatch_OCCTVersion.hxx>
+#include <Basics_OCCTVersion.hxx>
 
 #include <SALOME_Event.h>
 

@@ -22,7 +22,7 @@
 #include "SalomeApp_ExceptionHandler.h"
 
 #include "CASCatch.hxx"
-#include "CASCatch_OCCTVersion.hxx"
+#include "Basics_OCCTVersion.hxx"
 
 #include <OSD.hxx>
 

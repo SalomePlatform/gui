@@ -23,7 +23,7 @@
 
 #include "DDS_KeyWords.h"
 
-#include <CASCatch_OCCTVersion.hxx>
+#include <Basics_OCCTVersion.hxx>
 
 #include <LDOMString.hxx>
 #include <LDOMParser.hxx>

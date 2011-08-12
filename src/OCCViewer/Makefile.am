@@ -123,7 +123,7 @@ nodist_salomeres_DATA =		\
 	OCCViewer_msg_en.qm 	\
 	OCCViewer_msg_fr.qm 
 
-libOCCViewer_la_CPPFLAGS = $(QT_INCLUDES) $(OGL_INCLUDES) $(CAS_CPPFLAGS) \
+libOCCViewer_la_CPPFLAGS = $(QT_INCLUDES) $(OGL_INCLUDES) $(CAS_CPPFLAGS) @KERNEL_CXXFLAGS@ \
 	-I$(srcdir)/../SUIT -I$(srcdir)/../ViewerTools -I$(srcdir)/../Qtx \
 	-I$(srcdir)/../OpenGLUtils -I$(srcdir)/../CASCatch
 

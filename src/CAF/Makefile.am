@@ -52,7 +52,7 @@ nodist_salomeres_DATA = \
 	CAF_msg_en.qm \
 	CAF_msg_fr.qm
 
-libcaf_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) -I$(srcdir)/../CASCatch	\
+libcaf_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) @KERNEL_CXXFLAGS@	\
 	-I$(srcdir)/../STD -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 libcaf_la_LDFLAGS  = $(QT_MT_LIBS) $(CAS_OCAF) $(CAS_OCAFVIS)
 libcaf_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la ../STD/libstd.la

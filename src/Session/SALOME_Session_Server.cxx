@@ -29,7 +29,7 @@
 #include <SALOME_LifeCycleCORBA.hxx>
 #include <SALOME_Event.h>
 
-#include <CASCatch_OCCTVersion.hxx>
+#include <Basics_OCCTVersion.hxx>
 
 #include <Container_init_python.hxx>
 #include <ConnectionManager_i.hxx>

@@ -25,7 +25,7 @@
 #include "OCCViewer_ViewWindow.h"
 #include "OCCViewer_ViewModel.h"
 
-#include <CASCatch_OCCTVersion.hxx>
+#include <Basics_OCCTVersion.hxx>
 
 #include <SUIT_ViewManager.h>
 

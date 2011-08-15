@@ -28,8 +28,7 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 salomeinclude_HEADERS = CASCatch.hxx			\
 			CASCatch_CatchSignals.hxx	\
 			CASCatch_ErrorHandler.hxx	\
-			CASCatch_Failure.hxx		\
-			CASCatch_OCCTVersion.hxx
+			CASCatch_Failure.hxx
 
 lib_LTLIBRARIES         = libCASCatch.la
 libCASCatch_la_SOURCES  =				\

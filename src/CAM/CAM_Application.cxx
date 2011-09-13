@@ -31,6 +31,9 @@
 #include <SUIT_MessageBox.h>
 #include <SUIT_ResourceMgr.h>
 
+#include <KERNEL_version.h>
+#include <GUI_version.h>
+
 #include <QApplication>
 #include <QRegExp>
 
@@ -288,6 +291,7 @@ CAM_Module* CAM_Application::loadModule( const QString& modName, const bool show
 
   QString err;
   GET_MODULE_FUNC crtInst = 0;
+  GET_VERSION_FUNC getVersion = 0;
 
 #ifdef WIN32
   HINSTANCE modLib = ::LoadLibrary( libName.toLatin1() ); 
@@ -310,6 +314,8 @@ CAM_Module* CAM_Application::loadModule( const QString& modName, const bool show
     err = QString( "Failed to find  %1 function. %2" ).arg( GET_MODULE_NAME ).arg( (LPTSTR)lpMsgBuf );
     ::LocalFree( lpMsgBuf );
     }
+
+    getVersion = (GET_VERSION_FUNC)::GetProcAddress( modLib, GET_VERSION_NAME );
   }
 #else
   void* modLib = dlopen( libName.toLatin1(), RTLD_LAZY );
@@ -320,6 +326,8 @@ CAM_Module* CAM_Application::loadModule( const QString& modName, const bool show
     crtInst = (GET_MODULE_FUNC)dlsym( modLib, GET_MODULE_NAME );
     if ( !crtInst )
       err = QString( "Failed to find function %1. %2" ).arg( GET_MODULE_NAME ).arg( dlerror() );
+
+    getVersion = (GET_VERSION_FUNC)dlsym( modLib, GET_VERSION_NAME );
   }
 #endif
 
@@ -337,6 +345,19 @@ CAM_Module* CAM_Application::loadModule( const QString& modName, const bool show
       qWarning( qPrintable( err ) ); 
   }
 
+  char* version = getVersion ? getVersion() : 0;
+
+  if(version) {    
+    for ( ModuleInfoList::iterator it = myInfoList.begin(); it != myInfoList.end(); ++it ) {
+      if ( (*it).title == modName ) {
+	if( (*it).version.isEmpty() ) {
+	  (*it).version = QString(version);
+	}
+	break;
+      }
+    }
+  }
+  
   return module;
 }
 
@@ -691,12 +712,15 @@ void CAM_Application::readModuleList()
 
     bool aIsSingleton = resMgr->booleanValue(*it, "singleton", false);
 
+    QString ver = resMgr->stringValue(*it, modName + "_VERSION", QString());
+
     ModuleInfo inf;
     inf.name = modName;
     inf.title = modTitle;
     inf.internal = modLibrary;
     inf.icon = modIcon;
     inf.isSingleton = aIsSingleton;
+    inf.version = ver;
     myInfoList.append( inf );
   }
 
@@ -735,4 +759,30 @@ void CAM_Application::createEmptyStudy()
 {
   /*SUIT_Study* study = */activeStudy();
   STD_Application::createEmptyStudy();
+}
+
+/*!
+  \brief Return information about version of the each module.
+*/
+CAM_Application::ModuleShortInfoList CAM_Application::getVersionInfo() const {
+
+  ModuleShortInfoList info;
+
+  ModuleShortInfo kernel;
+  kernel.name = "KERNEL";
+  kernel.version = GUI_VERSION_STR;
+  info.append(kernel);
+
+  ModuleShortInfo gui;
+  gui.name = "GUI";
+  gui.version = GUI_VERSION_STR;
+  info.append(gui);
+
+  for(int i = 0; i < myInfoList.size(); i++) {
+    ModuleShortInfo infoItem;
+    infoItem.name = myInfoList.at(i).title;
+    infoItem.version = myInfoList.at(i).version;
+    info.append(infoItem);
+  }  
+  return info;
 }

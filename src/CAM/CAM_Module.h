@@ -152,8 +152,9 @@ private:
 extern "C"
 {
   typedef CAM_Module* (*GET_MODULE_FUNC)();
+  typedef char* (*GET_VERSION_FUNC)();
 }
 
 #define GET_MODULE_NAME "createModule"
-
+#define GET_VERSION_NAME "getModuleVersion"
 #endif

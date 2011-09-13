@@ -19,6 +19,22 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>About %1</translation>
     </message>
     <message>
+        <source>ABOUT_BASE</source>
+        <translation>Base information</translation>
+    </message>
+    <message>
+        <source>ABOUT_MODULE_INFOS</source>
+        <translation>Modules information</translation>
+    </message>
+    <message>
+        <source>ABOUT_UNKNOWN_VERSION</source>
+        <translation>Unknown</translation>
+    </message>
+    <message>
+        <source>ABOUT_CLOSE</source>
+        <translation>&amp;Close</translation>
+    </message>    
+    <message>
         <source>APP_NAME</source>
         <translation>SALOME</translation>
     </message>

@@ -41,6 +41,8 @@ class CAM_EXPORT CAM_Application : public STD_Application
 
 public:
   typedef QList<CAM_Module*> ModuleList;
+  typedef struct { QString name;  QString version; } ModuleShortInfo;
+  typedef QList<ModuleShortInfo> ModuleShortInfoList;
 
 public:
   CAM_Application( const bool = true );
@@ -71,6 +73,8 @@ public:
 
   virtual void        createEmptyStudy();
 
+  ModuleShortInfoList getVersionInfo() const;
+
 protected:
   virtual SUIT_Study* createNewStudy();
   virtual void        updateCommandsStatus();
@@ -88,7 +92,7 @@ private:
   void                readModuleList();
 
 private:
-  typedef struct { QString name, title, internal, icon; bool isSingleton; } ModuleInfo;
+  typedef struct { QString name, title, internal, icon; bool isSingleton; QString version; } ModuleInfo;
   typedef QList<ModuleInfo> ModuleInfoList;
 
 private:

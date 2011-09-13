@@ -45,13 +45,12 @@ public:
   LightApp_AboutDlg( const QString&, const QString&, QWidget* = 0 );
   virtual ~LightApp_AboutDlg();
 
-protected:
-  virtual void mousePressEvent( QMouseEvent* );
-
 private:
   void checkLabel( QLabel* ) const;
   void changeFont( QWidget*, const bool = false, const bool = false,
                    const bool = false, const int = 0 ) const;
+
+  QWidget* getModulesInfoWidget(QWidget* parent) const;
 };
 
 #endif

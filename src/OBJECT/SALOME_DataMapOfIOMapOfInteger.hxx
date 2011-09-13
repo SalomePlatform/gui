@@ -18,12 +18,11 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 //  SALOME SALOMEGUI : implementation of desktop and GUI kernel
 //  File   : SALOME_DataMapOfIOMapOfInteger.hxx
 //  Module : SALOME
-//
+
 #ifndef _SALOME_DataMapOfIOMapOfInteger_HeaderFile
 #define _SALOME_DataMapOfIOMapOfInteger_HeaderFile
 
@@ -42,6 +41,7 @@
 #ifndef _Standard_Boolean_HeaderFile
 #include <Standard_Boolean.hxx>
 #endif
+
 class Standard_DomainError;
 class Standard_NoSuchObject;
 class SALOME_InteractiveObject;
@@ -50,13 +50,14 @@ class TColStd_MapTransientHasher;
 class SALOME_DataMapNodeOfDataMapOfIOMapOfInteger;
 class SALOME_DataMapIteratorOfDataMapOfIOMapOfInteger;
 
-
 #ifndef _Standard_HeaderFile
 #include <Standard.hxx>
 #endif
 #ifndef _Standard_Macro_HeaderFile
 #include <Standard_Macro.hxx>
 #endif
+
+#include <Basics_OCCTVersion.hxx>
 
 class SALOME_DataMapOfIOMapOfInteger  : public TCollection_BasicMap {
 
@@ -74,10 +75,7 @@ public:
       { 
         if (anAddress) Standard::Free((Standard_Address&)anAddress); 
       }
-//    inline void  operator delete(void *anAddress, size_t size) 
-//      { 
-//        if (anAddress) Standard::Free((Standard_Address&)anAddress,size); 
-//      }
+
  // Methods PUBLIC
  // 
 Standard_EXPORT SALOME_DataMapOfIOMapOfInteger(const Standard_Integer NbBuckets = 1);
@@ -109,40 +107,16 @@ Standard_EXPORT   TColStd_IndexedMapOfInteger& ChangeFind(const Handle(SALOME_In
   return ChangeFind(K);
 }
 
-
-
-
-
-
-protected:
-
- // Methods PROTECTED
- // 
-
-
- // Fields PROTECTED
- //
-
+#if OCC_VERSION_LARGE > 0x06050100 // for OCC-6.5.2 and higher version
+Standard_EXPORT   Standard_Address Find1 (const Handle(SALOME_InteractiveObject)& K) const;
+Standard_EXPORT   Standard_Address ChangeFind1 (const Handle(SALOME_InteractiveObject)& K);
+#endif
 
 private: 
-
- // Methods PRIVATE
- // 
 Standard_EXPORT SALOME_DataMapOfIOMapOfInteger(const SALOME_DataMapOfIOMapOfInteger& Other);
-
-
- // Fields PRIVATE
- //
-
-
 };
-
-
-
-
 
 // other inline functions and methods (like "C++: function call" methods)
 //
-
 
 #endif

@@ -18,7 +18,6 @@
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-#
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
@@ -58,7 +57,7 @@ dist_libSalomeObject_la_SOURCES =				\
 	SALOME_DataMapNodeOfDataMapOfIOMapOfInteger_0.cxx	\
 	SALOME_DataMapIteratorOfDataMapOfIOMapOfInteger_0.cxx
 
-libSalomeObject_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS)
+libSalomeObject_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) @KERNEL_CXXFLAGS@
 libSalomeObject_la_LDFLAGS  = $(QT_LIBS) $(CAS_LDPATH) -lTKV3d
 
 # internal (non-distributed) headers

@@ -400,7 +400,7 @@ The changes will be applied on the next application session.</translation>
     </message>
     <message>
         <source>PREF_AUTO_SIZE_FIRST</source>
-        <translation>Auto size for first column</translation>
+        <translation>Auto size for "Name" column</translation>
     </message>
     <message>
         <source>PREF_RESIZE_ON_EXPAND_ITEM</source>

@@ -19,6 +19,22 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>A propos de %1</translation>
     </message>
     <message>
+        <source>ABOUT_BASE</source>
+        <translation>Informations générales</translation>
+    </message>
+    <message>
+        <source>ABOUT_MODULE_INFOS</source>
+        <translation>Modules</translation>
+    </message>
+    <message>
+        <source>ABOUT_UNKNOWN_VERSION</source>
+        <translation>Inconnue</translation>
+    </message>
+    <message>
+        <source>ABOUT_CLOSE</source>
+        <translation>&amp;Fermer</translation>
+    </message>    
+    <message>
         <source>APP_NAME</source>
         <translation>SALOME</translation>
     </message>
@@ -384,7 +400,7 @@ Les modifications seront appliquées à la prochaine session.</translation>
     </message>
     <message>
         <source>PREF_AUTO_SIZE_FIRST</source>
-        <translation>Taille automatique pour la première colonne</translation>
+        <translation>Taille automatique pour la colonne "Nom"</translation>
     </message>
     <message>
         <source>PREF_RESIZE_ON_EXPAND_ITEM</source>

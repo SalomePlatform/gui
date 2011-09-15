@@ -91,6 +91,9 @@ public:
 
   QWidget*            addWindow( QWidget*, Qt::WindowFlags = 0 );
 
+  QString             widgetToolTip( QWidget* ) const;
+  void                setWidgetToolTip( QWidget*, const QString& );
+
   void Split( QWidget* wid, const Qt::Orientation o, const SplitType type );
   void Attract( QWidget* wid1, QWidget* wid2, const bool all );
   void SetRelativePosition( QWidget* wid, const Qt::Orientation o, const double pos );
@@ -196,6 +199,9 @@ public:
 
   int                 tabAt( const QPoint& ) const;
 
+  QString             widgetToolTip( QWidget* ) const;
+  void                setWidgetToolTip( QWidget*, const QString& );
+
 signals:
   void                activated( QWidget* );
   void                contextMenuRequested( QWidget*, QPoint );
@@ -254,7 +260,7 @@ private:
   struct WidgetInfo
   {
     WidgetInfo() : id( 0 ), vis( false ) {}
-    int id; bool vis;
+    int id; bool vis; QString tip;
   };
 
   typedef QMap<QWidget*, bool>               BlockMap;
@@ -330,12 +336,13 @@ protected:
   virtual void        mouseReleaseEvent( QMouseEvent* );
   virtual void        contextMenuEvent( QContextMenuEvent* );
   virtual void        changeEvent( QEvent* );
-
-//  virtual void        paintLabel( QPainter*, const QRect&, QTab*, bool ) const;
+  virtual void        tabInserted( int );
+  virtual void        tabRemoved( int );
 
 private:
   int                 myId;         //!< current tab page index
   bool                myActive;     //!< "active" status
+  QMap<int, int>      myIdIndex;
 };
 
 class QtxWorkstackDrag : public QObject

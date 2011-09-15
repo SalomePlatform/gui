@@ -165,13 +165,24 @@ void QtxWorkstackDrag::setTarget( QtxWorkstackArea* area, const int tab )
 
 /*!
   \brief Called when drop operation is finished.
-  
+
   Inserts dropped widget to the target workarea.
 */
 void QtxWorkstackDrag::dropWidget()
 {
-  if ( myArea )
+  if ( myArea ) {
+    QtxWorkstackArea* curArea = 0;
+    QWidget* w = myChild->parentWidget();
+    while ( !curArea && w ) {
+      curArea = ::qobject_cast<QtxWorkstackArea*>( w );
+      w = w->parentWidget();
+    }
+    QString tip;
+    if ( curArea )
+      tip = curArea->widgetToolTip( myChild->widget() );
     myArea->insertWidget( myChild->widget(), myTab );
+    myArea->setWidgetToolTip( myChild->widget(), tip );
+  }
 }
 
 /*!
@@ -277,7 +288,7 @@ QSize CloseButton::sizeHint() const
 {
   ensurePolished();
   int dim = 0;
-  if( !icon().isNull() ) 
+  if( !icon().isNull() )
   {
     const QPixmap pm = icon().pixmap( style()->pixelMetric( QStyle::PM_SmallIconSize ),
                                       QIcon::Normal );
@@ -292,8 +303,8 @@ QSize CloseButton::sizeHint() const
   \return minimum size value
 */
 QSize CloseButton::minimumSizeHint() const
-{ 
-  return sizeHint(); 
+{
+  return sizeHint();
 }
 
 /*!
@@ -516,8 +527,9 @@ void QtxWorkstackArea::removeWidget( QWidget* wid, const bool del )
 
   myStack->removeWidget( child( wid ) );
 
-  if ( myBar->indexOf( widgetId( wid ) ) != -1 )
-    myBar->removeTab( myBar->indexOf( widgetId( wid ) ) );
+  int idx = myBar->indexOf( widgetId( wid ) );
+  if ( idx != -1 )
+    myBar->removeTab( idx );
 
   myList.removeAll( wid );
   myInfo.remove( wid );
@@ -698,6 +710,22 @@ int QtxWorkstackArea::tabAt( const QPoint& pnt ) const
       idx = i;
   }
   return idx;
+}
+
+QString QtxWorkstackArea::widgetToolTip( QWidget* w ) const
+{
+  QString tip;
+  if ( myInfo.contains( w ) )
+    tip = myInfo[w].tip;
+  return tip;
+}
+
+void QtxWorkstackArea::setWidgetToolTip( QWidget* w, const QString& tip )
+{
+  if ( myInfo.contains( w ) ) {
+    myInfo[w].tip = tip;
+    updateTab( w );
+  }
 }
 
 /*!
@@ -889,6 +917,7 @@ void QtxWorkstackArea::updateTab( QWidget* wid )
 
   myBar->setTabIcon( idx, wid->windowIcon() );
   myBar->setTabText( idx, wid->windowTitle() );
+  myBar->setTabToolTip( idx, widgetToolTip( wid ) );
 }
 
 /*!
@@ -987,10 +1016,12 @@ void QtxWorkstackArea::updateState()
     bool vis = widgetVisibility( wid );
 
     int cIdx = myBar->indexOf( id );
-    if ( cIdx != -1 && ( !vis || myBar->indexOf( id ) != idx ) )
+    if ( cIdx != -1 && ( !vis || cIdx != idx ) ) {
       myBar->removeTab( cIdx );
+      cIdx = -1;
+    }
 
-    if ( myBar->indexOf( id ) == -1 && vis )
+    if ( cIdx == -1 && vis )
       myBar->setTabId( myBar->insertTab( idx, wid->windowTitle() ), id );
 
     updateTab( wid );
@@ -1316,7 +1347,9 @@ int QtxWorkstackTabBar::tabId( const int index ) const
 */
 void QtxWorkstackTabBar::setTabId( const int index, const int id )
 {
+  myIdIndex.remove( tabId( index ) );
   setTabData( index, id );
+  myIdIndex.insert( id, index );
 }
 
 /*!
@@ -1327,11 +1360,16 @@ void QtxWorkstackTabBar::setTabId( const int index, const int id )
 int QtxWorkstackTabBar::indexOf( const int id ) const
 {
   int index = -1;
+  /*
   for ( int i = 0; i < (int)count() && index < 0; i++ )
   {
     if ( tabId( i ) == id )
       index = i;
   }
+  */
+  if ( myIdIndex.contains( id ) )
+    index = myIdIndex[id];
+
   return index;
 }
 
@@ -1437,18 +1475,25 @@ void QtxWorkstackTabBar::changeEvent( QEvent* /*e*/ )
   updateActiveState();
 }
 
-/*
-void QtxWorkstackTabBar::paintLabel( QPainter* p, const QRect& br, QTab* t, bool has_focus ) const
+void QtxWorkstackTabBar::tabInserted( int index )
 {
-  if ( currentTab() != t->identifier() )
-  {
-    QFont fnt = p->font();
-    fnt.setUnderline( false );
-    p->setFont( fnt );
+  QTabBar::tabInserted( index );
+
+  for ( QMap<int, int>::iterator it = myIdIndex.begin(); it != myIdIndex.end(); ++it ) {
+    if ( it.value() >= index )
+      it.value()++;
   }
-  QTabBar::paintLabel( p, br, t, has_focus );
 }
-*/
+
+void QtxWorkstackTabBar::tabRemoved( int index )
+{
+  QTabBar::tabRemoved( index );
+
+  for ( QMap<int, int>::iterator it = myIdIndex.begin(); it != myIdIndex.end(); ++it ) {
+    if ( it.value() > index )
+      it.value()--;
+  }
+}
 
 /*!
   \fn void QtxWorkstackTabBar::dragActiveTab()
@@ -1466,11 +1511,11 @@ void QtxWorkstackTabBar::paintLabel( QPainter* p, const QRect& br, QTab* t, bool
   \brief Workstack widget.
 
   Organizes the child widgets in the tabbed space.
-  Allows splitting the working area to arrange the child widgets in 
+  Allows splitting the working area to arrange the child widgets in
   arbitrary way. Any widgets can be moved to another working area with
   drag-n-drop operation.
 
-  This widget can be used as workspace of the application main window, 
+  This widget can be used as workspace of the application main window,
   for example, as kind of implementation of multi-document interface.
 */
 
@@ -1518,9 +1563,9 @@ QtxWorkstack::~QtxWorkstack()
 }
 
 /*!
-  \brief Get list of all widgets in all areas or in specified area which given 
+  \brief Get list of all widgets in all areas or in specified area which given
          widget belongs to
-  \param wid widget specifying area if it is equal to null when widgets of all 
+  \param wid widget specifying area if it is equal to null when widgets of all
          areas are retuned
   \return list of widgets
 */
@@ -1531,7 +1576,7 @@ QWidgetList QtxWorkstack::windowList( QWidget* wid ) const
   {
     areas( mySplit, lst, true );
   }
-  else 
+  else
   {
     QtxWorkstackArea* area = wgArea( wid );
     if ( area )
@@ -1609,11 +1654,14 @@ void QtxWorkstack::split( const int o )
 
   trg->setOrientation( (Qt::Orientation)o );
 
+  QString tip = area->widgetToolTip( curWid );
+
   QtxWorkstackArea* newArea = createArea( 0 );
   trg->insertWidget( trg->indexOf( area ) + 1, newArea );
 
   area->removeWidget( curWid );
   newArea->insertWidget( curWid );
+  newArea->setWidgetToolTip( curWid, tip );
 
   distributeSpace( trg );
 
@@ -1681,8 +1729,10 @@ void QtxWorkstack::Split( QWidget* wid, const Qt::Orientation o, const SplitType
       QWidget* wid_i = *itr;
       if ( wid_i != wid )
       {
+	QString tip = area->widgetToolTip( wid_i );
         area->removeWidget( wid_i );
         newArea->insertWidget( wid_i );
+	newArea->setWidgetToolTip( wid_i, tip );
       }
     }
     break;
@@ -1694,15 +1744,21 @@ void QtxWorkstack::Split( QWidget* wid, const Qt::Orientation o, const SplitType
       }
       for ( ; itr != wids.end(); ++itr )
       {
+	QString tip = area->widgetToolTip( *itr );
         area->removeWidget( *itr );
         newArea->insertWidget( *itr );
+	newArea->setWidgetToolTip( *itr, tip );
       }
     }
     break;
   case SplitMove:
-    area->removeWidget( wid );
-    newArea->insertWidget( wid );
-    break;
+    {
+      QString tip = area->widgetToolTip( wid );
+      area->removeWidget( wid );
+      newArea->insertWidget( wid );
+      newArea->setWidgetToolTip( wid, tip );
+      break;
+    }
   }
 
   distributeSpace( trg );
@@ -1962,8 +2018,8 @@ void QtxWorkstack::setIcon( const int id, const QIcon& icon )
 
 /*!
   \brief Set actions to be visible in the context popup menu.
-  
-  Actions, which IDs are set in \a flags parameter, will be shown in the 
+
+  Actions, which IDs are set in \a flags parameter, will be shown in the
   context popup menu. Other actions will not be shown.
 
   \param flags ORed together actions flags
@@ -1978,8 +2034,8 @@ void QtxWorkstack::setMenuActions( const int flags )
 
 /*!
   \brief Set actions to be visible in the context popup menu.
-  
-  Actions, which IDs are set in \a flags parameter, will be shown in the 
+
+  Actions, which IDs are set in \a flags parameter, will be shown in the
   context popup menu. Other actions will not be shown.
 
   \param flags ORed together actions flags
@@ -2505,6 +2561,26 @@ void QtxWorkstack::onContextMenuRequested( QWidget* w, QPoint p )
   myWorkArea = 0;
 }
 
+QString QtxWorkstack::widgetToolTip( QWidget* w ) const
+{
+  QString tip;
+  if ( w ) {
+    QtxWorkstackArea* a = wgArea( w );
+    if ( a )
+      tip = a->widgetToolTip( w );
+  }
+  return tip;
+}
+
+void QtxWorkstack::setWidgetToolTip( QWidget* w, const QString& tip )
+{
+  if ( w ) {
+    QtxWorkstackArea* a = wgArea( w );
+    if ( a )
+      a->setWidgetToolTip( w, tip );
+  }
+}
+
 /*!
   \brief Add child widget.
   \param w widget
@@ -2921,7 +2997,7 @@ static bool checkFormat( const QString& parameters )
 /*!
   \brief Get splitter's children descriptions from the string.
   \internal
-  
+
   Child widgets descriptions are separated by '(' and ')' symbols.
 
   \param str string to be processed
@@ -3160,9 +3236,9 @@ QtxWorkstackArea* QtxWorkstack::wgArea( QWidget* wid ) const
   \brief Moves the first widget to the same area which the second widget belongs to
   \param wid widget to be moved
   \param wid_to widget specified the destination area
-  \param before specifies whether the first widget has to be moved before or after 
+  \param before specifies whether the first widget has to be moved before or after
          the second widget
-  \return TRUE if operation is completed successfully, FALSE otherwise 
+  \return TRUE if operation is completed successfully, FALSE otherwise
 */
 bool QtxWorkstack::move( QWidget* wid, QWidget* wid_to, const bool before )
 {
@@ -3197,7 +3273,7 @@ bool QtxWorkstack::move( QWidget* wid, QWidget* wid_to, const bool before )
 
 /*!
   \brief Group all windows in one area
-  \return TRUE if operation is completed successfully, FALSE otherwise 
+  \return TRUE if operation is completed successfully, FALSE otherwise
 */
 void QtxWorkstack::stack()
 {
@@ -3215,13 +3291,15 @@ void QtxWorkstack::stack()
       area_to = wgArea( *it );
       area_src = area_to;
     }
-    else 
+    else
       area_src = wgArea( *it );
 
     if ( area_src != area_to )
     {
+      QString tip = area_src->widgetToolTip( *it );
       area_src->removeWidget( *it, true );
       area_to->insertWidget( *it, -1 );
+      area_to->setWidgetToolTip( *it, tip );
     }
   }
 }

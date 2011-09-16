@@ -712,7 +712,7 @@ void CAM_Application::readModuleList()
 
     bool aIsSingleton = resMgr->booleanValue(*it, "singleton", false);
 
-    QString ver = resMgr->stringValue(*it, modName + "_VERSION", QString());
+    QString ver = resMgr->stringValue(*it, "version", QString());
 
     ModuleInfo inf;
     inf.name = modName;

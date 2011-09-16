@@ -2325,7 +2325,7 @@ void QtxPagePrefSelectItem::setInputType( const int type )
 /*!
   \brief Get the list of the values from the selection widget.
   \return list of values
-  \sa numbers(), setStrings()
+  \sa numbers(), icons(), setStrings()
 */
 QStringList QtxPagePrefSelectItem::strings() const
 {
@@ -2338,7 +2338,7 @@ QStringList QtxPagePrefSelectItem::strings() const
 /*!
   \brief Get the list of the values identifiers from the selection widget.
   \return list of values IDs
-  \sa strings(), setNumbers()
+  \sa strings(), icons(), setNumbers()
 */
 QList<int> QtxPagePrefSelectItem::numbers() const
 {
@@ -2348,6 +2348,19 @@ QList<int> QtxPagePrefSelectItem::numbers() const
     if ( mySelector->hasId( i ) )
       res.append( mySelector->id( i ) );
   }
+  return res;
+}
+
+/*!
+  \brief Get the list of the icons from the selection widget.
+  \return list of icons
+  \sa strings(), numbers(), setIcons()
+*/
+QList<QIcon> QtxPagePrefSelectItem::icons() const
+{
+  QList<QIcon> res;
+  for ( uint i = 0; i < mySelector->count(); i++ )
+    res.append( mySelector->itemIcon( i ) );
   return res;
 }
 
@@ -2372,6 +2385,18 @@ void QtxPagePrefSelectItem::setNumbers( const QList<int>& ids )
   uint i = 0;
   for ( QList<int>::const_iterator it = ids.begin(); it != ids.end() && i < mySelector->count(); ++it, i++ )
     mySelector->setId( i, *it );
+}
+
+/*!
+  \brief Set the list of the icons to the selection widget.
+  \param lst new list of icons
+  \sa numbers(), strings(), setIcons()
+*/
+void QtxPagePrefSelectItem::setIcons( const QList<QIcon>& icons )
+{
+  uint i = 0;
+  for ( QList<QIcon>::const_iterator it = icons.begin(); it != icons.end() && i < mySelector->count(); ++it, i++ )
+    mySelector->setItemIcon( i, *it );
 }
 
 /*!

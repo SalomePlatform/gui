@@ -1483,16 +1483,23 @@ void QtxWorkstackTabBar::tabInserted( int index )
     if ( it.value() >= index )
       it.value()++;
   }
+  myIdIndex.insert( tabId( index ), index );
 }
 
 void QtxWorkstackTabBar::tabRemoved( int index )
 {
   QTabBar::tabRemoved( index );
 
+  int id = -1;
   for ( QMap<int, int>::iterator it = myIdIndex.begin(); it != myIdIndex.end(); ++it ) {
-    if ( it.value() > index )
+    if ( it.value() == index )
+      id = it.key();
+    else if ( it.value() > index )
       it.value()--;
   }
+
+  if ( id >= 0 )
+    myIdIndex.remove( id );
 }
 
 /*!

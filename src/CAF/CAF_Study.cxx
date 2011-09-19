@@ -151,7 +151,12 @@ bool CAF_Study::openDocument( const QString& fname )
 #if OCC_VERSION_LARGE > 0x06010000
     OCC_CATCH_SIGNALS;
 #endif
+
+#if OCC_VERSION_LARGE > 0x06050100 // for OCC-6.5.2 and higher version
+    status = app->Open( CAF_Tools::toExtString( fname ), myStdDoc ) == PCDM_RS_OK;
+#else
     status = app->Open( CAF_Tools::toExtString( fname ), myStdDoc ) == CDF_RS_OK;
+#endif
   }
   catch ( Standard_Failure ) {
     status = false;
@@ -183,7 +188,11 @@ bool CAF_Study::saveDocumentAs( const QString& fname )
     OCC_CATCH_SIGNALS;
 #endif
     if ( save )
+#if OCC_VERSION_LARGE > 0x06050100 // for OCC-6.5.2 and higher version
+      status = app->Save( stdDoc() ) == PCDM_SS_OK;
+#else
       status = app->Save( stdDoc() ) == CDF_SS_OK;
+#endif
     else
     {
       TCollection_ExtendedString format, path( CAF_Tools::toExtString( fname ) );
@@ -192,7 +201,11 @@ bool CAF_Study::saveDocumentAs( const QString& fname )
       if ( format.Length() )
         stdDoc()->ChangeStorageFormat( format );
 
+#if OCC_VERSION_LARGE > 0x06050100 // for OCC-6.5.2 and higher version
+      status = app->SaveAs( stdDoc(), path ) == PCDM_SS_OK;
+#else
       status = app->SaveAs( stdDoc(), path ) == CDF_SS_OK;
+#endif
     }
   }
   catch ( Standard_Failure ) {

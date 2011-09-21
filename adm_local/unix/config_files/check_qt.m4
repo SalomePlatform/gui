@@ -41,6 +41,7 @@ AC_REQUIRE([AC_PROG_CPP])dnl
 AC_REQUIRE([AC_PROG_CXXCPP])dnl
 AC_REQUIRE([CHECK_OPENGL])dnl
 AC_REQUIRE([AC_LINKER_OPTIONS])dnl
+AC_REQUIRE([PKG_PROG_PKG_CONFIG])dnl
 
 AC_REQUIRE([OPTIONS_QT])dnl
 
@@ -89,6 +90,45 @@ elif test "$QTDIR" = "/usr/lib/qt3" ; then
     QTDIR=/usr/lib/qt4
   fi
 elif test -z $QTDIR ; then
+  AC_MSG_WARN(undefined QTDIR variable which specify where Qt product was installed, trying to guess using pkg-config)
+  PKG_PROG_PKG_CONFIG()
+  AS_IF([test "x$PKG_CONFIG" != "x"],
+    [
+      QT_REQUIRED_VERSION=4.0.0
+      if $PKG_CONFIG --exists "QtCore >= $QT_REQUIRED_VERSION"
+      then
+	QT_USING_PKGCONFIG=yes
+        QT_VERSION=`$PKG_CONFIG --modversion QtCore --atleast-version=$QT_REQUIRED_VERSION`
+        QT_VERSION_ID=`echo $QT_VERSION | awk -F. '{v=$[1]*10000+$[2]*100+$[3];print v}'`
+
+	MOC=`$PKG_CONFIG --variable=moc_location "QtCore >= $QT_REQUIRED_VERSION"`
+	UIC=`$PKG_CONFIG --variable=uic_location "QtCore >= $QT_REQUIRED_VERSION"`
+	QRCC=`$PKG_CONFIG --variable=rcc_location "QtCore >= $QT_REQUIRED_VERSION"`
+	LRELEASE=`$PKG_CONFIG --variable=lrelease_location "QtCore >= $QT_REQUIRED_VERSION"`
+
+        QTCORE_CPPFLAGS=`$PKG_CONFIG --cflags "QtCore >= $QT_REQUIRED_VERSION"`
+        QTGUI_CPPFLAGS=`$PKG_CONFIG --cflags "QtGui >= $QT_REQUIRED_VERSION"`
+        QTOPENGL_CPPFLAGS=`$PKG_CONFIG --cflags "QtOpenGL >= $QT_REQUIRED_VERSION"`
+        QTXML_CPPFLAGS=`$PKG_CONFIG --cflags "QtXml >= $QT_REQUIRED_VERSION"`
+        QTASSISTANT_CPPFLAGS=`$PKG_CONFIG --cflags "QtAssistant >= $QT_REQUIRED_VERSION"`
+        QTNETWORK_CPPFLAGS=`$PKG_CONFIG --cflags "QtNetwork >= $QT_REQUIRED_VERSION"`
+
+	QTCORE_LDFLAGS=`$PKG_CONFIG --libs "QtCore >= $QT_REQUIRED_VERSION"`
+        QTGUI_LDFLAGS=`$PKG_CONFIG --libs "QtGui >= $QT_REQUIRED_VERSION"`
+        QTOPENGL_LDFLAGS=`$PKG_CONFIG --libs "QtOpenGL >= $QT_REQUIRED_VERSION"`
+        QTXML_LDFLAGS=`$PKG_CONFIG --libs "QtXml >= $QT_REQUIRED_VERSION"`
+        QTASSISTANT_LDFLAGS=`$PKG_CONFIG --libs "QtAssistant >= $QT_REQUIRED_VERSION"`
+        QTNETWORK_LDFLAGS=`$PKG_CONFIG --libs "QtNetwork >= $QT_REQUIRED_VERSION"`
+      else
+	AC_MSG_WARN(Qt not found)
+      fi
+    ],
+    [
+      AC_MSG_WARN([pkg-config not found])
+    ]
+  )
+fi
+if test -z $QTDIR ; then
   AC_MSG_WARN(undefined QTDIR variable which specify where Qt product was installed)
   for d in /usr/local/lib/qt4 /usr/lib/qt4 /usr ; do
     if test -f ${d}/lib/libQtCore.so ; then
@@ -106,11 +146,10 @@ elif test -z $QTDIR ; then
     fi
   done
 fi
-
 #
 # check QTDIR environment variable
 #
-if test "x$QTDIR" = "x"
+if test "x$QTDIR" = "x" -a "x$QT_USING_PKGCONFIG" != "xyes"
 then
    AC_MSG_RESULT(Please define correct path in "--with-qt" option or use correct $QTDIR variable)
    qt_ok=no
@@ -121,19 +160,28 @@ fi
 #
 if  test "x$qt_ok" = "xyes"
 then
-   qt_inc_ok=no
-   QTINC=""
-   AC_CHECK_FILE(${QTDIR}/include/qt4/QtCore/qglobal.h,QTINC="/qt4",QTINC="")
-   if test "x$QTINC" = "x"
+   AC_MSG_CHECKING(whether Qt version >= 4.0)
+   if test "x$QT_USING_PKGCONFIG" != "xyes"
    then
-     AC_CHECK_FILE(${QTDIR}/include${QTINC}/QtCore/qglobal.h,qt_inc_ok=yes,qt_inc_ok=no)
-   else
-     qt_inc_ok=yes
+     qt_inc_ok=no
+     QTINC=""
+     AC_CHECK_FILE(${QTDIR}/include/qt4/QtCore/qglobal.h,QTINC="/qt4",QTINC="")
+     if test "x$QTINC" = "x"
+     then
+       AC_CHECK_FILE(${QTDIR}/include${QTINC}/QtCore/qglobal.h,qt_inc_ok=yes,qt_inc_ok=no)
+     else
+       qt_inc_ok=yes
+     fi
+
+     if test "x$qt_inc_ok" = "xyes"
+     then
+       QT_VERSION=`grep "QT_VERSION_STR" ${QTDIR}/include${QTINC}/QtCore/qglobal.h | sed -e 's%^#define QT_VERSION_STR[[:space:]]*\"\([[:digit:]\.]*\)\"%\1%g'`
+     fi
    fi
-   if test "x$qt_inc_ok" = "xyes"
-   then
-     AC_MSG_CHECKING(whether Qt version >= 4.0)
-     QT_VERSION=`grep "QT_VERSION_STR" ${QTDIR}/include${QTINC}/QtCore/qglobal.h | sed -e 's%^#define QT_VERSION_STR[[:space:]]*\"\([[:digit:]\.]*\)\"%\1%g'`
+
+
+  if test "x$qt_inc_ok" = "xyes" -o "x$QT_USING_PKGCONFIG" = "xyes"
+  then
      QT_VERSION_ID=`echo $QT_VERSION | awk -F. '{v=$[1]*10000+$[2]*100+$[3];print v}'`
      if test $QT_VERSION_ID -ge 40000
      then
@@ -156,12 +204,16 @@ qt_add=no
 
 if  test "x$qt_ok" = "xyes"
 then
-  if test -f ${QTDIR}/bin/moc
+  if test "x$QT_USING_PKGCONFIG" != "xyes"
   then
-    MOC=${QTDIR}/bin/moc
-  else
-    AC_PATH_PROG(MOC, moc)
+    if test -f ${QTDIR}/bin/moc
+    then
+      MOC=${QTDIR}/bin/moc
+    else
+      AC_PATH_PROG(MOC, moc)
+    fi
   fi
+
   if test "x$MOC" = "x"
   then
     qt_ok=no
@@ -205,25 +257,28 @@ AC_MSG_RESULT(yes)
 #
 if  test "x$qt_ok" = "xyes"
 then
-  if test "x$qt_add" = "xno"
+  if test "x$QT_USING_PKGCONFIG" != "xyes"
   then
-     AC_MSG_CHECKING(uic)
-     if test -f ${QTDIR}/bin/uic
-     then
-       UIC=${QTDIR}/bin/uic
-     else
-       AC_PATH_PROG(UIC, uic)
-     fi
-     AC_MSG_RESULT(yes)
-  else
-     AC_MSG_CHECKING(uic-qt$qt_add)
-     if test -f ${QTDIR}/bin/uic-qt$qt_add
-     then
-       UIC=${QTDIR}/bin/uic-qt$qt_add
-     else
-       AC_PATH_PROG(UIC, uic)
-     fi
-     AC_MSG_RESULT(yes)
+    if test "x$qt_add" = "xno"
+    then
+       AC_MSG_CHECKING(uic)
+       if test -f ${QTDIR}/bin/uic
+       then
+         UIC=${QTDIR}/bin/uic
+       else
+         AC_PATH_PROG(UIC, uic)
+       fi
+       AC_MSG_RESULT(yes)
+    else
+       AC_MSG_CHECKING(uic-qt$qt_add)
+       if test -f ${QTDIR}/bin/uic-qt$qt_add
+       then
+         UIC=${QTDIR}/bin/uic-qt$qt_add
+       else
+         AC_PATH_PROG(UIC, uic)
+       fi
+       AC_MSG_RESULT(yes)
+    fi
   fi
 
   if test "x$UIC" = "x"
@@ -256,22 +311,26 @@ fi
 #
 if  test "x$qt_ok" = "xyes"
 then
-  if test "x$qt_add" = "xno"
+  if test "x$QT_USING_PKGONFIG" != "xyes"
   then
-     if test -f ${QTDIR}/bin/rcc
-     then
-       QRCC=${QTDIR}/bin/rcc
-     else
-       AC_PATH_PROG(QRCC, rcc)
-     fi
-  else
-     if test -f ${QTDIR}/bin/rcc-qt$qt_add
-     then
-       QRCC=${QTDIR}/bin/rcc-qt$qt_add
-     else
-       AC_PATH_PROG(QRCC, rcc)
-     fi
+    if test "x$qt_add" = "xno"
+    then
+       if test -f ${QTDIR}/bin/rcc
+       then
+         QRCC=${QTDIR}/bin/rcc
+       else
+         AC_PATH_PROG(QRCC, rcc)
+       fi
+    else
+       if test -f ${QTDIR}/bin/rcc-qt$qt_add
+       then
+         QRCC=${QTDIR}/bin/rcc-qt$qt_add
+       else
+         AC_PATH_PROG(QRCC, rcc)
+       fi
+    fi
   fi
+
   if test "x$QRCC" = "x"
   then
     qt_ok=no
@@ -302,22 +361,26 @@ fi
 #
 if  test "x$qt_ok" = "xyes"
 then
-  if test "x$qt_add" = "xno"
+  if test "x$QT_USING_PKGCONFIG" != "xyes"
   then
-     if test -f ${QTDIR}/bin/lrelease
-     then
-       LRELEASE=${QTDIR}/bin/lrelease
-     else
-       AC_PATH_PROG(LRELEASE, lrelease)
-     fi
-  else
-     if test -f ${QTDIR}/bin/lrelease-qt$qt_add
-     then
-       LRELEASE=${QTDIR}/bin/lrelease-qt$qt_add
-     else
-       AC_PATH_PROG(LRELEASE, lrelease)
-     fi
+    if test "x$qt_add" = "xno"
+    then
+       if test -f ${QTDIR}/bin/lrelease
+       then
+         LRELEASE=${QTDIR}/bin/lrelease
+       else
+         AC_PATH_PROG(LRELEASE, lrelease)
+       fi
+    else
+       if test -f ${QTDIR}/bin/lrelease-qt$qt_add
+       then
+         LRELEASE=${QTDIR}/bin/lrelease-qt$qt_add
+       else
+         AC_PATH_PROG(LRELEASE, lrelease)
+       fi
+    fi
   fi
+
   if test "x$LRELEASE" = "x"
   then
     qt_ok=no
@@ -353,7 +416,12 @@ then
   AC_CHECKING(include Qt header files)
 
   CPPFLAGS_old=$CPPFLAGS
-  CPPFLAGS="$CPPFLAGS -I${QTDIR}/include${QTINC} -I${QTDIR}/include${QTINC}/QtCore"
+  if test "x$QT_USING_PKGCONFIG" != "xyes"
+  then
+    CPPFLAGS="$CPPFLAGS -I${QTDIR}/include${QTINC} -I${QTDIR}/include${QTINC}/QtCore"
+  else
+    CPPFLAGS="$CPPFLAGS $QTCORE_CPPFLAGS"
+  fi
   AC_CHECK_HEADER(QObject,qt_ok=yes,qt_ok=no)
   CPPFLAGS=$CPPFLAGS_old
 
@@ -363,27 +431,23 @@ then
     AC_MSG_RESULT(QTDIR environment variable may be wrong (probably too old Qt version))
   else
     AC_MSG_RESULT(qt header files seem to be OK)
-    QT_INCLUDES="-I${QTDIR}/include${QTINC}"
-    # user header files
-    QT_INCLUDES="${QT_INCLUDES} -I${QTDIR}/include${QTINC}/QtCore"
-    QT_INCLUDES="${QT_INCLUDES} -I${QTDIR}/include${QTINC}/QtGui"
-    QT_INCLUDES="${QT_INCLUDES} -I${QTDIR}/include${QTINC}/QtOpenGL"
-    QT_INCLUDES="${QT_INCLUDES} -I${QTDIR}/include${QTINC}/QtXml"
-    # not used currently header files (uncomment if required)
-    #QT_INCLUDES="${QT_INCLUDES} -I$(QTDIR)/include${QTINC}/QtAssistant"
-    #QT_INCLUDES="${QT_INCLUDES} -I$(QTDIR)/include${QTINC}/QtDBus"
-    #QT_INCLUDES="${QT_INCLUDES} -I$(QTDIR)/include${QTINC}/QtDesigner"
-    #QT_INCLUDES="${QT_INCLUDES} -I$(QTDIR)/include${QTINC}/QtNetwork"
-    #QT_INCLUDES="${QT_INCLUDES} -I$(QTDIR)/include${QTINC}/QtSql"
-    #QT_INCLUDES="${QT_INCLUDES} -I$(QTDIR)/include${QTINC}/QtSvg"
-    #QT_INCLUDES="${QT_INCLUDES} -I$(QTDIR)/include${QTINC}/QtTest"
-    #QT_INCLUDES="${QT_INCLUDES} -I$(QTDIR)/include${QTINC}/QtUiTools"
+    if test "x$QT_USING_PKGCONFIG" != "xyes"
+    then
+       QT_BASE="-I${QTDIR}/include${QTINC}"
+       # user header files
+       QTCORE_CPPFLAGS="${QT_BASE}/QtCore"
+       QTGUI_CPPFLAGS="${QT_BASE}/QtGui"
+       QTOPENGL_CPPFLAGS="${QT_BASE}/QtOpenGL"
+       QTXML_CPPFLAGS="${QT_BASE}/QtXml"
 
-    QT_ASSISTANT_INCLUDES="${QT_ASSISTANT_INCLUDES} -I${QTDIR}/include${QTINC}/QtAssistant"
-    QT_ASSISTANT_INCLUDES="${QT_ASSISTANT_INCLUDES} -I${QTDIR}/include${QTINC}/QtNetwork"
+       QTASSISTANT_CPPFLAGS="${QT_BASE}/QtAssistant"
+       QTNETWORK_CPPFLAGS="${QT_BASE}/QtNetwork"
+     fi
 
-    # this flag is obsolete with Qt 4
-    QT_MT_INCLUDES="$QT_INCLUDES"
+     QT_INCLUDES="$QT_BASE $QTCORE_CPPFLAGS $QTGUI_CPPFLAGS $QTOPENGL_CPPFLAGS $QTXML_CPPFLAGS"
+
+     QT_ASSISANT_INCLUDES="$QTASSISTANT_CPPFLAGS $QTNETWORK_CPPFLAGS"
+     QT_MT_INCLUDES="${QT_INCLUDES}"
   fi
 fi
 
@@ -398,19 +462,24 @@ then
   CXXFLAGS="$CXXFLAGS $QT_INCLUDES"
 
   LIBS_old=$LIBS
-  if test "x$QTDIR" = "x/usr" ; then
-    QT_LIB_DIR=""
-  elif test -d ${QTDIR}/lib; then
-    QT_LIB_DIR="-L$QTDIR/lib"
-  elif test -d ${QTDIR}/lib64; then
-    QT_LIB_DIR="-L$QTDIR/lib64"
-  elif test "x$QTDIR" = "x/usr/lib/qt4" ; then
-    QT_LIB_DIR=""
+  if test "x$QT_USING_PKGCONFIG" = "xyes"
+  then
+    LIBS="$LIBS $QTCORE_LDFLAGS"
   else
-    AC_MSG_ERROR(Can't detect of Qt library directory )
-    qt_ok=no
+    if test "x$QTDIR" = "x/usr" ; then
+      QT_LIB_DIR=""
+    elif test -d ${QTDIR}/lib; then
+      QT_LIB_DIR="-L$QTDIR/lib"
+    elif test -d ${QTDIR}/lib64; then
+      QT_LIB_DIR="-L$QTDIR/lib64"
+    elif test "x$QTDIR" = "x/usr/lib/qt4" ; then
+      QT_LIB_DIR=""
+    else
+      AC_MSG_ERROR(Can't detect Qt library directory )  #'
+      qt_ok=no
+    fi
+    LIBS="$LIBS $QT_LIB_DIR -lQtCore"
   fi
-  LIBS="$LIBS $QT_LIB_DIR -lQtCore"
 
   AC_CACHE_VAL(salome_cv_lib_qt,[
     AC_TRY_LINK(
@@ -450,14 +519,21 @@ then
   else
     AC_MSG_RESULT(yes)
     # core libs
-    QT_CORE_LIBS="$QT_LIB_DIR -lQtCore -lQtXml"
-    # gui libs
-    QT_GUI_LIBS="$QT_LIB_DIR -lQtGui -lQtOpenGL"
-    # other libs (currently not used)
-    QT_OTHER_LIBS="$QT_LIB_DIR"
-    # other libs (can be used if necessary)
-    #QT_OTHER_LIBS="$QT_LIB_DIR -lQt3Support -lQtAssistantClient -lQtDesigner -lQtNetwork -lQtSql -lQtSvg -lQtTest -ltQtUiTools"
-    QT_ASSISTANT_LIBS="$QT_LIB_DIR -lQtAssistantClient -lQtNetwork"
+    if test "x$QT_USING_PKGCONFIG" = "xyes"
+    then
+      QT_CORE_LIBS="$QTCORE_LDFLAGS $QTXML_LDFLAGS"
+      QT_GUI_LIBS="$QTGUI_LDFLAGS $QTOPENGL_LDFLAGS"
+      QT_ASSISTANT_LIBS="$QTASSISTANT_LDFLAGS $QTNETWORK_LDFLAGS"
+    else
+      QT_CORE_LIBS="$QT_LIB_DIR -lQtCore -lQtXml"
+      # gui libs
+      QT_GUI_LIBS="$QT_LIB_DIR -lQtGui -lQtOpenGL"
+      # other libs (currently not used)
+      QT_OTHER_LIBS="$QT_LIB_DIR"
+      # other libs (can be used if necessary)
+      #QT_OTHER_LIBS="$QT_LIB_DIR -lQt3Support -lQtAssistantClient -lQtDesigner -lQtNetwork -lQtSql -lQtSvg -lQtTest -ltQtUiTools"
+      QT_ASSISTANT_LIBS="$QT_LIB_DIR -lQtAssistantClient -lQtNetwork"
+    fi
     # all libs
     QT_LIBS="$QT_CORE_LIBS $QT_GUI_LIBS $QT_OTHER_LIBS"
     # this flag is obsolete with Qt 4

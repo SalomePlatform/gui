@@ -1113,6 +1113,95 @@ bool Qtx::stringToColor( const QString& str, QColor& color )
 }
 
 /*!
+  \brief Convert bi-color value to the string representation.
+  
+  Bi-color value is specified as main color and integer delta
+  value that is used to calculate secondary color by changing
+  paremeters of the main color ("saturation" and "value"
+  components in HSV notation).
+
+  The resulting string consists of two sub-strings separated by
+  '|' symbol. The first part represents main color
+  (see colorToString() for more details), the second part is a
+  delta value.
+
+  Backward conversion can be done with stringToBiColor() method.
+
+  \param color color to be converted
+  \param delta delta value
+  \return string representation of the bi-color value
+
+  \sa stringToBiColor(), stringToColor()
+*/
+QString Qtx::biColorToString( const QColor& color, const int delta )
+{
+  return QString("%1|%2").arg( Qtx::colorToString( color ) ).arg( delta );
+}
+
+/*!
+  \brief Restore bi-color value from the string representation.
+
+  Bi-color value is specified as main color and integer delta
+  value that is used to calculate secondary color by changing
+  paremeters of the main color ("saturation" and "value"
+  components in HSV notation).
+
+  The parameter \a str should consist of two sub-strings separated
+  by '|' symbol. The first part represents main color
+  (see stringToColor() for more details), the second part is a
+  delta value.
+
+  Backward conversion can be done with biColorToString() method.
+
+  \param str string representation of the bi-color value
+  \param color resulting color value
+  \param delta resulting delta value
+  \return \c true if the conversion is successful and \c false otherwise
+
+  \sa biColorToString(), stringToColor(), rgbSet()
+*/
+bool Qtx::stringToBiColor( const QString& str, QColor& color, int& delta )
+{
+  QStringList data = str.split( "|", QString::KeepEmptyParts );
+  QColor c;
+  int d;
+  bool ok = data.count() > 0 && Qtx::stringToColor( data[0], c );
+  bool dok = false;
+  if ( data.count() > 1 ) d = data[1].toInt( &dok );
+  ok = ok && dok;
+  color = ok ? c : QColor();
+  delta = ok ? d : 0;
+  return ok;
+}
+
+/*!
+  \brief Compute secondary color value from specified main color
+  and delta.
+
+  Secondary color is calculated by changing paremeters of the main
+  color ("saturation" and "value" components in HSV notation) using
+  specified delta.
+
+  If main color is invalid, result of the function is also invalid color.
+
+  \param color source main color
+  \param delta delta value
+  \return resulting secondary color
+  
+  \sa biColorToString(), stringToBiColor()
+*/
+QColor Qtx::mainColorToSecondary( const QColor& color, int delta )
+{
+  QColor cs = color;
+  if ( cs.isValid() ) {
+    int val = qMin( 255, qMax( cs.value() + delta, 0 ) );
+    int sat = qMin( 255, qMax( cs.saturation() + delta-(val-cs.value()), 0 ) );
+    cs.setHsv( cs.hue(), sat, val );
+  }
+  return cs;
+}
+
+/*!
   \brief Dump linear gradient to the string description.
   \param gradient linear gradient to be converted
   \return string representation of the linear gradient

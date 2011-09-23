@@ -157,6 +157,9 @@ int SUIT_PreferenceMgr::addItem( const QString& title, const int pId,
   case ShortcutTree:
     item = new QtxPagePrefShortcutTreeItem( title, parent, sect, param );
     break;
+  case BiColor:
+    item = new QtxPagePrefBiColorItem( title, parent, sect, param );
+    break;
   case UserDefined:
     item = new QtxUserDefinedItem(parent);
     break;

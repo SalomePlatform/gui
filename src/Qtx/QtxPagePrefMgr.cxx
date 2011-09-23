@@ -28,6 +28,7 @@
 #include "QtxComboBox.h"
 #include "QtxIntSpinBox.h"
 #include "QtxColorButton.h"
+#include "QtxBiColorTool.h"
 #include "QtxDoubleSpinBox.h"
 #include "QtxShortcutEdit.h"
 #include "QtxResourceMgr.h"
@@ -3504,6 +3505,109 @@ void QtxPagePrefColorItem::store()
 void QtxPagePrefColorItem::retrieve()
 {
   myColor->setColor( getColor() );
+}
+
+/*!
+  \class QtxPagePrefBiColorItem
+  \brief GUI implementation of the resources item to store a bi-color value.
+
+  The main color is specified explicitly. The secondary color is calculated
+  by changing "value" and "saturation" parameters of the main color in the 
+  HSV notation using specified delta.
+*/
+
+/*!
+  \brief Constructor.
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
+QtxPagePrefBiColorItem::QtxPagePrefBiColorItem( const QString& title, QtxPreferenceItem* parent,
+						const QString& sect, const QString& param )
+: QtxPageNamedPrefItem( title, parent, sect, param )
+{
+  setControl( myColors = new QtxBiColorTool( 0 ) );
+}
+
+/*!
+  \brief Destructor.
+*/
+QtxPagePrefBiColorItem::~QtxPagePrefBiColorItem()
+{
+}
+
+/*!
+  \bried Get auxiliary text
+  \return text assigned to the item
+  \sa setText()
+*/
+QString QtxPagePrefBiColorItem::text() const
+{
+  return myColors->text();
+}
+
+/*!
+  \bried Set auxiliary text
+  \param t text being assigned to the item
+  \sa text()
+*/
+void QtxPagePrefBiColorItem::setText( const QString& t )
+{
+  myColors->setText( t );
+}
+
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
+void QtxPagePrefBiColorItem::store()
+{
+  setString( Qtx::biColorToString( myColors->mainColor(), myColors->delta() ) );
+}
+
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
+void QtxPagePrefBiColorItem::retrieve()
+{
+  QColor c;
+  int d;
+  Qtx::stringToBiColor( getString(), c, d );
+  myColors->setMainColor( c );
+  myColors->setDelta( d );
+}
+
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOptionValue()
+*/
+QVariant QtxPagePrefBiColorItem::optionValue( const QString& name ) const
+{
+  if ( name == "text" )
+    return text();
+  else
+    return QtxPageNamedPrefItem::optionValue( name );
+}
+
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
+void QtxPagePrefBiColorItem::setOptionValue( const QString& name, const QVariant& val )
+{
+  if ( name == "text" )
+  {
+    if ( val.canConvert( QVariant::String ) )
+      setText( val.toString() );
+  }
+  else
+    QtxPageNamedPrefItem::setOptionValue( name, val );
 }
 
 /*!

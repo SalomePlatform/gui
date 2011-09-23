@@ -191,6 +191,9 @@ public:
 
   static QString     colorToString( const QColor& );
   static bool        stringToColor( const QString&, QColor& );
+  static QString     biColorToString( const QColor&, const int );
+  static bool        stringToBiColor( const QString&, QColor&, int& );
+  static QColor      mainColorToSecondary( const QColor&, int );
 
   static QString     gradientToString( const QLinearGradient& );
   static QString     gradientToString( const QRadialGradient& );

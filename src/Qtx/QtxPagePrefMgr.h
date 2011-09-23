@@ -38,6 +38,7 @@ class QtxFontEdit;
 class QtxGroupBox;
 class QtxComboBox;
 class QtxColorButton;
+class QtxBiColorTool;
 class QtxShortcutEdit;
 class QtxShortcutTree;
 
@@ -457,7 +458,7 @@ protected:
   virtual void     setOptionValue( const QString&, const QVariant& );
 
 private slots:
- void             setIcon( int );
+  void             setIcon( int );
 
 private:
   void             updateSlider();
@@ -585,6 +586,27 @@ public:
 
 private:
   QtxColorButton*  myColor;
+};
+
+class QTX_EXPORT QtxPagePrefBiColorItem : public QtxPageNamedPrefItem
+{
+public:
+  QtxPagePrefBiColorItem( const QString&, QtxPreferenceItem* = 0,
+			   const QString& = QString(), const QString& = QString() );
+  virtual ~QtxPagePrefBiColorItem();
+
+  virtual QString  text() const;
+  virtual void     setText( const QString& );
+
+  virtual void     store();
+  virtual void     retrieve();
+
+protected:
+  virtual QVariant optionValue( const QString& ) const;
+  virtual void     setOptionValue( const QString&, const QVariant& );
+
+private:
+  QtxBiColorTool*  myColors;
 };
 
 class QTX_EXPORT QtxPagePrefFontItem : public QObject, public QtxPageNamedPrefItem

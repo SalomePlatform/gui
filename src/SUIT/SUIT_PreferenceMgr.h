@@ -37,7 +37,7 @@ class SUIT_EXPORT SUIT_PreferenceMgr : public QtxPagePrefMgr
 public:
   typedef enum { Auto, Space, Bool, Color, String, Selector,
                  DblSpin, IntSpin, Double, Integer,
-                 GroupBox, Tab, Frame, Font, DirList, File, Slider, Shortcut, ShortcutTree, 
+                 GroupBox, Tab, Frame, Font, DirList, File, Slider, Shortcut, ShortcutTree, BiColor,
                  UserDefined = 1000 } PrefItemType;
 
 public:

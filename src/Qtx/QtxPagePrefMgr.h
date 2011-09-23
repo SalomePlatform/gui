@@ -38,6 +38,7 @@ class QtxComboBox;
 class QtxColorButton;
 
 class QToolBox;
+class QComboBox;
 class QLineEdit;
 class QTextEdit;
 class QCheckBox;
@@ -650,6 +651,21 @@ private:
 private:
   int              myType;
   QDateTimeEdit*   myDateTime;
+};
+
+class QTX_EXPORT QtxPagePrefStyleItem : public QtxPageNamedPrefItem
+{
+public:
+  QtxPagePrefStyleItem( const QString&, QtxPreferenceItem* = 0,
+                        const QString& = QString(), const QString& = QString() );
+  virtual ~QtxPagePrefStyleItem();
+
+  virtual void     store();
+  virtual void     retrieve();
+
+private:
+  //  QtxComboBox*     myStyle;
+  QComboBox*       myStyle;
 };
 
 #endif

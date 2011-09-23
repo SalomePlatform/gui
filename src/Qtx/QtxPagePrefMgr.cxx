@@ -29,18 +29,20 @@
 #include "QtxColorButton.h"
 #include "QtxDoubleSpinBox.h"
 
-#include <QEvent>
-#include <QLayout>
-#include <QToolBox>
-#include <QLineEdit>
-#include <QTextEdit>
-#include <QCheckBox>
-#include <QSplitter>
-#include <QTabWidget>
-#include <QListWidget>
-#include <QApplication>
-#include <QDateTimeEdit>
-#include <QStackedWidget>
+#include <QtCore/QEvent>
+
+#include <QtGui/QLayout>
+#include <QtGui/QToolBox>
+#include <QtGui/QLineEdit>
+#include <QtGui/QTextEdit>
+#include <QtGui/QCheckBox>
+#include <QtGui/QSplitter>
+#include <QtGui/QTabWidget>
+#include <QtGui/QListWidget>
+#include <QtGui/QApplication>
+#include <QtGui/QDateTimeEdit>
+#include <QtGui/QStyleFactory>
+#include <QtGui/QStackedWidget>
 
 /*!
   \class QtxPagePrefMgr
@@ -2330,7 +2332,7 @@ void QtxPagePrefSelectItem::setInputType( const int type )
 QStringList QtxPagePrefSelectItem::strings() const
 {
   QStringList res;
-  for ( uint i = 0; i < mySelector->count(); i++ )
+  for ( int i = 0; i < mySelector->count(); i++ )
     res.append( mySelector->itemText( i ) );
   return res;
 }
@@ -2343,7 +2345,7 @@ QStringList QtxPagePrefSelectItem::strings() const
 QList<int> QtxPagePrefSelectItem::numbers() const
 {
   QList<int> res;
-  for ( uint i = 0; i < mySelector->count(); i++ )
+  for ( int i = 0; i < mySelector->count(); i++ )
   {
     if ( mySelector->hasId( i ) )
       res.append( mySelector->id( i ) );
@@ -2359,7 +2361,7 @@ QList<int> QtxPagePrefSelectItem::numbers() const
 QList<QIcon> QtxPagePrefSelectItem::icons() const
 {
   QList<QIcon> res;
-  for ( uint i = 0; i < mySelector->count(); i++ )
+  for ( int i = 0; i < mySelector->count(); i++ )
     res.append( mySelector->itemIcon( i ) );
   return res;
 }
@@ -2382,7 +2384,7 @@ void QtxPagePrefSelectItem::setStrings( const QStringList& lst )
 */
 void QtxPagePrefSelectItem::setNumbers( const QList<int>& ids )
 {
-  uint i = 0;
+  int i = 0;
   for ( QList<int>::const_iterator it = ids.begin(); it != ids.end() && i < mySelector->count(); ++it, i++ )
     mySelector->setId( i, *it );
 }
@@ -2394,7 +2396,7 @@ void QtxPagePrefSelectItem::setNumbers( const QList<int>& ids )
 */
 void QtxPagePrefSelectItem::setIcons( const QList<QIcon>& icons )
 {
-  uint i = 0;
+  int i = 0;
   for ( QList<QIcon>::const_iterator it = icons.begin(); it != icons.end() && i < mySelector->count(); ++it, i++ )
     mySelector->setItemIcon( i, *it );
 }
@@ -2432,7 +2434,7 @@ void QtxPagePrefSelectItem::retrieve()
     idx = mySelector->index( num );
   else
   {
-    for ( uint i = 0; i < mySelector->count() && idx == -1; i++ )
+    for ( int i = 0; i < mySelector->count() && idx == -1; i++ )
     {
       if ( mySelector->itemText( i ) == txt )
         idx = i;
@@ -3757,4 +3759,72 @@ void QtxPagePrefDateTimeItem::updateDateTime()
   }
 
   myDateTime->setDisplayFormat( dispFmt );
+}
+
+/*!
+  \class QtxPagePrefStyleItem
+  \brief GUI implementation of the GUI style selector item
+
+  All items in the list (represented as combo box) defined by Qt style system
+*/
+
+/*!
+  \brief Constructor.
+
+  Creates preference item with combo box widget which is not editable.
+
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
+QtxPagePrefStyleItem::QtxPagePrefStyleItem( const QString& title, QtxPreferenceItem* parent,
+                                            const QString& sect, const QString& param )
+: QtxPageNamedPrefItem( title, parent, sect, param )
+{
+  setControl( myStyle = new QtxComboBox() );
+
+  myStyle->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
+  myStyle->addItems( QStyleFactory::keys() );
+}
+
+/*!
+  \brief Destructor.
+*/
+QtxPagePrefStyleItem::~QtxPagePrefStyleItem()
+{
+}
+
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
+void QtxPagePrefStyleItem::store()
+{
+  /*
+  if ( myStyle->isCleared() )
+    return;
+  */
+  setString( myStyle->itemText( myStyle->currentIndex() ) );
+}
+
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
+void QtxPagePrefStyleItem::retrieve()
+{
+  QString txt = getString();
+
+  int idx = -1;
+  for ( int i = 0; i < myStyle->count() && idx == -1; i++ ) {
+    if ( myStyle->itemText( i ) == txt )
+      idx = i;
+  }
+
+  if ( idx != -1 )
+    myStyle->setCurrentIndex( idx );
+  /*  else
+    myStyle->setCleared( true );
+  */
 }

@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -72,7 +72,7 @@ void QtxComboBox::Model::setCleared( const bool isClear )
 {
   if ( myCleared == isClear )
     return;
-  
+
   myCleared = isClear;
 }
 
@@ -116,7 +116,7 @@ QtxComboBox::ClearEvent::ClearEvent() : QEvent( CLEAR_EVENT )
   \class QtxComboBox
   \brief Enhanced version of Qt combo box class.
 
-  In addition to the QComboBox class, QtxComboBox supports 
+  In addition to the QComboBox class, QtxComboBox supports
   adding/removing the items with the associated unique identifiers.
   It also provides a way to set "cleared" state to the combo box -
   when no item is selected.
@@ -161,7 +161,7 @@ void QtxComboBox::setCleared( const bool isClear )
 {
   if ( myCleared == isClear )
     return;
-    
+
   myCleared = isClear;
 
   if ( lineEdit() )
@@ -259,7 +259,7 @@ void QtxComboBox::resetClear()
 {
   if ( !myCleared )
     return;
-  
+
   myCleared = false;
   update();
 }
@@ -309,3 +309,13 @@ bool QtxComboBox::hasId( const int idx ) const
   \brief Emitted when the item with identificator \a id is activated.
   \param id item ID
 */
+
+bool QtxComboBox::event( QEvent* e )
+{
+  if ( e->type() == QEvent::StyleChange ) {
+    setEditable( !isEditable() );
+    setEditable( !isEditable() );
+  }
+
+  return QComboBox::event( e );
+}

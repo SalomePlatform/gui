@@ -54,6 +54,8 @@ public:
   bool         hasId( const int ) const;
   void         setId( const int, const int );
 
+  virtual bool event( QEvent* );
+
 signals:
   void         activatedId( int );
 

@@ -1196,7 +1196,12 @@ QColor Qtx::mainColorToSecondary( const QColor& color, int delta )
   if ( cs.isValid() ) {
     int val = qMin( 255, qMax( cs.value() + delta, 0 ) );
     int sat = qMin( 255, qMax( cs.saturation() + delta-(val-cs.value()), 0 ) );
-    cs.setHsv( cs.hue(), sat, val );
+#ifdef BICOLOR_CHANGE_HUE
+    int hue = qMin( 359, qMax( cs.hue() + delta-(val-cs.value())-(sat-cs.saturation()), 0 ) );
+#else
+    int hue = cs.hue();
+#endif
+    cs.setHsv( hue, sat, val );
   }
   return cs;
 }

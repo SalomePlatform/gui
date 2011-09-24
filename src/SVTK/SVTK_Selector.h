@@ -218,6 +218,14 @@ public:
   virtual
   void
   SetTolerance(const double& theTolerance) = 0;
+
+  virtual
+  void
+  SetDynamicPreSelection( bool theIsDynPreselect ) = 0;
+
+  virtual
+  bool
+  GetDynamicPreSelection() const = 0;
 };
 
 

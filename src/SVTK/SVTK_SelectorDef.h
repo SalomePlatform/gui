@@ -178,8 +178,18 @@ public:
   void
   SetTolerance(const double& theTolerance);
 
+  virtual
+  void
+  SetDynamicPreSelection( bool theIsDynPreselect );
+
+  virtual
+  bool
+  GetDynamicPreSelection() const;
+
 private:
   int mySelectionMode;
+
+  bool myDynamicPreselection;
 
   struct TIOLessThan
   {

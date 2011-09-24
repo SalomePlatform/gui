@@ -627,8 +627,8 @@ The changes will be applied on the next application session.</translation>
         <translation>Python Console</translation>
     </message>
     <message>
-        <source>PREF_USE_ADVANCED_SELECTION_ALGORITHM</source>
-        <translation>Use Advanced Selection Algorithm</translation>
+        <source>PREF_DYNAMIC_PRESELECTION</source>
+        <translation>Dynamic pre-selection</translation>
     </message>
     <message>
         <source>TOT_CLOSE</source>

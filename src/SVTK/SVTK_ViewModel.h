@@ -103,6 +103,12 @@ public:
   //! Sets zooming style
   void setZoomingStyle( const int );
 
+  //! Gets dynamic preselection
+  bool dynamicPreSelection() const;
+
+  //! Sets dynamic preselection
+  void setDynamicPreSelection( const bool );
+
   //! Get incremental speed (see #SVTK_InteractorStyle::ControllerIncrement)
   int incrementalSpeed() const;
 
@@ -180,6 +186,7 @@ private:
   int    myProjMode;
   int    myStyle;
   int    myZoomingStyle;
+  bool   myDynamicPreSelection;
   int    mySpaceBtn[3];
 };
 

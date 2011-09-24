@@ -81,6 +81,7 @@ SVTK_Viewer::SVTK_Viewer()
   myProjMode = 0;
   myStyle = 0;
   myZoomingStyle = 0;
+  myDynamicPreSelection = false;
   mySpaceBtn[0] = 1;
   mySpaceBtn[1] = 2;
   mySpaceBtn[2] = 9;
@@ -136,6 +137,7 @@ SUIT_ViewWindow* SVTK_Viewer::createView( SUIT_Desktop* theDesktop )
   aViewWindow->SetProjectionMode( projectionMode() );
   aViewWindow->SetInteractionStyle( interactionStyle() );
   aViewWindow->SetZoomingStyle( zoomingStyle() );
+  aViewWindow->SetDynamicPreSelection( dynamicPreSelection() );
   aViewWindow->SetIncrementalSpeed( incrementalSpeed(), incrementalSpeedMode() );
   aViewWindow->SetSpacemouseButtons( spacemouseBtn(1), spacemouseBtn(2), spacemouseBtn(3) );
 
@@ -286,6 +288,32 @@ void SVTK_Viewer::setZoomingStyle( const int theStyle )
     {
       if ( TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at( i )) )
         aView->SetZoomingStyle( theStyle );
+    }
+  }
+}
+
+/*!
+  \return dynamic preselection
+*/
+bool SVTK_Viewer::dynamicPreSelection() const
+{
+  return myDynamicPreSelection;
+}
+
+/*!
+  Sets dynamic preselection
+  \param theMode - new dynamic preselection mode
+*/
+void SVTK_Viewer::setDynamicPreSelection( const bool theMode )
+{
+  myDynamicPreSelection = theMode;
+  
+  if (SUIT_ViewManager* aViewManager = getViewManager()) {
+    QVector<SUIT_ViewWindow*> aViews = aViewManager->getViews();
+    for ( uint i = 0; i < aViews.count(); i++ )
+    {
+      if ( TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at( i )) )
+        aView->SetDynamicPreSelection( theMode );
     }
   }
 }

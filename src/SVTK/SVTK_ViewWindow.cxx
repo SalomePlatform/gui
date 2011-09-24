@@ -137,7 +137,9 @@ void SVTK_ViewWindow::Initialize(SVTK_ViewModelBase* theModel)
 {
   myInteractor = new SVTK_RenderWindowInteractor(this,"SVTK_RenderWindowInteractor");
   
-  SVTK_Selector* aSelector = SVTK_Selector::New();
+  SVTK_Selector* aSelector = SVTK_Selector::New(); 
+  aSelector->SetDynamicPreSelection( SUIT_Session::session()->resourceMgr()->
+				     booleanValue( "VTKViewer", "dynamic_preselection", true ) );
   
   SVTK_GenericRenderWindowInteractor* aDevice = SVTK_GenericRenderWindowInteractor::New();
   aDevice->SetRenderWidget(myInteractor);
@@ -155,7 +157,7 @@ void SVTK_ViewWindow::Initialize(SVTK_ViewModelBase* theModel)
   myToolBar = toolMgr()->createToolBar( tr("LBL_TOOLBAR_LABEL"), false, Qt::AllToolBarAreas, -1, this );
   myRecordingToolBar = toolMgr()->createToolBar( tr("LBL_TOOLBAR_RECORD_LABEL"), false, Qt::AllToolBarAreas, -1, this );
   
-  createActions( SUIT_Session::session()->activeApplication()->resourceMgr() );
+  createActions( SUIT_Session::session()->resourceMgr() );
   createToolBar();
   
   SetEventDispatcher(myInteractor->GetDevice());
@@ -711,6 +713,15 @@ void SVTK_ViewWindow::SetZoomingStyle(const int theStyle)
 }
 
 /*!
+  Switch dynamic preselection on / off
+  \param theDynPreselection - dynamic pre-selection mode
+*/
+void SVTK_ViewWindow::SetDynamicPreSelection( bool theDynPreselection )
+{
+  onSwitchDynamicPreSelection( theDynPreselection );
+}
+
+/*!
   Switches "keyboard free" interaction style on/off
 */
 void SVTK_ViewWindow::onSwitchInteractionStyle(bool theOn)
@@ -752,6 +763,19 @@ void SVTK_ViewWindow::onSwitchZoomingStyle( bool theOn )
 
   // update action state if method is called outside
   QtxAction* a = getAction( SwitchZoomingStyleId );
+  if ( a->isChecked() != theOn )
+    a->setChecked( theOn );
+}
+
+/*!
+  Toogles dynamic preselection on/off
+*/
+void SVTK_ViewWindow::onSwitchDynamicPreSelection( bool theOn )
+{
+  GetSelector()->SetDynamicPreSelection( theOn );
+
+  // update action state if method is called outside
+  QtxAction* a = getAction( SwitchDynamicPreselectionId );
   if ( a->isChecked() != theOn )
     a->setChecked( theOn );
 }
@@ -1859,7 +1883,7 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onSwitchInteractionStyle(bool)));
   mgr->registerAction( anAction, SwitchInteractionStyleId );
 
-  // Switch between zomming styles
+  // Switch between zooming styles
   anAction = new QtxAction(tr("MNU_SVTK_ZOOMING_STYLE_SWITCH"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_ZOOMING_STYLE_SWITCH" ) ),
                            tr( "MNU_SVTK_ZOOMING_STYLE_SWITCH" ), 0, this);
@@ -1867,6 +1891,15 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
   anAction->setCheckable(true);
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onSwitchZoomingStyle(bool)));
   mgr->registerAction( anAction, SwitchZoomingStyleId );
+
+  // Turn on/off dynamic pre-selection
+  anAction = new QtxAction(tr("MNU_SVTK_DYNAMIC_PRESLECTION_SWITCH"), 
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_DYNAMIC_PRESLECTION_SWITCH" ) ),
+                           tr( "MNU_SVTK_DYNAMIC_PRESLECTION_SWITCH" ), 0, this);
+  anAction->setStatusTip(tr("DSC_SVTK_DYNAMIC_PRESLECTION_SWITCH"));
+  anAction->setCheckable(true);
+  connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onSwitchDynamicPreSelection(bool)));
+  mgr->registerAction( anAction, SwitchDynamicPreselectionId );
 
   // Start recording
   myStartAction = new QtxAction(tr("MNU_SVTK_RECORDING_START"), 
@@ -1914,6 +1947,7 @@ void SVTK_ViewWindow::createToolBar()
   mgr->append( DumpId, myToolBar );
   mgr->append( SwitchInteractionStyleId, myToolBar );
   mgr->append( SwitchZoomingStyleId, myToolBar );
+  mgr->append( SwitchDynamicPreselectionId, myToolBar );
   mgr->append( ViewTrihedronId, myToolBar );
 
   QtxMultiAction* aScaleAction = new QtxMultiAction( this );

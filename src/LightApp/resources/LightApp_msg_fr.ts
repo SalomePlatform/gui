@@ -627,7 +627,7 @@ Les modifications seront appliquées à la prochaine session.</translation>
         <translation>Console Python</translation>
     </message>
     <message>
-        <source>PREF_USE_ADVANCED_SELECTION_ALGORITHM</source>
+        <source>PREF_DYNAMIC_PRESELECTION</source>
         <translation>Utiliser l&apos;algorithme de sélection avancée</translation>
     </message>
     <message>

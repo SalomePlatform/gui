@@ -226,6 +226,8 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
   //! Redirect the request to #SVTK_MainWindow::SetZoomingStyle
   virtual void SetZoomingStyle( const int );
 
+  virtual void SetDynamicPreSelection( bool );
+
   //! Redirect the request to #SVTK_MainWindow::SetSpacemouseButtons
   virtual void SetSpacemouseButtons( const int, const int, const int );
 
@@ -301,6 +303,7 @@ public slots:
 
   void onSwitchInteractionStyle(bool theOn);
   void onSwitchZoomingStyle(bool theOn);
+  void onSwitchDynamicPreSelection(bool theOn);
 
   void onStartRecording();
   void onPlayRecording();
@@ -389,9 +392,8 @@ protected:
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ClockWiseId, AntiClockWiseId, ResetId,
 	 ViewTrihedronId, NonIsometric, GraduatedAxes, UpdateRate,
          ParallelModeId, ProjectionModeId, ViewParametersId, SynchronizeId, SwitchInteractionStyleId,
-         SwitchZoomingStyleId,
+         SwitchZoomingStyleId,SwitchDynamicPreselectionId,
          StartRecordingId, PlayRecordingId, PauseRecordingId, StopRecordingId };
-
 
   SVTK_View* myView;
   //SVTK_MainWindow* myMainWindow;

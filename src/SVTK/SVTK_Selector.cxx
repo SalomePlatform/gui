@@ -62,6 +62,7 @@ SVTK_SelectorDef
   myCellPicker(vtkCellPicker::New())
 {
   mySelectionMode = ActorSelection;
+  myDynamicPreselection = true;
 
   myPicker->Delete();
   myCellPicker->Delete();
@@ -531,13 +532,9 @@ vtkActorCollection*
 SVTK_SelectorDef
 ::Pick(const SVTK_SelectionEvent* theEvent, vtkRenderer* theRenderer) const
 {
-  bool anAdvancedSelectionAlgorithm = true;
-  SUIT_ResourceMgr* aResourceMgr = SUIT_Session::session()->resourceMgr();
-  if ( aResourceMgr )
-    anAdvancedSelectionAlgorithm = aResourceMgr->booleanValue( "VTKViewer", "use_advanced_selection_algorithm", true );
-
   vtkActorCollection* aListActors = NULL;
-  if ( anAdvancedSelectionAlgorithm ) {
+
+  if ( GetDynamicPreSelection() ) {
     myCellPicker->Pick(theEvent->myX,
                        theEvent->myY, 
                        0.0,
@@ -563,4 +560,18 @@ SVTK_SelectorDef
 {
   myPicker->SetTolerance(theTolerance);         
   myCellPicker->SetTolerance(theTolerance);
+}
+
+void
+SVTK_SelectorDef
+::SetDynamicPreSelection( bool theIsDynPreselect )
+{
+  myDynamicPreselection = theIsDynPreselect;
+}
+
+bool
+SVTK_SelectorDef
+::GetDynamicPreSelection() const
+{
+  return myDynamicPreselection;
 }

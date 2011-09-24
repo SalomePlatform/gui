@@ -1404,6 +1404,7 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
       vm->setStaticTrihedronVisible( resMgr->booleanValue( "VTKViewer", "show_static_trihedron", vm->isStaticTrihedronVisible() ) );
       vm->setInteractionStyle( resMgr->integerValue( "VTKViewer", "navigation_mode", vm->interactionStyle() ) );
       vm->setZoomingStyle( resMgr->integerValue( "VTKViewer", "zooming_mode", vm->zoomingStyle() ) );
+      vm->setDynamicPreSelection( resMgr->booleanValue( "VTKViewer", "dynamic_preselection", vm->dynamicPreSelection() ) );
       vm->setIncrementalSpeed( resMgr->integerValue( "VTKViewer", "speed_value", vm->incrementalSpeed() ),
                                resMgr->integerValue( "VTKViewer", "speed_mode", vm->incrementalSpeedMode() ) );
       vm->setSpacemouseButtons( resMgr->integerValue( "VTKViewer", "spacemouse_func1_btn", vm->spacemouseBtn(1) ),
@@ -2095,6 +2096,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "indexes", aModeIndexesList, vtkSpeedMode );
 
   pref->addPreference( tr( "PREF_SHOW_STATIC_TRIHEDRON" ), vtkGen, LightApp_Preferences::Bool, "VTKViewer", "show_static_trihedron" );
+  pref->addPreference( tr( "PREF_DYNAMIC_PRESELECTION" ),  vtkGen, LightApp_Preferences::Bool, "VTKViewer", "dynamic_preselection" );
 
   int vtkSM = pref->addPreference( tr( "PREF_FRAME_SPACEMOUSE" ), vtkGroup, LightApp_Preferences::GroupBox );
   pref->setItemProperty( "columns", 2, vtkSM );
@@ -2477,6 +2479,27 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 
       SVTK_Viewer* vtkVM = dynamic_cast<SVTK_Viewer*>( vm );
       if( vtkVM ) vtkVM->setZoomingStyle( mode );
+    }
+#endif
+  }
+#endif
+
+#ifndef DISABLE_VTKVIEWER
+  if ( sec == QString( "VTKViewer" ) && param == QString( "dynamic_preselection" ) )
+  {
+    bool mode = resMgr->booleanValue( "VTKViewer", "dynamic_preselection", true );
+    QList<SUIT_ViewManager*> lst;
+#ifndef DISABLE_SALOMEOBJECT
+    viewManagers( SVTK_Viewer::Type(), lst );
+    QListIterator<SUIT_ViewManager*> it( lst );
+    while ( it.hasNext() )
+    {
+      SUIT_ViewModel* vm = it.next()->getViewModel();
+      if ( !vm || !vm->inherits( "SVTK_Viewer" ) )
+        continue;
+
+      SVTK_Viewer* vtkVM = dynamic_cast<SVTK_Viewer*>( vm );
+      if( vtkVM ) vtkVM->setDynamicPreSelection( mode );
     }
 #endif
   }

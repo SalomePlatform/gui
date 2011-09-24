@@ -307,6 +307,9 @@ public slots:
   void onPauseRecording();
   void onStopRecording();
 
+  void onSynchronizeView();
+  void updateSyncViews();
+
 signals:
  void selectionChanged();
  void actorAdded(VTKViewer_Actor*);
@@ -367,7 +370,7 @@ protected:
   virtual void Initialize(SVTK_View* theView,
                           SVTK_ViewModelBase* theModel);
 
-  void doSetVisualParameters( const QString& );
+  void doSetVisualParameters( const QString&, bool = false );
   void SetEventDispatcher(vtkObject* theDispatcher);
 
   QImage dumpViewContent();
@@ -385,7 +388,7 @@ protected:
          ChangeRotationPointId, RotationId,
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ClockWiseId, AntiClockWiseId, ResetId,
 	 ViewTrihedronId, NonIsometric, GraduatedAxes, UpdateRate,
-         ParallelModeId, ProjectionModeId, ViewParametersId, SwitchInteractionStyleId,
+         ParallelModeId, ProjectionModeId, ViewParametersId, SynchronizeId, SwitchInteractionStyleId,
          SwitchZoomingStyleId,
          StartRecordingId, PlayRecordingId, PauseRecordingId, StopRecordingId };
 

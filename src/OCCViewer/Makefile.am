@@ -116,7 +116,8 @@ dist_salomeres_DATA =				\
 	resources/occ_view_style_switch.png	\
 	resources/occ_view_zooming_style_switch.png \
 	resources/occ_view_maximized.png	\
-	resources/occ_view_minimized.png
+	resources/occ_view_minimized.png	\
+	resources/occ_view_sync.png
 
 nodist_salomeres_DATA =		\
 	OCCViewer_images.qm	\

@@ -28,6 +28,7 @@
 
 #include "SALOME_Actor.h"
 
+#include <QMenu>
 #include <QToolBar>
 #include <QEvent>
 #include <QXmlStreamWriter>
@@ -55,6 +56,7 @@
 #include "SUIT_ResourceMgr.h"
 #include "SUIT_Accel.h"
 #include "SUIT_OverrideCursor.h"
+#include "SUIT_ViewManager.h"
 #include "QtxActionToolMgr.h"
 #include "QtxMultiAction.h"
 
@@ -1422,7 +1424,7 @@ void SVTK_ViewWindow::setVisualParameters( const QString& parameters )
 /*!
   The method restores visual parameters of this view from a formated string
 */
-void SVTK_ViewWindow::doSetVisualParameters( const QString& parameters )
+void SVTK_ViewWindow::doSetVisualParameters( const QString& parameters, bool baseParamsOnly )
 {
   double pos[3], focalPnt[3], viewUp[3], parScale, scale[3];
 
@@ -1455,24 +1457,33 @@ void SVTK_ViewWindow::doSetVisualParameters( const QString& parameters )
         scale[1] = aAttr.value("Y").toString().toDouble();
         scale[2] = aAttr.value("Z").toString().toDouble();
         //printf("#### ViewScale %f; %f; %f\n", scale[0], scale[1], scale[2]);
-      } else if (aReader.name() == "DisplayCubeAxis") {
-        if (aAttr.value("Show") == "0")
-          gradAxesActor->VisibilityOff();
-        else
-          gradAxesActor->VisibilityOn();
-      } else if (aReader.name() == "GraduatedAxis") {
-        if(aAttr.value("Axis") == "X") 
-          setGradAxisVisualParams(aReader, gradAxesActor->GetXAxisActor2D());
-        else if(aAttr.value("Axis") == "Y")
-          setGradAxisVisualParams(aReader, gradAxesActor->GetYAxisActor2D());
-        else if(aAttr.value("Axis") == "Z")
-          setGradAxisVisualParams(aReader, gradAxesActor->GetZAxisActor2D());
-      } else if (aReader.name() == "Trihedron") {
-        if (aAttr.value("isShown") == "0")
-          GetTrihedron()->VisibilityOff();
-        else
-          GetTrihedron()->VisibilityOn();
-        SetTrihedronSize(aAttr.value("Size").toString().toDouble());
+      } 
+      else if (aReader.name() == "DisplayCubeAxis") {
+	if ( !baseParamsOnly ) {
+	  if (aAttr.value("Show") == "0")
+	    gradAxesActor->VisibilityOff();
+	  else
+	    gradAxesActor->VisibilityOn();
+	}
+      }
+      else if (aReader.name() == "GraduatedAxis") {
+	if ( !baseParamsOnly ) {
+	  if(aAttr.value("Axis") == "X") 
+	    setGradAxisVisualParams(aReader, gradAxesActor->GetXAxisActor2D());
+	  else if(aAttr.value("Axis") == "Y")
+	    setGradAxisVisualParams(aReader, gradAxesActor->GetYAxisActor2D());
+	  else if(aAttr.value("Axis") == "Z")
+	    setGradAxisVisualParams(aReader, gradAxesActor->GetZAxisActor2D());
+	}
+      } 
+      else if (aReader.name() == "Trihedron") {
+	if ( !baseParamsOnly ) {
+	  if (aAttr.value("isShown") == "0")
+	    GetTrihedron()->VisibilityOff();
+	  else
+	    GetTrihedron()->VisibilityOn();
+	  SetTrihedronSize(aAttr.value("Size").toString().toDouble());
+	}
       }
     } 
   }
@@ -1483,7 +1494,8 @@ void SVTK_ViewWindow::doSetVisualParameters( const QString& parameters )
     camera->SetViewUp( viewUp );
     camera->SetParallelScale( parScale );
     SetScale( scale );
-  } else {
+  }
+  else {
     QStringList paramsLst = parameters.split( '*' );
     if ( paramsLst.size() >= nNormalParams ) {
       // 'reading' list of parameters
@@ -1510,26 +1522,29 @@ void SVTK_ViewWindow::doSetVisualParameters( const QString& parameters )
       SetScale( scale );
       
       // apply graduated axes parameters
-      SVTK_CubeAxesActor2D* gradAxesActor = GetCubeAxes();
-      if ( gradAxesActor && paramsLst.size() == nAllParams ) {
-        int i = nNormalParams+1, j = i + nGradAxisParams - 1;
-        ::setGradAxisVisualParams( gradAxesActor->GetXAxisActor2D(), parameters.section( '*', i, j ) ); 
-        i = j + 1; j += nGradAxisParams;
-        ::setGradAxisVisualParams( gradAxesActor->GetYAxisActor2D(), parameters.section( '*', i, j ) ); 
-        i = j + 1; j += nGradAxisParams;
-        ::setGradAxisVisualParams( gradAxesActor->GetZAxisActor2D(), parameters.section( '*', i, j ) ); 
+      if ( !baseParamsOnly ) {
+	SVTK_CubeAxesActor2D* gradAxesActor = GetCubeAxes();
+	if ( gradAxesActor && paramsLst.size() == nAllParams ) {
+	  int i = nNormalParams+1, j = i + nGradAxisParams - 1;
+	  ::setGradAxisVisualParams( gradAxesActor->GetXAxisActor2D(), parameters.section( '*', i, j ) ); 
+	  i = j + 1; j += nGradAxisParams;
+	  ::setGradAxisVisualParams( gradAxesActor->GetYAxisActor2D(), parameters.section( '*', i, j ) ); 
+	  i = j + 1; j += nGradAxisParams;
+	  ::setGradAxisVisualParams( gradAxesActor->GetZAxisActor2D(), parameters.section( '*', i, j ) ); 
         
-        if ( paramsLst[13].toUShort() )
-          gradAxesActor->VisibilityOn();
-        else
-          gradAxesActor->VisibilityOff();
-      } else if ( paramsLst.size() == nAllParams ) {
-        if ( paramsLst[90].toUShort() )
-          GetTrihedron()->VisibilityOn();
-        else
-          GetTrihedron()->VisibilityOff();
+	  if ( paramsLst[13].toUShort() )
+	    gradAxesActor->VisibilityOn();
+	  else
+	    gradAxesActor->VisibilityOff();
+	}
+	else if ( paramsLst.size() == nAllParams ) {
+	  if ( paramsLst[90].toUShort() )
+	    GetTrihedron()->VisibilityOn();
+	  else
+	    GetTrihedron()->VisibilityOff();
         
-        SetTrihedronSize(paramsLst[91].toDouble());
+	  SetTrihedronSize(paramsLst[91].toDouble());
+	}
       }
     }
   }
@@ -1825,6 +1840,16 @@ void SVTK_ViewWindow::createActions(SUIT_ResourceMgr* theResourceMgr)
   connect(anAction, SIGNAL(toggled(bool)), this, SLOT(onViewParameters(bool)));
   mgr->registerAction( anAction, ViewParametersId );
 
+  // Synchronize View 
+  anAction = new QtxAction(tr("MNU_SYNCHRONIZE_VIEW"), 
+                           theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_SYNCHRONIZE" ) ),
+                           tr( "MNU_SYNCHRONIZE_VIEW" ), 0, this);
+  anAction->setStatusTip(tr("DSC_SYNCHRONIZE_VIEW"));
+  anAction->setMenu( new QMenu( this ) );
+  connect(anAction->menu(), SIGNAL(aboutToShow()), this, SLOT(updateSyncViews()));
+  connect(anAction, SIGNAL(triggered()), this, SLOT(onSynchronizeView()));
+  mgr->registerAction( anAction, SynchronizeId );
+
   // Switch between interaction styles
   anAction = new QtxAction(tr("MNU_SVTK_STYLE_SWITCH"), 
                            theResourceMgr->loadPixmap( "VTKViewer", tr( "ICON_SVTK_STYLE_SWITCH" ) ),
@@ -1925,7 +1950,10 @@ void SVTK_ViewWindow::createToolBar()
   mgr->append( GraduatedAxes, myToolBar );
 
   mgr->append( ViewParametersId, myToolBar );
+  mgr->append( SynchronizeId, myToolBar );
+
   mgr->append( toolMgr()->separator(), myToolBar );
+
   mgr->append( ParallelModeId, myToolBar );
   mgr->append( ProjectionModeId, myToolBar );
 
@@ -2098,3 +2126,61 @@ void SVTK_ViewWindow::hideEvent( QHideEvent * theEvent )
   emit Hide( theEvent );
 }
 
+/*!
+  "Synchronize View" action slot.
+*/
+void SVTK_ViewWindow::onSynchronizeView()
+{
+  QAction* a = qobject_cast<QAction*>( sender() );
+  if ( a ) {
+    int id = a->data().toInt();
+    if ( id != 0 ) {
+      SUIT_Application* app = SUIT_Session::session()->activeApplication();
+      if ( !app ) return;
+      QList<SUIT_ViewManager*> wmlist;
+      app->viewManagers( getViewManager()->getType(), wmlist );
+      foreach( SUIT_ViewManager* wm, wmlist ) {
+	QVector<SUIT_ViewWindow*> vwlist = wm->getViews();
+	foreach ( SUIT_ViewWindow* vw, vwlist ) {
+	  SVTK_ViewWindow* vtkVW = dynamic_cast<SVTK_ViewWindow*>( vw );
+	  if ( vtkVW && vtkVW->getId() == id && vtkVW != this ) {
+	    // perform synchronization
+	    doSetVisualParameters( vtkVW->getVisualParameters(), true );
+	  }
+	}
+      }
+      
+      if ( a != toolMgr()->action( SynchronizeId ) )
+	toolMgr()->action( SynchronizeId )->setData( id );
+    }
+  }
+}
+
+/*!
+  Update list of available view for the "Synchronize View" action
+*/
+void SVTK_ViewWindow::updateSyncViews()
+{
+  QAction* anAction = toolMgr()->action( SynchronizeId );
+  if ( anAction && anAction->menu() ) {
+    anAction->menu()->clear();
+    SUIT_Application* app = SUIT_Session::session()->activeApplication();
+    if ( app ) { 
+      QList<SUIT_ViewManager*> wmlist;
+      app->viewManagers( getViewManager()->getType(), wmlist );
+      foreach( SUIT_ViewManager* wm, wmlist ) {
+	QVector<SUIT_ViewWindow*> vwlist = wm->getViews();
+	foreach ( SUIT_ViewWindow* vw, vwlist ) {
+	  SVTK_ViewWindow* vtkVW = dynamic_cast<SVTK_ViewWindow*>( vw );
+	  if ( !vtkVW || vtkVW == this ) continue;
+	  QAction* a = anAction->menu()->addAction( vtkVW->windowTitle() );
+	  a->setData( vtkVW->getId() );
+	  connect( a, SIGNAL( triggered() ), this, SLOT( onSynchronizeView() ) );
+	}
+      }
+    }
+    if ( anAction->menu()->actions().isEmpty() ) {
+      anAction->menu()->addAction( tr( "MNU_SYNC_NO_VIEW" ) );
+    }
+  }
+}

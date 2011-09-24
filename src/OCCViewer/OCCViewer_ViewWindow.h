@@ -120,7 +120,7 @@ public:
          FrontId, BackId, TopId, BottomId, LeftId, RightId, ClockWiseId, AntiClockWiseId,
 	 ResetId, CloneId, ClippingId, MemId, RestoreId,
          TrihedronShowId, AxialScaleId, GraduatedAxesId, AmbientId,
-	 SwitchInteractionStyleId, SwitchZoomingStyleId, MaximizedId, UserId };
+	 SwitchInteractionStyleId, SwitchZoomingStyleId, MaximizedId, SynchronizeId, UserId };
 
   enum OperationType{ NOTHING, PANVIEW, ZOOMVIEW, ROTATE, 
                       PANGLOBAL, WINDOWFIT, FITALLVIEW, RESETVIEW,
@@ -137,11 +137,13 @@ public:
   OCCViewer_ViewWindow(SUIT_Desktop* theDesktop, OCCViewer_Viewer* theModel);
   virtual ~OCCViewer_ViewWindow();
 
+  virtual OCCViewer_ViewWindow* getView( const int ) const;
+
   virtual OCCViewer_ViewPort3d* getViewPort();
 
   virtual bool eventFilter(QObject* watched, QEvent* e);
 
-  virtual void performRestoring( const viewAspect& );
+  virtual void performRestoring( const viewAspect&, bool = false );
   
   virtual void initLayout();
 
@@ -228,6 +230,9 @@ public slots:
   virtual void hideEvent( QHideEvent * );
 
   virtual void onMaximizedView();
+
+  virtual void onSynchronizeView();
+  virtual void updateSyncViews();
 
 signals:
   void vpTransformationStarted(OCCViewer_ViewWindow::OperationType type);

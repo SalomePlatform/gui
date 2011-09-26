@@ -180,6 +180,18 @@
         <translation>Changer les paramètres de la vue</translation>
     </message>
     <message>
+        <source>MNU_SYNCHRONIZE_VIEW</source>
+        <translation>Synchroniser</translation>
+    </message>
+    <message>
+        <source>DSC_SYNCHRONIZE_VIEW</source>
+        <translation>Synchroniser la vue</translation>
+    </message>
+    <message>
+        <source>MNU_SYNC_NO_VIEW</source>
+        <translation>[ Pas de vue appropriée ]</translation>
+    </message>
+    <message>
         <source>MNU_SVTK_PARALLEL_MODE</source>
         <translation>Mode orthogonal</translation>
     </message>
@@ -210,6 +222,14 @@
     <message>
         <source>MNU_SVTK_ZOOMING_STYLE_SWITCH</source>
         <translation>Changer le style de zoom</translation>
+    </message>
+    <message>
+        <source>DSC_SVTK_DYNAMIC_PRESLECTION_SWITCH</source>
+        <translation>Pré-sélection dynamique</translation>
+    </message>
+    <message>
+        <source>MNU_SVTK_DYNAMIC_PRESLECTION_SWITCH</source>
+        <translation>Pré-sélection dynamique</translation>
     </message>
 </context>
 <context>

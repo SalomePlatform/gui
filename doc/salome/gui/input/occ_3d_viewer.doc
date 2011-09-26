@@ -177,6 +177,14 @@ light" flag on/off</center>
 the current view area to the minimized / maximized state.</center>
 <hr>
 
+\image html occ_view_sync.png
+<br><center><b>Synchronize view</b> - synchronize 3d view parameters.</center>
+Clicking on this button opens a drop-down menu listing the compatible
+3d views. As soon as user selects any view from the list, the
+parameters (view point, position, zoom coefficient etc) of the current
+view are synchronized to the selected view.
+<hr>
+
 \note OCC Viewer features a special <b>Polyline Selection</b>
 mechanism, which allows selecting an arbitraty part of the graphic
 area using a polygon frame, instead of the usual selection with a

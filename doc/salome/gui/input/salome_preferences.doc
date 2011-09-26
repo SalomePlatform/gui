@@ -134,6 +134,7 @@ dialog box press the &quot;<b>...</b>&quot; button(see the picture below).
   and \b Geometrical progression used for zooming.
   - <b>Show static trihedron</b> - allows to show/hide the static trihedron
   located in the bottom-left corner of the viewer.
+  - <b>Dynamic pre-selection</b> - switches dynamic pre-selection on/off.
   - <b>Spacemouse</b> - a mouse-like manipulator device specially designed
   for working with 3D presentations, objects, etc. You can reassign the
   actions listed below to any of its buttons.

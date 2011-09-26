@@ -31,6 +31,15 @@ position) zooming styles. The second mode is available only for parallel
 (non-perspective) view's mode.</center>
 <hr>
 
+\image html vtk_view_highlight.png
+<br><center><b>Dynamic pre-selection switch</b> - allows to switch
+on/off dynamic pre-selection of the objects. When the dynamic
+pre-selection is switched on, the objects can be selected by clicking
+of the point/cell belonging to this object, with some performance
+loss. Switch dynamic pre-selection off to have good performance on the
+big objects (like huge meshes).</center>
+<hr>
+
 \image html vtk_view_triedre.png
 <br><center><b>Show/Hide Trihedron</b> - shows or hides coordinate axes.</center>
 <hr>

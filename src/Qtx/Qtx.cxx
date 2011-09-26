@@ -47,6 +47,8 @@
 #include <stdarg.h>
 #include <clocale>
 
+#define BICOLOR_CHANGE_HUE
+
 /*!
   \class Qtx
   \brief A set of helpful utility functions.
@@ -1197,7 +1199,13 @@ QColor Qtx::mainColorToSecondary( const QColor& color, int delta )
     int val = qMin( 255, qMax( cs.value() + delta, 0 ) );
     int sat = qMin( 255, qMax( cs.saturation() + delta-(val-cs.value()), 0 ) );
 #ifdef BICOLOR_CHANGE_HUE
-    int hue = qMin( 359, qMax( cs.hue() + delta-(val-cs.value())-(sat-cs.saturation()), 0 ) );
+    const int BICOLOR_HUE_MAXDELTA = 40;
+    int dh = delta-(val-cs.value())-(sat-cs.saturation());
+    dh = qMin( BICOLOR_HUE_MAXDELTA, qAbs( dh ) ) * ( dh > 0 ? 1 : -1 );
+    //int hue = qMin( 359, qMax( cs.hue() + delta-(val-cs.value())-(sat-cs.saturation()), 0 ) );
+    //int hue = qMin( 359, qMax( cs.hue() + delta-(val-cs.value())-ds, 0 ) );
+    int hue = cs.hue() + dh;
+    if ( hue < 0 ) hue = 360 - hue;
 #else
     int hue = cs.hue();
 #endif

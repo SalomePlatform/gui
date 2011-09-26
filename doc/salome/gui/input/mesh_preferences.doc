@@ -99,14 +99,14 @@ dialog box.</li>
 </ul>
 <li><b>Elements</b></li>
 <ul>
-<li><b>Fill</b>  - allows to select the color of surface of elements
+<li><b>Surface color</b>  - allows to select the color of surface of elements
 (seen in Shading mode). Click on the colored line to access to the
 \ref select_color_and_font_page "Select Color" dialog box.</li>
+<li><b>Back surface color</b> - allows to select the color of interior surface
+of elements. Use slider to select this color.  This color generated on base 
+of the <b>Surface color</b> by changing it's brightness and saturation.</li>
 <li><b>Outline</b> - allows to select the color of borders of
 elements. Click on the colored line to access to the 
-\ref select_color_and_font_page "Select Color" dialog box.</li>
-<li><b>Back Face</b> - allows to select the color of interior surface
-of elements. Click on the colored line to access to the 
 \ref select_color_and_font_page "Select Color" dialog box.</li>
 <li><b>Width</b> - allows to define the width of lines (edges and borders of elements).</li>
 <li><b>Shrink coef.</b> - allows to define relative space of elements

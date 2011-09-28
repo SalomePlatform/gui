@@ -28,11 +28,11 @@
 #include <SUIT_ViewManager.h>
 #include <SUIT_ResourceMgr.h>
 
+#include <QtxMenu.h>
 #include <QtxDockAction.h>
 #include <QtxActionMenuMgr.h>
 #include <QtxActionToolMgr.h>
 
-#include <QMenu>
 #include <QStatusBar>
 #include <QCloseEvent>
 #include <QFileDialog>
@@ -779,7 +779,7 @@ void STD_Application::setActiveViewManager( SUIT_ViewManager* vm )
 /*!Public slot. */
 void STD_Application::onConnectPopupRequest( SUIT_PopupClient* client, QContextMenuEvent* e )
 {
-  QMenu* popup = new QMenu();
+  QMenu* popup = new QtxMenu();
   // fill popup by own items
   QString title;
   contextMenuPopup( client->popupClientType(), popup, title );

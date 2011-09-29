@@ -491,6 +491,16 @@ QPaintEngine* OCCViewer_ViewPort::paintEngine() const
 }*/
 
 /*!
+  Performs synchronization of view parameters with the specified view.
+  Returns \c true if synchronization is done successfully or \c false otherwise.
+  Default implementation does nothing (return \c false)
+*/
+bool OCCViewer_ViewPort::synchronize( OCCViewer_ViewPort* )
+{
+  return false;
+}
+
+/*!
     Sets the background color with color selection dialog. [ virtual protected slot ]
 */
 void OCCViewer_ViewPort::onChangeBgColor()

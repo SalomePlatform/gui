@@ -186,7 +186,7 @@ public:
   virtual QString backgroundImageFilename() const;
   virtual void    setBackgroundImage( const QString& ,const Aspect_FillMethod& theFillMethod);
   
-  virtual const viewAspectList&   getViewAspects();
+  virtual const   viewAspectList& getViewAspects();
   virtual void                    appendViewAspect( const viewAspect& );
   virtual void                    updateViewAspects( const viewAspectList& );
   virtual void                    clearViewAspects();
@@ -230,9 +230,6 @@ public slots:
   virtual void hideEvent( QHideEvent * );
 
   virtual void onMaximizedView();
-
-  virtual void onSynchronizeView();
-  virtual void updateSyncViews();
 
 signals:
   void vpTransformationStarted(OCCViewer_ViewWindow::OperationType type);
@@ -312,6 +309,11 @@ protected:
   QCursor               myCursor;
 
   double myCurScale;
+
+private slots:
+  void                  onSynchronizeView(bool);
+  void                  updateSyncViews();
+  static void           synchronizeView( OCCViewer_ViewWindow*, int );
 
 private:
   OCCViewer_ClippingDlg* myClippingDlg;

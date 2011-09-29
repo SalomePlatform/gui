@@ -86,6 +86,9 @@ public:
   void                  setAdvancedZoomingEnabled( const bool theState ) { myIsAdvancedZoomingEnabled = theState; }
   bool                  isAdvancedZoomingEnabled() const { return myIsAdvancedZoomingEnabled; }
 
+public slots:
+  virtual bool          synchronize( OCCViewer_ViewPort* );
+
 protected:
     // EVENTS
   virtual void          paintEvent( QPaintEvent* );

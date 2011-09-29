@@ -95,6 +95,9 @@ protected:
 //  void                             onCreatePopup( QPopupMenu* );
 //  void                             onDestroyPopup( QPopupMenu* );
 
+public slots:
+  virtual bool                   synchronize( OCCViewer_ViewPort* );
+
 protected slots:
   virtual void                   onChangeBgColor();
 
@@ -103,6 +106,7 @@ signals:
   void                           vpMouseEvent( QMouseEvent* );
   void                           vpDrawExternal( QPainter* );
   void                           vpChangeBGColor( QColor );
+  void                           vpTransformed( OCCViewer_ViewPort* );
 
 private:
   void                           initialize();

@@ -27,6 +27,7 @@
 #include <QStyle>
 #include <QRegExp>
 #include <QLayout>
+#include <QPointer>
 #include <QPainter>
 #include <QSplitter>
 #include <QFocusEvent>
@@ -2539,7 +2540,7 @@ void QtxWorkstack::onContextMenuRequested( QWidget* w, QPoint p )
   myWorkWin = w;
   myWorkArea = anArea;
 
-  QMenu* pm = new QMenu();
+  QPointer<QMenu> pm = new QMenu( myWorkWin );
 
   if ( lst.count() > 1 )
   {

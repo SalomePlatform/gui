@@ -1131,6 +1131,7 @@ void Plot2d_ViewFrame::showLegend( bool show, bool update )
       legend = new QwtLegend( myPlot );
       legend->setFrameStyle( QFrame::Box | QFrame::Sunken );
     }
+    legend->setItemMode( QwtLegend::ClickableItem );
     myPlot->insertLegend( legend );
     setLegendPos( myLegendPos );
   }

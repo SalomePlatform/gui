@@ -635,7 +635,15 @@ bool OCCViewer_ViewPort3d::synchronize( OCCViewer_ViewPort* view )
 {
   bool ok = false;
   OCCViewer_ViewPort3d* vp3d = qobject_cast<OCCViewer_ViewPort3d*>( view );
-  if ( vp3d ) ok = syncronize( vp3d );
+  if ( vp3d ) { 
+    bool blocked = blockSignals( false );
+    Handle(V3d_View) aView3d = getView();
+    Handle(V3d_View) aRefView3d = vp3d->getView();
+    aView3d->SetViewMapping( aRefView3d->ViewMapping() );
+    aView3d->SetViewOrientation( aRefView3d->ViewOrientation() );
+    blockSignals( blocked );
+    ok = true;
+  }
   return ok;
 }
 

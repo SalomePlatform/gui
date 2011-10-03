@@ -115,11 +115,6 @@ elements in the wireframe mode. Click on the colored line to access to the
 <li><b>Shrink coef.</b> - allows to define relative space of elements
 compared to gaps between them in shrink mode.</li>
 </ul>
-<li><b>Selection</b></li>
-<ul>
-<li><b>Selection color</b>  - allows to select the color of borders of elements of selected mesh.
-<li><b>Pre-selection color</b>  - allows to select the color of borders of elements of pre-selected mesh.
-</ul>
 <li><b>Orientation of Faces</b> - allows to define the behavior of
 <b>Orientation of faces</b> functionality</li>
 <ul>

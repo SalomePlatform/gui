@@ -60,6 +60,8 @@ public:
   virtual QString       backgroundImageFilename() const;
   virtual void          setBackgroundImage( const QString& fileName , const Aspect_FillMethod& theFillMethod);
 
+  virtual void          updateStaticTriedronVisibility();
+
 //   void         setActive( V3d_TypeOfView );
   virtual bool syncronize( const OCCViewer_ViewPort3d* );
 

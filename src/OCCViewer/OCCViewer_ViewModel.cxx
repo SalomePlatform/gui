@@ -29,6 +29,7 @@
 #include "SUIT_ViewManager.h"
 #include "SUIT_Desktop.h"
 #include "SUIT_Session.h"
+#include "SUIT_ResourceMgr.h"
 
 #include "QtxActionToolMgr.h"
 
@@ -56,14 +57,17 @@
 #include <Prs3d_AngleAspect.hxx>
 #include <Prs3d_TextAspect.hxx>
 
+#include <Visual3d_View.hxx>
+
 /*!
   Constructor
   \param DisplayTrihedron - is trihedron displayed
 */
-OCCViewer_Viewer::OCCViewer_Viewer( bool DisplayTrihedron, bool DisplayStaticTrihedron )
+OCCViewer_Viewer::OCCViewer_Viewer( bool DisplayTrihedron)
 : SUIT_ViewModel(),
-  myShowStaticTrihedron( DisplayStaticTrihedron ),
-  myColors(4, Qt::black)
+  myColors(4, Qt::black),
+  myIsRelative(true),
+  myTrihedronSize(100)
 {
   // init CasCade viewers
   myV3dViewer = OCCViewer_VService::Viewer3d( "", (short*) "Viewer3d", "", 1000.,
@@ -124,6 +128,11 @@ OCCViewer_Viewer::OCCViewer_Viewer( bool DisplayTrihedron, bool DisplayStaticTri
   // selection
   mySelectionEnabled = true;
   myMultiSelectionEnabled = true;
+  
+  
+  SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+  if(resMgr)
+    myShowStaticTrihedron = resMgr->booleanValue( "OCCViewer", "show_static_trihedron", true );
 }
 
 /*!
@@ -709,10 +718,13 @@ double OCCViewer_Viewer::trihedronSize() const
   Changes trihedron size
   \param sz - new size
 */
-void OCCViewer_Viewer::setTrihedronSize( const double sz )
+void OCCViewer_Viewer::setTrihedronSize( const double sz, bool isRelative )
 {
-  if ( !myTrihedron.IsNull() )
-    myTrihedron->SetSize( sz );
+  if ( myTrihedronSize != sz || isRelative != myIsRelative) {
+    myTrihedronSize = sz; 
+    myIsRelative = isRelative;
+    updateTrihedron();
+  }
 }
 
 /*!
@@ -762,4 +774,85 @@ void OCCViewer_Viewer::setBackgroundColor( int theViewId, const QColor& theColor
 {
   if ( theColor.isValid() && theViewId >= 0 && theViewId < myColors.count() )
     myColors[theViewId] = theColor;
+}
+
+
+/*!
+  Set the show static trihedron flag
+*/
+void OCCViewer_Viewer::setStaticTrihedronDisplayed(const bool on) {
+  if(myShowStaticTrihedron != on) {
+    OCCViewer_ViewWindow* aView = (OCCViewer_ViewWindow*)(myViewManager->getActiveView());
+    if(!aView)
+      return;
+
+    OCCViewer_ViewPort3d* vp3d = aView->getViewPort();
+    if(vp3d) {
+      myShowStaticTrihedron = on;
+      vp3d->updateStaticTriedronVisibility();
+    }
+  }
+}
+
+/*!
+  Get new and current trihedron size corresponding to the current model size
+*/
+bool OCCViewer_Viewer::computeTrihedronSize( double& theNewSize, double& theSize )
+{
+  theNewSize = 100;
+  theSize = 100;
+
+  //SRN: BUG IPAL8996, a usage of method ActiveView without an initialization
+  Handle(V3d_Viewer) viewer = getViewer3d();
+  viewer->InitActiveViews();
+  if(!viewer->MoreActiveViews()) return false;
+
+  Handle(V3d_View) view3d = viewer->ActiveView();
+  //SRN: END of fix
+
+  if ( view3d.IsNull() )
+    return false;
+
+  double Xmin = 0, Ymin = 0, Zmin = 0, Xmax = 0, Ymax = 0, Zmax = 0;
+  double aMaxSide;
+
+  view3d->View()->MinMaxValues( Xmin, Ymin, Zmin, Xmax, Ymax, Zmax );
+
+  if ( Xmin == RealFirst() || Ymin == RealFirst() || Zmin == RealFirst() ||
+       Xmax == RealLast()  || Ymax == RealLast()  || Zmax == RealLast() )
+    return false;
+
+  aMaxSide = Xmax - Xmin;
+  if ( aMaxSide < Ymax -Ymin ) aMaxSide = Ymax -Ymin;
+  if ( aMaxSide < Zmax -Zmin ) aMaxSide = Zmax -Zmin;
+
+  // IPAL21687
+  // The boundary box of the view may be initialized but nullified
+  // (case of infinite objects)
+  if ( aMaxSide < Precision::Confusion() )
+    return false;
+
+  float aSizeInPercents = SUIT_Session::session()->resourceMgr()->doubleValue("OCCViewer","trihedron_size", 100.);
+
+  static float EPS = 5.0E-3;
+  theSize = getTrihedron()->Size();
+  theNewSize = aMaxSide*aSizeInPercents / 100.0;
+
+  return fabs( theNewSize - theSize ) > theSize * EPS ||
+         fabs( theNewSize - theSize) > theNewSize * EPS;
+}
+
+/*! 
+ * Update the size of the trihedron
+ */
+void OCCViewer_Viewer::updateTrihedron() {
+  if(myIsRelative){
+    double newSz, oldSz;
+    
+    if(computeTrihedronSize(newSz, oldSz))
+      myTrihedron->SetSize(newSz);
+    
+  } else if(myTrihedron->Size() != myTrihedronSize) {
+    myTrihedron->SetSize(myTrihedronSize);
+  }
 }

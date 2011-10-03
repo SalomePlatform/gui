@@ -385,7 +385,7 @@ void SOCC_Viewer::Display( const SALOME_OCCPrs* prs )
       {
         Handle(AIS_Trihedron) aTrh = Handle(AIS_Trihedron)::DownCast( anAIS );
         double aNewSize = 100, aSize = 100;
-        getTrihedronSize( aNewSize, aSize );
+        computeTrihedronSize( aNewSize, aSize );
         aTrh->SetSize( aTrh == getTrihedron() ? aNewSize : 0.5 * aNewSize );
       }
 
@@ -428,6 +428,7 @@ void SOCC_Viewer::Display( const SALOME_OCCPrs* prs )
         ic->Deactivate( anAIS );
     }
   }
+  updateTrihedron();
 }
 
 
@@ -479,6 +480,7 @@ void SOCC_Viewer::Erase( const SALOME_OCCPrs* prs, const bool forced )
       //}
     }
   }
+  updateTrihedron();
 }
 
 
@@ -527,8 +529,9 @@ void SOCC_Viewer::EraseAll( const bool forced )
     //  }
     //}
   }
-  
+
   Repaint();
+  updateTrihedron();
 }
 
 /*!
@@ -619,53 +622,6 @@ void SOCC_Viewer::GlobalSelection( const bool update ) const
   }
 }
 
-/*!
-  Get new and current trihedron size corresponding to the current model size
-*/
-bool SOCC_Viewer::getTrihedronSize( double& theNewSize, double& theSize )
-{
-  theNewSize = 100;
-  theSize = 100;
-
-  //SRN: BUG IPAL8996, a usage of method ActiveView without an initialization
-  Handle(V3d_Viewer) viewer = getViewer3d();
-  viewer->InitActiveViews();
-  if(!viewer->MoreActiveViews()) return false;
-
-  Handle(V3d_View) view3d = viewer->ActiveView();
-  //SRN: END of fix
-
-  if ( view3d.IsNull() )
-    return false;
-
-  double Xmin = 0, Ymin = 0, Zmin = 0, Xmax = 0, Ymax = 0, Zmax = 0;
-  double aMaxSide;
-
-  view3d->View()->MinMaxValues( Xmin, Ymin, Zmin, Xmax, Ymax, Zmax );
-
-  if ( Xmin == RealFirst() || Ymin == RealFirst() || Zmin == RealFirst() ||
-       Xmax == RealLast()  || Ymax == RealLast()  || Zmax == RealLast() )
-    return false;
-
-  aMaxSide = Xmax - Xmin;
-  if ( aMaxSide < Ymax -Ymin ) aMaxSide = Ymax -Ymin;
-  if ( aMaxSide < Zmax -Zmin ) aMaxSide = Zmax -Zmin;
-
-  // IPAL21687
-  // The boundary box of the view may be initialized but nullified
-  // (case of infinite objects)
-  if ( aMaxSide < Precision::Confusion() )
-    return false;
-
-  float aSizeInPercents = SUIT_Session::session()->resourceMgr()->doubleValue("Viewer","TrihedronSize", 105.);
-
-  static float EPS = 5.0E-3;
-  theSize = getTrihedron()->Size();
-  theNewSize = aMaxSide*aSizeInPercents / 100.0;
-
-  return fabs( theNewSize - theSize ) > theSize * EPS ||
-         fabs( theNewSize - theSize) > theNewSize * EPS;
-}
 
 /*!
   \Collect objects visible in viewer

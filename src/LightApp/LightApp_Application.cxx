@@ -1361,7 +1361,7 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
 #ifndef DISABLE_SALOMEOBJECT
     vm = new SOCC_Viewer();
 #else
-    vm = new OCCViewer_Viewer( true, resMgr->booleanValue( "OCCViewer", "static_trihedron", true ) );
+    vm = new OCCViewer_Viewer( true );
 #endif
     vm->setBackgroundColor( OCCViewer_ViewFrame::TOP_LEFT, 
                             resMgr->colorValue( "OCCViewer", "xz_background", vm->backgroundColor() ) );
@@ -1373,7 +1373,8 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
     vm->setBackgroundColor( OCCViewer_ViewFrame::BOTTOM_RIGHT, 
 			    resMgr->colorValue( "OCCViewer", "background", vm->backgroundColor() ) );
     
-    vm->setTrihedronSize( resMgr->doubleValue( "OCCViewer", "trihedron_size", vm->trihedronSize() ) );
+    vm->setTrihedronSize(  resMgr->doubleValue( "OCCViewer", "trihedron_size", vm->trihedronSize() ), 
+			   resMgr->booleanValue( "OCCViewer", "relative_size", vm->trihedronRelative() ));
     int u( 1 ), v( 1 );
     vm->isos( u, v );
     u = resMgr->integerValue( "OCCViewer", "iso_number_u", u );
@@ -1991,6 +1992,8 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
                                    LightApp_Preferences::DblSpin, "OCCViewer", "trihedron_size" );
   pref->setItemProperty( "min", 1.0E-06, occTS );
   pref->setItemProperty( "max", 1000, occTS );
+  
+  pref->addPreference( tr( "PREF_RELATIVE_SIZE" ), occGroup, LightApp_Preferences::Bool, "OCCViewer", "relative_size" );
 
   int occStyleMode = pref->addPreference( tr( "PREF_NAVIGATION" ), occGroup,
                                           LightApp_Preferences::Selector, "OCCViewer", "navigation_mode" );
@@ -2039,6 +2042,8 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "strings", anOCCZoomingStyleModeList, occZoomingStyleMode );
   pref->setItemProperty( "indexes", aModeIndexesList, occZoomingStyleMode );
 #endif
+
+  pref->addPreference( tr( "PREF_SHOW_STATIC_TRIHEDRON" ), occGroup, LightApp_Preferences::Bool, "OCCViewer", "show_static_trihedron" );
 
   // VTK Viewer
   int vtkGen = pref->addPreference( "", vtkGroup, LightApp_Preferences::Frame );
@@ -2316,9 +2321,10 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
   }
 
 #ifndef DISABLE_OCCVIEWER
-  if ( sec == QString( "OCCViewer" ) && param == QString( "trihedron_size" ) )
+  if ( sec == QString( "OCCViewer" ) && (param == QString( "trihedron_size" ) || param == QString( "relative_size" )))
   {
-    double sz = resMgr->doubleValue( sec, param, -1 );
+    double sz = resMgr->doubleValue( sec, "trihedron_size", -1 );
+    bool relative = resMgr->booleanValue( sec, "relative_size", true );
     QList<SUIT_ViewManager*> lst;
     viewManagers( OCCViewer_Viewer::Type(), lst );
     QListIterator<SUIT_ViewManager*> it( lst );
@@ -2329,8 +2335,30 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
         continue;
 
       OCCViewer_Viewer* occVM = (OCCViewer_Viewer*)vm;
-      occVM->setTrihedronSize( sz );
+      occVM->setTrihedronSize( sz, relative );
       occVM->getAISContext()->UpdateCurrentViewer();
+    }
+  }
+#endif
+
+#ifndef DISABLE_OCCVIEWER
+  if ( sec == QString( "OCCViewer" ) && param == QString( "show_static_trihedron" ) )
+  {
+    bool isVisible = resMgr->booleanValue( "OCCViewer", "show_static_trihedron", true );
+    QList<SUIT_ViewManager*> lst;
+    viewManagers( OCCViewer_Viewer::Type(), lst );
+    QListIterator<SUIT_ViewManager*> it( lst );
+    while ( it.hasNext() )
+    {
+      SUIT_ViewModel* vm = it.next()->getViewModel();
+      if ( !vm || !vm->inherits( "OCCViewer_Viewer" ) )
+        continue;
+
+      OCCViewer_Viewer* occVM = dynamic_cast<OCCViewer_Viewer*>( vm );
+      if( occVM )
+      {
+        occVM->setStaticTrihedronDisplayed( isVisible );
+      }
     }
   }
 #endif

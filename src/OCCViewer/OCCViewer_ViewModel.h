@@ -55,7 +55,7 @@ class OCCVIEWER_EXPORT OCCViewer_Viewer: public SUIT_ViewModel
 public:
   static QString Type() { return "OCCViewer"; }
 
-  OCCViewer_Viewer( bool DisplayTrihedron = true, bool DisplayStaticTrihedron = true );
+  OCCViewer_Viewer( bool DisplayTrihedron = true);
   virtual ~OCCViewer_Viewer();
 
   void update();
@@ -88,7 +88,15 @@ public:
   virtual void                    setTrihedronShown( const bool );
 
   double                          trihedronSize() const;
-  virtual void                    setTrihedronSize( const double );
+  virtual void                    setTrihedronSize( const double , bool isRelative = true);
+  
+  bool                            trihedronRelative() const {return myIsRelative; }
+
+  // a utility function, used by SALOME_View_s methods
+  bool                            computeTrihedronSize( double& theNewSize, double& theSize );
+
+  void                            updateTrihedron();
+  
 
   virtual OCCViewer_ViewWindow*   createSubWindow();
 
@@ -111,7 +119,9 @@ public:
   bool                            isMultiSelectionEnabled() const { return myMultiSelectionEnabled; }
 
   int                             getSelectionCount() const { return (!myAISContext.IsNull())? myAISContext->NbSelected():0; }
+
   bool                            isStaticTrihedronDisplayed() { return myShowStaticTrihedron; }
+  void                            setStaticTrihedronDisplayed(const bool on);
 
   /* Selection management */
   bool    highlight( const Handle(AIS_InteractiveObject)&, bool, bool=true );
@@ -157,11 +167,14 @@ private:
 
   bool                            mySelectionEnabled;
   bool                            myMultiSelectionEnabled;
+  bool                            myIsRelative;
 
   //QColor                          myBgColor;
   QPoint                          myStartPnt, myEndPnt;
 
   bool                            myShowStaticTrihedron;
+
+  double                          myTrihedronSize;
 
   QVector<QColor>                 myColors;
 };

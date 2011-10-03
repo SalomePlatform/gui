@@ -90,6 +90,8 @@ dialog box press the &quot;<b>...</b>&quot; button(see the picture below).
 - <b>OCC Viewer 3d</b>
   - <b>Trihedron size</b> - this submenu allows to set the size of
   coordinate axes displayed in the viewer.
+    - <b>Relative size</b> - if checked in, trihedron axes scale to fit the
+    size of the area displayed in 3D Viewer.
   - <b>Navigation</b> - this option allows to choose one of the
   modes of work with mouse in OCC and VTK 3D viewers.
     - <b>Salome Standard Controls</b> - allows to manipulate objects in the
@@ -112,6 +114,8 @@ dialog box press the &quot;<b>...</b>&quot; button(see the picture below).
     relatively to its center.
     - <b>Relative to the cursor</b> - allows to zoom the view
     relatively to the current cursor position.
+  - <b>Show static trihedron</b> - allows to show/hide the static trihedron
+  located in the bottom-left corner of the viewer.
 - <b>VTK Viewer 3d</b>
   - <b>Projection mode</b> - allows choosing between \b Orthogonal and
   \b Perspective projection mode.

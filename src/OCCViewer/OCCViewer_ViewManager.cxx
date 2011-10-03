@@ -28,8 +28,8 @@
   Constructor
 */
 OCCViewer_ViewManager::OCCViewer_ViewManager( SUIT_Study* study, SUIT_Desktop* theDesktop, bool DisplayTrihedron )
-: SUIT_ViewManager( study, theDesktop, new OCCViewer_Viewer( DisplayTrihedron, false ) )
-{
+: SUIT_ViewManager( study, theDesktop, new OCCViewer_Viewer( DisplayTrihedron ) )
+{  
   setTitle( tr( "OCC_VIEW_TITLE" ) );
 }
 

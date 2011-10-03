@@ -67,9 +67,6 @@ public:
   virtual void                GetVisible( SALOME_ListIO& );
   virtual void                Repaint();
 
-  // a utility function, used by SALOME_View_s methods
-  bool                        getTrihedronSize( double& theNewSize, double& theSize );
-
   //a map to store AIS objects associated to a SALOME entry
   std::map< std::string , std::vector<Handle(AIS_InteractiveObject)> > entry2aisobjects;
 };

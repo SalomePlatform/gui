@@ -28,9 +28,12 @@ mypkgpythondir = $(salomepythondir)/salome/gui
 mypkgpython_PYTHON = __init__.py \
                      selectvars.py
 
-nodist_mypkgpython_PYTHON = SelectVarsDialog.py
-CLEANFILES  = $(nodist_mypkgpython_PYTHON)
-EXTRA_DIST += SelectVarsDialog.ui
+PYUIC_FILES = SelectVarsDialog.py
+
+nodist_mypkgpython_PYTHON = $(PYUIC_FILES)
+CLEANFILES = $(PYUIC_FILES)
+
+EXTRA_DIST = SelectVarsDialog.ui
 
 %.py:%.ui
 	$(PYUIC) $< -o $@

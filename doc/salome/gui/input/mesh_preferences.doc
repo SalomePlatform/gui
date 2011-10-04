@@ -64,7 +64,13 @@ information is shown:
 <ul>
 <li><b>Simple</b> - as a plain text</li>
 <li><b>Tree</b> - in a tree-like form</li>
-</ul></ul>
+</ul>
+<li><b>Automatic nodes compute limit</b></li> - Size limit for the
+mesh groups for which the number of underlying nodes is calculated
+automatically. If the group size exceeds the value set in preferences,
+the user will have to press \em Compute button explicitly. Zero value
+means "no limit". Default value is set to 100 000 mesh elements.
+</li></ul>
 <li><b>Automatic Parameters</b></li>
 <ul>
 <li><b>Ratio Bounding Box Diagonal / Max Size</b> - this parameter is

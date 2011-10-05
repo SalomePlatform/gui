@@ -33,7 +33,7 @@ PYUIC_FILES = SelectVarsDialog.py
 nodist_mypkgpython_PYTHON = $(PYUIC_FILES)
 CLEANFILES = $(PYUIC_FILES)
 
-EXTRA_DIST = SelectVarsDialog.ui
+EXTRA_DIST += SelectVarsDialog.ui
 
 %.py:%.ui
 	$(PYUIC) $< -o $@

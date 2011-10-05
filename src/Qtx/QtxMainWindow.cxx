@@ -241,7 +241,8 @@ QtxMainWindow::QtxMainWindow( QWidget* parent, Qt::WindowFlags f )
   myStatusBar( 0 ),
   myOpaque( true ),
   myResizer( 0 ),
-  myMouseMove( 0 )
+  myMouseMove( 0 ),
+  myFullScreenAllowed(true)
 {
   //rnv: Enables tooltips for inactive windows.
   //rnv: For details see http://bugtracker.opencascade.com/show_bug.cgi?id=20893
@@ -400,7 +401,7 @@ QString QtxMainWindow::storeGeometry() const
     state = QString( "min" );
     break;
   case Qt::WindowFullScreen:
-    state = QString( "full" );
+    state = isFullScreenAllowed() ? QString( "full" ) : QString( "max" );
     break;
   }
 
@@ -623,4 +624,23 @@ bool QtxMainWindow::event( QEvent* e )
   }
 
   return ok;
+}
+
+/*!
+  \brief FullScreenAllowed flag allowed dump in the main window geometry 
+         Qt::WindowFullScreen parameter.
+  \return \c fullScreenAllowed flag.
+*/
+bool QtxMainWindow::isFullScreenAllowed() const {
+  return myFullScreenAllowed;
+}
+
+
+/*!
+  \brief Set FullScreenAllowed flag.
+         The default value is true.
+  \param f value of the fullScreenAllowed flag.
+*/
+void QtxMainWindow::setFullScreenAllowed( const bool f ) {
+    myFullScreenAllowed = f;
 }

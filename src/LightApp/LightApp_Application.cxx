@@ -54,6 +54,7 @@
 #include "LightApp_SelectionMgr.h"
 #include "LightApp_DataObject.h"
 #include "LightApp_WgViewModel.h"
+#include "LightApp_FullScreenHelper.h"
 
 #include <Basics_OCCTVersion.hxx>
 
@@ -173,6 +174,7 @@
 #include <QTimer>
 #include <QHeaderView>
 #include <QTreeView>
+#include <QShortcut>
 
 #include <utilities.h>
 
@@ -239,11 +241,13 @@ LightApp_Preferences* LightApp_Application::_prefs_ = 0;
 /*!Constructor.*/
 LightApp_Application::LightApp_Application()
 : CAM_Application( false ),
-  myPrefs( 0 )
+  myPrefs( 0 ),
+  myScreenHelper(new LightApp_FullScreenHelper())
 {
   Q_INIT_RESOURCE( LightApp );
 
   STD_TabDesktop* desk = new STD_TabDesktop();
+  desk->setFullScreenAllowed(false);
 
   setDesktop( desk );
 
@@ -342,6 +346,7 @@ LightApp_Application::LightApp_Application()
 LightApp_Application::~LightApp_Application()
 {
   delete mySelMgr;
+  delete myScreenHelper;
 }
 
 /*!Start application.*/
@@ -660,9 +665,14 @@ void LightApp_Application::createActions()
   createAction( StyleId, tr( "TOT_THEME" ), QIcon(), tr( "MEN_DESK_THEME" ), tr( "PRP_THEME" ),
                 0, desk, false, this, SLOT( onStylePreferences() ) );
 
+  createAction( FullScreenId, tr( "TOT_FULLSCREEN" ), QIcon(), tr( "MEN_DESK_FULLSCREEN" ), tr( "PRP_FULLSCREEN" ),
+		Qt::Key_F11, desk, false, this, SLOT( onFullScreen() ) );
+
+
   int viewMenu = createMenu( tr( "MEN_DESK_VIEW" ), -1 );
   createMenu( separator(), viewMenu, -1, 20, -1 );
   createMenu( StyleId, viewMenu, 20, -1 );
+  createMenu( FullScreenId, viewMenu, 20, -1 );
 
   int modTBar = createTool( tr( "INF_TOOLBAR_MODULES" ) );
   createTool( ModulesListId, modTBar );
@@ -2740,7 +2750,7 @@ void LightApp_Application::loadPreferences()
     desktop()->setDockOptions( dopts );
     desktop()->setOpaqueResize( opaqueResize );
     if ( dynamic_cast<STD_TabDesktop*>( desktop() ) )
-      dynamic_cast<STD_TabDesktop*>( desktop() )->workstack()->setOpaqueResize( opaqueResize );
+      dynamic_cast<STD_TabDesktop*>( desktop() )->workstack()->setOpaqueResize( opaqueResize );      	
   }
 }
 
@@ -3257,6 +3267,15 @@ void LightApp_Application::onStylePreferences()
   dlg.exec();
 
   resourceMgr()->setValue( "Style", "use_salome_style", Style_Salome::isActive() );
+}
+
+void LightApp_Application::onFullScreen(){
+  if(myScreenHelper) {
+    if(desktop()->isFullScreen())
+      myScreenHelper->switchToNormalScreen();
+    else
+      myScreenHelper->switchToFullScreen();
+  }
 }
 
 /*!

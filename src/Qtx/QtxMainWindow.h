@@ -54,6 +54,9 @@ public:
   QString           storeGeometry() const;
   void              retrieveGeometry( const QString& );
 
+  bool              isFullScreenAllowed() const;
+  void              setFullScreenAllowed( const bool );
+
 protected:
   virtual bool      event( QEvent* );
 
@@ -66,6 +69,8 @@ private:
 private:
   QToolBar*         myMenuBar;       //!< dockable menu bar
   QToolBar*         myStatusBar;     //!< dockable status bar
+
+  bool              myFullScreenAllowed;
 
   bool              myOpaque;
   Resizer*          myResizer;

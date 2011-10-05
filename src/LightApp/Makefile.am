@@ -59,7 +59,8 @@ salomeinclude_HEADERS =			\
 	LightApp_Preferences.h		\
 	LightApp_PreferencesDlg.h	\
 	LightApp_UpdateFlags.h		\
-	LightApp_WgViewModel.h
+	LightApp_WgViewModel.h          \
+	LightApp_FullScreenHelper.h
 
 if ENABLE_PYCONSOLE
   salomeinclude_HEADERS += LightApp_PyInterp.h
@@ -107,7 +108,8 @@ dist_libLightApp_la_SOURCES =		\
 	LightApp_SwitchOp.cxx		\
 	LightApp_Preferences.cxx	\
 	LightApp_PreferencesDlg.cxx	\
-	LightApp_WgViewModel.cxx
+	LightApp_WgViewModel.cxx        \
+	LightApp_FullScreenHelper.cxx
 
 if ENABLE_PYCONSOLE
   dist_libLightApp_la_SOURCES += LightApp_PyInterp.cxx

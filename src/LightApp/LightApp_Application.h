@@ -45,6 +45,7 @@ class PyConsole_Console;
 class LightApp_WidgetContainer;
 class LightApp_Preferences;
 class LightApp_SelectionMgr;
+class LightApp_FullScreenHelper;
 class LightApp_DataObject;
 class SUIT_DataBrowser;
 class SUIT_Study;
@@ -84,7 +85,7 @@ public:
          CloseId, CloseAllId, GroupAllId,
          PreferencesId, MRUId, ModulesListId,
          NewGLViewId, NewPlot2dId, NewOCCViewId, NewVTKViewId, NewQxGraphViewId,
-         NewQxSceneViewId = NewQxGraphViewId, StyleId,
+         NewQxSceneViewId = NewQxGraphViewId, StyleId, FullScreenId, 
          UserID };
 
 protected:
@@ -232,6 +233,7 @@ protected slots:
   void                                onMRUActivated( const QString& );
 
   void                                onStylePreferences();
+  void                                onFullScreen();
 
 private slots:
   void                                onSelection();
@@ -288,6 +290,8 @@ protected:
 protected:
   LightApp_Preferences*               myPrefs;
   LightApp_SelectionMgr*              mySelMgr;
+
+  LightApp_FullScreenHelper*          myScreenHelper;
 
   WinMap                              myWin;
   WinVis                              myWinVis;

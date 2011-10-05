@@ -70,6 +70,19 @@ The changes will be applied on the next application session.</translation>
         <source>PRP_THEME</source>
         <translation>Change style properties</translation>
     </message>
+
+    <message>
+        <source>TOT_FULLSCREEN</source>
+        <translation>Full screen</translation>
+    </message>
+    <message>
+        <source>MEN_DESK_FULLSCREEN</source>
+        <translation>Full screen</translation>
+    </message>
+    <message>
+        <source>PRP_FULLSCREEN</source>
+        <translation>Switch to full screen mode</translation>
+    </message>
     <message>
         <source>INF_TOOLBAR_MODULES</source>
         <translation>Modules</translation>

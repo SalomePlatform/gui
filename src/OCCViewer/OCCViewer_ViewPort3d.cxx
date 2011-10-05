@@ -641,8 +641,12 @@ bool OCCViewer_ViewPort3d::synchronize( OCCViewer_ViewPort* view )
     bool blocked = blockSignals( false );
     Handle(V3d_View) aView3d = getView();
     Handle(V3d_View) aRefView3d = vp3d->getView();
+    aView3d->SetImmediateUpdate( Standard_False );
     aView3d->SetViewMapping( aRefView3d->ViewMapping() );
     aView3d->SetViewOrientation( aRefView3d->ViewOrientation() );
+    aView3d->ZFitAll();
+    aView3d->SetImmediateUpdate( Standard_True );
+    aView3d->Update();
     blockSignals( blocked );
     ok = true;
   }

@@ -1166,7 +1166,7 @@ bool Qtx::stringToBiColor( const QString& str, QColor& color, int& delta )
 {
   QStringList data = str.split( "|", QString::KeepEmptyParts );
   QColor c;
-  int d;
+  int d = 0;
   bool ok = data.count() > 0 && Qtx::stringToColor( data[0], c );
   bool dok = false;
   if ( data.count() > 1 ) d = data[1].toInt( &dok );

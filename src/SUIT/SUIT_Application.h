@@ -113,6 +113,7 @@ public:
 
   virtual int           viewManagerId ( const SUIT_ViewManager* ) const = 0;
   virtual void          viewManagers( const QString&, QList<SUIT_ViewManager*>& ) const = 0;
+  QAction*              action( const int ) const;
 
 signals:
   void                  applicationClosed( SUIT_Application* );
@@ -162,7 +163,6 @@ protected:
   void                  setActionShown( const int, const bool );
 
   static QAction*       separator();
-  QAction*              action( const int ) const;
   int                   actionId( const QAction* ) const;
 
   QList<QAction*>       actions() const;

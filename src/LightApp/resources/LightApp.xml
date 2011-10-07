@@ -229,6 +229,7 @@
   <section name="ExternalBrowser" >
     <!-- External HELP browser settings -->
     <parameter value="C:\Program Files\Internet Explorer\iexplore.exe" name="winapplication" />
+    <parameter value="false" name="use_external_browser" />
     <parameter value="/usr/bin/mozilla" name="application" />
   </section>
 </document>

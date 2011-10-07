@@ -50,6 +50,18 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <source>ENTRY_COLUMN</source>
         <translation>Entry</translation>
     </message>
+    <message>
+        <source>BROWSER_TITLE</source>
+        <translation>SALOME Help Browser</translation>
+    </message>    
+    <message>
+        <source>BROWSER_FILEMENU</source>
+        <translation>&amp;File</translation>
+    </message>    
+    <message>
+        <source>BROWSER_EXIT</source>
+        <translation>&amp;Exit</translation>
+    </message>    
 </context>
 <context>
     <name>LightApp_Application</name>

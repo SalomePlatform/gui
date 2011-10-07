@@ -89,6 +89,7 @@
 #include <QtxSearchTool.h>
 #include <QtxWorkstack.h>
 #include <QtxMap.h>
+#include <QtxWebBrowser.h> 
 
 #include <LogWindow.h>
 
@@ -233,6 +234,16 @@ extern "C" LIGHTAPP_EXPORT SUIT_Application* createApplication()
 /*! \var global preferences of LightApp */
 LightApp_Preferences* LightApp_Application::_prefs_ = 0;
 
+
+static inline QString getFile(){
+#ifdef WIN32
+  return QString( "file://" );
+#else
+  return QString( "file:" );
+#endif
+}
+
+
 /*!
   \class LightApp_Application
   Application containing LightApp module
@@ -258,6 +269,11 @@ LightApp_Application::LightApp_Application()
 
   SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
   QPixmap aLogo = aResMgr->loadPixmap( "LightApp", tr( "APP_DEFAULT_ICO" ), false );
+  
+  QtxWebBrowser::setData("BROWSER_ICON", aResMgr->loadPixmap( "LightApp", tr( "BROWSER_ICON" )));
+  QtxWebBrowser::setData("BROWSER_TITLE", tr("BROWSER_TITLE"));
+  QtxWebBrowser::setData("BROWSER_FILEMENU", tr("BROWSER_FILEMENU"));
+  QtxWebBrowser::setData("BROWSER_EXIT", tr("BROWSER_EXIT"));
 
   desktop()->setWindowIcon( aLogo );
   desktop()->setDockableMenuBar( false );
@@ -908,11 +924,7 @@ public:
               const QString&        theContext = QString() )
     : myApp( theApp ),
       myParams( theParams ),
-#ifdef WIN32
-      myHelpFile( "file://" + theHelpFile ),
-#else
-      myHelpFile( "file:" + theHelpFile ),
-#endif
+      myHelpFile( getFile() + theHelpFile ),
       myContext( theContext ),
       myStatus(0),
       myLApp( app )
@@ -970,19 +982,24 @@ void LightApp_Application::onHelpContentsModule()
   anApp.append( quote );
 #endif
   QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
+  bool useExtBrowser = resMgr->booleanValue("ExternalBrowser", "use_external_browser", false );
 
-  if ( !anApp.isEmpty() )
-  {
-    RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile );
-    rs->start();
-  }
-  else
-  {
-    if ( SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "DEFINE_EXTERNAL_BROWSER" ),
-                                    SUIT_MessageBox::Yes | SUIT_MessageBox::No,
-                                    SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
-
-      showPreferences( tr( "PREF_APP" ) );
+  if( useExtBrowser ) {
+    if ( !anApp.isEmpty() )
+      {
+	RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile );
+	rs->start();
+      }
+    else
+      {
+	if ( SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "DEFINE_EXTERNAL_BROWSER" ),
+					SUIT_MessageBox::Yes | SUIT_MessageBox::No,
+					SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
+	  
+	  showPreferences( tr( "PREF_APP" ) );
+      }
+  } else {
+    QtxWebBrowser::loadUrl(getFile() + helpFile);
   }
 }
 
@@ -1019,19 +1036,26 @@ void LightApp_Application::onHelpContextModule( const QString& theComponentName,
         anApp.prepend( quote );
         anApp.append( quote );
 #endif
-  QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 
-  if ( !anApp.isEmpty() )
-  {
-    RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile, theContext );
-    rs->start();
-  }
-  else
-  {
-    if ( SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "DEFINE_EXTERNAL_BROWSER" ),
-                                    SUIT_MessageBox::Yes | SUIT_MessageBox::No,
-                                    SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
-      showPreferences( tr( "PREF_APP" ) );
+  bool useExtBrowser = resMgr->booleanValue("ExternalBrowser", "use_external_browser", false );
+  
+  if(useExtBrowser) {  
+    QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
+    
+    if ( !anApp.isEmpty() )
+      {
+	RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile, theContext );
+	rs->start();
+      }
+    else
+      {
+	if ( SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "DEFINE_EXTERNAL_BROWSER" ),
+					SUIT_MessageBox::Yes | SUIT_MessageBox::No,
+					SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
+	  showPreferences( tr( "PREF_APP" ) );
+      }
+  } else {
+    QtxWebBrowser::loadUrl(getFile() + helpFile, theContext );
   }
 }
 
@@ -1960,7 +1984,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "max",     1440, autoSaveInterval );
   pref->setItemProperty( "special", tr( "PREF_AUTO_SAVE_DISABLED" ), autoSaveInterval );
 
-  int extgroup = pref->addPreference( tr( "PREF_GROUP_EXT_BROWSER" ), genTab );
+  int extgroup = pref->addPreference( tr( "PREF_GROUP_EXT_BROWSER" ), genTab, LightApp_Preferences::Auto, "ExternalBrowser", "use_external_browser");
   QString platform;
 #ifdef WIN32
   platform = "winapplication";
@@ -2692,6 +2716,14 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
     desktop()->setOpaqueResize( opaqueResize );
     if ( dynamic_cast<STD_TabDesktop*>( desktop() ) )
       dynamic_cast<STD_TabDesktop*>( desktop() )->workstack()->setOpaqueResize( opaqueResize );
+  }
+
+  if ( sec == "ExternalBrowser" && param == "use_external_browser" ) {
+    if ( resMgr->booleanValue("ExternalBrowser", "use_external_browser", false ) ) 
+      {
+	if(QtxWebBrowser::webBrowser())
+	  QtxWebBrowser::webBrowser()->close();
+      }
   }
 }
 

@@ -77,7 +77,8 @@ salomeinclude_HEADERS =		\
 	QtxWorkspace.h		\
 	QtxWorkspaceAction.h	\
 	QtxWorkstack.h		\
-	QtxWorkstackAction.h
+	QtxWorkstackAction.h    \
+	QtxWebBrowser.h
 
 #VSR: not yet migrated to Qt4 files
 #				\
@@ -135,7 +136,8 @@ dist_libqtx_la_SOURCES =	\
 	QtxWorkspace.cxx	\
 	QtxWorkspaceAction.cxx	\
 	QtxWorkstack.cxx	\
-	QtxWorkstackAction.cxx
+	QtxWorkstackAction.cxx  \
+	QtxWebBrowser.cxx
 
 #VSR: not yet migrated to Qt4 files
 #				\
@@ -184,7 +186,8 @@ MOC_FILES =				\
 	QtxWorkspace_moc.cxx		\
 	QtxWorkspaceAction_moc.cxx	\
 	QtxWorkstack_moc.cxx		\
-	QtxWorkstackAction_moc.cxx
+	QtxWorkstackAction_moc.cxx      \
+	QtxWebBrowser_moc.cxx
 
 #VSR: not yet migrated to Qt4 files
 #					\

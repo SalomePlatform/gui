@@ -1381,13 +1381,11 @@ void GLViewer_ViewPort2d::onMaybeTip( QPoint thePoint, QString& theText, QFont& 
 
     if( !aList.isEmpty() )
     {
-      int index = 0;
       int str_size = aList.first().length();
       for( int i = 1, size = aList.count(); i < size; i++ )
       {
         if ( str_size < (int)aList[i].length() )
         {
-          index = i;
           str_size = aList[i].length();
         }
       }

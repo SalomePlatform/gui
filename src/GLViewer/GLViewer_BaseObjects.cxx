@@ -1102,7 +1102,7 @@ GLboolean GLViewer_Polyline::select( GLfloat x, GLfloat y, GLfloat tol, GLViewer
         return false;
     GLfloat xa, xb, ya, yb, l;
     GLfloat rsin, rcos, r, ra, rb;
-    GLboolean update;
+    // GLboolean update;
     GLboolean selected = myIsSel;
 
     myIsSel = GL_FALSE;
@@ -1147,7 +1147,7 @@ GLboolean GLViewer_Polyline::select( GLfloat x, GLfloat y, GLfloat tol, GLViewer
     else
         myHighFlag = GL_TRUE;
 
-    update = ( GLboolean )( myIsSel != selected );
+    // update = ( GLboolean )( myIsSel != selected );
 
     //  cout << "GLViewer_Polyline::select complete with " << (int)myIsSel << endl;
 

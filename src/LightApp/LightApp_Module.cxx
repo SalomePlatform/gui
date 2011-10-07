@@ -156,9 +156,9 @@ void LightApp_Module::updateObjBrowser( bool theIsUpdateDataModel,
   if( theIsUpdateDataModel ){
     if( CAM_DataModel* aDataModel = dataModel() ){
       if ( LightApp_DataModel* aModel = dynamic_cast<LightApp_DataModel*>( aDataModel ) ) {
-        SUIT_DataObject* aParent = NULL;
-        if(theDataObject && theDataObject != aDataModel->root())
-          aParent = theDataObject->parent();
+        //SUIT_DataObject* aParent = NULL;
+        //if(theDataObject && theDataObject != aDataModel->root())
+        //  aParent = theDataObject->parent();
 
         LightApp_DataObject* anObject = dynamic_cast<LightApp_DataObject*>(theDataObject);
         LightApp_Study* aStudy = dynamic_cast<LightApp_Study*>(getApp()->activeStudy());

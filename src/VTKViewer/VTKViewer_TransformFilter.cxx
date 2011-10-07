@@ -56,7 +56,7 @@ int VTKViewer_TransformFilter::RequestData(
 
   vtkPoints *inPts;
   vtkPoints *newPts;
-  int numPts, numCells;
+  int numPts/*, numCells*/;
   vtkPointData *pd=input->GetPointData(), *outPD=output->GetPointData();
   vtkCellData *cd=input->GetCellData(), *outCD=output->GetCellData();
   output->CopyStructure( input );
@@ -67,7 +67,7 @@ int VTKViewer_TransformFilter::RequestData(
     inPts = input->GetPoints();
     if(!anIsIdentity && inPts){
       numPts = inPts->GetNumberOfPoints();
-      numCells = input->GetNumberOfCells();
+      // numCells = input->GetNumberOfCells();
       newPts = vtkPoints::New();
       newPts->Allocate(numPts);
       this->UpdateProgress(.2);

@@ -262,8 +262,8 @@ VTKViewer_AppendFilter
   vtkInformationVector *outputVector)
 {
   int idx;
-  vtkIdType numPts, numCells, newCellId, cellId;
-  vtkCellData *cd;
+  vtkIdType numPts, numCells, cellId;
+  // vtkCellData *cd;
   vtkIdList *ptIds;
   vtkDataSet *ds;
   int numInputs = this->GetNumberOfInputConnections(0);
@@ -321,11 +321,11 @@ VTKViewer_AppendFilter
     if (ds != NULL) {
       
       numCells = ds->GetNumberOfCells(); 
-      cd = ds->GetCellData();
+      // cd = ds->GetCellData();
       // copy cell and cell data
       for (cellId=0; cellId<numCells; cellId++)  {
         ds->GetCellPoints(cellId, ptIds);
-        newCellId = output->InsertNextCell(ds->GetCellType(cellId), ptIds);
+        output->InsertNextCell(ds->GetCellType(cellId), ptIds);
       }
     }
   }

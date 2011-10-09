@@ -259,6 +259,17 @@ void OCCViewer_ViewPort3d::setZSize( double zsize )
 }
 
 /*!
+  Get axial scale to the view
+*/
+void OCCViewer_ViewPort3d::getAxialScale( double& xScale, double& yScale, double& zScale )
+{
+  xScale = yScale = zScale = 1.;
+
+  if ( !activeView().IsNull() )
+    activeView()->AxialScale( xScale, yScale, zScale );
+}
+
+/*!
   Returns the background color [ virtual public ]
 */
 QColor OCCViewer_ViewPort3d::backgroundColor() const
@@ -572,6 +583,18 @@ void OCCViewer_ViewPort3d::rotateXY( double degrees )
   emit vpTransformed( this );
 }  
   
+/*!
+  Set axial scale to the view
+*/
+void OCCViewer_ViewPort3d::setAxialScale( double xScale, double yScale, double zScale )
+{
+  if ( activeView().IsNull() )
+    return;
+  
+  activeView()->SetAxialScale( xScale, yScale, zScale );
+  emit vpTransformed( this );
+}
+
 /*!
   Passed the handle of native window of the component to CASCADE view. [ private ]
 */

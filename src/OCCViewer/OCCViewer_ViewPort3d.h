@@ -48,11 +48,11 @@ public:
   virtual ~OCCViewer_ViewPort3d();
 
 public:
-  Handle(V3d_View)        getView() const;
-  Handle(V3d_View)        setView( const Handle(V3d_View)& );
-  Handle(V3d_Viewer)      getViewer() const;
+  Handle(V3d_View)      getView() const;
+  Handle(V3d_View)      setView( const Handle(V3d_View)& );
+  Handle(V3d_Viewer)    getViewer() const;
 
-  void setAnimationMode(bool theDegenerated);
+  void                  setAnimationMode(bool theDegenerated);
 
   virtual void          setBackgroundColor( const QColor& color);
   virtual QColor        backgroundColor() const;
@@ -63,12 +63,14 @@ public:
   virtual void          updateStaticTriedronVisibility();
 
 //   void         setActive( V3d_TypeOfView );
-  virtual bool syncronize( const OCCViewer_ViewPort3d* );
+  virtual bool          syncronize( const OCCViewer_ViewPort3d* );
 
-  double getZSize() const;
-  void   setZSize( double );
+  double                getZSize() const;
+  void                  setZSize( double );
 
-  virtual void onUpdate();
+  void                  getAxialScale( double&, double&, double& );
+
+  virtual void          onUpdate();
 
   // TRANSFORMATIONS
   virtual void          reset();
@@ -79,6 +81,7 @@ public:
   virtual void          zoom( int, int, int, int );
   virtual void          fitAll( bool keepScale = false, bool withZ = true, bool upd = true );
   virtual void          rotateXY( double );
+  virtual void          setAxialScale( double, double, double );
 
   virtual void          startRotation( int, int, int, const gp_Pnt& );
   virtual void          rotate( int, int, int, const gp_Pnt& );
@@ -100,11 +103,11 @@ protected:
   virtual void          attachWindow( const Handle(V3d_View)&, const Handle(Aspect_Window)& );
 
 private:
-  Handle(V3d_View) activeView() const;
-  Handle(V3d_View) inactiveView() const;
-  bool             mapView( const Handle(V3d_View)& );
-  bool             setWindow( const Handle(V3d_View)& );
-  bool             mapped( const Handle(V3d_View)& ) const;
+  Handle(V3d_View)      activeView() const;
+  Handle(V3d_View)      inactiveView() const;
+  bool                  mapView( const Handle(V3d_View)& );
+  bool                  setWindow( const Handle(V3d_View)& );
+  bool                  mapped( const Handle(V3d_View)& ) const;
 
 private:
   Handle(V3d_View)      myOrthoView;

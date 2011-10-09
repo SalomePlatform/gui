@@ -313,6 +313,8 @@ protected:
 private slots:
   void                  onSynchronizeView(bool);
   void                  updateSyncViews();
+
+private:
   static void           synchronizeView( OCCViewer_ViewWindow*, int );
 
 private:

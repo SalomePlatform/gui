@@ -141,7 +141,7 @@ void OCCViewer_AxialScaleDlg::Update()
 {
   // Get values from the OCC view
   double aScaleFactor[3];
-  myView->getViewPort()->getView()->AxialScale( aScaleFactor[0], aScaleFactor[1], aScaleFactor[2] );
+  myView->getViewPort()->getAxialScale( aScaleFactor[0], aScaleFactor[1], aScaleFactor[2] );
   m_sbXcoeff->setValue( aScaleFactor[0] );
   m_sbYcoeff->setValue( aScaleFactor[1] );
   m_sbZcoeff->setValue( aScaleFactor[2] );
@@ -162,7 +162,7 @@ void OCCViewer_AxialScaleDlg::accept()
 bool OCCViewer_AxialScaleDlg::apply()
 {
   double aScaleFactor[3] = { m_sbXcoeff->value(), m_sbYcoeff->value(), m_sbZcoeff->value() };
-  myView->getViewPort()->getView()->SetAxialScale( aScaleFactor[0], aScaleFactor[1], aScaleFactor[2] );
+  myView->getViewPort()->setAxialScale( aScaleFactor[0], aScaleFactor[1], aScaleFactor[2] );
   return true;
 }
 

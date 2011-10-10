@@ -338,8 +338,10 @@ void SUIT_ViewManager::onWindowActivated(SUIT_ViewWindow* view)
 */
 void SUIT_ViewManager::closeAllViews()
 {
-  for ( int i = 0; i < myViews.size(); i++ )
-    delete myViews[i];
+  for ( int i = 0; i < myViews.size(); i++ ){
+    if( !myViews[i].isNull() )
+      delete myViews[i];
+  }
   myViews.clear();
 }
 

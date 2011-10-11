@@ -53,6 +53,8 @@ class vtkRenderer;
 class vtkRenderWindow;
 class vtkRenderWindowInteractor;
 class vtkInteractorStyle;
+class vtkCallbackCommand;
+
 class SVTK_RenderWindowInteractor;
 class SVTK_Renderer;
 class SVTK_NonIsometricDlg;
@@ -263,6 +265,8 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
 
   virtual void RefreshDumpImage();
 
+  void emitTransformed();
+
   //! To invoke a VTK event on #SVTK_RenderWindowInteractor instance
   void InvokeEvent(unsigned long theEvent, void* theCallData);
   
@@ -310,13 +314,11 @@ public slots:
   void onPauseRecording();
   void onStopRecording();
 
-  void onSynchronizeView();
-  void updateSyncViews();
-
 signals:
  void selectionChanged();
  void actorAdded(VTKViewer_Actor*);
  void actorRemoved(VTKViewer_Actor*);
+ void transformed(SVTK_ViewWindow*);
 
 public slots:
   //! Redirect the request to #SVTK_Renderer::OnFrontView
@@ -360,7 +362,9 @@ public slots:
 
   //! Redirect the request to #SVTK_Renderer::OnAdjustCubeAxes
   virtual void onAdjustCubeAxes();
-
+  
+  virtual void synchronize(SVTK_ViewWindow*);
+    
 protected slots:
   void onKeyPressed(QKeyEvent* event);
   void onKeyReleased(QKeyEvent* event);
@@ -372,6 +376,12 @@ protected slots:
 protected:
   virtual void Initialize(SVTK_View* theView,
                           SVTK_ViewModelBase* theModel);
+
+  // Main process event method
+  static void ProcessEvents(vtkObject* object,
+                            unsigned long event,
+                            void* clientdata,
+                            void* calldata);
 
   void doSetVisualParameters( const QString&, bool = false );
   void SetEventDispatcher(vtkObject* theDispatcher);
@@ -407,6 +417,9 @@ protected:
 
   vtkSmartPointer<vtkObject> myEventDispatcher;
 
+  // Used to process events
+  vtkSmartPointer<vtkCallbackCommand> myEventCallbackCommand;
+
   SVTK_NonIsometricDlg* myNonIsometricDlg;
   SVTK_UpdateRateDlg* myUpdateRateDlg;
   SVTK_CubeAxesDlg* myCubeAxesDlg;
@@ -426,6 +439,13 @@ protected:
   int myRecordingToolBar;
 
   vtkPVAxesWidget* myAxesWidget;
+
+private slots:
+  void onSynchronizeView(bool);
+  void updateSyncViews();
+
+private:
+  static void synchronizeView( SVTK_ViewWindow*, int );
 
 private:
   QImage myDumpImage;

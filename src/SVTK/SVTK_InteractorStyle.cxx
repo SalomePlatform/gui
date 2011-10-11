@@ -271,12 +271,14 @@ void SVTK_InteractorStyle::RotateXY(int dx, int dy)
   GetCurrentRenderer()->ResetCameraClippingRange(); 
 
   this->Render();
+  this->InvokeEvent(SVTK::OperationFinished,NULL);
 }
 
 void SVTK_InteractorStyle::PanXY(int x, int y, int oldX, int oldY)
 {
   TranslateView(x, y, oldX, oldY);   
   this->Render();
+  this->InvokeEvent(SVTK::OperationFinished,NULL);
 }
 
 void SVTK_InteractorStyle::DollyXY(int dx, int dy)
@@ -312,6 +314,7 @@ void SVTK_InteractorStyle::DollyXY(int dx, int dy)
   }
 
   this->Render();
+  this->InvokeEvent(SVTK::OperationFinished,NULL);
 }
 
 void SVTK_InteractorStyle::SpinXY(int x, int y, int oldX, int oldY)
@@ -334,6 +337,7 @@ void SVTK_InteractorStyle::SpinXY(int x, int y, int oldX, int oldY)
   cam->OrthogonalizeViewUp();
       
   this->Render();
+  this->InvokeEvent(SVTK::OperationFinished,NULL);
 }
 
 

@@ -73,6 +73,8 @@ namespace SVTK
     SetFocalPointSelected,
     StartFocalPointSelection,
     FocalPointChanged,
+    
+    OperationFinished, // rnv: invoked then SpinXY, RotateXY, DollyXY or PanXY operation is finished.
         
     LastEvent
   };

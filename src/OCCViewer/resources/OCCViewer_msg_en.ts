@@ -269,7 +269,7 @@
     </message>
     <message>
         <source>OCC_IMAGE_FILES</source>
-        <translation>Images Files (*.bmp *.png *.jpg *.jpeg)</translation>
+        <translation>Images Files (*.bmp *.png *.jpg *.jpeg *.eps *.ps)</translation>
     </message>
     <message>
         <source>OCC_BG_IMAGE_FILES</source>

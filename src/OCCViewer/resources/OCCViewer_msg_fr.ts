@@ -269,7 +269,7 @@
     </message>
     <message>
         <source>OCC_IMAGE_FILES</source>
-        <translation>Fichiers images (*.bmp *.png *.jpg *.jpeg)</translation>
+        <translation>Fichiers images (*.bmp *.png *.jpg *.jpeg *.eps *.ps)</translation>
     </message>
     <message>
         <source>DSC_MAXIMIZE_VIEW</source>

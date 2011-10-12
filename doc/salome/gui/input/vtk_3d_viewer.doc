@@ -197,10 +197,16 @@ of the view:</center><br>
 
 \image html vtk_view_sync.png
 <br><center><b>Synchronize view</b> - synchronize 3d view parameters.</center>
-Clicking on this button opens a drop-down menu listing the compatible
-3d views. As soon as user selects any view from the list, the
-parameters (view point, position, zoom coefficient etc) of the current
-view are synchronized to the selected view.
+This button has two states - checked and unchecked. Clicking on this
+button opens a drop-down menu listing the compatible 3d views. As soon
+as user selects any view from the list, the parameters (view point,
+position, zoom coefficient etc) of the current view are synchronized
+to the selected view (static synchronization).
+
+In addition, when this button is in the "checked" state, the dynamic
+synchronization of the views is performed, i.e. any zoom, pan, rotate
+or other view operation done in one view is automatically applied
+to the second view.
 <hr>
 
 \image html vtk_view_parallel.png

@@ -82,7 +82,6 @@ The changes will be applied on the next application session.</translation>
         <source>PRP_THEME</source>
         <translation>Change style properties</translation>
     </message>
-
     <message>
         <source>TOT_FULLSCREEN</source>
         <translation>Full screen</translation>

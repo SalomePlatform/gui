@@ -50,6 +50,18 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <source>ENTRY_COLUMN</source>
         <translation>Entrée</translation>
     </message>
+    <message>
+        <source>BROWSER_TITLE</source>
+        <translation>Aide de SALOME</translation>
+    </message>    
+    <message>
+        <source>BROWSER_FILEMENU</source>
+        <translation>&amp;Fichier</translation>
+    </message>    
+    <message>
+        <source>BROWSER_EXIT</source>
+        <translation>&amp;Quitter</translation>
+    </message>
 </context>
 <context>
     <name>LightApp_Application</name>
@@ -69,6 +81,18 @@ Les modifications seront appliquées à la prochaine session.</translation>
     <message>
         <source>PRP_THEME</source>
         <translation>Changer les propriétés du style </translation>
+    </message>
+    <message>
+        <source>TOT_FULLSCREEN</source>
+        <translation>Plein écran</translation>
+    </message>
+    <message>
+        <source>MEN_DESK_FULLSCREEN</source>
+        <translation>Plein écran</translation>
+    </message>
+    <message>
+        <source>PRP_FULLSCREEN</source>
+        <translation>Basculer en mode plein écran</translation>
     </message>
     <message>
         <source>INF_TOOLBAR_MODULES</source>

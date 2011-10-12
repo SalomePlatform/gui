@@ -32,7 +32,7 @@
     <name>QxScene_ViewManager</name>
     <message>
         <source>QXSCENE_VIEW_TITLE</source>
-        <translation>QGraphics scène:%M - visualisateur:%V</translation>
+        <translation>Scène QGraphics:%M - visualisateur:%V</translation>
     </message>
 </context>
 </TS>

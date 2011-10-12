@@ -202,7 +202,7 @@
     <name>VTKViewer_ViewManager</name>
     <message>
         <source>VTK_VIEW_TITLE</source>
-        <translation>VTK scène:%M - visualiseur:%V</translation>
+        <translation>Scène VTK:%M - visualiseur:%V</translation>
     </message>
 </context>
 <context>

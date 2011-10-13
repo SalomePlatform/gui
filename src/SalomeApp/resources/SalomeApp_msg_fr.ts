@@ -202,7 +202,7 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>APPCLOSE_DESCRIPTION</source>
-        <translation>Voulez-vous fermer ou décharger l&apos;étude avant de la fermer?</translation>
+        <translation>Voulez-vous fermer ou décharger l&apos;étude avant de la fermer ?</translation>
     </message>
     <message>
         <source>PRP_DESK_PROPERTIES</source>
@@ -476,7 +476,7 @@ Voulez-vous vraiment la renommer?</translation>
     </message>
     <message>
         <source>CLOSE_DESCRIPTION</source>
-        <translation>Voulez-vous sauvegarder les changements faits au Registre?</translation>
+        <translation>Voulez-vous sauvegarder les changements faits au Registre ?</translation>
     </message>
     <message>
         <source>INCORRECT_DATA</source>
@@ -485,7 +485,7 @@ Editez ses paramètres ou retirez la de la liste.</translation>
     </message>
     <message>
         <source>ERR_UPDATE_STUDY_FAILED</source>
-        <translation>Impossible de mettre l&apos;étude à jour!</translation>
+        <translation>Impossible de mettre l&apos;étude à jour !</translation>
     </message>
 </context>
 <context>

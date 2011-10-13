@@ -50,7 +50,8 @@ study is reopened, the GUI state is restored.</li>
 (separately for each component) for dumping of a study to a python script.
 If the option is disabled, the study is dumped to a single python script.</li>
 </ul>
-<li><b>External browser</b></li>
+<li><b>External browser</b></li> - allow to define which browser will 
+be used to show SALOME reference manuals: internal (built-in SALOME browser) or external (IE, Netscape, Mozilla, ...).
 <ul>
 <li>\b Application - this option allows you to set an external browser (IE,
 Netscape) which will be used for viewing SALOME reference manuals. By

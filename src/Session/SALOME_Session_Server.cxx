@@ -199,6 +199,7 @@ protected:
 
   virtual int userFileId( const QString& _fname ) const
   {
+    int id = -1;
     if ( !myExtAppName.isEmpty() ) {
       QRegExp exp( QString( "\\.%1rc\\.([a-zA-Z0-9.]+)$" ).arg( myExtAppName ) );
       QRegExp vers_exp( "^([0-9]+)([A-Za-z]?)([0-9]*)$" );
@@ -207,25 +208,26 @@ protected:
       if( exp.exactMatch( fname ) ) {
         QStringList vers = exp.cap( 1 ).split( ".", QString::SkipEmptyParts );
         int major=0, minor=0;
-        major = vers[0].toInt();
-        minor = vers[1].toInt();
-        if( vers_exp.indexIn( vers[2] )==-1 )
-          return -1;
         int release = 0, dev1 = 0, dev2 = 0;
-        release = vers_exp.cap( 1 ).toInt();
-        dev1 = vers_exp.cap( 2 )[ 0 ].toLatin1();
-        dev2 = vers_exp.cap( 3 ).toInt();
+	if ( vers.count() > 0 ) major = vers[0].toInt();
+	if ( vers.count() > 1 ) minor = vers[1].toInt();
+	if ( vers.count() > 2 ) {
+	  if( vers_exp.indexIn( vers[2] ) != -1 ) {
+	    release = vers_exp.cap( 1 ).toInt();
+	    dev1 = vers_exp.cap( 2 )[ 0 ].toLatin1();
+	    dev2 = vers_exp.cap( 3 ).toInt();
+	  }
+	}
         
-        int dev = dev1*100+dev2, id = major;
+        int dev = dev1*100+dev2;
+	id = major;
         id*=100; id+=minor;
         id*=100; id+=release;
         id*=10000;
         if ( dev > 0 ) id+=dev-10000;
-        return id;
       }
     }
-
-    return -1;
+    return id;
   }
 
 public:

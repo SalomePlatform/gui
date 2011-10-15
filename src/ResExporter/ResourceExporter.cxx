@@ -43,6 +43,7 @@
  The number of parameters is limeted only by maximum possible length of the command line.
 */
 
+#include "GUI_version.h"
 #include "SUIT_ResourceMgr.h"
 #include <QFile>
 #include <QDir>
@@ -55,30 +56,7 @@
 */
 static QString salomeVersion()
 {
-  QString path( ::getenv( "GUI_ROOT_DIR" ) );
-  if ( !path.isEmpty() )
-    path += QDir::separator();
-  path += QString( "bin/salome/VERSION" );
-
-  QFile vf( path );
-  if ( !vf.open( QIODevice::ReadOnly ) )
-    return QString();
-
-  QString line( vf.readLine( 1024 ) );
-  vf.close();
-
-  if ( line.isEmpty() )
-    return QString();
-
-  while ( !line.isEmpty() && line.at( line.length() - 1 ) == QChar( '\n' ) )
-    line.remove( line.length() - 1, 1 );
-
-  QString ver;
-  int idx = line.lastIndexOf( ":" );
-  if ( idx != -1 )
-    ver = line.mid( idx + 1 ).trimmed();
-
-  return ver;
+  return GUI_VERSION_STR;
 }
 
 /*!

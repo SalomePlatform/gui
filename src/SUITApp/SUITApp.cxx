@@ -40,15 +40,14 @@
 
 //#endif //#if defined WIN32
 
+#include "GUI_version.h"
 #include "SUITApp_Application.h"
-
-#include <SUIT_Session.h>
-#include <SUIT_Desktop.h>
-#include <SUIT_ResourceMgr.h>
-#include <Style_Salome.h>
-#include <QtxSplash.h>
-
-#include <SUIT_LicenseDlg.h>
+#include "SUIT_Desktop.h"
+#include "SUIT_LicenseDlg.h"
+#include "SUIT_ResourceMgr.h"
+#include "SUIT_Session.h"
+#include "Style_Salome.h"
+#include "QtxSplash.h"
 
 #include <QDir>
 #include <QFile>
@@ -64,31 +63,7 @@
 
 static QString salomeVersion()
 {
-  QString path( ::getenv( "GUI_ROOT_DIR" ) );
-  if ( !path.isEmpty() )
-    path += QDir::separator();
-
-  path += QString( "bin/salome/VERSION" );
-
-  QFile vf( path );
-  if ( !vf.open( QFile::ReadOnly ) )
-    return QString();
-
-  QString line = vf.readLine( 1024 );
-  vf.close();
-
-  if ( line.isEmpty() )
-    return QString();
-
-  while ( !line.isEmpty() && line.at( line.length() - 1 ) == QChar( '\n' ) )
-    line.remove( line.length() - 1, 1 );
-
-  QString ver;
-  int idx = line.lastIndexOf( ":" );
-  if ( idx != -1 )
-    ver = line.mid( idx + 1 ).trimmed();
-
-  return ver;
+  return GUI_VERSION_STR;
 }
 
 // static void MessageOutput( QtMsgType type, const char* msg )

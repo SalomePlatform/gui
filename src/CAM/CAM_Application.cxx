@@ -770,7 +770,7 @@ CAM_Application::ModuleShortInfoList CAM_Application::getVersionInfo() const {
 
   ModuleShortInfo kernel;
   kernel.name = "KERNEL";
-  kernel.version = GUI_VERSION_STR;
+  kernel.version = KERNEL_VERSION_STR;
   info.append(kernel);
 
   ModuleShortInfo gui;

@@ -53,6 +53,6 @@ nodist_libCAM_la_SOURCES = $(MOC_FILES)
 
 nodist_salomeres_DATA = CAM_msg_en.qm CAM_msg_fr.qm
 
-libCAM_la_CPPFLAGS = $(QT_INCLUDES) -I$(srcdir)/../SUIT -I$(srcdir)/../STD -I$(srcdir)/../Qtx -I$(top_builddir)
+libCAM_la_CPPFLAGS = $(QT_INCLUDES) -I$(srcdir)/../SUIT -I$(srcdir)/../STD -I$(srcdir)/../Qtx
 libCAM_la_LDFLAGS  = $(QT_MT_LIBS)
 libCAM_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la ../STD/libstd.la

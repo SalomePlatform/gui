@@ -25,8 +25,8 @@
 # redefinition compilation warnings
 # ============================================================
 #
-AM_CXXFLAGS = @KERNEL_CXXFLAGS@ -include SALOMEconfig.h
-AM_CPPFLAGS = @KERNEL_CXXFLAGS@ -include SALOMEconfig.h
+AM_CXXFLAGS = @KERNEL_CXXFLAGS@ -include SALOMEconfig.h -I$(top_builddir)
+AM_CPPFLAGS = @KERNEL_CXXFLAGS@ -include SALOMEconfig.h -I$(top_builddir)
 
 # ============================================================
 # This file defines the common definitions used in several

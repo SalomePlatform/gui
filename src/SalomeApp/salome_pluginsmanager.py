@@ -29,7 +29,7 @@ A plugins manager is created when calling initialize.
 
 The plugins manager creates a submenu <menuname> in the <basemenuname> menu.
 
-The plugins manager searches in $HOME/.salome/Plugins, $HOME/$APPLI/Plugins, $SALOME_PLUGINS_PATH directories
+The plugins manager searches in $HOME/.config/salome/Plugins, $HOME/$APPLI/Plugins, $SALOME_PLUGINS_PATH directories
 files named <name>_plugins.py and executes them.
 
 These files should contain python code that register functions into the plugins manager.
@@ -137,8 +137,12 @@ class PluginsManager:
         self.plugins_files=[]
 
         # USER plugins directory
-        user_dir = os.path.expanduser("~/.salome/Plugins")
+        user_dir = os.path.expanduser("~/.config/salome/Plugins")
         self.plugindirs.append(user_dir)
+        # obsolete: USER plugins directory
+        # (for compatibility reasons only; new plugins should be stored in ~/.config/salome/Plugins)
+        user_obsolete_dir = os.path.expanduser("~/.salome/Plugins")
+        self.plugindirs.append(user_obsolete_dir)
 
         # APPLI plugins directory
         appli=os.getenv("APPLI")

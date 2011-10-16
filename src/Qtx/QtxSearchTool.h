@@ -79,8 +79,8 @@ public:
     Any         = HotKey | SlashKey | StandardKey | PrintKey  //!< search tool is activated by any of above mentioned ways
   } Activator;
 
-  QtxSearchTool( QWidget*, QWidget* = 0, int = All );
-  QtxSearchTool( QWidget*, int = All );
+  QtxSearchTool( QWidget*, QWidget* = 0, int = All, Qt::Orientation = Qt::Vertical );
+  QtxSearchTool( QWidget*, int = All, Qt::Orientation = Qt::Vertical );
   virtual ~QtxSearchTool();
 
   QWidget*            watchedWidget() const;
@@ -129,7 +129,7 @@ private slots:
   void                modifierSwitched();
 
 private:
-  void                init();
+  void                init( Qt::Orientation );
   bool                focused() const;
   void                clearShortcuts();
   void                initShortcuts( const QList<QKeySequence>& );

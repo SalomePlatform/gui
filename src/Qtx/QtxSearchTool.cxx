@@ -270,7 +270,7 @@ static QWidget* wrapWidget( QWidget* parent, QWidget* w )
   \param controls ORed controls flags (QtxSearchTool::Controls)
   \sa setWatchedWidget(), setControls()
 */
-QtxSearchTool::QtxSearchTool( QWidget* parent, QWidget* watched, int controls )
+QtxSearchTool::QtxSearchTool( QWidget* parent, QWidget* watched, int controls, Qt::Orientation orientation )
 : QFrame( parent ),
   myWatched( watched ? watched : parent ),
   mySearcher( 0 ),
@@ -279,7 +279,7 @@ QtxSearchTool::QtxSearchTool( QWidget* parent, QWidget* watched, int controls )
   myAutoHideTimer( 0 ),
   myAutoHideEnabled( true )
 {
-  init();
+  init( orientation );
 }
 
 /*!
@@ -294,7 +294,7 @@ QtxSearchTool::QtxSearchTool( QWidget* parent, QWidget* watched, int controls )
   \param controls ORed controls flags (QtxSearchTool::Controls)
   \sa setWatchedWidget(), setControls()
 */
-QtxSearchTool::QtxSearchTool( QWidget* parent, int controls )
+QtxSearchTool::QtxSearchTool( QWidget* parent, int controls, Qt::Orientation orientation )
 : QFrame( parent ),
   myWatched( parent ),
   mySearcher( 0 ),
@@ -303,7 +303,7 @@ QtxSearchTool::QtxSearchTool( QWidget* parent, int controls )
   myAutoHideTimer( 0 ),
   myAutoHideEnabled( true )
 {
-  init();
+  init( orientation );
 }
 
 /*!
@@ -496,7 +496,7 @@ int QtxSearchTool::addCustomWidget( QWidget* w, int id )
 
   wid = id < 0 ? --_wid : id;
 
-  QVBoxLayout* vbox = qobject_cast<QVBoxLayout*>( layout() );
+  QBoxLayout* vbox = qobject_cast<QBoxLayout*>( layout() );
   w->setParent( this );
   vbox->addWidget( w );
   myWidgets.insert( wid, w );
@@ -871,25 +871,19 @@ void QtxSearchTool::modifierSwitched()
   \brief Initialize the search tool widget.
   \internal
 */
-void QtxSearchTool::init()
+void QtxSearchTool::init( Qt::Orientation orientation )
 {
   setFrameStyle( QFrame::StyledPanel | QFrame::Plain );
-  QVBoxLayout* vbox = new QVBoxLayout();
-  vbox->setSpacing( 0 );
-  vbox->setMargin( 5 );
-  setLayout( vbox );
 
   myBtnWidget = new QWidget( this );
   QHBoxLayout* myBtnWidget_layout = new QHBoxLayout( myBtnWidget );
   myBtnWidget_layout->setSpacing( 0 );
   myBtnWidget_layout->setMargin( 0 );
-  vbox->addWidget( myBtnWidget );
 
   myModWidget = new QWidget( this );
   QHBoxLayout* myModWidget_layout = new QHBoxLayout( myModWidget );
   myModWidget_layout->setSpacing( 0 );
   myModWidget_layout->setMargin( 0 );
-  vbox->addWidget( myModWidget );
 
   myClose = new QToolButton( myBtnWidget );
   myClose->setIcon( QIcon( close_xpm ) );
@@ -951,6 +945,14 @@ void QtxSearchTool::init()
 
   setShortcuts( QKeySequence( "Ctrl+S" ) );
   setActivators( Any );
+  
+  QBoxLayout* box = orientation == Qt::Vertical ? (QBoxLayout*)( new QVBoxLayout ) : (QBoxLayout*)( new QHBoxLayout );
+  box->setSpacing( 0 );
+  box->setMargin( 5 );
+  box->addWidget( myBtnWidget );
+  box->addWidget( myModWidget );
+  setLayout( box );
+
   updateControls();
 }
 

@@ -36,13 +36,14 @@ class QAction;
 class QMenu;
 class QToolBar;
 class QWebView;
+class QtxSearchTool;
 
 class QTX_EXPORT QtxWebBrowser : public QMainWindow
 {
   Q_OBJECT
 
   enum { File };
-  enum { Close };
+  enum { Find, FindNext, FindPrev, Close };
 
 private:
   QtxWebBrowser();
@@ -58,6 +59,7 @@ private:
   static QString                  getStringValue( const QString& );
   static QIcon                    getIconValue( const QString& );
   void                            updateData();
+  static void                     clearData();
 
 private slots:
   void                            adjustTitle();    
@@ -69,6 +71,7 @@ private:
   QToolBar*                       myToolbar;
   QMap<int, QMenu*>               myMenus;
   QMap<int, QAction*>             myActions;
+  QtxSearchTool*                  myFindPanel;
 };
 
 #endif // QTXWEBBROWSER_H

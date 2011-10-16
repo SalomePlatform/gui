@@ -24,18 +24,74 @@
 // Author:    Roman NIKOLAEV
 //
 #include "QtxWebBrowser.h"
+#include "QtxSearchTool.h"
 
 #include <QApplication>
 #include <QWebView>
 #include <QMenuBar>
 #include <QToolBar>
 #include <QMenu>
+#include <QVBoxLayout>
 
-//! The only one instance of web browser
-QtxWebBrowser* QtxWebBrowser::myBrowser = 0;
+/*!
+  \class WebViewSearcher
+  \brief A class is used with QtxSearchTool in order to search text within the web page 
+  \internal
+*/
+class WebViewSearcher : public QtxSearchTool::Searcher
+{
+public:
+  WebViewSearcher( QWebView* );
+  ~WebViewSearcher();
 
-//! Internal data map to store resources of the browser.
-QMap<QString, QVariant> QtxWebBrowser::myData;
+  bool find( const QString&, QtxSearchTool* );
+  bool findNext( const QString&, QtxSearchTool* );
+  bool findPrevious( const QString&, QtxSearchTool* );
+  bool findFirst( const QString&, QtxSearchTool* );
+  bool findLast( const QString&, QtxSearchTool* );
+
+private:
+  QWebView* myView;
+};
+
+WebViewSearcher::WebViewSearcher( QWebView* view ) : myView( view )
+{
+}
+
+WebViewSearcher::~WebViewSearcher()
+{
+}
+
+bool WebViewSearcher::find( const QString& text, QtxSearchTool* st )
+{
+  QWebPage::FindFlags fl = 0;
+  if ( st->isCaseSensitive() ) fl = fl | QWebPage::FindCaseSensitively;
+  if ( st->isSearchWrapped() ) fl = fl | QWebPage::FindWrapsAroundDocument;
+  return myView->findText( text, fl );
+}
+
+bool WebViewSearcher::findNext( const QString& text, QtxSearchTool* st )
+{
+  return find( text, st );
+}
+
+bool WebViewSearcher::findPrevious( const QString& text, QtxSearchTool* st )
+{
+  QWebPage::FindFlags fl = QWebPage::FindBackward;
+  if ( st->isCaseSensitive() ) fl = fl | QWebPage::FindCaseSensitively;
+  if ( st->isSearchWrapped() ) fl = fl | QWebPage::FindWrapsAroundDocument;
+  return myView->findText( text, fl );
+}
+
+bool WebViewSearcher::findFirst( const QString&, QtxSearchTool* )
+{
+  return false;
+}
+
+bool WebViewSearcher::findLast( const QString&, QtxSearchTool* )
+{
+  return false;
+}
 
 /*!
   \class QtxWebBrowser
@@ -77,6 +133,12 @@ QMap<QString, QVariant> QtxWebBrowser::myData;
 
 */
 
+//! The only one instance of web browser
+QtxWebBrowser* QtxWebBrowser::myBrowser = 0;
+
+//! Internal data map to store resources of the browser.
+QMap<QString, QVariant> QtxWebBrowser::myData;
+
 /*!
   \brief Constructor.
  
@@ -85,19 +147,41 @@ QMap<QString, QVariant> QtxWebBrowser::myData;
 QtxWebBrowser::QtxWebBrowser() : QMainWindow( 0 )
 {
   setAttribute( Qt::WA_DeleteOnClose );
-  myWebView = new QWebView(this);
-  
+
+  QWidget* frame = new QWidget( this );
+
+  myWebView = new QWebView( frame );
+  myFindPanel = new QtxSearchTool( frame, myWebView,
+				   QtxSearchTool::Basic | QtxSearchTool::Case | QtxSearchTool::Wrap, 
+				   Qt::Horizontal );
+  myFindPanel->setFrameStyle( QFrame::NoFrame | QFrame::Plain );
+  myFindPanel->setActivators( QtxSearchTool::SlashKey );
+  myFindPanel->setSearcher( new WebViewSearcher( myWebView ) );
+  myFindPanel->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
+
   myToolbar = addToolBar( tr( "Navigation" ) );
   myToolbar->addAction( myWebView->pageAction( QWebPage::Back ) );
   myToolbar->addAction( myWebView->pageAction( QWebPage::Forward ) );
 
-  myMenus[ File ]    = menuBar()->addMenu( tr( "&File" ) );
-  myActions[ Close ] = myMenus[ File ]->addAction( tr( "&Close" ), this, SLOT( close() ) );
+  myMenus[ File ]        = menuBar()->addMenu( tr( "&File" ) );
+  myActions[ Find ]      = myMenus[ File ]->addAction( tr( "&Find in text..." ), myFindPanel, SLOT( find() ),         QKeySequence( QKeySequence::Find ) );
+  myActions[ FindNext ]  = myMenus[ File ]->addAction( tr( "&Find next" ),       myFindPanel, SLOT( findNext() ),     QKeySequence( QKeySequence::FindNext ) );
+  myActions[ FindPrev ]  = myMenus[ File ]->addAction( tr( "&Find previous" ),   myFindPanel, SLOT( findPrevious() ), QKeySequence( QKeySequence::FindPrevious ) );
+  myMenus[ File ]->addSeparator();
+  myActions[ Close ]     = myMenus[ File ]->addAction( tr( "&Close" ),           this, SLOT( close() ) );
+
+  QVBoxLayout* main = new QVBoxLayout( frame );
+  main->addWidget( myWebView );
+  main->addWidget( myFindPanel );
+  main->setMargin( 0 );
+  main->setSpacing( 3 );
 
   connect( myWebView, SIGNAL( titleChanged( QString ) ), SLOT( adjustTitle() ) ); 
-  setCentralWidget( myWebView );
-
+  
+  setCentralWidget( frame );
+  setFocusProxy( myWebView );
   updateData();
+  qAddPostRoutine( QtxWebBrowser::clearData );
 }
 
 /*!
@@ -142,16 +226,22 @@ void QtxWebBrowser::loadUrl( const QString& url, const QString& anchor )
   \brief  Set browser settings from.
 
   This method can be used to setup the browser properties.
-  - \c "browser:title"        : title of the browser window
-  - \c "browser:icon"         : icon of the browser window
-  - \c "toolbar:title"        : title of the toolbar
-  - \c "menu:file:title"      : File menu of the browser
-  - \c "action:close:title"   : File/Close menu item title
-  - \c "action:close:icon"    : File/Close menu item icon
-  - \c "action:back:title"    : Navigation/Back menu item title
-  - \c "action:back:icon"     : Navigation/Back menu item icon
-  - \c "action:forward:title" : Navigation/Forward menu item title
-  - \c "action:forward:icon"  : Navigation/Forward menu item icon
+  - \c "browser:title"         : title of the browser window
+  - \c "browser:icon"          : icon of the browser window
+  - \c "toolbar:title"         : title of the toolbar
+  - \c "menu:file:title"       : File menu of the browser
+  - \c "action:close:title"    : File/Close menu item title
+  - \c "action:close:icon"     : File/Close menu item icon
+  - \c "action:back:title"     : Navigation/Back menu item title
+  - \c "action:back:icon"      : Navigation/Back menu item icon
+  - \c "action:forward:title"  : Navigation/Forward menu item title
+  - \c "action:forward:icon"   : Navigation/Forward menu item icon
+  - \c "action:find:title"     : File/Find menu item title
+  - \c "action:find:icon"      : File/Find menu item icon
+  - \c "action:findnext:title" : File/Find Next menu item title
+  - \c "action:findnext:icon"  : File/Find Next menu item icon
+  - \c "action:findprev:title" : File/Find Previous menu item title
+  - \c "action:findprev:icon"  : File/Find Previous menu item icon
   
   \param key name of the property
   \param val value of the property
@@ -243,6 +333,41 @@ void QtxWebBrowser::updateData()
     myWebView->pageAction( QWebPage::Forward )->setText( fwdTlt );
   if ( !fwdIco.isNull() )
     myWebView->pageAction( QWebPage::Forward )->setIcon( fwdIco );
+
+  // File/Find menu
+  QString findTlt = getStringValue( "action:find:title" );
+  QIcon findIco = getIconValue( "action:find:icon" );
+  if ( myActions.contains( Find ) ) {
+    if ( !findTlt.isEmpty() )
+      myActions[ Find ]->setText( findTlt );
+    if ( !findIco.isNull() )
+      myActions[ Find ]->setIcon( findIco );
+  }
+
+  // File/Find Next menu
+  QString findNextTlt = getStringValue( "action:findnext:title" );
+  QIcon findNextIco = getIconValue( "action:findnext:icon" );
+  if ( myActions.contains( FindNext ) ) {
+    if ( !findNextTlt.isEmpty() )
+      myActions[ FindNext ]->setText( findNextTlt );
+    if ( !findNextIco.isNull() )
+      myActions[ FindNext ]->setIcon( findNextIco );
+  }
+
+  // File/Find Previous menu
+  QString findPrevTlt = getStringValue( "action:findprev:title" );
+  QIcon findPrevIco = getIconValue( "action:findprev:icon" );
+  if ( myActions.contains( FindPrev ) ) {
+    if ( !findPrevTlt.isEmpty() )
+      myActions[ FindPrev ]->setText( findPrevTlt );
+    if ( !findPrevIco.isNull() )
+      myActions[ FindPrev ]->setIcon( findPrevIco );
+  }
+}
+
+void QtxWebBrowser::clearData()
+{
+  myData.clear();
 }
 
 /*!

@@ -66,6 +66,26 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <source>BROWSER_CLOSE</source>
         <translation>&amp;Close</translation>
     </message>    
+    <message>
+        <source>BROWSER_BACK</source>
+        <translation>Go Back</translation>
+    </message>    
+    <message>
+        <source>BROWSER_FORWARD</source>
+        <translation>Go Forward</translation>
+    </message>    
+    <message>
+        <source>BROWSER_FIND</source>
+        <translation>&amp;Find...</translation>
+    </message>    
+    <message>
+        <source>BROWSER_FINDNEXT</source>
+        <translation>Find &amp;next</translation>
+    </message>    
+    <message>
+        <source>BROWSER_FINDPREV</source>
+        <translation>Find &amp;previous</translation>
+    </message>    
 </context>
 <context>
     <name>LightApp_Application</name>

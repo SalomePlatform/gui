@@ -635,6 +635,9 @@ bool QtxResourceMgr::IniFormat::load( const QString& fname, QMap<QString, Sectio
 */
 bool QtxResourceMgr::IniFormat::save( const QString& fname, const QMap<QString, Section>& secMap )
 {
+  if ( !Qtx::mkDir( QFileInfo( fname ).absolutePath() ) )
+    return false;
+
   QFile file( fname );
   if ( !file.open( QFile::WriteOnly ) )
     return false;
@@ -876,6 +879,9 @@ bool QtxResourceMgr::XmlFormat::save( const QString& fname, const QMap<QString, 
   bool res = false;
 
 #ifndef QT_NO_DOM
+
+  if ( !Qtx::mkDir( QFileInfo( fname ).absolutePath() ) )
+    return false;
 
   QFile file( fname );
   if ( !file.open( QFile::WriteOnly ) )
@@ -2779,7 +2785,7 @@ void QtxResourceMgr::setResource( const QString& sect, const QString& name, cons
   the configuration file from the previous versions of the application).
   
   \param appName application name
-  \param for_load boolean flag indicating that file is opened for loading or saving (not used) 
+  \param for_load boolean flag indicating that file is opened for loading or saving (not used in default implementation) 
   \return user configuration file name
   \sa globalFileName()
 */
@@ -2787,6 +2793,10 @@ QString QtxResourceMgr::userFileName( const QString& appName, const bool /*for_l
 {
   QString fileName;
   QString pathName = QDir::homePath();
+
+  QString cfgAppName = QApplication::applicationName();
+  if ( !cfgAppName.isEmpty() )
+    pathName = Qtx::addSlash( Qtx::addSlash( pathName ) + QString( ".config" ) ) + cfgAppName;
 
 #ifdef WIN32
   fileName = QString( "%1.%2" ).arg( appName ).arg( currentFormat() );

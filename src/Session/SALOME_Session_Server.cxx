@@ -174,9 +174,9 @@ protected:
     return SUIT_ResourceMgr::userFileName( myExtAppName, for_load );
   }
 
-  virtual int userFileId( const QString& _fname ) const
+  virtual long userFileId( const QString& _fname ) const
   {
-    int id = -1;
+    long id = -1;
     if ( !myExtAppName.isEmpty() ) {
       QRegExp exp( QString( "\\.%1rc\\.([a-zA-Z0-9.]+)$" ).arg( myExtAppName ) );
       QRegExp vers_exp( "^([0-9]+)([A-Za-z]?)([0-9]*)$" );

@@ -34,91 +34,70 @@
 //! The only one instance of web browser
 QtxWebBrowser* QtxWebBrowser::myBrowser = 0;
 
-//!Internal data map to store resources of the browser.
+//! Internal data map to store resources of the browser.
 QMap<QString, QVariant> QtxWebBrowser::myData;
 
 /*!
   \class QtxWebBrowser
 
-  \brief The QtxWebBrowser provides a window that can display a html pages.
+  \brief The QtxWebBrowser provides a window that can display html pages.
   
   Only one instance of the QtxWebBrowser class can be created. To access the browser 
   window, use static method QtxWebBrowser::webBrowser(), which creates an
-  instance of the QtxWebBrowser widget (if it is not yet creaed) and returns a
+  instance of the QtxWebBrowser widget (if it is not yet created) and returns a
   pointer to it.
 
   You should not destroy this instance - it is done automatically after
-  closing of the browser window. To closing window programmatically use 
+  closing of the browser window. To close window programmatically use 
   method close().
 
   To set visual properties of the browser use static method setData().
 
-  Following code demonstrate how to use web browser:
+  The following sample demonstrates how to use web browser.
+  In this code the browser window is created, /data/index.html file is opened
+  and scrolled to the "anchor1" anchor on this page.
 
   \code
   int main(int argc, char *argv[])
   {
     QApplication app(argc, argv);    
 
-    //Set icon, title and menu items.
-    QtxWebBrowser::setData("BROWSER_TITLE", tr("Web Browser"));
+    // set icon, title and menu items.
+    QtxWebBrowser::setData("browser:title",      tr("Web Browser"));
+    QtxWebBrowser::setData("browser:icon",       QPixmap(":/icon.png"));
+    QtxWebBrowser::setData("menu:file:title",    tr("&File"));
+    QtxWebBrowser::setData("action:close:title", tr("&Close"));
 
-    QPixmap pixmap(":/icon.png");
-    QtxWebBrowser::setData("BROWSER_ICON", pixmap);
-
-    QtxWebBrowser::setData("BROWSER_FILEMENU", tr("&File"));
-    QtxWebBrowser::setData("BROWSER_EXIT", tr("&Exit"));
-
-
-    //Show web page
+    // show HTML page
     QtxWebBrowser::loadUrl("file:///data/index.html", "anchor1");
     
     return app.exec();
   }
-  
   \endcode
 
-  This code will create the browser window and open /data/index.html 
-  file in "anchor1" context.
 */
 
 /*!
   \brief Constructor.
-  
+ 
   Construct the web browser.
 */
-QtxWebBrowser::QtxWebBrowser() 
-: QMainWindow(0)
+QtxWebBrowser::QtxWebBrowser() : QMainWindow( 0 )
 {
   setAttribute( Qt::WA_DeleteOnClose );
   myWebView = new QWebView(this);
   
-  QToolBar *toolBar = addToolBar(tr("Navigation"));
-  toolBar->addAction(myWebView->pageAction(QWebPage::Back));
-  toolBar->addAction(myWebView->pageAction(QWebPage::Forward));
+  myToolbar = addToolBar( tr( "Navigation" ) );
+  myToolbar->addAction( myWebView->pageAction( QWebPage::Back ) );
+  myToolbar->addAction( myWebView->pageAction( QWebPage::Forward ) );
 
-  QString title = getStringValue("BROWSER_TITLE");
-  if(!title.isEmpty())
-    setWindowTitle(title);
-  
-  QIcon icon = getIconValue("BROWSER_ICON");
-  if(!icon.isNull())
-    setWindowIcon(icon);
+  myMenus[ File ]    = menuBar()->addMenu( tr( "&File" ) );
+  myActions[ Close ] = myMenus[ File ]->addAction( tr( "&Close" ), this, SLOT( close() ) );
 
-  QString fmenu = getStringValue("BROWSER_FILEMENU");
-  if ( fmenu.isEmpty() ) {
-    fmenu = tr("&File");
-  }
-  QMenu *menu = menuBar()->addMenu(fmenu);
-  
-  QString item = getStringValue("BROWSER_EXIT");
-  if ( item.isEmpty() ) {
-    item = tr("&Exit");
-  }  
-  menu->addAction( item, this, SLOT(close()));
+  connect( myWebView, SIGNAL( titleChanged( QString ) ), SLOT( adjustTitle() ) ); 
+  setCentralWidget( myWebView );
 
-  connect(myWebView, SIGNAL(titleChanged(QString)), SLOT(adjustTitle())); 
-  setCentralWidget(myWebView);
+  updateData();
 }
 
 /*!
@@ -130,28 +109,30 @@ QtxWebBrowser::~QtxWebBrowser()
 }
 
 /*!
-  \brief Create instance of the QtxWebBrowser.
-  \return instance of the QtxWebBrowser.
+  \brief Return the only instance of the QtxWebBrowser
+  \return instance of the QtxWebBrowser
 */
-QtxWebBrowser* QtxWebBrowser::webBrowser() {
-  if( myBrowser == 0 )
+QtxWebBrowser* QtxWebBrowser::webBrowser()
+{
+  if ( !myBrowser )
     myBrowser = new QtxWebBrowser();
   return myBrowser;
 }
 
 /*!
-  \brief Load given url addres and context.
-  \param theUlr url address to load.
-  \param theContext url context to load.
+  \brief Load given url address and optional scroll to the specified anchor
+  \param url an url address to load
+  \param anchor an anchor to scroll page to
 */
-void QtxWebBrowser::loadUrl(const QString& theUrl , const QString theContext ) {
-  QString anUrl = theUrl;
-  if( !theContext.isEmpty() )
-    anUrl += "#" + theContext;
+void QtxWebBrowser::loadUrl( const QString& url, const QString& anchor )
+{
+  QString anUrl = url;
+  if( !anchor.isEmpty() ) anUrl += "#" + anchor;
 
-  Qtx::alignWidget(webBrowser(), (QWidget*)QApplication::desktop(),Qtx::AlignHCenter);
+  Qtx::alignWidget( webBrowser(), (QWidget*)QApplication::desktop(), Qtx::AlignCenter );
+
   webBrowser()->show();
-  webBrowser()->myWebView->load(QUrl(anUrl));
+  webBrowser()->myWebView->load( QUrl( anUrl ) );
   webBrowser()->setFocus();
   webBrowser()->activateWindow();
   webBrowser()->raise();
@@ -160,59 +141,116 @@ void QtxWebBrowser::loadUrl(const QString& theUrl , const QString theContext ) {
 /*!
   \brief  Set browser settings from.
 
-  This method can be used to setup the browser look-n-feel.
-
-  All the browser parameters can be defined via resources file:
-  - \c "BROWSER_TITLE" : title of the browser
-  - \c "BROWSER_ICON" : icon of the browser
-  - \c "BROWSER_FILEMENU" : name of the browser menu
-  - \c "BROWSER_EXIT" : name of the browser menu item
+  This method can be used to setup the browser properties.
+  - \c "browser:title"        : title of the browser window
+  - \c "browser:icon"         : icon of the browser window
+  - \c "toolbar:title"        : title of the toolbar
+  - \c "menu:file:title"      : File menu of the browser
+  - \c "action:close:title"   : File/Close menu item title
+  - \c "action:close:icon"    : File/Close menu item icon
+  - \c "action:back:title"    : Navigation/Back menu item title
+  - \c "action:back:icon"     : Navigation/Back menu item icon
+  - \c "action:forward:title" : Navigation/Forward menu item title
+  - \c "action:forward:icon"  : Navigation/Forward menu item icon
   
   \param key name of the property
   \param val value of the property
   
 */
-void QtxWebBrowser::setData( const QString& key, const QVariant& val ) {
-  myData.insert(key, val);
+void QtxWebBrowser::setData( const QString& key, const QVariant& val )
+{
+  myData.insert( key, val );
+  if ( myBrowser ) myBrowser->updateData();
 }
 
 /*!
-  \brief Get string by name from the internal data map.
+  \brief Get string value by key from the internal data map
+  \param key data key identifier
+  \return string value assigned to the key (null string if data is not assigned to the key)
   \internal
 */
-QString QtxWebBrowser::getStringValue(const QString& key) {
+QString QtxWebBrowser::getStringValue( const QString& key )
+{
   QString val;
-  if(myData.contains(key)) {
-    QVariant v = myData[key];
-    if( v.type() == QVariant::String ) {
-      val = v.toString();
-    }
+  if ( myData.contains( key ) && myData[key].canConvert( QVariant::String ) )
+    val = myData[key].toString();
+  return val;
+}
+
+/*!
+  \brief Get icon value by key from the internal data map
+  \param key data key identifier
+  \return icon assigned to the key (null icon if data is not assigned to the key)
+  \internal
+*/
+QIcon QtxWebBrowser::getIconValue(const QString& key)
+{
+  QIcon val;
+  if ( myData.contains( key ) ) {
+    if ( myData[key].canConvert( QVariant::Pixmap ) )
+      val = myData[key].value<QPixmap>();
+    else if ( myData[key].canConvert( QVariant::Icon ) )
+      val = myData[key].value<QIcon>();
   }
   return val;
 }
 
 /*!
-  \brief Get icon by name from the internal data map.
-  \internal
+  \brief Update web browser properties from internal data map
 */
-QIcon QtxWebBrowser::getIconValue(const QString& key) {
-  QIcon val;
-  if(myData.contains(key)) {
-    QVariant v = myData[key];
-    if( v.type() == QVariant::Pixmap ) {
-      val = v.value<QPixmap>();
-    }
-  }  
-  return val;
+void QtxWebBrowser::updateData()
+{
+  // main title
+  adjustTitle();
+
+  // window icon
+  QIcon icon = getIconValue( "browser:icon" );
+  if ( !icon.isNull() )
+    setWindowIcon( icon );
+
+  // toolbar title
+  QString tbTitle = getStringValue( "toolbar:title" );
+  if ( myToolbar && !tbTitle.isEmpty() )
+    myToolbar->setWindowTitle( tbTitle );
+
+  // File menu
+  QString fmenu = getStringValue( "menu:file:title" );
+  if ( myMenus.contains( File ) && !fmenu.isEmpty() )
+    myMenus[ File ]->setTitle( fmenu );
+
+  // File/Close menu
+  QString closeTlt = getStringValue( "action:close:title" );
+  QIcon closeIco = getIconValue( "action:close:icon" );
+  if ( myActions.contains( Close ) ) {
+    if ( !closeTlt.isEmpty() )
+      myActions[ Close ]->setText( closeTlt );
+    if ( !closeIco.isNull() )
+      myActions[ Close ]->setIcon( closeIco );
+  }
+
+  // Navigation/Go Back menu
+  QString backTlt = getStringValue( "action:back:title" );
+  QIcon backIco = getIconValue( "action:back:icon" );
+  if ( !backTlt.isEmpty() )
+    myWebView->pageAction( QWebPage::Back )->setText( backTlt );
+  if ( !backIco.isNull() )
+    myWebView->pageAction( QWebPage::Back )->setIcon( backIco );
+
+  // Navigation/Go Forward menu
+  QString fwdTlt = getStringValue( "action:forward:title" );
+  QIcon fwdIco = getIconValue( "action:forward:icon" );
+  if ( !fwdTlt.isEmpty() )
+    myWebView->pageAction( QWebPage::Forward )->setText( fwdTlt );
+  if ( !fwdIco.isNull() )
+    myWebView->pageAction( QWebPage::Forward )->setIcon( fwdIco );
 }
 
 /*!
-  \brief Update title of the window.
+  \brief Update title of the window
   \internal
 */
 void QtxWebBrowser::adjustTitle()
 {
-  QString title = getStringValue("BROWSER_TITLE");
-  title.isEmpty() ? title = myWebView->title() : title += " : " + myWebView->title();
-  setWindowTitle(title);
+  QString title = getStringValue( "browser:title" );
+  setWindowTitle( title.isEmpty() ? myWebView->title() : title + QString( " [%1]" ).arg( myWebView->title() ) );
 }

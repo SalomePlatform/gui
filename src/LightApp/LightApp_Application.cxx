@@ -270,10 +270,12 @@ LightApp_Application::LightApp_Application()
   SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
   QPixmap aLogo = aResMgr->loadPixmap( "LightApp", tr( "APP_DEFAULT_ICO" ), false );
   
-  QtxWebBrowser::setData("BROWSER_ICON", aResMgr->loadPixmap( "LightApp", tr( "BROWSER_ICON" )));
-  QtxWebBrowser::setData("BROWSER_TITLE", tr("BROWSER_TITLE"));
-  QtxWebBrowser::setData("BROWSER_FILEMENU", tr("BROWSER_FILEMENU"));
-  QtxWebBrowser::setData("BROWSER_EXIT", tr("BROWSER_EXIT"));
+  QtxWebBrowser::setData("browser:icon",       aResMgr->loadPixmap( "LightApp", tr( "BROWSER_ICON" ) ) );
+  QtxWebBrowser::setData("browser:title",      tr( "BROWSER_TITLE" ) );
+  QtxWebBrowser::setData("toolbar:title",      tr( "BROWSER_TOOLBAR_TITLE" ) );
+  QtxWebBrowser::setData("menu:file:title",    tr( "BROWSER_FILEMENU" ) );
+  QtxWebBrowser::setData("action:close:title", tr( "BROWSER_CLOSE" ) );
+  QtxWebBrowser::setData("action:close:icon",  aResMgr->loadPixmap( "LightApp", tr( "BROWSER_CLOSE_ICON" ) ) );
 
   desktop()->setWindowIcon( aLogo );
   desktop()->setDockableMenuBar( false );

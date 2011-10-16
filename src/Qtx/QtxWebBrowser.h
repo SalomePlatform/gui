@@ -30,13 +30,19 @@
 #include "Qtx.h"
 
 #include <QMainWindow>
-#include <QWebView>
 #include <QMap>
 
+class QAction;
+class QMenu;
+class QToolBar;
+class QWebView;
 
 class QTX_EXPORT QtxWebBrowser : public QMainWindow
 {
   Q_OBJECT
+
+  enum { File };
+  enum { Close };
 
 private:
   QtxWebBrowser();
@@ -44,22 +50,25 @@ private:
 public:
   virtual ~QtxWebBrowser();
   
-  static                          QtxWebBrowser* webBrowser();
-  static void                     loadUrl( const QString& theUrl, const QString theContext = QString() );
-  static void                     setData( const QString& key, const QVariant& val );
+  static QtxWebBrowser*           webBrowser();
+  static void                     loadUrl( const QString&, const QString& = QString() );
+  static void                     setData( const QString&, const QVariant& );
 
 private:
-  QString                         getStringValue(const QString& key);
-  QIcon                           getIconValue(const QString& key);
+  static QString                  getStringValue( const QString& );
+  static QIcon                    getIconValue( const QString& );
+  void                            updateData();
 
 private slots:
-    void                          adjustTitle();    
+  void                            adjustTitle();    
   
 private:
- static QtxWebBrowser*            myBrowser;
-  QWebView*                       myWebView;
   static QMap<QString, QVariant>  myData;
-  
+  static QtxWebBrowser*           myBrowser;
+  QWebView*                       myWebView;
+  QToolBar*                       myToolbar;
+  QMap<int, QMenu*>               myMenus;
+  QMap<int, QAction*>             myActions;
 };
 
 #endif // QTXWEBBROWSER_H

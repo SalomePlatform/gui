@@ -55,12 +55,16 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>SALOME Help Browser</translation>
     </message>    
     <message>
+        <source>BROWSER_TOOLBAR_TITLE</source>
+        <translation>Navigation</translation>
+    </message>    
+    <message>
         <source>BROWSER_FILEMENU</source>
         <translation>&amp;File</translation>
     </message>    
     <message>
-        <source>BROWSER_EXIT</source>
-        <translation>&amp;Exit</translation>
+        <source>BROWSER_CLOSE</source>
+        <translation>&amp;Close</translation>
     </message>    
 </context>
 <context>

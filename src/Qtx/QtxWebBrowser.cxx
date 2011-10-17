@@ -397,7 +397,7 @@ void QtxWebBrowser::linkClicked( const QUrl& url )
       foreach ( QString r, readers ) {
 	QString reader = QString( "/usr/bin/%1" ).arg( r );
 	if ( QFileInfo( reader ).exists() ) {
-	  ::system( QString( "%1 %2 &" ).arg( reader ).arg( url.toLocalFile() ).toLatin1().constData() );
+	  ::system( QString( "unset LD_LIBRARY_PATH; %1 %2 &" ).arg( reader ).arg( url.toLocalFile() ).toLatin1().constData() );
 	  break;
 	}
       }

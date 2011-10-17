@@ -32,6 +32,7 @@
 #include <QMenuBar>
 #include <QToolBar>
 #include <QMenu>
+#include <QStatusBar>
 #include <QVBoxLayout>
 
 /*!
@@ -148,6 +149,7 @@ QMap<QString, QVariant> QtxWebBrowser::myData;
 QtxWebBrowser::QtxWebBrowser() : QMainWindow( 0 )
 {
   setAttribute( Qt::WA_DeleteOnClose );
+  statusBar();
 
   QWidget* frame = new QWidget( this );
 
@@ -180,6 +182,7 @@ QtxWebBrowser::QtxWebBrowser() : QMainWindow( 0 )
 
   connect( myWebView, SIGNAL( titleChanged( QString ) ), SLOT( adjustTitle() ) ); 
   connect( myWebView, SIGNAL( linkClicked( QUrl ) ),     SLOT( linkClicked( QUrl ) ) ); 
+  connect( myWebView->page(), SIGNAL( linkHovered( QString, QString, QString ) ), SLOT( linkHovered( QString, QString, QString ) ) ); 
   
   setCentralWidget( frame );
   setFocusProxy( myWebView );
@@ -379,6 +382,7 @@ void QtxWebBrowser::clearData()
 
 /*!
   \brief Called when users activated any link at the page
+  \param url URL being clicked
   \internal
 */
 void QtxWebBrowser::linkClicked( const QUrl& url )
@@ -405,6 +409,18 @@ void QtxWebBrowser::linkClicked( const QUrl& url )
     }
   }
   myWebView->page()->setLinkDelegationPolicy( QWebPage::DelegateAllLinks );
+}
+
+/*!
+  \brief Called when link is hovered
+  \param link link being hovered
+  \param title link title (if it is specified in the markup)
+  \param content provides text within the link element, e.g., text inside an HTML anchor tag
+  \internal
+*/
+void QtxWebBrowser::linkHovered( const QString& link, const QString& /*title*/, const QString& /*context*/ )
+{
+  statusBar()->showMessage( link );
 }
 
 /*!

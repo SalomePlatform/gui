@@ -64,6 +64,7 @@ private:
 
 protected slots:
   virtual void                    linkClicked( const QUrl& );
+  virtual void                    linkHovered( const QString&, const QString&, const QString& );
 
 private slots:
   void                            adjustTitle();    

@@ -27,6 +27,7 @@
 #include "QtxSearchTool.h"
 
 #include <QApplication>
+#include <QFileInfo>
 #include <QWebView>
 #include <QMenuBar>
 #include <QToolBar>
@@ -151,6 +152,7 @@ QtxWebBrowser::QtxWebBrowser() : QMainWindow( 0 )
   QWidget* frame = new QWidget( this );
 
   myWebView = new QWebView( frame );
+  myWebView->page()->setLinkDelegationPolicy( QWebPage::DelegateAllLinks );
   myFindPanel = new QtxSearchTool( frame, myWebView,
 				   QtxSearchTool::Basic | QtxSearchTool::Case | QtxSearchTool::Wrap, 
 				   Qt::Horizontal );
@@ -177,6 +179,7 @@ QtxWebBrowser::QtxWebBrowser() : QMainWindow( 0 )
   main->setSpacing( 3 );
 
   connect( myWebView, SIGNAL( titleChanged( QString ) ), SLOT( adjustTitle() ) ); 
+  connect( myWebView, SIGNAL( linkClicked( QUrl ) ),     SLOT( linkClicked( QUrl ) ) ); 
   
   setCentralWidget( frame );
   setFocusProxy( myWebView );
@@ -365,9 +368,43 @@ void QtxWebBrowser::updateData()
   }
 }
 
+/*!
+  \brief Clear internal data map
+  \internal
+*/
 void QtxWebBrowser::clearData()
 {
   myData.clear();
+}
+
+/*!
+  \brief Called when users activated any link at the page
+  \internal
+*/
+void QtxWebBrowser::linkClicked( const QUrl& url )
+{
+  myWebView->page()->setLinkDelegationPolicy( QWebPage::DontDelegateLinks );
+  myWebView->load( url );
+  if ( url.scheme() == "file" ) {
+    QString filename = url.toLocalFile();
+    if ( QFileInfo( filename ).suffix().toLower() == "pdf" ) {
+#ifdef WIN32
+      ::system( QString( "start %2" ).arg( filename ).toLatin1().constData() );
+#else
+      // special processing of PDF files
+      QStringList readers;
+      readers << "xdg-open" << "acroread" << "kpdf" << "kghostview" << "xpdf";
+      foreach ( QString r, readers ) {
+	QString reader = QString( "/usr/bin/%1" ).arg( r );
+	if ( QFileInfo( reader ).exists() ) {
+	  ::system( QString( "%1 %2 &" ).arg( reader ).arg( url.toLocalFile() ).toLatin1().constData() );
+	  break;
+	}
+      }
+#endif // WIN32
+    }
+  }
+  myWebView->page()->setLinkDelegationPolicy( QWebPage::DelegateAllLinks );
 }
 
 /*!

@@ -36,6 +36,7 @@ class QAction;
 class QMenu;
 class QToolBar;
 class QWebView;
+class QUrl;
 class QtxSearchTool;
 
 class QTX_EXPORT QtxWebBrowser : public QMainWindow
@@ -60,6 +61,9 @@ private:
   static QIcon                    getIconValue( const QString& );
   void                            updateData();
   static void                     clearData();
+
+protected slots:
+  virtual void                    linkClicked( const QUrl& );
 
 private slots:
   void                            adjustTitle();    

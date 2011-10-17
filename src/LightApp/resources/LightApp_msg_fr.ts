@@ -63,8 +63,28 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>&amp;Fichier</translation>
     </message>    
     <message>
-        <source>BROWSER_EXIT</source>
+        <source>BROWSER_CLOSE</source>
         <translation>&amp;Fermer</translation>
+    </message>    
+    <message>
+        <source>BROWSER_BACK</source>
+        <translation>Reculer</translation>
+    </message>    
+    <message>
+        <source>BROWSER_FORWARD</source>
+        <translation>Avancer</translation>
+    </message>    
+    <message>
+        <source>BROWSER_FIND</source>
+        <translation>&amp;Chercher...</translation>
+    </message>    
+    <message>
+        <source>BROWSER_FINDNEXT</source>
+        <translation>Chercher &amp;suivant</translation>
+    </message>    
+    <message>
+        <source>BROWSER_FINDPREV</source>
+        <translation>Chercher &amp;précédent</translation>
     </message>
 </context>
 <context>

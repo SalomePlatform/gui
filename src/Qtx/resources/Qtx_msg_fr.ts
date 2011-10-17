@@ -209,7 +209,7 @@
     </message>
     <message>
         <source>Wrap search</source>
-        <translation>Terminer la recherche</translation>
+        <translation>Continuer la recherche</translation>
     </message>
 </context>
 <context>

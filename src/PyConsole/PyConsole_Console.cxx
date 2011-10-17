@@ -41,6 +41,8 @@
 #include <QMenu>
 #include <QVBoxLayout>
 
+#include <utilities.h>
+
 /*!
   \brief Constructor.
 
@@ -64,6 +66,12 @@ PyConsole_Console::PyConsole_Console( QWidget* parent, PyConsole_Interp* interp 
   QVBoxLayout* lay = new QVBoxLayout( this );
   lay->setMargin( 0 );
   myEditor = new PyConsole_Editor( myInterp, this );
+  char* synchronous = getenv("PYTHON_CONSOLE_SYNC");
+  if (synchronous && atoi(synchronous))
+  {
+      MESSAGE("Python console is synchronous");
+      myEditor->setIsSync(true);
+  }
   myEditor->viewport()->installEventFilter( this );
   lay->addWidget( myEditor );
 

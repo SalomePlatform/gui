@@ -112,6 +112,20 @@ void Plot2d_QwtLegendItem::drawIdentifier( QPainter* painter, const QRect& rect 
   }
 }
 
+void  Plot2d_QwtLegendItem::drawText(QPainter * painter, const QRect &rect) {
+  QWidget* pw = parentWidget(); 
+  QColor  col = palette().color( QPalette::WindowText );
+  while( pw ) {
+    if ( qobject_cast<QwtLegend*>( pw ) ) {
+	  col = pw->palette().color( QPalette::WindowText );
+      break;
+    }
+    pw = pw->parentWidget();
+  } 
+  painter->setPen( col );
+  QwtLegendItem::drawText( painter, rect );
+}
+
 /*!
   Constructor of Plot2d_QwtPlotCurve
 */

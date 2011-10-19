@@ -342,6 +342,10 @@ Logarithmic scale for ordinate axis is not allowed.</translation>
         <translation>Show legend</translation>
     </message>
     <message>
+        <source>PLOT2D_LEGEND_FONT</source>
+        <translation>Legend font</translation>
+    </message>
+    <message>
         <source>DSC_ZOOM_VIEW</source>
         <translation>Zoom the view</translation>
     </message>

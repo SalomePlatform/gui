@@ -47,6 +47,7 @@ public:
 
 protected:
   virtual void     drawIdentifier( QPainter*, const QRect& ) const;
+  virtual void     drawText(QPainter *, const QRect &);
 
 private:
   int              myYAxisIdentifierMode;

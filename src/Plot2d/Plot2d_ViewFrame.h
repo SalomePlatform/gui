@@ -117,6 +117,10 @@ public:
   void           showLegend( bool, bool = true );
   void           setLegendPos( int );
   int            getLegendPos() const;
+  void           setLegendFont( const QFont& );
+  QFont          getLegendFont() const;
+  void           setLegendColor( const QColor& );
+  QColor         getLegendColor() const;
   void           setMarkerSize( const int, bool = true  );
   int            getMarkerSize() const;
   void           setBackgroundColor( const QColor& );
@@ -212,6 +216,8 @@ protected:
   int            myCurveType;
   bool           myShowLegend;
   int            myLegendPos;
+  QFont          myLegendFont;
+  QColor         myLegendColor;
   int            myMarkerSize;
   QColor         myBackground;
   QString        myTitle, myXTitle, myYTitle, myY2Title;

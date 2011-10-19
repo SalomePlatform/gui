@@ -36,6 +36,7 @@ class QLineEdit;
 class QComboBox;
 class QPushButton;
 class QtxColorButton;
+class QtxFontEdit;
 
 class PLOT2D_EXPORT Plot2d_SetupViewDlg : public QDialog
 { 
@@ -63,9 +64,11 @@ public:
   void            setCurveType( const int );
   int             getCurveType();
 
-  void            setLegend( bool, int );
+  void            setLegend( bool, int, const QFont&, const QColor& );
   bool            isLegendEnabled();
   int             getLegendPos();
+  QFont           getLegendFont();
+  QColor          getLegendColor();
   
   void            setMarkerSize( const int );
   int             getMarkerSize();
@@ -108,6 +111,8 @@ private:
   QLineEdit*      myTitleYEdit;
   QLineEdit*      myTitleY2Edit;
   QtxColorButton* myBackgroundBtn;
+  QtxColorButton* myLegendColor;
+  QtxFontEdit*    myLegendFont;
   QCheckBox*      myXGridCheck;
   QSpinBox*       myXGridSpin;
   QCheckBox*      myYGridCheck;

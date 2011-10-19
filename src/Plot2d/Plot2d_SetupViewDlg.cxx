@@ -28,6 +28,7 @@
 #include <SUIT_Session.h>
 #include <SUIT_Application.h>
 #include <QtxColorButton.h>
+#include <QtxFontEdit.h>
 
 #include <QCheckBox>
 #include <QLineEdit>
@@ -89,6 +90,9 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent,
   // legend
   myLegendCheck = new QCheckBox( tr( "PLOT2D_ENABLE_LEGEND" ), this );
   myLegendCombo = new QComboBox( this );
+  myLegendFont = new QtxFontEdit( this );
+  myLegendColor = new QtxColorButton( this );
+  QLabel* aLegendFontLab = new QLabel( tr( "PLOT2D_LEGEND_FONT" ), this );
   myLegendCombo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myLegendCombo->setMinimumWidth( MIN_COMBO_WIDTH );
   myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_LEFT" ) );
@@ -321,22 +325,26 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent,
   // layout widgets
   topLayout->addWidget( myTitleCheck,  0,    0    );
   topLayout->addWidget( myTitleEdit,   0, 1, 1, 3 );
-  topLayout->addWidget( aCurveLab,     1,    0    );
-  topLayout->addWidget( myCurveCombo,  1,    1    );
-  topLayout->addWidget( myLegendCheck, 1,    2    );
-  topLayout->addWidget( myLegendCombo, 1,    3    );
-  topLayout->addWidget( aMarkerLab,    2,    0    );
-  topLayout->addWidget( myMarkerSpin,  2,    1    );
+  topLayout->addWidget( myLegendCheck, 1,    0    );
+  topLayout->addWidget( myLegendCombo, 1,    1    );
+  topLayout->addWidget( aCurveLab,  1,    2    );
+  topLayout->addWidget( myCurveCombo,  1,     3    );
+  topLayout->addWidget( aLegendFontLab,2,    0    );
+  topLayout->addWidget( myLegendFont,     2,    1    );
+  topLayout->addWidget( myLegendColor,  2,    2    );
+
+  topLayout->addWidget( aMarkerLab,    3,    0    );
+  topLayout->addWidget( myMarkerSpin,  3,    1    );
   QHBoxLayout* bgLayout = new QHBoxLayout;
   bgLayout->addWidget( myBackgroundBtn ); bgLayout->addStretch();
-  topLayout->addWidget( aBGLab,        2,    2    );
-  topLayout->addLayout( bgLayout,      2,    3    );
-  topLayout->addWidget( aScaleGrp,     3, 0, 1, 4 );
-  topLayout->addWidget( aTabWidget,    4, 0, 1, 4 );
-  topLayout->addWidget( myDefCheck,    5, 0, 1, 4 );
-  topLayout->setRowStretch( 5, 5 );
+  topLayout->addWidget( aBGLab,        3,    2    );
+  topLayout->addLayout( bgLayout,      3,    3    );
+  topLayout->addWidget( aScaleGrp,     4, 0, 1, 4 );
+  topLayout->addWidget( aTabWidget,    5, 0, 1, 4 );
+  topLayout->addWidget( myDefCheck,    6, 0, 1, 4 );
+  topLayout->setRowStretch( 6, 5 );
 
-  topLayout->addLayout( btnLayout,     6, 0, 1, 4 );
+  topLayout->addLayout( btnLayout,     7, 0, 1, 4 );
   
   if ( !showDefCheck )
     myDefCheck->hide();
@@ -543,12 +551,16 @@ int Plot2d_SetupViewDlg::getCurveType()
   \brief Set legend attribute.
   \param if \c true legend is shown
   \param pos legend position: 0 (left), 1 (right), 2 (top), 3 (bottom)
-  \sa isLegendEnabled(), getLegendPos()
+  \param fnt legend font
+  \param col legend font color
+  \sa isLegendEnabled(), getLegendPos(), getLegendFont()
 */
-void Plot2d_SetupViewDlg::setLegend( bool enable, int pos )
+void Plot2d_SetupViewDlg::setLegend( bool enable, int pos, const QFont& fnt, const QColor& col )
 {
   myLegendCheck->setChecked( enable );
   myLegendCombo->setCurrentIndex( pos );
+  myLegendFont->setCurrentFont( fnt );
+  myLegendColor->setColor( col );
   onLegendChecked();
 }
 
@@ -570,6 +582,26 @@ bool Plot2d_SetupViewDlg::isLegendEnabled()
 int Plot2d_SetupViewDlg::getLegendPos()
 {
   return myLegendCombo->currentIndex();
+}
+
+/*!
+  \brief Get legend font.
+  \return legend font
+  \sa setLegend()
+*/
+QFont Plot2d_SetupViewDlg::getLegendFont()
+{
+  return myLegendFont->currentFont();
+}
+
+/*!
+  \brief Get legend font color.
+  \return legend font color
+  \sa setLegend()
+*/
+QColor Plot2d_SetupViewDlg::getLegendColor()
+{
+  return myLegendColor->color();
 }
 
 /*!

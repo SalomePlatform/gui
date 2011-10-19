@@ -543,6 +543,10 @@ The changes will be applied on the next application session.</translation>
         <translation>Font</translation>
     </message>
     <message>
+        <source>PREF_FONT_COLOR</source>
+        <translation>Legend font color</translation>
+    </message>
+    <message>
         <source>PREF_LEFT</source>
         <translation>Left</translation>
     </message>

@@ -40,6 +40,7 @@ Plot2d_Viewer::Plot2d_Viewer(bool theAutoDel)
 {
   myPrs = 0;
   myAutoDel = theAutoDel;
+  Plot2d_Object::initColors();
 }
 
 /*!

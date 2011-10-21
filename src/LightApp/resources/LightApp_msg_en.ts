@@ -523,6 +523,10 @@ The changes will be applied on the next application session.</translation>
         <translation>Background color</translation>
     </message>
     <message>
+        <source>PREF_VIEWER_SELECTION</source>
+        <translation>Selection color</translation>
+    </message>    
+    <message>
         <source>PREF_XYVIEWER_BACKGROUND</source>
         <translation>XY View background color</translation>
     </message>
@@ -543,9 +547,17 @@ The changes will be applied on the next application session.</translation>
         <translation>Font</translation>
     </message>
     <message>
+        <source>PREF_LEGEND_FONT</source>
+        <translation>Legend font</translation>
+    </message>
+    <message>
         <source>PREF_FONT_COLOR</source>
         <translation>Legend font color</translation>
     </message>
+    <message>
+        <source>PREF_SELECTED_FONT_COLOR</source>
+        <translation>Highlighted legend font color</translation>
+    </message>			        
     <message>
         <source>PREF_LEFT</source>
         <translation>Left</translation>

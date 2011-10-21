@@ -2241,9 +2241,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "strings", aValuesList,   legendPosition );
   pref->setItemProperty( "indexes", anIndicesList, legendPosition );
 
-  pref->addPreference( tr( "PREF_FONT" ), plot2dGroup, LightApp_Preferences::Font, "Plot2d", "LegendFont" );
-  
-  pref->addPreference( tr( "PREF_FONT_COLOR" ), plot2dGroup, LightApp_Preferences::Color, "Plot2d", "LegendColor" );
+  pref->addPreference( tr( "PREF_LEGEND_FONT" ), plot2dGroup, LightApp_Preferences::Font, "Plot2d", "LegendFont" );
 
   int curveType = pref->addPreference( tr( "PREF_CURVE_TYPE" ), plot2dGroup,
                                        LightApp_Preferences::Selector, "Plot2d", "CurveType" );
@@ -2280,6 +2278,14 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), plot2dGroup,
                        LightApp_Preferences::Color, "Plot2d", "Background" );
+
+  pref->addPreference( tr( "PREF_FONT_COLOR" ), plot2dGroup, LightApp_Preferences::Color, "Plot2d", "LegendFontColor" );
+
+  pref->addPreference( tr( "PREF_SELECTED_FONT_COLOR" ), plot2dGroup, LightApp_Preferences::Color, "Plot2d", "SelectedLegendFontColor" );
+
+  pref->addPreference( tr( "PREF_VIEWER_SELECTION" ), plot2dGroup,
+                       LightApp_Preferences::Color, "Plot2d", "SelectionColor" );
+
 
   int dirTab = pref->addPreference( tr( "PREF_TAB_DIRECTORIES" ), salomeCat );
   int dirGroup = pref->addPreference( tr( "PREF_GROUP_DIRECTORIES" ), dirTab );
@@ -2736,6 +2742,19 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 	  QtxWebBrowser::webBrowser()->close();
       }
   }
+
+#ifndef DISABLE_PLOT2DVIEWER
+  if ( sec == "Plot2d" ) {
+    if( param == "SelectionColor" ) {
+      QColor c = resMgr->colorValue( sec, param );
+      Plot2d_Object::setSelectionColor(c);
+    }
+    else if (param == "SelectedLegendFontColor") {
+      QColor c = resMgr->colorValue( sec, param );      
+      Plot2d_Object::setHighlightedLegendTextColor(c);
+    }
+  }
+#endif
 }
 
 /*!

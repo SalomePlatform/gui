@@ -25,8 +25,32 @@
 
 #include "Plot2d_Object.h"
 
+
+#include <SUIT_Session.h>
+#include <SUIT_ResourceMgr.h>
+
 // color tolerance (used to compare color values)
 const long COLOR_DISTANCE = 100;
+
+
+// Static members
+QColor Plot2d_Object::mySelectionColor;
+QColor Plot2d_Object::myHighlightedLegendTextColor;
+
+/*
+ * Read colors from the resource manager.
+*/
+void Plot2d_Object::initColors() {
+  SUIT_Session* session = SUIT_Session::session();
+  if(!session)
+    return;
+
+  SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+  if(resMgr) {
+    mySelectionColor = resMgr->colorValue( "Plot2d", "SelectionColor", QColor(80,80,80) );
+    myHighlightedLegendTextColor = resMgr->colorValue( "Plot2d", "SelectedLegendFontColor", QColor(255,255,255) );
+  }
+}
 
 /*!
   Constructor
@@ -53,7 +77,8 @@ Plot2d_Object::Plot2d_Object()
   myHorUnits( "" ), myVerUnits( "" ),
   myName( "" ),
   myXAxis( QwtPlot::xBottom ),
-  myYAxis( QwtPlot::yLeft )
+  myYAxis( QwtPlot::yLeft ),
+  myIsSelected(false)
 {
 }
 
@@ -484,3 +509,44 @@ bool Plot2d_Object::closeColors( const QColor& color1,
   return tol <= 0;
 }
 
+/*!
+  Sets object's selected property
+*/
+void Plot2d_Object::setSelected(const bool on) {
+  myIsSelected = on;
+}
+
+/*!
+  Gets object's selected property
+*/
+bool Plot2d_Object::isSelected() const {
+  return myIsSelected;
+}
+
+/*!
+ * Sets selection color of the object.
+*/
+void Plot2d_Object::setSelectionColor(const QColor& c) {
+  mySelectionColor = c;
+}
+
+/*!
+ * Return selection color of the object.
+*/
+QColor Plot2d_Object::selectionColor() {
+  return mySelectionColor;
+}
+
+/*!
+ * Sets font color of the selected legend item.
+*/
+void Plot2d_Object::setHighlightedLegendTextColor(const QColor& c) {
+  myHighlightedLegendTextColor = c;
+}
+
+/*!
+ * Sets font color of the selected legend item.
+*/
+QColor Plot2d_Object::highlightedLegendTextColor() {
+  return myHighlightedLegendTextColor;
+}

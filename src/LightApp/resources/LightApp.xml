@@ -168,11 +168,13 @@
  <section name="Plot2d" >
     <!-- Plot2d viewer preferences -->
     <parameter name="Background"   value="255, 255, 255" />
+    <parameter name="SelectionColor"   value="80, 80, 80" />
     <parameter name="CurveType"    value="1" />
     <parameter name="HorScaleMode" value="0" />
     <parameter name="LegendPos"    value="1" />
     <parameter name="LegendFont"   value="Helvetic,12" />
-    <parameter name="LegendColor"  value="0, 0, 0" />
+    <parameter name="LegendFontColor"  value="0, 0, 0" />
+    <parameter name="SelectedLegendFontColor"  value="255, 255, 255" />
     <parameter name="MarkerSize"   value="9" />
     <parameter name="ShowLegend"   value="true" />
     <parameter name="VerScaleMode" value="0" />

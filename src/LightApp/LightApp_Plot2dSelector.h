@@ -51,7 +51,8 @@ protected:
   virtual void setSelection( const SUIT_DataOwnerPtrList& );
 
 private:
-  QString myCurEntry;
+  QString             myCurEntry;
+  Plot2d_Viewer*      myViewer;
 };
 
 #endif

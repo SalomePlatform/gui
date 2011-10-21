@@ -23,11 +23,16 @@
 #include "LightApp_DataObject.h"
 #include "LightApp_Application.h"
 
+#include <SPlot2d_ViewModel.h>
+
+#include <SALOME_ListIO.hxx>
+
 /*!
   Constructor
 */
 LightApp_Plot2dSelector::LightApp_Plot2dSelector( Plot2d_Viewer* v, SUIT_SelectionMgr* mgr )
-: SUIT_Selector( mgr, v )
+  : SUIT_Selector( mgr, v ),
+    myViewer(v)
 {
   if ( v )
     connect( v, SIGNAL( legendSelected( const QString& ) ), this, SLOT( onSelectionChanged( const QString& ) ) );
@@ -46,16 +51,27 @@ LightApp_Plot2dSelector::~LightApp_Plot2dSelector()
 void LightApp_Plot2dSelector::getSelection( SUIT_DataOwnerPtrList& theList ) const
 {
   if( !myCurEntry.isNull() )
-    theList.append( new LightApp_DataOwner( myCurEntry ) );
+    theList.append( new LightApp_DataOwner( new SALOME_InteractiveObject(qPrintable(myCurEntry),"","") ) );
 }
 
 /*!Sets selection.*/
 void LightApp_Plot2dSelector::setSelection( const SUIT_DataOwnerPtrList& theList )
 {
-  /*  if( theList.count()>0 )
-    myCurEntry = theList.first()->getEntry();
-  else*/
-  myCurEntry = QString::null;
+  SALOME_ListIO anIOList;
+  for ( SUIT_DataOwnerPtrList::const_iterator it = theList.begin(); it != theList.end(); ++it ) {
+    const LightApp_DataOwner* owner = dynamic_cast<const LightApp_DataOwner*>( (*it).operator->() );
+    if ( owner  ) {
+      if( !owner->IO().IsNull() ) {
+	anIOList.Append(owner->IO());
+      } else if ( !owner->entry().isEmpty() ) {
+	anIOList.Append( new SALOME_InteractiveObject(qPrintable(owner->entry()),"","") );
+      }      
+    }
+  }
+  SPlot2d_Viewer* v = dynamic_cast<SPlot2d_Viewer*>(myViewer);
+
+  if(v)
+    v->setObjectsSelected(anIOList);
 }
 
 /*!On selection changed.*/
@@ -63,4 +79,5 @@ void LightApp_Plot2dSelector::onSelectionChanged( const QString& entry )
 {
   myCurEntry = entry;
   selectionChanged();
+  myCurEntry = QString();
 }

@@ -44,10 +44,16 @@ public:
 
 public:
   void             setYAxisIdentifierMode( const int );
+  void             updateHighlit();
+  void             setSelected(const bool on);
+  bool             isSelected() const;
+  QColor           getColorFromPalette(QPalette::ColorRole role);  
 
 protected:
   virtual void     drawIdentifier( QPainter*, const QRect& ) const;
   virtual void     drawText(QPainter *, const QRect &);
+
+private:
 
 private:
   int              myYAxisIdentifierMode;
@@ -55,9 +61,30 @@ private:
   QPixmap          myYAxisRightIcon;
   int              mySpacingCollapsed;
   int              mySpacingExpanded;
+  bool             myIsSelected;
 };
 
-class PLOT2D_EXPORT Plot2d_QwtPlotCurve : public QwtPlotCurve
+class PLOT2D_EXPORT Plot2d_SelectableItem {
+public:
+    Plot2d_SelectableItem();
+    ~Plot2d_SelectableItem();
+  
+    void             setSelected( const bool );
+    bool             isSelected() const;
+    
+    void             setLegendPen( const QPen & );
+    QPen             legendPen() const;
+	
+    void             setLegendSymbol( const QwtSymbol& );
+    QwtSymbol        legendSymbol() const;
+    
+private:
+  bool             myIsSelected;
+  QPen             myLegendPen;
+  QwtSymbol        myLegendSymbol;
+};
+
+class PLOT2D_EXPORT Plot2d_QwtPlotCurve : public QwtPlotCurve, public Plot2d_SelectableItem
 {
 public:
   Plot2d_QwtPlotCurve( const QString&, QwtPlot::Axis = QwtPlot::yLeft );
@@ -118,7 +145,7 @@ private:
   double                 myReference;
 };
 
-class PLOT2D_EXPORT Plot2d_HistogramItem : public Plot2d_HistogramQwtItem
+class PLOT2D_EXPORT Plot2d_HistogramItem : public Plot2d_HistogramQwtItem, public Plot2d_SelectableItem
 {
 public:
   explicit Plot2d_HistogramItem( const QString& = QString() );
@@ -138,6 +165,8 @@ protected:
   void                   drawRectAndLowers( QPainter*, Qt::Orientation,
 					    const QRect& ) const;
   int                    getCrossedTop( const QRect& ) const;
+
+  virtual QWidget*       legendItem() const;
 
 protected:
   QList<QRect>           myBarItems;

@@ -111,7 +111,9 @@ void Plot2d_Histogram::updatePlotItem( QwtPlotItem* theItem )
   Plot2d_Object::updatePlotItem( theItem );
 
   anItem->setData( getData() );
-  anItem->setColor( getColor() );
+  anItem->setLegendPen(getColor());
+  anItem->setSelected(isSelected());
+  anItem->setColor( isSelected() ? Plot2d_Object::selectionColor() : getColor() );
 }
 
 /*!

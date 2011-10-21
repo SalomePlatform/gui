@@ -75,6 +75,8 @@ public:
   virtual bool         isVisible( const Handle(SALOME_InteractiveObject)& IObject );
   virtual void         GetVisible( SALOME_ListIO& theList );
 
+  virtual void         setObjectsSelected(  SALOME_ListIO& theList );
+
 
   /* operations */
   SPlot2d_Curve*                   getCurveByIO( const Handle(SALOME_InteractiveObject)&, Plot2d_ViewFrame* = 0 );

@@ -118,7 +118,7 @@ void Plot2d_Curve::updatePlotItem( QwtPlotItem* theItem )
   if ( theItem->rtti() != rtti() )
     return;
 
-  QwtPlotCurve* aCurve = dynamic_cast<QwtPlotCurve*>( theItem );
+  Plot2d_QwtPlotCurve* aCurve = dynamic_cast<Plot2d_QwtPlotCurve*>( theItem );
   if ( !aCurve )
     return;
 
@@ -126,11 +126,25 @@ void Plot2d_Curve::updatePlotItem( QwtPlotItem* theItem )
 
   Qt::PenStyle     ps = Plot2d::plot2qwtLine( getLine() );
   QwtSymbol::Style ms = Plot2d::plot2qwtMarker( getMarker() );
+  
+  QColor aColor = isSelected() ?  Plot2d_Object::selectionColor() : getColor();
+  int lineW = getLineWidth(); 
+  if ( isSelected() ) lineW += (lineW == 0 ? 3 : 2);
 
-  aCurve->setPen( QPen( getColor(), getLineWidth(), ps ) );
-  aCurve->setSymbol( QwtSymbol( ms, QBrush( getColor() ), 
-				QPen( getColor() ), 
-				QSize( getMarkerSize(), getMarkerSize() ) ) );
+  int markerS = isSelected() ? getMarkerSize() + 2 : getMarkerSize();
+
+  aCurve->setSelected(isSelected());
+
+  aCurve->setPen( QPen(aColor , lineW, ps ) );
+  aCurve->setSymbol( QwtSymbol( ms, QBrush( aColor ), 
+				QPen( aColor ), 
+				QSize( markerS , markerS ) ) );
+
+  aCurve->setLegendPen(QPen(getColor(), getLineWidth(), ps ));
+  aCurve->setLegendSymbol( QwtSymbol( ms, QBrush( getColor() ), 
+				      QPen( getColor() ), 
+				      QSize( getMarkerSize() , getMarkerSize() )));
+  
   double *x, *y;
   long nb = getData( &x, &y );
   aCurve->setData( x, y, nb );

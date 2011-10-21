@@ -23,8 +23,11 @@
 //  Author : Natalia ERMOLAEVA, Open CASCADE S.A.S. (natalia.donis@opencascade.com)
 
 #include "Plot2d_PlotItems.h"
+#include "Plot2d_Object.h"
 
 #include <QPainter>
+#include <QPalette>
+#include <QLayout>
 #include <qwt_plot.h>
 #include <qwt_painter.h>
 #include <qwt_scale_map.h>
@@ -71,7 +74,8 @@ const char* yAxisRight[] = {
 */
 Plot2d_QwtLegendItem::Plot2d_QwtLegendItem( QWidget* parent ) :
   QwtLegendItem( parent ),
-  myYAxisIdentifierMode( IM_None )
+  myYAxisIdentifierMode( IM_None ),
+  myIsSelected(false)
 {
   myYAxisLeftIcon = yAxisLeft;
   myYAxisRightIcon = yAxisRight;
@@ -112,18 +116,65 @@ void Plot2d_QwtLegendItem::drawIdentifier( QPainter* painter, const QRect& rect 
   }
 }
 
+/*!
+  Update highliting on the item.
+*/
+void Plot2d_QwtLegendItem::updateHighlit() {
+  QwtText txt = text();
+  if(isSelected()) {
+    QColor highlightColor = Plot2d_Object::selectionColor();
+    if(highlightColor != txt.backgroundBrush().color()) {
+      txt.setBackgroundBrush(highlightColor);
+      setText(txt);
+    }    
+  } else if( QWidget* parent = qobject_cast<QWidget*>(this->parent()->parent()) ) {
+    QPalette aPal = parent->palette();
+    if(aPal.color(QPalette::Background) != txt.backgroundBrush().color()) {
+      txt.setBackgroundBrush(aPal.color(QPalette::Background));
+      setText(txt);
+    }
+  }
+}
+
+/*!
+  Sets selected property.
+*/
+void Plot2d_QwtLegendItem::setSelected(const bool on) {
+  myIsSelected = on;
+}
+
+/*!
+  Gets selected property.
+*/
+bool Plot2d_QwtLegendItem::isSelected() const {
+  return myIsSelected;
+}
+
+
+/*
+  Draw text of the item.
+*/
 void  Plot2d_QwtLegendItem::drawText(QPainter * painter, const QRect &rect) {
+  painter->setPen( isSelected() ? Plot2d_Object::highlightedLegendTextColor() : 
+		   getColorFromPalette( QPalette::Text) );
+  
+  QwtLegendItem::drawText( painter, rect );
+}
+
+/*
+  Get color from the legend pallete by 'role' flag.
+*/
+QColor Plot2d_QwtLegendItem::getColorFromPalette(QPalette::ColorRole role) {
   QWidget* pw = parentWidget(); 
-  QColor  col = palette().color( QPalette::WindowText );
+  QColor  col = palette().color( role );
   while( pw ) {
     if ( qobject_cast<QwtLegend*>( pw ) ) {
-	  col = pw->palette().color( QPalette::WindowText );
+      col = pw->palette().color(role );
       break;
     }
     pw = pw->parentWidget();
   } 
-  painter->setPen( col );
-  QwtLegendItem::drawText( painter, rect );
+  return col;
 }
 
 /*!
@@ -131,9 +182,10 @@ void  Plot2d_QwtLegendItem::drawText(QPainter * painter, const QRect &rect) {
 */
 Plot2d_QwtPlotCurve::Plot2d_QwtPlotCurve( const QString& title,
                                           QwtPlot::Axis yAxis /*const int index*/ ) :
+  Plot2d_SelectableItem(),    					  
   QwtPlotCurve( title ),
   myYAxis( yAxis ),
-  myYAxisIdentifierEnabled( false )
+  myYAxisIdentifierEnabled( false )  
 {
 }
 
@@ -157,10 +209,35 @@ void Plot2d_QwtPlotCurve::setYAxisIdentifierEnabled( const bool on )
 */
 void Plot2d_QwtPlotCurve::updateLegend( QwtLegend* legend ) const
 {
-  QwtPlotCurve::updateLegend( legend );
+  if ( !legend )
+    return; 
 
-  if ( legend ) {
-    QWidget* widget = legend->find( this );
+  QWidget* widget = legend->find( this );
+
+  if ( testItemAttribute(QwtPlotItem::Legend)) {   
+
+    if ( widget == NULL ) {
+      widget = legendItem();
+      if ( widget ) {
+	if ( widget->inherits("QwtLegendItem") ) {
+	  QwtLegendItem *label = (QwtLegendItem *)widget;
+	  label->setItemMode(legend->itemMode());
+		
+	  if ( plot() ) {
+	    QObject::connect(label, SIGNAL(clicked()),
+			     plot(), SLOT(legendItemClicked()));
+	    QObject::connect(label, SIGNAL(checked(bool)),
+			     plot(), SLOT(legendItemChecked(bool)));
+	  }
+	}
+	legend->contentsWidget()->layout()->addWidget(widget);
+	legend->insert(this, widget);
+      }
+    }
+    
+    QwtPlotCurve::updateLegend( legend );
+    
+    
     if( Plot2d_QwtLegendItem* anItem = dynamic_cast<Plot2d_QwtLegendItem*>( widget ) ) {
       int aMode = Plot2d_QwtLegendItem::IM_None;
       if( myYAxisIdentifierEnabled )
@@ -168,6 +245,12 @@ void Plot2d_QwtPlotCurve::updateLegend( QwtLegend* legend ) const
 	  Plot2d_QwtLegendItem::IM_Right :
 	  Plot2d_QwtLegendItem::IM_Left;
       anItem->setYAxisIdentifierMode( aMode );
+      if(isSelected()) {
+	anItem->setCurvePen(legendPen());
+	anItem->setSymbol(legendSymbol());
+      }
+      anItem->setSelected(isSelected());
+      anItem->updateHighlit();
     }
   }
 }
@@ -178,6 +261,62 @@ void Plot2d_QwtPlotCurve::updateLegend( QwtLegend* legend ) const
 QWidget* Plot2d_QwtPlotCurve::legendItem() const
 {
   return new Plot2d_QwtLegendItem;
+}
+/*!
+  Constructor.
+*/
+Plot2d_SelectableItem::Plot2d_SelectableItem():
+  myIsSelected(false)
+{ 
+}
+
+/*!
+  Destructor.
+*/
+Plot2d_SelectableItem::~Plot2d_SelectableItem()
+{ 
+}
+
+/*!
+  Sets selected property.
+*/
+void Plot2d_SelectableItem::setSelected( const bool on) {
+  myIsSelected = on;
+}
+
+/*!
+  Return selected property.
+*/
+bool Plot2d_SelectableItem::isSelected() const {
+  return myIsSelected;
+}
+
+/*!
+  Sets legend pen property.
+*/  
+void Plot2d_SelectableItem::setLegendPen( const QPen & p) {
+  myLegendPen = p;
+}
+
+/*!
+  Return legend pen property.
+*/  
+QPen Plot2d_SelectableItem::legendPen() const {
+  return myLegendPen;
+}
+
+/*!
+  Sets legend symbol property.
+*/  
+void Plot2d_SelectableItem::setLegendSymbol(const QwtSymbol& s) {
+  myLegendSymbol = s;
+}
+
+/*!
+  Sets legend symbol property.
+*/  
+QwtSymbol Plot2d_SelectableItem::legendSymbol() const {
+  return myLegendSymbol;
 }
 
 /*!
@@ -444,7 +583,8 @@ void Plot2d_HistogramQwtItem::drawBar( QPainter* thePainter,
   Constructor
 */
 Plot2d_HistogramItem::Plot2d_HistogramItem( const QwtText& theTitle )
-: Plot2d_HistogramQwtItem( theTitle ), 
+: Plot2d_HistogramQwtItem( theTitle ),
+  Plot2d_SelectableItem(), 
   myCrossed( true )
 {
 }
@@ -487,14 +627,16 @@ void Plot2d_HistogramItem::updateLegend( QwtLegend* theLegend ) const
   if ( !theWidget || !theWidget->inherits( "QwtLegendItem" ) )
     return;
 
-  QwtLegendItem* anItem = ( QwtLegendItem* )theWidget;
+  Plot2d_QwtLegendItem* anItem = ( Plot2d_QwtLegendItem* )theWidget;
   QFontMetrics aFMetrics( anItem->font() );
   int aSize = aFMetrics.height();
-  QwtSymbol aSymbol( QwtSymbol::Rect, QBrush( color() ),
-                     QPen( color() ), QSize( aSize, aSize ) );
+  QwtSymbol aSymbol( QwtSymbol::Rect, QBrush( legendPen().color() ),
+                     QPen( legendPen().color() ), QSize( aSize, aSize ) );
   anItem->setSymbol( aSymbol );
   anItem->setIdentifierMode( theLegend->identifierMode()
 			     | QwtLegendItem::ShowSymbol ); 
+  anItem->setSelected(isSelected());
+  anItem->updateHighlit();
   anItem->update();
 }
 
@@ -587,6 +729,15 @@ bool Plot2d_HistogramItem::isCrossItems() const
 {
   return myCrossed;
 }
+
+/*!
+  Redefined method, which creates and returns legend item of the curve
+*/
+QWidget* Plot2d_HistogramItem::legendItem() const
+{
+  return new Plot2d_QwtLegendItem;
+}
+
 
 /*!
   Draws bar of histogram and on it bars of histograms with lower height.

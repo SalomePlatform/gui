@@ -35,6 +35,7 @@
 #include "SUIT_ViewManager.h"
 
 #include "SALOME_ListIO.hxx"
+#include "SALOME_ListIteratorOfListIO.hxx"
 
 #include <QApplication>
 #include <QToolBar>
@@ -422,5 +423,57 @@ void SPlot2d_Viewer::onLegendClicked( QwtPlotItem* plotItem )
     
     if(!anEntry.isEmpty())
       emit legendSelected( anEntry );
+  }
+}
+
+/*!
+  
+*/
+void SPlot2d_Viewer::setObjectsSelected( SALOME_ListIO& theList ) {
+  Plot2d_ViewFrame* aViewFrame = getActiveViewFrame();
+  if(aViewFrame) {
+
+    objectList allObjects;
+    aViewFrame->getObjects( allObjects );
+    
+    bool isSelected = false;
+    SPlot2d_Histogram* h = 0;
+    SPlot2d_Curve* c =0;
+    
+    foreach ( Plot2d_Object* o, allObjects ) {
+      isSelected = false;
+      
+      Handle(SALOME_InteractiveObject) io;
+      if( (h = dynamic_cast<SPlot2d_Histogram*>(o)) && h->hasIO() ) {
+	io = h->getIO();
+      } else if((c = dynamic_cast<SPlot2d_Curve*>(o)) && c->hasIO()) {
+	io = c->getIO();
+      } else {
+	continue;
+      }
+
+      SALOME_ListIteratorOfListIO anIter( theList ); 
+      
+      for( ; anIter.More(); anIter.Next() ) {
+	if ( anIter.Value()->hasEntry() ) {
+	  if( io->isSame(anIter.Value()) ) {
+	    isSelected = o->isSelected();
+	    if( !isSelected ) {
+	      o->setSelected(true);
+	      aViewFrame->updateObject(o);
+	      theList.Remove(anIter);
+	      isSelected = true;
+	      break;
+	    } else 
+	      break;
+	  }
+	}
+      }
+      if( !isSelected && o->isSelected() != false ) {	
+	o->setSelected(false);
+	aViewFrame->updateObject(o);
+      }
+    }    
+    aViewFrame->Repaint();
   }
 }

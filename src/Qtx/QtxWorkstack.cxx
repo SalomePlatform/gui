@@ -479,6 +479,9 @@ QWidget* QtxWorkstackArea::insertWidget( QWidget* wid, const int idx, Qt::Window
     connect( child, SIGNAL( captionChanged( QtxWorkstackChild* ) ), this, SLOT( onChildCaptionChanged( QtxWorkstackChild* ) ) );
   }
 
+  // Remove early posted deferred delete events if the new widget was inserted.
+  QApplication::removePostedEvents( this, QEvent::DeferredDelete );
+
   updateState();
 
   setWidgetActive( wid );

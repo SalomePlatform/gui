@@ -45,6 +45,16 @@
 
 #include <cstdio>
 
+class BusyLocker
+{
+public:
+  BusyLocker( bool& busy ) : myPrev( busy ), myBusy( busy ) { myBusy = true; }
+  ~BusyLocker() { myBusy = myPrev; }
+private:
+  bool  myPrev;
+  bool& myBusy;
+};
+
 /*!
   \brief Create new instance of CAM_Application.
   \return new instance of CAM_Application class
@@ -82,7 +92,8 @@ extern "C" CAM_EXPORT SUIT_Application* createApplication()
 CAM_Application::CAM_Application( const bool autoLoad )
 : STD_Application(),
   myModule( 0 ),
-  myAutoLoad( autoLoad )
+  myAutoLoad( autoLoad ),
+  myBlocked( false )
 {
   readModuleList();
 }
@@ -368,8 +379,12 @@ CAM_Module* CAM_Application::loadModule( const QString& modName, const bool show
 */
 bool CAM_Application::activateModule( const QString& modName )
 {
-  if ( !modName.isEmpty() && !activeStudy() )
+  if ( !modName.isEmpty() && !activeStudy() || myBlocked )
     return false;
+
+  // VSR 25/10/2011: prevent nested activation/deactivation
+  // See issues 0021307, 0021373
+  BusyLocker lock( myBlocked );
 
   bool res = false;
   if ( !modName.isEmpty() )
@@ -408,15 +423,10 @@ bool CAM_Application::activateModule( CAM_Module* mod )
 
   if ( myModule )
   {
-    // VSR: 26/06/2011 bug 0021307: temporarily disable desktop's signals to prevent false module activation
-    bool signalsBlocked = desktop() && desktop()->signalsBlocked();
-    if ( desktop() ) desktop()->blockSignals( true );
     if ( !myModule->deactivateModule( activeStudy() ) )
     {
       // ....      
     }    
-    // VSR: 26/06/2011 bug 0021307: enable desktop's signals back
-    if ( desktop() ) desktop()->blockSignals( signalsBlocked );
   }     
   myModule = mod;
 

@@ -100,6 +100,7 @@ private:
   ModuleList          myModules;       //!< loaded modules list
   ModuleInfoList      myInfoList;      //!< modules info list
   bool                myAutoLoad;      //!< auto loading flag
+  bool                myBlocked;       //!< "blocked" flag, internal usage
 };
 
 #ifdef WIN32

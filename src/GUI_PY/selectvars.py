@@ -31,7 +31,7 @@ from salome.kernel.parametric import study_exchange_vars
 # Dialog box for variables selection #
 # ---------------------------------- #
 
-from SelectVarsDialog import Ui_SelectVarsDialog
+from SelectVarsDialog_ui import Ui_SelectVarsDialog
 
 class MySelectVarsDialog(Ui_SelectVarsDialog, QtGui.QDialog):
 

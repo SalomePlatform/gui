@@ -63,7 +63,7 @@ else
     done
 fi
 
-if [ "$classType" == "qdialog" ]; then
+if [ "$classType" = "qdialog" ]; then
     sed s/__CLASSNAME__/$className/g $TOOLDIRNAME/__QDIALOG__.ui > $className.ui
     sed s/__CLASSNAME__/$className/g $TOOLDIRNAME/__QDIALOG__.hxx > $className.hxx
     sed s/__CLASSNAME__/$className/g $TOOLDIRNAME/__QDIALOG__.cxx > $className.cxx

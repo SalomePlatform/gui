@@ -671,5 +671,6 @@ AC_OUTPUT([ \
   src/GUI_PY/Makefile \
   resources/Makefile \
   idl/Makefile \
+  tools/dlgfactory/Makefile \
   Makefile
 ])

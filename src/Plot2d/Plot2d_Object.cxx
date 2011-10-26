@@ -78,7 +78,8 @@ Plot2d_Object::Plot2d_Object()
   myName( "" ),
   myXAxis( QwtPlot::xBottom ),
   myYAxis( QwtPlot::yLeft ),
-  myIsSelected(false)
+  myIsSelected(false),
+  myScale ( 1.0 )
 {
 }
 
@@ -103,6 +104,7 @@ Plot2d_Object::Plot2d_Object( const Plot2d_Object& object )
   myXAxis      = object.getXAxis();
   myYAxis      = object.getYAxis();
   myPoints     = object.getPointList();
+  myScale      = object.getScale();
 }
 
 /*!
@@ -119,6 +121,7 @@ Plot2d_Object& Plot2d_Object::operator=( const Plot2d_Object& object )
   myXAxis      = object.getXAxis();
   myYAxis      = object.getYAxis();
   myPoints     = object.getPointList();
+  myScale      = object.getScale();
   return *this;
 }
 
@@ -146,7 +149,10 @@ void Plot2d_Object::updatePlotItem( QwtPlotItem* theItem )
       theItem->attach( aPlot );
     }
   }
-  theItem->setTitle( !getName().isEmpty() ? getName() : getVerTitle() );
+  QString name = !getName().isEmpty() ? getName() : getVerTitle();
+  if( myScale != 1.0 )
+      name = name + QString("( *%1 )").arg(myScale);
+  theItem->setTitle( name );
 }
 
 /*!
@@ -234,6 +240,21 @@ void Plot2d_Object::setName( const QString& theName )
 QString Plot2d_Object::getName() const
 {
   return myName;
+}
+
+/*!
+  Sets object's scale factor
+ */
+void Plot2d_Object::setScale( double theScale )
+{
+  myScale = theScale;
+}
+/*!
+  Gets object's scale factor
+ */
+double Plot2d_Object::getScale() const
+{
+  return myScale;
 }
 
 /*!
@@ -337,7 +358,7 @@ double* Plot2d_Object::verData() const
   int aNPoints = nbPoints();
   double* aY = new double[aNPoints];
   for (int i = 0; i < aNPoints; i++) {
-    aY[i] = myPoints[i].y;
+    aY[i] = myScale * myPoints[i].y;
   }
   return aY;
 }
@@ -352,7 +373,7 @@ long Plot2d_Object::getData( double** theX, double** theY ) const
   *theY = new double[aNPoints];
   for (int i = 0; i < aNPoints; i++) {
     (*theX)[i] = myPoints[i].x;
-    (*theY)[i] = myPoints[i].y;
+    (*theY)[i] = myScale * myPoints[i].y;
   }
   return aNPoints;
 }
@@ -475,7 +496,7 @@ double Plot2d_Object::getMinY() const
   double aMinY = 1e150;
   pointList::const_iterator aIt;
   for (aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt)
-    aMinY = qMin( aMinY, (*aIt).y );
+    aMinY = qMin( aMinY, myScale * (*aIt).y );
   return aMinY;
 }
 
@@ -487,7 +508,7 @@ double Plot2d_Object::getMaxY() const
   double aMaxY = -1e150;
   pointList::const_iterator aIt;
   for (aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt)
-    aMaxY = qMax( aMaxY, (*aIt).y );
+    aMaxY = qMax( aMaxY, myScale * (*aIt).y );
   return aMaxY;
 }
 

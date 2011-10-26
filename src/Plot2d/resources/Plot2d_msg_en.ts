@@ -588,4 +588,15 @@ Logarithmic scale for ordinate axis is not allowed.</translation>
         <translation>Background color</translation>
     </message>
 </context>
+<context>
+    <name>Plot2d_SetupCurveScaleDlg</name>
+    <message>
+        <source>TLT_SETUP_CURVE_SCALE</source>
+        <translation>Curve(s) scale</translation>
+    </message>
+    <message>
+        <source>CURVE_SCALE_FACTOR</source>
+        <translation>Scale factor</translation>
+    </message>
+</context>
 </TS>

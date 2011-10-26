@@ -71,6 +71,9 @@ public:
   void                 setName( const QString& );
   QString              getName() const;
 
+  void                 setScale( double );
+  double               getScale() const;
+
   void                 addPoint( double, double, const QString& = QString() );
   void                 addPoint( const Plot2d_Point& );
   void                 insertPoint( int, double, double, const QString& = QString() );
@@ -130,6 +133,8 @@ protected:
   QString              myName;
   QwtPlot::Axis        myXAxis;
   QwtPlot::Axis        myYAxis;
+
+  double               myScale;
 
   pointList            myPoints;
   bool                 myIsSelected;

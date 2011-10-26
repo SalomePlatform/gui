@@ -35,7 +35,8 @@ else !GUI_ENABLE_CORBA
     IDLDIR =
 endif
 
-SUBDIRS = $(IDLDIR) adm_local resources src doc bin tools/dlgfactory
+#SUBDIRS = $(IDLDIR) adm_local resources src doc bin tools/dlgfactory
+SUBDIRS = $(IDLDIR) adm_local resources src doc bin
 
 DIST_SUBDIRS = idl adm_local resources src doc bin 
 

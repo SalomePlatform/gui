@@ -64,7 +64,9 @@ qtester_SOURCES = \
 	$(MOC_FILES_QDIALOG) $(UIC_FILES_QDIALOG)
 
 qtester_CPPFLAGS = \
-	$(QT_CXXFLAGS)
+	$(QT_CXXFLAGS) \
+	-I. \
+	-I$(srcdir)
 
 qtester_LDFLAGS = \
         $(QT_LIBS)
@@ -86,7 +88,9 @@ gtester_SOURCES = \
 	$(MOC_FILES_GDIALOG) $(UIC_FILES_GDIALOG)
 
 gtester_CPPFLAGS = \
-	$(QT_CXXFLAGS)
+	$(QT_CXXFLAGS) \
+	-I. \
+	-I$(srcdir)
 
 gtester_LDFLAGS = \
         $(QT_LIBS)

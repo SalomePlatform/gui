@@ -931,11 +931,11 @@ public:
               const QString&        theContext = QString() )
     : myApp( theApp ),
       myParams( theParams ),
-      myHelpFile( getFile() + theHelpFile ),
       myContext( theContext ),
       myStatus(0),
       myLApp( app )
   {
+    myHelpFile = QString("%1%2").arg( getFile() ).arg( QFileInfo( theHelpFile ).canonicalFilePath() );
   }
 
   virtual void run()

@@ -32,7 +32,8 @@ mypkgpython_PYTHON = \
 	genericdialog_ui.py    \
 	genericdialog.py       \
 	mytestdialog_ui.py     \
-	mytestdialog.py
+	mytestdialog.py        \
+	helper.py
 
 PYUIC_FILES = \
 	SelectVarsDialog_ui.py \

@@ -44,7 +44,6 @@ SUIT_ViewWindow* LightApp_WgViewModel::createView( SUIT_Desktop* d )
     vw = new SUIT_ViewWindow( d );
     vw->setCentralWidget( myWidget );
     myCreated = true;
-    vw->setClosable( false );///////////////////
   }
   return vw;
 }

@@ -22,7 +22,7 @@
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
-# moc-files generation
+# moc-files generation (using MOC)
 %_moc.cxx: %.hxx
 	$(MOC) $< -o $@
 
@@ -30,67 +30,75 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 ui_%.hxx: %.ui
 	$(UIC) -o $@ $<
 
-UIC_FILES_QDIALOG = \
-	ui_QDialogTest.hxx
-
-# MOC pre-processing
-MOC_FILES_QDIALOG = \
-	QDialogTest_moc.cxx
-
-BUILT_SOURCES = $(UIC_FILES_QDIALOG) $(UIC_FILES_GDIALOG)
-
-mostlyclean-local:
-	rm -f @builddir@/*_moc.cxx @builddir@/ui_*.hxx
-	rm @builddir@/QDialogTest*
-	rm @builddir@/GDialogTest*
-
-QDialogTest.ui: __QDIALOG__.ui __QDIALOG__.hxx __QDIALOG__.cxx dlgfactory.sh
-	$(srcdir)/dlgfactory.sh -n QDialogTest -t qdialog
-
-GDialogTest.ui: __GDIALOG__.ui __GDIALOG__.hxx __GDIALOG__.cxx dlgfactory.sh
-	$(srcdir)/dlgfactory.sh -n GDialogTest -t gdialog
-
-
-QT_CXXFLAGS=@QT_INCLUDES@ @QT_MT_INCLUDES@
-QT_LIBS=@QT_LIBS@
-
 # Program targets
 bin_PROGRAMS = qtester gtester
 
-# QDialog tester
-qtester_SOURCES = \
-        qtester.cxx \
-	QDialogTest.cxx \
-	$(MOC_FILES_QDIALOG) $(UIC_FILES_QDIALOG)
+# QDialog uic files
+UIC_FILES_QDIALOG = \
+	ui_QDialogTest.hxx
 
-qtester_CPPFLAGS = \
-	$(QT_CXXFLAGS) \
-	-I. \
-	-I$(srcdir)
+# QDialog moc files
+MOC_FILES_QDIALOG = \
+	QDialogTest_moc.cxx
 
-qtester_LDFLAGS = \
-        $(QT_LIBS)
-
-
-# GDialog tester
-MOC_FILES_GDIALOG= \
-	GenericDialog_moc.cxx \
-	GDialogTest_moc.cxx
-
+# GDialog uic files
 UIC_FILES_GDIALOG= \
 	ui_GenericDialog.hxx \
 	ui_GDialogTest.hxx
 
+# GDialog moc files
+MOC_FILES_GDIALOG= \
+	GenericDialog_moc.cxx \
+	GDialogTest_moc.cxx
+
+QDIALOG_TEMPLATES = __QDIALOG__.ui __QDIALOG__.hxx __QDIALOG__.cxx
+GDIALOG_TEMPLATES = __GDIALOG__.ui __GDIALOG__.hxx __GDIALOG__.cxx
+
+# generated sources
+BUILT_SOURCES = $(UIC_FILES_QDIALOG) $(UIC_FILES_GDIALOG)
+
+# extra distributed files
+EXTRA_DIST += $(QDIALOG_TEMPLATES) $(GDIALOG_TEMPLATES) GenericDialog.ui README.txt dlgfactory.sh
+
+mostlyclean-local:
+	rm @builddir@/QDialogTest*
+	rm @builddir@/GDialogTest*
+	rm -f @builddir@/*_moc.cxx @builddir@/ui_*.hxx
+
+QDialogTest.hxx QDialogTest.cxx QDialogTest.ui: $(QDIALOG_TEMPLATES) dlgfactory.sh
+	$(srcdir)/dlgfactory.sh -n QDialogTest -t qdialog
+
+GDialogTest.hxx GDialogTest.cxx GDialogTest.ui : $(GDIALOG_TEMPLATES) dlgfactory.sh
+	$(srcdir)/dlgfactory.sh -n GDialogTest -t gdialog
+
+QT_CXXFLAGS=@QT_INCLUDES@ @QT_MT_INCLUDES@
+QT_LIBS=@QT_LIBS@
+
+# QDialog tester
+qtester_SOURCES = \
+        qtester.cxx
+nodist_qtester_SOURCES =  \
+	QDialogTest.cxx \
+	$(MOC_FILES_QDIALOG) \
+	$(UIC_FILES_QDIALOG)
+
+qtester_CPPFLAGS = \
+	$(QT_CXXFLAGS)
+
+qtester_LDFLAGS = \
+        $(QT_LIBS)
+
 gtester_SOURCES = \
 	gtester.cxx \
-	GenericDialog.cxx \
+	GenericDialog.hxx \
+	GenericDialog.cxx
+nodist_gtester_SOURCES = \
 	GDialogTest.cxx \
-	$(MOC_FILES_GDIALOG) $(UIC_FILES_GDIALOG)
+	$(MOC_FILES_GDIALOG) \
+	$(UIC_FILES_GDIALOG)
 
 gtester_CPPFLAGS = \
-	$(QT_CXXFLAGS) \
-	-I. \
-	-I$(srcdir)
+	$(QT_CXXFLAGS)
 
 gtester_LDFLAGS = \
         $(QT_LIBS)

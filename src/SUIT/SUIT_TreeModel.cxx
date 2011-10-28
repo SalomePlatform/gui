@@ -15,20 +15,19 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 // File:   SUIT_TreeModel.cxx
 // Author: Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
-//
+
 #include "SUIT_Session.h"
 #include "SUIT_TreeModel.h"
 #include "SUIT_TreeSync.h"
 #include "SUIT_DataObject.h"
 #include "SUIT_ResourceMgr.h"
 
-
 #include <QApplication>
 #include <QHash>
+#include <QMimeData>
 
 SUIT_AbstractModel::SUIT_AbstractModel() : mySearcher( 0 )
 {
@@ -798,6 +797,8 @@ QVariant SUIT_TreeModel::data( const QModelIndex& index, int role ) const
     return QVariant();
 
   SUIT_DataObject* obj = object( index );
+  if ( !obj )
+    return QVariant();
 
   QColor c;
   QVariant val;
@@ -970,6 +971,7 @@ bool SUIT_TreeModel::setData( const QModelIndex& index,
 */
 Qt::ItemFlags SUIT_TreeModel::flags( const QModelIndex& index ) const
 {
+  /*
   if ( !index.isValid() )
     return 0;
 
@@ -993,7 +995,67 @@ Qt::ItemFlags SUIT_TreeModel::flags( const QModelIndex& index ) const
     if ( obj->renameAllowed( index.column() ) )
       f = f | Qt::ItemIsEditable;
   }
+
   return f;
+  */
+
+  Qt::ItemFlags f = 0;
+
+  if (!index.isValid())
+    //return Qt::ItemIsDropEnabled; // items can be dropped into the top level of the model
+    return f;
+
+  SUIT_DataObject* obj = object(index);
+
+  if (obj) {
+    // data object is enabled
+    if (obj->isEnabled())
+      f = f | Qt::ItemIsEnabled;
+
+    // data object is selectable
+    if (obj->isSelectable())
+      f = f | Qt::ItemIsSelectable;
+
+    // data object is checkable
+    if (obj->isCheckable(index.column()))
+      f = f | Qt::ItemIsUserCheckable;
+    
+    // data object can be renamed
+    if (obj->renameAllowed(index.column()))
+      f = f | Qt::ItemIsEditable;
+    
+    // data object can be dragged
+    if (obj->isDragable())
+      f = f | Qt::ItemIsDragEnabled;
+    
+    // another data object(s) can be dropped on this one
+    if (obj->isDropAccepted())
+      f = f | Qt::ItemIsDropEnabled;
+  }
+
+  return f;
+}
+
+Qt::DropActions SUIT_TreeModel::supportedDropActions() const
+{
+  return Qt::CopyAction | Qt::MoveAction;
+}
+
+//This function is never called
+bool SUIT_TreeModel::removeRows(int row, int count, const QModelIndex &parent)
+{
+  qDebug("Remove");
+  if (parent.isValid())
+    return FALSE;
+
+  beginRemoveRows(parent, row, row + count - 1);
+
+  for (int i = 0; i < count; ++i){
+    //delete m_pAllData->takeAt(row);
+  }
+
+  endRemoveRows();
+  return TRUE;
 }
 
 /*!
@@ -1613,8 +1675,51 @@ void SUIT_TreeModel::onRemoved( SUIT_DataObject* /*object*/, SUIT_DataObject* pa
 }
 
 /*!
+  \brief Drag and Drop support.
+*/
+QStringList SUIT_TreeModel::mimeTypes() const
+{
+  QStringList types;
+  types << "application/vnd.text.list";
+  return types;
+}
+
+/*!
+  \brief Called when the data objects are exported(dragged) from the tree.
+  \param indexes the list of exported objects
+*/
+QMimeData* SUIT_TreeModel::mimeData (const QModelIndexList &indexes) const
+{
+  QMimeData *mimeData = new QMimeData();
+  QByteArray encodedData;
+
+  QDataStream stream (&encodedData, QIODevice::WriteOnly);
+
+  foreach (QModelIndex index, indexes) {
+    if (index.isValid()) {
+      if (index.column() == 0) {
+        SUIT_DataObject* aDObj = object(index);
+        QString anEntry = aDObj->text(SUIT_DataObject::VisibilityId + 1);
+        stream << anEntry;
+      }
+    }
+  }
+
+  mimeData->setData("application/vnd.text.list", encodedData);
+  return mimeData;
+}
+
+bool SUIT_TreeModel::dropMimeData (const QMimeData* data, Qt::DropAction action,
+                                   int row, int column, const QModelIndex& parent)
+{
+  emit dropped(data, action, row, column, parent);
+
+  return true;
+}
+
+/*!
   \class SUIT_ProxyModel
-  \brief Proxy model which can be used above the SUIT_TreeMovel class
+  \brief Proxy model which can be used above the SUIT_TreeModel class
   to enable custom sorting/filtering of the data.
 
   The SUIT_TreeModel class does not support custom sorting/filtering of the data.
@@ -1633,6 +1738,9 @@ SUIT_ProxyModel::SUIT_ProxyModel( QObject* parent )
   SUIT_TreeModel* model = new SUIT_TreeModel( this );
   connect( model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
   connect( model, SIGNAL( clicked(SUIT_DataObject*, int) ), this, SIGNAL(clicked(SUIT_DataObject*, int) ) );
+  connect( model, SIGNAL( dropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ),
+           //this, SIGNAL( dropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ));
+           this, SLOT( onDropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ));
   setSourceModel( model );
   setDynamicSortFilter( true );
 }
@@ -1649,6 +1757,9 @@ SUIT_ProxyModel::SUIT_ProxyModel( SUIT_DataObject* root, QObject* parent )
   SUIT_TreeModel* model = new SUIT_TreeModel( root, this );
   connect( model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
   connect( model, SIGNAL( clicked(SUIT_DataObject*, int) ), this, SIGNAL(clicked(SUIT_DataObject*, int) ) );
+  connect( model, SIGNAL( dropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ),
+           //this, SIGNAL( dropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ));
+           this, SLOT( onDropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ));
   setSourceModel( model );
   setDynamicSortFilter( true );
 }
@@ -1664,6 +1775,9 @@ SUIT_ProxyModel::SUIT_ProxyModel( SUIT_AbstractModel* model, QObject* parent )
 {
   connect( *model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
   connect( *model, SIGNAL( clicked(SUIT_DataObject*, int) ), this, SIGNAL(clicked(SUIT_DataObject*, int) ) );
+  connect( *model, SIGNAL( dropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ),
+           //this, SIGNAL( dropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ));
+           this, SLOT( onDropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ));
   setSourceModel( *model );
   setDynamicSortFilter( true );
 }
@@ -2059,6 +2173,12 @@ Qtx::VisibilityState SUIT_ProxyModel::visibilityState(const QString& id) const {
 void SUIT_ProxyModel::emitClicked( SUIT_DataObject* obj, const QModelIndex& index) {
   if(treeModel())
     treeModel()->emitClicked(obj,index);
+}
+
+void SUIT_ProxyModel::onDropped (const QMimeData* data, Qt::DropAction action,
+                                 int row, int column, const QModelIndex& parent)
+{
+  emit dropped(data, action, row, column, mapFromSource(parent));
 }
 
 /*!

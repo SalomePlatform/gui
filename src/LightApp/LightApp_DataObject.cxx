@@ -18,11 +18,10 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 // File   : LightApp_DataObject.cxx
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
-//
+
 #include "LightApp_DataObject.h"
 #include "LightApp_Study.h"
 #include "LightApp_DataModel.h"
@@ -30,9 +29,11 @@
 #include "LightApp_Application.h"
 
 #include <CAM_Module.h>
-#include <SUIT_DataObjectKey.h> 
+#include <SUIT_DataObjectKey.h>
 
 #include <QVariant>
+
+#include <iostream>
 
 /*!
   \class LightApp_DataObject::Key
@@ -103,12 +104,12 @@ bool LightApp_DataObject::Key::isEqual( const SUIT_DataObjectKey* other ) const
 */
 
 /*!
-  \brief Constructor. 
+  \brief Constructor.
   \param parent parent data object
 */
 LightApp_DataObject::LightApp_DataObject( SUIT_DataObject* parent )
-: CAM_DataObject( parent ), 
-  myCompObject( 0 ), 
+: CAM_DataObject( parent ),
+  myCompObject( 0 ),
   myCompDataType( "" )
 {
 }
@@ -131,7 +132,7 @@ int LightApp_DataObject::groupId() const
 */
 QVariant LightApp_DataObject::customData(Qtx::CustomDataType type) {
   switch(type) {
-  case Qtx::IdType: 
+  case Qtx::IdType:
     return EntryId;
     break;
   default:
@@ -150,6 +151,39 @@ bool LightApp_DataObject::isVisible() const
   return r && r->study() && componentDataType() != r->study()->getVisualComponentName();
 }
 
+/*!
+  \brief Check if the object is dragable.
+
+  This method can be re-implemented in the subclasses.
+
+  \return \c true if it is possible to drag this object
+*/
+bool LightApp_DataObject::isDragable() const
+{
+  LightApp_Module* aModule = dynamic_cast<LightApp_Module*>(module());
+  if (aModule) {
+    return aModule->isDragable(this);
+  }
+  return false;
+}
+
+/*!
+  \brief Check if the drop operation fo this object is possible.
+
+  This method can be re-implemented in the subclasses.
+
+  \param obj object being dropped
+  \return \c true if it is possible to drop an object \c obj
+          to this object
+*/
+bool LightApp_DataObject::isDropAccepted()
+{
+  LightApp_Module* aModule = dynamic_cast<LightApp_Module*>(module());
+  if (aModule) {
+    return aModule->isDropAccepted(this);
+  }
+  return false;
+}
 
 /*!
   \brief Check if this object is can't be renamed in place
@@ -168,7 +202,7 @@ bool LightApp_DataObject::renameAllowed( const int id ) const
     LightApp_RootObject* r = dynamic_cast<LightApp_RootObject*>( root() );
     if(r && r->study())
       app  = dynamic_cast<LightApp_Application*>(r->study()->application());
-    
+
     return ( m && m->renameAllowed( entry() ) ) ||
       ( app && app->renameAllowed( entry() ) );
   }
@@ -188,7 +222,8 @@ bool LightApp_DataObject::setName(const QString& name)
 {
     LightApp_Module* m = dynamic_cast<LightApp_Module*>( module() );
     LightApp_RootObject* r = dynamic_cast<LightApp_RootObject*>( root() );
-    LightApp_Application* app = (r && r->study()) ? dynamic_cast<LightApp_Application*>(r->study()->application()) : 0;
+    LightApp_Application* app =
+      (r && r->study()) ? dynamic_cast<LightApp_Application*>(r->study()->application()) : 0;
 
     return ( m && m->renameObject( entry(), name ) ) ||
            ( app && app->renameObject( entry(), name ) );
@@ -326,7 +361,7 @@ bool LightApp_DataObject::compare( const QVariant& left, const QVariant& right, 
         }
         else {
           // both not integer ID
-          int r = QString::localeAwareCompare( idsLeft[i], idsRight[i] ); 
+          int r = QString::localeAwareCompare( idsLeft[i], idsRight[i] );
           if ( !calculated && r != 0 ) {
             result = r < 0;
             calculated = true;
@@ -334,7 +369,7 @@ bool LightApp_DataObject::compare( const QVariant& left, const QVariant& right, 
         }
       }
       // we should reach this if the entries are exactly equal
-      return result; 
+      return result;
     }
     return QString::localeAwareCompare( leftStr, rightStr ) < 0;
   }
@@ -408,9 +443,9 @@ QString LightApp_ModuleObject::toolTip( const int id ) const
 
 /*!
   \brief Insert new child object to the children list at specified position.
-  
+
   Adds component in the study for this module object if it is not done yet.
-  
+
   \param obj object to be inserted
   \param pos position at which data object should be inserted
 */
@@ -442,8 +477,8 @@ void LightApp_ModuleObject::insertChild( SUIT_DataObject* obj, int pos )
 */
 LightApp_RootObject::LightApp_RootObject( LightApp_Study* study )
 : CAM_DataObject( 0 ),
-  LightApp_DataObject( 0 ), 
-  myStudy( study ) 
+  LightApp_DataObject( 0 ),
+  myStudy( study )
 {
 }
 
@@ -459,8 +494,8 @@ LightApp_RootObject::~LightApp_RootObject()
   \param study pointer to the study
 */
 void LightApp_RootObject::setStudy( LightApp_Study* study )
-{ 
-  myStudy = study; 
+{
+  myStudy = study;
 }
 
 /*
@@ -468,6 +503,6 @@ void LightApp_RootObject::setStudy( LightApp_Study* study )
   \return pointer to the study
 */
 LightApp_Study* LightApp_RootObject::study() const
-{ 
-  return myStudy;  
-} 
+{
+  return myStudy;
+}

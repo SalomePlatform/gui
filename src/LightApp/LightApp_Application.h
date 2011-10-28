@@ -18,12 +18,11 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 // File:      LightApp_Application.h
 // Created:   6/20/2005 18:39:25 PM
 // Author:    OCC team
-//
+
 #ifndef LIGHTAPP_APPLICATION_H
 #define LIGHTAPP_APPLICATION_H
 
@@ -85,7 +84,7 @@ public:
          CloseId, CloseAllId, GroupAllId,
          PreferencesId, MRUId, ModulesListId,
          NewGLViewId, NewPlot2dId, NewOCCViewId, NewVTKViewId, NewQxGraphViewId,
-         NewQxSceneViewId = NewQxGraphViewId, StyleId, FullScreenId, 
+         NewQxSceneViewId = NewQxGraphViewId, StyleId, FullScreenId,
          UserID };
 
 protected:
@@ -238,6 +237,8 @@ protected slots:
 private slots:
   void                                onSelection();
   void                                onRefresh();
+  void                                onDropped( const QMimeData*, Qt::DropAction,
+                                                 int, int, const QModelIndex& );
   void                                onPreferences();
   void                                onPreferenceChanged( QString&, QString&, QString& );
   void                                onRenameWindow();

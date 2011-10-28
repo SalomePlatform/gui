@@ -18,7 +18,6 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 #include "SalomeApp_Study.h"
 
@@ -80,7 +79,7 @@ public:
     myStudy=aStudy;
     fillEntryMap();
   }
-  
+
   SUIT_DataObject* findObject( const char* theID ) const
   {
     EntryMap::const_iterator it = entry2SuitObject.find( theID );
@@ -98,7 +97,7 @@ public:
 
   virtual bool event(QEvent *event)
   {
-    if (event->type() == QEvent::User ) 
+    if (event->type() == QEvent::User )
     {
       //START_TIMING(notify);
       notifyObserverID_real(static_cast<ObserverEvent *>(event)->_anID.c_str(),static_cast<ObserverEvent *>(event)->_event);
@@ -110,96 +109,164 @@ public:
   void notifyObserverID_real(const std::string& theID, long event)
   {
     SalomeApp_DataObject* suit_obj = 0;
-    
-    switch(event) {      
-    case 1: 
+
+    switch(event) {
+    case 1:
       { //Add sobject
-        EntryMapIter it = entry2SuitObject.find( theID );
-        if ( it != entry2SuitObject.end() ) 
-        {
-          MESSAGE("Entry " << theID << " is already added. Problem ??");
+        _PTR(SObject) aSObj = myStudyDS->FindObjectID(theID);
+        _PTR(SComponent) aSComp = aSObj->GetFatherComponent();
+
+        if (!aSComp || aSComp->IsNull()) {
+          MESSAGE("Entry " << theID << " has not father component. Problem ??");
           return;
         }
-        _PTR(SObject) obj = myStudyDS->FindObjectID( theID );
-        int last2Pnt_pos = theID.rfind( ":" );
-        std::string parent_id = theID.substr( 0, last2Pnt_pos );
-        int tag = atoi( theID.substr( last2Pnt_pos+1 ).c_str() );
-      
-        if ( parent_id.length() == 3 ) // "0:1" - root item?
-        {
-          // It's probably a SComponent
-          _PTR(SComponent) aSComp = obj->GetFatherComponent();
-          if ( aSComp && !aSComp->IsNull() && aSComp->GetID() == theID )
-            suit_obj = new SalomeApp_ModuleObject( aSComp );
-          else
-            suit_obj = new SalomeApp_DataObject( obj );
-        }
-        else
-        {
-          suit_obj = new SalomeApp_DataObject( obj );
-        }
-      
-        it = entry2SuitObject.find( parent_id );
-        if ( it != entry2SuitObject.end() )
-        {
-          SalomeApp_DataObject* father = it->second;
-          father->insertChildAtTag( suit_obj, tag );
-        }
-        else
-        {
+
+        // Mantis issue 0020136: Drag&Drop in OB
+        _PTR(UseCaseBuilder) aUseCaseBuilder = myStudyDS->GetUseCaseBuilder();
+        if (aUseCaseBuilder->IsUseCaseNode(aSComp)) { // BEGIN: work with tree nodes structure
+          if (!aUseCaseBuilder->IsUseCaseNode(aSObj)) {
+            // tree node is not yet set, it is a normal situation
+            return;
+          }
+
+          _PTR(SObject) aFatherSO = aUseCaseBuilder->GetFather(aSObj);
+          if (!aFatherSO || aFatherSO->IsNull()) {
+            MESSAGE("Father SObject is not found. Problem ??");
+            return;
+          }
+
+          std::string parent_id = aFatherSO->GetID();
+          EntryMapIter it = entry2SuitObject.find(parent_id.c_str());
+
+          if (it == entry2SuitObject.end()) {
+            MESSAGE("Father data object is not found. Problem ??");
+            return;
+          }
+
+          SalomeApp_DataObject* aFatherDO = it->second;
+
+          it = entry2SuitObject.find(theID);
+          if (it != entry2SuitObject.end()) { // this SOobject is already added somethere
+            // tmp??
+            suit_obj = it->second;
+            SUIT_DataObject* oldFather = suit_obj->parent();
+            if (oldFather) {
+              oldFather->removeChild(suit_obj, false);
+
+              suit_obj->updateItem(); // tmp??
+              if (SalomeApp_DataObject* oldFatherSA = dynamic_cast<SalomeApp_DataObject*>(oldFather)) {
+                oldFatherSA->updateItem(); // tmp??
+              }
+
+              //entry2SuitObject.erase(it);
+              ////delete suit_obj;
+              //suit_obj = new SalomeApp_DataObject(aSObj);
+              //entry2SuitObject[theID] = suit_obj;
+            }
+          }
+          else {
+            suit_obj = new SalomeApp_DataObject(aSObj);
+            entry2SuitObject[theID] = suit_obj;
+          }
+
+          // define position in the data tree (in aFatherDO) to insert the aSObj
+          int pos = -1;
+          //int childDataObjCount = aFatherDO->childCount();
+          _PTR(UseCaseIterator) aUseCaseIter = aUseCaseBuilder->GetUseCaseIterator(aFatherSO);
+          for (int cur = 0; aUseCaseIter->More() && pos < 0; cur++, aUseCaseIter->Next()) {
+            if (aUseCaseIter->Value()->GetID() == theID) {
+              pos = cur;
+              break;
+            }
+          }
+
+          //aFatherDO->insertChildAtPos(suit_obj, pos);
+          aFatherDO->insertChild(suit_obj, pos);
+          aFatherDO->updateItem(); // tmp??
+
+        } // END: work with tree nodes structure
+        else { // BEGIN: work with study structure
+          EntryMapIter it = entry2SuitObject.find( theID );
+          if ( it != entry2SuitObject.end() ) {
+            MESSAGE("Entry " << theID << " is already added. Problem ??");
+            return;
+          }
+
+          int last2Pnt_pos = theID.rfind( ":" );
+          std::string parent_id = theID.substr( 0, last2Pnt_pos );
+          int tag = atoi( theID.substr( last2Pnt_pos+1 ).c_str() );
+
           if ( parent_id.length() == 3 ) // "0:1" - root item?
           {
-            // This should be for a module
-            SUIT_DataObject* father=myStudy->root();
-            father->appendChild(suit_obj);
+            // It's probably a SComponent
+            if ( theID == aSComp->GetID() )
+              suit_obj = new SalomeApp_ModuleObject( aSComp );
+            else
+              suit_obj = new SalomeApp_DataObject( aSObj );
           }
           else
           {
-            MESSAGE("SHOULD NEGER GET HERE!!!");
-
-            //Try to find the SalomeApp_DataObject object parent
-            std::string root_id = parent_id.substr( 0, 4 );
-            std::string obj_id = parent_id.substr( 4 );
-            
-            std::string anID;
-	    std::string::size_type debut = 0;
-            std::string::size_type fin;
-            SalomeApp_DataObject* anObj = dynamic_cast<SalomeApp_DataObject*>( myStudy->root() );
-            while ( 1 )
-            {
-              fin = obj_id.find_first_of( ':', debut );
-              if ( fin == std::string::npos )
-              {
-                //last id
-                anObj = dynamic_cast<SalomeApp_DataObject*>( anObj->childObject( atoi( obj_id.substr( debut ).c_str() )-1 ) );
-                entry2SuitObject[parent_id] = anObj;
-                break;
-              }
-              anID = root_id + obj_id.substr( 0, fin );
-              EntryMapIter it2 = entry2SuitObject.find( anID );
-              if ( it2 == entry2SuitObject.end() )
-              {
-                //the ID is not known in entry2SuitObject
-                anObj = dynamic_cast<SalomeApp_DataObject*>( anObj->childObject( atoi( obj_id.substr( debut, fin-debut ).c_str() )-1 ) );
-                entry2SuitObject[anID] = anObj;
-              }
-              else
-                anObj = it2->second;
-              debut = fin+1;
-            }
-            anObj->insertChildAtTag( suit_obj, tag );
+            suit_obj = new SalomeApp_DataObject( aSObj );
           }
-        }
-        entry2SuitObject[theID] = suit_obj;
+
+          it = entry2SuitObject.find( parent_id );
+          if ( it != entry2SuitObject.end() ) {
+            SalomeApp_DataObject* father = it->second;
+            father->insertChildAtTag( suit_obj, tag );
+          }
+          else {
+            if ( parent_id.length() == 3 ) // "0:1" - root item?
+            {
+              // This should be for a module
+              SUIT_DataObject* father=myStudy->root();
+              father->appendChild(suit_obj);
+            }
+            else
+            {
+              MESSAGE("SHOULD NEVER GET HERE!!!");
+
+              //Try to find the SalomeApp_DataObject object parent
+              std::string root_id = parent_id.substr( 0, 4 );
+              std::string obj_id = parent_id.substr( 4 );
+
+              std::string anID;
+              std::string::size_type debut = 0;
+              std::string::size_type fin;
+              SalomeApp_DataObject* anObj = dynamic_cast<SalomeApp_DataObject*>( myStudy->root() );
+              while ( 1 ) {
+                fin = obj_id.find_first_of( ':', debut );
+                if ( fin == std::string::npos ) {
+                  //last id
+                  anObj = dynamic_cast<SalomeApp_DataObject*>(anObj->childObject(atoi(obj_id.substr(debut).c_str())-1));
+                  entry2SuitObject[parent_id] = anObj;
+                  break;
+                }
+                anID = root_id + obj_id.substr( 0, fin );
+                EntryMapIter it2 = entry2SuitObject.find( anID );
+                if ( it2 == entry2SuitObject.end() ) {
+                  //the ID is not known in entry2SuitObject
+                  anObj = dynamic_cast<SalomeApp_DataObject*>(anObj->childObject(atoi(obj_id.substr(debut, fin-debut).c_str())-1));
+                  entry2SuitObject[anID] = anObj;
+                }
+                else
+                  anObj = it2->second;
+                debut = fin+1;
+              }
+              anObj->insertChildAtTag( suit_obj, tag );
+            }
+          }
+          entry2SuitObject[theID] = suit_obj;
+        } // END: work with study structure
         break;
-      }      
-    case 2: 
+      }
+    case 2:
       { // Remove sobject
         EntryMapIter it = entry2SuitObject.find( theID );
         if ( it != entry2SuitObject.end() )
         {
           suit_obj = it->second;
-          // VSR: object is not removed, since SALOMEDS::SObject is not actually removed, only its attributes are cleared;
+          // VSR: object is not removed, since SALOMEDS::SObject is not actually removed,
+          //      only its attributes are cleared;
           //      thus, the object can be later reused
           suit_obj->updateItem();
           //SUIT_DataObject* father=suit_obj->parent();
@@ -213,7 +280,7 @@ public:
         }
         break;
       }
-    case 0:  
+    case 0:
       { //modify sobject
         //MESSAGE("Want to modify an object "  << theID);
         EntryMapIter it = entry2SuitObject.find( theID );
@@ -231,20 +298,21 @@ public:
     case 5: //IOR of the object modified
       {
         EntryMapIter it = entry2SuitObject.find( theID );
-        if ( it != entry2SuitObject.end() ) 
+        if ( it != entry2SuitObject.end() )
           suit_obj = it->second;
-        
+
         /* Define visibility state */
-	bool isComponent = dynamic_cast<SalomeApp_ModuleObject*>( suit_obj ) != 0;
+        bool isComponent = dynamic_cast<SalomeApp_ModuleObject*>( suit_obj ) != 0;
         if ( suit_obj && !isComponent ) {
           QString moduleTitle = ((CAM_Application*)myStudy->application())->moduleTitle(suit_obj->componentDataType());
           if (!moduleTitle.isEmpty()) {
             LightApp_Displayer* aDisplayer = LightApp_Displayer::FindDisplayer(moduleTitle,false);
-            if(aDisplayer) {
+            if (aDisplayer) {
               if(aDisplayer->canBeDisplayed(theID.c_str())) {
                 myStudy->setVisibilityState( theID.c_str(), Qtx::HiddenState );
                 //MESSAGE("Object with entry : "<< theID <<" CAN be displayed !!!");
-              } else 
+              }
+              else
                 MESSAGE("Object with entry : "<< theID <<" CAN'T be displayed !!!");
             }
           }
@@ -253,9 +321,9 @@ public:
       }
     default:MESSAGE("Unknown event: "  << event);break;
     } //switch
-  } //notifyObserverID
+  } //notifyObserverID_real
 
-private:  
+private:
   void fillEntryMap()
   {
     entry2SuitObject.clear();
@@ -287,7 +355,7 @@ private:
       }
     }
   }
-  
+
 private:
   _PTR(Study)      myStudyDS;
   SalomeApp_Study* myStudy;
@@ -301,7 +369,7 @@ private:
 SalomeApp_Study::SalomeApp_Study( SUIT_Application* app )
 : LightApp_Study( app ), myObserver( 0 )
 {
-}  
+}
 
 /*!
   Destructor.
@@ -376,10 +444,10 @@ bool SalomeApp_Study::createDocument( const QString& theStr )
 
 #ifdef WITH_SALOMEDS_OBSERVER
   myObserver = new Observer_i(myStudyDS,this);
-  //attach an observer to the study with notification of modifications 
+  //attach an observer to the study with notification of modifications
   myStudyDS->attach(myObserver->_this(),true);
 #endif
-  
+
   return aRet;
 }
 
@@ -404,23 +472,23 @@ bool SalomeApp_Study::openDocument( const QString& theFileName )
   ModelList dm_s;
   dataModels( dm_s );
   QListIterator<CAM_DataModel*> it( dm_s );
-  while ( it.hasNext() ) 
+  while ( it.hasNext() )
     openDataModel( studyName(), it.next() );
-  
+
   // this will build a SUIT_DataObject-s tree under myRoot member field
   // passing "false" in order NOT to rebuild existing data models' trees - it was done in previous step
-  // but tree that corresponds to not-loaded data models will be updated any way. 
-  ((SalomeApp_Application*)application())->updateObjectBrowser( false ); 
+  // but tree that corresponds to not-loaded data models will be updated any way.
+  ((SalomeApp_Application*)application())->updateObjectBrowser( false );
 
 #ifdef WITH_SALOMEDS_OBSERVER
   dynamic_cast<SalomeApp_RootObject*>( root() )->setToSynchronize(false);
   myObserver = new Observer_i(myStudyDS,this);
-  //attach an observer to the study with notification of modifications 
+  //attach an observer to the study with notification of modifications
   myStudyDS->attach(myObserver->_this(),true);
 #endif
 
   bool res = CAM_Study::openDocument( theFileName );
-  
+
   emit opened( this );
   study->IsSaved(true);
 
@@ -431,7 +499,7 @@ bool SalomeApp_Study::openDocument( const QString& theFileName )
       SalomeApp_VisualState( (SalomeApp_Application*)application() ).restoreState( savePoints[savePoints.size()-1] );
   }
 
-  ((SalomeApp_Application*)application())->updateObjectBrowser( true ); 
+  ((SalomeApp_Application*)application())->updateObjectBrowser( true );
   return res;
 }
 
@@ -464,13 +532,13 @@ bool SalomeApp_Study::loadDocument( const QString& theStudyName )
 
   // this will build a SUIT_DataObject-s tree under myRoot member field
   // passing "false" in order NOT to rebuild existing data models' trees - it was done in previous step
-  // but tree that corresponds to not-loaded data models will be updated any way. 
-  ((SalomeApp_Application*)application())->updateObjectBrowser( false ); 
+  // but tree that corresponds to not-loaded data models will be updated any way.
+  ((SalomeApp_Application*)application())->updateObjectBrowser( false );
 
 #ifdef WITH_SALOMEDS_OBSERVER
   dynamic_cast<SalomeApp_RootObject*>( root() )->setToSynchronize(false);
   myObserver = new Observer_i(myStudyDS,this);
-  //attach an observer to the study with notification of modifications 
+  //attach an observer to the study with notification of modifications
   myStudyDS->attach(myObserver->_this(),true);
 #endif
 
@@ -497,7 +565,7 @@ bool SalomeApp_Study::saveDocumentAs( const QString& theFileName )
   bool store = application()->resourceMgr()->booleanValue( "Study", "store_visual_state", false );
   if ( store )
     SalomeApp_VisualState( (SalomeApp_Application*)application() ).storeState();
-  
+
   ModelList list; dataModels( list );
 
   QListIterator<CAM_DataModel*> it( list );
@@ -518,11 +586,11 @@ bool SalomeApp_Study::saveDocumentAs( const QString& theFileName )
 
   bool isMultiFile = resMgr->booleanValue( "Study", "multi_file", false );
   bool isAscii = resMgr->booleanValue( "Study", "ascii_file", false );
-  bool res = (isAscii ? 
+  bool res = (isAscii ?
     SalomeApp_Application::studyMgr()->SaveAsASCII( theFileName.toStdString(), studyDS(), isMultiFile ) :
     SalomeApp_Application::studyMgr()->SaveAs     ( theFileName.toStdString(), studyDS(), isMultiFile ))
     && CAM_Study::saveDocumentAs( theFileName );
-  
+
   res = res && saveStudyData(theFileName);
 
   if ( res )
@@ -548,7 +616,7 @@ bool SalomeApp_Study::saveDocument()
     if ( SalomeApp_DataModel* aModel = (SalomeApp_DataModel*)it.next() ) {
       listOfFiles.clear();
       aModel->save(listOfFiles);
-      if ( !listOfFiles.isEmpty() ) 
+      if ( !listOfFiles.isEmpty() )
         saveModuleData(aModel->module()->name(), listOfFiles);
     }
   }
@@ -560,13 +628,13 @@ bool SalomeApp_Study::saveDocument()
 
   bool isMultiFile = resMgr->booleanValue( "Study", "multi_file", false );
   bool isAscii = resMgr->booleanValue( "Study", "ascii_file", false );
-  bool res = (isAscii ? 
+  bool res = (isAscii ?
     SalomeApp_Application::studyMgr()->SaveASCII( studyDS(), isMultiFile ) :
     SalomeApp_Application::studyMgr()->Save     ( studyDS(), isMultiFile )) && CAM_Study::saveDocument();
 
   res = res && saveStudyData(studyName());
   if ( res )
-    emit saved( this );  
+    emit saved( this );
 
   return res;
 }
@@ -599,7 +667,7 @@ bool SalomeApp_Study::isModified() const
   if (!isAnyChanged)
     isAnyChanged = LightApp_Study::isModified();
 
-  return isAnyChanged; 
+  return isAnyChanged;
 }
 
 /*!
@@ -621,7 +689,7 @@ bool SalomeApp_Study::isSaved() const
   if (!isAllSaved)
     isAllSaved = LightApp_Study::isSaved();
 
-  return isAllSaved; 
+  return isAllSaved;
 }
 
 /*!
@@ -718,7 +786,7 @@ void SalomeApp_Study::addComponent(const CAM_DataModel* dm)
   if (!aModule) {
     // Check SComponent existance
     _PTR(Study) aStudy = studyDS();
-    if (!aStudy) 
+    if (!aStudy)
       return;
     _PTR(SComponent) aComp = aStudy->FindComponent(dm->module()->name().toStdString());
     if (!aComp) {
@@ -977,7 +1045,7 @@ void SalomeApp_Study::children( const QString& entry, QStringList& child_entries
 */
 void SalomeApp_Study::components( QStringList& comps ) const
 {
-  for( _PTR(SComponentIterator) it ( studyDS()->NewComponentIterator() ); it->More(); it->Next() ) 
+  for( _PTR(SComponentIterator) it ( studyDS()->NewComponentIterator() ); it->More(); it->Next() )
   {
     _PTR(SComponent) aComponent ( it->Value() );
     // skip the magic "Interface Applicative" component
@@ -994,7 +1062,7 @@ void SalomeApp_Study::components( QStringList& comps ) const
 QString SalomeApp_Study::centry( const QString& comp ) const
 {
   QString e;
-  for( _PTR(SComponentIterator) it ( studyDS()->NewComponentIterator() ); it->More() && e.isEmpty(); it->Next() ) 
+  for( _PTR(SComponentIterator) it ( studyDS()->NewComponentIterator() ); it->More() && e.isEmpty(); it->Next() )
   {
     _PTR(SComponent) aComponent ( it->Value() );
     if ( aComponent && comp == aComponent->ComponentDataType().c_str() )

@@ -365,13 +365,22 @@ _PTR(SObject) SalomeApp_DataObject::referencedObject() const
 bool SalomeApp_DataObject::hasChildren() const
 {
   bool ok = false;
-  _PTR(ChildIterator) it ( myObject->GetStudy()->NewChildIterator( myObject ) );
-  for ( ; it->More() && !ok; it->Next() ) {
-    _PTR(SObject) obj = it->Value();
-    if ( obj ) {
-      _PTR(SObject) refObj;
-      //if ( obj->ReferencedObject( refObj ) ) continue; // omit references
-      if ( obj->GetName() != "" ) ok = true;
+
+  // tmp??
+  _PTR(UseCaseBuilder) aUseCaseBuilder = myObject->GetStudy()->GetUseCaseBuilder();
+  if (aUseCaseBuilder->IsUseCaseNode(myObject)) {
+    ok = aUseCaseBuilder->HasChildren(myObject);
+    // TODO: check name as below?
+  }
+  else {
+    _PTR(ChildIterator) it ( myObject->GetStudy()->NewChildIterator( myObject ) );
+    for ( ; it->More() && !ok; it->Next() ) {
+      _PTR(SObject) obj = it->Value();
+      if ( obj ) {
+        _PTR(SObject) refObj;
+        //if ( obj->ReferencedObject( refObj ) ) continue; // omit references
+        if ( obj->GetName() != "" ) ok = true;
+      }
     }
   }
   return ok;

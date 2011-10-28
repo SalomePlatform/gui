@@ -18,11 +18,10 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 // File   : LightApp_DataObject.h
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
-//
+
 #ifndef LIGHTAPP_DATAOBJECT_H
 #define LIGHTAPP_DATAOBJECT_H
 
@@ -38,7 +37,7 @@ class LIGHTAPP_EXPORT LightApp_DataObject : public virtual CAM_DataObject
 
 public:
   //! Column id
-  enum { 
+  enum {
     EntryId = VisibilityId + 1    //!< entry column
   };
 
@@ -60,6 +59,8 @@ public:
   virtual QVariant                customData(Qtx::CustomDataType type);
 
   virtual bool                    isVisible() const;
+  virtual bool                    isDragable() const;
+  virtual bool                    isDropAccepted();
   virtual bool                    renameAllowed( const int = NameId ) const;
   virtual bool                    setName( const QString& );
 
@@ -90,10 +91,10 @@ public:
   LightApp_RootObject( LightApp_Study* );
 
   virtual ~LightApp_RootObject();
-    
+
   void                   setStudy( LightApp_Study* );
   LightApp_Study*        study() const;
-  
+
 private:
   LightApp_Study*        myStudy;
 };

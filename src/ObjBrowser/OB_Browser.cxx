@@ -18,11 +18,10 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 // File   : OB_Browser.cxx
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
-//
+
 #include "OB_Browser.h"
 
 //#include "OB_Filter.h"
@@ -142,6 +141,13 @@ OB_Browser::OB_Browser( QWidget* parent, QAbstractItemModel* model )
   myView->setSelectionMode( QAbstractItemView::ExtendedSelection );
   myView->setAllColumnsShowFocus( true );
 
+  // Mantis issue 0020136: Drag&Drop in OB
+  myView->setDragEnabled(TRUE);
+  myView->setAcceptDrops(TRUE);
+  myView->setDropIndicatorShown(TRUE);
+  myView->setDragDropMode(QAbstractItemView::DragDrop);
+  //myView->setDragDropMode(QAbstractItemView::InternalMove);
+
   mySearchTool = new QtxSearchTool( this, myView );
   mySearchTool->setFrameStyle( QFrame::NoFrame | QFrame::Plain );
   mySearchTool->setActivators( QtxSearchTool::StandardKey | QtxSearchTool::SlashKey );
@@ -165,7 +171,6 @@ OB_Browser::OB_Browser( QWidget* parent, QAbstractItemModel* model )
 
   connect( myView, SIGNAL( selectionChanged() ),
            this,   SIGNAL( selectionChanged() ) );
-
 }
 
 /*!

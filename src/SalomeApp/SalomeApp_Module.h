@@ -18,12 +18,11 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 // File:      SalomeApp_Module.h
 // Created:   10/25/2004 11:33:06 AM
 // Author:    Sergey LITONIN
-//
+
 #ifndef SALOMEAPP_MODULE_H
 #define SALOMEAPP_MODULE_H
 

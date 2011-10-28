@@ -18,18 +18,19 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 // File:      LightApp_Module.h
 // Created:   6/20/2005 16:25:06 AM
 // Author:    OCC team
-//
+
 #ifndef LIGHTAPP_MODULE_H
 #define LIGHTAPP_MODULE_H
 
 #include "LightApp.h"
 #include "LightApp_Preferences.h"
 #include <CAM_Module.h>
+
+#include <SUIT_DataObject.h>
 
 class LightApp_Application;
 class LightApp_Selection;
@@ -39,7 +40,7 @@ class LightApp_Displayer;
 class LightApp_SelectionMgr;
 
 class SUIT_Study;
-class SUIT_DataObject;
+//class SUIT_DataObject;
 class SUIT_Operation;
 class SUIT_ViewManager;
 class CAM_Application;
@@ -78,12 +79,11 @@ public:
 
   virtual void                        update( const int );
   // Update viewer or/and object browser etc. in accordance with update flags
-  // ( see SalomeApp_UpdateFlags enumeration ). Derived modules can redefine this method
+  // (see SalomeApp_UpdateFlags enumeration). Derived modules can redefine this method
   // for their own purposes
 
   virtual void                        updateObjBrowser( bool = true, SUIT_DataObject* = 0 );
-  // Update object bropwser ( for updating model or whole object browser use update() method
-  // can be used )
+  // Update object browser (for updating model or whole object browser use update() method)
 
   virtual void                        selectionChanged();
   virtual void                        preferencesChanged( const QString&, const QString& );
@@ -95,6 +95,10 @@ public:
 
   virtual bool                        canCopy() const;
   virtual bool                        canPaste() const;
+  virtual bool                        isDragable(const SUIT_DataObject* what) const;
+  virtual bool                        isDropAccepted(const SUIT_DataObject* where) const;
+  virtual void                        dropObjects(const DataObjectList& what, Qt::DropAction action,
+                                                  const SUIT_DataObject* parent, const int row);
   virtual void                        copy();
   virtual void                        paste();
   virtual bool                        renameAllowed( const QString& ) const;
@@ -133,7 +137,8 @@ protected:
   virtual bool                        reusableOperation( const int id );
 
   int                                 addPreference( const QString& label );
-  int                                 addPreference( const QString& label, const int pId, const int = LightApp_Preferences::Auto,
+  int                                 addPreference( const QString& label, const int pId,
+                                                     const int type = LightApp_Preferences::Auto,
                                                      const QString& section = QString(),
                                                      const QString& param = QString() );
   QVariant                            preferenceProperty( const int, const QString& ) const;

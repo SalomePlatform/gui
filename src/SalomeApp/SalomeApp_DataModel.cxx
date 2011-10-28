@@ -18,12 +18,11 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 // File:      SalomeApp_DataModel.cxx
 // Created:   10/25/2004 10:36:06 AM
 // Author:    Sergey LITONIN
-//
+
 #include "SalomeApp_DataModel.h"
 #include "SalomeApp_Study.h"
 #include "SalomeApp_DataObject.h"
@@ -191,11 +190,20 @@ QList<kerPtr> SalomeApp_DataModelSync::children( const kerPtr& obj ) const
     _PTR(AttributeExpandable) aAttrExp = anAttr;
     expandable = aAttrExp->IsExpandable();
   }
-  
+
   if ( expandable ) {
-    _PTR(ChildIterator) it ( myStudy->NewChildIterator( obj ) );
-    for ( ; it->More(); it->Next() )
-      ch.append( it->Value() );
+    // tmp??
+    _PTR(UseCaseBuilder) aUseCaseBuilder = myStudy->GetUseCaseBuilder();
+    if (aUseCaseBuilder->HasChildren(obj)) {
+      _PTR(UseCaseIterator) it ( aUseCaseBuilder->GetUseCaseIterator( obj ) );
+      for ( ; it->More(); it->Next() )
+        ch.append( it->Value() );
+    }
+    else {
+      _PTR(ChildIterator) it ( myStudy->NewChildIterator( obj ) );
+      for ( ; it->More(); it->Next() )
+        ch.append( it->Value() );
+    }
   }
 
   return ch;

@@ -18,11 +18,10 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 // File   : SUIT_DataObject.h
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
-//
+
 #ifndef SUIT_DATAOBJECT_H
 #define SUIT_DATAOBJECT_H
 
@@ -45,13 +44,13 @@ typedef QList<SUIT_DataObject*> DataObjectList;
 #pragma warning( disable:4251 )
 #endif
 
-class SUIT_EXPORT SUIT_DataObject  
+class SUIT_EXPORT SUIT_DataObject
 {
 public:
   class Signal;
 
   //! Color role
-  typedef enum { 
+  typedef enum {
     Text,              //!< editor foreground (text) color
     Base,              //!< editor background color
     Foreground,        //!< foreground (text) color
@@ -62,7 +61,7 @@ public:
 
   //! Column id
   enum
-  { 
+  {
     NameId,          //!< name column
     VisibilityId     //!< visibility state column
   };
@@ -88,7 +87,7 @@ public:
 
   virtual void                children( DataObjectList&, const bool = false ) const;
   virtual DataObjectList      children( const bool = false );
-  
+
   void                        appendChild( SUIT_DataObject* );
   virtual void                insertChild( SUIT_DataObject*, int );
   virtual void                removeChild( SUIT_DataObject*, const bool = false );
@@ -116,7 +115,7 @@ public:
   virtual bool                expandable() const;
   virtual bool                isVisible() const;
   virtual bool                isDragable() const;
-  virtual bool                isDropAccepted( SUIT_DataObject* obj );
+  virtual bool                isDropAccepted();
 
   virtual bool                isEnabled() const;
   virtual bool                isSelectable() const;
@@ -135,7 +134,7 @@ public:
   virtual bool                compare( const QVariant&, const QVariant&, const int = NameId ) const;
 
   virtual SUIT_DataObjectKey* key() const;
-  virtual int groupId() const;
+  virtual int                 groupId() const;
   virtual QVariant            customData(Qtx::CustomDataType /*type*/);
 
   static Signal*              signal();

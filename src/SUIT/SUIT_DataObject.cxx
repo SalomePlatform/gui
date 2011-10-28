@@ -18,11 +18,9 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 // File   : SUIT_DataObject.cxx
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
-//
 
 #include <QVariant>
 
@@ -579,17 +577,14 @@ bool SUIT_DataObject::isDragable() const
 }
 
 /*!
-  \brief Check if the drop operation fo this object is possible.
+  \brief Check if the drop operation for this object is possible.
 
   This method can be re-implemented in the subclasses.
   Default implementation returns \c false (drop operation is not allowed).
 
-  \param obj object being dropped
-  \return \c true if it is possible to drop an object \c obj
-          to this object
+  \return \c true if it is possible to drop one or more objects (currently selected) to this object
 */
-
-bool SUIT_DataObject::isDropAccepted( SUIT_DataObject* /*obj*/ )
+bool SUIT_DataObject::isDropAccepted()
 {
   return false;
 }

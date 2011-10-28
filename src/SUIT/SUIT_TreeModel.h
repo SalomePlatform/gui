@@ -15,11 +15,10 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 // File:   SUIT_TreeModel.h
 // Author: Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
-//
+
 #ifndef SUIT_TREEMODEL_H
 #define SUIT_TREEMODEL_H
 
@@ -40,6 +39,7 @@
 
 class SUIT_DataObject;
 class SUIT_TreeModel;
+class QMimeData;
 
 class SUIT_EXPORT SUIT_DataSearcher
 {
@@ -137,6 +137,9 @@ public:
   virtual Qt::ItemFlags  flags( const QModelIndex& ) const;
   virtual QVariant       headerData( int, Qt::Orientation, int = Qt::DisplayRole ) const;
 
+  virtual Qt::DropActions supportedDropActions() const;
+  virtual bool            removeRows(int row, int count, const QModelIndex &parent);
+
   virtual QModelIndex    index( int, int, const QModelIndex& = QModelIndex() ) const;
   virtual QModelIndex    parent( const QModelIndex& ) const;
 
@@ -176,6 +179,11 @@ public:
 
   virtual void           updateTreeModel(SUIT_DataObject*,TreeItem*);
 
+  virtual QStringList    mimeTypes() const;
+  virtual QMimeData*     mimeData (const QModelIndexList& indexes) const;
+  virtual bool           dropMimeData (const QMimeData *data, Qt::DropAction action,
+                                       int row, int column, const QModelIndex &parent);
+
 public slots:
   virtual void           updateTree( const QModelIndex& );
   virtual void           updateTree( SUIT_DataObject* = 0 );
@@ -183,6 +191,7 @@ public slots:
 signals:
   void modelUpdated();
   void clicked( SUIT_DataObject*, int );
+  void dropped( const QMimeData*, Qt::DropAction, int, int, const QModelIndex& );
 
 private:
   void                   initialize();
@@ -278,10 +287,12 @@ public slots:
   virtual void           updateTree( const QModelIndex& );
   virtual void           updateTree( SUIT_DataObject* = 0 );
   void                   setSortingEnabled( bool );
+  void                   onDropped( const QMimeData*, Qt::DropAction, int, int, const QModelIndex& );
 
 signals:
   void modelUpdated();
   void clicked( SUIT_DataObject*, int );
+  void dropped( const QMimeData*, Qt::DropAction, int, int, const QModelIndex& );
 
 protected:
   SUIT_AbstractModel*    treeModel() const;

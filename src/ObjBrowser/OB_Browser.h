@@ -18,11 +18,10 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-//
 
 // File   : OB_Browser.h
 // Author : Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
-//
+
 #ifndef OB_BROWSER_H
 #define OB_BROWSER_H
 
@@ -70,7 +69,7 @@ public:
   QtxSearchTool*         searchTool() const;
   bool                   isSearchToolEnabled() const;
   void                   setSearchToolEnabled( const bool );
-  
+
   int                    autoOpenLevel() const;
   void                   setAutoOpenLevel( const int );
   void                   openLevels( const int = -1 );
@@ -105,7 +104,7 @@ public:
 
   unsigned long          getModifiedTime() const;
   void                   setModified();
-  
+
   // san - moved to SUIT_TreeModel
   //OB_Updater*       getUpdater() const;
   //virtual void      setUpdater( OB_Updater* theUpdate = 0 );
@@ -120,10 +119,10 @@ signals:
 private slots:
   void                   onExpandAll();
   void                   onCollapseAll();
-  //void              onDestroyed( SUIT_DataObject* );
-  //void              onDoubleClicked ( QListViewItem* );
-  //void              onDropped( QPtrList<QListViewItem>, QListViewItem*, int );
-  
+  //void                   onDestroyed( SUIT_DataObject* );
+  //void                   onDoubleClicked ( QListViewItem* );
+  //void                   onDropped( QPtrList<QListViewItem>, QListViewItem*, int );
+
 protected:
   //void              adjustWidth( QListViewItem* );
   //virtual void      updateText();

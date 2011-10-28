@@ -277,6 +277,14 @@ public:
     catch (std::exception& e) {
       std::cerr << e.what()  << std::endl;
     }
+    catch (CORBA::Exception& e) {
+      std::cerr << "Caught CORBA::Exception"  << std::endl;
+      CORBA::Any tmp;
+      tmp<<= e;
+      CORBA::TypeCode_var tc = tmp.type();
+      const char *p = tc->name();
+      std::cerr << "notify(): CORBA exception of the kind : " << p << " is caught" << std::endl;
+    }
     catch (...) {
       std::cerr << "Unknown exception caught in Qt handler: it's probably a bug in SALOME platform" << std::endl;
     }

@@ -89,7 +89,7 @@
 #include <QtxSearchTool.h>
 #include <QtxWorkstack.h>
 #include <QtxMap.h>
-#include <QtxWebBrowser.h> 
+#include <QtxWebBrowser.h>
 
 #include <LogWindow.h>
 
@@ -175,6 +175,7 @@
 #include <QTimer>
 #include <QHeaderView>
 #include <QTreeView>
+#include <QMimeData>
 #include <QShortcut>
 
 #include <utilities.h>
@@ -269,7 +270,7 @@ LightApp_Application::LightApp_Application()
 
   SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
   QPixmap aLogo = aResMgr->loadPixmap( "LightApp", tr( "APP_DEFAULT_ICO" ), false );
-  
+
   QtxWebBrowser::setData("browser:icon",          aResMgr->loadPixmap( "LightApp", tr( "BROWSER_ICON" ) ) );
   QtxWebBrowser::setData("browser:title",         tr( "BROWSER_TITLE" ) );
   QtxWebBrowser::setData("toolbar:title",         tr( "BROWSER_TOOLBAR_TITLE" ) );
@@ -557,7 +558,7 @@ void LightApp_Application::createActions()
       if ( QFile::exists( indexFile ) )
         helpData.insert( tr( "%1 module Users's Guide" ).arg( aModule ), indexFile );
     }
-    
+
     IMapConstIterator<QString, QString > fileIt;
     for ( fileIt = helpData.begin(); fileIt != helpData.end(); fileIt++ ) {
       QString helpFileName = fileIt.key();
@@ -568,7 +569,7 @@ void LightApp_Application::createActions()
       a->setData( fileIt.value() );
       if ( !helpSubMenu.isEmpty() ){
         int helpSubMenuId = createMenu( helpSubMenu, helpMenu, -1, 0 );
-        createMenu( a, helpSubMenuId, -1 ); 
+        createMenu( a, helpSubMenuId, -1 );
       }
       else
         createMenu( a, helpMenu, -1, 0 );
@@ -580,17 +581,17 @@ void LightApp_Application::createActions()
   static QtxMRUAction* mru = new QtxMRUAction( tr( "TOT_DESK_MRU" ), tr( "MEN_DESK_MRU" ), 0 );
   connect( mru, SIGNAL( activated( const QString& ) ), this, SLOT( onMRUActivated( const QString& ) ) );
   registerAction( MRUId, mru );
-  
+
   // default icon for neutral point ('SALOME' module)
   QPixmap defIcon = resMgr->loadPixmap( "LightApp", tr( "APP_DEFAULT_ICO" ), false );
   if ( defIcon.isNull() )
     defIcon = QPixmap( imageEmptyIcon );
-  
+
   //! default icon for any module
   QPixmap modIcon = resMgr->loadPixmap( "LightApp", tr( "APP_MODULE_ICO" ), false );
   if ( modIcon.isNull() )
     modIcon = QPixmap( imageEmptyIcon );
-  
+
   QStringList modList;
   modules( modList, false );
 
@@ -609,7 +610,7 @@ void LightApp_Application::createActions()
     {
       if ( !isLibExists( *it ) )
         continue;
-      
+
       QString modName = moduleName( *it );
 
       if ( !isModuleAccessible( *it ) )
@@ -624,7 +625,7 @@ void LightApp_Application::createActions()
       {
         icon = modIcon;
         INFOS ( "****************************************************************" << std::endl
-                <<  "*    Icon for " << (*it).toLatin1().constData() 
+                <<  "*    Icon for " << (*it).toLatin1().constData()
                 << " not found. Using the default one." << std::endl
                 << "****************************************************************" << std::endl );
       }
@@ -634,7 +635,7 @@ void LightApp_Application::createActions()
       moduleAction->insertModule( *it, icon );
     }
 
-    connect( moduleAction, SIGNAL( moduleActivated( const QString& ) ), 
+    connect( moduleAction, SIGNAL( moduleActivated( const QString& ) ),
              this, SLOT( onModuleActivation( const QString& ) ) );
     registerAction( ModulesListId, moduleAction );
   }
@@ -689,7 +690,7 @@ void LightApp_Application::createActions()
                 0, desk, false, this, SLOT( onStylePreferences() ) );
 
   createAction( FullScreenId, tr( "TOT_FULLSCREEN" ), QIcon(), tr( "MEN_DESK_FULLSCREEN" ), tr( "PRP_FULLSCREEN" ),
-		Qt::Key_F11, desk, false, this, SLOT( onFullScreen() ) );
+                Qt::Key_F11, desk, false, this, SLOT( onFullScreen() ) );
 
 
   int viewMenu = createMenu( tr( "MEN_DESK_VIEW" ), -1 );
@@ -992,20 +993,19 @@ void LightApp_Application::onHelpContentsModule()
   bool useExtBrowser = resMgr->booleanValue("ExternalBrowser", "use_external_browser", false );
 
   if( useExtBrowser ) {
-    if ( !anApp.isEmpty() )
-      {
-	RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile );
-	rs->start();
-      }
-    else
-      {
-	if ( SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "DEFINE_EXTERNAL_BROWSER" ),
-					SUIT_MessageBox::Yes | SUIT_MessageBox::No,
-					SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
-	  
-	  showPreferences( tr( "PREF_APP" ) );
-      }
-  } else {
+    if ( !anApp.isEmpty() ) {
+      RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile );
+      rs->start();
+    }
+    else {
+      if ( SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "DEFINE_EXTERNAL_BROWSER" ),
+                                      SUIT_MessageBox::Yes | SUIT_MessageBox::No,
+                                      SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
+
+        showPreferences( tr( "PREF_APP" ) );
+    }
+  }
+  else {
     QtxWebBrowser::loadUrl(getFile() + helpFile);
   }
 }
@@ -1045,23 +1045,22 @@ void LightApp_Application::onHelpContextModule( const QString& theComponentName,
 #endif
 
   bool useExtBrowser = resMgr->booleanValue("ExternalBrowser", "use_external_browser", false );
-  
-  if(useExtBrowser) {  
+
+  if(useExtBrowser) {
     QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
-    
-    if ( !anApp.isEmpty() )
-      {
-	RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile, theContext );
-	rs->start();
-      }
-    else
-      {
-	if ( SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "DEFINE_EXTERNAL_BROWSER" ),
-					SUIT_MessageBox::Yes | SUIT_MessageBox::No,
-					SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
-	  showPreferences( tr( "PREF_APP" ) );
-      }
-  } else {
+
+    if ( !anApp.isEmpty() ) {
+      RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile, theContext );
+      rs->start();
+    }
+    else {
+      if ( SUIT_MessageBox::question( desktop(), tr( "WRN_WARNING" ), tr( "DEFINE_EXTERNAL_BROWSER" ),
+                                      SUIT_MessageBox::Yes | SUIT_MessageBox::No,
+                                      SUIT_MessageBox::Yes ) == SUIT_MessageBox::Yes )
+        showPreferences( tr( "PREF_APP" ) );
+    }
+  }
+  else {
     QtxWebBrowser::loadUrl(getFile() + helpFile, theContext );
   }
 }
@@ -1404,18 +1403,18 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
 #else
     vm = new OCCViewer_Viewer( true );
 #endif
-    vm->setBackgroundColor( OCCViewer_ViewFrame::TOP_LEFT, 
+    vm->setBackgroundColor( OCCViewer_ViewFrame::TOP_LEFT,
                             resMgr->colorValue( "OCCViewer", "xz_background", vm->backgroundColor() ) );
-    vm->setBackgroundColor( OCCViewer_ViewFrame::TOP_RIGHT, 
-			    resMgr->colorValue( "OCCViewer", "yz_background", vm->backgroundColor() ) );
-    
+    vm->setBackgroundColor( OCCViewer_ViewFrame::TOP_RIGHT,
+                            resMgr->colorValue( "OCCViewer", "yz_background", vm->backgroundColor() ) );
+
     vm->setBackgroundColor( OCCViewer_ViewFrame::BOTTOM_LEFT,
                             resMgr->colorValue( "OCCViewer", "xy_background", vm->backgroundColor() ) );
-    vm->setBackgroundColor( OCCViewer_ViewFrame::BOTTOM_RIGHT, 
-			    resMgr->colorValue( "OCCViewer", "background", vm->backgroundColor() ) );
-    
-    vm->setTrihedronSize(  resMgr->doubleValue( "OCCViewer", "trihedron_size", vm->trihedronSize() ), 
-			   resMgr->booleanValue( "OCCViewer", "relative_size", vm->trihedronRelative() ));
+    vm->setBackgroundColor( OCCViewer_ViewFrame::BOTTOM_RIGHT,
+                            resMgr->colorValue( "OCCViewer", "background", vm->backgroundColor() ) );
+
+    vm->setTrihedronSize(  resMgr->doubleValue( "OCCViewer", "trihedron_size", vm->trihedronSize() ),
+                           resMgr->booleanValue( "OCCViewer", "relative_size", vm->trihedronRelative() ));
     int u( 1 ), v( 1 );
     vm->isos( u, v );
     u = resMgr->integerValue( "OCCViewer", "iso_number_u", u );
@@ -1481,11 +1480,11 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
 {
   SUIT_ResourceMgr* resMgr = resourceMgr();
 
-  SUIT_ViewManager* vm = new SUIT_ViewManager( activeStudy(), 
-					       desktop(),
-					       new LightApp_WgViewModel( vmType, w ) );
+  SUIT_ViewManager* vm = new SUIT_ViewManager( activeStudy(),
+                                               desktop(),
+                                               new LightApp_WgViewModel( vmType, w ) );
   vm->setTitle( QString( "%1: %M - viewer %V" ).arg( vmType ) );
- 
+
   addViewManager( vm );
   SUIT_ViewWindow* vw = vm->createViewWindow();
   if ( vw && desktop() ) {
@@ -1667,6 +1666,60 @@ void LightApp_Application::onRefresh()
   updateObjectBrowser( true );
 }
 
+/*!Private SLOT. Support drag-and-drop operation.*/
+void LightApp_Application::onDropped (const QMimeData *data, Qt::DropAction action,
+                                      int row, int column, const QModelIndex& parent)
+{
+  if (action == Qt::IgnoreAction)
+    return;
+
+  if (!data->hasFormat("application/vnd.text.list"))
+    return;
+
+  if (column > 0)
+    return;
+
+  if (!parent.isValid())
+    // dropping into the top level of the model is not allowed
+    return;
+
+  SUIT_AbstractModel* treeModel = dynamic_cast<SUIT_AbstractModel*>(objectBrowser()->model());
+
+  SUIT_DataObject* obj = treeModel->object(parent);
+  if (!obj)
+    return;
+
+  LightApp_DataObject* parentObj = dynamic_cast<LightApp_DataObject*>(obj);
+  if (!parentObj)
+    return;
+
+  // decode mime data
+  QByteArray encodedData = data->data("application/vnd.text.list");
+  QDataStream stream (&encodedData, QIODevice::ReadOnly);
+  QStringList newItems;
+
+  while (!stream.atEnd()) {
+    QString text;
+    stream >> text;
+    if (!text.isEmpty())
+      newItems << text;
+  }
+
+  DataObjectList listObjs;
+  foreach (QString text, newItems) {
+    SUIT_DataObject* anObji = findObject(text);
+    if (anObji)
+      listObjs.append(anObji);
+  }
+
+  // tmp: clear selection to avoid problem with persistent data model indexes
+  //mySelMgr->clearSelected();
+
+  LightApp_Module* aModule = dynamic_cast<LightApp_Module*>(parentObj->module());
+  if (aModule)
+    aModule->dropObjects(listObjs, action, parentObj, row);
+}
+
 /*!Private SLOT. On preferences.*/
 void LightApp_Application::onPreferences()
 {
@@ -1773,6 +1826,11 @@ QWidget* LightApp_Application::createWindow( const int flag )
     treeModel->setSearcher( this );
     treeModel->registerColumn( 0, EntryCol, LightApp_DataObject::EntryId );
     treeModel->setAppropriate( EntryCol, Qtx::Toggled );
+
+    // Mantis issue 0020136: Drag&Drop in OB
+    SUIT_ProxyModel* proxyModel = dynamic_cast<SUIT_ProxyModel*>(treeModel);
+    connect( proxyModel, SIGNAL(dropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&)),
+             this, SLOT(onDropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&)) );
 
     // temporary commented
     /*
@@ -1985,7 +2043,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "PREF_ASCII_FILE" ), studyGroup, LightApp_Preferences::Bool, "Study", "ascii_file" );
   pref->addPreference( tr( "PREF_STORE_POS" ),  studyGroup, LightApp_Preferences::Bool, "Study", "store_positions" );
 
-  int autoSaveInterval = pref->addPreference( tr( "PREF_AUTO_SAVE" ),  studyGroup, 
+  int autoSaveInterval = pref->addPreference( tr( "PREF_AUTO_SAVE" ),  studyGroup,
                                               LightApp_Preferences::IntSpin, "Study", "auto_save_interval" );
   pref->setItemProperty( "min",        0, autoSaveInterval );
   pref->setItemProperty( "max",     1440, autoSaveInterval );
@@ -2012,8 +2070,8 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   int genGroup = pref->addPreference( tr( "PREF_GROUP_COMMON" ), viewTab );
 
   pref->addPreference( tr( "PREF_DROP_DOWN_BUTTONS" ), genGroup,
-		       LightApp_Preferences::Bool, "viewers", "drop_down_buttons" );
-  
+                       LightApp_Preferences::Bool, "viewers", "drop_down_buttons" );
+
   int occGroup = pref->addPreference( tr( "PREF_GROUP_OCCVIEWER" ), viewTab );
 
   int vtkGroup = pref->addPreference( tr( "PREF_GROUP_VTKVIEWER" ), viewTab );
@@ -2033,7 +2091,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
                                    LightApp_Preferences::DblSpin, "OCCViewer", "trihedron_size" );
   pref->setItemProperty( "min", 1.0E-06, occTS );
   pref->setItemProperty( "max", 1000, occTS );
-  
+
   pref->addPreference( tr( "PREF_RELATIVE_SIZE" ), occGroup, LightApp_Preferences::Bool, "OCCViewer", "relative_size" );
 
   int occStyleMode = pref->addPreference( tr( "PREF_NAVIGATION" ), occGroup,
@@ -2360,14 +2418,14 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
   if ( !resMgr )
     return;
 
-  if ( sec == "viewers" && param == "drop_down_buttons" ) 
+  if ( sec == "viewers" && param == "drop_down_buttons" )
   {
     ViewManagerList vmlist = viewManagers();
     foreach( SUIT_ViewManager* vm, vmlist )
     {
       QVector<SUIT_ViewWindow*> vwlist = vm->getViews();
       foreach( SUIT_ViewWindow* vw, vwlist )
-	if ( vw ) vw->setDropDownButtons( resMgr->booleanValue( "viewers", "drop_down_buttons", true ) );
+        if ( vw ) vw->setDropDownButtons( resMgr->booleanValue( "viewers", "drop_down_buttons", true ) );
     }
   }
 
@@ -2736,10 +2794,10 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
   }
 
   if ( sec == "ExternalBrowser" && param == "use_external_browser" ) {
-    if ( resMgr->booleanValue("ExternalBrowser", "use_external_browser", false ) ) 
+    if ( resMgr->booleanValue("ExternalBrowser", "use_external_browser", false ) )
       {
-	if(QtxWebBrowser::webBrowser())
-	  QtxWebBrowser::webBrowser()->close();
+        if(QtxWebBrowser::webBrowser())
+          QtxWebBrowser::webBrowser()->close();
       }
   }
 
@@ -2812,7 +2870,7 @@ void LightApp_Application::loadPreferences()
     desktop()->setDockOptions( dopts );
     desktop()->setOpaqueResize( opaqueResize );
     if ( dynamic_cast<STD_TabDesktop*>( desktop() ) )
-      dynamic_cast<STD_TabDesktop*>( desktop() )->workstack()->setOpaqueResize( opaqueResize );      	
+      dynamic_cast<STD_TabDesktop*>( desktop() )->workstack()->setOpaqueResize( opaqueResize );
   }
 }
 
@@ -3222,7 +3280,7 @@ void LightApp_Application::moduleIconNames( QMap<QString, QString>& iconMap ) co
 */
 void LightApp_Application::contextMenuPopup( const QString& type, QMenu* thePopup, QString& title )
 {
-  //Add "Rename" item 
+  //Add "Rename" item
   LightApp_SelectionMgr* selMgr = LightApp_Application::selectionMgr();
   bool cacheIsOn = selMgr->isSelectionCacheEnabled();
   selMgr->setSelectionCacheEnabled( true );
@@ -3237,7 +3295,7 @@ void LightApp_Application::contextMenuPopup( const QString& type, QMenu* thePopu
     if ( ob->shortcutKey(SUIT_DataBrowser::UpdateShortcut) )
       a->setShortcut( ob->shortcutKey(SUIT_DataBrowser::UpdateShortcut) );
   }
-  
+
   if ( selMgr && ob ) {
     SALOME_ListIO selected;
     selMgr->selectedObjects( selected );
@@ -3245,14 +3303,14 @@ void LightApp_Application::contextMenuPopup( const QString& type, QMenu* thePopu
       Handle(SALOME_InteractiveObject) anIObject = selected.First();
       SUIT_DataObject* obj = findObject(anIObject->getEntry());
       if(obj && obj->renameAllowed()) {
-	QAction* a = new QAction(tr("MEN_RENAME_OBJ"), thePopup);
-	connect( a, SIGNAL( triggered(bool) ), ob, SLOT( onStartEditing() ) );
-	if ( ob->shortcutKey(SUIT_DataBrowser::RenameShortcut) )
-	  a->setShortcut( ob->shortcutKey(SUIT_DataBrowser::RenameShortcut) );	
+        QAction* a = new QAction(tr("MEN_RENAME_OBJ"), thePopup);
+        connect( a, SIGNAL( triggered(bool) ), ob, SLOT( onStartEditing() ) );
+        if ( ob->shortcutKey(SUIT_DataBrowser::RenameShortcut) )
+          a->setShortcut( ob->shortcutKey(SUIT_DataBrowser::RenameShortcut) );
 
-	QList<QAction*> acts = thePopup->actions();
-	QAction* firstAction = acts.count() > 0 ? acts.first() : 0;
-	thePopup->insertAction(firstAction,a);
+        QList<QAction*> acts = thePopup->actions();
+        QAction* firstAction = acts.count() > 0 ? acts.first() : 0;
+        thePopup->insertAction(firstAction,a);
       }
     }
   }
@@ -3269,7 +3327,7 @@ void LightApp_Application::createEmptyStudy()
 
   if ( objectBrowser() )
     objectBrowser()->updateTree();
-  
+
   SUIT_ResourceMgr* aResMgr = SUIT_Session::session()->resourceMgr();
   if ( aResMgr && activeStudy() ) {
     int autoSaveInterval = aResMgr->integerValue( "Study", "auto_save_interval", 0 );
@@ -3360,7 +3418,7 @@ void LightApp_Application::removeViewManager( SUIT_ViewManager* vm )
   LightApp_Study* aStudy = dynamic_cast<LightApp_Study*>(activeStudy());
   if (aStudy )
     aStudy->removeViewMgr(vm->getGlobalId());
-  
+
   STD_Application::removeViewManager( vm );
   delete vm;
 }
@@ -3661,7 +3719,7 @@ void LightApp_Application::clearKnownViewManagers()
 }
 
 /*!
-  Copy of current selection 
+  Copy of current selection
  */
 void LightApp_Application::onCopy()
 {

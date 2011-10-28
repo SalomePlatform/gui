@@ -2107,19 +2107,18 @@ static SUIT_ViewWindow* getWnd( const int id )
 {
   SUIT_ViewWindow* resWnd = 0;
 
-  LightApp_Application* app  = getApplication();
+  LightApp_Application* app = getApplication();
   if ( app )
   {
-    STD_TabDesktop* tabDesk = dynamic_cast<STD_TabDesktop*>( app->desktop() );
-    if ( tabDesk )
+    ViewManagerList vmlist = app->viewManagers();
+    foreach( SUIT_ViewManager* vm, vmlist )
     {
-      QList<SUIT_ViewWindow*> wndlist = tabDesk->windows();
-      SUIT_ViewWindow* wnd;
-      foreach ( wnd, wndlist )
+      QVector<SUIT_ViewWindow*> vwlist = vm->getViews();
+      foreach ( SUIT_ViewWindow* vw, vwlist )
       {
-        if ( id == wnd->getId() )
+        if ( id == vw->getId() )
         {
-          resWnd = wnd;
+          resWnd = vw;
           break;
         }
       }

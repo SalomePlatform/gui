@@ -78,4 +78,4 @@ MOC_FILES = \
 
 nodist_libSalomeGuiHelpers_la_SOURCES = $(MOC_FILES)
 
-EXTRA_DIST=$(MOC_FILES:%_moc.cxx=%.hxx)
+EXTRA_DIST+=$(MOC_FILES:%_moc.cxx=%.hxx)

@@ -29,10 +29,6 @@
 #include <SUIT_Session.h>
 #include <SUIT_ResourceMgr.h>
 
-// color tolerance (used to compare color values)
-const long COLOR_DISTANCE = 100;
-
-
 // Static members
 QColor Plot2d_Object::mySelectionColor;
 QColor Plot2d_Object::myHighlightedLegendTextColor;
@@ -50,22 +46,6 @@ void Plot2d_Object::initColors() {
     mySelectionColor = resMgr->colorValue( "Plot2d", "SelectionColor", QColor(80,80,80) );
     myHighlightedLegendTextColor = resMgr->colorValue( "Plot2d", "SelectedLegendFontColor", QColor(255,255,255) );
   }
-}
-
-/*!
-  Constructor
-*/
-Plot2d_Point::Plot2d_Point()
-  : x( 0. ), y( 0. )
-{
-}
-
-/*!
-  Constructor
-*/
-Plot2d_Point::Plot2d_Point( double theX, double theY, const QString& theText )
-  : x( theX ), y( theY ), text( theText )
-{
 }
 
 /*!
@@ -510,24 +490,6 @@ double Plot2d_Object::getMaxY() const
   for (aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt)
     aMaxY = qMax( aMaxY, myScale * (*aIt).y );
   return aMaxY;
-}
-
-/*!
-  Checks if two colors are close to each other [ static ]
-  uses COLOR_DISTANCE variable as max tolerance for comparing of colors
-*/
-
-bool Plot2d_Object::closeColors( const QColor& color1,
-				 const QColor& color2,
-				 int distance )
-{
-  long tol = 
-    qAbs( color2.red()   - color1.red()   ) + 
-    qAbs( color2.green() - color1.green() ) +
-    qAbs( color2.blue()  - color1.blue()  ) -
-    ( distance < 0 ? COLOR_DISTANCE : distance );
-
-  return tol <= 0;
 }
 
 /*!

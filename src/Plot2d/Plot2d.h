@@ -40,6 +40,19 @@
 #include <Qt>
 
 class QPainter;
+class QwtPlot;
+
+struct PLOT2D_EXPORT Plot2d_Point
+{
+  double x;
+  double y;
+  QString text;
+  Plot2d_Point();
+    Plot2d_Point( double theX, double theY, const QString& theText = QString() );
+};
+
+typedef QList<Plot2d_Point> pointList;
+
 
 namespace Plot2d
 {
@@ -95,6 +108,24 @@ namespace Plot2d
   void                     drawMarker( QPainter*, int, int, int, int,
                                        MarkerType = Circle,
                                        const QColor& = Qt::black );
+  
+  QPixmap                  markerIcon( const QSize&, const QColor&, 
+				      Plot2d::MarkerType );
+
+  QPixmap                  lineIcon( const QSize&,  const QColor&, 
+				     Plot2d::LineType );
+
+  void                     getNextMarker( const int rtti, const QwtPlot*, QwtSymbol::Style&,
+					  QColor&, Qt::PenStyle& );
+  
+  bool                     existMarker( const int rtti , const QwtPlot*, const QwtSymbol::Style,
+					const QColor&, const Qt::PenStyle );
+
+
+  bool                     closeColors( const QColor&, 
+					const QColor&, 
+					int distance = -1 );
+
 }
 
 #if defined WIN32

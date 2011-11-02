@@ -204,6 +204,10 @@
         <translation>Settings</translation>
     </message>
     <message>
+        <source>TOT_PLOT2D_ANALITIC_CURVES</source>
+        <translation>Analitic curves</translation>
+    </message>    
+    <message>
         <source>PLOT2D_CURVE_TYPE_LINES</source>
         <translation>Lines</translation>
     </message>
@@ -350,9 +354,13 @@ Logarithmic scale for ordinate axis is not allowed.</translation>
         <translation>Zoom the view</translation>
     </message>
     <message>
+        <source>PRP_PLOT2D_ANALITIC_CURVES</source>
+        <translation>Setups analitic curves properties</translation>
+    </message>
+    <message>
         <source>PRP_PLOT2D_SETTINGS</source>
         <translation>Setups view properties</translation>
-    </message>
+    </message>    
     <message>
         <source>INF_COORDINATES_SOME_Y</source>
         <translation>Coordinates: X : %1, Y : %2 ( %3 )</translation>
@@ -440,6 +448,10 @@ Logarithmic scale for ordinate axis is not allowed.</translation>
     <message>
         <source>MEN_PLOT2D_SETTINGS</source>
         <translation>&amp;Settings</translation>
+    </message>
+    <message>
+        <source>MEN_PLOT2D_ANALITIC_CURVES</source>
+        <translation>Analitic curvse</translation>
     </message>
     <message>
         <source>CIRCLE_MARKER_LBL</source>
@@ -589,6 +601,70 @@ Logarithmic scale for ordinate axis is not allowed.</translation>
     </message>
 </context>
 <context>
+    <name>Plot2d_AnaliticCurveDlg</name>
+    <message>
+        <source>ANALITIC_CURVE_TLT</source>
+        <translation>Analitic curves properties</translation>
+    </message>
+    <message>
+        <source>AC_CURVE_PARAMS</source>
+        <translation>Curve parameters</translation>
+    </message>    
+    <message>
+        <source>AC_CURVE_PROPS</source>
+        <translation>Curve properties</translation>
+    </message>        
+    <message>
+        <source>AC_FORMULA</source>
+        <translation>y(x) = </translation>
+    </message>            
+    <message>
+        <source>AC_NB_INTERVALS</source>
+        <translation>Nb. intervals</translation>
+    </message>
+    <message>
+        <source>AC_AUTO_ASSIGN</source>
+        <translation>Auto assign</translation>
+    </message>
+    <message>
+        <source>AC_MARKER_TYPE</source>
+        <translation>Marker type</translation>
+    </message>
+    <message>
+        <source>AC_LINE_TYPE</source>
+        <translation>Line type</translation>
+    </message>
+    <message>
+        <source>AC_LINE_WIDTH</source>
+        <translation>Line Width</translation>
+    </message>
+    <message>
+        <source>AC_CURVE_COLOR</source>
+        <translation>Curve color</translation>
+    </message>
+    <message>
+        <source>AC_ADD_BTN</source>
+        <translation>Add curve</translation>
+    </message>                
+    <message>
+        <source>AC_REM_BTN</source>
+        <translation>Remove curve</translation>
+    </message>                    
+    <message>
+        <source>AC_UPD_BTN</source>
+        <translation>Update Curve</translation>
+    </message>                    
+    <message>
+        <source>AC_CANT_CALCULATE</source>
+        <translation>Can't calculate curve. 
+Please, check input parameters!!!</translation>
+    </message>
+    <message>
+        <source>AC_CLOSE_BTN</source>
+        <translation>&amp;Close</translation>
+    </message>
+</context>
+<context>
     <name>Plot2d_SetupCurveScaleDlg</name>
     <message>
         <source>TLT_SETUP_CURVE_SCALE</source>
@@ -600,3 +676,4 @@ Logarithmic scale for ordinate axis is not allowed.</translation>
     </message>
 </context>
 </TS>
+

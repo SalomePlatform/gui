@@ -28,7 +28,6 @@
 
 const int DEFAULT_LINE_WIDTH  =  0;     // (default) line width
 const int DEFAULT_MARKER_SIZE =  9;     // default marker size
-const int MAX_ATTEMPTS        = 10;     // max attempts
 
 /*!
   Constructor
@@ -103,7 +102,7 @@ void Plot2d_Curve::autoFill( const QwtPlot* thePlot )
   QwtSymbol::Style typeMarker;
   QColor           color;
   Qt::PenStyle     typeLine;
-  getNextMarker( thePlot, typeMarker, color, typeLine );
+  Plot2d::getNextMarker( rtti(), thePlot, typeMarker, color, typeLine );
 
   setColor( color );
   setLine( Plot2d::qwt2plotLine( typeLine ), DEFAULT_LINE_WIDTH );
@@ -259,57 +258,3 @@ int Plot2d_Curve::getLineWidth() const
   return myLineWidth;
 }
 
-/*!
-  Gets new unique marker for item if possible
-*/
-void Plot2d_Curve::getNextMarker( const QwtPlot* thePlot, QwtSymbol::Style& typeMarker,
-                                  QColor& color, Qt::PenStyle& typeLine ) 
-{
-  bool bOk = false;
-  int cnt = 0;
-  while ( !bOk ) {
-    int aRed    = (int)( 256.0 * rand() / RAND_MAX );  // generate random color
-    int aGreen  = (int)( 256.0 * rand() / RAND_MAX );  // ...
-    int aBlue   = (int)( 256.0 * rand() / RAND_MAX );  // ...
-    int aMarker = (int)( 9.0 * rand() / RAND_MAX ) + 1;// 9 markers types( not including empty )
-    int aLine   = (int)( 5.0 * rand() / RAND_MAX ) + 1;// 5 line types ( not including empty )
-
-    typeMarker = ( QwtSymbol::Style )aMarker;
-    color      = QColor( aRed, aGreen, aBlue );
-    typeLine   = ( Qt::PenStyle )aLine;
-
-    bOk = ( ++cnt == MAX_ATTEMPTS ) || !existMarker( thePlot, typeMarker, color, typeLine );
-  }
-}
-
-/*!
-  Checks if marker belongs to any enitity
-*/
-bool Plot2d_Curve::existMarker( const QwtPlot* thePlot, const QwtSymbol::Style typeMarker,
-				const QColor& color, const Qt::PenStyle typeLine ) 
-{
-  bool ok = false;
-
-  QColor bgColor = thePlot->palette().color( QPalette::Background );
-  if ( closeColors( color, bgColor ) ) {
-    ok = true;
-  }
-  else {
-    QwtPlotItemList anItems = thePlot->itemList();
-    QwtPlotItemIterator anIt = anItems.begin(), aLast = anItems.end();
-    QwtPlotItem* anItem;
-    for ( ; anIt != aLast && !ok; anIt++ ) {
-      anItem = *anIt;
-      if ( anItem && anItem->rtti() == rtti() ) {
-	QwtPlotCurve* crv = dynamic_cast<QwtPlotCurve*>( anItem );
-	if ( crv ) {
-	  QwtSymbol::Style aStyle = crv->symbol().style();
-	  QColor           aColor = crv->pen().color();
-	  Qt::PenStyle     aLine  = crv->pen().style();
-	  ok = closeColors( aColor, color ) && aStyle == typeMarker && aLine == typeLine;
-	}
-      }
-    }
-  }
-  return ok;
-}

@@ -374,11 +374,23 @@ void Plot2d_ViewWindow::createActions()
                            aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_SETTINGS" ) ),
                            tr( "MEN_PLOT2D_SETTINGS" ),
                            0, this );
+
   aAction->setStatusTip( tr( "PRP_PLOT2D_SETTINGS" ) );
   connect( aAction, SIGNAL( triggered( bool ) ), myViewFrame, SLOT( onSettings() ) );
   mgr->registerAction( aAction, CurvSettingsId );
 
-  // 9. Clone
+  // 9. Analitic curves
+  aAction = new QtxAction( tr( "TOT_PLOT2D_ANALITIC_CURVES" ),
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_ANALITIC_CURVES" ) ),
+                           tr( "MEN_PLOT2D_ANALITIC_CURVES" ),
+                           0, this );
+
+  aAction->setStatusTip( tr( "PRP_PLOT2D_ANALITIC_CURVES" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), myViewFrame, SLOT( onAnaliticCurve() ) );
+  mgr->registerAction( aAction, AnaliticCurveId );
+
+
+  // 10. Clone
   aAction = new QtxAction( tr( "MNU_CLONE_VIEW" ),
                            aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_CLONE_VIEW" ) ),
                            tr( "MNU_CLONE_VIEW" ),
@@ -387,7 +399,7 @@ void Plot2d_ViewWindow::createActions()
   connect( aAction, SIGNAL( triggered( bool ) ), this, SIGNAL( cloneView() ) );
   mgr->registerAction( aAction, CloneId );
 
-  // 10. Print 
+  // 11. Print 
   aAction = new QtxAction( tr( "MNU_PRINT_VIEW" ),
 			   aResMgr->loadPixmap( "STD", tr( "ICON_PLOT2D_PRINT" ) ),
                            tr( "MNU_PRINT_VIEW" ),
@@ -426,6 +438,7 @@ void Plot2d_ViewWindow::createToolBar()
   mgr->append( toolMgr()->separator(), myToolBar );
   mgr->append( LegendId, myToolBar );
   mgr->append( CurvSettingsId, myToolBar );
+  mgr->append( AnaliticCurveId, myToolBar );
   mgr->append( CloneId, myToolBar );
   mgr->append( PrintId, myToolBar );
 }

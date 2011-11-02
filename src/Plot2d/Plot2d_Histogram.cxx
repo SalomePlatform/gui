@@ -213,7 +213,7 @@ bool Plot2d_Histogram::existColor( const QwtPlot* thePlot, const QColor& theColo
   bool ok = false;
   
   QColor bgColor = thePlot->palette().color( QPalette::Background );
-  if ( closeColors( theColor, bgColor ) ) {
+  if ( Plot2d::closeColors( theColor, bgColor ) ) {
     ok = true;
   }
   else {
@@ -226,11 +226,11 @@ bool Plot2d_Histogram::existColor( const QwtPlot* thePlot, const QColor& theColo
 	continue;
       if ( anItem->rtti() == rtti() ) {
 	Plot2d_HistogramItem* aHItem = dynamic_cast<Plot2d_HistogramItem*>( anItem );
-	ok = aHItem && closeColors( theColor, aHItem->color() );
+	ok = aHItem && Plot2d::closeColors( theColor, aHItem->color() );
       }
       else if ( anItem->rtti() == QwtPlotItem::Rtti_PlotCurve ) {
 	QwtPlotCurve* aCurve = dynamic_cast<QwtPlotCurve*>( anItem );
-	ok = aCurve && closeColors( theColor, aCurve->pen().color() );
+	ok = aCurve && Plot2d::closeColors( theColor, aCurve->pen().color() );
       }
     }
   }

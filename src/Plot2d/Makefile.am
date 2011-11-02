@@ -30,22 +30,30 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 lib_LTLIBRARIES = libPlot2d.la
 
 # header files 
-salomeinclude_HEADERS =		\
-	Plot2d.h		\
-	Plot2d_PlotItems.h	\
-	Plot2d_Object.h		\
-	Plot2d_Curve.h		\
-	Plot2d_Histogram.h	\
-	Plot2d_FitDataDlg.h	\
-	Plot2d_Prs.h		\
-	Plot2d_SetupViewDlg.h	\
-	Plot2d_ViewFrame.h	\
-	Plot2d_ViewManager.h	\
-	Plot2d_ViewModel.h	\
-	Plot2d_ViewWindow.h	\
-	Plot2d_SetupCurveDlg.h	\
-	Plot2d_SetupCurveScaleDlg.h	\
-	Plot2d_ToolTip.h
+salomeinclude_HEADERS =		        \
+	Plot2d.h		        \
+	Plot2d_PlotItems.h	        \
+	Plot2d_Object.h		        \
+	Plot2d_Curve.h		        \
+	Plot2d_Histogram.h	        \
+	Plot2d_FitDataDlg.h	        \
+	Plot2d_Prs.h		        \
+	Plot2d_SetupViewDlg.h     	\
+	Plot2d_ViewFrame.h	        \
+	Plot2d_ViewManager.h	        \
+	Plot2d_ViewModel.h	        \
+	Plot2d_ViewWindow.h	        \
+	Plot2d_SetupCurveDlg.h	        \
+	Plot2d_ToolTip.h                \
+	Plot2d_SetupCurveScaleDlg.h	
+
+if ENABLE_PYCONSOLE
+salomeinclude_HEADERS +=                \
+	Plot2d_AnaliticCurve.h   	\
+	Plot2d_AnaliticCurveDlg.h       \
+        Plot2d_AnaliticParcer.h
+endif
+
 
 dist_libPlot2d_la_SOURCES =		\
 	Plot2d.cxx			\
@@ -62,7 +70,14 @@ dist_libPlot2d_la_SOURCES =		\
 	Plot2d_ViewWindow.cxx		\
 	Plot2d_SetupCurveDlg.cxx	\
 	Plot2d_SetupCurveScaleDlg.cxx	\
-	Plot2d_ToolTip.cxx
+	Plot2d_ToolTip.cxx              
+
+if ENABLE_PYCONSOLE
+dist_libPlot2d_la_SOURCES +=            \
+	Plot2d_AnaliticCurve.cxx	\
+	Plot2d_AnaliticCurveDlg.cxx     \
+        Plot2d_AnaliticParcer.cxx
+endif
 
 MOC_FILES =				\
 	Plot2d_FitDataDlg_moc.cxx	\
@@ -74,6 +89,11 @@ MOC_FILES =				\
 	Plot2d_SetupCurveDlg_moc.cxx	\
 	Plot2d_SetupCurveScaleDlg_moc.cxx	\
 	Plot2d_ToolTip_moc.cxx
+
+if ENABLE_PYCONSOLE
+MOC_FILES +=         Plot2d_AnaliticCurveDlg_moc.cxx
+endif
+
 nodist_libPlot2d_la_SOURCES = $(MOC_FILES)
 
 dist_salomeres_DATA =				\
@@ -93,6 +113,7 @@ dist_salomeres_DATA =				\
 	resources/plot2d_print.png		\
 	resources/plot2d_settings.png		\
 	resources/plot2d_splines.png		\
+	resources/plot2d_analitic_curve.png	\
 	resources/plot2d_zoom.png
 
 nodist_salomeres_DATA =		\
@@ -103,6 +124,6 @@ nodist_salomeres_DATA =		\
 libPlot2d_la_CPPFLAGS = $(QT_INCLUDES) $(PYTHON_INCLUDES) $(QWT_INCLUDES) \
 	-I$(srcdir)/../Qtx -I$(srcdir)/../SUIT
 
-libPlot2d_la_LDFLAGS  = $(QWT_LIBS) $(QT_MT_LIBS) ../SUIT/libsuit.la
+libPlot2d_la_LDFLAGS  = $(QWT_LIBS) $(QT_MT_LIBS) $(PYTHON_LIBS) ../SUIT/libsuit.la
 
 

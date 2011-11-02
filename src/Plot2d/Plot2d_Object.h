@@ -31,16 +31,6 @@
 #include <QList>
 #include <qwt_plot.h>
 
-struct PLOT2D_EXPORT Plot2d_Point
-{
-  double x;
-  double y;
-  QString text;
-  Plot2d_Point();
-  Plot2d_Point( double theX, double theY, const QString& theText = QString() );
-};
-
-typedef QList<Plot2d_Point> pointList;
 
 class PLOT2D_EXPORT Plot2d_Object
 {
@@ -113,8 +103,6 @@ public:
   
   void                 setSelected(const bool);
   bool                 isSelected() const;
-
-  static bool          closeColors( const QColor&, const QColor&, int distance = -1 );
   
   static void initColors();
   

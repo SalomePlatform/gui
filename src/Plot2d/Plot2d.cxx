@@ -24,6 +24,34 @@
 
 #include <QPainter>
 
+#include <qwt_plot.h>
+#include <qwt_plot_curve.h>
+
+const int MSIZE  = 9;
+const int MAX_ATTEMPTS        = 10;     // max attempts
+
+// color tolerance (used to compare color values)
+const long COLOR_DISTANCE = 100;
+
+
+
+/*!
+  Constructor
+*/
+Plot2d_Point::Plot2d_Point()
+  : x( 0. ), y( 0. )
+{
+}
+
+/*!
+  Constructor
+*/
+Plot2d_Point::Plot2d_Point( double theX, double theY, const QString& theText )
+  : x( theX ), y( theY ), text( theText )
+{
+}
+
+
 /*!
   \brief Convert Plot2d marker type to Qwt marker type.
   \param m Plot2d marker type
@@ -347,4 +375,114 @@ void Plot2d::drawMarker( QPainter* painter, int x, int y, int w, int h,
                          Plot2d::MarkerType type, const QColor& color )
 {
   drawMarker( painter, QPoint( x, y ), QRect( 0, 0, w, h ), plot2qwtMarker( type ), color ); 
+}
+
+
+/*!
+  \brief Create icon pixmap according to the marker type.
+  \param size icon size
+  \param type marker type
+  \param color icon color
+  \return icon
+*/
+QPixmap Plot2d::markerIcon(const QSize &size, const QColor& color, Plot2d::MarkerType type )
+{
+
+  QPixmap px( size );
+  px.fill( QColor( 255, 255, 255, 0 ) );
+  QPainter p( &px );
+  Plot2d::drawMarker( &p, size.width()/2, size.height()/2, MSIZE, MSIZE, type, color );
+  return px;
+}
+
+
+/*!
+  \brief Create icon pixmap according to the line type.
+  \param size icon size
+  \param type line type
+  \param color icon color
+  \return icon
+*/
+QPixmap Plot2d::lineIcon( const QSize& size,  const QColor& color, Plot2d::LineType type )
+{
+
+  QPixmap px( size );
+  px.fill( QColor( 255, 255, 255, 0 ) );
+  QPainter p( &px );
+  drawLine( &p, 5, size.height()/2, size.width()-5, size.height()/2, type,
+	    color, 1 );
+  return px;
+}
+
+/*!
+  Gets new unique marker for item if possible
+*/
+void Plot2d::getNextMarker( const int rtti, const QwtPlot* thePlot, QwtSymbol::Style& typeMarker,
+			    QColor& color, Qt::PenStyle& typeLine ) 
+{
+  bool bOk = false;
+  int cnt = 0;
+  while ( !bOk ) {
+    int aRed    = (int)( 256.0 * rand() / RAND_MAX );  // generate random color
+    int aGreen  = (int)( 256.0 * rand() / RAND_MAX );  // ...
+    int aBlue   = (int)( 256.0 * rand() / RAND_MAX );  // ...
+    int aMarker = (int)( 9.0 * rand() / RAND_MAX ) + 1;// 9 markers types( not including empty )
+    int aLine   = (int)( 5.0 * rand() / RAND_MAX ) + 1;// 5 line types ( not including empty )
+    
+    typeMarker = ( QwtSymbol::Style )aMarker;
+    color      = QColor( aRed, aGreen, aBlue );
+    typeLine   = ( Qt::PenStyle )aLine;
+    
+    bOk = ( ++cnt == MAX_ATTEMPTS ) || !existMarker( rtti, thePlot, typeMarker, color, typeLine );
+  }
+}
+
+/*!
+  Checks if marker belongs to any enitity
+*/
+bool Plot2d::existMarker( const int rtti, const QwtPlot* thePlot, const QwtSymbol::Style typeMarker,
+			  const QColor& color, const Qt::PenStyle typeLine ) 
+{
+  bool ok = false;
+  
+  QColor bgColor = thePlot->palette().color( QPalette::Background );
+  if ( closeColors( color, bgColor ) ) {
+    ok = true;
+  }
+  else {
+    QwtPlotItemList anItems = thePlot->itemList();
+    QwtPlotItemIterator anIt = anItems.begin(), aLast = anItems.end();
+    QwtPlotItem* anItem;
+    for ( ; anIt != aLast && !ok; anIt++ ) {
+      anItem = *anIt;
+      if ( anItem && anItem->rtti() == rtti ) {
+	QwtPlotCurve* crv = dynamic_cast<QwtPlotCurve*>( anItem );
+	if ( crv ) {
+	  QwtSymbol::Style aStyle = crv->symbol().style();
+	  QColor           aColor = crv->pen().color();
+	  Qt::PenStyle     aLine  = crv->pen().style();
+	  ok = closeColors( aColor, color ) && aStyle == typeMarker && aLine == typeLine;
+	}
+      }
+    }
+  }
+  return ok;
+}
+
+/*!
+  Checks if two colors are close to each other
+  uses COLOR_DISTANCE variable as max tolerance for comparing of colors
+*/
+
+bool Plot2d::closeColors( const QColor& color1,
+			  const QColor& color2,
+			  int distance )
+{
+  long tol = 
+    qAbs( color2.red()   - color1.red()   ) + 
+    qAbs( color2.green() - color1.green() ) +
+    qAbs( color2.blue()  - color1.blue()  ) -
+    ( distance < 0 ? COLOR_DISTANCE : distance );
+
+  return tol <= 0;
 }

@@ -55,9 +55,6 @@ public:
   void               setColor( const QColor& );
   QColor             getColor() const;
 
-private:
-  QPixmap            lineIcon( Plot2d::LineType ) const;
-  QPixmap            markerIcon( Plot2d::MarkerType ) const;
 
 private slots:
   void               updatePreview();

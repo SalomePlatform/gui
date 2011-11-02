@@ -106,7 +106,7 @@ SUBDIRS_LIGHT = LightApp ResExporter
 # Full (CORBA) SALOME packages
 ##
 if GUI_ENABLE_CORBA
-  SUBDIRS_CORBA = TOOLSGUI Session SalomeApp 
+  SUBDIRS_CORBA = TOOLSGUI Session SalomeApp GuiHelpers TreeData
 endif
 
 ##

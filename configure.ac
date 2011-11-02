@@ -660,6 +660,8 @@ AC_OUTPUT([ \
   src/Session/Makefile \
   src/SalomeApp/Makefile \
   src/SalomeApp/Test/Makefile \
+  src/GuiHelpers/Makefile \
+  src/TreeData/Makefile \
   src/SALOME_SWIG/Makefile \
   src/SALOME_SWIG/supervisionexample.py \
   src/SALOME_SWIG/supervisiongeomexample.py \

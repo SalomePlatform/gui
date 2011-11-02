@@ -39,4 +39,5 @@ check_sip.m4			\
 check_SupervGraphViewer.m4	\
 check_VTKViewer.m4		\
 check_QxGraphViewer.m4          \
-check_TestRecorder.m4
+check_TestRecorder.m4           \
+check_salome_version.m4

@@ -941,10 +941,8 @@ public:
 
   virtual void run()
   {
-    if ( !myApp.isEmpty()) {
-      QString aCommand = QString( "%1 %2 \"%3\"" ).arg( myApp, myParams, myHelpFile );
-      if ( !myContext.isEmpty() )
-        aCommand += "#" + myContext;
+    if ( !myApp.isEmpty() && !myHelpFile.isEmpty()) {
+      QString aCommand = QString( "%1 %2 \"%3%4\"" ).arg( myApp, myParams, myHelpFile, myContext.isEmpty() ? QString("") : QString( "#%1" ).arg( myContext ) );
 
       QProcess* proc = new QProcess();
 
@@ -1017,6 +1015,18 @@ void LightApp_Application::onHelpContextModule( const QString& theComponentName,
                                                 const QString& theFileName,
                                                 const QString& theContext )
 {
+  QString fileName = theFileName;
+  QString context  = theContext;
+  if ( !QFile::exists( fileName ) && theContext.isEmpty() ) {
+    // context might be passed within theFileName argument
+    QStringList comps = fileName.split("#");
+    if ( comps.count() > 1 ) {
+      context = comps.last();
+      comps.removeLast();
+      fileName = comps.join("#");
+    }
+  }
+
   QString homeDir = "";
   if ( !theComponentName.isEmpty() ) {
     QString dir = getenv( ( theComponentName + "_ROOT_DIR" ).toLatin1().constData() );
@@ -1029,7 +1039,7 @@ void LightApp_Application::onHelpContextModule( const QString& theComponentName,
                                Qtx::addSlash( theComponentName ) );
   }
 
-  QString helpFile = QFileInfo( homeDir + theFileName ).absoluteFilePath();
+  QString helpFile = QFileInfo( homeDir + fileName ).absoluteFilePath();
   SUIT_ResourceMgr* resMgr = resourceMgr();
         QString platform;
 #ifdef WIN32
@@ -1050,7 +1060,7 @@ void LightApp_Application::onHelpContextModule( const QString& theComponentName,
     QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 
     if ( !anApp.isEmpty() ) {
-      RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile, theContext );
+      RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile, context );
       rs->start();
     }
     else {
@@ -1061,7 +1071,7 @@ void LightApp_Application::onHelpContextModule( const QString& theComponentName,
     }
   }
   else {
-    QtxWebBrowser::loadUrl(getFile() + helpFile, theContext );
+    QtxWebBrowser::loadUrl(getFile() + helpFile, context );
   }
 }
 

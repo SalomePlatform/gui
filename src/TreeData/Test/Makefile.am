@@ -30,6 +30,7 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 mostlyclean-local:
 	rm -f @builddir@/*_moc.cxx
 	rm -f @builddir@/*.qm
+	rm -f @builddir@/*_moc.cxx @builddir@/ui_*.h
 
 # qt forms files generation (uic)
 ui_%.h: %.ui

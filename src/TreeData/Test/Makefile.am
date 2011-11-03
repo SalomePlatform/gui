@@ -45,7 +45,8 @@ TEST_CPPFLAGS = \
 	$(CORBA_CXXFLAGS) \
 	$(KERNEL_CXXFLAGS) \
 	-I$(top_srcdir)/src/GuiHelpers \
-	-I$(top_srcdir)/src/TreeData
+	-I$(top_srcdir)/src/TreeData \
+	-I.
 
 TEST_LDFLAGS  = \
 	$(CORBA_LIBS) $(QT_LIBS) \

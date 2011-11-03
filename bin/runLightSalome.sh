@@ -229,7 +229,8 @@ run_light_salome(){
     # start application
     ###
 
-    SUITApp LightApp "$*" &
+    MODULES=`echo $MODULES | tr " " ","`
+    SUITApp LightApp --modules=${MODULES} "$*" &
 }
 
 ###

@@ -23,6 +23,8 @@
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
+SUBDIRS = . Test
+
 # moc-files generation
 %_moc.cxx: %.hxx
 	$(MOC) $< -o $@
@@ -60,12 +62,12 @@ dist_libSalomeTreeData_la_SOURCES = \
 	TreeGuiManager.cxx
 
 # MOC pre-processing
-MOC_FILES = \
+MOC_FILES_HXX = \
 	TreeModel_moc.cxx \
 	TreeView_moc.cxx \
 	TreeObserver_moc.cxx
 
-nodist_libSalomeTreeData_la_SOURCES = $(MOC_FILES)
+nodist_libSalomeTreeData_la_SOURCES = $(MOC_FILES_HXX)
 
 CORBA_CXXFLAGS=@OMNIORB_CXXFLAGS@ @OMNIORB_INCLUDES@
 CORBA_LIBS=@OMNIORB_LIBS@

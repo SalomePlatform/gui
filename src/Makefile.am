@@ -107,7 +107,6 @@ SUBDIRS_LIGHT = LightApp ResExporter
 ##
 if GUI_ENABLE_CORBA
   SUBDIRS_CORBA = TOOLSGUI Session SalomeApp GuiHelpers TreeData
-  SUBDIRS_CORBA += TreeData/Test
 endif
 
 
@@ -124,5 +123,5 @@ SUBDIRS = $(SUBDIRS_COMMON) $(SUBDIRS_OBJECT) $(SUBDIRS_VIEWERTOOLS) $(SUBDIRS_G
 
 DIST_SUBDIRS = CASCatch Qtx Style DDS QDS ObjBrowser SUIT SUITApp STD CAF CAM LogWindow Prs Event OpenGLUtils \
                OBJECT ViewerTools GLViewer VTKViewer SVTK OCCViewer SOCC Plot2d SPlot2d SUPERVGraph QxGraph QxScene \
-               PyInterp PyConsole LightApp ResExporter TOOLSGUI Session SalomeApp SALOME_SWIG SALOME_PY SALOME_PYQT \
-               GUI_PY
+               PyInterp PyConsole LightApp ResExporter TOOLSGUI Session SalomeApp GuiHelpers TreeData \
+               SALOME_SWIG SALOME_PY SALOME_PYQT GUI_PY

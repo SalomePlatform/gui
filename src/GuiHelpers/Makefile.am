@@ -73,9 +73,9 @@ libSalomeGuiHelpers_la_LDFLAGS  = \
 	$(MOC) $< -o $@
 
 # MOC pre-processing
-MOC_FILES = \
+MOC_FILES_HXX = \
 	StandardApp_Module_moc.cxx
 
-nodist_libSalomeGuiHelpers_la_SOURCES = $(MOC_FILES)
+nodist_libSalomeGuiHelpers_la_SOURCES = $(MOC_FILES_HXX)
 
-EXTRA_DIST+=$(MOC_FILES:%_moc.cxx=%.hxx)
+EXTRA_DIST+=$(MOC_FILES_HXX:%_moc.cxx=%.hxx)

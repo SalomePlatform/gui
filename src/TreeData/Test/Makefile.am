@@ -57,7 +57,7 @@ TEST_LDFLAGS  = \
 # Program targets
 bin_PROGRAMS = TreeData_guitester TreeData_tester
 
-MOC_FILES = \
+MOC_FILES_HXX = \
 	mainwindow_moc.cxx
 
 UIC_FILES = \
@@ -65,12 +65,15 @@ UIC_FILES = \
 
 BUILT_SOURCES = $(UIC_FILES)
 
-nodist_TreeData_guitester_SOURCES = $(MOC_FILES) $(UIC_FILES)
+nodist_TreeData_guitester_SOURCES = $(MOC_FILES_HXX) $(UIC_FILES)
 
 TreeData_guitester_SOURCES = \
+	testhelper.hxx \
 	testhelper.cxx \
 	guitester.cxx \
+	mainwindow.hxx \
 	mainwindow.cxx \
+	MyDataModel.hxx \
 	MyDataModel.cxx
 
 TreeData_guitester_CPPFLAGS = \
@@ -95,4 +98,3 @@ test_DATA = \
 	data.txt
 
 EXTRA_DIST+=$(test_DATA)
-

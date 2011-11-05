@@ -27,11 +27,8 @@ mypkgpythondir = $(salomepythondir)/salome/gui
 # Python modules to be installed
 mypkgpython_PYTHON = \
 	__init__.py            \
-	SelectVarsDialog_ui.py \
 	selectvars.py          \
-	genericdialog_ui.py    \
 	genericdialog.py       \
-	mytestdialog_ui.py     \
 	mytestdialog.py        \
 	helper.py
 

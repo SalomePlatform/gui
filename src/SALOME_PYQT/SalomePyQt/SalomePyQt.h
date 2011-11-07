@@ -26,6 +26,8 @@
 #ifndef SALOME_PYQT_H
 #define SALOME_PYQT_H
 
+#include <Python.h>
+
 #include <QObject>
 #include <QString>
 #include <QColor>
@@ -127,6 +129,8 @@ public:
   static int               getStudyId();
   static void              putInfo( const QString&, const int = 0 );
   static const QString     getActiveComponent();
+  static PyObject*         getActivePythonModule();
+  static bool              activateModule( const QString& );
   static void              updateObjBrowser( const int = 0, bool = true );
 
   static QString           getFileName         ( QWidget*, const QString&, const QStringList&, const QString&, bool );

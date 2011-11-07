@@ -520,6 +520,56 @@ const QString SalomePyQt::getActiveComponent()
 }
 
 /*!
+  \fn PyObject* SalomePyQt::getActivePythonModule()
+  \brief Access to Python module object currently loaded into SALOME_PYQT_ModuleLight container.
+  \return Python module object currently loaded into SALOME_PYQT_ModuleLight container
+*/
+
+class TGetActivePyModuleEvent: public SALOME_Event
+{
+public:
+  typedef PyObject* TResult;
+  TResult myResult;
+  TGetActivePyModuleEvent() : myResult( 0 ) {}
+  virtual void Execute() 
+  {
+    SALOME_PYQT_ModuleLight* module = getActiveModule();
+    if ( module )
+      myResult = (PyObject*)module->getPythonModule();
+  }
+};
+PyObject* SalomePyQt::getActivePythonModule()
+{
+  return ProcessEvent( new TGetActivePyModuleEvent() );
+}
+
+/*!
+  \fn bool SalomePyQt::activateModule( const QString& modName )
+  \brief Activates SALOME module with the given name
+  \return True if the module has been activated and False otherwise.
+*/
+
+class TActivateModuleEvent: public SALOME_Event
+{
+public:
+  typedef bool TResult;
+  TResult myResult;
+  QString myModuleName;
+  TActivateModuleEvent( const QString& modName ) 
+  : myResult( false ), myModuleName( modName ) {}
+  virtual void Execute() 
+  {
+    if ( LightApp_Application* anApp = getApplication() ) {
+      myResult = anApp->activateModule( myModuleName );
+    }
+  }
+};
+bool SalomePyQt::activateModule( const QString& modName )
+{
+  return ProcessEvent( new TActivateModuleEvent( modName ) );
+}
+
+/*!
   \brief Update an Object Browser of the specified (by identifier) study.
 
   If \a studyId <= 0 the active study's object browser is updated.

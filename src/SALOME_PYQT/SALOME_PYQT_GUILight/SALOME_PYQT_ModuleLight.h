@@ -148,6 +148,9 @@ public:
                             /*return list of child objets*/
   QStringList               getChildren(const QString& obj, const bool rec);
 
+  /*Access to the underlying Python module object */
+  PyObject*                 getPythonModule();
+
 
 public slots:
   virtual bool               activateModule( SUIT_Study* );

@@ -52,7 +52,7 @@ public:
   
   virtual void         update ( LightApp_DataObject* = 0, LightApp_Study* = 0 );
 
-  LightApp_ModuleObject* getRoot();
+  CAM_DataObject*      getRoot();
 
  private:
   QString              myFileName;

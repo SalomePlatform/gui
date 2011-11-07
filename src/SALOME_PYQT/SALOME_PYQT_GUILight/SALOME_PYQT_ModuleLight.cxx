@@ -2775,3 +2775,11 @@ CAM_DataModel* SALOME_PYQT_ModuleLight::createDataModel()
   MESSAGE( "SALOME_PYQT_ModuleLight::createDataModel()" );
   return new SALOME_PYQT_DataModelLight(this);
 }
+
+/*!
+ * Returns the Python module object currently loaded.
+ */
+PyObject* SALOME_PYQT_ModuleLight::getPythonModule()
+{
+  return myModule;
+}

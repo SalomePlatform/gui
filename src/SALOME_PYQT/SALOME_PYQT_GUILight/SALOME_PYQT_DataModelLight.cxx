@@ -152,12 +152,12 @@ void SALOME_PYQT_DataModelLight::update ( LightApp_DataObject* theObj, LightApp_
   return;
 }
 
-LightApp_ModuleObject* SALOME_PYQT_DataModelLight::getRoot()
+CAM_DataObject* SALOME_PYQT_DataModelLight::getRoot()
 {
   LightApp_Study* study = dynamic_cast<LightApp_Study*>( module()->application()->activeStudy() );
-  LightApp_ModuleObject *aModelRoot = dynamic_cast<LightApp_ModuleObject*>(root());
-  if(aModelRoot == NULL) {
-    aModelRoot = new LightApp_ModuleObject(this,study->root());
+  CAM_ModuleObject *aModelRoot = dynamic_cast<CAM_ModuleObject*>(root());
+  if(study && aModelRoot == NULL) {
+    aModelRoot = createModuleObject( study->root() );
     aModelRoot->setDataModel( this );
     setRoot(aModelRoot);
   }

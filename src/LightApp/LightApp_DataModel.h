@@ -38,6 +38,7 @@ class LightApp_Module;
 class LightApp_Study;
 class LightApp_DataObject;
 class SUIT_DataBrowser;
+class CAM_ModuleObject;
 
 /*!
   Description : Base class of data model
@@ -75,6 +76,7 @@ protected:
   LightApp_Study*                     getStudy() const;
   virtual void                        build();
   virtual void                        updateWidgets();
+  virtual CAM_ModuleObject*           createModuleObject( SUIT_DataObject* theRoot ) const;
 
 private:
   int myGroupId;

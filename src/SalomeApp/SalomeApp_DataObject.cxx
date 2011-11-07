@@ -671,10 +671,17 @@ QString SalomeApp_ModuleObject::name() const
   \brief Get data object icon for the specified column.
   \param id column id
   \return object icon for the specified column
+  \sa CAM_ModuleObject class
 */
 QPixmap SalomeApp_ModuleObject::icon( const int id ) const
 {
-  return SalomeApp_DataObject::icon( id );
+  QPixmap p = SalomeApp_DataObject::icon( id );
+  // The module might not provide a separate small icon
+  // for Obj. Browser representation -> always try to scale it
+  // See CAM_ModuleObject::icon()
+  if ( !p.isNull() )
+    p = Qtx::scaleIcon( p, 16 );
+  return p;
 }
 
 /*!

@@ -110,7 +110,10 @@ void LightApp_DataModel::updateWidgets()
 */
 void LightApp_DataModel::update( LightApp_DataObject*, LightApp_Study* )
 {
-  LightApp_ModuleObject* modelRoot = dynamic_cast<LightApp_ModuleObject*>( root() );
+  // san: Previously modelRoot was casted to LightApp_ModuleObject*,
+  // BUT this is incorrect: in full SALOME the model root has different type.
+  // Hopefully LightApp_DataObject* is sufficient here.
+  LightApp_DataObject* modelRoot = dynamic_cast<LightApp_DataObject*>( root() );
   DataObjectList ch;
   QMap<SUIT_DataObject*,int> aMap;
   if( modelRoot )
@@ -123,7 +126,7 @@ void LightApp_DataModel::update( LightApp_DataObject*, LightApp_Study* )
 
   build();
 
-  modelRoot = dynamic_cast<LightApp_ModuleObject*>( root() );
+  modelRoot = dynamic_cast<LightApp_DataObject*>( root() );
   if( modelRoot )
   {
     DataObjectList new_ch = modelRoot->children();
@@ -207,5 +210,27 @@ void LightApp_DataModel::unregisterColumn( SUIT_DataBrowser* browser, const QStr
 {
   SUIT_AbstractModel* m = dynamic_cast<SUIT_AbstractModel*>( browser ? browser->model() : 0 );
   if( m )
-        m->unregisterColumn( groupId(), name );
+    m->unregisterColumn( groupId(), name );
+}
+
+/*!
+  Creates the data model's root (module object) using the study services.
+  This is important because different study classes use different moduel object classes.
+  Therefore creation of the module object cannot be done at the data model level
+  where the type of the current study instance should not be known.
+  The module object returned by this method should be then passed to the model's setRoot().
+  \return the module object instance corresponding to the study type
+  \sa CAM_DataModel class
+*/
+CAM_ModuleObject* LightApp_DataModel::createModuleObject( SUIT_DataObject* theRoot ) const
+{
+  LightApp_RootObject* aStudyRoot = dynamic_cast<LightApp_RootObject*>( theRoot );
+  if ( !aStudyRoot )
+    return 0;
+
+  LightApp_Study* aStudy = aStudyRoot->study();
+  if ( aStudy )
+    return aStudy->createModuleObject( const_cast<LightApp_DataModel*>( this ), 
+				       theRoot );
+  return 0;
 }

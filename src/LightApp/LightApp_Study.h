@@ -38,7 +38,9 @@
 class SUIT_Study;
 class SUIT_Application;
 class CAM_DataModel;
+class CAM_ModuleObject;
 class LightApp_DataObject;
+class LightApp_DataModel;
 
 //Map to store visual property of the object.
 //Key:   Name of the visual property of the object.
@@ -123,6 +125,8 @@ protected:
 
 protected:
   virtual bool        openDataModel  ( const QString&, CAM_DataModel* );
+  virtual CAM_ModuleObject* createModuleObject( LightApp_DataModel* theDataModel, 
+						SUIT_DataObject* theParent ) const;
 
 signals:
   void                saved  ( SUIT_Study* );
@@ -136,6 +140,7 @@ private:
   ViewMgrMap          myViewMgrMap;
 
   friend class LightApp_Application;
+  friend class LightApp_DataModel;
 };
 
 #endif 

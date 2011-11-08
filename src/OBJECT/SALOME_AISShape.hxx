@@ -40,18 +40,22 @@
 #ifndef _Handle_SALOME_InteractiveObject_HeaderFile
 #include <Handle_SALOME_InteractiveObject.hxx>
 #endif
-#ifndef _AIS_Shape_HeaderFile
-#include <AIS_Shape.hxx>
+// #ifndef _AIS_Shape_HeaderFile
+// #include <AIS_Shape.hxx>
+// #endif
+#ifndef _AIS_TexturedShape_HeaderFile
+#include <AIS_TexturedShape.hxx>
 #endif
 #ifndef _Standard_Boolean_HeaderFile
 #include <Standard_Boolean.hxx>
 #endif
+
 class SALOME_InteractiveObject;
 class TopoDS_Shape;
 class TColStd_IndexedMapOfInteger;
 
 
-class SALOME_AISShape : public AIS_Shape {
+class SALOME_AISShape : public AIS_TexturedShape {
 
 public:
 

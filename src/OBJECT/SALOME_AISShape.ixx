@@ -37,8 +37,8 @@ SALOME_AISShape::~SALOME_AISShape() {}
 Standard_EXPORT Handle_Standard_Type& SALOME_AISShape_Type_()
 {
 
-    static Handle_Standard_Type aType1 = STANDARD_TYPE(AIS_Shape);
-  if ( aType1.IsNull()) aType1 = STANDARD_TYPE(AIS_Shape);
+  static Handle_Standard_Type aType1 = STANDARD_TYPE(AIS_TexturedShape);
+  if ( aType1.IsNull()) aType1 = STANDARD_TYPE(AIS_TexturedShape);
   static Handle_Standard_Type aType2 = STANDARD_TYPE(AIS_InteractiveObject);
   if ( aType2.IsNull()) aType2 = STANDARD_TYPE(AIS_InteractiveObject);
   static Handle_Standard_Type aType3 = STANDARD_TYPE(SelectMgr_SelectableObject);

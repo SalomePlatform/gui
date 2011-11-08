@@ -18,6 +18,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
 
 #include "OCCViewer_ViewModel.h"
 #include "OCCViewer_ViewWindow.h"
@@ -173,7 +174,10 @@ void OCCViewer_Viewer::initView( OCCViewer_ViewWindow* view )
     
     OCCViewer_ViewPort3d* vp3d = view->getViewPort();
     if ( vp3d )
+    {
       vp3d->setBackgroundColor( myColors[0] );
+      vp3d->getView()->SetSurfaceDetail(V3d_TEX_ALL);
+    }
   }
 }
 
@@ -224,6 +228,7 @@ void OCCViewer_Viewer::onMousePress(SUIT_ViewWindow* theWindow, QMouseEvent* the
 */
 void OCCViewer_Viewer::onMouseMove(SUIT_ViewWindow* theWindow, QMouseEvent* theEvent)
 {
+//   MESSAGE("OCCViewer_Viewer::onMouseMove")
   if (!mySelectionEnabled) return;
   if (!theWindow->inherits("OCCViewer_ViewWindow")) return;
 
@@ -249,6 +254,7 @@ void OCCViewer_Viewer::onMouseMove(SUIT_ViewWindow* theWindow, QMouseEvent* theE
 */
 void OCCViewer_Viewer::onMouseRelease(SUIT_ViewWindow* theWindow, QMouseEvent* theEvent)
 {
+  MESSAGE("OCCViewer_Viewer::onMouseRelease")
   if (!mySelectionEnabled) return;
   if (theEvent->button() != Qt::LeftButton) return;
   if (!theWindow->inherits("OCCViewer_ViewWindow")) return;
@@ -470,9 +476,10 @@ void OCCViewer_Viewer::onChangeBgImageCentered()
   if ( !aView )
     return;
   
-  QString selFile = QFileDialog::getOpenFileName(aView,tr( "SELECT_IMAGE"),aView->backgroundImageFilename(), tr("OCC_BG_IMAGE_FILES"));
-  if ( ! selFile.isEmpty() )
+  QString selFile = QFileDialog::getOpenFileName(aView,tr( "SELECT_IMAGE"),aView->backgroundImageFilename(), tr("OCC_IMAGE_FILES"));
+  if ( ! selFile.isEmpty() ){
     aView->setBackgroundImage(selFile,Aspect_FM_CENTERED);
+  }
 }
 
 /*!
@@ -484,7 +491,7 @@ void OCCViewer_Viewer::onChangeBgImageTiled()
   if ( !aView )
     return;
   
-  QString selFile = QFileDialog::getOpenFileName(aView,tr( "SELECT_IMAGE"),aView->backgroundImageFilename(), tr("OCC_BG_IMAGE_FILES"));
+  QString selFile = QFileDialog::getOpenFileName(aView,tr( "SELECT_IMAGE"),aView->backgroundImageFilename(), tr("OCC_IMAGE_FILES"));
   if ( ! selFile.isEmpty() )
     aView->setBackgroundImage(selFile,Aspect_FM_TILED);
 }
@@ -498,9 +505,10 @@ void OCCViewer_Viewer::onChangeBgImageStretched()
   if ( !aView )
     return;
   
-  QString selFile = QFileDialog::getOpenFileName(aView,tr( "SELECT_IMAGE"),aView->backgroundImageFilename(), tr("OCC_BG_IMAGE_FILES"));
+  QString selFile = QFileDialog::getOpenFileName(aView,tr( "SELECT_IMAGE"),aView->backgroundImageFilename(), tr("OCC_IMAGE_FILES"));
   if ( ! selFile.isEmpty() )
     aView->setBackgroundImage(selFile,Aspect_FM_STRETCH);
+//     aView->setBackgroundImage(selFile,Aspect_FM_STRETCH_NODEF);
 }
 /*!
   Updates OCC 3D viewer

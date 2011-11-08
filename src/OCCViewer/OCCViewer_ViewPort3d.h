@@ -59,6 +59,11 @@ public:
 
   virtual QString       backgroundImageFilename() const;
   virtual void          setBackgroundImage( const QString& fileName , const Aspect_FillMethod& theFillMethod);
+  
+  virtual int           getBgImgHeight(){return myBgImgHeight; };
+  virtual int           getBgImgWidth() {return myBgImgWidth;  };
+
+  virtual void          updateStaticTriedronVisibility();
 
   virtual void          updateStaticTriedronVisibility();
 
@@ -119,6 +124,8 @@ private:
   double                myScale;
   bool                  myIsAdvancedZoomingEnabled;
   QString               myBackgroundImageFilename;
+  int                   myBgImgHeight;
+  int                   myBgImgWidth;
 };
 
 #ifdef WIN32

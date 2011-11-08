@@ -23,6 +23,7 @@
 #  Author : Vladimir Klyachin (OCN)
 #  Module : OCCViewer
 #  $Header$
+#
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
@@ -129,5 +130,6 @@ libOCCViewer_la_CPPFLAGS = $(QT_INCLUDES) $(OGL_INCLUDES) $(CAS_CPPFLAGS) @KERNE
 	-I$(srcdir)/../OpenGLUtils -I$(srcdir)/../CASCatch
 
 libOCCViewer_la_LDFLAGS  = $(OGL_LIBS) $(QT_MT_LIBS) $(CAS_KERNEL) $(CAS_VIEWER)
+
 libOCCViewer_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la \
 	../ViewerTools/libViewerTools.la ../OpenGLUtils/libOpenGLUtils.la

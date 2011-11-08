@@ -80,6 +80,12 @@
 
 #include <Standard_Version.hxx>
 
+#include "utilities.h"
+
+// // OpenCV includes
+// #include <cv.h>
+// #include <highgui.h>
+
 static QEvent* l_mbPressEvent = 0;
 
 #ifdef WIN32
@@ -228,6 +234,7 @@ OCCViewer_ViewWindow::OCCViewer_ViewWindow( SUIT_Desktop*     theDesktop,
   myInteractionStyle = SUIT_ViewModel::STANDARD;
 
   clearViewAspects();
+  
 }
 
 /*!
@@ -827,6 +834,7 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent( QMouseEvent* theEvent )
             myViewPort->setCursor( handCursor );
           }
         }
+        emit mouseMoving( this, theEvent );
       }
       else if ( anInteractionStyle == SUIT_ViewModel::STANDARD && 
                 aButton == Qt::RightButton && ( aState == Qt::NoModifier || Qt::ShiftModifier ) ) {
@@ -2271,6 +2279,7 @@ void OCCViewer_ViewWindow::onSketchingStarted()
 */
 void OCCViewer_ViewWindow::onSketchingFinished()
 {
+  MESSAGE("OCCViewer_ViewWindow::onSketchingFinished()")
   if ( mypSketcher && mypSketcher->result() == OCCViewer_ViewSketcher::Accept )
   {
     Handle(AIS_InteractiveContext) ic = myModel->getAISContext();
@@ -2286,6 +2295,7 @@ void OCCViewer_ViewWindow::onSketchingFinished()
           int aRight = aRect->right();
           int aTop = aRect->top();
           int aBottom = aRect->bottom();
+//           myRect = aRect;
 
           if( append )
             ic->ShiftSelect( aLeft, aBottom, aRight, aTop, getViewPort()->getView(), Standard_False );
@@ -2421,7 +2431,8 @@ QString OCCViewer_ViewWindow::backgroundImageFilename() const
    
 void OCCViewer_ViewWindow::setBackgroundImage( const QString& theFileName,const Aspect_FillMethod& theFillMethod)
 {
-  if ( myViewPort ) myViewPort->setBackgroundImage( theFileName ,theFillMethod);
+  if ( myViewPort ) 
+    myViewPort->setBackgroundImage( theFileName ,theFillMethod);
 }
 
 /*!

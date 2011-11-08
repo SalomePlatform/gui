@@ -28,6 +28,7 @@
 #include <Basics_OCCTVersion.hxx>
 
 #include <SUIT_ViewManager.h>
+#include <SUIT_ViewModel.h>
 
 #include <QColor>
 #include <QString>
@@ -40,6 +41,12 @@
 #include <V3d_Viewer.hxx>
 #include <V3d_PerspectiveView.hxx>
 #include <V3d_OrthographicView.hxx>
+
+#include <InterfaceGraphic_Visual3d.hxx>
+#include <OpenGl_cmn_varargs.h>
+#include <OpenGl_tsm_ws.h>
+
+#include "utilities.h"
 
 #if defined WNT
 #include <WNT_Window.hxx>
@@ -312,9 +319,10 @@ QString OCCViewer_ViewPort3d::backgroundImageFilename() const
 void OCCViewer_ViewPort3d::setBackgroundImage( const QString& fileName,const Aspect_FillMethod& theFillMethod)
 { 
   myBackgroundImageFilename=fileName;
-  if ( !activeView().IsNull() ) {
-    activeView()->SetBackgroundImage( (Standard_CString)fileName.toLatin1().constData(),theFillMethod,true);
-  }
+  //TEST
+//   if ( !activeView().IsNull() ) {
+//     activeView()->SetBackgroundImage( (Standard_CString)fileName.toLatin1().constData(),theFillMethod,true);
+//   }
 }
 
 /*!

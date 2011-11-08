@@ -34,7 +34,7 @@
   \param shape - TopoDS shape 
 */
 SALOME_AISShape::SALOME_AISShape(const TopoDS_Shape& shape)
-: AIS_Shape(shape)
+: AIS_TexturedShape(shape)
 {
 }
 

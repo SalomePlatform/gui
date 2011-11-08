@@ -46,9 +46,12 @@ MOC_FILES = 			\
 nodist_libSOCC_la_SOURCES = $(MOC_FILES)
 
 libSOCC_la_CPPFLAGS = $(QT_INCLUDES) $(CAS_CPPFLAGS) $(BOOST_CPPFLAGS)			\
+	              $(OPENCV_INCLUDES)						\
 	              -I$(srcdir)/../SUIT -I$(srcdir)/../OBJECT -I$(srcdir)/../Prs	\
 	              -I$(srcdir)/../OCCViewer -I$(srcdir)/../Qtx
 
-libSOCC_la_LDFLAGS  = $(QT_MT_LIBS)
+libSOCC_la_LDFLAGS  = $(QT_MT_LIBS)	\
+	              $(OPENCV_LIBS)
+
 libSOCC_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la ../OBJECT/libSalomeObject.la	\
 	              ../Prs/libSalomePrs.la ../OCCViewer/libOCCViewer.la

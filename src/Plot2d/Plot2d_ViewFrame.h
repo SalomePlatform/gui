@@ -170,22 +170,18 @@ public:
   Plot2d_Curve*  getClosestCurve( QPoint, double&, int& ) const;
   
   Plot2d_Object* getPlotObject( QwtPlotItem* ) const;
-
+  QwtPlotItem*   getPlotObject( Plot2d_Object* ) const;
+  QwtPlotCurve*  getPlotCurve( Plot2d_Curve* ) const;
+  Plot2d_Plot2d* getPlot() const { return myPlot; }
 protected:
   int            testOperation( const QMouseEvent& );
   void           readPreferences();
   void           writePreferences();
   QString        getInfo( const QPoint& );
   virtual void   wheelEvent( QWheelEvent* );
-  QwtPlotCurve*  getPlotCurve( Plot2d_Curve* ) const;
   bool           hasPlotCurve( Plot2d_Curve* ) const;
   void           setCurveType( QwtPlotCurve*, int );
-  QwtPlotItem*   getPlotObject( Plot2d_Object* ) const;
   bool           hasPlotObject( Plot2d_Object* ) const;
-
-
-  
-  
 
 public slots:
   void           onViewPan(); 

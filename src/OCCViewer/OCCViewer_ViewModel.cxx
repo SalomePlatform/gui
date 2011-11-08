@@ -228,7 +228,6 @@ void OCCViewer_Viewer::onMousePress(SUIT_ViewWindow* theWindow, QMouseEvent* the
 */
 void OCCViewer_Viewer::onMouseMove(SUIT_ViewWindow* theWindow, QMouseEvent* theEvent)
 {
-//   MESSAGE("OCCViewer_Viewer::onMouseMove")
   if (!mySelectionEnabled) return;
   if (!theWindow->inherits("OCCViewer_ViewWindow")) return;
 
@@ -254,7 +253,6 @@ void OCCViewer_Viewer::onMouseMove(SUIT_ViewWindow* theWindow, QMouseEvent* theE
 */
 void OCCViewer_Viewer::onMouseRelease(SUIT_ViewWindow* theWindow, QMouseEvent* theEvent)
 {
-  MESSAGE("OCCViewer_Viewer::onMouseRelease")
   if (!mySelectionEnabled) return;
   if (theEvent->button() != Qt::LeftButton) return;
   if (!theWindow->inherits("OCCViewer_ViewWindow")) return;

@@ -65,8 +65,6 @@ public:
 
   virtual void          updateStaticTriedronVisibility();
 
-  virtual void          updateStaticTriedronVisibility();
-
 //   void         setActive( V3d_TypeOfView );
   virtual bool          syncronize( const OCCViewer_ViewPort3d* );
 

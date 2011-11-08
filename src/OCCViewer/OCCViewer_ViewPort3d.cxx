@@ -42,10 +42,6 @@
 #include <V3d_PerspectiveView.hxx>
 #include <V3d_OrthographicView.hxx>
 
-#include <InterfaceGraphic_Visual3d.hxx>
-#include <OpenGl_cmn_varargs.h>
-#include <OpenGl_tsm_ws.h>
-
 #include "utilities.h"
 
 #if defined WNT

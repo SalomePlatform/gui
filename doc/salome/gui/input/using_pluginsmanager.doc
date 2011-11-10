@@ -1,0 +1,146 @@
+/*!
+
+\page using_pluginsmanager Extends SALOME gui functions using python plugins
+
+-# \ref S1_SALOMEPLUGINS
+-# \ref S2_SALOMEPLUGINS
+-# \ref S3_SALOMEPLUGINS
+
+\section S1_SALOMEPLUGINS Objectives
+
+The SALOME python plugin manager allows the end user to extends the
+graphic interface of SALOME with its own functions written as python
+modules. The screenshots below show the example of a tool that creates
+a mesh from a set of geometrical parameters, with the support of
+simple graphical interface:
+
+The default menu of plugins is "Tool->Extensions":
+\image html SALOME_pythonplugins_menu.png
+
+In this example, the plugin provides a small interface to capture the
+parameters (not provided by the plugin manager):
+\image html SALOME_pythonplugins_dialog.png
+
+And then creates the mesh model:
+\image html SALOME_pythonplugins_result.png
+
+In this example, the end user has to write:
+
+-# the python script that creates the mesh from the parameters, using
+   the GEOM and SMESH python interface, as in a clasic use case.
+-# the dialog box in PyQt to capture the parameters
+-# a file salome_plugins.py that must declares the plugins
+
+This page explains only the last point.
+
+\section S2_SALOMEPLUGINS Principles
+
+The general form of the file salome_plugins.py is:
+
+\code
+import salome_pluginsmanager
+
+# Creation of the plugin
+def myplugin1(context):
+   ...
+   # Here is the code of the plugin myplugin1
+   ...
+
+def myplugin2(context):
+   ...
+   # Here is the code of the plugin myplugin2
+   ...
+
+# Declaration of the plugins to the pluginsmanager
+salome_pluginsmanager.AddFunction('My plugin n°1', 'This action runs the plugin n°1', myplugin1)
+salome_pluginsmanager.AddFunction('My plugin n°2', 'This action runs the plugin n°2', myplugin2)
+...
+\endcode 
+
+The procedure is to define a function that implements the plugin, and
+to declare this function to the plugins manager. The implementation
+may be anything. The advice is to just consider this function as a
+proxy toward your code that you can manage in a python package
+installed in the standard SALOME python directories.
+
+In this code, the variable "context" is automatically transmitted by
+the pluginmanager when you request the plugin with at least the
+attributes:
+
+\code
+activeStudy = context.study
+salomegui = context.sg
+\endcode
+
+Once terminated, this script salome_plugin.py has to be move to a
+specific place on your filesystem where SALOME is programmed to lookup
+for plugins. The possible directories are:
+
+-# The directory <*_ROOT_DIR>/share/salome/plugins, when this plugins
+   is develop in the framework of a SALOME module (<*_ROOT_DIR>
+   specifies here the root installation directory of the module).
+-# The directory ~/.config/salome/Plugins for personnal end user
+   plugins
+-# Any path in the shell variable SALOME_PLUGIN_PATH (each path must be
+   separated by a comma ":" for unix and ";" for windows). This
+   variable should be set and export before running the SALOME
+   application.  
+
+\section S3_SALOMEPLUGINS A complete example
+
+Suppose you write a SALOME script that creates a trihedron for each of
+your studies (a simple and standard SALOME script, that every end user
+is capable to write if he reads the documentation and follows the
+training course):
+
+\code 
+# Intialize the geompy factory with the active study
+import salome
+import geompy
+geompy.init_geom(salome.myStudy)
+
+# Create the objects
+Vx = geompy.MakeVectorDXDYDZ(10, 0, 0)
+Vy = geompy.MakeVectorDXDYDZ(0, 10, 0)
+Vz = geompy.MakeVectorDXDYDZ(0, 0, 10)
+origin = geompy.MakeVertex(0, 0, 0)
+
+# Register the objects in the active study
+geompy.addToStudy( Vx, "Vx" ))
+geompy.addToStudy( Vy, "Vy" ))
+geompy.addToStudy( Vz, "Vz" ))
+geompy.addToStudy( origin, "origin" ))
+\endcode
+
+The job consists here in creating the file salome_plugins.py as
+follow:
+
+\code
+import salome_pluginsmanager
+def trihedron(context):
+    import geompy
+    # Intialize the geompy factory with the active study
+    activeStudy = context.study
+    geompy.init_geom(activeStudy)
+    # Create the objects
+    Vx = geompy.MakeVectorDXDYDZ(10, 0, 0)
+    Vy = geompy.MakeVectorDXDYDZ(0, 10, 0)
+    Vz = geompy.MakeVectorDXDYDZ(0, 0, 10)
+    origin = geompy.MakeVertex(0, 0, 0)
+    # Register the objects in the active study
+    geompy.addToStudy( Vx, "Vx" )
+    geompy.addToStudy( Vy, "Vy" )
+    geompy.addToStudy( Vz, "Vz" )
+    geompy.addToStudy( origin, "origin" )
+
+# Register the function in the plugin manager
+salome_pluginsmanager.AddFunction('O,Vx,Vy,Vz',
+                                  'Creates the trihedron',
+                                  trihedron)
+
+\endcode
+
+And then, to move this script in the directory
+~/.config/salome/Plugins. Run SALOME and enjoy your new function.
+
+*/

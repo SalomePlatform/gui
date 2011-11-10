@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 import salome_pluginsmanager
 
-DEMO_IS_ACTIVATED=True
+DEMO_IS_ACTIVATED=False
 
 # -------------------------------------------------------------------------
 # Example 1: creation of basic objects.

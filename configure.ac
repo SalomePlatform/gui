@@ -660,6 +660,7 @@ AC_OUTPUT([ \
   src/Session/Makefile \
   src/SalomeApp/Makefile \
   src/SalomeApp/Test/Makefile \
+  src/SalomeApp/pluginsdemo/Makefile \
   src/GuiHelpers/Makefile \
   src/TreeData/Makefile \
   src/TreeData/Test/Makefile \

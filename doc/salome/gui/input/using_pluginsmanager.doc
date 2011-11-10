@@ -2,6 +2,9 @@
 
 \page using_pluginsmanager Extends SALOME gui functions using python plugins
 
+This page explains how to extends the SALOME gui function with python
+plugins.
+
 -# \ref S1_SALOMEPLUGINS
 -# \ref S2_SALOMEPLUGINS
 -# \ref S3_SALOMEPLUGINS
@@ -86,7 +89,7 @@ for plugins. The possible directories are:
    variable should be set and export before running the SALOME
    application.  
 
-\section S3_SALOMEPLUGINS A complete example
+\section S3_SALOMEPLUGINS Examples
 
 Suppose you write a SALOME script that creates a trihedron for each of
 your studies (a simple and standard SALOME script, that every end user
@@ -142,5 +145,17 @@ salome_pluginsmanager.AddFunction('O,Vx,Vy,Vz',
 
 And then, to move this script in the directory
 ~/.config/salome/Plugins. Run SALOME and enjoy your new function.
+
+A list of complete examples are included in the module GUI of the
+SALOME plateform. The location is:
+
+-# In the source directory: src/SalomeApp/pluginsdemo
+-# In the install directory: share/salome/plugins/demo
+
+These plugins are installed by the build procedure but are not
+activated by default. To activate the plugins (i.e. to see an entry in
+the plugins menu of SALOME), you must edit the file salome_plugins.py
+and change the variable DEMO_IS_ACTIVATED to True, and then restart
+the SALOME application.
 
 */

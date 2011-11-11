@@ -410,11 +410,11 @@ void QDS_ComboBox::setString( const QString& txt )
   else if ( txt.isEmpty() )
   {
     if ( !cb->isEditable() )
-      cb->setItemText( cb->currentIndex(), txt );
+      cb->setCleared( true );
     else
       cb->lineEdit()->setText( txt );
   }
-  if ( isClear != txt.isEmpty() || ( !isClear && old != cb->currentIndex() ) )
+  if ( isClear != txt.isEmpty() || ( !isClear && old != cb->currentIndex() ) || isClear != cb->isCleared() )
   {
     onParamChanged();
     QString str = getString();

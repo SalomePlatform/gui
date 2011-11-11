@@ -53,13 +53,14 @@ public:
   //! Enum describes bit flags of the Qt datum view and behaviour
   typedef enum
   {
-    None = 0x00,                   //!< Non specified any flags (Default behaviour)
-    Label = 0x01,                  //!< Create subwidget for datum label
-    Control = 0x02,                //!< Create subwidget for datum input control
-    Units = 0x04,                  //!< Create subwidget for datum units of measure
-    NotFormat = 0x08,              //!< Don't format initial value
-    NotAccel = 0x10,               //!< Not support accelerators in datum label
-    UnitsWithLabel = 0x20,         //!< Display units of measure in label like "<label_text> (<units_text>) instead separate text"
+    None           = 0x00,         //!< Non specified any flags (Default behaviour)
+    Label          = 0x01,         //!< Create subwidget for datum label
+    Control        = 0x02,         //!< Create subwidget for datum input control
+    Units          = 0x04,         //!< Create subwidget for datum units of measure
+    NotFormat      = 0x08,         //!< Don't format initial value
+    NotAccel       = 0x10,         //!< Not support accelerators in datum label
+    NotConvert     = 0x20,         //!< Don't convert numeric value
+    UnitsWithLabel = 0x40,         //!< Display units of measure in label like "<label_text> (<units_text>) instead separate text"
     All = Label | Control | Units  //!< Create all subwidgets
   } DatumFlags;
 

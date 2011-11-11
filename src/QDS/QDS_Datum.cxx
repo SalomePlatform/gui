@@ -588,7 +588,7 @@ double QDS_Datum::doubleValue() const
   else
   {
     res = getString().toDouble();
-    if ( !myDicItem.IsNull() )
+    if ( !myDicItem.IsNull() && !( flags() & NotConvert ) )
       res = myDicItem->ToSI( res );
   }
 
@@ -613,7 +613,7 @@ int QDS_Datum::integerValue() const
   else
   {
     double val = getString().toDouble();
-    if ( !myDicItem.IsNull() )
+    if ( !myDicItem.IsNull() && !( flags() & NotConvert ) )
       res = (int)myDicItem->ToSI( val );
   }
 
@@ -738,7 +738,7 @@ void QDS_Datum::setDoubleValue( const double num )
 
   mySourceValue = QString().setNum( num, 'g', 16 );
   double val = num;
-  if ( !myDicItem.IsNull() )
+  if ( !myDicItem.IsNull() && !( flags() & NotConvert ) )
     val = myDicItem->FromSI( val );
 
   QString aStr = format( ( flags() & NotFormat ) ? (QString) "" : format(), type(), val );
@@ -766,7 +766,7 @@ void QDS_Datum::setIntegerValue( const int num )
 
   mySourceValue = QString().setNum( num );
   double val = num;
-  if ( !myDicItem.IsNull() )
+  if ( !myDicItem.IsNull() && !( flags() & NotConvert ) )
     val = myDicItem->FromSI( val );
 
   QString aStr = format( ( flags() & NotFormat ) ? (QString) "" : format(), type(), val );

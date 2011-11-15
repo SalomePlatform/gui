@@ -65,11 +65,11 @@ information is shown:
 <li><b>Simple</b> - as a plain text</li>
 <li><b>Tree</b> - in a tree-like form</li>
 </ul>
-<li><b>Automatic nodes compute limit</b></li> - Size limit for the
+<li><b>Automatic nodes compute limit</b></li> - allows to define the size limit for the
 mesh groups for which the number of underlying nodes is calculated
-automatically. If the group size exceeds the value set in preferences,
+automatically. If the group size exceeds the value set in the preferences,
 the user will have to press \em Compute button explicitly. Zero value
-means "no limit". Default value is set to 100 000 mesh elements.
+means "no limit". By default the value is set to 100 000 mesh elements.
 </li></ul>
 <li><b>Automatic Parameters</b></li>
 <ul>
@@ -105,14 +105,14 @@ dialog box.</li>
 </ul>
 <li><b>Elements</b></li>
 <ul>
-<li><b>Surface color</b>  - allows to select the color of surface of elements
+<li><b>Surface color</b>  - allows to select the surface color of elements
 (seen in Shading mode). Click on the colored line to access to the
 \ref select_color_and_font_page "Select Color" dialog box.</li>
-<li><b>Back surface color</b> - allows to select the color of interior surface
-of elements. Use slider to select this color.  This color generated on base 
-of the <b>Surface color</b> by changing it's brightness and saturation.</li>
-<li><b>Outline color</b> - allows to select the color of borders of
-elements. Click on the colored line to access to the 
+<li><b>Back surface color</b> - allows to select the interior surface color
+of elements. Use the slider to select the color generated basing on  
+the <b>Surface color</b> by changing its brightness and saturation.</li>
+<li><b>Outline color</b> - allows to select the color of element
+borders. Click on the colored line to access to the 
 \ref select_color_and_font_page "Select Color" dialog box.</li>
 <li><b>Wireframe color</b> - allows to select the color of borders of
 elements in the wireframe mode. Click on the colored line to access to the 

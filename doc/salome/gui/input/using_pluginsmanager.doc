@@ -2,37 +2,34 @@
 
 \page using_pluginsmanager Extends SALOME gui functions using python plugins
 
-This page explains how to extends the SALOME gui function with python
-plugins.
-
 -# \ref S1_SALOMEPLUGINS
 -# \ref S2_SALOMEPLUGINS
 -# \ref S3_SALOMEPLUGINS
 
 \section S1_SALOMEPLUGINS Objectives
 
-The SALOME python plugin manager allows the end user to extends the
-graphic interface of SALOME with its own functions written as python
+The SALOME python plugin manager allows the end user to extend the
+graphic interface of SALOME with custom functions written as python
 modules. The screenshots below show the example of a tool that creates
-a mesh from a set of geometrical parameters, with the support of
+a mesh from a set of geometrical parameters with the support of
 simple graphical interface:
 
-The default menu of plugins is "Tool->Extensions":
+The default menu for plugins is "Tool->Extensions":
 \image html SALOME_pythonplugins_menu.png
 
-In this example, the plugin provides a small interface to capture the
+In this example, the plugin provides a small interface to input the
 parameters (not provided by the plugin manager):
 \image html SALOME_pythonplugins_dialog.png
 
-And then creates the mesh model:
+Then creates the mesh model:
 \image html SALOME_pythonplugins_result.png
 
 In this example, the end user has to write:
 
 -# the python script that creates the mesh from the parameters, using
    the GEOM and SMESH python interface, as in a clasic use case.
--# the dialog box in PyQt to capture the parameters
--# a file salome_plugins.py that must declares the plugins
+-# the dialog box in PyQt to input the parameters
+-# file salome_plugins.py that declares the plugins
 
 This page explains only the last point.
 
@@ -62,12 +59,12 @@ salome_pluginsmanager.AddFunction('My plugin n°2', 'This action runs the plugin
 
 The procedure is to define a function that implements the plugin, and
 to declare this function to the plugins manager. The implementation
-may be anything. The advice is to just consider this function as a
-proxy toward your code that you can manage in a python package
+can be very variable. It is advisable to consider this function as a
+proxy to your code that you can manage in a python package
 installed in the standard SALOME python directories.
 
 In this code, the variable "context" is automatically transmitted by
-the pluginmanager when you request the plugin with at least the
+the pluginmanager when you request the plugin with at least the following
 attributes:
 
 \code
@@ -75,23 +72,22 @@ activeStudy = context.study
 salomegui = context.sg
 \endcode
 
-Once terminated, this script salome_plugin.py has to be move to a
-specific place on your filesystem where SALOME is programmed to lookup
+Once terminated, this script salome_plugin.py has to be moved to a
+specific place on your filesystem where SALOME is programmed to search
 for plugins. The possible directories are:
 
--# The directory <*_ROOT_DIR>/share/salome/plugins, when this plugins
-   is develop in the framework of a SALOME module (<*_ROOT_DIR>
-   specifies here the root installation directory of the module).
+-# The directory <*_ROOT_DIR>/share/salome/plugins, when this plugin
+   is developped in the framework of a SALOME module (<*_ROOT_DIR>
+   is the root installation directory of the module).
 -# The directory ~/.config/salome/Plugins for personnal end user
    plugins
 -# Any path in the shell variable SALOME_PLUGIN_PATH (each path must be
    separated by a comma ":" for unix and ";" for windows). This
-   variable should be set and export before running the SALOME
-   application.  
+   variable should be set and exported before running the SALOME application.  
 
-\section S3_SALOMEPLUGINS Examples
+\section S3_SALOMEPLUGINS A complete example
 
-Suppose you write a SALOME script that creates a trihedron for each of
+Suppose that you write a SALOME script that creates a trihedron for each of
 your studies (a simple and standard SALOME script, that every end user
 is capable to write if he reads the documentation and follows the
 training course):
@@ -115,8 +111,7 @@ geompy.addToStudy( Vz, "Vz" ))
 geompy.addToStudy( origin, "origin" ))
 \endcode
 
-The job consists here in creating the file salome_plugins.py as
-follow:
+The job consists in creating the file salome_plugins.py as follows:
 
 \code
 import salome_pluginsmanager
@@ -143,19 +138,7 @@ salome_pluginsmanager.AddFunction('O,Vx,Vy,Vz',
 
 \endcode
 
-And then, to move this script in the directory
-~/.config/salome/Plugins. Run SALOME and enjoy your new function.
-
-A list of complete examples are included in the module GUI of the
-SALOME plateform. The location is:
-
--# In the source directory: src/SalomeApp/pluginsdemo
--# In the install directory: share/salome/plugins/demo
-
-These plugins are installed by the build procedure but are not
-activated by default. To activate the plugins (i.e. to see an entry in
-the plugins menu of SALOME), you must edit the file salome_plugins.py
-and change the variable DEMO_IS_ACTIVATED to True, and then restart
-the SALOME application.
+Move this script in the directory
+~/.config/salome/Plugins, run SALOME and enjoy your new function.
 
 */

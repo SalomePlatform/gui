@@ -33,11 +33,11 @@ position) zooming styles. The second mode is available only for parallel
 
 \image html vtk_view_highlight.png
 <br><center><b>Dynamic pre-selection switch</b> - allows to switch
-on/off dynamic pre-selection of the objects. When the dynamic
-pre-selection is switched on, the objects can be selected by clicking
-of the point/cell belonging to this object, with some performance
-loss. Switch dynamic pre-selection off to have good performance on the
-big objects (like huge meshes).</center>
+on/off dynamic pre-selection of objects. When the dynamic
+pre-selection is switched on, an objects can be selected by clicking
+the point/cell belonging to this object, with some performance
+loss. Switch dynamic pre-selection off to have a good performance on 
+big objects (for example, huge meshes).</center>
 <hr>
 
 \image html vtk_view_triedre.png
@@ -196,17 +196,17 @@ of the view:</center><br>
 <hr>
 
 \image html vtk_view_sync.png
-<br><center><b>Synchronize view</b> - synchronize 3d view parameters.</center>
+<br><center><b>Synchronize view</b> - allows to synchronize 3d view parameters.</center>
 This button has two states - checked and unchecked. Clicking on this
 button opens a drop-down menu listing the compatible 3d views. As soon
-as user selects any view from the list, the parameters (view point,
-position, zoom coefficient etc) of the current view are synchronized
-to the selected view (static synchronization).
+as the user selects any view from the list, the parameters (view point,
+position, zoom coefficient, etc.) of the current view are synchronized
+with the selected view (static synchronization).
 
 In addition, when this button is in the "checked" state, the dynamic
 synchronization of the views is performed, i.e. any zoom, pan, rotate
 or other view operation done in one view is automatically applied
-to the second view.
+to the other view.
 <hr>
 
 \image html vtk_view_parallel.png

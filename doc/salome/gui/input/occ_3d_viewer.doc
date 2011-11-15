@@ -178,17 +178,17 @@ the current view area to the minimized / maximized state.</center>
 <hr>
 
 \image html occ_view_sync.png
-<br><center><b>Synchronize view</b> - synchronize 3d view parameters.</center>
+<br><center><b>Synchronize view</b> - allows to synchronize 3d view parameters.</center>
 This button has two states - checked and unchecked. Clicking on this
 button opens a drop-down menu listing the compatible 3d views. As soon
-as user selects any view from the list, the parameters (view point,
-position, zoom coefficient etc) of the current view are synchronized
-to the selected view (static synchronization).
+as the user selects any view from the list, the parameters (view point,
+position, zoom coefficient, etc.) of the current view are synchronized
+with the selected view (static synchronization).
 
 In addition, when this button is in the "checked" state, the dynamic
 synchronization of the views is performed, i.e. any zoom, pan, rotate
 or other view operation done in one view is automatically applied
-to the second view.
+to the other view.
 <hr>
 
 \note OCC Viewer features a special <b>Polyline Selection</b>

@@ -45,12 +45,14 @@ to the objects</li>
 
 <h1> Enable sorting </h1>
 
-The objects in the object browser are sorted by creation order by default. 
+By default the objects in the object browser are sorted in the creation order. 
 \n
-It is yet possible to enable sorting 
-by alphabetical order (or reverse order) by right clicking in the header of the tree (near the "Name" field) and checking "enable sorting" in the popup menu.
+However, it is possible to enable sorting 
+in the alphabetical order (or the reverse alphabetical order) by right
+clicking in the header of the tree (near the "Name" field) and
+checking "enable sorting" in the popup menu.
 \n
-An arrow appears then near "Name" to reverse the order.
-If unchecking "enable sorting" the objects are sorted with default order again.
- 
+It is possible to use the arrow near "Name" to reverse the order.
+If "enable sorting" is unchecked, the objects are sorted in the default order again.
+
 */

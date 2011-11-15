@@ -40,7 +40,7 @@ tooltip near the spin box just as he types in it. The tooltip contains
 information about the valid data range. For a floating-point input, the
 tooltip also contains information about the expected precision. 
 
-In standard \bSALOME modules the precision value can be adjusted through
+In standard \b SALOME modules the precision value can be adjusted through
 \ref setting_preferences_page "user preferences" of the correspodning  modules, and the tooltip contains a
 reference to the corresponding parameter in the preferences.
 

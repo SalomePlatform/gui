@@ -173,7 +173,7 @@ are prompted to confirm directory creation. If you type a wrong
 directory path, or if you do not have write permissions 
 for the directory you use, the corresponding message box is shown.
 
-\b Note: you are strongly recommended to avoid using directory names containing spaces.</b> Otherwise you can experience some troubles with the installation.
+<b> Note: you are strongly recommended to avoid using directory names containing spaces.</b> Otherwise you can experience some troubles with the installation.
 \n
 \anchor figure_4
 \image html directorypage.png
@@ -281,7 +281,9 @@ script. The script tries to clear all temporary files. The process of
 removing temporary files can take some time, so the installation
 wizard will wait 3 seconds before closing.
 
-At the end of the installation <b>"Installation completed"</b> message will appear in the status bar. You can return to the previous pages to start a new installation or click \em"Next" button to go to the readme page:
+At the end of the installation <b>"Installation completed"</b> message
+will appear in the status bar. You can return to the previous pages to
+start a new installation or click \em "Next" button to go to the readme page:
 
 \anchor figure_12
 \image html readmepage.png
@@ -594,7 +596,7 @@ script.<br><br>
 \n\n This function is called when <em>'Install binaries'</em> installation mode is selected by the user. The function is responsible for the extracting of the product from the binaries package. It should create environment for the product in the temporary directory (see also the description of \b print_env() function). It is not necessary to implement this function if you do not provide binaries mode installation for the current product.<br><br>
 </li>
 <li><b>install_source()</b>
-This function is called to install SALOME modules sources, if <em>'Install binaries'</em> installation mode is selected by the user, and to install prerequisite products sources, in <em>'Install sources'</em> case (\ref Figure_2 "Fig. 2" above). The function is responsible for the building of the product from the sources package. It should create the environment file for the product in the temporary directory (see also the description of print_env() function). It is not necessary to implement this function if you do not provide a sources mode installation for the current product. <br><br>
+This function is called to install SALOME modules sources, if <em>'Install binaries'</em> installation mode is selected by the user, and to install prerequisite products sources, in <em>'Install sources'</em> case (\ref figure_2 "Fig. 2" above). The function is responsible for the building of the product from the sources package. It should create the environment file for the product in the temporary directory (see also the description of print_env() function). It is not necessary to implement this function if you do not provide a sources mode installation for the current product. <br><br>
 </li>
 <li><b>install_source_and_build()</b>
 This function is called when <em>'Install sources and make a compilation'</em> installation mode is selected. This function should be used to unpack SALOME or prerequisite sources package and then call build/install procedure for it.

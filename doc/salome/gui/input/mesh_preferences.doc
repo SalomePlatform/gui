@@ -184,7 +184,7 @@ side)</li>
 <ul>
 <li><b>Multicolor</b> the histogram is colored as <b>Scalar Bar</b></li>
 <li><b>Monocolor</b> the histogram is colored as selected with <b>Distribution color</b> selector</li>
-<ul>
+</ul>
 </ul>
 
 */

@@ -22,6 +22,8 @@
 #ifndef _DATAPROCESSOR_H_
 #define _DATAPROCESSOR_H_
 
+#include "TreeData.hxx"
+
 #include "DataModel.hxx"
 #include "DataObject.hxx"
 #include <QStringList>
@@ -40,7 +42,7 @@ typedef std::vector<DataObject *> DataObjectVector;
 // =================================================================
 //
 
-class DataProcessor {
+class TREEDATA_EXPORT DataProcessor {
 
 public:
   DataProcessor(DataModel * dataModel);

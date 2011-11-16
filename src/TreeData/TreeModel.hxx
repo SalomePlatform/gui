@@ -23,6 +23,8 @@
 #ifndef TREEMODEL_H
 #define TREEMODEL_H
 
+#include "TreeData.hxx"
+
 #include <QAbstractItemModel>
 #include <QModelIndex>
 #include <QVariant>
@@ -33,7 +35,7 @@
 class TreeItem;
 class TreeView;
 
-class TreeModel : public QAbstractItemModel
+class TREEDATA_EXPORT TreeModel : public QAbstractItemModel
 {
   Q_OBJECT
 

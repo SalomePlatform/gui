@@ -1,5 +1,8 @@
 // Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
 //
+// Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
+// CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
 // License as published by the Free Software Foundation; either
@@ -17,28 +20,17 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-// Author: Guillaume Boulant (EDF/R&D)
+#ifndef TREEDATA_HXX
+#define TREEDATA_HXX
 
-#ifndef _TREEOBSERVER_
-#define _TREEOBSERVER_
+#ifdef WIN32
+#  if defined SALOMETREEDATA_EXPORTS || defined SalomeTreeData_EXPORTS
+#    define TREEDATA_EXPORT __declspec( dllexport )
+#  else
+#    define TREEDATA_EXPORT __declspec( dllimport )
+#  endif
+#else
+#  define TREEDATA_EXPORT
+#endif
 
-#include "TreeData.hxx"
-
-#include <QObject>
-#include "TreeView.hxx"
-
-class TREEDATA_EXPORT TreeObserver : public QObject {
-
-  Q_OBJECT
-
-public:
-  TreeObserver();
-  void observe(TreeView * treeView);
-
-public slots:
- /* These slots should be implemented in a specialized version of
-    the TreeObserver to process signals emitted from the TreeView */
-  virtual void processItemList(QStringList itemNameIdList, int actionId);
-};
-
-#endif // _TREEOBSERVER_
+#endif //TREEDATA_HXX

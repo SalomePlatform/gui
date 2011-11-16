@@ -44,6 +44,7 @@ CAS_CXXFLAGS=@CAS_CPPFLAGS@ @CAS_CXXFLAGS@
 BOOST_CPPFLAGS=@BOOST_CPPFLAGS@
 BOOST_LIBS=@BOOST_LIBS@
 CORBA_CXXFLAGS=@OMNIORB_CXXFLAGS@ @OMNIORB_INCLUDES@
+CORBA_LIBS=@OMNIORB_LIBS@
 
 libSalomeGuiHelpers_la_CPPFLAGS =   \
 	$(QT_CXXFLAGS)              \
@@ -60,8 +61,9 @@ libSalomeGuiHelpers_la_CPPFLAGS =   \
 	-I$(srcdir)/../OBJECT
 
 libSalomeGuiHelpers_la_LDFLAGS  = \
-	$(KERNEL_LDFLAGS) -lSalomeKernelHelpers
-	$(builddir)/../SalomeApp/libSalomeApp.la
+	$(KERNEL_LDFLAGS) -lSalomeKernelHelpers \
+	$(builddir)/../SalomeApp/libSalomeApp.la \
+	$(CORBA_LIBS)
 
 #
 # =======================================================

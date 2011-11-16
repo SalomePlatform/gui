@@ -40,6 +40,7 @@ lib_LTLIBRARIES = libSalomeTreeData.la
 # Generic source files
 #
 salomeinclude_HEADERS = \
+	TreeData.hxx \
 	DockWidgets.hxx \
 	TreeModel.hxx \
 	TreeItem.hxx \

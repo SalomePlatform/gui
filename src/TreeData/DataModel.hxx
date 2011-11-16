@@ -23,10 +23,12 @@
 #ifndef DATAMODEL_H
 #define DATAMODEL_H
 
+#include "TreeData.hxx"
+
 #include <map>
 #include "DataObject.hxx"
 
-class DataModel {
+class TREEDATA_EXPORT DataModel {
 
 public:
   DataModel();

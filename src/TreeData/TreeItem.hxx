@@ -22,6 +22,8 @@
 #ifndef TREEITEM_H
 #define TREEITEM_H
 
+#include "TreeData.hxx"
+
 #include <QList>
 #include <QVariant>
 #include <QVector>
@@ -30,7 +32,7 @@
 #include "DataObject.hxx"
 #include "TreeModel.hxx"
 
-class TreeItem
+class TREEDATA_EXPORT TreeItem
 {
  public:
   TreeItem(const QString &nameId, const QVector<QVariant> &columnValues, TreeItem *parent = 0);

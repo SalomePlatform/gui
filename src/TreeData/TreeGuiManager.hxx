@@ -22,6 +22,8 @@
 #ifndef _TREEGUIMANAGER_H_
 #define _TREEGUIMANAGER_H_
 
+#include "TreeData.hxx"
+
 // SALOME includes
 #include <SalomeApp_Application.h>
 
@@ -32,7 +34,7 @@
 #include "TreeView.hxx"
 #include "TreeObserver.hxx"
 
-class TreeGuiManager : public TreeObserver {
+class TREEDATA_EXPORT TreeGuiManager : public TreeObserver {
   
 public:
   TreeGuiManager(SalomeApp_Application * salomeApp, const char * title="Data Model");

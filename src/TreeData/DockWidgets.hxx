@@ -22,6 +22,8 @@
 #ifndef _DOCKWIDGETS_H_
 #define _DOCKWIDGETS_H_
 
+#include "TreeData.hxx"
+
 // Qt includes
 #include <QDockWidget>
 #include <QTreeView>
@@ -29,11 +31,11 @@
 // SALOME includes
 #include <SalomeApp_Application.h>
 
-class DockWidgets {
+class TREEDATA_EXPORT DockWidgets {
  public:
   DockWidgets(SalomeApp_Application* salomeApp,
-	      bool tabify=false,
-	      const char * title="Data Model");
+        bool tabify=false,
+        const char * title="Data Model");
 
   void tabify(bool tabify);
   void show(bool isVisible);

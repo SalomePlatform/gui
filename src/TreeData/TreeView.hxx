@@ -23,12 +23,14 @@
 #ifndef TREEVIEW_H
 #define TREEVIEW_H
 
+#include "TreeData.hxx"
+
 #include <QTreeView>
 #include <QAction>
 #include <QContextMenuEvent>
 #include <QList>
 
-class TreeView : public QTreeView
+class TREEDATA_EXPORT TreeView : public QTreeView
 {
   Q_OBJECT
 

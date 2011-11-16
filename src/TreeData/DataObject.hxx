@@ -22,11 +22,13 @@
 #ifndef DATAOBJECT_H
 #define DATAOBJECT_H
 
+#include "TreeData.hxx"
+
 #include <map>
 #include <string>
 using namespace std;
 
-class DataObject {
+class TREEDATA_EXPORT DataObject {
 
 public:
   DataObject();

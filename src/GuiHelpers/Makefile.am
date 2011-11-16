@@ -61,8 +61,7 @@ libSalomeGuiHelpers_la_CPPFLAGS =   \
 	-I$(srcdir)/../OBJECT
 
 libSalomeGuiHelpers_la_LDFLAGS  = \
-	$(KERNEL_LDFLAGS) -lSalomeKernelHelpers \
-	$(builddir)/../SalomeApp/libSalomeApp.la \
+	$(KERNEL_LDFLAGS) -lSalomeKernelHelpers $(builddir)/../SalomeApp/libSalomeApp.la \
 	$(CORBA_LIBS)
 
 #

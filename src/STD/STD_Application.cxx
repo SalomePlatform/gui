@@ -182,7 +182,7 @@ void STD_Application::createActions()
 
   createAction( FileSaveAsId, tr( "TOT_DESK_FILE_SAVEAS" ), QIcon(),
                 tr( "MEN_DESK_FILE_SAVEAS" ), tr( "PRP_DESK_FILE_SAVEAS" ),
-                Qt::CTRL+Qt::Key_A, desk, false, this, SLOT( onSaveAsDoc() ) );
+                Qt::CTRL+Qt::SHIFT+Qt::Key_S, desk, false, this, SLOT( onSaveAsDoc() ) );
 
   createAction( EditCopyId, tr( "TOT_DESK_EDIT_COPY" ),
                 resMgr->loadPixmap( "STD", tr( "ICON_EDIT_COPY" ) ),
@@ -196,7 +196,7 @@ void STD_Application::createActions()
 
   QAction* a = createAction( ViewStatusBarId, tr( "TOT_DESK_VIEW_STATUSBAR" ),
                              QIcon(), tr( "MEN_DESK_VIEW_STATUSBAR" ),
-                             tr( "PRP_DESK_VIEW_STATUSBAR" ), Qt::SHIFT+Qt::Key_S, desk, true );
+                             tr( "PRP_DESK_VIEW_STATUSBAR" ), Qt::ALT+Qt::SHIFT+Qt::Key_S, desk, true );
   a->setChecked( desk->statusBar()->isVisibleTo( desk ) );
   connect( a, SIGNAL( toggled( bool ) ), this, SLOT( onViewStatusBar( bool ) ) );
 
@@ -205,7 +205,7 @@ void STD_Application::createActions()
 
   createAction( HelpAboutId, tr( "TOT_DESK_HELP_ABOUT" ), QIcon(),
                 tr( "MEN_DESK_HELP_ABOUT" ), tr( "PRP_DESK_HELP_ABOUT" ),
-                Qt::SHIFT+Qt::Key_A, desk, false, this, SLOT( onHelpAbout() ) );
+                Qt::ALT+Qt::SHIFT+Qt::Key_A, desk, false, this, SLOT( onHelpAbout() ) );
 
 
   QtxDockAction* dwa = new QtxDockAction( tr( "TOT_DOCKWINDOWS" ), tr( "MEN_DESK_VIEW_DOCKWINDOWS" ), desk );

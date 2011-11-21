@@ -127,6 +127,17 @@ void Session_ServerLauncher::CheckArgs()
           }
         case 1: // looking for server type
           {
+	    // Temporary solution
+	    // Issue 21337 - no more SalomeApp_Engine_i activation here
+	    // TODO: To be removed as soon as any trace of SalomeAppEngine
+	    // has been eliminated from KERNEL scripts
+	    if (strcmp(_argv[iarg], "SalomeAppEngine")==0){
+	      argState = 0;
+	      iarg += 2; // skipping "()" 
+	      break;
+	    }
+	    // Temporary solution
+
             for (int i=0; i<Session_ServerThread::NB_SRV_TYP; i++)
                 if (strcmp(_argv[iarg],Session_ServerThread::_serverTypes[i])==0)
                   {

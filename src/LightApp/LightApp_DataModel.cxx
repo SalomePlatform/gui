@@ -80,6 +80,15 @@ bool LightApp_DataModel::saveAs( const QString&, CAM_Study*, QStringList& )
 }
 
 /*!
+  Does nothing by default. Should be redefined in light modules
+  that want to participate in "Dump study" operation.
+*/
+bool LightApp_DataModel::dumpPython( const QString&, CAM_Study*, bool, QStringList& )
+{
+  return true;
+}
+
+/*!
   Emit closed()
 */
 bool LightApp_DataModel::close()

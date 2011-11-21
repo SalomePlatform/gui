@@ -37,8 +37,9 @@ class LIGHTAPP_EXPORT LightApp_DataObject : public virtual CAM_DataObject
 
 public:
   //! Column id
-  enum {
-    EntryId = VisibilityId + 1    //!< entry column
+  enum { 
+    EntryId = VisibilityId + 1,    //!< entry column
+    RefEntryId                     //!< reference entry column
   };
 
 public:
@@ -48,7 +49,11 @@ public:
   virtual SUIT_DataObjectKey*     key() const;
   virtual QString                 entry() const;
 
+  virtual QString                 refEntry() const;
+  virtual bool                    isReference() const;
+
   virtual QString                 text( const int = NameId ) const;
+  virtual QColor                  color( const ColorRole, const int = NameId ) const;
 
   virtual SUIT_DataObject*        componentObject() const;
   virtual QString                 componentDataType() const;

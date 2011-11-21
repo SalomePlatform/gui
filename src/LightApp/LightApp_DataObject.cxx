@@ -245,6 +245,31 @@ QString LightApp_DataObject::entry() const
 }
 
 /*!
+  \brief Returns the string identifier of the data objects referenced by this one.
+
+  This method should be reimplemented in the subclasses.
+  Default implementation returns null string.
+
+  \return ID string of the referenced data object
+*/
+QString LightApp_DataObject::refEntry() const
+{
+  return QString();
+}
+
+/*!
+  \brief Tells if this data objects is a reference to some other or not.
+
+  The base implementation retuns true, if refEntry() returns non-empty string.
+
+  \return true if refEntry() is a non-empty string.
+*/
+bool LightApp_DataObject::isReference() const
+{
+  return !refEntry().isEmpty();
+}
+
+/*!
   \brief Get the data object unique key.
   \return data object key
 */
@@ -257,17 +282,88 @@ SUIT_DataObjectKey* LightApp_DataObject::key() const
 /*!
   \brief Get object text data for the specified column.
 
-  Column with \a id = 0 (NameId) is supposed to be used
+  Column with \a id == NameId is supposed to be used
   to get the object name.
-  Column with \a id = 1 (EntryId) is supposed to be used
+  Column with \a id == EntryId is supposed to be used
   to get the object entry.
+  Column with \a id == RefEntryId is supposed to be used
+  to show the entry of the object referenced by this one.
 
   \param id column id
   \return object text data
 */
 QString LightApp_DataObject::text( const int id ) const
 {
-  return id == EntryId ? entry() : CAM_DataObject::text( id );
+  QString txt;
+  
+  switch ( id )
+  {
+  case EntryId:
+    txt = entry();
+    break;
+  case RefEntryId:
+    // Issue 21379: reference support at LightApp level
+    if ( isReference() )
+      txt = refEntry();
+    break;
+  default:
+    // Issue 21379: Note that we cannot return some specially decorated
+    // name string (like "* ref_obj_name") when isReference() returns true, 
+    // since there is no generic way at LightApp level
+    // to query the object name using refEntry() up to now.
+    // TODO: Think how to make reference name generation
+    // more generic at move it here from SalomeApp level...
+    txt = CAM_DataObject::text( id );
+    break;
+  }
+
+  return txt;
+}
+
+/*!
+  \brief Get data object color for the specified column.
+  \param role color role
+  \param id column id (not used)
+  \return object color for the specified column
+*/
+QColor LightApp_DataObject::color( const ColorRole role, const int id) const
+{
+  QColor c;
+
+  // Issue 21379: reference support at LightApp level
+  // Centralized way for choosing text/background color for references.
+  // Colors for "normal" objects should be chosen by sub-classes.
+  switch ( role )
+  {
+  case Text:
+  case Foreground:
+    // text color (not selected item)
+    // TODO: think how to detect invalid references...
+    if ( isReference() )
+      c = QColor( 255, 0, 0 );      // valid reference (red)
+    break;
+
+  case Highlight:
+    // background color for the highlighted item
+    // TODO: think how to detect invalid references...
+    if ( isReference() ) 
+      c = QColor( 255, 0, 0 );      // valid reference (red)
+    break;
+
+  case HighlightedText:
+    // text color for the highlighted item
+    if ( isReference() )
+      c = QColor( 255, 255, 255 );   // white
+    break;
+
+  default:
+    break;
+  }
+
+  if ( !c.isValid() )
+    c = CAM_DataObject::color( role, id );
+
+  return c;
 }
 
 /*!

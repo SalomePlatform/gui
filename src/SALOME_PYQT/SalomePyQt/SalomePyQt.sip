@@ -215,7 +215,10 @@ public:
   static const QString     getActiveComponent() /ReleaseGIL/ ;
   static SIP_PYOBJECT      getActivePythonModule() /ReleaseGIL/ ;
   static bool              activateModule( const QString& ) /ReleaseGIL/ ;
-  static void              updateObjBrowser( const int = 0, bool = true ) /ReleaseGIL/ ;
+  static void              updateObjBrowser( const int = 0, bool =  true ) /ReleaseGIL/ ;
+  
+  static bool              isModified() /ReleaseGIL/ ;
+  static void              setModified( bool ) /ReleaseGIL/ ;
 
   static QString           getFileName         ( QWidget*, const QString&, const QStringList&, const QString&, bool ) /ReleaseGIL/ ;
   static QStringList       getOpenFileNames    ( QWidget*, const QString&, const QStringList&, const QString& ) /ReleaseGIL/ ;
@@ -223,15 +226,21 @@ public:
 			 
   static QString           createObject( const QString& = QString("") )  /ReleaseGIL/ ;
   static QString           createObject( const QString&,
-			                const QString&,
-					const QString&,
-					const QString& = QString("") )  /ReleaseGIL/ ;
+			                 const QString&,
+					 const QString&,
+					 const QString& = QString("") )  /ReleaseGIL/ ;
 
   static void              setName(const QString& ,const QString& ) /ReleaseGIL/ ;
   static void              setIcon(const QString& ,const QString& ) /ReleaseGIL/ ;
   static void              setToolTip(const QString& ,const QString& ) /ReleaseGIL/ ;
   static QString           getName(const QString& ) /ReleaseGIL/ ;
   static QString           getToolTip(const QString& ) /ReleaseGIL/ ;
+
+  static void              setColor( const QString&, const QColor& ) /ReleaseGIL/ ;
+  static QColor            getColor( const QString& ) /ReleaseGIL/ ;
+
+  static void              setReference( const QString& ,const QString& ) /ReleaseGIL/ ; 
+  static QString           getReference( const QString& ) /ReleaseGIL/ ;
 
   static void              removeObject(const QString&  )    /ReleaseGIL/ ;
   static void              removeChild(const QString& = QString("")  ) /ReleaseGIL/ ;

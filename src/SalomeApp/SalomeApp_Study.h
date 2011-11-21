@@ -55,6 +55,8 @@ public:
 
   virtual void        closeDocument(bool permanently = true);
 
+  virtual bool        dump( const QString&, bool, bool, bool );
+
   virtual bool        isSaved()  const;
   virtual bool        isModified() const;
   virtual void        Modified();

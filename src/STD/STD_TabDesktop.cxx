@@ -56,9 +56,9 @@ myWorkstackAction( 0 )
   // But the workstack must occupy as much space as possible -- set Expanding for it.
   myWorkstack->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding ) );
 
-  myWorkstack->setAccel( QtxWorkstack::SplitVertical,   Qt::SHIFT + Qt::Key_V );
-  myWorkstack->setAccel( QtxWorkstack::SplitHorizontal, Qt::SHIFT + Qt::Key_H );
-  myWorkstack->setAccel( QtxWorkstack::Close,           Qt::SHIFT + Qt::Key_C );
+  myWorkstack->setAccel( QtxWorkstack::SplitVertical,   Qt::ALT + Qt::SHIFT + Qt::Key_V );
+  myWorkstack->setAccel( QtxWorkstack::SplitHorizontal, Qt::ALT + Qt::SHIFT + Qt::Key_H );
+  myWorkstack->setAccel( QtxWorkstack::Close,           Qt::CTRL + Qt::Key_F4 );
 
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
   if ( resMgr ) {
@@ -204,14 +204,14 @@ void STD_TabDesktop::createActions()
                               resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_HSPLIT" ) ) );
   myWorkstackAction->setText( QtxWorkstackAction::SplitHorizontal, tr( "MEN_DESK_WINDOW_HSPLIT" ) );
   myWorkstackAction->setStatusTip( QtxWorkstackAction::SplitHorizontal, tr( "PRP_DESK_WINDOW_HSPLIT" ) );
-  myWorkstackAction->setAccel( QtxWorkstackAction::SplitHorizontal, Qt::SHIFT + Qt::Key_H );
+  myWorkstackAction->setAccel( QtxWorkstackAction::SplitHorizontal, Qt::ALT + Qt::SHIFT + Qt::Key_H );
 
   // Split Vertical
   myWorkstackAction->setIcon( QtxWorkstackAction::SplitVertical,
                               resMgr->loadPixmap( "STD", tr( "ICON_DESK_WINDOW_VSPLIT" ) ) );
   myWorkstackAction->setText( QtxWorkstackAction::SplitVertical, tr( "MEN_DESK_WINDOW_VSPLIT" ) );
   myWorkstackAction->setStatusTip( QtxWorkstackAction::SplitVertical, tr( "PRP_DESK_WINDOW_VSPLIT" ) );
-  myWorkstackAction->setAccel( QtxWorkstackAction::SplitVertical,   Qt::SHIFT + Qt::Key_V );
+  myWorkstackAction->setAccel( QtxWorkstackAction::SplitVertical,   Qt::ALT + Qt::SHIFT + Qt::Key_V );
 
   QtxActionMenuMgr* mMgr = menuMgr();
   if ( !mMgr )

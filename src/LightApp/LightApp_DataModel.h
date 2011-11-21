@@ -55,6 +55,10 @@ public:
   virtual bool                        save( QStringList& );
   virtual bool                        saveAs( const QString&, CAM_Study*, QStringList& );
   virtual bool                        close();
+  virtual bool                        dumpPython( const QString&,
+						  CAM_Study*,
+						  bool,
+						  QStringList& );
 
   virtual void                        update( LightApp_DataObject* = 0, LightApp_Study* = 0 );
 

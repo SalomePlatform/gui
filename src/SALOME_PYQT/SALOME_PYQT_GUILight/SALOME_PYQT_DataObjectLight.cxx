@@ -70,6 +70,24 @@ QString SALOME_PYQT_DataObjectLight::entry() const
 }
 
 //=================================================================================
+// function : SALOME_PYQT_DataObjectLight::refEntry()
+// purpose  : return entry of the data object referenced by this one (if any)
+//=================================================================================
+QString SALOME_PYQT_DataObjectLight::refEntry() const
+{
+  return myRefEntry;
+}
+
+//=================================================================================
+// function : SALOME_PYQT_DataObjectLight::setRefEntry()
+// purpose  : sets entry of the data object referenced by this one
+//=================================================================================
+void SALOME_PYQT_DataObjectLight::setRefEntry( const QString& refEntry )
+{
+  myRefEntry = refEntry;
+}
+
+//=================================================================================
 // function : SALOME_PYQT_DataObjectLight::name()
 // purpose  : return name of object
 //=================================================================================
@@ -100,6 +118,32 @@ QString SALOME_PYQT_DataObjectLight::toolTip(const int index) const
   return myToolTip;
 }
 
+//=================================================================================
+// function : SALOME_PYQT_DataObjectLight::toolTip()
+// purpose  : return toolTip of object
+//=================================================================================
+QColor SALOME_PYQT_DataObjectLight::color( const ColorRole role, const int id ) const
+{
+  QColor c;
+
+  switch ( role )
+  {
+  case Text:
+  case Foreground:
+    if ( !isReference() )
+      c = myColor;
+    break;
+
+  default:
+    break;
+  }
+
+  // Issue 21379: LightApp_DataObject::color() defines colors for valid references
+  if ( !c.isValid() )
+    c = LightApp_DataObject::color( role, id );
+
+  return c;
+}
 
 bool SALOME_PYQT_DataObjectLight::setName(const QString& name)
 {
@@ -125,4 +169,9 @@ void SALOME_PYQT_DataObjectLight::setIcon(const QString& iconname)
 void SALOME_PYQT_DataObjectLight::setToolTip(const QString& tooltip)
 {
   myToolTip = tooltip;
+}
+
+void SALOME_PYQT_DataObjectLight::setColor(const QColor& color)
+{
+  myColor = color;
 }

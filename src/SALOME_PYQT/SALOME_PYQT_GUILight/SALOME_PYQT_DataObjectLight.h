@@ -42,20 +42,28 @@ class SALOME_PYQT_LIGHT_EXPORT SALOME_PYQT_DataObjectLight : public virtual Ligh
   virtual ~SALOME_PYQT_DataObjectLight();
   
   virtual QString    entry() const;
+
+  virtual QString    refEntry() const;
+  void               setRefEntry( const QString& refEntry );
   
   virtual QString    name()    const;
-  QPixmap            icon(const int = NameId)    const;
-  QString            toolTip(const int = NameId) const;
-  
-  bool setName(const QString& name);
-  void setIcon(const QString& icon);
-  void setToolTip(const QString& tooltip);
+  virtual QPixmap    icon(const int = NameId)    const;
+  virtual QString    toolTip(const int = NameId) const;
+
+  bool               setName(const QString& name);
+  void               setIcon(const QString& icon);
+  void               setToolTip(const QString& tooltip);
+
+  virtual QColor     color( const ColorRole, const int = NameId ) const;
+  void               setColor(const QColor& color);
 
  private:
   QString myEntry;
+  QString myRefEntry;
   QString myName;
   QString myToolTip;
   QPixmap myIcon;
+  QColor  myColor;
 }; 
 
 #endif // SALOME_PYQT_DATAOBJECTLIGHT_H

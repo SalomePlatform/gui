@@ -96,7 +96,6 @@ public:
   static SALOMEDSClient_StudyManager* studyMgr();
   static SALOME_NamingService*        namingService();
   static SALOME_LifeCycleCORBA*       lcc();
-  static QString                      defaultEngineIOR();
 
   SUIT_ViewManager*                   newViewManager(const QString&);
   void                                updateSavePointDataObjects( SalomeApp_Study* );

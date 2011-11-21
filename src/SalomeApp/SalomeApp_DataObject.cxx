@@ -125,7 +125,7 @@ QString SalomeApp_DataObject::text( const int id ) const
 {
   QString txt;
 
-  // add "Value", "IOR", and "Reference Entry" columns
+  // Text for "Value" and "IOR" columns
   switch ( id )
   {
   case ValueId:
@@ -141,11 +141,9 @@ QString SalomeApp_DataObject::text( const int id ) const
   case IORId:
     txt = ior( referencedObject() );
     break;
-  case RefEntryId :
-    if ( isReference() )
-      txt = entry( referencedObject() );
-    break;
   default:
+    // Issue 21379: LightApp_DataObject::text() treats "Entry"
+    // and "Reference Entry" columns
     txt = LightApp_DataObject::text( id );
     break;
   }
@@ -202,9 +200,7 @@ QColor SalomeApp_DataObject::color( const ColorRole role, const int id ) const
   case Foreground:
     // text color (not selected item)
     if ( isReference() ) {
-      if ( !(QString(referencedObject()->GetName().c_str()).isEmpty()) )
-        c = QColor( 255, 0, 0 );      // valid reference (red)
-      else
+      if ( QString(referencedObject()->GetName().c_str()).isEmpty() )
         c = QColor( 200, 200, 200 );  // invalid reference (grayed)
     }
     else if ( myObject ) {
@@ -216,12 +212,11 @@ QColor SalomeApp_DataObject::color( const ColorRole role, const int id ) const
       }
     }
     break;
+
   case Highlight:
     // background color for the highlighted item
     if ( isReference() ) {
-      if ( !(QString(referencedObject()->GetName().c_str()).isEmpty()) )
-        c = QColor( 255, 0, 0 );      // valid reference (red)
-      else
+      if ( QString(referencedObject()->GetName().c_str()).isEmpty() )
         c = QColor( 200, 200, 200 );  // invalid reference (grayed)
     }
     else if ( myObject ) {
@@ -235,14 +230,14 @@ QColor SalomeApp_DataObject::color( const ColorRole role, const int id ) const
       }
     }
     break;
-  case HighlightedText:
-    // text color for the highlighted item
-    if ( isReference() )
-      c = QColor( 255, 255, 255 );   // white
+  default:
     break;
   }
+
+  // Issue 21379: LightApp_DataObject::color() defines colors for valid references
   if ( !c.isValid() )
     c = LightApp_DataObject::color( role, id );
+
   return c;
 }
 
@@ -330,7 +325,22 @@ _PTR(SObject) SalomeApp_DataObject::object() const
 }
 
 /*!
+  \brief Returns the string identifier of the data objects referenced by this one.
+
+  Re-implemented from LightApp_DataObject using SALOMEDS API.
+
+  \return ID string of the referenced SObject
+*/
+QString SalomeApp_DataObject::refEntry() const
+{
+  return entry( referencedObject() );
+}
+
+/*!
   \brief Check if the data object is a reference.
+
+  Re-implemented from LightApp_DataObject using SALOMEDS API.
+
   \return \c true if this data object actually refers to another one
 */
 bool SalomeApp_DataObject::isReference() const

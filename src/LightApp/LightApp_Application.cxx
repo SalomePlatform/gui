@@ -645,7 +645,7 @@ void LightApp_Application::createActions()
   int newWinMenu = createMenu( tr( "MEN_DESK_NEWWINDOW" ), windowMenu, -1, 0 );
 
   createAction( CloseId, tr( "TOT_CLOSE" ), QIcon(), tr( "MEN_DESK_CLOSE" ), tr( "PRP_CLOSE" ),
-                Qt::SHIFT+Qt::Key_C, desk, false, this, SLOT( onCloseWindow() ) );
+                Qt::CTRL+Qt::Key_F4, desk, false, this, SLOT( onCloseWindow() ) );
   createAction( CloseAllId, tr( "TOT_CLOSE_ALL" ), QIcon(), tr( "MEN_DESK_CLOSE_ALL" ), tr( "PRP_CLOSE_ALL" ),
                 0, desk, false, this, SLOT( onCloseAllWindow() ) );
   createAction( GroupAllId, tr( "TOT_GROUP_ALL" ), QIcon(), tr( "MEN_DESK_GROUP_ALL" ), tr( "PRP_GROUP_ALL" ),
@@ -675,7 +675,7 @@ void LightApp_Application::createActions()
 #endif
 
   createAction( RenameId, tr( "TOT_RENAME" ), QIcon(), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ),
-                Qt::SHIFT+Qt::Key_R, desk, false, this, SLOT( onRenameWindow() ) );
+                Qt::ALT+Qt::SHIFT+Qt::Key_R, desk, false, this, SLOT( onRenameWindow() ) );
   createMenu( RenameId, windowMenu, -1 );
 
   int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1 );

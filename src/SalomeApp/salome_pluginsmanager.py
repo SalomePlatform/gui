@@ -143,7 +143,8 @@ from salome.kernel.syshelper import walktree
 from salome.kernel.logger import Logger
 #from salome.kernel.termcolor import GREEN
 logger=Logger("PluginsManager") #,color=GREEN)
-logger.showDebug()
+# VSR 21/11/2011 : do not show infos in the debug mode
+#logger.showDebug()
 
 class PluginsManager:
     def __init__(self,module,name,basemenuname,menuname):

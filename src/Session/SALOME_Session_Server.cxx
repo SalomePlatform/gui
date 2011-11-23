@@ -178,7 +178,11 @@ protected:
   {
     long id = -1;
     if ( !myExtAppName.isEmpty() ) {
+#ifdef WIN32
+      QRegExp exp( QString( "%1\\.%2\\.([a-zA-Z0-9.]+)$" ).arg( myExtAppName ).arg( currentFormat() ) );
+#else
       QRegExp exp( QString( "\\.%1rc\\.([a-zA-Z0-9.]+)$" ).arg( myExtAppName ) );
+#endif
       QRegExp vers_exp( "^([0-9]+)([A-Za-z]?)([0-9]*)$" );
       
       QString fname = QFileInfo( _fname ).fileName();

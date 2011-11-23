@@ -47,28 +47,34 @@ AC_ARG_WITH(pyuic4,
       AC_MSG_RESULT([Try $withval as pyuic4 executable])
     ])
 
+AC_ARG_WITH(pyrcc4,
+    [  --with-pyrcc4=EXEC pyrcc4 executable ],
+    [PYRCC="$withval"
+      AC_MSG_RESULT([Try $withval as pyrcc4 executable])
+    ])
+
 AC_CHECKING(for pyqt)
 
 pyqt_ok=no
+
+TEST_BIN_DIRS=""
+if test "x${PYQTDIR}" != "x" ; then
+    TEST_BIN_DIRS="${TEST_BIN_DIRS} ${PYQTDIR} ${PYQTDIR}/bin"
+fi
+TEST_BIN_DIRS="${TEST_BIN_DIRS} __CHECK__PATH__"
+if test "x${SIPDIR}" != "x" ; then
+    TEST_BIN_DIRS="${TEST_BIN_DIRS} ${SIPDIR} ${SIPDIR}/bin"
+fi
+if test "x${PYTHONHOME}" != "x" ; then
+    TEST_BIN_DIRS="${TEST_BIN_DIRS} ${PYTHONHOME}/bin"
+fi
+TEST_BIN_DIRS="${TEST_BIN_DIRS} /usr/bin"
 
 dnl check pyuic4
 if test "x$PYUIC" != "x" ; then
     dnl try $withval value
     AC_CHECK_FILE($PYUIC,pyqt_ok=yes,pyqt_ok=no)
 else
-    TEST_BIN_DIRS=""
-    if test "x${PYQTDIR}" != "x" ; then
-        TEST_BIN_DIRS="${TEST_BIN_DIRS} ${PYQTDIR} ${PYQTDIR}/bin"
-    fi
-    TEST_BIN_DIRS="${TEST_BIN_DIRS} __CHECK__PATH__"
-    if test "x${SIPDIR}" != "x" ; then
-        TEST_BIN_DIRS="${TEST_BIN_DIRS} ${SIPDIR} ${SIPDIR}/bin"
-    fi
-    if test "x${PYTHONHOME}" != "x" ; then
-        TEST_BIN_DIRS="${TEST_BIN_DIRS} ${PYTHONHOME}/bin"
-    fi
-    TEST_BIN_DIRS="${TEST_BIN_DIRS} /usr/bin"
-
     dnl search pyuic4
     pyqt_ok=no
     for d in ${TEST_BIN_DIRS} ; do
@@ -119,6 +125,37 @@ if test "x$pyqt_ok" == "xyes" ; then
     fi
 else
     AC_MSG_RESULT(Warning! pyuic4 is not found!)
+fi
+
+dnl check pyrcc4
+if test "x$PYRCC" != "x" ; then
+    dnl try $withval value
+    AC_CHECK_FILE($PYRCC,pyqt_ok=yes,pyqt_ok=no)
+else
+    dnl search pyrcc4
+    pyqt_ok=no
+    for d in ${TEST_BIN_DIRS} ; do
+        if test "x${d}" = "x__CHECK__PATH__" ; then
+            AC_PATH_PROG(TEMP, pyrcc4)
+            if test "x${TEMP}" != "x" ; then
+                PYRCC=${TEMP}
+                if test "x$PYQTDIR" = "x" ; then
+                    PYQTDIR=`dirname ${PYRCC}`
+                    PYQTDIR=`dirname ${PYQTDIR}`
+                fi
+                pyqt_ok=yes
+                break
+            fi
+        else
+            if test -d $d ; then
+                AC_CHECK_FILE(${d}/pyrcc4,pyqt_ok=yes,pyqt_ok=no)
+      	        if test "x$pyqt_ok" == "xyes" ; then
+                    PYRCC=${d}/pyrcc4
+                    break
+                fi
+            fi
+        fi
+    done
 fi
 
 if test "x$pyqt_ok" == "xyes" ; then
@@ -211,6 +248,7 @@ AC_SUBST(PYQT_INCLUDES)
 AC_SUBST(PYQT_LIBS)
 AC_SUBST(PYQT_SIPS)
 AC_SUBST(PYUIC)
+AC_SUBST(PYRCC)
 AC_SUBST(PYQT_SIPFLAGS)
 
 dnl AC_LANG_RESTORE

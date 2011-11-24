@@ -25,6 +25,8 @@
 #include <QtxComboBox.h>
 #include <QtxActionSet.h>
 #include <QVBoxLayout>
+#include <QApplication>
+#include <QEvent>
 
 /*!
   \class LightApp_ModuleAction::ActionSet
@@ -180,6 +182,23 @@ QWidget* LightApp_ModuleAction::ComboAction::createWidget( QWidget* parent )
   \brief Emitted when the combo box item is activated
   \param item identifier
 */
+
+/*!
+  \class LightApp_ModuleAction::ActivateEvent
+  \brief Internal class to represent custom event for transfer the activation item id.
+  \internal
+*/
+class LightApp_ModuleAction::ActivateEvent : public QEvent
+{
+public:
+  ActivateEvent( QEvent::Type type, int id ) : QEvent( type ), myId( id ) {};
+  ~ActivateEvent() {};
+
+  int     id() const { return myId; }
+
+private:
+  int     myId;
+};
 
 /*!
   \class LightApp_ModuleAction
@@ -414,6 +433,19 @@ void LightApp_ModuleAction::removedFrom( QWidget* w )
 }
 
 /*!
+  \brief Perform delayed activation with specified id.
+  \param e custom event
+  \return \c true if the event was processed successfully and \c false otherwise.
+*/
+bool LightApp_ModuleAction::event( QEvent* e )
+{
+  if ( e->type() == QEvent::MaxUser )
+    activate( ((ActivateEvent*)e)->id(), false );
+  else
+    return QtxAction::event( e );
+}
+
+/*!
   \fn void LightApp_ModuleAction::moduleActivated( const QString& name );
   \brief Emitted when the module is activated
   \param name module name (empty string for neutral point)
@@ -568,5 +600,5 @@ void LightApp_ModuleAction::onChanged()
 */
 void LightApp_ModuleAction::onComboActivated( int id )
 {
-  activate( id, false );
+  QApplication::postEvent( this, new ActivateEvent( QEvent::MaxUser, id ) );
 } 

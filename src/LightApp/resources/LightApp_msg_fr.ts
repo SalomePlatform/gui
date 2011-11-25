@@ -33,7 +33,7 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
     <message>
         <source>ABOUT_CLOSE</source>
         <translation>&amp;Fermer</translation>
-    </message>    
+    </message>
     <message>
         <source>APP_NAME</source>
         <translation>SALOME</translation>
@@ -53,35 +53,35 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
     <message>
         <source>BROWSER_TITLE</source>
         <translation>Aide de SALOME</translation>
-    </message>    
+    </message>
     <message>
         <source>BROWSER_TOOLBAR_TITLE</source>
         <translation>Navigation</translation>
-    </message>    
+    </message>
     <message>
         <source>BROWSER_FILEMENU</source>
         <translation>&amp;Fichier</translation>
-    </message>    
+    </message>
     <message>
         <source>BROWSER_CLOSE</source>
         <translation>&amp;Fermer</translation>
-    </message>    
+    </message>
     <message>
         <source>BROWSER_BACK</source>
         <translation>Reculer</translation>
-    </message>    
+    </message>
     <message>
         <source>BROWSER_FORWARD</source>
         <translation>Avancer</translation>
-    </message>    
+    </message>
     <message>
         <source>BROWSER_FIND</source>
         <translation>&amp;Chercher...</translation>
-    </message>    
+    </message>
     <message>
         <source>BROWSER_FINDNEXT</source>
         <translation>Chercher &amp;suivant</translation>
-    </message>    
+    </message>
     <message>
         <source>BROWSER_FINDPREV</source>
         <translation>Chercher &amp;précédent</translation>
@@ -385,7 +385,7 @@ Les modifications seront appliquées à la prochaine session.</translation>
     <message>
         <source>MEN_RENAME_OBJ</source>
         <translation>Renommer</translation>
-    </message>   
+    </message>
     <message>
         <source>LOG_WINDOW</source>
         <translation>Fenêtre de messages</translation>
@@ -448,7 +448,7 @@ Les modifications seront appliquées à la prochaine session.</translation>
     </message>
     <message>
         <source>PREF_AUTO_SIZE_FIRST</source>
-        <translation>Taille automatique pour la colonne "Nom"</translation>
+        <translation>Taille automatique pour la colonne &quot;Nom&quot;</translation>
     </message>
     <message>
         <source>PREF_RESIZE_ON_EXPAND_ITEM</source>
@@ -464,7 +464,7 @@ Les modifications seront appliquées à la prochaine session.</translation>
     </message>
     <message>
         <source>PREF_BROWSE_AFTER_APPLY_AND_CLOSE_ONLY</source>
-        <translation>Seulement après "Appliquer et Fermer"</translation>
+        <translation>Seulement après &quot;Appliquer et Fermer&quot;</translation>
     </message>
     <message>
         <source>PREF_BROWSE_ALWAYS</source>
@@ -523,6 +523,10 @@ Les modifications seront appliquées à la prochaine session.</translation>
         <translation>Couleur de l&apos;arrière-plan</translation>
     </message>
     <message>
+        <source>PREF_VIEWER_SELECTION</source>
+        <translation>Couleur de sélection</translation>
+    </message>
+    <message>
         <source>PREF_XYVIEWER_BACKGROUND</source>
         <translation>Couleur de l&apos;arrière-plan (vue XY)</translation>
     </message>
@@ -541,6 +545,18 @@ Les modifications seront appliquées à la prochaine session.</translation>
     <message>
         <source>PREF_FONT</source>
         <translation>Police</translation>
+    </message>
+    <message>
+        <source>PREF_LEGEND_FONT</source>
+        <translation>Police de la légende</translation>
+    </message>
+    <message>
+        <source>PREF_FONT_COLOR</source>
+        <translation>Couleur de police de la légende</translation>
+    </message>
+    <message>
+        <source>PREF_SELECTED_FONT_COLOR</source>
+        <translation>Couleur de surlignement de la légende</translation>
     </message>
     <message>
         <source>PREF_LEFT</source>

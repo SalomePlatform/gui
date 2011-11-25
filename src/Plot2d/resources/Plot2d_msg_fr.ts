@@ -347,7 +347,7 @@ L&apos;échelle logarithmique de l&apos;ordonnée n&apos;est pas permise.</trans
     </message>
     <message>
         <source>PLOT2D_LEGEND_FONT</source>
-        <translation">Police de la légende</translation>
+        <translation>Police de la légende</translation>
     </message>
     <message>
         <source>DSC_ZOOM_VIEW</source>

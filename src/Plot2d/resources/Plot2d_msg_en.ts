@@ -205,7 +205,7 @@
     </message>
     <message>
         <source>TOT_PLOT2D_ANALITIC_CURVES</source>
-        <translation>Analitic curves</translation>
+        <translation>Analytic curves</translation>
     </message>    
     <message>
         <source>PLOT2D_CURVE_TYPE_LINES</source>
@@ -355,7 +355,7 @@ Logarithmic scale for ordinate axis is not allowed.</translation>
     </message>
     <message>
         <source>PRP_PLOT2D_ANALITIC_CURVES</source>
-        <translation>Setups analitic curves properties</translation>
+        <translation>Setups analytic curves properties</translation>
     </message>
     <message>
         <source>PRP_PLOT2D_SETTINGS</source>
@@ -451,7 +451,7 @@ Logarithmic scale for ordinate axis is not allowed.</translation>
     </message>
     <message>
         <source>MEN_PLOT2D_ANALITIC_CURVES</source>
-        <translation>Analitic curvse</translation>
+        <translation>Analytic curves</translation>
     </message>
     <message>
         <source>CIRCLE_MARKER_LBL</source>

@@ -79,6 +79,7 @@ int VTKViewer_TransformFilter::RequestData(
   }
   outPD->PassData(pd);
   outCD->PassData(cd);
+  InvokeEvent("VTKViewer_TransformFilter::TransformationFinished");
   
   return 1;
 }

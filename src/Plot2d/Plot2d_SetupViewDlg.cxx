@@ -582,8 +582,10 @@ bool Plot2d_SetupViewDlg::isYTitleEditable()
 */
 void Plot2d_SetupViewDlg::setY2TitleEditable( bool editable )
 {
-  myTitleY2Check->setVisible( editable );
-  myTitleY2Edit->setVisible( editable );
+  if ( mySecondAxisY ) {
+    myTitleY2Check->setVisible( editable );
+    myTitleY2Edit->setVisible( editable );
+  }
 }
  
 /*!
@@ -593,7 +595,7 @@ void Plot2d_SetupViewDlg::setY2TitleEditable( bool editable )
 */
 bool Plot2d_SetupViewDlg::isY2TitleEditable()
 {
-  return myTitleY2Edit->isVisible();
+  return mySecondAxisY && myTitleY2Edit->isVisible();
 }
 
 /*!

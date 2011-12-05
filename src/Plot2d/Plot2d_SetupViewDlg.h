@@ -57,6 +57,15 @@ public:
   QString         getYTitle();
   QString         getY2Title();
 
+  void            setTitleEditable( bool );
+  bool            isTitleEditable();
+  void            setXTitleEditable( bool );
+  bool            isXTitleEditable();
+  void            setYTitleEditable( bool );
+  bool            isYTitleEditable();
+  void            setY2TitleEditable( bool );
+  bool            isY2TitleEditable();
+
   void            setCurveType( const int );
   int             getCurveType();
 

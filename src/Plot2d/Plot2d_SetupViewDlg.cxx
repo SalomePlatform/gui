@@ -517,6 +517,86 @@ QString Plot2d_SetupViewDlg::getY2Title()
 }
 
 /*!
+  \brief Shows/hides widgets for the main title editing
+  \sa isTitleEditable()
+*/
+void Plot2d_SetupViewDlg::setTitleEditable( bool editable )
+{
+  myTitleCheck->setVisible( editable );
+  myTitleEdit->setVisible( editable );
+}
+
+/*!
+  \brief Get visibility state of the widgets for the main title editing
+  \return true if the widgets are visible
+  \sa setTitleEditable()
+*/
+bool Plot2d_SetupViewDlg::isTitleEditable()
+{
+  return myTitleEdit->isVisible();
+}
+
+/*!
+  \brief Shows/hides widgets for the X axis title editing
+  \sa isXTitleEditable()
+*/
+void Plot2d_SetupViewDlg::setXTitleEditable( bool editable )
+{
+  myTitleXCheck->setVisible( editable );
+  myTitleXEdit->setVisible( editable );
+}
+ 
+/*!
+  \brief Get visibility state of the widgets for the X axis title editing
+  \return true if the widgets are visible
+  \sa setXTitleEditable()
+*/
+bool Plot2d_SetupViewDlg::isXTitleEditable()
+{
+  return myTitleXEdit->isVisible();
+}
+
+/*!
+  \brief Shows/hides widgets for the Y axis title editing
+  \sa isYTitleEditable()
+*/
+void Plot2d_SetupViewDlg::setYTitleEditable( bool editable )
+{
+  myTitleYCheck->setVisible( editable );
+  myTitleYEdit->setVisible( editable );
+}
+ 
+/*!
+  \brief Get visibility state of the widgets for the Y axis title editing
+  \return true if the widgets are visible
+  \sa setYTitleEditable()
+*/
+bool Plot2d_SetupViewDlg::isYTitleEditable()
+{
+  return myTitleYEdit->isVisible();
+}
+
+/*!
+  \brief Shows/hides widgets for the second Y axis title editing
+  \sa isY2TitleEditable()
+*/
+void Plot2d_SetupViewDlg::setY2TitleEditable( bool editable )
+{
+  myTitleY2Check->setVisible( editable );
+  myTitleY2Edit->setVisible( editable );
+}
+ 
+/*!
+  \brief Get visibility state of the widgets for the second Y axis title editing
+  \return true if the widgets are visible
+  \sa setY2TitleEditable()
+*/
+bool Plot2d_SetupViewDlg::isY2TitleEditable()
+{
+  return myTitleY2Edit->isVisible();
+}
+
+/*!
   \brief Set curve type.
   \param type curve type: 0 (points), 1 (lines) or 2 (splines)
   \sa getCurveType()

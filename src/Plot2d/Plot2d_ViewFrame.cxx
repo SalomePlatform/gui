@@ -933,6 +933,16 @@ int Plot2d_ViewFrame::testOperation( const QMouseEvent& me )
 }
 
 /*!
+  Protected virtual method called by onSettings() slot, 
+  can be redefined to customize the dialog box appearance.
+  \param theDlg a pointer to the 2D plot settings dialog box instance
+  \sa onSettings()
+*/
+void Plot2d_ViewFrame::setupSettingsDlg( Plot2d_SetupViewDlg* /*theDlg*/ )
+{
+}
+
+/*!
   "Settings" toolbar action slot
 */
 void Plot2d_ViewFrame::onSettings()
@@ -977,6 +987,10 @@ void Plot2d_ViewFrame::onSettings()
 #endif
   
   Plot2d_SetupViewDlg* dlg = new Plot2d_SetupViewDlg( this, true, mySecondY );
+
+  // Allow derived classes to customize the dialog box appearance
+  setupSettingsDlg( dlg );
+
   dlg->setMainTitle( myTitleEnabled, myTitle );
   dlg->setXTitle( myXTitleEnabled, myXTitle );
   dlg->setYTitle( myYTitleEnabled, myYTitle );

@@ -27,6 +27,7 @@
 
 class Plot2d_Plot2d;
 class Plot2d_Prs;
+class Plot2d_SetupViewDlg;
 class QCustomEvent;
 class QwtPlotCurve;
 class QwtPlotGrid;
@@ -169,6 +170,8 @@ protected:
 
   void    setCurveType( QwtPlotCurve* curve, int curveType );
 
+  virtual void setupSettingsDlg( Plot2d_SetupViewDlg* );
+
 public slots:
   void    onViewPan(); 
   void    onViewZoom();
@@ -191,6 +194,7 @@ protected:
   void    plotMousePressed( const QMouseEvent& );
   bool    plotMouseMoved( const QMouseEvent& );
   void    plotMouseReleased( const QMouseEvent& );
+  
 
 signals:
   void    vpModeHorChanged();

@@ -449,6 +449,44 @@ void LightApp_Study::RemoveTemporaryFiles (const char* theModuleName, const bool
 }
 
 /*!
+  Virtual method that creates the root object (module object) for the given data model.
+  The type of the created object depends on the study class, therefore data model classes
+  should not create their module objects directly and should instead use 
+  LightApp_DataModel::createModuleObject() that in its turn relies on this method.
+
+  \param theDataModel - data model instance to create a module object for
+  \param theParent - the module object's parent (normally it's the study root)
+  \return the module object instance
+  \sa LightApp_DataModel class, SalomeApp_Study class, LightApp_ModuleObject class
+*/
+CAM_ModuleObject* LightApp_Study::createModuleObject( LightApp_DataModel* theDataModel, 
+						      SUIT_DataObject* theParent ) const
+{
+  // Calling addComponent() for symmetry with SalomeApp_Study
+  // Currently it has empty implementation, but maybe in the future things will change...
+  LightApp_Study* that = const_cast<LightApp_Study*>( this );
+  that->addComponent( theDataModel );
+
+  // Avoid creating multiple module objects for the same module
+  CAM_ModuleObject* res = 0;
+
+  DataObjectList children = root()->children();
+  DataObjectList::const_iterator anIt = children.begin(), aLast = children.end();
+  for( ; !res && anIt!=aLast; anIt++ )
+  {
+    LightApp_ModuleObject* obj = dynamic_cast<LightApp_ModuleObject*>( *anIt );
+    if ( obj && obj->name() == theDataModel->module()->moduleName() )
+      res = obj;
+  }
+
+  if ( !res ){
+    res = new LightApp_ModuleObject( theDataModel, theParent );
+  }
+
+  return res;
+}
+
+/*!
   Fills list with components names
   \param comp - list to be filled
 */

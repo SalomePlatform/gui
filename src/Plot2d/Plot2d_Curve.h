@@ -60,12 +60,6 @@ public:
   int                  getLineWidth() const;
 
 protected:
-  void                 getNextMarker( const QwtPlot*, QwtSymbol::Style&,
-				      QColor&, Qt::PenStyle& );
-  bool                 existMarker( const QwtPlot*, const QwtSymbol::Style,
-				    const QColor&, const Qt::PenStyle );
-
-protected:
   QColor               myColor;
   Plot2d::MarkerType   myMarker;
   int                  myMarkerSize;

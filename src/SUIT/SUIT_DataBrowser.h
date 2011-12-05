@@ -69,6 +69,9 @@ public:
   void             setAutoSizeColumns( const bool on );
   void             setResizeOnExpandItem( const bool on );
 
+  void             ensureVisible( SUIT_DataObject* );
+  void             ensureVisible( const DataObjectList& );
+
 protected:
   virtual void     contextMenuEvent( QContextMenuEvent* );
 

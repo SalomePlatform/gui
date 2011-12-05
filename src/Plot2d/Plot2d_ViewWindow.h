@@ -56,7 +56,8 @@ public:
 	 CurvPointsId, CurvLinesId, CurvSplinesId, 
 	 LegendId,
 	 CurvSettingsId,
-	 CloneId, PrintId };
+	 CloneId, PrintId,
+	 AnaliticCurveId };
 
 public:
   Plot2d_ViewWindow( SUIT_Desktop*, Plot2d_Viewer* );

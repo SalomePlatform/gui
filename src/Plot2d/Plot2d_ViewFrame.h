@@ -25,6 +25,9 @@
 
 #include "Plot2d.h"
 #include "Plot2d_Curve.h"
+#ifndef DISABLE_PYCONSOLE
+#include "Plot2d_AnaliticCurve.h"
+#endif
 
 #include <QWidget>
 #include <QMultiHash>
@@ -108,6 +111,10 @@ public:
   
   void           getFitRangeByCurves( double&, double&, double&, double&,
 				      double&, double& );
+#ifndef DISABLE_PYCONSOLE
+  void           updateAnaliticCurves();
+  void           updateAnaliticCurve( Plot2d_AnaliticCurve*, bool = false );
+#endif
 
   /* view parameters */
   void           copyPreferences( Plot2d_ViewFrame* );
@@ -163,22 +170,18 @@ public:
   Plot2d_Curve*  getClosestCurve( QPoint, double&, int& ) const;
   
   Plot2d_Object* getPlotObject( QwtPlotItem* ) const;
-
+  QwtPlotItem*   getPlotObject( Plot2d_Object* ) const;
+  QwtPlotCurve*  getPlotCurve( Plot2d_Curve* ) const;
+  Plot2d_Plot2d* getPlot() const { return myPlot; }
 protected:
   int            testOperation( const QMouseEvent& );
   void           readPreferences();
   void           writePreferences();
   QString        getInfo( const QPoint& );
   virtual void   wheelEvent( QWheelEvent* );
-  QwtPlotCurve*  getPlotCurve( Plot2d_Curve* ) const;
   bool           hasPlotCurve( Plot2d_Curve* ) const;
   void           setCurveType( QwtPlotCurve*, int );
-  QwtPlotItem*   getPlotObject( Plot2d_Object* ) const;
   bool           hasPlotObject( Plot2d_Object* ) const;
-
-
-  
-  
 
 public slots:
   void           onViewPan(); 
@@ -187,6 +190,9 @@ public slots:
   void           onViewFitArea();
   void           onViewGlobalPan(); 
   void           onSettings();
+#ifndef DISABLE_PYCONSOLE
+  void           onAnaliticCurve();
+#endif
   void           onFitData();
   void           onChangeBackground();
   void           onPanLeft();
@@ -210,28 +216,31 @@ signals:
   void           legendClicked( QwtPlotItem* );
 
 protected:
-  Plot2d_Plot2d* myPlot;
-  int            myOperation;
-  QPoint         myPnt;
+  Plot2d_Plot2d*      myPlot;
+  int                 myOperation;
+  QPoint              myPnt;
 
-  int            myCurveType;
-  bool           myShowLegend;
-  int            myLegendPos;
-  QFont          myLegendFont;
-  QColor         myLegendColor;
-  int            myMarkerSize;
-  QColor         myBackground;
-  QString        myTitle, myXTitle, myYTitle, myY2Title;
-  bool           myTitleEnabled, myXTitleEnabled, myYTitleEnabled, myY2TitleEnabled;
-  bool           myXGridMajorEnabled, myYGridMajorEnabled, myY2GridMajorEnabled;
-  bool           myXGridMinorEnabled, myYGridMinorEnabled, myY2GridMinorEnabled;
-  int            myXGridMaxMajor, myYGridMaxMajor, myY2GridMaxMajor;
-  int            myXGridMaxMinor, myYGridMaxMinor, myY2GridMaxMinor;
-  int            myXMode, myYMode;
-  double         myXDistance, myYDistance, myYDistance2;
-  bool           mySecondY;
-  ObjectDict     myObjects;
-  bool           myIsDefTitle;
+  int                 myCurveType;
+  bool                myShowLegend;
+  int                 myLegendPos;
+  QFont               myLegendFont;
+  QColor              myLegendColor;
+  int                 myMarkerSize;
+  QColor              myBackground;
+  QString             myTitle, myXTitle, myYTitle, myY2Title;
+  bool                myTitleEnabled, myXTitleEnabled, myYTitleEnabled, myY2TitleEnabled;
+  bool                myXGridMajorEnabled, myYGridMajorEnabled, myY2GridMajorEnabled;
+  bool                myXGridMinorEnabled, myYGridMinorEnabled, myY2GridMinorEnabled;
+  int                 myXGridMaxMajor, myYGridMaxMajor, myY2GridMaxMajor;
+  int                 myXGridMaxMinor, myYGridMaxMinor, myY2GridMaxMinor;
+  int                 myXMode, myYMode;
+  double              myXDistance, myYDistance, myYDistance2;
+  bool                mySecondY;
+  ObjectDict          myObjects;
+#ifndef DISABLE_PYCONSOLE
+  AnaliticCurveList   myAnaliticCurves;
+#endif
+  bool                myIsDefTitle;
 };
 
 class Plot2d_Plot2d : public QwtPlot 

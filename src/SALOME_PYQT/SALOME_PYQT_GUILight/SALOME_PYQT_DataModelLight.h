@@ -46,17 +46,22 @@ public:
   virtual bool         saveAs ( const QString&, CAM_Study*, QStringList& );
   virtual bool         close  ();
   virtual bool         create ( CAM_Study* );
+  virtual bool         dumpPython( const QString&,
+				   CAM_Study*,
+				   bool,
+				   QStringList& );
   
   virtual bool         isModified () const;
-  virtual bool         isSaved    () const;
+  void                 setModified( bool );
   
   virtual void         update ( LightApp_DataObject* = 0, LightApp_Study* = 0 );
 
-  LightApp_ModuleObject* getRoot();
+  CAM_DataObject*      getRoot();
 
  private:
   QString              myFileName;
   QString              myStudyURL;
+  bool                 myModified;
 };
 
 #endif // SALOME_PYQT_DATAMODELLIGHT_H

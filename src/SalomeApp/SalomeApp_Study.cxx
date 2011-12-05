@@ -33,6 +33,7 @@
 
 #include <QCoreApplication>
 #include <QEvent>
+#include <QFileInfo>
 #include "SALOME_Event.h"
 #include "Basics_Utils.hxx"
 
@@ -571,7 +572,10 @@ bool SalomeApp_Study::saveDocumentAs( const QString& theFileName )
   QListIterator<CAM_DataModel*> it( list );
   QStringList listOfFiles;
   while ( it.hasNext() ) {
-    if ( SalomeApp_DataModel* aModel = (SalomeApp_DataModel*)it.next() ) {
+    // Cast to LightApp class in order to give a chance
+    // to light modules to save their data
+    if ( LightApp_DataModel* aModel = 
+	 dynamic_cast<LightApp_DataModel*>( it.next() ) ) {
       listOfFiles.clear();
       aModel->saveAs( theFileName, this, listOfFiles );
       if ( !listOfFiles.isEmpty() )
@@ -613,7 +617,10 @@ bool SalomeApp_Study::saveDocument()
   QListIterator<CAM_DataModel*> it( list );
   QStringList listOfFiles;
   while ( it.hasNext() ) {
-    if ( SalomeApp_DataModel* aModel = (SalomeApp_DataModel*)it.next() ) {
+    // Cast to LightApp class in order to give a chance
+    // to light modules to save their data
+    if ( LightApp_DataModel* aModel = 
+	 dynamic_cast<LightApp_DataModel*>( it.next() ) ) {
       listOfFiles.clear();
       aModel->save(listOfFiles);
       if ( !listOfFiles.isEmpty() )
@@ -656,6 +663,80 @@ void SalomeApp_Study::closeDocument(bool permanently)
     SALOMEDSClient_Study* aStudy = 0;
     setStudyDS( _PTR(Study)(aStudy) );
   }
+}
+
+/*!
+  Dump study operation. Writes a Python dump file using
+  SALOMEDS services. Additionally, gives a chance to light modules
+  to participate in dump study operation.
+
+  \param theFileName - full path to the output Python file
+  \param toPublish - if true, all objects are published in a study 
+  by the output script, including those not orignally present 
+  in the current study.
+  \param isMultiFile - if true, each module's dump is written into 
+  a separate Python file, otherwise a single output file is written
+  \param toSaveGUI - if true, the GUI state is written
+
+  \return - true if the operation succeeds, and false otherwise.
+*/
+bool SalomeApp_Study::dump( const QString& theFileName, 
+			    bool toPublish, 
+			    bool isMultiFile,
+			    bool toSaveGUI )
+{
+  int savePoint;
+  _PTR(AttributeParameter) ap;
+  _PTR(IParameters) ip = ClientFactory::getIParameters(ap);
+  _PTR(Study) aStudy = studyDS();
+
+  if( ip->isDumpPython( aStudy ) ) 
+    ip->setDumpPython( aStudy ); //Unset DumpPython flag.
+
+  if ( toSaveGUI ) { //SRN: Store a visual state of the study at the save point for DumpStudy method
+    ip->setDumpPython( aStudy );
+    //SRN: create a temporary save point
+    savePoint = SalomeApp_VisualState( 
+      dynamic_cast<SalomeApp_Application*>( application() ) ).storeState(); 
+  }
+
+  // Issue 21377 - Each data model is asked to dump its data not present in SALOMEDS study.
+  // This is an optional but important step, it gives a chance to light modules
+  // to dump their data as a part of common dump study operation
+  ModelList list; 
+  dataModels( list );
+
+  QListIterator<CAM_DataModel*> it( list );
+  QStringList listOfFiles;
+  while ( it.hasNext() ) {
+    if ( LightApp_DataModel* aModel = 
+	 dynamic_cast<LightApp_DataModel*>( it.next() ) ) {
+      listOfFiles.clear();
+      if ( aModel->dumpPython( theFileName, this, isMultiFile, listOfFiles ) && 
+	   !listOfFiles.isEmpty() )
+	// This call simply passes the data model's dump output to SalomeApp_Engine servant.
+	// This code is shared with persistence mechanism.
+	// NOTE: this should be revised if behavior of saveModuleData() changes!
+        saveModuleData(aModel->module()->name(), listOfFiles);
+    }
+  }
+
+  // Now dump SALOMEDS part that also involves SalomeApp_Engine in case if 
+  // any light module is present in the current configuration
+  QFileInfo aFileInfo( theFileName );
+  bool res = aStudy->DumpStudy( aFileInfo.absolutePath().toStdString(),
+				aFileInfo.baseName().toStdString(),
+				toPublish,
+				isMultiFile);
+  if ( toSaveGUI )
+    removeSavePoint( savePoint ); //SRN: remove the created temporary save point.
+
+  // Issue 21377 - Clean up light module data in SalomeApp_Engine servant
+  // This code is shared with persistence mechanism.
+  // NOTE: this should be revised if behavior of saveStudyData() changes!
+  saveStudyData( theFileName );
+
+  return res;
 }
 
 /*!
@@ -735,16 +816,22 @@ void SalomeApp_Study::openModuleData( QString theModuleName, QStringList& theLis
 }
 
 /*!
-  Saves data from study
+  Re-implemented from LightApp_Study, actually does not save anything but
+  simply cleans up light modules' data
 */
 bool SalomeApp_Study::saveStudyData( const QString& theFileName )
 {
   ModelList list; dataModels( list );
   QListIterator<CAM_DataModel*> it( list );
   std::vector<std::string> listOfFiles(0);
-  while ( it.hasNext() )
-    if ( SalomeApp_DataModel* aModel = (SalomeApp_DataModel*)it.next() )
-      SetListOfFiles(aModel->module()->name().toStdString().c_str(), listOfFiles);
+  while ( it.hasNext() ){
+    LightApp_DataModel* aLModel = 
+      dynamic_cast<LightApp_DataModel*>( it.next() );
+    // It is safe to call SetListOfFiles() for any kind of module
+    // because SetListOfFiles() does nothing for full modules :)
+    if ( aLModel )
+      SetListOfFiles(aLModel->module()->name().toStdString().c_str(), listOfFiles);
+  }
   return true;
 }
 
@@ -762,6 +849,54 @@ bool SalomeApp_Study::openStudyData( const QString& theFileName )
 void SalomeApp_Study::setStudyDS( const _PTR(Study)& s )
 {
   myStudyDS = s;
+}
+
+/*!
+  Virtual method re-implemented from LightApp_Study in order to create
+  the module object connected to SALOMEDS - SalomeApp_ModuleObject.
+
+  \param theDataModel - data model instance to create a module object for
+  \param theParent - the module object's parent (normally it's the study root)
+  \return the module object instance
+  \sa LightApp_Study class, LightApp_DataModel class
+*/
+CAM_ModuleObject* SalomeApp_Study::createModuleObject( LightApp_DataModel* theDataModel, 
+						       SUIT_DataObject* theParent ) const
+{
+  SalomeApp_Study* that = const_cast<SalomeApp_Study*>( this );
+  
+  // Ensure that SComponent instance is published in the study for the given module
+  // This line causes automatic creation of SalomeApp_ModuleObject in case if
+  // WITH_SALOMEDS_OBSERVER is defined
+  that->addComponent( theDataModel );
+  
+  // SalomeApp_ModuleObject might have been created by SALOMEDS observer
+  // or by someone else so check if it exists first of all
+  CAM_ModuleObject* res = 0;
+
+  DataObjectList children = root()->children();
+  DataObjectList::const_iterator anIt = children.begin(), aLast = children.end();
+  for( ; !res && anIt!=aLast; anIt++ )
+  {
+    SalomeApp_ModuleObject* obj = dynamic_cast<SalomeApp_ModuleObject*>( *anIt );
+    if ( obj && obj->componentDataType() == theDataModel->module()->name() )
+      res = obj;
+  }
+
+  if ( !res ){
+    _PTR(Study) aStudy = studyDS();
+    if ( !aStudy )
+      return res;
+
+    _PTR(SComponent) aComp = aStudy->FindComponent( 
+      theDataModel->module()->name().toStdString() );
+    if ( !aComp )
+      return res;
+
+    res = new SalomeApp_ModuleObject( theDataModel, aComp, theParent );
+  }
+
+  return res;
 }
 
 /*!
@@ -788,11 +923,32 @@ void SalomeApp_Study::addComponent(const CAM_DataModel* dm)
     _PTR(Study) aStudy = studyDS();
     if (!aStudy)
       return;
-    _PTR(SComponent) aComp = aStudy->FindComponent(dm->module()->name().toStdString());
+
+    std::string aCompDataType = dm->module()->name().toStdString();
+
+    _PTR(SComponent) aComp = aStudy->FindComponent(aCompDataType);
     if (!aComp) {
       // Create SComponent
       _PTR(StudyBuilder) aBuilder = aStudy->NewBuilder();
-      aComp = aBuilder->NewComponent(dm->module()->name().toStdString());
+      aComp = aBuilder->NewComponent(aCompDataType);
+      aBuilder->SetName(aComp, dm->module()->moduleName().toStdString());
+      QString anIconName = dm->module()->iconName();
+      if (!anIconName.isEmpty()) {
+        _PTR(AttributePixMap) anAttr = aBuilder->FindOrCreateAttribute(aComp, "AttributePixMap");
+        if (anAttr)
+          anAttr->SetPixMap(anIconName.toStdString());
+      }
+
+      // Set default engine IOR
+      // Issue 21377 - using separate engine for each type of light module
+      std::string anEngineIOR = SalomeApp_Engine_i::EngineIORForComponent( aCompDataType.c_str(),
+									   true );
+      aBuilder->DefineComponentInstance(aComp, anEngineIOR);
+      //SalomeApp_DataModel::BuildTree( aComp, root(), this, /*skipExisitng=*/true );
+      SalomeApp_DataModel::synchronize( aComp, this );
+    }
+    else {
+      _PTR(StudyBuilder) aBuilder = aStudy->NewBuilder();
       aBuilder->SetName(aComp, dm->module()->moduleName().toStdString());
       QString anIconName = dm->module()->iconName();
       if (!anIconName.isEmpty()) {
@@ -801,9 +957,6 @@ void SalomeApp_Study::addComponent(const CAM_DataModel* dm)
           anAttr->SetPixMap(anIconName.toStdString());
       }
       // Set default engine IOR
-      aBuilder->DefineComponentInstance(aComp, SalomeApp_Application::defaultEngineIOR().toStdString());
-      //SalomeApp_DataModel::BuildTree( aComp, root(), this, /*skipExisitng=*/true );
-      SalomeApp_DataModel::synchronize( aComp, this );
     }
   }
 }
@@ -823,8 +976,10 @@ bool SalomeApp_Study::openDataModel( const QString& studyName, CAM_DataModel* dm
   QString anEngine;
   // 1. aModule == 0 means that this is a light module (no CORBA enigine)
   if (!aModule) {
-    anEngine = SalomeApp_Application::defaultEngineIOR();
-    aSComp = aStudy->FindComponent(dm->module()->name().toStdString());
+    // Issue 21377 - using separate engine for each type of light module
+    std::string aCompDataType = dm->module()->name().toStdString();
+    anEngine = SalomeApp_Engine_i::EngineIORForComponent( aCompDataType.c_str(), true ).c_str();
+    aSComp = aStudy->FindComponent( aCompDataType );
   }
   else {
     SalomeApp_DataModel* aDM = dynamic_cast<SalomeApp_DataModel*>( dm );
@@ -896,30 +1051,38 @@ QString SalomeApp_Study::newStudyName() const
 }
 
 /*!
+  Note that this method does not create or activate SalomeApp_Engine_i instance,
+  therefore it can be called safely for any kind of module, but for full
+  modules it returns an empty list.
   \return list of files used by module: to be used by CORBAless modules
   \param theModuleName - name of module
 */
 std::vector<std::string> SalomeApp_Study::GetListOfFiles( const char* theModuleName  ) const
 {
-  SalomeApp_Engine_i* aDefaultEngine = SalomeApp_Engine_i::GetInstance();
+  // Issue 21377 - using separate engine for each type of light module
+  SalomeApp_Engine_i* aDefaultEngine = SalomeApp_Engine_i::GetInstance( theModuleName, false );
   if (aDefaultEngine)
-    return aDefaultEngine->GetListOfFiles(id(), theModuleName);
+    return aDefaultEngine->GetListOfFiles(id());
 
   std::vector<std::string> aListOfFiles;
   return aListOfFiles;
 }
 
 /*!
-  Sets list of files used by module: to be used by CORBAless modules
+  Sets list of files used by module: to be used by CORBAless modules.
+  Note that this method does not create or activate SalomeApp_Engine_i instance,
+  therefore it can be called safely for any kind of module, but for full
+  modules it simply does nothing.
   \param theModuleName - name of module
   \param theListOfFiles - list of files
 */
 void SalomeApp_Study::SetListOfFiles ( const char* theModuleName,
                                        const std::vector<std::string> theListOfFiles )
 {
-  SalomeApp_Engine_i* aDefaultEngine = SalomeApp_Engine_i::GetInstance();
+  // Issue 21377 - using separate engine for each type of light module
+  SalomeApp_Engine_i* aDefaultEngine = SalomeApp_Engine_i::GetInstance( theModuleName, false );
   if (aDefaultEngine)
-    aDefaultEngine->SetListOfFiles(theListOfFiles, id(), theModuleName);
+    aDefaultEngine->SetListOfFiles(theListOfFiles, id());
 }
 
 /*!

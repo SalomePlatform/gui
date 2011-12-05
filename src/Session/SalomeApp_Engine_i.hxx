@@ -39,11 +39,13 @@
 #include <SALOMEconfig.h>
 #include CORBA_SERVER_HEADER(SalomeApp_Engine)
 
+class SALOME_NamingService;
+
 class SESSION_EXPORT SalomeApp_Engine_i: public POA_SalomeApp::Engine,
-                          public Engines_Component_i
+					 public Engines_Component_i
 {
 public:
-  SalomeApp_Engine_i();
+  SalomeApp_Engine_i( const char* theComponentName );
   ~SalomeApp_Engine_i();
 
   SALOMEDS::TMPFile*      Save( SALOMEDS::SComponent_ptr theComponent, 
@@ -55,17 +57,22 @@ public:
                                const char* theURL, 
                                bool isMultiFile );
 
+  virtual Engines::TMPFile* DumpPython(CORBA::Object_ptr theStudy,
+                                       CORBA::Boolean isPublished,
+                                       CORBA::Boolean isMultiFile,
+                                       CORBA::Boolean& isValidScript);
+
 public:
   typedef std::vector<std::string> ListOfFiles;
 
-  ListOfFiles             GetListOfFiles (const int         theStudyId, 
-                                          const char*       theComponentName);
+  ListOfFiles             GetListOfFiles (const int          theStudyId);
+  void                    SetListOfFiles (const ListOfFiles& theListOfFiles,
+                                          const int          theStudyId);
 
-  void                    SetListOfFiles (const ListOfFiles theListOfFiles,
-                                          const int         theStudyId, 
-                                          const char*       theComponentName);
-
-  static SalomeApp_Engine_i* GetInstance();
+  static std::string         EngineIORForComponent( const char* theComponentName,
+						    bool toCreate );
+  static SalomeApp_Engine_i* GetInstance          ( const char* theComponentName,
+						    bool toCreate ); 
 
 public:
   // methods from SALOMEDS::Driver without implementation.  Must be redefined because 
@@ -73,7 +80,7 @@ public:
   SALOMEDS::TMPFile* SaveASCII( SALOMEDS::SComponent_ptr, const char*, bool )                                                                        {return 0;}
   CORBA::Boolean LoadASCII( SALOMEDS::SComponent_ptr, const SALOMEDS::TMPFile&, const char*, bool )                                                  {return 0;}
   void Close( SALOMEDS::SComponent_ptr )                                                                                                             {}
-  char* ComponentDataType()                                                                                                                          {return 0;}
+  char* ComponentDataType();
   char* IORToLocalPersistentID( SALOMEDS::SObject_ptr, const char*, CORBA::Boolean,  CORBA::Boolean )                                                {return 0;}
   char* LocalPersistentIDToIOR( SALOMEDS::SObject_ptr, const char*, CORBA::Boolean,  CORBA::Boolean )                                                {return 0;}
   bool CanPublishInStudy( CORBA::Object_ptr )                                                                                                        {return 0;}
@@ -84,11 +91,17 @@ public:
   SALOMEDS::SObject_ptr PasteInto( const SALOMEDS::TMPFile&, CORBA::Long, SALOMEDS::SObject_ptr )                                                    {return 0;}
 
 private:
-  typedef std::map<std::string, ListOfFiles> MapOfListOfFiles;
-  typedef std::map<int, MapOfListOfFiles>    MapOfMapOfListOfFiles;
-  MapOfMapOfListOfFiles                      myMap;
+  static CORBA::ORB_var              orb();
+  static PortableServer::POA_var     poa();
+  static SALOME_NamingService*       namingService();
+  static CORBA::Object_ptr           engineForComponent( const char* theComponentName,
+							 bool toCreate  );
 
-  static SalomeApp_Engine_i* myInstance;
+private:
+  typedef std::map<int, ListOfFiles> MapOfListOfFiles;
+  MapOfListOfFiles                   myMap;
+
+  std::string                        myComponentName;
 };
 
 #endif

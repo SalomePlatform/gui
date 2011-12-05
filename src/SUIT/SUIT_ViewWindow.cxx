@@ -47,7 +47,7 @@ const int DUMP_EVENT = QEvent::User + 123;
 
 /*! Constructor.*/
 SUIT_ViewWindow::SUIT_ViewWindow( SUIT_Desktop* theDesktop )
-  : QMainWindow( theDesktop ), myIsDropDown( true )
+  : QMainWindow( theDesktop ), myManager( 0 ), myIsDropDown( true )
 {
   myDesktop = theDesktop;
 

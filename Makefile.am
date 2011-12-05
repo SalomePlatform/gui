@@ -44,6 +44,8 @@ DISTCLEANFILES = a.out aclocal.m4 configure local-install.sh hack_libtool adm_lo
 salomeinclude_DATA = GUI_version.h
 
 EXTRA_DIST +=		\
+	build_cmake	\
+	build_cmake.bat	\
 	build_configure	\
 	clean_configure	\
 	LICENCE

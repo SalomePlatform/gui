@@ -39,7 +39,6 @@
 #include <RegistryService.hxx>
 
 #include "Session_Session_i.hxx"
-#include "SalomeApp_Engine_i.hxx"
 
 #include <Utils_ORB_INIT.hxx>
 #include <Utils_SINGLETON.hxx>
@@ -56,13 +55,12 @@
 
 using namespace std;
 
-const int Session_ServerThread::NB_SRV_TYP = 7;
+const int Session_ServerThread::NB_SRV_TYP = 6;
 const char* Session_ServerThread::_serverTypes[NB_SRV_TYP] = {"Container",
                                                               "ModuleCatalog",
                                                               "Registry",
                                                               "SALOMEDS",
                                                               "Session",
-                                                              "SalomeAppEngine",
                                                               "ContainerManager"};
 
 /*! 
@@ -158,13 +156,7 @@ void Session_ServerThread::Init()
           ActivateSession(_argc, _argv);
           break;
         }
-      case 5: // SalomeApp_Engine
-        {
-          NamingService_WaitForServerReadiness(_NS,"/myStudyManager");
-          ActivateEngine(_argc, _argv);
-          break;
-        }
-      case 6: // Container Manager
+      case 5: // Container Manager
         {
           NamingService_WaitForServerReadiness(_NS,"");
           ActivateContainerManager(_argc, _argv);
@@ -386,29 +378,6 @@ void Session_ServerThread::ActivateContainer(int argc,
     INFOS("Caught CORBA::Exception.");
   }
   catch(...) {
-    INFOS("Caught unknown exception.");
-  }
-}
-
-void Session_ServerThread::ActivateEngine(int /*argc*/, char ** /*argv*/)
-{
-  try {
-    MESSAGE("SalomeApp_Engine thread started");
-    SalomeApp_Engine_i* anEngine = new SalomeApp_Engine_i();
-    PortableServer::ObjectId_var id =_root_poa->activate_object( anEngine );
-    MESSAGE("poa->activate_object( SalomeApp_Engine )");
-
-    CORBA::Object_var obj = anEngine->_this();
-    anEngine->_remove_ref();
-    _NS->Register( obj ,"/SalomeAppEngine");
-  }
-  catch (CORBA::SystemException&) {
-    INFOS("Caught CORBA::SystemException.");
-  }
-  catch (CORBA::Exception&) {
-    INFOS("Caught CORBA::Exception.");
-  }
-  catch (...) {
     INFOS("Caught unknown exception.");
   }
 }

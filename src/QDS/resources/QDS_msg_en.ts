@@ -17,7 +17,7 @@
     </message>
     <message>
         <source>DATA_MIN_LIMIT</source>
-        <translation> is greater than %1</translation>
+        <translation> greater than %1</translation>
     </message>
     <message>
         <source>DATA_FLOAT</source>
@@ -41,7 +41,7 @@
     </message>
     <message>
         <source>DATA_MAX_LIMIT</source>
-        <translation> is less than %1</translation>
+        <translation> less than %1</translation>
     </message>
     <message>
         <source>DATA_INPUT_VALUE</source>

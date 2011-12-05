@@ -645,7 +645,7 @@ void LightApp_Application::createActions()
   int newWinMenu = createMenu( tr( "MEN_DESK_NEWWINDOW" ), windowMenu, -1, 0 );
 
   createAction( CloseId, tr( "TOT_CLOSE" ), QIcon(), tr( "MEN_DESK_CLOSE" ), tr( "PRP_CLOSE" ),
-                Qt::SHIFT+Qt::Key_C, desk, false, this, SLOT( onCloseWindow() ) );
+                Qt::CTRL+Qt::Key_F4, desk, false, this, SLOT( onCloseWindow() ) );
   createAction( CloseAllId, tr( "TOT_CLOSE_ALL" ), QIcon(), tr( "MEN_DESK_CLOSE_ALL" ), tr( "PRP_CLOSE_ALL" ),
                 0, desk, false, this, SLOT( onCloseAllWindow() ) );
   createAction( GroupAllId, tr( "TOT_GROUP_ALL" ), QIcon(), tr( "MEN_DESK_GROUP_ALL" ), tr( "PRP_GROUP_ALL" ),
@@ -675,7 +675,7 @@ void LightApp_Application::createActions()
 #endif
 
   createAction( RenameId, tr( "TOT_RENAME" ), QIcon(), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ),
-                Qt::SHIFT+Qt::Key_R, desk, false, this, SLOT( onRenameWindow() ) );
+                Qt::ALT+Qt::SHIFT+Qt::Key_R, desk, false, this, SLOT( onRenameWindow() ) );
   createMenu( RenameId, windowMenu, -1 );
 
   int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1 );
@@ -941,10 +941,8 @@ public:
 
   virtual void run()
   {
-    if ( !myApp.isEmpty()) {
-      QString aCommand = QString( "%1 %2 \"%3\"" ).arg( myApp, myParams, myHelpFile );
-      if ( !myContext.isEmpty() )
-        aCommand += "#" + myContext;
+    if ( !myApp.isEmpty() && !myHelpFile.isEmpty()) {
+      QString aCommand = QString( "%1 %2 \"%3%4\"" ).arg( myApp, myParams, myHelpFile, myContext.isEmpty() ? QString("") : QString( "#%1" ).arg( myContext ) );
 
       QProcess* proc = new QProcess();
 
@@ -1017,6 +1015,18 @@ void LightApp_Application::onHelpContextModule( const QString& theComponentName,
                                                 const QString& theFileName,
                                                 const QString& theContext )
 {
+  QString fileName = theFileName;
+  QString context  = theContext;
+  if ( !QFile::exists( fileName ) && theContext.isEmpty() ) {
+    // context might be passed within theFileName argument
+    QStringList comps = fileName.split("#");
+    if ( comps.count() > 1 ) {
+      context = comps.last();
+      comps.removeLast();
+      fileName = comps.join("#");
+    }
+  }
+
   QString homeDir = "";
   if ( !theComponentName.isEmpty() ) {
     QString dir = getenv( ( theComponentName + "_ROOT_DIR" ).toLatin1().constData() );
@@ -1029,7 +1039,7 @@ void LightApp_Application::onHelpContextModule( const QString& theComponentName,
                                Qtx::addSlash( theComponentName ) );
   }
 
-  QString helpFile = QFileInfo( homeDir + theFileName ).absoluteFilePath();
+  QString helpFile = QFileInfo( homeDir + fileName ).absoluteFilePath();
   SUIT_ResourceMgr* resMgr = resourceMgr();
         QString platform;
 #ifdef WIN32
@@ -1050,7 +1060,7 @@ void LightApp_Application::onHelpContextModule( const QString& theComponentName,
     QString aParams = resMgr->stringValue("ExternalBrowser", "parameters");
 
     if ( !anApp.isEmpty() ) {
-      RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile, theContext );
+      RunBrowser* rs = new RunBrowser( this, anApp, aParams, helpFile, context );
       rs->start();
     }
     else {
@@ -1061,7 +1071,7 @@ void LightApp_Application::onHelpContextModule( const QString& theComponentName,
     }
   }
   else {
-    QtxWebBrowser::loadUrl(getFile() + helpFile, theContext );
+    QtxWebBrowser::loadUrl(getFile() + helpFile, context );
   }
 }
 

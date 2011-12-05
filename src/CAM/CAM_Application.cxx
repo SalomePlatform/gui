@@ -45,6 +45,8 @@
 
 #include <cstdio>
 
+namespace
+{
 class BusyLocker
 {
 public:
@@ -54,6 +56,7 @@ private:
   bool  myPrev;
   bool& myBusy;
 };
+}
 
 /*!
   \brief Create new instance of CAM_Application.
@@ -361,10 +364,10 @@ CAM_Module* CAM_Application::loadModule( const QString& modName, const bool show
   if(version) {    
     for ( ModuleInfoList::iterator it = myInfoList.begin(); it != myInfoList.end(); ++it ) {
       if ( (*it).title == modName ) {
-	if( (*it).version.isEmpty() ) {
-	  (*it).version = QString(version);
-	}
-	break;
+        if( (*it).version.isEmpty() ) {
+          (*it).version = QString(version);
+        }
+        break;
       }
     }
   }

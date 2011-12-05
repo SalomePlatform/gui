@@ -26,9 +26,11 @@
 
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
+SUBDIRS=pluginsdemo
+
 if CPPUNIT_IS_OK
 if GUI_ENABLE_CORBA
-  SUBDIRS = Test
+  SUBDIRS += Test
 endif
 endif
 

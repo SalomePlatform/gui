@@ -50,5 +50,5 @@ nodist_salomeres_DATA = \
 libPyConsole_la_CPPFLAGS = $(PYTHON_INCLUDES) $(QT_INCLUDES) \
 	-I$(srcdir)/../PyInterp -I$(srcdir)/../SUIT -I$(srcdir)/../Qtx
 
-libPyConsole_la_LDFLAGS  = $(PYTHON_LIBS) $(QT_MT_LIBS)
+libPyConsole_la_LDFLAGS  = $(PYTHON_LIBS) $(QT_MT_LIBS) $(KERNEL_LDFLAGS) -lSALOMELocalTrace
 libPyConsole_la_LIBADD   = ../Qtx/libqtx.la ../SUIT/libsuit.la ../PyInterp/libPyInterp.la

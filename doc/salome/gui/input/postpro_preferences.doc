@@ -152,7 +152,6 @@ configuration.</li>
 Cache</li> 
 </ul>
 
-<ul>
 <li><b>Animation preferences</b></li>
 <ul>
 <li><b>Speed</b> - allows to define the speed of the animation.</li>
@@ -339,24 +338,24 @@ select_color_and_font_page "Select Color" dialog box.</li>
 <ul>
 <li><b>Gauss Points Scalar Bar</b></li>
 <ul>
-<li><b>Active Bar</b> - this option allows to choose <b>Local</b> or
-<b>Global</b> Bar as active.</li>
-<li><b>Display Global Bar</b> - this option allows to visualize or to
-hide the Global Bar.</li>
-<li><b>Scalar Bar Mode</b> - this option allows to choose between
-<b>Bicolor</b> and <b>Rainbow</b> Scalar Bar Mode.</li>
-<li><b>Spacing</b> - allows to define Spacing from 0.01 to 1.</li>
+  <li><b>Active Bar</b> - this option allows to choose <b>Local</b> or
+    <b>Global</b> Bar as active.</li>
+  <li><b>Display Global Bar</b> - this option allows to visualize or to
+    hide the Global Bar.</li>
+  <li><b>Scalar Bar Mode</b> - this option allows to choose between
+    <b>Bicolor</b> and <b>Rainbow</b> Scalar Bar Mode.</li>
+  <li><b>Spacing</b> - allows to define Spacing from 0.01 to 1.</li>
 </ul>
 </ul>
 
 <ul>
-<b>Spacemouse</b>
+<li><b>Spacemouse</b></li>
 <ul>
 <li><b>Decrease Gauss Points Magnification </b> - divides the current
 magnification by magnification ratio. </li>
 <li><b>Increase Gauss Points Magnification </b> - multiplies the
 current magnification by magnification ratio. </li>
-</ulul>
+</ul>
 </ul>
 
 <br><br><b>Inside<b> and </b>Outside Cursor Preferences</b> allow to set
@@ -376,24 +375,23 @@ the point it becomes selected (ranges from 0.001 to 10).</li>
 <li><b>Information window</b> - allows to define the
 <b>Transparency</b> (from 0% = opaque to 100% = transparent) and
 <b>Position</b> of the window, which can be:</li>
-<ul>
-<li><b>Centred below the point</b>, or</li>
-<li>located at <b>Top-left corner of the 3D view</b></li>
-</ul>
+<li><ul>
+  <li><b>Centred below the point</b>, or</li>
+  <li>located at <b>Top-left corner of the 3D view</b></li>
+</ul></li>
 <li><b>Movement of the Camera</b> can also be define by the user.</li>
-<ul>
-<li><b>Zoom at first selected point</b> - This value is used to define
-the focal distance at the first selected point (at the end of the
-movement of the camera). This value is a ratio that will be multiplied
-by the current zoom value.</li>
-<li><b>Number of steps between two positions</b> - defines the
-smoothness of camera movement at selection by the number of
-iterations. If set to 1 the camera is zoomed and centered at the point
-momentarily. Greater numbers mean very slow camera movement.</li>
-</ul>
+<li><ul>
+  <li><b>Zoom at first selected point</b> - This value is used to define
+    the focal distance at the first selected point (at the end of the
+    movement of the camera). This value is a ratio that will be multiplied
+    by the current zoom value.</li>
+  <li><b>Number of steps between two positions</b> - defines the
+    smoothness of camera movement at selection by the number of
+    iterations. If set to 1 the camera is zoomed and centered at the point
+    momentarily. Greater numbers mean very slow camera movement.</li>
+</ul></li>
 <li><b>Display parent mesh element</b> - allows to visualize or hide
 the patent mesh element of the selected gauss point.</li>
-</ul>
 </ul>
 
 */

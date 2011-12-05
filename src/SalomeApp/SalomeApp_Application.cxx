@@ -299,7 +299,7 @@ void SalomeApp_Application::createActions()
   //! Catalog Generator
   createAction( CatalogGenId, tr( "TOT_DESK_CATALOG_GENERATOR" ),  QIcon(),
                 tr( "MEN_DESK_CATALOG_GENERATOR" ), tr( "PRP_DESK_CATALOG_GENERATOR" ),
-                Qt::SHIFT+Qt::Key_G, desk, false, this, SLOT( onCatalogGen() ) );
+                Qt::ALT+Qt::SHIFT+Qt::Key_G, desk, false, this, SLOT( onCatalogGen() ) );
 
   //! Registry Display
   createAction( RegDisplayId, tr( "TOT_DESK_REGISTRY_DISPLAY" ),  QIcon(),
@@ -812,21 +812,10 @@ void SalomeApp_Application::onDumpStudy( )
       QFileInfo aFileInfo(aFileName);
       if( aFileInfo.isDir() ) // IPAL19257
         return;
+      
+      // Issue 21377 - dump study implementation moved to SalomeApp_Study class
+      bool res = appStudy->dump( aFileName, toPublish, isMultiFile, toSaveGUI );
 
-      int savePoint;
-      _PTR(AttributeParameter) ap;
-      _PTR(IParameters) ip = ClientFactory::getIParameters(ap);
-      if(ip->isDumpPython(appStudy->studyDS())) ip->setDumpPython(appStudy->studyDS()); //Unset DumpPython flag.
-      if ( toSaveGUI ) { //SRN: Store a visual state of the study at the save point for DumpStudy method
-        ip->setDumpPython(appStudy->studyDS());
-        savePoint = SalomeApp_VisualState( this ).storeState(); //SRN: create a temporary save point
-      }
-      bool res = aStudy->DumpStudy( aFileInfo.absolutePath().toStdString(),
-                                    aFileInfo.baseName().toStdString(),
-                                    toPublish,
-                                    isMultiFile);
-      if ( toSaveGUI )
-        appStudy->removeSavePoint(savePoint); //SRN: remove the created temporary save point.
       if ( !res )
         SUIT_MessageBox::warning( desktop(),
                                   QObject::tr("WRN_WARNING"),
@@ -1001,7 +990,7 @@ void SalomeApp_Application::createPreferences( LightApp_Preferences* pref )
   int salomeCat = pref->addPreference( tr( "PREF_CATEGORY_SALOME" ) );
   int obTab = pref->addPreference( tr( "PREF_TAB_OBJBROWSER" ), salomeCat );
   int defCols = pref->addPreference( tr( "PREF_GROUP_DEF_COLUMNS" ), obTab );
-  for ( int i = SalomeApp_DataObject::EntryId; i <= SalomeApp_DataObject::RefEntryId; i++ )
+  for ( int i = SalomeApp_DataObject::EntryId; i < SalomeApp_DataObject::LastId; i++ )
   {
     pref->addPreference( tr( QString().sprintf( "OBJ_BROWSER_COLUMN_%d", i-SalomeApp_DataObject::EntryId ).toLatin1() ), defCols,
                          LightApp_Preferences::Bool, "ObjectBrowser", QString().sprintf( "visibility_column_id_%d", i-1 ) );
@@ -1222,20 +1211,6 @@ SALOME_LifeCycleCORBA* SalomeApp_Application::lcc()
   return &_lcc;
 }
 
-/*!Return default engine IOR for light modules*/
-QString SalomeApp_Application::defaultEngineIOR()
-{
-  /// Look for a default module engine (needed for CORBAless modules to use SALOMEDS persistence)
-  QString anIOR( "" );
-  CORBA::Object_ptr anEngine = namingService()->Resolve( "/SalomeAppEngine" );
-  if ( !CORBA::is_nil( anEngine ) )
-  {
-    CORBA::String_var objStr = orb()->object_to_string( anEngine );
-    anIOR = QString( objStr.in() );
-  }
-  return anIOR;
-}
-
 /*!Private SLOT. On preferences.*/
 void SalomeApp_Application::onProperties()
 {
@@ -1417,28 +1392,22 @@ void SalomeApp_Application::onRegDisplay()
 /*!find original object by double click on item */
 void SalomeApp_Application::onDblClick( SUIT_DataObject* theObj )
 {
-  SalomeApp_DataObject* obj = dynamic_cast<SalomeApp_DataObject*>( theObj );
-  SalomeApp_Study* study = dynamic_cast<SalomeApp_Study*>( activeStudy() );
+  // Issue 21379: References are supported at LightApp_DataObject level
+  LightApp_DataObject* obj = dynamic_cast<LightApp_DataObject*>( theObj );
 
-  if( study && obj )
+  if( obj && obj->isReference() )
   {
-    QString entry = obj->entry();
-    _PTR(SObject) sobj = study->studyDS()->FindObjectID( entry.toStdString() ), ref;
+    QString entry = obj->refEntry();
 
-    if( sobj && sobj->ReferencedObject( ref ) )
-    {
-      entry = ref->GetID().c_str();
+    SUIT_DataOwnerPtrList aList;
+    aList.append( new LightApp_DataOwner( entry ) );
+    selectionMgr()->setSelected( aList, false );
+    
+    SUIT_DataBrowser* ob = objectBrowser();
 
-      SUIT_DataOwnerPtrList aList;
-      aList.append( new LightApp_DataOwner( entry ) );
-      selectionMgr()->setSelected( aList, false );
-
-      SUIT_DataBrowser* ob = objectBrowser();
-
-      QModelIndexList aSelectedIndexes = ob->selectedIndexes();
-      if ( !aSelectedIndexes.isEmpty() )
-        ob->treeView()->scrollTo( aSelectedIndexes.first() );
-    }
+    QModelIndexList aSelectedIndexes = ob->selectedIndexes();
+    if ( !aSelectedIndexes.isEmpty() )
+      ob->treeView()->scrollTo( aSelectedIndexes.first() );
   }
 }
 
@@ -1654,7 +1623,7 @@ bool SalomeApp_Application::useStudy( const QString& theName )
 void SalomeApp_Application::objectBrowserColumnsVisibility()
 {
   if ( objectBrowser() )
-    for ( int i = SalomeApp_DataObject::EntryId; i <= SalomeApp_DataObject::RefEntryId; i++ )
+    for ( int i = SalomeApp_DataObject::EntryId; i < SalomeApp_DataObject::LastId; i++ )
     {
       bool shown = resourceMgr()->booleanValue( "ObjectBrowser", QString( "visibility_column_id_%1" ).arg( i-1 ), true );
       objectBrowser()->treeView()->setColumnHidden( i, !shown );

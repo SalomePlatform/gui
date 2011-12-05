@@ -270,6 +270,39 @@ void SUIT_DataBrowser::setSelected( const DataObjectList& lst, const bool append
 }
 
 /*!
+  \brief Make the view item for specified data object is visible.
+  \param obj data object
+*/
+void SUIT_DataBrowser::ensureVisible( SUIT_DataObject* obj )
+{
+  if ( !obj )
+    return;
+
+  DataObjectList lst;
+  lst.append( obj );
+  ensureVisible( lst );
+}
+
+/*!
+  \brief Make the view items for specified data objects is visible.
+  \param lst data object list
+*/
+void SUIT_DataBrowser::ensureVisible( const DataObjectList& lst )
+{
+  QtxTreeView* tv = treeView();
+  SUIT_AbstractModel* treeModel = dynamic_cast<SUIT_AbstractModel*>( model() );
+  if ( !tv || !treeModel )
+    return;
+
+  for ( DataObjectList::const_iterator it = lst.begin(); it != lst.end(); ++it )
+  {
+    QModelIndex idx = treeModel->index( *it );
+    if ( idx.isValid() )
+      tv->scrollTo( idx );
+  }
+}
+
+/*!
   \brief Add custom actions to the popup menu.
   \param menu popup menu
 */

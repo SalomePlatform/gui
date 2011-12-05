@@ -64,7 +64,8 @@ Plot2d_SetupCurveDlg::Plot2d_SetupCurveDlg( QWidget* parent )
   myLineCombo = new QComboBox( this );
   myLineCombo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myLineCombo->setMinimumWidth( MIN_COMBO_WIDTH );
-  myLineCombo->setIconSize( QSize( 40, 16 ) );
+  QSize lsz( 40, 16 );
+  myLineCombo->setIconSize( lsz );
 
   // curve width
   QLabel* aLineWidthLab = new QLabel( tr( "CURVE_LINE_WIDTH_LAB" ), this );
@@ -80,7 +81,8 @@ Plot2d_SetupCurveDlg::Plot2d_SetupCurveDlg( QWidget* parent )
   myMarkerCombo = new QComboBox( this );
   myMarkerCombo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myMarkerCombo->setMinimumWidth( MIN_COMBO_WIDTH );
-  myMarkerCombo->setIconSize( QSize( 16, 16 ) );
+  QSize sz(16, 16);
+  myMarkerCombo->setIconSize(sz);
 
   // curve color
   QLabel* aColorLab = new QLabel( tr( "CURVE_COLOR_LAB" ), this );
@@ -125,23 +127,27 @@ Plot2d_SetupCurveDlg::Plot2d_SetupCurveDlg( QWidget* parent )
   topLayout->addLayout( btnLayout, 5, 0, 1, 3 );
 
   // fill then combo boxes
-  myLineCombo->addItem( lineIcon( Plot2d::NoPen ),      tr( "NONE_LINE_LBL" ) );
-  myLineCombo->addItem( lineIcon( Plot2d::Solid ),      tr( "SOLID_LINE_LBL" ) );
-  myLineCombo->addItem( lineIcon( Plot2d::Dash ),       tr( "DASH_LINE_LBL" ) );
-  myLineCombo->addItem( lineIcon( Plot2d::Dot ),        tr( "DOT_LINE_LBL" ) );
-  myLineCombo->addItem( lineIcon( Plot2d::DashDot ),    tr( "DASHDOT_LINE_LBL" ) );
-  myLineCombo->addItem( lineIcon( Plot2d::DashDotDot ), tr( "DAHSDOTDOT_LINE_LBL" ) );
+  QColor cl = myLineCombo->palette().color( QPalette::Text );
 
-  myMarkerCombo->addItem( markerIcon( Plot2d::None ),      tr( "NONE_MARKER_LBL" ) );
-  myMarkerCombo->addItem( markerIcon( Plot2d::Circle ),    tr( "CIRCLE_MARKER_LBL" ) );
-  myMarkerCombo->addItem( markerIcon( Plot2d::Rectangle ), tr( "RECTANGLE_MARKER_LBL" ) );
-  myMarkerCombo->addItem( markerIcon( Plot2d::Diamond ),   tr( "DIAMOND_MARKER_LBL" ) );
-  myMarkerCombo->addItem( markerIcon( Plot2d::DTriangle ), tr( "DTRIANGLE_MARKER_LBL" ) );
-  myMarkerCombo->addItem( markerIcon( Plot2d::UTriangle ), tr( "UTRIANGLE_MARKER_LBL" ) );
-  myMarkerCombo->addItem( markerIcon( Plot2d::LTriangle ), tr( "LTRIANGLE_MARKER_LBL" ) );
-  myMarkerCombo->addItem( markerIcon( Plot2d::RTriangle ), tr( "RTRIANGLE_MARKER_LBL" ) );
-  myMarkerCombo->addItem( markerIcon( Plot2d::Cross ),     tr( "CROSS_MARKER_LBL" ) );
-  myMarkerCombo->addItem( markerIcon( Plot2d::XCross ),    tr( "XCROSS_MARKER_LBL" ) );
+  myLineCombo->addItem( Plot2d::lineIcon( lsz, cl, Plot2d::NoPen ),      tr( "NONE_LINE_LBL" ) );
+  myLineCombo->addItem( Plot2d::lineIcon( lsz, cl, Plot2d::Solid ),      tr( "SOLID_LINE_LBL" ) );
+  myLineCombo->addItem( Plot2d::lineIcon( lsz, cl, Plot2d::Dash ),       tr( "DASH_LINE_LBL" ) );
+  myLineCombo->addItem( Plot2d::lineIcon( lsz, cl, Plot2d::Dot ),        tr( "DOT_LINE_LBL" ) );
+  myLineCombo->addItem( Plot2d::lineIcon( lsz, cl, Plot2d::DashDot ),    tr( "DASHDOT_LINE_LBL" ) );
+  myLineCombo->addItem( Plot2d::lineIcon( lsz, cl, Plot2d::DashDotDot ), tr( "DAHSDOTDOT_LINE_LBL" ) );
+
+  cl = myMarkerCombo->palette().color( QPalette::Text );
+
+  myMarkerCombo->addItem( Plot2d::markerIcon( sz, cl, Plot2d::None ),      tr( "NONE_MARKER_LBL" ) );
+  myMarkerCombo->addItem( Plot2d::markerIcon( sz, cl, Plot2d::Circle ),    tr( "CIRCLE_MARKER_LBL" ) );
+  myMarkerCombo->addItem( Plot2d::markerIcon( sz, cl, Plot2d::Rectangle ), tr( "RECTANGLE_MARKER_LBL" ) );
+  myMarkerCombo->addItem( Plot2d::markerIcon( sz, cl, Plot2d::Diamond ),   tr( "DIAMOND_MARKER_LBL" ) );
+  myMarkerCombo->addItem( Plot2d::markerIcon( sz, cl, Plot2d::DTriangle ), tr( "DTRIANGLE_MARKER_LBL" ) );
+  myMarkerCombo->addItem( Plot2d::markerIcon( sz, cl, Plot2d::UTriangle ), tr( "UTRIANGLE_MARKER_LBL" ) );
+  myMarkerCombo->addItem( Plot2d::markerIcon( sz, cl, Plot2d::LTriangle ), tr( "LTRIANGLE_MARKER_LBL" ) );
+  myMarkerCombo->addItem( Plot2d::markerIcon( sz, cl, Plot2d::RTriangle ), tr( "RTRIANGLE_MARKER_LBL" ) );
+  myMarkerCombo->addItem( Plot2d::markerIcon( sz, cl, Plot2d::Cross ),     tr( "CROSS_MARKER_LBL" ) );
+  myMarkerCombo->addItem( Plot2d::markerIcon( sz, cl, Plot2d::XCross ),    tr( "XCROSS_MARKER_LBL" ) );
 
   // default settings
   setLine( Plot2d::Solid, 0 );   // solid line, width = 0
@@ -242,38 +248,6 @@ void Plot2d_SetupCurveDlg::setColor( const QColor& color )
 QColor Plot2d_SetupCurveDlg::getColor() const
 {
   return myColorBtn->color();
-}
-
-/*!
-  \brief Create icon pixmap according to the line type.
-  \param type line type
-  \return icon
-*/
-QPixmap Plot2d_SetupCurveDlg::lineIcon( Plot2d::LineType type ) const
-{
-  QSize sz = myLineCombo->iconSize();
-  QPixmap px( sz );
-  px.fill( QColor( 255, 255, 255, 0 ) );
-  QPainter p( &px );
-  Plot2d::drawLine( &p, 5, sz.height()/2, sz.width()-5, sz.height()/2, type,
-                    myLineCombo->palette().color( QPalette::Text ), 1 );
-  return px;
-}
-
-/*!
-  \brief Create icon pixmap according to the marker type.
-  \param type marker type
-  \return icon
-*/
-QPixmap Plot2d_SetupCurveDlg::markerIcon( Plot2d::MarkerType type ) const
-{
-  QSize sz = myMarkerCombo->iconSize();
-  QPixmap px( sz );
-  px.fill( QColor( 255, 255, 255, 0 ) );
-  QPainter p( &px );
-  Plot2d::drawMarker( &p, sz.width()/2, sz.height()/2, MSIZE, MSIZE, type,
-                      myMarkerCombo->palette().color( QPalette::Text ) );
-  return px;
 }
 
 /*

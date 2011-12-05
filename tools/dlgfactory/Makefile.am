@@ -83,7 +83,8 @@ nodist_qtester_SOURCES =  \
 	$(UIC_FILES_QDIALOG)
 
 qtester_CPPFLAGS = \
-	$(QT_CXXFLAGS)
+	$(QT_CXXFLAGS) \
+	-I.
 
 qtester_LDFLAGS = \
         $(QT_LIBS)
@@ -98,7 +99,9 @@ nodist_gtester_SOURCES = \
 	$(UIC_FILES_GDIALOG)
 
 gtester_CPPFLAGS = \
-	$(QT_CXXFLAGS)
+	$(QT_CXXFLAGS) \
+	-I@srcdir@ \
+	-I.
 
 gtester_LDFLAGS = \
         $(QT_LIBS)

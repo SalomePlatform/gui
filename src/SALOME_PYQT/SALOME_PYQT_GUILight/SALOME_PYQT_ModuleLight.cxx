@@ -2454,8 +2454,96 @@ void SALOME_PYQT_ModuleLight::saveEvent(QStringList& theListOfFiles)
     return;
 
   if ( PyObject_HasAttrString(myModule, (char*)"saveFiles") ) {
+    // temporary set myInitModule because saveEvent() method
+    // might be called by the framework when this module is inactive,
+    // but still it should be possible to access this module's data
+    // from Python
+    myInitModule = this;
+
     PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"saveFiles",
                                            (char*)"s", (*it).toLatin1().constData()));
+
+    myInitModule = 0;
+
+    if( !res ) {
+      PyErr_Print();
+    }
+    else{
+      // parse the return value
+      // result can be one string...
+      if ( PyString_Check( res ) ) {
+        QString astr = PyString_AsString( res );
+        //SCRUTE(astr);
+        theListOfFiles.append(astr);
+      }
+      //also result can be a list...
+      else if ( PyList_Check( res ) ) {
+        int size = PyList_Size( res );
+        for ( int i = 0; i < size; i++ ) {
+          PyObject* value = PyList_GetItem( res, i );
+          if( value && PyString_Check( value ) ) {
+            theListOfFiles.append( PyString_AsString( value ) );
+          }
+        }
+      }
+    }
+  }
+}
+
+/*
+ * Python dump request.
+ * Called when user activates dump study operation.
+ */
+void SALOME_PYQT_ModuleLight::dumpPython(QStringList& theListOfFiles)
+{
+  MESSAGE("SALOME_PYQT_ModuleLight::dumpPython()")
+  // perform synchronous request to Python event dispatcher
+  class DumpEvent: public PyInterp_LockRequest
+  {
+  public:     
+    DumpEvent(PyInterp_Interp*          _py_interp,
+              SALOME_PYQT_ModuleLight*  _obj,
+              QStringList&              _files_list)
+      : PyInterp_LockRequest( _py_interp, 0, true ), // this request should be processed synchronously (sync == true)
+        myObj( _obj ) ,
+        myFilesList(_files_list) {}
+  protected:
+    virtual void execute()
+    {
+      myObj->dumpEvent(myFilesList);
+    }
+  private:
+    SALOME_PYQT_ModuleLight* myObj;
+    QStringList&             myFilesList;
+  };
+  
+  // Posting the request only if dispatcher is not busy!
+  // Executing the request synchronously
+  if ( !PyInterp_Dispatcher::Get()->IsBusy() )
+    PyInterp_Dispatcher::Get()->Exec( new DumpEvent( myInterp, this, theListOfFiles ) );
+}
+
+void SALOME_PYQT_ModuleLight::dumpEvent(QStringList& theListOfFiles)
+{
+  MESSAGE("SALOME_PYQT_ModuleLight::dumpEvent()");
+  QStringList::Iterator it = theListOfFiles.begin();
+  // Python interpreter should be initialized and Python module should be
+  // import first
+  if ( !myInterp || !myModule || (it == theListOfFiles.end()))
+    return;
+
+  if ( PyObject_HasAttrString(myModule, (char*)"dumpStudy") ) {
+    // temporary set myInitModule because dumpEvent() method
+    // might be called by the framework when this module is inactive,
+    // but still it should be possible to access this module's data
+    // from Python
+    myInitModule = this;
+
+    PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"dumpStudy",
+                                           (char*)"s", (*it).toLatin1().constData()));
+
+    myInitModule = 0;
+
     if( !res ) {
       PyErr_Print();
     }
@@ -2682,6 +2770,53 @@ void SALOME_PYQT_ModuleLight::setToolTip(const QString& obj, const QString& tool
 }
 
 /*
+ * Return color of object
+ */
+QColor SALOME_PYQT_ModuleLight::getColor(const QString& obj)
+{
+  SALOME_PYQT_DataObjectLight* dataObj = findObject( obj );
+  if( dataObj ) {
+    return dataObj->color( SUIT_DataObject::Foreground );
+  }
+  return QColor();
+}
+
+/*
+ * Set color for object
+ */
+void SALOME_PYQT_ModuleLight::setColor(const QString& obj, const QColor& color)
+{
+  SALOME_PYQT_DataObjectLight* dataObj = findObject( obj );
+  if( dataObj ) {
+    dataObj->setColor( color );
+  }
+}
+
+/*
+ * Return entry of the referenced object (if any)
+ */
+QString SALOME_PYQT_ModuleLight::getReference(const QString& obj)
+{
+  SALOME_PYQT_DataObjectLight* dataObj = findObject(obj);
+  if(dataObj) {
+    return dataObj->refEntry();
+  }
+  return QString::null;
+}
+
+
+/*
+ * Set entry of the referenced object
+ */
+void SALOME_PYQT_ModuleLight::setReference(const QString& obj, const QString& refEntry)
+{
+  SALOME_PYQT_DataObjectLight* dataObj = findObject(obj);
+  if(dataObj) {
+    dataObj->setRefEntry(refEntry);
+  }
+}
+
+/*
  * Remove object by entry
  */
 void SALOME_PYQT_ModuleLight::removeObject(const QString& obj)
@@ -2774,4 +2909,12 @@ CAM_DataModel* SALOME_PYQT_ModuleLight::createDataModel()
 {
   MESSAGE( "SALOME_PYQT_ModuleLight::createDataModel()" );
   return new SALOME_PYQT_DataModelLight(this);
+}
+
+/*!
+ * Returns the Python module object currently loaded.
+ */
+PyObject* SALOME_PYQT_ModuleLight::getPythonModule()
+{
+  return myModule;
 }

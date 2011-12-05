@@ -204,6 +204,10 @@
         <translation>Paramètres</translation>
     </message>
     <message>
+        <source>TOT_PLOT2D_ANALITIC_CURVES</source>
+        <translation>Courbes analytiques</translation>
+    </message>    
+    <message>
         <source>PLOT2D_CURVE_TYPE_LINES</source>
         <translation>Lignes</translation>
     </message>
@@ -342,8 +346,16 @@ L&apos;échelle logarithmique de l&apos;ordonnée n&apos;est pas permise.</trans
         <translation>Afficher la légende</translation>
     </message>
     <message>
+        <source>PLOT2D_LEGEND_FONT</source>
+        <translation>Police de la légende</translation>
+    </message>
+    <message>
         <source>DSC_ZOOM_VIEW</source>
         <translation>Zoomer la vue</translation>
+    </message>
+    <message>
+        <source>PRP_PLOT2D_ANALITIC_CURVES</source>
+        <translation>Réglage des propriétés des courbes analytiques</translation>
     </message>
     <message>
         <source>PRP_PLOT2D_SETTINGS</source>
@@ -387,7 +399,7 @@ L&apos;échelle logarithmique de l&apos;ordonnée n&apos;est pas permise.</trans
     </message>
     <message>
         <source>PRP_PLOT2D_FITDATA</source>
-        <translation>Ajuster la vue à la plage de données indiquées</translation>
+        <translation>Ajuster la vue à la plage de données indiquée</translation>
     </message>
     <message>
         <source>MEN_PLOT2D_MODE_LINEAR_VER</source>
@@ -436,6 +448,10 @@ L&apos;échelle logarithmique de l&apos;ordonnée n&apos;est pas permise.</trans
     <message>
         <source>MEN_PLOT2D_SETTINGS</source>
         <translation>&amp;Paramètres</translation>
+    </message>
+    <message>
+        <source>MEN_PLOT2D_ANALITIC_CURVES</source>
+        <translation>Courbes analytiques</translation>
     </message>
     <message>
         <source>CIRCLE_MARKER_LBL</source>
@@ -573,15 +589,90 @@ L&apos;échelle logarithmique de l&apos;ordonnée n&apos;est pas permise.</trans
     </message>
     <message>
         <source>PREF_HOR_AXIS_SCALE</source>
-        <translation>Echelle de l'axe horizontal:</translation>
+        <translation>Echelle de l&apos;axe horizontal:</translation>
     </message>
     <message>
         <source>PREF_VERT_AXIS_SCALE</source>
-        <translation>Echelle de l'axe vertical:</translation>
+        <translation>Echelle de l&apos;axe vertical:</translation>
     </message>
     <message>
         <source>PREF_VIEWER_BACKGROUND</source>
         <translation>Couleur du fond</translation>
+    </message>
+</context>
+<context>
+    <name>Plot2d_AnaliticCurveDlg</name>
+    <message>
+        <source>ANALITIC_CURVE_TLT</source>
+        <translation>Propriétés des courbes analytiques</translation>
+    </message>
+    <message>
+        <source>AC_CURVE_PARAMS</source>
+        <translation>Paramètres de la courbe</translation>
+    </message>    
+    <message>
+        <source>AC_CURVE_PROPS</source>
+        <translation>Propriétés de la courbe</translation>
+    </message>        
+    <message>
+        <source>AC_FORMULA</source>
+        <translation>y(x) = </translation>
+    </message>            
+    <message>
+        <source>AC_NB_INTERVALS</source>
+        <translation>Nb. intervalles</translation>
+    </message>
+    <message>
+        <source>AC_AUTO_ASSIGN</source>
+        <translation>Affectation auto.</translation>
+    </message>
+    <message>
+        <source>AC_MARKER_TYPE</source>
+        <translation>Type de marqueur</translation>
+    </message>
+    <message>
+        <source>AC_LINE_TYPE</source>
+        <translation>Type de ligne</translation>
+    </message>
+    <message>
+        <source>AC_LINE_WIDTH</source>
+        <translation>Epaisseur de ligne</translation>
+    </message>
+    <message>
+        <source>AC_CURVE_COLOR</source>
+        <translation>Couleur de la courbe</translation>
+    </message>
+    <message>
+        <source>AC_ADD_BTN</source>
+        <translation>Ajouter une courbe</translation>
+    </message>                
+    <message>
+        <source>AC_REM_BTN</source>
+        <translation>Supprimer une courbe</translation>
+    </message>                    
+    <message>
+        <source>AC_UPD_BTN</source>
+        <translation>Mettre à jour la courbe</translation>
+    </message>                    
+    <message>
+        <source>AC_CANT_CALCULATE</source>
+        <translation>La courbe ne peut pas être calculée. 
+Merci de vérifier les paramètres d&apos;entrée</translation>
+    </message>
+    <message>
+        <source>AC_CLOSE_BTN</source>
+        <translation>&amp;Fermer</translation>
+    </message>
+</context>
+<context>
+    <name>Plot2d_SetupCurveScaleDlg</name>
+    <message>
+        <source>TLT_SETUP_CURVE_SCALE</source>
+        <translation>Mise à l&apos;échelle de courbe(s)</translation>
+    </message>
+    <message>
+        <source>CURVE_SCALE_FACTOR</source>
+        <translation>Facteur d&apos;échelle</translation>
     </message>
 </context>
 </TS>

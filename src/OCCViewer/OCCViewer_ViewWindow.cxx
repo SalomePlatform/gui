@@ -221,6 +221,7 @@ OCCViewer_ViewWindow::OCCViewer_ViewWindow( SUIT_Desktop*     theDesktop,
   myModel = theModel;
   myRestoreFlag = 0;
   myEnableDrawMode = false;
+  myDrawRect=false;
   updateEnabledDrawMode();
   myClippingDlg = 0;
   myScalingDlg = 0;

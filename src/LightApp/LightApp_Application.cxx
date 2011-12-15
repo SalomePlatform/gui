@@ -1004,7 +1004,7 @@ void LightApp_Application::onHelpContentsModule()
     }
   }
   else {
-    QtxWebBrowser::loadUrl(getFile() + helpFile);
+    QtxWebBrowser::loadUrl(helpFile);
   }
 }
 
@@ -1071,7 +1071,7 @@ void LightApp_Application::onHelpContextModule( const QString& theComponentName,
     }
   }
   else {
-    QtxWebBrowser::loadUrl(getFile() + helpFile, context );
+    QtxWebBrowser::loadUrl(helpFile, context);
   }
 }
 

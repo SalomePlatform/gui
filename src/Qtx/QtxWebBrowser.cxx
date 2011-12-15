@@ -218,6 +218,7 @@ void QtxWebBrowser::loadUrl( const QString& url, const QString& anchor )
 {
   QString anUrl = url;
   if( !anchor.isEmpty() ) anUrl += "#" + anchor;
+  anUrl.replace('\\', '/');
 
   Qtx::alignWidget( webBrowser(), (QWidget*)QApplication::desktop(), Qtx::AlignCenter );
 

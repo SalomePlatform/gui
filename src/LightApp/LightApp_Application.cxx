@@ -3831,7 +3831,17 @@ QString LightApp_Application::browseObjects( const QStringList& theEntryList,
         aSelector->setAutoBlock( false );
 
         SUIT_DataOwnerPtrList aList;
-        aList.append( new LightApp_DataOwner( anEntry ) );
+#ifndef DISABLE_SALOMEOBJECT
+        Handle(SALOME_InteractiveObject) aSObj = new SALOME_InteractiveObject
+          ( anObject->entry().toLatin1().constData(),
+            anObject->componentDataType().toLatin1().constData(),
+            anObject->name().toLatin1().constData() );
+        LightApp_DataOwner* owner = new LightApp_DataOwner( aSObj  );
+#else
+        LightApp_DataOwner* owner = new LightApp_DataOwner( anEntry );
+#endif
+
+        aList.append( owner );
         selectionMgr()->setSelected( aList );
         aResult = anEntry;
 

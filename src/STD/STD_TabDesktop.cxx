@@ -58,7 +58,7 @@ myWorkstackAction( 0 )
 
   myWorkstack->setAccel( QtxWorkstack::SplitVertical,   Qt::ALT + Qt::SHIFT + Qt::Key_V );
   myWorkstack->setAccel( QtxWorkstack::SplitHorizontal, Qt::ALT + Qt::SHIFT + Qt::Key_H );
-  myWorkstack->setAccel( QtxWorkstack::Close,           Qt::CTRL + Qt::Key_F4 );
+  //myWorkstack->setAccel( QtxWorkstack::Close,           Qt::CTRL + Qt::Key_F4 );
 
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
   if ( resMgr ) {

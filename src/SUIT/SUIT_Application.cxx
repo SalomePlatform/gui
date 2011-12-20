@@ -253,8 +253,8 @@ void SUIT_Application::setDesktop( SUIT_Desktop* desk )
 {
   if ( myDesktop == desk )
     return;
-
-  delete myDesktop;
+  //workaround about Qt 4.7.1 bug: SIGSEGV on desktop delete
+  myDesktop->deleteLater(); //delete myDesktop;
   myDesktop = desk;
   if ( myDesktop ) {
     connect( myDesktop, SIGNAL( activated() ), this, SLOT( onDesktopActivated() ) );

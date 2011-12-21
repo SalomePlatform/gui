@@ -267,7 +267,7 @@ void SUIT_ViewManager::closeView( SUIT_ViewWindow* theView )
   removeView( view );
 
   if ( view )
-    delete view;
+    view->deleteLater();
 }
 
 /*!Remove view window \a theView from view manager.
@@ -340,7 +340,8 @@ void SUIT_ViewManager::closeAllViews()
 {
   for ( int i = 0; i < myViews.size(); i++ ){
     if( !myViews[i].isNull() )
-      delete myViews[i];
+      myViews[i]->hide();
+      myViews[i]->deleteLater();
   }
   myViews.clear();
 }

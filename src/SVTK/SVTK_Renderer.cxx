@@ -76,7 +76,8 @@ SVTK_Renderer
   myCubeAxes(SVTK_CubeAxesActor2D::New()),
   myTrihedron(SVTK_Trihedron::New()),
   myTrihedronSize(105),
-  myIsTrihedronRelative(true)
+  myIsTrihedronRelative(true),
+  myIsDestroying(false)
 {
   myDevice->Delete();
   myTransform->Delete();
@@ -157,6 +158,8 @@ SVTK_Renderer
 SVTK_Renderer
 ::~SVTK_Renderer()
 {
+  myIsDestroying = true;
+
   vtkActorCollection* anActors = GetDevice()->GetActors();
   vtkActorCollection* anActors2 = vtkActorCollection::New();
 
@@ -276,7 +279,9 @@ SVTK_Renderer
     anActor->SetHighlightProperty(NULL);
 
     anActor->RemoveFromRender(GetDevice());
-    AdjustActors();
+
+    if ( !myIsDestroying )
+      AdjustActors();
   }
 }
 

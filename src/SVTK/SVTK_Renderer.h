@@ -250,6 +250,7 @@ class SVTK_EXPORT SVTK_Renderer : public vtkObject
   vtkFloatingPointType myTrihedronSize;
   bool myIsTrihedronRelative;
   vtkFloatingPointType myBndBox[6];
+  bool                 myIsDestroying;
 };
 
 #ifdef WIN32

@@ -19,15 +19,17 @@
 // File:      QtxActionMgr.cxx
 // Author:    Alexander SOLOVYOV, Sergey TELKOV
 
-#include "Qtx.h"
 #include "QtxActionMgr.h"
+
 #include "QtxAction.h"
-#include <QFile>
-#include <QTimer>
+
+#include <QtCore/QFile>
+#include <QtCore/QTimer>
+
 #ifndef QT_NO_DOM
-#include <QDomDocument>
-#include <QDomNode>
-#include <QCoreApplication>
+#include <QtXml/QDomNode>
+#include <QtXml/QDomDocument>
+#include <QtCore/QCoreApplication>
 #endif
 
 typedef QList< QPointer<QAction> > qtx_actionlist;
@@ -80,14 +82,14 @@ QtxActionMgr::SeparatorAction::~SeparatorAction()
 /*!
   \class QtxActionMgr
   \brief Manages a set of actions accessible by unique identifier.
-  
+
   Base class for menu, toolbar actions containers and popup menu creators.
 
   Actions are registered in the manager with the registerAction() method
   and unregistered from it with the unRegisterAction() method.
 
   Functions action() and actionId() allow getting action by its identifier
-  and vice versa. Method contains() returns \c true if the action with 
+  and vice versa. Method contains() returns \c true if the action with
   the specified identifier is already registered.
 
   To get total number of the registered actions can be retrieved by
@@ -97,7 +99,7 @@ QtxActionMgr::SeparatorAction::~SeparatorAction()
 
   The method separator() allows creating a separator action which can be
   used in the menus or toolbars to separate logical groups of actions.
-  
+
   To enable/disable any action by its identifier, use setEnabled() method.
 */
 
@@ -108,7 +110,8 @@ QtxActionMgr::SeparatorAction::~SeparatorAction()
 QtxActionMgr::QtxActionMgr( QObject* parent )
 : QObject( parent ),
   myUpdate( true ),
-  myUpdTimer( 0 )
+  myUpdTimer( 0 ),
+  myIOHandler( 0 )
 {
 }
 
@@ -117,13 +120,14 @@ QtxActionMgr::QtxActionMgr( QObject* parent )
 */
 QtxActionMgr::~QtxActionMgr()
 {
+  delete myIOHandler;
 }
 
 /*!
   \brief Register an action in the internal map.
 
-  If \a userId is less than 0, the identifier for the action 
-  is generated automatically. If action with given \a userId 
+  If \a userId is less than 0, the identifier for the action
+  is generated automatically. If action with given \a userId
   is already registered, it will be re-registered.
 
   \param a action to be registered
@@ -131,20 +135,22 @@ QtxActionMgr::~QtxActionMgr()
   \return action ID (the same as userId or generated one)
   \sa unRegisterAction()
 */
-int QtxActionMgr::registerAction( QAction* a, const int userId )
+QtxActionMgrId QtxActionMgr::registerAction( QAction* a, const QtxActionMgrId& userId )
 {
   if ( !a )
-    return -1;
+    return QtxActionMgrId();
 
-  int theId = userId < 0 ? generateId() : userId;
+  QtxActionMgrId theId = userId;
+  if ( theId.isNull() )
+    theId = QtxActionMgrId( generateId().id(), userId.context() );
 
   if ( contains( theId ) )
     unRegisterAction( theId );
 
-  int cur = actionId( a );
-  if ( cur != -1 )
+  QtxActionMgrId cur = actionId( a );
+  if ( !cur.isNull() )
   {
-    if ( userId == -1 )
+    if ( userId.isNull() )
       return cur;
     else
       unRegisterAction( cur );
@@ -160,9 +166,9 @@ int QtxActionMgr::registerAction( QAction* a, const int userId )
   \param id action ID
   \sa registerAction()
 */
-void QtxActionMgr::unRegisterAction( const int id )
+void QtxActionMgr::unRegisterAction( const QtxActionMgrId& id )
 {
-  if( contains( id ) )
+  if ( contains( id ) )
     myActions.remove( id );
 }
 
@@ -172,10 +178,10 @@ void QtxActionMgr::unRegisterAction( const int id )
   \return action (or 0 if \a id is invalid)
   \sa actionId()
 */
-QAction* QtxActionMgr::action( const int id ) const
+QAction* QtxActionMgr::action( const QtxActionMgrId& id ) const
 {
   if ( contains( id ) )
-    return myActions[ id ];
+    return myActions[id];
   else
     return 0;
 }
@@ -186,13 +192,13 @@ QAction* QtxActionMgr::action( const int id ) const
   \return action ID (or -1 if action is not found)
   \sa action()
 */
-int QtxActionMgr::actionId( const QAction* a ) const
+QtxActionMgrId QtxActionMgr::actionId( const QAction* a ) const
 {
   if ( !a )
-    return -1;
+    return QtxActionMgrId();
 
-  int theId = -1;
-  for ( ActionMap::ConstIterator it = myActions.begin(); it != myActions.end() && theId == -1; ++it )
+  QtxActionMgrId theId;
+  for ( ActionMap::ConstIterator it = myActions.begin(); it != myActions.end() && theId.isNull(); ++it )
   {
     if ( it.value() == a )
       theId = it.key();
@@ -206,7 +212,7 @@ int QtxActionMgr::actionId( const QAction* a ) const
   \param id action ID
   \return \c true if internal map contains action with such identifier
 */
-bool QtxActionMgr::contains( const int id ) const
+bool QtxActionMgr::contains( const QtxActionMgrId& id ) const
 {
   return myActions.contains( id );
 }
@@ -235,7 +241,7 @@ bool QtxActionMgr::isEmpty() const
   \brief Get all registered actions identifiers.
   \return list of actions identifiers
 */
-QIntList QtxActionMgr::idList() const
+QList<QtxActionMgrId> QtxActionMgr::idList() const
 {
   return myActions.keys();
 }
@@ -272,7 +278,8 @@ void QtxActionMgr::setUpdatesEnabled( const bool upd )
   \return \c true if an action is visible to the parent
   \sa setVisible()
 */
-bool QtxActionMgr::isVisible( const int /*actId*/, const int /*place*/ ) const
+bool QtxActionMgr::isVisible( const QtxActionMgrId& /*actId*/,
+                              const QtxActionMgrId& /*place*/ ) const
 {
   return true;
 }
@@ -288,7 +295,8 @@ bool QtxActionMgr::isVisible( const int /*actId*/, const int /*place*/ ) const
   \param v new visibility state
   \sa isVisible()
 */
-void QtxActionMgr::setVisible( const int /*actId*/, const int /*place*/, const bool /*v*/ )
+void QtxActionMgr::setVisible( const QtxActionMgrId& /*actId*/,
+                               const QtxActionMgrId& /*place*/, const bool /*v*/ )
 {
 }
 
@@ -310,10 +318,48 @@ void QtxActionMgr::update()
     myUpdTimer->stop();
 }
 
+QtxActionMgrIO* QtxActionMgr::ioHandler() const
+{
+  return myIOHandler;
+}
+
+void QtxActionMgr::setIOHandler( QtxActionMgrIO* io )
+{
+  if ( myIOHandler == io )
+    return;
+
+  delete myIOHandler;
+  myIOHandler = io;
+}
+
+bool QtxActionMgr::load( const QString& ref )
+{
+  if ( !ioHandler() || ref.isEmpty() )
+    return false;
+
+  QMap<QtxActionMgrId, QtxActionMgrIO::Node> nodeMap;
+  if ( !ioHandler()->load( ref, nodeMap ) )
+    return false;
+
+  return retrieve( nodeMap );
+}
+
+bool QtxActionMgr::save( const QString& ref )
+{
+  if ( !ioHandler() || ref.isEmpty() )
+    return false;
+
+  QMap<QtxActionMgrId, QtxActionMgrIO::Node> nodeMap;
+  if ( !store( nodeMap ) )
+    return false;
+
+  return ioHandler()->save( ref, nodeMap );
+}
+
 /*!
   \brief Internal update.
 
-  This method is called by update() function and can be redefined 
+  This method is called by update() function and can be redefined
   in subclasses to customize update operation. Base implementation
   does nothing.
 */
@@ -325,7 +371,7 @@ void QtxActionMgr::internalUpdate()
   \brief Generate unique action identifier.
   \return new ID
 */
-int QtxActionMgr::generateId() const
+QtxActionMgrId QtxActionMgr::generateId() const
 {
   static int id = -1;
   return --id;
@@ -336,7 +382,7 @@ int QtxActionMgr::generateId() const
   \param id action ID
   \return \c true if action is enabled
 */
-bool QtxActionMgr::isEnabled( const int id ) const
+bool QtxActionMgr::isEnabled( const QtxActionMgrId& id ) const
 {
   QAction* a = action( id );
   if ( a )
@@ -350,7 +396,7 @@ bool QtxActionMgr::isEnabled( const int id ) const
   \param id action ID
   \param enable new state
 */
-void QtxActionMgr::setEnabled( const int id, const bool enable )
+void QtxActionMgr::setEnabled( const QtxActionMgrId& id, const bool enable )
 {
   QAction* a = action( id );
   if ( a )
@@ -415,6 +461,32 @@ void QtxActionMgr::updateContent()
 {
 }
 
+bool QtxActionMgr::retrieve( const QMap<QtxActionMgrId, QtxActionMgrIO::Node>& )
+{
+  return true;
+}
+
+bool QtxActionMgr::store( QMap<QtxActionMgrId, QtxActionMgrIO::Node>& /*nodeMap*/ ) const
+{
+  /*
+  for ( ActionMap::const_iterator it = myActions.begin(); it != myActions.end(); ++it ) {
+    QtxActionMgrIO::Node node( it.key() );
+    nodeMap.insert( it.key(), node );
+  }
+  */
+  return true;
+}
+
+QtxActionMgrId QtxActionMgr::findSeparator() const
+{
+  QtxActionMgrId id;
+  for ( ActionMap::const_iterator it = myActions.begin(); it != myActions.end() && id.isNull(); ++it ) {
+    if ( it.value()->isSeparator() )
+      id = it.key();
+  }
+  return id;
+}
+
 /*!
   \brief Called when delayed update is performed (via timer event).
 
@@ -430,7 +502,7 @@ void QtxActionMgr::onUpdateContent()
   \class QtxActionMgr::Reader
   \brief Generic actions description files reader class.
 
-  This class is used to read files of some format to create actions 
+  This class is used to read files of some format to create actions
   and fill an action manager with the actions automatically.
 */
 
@@ -459,7 +531,7 @@ QStringList QtxActionMgr::Reader::options() const
 
 /*!
   \brief Get option value.
-  
+
   If there is no such option the default value (\a def) is returned.
 
   \param name option name
@@ -486,11 +558,11 @@ void QtxActionMgr::Reader::setOption( const QString& name, const QString& value 
 
 /*!
   \fn bool QtxActionMgr::Reader::read( const QString& fname, Creator& cr ) const
-  \brief Read the file and fill and action manager with actions 
-         by using help actions creator. 
+  \brief Read the file and fill and action manager with actions
+         by using help actions creator.
 
   This method should be redefined in the subclasses.
-  
+
   \param fname XML file name
   \param cr actions creator
   \return \c true on success and \c false in case of error
@@ -500,7 +572,7 @@ void QtxActionMgr::Reader::setOption( const QString& name, const QString& value 
   \class QtxActionMgr::XMLReader
   \brief XML file reader.
 
-  This class is used to read files of XML format to create 
+  This class is used to read files of XML format to create
   actions and fill an action manager with actions automatically.
 */
 
@@ -537,7 +609,7 @@ QtxActionMgr::XMLReader::~XMLReader()
 }
 
 /*!
-  \brief Read the file and fill and action manager with actions 
+  \brief Read the file and fill and action manager with actions
          by using actions creator.
   \param fname XML file name
   \param cr actions creator
@@ -656,7 +728,7 @@ bool QtxActionMgr::XMLReader::isNodeSimilar( const QDomNode& node,
   \class QtxActionMgr::Creator
   \brief Generic actions creator class.
 
-  Used by Reader to create actions and fill in the action 
+  Used by Reader to create actions and fill in the action
   manager with the actions.
 */
 
@@ -731,7 +803,7 @@ QtxActionMgr::Reader* QtxActionMgr::Creator::reader() const
 /*!
   \brief Connect action to some specific slot(s).
 
-  This method can be redefined in subclasses. 
+  This method can be redefined in subclasses.
   Base implementation does nothing.
 
   \param a action
@@ -762,14 +834,14 @@ bool QtxActionMgr::Creator::loadPixmap( const QString& fname, QPixmap& pix ) con
 }
 
 /*!
-  \fn int QtxActionMgr::Creator::append( const QString& tag, 
-                                         const bool subMenu, 
+  \fn int QtxActionMgr::Creator::append( const QString& tag,
+                                         const bool subMenu,
                                          const ItemAttributes& attr,
                                          const int pId )
   \brief Create (and probably append to the action manager) new action.
 
   This method should be redefined in the subclasses.
-  
+
   \param tag item tag name
   \param subMenu \c true if this item is submenu
   \param attr attributes map

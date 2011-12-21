@@ -38,16 +38,16 @@ class QtxActionMenuMgr::MenuNode
 {
 public:
   MenuNode();
-  MenuNode( MenuNode*, const int, const int, const int );
+  MenuNode( MenuNode*, const QtxActionMgrId&, const int, const int );
   ~MenuNode();
 
-  MenuNode* parent;       //!< parent menu node
-  int       id;           //!< menu nodeID
-  int       idx;          //!< menu node index
-  int       group;        //!< menu group ID
-  bool      visible;      //!< visibility status
-  int       emptyEnabled; //!< enable empty menu flag
-  NodeList  children;     //!< children menu nodes list
+  MenuNode*        parent;       //!< parent menu node
+  QtxActionMgrId id;           //!< menu nodeID
+  int              idx;          //!< menu node index
+  int              group;        //!< menu group ID
+  bool             visible;      //!< visibility status
+  int              emptyEnabled; //!< enable empty menu flag
+  NodeList         children;     //!< children menu nodes list
 };
 
 /*!
@@ -55,7 +55,12 @@ public:
   \internal
 */
 QtxActionMenuMgr::MenuNode::MenuNode()
-  : parent( 0 ), id( -1 ), idx( -1 ), group( -1 ), visible( true ), emptyEnabled( 0 )
+  : parent( 0 ),
+    id( QtxActionMgrId() ),
+    idx( -1 ),
+    group( -1 ),
+    visible( true ),
+    emptyEnabled( 0 )
 {
 }
 
@@ -67,11 +72,14 @@ QtxActionMenuMgr::MenuNode::MenuNode()
   \param _idx menu node index
   \param _group menu node group ID
 */
-QtxActionMenuMgr::MenuNode::MenuNode( MenuNode* p,
-				      const int _id,
-				      const int _idx,
-				      const int _group )
-: parent( p ), id( _id ), idx( _idx ), group( _group ), visible( true ), emptyEnabled( 0 )
+QtxActionMenuMgr::MenuNode::MenuNode( MenuNode* p, const QtxActionMgrId& _id,
+				      const int _idx, const int _group )
+: parent( p ),
+  id( _id ),
+  idx( _idx ),
+  group( _group ),
+  visible( true ),
+  emptyEnabled( 0 )
 {
   if ( p )
     p->children.append( this );
@@ -158,7 +166,7 @@ QtxActionMenuMgr::~QtxActionMenuMgr()
   \return \c true if an action is visible to the parent
   \sa setVisible()
 */
-bool QtxActionMenuMgr::isVisible( const int actId, const int place ) const
+bool QtxActionMenuMgr::isVisible( const QtxActionMgrId& actId, const QtxActionMgrId& place ) const
 {
   MenuNode* node = find( actId, place );
   return node && node->visible;
@@ -171,7 +179,7 @@ bool QtxActionMenuMgr::isVisible( const int actId, const int place ) const
   \param v new visibility state
   \sa isVisible()
 */
-void QtxActionMenuMgr::setVisible( const int actId, const int place, const bool v )
+void QtxActionMenuMgr::setVisible( const QtxActionMgrId& actId, const QtxActionMgrId& place, const bool v )
 {
   MenuNode* node = find( actId, place );
   if ( node )
@@ -192,7 +200,7 @@ void QtxActionMenuMgr::setVisible( const int actId, const int place, const bool 
   \param idx menu index inside the menu group
   \return action ID
 */
-int QtxActionMenuMgr::insert( const int id, const QString& menus, const int group, const int idx )
+QtxActionMgrId QtxActionMenuMgr::insert( const QtxActionMgrId& id, const QString& menus, const int group, const int idx )
 {
   return insert( id, menus.split( "|", QString::SkipEmptyParts ), group, idx );
 }
@@ -211,7 +219,7 @@ int QtxActionMenuMgr::insert( const int id, const QString& menus, const int grou
   \param idx menu index inside the menu group
   \return action ID
 */
-int QtxActionMenuMgr::insert( QAction* a, const QString& menus, const int group, const int idx )
+QtxActionMgrId QtxActionMenuMgr::insert( QAction* a, const QString& menus, const int group, const int idx )
 {
   return insert( a, menus.split( "|", QString::SkipEmptyParts ), group, idx );
 }
@@ -231,11 +239,12 @@ int QtxActionMenuMgr::insert( QAction* a, const QString& menus, const int group,
   \param idx menu index inside the menu group
   \return action ID
 */
-int QtxActionMenuMgr::insert( const int id, const QStringList& menus, const int group, const int idx )
+QtxActionMgrId QtxActionMenuMgr::insert( const QtxActionMgrId& id, const QStringList& menus,
+                                           const int group, const int idx )
 {
-  int pId = createMenu( menus, -1 );
-  if ( pId == -1 )
-    return -1;
+  QtxActionMgrId pId = createMenu( menus, -1 );
+  if ( pId.isNull() )
+    return QtxActionMgrId();
 
   return insert( id, pId, group, idx );
 }
@@ -255,11 +264,11 @@ int QtxActionMenuMgr::insert( const int id, const QStringList& menus, const int 
   \param idx menu index inside the menu group
   \return action ID
 */
-int QtxActionMenuMgr::insert( QAction* a, const QStringList& menus, const int group, const int idx )
+QtxActionMgrId QtxActionMenuMgr::insert( QAction* a, const QStringList& menus, const int group, const int idx )
 {
-  int pId = createMenu( menus, -1 );
-  if ( pId == -1 )
-    return -1;
+  QtxActionMgrId pId = createMenu( menus, -1 );
+  if ( pId.isNull() )
+    return QtxActionMgrId();
 
   return insert( a, pId, group, idx );
 }
@@ -272,14 +281,15 @@ int QtxActionMenuMgr::insert( QAction* a, const QStringList& menus, const int gr
   \param idx menu index inside the menu group
   \return action ID
 */
-int QtxActionMenuMgr::insert( const int id, const int pId, const int group, const int idx )
+QtxActionMgrId QtxActionMenuMgr::insert( const QtxActionMgrId& id, const QtxActionMgrId& pId,
+                                           const int group, const int idx )
 {
-  if ( id == -1 )
-    return -1;
+  if ( id.isNull() )
+    return QtxActionMgrId();
 
-  MenuNode* pNode = pId == -1 ? myRoot : find( pId );
+  MenuNode* pNode = pId.isNull() ? myRoot : find( pId );
   if ( !pNode )
-    return -1;
+    return QtxActionMgrId();
 
   MenuNode* node = new MenuNode( pNode, id, idx, group );
 
@@ -296,7 +306,8 @@ int QtxActionMenuMgr::insert( const int id, const int pId, const int group, cons
   \param idx menu index inside the menu group
   \return action ID
 */
-int QtxActionMenuMgr::insert( QAction* a, const int pId, const int group, const int idx )
+QtxActionMgrId QtxActionMenuMgr::insert( QAction* a, const QtxActionMgrId& pId,
+                                           const int group, const int idx )
 {
   return insert( registerAction( a ), pId, group, idx );
 }
@@ -310,26 +321,27 @@ int QtxActionMenuMgr::insert( QAction* a, const int pId, const int group, const 
   \param idx menu index inside the menu group
   \return action ID
 */
-int QtxActionMenuMgr::insert( const QString& title, const int pId, const int group, const int id, const int idx )
+QtxActionMgrId QtxActionMenuMgr::insert( const QString& title, const QtxActionMgrId& pId,
+                                         const int group, const QtxActionMgrId& id, const int idx )
 {
-  MenuNode* pNode = pId == -1 ? myRoot : find( pId );
+  MenuNode* pNode = pId.isNull() ? myRoot : find( pId );
   if ( !pNode )
-    return -1;
+    return QtxActionMgrId();
 
-  MenuNode* eNode = id == -1 ? 0 : find( id );
+  MenuNode* eNode = id.isNull() ? 0 : find( id );
 
-  int fid = -1;
-  for ( NodeList::iterator it = pNode->children.begin(); it != pNode->children.end() && fid == -1; ++it )
+  QtxActionMgrId fid;
+  for ( NodeList::iterator it = pNode->children.begin(); it != pNode->children.end() && fid.isNull(); ++it )
   {
     if ( myMenus.contains( (*it)->id ) &&
          clearTitle( myMenus[(*it)->id]->text() ) == clearTitle( title ) )
       fid = (*it)->id;
   }
 
-  if ( fid != -1 )
+  if ( !fid.isNull() )
     return fid;
 
-  int gid = (id == -1 || eNode ) ? generateId() : id;
+  QtxActionMgrId gid = ( id.isNull() || eNode ) ? generateId() : id;
 
   QtxMenu* menu = new QtxMenu( 0 );
   QAction* ma = menu->menuAction();
@@ -361,7 +373,8 @@ int QtxActionMenuMgr::insert( const QString& title, const int pId, const int gro
   \param idx menu index inside the menu group
   \return action ID
 */
-int QtxActionMenuMgr::insert( const QString& title, const QString& menus, const int group, const int id, const int idx )
+QtxActionMgrId QtxActionMenuMgr::insert( const QString& title, const QString& menus,
+                                           const int group, const QtxActionMgrId& id, const int idx )
 {
   return insert( title, menus.split( "|", QString::SkipEmptyParts ), group, id, idx );
 }
@@ -382,91 +395,18 @@ int QtxActionMenuMgr::insert( const QString& title, const QString& menus, const 
   \param idx menu index inside the menu group
   \return action ID
 */
-int QtxActionMenuMgr::insert( const QString& title, const QStringList& menus, const int group, const int id, const int idx )
+QtxActionMgrId QtxActionMenuMgr::insert( const QString& title, const QStringList& menus,
+                                           const int group, const QtxActionMgrId& id, const int idx )
 {
-  int pId = createMenu( menus, -1 );
+  QtxActionMgrId pId = createMenu( menus, -1 );
   return insert( title, pId, group, id, idx );
-}
-
-/*!
-  \brief Create and add menu item action to the end of menu.
-  \param title menu text
-  \param pId parent menu action ID
-  \param group group ID
-  \param id action ID
-  \return action ID
-*/
-int QtxActionMenuMgr::append( const QString& title, const int pId, const int group, const int id )
-{
-  return insert( title, pId, group, id );
-}
-
-/*!
-  \brief Create and add menu item action to the end of menu.
-  \param id action ID
-  \param pId parent menu action ID
-  \param group group ID
-  \return action ID
-*/
-int QtxActionMenuMgr::append( const int id, const int pId, const int group )
-{
-  return insert( id, pId, group );
-}
-
-/*!
-  \brief Create and add menu item action to the end of menu.
-  \param a action
-  \param pId parent menu action ID
-  \param group group ID
-  \return action ID
-*/
-int QtxActionMenuMgr::append( QAction* a, const int pId, const int group )
-{
-  return insert( a, pId, group );
-}
-
-/*!
-  \brief Create and add menu item action to the beginning of menu.
-  \param title menu text
-  \param pId parent menu action ID
-  \param group group ID
-  \param id action ID
-  \return action ID
-*/
-int QtxActionMenuMgr::prepend( const QString& title, const int pId, const int group, const int id )
-{
-  return insert( title, pId, group, id, 0 );
-}
-
-/*!
-  \brief Create and add menu item action to the beginning of menu.
-  \param id action ID
-  \param pId parent menu action ID
-  \param group group ID
-  \return action ID
-*/
-int QtxActionMenuMgr::prepend( const int id, const int pId, const int group )
-{
-  return insert( id, pId, group, 0 );
-}
-
-/*!
-  \brief Create and add menu item action to the beginning of menu.
-  \param a action
-  \param pId parent menu action ID
-  \param group group ID
-  \return action ID
-*/
-int QtxActionMenuMgr::prepend( QAction* a, const int pId, const int group )
-{
-  return insert( a, pId, group, 0 );
 }
 
 /*!
   \brief Remove menu item with given \a id.
   \param id menu action ID
 */
-void QtxActionMenuMgr::remove( const int id )
+void QtxActionMenuMgr::remove( const QtxActionMgrId& id )
 {
   removeMenu( id, 0 );
   update();
@@ -478,9 +418,9 @@ void QtxActionMenuMgr::remove( const int id )
   \param pId parent menu action ID
   \param group group ID
 */
-void QtxActionMenuMgr::remove( const int id, const int pId, const int group )
+void QtxActionMenuMgr::remove( const QtxActionMgrId& id, const QtxActionMgrId& pId, const int group )
 {
-  MenuNode* pNode = pId == -1 ? myRoot : find( pId );
+  MenuNode* pNode = pId.isNull() ? myRoot : find( pId );
   if ( !pNode )
     return;
 
@@ -498,32 +438,12 @@ void QtxActionMenuMgr::remove( const int id, const int pId, const int group )
 }
 
 /*!
-  \brief Show menu item with given \a id.
-  \param id menu action ID
-  \sa hide()
-*/
-void QtxActionMenuMgr::show( const int id )
-{
-  setShown( id, true );
-}
-
-/*!
-  \brief Hide menu item with given \a id.
-  \param id menu action ID
-  \sa show()
-*/
-void QtxActionMenuMgr::hide( const int id )
-{
-  setShown( id, false );
-}
-
-/*!
   \brief Get visibility status for menu item with given \a id.
   \param id menu action ID
   \return \c true if an item is shown
   \sa setShown()
 */
-bool QtxActionMenuMgr::isShown( const int id ) const
+bool QtxActionMenuMgr::isShown( const QtxActionMgrId& id ) const
 {
   bool res = false;
   MenuNode* node = find( id );
@@ -538,7 +458,7 @@ bool QtxActionMenuMgr::isShown( const int id ) const
   \param on new visibility status
   \sa isShown()
 */
-void QtxActionMenuMgr::setShown( const int id, const bool on )
+void QtxActionMenuMgr::setShown( const QtxActionMgrId& id, const bool on )
 {
   NodeList aNodes;
   find( id, aNodes );
@@ -558,7 +478,7 @@ void QtxActionMenuMgr::setShown( const int id, const bool on )
   \param id menu action ID
   \param title new menu title
 */
-void QtxActionMenuMgr::change( const int id, const QString& title )
+void QtxActionMenuMgr::change( const QtxActionMgrId& id, const QString& title )
 {
   QAction* a = menuAction( id );
   if ( a )
@@ -651,7 +571,8 @@ void QtxActionMenuMgr::setMenuWidget( QWidget* mw )
   \param rec if \c true perform recursive search
   \return menu node or 0 if it is not found
 */
-QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const int id, const int pId, const bool rec ) const
+QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const QtxActionMgrId& id,
+                                                    const QtxActionMgrId& pId, const bool rec ) const
 {
   return find( id, find( pId ), rec );
 }
@@ -663,7 +584,7 @@ QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const int id, const int pId,
   \param rec if \c true perform recursive search
   \return menu node or 0 if it is not found
 */
-QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const int id, MenuNode* startNode, const bool rec ) const
+QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const QtxActionMgrId& id, MenuNode* startNode, const bool rec ) const
 {
   MenuNode* node = 0;
   MenuNode* start = startNode ? startNode : myRoot;
@@ -684,7 +605,7 @@ QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const int id, MenuNode* star
   \param startNode start menu node (if 0, search from root node)
   \return \c true if at least one node is found
 */
-bool QtxActionMenuMgr::find( const int id, NodeList& lst, MenuNode* startNode ) const
+bool QtxActionMenuMgr::find( const QtxActionMgrId& id, NodeList& lst, MenuNode* startNode ) const
 {
   MenuNode* start = startNode ? startNode : myRoot;
   for ( NodeList::iterator it = start->children.begin(); it != start->children.end(); ++it )
@@ -705,7 +626,7 @@ bool QtxActionMenuMgr::find( const int id, NodeList& lst, MenuNode* startNode ) 
   \param rec if \c true perform recursive search
   \return menu node or 0 if it is not found
 */
-QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const QString& title, const int pId, const bool rec ) const
+QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const QString& title, const QtxActionMgrId& pId, const bool rec ) const
 {
   return find( title, find( pId ), rec );
 }
@@ -763,9 +684,9 @@ QtxActionMenuMgr::MenuNode* QtxActionMenuMgr::find( const QString& title, MenuNo
   \param pid parent meun item ID
   \return id (>0) on success or -1 if menu item is not found
 */
-int QtxActionMenuMgr::findId( const int id, const int pid ) const
+QtxActionMgrId QtxActionMenuMgr::findId( const QtxActionMgrId& id, const QtxActionMgrId& pid ) const
 {
-  MenuNode* start = pid != -1 ? find( pid ) : myRoot;
+  MenuNode* start = !pid.isNull() ? find( pid ) : myRoot;
   if ( start )
   {
     for ( NodeList::iterator it = start->children.begin(); it != start->children.end(); ++it )
@@ -774,7 +695,7 @@ int QtxActionMenuMgr::findId( const int id, const int pid ) const
         return id;
     }
   }
-  return -1;
+  return QtxActionMgrId();
 }
 
 /*!
@@ -782,7 +703,7 @@ int QtxActionMenuMgr::findId( const int id, const int pid ) const
   \param id menu action ID
   \param startNode parent menu node which search starts from (if 0, search starts from root)
 */
-void QtxActionMenuMgr::removeMenu( const int id, MenuNode* startNode )
+void QtxActionMenuMgr::removeMenu( const QtxActionMgrId& id, MenuNode* startNode )
 {
   MenuNode* start = startNode ? startNode : myRoot;
   for ( NodeList::iterator it = start->children.begin(); it != start->children.end(); ++it )
@@ -799,7 +720,7 @@ void QtxActionMenuMgr::removeMenu( const int id, MenuNode* startNode )
   \param id action ID
   \return action or 0 if \a id is invalid
 */
-QAction* QtxActionMenuMgr::itemAction( const int id ) const
+QAction* QtxActionMenuMgr::itemAction( const QtxActionMgrId& id ) const
 {
   return action( id );
 }
@@ -809,7 +730,7 @@ QAction* QtxActionMenuMgr::itemAction( const int id ) const
   \param id submenu ID
   \return submenu action or 0 if action is not found
 */
-QAction* QtxActionMenuMgr::menuAction( const int id ) const
+QAction* QtxActionMenuMgr::menuAction( const QtxActionMgrId& id ) const
 {
   QAction* a = 0;
 
@@ -824,10 +745,10 @@ QAction* QtxActionMenuMgr::menuAction( const int id ) const
   \param id submenu ID
   \return submenu action or 0 if it is not found
 */
-int QtxActionMenuMgr::menuActionId( QAction* a ) const
+QtxActionMgrId QtxActionMenuMgr::menuActionId( QAction* a ) const
 {
-  int id = -1;
-  for ( MenuMap::ConstIterator itr = myMenus.begin(); itr != myMenus.end() && id == -1; ++itr )
+  QtxActionMgrId id;
+  for ( MenuMap::ConstIterator itr = myMenus.begin(); itr != myMenus.end() && id.isNull(); ++itr )
   {
     if ( itr.value() == a )
       id = itr.key();
@@ -926,7 +847,7 @@ void QtxActionMenuMgr::updateMenu( MenuNode* startNode, const bool rec, const bo
         updateMenu( node, rec, false );
 
       MenuNode* par = node->parent;
-      if ( !isVisible( node->id, par ? par->id : -1 ) )
+      if ( !isVisible( node->id, par ? par->id : QtxActionMgrId() ) )
         continue;
 
       bool isMenu = false;
@@ -1053,17 +974,17 @@ QString QtxActionMenuMgr::clearTitle( const QString& txt ) const
   \param pId parent menu item ID
   \return created menu item ID (last in the chain)
 */
-int QtxActionMenuMgr::createMenu( const QStringList& lst, const int pId )
+QtxActionMgrId QtxActionMenuMgr::createMenu( const QStringList& lst, const QtxActionMgrId& pId )
 {
   if ( lst.isEmpty() )
-    return -1;
+    return QtxActionMgrId();
 
   QStringList sl( lst );
 
   QString title = sl.last().trimmed();
   sl.removeLast();
 
-  int parentId = sl.isEmpty() ? pId : createMenu( sl, pId );
+  QtxActionMgrId parentId = sl.isEmpty() ? pId : createMenu( sl, pId );
 
   return insert( title, parentId, -1 );
 }
@@ -1086,7 +1007,7 @@ bool QtxActionMenuMgr::load( const QString& fname, QtxActionMgr::Reader& r )
   \param pid parent menu item ID
   \return \c true if parent menu item contains such child item
 */
-bool QtxActionMenuMgr::containsMenu( const QString& title, const int pid, const bool rec ) const
+bool QtxActionMenuMgr::containsMenu( const QString& title, const QtxActionMgrId& pid, const bool rec ) const
 {
   return (bool)find( title, pid, rec );
 }
@@ -1097,7 +1018,7 @@ bool QtxActionMenuMgr::containsMenu( const QString& title, const int pid, const 
   \param pid parent menu item ID
   \return \c true if parent menu item contains such child item
 */
-bool QtxActionMenuMgr::containsMenu( const int id, const int pid, const bool rec ) const
+bool QtxActionMenuMgr::containsMenu( const QtxActionMgrId& id, const QtxActionMgrId& pid, const bool rec ) const
 {
   return (bool)find( id, pid, rec );
 }
@@ -1107,7 +1028,7 @@ bool QtxActionMenuMgr::containsMenu( const int id, const int pid, const bool rec
   \param id menu item ID
   \return menu pointer or 0 if menu is not found
 */
-QMenu* QtxActionMenuMgr::findMenu( const int id ) const
+QMenu* QtxActionMenuMgr::findMenu( const QtxActionMgrId& id ) const
 {
   QMenu* m = 0;
   QAction* a = menuAction( id );
@@ -1123,7 +1044,7 @@ QMenu* QtxActionMenuMgr::findMenu( const int id ) const
   \param rec if \c true, perform recursive update
   \return menu pointer or 0 if menu is not found
 */
-QMenu* QtxActionMenuMgr::findMenu( const QString& title, const int pid, const bool rec ) const
+QMenu* QtxActionMenuMgr::findMenu( const QString& title, const QtxActionMgrId& pid, const bool rec ) const
 {
   QMenu* m = 0;
   MenuNode* node = find( title, pid, rec );
@@ -1141,7 +1062,7 @@ QMenu* QtxActionMenuMgr::findMenu( const QString& title, const int pid, const bo
   \param id menu item ID
   \return \c true if empty menu is enabled
 */
-bool QtxActionMenuMgr::isEmptyEnabled( const int id ) const
+bool QtxActionMenuMgr::isEmptyEnabled( const QtxActionMgrId& id ) const
 {
   MenuNode* node = find( id );
   if ( node && menuAction( id ) )
@@ -1155,7 +1076,7 @@ bool QtxActionMenuMgr::isEmptyEnabled( const int id ) const
   \param id menu item ID
   \param enable if \c true, empty menu will be enabled, otherwise empty menu will be disabled
 */
-void QtxActionMenuMgr::setEmptyEnabled( const int id, const bool enable )
+void QtxActionMenuMgr::setEmptyEnabled( const QtxActionMgrId& id, const bool enable )
 {
   MenuNode* node = find( id );
   if ( node && menuAction( id ) ) {
@@ -1198,7 +1119,7 @@ void QtxActionMenuMgr::setMenuCollapsible( bool enable )
   \brief Returns the priority for specified menu.
   \param id - menu id.
 */
-int QtxActionMenuMgr::menuPriority( const int id ) const
+int QtxActionMenuMgr::menuPriority( const QtxActionMgrId& id ) const
 {
   return QtxMenu::actionPriority( menuAction( id ) );
 }
@@ -1209,17 +1130,17 @@ int QtxActionMenuMgr::menuPriority( const int id ) const
   \param id - menu id.
   \param p - priority value.
 */
-void QtxActionMenuMgr::setMenuPriority( const int id, const int p )
+void QtxActionMenuMgr::setMenuPriority( const QtxActionMgrId& id, const int p )
 {
   return QtxMenu::setActionPriority( menuAction( id ), p );
 }
 
-bool QtxActionMenuMgr::isPermanentMenu( const int id ) const
+bool QtxActionMenuMgr::isPermanentMenu( const QtxActionMgrId& id ) const
 {
   return QtxMenu::isPermanentAction( menuAction( id ) );
 }
 
-void QtxActionMenuMgr::setPermanentMenu( const int id, bool on )
+void QtxActionMenuMgr::setPermanentMenu( const QtxActionMgrId& id, bool on )
 {
   QtxMenu::setPermanentAction( menuAction( id ), on );
 }
@@ -1229,11 +1150,11 @@ void QtxActionMenuMgr::setPermanentMenu( const int id, bool on )
   \param id menu item ID
   \param rec if \c true, perform recursive update
 */
-void QtxActionMenuMgr::triggerUpdate( const int id, const bool rec )
+void QtxActionMenuMgr::triggerUpdate( const QtxActionMgrId& id, const bool rec )
 {
   bool isRec = rec;
   if ( myUpdateIds.contains( id ) )
-    isRec = isRec || myUpdateIds[ id ];
+    isRec = isRec || myUpdateIds[id];
   myUpdateIds.insert( id, isRec );
 
   QtxActionMgr::triggerUpdate();
@@ -1254,9 +1175,9 @@ void QtxActionMenuMgr::updateContent()
   //          have positive identifiers this method might not work correctly. In this case it would be
   //          necessary to improve this method and to add preliminary sorting a submenus by depth of an
   //          enclosure.
-  for ( QMap<int, bool>::const_iterator it = myUpdateIds.constBegin(); it != myUpdateIds.constEnd(); ++it )
+  for ( QMap<QtxActionMgrId, bool>::const_iterator it = myUpdateIds.constBegin(); it != myUpdateIds.constEnd(); ++it )
   {
-    MenuNode* node = it.key() == -1 ? myRoot : find( it.key() );
+    MenuNode* node = it.key().isNull() ? myRoot : find( it.key() );
     if ( node )
       updateMenu( node, it.value() );
   }

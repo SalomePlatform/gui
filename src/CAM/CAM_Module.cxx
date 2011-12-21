@@ -26,6 +26,7 @@
 #include "CAM_Study.h"
 
 #include <QtxAction.h>
+#include <QtxActionMgrId.h>
 #include <QtxActionMenuMgr.h>
 #include <QtxActionToolMgr.h>
 
@@ -106,7 +107,7 @@ void CAM_Module::initialize( CAM_Application* app )
 
   This protected method allows derived module classes to set application object
   from methods different from initalize(). This is used e.g. when
-  a module instance is created but not intialized by custom application class, 
+  a module instance is created but not intialized by custom application class,
   still the module needs some minimal link to application.
   \sa initialize()
 */
@@ -886,10 +887,10 @@ int CAM_Module::registerAction( const int id, QAction* a )
   myActionMap.insert( ident, a );
 
   if ( menuMgr() )
-    menuMgr()->registerAction( a );
+    menuMgr()->registerAction( a, QtxActionMgrId( ident, moduleName() ) );
 
   if ( toolMgr() )
-    toolMgr()->registerAction( a );
+    toolMgr()->registerAction( a, QtxActionMgrId( ident, moduleName() ) );
 
   if ( application() && application()->desktop() )
     application()->desktop()->addAction( a );

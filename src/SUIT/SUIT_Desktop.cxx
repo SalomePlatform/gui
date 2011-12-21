@@ -84,7 +84,7 @@ bool SUIT_Desktop::event( QEvent* e )
     break;
   }
 
-  return QMainWindow::event( e );
+  return QtxMainWindow::event( e );
 }
 
 /*!

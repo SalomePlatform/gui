@@ -615,23 +615,23 @@ SVTK_MainWindow
 {
   QtxActionToolMgr* mgr = toolMgr();
   
-  mgr->append( DumpId, myToolBar );
-  mgr->append( ViewTrihedronId, myToolBar );
+  mgr->insert( DumpId, myToolBar );
+  mgr->insert( ViewTrihedronId, myToolBar );
 
   QtxMultiAction* aScaleAction = new QtxMultiAction( this );
   aScaleAction->insertAction( action( FitAllId ) );
   aScaleAction->insertAction( action( FitRectId ) );
   aScaleAction->insertAction( action( ZoomId ) );
-  mgr->append( aScaleAction, myToolBar );
+  mgr->insert( aScaleAction, myToolBar );
 
   QtxMultiAction* aPanningAction = new QtxMultiAction( this );
   aPanningAction->insertAction( action( PanId ) );
   aPanningAction->insertAction( action( GlobalPanId ) );
-  mgr->append( aPanningAction, myToolBar );
+  mgr->insert( aPanningAction, myToolBar );
 
-  mgr->append( ChangeRotationPointId, myToolBar );
+  mgr->insert( ChangeRotationPointId, myToolBar );
 
-  mgr->append( RotationId, myToolBar );
+  mgr->insert( RotationId, myToolBar );
 
   QtxMultiAction* aViewsAction = new QtxMultiAction( this );
   aViewsAction->insertAction( action( FrontId ) );
@@ -640,15 +640,15 @@ SVTK_MainWindow
   aViewsAction->insertAction( action( BottomId ) );
   aViewsAction->insertAction( action( LeftId ) );
   aViewsAction->insertAction( action( RightId ) );
-  mgr->append( aViewsAction, myToolBar );
+  mgr->insert( aViewsAction, myToolBar );
 
-  mgr->append( ResetId, myToolBar );
+  mgr->insert( ResetId, myToolBar );
 
-  mgr->append( UpdateRate, myToolBar );
-  mgr->append( NonIsometric, myToolBar );
-  mgr->append( GraduatedAxes, myToolBar );
-  mgr->append( TextRegion, myToolBar );
-  mgr->append( PrintId, myToolBar );
+  mgr->insert( UpdateRate, myToolBar );
+  mgr->insert( NonIsometric, myToolBar );
+  mgr->insert( GraduatedAxes, myToolBar );
+  mgr->insert( TextRegion, myToolBar );
+  mgr->insert( PrintId, myToolBar );
 }
 
 /*!

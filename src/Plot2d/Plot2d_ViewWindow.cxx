@@ -406,24 +406,24 @@ void Plot2d_ViewWindow::createToolBar()
 {
   QtxActionToolMgr* mgr = toolMgr();
   myToolBar = mgr->createToolBar( tr( "LBL_TOOLBAR_LABEL" ) );
-  mgr->append( DumpId, myToolBar );
-  mgr->append( ScaleOpId, myToolBar );
-  mgr->append( MoveOpId, myToolBar );
-  mgr->append( toolMgr()->separator(), myToolBar );
-  mgr->append( CurvPointsId, myToolBar );
-  mgr->append( CurvLinesId, myToolBar );
-  mgr->append( CurvSplinesId, myToolBar );
-  mgr->append( toolMgr()->separator(), myToolBar );
-  mgr->append( PModeXLinearId, myToolBar );
-  mgr->append( PModeXLogarithmicId, myToolBar );
-  mgr->append( toolMgr()->separator(), myToolBar );
-  mgr->append( PModeYLinearId, myToolBar );
-  mgr->append( PModeYLogarithmicId, myToolBar );
-  mgr->append( toolMgr()->separator(), myToolBar );
-  mgr->append( LegendId, myToolBar );
-  mgr->append( CurvSettingsId, myToolBar );
-  mgr->append( CloneId, myToolBar );
-  mgr->append( PrintId, myToolBar );
+  mgr->insert( DumpId, myToolBar );
+  mgr->insert( ScaleOpId, myToolBar );
+  mgr->insert( MoveOpId, myToolBar );
+  mgr->insert( toolMgr()->separator(), myToolBar );
+  mgr->insert( CurvPointsId, myToolBar );
+  mgr->insert( CurvLinesId, myToolBar );
+  mgr->insert( CurvSplinesId, myToolBar );
+  mgr->insert( toolMgr()->separator(), myToolBar );
+  mgr->insert( PModeXLinearId, myToolBar );
+  mgr->insert( PModeXLogarithmicId, myToolBar );
+  mgr->insert( toolMgr()->separator(), myToolBar );
+  mgr->insert( PModeYLinearId, myToolBar );
+  mgr->insert( PModeYLogarithmicId, myToolBar );
+  mgr->insert( toolMgr()->separator(), myToolBar );
+  mgr->insert( LegendId, myToolBar );
+  mgr->insert( CurvSettingsId, myToolBar );
+  mgr->insert( CloneId, myToolBar );
+  mgr->insert( PrintId, myToolBar );
 }
 
 /*!

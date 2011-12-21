@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -53,60 +53,49 @@ public:
 
   QWidget*     menuWidget() const;
 
-  virtual bool isVisible( const int, const int ) const;
-  virtual void setVisible( const int, const int, const bool );
+  virtual bool isVisible( const QtxActionMgrId&, const QtxActionMgrId& ) const;
+  virtual void setVisible( const QtxActionMgrId&, const QtxActionMgrId&, const bool );
 
-  int          insert( const int, const QString&, const int, const int = -1 );
-  int          insert( QAction*, const QString&, const int, const int = -1 );
+  QtxActionMgrId           insert( const QtxActionMgrId&, const QString&, const int, const int = -1 );
+  QtxActionMgrId           insert( QAction*, const QString&, const int, const int = -1 );
 
-  int          insert( const int, const QStringList&, const int, const int = -1 );
-  int          insert( QAction*, const QStringList&, const int, const int = -1 );
+  QtxActionMgrId           insert( const QtxActionMgrId&, const QStringList&, const int, const int = -1 );
+  QtxActionMgrId           insert( QAction*, const QStringList&, const int, const int = -1 );
 
-  virtual int  insert( const int, const int, const int, const int = -1 );
-  int          insert( QAction*, const int, const int, const int = -1 );
+  virtual QtxActionMgrId   insert( const QtxActionMgrId&, const QtxActionMgrId&, const int, const int = -1 );
+  QtxActionMgrId           insert( QAction*, const QtxActionMgrId&, const int, const int = -1 );
 
-  int          insert( const QString&, const QString&, const int, const int = -1, const int = -1 );
-  int          insert( const QString&, const QStringList&, const int, const int = -1, const int = -1 );
-  virtual int  insert( const QString&, const int, const int, const int = -1, const int = -1 );
+  QtxActionMgrId           insert( const QString&, const QString&, const int, const QtxActionMgrId& = QtxActionMgrId(), const int = -1 );
+  QtxActionMgrId           insert( const QString&, const QStringList&, const int, const QtxActionMgrId& = QtxActionMgrId(), const int = -1 );
+  virtual QtxActionMgrId   insert( const QString&, const QtxActionMgrId&, const int, const QtxActionMgrId& = QtxActionMgrId(), const int = -1 );
 
-  int          append( const int, const int, const int );
-  int          append( QAction*, const int, const int );
-  int          append( const QString&, const int, const int, const int = -1 );
+  void         remove( const QtxActionMgrId& );
+  void         remove( const QtxActionMgrId&, const QtxActionMgrId&, const int = -1 );
 
-  int          prepend( const int, const int, const int );
-  int          prepend( QAction*, const int, const int );
-  int          prepend( const QString&, const int, const int, const int = -1 );
+  bool         isShown( const QtxActionMgrId& ) const;
+  void         setShown( const QtxActionMgrId&, const bool );
 
-  void         remove( const int );
-  void         remove( const int, const int, const int = -1 );
-
-  void         show( const int );
-  void         hide( const int );
-
-  bool         isShown( const int ) const;
-  void         setShown( const int, const bool );
-
-  virtual void change( const int, const QString& );
+  virtual void change( const QtxActionMgrId&, const QString& );
 
   virtual bool load( const QString&, QtxActionMgr::Reader& );
 
-  bool         containsMenu( const QString&, const int, const bool = false ) const;
-  bool         containsMenu( const int, const int, const bool = false ) const;
+  bool         containsMenu( const QString&, const QtxActionMgrId&, const bool = false ) const;
+  bool         containsMenu( const QtxActionMgrId&, const QtxActionMgrId&, const bool = false ) const;
 
-  QMenu*       findMenu( const int ) const;
-  QMenu*       findMenu( const QString&, const int, const bool = false ) const;
+  QMenu*       findMenu( const QtxActionMgrId& ) const;
+  QMenu*       findMenu( const QString&, const QtxActionMgrId&, const bool = false ) const;
 
-  bool         isEmptyEnabled( const int ) const;
-  void         setEmptyEnabled( const int, const bool );
+  bool         isEmptyEnabled( const QtxActionMgrId& ) const;
+  void         setEmptyEnabled( const QtxActionMgrId&, const bool );
 
   bool         menuCollapsible() const;
   void         setMenuCollapsible( bool );
 
-  int          menuPriority( const int ) const;
-  void         setMenuPriority( const int, const int );
+  int          menuPriority( const QtxActionMgrId& ) const;
+  void         setMenuPriority( const QtxActionMgrId&, const int );
 
-  bool         isPermanentMenu( const int ) const;
-  void         setPermanentMenu( const int, bool );
+  bool         isPermanentMenu( const QtxActionMgrId& ) const;
+  void         setPermanentMenu( const QtxActionMgrId&, bool );
 
 private slots:
   void         onAboutToShow();
@@ -120,19 +109,19 @@ signals:
 protected:
   void         setMenuWidget( QWidget* );
 
-  MenuNode*    find( const int, const int, const bool = true ) const;
-  MenuNode*    find( const int, MenuNode* = 0, const bool = true ) const;
-  bool         find( const int, NodeList&, MenuNode* = 0 ) const;
-  MenuNode*    find( const QString&, const int, const bool = true ) const;
+  MenuNode*    find( const QtxActionMgrId&, const QtxActionMgrId&, const bool = true ) const;
+  MenuNode*    find( const QtxActionMgrId&, MenuNode* = 0, const bool = true ) const;
+  bool         find( const QtxActionMgrId&, NodeList&, MenuNode* = 0 ) const;
+  MenuNode*    find( const QString&, const QtxActionMgrId&, const bool = true ) const;
   MenuNode*    find( const QString&, MenuNode* = 0, const bool = true ) const;
   bool         find( const QString&, NodeList&, MenuNode* = 0 ) const;
-  int          findId( const int, const int = -1 ) const;
+  QtxActionMgrId findId( const QtxActionMgrId&, const QtxActionMgrId& = QtxActionMgrId() ) const;
 
-  void         removeMenu( const int, MenuNode* );
+  void         removeMenu( const QtxActionMgrId&, MenuNode* );
 
-  QAction*     itemAction( const int ) const;
-  QAction*     menuAction( const int ) const;
-  int          menuActionId( QAction* ) const;
+  QAction*     itemAction( const QtxActionMgrId& ) const;
+  QAction*     menuAction( const QtxActionMgrId& ) const;
+  QtxActionMgrId menuActionId( QAction* ) const;
 
   void         updateMenu( MenuNode* = 0, const bool = true, const bool = true );
   virtual void internalUpdate();
@@ -144,19 +133,19 @@ private:
   QWidget*     menuWidget( MenuNode* ) const;
   void         simplifySeparators( QWidget* );
   QString      clearTitle( const QString& ) const;
-  int          createMenu( const QStringList&, const int );
+  QtxActionMgrId createMenu( const QStringList&, const QtxActionMgrId& );
 
-  void         triggerUpdate( const int, const bool rec = true );
+  void         triggerUpdate( const QtxActionMgrId&, const bool rec = true );
 
 private:
   typedef QMap<int, QAction*> MenuMap;     //!< actions map
-  
+
 private:
-  MenuNode*       myRoot;        //!< root menu node
-  QWidget*        myMenu;        //!< menu widget
-  MenuMap         myMenus;       //!< actions map
-  bool            myCollapse;
-  QMap<int, bool> myUpdateIds;   //!< list of actions ID being updated
+  MenuNode*                   myRoot;        //!< root menu node
+  QWidget*                    myMenu;        //!< menu widget
+  MenuMap                     myMenus;       //!< actions map
+  bool                        myCollapse;
+  QMap<QtxActionMgrId, bool>  myUpdateIds;   //!< list of actions ID being updated
 };
 
 class QtxActionMenuMgr::MenuCreator : public QtxActionMgr::Creator

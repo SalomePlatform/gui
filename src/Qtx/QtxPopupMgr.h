@@ -1,17 +1,17 @@
 // Copyright (C) 2005  OPEN CASCADE, CEA/DEN, EDF R&D, PRINCIPIA R&D
-// 
+//
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
-// License as published by the Free Software Foundation; either 
+// License as published by the Free Software Foundation; either
 // version 2.1 of the License.
-// 
-// This library is distributed in the hope that it will be useful 
-// but WITHOUT ANY WARRANTY; without even the implied warranty of 
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU 
+//
+// This library is distributed in the hope that it will be useful
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 // Lesser General Public License for more details.
 //
-// You should have received a copy of the GNU Lesser General Public  
-// License along with this library; if not, write to the Free Software 
+// You should have received a copy of the GNU Lesser General Public
+// License along with this library; if not, write to the Free Software
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
@@ -37,7 +37,7 @@ class QTX_EXPORT QtxPopupMgr : public QtxActionMenuMgr
 
 public:
   //! Menu item rule type
-  typedef enum { 
+  typedef enum {
     VisibleRule,   //!< menu item visibility state
     EnableRule,    //!< menu item enable state
     ToggleRule     //!< menu item toggle state
@@ -51,23 +51,23 @@ public:
   QtxPopupMgr( QMenu*, QObject* = 0 );
   virtual ~QtxPopupMgr();
 
-  int                insertAction( const int, const int, const QString&, const RuleType = VisibleRule );
-  int                insertAction( QAction*, const int, const QString&, const RuleType = VisibleRule );
+  QtxActionMgrId     insertAction( const QtxActionMgrId&, const QtxActionMgrId&, const QString&, const RuleType = VisibleRule );
+  QtxActionMgrId     insertAction( QAction*, const QtxActionMgrId&, const QString&, const RuleType = VisibleRule );
 
-  virtual int        registerAction( QAction*, const int, const QString& rule,
-                                     const RuleType = VisibleRule );
-  virtual void       unRegisterAction( const int );
+  virtual QtxActionMgrId registerAction( QAction*, const QtxActionMgrId&, const QString& rule,
+                                         const RuleType = VisibleRule );
+  virtual void       unRegisterAction( const QtxActionMgrId& );
 
-  virtual bool       isVisible( const int actId, const int place ) const;
+  virtual bool       isVisible( const QtxActionMgrId& actId, const QtxActionMgrId& place ) const;
 
   QString            rule( QAction*, const RuleType = VisibleRule ) const;
-  QString            rule( const int, const RuleType = VisibleRule ) const;
+  QString            rule( const QtxActionMgrId&, const RuleType = VisibleRule ) const;
 
   void               setRule( QAction*, const QString&, const RuleType = VisibleRule );
-  void               setRule( const int, const QString&, const RuleType = VisibleRule );
+  void               setRule( const QtxActionMgrId&, const QString&, const RuleType = VisibleRule );
 
   bool               hasRule( QAction*, const RuleType = VisibleRule ) const;
-  bool               hasRule( const int, const RuleType = VisibleRule ) const;
+  bool               hasRule( const QtxActionMgrId&, const RuleType = VisibleRule ) const;
 
   QtxPopupSelection* selection() const;
   void               setSelection( QtxPopupSelection* );

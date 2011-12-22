@@ -474,8 +474,8 @@ void OCCViewer_ViewPort3d::rotate( int x, int y,
         dx = dy = 0.;
       }
       else {
-        dx = (Standard_Real(x) - sx) * Standard_PI/rx;
-        dy = (sy - Standard_Real(y)) * Standard_PI/ry;
+        dx = (Standard_Real(x) - sx) * M_PI/rx;
+        dy = (sy - Standard_Real(y)) * M_PI/ry;
         dz = 0.;
       }
       
@@ -583,7 +583,7 @@ void OCCViewer_ViewPort3d::rotateXY( double degrees )
   int x = width()/2, y = height()/2;
   double X, Y, Z;
   activeView()->Convert( x, y, X, Y, Z );
-  activeView()->Rotate( 0, 0, degrees * Standard_PI180, X, Y, Z );
+  activeView()->Rotate( 0, 0, degrees * M_PI / 180., X, Y, Z );
   emit vpTransformed( this );
 }  
   

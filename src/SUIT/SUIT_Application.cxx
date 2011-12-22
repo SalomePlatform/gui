@@ -639,11 +639,13 @@ int SUIT_Application::registerAction( const int id, QAction* a )
 
   myActionMap.insert( ident, a );
 
+  QString ctx = QString( "APP_%1" ).arg( applicationName() );
+
   if ( desktop() && desktop()->menuMgr() )
-    desktop()->menuMgr()->registerAction( a, QtxActionMgrId( ident, applicationName() ) );
+    desktop()->menuMgr()->registerAction( a, QtxActionMgrId( ident, ctx ) );
 
   if ( desktop() && desktop()->toolMgr() )
-    desktop()->toolMgr()->registerAction( a, QtxActionMgrId( ident, applicationName() ) );
+    desktop()->toolMgr()->registerAction( a, QtxActionMgrId( ident, ctx ) );
 
   return ident;
 }

@@ -886,11 +886,13 @@ int CAM_Module::registerAction( const int id, QAction* a )
 
   myActionMap.insert( ident, a );
 
+  QString ctx = QString( "MOD_%1" ).arg( moduleName() );
+
   if ( menuMgr() )
-    menuMgr()->registerAction( a, QtxActionMgrId( ident, moduleName() ) );
+    menuMgr()->registerAction( a, QtxActionMgrId( ident, ctx ) );
 
   if ( toolMgr() )
-    toolMgr()->registerAction( a, QtxActionMgrId( ident, moduleName() ) );
+    toolMgr()->registerAction( a, QtxActionMgrId( ident, ctx ) );
 
   if ( application() && application()->desktop() )
     application()->desktop()->addAction( a );

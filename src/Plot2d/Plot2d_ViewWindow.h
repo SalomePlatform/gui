@@ -53,6 +53,8 @@ public:
          MoveOpId, PanId, GlobalPanId,
          PModeXLinearId, PModeXLogarithmicId, 
          PModeYLinearId, PModeYLogarithmicId,
+         PModeNormLMaxId, PModeNormLMinId,
+         PModeNormRMaxId, PModeNormRMinId,
 	 CurvPointsId, CurvLinesId, CurvSplinesId, 
 	 LegendId,
 	 CurvSettingsId,
@@ -85,6 +87,9 @@ public slots:
   void              onChangeVerMode();
   void              onChangeCurveMode();
   void              onChangeLegendMode();
+  void              onChangeNormLMode();
+  void              onChangeNormRMode();
+
   
   void              onFitAll();
   void              onFitRect();
@@ -93,6 +98,8 @@ public slots:
   void              onGlobalPanning();
   void              onViewHorMode();
   void              onViewVerMode();
+  void              onViewNormLMode();
+  void              onViewNormRMode();
   void              onLegend();
   void              onCurves();
 

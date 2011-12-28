@@ -88,6 +88,8 @@ void Plot2d_ViewWindow::initLayout()
 
   connect( myViewFrame, SIGNAL( vpModeHorChanged() ), this, SLOT( onChangeHorMode() ) );
   connect( myViewFrame, SIGNAL( vpModeVerChanged() ), this, SLOT( onChangeVerMode() ) );
+  connect( myViewFrame, SIGNAL( vpNormLModeChanged() ), this, SLOT( onChangeNormLMode() ) );
+  connect( myViewFrame, SIGNAL( vpNormRModeChanged() ), this, SLOT( onChangeNormRMode() ) );
   connect( myViewFrame, SIGNAL( vpCurveChanged() ),   this, SLOT( onChangeCurveMode() ) );
   connect( myViewFrame, SIGNAL( contextMenuRequested( QContextMenuEvent* ) ),
            this,        SIGNAL( contextMenuRequested( QContextMenuEvent* ) ) );
@@ -155,6 +157,15 @@ void Plot2d_ViewWindow::contextMenuPopup( QMenu* thePopup )
   curTypePopup->addAction( mgr->action( CurvPointsId ) );
   curTypePopup->addAction( mgr->action( CurvLinesId ) );
   curTypePopup->addAction( mgr->action( CurvSplinesId ) );
+
+  //Normalization type
+  QMenu* normTypePopup = thePopup->addMenu( tr( "NORMALIZATION_TYPE_POPUP" ) );
+  normTypePopup->addAction( mgr->action( PModeNormLMinId ) );
+  normTypePopup->addAction( mgr->action( PModeNormLMaxId ) );
+  normTypePopup->addSeparator();
+  normTypePopup->addAction( mgr->action( PModeNormRMinId ) );
+  normTypePopup->addAction( mgr->action( PModeNormRMaxId ) );
+
 
   // legend
   thePopup->addAction( mgr->action( LegendId ) );
@@ -359,7 +370,49 @@ void Plot2d_ViewWindow::createActions()
   aVerGroup->addAction( mgr->action( PModeYLinearId ) );
   aVerGroup->addAction( mgr->action( PModeYLogarithmicId ) );
 
-  // 7. Legend
+  // 7. Normalization mode operations
+
+  // 7.1. Normalize to the global minimum by left Y axis
+  aAction = new QtxAction( tr( "TOT_PLOT2D_NORMALIZE_MODE_LMIN" ),
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_NORMALIZE_MODE_LMIN" ) ),
+                           tr( "MEN_PLOT2D_NORMALIZE_MODE_LMIN" ),
+                           0, this );
+  aAction->setStatusTip( tr( "PRP_PLOT2D_NORMALIZE_MODE_LMIN" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewNormLMode() ) );
+  aAction->setCheckable( true );
+  mgr->registerAction( aAction, PModeNormLMinId );
+
+  // 7.2. Normalize to the global maximum by right Y axis
+  aAction = new QtxAction( tr( "TOT_PLOT2D_NORMALIZE_MODE_LMAX" ),
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_NORMALIZE_MODE_LMAX" ) ),
+                           tr( "MEN_PLOT2D_NORMALIZE_MODE_LMAX" ),
+                           0, this );
+  aAction->setStatusTip( tr( "PRP_PLOT2D_NORMALIZE_MODE_LMAX" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewNormLMode() ) );
+  aAction->setCheckable( true );
+  mgr->registerAction( aAction, PModeNormLMaxId );
+
+    // 7.3. Normalize to the global minimum by right Y axis
+  aAction = new QtxAction( tr( "TOT_PLOT2D_NORMALIZE_MODE_RMIN" ),
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_NORMALIZE_MODE_RMIN" ) ),
+                           tr( "MEN_PLOT2D_NORMALIZE_MODE_RMIN" ),
+                           0, this );
+  aAction->setStatusTip( tr( "PRP_PLOT2D_NORMALIZE_MODE_RMIN" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewNormRMode() ) );
+  aAction->setCheckable( true );
+  mgr->registerAction( aAction, PModeNormRMinId );
+
+  // 7.4. Normalize to the global maximum by left Y axis
+  aAction = new QtxAction( tr( "TOT_PLOT2D_NORMALIZE_MODE_RMAX" ),
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_NORMALIZE_MODE_RMAX" ) ),
+                           tr( "MEN_PLOT2D_NORMALIZE_MODE_RMAX" ),
+                           0, this );
+  aAction->setStatusTip( tr( "PRP_PLOT2D_NORMALIZE_MODE_RMAX" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), this, SLOT( onViewNormRMode() ) );
+  aAction->setCheckable( true );
+  mgr->registerAction( aAction, PModeNormRMaxId );
+
+  // 8. Legend
   aAction = new QtxAction( tr( "TOT_PLOT2D_SHOW_LEGEND" ),
                            aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_SHOW_LEGEND" ) ),
                            tr( "MEN_PLOT2D_SHOW_LEGEND" ),
@@ -369,7 +422,7 @@ void Plot2d_ViewWindow::createActions()
   aAction->setCheckable( true );
   mgr->registerAction( aAction, LegendId );
 
-  // 8. Settings
+  // 9. Settings
   aAction = new QtxAction( tr( "TOT_PLOT2D_SETTINGS" ),
                            aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_SETTINGS" ) ),
                            tr( "MEN_PLOT2D_SETTINGS" ),
@@ -412,6 +465,8 @@ void Plot2d_ViewWindow::createActions()
   onChangeCurveMode();
   onChangeHorMode();
   onChangeVerMode();
+  onChangeNormLMode();
+  onChangeNormRMode();
   onChangeLegendMode();
 }
 
@@ -429,6 +484,12 @@ void Plot2d_ViewWindow::createToolBar()
   mgr->append( CurvPointsId, myToolBar );
   mgr->append( CurvLinesId, myToolBar );
   mgr->append( CurvSplinesId, myToolBar );
+  mgr->append( toolMgr()->separator(), myToolBar );
+  mgr->append( PModeNormLMaxId, myToolBar );
+  mgr->append( PModeNormLMinId, myToolBar );
+  mgr->append( toolMgr()->separator(), myToolBar );
+  mgr->append( PModeNormRMaxId, myToolBar );
+  mgr->append( PModeNormRMinId, myToolBar );
   mgr->append( toolMgr()->separator(), myToolBar );
   mgr->append( PModeXLinearId, myToolBar );
   mgr->append( PModeXLogarithmicId, myToolBar );
@@ -500,6 +561,42 @@ void Plot2d_ViewWindow::onChangeVerMode()
     toolMgr()->action( PModeYLogarithmicId )->setChecked( true );
 
   toolMgr()->action( GlobalPanId )->setEnabled( aHorLinear && aVerLinear );
+}
+
+/*!
+  \brief Called when the normalization mode (by left Y axis) for curves is changed.
+*/
+void Plot2d_ViewWindow::onChangeNormLMode()
+{
+  bool aNormMax = myViewFrame->isNormLMaxMode();
+  bool aNormMin = myViewFrame->isNormLMinMode();
+
+  if ( aNormMax )
+    toolMgr()->action( PModeNormLMaxId )->setChecked( true );
+  else
+    toolMgr()->action( PModeNormLMaxId )->setChecked( false );
+  if ( aNormMin )
+    toolMgr()->action( PModeNormLMinId )->setChecked( true );
+  else
+    toolMgr()->action( PModeNormLMinId )->setChecked( false );
+}
+
+/*!
+  \brief Called when the normalization mode (by left Y axis) for curves is changed.
+*/
+void Plot2d_ViewWindow::onChangeNormRMode()
+{
+  bool aNormMax = myViewFrame->isNormRMaxMode();
+  bool aNormMin = myViewFrame->isNormRMinMode();
+
+  if ( aNormMax )
+    toolMgr()->action( PModeNormRMaxId )->setChecked( true );
+  else
+    toolMgr()->action( PModeNormRMaxId )->setChecked( false );
+  if ( aNormMin )
+    toolMgr()->action( PModeNormRMinId )->setChecked( true );
+  else
+    toolMgr()->action( PModeNormRMinId )->setChecked( false );
 }
 
 /*!
@@ -584,6 +681,26 @@ void Plot2d_ViewWindow::onViewHorMode()
 void Plot2d_ViewWindow::onViewVerMode()
 {
   myViewFrame->setVerScaleMode( toolMgr()->action( PModeYLinearId )->isChecked() ? 0 : 1 );
+}
+
+/*!
+  \brief Called when normalization mode action (by left Y axis) is activated.
+*/
+
+void Plot2d_ViewWindow::onViewNormLMode()
+{
+  myViewFrame->setNormLMaxMode( toolMgr()->action( PModeNormLMaxId )->isChecked() ? true : false );
+  myViewFrame->setNormLMinMode( toolMgr()->action( PModeNormLMinId )->isChecked() ? true : false );
+}
+
+/*!
+  \brief Called when normalization mode action (by right Y axis) is activated.
+*/
+
+void Plot2d_ViewWindow::onViewNormRMode()
+{
+  myViewFrame->setNormRMaxMode( toolMgr()->action( PModeNormRMaxId )->isChecked() ? true : false );
+  myViewFrame->setNormRMinMode( toolMgr()->action( PModeNormRMinId )->isChecked() ? true : false );
 }
 
 /*!

@@ -43,6 +43,8 @@ salomeinclude_HEADERS =		        \
 	Plot2d_ViewManager.h	        \
 	Plot2d_ViewModel.h	        \
 	Plot2d_ViewWindow.h	        \
+	Plot2d_Algorithm.h		\
+	Plot2d_NormalizeAlgorithm.h	\
 	Plot2d_SetupCurveDlg.h	        \
 	Plot2d_ToolTip.h                \
 	Plot2d_SetupCurveScaleDlg.h	
@@ -68,6 +70,8 @@ dist_libPlot2d_la_SOURCES =		\
 	Plot2d_ViewManager.cxx		\
 	Plot2d_ViewModel.cxx		\
 	Plot2d_ViewWindow.cxx		\
+	Plot2d_Algorithm.cxx		\
+	Plot2d_NormalizeAlgorithm.cxx	\
 	Plot2d_SetupCurveDlg.cxx	\
 	Plot2d_SetupCurveScaleDlg.cxx	\
 	Plot2d_ToolTip.cxx              
@@ -87,6 +91,8 @@ MOC_FILES =				\
 	Plot2d_ViewModel_moc.cxx	\
 	Plot2d_ViewWindow_moc.cxx	\
 	Plot2d_SetupCurveDlg_moc.cxx	\
+	Plot2d_Algorithm_moc.cxx		\
+	Plot2d_NormalizeAlgorithm_moc.cxx	\
 	Plot2d_SetupCurveScaleDlg_moc.cxx	\
 	Plot2d_ToolTip_moc.cxx
 
@@ -114,6 +120,10 @@ dist_salomeres_DATA =				\
 	resources/plot2d_settings.png		\
 	resources/plot2d_splines.png		\
 	resources/plot2d_analitic_curve.png	\
+	resources/plot2d_lmax_normalization.png	\
+	resources/plot2d_lmin_normalization.png	\
+	resources/plot2d_rmax_normalization.png	\
+	resources/plot2d_rmin_normalization.png	\
 	resources/plot2d_zoom.png
 
 nodist_salomeres_DATA =		\

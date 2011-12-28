@@ -72,6 +72,7 @@ public:
   void                 clearAllPoints();
   pointList            getPointList() const;
   void                 setPointList( const pointList& points );
+  Plot2d_Point&        getPoint(int index);
 
   void                 setData( const double*, const double*, 
 				long, const QStringList& = QStringList() );

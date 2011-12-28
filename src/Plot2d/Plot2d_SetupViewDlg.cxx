@@ -113,6 +113,25 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent,
   QLabel* aBGLab  = new QLabel( tr( "PLOT2D_BACKGROUND_COLOR_LBL" ), this );
   myBackgroundBtn = new QtxColorButton( this );
 
+  // normalize mode
+  QGroupBox* aNormalizeGrp = new QGroupBox( tr( "PLOT2D_NORMALIZE_TLT" ), this );
+  QGridLayout* aNormalizeLayout = new QGridLayout( aNormalizeGrp );
+  aNormalizeLayout->setMargin( MARGIN_SIZE ); aNormalizeLayout->setSpacing( SPACING_SIZE );
+  aNormalizeGrp->setLayout( aNormalizeLayout );
+  QLabel* aYLeftLab  = new QLabel( tr( "PLOT2D_NORMALIZE_LEFT_AXIS" ), aNormalizeGrp );
+  myNormLMinCheck = new QCheckBox( tr( "PLOT2D_NORMALIZE_MODE_MIN" ), aNormalizeGrp );
+  myNormLMaxCheck = new QCheckBox( tr( "PLOT2D_NORMALIZE_MODE_MAX" ), aNormalizeGrp );
+  QLabel* aYRightLab  = new QLabel( tr( "PLOT2D_NORMALIZE_RIGHT_AXIS" ), aNormalizeGrp );
+  myNormRMinCheck = new QCheckBox( tr( "PLOT2D_NORMALIZE_MODE_MIN" ), aNormalizeGrp );
+  myNormRMaxCheck = new QCheckBox( tr( "PLOT2D_NORMALIZE_MODE_MAX" ), aNormalizeGrp );
+
+  aNormalizeLayout->addWidget( aYLeftLab,    0, 0 );
+  aNormalizeLayout->addWidget( myNormLMaxCheck,    0, 1 );
+  aNormalizeLayout->addWidget( myNormLMinCheck, 0, 2 );
+  aNormalizeLayout->addWidget( aYRightLab,    1, 0 );
+  aNormalizeLayout->addWidget( myNormRMaxCheck,    1, 1 );
+  aNormalizeLayout->addWidget( myNormRMinCheck, 1, 2 );
+
   // scale mode
   QGroupBox* aScaleGrp = new QGroupBox( tr( "PLOT2D_SCALE_TLT" ), this );
   QGridLayout* aScaleLayout = new QGridLayout( aScaleGrp );
@@ -232,7 +251,7 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent,
   myYMinGridSpin->setMinimumWidth( MIN_SPIN_WIDTH );
 
   aGridLayoutY->addWidget( myYGridCheck,    0, 0 );
-  aGridLayoutY->addWidget( aYMajLbl,        0, 1 );
+  aGridLayoutY->addWidget( aYMajLbl,       0, 1 );
   aGridLayoutY->addWidget( myYGridSpin,     0, 2 );
   aGridLayoutY->addWidget( myYMinGridCheck, 1, 0 );
   aGridLayoutY->addWidget( aYMinLbl,        1, 1 );
@@ -339,12 +358,13 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent,
   bgLayout->addWidget( myBackgroundBtn ); bgLayout->addStretch();
   topLayout->addWidget( aBGLab,        3,    2    );
   topLayout->addLayout( bgLayout,      3,    3    );
-  topLayout->addWidget( aScaleGrp,     4, 0, 1, 4 );
-  topLayout->addWidget( aTabWidget,    5, 0, 1, 4 );
-  topLayout->addWidget( myDefCheck,    6, 0, 1, 4 );
-  topLayout->setRowStretch( 6, 5 );
+  topLayout->addWidget( aNormalizeGrp,      4, 0, 1, 4 );
+  topLayout->addWidget( aScaleGrp,     5, 0, 1, 4 );
+  topLayout->addWidget( aTabWidget,    6, 0, 1, 4 );
+  topLayout->addWidget( myDefCheck,    7, 0, 1, 4 );
+  topLayout->setRowStretch( 7, 5 );
 
-  topLayout->addLayout( btnLayout,     7, 0, 1, 4 );
+  topLayout->addLayout( btnLayout,     8, 0, 1, 4 );
   
   if ( !showDefCheck )
     myDefCheck->hide();
@@ -357,6 +377,11 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent,
   connect( myYGridCheck,    SIGNAL( clicked() ), this, SLOT( onYGridMajorChecked() ) );
   connect( myXMinGridCheck, SIGNAL( clicked() ), this, SLOT( onXGridMinorChecked() ) );
   connect( myYMinGridCheck, SIGNAL( clicked() ), this, SLOT( onYGridMinorChecked() ) );
+  connect( myNormLMaxCheck, SIGNAL( clicked() ), this, SLOT( onNormLMaxChecked() ) );
+  connect( myNormLMinCheck, SIGNAL( clicked() ), this, SLOT( onNormLMinChecked() ) );
+  connect( myNormRMaxCheck, SIGNAL( clicked() ), this, SLOT( onNormRMaxChecked() ) );
+  connect( myNormRMinCheck, SIGNAL( clicked() ), this, SLOT( onNormRMinChecked() ) );
+
 
   connect( myOkBtn,         SIGNAL( clicked() ), this, SLOT( accept() ) );
   connect( myCancelBtn,     SIGNAL( clicked() ), this, SLOT( reject() ) );
@@ -377,6 +402,10 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent,
   onXGridMajorChecked();
   onYGridMajorChecked();
   onXGridMinorChecked();
+  onNormLMaxChecked();
+  onNormLMinChecked();
+  onNormRMaxChecked();
+  onNormRMinChecked();
   if ( mySecondAxisY ) {
     onY2TitleChecked();
     onY2GridMajorChecked();
@@ -545,6 +574,86 @@ void Plot2d_SetupViewDlg::setCurveType( const int type )
 int Plot2d_SetupViewDlg::getCurveType()
 {
   return myCurveCombo->currentIndex();
+}
+
+/*!
+  \brief Set normalization to maximum by left Y axis.
+  \param type normalizatoin type: true,false
+  \sa getMaxNormMode()
+*/
+void Plot2d_SetupViewDlg::setLMaxNormMode( const bool type )
+{
+  myNormLMaxCheck->setChecked( type );
+}
+
+/*!
+  \brief Check if normalization to maximum by left Y axis sets.
+  \return curve normalizatoin type: true,false
+  \sa setMaxNormMode()
+*/
+bool Plot2d_SetupViewDlg::getLMaxNormMode()
+{
+  return myNormLMaxCheck->isChecked();
+}
+
+/*!
+  \brief Set normalization to minimum by left Y axis.
+  \param type normalizatoin type: true,false
+  \sa getMinNormMode()
+*/
+void Plot2d_SetupViewDlg::setLMinNormMode( const bool type )
+{
+  myNormLMinCheck->setChecked( type );
+}
+
+/*!
+  \brief Check if normalization to minimum by left Y axis sets.
+  \return curve normalizatoin type: true,false
+  \sa setMinNormMode()
+*/
+bool Plot2d_SetupViewDlg::getLMinNormMode()
+{
+  return myNormLMinCheck->isChecked();
+}
+
+/*!
+  \brief Set normalization to maximum by right Y axis.
+  \param type normalizatoin type: true,false
+  \sa getMaxNormMode()
+*/
+void Plot2d_SetupViewDlg::setRMaxNormMode( const bool type )
+{
+  myNormRMaxCheck->setChecked( type );
+}
+
+/*!
+  \brief Check if normalization to maximum by right Y axis sets.
+  \return curve normalizatoin type: true,false
+  \sa setMaxNormMode()
+*/
+bool Plot2d_SetupViewDlg::getRMaxNormMode()
+{
+  return myNormRMaxCheck->isChecked();
+}
+
+/*!
+  \brief Set normalization to minimum by right Y axis.
+  \param type normalizatoin type: true,false
+  \sa getMinNormMode()
+*/
+void Plot2d_SetupViewDlg::setRMinNormMode( const bool type )
+{
+  myNormRMinCheck->setChecked( type );
+}
+
+/*!
+  \brief Check if normalization to minimum by right Y axis sets.
+  \return curve normalizatoin type: true,false
+  \sa setMinNormMode()
+*/
+bool Plot2d_SetupViewDlg::getRMinNormMode()
+{
+  return myNormRMinCheck->isChecked();
 }
 
 /*!
@@ -868,6 +977,34 @@ void Plot2d_SetupViewDlg::onYGridMinorChecked()
   \brief Called when user clicks "Enable right vertical minor grid" check box.
 */
 void Plot2d_SetupViewDlg::onY2GridMinorChecked()
+{
+}
+
+/*!
+  \brief Called when user clicks "Left Y Axis: Normalize to maximum" check box.
+*/
+void Plot2d_SetupViewDlg::onNormLMaxChecked()
+{
+}
+
+/*!
+  \brief Called when user clicks "Left Y Axis: Normalize to minimum" check box.
+*/
+void Plot2d_SetupViewDlg::onNormLMinChecked()
+{
+}
+
+/*!
+  \brief Called when user clicks "Right Y Axis: Normalize to maximum" check box.
+*/
+void Plot2d_SetupViewDlg::onNormRMaxChecked()
+{
+}
+
+/*!
+  \brief Called when user clicks "Right Y Axis: Normalize to minimum" check box.
+*/
+void Plot2d_SetupViewDlg::onNormRMinChecked()
 {
 }
 

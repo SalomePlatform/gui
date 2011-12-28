@@ -299,6 +299,14 @@ pointList Plot2d_Object::getPointList() const
 }
 
 /*!
+  Gets points by index.
+*/
+
+Plot2d_Point& Plot2d_Object::getPoint(int index) {
+	return myPoints[index];
+}
+
+/*!
   Gets object's data : abscissas of points
 */
 void Plot2d_Object::setPointList( const pointList& points )

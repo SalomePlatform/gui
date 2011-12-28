@@ -64,6 +64,15 @@ public:
   void            setCurveType( const int );
   int             getCurveType();
 
+  bool            getLMaxNormMode();
+  void            setLMaxNormMode(const bool);
+  bool            getLMinNormMode();
+  void            setLMinNormMode(const bool);
+  bool            getRMaxNormMode();
+  void            setRMaxNormMode(const bool);
+  bool            getRMinNormMode();
+  void            setRMinNormMode(const bool);
+
   void            setLegend( bool, int, const QFont&, const QColor& );
   bool            isLegendEnabled();
   int             getLegendPos();
@@ -99,6 +108,10 @@ protected slots:
   void            onXGridMinorChecked();
   void            onYGridMinorChecked();
   void            onY2GridMinorChecked();
+  void            onNormLMaxChecked();
+  void            onNormLMinChecked();
+  void            onNormRMaxChecked();
+  void            onNormRMinChecked();
   void            onHelp();
 
 private:
@@ -131,6 +144,10 @@ private:
   QSpinBox*       myMarkerSpin;
   QComboBox*      myXModeCombo;
   QComboBox*      myYModeCombo;
+  QCheckBox*      myNormLMaxCheck;
+  QCheckBox*      myNormLMinCheck;
+  QCheckBox*      myNormRMaxCheck;
+  QCheckBox*      myNormRMinCheck;
   QComboBox*      myY2ModeCombo;
   QCheckBox*      myDefCheck;
   QPushButton*    myOkBtn;

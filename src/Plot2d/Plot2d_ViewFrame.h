@@ -28,6 +28,7 @@
 #ifndef DISABLE_PYCONSOLE
 #include "Plot2d_AnaliticCurve.h"
 #endif
+#include "Plot2d_NormalizeAlgorithm.h"
 
 #include <QWidget>
 #include <QMultiHash>
@@ -88,6 +89,7 @@ public:
   int            getCurves( curveList& ) const;
   CurveDict      getCurves() const;
   void           updateCurve( Plot2d_Curve*, bool = false );
+  void           processFiltering(bool = false);
 
   /* objects operations */
   void           displayObject( Plot2d_Object*, bool = false );
@@ -144,9 +146,23 @@ public:
   int            getHorScaleMode() const;
   void           setVerScaleMode( const int, bool = true );
   int            getVerScaleMode() const;
+  void           setNormLMaxMode( bool, bool = true);
+  bool           getNormLMaxMode()const;
+  void           setNormLMinMode( bool, bool = true);
+  bool           getNormLMinMode()const;
+  void           setNormRMaxMode( bool, bool = true);
+  bool           getNormRMaxMode()const;
+  void           setNormRMinMode( bool, bool = true);
+  bool           getNormRMinMode()const;
+
 
   bool           isModeHorLinear();
   bool           isModeVerLinear();
+  bool           isNormLMaxMode();
+  bool           isNormLMinMode();
+  bool           isNormRMaxMode();
+  bool           isNormRMinMode();
+
   bool           isLegendShow() const;
 
   // Protection against QwtCurve::drawLines() bug in Qwt 0.4.x: 
@@ -173,6 +189,8 @@ public:
   QwtPlotItem*   getPlotObject( Plot2d_Object* ) const;
   QwtPlotCurve*  getPlotCurve( Plot2d_Curve* ) const;
   Plot2d_Plot2d* getPlot() const { return myPlot; }
+
+  void           updatePlotItem(Plot2d_Object*, QwtPlotItem*);
 protected:
   int            testOperation( const QMouseEvent& );
   void           readPreferences();
@@ -211,6 +229,8 @@ protected:
 signals:
   void           vpModeHorChanged();
   void           vpModeVerChanged();
+  void           vpNormLModeChanged();
+  void           vpNormRModeChanged();
   void           vpCurveChanged();
   void           contextMenuRequested( QContextMenuEvent* );
   void           legendClicked( QwtPlotItem* );
@@ -234,12 +254,15 @@ protected:
   int                 myXGridMaxMajor, myYGridMaxMajor, myY2GridMaxMajor;
   int                 myXGridMaxMinor, myYGridMaxMinor, myY2GridMaxMinor;
   int                 myXMode, myYMode;
+  bool                myNormLMin, myNormLMax, myNormRMin, myNormRMax;
   double              myXDistance, myYDistance, myYDistance2;
   bool                mySecondY;
   ObjectDict          myObjects;
 #ifndef DISABLE_PYCONSOLE
   AnaliticCurveList   myAnaliticCurves;
 #endif
+  Plot2d_NormalizeAlgorithm* myLNormAlgo;
+  Plot2d_NormalizeAlgorithm* myRNormAlgo;
   bool                myIsDefTitle;
 };
 

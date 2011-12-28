@@ -172,9 +172,12 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
        myXGridMinorEnabled( false ), myYGridMinorEnabled( false ), myY2GridMinorEnabled( false ),
        myXGridMaxMajor( 8 ), myYGridMaxMajor( 8 ), myY2GridMaxMajor( 8 ),
        myXGridMaxMinor( 5 ), myYGridMaxMinor( 5 ), myY2GridMaxMinor( 5 ),
-       myXMode( 0 ), myYMode( 0 ), mySecondY( false ), myIsDefTitle( true )
+       myXMode( 0 ), myYMode( 0 ),myNormLMin(false), myNormLMax(false), myNormRMin(false), myNormRMax(false),
+       mySecondY( false ), myIsDefTitle( true )
 {
   setObjectName( title );
+  myRNormAlgo = new Plot2d_NormalizeAlgorithm(this);
+  myLNormAlgo = new Plot2d_NormalizeAlgorithm(this);
   /* Plot 2d View */
   QVBoxLayout* aLayout = new QVBoxLayout( this ); 
   myPlot = new Plot2d_Plot2d( this );
@@ -411,6 +414,10 @@ void Plot2d_ViewFrame::readPreferences()
 
   setHorScaleMode( qMax( 0, qMin( 1, resMgr->integerValue( "Plot2d", "HorScaleMode", myXMode ) ) ), false );
   setVerScaleMode( qMax( 0, qMin( 1, resMgr->integerValue( "Plot2d", "VerScaleMode", myYMode ) ) ), false );
+  setNormLMinMode( resMgr->booleanValue( "Plot2d", "VerNormLMinMode", myNormLMin ) );
+  setNormLMaxMode( resMgr->booleanValue( "Plot2d", "VerNormLMaxMode", myNormLMax ) );
+  setNormRMinMode( resMgr->booleanValue( "Plot2d", "VerNormRMinMode", myNormRMin ) );
+  setNormRMaxMode( resMgr->booleanValue( "Plot2d", "VerNormRMaxMode", myNormRMax ) );
 }
 
 /*!
@@ -455,6 +462,10 @@ void Plot2d_ViewFrame::writePreferences()
   }
 
   resMgr->setValue( "Plot2d", "VerScaleMode", myYMode );
+  resMgr->setValue( "Plot2d", "VerNormLMinMode", myNormLMin );
+  resMgr->setValue( "Plot2d", "VerNormLMaxMode", myNormLMax );
+  resMgr->setValue( "Plot2d", "VerNormRMinMode", myNormRMin );
+  resMgr->setValue( "Plot2d", "VerNormRMaxMode", myNormRMax );
 }
 
 /*!
@@ -606,6 +617,54 @@ void Plot2d_ViewFrame::updateCurve( Plot2d_Curve* curve, bool update )
   updateObject( curve, update );
 }
 
+void Plot2d_ViewFrame::processFiltering(bool update) 
+{
+  CurveDict aCurves = getCurves();
+  AlgoPlot2dInputData aLData, aRData;
+  CurveDict::iterator it;
+  for ( it = aCurves.begin(); it != aCurves.end(); it++ ) {
+    Plot2d_Object* objItem = it.value();
+    if (objItem->getYAxis() == QwtPlot::yRight)
+      aRData.append(objItem);
+    else
+      aLData.append(objItem);
+  }
+
+// Normalization by left Y axis
+  if (!myNormLMin && !myNormLMax)
+    myLNormAlgo->setNormalizationMode(Plot2d_NormalizeAlgorithm::NormalizeNone);
+  if(myNormLMin && myNormLMax)  
+    myLNormAlgo->setNormalizationMode(Plot2d_NormalizeAlgorithm::NormalizeToMinMax);
+  else if(myNormLMin)
+    myLNormAlgo->setNormalizationMode(Plot2d_NormalizeAlgorithm::NormalizeToMin);
+  else if(myNormLMax)
+    myLNormAlgo->setNormalizationMode(Plot2d_NormalizeAlgorithm::NormalizeToMax);
+
+  myLNormAlgo->setInput(aLData);
+  myLNormAlgo->execute();
+
+// Normalization by right Y axis
+  if (!myNormRMin && !myNormRMax)
+    myRNormAlgo->setNormalizationMode(Plot2d_NormalizeAlgorithm::NormalizeNone);
+  if(myNormRMin && myNormRMax)  
+    myRNormAlgo->setNormalizationMode(Plot2d_NormalizeAlgorithm::NormalizeToMinMax);
+  else if(myNormRMin)
+    myRNormAlgo->setNormalizationMode(Plot2d_NormalizeAlgorithm::NormalizeToMin);
+  else if(myNormRMax)
+    myRNormAlgo->setNormalizationMode(Plot2d_NormalizeAlgorithm::NormalizeToMax);
+
+  myRNormAlgo->setInput(aRData);
+  myRNormAlgo->execute();
+
+  for ( it = aCurves.begin(); it != aCurves.end(); it++) {
+    QwtPlotCurve* item = it.key();
+    Plot2d_Object* objItem = it.value();
+    updatePlotItem(objItem, item);
+  }
+  if(update)
+  myPlot->replot();
+}
+
 /*!
   Gets lsit of displayed curves
 */
@@ -659,6 +718,7 @@ void Plot2d_ViewFrame::displayObject( Plot2d_Object* object, bool update )
     object->autoFill( myPlot );
   
   if ( hasPlotObject( object ) ) {
+    processFiltering(update);
     updateObject( object, update );
   }
   else {
@@ -671,7 +731,8 @@ void Plot2d_ViewFrame::displayObject( Plot2d_Object* object, bool update )
       Plot2d_Curve* aCurve = dynamic_cast<Plot2d_Curve*>( object );
       if ( aCurve ) {
         aCurve->setMarkerSize( myMarkerSize );
-        aCurve->updatePlotItem( anItem );
+        processFiltering(update);
+        updatePlotItem( aCurve, anItem );
         setCurveType( getPlotCurve( aCurve ), myCurveType );
       }
     }
@@ -744,7 +805,7 @@ void Plot2d_ViewFrame::updateObject( Plot2d_Object* object, bool update )
     QwtPlotItem* anItem = getPlotObject( object );
     if ( !anItem )
       return;
-    object->updatePlotItem( anItem );
+    updatePlotItem(object, anItem );
     anItem->setVisible( true );
     if ( update )
       myPlot->replot();
@@ -1055,6 +1116,10 @@ void Plot2d_ViewFrame::onSettings()
   dlg->setMarkerSize( myMarkerSize );
   dlg->setBackgroundColor( myBackground );
   dlg->setScaleMode(myXMode, myYMode);
+  dlg->setLMinNormMode(myNormLMin);
+  dlg->setLMaxNormMode(myNormLMax);
+  dlg->setRMinNormMode(myNormRMin);
+  dlg->setRMaxNormMode(myNormRMax);
   //
   dlg->setMajorGrid( myXGridMajorEnabled, myPlot->axisMaxMajor( QwtPlot::xBottom ),
          myYGridMajorEnabled, myPlot->axisMaxMajor( QwtPlot::yLeft ),
@@ -1118,6 +1183,19 @@ void Plot2d_ViewFrame::onSettings()
     if ( myYMode != dlg->getYScaleMode() ) {
       setVerScaleMode( dlg->getYScaleMode() );
     }
+    if ( myNormLMin != dlg->getLMinNormMode() ) {
+      setNormLMinMode( dlg->getLMinNormMode() );
+    }
+    if ( myNormLMax != dlg->getLMaxNormMode() ) {
+      setNormLMaxMode( dlg->getLMaxNormMode() );
+    }
+    if ( myNormRMin != dlg->getRMinNormMode() ) {
+      setNormRMinMode( dlg->getRMinNormMode() );
+    }
+    if ( myNormRMax != dlg->getRMaxNormMode() ) {
+      setNormRMaxMode( dlg->getRMaxNormMode() );
+    }
+
     // update view
     myPlot->replot();
     // update preferences
@@ -1664,6 +1742,98 @@ int Plot2d_ViewFrame::getVerScaleMode() const
 }
 
 /*!
+  Sets normalization mode to the global maximum by left Y axis
+*/
+void Plot2d_ViewFrame::setNormLMaxMode( bool mode, bool update )
+{
+  if ( myNormLMax == mode )
+    return;
+
+  myNormLMax = mode;
+  processFiltering(true);
+  if ( update )
+    fitAll();
+  emit vpNormLModeChanged();
+}
+
+/*!
+  Gets normalization mode to the global maximum by left Y axis
+*/
+bool Plot2d_ViewFrame::getNormLMaxMode() const
+{
+  return myNormLMax;
+}
+
+/*!
+  Sets normalization mode to the global minimum by left Y axis
+*/
+void Plot2d_ViewFrame::setNormLMinMode( bool mode, bool update )
+{
+  if ( myNormLMin == mode )
+    return;
+
+  myNormLMin = mode;
+  processFiltering(true);
+  if ( update )
+    fitAll();
+  emit vpNormLModeChanged();
+}
+
+/*!
+  Gets normalization mode to the global minimum by left Y axis
+*/
+bool Plot2d_ViewFrame::getNormLMinMode() const
+{
+  return myNormLMax;
+}
+
+/*!
+  Sets normalization mode to the global maximum by right Y axis
+*/
+void Plot2d_ViewFrame::setNormRMaxMode( bool mode, bool update )
+{
+  if ( myNormRMax == mode )
+    return;
+
+  myNormRMax = mode;
+  processFiltering(true);
+  if ( update )
+    fitAll();
+  emit vpNormRModeChanged();
+}
+
+/*!
+  Gets normalization mode to the global maximum by right Y axis
+*/
+bool Plot2d_ViewFrame::getNormRMaxMode() const
+{
+  return myNormRMax;
+}
+
+/*!
+  Sets normalization mode to the global minimum by right Y axis
+*/
+void Plot2d_ViewFrame::setNormRMinMode( bool mode, bool update )
+{
+  if ( myNormRMin == mode )
+    return;
+
+  myNormRMin = mode;
+  processFiltering(true);
+  if ( update )
+    fitAll();
+  emit vpNormRModeChanged();
+}
+
+/*!
+  Gets normalization mode to the global minimum by right Y axis
+*/
+bool Plot2d_ViewFrame::getNormRMinMode() const
+{
+  return myNormRMax;
+}
+
+/*!
   Return, scale mode for horizontal axis
 */
 bool Plot2d_ViewFrame::isModeHorLinear()
@@ -1677,6 +1847,38 @@ bool Plot2d_ViewFrame::isModeHorLinear()
 bool Plot2d_ViewFrame::isModeVerLinear()
 {
   return (myYMode == 0 ? true : false);
+}
+
+/*!
+  Return \c True if curves are normalize to the global maximum by left Y axis
+*/
+bool Plot2d_ViewFrame::isNormLMaxMode()
+{
+  return (myNormLMax ? true : false);
+}
+
+/*!
+  Return \c True if curves are normalize to the global minimum by left Y axis
+*/
+bool Plot2d_ViewFrame::isNormLMinMode()
+{
+  return (myNormLMin ? true : false);
+}
+
+/*!
+  Return \c True if curves are normalize to the global maximum by right Y axis
+*/
+bool Plot2d_ViewFrame::isNormRMaxMode()
+{
+  return (myNormRMax ? true : false);
+}
+
+/*!
+  Return \c True if curves are normalize to the global minimum by right Y axis
+*/
+bool Plot2d_ViewFrame::isNormRMinMode()
+{
+  return (myNormRMin ? true : false);
 }
 
 /*!
@@ -2556,6 +2758,44 @@ void Plot2d_ViewFrame::incrementalZoom( const int incrX, const int incrY ) {
                           myPlot->invTransform( QwtPlot::yRight, y2Map.transform( y2Map.s2() ) + incrY ) );
   }
   myPlot->replot();
+}
+
+/*
+  Update plot item 
+*/
+void Plot2d_ViewFrame::updatePlotItem(Plot2d_Object* theObject, QwtPlotItem* theItem) {
+  theObject->updatePlotItem( theItem );
+  Plot2d_Curve* c = dynamic_cast<Plot2d_Curve*>(theObject);
+  QwtPlotCurve* cu = dynamic_cast<QwtPlotCurve*>(theItem);
+  Plot2d_NormalizeAlgorithm* aNormAlgo;
+  if(c && cu) {
+    if(c->getYAxis() == QwtPlot::yRight)
+      aNormAlgo = myRNormAlgo;
+    else
+      aNormAlgo = myLNormAlgo;
+    if(aNormAlgo->getNormalizationMode() != Plot2d_NormalizeAlgorithm::NormalizeNone) {
+      AlgoPlot2dOutputData aResultData =  aNormAlgo->getOutput();
+      AlgoPlot2dOutputData::iterator itTmp = aResultData.find(theObject);
+      double *xNew,*yNew;
+      int size = itTmp.value().size();
+      xNew = new double[size];
+      yNew = new double[size];
+      int j = 0;
+      for (; j < size; ++j) {
+        xNew[j] = itTmp.value().at(j).first;
+        yNew[j] = itTmp.value().at(j).second;
+      }
+      cu->setData(xNew, yNew,j);
+      delete xNew;
+      delete yNew;
+      if(aNormAlgo->getNormalizationMode() != Plot2d_NormalizeAlgorithm::NormalizeNone) {
+        QString name = c->getName().isEmpty() ? c->getVerTitle() : c->getName();
+        name = name + QString("(B=%1, K=%2)");
+        name = name.arg(aNormAlgo->getBkoef(c)).arg(aNormAlgo->getKkoef(c));
+        cu->setTitle(name);
+      }
+    }
+  }
 }
 
 /**

@@ -52,6 +52,22 @@
         <translation>plot2d_log_y.png</translation>
     </message>
     <message>
+        <source>ICON_PLOT2D_NORMALIZE_MODE_LMIN</source>
+        <translation>plot2d_lmin_normalization.png</translation>
+    </message>
+    <message>
+        <source>ICON_PLOT2D_NORMALIZE_MODE_LMAX</source>
+        <translation>plot2d_lmax_normalization.png</translation>
+    </message>
+    <message>
+        <source>ICON_PLOT2D_NORMALIZE_MODE_RMIN</source>
+        <translation>plot2d_rmin_normalization.png</translation>
+    </message>
+    <message>
+        <source>ICON_PLOT2D_NORMALIZE_MODE_RMAX</source>
+        <translation>plot2d_rmax_normalization.png</translation>
+    </message>
+    <message>
         <source>ICON_PLOT2D_SETTINGS</source>
         <translation>plot2d_settings.png</translation>
     </message>

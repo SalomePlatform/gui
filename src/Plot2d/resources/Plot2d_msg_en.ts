@@ -28,6 +28,26 @@
         <translation>Horizontal axis:</translation>
     </message>
     <message>
+        <source>PLOT2D_NORMALIZE_TLT</source>
+        <translation>Normalization</translation>
+    </message>
+    <message>
+        <source>PLOT2D_NORMALIZE_MODE_MIN</source>
+        <translation>Normalize to minimum</translation>
+    </message>
+    <message>
+        <source>PLOT2D_NORMALIZE_MODE_MAX</source>
+        <translation>Normalize to maximum</translation>
+    </message>
+    <message>
+        <source>PLOT2D_NORMALIZE_LEFT_AXIS</source>
+        <translation>Left Y Axis: </translation>
+    </message>
+    <message>
+        <source>PLOT2D_NORMALIZE_RIGHT_AXIS</source>
+        <translation>Right Y Axis: </translation>
+    </message>
+    <message>
         <source>PLOT2D_SCALE_MODE_VER</source>
         <translation>Vertical axis:</translation>
     </message>
@@ -70,6 +90,10 @@
     <message>
         <source>CURVE_TYPE_POPUP</source>
         <translation>Curve type</translation>
+    </message>
+    <message>
+        <source>NORMALIZATION_TYPE_POPUP</source>
+        <translation>Normalization</translation>
     </message>
     <message>
         <source>TOT_PLOT2D_MODE_LINEAR_VER</source>
@@ -206,6 +230,22 @@
     <message>
         <source>TOT_PLOT2D_ANALITIC_CURVES</source>
         <translation>Analytic curves</translation>
+    </message>    
+    <message>
+        <source>TOT_PLOT2D_NORMALIZE_MODE_LMAX</source>
+        <translation>Left Y Axis: Normalize to maximum</translation>
+    </message>    
+    <message>
+        <source>TOT_PLOT2D_NORMALIZE_MODE_LMIN</source>
+        <translation>Left Y Axis: Normalize to global minimum</translation>
+    </message>    
+    <message>
+        <source>TOT_PLOT2D_NORMALIZE_MODE_RMAX</source>
+        <translation>Right Y Axis: Normalize to maximum</translation>
+    </message>    
+    <message>
+        <source>TOT_PLOT2D_NORMALIZE_MODE_RMIN</source>
+        <translation>Right Y Axis: Normalize to global minimum</translation>
     </message>    
     <message>
         <source>PLOT2D_CURVE_TYPE_LINES</source>
@@ -358,6 +398,22 @@ Logarithmic scale for ordinate axis is not allowed.</translation>
         <translation>Setups analytic curves properties</translation>
     </message>
     <message>
+        <source>PRP_PLOT2D_NORMALIZE_MODE_LMAX</source>
+        <translation>Switches view to maximum normalization mode by left Y axis</translation>
+    </message>
+    <message>
+        <source>PRP_PLOT2D_NORMALIZE_MODE_LMIN</source>
+        <translation>Switches view to minimum normalization mode by left Y axis</translation>
+    </message>
+    <message>
+        <source>PRP_PLOT2D_NORMALIZE_MODE_RMAX</source>
+        <translation>Switches view to maximum normalization mode by right Y axis</translation>
+    </message>
+    <message>
+        <source>PRP_PLOT2D_NORMALIZE_MODE_RMIN</source>
+        <translation>Switches view to minimum normalization mode by right Y axis</translation>
+    </message>
+    <message>
         <source>PRP_PLOT2D_SETTINGS</source>
         <translation>Setups view properties</translation>
     </message>    
@@ -396,6 +452,22 @@ Logarithmic scale for ordinate axis is not allowed.</translation>
     <message>
         <source>MEN_PLOT2D_MODE_LOGARITHMIC_VER</source>
         <translation>Vertical Axis: Logarithmic</translation>
+    </message>
+    <message>
+        <source>MEN_PLOT2D_NORMALIZE_MODE_LMIN</source>
+        <translation>Left Y Axis: Minimum</translation>
+    </message>
+    <message>
+        <source>MEN_PLOT2D_NORMALIZE_MODE_LMAX</source>
+        <translation>Left Y Axis: Maximum</translation>
+    </message>
+    <message>
+        <source>MEN_PLOT2D_NORMALIZE_MODE_RMIN</source>
+        <translation>Right Y Axis: Minimum</translation>
+    </message>
+    <message>
+        <source>MEN_PLOT2D_NORMALIZE_MODE_RMAX</source>
+        <translation>Right Y Axis: Maximum</translation>
     </message>
     <message>
         <source>PRP_PLOT2D_FITDATA</source>

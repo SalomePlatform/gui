@@ -179,6 +179,10 @@
     <parameter name="MarkerSize"   value="9" />
     <parameter name="ShowLegend"   value="true" />
     <parameter name="VerScaleMode" value="0" />
+    <parameter name="VerNormLMinMode" value="false"/>
+    <parameter name="VerNormLMaxMode" value="false"/>
+    <parameter name="VerNormRMinMode" value="false"/>
+    <parameter name="VerNormRMaxMode" value="false"/>
   </section>
   <section name="QxGraph" >
     <!-- QxGraph viewer preferences -->

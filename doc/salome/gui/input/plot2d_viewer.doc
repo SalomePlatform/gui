@@ -60,6 +60,28 @@ the plain line segments.</center>
 spline.</center>
 <hr>
 
+\image html plot2d_lmin_normalization.png
+<br><center><b>Normalization to global minimum by left Y axis</b> - switch normalization mode to the
+<b>Left Y Axis: Minimum normalization</b> mode. In this mode, all curves are normalized 
+to the global minimum by left Y axis.</center>
+
+\image html plot2d_lmax_normalization.png
+<br><center><b>Normalization to global maximum by left Y axis</b> - switch normalization mode to the
+<b>Left Y Axis: Maximum normalization</b> mode. In this mode, all curves are normalized 
+to the global maximum by left Y axis.</center>
+<hr>
+
+\image html plot2d_rmin_normalization.png
+<br><center><b>Normalization to global minimum by right Y axis</b> - switch normalization mode to the
+<b>Right Y Axis: Minimum normalization</b> mode. In this mode, all curves are normalized 
+to the global minimum by right Y axis.</center>
+
+\image html plot2d_rmax_normalization.png
+<br><center><b>Normalization to global maximum by right Y axis</b> - switch normalization mode to the
+<b>Right Y Axis: Maximum normalization</b> mode. In this mode, all curves are normalized 
+to the global maximum by right Y axis.</center>
+<hr>
+
 \image html plot2d_linear.png
 <br>
 \image html plot2d_log.png
@@ -105,6 +127,8 @@ description table on the XY plot (to the \b Left, to the \b Right, on
 font of Legend item.
 - <b>Marker size</b> - size of the points (markers) forming curve lines.
 - <b>Background color</b> of the XY plot.
+- <b>Normalization</b> here you can select the type of normalization(\b
+minimum or/and \b maximum) for the displayed presentations of the 2d curves in the view.
 - <b>Scale mode</b> here you can select the type of scaling (\b
 Linear or \b Logarithmic) for <b>X (Horizontal)</b> or <b>Y
 (Vertical)</b> axes separately. Note that the \b Logarithmic scale can

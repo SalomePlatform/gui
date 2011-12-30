@@ -26,6 +26,7 @@
 
 #include <QFrame>
 
+class QComboBox;
 class QtxComboBox;
 class QToolButton;
 class QFontComboBox;
@@ -43,10 +44,17 @@ public:
     Bold      = 0x08,                                      //!< show 'bold' widget
     Italic    = 0x10,                                      //!< show 'italic' widget
     Underline = 0x20,                                      //!< show 'underline' widget
-    Preview   = 0x40,                                      //!< show font preview widget
+    Shadow    = 0x40,                                      //!< show 'shadow' widget
+    Preview   = 0x80,                                      //!< show font preview widget
     Scripting = Bold | Italic | Underline,                 //!< show font scripting widgets ('bold','italic','underline')
     All = Family | Size | UserSize | Scripting | Preview   //!< show all font widgets
   } Features;
+
+  typedef enum 
+  {
+    Native, //!< Native mode intended for working with system fonts
+    Custom  //!< Custom mode intended for working with manually defined set of fonts
+  } Mode;
 
 public:
   QtxFontEdit( const int, QWidget* = 0 );
@@ -67,9 +75,22 @@ public:
   int            features() const;
   void           setFeatures( const int );
 
+  void           setMode( const int );
+  int            mode() const;
+
+  void           setFonts( const QStringList& );
+  QStringList    fonts() const;
+
+  void           setSizes( const QList<int>& = QList<int>() );
+  QList<int>     sizes() const;
+
+signals:
+  void           changed( const QFont& );
+
 private slots:
   void           onPreview( bool );
   void           onFontChanged( const QFont& );
+  void           onPropertyChanged();
  
 private:
   void           initialize();
@@ -80,7 +101,9 @@ private:
   QFontComboBox* myFamily;
   QToolButton*   myPreview;
   int            myFeatures;
-  QToolButton    *myB, *myI, *myU;
+  QToolButton    *myB, *myI, *myU, *myS;
+  int            myMode;
+  QComboBox*     myCustomFams;
 };
 
 #endif // QTXFONTEDIT_H

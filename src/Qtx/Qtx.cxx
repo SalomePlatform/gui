@@ -37,9 +37,14 @@
 #include <QRadialGradient>
 #include <QConicalGradient>
 
+#include <QtDebug>
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdarg.h>
+#include <clocale>
+
+#define BICOLOR_CHANGE_HUE
 
 /*!
   \class Qtx
@@ -431,7 +436,7 @@ QString Qtx::library( const QString& str )
 */
 QString Qtx::tmpDir()
 {
-  char* tmpdir = ::getenv( "TEMP" );
+  const char* tmpdir = ::getenv( "TEMP" );
   if ( !tmpdir )
     tmpdir = ::getenv ( "TMP" );
   if ( !tmpdir )
@@ -625,6 +630,99 @@ QCompleter* Qtx::pathCompleter( const PathType type, const QString& filter )
 }
 
 /*!
+  \brief Parse given string to retrieve environment variable.
+
+  Looks through the string for the patterns: ${name} or $(name) or %name%.
+  If string contains variable satisfying any pattern, the variable name
+  is returned, start index of the variable is returned in the \a start parameter,
+  and length of the variable is returned in the \a len parameter.
+
+  \param str string being processed
+  \param start if variable is found, this parameter contains its starting 
+         position in the \a str
+  \param len if variable is found, this parameter contains its length 
+  \return first found variable or null QString if there is no ones
+*/
+QString Qtx::findEnvVar( const QString& str, int& start, int& len )
+{
+  QString varName;
+  len = 0;
+
+  QRegExp rx( "(^\\$\\{|[^\\$]\\$\\{)([a-zA-Z]+[a-zA-Z0-9_]*)(\\})|(^\\$\\(|[^\\$]\\$\\()([a-zA-Z]+[a-zA-Z0-9_]*)(\\))|(^\\$|[^\\$]\\$)([a-zA-Z]+[a-zA-Z0-9_]*)|(^%|[^%]%)([a-zA-Z]+[a-zA-Z0-9_]*)(%[^%]|%$)" );
+
+  int pos = rx.indexIn( str, start );
+  if ( pos != -1 )
+  {
+    int i = 1;
+    while ( i <= rx.numCaptures() && varName.isEmpty() )
+    {
+      QString capStr = rx.cap( i );
+      if ( !capStr.contains( "%" ) && !capStr.contains( "$" ) )
+        varName = capStr;
+      i++;
+    }
+
+    if ( !varName.isEmpty() )
+    {
+      int capIdx = i - 1;
+      start = rx.pos( capIdx );
+      int end = start + varName.length();
+      if ( capIdx > 1 && rx.cap( capIdx - 1 ).contains( QRegExp( "\\$|%" ) ) )
+        start = rx.pos( capIdx - 1 ) + rx.cap( capIdx - 1 ).indexOf( QRegExp( "\\$|%" ) );
+      if ( capIdx < rx.numCaptures() && !rx.cap( capIdx - 1 ).isEmpty() )
+        end++;
+      len = end - start;
+    }
+  }
+  return varName;
+}
+
+/*!
+  \brief Substitute environment variables by their values.
+
+  Environment variable is substituted by its value.
+
+  \param str string to be processed
+  \return processed string (with all substitutions made)
+*/
+QString Qtx::makeEnvVarSubst( const QString& str, const SubstMode mode )
+{
+  QString res = str;
+  if ( mode != Never )
+  {
+    QMap<QString, int> ignoreMap;
+
+    int start( 0 ), len( 0 );
+    while ( true )
+    {
+      QString envName = findEnvVar( res, start, len );
+      if ( envName.isNull() )
+        break;
+
+      QString newStr;
+      if ( ::getenv( envName.toLatin1() ) || mode == Always )
+        newStr = QString( ::getenv( envName.toLatin1() ) );
+
+      if ( newStr.isNull() )
+      {
+        if ( ignoreMap.contains( envName ) )
+        {
+          start += len;
+          continue;
+        }
+        ignoreMap.insert( envName, 0 );
+      }
+      res.replace( start, len, newStr );
+    }
+
+    res.replace( "$$", "$" );
+    res.replace( "%%", "%" );
+  }
+
+  return res;
+}
+
+/*!
   \brief Pack the specified color into integer RGB set.
   \param c unpacked color
   \return packed color
@@ -718,7 +816,7 @@ void Qtx::scaleColors( const int num, QColorList& lst )
 /*!
   \brief Scale the pixmap to the required size.
 
-  If \h is 0 (default) the value of \a w is used instead (to create
+  If \a h is 0 (default) the value of \a w is used instead (to create
   square pixmap).
 
   \param icon pixmap to be resized
@@ -730,7 +828,7 @@ QPixmap Qtx::scaleIcon( const QPixmap& icon, const unsigned w, const unsigned h 
 {
   QPixmap p;
   int aw = w, ah = h <= 0 ? w : h;
-  if ( icon.isNull() || aw <= 0 || ah <= 0 || aw == icon.width() && ah == icon.height() )
+  if ( icon.isNull() || aw <= 0 || ah <= 0 || ( aw == icon.width() && ah == icon.height() ) )
     p = icon;
   else
     p = icon.fromImage( icon.toImage().scaled( aw, ah, Qt::KeepAspectRatio, Qt::SmoothTransformation ) );
@@ -962,7 +1060,7 @@ QString Qtx::colorToString( const QColor& color )
   - "RR,GG,BB[,AA]" or "RR GG BB[ AA]" (\c RR, \c GG, \c BB
   and optional \c AA values represent red, green, blue and alpha
   components of the color in decimal form)
-  - #RRGGBB" - (\c RR, \c GG and \c BB values represent red, green and blue
+  - "#RRGGBB" - (\c RR, \c GG and \c BB values represent red, green and blue
   components of the color in hexadecimal form)
   - an integer value representing packed color components (see rgbSet())
   - a name from the list of colors defined in the list of SVG color keyword names
@@ -1011,6 +1109,106 @@ bool Qtx::stringToColor( const QString& str, QColor& color )
   }
 
   return res;
+}
+
+/*!
+  \brief Convert bi-color value to the string representation.
+  
+  Bi-color value is specified as main color and integer delta
+  value that is used to calculate secondary color by changing
+  paremeters of the main color ("saturation" and "value"
+  components in HSV notation).
+
+  The resulting string consists of two sub-strings separated by
+  '|' symbol. The first part represents main color
+  (see colorToString() for more details), the second part is a
+  delta value.
+
+  Backward conversion can be done with stringToBiColor() method.
+
+  \param color color to be converted
+  \param delta delta value
+  \return string representation of the bi-color value
+
+  \sa stringToBiColor(), stringToColor()
+*/
+QString Qtx::biColorToString( const QColor& color, const int delta )
+{
+  return QString("%1|%2").arg( Qtx::colorToString( color ) ).arg( delta );
+}
+
+/*!
+  \brief Restore bi-color value from the string representation.
+
+  Bi-color value is specified as main color and integer delta
+  value that is used to calculate secondary color by changing
+  paremeters of the main color ("saturation" and "value"
+  components in HSV notation).
+
+  The parameter \a str should consist of two sub-strings separated
+  by '|' symbol. The first part represents main color
+  (see stringToColor() for more details), the second part is a
+  delta value.
+
+  Backward conversion can be done with biColorToString() method.
+
+  \param str string representation of the bi-color value
+  \param color resulting color value
+  \param delta resulting delta value
+  \return \c true if the conversion is successful and \c false otherwise
+
+  \sa biColorToString(), stringToColor(), rgbSet()
+*/
+bool Qtx::stringToBiColor( const QString& str, QColor& color, int& delta )
+{
+  QStringList data = str.split( "|", QString::KeepEmptyParts );
+  QColor c;
+  int d = 0;
+  bool ok = data.count() > 0 && Qtx::stringToColor( data[0], c );
+  bool dok = false;
+  if ( data.count() > 1 ) d = data[1].toInt( &dok );
+  ok = ok && dok;
+  color = ok ? c : QColor();
+  delta = ok ? d : 0;
+  return ok;
+}
+
+/*!
+  \brief Compute secondary color value from specified main color
+  and delta.
+
+  Secondary color is calculated by changing paremeters of the main
+  color ("saturation" and "value" components in HSV notation) using
+  specified delta.
+
+  If main color is invalid, result of the function is also invalid color.
+
+  \param color source main color
+  \param delta delta value
+  \return resulting secondary color
+  
+  \sa biColorToString(), stringToBiColor()
+*/
+QColor Qtx::mainColorToSecondary( const QColor& color, int delta )
+{
+  QColor cs = color;
+  if ( cs.isValid() ) {
+    int val = qMin( 255, qMax( cs.value() + delta, 0 ) );
+    int sat = qMin( 255, qMax( cs.saturation() + delta-(val-cs.value()), 0 ) );
+#ifdef BICOLOR_CHANGE_HUE
+    const int BICOLOR_HUE_MAXDELTA = 40;
+    int dh = delta-(val-cs.value())-(sat-cs.saturation());
+    dh = qMin( BICOLOR_HUE_MAXDELTA, qAbs( dh ) ) * ( dh > 0 ? 1 : -1 );
+    //int hue = qMin( 359, qMax( cs.hue() + delta-(val-cs.value())-(sat-cs.saturation()), 0 ) );
+    //int hue = qMin( 359, qMax( cs.hue() + delta-(val-cs.value())-ds, 0 ) );
+    int hue = cs.hue() + dh;
+    if ( hue < 0 ) hue = 360 - hue;
+#else
+    int hue = cs.hue();
+#endif
+    cs.setHsv( hue, sat, val );
+  }
+  return cs;
 }
 
 /*!
@@ -1191,7 +1389,7 @@ bool Qtx::stringToRadialGradient( const QString& str, QRadialGradient& gradient 
 {
   bool success = false;
   QStringList vals = str.split( "|", QString::SkipEmptyParts );
-  if ( vals.count() > 5 && vals[0] == "radial" || vals[0] == "rg" ) 
+  if ( ( vals.count() > 5 && vals[0] == "radial" ) || vals[0] == "rg" ) 
   {
     // center, radius and focal point
     double cx, cy, r, fx, fy;
@@ -1245,7 +1443,7 @@ bool Qtx::stringToConicalGradient( const QString& str, QConicalGradient& gradien
 {
   bool success = false;
   QStringList vals = str.split( "|", QString::SkipEmptyParts );
-  if ( vals.count() > 3 && vals[0] == "conical" || vals[0] == "cg" ) 
+  if ( ( vals.count() > 3 && vals[0] == "conical" ) || vals[0] == "cg" ) 
   {
     // center and angle
     double cx, cy, a;
@@ -1286,34 +1484,108 @@ bool Qtx::stringToConicalGradient( const QString& str, QConicalGradient& gradien
   return success;
 }
 
-/**
- * Cheque for existing any system printers
+/*!
+  \class Qtx::Localizer
+  \brief Localization helper
+
+  This helper class can be used to solve the localization problems,
+  usually related to the textual files reading/writing, namely when
+  floating point values are read / written with API functions.
+  The problem relates to such locale specific settings as decimal point
+  separator, thousands separator, etc.
+  
+  To use the Localizer class, just create a local variable in the beginning
+  of the code where you need to read / write data from textual file(s).
+  The constructor of the class forces setting "C" locale temporariy.
+  The destructor switches back to the initial locale.
+
+  \code
+  Qtx::Localizer loc;
+  readSomething();
+  writeSomething();
+  \endcode
  */
 
-#if !defined(WIN32) && !defined(QT_NO_CUPS)
-#if QT_VERSION < 0x040303
-#include <QLibrary>
-#include <cups/cups.h>
-
-typedef int (*CupsGetDests)(cups_dest_t **dests);
-static CupsGetDests _cupsGetDests = 0;
-#endif
-#endif
-bool Qtx::hasAnyPrinters()
+/*!
+  \brief Constructor. Forces "C" locale to be set.
+*/
+Qtx::Localizer::Localizer()
 {
-  bool aRes = true;
-#if !defined(WIN32) && !defined(QT_NO_CUPS)
-#if QT_VERSION < 0x040303
-  QLibrary aCupsLib( QString( "cups" ), 2 );
-  if ( !aCupsLib.load() )
-    aRes = false;
-  else {
-    cups_dest_t *printers;
-    _cupsGetDests = (CupsGetDests) aCupsLib.resolve("cupsGetDests");
-    int prnCount = _cupsGetDests(&printers);
-    aRes = prnCount > 0;
-  }
-#endif
-#endif
-  return aRes;
+  myCurLocale = setlocale( LC_NUMERIC, 0 );
+  setlocale( LC_NUMERIC, "C" );
 }
+
+/*!
+  \brief Destructor. Reverts back to the initial locale.
+*/
+Qtx::Localizer::~Localizer()
+{
+  setlocale( LC_NUMERIC, myCurLocale.toLatin1().constData() );
+  }
+
+#ifndef WIN32
+
+#include <X11/Xlib.h>
+#include <GL/glx.h>
+
+/*!
+  \brief Open the default X display and returns pointer to it.
+         This method is available on Linux only.
+  \return Pointer to X display.
+  \sa getVisual()
+*/
+void* Qtx::getDisplay()
+{
+  static Display* pDisplay = NULL;
+  if ( !pDisplay )
+    pDisplay = XOpenDisplay( NULL );
+  return pDisplay;
+}
+
+/*!
+  \brief Returns pointer to X visual suitable for 3D rendering.
+         This method is available on Linux only.
+  \return Pointer to X visual.
+  \sa getDisplay()
+*/
+Qt::HANDLE Qtx::getVisual()
+{
+  Qt::HANDLE res = (Qt::HANDLE)NULL;
+
+  Display* pDisplay = (Display*)getDisplay();
+  if ( !pDisplay )
+    return res;
+
+  int errorBase;
+  int eventBase;
+
+  // Make sure OpenGL's GLX extension supported
+  if( !glXQueryExtension( pDisplay, &errorBase, &eventBase ) ){
+    qCritical( "Could not find glx extension" );
+    return res;
+  }
+
+  // Find an appropriate visual
+
+  int doubleBufferVisual[]  = {
+    GLX_RGBA,           // Needs to support OpenGL
+    GLX_DEPTH_SIZE, 16, // Needs to support a 16 bit depth buffer
+    GLX_DOUBLEBUFFER,   // Needs to support double-buffering
+    None                // end of list
+  };
+
+  // Try for the double-bufferd visual first
+  XVisualInfo *visualInfo = NULL;
+  visualInfo = glXChooseVisual( pDisplay, DefaultScreen(pDisplay), doubleBufferVisual );
+
+  if( visualInfo == NULL ){
+    qCritical( "Could not find matching glx visual" );
+    return res;
+  }
+
+  qDebug() << "Picked visual 0x" << hex << XVisualIDFromVisual( visualInfo->visual );
+  res = (Qt::HANDLE)( visualInfo->visual );
+ 
+  return res;
+}
+#endif // WIN32

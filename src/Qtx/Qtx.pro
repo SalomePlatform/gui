@@ -6,6 +6,7 @@ include(../Common.pro)
 CONFIG += embed_manifest_exe
 
 win32:LIBS *= -L$(QTLIB)
+unix:LIBS *= -lGL
 win32:INCLUDEPATH *= $(QTINC) $(QTINC)\QtCore $(QTINC)\QtGui $(QTINC)\QtXml
 
 QT += xml

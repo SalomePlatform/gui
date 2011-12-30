@@ -23,7 +23,7 @@
 #define QTX_H
 
 #if defined WIN32
-#  if defined QTX_EXPORTS
+#  if defined QTX_EXPORTS || defined qtx_EXPORTS
 #    define QTX_EXPORT _declspec( dllexport )
 #  else
 #    define QTX_EXPORT _declspec( dllimport )
@@ -96,6 +96,49 @@ public:
     AppropriateRole = Qt::UserRole + 100   //!< can be used to return \c true if data is appropriate
   };
 
+  typedef enum {
+        Shown,   //!< column should be always visible
+        Hidden,  //!< column should be always hidden
+        Toggled  //!< it should be possible to show/hide the column with help of popup menu
+  } Appropriate;  //!< appropriate status
+
+  //! Environment variables substitution mode
+  typedef enum {
+        Always, //!< substitute environment variable by it's value if variable exists, and "" otherwise
+        Never,  //!< keep environment variable as is without any substitution
+        Auto    //!< substitute environment variable by it's value if variable exists, and keep it as is otherwise
+  } SubstMode;
+
+  //! object visibility state
+  typedef enum {
+    ShownState,             //!< Object is shown in viewer
+    HiddenState,            //!< Object is hidden in viewer
+    UnpresentableState,     //!< Unpresentable object
+  } VisibilityState;
+
+  //! Header view flags
+  typedef enum {
+    ShowText = 0x001,                //!< Show only text in the header
+    ShowIcon = 0x010,                //!< Show only icon in the header
+    ShowAll  = ShowText | ShowIcon   //!< Show icon and text in the header
+  } HeaderViewFlags;
+
+  //Type of the custom data
+  typedef enum {
+    IdType
+  } CustomDataType;
+
+
+
+  class QTX_EXPORT Localizer
+  {
+  public:
+    Localizer();
+    ~Localizer();
+  private:
+    QString myCurLocale;
+  };
+
   static QString     toQString( const char*, const int = -1 );
   static QString     toQString( const short*, const int = -1 );
   static QString     toQString( const unsigned char*, const int = -1 );
@@ -123,6 +166,8 @@ public:
   static QString     addSlash( const QString& );
 
   static QCompleter* pathCompleter( const PathType, const QString& = QString() );
+  static QString     findEnvVar( const QString&, int&, int& );
+  static QString     makeEnvVarSubst( const QString&, const SubstMode = Auto );
 
   static int         rgbSet( const QColor& );
   static int         rgbSet( const int, const int, const int );
@@ -142,6 +187,9 @@ public:
 
   static QString     colorToString( const QColor& );
   static bool        stringToColor( const QString&, QColor& );
+  static QString     biColorToString( const QColor&, const int );
+  static bool        stringToBiColor( const QString&, QColor&, int& );
+  static QColor      mainColorToSecondary( const QColor&, int );
 
   static QString     gradientToString( const QLinearGradient& );
   static QString     gradientToString( const QRadialGradient& );
@@ -150,7 +198,10 @@ public:
   static bool        stringToRadialGradient( const QString&, QRadialGradient& );
   static bool        stringToConicalGradient( const QString&, QConicalGradient& );
 
-  static bool        hasAnyPrinters();
+#ifndef WIN32
+  static void*       getDisplay();
+  static Qt::HANDLE  getVisual();
+#endif
 };
 
 #endif

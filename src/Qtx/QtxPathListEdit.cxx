@@ -206,8 +206,7 @@ QtxPathListEdit::Delegate::~Delegate()
   \param option style option
   \param index data model index
 */
-QWidget* QtxPathListEdit::Delegate::createEditor( QWidget* parent, const QStyleOptionViewItem& option,
-                                                  const QModelIndex& index ) const
+QWidget* QtxPathListEdit::Delegate::createEditor( QWidget* parent, const QStyleOptionViewItem&, const QModelIndex& ) const
 {
   return myPathEdit->createEditor( parent );
 }
@@ -219,8 +218,7 @@ QWidget* QtxPathListEdit::Delegate::createEditor( QWidget* parent, const QStyleO
   \param model data model
   \param index data model index
 */
-void QtxPathListEdit::Delegate::setModelData( QWidget* editor, QAbstractItemModel* model,
-                                              const QModelIndex& index ) const
+void QtxPathListEdit::Delegate::setModelData( QWidget* editor, QAbstractItemModel*, const QModelIndex& index ) const
 {
   myPathEdit->setModelData( editor, index );
 }
@@ -268,8 +266,7 @@ void QtxPathListEdit::Delegate::paint( QPainter* painter, const QStyleOptionView
   \param option style option
   \param rect selection rectangle
 */
-void QtxPathListEdit::Delegate::drawFocus( QPainter* painter, const QStyleOptionViewItem& option,
-                                           const QRect& rect ) const
+void QtxPathListEdit::Delegate::drawFocus( QPainter* painter, const QStyleOptionViewItem& option, const QRect& ) const
 {
   QItemDelegate::drawFocus( painter, option, option.rect );
 }
@@ -306,8 +303,8 @@ void QtxPathListEdit::Delegate::drawFocus( QPainter* painter, const QStyleOption
 */
 QtxPathListEdit::QtxPathListEdit( const Qtx::PathType type, QWidget* parent )
 : QFrame( parent ),
-  myCompleter( 0 ),
   myType( type ),
+  myCompleter( 0 ),
   myDuplicate( false )
 {
   initialize();
@@ -323,8 +320,8 @@ QtxPathListEdit::QtxPathListEdit( const Qtx::PathType type, QWidget* parent )
 */
 QtxPathListEdit::QtxPathListEdit( QWidget* parent )
 : QFrame( parent ),
-  myCompleter( 0 ),
   myType( Qtx::PT_OpenFile ),
+  myCompleter( 0 ),
   myDuplicate( false )
 {
   initialize();

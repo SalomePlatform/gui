@@ -57,7 +57,8 @@
 */
 QtxFontEdit::QtxFontEdit( const int feat, QWidget* parent )
 : QFrame( parent ),
-  myFeatures( feat )
+  myFeatures( feat ),
+  myMode( Native )
 {
   initialize();
 }
@@ -70,7 +71,8 @@ QtxFontEdit::QtxFontEdit( const int feat, QWidget* parent )
 */
 QtxFontEdit::QtxFontEdit( QWidget* parent )
 : QFrame( parent ),
-  myFeatures( All )
+  myFeatures( All ),
+  myMode( Native )
 {
   initialize();
 }
@@ -119,6 +121,7 @@ QFont QtxFontEdit::currentFont() const
   fnt.setBold( script & Bold );
   fnt.setItalic( script & Italic );
   fnt.setUnderline( script & Underline );
+  fnt.setOverline( script & Shadow ); //addVtkFontPref( tr( "LABELS" ), valLblFontGr, "values_labeling_font" );
 
   return fnt;
 }
@@ -130,11 +133,28 @@ QFont QtxFontEdit::currentFont() const
 */
 void QtxFontEdit::setCurrentFont( const QFont& fnt )
 {
+  myFamily->blockSignals( true );
+  myCustomFams->blockSignals( true );
+  mySize->blockSignals( true );
+  myB->blockSignals( true );
+  myI->blockSignals( true );
+  myU->blockSignals( true );
+  
   setFontFamily( fnt.family() );
   setFontSize( fnt.pointSize() );
   setFontScripting( ( fnt.bold() ? Bold : 0 ) |
                     ( fnt.italic() ? Italic : 0 ) |
-                    ( fnt.underline() ? Underline : 0 ) );
+                    ( fnt.underline() ? Underline : 0 ) | 
+                    ( fnt.overline() ? Shadow : 0 ) );
+
+  myFamily->blockSignals( false );
+  myCustomFams->blockSignals( false );
+  mySize->blockSignals( false );
+  myB->blockSignals( false );
+  myI->blockSignals( false );
+  myU->blockSignals( false );
+
+  emit( changed( currentFont() ) );
 }
 
 /*!
@@ -144,7 +164,10 @@ void QtxFontEdit::setCurrentFont( const QFont& fnt )
 */
 QString QtxFontEdit::fontFamily() const
 {
+  if ( myMode == Native )
   return myFamily->currentFont().family();
+  else
+    return myCustomFams->currentText();
 }
 
 /*!
@@ -168,7 +191,8 @@ int QtxFontEdit::fontScripting() const
 {
   return ( myB->isChecked() ? Bold : 0 ) |
          ( myI->isChecked() ? Italic : 0 ) |
-         ( myU->isChecked() ? Underline : 0 );
+         ( myU->isChecked() ? Underline : 0 ) |
+         ( myS->isChecked() ? Shadow : 0 ) ;
 }
 
 /*!
@@ -178,8 +202,17 @@ int QtxFontEdit::fontScripting() const
 */
 void QtxFontEdit::setFontFamily( const QString& fam )
 {
+  if ( myMode == Native )
+  {
   myFamily->setCurrentFont( QFont( fam ) );
   onFontChanged( myFamily->currentFont() );  
+}
+  else 
+  {
+    myCustomFams->setCurrentIndex( myCustomFams->findText( fam ) );
+    if ( !myCustomFams->signalsBlocked() )
+      emit( changed( currentFont() ) );
+  }
 }
 
 /*!
@@ -209,6 +242,7 @@ void QtxFontEdit::setFontScripting( const int script )
   myB->setChecked( script & Bold );
   myI->setChecked( script & Italic );
   myU->setChecked( script & Underline );
+  myS->setChecked( script & Shadow );
 }
 
 /*!
@@ -218,11 +252,13 @@ void QtxFontEdit::updateState()
 {
   int feat = features();
 
-  myFamily->setVisible( feat & Family );
+  myFamily->setVisible( ( feat & Family ) && myMode == Native );
+  myCustomFams->setVisible( ( feat & Family ) && myMode == Custom );
   mySize->setVisible( feat & Size );
   myB->setVisible( feat & Bold );
   myI->setVisible( feat & Italic );
   myU->setVisible( feat & Underline );
+  myS->setVisible( feat & Shadow );
   myPreview->setVisible( feat & Preview );
 
   mySize->setEditable( feat & UserSize );
@@ -234,6 +270,9 @@ void QtxFontEdit::updateState()
 */
 void QtxFontEdit::onFontChanged( const QFont& /*f*/ )
 {
+  bool blocked = mySize->signalsBlocked();
+  mySize->blockSignals( true );
+
   int s = fontSize();
   mySize->clear();
 
@@ -244,6 +283,16 @@ void QtxFontEdit::onFontChanged( const QFont& /*f*/ )
   mySize->addItems( sizes );
 
   setFontSize( s );
+
+  mySize->blockSignals( blocked );
+
+  if ( !myFamily->signalsBlocked() )
+    emit( changed( currentFont() ) );
+}
+
+void QtxFontEdit::onPropertyChanged()
+{
+  emit( changed( currentFont() ) );
 }
 
 /*!
@@ -269,6 +318,7 @@ void QtxFontEdit::initialize()
   base->setSpacing( 5 );
 
   base->addWidget( myFamily = new QFontComboBox( this ) );
+  base->addWidget( myCustomFams = new QComboBox( this ) );
   base->addWidget( mySize = new QtxComboBox( this ) );
   mySize->setInsertPolicy( QComboBox::NoInsert );
   mySize->setValidator( new QIntValidator( 1, 250, mySize ) );
@@ -285,14 +335,159 @@ void QtxFontEdit::initialize()
   myU->setText( tr( "U" ) );
   myU->setCheckable( true );
 
+  base->addWidget( myS = new QToolButton( this ) );
+  myS->setText( tr( "S" ) );
+  myS->setCheckable( true );
+
   base->addWidget( myPreview = new QToolButton( this ) );
   myPreview->setText( "..." );
 
   myFamily->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Preferred );
+  myCustomFams->setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::Preferred );
 
   connect( myPreview, SIGNAL( clicked( bool ) ), this, SLOT( onPreview( bool ) ) );
   connect( myFamily, SIGNAL( currentFontChanged( const QFont& ) ), this, SLOT( onFontChanged( const QFont& ) ) );
+  connect( mySize,    SIGNAL( currentIndexChanged( int ) ),         this, SLOT( onPropertyChanged() ) );
+  connect( mySize,    SIGNAL( editTextChanged( QString ) ),         this, SLOT( onPropertyChanged() ) );
+  connect( myB,       SIGNAL( toggled( bool ) ),                    this, SLOT( onPropertyChanged() ) );
+  connect( myI,       SIGNAL( toggled( bool ) ),                    this, SLOT( onPropertyChanged() ) );
+  connect( myU,       SIGNAL( toggled( bool ) ),                    this, SLOT( onPropertyChanged() ) );
+
+  myCustomFams->hide();
+  myS->hide();
 
   updateState();
   onFontChanged( currentFont() );
 }
+
+/*!
+  \brief Specifies whether widget works in Native or Custom mode. Native mode 
+  is intended for working with system fonts. Custom mode is intended for 
+  working with manually defined set of fonts. Set of custom fonts can be 
+  specified with setCustomFonts() method 
+  \param mode mode from QtxFontEdit::Mode enumeration
+  \sa mode()
+*/
+void QtxFontEdit::setMode( const int mode )
+{
+  if ( myMode == mode )
+    return;
+
+  myMode = mode;
+
+  myFamily->setShown( myMode == Native );
+  myCustomFams->setShown( myMode == Custom );
+
+  updateGeometry();
+}
+
+/*!
+  \brief Verifies whether widget works in Native or Custom mode
+  \return Native or Custom mode
+  \sa setMode()
+*/
+int QtxFontEdit::mode() const
+{
+  return myMode;
+}
+
+/*!
+  \brief Sets list of custom fonts. 
+  <b>This method is intended for working in Custom mode.</b>
+  \param fams list of families
+  \sa fonts(), setMode()
+*/
+void QtxFontEdit::setFonts( const QStringList& fams )
+{
+  QString currFam = myCustomFams->currentText();
+  
+  myCustomFams->clear();
+  myCustomFams->addItems( fams );
+
+  int ind = myCustomFams->findText( currFam );
+  if ( ind != -1 )
+    myCustomFams->setCurrentIndex( ind );
+
+  setSizes( QList<int>() );
+}
+
+/*!
+  \brief Sets list of available font sizes. 
+  <b>This method is intended for working in Custom mode.</b> The list of sizes can 
+  be empty. In this case system generate listof size automatically from 8 till 72.
+  \param sizes list of sizes
+  \sa sizes(), setMode()
+*/
+void QtxFontEdit::setSizes( const QList<int>& sizes )
+{
+  QString currSize = mySize->currentText();
+
+  mySize->clear();
+  if ( !sizes.isEmpty() )
+  {
+    QStringList szList;
+    for ( QList<int>::const_iterator it = sizes.begin(); it != sizes.end(); ++it )
+      szList.append( QString::number( *it ) );
+    mySize->addItems( szList );
+  }
+  else
+  {
+    static QStringList defLst;
+    if ( defLst.isEmpty() )
+    {
+      QString str( "8 9 10 11 12 14 16 18 20 22 24 26 28 36 48 72" );
+      defLst = str.split( " " );
+    }
+    mySize->addItems( defLst );
+  }
+  
+  int ind = mySize->findText( currSize );
+  if ( ind != -1 )
+    mySize->setCurrentIndex( ind );
+}
+
+/*!
+  \brief Gets list of custom fonts 
+  \return list of families
+  \sa setFonts(), setMode()
+*/
+QStringList QtxFontEdit::fonts() const
+{
+  QStringList fams;
+  for ( int i = 0, n = myCustomFams->count(); i < n; i++ )
+    fams.append( myCustomFams->itemText( i ) );
+  return fams;
+}
+
+/*!
+  \brief Gets list of custom fonts 
+  \return list of families
+  \sa setCustomFonts(), setMode()
+*/
+QList<int> QtxFontEdit::sizes() const
+{
+  QList<int> lst;
+  for ( int i = 0, n = mySize->count(); i < n; i++ )
+    lst.append( mySize->itemText( i ).toInt() );
+  return lst;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

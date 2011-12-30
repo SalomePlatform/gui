@@ -36,7 +36,10 @@ class QtxFontEdit;
 class QtxGroupBox;
 class QtxComboBox;
 class QtxColorButton;
+class QtxShortcutEdit;
+class QtxShortcutTree;
 
+class QSlider;
 class QToolBox;
 class QComboBox;
 class QLineEdit;
@@ -404,6 +407,12 @@ public:
   int              inputType() const;
   void             setInputType( const int );
 
+  int              decimals() const;
+  void             setDecimals( const int );
+
+  int              echoMode() const;
+  void             setEchoMode( const int );
+
   virtual void     store();
   virtual void     retrieve();
 
@@ -416,7 +425,50 @@ private:
 
 private:
   int              myType;
+  int              myDecimals;
+  int              myEchoMode;
   QLineEdit*       myEditor;
+};
+
+class QTX_EXPORT QtxPagePrefSliderItem : public QObject,public QtxPageNamedPrefItem
+{
+  Q_OBJECT
+
+public:
+  QtxPagePrefSliderItem( const QString&, QtxPreferenceItem* = 0,
+                         const QString& = QString(), const QString& = QString() );
+  virtual ~QtxPagePrefSliderItem();
+
+  int              singleStep() const;
+  int              pageStep() const;
+  int              minimum() const;
+  int              maximum() const;
+  QList<QIcon>     icons() const;
+
+  void             setSingleStep( const int& );
+  void             setPageStep( const int& );
+  void             setMinimum( const int& );
+  void             setMaximum( const int& );
+  void             setIcons( const QList<QIcon>& );
+
+  virtual void     store();
+  virtual void     retrieve();
+
+protected:
+  virtual QVariant optionValue( const QString& ) const;
+  virtual void     setOptionValue( const QString&, const QVariant& );
+
+private slots:
+  void             setIcon( int );
+
+private:
+  void             updateSlider();
+  void             setIcons( const QVariant& );
+
+private:
+  QSlider*         mySlider;
+  QLabel*          myLabel;
+  QList<QIcon>     myIcons;
 };
 
 class QTX_EXPORT QtxPagePrefSelectItem : public QtxPageNamedPrefItem
@@ -453,6 +505,7 @@ private:
   void             updateSelector();
   void             setStrings( const QVariant& );
   void             setNumbers( const QVariant& );
+  void             setIcons( const QVariant& );
 
 private:
   int              myType;
@@ -472,6 +525,7 @@ public:
   virtual ~QtxPagePrefSpinItem();
 
   QVariant         step() const;
+  QVariant         precision() const;
   QVariant         minimum() const;
   QVariant         maximum() const;
 
@@ -480,6 +534,7 @@ public:
   QString          specialValueText() const;
 
   void             setStep( const QVariant& );
+  void             setPrecision( const QVariant& );
   void             setMinimum( const QVariant& );
   void             setMaximum( const QVariant& );
 
@@ -547,6 +602,15 @@ public:
 
   int              features() const;
   void             setFeatures( const int );
+
+  void             setMode( const int );
+  int              mode() const;
+
+  void             setFonts( const QStringList& );
+  QStringList      fonts() const;
+
+  void             setSizes( const QList<int>& = QList<int>() );
+  QList<int>       sizes() const;
 
   virtual void     store();
   virtual void     retrieve();
@@ -666,6 +730,41 @@ public:
 private:
   //  QtxComboBox*     myStyle;
   QComboBox*       myStyle;
+};
+
+class QTX_EXPORT QtxPagePrefShortcutBtnsItem : public QtxPageNamedPrefItem
+{
+public:
+  QtxPagePrefShortcutBtnsItem( const QString&, QtxPreferenceItem* = 0,
+                               const QString& = QString(), const QString& = QString() );
+  virtual ~QtxPagePrefShortcutBtnsItem();
+  virtual void     store();
+  virtual void     retrieve();
+
+private:
+  QtxShortcutEdit* myShortcut;
+};
+
+class QTX_EXPORT QtxPagePrefShortcutTreeItem : public QtxPageNamedPrefItem
+{
+public:
+  QtxPagePrefShortcutTreeItem( const QString&, QtxPreferenceItem* = 0,
+                               const QString& = QString(), const QString& = QString() );
+  virtual ~QtxPagePrefShortcutTreeItem();
+
+  virtual void     store();
+  virtual void     retrieve();
+
+protected:
+  QtxShortcutTree* shortcutTree() const;
+  virtual QString  actionName( const QString& ) const;
+
+private:
+  QMap<QString, QString> paramToName( const QString& ) const;
+  QMap<QString, QString> nameToParam( const QString& ) const;
+
+private:
+  QtxShortcutTree* myShortcutTree;
 };
 
 #endif

@@ -33,10 +33,14 @@ class QTX_EXPORT QtxMainWindow : public QMainWindow
   Q_OBJECT
 
   class Filter;
+  class Resizer;
 
 public:
   QtxMainWindow( QWidget* = 0, Qt::WindowFlags = 0 );
   virtual ~QtxMainWindow();
+
+  bool              isOpaqueResize() const;
+  void              setOpaqueResize( bool );
 
   bool              isDockableMenuBar() const;
   void              setDockableMenuBar( const bool );
@@ -47,6 +51,9 @@ public:
   QString           storeGeometry() const;
   void              retrieveGeometry( const QString& );
 
+protected:
+  virtual bool      event( QEvent* );
+
 private slots:
   void              onDestroyed( QObject* );
 
@@ -56,6 +63,10 @@ private:
 private:
   QToolBar*         myMenuBar;       //!< dockable menu bar
   QToolBar*         myStatusBar;     //!< dockable status bar
+
+  bool              myOpaque;
+  Resizer*          myResizer;
+  QMouseEvent*      myMouseMove;
 };
 
 #endif // QTXMAINWINDOW_H

@@ -22,16 +22,21 @@
 #include "QtxResourceMgr.h"
 #include "QtxTranslator.h"
 
+#include <QSet>
 #include <QDir>
 #include <QFile>
 #include <QRegExp>
+#include <QFileInfo>
 #include <QTextStream>
 #include <QApplication>
+#include <QLibraryInfo>
 #ifndef QT_NO_DOM
 #include <QDomDocument>
 #include <QDomElement>
 #include <QDomNode>
 #endif
+
+#include <QtDebug>
 
 #include <stdlib.h>
 
@@ -62,7 +67,6 @@ public:
   QPixmap                loadPixmap( const QString&, const QString&, const QString& ) const;
   QTranslator*           loadTranslator( const QString&, const QString&, const QString& ) const;
 
-  QString                environmentVariable( const QString&, int&, int& ) const;
   QString                makeSubstitution( const QString&, const QString&, const QString& ) const;
 
   void                   clear();
@@ -404,54 +408,6 @@ QTranslator* QtxResourceMgr::Resources::loadTranslator( const QString& sect, con
 }
 
 /*!
-  \brief Parse given string to retrieve environment variable.
-
-  Looks through the string for the patterns: ${name} or $(name) or %name%.
-  If string contains variable satisfying any pattern, the variable name
-  is returned, start index of the variable is returned in the \a start parameter,
-  and length of the variable is returned in the \a len parameter.
-
-  \param str string being processed
-  \param start if variable is found, this parameter contains its starting 
-         position in the \a str
-  \param len if variable is found, this parameter contains its length 
-  \return first found variable or null QString if there is no ones
-*/
-QString QtxResourceMgr::Resources::environmentVariable( const QString& str, int& start, int& len ) const
-{
-  QString varName;
-  len = 0;
-
-  QRegExp rx( "(^\\$\\{|[^\\$]\\$\\{)([a-zA-Z]+[a-zA-Z0-9_]*)(\\})|(^\\$\\(|[^\\$]\\$\\()([a-zA-Z]+[a-zA-Z0-9_]*)(\\))|(^\\$|[^\\$]\\$)([a-zA-Z]+[a-zA-Z0-9_]*)|(^%|[^%]%)([a-zA-Z]+[a-zA-Z0-9_]*)(%[^%]|%$)" );
-
-  int pos = rx.indexIn( str, start );
-  if ( pos != -1 )
-  {
-    int i = 1;
-    while ( i <= rx.numCaptures() && varName.isEmpty() )
-    {
-      QString capStr = rx.cap( i );
-      if ( !capStr.contains( "%" ) && !capStr.contains( "$" ) )
-        varName = capStr;
-      i++;
-    }
-
-    if ( !varName.isEmpty() )
-    {
-      int capIdx = i - 1;
-      start = rx.pos( capIdx );
-      int end = start + varName.length();
-      if ( capIdx > 1 && rx.cap( capIdx - 1 ).contains( QRegExp( "\\$|%" ) ) )
-        start = rx.pos( capIdx - 1 ) + rx.cap( capIdx - 1 ).indexOf( QRegExp( "\\$|%" ) );
-      if ( capIdx < rx.numCaptures() && !rx.cap( capIdx - 1 ).isEmpty() )
-        end++;
-      len = end - start;
-    }
-  }
-  return varName;
-}
-
-/*!
   \brief Substitute variables by their values.
 
   Environment variable is substituted by its value. For other variables resource
@@ -472,7 +428,7 @@ QString QtxResourceMgr::Resources::makeSubstitution( const QString& str, const Q
   int start( 0 ), len( 0 );
   while ( true )
   {
-    QString envName = environmentVariable( res, start, len );
+    QString envName = Qtx::findEnvVar( res, start, len );
     if ( envName.isNull() )
       break;
 
@@ -516,6 +472,9 @@ public:
 protected:
   virtual bool load( const QString&, QMap<QString, Section>& );
   virtual bool save( const QString&, const QMap<QString, Section>& );
+
+private:
+  bool         load( const QString&, QMap<QString, Section>&, QSet<QString>& );
 };
 
 /*!
@@ -541,9 +500,41 @@ QtxResourceMgr::IniFormat::~IniFormat()
 */
 bool QtxResourceMgr::IniFormat::load( const QString& fname, QMap<QString, Section>& secMap )
 {
-  QFile file( fname );
+  QSet<QString> importHistory;
+  return load( fname, secMap, importHistory );
+}
+
+
+/*!
+  \brief Load resources from xml-file.
+  \param fname resources file name
+  \param secMap resources map to be filled in
+  \param importHistory list of already imported resources files (to prevent import loops)
+  \return \c true on success or \c false on error
+*/
+bool QtxResourceMgr::IniFormat::load( const QString& fname, QMap<QString, Section>& secMap, QSet<QString>& importHistory)
+{
+  QString aFName = fname.trimmed();
+  if ( !QFileInfo( aFName ).exists() )
+  {
+    if ( QFileInfo( aFName + ".ini" ).exists() )
+      aFName += ".ini";
+    else if ( QFileInfo( aFName + ".INI" ).exists() )
+      aFName += ".INI";
+    else
+      return false; // file does not exist
+  }
+  QFileInfo aFinfo( aFName );
+  aFName = aFinfo.canonicalFilePath();
+
+  if ( !importHistory.contains( aFName ) )
+    importHistory.insert( aFName );
+  else
+    return true;   // already imported (prevent import loops)
+
+  QFile file( aFName );
   if ( !file.open( QFile::ReadOnly ) )
-    return false;
+    return false;  // file is not accessible
 
   QTextStream ts( &file );
 
@@ -575,27 +566,64 @@ bool QtxResourceMgr::IniFormat::load( const QString& fname, QMap<QString, Sectio
     if ( data.startsWith( comment ) )
       continue;
 
-    QRegExp rx( "^\\[([\\w\\s\\._]*)\\]$" );
+    QRegExp rx( "^\\[([^\\[\\]]*)\\]$" );
     if ( rx.indexIn( data ) != -1 )
     {
       section = rx.cap( 1 );
       if ( section.isEmpty() )
       {
         res = false;
-        qWarning( "Empty section in line %d", line );
+        qWarning() << "QtxResourceMgr: Empty section in line:" << line;
       }
     }
-    else if ( data.contains( "=" ) && !section.isEmpty() )
+    else if ( data.contains( separator ) && !section.isEmpty() )
     {
       int pos = data.indexOf( separator );
       QString key = data.left( pos ).trimmed();
       QString val = data.mid( pos + 1 ).trimmed();
       secMap[section].insert( key, val );
     }
+    else if ( section == "import" )
+    {
+      QFileInfo impFInfo( data );
+      if ( impFInfo.isRelative() )
+	impFInfo.setFile( aFinfo.absoluteDir(), data );
+    
+      QMap<QString, Section> impMap;
+      if ( !load( impFInfo.absoluteFilePath(), impMap, importHistory ) )
+      {
+        qDebug() << "QtxResourceMgr: Error with importing file:" << data;
+      }
+      else 
+      {
+	QMap<QString, Section>::const_iterator it = impMap.constBegin();
+	for ( ; it != impMap.constEnd() ; ++it )
+	{ 
+	  if ( !secMap.contains( it.key() ) )
+	  {
+	    // insert full section
+	    secMap.insert( it.key(), it.value() );
+	  }
+	  else
+	  {
+	    // insert all parameters from the section
+	    Section::ConstIterator paramIt = it.value().begin();
+	    for ( ; paramIt != it.value().end() ; ++paramIt )
+	    {
+	      if ( !secMap[it.key()].contains( paramIt.key() ) )
+		secMap[it.key()].insert( paramIt.key(), paramIt.value() );
+	    }
+	  }
+	}
+      }
+    }
     else
     {
       res = false;
-      section.isEmpty() ? qWarning( "Current section is empty" ) : qWarning( "Error in line: %d", line );
+      if ( section.isEmpty() )
+	qWarning() << "QtxResourceMgr: Current section is empty";
+      else
+	qWarning() << "QtxResourceMgr: Error in line:" << line;
     }
   }
 
@@ -612,6 +640,9 @@ bool QtxResourceMgr::IniFormat::load( const QString& fname, QMap<QString, Sectio
 */
 bool QtxResourceMgr::IniFormat::save( const QString& fname, const QMap<QString, Section>& secMap )
 {
+  if ( !Qtx::mkDir( QFileInfo( fname ).absolutePath() ) )
+    return false;
+
   QFile file( fname );
   if ( !file.open( QFile::WriteOnly ) )
     return false;
@@ -655,8 +686,11 @@ private:
   QString      docTag() const;
   QString      sectionTag() const;
   QString      parameterTag() const;
+  QString      importTag() const;
   QString      nameAttribute() const;
   QString      valueAttribute() const;
+
+  bool         load( const QString&, QMap<QString, Section>&, QSet<QString>& );
 };
 
 /*!
@@ -682,14 +716,45 @@ QtxResourceMgr::XmlFormat::~XmlFormat()
 */
 bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Section>& secMap )
 {
+  QSet<QString> importHistory;
+  return load( fname, secMap, importHistory );
+}
+
+/*!
+  \brief Load resources from xml-file.
+  \param fname resources file name
+  \param secMap resources map to be filled in
+  \param importHistory list of already imported resources files (to prevent import loops)
+  \return \c true on success and \c false on error
+*/
+bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Section>& secMap, QSet<QString>& importHistory )
+{
+  QString aFName = fname.trimmed();
+  if ( !QFileInfo( aFName ).exists() )
+  {
+    if ( QFileInfo( aFName + ".xml" ).exists() )
+      aFName += ".xml";
+    else if ( QFileInfo( aFName + ".XML" ).exists() )
+      aFName += ".XML";
+    else
+      return false; // file does not exist
+  }
+  QFileInfo aFinfo( aFName );
+  aFName = aFinfo.canonicalFilePath();
+
+  if ( !importHistory.contains(  aFName ) )
+    importHistory.insert( aFName );
+  else
+    return true;   // already imported (prevent import loops)
+
   bool res = false;
 
 #ifndef QT_NO_DOM
 
-  QFile file( fname );
+  QFile file( aFName );
   if ( !file.open( QFile::ReadOnly ) )
   {
-    qDebug( "File '%s' cannot be opened", (const char*)fname.toLatin1() );
+    qDebug() << "QtxResourceMgr: File is not accessible:" << aFName;
     return false;
   }
 
@@ -700,14 +765,14 @@ bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Sectio
 
   if ( !res )
   {
-    qDebug( "File is empty" );
+    qDebug() << "QtxResourceMgr: File is empty:" << aFName;
     return false;
   }
 
   QDomElement root = doc.documentElement();
   if ( root.isNull() || root.tagName() != docTag() )
   {
-    qDebug( "Invalid root" );
+    qDebug() << "QtxResourceMgr: Invalid root in file:" << aFName;
     return false;
   }
 
@@ -733,12 +798,11 @@ bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Sectio
             {
               QString paramName = paramElem.attribute( nameAttribute() );
               QString paramValue = paramElem.attribute( valueAttribute() );
-
               secMap[section].insert( paramName, paramValue );
             }
             else
 	    {
-	      qDebug( "Invalid parameter element" );
+              qDebug() << "QtxResourceMgr: Invalid parameter element in file:" << aFName;
               res = false;
 	    }
           }
@@ -746,15 +810,49 @@ bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Sectio
 	  {
 	    res = paramNode.isComment();
 	    if( !res )
-	      qDebug( "Node isn't element nor comment" );
+              qDebug() << "QtxResourceMgr: Node is neither element nor comment in file:" << aFName;
 	  }
 
           paramNode = paramNode.nextSibling();
         }
       }
+      else if ( sectElem.tagName() == importTag() && sectElem.hasAttribute( nameAttribute() ) )
+      {
+	QFileInfo impFInfo( sectElem.attribute( nameAttribute() ) );
+	if ( impFInfo.isRelative() )
+	  impFInfo.setFile( aFinfo.absoluteDir(), sectElem.attribute( nameAttribute() ) );
+
+        QMap<QString, Section> impMap;
+        if ( !load( impFInfo.absoluteFilePath(), impMap, importHistory ) )
+	{
+          qDebug() << "QtxResourceMgr: Error with importing file:" << sectElem.attribute( nameAttribute() );
+	}
+	else
+	{
+	  QMap<QString, Section>::const_iterator it = impMap.constBegin();
+	  for ( ; it != impMap.constEnd() ; ++it )
+	  {
+	    if ( !secMap.contains( it.key() ) )
+	    {
+	    // insert full section
+	      secMap.insert( it.key(), it.value() );
+	    }
       else
       {
-	qDebug( "Invalid section" );
+	      // insert all parameters from the section
+	      Section::ConstIterator paramIt = it.value().begin();
+	      for ( ; paramIt != it.value().end() ; ++paramIt )
+	      {
+		if ( !secMap[it.key()].contains( paramIt.key() ) )
+		  secMap[it.key()].insert( paramIt.key(), paramIt.value() );
+	      }
+	    }
+	  }
+        }
+      }
+      else
+      {
+        qDebug() << "QtxResourceMgr: Invalid section in file:" << aFName;
         res = false;
       }
     }
@@ -762,7 +860,7 @@ bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Sectio
     {
       res = sectNode.isComment(); // if it's a comment -- let it be, pass it..
       if( !res )
-	qDebug( "Node isn't element nor comment" );
+        qDebug() << "QtxResourceMgr: Node is neither element nor comment in file:" << aFName;
     }
 
     sectNode = sectNode.nextSibling();
@@ -771,7 +869,7 @@ bool QtxResourceMgr::XmlFormat::load( const QString& fname, QMap<QString, Sectio
 #endif
 
   if ( res )
-    qDebug( "File '%s' is loaded successfully", (const char*)fname.toLatin1() );
+    qDebug() << "QtxResourceMgr: File" << fname << "is loaded successfully";
   return res;
 }
 
@@ -786,6 +884,9 @@ bool QtxResourceMgr::XmlFormat::save( const QString& fname, const QMap<QString, 
   bool res = false;
 
 #ifndef QT_NO_DOM
+
+  if ( !Qtx::mkDir( QFileInfo( fname ).absolutePath() ) )
+    return false;
 
   QFile file( fname );
   if ( !file.open( QFile::WriteOnly ) )
@@ -854,6 +955,18 @@ QString QtxResourceMgr::XmlFormat::parameterTag() const
   QString tag = option( "parameter_tag" );
   if ( tag.isEmpty() )
     tag = QString( "parameter" );
+  return tag;
+}
+
+/*!
+  \brief Get import tag name
+  \return XML import tag name
+*/
+QString QtxResourceMgr::XmlFormat::importTag() const
+{
+  QString tag = option( "import_tag" );
+  if ( tag.isEmpty() )
+   tag = QString( "import" );
   return tag;
 }
 
@@ -961,7 +1074,7 @@ bool QtxResourceMgr::Format::load( Resources* res )
   if ( status )
     res->mySections = sections;
   else
-    qDebug( "QtxResourceMgr: Could not load resource file \"%s\"", (const char*)res->myFileName.toLatin1() );
+    qDebug() << "QtxResourceMgr: Can't load resource file:" << res->myFileName;
 
   return status;
 }
@@ -1049,8 +1162,11 @@ bool QtxResourceMgr::Format::save( Resources* res )
   resources environment variable has higher priority. Priority has the meaning when
   searching requested resources (application preference, pixmap file name, translation
   file, etc).
-  Loading of the user configuration file can be omitted by calling setIgnoreUserValues() 
-  with \c true parameter.
+
+  When retrieving preferences, it is sometimes helpful to ignore values coming from the
+  user preference file and take into account only global preferences.
+  To do this, use setWorkingMode() method passing QtxResourceMgr::IgnoreUserValues enumerator
+  as parameter.
 
   Resources manager operates with such terms like options, sections and parameters. 
   Parametets are named application resources, for example, application preferences like
@@ -1090,7 +1206,8 @@ QtxResourceMgr::QtxResourceMgr( const QString& appName, const QString& resVarTem
   myCheckExist( true ),
   myDefaultPix( 0 ),
   myIsPixmapCached( true ),
-  myIsIgnoreUserValues( false )
+  myHasUserValues( true ),
+  myWorkingMode( AllowUserValues )
 {
   QString envVar = !resVarTemplate.isEmpty() ? resVarTemplate : QString( "%1Resources" );
   if ( envVar.contains( "%1" ) )
@@ -1180,17 +1297,18 @@ QStringList QtxResourceMgr::dirList() const
   Prepare the resources containers and load resources (if \a autoLoad is \c true).
 
   \param autoLoad if \c true (default) then all resources are loaded
-  \param loadUser if \c true (default) then user settings are also loaded
 */
-void QtxResourceMgr::initialize( const bool autoLoad, const bool loadUser ) const
+void QtxResourceMgr::initialize( const bool autoLoad ) const
 {
   if ( !myResources.isEmpty() )
     return;
 
   QtxResourceMgr* that = (QtxResourceMgr*)this;
 
-  if ( loadUser && !userFileName( appName() ).isEmpty() )
+  if ( !userFileName( appName() ).isEmpty() )
     that->myResources.append( new Resources( that, userFileName( appName() ) ) );
+
+  that->myHasUserValues = myResources.count() > 0;
 
   for ( QStringList::ConstIterator it = myDirList.begin(); it != myDirList.end(); ++it )
   {
@@ -1238,27 +1356,31 @@ void QtxResourceMgr::clear()
 }
 
 /*!
-  \brief Set "ignore user values" option value.
+  \brief Get current working mode.
   
-  If this option is \c true, then all resources loaded from user home directory are ignored.
-  
-  \param val new option value
-  \sa ignoreUserValues()
+  \return current working mode
+  \sa setWorkingMode(), value(), hasValue(), hasSection(), setValue()
 */
-void QtxResourceMgr::setIgnoreUserValues( const bool val )
+QtxResourceMgr::WorkingMode QtxResourceMgr::workingMode() const
 {
-  myIsIgnoreUserValues = val;
+  return myWorkingMode;
 }
 
 /*!
-  \brief Get "ignore user values" option value.
+  \brief Set resource manager's working mode.
+
+  The resource manager can operate in the following working modes:
+  * AllowUserValues  : methods values(), hasValue(), hasSection() take into account user values (default)
+  * IgnoreUserValues : methods values(), hasValue(), hasSection() do not take into account user values
   
-  \return "ignore user values" option value
-  \sa setIgnoreUserValues()
+  Note, that setValue() method always put the value to the user settings file.
+  
+  \param mode new working mode
+  \sa workingMode(), value(), hasValue(), hasSection(), setValue()
 */
-bool QtxResourceMgr::ignoreUserValues() const
+void QtxResourceMgr::setWorkingMode( WorkingMode mode )
 {
-  return myIsIgnoreUserValues;
+  myWorkingMode = mode;
 }
 
 /*!
@@ -1387,6 +1509,8 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QFont& fVa
       fVal.setItalic( true );
     else if ( curval == QString( "underline" ) )
       fVal.setUnderline( true );
+    else if ( curval == QString( "shadow" ) || curval == QString( "overline" ) )
+      fVal.setOverline( true );
     else
     {
       bool isOk = false;
@@ -1501,7 +1625,7 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QString& v
   bool ok = false;
  
   ResList::ConstIterator it = myResources.begin();
-  if ( ignoreUserValues() )
+  if ( myHasUserValues && workingMode() == IgnoreUserValues )
     ++it;
 
   for ( ; it != myResources.end() && !ok; ++it )
@@ -1710,7 +1834,12 @@ bool QtxResourceMgr::hasValue( const QString& sect, const QString& name ) const
   initialize();
 
   bool ok = false;
-  for ( ResList::ConstIterator it = myResources.begin(); it != myResources.end() && !ok; ++it )
+
+  ResList::ConstIterator it = myResources.begin();
+  if ( myHasUserValues && workingMode() == IgnoreUserValues )
+    ++it;
+
+  for ( ; it != myResources.end() && !ok; ++it )
     ok = (*it)->hasValue( sect, name );
 
   return ok;
@@ -1726,7 +1855,12 @@ bool QtxResourceMgr::hasSection( const QString& sect ) const
   initialize();
 
   bool ok = false;
-  for ( ResList::ConstIterator it = myResources.begin(); it != myResources.end() && !ok; ++it )
+
+  ResList::ConstIterator it = myResources.begin();
+  if ( myHasUserValues && workingMode() == IgnoreUserValues )
+    ++it;
+
+  for ( ; it != myResources.end() && !ok; ++it )
     ok = (*it)->hasSection( sect );
 
   return ok;
@@ -1812,6 +1946,8 @@ void QtxResourceMgr::setValue( const QString& sect, const QString& name, const Q
     fontDescr.append( "Italic" );
   if ( val.underline() )
     fontDescr.append( "Underline" );
+  if ( val.overline() )
+    fontDescr.append( "Overline" );
   fontDescr.append( QString( "%1" ).arg( val.pointSize() ) );
 
   setResource( sect, name, fontDescr.join( "," ) );
@@ -2070,6 +2206,9 @@ bool QtxResourceMgr::import( const QString& fname )
   if ( !fmt )
     return false;
 
+  if ( myResources.isEmpty() || !myHasUserValues )
+    return false;
+
   Resources* r = myResources[0];
   if ( !r )
     return false;
@@ -2093,7 +2232,7 @@ bool QtxResourceMgr::save()
   if ( !fmt )
     return false;
 
-  if ( myResources.isEmpty() )
+  if ( myResources.isEmpty() || !myHasUserValues )
     return true;
 
   return fmt->save( myResources[0] );
@@ -2107,19 +2246,95 @@ QStringList QtxResourceMgr::sections() const
 {
   initialize();
 
-  QMap<QString, int> map;
-  for ( ResList::ConstIterator it = myResources.begin(); it != myResources.end(); ++it )
-  {
-    QStringList lst = (*it)->sections();
-    for ( QStringList::ConstIterator itr = lst.begin(); itr != lst.end(); ++itr )
-      map.insert( *itr, 0 );
-  }
+  QSet<QString> set;
+
+  ResList::ConstIterator it = myResources.begin();
+  if ( myHasUserValues && workingMode() == IgnoreUserValues )
+    ++it;
 
   QStringList res;
-  for ( QMap<QString, int>::ConstIterator iter = map.begin(); iter != map.end(); ++iter )
-    res.append( iter.key() );
+  for ( ; it != myResources.end(); ++it )
+  {
+    QStringList lst = (*it)->sections();
+    for ( QStringList::ConstIterator itr = lst.begin(); itr != lst.end(); ++itr ) {
+      QString sect = *itr;
+      if ( !set.contains( sect ) ) {
+        set.insert( sect );
+        res.append( sect );
+      }
+    }
+  }
 
   return res;
+}
+
+/*!
+  \brief Get all sections names matching specified regular expression.
+  \param re searched regular expression
+  \return list of sections names
+*/
+QStringList QtxResourceMgr::sections(const QRegExp& re) const
+{
+  return sections().filter( re );
+}
+
+/*!
+  \brief Get all sections names with the prefix specified by passed
+  list of parent sections names. 
+
+  Sub-sections are separated inside the section name by the sections 
+  separator token, for example "splash:color:label".
+
+  \param names parent sub-sections names 
+  \return list of sections names
+*/
+QStringList QtxResourceMgr::sections(const QStringList& names) const
+{
+  QStringList nm = names;
+  nm << ".+";
+  QRegExp re( QString( "^%1$" ).arg( nm.join( sectionsToken() ) ) );
+  return sections( re );
+}
+
+/*!
+  \brief Get list of sub-sections names for the specified parent section name.
+
+  Sub-sections are separated inside the section name by the sections 
+  separator token, for example "splash:color:label".
+
+  \param section parent sub-section name
+  \param full if \c true return full names of child sub-sections, if \c false,
+         return only top-level sub-sections names
+  \return list of sub-sections names
+*/
+QStringList QtxResourceMgr::subSections(const QString& section, const bool full) const
+{
+  QStringList names = sections( QStringList() << section );
+  QMutableListIterator<QString> it( names );
+  while ( it.hasNext() ) {
+    QString name = it.next().mid( section.size() + 1 ).trimmed();
+    if ( name.isEmpty() ) {
+      it.remove();
+      continue;
+    }
+    if ( !full )
+      name = name.split( sectionsToken() ).first();
+    it.setValue( name );
+  }
+  /*
+  names.removeDuplicates();
+  */
+  QSet<QString> set;
+  QStringList simpleList;
+  for ( QStringList::iterator it = names.begin(); it != names.end(); ++it ) {
+    if ( !set.contains( *it ) ) {
+      set.insert( *it );
+      simpleList.append( *it );
+    }
+  }
+  names = simpleList;
+  names.sort();
+  return names;
 }
 
 /*!
@@ -2138,20 +2353,40 @@ QStringList QtxResourceMgr::parameters( const QString& sec ) const
 #endif
   PMap pmap;
   
-  ResList::ConstIterator it = myResources.end();
-  while ( it != myResources.begin() )
+  Resources* ur = !myResources.isEmpty() && workingMode() == IgnoreUserValues ? myResources[0] : 0;
+
+  QListIterator<Resources*> it( myResources );
+  it.toBack();
+  while ( it.hasPrevious() )
   {
-    --it;
-    QStringList lst = (*it)->parameters( sec );
+    Resources* r = it.previous();
+    if ( r == ur ) break;
+    QStringList lst = r->parameters( sec );
+
     for ( QStringList::ConstIterator itr = lst.begin(); itr != lst.end(); ++itr )
+#if defined(QTX_NO_INDEXED_MAP)
+      if ( !pmap.contains( *itr ) ) pmap.insert( *itr, 0 );
+#else
       pmap.insert( *itr, 0, false );
+#endif
   }
 
-  QStringList res;
-  for ( PMap::ConstIterator iter = pmap.begin(); iter != pmap.end(); ++iter )
-    res.append( iter.key() );
+  return pmap.keys();
+}
 
-  return res;
+/*!
+  \brief Get all parameters name in specified
+  list of sub-sections names. 
+
+  Sub-sections are separated inside the section name by the sections 
+  separator token, for example "splash:color:label".
+
+  \param names parent sub-sections names 
+  \return list of settings names
+*/
+QStringList QtxResourceMgr::parameters( const QStringList& names ) const
+{
+  return parameters( names.join( sectionsToken() ) );
 }
 
 /*!
@@ -2171,7 +2406,12 @@ QStringList QtxResourceMgr::parameters( const QString& sec ) const
 QString QtxResourceMgr::path( const QString& sect, const QString& prefix, const QString& name ) const
 {
   QString res;
-  for ( ResList::ConstIterator it = myResources.begin(); it != myResources.end() && res.isEmpty(); ++it )
+
+  ResList::ConstIterator it = myResources.begin();
+  if ( myHasUserValues && workingMode() == IgnoreUserValues )
+    ++it;
+
+  for ( ; it != myResources.end() && res.isEmpty(); ++it )
     res = (*it)->path( sect, prefix, name );
   return res;
 }
@@ -2180,7 +2420,7 @@ QString QtxResourceMgr::path( const QString& sect, const QString& prefix, const 
   \brief Get application resources section name.
 
   By default, application resources section name is "resources" but
-  it can be changed by setting the corresponding resources manager option.
+  it can be changed by setting the "res_section_name" resources manager option.
   
   \return section corresponding to the resources directories
   \sa option(), setOption()
@@ -2197,7 +2437,7 @@ QString QtxResourceMgr::resSection() const
   \brief Get application language section name.
 
   By default, application language section name is "language" but
-  it can be changed by setting the corresponding resources manager option.
+  it can be changed by setting the "lang_section_name" resources manager option.
   
   \return section corresponding to the application language settings
   \sa option(), setOption()
@@ -2207,6 +2447,23 @@ QString QtxResourceMgr::langSection() const
   QString res = option( "lang_section_name" );
   if ( res.isEmpty() )
     res = QString( "language" );
+  return res;
+}
+
+/*!
+  \brief Get sections separator token.
+
+  By default, sections separator token is colon symbol ":" but
+  it can be changed by setting the "section_token" resources manager option.
+  
+  \return string corresponding to the current section separator token
+  \sa option(), setOption()
+*/
+QString QtxResourceMgr::sectionsToken() const
+{
+  QString res = option( "section_token" );
+  if ( res.isEmpty() )
+    res = QString( ":" );
   return res;
 }
 
@@ -2284,37 +2541,16 @@ QPixmap QtxResourceMgr::loadPixmap( const QString& prefix, const QString& name, 
   initialize();
 
   QPixmap pix;
-  for ( ResList::ConstIterator it = myResources.begin(); it != myResources.end() && pix.isNull(); ++it )
+
+  ResList::ConstIterator it = myResources.begin();
+  if ( myHasUserValues && workingMode() == IgnoreUserValues )
+    ++it;
+
+  for ( ; it != myResources.end() && pix.isNull(); ++it )
     pix = (*it)->loadPixmap( resSection(), prefix, name );
   if ( pix.isNull() )
     pix = defPix;
   return pix;
-}
-
-/*!
-  \brief Load translation files according to the specified language.
-
-  Names of the translation files are calculated according to the pattern specified
-  by the "translators" option (this option is read from the section "language" of resources files).
-  By default, "%P_msg_%L.qm" pattern is used.
-  Keywords \%A, \%P, \%L in the pattern are substituted by the application name, prefix and language name
-  correspondingly.
-  For example, for prefix "SUIT" an language "en", all translation files "SUIT_msg_en.qm" are searched and
-  loaded.
-
-  If prefix is empty or null string, all translation files specified in the "resources" section of resources
-  files are loaded (actually, the section is retrieved from resSection() method). 
-  If language is not specified, it is retrieved from the langSection() method, and if the latest is also empty,
-  by default "en" (English) language is used.
-
-  \param pref parameter which defines translation context (for example, package name)
-  \param l language name
-
-  \sa resSection(), langSection(), loadTranslators()
-*/
-void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
-{
-  loadLanguage( true, pref, l );
 }
 
 /*!
@@ -2335,15 +2571,14 @@ void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
   By default, settings from the user preferences file are also loaded (if user resource file is valid, 
   see userFileName()). To avoid loading user settings, pass \c false as first parameter.
 
-  \param loadUser if \c true then user settings are also loaded
   \param pref parameter which defines translation context (for example, package name)
   \param l language name
 
   \sa resSection(), langSection(), loadTranslators()
 */
-void QtxResourceMgr::loadLanguage( const bool loadUser, const QString& pref, const QString& l )
+void QtxResourceMgr::loadLanguage( const QString& pref, const QString& l )
 {
-  initialize( true, loadUser );
+  initialize( true );
 
   QMap<QChar, QString> substMap;
   substMap.insert( 'A', appName() );
@@ -2355,7 +2590,7 @@ void QtxResourceMgr::loadLanguage( const bool loadUser, const QString& pref, con
   if ( lang.isEmpty() )
   {
     lang = QString( "en" );
-    qWarning( "Language not specified. Assumed: %s", (const char*)lang.toLatin1() );
+    qWarning() << "QtxResourceMgr: Language not specified. Assumed:" << lang;
   }
 
   substMap.insert( 'L', lang );
@@ -2377,7 +2612,7 @@ void QtxResourceMgr::loadLanguage( const bool loadUser, const QString& pref, con
   if ( trList.isEmpty() )
   {
     trList.append( "%P_msg_%L.qm" );
-    qWarning( "Translators not defined. Assumed: %s", (const char*)trList[0].toLatin1() );
+    qWarning() << "QtxResourceMgr: Translators not defined. Assumed:" << trList[0];
   }
 
   QStringList prefixList;
@@ -2385,6 +2620,20 @@ void QtxResourceMgr::loadLanguage( const bool loadUser, const QString& pref, con
     prefixList.append( pref );
   else
     prefixList = parameters( resSection() );
+
+  if ( pref.isEmpty() && lang != "en" ) {
+    // load Qt resources
+    QString qt_translations = QLibraryInfo::location( QLibraryInfo::TranslationsPath );
+    QString qt_dir_trpath;
+    if ( ::getenv( "QTDIR" ) )
+      qt_dir_trpath = QString( ::getenv( "QTDIR" ) );
+    if ( !qt_dir_trpath.isEmpty() )
+      qt_dir_trpath = QDir( qt_dir_trpath ).absoluteFilePath( "translations" );
+
+    QTranslator* trans = new QtxTranslator( 0 );
+    if ( trans->load( QString("qt_%1").arg( lang ), qt_translations ) || trans->load( QString("qt_%1").arg( lang ), qt_dir_trpath ) )
+      QApplication::instance()->installTranslator( trans );
+  }
 
   for ( QStringList::ConstIterator iter = prefixList.begin(); iter != prefixList.end(); ++iter )
   {
@@ -2410,7 +2659,12 @@ void QtxResourceMgr::loadTranslators( const QString& prefix, const QStringList& 
   initialize();
 
   ResList lst;
-  for ( ResList::Iterator iter = myResources.begin(); iter != myResources.end(); ++iter )
+
+  ResList::ConstIterator iter = myResources.begin();
+  if ( myHasUserValues && workingMode() == IgnoreUserValues )
+    ++iter;
+
+  for ( ; iter != myResources.end(); ++iter )
     lst.prepend( *iter );
 
   QTranslator* trans = 0;
@@ -2442,11 +2696,16 @@ void QtxResourceMgr::loadTranslator( const QString& prefix, const QString& name 
 
   QTranslator* trans = 0;
 
-  ResList::ConstIterator it = myResources.end();
-  while ( it != myResources.begin() )
+  Resources* ur = !myResources.isEmpty() && workingMode() == IgnoreUserValues ? myResources[0] : 0;
+  
+  QListIterator<Resources*> it( myResources );
+  it.toBack();
+  while ( it.hasPrevious() )
   {
-    --it;
-    trans = (*it)->loadTranslator( resSection(), prefix, name );
+    Resources* r = it.previous();
+    if ( r == ur ) break;
+
+    trans = r->loadTranslator( resSection(), prefix, name );
     if ( trans )
     {
       if ( !myTranslator[prefix].contains( trans ) )
@@ -2532,7 +2791,7 @@ void QtxResourceMgr::setResource( const QString& sect, const QString& name, cons
 {
   initialize();
 
-  if ( !myResources.isEmpty() )
+  if ( !myResources.isEmpty() && myHasUserValues )
     myResources.first()->setValue( sect, name, val );
 }
 
@@ -2550,7 +2809,7 @@ void QtxResourceMgr::setResource( const QString& sect, const QString& name, cons
   the configuration file from the previous versions of the application).
   
   \param appName application name
-  \param for_load boolean flag indicating that file is opened for loading or saving (not used) 
+  \param for_load boolean flag indicating that file is opened for loading or saving (not used in default implementation) 
   \return user configuration file name
   \sa globalFileName()
 */
@@ -2558,6 +2817,10 @@ QString QtxResourceMgr::userFileName( const QString& appName, const bool /*for_l
 {
   QString fileName;
   QString pathName = QDir::homePath();
+
+  QString cfgAppName = QApplication::applicationName();
+  if ( !cfgAppName.isEmpty() )
+    pathName = Qtx::addSlash( Qtx::addSlash( pathName ) + QString( ".config" ) ) + cfgAppName;
 
 #ifdef WIN32
   fileName = QString( "%1.%2" ).arg( appName ).arg( currentFormat() );

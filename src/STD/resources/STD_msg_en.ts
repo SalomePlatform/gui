@@ -92,6 +92,10 @@
         <translation>&amp;About...</translation>
     </message>
     <message>
+        <source>MEN_DESK_NEWWINDOW</source>
+        <translation>&amp;New Window</translation>
+    </message>
+    <message>
         <source>PRP_DESK_NEWWINDOW</source>
         <translation>Create new Window</translation>
     </message>
@@ -100,8 +104,8 @@
         <translation>&amp;Status Bar</translation>
     </message>
     <message>
-        <source>MEN_DESK_NEWWINDOW</source>
-        <translation>&amp;New Window</translation>
+        <source>TOT_DESK_VIEW_STATUSBAR</source>
+        <translation>View Status bar</translation>
     </message>
     <message>
         <source>PRP_DESK_VIEW_STATUSBAR</source>

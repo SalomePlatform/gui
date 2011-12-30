@@ -37,6 +37,7 @@ AM_CPPFLAGS = @KERNEL_CXXFLAGS@ -include SALOMEconfig.h -I$(top_builddir)
 #
 salomeincludedir   = $(includedir)/salome
 libdir             = $(prefix)/lib@LIB_LOCATION_SUFFIX@/salome
+libparaviewdir          = $(prefix)/lib@LIB_LOCATION_SUFFIX@/paraview
 bindir             = $(prefix)/bin/salome
 salomescriptdir    = $(bindir)
 salomepythondir    = $(pythondir)/salome

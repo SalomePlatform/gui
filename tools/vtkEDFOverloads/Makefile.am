@@ -20,4 +20,16 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-SUBDIRS = vtkEDFOverloads dlgfactory
+include $(top_srcdir)/adm_local/unix/make_common_starter.am
+
+libparaview_LTLIBRARIES = libvtkEDFOverloads.la	
+
+salomeinclude_HEADERS = vtkEDFCutter.h \
+	vtkEDFFactory.h
+
+dist_libvtkEDFOverloads_la_SOURCES = vtkEDFCutter.cxx \
+	vtkEDFFactory.cxx
+
+libvtkEDFOverloads_la_CPPFLAGS = $(VTK_INCLUDES)
+
+libvtkEDFOverloads_la_LDFLAGS = $(VTK_LIBS)

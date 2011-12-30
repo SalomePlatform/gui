@@ -677,5 +677,6 @@ AC_OUTPUT([ \
   idl/Makefile \
   tools/Makefile \
   tools/dlgfactory/Makefile \
+  tools/vtkEDFOverloads/Makefile \
   Makefile
 ])

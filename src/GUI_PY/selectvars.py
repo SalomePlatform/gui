@@ -20,6 +20,7 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
+import os
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtCore import Qt
 
@@ -48,6 +49,8 @@ class MySelectVarsDialog(Ui_SelectVarsDialog, QtGui.QDialog):
         self.connect(self.addOutputVarButton, QtCore.SIGNAL("clicked()"), self.addSelectedOutputVar)
         self.connect(self.removeOutputVarButton, QtCore.SIGNAL("clicked()"), self.removeSelectedOutputVar)
         self.connect(self.newOutputVarButton, QtCore.SIGNAL("clicked()"), self.newOutputVar)
+        self.connect(self.loadVarsButton, QtCore.SIGNAL("clicked()"), self.loadVars)
+        self.connect(self.saveVarsButton, QtCore.SIGNAL("clicked()"), self.saveVars)
         self.refEntry = None
 
     def setExchangeVariables(self, exchangeVariables):
@@ -120,3 +123,31 @@ class MySelectVarsDialog(Ui_SelectVarsDialog, QtGui.QDialog):
             name = str(self.selectedOutputVarListWidget.item(row).text())
             outputVarList.append(study_exchange_vars.Variable(name))
         return study_exchange_vars.ExchangeVariables(inputVarList, outputVarList, self.refEntry)
+
+    def loadVars(self):
+        filename = QtGui.QFileDialog.getOpenFileName(self, self.tr("Import variables from file"),
+                                                     os.getenv("HOME"),
+                                                     self.tr("XML Files (*.xml)"))
+        if not filename:
+            return
+        try:
+            filename = str(filename)
+            exchange_variables = study_exchange_vars.loadExchangeVariablesFromXmlFile(filename)
+            self.setExchangeVariables(exchange_variables)
+        except Exception, e:
+            QtGui.QMessageBox.critical(self, self.tr("Error"),
+                                       self.tr("Cannot load file %s:\n%s" % (filename, e)))
+
+    def saveVars(self):
+        default = os.path.join(os.getenv("HOME"), "vars.xml")
+        filename = QtGui.QFileDialog.getSaveFileName(self, self.tr("Export variables to file"),
+                                                     default, self.tr("XML Files (*.xml)"))
+        if not filename:
+            return
+        try:
+            filename = str(filename)
+            exchange_variables = self.getSelectedExchangeVariables()
+            exchange_variables.saveToXmlFile(filename)
+        except Exception, e:
+            QtGui.QMessageBox.critical(self, self.tr("Error"),
+                                       self.tr("Cannot save file %s:\n%s" % (filename, e)))

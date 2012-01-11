@@ -236,12 +236,9 @@ extern "C" LIGHTAPP_EXPORT SUIT_Application* createApplication()
 LightApp_Preferences* LightApp_Application::_prefs_ = 0;
 
 
-static inline QString getFile(){
-#ifdef WIN32
+static inline QString getFile()
+{
   return QString( "file://" );
-#else
-  return QString( "file:" );
-#endif
 }
 
 

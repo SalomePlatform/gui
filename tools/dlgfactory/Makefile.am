@@ -58,18 +58,18 @@ GDIALOG_TEMPLATES = __GDIALOG__.ui __GDIALOG__.hxx __GDIALOG__.cxx
 BUILT_SOURCES = $(UIC_FILES_QDIALOG) $(UIC_FILES_GDIALOG)
 
 # extra distributed files
-EXTRA_DIST += $(QDIALOG_TEMPLATES) $(GDIALOG_TEMPLATES) GenericDialog.ui README.txt dlgfactory.sh
+EXTRA_DIST += $(QDIALOG_TEMPLATES) $(GDIALOG_TEMPLATES) GenericDialog.ui README.txt dlgfactory.py
 
 mostlyclean-local:
 	rm @builddir@/QDialogTest*
 	rm @builddir@/GDialogTest*
 	rm -f @builddir@/*_moc.cxx @builddir@/ui_*.hxx
 
-QDialogTest.hxx QDialogTest.cxx QDialogTest.ui: $(QDIALOG_TEMPLATES) dlgfactory.sh
-	$(srcdir)/dlgfactory.sh -n QDialogTest -t qdialog
+QDialogTest.hxx QDialogTest.cxx QDialogTest.ui: $(QDIALOG_TEMPLATES) dlgfactory.py
+	$(srcdir)/dlgfactory.py -n QDialogTest -t qdialog
 
-GDialogTest.hxx GDialogTest.cxx GDialogTest.ui : $(GDIALOG_TEMPLATES) dlgfactory.sh
-	$(srcdir)/dlgfactory.sh -n GDialogTest -t gdialog
+GDialogTest.hxx GDialogTest.cxx GDialogTest.ui : $(GDIALOG_TEMPLATES) dlgfactory.py
+	$(srcdir)/dlgfactory.py -n GDialogTest -t gdialog
 
 QT_CXXFLAGS=@QT_INCLUDES@ @QT_MT_INCLUDES@
 QT_LIBS=@QT_LIBS@

@@ -236,12 +236,6 @@ extern "C" LIGHTAPP_EXPORT SUIT_Application* createApplication()
 LightApp_Preferences* LightApp_Application::_prefs_ = 0;
 
 
-static inline QString getFile()
-{
-  return QString( "file://" );
-}
-
-
 /*!
   \class LightApp_Application
   Application containing LightApp module
@@ -933,7 +927,9 @@ public:
       myStatus(0),
       myLApp( app )
   {
-    myHelpFile = QString("%1%2").arg( getFile() ).arg( QFileInfo( theHelpFile ).canonicalFilePath() );
+    //For the external browser always specify 'file://' protocol,
+    //because some WEB browsers (for example Mozilla Firefox) can't open local file without protocol.
+    myHelpFile = QString("file://%1").arg( QFileInfo( theHelpFile ).canonicalFilePath() );
   }
 
   virtual void run()
@@ -1001,7 +997,13 @@ void LightApp_Application::onHelpContentsModule()
     }
   }
   else {
-    QtxWebBrowser::loadUrl(getFile() + helpFile);
+#ifdef WIN32
+    // On Win32 platform QWebKit of the Qt 4.6.3 hang up in case 'file://' protocol 
+    // is defined. On Linux platform QWebKit doesn't work correctly without 'file://' protocol.
+    QtxWebBrowser::loadUrl(helpFile);
+#else
+	QtxWebBrowser::loadUrl(QString("file://%1").arg(helpFile));
+#endif
   }
 }
 
@@ -1068,7 +1070,14 @@ void LightApp_Application::onHelpContextModule( const QString& theComponentName,
     }
   }
   else {
-    QtxWebBrowser::loadUrl(getFile() + helpFile, context);
+#ifdef WIN32
+    // On Win32 platform QWebKit of the Qt 4.6.3 hang up in case 'file://' protocol 
+    // is defined. On Linux platform QWebKit doesn't work correctly without 'file://' protocol.
+	QtxWebBrowser::loadUrl(helpFile, context);
+#else
+	QtxWebBrowser::loadUrl(QString("file://%1").arg(helpFile),context);
+#endif
+    
   }
 }
 

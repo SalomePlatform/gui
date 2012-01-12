@@ -31,6 +31,7 @@
 
 #include "SVTK.h"
 #include "VTKViewer.h"
+#include "VTKViewer_Actor.h"
 #include "VTKViewer_MarkerDef.h"
 
 #include <vector>
@@ -48,18 +49,6 @@ class vtkShrinkFilter;
 class vtkFeatureEdges;
 class VTKViewer_DataSetMapper;
 class vtkPassThroughFilter;
-
-namespace SVTK
-{
-  namespace Representation
-  {
-    typedef int Type;
-    const Type Points = VTK_POINTS;
-    const Type Wireframe = VTK_WIREFRAME;
-    const Type Surface = VTK_SURFACE;
-    const Type Insideframe = Surface + 1;
-  }
-}
 
 #ifdef WIN32
 #pragma warning ( disable:4251 )
@@ -201,9 +190,9 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
   /** @name For representation mamnagement purpose */
   virtual
   void 
-  SetRepresentation(SVTK::Representation::Type theMode);
+    SetRepresentation(VTKViewer::Representation::Type theMode);
 
-  SVTK::Representation::Type 
+  VTKViewer::Representation::Type 
   GetRepresentation();
 
   virtual
@@ -256,7 +245,7 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
   virtual vtkFloatingPointType GetQuadraticArcAngle();
 
  protected:
-  SVTK::Representation::Type myRepresentation;
+  VTKViewer::Representation::Type myRepresentation;
   vtkProperty *myProperty;
   bool myIsShaded;
 

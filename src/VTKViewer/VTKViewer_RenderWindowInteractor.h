@@ -136,12 +136,14 @@ public:
   //@{
   void ChangeRepresentationToWireframe();
   void ChangeRepresentationToSurface();
+  void ChangeRepresentationToSurfaceWithEdges();
   //@}
 
   /** @name Change to wireframe or surface a list of vtkactor*/
   //@{
   void ChangeRepresentationToWireframe(vtkActorCollection* ListofActors);
   void ChangeRepresentationToSurface(vtkActorCollection* ListofActors);
+  void ChangeRepresentationToSurfaceWithEdges(vtkActorCollection* ListofActors);
   //@}
 
   /** @name Erase Display functions*/

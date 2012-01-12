@@ -39,6 +39,7 @@
 
 #include <vtkActorCollection.h>
 #include <vtkRenderer.h>
+#include <vtkProperty.h>
 
 /*!
   Constructor
@@ -359,8 +360,12 @@ SVTK_View
 {
   if(theMode == 0) 
     ChangeRepresentationToWireframe();
-  else 
+  else if (theMode == 1)
     ChangeRepresentationToSurface();
+  else if (theMode == 2) {
+    ChangeRepresentationToSurfaceWithEdges();
+    theMode++;
+  }
   myDisplayMode = theMode;
 }
 
@@ -405,6 +410,17 @@ SVTK_View
 }
 
 /*!
+  Change all actors to shading with edges
+*/
+void
+SVTK_View
+::ChangeRepresentationToSurfaceWithEdges()
+{
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  ChangeRepresentationToSurfaceWithEdges(aCopy.GetActors());
+}
+
+/*!
   Change to wireframe a list of vtkactor
   theCollection - list of vtkactor
 */
@@ -431,6 +447,21 @@ SVTK_View
   ForEach<SALOME_Actor>(theCollection,
                         TSetFunction<SALOME_Actor,int>
                         (&SALOME_Actor::setDisplayMode,1));
+  Repaint();
+}
+
+/*!
+  Change to shading with edges a list of vtkactor
+  theCollection - list of vtkactor
+*/
+void
+SVTK_View
+::ChangeRepresentationToSurfaceWithEdges(vtkActorCollection* theCollection)
+{
+  using namespace SVTK;
+  ForEach<SALOME_Actor>(theCollection,
+                        TSetFunction<SALOME_Actor,int>
+                        (&SALOME_Actor::setDisplayMode,3));
   Repaint();
 }
 
@@ -712,6 +743,67 @@ SVTK_View
   }
 
   return QColor(0,0,0);
+}
+
+/*!
+  Change material
+  \param theIObject - object
+  \param thePropF - property contained new properties of front material
+  \param thePropB - property contained new properties of back material
+*/
+void
+SVTK_View
+::SetMaterial(const Handle(SALOME_InteractiveObject)& theIObject,
+	      vtkProperty* thePropF,
+	      vtkProperty* thePropB)
+{
+  using namespace SVTK;
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  std::vector<vtkProperty*> aProps;
+  aProps.push_back( thePropF );
+  aProps.push_back( thePropB );
+  ForEachIf<SALOME_Actor>(aCopy.GetActors(),
+                          TIsSameIObject<SALOME_Actor>(theIObject),
+                          TSetFunction<SALOME_Actor,std::vector<vtkProperty*> >
+                          (&SALOME_Actor::SetMaterial,aProps));
+}
+
+/*!
+  Get current front material
+  \param theIObject - object
+  \return property contained front material properties of the given object
+*/
+vtkProperty* 
+SVTK_View
+::GetFrontMaterial(const Handle(SALOME_InteractiveObject)& theIObject)
+{
+  using namespace SVTK;
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  SALOME_Actor* anActor = 
+    Find<SALOME_Actor>(aCopy.GetActors(),
+                       TIsSameIObject<SALOME_Actor>(theIObject));
+  if(anActor)
+    return anActor->GetFrontMaterial();
+  return NULL;
+}
+
+/*!
+  Get current back material
+  \param theIObject - object
+  \return property contained back material properties of the given object
+*/
+vtkProperty* 
+SVTK_View
+::GetBackMaterial(const Handle(SALOME_InteractiveObject)& theIObject)
+{
+  using namespace SVTK;
+  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
+  SALOME_Actor* anActor = 
+    Find<SALOME_Actor>(aCopy.GetActors(),
+                       TIsSameIObject<SALOME_Actor>(theIObject));
+  if(anActor)
+    return anActor->GetBackMaterial();
+  return NULL;
 }
 
 /*!

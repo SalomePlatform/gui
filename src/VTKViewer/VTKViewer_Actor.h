@@ -35,6 +35,7 @@
 #include <vector>
 
 #include <vtkLODActor.h>
+#include <vtkProperty.h>
 
 class vtkCell;
 class vtkPointPicker;
@@ -51,6 +52,19 @@ class VTKViewer_TransformFilter;
 
 extern int VTKViewer_POINT_SIZE;
 extern int VTKViewer_LINE_WIDTH;
+
+namespace VTKViewer
+{
+  namespace Representation
+  {
+    typedef int Type;
+    const Type Points = VTK_POINTS;
+    const Type Wireframe = VTK_WIREFRAME;
+    const Type Surface = VTK_SURFACE;
+    const Type Insideframe = Surface + 1;
+    const Type SurfaceWithEdges = Insideframe + 1;
+  }
+}
 
 #ifdef WIN32
 #pragma warning ( disable:4251 )
@@ -106,6 +120,21 @@ class VTKVIEWER_EXPORT VTKViewer_Actor : public vtkLODActor
   virtual
   void
   SetColor(const vtkFloatingPointType theRGB[3]);
+
+  //! Change material
+  virtual
+  void
+  SetMaterial(std::vector<vtkProperty*> theProps);
+
+  //! Get current front material
+  virtual
+  vtkProperty* 
+  GetFrontMaterial();
+
+  //! Get current back material
+  virtual
+  vtkProperty* 
+  GetBackMaterial();
 
   //----------------------------------------------------------------------------
   // For selection mapping purpose

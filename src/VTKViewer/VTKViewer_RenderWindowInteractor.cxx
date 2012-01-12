@@ -491,8 +491,12 @@ int VTKViewer_RenderWindowInteractor::GetDisplayMode() {
 void VTKViewer_RenderWindowInteractor::SetDisplayMode(int theMode) {
   if(theMode == 0)
     ChangeRepresentationToWireframe();
-  else
+  else if (theMode == 1)
     ChangeRepresentationToSurface();
+  else if (theMode == 2) {
+    ChangeRepresentationToSurfaceWithEdges();
+    theMode++;
+  }
   myDisplayMode = theMode;
 }
 
@@ -510,6 +514,14 @@ void VTKViewer_RenderWindowInteractor::ChangeRepresentationToSurface()
   using namespace VTK;
   ActorCollectionCopy aCopy(GetRenderer()->GetActors());
   ChangeRepresentationToSurface(aCopy.GetActors());
+}
+
+/*!Change all actors to surface with edges*/
+void VTKViewer_RenderWindowInteractor::ChangeRepresentationToSurfaceWithEdges()
+{
+  using namespace VTK;
+  ActorCollectionCopy aCopy(GetRenderer()->GetActors());
+  ChangeRepresentationToSurfaceWithEdges(aCopy.GetActors());
 }
 
 /*!Change all actors from \a theCollection to wireframe and
@@ -533,6 +545,18 @@ void VTKViewer_RenderWindowInteractor::ChangeRepresentationToSurface(vtkActorCol
   ForEach<VTKViewer_Actor>(theCollection,
                         TSetFunction<VTKViewer_Actor,int>
                         (&VTKViewer_Actor::setDisplayMode,1));
+  emit RenderWindowModified();
+}
+
+/*!Change all actors from \a theCollection to surface with edges and
+ * emit render window modified.
+ */
+void VTKViewer_RenderWindowInteractor::ChangeRepresentationToSurfaceWithEdges(vtkActorCollection* theCollection)
+{
+  using namespace VTK;
+  ForEach<VTKViewer_Actor>(theCollection,
+                        TSetFunction<VTKViewer_Actor,int>
+                        (&VTKViewer_Actor::setDisplayMode,3));
   emit RenderWindowModified();
 }
 

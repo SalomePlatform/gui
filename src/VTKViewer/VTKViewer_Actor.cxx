@@ -44,7 +44,6 @@
 #include <vtkObjectFactory.h>
 #include <vtkDataSetMapper.h>
 #include <vtkPolyDataMapper.h>
-#include <vtkProperty.h>
 #include <vtkRenderer.h>
 #include <vtkPassThroughFilter.h>
 
@@ -70,7 +69,7 @@ VTKViewer_Actor
   myOpacity(1.0),
   myIsHighlighted(false),
   myIsPreselected(false),
-  myRepresentation(VTK_SURFACE),
+  myRepresentation(VTKViewer::Representation::Surface),
   myDisplayMode(1),
   myProperty(vtkProperty::New()),
   PreviewProperty(NULL),
@@ -363,9 +362,11 @@ void
 VTKViewer_Actor
 ::SetRepresentation(int theMode) 
 { 
+  using namespace VTKViewer::Representation;
   switch(myRepresentation){
-  case VTK_POINTS : 
-  case VTK_SURFACE : 
+  case Points : 
+  case Surface : 
+  case SurfaceWithEdges :
     myProperty->SetAmbient(GetProperty()->GetAmbient());
     myProperty->SetDiffuse(GetProperty()->GetDiffuse());
     myProperty->SetSpecular(GetProperty()->GetSpecular());
@@ -373,8 +374,9 @@ VTKViewer_Actor
   }    
 
   switch(theMode){
-  case VTK_POINTS : 
-  case VTK_SURFACE : 
+  case Points : 
+  case Surface : 
+  case SurfaceWithEdges :
     GetProperty()->SetAmbient(myProperty->GetAmbient());
     GetProperty()->SetDiffuse(myProperty->GetDiffuse());
     GetProperty()->SetSpecular(myProperty->GetSpecular());
@@ -386,23 +388,24 @@ VTKViewer_Actor
   }
 
   switch(theMode){
-  case 3 : 
+  case Insideframe : 
     myGeomFilter->SetInside(true);
     myGeomFilter->SetWireframeMode(true);
     GetProperty()->SetRepresentation(VTK_WIREFRAME);
     break;
-  case VTK_POINTS : 
+  case Points : 
     GetProperty()->SetPointSize(VTKViewer_POINT_SIZE);  
     GetProperty()->SetRepresentation(theMode);
     myGeomFilter->SetWireframeMode(false);
     myGeomFilter->SetInside(false);
     break;
-  case VTK_WIREFRAME : 
+  case Wireframe : 
     GetProperty()->SetRepresentation(theMode);
     myGeomFilter->SetWireframeMode(true);
     myGeomFilter->SetInside(false);
     break;
-  case VTK_SURFACE : 
+  case Surface : 
+  case SurfaceWithEdges :
     GetProperty()->SetRepresentation(theMode);
     myGeomFilter->SetWireframeMode(false);
     myGeomFilter->SetInside(false);
@@ -610,6 +613,36 @@ VTKViewer_Actor
   r = aColor[0];
   g = aColor[1];
   b = aColor[2];
+}
+
+
+/*!
+  Change material
+*/
+void
+VTKViewer_Actor
+::SetMaterial(std::vector<vtkProperty*> theProps)
+{
+}
+
+/*!
+  Get current front material
+*/
+vtkProperty* 
+VTKViewer_Actor
+::GetFrontMaterial()
+{
+  return NULL;
+}
+
+/*!
+  Get current back material
+*/
+vtkProperty* 
+VTKViewer_Actor
+::GetBackMaterial()
+{
+  return NULL;
 }
 
 

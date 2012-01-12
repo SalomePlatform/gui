@@ -36,6 +36,7 @@
 
 class vtkActorCollection;
 class vtkRenderer;
+class vtkProperty;
 
 class SVTK_ViewWindow;
 class SVTK_Renderer;
@@ -174,6 +175,10 @@ public:
   void
   ChangeRepresentationToSurface();
 
+  //! Change all actors to surface with edges
+  void
+  ChangeRepresentationToSurfaceWithEdges();
+
   //! Change to wireframe a list of vtkactor
   void
   ChangeRepresentationToWireframe(vtkActorCollection* theListofActors);
@@ -181,6 +186,10 @@ public:
   //! Change to surface a list of vtkactor
   void
   ChangeRepresentationToSurface(vtkActorCollection* theListofActors);
+
+  //! Change to surface with edges a list of vtkactor
+  void
+  ChangeRepresentationToSurfaceWithEdges(vtkActorCollection* theListofActors);
 
   //! Change transparency
   void
@@ -199,6 +208,20 @@ public:
   //! Get current color
   QColor
   GetColor(const Handle(SALOME_InteractiveObject)& theIObject);
+
+  //! Change material
+  void
+  SetMaterial(const Handle(SALOME_InteractiveObject)& theIObject,
+	      vtkProperty* thePropF,
+	      vtkProperty* thePropB);
+
+  //! Get current front material
+  vtkProperty* 
+  GetFrontMaterial(const Handle(SALOME_InteractiveObject)& theIObject);
+
+  //! Get current back material
+  vtkProperty* 
+  GetBackMaterial(const Handle(SALOME_InteractiveObject)& theIObject);
 
   //----------------------------------------------------------------------------
   // Erase Display functions

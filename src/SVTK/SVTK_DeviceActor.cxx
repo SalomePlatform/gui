@@ -63,7 +63,7 @@ SVTK_DeviceActor
 
   myIsShaded = true;
   myProperty = vtkProperty::New();
-  myRepresentation = SVTK::Representation::Surface;
+  myRepresentation = VTKViewer::Representation::Surface;
 
   myIsResolveCoincidentTopology = true;
   vtkMapper::GetResolveCoincidentTopologyPolygonOffsetParameters(myPolygonOffsetFactor,
@@ -458,13 +458,14 @@ SVTK_DeviceActor
 */
 void
 SVTK_DeviceActor
-::SetRepresentation(SVTK::Representation::Type theMode)
+::SetRepresentation(VTKViewer::Representation::Type theMode)
 { 
-  using namespace SVTK::Representation;
+  using namespace VTKViewer::Representation;
   if(IsShaded()){
     switch(myRepresentation){
     case Points : 
     case Surface : 
+    case SurfaceWithEdges :
       myProperty->SetAmbient(GetProperty()->GetAmbient());
       myProperty->SetDiffuse(GetProperty()->GetDiffuse());
       myProperty->SetSpecular(GetProperty()->GetSpecular());
@@ -473,6 +474,7 @@ SVTK_DeviceActor
     switch(theMode){
     case Points : 
     case Surface : 
+    case SurfaceWithEdges :
       GetProperty()->SetAmbient(myProperty->GetAmbient());
       GetProperty()->SetDiffuse(myProperty->GetDiffuse());
       GetProperty()->SetSpecular(myProperty->GetSpecular());
@@ -502,6 +504,7 @@ SVTK_DeviceActor
     myGeomFilter->SetInside(false);
     break;
   case Surface : 
+  case SurfaceWithEdges :
     GetProperty()->SetRepresentation(VTK_SURFACE);
     myGeomFilter->SetWireframeMode(false);
     myGeomFilter->SetInside(false);
@@ -516,7 +519,7 @@ SVTK_DeviceActor
 /*!
   \return current representation mode
 */
-SVTK::Representation::Type 
+VTKViewer::Representation::Type 
 SVTK_DeviceActor
 ::GetRepresentation()
 {

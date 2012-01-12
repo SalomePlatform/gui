@@ -23,13 +23,16 @@
 include $(top_srcdir)/adm_local/unix/make_common_starter.am
 
 libparaview_LTLIBRARIES = libvtkEDFOverloads.la	
+lib_LTLIBRARIES = libvtkTools.la
 
 salomeinclude_HEADERS = vtkEDFCutter.h \
 	vtkEDFFactory.h
 
-dist_libvtkEDFOverloads_la_SOURCES = vtkEDFCutter.cxx \
-	vtkEDFFactory.cxx
+dist_libvtkEDFOverloads_la_SOURCES = vtkEDFFactory.cxx
+dist_libvtkTools_la_SOURCES = vtkEDFCutter.cxx
 
 libvtkEDFOverloads_la_CPPFLAGS = $(VTK_INCLUDES)
+libvtkTools_la_CPPFLAGS = $(VTK_INCLUDES)
 
 libvtkEDFOverloads_la_LDFLAGS = $(VTK_LIBS)
+libvtkTools_la_LDFLAGS = $(VTK_LIBS)

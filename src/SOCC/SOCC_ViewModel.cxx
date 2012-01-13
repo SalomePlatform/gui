@@ -126,7 +126,7 @@ bool SOCC_Viewer::highlight( const Handle(SALOME_InteractiveObject)& obj,
     {
       if ( !isInLocal )
           OCCViewer_Viewer::highlight( ite.Value(), hilight, false );
-      // highlight subshapes only when local selection is active
+      // highlight sub-shapes only when local selection is active
       else
       {
         /*if ( ite.Value()->IsKind( STANDARD_TYPE( SALOME_AISShape ) ) )
@@ -564,7 +564,7 @@ SALOME_Prs* SOCC_Viewer::CreatePrs( const char* entry )
 }
 
 /*!
-  Activates selection of sub shapes
+  Activates selection of sub-shapes
 */
 void SOCC_Viewer::LocalSelection( const SALOME_OCCPrs* thePrs, const int theMode )
 {
@@ -609,7 +609,7 @@ void SOCC_Viewer::LocalSelection( const SALOME_OCCPrs* thePrs, const int theMode
 }
 
 /*!
-  Deactivates selection of sub shapes
+  Deactivates selection of sub-shapes
 */
 void SOCC_Viewer::GlobalSelection( const bool update ) const
 {

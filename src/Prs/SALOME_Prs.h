@@ -74,7 +74,7 @@ public:
   //! Should return true, if this presentation contains a graphic object
   virtual bool IsNull() const = 0;
 
-  //! Key method for double dispatch of activation of subshapes selection
+  //! Key method for double dispatch of activation of sub-shapes selection
   virtual void LocalSelectionIn( SALOME_View*, const int ) const = 0;
 };
 
@@ -115,7 +115,7 @@ public:
   //! invoke Update() method corresponding to the actual type of presentation.
   virtual void Update( SALOME_Displayer* );
 
-  //! Key method for double dispatch of activation of subshapes selection
+  //! Key method for double dispatch of activation of sub-shapes selection
   virtual void LocalSelectionIn( SALOME_View*, const int ) const;
 };
 
@@ -155,7 +155,7 @@ public:
   //! invoke Update() method corresponding to the actual type of presentation.
   virtual void Update( SALOME_Displayer* );
 
-  //! Key method for double dispatch of activation of subshapes selection
+  //! Key method for double dispatch of activation of sub-shapes selection
   virtual void LocalSelectionIn( SALOME_View*, const int ) const;
 };
 
@@ -194,7 +194,7 @@ public:
   //! invoke Update() method corresponding to the actual type of presentation.
   virtual void Update( SALOME_Displayer* );
 
-  //! Key method for double dispatch of activation of subshapes selection
+  //! Key method for double dispatch of activation of sub-shapes selection
   virtual void LocalSelectionIn( SALOME_View*, const int ) const;
 };
 

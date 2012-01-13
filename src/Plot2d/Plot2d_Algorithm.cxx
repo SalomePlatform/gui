@@ -65,9 +65,8 @@ bool Plot2d_Algorithm::isDataChanged()
   return myDataChanged;
 }
 
-
 void Plot2d_Algorithm::clear() {
-	myDataChanged=false;
-	myInuptData.clear();
-	myResultData.clear();
+  myDataChanged=false;
+  myInuptData.clear();
+  myResultData.clear();
 }

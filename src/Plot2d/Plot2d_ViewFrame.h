@@ -32,9 +32,16 @@
 
 #include <QWidget>
 #include <QMultiHash>
+#include <QMap>
 #include <QList>
+#include <QPainter>
 #include <qwt_symbol.h>
 #include <qwt_scale_draw.h>
+#include <qwt_plot_marker.h>
+#include <qwt_plot_picker.h>
+
+#include <iostream>
+#include <ostream>
 
 class Plot2d_Plot2d;
 class Plot2d_Prs;
@@ -45,6 +52,8 @@ class QwtPlotItem;
 class QwtPlotCurve;
 class QwtPlotGrid;
 class QwtPlotZoomer;
+class Plot2d_AxisScaleDraw;
+class Plot2d_QwtPlotPicker;
 
 typedef QMultiHash<QwtPlotCurve*, Plot2d_Curve*>  CurveDict;
 typedef QMultiHash<QwtPlotItem*,  Plot2d_Object*> ObjectDict;
@@ -80,6 +89,37 @@ public:
   void           updateTitles();
   void           setTitle( const QString& );
   QString        getTitle() const;
+
+  /* addition MultiX */
+  void createCurveTooltips( Plot2d_Curve *curve,
+                            Plot2d_QwtPlotPicker *picker);
+
+  void displayPlot2dCurveList( QList< QList<Plot2d_Curve*> > sysCoCurveList,
+                               Plot2d_QwtPlotPicker*         picker);
+  
+  void displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
+                                                int  groupsize,
+                               Plot2d_QwtPlotPicker* picker);
+  
+  Plot2d_Curve* createPlot2dCurve( QString & title,
+                                   QString & unit,
+                                   QList<double> & xList,
+                                   QList<double> & yList,
+                                   QList<QString> & tooltipList,
+                                   Plot2d::LineType lineKind,
+                                   int lineWidth,
+                                   QColor & lineColor,
+                                   QwtSymbol::Style markerKind,
+                                   Plot2d_QwtPlotPicker* picker,
+                                   bool toDraw);
+
+  QColor getPlot2dCurveColor( Plot2d_Curve* plot2dCurve);
+
+  void createSegment( double *X, double *Y, int nbPoint,
+                      Qt::PenStyle lineKind,
+                      int lineWidth,
+                      QColor & lineColor,
+                      QwtSymbol::Style markerKind);
 
   /* curves operations [ obsolete ] */
   void           displayCurve( Plot2d_Curve*, bool = false );
@@ -282,11 +322,30 @@ public:
   void           defaultPicker();
   void           setPickerMousePattern( int, int = Qt::NoButton );
 
+  void createMarkerAndTooltip( QwtSymbol symbol,
+                               double    X,
+                               double    Y,
+                               QString & tooltip,
+                               Plot2d_QwtPlotPicker *picker);
+
   bool           polished() const;
   QwtPlotGrid*   grid() const;
   QwtPlotZoomer* zoomer() const;
 
   virtual void   updateYAxisIdentifiers();
+  
+  // Methods to deal with axes ticks
+
+  void createAxisScaleDraw();
+  void applyTicks();
+  void unactivAxisScaleDraw( int numcall);
+
+  void displayXTicksAndLabels(
+         double XLeftmargin, double XRightMargin,
+         const QList< QPair< QString, QMap<double,QString> > > & devicesPosLabelTicks);
+
+  void createSeparationLine( double Xpos);
+                                         
 
 public slots:
   virtual void   polish();
@@ -299,6 +358,7 @@ protected:
   QList<QColor>  myColors;
   bool           myIsPolished;
   QwtPlotZoomer* myPlotZoomer;
+  Plot2d_AxisScaleDraw* myScaleDraw;
 };
 
 class Plot2d_ScaleDraw: public QwtScaleDraw
@@ -314,6 +374,89 @@ public:
 private:
   char myFormat;
   int  myPrecision;
+};
+
+/* Definition of X axis graduations
+ */
+class Plot2d_AxisScaleDraw: public QwtScaleDraw
+{
+public:
+  static const QString DEVICE_FONT;
+  static const int     DEVICE_FONT_SIZE;
+  static const int     DEVICE_BY;
+
+  Plot2d_AxisScaleDraw(Plot2d_Plot2d* plot);
+
+  virtual ~Plot2d_AxisScaleDraw();
+
+  void unactivTicksDrawing( int numcall);
+
+  virtual void draw( QPainter * painter, const QPalette & palette) const;
+
+  virtual QwtText label(double value) const;
+
+  void setLabelTick(double value, QString label, bool isDevice = false);
+    
+  void setTicks(const QList<double> aTicks);
+
+  void setInterval(double lowerBound, double upperBound);
+
+  void applyTicks();
+
+protected:
+
+  void drawLabel( QPainter* painter, double value) const;
+    
+  void drawTick( QPainter* painter, double value, int len) const;
+
+private:
+  bool myActivTicksDrawing;   // true => activate drawing ticks (with draw() )
+  int  myNumTicksDrawingCall; // call number to ticks drawing
+
+  // Ticks list to display on X axis
+  QMap<double, QString> myLabelX;  // position, label
+  //
+  QList<double> myTicks;  // positions
+    
+  // Systems names to display under X axis
+  QMap<double, QString> myLabelDevice;
+    
+  Plot2d_Plot2d* myPlot;  // Drawing zone QwtPlot
+
+  double myLowerBound;
+  double myUpperBound;
+};
+
+
+
+
+/* Management of tooltips associated with markers for curves points or others points
+ */
+class Plot2d_QwtPlotPicker : public QwtPlotPicker
+{
+public:
+  static const double BOUND_HV_SIZE;
+  
+  Plot2d_QwtPlotPicker( int            xAxis,
+                        int            yAxis,
+                        int            selectionFlags,
+                        RubberBand     rubberBand,
+                        DisplayMode    trackerMode,
+                        QwtPlotCanvas *canvas);
+    
+  Plot2d_QwtPlotPicker( int  xAxis,
+                        int  yAxis,
+                        QwtPlotCanvas *canvas);
+    
+  virtual ~Plot2d_QwtPlotPicker();
+    
+  QList<QwtPlotMarker*>             pMarkers;         // points markers
+  QMap<QwtPlotMarker*, QwtText>  pMarkersToolTip;  // associations (marker,tooltip)
+
+protected:
+
+  virtual QwtText trackerText( const QwtDoublePoint & pos ) const;
+
 };
 
 #endif

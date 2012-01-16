@@ -59,6 +59,7 @@
 #include <qwt_math.h>
 #include <qwt_plot_canvas.h>
 #include <qwt_scale_div.h>
+#include <qwt_plot_marker.h>
 #include <qwt_plot_curve.h>
 #include <qwt_plot_grid.h>
 #include <qwt_scale_engine.h>
@@ -569,6 +570,402 @@ QString Plot2d_ViewFrame::getInfo( const QPoint& pnt )
     info = tr("INF_COORDINATES").arg( strX ).arg( strY );
 
   return info;
+}
+
+/*!
+ * Create markers and tooltips associated with curve points
+ */
+void Plot2d_ViewFrame::createCurveTooltips( Plot2d_Curve *curve,
+                                            Plot2d_QwtPlotPicker *picker)
+{	
+  // Dans Plot2d.h : pointList == QList<Plot2d_Point> 
+  double x, y;
+  QString tooltip;
+
+  pointList points = curve->getPointList();
+  QColor    color  = curve->getColor();
+
+  // Point marker
+  QwtSymbol symbol;
+  symbol.setStyle(QwtSymbol::Ellipse);
+  symbol.setSize(1,1);
+  symbol.setPen( QPen(color));
+  symbol.setBrush( QBrush(color));
+
+  for (int ip=0; ip < points.count(); ip++)
+  {
+      x = points[ip].x;
+      y = points[ip].y;
+      tooltip = points[ip].text;
+
+      myPlot->createMarkerAndTooltip( symbol,
+                                      x,
+                                      y,
+                                      tooltip,
+                                      picker);
+  }
+}
+
+
+/*!
+ * Display curves of the list of lists by systems and components
+ * - the first level list contains NbSytems lists of second level
+ * - a second level list contains NbComponents curves
+ * |         system 1         |         system 2         | ..... |          system N        |
+ * | compo1 compo2 ... compoM | compo1 compo2 ... compoM | ..... | compo1 compo2 ... compoM |
+ *
+ * Draw points markers and create associated tooltips.
+ * Draw connection segments (intermittent line) between all the curves of a component.
+ */
+void Plot2d_ViewFrame::displayPlot2dCurveList( QList< QList<Plot2d_Curve*> > sysCoCurveList,
+                                               Plot2d_QwtPlotPicker*         picker)
+{
+  //std::cout << "Plot2d_ViewFrame::displayPlot2dCurveList() 1" << std::endl;
+
+  // Systems number
+  int nbSystem = sysCoCurveList.size();
+
+  // Composants number by system
+  int nbComponent = (sysCoCurveList.at(0)).size();
+
+  // Total number of curves
+  //int nbAllCurve = nbSystem*nbComponent;
+
+   //std::cout << "  Nombre de systemes      = " << nbSystem << std::endl;
+   //std::cout << "  Nombre de composants    = " << nbComponent << std::endl;
+   //std::cout << "  Nombre total de courbes = " << nbAllCurve << std::endl;
+
+   // 1)- Construction of a list by component and by system
+ 
+   // |      component 1      |      component 2      | ..... |      component M      |
+   // | syst1 syst2 ... systN | syst1 syst2 ... systN | ..... | syst1 syst2 ... systN |
+
+  QList<Plot2d_Curve*> plot2dCurveCoSysList;
+
+  //std::cout << "  Liste par composant et par systeme :" << std::endl;
+
+  for (int icom = 0; icom < nbComponent; icom++)
+  {
+      for (int isys = 0; isys < nbSystem; isys++)
+      {
+          //std::cout << "    icom= " << icom << " idev= " << isys << std::endl;
+
+	  // The system curves list
+          QList<Plot2d_Curve*> sysCurveList = sysCoCurveList.at(isys);
+
+	  Plot2d_Curve *curve = sysCurveList.at(icom);
+
+          plot2dCurveCoSysList.append( curve);
+      }
+  }
+
+  // 2)- Display list curves by a component's curves group
+  //     Draw connection segments (intermittent line) between the curves
+
+  displayPlot2dCurveList( plot2dCurveCoSysList, nbSystem, picker);
+
+  // 3)- Size of graduations labels and texts under X axis
+
+  QwtScaleWidget *wid = myPlot->axisWidget( QwtPlot::xBottom);
+  wid->setTitle( "  "); // indispensable pour que les noms des systemes apparaissent
+                        // sous l'axe des X !!
+
+  QFont xFont = myPlot->axisFont(QwtPlot::xBottom);
+  xFont.setPointSize(8); 
+  myPlot->setAxisFont( QwtPlot::xBottom, xFont);
+
+  //std::cout << "Ok for Plot2d_ViewFrame::displayPlot2dCurveList() 1" << std::endl;
+}
+
+
+/*!
+ * Display list of curves by group of consecutive curves.
+ *
+ * Draw points markers and create associated tooltips
+ * Draw connection segments (intermittent line) between the curves
+ */
+void Plot2d_ViewFrame::displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
+                                                                int  groupSize,
+                                               Plot2d_QwtPlotPicker* picker)
+{
+  //std::cout << "Plot2d_ViewFrame::displayPlot2dCurveList() 2" << std::endl;
+
+  // Consider the new legend's entries
+  // (we must remove and put the QwtLegend in the QwtPlot)
+  myPlot->insertLegend( (QwtLegend*)NULL); // we remove here, we shall put at the end
+
+  double X[2];
+  double Y[2];
+
+  int nbAllCurves = curveList.size();
+  int nbGroups    = nbAllCurves / groupSize;
+  int ig, icur;
+  int icur1, icur2;  // curves indices in a group
+
+  //std::cout << "  " << nbGroups << " groupes a " << groupSize << " courbes" << std::endl;
+
+  icur1 = 0;
+  for (ig=0; ig < nbGroups; ig++)
+  {
+      icur2 = icur1 + groupSize -1;
+
+      //std::cout << "  Indices des courbes du groupe " << ig << " : " << icur1
+      //                                                      << " a " << icur2 << std::endl;
+      int nbCurves = icur2 - icur1 + 1;
+      //std::cout << "    groupe a " << nbCurves << " courbes" << std::endl;
+
+      // 1)- Graphical attributs of group's curves
+
+      // Graphical attributes of the first group's curve
+      //
+      Plot2d_Curve *plot2dCurve1 = curveList.at(icur1);
+      //
+      QColor color1 = plot2dCurve1->getColor();
+      Plot2d::LineType linetype1 = plot2dCurve1->getLine();
+      int lineWidth1 = plot2dCurve1->getLineWidth();
+      QwtSymbol::Style symbolStyle1 = plot2dCurve1->getMarkerStyle();
+
+      if (nbCurves > 1)
+      {
+          // We attribute to the current group's curve, the color, the line's kind
+          // and the marker's kind of the first group's curve
+
+          for (icur=icur1 +1; icur <= icur2; icur++)
+          {
+              Plot2d_Curve *plot2dCurve = curveList.at(icur);
+              //
+              plot2dCurve->setColor( color1);
+              plot2dCurve->setLine( linetype1, lineWidth1);
+              plot2dCurve->setMarkerStyle( symbolStyle1);
+          }
+      }
+
+      // 2)- Display the group's curves
+
+      for (icur=icur1; icur <= icur2; icur++)
+      {
+          Plot2d_Curve *plot2dCurve = curveList.at(icur);
+
+          QString title = plot2dCurve->getVerTitle();
+          std::string std_title = title.toStdString();
+          //const char *c_title = std_title.c_str();
+          //std::cout << "    courbe d'indice " << icur << " : |" << c_title << "|" << std::endl;
+
+          // Create the graphic curve (QwtPlotCurve) et display it in the drawing zone
+          // (Qwtplot)
+          displayCurve( plot2dCurve);
+
+	  // Draw the points' markers and create the associated tooltips
+          createCurveTooltips( plot2dCurve, picker);
+
+          // Get the graphic curve
+          QwtPlotCurve* plotCurve = dynamic_cast<QwtPlotCurve *>( getPlotObject( plot2dCurve));
+
+          // Modify the points' markers
+          QwtSymbol symbol (plotCurve->symbol()) ;
+          symbol.setStyle( symbolStyle1);
+          symbol.setPen( QPen( color1, lineWidth1));
+          symbol.setBrush( QBrush( color1));
+          QSize size = 0.5*(symbol.size());
+          symbol.setSize(size);
+          //
+          plotCurve->setPen( QPen( color1, lineWidth1));
+          plotCurve->setSymbol( symbol);
+
+          if (icur > icur1)
+          {
+              //std::cout << "  courbe d'indice " << icur << " sans entree dans la legende" << std::endl;
+
+              // The curve must not have legend's entry
+              plotCurve->setItemAttribute( QwtPlotItem::Legend, false);
+          }
+          else
+          {
+              plotCurve->setItemAttribute( QwtPlotItem::Legend, true);
+          }
+      }
+
+      // 3)- Intermittent segments to connect all the group's curves
+
+      if (nbCurves > 1)
+      {
+          double *Xval;
+          double *Yval;
+          int nbPoints;
+
+          Plot2d_Curve *plot2dCurve1 = curveList.at(icur1);
+
+          // Last point of the first curve
+          nbPoints = plot2dCurve1->getData( &Xval, &Yval);  // dynamic allocation
+          X[0] = Xval[ nbPoints -1];
+          Y[0] = Yval[ nbPoints -1];
+          delete [] Xval;
+          delete [] Yval;
+
+          for (icur=icur1 +1; icur <= icur2; icur++)
+          {
+              Plot2d_Curve *plot2dCurve = curveList.at(icur);
+
+              // First curve's point
+              nbPoints = plot2dCurve->getData( &Xval, &Yval);
+              X[1] = Xval[0];
+              Y[1] = Yval[0];
+
+              createSegment( X, Y, 2,
+                             Qt::DotLine,
+                             lineWidth1,
+                             color1,
+                             QwtSymbol::NoSymbol);
+
+              // Last curve's point
+              X[0] = Xval[ nbPoints -1];
+              Y[0] = Yval[ nbPoints -1];
+              delete [] Xval;
+              delete [] Yval;
+          }
+      }
+
+      icur1 = icur2 + 1;
+  }
+
+  // Consider the new legend's entries
+  showLegend( true, true);
+
+  //std::cout << "Ok for Plot2d_ViewFrame::displayPlot2dCurveList() 2" << std::endl;
+}
+
+
+/*!
+ * Create and display an y=f(x) curve of points
+ * Parameters :
+ *   toDraw : true => Display the created curve
+ *                    Draw the points'markers and create associated tooltips
+ */
+Plot2d_Curve* Plot2d_ViewFrame::createPlot2dCurve( QString & title,
+                                                   QString & unit,
+                                                   QList<double> & xList,
+                                                   QList<double> & yList,
+                                                   QList<QString> & tooltipList,
+                                                   Plot2d::LineType lineKind,
+                                                   int lineWidth,
+                                                   QColor & lineColor,
+                                                   QwtSymbol::Style markerKind,
+                                                   Plot2d_QwtPlotPicker* picker,
+                                                   bool toDraw)
+{
+  //std::cout << "Plot2d_ViewFrame::createPlot2dCurve()" << std::endl;
+
+  // Mathematical curve
+  Plot2d_Curve* plot2dCurve = new Plot2d_Curve();
+
+  int nbPoint = xList.size();
+  double xVal, yVal;
+  QString tooltip;
+
+  for (int ip=0; ip < nbPoint; ip++)
+  {
+      xVal = xList.at(ip);
+      yVal = yList.at(ip);
+      tooltip = tooltipList.at(ip);
+
+      plot2dCurve->addPoint( xVal, yVal, tooltip);
+  }
+
+  plot2dCurve->setVerTitle( title);
+  plot2dCurve->setVerUnits( unit);
+  if (lineColor.isValid())
+  {
+      plot2dCurve->setColor( lineColor);
+  }
+  plot2dCurve->setLine( lineKind, lineWidth);
+  plot2dCurve->setMarkerStyle( markerKind);
+
+  // Graphical curve (QwtPlotCurve) in the drawing zone (QwtPlot) myPlot
+  if (toDraw)
+  {
+      displayCurve( plot2dCurve);
+
+      // plot points marker create associated tooltips
+      createCurveTooltips( plot2dCurve, picker);
+
+      // Get the graphical curve
+      QwtPlotCurve* plotCurve = dynamic_cast<QwtPlotCurve *>( getPlotObject( plot2dCurve));
+
+      QColor theColor;
+
+      if (lineColor.isValid())
+      {
+        //std::cout << "  valid color" << std::endl;
+          theColor = lineColor;
+      }
+      else
+      {
+        //std::cout << "  valid color" << std::endl;
+          QPen pen = plotCurve->pen();
+          theColor = pen.color();
+      }
+
+      // Modify points' markers
+      QwtSymbol symbol (plotCurve->symbol()) ;
+      symbol.setStyle( markerKind);
+      //
+      if (markerKind != QwtSymbol::NoSymbol)
+      {
+          symbol.setPen( QPen( theColor, lineWidth));
+          symbol.setBrush( QBrush( theColor));
+          QSize size = 2.0*(symbol.size()); //0.5
+          symbol.setSize(size);
+      }
+
+      plotCurve->setSymbol( symbol);
+      plotCurve->setStyle( QwtPlotCurve::Lines);
+      plotCurve->setPen( QPen( theColor, lineWidth));
+
+      // The curve must not have legend's entry
+      plotCurve->setItemAttribute( QwtPlotItem::Legend, false);
+  }
+  return plot2dCurve;
+}
+
+
+/*!
+ * Get curve's color
+ */
+QColor Plot2d_ViewFrame::getPlot2dCurveColor( Plot2d_Curve* plot2dCurve)
+{
+
+  // Get graphical curve
+  QwtPlotCurve* plotCurve = dynamic_cast<QwtPlotCurve *>( getPlotObject( plot2dCurve));
+
+  QPen pen = plotCurve->pen();
+  QColor color = pen.color();
+
+  return color;
+}
+
+
+/*!
+ * Create and display a segment with nbPoint=2 points
+ */
+void Plot2d_ViewFrame::createSegment( double *X, double *Y, int nbPoint,
+                                      Qt::PenStyle lineKind,
+                                      int lineWidth,
+                                      QColor & lineColor,
+                                      QwtSymbol::Style markerKind)
+{
+  QwtPlotCurve* aPCurve = new QwtPlotCurve();
+
+  aPCurve->setData( X, Y, nbPoint);
+
+  aPCurve->setPen( QPen( lineColor, lineWidth, lineKind));
+  QwtSymbol aSymbol;
+  aSymbol.setStyle( markerKind);
+  aPCurve->setSymbol( aSymbol);
+
+  // The segment must not have legend's entry
+  aPCurve->setItemAttribute( QwtPlotItem::Legend, false);
+
+  aPCurve->attach( myPlot);
 }
 
 /*!
@@ -2314,6 +2711,37 @@ void Plot2d_Plot2d::setPickerMousePattern( int button, int state )
   myPlotZoomer->setMousePattern( QwtEventPattern::MouseSelect1, button, state );
 }
 
+/*!
+ * Create marker and tooltip associed with a point
+ */
+void Plot2d_Plot2d::createMarkerAndTooltip( QwtSymbol symbol,
+                                            double    X,
+                                            double    Y,
+                                            QString & tooltip,
+                                            Plot2d_QwtPlotPicker *picker)
+{
+  QwtPlotMarker* aPlotMarker = new QwtPlotMarker();
+
+  aPlotMarker->setSymbol( symbol );  // symbol must have a color
+  aPlotMarker->setLabelAlignment( Qt::AlignTop);
+  aPlotMarker->setXValue(X);
+  aPlotMarker->setYValue(Y);
+  //
+  aPlotMarker->attach(this);
+			
+  // Associate a tooltip with the point's marker
+  // PB: how to obtain a tooltip with a rectangular frame ?
+  //QwtText tooltip ("X=" + QString::number(X) + " Y=" + QString::number(Y) );
+
+  QwtText text (tooltip);
+  //QColor tooltipColor( 245, 222, 179);            // Wheat  -RGB (0 a 255)
+  QColor tooltipColor( 253, 245, 230);            // OldLace
+  text.setBackgroundBrush( QBrush(tooltipColor)); //, Qt::SolidPattern));
+  //
+  picker->pMarkers.append( aPlotMarker); 
+  picker->pMarkersToolTip[ aPlotMarker] = text;
+}
+
 bool Plot2d_Plot2d::polished() const
 {
   return myIsPolished;
@@ -2404,6 +2832,202 @@ void Plot2d_Plot2d::polish()
   myIsPolished = true;
 }
 
+// Methods to manage axis graduations
+
+/* Create definition and graduations of axes
+ */
+void Plot2d_Plot2d::createAxisScaleDraw()
+{
+  myScaleDraw = new Plot2d_AxisScaleDraw( this);
+}
+
+
+/* Stock X axis's ticks in the drawing zone
+*/
+void Plot2d_Plot2d::applyTicks()
+{
+  myScaleDraw->applyTicks();
+}
+
+
+/* Unactivate automatic ticks drawing (call to method Plot2d_AxisScaleDraw::draw() )
+ * Parameters :
+ * - number call to ticks drawing (for information) : numcall
+ */
+void Plot2d_Plot2d::unactivAxisScaleDraw( int numcall)
+{
+  // Memorize X axis (myScaleDraw already exists) in the drawing zone
+  //setAxisScaleDraw( QwtPlot::xBottom, myScaleDraw);  // heritage of QwtPlot
+
+  myScaleDraw->unactivTicksDrawing( numcall);
+}
+
+
+/* Draw ticks and labels on X axis of the drawing zone
+ * Draw systems' names under the X axis of the drawing zone
+ * Draw vertical segments between X axis's intervals of the systems
+ * Parameters :
+ * - left and right margins for ticks : XLeftMargin, XRightMargin
+ * - for each named system :
+ *     positions and labels for ticks on X axis : devicesPosLabelTicks
+ *
+ * The true drawings will be realized by the method Plot2d_AxisScaleDraw::draw()
+ * PB: who call il ?
+ */
+void Plot2d_Plot2d::displayXTicksAndLabels(
+                      double XLeftMargin, double XRightMargin,
+                      const QList< QPair< QString, QMap<double, QString> > > & devicesPosLabelTicks)
+                      //                    name        position  label
+                      //                   system         tick    tick
+{
+  //std::cout << "Plot2d_Plot2d::displayXTicksAndLabels() 1" << std::endl;
+
+  int nbDevices = devicesPosLabelTicks.size();
+  //
+  //std::cout << "  Nombre de systemes = " << nbDevices << std::endl;
+  if (nbDevices == 0)  return;
+
+  // For drawing systems' names, their positions must be in the allTicks list
+  // (cf class Plot2d_AxisScaleDraw)
+
+  // Liste of ticks' positions and systems' names
+  QList<double> allTicks;
+
+  double devXmin, devXmax;  // X interval of a system
+  double gapXmin, gapXmax;  // X interval between two systems
+  double devLabPos;         // Label's position of a system
+  double segmentPos;  // Position of the vertical segment between current system and the next
+
+  // 1)- Search for the system whose X interval is the most to the left
+
+  int ileftDev = 0;
+  double XminMin = 1.e+12;
+
+  if (nbDevices > 1)
+  {
+      for (int idev=0; idev < nbDevices; idev++)
+      {
+          QPair< QString, QMap<double,QString> > paire = devicesPosLabelTicks.at(idev);
+
+          QString deviceLabel = paire.first;
+
+          // Ticks' map of the system
+          QMap<double,QString> devPosLabelTicks = paire.second;
+
+          QList<double> posTicks = devPosLabelTicks.keys();
+
+          // List's items increasing sorting
+          qSort( posTicks.begin(), posTicks.end() );  // iterators
+
+          // X interval for the system
+          devXmin = posTicks.first();
+          devXmax = posTicks.last();
+
+          if (devXmin < XminMin)
+          {
+              XminMin = devXmin;
+              ileftDev = idev;
+          }
+      }
+  }
+
+  // 2)- Ticks, systems' names, verticals segments
+
+  for (int idev=0; idev < nbDevices; idev++)
+  {
+      QPair< QString, QMap<double,QString> > paire = devicesPosLabelTicks.at(idev);
+
+      QString deviceLabel = paire.first;
+
+      std::string std_label = deviceLabel.toStdString();
+      //const char *c_label = std_label.c_str();
+      //std::cout << "  deviceLabel: |" << c_label << "|" << std::endl;
+
+      // Ticks' map of the system
+      QMap<double,QString> devPosLabelTicks = paire.second;
+
+      int nbTicks = devPosLabelTicks.size();
+
+      QList<double> posTicks = devPosLabelTicks.keys();
+
+      // List's items increasing sorting
+      qSort( posTicks.begin(), posTicks.end() );  // iterators
+
+      // X interval for the system
+      devXmin = posTicks.first();
+      devXmax = posTicks.last();
+
+      // Stock ticks' positions and labels on X axis
+      double pos;
+      QString label;
+      //
+      for (int itic=0; itic < nbTicks; itic++)
+      {
+          pos   = posTicks.at(itic);
+          label = devPosLabelTicks[pos];
+
+          myScaleDraw->setLabelTick( pos, label, false);
+
+          std::string std_label = label.toStdString();
+          //const char *c_label = std_label.c_str();
+          //std::cout << "    tick " << itic << " : pos= " << pos << ", label= |" << c_label << "|" << std::endl;
+      }
+      allTicks.append( posTicks);
+
+      // Compute the position of the system's label
+      if (idev == ileftDev)
+      {
+          devLabPos = devXmin + 0.25*(devXmax - devXmin);
+      }
+      else
+      {
+          devLabPos = devXmin + 0.50*(devXmax - devXmin);
+      }
+      allTicks.append( devLabPos);
+
+      // Stock position and name of the system under X axis
+      myScaleDraw->setLabelTick( devLabPos, deviceLabel, true);
+
+      if (idev > 0)
+      {
+          // Create the vertical segment between the current system and the next
+          gapXmax = devXmin;
+          segmentPos = gapXmin + 0.5*(gapXmax - gapXmin);
+
+          createSeparationLine( segmentPos);
+      }
+      gapXmin = devXmax;
+  }
+
+  // List's items increasing sorting
+  qSort( allTicks.begin(), allTicks.end() );  // iterators
+
+  // Stock the interval of X's values
+  double lowerBound = allTicks.first() - XLeftMargin;
+  double upperBound = allTicks.last() + XRightMargin;
+  myScaleDraw->setInterval( lowerBound, upperBound);
+
+  // For each system, stock the position of the X's ticks and those of the name
+  myScaleDraw->setTicks( allTicks);  // do not draw the ticks
+
+  // Memorize the X axis in the drawing zone
+  setAxisScaleDraw( QwtPlot::xBottom, myScaleDraw);  // heritage of QwtPlot
+
+  //std::cout << "Plot2d_Plot2d::displayXTicksAndLabels() 1" << std::endl;
+}
+
+
+/* Create vertical segment between two curves
+ */
+void Plot2d_Plot2d::createSeparationLine( double Xpos)
+{
+  QwtPlotMarker* aPlotMarker = new QwtPlotMarker();
+
+  aPlotMarker->setLineStyle( QwtPlotMarker::VLine);
+  aPlotMarker->setXValue( Xpos);
+  aPlotMarker->setLinePen( QPen(Qt::black));
+  aPlotMarker->attach(this);  // Add to drawing zone
+}
 
 /*!
   Creates presentation of object
@@ -2953,4 +3577,272 @@ QwtText Plot2d_ScaleDraw::label( double value ) const
   }
 
   return QwtScaleDraw::label( value );
+}
+
+/* Definition of X axis graduations
+ */
+const QString Plot2d_AxisScaleDraw::DEVICE_FONT = QString("Times");
+const int     Plot2d_AxisScaleDraw::DEVICE_FONT_SIZE = 12;
+const int     Plot2d_AxisScaleDraw::DEVICE_BY = 40;
+
+Plot2d_AxisScaleDraw::Plot2d_AxisScaleDraw( Plot2d_Plot2d* plot)
+: myPlot(plot)
+{
+  myLowerBound = -1;
+  myUpperBound = -1;
+  setLabelAlignment(Qt::AlignRight);
+  setLabelRotation(45.);
+
+  applyTicks();
+
+  myActivTicksDrawing   = true;
+  myNumTicksDrawingCall = 1;
+}
+
+
+Plot2d_AxisScaleDraw::~Plot2d_AxisScaleDraw()
+{
+}
+
+
+/* Unactivate automatic ticks drawing
+ */
+void Plot2d_AxisScaleDraw::unactivTicksDrawing( int numcall)
+{
+  myActivTicksDrawing   = false;
+  myNumTicksDrawingCall = numcall;
+}
+
+
+/* Draw X ticks and labels.
+ * Draw systems names under X axis.
+ * Overload the same name QwtScaleDraw method.
+ * (PB: who call automaticaly this method)
+ */
+void Plot2d_AxisScaleDraw::draw( QPainter* painter, const QPalette & palette) const
+{
+  //std::cout << "Plot2d_AxisScaleDraw::draw() : activ= " << myActivTicksDrawing
+  //                           << "  numcall= " << myNumTicksDrawingCall << std::endl;
+
+  if (!myActivTicksDrawing)  return;
+
+  //std::cout << "Plot2d_AxisScaleDraw::draw()" << std::endl;
+
+  QList<double> major_ticks  = scaleDiv().ticks(QwtScaleDiv::MajorTick);
+  QList<double> medium_ticks = scaleDiv().ticks(QwtScaleDiv::MediumTick);
+  QList<double> minor_ticks  = scaleDiv().ticks(QwtScaleDiv::MinorTick);
+
+  medium_ticks.clear();
+  minor_ticks.clear();
+  major_ticks.clear();
+
+  major_ticks.append( myTicks);
+  myPlot->axisScaleDiv(QwtPlot::xBottom)->setTicks(QwtScaleDiv::MajorTick,  major_ticks);
+  myPlot->axisScaleDiv(QwtPlot::xBottom)->setTicks(QwtScaleDiv::MediumTick, medium_ticks);
+  myPlot->axisScaleDiv(QwtPlot::xBottom)->setTicks(QwtScaleDiv::MinorTick,  minor_ticks);
+  QwtScaleDraw *scale = myPlot->axisScaleDraw(QwtPlot::xBottom);
+  ((Plot2d_AxisScaleDraw*)(scale))->applyTicks();
+
+  QwtScaleDraw::draw( painter, palette);
+
+  for (int i = 0; i < myTicks.size(); i++)
+  {
+      drawLabel( painter, myTicks[i]);		      
+  }      
+		
+  //std::cout << "Ok for Plot2d_AxisScaleDraw::draw()" << std::endl;
+}
+
+
+QwtText Plot2d_AxisScaleDraw::label( double value) const
+{
+  if (myLabelX.contains(value))
+          return myLabelX[value];
+
+  return QwtText(QString::number(value, 'f', 1));
+}
+
+
+/* Stock position and label of a X tick
+ */
+void Plot2d_AxisScaleDraw::setLabelTick( double value, QString label, bool isDevice)
+{
+  //qDebug()<< "setLabelTick ( " << value << ","<< label <<" )";
+  if ( isDevice )
+  {
+      // For systems names under X axis
+      myLabelDevice[value] = label;
+  }
+  else
+  {
+      // For X axis graduations
+      myLabelX[value] = label;
+  }
+}
+
+
+/* Stock ticks positions of a system, and draw them
+ */
+void Plot2d_AxisScaleDraw::setTicks(const QList<double> aTicks)
+{
+  //std::cout << "  Plot2d_AxisScaleDraw::setTicks()" << std::endl;
+  myTicks = aTicks;
+
+  applyTicks();
+}
+
+
+void Plot2d_AxisScaleDraw::setInterval(double lowerBound, double upperBound)
+{
+  myLowerBound = lowerBound;
+  myUpperBound = upperBound;
+  myPlot->setAxisScale( QwtPlot::xBottom, myLowerBound, myUpperBound );
+}
+
+
+/* Stock X ticks in drawing zone
+ */
+void Plot2d_AxisScaleDraw::applyTicks()
+{
+  //std::cout << "  Plot2d_AxisScaleDraw::applyTicks()" << std::endl;
+
+  QList<double> major_ticks = scaleDiv().ticks(QwtScaleDiv::MajorTick);
+  QList<double> medium_ticks = scaleDiv().ticks(QwtScaleDiv::MediumTick);
+  QList<double> minor_ticks = scaleDiv().ticks(QwtScaleDiv::MinorTick);
+
+  medium_ticks.clear();
+  minor_ticks.clear();
+
+  myPlot->axisScaleDiv(QwtPlot::xBottom)->setTicks(QwtScaleDiv::MajorTick, myTicks);
+  myPlot->axisScaleDiv(QwtPlot::xBottom)->setTicks(QwtScaleDiv::MediumTick, medium_ticks);
+  myPlot->axisScaleDiv(QwtPlot::xBottom)->setTicks(QwtScaleDiv::MinorTick, minor_ticks);
+
+  QwtScaleDiv* aScaleDiv = (QwtScaleDiv*) &scaleDiv();
+
+  aScaleDiv->setTicks(QwtScaleDiv::MajorTick, myTicks);
+  aScaleDiv->setTicks(QwtScaleDiv::MediumTick, medium_ticks);
+  aScaleDiv->setTicks(QwtScaleDiv::MinorTick, minor_ticks);
+
+  if (myLowerBound != -1 && myUpperBound != -1)
+              aScaleDiv->setInterval(myLowerBound, myUpperBound);
+		
+  //for (int i = 0; i < myTicks.size(); i++){
+  //  QPoint p = labelPosition( i );
+  //  qDebug() << i<< ") applyTicks -> LABEL" <<p;
+  //}
+}
+
+
+void Plot2d_AxisScaleDraw::drawLabel( QPainter* painter, double value) const
+{
+  //std::cout << "  Plot2d_AxisScaleDraw::drawLabel( " << value << " ) : "; //<< std::endl;
+
+  //qDebug() << "drawLabel  ( " <<value<<" )";
+  if ( myLabelDevice.contains(value) )
+  {
+      QString deviceLabel = myLabelDevice[value];
+      //
+      std::string std_label = deviceLabel.toStdString();
+      //const char *c_label = std_label.c_str();
+      //std::cout << "    deviceLabel= |" << c_label << "|" << std::endl;
+
+      QPoint p = labelPosition( value );
+      p += QPoint(0, DEVICE_BY);
+      QFont  prevf = painter->font();
+      //QColor prevc = (painter->pen()).color();
+	  	  
+      QFont devicef( DEVICE_FONT, DEVICE_FONT_SIZE, QFont::Bold);
+      //
+      //painter->setPen( QColor("blue") );
+      painter->setFont( devicef );
+      painter->drawText( p, myLabelDevice[value] );
+      //painter->setPen( prevc );
+      painter->setFont( prevf );
+  }
+  if ( myLabelX.contains(value) )
+  {
+      QString xLabel = myLabelX[value];
+      //
+      std::string std_label = xLabel.toStdString();
+      //const char *c_label = std_label.c_str();
+      //std::cout << "    xLabel= |" << c_label << "|" << std::endl;
+
+      QwtScaleDraw::drawLabel( painter, value );
+  }
+}
+    
+
+void Plot2d_AxisScaleDraw::drawTick( QPainter* painter, double value, int len) const
+{
+  //qDebug() << "drawTick  ( " <<value<<" , "<<len<<" )  " ;
+  //qDebug() << "myLabelX" << myLabelX;
+  //
+  if ( myLabelX.contains(value) )
+  {
+      QwtScaleDraw::drawTick( painter, value, len);
+  } 
+}
+
+
+/* Management of tooltips associated with markers for curves points or others points
+ */
+const double Plot2d_QwtPlotPicker::BOUND_HV_SIZE = 0.2;
+ 
+Plot2d_QwtPlotPicker::Plot2d_QwtPlotPicker( int            xAxis,
+                                            int            yAxis,
+                                            int            selectionFlags,
+                                            RubberBand     rubberBand,
+                                            DisplayMode    trackerMode,
+                                            QwtPlotCanvas *canvas)
+: QwtPlotPicker( xAxis,
+                 yAxis,
+                 selectionFlags,
+                 rubberBand,
+                 trackerMode,
+                 canvas)    // of drawing zone QwtPlot
+{
+}
+  
+Plot2d_QwtPlotPicker::Plot2d_QwtPlotPicker( int            xAxis,
+                                            int            yAxis,
+                                            QwtPlotCanvas *canvas)
+: QwtPlotPicker( xAxis,
+                 yAxis,
+                 canvas)
+{
+}
+
+Plot2d_QwtPlotPicker::~Plot2d_QwtPlotPicker()
+{
+}
+// http://www.qtcentre.org/threads/22751-How-do-i-select-a-QwtPlotMarker-using-a-QPlotPicker
+
+/* Return the tooltip associated with a point when the mouse cursor pass near
+ */
+QwtText Plot2d_QwtPlotPicker::trackerText( const QwtDoublePoint & pos ) const
+{
+  for (QList<QwtPlotMarker* >::const_iterator pMarkerIt = pMarkers.begin();
+                                              pMarkerIt != pMarkers.end();
+                                              ++pMarkerIt )
+  {
+      QwtPlotMarker* pMarker = *pMarkerIt;
+      if ( pMarker != NULL )
+      {
+          QwtDoubleRect  bound0        = pMarker->boundingRect();
+          QwtDoublePoint center_bound0 = bound0.center();
+          double left = center_bound0.x()-(BOUND_HV_SIZE/2.);
+          double top  = center_bound0.y()-(BOUND_HV_SIZE/2.);
+	  
+          QwtDoubleRect  bound( left, top , BOUND_HV_SIZE, BOUND_HV_SIZE);
+	  
+          if( bound.contains(pos) )
+          {
+            //QString toolTip =  "X="  + QString::number( pMarker->xValue() )
+            //                 + " Y=" + QString::number( pMarker->yValue() );
+            return pMarkersToolTip[pMarker];
+          }
+      }	
+  }
+      
+  return QwtText();      
 }

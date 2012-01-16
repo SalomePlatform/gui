@@ -28,11 +28,12 @@
 #include "Plot2d.h"
 #include "Plot2d_Object.h"
 
-//#include <qwt_plot_curve.h>
+#include <qwt_symbol.h>
 
 class PLOT2D_EXPORT Plot2d_Curve : public Plot2d_Object
 {
 public:
+
   Plot2d_Curve();
   Plot2d_Curve( const Plot2d_Curve& );
 
@@ -49,7 +50,9 @@ public:
 
   void                 setMarker( Plot2d::MarkerType, const int );
   void                 setMarker( Plot2d::MarkerType );
+  void		       setMarkerStyle( QwtSymbol::Style style);
   Plot2d::MarkerType   getMarker() const;
+  QwtSymbol::Style     getMarkerStyle() const;
   void                 setMarkerSize( const int );
   int                  getMarkerSize() const;
 
@@ -60,8 +63,10 @@ public:
   int                  getLineWidth() const;
 
 protected:
+
   QColor               myColor;
   Plot2d::MarkerType   myMarker;
+  QwtSymbol::Style     myMarkerStyle;
   int                  myMarkerSize;
   Plot2d::LineType     myLine;
   int                  myLineWidth;

@@ -185,6 +185,13 @@ void Plot2d_Curve::setMarker( Plot2d::MarkerType marker )
   setAutoAssign( false );
 }
 
+/* Sets Qwt marker type
+ */
+void Plot2d_Curve::setMarkerStyle( QwtSymbol::Style style)
+{
+  myMarkerStyle = style;
+}
+
 /*!
   Gets marker type
 */
@@ -192,6 +199,16 @@ Plot2d::MarkerType Plot2d_Curve::getMarker() const
 {
   return myMarker;
 }
+
+
+/* Gets Qwt marker type
+ */
+QwtSymbol::Style Plot2d_Curve::getMarkerStyle() const
+{
+  return myMarkerStyle;
+}
+
+
 
 /*!
   Sets new marker size ( and resets AutoAssign flag )

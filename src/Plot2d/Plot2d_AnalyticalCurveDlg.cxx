@@ -499,7 +499,7 @@ void Plot2d_AnalyticalCurveDlg::help()
 {
   SUIT_Application* app = SUIT_Session::session()->activeApplication();
   if ( app )
-    app->onHelpContextModule( "GUI", "plot2d_analytical_curves.html" );
+    app->onHelpContextModule( "GUI", "plot2d_viewer_page.html", "analytical_curve" );
 }
 
 /*!

@@ -228,8 +228,8 @@
         <translation>Settings</translation>
     </message>
     <message>
-        <source>TOT_PLOT2D_ANALITIC_CURVES</source>
-        <translation>Analytic curves</translation>
+        <source>TOT_PLOT2D_ANALYTICAL_CURVES</source>
+        <translation>Analytical curves</translation>
     </message>    
     <message>
         <source>TOT_PLOT2D_NORMALIZE_MODE_LMAX</source>
@@ -394,8 +394,8 @@ Logarithmic scale for ordinate axis is not allowed.</translation>
         <translation>Zoom the view</translation>
     </message>
     <message>
-        <source>PRP_PLOT2D_ANALITIC_CURVES</source>
-        <translation>Setups analytic curves properties</translation>
+        <source>PRP_PLOT2D_ANALYTICAL_CURVES</source>
+        <translation>Setups analytical curves properties</translation>
     </message>
     <message>
         <source>PRP_PLOT2D_NORMALIZE_MODE_LMAX</source>
@@ -522,8 +522,8 @@ Logarithmic scale for ordinate axis is not allowed.</translation>
         <translation>&amp;Settings</translation>
     </message>
     <message>
-        <source>MEN_PLOT2D_ANALITIC_CURVES</source>
-        <translation>Analytic curves</translation>
+        <source>MEN_PLOT2D_ANALYTICAL_CURVES</source>
+        <translation>Analytical curves</translation>
     </message>
     <message>
         <source>CIRCLE_MARKER_LBL</source>
@@ -673,10 +673,10 @@ Logarithmic scale for ordinate axis is not allowed.</translation>
     </message>
 </context>
 <context>
-    <name>Plot2d_AnaliticCurveDlg</name>
+    <name>Plot2d_AnalyticalCurveDlg</name>
     <message>
-        <source>ANALITIC_CURVE_TLT</source>
-        <translation>Analitic curves properties</translation>
+        <source>ANALYTICAL_CURVE_TLT</source>
+        <translation>Analytical curves properties</translation>
     </message>
     <message>
         <source>AC_CURVE_PARAMS</source>
@@ -723,9 +723,13 @@ Logarithmic scale for ordinate axis is not allowed.</translation>
         <translation>Remove curve</translation>
     </message>                    
     <message>
-        <source>AC_UPD_BTN</source>
-        <translation>Update Curve</translation>
+        <source>AC_OK_BTN</source>
+        <translation>Ok</translation>
     </message>                    
+    <message>
+        <source>AC_APPLY_BTN</source>
+        <translation>Apply</translation>
+    </message>                                        
     <message>
         <source>AC_CANT_CALCULATE</source>
         <translation>Can't calculate curve. 
@@ -735,6 +739,11 @@ Please, check input parameters!!!</translation>
         <source>AC_CLOSE_BTN</source>
         <translation>&amp;Close</translation>
     </message>
+    <message>
+        <source>AC_HELP_BTN</source>
+        <translation>Help</translation>
+    </message>
+
 </context>
 <context>
     <name>Plot2d_SetupCurveScaleDlg</name>

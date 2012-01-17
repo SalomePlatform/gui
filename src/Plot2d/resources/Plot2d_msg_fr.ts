@@ -204,7 +204,7 @@
         <translation>Paramètres</translation>
     </message>
     <message>
-        <source>TOT_PLOT2D_ANALITIC_CURVES</source>
+        <source>TOT_PLOT2D_ANALYTICAL_CURVES</source>
         <translation>Courbes analytiques</translation>
     </message>    
     <message>
@@ -354,7 +354,7 @@ L&apos;échelle logarithmique de l&apos;ordonnée n&apos;est pas permise.</trans
         <translation>Zoomer la vue</translation>
     </message>
     <message>
-        <source>PRP_PLOT2D_ANALITIC_CURVES</source>
+        <source>PRP_PLOT2D_ANALYTICAL_CURVES</source>
         <translation>Réglage des propriétés des courbes analytiques</translation>
     </message>
     <message>
@@ -450,7 +450,7 @@ L&apos;échelle logarithmique de l&apos;ordonnée n&apos;est pas permise.</trans
         <translation>&amp;Paramètres</translation>
     </message>
     <message>
-        <source>MEN_PLOT2D_ANALITIC_CURVES</source>
+        <source>MEN_PLOT2D_ANALYTICAL_CURVES</source>
         <translation>Courbes analytiques</translation>
     </message>
     <message>
@@ -601,9 +601,9 @@ L&apos;échelle logarithmique de l&apos;ordonnée n&apos;est pas permise.</trans
     </message>
 </context>
 <context>
-    <name>Plot2d_AnaliticCurveDlg</name>
+    <name>Plot2d_AnalyticalCurveDlg</name>
     <message>
-        <source>ANALITIC_CURVE_TLT</source>
+        <source>ANALYTICAL_CURVE_TLT</source>
         <translation>Propriétés des courbes analytiques</translation>
     </message>
     <message>

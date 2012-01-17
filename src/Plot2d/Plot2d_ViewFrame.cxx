@@ -28,10 +28,8 @@
 #include "Plot2d_FitDataDlg.h"
 #include "Plot2d_ViewWindow.h"
 #include "Plot2d_SetupViewDlg.h"
-#ifndef DISABLE_PYCONSOLE
-#include "Plot2d_AnaliticCurveDlg.h"
-#include "Plot2d_AnaliticCurve.h"
-#endif
+#include "Plot2d_AnalyticalCurveDlg.h"
+#include "Plot2d_AnalyticalCurve.h"
 #include "Plot2d_ToolTip.h"
 
 #include "SUIT_Tools.h"
@@ -66,7 +64,6 @@
 #include <qwt_plot_zoomer.h>
 #include <qwt_curve_fitter.h>
 
-#include <iostream>
 #include <stdlib.h>
 #include <qprinter.h>
 
@@ -1602,24 +1599,38 @@ void Plot2d_ViewFrame::onSettings()
   delete dlg;
 }
 
-#ifndef DISABLE_PYCONSOLE
 /*!
-  "Analitic Curves" toolbar action slot
+  "Analytical Curves" toolbar action slot
 */
-void Plot2d_ViewFrame::onAnaliticCurve() {
-  Plot2d_AnaliticCurveDlg* dlg = new Plot2d_AnaliticCurveDlg(this, myPlot);
-  dlg->setCurveList(myAnaliticCurves);
-  dlg->exec();
-  delete dlg;
-}
-#endif
-
-
+void Plot2d_ViewFrame::onAnalyticalCurve()
+{
 #ifndef DISABLE_PYCONSOLE
+  Plot2d_AnalyticalCurveDlg dlg( this, this );
+  dlg.exec();
+  updateAnalyticalCurves();
+#endif
+}
+
+void Plot2d_ViewFrame::addAnalyticalCurve( Plot2d_AnalyticalCurve* theCurve)
+{
+#ifndef DISABLE_PYCONSOLE
+	myAnalyticalCurves.append(theCurve);
+#endif
+}
+
+void Plot2d_ViewFrame::removeAnalyticalCurve( Plot2d_AnalyticalCurve* theCurve)
+{
+#ifndef DISABLE_PYCONSOLE
+	theCurve->setAction(Plot2d_AnalyticalCurve::ActRemoveFromView);
+#endif
+}
+
 /*
-  Update analitic curve
+  Update Analytical curve
 */
-void Plot2d_ViewFrame::updateAnaliticCurve(Plot2d_AnaliticCurve* c, bool updateView){
+void Plot2d_ViewFrame::updateAnalyticalCurve(Plot2d_AnalyticalCurve* c, bool updateView)
+{
+#ifndef DISABLE_PYCONSOLE
   if(!c) return;
   QwtScaleDiv* div = myPlot->axisScaleDiv(QwtPlot::xBottom);
   c->setRangeBegin(div->lowerBound());
@@ -1629,17 +1640,17 @@ void Plot2d_ViewFrame::updateAnaliticCurve(Plot2d_AnaliticCurve* c, bool updateV
   QwtPlotItem* item = c->plotItem();
   
   switch( c->getAction() ) {
-  case Plot2d_AnaliticCurve::ActAddInView:
+  case Plot2d_AnalyticalCurve::ActAddInView:
     if( c->isActive() ) {
+      c->updatePlotItem();
       item->attach( myPlot );
+      item->show();
     }
-    myAnaliticCurves.append(c);
-    c->setAction(Plot2d_AnaliticCurve::ActNothing);
+    c->setAction(Plot2d_AnalyticalCurve::ActNothing);
     break;
     
-  case Plot2d_AnaliticCurve::ActUpdateInView:
+  case Plot2d_AnalyticalCurve::ActUpdateInView:
     if(c->isActive()) {
-      item->attach( myPlot );
       c->updatePlotItem();
       item->show();
     } else {      
@@ -1647,33 +1658,56 @@ void Plot2d_ViewFrame::updateAnaliticCurve(Plot2d_AnaliticCurve* c, bool updateV
       item->detach();
     }
     
-    c->setAction(Plot2d_AnaliticCurve::ActNothing);
+    c->setAction(Plot2d_AnalyticalCurve::ActNothing);
     break;    
-  case Plot2d_AnaliticCurve::ActRemoveFromView:
+  case Plot2d_AnalyticalCurve::ActRemoveFromView:
     item->hide();
     item->detach();
-    myAnaliticCurves.removeAll(c);
+    myAnalyticalCurves.removeAll(c);
     delete c;
     break;
   }
 
   if(updateView)
     myPlot->replot();
-}
 #endif
+}
 
-#ifndef DISABLE_PYCONSOLE
 /*
-  Update analitic curves
+  Update Analytical curves
 */
-void Plot2d_ViewFrame::updateAnaliticCurves() {
-  AnaliticCurveList::iterator it = myAnaliticCurves.begin();
-  for( ; it != myAnaliticCurves.end(); it++) {
-    updateAnaliticCurve(*it);
+void Plot2d_ViewFrame::updateAnalyticalCurves()
+{
+#ifndef DISABLE_PYCONSOLE
+  AnalyticalCurveList::iterator it = myAnalyticalCurves.begin();
+  for( ; it != myAnalyticalCurves.end(); it++) {
+    updateAnalyticalCurve(*it);
   }
   myPlot->replot();
-}
 #endif
+}
+
+/*!
+  Return list of the alalytical curves.
+*/
+AnalyticalCurveList Plot2d_ViewFrame::getAnalyticalCurves() const
+{
+  return myAnalyticalCurves;
+}
+
+/*!
+  Get analytical curve by plot item.
+*/
+Plot2d_AnalyticalCurve* Plot2d_ViewFrame::getAnalyticalCurve(QwtPlotItem * theItem) {
+#ifndef DISABLE_PYCONSOLE
+  AnalyticalCurveList::iterator it = myAnalyticalCurves.begin();
+  for( ; it != myAnalyticalCurves.end(); it++) {
+    if((*it)->plotItem() == theItem);
+		return (*it);
+  }
+  return 0;
+#endif
+}
 
 /*!
   "Fit Data" command slot
@@ -1690,9 +1724,7 @@ void Plot2d_ViewFrame::onFitData()
     fitData(mode,xMin,xMax,yMin,yMax,y2Min,y2Max);
   }
   delete dlg;
-#ifndef DISABLE_PYCONSOLE
-  updateAnaliticCurves();
-#endif
+  updateAnalyticalCurves();
 }
 
 /*!
@@ -2362,11 +2394,9 @@ void Plot2d_ViewFrame::plotMouseReleased( const QMouseEvent& me )
                               me.pos(), me.globalPos() );
     emit contextMenuRequested( &aEvent );
   } 
-#ifndef DISABLE_PYCONSOLE
   else {
-    updateAnaliticCurves();
+    updateAnalyticalCurves();
   }
-#endif
   myPlot->canvas()->setCursor( QCursor( Qt::CrossCursor ) );
   myPlot->defaultPicker();
 
@@ -2399,9 +2429,7 @@ void Plot2d_ViewFrame::wheelEvent(QWheelEvent* event)
   myPlot->replot();
   if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
   myPnt = event->pos();
-#ifndef DISABLE_PYCONSOLE
-  updateAnaliticCurves();
-#endif
+  updateAnalyticalCurves();
 }
 
 /*!
@@ -3217,15 +3245,14 @@ QString Plot2d_ViewFrame::getVisualParameters()
 		  myLegendFont.italic(), myLegendFont.underline(),myLegendColor.red(),
 		  myLegendColor.green(), myLegendColor.blue());
   
-#ifndef DISABLE_PYCONSOLE
-  //store all analitic curves
+  //store all Analytical curves
   //store each curve in the following format
   // ...*Name|isActive|Expresion|NbInervals|isAutoAssign[|MarkerType|LineType|LineWidth|r:g:b]
   // parameters in the [ ] is optional in case if isAutoAssign == true
-  AnaliticCurveList::iterator it = myAnaliticCurves.begin();
-  Plot2d_AnaliticCurve* c = 0;
+  AnalyticalCurveList::iterator it = myAnalyticalCurves.begin();
+  Plot2d_AnalyticalCurve* c = 0;
   bool isAuto; 
-  for( ; it != myAnaliticCurves.end(); it++) {
+  for( ; it != myAnalyticalCurves.end(); it++) {
     c = (*it);
     if(!c) continue;
     QString curveString("");
@@ -3250,7 +3277,6 @@ QString Plot2d_ViewFrame::getVisualParameters()
       retStr+=optCurveString;
     }
   }
-#endif
   return retStr; 
 }
 
@@ -3308,14 +3334,13 @@ void Plot2d_ViewFrame::setVisualParameters( const QString& parameters )
     }    
   }
 
-#ifndef DISABLE_PYCONSOLE
-  //Restore all analitical curves
+  //Restore all Analyticalal curves
   int startCurveIndex = 10;
   if( paramsLst.size() >= startCurveIndex+1 ) {
     for( int i=startCurveIndex; i<paramsLst.size() ; i++ ) {
       QStringList curveLst = paramsLst[i].split("|");
       if( curveLst.size() == 5 || curveLst.size() == 9 ) {
-	Plot2d_AnaliticCurve* c = new Plot2d_AnaliticCurve();
+	Plot2d_AnalyticalCurve* c = new Plot2d_AnalyticalCurve();
 	c->setName(curveLst[0]);
 	c->setActive(curveLst[1].toInt());
 	c->setExpression(curveLst[2]);
@@ -3334,13 +3359,12 @@ void Plot2d_ViewFrame::setVisualParameters( const QString& parameters )
 	} else {
 	  c->autoFill( myPlot );
 	}
-	c->setAction(Plot2d_AnaliticCurve::ActAddInView);
-	updateAnaliticCurve(c);
+	addAnalyticalCurve(c);
+	updateAnalyticalCurve(c);
       }
     }
     myPlot->replot();
   }
-#endif
 }
 
 /*!
@@ -3449,6 +3473,25 @@ Plot2d_Curve* Plot2d_ViewFrame::getClosestCurve( QPoint p, double& distance, int
   return 0;
 }
 
+/*!
+ \brief  Deselect all analytical curves.
+*/
+void Plot2d_ViewFrame::deselectAnalyticalCurves() {
+  foreach(Plot2d_AnalyticalCurve* c, myAnalyticalCurves) {
+   c->setSelected(false);
+  }
+}
+
+/*!
+ \brief  Deselect all objects, except analytical curves.
+*/
+void Plot2d_ViewFrame::deselectObjects() {
+  ObjectDict::const_iterator it = myObjects.begin(), aLast = myObjects.end();
+  for ( ; it != aLast; it++ ) {
+	  it.value()->setSelected(false);
+   }
+}
+
 #define INCREMENT_FOR_OP 10
 
 /*!
@@ -3457,9 +3500,7 @@ Plot2d_Curve* Plot2d_ViewFrame::getClosestCurve( QPoint p, double& distance, int
 void Plot2d_ViewFrame::onPanLeft()
 {
   this->incrementalPan( -INCREMENT_FOR_OP, 0 );
-#ifndef DISABLE_PYCONSOLE
-  updateAnaliticCurves();
-#endif
+  updateAnalyticalCurves();
 }
 
 /*!
@@ -3468,9 +3509,7 @@ void Plot2d_ViewFrame::onPanLeft()
 void Plot2d_ViewFrame::onPanRight()
 {
   this->incrementalPan( INCREMENT_FOR_OP, 0 );
-#ifndef DISABLE_PYCONSOLE
-  updateAnaliticCurves();
-#endif
+  updateAnalyticalCurves();
 }
 
 /*!
@@ -3479,9 +3518,7 @@ void Plot2d_ViewFrame::onPanRight()
 void Plot2d_ViewFrame::onPanUp()
 {
   this->incrementalPan( 0, -INCREMENT_FOR_OP );
-#ifndef DISABLE_PYCONSOLE
-  updateAnaliticCurves();
-#endif
+  updateAnalyticalCurves();
 }
 
 /*!
@@ -3490,9 +3527,7 @@ void Plot2d_ViewFrame::onPanUp()
 void Plot2d_ViewFrame::onPanDown()
 {
   this->incrementalPan( 0, INCREMENT_FOR_OP );
-#ifndef DISABLE_PYCONSOLE
-  updateAnaliticCurves();
-#endif
+  updateAnalyticalCurves();
 }
 
 /*!
@@ -3501,9 +3536,7 @@ void Plot2d_ViewFrame::onPanDown()
 void Plot2d_ViewFrame::onZoomIn()
 {
   this->incrementalZoom( INCREMENT_FOR_OP, INCREMENT_FOR_OP );
-#ifndef DISABLE_PYCONSOLE
-  updateAnaliticCurves();
-#endif
+  updateAnalyticalCurves();
 }
 
 /*!
@@ -3512,9 +3545,7 @@ void Plot2d_ViewFrame::onZoomIn()
 void Plot2d_ViewFrame::onZoomOut()
 {
   this->incrementalZoom( -INCREMENT_FOR_OP, -INCREMENT_FOR_OP );
-#ifndef DISABLE_PYCONSOLE
-  updateAnaliticCurves();
-#endif
+  updateAnalyticalCurves();
 }
 
 /*!

@@ -88,6 +88,9 @@ protected slots:
 
 signals:
   void legendSelected( const QString& );
+  void clearSelected();
+private:
+  bool myDeselectAnalytical;
 };
 
 

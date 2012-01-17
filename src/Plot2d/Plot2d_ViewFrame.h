@@ -25,9 +25,7 @@
 
 #include "Plot2d.h"
 #include "Plot2d_Curve.h"
-#ifndef DISABLE_PYCONSOLE
-#include "Plot2d_AnaliticCurve.h"
-#endif
+#include "Plot2d_AnalyticalCurve.h"
 #include "Plot2d_NormalizeAlgorithm.h"
 
 #include <QWidget>
@@ -58,7 +56,7 @@ class Plot2d_QwtPlotPicker;
 typedef QMultiHash<QwtPlotCurve*, Plot2d_Curve*>  CurveDict;
 typedef QMultiHash<QwtPlotItem*,  Plot2d_Object*> ObjectDict;
 
-class PLOT2D_EXPORT Plot2d_ViewFrame : public QWidget
+class PLOT2D_EXPORT Plot2d_ViewFrame : public QWidget, public Plot2d_CurveContainer
 { 
   Q_OBJECT
   
@@ -153,10 +151,16 @@ public:
   
   void           getFitRangeByCurves( double&, double&, double&, double&,
 				      double&, double& );
-#ifndef DISABLE_PYCONSOLE
-  void           updateAnaliticCurves();
-  void           updateAnaliticCurve( Plot2d_AnaliticCurve*, bool = false );
-#endif
+
+  void              addAnalyticalCurve( Plot2d_AnalyticalCurve* );
+  void              removeAnalyticalCurve( Plot2d_AnalyticalCurve* );
+  void              updateAnalyticalCurve( Plot2d_AnalyticalCurve*, bool = false );
+  void              updateAnalyticalCurves();
+  void              deselectAnalyticalCurves();	
+  void              deselectObjects();	
+
+  AnalyticalCurveList getAnalyticalCurves() const;
+  Plot2d_AnalyticalCurve* getAnalyticalCurve(QwtPlotItem *);
 
   /* view parameters */
   void           copyPreferences( Plot2d_ViewFrame* );
@@ -241,6 +245,10 @@ protected:
   void           setCurveType( QwtPlotCurve*, int );
   bool           hasPlotObject( Plot2d_Object* ) const;
 
+
+  
+  
+
 public slots:
   void           onViewPan(); 
   void           onViewZoom();
@@ -248,9 +256,7 @@ public slots:
   void           onViewFitArea();
   void           onViewGlobalPan(); 
   void           onSettings();
-#ifndef DISABLE_PYCONSOLE
-  void           onAnaliticCurve();
-#endif
+  void           onAnalyticalCurve();
   void           onFitData();
   void           onChangeBackground();
   void           onPanLeft();
@@ -298,9 +304,7 @@ protected:
   double              myXDistance, myYDistance, myYDistance2;
   bool                mySecondY;
   ObjectDict          myObjects;
-#ifndef DISABLE_PYCONSOLE
-  AnaliticCurveList   myAnaliticCurves;
-#endif
+  AnalyticalCurveList myAnalyticalCurves;
   Plot2d_NormalizeAlgorithm* myLNormAlgo;
   Plot2d_NormalizeAlgorithm* myRNormAlgo;
   bool                myIsDefTitle;

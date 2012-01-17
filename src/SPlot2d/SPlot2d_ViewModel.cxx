@@ -79,7 +79,8 @@ using namespace std;
   Constructor
 */
 SPlot2d_Viewer::SPlot2d_Viewer(  bool theAutoDel )
-: Plot2d_Viewer( theAutoDel )    
+: Plot2d_Viewer( theAutoDel ),
+  myDeselectAnalytical(true)
 {
 }
 
@@ -406,6 +407,23 @@ void SPlot2d_Viewer::onLegendClicked( QwtPlotItem* plotItem )
   Plot2d_ViewFrame* aViewFrame = getActiveViewFrame();
   if(aViewFrame == NULL) return;
 
+  bool isAnalytical = false;
+  AnalyticalCurveList curves = aViewFrame->getAnalyticalCurves();
+   foreach ( Plot2d_AnalyticalCurve* curve, curves ) {
+	   if(plotItem == curve->plotItem()) {
+		  isAnalytical = true;
+		  curve->setSelected(true);
+	   } else {
+		  curve->setSelected(false);
+	   }
+   }
+  if(isAnalytical) {
+	myDeselectAnalytical = false;
+	emit clearSelected();
+	aViewFrame->updateAnalyticalCurves();
+	myDeselectAnalytical = true;
+	return;
+  }
 
   Plot2d_Object* anObject = aViewFrame->getPlotObject(plotItem);
   
@@ -423,7 +441,7 @@ void SPlot2d_Viewer::onLegendClicked( QwtPlotItem* plotItem )
     
     if(!anEntry.isEmpty())
       emit legendSelected( anEntry );
-  }
+  }	
 }
 
 /*!
@@ -473,7 +491,11 @@ void SPlot2d_Viewer::setObjectsSelected( SALOME_ListIO& theList ) {
 	o->setSelected(false);
 	aViewFrame->updateObject(o);
       }
-    }    
+    }
+	if( myDeselectAnalytical ) {
+		aViewFrame->deselectAnalyticalCurves();
+		aViewFrame->updateAnalyticalCurves(); 
+	}
     aViewFrame->Repaint();
   }
 }

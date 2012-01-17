@@ -72,8 +72,8 @@
         <translation>plot2d_settings.png</translation>
     </message>
     <message>
-        <source>ICON_PLOT2D_ANALITIC_CURVES</source>
-        <translation>plot2d_analitic_curve.png</translation>
+        <source>ICON_PLOT2D_ANALYTICAL_CURVES</source>
+        <translation>plot2d_analytical_curve.png</translation>
     </message>    
     <message>
         <source>ICON_PLOT2D_CURVES_LINES</source>

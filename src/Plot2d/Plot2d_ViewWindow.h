@@ -59,7 +59,7 @@ public:
 	 LegendId,
 	 CurvSettingsId,
 	 CloneId, PrintId,
-	 AnaliticCurveId };
+	 AnalyticalCurveId };
 
 public:
   Plot2d_ViewWindow( SUIT_Desktop*, Plot2d_Viewer* );

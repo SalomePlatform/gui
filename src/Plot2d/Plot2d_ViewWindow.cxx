@@ -432,16 +432,17 @@ void Plot2d_ViewWindow::createActions()
   connect( aAction, SIGNAL( triggered( bool ) ), myViewFrame, SLOT( onSettings() ) );
   mgr->registerAction( aAction, CurvSettingsId );
 
-  // 9. Analitic curves
-  aAction = new QtxAction( tr( "TOT_PLOT2D_ANALITIC_CURVES" ),
-                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_ANALITIC_CURVES" ) ),
-                           tr( "MEN_PLOT2D_ANALITIC_CURVES" ),
+  // 9. Analytical curves
+#ifndef DISABLE_PYCONSOLE
+  aAction = new QtxAction( tr( "TOT_PLOT2D_ANALYTICAL_CURVES" ),
+                           aResMgr->loadPixmap( "Plot2d", tr( "ICON_PLOT2D_ANALYTICAL_CURVES" ) ),
+                           tr( "MEN_PLOT2D_ANALYTICAL_CURVES" ),
                            0, this );
 
-  aAction->setStatusTip( tr( "PRP_PLOT2D_ANALITIC_CURVES" ) );
-  connect( aAction, SIGNAL( triggered( bool ) ), myViewFrame, SLOT( onAnaliticCurve() ) );
-  mgr->registerAction( aAction, AnaliticCurveId );
-
+  aAction->setStatusTip( tr( "PRP_PLOT2D_ANALYTICAL_CURVES" ) );
+  connect( aAction, SIGNAL( triggered( bool ) ), myViewFrame, SLOT( onAnalyticalCurve() ) );
+  mgr->registerAction( aAction, AnalyticalCurveId );
+#endif
 
   // 10. Clone
   aAction = new QtxAction( tr( "MNU_CLONE_VIEW" ),
@@ -499,7 +500,7 @@ void Plot2d_ViewWindow::createToolBar()
   mgr->append( toolMgr()->separator(), myToolBar );
   mgr->append( LegendId, myToolBar );
   mgr->append( CurvSettingsId, myToolBar );
-  mgr->append( AnaliticCurveId, myToolBar );
+  mgr->append( AnalyticalCurveId, myToolBar );
   mgr->append( CloneId, myToolBar );
   mgr->append( PrintId, myToolBar );
 }

@@ -45,6 +45,7 @@ public:
 
 private slots:
   void         onSelectionChanged( const QString& );
+  void         onClearSelected();
 
 protected:
   virtual void getSelection( SUIT_DataOwnerPtrList& ) const;

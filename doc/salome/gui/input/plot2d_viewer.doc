@@ -144,8 +144,37 @@ or ordinate) of all points displayed in the viewer is greater than zero.
 XY plots will be displayed with these defined properties.
 <hr>
 
+\anchor analytical_curve
+\image html plot2d_analytical_curve.png
+<br><center><b>Analytical curves</b> - provides an access to the analytical curves dialog box, 
+that allows to add, remove and modify analytical curves for the Plot 2d Viewer.</center>
+
+<br>
+
+\image html analytical_curves_dlg.png
+
+The options are as follows:<br>
+Curve parameters:
+<ul>
+<li><b>y(x)=</b> allows to specify python expression, which used to calculate coordinates of the points of the curve.</li>
+<li><b>Nb. itervals</b> allows to specify number of the points of the curve.</li>
+</ul>
+Curve properties:
+<ul>
+<li><b>Auto assign</b> if it is checked, properties of the curves (Line type, Line width, Marker type and Color)
+assigned automatically.To define the properties of the curve manually remove the checkmark from this control.</li>
+<li><b>Line type</b> allows to choose curve's line type from (None, Solid, Dash, Dot, Dash - Dot, Dash - Dot - Dot).</li>
+<li><b>Line width</b> allows to specify line width of the curve.</li>
+<li><b>Marker type</b> allows to choose curve's marker type from (Circle, Rectangle, Diamond, Rightward, 
+Leftward, Downward & Upward Triangle, Cross or Diagonal Cross).</li>
+<li><b>Color</b> allows to specify color of the curve.</li>
+</ul>
+
+<hr>
+
 \image html plot2d_clone.png
 <br><center><b>Clone view</b> - opens a new duplicate scene.</center>
+
 <hr>
 
 \image html plot2d_print.png

@@ -22,6 +22,7 @@
 #include "LightApp_DataOwner.h"
 #include "LightApp_DataObject.h"
 #include "LightApp_Application.h"
+#include "SUIT_SelectionMgr.h"
 
 #include <SPlot2d_ViewModel.h>
 
@@ -36,6 +37,7 @@ LightApp_Plot2dSelector::LightApp_Plot2dSelector( Plot2d_Viewer* v, SUIT_Selecti
 {
   if ( v )
     connect( v, SIGNAL( legendSelected( const QString& ) ), this, SLOT( onSelectionChanged( const QString& ) ) );
+    connect( v, SIGNAL( clearSelected() ), this, SLOT( onClearSelected( ) ) );
 }
 
 /*!
@@ -80,4 +82,10 @@ void LightApp_Plot2dSelector::onSelectionChanged( const QString& entry )
   myCurEntry = entry;
   selectionChanged();
   myCurEntry = QString();
+}
+
+/*!On clear selected.*/
+void LightApp_Plot2dSelector::onClearSelected( ) 
+{
+	selectionMgr()->clearSelected();
 }

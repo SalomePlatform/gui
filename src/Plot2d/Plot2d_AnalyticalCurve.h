@@ -19,11 +19,11 @@
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
-//  File   : Plot2d_AnaliticCurve.h
+//  File   : Plot2d_AnalyticalCurve.h
 //  Author : Roman NIKOLAEV, Open CASCADE S.A.S. (roman.nikolaev@opencascade.com)
 
-#ifndef PLOT2D_ANALITIC_CURVE_H
-#define PLOT2D_ANALITIC_CURVE_H
+#ifndef PLOT2D_ANALYTICAL_CURVE_H
+#define PLOT2D_ANALYTICAL_CURVE_H
 
 #include "Plot2d.h"
 
@@ -32,7 +32,7 @@ class QwtPlot;
 class QwtPlotItem;
 
 
-class PLOT2D_EXPORT Plot2d_AnaliticCurve
+class PLOT2D_EXPORT Plot2d_AnalyticalCurve
 {
 public:
   
@@ -54,19 +54,24 @@ public:
     StateNeedUpdate
   };
   
-  Plot2d_AnaliticCurve();
-  Plot2d_AnaliticCurve( const Plot2d_AnaliticCurve& );
-  Plot2d_AnaliticCurve& operator= ( const Plot2d_AnaliticCurve& );
+  Plot2d_AnalyticalCurve();
+  Plot2d_AnalyticalCurve( const Plot2d_AnalyticalCurve& );
+  Plot2d_AnalyticalCurve& operator= ( const Plot2d_AnalyticalCurve& );
 
-  virtual ~Plot2d_AnaliticCurve();
+  virtual ~Plot2d_AnalyticalCurve();
 
   virtual QwtPlotItem* plotItem();
   virtual void         autoFill( const QwtPlot* );
   virtual void         updatePlotItem();
+  virtual bool         checkCurve( const QwtPlot* );
 
   virtual void         calculate();
 
   long                 getData( double** , double** ) const;
+
+  void                 setSelected(const bool);
+  bool                 isSelected() const;
+
 
 
   void                 setAutoAssign( bool );
@@ -128,13 +133,24 @@ protected:
   int                  myState;
   QwtPlotItem*         myCurve;
   bool                 myActive;
+  bool                 myIsSelected;
 
 private:
   static int           myNbCurves;
 
 };
 
-typedef QList<Plot2d_AnaliticCurve*> AnaliticCurveList;
+typedef QList<Plot2d_AnalyticalCurve*> AnalyticalCurveList;
 
-#endif //PLOT2D_ANALITIC_CURVE_H
+class PLOT2D_EXPORT Plot2d_CurveContainer
+{
+public:
+  virtual void              addAnalyticalCurve( Plot2d_AnalyticalCurve* ) = 0;
+  virtual void              removeAnalyticalCurve( Plot2d_AnalyticalCurve* ) = 0;
+  virtual void              updateAnalyticalCurve( Plot2d_AnalyticalCurve*, bool = false ) = 0;
+  virtual void              updateAnalyticalCurves() = 0;
+  virtual AnalyticalCurveList getAnalyticalCurves() const = 0;
+};
+
+#endif //PLOT2D_ANALYTICAL_CURVE_H
 

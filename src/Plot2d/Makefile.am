@@ -51,9 +51,9 @@ salomeinclude_HEADERS =		        \
 
 if ENABLE_PYCONSOLE
 salomeinclude_HEADERS +=                \
-	Plot2d_AnaliticCurve.h   	\
-	Plot2d_AnaliticCurveDlg.h       \
-        Plot2d_AnaliticParcer.h
+	Plot2d_AnalyticalCurve.h   	\
+	Plot2d_AnalyticalCurveDlg.h       \
+        Plot2d_AnalyticalParser.h
 endif
 
 
@@ -78,9 +78,9 @@ dist_libPlot2d_la_SOURCES =		\
 
 if ENABLE_PYCONSOLE
 dist_libPlot2d_la_SOURCES +=            \
-	Plot2d_AnaliticCurve.cxx	\
-	Plot2d_AnaliticCurveDlg.cxx     \
-        Plot2d_AnaliticParcer.cxx
+	Plot2d_AnalyticalCurve.cxx	\
+	Plot2d_AnalyticalCurveDlg.cxx     \
+        Plot2d_AnalyticalParser.cxx
 endif
 
 MOC_FILES =				\
@@ -97,7 +97,7 @@ MOC_FILES =				\
 	Plot2d_ToolTip_moc.cxx
 
 if ENABLE_PYCONSOLE
-MOC_FILES +=         Plot2d_AnaliticCurveDlg_moc.cxx
+MOC_FILES +=         Plot2d_AnalyticalCurveDlg_moc.cxx
 endif
 
 nodist_libPlot2d_la_SOURCES = $(MOC_FILES)
@@ -119,7 +119,7 @@ dist_salomeres_DATA =				\
 	resources/plot2d_print.png		\
 	resources/plot2d_settings.png		\
 	resources/plot2d_splines.png		\
-	resources/plot2d_analitic_curve.png	\
+	resources/plot2d_analytical_curve.png	\
 	resources/plot2d_lmax_normalization.png	\
 	resources/plot2d_lmin_normalization.png	\
 	resources/plot2d_rmax_normalization.png	\

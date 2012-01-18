@@ -3162,6 +3162,28 @@ void QtxWorkstack::setSplitter( QSplitter* splitter, const QString& parameters, 
 }
 
 /*!
+  \brief Set resize mode of all splitters opaque or transparent.
+  \param opaque opaque mode
+*/
+void QtxWorkstack::setOpaqueResize( bool opaque )
+{
+  QList<QSplitter*> splitList;
+  splitters( mySplit, splitList, true );
+  splitList << mySplit;
+  foreach( QSplitter* split, splitList )
+    split->setOpaqueResize( opaque );
+}
+
+/*!
+  \brief Get resize mode of all splitters: opaque (\c true) or transparent (\c false).
+  \return current opaque mode
+*/
+bool QtxWorkstack::opaqueResize() const
+{
+  return mySplit->opaqueResize();
+}
+
+/*!
   \brief Restore workstack configuration from the state description string.
   \param parameters workstack state description
   \return reference to this workstack

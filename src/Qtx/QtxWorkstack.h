@@ -94,6 +94,9 @@ public:
   QString             widgetToolTip( QWidget* ) const;
   void                setWidgetToolTip( QWidget*, const QString& );
 
+  void                setOpaqueResize( bool = true );
+  bool                opaqueResize() const;
+
   void Split( QWidget* wid, const Qt::Orientation o, const SplitType type );
   void Attract( QWidget* wid1, QWidget* wid2, const bool all );
   void SetRelativePosition( QWidget* wid, const Qt::Orientation o, const double pos );

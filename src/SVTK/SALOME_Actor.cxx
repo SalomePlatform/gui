@@ -484,7 +484,8 @@ SALOME_Actor
   //
   myPreHighlightActor->SetVisibility( false );
   bool anIsPreselected = myIsPreselected;
-  
+  SetPreSelected( false );
+
   Selection_Mode aSelectionMode = theSelectionEvent->mySelectionMode;
   bool anIsChanged = (mySelectionMode != aSelectionMode);
 
@@ -495,7 +496,6 @@ SALOME_Actor
   vtkFloatingPointType z = 0.0;
 
   if( !theIsHighlight ) {
-    SetPreSelected( false );
     if ( hasIO() ) {
       VTK::ActorCollectionCopy aCopy(aRenderer->GetActors());
       vtkActorCollection* theActors = aCopy.GetActors();

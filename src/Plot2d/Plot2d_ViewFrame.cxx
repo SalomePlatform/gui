@@ -628,9 +628,9 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList< QList<Plot2d_Curve*> > sys
   // Total number of curves
   //int nbAllCurve = nbSystem*nbComponent;
 
-   //std::cout << "  Nombre de systemes      = " << nbSystem << std::endl;
-   //std::cout << "  Nombre de composants    = " << nbComponent << std::endl;
-   //std::cout << "  Nombre total de courbes = " << nbAllCurve << std::endl;
+   //std::cout << "  Number of systems       = " << nbSystem << std::endl;
+   //std::cout << "  Number of components    = " << nbComponent << std::endl;
+   //std::cout << "  Number total of courbes = " << nbAllCurve << std::endl;
 
    // 1)- Construction of a list by component and by system
  
@@ -876,6 +876,7 @@ Plot2d_Curve* Plot2d_ViewFrame::createPlot2dCurve( QString & title,
   }
   plot2dCurve->setLine( lineKind, lineWidth);
   plot2dCurve->setMarkerStyle( markerKind);
+  plot2dCurve->setMarkerSize(1);
 
   // Graphical curve (QwtPlotCurve) in the drawing zone (QwtPlot) myPlot
   if (toDraw)
@@ -1121,10 +1122,19 @@ void Plot2d_ViewFrame::displayObject( Plot2d_Object* object, bool update )
     myObjects.insert( anItem, object );
     //myPlot->setCurveYAxis(curveKey, curve->getYAxis());
 
-    if ( object->rtti() == QwtPlotItem::Rtti_PlotCurve ) {
+    if ( object->rtti() == QwtPlotItem::Rtti_PlotCurve )
+    {
       Plot2d_Curve* aCurve = dynamic_cast<Plot2d_Curve*>( object );
-      if ( aCurve ) {
-        aCurve->setMarkerSize( myMarkerSize );
+      if ( aCurve )
+      {
+	//myMarkerSize = 1;
+        //aCurve->setMarkerSize( myMarkerSize );
+
+	if (aCurve->getMarkerSize() == 0)
+	{
+            aCurve->setMarkerSize( myMarkerSize );
+	}
+
         processFiltering(update);
         updatePlotItem( aCurve, anItem );
         setCurveType( getPlotCurve( aCurve ), myCurveType );

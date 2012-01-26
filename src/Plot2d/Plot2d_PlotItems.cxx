@@ -183,7 +183,7 @@ QColor Plot2d_QwtLegendItem::getColorFromPalette(QPalette::ColorRole role) {
  */
 class Plot2d_QwtPlotCurve::Plot2d_DeviationData {
 public:
-  Plot2d_DeviationData::Plot2d_DeviationData(const double *min, const double *max,const QList<int>& idx)
+  Plot2d_DeviationData(const double *min, const double *max,const QList<int>& idx)
   { 
     foreach(int index,idx) {
       myMin[index] = min[index];

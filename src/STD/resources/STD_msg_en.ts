@@ -461,7 +461,10 @@ Do you want to save changes?</translation>
     <message>
         <source>INF_DOC_SAVING_FAILS</source>
         <translation>Can&apos;t save file &quot;%1&quot;.
-Possible reason is permission denied or disc full.
+Possible reasons:
+- permission denied;
+- unsufficient disk space;
+- application error.
 Try to use another file name.</translation>
     </message>
     <message>

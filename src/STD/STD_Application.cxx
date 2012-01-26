@@ -558,7 +558,7 @@ void STD_Application::onSaveDoc()
       putInfo( "" );
       // displaying a message box as SUIT_Validator in case file can't be written (the most frequent case)
       SUIT_MessageBox::critical( desktop(), tr( "ERR_ERROR" ),
-                                 tr( "ERR_PERMISSION_DENIED" ).arg( activeStudy()->studyName() ) );
+                                 tr( "INF_DOC_SAVING_FAILS" ).arg( activeStudy()->studyName() ) );
     }
     else
       putInfo( tr( "INF_DOC_SAVED" ).arg( "" ) );

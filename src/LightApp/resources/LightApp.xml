@@ -170,7 +170,7 @@
     <!-- Plot2d viewer preferences -->
     <parameter name="Background"   value="255, 255, 255" />
     <parameter name="SelectionColor"   value="80, 80, 80" />
-    <parameter name="DeviationMarkerColor"   value="0, 0, 255" />
+    <parameter name="DeviationMarkerColor"   value="255, 0, 0" />
     <parameter name="DeviationMarkerLineWidth" value="1" />
     <parameter name="DeviationMarkerTickSize" value="2" />
     <parameter name="CurveType"    value="1" />

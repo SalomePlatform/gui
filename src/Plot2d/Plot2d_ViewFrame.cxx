@@ -416,7 +416,7 @@ void Plot2d_ViewFrame::readPreferences()
   setNormLMaxMode( resMgr->booleanValue( "Plot2d", "VerNormLMaxMode", myNormLMax ) );
   setNormRMinMode( resMgr->booleanValue( "Plot2d", "VerNormRMinMode", myNormRMin ) );
   setNormRMaxMode( resMgr->booleanValue( "Plot2d", "VerNormRMaxMode", myNormRMax ) );
-  QColor c = resMgr->colorValue( "Plot2d", "DeviationMarkerColor", QColor(0,0,255));
+  QColor c = resMgr->colorValue( "Plot2d", "DeviationMarkerColor", QColor(255,0,0));
   myPlot->setProperty(PLOT2D_DEVIATION_COLOR, c);
   myPlot->setProperty(PLOT2D_DEVIATION_LW, 
                       resMgr->integerValue( "Plot2d", "DeviationMarkerLineWidth", 1));
@@ -1539,7 +1539,7 @@ void Plot2d_ViewFrame::onSettings()
   int ts = v.isValid() ? v.toInt() : 2;
 
   v = myPlot->property(PLOT2D_DEVIATION_COLOR);
-  QColor cl =  v.isValid() ? v.value<QColor>() : QColor(0,0,255);
+  QColor cl =  v.isValid() ? v.value<QColor>() : QColor(255,0,0);
 
   dlg->setDeviationMarkerLw(lw);
   dlg->setDeviationMarkerTs(ts);

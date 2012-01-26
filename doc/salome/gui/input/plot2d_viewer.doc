@@ -127,6 +127,12 @@ description table on the XY plot (to the \b Left, to the \b Right, on
 font of Legend item.
 - <b>Marker size</b> - size of the points (markers) forming curve lines.
 - <b>Background color</b> of the XY plot.
+- <b>Deviation marker</b> here you can specify the properties of the marker, which used for the drawing
+deviations data.
+ - <b>Line width</b> line width of the marker.
+ - <b>Tick size</b> size of the upper and lower horizontal lines of the marker.
+ - <b>Color</b> color of the marker.
+
 - <b>Normalization</b> here you can select the type of normalization(\b
 minimum or/and \b maximum) for the displayed presentations of the 2d curves in the view.
 - <b>Scale mode</b> here you can select the type of scaling (\b

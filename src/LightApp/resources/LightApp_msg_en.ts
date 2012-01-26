@@ -659,6 +659,18 @@ The changes will be applied on the next application session.</translation>
         <translation>Plot2d Viewer</translation>
     </message>
     <message>
+        <source>PREF_DEVIATION_COLOR</source>
+        <translation>Deviation marker color</translation>
+    </message>
+    <message>
+        <source>PREF_DEVIATION_MARKER_LW</source>
+        <translation>Deviation marker line width</translation>
+    </message>
+    <message>
+        <source>PREF_DEVIATION_MARKER_TS</source>
+        <translation>Deviation marker tick size</translation>
+    </message>
+    <message>
         <source>MEN_DESK_MRU</source>
         <translation>Most Recently Used</translation>
     </message>

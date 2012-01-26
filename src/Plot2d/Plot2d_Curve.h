@@ -50,7 +50,7 @@ public:
 
   void                 setMarker( Plot2d::MarkerType, const int );
   void                 setMarker( Plot2d::MarkerType );
-  void		       setMarkerStyle( QwtSymbol::Style style);
+  void		             setMarkerStyle( QwtSymbol::Style style);
   Plot2d::MarkerType   getMarker() const;
   QwtSymbol::Style     getMarkerStyle() const;
   void                 setMarkerSize( const int );
@@ -61,6 +61,13 @@ public:
   Plot2d::LineType     getLine() const;
   void                 setLineWidth( const int );
   int                  getLineWidth() const;
+  void                 setDeviationData( const double*, const double*, const QList<int>&);
+  void                 getDeviationData( double*&, double*&, QList<int>& ) const;
+  void                 clearDeviationData();
+
+  virtual double          getMinY() const;
+  virtual double          getMaxY() const;
+
 
 protected:
 

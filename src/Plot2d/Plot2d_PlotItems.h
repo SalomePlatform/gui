@@ -92,14 +92,30 @@ public:
 
 public:
   virtual void     setYAxisIdentifierEnabled( const bool );
+  virtual void     draw(QPainter *p, 
+                        const QwtScaleMap &xMap, 
+                        const QwtScaleMap &yMap,
+                        int from, int to) const;
+
+  void             setDeviationData(const double* min, const double* max, const QList<int> &idx);
+  bool             hasDeviationData() const;
+  void             clearDeviationData();
+
 
 protected:
   virtual void     updateLegend( QwtLegend* ) const;
   virtual QWidget* legendItem() const;
 
+  QColor           deviationMarkerColor() const;
+  int              deviationMarkerLineWidth() const;
+  int              deviationMarkerTickSize() const;
+
 private:
-  QwtPlot::Axis    myYAxis;
-  bool             myYAxisIdentifierEnabled;
+  QwtPlot::Axis        myYAxis;
+  bool                 myYAxisIdentifierEnabled;
+  
+  class Plot2d_DeviationData;
+  Plot2d_DeviationData* myDeviationData;
 };
 
 class PLOT2D_EXPORT Plot2d_HistogramQwtItem: public QwtPlotItem

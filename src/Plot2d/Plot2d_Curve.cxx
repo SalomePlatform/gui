@@ -144,9 +144,22 @@ void Plot2d_Curve::updatePlotItem( QwtPlotItem* theItem )
 				      QPen( getColor() ), 
 				      QSize( getMarkerSize() , getMarkerSize() )));
   
-  double *x, *y;
+  double *x, *y, *min, *max;
   long nb = getData( &x, &y );
-  aCurve->setData( x, y, nb );
+  if(nb > 0 && x && y) {
+    aCurve->setData( x, y, nb );
+    delete x;
+    delete y;
+    QList<int> idx;
+    getDeviationData(min, max, idx);
+    if(idx.size() > 0 && min && max) {
+      aCurve->setDeviationData(min,max,idx);
+      delete min;
+      delete max;
+    } else {
+      aCurve->clearDeviationData();
+    }
+  }
 }
 
 /*!
@@ -274,4 +287,75 @@ int Plot2d_Curve::getLineWidth() const
 {
   return myLineWidth;
 }
+/*!
+  Sets deviation data on the curve.
+*/
+void Plot2d_Curve::setDeviationData( const double* min, const double* max,const QList<int>& idx) {
+  for( int i = 0; i < idx.size(); i++ ) {
+    if(idx[i] < myPoints.size()) {
+      myPoints[idx[i]].setDeviation(min[i], max[i]);
+    }
+  }
+}
 
+/*!
+  Gets object's data
+*/
+void Plot2d_Curve::getDeviationData( double*& theMin, double*& theMax, QList<int>& idx) const
+{
+  int aNb = 0;
+  idx.clear();
+  for (int i = 0; i < nbPoints(); i++)
+    if(myPoints[i].hasDeviation())
+      aNb++;
+  if(aNb) {
+    double min, max;
+    theMin = new double[aNb];
+    theMax = new double[aNb];
+    for (int i = 0; i < nbPoints(); i++)
+      if(myPoints[i].hasDeviation()) {
+        myPoints[i].deviation(min,max);
+        theMin[i] = min;
+        theMax[i] = max;
+        idx.push_back(i);
+      }
+  }
+}
+
+/*!
+  Clear deviation data on the curve.
+*/
+void Plot2d_Curve::clearDeviationData() {
+  for( int i=0; i < myPoints.size(); i++ )
+    myPoints[i].clearDeviation();
+}
+
+/*!
+  Gets object's minimal ordinate
+*/
+double Plot2d_Curve::getMinY() const
+{
+  double aMinY = 1e150;
+  pointList::const_iterator aIt;
+  double coeff = 0.0;
+  for (aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt) {
+    coeff = (*aIt).minDeviation();
+    aMinY = qMin( aMinY, myScale * (*aIt).y - coeff );
+  }
+  return aMinY;
+}
+
+/*!
+  Gets object's maximal ordinate
+*/
+double Plot2d_Curve::getMaxY() const
+{
+  double aMaxY = -1e150;
+  pointList::const_iterator aIt;
+  double coeff = 0.0;
+  for (aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt) {
+    coeff = (*aIt).maxDeviation();
+    aMaxY = qMax( aMaxY, myScale * (*aIt).y + coeff );
+  }
+  return aMaxY;
+}

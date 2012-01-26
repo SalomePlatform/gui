@@ -113,6 +113,37 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent,
   QLabel* aBGLab  = new QLabel( tr( "PLOT2D_BACKGROUND_COLOR_LBL" ), this );
   myBackgroundBtn = new QtxColorButton( this );
 
+  //Deviation marker parameters
+  QGroupBox* aDeviationGrp = new QGroupBox( tr( "PLOT2D_DEVIATION_MARKER_TLT" ), this );
+  QHBoxLayout* aDeviationLayout = new QHBoxLayout(aDeviationGrp);
+
+  //Deviation marker parameters : Line width
+  QLabel* aDeviationLwLbl  = new QLabel( tr( "PLOT2D_DEVIATION_LW_LBL" ), aDeviationGrp );
+  myDeviationLw  = new QSpinBox( aDeviationGrp );
+  myDeviationLw->setMinimum( 1 );
+  myDeviationLw->setMaximum( 5 );
+  myDeviationLw->setSingleStep( 1 );
+  myDeviationLw->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
+
+  //Deviation marker parameters : Line width
+  QLabel* aDeviationTsLbl  = new QLabel( tr( "PLOT2D_DEVIATION_TS_LBL" ), aDeviationGrp );
+  myDeviationTs  =  new QSpinBox( aDeviationGrp );
+  myDeviationTs->setMinimum( 1 );
+  myDeviationTs->setMaximum( 5 );
+  myDeviationTs->setSingleStep( 1 );
+  myDeviationTs->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
+
+  //Deviation marker parameters : Color
+  QLabel* aDeviationClLbl  = new QLabel( tr( "PLOT2D_DEVIATION_CL_LBL" ), aDeviationGrp );
+  myDeviationCl = new QtxColorButton( aDeviationGrp );
+
+  aDeviationLayout->addWidget( aDeviationLwLbl );
+  aDeviationLayout->addWidget( myDeviationLw );
+  aDeviationLayout->addWidget( aDeviationTsLbl );
+  aDeviationLayout->addWidget( myDeviationTs );
+  aDeviationLayout->addWidget( aDeviationClLbl );
+  aDeviationLayout->addWidget( myDeviationCl );
+
   // normalize mode
   QGroupBox* aNormalizeGrp = new QGroupBox( tr( "PLOT2D_NORMALIZE_TLT" ), this );
   QGridLayout* aNormalizeLayout = new QGridLayout( aNormalizeGrp );
@@ -358,13 +389,14 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent,
   bgLayout->addWidget( myBackgroundBtn ); bgLayout->addStretch();
   topLayout->addWidget( aBGLab,        3,    2    );
   topLayout->addLayout( bgLayout,      3,    3    );
-  topLayout->addWidget( aNormalizeGrp,      4, 0, 1, 4 );
-  topLayout->addWidget( aScaleGrp,     5, 0, 1, 4 );
-  topLayout->addWidget( aTabWidget,    6, 0, 1, 4 );
-  topLayout->addWidget( myDefCheck,    7, 0, 1, 4 );
-  topLayout->setRowStretch( 7, 5 );
+  topLayout->addWidget( aDeviationGrp,   4, 0, 1, 4 );
+  topLayout->addWidget( aNormalizeGrp,      5, 0, 1, 4 );
+  topLayout->addWidget( aScaleGrp,     6, 0, 1, 4 );
+  topLayout->addWidget( aTabWidget,    7, 0, 1, 4 );
+  topLayout->addWidget( myDefCheck,    8, 0, 1, 4 );
+  topLayout->setRowStretch( 9, 5 );
 
-  topLayout->addLayout( btnLayout,     8, 0, 1, 4 );
+  topLayout->addLayout( btnLayout,     10, 0, 1, 4 );
   
   if ( !showDefCheck )
     myDefCheck->hide();
@@ -731,6 +763,59 @@ void Plot2d_SetupViewDlg::setMarkerSize( const int size )
 int Plot2d_SetupViewDlg::getMarkerSize()
 {
   return myMarkerSpin->value();
+}
+/*!
+  \brief Set deviation marker line width.
+  \param width marker line width
+  \sa getDeviationMarkerLw()
+*/
+void Plot2d_SetupViewDlg::setDeviationMarkerLw( const int width ){
+  myDeviationLw->setValue(width);
+}
+
+/*!
+  \brief Get deviation marker line width.
+  \return marker line width
+  \sa setMarkerSize()
+*/
+int Plot2d_SetupViewDlg::getDeviationMarkerLw() const {
+  return myDeviationLw->value();
+}
+
+/*!
+  \brief Set deviation marker tick size.
+  \param size marker tick size
+  \sa getDeviationMarkerTs()
+*/
+void Plot2d_SetupViewDlg::setDeviationMarkerTs( const int size) {
+  myDeviationTs->setValue(size);
+}
+
+/*!
+  \brief Get deviation marker tick size.
+  \return marker tick size
+  \sa setDeviationMarkerTs()
+*/
+int Plot2d_SetupViewDlg::getDeviationMarkerTs() const {
+  return myDeviationTs->value();
+}
+
+/*!
+  \brief Set color of the deviation marker.
+  \param color marker color
+  \sa getDeviationMarkerCl()
+*/
+void Plot2d_SetupViewDlg::setDeviationMarkerCl( const QColor& col) {
+  myDeviationCl->setColor( col );
+}
+
+/*!
+  \brief Get color of the deviation marker.
+  \return marker color
+  \sa setDeviationMarkerCl()
+*/
+QColor Plot2d_SetupViewDlg::getDeviationMarkerCl() const {
+ return myDeviationCl->color();
 }
 
 /*!

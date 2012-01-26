@@ -39,7 +39,7 @@ const long COLOR_DISTANCE = 100;
   Constructor
 */
 Plot2d_Point::Plot2d_Point()
-  : x( 0. ), y( 0. )
+  : x( 0. ), y( 0. ), deviationPtr(0)
 {
 }
 
@@ -47,9 +47,72 @@ Plot2d_Point::Plot2d_Point()
   Constructor
 */
 Plot2d_Point::Plot2d_Point( double theX, double theY, const QString& theText )
-  : x( theX ), y( theY ), text( theText )
+  : x( theX ), y( theY ), text( theText ), deviationPtr(0)
 {
 }
+
+/*!
+  Destructor.
+*/
+Plot2d_Point::~Plot2d_Point() {
+  clearDeviation();
+}
+
+/*!
+  Free memory allocated for the deviation data.
+*/
+void Plot2d_Point::clearDeviation() {
+  if(deviationPtr)
+    delete deviationPtr;
+  deviationPtr = 0;
+}
+
+/*!
+  Return true in case if deviation data is assigned to the point.
+*/
+bool Plot2d_Point::hasDeviation() const {
+  return !(deviationPtr == 0);
+}
+
+/*!
+  Assign deviation data to the point.
+*/
+void Plot2d_Point::setDeviation(double min, double max) {
+ clearDeviation();
+ deviationPtr = new double[2];
+ deviationPtr[0] = min;deviationPtr[1] = max;
+}
+
+/*!
+  Return true in case if deviation data is assigned to the point
+  and store deviation data in the input parameters.
+*/
+bool Plot2d_Point::deviation(double& min, double& max) const {
+  if(hasDeviation()) {
+    min = deviationPtr[0];
+    max = deviationPtr[1];
+  }
+  return false;
+}
+
+/*!
+  Return minimal deviation value.
+*/
+double Plot2d_Point::minDeviation() const {
+  if(hasDeviation()) 
+    return deviationPtr[0];
+  return 0.;
+}
+
+/*!
+  Return minimal deviation value.
+*/
+double Plot2d_Point::maxDeviation() const {
+  if(hasDeviation()) 
+    return deviationPtr[1];
+  return 0.;
+}
+
 
 
 /*!

@@ -97,10 +97,10 @@ public:
   // Protection against QwtObject::drawLines() bug in Qwt 0.4.x: 
   // it crashes if switched to X/Y logarithmic mode, when one or more points have
   // non-positive X/Y coordinate
-  double               getMinX() const;
-  double               getMaxX() const;
-  double               getMinY() const;
-  double               getMaxY() const;
+  virtual double          getMinX() const;
+  virtual double          getMaxX() const;
+  virtual double          getMinY() const;
+  virtual double          getMaxY() const;
   
   void                 setSelected(const bool);
   bool                 isSelected() const;

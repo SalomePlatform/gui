@@ -42,13 +42,26 @@
 class QPainter;
 class QwtPlot;
 
+// Properties on the deviation marker.
+#define PLOT2D_DEVIATION_COLOR "DEVIATION_COLOR"
+#define PLOT2D_DEVIATION_LW "DEVIATION_LW"
+#define PLOT2D_DEVIATION_TS "DEVIATION_TS"
+
 struct PLOT2D_EXPORT Plot2d_Point
 {
   double x;
   double y;
+  double* deviationPtr;
   QString text;
   Plot2d_Point();
-    Plot2d_Point( double theX, double theY, const QString& theText = QString() );
+  Plot2d_Point( double theX, double theY, const QString& theText = QString() );
+  ~Plot2d_Point();
+  bool deviation(double& min, double& max) const;
+  bool hasDeviation() const;
+  void setDeviation(double min, double max);
+  void clearDeviation();
+  double minDeviation() const;
+  double maxDeviation() const;
 };
 
 typedef QList<Plot2d_Point> pointList;

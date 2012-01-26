@@ -416,6 +416,13 @@ void Plot2d_ViewFrame::readPreferences()
   setNormLMaxMode( resMgr->booleanValue( "Plot2d", "VerNormLMaxMode", myNormLMax ) );
   setNormRMinMode( resMgr->booleanValue( "Plot2d", "VerNormRMinMode", myNormRMin ) );
   setNormRMaxMode( resMgr->booleanValue( "Plot2d", "VerNormRMaxMode", myNormRMax ) );
+  QColor c = resMgr->colorValue( "Plot2d", "DeviationMarkerColor", QColor(0,0,255));
+  myPlot->setProperty(PLOT2D_DEVIATION_COLOR, c);
+  myPlot->setProperty(PLOT2D_DEVIATION_LW, 
+                      resMgr->integerValue( "Plot2d", "DeviationMarkerLineWidth", 1));
+  myPlot->setProperty(PLOT2D_DEVIATION_TS, 
+                      resMgr->integerValue( "Plot2d", "DeviationMarkerTickSize", 2));
+
 }
 
 /*!
@@ -1524,6 +1531,20 @@ void Plot2d_ViewFrame::onSettings()
   dlg->setLMaxNormMode(myNormLMax);
   dlg->setRMinNormMode(myNormRMin);
   dlg->setRMaxNormMode(myNormRMax);
+
+  QVariant v = myPlot->property(PLOT2D_DEVIATION_LW);
+  int lw = v.isValid() ? v.toInt() : 1;
+
+  v = myPlot->property(PLOT2D_DEVIATION_TS);
+  int ts = v.isValid() ? v.toInt() : 2;
+
+  v = myPlot->property(PLOT2D_DEVIATION_COLOR);
+  QColor cl =  v.isValid() ? v.value<QColor>() : QColor(0,0,255);
+
+  dlg->setDeviationMarkerLw(lw);
+  dlg->setDeviationMarkerTs(ts);
+  dlg->setDeviationMarkerCl(cl);
+
   //
   dlg->setMajorGrid( myXGridMajorEnabled, myPlot->axisMaxMajor( QwtPlot::xBottom ),
          myYGridMajorEnabled, myPlot->axisMaxMajor( QwtPlot::yLeft ),
@@ -1599,6 +1620,14 @@ void Plot2d_ViewFrame::onSettings()
     if ( myNormRMax != dlg->getRMaxNormMode() ) {
       setNormRMaxMode( dlg->getRMaxNormMode() );
     }
+
+    myPlot->setProperty(PLOT2D_DEVIATION_COLOR, 
+                        dlg->getDeviationMarkerCl());
+    myPlot->setProperty(PLOT2D_DEVIATION_LW, 
+                        dlg->getDeviationMarkerLw());
+    myPlot->setProperty(PLOT2D_DEVIATION_TS, 
+                         dlg->getDeviationMarkerTs());
+
 
     // update view
     myPlot->replot();

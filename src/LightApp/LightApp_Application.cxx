@@ -2360,6 +2360,20 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->addPreference( tr( "PREF_VIEWER_SELECTION" ), plot2dGroup,
                        LightApp_Preferences::Color, "Plot2d", "SelectionColor" );
 
+  pref->addPreference( tr( "PREF_DEVIATION_COLOR" ), plot2dGroup,
+                       LightApp_Preferences::Color, "Plot2d", "DeviationMarkerColor" );
+
+  int deviationMarkerLw = pref->addPreference( tr( "PREF_DEVIATION_MARKER_LW" ), plot2dGroup,
+                                        LightApp_Preferences::IntSpin, "Plot2d", "DeviationMarkerLineWidth" );
+  pref->setItemProperty( "min", 1, deviationMarkerLw );
+  pref->setItemProperty( "max", 5, deviationMarkerLw );
+
+  int deviationMarkerTs = pref->addPreference( tr( "PREF_DEVIATION_MARKER_TS" ), plot2dGroup,
+                                        LightApp_Preferences::IntSpin, "Plot2d", "DeviationMarkerTickSize" );
+
+  pref->setItemProperty( "min", 1, deviationMarkerTs );
+  pref->setItemProperty( "max", 5, deviationMarkerTs );
+
 
   int dirTab = pref->addPreference( tr( "PREF_TAB_DIRECTORIES" ), salomeCat );
   int dirGroup = pref->addPreference( tr( "PREF_GROUP_DIRECTORIES" ), dirTab );

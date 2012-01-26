@@ -332,6 +332,22 @@
         <translation>Background color:</translation>
     </message>
     <message>
+        <source>PLOT2D_DEVIATION_MARKER_TLT</source>
+        <translation>Deviation marker</translation>
+    </message>
+    <message>
+        <source>PLOT2D_DEVIATION_LW_LBL</source>
+        <translation>Line width</translation>
+    </message>
+    <message>
+        <source>PLOT2D_DEVIATION_TS_LBL</source>
+        <translation>Tick size</translation>
+    </message>
+    <message>
+        <source>PLOT2D_DEVIATION_CL_LBL</source>
+        <translation>Color</translation>
+    </message>
+    <message>
         <source>WRN_XLOG_NOT_ALLOWED</source>
         <translation>Some points with non-positive abscissa values have been detected.
 Logarithmic scale for abscissa axis is not allowed.</translation>

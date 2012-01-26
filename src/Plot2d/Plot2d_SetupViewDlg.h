@@ -94,6 +94,15 @@ public:
   int             getXScaleMode();
   int             getYScaleMode();
 
+  void            setDeviationMarkerLw( const int);
+  int             getDeviationMarkerLw() const;
+
+  void            setDeviationMarkerTs( const int);
+  int             getDeviationMarkerTs() const;
+
+  void            setDeviationMarkerCl( const QColor&);
+  QColor          getDeviationMarkerCl() const;
+
   bool            isSetAsDefault();
 
 protected slots:
@@ -153,6 +162,9 @@ private:
   QPushButton*    myOkBtn;
   QPushButton*    myCancelBtn;
   QPushButton*    myHelpBtn;
+  QSpinBox*       myDeviationLw;
+  QSpinBox*       myDeviationTs;
+  QtxColorButton* myDeviationCl;
   bool            mySecondAxisY;
 };
 

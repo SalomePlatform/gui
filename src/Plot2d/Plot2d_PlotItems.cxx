@@ -28,6 +28,8 @@
 #include <QPainter>
 #include <QPalette>
 #include <QLayout>
+#include <QLine>
+#include <QVariant>
 #include <qwt_plot.h>
 #include <qwt_painter.h>
 #include <qwt_scale_map.h>
@@ -176,6 +178,37 @@ QColor Plot2d_QwtLegendItem::getColorFromPalette(QPalette::ColorRole role) {
   } 
   return col;
 }
+/*
+ * Internal class to store deviation data on the curve.
+ */
+class Plot2d_QwtPlotCurve::Plot2d_DeviationData {
+public:
+  Plot2d_DeviationData::Plot2d_DeviationData(const double *min, const double *max,const QList<int>& idx)
+  { 
+    foreach(int index,idx) {
+      myMin[index] = min[index];
+      myMax[index] = max[index];
+    }
+  }
+  ~Plot2d_DeviationData(){}
+
+  size_t size() const 
+  { 
+    return qwtMin(myMin.size(), myMax.size()); 
+  }
+  bool values(size_t i, double &min, double &max) {
+    if(myMin.contains(i) && myMax.contains(i)) {
+      min = myMin[i];
+      max = myMax[i];
+      return true;
+    }
+    return false;
+  }
+private:
+  QMap<int,double> myMin;
+  QMap<int,double> myMax;
+};
+
 
 /*!
   Constructor of Plot2d_QwtPlotCurve
@@ -185,8 +218,9 @@ Plot2d_QwtPlotCurve::Plot2d_QwtPlotCurve( const QString& title,
   Plot2d_SelectableItem(),    					  
   QwtPlotCurve( title ),
   myYAxis( yAxis ),
-  myYAxisIdentifierEnabled( false )  
-{
+  myYAxisIdentifierEnabled( false ),
+  myDeviationData(0)
+{  
 }
 
 /*!
@@ -194,6 +228,7 @@ Plot2d_QwtPlotCurve::Plot2d_QwtPlotCurve( const QString& title,
 */
 Plot2d_QwtPlotCurve::~Plot2d_QwtPlotCurve()
 {
+  clearDeviationData();
 }
 
 /*!
@@ -262,6 +297,111 @@ QWidget* Plot2d_QwtPlotCurve::legendItem() const
 {
   return new Plot2d_QwtLegendItem;
 }
+
+/*!
+  Redefined method, which draw a set of points of a curve.
+*/
+void Plot2d_QwtPlotCurve::draw(QPainter *painter,
+                               const QwtScaleMap &xMap, const QwtScaleMap &yMap, 
+                               int from, int to) const
+{
+  if (to < 0)
+    to = dataSize() - 1;
+  QwtPlotCurve::draw(painter, xMap, yMap, from, to);
+
+  //draw deviation data
+  if(hasDeviationData()) {    
+    painter->save();
+    int lineW = deviationMarkerLineWidth();
+    int tickSz = deviationMarkerTickSize() + qRound(lineW/2);
+    double min, max, xi, yi;
+    int xp, ytop, ybtm, tickl, tickr;
+    QColor c = isSelected() ? Plot2d_Object::selectionColor() : deviationMarkerColor(); 
+    QPen p = QPen(c, lineW, Qt::SolidLine);
+    painter->setPen(p);
+    for (int i = from; i <= to; i++) {
+      if(!myDeviationData->values(i,min,max)) continue;
+      xi = x(i);
+      yi = y(i);
+      xp = xMap.transform(xi);
+      ytop = yMap.transform(yi + max);
+      ybtm = yMap.transform(yi - min);
+      tickl = xp - tickSz;
+      tickr = xp + tickSz;
+      painter->drawLine(tickl,ytop,tickr,ytop);
+      painter->drawLine(xp,ytop,xp,ybtm);
+      painter->drawLine(tickl,ybtm,tickr,ybtm);
+    }
+	  painter->restore();
+  }
+}
+
+/*!
+ * Return color of the deviation marker.
+ */
+QColor Plot2d_QwtPlotCurve::deviationMarkerColor() const {
+  QColor c(0, 0, 127);
+  if(plot()) {
+    QVariant var = plot()->property(PLOT2D_DEVIATION_COLOR);
+    if(var.isValid())
+      c = var.value<QColor>();
+  }
+  return c;
+}
+/*!
+ * Return line width of the deviation marker.
+ */
+int Plot2d_QwtPlotCurve::deviationMarkerLineWidth() const {
+  int lw = 1;
+  if(plot()) {
+    QVariant var = plot()->property(PLOT2D_DEVIATION_LW);
+    if(var.isValid())
+      lw = var.toInt();
+  }
+  return lw;
+}
+
+/*!
+ * Return tick size of the deviation marker.
+ */
+int Plot2d_QwtPlotCurve::deviationMarkerTickSize() const {
+  int ts = 2;
+  if(plot()) {
+    QVariant var = plot()->property(PLOT2D_DEVIATION_TS);
+    if(var.isValid())
+      ts = var.toInt();
+  }
+  return ts;
+}
+
+/*!
+ * Sets deviation data for the plot item.
+ */
+void Plot2d_QwtPlotCurve::setDeviationData(const double* min, const double* max,const QList<int> &idx) {
+  clearDeviationData();
+  myDeviationData = new Plot2d_DeviationData(min,max,idx);
+}
+
+/*!
+ * Return true if deviation is assigned to the plot item,
+   false otherwise.
+ */
+bool Plot2d_QwtPlotCurve::hasDeviationData() const {
+  return myDeviationData != 0;
+}
+
+/*!
+ * Remove deviation data from the plot item.
+ */
+void Plot2d_QwtPlotCurve::clearDeviationData() 
+{
+  if(myDeviationData)
+    delete myDeviationData;
+  myDeviationData = 0;
+}
+
+
+
 /*!
   Constructor.
 */

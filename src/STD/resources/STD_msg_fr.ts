@@ -461,7 +461,10 @@ Voulez-vous sauvegarder les modifications?</translation>
     <message>
         <source>INF_DOC_SAVING_FAILS</source>
         <translation>Impossible de sauvegarder le fichier &quot;%1&quot;.
-Il peut y avoir un problème de droit ou l&apos;espace disque restant est insuffisant.
+Les raisons possibles sont:
+- un problème de droit;
+- l&apos;espace disque restant est insuffisant;
+- erreur de l'application;
 Essayez d&apos;utiliser un autre nom de fichier.</translation>
     </message>
     <message>

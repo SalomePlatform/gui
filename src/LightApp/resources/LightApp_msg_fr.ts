@@ -659,6 +659,18 @@ Les modifications seront appliquées à la prochaine session.</translation>
         <translation>Visualiseur Plot2d</translation>
     </message>
     <message>
+        <source>PREF_DEVIATION_COLOR</source>
+        <translation>Couleur des marqueurs de déviation</translation>
+    </message>
+    <message>
+        <source>PREF_DEVIATION_MARKER_LW</source>
+        <translation>Epaisseur des lignes des marqueurs de déviation</translation>
+    </message>
+    <message>
+        <source>PREF_DEVIATION_MARKER_TS</source>
+        <translation>Taille des coches des marqueurs de déviation</translation>
+    </message>
+    <message>
         <source>MEN_DESK_MRU</source>
         <translation>&amp;Récemment utilisés</translation>
     </message>

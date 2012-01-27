@@ -759,7 +759,6 @@ Please, check input parameters!!!</translation>
         <source>AC_HELP_BTN</source>
         <translation>Help</translation>
     </message>
-
 </context>
 <context>
     <name>Plot2d_SetupCurveScaleDlg</name>
@@ -773,4 +772,3 @@ Please, check input parameters!!!</translation>
     </message>
 </context>
 </TS>
-

@@ -28,6 +28,26 @@
         <translation>Axe horizontal:</translation>
     </message>
     <message>
+        <source>PLOT2D_NORMALIZE_TLT</source>
+        <translation>Normalisation</translation>
+    </message>
+    <message>
+        <source>PLOT2D_NORMALIZE_MODE_MIN</source>
+        <translation>Normaliser sur le minimum</translation>
+    </message>
+    <message>
+        <source>PLOT2D_NORMALIZE_MODE_MAX</source>
+        <translation>Normaliser sur le maximum</translation>
+    </message>
+    <message>
+        <source>PLOT2D_NORMALIZE_LEFT_AXIS</source>
+        <translation>Axe Y gauche: </translation>
+    </message>
+    <message>
+        <source>PLOT2D_NORMALIZE_RIGHT_AXIS</source>
+        <translation>Axe Y droite: </translation>
+    </message>
+    <message>
         <source>PLOT2D_SCALE_MODE_VER</source>
         <translation>Axe vertical:</translation>
     </message>
@@ -70,6 +90,10 @@
     <message>
         <source>CURVE_TYPE_POPUP</source>
         <translation>Type de courbe</translation>
+    </message>
+    <message>
+        <source>NORMALIZATION_TYPE_POPUP</source>
+        <translation>Normalisation</translation>
     </message>
     <message>
         <source>TOT_PLOT2D_MODE_LINEAR_VER</source>
@@ -206,7 +230,23 @@
     <message>
         <source>TOT_PLOT2D_ANALYTICAL_CURVES</source>
         <translation>Courbes analytiques</translation>
+    </message>     
+    <message>
+        <source>TOT_PLOT2D_NORMALIZE_MODE_LMAX</source>
+        <translation>Axe Y gauche: Normaliser sur le maximum</translation>
     </message>    
+    <message>
+        <source>TOT_PLOT2D_NORMALIZE_MODE_LMIN</source>
+        <translation>Axe Y gauche: Normaliser sur le minimum global</translation>
+    </message>    
+    <message>
+        <source>TOT_PLOT2D_NORMALIZE_MODE_RMAX</source>
+        <translation>Axe Y droite: Normaliser sur le maximum</translation>
+    </message>    
+    <message>
+        <source>TOT_PLOT2D_NORMALIZE_MODE_RMIN</source>
+        <translation>Axe Y droite: Normaliser sur le minimum global</translation>
+    </message>     
     <message>
         <source>PLOT2D_CURVE_TYPE_LINES</source>
         <translation>Lignes</translation>
@@ -292,6 +332,22 @@
         <translation>Couleur d&apos;arrière-plan:</translation>
     </message>
     <message>
+        <source>PLOT2D_DEVIATION_MARKER_TLT</source>
+        <translation>Marqueur de déviation</translation>
+    </message>
+    <message>
+        <source>PLOT2D_DEVIATION_LW_LBL</source>
+        <translation>Epaisseur de ligne</translation>
+    </message>
+    <message>
+        <source>PLOT2D_DEVIATION_TS_LBL</source>
+        <translation>Taille des coches</translation>
+    </message>
+    <message>
+        <source>PLOT2D_DEVIATION_CL_LBL</source>
+        <translation>Couleur</translation>
+    </message>
+    <message>
         <source>WRN_XLOG_NOT_ALLOWED</source>
         <translation>On a détecté des points avec les valeurs non-positives sur l&apos;abscisse.
 L&apos;échelle logarithmique de l&apos;abscisse n&apos;est pas permise.</translation>
@@ -358,6 +414,22 @@ L&apos;échelle logarithmique de l&apos;ordonnée n&apos;est pas permise.</trans
         <translation>Réglage des propriétés des courbes analytiques</translation>
     </message>
     <message>
+        <source>PRP_PLOT2D_NORMALIZE_MODE_LMAX</source>
+        <translation>Bascule la vue vers le mode de normalisation sur le maximum pour l'axe Y gauche</translation>
+    </message>
+    <message>
+        <source>PRP_PLOT2D_NORMALIZE_MODE_LMIN</source>
+        <translation>Bascule la vue vers le mode de normalisation sur le minimum pour l'axe Y gauche</translation>
+    </message>
+    <message>
+        <source>PRP_PLOT2D_NORMALIZE_MODE_RMAX</source>
+        <translation>Bascule la vue vers le mode de normalisation sur le maximum pour l'axe Y droite</translation>
+    </message>
+    <message>
+        <source>PRP_PLOT2D_NORMALIZE_MODE_RMIN</source>
+        <translation>Bascule la vue vers le mode de normalisation sur le minimum pour l'axe Y droite</translation>
+    </message>
+    <message>
         <source>PRP_PLOT2D_SETTINGS</source>
         <translation>Définit les paramètres de visualisation</translation>
     </message>
@@ -396,6 +468,22 @@ L&apos;échelle logarithmique de l&apos;ordonnée n&apos;est pas permise.</trans
     <message>
         <source>MEN_PLOT2D_MODE_LOGARITHMIC_VER</source>
         <translation>Axe vertical: logarithmique</translation>
+    </message>
+    <message>
+        <source>MEN_PLOT2D_NORMALIZE_MODE_LMIN</source>
+        <translation>Axe Y gauche: Minimum</translation>
+    </message>
+    <message>
+        <source>MEN_PLOT2D_NORMALIZE_MODE_LMAX</source>
+        <translation>Axe Y gauche: Maximum</translation>
+    </message>
+    <message>
+        <source>MEN_PLOT2D_NORMALIZE_MODE_RMIN</source>
+        <translation>Axe Y droite: Minimum</translation>
+    </message>
+    <message>
+        <source>MEN_PLOT2D_NORMALIZE_MODE_RMAX</source>
+        <translation>Axe Y droite: Maximum</translation>
     </message>
     <message>
         <source>PRP_PLOT2D_FITDATA</source>
@@ -655,6 +743,10 @@ L&apos;échelle logarithmique de l&apos;ordonnée n&apos;est pas permise.</trans
         <translation>Mettre à jour la courbe</translation>
     </message>                    
     <message>
+        <source>AC_APPLY_BTN</source>
+        <translation>Appliquer</translation>
+    </message>                    
+    <message>
         <source>AC_CANT_CALCULATE</source>
         <translation>La courbe ne peut pas être calculée. 
 Merci de vérifier les paramètres d&apos;entrée</translation>
@@ -662,6 +754,10 @@ Merci de vérifier les paramètres d&apos;entrée</translation>
     <message>
         <source>AC_CLOSE_BTN</source>
         <translation>&amp;Fermer</translation>
+    </message>
+    <message>
+        <source>AC_HELP_BTN</source>
+        <translation>Aide</translation>
     </message>
 </context>
 <context>

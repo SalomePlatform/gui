@@ -28,6 +28,9 @@ object will be displayed in the viewer by default.</li>
 <b>Quality Control</b> diagrams at the necessary level of precision.</li>
 <li><b>Number of digits after point</b> - defines precision for <b>Quality Controls</b>. By default, numbers in <b>Quality Control</b>
 diagrams are presented as integers.</li>
+<li><b>Double nodes tolerance</b> defines maximal distance between two
+mesh nodes at which they are considered coincident by <b>Double nodes</b>
+quality control.
 </ul>
 <li><b>Display mode</b> - allows to set Wireframe, Shading, Nodes or Shrink
 presentation mode as default.</li>

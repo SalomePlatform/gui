@@ -18,9 +18,10 @@
 #ifndef __vtkEDFFactory_h
 #define __vtkEDFFactory_h
 
+#include "vtkEDFOverloadsDefines.h"
 #include "vtkObjectFactory.h"
 
-class VTK_EXPORT vtkEDFFactory : public vtkObjectFactory
+class VTKEDF_OVERLOADS_EXPORT vtkEDFFactory : public vtkObjectFactory
 {
 public:
 // Methods from vtkObject

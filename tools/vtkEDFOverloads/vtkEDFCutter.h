@@ -20,9 +20,10 @@
 #ifndef __vtkEDFCutter_h__
 #define __vtkEDFCutter_h__
 
+#include "vtkEDFOverloadsDefines.h"
 #include "vtkCutter.h"
 
-class VTK_EXPORT vtkEDFCutter : public vtkCutter
+class VTKTOOLS_EXPORT vtkEDFCutter : public vtkCutter
 {
 public :
   static vtkEDFCutter* New();

@@ -26,7 +26,8 @@ libparaview_LTLIBRARIES = libvtkEDFOverloads.la
 lib_LTLIBRARIES = libvtkTools.la
 
 salomeinclude_HEADERS = vtkEDFCutter.h \
-	vtkEDFFactory.h
+			vtkEDFFactory.h \
+			vtkEDFOverloadsDefines.h
 
 dist_libvtkEDFOverloads_la_SOURCES = vtkEDFFactory.cxx
 dist_libvtkTools_la_SOURCES = vtkEDFCutter.cxx
@@ -35,4 +36,5 @@ libvtkEDFOverloads_la_CPPFLAGS = $(VTK_INCLUDES)
 libvtkTools_la_CPPFLAGS = $(VTK_INCLUDES)
 
 libvtkEDFOverloads_la_LDFLAGS = $(VTK_LIBS)
+libvtkEDFOverloads_la_LIBADD = libvtkTools.la
 libvtkTools_la_LDFLAGS = $(VTK_LIBS)

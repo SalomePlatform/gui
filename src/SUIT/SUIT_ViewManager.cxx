@@ -44,7 +44,8 @@ SUIT_ViewManager::SUIT_ViewManager( SUIT_Study* theStudy,
 : QObject( 0 ),
 myDesktop( theDesktop ),
 myTitle( "Default: %M - viewer %V" ),
-myStudy( NULL )
+myStudy( NULL ),
+myFlags( None )
 {
   myViewModel = 0;
   myActiveView = 0;
@@ -140,7 +141,7 @@ QString SUIT_ViewManager::prepareTitle( const QString& title, const int mId, con
 /*! Creates View, adds it into list of views and returns just created view window*/
 SUIT_ViewWindow* SUIT_ViewManager::createViewWindow()
 {
-  SUIT_ViewWindow* aView = myViewModel->createView(myDesktop);
+  SUIT_ViewWindow* aView = myViewModel->createView( myDesktop );
 
   if ( !insertView( aView ) ){
     delete aView;
@@ -151,19 +152,34 @@ SUIT_ViewWindow* SUIT_ViewManager::createViewWindow()
   aView->setWindowIcon( QIcon( myIcon ) );
   aView->setViewManager( this );
 
-  myDesktop->addWindow( aView );
+  bool extView = myFlags & ExternalViews;
+
+  if ( myDesktop && !extView )
+    myDesktop->addWindow( aView );
   //it is done automatically during creation of view
 
   emit viewCreated( aView );
 
+  if ( myDesktop && !extView )
+    aView->show();
+
   // Special treatment for the case when <aView> is the first one in this view manager
   // -> call onWindowActivated() directly, because somebody may always want
   // to use getActiveView()
-  aView->show();
   if ( !myActiveView )
     onWindowActivated( aView );
 
   return aView;
+}
+
+int SUIT_ViewManager::flags() const
+{
+  return myFlags;
+}
+
+void SUIT_ViewManager::setFlags( int f )
+{
+  myFlags = f;
 }
 
 /*! Get identifier */

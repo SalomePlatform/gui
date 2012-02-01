@@ -45,6 +45,11 @@ class SUIT_ViewWindow;
 class SUIT_EXPORT SUIT_ViewManager : public QObject, public SUIT_PopupClient
 {
   Q_OBJECT
+
+public:
+  enum { None          = 0x000000,
+         ExternalViews = 0x000001 };
+
 public:
   SUIT_ViewManager( SUIT_Study*,
                     SUIT_Desktop*,
@@ -76,6 +81,9 @@ public:
   bool             isVisible() const;
   virtual void     setShown( const bool );
   virtual void     setDestructiveClose( const bool );
+
+  int              flags() const;
+  void             setFlags( int );
 
   int              getId() const;
 
@@ -136,6 +144,8 @@ protected:
   QPixmap                     myIcon;
   QString                     myTitle;
   SUIT_Study*                 myStudy;
+
+  int                         myFlags;
 
   static QMap<QString, int>   _ViewMgrId;
 };

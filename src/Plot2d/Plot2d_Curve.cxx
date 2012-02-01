@@ -338,9 +338,10 @@ double Plot2d_Curve::getMinY() const
   double aMinY = 1e150;
   pointList::const_iterator aIt;
   double coeff = 0.0;
-  for (aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt) {
-    coeff = (*aIt).minDeviation();
-    aMinY = qMin( aMinY, myScale * (*aIt).y - coeff );
+  for (aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt) {    
+    aMinY = qMin( aMinY, myScale * (*aIt).y );
+    if((*aIt).minDeviation(coeff))
+      aMinY = qMin( aMinY, coeff );
   }
   return aMinY;
 }
@@ -354,8 +355,9 @@ double Plot2d_Curve::getMaxY() const
   pointList::const_iterator aIt;
   double coeff = 0.0;
   for (aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt) {
-    coeff = (*aIt).maxDeviation();
-    aMaxY = qMax( aMaxY, myScale * (*aIt).y + coeff );
+    aMaxY = qMax( aMaxY, myScale * (*aIt).y);
+    if((*aIt).maxDeviation(coeff))
+      aMaxY = qMax( aMaxY, coeff);
   }
   return aMaxY;
 }

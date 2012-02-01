@@ -60,8 +60,8 @@ struct PLOT2D_EXPORT Plot2d_Point
   bool hasDeviation() const;
   void setDeviation(double min, double max);
   void clearDeviation();
-  double minDeviation() const;
-  double maxDeviation() const;
+  bool minDeviation(double& min) const;
+  bool maxDeviation(double& max) const;
 };
 
 typedef QList<Plot2d_Point> pointList;

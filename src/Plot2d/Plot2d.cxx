@@ -98,19 +98,23 @@ bool Plot2d_Point::deviation(double& min, double& max) const {
 /*!
   Return minimal deviation value.
 */
-double Plot2d_Point::minDeviation() const {
-  if(hasDeviation()) 
-    return deviationPtr[0];
-  return 0.;
+bool Plot2d_Point::minDeviation(double& min) const {
+  if(hasDeviation()) {
+    min = deviationPtr[0];
+    return true;
+  }
+  return false;
 }
 
 /*!
   Return minimal deviation value.
 */
-double Plot2d_Point::maxDeviation() const {
-  if(hasDeviation()) 
-    return deviationPtr[1];
-  return 0.;
+bool Plot2d_Point::maxDeviation(double& max) const {
+  if(hasDeviation()) {
+    max = deviationPtr[1];
+    return true;
+  }
+  return false;
 }
 
 

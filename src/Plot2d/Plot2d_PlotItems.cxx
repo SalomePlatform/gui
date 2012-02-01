@@ -324,8 +324,8 @@ void Plot2d_QwtPlotCurve::draw(QPainter *painter,
       xi = x(i);
       yi = y(i);
       xp = xMap.transform(xi);
-      ytop = yMap.transform(yi + max);
-      ybtm = yMap.transform(yi - min);
+      ytop = yMap.transform(max);
+      ybtm = yMap.transform(min);
       tickl = xp - tickSz;
       tickr = xp + tickSz;
       painter->drawLine(tickl,ytop,tickr,ytop);

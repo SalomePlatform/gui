@@ -1597,10 +1597,19 @@ bool SalomeApp_Application::checkDataObject(LightApp_DataObject* theObj)
 /*! Process standard messages from desktop */
 void SalomeApp_Application::onDesktopMessage( const QString& message )
 {
-  // update object browser
   if ( message.toLower() == "updateobjectbrowser" ||
-       message.toLower() == "updateobjbrowser" )
+       message.toLower() == "updateobjbrowser" ) {
+    // update object browser
     updateObjectBrowser();
+  }
+  if ( message.toLower().startsWith( "preferences" ) ) {
+    // preferences changed: should be given as "preferences:<section>:<name>:<value>",
+    // for example "preferences:Study:multi_file_dump:true"
+    QStringList data = message.split( ":" );
+    if ( data.count() > 3 ) {
+      resourceMgr()->setValue( data[1], data[2], data[3] );
+    }
+  }
 }
 
 /*!

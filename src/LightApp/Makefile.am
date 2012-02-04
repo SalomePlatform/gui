@@ -183,13 +183,11 @@ nodist_salomeres_DATA =		\
 
 libLightApp_la_CPPFLAGS = $(PYTHON_INCLUDES) $(QT_INCLUDES) $(CAS_CPPFLAGS)		\
 	$(HDF5_INCLUDES) @KERNEL_CXXFLAGS@ -I$(srcdir)/../SUIT -I$(srcdir)/../STD	\
-	$(OPENCV_INCLUDES)								\
 	-I$(srcdir)/../CAM -I$(srcdir)/../ObjBrowser -I$(srcdir)/../LogWindow		\
 	-I$(srcdir)/../Prs -I$(srcdir)/../Qtx -I$(srcdir)/../Event -I$(srcdir)/../Style	\
 	-I$(srcdir)/../CASCatch
 
-libLightApp_la_LDFLAGS = $(QT_MT_LIBS)							\
-	$(OPENCV_LIBS)
+libLightApp_la_LDFLAGS = $(QT_MT_LIBS)
 
 if ENABLE_VTKVIEWER
   libLightApp_la_CPPFLAGS += $(VTK_INCLUDES) -I$(srcdir)/../VTKViewer

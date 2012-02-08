@@ -53,8 +53,6 @@ public:
   QString          text() const;
   void             setText( const QString& );
 
-  static QColor    mainColorToSecondary( const QColor&, int );
-
 private slots:
   void             updateState();
 

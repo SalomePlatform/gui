@@ -2031,13 +2031,17 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   QStringList     aValuesList;
   QList<QVariant> anIndicesList;
 
+  // . Top-level "SALOME" preferences group <<start>>
   int salomeCat = pref->addPreference( tr( "PREF_CATEGORY_SALOME" ) );
   pref->setItemIcon( salomeCat, Qtx::scaleIcon( resourceMgr()->loadPixmap( "LightApp", tr( "APP_DEFAULT_ICO" ), false ), 20 ) );
 
+  // .. "General" preferences tab <<start>>
   int genTab = pref->addPreference( tr( "PREF_TAB_GENERAL" ), salomeCat );
 
+  // ... "Language" group <<start>>
   int langGroup = pref->addPreference( tr( "PREF_GROUP_LANGUAGE" ), genTab );
   pref->setItemProperty( "columns", 2, langGroup );
+  // .... -> application language
   int curLang = pref->addPreference( tr( "PREF_CURRENT_LANGUAGE" ), langGroup,
                                           LightApp_Preferences::Selector, "language", "language" );
   QStringList aLangs = SUIT_Session::session()->resourceMgr()->stringValue( "language", "languages", "en" ).split( "," );
@@ -2047,384 +2051,64 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   }
   pref->setItemProperty( "strings", aLangs, curLang );
   pref->setItemProperty( "icons",   aIcons, curLang );
+  // ... "Language" group <<end>>
 
+  // ... "Look and feel" group <<start>>
   int lookGroup = pref->addPreference( tr( "PREF_GROUP_LOOK_AND_FEEL" ), genTab );
+  // .... -> opaque resize
   pref->addPreference( tr( "PREF_OPAQUE_RESIZE" ), lookGroup, LightApp_Preferences::Bool, "desktop", "opaque_resize" );
+  // .... -> drop-down buttons 
+  pref->addPreference( tr( "PREF_DROP_DOWN_BUTTONS" ), lookGroup, LightApp_Preferences::Bool, "viewers", "drop_down_buttons" );
+  // ... "Look and feel" group <<end>>
 
+  // ... "Study properties" group <<start>>
   int studyGroup = pref->addPreference( tr( "PREF_GROUP_STUDY" ), genTab );
-
   pref->setItemProperty( "columns", 2, studyGroup );
-
+  // .... -> multi-file save
   pref->addPreference( tr( "PREF_MULTI_FILE" ), studyGroup, LightApp_Preferences::Bool, "Study", "multi_file" );
+  // .... -> ascii save mode
   pref->addPreference( tr( "PREF_ASCII_FILE" ), studyGroup, LightApp_Preferences::Bool, "Study", "ascii_file" );
+  // .... -> store windows geometry
   pref->addPreference( tr( "PREF_STORE_POS" ),  studyGroup, LightApp_Preferences::Bool, "Study", "store_positions" );
-
+  // .... -> auto-save
   int autoSaveInterval = pref->addPreference( tr( "PREF_AUTO_SAVE" ),  studyGroup,
                                               LightApp_Preferences::IntSpin, "Study", "auto_save_interval" );
   pref->setItemProperty( "min",        0, autoSaveInterval );
   pref->setItemProperty( "max",     1440, autoSaveInterval );
   pref->setItemProperty( "special", tr( "PREF_AUTO_SAVE_DISABLED" ), autoSaveInterval );
+  // ... "Study properties" group <<end>>
 
+  // ... "Help browser" group <<start>>
   int extgroup = pref->addPreference( tr( "PREF_GROUP_EXT_BROWSER" ), genTab, LightApp_Preferences::Auto, "ExternalBrowser", "use_external_browser");
-  QString platform;
 #ifdef WIN32
-  platform = "winapplication";
+  QString platform = "winapplication";
 #else
-  platform = "application";
+  QString platform = "application";
 #endif
+  // .... -> browser application
   int apppref = pref->addPreference( tr( "PREF_APP" ), extgroup, LightApp_Preferences::File, "ExternalBrowser", platform );
   pref->setItemProperty( "mode", Qtx::PT_OpenFile, apppref );
-
+  // .... -> browser parameters
   pref->addPreference( tr( "PREF_PARAM" ), extgroup, LightApp_Preferences::String, "ExternalBrowser", "parameters" );
+  // ... "Help browser" group <<end>>
 
+  // ... "Python console properties" group <<start>>
   int pythonConsoleGroup = pref->addPreference( tr( "PREF_GROUP_PY_CONSOLE" ), genTab );
+  // .... -> font
   pref->addPreference( tr( "PREF_FONT" ), pythonConsoleGroup, LightApp_Preferences::Font, "PyConsole", "font" );
+  // .... -> show banner
   pref->addPreference( tr( "PREF_SHOW_BANNER" ), pythonConsoleGroup, LightApp_Preferences::Bool, "PyConsole", "show_banner" );
+  // ... "Python console properties" group <<end>>
 
-  int viewTab = pref->addPreference( tr( "PREF_TAB_VIEWERS" ), salomeCat );
-
-  int genGroup = pref->addPreference( tr( "PREF_GROUP_COMMON" ), viewTab );
-
-  pref->addPreference( tr( "PREF_DROP_DOWN_BUTTONS" ), genGroup,
-                       LightApp_Preferences::Bool, "viewers", "drop_down_buttons" );
-
-  int occGroup = pref->addPreference( tr( "PREF_GROUP_OCCVIEWER" ), viewTab );
-
-  int vtkGroup = pref->addPreference( tr( "PREF_GROUP_VTKVIEWER" ), viewTab );
-
-  int plot2dGroup = pref->addPreference( tr( "PREF_GROUP_PLOT2DVIEWER" ), viewTab );
-
-  /* VSR : 26/02/09 : temporarily comment : SUPERV is not migrated to Qt 4
-  int supervGroup = pref->addPreference( tr( "PREF_GROUP_SUPERV" ), viewTab );
-  ----> end VSR : 26/02/09 */
-
-  pref->setItemProperty( "columns", 2, occGroup );
-  pref->setItemProperty( "columns", 1, vtkGroup );
-  pref->setItemProperty( "columns", 2, plot2dGroup );
-
-  // OCC Viewer
-  int occTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), occGroup,
-                                   LightApp_Preferences::DblSpin, "OCCViewer", "trihedron_size" );
-  pref->setItemProperty( "min", 1.0E-06, occTS );
-  pref->setItemProperty( "max", 1000, occTS );
-
-  pref->addPreference( tr( "PREF_RELATIVE_SIZE" ), occGroup, LightApp_Preferences::Bool, "OCCViewer", "relative_size" );
-
-  int occStyleMode = pref->addPreference( tr( "PREF_NAVIGATION" ), occGroup,
-                                          LightApp_Preferences::Selector, "OCCViewer", "navigation_mode" );
-
-
-  int isoU = pref->addPreference( tr( "PREF_ISOS_U" ), occGroup,
-                                  LightApp_Preferences::IntSpin, "OCCViewer", "iso_number_u" );
-  pref->setItemProperty( "min", 0, isoU );
-  pref->setItemProperty( "max", 100000, isoU );
-
-  int isoV = pref->addPreference( tr( "PREF_ISOS_V" ), occGroup,
-                                  LightApp_Preferences::IntSpin, "OCCViewer", "iso_number_v" );
-  pref->setItemProperty( "min", 0, isoV );
-  pref->setItemProperty( "max", 100000, isoV );
-
-  //pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), occGroup,
-  //                     LightApp_Preferences::Color, "OCCViewer", "background" );
-  pref->addPreference( tr( "PREF_XZVIEWER_BACKGROUND" ), occGroup,
-                       LightApp_Preferences::Color, "OCCViewer", "xz_background" );
-  pref->addPreference( tr( "PREF_YZVIEWER_BACKGROUND" ), occGroup,
-                       LightApp_Preferences::Color, "OCCViewer", "yz_background" );
-
-  pref->addPreference( tr( "PREF_XYVIEWER_BACKGROUND" ), occGroup,
-                       LightApp_Preferences::Color, "OCCViewer", "xy_background" );
-  pref->addPreference( tr( "PREF_3DVIEWER_BACKGROUND" ), occGroup,
-                       LightApp_Preferences::Color, "OCCViewer", "background" );
-
-  QStringList aStyleModeList;
-  aStyleModeList.append( tr("PREF_STANDARD_STYLE") );
-  aStyleModeList.append( tr("PREF_KEYFREE_STYLE") );
-
-  QList<QVariant> aModeIndexesList;
-  aModeIndexesList.append(0);
-  aModeIndexesList.append(1);
-
-  pref->setItemProperty( "strings", aStyleModeList, occStyleMode );
-  pref->setItemProperty( "indexes", aModeIndexesList, occStyleMode );
-
-#if OCC_VERSION_LARGE > 0x0603000A // available only with OCC-6.3-sp11 and higher version
-  int occZoomingStyleMode = pref->addPreference( tr( "PREF_ZOOMING" ), occGroup,
-                                                 LightApp_Preferences::Selector, "OCCViewer", "zooming_mode" );
-  QStringList anOCCZoomingStyleModeList;
-  anOCCZoomingStyleModeList.append( tr("PREF_ZOOMING_AT_CENTER") );
-  anOCCZoomingStyleModeList.append( tr("PREF_ZOOMING_AT_CURSOR") );
-
-  pref->setItemProperty( "strings", anOCCZoomingStyleModeList, occZoomingStyleMode );
-  pref->setItemProperty( "indexes", aModeIndexesList, occZoomingStyleMode );
-#endif
-
-  pref->addPreference( tr( "PREF_SHOW_STATIC_TRIHEDRON" ), occGroup, LightApp_Preferences::Bool, "OCCViewer", "show_static_trihedron" );
-
-  // VTK Viewer
-  int vtkGen = pref->addPreference( "", vtkGroup, LightApp_Preferences::Frame );
-  pref->setItemProperty( "columns", 2, vtkGen );
-
-  int vtkProjMode = pref->addPreference( tr( "PREF_PROJECTION_MODE" ), vtkGen,
-                                         LightApp_Preferences::Selector, "VTKViewer", "projection_mode" );
-  QStringList aProjModeList;
-  aProjModeList.append( tr("PREF_ORTHOGRAPHIC") );
-  aProjModeList.append( tr("PREF_PERSPECTIVE") );
-
-  pref->setItemProperty( "strings", aProjModeList, vtkProjMode );
-  pref->setItemProperty( "indexes", aModeIndexesList, vtkProjMode );
-
-  pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), vtkGen,
-                       LightApp_Preferences::Color, "VTKViewer", "background" );
-
-  int vtkTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), vtkGen,
-                                   LightApp_Preferences::DblSpin, "VTKViewer", "trihedron_size" );
-
-  pref->setItemProperty( "min", 1.0E-06, vtkTS );
-  pref->setItemProperty( "max", 150, vtkTS );
-
-  pref->addPreference( tr( "PREF_RELATIVE_SIZE" ), vtkGen, LightApp_Preferences::Bool, "VTKViewer", "relative_size" );
-
-  int vtkStyleMode = pref->addPreference( tr( "PREF_NAVIGATION" ), vtkGen,
-                                          LightApp_Preferences::Selector, "VTKViewer", "navigation_mode" );
-
-  pref->setItemProperty( "strings", aStyleModeList, vtkStyleMode );
-  pref->setItemProperty( "indexes", aModeIndexesList, vtkStyleMode );
-
-  int vtkZoomingStyleMode = pref->addPreference( tr( "PREF_ZOOMING" ), vtkGen,
-                                                 LightApp_Preferences::Selector, "VTKViewer", "zooming_mode" );
-
-  QStringList aVTKZoomingStyleModeList;
-  aVTKZoomingStyleModeList.append( tr("PREF_ZOOMING_AT_CENTER") );
-  aVTKZoomingStyleModeList.append( tr("PREF_ZOOMING_AT_CURSOR") );
-
-  pref->setItemProperty( "strings", aVTKZoomingStyleModeList, vtkZoomingStyleMode );
-  pref->setItemProperty( "indexes", aModeIndexesList, vtkZoomingStyleMode );
-
-  int vtkSpeed = pref->addPreference( tr( "PREF_INCREMENTAL_SPEED" ), vtkGen,
-                                      LightApp_Preferences::IntSpin, "VTKViewer", "speed_value" );
-
-  pref->setItemProperty( "min", 1, vtkSpeed );
-  pref->setItemProperty( "max", 1000, vtkSpeed );
-
-  int vtkSpeedMode = pref->addPreference( tr( "PREF_INCREMENTAL_SPEED_MODE" ), vtkGen,
-                                          LightApp_Preferences::Selector, "VTKViewer", "speed_mode" );
-  QStringList aSpeedModeList;
-  aSpeedModeList.append( tr("PREF_ARITHMETIC") );
-  aSpeedModeList.append( tr("PREF_GEOMETRICAL") );
-
-  pref->setItemProperty( "strings", aSpeedModeList, vtkSpeedMode );
-  pref->setItemProperty( "indexes", aModeIndexesList, vtkSpeedMode );
-
-  pref->addPreference( tr( "PREF_SHOW_STATIC_TRIHEDRON" ), vtkGen, LightApp_Preferences::Bool, "VTKViewer", "show_static_trihedron" );
-  pref->addPreference( tr( "PREF_DYNAMIC_PRESELECTION" ),  vtkGen, LightApp_Preferences::Bool, "VTKViewer", "dynamic_preselection" );
-
-  int vtkSM = pref->addPreference( tr( "PREF_FRAME_SPACEMOUSE" ), vtkGroup, LightApp_Preferences::GroupBox );
-  pref->setItemProperty( "columns", 2, vtkSM );
-  int spacemousePref1 = pref->addPreference( tr( "PREF_SPACEMOUSE_FUNC_1" ), vtkSM,
-                                             LightApp_Preferences::Selector, "VTKViewer",
-                                             "spacemouse_func1_btn" ); //decrease_speed_increment
-  int spacemousePref2 = pref->addPreference( tr( "PREF_SPACEMOUSE_FUNC_2" ), vtkSM,
-                                             LightApp_Preferences::Selector, "VTKViewer",
-                                             "spacemouse_func2_btn" ); //increase_speed_increment
-  int spacemousePref3 = pref->addPreference( tr( "PREF_SPACEMOUSE_FUNC_3" ), vtkSM,
-                                             LightApp_Preferences::Selector, "VTKViewer",
-                                             "spacemouse_func5_btn" ); //dominant_combined_switch
-
-  QStringList values;
-  values.append( tr( "PREF_SPACEMOUSE_BTN_1" ) );
-  values.append( tr( "PREF_SPACEMOUSE_BTN_2" ) );
-  values.append( tr( "PREF_SPACEMOUSE_BTN_3" ) );
-  values.append( tr( "PREF_SPACEMOUSE_BTN_4" ) );
-  values.append( tr( "PREF_SPACEMOUSE_BTN_5" ) );
-  values.append( tr( "PREF_SPACEMOUSE_BTN_6" ) );
-  values.append( tr( "PREF_SPACEMOUSE_BTN_7" ) );
-  values.append( tr( "PREF_SPACEMOUSE_BTN_8" ) );
-  values.append( tr( "PREF_SPACEMOUSE_BTN_*" ) );
-  values.append( tr( "PREF_SPACEMOUSE_BTN_10" ) );
-  values.append( tr( "PREF_SPACEMOUSE_BTN_11" ) );
-  QList<QVariant> indices;
-  indices.append( 1 );
-  indices.append( 2 );
-  indices.append( 3 );
-  indices.append( 4 );
-  indices.append( 5 );
-  indices.append( 6 );
-  indices.append( 7 );
-  indices.append( 8 );
-  indices.append( 9 ); // == button_*
-  indices.append( 10 );
-  indices.append( 11 );
-  pref->setItemProperty( "strings", values, spacemousePref1 );
-  pref->setItemProperty( "indexes", indices, spacemousePref1 );
-  pref->setItemProperty( "strings", values, spacemousePref2 );
-  pref->setItemProperty( "indexes", indices, spacemousePref2 );
-  pref->setItemProperty( "strings", values, spacemousePref3 );
-  pref->setItemProperty( "indexes", indices, spacemousePref3 );
-
-  int vtkRec = pref->addPreference( tr( "PREF_FRAME_RECORDING" ), vtkGroup, LightApp_Preferences::GroupBox );
-  pref->setItemProperty( "columns", 2, vtkRec );
-
-  int modePref = pref->addPreference( tr( "PREF_RECORDING_MODE" ), vtkRec,
-                                      LightApp_Preferences::Selector, "VTKViewer", "recorder_mode" );
-  values.clear();
-  values.append( tr( "PREF_SKIPPED_FRAMES" ) );
-  values.append( tr( "PREF_ALL_DISLPAYED_FRAMES" ) );
-  indices.clear();
-  indices.append( 0 );
-  indices.append( 1 );
-  pref->setItemProperty( "strings", values, modePref );
-  pref->setItemProperty( "indexes", indices, modePref );
-
-  int fpsPref = pref->addPreference( tr( "PREF_FPS" ), vtkRec,
-                                     LightApp_Preferences::DblSpin, "VTKViewer", "recorder_fps" );
-  pref->setItemProperty( "min", 0.1, fpsPref );
-  pref->setItemProperty( "max", 100, fpsPref );
-
-  int qualityPref = pref->addPreference( tr( "PREF_QUALITY" ), vtkRec,
-                                         LightApp_Preferences::IntSpin, "VTKViewer", "recorder_quality" );
-  pref->setItemProperty( "min", 1, qualityPref );
-  pref->setItemProperty( "max", 100, qualityPref );
-
-  pref->addPreference( tr( "PREF_PROGRESSIVE" ), vtkRec,
-                       LightApp_Preferences::Bool, "VTKViewer", "recorder_progressive" );
-
-  int vtkGN = pref->addPreference( tr( "PREF_FRAME_GROUP_NAMES" ), vtkGroup,
-                                   LightApp_Preferences::GroupBox, "VTKViewer", "show_group_names" );
-  pref->setItemProperty( "columns", 2, vtkGN );
-
-  pref->addPreference( tr( "PREF_GROUP_NAMES_TEXT_COLOR" ), vtkGN,
-                       LightApp_Preferences::Color, "VTKViewer", "group_names_text_color" );
-  int transPref = pref->addPreference( tr( "PREF_GROUP_NAMES_TRANSPARENCY" ), vtkGN,
-                                       LightApp_Preferences::DblSpin, "VTKViewer", "group_names_transparency" );
-
-  pref->setItemProperty( "min", 0.0, transPref );
-  pref->setItemProperty( "max", 1.0, transPref );
-  pref->setItemProperty( "step", 0.1, transPref );
-
-  // Plot2d
-  pref->addPreference( tr( "PREF_SHOW_LEGEND" ), plot2dGroup,
-                       LightApp_Preferences::Bool, "Plot2d", "ShowLegend" );
-
-  int legendPosition = pref->addPreference( tr( "PREF_LEGEND_POSITION" ), plot2dGroup,
-                                            LightApp_Preferences::Selector, "Plot2d", "LegendPos" );
-  aValuesList.clear();
-  anIndicesList.clear();
-  aValuesList   << tr("PREF_LEFT") << tr("PREF_RIGHT") << tr("PREF_TOP") << tr("PREF_BOTTOM");
-  anIndicesList << 0               << 1                << 2              << 3                ;
-
-  pref->setItemProperty( "strings", aValuesList,   legendPosition );
-  pref->setItemProperty( "indexes", anIndicesList, legendPosition );
-
-  pref->addPreference( tr( "PREF_LEGEND_FONT" ), plot2dGroup, LightApp_Preferences::Font, "Plot2d", "LegendFont" );
-
-  int curveType = pref->addPreference( tr( "PREF_CURVE_TYPE" ), plot2dGroup,
-                                       LightApp_Preferences::Selector, "Plot2d", "CurveType" );
-  aValuesList.clear();
-  anIndicesList.clear();
-  aValuesList   << tr("PREF_POINTS") << tr("PREF_LINES") << tr("PREF_SPLINE");
-  anIndicesList << 0                 << 1                << 2                ;
-
-  pref->setItemProperty( "strings", aValuesList,   curveType );
-  pref->setItemProperty( "indexes", anIndicesList, curveType );
-
-  int markerSize = pref->addPreference( tr( "PREF_MARKER_SIZE" ), plot2dGroup,
-                                        LightApp_Preferences::IntSpin, "Plot2d", "MarkerSize" );
-
-  pref->setItemProperty( "min", 0, markerSize );
-  pref->setItemProperty( "max", 100, markerSize );
-
-  aValuesList.clear();
-  anIndicesList.clear();
-  aValuesList   << tr("PREF_LINEAR") << tr("PREF_LOGARITHMIC");
-  anIndicesList << 0                 << 1                     ;
-
-  int horScale = pref->addPreference( tr( "PREF_HOR_AXIS_SCALE" ), plot2dGroup,
-                                      LightApp_Preferences::Selector, "Plot2d", "HorScaleMode" );
-
-  pref->setItemProperty( "strings", aValuesList,   horScale );
-  pref->setItemProperty( "indexes", anIndicesList, horScale );
-
-  int verScale = pref->addPreference( tr( "PREF_VERT_AXIS_SCALE" ), plot2dGroup,
-                                      LightApp_Preferences::Selector, "Plot2d", "VerScaleMode" );
-
-  pref->setItemProperty( "strings", aValuesList,   verScale );
-  pref->setItemProperty( "indexes", anIndicesList, verScale );
-
-  pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), plot2dGroup,
-                       LightApp_Preferences::Color, "Plot2d", "Background" );
-
-  pref->addPreference( tr( "PREF_FONT_COLOR" ), plot2dGroup, LightApp_Preferences::Color, "Plot2d", "LegendFontColor" );
-
-  pref->addPreference( tr( "PREF_SELECTED_FONT_COLOR" ), plot2dGroup, LightApp_Preferences::Color, "Plot2d", "SelectedLegendFontColor" );
-
-  pref->addPreference( tr( "PREF_VIEWER_SELECTION" ), plot2dGroup,
-                       LightApp_Preferences::Color, "Plot2d", "SelectionColor" );
-
-  pref->addPreference( tr( "PREF_DEVIATION_COLOR" ), plot2dGroup,
-                       LightApp_Preferences::Color, "Plot2d", "DeviationMarkerColor" );
-
-  int deviationMarkerLw = pref->addPreference( tr( "PREF_DEVIATION_MARKER_LW" ), plot2dGroup,
-                                        LightApp_Preferences::IntSpin, "Plot2d", "DeviationMarkerLineWidth" );
-  pref->setItemProperty( "min", 1, deviationMarkerLw );
-  pref->setItemProperty( "max", 5, deviationMarkerLw );
-
-  int deviationMarkerTs = pref->addPreference( tr( "PREF_DEVIATION_MARKER_TS" ), plot2dGroup,
-                                        LightApp_Preferences::IntSpin, "Plot2d", "DeviationMarkerTickSize" );
-
-  pref->setItemProperty( "min", 1, deviationMarkerTs );
-  pref->setItemProperty( "max", 5, deviationMarkerTs );
-
-
-  int dirTab = pref->addPreference( tr( "PREF_TAB_DIRECTORIES" ), salomeCat );
-  int dirGroup = pref->addPreference( tr( "PREF_GROUP_DIRECTORIES" ), dirTab );
-  pref->addPreference( tr( "" ), dirGroup,
-                       LightApp_Preferences::DirList, "FileDlg", "QuickDirList" );
-
-  /* VSR : 26/02/09 : temporarily comment : SUPERV is not migrated to Qt 4
-  pref->setItemProperty( "columns", 4, supervGroup );
-  pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), supervGroup,
-                       LightApp_Preferences::Color, "SUPERVGraph", "Background" );
-  pref->addPreference( tr( "PREF_SUPERV_TITLE_COLOR" ), supervGroup,
-                       LightApp_Preferences::Color, "SUPERVGraph", "Title" );
-//  pref->addPreference( tr( "PREF_SUPERV_CTRL_COLOR" ), supervGroup,
-//                     LightApp_Preferences::Color, "SUPERVGraph", "Ctrl" );
-  ----> end VSR : 26/02/09 */
-
-  int obTab = pref->addPreference( tr( "PREF_TAB_OBJBROWSER" ), salomeCat );
-  int stGroup = pref->addPreference( tr( "PREF_OBJ_BROWSER_SEARCH_TOOL" ), obTab );
-  pref->addPreference( tr( "PREF_AUTO_HIDE_SEARCH_TOOL" ), stGroup, LightApp_Preferences::Bool,
-                       "ObjectBrowser", "auto_hide_search_tool" );
-
-  int objSetGroup = pref->addPreference( tr( "PREF_OBJ_BROWSER_SETTINGS" ), obTab );
-  pref->setItemProperty( "columns", 2, objSetGroup );
-  pref->addPreference( tr( "PREF_AUTO_SIZE_FIRST" ), objSetGroup, LightApp_Preferences::Bool,
-                       "ObjectBrowser", "auto_size_first" );
-  pref->addPreference( tr( "PREF_AUTO_SIZE" ), objSetGroup, LightApp_Preferences::Bool,
-                       "ObjectBrowser", "auto_size" );
-  pref->addPreference( tr( "PREF_RESIZE_ON_EXPAND_ITEM" ), objSetGroup, LightApp_Preferences::Bool,
-                       "ObjectBrowser", "resize_on_expand_item" );
-  int browsePublished = pref->addPreference( tr( "PREF_BROWSE_TO_THE_PUBLISHED_OBJECT" ), objSetGroup, LightApp_Preferences::Selector,
-                                             "ObjectBrowser", "browse_published_object" );
-  aValuesList.clear();
-  anIndicesList.clear();
-  aValuesList << tr( "PREF_BROWSE_NEVER" ) << tr( "PREF_BROWSE_AFTER_APPLY_AND_CLOSE_ONLY" ) << tr( "PREF_BROWSE_ALWAYS" );
-  anIndicesList << BP_Never << BP_ApplyAndClose << BP_Always;
-  pref->setItemProperty( "strings", aValuesList,   browsePublished );
-  pref->setItemProperty( "indexes", anIndicesList, browsePublished );
-
-  // Shortcuts preferences
-  int shortcutTab = pref->addPreference( tr( "PREF_TAB_SHORTCUTS" ), salomeCat );
-  int shortcutGroup = pref->addPreference( tr( "PREF_GROUP_SHORTCUTS" ), shortcutTab );
-  pref->addPreference( tr( "" ), shortcutGroup,
-                       LightApp_Preferences::ShortcutTree, "shortcuts" );
-
-  // MRU preferences
+  // ... "MRU" preferences group <<start>>
   int mruGroup = pref->addPreference( tr( "PREF_GROUP_MRU" ), genTab, LightApp_Preferences::Auto, "MRU", "show_mru" );
   pref->setItemProperty( "columns", 4, mruGroup );
+  // number of MRU items
   int mruVisCount = pref->addPreference( tr( "PREF_MRU_VISIBLE_COUNT" ), mruGroup, LightApp_Preferences::IntSpin,
                                          "MRU", "visible_count" );
   pref->setItemProperty( "min", 0,   mruVisCount );
   pref->setItemProperty( "max", 100, mruVisCount );
+  // MRU links type
   int mruLinkType = pref->addPreference( tr( "PREF_MRU_LINK_TYPE" ), mruGroup, LightApp_Preferences::Selector,
                                          "MRU", "link_type" );
   aValuesList.clear();
@@ -2433,6 +2117,348 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   anIndicesList << 0                        << 1                         << 2                       ;
   pref->setItemProperty( "strings", aValuesList,   mruLinkType );
   pref->setItemProperty( "indexes", anIndicesList, mruLinkType );
+  // ... "MRU" preferences group <<end>>
+  // .. "General" preferences tab <<end>>
+
+  // .. "OCC viewer" group <<start>>
+  int occGroup = pref->addPreference( tr( "PREF_GROUP_OCCVIEWER" ), salomeCat );
+
+  // ... "Trihedron" group <<start>>
+  int occTriGroup = pref->addPreference( tr( "PREF_TRIHEDRON" ), occGroup );
+  pref->setItemProperty( "columns", 2, occTriGroup );
+  // .... -> trihedron size
+  int occTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), occTriGroup,
+                                   LightApp_Preferences::DblSpin, "OCCViewer", "trihedron_size" );
+  pref->setItemProperty( "min", 1.0E-06, occTS );
+  pref->setItemProperty( "max", 1000, occTS );
+  // .... -> relative size of trihedron
+  pref->addPreference( tr( "PREF_RELATIVE_SIZE" ), occTriGroup, LightApp_Preferences::Bool, "OCCViewer", "relative_size" );
+  // .... -> show static trihedron
+  pref->addPreference( tr( "PREF_SHOW_STATIC_TRIHEDRON" ), occTriGroup, LightApp_Preferences::Bool, "OCCViewer", "show_static_trihedron" );
+  // ... "Trihedron" group <<end>>
+
+  // ... "Iso-lines" group <<start>>
+  int isoGroup = pref->addPreference( tr( "PREF_ISOS" ), occGroup );
+  pref->setItemProperty( "columns", 2, isoGroup );
+  // .... -> nb isos U
+  int isoU = pref->addPreference( tr( "PREF_ISOS_U" ), isoGroup,
+                                  LightApp_Preferences::IntSpin, "OCCViewer", "iso_number_u" );
+  pref->setItemProperty( "min", 0, isoU );
+  pref->setItemProperty( "max", 100000, isoU );
+  // .... -> nb isos V
+  int isoV = pref->addPreference( tr( "PREF_ISOS_V" ), isoGroup,
+                                  LightApp_Preferences::IntSpin, "OCCViewer", "iso_number_v" );
+  pref->setItemProperty( "min", 0, isoV );
+  pref->setItemProperty( "max", 100000, isoV );
+  // ... "Iso-lines" group <<end>>
+
+  // ... "Background" group <<start>>
+  int bgGroup = pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), occGroup );
+  pref->setItemProperty( "columns", 2, bgGroup );
+  // .... -> 3D viewer background
+  pref->addPreference( tr( "PREF_3DVIEWER_BACKGROUND" ), bgGroup,
+                       LightApp_Preferences::Color, "OCCViewer", "background" );
+  // .... -> XZ viewer background
+  pref->addPreference( tr( "PREF_XZVIEWER_BACKGROUND" ), bgGroup,
+                       LightApp_Preferences::Color, "OCCViewer", "xz_background" );
+  // .... -> YZ viewer background
+  pref->addPreference( tr( "PREF_YZVIEWER_BACKGROUND" ), bgGroup,
+                       LightApp_Preferences::Color, "OCCViewer", "yz_background" );
+  // .... -> XY viewer background
+  pref->addPreference( tr( "PREF_XYVIEWER_BACKGROUND" ), bgGroup,
+                       LightApp_Preferences::Color, "OCCViewer", "xy_background" );
+  // ... "Background" group <<end>>
+
+  // ... -> empty frame (for layout) <<start>>
+  int occGen = pref->addPreference( "", occGroup, LightApp_Preferences::Frame );
+  pref->setItemProperty( "margin",  0, occGen );
+  pref->setItemProperty( "columns", 2, occGen );
+  // .... -> navigation mode
+  int occStyleMode = pref->addPreference( tr( "PREF_NAVIGATION" ), occGen,
+                                          LightApp_Preferences::Selector, "OCCViewer", "navigation_mode" );
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList   << tr("PREF_STANDARD_STYLE") << tr("PREF_KEYFREE_STYLE");
+  anIndicesList << 0                         << 1;
+  pref->setItemProperty( "strings", aValuesList,   occStyleMode );
+  pref->setItemProperty( "indexes", anIndicesList, occStyleMode );
+  // .... -> zooming mode
+#if OCC_VERSION_LARGE > 0x0603000A // available only with OCC-6.3-sp11 and higher version
+  int occZoomingStyleMode = pref->addPreference( tr( "PREF_ZOOMING" ), occGen,
+                                                 LightApp_Preferences::Selector, "OCCViewer", "zooming_mode" );
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList   << tr("PREF_ZOOMING_AT_CENTER") << tr("PREF_ZOOMING_AT_CURSOR");
+  anIndicesList << 0                            << 1;
+  pref->setItemProperty( "strings", aValuesList,   occZoomingStyleMode );
+  pref->setItemProperty( "indexes", anIndicesList, occZoomingStyleMode );
+#endif
+  // ... -> empty frame (for layout) <<end>>
+  // .. "OCC viewer" group <<end>>
+
+  // .. "VTK viewer" group <<start>>
+  int vtkGroup = pref->addPreference( tr( "PREF_GROUP_VTKVIEWER" ), salomeCat ); //viewTab
+
+  // ... -> empty frame (for layout) <<start>>
+  int vtkGen = pref->addPreference( "", vtkGroup, LightApp_Preferences::Frame );
+  pref->setItemProperty( "columns", 2, vtkGen );
+  // .... -> projection mode
+  int vtkProjMode = pref->addPreference( tr( "PREF_PROJECTION_MODE" ), vtkGen,
+                                         LightApp_Preferences::Selector, "VTKViewer", "projection_mode" );
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList   << tr("PREF_ORTHOGRAPHIC") << tr("PREF_PERSPECTIVE");
+  anIndicesList << 0                       << 1;
+  pref->setItemProperty( "strings", aValuesList,   vtkProjMode );
+  pref->setItemProperty( "indexes", anIndicesList, vtkProjMode );
+  // .... -> background
+  pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), vtkGen,
+                       LightApp_Preferences::Color, "VTKViewer", "background" );
+  // .... -> navigation mode
+  int vtkStyleMode = pref->addPreference( tr( "PREF_NAVIGATION" ), vtkGen,
+                                          LightApp_Preferences::Selector, "VTKViewer", "navigation_mode" );
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList   << tr("PREF_STANDARD_STYLE") << tr("PREF_KEYFREE_STYLE");
+  anIndicesList << 0                         << 1;
+  pref->setItemProperty( "strings", aValuesList,   vtkStyleMode );
+  pref->setItemProperty( "indexes", anIndicesList, vtkStyleMode );
+  // .... -> zooming mode
+  int vtkZoomingStyleMode = pref->addPreference( tr( "PREF_ZOOMING" ), vtkGen,
+                                                 LightApp_Preferences::Selector, "VTKViewer", "zooming_mode" );
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList   << tr("PREF_ZOOMING_AT_CENTER") << tr("PREF_ZOOMING_AT_CURSOR");
+  anIndicesList << 0                            << 1;
+  pref->setItemProperty( "strings", aValuesList,   vtkZoomingStyleMode );
+  pref->setItemProperty( "indexes", anIndicesList, vtkZoomingStyleMode );
+  // .... -> speed increment
+  int vtkSpeed = pref->addPreference( tr( "PREF_INCREMENTAL_SPEED" ), vtkGen,
+                                      LightApp_Preferences::IntSpin, "VTKViewer", "speed_value" );
+  pref->setItemProperty( "min", 1, vtkSpeed );
+  pref->setItemProperty( "max", 1000, vtkSpeed );
+  // .... -> speed mode
+  int vtkSpeedMode = pref->addPreference( tr( "PREF_INCREMENTAL_SPEED_MODE" ), vtkGen,
+                                          LightApp_Preferences::Selector, "VTKViewer", "speed_mode" );
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList   << tr("PREF_ARITHMETIC") << tr("PREF_GEOMETRICAL");
+  anIndicesList << 0                     << 1;
+  pref->setItemProperty( "strings", aValuesList,   vtkSpeedMode );
+  pref->setItemProperty( "indexes", anIndicesList, vtkSpeedMode );
+  // .... -> dynamic pre-selection
+  pref->addPreference( tr( "PREF_DYNAMIC_PRESELECTION" ),  vtkGen, LightApp_Preferences::Bool, "VTKViewer", "dynamic_preselection" );
+  // ... -> empty frame (for layout) <<end>>
+
+  // ... "Trihedron" group <<start>>
+  int vtkTriGroup = pref->addPreference( tr( "PREF_TRIHEDRON" ), vtkGroup );
+  pref->setItemProperty( "columns", 2, vtkTriGroup );
+  // .... -> trihedron size
+  int vtkTS = pref->addPreference( tr( "PREF_TRIHEDRON_SIZE" ), vtkTriGroup,
+                                   LightApp_Preferences::DblSpin, "VTKViewer", "trihedron_size" );
+  pref->setItemProperty( "min", 1.0E-06, vtkTS );
+  pref->setItemProperty( "max", 150, vtkTS );
+  // .... -> relative size of trihedron
+  pref->addPreference( tr( "PREF_RELATIVE_SIZE" ), vtkTriGroup, LightApp_Preferences::Bool, "VTKViewer", "relative_size" );
+  // .... -> static trihedron
+  pref->addPreference( tr( "PREF_SHOW_STATIC_TRIHEDRON" ), vtkTriGroup, LightApp_Preferences::Bool, "VTKViewer", "show_static_trihedron" );
+  // ... "Trihedron" group <<end>>
+
+  // ... space mouse sub-group <<start>>
+  int vtkSM = pref->addPreference( tr( "PREF_FRAME_SPACEMOUSE" ), vtkGroup, LightApp_Preferences::GroupBox );
+  pref->setItemProperty( "columns", 2, vtkSM );
+  // .... -> decrease speed increment
+  int spacemousePref1 = pref->addPreference( tr( "PREF_SPACEMOUSE_FUNC_1" ), vtkSM,
+                                             LightApp_Preferences::Selector, "VTKViewer",
+                                             "spacemouse_func1_btn" );
+  // .... -> increase speed increment
+  int spacemousePref2 = pref->addPreference( tr( "PREF_SPACEMOUSE_FUNC_2" ), vtkSM,
+                                             LightApp_Preferences::Selector, "VTKViewer",
+                                             "spacemouse_func2_btn" );
+  // .... -> dominant / combined switch  
+  int spacemousePref3 = pref->addPreference( tr( "PREF_SPACEMOUSE_FUNC_3" ), vtkSM,
+                                             LightApp_Preferences::Selector, "VTKViewer",
+                                             "spacemouse_func5_btn" ); //
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList << tr( "PREF_SPACEMOUSE_BTN_1" )  << tr( "PREF_SPACEMOUSE_BTN_2" ) << tr( "PREF_SPACEMOUSE_BTN_3" );
+  aValuesList << tr( "PREF_SPACEMOUSE_BTN_4" )  << tr( "PREF_SPACEMOUSE_BTN_5" ) << tr( "PREF_SPACEMOUSE_BTN_6" );
+  aValuesList << tr( "PREF_SPACEMOUSE_BTN_7" )  << tr( "PREF_SPACEMOUSE_BTN_8" ) << tr( "PREF_SPACEMOUSE_BTN_*" );
+  aValuesList << tr( "PREF_SPACEMOUSE_BTN_10" ) << tr( "PREF_SPACEMOUSE_BTN_11" );
+  anIndicesList << 1 << 2 << 3 << 4 << 5 << 6 << 7 << 8 << 9 << 10 << 11;
+  pref->setItemProperty( "strings", aValuesList,   spacemousePref1 );
+  pref->setItemProperty( "indexes", anIndicesList, spacemousePref1 );
+  pref->setItemProperty( "strings", aValuesList,   spacemousePref2 );
+  pref->setItemProperty( "indexes", anIndicesList, spacemousePref2 );
+  pref->setItemProperty( "strings", aValuesList,   spacemousePref3 );
+  pref->setItemProperty( "indexes", anIndicesList, spacemousePref3 );
+  // ... space mouse sub-group <<end>>
+
+  // ... avi recording sub-group <<start>>
+  int vtkRec = pref->addPreference( tr( "PREF_FRAME_RECORDING" ), vtkGroup, LightApp_Preferences::GroupBox );
+  pref->setItemProperty( "columns", 2, vtkRec );
+  // .... -> recording mode
+  int modePref = pref->addPreference( tr( "PREF_RECORDING_MODE" ), vtkRec,
+                                      LightApp_Preferences::Selector, "VTKViewer", "recorder_mode" );
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList   << tr( "PREF_SKIPPED_FRAMES" ) << tr( "PREF_ALL_DISLPAYED_FRAMES" );
+  anIndicesList << 0                           << 1;
+  pref->setItemProperty( "strings", aValuesList,   modePref );
+  pref->setItemProperty( "indexes", anIndicesList, modePref );
+  // .... -> fps
+  int fpsPref = pref->addPreference( tr( "PREF_FPS" ), vtkRec,
+                                     LightApp_Preferences::DblSpin, "VTKViewer", "recorder_fps" );
+  pref->setItemProperty( "min", 0.1, fpsPref );
+  pref->setItemProperty( "max", 100, fpsPref );
+  // .... -> quality
+  int qualityPref = pref->addPreference( tr( "PREF_QUALITY" ), vtkRec,
+                                         LightApp_Preferences::IntSpin, "VTKViewer", "recorder_quality" );
+  pref->setItemProperty( "min", 1, qualityPref );
+  pref->setItemProperty( "max", 100, qualityPref );
+  // .... -> progressive mode
+  pref->addPreference( tr( "PREF_PROGRESSIVE" ), vtkRec,
+                       LightApp_Preferences::Bool, "VTKViewer", "recorder_progressive" );
+  // ... avi recording sub-group <<end>>
+
+  // ... group names sub-group <<start>>
+  int vtkGN = pref->addPreference( tr( "PREF_FRAME_GROUP_NAMES" ), vtkGroup,
+                                   LightApp_Preferences::GroupBox, "VTKViewer", "show_group_names" );
+  pref->setItemProperty( "columns", 2, vtkGN );
+  // .... -> text color
+  pref->addPreference( tr(  "PREF_GROUP_NAMES_TEXT_COLOR" ), vtkGN,
+                       LightApp_Preferences::Color, "VTKViewer", "group_names_text_color" );
+  // .... -> transparency
+  int transPref = pref->addPreference( tr( "PREF_GROUP_NAMES_TRANSPARENCY" ), vtkGN,
+                                       LightApp_Preferences::DblSpin, "VTKViewer", "group_names_transparency" );
+  pref->setItemProperty( "min", 0.0, transPref );
+  pref->setItemProperty( "max", 1.0, transPref );
+  pref->setItemProperty( "step", 0.1, transPref );
+  // ... -> group names sub-group <<end>>
+  // .. "VTK viewer" group <<end>>
+
+  // .. "Plot2d viewer" group <<start>>
+  int plot2dGroup = pref->addPreference( tr( "PREF_GROUP_PLOT2DVIEWER" ), salomeCat ); //viewTab
+  //pref->setItemProperty( "columns", 2, plot2dGroup );
+
+  // ... -> show legend
+  pref->addPreference( tr( "PREF_SHOW_LEGEND" ), plot2dGroup,
+                       LightApp_Preferences::Bool, "Plot2d", "ShowLegend" );
+  // ... -> legend position
+  int legendPosition = pref->addPreference( tr( "PREF_LEGEND_POSITION" ), plot2dGroup,
+                                            LightApp_Preferences::Selector, "Plot2d", "LegendPos" );
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList   << tr("PREF_LEFT") << tr("PREF_RIGHT") << tr("PREF_TOP") << tr("PREF_BOTTOM");
+  anIndicesList << 0               << 1                << 2              << 3                ;
+  pref->setItemProperty( "strings", aValuesList,   legendPosition );
+  pref->setItemProperty( "indexes", anIndicesList, legendPosition );
+  // ... -> legend font
+  pref->addPreference( tr( "PREF_LEGEND_FONT" ), plot2dGroup, LightApp_Preferences::Font, "Plot2d", "LegendFont" );
+  // ... -> curve type
+  int curveType = pref->addPreference( tr( "PREF_CURVE_TYPE" ), plot2dGroup,
+                                       LightApp_Preferences::Selector, "Plot2d", "CurveType" );
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList   << tr("PREF_POINTS") << tr("PREF_LINES") << tr("PREF_SPLINE");
+  anIndicesList << 0                 << 1                << 2                ;
+  pref->setItemProperty( "strings", aValuesList,   curveType );
+  pref->setItemProperty( "indexes", anIndicesList, curveType );
+  // ... -> marker size
+  int markerSize = pref->addPreference( tr( "PREF_MARKER_SIZE" ), plot2dGroup,
+                                        LightApp_Preferences::IntSpin, "Plot2d", "MarkerSize" );
+  pref->setItemProperty( "min", 0, markerSize );
+  pref->setItemProperty( "max", 100, markerSize );
+  // ... -> horizontal scaling mode
+  int horScale = pref->addPreference( tr( "PREF_HOR_AXIS_SCALE" ), plot2dGroup,
+                                      LightApp_Preferences::Selector, "Plot2d", "HorScaleMode" );
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList   << tr("PREF_LINEAR") << tr("PREF_LOGARITHMIC");
+  anIndicesList << 0                 << 1                     ;
+  pref->setItemProperty( "strings", aValuesList,   horScale );
+  pref->setItemProperty( "indexes", anIndicesList, horScale );
+  // ... -> vertical scaling mode
+  int verScale = pref->addPreference( tr( "PREF_VERT_AXIS_SCALE" ), plot2dGroup,
+                                      LightApp_Preferences::Selector, "Plot2d", "VerScaleMode" );
+  pref->setItemProperty( "strings", aValuesList,   verScale );
+  pref->setItemProperty( "indexes", anIndicesList, verScale );
+  // ... -> background
+  pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), plot2dGroup,
+                       LightApp_Preferences::Color, "Plot2d", "Background" );
+  // ... -> font color
+  pref->addPreference( tr( "PREF_FONT_COLOR" ), plot2dGroup, LightApp_Preferences::Color, "Plot2d", "LegendFontColor" );
+  // ... -> selection font color
+  pref->addPreference( tr( "PREF_SELECTED_FONT_COLOR" ), plot2dGroup, LightApp_Preferences::Color, "Plot2d", "SelectedLegendFontColor" );
+  // ... -> selection color
+  pref->addPreference( tr( "PREF_VIEWER_SELECTION" ), plot2dGroup,
+                       LightApp_Preferences::Color, "Plot2d", "SelectionColor" );
+  // ... -> errors/deviation colot
+  pref->addPreference( tr( "PREF_DEVIATION_COLOR" ), plot2dGroup,
+                       LightApp_Preferences::Color, "Plot2d", "DeviationMarkerColor" );
+  // ... -> deviation markers line size
+  int deviationMarkerLw = pref->addPreference( tr( "PREF_DEVIATION_MARKER_LW" ), plot2dGroup,
+                                        LightApp_Preferences::IntSpin, "Plot2d", "DeviationMarkerLineWidth" );
+  pref->setItemProperty( "min", 1, deviationMarkerLw );
+  pref->setItemProperty( "max", 5, deviationMarkerLw );
+  // ... -> deviation markers tick mark size
+  int deviationMarkerTs = pref->addPreference( tr( "PREF_DEVIATION_MARKER_TS" ), plot2dGroup,
+                                        LightApp_Preferences::IntSpin, "Plot2d", "DeviationMarkerTickSize" );
+  pref->setItemProperty( "min", 1, deviationMarkerTs );
+  pref->setItemProperty( "max", 5, deviationMarkerTs );
+  // .. "Plot2d viewer" group <<end>>
+
+  // .. "Directories" preferences tab <<start>>
+  int dirTab = pref->addPreference( tr( "PREF_TAB_DIRECTORIES" ), salomeCat );
+  // ... --> quick directories list
+  int dirGroup = pref->addPreference( tr( "PREF_GROUP_DIRECTORIES" ), dirTab );
+  pref->addPreference( tr( "" ), dirGroup,
+                       LightApp_Preferences::DirList, "FileDlg", "QuickDirList" );
+  // .. "Directories" preferences tab <<end>>
+
+  // .. "Object browser" preferences tab <<start>>
+  int obTab = pref->addPreference( tr( "PREF_TAB_OBJBROWSER" ), salomeCat );
+
+  // ... "Search tool" group <<start>>
+  int stGroup = pref->addPreference( tr( "PREF_OBJ_BROWSER_SEARCH_TOOL" ), obTab );
+  // .... --> auto-hide
+  pref->addPreference( tr( "PREF_AUTO_HIDE_SEARCH_TOOL" ), stGroup, LightApp_Preferences::Bool,
+                       "ObjectBrowser", "auto_hide_search_tool" );
+  // ... "Search tool" group <<end>>
+
+  // ... "Object browser settings" group <<start>>
+  int objSetGroup = pref->addPreference( tr( "PREF_OBJ_BROWSER_SETTINGS" ), obTab );
+  pref->setItemProperty( "columns", 2, objSetGroup );
+  // .... -> auto size first column
+  pref->addPreference( tr( "PREF_AUTO_SIZE_FIRST" ), objSetGroup, LightApp_Preferences::Bool,
+                       "ObjectBrowser", "auto_size_first" );
+  // .... -> auto size other columns
+  pref->addPreference( tr( "PREF_AUTO_SIZE" ), objSetGroup, LightApp_Preferences::Bool,
+                       "ObjectBrowser", "auto_size" );
+  // .... -> resize columns on expand item
+  pref->addPreference( tr( "PREF_RESIZE_ON_EXPAND_ITEM" ), objSetGroup, LightApp_Preferences::Bool,
+                       "ObjectBrowser", "resize_on_expand_item" );
+  // .... -> browse to published object
+  int browsePublished = pref->addPreference( tr( "PREF_BROWSE_TO_THE_PUBLISHED_OBJECT" ), objSetGroup, LightApp_Preferences::Selector,
+                                             "ObjectBrowser", "browse_published_object" );
+  aValuesList.clear();
+  anIndicesList.clear();
+  aValuesList << tr( "PREF_BROWSE_NEVER" ) << tr( "PREF_BROWSE_AFTER_APPLY_AND_CLOSE_ONLY" ) << tr( "PREF_BROWSE_ALWAYS" );
+  anIndicesList << BP_Never << BP_ApplyAndClose << BP_Always;
+  pref->setItemProperty( "strings", aValuesList,   browsePublished );
+  pref->setItemProperty( "indexes", anIndicesList, browsePublished );
+  // ... "Object browser settings" group <<end>>
+  // .. "Object browser" preferences tab <<end>>
+
+  // .. "Shortcuts" preferences tab <<start>>
+  int shortcutTab = pref->addPreference( tr( "PREF_TAB_SHORTCUTS" ), salomeCat );
+  // ... "Shortcuts settings" group <<start>>
+  int shortcutGroup = pref->addPreference( tr( "PREF_GROUP_SHORTCUTS" ), shortcutTab );
+  pref->addPreference( tr( "" ), shortcutGroup,
+                       LightApp_Preferences::ShortcutTree, "shortcuts" );
+  // ... "Shortcuts settings" group <<end>>
+  // .. "Shortcuts" preferences tab <<end>>
+  // . Top-level "SALOME" preferences group <<end>>
 
   pref->retrieve();
 }

@@ -143,8 +143,12 @@ The changes will be applied on the next application session.</translation>
         <translation>Show trihedron</translation>
     </message>
     <message>
+        <source>PREF_TRIHEDRON</source>
+        <translation>Trihedron</translation>
+    </message>
+    <message>
         <source>PREF_TRIHEDRON_SIZE</source>
-        <translation>Trihedron size</translation>
+        <translation>Size</translation>
     </message>
     <message>
         <source>OBJECT_BROWSER</source>
@@ -343,12 +347,16 @@ The changes will be applied on the next application session.</translation>
         <translation>Curve type:</translation>
     </message>
     <message>
+        <source>PREF_ISOS</source>
+        <translation>Number of isolines</translation>
+    </message>
+    <message>
         <source>PREF_ISOS_U</source>
-        <translation>Number of isolines along U</translation>
+        <translation>Along U</translation>
     </message>
     <message>
         <source>PREF_ISOS_V</source>
-        <translation>Number of isolines along V</translation>
+        <translation>Along V</translation>
     </message>
     <message>
         <source>PREF_POINTS</source>
@@ -516,7 +524,7 @@ The changes will be applied on the next application session.</translation>
     </message>
     <message>
         <source>PREF_RELATIVE_SIZE</source>
-        <translation>Relative size</translation>
+        <translation>Relative</translation>
     </message>
     <message>
         <source>PREF_VIEWER_BACKGROUND</source>
@@ -528,19 +536,19 @@ The changes will be applied on the next application session.</translation>
     </message>    
     <message>
         <source>PREF_XYVIEWER_BACKGROUND</source>
-        <translation>XY View background color</translation>
+        <translation>XY View</translation>
     </message>
     <message>
         <source>PREF_XZVIEWER_BACKGROUND</source>
-        <translation>XZ View background color</translation>
+        <translation>XZ View</translation>
     </message>
     <message>
         <source>PREF_YZVIEWER_BACKGROUND</source>
-        <translation>YZ View background color</translation>
+        <translation>YZ View</translation>
     </message>
     <message>
         <source>PREF_3DVIEWER_BACKGROUND</source>
-        <translation>3D View background color</translation>
+        <translation>3D View</translation>
     </message>
     <message>
         <source>PREF_FONT</source>

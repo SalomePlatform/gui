@@ -143,8 +143,12 @@ Les modifications seront appliquées à la prochaine session.</translation>
         <translation>Afficher le trièdre</translation>
     </message>
     <message>
+        <source>PREF_TRIHEDRON</source>
+        <translation>Trièdre</translation>
+    </message>
+    <message>
         <source>PREF_TRIHEDRON_SIZE</source>
-        <translation>Taille du trièdre</translation>
+        <translation>Taille</translation>
     </message>
     <message>
         <source>OBJECT_BROWSER</source>
@@ -343,12 +347,16 @@ Les modifications seront appliquées à la prochaine session.</translation>
         <translation>Type de courbe:</translation>
     </message>
     <message>
+        <source>PREF_ISOS</source>
+        <translation>Nombre d&apos;isolignes</translation>
+    </message>
+    <message>
         <source>PREF_ISOS_U</source>
-        <translation>Nombre d&apos;isolignes selon U</translation>
+        <translation>Selon U</translation>
     </message>
     <message>
         <source>PREF_ISOS_V</source>
-        <translation>Nombre d&apos;isolignes selon V</translation>
+        <translation>Selon V</translation>
     </message>
     <message>
         <source>PREF_POINTS</source>
@@ -516,7 +524,7 @@ Les modifications seront appliquées à la prochaine session.</translation>
     </message>
     <message>
         <source>PREF_RELATIVE_SIZE</source>
-        <translation>Taille Relative</translation>
+        <translation>Relative</translation>
     </message>
     <message>
         <source>PREF_VIEWER_BACKGROUND</source>
@@ -528,19 +536,19 @@ Les modifications seront appliquées à la prochaine session.</translation>
     </message>
     <message>
         <source>PREF_XYVIEWER_BACKGROUND</source>
-        <translation>Couleur de l&apos;arrière-plan (vue XY)</translation>
+        <translation>Vue XY</translation>
     </message>
     <message>
         <source>PREF_XZVIEWER_BACKGROUND</source>
-        <translation>Couleur de l&apos;arrière-plan (vue XZ)</translation>
+        <translation>Vue XZ</translation>
     </message>
     <message>
         <source>PREF_YZVIEWER_BACKGROUND</source>
-        <translation>Couleur de l&apos;arrière-plan (vue YZ)</translation>
+        <translation>Vue YZ</translation>
     </message>
     <message>
         <source>PREF_3DVIEWER_BACKGROUND</source>
-        <translation>Couleur de l&apos;arrière-plan (vue 3D)</translation>
+        <translation>Vue 3D</translation>
     </message>
     <message>
         <source>PREF_FONT</source>

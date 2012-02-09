@@ -91,6 +91,15 @@ number of segments on each edge</li>
 <li><b>Area precision</b> - allows to adjust input precision of mesh element area.</li>
 <li><b>Volume precision</b> - allows to adjust input precision of mesh element volume.</li>
 </ul>
+<li><b>Python Dump</b></li>
+<ul>
+<li><b>Historical python dump</b> checkbox switches Python Dump from
+  \a Historical to \a Snapshot mode and backward. In the \a
+  Historical mode, the Python Dump script includes all commands
+  performed by SMESH engine. In the \a Snapshot mode, commands
+  relating to objects removed from the Study are excluded from the
+  script as well as commands not influencing the current state of meshes.</li>
+</ul>
 </ul>
 
 <h2>Mesh Preferences</h2>

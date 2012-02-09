@@ -6,14 +6,16 @@ DEFAULT_RADIUS = 100
 DEFAULT_LENGTH = 300
 DEFAULT_WIDTH  = 20
 
+from salome.geom import geomtools
+
 def createGeometry(study, radius=DEFAULT_RADIUS, length=DEFAULT_LENGTH, width=DEFAULT_WIDTH):
     '''
     This function creates the geometry on the specified study and with
     given parameters.
     '''
     print "TUBE: creating the geometry ..."
-    import geompy
-    geompy.init_geom(study)
+    studyId = study._get_StudyId()
+    geompy = geomtools.getGeompy(studyId)
 
     radius_ext = radius
     radius_int = radius_ext - width
@@ -21,19 +23,20 @@ def createGeometry(study, radius=DEFAULT_RADIUS, length=DEFAULT_LENGTH, width=DE
     CylinderExt = geompy.MakeCylinderRH(radius_ext, length)
     CylinderInt = geompy.MakeCylinderRH(radius_int, length)
     Tube = geompy.MakeCut(CylinderExt, CylinderInt)
-    entry = geompy.addToStudy( Tube, "Tube" )
     return Tube
-
+    
 def createGeometryWithPartition(study, radius=DEFAULT_RADIUS, length=DEFAULT_LENGTH, width=DEFAULT_WIDTH):
     '''
     This function create the geometrical shape with a partition so
     that the hexaedric algorithm could be used for meshing.
     '''
-    import geompy
     shape = createGeometry(study,radius,length,width)
 
     # We have to create a partition so that we can use an hexaedric
     # meshing algorithm.
+    studyId = study._get_StudyId()
+    geompy = geomtools.getGeompy(studyId)
+
     print "TUBE: creating a partition ..."
     toolPlane = geompy.MakeFaceHW(2.1*length,2.1*radius,3)
     partition = geompy.MakePartition([shape], [toolPlane], [], [], geompy.ShapeType["SOLID"], 0, [], 0)

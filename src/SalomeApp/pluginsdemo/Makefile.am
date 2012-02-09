@@ -32,7 +32,9 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 #
 pluginsdir =$(salomepluginsdir)/demo
 plugins_PYTHON = \
-	salome_plugins.py \
-	trihedron.py      \
-	tubedialog.py     \
-	tube.py
+	salome_plugins.py      \
+	trihedron.py           \
+	tubedialog.py          \
+	tubedialogWithApply.py \
+	tube.py                \
+	myhelper.py

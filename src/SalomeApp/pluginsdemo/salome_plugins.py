@@ -72,6 +72,7 @@ if DEMO_IS_ACTIVATED:
 # dedicated imported modules (tube.py and tubedialog.py).
 #
 import tube
+import myhelper
 
 # A single dialog box is defined and recycled for every call. The
 # fields are initialized with default values given by the tube factory
@@ -81,7 +82,7 @@ dialog = tubedialog.TubeDialog()
 dialog.setData(tube.DEFAULT_RADIUS, tube.DEFAULT_LENGTH, tube.DEFAULT_WIDTH)
 
 def tube_shapewithgui(context):
-    global tube, dialog
+    global tube, myhelper, dialog
     activeStudy = context.study
 
     # Get the parameter values from a gui dialog box. If the dialog is
@@ -91,6 +92,8 @@ def tube_shapewithgui(context):
     if dialog.wasOk():
         radius, length, width = dialog.getData()
         shape = tube.createGeometry(activeStudy, radius, length, width)
+        entry = myhelper.addToStudy(activeStudy, shape, "Tube" )
+        myhelper.displayShape(entry)
 
 if DEMO_IS_ACTIVATED:
     salome_pluginsmanager.AddFunction('Tube shape from parameters',
@@ -119,6 +122,91 @@ if DEMO_IS_ACTIVATED:
     salome_pluginsmanager.AddFunction('Tube mesh from parameters',
                                       'Creates a tube object from specified parameters',
                                       tube_meshwithgui)
+
+
+# -------------------------------------------------------------------------
+# Example 2 ter: creation of a geom object with a preview function in
+# the dialog box. This use case is more complex from the gui point of
+# view because the dialog box is a not modal so that we can have
+# interaction with the complete SALOME application. This modal
+# situation requires to connect button click signal on global
+# functions named the "callback" functions.
+#
+import tubedialogWithApply
+dialogWithApply = tubedialogWithApply.TubeDialogWithApply()
+dialogWithApply.setData(tube.DEFAULT_RADIUS, tube.DEFAULT_LENGTH, tube.DEFAULT_WIDTH)
+activeStudy = None
+previewShapeEntry = None
+
+def acceptCallback():
+    """Action to do when click on Ok"""
+    global tube, dialogWithApply, activeStudy, previewShapeEntry, deletePreviewShape
+    dialogWithApply.accept()
+
+    if previewShapeEntry is not None:
+        deletePreviewShape()
+
+    radius, length, width = dialogWithApply.getData()
+    shape = tube.createGeometry(activeStudy, radius, length, width)
+    entry = myhelper.addToStudy(activeStudy, shape, "Tube" )
+    myhelper.displayShape(entry)
+    
+
+def rejectCallback():
+    """Action to do when click on Cancel"""
+    global tube, dialogWithApply, activeStudy, previewShapeEntry, deletePreviewShape
+    dialogWithApply.reject()
+
+    if previewShapeEntry is not None:
+        deletePreviewShape()
+
+def applyCallback():
+    """Action to do when click on Apply"""
+    global tube, dialogWithApply, activeStudy, previewShapeEntry, deletePreviewShape
+    # We first have to destroy the currently displayed preview shape.
+    if previewShapeEntry is not None:
+        deletePreviewShape()
+
+    # Then we can create the new shape with the new parameter values
+    radius, length, width = dialogWithApply.getData()
+    shape = tube.createGeometry(activeStudy, radius, length, width)
+    previewShapeEntry = myhelper.addToStudy(activeStudy, shape, "Tube" )
+    myhelper.displayShape(previewShapeEntry)
+
+def deletePreviewShape():
+    global activeStudy, previewShapeEntry
+
+    from salome.kernel.studyedit import getStudyEditor, getStudyIdFromStudy
+    from salome.kernel.services import IDToSObject, IDToObject
+
+    # WARN: please be aware that to delete a geom object, you have
+    # three operations to perform:
+    # 1. erase the shape from the viewer
+    # 2. delete the entry in the study
+    # 3. destroy the geom object
+    myhelper.eraseShape(previewShapeEntry)
+    item = IDToSObject(previewShapeEntry)
+    geomObj = IDToObject(previewShapeEntry)    
+    ste = getStudyEditor(getStudyIdFromStudy(activeStudy))
+    ste.removeItem(item,True)
+    geomObj.Destroy()
+    previewShapeEntry = None
+    
+dialogWithApply.handleAcceptWith(acceptCallback)
+dialogWithApply.handleRejectWith(rejectCallback)
+dialogWithApply.handleApplyWith(applyCallback)
+
+def tube_shapewithguiAndPreview(context):
+    global tube, dialogWithApply, activeStudy
+    activeStudy = context.study
+    dialogWithApply.open()
+
+if DEMO_IS_ACTIVATED:
+    salome_pluginsmanager.AddFunction('Tube geometry from parameters with preview',
+                                      'Creates a tube object from specified parameters',
+                                      tube_shapewithguiAndPreview)
+
+
 
 # -------------------------------------------------------------------------
 # Example 3: run a shell session in a xterm to get a SALOME python console

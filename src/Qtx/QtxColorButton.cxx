@@ -305,11 +305,13 @@ void QtxColorButton::paintEvent( QPaintEvent* e )
   pix.fill( palette().color( backgroundRole() ) );
 
   if ( color().isValid() )
-    drawColor( &pix, color() );
+    drawColor( &pix, isEnabled() ? color() : palette().mid().color(), isEnabled() ? Qt::black : palette().mid().color() );
   else {
     QPainter pixp( &pix );
+    pixp.setPen( palette().color( isEnabled() ? QPalette::WindowText : QPalette::Mid ) );
     pixp.drawRect( 2, 2, pix.width() - 4, pix.height() - 4 );
-    pixp.fillRect( 3, 3, pix.width() - 6, pix.height() - 6, QBrush( Qt::BDiagPattern ) );
+    pixp.fillRect( 3, 3, pix.width() - 6, pix.height() - 6, 
+		   QBrush( palette().color( isEnabled() ? QPalette::WindowText : QPalette::Mid ), Qt::BDiagPattern ) );
     pixp.end();
   }
 
@@ -380,13 +382,13 @@ QPixmap QtxColorButton::buttonIcon( const QColor& c ) const
   \param c color
   \param m margin
 */
-void QtxColorButton::drawColor( QPaintDevice* pd, const QColor& c, const int m ) const
+void QtxColorButton::drawColor( QPaintDevice* pd, const QColor& c, const QColor& bc, const int m ) const
 {
   if ( !pd )
     return;
 
   QPainter p( pd );
-  p.setPen( Qt::black );
+  p.setPen( bc );
   p.fillRect( m, m, pd->width() - 2 * m - 1, pd->height() - 2 * m - 1, QBrush( c ) );
   p.drawRect( m, m, pd->width() - 2 * m - 1, pd->height() - 2 * m - 1 );
   p.end();

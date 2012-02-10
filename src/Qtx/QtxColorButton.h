@@ -72,7 +72,7 @@ private:
   void          updateState();
   void          updateButton( QToolButton* );
   QPixmap       buttonIcon( const QColor& ) const;
-  void          drawColor( QPaintDevice*, const QColor&, const int = 1 ) const;
+  void          drawColor( QPaintDevice*, const QColor&, const QColor& = Qt::black, const int = 1 ) const;
 
 private:
   typedef QMap<const QToolButton*, QColor> ColorMap;

@@ -1,78 +1,33 @@
-# -*- coding: iso-8859-1 -*-
 import sys
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
+from tubedialog_ui import TubeDialog_UI
 
-class TubeDialog(QtGui.QDialog):
-    def __init__(self, parent=None):
-        QtGui.QDialog.__init__(self, parent)
-        self.setupUi()
 
+class TubeDialog(TubeDialog_UI):
     def setupUi(self):
-        self.setObjectName("Dialog")
-        self.resize(400, 300)
-        self.hboxlayout = QtGui.QHBoxLayout(self)
-        self.hboxlayout.setMargin(9)
-        self.hboxlayout.setSpacing(6)
-        self.hboxlayout.setObjectName("hboxlayout")
-        self.vboxlayout = QtGui.QVBoxLayout()
-        self.vboxlayout.setMargin(0)
-        self.vboxlayout.setSpacing(6)
-        self.vboxlayout.setObjectName("vboxlayout")
-        self.hboxlayout1 = QtGui.QHBoxLayout()
-        self.hboxlayout1.setMargin(0)
-        self.hboxlayout1.setSpacing(6)
-        self.hboxlayout1.setObjectName("hboxlayout1")
-        self.vboxlayout1 = QtGui.QVBoxLayout()
-        self.vboxlayout1.setMargin(0)
-        self.vboxlayout1.setSpacing(6)
-        self.vboxlayout1.setObjectName("vboxlayout1")
-        self.lblRadius = QtGui.QLabel(self)
-        self.lblRadius.setObjectName("lblRadius")
-        self.vboxlayout1.addWidget(self.lblRadius)
-        self.lblLength = QtGui.QLabel(self)
-        self.lblLength.setObjectName("lblLength")
-        self.vboxlayout1.addWidget(self.lblLength)
-        self.lblWidth = QtGui.QLabel(self)
-        self.lblWidth.setObjectName("lblWidth")
-        self.vboxlayout1.addWidget(self.lblWidth)
-        self.hboxlayout1.addLayout(self.vboxlayout1)
-        self.vboxlayout2 = QtGui.QVBoxLayout()
-        self.vboxlayout2.setMargin(0)
-        self.vboxlayout2.setSpacing(6)
-        self.vboxlayout2.setObjectName("vboxlayout2")
-        self.txtRadius = QtGui.QLineEdit(self)
-        self.txtRadius.setObjectName("txtRadius")
-        self.vboxlayout2.addWidget(self.txtRadius)
-        self.txtLength = QtGui.QLineEdit(self)
-        self.txtLength.setObjectName("txtLength")
-        self.vboxlayout2.addWidget(self.txtLength)
-        self.txtWidth = QtGui.QLineEdit(self)
-        self.txtWidth.setObjectName("txtWidth")
-        self.vboxlayout2.addWidget(self.txtWidth)
-        self.hboxlayout1.addLayout(self.vboxlayout2)
-        self.vboxlayout.addLayout(self.hboxlayout1)
-        spacerItem = QtGui.QSpacerItem(20, 40, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
-        self.vboxlayout.addItem(spacerItem)
-        self.buttonBox = QtGui.QDialogButtonBox(self)
-        self.buttonBox.setOrientation(QtCore.Qt.Horizontal)
-        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.NoButton|QtGui.QDialogButtonBox.Ok)
-        self.buttonBox.setObjectName("buttonBox")
-        self.vboxlayout.addWidget(self.buttonBox)
-        self.hboxlayout.addLayout(self.vboxlayout)
+        TubeDialog_UI.setupUi(self)
+        self.handleAcceptWith(self.accept)
+        self.handleRejectWith(self.reject)
 
-        self.setWindowTitle("Tube construction")
-        self.lblRadius.setText("Rayon")
-        self.lblLength.setText("Longueur")
-        self.lblWidth.setText("Epaisseur")
+    def handleAcceptWith(self,callbackFunction):
+        """This defines the function to be connected to the signal 'accepted()' (click on Ok)"""
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("accepted()"), callbackFunction)
 
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("accepted()"), self.accept)
-        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("rejected()"), self.reject)
+    def handleRejectWith(self,callbackFunction):
+        """This defines the function to be connected to the signal 'rejected()' (click on Cancel)"""
+        QtCore.QObject.connect(self.buttonBox, QtCore.SIGNAL("rejected()"), callbackFunction)
+
+    def handleApplyWith(self,callbackFunction):
+        """This defines the function to be connected to the signal 'apply()' (click on Apply)"""
+        button = self.buttonBox.button(QtGui.QDialogButtonBox.Apply)        
+        QtCore.QObject.connect(button, QtCore.SIGNAL("clicked()"), callbackFunction);
 
     def accept(self):
         '''Callback function when dialog is accepted (click Ok)'''
         self._wasOk = True
+        # We should test here the validity of values
         QtGui.QDialog.accept(self)
 
     def reject(self):
@@ -98,11 +53,32 @@ class TubeDialog(QtGui.QDialog):
 
         return radius, length, width
 
+    
+class TubeDialogOnTopWithApply(TubeDialog):
+    def setupUi(self):
+        """
+        This setupUi adds a button 'Apply' to execute a processing
+        tasks (ex: preview), and set a flag that keeps the dialog on
+        top of all windows.
+        """
+        TubeDialog.setupUi(self)
+        # Add a button "Apply"
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel|
+                                          QtGui.QDialogButtonBox.Apply|
+                                          QtGui.QDialogButtonBox.Ok)
 
-def TEST_getData():
-    # This use case illustrates the MVC pattern on this simple dialog example.
-    a = QtGui.QApplication(sys.argv)
+        # Keep the dialog on top of the windows
+        self.setWindowFlags(self.windowFlags() |
+                            QtCore.Qt.WindowStaysOnTopHint)
 
+
+#
+# ======================================================================
+# Unit test
+# ======================================================================
+#
+def TEST_getData_synchrone():
+    """This use case illustrates the MVC pattern on this simple dialog example""" 
     tubedialog = TubeDialog()
     tubedialog.setData(10,50,3)
     tubedialog.exec_()
@@ -110,16 +86,12 @@ def TEST_getData():
         radius, length, width = tubedialog.getData()
         print radius, length, width
 
-    sys.exit(0)
 
 def main( args ):
     a = QtGui.QApplication(sys.argv)
-
-    tubedialog = TubeDialog()
-    tubedialog.setData(10,50,3)
-    sys.exit(tubedialog.exec_())
+    TEST_getData_synchrone()
+    sys.exit(0)
 
 if __name__=="__main__":
-    #main(sys.argv)
-    TEST_getData()
+    main(sys.argv)
 

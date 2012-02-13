@@ -1,7 +1,7 @@
 # -*- coding: iso-8859-1 -*-
 import salome_pluginsmanager
 
-DEMO_IS_ACTIVATED=False
+DEMO_IS_ACTIVATED=True
 
 # -------------------------------------------------------------------------
 # Example 1: creation of basic objects.
@@ -71,18 +71,20 @@ if DEMO_IS_ACTIVATED:
 # The plugin function (tube_shapewithgui) delegates some action to
 # dedicated imported modules (tube.py and tubedialog.py).
 #
-import tube
-import myhelper
+import tubebuilder
+import xalome
 
 # A single dialog box is defined and recycled for every call. The
 # fields are initialized with default values given by the tube factory
 # tube.py.
 import tubedialog
 dialog = tubedialog.TubeDialog()
-dialog.setData(tube.DEFAULT_RADIUS, tube.DEFAULT_LENGTH, tube.DEFAULT_WIDTH)
+dialog.setData(tubebuilder.DEFAULT_RADIUS,
+               tubebuilder.DEFAULT_LENGTH,
+               tubebuilder.DEFAULT_WIDTH)
 
 def tube_shapewithgui(context):
-    global tube, myhelper, dialog
+    global tubebuilder, xalome, dialog
     activeStudy = context.study
 
     # Get the parameter values from a gui dialog box. If the dialog is
@@ -91,9 +93,9 @@ def tube_shapewithgui(context):
     dialog.exec_()
     if dialog.wasOk():
         radius, length, width = dialog.getData()
-        shape = tube.createGeometry(activeStudy, radius, length, width)
-        entry = myhelper.addToStudy(activeStudy, shape, "Tube" )
-        myhelper.displayShape(entry)
+        shape = tubebuilder.createGeometry(activeStudy, radius, length, width)
+        entry = xalome.addToStudy(activeStudy, shape, "Tube" )
+        xalome.displayShape(entry)
 
 if DEMO_IS_ACTIVATED:
     salome_pluginsmanager.AddFunction('Tube shape from parameters',
@@ -104,7 +106,7 @@ if DEMO_IS_ACTIVATED:
 # -------------------------------------------------------------------------
 # Example 2 bis: creation of a mesh with parameters that can be read from a GUI.
 # The plugin function (tube_meshwithgui) delegates some action to
-# dedicated imported modules (tube.py and tubedialog.py).
+# dedicated imported modules (tubebuilder.py and tubedialog.py).
 #
 def tube_meshwithgui(context):
     global tube, dialog
@@ -116,7 +118,7 @@ def tube_meshwithgui(context):
     dialog.exec_()
     if dialog.wasOk():
         radius, length, width = dialog.getData()
-        mesh = tube.createModel(activeStudy, radius, length, width)
+        mesh = tubebuilder.createModel(activeStudy, radius, length, width)
 
 if DEMO_IS_ACTIVATED:
     salome_pluginsmanager.AddFunction('Tube mesh from parameters',
@@ -130,74 +132,89 @@ if DEMO_IS_ACTIVATED:
 # view because the dialog box is a not modal so that we can have
 # interaction with the complete SALOME application. This modal
 # situation requires to connect button click signal on global
-# functions named the "callback" functions.
+# functions as a "callback" mechanism.
 #
-import tubedialogWithApply
-dialogWithApply = tubedialogWithApply.TubeDialogWithApply()
-dialogWithApply.setData(tube.DEFAULT_RADIUS, tube.DEFAULT_LENGTH, tube.DEFAULT_WIDTH)
+# TODO:
+# - coloring the preview in pink
+# - store the tmp study objects in a "preview" folder
+#
+dialogWithApply = tubedialog.TubeDialogOnTopWithApply()
+dialogWithApply.setData(tubebuilder.DEFAULT_RADIUS,
+                        tubebuilder.DEFAULT_LENGTH,
+                        tubebuilder.DEFAULT_WIDTH)
 activeStudy = None
 previewShapeEntry = None
 
+DEFAULT_FOLDER_NAME="TubeList"
+DEFAULT_SHAPE_NAME="tube"
+PREVIEW_SHAPE_NAME="preview"
+
 def acceptCallback():
-    """Action to do when click on Ok"""
-    global tube, dialogWithApply, activeStudy, previewShapeEntry, deletePreviewShape
+    """Action to be done when click on Ok"""
+    global tubebuilder, xalome
+    global dialogWithApply, activeStudy
+    global previewShapeEntry, deletePreviewShape
+    global DEFAULT_FOLDER_NAME,DEFAULT_SHAPE_NAME 
+
     dialogWithApply.accept()
 
     if previewShapeEntry is not None:
         deletePreviewShape()
 
     radius, length, width = dialogWithApply.getData()
-    shape = tube.createGeometry(activeStudy, radius, length, width)
-    entry = myhelper.addToStudy(activeStudy, shape, "Tube" )
-    myhelper.displayShape(entry)
+    shape = tubebuilder.createGeometry(activeStudy, radius, length, width)
+    entry = xalome.addToStudy(activeStudy, shape, DEFAULT_SHAPE_NAME, DEFAULT_FOLDER_NAME)
+    xalome.displayShape(entry)
     
-
 def rejectCallback():
-    """Action to do when click on Cancel"""
-    global tube, dialogWithApply, activeStudy, previewShapeEntry, deletePreviewShape
+    """Action to be done when click on Cancel"""
+    global dialogWithApply, previewShapeEntry, deletePreviewShape
+
     dialogWithApply.reject()
 
     if previewShapeEntry is not None:
         deletePreviewShape()
 
+import SALOMEDS
+PREVIEW_COLOR=SALOMEDS.Color(1,0.6,1) # pink
+
 def applyCallback():
-    """Action to do when click on Apply"""
-    global tube, dialogWithApply, activeStudy, previewShapeEntry, deletePreviewShape
+    """Action to be done when click on Apply"""
+    global tubebuilder, xalome
+    global dialogWithApply, activeStudy
+    global previewShapeEntry, deletePreviewShape
+    global PREVIEW_COLOR, DEFAULT_SHAPE_NAME, DEFAULT_FOLDER_NAME, PREVIEW_SHAPE_NAME
+
     # We first have to destroy the currently displayed preview shape.
     if previewShapeEntry is not None:
         deletePreviewShape()
 
     # Then we can create the new shape with the new parameter values
     radius, length, width = dialogWithApply.getData()
-    shape = tube.createGeometry(activeStudy, radius, length, width)
-    previewShapeEntry = myhelper.addToStudy(activeStudy, shape, "Tube" )
-    myhelper.displayShape(previewShapeEntry)
+    shape = tubebuilder.createGeometry(activeStudy, radius, length, width)
+    # We apply a specific color on the shape for the preview state
+    shape.SetColor(PREVIEW_COLOR)
+    previewShapeEntry = xalome.addToStudy(activeStudy, shape, PREVIEW_SHAPE_NAME, DEFAULT_FOLDER_NAME )
+    xalome.displayShape(previewShapeEntry)
 
 def deletePreviewShape():
-    global activeStudy, previewShapeEntry
-
-    from salome.kernel.studyedit import getStudyEditor, getStudyIdFromStudy
-    from salome.kernel.services import IDToSObject, IDToObject
-
-    # WARN: please be aware that to delete a geom object, you have
-    # three operations to perform:
-    # 1. erase the shape from the viewer
-    # 2. delete the entry in the study
-    # 3. destroy the geom object
-    myhelper.eraseShape(previewShapeEntry)
-    item = IDToSObject(previewShapeEntry)
-    geomObj = IDToObject(previewShapeEntry)    
-    ste = getStudyEditor(getStudyIdFromStudy(activeStudy))
-    ste.removeItem(item,True)
-    geomObj.Destroy()
+    """This delete the shape currently being displayed as a preview"""
+    global activeStudy, previewShapeEntry, xsalome
+    xalome.deleteShape(activeStudy,previewShapeEntry)
     previewShapeEntry = None
-    
+
+# Connection of callback functions to the dialog butoon click signals
 dialogWithApply.handleAcceptWith(acceptCallback)
 dialogWithApply.handleRejectWith(rejectCallback)
 dialogWithApply.handleApplyWith(applyCallback)
 
 def tube_shapewithguiAndPreview(context):
-    global tube, dialogWithApply, activeStudy
+    """
+    This plugin open a dialog in an asynchronous mode. Then it
+    required callback functions to be associated to the button
+    signals.
+    """
+    global dialogWithApply, activeStudy
     activeStudy = context.study
     dialogWithApply.open()
 

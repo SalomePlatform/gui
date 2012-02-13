@@ -5,6 +5,7 @@
 -# \ref S1_SALOMEPLUGINS
 -# \ref S2_SALOMEPLUGINS
 -# \ref S3_SALOMEPLUGINS
+-# \ref S4_SALOMEPLUGINS
 
 \section S1_SALOMEPLUGINS Objectives
 
@@ -29,7 +30,7 @@ In this example, the end user has to write:
 -# the python script that creates the mesh from the parameters, using
    the GEOM and SMESH python interface, as in a clasic use case.
 -# the dialog box in PyQt to input the parameters
--# file salome_plugins.py that declares the plugins
+-# the file salome_plugins.py that declares the plugins
 
 This page explains only the last point.
 
@@ -64,23 +65,24 @@ proxy to your code that you can manage in a python package
 installed in the standard SALOME python directories.
 
 In this code, the variable "context" is automatically transmitted by
-the pluginmanager when you request the plugin with at least the following
-attributes:
+the pluginmanager when you request the plugin. This context provides
+you with at at least the following attributes:
 
 \code
 activeStudy = context.study
 salomegui = context.sg
 \endcode
 
-Once terminated, this script salome_plugin.py has to be moved to a
+Once written, this script salome_plugin.py has to be moved to a
 specific place on your filesystem where SALOME is programmed to search
-for plugins. The possible directories are:
+for plugins. The possible directories are (in search order):
 
--# The directory <*_ROOT_DIR>/share/salome/plugins, when this plugin
-   is developped in the framework of a SALOME module (<*_ROOT_DIR>
-   is the root installation directory of the module).
+-# The directory <*_ROOT_DIR>/share/salome/plugins/<module_name>, when
+   this plugin is developped in the framework of a SALOME module
+   (<*_ROOT_DIR> is the root installation directory of the module, and
+   <module_name> is the name of the module in low letters).
 -# The directory ~/.config/salome/Plugins for personnal end user
-   plugins
+   plugins.
 -# Any path in the shell variable SALOME_PLUGIN_PATH (each path must be
    separated by a comma ":" for unix and ";" for windows). This
    variable should be set and exported before running the SALOME application.  
@@ -140,5 +142,28 @@ salome_pluginsmanager.AddFunction('O,Vx,Vy,Vz',
 
 Move this script in the directory
 ~/.config/salome/Plugins, run SALOME and enjoy your new function.
+
+\section S4_SALOMEPLUGINS Other examples
+
+The GUI module provides you with some basic demo examples, located in
+the directory src/SalomeApp/pluginsdemo of the source space, and
+installed in the directory $GUI_ROOT_DIR/share/salome/plugins/gui.
+
+\note These examples are automatically installed when you install the GUI
+but are not activated. To activate the plugins, edit the file
+$GUI_ROOT_DIR/share/salome/plugins/gui/salome_plugins.py and turn the
+variable DEMO_IS_ACTIVATED to True.
+
+The demo examples are:
+-# \b trihedron: create a trihedron and display it with fit on the size 
+-# \b tube_shapewithgui: create a geom object from parameters given by a
+   dialog box.
+-# \b tube_meshwithgui: create a mesh object from parameters given by a
+   dialog box. This illustrates that a plugin can work with more than
+   one SALOME module.
+-# \b tube_shapewithguiAndPreview: same than tube_shapewithgui but with
+   an additionnal preview function (button apply in the dialog box).
+-# \b runSalomeShellSession: run a SALOME prepared shell session in a
+   xterm.
 
 */

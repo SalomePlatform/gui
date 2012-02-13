@@ -89,7 +89,7 @@ libSalomePyQtGUILight_la_LIBADD = $(PYTHON_LIBS) $(SIP_LIBS) $(PYQT_LIBS) $(VTK_
                                   $(OGL_LIBS) ../../PyInterp/libPyInterp.la ../../LightApp/libLightApp.la
 
 if GUI_ENABLE_CORBA
-  libSalomePyQtGUILight_la_LIBADD +=../../SalomeApp/libSalomeApp.la $(KERNEL_ROOT_DIR)/lib/salome/libSalomeContainer.la
+  libSalomePyQtGUILight_la_LIBADD +=../../SalomeApp/libSalomeApp.la $(KERNEL_LDFLAGS) -lSalomeContainer
 endif
 			
 

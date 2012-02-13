@@ -47,13 +47,11 @@
 #include <QColor>
 #include <QImage>
 #include <QPixmap>
+#include <QGradient>
 
 class QObject;
 class QWidget;
 class QCompleter;
-class QLinearGradient;
-class QRadialGradient;
-class QConicalGradient;
 
 typedef QList<int>    QIntList;       //!< list of int values
 typedef QList<short>  QShortList;     //!< list of short int values
@@ -127,12 +125,26 @@ public:
     ShowAll  = ShowText | ShowIcon   //!< Show icon and text in the header
   } HeaderViewFlags;
 
-  //Type of the custom data
+  //! Type of the custom data (for custom tree model)
   typedef enum {
     IdType
   } CustomDataType;
+  
+  //! Background mode
+  typedef enum { 
+    NoBackground,              // no (invalid) background data
+    ImageBackground,           // image (texture)
+    ColorBackground,           // single color
+    SimpleGradientBackground,  // simple two-color gradient
+    CustomGradientBackground   // custom (complex) gradient
+  } BackgroundMode;
 
-
+  //! Texture mode
+  typedef enum { 
+    CenterTexture,             // center texture
+    TileTexture,               // tile texture
+    StretchTexture,            // stretch texture
+  } TextureMode;
 
   class QTX_EXPORT Localizer
   {
@@ -141,6 +153,45 @@ public:
     ~Localizer();
   private:
     QString myCurLocale;
+  };
+
+  class QTX_EXPORT BackgroundData
+  {
+  public:
+    BackgroundData();
+    BackgroundData( const QColor& );
+    BackgroundData( int, const QColor&, const QColor& );
+    BackgroundData( const QGradient& );
+    virtual ~BackgroundData();
+
+    bool operator==( const BackgroundData&) const;
+    inline bool operator!=( const BackgroundData& other ) const
+    { return !operator==( other ); }
+
+    bool             isValid() const;
+    
+    BackgroundMode   mode() const;
+    void             setMode( const BackgroundMode );
+    
+    TextureMode      texture( QString& ) const;
+    void             setTexture( const QString&, TextureMode = Qtx::CenterTexture );
+
+    QColor           color() const;
+    void             setColor( const QColor& );
+
+    int              gradient( QColor&, QColor& ) const;
+    void             setGradient( int, const QColor&, const QColor& );
+
+    const QGradient* gradient() const;
+    void             setGradient( const QGradient& );
+  
+  private:
+    BackgroundMode  myMode;
+    TextureMode     myTextureMode;
+    QString         myFileName;
+    QColorList      myColors;
+    int             myGradientType;
+    QGradient       myGradient;
   };
 
   static QString     toQString( const char*, const int = -1 );
@@ -201,6 +252,9 @@ public:
   static bool        stringToLinearGradient( const QString&, QLinearGradient& );
   static bool        stringToRadialGradient( const QString&, QRadialGradient& );
   static bool        stringToConicalGradient( const QString&, QConicalGradient& );
+
+  static QString        backgroundToString( const BackgroundData& );
+  static BackgroundData stringToBackground( const QString& );
 
 #ifndef WIN32
   static void*       getDisplay();

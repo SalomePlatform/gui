@@ -97,6 +97,7 @@ public:
   bool             value( const QString&, const QString&, QLinearGradient& ) const;  
   bool             value( const QString&, const QString&, QRadialGradient& ) const;  
   bool             value( const QString&, const QString&, QConicalGradient& ) const;  
+  bool             value( const QString&, const QString&, Qtx::BackgroundData& ) const;  
   bool             value( const QString&, const QString&, QString&, const bool = true ) const;
 
   int              integerValue( const QString&, const QString&, const int = 0 ) const;
@@ -109,6 +110,7 @@ public:
   QLinearGradient  linearGradientValue( const QString&, const QString&, const QLinearGradient& = QLinearGradient() ) const;
   QRadialGradient  radialGradientValue( const QString&, const QString&, const QRadialGradient& = QRadialGradient() ) const;
   QConicalGradient conicalGradientValue( const QString&, const QString&, const QConicalGradient& = QConicalGradient() ) const;
+  Qtx::BackgroundData backgroundValue( const QString&, const QString&, const Qtx::BackgroundData& = Qtx::BackgroundData() ) const;
 
   bool             hasSection( const QString& ) const;
   bool             hasValue( const QString&, const QString& ) const;
@@ -123,6 +125,7 @@ public:
   void             setValue( const QString&, const QString&, const QLinearGradient& );
   void             setValue( const QString&, const QString&, const QRadialGradient& );
   void             setValue( const QString&, const QString&, const QConicalGradient& );
+  void             setValue( const QString&, const QString&, const Qtx::BackgroundData& );
 
   void             remove( const QString& );
   void             remove( const QString&, const QString& );

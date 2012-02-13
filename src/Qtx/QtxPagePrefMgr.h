@@ -41,6 +41,7 @@ class QtxColorButton;
 class QtxBiColorTool;
 class QtxShortcutEdit;
 class QtxShortcutTree;
+class QtxBackgroundTool;
 
 class QToolBox;
 class QLineEdit;
@@ -762,6 +763,38 @@ public:
 private:
   QtxShortcutTree* myShortcutTree;
   QString          mySection;
+};
+
+class QTX_EXPORT QtxPagePrefBackgroundItem : public QObject, public QtxPageNamedPrefItem
+{
+  Q_OBJECT
+
+public:
+  QtxPagePrefBackgroundItem( const QString&, QtxPreferenceItem* = 0,
+			     const QString& = QString(), const QString& = QString() );
+  virtual ~QtxPagePrefBackgroundItem();
+
+  void               gradients( QStringList&, QIntList& ) const;
+  void               setGradients( const QStringList&, const QIntList& = QIntList() );
+
+  bool               isModeAllowed( Qtx::BackgroundMode ) const;
+  void               setModeAllowed( Qtx::BackgroundMode, bool = true );
+
+  QString            imageFormats() const;
+  void               setImageFormats( const QString& );
+
+  Qt::Orientation    orientation() const;
+  void               setOrientation( Qt::Orientation );
+
+  virtual void       store();
+  virtual void       retrieve();
+
+protected:
+  virtual QVariant   optionValue( const QString& ) const;
+  virtual void       setOptionValue( const QString&, const QVariant& );
+
+private:
+  QtxBackgroundTool* myBgTool;
 };
 
 class QtxUserDefinedContent: public QWidget

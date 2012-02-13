@@ -31,6 +31,7 @@
 #include "QtxBiColorTool.h"
 #include "QtxDoubleSpinBox.h"
 #include "QtxShortcutEdit.h"
+#include "QtxBackgroundTool.h"
 #include "QtxResourceMgr.h"
 
 #include <QEvent>
@@ -4509,6 +4510,234 @@ void QtxPagePrefShortcutTreeItem::store()
 	resMgr->setValue( aSection, it.key(), it.value() );
     }
   }
+}
+
+/*!
+  \class QtxPagePrefBackgroundItem
+  \brief GUI implementation of the resources item to store background data.
+
+  Preference item allows specifying background data in different ways:
+  - solid color
+  - texture image file
+  - simple two-color gradient
+  - complex custom gradient (NOT IMPLEMENTED YET)
+  
+  Allows background modes can be specified using setModeAllowed() method.
+  Verical or horizontal orientation of the widget can be chosen via setOrientation()
+  method (default orientation is horizontal).
+
+  Simple gradient types can be specified using setGradients() method.
+  \sa Qtx::BackgroundData, QtxBackgroundTool
+*/
+
+/*!
+  \brief Constructor.
+  \param title preference item title
+  \param parent parent preference item
+  \param sect resource file section associated with the preference item
+  \param param resource file parameter associated with the preference item
+*/
+QtxPagePrefBackgroundItem::QtxPagePrefBackgroundItem( const QString& title, QtxPreferenceItem* parent,
+						      const QString& sect, const QString& param )
+: QtxPageNamedPrefItem( title, parent, sect, param )
+{
+  setControl( myBgTool = new QtxBackgroundTool( 0 ) );
+}
+
+/*!
+  \brief Destructor.
+*/
+QtxPagePrefBackgroundItem::~QtxPagePrefBackgroundItem()
+{
+}
+
+/*!
+  \brief Get allowed two-color gradients to the widget
+  \param gradients gradients names are returned via this parameter
+  \param ids gradients identifiers are returned via this parameter (empty list can be returned)
+*/
+void QtxPagePrefBackgroundItem::gradients( QStringList& gradList, QIntList& idList ) const
+{
+  myBgTool->gradients( gradList, idList );
+}
+
+/*!
+  \brief Set allowed two-color gradients to the widget
+  \param gradients gradients names
+  \param ids optional gradients identifiers; if not specified, gradients are automatically numbered starting from 0
+*/
+void QtxPagePrefBackgroundItem::setGradients( const QStringList& gradients, const QIntList& ids )
+{
+  myBgTool->setGradients( gradients, ids );
+}
+
+/*!
+  \brief Check if specific background mode is allowed
+  \param mode background mode
+  \return \c true if specified background mode is enabled or \c false otherwise
+  \sa setModeAllowed()
+*/
+bool QtxPagePrefBackgroundItem::isModeAllowed( Qtx::BackgroundMode mode ) const
+{
+  return myBgTool->isModeAllowed( mode );
+}
+
+/*!
+  \brief Enable / disable specific background mode
+  \param mode background mode
+  \param on enable / disable flag
+  \sa isModeAllowed()
+*/
+void QtxPagePrefBackgroundItem::setModeAllowed( Qtx::BackgroundMode mode, bool on )
+{
+  myBgTool->setModeAllowed( mode, on );
+}
+
+/*!
+  \brief Get allowed image formats
+  \return image formats
+*/
+QString QtxPagePrefBackgroundItem::imageFormats() const
+{
+  return myBgTool->imageFormats();
+}
+
+/*!
+  \brief Set allowed image formats
+  \param formats image formats
+*/
+void QtxPagePrefBackgroundItem::setImageFormats( const QString& formats )
+{
+  myBgTool->setImageFormats( formats );
+}
+
+/*!
+  \brief Get widget editor orientation
+  \return orientation
+*/
+Qt::Orientation QtxPagePrefBackgroundItem::orientation() const
+{
+  return myBgTool->orientation();
+}
+
+/*!
+  \brief Set widget editor orientation
+  \param o orientation
+*/
+void QtxPagePrefBackgroundItem::setOrientation( Qt::Orientation o )
+{
+  myBgTool->setOrientation( o );
+}
+
+/*!
+  \brief Store preference item to the resource manager.
+  \sa retrieve()
+*/
+void QtxPagePrefBackgroundItem::store()
+{
+  setString( Qtx::backgroundToString( myBgTool->data() ) );
+}
+
+/*!
+  \brief Retrieve preference item from the resource manager.
+  \sa store()
+*/
+void QtxPagePrefBackgroundItem::retrieve()
+{
+  myBgTool->setData( Qtx::stringToBackground( getString() ) );
+}
+
+/*!
+  \brief Get preference item option value.
+  \param name option name
+  \return property value or null QVariant if option is not set
+  \sa setOptionValue()
+*/
+QVariant QtxPagePrefBackgroundItem::optionValue( const QString& name ) const
+{
+  if ( name == "texture_enabled" )
+    return isModeAllowed( Qtx::ImageBackground );
+  else if ( name == "color_enabled" )
+    return isModeAllowed( Qtx::ColorBackground );
+  else if ( name == "gradient_enabled" )
+    return isModeAllowed( Qtx::SimpleGradientBackground );
+  else if ( name == "custom_enabled" )
+    return isModeAllowed( Qtx::CustomGradientBackground );
+  else if ( name == "orientation" )
+    return orientation();
+  else if ( name == "image_formats" )
+    return imageFormats();
+  else if ( name == "gradient_names" ) {
+    QStringList grList;
+    QIntList    idList;
+    gradients( grList, idList );
+    return grList;
+  }
+  else if ( name == "gradient_ids" ) {
+    QStringList grList;
+    QIntList    idList;
+    gradients( grList, idList );
+    QList<QVariant> lst;
+    for ( QIntList::const_iterator it = idList.begin(); it != idList.end(); ++it )
+      lst.append( *it );
+    return lst;
+  }
+  else
+    return QtxPageNamedPrefItem::optionValue( name );
+}
+
+/*!
+  \brief Set preference item option value.
+  \param name option name
+  \param val new property value
+  \sa optionValue()
+*/
+void QtxPagePrefBackgroundItem::setOptionValue( const QString& name, const QVariant& val )
+{
+  if ( name == "texture_enabled" ) {
+    if ( val.canConvert( QVariant::Bool ) )
+      setModeAllowed( Qtx::ImageBackground, val.toBool() );
+  }
+  else if ( name == "color_enabled" ) {
+    if ( val.canConvert( QVariant::Bool ) )
+      setModeAllowed( Qtx::ColorBackground, val.toBool() );
+  }
+  else if ( name == "gradient_enabled" ) {
+    if ( val.canConvert( QVariant::Bool ) )
+      setModeAllowed( Qtx::SimpleGradientBackground, val.toBool() );
+  }
+  else if ( name == "custom_enabled" ) {
+    if ( val.canConvert( QVariant::Bool ) )
+      setModeAllowed( Qtx::CustomGradientBackground, val.toBool() );
+  }
+  else if ( name == "orientation" ) {
+    if ( val.canConvert( QVariant::Int ) )
+      setOrientation( (Qt::Orientation)val.toInt() );
+  }
+  else if ( name == "image_formats" ) {
+    if ( val.canConvert( QVariant::String ) )
+      setImageFormats( val.toString() );
+  }
+  else if ( name == "gradient_names" ) {
+    if ( val.canConvert( QVariant::StringList ) )
+      setGradients( val.toStringList() );
+  }
+  else if ( name == "gradient_ids" ) {
+    if ( val.canConvert( QVariant::List ) ) {
+      QStringList grList;
+      QIntList    idList;
+      gradients( grList, idList );
+      idList.clear();
+      QList<QVariant> varList = val.toList();
+      for ( QList<QVariant>::const_iterator it = varList.begin(); it != varList.end(); ++it ) {
+	if ( (*it).canConvert( QVariant::Int ) )
+	  idList.append( (*it).toInt() );
+      }
+      setGradients( grList, idList );
+    }
+  }
+  else
+    QtxPageNamedPrefItem::setOptionValue( name, val );
 }
 
 /*!

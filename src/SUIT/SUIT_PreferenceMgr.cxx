@@ -160,6 +160,9 @@ int SUIT_PreferenceMgr::addItem( const QString& title, const int pId,
   case BiColor:
     item = new QtxPagePrefBiColorItem( title, parent, sect, param );
     break;
+  case Background:
+    item = new QtxPagePrefBackgroundItem( title, parent, sect, param );
+    break;
   case UserDefined:
     item = new QtxUserDefinedItem(parent);
     break;

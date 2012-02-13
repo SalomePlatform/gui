@@ -1557,7 +1557,7 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QByteArray
   \brief Get linear gradient parameter value.
   \param sect section name
   \param name parameter name
-  \param gVal parameter to return resulting linear gradient value value
+  \param gVal parameter to return resulting linear gradient value
   \return \c true if parameter is found and \c false if parameter is not found
           (in this case \a gVal value is undefined)
 */
@@ -1574,7 +1574,7 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QLinearGra
   \brief Get radial gradient parameter value.
   \param sect section name
   \param name parameter name
-  \param gVal parameter to return resulting radial gradient value value
+  \param gVal parameter to return resulting radial gradient value
   \return \c true if parameter is found and \c false if parameter is not found
           (in this case \a gVal value is undefined)
 */
@@ -1591,7 +1591,7 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QRadialGra
   \brief Get conical gradient parameter value.
   \param sect section name
   \param name parameter name
-  \param gVal parameter to return resulting conical gradient value value
+  \param gVal parameter to return resulting conical gradient value
   \return \c true if parameter is found and \c false if parameter is not found
           (in this case \a gVal value is undefined)
 */
@@ -1602,6 +1602,24 @@ bool QtxResourceMgr::value( const QString& sect, const QString& name, QConicalGr
     return false;
 
   return Qtx::stringToConicalGradient( val, gVal );
+}
+
+/*!
+  \brief Get background parameter value.
+  \param sect section name
+  \param name parameter name
+  \param bgVal parameter to return resulting background value
+  \return \c true if parameter is found and \c false if parameter is not found
+          (in this case \a bgVal value is undefined)
+*/
+bool QtxResourceMgr::value( const QString& sect, const QString& name, Qtx::BackgroundData& bgVal ) const
+{
+  QString val;
+  if ( !value( sect, name, val, true ) )
+    return false;
+
+  bgVal = Qtx::stringToBackground( val );
+  return bgVal.isValid();
 }
 
 /*!
@@ -1819,6 +1837,24 @@ QConicalGradient QtxResourceMgr::conicalGradientValue( const QString& sect, cons
 }
 
 /*!
+  \brief Get background parameter value.
+
+  If the specified parameter is not found, the specified default value is returned instead.
+
+  \param sect section name
+  \param name parameter name
+  \param def default value
+  \return parameter value (or default value if parameter is not found)
+*/
+Qtx::BackgroundData QtxResourceMgr::backgroundValue( const QString& sect, const QString& name, const Qtx::BackgroundData& def ) const
+{
+  Qtx::BackgroundData val;
+  if ( !value( sect, name, val ) )
+    val = def;
+  return val;
+}
+
+/*!
   \brief Check parameter existence.
   \param sect section name
   \param name parameter name
@@ -2028,6 +2064,21 @@ void QtxResourceMgr::setValue( const QString& sect, const QString& name, const Q
     return;
 
   setResource( sect, name, Qtx::gradientToString( val ) );
+}
+
+/*!
+  \brief Set background parameter value.
+  \param sect section name
+  \param name parameter name
+  \param val parameter value
+*/
+void QtxResourceMgr::setValue( const QString& sect, const QString& name, const Qtx::BackgroundData& val )
+{
+  Qtx::BackgroundData res;
+  if ( checkExisting() && value( sect, name, res ) && res == val )
+    return;
+
+  setResource( sect, name, Qtx::backgroundToString( val ) );
 }
 
 /*!

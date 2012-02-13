@@ -38,6 +38,7 @@ salomeinclude_HEADERS =		\
 	QtxActionMgr.h		\
 	QtxActionSet.h		\
 	QtxActionToolMgr.h	\
+	QtxBackgroundTool.h	\
 	QtxBiColorTool.h	\
 	QtxColorButton.h	\
 	QtxColorScale.h		\
@@ -98,6 +99,7 @@ dist_libqtx_la_SOURCES =	\
 	QtxActionMgr.cxx	\
 	QtxActionSet.cxx	\
 	QtxActionToolMgr.cxx	\
+	QtxBackgroundTool.cxx	\
 	QtxBiColorTool.cxx	\
 	QtxColorButton.cxx	\
 	QtxColorScale.cxx	\
@@ -152,6 +154,7 @@ MOC_FILES =				\
 	QtxActionMgr_moc.cxx		\
 	QtxActionSet_moc.cxx		\
 	QtxActionToolMgr_moc.cxx	\
+	QtxBackgroundTool_moc.cxx	\
 	QtxBiColorTool_moc.cxx		\
 	QtxColorButton_moc.cxx		\
 	QtxColorScale_moc.cxx		\

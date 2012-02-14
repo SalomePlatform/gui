@@ -21,6 +21,7 @@
 // Author:    Vadim SANDLER, Open CASCADE S.A.S. (vadim.sandler@opencascade.com)
 
 #include "QtxBackgroundTool.h"
+#include "QtxColorButton.h"
 
 #include <QComboBox>
 #include <QFileDialog>
@@ -30,7 +31,7 @@
 #include <QPushButton>
 #include <QStackedWidget>
 #include <QVBoxLayout>
-#include <QtxColorButton.h>
+
 
 /*!
   \class QtxBackgroundTool

@@ -17,11 +17,12 @@ the \ref select_color_and_font_page "Select Color" dialog box.
 <ul>
 <li><b>General</b></li>
 <ul>
-<li><b>Default Display Mode</b> - allows to choose between wireframe
-or shading.</li>
-<li><b>Default Shading Color</b> - allows to select default shading
+<li><b>Default display mode</b> - allows to choose between wireframe, shading or 
+shading with edges.</li>
+<li><b>Default shading color</b> - allows to select default shading
 color.</li>
-<li><b> Default Wireframe Color</b> - allows to select default
+<li><b>Edges in shading</b> - allows to select default edges color in shading mode.</li>
+<li><b> Default wireframe color</b> - allows to select default
 wireframe color (to be applied to any lines not being free boundaries
 or isolated lines).</li>
 <li><b>Color of free boundaries</b> - allows to select default color for free boundaries.</li>
@@ -31,11 +32,18 @@ default color for edges, vectors and wires (isolated lines).</li>
 vertices.</li>
 <li><b>Color of isolines</b> - allows to select default color for
 isolines.</li>
-<li><b>Step Value for Spin Boxes</b> - allows to define the increment
+<li><b>Step value for spin boxes</b> - allows to define the increment
 of values set in spin boxes.</li>
 <li><b>Deflection coefficient</b> - allows to define default deflection
 coefficient for lines and surfaces. A smaller coefficient provides
 better quality of a shape in the viewer.</li>
+<li><b>Default front material</b> - allows to define default front face material.</li>
+<li><b>Default back material</b> - allows to define default back face material.</li>
+<li><b>Edges width</b> - allows to define default width of the edges.</li>
+<li><b>Isolines width</b> - allows to define default width of the isolines.</li>
+<li><b>Preview edges width</b> - allows to define width of the edges for preview.</li>
+<li><b>Measures line width</b> - allows to define lines width of measurements tools.</li>
+
 </ul>
 </ul>
 
@@ -73,5 +81,14 @@ of origin and three base vectors of the rectangular coordinate
 system immediately after the module activation.</li>
 </ul>
 </ul>
+
+
+<ul>
+<li><b>Operations</b></li>
+<ul>
+<li><b>Preview</b> - allows to customize the displaying preview by default.</li>
+</ul>
+</ul>
+
 
 */

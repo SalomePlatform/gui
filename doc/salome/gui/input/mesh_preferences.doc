@@ -159,7 +159,6 @@ box.</li>
 <li><b>Element color</b> - allows to select the color of surface of selected
 elements (seen in Shading mode). Click on the colored line to access
 to the \ref select_color_and_font_page "Select Color" dialog box.</li>
-<li><b>Width</b> - allows to define the width of selected edges. </li>
 </ul>
 <li><b>Preselection</b> - performed with mouse-indexing on an object,
 whose appearance changes as defined in the <b>Preferences</b>.</li>
@@ -167,7 +166,6 @@ whose appearance changes as defined in the <b>Preferences</b>.</li>
 <li><b>Highlight Color</b> -  allows to select the color of mesh (edges and
 borders of meshes) of the entity . Click on the colored line to access
 to the \ref select_color_and_font_page "Select Color" dialog box.</li>
-<li><b>Width</b> - allows to define the width of preselected edges.</li>
 </ul>
 <li><b>Precision</b> - in this menu you can set the value of precision
 used for <b>Nodes</b>, <b>Elements</b> and <b>Objects</b>.</li>

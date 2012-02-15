@@ -33,6 +33,7 @@
 #include "SUIT_ResourceMgr.h"
 
 #include "QtxActionToolMgr.h"
+#include "QtxBackgroundTool.h"
 
 #include <QPainter>
 #include <QApplication>
@@ -61,12 +62,28 @@
 #include <Visual3d_View.hxx>
 
 /*!
+  Get data for supported background modes: gradient types, identifiers and supported image formats
+*/
+QString OCCViewer_Viewer::backgroundData( QStringList& gradList, QIntList& idList )
+{
+  gradList << tr("GT_HORIZONTALGRADIENT")    << tr("GT_VERTICALGRADIENT")       <<
+              tr("GT_FIRSTDIAGONALGRADIENT") << tr("GT_SECONDDIAGONALGRADIENT") <<
+              tr("GT_FIRSTCORNERGRADIENT")   << tr("GT_SECONDCORNERGRADIENT")   <<
+              tr("GT_THIRDCORNERGRADIENT")   << tr("GT_FORTHCORNERGRADIENT");
+  idList   << HorizontalGradient             << VerticalGradient  <<
+              Diagonal1Gradient              << Diagonal2Gradient <<
+              Corner1Gradient                << Corner2Gradient   <<
+              Corner3Gradient                << Corner4Gradient;
+  return QString(); // temporarily, means support of all image formars!
+}
+
+/*!
   Constructor
   \param DisplayTrihedron - is trihedron displayed
 */
 OCCViewer_Viewer::OCCViewer_Viewer( bool DisplayTrihedron)
 : SUIT_ViewModel(),
-  myColors(4, Qt::black),
+  myBackgrounds(4, Qtx::BackgroundData( Qt::black )),
   myIsRelative(true),
   myTrihedronSize(100)
 {
@@ -144,20 +161,38 @@ OCCViewer_Viewer::~OCCViewer_Viewer()
 }
 
 /*!
+  [obsolete]
   \return background color of viewer
 */
 QColor OCCViewer_Viewer::backgroundColor() const
 {
-  return myColors[0];
+  return backgroundColor(0);
 }
 
 /*!
-  Sets background color
+  \return background data of viewer
+*/
+Qtx::BackgroundData OCCViewer_Viewer::background() const
+{
+  return background(0);
+}
+
+/*!
+  Sets background color [obsolete]
   \param c - new background color
 */
 void OCCViewer_Viewer::setBackgroundColor( const QColor& c )
 {
   setBackgroundColor( 0, c );
+}
+
+/*!
+  Sets background data
+  \param d - new background data
+*/
+void OCCViewer_Viewer::setBackground( const Qtx::BackgroundData& theBackground )
+{
+  setBackground( 0, theBackground );
 }
 
 /*!
@@ -175,7 +210,6 @@ void OCCViewer_Viewer::initView( OCCViewer_ViewWindow* view )
     OCCViewer_ViewPort3d* vp3d = view->getViewPort();
     if ( vp3d )
     {
-      vp3d->setBackgroundColor( myColors[0] );
       vp3d->getView()->SetSurfaceDetail(V3d_TEX_ALL);
     }
   }
@@ -187,9 +221,14 @@ void OCCViewer_Viewer::initView( OCCViewer_ViewWindow* view )
 */
 SUIT_ViewWindow* OCCViewer_Viewer::createView( SUIT_Desktop* theDesktop )
 {
-  //OCCViewer_ViewWindow* view = new OCCViewer_ViewWindow(theDesktop, this);
+  // create view frame
   OCCViewer_ViewFrame* view = new OCCViewer_ViewFrame(theDesktop, this);
-  initView( view->getView(OCCViewer_ViewFrame::MAIN_VIEW) );
+  // get main view window (created by view frame)
+  OCCViewer_ViewWindow* vw = view->getView(OCCViewer_ViewFrame::MAIN_VIEW);
+  // initialize main view window
+  initView( vw );
+  // set default background for view window
+  vw->setBackground( background(0) ); // 0 means MAIN_VIEW (other views are not yet created here)
   return view;
 }
 
@@ -422,11 +461,7 @@ void OCCViewer_Viewer::enableMultiselection(bool isEnable)
 void OCCViewer_Viewer::contextMenuPopup(QMenu* thePopup)
 {
   thePopup->addAction( tr( "MEN_DUMP_VIEW" ), this, SLOT( onDumpView() ) );
-  thePopup->addAction( tr( "MEN_CHANGE_BACKGROUD" ), this, SLOT( onChangeBgColor() ) );
-  QMenu * changeImageMenu=thePopup->addMenu( tr( "MEN_CHANGE_IMAGE" ));
-  changeImageMenu->addAction( tr( "CENTERED") , this, SLOT( onChangeBgImageCentered() ) );
-  changeImageMenu->addAction( tr( "TILED") , this, SLOT( onChangeBgImageTiled() ) );
-  changeImageMenu->addAction( tr( "STRETCHED") , this, SLOT( onChangeBgImageStretched() ) );
+  thePopup->addAction( tr( "MEN_CHANGE_BACKGROUD" ), this, SLOT( onChangeBackground() ) );
 
   thePopup->addSeparator();
 
@@ -454,60 +489,33 @@ void OCCViewer_Viewer::onDumpView()
 /*!
   SLOT: called if background color is to be changed changed, passes new color to view port
 */
-void OCCViewer_Viewer::onChangeBgColor()
+void OCCViewer_Viewer::onChangeBackground()
 {
   OCCViewer_ViewWindow* aView = dynamic_cast<OCCViewer_ViewWindow*>(myViewManager->getActiveView());
   if ( !aView )
     return;
-  
-  QColor selColor = QColorDialog::getColor( aView->backgroundColor(), aView );
-  if ( selColor.isValid() )
-    aView->setBackgroundColor(selColor);
+
+  // get supported gradient types
+  QStringList gradList;
+  QIntList    idList;
+  QString     formats = backgroundData( gradList, idList );
+
+  // invoke dialog box
+  Qtx::BackgroundData bgData = QtxBackgroundDialog::getBackground( aView,                // parent for dialog box
+								   aView->background(),  // initial background
+								   true,                 // enable solid color mode
+								   false,                // disable texture mode
+								   true,                 // enable gradient mode
+								   false,                // disable custom gradient mode
+								   gradList,             // gradient names
+								   idList,               // gradient identifiers
+								   formats );            // image formats
+
+  // set chosen background data to the viewer
+  if ( bgData.isValid() )
+    aView->setBackground( bgData );
 }
 
-/*!
-  SLOT: called if background image is to be changed changed, passes new image to view port in centered mode
-*/
-void OCCViewer_Viewer::onChangeBgImageCentered()
-{
-  OCCViewer_ViewWindow* aView = dynamic_cast<OCCViewer_ViewWindow*>(myViewManager->getActiveView());
-  if ( !aView )
-    return;
-  
-  QString selFile = QFileDialog::getOpenFileName(aView,tr( "SELECT_IMAGE"),aView->backgroundImageFilename(), tr("OCC_IMAGE_FILES"));
-  if ( ! selFile.isEmpty() ){
-    aView->setBackgroundImage(selFile,Aspect_FM_CENTERED);
-  }
-}
-
-/*!
-  SLOT: called if background image is to be changed changed, passes new image to view port in tiled mode
-*/
-void OCCViewer_Viewer::onChangeBgImageTiled()
-{
-  OCCViewer_ViewWindow* aView = dynamic_cast<OCCViewer_ViewWindow*>(myViewManager->getActiveView());
-  if ( !aView )
-    return;
-  
-  QString selFile = QFileDialog::getOpenFileName(aView,tr( "SELECT_IMAGE"),aView->backgroundImageFilename(), tr("OCC_IMAGE_FILES"));
-  if ( ! selFile.isEmpty() )
-    aView->setBackgroundImage(selFile,Aspect_FM_TILED);
-}
-
-/*!
-  SLOT: called if background image is to be changed changed, passes new image to view port in stretched mode
-*/
-void OCCViewer_Viewer::onChangeBgImageStretched()
-{
-  OCCViewer_ViewWindow* aView = dynamic_cast<OCCViewer_ViewWindow*>(myViewManager->getActiveView());
-  if ( !aView )
-    return;
-  
-  QString selFile = QFileDialog::getOpenFileName(aView,tr( "SELECT_IMAGE"),aView->backgroundImageFilename(), tr("OCC_IMAGE_FILES"));
-  if ( ! selFile.isEmpty() )
-    aView->setBackgroundImage(selFile,Aspect_FM_STRETCH);
-//     aView->setBackgroundImage(selFile,Aspect_FM_STRETCH_NODEF);
-}
 /*!
   Updates OCC 3D viewer
 */
@@ -770,16 +778,32 @@ OCCViewer_ViewWindow* OCCViewer_Viewer::createSubWindow()
 {
   return new OCCViewer_ViewWindow( 0,  this);
 }
-  
-QColor OCCViewer_Viewer::backgroundColor(int theViewId) const
+
+// obsolete  
+QColor OCCViewer_Viewer::backgroundColor( int theViewId ) const
 {
-  return ( theViewId >= 0 && theViewId < myColors.count() ) ? myColors[theViewId] : Qt::black;
+  return background( theViewId ).color();
 }
 
-void OCCViewer_Viewer::setBackgroundColor( int theViewId, const QColor& theColor)
+Qtx::BackgroundData OCCViewer_Viewer::background( int theViewId ) const
 {
-  if ( theColor.isValid() && theViewId >= 0 && theViewId < myColors.count() )
-    myColors[theViewId] = theColor;
+  return ( theViewId >= 0 && theViewId < myBackgrounds.count() ) ? myBackgrounds[theViewId] : Qtx::BackgroundData();
+}
+
+// obsolete
+void OCCViewer_Viewer::setBackgroundColor( int theViewId, const QColor& theColor )
+{
+  if ( theColor.isValid() ) {
+    Qtx::BackgroundData bg = background( theViewId );
+    bg.setColor( theColor );
+    setBackground( theViewId, bg );
+  }
+}
+
+void OCCViewer_Viewer::setBackground( int theViewId, const Qtx::BackgroundData& theBackground )
+{
+  if ( theBackground.isValid() && theViewId >= 0 && theViewId < myBackgrounds.count() )
+    myBackgrounds[theViewId] = theBackground;    
 }
 
 

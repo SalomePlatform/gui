@@ -595,5 +595,9 @@ Please, refer to the documentation.</translation>
         <source>MEN_CHANGE_BACKGROUD</source>
         <translation>Change background...</translation>
     </message>
+    <message>
+        <source>GT_VERTICALGRADIENT</source>
+        <translation>Vertical gradient</translation>
+    </message>
 </context>
 </TS>

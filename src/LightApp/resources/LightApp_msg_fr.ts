@@ -528,6 +528,10 @@ Les modifications seront appliquées à la prochaine session.</translation>
     </message>
     <message>
         <source>PREF_VIEWER_BACKGROUND</source>
+        <translation>Arrière-plan</translation>
+    </message>
+    <message>
+        <source>PREF_VIEWER_BACKGROUND_COLOR</source>
         <translation>Couleur de l&apos;arrière-plan</translation>
     </message>
     <message>

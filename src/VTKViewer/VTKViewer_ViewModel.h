@@ -24,6 +24,7 @@
 #define VTKVIEWER_VIEWMODEL_H
 
 #include "VTKViewer.h"
+#include "Qtx.h"
 #include "SUIT_ViewModel.h"
 
 #include <QColor>
@@ -38,8 +39,15 @@ class VTKVIEWER_EXPORT VTKViewer_Viewer: public SUIT_ViewModel
   Q_OBJECT
 
 public:
+  /*! supported gradient types */
+  enum {
+    VerticalGradient,
+    LastGradient = VerticalGradient,
+  };
+
   /*!Initialize type of viewer.*/
-  static QString Type() { return "VTKViewer"; }
+  static QString           Type() { return "VTKViewer"; }
+  static QString           backgroundData( QStringList&, QIntList& );
 
   VTKViewer_Viewer();
   virtual ~VTKViewer_Viewer();
@@ -52,35 +60,37 @@ public:
   virtual QString          getType() const { return Type(); }
 
 public:
-  void enableSelection(bool isEnabled);
+  void                     enableSelection(bool isEnabled);
   /*!Checks: is selection enabled*/
-  bool isSelectionEnabled() const { return mySelectionEnabled; }
+  bool                     isSelectionEnabled() const { return mySelectionEnabled; }
 
-  void enableMultiselection(bool isEnable);
+  void                     enableMultiselection(bool isEnable);
   /*!Checks: is multi selection enabled*/
-  bool isMultiSelectionEnabled() const { return myMultiSelectionEnabled; }
+  bool                     isMultiSelectionEnabled() const { return myMultiSelectionEnabled; }
 
-  int  getSelectionCount() const;
+  int                      getSelectionCount() const;
 
-  QColor backgroundColor() const;
-  void   setBackgroundColor( const QColor& );
+  QColor                   backgroundColor() const;                  // obsolete
+  void                     setBackgroundColor( const QColor& );      // obsolete
+  Qtx::BackgroundData      background() const;
+  void                     setBackground( const Qtx::BackgroundData& );
 
 signals:
-  void selectionChanged();
+  void                     selectionChanged();
 
 protected slots:
-  void onMousePress(SUIT_ViewWindow*, QMouseEvent*);
-  void onMouseMove(SUIT_ViewWindow*, QMouseEvent*);
-  void onMouseRelease(SUIT_ViewWindow*, QMouseEvent*);
+  void                     onMousePress( SUIT_ViewWindow*, QMouseEvent* );
+  void                     onMouseMove( SUIT_ViewWindow*, QMouseEvent* );
+  void                     onMouseRelease( SUIT_ViewWindow*, QMouseEvent* );
 
-  void onDumpView();
-  void onShowToolbar();
-  void onChangeBgColor();
+  void                     onDumpView();
+  void                     onShowToolbar();
+  void                     onChangeBackground();
 
 private:
-  QColor myBgColor;
-  bool   mySelectionEnabled;
-  bool   myMultiSelectionEnabled;
+  Qtx::BackgroundData      myDefaultBackground;
+  bool                     mySelectionEnabled;
+  bool                     myMultiSelectionEnabled;
 };
 
 #endif

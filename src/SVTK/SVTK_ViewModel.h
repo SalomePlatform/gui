@@ -26,6 +26,8 @@
 #include "SVTK.h"
 #include "SVTK_ViewModelBase.h"
 
+#include "Qtx.h"
+
 #include <SALOME_Prs.h>
 #include <SALOME_InteractiveObject.hxx>
 #include <SALOME_ListIO.hxx>
@@ -44,10 +46,17 @@ class SVTK_EXPORT SVTK_Viewer : public SVTK_ViewModelBase, public SALOME_View
   Q_OBJECT;
 
 public:
+  /*! supported gradient types */
+  enum { 
+    VerticalGradient,
+    LastGradient = VerticalGradient,
+  };
+
   typedef SVTK_ViewWindow TViewWindow;
   
   //! Define string representation of the viewer type
-  static QString Type() { return "VTKViewer"; }
+  static QString           Type() { return "VTKViewer"; }
+  static QString           backgroundData( QStringList&, QIntList& );
 
   SVTK_Viewer();
   virtual ~SVTK_Viewer();
@@ -64,11 +73,17 @@ public:
   //! See #SUIT_ViewModel::getType
   virtual QString getType() const { return Type(); }
 
-  //! Get background color of the viewer
+  //! Get background color of the viewer [obsolete]
   QColor backgroundColor() const;
 
-  //! Set background color to the viewer
+  //! Set background color to the viewer [obsolete]
   void setBackgroundColor( const QColor& );
+
+  //! Get background color of the viewer
+  Qtx::BackgroundData background() const;
+
+  //! Set background color to the viewer
+  void setBackground( const Qtx::BackgroundData& );
 
   //! Get size of trihedron of the viewer (see #SVTK_Renderer::SetTrihedronSize)
   vtkFloatingPointType trihedronSize() const;
@@ -166,7 +181,7 @@ protected slots:
   void onMouseRelease(SUIT_ViewWindow*, QMouseEvent*);
 
   void onDumpView();
-  void onChangeBgColor();
+  void onChangeBackground();
 
   void onActorAdded(VTKViewer_Actor*);
   void onActorRemoved(VTKViewer_Actor*);
@@ -174,20 +189,19 @@ protected slots:
 private:
   void updateToolBars();
 
-
-  QColor myBgColor;
+  Qtx::BackgroundData  myDefaultBackground;
   vtkFloatingPointType myTrihedronSize;
-  bool   myTrihedronRelative;
-  bool   myIsStaticTrihedronVisible;
-  bool   mySelectionEnabled;
-  bool   myMultiSelectionEnabled;
-  int    myIncrementSpeed;
-  int    myIncrementMode;
-  int    myProjMode;
-  int    myStyle;
-  int    myZoomingStyle;
-  bool   myDynamicPreSelection;
-  int    mySpaceBtn[3];
+  bool                 myTrihedronRelative;
+  bool                 myIsStaticTrihedronVisible;
+  bool                 mySelectionEnabled;
+  bool                 myMultiSelectionEnabled;
+  int                  myIncrementSpeed;
+  int                  myIncrementMode;
+  int                  myProjMode;
+  int                  myStyle;
+  int                  myZoomingStyle;
+  bool                 myDynamicPreSelection;
+  int                  mySpaceBtn[3];
 };
 
 #endif

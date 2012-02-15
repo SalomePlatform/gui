@@ -34,10 +34,18 @@
 #include <SUIT_Tools.h>
 #include <SUIT_ResourceMgr.h>
 
+#include <QFileInfo>
 #include <QImage>
 
 #include <vtkRenderer.h>
 #include <vtkCamera.h>
+#include <vtkJPEGReader.h>
+#include <vtkBMPReader.h>
+#include <vtkTIFFReader.h>
+#include <vtkPNGReader.h>
+#include <vtkMetaImageReader.h>
+#include <vtkImageMapToColors.h>
+#include <vtkTexture.h>
 
 #include <QtxToolBar.h>
 #include <QtxMultiAction.h>
@@ -68,16 +76,6 @@ VTKViewer_ViewWindow::VTKViewer_ViewWindow( SUIT_Desktop* theDesktop,
   myRenderer->LightFollowCameraOn();
   myRenderer->TwoSidedLightingOn();
 
-  // Set BackgroundColor
-  QString BgrColorRed   = "0";//SUIT_CONFIG->getSetting("VTKViewer:BackgroundColorRed");
-  QString BgrColorGreen = "0";//SUIT_CONFIG->getSetting("VTKViewer:BackgroundColorGreen");
-  QString BgrColorBlue  = "0";//SUIT_CONFIG->getSetting("VTKViewer:BackgroundColorBlue");
-
-  if( !BgrColorRed.isEmpty() && !BgrColorGreen.isEmpty() && !BgrColorBlue.isEmpty() ) 
-    myRenderer->SetBackground( BgrColorRed.toInt()/255., BgrColorGreen.toInt()/255., BgrColorBlue.toInt()/255. );
-  else
-    myRenderer->SetBackground( 0, 0, 0 );
-  
   // Create an interactor.
   myRWInteractor = rw ? rw : VTKViewer_RenderWindowInteractor::New();
   myRWInteractor->SetRenderWindow( myRenderWindow->getRenderWindow() );
@@ -120,6 +118,9 @@ VTKViewer_ViewWindow::VTKViewer_ViewWindow( SUIT_Desktop* theDesktop,
            this,           SIGNAL(contextMenuRequested( QContextMenuEvent * )) );
 
 
+  // set default background
+  setBackground( Qtx::BackgroundData( Qt::black ) );
+  // reset view
   onResetView();
 }
 
@@ -444,22 +445,165 @@ void VTKViewer_ViewWindow::onFitAll()
   Repaint();
 }
 
-/*!Set background of the viewport*/
-void VTKViewer_ViewWindow::setBackgroundColor( const QColor& color )
+/*!Set background color of the viewport [obsolete]*/
+void VTKViewer_ViewWindow::setBackgroundColor( const QColor& c )
 {
-  if ( myRenderer )
-    myRenderer->SetBackground( color.red()/255., color.green()/255., color.blue()/255. );
+  Qtx::BackgroundData bg = background();
+  bg.setColor( c );
+  setBackground( bg );
+}
+
+/*!Returns background color of the viewport [obsolete]*/
+QColor VTKViewer_ViewWindow::backgroundColor() const
+{
+  return background().color();
+}
+
+/*!Set background of the viewport*/
+void VTKViewer_ViewWindow::setBackground( const Qtx::BackgroundData& bgData )
+{
+  bool ok = bgData.isValid();
+
+  switch ( bgData.mode() ) {
+  case Qtx::ImageBackground:
+    {
+      QString fileName;
+      int textureMode = bgData.texture( fileName );
+      QFileInfo fi( fileName );
+      if ( !fileName.isEmpty() && fi.exists() ) {
+	// read texture from file
+	QString extension = fi.suffix().toLower();
+	vtkImageReader2* aReader = 0;
+	if ( extension == "jpg" || extension == "jpeg" )
+	  aReader = vtkJPEGReader::New();
+	else if ( extension == "bmp" )
+	  aReader = vtkBMPReader::New();
+	else if ( extension == "tif" || extension == "tiff" )
+	  aReader = vtkTIFFReader::New();
+	else if ( extension == "png" )
+	  aReader = vtkPNGReader::New();
+	else if ( extension == "mhd" || extension == "mha" )
+	  aReader = vtkMetaImageReader::New();           
+	if ( aReader ) {
+	  // create texture
+	  aReader->SetFileName( fi.absoluteFilePath().toLatin1().constData() );
+	  aReader->Update();
+	  
+	  vtkTexture* aTexture = vtkTexture::New();
+	  vtkImageMapToColors* aMap = 0;
+	  vtkAlgorithmOutput* anOutput;
+	  /*
+	  // special processing for BMP reader
+	  vtkBMPReader* aBMPReader = (vtkBMPReader*)aReader;
+	  if ( aBMPReader ) {
+	    // Special processing for BMP file
+	    aBMPReader->SetAllow8BitBMP(1);
+	    
+	    aMap = vtkImageMapToColors::New();
+	    aMap->SetInputConnection( aBMPReader->GetOutputPort() );
+	    aMap->SetLookupTable( (vtkScalarsToColors*)aBMPReader->GetLookupTable() );
+	    aMap->SetOutputFormatToRGB();
+	    
+	    anOutput = aMap->GetOutputPort();
+	  }
+	  else {
+          }
+	  */
+	  anOutput = aReader->GetOutputPort( 0 );
+	  aTexture->SetInputConnection( anOutput );
+	  // set texture mode
+	  // VSR: Currently, VTK only supports Stretch mode, so below code will give
+	  // the same results for all modes
+	  switch ( textureMode ) {
+	  case Qtx::TileTexture:
+	    aTexture->RepeatOn();
+	    aTexture->EdgeClampOff();
+	    aTexture->InterpolateOff();
+	    break;
+	  case Qtx::StretchTexture:
+	    aTexture->RepeatOff();
+	    aTexture->EdgeClampOff();
+	    aTexture->InterpolateOn();
+	    break;
+	  case Qtx::CenterTexture:
+	  default:
+	    aTexture->RepeatOff();
+	    aTexture->EdgeClampOn();
+	    aTexture->InterpolateOff();
+	    break;
+	  }
+	  // show textured background
+	  getRenderer()->SetTexturedBackground( true );     // switch to texture mode
+	  getRenderer()->SetBackgroundTexture( aTexture );  // set texture image
+	  
+	  // clean-up resources
+	  if ( aMap )
+	    aMap->Delete();
+	  aReader->Delete();
+	  aTexture->Delete();
+	  ok = true;
+	}
+      }
+      break;
+    }
+  case Qtx::ColorBackground:
+    {
+      QColor c = bgData.color();
+      if ( c.isValid() ) {
+	// show solid-colored background
+	getRenderer()->SetTexturedBackground( false );  // cancel texture mode
+	getRenderer()->SetGradientBackground( false );  // cancel gradient mode
+	getRenderer()->SetBackground( c.red()/255.0,
+				      c.green()/255.0,
+				      c.blue()/255.0 ); // set background color
+	ok = true;
+      }
+      break;
+    }
+  case Qtx::SimpleGradientBackground:
+    {
+      QColor c1, c2;
+      int type = bgData.gradient( c1, c2 );
+      // VSR: Currently, only vertical gradient is supported by VTK. 
+      // In future, switch operator might be added here to process different supported gradient types.
+      if ( c1.isValid() && type == VTKViewer_Viewer::VerticalGradient ) {
+	if ( !c2.isValid() ) c2 = c1;
+	// show two-color gradient background
+	getRenderer()->SetTexturedBackground( false );    // cancel texture mode
+	getRenderer()->SetGradientBackground( true );     // switch to gradient mode
+	// VSR: In VTK, gradient is colored from bottom to top:
+	// - top color is set via SetBackground2()
+	// - bottom color is set via SetBackground()
+	// So, we reverse colors, to draw gradient from top to bottom instead.
+	getRenderer()->SetBackground(  c2.red()/255.0, 
+				       c2.green()/255.0,
+				       c2.blue()/255.0 ); // set first gradient color
+	getRenderer()->SetBackground2( c1.red()/255.0,
+				       c1.green()/255.0,
+				       c1.blue()/255.0 ); // set second gradient color
+	ok = true;
+      }
+      break;
+    }
+  case Qtx::CustomGradientBackground:
+    {
+      // NOT IMPLEMENTED YET
+      getRenderer()->SetTexturedBackground( false );  // cancel texture mode
+      getRenderer()->SetGradientBackground( false );  // cancel gradient mode
+      // .........
+      break;
+    }
+  default:
+    break;
+  }
+  if ( ok )
+    myBackground = bgData;
 }
 
 /*!Returns background of the viewport*/
-QColor VTKViewer_ViewWindow::backgroundColor() const
+Qtx::BackgroundData VTKViewer_ViewWindow::background() const
 {
-  vtkFloatingPointType backint[3];
-  if ( myRenderer ) {
-    myRenderer->GetBackground( backint );
-    return QColor(int(backint[0]*255), int(backint[1]*255), int(backint[2]*255));
-  }
-  return palette().color( backgroundRole() );
+  return myBackground;
 }
 
 /*!Repaint window. If \a theUpdateTrihedron is true - recalculate trihedron.*/

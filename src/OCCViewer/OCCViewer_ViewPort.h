@@ -99,7 +99,7 @@ public slots:
   virtual bool                   synchronize( OCCViewer_ViewPort* );
 
 protected slots:
-  virtual void                   onChangeBgColor();
+  virtual void                   onChangeBackground();
 
 signals:
   void                           vpKeyEvent( QKeyEvent* );
@@ -118,7 +118,7 @@ protected:
   bool                           myEnableTransform;
   bool                           myPaintersRedrawing; /* set to draw externally */
   QList<QtxAction*>              myPopupActions;
-
+  
 private:
   static int                     nCounter; /* objects counter */
 };

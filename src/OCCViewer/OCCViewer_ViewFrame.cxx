@@ -30,6 +30,14 @@
 #include <QLayout>
 #include <QApplication>
 
+class VisEvent : public QEvent
+{
+public:
+  VisEvent( const QMap<int,bool>& visMap ) : QEvent( QEvent::User ), myVisMap( visMap )
+  {}
+  QMap<int,bool> myVisMap;
+};
+
 OCCViewer_ViewFrame::OCCViewer_ViewFrame(SUIT_Desktop* theDesktop, OCCViewer_Viewer* theModel)
   : OCCViewer_ViewWindow( theDesktop, theModel ), myPopupRequestedView(0)
 {
@@ -55,7 +63,7 @@ OCCViewer_ViewFrame::~OCCViewer_ViewFrame()
 //**************************************************************************************
 OCCViewer_ViewWindow* OCCViewer_ViewFrame::getView( const int i ) const
 {
-  return ( i < myViews.count() ) ? myViews.at( i ) : 0 ;
+  return ( i >= 0 && i < myViews.count() ) ? myViews.at( i ) : 0 ;
 }
 
 //**************************************************************************************
@@ -75,21 +83,21 @@ void OCCViewer_ViewFrame::onMaximizedView( OCCViewer_ViewWindow* theView, bool i
     if (myViews.count() <= 1)
       return;
 
-    myLayout->setColumnStretch(0 , 0);
+    myLayout->setColumnStretch(0, 0);
     myLayout->setColumnStretch(1, 0);
     int i = 0;
-    OCCViewer_ViewWindow* aView = 0;
+    OCCViewer_ViewWindow* view = 0;
     for ( i = BOTTOM_RIGHT; i <= TOP_RIGHT; i++) {
-      aView = myViews.at(i);
-      if (aView != theView)
-        aView->hide();
+      view = myViews.at(i);
+      view->setVisible( view == theView );
+      view->setMaximized( view == theView, false );
     }
   }
   else {
     OCCViewer_Viewer* aModel = dynamic_cast<OCCViewer_Viewer*>(myManager->getViewModel());
     if (!aModel) return;
 
-    myLayout->setColumnStretch(0 , 10);
+    myLayout->setColumnStretch(0, 10);
     myLayout->setColumnStretch(1, 10);
 
     int i = 0;
@@ -106,7 +114,7 @@ void OCCViewer_ViewFrame::onMaximizedView( OCCViewer_ViewWindow* theView, bool i
         view->setMaximized(false, false);
 	view->setDropDownButtons( dropDownButtons() );
         connectViewSignals(view);
-        view->setBackgroundColor(aModel->backgroundColor(i));
+	view->setBackground(aModel->background(i));
       }
       myLayout->addWidget( myViews.at(BOTTOM_LEFT), 1, 0 );
       myLayout->addWidget( myViews.at(TOP_LEFT), 0, 0 );
@@ -116,7 +124,8 @@ void OCCViewer_ViewFrame::onMaximizedView( OCCViewer_ViewWindow* theView, bool i
     for ( i = BOTTOM_RIGHT; i <= TOP_RIGHT; i++) {
       view = myViews.at(i);
       view->show();
-      QApplication::processEvents();
+      view->setMaximized( false, false );
+      ///////////////QApplication::processEvents(); // VSR: hangs up ?
       if (view != theView)
         view->onViewFitAll();
     }
@@ -193,7 +202,7 @@ void OCCViewer_ViewFrame::connectViewSignals(OCCViewer_ViewWindow* theView)
   connect( theView, SIGNAL( mouseMoving(SUIT_ViewWindow*, QMouseEvent*) ), 
            this, SIGNAL( mouseMoving(SUIT_ViewWindow*, QMouseEvent*) ) );
 
-  // The signal is used to process get/set bacgrounf\d color from popup
+  // The signal is used to process get/set background color from popup
   connect( theView, SIGNAL( contextMenuRequested(QContextMenuEvent*) ), 
            this, SLOT( onContextMenuRequested(QContextMenuEvent*) ) );
 
@@ -201,7 +210,8 @@ void OCCViewer_ViewFrame::connectViewSignals(OCCViewer_ViewWindow* theView)
            this, SIGNAL( contextMenuRequested(QContextMenuEvent*) ) );
 }
 
-void OCCViewer_ViewFrame::setBackgroundColor( const QColor& theColor)
+// obsolete
+void OCCViewer_ViewFrame::setBackgroundColor( const QColor& theColor )
 {
   if (myPopupRequestedView)
     myPopupRequestedView->setBackgroundColor(theColor); 
@@ -212,15 +222,14 @@ void OCCViewer_ViewFrame::setBackgroundColor( const QColor& theColor)
     }
   }
 }
-
-void OCCViewer_ViewFrame::setBackgroundImage( const QString& theFilename,const Aspect_FillMethod& theFillMethod)
+void OCCViewer_ViewFrame::setBackground( const Qtx::BackgroundData& theBackground )
 {
   if (myPopupRequestedView)
-    myPopupRequestedView->setBackgroundImage(theFilename,theFillMethod); 
+    myPopupRequestedView->setBackground(theBackground); 
   else {
     foreach (OCCViewer_ViewWindow* aView, myViews) {
       if (aView->isVisible())
-        aView->setBackgroundImage(theFilename,theFillMethod); 
+        aView->setBackground(theBackground); 
     }
   }
 }
@@ -238,7 +247,8 @@ void OCCViewer_ViewFrame::onFitAll()
     aView->onFitAll(); 
   }
 }
-  
+
+// obsolete  
 QColor OCCViewer_ViewFrame::backgroundColor() const 
 { 
   if (myPopupRequestedView)
@@ -251,16 +261,16 @@ QColor OCCViewer_ViewFrame::backgroundColor() const
   return getView(MAIN_VIEW)->backgroundColor(); 
 }
 
-QString OCCViewer_ViewFrame::backgroundImageFilename() const 
+Qtx::BackgroundData OCCViewer_ViewFrame::background() const 
 { 
   if (myPopupRequestedView)
-    return myPopupRequestedView->backgroundImageFilename(); 
+    return myPopupRequestedView->background(); 
 
   foreach (OCCViewer_ViewWindow* aView, myViews) {
     if (aView->isVisible())
-      return aView->backgroundImageFilename(); 
+      return aView->background(); 
   }
-  return getView(MAIN_VIEW)->backgroundImageFilename(); 
+  return getView(MAIN_VIEW)->background(); 
 }
 
 QImage OCCViewer_ViewFrame::dumpView()
@@ -302,4 +312,50 @@ void OCCViewer_ViewFrame::setDropDownButtons( bool on )
     aView->setDropDownButtons( on );
   }
   OCCViewer_ViewWindow::setDropDownButtons( on );
+}
+
+QString OCCViewer_ViewFrame::getVisualParameters()
+{
+  QStringList params;
+  int maximizedView = 999;
+  for ( int i = BOTTOM_RIGHT; i <= TOP_RIGHT && i < myViews.count(); i++) {
+    if ( getView(i)->isVisible() )
+      maximizedView = ( maximizedView != -1 ) ? ( maximizedView == 999 ? i : -1 ) : ( maximizedView );
+    params << getView(i)->getVisualParameters();
+  }
+  params.prepend( QString::number( maximizedView ) );
+  return params.join( "|" );
+}
+
+void OCCViewer_ViewFrame::setVisualParameters( const QString& parameters ) 
+{
+  QStringList params = parameters.split( "|" );
+  if ( params.count() > 1 ) {
+    int maximizedView = params[0].toInt();
+    QMap<int,bool> visMap;
+    if ( myViews.count() < params.count()-1 )
+      onMaximizedView( getView(MAIN_VIEW), false ); // secondary views are not created yet, but should be
+    for ( int i = 1; i < params.count(); i++ ) {
+      int idx = i-1;
+      getView( idx )->setVisualParameters( params[i] );
+      //visMap[idx] = maximizedView == -1 || maximizedView == idx;
+    }
+    onMaximizedView( getView( maximizedView ), maximizedView != -1 ); // set proper sib-window maximized 
+    //VisEvent ve( visMap );
+    //QApplication::sendEvent( this, &ve );
+  }
+  else {
+    // handle obsolete versions - no parameters for xy, yz, xz views
+    getView(MAIN_VIEW)->setVisualParameters( parameters );
+  }
+}
+
+bool OCCViewer_ViewFrame::event( QEvent* e )
+{
+  if ( e->type() == QEvent::User ) {
+    VisEvent* ve = dynamic_cast<VisEvent*>( e );
+    QMap<int,bool> visMap = ve->myVisMap;
+    for ( int i = 0 ; i < myViews.count(); i++ )
+      myViews[i]->setVisible( visMap.contains( i ) && visMap[i] );
+  }
 }

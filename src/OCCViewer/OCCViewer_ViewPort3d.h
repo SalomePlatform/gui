@@ -24,6 +24,7 @@
 #define OCCVIEWER_VIEWPORT3D_H
 
 #include "OCCViewer_ViewPort.h"
+#include "Qtx.h"
 
 #include <V3d_View.hxx>
 
@@ -54,12 +55,11 @@ public:
 
   void                  setAnimationMode(bool theDegenerated);
 
-  virtual void          setBackgroundColor( const QColor& color);
-  virtual QColor        backgroundColor() const;
+  virtual void          setBackgroundColor( const QColor& color);    // obsolete
+  virtual QColor        backgroundColor() const;                     // obsolete
+  void                  setBackground( const Qtx::BackgroundData& color);
+  Qtx::BackgroundData   background() const;
 
-  virtual QString       backgroundImageFilename() const;
-  virtual void          setBackgroundImage( const QString& fileName , const Aspect_FillMethod& theFillMethod);
-  
   virtual int           getBgImgHeight(){return myBgImgHeight; };
   virtual int           getBgImgWidth() {return myBgImgWidth;  };
 
@@ -94,6 +94,9 @@ public:
   void                  setAdvancedZoomingEnabled( const bool theState ) { myIsAdvancedZoomingEnabled = theState; }
   bool                  isAdvancedZoomingEnabled() const { return myIsAdvancedZoomingEnabled; }
 
+signals:
+  void                  vpChangeBackground( const Qtx::BackgroundData& );
+
 public slots:
   virtual bool          synchronize( OCCViewer_ViewPort* );
 
@@ -111,7 +114,8 @@ private:
   bool                  mapView( const Handle(V3d_View)& );
   bool                  setWindow( const Handle(V3d_View)& );
   bool                  mapped( const Handle(V3d_View)& ) const;
-
+  void                  updateBackground();
+  
 private:
   Handle(V3d_View)      myOrthoView;
   Handle(V3d_View)      myPerspView;
@@ -121,7 +125,7 @@ private:
   bool                  myBusy;
   double                myScale;
   bool                  myIsAdvancedZoomingEnabled;
-  QString               myBackgroundImageFilename;
+  Qtx::BackgroundData   myBackground;
   int                   myBgImgHeight;
   int                   myBgImgWidth;
 };

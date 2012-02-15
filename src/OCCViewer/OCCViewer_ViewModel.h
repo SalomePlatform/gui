@@ -29,6 +29,7 @@
 
 #include "OCCViewer.h"
 
+#include "Qtx.h"
 #include "SUIT_ViewModel.h"
 
 #include <V3d_View.hxx>
@@ -53,7 +54,17 @@ class OCCVIEWER_EXPORT OCCViewer_Viewer: public SUIT_ViewModel
   Q_OBJECT
 
 public:
-  static QString Type() { return "OCCViewer"; }
+  /*! supported gradient types */
+  enum { 
+    HorizontalGradient, VerticalGradient,
+    Diagonal1Gradient,  Diagonal2Gradient,
+    Corner1Gradient,    Corner2Gradient,
+    Corner3Gradient,    Corner4Gradient,
+    LastGradient = Corner4Gradient
+  };
+  
+  static QString           Type() { return "OCCViewer"; }
+  static QString           backgroundData( QStringList&, QIntList& );
 
   OCCViewer_Viewer( bool DisplayTrihedron = true);
   virtual ~OCCViewer_Viewer();
@@ -74,11 +85,15 @@ public:
   void                            performSelectionChanged();
   // emit signal selectionChanged
 
-  QColor                          backgroundColor() const;
-  void                            setBackgroundColor( const QColor& );
+  QColor                          backgroundColor() const;                              // obsolete
+  void                            setBackgroundColor( const QColor& );                  // obsolete
+  Qtx::BackgroundData             background() const;
+  void                            setBackground( const Qtx::BackgroundData& );
 
-  QColor                          backgroundColor(int theViewId) const;
-  void                            setBackgroundColor( int theViewId, const QColor& );
+  QColor                          backgroundColor(int theViewId) const;                 // obsolete
+  void                            setBackgroundColor( int theViewId, const QColor& );   // obsolete
+  Qtx::BackgroundData             background(int theViewId) const;
+  void                            setBackground( int theViewId, const Qtx::BackgroundData& );
 
   //! returns true if 3d Trihedron in viewer was created
   bool                            trihedronActivated() const { return !myTrihedron.IsNull(); }
@@ -141,8 +156,6 @@ signals:
   void selectionChanged();
   void deselection();
 
-protected:
-
 protected slots:
   virtual void onMousePress(SUIT_ViewWindow*, QMouseEvent*);
   virtual void onMouseMove(SUIT_ViewWindow*, QMouseEvent*);
@@ -150,10 +163,7 @@ protected slots:
   virtual void onKeyPress(SUIT_ViewWindow*, QKeyEvent*);
 
   void onDumpView();
-  void onChangeBgColor();
-  void onChangeBgImageCentered();
-  void onChangeBgImageTiled();
-  void onChangeBgImageStretched();
+  void onChangeBackground();
 
 protected:
   Handle(V3d_Viewer)              myV3dViewer;
@@ -176,7 +186,7 @@ protected:
 
   double                          myTrihedronSize;
 
-  QVector<QColor>                 myColors;
+  QVector<Qtx::BackgroundData>    myBackgrounds;
 };
 
 #ifdef WIN32

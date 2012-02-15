@@ -383,6 +383,38 @@
         <source>STRETCHED</source>
         <translation>en mode étiré</translation>
     </message>
+    <message>
+        <source>GT_HORIZONTALGRADIENT</source>
+        <translation type="unfinished">Horizontal gradient</translation>
+    </message>
+    <message>
+        <source>GT_VERTICALGRADIENT</source>
+        <translation type="unfinished">Vertical gradient</translation>
+    </message>
+    <message>
+        <source>GT_FIRSTDIAGONALGRADIENT</source>
+        <translation type="unfinished">First diagonal gradient</translation>
+    </message>
+    <message>
+        <source>GT_SECONDDIAGONALGRADIENT</source>
+        <translation type="unfinished">Second diagonal gradient</translation>
+    </message>
+    <message>
+        <source>GT_FIRSTCORNERGRADIENT</source>
+        <translation type="unfinished">First corner gradient</translation>
+    </message>
+    <message>
+        <source>GT_SECONDCORNERGRADIENT</source>
+        <translation type="unfinished">Second corner gradient</translation>
+    </message>
+    <message>
+        <source>GT_THIRDCORNERGRADIENT</source>
+        <translation type="unfinished">Third corner gradient</translation>
+    </message>
+    <message>
+        <source>GT_FORTHCORNERGRADIENT</source>
+        <translation type="unfinished">Fourth corner gradient</translation>
+    </message>
 </context>
 <context>
     <name>OCCViewer_AxialScaleDlg</name>

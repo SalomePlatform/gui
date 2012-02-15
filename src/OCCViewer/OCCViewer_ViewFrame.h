@@ -57,8 +57,8 @@ public:
 
   virtual bool isCuttingPlane() { return getView(MAIN_VIEW)->isCuttingPlane(); }
 
-  virtual QString getVisualParameters() { return getView(MAIN_VIEW)->getVisualParameters(); }
-  virtual void setVisualParameters( const QString& parameters ) { getView(MAIN_VIEW)->setVisualParameters(parameters); }
+  virtual QString getVisualParameters();
+  virtual void setVisualParameters( const QString& parameters );
 
   virtual void initSketchers() { getView(MAIN_VIEW)->initSketchers(); }
   virtual OCCViewer_ViewSketcher* getSketcher( const int i)  { return getView(MAIN_VIEW)->getSketcher(i); }
@@ -74,13 +74,15 @@ public:
 
   virtual bool eventFilter(QObject* watched, QEvent* e) { return SUIT_ViewWindow::eventFilter(watched, e); }
 
-  virtual QColor backgroundColor() const;
-  virtual void   setBackgroundColor( const QColor& );
+  virtual QColor backgroundColor() const;                 // obsolete
+  virtual void   setBackgroundColor( const QColor& );     // obsolete
 
-  virtual QString backgroundImageFilename() const;
-  virtual void   setBackgroundImage( const QString& theFilename , const Aspect_FillMethod& theFillMethod);
-  
+  virtual Qtx::BackgroundData background() const;
+  virtual void                setBackground( const Qtx::BackgroundData& );
+
   virtual void   setDropDownButtons( bool );
+
+  bool           event( QEvent* e );
 
 public slots:
   virtual void onFrontView() { getView(MAIN_VIEW)->onFrontView(); }

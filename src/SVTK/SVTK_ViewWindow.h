@@ -29,6 +29,7 @@
 
 #include "SVTK.h"
 #include "SVTK_Selection.h"
+#include "Qtx.h"
 #include "SUIT_ViewWindow.h"
 
 #include "SALOME_InteractiveObject.hxx"
@@ -43,7 +44,6 @@ class VTKViewer_Actor;
 class VTKViewer_Trihedron;
 
 class SVTK_ViewModelBase;
-//class SVTK_MainWindow;
 class SVTK_Selector;
 class SVTK_View;
 
@@ -96,50 +96,55 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
   //! Get #SVTK_View
   SVTK_View* getView();
 
-  //! Get #SVTK_MainWindow
-  //SVTK_MainWindow* getMainWindow();
-
-  //! Redirect the request to #SVTK_MainWindow::getRenderWindow
+  //! Get render window
   vtkRenderWindow* getRenderWindow();
 
-  //! Redirect the request to #SVTK_MainWindow::getInteractor
+  //! Get interactor
   vtkRenderWindowInteractor* getInteractor() const;
 
-  //! Redirect the request to #SVTK_MainWindow::getInteractor
+  //! Get SVTK interactor
   SVTK_RenderWindowInteractor*  GetInteractor() const;
 
+  //! Get current interactor style
   vtkInteractorStyle* GetInteractorStyle() const;
 
-  //! Redirect the request to #SVTK_RenderWindowInteractor::PushInteractorStyle
+  //! Add interactor style to the stack of styles
   void PushInteractorStyle(vtkInteractorStyle* theStyle);
 
-  //! Redirect the request to #SVTK_RenderWindowInteractor::PopInteractorStyle
+  //! Remove last interactor style from the stack of styles
   void PopInteractorStyle();
 
-  //! Redirect the request to #SVTK_MainWindow::getRenderer 
+  //! Get renderer
   vtkRenderer* getRenderer() const;
-
+  
+  //! Get SVTK renderer
   SVTK_Renderer* GetRenderer() const;
 
-  //! Redirect the request to #SVTK_MainWindow::GetSelector 
+  //! Get selector
   SVTK_Selector* GetSelector() const;
   
-  //! Redirect the request to #SVTK_Selector::SelectionMode
+  //! Set selection mode
   Selection_Mode SelectionMode() const;
   
   //! Change selection mode
   virtual void SetSelectionMode(Selection_Mode theMode);
 
-  //! Redirect the request to #SVTK_MainWindow::SetBackgroundColor 
+  //! Set background color [obsolete] 
   virtual void setBackgroundColor( const QColor& );
 
-  //! Redirect the request to #SVTK_MainWindow::SetBackgroundColor 
+  //! Get background color [obsolete]
   QColor backgroundColor() const;
 
-  //! Redirect the request to #SVTK_Renderer::IsTrihedronDisplayed
+  //! Set background
+  virtual void setBackground( const Qtx::BackgroundData& );
+
+  //! Get background
+  Qtx::BackgroundData background() const;
+
+  //! Return \c true if "display trihedron" flag is set
   bool isTrihedronDisplayed();
 
-  //! Redirect the request to #SVTK_Renderer::IsCubeAxesDisplayed
+  //! Return \c true if "show graduated axes" flag is set
   bool isCubeAxesDisplayed();
  
   /*  interactive object management */
@@ -216,24 +221,25 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
   //! Redirect the request to #SVTK_Renderer::SetTrihedronSize
   virtual void SetTrihedronSize( const vtkFloatingPointType, const bool = true );
 
-  //! Redirect the request to #SVTK_MainWindow::SetIncrementalSpeed
+  //! Set incremental speed
   virtual void SetIncrementalSpeed( const int, const int = 0 );
 
-  //! Redirect the request to #SVTK_MainWindow::SetProjectionMode
+  //! Set current projection mode
   virtual void SetProjectionMode( const int );
 
-  //! Redirect the request to #SVTK_MainWindow::SetInteractionStyle
+  //! Set interactive style
   virtual void SetInteractionStyle( const int );
 
-  //! Redirect the request to #SVTK_MainWindow::SetZoomingStyle
+  //! Set zooming style
   virtual void SetZoomingStyle( const int );
 
+  //! Set dynamic preselection on/off
   virtual void SetDynamicPreSelection( bool );
 
-  //! Redirect the request to #SVTK_MainWindow::SetSpacemouseButtons
+  //! Customize space mouse buttons
   virtual void SetSpacemouseButtons( const int, const int, const int );
 
-  //! Redirect the request to #SVTK_Renderer::SetSelectionProp
+  //! Set selection properties
   virtual void SetSelectionProp(const double& theRed = 1, 
                                 const double& theGreen = 1,
                                 const double& theBlue = 0, 
@@ -406,7 +412,6 @@ protected:
          StartRecordingId, PlayRecordingId, PauseRecordingId, StopRecordingId };
 
   SVTK_View* myView;
-  //SVTK_MainWindow* myMainWindow;
   SVTK_ViewModelBase* myModel;
 
   SVTK_RenderWindowInteractor* myInteractor;
@@ -439,6 +444,7 @@ protected:
   int myRecordingToolBar;
 
   vtkPVAxesWidget* myAxesWidget;
+  Qtx::BackgroundData myBackground;
 
 private slots:
   void onSynchronizeView(bool);

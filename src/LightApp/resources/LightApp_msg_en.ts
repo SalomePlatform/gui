@@ -528,6 +528,10 @@ The changes will be applied on the next application session.</translation>
     </message>
     <message>
         <source>PREF_VIEWER_BACKGROUND</source>
+        <translation>Background</translation>
+    </message>
+    <message>
+        <source>PREF_VIEWER_BACKGROUND_COLOR</source>
         <translation>Background color</translation>
     </message>
     <message>

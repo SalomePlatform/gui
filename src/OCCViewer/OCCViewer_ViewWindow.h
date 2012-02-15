@@ -24,6 +24,7 @@
 #define OCCVIEWER_VIEWWINDOW_H
 
 #include "OCCViewer.h"
+#include "Qtx.h"
 #include "SUIT_ViewWindow.h"
 #include <gp_Pnt.hxx>
 #include <V3d_Plane.hxx>
@@ -180,12 +181,12 @@ public:
   void            setMaximized( bool, bool = true );
   bool            isMaximized() const;
 
-  virtual QColor  backgroundColor() const;
-  virtual void    setBackgroundColor( const QColor& );
+  virtual QColor  backgroundColor() const;                      // obsolete
+  virtual void    setBackgroundColor( const QColor& );          // obsolete
 
-  virtual QString backgroundImageFilename() const;
-  virtual void    setBackgroundImage( const QString& ,const Aspect_FillMethod& theFillMethod);
-  
+  virtual Qtx::BackgroundData  background() const;
+  virtual void                 setBackground( const Qtx::BackgroundData& );
+
   virtual const   viewAspectList& getViewAspects();
   virtual void                    appendViewAspect( const viewAspect& );
   virtual void                    updateViewAspects( const viewAspectList& );

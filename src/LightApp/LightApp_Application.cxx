@@ -1419,15 +1419,14 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
 #else
     vm = new OCCViewer_Viewer( true );
 #endif
-    vm->setBackgroundColor( OCCViewer_ViewFrame::TOP_LEFT,
-                            resMgr->colorValue( "OCCViewer", "xz_background", vm->backgroundColor() ) );
-    vm->setBackgroundColor( OCCViewer_ViewFrame::TOP_RIGHT,
-                            resMgr->colorValue( "OCCViewer", "yz_background", vm->backgroundColor() ) );
-
-    vm->setBackgroundColor( OCCViewer_ViewFrame::BOTTOM_LEFT,
-                            resMgr->colorValue( "OCCViewer", "xy_background", vm->backgroundColor() ) );
-    vm->setBackgroundColor( OCCViewer_ViewFrame::BOTTOM_RIGHT,
-                            resMgr->colorValue( "OCCViewer", "background", vm->backgroundColor() ) );
+    vm->setBackground( OCCViewer_ViewFrame::TOP_LEFT,
+		       resMgr->backgroundValue( "OCCViewer", "xz_background", vm->background(OCCViewer_ViewFrame::TOP_LEFT) ) );
+    vm->setBackground( OCCViewer_ViewFrame::TOP_RIGHT,
+		       resMgr->backgroundValue( "OCCViewer", "yz_background", vm->background(OCCViewer_ViewFrame::TOP_RIGHT) ) );
+    vm->setBackground( OCCViewer_ViewFrame::BOTTOM_LEFT,
+		       resMgr->backgroundValue( "OCCViewer", "xy_background", vm->background(OCCViewer_ViewFrame::BOTTOM_LEFT) ) );
+    vm->setBackground( OCCViewer_ViewFrame::BOTTOM_RIGHT,
+		       resMgr->backgroundValue( "OCCViewer", "background", vm->background(OCCViewer_ViewFrame::MAIN_VIEW) ) );
 
     vm->setTrihedronSize(  resMgr->doubleValue( "OCCViewer", "trihedron_size", vm->trihedronSize() ),
                            resMgr->booleanValue( "OCCViewer", "relative_size", vm->trihedronRelative() ));
@@ -1455,7 +1454,7 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
     if( vm )
     {
       vm->setProjectionMode( resMgr->integerValue( "VTKViewer", "projection_mode", vm->projectionMode() ) );
-      vm->setBackgroundColor( resMgr->colorValue( "VTKViewer", "background", vm->backgroundColor() ) );
+      vm->setBackground( resMgr->backgroundValue( "VTKViewer", "background", vm->background() ) );
       vm->setTrihedronSize( resMgr->doubleValue( "VTKViewer", "trihedron_size", vm->trihedronSize() ),
                             resMgr->booleanValue( "VTKViewer", "relative_size", vm->trihedronRelative() ) );
       vm->setStaticTrihedronVisible( resMgr->booleanValue( "VTKViewer", "show_static_trihedron", vm->isStaticTrihedronVisible() ) );
@@ -1473,7 +1472,7 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
     viewMgr = new VTKViewer_ViewManager( activeStudy(), desktop() );
     VTKViewer_Viewer* vm = dynamic_cast<VTKViewer_Viewer*>( viewMgr->getViewModel() );
     if ( vm )
-      vm->setBackgroundColor( resMgr->colorValue( "VTKViewer", "background", vm->backgroundColor() ) );
+      vm->setBackground( resMgr->backgroundValue( "VTKViewer", "background", vm->background() ) );
 #endif
   }
 #endif
@@ -2030,6 +2029,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   QStringList     aValuesList;
   QList<QVariant> anIndicesList;
+  QIntList        idList;
 
   // . Top-level "SALOME" preferences group <<start>>
   int salomeCat = pref->addPreference( tr( "PREF_CATEGORY_SALOME" ) );
@@ -2154,19 +2154,43 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   // ... "Background" group <<start>>
   int bgGroup = pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), occGroup );
-  pref->setItemProperty( "columns", 2, bgGroup );
+  //  pref->setItemProperty( "columns", 2, bgGroup );
+  aValuesList.clear();
+  anIndicesList.clear();
+  QString formats = OCCViewer_Viewer::backgroundData( aValuesList, idList );
+  foreach( int gid, idList ) anIndicesList << gid;
   // .... -> 3D viewer background
-  pref->addPreference( tr( "PREF_3DVIEWER_BACKGROUND" ), bgGroup,
-                       LightApp_Preferences::Color, "OCCViewer", "background" );
+  int bgId = pref->addPreference( tr( "PREF_3DVIEWER_BACKGROUND" ), bgGroup,
+				  LightApp_Preferences::Background, "OCCViewer", "background" );
+  pref->setItemProperty( "gradient_names", aValuesList, bgId );
+  pref->setItemProperty( "gradient_ids", anIndicesList, bgId );
+  pref->setItemProperty( "texture_enabled", false, bgId );
+  pref->setItemProperty( "custom_enabled", false, bgId );
+  pref->setItemProperty( "image_formats", formats, bgId );
   // .... -> XZ viewer background
-  pref->addPreference( tr( "PREF_XZVIEWER_BACKGROUND" ), bgGroup,
-                       LightApp_Preferences::Color, "OCCViewer", "xz_background" );
+  bgId = pref->addPreference( tr( "PREF_XZVIEWER_BACKGROUND" ), bgGroup,
+			      LightApp_Preferences::Background, "OCCViewer", "xz_background" );
+  pref->setItemProperty( "gradient_names", aValuesList, bgId );
+  pref->setItemProperty( "gradient_ids", anIndicesList, bgId );
+  pref->setItemProperty( "texture_enabled", false, bgId );
+  pref->setItemProperty( "custom_enabled", false, bgId );
+  pref->setItemProperty( "image_formats", formats, bgId );
   // .... -> YZ viewer background
-  pref->addPreference( tr( "PREF_YZVIEWER_BACKGROUND" ), bgGroup,
-                       LightApp_Preferences::Color, "OCCViewer", "yz_background" );
+  bgId = pref->addPreference( tr( "PREF_YZVIEWER_BACKGROUND" ), bgGroup,
+			      LightApp_Preferences::Background, "OCCViewer", "yz_background" );
+  pref->setItemProperty( "gradient_names", aValuesList, bgId );
+  pref->setItemProperty( "gradient_ids", anIndicesList, bgId );
+  pref->setItemProperty( "texture_enabled", false, bgId );
+  pref->setItemProperty( "custom_enabled", false, bgId );
+  pref->setItemProperty( "image_formats", formats, bgId );
   // .... -> XY viewer background
-  pref->addPreference( tr( "PREF_XYVIEWER_BACKGROUND" ), bgGroup,
-                       LightApp_Preferences::Color, "OCCViewer", "xy_background" );
+  bgId = pref->addPreference( tr( "PREF_XYVIEWER_BACKGROUND" ), bgGroup,
+			      LightApp_Preferences::Background, "OCCViewer", "xy_background" );
+  pref->setItemProperty( "gradient_names", aValuesList, bgId );
+  pref->setItemProperty( "gradient_ids", anIndicesList, bgId );
+  pref->setItemProperty( "texture_enabled", false, bgId );
+  pref->setItemProperty( "custom_enabled", false, bgId );
+  pref->setItemProperty( "image_formats", formats, bgId );
   // ... "Background" group <<end>>
 
   // ... -> empty frame (for layout) <<start>>
@@ -2201,7 +2225,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   // ... -> empty frame (for layout) <<start>>
   int vtkGen = pref->addPreference( "", vtkGroup, LightApp_Preferences::Frame );
-  pref->setItemProperty( "columns", 2, vtkGen );
+  //pref->setItemProperty( "columns", 2, vtkGen );
   // .... -> projection mode
   int vtkProjMode = pref->addPreference( tr( "PREF_PROJECTION_MODE" ), vtkGen,
                                          LightApp_Preferences::Selector, "VTKViewer", "projection_mode" );
@@ -2212,8 +2236,17 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "strings", aValuesList,   vtkProjMode );
   pref->setItemProperty( "indexes", anIndicesList, vtkProjMode );
   // .... -> background
-  pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), vtkGen,
-                       LightApp_Preferences::Color, "VTKViewer", "background" );
+  aValuesList.clear();
+  anIndicesList.clear();
+  formats = SVTK_Viewer::backgroundData( aValuesList, idList );
+  foreach( int gid, idList ) anIndicesList << gid;
+  bgId = pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), vtkGen,
+			      LightApp_Preferences::Background, "VTKViewer", "background" );
+  pref->setItemProperty( "gradient_names", aValuesList, bgId );
+  pref->setItemProperty( "gradient_ids", anIndicesList, bgId );
+  pref->setItemProperty( "texture_enabled", false, bgId );
+  pref->setItemProperty( "custom_enabled", false, bgId );
+  pref->setItemProperty( "image_formats", formats, bgId );
   // .... -> navigation mode
   int vtkStyleMode = pref->addPreference( tr( "PREF_NAVIGATION" ), vtkGen,
                                           LightApp_Preferences::Selector, "VTKViewer", "navigation_mode" );
@@ -2266,7 +2299,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   // ... space mouse sub-group <<start>>
   int vtkSM = pref->addPreference( tr( "PREF_FRAME_SPACEMOUSE" ), vtkGroup, LightApp_Preferences::GroupBox );
-  pref->setItemProperty( "columns", 2, vtkSM );
+  //pref->setItemProperty( "columns", 2, vtkSM );
   // .... -> decrease speed increment
   int spacemousePref1 = pref->addPreference( tr( "PREF_SPACEMOUSE_FUNC_1" ), vtkSM,
                                              LightApp_Preferences::Selector, "VTKViewer",
@@ -2384,7 +2417,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "strings", aValuesList,   verScale );
   pref->setItemProperty( "indexes", anIndicesList, verScale );
   // ... -> background
-  pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), plot2dGroup,
+  pref->addPreference( tr( "PREF_VIEWER_BACKGROUND_COLOR" ), plot2dGroup,
                        LightApp_Preferences::Color, "Plot2d", "Background" );
   // ... -> font color
   pref->addPreference( tr( "PREF_FONT_COLOR" ), plot2dGroup, LightApp_Preferences::Color, "Plot2d", "LegendFontColor" );

@@ -31,6 +31,7 @@
 #include <SUIT_ViewModel.h>
 
 #include <QColor>
+#include <QFileInfo>
 #include <QString>
 #include <QRect>
 #include <QPaintEvent>
@@ -67,8 +68,7 @@ OCCViewer_ViewPort3d::OCCViewer_ViewPort3d( QWidget* parent, const Handle( V3d_V
     myDegenerated( true ),
     myAnimate( false ),
     myBusy( true ),
-    myIsAdvancedZoomingEnabled( false ),
-    myBackgroundImageFilename( "" )
+    myIsAdvancedZoomingEnabled( false )
 {
   // VSR: 01/07/2010 commented to avoid SIGSEGV at SALOME exit
   //selectVisualId();
@@ -83,6 +83,7 @@ OCCViewer_ViewPort3d::OCCViewer_ViewPort3d( QWidget* parent, const Handle( V3d_V
   }
   if ( myDegenerated )
     activeView()->SetDegenerateModeOn();
+  setBackground( Qtx::BackgroundData( Qt::black ) ); // set default background
 }
 
 /*!
@@ -273,52 +274,161 @@ void OCCViewer_ViewPort3d::getAxialScale( double& xScale, double& yScale, double
 }
 
 /*!
-  Returns the background color [ virtual public ]
+  Returns the background color [ virtual public ] [ obsolete ]
 */
 QColor OCCViewer_ViewPort3d::backgroundColor() const
 {
-  if ( !activeView().IsNull() ) {
-    Standard_Real aRed, aGreen, aBlue;
-    activeView()->BackgroundColor( Quantity_TOC_RGB, aRed, aGreen, aBlue );
-    int red = (int) (aRed * 255);
-    int green = (int) (aGreen * 255);
-    int blue = (int) (aBlue * 255);
-    return QColor( red, green, blue );
-  }
-  return OCCViewer_ViewPort::backgroundColor();
+  return background().color();
 }
 
 /*!
-  Sets the background color [ virtual public ]
+  Sets the background color [ virtual public ] [ obsolete ]
 */
 void OCCViewer_ViewPort3d::setBackgroundColor( const QColor& color )
 {
-  if ( !activeView().IsNull() ) {
-    activeView()->SetBackgroundColor( Quantity_TOC_RGB, color.red()/255.,
-                                      color.green()/255., color.blue()/255.);
-    activeView()->Update();
-    emit vpChangeBGColor( color );
+  Qtx::BackgroundData bg = background();
+  bg.setColor( color );
+  setBackground( bg );
+}
+
+/*!
+  Returns the background data
+*/
+Qtx::BackgroundData OCCViewer_ViewPort3d::background() const
+{
+  return myBackground;
+}
+
+/*!
+  Sets the background data
+*/
+void OCCViewer_ViewPort3d::setBackground( const Qtx::BackgroundData& bgData )
+{
+  if ( bgData.isValid() ) {
+    myBackground = bgData;
+    updateBackground();
+    emit vpChangeBackground( myBackground );
   }
 }
 
-/*!
-  Returns the background image fileName[ virtual public ]
-*/
-QString OCCViewer_ViewPort3d::backgroundImageFilename() const
+void OCCViewer_ViewPort3d::updateBackground()
 {
-  return myBackgroundImageFilename;
-}
+  if ( activeView().IsNull() ) return;
+  if ( !myBackground.isValid() ) return;
 
-/*!
-  Sets the background image [ virtual public ]
-*/
-void OCCViewer_ViewPort3d::setBackgroundImage( const QString& fileName,const Aspect_FillMethod& theFillMethod)
-{ 
-  myBackgroundImageFilename=fileName;
-  //TEST
-//   if ( !activeView().IsNull() ) {
-//     activeView()->SetBackgroundImage( (Standard_CString)fileName.toLatin1().constData(),theFillMethod,true);
-//   }
+  // VSR: Important note on below code.
+  // In OCCT (at least in version 6.5.2), things about the background drawing
+  // are not straightforward and not clearly understandable:
+  // - Horizontal gradient is drawn vertically (!), well ok, from top side to bottom one.
+  // - Vertical gradient is drawn horizontally (!), from right side to left one (!!!).
+  // - First and second diagonal gradients are confused.
+  // - Image texture, once set, can not be removed (!).
+  // - Texture image fill mode Aspect_FM_NONE is not taken into account (and means the same
+  //   as Aspect_FM_CENTERED).
+  // - The only way to cancel gradient background (and get back to single colored) is to
+  //   set gradient background style to Aspect_GFM_NONE while passing two colors is also needed
+  //   (see V3d_View::SetBgGradientColors() function).
+  // - Also, it is impossible to draw texture image above the gradiented background (only above
+  //   single-colored).
+  // Well, all this is strange but we have to live with it.
+  switch ( myBackground.mode() ) {
+  case Qtx::ImageBackground:
+    {
+      // VSR: Do not use this code until the bug is fixed - currently it is not possible to
+      // clear the background texture image as soon as it is once set to the viewer.
+      QString fileName;
+      int textureMode = myBackground.texture( fileName );
+      QFileInfo fi( fileName );
+      if ( !fileName.isEmpty() && fi.exists() ) {
+	// set texture image: file name and fill mode
+	switch ( textureMode ) {
+	case Qtx::CenterTexture:
+	  activeView()->SetBackgroundImage( fi.absoluteFilePath().toLatin1().constData(), Aspect_FM_CENTERED );
+	  break;
+	case Qtx::TileTexture:
+	  activeView()->SetBackgroundImage( fi.absoluteFilePath().toLatin1().constData(), Aspect_FM_TILED );
+	  break;
+	case Qtx::StretchTexture:
+	  activeView()->SetBackgroundImage( fi.absoluteFilePath().toLatin1().constData(), Aspect_FM_STRETCH );
+	  break;
+	default:
+	  break;
+ 	}
+      }
+      break;
+    }
+  case Qtx::ColorBackground:
+    {
+      QColor c = myBackground.color();
+      if ( c.isValid() ) {
+	// Unset texture should be done here
+	// ...
+	// cancel gradient background (in OCC the only way is to set it to NONE type)
+	Quantity_Color qCol( c.red()/255., c.green()/255., c.blue()/255., Quantity_TOC_RGB );
+	activeView()->SetBgGradientColors( qCol, qCol, Aspect_GFM_NONE );
+	// then change background color
+	activeView()->SetBackgroundColor( qCol );
+	// update viewer
+	activeView()->Update();
+      }
+      break;
+    }
+  case Qtx::SimpleGradientBackground:
+    {
+      QColor c1, c2;
+      int type = myBackground.gradient( c1, c2 );
+      if ( c1.isValid() && type >= OCCViewer_Viewer::HorizontalGradient && type <= OCCViewer_Viewer::LastGradient ) {
+	// Unset texture should be done here
+	// ...
+	// Get colors and set-up gradiented background
+	if ( !c2.isValid() ) c2 = c1;
+	Quantity_Color qCol1( c1.red()/255., c1.green()/255., c1.blue()/255., Quantity_TOC_RGB );
+	Quantity_Color qCol2( c2.red()/255., c2.green()/255., c2.blue()/255., Quantity_TOC_RGB );
+	switch ( type ) {
+	case OCCViewer_Viewer::HorizontalGradient:
+	  // in OCCT, to draw horizontal gradient it's necessary to use Aspect_GFM_VER type
+	  // and interchange the colors
+	  activeView()->SetBgGradientColors( qCol2, qCol1, Aspect_GFM_VER, Standard_True );
+	  break;
+	case OCCViewer_Viewer::VerticalGradient:
+	  // in OCCT, to draw vertical gradient it's necessary to use Aspect_GFM_HOR type
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_HOR, Standard_True );
+	  break;
+	case OCCViewer_Viewer::Diagonal1Gradient:
+	  // in OCCT, to draw 1st dialognal gradient it's necessary to use Aspect_GFM_DIAG2 type
+	  // and interchange the colors
+	  activeView()->SetBgGradientColors( qCol2, qCol1, Aspect_GFM_DIAG2, Standard_True );
+	  break;
+	case OCCViewer_Viewer::Diagonal2Gradient:
+	  // in OCCT, to draw 2nd dialognal gradient it's necessary to use Aspect_GFM_DIAG1 type
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_DIAG1, Standard_True );
+	  break;
+	case OCCViewer_Viewer::Corner1Gradient:
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_CORNER1, Standard_True );
+	  break;
+	case OCCViewer_Viewer::Corner2Gradient:
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_CORNER2, Standard_True );
+	  break;
+	case OCCViewer_Viewer::Corner3Gradient:
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_CORNER3, Standard_True );
+	  break;
+	case OCCViewer_Viewer::Corner4Gradient:
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_CORNER4, Standard_True );
+	  break;
+	default:
+	  break;
+	}
+      }
+      break;
+    }
+  case Qtx::CustomGradientBackground:
+    {
+      // NOT IMPLEMENTED YET
+      break;
+    }
+  default:
+    break;
+  }
 }
 
 /*!
@@ -627,8 +737,10 @@ bool OCCViewer_ViewPort3d::setWindow( const Handle(V3d_View)& view )
 void OCCViewer_ViewPort3d::attachWindow( const Handle(V3d_View)& view, 
                                          const Handle(Aspect_Window)& window)
 {
-  if (!view.IsNull())
+  if (!view.IsNull()) {
     view->SetWindow( window );
+    updateBackground();
+  }
 }
 
 /*!

@@ -44,7 +44,8 @@
 
 #include "SALOME_Actor.h"
 
-#include <QtxActionToolMgr.h>
+#include "QtxActionToolMgr.h"
+#include "QtxBackgroundTool.h"
 
 // in order NOT TO link with SalomeApp, here the code returns SALOMEDS_Study.
 // SalomeApp_Study::studyDS() does it as well, but -- here it is retrieved from 
@@ -85,6 +86,7 @@ SVTK_Viewer::SVTK_Viewer()
   mySpaceBtn[0] = 1;
   mySpaceBtn[1] = 2;
   mySpaceBtn[2] = 9;
+  myDefaultBackground = Qtx::BackgroundData( Qt::black );
 }
 
 /*!
@@ -94,33 +96,51 @@ SVTK_Viewer::~SVTK_Viewer()
 {
 }
 
-/*!
-  \return background color
-*/
+/*! Get data for supported background modes: gradient types, identifiers and supported image formats */
+QString SVTK_Viewer::backgroundData( QStringList& gradList, QIntList& idList )
+{
+  gradList << tr( "GT_VERTICALGRADIENT" );
+  idList   << VerticalGradient;
+  return QString(); // temporarily, means support of all image formats!
+}
+
+//! Get background color of the viewer [obsolete]
 QColor SVTK_Viewer::backgroundColor() const
 {
-  return myBgColor;
+  return background().color();
+}
+
+//! Set background color to the viewer [obsolete]
+void SVTK_Viewer::setBackgroundColor( const QColor& c )
+{
+  Qtx::BackgroundData bg = background();
+  bg.setColor( c );
+  setBackground( bg );
 }
 
 /*!
-  Changes background color
-  \param theColor - new background color
+  \return background data
 */
-void SVTK_Viewer::setBackgroundColor( const QColor& theColor )
+Qtx::BackgroundData SVTK_Viewer::background() const
 {
-  if ( !theColor.isValid() )
-    return;
+  return myDefaultBackground;
+}
 
+/*!
+  Changes background
+  \param theBackground - new background data
+*/
+void SVTK_Viewer::setBackground( const Qtx::BackgroundData& theBackground )
+{
+  myDefaultBackground = theBackground.isValid() ? theBackground : Qtx::BackgroundData( Qt::black );
   QVector<SUIT_ViewWindow*> aViews = myViewManager->getViews();
   for(int i = 0, iEnd = aViews.size(); i < iEnd; i++){
     if(SUIT_ViewWindow* aViewWindow = aViews.at(i)){
       if(TViewWindow* aView = dynamic_cast<TViewWindow*>(aViewWindow)){
-        aView->setBackgroundColor(theColor);
+        aView->setBackground(myDefaultBackground);
       }
     }
-  }
-
-  myBgColor = theColor;
+  }  
 }
 
 /*!Create new instance of view window on desktop \a theDesktop.
@@ -131,7 +151,7 @@ SUIT_ViewWindow* SVTK_Viewer::createView( SUIT_Desktop* theDesktop )
   TViewWindow* aViewWindow = new TViewWindow(theDesktop);
   aViewWindow->Initialize(this);
 
-  aViewWindow->setBackgroundColor( backgroundColor() );
+  aViewWindow->setBackground( background() );
   aViewWindow->SetTrihedronSize( trihedronSize(), trihedronRelative() );
   aViewWindow->SetStaticTrihedronVisible( isStaticTrihedronVisible() );
   aViewWindow->SetProjectionMode( projectionMode() );
@@ -412,7 +432,7 @@ void SVTK_Viewer::setViewManager(SUIT_ViewManager* theViewManager)
 void SVTK_Viewer::contextMenuPopup( QMenu* thePopup )
 {
   thePopup->addAction( VTKViewer_Viewer::tr( "MEN_DUMP_VIEW" ), this, SLOT( onDumpView() ) );
-  thePopup->addAction( VTKViewer_Viewer::tr( "MEN_CHANGE_BACKGROUD" ), this, SLOT( onChangeBgColor() ) );
+  thePopup->addAction( VTKViewer_Viewer::tr( "MEN_CHANGE_BACKGROUD" ), this, SLOT( onChangeBackground() ) );
 
   thePopup->addSeparator();
 
@@ -476,12 +496,31 @@ void SVTK_Viewer::onDumpView()
 /*!
   SLOT: called if background color is to be changed changed, passes new color to view port
 */
-void SVTK_Viewer::onChangeBgColor()
+void SVTK_Viewer::onChangeBackground()
 {
-  if(SUIT_ViewWindow* aView = myViewManager->getActiveView()){
-    QColor aColor = QColorDialog::getColor( backgroundColor(), aView);
-    setBackgroundColor(aColor);
-  }
+  SVTK_ViewWindow* aView = dynamic_cast<SVTK_ViewWindow*>(myViewManager->getActiveView());
+  if ( !aView )
+    return;
+
+  // get supported gradient types
+  QStringList gradList;
+  QIntList    idList;
+  QString     formats = backgroundData( gradList, idList );
+
+  // invoke dialog box
+  Qtx::BackgroundData bgData = QtxBackgroundDialog::getBackground( aView,                // parent for dialog box
+								   aView->background(),  // initial background
+								   true,                 // enable solid color mode
+								   false,                // disable texture mode
+								   true,                 // enable gradient mode
+								   false,                // disable custom gradient mode
+								   gradList,             // gradient names
+								   idList,               // gradient identifiers
+								   formats );            // image formats
+
+  // set chosen background data to the viewer
+  if ( bgData.isValid() )
+    aView->setBackground( bgData );
 }
 
 /*!

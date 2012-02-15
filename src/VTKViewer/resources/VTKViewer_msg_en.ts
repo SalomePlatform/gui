@@ -219,5 +219,9 @@
         <source>MEN_CHANGE_BACKGROUD</source>
         <translation>Change Background...</translation>
     </message>
+    <message>
+        <source>GT_VERTICALGRADIENT</source>
+        <translation>Vertical gradient</translation>
+    </message>
 </context>
 </TS>

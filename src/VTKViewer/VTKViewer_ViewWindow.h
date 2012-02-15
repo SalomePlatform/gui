@@ -54,10 +54,12 @@ public:
   virtual ~VTKViewer_ViewWindow();
   
   /*!Gets tool bar.*/
-  QToolBar*    getToolBar() { return myToolBar; }
+  QToolBar*                         getToolBar() { return myToolBar; }
   
-  void         setBackgroundColor( const QColor& );
-  QColor       backgroundColor() const;
+  void                              setBackgroundColor( const QColor& ); // obsolete
+  QColor                            backgroundColor() const;             // obsolete
+  void                              setBackground( const Qtx::BackgroundData& );
+  Qtx::BackgroundData               background() const;
 
   /*!Gets renderer.*/
   vtkRenderer*                      getRenderer()     { return myRenderer;     }
@@ -133,6 +135,7 @@ private:
   ActionsMap                        myActionsMap;  
   
   double                            myCurScale;
+  Qtx::BackgroundData               myBackground;
 
   friend class VTKViewer_RenderWindowInteractor;
 };

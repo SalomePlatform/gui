@@ -253,7 +253,6 @@ OCCViewer_ViewWindow::~OCCViewer_ViewWindow()
 void OCCViewer_ViewWindow::initLayout()
 {
   myViewPort = new OCCViewer_ViewPort3d( this, myModel->getViewer3d(), V3d_ORTHOGRAPHIC );
-  myViewPort->setBackgroundColor(Qt::black);
   myViewPort->installEventFilter(this);
   setCentralWidget(myViewPort);
   myOperation = NOTHING;
@@ -2070,6 +2069,8 @@ QString OCCViewer_ViewWindow::getVisualParameters()
   data << QString( "gtTickmarkLengthY=%1" ).arg( params.gtTickmarkLengthY );
   data << QString( "gtTickmarkLengthZ=%1" ).arg( params.gtTickmarkLengthZ );
 #endif
+  QString bg = Qtx::backgroundToString( background() ).replace( "=", "$" );
+  data << QString( "background=%1" ).arg( bg );
 
   return data.join("*");
 }
@@ -2083,6 +2084,7 @@ void OCCViewer_ViewWindow::setVisualParameters( const QString& parameters )
   viewAspect params;
 
   QStringList data = parameters.split( '*' );
+  Qtx::BackgroundData bgData;
   if ( parameters.contains( '=' )  ) // new format - "scale=1.000e+00*centerX=0.000e+00..."
   {
     foreach( QString param, data ) {
@@ -2147,6 +2149,10 @@ void OCCViewer_ViewWindow::setVisualParameters( const QString& parameters )
       else if ( paramName == "gtTickmarkLengthX" ) params.gtTickmarkLengthX = paramValue.toInt();
       else if ( paramName == "gtTickmarkLengthY" ) params.gtTickmarkLengthY = paramValue.toInt();
       else if ( paramName == "gtTickmarkLengthZ" ) params.gtTickmarkLengthZ = paramValue.toInt();
+      else if ( paramName == "background" )        {
+	QString bg = paramValue.replace( "$", "=" );
+	bgData = Qtx::stringToBackground( bg );
+      }
     }
   }
   else // old format - "1.000e+00*0.000e+00..."
@@ -2172,6 +2178,7 @@ void OCCViewer_ViewWindow::setVisualParameters( const QString& parameters )
     params.size      = data.count() > idx ? data[idx++].toDouble() : 100.0;
   }
   performRestoring( params );
+  setBackground( bgData );
 }
 
 /*!
@@ -2414,26 +2421,27 @@ void OCCViewer_ViewWindow::set2dMode(Mode2dType theType)
 {
   my2dMode = theType;
 }
-   
+
+// obsolete   
 QColor OCCViewer_ViewWindow::backgroundColor() const
 {
   return myViewPort ? myViewPort->backgroundColor() : Qt::black;
 }
    
-void OCCViewer_ViewWindow::setBackgroundColor( const QColor& theColor)
+// obsolete
+void OCCViewer_ViewWindow::setBackgroundColor( const QColor& theColor )
 {
   if ( myViewPort ) myViewPort->setBackgroundColor( theColor );
 }
 
-QString OCCViewer_ViewWindow::backgroundImageFilename() const
+Qtx::BackgroundData OCCViewer_ViewWindow::background() const
 {
-  return myViewPort ? myViewPort->backgroundImageFilename() : "";
+  return myViewPort ? myViewPort->background() : Qtx::BackgroundData();
 }
    
-void OCCViewer_ViewWindow::setBackgroundImage( const QString& theFileName,const Aspect_FillMethod& theFillMethod)
+void OCCViewer_ViewWindow::setBackground( const Qtx::BackgroundData& theBackground )
 {
-  if ( myViewPort ) 
-    myViewPort->setBackgroundImage( theFileName ,theFillMethod);
+  if ( myViewPort ) myViewPort->setBackground( theBackground );
 }
 
 /*!

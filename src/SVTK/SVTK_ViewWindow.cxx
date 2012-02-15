@@ -25,12 +25,14 @@
 #include "SVTK_CubeAxesDlg.h"
 #include "SVTK_SetRotationPointDlg.h"
 #include "SVTK_ViewParameterDlg.h"
+#include "SVTK_ViewModel.h"
 
 #include "SALOME_Actor.h"
 
 #include <QMenu>
 #include <QToolBar>
 #include <QEvent>
+#include <QFileInfo>
 #include <QXmlStreamWriter>
 #include <QXmlStreamReader>
 #include <QXmlStreamAttributes>
@@ -47,6 +49,13 @@
 #include <vtkInteractorStyle.h>
 #include <vtkProperty.h>
 #include <vtkCallbackCommand.h>
+#include <vtkJPEGReader.h>
+#include <vtkBMPReader.h>
+#include <vtkTIFFReader.h>
+#include <vtkPNGReader.h>
+#include <vtkMetaImageReader.h>
+#include <vtkImageMapToColors.h>
+#include <vtkTexture.h>
 
 #include "QtxAction.h"
 
@@ -71,7 +80,6 @@
 #include "SVTK_Event.h"
 #include "SVTK_Renderer.h"
 #include "SVTK_ViewWindow.h"
-#include "SVTK_ViewModelBase.h"
 #include "SVTK_InteractorStyle.h"
 #include "SVTK_RenderWindowInteractor.h"
 #include "SVTK_GenericRenderWindowInteractor.h"
@@ -223,6 +231,7 @@ void SVTK_ViewWindow::Initialize(SVTK_ViewModelBase* theModel)
 
   
   myInteractor->getRenderWindow()->Render();
+  setBackground( Qtx::BackgroundData( Qt::black ) ); // set default background
   onResetView();
 }
 
@@ -537,26 +546,174 @@ void SVTK_ViewWindow::EraseAll()
 }
 
 /*!
-  Sets background color
+  Sets background color [obsolete]
   \param color - new background color
 */
-void SVTK_ViewWindow::setBackgroundColor( const QColor& theColor )
+void SVTK_ViewWindow::setBackgroundColor( const QColor& c )
 {
-  getRenderer()->SetBackground(theColor.red()/255.0, 
-                               theColor.green()/255.0,
-                               theColor.blue()/255.0);
+  Qtx::BackgroundData bg = background();
+  bg.setColor( c );
+  setBackground( bg );
 }
 
 /*!
-  \return background color of viewer
+  \return background color of viewer [obsolete]
 */
 QColor SVTK_ViewWindow::backgroundColor() const
 {
-  vtkFloatingPointType aBackgroundColor[3];
-  getRenderer()->GetBackground(aBackgroundColor);
-  return QColor(int(aBackgroundColor[0]*255), 
-                int(aBackgroundColor[1]*255), 
-                int(aBackgroundColor[2]*255));
+  return background().color();
+}
+
+/*!
+  Sets background data
+  \param bgData - new background data
+*/
+void SVTK_ViewWindow::setBackground( const Qtx::BackgroundData& bgData )
+{
+  bool ok = bgData.isValid();
+
+  switch ( bgData.mode() ) {
+  case Qtx::ImageBackground:
+    {
+      QString fileName;
+      int textureMode = bgData.texture( fileName );
+      QFileInfo fi( fileName );
+      if ( !fileName.isEmpty() && fi.exists() ) {
+	// read texture from file
+	QString extension = fi.suffix().toLower();
+	vtkImageReader2* aReader = 0;
+	if ( extension == "jpg" || extension == "jpeg" )
+	  aReader = vtkJPEGReader::New();
+	else if ( extension == "bmp" )
+	  aReader = vtkBMPReader::New();
+	else if ( extension == "tif" || extension == "tiff" )
+	  aReader = vtkTIFFReader::New();
+	else if ( extension == "png" )
+	  aReader = vtkPNGReader::New();
+	else if ( extension == "mhd" || extension == "mha" )
+	  aReader = vtkMetaImageReader::New();           
+	if ( aReader ) {
+	  // create texture
+	  aReader->SetFileName( fi.absoluteFilePath().toLatin1().constData() );
+	  aReader->Update();
+	  
+	  vtkTexture* aTexture = vtkTexture::New();
+	  vtkImageMapToColors* aMap = 0;
+	  vtkAlgorithmOutput* anOutput;
+	  /*
+	  // special processing for BMP reader
+	  vtkBMPReader* aBMPReader = (vtkBMPReader*)aReader;
+	  if ( aBMPReader ) {
+	    // Special processing for BMP file
+	    aBMPReader->SetAllow8BitBMP(1);
+	    
+	    aMap = vtkImageMapToColors::New();
+	    aMap->SetInputConnection( aBMPReader->GetOutputPort() );
+	    aMap->SetLookupTable( (vtkScalarsToColors*)aBMPReader->GetLookupTable() );
+	    aMap->SetOutputFormatToRGB();
+	    
+	    anOutput = aMap->GetOutputPort();
+	  }
+	  else {
+          }
+	  */
+	  anOutput = aReader->GetOutputPort( 0 );
+	  aTexture->SetInputConnection( anOutput );
+	  // set texture mode
+	  // VSR: Currently, VTK only supports Stretch mode, so below code will give
+	  // the same results for all modes
+	  switch ( textureMode ) {
+	  case Qtx::TileTexture:
+	    aTexture->RepeatOn();
+	    aTexture->EdgeClampOff();
+	    aTexture->InterpolateOff();
+	    break;
+	  case Qtx::StretchTexture:
+	    aTexture->RepeatOff();
+	    aTexture->EdgeClampOff();
+	    aTexture->InterpolateOn();
+	    break;
+	  case Qtx::CenterTexture:
+	  default:
+	    aTexture->RepeatOff();
+	    aTexture->EdgeClampOn();
+	    aTexture->InterpolateOff();
+	    break;
+	  }
+	  // show textured background
+	  getRenderer()->SetTexturedBackground( true );
+	  getRenderer()->SetBackgroundTexture( aTexture );
+	  
+	  // clean-up resources
+	  if ( aMap )
+	    aMap->Delete();
+	  aReader->Delete();
+	  aTexture->Delete();
+	  ok = true;
+	}
+      }
+      break;
+    }
+  case Qtx::ColorBackground:
+    {
+      QColor c = bgData.color();
+      if ( c.isValid() ) {
+	// show solid-colored background
+	getRenderer()->SetTexturedBackground( false );  // cancel texture mode
+	getRenderer()->SetGradientBackground( false );  // cancel gradient mode
+	getRenderer()->SetBackground( c.red()/255.0,
+				      c.green()/255.0,
+				      c.blue()/255.0 ); // set background color
+	ok = true;
+      }
+      break;
+    }
+  case Qtx::SimpleGradientBackground:
+    {
+      QColor c1, c2;
+      int type = bgData.gradient( c1, c2 );
+      // VSR: Currently, only vertical gradient is supported by VTK. 
+      // In future, switch operator might be added here to process different supported gradient types.
+      if ( c1.isValid() && type == SVTK_Viewer::VerticalGradient ) {
+	if ( !c2.isValid() ) c2 = c1;
+	// show two-color gradient background
+	getRenderer()->SetTexturedBackground( false );    // cancel texture mode
+	getRenderer()->SetGradientBackground( true );     // switch to gradient mode
+	// VSR: In VTK, gradient is colored from bottom to top:
+	// - top color is set via SetBackground2()
+	// - bottom color is set via SetBackground()
+	// So, we reverse colors, to draw gradient from top to bottom instead.
+	getRenderer()->SetBackground(  c2.red()/255.0, 
+				       c2.green()/255.0,
+				       c2.blue()/255.0 ); // set first gradient color
+	getRenderer()->SetBackground2( c1.red()/255.0,
+				       c1.green()/255.0,
+				       c1.blue()/255.0 ); // set second gradient color
+	ok = true;
+      }
+      break;
+    }
+  case Qtx::CustomGradientBackground:
+    {
+      // NOT IMPLEMENTED YET
+      getRenderer()->SetTexturedBackground( false );  // cancel texture mode
+      getRenderer()->SetGradientBackground( false );  // cancel gradient mode
+      // .........
+      break;
+    }
+  default:
+    break;
+  }
+  if ( ok )
+    myBackground = bgData;
+}
+
+/*!
+  \return background data of viewer
+*/
+Qtx::BackgroundData SVTK_ViewWindow::background() const
+{
+  return myBackground;
 }
 
 
@@ -1455,6 +1612,10 @@ QString SVTK_ViewWindow::getVisualParameters()
   aWriter.writeAttribute("Size", QString::number(GetTrihedronSize()));
   aWriter.writeEndElement();
 
+  aWriter.writeStartElement("Background");
+  aWriter.writeAttribute("Value",  QString( "%1" ).arg( Qtx::backgroundToString(background()) ));
+  aWriter.writeEndElement();
+
   aWriter.writeEndElement();
   aWriter.writeEndDocument();
 
@@ -1498,17 +1659,20 @@ void SVTK_ViewWindow::doSetVisualParameters( const QString& parameters, bool bas
         pos[1] = aAttr.value("Y").toString().toDouble();
         pos[2] = aAttr.value("Z").toString().toDouble();
         //printf("#### Position %f; %f; %f\n", pos[0], pos[1], pos[2]);
-      } else if (aReader.name() == "FocalPoint") {
+      }
+      else if (aReader.name() == "FocalPoint") {
         focalPnt[0] = aAttr.value("X").toString().toDouble();
         focalPnt[1] = aAttr.value("Y").toString().toDouble();
         focalPnt[2] = aAttr.value("Z").toString().toDouble();
         //printf("#### FocalPoint %f; %f; %f\n", focalPnt[0], focalPnt[1], focalPnt[2]);
-      } else if (aReader.name() == "ViewUp") {
+      }
+      else if (aReader.name() == "ViewUp") {
         viewUp[0] = aAttr.value("X").toString().toDouble();
         viewUp[1] = aAttr.value("Y").toString().toDouble();
         viewUp[2] = aAttr.value("Z").toString().toDouble();
         //printf("#### ViewUp %f; %f; %f\n", viewUp[0], viewUp[1], viewUp[2]);
-      } else if (aReader.name() == "ViewScale") {
+      }
+      else if (aReader.name() == "ViewScale") {
         parScale = aAttr.value("Parallel").toString().toDouble();
         scale[0] = aAttr.value("X").toString().toDouble();
         scale[1] = aAttr.value("Y").toString().toDouble();
@@ -1542,7 +1706,12 @@ void SVTK_ViewWindow::doSetVisualParameters( const QString& parameters, bool bas
 	  SetTrihedronSize(aAttr.value("Size").toString().toDouble());
 	}
       }
-    } 
+      else if (aReader.name() == "Background") {
+	if ( !baseParamsOnly ) {
+	  setBackground( Qtx::stringToBackground( aAttr.value("Value").toString() ) );
+	}
+      }
+    }
   }
   if (!aReader.hasError()) {
     vtkCamera* camera = getRenderer()->GetActiveCamera();

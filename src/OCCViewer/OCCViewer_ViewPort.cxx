@@ -503,7 +503,7 @@ bool OCCViewer_ViewPort::synchronize( OCCViewer_ViewPort* )
 /*!
     Sets the background color with color selection dialog. [ virtual protected slot ]
 */
-void OCCViewer_ViewPort::onChangeBgColor()
+void OCCViewer_ViewPort::onChangeBackground()
 {
   QColor selColor = QColorDialog::getColor ( backgroundColor(), this );
   if ( selColor.isValid() )

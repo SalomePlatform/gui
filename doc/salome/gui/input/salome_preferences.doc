@@ -88,7 +88,7 @@ dialog box press the &quot;<b>...</b>&quot; button(see the picture below).
   checked, the action groups are represented in the viewer toolbars
   as a single drop-down button, switchable by the user. Otherwise,
   all the buttons from the action groups are displayed in the toolbar.
-- <b>OCC Viewer 3d</b>
+- \anchor occ_preferences <b>OCC Viewer 3d</b>
   - <b>Trihedron size</b> - this submenu allows to set the size of
   coordinate axes displayed in the viewer.
     - <b>Relative size</b> - if checked in, trihedron axes scale to fit the
@@ -117,7 +117,7 @@ dialog box press the &quot;<b>...</b>&quot; button(see the picture below).
     relatively to the current cursor position.
   - <b>Show static trihedron</b> - allows to show/hide the static trihedron
   located in the bottom-left corner of the viewer.
-- <b>VTK Viewer 3d</b>
+- \anchor vtk_preferences <b>VTK Viewer 3d</b>
   - <b>Projection mode</b> - allows choosing between \b Orthogonal and
   \b Perspective projection mode.
   - <b>Background Color</b> - this submenu allows to select background
@@ -129,9 +129,9 @@ dialog box press the &quot;<b>...</b>&quot; button(see the picture below).
     size of the area displayed in 3D Viewer.
   - <b>Navigation</b> - this option allows to choose one of the
   modes of work with mouse in OCC and VTK 3D viewers (for more details
-  see preferences for OCC Viewer 3d).
+  see \ref occ_preferences "preferences for OCC Viewer 3d").
   - <b>Zooming mode</b> - this option allows to choose a zooming mode
-  (for more details see preferences for OCC Viewer 3d).
+  (for more details see \ref occ_preferences "preferences for OCC Viewer 3d").
   - <b>Speed Increment</b> - defines the number of units by
   which the speed increases or respectively decreases after pressing [+]
   or [-] keyboard buttons.

@@ -2,6 +2,8 @@
 
 \page occ_3d_viewer_page OCC 3D Viewer
 
+<h2>Operations</h2>
+
 The functionalities of OCC viewer are available via its Viewer
 Toolbar. Buttons marked with small downward triangles have extended
 functionality which can be accessed by locking on them with left mouse
@@ -191,10 +193,38 @@ or other view operation done in one view is automatically applied
 to the other view.
 <hr>
 
-\note OCC Viewer features a special <b>Polyline Selection</b>
+\anchor occ_background
+<h2>Background</h2>
+
+OCC Viewer background can be customized using the "Change background"
+popup menu command that opens the following dialog box:
+
+\image html change_background_dlg.png
+
+The following types of the background are supported:
+- Single color: the background is colored with the solid color
+  specified by the user in the dialog box.
+- Gradient background: the background is gradiently colored according
+  to two colors and the gradient type specified in the dialog box. The
+  following types of background are supported:
+  - Horizontal
+  - Vertical
+  - First diagonal
+  - Second diagonal
+  - First corner
+  - Second corner
+  - Third corner
+  - Fourth corner
+
+Default background for the viewer is specified via the
+\ref occ_preferences "application preferences".
+
+<h2>Polyline selection</h2>
+
+OCC Viewer features a special <b>Polyline Selection</b>
 mechanism, which allows selecting an arbitraty part of the graphic
-area using a polygon frame, instead of the usual selection with a
-rectangular frame. 
+area using a polygon frame (rubber band), instead of the usual
+selection with a rectangular frame. 
 To produce a Polyline Selection, lock the right mouse button and draw
 the first side of the polygon, then change the direction by clicking
 the left mouse button add draw another side, etc. The whole selection

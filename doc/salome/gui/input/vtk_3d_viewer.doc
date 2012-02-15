@@ -2,6 +2,8 @@
 
 \page vtk_3d_viewer_page VTK 3D Viewer
 
+<h2>Operations</h2>
+
 The functionalities of VTK viewer are available via its Viewer
 Toolbar. Buttons marked with small downward triangles have extended
 functionality which can be accessed by locking on them with left mouse
@@ -227,5 +229,23 @@ video file in the AVI format using external software (jpeg2yuv):</center>
 - <b>Pause recording</b> - suspend recording;
 - <b>Continue recording</b> - resume recording;
 - <b>Stop recording</b> - stop recording.
+
+\anchor vtk_background
+<h2>Background</h2>
+
+VTK Viewer background can be customized using the "Change background"
+popup menu command that opens the following dialog box:
+
+\image html change_background_dlg.png
+
+The following types of the background are supported:
+- Single color: the background is colored with the solid color
+  specified by the user in the dialog box.
+- Gradient background: the background is gradiently colored according
+  to two colors and the gradient type specified in the dialog
+  box. Currently, only vertical background type is supported.
+
+Default background for the viewer is specified via the
+\ref vtk_preferences "application preferences".
 
 */

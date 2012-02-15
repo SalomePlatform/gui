@@ -192,7 +192,7 @@ The changes will be applied on the next application session.</translation>
     </message>
     <message>
         <source>PREF_NAVIGATION</source>
-        <translation>Navigation:</translation>
+        <translation>Navigation style</translation>
     </message>
     <message>
         <source>PREF_STANDARD_STYLE</source>
@@ -204,7 +204,7 @@ The changes will be applied on the next application session.</translation>
     </message>
     <message>
         <source>PREF_ZOOMING</source>
-        <translation>Zooming:</translation>
+        <translation>Zooming style</translation>
     </message>
     <message>
         <source>PREF_ZOOMING_AT_CENTER</source>
@@ -420,7 +420,7 @@ The changes will be applied on the next application session.</translation>
     </message>
     <message>
         <source>PREF_GROUP_PY_CONSOLE</source>
-        <translation>Python console properties</translation>
+        <translation>Python console</translation>
     </message>
     <message>
         <source>PREF_SHOW_BANNER</source>

@@ -2460,7 +2460,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   // ... "Search tool" group <<end>>
 
   // ... "Object browser settings" group <<start>>
-  int objSetGroup = pref->addPreference( tr( "PREF_OBJ_BROWSER_SETTINGS" ), obTab );
+  int objSetGroup = pref->addPreference( tr( "PREF_GROUP_LOOK_AND_FEEL" ), obTab );
   pref->setItemProperty( "columns", 2, objSetGroup );
   // .... -> auto size first column
   pref->addPreference( tr( "PREF_AUTO_SIZE_FIRST" ), objSetGroup, LightApp_Preferences::Bool,

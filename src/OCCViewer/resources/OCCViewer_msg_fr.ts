@@ -385,35 +385,35 @@
     </message>
     <message>
         <source>GT_HORIZONTALGRADIENT</source>
-        <translation type="unfinished">Horizontal gradient</translation>
+        <translation>Gradient horizontal</translation>
     </message>
     <message>
         <source>GT_VERTICALGRADIENT</source>
-        <translation type="unfinished">Vertical gradient</translation>
+        <translation>Gradient vertical</translation>
     </message>
     <message>
         <source>GT_FIRSTDIAGONALGRADIENT</source>
-        <translation type="unfinished">First diagonal gradient</translation>
+        <translation>Gradient de la première diagonale</translation>
     </message>
     <message>
         <source>GT_SECONDDIAGONALGRADIENT</source>
-        <translation type="unfinished">Second diagonal gradient</translation>
+        <translation>Gradient de la seconde diagonale</translation>
     </message>
     <message>
         <source>GT_FIRSTCORNERGRADIENT</source>
-        <translation type="unfinished">First corner gradient</translation>
+        <translation>Gradient du premier coin</translation>
     </message>
     <message>
         <source>GT_SECONDCORNERGRADIENT</source>
-        <translation type="unfinished">Second corner gradient</translation>
+        <translation>Gradient du second coin</translation>
     </message>
     <message>
         <source>GT_THIRDCORNERGRADIENT</source>
-        <translation type="unfinished">Third corner gradient</translation>
+        <translation>Gradient du troisième coin</translation>
     </message>
     <message>
         <source>GT_FORTHCORNERGRADIENT</source>
-        <translation type="unfinished">Fourth corner gradient</translation>
+        <translation>Gradient du quatrième coin</translation>
     </message>
 </context>
 <context>

@@ -287,50 +287,50 @@
     <name>QtxBackgroundTool</name>
     <message>
         <source>Browse...</source>
-        <translation type="unfinished"></translation>
+        <translation>Parcourir...</translation>
     </message>
     <message>
         <source>Not implemented yet</source>
-        <translation type="unfinished"></translation>
+        <translation>Pas encore disponible</translation>
     </message>
     <message>
         <source>Center</source>
-        <translation type="unfinished"></translation>
+        <translation>Centre</translation>
     </message>
     <message>
         <source>Tile</source>
-        <translation type="unfinished"></translation>
+        <translation>Mosaïque</translation>
     </message>
     <message>
         <source>Stretch</source>
-        <translation type="unfinished"></translation>
+        <translation>Etiré</translation>
     </message>
     <message>
         <source>Images Files (*.bmp *.png *.jpg *.jpeg *.gif *.tiff)</source>
-        <translation type="unfinished"></translation>
+        <translation>Fichiers images (*.bmp *.png *.jpg *.jpeg *.gif *.tiff)</translation>
     </message>
     <message>
         <source>Image</source>
-        <translation type="unfinished"></translation>
+        <translation>Image</translation>
     </message>
     <message>
         <source>Single Color</source>
-        <translation type="unfinished"></translation>
+        <translation>Couleur unique</translation>
     </message>
     <message>
         <source>Custom</source>
-        <translation type="unfinished"></translation>
+        <translation>Personnalisé</translation>
     </message>
     <message>
         <source>Select Picture</source>
-        <translation type="unfinished"></translation>
+        <translation>Choisir l&apos;image</translation>
     </message>
 </context>
 <context>
     <name>QtxBackgroundDialog</name>
     <message>
         <source>Change background</source>
-        <translation type="unfinished"></translation>
+        <translation>Modifier l&apos;arrière plan</translation>
     </message>
 </context>
 </TS>

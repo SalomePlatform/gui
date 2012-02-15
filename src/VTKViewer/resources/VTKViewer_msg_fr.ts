@@ -221,7 +221,7 @@
     </message>
     <message>
         <source>GT_VERTICALGRADIENT</source>
-        <translation type="unfinished">Vertical gradient</translation>
+        <translation>Gradient vertical</translation>
     </message>
 </context>
 </TS>

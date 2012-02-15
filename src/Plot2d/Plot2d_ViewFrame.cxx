@@ -3316,6 +3316,7 @@ QString Plot2d_ViewFrame::getVisualParameters()
       retStr+=optCurveString;
     }
   }
+  retStr += QString( "*%1" ).arg( Qtx::colorToString( backgroundColor() ) );
   return retStr; 
 }
 
@@ -3400,6 +3401,12 @@ void Plot2d_ViewFrame::setVisualParameters( const QString& parameters )
 	}
 	addAnalyticalCurve(c);
 	updateAnalyticalCurve(c);
+      }
+      else if( curveLst.size() == 1 ) {
+	// background color can be set here
+	QColor c;
+	if ( Qtx::stringToColor( paramsLst[i], c ) )
+	  setBackgroundColor( c );
       }
     }
     myPlot->replot();

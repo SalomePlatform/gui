@@ -22,8 +22,8 @@ basing on open-source Qwt library. It is destined for the representation of 2d
 plots and graphs in Post-Pro module.</li>
 <li>GL 2D viewer - general purpose OpenGL-based viewer, which can be
 used for visualization of 2D scenes.</li>
-<li>QxScene 2D viewer - has been developed on the basis of
-QGraphicsView scene by Trolltech. This viewer is used in YACS module
+<li>QxScene 2D viewer - has been developed on the basis of Qt's
+QGraphicsView scene. This viewer is used in YACS module
 for visualization of computation schemes.</li>
 </ul>
 

@@ -53,6 +53,8 @@
 #include <QPrinter>
 #include <QPalette>
 #include <QLocale>
+#include <QXmlStreamWriter>
+#include <QXmlStreamReader>
 
 #include <qwt_math.h>
 #include <qwt_plot_canvas.h>
@@ -3271,6 +3273,12 @@ void Plot2d_ViewFrame::printPlot( QPainter* p, const QRect& rect,
 */
 QString Plot2d_ViewFrame::getVisualParameters()
 {
+
+  return getXmlVisualParameters();
+
+  /*
+  RNV: Old case, now visual parameters stored in the XML format.
+  //
   double xmin, xmax, ymin, ymax, y2min, y2max;
   getFitRanges( xmin, xmax, ymin, ymax, y2min, y2max );
   QString retStr;
@@ -3284,7 +3292,7 @@ QString Plot2d_ViewFrame::getVisualParameters()
 		  myLegendFont.italic(), myLegendFont.underline(),myLegendColor.red(),
 		  myLegendColor.green(), myLegendColor.blue());
   
-  //store all Analytical curves
+ //store all Analytical curves
   //store each curve in the following format
   // ...*Name|isActive|Expresion|NbInervals|isAutoAssign[|MarkerType|LineType|LineWidth|r:g:b]
   // parameters in the [ ] is optional in case if isAutoAssign == true
@@ -3318,6 +3326,7 @@ QString Plot2d_ViewFrame::getVisualParameters()
   }
   retStr += QString( "*%1" ).arg( Qtx::colorToString( backgroundColor() ) );
   return retStr; 
+  */
 }
 
 /*!
@@ -3325,6 +3334,9 @@ QString Plot2d_ViewFrame::getVisualParameters()
 */
 void Plot2d_ViewFrame::setVisualParameters( const QString& parameters )
 {
+  if(setXmlVisualParameters(parameters))
+    return;
+
   double xmin, xmax;
   QStringList paramsLst = parameters.split( '*' );
   if ( paramsLst.size() >= 9 ) {
@@ -3348,7 +3360,7 @@ void Plot2d_ViewFrame::setVisualParameters( const QString& parameters )
       QwtScaleMap yMap2 = myPlot->canvasMap( QwtPlot::yRight );
       myYDistance2 = yMap2.s2() - yMap2.s1();
     }
-
+    
     fitData( 0, xmin, xmax, ymin, ymax, y2min, y2max );
     fitData( 0, xmin, xmax, ymin, ymax, y2min, y2max );
   }
@@ -3366,15 +3378,15 @@ void Plot2d_ViewFrame::setVisualParameters( const QString& parameters )
       setLegendFont( myLegendFont );
 
       if(colorList.size() == 3) {
-	myLegendColor = QColor(colorList[0].toInt(),
-			       colorList[1].toInt(),
-			       colorList[2].toInt());
-	setLegendFontColor( myLegendColor );
+	      myLegendColor = QColor(colorList[0].toInt(),
+			                         colorList[1].toInt(),
+			                         colorList[2].toInt());
+	      setLegendFontColor( myLegendColor );
       }
     }    
   }
 
-  //Restore all Analyticalal curves
+  //Restore all Analytical curves
   int startCurveIndex = 10;
   if( paramsLst.size() >= startCurveIndex+1 ) {
     for( int i=startCurveIndex; i<paramsLst.size() ; i++ ) {
@@ -3411,6 +3423,191 @@ void Plot2d_ViewFrame::setVisualParameters( const QString& parameters )
     }
     myPlot->replot();
   }
+}
+
+/*!
+  Store visual parameters in xml format.
+*/
+QString Plot2d_ViewFrame::getXmlVisualParameters() {
+  QString retStr;
+  QXmlStreamWriter aWriter(&retStr);
+  aWriter.setAutoFormatting(true);
+
+  //Ranges
+  aWriter.writeStartDocument();
+  aWriter.writeStartElement("ViewState");
+  aWriter.writeStartElement("Range");
+  double xmin, xmax, ymin, ymax, y2min, y2max;
+  getFitRanges( xmin, xmax, ymin, ymax, y2min, y2max );
+  aWriter.writeAttribute("Xmin", QString("").sprintf("%.12e",xmin));
+  aWriter.writeAttribute("Xmax", QString("").sprintf("%.12e",xmax));
+  aWriter.writeAttribute("Ymin", QString("").sprintf("%.12e",ymin));
+  aWriter.writeAttribute("Ymax", QString("").sprintf("%.12e",ymax));
+  aWriter.writeAttribute("Y2min", QString("").sprintf("%.12e",y2min));
+  aWriter.writeAttribute("Y2max", QString("").sprintf("%.12e",y2max));
+  aWriter.writeEndElement();
+
+  //Display mode
+  aWriter.writeStartElement("DisplayMode");
+  aWriter.writeAttribute("SecondAxis", QString("").sprintf("%d",mySecondY));
+  aWriter.writeStartElement("ScaleMode");
+  aWriter.writeAttribute("Xscale", QString("").sprintf("%d",myXMode));
+  aWriter.writeAttribute("Yscale", QString("").sprintf("%d",myYMode));
+  aWriter.writeEndElement();
+  aWriter.writeStartElement("NormalizationMode");
+  aWriter.writeAttribute("LeftMin", QString("").sprintf("%d",myNormLMin));
+  aWriter.writeAttribute("LeftMax", QString("").sprintf("%d",myNormLMax));
+  aWriter.writeAttribute("RightMin", QString("").sprintf("%d",myNormRMin));
+  aWriter.writeAttribute("RightMax", QString("").sprintf("%d",myNormRMax));
+  aWriter.writeEndElement();
+  aWriter.writeEndElement();
+
+  //Legend
+  aWriter.writeStartElement("Legend");
+  aWriter.writeAttribute("Visibility", QString("").sprintf("%d", myShowLegend));
+  aWriter.writeStartElement("LegendFont");
+  aWriter.writeAttribute("Family", myLegendFont.family());
+  aWriter.writeAttribute("Size", QString("").sprintf("%d",myLegendFont.pointSize()));
+  aWriter.writeAttribute("Bold", QString("").sprintf("%d",myLegendFont.bold()));
+  aWriter.writeAttribute("Italic", QString("").sprintf("%d",myLegendFont.italic()));
+  aWriter.writeAttribute("Underline", QString("").sprintf("%d",myLegendFont.underline()));
+  aWriter.writeAttribute("R", QString("").sprintf("%d",myLegendColor.red()));
+  aWriter.writeAttribute("G", QString("").sprintf("%d",myLegendColor.green()));
+  aWriter.writeAttribute("B", QString("").sprintf("%d",myLegendColor.blue()));
+  aWriter.writeEndElement();
+  aWriter.writeEndElement();
+
+  //AnalyticalCurve
+  aWriter.writeStartElement("AnalyticalCurves");  
+  AnalyticalCurveList::iterator it = myAnalyticalCurves.begin();
+  Plot2d_AnalyticalCurve* c = 0;
+  bool isAuto; 
+  int id = 1;
+  for( ; it != myAnalyticalCurves.end(); it++) {
+    c = (*it);
+    if(!c) continue;
+    aWriter.writeStartElement(QString("AnalyticalCurve_%1").arg(id));
+    isAuto = c->isAutoAssign();
+    aWriter.writeAttribute("Name",c->getName());
+    aWriter.writeAttribute("IsActive", QString("").sprintf("%d",	c->isActive()));
+		aWriter.writeAttribute("Expression", c->getExpression());
+    aWriter.writeAttribute("NbIntervals", QString("").sprintf("%d",	c->getNbIntervals()));
+    aWriter.writeAttribute("isAuto", QString("").sprintf("%d",isAuto));
+    if(!isAuto) {
+      aWriter.writeAttribute("Marker", QString("").sprintf("%d",(int)c->getMarker()));
+      aWriter.writeAttribute("Line", QString("").sprintf("%d",(int)c->getLine()));
+      aWriter.writeAttribute("LineWidth", QString("").sprintf("%d",c->getLineWidth()));
+      aWriter.writeAttribute("R", QString("").sprintf("%d",c->getColor().red()));
+      aWriter.writeAttribute("G", QString("").sprintf("%d",c->getColor().green()));
+      aWriter.writeAttribute("B", QString("").sprintf("%d",c->getColor().blue()));
+    }
+    aWriter.writeEndElement();
+    id++;
+  }
+  aWriter.writeEndElement(); //AnalyticalCurve
+
+  //Background
+  aWriter.writeStartElement(QString("Background").arg(id));
+  aWriter.writeStartElement(QString("BackgroundColor").arg(id));
+  aWriter.writeAttribute("R", QString("").sprintf("%d",backgroundColor().red()));
+  aWriter.writeAttribute("G", QString("").sprintf("%d",backgroundColor().green()));
+  aWriter.writeAttribute("B", QString("").sprintf("%d",backgroundColor().blue()));
+  aWriter.writeEndElement();
+  aWriter.writeEndElement();
+
+
+  aWriter.writeEndDocument();
+  return retStr;
+}
+/*!
+  Restore visual parameters from xml format.
+*/
+bool Plot2d_ViewFrame::setXmlVisualParameters(const QString& parameters) {
+  QXmlStreamReader aReader(parameters);
+  double xmin, xmax, ymin, ymax, y2min, y2max;
+  bool leftMin,leftMax,rightMin,rightMax;
+  leftMin = leftMax = rightMin = rightMax = false;
+  while(!aReader.atEnd()) {
+      aReader.readNext();
+      if (aReader.isStartElement()) {
+      QXmlStreamAttributes aAttr = aReader.attributes();
+        if(aReader.name() == "Range") {
+          xmin = aAttr.value("Xmin").toString().toDouble();
+          xmax = aAttr.value("Xmax").toString().toDouble();
+          ymin = aAttr.value("Ymin").toString().toDouble();
+          ymax = aAttr.value("Ymax").toString().toDouble();
+          y2min = aAttr.value("Y2min").toString().toDouble();
+          y2max = aAttr.value("Y2max").toString().toDouble();
+        } else if(aReader.name() == "DisplayMode") {
+          mySecondY = aAttr.value("Y2max").toString().toDouble();
+        } else if(aReader.name() == "ScaleMode") {
+           myXMode = aAttr.value("Xscale").toString().toInt();
+           myYMode = aAttr.value("Yscale").toString().toInt();
+        } else if(aReader.name() == "NormalizationMode") {
+            leftMin = (bool)aAttr.value("LeftMin").toString().toInt();
+            leftMax = (bool)aAttr.value("LeftMax").toString().toInt();
+            rightMin = (bool)aAttr.value("RightMin").toString().toInt();
+            rightMax = (bool)aAttr.value("RightMax").toString().toInt();
+        } else if(aReader.name() == "Legend") {
+          myShowLegend = (bool)aAttr.value("Visibility").toString().toInt();
+        } else if (aReader.name() == "LegendFont") {
+            myLegendFont = QFont(aAttr.value("Family").toString());
+            myLegendFont.setPointSize(aAttr.value("Size").toString().toInt());
+            myLegendFont.setBold((bool)aAttr.value("Bold").toString().toInt());
+            myLegendFont.setItalic((bool)aAttr.value("Italic").toString().toInt());
+            myLegendFont.setUnderline((bool)aAttr.value("Underline").toString().toInt());
+    	      myLegendColor = QColor(aAttr.value("R").toString().toInt(),
+			                             aAttr.value("G").toString().toInt(),
+			                             aAttr.value("B").toString().toInt());
+	          setLegendFontColor( myLegendColor );
+            setLegendFont(myLegendFont);
+        } else if(aReader.name().toString().indexOf("AnalyticalCurve_") >= 0) {
+            Plot2d_AnalyticalCurve* c = new Plot2d_AnalyticalCurve();
+	          c->setName(aAttr.value("Name").toString());
+	          c->setActive((bool)aAttr.value("IsActive").toString().toInt());
+	          c->setExpression(aAttr.value("Expression").toString());
+	          c->setNbIntervals(aAttr.value("NbIntervals").toString().toLong());
+	          c->setAutoAssign((bool)aAttr.value("isAuto").toString().toInt());
+	          if( !c->isAutoAssign() ) {
+	            c->setMarker((Plot2d::MarkerType)aAttr.value("Marker").toString().toInt());
+	            c->setLine((Plot2d::LineType)aAttr.value("Line").toString().toInt());
+	            c->setLineWidth(aAttr.value("LineWidth").toString().toInt());               
+	            c->setColor(QColor(aAttr.value("R").toString().toInt(),
+			                           aAttr.value("G").toString().toInt(),
+			                           aAttr.value("B").toString().toInt()));
+            } else {
+	            c->autoFill( myPlot );
+	          }
+	          addAnalyticalCurve(c);
+	          updateAnalyticalCurve(c);
+        } else if(aReader.name().toString() == "BackgroundColor") {
+          setBackgroundColor(QColor(aAttr.value("R").toString().toInt(),
+			                              aAttr.value("G").toString().toInt(),
+			                              aAttr.value("B").toString().toInt()));
+        }
+      }
+  }
+
+  if(aReader.hasError())
+    return false;
+
+  if (mySecondY)
+    setTitle( myY2TitleEnabled, myY2Title, Y2Title, false );
+  setHorScaleMode( myXMode, /*update=*/false );
+  setVerScaleMode( myYMode, /*update=*/false );    
+  if (mySecondY) {
+    QwtScaleMap yMap2 = myPlot->canvasMap( QwtPlot::yRight );
+    myYDistance2 = yMap2.s2() - yMap2.s1();
+  }    
+  setNormLMinMode(leftMin);
+  setNormLMaxMode(leftMax);
+  setNormRMinMode(rightMin);
+  setNormRMaxMode(rightMax);
+
+  showLegend( myShowLegend, false );
+
+  fitData( 0, xmin, xmax, ymin, ymax, y2min, y2max );  
+  return true;
 }
 
 /*!

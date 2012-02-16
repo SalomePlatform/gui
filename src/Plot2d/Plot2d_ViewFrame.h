@@ -244,6 +244,8 @@ protected:
   bool           hasPlotCurve( Plot2d_Curve* ) const;
   void           setCurveType( QwtPlotCurve*, int );
   bool           hasPlotObject( Plot2d_Object* ) const;
+  QString        getXmlVisualParameters();
+  bool           setXmlVisualParameters(const QString&);
 
 
   

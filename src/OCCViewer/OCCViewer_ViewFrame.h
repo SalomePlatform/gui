@@ -82,8 +82,6 @@ public:
 
   virtual void   setDropDownButtons( bool );
 
-  bool           event( QEvent* e );
-
 public slots:
   virtual void onFrontView() { getView(MAIN_VIEW)->onFrontView(); }
   virtual void onViewFitAll();

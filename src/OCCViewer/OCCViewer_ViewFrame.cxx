@@ -30,14 +30,6 @@
 #include <QLayout>
 #include <QApplication>
 
-class VisEvent : public QEvent
-{
-public:
-  VisEvent( const QMap<int,bool>& visMap ) : QEvent( QEvent::User ), myVisMap( visMap )
-  {}
-  QMap<int,bool> myVisMap;
-};
-
 OCCViewer_ViewFrame::OCCViewer_ViewFrame(SUIT_Desktop* theDesktop, OCCViewer_Viewer* theModel)
   : OCCViewer_ViewWindow( theDesktop, theModel ), myPopupRequestedView(0)
 {
@@ -332,30 +324,16 @@ void OCCViewer_ViewFrame::setVisualParameters( const QString& parameters )
   QStringList params = parameters.split( "|" );
   if ( params.count() > 1 ) {
     int maximizedView = params[0].toInt();
-    QMap<int,bool> visMap;
     if ( myViews.count() < params.count()-1 )
       onMaximizedView( getView(MAIN_VIEW), false ); // secondary views are not created yet, but should be
     for ( int i = 1; i < params.count(); i++ ) {
       int idx = i-1;
       getView( idx )->setVisualParameters( params[i] );
-      //visMap[idx] = maximizedView == -1 || maximizedView == idx;
     }
     onMaximizedView( getView( maximizedView ), maximizedView != -1 ); // set proper sib-window maximized 
-    //VisEvent ve( visMap );
-    //QApplication::sendEvent( this, &ve );
   }
   else {
     // handle obsolete versions - no parameters for xy, yz, xz views
     getView(MAIN_VIEW)->setVisualParameters( parameters );
-  }
-}
-
-bool OCCViewer_ViewFrame::event( QEvent* e )
-{
-  if ( e->type() == QEvent::User ) {
-    VisEvent* ve = dynamic_cast<VisEvent*>( e );
-    QMap<int,bool> visMap = ve->myVisMap;
-    for ( int i = 0 ; i < myViews.count(); i++ )
-      myViews[i]->setVisible( visMap.contains( i ) && visMap[i] );
   }
 }

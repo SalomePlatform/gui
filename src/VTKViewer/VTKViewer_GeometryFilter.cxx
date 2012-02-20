@@ -75,6 +75,7 @@ VTKViewer_GeometryFilter
 ::VTKViewer_GeometryFilter():
   myShowInside(0),
   myStoreMapping(0),
+  myAppendCoincident3D(0),
   myIsWireframeMode(0),
   myIsBuildArc(false),
   myMaxArcAngle(2)
@@ -329,6 +330,7 @@ VTKViewer_GeometryFilter
                                                       cellId,
                                                       myShowInside,
                                                       allVisible,
+                                                      myAppendCoincident3D,
                                                       cellVis,
                                                       output,
                                                       outputCD,
@@ -341,6 +343,7 @@ VTKViewer_GeometryFilter
                                           cellId,
                                           myShowInside,
                                           allVisible,
+                                          myAppendCoincident3D,
                                           cellVis,
                                           output,
                                           outputCD,
@@ -361,7 +364,8 @@ VTKViewer_GeometryFilter
             aCellType = VTK_TRIANGLE;
             numFacePts = 3;
             input->GetCellNeighbors(cellId, faceIds, cellIds);
-            if ( cellIds->GetNumberOfIds() <= 0 || myShowInside ||
+            bool process = cellIds->GetNumberOfIds() <= 0 ? true : myAppendCoincident3D;
+            if ( process || myShowInside ||
                  (!allVisible && !cellVis[cellIds->GetId(0)]) )
               {
               for ( i=0; i < numFacePts; i++)
@@ -386,7 +390,8 @@ VTKViewer_GeometryFilter
             aCellType = VTK_QUAD;
             numFacePts = 4;
             input->GetCellNeighbors(cellId, faceIds, cellIds);
-            if ( cellIds->GetNumberOfIds() <= 0 || myShowInside ||
+            bool process = cellIds->GetNumberOfIds() <= 0 ? true : myAppendCoincident3D;
+            if ( process || myShowInside ||
                  (!allVisible && !cellVis[cellIds->GetId(0)]) )
               {
               for ( i=0; i < numFacePts; i++)
@@ -411,7 +416,8 @@ VTKViewer_GeometryFilter
             aCellType = VTK_QUAD;
             numFacePts = 4;
             input->GetCellNeighbors(cellId, faceIds, cellIds);
-            if ( cellIds->GetNumberOfIds() <= 0 || myShowInside ||
+            bool process = cellIds->GetNumberOfIds() <= 0 ? true : myAppendCoincident3D;
+            if ( process || myShowInside ||
                  (!allVisible && !cellVis[cellIds->GetId(0)]) )
               {
               for ( i=0; i < numFacePts; i++)
@@ -440,8 +446,10 @@ VTKViewer_GeometryFilter
               aCellType = VTK_QUAD;
               numFacePts = 4;
               }
+
             input->GetCellNeighbors(cellId, faceIds, cellIds);
-            if ( cellIds->GetNumberOfIds() <= 0 || myShowInside ||
+            bool process = cellIds->GetNumberOfIds() <= 0 ? true : myAppendCoincident3D;
+            if ( process || myShowInside ||
                  (!allVisible && !cellVis[cellIds->GetId(0)]) )
               {
               for ( i=0; i < numFacePts; i++)
@@ -473,7 +481,8 @@ VTKViewer_GeometryFilter
               numFacePts = 6;
             }
             input->GetCellNeighbors(cellId, faceIds, cellIds);
-            if ( cellIds->GetNumberOfIds() <= 0 || myShowInside ||
+            bool process = cellIds->GetNumberOfIds() <= 0 ? true : myAppendCoincident3D;
+            if ( process || myShowInside ||
                  (!allVisible && !cellVis[cellIds->GetId(0)]) )
             {
               for ( i=0; i < numFacePts; i++)
@@ -503,7 +512,8 @@ VTKViewer_GeometryFilter
               numFacePts = 4;
               }
             input->GetCellNeighbors(cellId, faceIds, cellIds);
-            if ( cellIds->GetNumberOfIds() <= 0 || myShowInside ||
+            bool process = cellIds->GetNumberOfIds() <= 0 ? true : myAppendCoincident3D;
+            if ( process || myShowInside ||
                  (!allVisible && !cellVis[cellIds->GetId(0)]) )
               {
               for ( i=0; i < numFacePts; i++)
@@ -549,9 +559,10 @@ VTKViewer_GeometryFilter
                     aCellType = VTK_POLYGON;
                     break;
                   }
-                // TODO understand and fix display of several polyhedrons
+                // TODO understand and fix display of several polyhedrons                
                 input->GetCellNeighbors(cellId, faceIds, cellIds);
-                if (cellIds->GetNumberOfIds() <= 0 || myShowInside
+                bool process = cellIds->GetNumberOfIds() <= 0 ? true : myAppendCoincident3D;
+                if (process || myShowInside
                     || (!allVisible && !cellVis[cellIds->GetId(0)]))
                   {
                     for (i = 0; i < numFacePts; i++)
@@ -634,7 +645,8 @@ VTKViewer_GeometryFilter
               for (int j=0; j < cell->GetNumberOfFaces(); j++){
                 vtkCell *face = cell->GetFace(j);
                 input->GetCellNeighbors(cellId, face->PointIds, cellIds);
-                if ( cellIds->GetNumberOfIds() <= 0 || myShowInside ) {
+                bool process = cellIds->GetNumberOfIds() <= 0 ? true : myAppendCoincident3D;
+                if ( process <= 0 || myShowInside ) {
                   face->Triangulate(0,lpts,coords);
                   for (i=0; i < lpts->GetNumberOfIds(); i+=3) {
                     aNewPts[0] = lpts->GetId(i);
@@ -1317,4 +1329,16 @@ void VTKViewer_GeometryFilter::SetQuadraticArcAngle(vtkFloatingPointType theMaxA
 vtkFloatingPointType VTKViewer_GeometryFilter:: GetQuadraticArcAngle() const
 {
   return myMaxArcAngle;
+}
+
+
+int VTKViewer_GeometryFilter::GetAppendCoincident3D() const {
+  return myAppendCoincident3D;
+}
+
+void VTKViewer_GeometryFilter::SetAppendCoincident3D(int theFlag) {
+  if(myAppendCoincident3D != theFlag){
+    myAppendCoincident3D = theFlag;
+    this->Modified();
+  }
 }

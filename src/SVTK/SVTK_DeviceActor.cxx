@@ -745,3 +745,11 @@ int SVTK_DeviceActor::GetMarkerTexture()
 {
   return myMapper->GetMarkerTexture();
 }
+
+void SVTK_DeviceActor::SetCoincident3DAllowed(bool theFlag) {
+  myGeomFilter->SetAppendCoincident3D(theFlag);
+}
+
+bool SVTK_DeviceActor::IsCoincident3DAllowed() const {
+  return myGeomFilter->GetAppendCoincident3D();
+}

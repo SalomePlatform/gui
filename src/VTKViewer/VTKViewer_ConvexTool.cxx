@@ -192,6 +192,7 @@ VTKViewer_Triangulator
           vtkIdType theCellId,
           int theShowInside,
           int theAllVisible,
+          int theAppendCoincident3D,
           const char* theCellsVisibility,
           vtkPolyData *theOutput,
           vtkCellData* theOutputCD,
@@ -246,8 +247,9 @@ VTKViewer_Triangulator
     vtkCell* aFace = GetFace(aFaceId);
     
     GetCellNeighbors(theInput, theCellId, aFace, myCellIds);
+    bool process = myCellIds->GetNumberOfIds() <= 0 ? true : theAppendCoincident3D;
     if((!theAllVisible && !theCellsVisibility[myCellIds->GetId(0)]) || 
-       myCellIds->GetNumberOfIds() <= 0 || theShowInside)
+       myCellIds->GetNumberOfIds() <= 0 || theShowInside || process)
     {
       TPointIds aPointIds;
       vtkIdList *anIdList = aFace->PointIds;  

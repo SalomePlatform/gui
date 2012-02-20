@@ -168,11 +168,13 @@ SALOME_Actor
   myPreHighlightActor->Initialize();
   myPreHighlightActor->PickableOff();
   myPreHighlightActor->SetVisibility( false );
+  myPreHighlightActor->SetCoincident3DAllowed(true);
 
   myHighlightActor->Delete();
   myHighlightActor->Initialize();
   myHighlightActor->PickableOff();
   myHighlightActor->SetVisibility( false );
+  myHighlightActor->SetCoincident3DAllowed(true);
 
   myOutline->Delete();
 

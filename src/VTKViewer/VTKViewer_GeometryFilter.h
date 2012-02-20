@@ -62,6 +62,19 @@ public:
    * \brief Sets \a myIsWireframeMode flag. \a myIsWireframeMode is changed, call this->Modified().
    * \param theIsWireframeMode - used for changing value of \a myIsWireframeMode variable.
    */
+
+  int GetAppendCoincident3D() const;
+  /*! \fn void SetAppendCoincident3D()
+   *  \brief Sets \a myAppendCoincident3D flag. If this flag is true, filter append to the 
+      result data set coincident 3D elements.
+   */
+
+  void SetAppendCoincident3D(int theFlag);
+  /*! \fn int SetAppendCoincident3D()
+   * \brief Return value of \a myAppendCoincident3D
+   * \retval myAppendCoincident3D
+   */
+
   void SetWireframeMode(int theIsWireframeMode);
   /*! \fn int GetWireframeMode()
    * \brief Return value of \a myIsWireframeMode
@@ -126,6 +139,7 @@ private:
   int       myShowInside;
   int       myStoreMapping;
   int       myIsWireframeMode;
+  int       myAppendCoincident3D;
 
   vtkFloatingPointType    myMaxArcAngle;   // define max angle for mesh 2D quadratic element in the degrees
   bool      myIsBuildArc;     // flag for representation 2D quadratic element as arked polygon

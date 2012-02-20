@@ -244,6 +244,15 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
   virtual void SetQuadraticArcAngle(vtkFloatingPointType theMaxAngle);
   virtual vtkFloatingPointType GetQuadraticArcAngle();
 
+  virtual
+  void
+  SetCoincident3DAllowed(bool theIsFeatureEdgesAllowed);
+
+  virtual
+  bool 
+  IsCoincident3DAllowed() const;
+
+
  protected:
   VTKViewer::Representation::Type myRepresentation;
   vtkProperty *myProperty;

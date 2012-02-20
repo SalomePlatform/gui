@@ -57,6 +57,7 @@ class VTKVIEWER_EXPORT VTKViewer_Triangulator
           vtkIdType theCellId,
           int theShowInside,
           int theAllVisible,
+          int theAppendCoincident3D,
           const char* theCellsVisibility,
           vtkPolyData *theOutput,
           vtkCellData* theOutputCD,

@@ -632,6 +632,7 @@ Style_PrefDlg::Style_PrefDlg( QWidget* parent )
   setButtonPosition( Right, Close );
   setDialogFlags( AlignOnce );
   myStylesList->setEditTriggers( QAbstractItemView::EditKeyPressed );
+  myStylesList->installEventFilter( this );
 
   QStringList globalStyles = resourceMgr()->styles( Style_ResourceMgr::Global );
   QStringList userStyles   = resourceMgr()->styles( Style_ResourceMgr::User );
@@ -718,23 +719,30 @@ void Style_PrefDlg::accept()
   \brief Process key press event
   \param e key event
 */
-void Style_PrefDlg::keyPressEvent( QKeyEvent* e )
+bool Style_PrefDlg::eventFilter( QObject* o, QEvent* e )
 {
-  if ( e->key() == Qt::Key_Delete ) {
-    QListWidgetItem* item = myStylesList->currentItem();
-    if ( item && item->data( TypeRole ).toInt() == User ) {
-      if ( QMessageBox::question( this,
-                                  tr( "Delete user theme" ),
-                                  tr( "Remove theme %1?" ).arg( item->text() ),
-                                  QMessageBox::Yes | QMessageBox::No,
-                                  QMessageBox::Yes ) == QMessageBox::Yes ) {
-        resourceMgr()->remove( item->data( NameRole ).toString() );
-        resourceMgr()->save();
-        delete item;
+  if ( o == myStylesList && e->type() == QEvent::KeyPress ) {
+    QKeyEvent* ke = (QKeyEvent*)e;
+    if ( ke->key() == Qt::Key_Delete ) {
+      QListWidgetItem* item = myStylesList->currentItem();
+      if ( item && item->data( TypeRole ).toInt() == User ) {
+	if ( QMessageBox::question( this,
+				    tr( "Delete user theme" ),
+				    tr( "Remove theme %1?" ).arg( item->text() ),
+				    QMessageBox::Yes | QMessageBox::No,
+				    QMessageBox::Yes ) == QMessageBox::Yes ) {
+	  resourceMgr()->remove( item->data( NameRole ).toString() );
+	  resourceMgr()->save();
+	  delete item;
+	}
       }
     }
+    if ( ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Return ) {
+//       onApply();
+//       return true;
+    }
   }
-  QtxDialog::keyPressEvent( e );
+  return QtxDialog::eventFilter( o, e );
 }
 
 /*!

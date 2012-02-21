@@ -58,9 +58,7 @@ public:
   ~Style_PrefDlg();
 
   void               accept();
-
-protected:
-  void               keyPressEvent( QKeyEvent* );
+  bool               eventFilter( QObject*, QEvent* );
 
 private:
   Style_ResourceMgr* resourceMgr();

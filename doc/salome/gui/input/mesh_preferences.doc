@@ -81,6 +81,15 @@ used for automatic meshing: ratio between the bounding box of the
 meshed object and the Max Size of segments.</li>
 <li><b>Default Number of Segments</b> - allows defining the default
 number of segments on each edge</li>
+</li></ul>
+<li><b>Mesh loading</b></li>
+<ul>
+<li>If you toggle <b>No mesh loading from study file at hypothesis modification</b>
+  checkbox, then mesh data won't be loaded from the study file
+  provided that your first action on a mesh after study opening is
+  modification of hypotheses. This can save your time by omitting
+  loading data of a large mesh that your are going to recompute with
+  other parameters.</li>
 </ul>
 <li><b>Input fields precision</b></li>
 <ul>

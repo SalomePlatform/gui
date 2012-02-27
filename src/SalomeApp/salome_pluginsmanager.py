@@ -169,7 +169,7 @@ class PluginsManager:
             rootpath=os.environ[key]
             dirpath=os.path.join(rootpath,PLUGIN_PATH_PATTERN)
             if os.path.isdir(dirpath) and dirpath not in self.plugindirs:
-              logger.info("Looking for plugins in the directory %s ..."%dirpath)
+              logger.debug("Looking for plugins in the directory %s ..."%dirpath)
               walktree(dirpath,self.analyseFile)
 
         # USER plugins directory
@@ -220,7 +220,7 @@ class PluginsManager:
         dirpath=os.path.dirname(filename)
         if dirpath not in self.plugindirs:
           self.plugindirs.append(dirpath)
-          logger.info("The directory %s has been added to plugin paths"%dirpath)
+          logger.debug("The directory %s has been added to plugin paths"%dirpath)
         
     def AddFunction(self,name,description,script):
         """ Add a plugin function

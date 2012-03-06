@@ -115,7 +115,7 @@ public:
   virtual bool                expandable() const;
   virtual bool                isVisible() const;
   virtual bool                isDragable() const;
-  virtual bool                isDropAccepted();
+  virtual bool                isDropAccepted() const;
 
   virtual bool                isEnabled() const;
   virtual bool                isSelectable() const;

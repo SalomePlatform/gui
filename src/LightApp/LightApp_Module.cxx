@@ -707,7 +707,7 @@ void LightApp_Module::paste()
   virtual method
   \return true if module allows dragging the given object
 */
-bool LightApp_Module::isDragable(const SUIT_DataObject* /*what*/) const
+bool LightApp_Module::isDragable( const SUIT_DataObject* /*what*/ ) const
 {
   return false;
 }
@@ -716,16 +716,18 @@ bool LightApp_Module::isDragable(const SUIT_DataObject* /*what*/) const
   virtual method
   \return true if module allows dropping one or more objects (currently selected) on the object \c where
 */
-bool LightApp_Module::isDropAccepted(const SUIT_DataObject* /*where*/) const
+bool LightApp_Module::isDropAccepted( const SUIT_DataObject* /*where*/ ) const
 {
   return false;
 }
 
 /*!
   virtual method
+  Complete drag-n-drop operation by processing objects \a what being dragged, dropped to the line \a row
+  within the object \a where. The drop action being performed is specified by \a action.
 */
-void LightApp_Module::dropObjects(const DataObjectList& what, Qt::DropAction action,
-                                  const SUIT_DataObject* parent, const int row)
+void LightApp_Module::dropObjects( const DataObjectList& /*what*/, SUIT_DataObject* /*where*/,
+                                   const int /*row*/, Qt::DropAction /*action*/ )
 {
 }
 

@@ -95,10 +95,10 @@ public:
 
   virtual bool                        canCopy() const;
   virtual bool                        canPaste() const;
-  virtual bool                        isDragable(const SUIT_DataObject* what) const;
-  virtual bool                        isDropAccepted(const SUIT_DataObject* where) const;
-  virtual void                        dropObjects(const DataObjectList& what, Qt::DropAction action,
-                                                  const SUIT_DataObject* parent, const int row);
+  virtual bool                        isDragable( const SUIT_DataObject* ) const;
+  virtual bool                        isDropAccepted( const SUIT_DataObject* ) const;
+  virtual void                        dropObjects( const DataObjectList&, SUIT_DataObject*,
+						   const int, Qt::DropAction );
   virtual void                        copy();
   virtual void                        paste();
   virtual bool                        renameAllowed( const QString& ) const;

@@ -584,7 +584,7 @@ bool SUIT_DataObject::isDragable() const
 
   \return \c true if it is possible to drop one or more objects (currently selected) to this object
 */
-bool SUIT_DataObject::isDropAccepted()
+bool SUIT_DataObject::isDropAccepted() const
 {
   return false;
 }

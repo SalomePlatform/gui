@@ -176,7 +176,7 @@ bool LightApp_DataObject::isDragable() const
   \return \c true if it is possible to drop an object \c obj
           to this object
 */
-bool LightApp_DataObject::isDropAccepted()
+bool LightApp_DataObject::isDropAccepted() const
 {
   LightApp_Module* aModule = dynamic_cast<LightApp_Module*>(module());
   if (aModule) {

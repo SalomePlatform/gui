@@ -136,23 +136,23 @@ OB_Browser::OB_Browser( QWidget* parent, QAbstractItemModel* model )
 : QWidget( parent ),
   myAutoOpenLevel( 0 )
 {
-  myView = new QtxTreeView( this );
-  myView->setRootIsDecorated( true );
-  myView->setSelectionMode( QAbstractItemView::ExtendedSelection );
-  myView->setAllColumnsShowFocus( true );
+  // set-up tree view
+  myView = new QtxTreeView( this );                                  // create tree view
+  myView->setRootIsDecorated( true );                                // show root item
+  myView->setSelectionMode( QAbstractItemView::ExtendedSelection );  // enable extended selection mode
+  myView->setAllColumnsShowFocus( true );                            // focus is shown in all columns
 
-  // Mantis issue 0020136: Drag&Drop in OB
-  myView->setDragEnabled(TRUE);
-  myView->setAcceptDrops(TRUE);
-  myView->setDropIndicatorShown(TRUE);
-  myView->setDragDropMode(QAbstractItemView::DragDrop);
-  //myView->setDragDropMode(QAbstractItemView::InternalMove);
+  // enable drag-n-drop support
+  myView->setDragDropMode( QAbstractItemView::DragDrop );            // enable both drag and drop operations
+  myView->setDropIndicatorShown( true );                             // show drag indicator on dragging
 
-  mySearchTool = new QtxSearchTool( this, myView );
-  mySearchTool->setFrameStyle( QFrame::NoFrame | QFrame::Plain );
-  mySearchTool->setActivators( QtxSearchTool::StandardKey | QtxSearchTool::SlashKey );
-  mySearchTool->setSearcher( new QtxTreeViewSearcher( myView ) );
+  // set-up search tool
+  mySearchTool = new QtxSearchTool( this, myView );                  // create search tool
+  mySearchTool->setFrameStyle( QFrame::NoFrame | QFrame::Plain );    // do not show frame
+  mySearchTool->setActivators( QtxSearchTool::StandardKey | QtxSearchTool::SlashKey ); // set activation mode
+  mySearchTool->setSearcher( new QtxTreeViewSearcher( myView ) );    // assign searcher (for tree view)
   
+  // layout widgets
   QVBoxLayout* main = new QVBoxLayout( this );
   main->addWidget( myView );
   main->addWidget( mySearchTool );

@@ -65,7 +65,7 @@ public:
 
   virtual bool                    isVisible() const;
   virtual bool                    isDragable() const;
-  virtual bool                    isDropAccepted();
+  virtual bool                    isDropAccepted() const;
   virtual bool                    renameAllowed( const int = NameId ) const;
   virtual bool                    setName( const QString& );
 

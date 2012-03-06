@@ -148,21 +148,17 @@ public:
 
           it = entry2SuitObject.find(theID);
           if (it != entry2SuitObject.end()) { // this SOobject is already added somethere
-            // tmp??
             suit_obj = it->second;
             SUIT_DataObject* oldFather = suit_obj->parent();
             if (oldFather) {
               oldFather->removeChild(suit_obj, false);
-
-              suit_obj->updateItem(); // tmp??
+	      SalomeApp_Application* app = dynamic_cast<SalomeApp_Application*>( myStudy->application() );
+	      SUIT_AbstractModel* model = dynamic_cast<SUIT_AbstractModel*>(app->objectBrowser()->model());
+	      model->forgetObject( suit_obj );
+		
               if (SalomeApp_DataObject* oldFatherSA = dynamic_cast<SalomeApp_DataObject*>(oldFather)) {
-                oldFatherSA->updateItem(); // tmp??
+                oldFatherSA->updateItem();
               }
-
-              //entry2SuitObject.erase(it);
-              ////delete suit_obj;
-              //suit_obj = new SalomeApp_DataObject(aSObj);
-              //entry2SuitObject[theID] = suit_obj;
             }
           }
           else {
@@ -170,6 +166,7 @@ public:
             entry2SuitObject[theID] = suit_obj;
           }
 
+	  suit_obj->updateItem();
           // define position in the data tree (in aFatherDO) to insert the aSObj
           int pos = -1;
           //int childDataObjCount = aFatherDO->childCount();
@@ -181,9 +178,9 @@ public:
             }
           }
 
-          //aFatherDO->insertChildAtPos(suit_obj, pos);
-          aFatherDO->insertChild(suit_obj, pos);
-          aFatherDO->updateItem(); // tmp??
+          aFatherDO->insertChildAtPos(suit_obj, pos);
+          //aFatherDO->insertChild(suit_obj, pos);
+          aFatherDO->updateItem();
 
         } // END: work with tree nodes structure
         else { // BEGIN: work with study structure

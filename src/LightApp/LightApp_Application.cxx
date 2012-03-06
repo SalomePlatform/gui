@@ -1682,57 +1682,15 @@ void LightApp_Application::onRefresh()
 }
 
 /*!Private SLOT. Support drag-and-drop operation.*/
-void LightApp_Application::onDropped (const QMimeData *data, Qt::DropAction action,
-                                      int row, int column, const QModelIndex& parent)
+void LightApp_Application::onDropped( const QList<SUIT_DataObject*>& objects, SUIT_DataObject* parent, int row, Qt::DropAction action )
 {
-  if (action == Qt::IgnoreAction)
+  LightApp_DataObject* parentObj = dynamic_cast<LightApp_DataObject*>( parent );
+  if ( !parentObj )
     return;
 
-  if (!data->hasFormat("application/vnd.text.list"))
-    return;
-
-  if (column > 0)
-    return;
-
-  if (!parent.isValid())
-    // dropping into the top level of the model is not allowed
-    return;
-
-  SUIT_AbstractModel* treeModel = dynamic_cast<SUIT_AbstractModel*>(objectBrowser()->model());
-
-  SUIT_DataObject* obj = treeModel->object(parent);
-  if (!obj)
-    return;
-
-  LightApp_DataObject* parentObj = dynamic_cast<LightApp_DataObject*>(obj);
-  if (!parentObj)
-    return;
-
-  // decode mime data
-  QByteArray encodedData = data->data("application/vnd.text.list");
-  QDataStream stream (&encodedData, QIODevice::ReadOnly);
-  QStringList newItems;
-
-  while (!stream.atEnd()) {
-    QString text;
-    stream >> text;
-    if (!text.isEmpty())
-      newItems << text;
-  }
-
-  DataObjectList listObjs;
-  foreach (QString text, newItems) {
-    SUIT_DataObject* anObji = findObject(text);
-    if (anObji)
-      listObjs.append(anObji);
-  }
-
-  // tmp: clear selection to avoid problem with persistent data model indexes
-  //mySelMgr->clearSelected();
-
-  LightApp_Module* aModule = dynamic_cast<LightApp_Module*>(parentObj->module());
-  if (aModule)
-    aModule->dropObjects(listObjs, action, parentObj, row);
+  LightApp_Module* aModule = dynamic_cast<LightApp_Module*>( parentObj->module() );
+  if ( aModule )
+    aModule->dropObjects( objects, parentObj, row, action );
 }
 
 /*!Private SLOT. On preferences.*/
@@ -1844,8 +1802,10 @@ QWidget* LightApp_Application::createWindow( const int flag )
 
     // Mantis issue 0020136: Drag&Drop in OB
     SUIT_ProxyModel* proxyModel = dynamic_cast<SUIT_ProxyModel*>(treeModel);
-    connect( proxyModel, SIGNAL(dropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&)),
-             this, SLOT(onDropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&)) );
+    if ( proxyModel ) {
+      connect( proxyModel, SIGNAL( dropped( const QList<SUIT_DataObject*>&, SUIT_DataObject*, int, Qt::DropAction ) ),
+	       this,       SLOT( onDropped( const QList<SUIT_DataObject*>&, SUIT_DataObject*, int, Qt::DropAction ) ) );
+    }
 
     // temporary commented
     /*

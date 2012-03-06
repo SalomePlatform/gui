@@ -828,17 +828,24 @@ QVariant SUIT_TreeModel::data( const QModelIndex& index, int role ) const
       val = obj->text( id );
       break;
     case DecorationRole: {
-      if(id == SUIT_DataObject::VisibilityId) {
-	int anId = obj->customData(Qtx::IdType).toInt(); 
-	QString objId = data(createIndex(index.row(),anId,index.internalPointer())).toString();
-	if(myVisibilityMap.contains(objId)) {
+      // icon
+      if ( id == SUIT_DataObject::VisibilityId ) {
+	// for visibility column, icon is defined specifically (using data object id)
+	QString objId = objectId( index );
+	if ( myVisibilityMap.contains( objId ) ) {
+	  // visibility status is defined -> return proper icon
 	  SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();	  
-	  val  = (myVisibilityMap.value(objId) == Qtx::ShownState) ? 
-	    resMgr->loadPixmap( "SUIT", tr( "ICON_DATAOBJ_VISIBLE" )) : resMgr->loadPixmap( "SUIT", tr( "ICON_DATAOBJ_INVISIBLE" ));
-	} else {
+	  val  = ( myVisibilityMap.value( objId ) == Qtx::ShownState ) ? 
+	    resMgr->loadPixmap( "SUIT", tr( "ICON_DATAOBJ_VISIBLE" ) ) : 
+	    resMgr->loadPixmap( "SUIT", tr( "ICON_DATAOBJ_INVISIBLE" ) );
+	} 
+	else {
+	  // visibility status is undefined -> no icon
 	  val = QIcon();
 	}
-      } else {
+      }
+      else {
+	// for other columns get icon from the object
 	val = obj->icon( id );
       }
       break;
@@ -971,34 +978,6 @@ bool SUIT_TreeModel::setData( const QModelIndex& index,
 */
 Qt::ItemFlags SUIT_TreeModel::flags( const QModelIndex& index ) const
 {
-  /*
-  if ( !index.isValid() )
-    return 0;
-
-  SUIT_DataObject* obj = object( index );
-  Qt::ItemFlags f = 0;
-
-  if ( obj ) {
-    // data object is enabled
-    if ( obj->isEnabled() )
-      f = f | Qt::ItemIsEnabled;
-
-    // data object is selectable
-    if ( obj->isSelectable() )
-      f = f | Qt::ItemIsSelectable;
-
-    // data object is checkable
-    if ( obj->isCheckable( index.column() ) )
-      f = f | Qt::ItemIsUserCheckable;
-    
-    // data object can be renamed
-    if ( obj->renameAllowed( index.column() ) )
-      f = f | Qt::ItemIsEditable;
-  }
-
-  return f;
-  */
-
   Qt::ItemFlags f = 0;
 
   if (!index.isValid())
@@ -1039,23 +1018,6 @@ Qt::ItemFlags SUIT_TreeModel::flags( const QModelIndex& index ) const
 Qt::DropActions SUIT_TreeModel::supportedDropActions() const
 {
   return Qt::CopyAction | Qt::MoveAction;
-}
-
-//This function is never called
-bool SUIT_TreeModel::removeRows(int row, int count, const QModelIndex &parent)
-{
-  qDebug("Remove");
-  if (parent.isValid())
-    return FALSE;
-
-  beginRemoveRows(parent, row, row + count - 1);
-
-  for (int i = 0; i < count; ++i){
-    //delete m_pAllData->takeAt(row);
-  }
-
-  endRemoveRows();
-  return TRUE;
 }
 
 /*!
@@ -1287,6 +1249,11 @@ void SUIT_TreeModel::setUpdateModified(const bool on)
 bool SUIT_TreeModel::customSorting( const int column ) const
 {
   return root() ? root()->customSorting( column ) : false;
+}
+
+void SUIT_TreeModel::forgetObject( const SUIT_DataObject* obj )
+{
+  removeItem( treeItem( obj ) );
 }
 
 /*!
@@ -1521,6 +1488,28 @@ SUIT_DataObject* SUIT_TreeModel::object( const SUIT_TreeModel::TreeItem* item ) 
 }
 
 /*!
+  \brief Get unique object identifier
+  
+  Object identifier is customized via the Qtx::IdType custom data
+
+  \param index model index
+  \return object identifier or null string if it isn't specified
+  \sa SUIT_DataObject::customData()
+*/
+QString SUIT_TreeModel::objectId( const QModelIndex& index ) const
+{
+  QString objId;
+  if ( index.isValid() ) {
+    SUIT_DataObject* obj = object( index );
+    if ( obj ) {
+      int anId = obj->customData( Qtx::IdType ).toInt(); 
+      objId = data( createIndex( index.row(), anId, index.internalPointer() ) ).toString();
+    }
+  }
+  return objId;
+}
+
+/*!
   \brief Create an item corresponding to the data object.
   \param obj source data object
   \param parent parent tree item
@@ -1688,33 +1677,66 @@ QStringList SUIT_TreeModel::mimeTypes() const
   \brief Called when the data objects are exported(dragged) from the tree.
   \param indexes the list of exported objects
 */
-QMimeData* SUIT_TreeModel::mimeData (const QModelIndexList &indexes) const
+QMimeData* SUIT_TreeModel::mimeData( const QModelIndexList& indexes ) const
 {
-  QMimeData *mimeData = new QMimeData();
+  QMimeData* mimeData = new QMimeData();
   QByteArray encodedData;
 
-  QDataStream stream (&encodedData, QIODevice::WriteOnly);
+  QDataStream stream( &encodedData, QIODevice::WriteOnly );
 
-  foreach (QModelIndex index, indexes) {
-    if (index.isValid()) {
-      if (index.column() == 0) {
-        SUIT_DataObject* aDObj = object(index);
-        QString anEntry = aDObj->text(SUIT_DataObject::VisibilityId + 1);
-        stream << anEntry;
-      }
-    }
+  foreach ( QModelIndex index, indexes ) {
+    QString id = objectId( index );
+    // we have to check only 0 column in order to avoid repeating items in the drag object
+    // - QTreeView tries to drag indices for all visible columns
+    if ( index.isValid() && index.column() == 0 && !id.isEmpty() )
+      stream << id;
   }
 
-  mimeData->setData("application/vnd.text.list", encodedData);
+  mimeData->setData( "application/vnd.text.list", encodedData );
   return mimeData;
 }
 
-bool SUIT_TreeModel::dropMimeData (const QMimeData* data, Qt::DropAction action,
-                                   int row, int column, const QModelIndex& parent)
+bool SUIT_TreeModel::dropMimeData( const QMimeData* data, Qt::DropAction action,
+                                   int row, int column, const QModelIndex& parent )
 {
-  emit dropped(data, action, row, column, parent);
+  if ( action == Qt::IgnoreAction )
+    // do nothing with data
+    return false;
 
-  return true;
+  if ( !data->hasFormat( "application/vnd.text.list" ) )
+    // not supported data dropped
+    return false;
+
+  if ( !parent.isValid() )
+    // dropping into the top level of the model is not allowed
+    return false;
+
+  // get parent object
+  SUIT_DataObject* pobj = object( parent );
+  if ( !pobj )
+    // invalid parent
+    return false;
+
+  // decode mime data and collect data objects being dropped
+  QByteArray encodedData = data->data( "application/vnd.text.list" );
+  QDataStream stream( &encodedData, QIODevice::ReadOnly );
+  
+  DataObjectList objects;
+
+  while ( !stream.atEnd() ) {
+    QString id;
+    stream >> id;
+    if ( !id.isEmpty() && searcher() ) {
+      SUIT_DataObject* obj = searcher()->findObject( id );
+      if ( obj ) objects << obj;
+    }
+  }
+
+  // emit signal
+  emit dropped( objects, pobj, row, action );
+
+  // return true if there's any to drop
+  return !objects.isEmpty();
 }
 
 /*!
@@ -1737,10 +1759,9 @@ SUIT_ProxyModel::SUIT_ProxyModel( QObject* parent )
 {
   SUIT_TreeModel* model = new SUIT_TreeModel( this );
   connect( model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
-  connect( model, SIGNAL( clicked(SUIT_DataObject*, int) ), this, SIGNAL(clicked(SUIT_DataObject*, int) ) );
-  connect( model, SIGNAL( dropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ),
-           //this, SIGNAL( dropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ));
-           this, SLOT( onDropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ));
+  connect( model, SIGNAL( clicked( SUIT_DataObject*, int ) ), this, SIGNAL(clicked( SUIT_DataObject*, int ) ) );
+  connect( model, SIGNAL( dropped( const QList<SUIT_DataObject*>&, SUIT_DataObject*, int, Qt::DropAction ) ),
+           this,  SIGNAL( dropped( const QList<SUIT_DataObject*>&, SUIT_DataObject*, int, Qt::DropAction ) ) );
   setSourceModel( model );
   setDynamicSortFilter( true );
 }
@@ -1756,10 +1777,9 @@ SUIT_ProxyModel::SUIT_ProxyModel( SUIT_DataObject* root, QObject* parent )
 {
   SUIT_TreeModel* model = new SUIT_TreeModel( root, this );
   connect( model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
-  connect( model, SIGNAL( clicked(SUIT_DataObject*, int) ), this, SIGNAL(clicked(SUIT_DataObject*, int) ) );
-  connect( model, SIGNAL( dropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ),
-           //this, SIGNAL( dropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ));
-           this, SLOT( onDropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ));
+  connect( model, SIGNAL( clicked( SUIT_DataObject*, int ) ), this, SIGNAL( clicked( SUIT_DataObject*, int ) ) );
+  connect( model, SIGNAL( dropped( const QList<SUIT_DataObject*>&, SUIT_DataObject*, int, Qt::DropAction ) ),
+           this,  SIGNAL( dropped( const QList<SUIT_DataObject*>&, SUIT_DataObject*, int, Qt::DropAction ) ) );
   setSourceModel( model );
   setDynamicSortFilter( true );
 }
@@ -1774,10 +1794,9 @@ SUIT_ProxyModel::SUIT_ProxyModel( SUIT_AbstractModel* model, QObject* parent )
   mySortingEnabled( true )
 {
   connect( *model, SIGNAL( modelUpdated() ), this, SIGNAL( modelUpdated() ) );
-  connect( *model, SIGNAL( clicked(SUIT_DataObject*, int) ), this, SIGNAL(clicked(SUIT_DataObject*, int) ) );
-  connect( *model, SIGNAL( dropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ),
-           //this, SIGNAL( dropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ));
-           this, SLOT( onDropped(const QMimeData*, Qt::DropAction, int, int, const QModelIndex&) ));
+  connect( *model, SIGNAL( clicked( SUIT_DataObject*, int ) ), this, SIGNAL( clicked( SUIT_DataObject*, int ) ) );
+  connect( *model, SIGNAL( dropped( const QList<SUIT_DataObject*>&, SUIT_DataObject*, int, Qt::DropAction ) ),
+           this,   SIGNAL( dropped( const QList<SUIT_DataObject*>&, SUIT_DataObject*, int, Qt::DropAction ) ) );
   setSourceModel( *model );
   setDynamicSortFilter( true );
 }
@@ -1964,6 +1983,12 @@ void SUIT_ProxyModel::updateTree( SUIT_DataObject* obj )
     treeModel()->updateTree( obj );
 }
 
+void SUIT_ProxyModel::forgetObject( const SUIT_DataObject* obj )
+{
+  if ( treeModel() )
+    treeModel()->forgetObject( obj );
+}
+
 /*!
   \brief Compares two model indexes for the sorting purposes.
   \param left first index to compare
@@ -2120,7 +2145,8 @@ Qtx::Appropriate SUIT_ProxyModel::appropriate( const QString& name ) const
   \param flags - header flags
 
 */
-void SUIT_ProxyModel::setHeaderFlags( const QString& name, const Qtx::HeaderViewFlags flags ) {
+void SUIT_ProxyModel::setHeaderFlags( const QString& name, const Qtx::HeaderViewFlags flags )
+{
   if(treeModel())
     treeModel()->setHeaderFlags(name, flags);
 }
@@ -2134,7 +2160,8 @@ void SUIT_ProxyModel::setHeaderFlags( const QString& name, const Qtx::HeaderView
   \param name - column name
   \return header flags
 */
-Qtx::HeaderViewFlags SUIT_ProxyModel::headerFlags( const QString& name ) const {
+Qtx::HeaderViewFlags SUIT_ProxyModel::headerFlags( const QString& name ) const
+{
   return treeModel() ? treeModel()->headerFlags( name ) : Qtx::ShowAll;
 }
 
@@ -2144,7 +2171,8 @@ Qtx::HeaderViewFlags SUIT_ProxyModel::headerFlags( const QString& name ) const {
   \param id - column name
   \param state - visible state
 */
-void SUIT_ProxyModel::setVisibilityState(const QString& id, Qtx::VisibilityState state) {
+void SUIT_ProxyModel::setVisibilityState(const QString& id, Qtx::VisibilityState state)
+{
   if(treeModel())
     treeModel()->setVisibilityState(id,state);
 }
@@ -2155,7 +2183,8 @@ void SUIT_ProxyModel::setVisibilityState(const QString& id, Qtx::VisibilityState
   \param id - column name
   \param state - visible state
 */
-void SUIT_ProxyModel::setVisibilityStateForAll(Qtx::VisibilityState state) {
+void SUIT_ProxyModel::setVisibilityStateForAll(Qtx::VisibilityState state)
+{
   if(treeModel())
     treeModel()->setVisibilityStateForAll(state);
 }
@@ -2166,19 +2195,15 @@ void SUIT_ProxyModel::setVisibilityStateForAll(Qtx::VisibilityState state) {
   \param id - column name
   \return visible state
 */
-Qtx::VisibilityState SUIT_ProxyModel::visibilityState(const QString& id) const {
+Qtx::VisibilityState SUIT_ProxyModel::visibilityState(const QString& id) const
+{
   return treeModel() ? treeModel()->visibilityState(id) : Qtx::UnpresentableState;
 }
 
-void SUIT_ProxyModel::emitClicked( SUIT_DataObject* obj, const QModelIndex& index) {
+void SUIT_ProxyModel::emitClicked( SUIT_DataObject* obj, const QModelIndex& index)
+{
   if(treeModel())
     treeModel()->emitClicked(obj,index);
-}
-
-void SUIT_ProxyModel::onDropped (const QMimeData* data, Qt::DropAction action,
-                                 int row, int column, const QModelIndex& parent)
-{
-  emit dropped(data, action, row, column, mapFromSource(parent));
 }
 
 /*!

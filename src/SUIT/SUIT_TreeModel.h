@@ -71,6 +71,7 @@ public:
   virtual QAbstractItemDelegate* delegate() const = 0;
   virtual bool                  customSorting( const int ) const = 0;
   virtual bool                  lessThan( const QModelIndex& left, const QModelIndex& right ) const = 0;
+  virtual void                  forgetObject( const SUIT_DataObject* ) = 0;
 
   virtual void                  updateTree( const QModelIndex& ) = 0;
   virtual void                  updateTree( SUIT_DataObject* = 0 ) = 0;
@@ -138,7 +139,6 @@ public:
   virtual QVariant       headerData( int, Qt::Orientation, int = Qt::DisplayRole ) const;
 
   virtual Qt::DropActions supportedDropActions() const;
-  virtual bool            removeRows(int row, int count, const QModelIndex &parent);
 
   virtual QModelIndex    index( int, int, const QModelIndex& = QModelIndex() ) const;
   virtual QModelIndex    parent( const QModelIndex& ) const;
@@ -173,6 +173,7 @@ public:
 
   virtual bool           customSorting( const int ) const;
   virtual bool           lessThan( const QModelIndex& left, const QModelIndex& right ) const;
+  virtual void           forgetObject( const SUIT_DataObject* );
 
   QAbstractItemDelegate* delegate() const;
 
@@ -191,7 +192,7 @@ public slots:
 signals:
   void modelUpdated();
   void clicked( SUIT_DataObject*, int );
-  void dropped( const QMimeData*, Qt::DropAction, int, int, const QModelIndex& );
+  void dropped( const QList<SUIT_DataObject*>&, SUIT_DataObject*, int, Qt::DropAction );
 
 private:
   void                   initialize();
@@ -200,6 +201,7 @@ private:
   TreeItem*              treeItem( const QModelIndex& ) const;
   TreeItem*              treeItem( const SUIT_DataObject* ) const;
   SUIT_DataObject*       object( const TreeItem* ) const;
+  QString                objectId( const QModelIndex& = QModelIndex() ) const;
 
   TreeItem*              createItem( SUIT_DataObject*, TreeItem* = 0, TreeItem* = 0 );
   TreeItem*              createItemAtPos( SUIT_DataObject*, TreeItem* = 0, int pos=0 );
@@ -264,6 +266,7 @@ public:
   bool                   isSortingEnabled() const;
   bool                   customSorting( const int ) const;
 
+  virtual void             forgetObject( const SUIT_DataObject* );
   virtual bool             lessThan( const QModelIndex&, const QModelIndex& ) const;
   virtual void             registerColumn( const int group_id, const QString& name, const int custom_id );
   virtual void             unregisterColumn( const int group_id, const QString& name );
@@ -287,12 +290,11 @@ public slots:
   virtual void           updateTree( const QModelIndex& );
   virtual void           updateTree( SUIT_DataObject* = 0 );
   void                   setSortingEnabled( bool );
-  void                   onDropped( const QMimeData*, Qt::DropAction, int, int, const QModelIndex& );
 
 signals:
   void modelUpdated();
   void clicked( SUIT_DataObject*, int );
-  void dropped( const QMimeData*, Qt::DropAction, int, int, const QModelIndex& );
+  void dropped( const QList<SUIT_DataObject*>&, SUIT_DataObject*, int, Qt::DropAction );
 
 protected:
   SUIT_AbstractModel*    treeModel() const;

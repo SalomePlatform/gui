@@ -237,8 +237,7 @@ protected slots:
 private slots:
   void                                onSelection();
   void                                onRefresh();
-  void                                onDropped( const QMimeData*, Qt::DropAction,
-                                                 int, int, const QModelIndex& );
+  void                                onDropped( const QList<SUIT_DataObject*>&, SUIT_DataObject*, int, Qt::DropAction );
   void                                onPreferences();
   void                                onPreferenceChanged( QString&, QString&, QString& );
   void                                onRenameWindow();

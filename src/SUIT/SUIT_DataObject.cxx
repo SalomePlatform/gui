@@ -571,7 +571,7 @@ bool SUIT_DataObject::isVisible() const
 
   \return \c true if it is possible to drag this object
 */
-bool SUIT_DataObject::isDragable() const
+bool SUIT_DataObject::isDraggable() const
 {
   return false;
 }

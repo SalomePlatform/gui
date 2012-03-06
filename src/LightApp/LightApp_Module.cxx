@@ -707,7 +707,7 @@ void LightApp_Module::paste()
   virtual method
   \return true if module allows dragging the given object
 */
-bool LightApp_Module::isDragable( const SUIT_DataObject* /*what*/ ) const
+bool LightApp_Module::isDraggable( const SUIT_DataObject* /*what*/ ) const
 {
   return false;
 }

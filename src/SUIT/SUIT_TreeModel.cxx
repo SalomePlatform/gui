@@ -1004,7 +1004,7 @@ Qt::ItemFlags SUIT_TreeModel::flags( const QModelIndex& index ) const
       f = f | Qt::ItemIsEditable;
     
     // data object can be dragged
-    if (obj->isDragable())
+    if (obj->isDraggable())
       f = f | Qt::ItemIsDragEnabled;
     
     // another data object(s) can be dropped on this one

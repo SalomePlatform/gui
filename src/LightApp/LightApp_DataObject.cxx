@@ -152,17 +152,17 @@ bool LightApp_DataObject::isVisible() const
 }
 
 /*!
-  \brief Check if the object is dragable.
+  \brief Check if the object is draggable.
 
   This method can be re-implemented in the subclasses.
 
   \return \c true if it is possible to drag this object
 */
-bool LightApp_DataObject::isDragable() const
+bool LightApp_DataObject::isDraggable() const
 {
   LightApp_Module* aModule = dynamic_cast<LightApp_Module*>(module());
   if (aModule) {
-    return aModule->isDragable(this);
+    return aModule->isDraggable(this);
   }
   return false;
 }

@@ -95,7 +95,7 @@ public:
 
   virtual bool                        canCopy() const;
   virtual bool                        canPaste() const;
-  virtual bool                        isDragable( const SUIT_DataObject* ) const;
+  virtual bool                        isDraggable( const SUIT_DataObject* ) const;
   virtual bool                        isDropAccepted( const SUIT_DataObject* ) const;
   virtual void                        dropObjects( const DataObjectList&, SUIT_DataObject*,
 						   const int, Qt::DropAction );

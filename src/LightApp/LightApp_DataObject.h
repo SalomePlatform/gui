@@ -64,7 +64,7 @@ public:
   virtual QVariant                customData(Qtx::CustomDataType type);
 
   virtual bool                    isVisible() const;
-  virtual bool                    isDragable() const;
+  virtual bool                    isDraggable() const;
   virtual bool                    isDropAccepted() const;
   virtual bool                    renameAllowed( const int = NameId ) const;
   virtual bool                    setName( const QString& );

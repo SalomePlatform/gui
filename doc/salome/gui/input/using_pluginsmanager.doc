@@ -6,6 +6,7 @@
 -# \ref S2_SALOMEPLUGINS
 -# \ref S3_SALOMEPLUGINS
 -# \ref S4_SALOMEPLUGINS
+-# \ref S5_SALOMEPLUGINS
 
 \section S1_SALOMEPLUGINS Objectives
 
@@ -143,15 +144,46 @@ salome_pluginsmanager.AddFunction('O,Vx,Vy,Vz',
 Move this script in the directory
 ~/.config/salome/Plugins, run SALOME and enjoy your new function.
 
-\section S4_SALOMEPLUGINS Other examples
+\section S4_SALOMEPLUGINS How to select an object of the object browser
+
+Sometimes it can be useful to retrieve an object of the object browser to perform
+an action on it. For example it can be useful to select a mesh in order
+to display some information related to it.
+
+Some important methods and objects to use are the followings:
+-# context.sg.getObjectBrowser(): useful to connect the signal event 
+				  `selectionChanged()` to a custom slot
+-# context.salome.sg.getAllSelected(): to get the list of selected object
+				       in the object browser
+-# objId = context.salome.sg.getSelected(0): 
+  to get the first selected object in the object browser
+-# salomeObj = context.salome.study.FindObjectID(objId).GetObject():
+  to retrieve the salome object from the selection. It can be a GEOM, SMESH, or any
+  other module object. 
+
+  If it is a mesh, then it is possible to call GetMEDMesh() on the object. 
+  If it is not a mesh, this call will raise an exception. Then a possible way to get
+  a mesh can be written as following:
+\code
+mesh = None
+try:
+  mesh = salomeObj.GetMEDMesh()
+except:
+  print "The selection is not a mesh"
+\endcode
+
+A example of usage of those methods is available with the demo examples.
+See the next chapter \ref S5_SALOMEPLUGINS.
+
+\section S5_SALOMEPLUGINS Other examples
 
 The GUI module provides you with some basic demo examples, located in
 the directory src/SalomeApp/pluginsdemo of the source space, and
-installed in the directory $GUI_ROOT_DIR/share/salome/plugins/gui.
+installed in the directory $GUI_ROOT_DIR/share/salome/plugins/gui/demo.
 
 \note These examples are automatically installed when you install the GUI
 but are not activated. To activate the plugins, edit the file
-$GUI_ROOT_DIR/share/salome/plugins/gui/salome_plugins.py and turn the
+$GUI_ROOT_DIR/share/salome/plugins/gui/demo/salome_plugins.py and turn the
 variable DEMO_IS_ACTIVATED to True.
 
 The demo examples are:
@@ -165,5 +197,9 @@ The demo examples are:
    an additionnal preview function (button apply in the dialog box).
 -# \b runSalomeShellSession: run a SALOME prepared shell session in a
    xterm.
+-# \b minmax: computes the min and max values of a control on a selected mesh.
+  \note This plugin is available in the SMESH module only. To activate it, edit 
+  the file $GUI_ROOT_DIR/share/salome/plugins/gui/demo/smesh_plugins.py and turn the variable
+  DEMO_IS_ACTIVATED to True.
 
 */

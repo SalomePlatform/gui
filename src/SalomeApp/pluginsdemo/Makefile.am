@@ -33,8 +33,11 @@ include $(top_srcdir)/adm_local/unix/make_common_starter.am
 pluginsdir =$(salomepluginsdir)/demo
 plugins_PYTHON = \
 	salome_plugins.py \
+	smesh_plugins.py \
 	trihedron.py      \
 	tubedialog_ui.py  \
 	tubedialog.py     \
 	tubebuilder.py    \
-	xalome.py
+	xalome.py         \
+	minmax_dialog.py  \
+	minmax_plugin.py

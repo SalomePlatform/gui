@@ -229,44 +229,6 @@ void SalomeApp_Application::onStudyClosed( SUIT_Study* theStudy){
 	      this, SLOT( onViewManagerRemoved( SUIT_ViewManager* ) ) );
 }
 
-/*!
-  \brief Check if this object is can't be renamed in place
-
-  This method can be re-implemented in the subclasses.
-  Return true in case if object isn't reference or component (module root).
-
-  \param id column id
-  \return \c true if the item can be renamed by the user in place (e.g. in the Object browser)
-*/
-bool SalomeApp_Module::renameAllowed( const QString& entry) const {
-
-  SalomeApp_Application* app = dynamic_cast< SalomeApp_Application* >( SUIT_Session::session()->activeApplication() );
-
-  SalomeApp_Study* appStudy = app ? dynamic_cast<SalomeApp_Study*>( app->activeStudy() ) : 0; 
-
-  SalomeApp_DataObject* obj = appStudy ? dynamic_cast<SalomeApp_DataObject*>(appStudy->findObjectByEntry(entry)) : 0;
-
-  return (app && appStudy && obj && !appStudy->isComponent(entry) && !obj->isReference());
-}
-
-/*!
-  \brief Show warning message box and return c\ false in case if current study locked,
-         \c true otherwise.
-*/
-bool SalomeApp_Module::renameObject( const QString& /*entry*/, const QString& /*name*/) {
-
-  SalomeApp_Application* app = dynamic_cast< SalomeApp_Application* >( SUIT_Session::session()->activeApplication() );
-  SalomeApp_Study* appStudy = app ? dynamic_cast<SalomeApp_Study*>(app->activeStudy()) : 0;
-  
-  if ( appStudy && appStudy->studyDS()) {    
-    bool aLocked = (_PTR(AttributeStudyProperties)(appStudy->studyDS()->GetProperties()))->IsLocked();
-    if ( aLocked ) {
-      SUIT_MessageBox::warning ( app->desktop(), QObject::tr("WRN_WARNING"), QObject::tr("WRN_STUDY_LOCKED") );
-      return false;
-    }
-  }
-  return true;
-}
 
 void SalomeApp_Module::updateModuleVisibilityState() {
 

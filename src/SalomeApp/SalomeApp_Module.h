@@ -62,9 +62,6 @@ public:
   virtual void                        storeVisualParameters(int savePoint);
   virtual void                        restoreVisualParameters(int savePoint);
   virtual LightApp_Selection*         createSelection() const;
-
-  virtual bool                        renameAllowed( const QString& ) const;
-  virtual bool                        renameObject( const QString&, const QString& );
   
   public slots:
   virtual bool                        activateModule( SUIT_Study* );

@@ -1,6 +1,6 @@
 /*!
 
-\page using_pluginsmanager Extends SALOME gui functions using python plugins
+\page using_pluginsmanager Extend SALOME gui functions using python plugins
 
 -# \ref S1_SALOMEPLUGINS
 -# \ref S2_SALOMEPLUGINS

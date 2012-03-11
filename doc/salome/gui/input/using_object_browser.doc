@@ -43,7 +43,7 @@ to the objects</li>
 
 \note <b>Entry, IOR and Reference entry</b> attributes are displayed for debugging purposes only.
 
-<h1> Enable sorting </h1>
+<h2> Enable sorting </h2>
 
 By default the objects in the object browser are sorted in the creation order. 
 \n

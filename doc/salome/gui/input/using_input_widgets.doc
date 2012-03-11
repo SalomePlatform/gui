@@ -5,7 +5,7 @@
 This section contains some hints that might be useful when working
 with SALOME GUI input widgets.
 
-<h1>Spin boxes</h1>
+<h2>Spin boxes</h2>
 
 This type of widgets is used for numeric (integer or floating-point)
 data input. Spin boxes are used in standard \b SALOME modules if the

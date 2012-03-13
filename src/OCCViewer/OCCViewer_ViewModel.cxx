@@ -61,6 +61,8 @@
 
 #include <Visual3d_View.hxx>
 
+#include <Basics_OCCTVersion.hxx>
+
 /*!
   Get data for supported background modes: gradient types, identifiers and supported image formats
 */
@@ -85,6 +87,7 @@ OCCViewer_Viewer::OCCViewer_Viewer( bool DisplayTrihedron)
 : SUIT_ViewModel(),
   myBackgrounds(4, Qtx::BackgroundData( Qt::black )),
   myIsRelative(true),
+  myTopLayerId( 0 ),
   myTrihedronSize(100)
 {
   // init CasCade viewers
@@ -357,6 +360,16 @@ void OCCViewer_Viewer::onKeyPress(SUIT_ViewWindow* theWindow, QKeyEvent* theEven
   myAISContext->Select();
 
   emit selectionChanged();
+}
+
+int OCCViewer_Viewer::getTopLayerId()
+{
+#if OCC_VERSION_LARGE > 0x06050200
+  if ( myTopLayerId == 0 && !myAISContext->CurrentViewer().IsNull() )    
+    myAISContext->CurrentViewer()->AddZLayer( myTopLayerId );
+#endif
+
+  return myTopLayerId;
 }
 
 /*!

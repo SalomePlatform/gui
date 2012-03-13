@@ -121,6 +121,8 @@ public:
   Handle(AIS_InteractiveContext)  getAISContext()  const { return myAISContext; }
   Handle(AIS_Trihedron)           getTrihedron()   const { return myTrihedron; }
 
+  int                             getTopLayerId();
+
   int                             interactionStyle() const;
   void                            setInteractionStyle( const int );
 
@@ -170,7 +172,7 @@ protected:
   Handle(V3d_Viewer)              myV3dCollector;
 
   Handle(AIS_Trihedron)           myTrihedron;
-  Handle(AIS_InteractiveContext)  myAISContext;
+  Handle(AIS_InteractiveContext)  myAISContext;  
 
   int                             myInteractionStyle;
   int                             myZoomingStyle;
@@ -178,6 +180,8 @@ protected:
   bool                            mySelectionEnabled;
   bool                            myMultiSelectionEnabled;
   bool                            myIsRelative;
+
+  int                             myTopLayerId;
 
   //QColor                          myBgColor;
   QPoint                          myStartPnt, myEndPnt;

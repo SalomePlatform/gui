@@ -57,6 +57,7 @@
 
 //#include "SALOMEDSClient.hxx"
 //#include "SALOMEDS_StudyManager.hxx"
+#include <Basics_OCCTVersion.hxx>
 
 #include <AIS_TypeOfIso.hxx>
 #include <Precision.hxx>
@@ -390,7 +391,13 @@ void SOCC_Viewer::Display( const SALOME_OCCPrs* prs )
       }
 
       ic->Display( anAIS, false );
-
+      
+#if OCC_VERSION_LARGE > 0x06050200 
+      Handle(SALOME_AISShape) aSh = Handle(SALOME_AISShape)::DownCast(anAIS);
+      if ( !aSh.IsNull() ) {
+	ic->SetZLayer( aSh, aSh->isTopLevel() ? getTopLayerId() : 0 );
+      }
+#endif
       //Register anAIS (if it has an entry) in entry2aisobjects map
       Handle(SALOME_InteractiveObject) anObj = Handle(SALOME_InteractiveObject)::DownCast( anAIS->GetOwner() );
       if ( !anObj.IsNull() && anObj->hasEntry())

@@ -65,6 +65,8 @@ public:
 
   //! Register the servant to Naming Service
   void NSregister();
+  //! Unregister the servant from Naming Service
+  void NSunregister();
 
   CORBA::Long GetActiveStudyId();
 

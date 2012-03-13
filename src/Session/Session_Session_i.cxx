@@ -122,6 +122,25 @@ void SALOME_Session_i::NSregister()
 }
 
 /*!
+  Unregister session server from CORBA Naming Service
+*/
+void SALOME_Session_i::NSunregister()
+{
+  try
+    {
+      _NS->Destroy_Name("/Kernel/Session");
+    }
+  catch (ServiceUnreachable&)
+    {
+      INFOS("Caught exception: Naming Service Unreachable");
+    }
+  catch (...)
+    {
+      INFOS("Caught unknown exception from Naming Service");
+    }
+}
+
+/*!
   Launches the GUI if there is none.
   The Corba method is oneway (corba client does'nt wait for GUI completion)
 */
@@ -164,13 +183,16 @@ void SALOME_Session_i::StopSession()
 void SALOME_Session_i::Shutdown()
 {
   _GUIMutex->lock();
+  bool isBeingShuttingDown = _isShuttingDown;
   _isShuttingDown = true;
   _GUIMutex->unlock();
-  if ( SUIT_Session::session() ) {
-    ProcessVoidEvent( new CloseEvent() );
-  }
-  else {
-    _GUILauncher->wakeAll();
+  if ( !isBeingShuttingDown ) {
+    if ( SUIT_Session::session() ) {
+      ProcessVoidEvent( new CloseEvent() );
+    }
+    else {
+      _GUILauncher->wakeAll();
+    }
   }
 }
 

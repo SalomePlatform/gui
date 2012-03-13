@@ -48,6 +48,7 @@
 #include <utilities.h>
 #include "Session_ServerLauncher.hxx"
 #include "Session_ServerCheck.hxx"
+#include "Session_Session_i.hxx"
 
 #include <Qtx.h>
 #include <QtxSplash.h>
@@ -515,6 +516,10 @@ int main( int argc, char **argv )
     _GUIMutex.unlock();
   }
 
+  // Obtain Session interface reference
+  CORBA::Object_var obj = _NS->Resolve( "/Kernel/Session" );
+  SALOME::Session_var session = SALOME::Session::_narrow( obj ) ;
+
   bool shutdownAll = false;
   bool shutdownSession = false;
   if ( !result ) {
@@ -522,10 +527,6 @@ int main( int argc, char **argv )
     if ( isGUI ) {
       if ( splash )
         splash->setStatus( QApplication::translate( "", "Activating desktop..." ) );
-      // ...retrieve Session interface reference
-      CORBA::Object_var obj = _NS->Resolve( "/Kernel/Session" );
-      SALOME::Session_var session = SALOME::Session::_narrow( obj ) ;
-      ASSERT ( ! CORBA::is_nil( session ) );
       // ...create GUI launcher
       MESSAGE( "Session activated, Launch IAPP..." );
       guiThread = new GetInterfaceThread( session );
@@ -543,9 +544,6 @@ int main( int argc, char **argv )
       _SessionMutex.unlock();
 
       // Session might be shutdowning here, check status
-      CORBA::Object_var obj = _NS->Resolve( "/Kernel/Session" );
-      SALOME::Session_var session = SALOME::Session::_narrow( obj ) ;
-      ASSERT ( ! CORBA::is_nil( session ) );
       SALOME::StatSession stat = session->GetStatSession();
       shutdownSession = stat.state == SALOME::shutdown;
       if ( shutdownSession ) {
@@ -613,6 +611,11 @@ int main( int argc, char **argv )
 
   if ( myServerLauncher )
     myServerLauncher->KillAll(); // kill embedded servers
+
+  // Unregister session server
+  SALOME_Session_i* sessionServant = dynamic_cast<SALOME_Session_i*>( poa->reference_to_servant( session.in() ) );
+  if ( sessionServant )
+    sessionServant->NSunregister();
 
   delete aGUISession;
   delete guiThread;

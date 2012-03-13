@@ -253,6 +253,7 @@ VTKViewer_GeometryFilter
   // Loop over all cells now that visibility is known
   // (Have to compute visibility first for 3D cell boundarys)
   int progressInterval = numCells/20 + 1;
+  TMapOfVectorId aDimension2VTK2ObjIds;
   if(myStoreMapping){
     myVTK2ObjIds.clear();
     myVTK2ObjIds.reserve(numCells);
@@ -288,7 +289,7 @@ VTKViewer_GeometryFilter
         case VTK_POLY_VERTEX:
           newCellId = output->InsertNextCell(aCellType,npts,pts);
           if(myStoreMapping){
-            myVTK2ObjIds.push_back(cellId); //apo
+            InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
           }
           outputCD->CopyData(cd,cellId,newCellId);
           break;
@@ -297,7 +298,7 @@ VTKViewer_GeometryFilter
         case VTK_POLY_LINE:
           newCellId = output->InsertNextCell(aCellType,npts,pts);
           if(myStoreMapping)
-            myVTK2ObjIds.push_back(cellId);
+            InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
           outputCD->CopyData(cd,cellId,newCellId);
           break;
 
@@ -306,21 +307,21 @@ VTKViewer_GeometryFilter
         case VTK_POLYGON:
           newCellId = output->InsertNextCell(aCellType,npts,pts);
           if(myStoreMapping)
-            myVTK2ObjIds.push_back(cellId);
+            InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
           outputCD->CopyData(cd,cellId,newCellId);
           break;
 
         case VTK_TRIANGLE_STRIP:
           newCellId = output->InsertNextCell(aCellType,npts,pts);
           if(myStoreMapping)
-            myVTK2ObjIds.push_back(cellId);
+            InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
           outputCD->CopyData(cd,cellId,newCellId);
           break;
 
         case VTK_PIXEL:
           newCellId = output->InsertNextCell(aCellType,npts,pts);
           if(myStoreMapping)
-            myVTK2ObjIds.push_back(cellId);
+            InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
           outputCD->CopyData(cd,cellId,newCellId);
           break;
 
@@ -336,6 +337,7 @@ VTKViewer_GeometryFilter
                                                       outputCD,
                                                       myStoreMapping,
                                                       myVTK2ObjIds,
+                                                      aDimension2VTK2ObjIds,
                                                       true);
           if(!anIsOk)
             aDelaunayTriangulator.Execute(input,
@@ -349,6 +351,7 @@ VTKViewer_GeometryFilter
                                           outputCD,
                                           myStoreMapping,
                                           myVTK2ObjIds,
+                                          aDimension2VTK2ObjIds,
                                           false);
 
           break;
@@ -372,7 +375,7 @@ VTKViewer_GeometryFilter
                 aNewPts[i] = pts[faceVerts[i]];
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
               outputCD->CopyData(cd,cellId,newCellId);
               }
             }
@@ -398,7 +401,7 @@ VTKViewer_GeometryFilter
                 aNewPts[i] = pts[faceVerts[PixelConvert[i]]];
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
               outputCD->CopyData(cd,cellId,newCellId);
               }
             }
@@ -424,7 +427,7 @@ VTKViewer_GeometryFilter
                 aNewPts[i] = pts[faceVerts[i]];
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
               outputCD->CopyData(cd,cellId,newCellId);
               }
             }
@@ -456,7 +459,7 @@ VTKViewer_GeometryFilter
                 aNewPts[i] = pts[faceVerts[i]];
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
               outputCD->CopyData(cd,cellId,newCellId);
               }
             }
@@ -489,7 +492,7 @@ VTKViewer_GeometryFilter
                 aNewPts[i] = pts[faceVerts[i]];
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
               outputCD->CopyData(cd,cellId,newCellId);
             }
             }
@@ -520,7 +523,7 @@ VTKViewer_GeometryFilter
                 aNewPts[i] = pts[faceVerts[i]];
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
               outputCD->CopyData(cd,cellId,newCellId);
               }
             }
@@ -569,7 +572,7 @@ VTKViewer_GeometryFilter
                       aNewPts[i] = ptIds[pt0 + i];
                     newCellId = output->InsertNextCell(aCellType, numFacePts, aNewPts);
                     if (myStoreMapping)
-                      myVTK2ObjIds.push_back(cellId);
+                      InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
                     outputCD->CopyData(cd, cellId, newCellId);
                   }
               }
@@ -609,13 +612,13 @@ VTKViewer_GeometryFilter
                   aNewPts[1] = lpts->GetId(i+1);
                   newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
                   if(myStoreMapping)
-                    myVTK2ObjIds.push_back(cellId);
+                    InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
                   outputCD->CopyData(cd,cellId,newCellId);
                 }
               }
               else {
                 if(myStoreMapping)
-                  myVTK2ObjIds.push_back(cellId);
+                  InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
                 outputCD->CopyData(cd,cellId,newCellId);
               }
             }
@@ -630,12 +633,12 @@ VTKViewer_GeometryFilter
                   aNewPts[2] = lpts->GetId(i+2);
                   newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
                   if(myStoreMapping)
-                    myVTK2ObjIds.push_back(cellId);
+                    InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
                   outputCD->CopyData(cd,cellId,newCellId);
                 }
               }
               else{
-                BuildArcedPolygon(cellId,input,output,true);
+                BuildArcedPolygon(cellId,input,output,aDimension2VTK2ObjIds,true);
               }
             }
             else //3D nonlinear cell
@@ -654,7 +657,7 @@ VTKViewer_GeometryFilter
                     aNewPts[2] = lpts->GetId(i+2);
                     newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
                     if(myStoreMapping)
-                      myVTK2ObjIds.push_back(cellId);
+                      InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
                     outputCD->CopyData(cd,cellId,newCellId);
                   }
                 }
@@ -684,7 +687,7 @@ VTKViewer_GeometryFilter
               }
 
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
               outputCD->CopyData(cd,cellId,newCellId);
               break;
@@ -703,12 +706,12 @@ VTKViewer_GeometryFilter
 
                 newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
                 if(myStoreMapping)
-                  myVTK2ObjIds.push_back(cellId);
+                  InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
                 outputCD->CopyData(cd,cellId,newCellId);
               }
               else
-                BuildArcedPolygon(cellId,input,output);
+                BuildArcedPolygon(cellId,input,output,aDimension2VTK2ObjIds);
               break;
             }
             case VTK_BIQUADRATIC_QUAD:
@@ -728,12 +731,12 @@ VTKViewer_GeometryFilter
 
                 newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
                 if(myStoreMapping)
-                  myVTK2ObjIds.push_back(cellId);
+                  InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
                 outputCD->CopyData(cd,cellId,newCellId);
               }
               else
-                BuildArcedPolygon(cellId,input,output);
+                BuildArcedPolygon(cellId,input,output,aDimension2VTK2ObjIds);
               break;
             }
             case VTK_QUADRATIC_TETRA: {
@@ -750,7 +753,7 @@ VTKViewer_GeometryFilter
 
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
               outputCD->CopyData(cd,cellId,newCellId);
 
@@ -764,7 +767,7 @@ VTKViewer_GeometryFilter
 
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
               outputCD->CopyData(cd,cellId,newCellId);
 
@@ -778,7 +781,7 @@ VTKViewer_GeometryFilter
 
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
               outputCD->CopyData(cd,cellId,newCellId);
 
@@ -792,7 +795,7 @@ VTKViewer_GeometryFilter
 
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
               outputCD->CopyData(cd,cellId,newCellId);
 
@@ -811,7 +814,7 @@ VTKViewer_GeometryFilter
               aNewPts[5] = pts[8];
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
               outputCD->CopyData(cd,cellId,newCellId);
 
               //---------------------------------------------------------------
@@ -824,7 +827,7 @@ VTKViewer_GeometryFilter
               aNewPts[5] = pts[11];
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
               outputCD->CopyData(cd,cellId,newCellId);
 
               //---------------------------------------------------------------
@@ -840,7 +843,7 @@ VTKViewer_GeometryFilter
               aNewPts[7] = pts[12];
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
               outputCD->CopyData(cd,cellId,newCellId);
 
               //---------------------------------------------------------------
@@ -855,7 +858,7 @@ VTKViewer_GeometryFilter
               aNewPts[7] = pts[7];
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
               outputCD->CopyData(cd,cellId,newCellId);
 
               //---------------------------------------------------------------
@@ -870,7 +873,7 @@ VTKViewer_GeometryFilter
               aNewPts[7] = pts[6];
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
               outputCD->CopyData(cd,cellId,newCellId);
               break;
             }
@@ -891,7 +894,7 @@ VTKViewer_GeometryFilter
 
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
               outputCD->CopyData(cd,cellId,newCellId);
 
@@ -907,7 +910,7 @@ VTKViewer_GeometryFilter
 
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
               outputCD->CopyData(cd,cellId,newCellId);
 
@@ -923,7 +926,7 @@ VTKViewer_GeometryFilter
 
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
               outputCD->CopyData(cd,cellId,newCellId);
 
@@ -939,7 +942,7 @@ VTKViewer_GeometryFilter
 
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
               outputCD->CopyData(cd,cellId,newCellId);
 
@@ -955,7 +958,7 @@ VTKViewer_GeometryFilter
 
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
               outputCD->CopyData(cd,cellId,newCellId);
 
@@ -971,7 +974,7 @@ VTKViewer_GeometryFilter
 
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
               outputCD->CopyData(cd,cellId,newCellId);
 
@@ -991,7 +994,7 @@ VTKViewer_GeometryFilter
 
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
               outputCD->CopyData(cd,cellId,newCellId);
 
@@ -1005,7 +1008,7 @@ VTKViewer_GeometryFilter
 
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
               outputCD->CopyData(cd,cellId,newCellId);
 
@@ -1019,7 +1022,7 @@ VTKViewer_GeometryFilter
 
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
               outputCD->CopyData(cd,cellId,newCellId);
 
@@ -1033,7 +1036,7 @@ VTKViewer_GeometryFilter
 
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
               outputCD->CopyData(cd,cellId,newCellId);
 
@@ -1050,7 +1053,7 @@ VTKViewer_GeometryFilter
 
               newCellId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
               if(myStoreMapping)
-                myVTK2ObjIds.push_back(cellId);
+                InsertId( cellId, aCellType, myVTK2ObjIds, aDimension2VTK2ObjIds );
 
               outputCD->CopyData(cd,cellId,newCellId);
 
@@ -1078,9 +1081,61 @@ VTKViewer_GeometryFilter
     delete [] cellVis;
   }
 
+  // to sort myVTK2ObjIds vector by cell dimension (ascending)
+  if( myStoreMapping && !aDimension2VTK2ObjIds.empty() )
+  {
+    myVTK2ObjIds.clear();
+    for( vtkIdType aDimension = 0; aDimension <= 2; aDimension++ )
+    {
+      TMapOfVectorId::const_iterator anIter = aDimension2VTK2ObjIds.find( aDimension );
+      if( anIter != aDimension2VTK2ObjIds.end() )
+      {
+        const TVectorId& aCellIds = anIter->second;
+        TVectorId::const_iterator anIdIter, anIdIterEnd = aCellIds.end();
+        for( anIdIter = aCellIds.begin(); anIdIter != anIdIterEnd; anIdIter++ )
+        {
+          const vtkIdType aCellId = *anIdIter;
+          myVTK2ObjIds.push_back( aCellId );
+        }
+      }
+    }
+  }
+
   return 1;
 }
 
+void
+VTKViewer_GeometryFilter
+::InsertId( const vtkIdType theCellId,
+            const vtkIdType theCellType,
+            TVectorId& theVTK2ObjIds,
+            TMapOfVectorId& theDimension2VTK2ObjIds )
+{
+  theVTK2ObjIds.push_back( theCellId );
+
+  int aDimension = 0;
+  switch( theCellType )
+  {
+    case VTK_VERTEX:
+    case VTK_POLY_VERTEX:
+      aDimension = 0;
+      break;
+    case VTK_LINE:
+    case VTK_POLY_LINE:
+      aDimension = 1;
+      break;
+    case VTK_TRIANGLE:
+    case VTK_TRIANGLE_STRIP:
+    case VTK_POLYGON:
+    case VTK_PIXEL:
+    case VTK_QUAD:
+      aDimension = 2;
+      break;
+  }
+
+  TVectorId& aCellIds = theDimension2VTK2ObjIds[ aDimension ];
+  aCellIds.push_back( theCellId );
+}
 
 void
 VTKViewer_GeometryFilter
@@ -1147,7 +1202,11 @@ vtkIdType VTKViewer_GeometryFilter::GetElemObjId( int theVtkID )
 }
 
 
-void VTKViewer_GeometryFilter::BuildArcedPolygon(vtkIdType cellId, vtkUnstructuredGrid* input, vtkPolyData *output, bool triangulate){
+void VTKViewer_GeometryFilter::BuildArcedPolygon(vtkIdType cellId,
+                                                 vtkUnstructuredGrid* input,
+                                                 vtkPolyData *output,
+                                                 TMapOfVectorId& theDimension2VTK2ObjIds,
+                                                 bool triangulate){
   vtkIdType aCellType = VTK_POLYGON;
   vtkIdType *aNewPoints = NULL;
   vtkIdType aNbPoints = 0;
@@ -1281,7 +1340,7 @@ void VTKViewer_GeometryFilter::BuildArcedPolygon(vtkIdType cellId, vtkUnstructur
       aTriangleId = output->InsertNextCell(aCellType,numFacePts,aNewPts);
 
       if(myStoreMapping)
-        myVTK2ObjIds.push_back(cellId);
+        InsertId( cellId, aCellType, myVTK2ObjIds, theDimension2VTK2ObjIds );
       outputCD->CopyData(cd,cellId,aTriangleId);
     }
     pts->Delete();
@@ -1298,7 +1357,7 @@ void VTKViewer_GeometryFilter::BuildArcedPolygon(vtkIdType cellId, vtkUnstructur
     outputCD->CopyData(cd,cellId,newCellId);
 
     if(myStoreMapping)
-      myVTK2ObjIds.push_back(cellId);
+      InsertId( cellId, aCellType, myVTK2ObjIds, theDimension2VTK2ObjIds );
   }
 
   if (aNewPoints)

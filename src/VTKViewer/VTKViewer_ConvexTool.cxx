@@ -21,6 +21,7 @@
 //
 
 #include "VTKViewer_ConvexTool.h"
+#include "VTKViewer_GeometryFilter.h"
 
 #include <set>
 #include <map>
@@ -198,6 +199,7 @@ VTKViewer_Triangulator
           vtkCellData* theOutputCD,
           int theStoreMapping,
           std::vector<vtkIdType>& theVTK2ObjIds,
+          std::map< vtkIdType, std::vector<vtkIdType> >& theDimension2VTK2ObjIds,
           bool theIsCheckConvex)
 {
   vtkPoints *aPoints = InitPoints(theInput, theCellId);
@@ -577,7 +579,7 @@ VTKViewer_Triangulator
       int aNbPoints = aConnectivities.size();
       vtkIdType aNewCellId = theOutput->InsertNextCell(VTK_POLYGON,aNbPoints,&aConnectivities[0]);
       if(theStoreMapping)
-        theVTK2ObjIds.push_back(theCellId);
+        VTKViewer_GeometryFilter::InsertId( theCellId, VTK_POLYGON, theVTK2ObjIds, theDimension2VTK2ObjIds );
       theOutputCD->CopyData(thInputCD,theCellId,aNewCellId);
     }
   }

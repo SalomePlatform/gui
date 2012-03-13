@@ -27,6 +27,7 @@
 
 #include <vtkGeometryFilter.h>
 
+#include <map>
 #include <vector>
 
 #ifdef WIN32
@@ -108,6 +109,13 @@ public:
   virtual void   SetQuadraticArcAngle(vtkFloatingPointType theMaxAngle);
   virtual vtkFloatingPointType GetQuadraticArcAngle() const;
 
+  typedef std::vector<vtkIdType> TVectorId;
+  typedef std::map<vtkIdType, TVectorId> TMapOfVectorId;
+
+  static void InsertId( const vtkIdType theCellId,
+                        const vtkIdType theCellType,
+                        TVectorId& theVTK2ObjIds,
+                        TMapOfVectorId& theDimension2VTK2ObjIds );
 
 protected:
   /*! \fn VTKViewer_GeometryFilter();
@@ -129,11 +137,12 @@ protected:
   int UnstructuredGridExecute (vtkDataSet *, vtkPolyData *, vtkInformation *);
 
 
-  void BuildArcedPolygon(vtkIdType cellId, vtkUnstructuredGrid* input, vtkPolyData *output, bool triangulate = false);
+  void BuildArcedPolygon(vtkIdType cellId,
+                         vtkUnstructuredGrid* input,
+                         vtkPolyData *output,
+                         TMapOfVectorId& theDimension2VTK2ObjIds,
+                         bool triangulate = false);
     
-private:
-  typedef std::vector<vtkIdType> TVectorId;
-
 private:
   TVectorId myVTK2ObjIds;
   int       myShowInside;

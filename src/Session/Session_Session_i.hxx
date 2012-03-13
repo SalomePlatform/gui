@@ -60,6 +60,9 @@ public:
   //! Get session state
   SALOME::StatSession GetStatSession();
 
+  //! Shutdown session
+  void Shutdown();
+
   //! Register the servant to Naming Service
   void NSregister();
 
@@ -89,6 +92,7 @@ protected:
   int _runningStudies ;
   CORBA::ORB_var _orb;
   PortableServer::POA_var _poa;
+  bool _isShuttingDown;
 };
 
 #endif

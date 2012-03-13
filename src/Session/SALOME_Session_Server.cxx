@@ -515,7 +515,8 @@ int main( int argc, char **argv )
     _GUIMutex.unlock();
   }
 
-  bool shutdown = false;
+  bool shutdownAll = false;
+  bool shutdownSession = false;
   if ( !result ) {
     // Launch GUI activator
     if ( isGUI ) {
@@ -541,6 +542,17 @@ int main( int argc, char **argv )
 
       _SessionMutex.unlock();
 
+      // Session might be shutdowning here, check status
+      CORBA::Object_var obj = _NS->Resolve( "/Kernel/Session" );
+      SALOME::Session_var session = SALOME::Session::_narrow( obj ) ;
+      ASSERT ( ! CORBA::is_nil( session ) );
+      SALOME::StatSession stat = session->GetStatSession();
+      shutdownSession = stat.state == SALOME::shutdown;
+      if ( shutdownSession ) {
+	_SessionMutex.lock(); // lock mutex before leaving loop - it will be unlocked later
+	break;
+      }
+
       // SUIT_Session creation
       aGUISession = new SALOME_Session();
 
@@ -561,24 +573,33 @@ int main( int argc, char **argv )
 
         if ( splash )
           splash->finish( aGUIApp->desktop() );
-          
+	
         result = _qappl.exec();
         
         splash = 0;
-
-        if ( result == SUIT_Session::NORMAL ) { // desktop is closed by user from GUI
-          shutdown = aGUISession->exitFlags();
-          if(shutdown)
-            {
-              _SessionMutex.lock();
-              break;
-            }
-        }
+	
+        if ( result == SUIT_Session::NORMAL ) {
+	  // desktop is explicitly closed by user from GUI
+	  // exit flags says if it's necessary to shutdown all servers
+	  // all session server only
+          shutdownAll = aGUISession->exitFlags();
+	}
+	else {
+	  // desktop might be closed from:
+	  // - StopSesion() /temporarily/ or
+	  // - Shutdown() /permanently/
+	  stat = session->GetStatSession();
+	  shutdownSession = stat.state == SALOME::shutdown;
+	}
+	if ( shutdownAll || shutdownSession ) {
+	  _SessionMutex.lock(); // lock mutex before leaving loop - it will be unlocked later
+	  break;
+	}
       }
 
       delete aGUISession;
       aGUISession = 0;
-
+      
       // Prepare _GUIMutex for a new GUI activation
       _SessionMutex.lock();
     }
@@ -587,7 +608,7 @@ int main( int argc, char **argv )
   // unlock Session mutex
   _SessionMutex.unlock();
   
-  if ( shutdown )
+  if ( shutdownAll )
     shutdownServers( _NS );
 
   if ( myServerLauncher )
@@ -609,7 +630,7 @@ int main( int argc, char **argv )
     // cpp continer is launched in the embedded mode
     //////////////////////////////////////////////////////////////
     // std::cerr << "Caught unexpected exception on shutdown : ignored !!" << std::endl;
-    if ( shutdown )
+    if ( shutdownAll )
       killOmniNames();
     abort(); //abort program to avoid deadlock in destructors or atexit when shutdown has been interrupted
   }
@@ -621,7 +642,7 @@ int main( int argc, char **argv )
   //PyRun_SimpleString("orb.destroy()");
   Py_Finalize();
 
-  if ( shutdown )
+  if ( shutdownAll )
     killOmniNames();
 
   MESSAGE( "Salome_Session_Server:endofserver" );

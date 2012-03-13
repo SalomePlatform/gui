@@ -69,6 +69,7 @@ SALOME_Session_i::SALOME_Session_i(int argc,
   _GUIMutex = GUIMutex;
   _GUILauncher = GUILauncher;
   _NS = new SALOME_NamingService(_orb);
+  _isShuttingDown = false;
   //MESSAGE("constructor end");
 }
 
@@ -131,8 +132,8 @@ void SALOME_Session_i::GetInterface()
   if ( !SUIT_Session::session() )
   {
     _GUILauncher->wakeAll();
-    MESSAGE("SALOME_Session_i::GetInterface() called, starting GUI...")
-      }
+    MESSAGE("SALOME_Session_i::GetInterface() called, starting GUI...");
+  }
 }
 
 /*!
@@ -142,19 +143,35 @@ class CloseEvent : public SALOME_Event
 {
 public:
   virtual void Execute() {
-    SUIT_Session* session = SUIT_Session::session();
-    session->closeSession( SUIT_Session::DONT_SAVE );
-    //if ( SUIT_Application::getDesktop() )
-    //  QAD_Application::getDesktop()->closeDesktop( true );
+    if ( SUIT_Session::session() )
+      SUIT_Session::session()->closeSession( SUIT_Session::DONT_SAVE );
   }
 };
 
 /*!
-  Processes event to close session
+  Stop session (close all GUI windows)
 */
 void SALOME_Session_i::StopSession()
 {
-  ProcessVoidEvent( new CloseEvent() );
+  _GUIMutex->lock();
+  _GUIMutex->unlock();
+  if ( SUIT_Session::session() ) {
+    ProcessVoidEvent( new CloseEvent() );
+  }
+}
+
+//! Shutdown session
+void SALOME_Session_i::Shutdown()
+{
+  _GUIMutex->lock();
+  _isShuttingDown = true;
+  _GUIMutex->unlock();
+  if ( SUIT_Session::session() ) {
+    ProcessVoidEvent( new CloseEvent() );
+  }
+  else {
+    _GUILauncher->wakeAll();
+  }
 }
 
 /*!
@@ -182,16 +199,19 @@ SALOME::StatSession SALOME_Session_i::GetStatSession()
       _runningStudies = SUIT_Session::session()->activeApplication()->getNbStudies();
   }
 
-  _GUIMutex->unlock();
-
   // getting stat info
   SALOME::StatSession_var myStats = new SALOME::StatSession ;
   if (_runningStudies)
     myStats->state = SALOME::running ;
+  else if (_isShuttingDown)
+    myStats->state = SALOME::shutdown ;
   else
     myStats->state = SALOME::asleep ;
   myStats->runningStudies = _runningStudies ;
   myStats->activeGUI = _isGUI ;
+
+  _GUIMutex->unlock();
+
   return myStats._retn() ;
 }
 

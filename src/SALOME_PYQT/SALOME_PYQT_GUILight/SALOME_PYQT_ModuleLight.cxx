@@ -2621,7 +2621,7 @@ void SALOME_PYQT_ModuleLight::openEvent(QStringList theListOfFiles, bool &opened
 #if SIP_VERSION < 0x040800
   PyObjWrapper sipList( sipBuildResult( 0, "M", theList, sipClass_QStringList) );
 #else
-  PyObjWrapper sipList( sipBuildResult( 0, "D", theList,  sipType_QStringList , NULL) );
+  PyObjWrapper sipList( sipBuildResult( 0, "D", theList, sipType_QStringList, NULL ) );
 #endif
   if ( PyObject_HasAttrString(myModule , (char*)"openFiles") ) {
     PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"openFiles",
@@ -2917,4 +2917,212 @@ CAM_DataModel* SALOME_PYQT_ModuleLight::createDataModel()
 PyObject* SALOME_PYQT_ModuleLight::getPythonModule()
 {
   return myModule;
+}
+
+bool SALOME_PYQT_ModuleLight::isDraggable( const SUIT_DataObject* what ) const
+{
+  MESSAGE("SALOME_PYQT_ModuleLight::isDraggable()");
+  // perform synchronous request to Python event dispatcher
+  bool draggable = false;
+  class IsDraggableEvent: public PyInterp_LockRequest
+  {
+  public:
+    IsDraggableEvent(PyInterp_Interp*          _py_interp,
+		     SALOME_PYQT_ModuleLight*  _obj,
+		     LightApp_DataObject*      _data_object,
+		     bool&                     _is_draggable )
+      : PyInterp_LockRequest( _py_interp, 0, true ), // this request should be processed synchronously (sync == true)
+        myObj( _obj ) ,
+        myDataObject( _data_object ),
+        myIsDraggable( _is_draggable ) {}
+  protected:
+    virtual void execute()
+    {
+      myIsDraggable = myObj->isDraggableEvent( myDataObject );
+    }
+
+  private:
+    SALOME_PYQT_ModuleLight* myObj;
+    LightApp_DataObject*     myDataObject;
+    bool&                    myIsDraggable;
+  };
+
+  const LightApp_DataObject* data_object = dynamic_cast<const LightApp_DataObject*>( what );
+							      
+  // Posting the request only if dispatcher is not busy!
+  // Executing the request synchronously
+  if ( !PyInterp_Dispatcher::Get()->IsBusy() )
+    PyInterp_Dispatcher::Get()->Exec( new IsDraggableEvent( myInterp,
+							    const_cast<SALOME_PYQT_ModuleLight*>( this ),
+							    const_cast<LightApp_DataObject*>( data_object ),
+							    draggable ) );
+  return draggable;
+}
+
+bool SALOME_PYQT_ModuleLight::isDraggableEvent( LightApp_DataObject* what )
+{
+  MESSAGE("SALOME_PYQT_ModuleLight::isDraggableEvent()");
+
+  bool draggable = false;
+
+  // Python interpreter should be initialized and Python module should be
+  // import first
+  if ( !myInterp || !myModule || !what )
+    return draggable;
+
+  if ( PyObject_HasAttrString(myModule , (char*)"isDraggable") ) {
+    PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"isDraggable",
+					   (char*)"s", what->entry().toLatin1().constData() ) );
+    if( !res || !PyBool_Check( res )) {
+      PyErr_Print();
+      draggable = false;
+    }
+    else{
+      draggable = PyObject_IsTrue( res );
+    }
+  }
+
+  return draggable;
+}
+
+bool SALOME_PYQT_ModuleLight::isDropAccepted( const SUIT_DataObject* where ) const
+{
+  MESSAGE("SALOME_PYQT_ModuleLight::isDropAccepted()");
+  // perform synchronous request to Python event dispatcher
+  bool dropAccepted = false;
+  class IsDropAcceptedEvent: public PyInterp_LockRequest
+  {
+  public:
+    IsDropAcceptedEvent(PyInterp_Interp*          _py_interp,
+			SALOME_PYQT_ModuleLight*  _obj,
+			LightApp_DataObject*      _data_object,
+			bool&                     _is_drop_accepted )
+      : PyInterp_LockRequest( _py_interp, 0, true ), // this request should be processed synchronously (sync == true)
+        myObj( _obj ) ,
+        myDataObject( _data_object ),
+        myIsDropAccepted( _is_drop_accepted ) {}
+  protected:
+    virtual void execute()
+    {
+      myIsDropAccepted = myObj->isDropAcceptedEvent( myDataObject );
+    }
+
+  private:
+    SALOME_PYQT_ModuleLight* myObj;
+    LightApp_DataObject*     myDataObject;
+    bool&                    myIsDropAccepted;
+  };
+  
+  const LightApp_DataObject* data_object = dynamic_cast<const LightApp_DataObject*>( where );
+							      
+  // Posting the request only if dispatcher is not busy!
+  // Executing the request synchronously
+  if ( !PyInterp_Dispatcher::Get()->IsBusy() )
+    PyInterp_Dispatcher::Get()->Exec( new IsDropAcceptedEvent( myInterp,
+							       const_cast<SALOME_PYQT_ModuleLight*>( this ),
+							       const_cast<LightApp_DataObject*>( data_object ),
+							       dropAccepted ) );
+  return dropAccepted;
+}
+
+bool SALOME_PYQT_ModuleLight::isDropAcceptedEvent( LightApp_DataObject* where )
+{
+  MESSAGE("SALOME_PYQT_ModuleLight::isDropAcceptedEvent()");
+
+  bool dropAccepted = false;
+
+  // Python interpreter should be initialized and Python module should be
+  // import first
+  if ( !myInterp || !myModule || !where )
+    return dropAccepted;
+
+  if ( PyObject_HasAttrString(myModule , (char*)"isDropAccepted") ) {
+    PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"isDropAccepted",
+					   (char*)"s", where->entry().toLatin1().constData() ) );
+    if( !res || !PyBool_Check( res )) {
+      PyErr_Print();
+      dropAccepted = false;
+    }
+    else{
+      dropAccepted = PyObject_IsTrue( res );
+    }
+  }
+
+  return dropAccepted;
+}
+
+void SALOME_PYQT_ModuleLight::dropObjects( const DataObjectList& what, SUIT_DataObject* where,
+					   const int row, Qt::DropAction action )
+{
+  MESSAGE("SALOME_PYQT_ModuleLight::dropObjects()");
+  // perform synchronous request to Python event dispatcher
+  class DropObjectsEvent: public PyInterp_LockRequest
+  {
+  public:
+    DropObjectsEvent(PyInterp_Interp*          _py_interp,
+		     SALOME_PYQT_ModuleLight*  _obj,
+		     const DataObjectList&     _what,
+		     SUIT_DataObject*          _where,
+		     const int                 _row,
+		     Qt::DropAction            _action )
+      : PyInterp_LockRequest( _py_interp, 0, true ), // this request should be processed synchronously (sync == true)
+        myObj( _obj ) ,
+        myWhat( _what ),
+	myWhere( _where ),
+	myRow ( _row ),
+	myAction ( _action ){}
+  protected:
+    virtual void execute()
+    {
+      myObj->dropObjectsEvent( myWhat, myWhere, myRow, myAction );
+    }
+
+  private:
+    SALOME_PYQT_ModuleLight* myObj;
+    DataObjectList           myWhat;
+    SUIT_DataObject*         myWhere;
+    int                      myRow;
+    Qt::DropAction           myAction;
+  };
+  
+  // Posting the request only if dispatcher is not busy!
+  // Executing the request synchronously
+  if ( !PyInterp_Dispatcher::Get()->IsBusy() )
+    PyInterp_Dispatcher::Get()->Exec( new DropObjectsEvent( myInterp, this, what, where, row, action ) );
+}
+
+void SALOME_PYQT_ModuleLight::dropObjectsEvent( const DataObjectList& what, SUIT_DataObject* where,
+						const int row, Qt::DropAction action )
+{
+  MESSAGE("SALOME_PYQT_ModuleLight::dropObjectsEvent()");
+  // Python interpreter should be initialized and Python module should be
+  // import first
+  if ( !myInterp || !myModule || what.isEmpty() || !where )
+    return;
+
+  QStringList* theList = new QStringList();
+
+  LightApp_DataObject* whereObject = dynamic_cast<LightApp_DataObject*>( where );
+  if ( !whereObject ) return;
+  
+  for ( int i = 0; i < what.count(); i++ ) {
+    LightApp_DataObject* dataObject = dynamic_cast<LightApp_DataObject*>( what[i] );
+    if ( dataObject ) theList->append( dataObject->entry() );
+  }
+
+#if SIP_VERSION < 0x040800
+  PyObjWrapper sipList( sipBuildResult( 0, "M", theList, sipClass_QStringList) );
+#else
+  PyObjWrapper sipList( sipBuildResult( 0, "D", theList, sipType_QStringList, NULL) );
+#endif
+  if ( PyObject_HasAttrString(myModule, (char*)"dropObjects") ) {
+    PyObjWrapper res( PyObject_CallMethod( myModule, (char*)"dropObjects", (char*)"Osii",
+					   sipList.get(),
+					   whereObject->entry().toLatin1().constData(),
+					   row, action ) );
+    
+    if( !res ) {
+      PyErr_Print();
+    }
+  }
 }

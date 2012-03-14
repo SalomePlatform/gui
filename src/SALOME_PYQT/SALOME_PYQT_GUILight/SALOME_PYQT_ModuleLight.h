@@ -159,6 +159,11 @@ public:
   /*Access to the underlying Python module object */
   PyObject*                 getPythonModule();
 
+  /*Drag and drop support*/
+  virtual bool              isDraggable( const SUIT_DataObject* ) const;
+  virtual bool              isDropAccepted( const SUIT_DataObject* ) const;
+  virtual void              dropObjects( const DataObjectList&, SUIT_DataObject*,
+					 const int, Qt::DropAction );
 
 public slots:
   virtual bool               activateModule( SUIT_Study* );
@@ -203,6 +208,11 @@ private:
   void                       saveEvent(QStringList& theListOfFiles);
   void                       dumpEvent(QStringList& theListOfFiles);
   void                       openEvent(QStringList theListOfFiles, bool& opened);
+  
+  bool                       isDraggableEvent( LightApp_DataObject* );
+  bool                       isDropAcceptedEvent( LightApp_DataObject* );
+  void                       dropObjectsEvent( const DataObjectList&, SUIT_DataObject*,
+					       const int, Qt::DropAction );
 
   SALOME_PYQT_DataObjectLight* findObject(const QString& entry);
 

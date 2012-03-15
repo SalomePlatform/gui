@@ -159,10 +159,8 @@ extern "C" SALOMEAPP_EXPORT SUIT_Application* createApplication()
 SalomeApp_Application::SalomeApp_Application()
   : LightApp_Application()
 {
-  connect( desktop(), SIGNAL( message( const QString& ) ),
-           this,      SLOT( onDesktopMessage( const QString& ) ) );
   connect( desktop(), SIGNAL( windowActivated( SUIT_ViewWindow* ) ),
-           this,      SLOT( onWindowActivated( SUIT_ViewWindow* ) ) );
+           this,      SLOT( onWindowActivated( SUIT_ViewWindow* ) ), Qt::UniqueConnection );
 
   setNoteBook(0);
 }
@@ -354,15 +352,10 @@ void SalomeApp_Application::createActions()
 void SalomeApp_Application::setDesktop( SUIT_Desktop* desk )
 {
   SUIT_Desktop* prev = desktop();
-  if ( prev == desk )
-    return;
 
   LightApp_Application::setDesktop( desk );
 
-  if ( desk != 0 ) {
-    connect( desk, SIGNAL( message( const QString& ) ),
-             this, SLOT( onDesktopMessage( const QString& ) ), Qt::UniqueConnection);
-
+  if ( desk ) {
     connect( desk, SIGNAL( windowActivated( SUIT_ViewWindow* ) ),
              this, SLOT( onWindowActivated( SUIT_ViewWindow* ) ), Qt::UniqueConnection );
   }
@@ -1594,24 +1587,6 @@ bool SalomeApp_Application::checkDataObject(LightApp_DataObject* theObj)
   return false;
 }
 
-/*! Process standard messages from desktop */
-void SalomeApp_Application::onDesktopMessage( const QString& message )
-{
-  if ( message.toLower() == "updateobjectbrowser" ||
-       message.toLower() == "updateobjbrowser" ) {
-    // update object browser
-    updateObjectBrowser();
-  }
-  if ( message.toLower().startsWith( "preferences" ) ) {
-    // preferences changed: should be given as "preferences:<section>:<name>:<value>",
-    // for example "preferences:Study:multi_file_dump:true"
-    QStringList data = message.split( ":" );
-    if ( data.count() > 3 ) {
-      resourceMgr()->setValue( data[1], data[2], data[3] );
-    }
-  }
-}
-
 /*!
   Opens other study into active Study. If Study is empty - creates it.
   \param theName - name of study
@@ -1744,7 +1719,8 @@ void SalomeApp_Application::onExtAction()
 /*!
  * Called when window activated
  */
-void SalomeApp_Application::onWindowActivated( SUIT_ViewWindow* theViewWindow ) {
+void SalomeApp_Application::onWindowActivated( SUIT_ViewWindow* theViewWindow )
+{
   SUIT_DataBrowser* anOB = objectBrowser();
   if( !anOB )
     return;
@@ -1764,7 +1740,8 @@ void SalomeApp_Application::onWindowActivated( SUIT_ViewWindow* theViewWindow ) 
   Update visibility state of given objects
  */
 void SalomeApp_Application::updateVisibilityState( DataObjectList& theList,
-                                                   SUIT_ViewModel*  theViewModel ) {
+                                                   SUIT_ViewModel*  theViewModel )
+{
   LightApp_Study* aStudy = dynamic_cast<LightApp_Study*>(activeStudy());
 
   if(!theViewModel)
@@ -1802,7 +1779,8 @@ void SalomeApp_Application::updateVisibilityState( DataObjectList& theList,
 /*!
   Called then view manager removed
 */
-void SalomeApp_Application::onViewManagerRemoved( SUIT_ViewManager* ) {
+void SalomeApp_Application::onViewManagerRemoved( SUIT_ViewManager* )
+{
   ViewManagerList lst;
   viewManagers(lst);
   if( lst.count() == 1) { // in case if closed last view window
@@ -1817,7 +1795,8 @@ void SalomeApp_Application::onViewManagerRemoved( SUIT_ViewManager* ) {
   \param entry entry of the object
   \brief Return \c true if object can be renamed
 */
-bool SalomeApp_Application::renameAllowed( const QString& entry) const {
+bool SalomeApp_Application::renameAllowed( const QString& entry) const
+{
   return entry.startsWith( tr( "SAVE_POINT_DEF_NAME") );
 }
 
@@ -1827,8 +1806,8 @@ bool SalomeApp_Application::renameAllowed( const QString& entry) const {
   \param name new name of the object
   \brief Return \c true if rename operation finished successfully, \c false otherwise.
 */
-bool SalomeApp_Application::renameObject( const QString& entry, const QString& name ) {
-
+bool SalomeApp_Application::renameObject( const QString& entry, const QString& name )
+{
   SalomeApp_Study* aStudy = dynamic_cast<SalomeApp_Study*>( activeStudy() );
 
   int savePoint = ::getSelectedSavePoint( selectionMgr() );

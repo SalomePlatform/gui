@@ -3384,6 +3384,19 @@ void LightApp_Application::createEmptyStudy()
   }
 }
 
+/*!Set desktop:*/
+void LightApp_Application::setDesktop( SUIT_Desktop* desk )
+{
+  SUIT_Desktop* prev = desktop();
+
+  CAM_Application::setDesktop( desk );
+
+  if ( desk ) {
+    connect( desk, SIGNAL( message( const QString& ) ),
+             this, SLOT( onDesktopMessage( const QString& ) ), Qt::UniqueConnection );
+  }
+}
+
 /*!
   Activates module
   \param mod - module to be activated
@@ -3916,4 +3929,44 @@ bool LightApp_Application::renameAllowed( const QString& /*entry*/) const {
 */
 bool LightApp_Application::renameObject( const QString& entry, const QString& ) {
   return false;
+}
+
+/*! Process standard messages from desktop */
+void LightApp_Application::onDesktopMessage( const QString& message )
+{
+  const QString sectionSeparator = "/";
+
+  if ( message.toLower() == "updateobjectbrowser" ||
+       message.toLower() == "updateobjbrowser" ) {
+    // update object browser
+    updateObjectBrowser();
+  }
+  else {
+    QStringList data = message.split( sectionSeparator );
+    if ( data.count() > 1 ) {
+      QString msgType = data[0].trimmed();
+      LightApp_Module* sMod = 0;
+      CAM_Module* mod = module( msgType );
+      if ( !mod )
+	mod = module( moduleTitle( msgType ) );
+      if ( mod && mod->inherits( "LightApp_Module" ) )
+	sMod = (LightApp_Module*)mod;
+
+      if ( msgType.toLower() == "preferences" ) {
+	// requested preferences change: should be given as "preferences/<section>/<name>/<value>"
+	// for example "preferences/Study/multi_file_dump/true"
+	if ( data.count() > 3 ) {
+	  QString section = data[1].trimmed();
+	  QString param   = data[2].trimmed();
+	  QString value   = QStringList( data.mid(3) ).join( sectionSeparator );
+	  resourceMgr()->setValue( section, param, value );
+	}
+      }
+      else if ( sMod ) {
+	// received message for the module
+	QString msg = QStringList( data.mid(1) ).join( sectionSeparator );
+	sMod->message( msg );
+      }
+    }
+  }
 }

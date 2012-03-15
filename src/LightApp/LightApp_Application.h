@@ -142,6 +142,8 @@ public:
 
   virtual void                        createEmptyStudy();
 
+  virtual void                        setDesktop( SUIT_Desktop* );
+
   SUIT_Accel*                         accel() const;
 
   void                                setDefaultStudyName( const QString& theName );
@@ -233,6 +235,8 @@ protected slots:
 
   void                                onStylePreferences();
   void                                onFullScreen();
+
+  virtual void                        onDesktopMessage( const QString& );
 
 private slots:
   void                                onSelection();

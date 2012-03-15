@@ -87,6 +87,7 @@ public:
 
   virtual void                        selectionChanged();
   virtual void                        preferencesChanged( const QString&, const QString& );
+  virtual void                        message( const QString& );
 
   virtual void                        studyActivated() {};
 

@@ -298,6 +298,11 @@ void LightApp_Module::preferencesChanged( const QString&, const QString& )
 {
 }
 
+/*!NOT IMPLEMENTED*/
+void LightApp_Module::message( const QString& )
+{
+}
+
 /*!Gets application.*/
 LightApp_Application* LightApp_Module::getApp() const
 {

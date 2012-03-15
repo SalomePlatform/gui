@@ -130,7 +130,6 @@ protected slots:
   void                                onStudyCreated( SUIT_Study* );
   void                                onStudySaved( SUIT_Study* );
   void                                onStudyOpened( SUIT_Study* );
-  void                                onDesktopMessage( const QString& );
   void                                onStudyClosed( SUIT_Study* );
   
   void                                onViewManagerRemoved( SUIT_ViewManager* );

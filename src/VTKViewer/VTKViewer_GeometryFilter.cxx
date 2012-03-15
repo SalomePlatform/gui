@@ -649,7 +649,7 @@ VTKViewer_GeometryFilter
                 vtkCell *face = cell->GetFace(j);
                 input->GetCellNeighbors(cellId, face->PointIds, cellIds);
                 bool process = cellIds->GetNumberOfIds() <= 0 ? true : myAppendCoincident3D;
-                if ( process <= 0 || myShowInside ) {
+                if ( process || myShowInside ) {
                   face->Triangulate(0,lpts,coords);
                   for (i=0; i < lpts->GetNumberOfIds(); i+=3) {
                     aNewPts[0] = lpts->GetId(i);

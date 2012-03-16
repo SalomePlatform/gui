@@ -180,6 +180,9 @@ public:
 
   void            setMaximized( bool, bool = true );
   bool            isMaximized() const;
+  
+  void            setSketcherStyle( bool enable );
+  bool            isSketcherStyle() const;
 
   virtual QColor  backgroundColor() const;                      // obsolete
   virtual void    setBackgroundColor( const QColor& );          // obsolete
@@ -305,8 +308,9 @@ protected:
   bool                  myCursorIsHand;                 
   bool                  myDrawRect;           // set when a rect is used for selection or magnify 
   bool                  myEnableDrawMode;
-  bool                  myPaintersRedrawing;  // set to draw with external painters 
- 
+  bool                  myPaintersRedrawing;  // set to draw with external painters  
+  bool                  IsSketcherStyle;
+  
   QCursor               myCursor;
 
   double myCurScale;

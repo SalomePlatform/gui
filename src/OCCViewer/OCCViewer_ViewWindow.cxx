@@ -227,6 +227,8 @@ OCCViewer_ViewWindow::OCCViewer_ViewWindow( SUIT_Desktop*     theDesktop,
   myScalingDlg = 0;
   mySetRotationPointDlg = 0;
   myRectBand = 0;
+  
+  IsSketcherStyle = false;
 
   mypSketcher = 0;
   myCurSketch = -1;
@@ -815,8 +817,10 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent( QMouseEvent* theEvent )
     break;
 
   default:
-    if ( myRotationPointSelection )
+    if ( myRotationPointSelection || isSketcherStyle() )
+    {
       emit mouseMoving( this, theEvent );
+    }
     else
     {
       int aState = theEvent->modifiers();
@@ -2414,6 +2418,16 @@ void OCCViewer_ViewWindow::setMaximized(bool toMaximize, bool toSendSignal)
 bool OCCViewer_ViewWindow::isMaximized() const
 {
   return !(toolMgr()->action( MaximizedId )->text() == tr( "MNU_MAXIMIZE_VIEW" ));
+}
+
+void OCCViewer_ViewWindow::setSketcherStyle( bool enable )
+{ 
+  IsSketcherStyle = enable; 
+}
+
+bool OCCViewer_ViewWindow::isSketcherStyle() const 
+{ 
+  return IsSketcherStyle; 
 }
 
 

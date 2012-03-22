@@ -32,5 +32,6 @@
 
 #define GUI_VERSION_STR "@VERSION@"
 #define GUI_VERSION     @XVERSION@
+#define GUI_DEVELOPMENT @VERSION_DEV@
 
 #endif // __GUI_VERSION_H__

@@ -23,6 +23,7 @@ dist_admlocal_cmake_DATA = \
 FindCAS.cmake \
 FindOPENGL.cmake \
 FindQT4.cmake \
+UseQT4EXT.cmake \
 FindQWT.cmake \
 FindSIPPYQT.cmake \
 FindVTK.cmake \

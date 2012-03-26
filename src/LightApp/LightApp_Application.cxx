@@ -553,17 +553,27 @@ void LightApp_Application::createActions()
     IMapConstIterator<QString, QString > fileIt;
     for ( fileIt = helpData.begin(); fileIt != helpData.end(); fileIt++ ) {
       QString helpFileName = fileIt.key();
+      // remove all '//' occurances 
+      while ( helpFileName.contains( "//" ) )
+	helpFileName.replace( "//", "" );
+      // obtain submenus hierarchy if given
+      QStringList smenus = helpFileName.split( "/" );
+      helpFileName = smenus.last();
+      smenus.removeLast();
       QAction* a = createAction( id, helpFileName,
                                  resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false ),
                                  helpFileName, helpFileName,
                                  0, desk, false, this, SLOT( onHelpContentsModule() ) );
       a->setData( fileIt.value() );
-      if ( !helpSubMenu.isEmpty() ){
-        int helpSubMenuId = createMenu( helpSubMenu, helpMenu, -1, 0 );
-        createMenu( a, helpSubMenuId, -1 );
+      if ( !helpSubMenu.isEmpty() ) {
+	smenus.prepend( helpSubMenu );
       }
-      else
-        createMenu( a, helpMenu, -1, 0 );
+      // create sub-menus hierarchy
+      int menuId = helpMenu;
+      foreach ( QString subMenu, smenus ) {
+        menuId = createMenu( subMenu, menuId, -1, 0 );
+      }
+      createMenu( a, menuId, -1, 0 );
       id++;
     }
   }

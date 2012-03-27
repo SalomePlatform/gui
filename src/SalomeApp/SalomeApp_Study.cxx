@@ -423,7 +423,7 @@ bool SalomeApp_Study::createDocument( const QString& theStr )
 
   // initialize myStudyDS, read HDF file
   QString aName = newStudyName();
-  _PTR(Study) study ( SalomeApp_Application::studyMgr()->NewStudy( aName.toStdString() ) );
+  _PTR(Study) study ( SalomeApp_Application::studyMgr()->NewStudy( aName.toUtf8().data() ) );
   if ( !study )
     return false;
 
@@ -458,7 +458,7 @@ bool SalomeApp_Study::openDocument( const QString& theFileName )
   MESSAGE( "openDocument" );
 
   // initialize myStudyDS, read HDF file
-  _PTR(Study) study ( SalomeApp_Application::studyMgr()->Open( (char*) theFileName.toStdString().c_str() ) );
+  _PTR(Study) study ( SalomeApp_Application::studyMgr()->Open( theFileName.toUtf8().data() ) );
   if ( !study )
     return false;
 
@@ -510,7 +510,7 @@ bool SalomeApp_Study::loadDocument( const QString& theStudyName )
   MESSAGE( "loadDocument" );
 
   // obtain myStudyDS from StudyManager
-  _PTR(Study) study ( SalomeApp_Application::studyMgr()->GetStudyByName( (char*) theStudyName.toStdString().c_str() ) );
+  _PTR(Study) study ( SalomeApp_Application::studyMgr()->GetStudyByName( theStudyName.toUtf8().data() ) );
   if ( !study )
     return false;
 
@@ -588,8 +588,8 @@ bool SalomeApp_Study::saveDocumentAs( const QString& theFileName )
   bool isMultiFile = resMgr->booleanValue( "Study", "multi_file", false );
   bool isAscii = resMgr->booleanValue( "Study", "ascii_file", false );
   bool res = (isAscii ?
-    SalomeApp_Application::studyMgr()->SaveAsASCII( theFileName.toStdString(), studyDS(), isMultiFile ) :
-    SalomeApp_Application::studyMgr()->SaveAs     ( theFileName.toStdString(), studyDS(), isMultiFile ))
+    SalomeApp_Application::studyMgr()->SaveAsASCII( theFileName.toUtf8().data(), studyDS(), isMultiFile ) :
+    SalomeApp_Application::studyMgr()->SaveAs     ( theFileName.toUtf8().data(), studyDS(), isMultiFile ))
     && CAM_Study::saveDocumentAs( theFileName );
 
   res = res && saveStudyData(theFileName);
@@ -721,8 +721,8 @@ bool SalomeApp_Study::dump( const QString& theFileName,
   // Now dump SALOMEDS part that also involves SalomeApp_Engine in case if 
   // any light module is present in the current configuration
   QFileInfo aFileInfo( theFileName );
-  bool res = aStudy->DumpStudy( aFileInfo.absolutePath().toStdString(),
-				aFileInfo.baseName().toStdString(),
+  bool res = aStudy->DumpStudy( aFileInfo.absolutePath().toUtf8().data(),
+				aFileInfo.baseName().toUtf8().data(),
 				toPublish,
 				isMultiFile);
   if ( toSaveGUI )
@@ -786,7 +786,7 @@ void SalomeApp_Study::saveModuleData( QString theModuleName, QStringList theList
   for ( QStringList::Iterator it = theListOfFiles.begin(); it != theListOfFiles.end(); ++it ) {
     if ( (*it).isEmpty() )
       continue;
-    aListOfFiles[anIndex] = (*it).toStdString();
+    aListOfFiles[anIndex] = (*it).toUtf8().data();
     anIndex++;
   }
   SetListOfFiles(theModuleName.toStdString().c_str(), aListOfFiles);

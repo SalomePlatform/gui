@@ -158,7 +158,7 @@ Handle( V3d_View ) OCCViewer_ViewPort3d::setView( const Handle( V3d_View )& view
       oldView->View()->Deactivate();
     view->SetBackgroundColor( oldView->BackgroundColor() );
   }
-  
+
   if ( myDegenerated )
     view->SetDegenerateModeOn();
   else
@@ -317,7 +317,7 @@ void OCCViewer_ViewPort3d::updateBackground()
   if ( !myBackground.isValid() ) return;
 
   // VSR: Important note on below code.
-  // In OCCT (at least in version 6.5.2), things about the background drawing
+  // In OCCT (in version 6.5.2), things about the background drawing
   // are not straightforward and not clearly understandable:
   // - Horizontal gradient is drawn vertically (!), well ok, from top side to bottom one.
   // - Vertical gradient is drawn horizontally (!), from right side to left one (!!!).
@@ -330,42 +330,23 @@ void OCCViewer_ViewPort3d::updateBackground()
   //   (see V3d_View::SetBgGradientColors() function).
   // - Also, it is impossible to draw texture image above the gradiented background (only above
   //   single-colored).
-  // Well, all this is strange but we have to live with it.
+  // In OCCT 6.5.3 all above mentioned problems are fixed; so, above comment should be removed as soon
+  // as SALOME is migrated to OCCT 6.5.3. The same concerns #ifdef statements in the below code
   switch ( myBackground.mode() ) {
-  case Qtx::ImageBackground:
-    {
-      // VSR: Do not use this code until the bug is fixed - currently it is not possible to
-      // clear the background texture image as soon as it is once set to the viewer.
-      QString fileName;
-      int textureMode = myBackground.texture( fileName );
-      QFileInfo fi( fileName );
-      if ( !fileName.isEmpty() && fi.exists() ) {
-	// set texture image: file name and fill mode
-	switch ( textureMode ) {
-	case Qtx::CenterTexture:
-	  activeView()->SetBackgroundImage( fi.absoluteFilePath().toLatin1().constData(), Aspect_FM_CENTERED );
-	  break;
-	case Qtx::TileTexture:
-	  activeView()->SetBackgroundImage( fi.absoluteFilePath().toLatin1().constData(), Aspect_FM_TILED );
-	  break;
-	case Qtx::StretchTexture:
-	  activeView()->SetBackgroundImage( fi.absoluteFilePath().toLatin1().constData(), Aspect_FM_STRETCH );
-	  break;
-	default:
-	  break;
- 	}
-      }
-      break;
-    }
   case Qtx::ColorBackground:
     {
       QColor c = myBackground.color();
       if ( c.isValid() ) {
 	// Unset texture should be done here
 	// ...
-	// cancel gradient background (in OCC the only way is to set it to NONE type)
 	Quantity_Color qCol( c.red()/255., c.green()/255., c.blue()/255., Quantity_TOC_RGB );
+#if OCC_VERSION_LARGE > 0x06050200 // available since OCCT 6.5.3
+	activeView()->SetBgGradientStyle( Aspect_GFM_NONE ); // cancel gradient background
+	activeView()->SetBgImageStyle( Aspect_FM_NONE );     // cancel texture background
+#else
+	// cancel gradient background (in OCC before v6.5.3 the only way to do this is to set it to NONE type passing arbitrary colors as parameters)
 	activeView()->SetBgGradientColors( qCol, qCol, Aspect_GFM_NONE );
+#endif
 	// then change background color
 	activeView()->SetBackgroundColor( qCol );
 	// update viewer
@@ -384,24 +365,41 @@ void OCCViewer_ViewPort3d::updateBackground()
 	if ( !c2.isValid() ) c2 = c1;
 	Quantity_Color qCol1( c1.red()/255., c1.green()/255., c1.blue()/255., Quantity_TOC_RGB );
 	Quantity_Color qCol2( c2.red()/255., c2.green()/255., c2.blue()/255., Quantity_TOC_RGB );
+	activeView()->SetBgImageStyle( Aspect_FM_NONE );    // cancel texture background
 	switch ( type ) {
 	case OCCViewer_Viewer::HorizontalGradient:
-	  // in OCCT, to draw horizontal gradient it's necessary to use Aspect_GFM_VER type
+#if OCC_VERSION_LARGE > 0x06050200 // available since OCCT 6.5.3
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_HOR, Standard_True );
+#else
+	  // in OCCT before v6.5.3, to draw horizontal gradient it's necessary to use Aspect_GFM_VER type
 	  // and interchange the colors
 	  activeView()->SetBgGradientColors( qCol2, qCol1, Aspect_GFM_VER, Standard_True );
+#endif
 	  break;
 	case OCCViewer_Viewer::VerticalGradient:
-	  // in OCCT, to draw vertical gradient it's necessary to use Aspect_GFM_HOR type
+#if OCC_VERSION_LARGE > 0x06050200 // available since OCCT 6.5.3
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_VER, Standard_True );
+#else
+	  // in OCCT before v6.5.3, to draw vertical gradient it's necessary to use Aspect_GFM_HOR type
 	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_HOR, Standard_True );
+#endif
 	  break;
 	case OCCViewer_Viewer::Diagonal1Gradient:
-	  // in OCCT, to draw 1st dialognal gradient it's necessary to use Aspect_GFM_DIAG2 type
+#if OCC_VERSION_LARGE > 0x06050200 // available since OCCT 6.5.3
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_DIAG1, Standard_True );
+#else
+	  // in OCCT before v6.5.3, to draw 1st dialognal gradient it's necessary to use Aspect_GFM_DIAG2 type
 	  // and interchange the colors
 	  activeView()->SetBgGradientColors( qCol2, qCol1, Aspect_GFM_DIAG2, Standard_True );
+#endif
 	  break;
 	case OCCViewer_Viewer::Diagonal2Gradient:
-	  // in OCCT, to draw 2nd dialognal gradient it's necessary to use Aspect_GFM_DIAG1 type
+#if OCC_VERSION_LARGE > 0x06050200 // available since OCCT 6.5.3
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_DIAG2, Standard_True );
+#else
+	  // in OCCT before v6.5.3, to draw 2nd dialognal gradient it's necessary to use Aspect_GFM_DIAG1 type
 	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_DIAG1, Standard_True );
+#endif
 	  break;
 	case OCCViewer_Viewer::Corner1Gradient:
 	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_CORNER1, Standard_True );
@@ -429,6 +427,32 @@ void OCCViewer_ViewPort3d::updateBackground()
   default:
     break;
   }
+#if OCC_VERSION_LARGE > 0x06050200 // available since OCCT 6.5.3
+  // VSR: In OCCT before v6.5.3 below code can't be used because of very ugly bug - it has been impossible to
+  // clear the background texture image as soon as it was once set to the viewer.
+  if ( myBackground.isTextureShown() ) {
+    QString fileName;
+    int textureMode = myBackground.texture( fileName );
+    QFileInfo fi( fileName );
+    if ( !fileName.isEmpty() && fi.exists() ) {
+      // set texture image: file name and fill mode
+      switch ( textureMode ) {
+      case Qtx::CenterTexture:
+	activeView()->SetBackgroundImage( fi.absoluteFilePath().toLatin1().constData(), Aspect_FM_CENTERED );
+	break;
+      case Qtx::TileTexture:
+	activeView()->SetBackgroundImage( fi.absoluteFilePath().toLatin1().constData(), Aspect_FM_TILED );
+	break;
+      case Qtx::StretchTexture:
+	activeView()->SetBackgroundImage( fi.absoluteFilePath().toLatin1().constData(), Aspect_FM_STRETCH );
+	break;
+      default:
+	break;
+      }
+      activeView()->Update();
+    }
+  }
+#endif
 }
 
 /*!
@@ -518,7 +542,7 @@ void OCCViewer_ViewPort3d::pan( int dx, int dy )
 /*!
   Inits 'rotation' transformation. [ protected ]
 */
-void OCCViewer_ViewPort3d::startRotation( int x, int y, 
+void OCCViewer_ViewPort3d::startRotation( int x, int y,
                                           int theRotationPointType,
                                           const gp_Pnt& theSelectedPoint )
 {
@@ -526,27 +550,27 @@ void OCCViewer_ViewPort3d::startRotation( int x, int y,
     myDegenerated = activeView()->DegenerateModeIsOn();
     activeView()->SetDegenerateModeOn();
     if (myAnimate) activeView()->SetAnimationModeOn();
-    
+
     //double gx, gy, gz;
     //double gx = activeView()->gx;
     //activeView()->Gravity(gx,gy,gz);
-    
+
     switch ( theRotationPointType ) {
     case OCCViewer_ViewWindow::GRAVITY:
       activeView()->StartRotation( x, y, 0.45 );
       break;
     case OCCViewer_ViewWindow::SELECTED:
       sx = x; sy = y;
-      
+
       double X,Y;
       activeView()->Size(X,Y);
-      rx = Standard_Real(activeView()->Convert(X)); 
-      ry = Standard_Real(activeView()->Convert(Y)); 
-      
-      activeView()->Rotate( 0., 0., 0., 
-                            theSelectedPoint.X(),theSelectedPoint.Y(), theSelectedPoint.Z(), 
+      rx = Standard_Real(activeView()->Convert(X));
+      ry = Standard_Real(activeView()->Convert(Y));
+
+      activeView()->Rotate( 0., 0., 0.,
+                            theSelectedPoint.X(),theSelectedPoint.Y(), theSelectedPoint.Z(),
                             Standard_True );
-      
+
       Quantity_Ratio zRotationThreshold;
       zRotation = Standard_False;
       zRotationThreshold = 0.45;
@@ -567,7 +591,7 @@ void OCCViewer_ViewPort3d::startRotation( int x, int y,
 /*!
   Rotates the viewport. [ protected ]
 */
-void OCCViewer_ViewPort3d::rotate( int x, int y, 
+void OCCViewer_ViewPort3d::rotate( int x, int y,
                                    int theRotationPointType,
                                    const gp_Pnt& theSelectedPoint )
 {
@@ -579,7 +603,7 @@ void OCCViewer_ViewPort3d::rotate( int x, int y,
     case OCCViewer_ViewWindow::SELECTED:
       double dx, dy, dz;
       if( zRotation ) {
-        dz = atan2(Standard_Real(x)-rx/2., ry/2.-Standard_Real(y)) - 
+        dz = atan2(Standard_Real(x)-rx/2., ry/2.-Standard_Real(y)) -
           atan2(sx-rx/2.,ry/2.-sy);
         dx = dy = 0.;
       }
@@ -588,8 +612,8 @@ void OCCViewer_ViewPort3d::rotate( int x, int y,
         dy = (sy - Standard_Real(y)) * M_PI/ry;
         dz = 0.;
       }
-      
-      activeView()->Rotate( dx, dy, dz, 
+
+      activeView()->Rotate( dx, dy, dz,
                             theSelectedPoint.X(),theSelectedPoint.Y(), theSelectedPoint.Z(),
                             Standard_False );
       break;
@@ -695,8 +719,8 @@ void OCCViewer_ViewPort3d::rotateXY( double degrees )
   activeView()->Convert( x, y, X, Y, Z );
   activeView()->Rotate( 0, 0, degrees * M_PI / 180., X, Y, Z );
   emit vpTransformed( this );
-}  
-  
+}
+
 /*!
   Set axial scale to the view
 */
@@ -704,7 +728,7 @@ void OCCViewer_ViewPort3d::setAxialScale( double xScale, double yScale, double z
 {
   if ( activeView().IsNull() )
     return;
-  
+
   activeView()->SetAxialScale( xScale, yScale, zScale );
   emit vpTransformed( this );
 }
@@ -734,7 +758,7 @@ bool OCCViewer_ViewPort3d::setWindow( const Handle(V3d_View)& view )
   return !myWindow.IsNull();
 }
 
-void OCCViewer_ViewPort3d::attachWindow( const Handle(V3d_View)& view, 
+void OCCViewer_ViewPort3d::attachWindow( const Handle(V3d_View)& view,
                                          const Handle(Aspect_Window)& window)
 {
   if (!view.IsNull()) {
@@ -776,7 +800,7 @@ bool OCCViewer_ViewPort3d::synchronize( OCCViewer_ViewPort* view )
 {
   bool ok = false;
   OCCViewer_ViewPort3d* vp3d = qobject_cast<OCCViewer_ViewPort3d*>( view );
-  if ( vp3d ) { 
+  if ( vp3d ) {
     bool blocked = blockSignals( false );
     Handle(V3d_View) aView3d = getView();
     Handle(V3d_View) aRefView3d = vp3d->getView();
@@ -808,5 +832,5 @@ void OCCViewer_ViewPort3d::updateStaticTriedronVisibility() {
       }
       aView->Update();
     }
-  } 
+  }
 }

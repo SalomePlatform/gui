@@ -64,7 +64,7 @@ public:
   };
   
   static QString           Type() { return "OCCViewer"; }
-  static QString           backgroundData( QStringList&, QIntList& );
+  static QString           backgroundData( QStringList&, QIntList&, QIntList& );
 
   OCCViewer_Viewer( bool DisplayTrihedron = true);
   virtual ~OCCViewer_Viewer();

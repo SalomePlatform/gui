@@ -2000,6 +2000,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   QStringList     aValuesList;
   QList<QVariant> anIndicesList;
   QIntList        idList;
+  QIntList        txtList;
 
   // . Top-level "SALOME" preferences group <<start>>
   int salomeCat = pref->addPreference( tr( "PREF_CATEGORY_SALOME" ) );
@@ -2127,14 +2128,18 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   //  pref->setItemProperty( "columns", 2, bgGroup );
   aValuesList.clear();
   anIndicesList.clear();
-  QString formats = OCCViewer_Viewer::backgroundData( aValuesList, idList );
+  txtList.clear();
+  QString formats = OCCViewer_Viewer::backgroundData( aValuesList, idList, txtList );
   foreach( int gid, idList ) anIndicesList << gid;
   // .... -> 3D viewer background
   int bgId = pref->addPreference( tr( "PREF_3DVIEWER_BACKGROUND" ), bgGroup,
 				  LightApp_Preferences::Background, "OCCViewer", "background" );
   pref->setItemProperty( "gradient_names", aValuesList, bgId );
   pref->setItemProperty( "gradient_ids", anIndicesList, bgId );
-  pref->setItemProperty( "texture_enabled", false, bgId );
+  pref->setItemProperty( "texture_enabled", !txtList.isEmpty(), bgId );
+  pref->setItemProperty( "texture_center_enabled", (bool)txtList.contains( Qtx::CenterTexture ), bgId );
+  pref->setItemProperty( "texture_tile_enabled", (bool)txtList.contains( Qtx::TileTexture ), bgId );
+  pref->setItemProperty( "texture_stretch_enabled", (bool)txtList.contains( Qtx::StretchTexture ), bgId );
   pref->setItemProperty( "custom_enabled", false, bgId );
   pref->setItemProperty( "image_formats", formats, bgId );
   // .... -> XZ viewer background
@@ -2142,7 +2147,10 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 			      LightApp_Preferences::Background, "OCCViewer", "xz_background" );
   pref->setItemProperty( "gradient_names", aValuesList, bgId );
   pref->setItemProperty( "gradient_ids", anIndicesList, bgId );
-  pref->setItemProperty( "texture_enabled", false, bgId );
+  pref->setItemProperty( "texture_enabled", !txtList.isEmpty(), bgId );
+  pref->setItemProperty( "texture_center_enabled", (bool)txtList.contains( Qtx::CenterTexture ), bgId );
+  pref->setItemProperty( "texture_tile_enabled", (bool)txtList.contains( Qtx::TileTexture ), bgId );
+  pref->setItemProperty( "texture_stretch_enabled", (bool)txtList.contains( Qtx::StretchTexture ), bgId );
   pref->setItemProperty( "custom_enabled", false, bgId );
   pref->setItemProperty( "image_formats", formats, bgId );
   // .... -> YZ viewer background
@@ -2150,7 +2158,10 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 			      LightApp_Preferences::Background, "OCCViewer", "yz_background" );
   pref->setItemProperty( "gradient_names", aValuesList, bgId );
   pref->setItemProperty( "gradient_ids", anIndicesList, bgId );
-  pref->setItemProperty( "texture_enabled", false, bgId );
+  pref->setItemProperty( "texture_enabled", !txtList.isEmpty(), bgId );
+  pref->setItemProperty( "texture_center_enabled", (bool)txtList.contains( Qtx::CenterTexture ), bgId );
+  pref->setItemProperty( "texture_tile_enabled", (bool)txtList.contains( Qtx::TileTexture ), bgId );
+  pref->setItemProperty( "texture_stretch_enabled", (bool)txtList.contains( Qtx::StretchTexture ), bgId );
   pref->setItemProperty( "custom_enabled", false, bgId );
   pref->setItemProperty( "image_formats", formats, bgId );
   // .... -> XY viewer background
@@ -2158,7 +2169,10 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 			      LightApp_Preferences::Background, "OCCViewer", "xy_background" );
   pref->setItemProperty( "gradient_names", aValuesList, bgId );
   pref->setItemProperty( "gradient_ids", anIndicesList, bgId );
-  pref->setItemProperty( "texture_enabled", false, bgId );
+  pref->setItemProperty( "texture_enabled", !txtList.isEmpty(), bgId );
+  pref->setItemProperty( "texture_center_enabled", (bool)txtList.contains( Qtx::CenterTexture ), bgId );
+  pref->setItemProperty( "texture_tile_enabled", (bool)txtList.contains( Qtx::TileTexture ), bgId );
+  pref->setItemProperty( "texture_stretch_enabled", (bool)txtList.contains( Qtx::StretchTexture ), bgId );
   pref->setItemProperty( "custom_enabled", false, bgId );
   pref->setItemProperty( "image_formats", formats, bgId );
   // ... "Background" group <<end>>
@@ -2208,13 +2222,17 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   // .... -> background
   aValuesList.clear();
   anIndicesList.clear();
-  formats = SVTK_Viewer::backgroundData( aValuesList, idList );
+  txtList.clear();
+  formats = SVTK_Viewer::backgroundData( aValuesList, idList, txtList );
   foreach( int gid, idList ) anIndicesList << gid;
   bgId = pref->addPreference( tr( "PREF_VIEWER_BACKGROUND" ), vtkGen,
 			      LightApp_Preferences::Background, "VTKViewer", "background" );
   pref->setItemProperty( "gradient_names", aValuesList, bgId );
   pref->setItemProperty( "gradient_ids", anIndicesList, bgId );
-  pref->setItemProperty( "texture_enabled", false, bgId );
+  pref->setItemProperty( "texture_enabled", !txtList.isEmpty(), bgId );
+  pref->setItemProperty( "texture_center_enabled", (bool)txtList.contains( Qtx::CenterTexture ), bgId );
+  pref->setItemProperty( "texture_tile_enabled", (bool)txtList.contains( Qtx::TileTexture ), bgId );
+  pref->setItemProperty( "texture_stretch_enabled", (bool)txtList.contains( Qtx::StretchTexture ), bgId );
   pref->setItemProperty( "custom_enabled", false, bgId );
   pref->setItemProperty( "image_formats", formats, bgId );
   // .... -> navigation mode
@@ -3397,8 +3415,6 @@ void LightApp_Application::createEmptyStudy()
 /*!Set desktop:*/
 void LightApp_Application::setDesktop( SUIT_Desktop* desk )
 {
-  SUIT_Desktop* prev = desktop();
-
   CAM_Application::setDesktop( desk );
 
   if ( desk ) {

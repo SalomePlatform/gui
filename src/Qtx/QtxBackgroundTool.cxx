@@ -23,6 +23,7 @@
 #include "QtxBackgroundTool.h"
 #include "QtxColorButton.h"
 
+#include <QCheckBox>
 #include <QComboBox>
 #include <QFileDialog>
 #include <QHBoxLayout>
@@ -73,21 +74,27 @@
 
 /*!
   \brief Constructor.
+
+  Creates a background data widget with horizontal orientation.
+
   \param parent parent widget
 */
 QtxBackgroundTool::QtxBackgroundTool( QWidget* parent )
-  : QWidget( parent ), myLastGradient( -1 )
+  : QWidget( parent ), myTextureAllowed( true ), myLastGradient( -1 )
 {
   init( Qt::Horizontal );
 }
 
 /*!
   \brief Constructor.
+
+  Creates a background data widget with specified orientation.
+
   \param o widget orientation
   \param parent parent widget
 */
 QtxBackgroundTool::QtxBackgroundTool( Qt::Orientation o, QWidget* parent )
-  : QWidget( parent ), myLastGradient( -1 )
+  : QWidget( parent ), myTextureAllowed( true ), myLastGradient( -1 )
 {
   init( o );
 }
@@ -99,24 +106,28 @@ void QtxBackgroundTool::init( Qt::Orientation o )
 {
   // mode combo box
   myModeCombo = new QComboBox( this );
-  // sub-widgets container
-  myContainer = new QStackedWidget( this );
+  // color / gradient sub-widgets container
+  myCContainer = new QStackedWidget( this );
+  // texture sub-widgets container
+  myTContainer = new QWidget( this );
 
   QWidget* wrap;
   QHBoxLayout* wrapLayout;
 
   // add image controls
-  wrap = new QWidget( this );
-  wrapLayout = new QHBoxLayout( wrap );
+  wrapLayout = new QHBoxLayout( myTContainer );
   wrapLayout->setMargin( 0 );
   wrapLayout->setSpacing( 5 );
-  myFileName    = new QLineEdit( wrap );
-  myBrowseBtn   = new QPushButton( tr( "Browse..." ), wrap );
-  myTextureMode = new QComboBox( wrap );
+  myTextureCheck = new QCheckBox( tr( "Image" ), myTContainer );
+  myFileName     = new QLineEdit( myTContainer );
+  myFileName->setMinimumWidth(100);
+  myBrowseBtn    = new QPushButton( tr( "Browse..." ), myTContainer );
+  myTextureMode  = new QComboBox( myTContainer );
+  wrapLayout->addWidget( myTextureCheck );
   wrapLayout->addWidget( myFileName );
   wrapLayout->addWidget( myBrowseBtn );
   wrapLayout->addWidget( myTextureMode );
-  myContainer->addWidget( wrap ); // Image
+  wrapLayout->setStretchFactor(myFileName, 10);
   // add color controls
   wrap = new QWidget( this );
   wrapLayout = new QHBoxLayout( wrap );
@@ -126,7 +137,9 @@ void QtxBackgroundTool::init( Qt::Orientation o )
   mySecondColor = new QtxColorButton( wrap );
   wrapLayout->addWidget( myFirstColor );
   wrapLayout->addWidget( mySecondColor );
-  myContainer->addWidget( wrap ); // Color
+  wrapLayout->setStretchFactor(myFirstColor, 5);
+  wrapLayout->setStretchFactor(mySecondColor, 5);
+  myCContainer->addWidget( wrap ); // Color
   // add gradient controls ... NOT IMPLEMENTED YET
   wrap = new QWidget( this );
   wrapLayout = new QHBoxLayout( wrap );
@@ -135,22 +148,23 @@ void QtxBackgroundTool::init( Qt::Orientation o )
   QLabel* foo = new QLabel( tr( "Not implemented yet" ), wrap );
   foo->setAlignment( Qt::AlignCenter );
   wrapLayout->addWidget( foo );
-  myContainer->addWidget( wrap ); // Gradient
+  myCContainer->addWidget( wrap ); // Gradient
 
   // initialize widget
   myFirstColor->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
   mySecondColor->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
-  myTextureMode->addItem( tr( "Center" ),  Qtx::CenterTexture );
-  myTextureMode->addItem( tr( "Tile" ),    Qtx::TileTexture );
-  myTextureMode->addItem( tr( "Stretch" ), Qtx::StretchTexture );
 
   connect( myModeCombo, SIGNAL( currentIndexChanged( int ) ), this, SLOT( updateState() ) );
+  connect( myTextureCheck, SIGNAL( toggled( bool ) ), this, SLOT( updateState() ) );
   connect( myBrowseBtn, SIGNAL( clicked() ), this, SLOT( browse() ) );
 
-  setModeAllowed( Qtx::ImageBackground );
   setModeAllowed( Qtx::ColorBackground );
   setModeAllowed( Qtx::SimpleGradientBackground );
   setModeAllowed( Qtx::CustomGradientBackground );
+  setTextureModeAllowed( Qtx::CenterTexture );
+  setTextureModeAllowed( Qtx::TileTexture );
+  setTextureModeAllowed( Qtx::StretchTexture );
+  setTextureAllowed();
   setImageFormats( QString() );
   setOrientation( o );
 }
@@ -175,9 +189,10 @@ Qtx::BackgroundData QtxBackgroundTool::data() const
     // get currently selected mode
     int id = myModeCombo->itemData( idx, TypeRole ).toInt();
     // texture data
-    if ( isModeAllowed( Qtx::ImageBackground ) ) {
+    if ( isTextureAllowed() && myTextureMode->currentIndex() != -1 ) {
       bgData.setTexture( myFileName->text().trimmed(),
 			 Qtx::TextureMode( myTextureMode->itemData( myTextureMode->currentIndex() ).toInt() ) );
+      bgData.setTextureShown( myTextureCheck->isChecked() );
     }
     // single-color data
     if ( isModeAllowed( Qtx::ColorBackground ) ) {
@@ -211,16 +226,26 @@ void QtxBackgroundTool::setData( const Qtx::BackgroundData& bgData )
   int     gtype = bgData.gradient( c1, c2 );
   QString fileName;
   int tmode = bgData.texture( fileName );
+  bool tshown = bgData.isTextureShown();
+
   // texture data
   myFileName->setText( fileName );
-  myTextureMode->setCurrentIndex( tmode );
+  for ( int i = 0; i < myTextureMode->count(); i++ ) {
+    if ( myTextureMode->itemData( i ).toInt() == tmode ) {
+      myTextureMode->setCurrentIndex( i );
+      break;
+    }
+  }
+  myTextureCheck->setChecked( tshown );
+
   // color / simple gradient data
   myFirstColor->setColor( c1 );
   mySecondColor->setColor( c2 );
+
   // gradient data
   // ... NOT IMPLEMENTED YET
 
-  // set current index
+  // set current mode index
   int idx = -1;
   for ( int i = 0; i < myModeCombo->count() && idx == -1; i++ ) {
     int im = myModeCombo->itemData( i, TypeRole ).toInt();
@@ -230,8 +255,12 @@ void QtxBackgroundTool::setData( const Qtx::BackgroundData& bgData )
       if ( it == gtype ) idx = i;
     }
     // for other modes we just check mode itself
-    else if ( im == m ) idx = i;
+    else if ( im == m ) {
+      idx = i;
+    }
   }
+  // if background data is invalid, we set-up widget to the first available type
+  if ( idx == -1 && myModeCombo->count() > 0 ) idx = 0;
   myModeCombo->setCurrentIndex( idx );
 }
 
@@ -253,10 +282,10 @@ void QtxBackgroundTool::gradients( QStringList& gradList, QIntList& idList ) con
 */
 void QtxBackgroundTool::setGradients( const QStringList& gradList, const QIntList& idList )
 {
-  myGradients    = gradList;
-  myGradientsIds = idList;
-  myLastGradient = -1;
-  Qtx::BackgroundData d = data(); // store current state
+  Qtx::BackgroundData d = data(); // get current state
+  myGradients    = gradList;      // store new gradient data
+  myGradientsIds = idList;        // ...
+  myLastGradient = -1;            // ...
   internalUpdate();               // re-initialize
   setData( d );                   // restore current state (if possible)
 }
@@ -275,7 +304,7 @@ bool QtxBackgroundTool::isModeAllowed( Qtx::BackgroundMode mode ) const
 /*!
   \brief Enable / disable specific background mode
   \param mode background mode
-  \param on enable / disable flag
+  \param on enable / disable flag (\c true by default)
   \sa isModeAllowed()
 */
 void QtxBackgroundTool::setModeAllowed( Qtx::BackgroundMode mode, bool on )
@@ -283,10 +312,62 @@ void QtxBackgroundTool::setModeAllowed( Qtx::BackgroundMode mode, bool on )
   if ( mode == Qtx::CustomGradientBackground )
     return; // NOT IMPLEMENTED YET //
 
-  myTypesAllowed[ mode ] = on;
-  Qtx::BackgroundData d = data(); // store current state
-  internalUpdate();               // re-initialize
-  setData( d );                   // restore current state (if possible)
+  if ( isModeAllowed( mode ) != on ) {
+    Qtx::BackgroundData d = data(); // get current state
+    myTypesAllowed[ mode ] = on;    // store new background mode state
+    internalUpdate();               // re-initialize
+    setData( d );                   // restore current state (if possible)
+  }
+}
+
+/*!
+  \brief Check if specific texture mode is allowed
+  \param mode texture mode
+  \return \c true if specified texture mode is enabled or \c false otherwise
+  \sa setTextureModeAllowed(), setTextureAllowed()
+*/
+bool QtxBackgroundTool::isTextureModeAllowed( Qtx::TextureMode mode ) const
+{
+  return myTextureTypesAllowed.contains( mode ) ? myTextureTypesAllowed[ mode ] : false;
+}
+
+/*!
+  \brief Enable / disable specific texture mode
+  \param mode texture mode
+  \param on enable / disable flag (\c true by default)
+  \sa isTextureModeAllowed(), setTextureAllowed()
+*/
+void QtxBackgroundTool::setTextureModeAllowed( Qtx::TextureMode mode, bool on )
+{
+  if ( isTextureModeAllowed( mode ) != on ) {
+    Qtx::BackgroundData d = data();     // get current state
+    myTextureTypesAllowed[ mode ] = on; // store new texture mode
+    internalUpdate();                   // re-initialize
+    setData( d );                       // restore current state (if possible)
+  }
+}
+
+/*!
+  \brief Check if texture controls are allowed (shown)
+  \return \c true if texture controls are enabled or \c false otherwise
+  \sa setTextureAllowed(), setTextureModeAllowed()
+*/
+bool QtxBackgroundTool::isTextureAllowed() const
+{
+  return myTextureAllowed;
+}
+
+/*!
+  \brief Enable / disable texture controls
+  \param on enable / disable flag (\c true by default)
+  \sa isTextureAllowed(), setTextureModeAllowed()
+*/
+void QtxBackgroundTool::setTextureAllowed( bool on )
+{
+  if ( myTextureAllowed != on ) {
+    myTextureAllowed = on;
+    setOrientation( orientation() );
+  }
 }
 
 /*!
@@ -330,7 +411,10 @@ void QtxBackgroundTool::setOrientation( Qt::Orientation orientation )
   l->setMargin( 0 );
   l->setSpacing( 5 );
   l->addWidget( myModeCombo );
-  l->addWidget( myContainer );
+  l->addWidget( myCContainer );
+  myTContainer->setVisible( isTextureAllowed() );
+  if ( isTextureAllowed() )
+    l->addWidget( myTContainer );
   delete layout();
   setLayout( l );
 }
@@ -342,21 +426,13 @@ void QtxBackgroundTool::setOrientation( Qt::Orientation orientation )
 void QtxBackgroundTool::internalUpdate()
 {
   myModeCombo->clear();
-  if ( isModeAllowed( Qtx::ImageBackground ) ) {
-    myModeCombo->addItem( tr( "Image" ) );
-    int idx = myModeCombo->count()-1;
-    myModeCombo->setItemData( idx, (int)Qtx::ImageBackground, TypeRole );
-  }
   if ( isModeAllowed( Qtx::ColorBackground ) ) {
-    if ( myModeCombo->count() > 0 ) 
-      myModeCombo->insertSeparator( myModeCombo->count() );
     myModeCombo->addItem( tr( "Single Color" ) );
-    int idx = myModeCombo->count()-1;
-    myModeCombo->setItemData( idx, (int)Qtx::ColorBackground, TypeRole );
+    myModeCombo->setItemData( 0, (int)Qtx::ColorBackground, TypeRole );
   }
   if ( isModeAllowed( Qtx::SimpleGradientBackground ) ) {
-    if ( myGradients.count() > 0 && myModeCombo->count() > 0 ) 
-      myModeCombo->insertSeparator( myModeCombo->count() );
+//     if ( myGradients.count() > 0 && myModeCombo->count() > 0 ) 
+//       myModeCombo->insertSeparator( myModeCombo->count() );
     for ( int i = 0; i < myGradients.count(); i++ ) {
       myModeCombo->addItem( myGradients[i] );
       int idx = myModeCombo->count()-1;
@@ -365,12 +441,21 @@ void QtxBackgroundTool::internalUpdate()
     }
   }
   if ( isModeAllowed( Qtx::CustomGradientBackground ) ) {
-    if ( myModeCombo->count() > 0 ) 
-      myModeCombo->insertSeparator( myModeCombo->count() );
+//     if ( myModeCombo->count() > 0 ) 
+//       myModeCombo->insertSeparator( myModeCombo->count() );
     myModeCombo->addItem( tr( "Custom" ) );
     int idx = myModeCombo->count()-1;
     myModeCombo->setItemData( idx, (int)Qtx::CustomGradientBackground, TypeRole );
   }
+
+  myTextureMode->clear();
+  if ( isTextureModeAllowed( Qtx::CenterTexture ) )
+    myTextureMode->addItem( tr( "Center" ),  Qtx::CenterTexture );
+  if ( isTextureModeAllowed( Qtx::TileTexture ) )
+    myTextureMode->addItem( tr( "Tile" ),    Qtx::TileTexture );
+  if ( isTextureModeAllowed( Qtx::StretchTexture ) )
+    myTextureMode->addItem( tr( "Stretch" ), Qtx::StretchTexture );
+
   updateState();
 }
 
@@ -384,22 +469,25 @@ void QtxBackgroundTool::updateState()
   if ( idx >= 0 ) {
     id = myModeCombo->itemData( idx, TypeRole ).toInt();
     switch( id ) {
-    case Qtx::ImageBackground:
-      myContainer->setCurrentIndex( Image );
-      break;
     case Qtx::ColorBackground:
+      myCContainer->setCurrentIndex( Color );
+      break;
     case Qtx::SimpleGradientBackground:
-      myContainer->setCurrentIndex( Color );
+      myCContainer->setCurrentIndex( Color );
       myLastGradient = myModeCombo->itemData( idx, IdRole ).toInt();
       break;
     case Qtx::CustomGradientBackground:
-      myContainer->setCurrentIndex( Gradient );
+      myCContainer->setCurrentIndex( Gradient );
       break;
     }
   }
   myModeCombo->setEnabled( idx >= 0 );
-  myContainer->setEnabled( idx >= 0 );
+  myCContainer->setEnabled( idx >= 0 );
   mySecondColor->setEnabled( id == Qtx::SimpleGradientBackground );
+  myTContainer->setEnabled( idx >= 0 );
+  myFileName->setEnabled( myTextureCheck->isChecked() );
+  myBrowseBtn->setEnabled( myTextureCheck->isChecked() );
+  myTextureMode->setEnabled( myTextureCheck->isChecked() );
 }
 
 /*!
@@ -462,6 +550,7 @@ QtxBackgroundDialog::QtxBackgroundDialog( const Qtx::BackgroundData& bgData, QWi
   : QtxDialog( parent, true, true, OK | Cancel )
 {
   init();
+  setData( bgData );
 }
 
 /*!
@@ -482,6 +571,8 @@ void QtxBackgroundDialog::init()
   setDialogFlags( SetFocus );
   // move "Cancel" button to the right
   setButtonPosition( Right, Cancel );
+  // set OK button to be default (activated by Enter key)
+  qobject_cast<QPushButton*>( button( OK ) )->setDefault( true );
 
   // main layout
   QVBoxLayout* main = new QVBoxLayout( mainFrame() );
@@ -532,6 +623,27 @@ void QtxBackgroundDialog::setModeAllowed( Qtx::BackgroundMode mode, bool on )
 }
 
 /*!
+  \brief Enable / disable texture controls
+  \param on enable / disable flag
+  \sa setTextureModeAllowed()
+*/
+void QtxBackgroundDialog::setTextureAllowed( bool on )
+{
+  myTool->setTextureAllowed( on );
+}
+
+/*!
+  \brief Enable / disable specific texture mode
+  \param mode texture mode
+  \param on enable / disable flag (\c true by default)
+  \sa setTextureAllowed()
+*/
+void QtxBackgroundDialog::setTextureModeAllowed( Qtx::TextureMode mode, bool on )
+{
+  myTool->setTextureModeAllowed( mode, on );
+}
+
+/*!
   \brief Set allowed image formats
   \param formats image formats
 */
@@ -543,19 +655,91 @@ void QtxBackgroundDialog::setImageFormats( const QString& formats )
 /*!
   \brief This is a convenience static function that returns an background data selected by the user.
   If the user presses Cancel, it returns an invalid background data.
+
+  By default:
+  - all background modes are enabled
+  - texture controls are shown
+  - all texture modes are enabled
+  - simple gradient types list is empty
+  - all image formats are supported
+
+  To customize the dialog box behavior, initialize it passing the corresponding options to the function.
+
+  \param bgData initial background data
+  \param parent parent widget
+  \param enableSolidColor "enable solid colored background mode" flag
+  \param enableGradient "enable simple gradient background mode" flag
+  \param enableCustom "enable custom gradient background mode" flag
+  \param enableTexture "show texture controls" flag
+  \param gradList list of simple gradients names
+  \param idList list of simple gradients identifiers
+  \param formats image formats
+  \return resulting background data chosen by the user or invalid data if users cancels operation
 */
-Qtx::BackgroundData QtxBackgroundDialog::getBackground( QWidget* parent,
-							const Qtx::BackgroundData& bgData,
+Qtx::BackgroundData QtxBackgroundDialog::getBackground( const Qtx::BackgroundData& bgData,
+							QWidget* parent,
 							bool enableSolidColor,
-							bool enableTexture,
 							bool enableGradient,
 							bool enableCustom,
+							bool enableTexture,
 							const QStringList& gradList,
 							const QIntList& idList,
 							const QString& formats )
 {
   QtxBackgroundDialog dlg( parent );
-  dlg.setModeAllowed( Qtx::ImageBackground,          enableTexture );
+  dlg.setTextureAllowed( enableTexture );
+  dlg.setModeAllowed( Qtx::ColorBackground,          enableSolidColor );
+  dlg.setModeAllowed( Qtx::SimpleGradientBackground, enableGradient );
+  dlg.setModeAllowed( Qtx::CustomGradientBackground, enableCustom );
+  dlg.setGradients( gradList, idList );
+  dlg.setImageFormats( formats );
+  dlg.setData( bgData );
+  Qtx::BackgroundData res;
+  int rc = dlg.exec();
+  if ( rc ) res = dlg.data();
+  return res;
+}
+
+/*!
+  \brief This is a convenience static function that returns an background data selected by the user.
+  If the user presses Cancel, it returns an invalid background data.
+
+  By default:
+  - all background modes are enabled
+  - texture controls are shown
+  - all texture modes are disabled
+  - simple gradient types list is empty
+  - all image formats are supported
+
+  To customize the dialog box behavior, initialize it passing the corresponding options to the function.
+
+  \param bgData initial background data
+  \param parent parent widget
+  \param tmList allowed texture modes
+  \param enableSolidColor "enable solid colored background mode" flag
+  \param enableGradient "enable simple gradient background mode" flag
+  \param enableCustom "enable custom gradient background mode" flag
+  \param enableTexture "show texture controls" flag
+  \param gradList list of simple gradients names
+  \param idList list of simple gradients identifiers
+  \param formats image formats
+  \return resulting background data chosen by the user or invalid data if users cancels operation
+*/
+Qtx::BackgroundData QtxBackgroundDialog::getBackground( const Qtx::BackgroundData& bgData,
+							QWidget* parent,
+							const QIntList& tmList,
+							bool enableSolidColor,
+							bool enableGradient,
+							bool enableCustom,
+							bool enableTexture,
+							const QStringList& gradList,
+							const QIntList& idList,
+							const QString& formats )
+{
+  QtxBackgroundDialog dlg( parent );
+  dlg.setTextureAllowed( enableTexture );
+  for ( int i = Qtx::CenterTexture; i <= Qtx::StretchTexture; i++ )
+    dlg.setTextureModeAllowed( (Qtx::TextureMode)i, tmList.contains( i ) );
   dlg.setModeAllowed( Qtx::ColorBackground,          enableSolidColor );
   dlg.setModeAllowed( Qtx::SimpleGradientBackground, enableGradient );
   dlg.setModeAllowed( Qtx::CustomGradientBackground, enableCustom );

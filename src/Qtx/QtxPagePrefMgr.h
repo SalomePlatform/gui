@@ -778,7 +778,13 @@ public:
   void               setGradients( const QStringList&, const QIntList& = QIntList() );
 
   bool               isModeAllowed( Qtx::BackgroundMode ) const;
-  void               setModeAllowed( Qtx::BackgroundMode, bool = true );
+  void               setModeAllowed( Qtx::BackgroundMode, bool );
+
+  bool               isTextureModeAllowed( Qtx::TextureMode ) const;
+  void               setTextureModeAllowed( Qtx::TextureMode, bool );
+
+  bool               isTextureAllowed() const;
+  void               setTextureAllowed( bool );
 
   QString            imageFormats() const;
   void               setImageFormats( const QString& );

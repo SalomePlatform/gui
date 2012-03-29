@@ -570,11 +570,61 @@ QColor SVTK_ViewWindow::backgroundColor() const
 */
 void SVTK_ViewWindow::setBackground( const Qtx::BackgroundData& bgData )
 {
-  bool ok = bgData.isValid();
+  bool ok = false;
 
-  switch ( bgData.mode() ) {
-  case Qtx::ImageBackground:
-    {
+  if ( bgData.isValid() ) {
+    switch ( bgData.mode() ) {
+    case Qtx::ColorBackground:
+      {
+	QColor c = bgData.color();
+	if ( c.isValid() ) {
+	  // show solid-colored background
+	  getRenderer()->SetTexturedBackground( false );  // cancel texture mode
+	  getRenderer()->SetGradientBackground( false );  // cancel gradient mode
+	  getRenderer()->SetBackground( c.red()/255.0,
+					c.green()/255.0,
+					c.blue()/255.0 ); // set background color
+	  ok = true;
+	}
+	break;
+      }
+    case Qtx::SimpleGradientBackground:
+      {
+	QColor c1, c2;
+	int type = bgData.gradient( c1, c2 );
+	// VSR: Currently, only vertical gradient is supported by VTK. 
+	// In future, switch operator might be added here to process different supported gradient types.
+	if ( c1.isValid() && type == SVTK_Viewer::VerticalGradient ) {
+	  if ( !c2.isValid() ) c2 = c1;
+	  // show two-color gradient background
+	  getRenderer()->SetTexturedBackground( false );    // cancel texture mode
+	  getRenderer()->SetGradientBackground( true );     // switch to gradient mode
+	  // VSR: In VTK, gradient is colored from bottom to top:
+	  // - top color is set via SetBackground2()
+	  // - bottom color is set via SetBackground()
+	  // So, we reverse colors, to draw gradient from top to bottom instead.
+	  getRenderer()->SetBackground(  c2.red()/255.0, 
+					 c2.green()/255.0,
+					 c2.blue()/255.0 ); // set first gradient color
+	  getRenderer()->SetBackground2( c1.red()/255.0,
+					 c1.green()/255.0,
+					 c1.blue()/255.0 ); // set second gradient color
+	  ok = true;
+	}
+	break;
+      }
+    case Qtx::CustomGradientBackground:
+      {
+	// NOT IMPLEMENTED YET
+	getRenderer()->SetTexturedBackground( false );  // cancel texture mode
+	getRenderer()->SetGradientBackground( false );  // cancel gradient mode
+	// .........
+	break;
+      }
+    default:
+      break;
+    }
+    if ( bgData.isTextureShown() ) {
       QString fileName;
       int textureMode = bgData.texture( fileName );
       QFileInfo fi( fileName );
@@ -596,7 +646,7 @@ void SVTK_ViewWindow::setBackground( const Qtx::BackgroundData& bgData )
 	  // create texture
 	  aReader->SetFileName( fi.absoluteFilePath().toLatin1().constData() );
 	  aReader->Update();
-	  
+	    
 	  vtkTexture* aTexture = vtkTexture::New();
 	  vtkImageMapToColors* aMap = 0;
 	  vtkAlgorithmOutput* anOutput;
@@ -604,18 +654,18 @@ void SVTK_ViewWindow::setBackground( const Qtx::BackgroundData& bgData )
 	  // special processing for BMP reader
 	  vtkBMPReader* aBMPReader = (vtkBMPReader*)aReader;
 	  if ( aBMPReader ) {
-	    // Special processing for BMP file
-	    aBMPReader->SetAllow8BitBMP(1);
+	  // Special processing for BMP file
+	  aBMPReader->SetAllow8BitBMP(1);
 	    
-	    aMap = vtkImageMapToColors::New();
-	    aMap->SetInputConnection( aBMPReader->GetOutputPort() );
-	    aMap->SetLookupTable( (vtkScalarsToColors*)aBMPReader->GetLookupTable() );
-	    aMap->SetOutputFormatToRGB();
+	  aMap = vtkImageMapToColors::New();
+	  aMap->SetInputConnection( aBMPReader->GetOutputPort() );
+	  aMap->SetLookupTable( (vtkScalarsToColors*)aBMPReader->GetLookupTable() );
+	  aMap->SetOutputFormatToRGB();
 	    
-	    anOutput = aMap->GetOutputPort();
+	  anOutput = aMap->GetOutputPort();
 	  }
 	  else {
-          }
+	  }
 	  */
 	  anOutput = aReader->GetOutputPort( 0 );
 	  aTexture->SetInputConnection( anOutput );
@@ -652,57 +702,7 @@ void SVTK_ViewWindow::setBackground( const Qtx::BackgroundData& bgData )
 	  ok = true;
 	}
       }
-      break;
     }
-  case Qtx::ColorBackground:
-    {
-      QColor c = bgData.color();
-      if ( c.isValid() ) {
-	// show solid-colored background
-	getRenderer()->SetTexturedBackground( false );  // cancel texture mode
-	getRenderer()->SetGradientBackground( false );  // cancel gradient mode
-	getRenderer()->SetBackground( c.red()/255.0,
-				      c.green()/255.0,
-				      c.blue()/255.0 ); // set background color
-	ok = true;
-      }
-      break;
-    }
-  case Qtx::SimpleGradientBackground:
-    {
-      QColor c1, c2;
-      int type = bgData.gradient( c1, c2 );
-      // VSR: Currently, only vertical gradient is supported by VTK. 
-      // In future, switch operator might be added here to process different supported gradient types.
-      if ( c1.isValid() && type == SVTK_Viewer::VerticalGradient ) {
-	if ( !c2.isValid() ) c2 = c1;
-	// show two-color gradient background
-	getRenderer()->SetTexturedBackground( false );    // cancel texture mode
-	getRenderer()->SetGradientBackground( true );     // switch to gradient mode
-	// VSR: In VTK, gradient is colored from bottom to top:
-	// - top color is set via SetBackground2()
-	// - bottom color is set via SetBackground()
-	// So, we reverse colors, to draw gradient from top to bottom instead.
-	getRenderer()->SetBackground(  c2.red()/255.0, 
-				       c2.green()/255.0,
-				       c2.blue()/255.0 ); // set first gradient color
-	getRenderer()->SetBackground2( c1.red()/255.0,
-				       c1.green()/255.0,
-				       c1.blue()/255.0 ); // set second gradient color
-	ok = true;
-      }
-      break;
-    }
-  case Qtx::CustomGradientBackground:
-    {
-      // NOT IMPLEMENTED YET
-      getRenderer()->SetTexturedBackground( false );  // cancel texture mode
-      getRenderer()->SetGradientBackground( false );  // cancel gradient mode
-      // .........
-      break;
-    }
-  default:
-    break;
   }
   if ( ok )
     myBackground = bgData;

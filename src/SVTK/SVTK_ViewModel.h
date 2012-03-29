@@ -56,7 +56,7 @@ public:
   
   //! Define string representation of the viewer type
   static QString           Type() { return "VTKViewer"; }
-  static QString           backgroundData( QStringList&, QIntList& );
+  static QString           backgroundData( QStringList&, QIntList&, QIntList& );
 
   SVTK_Viewer();
   virtual ~SVTK_Viewer();

@@ -29,6 +29,7 @@
 #include <QWidget>
 #include <QMap>
 
+class QCheckBox;
 class QComboBox;
 class QStackedWidget;
 class QLineEdit;
@@ -37,7 +38,7 @@ class QtxColorButton;
 
 class QTX_EXPORT QtxBackgroundTool : public QWidget
 {
-  enum { Image, Color, Gradient };
+  enum { Color, Gradient };
   enum { TypeRole = Qt::UserRole, IdRole };
 
   Q_OBJECT
@@ -56,6 +57,12 @@ public:
   bool                isModeAllowed( Qtx::BackgroundMode ) const;
   void                setModeAllowed( Qtx::BackgroundMode, bool = true );
 
+  bool                isTextureModeAllowed( Qtx::TextureMode ) const;
+  void                setTextureModeAllowed( Qtx::TextureMode, bool = true );
+
+  bool                isTextureAllowed() const;
+  void                setTextureAllowed( bool = true );
+
   QString             imageFormats() const;
   void                setImageFormats( const QString& );
 
@@ -72,7 +79,9 @@ private slots:
   
 private:
   QComboBox*          myModeCombo;
-  QStackedWidget*     myContainer;
+  QStackedWidget*     myCContainer;
+  QWidget*            myTContainer;
+  QCheckBox*          myTextureCheck;
   QLineEdit*          myFileName;
   QPushButton*        myBrowseBtn;
   QComboBox*          myTextureMode;
@@ -80,7 +89,9 @@ private:
   QtxColorButton*     mySecondColor;
   QStringList         myGradients;
   QIntList            myGradientsIds;
+  bool                myTextureAllowed;
   QMap<int, bool>     myTypesAllowed;
+  QMap<int, bool>     myTextureTypesAllowed;
   QString             myImageFormats;
   int                 myLastGradient;
 };
@@ -97,15 +108,25 @@ public:
   void                       setData( const Qtx::BackgroundData& );
   Qtx::BackgroundData        data() const;
 
-  static Qtx::BackgroundData getBackground( QWidget* = 0,
-					    const Qtx::BackgroundData& = Qtx::BackgroundData(),
+  static Qtx::BackgroundData getBackground( const Qtx::BackgroundData& = Qtx::BackgroundData(),
+					    QWidget* = 0,
+					    bool = true, bool = true, bool = true, bool = true,
+					    const QStringList& = QStringList(),
+					    const QIntList& = QIntList(),
+					    const QString& = QString() );
+  static Qtx::BackgroundData getBackground( const Qtx::BackgroundData&,
+					    QWidget*,
+					    const QIntList&,
 					    bool = true, bool = true, bool = true, bool = true,
 					    const QStringList& = QStringList(),
 					    const QIntList& = QIntList(),
 					    const QString& = QString() );
 
+
   void                       setGradients( const QStringList&, const QIntList& = QIntList() );
   void                       setModeAllowed( Qtx::BackgroundMode, bool = true );
+  void                       setTextureAllowed( bool = true );
+  void                       setTextureModeAllowed( Qtx::TextureMode, bool = true );
   void                       setImageFormats( const QString& );
 
 private:

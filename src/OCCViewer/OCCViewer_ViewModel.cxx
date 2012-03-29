@@ -63,10 +63,13 @@
 
 #include <Basics_OCCTVersion.hxx>
 
+// VSR: Uncomment below line to allow texture background support in OCC viewer
+// #define OCC_ENABLE_TEXTURED_BACKGROUND
+
 /*!
   Get data for supported background modes: gradient types, identifiers and supported image formats
 */
-QString OCCViewer_Viewer::backgroundData( QStringList& gradList, QIntList& idList )
+QString OCCViewer_Viewer::backgroundData( QStringList& gradList, QIntList& idList, QIntList& txtList )
 {
   gradList << tr("GT_HORIZONTALGRADIENT")    << tr("GT_VERTICALGRADIENT")       <<
               tr("GT_FIRSTDIAGONALGRADIENT") << tr("GT_SECONDDIAGONALGRADIENT") <<
@@ -76,7 +79,12 @@ QString OCCViewer_Viewer::backgroundData( QStringList& gradList, QIntList& idLis
               Diagonal1Gradient              << Diagonal2Gradient <<
               Corner1Gradient                << Corner2Gradient   <<
               Corner3Gradient                << Corner4Gradient;
-  return QString(); // temporarily, means support of all image formars!
+#if OCC_VERSION_LARGE > 0x06050200 // enabled since OCCT 6.5.3, since in previous version this functionality is buggy
+#ifdef OCC_ENABLE_TEXTURED_BACKGROUND
+  txtList  << Qtx::CenterTexture << Qtx::TileTexture << Qtx::StretchTexture;
+#endif
+#endif
+  return tr("BG_IMAGE_FILES");
 }
 
 /*!
@@ -510,16 +518,17 @@ void OCCViewer_Viewer::onChangeBackground()
 
   // get supported gradient types
   QStringList gradList;
-  QIntList    idList;
-  QString     formats = backgroundData( gradList, idList );
+  QIntList    idList, txtList;
+  QString     formats = backgroundData( gradList, idList, txtList );
 
   // invoke dialog box
-  Qtx::BackgroundData bgData = QtxBackgroundDialog::getBackground( aView,                // parent for dialog box
-								   aView->background(),  // initial background
+  Qtx::BackgroundData bgData = QtxBackgroundDialog::getBackground( aView->background(),  // initial background
+								   aView,                // parent for dialog box
+								   txtList,              // allowed texture modes
 								   true,                 // enable solid color mode
-								   false,                // disable texture mode
 								   true,                 // enable gradient mode
 								   false,                // disable custom gradient mode
+								   !txtList.isEmpty(),   // enable/disable texture mode
 								   gradList,             // gradient names
 								   idList,               // gradient identifiers
 								   formats );            // image formats

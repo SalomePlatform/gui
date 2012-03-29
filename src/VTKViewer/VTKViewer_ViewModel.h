@@ -47,7 +47,7 @@ public:
 
   /*!Initialize type of viewer.*/
   static QString           Type() { return "VTKViewer"; }
-  static QString           backgroundData( QStringList&, QIntList& );
+  static QString           backgroundData( QStringList&, QIntList&, QIntList& );
 
   VTKViewer_Viewer();
   virtual ~VTKViewer_Viewer();

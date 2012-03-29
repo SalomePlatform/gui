@@ -47,6 +47,10 @@
 #include "QtxActionToolMgr.h"
 #include "QtxBackgroundTool.h"
 
+// VSR: Uncomment below line to allow texture background support in VTK viewer
+// #define VTK_ENABLE_TEXTURED_BACKGROUND
+
+
 // in order NOT TO link with SalomeApp, here the code returns SALOMEDS_Study.
 // SalomeApp_Study::studyDS() does it as well, but -- here it is retrieved from 
 // SALOMEDS::StudyManager - no linkage with SalomeApp. 
@@ -97,11 +101,14 @@ SVTK_Viewer::~SVTK_Viewer()
 }
 
 /*! Get data for supported background modes: gradient types, identifiers and supported image formats */
-QString SVTK_Viewer::backgroundData( QStringList& gradList, QIntList& idList )
+QString SVTK_Viewer::backgroundData( QStringList& gradList, QIntList& idList, QIntList& txtList )
 {
-  gradList << tr( "GT_VERTICALGRADIENT" );
-  idList   << VerticalGradient;
-  return QString(); // temporarily, means support of all image formats!
+  gradList << tr( "GT_VERTICALGRADIENT" );  // only vertical type of gradient is supported
+  idList   << VerticalGradient;             // only vertical type of gradient is supported
+#ifdef VTK_ENABLE_TEXTURED_BACKGROUND
+  txtList  << Qtx::StretchTexture;          // only stretch texture mode is supported
+#endif
+  return tr("BG_IMAGE_FILES");
 }
 
 //! Get background color of the viewer [obsolete]
@@ -504,16 +511,17 @@ void SVTK_Viewer::onChangeBackground()
 
   // get supported gradient types
   QStringList gradList;
-  QIntList    idList;
-  QString     formats = backgroundData( gradList, idList );
+  QIntList    idList, txtList;
+  QString     formats = backgroundData( gradList, idList, txtList );
 
   // invoke dialog box
-  Qtx::BackgroundData bgData = QtxBackgroundDialog::getBackground( aView,                // parent for dialog box
-								   aView->background(),  // initial background
+  Qtx::BackgroundData bgData = QtxBackgroundDialog::getBackground( aView->background(),  // initial background
+								   aView,                // parent for dialog box
+								   txtList,              // allowed texture modes
 								   true,                 // enable solid color mode
-								   false,                // disable texture mode
 								   true,                 // enable gradient mode
 								   false,                // disable custom gradient mode
+								   !txtList.isEmpty(),   // enable texture mode
 								   gradList,             // gradient names
 								   idList,               // gradient identifiers
 								   formats );            // image formats

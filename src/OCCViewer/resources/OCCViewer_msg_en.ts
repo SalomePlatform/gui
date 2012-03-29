@@ -272,10 +272,6 @@
         <translation>Images Files (*.bmp *.png *.jpg *.jpeg *.eps *.ps)</translation>
     </message>
     <message>
-        <source>OCC_BG_IMAGE_FILES</source>
-        <translation>Images Files (*.bmp *.gif *.pix *.xwd *.rgb *.rs)</translation>
-    </message>
-    <message>
         <source>DSC_MAXIMIZE_VIEW</source>
         <translation>Maximize view</translation>
     </message>
@@ -414,6 +410,10 @@
     <message>
         <source>GT_FORTHCORNERGRADIENT</source>
         <translation>Fourth corner gradient</translation>
+    </message>
+    <message>
+        <source>BG_IMAGE_FILES</source>
+        <translation>Image files (*.bmp *.gif *.pix *.xwd *.rgb *.rs)</translation>
     </message>
 </context>
 <context>

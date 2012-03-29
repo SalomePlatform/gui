@@ -223,5 +223,9 @@
         <source>GT_VERTICALGRADIENT</source>
         <translation>Gradient vertical</translation>
     </message>
+    <message>
+        <source>BG_IMAGE_FILES</source>
+        <translation>Fichiers images (*.png *.jpg *.jpeg *.bmp *.tif *.tiff *.mhd *.mha)</translation>
+    </message>
 </context>
 </TS>

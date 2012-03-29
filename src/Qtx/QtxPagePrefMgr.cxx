@@ -4522,11 +4522,15 @@ void QtxPagePrefShortcutTreeItem::store()
   - simple two-color gradient
   - complex custom gradient (NOT IMPLEMENTED YET)
   
-  Allows background modes can be specified using setModeAllowed() method.
+  Allowed background modes can be specified using setModeAllowed() method.
+  Texture modes can be enabled/disabled using setTextureModeAllowed() method.
+  Also, showing texture controls can be enabled/disabled by means of
+  setTextureAllowed() method.
   Verical or horizontal orientation of the widget can be chosen via setOrientation()
   method (default orientation is horizontal).
 
   Simple gradient types can be specified using setGradients() method.
+
   \sa Qtx::BackgroundData, QtxBackgroundTool
 */
 
@@ -4594,6 +4598,48 @@ void QtxPagePrefBackgroundItem::setModeAllowed( Qtx::BackgroundMode mode, bool o
 }
 
 /*!
+  \brief Check if specific texture mode is allowed
+  \param mode texture mode
+  \return \c true if specified texture mode is enabled or \c false otherwise
+  \sa setTextureModeAllowed(), setTextureAllowed()
+*/
+bool QtxPagePrefBackgroundItem::isTextureModeAllowed( Qtx::TextureMode mode ) const
+{
+  return myBgTool->isTextureModeAllowed( mode );
+}
+
+/*!
+  \brief Enable / disable specific texture mode
+  \param mode texture mode
+  \param on enable / disable flag (\c true by default)
+  \sa isTextureModeAllowed(), setTextureAllowed()
+*/
+void QtxPagePrefBackgroundItem::setTextureModeAllowed( Qtx::TextureMode mode, bool on )
+{
+  myBgTool->setTextureModeAllowed( mode, on );
+}
+
+/*!
+  \brief Check if texture controls are allowed (shown)
+  \return \c true if texture controls are enabled or \c false otherwise
+  \sa setTextureAllowed(), setTextureModeAllowed()
+*/
+bool QtxPagePrefBackgroundItem::isTextureAllowed() const
+{
+  return myBgTool->isTextureAllowed();
+}
+
+/*!
+  \brief Enable / disable texture controls
+  \param on enable / disable flag (\c true by default)
+  \sa isTextureAllowed(), setTextureModeAllowed()
+*/
+void QtxPagePrefBackgroundItem::setTextureAllowed( bool on )
+{
+  myBgTool->setTextureAllowed( on );
+}
+
+/*!
   \brief Get allowed image formats
   \return image formats
 */
@@ -4656,13 +4702,19 @@ void QtxPagePrefBackgroundItem::retrieve()
 QVariant QtxPagePrefBackgroundItem::optionValue( const QString& name ) const
 {
   if ( name == "texture_enabled" )
-    return isModeAllowed( Qtx::ImageBackground );
+    return isTextureAllowed();
   else if ( name == "color_enabled" )
     return isModeAllowed( Qtx::ColorBackground );
   else if ( name == "gradient_enabled" )
     return isModeAllowed( Qtx::SimpleGradientBackground );
   else if ( name == "custom_enabled" )
     return isModeAllowed( Qtx::CustomGradientBackground );
+  else if ( name == "texture_center_enabled" )
+    return isTextureModeAllowed( Qtx::CenterTexture );
+  else if ( name == "texture_tile_enabled" )
+    return isTextureModeAllowed( Qtx::TileTexture );
+  else if ( name == "texture_stretch_enabled" )
+    return isTextureModeAllowed( Qtx::StretchTexture );
   else if ( name == "orientation" )
     return orientation();
   else if ( name == "image_formats" )
@@ -4696,7 +4748,7 @@ void QtxPagePrefBackgroundItem::setOptionValue( const QString& name, const QVari
 {
   if ( name == "texture_enabled" ) {
     if ( val.canConvert( QVariant::Bool ) )
-      setModeAllowed( Qtx::ImageBackground, val.toBool() );
+      setTextureAllowed( val.toBool() );
   }
   else if ( name == "color_enabled" ) {
     if ( val.canConvert( QVariant::Bool ) )
@@ -4709,6 +4761,18 @@ void QtxPagePrefBackgroundItem::setOptionValue( const QString& name, const QVari
   else if ( name == "custom_enabled" ) {
     if ( val.canConvert( QVariant::Bool ) )
       setModeAllowed( Qtx::CustomGradientBackground, val.toBool() );
+  }
+  else if ( name == "texture_center_enabled" ) {
+    if ( val.canConvert( QVariant::Bool ) )
+      setTextureModeAllowed( Qtx::CenterTexture, val.toBool() );
+  }
+  else if ( name == "texture_tile_enabled" ) {
+    if ( val.canConvert( QVariant::Bool ) )
+      setTextureModeAllowed( Qtx::TileTexture, val.toBool() );
+  }
+  else if ( name == "texture_stretch_enabled" ) {
+    if ( val.canConvert( QVariant::Bool ) )
+      setTextureModeAllowed( Qtx::StretchTexture, val.toBool() );
   }
   else if ( name == "orientation" ) {
     if ( val.canConvert( QVariant::Int ) )

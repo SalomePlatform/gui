@@ -1510,10 +1510,11 @@ bool Qtx::stringToConicalGradient( const QString& str, QConicalGradient& gradien
   1. background type (enumerator, see Qtx::BackgroundMode)
   2. texture image file name (string)
   3. texture mode (enumerator, see Qtx::TextureMode)
-  4. first color (for simple gradient data) or solid color (for single-colored mode)
-  5. second color (for simple gradient data)
-  6. type of simple gradient (some integer identifier)
-  7. complex gradient data (for custom gradient mode)
+  4. "show texture" flag (boolean)
+  5. first color (for simple gradient data) or solid color (for single-colored mode)
+  6. second color (for simple gradient data)
+  7. type of simple gradient (some integer identifier)
+  8. complex gradient data (for custom gradient mode)
   Each sub-string consists of keyword/value couple, in form of "<keyword>=<value>".
 
   Backward conversion can be done with stringToBackground() method.
@@ -1530,6 +1531,7 @@ QString Qtx::backgroundToString( const Qtx::BackgroundData& bgData )
   const QString kwBgType      = "bt";
   const QString kwFileName    = "fn";
   const QString kwTextureMode = "tm";
+  const QString kwShowTexture = "ts";
   const QString kwFirstColor  = "c1";
   const QString kwSecondColor = "c2";
   const QString kwGrType      = "gt";
@@ -1538,6 +1540,7 @@ QString Qtx::backgroundToString( const Qtx::BackgroundData& bgData )
   Qtx::BackgroundMode bgMode       = bgData.mode();
   QString             fileName;
   Qtx::TextureMode    textureMode  = bgData.texture( fileName );
+  bool                showTexture  = bgData.isTextureShown();
   QColor              c1, c2;
   int                 gradientType = bgData.gradient( c1, c2 );
   const QGradient*    gradient     = bgData.gradient();
@@ -1561,6 +1564,7 @@ QString Qtx::backgroundToString( const Qtx::BackgroundData& bgData )
   data << QString( "%1%2%3" ).arg( kwBgType ).arg( kwSep ).arg( (int)bgMode );
   data << QString( "%1%2%3" ).arg( kwFileName ).arg( kwSep ).arg( fileName );
   data << QString( "%1%2%3" ).arg( kwTextureMode ).arg( kwSep ).arg( (int)textureMode );
+  data << QString( "%1%2%3" ).arg( kwShowTexture ).arg( kwSep ).arg( showTexture ? "true" : "false" );
   data << QString( "%1%2%3" ).arg( kwFirstColor ).arg( kwSep ).arg( Qtx::colorToString( c1 ) );
   data << QString( "%1%2%3" ).arg( kwSecondColor ).arg( kwSep ).arg( Qtx::colorToString( c2 ) );
   data << QString( "%1%2%3" ).arg( kwGrType ).arg( kwSep ).arg( gradientType );
@@ -1574,11 +1578,12 @@ QString Qtx::backgroundToString( const Qtx::BackgroundData& bgData )
 
   The string should consist of several sub-strings separated by ';' symbol. 
   Each sub-string consists of keyword/value couple, in form of "<keyword>=<value>".
-  The sub-strings can follow in arbitrary order, some keywords might be missed.
+  The sub-strings can follow in arbitrary order, some keywords can be missing.
   The background data is described by the following values:
   - background type (enumerator, see Qtx::BackgroundMode), keyword "bt"
   - texture image file name (string), keyword "fn"
   - texture mode (enumerator, see Qtx::TextureMode), keyword "tm"
+  - "show texture" flag (boolean), keyword "ts"
   - first color (for simple gradient data) or solid color (for single-colored mode), keyword "c1"
   - second color (for simple gradient data), keyword "c2"
   - name of gradient type (string), keyword "gt"
@@ -1608,6 +1613,7 @@ Qtx::BackgroundData Qtx::stringToBackground( const QString& str )
   const QString kwBgType      = "bt";
   const QString kwFileName    = "fn";
   const QString kwTextureMode = "tm";
+  const QString kwShowTexture = "ts";
   const QString kwFirstColor  = "c1";
   const QString kwSecondColor = "c2";
   const QString kwGrType      = "gt";
@@ -1636,16 +1642,20 @@ Qtx::BackgroundData Qtx::stringToBackground( const QString& str )
     QString bgMode       = dmap.value( kwBgType,      QString() );
     QString fileName     = dmap.value( kwFileName,    QString() );
     QString textureMode  = dmap.value( kwTextureMode, QString() );
+    QString showTexture  = dmap.value( kwShowTexture, QString() );
     QString color1       = dmap.value( kwFirstColor,  QString() );
     QString color2       = dmap.value( kwSecondColor, QString() );
     QString gradientType = dmap.value( kwGrType,      QString() );
     QString gradient     = dmap.value( kwGrData,      QString() );
     
-    // try texture mode
-    if ( !fileName.isEmpty() || !textureMode.isEmpty() ) {
+    // texture data
+    if ( !fileName.isEmpty() || !textureMode.isEmpty() || !showTexture.isEmpty() ) {
       Qtx::TextureMode m = (Qtx::TextureMode)( stringToInt( textureMode,        Qtx::CenterTexture, 
 							    Qtx::CenterTexture, Qtx::StretchTexture ) );
       bgData.setTexture( fileName, m );
+      QStringList boolvars; boolvars << "true" << "yes" << "ok" << "1";
+      if ( boolvars.contains( showTexture.trimmed().toLower() ) )
+	bgData.setTextureShown( true );
     }
     QColor c1, c2;
     // try color mode
@@ -1676,9 +1686,9 @@ Qtx::BackgroundData Qtx::stringToBackground( const QString& str )
       bgData.setGradient( cg );
     }
     
-    // finally set backround mode
-    Qtx::BackgroundMode m = (Qtx::BackgroundMode)( stringToInt( bgMode,               Qtx::ColorBackground, 
-								Qtx::ImageBackground, Qtx::CustomGradientBackground ) );
+    // finally set background mode
+    Qtx::BackgroundMode m = (Qtx::BackgroundMode)( stringToInt( bgMode,            Qtx::ColorBackground, 
+								Qtx::NoBackground, Qtx::CustomGradientBackground ) );
     bgData.setMode( m );
   }
 
@@ -1730,19 +1740,21 @@ Qtx::Localizer::~Localizer()
 
   This class is used to store background data. Depending on the mode,
   the background can be specified by:
-  - image (by assigning the file name to be used as background texture), see setTexture()
+  - image (by assigning the file name to be used as background texture), see setTexture(), setTextureShown()
   - single color (by assigning any color), see setColor()
   - simple two-color gradient (with the gradient type id and two colors), see setGradient( int, const QColor&, const QColor& )
   - complex gradient (by assigning arbitrary gradient data), see setGradient( const QGradient& )
+
   The class stores all the data passed to it, so switching between different modes can be done
   just by calling setMode() function.
+
+  \note Texture is used with combination of the background mode.
 
   \note Two-color gradient is specified by two colors and integer identifier. The interpretation of 
   this identifier should be done in the calling code.
 
   \code
   Qtx::BackgroundData bg;
-  bg.setTexture( "/data/images/background.png" );        // bg is switched to Qtx::ImageBackground mode
   bg.setColor( QColor(100, 100, 100) );                  // bg is switched to Qtx::ColorBackground mode
   bg.setGradient( Qt::Horizontal, Qt::gray, Qt::white ); // bg is switched to Qtx::ColorBackground mode
   QLinearGradient grad( 0,0,1,1 ); 
@@ -1752,6 +1764,8 @@ Qtx::Localizer::~Localizer()
   grad.setSpread( QGradient::PadSpread );
   bg.setGradient( grad );                                // bg is switched to Qtx::CustomGradientBackground mode
   bg.setMode( Qtx::ColorBackground );                    // bg is switched back to Qtx::ColorBackground mode
+  bg.setTexture( "/data/images/background.png" );        // specify texture (in the centered mode by default)
+  bg.setTextureShown( true );                            // draw texture on the solid color background
   \endcode
 */
 
@@ -1760,7 +1774,7 @@ Qtx::Localizer::~Localizer()
   Creates invalid background data.
 */
 Qtx::BackgroundData::BackgroundData()
-  : myTextureMode( Qtx::CenterTexture ), myGradientType( -1 )
+  : myTextureMode( Qtx::CenterTexture ), myGradientType( -1 ), myTextureShown( false )
 {
   setMode( Qtx::NoBackground );
 }
@@ -1771,7 +1785,7 @@ Qtx::BackgroundData::BackgroundData()
   \param c color
 */
 Qtx::BackgroundData::BackgroundData( const QColor& c )
-  : myTextureMode( Qtx::CenterTexture ), myGradientType( -1 )
+  : myTextureMode( Qtx::CenterTexture ), myGradientType( -1 ), myTextureShown( false )
 {
   setColor( c );
 }
@@ -1785,7 +1799,7 @@ Qtx::BackgroundData::BackgroundData( const QColor& c )
   \note the interpretation of the gradient identifier should be done in the calling code
 */
 Qtx::BackgroundData::BackgroundData( int type, const QColor& c1, const QColor& c2 )
-  : myTextureMode( Qtx::CenterTexture ), myGradientType( -1 )
+  : myTextureMode( Qtx::CenterTexture ), myGradientType( -1 ), myTextureShown( false )
 {
   setGradient( type, c1, c2 );
 }
@@ -1796,7 +1810,7 @@ Qtx::BackgroundData::BackgroundData( int type, const QColor& c1, const QColor& c
   \param grad gradient data
 */
 Qtx::BackgroundData::BackgroundData( const QGradient& grad )
-  : myTextureMode( Qtx::CenterTexture ), myGradientType( -1 )
+  : myTextureMode( Qtx::CenterTexture ), myGradientType( -1 ), myTextureShown( false )
 {
   setGradient( grad );
 }
@@ -1819,7 +1833,8 @@ bool Qtx::BackgroundData::operator==( const Qtx::BackgroundData& other ) const
     ( myFileName     == other.myFileName )     &&
     ( myColors       == other.myColors )       &&
     ( myGradientType == other.myGradientType ) &&
-    ( myGradient     == other.myGradient );
+    ( myGradient     == other.myGradient )     &&
+    ( myTextureShown == other.myTextureShown );
 }
 
 /*!
@@ -1855,7 +1870,7 @@ void Qtx::BackgroundData::setMode( const Qtx::BackgroundMode m )
 /*!
   \brief Get file name used as a texture image
   \return path to the texture image file
-  \sa setTexture(), mode()
+  \sa setTexture(), setTextureShown()
 */
 Qtx::TextureMode Qtx::BackgroundData::texture( QString& fileName ) const
 {
@@ -1864,16 +1879,39 @@ Qtx::TextureMode Qtx::BackgroundData::texture( QString& fileName ) const
 }
 
 /*!
-  \brief Set file name to be used as a texture image and switch to the Qtx::ImageBackground mode
+  \brief Set file name to be used as a texture image.
+
+  \note To show texture image on the background it is necessary to call additionally
+  setTextureShown() method.
+
   \param fileName path to the texture image file name
   \param m texture mode (Qtx::CenterTexture by default)
-  \sa texture(), mode()
+  \sa texture(), setTextureShown()
 */
 void Qtx::BackgroundData::setTexture( const QString& fileName, const Qtx::TextureMode m )
 {
   myFileName = fileName;
   myTextureMode = m;
-  setMode( Qtx::ImageBackground );
+}
+
+/*!
+  \brief Check if "show texture" flag is switched on
+  \return \c true if "show texture" flag is set or \c false otherwise
+  \sa setTextureShown(), texture()
+*/
+bool Qtx::BackgroundData::isTextureShown() const
+{
+  return myTextureShown;
+}
+
+/*!
+  \brief Specify if texture should be shown on the background or no.
+  \param on \c true if texture should be shown or \c false otherwise
+  \sa isTextureShown(), texture()
+*/
+void Qtx::BackgroundData::setTextureShown( bool on )
+{
+  myTextureShown = on;
 }
 
 /*!

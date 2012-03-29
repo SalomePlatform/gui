@@ -599,5 +599,9 @@ Please, refer to the documentation.</translation>
         <source>GT_VERTICALGRADIENT</source>
         <translation>Vertical gradient</translation>
     </message>
+    <message>
+        <source>BG_IMAGE_FILES</source>
+        <translation>Image files (*.png *.jpg *.jpeg *.bmp *.tif *.tiff *.mhd *.mha)</translation>
+    </message>
 </context>
 </TS>

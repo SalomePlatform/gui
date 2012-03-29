@@ -133,7 +133,6 @@ public:
   //! Background mode
   typedef enum { 
     NoBackground,              // no (invalid) background data
-    ImageBackground,           // image (texture)
     ColorBackground,           // single color
     SimpleGradientBackground,  // simple two-color gradient
     CustomGradientBackground   // custom (complex) gradient
@@ -175,6 +174,8 @@ public:
     
     TextureMode      texture( QString& ) const;
     void             setTexture( const QString&, TextureMode = Qtx::CenterTexture );
+    bool             isTextureShown() const;
+    void             setTextureShown( bool );
 
     QColor           color() const;
     void             setColor( const QColor& );
@@ -186,12 +187,13 @@ public:
     void             setGradient( const QGradient& );
   
   private:
-    BackgroundMode  myMode;
-    TextureMode     myTextureMode;
-    QString         myFileName;
-    QColorList      myColors;
-    int             myGradientType;
-    QGradient       myGradient;
+    BackgroundMode   myMode;
+    TextureMode      myTextureMode;
+    QString          myFileName;
+    QColorList       myColors;
+    int              myGradientType;
+    QGradient        myGradient;
+    bool             myTextureShown;
   };
 
   static QString     toQString( const char*, const int = -1 );

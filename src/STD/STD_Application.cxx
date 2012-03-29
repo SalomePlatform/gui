@@ -931,13 +931,12 @@ QString STD_Application::getDirectory( const QString& initial, const QString& ca
 */
 void STD_Application::setDesktop( SUIT_Desktop* desk )
 {
-  SUIT_Desktop* prev = desktop();
-
   SUIT_Application::setDesktop( desk );
 
-  if ( prev != desk && desk )
+  if ( desk ) {
     connect( desk, SIGNAL( closing( SUIT_Desktop*, QCloseEvent* ) ),
-             this, SLOT( onDesktopClosing( SUIT_Desktop*, QCloseEvent* ) ) );
+             this, SLOT( onDesktopClosing( SUIT_Desktop*, QCloseEvent* ) ), Qt::UniqueConnection );
+  }
 }
 
 /*!

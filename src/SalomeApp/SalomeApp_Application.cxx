@@ -351,8 +351,6 @@ void SalomeApp_Application::createActions()
 /*!Set desktop:*/
 void SalomeApp_Application::setDesktop( SUIT_Desktop* desk )
 {
-  SUIT_Desktop* prev = desktop();
-
   LightApp_Application::setDesktop( desk );
 
   if ( desk ) {

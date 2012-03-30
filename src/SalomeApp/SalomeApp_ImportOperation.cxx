@@ -23,15 +23,9 @@
 //  SALOME SALOMEGUI : implementation of desktop and GUI kernel
 //  File   : SALOMEGUI_ImportOperation.cxx
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SalomeApp_ImportOperation.h"
 #include <SUIT_Application.h>
-
-#ifndef WIN32
-using namespace std;
-#endif
 
 /*!Constructor. Do nothing.*/
 SalomeApp_ImportOperation::SalomeApp_ImportOperation( SUIT_Application* app ) :

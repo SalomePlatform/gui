@@ -61,8 +61,7 @@ namespace
               const int theIndex,
               std::string& theName)
   {
-    using namespace std;
-    ostringstream aStream;
+    std::ostringstream aStream;
     aStream<<thePreffix<<"_"<<setw(6)<<setfill('0')<<theIndex<<".jpeg";
     theName = aStream.str();
   }
@@ -114,8 +113,7 @@ SVTK_Recorder
 ::CheckExistAVIMaker()
 {
   myErrorStatus = 0;
-  using namespace std;
-  ostringstream aStream;
+  std::ostringstream aStream;
 #ifndef WIN32
   aStream<<"which "<<myNameAVIMaker<<" 2> /dev/null";
 #else

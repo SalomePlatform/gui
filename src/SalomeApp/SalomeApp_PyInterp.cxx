@@ -23,17 +23,13 @@
 //  SALOME SALOMEGUI : implementation of desktop and GUI kernel
 //  File   : SalomeApp_PyInterp.cxx
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SalomeApp_PyInterp.h"
 
 #include <utilities.h>
 #include <Container_init_python.hxx>
 
 #include "PyInterp.h" // this include must be first (see PyInterp_base.h)!
-
-using namespace std;
 
 /*!
  * constructor : multi Python interpreter, one per SALOME study.

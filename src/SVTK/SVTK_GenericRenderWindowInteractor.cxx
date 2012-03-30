@@ -23,9 +23,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : 
 //  Author : 
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SVTK_GenericRenderWindowInteractor.h"
 #include "SVTK_Selector.h"
 
@@ -33,8 +31,6 @@
 #include <vtkCommand.h>
 
 #include <QTimer>
-
-using namespace std;
 
 vtkStandardNewMacro(QVTK_GenericRenderWindowInteractor);
 

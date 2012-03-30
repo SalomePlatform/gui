@@ -23,9 +23,7 @@
 //  SALOME SalomeApp
 //  File   : SalomeApp_StudyPropertiesDlg.cxx
 //  Author : Roman NIKOLAEV
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SalomeApp_StudyPropertiesDlg.h"
 #include "SalomeApp_Study.h"
 

@@ -23,12 +23,7 @@
 //  SALOME Session : implementation of Session_ServerThread.cxx
 //  File   : Session_ServerThread.cxx
 //  Author : Paul RASCLE, EDF
-//  Module : SALOME
-//  $Header$
-// #include <SALOMEconfig.h>
-// #include CORBA_SERVER_HEADER(SALOME_Session)
-// #include CORBA_SERVER_HEADER(SALOMEDS)
-//
+
 #include "Session_ServerThread.hxx"
 
 #include <SALOME_NamingService.hxx>
@@ -52,8 +47,6 @@
 
 #include <QMutex>
 #include <QWaitCondition>
-
-using namespace std;
 
 const int Session_ServerThread::NB_SRV_TYP = 6;
 const char* Session_ServerThread::_serverTypes[NB_SRV_TYP] = {"Container",
@@ -149,7 +142,7 @@ void Session_ServerThread::Init()
       case 4:  // Session
         {
           NamingService_WaitForServerReadiness(_NS,"/myStudyManager");
-          string containerName = "/Containers/";
+          std::string containerName = "/Containers/";
           containerName = containerName + Kernel_Utils::GetHostname();
           containerName = containerName + "/FactoryServer";
           NamingService_WaitForServerReadiness(_NS,containerName);
@@ -275,7 +268,7 @@ void Session_ServerThread::ActivateRegistry(int argc,
     }
     catch( const CORBA::Exception &/*exx*/ ) {
     }
-    string absoluteName = string("/") + registryName;
+    std::string absoluteName = std::string("/") + registryName;
     _NS->Register( varComponents , absoluteName.c_str() );
   }
   catch( const SALOME_Exception &ex ) {
@@ -289,7 +282,7 @@ void Session_ServerThread::ActivateContainerManager(int argc,
 {
   try {
     PortableServer::POA_var root_poa=PortableServer::POA::_the_root_poa();
-    cout << "Activate SalomeLauncher ......!!!! " << endl;
+    std::cout << "Activate SalomeLauncher ......!!!! " << std::endl;
     new SALOME_Launcher(_orb,root_poa);
   }
   catch(CORBA::SystemException&) {

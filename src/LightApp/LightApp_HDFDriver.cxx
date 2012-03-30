@@ -37,8 +37,6 @@ LightApp_HDFDriver::~LightApp_HDFDriver()
 {
 }
 
-using namespace std;
-
 /*!
   Saves in file 'theFileName' datas from this driver
 */

@@ -21,12 +21,9 @@
 //
 
 //  SALOME OBJECT : implementation of interactive object visualization for OCC and VTK viewers
-//  File   : SALOME_AISShape.hxx
+//  File   : SALOME_AISShape.cxx
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
-//using namespace std;
-//
+
 #include "SALOME_AISShape.ixx"
 
 /*!

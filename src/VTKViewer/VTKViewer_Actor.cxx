@@ -23,14 +23,11 @@
 //  SALOME OBJECT : implementation of interactive object visualization for OCC and VTK viewers
 //  File   : SALOME_Actor.cxx
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
-//
+
 /*!
   \class SALOME_Actor SALOME_Actor.h
   \brief Abstract class of SALOME Objects in VTK.
 */
-
 
 #include "VTKViewer_Actor.h"
 
@@ -46,8 +43,6 @@
 #include <vtkPolyDataMapper.h>
 #include <vtkRenderer.h>
 #include <vtkPassThroughFilter.h>
-
-using namespace std;
 
 #if defined __GNUC__
   #if __GNUC__ == 2

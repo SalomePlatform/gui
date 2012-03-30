@@ -23,9 +23,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : 
 //  Author : 
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef SVTK_RenderWindowInteractor_h
 #define SVTK_RenderWindowInteractor_h
 

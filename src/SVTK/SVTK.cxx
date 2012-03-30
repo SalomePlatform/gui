@@ -23,9 +23,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   :
 //  Author :
-//  Module :
-//  $Header$
-//
+
 #include "SVTK.h"
 #include "SVTK_Prs.h"
 #include "SVTK_Actor.h"

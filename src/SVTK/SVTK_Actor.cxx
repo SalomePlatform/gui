@@ -41,9 +41,6 @@
 #include "Utils_SALOME_Exception.hxx"
 #include "utilities.h"
 
-using namespace std;
-
-
 static 
 void
 CopyPoints(vtkUnstructuredGrid* theGrid, vtkDataSet *theSourceDataSet)

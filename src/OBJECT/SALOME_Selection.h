@@ -23,9 +23,7 @@
 //  SALOME Selection : description of enumeration Selection_Mode
 //  File   : SALOME_Selection.h
 //  Author :
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef SALOME_SELECTION_H
 #define SALOME_SELECTION_H
 

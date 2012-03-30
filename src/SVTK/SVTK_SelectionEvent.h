@@ -23,9 +23,7 @@
 //  SALOME SALOMEGUI : implementation of desktop and GUI kernel
 //  File   : SVTK_SelectionEvent.h
 //  Author : 
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef SVTK_SELECTIONEVENT_H
 #define SVTK_SELECTIONEVENT_H
 

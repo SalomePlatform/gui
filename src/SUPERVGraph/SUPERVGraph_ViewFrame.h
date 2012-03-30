@@ -23,9 +23,7 @@
 //  SALOME SUPERVGraph : build Supervisor viewer into desktop
 //  File   : SUPERVGraph_ViewFrame.h
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef SUPERVGraph_ViewFrame_H
 #define SUPERVGraph_ViewFrame_H
 

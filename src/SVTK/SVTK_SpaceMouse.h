@@ -23,9 +23,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : SVTK_SpaceMouse.h
 //  Author : Alexander SLADKOV
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef SVTK_SpaceMouse_h
 #define SVTK_SpaceMouse_h
 

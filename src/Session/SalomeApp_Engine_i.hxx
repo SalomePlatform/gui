@@ -23,9 +23,7 @@
 //  SalomeApp_Engine_i : implementation of SalomeApp_Engine.idl
 //  File   : SalomeApp_Engine_i.hxx
 //  Author : Alexander SLADKOV
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef _SALOMEAPP_ENGINE_I_HXX_
 #define _SALOMEAPP_ENGINE_I_HXX_
 

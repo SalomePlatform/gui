@@ -23,9 +23,7 @@
 //  SALOME SALOMEGUI : implementation of desktop and GUI kernel
 //  File   : SalomeApp_PyInterp.h
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef _SalomeApp_PYINTERP_H_
 #define _SalomeApp_PYINTERP_H_
 

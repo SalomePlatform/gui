@@ -23,12 +23,9 @@
 //  SALOME SALOMEGUI : implementation of desktop and GUI kernel
 //  File   : SALOME_TypeFilter.cxx
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SALOME_TypeFilter.ixx"
 #include "SALOME_InteractiveObject.hxx"
-using namespace std;
 
 /*!
   Constructor

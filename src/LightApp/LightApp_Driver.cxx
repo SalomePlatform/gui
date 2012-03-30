@@ -48,8 +48,6 @@ LightApp_Driver::~LightApp_Driver()
 {
 }
 
-using namespace std;
-
 /*!
   Save in file 'theFileName' datas from this driver
 */

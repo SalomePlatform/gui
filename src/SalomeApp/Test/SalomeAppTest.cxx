@@ -22,8 +22,6 @@
 
 #include "SalomeAppTest.hxx"
 
-using namespace std;
-
 // ============================================================================
 /*!
  * Set up the environment

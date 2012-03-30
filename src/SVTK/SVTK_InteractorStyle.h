@@ -23,9 +23,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : SVTK_InteractorStyle.h
 //  Author : Christophe ATTANASIO
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef __SVTK_InteractorStyle_h
 #define __SVTK_InteractorStyle_h
 

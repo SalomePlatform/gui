@@ -23,9 +23,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : 
 //  Author : 
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SVTK_InteractorStyle.h"
 
 #include "VTKViewer_Algorithm.h"
@@ -64,8 +62,6 @@
 
 #include <algorithm>
 #include <iostream>
-
-using namespace std;
 
 namespace
 {

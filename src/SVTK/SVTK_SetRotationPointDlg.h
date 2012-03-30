@@ -23,9 +23,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : 
 //  Author : 
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef SVTK_SETROTATIONPOINTDLG_H
 #define SVTK_SETROTATIONPOINTDLG_H
 

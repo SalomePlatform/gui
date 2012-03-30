@@ -23,9 +23,7 @@
 //  SALOME SALOMEGUI : implementation of desktop and GUI kernel
 //  File   : SALOME_Selection.cxx
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SVTK_SelectorDef.h"
 
 #include <VTKViewer_Filter.h>

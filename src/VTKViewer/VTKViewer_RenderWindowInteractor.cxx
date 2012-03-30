@@ -26,18 +26,9 @@
 #include "SUIT_ViewModel.h"
 #include "VTKViewer_ViewWindow.h"
 
-//#include "SUIT_Application.h"
-//#include "SUIT_Desktop.h"
-
-//#include "SALOME_Selection.h"
 #include "VTKViewer_Actor.h"
 #include "VTKViewer_Algorithm.h"
 #include "VTKViewer_Functor.h"
-
-//#include <stdio.h>
-//#include <stdlib.h>
-//#include <string.h>
-//#include <math.h>
 
 // VTK Includes
 #include <vtkAssemblyNode.h>

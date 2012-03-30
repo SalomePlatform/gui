@@ -23,9 +23,7 @@
 //  SALOME SUPERVGraph : build Supervisor viewer into desktop
 //  File   : SUPERVGraph_ViewFrame.cxx
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SUPERVGraph_ViewFrame.h"
 
 #include <SUIT_ResourceMgr.h>
@@ -34,9 +32,6 @@
 //QT Include
 #include <QVBoxLayout>
 #include <QToolBar>
-
-using namespace std;
-
 
 /*!
   Constructor

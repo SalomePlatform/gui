@@ -23,9 +23,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : 
 //  Author : 
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SVTK_SetRotationPointDlg.h"
 #include "SVTK_ViewWindow.h"
 #include "SVTK_RenderWindowInteractor.h"
@@ -45,8 +43,6 @@
 #include <QCheckBox>
 
 #include <vtkCallbackCommand.h>
-
-using namespace std;
 
 /*!
   Constructor

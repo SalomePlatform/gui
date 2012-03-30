@@ -23,9 +23,7 @@
 //  SALOME Session : implementation of Session_ServerLauncher.hxx
 //  File   : Session_ServerLauncher.hxx
 //  Author : Paul RASCLE, EDF
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef _SESSION_SERVERLAUNCHER_HXX_
 #define _SESSION_SERVERLAUNCHER_HXX_
 
@@ -36,8 +34,6 @@
 #include <vector>
 #include <string>
 #include <QThread>
-
-using namespace std;
 
 class SESSION_EXPORT ServArg
   {
@@ -78,17 +74,17 @@ protected:
   void ActivateAll();
 
 private:
-  int _argc;
-  char ** _argv;
-  CORBA::ORB_var              _orb;
-  PortableServer::POA_var     _root_poa;
-  QMutex*                     _GUIMutex;
-  QWaitCondition*             _ServerLaunch;
-  QMutex*                     _SessionMutex;
-  QWaitCondition*             _SessionStarted;
-  list<ServArg>               _argServToLaunch;
-  vector<string>              _argCopy;
-  list<Session_ServerThread*> _serverThreads;
+  int                              _argc;
+  char**                           _argv;
+  CORBA::ORB_var                    _orb;
+  PortableServer::POA_var          _root_poa;
+  QMutex*                          _GUIMutex;
+  QWaitCondition*                  _ServerLaunch;
+  QMutex*                          _SessionMutex;
+  QWaitCondition*                  _SessionStarted;
+  std::list<ServArg>               _argServToLaunch;
+  std::vector<std::string>         _argCopy;
+  std::list<Session_ServerThread*> _serverThreads;
 };
 
 #endif

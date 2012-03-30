@@ -21,15 +21,9 @@
 //
 
 // File:        SALOME_Prs.cxx
-// Created:     Wed Apr 28 15:03:43 2004
-// Author:      Sergey ANIKIN
-//              <san@startrex.nnov.opencascade.com>
-//
+// Author:      Sergey ANIKIN, Open CASCADE S.A.S. (sergey.anikin@opencascade.com)
+
 #include "SALOME_Prs.h"
-
-//#include "utilities.h"
-
-//using namespace std;
 
 /*!
   Dispatches display operation to proper Display() method of SALOME_View

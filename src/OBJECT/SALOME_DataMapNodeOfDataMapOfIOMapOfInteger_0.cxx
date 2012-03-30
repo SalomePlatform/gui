@@ -45,7 +45,6 @@
 #ifndef _SALOME_DataMapIteratorOfDataMapOfIOMapOfInteger_HeaderFile
 #include "SALOME_DataMapIteratorOfDataMapOfIOMapOfInteger.hxx"
 #endif
-using namespace std;
 
 /*!
   Destructor

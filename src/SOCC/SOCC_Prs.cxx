@@ -23,14 +23,10 @@
 //  SALOME OCCViewer : build OCC Viewer into Salome desktop
 //  File   : SOCC_Prs.cxx
 //  Author : Sergey ANIKIN
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SOCC_Prs.h"
 
 #include <AIS_InteractiveObject.hxx>
-
-using namespace std;
 
 /*!
   Default constructor

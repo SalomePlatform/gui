@@ -32,8 +32,6 @@
 #include <vtkRenderer.h>
 #include <vtkRenderWindow.h>
 
-using namespace std;
-
 /*!@see vtkRenderer::ResetCamera(vtkFloatingPointType bounds[6]) method*/
 void 
 ResetCamera(vtkRenderer* theRenderer, 
@@ -53,8 +51,8 @@ ResetCamera(vtkRenderer* theRenderer,
     static vtkFloatingPointType MIN_DISTANCE = 1.0 / VTK_LARGE_FLOAT;
 
     vtkFloatingPointType aLength = aBounds[1]-aBounds[0];
-    aLength = max((aBounds[3]-aBounds[2]),aLength);
-    aLength = max((aBounds[5]-aBounds[4]),aLength);
+    aLength = std::max((aBounds[3]-aBounds[2]),aLength);
+    aLength = std::max((aBounds[5]-aBounds[4]),aLength);
     
     if(aLength < MIN_DISTANCE)
       return;
@@ -137,13 +135,13 @@ ComputeVisiblePropBounds(vtkRenderer* theRenderer,
       {
         aCount++;
 
-        theBounds[0] = min(aBounds[0],theBounds[0]);
-        theBounds[2] = min(aBounds[2],theBounds[2]);
-        theBounds[4] = min(aBounds[4],theBounds[4]);
+        theBounds[0] = std::min(aBounds[0],theBounds[0]);
+        theBounds[2] = std::min(aBounds[2],theBounds[2]);
+        theBounds[4] = std::min(aBounds[4],theBounds[4]);
 
-        theBounds[1] = max(aBounds[1],theBounds[1]);
-        theBounds[3] = max(aBounds[3],theBounds[3]);
-        theBounds[5] = max(aBounds[5],theBounds[5]);
+        theBounds[1] = std::max(aBounds[1],theBounds[1]);
+        theBounds[3] = std::max(aBounds[3],theBounds[3]);
+        theBounds[5] = std::max(aBounds[5],theBounds[5]);
 
       }//not bogus
     }
@@ -209,8 +207,8 @@ ComputeTrihedronSize( vtkRenderer* theRenderer,
   vtkFloatingPointType aLength = 0;
 
   aLength = bnd[ 1 ]-bnd[ 0 ];
-  aLength = max( ( bnd[ 3 ] - bnd[ 2 ] ),aLength );
-  aLength = max( ( bnd[ 5 ] - bnd[ 4 ] ),aLength );
+  aLength = std::max( ( bnd[ 3 ] - bnd[ 2 ] ),aLength );
+  aLength = std::max( ( bnd[ 5 ] - bnd[ 4 ] ),aLength );
 
   static vtkFloatingPointType EPS_SIZE = 5.0E-3;
   theNewSize = aLength * theSizeInPercents / 100.0;
@@ -302,8 +300,8 @@ bool ComputeBBCenter(vtkRenderer* theRenderer, vtkFloatingPointType theCenter[3]
     static vtkFloatingPointType MIN_DISTANCE = 1.0 / VTK_LARGE_FLOAT;
     
     vtkFloatingPointType aLength = aNewBndBox[1]-aNewBndBox[0];
-    aLength = max((aNewBndBox[3]-aNewBndBox[2]),aLength);
-    aLength = max((aNewBndBox[5]-aNewBndBox[4]),aLength);
+    aLength = std::max((aNewBndBox[3]-aNewBndBox[2]),aLength);
+    aLength = std::max((aNewBndBox[5]-aNewBndBox[4]),aLength);
     
     if(aLength < MIN_DISTANCE)
       return false;

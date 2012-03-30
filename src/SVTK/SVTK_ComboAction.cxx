@@ -20,9 +20,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : 
 //  Author : 
-//  Module : SALOME
-//  $Header: 
-//
+
 #include "SVTK_ComboAction.h"
 
 #include <QComboBox>

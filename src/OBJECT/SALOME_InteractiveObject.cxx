@@ -23,10 +23,7 @@
 //  SALOME OBJECT : implementation of interactive object visualization for OCC and VTK viewers
 //  File   : SALOME_InteractiveObject.cxx
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
-//using namespace std;
-//
+
 /*!
   \class SALOME_InteractiveObject SALOME_InteractiveObject.hxx
   \brief ...

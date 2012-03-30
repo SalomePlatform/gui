@@ -23,8 +23,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : VTKViewer_InteractorStyle.cxx
 //  Author : Christophe ATTANASIO
-//  Module : SALOME
-//
+
 #include "VTKViewer_InteractorStyle.h"
 
 #include "VTKViewer_Actor.h"
@@ -33,8 +32,6 @@
 #include "VTKViewer_ViewWindow.h"
 #include "VTKViewer_RenderWindow.h"
 #include "VTKViewer_RenderWindowInteractor.h"
-
-//#include "SALOME_Actor.h"
 
 #include <vtkObjectFactory.h>
 #include <vtkMath.h>
@@ -54,11 +51,6 @@
 #include <QRubberBand>
 
 #include <algorithm>
-
-//#include "utilities.h"
-
-using namespace std;
-
 
 /*
 static int GetEdgeId(vtkPicker *thePicker, SALOME_Actor *theActor, int theObjId){

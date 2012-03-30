@@ -23,9 +23,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   :
 //  Author :
-//  Module :
-//  $Header$
-//
+
 #include "VTKViewer_Actor.h"
 #include "VTKViewer_ExtractUnstructuredGrid.h"
 #include "VTKViewer_ConvexTool.h"

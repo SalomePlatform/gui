@@ -23,11 +23,8 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : 
 //  Author : 
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SVTK_RenderWindowInteractor.h"
-//#include "SVTK_GenericRenderWindowInteractor.h"
 
 #include "SVTK_InteractorStyle.h"
 #include "SVTK_Renderer.h"
@@ -56,8 +53,6 @@
 #include <vtkCommand.h>
 #include <vtkPicker.h>
 #include <vtkCamera.h>
-
-using namespace std;
 
 static bool GENERATE_SUIT_EVENTS = true;
 static bool FOCUS_UNDER_MOUSE = false;

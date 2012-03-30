@@ -22,8 +22,7 @@
 
 //  SALOME SALOMEGUI : implementation of desktop and GUI kernel
 //  File   : SALOME_ListIteratorOfListIO_0.cxx
-//  Module : SALOME
-//
+
 #include "SALOME_ListIteratorOfListIO.hxx"
 
 #ifndef _Standard_NoMoreObject_HeaderFile
@@ -41,8 +40,7 @@
 #ifndef _SALOME_ListNodeOfListIO_HeaderFile
 #include "SALOME_ListNodeOfListIO.hxx"
 #endif
-using namespace std;
- 
+
 
 #define Item Handle_SALOME_InteractiveObject
 #define Item_hxx "SALOME_InteractiveObject.hxx"

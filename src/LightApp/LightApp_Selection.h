@@ -23,9 +23,7 @@
 //  LightApp_Selection
 //  File   : LightApp_Selection.h
 //  Author : Alexander SOLOVYOV
-//  Module : GUI
-//  $Header$
-//
+
 #ifndef LIGHTAPP_SELECTION_HeaderFile
 #define LIGHTAPP_SELECTION_HeaderFile
 

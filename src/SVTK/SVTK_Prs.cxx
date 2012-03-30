@@ -23,14 +23,10 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : SVTK_Prs.cxx
 //  Author : Sergey ANIKIN
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SVTK_Prs.h"
 
 #include <vtkActorCollection.h>
-
-using namespace std;
 
 /*!
   Default constructor

@@ -22,11 +22,8 @@
 
 //  File   : libSALOME_Swig.i
 //  Author : Paul RASCLE, EDF
-//  Module : SALOME
-//  $Header$
-//
+
 %module libSALOME_Swig
 
-//%include "SALOME_NamingService.i"
 %include "SALOMEGUI_Swig.i"
 

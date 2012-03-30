@@ -47,8 +47,6 @@
 #ifndef _SALOME_DataMapIteratorOfDataMapOfIOMapOfInteger_HeaderFile
 #include "SALOME_DataMapIteratorOfDataMapOfIOMapOfInteger.hxx"
 #endif
-using namespace std;
-
 
 #define TheKey Handle_SALOME_InteractiveObject
 #define TheKey_hxx "SALOME_InteractiveObject.hxx"

@@ -23,10 +23,8 @@
 //  VTKViewer_Filter : Filter for VTK viewer
 //  File   : VTKViewer_Filter.cxx
 //  Author : Sergey LITONIN
-//  Module : SALOME
-//
+
 #include "VTKViewer_Filter.h"
-using namespace std;
 
 IMPLEMENT_STANDARD_HANDLE(VTKViewer_Filter, MMgt_TShared)
 IMPLEMENT_STANDARD_RTTIEXT(VTKViewer_Filter, MMgt_TShared)

@@ -20,9 +20,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : 
 //  Author : 
-//  Module : SALOME
-//  $Header:
-//
+
 #ifndef SVTK_VIEWPARAMETERDLG_H
 #define SVTK_VIEWPARAMETERDLG_H
 

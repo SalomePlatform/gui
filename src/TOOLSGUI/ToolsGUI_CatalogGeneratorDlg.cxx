@@ -50,8 +50,6 @@
 
 #include "utilities.h"
 
-using namespace std;
-
 #define SPACING_SIZE             6
 #define MARGIN_SIZE             11
 #define MIN_EDIT_SIZE          250

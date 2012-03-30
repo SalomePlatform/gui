@@ -28,8 +28,6 @@
 #include <QString>
 #include <QTextStream>
 
-using namespace std;
-
 namespace VTK
 {
   bool LoadTextureData( const QString& theFileName,

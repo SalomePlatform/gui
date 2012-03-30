@@ -20,9 +20,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : 
 //  Author : 
-//  Module : SALOME
-//  $Header: 
-//
+
 #include "SVTK_ViewParameterDlg.h"
 #include "SVTK_ViewWindow.h"
 #include "SVTK_RenderWindowInteractor.h"
@@ -47,8 +45,6 @@
 #include <vtkRenderer.h>
 #include <vtkCamera.h>
 #include <vtkGenericRenderWindowInteractor.h>
-
-using namespace std;
 
 /*!
   Constructor

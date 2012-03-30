@@ -44,8 +44,6 @@ public:
   }
 };
 
-using namespace std;
-
 PyInterp_Dispatcher* PyInterp_Dispatcher::myInstance = 0;
 
 void PyInterp_Request::process()

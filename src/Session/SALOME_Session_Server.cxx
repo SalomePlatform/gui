@@ -455,7 +455,7 @@ int main( int argc, char **argv )
     const char *p = tc->name();
     INFOS ( "run(): CORBA exception of the kind : "<<p<< " is caught" );
   }
-  catch ( exception& e ) {
+  catch ( std::exception& e ) {
     INFOS( "run(): An exception has been caught: " <<e.what() );
   }
   catch (...) {

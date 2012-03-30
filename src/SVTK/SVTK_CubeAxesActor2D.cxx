@@ -23,9 +23,7 @@
 //  SALOME OBJECT : kernel of SALOME component
 //  File   : SVTK_CubeAxesActor2D.cxx
 //  Author : Eugeny Nikolaev
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SVTK_CubeAxesActor2D.h"
 #include "VTKViewer_Transform.h"
 

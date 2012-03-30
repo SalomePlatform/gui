@@ -23,9 +23,7 @@
 //  SALOME OBJECT : implementation of interactive object visualization for OCC and VTK viewers
 //  File   :
 //  Author :
-//  Module :
-//  $Header$
-//
+
 #include "VTKViewer_CellLocationsArray.h"
 
 #include <vtkObjectFactory.h>

@@ -23,9 +23,7 @@
 //  SALOME OCCViewer : build OCC Viewer into Salome desktop
 //  File   : SOCC_Prs.h
 //  Author : Sergey ANIKIN
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef SOCC_Prs_H
 #define SOCC_Prs_H
 

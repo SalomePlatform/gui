@@ -20,9 +20,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : SVTK_KeyFreeInteractorStyle.cxx
 //  Author : Christophe ATTANASIO
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SVTK_KeyFreeInteractorStyle.h"
 #include "SVTK_Selector.h"
 

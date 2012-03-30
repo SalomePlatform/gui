@@ -23,9 +23,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : 
 //  Author : 
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SVTK_UpdateRateDlg.h"
 
 #include "SVTK_ViewWindow.h"
@@ -53,8 +51,6 @@
 
 static vtkFloatingPointType OFF_UPDATE_RATE = 0.00001;
 static vtkFloatingPointType FLOAT_TOLERANCE = 1.0 / VTK_LARGE_FLOAT;
-
-using namespace std;
 
 namespace
 {

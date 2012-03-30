@@ -23,9 +23,7 @@
 //  SVTK OBJECT : interactive object for SVTK visualization
 //  File   : SVTK_DeviceActor.cxx
 //  Author : 
-//  Module : 
-//  $Header$
-//
+
 #include "SVTK_DeviceActor.h"
 
 #include "VTKViewer_Transform.h"
@@ -44,8 +42,6 @@
 #include <VTKViewer_DataSetMapper.h>
 
 #include <vtkPassThroughFilter.h>
-
-using namespace std;
 
 vtkStandardNewMacro(SVTK_DeviceActor);
 
@@ -192,18 +188,18 @@ SVTK_DeviceActor
 {
   unsigned long mTime = this->Superclass::GetMTime();
 
-  mTime = max(mTime,myGeomFilter->GetMTime());
+  mTime = std::max(mTime,myGeomFilter->GetMTime());
 
-  mTime = max(mTime,myTransformFilter->GetMTime());
+  mTime = std::max(mTime,myTransformFilter->GetMTime());
 
   if(myIsShrunk)
-    mTime = max(mTime,myShrinkFilter->GetMTime());
+    mTime = std::max(mTime,myShrinkFilter->GetMTime());
 
   if(myIsFeatureEdgesEnabled)
-    mTime = max(mTime,myFeatureEdges->GetMTime());
+    mTime = std::max(mTime,myFeatureEdges->GetMTime());
 
   for(int i = 0, iEnd = myPassFilter.size(); i < iEnd; i++)
-    max(mTime,myPassFilter[i]->GetMTime());
+    std::max(mTime,myPassFilter[i]->GetMTime());
 
   return mTime;
 }

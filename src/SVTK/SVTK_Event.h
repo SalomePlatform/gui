@@ -23,9 +23,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : 
 //  Author : Alexander SLADKOV
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef SVTK_Event_h
 #define SVTK_Event_h
 

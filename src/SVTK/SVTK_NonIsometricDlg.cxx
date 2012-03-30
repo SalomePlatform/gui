@@ -23,9 +23,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : 
 //  Author : 
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SVTK_NonIsometricDlg.h"
 #include "SVTK_ViewWindow.h"
 #include "SVTK_Renderer.h"
@@ -37,8 +35,6 @@
 #include <QLabel>
 #include <QPushButton>
 #include <QGridLayout>
-
-using namespace std;
 
 /*!
   Constructor

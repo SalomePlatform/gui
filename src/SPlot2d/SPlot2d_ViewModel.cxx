@@ -48,8 +48,6 @@
 #include <qwt_plot_curve.h>
 #include <stdlib.h>
 
-using namespace std;
-
 //ASL: Temporary commented in order to avoir dependency on SALOMEDS
 
 //#include "SALOMEDSClient.hxx"

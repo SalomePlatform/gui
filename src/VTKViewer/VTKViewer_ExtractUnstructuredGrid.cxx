@@ -20,11 +20,9 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-//  VISU CONVERTOR :
-// File:    VISU_ExtractUnstructuredGrid.cxx
+// File:    VTKViewer_ExtractUnstructuredGrid.cxx
 // Author:  Alexey PETROV
-// Module : VISU
-//
+
 #include "VTKViewer_ExtractUnstructuredGrid.h"
 #include "VTKViewer_CellLocationsArray.h"
 
@@ -39,8 +37,6 @@
 #include <vtkVersion.h>
 
 #include "utilities.h"
-
-using namespace std;
 
 #if defined __GNUC__
   #if __GNUC__ == 2

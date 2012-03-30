@@ -35,8 +35,6 @@
 #include <map>
 #include <deque>
 
-using namespace std;
-
 class vtkEDFEdge
 {
 public :
@@ -332,7 +330,7 @@ void  vtkEDFCutter::AssembleOutputTriangles(vtkPolyData* inpd,
 
           toVisit.push_back(*(batch.begin()));
 
-          set<vtkIdType> triedAgain;
+          std::set<vtkIdType> triedAgain;
 
           while(toVisit.size() > 0)
             {

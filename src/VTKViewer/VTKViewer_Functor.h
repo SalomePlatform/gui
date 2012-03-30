@@ -23,9 +23,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : VTKViewer_ViewFrame.h
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef VTKViewer_Functor_H
 #define VTKViewer_Functor_H
 

@@ -23,9 +23,7 @@
 //  SALOME VTKViewer : build VTK viewer into Salome desktop
 //  File   : SVTK_Prs.h
 //  Author : Sergey ANIKIN
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef SVTK_Prs_H
 #define SVTK_Prs_H
 

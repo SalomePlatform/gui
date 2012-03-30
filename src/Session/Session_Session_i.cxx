@@ -47,9 +47,6 @@
 # include <process.h>
 #endif
 
-
-using namespace std;
-
 /*!
   constructor
 */
@@ -258,7 +255,7 @@ CORBA::Long SALOME_Session_i::getPID() {
 
 char* SALOME_Session_i::getHostname()
 {
-  string aHostName = Kernel_Utils::GetHostname();
+  std::string aHostName = Kernel_Utils::GetHostname();
   return CORBA::string_dup( aHostName.data() );
 }
 

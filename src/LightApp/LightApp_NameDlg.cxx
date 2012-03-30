@@ -33,10 +33,6 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 
-#ifndef WIN32
-using namespace std;
-#endif
-
 /*!
   Constructor
 */

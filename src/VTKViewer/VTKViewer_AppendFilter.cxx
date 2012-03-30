@@ -23,9 +23,7 @@
 //  SALOME OBJECT : kernel of SALOME component
 //  File   : VTKViewer_GeometryFilter.cxx
 //  Author : 
-//  Module : SALOME
-//  $Header$
-//
+
 #include "VTKViewer_AppendFilter.h"
 
 #include <vtkCell.h>

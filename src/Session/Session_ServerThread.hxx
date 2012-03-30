@@ -23,9 +23,7 @@
 //  SALOME Session : implementation of Session_ServerThread.hxx
 //  File   : Session_ServerThread.hxx
 //  Author : Paul RASCLE, EDF
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef _SESSION_SERVERTHREAD_HXX_
 #define _SESSION_SERVERTHREAD_HXX_
 
@@ -34,9 +32,7 @@
 #include <CORBA.h> 
 #include <string>
 
-using namespace std;
-
-void WaitForServerReadiness(string serverName);
+void WaitForServerReadiness(std::string serverName);
 
 class SALOME_NamingService;
 
@@ -78,11 +74,11 @@ class SESSION_EXPORT Session_SessionThread : public Session_ServerThread
 public:
   Session_SessionThread() {}
   Session_SessionThread(int argc,
-                       char** argv, 
-                       CORBA::ORB_ptr orb, 
-                       PortableServer::POA_ptr poa,
-                       QMutex* GUIMutex,
-                       QWaitCondition* GUILauncher);
+			char** argv, 
+			CORBA::ORB_ptr orb, 
+			PortableServer::POA_ptr poa,
+			QMutex* GUIMutex,
+			QWaitCondition* GUILauncher);
   virtual ~Session_SessionThread();  
 
 protected:

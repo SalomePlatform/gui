@@ -23,9 +23,7 @@
 //  SALOME SALOMEGUI : implementation of desktop and GUI kernel
 //  File   : SALOME_Selection.h
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef SVTK_SELECTORDEF_H
 #define SVTK_SELECTORDEF_H
 

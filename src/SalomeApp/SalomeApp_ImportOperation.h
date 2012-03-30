@@ -23,9 +23,7 @@
 //  SALOME SALOMEAPP : implementation of desktop and GUI kernel
 //  File   : SalomeApp_ImportOperation.h
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
-//
+
 #if !defined SALOMEAPP_IMPORTOPERATION
 #define SALOMEAPP_IMPORTOPERATION
 

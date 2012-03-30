@@ -23,9 +23,7 @@
 //  SALOME OBJECT : kernel of SALOME component
 //  File   : SALOME_GeometryFilter.cxx
 //  Author : Michael ZORIN
-//  Module : SALOME
-//  $Header$
-//
+
 #include "VTKViewer_ShrinkFilter.h"
 
 #include <vtkCell.h>

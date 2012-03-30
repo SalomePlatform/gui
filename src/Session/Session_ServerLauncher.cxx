@@ -23,9 +23,7 @@
 //  SALOME Session : implementation of Session_ServerLauncher.cxx
 //  File   : Session_ServerLauncher.xx
 //  Author : Paul RASCLE, EDF
-//  Module : SALOME
-//  $Header$
-//
+
 #include "Session_ServerLauncher.hxx"
 #include "Session_ServerThread.hxx"
 
@@ -35,7 +33,6 @@
 #include <QMutex>
 #include <QWaitCondition>
 
-using namespace std;
 /*! 
    default constructor not for use
  */
@@ -153,8 +150,8 @@ void Session_ServerLauncher::CheckArgs()
               {
                 INFOS("parenthesis '(' is required here...");
                 for (int i=0; i<iarg; i++)
-                  cerr << _argv[i] << " ";
-                cerr << endl;
+                  std::cerr << _argv[i] << " ";
+                std::cerr << std::endl;
                 throw SALOME_Exception(LOCALIZED("Error in command arguments, missing prenthesis"));
               } 
             else
@@ -194,7 +191,7 @@ void Session_ServerLauncher::CheckArgs()
 
 void Session_ServerLauncher::ActivateAll()
 {
-  list<ServArg>::iterator itServ;
+  std::list<ServArg>::iterator itServ;
   for (itServ = _argServToLaunch.begin(); itServ !=_argServToLaunch.end(); itServ++)
   {
     int argc = 2 + (*itServ)._lastArg - (*itServ)._firstArg;
@@ -239,7 +236,7 @@ void Session_ServerLauncher::ActivateAll()
 void Session_ServerLauncher::KillAll()
 {
   MESSAGE("Session_ServerLauncher::KillAll()");
-  list<Session_ServerThread*>::reverse_iterator itServ;
+  std::list<Session_ServerThread*>::reverse_iterator itServ;
   for (itServ = _serverThreads.rbegin(); itServ !=_serverThreads.rend(); itServ++)
   {
     delete (*itServ);

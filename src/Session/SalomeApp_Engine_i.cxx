@@ -23,9 +23,7 @@
 //  SalomeApp_Engine_i : implementation of SalomeApp_Engine.idl
 //  File   : SalomeApp_Engine_i.cxx
 //  Author : Alexander SLADKOV
-//  Module : SALOME
-//  $Header$
-//
+
 #include "SalomeApp_Engine_i.hxx"
 
 #include <SALOME_NamingService.hxx>
@@ -40,8 +38,6 @@
 #include <QFile>
 
 #include <iostream>
-
-using namespace std;
 
 /*!
   Constructor
@@ -115,7 +111,7 @@ CORBA::Boolean SalomeApp_Engine_i::Load (SALOMEDS::SComponent_ptr theComponent,
                                          const char* theURL,
                                          bool isMultiFile)
 {
-  cout << "SalomeApp_Engine_i::Load() isMultiFile = " << isMultiFile << endl;
+  std::cout << "SalomeApp_Engine_i::Load() isMultiFile = " << isMultiFile << std::endl;
   if (CORBA::is_nil(theComponent) || CORBA::is_nil(theComponent->GetStudy()))
     return false;
 

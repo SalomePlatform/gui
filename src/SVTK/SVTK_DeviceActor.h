@@ -23,9 +23,7 @@
 //  SVTK OBJECT : interactive object for SVTK visualization
 //  File   : SVTK_DeviceActor.h
 //  Author : 
-//  Module : 
-//  $Header$
-//
+
 #ifndef SVTK_DEVICE_ACTOR_H
 #define SVTK_DEVICE_ACTOR_H
 

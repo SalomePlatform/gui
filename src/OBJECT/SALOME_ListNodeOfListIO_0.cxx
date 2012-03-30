@@ -22,8 +22,7 @@
 
 //  SALOME SALOMEGUI : implementation of desktop and GUI kernel
 //  File   : SALOME_ListNodeOfListIO_0.cxx
-//  Module : SALOME
-//
+
 #include "SALOME_ListNodeOfListIO.hxx"
 
 #ifndef _Standard_TypeMismatch_HeaderFile
@@ -39,7 +38,6 @@
 #ifndef _SALOME_ListIteratorOfListIO_HeaderFile
 #include "SALOME_ListIteratorOfListIO.hxx"
 #endif
-using namespace std;
 
 /*!
   Destructor

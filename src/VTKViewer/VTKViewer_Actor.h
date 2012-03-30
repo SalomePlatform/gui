@@ -23,9 +23,7 @@
 //  SALOME OBJECT : implementation of interactive object visualization for OCC and VTK viewers
 //  File   : SALOME_Actor.h
 //  Author : Nicolas REJNERI
-//  Module : SALOME
-//  $Header$
-//
+
 #ifndef VTKVIEVER_ACTOR_H
 #define VTKVIEVER_ACTOR_H
 

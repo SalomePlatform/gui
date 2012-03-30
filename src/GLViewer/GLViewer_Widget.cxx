@@ -20,33 +20,21 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-//  Author : OPEN CASCADE
-// File:      GLViewer_Widget.cxx
-// Created:   November, 2004
-//
 #include "GLViewer_Widget.h"
 #include "GLViewer_ViewPort2d.h"
 #include "GLViewer_Viewer2d.h"
-//#include "GLViewer_Compass.h"
 #include "GLViewer_Grid.h"
-//#include "GLViewer_Object.h"
 #include "GLViewer_CoordSystem.h"
 #include "GLViewer_ViewFrame.h"
 
 #include <cmath>
-using namespace std;
 
 #include <QEvent>
 #include <QPaintEvent>
 #include <QRect>
-
 #include <QFile>
-//#include <qpixmap.h>
 #include <QImage>
 #include <QApplication>
-//#include <qintdict.h>
-//#include <qpaintdevicemetrics.h>
-//#include <qsize.h>
 #include <QToolTip>
 
 /*!

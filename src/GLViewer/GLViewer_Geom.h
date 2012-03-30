@@ -33,8 +33,6 @@
 #include <QtOpenGL>
 #include <math.h>
 
-//using namespace QGL;
-
 #ifdef WIN32
 #pragma warning( disable:4251 )
 #endif

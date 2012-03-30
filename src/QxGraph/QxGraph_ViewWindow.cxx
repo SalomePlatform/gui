@@ -34,9 +34,6 @@
 //QT Include
 #include <qlayout.h>
 #include <qcolor.h>
-//#include <qcolordialog.h>
-
-using namespace std;
 
 /*!
     Constructor

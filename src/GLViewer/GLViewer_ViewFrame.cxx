@@ -20,11 +20,6 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-//  Author : OPEN CASCADE
-// File:      GLViewer_ViewFrame.cxx
-// Created:   November, 2004
-//#include <GLViewerAfx.h>
-//
 #include "GLViewer_ViewFrame.h"
 #include "GLViewer_Viewer.h"
 #include "GLViewer_ViewPort2d.h"
@@ -51,7 +46,6 @@
 #ifdef WIN32
 #include <Standard_Integer.hxx>
 #include <iostream>
-using namespace std;
 #endif
 
 /*!

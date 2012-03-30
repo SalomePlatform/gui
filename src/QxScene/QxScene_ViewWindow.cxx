@@ -37,8 +37,6 @@
 //#define _DEVDEBUG_
 #include "DebTrace.hxx"
 
-using namespace std;
-
 /*!
     Constructor
 */

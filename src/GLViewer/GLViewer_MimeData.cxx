@@ -17,14 +17,8 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-//  Author : OPEN CASCADE
-//#include <GLViewerAfx.h>
-//
 #include "GLViewer_MimeData.h"
 #include "GLViewer_BaseObjects.h"
-
-//#include <cmath>
-//using namespace std;
 
 /*!
   Destructor

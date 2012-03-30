@@ -20,22 +20,15 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-//  Author : OPEN CASCADE
-//#include <GLViewerAfx.h>
-//
 #include "GLViewer_BaseObjects.h"
 #include "GLViewer_BaseDrawers.h"
 #include "GLViewer_AspectLine.h"
 #include "GLViewer_CoordSystem.h"
 #include "GLViewer_Text.h"
 #include "GLViewer_Group.h"
-
 #include "GLViewer_Drawer.h"
 
 #include <QFile>
-
-//#include <cmath>
-//using namespace std;
 
 /*!
   Constructor

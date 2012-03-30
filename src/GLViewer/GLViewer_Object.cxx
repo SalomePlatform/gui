@@ -20,9 +20,6 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-//  Author : OPEN CASCADE
-//#include <GLViewerAfx.h>
-//
 #include "GLViewer_Object.h"
 #include "GLViewer_Drawer.h"
 #include "GLViewer_AspectLine.h"
@@ -30,9 +27,6 @@
 #include "GLViewer_Group.h"
 
 #include <SUIT_DataOwner.h>
-
-//#include <cmath>
-//using namespace std;
 
 /*!
   Default constructor

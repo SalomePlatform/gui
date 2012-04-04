@@ -270,6 +270,19 @@ void Plot2d_ViewFrame::EraseAll()
   getObjects( anObjects );
   eraseObjects( anObjects, false );
   myObjects.clear();
+  // Erase all the intermittent segments who connect curves
+  // (cf displayPlot2dCurveList() and createSegment(() )
+  //
+  {
+    int nbSeg = myIntermittentSegmentList.size();
+    for (int iseg=0; iseg < nbSeg; iseg++)
+      {
+        QwtPlotCurve *segment = myIntermittentSegmentList[iseg]; 
+        segment->detach();  // erase in QwtPlot window
+        delete segment;
+      }
+    myIntermittentSegmentList.clear();
+  }
   myPlot->replot();
   if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
 }
@@ -624,7 +637,8 @@ void Plot2d_ViewFrame::createCurveTooltips( Plot2d_Curve *curve,
  * Draw connection segments (intermittent line) between all the curves of a component.
  */
 void Plot2d_ViewFrame::displayPlot2dCurveList( QList< QList<Plot2d_Curve*> > sysCoCurveList,
-                                               Plot2d_QwtPlotPicker*         picker)
+                                               Plot2d_QwtPlotPicker*         picker,
+                                               bool                          displayLegend)
 {
   //std::cout << "Plot2d_ViewFrame::displayPlot2dCurveList() 1" << std::endl;
 
@@ -668,7 +682,7 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList< QList<Plot2d_Curve*> > sys
   // 2)- Display list curves by a component's curves group
   //     Draw connection segments (intermittent line) between the curves
 
-  displayPlot2dCurveList( plot2dCurveCoSysList, nbSystem, picker);
+  displayPlot2dCurveList( plot2dCurveCoSysList, nbSystem, picker, displayLegend);
 
   // 3)- Size of graduations labels and texts under X axis
 
@@ -692,12 +706,13 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList< QList<Plot2d_Curve*> > sys
  */
 void Plot2d_ViewFrame::displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
                                                                 int  groupSize,
-                                               Plot2d_QwtPlotPicker* picker)
+                                               Plot2d_QwtPlotPicker* picker,
+                                                               bool  displayLegend)
 {
   //std::cout << "Plot2d_ViewFrame::displayPlot2dCurveList() 2" << std::endl;
 
   // Consider the new legend's entries
-  // (we must remove and put the QwtLegend in the QwtPlot)
+  // (PB: to update the legend we must remove it and put a new QwtLegend in the QwtPlot)
   myPlot->insertLegend( (QwtLegend*)NULL); // we remove here, we shall put at the end
 
   double X[2];
@@ -834,8 +849,11 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
       icur1 = icur2 + 1;
   }
 
-  // Consider the new legend's entries
-  showLegend( true, true);
+  if (displayLegend)
+    {
+      // Consider the new legend's entries
+      showLegend( true, true);
+    }
 
   //std::cout << "Ok for Plot2d_ViewFrame::displayPlot2dCurveList() 2" << std::endl;
 }
@@ -857,7 +875,8 @@ Plot2d_Curve* Plot2d_ViewFrame::createPlot2dCurve( QString & title,
                                                    QColor & lineColor,
                                                    QwtSymbol::Style markerKind,
                                                    Plot2d_QwtPlotPicker* picker,
-                                                   bool toDraw)
+                                                   bool toDraw,
+                                                   bool displayLegend)
 {
   //std::cout << "Plot2d_ViewFrame::createPlot2dCurve()" << std::endl;
 
@@ -890,6 +909,10 @@ Plot2d_Curve* Plot2d_ViewFrame::createPlot2dCurve( QString & title,
   // Graphical curve (QwtPlotCurve) in the drawing zone (QwtPlot) myPlot
   if (toDraw)
   {
+      if (!displayLegend)
+        {
+          myPlot->insertLegend( (QwtLegend*)NULL);
+        }
       displayCurve( plot2dCurve);
 
       // plot points marker create associated tooltips
@@ -973,6 +996,8 @@ void Plot2d_ViewFrame::createSegment( double *X, double *Y, int nbPoint,
   aPCurve->setItemAttribute( QwtPlotItem::Legend, false);
 
   aPCurve->attach( myPlot);
+  // To deallocate in EraseAll()
+  myIntermittentSegmentList.append( aPCurve);
 }
 
 /*!

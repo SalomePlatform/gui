@@ -93,11 +93,13 @@ public:
                             Plot2d_QwtPlotPicker *picker);
 
   void displayPlot2dCurveList( QList< QList<Plot2d_Curve*> > sysCoCurveList,
-                               Plot2d_QwtPlotPicker*         picker);
+                               Plot2d_QwtPlotPicker*         picker,
+                               bool                          displayLegend);
   
   void displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
                                                 int  groupsize,
-                               Plot2d_QwtPlotPicker* picker);
+                               Plot2d_QwtPlotPicker* picker,
+                                               bool  displayLegend);
   
   Plot2d_Curve* createPlot2dCurve( QString & title,
                                    QString & unit,
@@ -109,7 +111,8 @@ public:
                                    QColor & lineColor,
                                    QwtSymbol::Style markerKind,
                                    Plot2d_QwtPlotPicker* picker,
-                                   bool toDraw);
+                                   bool toDraw,
+                                   bool displayLegend=true);
 
   QColor getPlot2dCurveColor( Plot2d_Curve* plot2dCurve);
 
@@ -310,6 +313,10 @@ protected:
   Plot2d_NormalizeAlgorithm* myLNormAlgo;
   Plot2d_NormalizeAlgorithm* myRNormAlgo;
   bool                myIsDefTitle;
+ private:
+  // List of intermittent segments to connect curves
+  // (cf displayPlot2dCurveList() and createSegment(() )
+  QList<QwtPlotCurve*> myIntermittentSegmentList;
 };
 
 class Plot2d_Plot2d : public QwtPlot 

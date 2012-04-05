@@ -226,17 +226,18 @@ if test "x$pyqt_ok" == "xyes" ; then
                     PYQT_INCLUDES="${PYQT_INCLUDES} -I ${d}/QtSvg -I ${d}/QtTest"
 
                     # check compatibility with Qt
-                    SUPPORTED=`grep -e "[[[:space:]]]*Qt_[[[:digit:]_]]\+}" ${PYQT_SIPS}/QtCore/QtCoremod.sip | sed -e "s/\(.*\)[[[:space:]]]*\(Qt_[[[:digit:]_]]\+\)}/\2/g"`
-                    SUPPORTED=`echo $SUPPORTED | sed -e "s/Qt_//g" -e "s/_/./g"`
-                    SUPPORTED_ID=`echo $SUPPORTED | awk -F. '{v=$[1]*10000+$[2]*100+$[3];print v}'`
-                    if test $SUPPORTED_ID -lt $QT_VERSION_ID ; then 
-                        AC_MSG_RESULT(Warning! Used Qt version ($QT_VERSION) is not supported by PyQt)
-                        AC_MSG_RESULT(Latest supported Qt version is ${SUPPORTED})
-                    else
-                        SUPPORTED=${QT_VERSION}
-                    fi
-                    SUPPORTED="Qt_`echo ${SUPPORTED} | sed -e 's/\./_/g'`"
-                    PYQT_SIPFLAGS="-x VendorID -x PyQt_NoPrintRangeBug -t WS_X11 -t ${SUPPORTED} -g -s ".cc" -c . ${PYQT_INCLUDES}"
+                    #SUPPORTED=`grep -e "[[[:space:]]]*Qt_[[[:digit:]_]]\+}" ${PYQT_SIPS}/QtCore/QtCoremod.sip | sed -e "s/\(.*\)[[[:space:]]]*\(Qt_[[[:digit:]_]]\+\)}/\2/g"`
+                    #SUPPORTED=`echo $SUPPORTED | sed -e "s/Qt_//g" -e "s/_/./g"`
+                    #SUPPORTED_ID=`echo $SUPPORTED | awk -F. '{v=$[1]*10000+$[2]*100+$[3];print v}'`
+                    #if test $SUPPORTED_ID -lt $QT_VERSION_ID ; then 
+                    #    AC_MSG_RESULT(Warning! Used Qt version ($QT_VERSION) is not supported by PyQt)
+                    #    AC_MSG_RESULT(Latest supported Qt version is ${SUPPORTED})
+                    #else
+                    #    SUPPORTED=${QT_VERSION}
+                    #fi
+                    #SUPPORTED="Qt_`echo ${SUPPORTED} | sed -e 's/\./_/g'`"
+		    PYQT_SIPFLAGS=`python -c "import pyqtconfig; print pyqtconfig.Configuration().pyqt_sip_flags"`
+                    PYQT_SIPFLAGS="${PYQT_SIPFLAGS} -s .cc -c . ${PYQT_INCLUDES}"
                     break
                 fi
             fi

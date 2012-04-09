@@ -1,23 +1,19 @@
 #!/usr/bin/env python
 
 import sys, os
-from optparse import OptionParser
-import shutil, fileinput
 
-descr_str = """
- This script generates a set of files to initiate a dialog qt window
- (i.e. MyDialog.ui, MyDialog.hxx and MyDialog.cxx files).
+__descr_str = ""
+__descr_str += "This script generates a set of files to initiate a dialog Qt window "
+__descr_str += "(i.e. MyDialog.ui, MyDialog.hxx and MyDialog.cxx files). "
+__descr_str += "The dialog window can be a self-consistent class (i.e. depends only "
+__descr_str += "on Qt classes) or a class that inherits class GenericDialog "
+__descr_str += "which implementation is provided in this package and "
+__descr_str += "which design is defined by the GenericDialog.ui file (editable using "
+__descr_str += "the Qt designer). "
+__descr_str += "The -t option let you choose between the two possibilities (specify "
+__descr_str += "\"-t qdialog\" for the first case, \"-t gdialog\" otherwise)."
 
- The dialog window can be a self-consistent class (i.e. depends only
- on Qt classes) or a classe that inherits from the class
- GenericDialog whose implementation is provided in this package and
- whose design is defined by the GenericDialog.ui file (editable using
- the qt designer).
-
- The -t option let you choose between the two possibilities (specify
- "-t qdialog" for the first case, "-t gdialog" otherwise).
-"""
-msg_str = """
+__msg_str = """
 #
 # ---------------------------------------------------------
 # Generation rules to create moc files from QObject headers
@@ -65,36 +61,46 @@ salomeinclude_HEADERS       += __CLASSNAME__.hxx
         $(QT_LIBS)
 """ 
 
-tool_path = os.path.dirname( os.path.abspath(__file__) )
+if __name__ == "__main__":
+  from optparse import OptionParser
+  import shutil, fileinput
 
-parser = OptionParser(description=descr_str)
-parser.add_option("-n", action="store", default="TestDialog", 
-                  help="specify the name of the class (default is TestDialog)", metavar="className")
-parser.add_option("-t", action="store", default="qdialog",
-                  choices=["qdialog", "gdialog"],
-                  help="specify the type of the class (default is qdialog)",  metavar="classType")
-  
-(options, args) = parser.parse_args()
-className = options.n
-classType = options.t
+  tool_path = os.path.dirname( os.path.abspath( sys.argv[0] ) )
 
-sep = os.path.sep 
-for ext in [".cxx", ".hxx", ".ui"]:
-  file_dest = className + ext 
-  if classType == "qdialog":
-    file_src = tool_path + sep + "__QDIALOG__" + ext
-  else:
-    file_src = tool_path + sep + "__GDIALOG__" + ext
-  shutil.copyfile(file_src, file_dest)
-  finput = fileinput.FileInput(file_dest,inplace=1)
-  for line in finput:
-    line = line[:-1] 
-    line = line.replace("__CLASSNAME__",className)
-    print line
+  parser = OptionParser( description = __descr_str )
+  parser.add_option( "-n", action="store", default="TestDialog", dest="className", metavar="className",
+                     help="specify the name of the class (default is TestDialog)" )
+  parser.add_option( "-t", action="store", default="qdialog", dest="classType",
+                     choices=["qdialog", "gdialog"], metavar="classType",
+                     help="specify the type of the class (default is qdialog)" )
+  parser.add_option( "-v", "--verbose", action="store_true", default=True, dest="verbose",
+                     help="verbose mode" )
+  parser.add_option( "-s", "--silent", action="store_false", dest="verbose",
+                     help="silent mode" )
 
-print "Note that the following directives should be present in your Makefile.am (or something like that): \n"
-print msg_str.replace("__CLASSNAME__",className)
+  (options, args) = parser.parse_args()
+  className = options.className
+  classType = options.classType
 
-      
-   
- 
+  for ext in [".cxx", ".hxx", ".ui"]:
+    file_dest = className + ext 
+    if classType == "qdialog":
+      file_src = os.path.join( tool_path, "__QDIALOG__" + ext )
+      pass
+    else:
+      file_src = os.path.join( tool_path, "__GDIALOG__" + ext )
+      pass
+    shutil.copyfile( file_src, file_dest )
+    finput = fileinput.FileInput( file_dest, inplace=1 )
+    for line in finput:
+      line = line[:-1] 
+      line = line.replace( "__CLASSNAME__", className )
+      print line
+      pass
+
+    if options.verbose:
+      print "Note that the following directives should be present in your Makefile.am (or something like that): \n"
+      print __msg_str.replace( "__CLASSNAME__", className )
+      pass
+  pass
+

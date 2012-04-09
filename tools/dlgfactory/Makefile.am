@@ -66,10 +66,10 @@ mostlyclean-local:
 	rm -f @builddir@/*_moc.cxx @builddir@/ui_*.hxx
 
 QDialogTest.hxx QDialogTest.cxx QDialogTest.ui: $(QDIALOG_TEMPLATES) dlgfactory.py
-	$(srcdir)/dlgfactory.py -n QDialogTest -t qdialog
+	$(srcdir)/dlgfactory.py -s -n QDialogTest -t qdialog
 
 GDialogTest.hxx GDialogTest.cxx GDialogTest.ui : $(GDIALOG_TEMPLATES) dlgfactory.py
-	$(srcdir)/dlgfactory.py -n GDialogTest -t gdialog
+	$(srcdir)/dlgfactory.py -s -n GDialogTest -t gdialog
 
 QT_CXXFLAGS=@QT_INCLUDES@ @QT_MT_INCLUDES@
 QT_LIBS=@QT_LIBS@

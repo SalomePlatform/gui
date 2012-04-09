@@ -301,7 +301,7 @@ void QtxShortcutTree::setBindings( const QString& title, const ShortcutMap& theS
   }
   for( ShortcutMap::const_iterator it = theShortcutMap.constBegin(); it != theShortcutMap.constEnd(); ++it )
       item->addChild( new QTreeWidgetItem( QStringList() << it.key() << it.value() ) );
-  myPrevBindings.insert( title, theShortcutMap);
+  myPrevBindings.insert( title, theShortcutMap );
 }
 
 /*!
@@ -333,7 +333,8 @@ ShortcutMap* QtxShortcutTree::bindings( const QString& sec ) const
 void QtxShortcutTree::focusOutEvent ( QFocusEvent* event )
 {
   QWidget::focusOutEvent( event );
-  if ( currentItem() && currentItem()->isSelected() )
+
+  if ( currentItem() && currentItem()->isSelected() && currentItem()->text( 1 ).endsWith( "+" ) )
     currentItem()->setText( 1, myPrevBindings[ currentItem()->parent()->text( 0 ) ][ currentItem()->text( 0 ) ] );
 }
 

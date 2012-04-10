@@ -334,7 +334,7 @@ void SUIT_TreeModel::TreeSync::updateItem( const ObjPtr& obj, const ItemPtr& ite
   if( obj )
     obj->update();
   if ( item && needUpdate( item ) ) 
-    myModel->updateItem( item );
+    myModel->updateItem( item, false );
 }
 
 /*!
@@ -1357,7 +1357,7 @@ void SUIT_TreeModel::updateTreeModel(SUIT_DataObject* obj,TreeItem* item)
         {
           //obj and item are synchronised : go to next ones
           updateTreeModel(sobj,sitem);
-          if(sobj->modified()) updateItem(sitem);
+          if(sobj->modified()) updateItem(sitem, true);
           if( sobj ) sobj->update();
           kobj++;
           kitem++;
@@ -1581,8 +1581,9 @@ SUIT_TreeModel::TreeItem* SUIT_TreeModel::createItemAtPos( SUIT_DataObject* obj,
 /*!
   \brief Update tree item.
   \param item tree item to be updated
+  \param emitLayoutChanged if signal about changed layout should be emitted
 */
-void SUIT_TreeModel::updateItem( SUIT_TreeModel::TreeItem* item )
+void SUIT_TreeModel::updateItem( SUIT_TreeModel::TreeItem* item, bool emitLayoutChanged )
 {
   if ( !item )
     return;
@@ -1597,7 +1598,8 @@ void SUIT_TreeModel::updateItem( SUIT_TreeModel::TreeItem* item )
   QModelIndex lastIdx  = index( obj, columnCount() - 1 );
   emit dataChanged( firstIdx, lastIdx );
   obj->setModified(false);
-  emit layoutChanged();
+  if( emitLayoutChanged )
+    emit layoutChanged();
 }
 
 /*!

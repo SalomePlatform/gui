@@ -205,7 +205,7 @@ private:
 
   TreeItem*              createItem( SUIT_DataObject*, TreeItem* = 0, TreeItem* = 0 );
   TreeItem*              createItemAtPos( SUIT_DataObject*, TreeItem* = 0, int pos=0 );
-  void                   updateItem( TreeItem* );
+  void                   updateItem( TreeItem*, bool emitLayoutChanged );
   void                   removeItem( TreeItem* );
 
 private slots:

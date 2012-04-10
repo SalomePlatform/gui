@@ -3493,7 +3493,10 @@ void LightApp_Application::removeViewManager( SUIT_ViewManager* vm )
     aStudy->removeViewMgr(vm->getGlobalId());
 
   STD_Application::removeViewManager( vm );
-  delete vm;
+
+  // IPAL22894: Crash on closing OCC view
+  //delete vm;
+  vm->deleteLater();
 }
 
 /*!

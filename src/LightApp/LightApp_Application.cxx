@@ -56,6 +56,8 @@
 #include "LightApp_WgViewModel.h"
 #include "LightApp_FullScreenHelper.h"
 
+
+#include <GUI_version.h>
 #include <Basics_OCCTVersion.hxx>
 
 #include <SALOME_Event.h>
@@ -381,7 +383,10 @@ void LightApp_Application::start()
 /*!Gets application name.*/
 QString LightApp_Application::applicationName() const
 {
-  return tr( "APP_NAME" );
+  static QString _app_name;
+  if ( _app_name.isEmpty() )
+    _app_name = tr( "APP_NAME" );
+  return _app_name;
 }
 
 /*!Gets application version.*/
@@ -398,27 +403,7 @@ QString LightApp_Application::applicationVersion() const
     }
     else
     {
-      QString path( ::getenv( "GUI_ROOT_DIR" ) );
-      if ( !path.isEmpty() )
-        path += QDir::separator();
-      path += QString( "bin/salome/VERSION" );
-
-      QFile vf( path );
-      if ( vf.open( QIODevice::ReadOnly ) )
-      {
-        QString line( vf.readLine( 1024 ) );
-        vf.close();
-
-        if ( !line.isEmpty() )
-        {
-          while ( !line.isEmpty() && line.at( line.length() - 1 ) == QChar( '\n' ) )
-            line.remove( line.length() - 1, 1 );
-
-          int idx = line.lastIndexOf( ":" );
-          if ( idx != -1 )
-            _app_version = line.mid( idx + 1 ).trimmed();
-        }
-      }
+      _app_version = GUI_VERSION_STR;
     }
   }
   return _app_version;

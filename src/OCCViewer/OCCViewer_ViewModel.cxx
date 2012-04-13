@@ -64,7 +64,7 @@
 #include <Basics_OCCTVersion.hxx>
 
 // VSR: Uncomment below line to allow texture background support in OCC viewer
-// #define OCC_ENABLE_TEXTURED_BACKGROUND
+#define OCC_ENABLE_TEXTURED_BACKGROUND
 
 /*!
   Get data for supported background modes: gradient types, identifiers and supported image formats

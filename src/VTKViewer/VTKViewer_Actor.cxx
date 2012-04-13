@@ -621,25 +621,14 @@ VTKViewer_Actor
 }
 
 /*!
-  Get current front material
+  Get current material
 */
 vtkProperty* 
 VTKViewer_Actor
-::GetFrontMaterial()
+::GetMaterial()
 {
   return NULL;
 }
-
-/*!
-  Get current back material
-*/
-vtkProperty* 
-VTKViewer_Actor
-::GetBackMaterial()
-{
-  return NULL;
-}
-
 
 /*!
   \return display mode

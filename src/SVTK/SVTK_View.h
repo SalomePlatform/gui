@@ -212,16 +212,11 @@ public:
   //! Change material
   void
   SetMaterial(const Handle(SALOME_InteractiveObject)& theIObject,
-	      vtkProperty* thePropF,
-	      vtkProperty* thePropB);
+	      vtkProperty* thePropF);
 
-  //! Get current front material
+  //! Get current material
   vtkProperty* 
-  GetFrontMaterial(const Handle(SALOME_InteractiveObject)& theIObject);
-
-  //! Get current back material
-  vtkProperty* 
-  GetBackMaterial(const Handle(SALOME_InteractiveObject)& theIObject);
+  GetMaterial(const Handle(SALOME_InteractiveObject)& theIObject);
 
   //----------------------------------------------------------------------------
   // Erase Display functions

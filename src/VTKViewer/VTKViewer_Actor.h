@@ -124,15 +124,10 @@ class VTKVIEWER_EXPORT VTKViewer_Actor : public vtkLODActor
   void
   SetMaterial(std::vector<vtkProperty*> theProps);
 
-  //! Get current front material
+  //! Get current material
   virtual
   vtkProperty* 
-  GetFrontMaterial();
-
-  //! Get current back material
-  virtual
-  vtkProperty* 
-  GetBackMaterial();
+  GetMaterial();
 
   //----------------------------------------------------------------------------
   // For selection mapping purpose

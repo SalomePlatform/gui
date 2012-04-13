@@ -26,6 +26,7 @@
 #include "SVTK_SetRotationPointDlg.h"
 #include "SVTK_ViewParameterDlg.h"
 #include "SVTK_ViewModel.h"
+#include "VTKViewer_Texture.h"
 
 #include "SALOME_Actor.h"
 
@@ -645,9 +646,8 @@ void SVTK_ViewWindow::setBackground( const Qtx::BackgroundData& bgData )
 	if ( aReader ) {
 	  // create texture
 	  aReader->SetFileName( fi.absoluteFilePath().toLatin1().constData() );
-	  aReader->Update();
-	    
-	  vtkTexture* aTexture = vtkTexture::New();
+	  aReader->Update();	  
+	  VTKViewer_Texture* aTexture = VTKViewer_Texture::New();	    
 	  vtkImageMapToColors* aMap = 0;
 	  vtkAlgorithmOutput* anOutput;
 	  /*
@@ -674,20 +674,14 @@ void SVTK_ViewWindow::setBackground( const Qtx::BackgroundData& bgData )
 	  // the same results for all modes
 	  switch ( textureMode ) {
 	  case Qtx::TileTexture:
-	    aTexture->RepeatOn();
-	    aTexture->EdgeClampOff();
-	    aTexture->InterpolateOff();
+	    aTexture->SetPosition((int)VTKViewer_Texture::Tiled);
 	    break;
 	  case Qtx::StretchTexture:
-	    aTexture->RepeatOff();
-	    aTexture->EdgeClampOff();
-	    aTexture->InterpolateOn();
+	    aTexture->SetPosition((int)VTKViewer_Texture::Stretched);
 	    break;
 	  case Qtx::CenterTexture:
+	    aTexture->SetPosition((int)VTKViewer_Texture::Centered);
 	  default:
-	    aTexture->RepeatOff();
-	    aTexture->EdgeClampOn();
-	    aTexture->InterpolateOff();
 	    break;
 	  }
 	  // show textured background

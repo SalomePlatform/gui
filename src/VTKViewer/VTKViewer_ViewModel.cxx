@@ -36,7 +36,7 @@
 #include <QToolBar>
 
 // VSR: Uncomment below line to allow texture background support in VTK viewer
-// #define VTK_ENABLE_TEXTURED_BACKGROUND
+#define VTK_ENABLE_TEXTURED_BACKGROUND
 
 bool _InitializeVtkWarningsCall()
 {
@@ -67,7 +67,7 @@ QString VTKViewer_Viewer::backgroundData( QStringList& gradList, QIntList& idLis
   gradList << tr( "GT_VERTICALGRADIENT" );  // only vertical type of gradient is supported
   idList   << VerticalGradient;             // only vertical type of gradient is supported
 #ifdef VTK_ENABLE_TEXTURED_BACKGROUND
-  txtList  << Qtx::StretchTexture;          // only stretch texture mode is supported
+  txtList  << Qtx::CenterTexture << Qtx::TileTexture << Qtx::StretchTexture;
 #endif
   return tr("BG_IMAGE_FILES");
 }

@@ -28,6 +28,8 @@
 #include "VTKViewer_Trihedron.h"
 #include "VTKViewer_Transform.h"
 #include "VTKViewer_Utilities.h"
+#include "VTKViewer_Texture.h"
+#include "VTKViewer_OpenGLRenderer.h"
 
 #include <SUIT_Session.h>
 #include <SUIT_MessageBox.h>
@@ -37,7 +39,6 @@
 #include <QFileInfo>
 #include <QImage>
 
-#include <vtkRenderer.h>
 #include <vtkCamera.h>
 #include <vtkJPEGReader.h>
 #include <vtkBMPReader.h>
@@ -61,7 +62,7 @@ VTKViewer_ViewWindow::VTKViewer_ViewWindow( SUIT_Desktop* theDesktop,
 
   myTrihedron = VTKViewer_Trihedron::New();
   myTransform = VTKViewer_Transform::New();
-  myRenderer  = vtkRenderer::New() ;
+  myRenderer  = VTKViewer_OpenGLRenderer::New() ;
 
   myTrihedron->AddToRender( myRenderer );
 
@@ -539,7 +540,7 @@ void VTKViewer_ViewWindow::setBackground( const Qtx::BackgroundData& bgData )
 	  aReader->SetFileName( fi.absoluteFilePath().toLatin1().constData() );
 	  aReader->Update();
 	  
-	  vtkTexture* aTexture = vtkTexture::New();
+	  VTKViewer_Texture* aTexture = VTKViewer_Texture::New();
 	  vtkImageMapToColors* aMap = 0;
 	  vtkAlgorithmOutput* anOutput;
 	  /*

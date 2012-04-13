@@ -48,7 +48,7 @@
 #include "QtxBackgroundTool.h"
 
 // VSR: Uncomment below line to allow texture background support in VTK viewer
-// #define VTK_ENABLE_TEXTURED_BACKGROUND
+#define VTK_ENABLE_TEXTURED_BACKGROUND
 
 
 // in order NOT TO link with SalomeApp, here the code returns SALOMEDS_Study.
@@ -106,7 +106,7 @@ QString SVTK_Viewer::backgroundData( QStringList& gradList, QIntList& idList, QI
   gradList << tr( "GT_VERTICALGRADIENT" );  // only vertical type of gradient is supported
   idList   << VerticalGradient;             // only vertical type of gradient is supported
 #ifdef VTK_ENABLE_TEXTURED_BACKGROUND
-  txtList  << Qtx::StretchTexture;          // only stretch texture mode is supported
+  txtList  << Qtx::CenterTexture << Qtx::TileTexture << Qtx::StretchTexture;
 #endif
   return tr("BG_IMAGE_FILES");
 }

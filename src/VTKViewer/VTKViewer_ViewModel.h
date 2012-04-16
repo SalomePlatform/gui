@@ -41,8 +41,15 @@ class VTKVIEWER_EXPORT VTKViewer_Viewer: public SUIT_ViewModel
 public:
   /*! supported gradient types */
   enum {
+    HorizontalGradient,
     VerticalGradient,
-    LastGradient = VerticalGradient,
+    FirstDiagonalGradient,
+    SecondDiagonalGradient,
+    FirstCornerGradient,
+    SecondCornerGradient,
+    ThirdCornerGradient,
+    FourthCornerGradient,
+    LastGradient = FourthCornerGradient,
   };
 
   /*!Initialize type of viewer.*/

@@ -103,8 +103,22 @@ SVTK_Viewer::~SVTK_Viewer()
 /*! Get data for supported background modes: gradient types, identifiers and supported image formats */
 QString SVTK_Viewer::backgroundData( QStringList& gradList, QIntList& idList, QIntList& txtList )
 {
-  gradList << tr( "GT_VERTICALGRADIENT" );  // only vertical type of gradient is supported
-  idList   << VerticalGradient;             // only vertical type of gradient is supported
+  gradList << tr( "GT_HORIZONTALGRADIENT" )
+           << tr( "GT_VERTICALGRADIENT" )
+           << tr( "GT_FIRSTDIAGONALGRADIENT" )
+           << tr( "GT_SECONDDIAGONALGRADIENT" )
+           << tr( "GT_FIRSTCORNERGRADIENT" )
+           << tr( "GT_SECONDCORNERGRADIENT" )
+           << tr( "GT_THIRDCORNERGRADIENT" )
+           << tr( "GT_FOURTHCORNERGRADIENT" );
+  idList   << HorizontalGradient
+           << VerticalGradient
+           << FirstDiagonalGradient
+           << SecondDiagonalGradient
+           << FirstCornerGradient
+           << SecondCornerGradient
+           << ThirdCornerGradient
+           << FourthCornerGradient;
 #ifdef VTK_ENABLE_TEXTURED_BACKGROUND
   txtList  << Qtx::CenterTexture << Qtx::TileTexture << Qtx::StretchTexture;
 #endif

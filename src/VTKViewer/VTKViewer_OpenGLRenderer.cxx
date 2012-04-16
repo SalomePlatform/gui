@@ -43,10 +43,16 @@ vtkStandardNewMacro(VTKViewer_OpenGLRenderer);
 
 VTKViewer_OpenGLRenderer::VTKViewer_OpenGLRenderer()
 {
+  this->GradientType = HorizontalGradient;
 }
 
 VTKViewer_OpenGLRenderer::~VTKViewer_OpenGLRenderer()
 {
+}
+
+void VTKViewer_OpenGLRenderer::SetGradientType( const int theGradientType )
+{
+  this->GradientType = theGradientType;
 }
 
 void VTKViewer_OpenGLRenderer::Clear(void)
@@ -97,16 +103,92 @@ void VTKViewer_OpenGLRenderer::Clear(void)
 
     if( this->GradientBackground )
     {
-      glBegin( GL_QUADS );
+      double* corner1 = 0;
+      double* corner2 = 0;
+      double* corner3 = 0;
+      double* corner4 = 0;
+      double dcorner1[3];
+      double dcorner2[3];
 
-      glColor4d( this->Background[0], this->Background[1], this->Background[2], 0.0 );
-      glVertex2f( 0.F, 0.F );
-      glVertex2f( 1.F, 0.F );
+      switch( this->GradientType )
+      {
+        case HorizontalGradient:
+          corner1 = this->Background;
+          corner2 = this->Background2;
+          corner3 = this->Background2;
+          corner4 = this->Background;
+          break;
+        case VerticalGradient:
+          corner1 = this->Background2;
+          corner2 = this->Background2;
+          corner3 = this->Background;
+          corner4 = this->Background;
+          break;
+        case FirstDiagonalGradient:
+          corner2 = this->Background2;
+          corner4 = this->Background;
+          dcorner1[0] = dcorner2[0] = 0.5F * ( corner2[0] + corner4[0] );
+          dcorner1[1] = dcorner2[1] = 0.5F * ( corner2[1] + corner4[1] );
+          dcorner1[2] = dcorner2[2] = 0.5F * ( corner2[2] + corner4[2] );
+          corner1 = dcorner1;
+          corner3 = dcorner2;
+          break;
+        case SecondDiagonalGradient:
+          corner1 = this->Background2;  
+          corner3 = this->Background;
+          dcorner1[0] = dcorner2[0] = 0.5F * ( corner1[0] + corner3[0] );
+          dcorner1[1] = dcorner2[1] = 0.5F * ( corner1[1] + corner3[1] );
+          dcorner1[2] = dcorner2[2] = 0.5F * ( corner1[2] + corner3[2] );
+          corner2 = dcorner1;
+          corner4 = dcorner2;
+          break;
+        case FirstCornerGradient:
+          corner1 = this->Background2;
+          corner2 = this->Background2;
+          corner3 = this->Background2;
+          corner4 = this->Background;
+          break;
+        case SecondCornerGradient:
+          corner1 = this->Background2;
+          corner2 = this->Background2;
+          corner3 = this->Background;
+          corner4 = this->Background2;
+          break;
+        case ThirdCornerGradient:
+          corner1 = this->Background2;
+          corner2 = this->Background;
+          corner3 = this->Background2;
+          corner4 = this->Background2;
+          break;
+        case FourthCornerGradient:
+          corner1 = this->Background;
+          corner2 = this->Background2;
+          corner3 = this->Background2;
+          corner4 = this->Background2;
+          break;
+        default: // just in case
+          corner1 = this->Background;
+          corner2 = this->Background;
+          corner3 = this->Background;
+          corner4 = this->Background;
+          break;
+      }
 
-      glColor4d( this->Background2[0], this->Background2[1], this->Background2[2], 0.0 );
-      glVertex2f( 1.F, 1.F );
-      glVertex2f( 0.F, 1.F );
-
+      glBegin( GL_TRIANGLE_FAN );
+      if( this->GradientType != FirstCornerGradient && this->GradientType != ThirdCornerGradient )
+      {
+        glColor3f( corner1[0], corner1[1], corner1[2] ); glVertex2f( 0.F, 0.F );
+        glColor3f( corner2[0], corner2[1], corner2[2] ); glVertex2f( 1.F, 0.F );
+        glColor3f( corner3[0], corner3[1], corner3[2] ); glVertex2f( 1.F, 1.F );
+        glColor3f( corner4[0], corner4[1], corner4[2] ); glVertex2f( 0.F, 1.F );
+      }
+      else //if( this->GradientType == FirstCornerGradient || this->GradientType == ThirdCornerGradient )
+      {
+        glColor3f( corner2[0], corner2[1], corner2[2] ); glVertex2f( 1.F, 0.F );
+        glColor3f( corner3[0], corner3[1], corner3[2] ); glVertex2f( 1.F, 1.F );
+        glColor3f( corner4[0], corner4[1], corner4[2] ); glVertex2f( 0.F, 1.F );
+        glColor3f( corner1[0], corner1[1], corner1[2] ); glVertex2f( 0.F, 0.F );
+      }
       glEnd();
     }
 

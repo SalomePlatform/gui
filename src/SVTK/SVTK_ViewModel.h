@@ -48,8 +48,15 @@ class SVTK_EXPORT SVTK_Viewer : public SVTK_ViewModelBase, public SALOME_View
 public:
   /*! supported gradient types */
   enum { 
+    HorizontalGradient,
     VerticalGradient,
-    LastGradient = VerticalGradient,
+    FirstDiagonalGradient,
+    SecondDiagonalGradient,
+    FirstCornerGradient,
+    SecondCornerGradient,
+    ThirdCornerGradient,
+    FourthCornerGradient,
+    LastGradient = FourthCornerGradient,
   };
 
   typedef SVTK_ViewWindow TViewWindow;

@@ -27,6 +27,7 @@
 #include "SVTK_ViewParameterDlg.h"
 #include "SVTK_ViewModel.h"
 #include "VTKViewer_Texture.h"
+#include "VTKViewer_OpenGLRenderer.h"
 
 #include "SALOME_Actor.h"
 
@@ -591,28 +592,28 @@ void SVTK_ViewWindow::setBackground( const Qtx::BackgroundData& bgData )
       }
     case Qtx::SimpleGradientBackground:
       {
-	QColor c1, c2;
-	int type = bgData.gradient( c1, c2 );
-	// VSR: Currently, only vertical gradient is supported by VTK. 
-	// In future, switch operator might be added here to process different supported gradient types.
-	if ( c1.isValid() && type == SVTK_Viewer::VerticalGradient ) {
-	  if ( !c2.isValid() ) c2 = c1;
-	  // show two-color gradient background
-	  getRenderer()->SetTexturedBackground( false );    // cancel texture mode
-	  getRenderer()->SetGradientBackground( true );     // switch to gradient mode
-	  // VSR: In VTK, gradient is colored from bottom to top:
-	  // - top color is set via SetBackground2()
-	  // - bottom color is set via SetBackground()
-	  // So, we reverse colors, to draw gradient from top to bottom instead.
-	  getRenderer()->SetBackground(  c2.red()/255.0, 
-					 c2.green()/255.0,
-					 c2.blue()/255.0 ); // set first gradient color
-	  getRenderer()->SetBackground2( c1.red()/255.0,
-					 c1.green()/255.0,
-					 c1.blue()/255.0 ); // set second gradient color
-	  ok = true;
-	}
-	break;
+        QColor c1, c2;
+        int type = bgData.gradient( c1, c2 );
+        if ( c1.isValid() )
+        {
+          if ( !c2.isValid() )
+            c2 = c1;
+
+          // show two-color gradient background
+          getRenderer()->SetTexturedBackground( false );    // cancel texture mode
+          getRenderer()->SetGradientBackground( true );     // switch to gradient mode
+
+          VTKViewer_OpenGLRenderer* aRenderer =
+            VTKViewer_OpenGLRenderer::SafeDownCast( getRenderer() );
+          if( aRenderer )
+          {
+            aRenderer->SetGradientType( type );
+            aRenderer->SetBackground( c1.redF(), c1.greenF(), c1.blueF() );
+            aRenderer->SetBackground2( c2.redF(), c2.greenF(), c2.blueF() );
+            ok = true;
+          }
+        }
+        break;
       }
     case Qtx::CustomGradientBackground:
       {

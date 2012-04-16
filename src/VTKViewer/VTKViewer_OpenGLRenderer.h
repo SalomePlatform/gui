@@ -36,14 +36,31 @@
 class VTKVIEWER_EXPORT VTKViewer_OpenGLRenderer : public vtkOpenGLRenderer
 {
 public:
+  enum {
+    HorizontalGradient,
+    VerticalGradient,
+    FirstDiagonalGradient,
+    SecondDiagonalGradient,
+    FirstCornerGradient,
+    SecondCornerGradient,
+    ThirdCornerGradient,
+    FourthCornerGradient
+  };
+
+public:
   static VTKViewer_OpenGLRenderer *New();
   vtkTypeMacro(VTKViewer_OpenGLRenderer,vtkOpenGLRenderer);
 
-  virtual void Clear(void); 
+  virtual void SetGradientType( const int );
+
+  virtual void Clear(void);
 
 protected:
   VTKViewer_OpenGLRenderer();
   ~VTKViewer_OpenGLRenderer();
+
+private:
+  int GradientType;
 
 private:
   VTKViewer_OpenGLRenderer(const VTKViewer_OpenGLRenderer&);  // Not implemented.

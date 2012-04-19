@@ -216,6 +216,11 @@ The following types of the background are supported:
   - Third corner
   - Fourth corner
 
+- Image: allows to set image as viewer background and define filling type:
+  - Center: the image is located at the center of the viewer backgound
+  - Tile: the image fills the entire viewer backgound one by one
+  - Strech: the image is stretched to the entire viewer backgound.
+
 Default background for the viewer is specified via the
 \ref occ_preferences "application preferences".
 

@@ -243,7 +243,21 @@ The following types of the background are supported:
   specified by the user in the dialog box.
 - Gradient background: the background is gradiently colored according
   to two colors and the gradient type specified in the dialog
-  box. Currently, only vertical background type is supported.
+  box. The following types of background are supported:
+  - Horizontal
+  - Vertical
+  - First diagonal
+  - Second diagonal
+  - First corner
+  - Second corner
+  - Third corner
+  - Fourth corner
+
+- Image: allows to set image as viewer background and define filling type:
+  - Center: the image is located at the center of the viewer backgound
+  - Tile: the image fills the entire viewer backgound one by one
+  - Strech: the image is stretched to the entire viewer backgound.
+
 
 Default background for the viewer is specified via the
 \ref vtk_preferences "application preferences".

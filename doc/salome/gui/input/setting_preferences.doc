@@ -95,7 +95,7 @@ items in <b>Most Recently Used</b> list and the <b>Link type</b>:
 different locations have the same name.
 
 \anchor occ_preferences
-<h2>OCC Viewer 3d Preferences</h2>
+<h2>OCC 3D Viewer Preferences</h2>
 
 \image html pref_salome_occviewer.png
 
@@ -136,7 +136,7 @@ different locations have the same name.
   relatively to the current cursor position.
 
 \anchor vtk_preferences
-<h2>VTK Viewer 3d Preferences</h2>
+<h2>VTK 3D Viewer Preferences</h2>
 
 \image html pref_salome_vtkviewer.png
 
@@ -190,7 +190,7 @@ titles displayed in the viewer:
   - <b>Transparency</b> - allows selecting the text transparency.
 
 \anchor plot2d_preferences
-<h2>Plot2d Viewer Preferences</h2>
+<h2>Plot 2D Viewer Preferences</h2>
 
 \image html pref_salome_plot2dviewer.png
 

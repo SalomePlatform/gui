@@ -466,10 +466,18 @@ void LightApp_Application::createActionForViewer( const int id,
                                                   const QString& suffix,
                                                   const int accel )
 {
-  QAction* a = createAction( id, tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() ), QIcon(),
-                             tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() ),
-                             tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() ),
-                             accel, desktop(), false, this, SLOT( onNewWindow() ) );
+  QString vtlt = tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() );
+  QString tip = tr( "CREATING_NEW_WINDOW" ).arg( vtlt.remove( "&" ) );
+  QAction* a = createAction( id,                      // menu action id
+			     tip,                     // status tip
+			     QIcon(),                 // icon
+			     vtlt,                    // menu text
+                             tip,                     // tooltip
+                             accel,                   // shortcut
+			     desktop(),               // parent
+                             false,                   // toggle flag
+			     this,                    // receiver
+                             SLOT( onNewWindow() ) ); // slot
   createMenu( a, parentId, -1 );
 }
 

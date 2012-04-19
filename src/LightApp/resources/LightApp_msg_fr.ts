@@ -515,6 +515,10 @@ Les modifications seront appliquées à la prochaine session.</translation>
         <translation>Vue Qx&amp;Scene</translation>
     </message>
     <message>
+        <source>CREATING_NEW_WINDOW</source>
+        <translation>Créer un nouveau %1</translation>
+    </message>
+    <message>
         <source>OBJ_BROWSER_NAME</source>
         <translation>Objet</translation>
     </message>

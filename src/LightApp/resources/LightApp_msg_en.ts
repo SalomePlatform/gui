@@ -164,7 +164,7 @@ The changes will be applied on the next application session.</translation>
     </message>
     <message>
         <source>PREF_GROUP_VTKVIEWER</source>
-        <translation>VTK Viewer 3d</translation>
+        <translation>VTK 3D Viewer</translation>
     </message>
     <message>
         <source>PREF_STORE_POS</source>
@@ -492,27 +492,31 @@ The changes will be applied on the next application session.</translation>
     </message>
     <message>
         <source>NEW_WINDOW_0</source>
-        <translation>&amp;GL view</translation>
+        <translation>&amp;GL 2D view</translation>
     </message>
     <message>
         <source>NEW_WINDOW_1</source>
-        <translation>&amp;Plot2d view</translation>
+        <translation>&amp;Plot 2D view</translation>
     </message>
     <message>
         <source>NEW_WINDOW_2</source>
-        <translation>&amp;OCC view</translation>
+        <translation>&amp;OCC 3D view</translation>
     </message>
     <message>
         <source>NEW_WINDOW_3</source>
-        <translation>VT&amp;K view</translation>
+        <translation>VT&amp;K 3D view</translation>
     </message>
     <message>
         <source>NEW_WINDOW_4</source>
-        <translation>&amp;QxGraph view</translation>
+        <translation>&amp;QxGraph 2D view</translation>
     </message>
     <message>
         <source>NEW_WINDOW_5</source>
-        <translation>Qx&amp;Scene view</translation>
+        <translation>Qx&amp;Scene 2D view</translation>
+    </message>
+    <message>
+        <source>CREATING_NEW_WINDOW</source>
+        <translation>Create new %1</translation>
     </message>
     <message>
         <source>OBJ_BROWSER_NAME</source>
@@ -624,7 +628,7 @@ The changes will be applied on the next application session.</translation>
     </message>
     <message>
         <source>PREF_GROUP_OCCVIEWER</source>
-        <translation>OCC Viewer 3d</translation>
+        <translation>OCC 3D Viewer</translation>
     </message>
     <message>
         <source>PREF_LOGARITHMIC</source>
@@ -668,7 +672,7 @@ The changes will be applied on the next application session.</translation>
     </message>
     <message>
         <source>PREF_GROUP_PLOT2DVIEWER</source>
-        <translation>Plot2d Viewer</translation>
+        <translation>Plot 2D Viewer</translation>
     </message>
     <message>
         <source>PREF_DEVIATION_COLOR</source>

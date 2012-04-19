@@ -233,7 +233,7 @@
     </message>     
     <message>
         <source>TOT_PLOT2D_NORMALIZE_MODE_LMAX</source>
-        <translation>Axe Y gauche: Normaliser sur le maximum</translation>
+        <translation>Axe Y gauche: Normaliser sur le maximum global</translation>
     </message>    
     <message>
         <source>TOT_PLOT2D_NORMALIZE_MODE_LMIN</source>
@@ -241,7 +241,7 @@
     </message>    
     <message>
         <source>TOT_PLOT2D_NORMALIZE_MODE_RMAX</source>
-        <translation>Axe Y droite: Normaliser sur le maximum</translation>
+        <translation>Axe Y droite: Normaliser sur le maximum global</translation>
     </message>    
     <message>
         <source>TOT_PLOT2D_NORMALIZE_MODE_RMIN</source>

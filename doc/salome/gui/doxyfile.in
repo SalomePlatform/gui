@@ -40,7 +40,12 @@ WARNINGS          = YES
 #---------------------------------------------------------------------------
 INPUT             = @srcdir@/input		  
 FILE_PATTERNS     = *.doc
-IMAGE_PATH        = @srcdir@/images @top_srcdir@/src/OCCViewer/resources @top_srcdir@/src/VTKViewer/resources @top_srcdir@/src/SVTK/resources @top_srcdir@/src/Plot2d/resources
+IMAGE_PATH        = @srcdir@/images @top_srcdir@/src/OCCViewer/resources \
+                    @top_srcdir@/src/VTKViewer/resources \
+                    @top_srcdir@/src/SVTK/resources \
+                    @top_srcdir@/src/Plot2d/resources \
+                    @top_srcdir@/src/GLViewer/resources \
+                    @top_srcdir@/src/QxScene/resources \
 
 #---------------------------------------------------------------------------
 #HTML related options

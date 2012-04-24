@@ -201,7 +201,8 @@ The options are as follows:
 - Curve parameters:
 
   - <b>y(x)=</b> allows to specify python expression, which used to
-    calculate coordinates of the points of the curve.
+    calculate coordinates of the points of the curve,
+    <b>x</b> corresponds to the shown in the plot 2d viewer horizontal range.</li>
   - <b>Nb. itervals</b> allows to specify number of the points of the
     curve.
 

@@ -102,6 +102,8 @@ bool Plot2d_Point::minDeviation(double& min) const {
   if(hasDeviation()) {
     min = deviationPtr[0];
     return true;
+  } else {
+    min = 0;
   }
   return false;
 }
@@ -113,6 +115,8 @@ bool Plot2d_Point::maxDeviation(double& max) const {
   if(hasDeviation()) {
     max = deviationPtr[1];
     return true;
+  } else {
+    max = 0;
   }
   return false;
 }

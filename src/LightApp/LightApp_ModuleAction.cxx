@@ -325,7 +325,7 @@ void LightApp_ModuleAction::insertModule( const QString& name, const QIcon& ico,
                                           const int idx )
 {
   QtxAction* a = new QtxAction( name, ico, name, 0, this, true );
-  a->setStatusTip( tr( "Activate/deactivate %1 module" ).arg( name ) );
+  a->setStatusTip( tr( "ACTIVATE_MODULE_TOP" ).arg( name ) );
 
   mySet->insertAction( a, -1, idx );
   update();
@@ -441,8 +441,7 @@ bool LightApp_ModuleAction::event( QEvent* e )
 {
   if ( e->type() == QEvent::MaxUser )
     activate( ((ActivateEvent*)e)->id(), false );
-  else
-    return QtxAction::event( e );
+  return QtxAction::event( e );
 }
 
 /*!

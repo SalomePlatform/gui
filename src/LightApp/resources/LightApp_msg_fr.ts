@@ -925,4 +925,11 @@ Le fichier n&apos;existe pas</translation>
         <translation>Défauts</translation>
     </message>
 </context>
+<context>
+    <name>LightApp_ModuleAction</name>
+    <message>
+        <source>ACTIVATE_MODULE_TOP</source>
+        <translation type="unfinished">Activate/deactivate %1 module</translation>
+    </message>
+</context>
 </TS>

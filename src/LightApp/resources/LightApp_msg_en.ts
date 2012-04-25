@@ -925,4 +925,11 @@ File does not exist</translation>
         <translation>Defaults</translation>
     </message>
 </context>
+<context>
+    <name>LightApp_ModuleAction</name>
+    <message>
+        <source>ACTIVATE_MODULE_TOP</source>
+        <translation>Activate/deactivate %1 module</translation>
+    </message>
+</context>
 </TS>

@@ -14,7 +14,7 @@ Un fichier Python ne doit être composé que de lettres, chiffres et tirets bas 
     </message>
     <message>
         <source>CLOSE_LOCKED_STUDY</source>
-        <translation>Fermer l&apos;étude verrouillée?</translation>
+        <translation>Fermer l&apos;étude verrouillée ?</translation>
     </message>
     <message>
         <source>PUBLISH_IN_STUDY</source>
@@ -129,7 +129,7 @@ Un fichier Python ne doit être composé que de lettres, chiffres et tirets bas 
     </message>
     <message>
         <source>PREF_PYDUMP_PUBLISH</source>
-        <translation>Publier dans l&apos;étude dans un scrypt en python</translation>
+        <translation>Publier dans l&apos;étude dans un scrypt Python</translation>
     </message>
     <message>
         <source>PREF_PYDUMP_MULTI_FILE</source>
@@ -141,7 +141,7 @@ Un fichier Python ne doit être composé que de lettres, chiffres et tirets bas 
     </message>
     <message>
         <source>PREF_STORE_VISUAL_STATE</source>
-        <translation>Sauvegarder/restaurer le dernier ètat d&apos;IHM</translation>
+        <translation>Sauvegarder/restaurer le dernier état d&apos;IHM</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_SAVE_GUI_STATE</source>
@@ -250,7 +250,7 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>PYTHON_CONSOLE</source>
-        <translation>Console Python </translation>
+        <translation>Console Python</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_LOAD_SCRIPT</source>
@@ -294,7 +294,7 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>TOT_DESK_FILE_NOTEBOOK</source>
-        <translation>Ouvrir le Registre</translation>
+        <translation>Ouvrir le registre</translation>
     </message>
     <message>
         <source>MEN_DESK_FILE_NOTEBOOK</source>
@@ -302,7 +302,7 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>PRP_DESK_FILE_NOTEBOOK</source>
-        <translation>Ouvrir le Registre</translation>
+        <translation>Ouvrir le registre</translation>
     </message>
     <message>
         <source>TOT_DESK_PROPERTIES</source>
@@ -318,11 +318,11 @@ Voulez-vous le recharger ?</translation>
     </message>
     <message>
         <source>MEN_DESK_CATALOG_GENERATOR</source>
-        <translation>&amp;Genérateur de Catalogue</translation>
+        <translation>&amp;Genérateur de catalogue</translation>
     </message>
     <message>
         <source>MEN_DESK_ADD_VARS_TO_NOTEBOOK</source>
-        <translation>Ajouter les variables au Registre</translation>
+        <translation>Ajouter les variables au registre</translation>
     </message>
     <message>
         <source>APPCLOSE_CAPTION</source>
@@ -472,11 +472,11 @@ Voulez-vous vraiment la renommer?</translation>
     </message>
     <message>
         <source>CLOSE_CAPTION</source>
-        <translation>Fermer le Registre</translation>
+        <translation>Fermer le registre</translation>
     </message>
     <message>
         <source>CLOSE_DESCRIPTION</source>
-        <translation>Voulez-vous sauvegarder les changements faits au Registre ?</translation>
+        <translation>Voulez-vous sauvegarder les changements faits au registre ?</translation>
     </message>
     <message>
         <source>INCORRECT_DATA</source>

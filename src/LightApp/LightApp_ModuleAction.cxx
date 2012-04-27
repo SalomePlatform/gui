@@ -439,8 +439,10 @@ void LightApp_ModuleAction::removedFrom( QWidget* w )
 */
 bool LightApp_ModuleAction::event( QEvent* e )
 {
-  if ( e->type() == QEvent::MaxUser )
+  if ( e->type() == QEvent::MaxUser ) {
     activate( ((ActivateEvent*)e)->id(), false );
+    return true;
+  }
   return QtxAction::event( e );
 }
 

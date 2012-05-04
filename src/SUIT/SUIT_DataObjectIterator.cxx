@@ -27,8 +27,7 @@
 */
 SUIT_DataObjectIterator::SUIT_DataObjectIterator( SUIT_DataObject* root, const int det, const bool fromTrueRoot )
 : myRoot( root ),
-myDetourType( det ),
-myCurrentLevel( 0 )
+myDetourType( det )
 {
   if ( myRoot && fromTrueRoot )
     myRoot = myRoot->root();
@@ -65,7 +64,7 @@ void SUIT_DataObjectIterator::operator++()
       if ( myCurrent->myChildren.count() > 0 )
       {
         myCurrent = extreme( myCurrent->myChildren, myDetourType == DepthLeft );
-        myCurrentLevel++;
+        myChildrenIndexes.append(myDetourType == DepthLeft ? 0 : myCurrent->myChildren.size() - 1);
       }
       else do
       {
@@ -78,18 +77,22 @@ void SUIT_DataObjectIterator::operator++()
         }
         else
         {
-          int idx = aParent->myChildren.indexOf( myCurrent );
-          if ( myDetourType == DepthLeft )
-            myCurrent = idx < aParent->myChildren.count() - 1 ? aParent->myChildren[idx + 1] : 0;
-          else
-            myCurrent = idx > 0 ? aParent->myChildren[idx - 1] : 0;
-          if ( !myCurrent )
+          int idx = myChildrenIndexes.last();
+          if (myDetourType == DepthLeft && idx < aParent->myChildren.count() - 1) 
           {
-            myCurrent = aParent;
-            myCurrentLevel--;
-          }
-          else
+            myChildrenIndexes.last()++;
+            myCurrent = aParent->myChildren[idx + 1];
             exit = true;
+          }
+          else if (myDetourType == DepthRight && idx > 0) 
+          {
+            myChildrenIndexes.last()--;
+            myCurrent = aParent->myChildren[idx - 1];
+            exit = true;
+          } else {
+            myCurrent = aParent;
+            myChildrenIndexes.removeLast();
+          }
         }
       }
       while ( !exit );
@@ -107,7 +110,7 @@ void SUIT_DataObjectIterator::operator++()
           {
             myExtremeChild = extreme( cur->myChildren, myDetourType == BreadthLeft );
             myCurrent = myExtremeChild;
-            myCurrentLevel++;
+            myChildrenIndexes.append(myDetourType == BreadthLeft ? 0 : myCurrent->myChildren.size() - 1);
           }
         }
       }
@@ -130,7 +133,7 @@ SUIT_DataObject* SUIT_DataObjectIterator::current() const
 */
 int SUIT_DataObjectIterator::depth() const
 {
-  return myCurrentLevel;
+  return myChildrenIndexes.size();
 }
 
 /*!

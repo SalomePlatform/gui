@@ -55,7 +55,9 @@ protected:
 
 private:
   SUIT_DataObject*  myExtremeChild;
-  int               myDetourType, myCurrentLevel;
+  int               myDetourType;
+  ///! Indexes of the iterated children at each level (optimization for avoid indexOf call)
+  QList<int>        myChildrenIndexes;
 };
 
 /*!

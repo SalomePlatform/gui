@@ -592,7 +592,7 @@ Please, refer to the documentation.</translation>
         <translation>Show toolbar</translation>
     </message>
     <message>
-        <source>MEN_CHANGE_BACKGROUD</source>
+        <source>MEN_CHANGE_BACKGROUND</source>
         <translation>Change background...</translation>
     </message>
     <message>

@@ -592,7 +592,7 @@ Veuillez consulter la documentation.</translation>
         <translation>Montrer la barre d&apos;outils</translation>
     </message>
     <message>
-        <source>MEN_CHANGE_BACKGROUD</source>
+        <source>MEN_CHANGE_BACKGROUND</source>
         <translation>Changer l&apos;arrière-plan...</translation>
     </message>
     <message>

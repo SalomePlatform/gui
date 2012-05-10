@@ -138,7 +138,7 @@ void VTKViewer_Viewer::setViewManager(SUIT_ViewManager* theViewManager)
 void VTKViewer_Viewer::contextMenuPopup(QMenu* thePopup)
 {
   thePopup->addAction( tr( "MEN_DUMP_VIEW" ), this, SLOT( onDumpView() ) );
-  thePopup->addAction( tr( "MEN_CHANGE_BACKGROUD" ), this, SLOT( onChangeBackground() ) );
+  thePopup->addAction( tr( "MEN_CHANGE_BACKGROUND" ), this, SLOT( onChangeBackground() ) );
 
   thePopup->addSeparator();
 

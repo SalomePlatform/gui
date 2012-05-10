@@ -482,7 +482,7 @@ void OCCViewer_Viewer::enableMultiselection(bool isEnable)
 void OCCViewer_Viewer::contextMenuPopup(QMenu* thePopup)
 {
   thePopup->addAction( tr( "MEN_DUMP_VIEW" ), this, SLOT( onDumpView() ) );
-  thePopup->addAction( tr( "MEN_CHANGE_BACKGROUD" ), this, SLOT( onChangeBackground() ) );
+  thePopup->addAction( tr( "MEN_CHANGE_BACKGROUND" ), this, SLOT( onChangeBackground() ) );
 
   thePopup->addSeparator();
 

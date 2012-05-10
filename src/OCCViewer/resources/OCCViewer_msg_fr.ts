@@ -353,14 +353,14 @@
     <name>OCCViewer_Viewer</name>
     <message>
         <source>MEN_DUMP_VIEW</source>
-        <translation>Sauvegarder la Vue</translation>
+        <translation>Sauvegarder la vue</translation>
     </message>
     <message>
         <source>MEN_SHOW_TOOLBAR</source>
         <translation>Montrer la Barre d&apos;Outils</translation>
     </message>
     <message>
-        <source>MEN_CHANGE_BACKGROUD</source>
+        <source>MEN_CHANGE_BACKGROUND</source>
         <translation>Changer l&apos;arrière-plan</translation>
     </message>
     <message>

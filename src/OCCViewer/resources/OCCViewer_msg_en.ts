@@ -360,7 +360,7 @@
         <translation>Show Toolbar</translation>
     </message>
     <message>
-        <source>MEN_CHANGE_BACKGROUD</source>
+        <source>MEN_CHANGE_BACKGROUND</source>
         <translation>Change Background...</translation>
     </message>
     <message>

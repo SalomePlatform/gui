@@ -272,6 +272,10 @@
         <translation>Fichiers images (*.bmp *.png *.jpg *.jpeg *.eps *.ps)</translation>
     </message>
     <message>
+        <source>OCC_TEXTURE_FILES</source>
+        <translation>Fichiers images (*.bmp *.gif *.pix *.xwd *.rgb *.rs)</translation>
+    </message>
+    <message>
         <source>DSC_MAXIMIZE_VIEW</source>
         <translation>Maximiser la vue</translation>
     </message>

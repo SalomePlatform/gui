@@ -45,6 +45,8 @@
 
 #ifdef WNT
 # include <process.h>
+#else
+#include <unistd.h>
 #endif
 
 /*!

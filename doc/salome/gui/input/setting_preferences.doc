@@ -3,31 +3,30 @@
 \page setting_preferences_page Setting Preferences
 
 All user preferences of \b SALOME application can be customized using the
-common \b Preferences dialog box. This dialog can be invoked using the
+common \b Preferences dialog box. This dialog can be open using the
 <b><i>File > Preferences...</i></b> menu item.
 
 The \b Preferences dialog box consists of two parts:
-- Available preferences sections are listed at the left of the dialog
+- Available preferences sections are listed in the left part of the dialog
 box; usually this list contains "SALOME" item that specifies general
-application preferences and separate section for each SALOME module
+application preferences and a separate section for each SALOME module
 available in the current session.
 - The tabbed widget at the right side of the dialog box provides
 controls that can be used to customize the preferences.
 
-\note The preferences for the modules become accessible only after
-explicit loading of these modules. Until that time the dialog box will
-show corresponding warning message. 
+\note The preferences for modules become accessible only after
+explicit loading of these modules. Until then the dialog box will
+show the corresponding warning message. 
 
-More detailed information about certain module preferences can be found in the User's guide of the corresponding module.
+More detailed information about preferences for certain modules can be found in the User's guide of the corresponding module.
 
-General application preferences are specified at the \b SALOME section
+General application preferences are specified in the \b SALOME section
 of the \b Preferences dialog box. These preferences affect on the
 application look-n-feel and common functionality.
 
-If you've just started your study and haven't yet loaded other
-modules, you'll be able to change only those settings, which refer to
-the whole GUI SALOME session. These settings will be valid for the
-whole study session.
+If the study has just been started and other
+modules have not been loaded yet, it will be possible to change only the settings which refer to
+the whole GUI SALOME session. 
 
 <h2>General Preferences</h2>
 
@@ -300,7 +299,7 @@ Import dialog box.
 \image html import.png
 
 The preferences files usually have *.xml extension. Also,
-preferences files automatically saved by application (stored in the
+preferences files automatically saved by the application (stored in the
 ~/.config/salome directory) have no extension and by default start with
 .SalomeApprc. followed by SALOME version number. Usually there is a
 separate preferences file for each SALOME version in use. Preferences

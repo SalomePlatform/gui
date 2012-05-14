@@ -54,12 +54,7 @@ appropriate help page can also be called from any operation dialog via
 </ul>
 
 Help for the GUI module provides information about standard
-\subpage viewers_page "Salome Viewers":
-<ul>
-<li>\ref occ_3d_viewer_page "OCC 3D viewer", </li>
-<li>\ref vtk_3d_viewer_page "VTK 3D viewer" and </li>
-<li>\ref plot2d_viewer_page "Plot 2D viewer". </li>
-</ul>
+\subpage viewers_page "Salome Viewers".
 
 General application preferences are described in the \subpage setting_preferences_page "Preferences" 
 section of SALOME GUI Help.

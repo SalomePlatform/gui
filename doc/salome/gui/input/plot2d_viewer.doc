@@ -47,50 +47,48 @@ presenting all displayed objects in the visible area.
 
 \image html plot2d_points.png
 
-<b>Draw Points</b> - switch display mode to the \em Points mode. In
+<b>Draw Points</b> - switches display mode to \em Points. In
 this mode, each curve is displayed as a set of points.
 <hr>
 
 \image html plot2d_lines.png
 
-<b>Draw Lines</b> - switch display mode to the \em Lines mode. In this
-mode, each curve is represented as a set of the plain line segments.
+<b>Draw Lines</b> - switches display mode to \em Lines. In this
+mode, each curve is represented as a set of plain line segments.
 <hr>
 
 \image html plot2d_splines.png
 
-<b>Draw Splines</b> - switch display mode to the \em Splines mode. In
+<b>Draw Splines</b> - switches display mode to \em Splines. In
 this mode, each curve is represented as a spline.
 <hr>
 
 \image html plot2d_lmin_normalization.png
 
-<b>Normalization to global minimum by left Y axis</b> - switch
-normalization mode to the <b>Left Y Axis: Minimum normalization</b>
-mode. In this mode, all curves are normalized to the global minimum by
-left Y axis.
+<b>Normalization to global minimum by left Y axis</b> - switches
+normalization mode to <b>Left Y Axis: Minimum normalization</b>.
+In this mode, all curves are normalized to the global minimum by the left Y axis.
 
 \image html plot2d_lmax_normalization.png
 
-<b>Normalization to global maximum by left Y axis</b> - switch
-normalization mode to the <b>Left Y Axis: Maximum normalization</b>
-mode. In this mode, all curves are normalized to the global maximum by
-left Y axis.
+<b>Normalization to global maximum by left Y axis</b> - switches
+normalization mode to <b>Left Y Axis: Maximum normalization</b>. 
+In this mode, all curves are normalized to the global maximum by the left Y axis.
 <hr>
 
 \image html plot2d_rmin_normalization.png
 
-<b>Normalization to global minimum by right Y axis</b> - switch
-normalization mode to the <b>Right Y Axis: Minimum normalization</b>
-mode. In this mode, all curves are normalized to the global minimum by
-right Y axis.
+<b>Normalization to global minimum by right Y axis</b> - switches
+normalization mode to <b>Right Y Axis: Minimum normalization</b>.
+In this mode, all curves are normalized to the global minimum by
+the right Y axis.
 
 \image html plot2d_rmax_normalization.png
 
 <b>Normalization to global maximum by right Y axis</b> - switch
-normalization mode to the <b>Right Y Axis: Maximum normalization</b>
-mode. In this mode, all curves are normalized to the global maximum by
-right Y axis.
+normalization mode to <b>Right Y Axis: Maximum normalization</b>.
+In this mode, all curves are normalized to the global maximum by
+the right Y axis.
 <hr>
 
 \image html plot2d_linear.png
@@ -151,8 +149,8 @@ The options are as follows:
 
 - <b>Background color</b> of the XY plot.
 
-- <b>Deviation marker</b> here you can specify the properties of the
-  marker, which used for the drawing deviations data.
+- <b>Deviation marker</b> allows specifying the properties of the
+  marker, which is used for drawing deviations data.
 
   - <b>Line width</b> line width of the marker.
 
@@ -161,26 +159,26 @@ The options are as follows:
 
   - <b>Color</b> color of the marker.
 
-- <b>Normalization</b> here you can select the type of
-  normalization(\em minimum or/and \em maximum) for the displayed
-  presentations of the 2d curves in the view.
+- <b>Normalization</b> allows selecting the type of
+  normalization (\em minimum or/and \em maximum) for the displayed
+  presentations of 2d curves in the view.
 
-- <b>Scale mode</b> here you can select the type of scaling (\em Linear
+- <b>Scale mode</b> allows selecting the type of scaling (\em Linear
   or \em Logarithmic) for <b>X (Horizontal)</b> or <b>Y (Vertical)</b>
   axes separately. Note that the \em Logarithmic scale can be used
   only if the minimum value of corresponding component (abscissa or
   ordinate) of all points displayed in the viewer is greater than
   zero.
 
-- <b>Axis ...</b> options group allows to specify additional settings
+- <b>Axis ...</b> options group allows specifying additional settings
   for each axis separately:
 
-  - <b>Axis title</b> - an axis title
+  - <b>Axis title</b> - an axis title.
 
-  - <b>Grid / Axes marks</b>  here you can define the maximum number
-    of major and minor scale divisions for a specified axis. The real
+  - <b>Grid / Axes marks</b> allows defining the maximum number
+    of major and minor scale divisions for a given axis. The real
     number of intervals fits to {1,2,5}*10^N, where N is a natural
-    number, and doesn't exceed the maximum.
+    number, and does not exceed the maximum.
 
 - <b>Save settings as default</b> If this check box is marked, all XY
   plots will be displayed with these defined properties. 
@@ -191,7 +189,7 @@ The options are as follows:
 \image html plot2d_analytical_curve.png
 
 <b>Analytical curves</b> - provides an access to the analytical curves
-dialog box, that allows to add, remove and modify analytical curves
+dialog box that allows to add, remove and modify analytical curves
 for the Plot 2d Viewer.
 
 \image html analytical_curves_dlg.png
@@ -200,29 +198,31 @@ The options are as follows:
 
 - Curve parameters:
 
-  - <b>y(x)=</b> allows to specify python expression, which used to
-    calculate coordinates of the points of the curve,
-    <b>x</b> corresponds to the shown in the plot 2d viewer horizontal range.</li>
-  - <b>Nb. itervals</b> allows to specify number of the points of the
-    curve.
+  - <b>y(x)=</b> allows specifying a python expression, which is used to
+    calculate the coordinates of the curve points, where <b>x</b>
+    corresponds to the horizontal range, shown in plot 2D viewer.
+
+  - <b>Nb. itervals</b> allows specifying the number of the curve points.
 
 - Curve properties:
 
-  - <b>Auto assign</b> if it is checked, properties of the curves
-    (Line type, Line width, Marker type and Color) assigned
-    automatically.To define the properties of the curve manually
-    remove the checkmark from this control.
+  - <b>Auto assign</b> if checked, the properties 
+    (<em>Line type</em>, <em>Line width</em>, <em>Marker type</em> and
+    <em>Color</em>) are assigned to curves automatically. To define
+    the curve properties manually, uncheck this control.
 
-  - <b>Line type</b> allows to choose curve's line type from (None,
-    Solid, Dash, Dot, Dash - Dot, Dash - Dot - Dot).
+  - <b>Line type</b> allows to choose curve line type from \em None,
+    \em Solid, \em Dash, \em Dot, <em>Dash - Dot</em> and
+    <em>Dash - Dot - Dot</em>.
 
   - <b>Line width</b> allows to specify line width of the curve.
 
-  - <b>Marker type</b> allows to choose curve's marker type from
-    (Circle, Rectangle, Diamond, Rightward, Leftward, Downward &
-    Upward Triangle, Cross or Diagonal Cross).
+  - <b>Marker type</b> allows to choose curve marker type from
+    \em Circle, \em Rectangle, \em Diamond, <em>Rightward Triangle</em>,
+    <em>Leftward Triangle</em>, <em>Downward Triangle</em>,
+    <em>Upward Triangle</em>, \em Cross and <em>Diagonal Cross</em>).
 
-  - <b>Color</b> allows to specify color of the curve.
+  - <b>Color</b> allows specifying the curve color.
 
 <hr>
 
@@ -233,6 +233,6 @@ The options are as follows:
 
 \image html plot2d_print.png
 
-<b>Print view</b> - print view scene.
+<b>Print view</b> - prints the current view scene.
 
 */

@@ -439,13 +439,14 @@ bool SalomeApp_Study::createDocument( const QString& theStr )
   setRoot( aRoot );
 
   bool aRet = CAM_Study::createDocument( theStr );
-  emit created( this );
 
 #ifdef WITH_SALOMEDS_OBSERVER
   myObserver = new Observer_i(myStudyDS,this);
   //attach an observer to the study with notification of modifications
   myStudyDS->attach(myObserver->_this(),true);
 #endif
+
+  emit created( this );
 
   return aRet;
 }

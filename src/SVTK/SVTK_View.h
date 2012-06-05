@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 // Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 // CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -212,16 +212,11 @@ public:
   //! Change material
   void
   SetMaterial(const Handle(SALOME_InteractiveObject)& theIObject,
-	      vtkProperty* thePropF,
-	      vtkProperty* thePropB);
+	      vtkProperty* thePropF);
 
-  //! Get current front material
+  //! Get current material
   vtkProperty* 
-  GetFrontMaterial(const Handle(SALOME_InteractiveObject)& theIObject);
-
-  //! Get current back material
-  vtkProperty* 
-  GetBackMaterial(const Handle(SALOME_InteractiveObject)& theIObject);
+  GetMaterial(const Handle(SALOME_InteractiveObject)& theIObject);
 
   //----------------------------------------------------------------------------
   // Erase Display functions

@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
+# Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -63,16 +63,14 @@ SET(PYQT_INCLUDES ${PYQT_INCLUDES} -I${PYQT_SIPS}/QtNetwork -I${PYQT_SIPS}/QtSql
 SET(PYQT_INCLUDES ${PYQT_INCLUDES} -I${PYQT_SIPS}/QtSvg -I${PYQT_SIPS}/QtTest)
 
 EXECUTE_PROCESS(
-  COMMAND ${PYTHON_EXECUTABLE} -c "import re, PyQt4.pyqtconfig ; s = PyQt4.pyqtconfig.Configuration().pyqt_sip_flags ; m = re.search('(Qt_[0-9_]+)',s) ; print m.group(1)"
-  OUTPUT_VARIABLE SUPPORTED
+  COMMAND ${PYTHON_EXECUTABLE} -c "import re, PyQt4.pyqtconfig ; s = PyQt4.pyqtconfig.Configuration().pyqt_sip_flags ; print s;"
+  OUTPUT_VARIABLE COMPILE_FLAGS
   OUTPUT_STRIP_TRAILING_WHITESPACE
   )
+string(REPLACE " " ";" FLAGS_LIST ${COMPILE_FLAGS})
+FOREACH(FLG ${FLAGS_LIST})
+SET( PYQT_SIPFLAGS ${PYQT_SIPFLAGS} ${FLG})
+ENDFOREACH(FLG ${FLAGS_LIST})
 
-IF(WINDOWS)
-  SET(ws_flag WS_WIN)
-ELSE(WINDOWS)
-  SET(ws_flag WS_X11)
-ENDIF(WINDOWS)
-
-SET(PYQT_SIPFLAGS -x VendorID -x PyQt_NoPrintRangeBug -t ${ws_flag} -t ${SUPPORTED} -g -s .cc -c .)
-SET(PYQT_SIPFLAGS ${PYQT_SIPFLAGS} ${PYQT_INCLUDES})
+SET( PYQT_SIPFLAGS ${PYQT_SIPFLAGS} -s .cc -c . )
+SET( PYQT_SIPFLAGS ${PYQT_SIPFLAGS} ${PYQT_INCLUDES} )

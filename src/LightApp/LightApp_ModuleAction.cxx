@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 // This library is free software; you can redistribute it and/or
 // modify it under the terms of the GNU Lesser General Public
@@ -325,7 +325,7 @@ void LightApp_ModuleAction::insertModule( const QString& name, const QIcon& ico,
                                           const int idx )
 {
   QtxAction* a = new QtxAction( name, ico, name, 0, this, true );
-  a->setStatusTip( tr( "Activate/deactivate %1 module" ).arg( name ) );
+  a->setStatusTip( tr( "ACTIVATE_MODULE_TOP" ).arg( name ) );
 
   mySet->insertAction( a, -1, idx );
   update();
@@ -439,10 +439,11 @@ void LightApp_ModuleAction::removedFrom( QWidget* w )
 */
 bool LightApp_ModuleAction::event( QEvent* e )
 {
-  if ( e->type() == QEvent::MaxUser )
+  if ( e->type() == QEvent::MaxUser ) {
     activate( ((ActivateEvent*)e)->id(), false );
-  else
-    return QtxAction::event( e );
+    return true;
+  }
+  return QtxAction::event( e );
 }
 
 /*!

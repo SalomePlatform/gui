@@ -9,7 +9,7 @@
     </message>
     <message>
         <source>ABOUT_COPYRIGHT</source>
-        <translation>Copyright (C) 2007-2011 CEA/DEN, EDF R&amp;D, OPEN CASCADE
+        <translation>Copyright (C) 2007-2012 CEA/DEN, EDF R&amp;D, OPEN CASCADE
 
 Copyright (C) 2003-2007 OPEN CASCADE, EADS/CCR, LIP6,
 CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translation>
@@ -164,7 +164,7 @@ Les modifications seront appliquées à la prochaine session.</translation>
     </message>
     <message>
         <source>PREF_GROUP_VTKVIEWER</source>
-        <translation>Visualiseur VTK 3D</translation>
+        <translation>Scène VTK 3D</translation>
     </message>
     <message>
         <source>PREF_STORE_POS</source>
@@ -208,7 +208,7 @@ Les modifications seront appliquées à la prochaine session.</translation>
     </message>
     <message>
         <source>PREF_ZOOMING_AT_CENTER</source>
-        <translation>Relatif au centre de la vue</translation>
+        <translation>Relatif au centre de la scène</translation>
     </message>
     <message>
         <source>PREF_ZOOMING_AT_CURSOR</source>
@@ -440,7 +440,7 @@ Les modifications seront appliquées à la prochaine session.</translation>
     </message>
     <message>
         <source>PREF_TAB_VIEWERS</source>
-        <translation>Visualiseurs</translation>
+        <translation>Scènes</translation>
     </message>
     <message>
         <source>PREF_APP</source>
@@ -492,27 +492,31 @@ Les modifications seront appliquées à la prochaine session.</translation>
     </message>
     <message>
         <source>NEW_WINDOW_0</source>
-        <translation>Vue &amp;GL </translation>
+        <translation>Scène &amp;GL </translation>
     </message>
     <message>
         <source>NEW_WINDOW_1</source>
-        <translation>Vue &amp;Plot2d </translation>
+        <translation>Scène &amp;Plot2d </translation>
     </message>
     <message>
         <source>NEW_WINDOW_2</source>
-        <translation>Vue &amp;OCC</translation>
+        <translation>Scène &amp;OCC</translation>
     </message>
     <message>
         <source>NEW_WINDOW_3</source>
-        <translation>Vue VT&amp;K</translation>
+        <translation>Scène VT&amp;K</translation>
     </message>
     <message>
         <source>NEW_WINDOW_4</source>
-        <translation>Vue &amp;QxGraph</translation>
+        <translation>Scène &amp;QxGraph</translation>
     </message>
     <message>
         <source>NEW_WINDOW_5</source>
-        <translation>Vue Qx&amp;Scene</translation>
+        <translation>Scène Qx&amp;Scene</translation>
+    </message>
+    <message>
+        <source>CREATING_NEW_WINDOW</source>
+        <translation>Créer une nouvelle %1</translation>
     </message>
     <message>
         <source>OBJ_BROWSER_NAME</source>
@@ -624,7 +628,7 @@ Les modifications seront appliquées à la prochaine session.</translation>
     </message>
     <message>
         <source>PREF_GROUP_OCCVIEWER</source>
-        <translation>Visualiseur OCC 3D</translation>
+        <translation>Scène OCC 3D</translation>
     </message>
     <message>
         <source>PREF_LOGARITHMIC</source>
@@ -668,7 +672,7 @@ Les modifications seront appliquées à la prochaine session.</translation>
     </message>
     <message>
         <source>PREF_GROUP_PLOT2DVIEWER</source>
-        <translation>Visualiseur Plot2d</translation>
+        <translation>Scène Plot2d</translation>
     </message>
     <message>
         <source>PREF_DEVIATION_COLOR</source>
@@ -919,6 +923,13 @@ Le fichier n&apos;existe pas</translation>
     <message>
         <source>DEFAULT_BTN_TEXT</source>
         <translation>Défauts</translation>
+    </message>
+</context>
+<context>
+    <name>LightApp_ModuleAction</name>
+    <message>
+        <source>ACTIVATE_MODULE_TOP</source>
+        <translation>Activer/désactiver le module %1</translation>
     </message>
 </context>
 </TS>

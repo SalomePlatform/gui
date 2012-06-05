@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 // Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 // CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -746,20 +746,17 @@ SVTK_View
 /*!
   Change material
   \param theIObject - object
-  \param thePropF - property contained new properties of front material
-  \param thePropB - property contained new properties of back material
+  \param thePropF - property contained new properties of material
 */
 void
 SVTK_View
 ::SetMaterial(const Handle(SALOME_InteractiveObject)& theIObject,
-	      vtkProperty* thePropF,
-	      vtkProperty* thePropB)
+	      vtkProperty* thePropF)
 {
   using namespace SVTK;
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
   std::vector<vtkProperty*> aProps;
   aProps.push_back( thePropF );
-  aProps.push_back( thePropB );
   ForEachIf<SALOME_Actor>(aCopy.GetActors(),
                           TIsSameIObject<SALOME_Actor>(theIObject),
                           TSetFunction<SALOME_Actor,std::vector<vtkProperty*> >
@@ -769,11 +766,11 @@ SVTK_View
 /*!
   Get current front material
   \param theIObject - object
-  \return property contained front material properties of the given object
+  \return property contained material properties of the given object
 */
 vtkProperty* 
 SVTK_View
-::GetFrontMaterial(const Handle(SALOME_InteractiveObject)& theIObject)
+::GetMaterial(const Handle(SALOME_InteractiveObject)& theIObject)
 {
   using namespace SVTK;
   VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
@@ -781,26 +778,7 @@ SVTK_View
     Find<SALOME_Actor>(aCopy.GetActors(),
                        TIsSameIObject<SALOME_Actor>(theIObject));
   if(anActor)
-    return anActor->GetFrontMaterial();
-  return NULL;
-}
-
-/*!
-  Get current back material
-  \param theIObject - object
-  \return property contained back material properties of the given object
-*/
-vtkProperty* 
-SVTK_View
-::GetBackMaterial(const Handle(SALOME_InteractiveObject)& theIObject)
-{
-  using namespace SVTK;
-  VTK::ActorCollectionCopy aCopy(getRenderer()->GetActors());
-  SALOME_Actor* anActor = 
-    Find<SALOME_Actor>(aCopy.GetActors(),
-                       TIsSameIObject<SALOME_Actor>(theIObject));
-  if(anActor)
-    return anActor->GetBackMaterial();
+    return anActor->GetMaterial();
   return NULL;
 }
 

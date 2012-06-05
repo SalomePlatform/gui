@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 // Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 // CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -35,9 +35,9 @@
 #include "VTKViewer_Algorithm.h"
 #include "VTKViewer_Transform.h"
 #include "VTKViewer_Utilities.h"
+#include "VTKViewer_OpenGLRenderer.h"
 
 #include <vtkCamera.h>
-#include <vtkRenderer.h>
 #include <vtkTextProperty.h>
 #include <vtkObjectFactory.h>
 #include <vtkCallbackCommand.h>
@@ -61,7 +61,7 @@ vtkStandardNewMacro(SVTK_Renderer);
 */
 SVTK_Renderer
 ::SVTK_Renderer():
-  myDevice(vtkRenderer::New()),
+  myDevice(VTKViewer_OpenGLRenderer::New()),
   myInteractor(NULL),
   myPriority(0.0),
   myEventCallbackCommand(vtkCallbackCommand::New()),

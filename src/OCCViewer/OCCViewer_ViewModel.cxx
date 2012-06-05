@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 // Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 // CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -64,7 +64,7 @@
 #include <Basics_OCCTVersion.hxx>
 
 // VSR: Uncomment below line to allow texture background support in OCC viewer
-// #define OCC_ENABLE_TEXTURED_BACKGROUND
+#define OCC_ENABLE_TEXTURED_BACKGROUND
 
 /*!
   Get data for supported background modes: gradient types, identifiers and supported image formats
@@ -482,7 +482,7 @@ void OCCViewer_Viewer::enableMultiselection(bool isEnable)
 void OCCViewer_Viewer::contextMenuPopup(QMenu* thePopup)
 {
   thePopup->addAction( tr( "MEN_DUMP_VIEW" ), this, SLOT( onDumpView() ) );
-  thePopup->addAction( tr( "MEN_CHANGE_BACKGROUD" ), this, SLOT( onChangeBackground() ) );
+  thePopup->addAction( tr( "MEN_CHANGE_BACKGROUND" ), this, SLOT( onChangeBackground() ) );
 
   thePopup->addSeparator();
 

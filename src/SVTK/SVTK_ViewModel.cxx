@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 // Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 // CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -48,7 +48,7 @@
 #include "QtxBackgroundTool.h"
 
 // VSR: Uncomment below line to allow texture background support in VTK viewer
-// #define VTK_ENABLE_TEXTURED_BACKGROUND
+#define VTK_ENABLE_TEXTURED_BACKGROUND
 
 
 // in order NOT TO link with SalomeApp, here the code returns SALOMEDS_Study.
@@ -103,10 +103,24 @@ SVTK_Viewer::~SVTK_Viewer()
 /*! Get data for supported background modes: gradient types, identifiers and supported image formats */
 QString SVTK_Viewer::backgroundData( QStringList& gradList, QIntList& idList, QIntList& txtList )
 {
-  gradList << tr( "GT_VERTICALGRADIENT" );  // only vertical type of gradient is supported
-  idList   << VerticalGradient;             // only vertical type of gradient is supported
+  gradList << tr( "GT_HORIZONTALGRADIENT" )
+           << tr( "GT_VERTICALGRADIENT" )
+           << tr( "GT_FIRSTDIAGONALGRADIENT" )
+           << tr( "GT_SECONDDIAGONALGRADIENT" )
+           << tr( "GT_FIRSTCORNERGRADIENT" )
+           << tr( "GT_SECONDCORNERGRADIENT" )
+           << tr( "GT_THIRDCORNERGRADIENT" )
+           << tr( "GT_FOURTHCORNERGRADIENT" );
+  idList   << HorizontalGradient
+           << VerticalGradient
+           << FirstDiagonalGradient
+           << SecondDiagonalGradient
+           << FirstCornerGradient
+           << SecondCornerGradient
+           << ThirdCornerGradient
+           << FourthCornerGradient;
 #ifdef VTK_ENABLE_TEXTURED_BACKGROUND
-  txtList  << Qtx::StretchTexture;          // only stretch texture mode is supported
+  txtList  << Qtx::CenterTexture << Qtx::TileTexture << Qtx::StretchTexture;
 #endif
   return tr("BG_IMAGE_FILES");
 }
@@ -439,7 +453,7 @@ void SVTK_Viewer::setViewManager(SUIT_ViewManager* theViewManager)
 void SVTK_Viewer::contextMenuPopup( QMenu* thePopup )
 {
   thePopup->addAction( VTKViewer_Viewer::tr( "MEN_DUMP_VIEW" ), this, SLOT( onDumpView() ) );
-  thePopup->addAction( VTKViewer_Viewer::tr( "MEN_CHANGE_BACKGROUD" ), this, SLOT( onChangeBackground() ) );
+  thePopup->addAction( VTKViewer_Viewer::tr( "MEN_CHANGE_BACKGROUND" ), this, SLOT( onChangeBackground() ) );
 
   thePopup->addSeparator();
 

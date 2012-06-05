@@ -272,6 +272,10 @@
         <translation>Images Files (*.bmp *.png *.jpg *.jpeg *.eps *.ps)</translation>
     </message>
     <message>
+        <source>OCC_TEXTURE_FILES</source>
+        <translation>Image files (*.bmp *.gif *.pix *.xwd *.rgb *.rs)</translation>
+    </message>
+    <message>
         <source>DSC_MAXIMIZE_VIEW</source>
         <translation>Maximize view</translation>
     </message>
@@ -356,7 +360,7 @@
         <translation>Show Toolbar</translation>
     </message>
     <message>
-        <source>MEN_CHANGE_BACKGROUD</source>
+        <source>MEN_CHANGE_BACKGROUND</source>
         <translation>Change Background...</translation>
     </message>
     <message>

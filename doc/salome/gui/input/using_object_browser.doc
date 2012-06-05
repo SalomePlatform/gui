@@ -26,7 +26,7 @@ right-click on a definite object in the Object Browser.
 The Object Browser may contain supplementary attributes of the objects
 displayed in additional columns. By default, these columns are not
 displayed -  displaying/hiding these columns is possible through
-\ref salome_preferences_page "setting study preferences" or
+\ref setting_preferences_page "setting study preferences" or
 right-clicking on the attributes bar and toggling the necessary
 attributes.
 

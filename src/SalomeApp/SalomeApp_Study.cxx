@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 // Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 // CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -18,6 +18,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
 
 #include "SalomeApp_Study.h"
 
@@ -438,13 +439,14 @@ bool SalomeApp_Study::createDocument( const QString& theStr )
   setRoot( aRoot );
 
   bool aRet = CAM_Study::createDocument( theStr );
-  emit created( this );
 
 #ifdef WITH_SALOMEDS_OBSERVER
   myObserver = new Observer_i(myStudyDS,this);
   //attach an observer to the study with notification of modifications
   myStudyDS->attach(myObserver->_this(),true);
 #endif
+
+  emit created( this );
 
   return aRet;
 }

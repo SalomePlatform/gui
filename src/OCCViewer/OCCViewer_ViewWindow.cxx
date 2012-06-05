@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 // Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 // CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -18,6 +18,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
 
 // File   : OCCViewer_ViewWindow.cxx
 // Author :
@@ -2555,11 +2556,14 @@ void OCCViewer_ViewWindow::synchronizeView( OCCViewer_ViewWindow* viewWindow, in
       // synchronize target view with source view
       viewWindow->getViewPort()->synchronize( otherViewWindow->getViewPort() );
       viewWindow->toolMgr()->action( SynchronizeId )->setData( otherViewWindow->getId() );
-      otherViewWindow->toolMgr()->action( SynchronizeId )->setData( viewWindow->getId() );
-      if ( !otherViewWindow->toolMgr()->action( SynchronizeId )->isChecked() ) {
-	bool blocked = otherViewWindow->toolMgr()->action( SynchronizeId )->blockSignals( true );
-	otherViewWindow->toolMgr()->action( SynchronizeId )->setChecked( true );
-	otherViewWindow->toolMgr()->action( SynchronizeId )->blockSignals( blocked );
+      QAction* anOtherAcion = otherViewWindow->toolMgr()->action( SynchronizeId );
+      if (anOtherAcion) {
+        anOtherAcion->setData( viewWindow->getId() );
+        if ( !anOtherAcion->isChecked() ) {
+	        bool blocked = anOtherAcion->blockSignals( true );
+	        anOtherAcion->setChecked( true );
+	        anOtherAcion->blockSignals( blocked );
+        }
       }
     }
   }
@@ -2569,10 +2573,13 @@ void OCCViewer_ViewWindow::synchronizeView( OCCViewer_ViewWindow* viewWindow, in
     viewWindow->getViewPort()->disconnect( SIGNAL( vpTransformed( OCCViewer_ViewPort* ) ), otherViewWindow->getViewPort(), SLOT( synchronize( OCCViewer_ViewPort* ) ) );
     viewWindow->getViewPort()->synchronize( otherViewWindow->getViewPort() );
     viewWindow->toolMgr()->action( SynchronizeId )->setData( otherViewWindow->getId() );
-    if ( otherViewWindow->toolMgr()->action( SynchronizeId )->data().toInt() == viewWindow->getId() && otherViewWindow->toolMgr()->action( SynchronizeId )->isChecked() ) {
-      bool blocked = otherViewWindow->toolMgr()->action( SynchronizeId )->blockSignals( true );
-      otherViewWindow->toolMgr()->action( SynchronizeId )->setChecked( false );
-      otherViewWindow->toolMgr()->action( SynchronizeId )->blockSignals( blocked );
+    QAction* anOtherAcion = otherViewWindow->toolMgr()->action( SynchronizeId );
+    if (anOtherAcion) {
+      if ( anOtherAcion->data().toInt() == viewWindow->getId() && anOtherAcion->isChecked() ) {
+        bool blocked = anOtherAcion->blockSignals( true );
+        anOtherAcion->setChecked( false );
+        anOtherAcion->blockSignals( blocked );
+      }
     }
   }
 }

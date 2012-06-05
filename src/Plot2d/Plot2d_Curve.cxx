@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 // Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 // CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -339,9 +339,8 @@ double Plot2d_Curve::getMinY() const
   pointList::const_iterator aIt;
   double coeff = 0.0;
   for (aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt) {    
-    aMinY = qMin( aMinY, myScale * (*aIt).y );
-    if((*aIt).minDeviation(coeff))
-      aMinY = qMin( aMinY, coeff );
+   (*aIt).minDeviation(coeff);
+    aMinY = qMin( aMinY, myScale * (*aIt).y - coeff);
   }
   return aMinY;
 }
@@ -355,9 +354,8 @@ double Plot2d_Curve::getMaxY() const
   pointList::const_iterator aIt;
   double coeff = 0.0;
   for (aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt) {
-    aMaxY = qMax( aMaxY, myScale * (*aIt).y);
-    if((*aIt).maxDeviation(coeff))
-      aMaxY = qMax( aMaxY, coeff);
+    (*aIt).maxDeviation(coeff);
+    aMaxY = qMax( aMaxY, myScale * (*aIt).y + coeff);
   }
   return aMaxY;
 }

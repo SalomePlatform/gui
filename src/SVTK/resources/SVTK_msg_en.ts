@@ -592,12 +592,40 @@ Please, refer to the documentation.</translation>
         <translation>Show toolbar</translation>
     </message>
     <message>
-        <source>MEN_CHANGE_BACKGROUD</source>
+        <source>MEN_CHANGE_BACKGROUND</source>
         <translation>Change background...</translation>
+    </message>
+    <message>
+        <source>GT_HORIZONTALGRADIENT</source>
+        <translation>Horizontal gradient</translation>
     </message>
     <message>
         <source>GT_VERTICALGRADIENT</source>
         <translation>Vertical gradient</translation>
+    </message>
+    <message>
+        <source>GT_FIRSTDIAGONALGRADIENT</source>
+        <translation>First diagonal gradient</translation>
+    </message>
+    <message>
+        <source>GT_SECONDDIAGONALGRADIENT</source>
+        <translation>Second diagonal gradient</translation>
+    </message>
+    <message>
+        <source>GT_FIRSTCORNERGRADIENT</source>
+        <translation>First corner gradient</translation>
+    </message>
+    <message>
+        <source>GT_SECONDCORNERGRADIENT</source>
+        <translation>Second corner gradient</translation>
+    </message>
+    <message>
+        <source>GT_THIRDCORNERGRADIENT</source>
+        <translation>Third corner gradient</translation>
+    </message>
+    <message>
+        <source>GT_FOURTHCORNERGRADIENT</source>
+        <translation>Fourth corner gradient</translation>
     </message>
     <message>
         <source>BG_IMAGE_FILES</source>

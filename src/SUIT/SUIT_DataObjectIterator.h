@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 // Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 // CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -55,7 +55,9 @@ protected:
 
 private:
   SUIT_DataObject*  myExtremeChild;
-  int               myDetourType, myCurrentLevel;
+  int               myDetourType;
+  ///! Indexes of the iterated children at each level (optimization for avoid indexOf call)
+  QList<int>        myChildrenIndexes;
 };
 
 /*!

@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 // Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 // CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -18,6 +18,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 //
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
+//
 
 // File:      LightApp_Application.cxx
 // Created:   6/20/2005 18:39:45 PM
@@ -465,10 +466,18 @@ void LightApp_Application::createActionForViewer( const int id,
                                                   const QString& suffix,
                                                   const int accel )
 {
-  QAction* a = createAction( id, tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() ), QIcon(),
-                             tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() ),
-                             tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() ),
-                             accel, desktop(), false, this, SLOT( onNewWindow() ) );
+  QString vtlt = tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() );
+  QString tip = tr( "CREATING_NEW_WINDOW" ).arg( vtlt.remove( "&" ) );
+  QAction* a = createAction( id,                      // menu action id
+			     tip,                     // status tip
+			     QIcon(),                 // icon
+			     vtlt,                    // menu text
+                             tip,                     // tooltip
+                             accel,                   // shortcut
+			     desktop(),               // parent
+                             false,                   // toggle flag
+			     this,                    // receiver
+                             SLOT( onNewWindow() ) ); // slot
   createMenu( a, parentId, -1 );
 }
 

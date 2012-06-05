@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2011  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 // Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 // CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -28,6 +28,8 @@
 #include "VTKViewer_Trihedron.h"
 #include "VTKViewer_Transform.h"
 #include "VTKViewer_Utilities.h"
+#include "VTKViewer_Texture.h"
+#include "VTKViewer_OpenGLRenderer.h"
 
 #include <SUIT_Session.h>
 #include <SUIT_MessageBox.h>
@@ -37,7 +39,6 @@
 #include <QFileInfo>
 #include <QImage>
 
-#include <vtkRenderer.h>
 #include <vtkCamera.h>
 #include <vtkJPEGReader.h>
 #include <vtkBMPReader.h>
@@ -61,7 +62,7 @@ VTKViewer_ViewWindow::VTKViewer_ViewWindow( SUIT_Desktop* theDesktop,
 
   myTrihedron = VTKViewer_Trihedron::New();
   myTransform = VTKViewer_Transform::New();
-  myRenderer  = vtkRenderer::New() ;
+  myRenderer  = VTKViewer_OpenGLRenderer::New() ;
 
   myTrihedron->AddToRender( myRenderer );
 
@@ -484,25 +485,25 @@ void VTKViewer_ViewWindow::setBackground( const Qtx::BackgroundData& bgData )
       {
 	QColor c1, c2;
 	int type = bgData.gradient( c1, c2 );
-	// VSR: Currently, only vertical gradient is supported by VTK. 
-	// In future, switch operator might be added here to process different supported gradient types.
-	if ( c1.isValid() && type == VTKViewer_Viewer::VerticalGradient ) {
-	  if ( !c2.isValid() ) c2 = c1;
-	  // show two-color gradient background
-	  getRenderer()->SetTexturedBackground( false );    // cancel texture mode
-	  getRenderer()->SetGradientBackground( true );     // switch to gradient mode
-	  // VSR: In VTK, gradient is colored from bottom to top:
-	  // - top color is set via SetBackground2()
-	  // - bottom color is set via SetBackground()
-	  // So, we reverse colors, to draw gradient from top to bottom instead.
-	  getRenderer()->SetBackground(  c2.red()/255.0, 
-					 c2.green()/255.0,
-					 c2.blue()/255.0 ); // set first gradient color
-	  getRenderer()->SetBackground2( c1.red()/255.0,
-					 c1.green()/255.0,
-					 c1.blue()/255.0 ); // set second gradient color
-	  ok = true;
-	}
+        if ( c1.isValid() )
+        {
+          if ( !c2.isValid() )
+            c2 = c1;
+
+          // show two-color gradient background
+          getRenderer()->SetTexturedBackground( false );    // cancel texture mode
+          getRenderer()->SetGradientBackground( true );     // switch to gradient mode
+
+          VTKViewer_OpenGLRenderer* aRenderer =
+            VTKViewer_OpenGLRenderer::SafeDownCast( getRenderer() );
+          if( aRenderer )
+          {
+            aRenderer->SetGradientType( type );
+            aRenderer->SetBackground( c1.redF(), c1.greenF(), c1.blueF() );
+            aRenderer->SetBackground2( c2.redF(), c2.greenF(), c2.blueF() );
+            ok = true;
+          }
+        }
 	break;
       }
     case Qtx::CustomGradientBackground:
@@ -539,7 +540,7 @@ void VTKViewer_ViewWindow::setBackground( const Qtx::BackgroundData& bgData )
 	  aReader->SetFileName( fi.absoluteFilePath().toLatin1().constData() );
 	  aReader->Update();
 	  
-	  vtkTexture* aTexture = vtkTexture::New();
+	  VTKViewer_Texture* aTexture = VTKViewer_Texture::New();
 	  vtkImageMapToColors* aMap = 0;
 	  vtkAlgorithmOutput* anOutput;
 	  /*

@@ -272,6 +272,10 @@
         <translation>Fichiers images (*.bmp *.png *.jpg *.jpeg *.eps *.ps)</translation>
     </message>
     <message>
+        <source>OCC_TEXTURE_FILES</source>
+        <translation>Fichiers images (*.bmp *.gif *.pix *.xwd *.rgb *.rs)</translation>
+    </message>
+    <message>
         <source>DSC_MAXIMIZE_VIEW</source>
         <translation>Maximiser la vue</translation>
     </message>
@@ -349,14 +353,14 @@
     <name>OCCViewer_Viewer</name>
     <message>
         <source>MEN_DUMP_VIEW</source>
-        <translation>Sauvegarder la Vue</translation>
+        <translation>Sauvegarder la vue</translation>
     </message>
     <message>
         <source>MEN_SHOW_TOOLBAR</source>
         <translation>Montrer la Barre d&apos;Outils</translation>
     </message>
     <message>
-        <source>MEN_CHANGE_BACKGROUD</source>
+        <source>MEN_CHANGE_BACKGROUND</source>
         <translation>Changer l&apos;arrière-plan</translation>
     </message>
     <message>

@@ -1,7 +1,6 @@
+#! /usr/bin/env python
+#  -*- coding: iso-8859-1 -*-
 # Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
-#
-# Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
-# CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -20,21 +19,13 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-# -* Makefile *- 
-# Author : Guillaume Boulant (CSSI)
-# Module : KERNEL
-# $Header$
-#
-include $(top_srcdir)/adm_local/unix/make_common_starter.am
+import os
 
-# non-distributed files 
-nodist_salomescript_DATA = VERSION
+# -----------------------------------------------------------------------------
 
-# distributed files
-dist_salomescript_SCRIPTS =	\
-	runLightSalome.csh	\
-	runLightSalome.sh
+def set_env( args ):
+    """Add environment required for GUI module"""
+    os.environ[ 'VTK_AUTOLOAD_PATH' ] = os.path.join( os.getenv("GUI_ROOT_DIR"), "lib", "paraview" )
+    return
 
-# python files
-dist_salomescript_PYTHON = \
-        gui_setenv.py
+

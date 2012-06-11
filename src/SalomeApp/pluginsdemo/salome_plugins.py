@@ -21,11 +21,14 @@
 
 import salome_pluginsmanager
 
-DEMO_IS_ACTIVATED=True
-try:
-  import geompy, smesh
-except:
-  DEMO_IS_ACTIVATED=False
+DEMO_IS_ACTIVATED = False
+
+if DEMO_IS_ACTIVATED:
+  # Check that GEOM and SMESH modules are present
+  try:
+    import geompy, smesh
+  except:
+    DEMO_IS_ACTIVATED = False
 
 if DEMO_IS_ACTIVATED:
   # -------------------------------------------------------------------------
@@ -254,11 +257,23 @@ if DEMO_IS_ACTIVATED:
 # -------------------------------------------------------------------------
 # Example 3: run a shell session in a xterm to get a SALOME python console
 def runSalomeShellSession(context):
-    import os
+    import os,subprocess
     import salome_version
-    ld_library_path= os.getenv("LD_LIBRARY_PATH")
-    command = 'xterm -T "SALOME %s - Shell session" -e env LD_LIBRARY_PATH=%s %s/runSession&'%(salome_version.getVersion(full=True),ld_library_path,os.environ['KERNEL_ROOT_DIR'])
-    os.system(command)
+    version = salome_version.getVersion(full=True)
+    kernel_appli_dir = os.environ['KERNEL_ROOT_DIR']
+    command = ""
+    if os.path.exists("/usr/bin/xterm"):
+      command = 'xterm -T "SALOME %s - Shell session" -e %s/runSession &'%(version,kernel_appli_dir)
+    elif os.path.exists("/usr/bin/gnome-terminal"):
+      command = 'gnome-terminal -t "SALOME %s - Shell session" -e %s/runSession &'%(version,kernel_appli_dir)
+    else:
+      print "Neither xterm nor gnome-terminal is installed."
+    
+    if command is not "":
+      try:
+        subprocess.check_call(command, shell = True)
+      except Exception, e:
+        print "Error: ",e
 
 
 salome_pluginsmanager.AddFunction('SALOME shell session',

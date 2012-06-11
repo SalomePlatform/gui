@@ -114,12 +114,12 @@ These buttons orientate the scene strictly about coordinate axes:
 
 \image html occ_view_anticlockwise.png
 
-<b>Rotate counterclockwise</b> - rotates view 90° counterclockwise.
+<b>Rotate counterclockwise</b> - rotates view 90 @htmlonly &deg; @endhtmlonly counterclockwise.
 <hr>
 
 \image html occ_view_clockwise.png
 
-<b>Rotate clockwise</b> - rotates view 90° clockwise.
+<b>Rotate clockwise</b> - rotates view 90 @htmlonly &deg; @endhtmlonly clockwise.
 <hr>
 
 \image html occ_view_reset.png

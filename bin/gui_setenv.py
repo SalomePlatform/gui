@@ -19,13 +19,16 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-import os
+import os, re
 
 # -----------------------------------------------------------------------------
 
 def set_env( args ):
     """Add environment required for GUI module"""
-    os.environ[ 'VTK_AUTOLOAD_PATH' ] = os.path.join( os.getenv("GUI_ROOT_DIR"), "lib", "paraview" )
+    vtk_overloads_dir = os.path.join( os.getenv( "GUI_ROOT_DIR" ), "lib", "paraview" )
+    dirs = re.split( ":|;", os.getenv( 'VTK_AUTOLOAD_PATH', vtk_overloads_dir ) )
+    if vtk_overloads_dir not in dirs: dirs[0:0] = [vtk_overloads_dir]
+    os.environ['VTK_AUTOLOAD_PATH'] = os.pathsep.join(dirs)
     return
 
 

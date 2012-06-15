@@ -139,7 +139,8 @@ def deleteShape(study,shapeStudyEntry):
     """
     eraseShape(shapeStudyEntry)
     shape = removeFromStudy(study, shapeStudyEntry)
-    shape.Destroy()
+    if shape is not None:
+      shape.Destroy()
     
 
 #

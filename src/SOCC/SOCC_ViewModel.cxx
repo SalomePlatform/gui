@@ -395,7 +395,11 @@ void SOCC_Viewer::Display( const SALOME_OCCPrs* prs )
 #if OCC_VERSION_LARGE > 0x06050200 
       Handle(SALOME_AISShape) aSh = Handle(SALOME_AISShape)::DownCast(anAIS);
       if ( !aSh.IsNull() ) {
-	ic->SetZLayer( aSh, aSh->isTopLevel() ? getTopLayerId() : 0 );
+          bool top = (aSh->isTopLevel() && aSh->switchTopLevel());
+	      ic->SetZLayer( aSh, top ? getTopLayerId() : 0 );
+		  if(!aSh->toActivate()) {
+			ic->Deactivate( aSh );
+		  }
       }
 #endif
       //Register anAIS (if it has an entry) in entry2aisobjects map

@@ -87,7 +87,7 @@ OCCViewer_ClippingDlg::OCCViewer_ClippingDlg( OCCViewer_ViewWindow* view, const 
   const double min = -1e+7;
   const double max =  1e+7;
   const double step = 5;
-  const int precision = 3;
+  const int precision = -7;
 
   TextLabelX = new QLabel( GroupPoint );
   TextLabelX->setObjectName( "TextLabelX" );
@@ -96,7 +96,7 @@ OCCViewer_ClippingDlg::OCCViewer_ClippingDlg( OCCViewer_ViewWindow* view, const 
   
   SpinBox_X = new QtxDoubleSpinBox( min, max, step, GroupPoint );
   SpinBox_X->setObjectName("SpinBox_X" );
-  SpinBox_X->setDecimals( precision );
+  SpinBox_X->setPrecision( precision );
   GroupPointLayout->addWidget( SpinBox_X, 0, 1 );
 
   TextLabelY = new QLabel( GroupPoint );
@@ -106,7 +106,7 @@ OCCViewer_ClippingDlg::OCCViewer_ClippingDlg( OCCViewer_ViewWindow* view, const 
 
   SpinBox_Y = new QtxDoubleSpinBox( min, max, step, GroupPoint );
   SpinBox_Y->setObjectName("SpinBox_Y" );
-  SpinBox_Y->setDecimals( precision );
+  SpinBox_Y->setPrecision( precision );
   GroupPointLayout->addWidget( SpinBox_Y, 0, 3 );
 
   TextLabelZ = new QLabel( GroupPoint );
@@ -116,7 +116,7 @@ OCCViewer_ClippingDlg::OCCViewer_ClippingDlg( OCCViewer_ViewWindow* view, const 
 
   SpinBox_Z = new QtxDoubleSpinBox( min, max, step, GroupPoint );
   SpinBox_Z->setObjectName("SpinBox_Z" );
-  SpinBox_Z->setDecimals( precision );
+  SpinBox_Z->setPrecision( precision );
   GroupPointLayout->addWidget( SpinBox_Z, 0, 5 );
 
   resetButton  = new QPushButton( GroupPoint );
@@ -141,7 +141,7 @@ OCCViewer_ClippingDlg::OCCViewer_ClippingDlg( OCCViewer_ViewWindow* view, const 
   
   SpinBox_Dx = new QtxDoubleSpinBox( min, max, step, GroupDirection );
   SpinBox_Dx->setObjectName("SpinBox_Dx" );
-  SpinBox_Dx->setDecimals( precision );
+  SpinBox_Dx->setPrecision( precision );
   GroupDirectionLayout->addWidget( SpinBox_Dx, 0, 1 );
 
   TextLabelDy = new QLabel( GroupDirection );
@@ -151,7 +151,7 @@ OCCViewer_ClippingDlg::OCCViewer_ClippingDlg( OCCViewer_ViewWindow* view, const 
   
   SpinBox_Dy = new QtxDoubleSpinBox( min, max, step, GroupDirection );
   SpinBox_Dy->setObjectName("SpinBox_Dy" );
-  SpinBox_Dy->setDecimals( precision );
+  SpinBox_Dy->setPrecision( precision );
   GroupDirectionLayout->addWidget( SpinBox_Dy, 0, 3 );
 
   TextLabelDz = new QLabel( GroupDirection );
@@ -161,7 +161,7 @@ OCCViewer_ClippingDlg::OCCViewer_ClippingDlg( OCCViewer_ViewWindow* view, const 
   
   SpinBox_Dz = new QtxDoubleSpinBox( min, max, step, GroupDirection );
   SpinBox_Dz->setObjectName("SpinBox_Dz" );
-  SpinBox_Dz->setDecimals( precision );
+  SpinBox_Dz->setPrecision( precision );
   GroupDirectionLayout->addWidget( SpinBox_Dz, 0, 5 );
 
   invertButton  = new QPushButton( GroupDirection );

@@ -69,6 +69,22 @@ void SOCC_Prs::AddObject( const Handle(AIS_InteractiveObject)& obj )
 }
 
 /*!
+  Prepend interactive object
+*/
+void SOCC_Prs::PrependObject( const Handle(AIS_InteractiveObject)& obj ) 
+{ 
+  myObjects.Prepend( obj ); 
+}
+
+/*!
+  Remove first interactive object
+*/
+void SOCC_Prs::RemoveFirst()
+{
+  myObjects.RemoveFirst();
+}
+
+/*!
   Remove all interactive objects
 */
 void SOCC_Prs::Clear()

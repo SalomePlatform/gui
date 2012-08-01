@@ -49,7 +49,11 @@ public:
   // Get interactive objects list
   void AddObject( const Handle(AIS_InteractiveObject)& obj );
   // Add interactive object
+  void PrependObject( const Handle(AIS_InteractiveObject)& obj );
+  // Prepend interactive object
 
+  void RemoveFirst();
+  // Remove first interactive object
   void Clear();
   // Remove all interactive objects
 

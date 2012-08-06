@@ -270,18 +270,77 @@ void Plot2d_ViewFrame::EraseAll()
   getObjects( anObjects );
   eraseObjects( anObjects, false );
   myObjects.clear();
-  // Erase all the intermittent segments who connect curves
-  // (cf displayPlot2dCurveList() and createSegment(() )
-  //
+
+  // 1)- Erase all the intermittent segments who connect curves
+
+  int nbSeg = myIntermittentSegmentList.size();
+  if (nbSeg > 0)
   {
-    int nbSeg = myIntermittentSegmentList.size();
-    for (int iseg=0; iseg < nbSeg; iseg++)
+      for (int iseg=0; iseg < nbSeg; iseg++)
       {
-        QwtPlotCurve *segment = myIntermittentSegmentList[iseg]; 
-        segment->detach();  // erase in QwtPlot window
-        delete segment;
+          QwtPlotCurve *segment = myIntermittentSegmentList[iseg];
+
+          segment->detach();  // erase in QwtPlot window
+          delete segment;
       }
-    myIntermittentSegmentList.clear();
+      myIntermittentSegmentList.clear();
+  }
+
+  // 2)- Erase all curves points markers
+
+  int nbMark = myMarkerList.size();
+  if (nbMark > 0)
+  {
+      for (int imar=0; imar < nbMark; imar++)
+      {
+          QwtPlotMarker *marker = myMarkerList[imar];
+
+          marker->detach();  // erase in QwtPlot window
+          delete marker;
+      }
+      myMarkerList.clear();
+  }
+
+  // The graphic view's picker
+  Plot2d_QwtPlotPicker *picker = myPlot->getPicker();
+
+  // Clear points markers list and associations (marker,tooltip)
+  picker->pMarkers.clear();         // QList<QwtPlotMarker*>
+  picker->pMarkersToolTip.clear();  // QMap<QwtPlotMarker*, QwtText>
+
+  // 3)- Erase all QwtPlotCurve associated with the Plot2d_Curve
+
+  int nbCur1 = myQwtPlotCurveList.size();
+  if (nbCur1 > 0)
+  {
+      for (int icur=0; icur < nbCur1; icur++)
+      {
+          QwtPlotItem *curve0 = myQwtPlotCurveList[icur];
+          QwtPlotCurve *curve = static_cast<QwtPlotCurve*>(curve0);
+
+          if (curve)
+          {
+              delete curve;
+          }
+      }
+      myQwtPlotCurveList.clear();
+  }
+
+  // 4)- Erase all curves Plot2d_Curve
+
+  int nbCur = myPlot2dCurveList.size();
+  if (nbCur > 0)
+  {
+      for (int icur=0; icur < nbCur; icur++)
+      {
+          Plot2d_Curve *curve = myPlot2dCurveList[icur];
+
+          if (curve)
+          {
+              delete curve;
+          }
+      }
+      myPlot2dCurveList.clear();
   }
   myPlot->replot();
   if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
@@ -617,11 +676,13 @@ void Plot2d_ViewFrame::createCurveTooltips( Plot2d_Curve *curve,
       y = points[ip].y;
       tooltip = points[ip].text;
 
-      myPlot->createMarkerAndTooltip( symbol,
-                                      x,
-                                      y,
-                                      tooltip,
-                                      picker);
+      QwtPlotMarker *marker = myPlot->createMarkerAndTooltip( symbol,
+                                                              x,
+                                                              y,
+                                                              tooltip,
+                                                              picker);
+      // To deallocate in EraseAll()
+      myMarkerList.append( marker);
   }
 }
 
@@ -715,15 +776,114 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
   // (PB: to update the legend we must remove it and put a new QwtLegend in the QwtPlot)
   myPlot->insertLegend( (QwtLegend*)NULL); // we remove here, we shall put at the end
 
-  double X[2];
-  double Y[2];
-
   int nbAllCurves = curveList.size();
   int nbGroups    = nbAllCurves / groupSize;
   int ig, icur;
   int icur1, icur2;  // curves indices in a group
 
   //std::cout << "  " << nbGroups << " groupes a " << groupSize << " courbes" << std::endl;
+  // I)- Compute X range and Y range for all the curves' points of all groups
+  //     In the graphic view, set the Y range 's bounds for all groups of curves
+
+  // For all groups of curves
+  double XallGroupMin, XallGroupMax;
+  double YallGroupMin, YallGroupMax;
+  bool isFirstGroup = true;
+
+  icur1 = 0;
+  for (ig=0; ig < nbGroups; ig++)  //*1*
+  {
+      icur2 = icur1 + groupSize -1;
+
+      // For all curves in one group
+      double XgroupMin, XgroupMax;
+      double YgroupMin, YgroupMax;
+
+      // For one curve
+      double XcurveMin, XcurveMax;
+      double YcurveMin, YcurveMax;
+      double *Xval;
+      double *Yval;
+      int nbPoints;
+
+      // Compute X range and Y range for all the curves' points in the group
+
+      for (icur=icur1; icur <= icur2; icur++)  //*2*
+      {
+          Plot2d_Curve *plot2dCurve = curveList.at(icur);
+
+          // Curve points
+          nbPoints = plot2dCurve->getData( &Xval, &Yval);  // dynamic allocation
+
+          for (int ip=0; ip < nbPoints; ip++)
+          {
+              if (ip == 0)  // first point
+              {
+                  XcurveMin = Xval[ip];  XcurveMax = Xval[ip];
+                  YcurveMin = Yval[ip];  YcurveMax = Yval[ip];
+              }
+              else
+              {
+                  if      (Xval[ip] < XcurveMin)  XcurveMin = Xval[ip];
+                  else if (Xval[ip] > XcurveMax)  XcurveMax = Xval[ip];
+                  if      (Yval[ip] < YcurveMin)  YcurveMin = Yval[ip];
+                  else if (Yval[ip] > YcurveMax)  YcurveMax = Yval[ip];
+              }
+          }
+          delete [] Xval;
+          delete [] Yval;
+
+          //std::cout << "  Pour la courbe d'indice " << icur << " :" << std::endl;
+          //std::cout << "    Xmin= " << XcurveMin << "  Xmax= " << XcurveMax << std::endl;
+          //std::cout << "    Ymin= " << YcurveMin << "  Ymax= " << YcurveMax << std::endl;
+
+          if (icur == icur1)  // first curve
+          {
+              XgroupMin = XcurveMin;  XgroupMax = XcurveMax;
+              YgroupMin = YcurveMin;  YgroupMax = YcurveMax;
+          }
+          else
+          {
+              if (XcurveMin < XgroupMin)  XgroupMin = XcurveMin;
+              if (XcurveMax > XgroupMax)  XgroupMax = XcurveMax;
+              if (YcurveMin < YgroupMin)  YgroupMin = YcurveMin;
+              if (YcurveMax > YgroupMax)  YgroupMax = YcurveMax;
+          }
+      } //*2*
+
+      //std::cout << "  Pour les courbes du groupe d'indice " << ig << " :" << std::endl;
+      //std::cout << "    Xmin= " << XgroupMin << "  Xmax= " << XgroupMax << std::endl;
+      //std::cout << "    Ymin= " << YgroupMin << "  Ymax= " << YgroupMax << std::endl;
+
+      if (isFirstGroup)
+      {
+          XallGroupMin = XgroupMin;  XallGroupMax = XgroupMax;
+          YallGroupMin = YgroupMin;  YallGroupMax = YgroupMax;
+          isFirstGroup = false;
+      }
+      else
+      {
+          if (XgroupMin < XallGroupMin)  XallGroupMin = XgroupMin;
+          if (XgroupMax > XallGroupMax)  XallGroupMax = XgroupMax;
+          if (YgroupMin < YallGroupMin)  YallGroupMin = YgroupMin;
+          if (YgroupMax > YallGroupMax)  YallGroupMax = YgroupMax;
+      }
+
+      // First curve of the following group
+      icur1 = icur2 + 1;
+  } //*1*
+
+  //std::cout << "  Pour tous les groupes de courbes :" << std::endl;
+  //std::cout << "    Xmin= " << XallGroupMin << "  Xmax= " << XallGroupMax << std::endl;
+  //std::cout << "    Ymin= " << YallGroupMin << "  Ymax= " << YallGroupMax << std::endl;
+
+  double deltaY = YallGroupMax - YallGroupMin;
+
+  // Set the XY range 's bounds for all groups of curves
+//myPlot->setAxisScale( QwtPlot::xBottom, XallGroupMin, XallGroupMax);
+  myPlot->setAxisScale( QwtPlot::yLeft, YallGroupMin - 0.05*deltaY, YallGroupMax + 0.05*deltaY);
+
+  // II)- Drawing curves, points markers and connection segments
 
   icur1 = 0;
   for (ig=0; ig < nbGroups; ig++)
@@ -813,13 +973,13 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
           double *Xval;
           double *Yval;
           int nbPoints;
-
+          double Xseg[2], Yseg[2];
           Plot2d_Curve *plot2dCurve1 = curveList.at(icur1);
 
           // Last point of the first curve
           nbPoints = plot2dCurve1->getData( &Xval, &Yval);  // dynamic allocation
-          X[0] = Xval[ nbPoints -1];
-          Y[0] = Yval[ nbPoints -1];
+          Xseg[0] = Xval[ nbPoints -1];
+          Yseg[0] = Yval[ nbPoints -1];
           delete [] Xval;
           delete [] Yval;
 
@@ -829,30 +989,30 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
 
               // First curve's point
               nbPoints = plot2dCurve->getData( &Xval, &Yval);
-              X[1] = Xval[0];
-              Y[1] = Yval[0];
+              Xseg[1] = Xval[0];
+              Yseg[1] = Yval[0];
 
-              createSegment( X, Y, 2,
+              createSegment( Xseg, Yseg, 2,
                              Qt::DotLine,
                              lineWidth1,
                              color1,
                              QwtSymbol::NoSymbol);
 
               // Last curve's point
-              X[0] = Xval[ nbPoints -1];
-              Y[0] = Yval[ nbPoints -1];
+              Xseg[0] = Xval[ nbPoints -1];
+              Yseg[0] = Yval[ nbPoints -1];
               delete [] Xval;
               delete [] Yval;
           }
       }
-
+      // First curve of the following group
       icur1 = icur2 + 1;
   }
 
   if (displayLegend)
     {
       // Consider the new legend's entries
-      showLegend( true, true);
+      showLegend( true, true);  // show, update
     }
 
   //std::cout << "Ok for Plot2d_ViewFrame::displayPlot2dCurveList() 2" << std::endl;
@@ -882,6 +1042,9 @@ Plot2d_Curve* Plot2d_ViewFrame::createPlot2dCurve( QString & title,
 
   // Mathematical curve
   Plot2d_Curve* plot2dCurve = new Plot2d_Curve();
+
+  // To deallocate in EraseAll()
+  myPlot2dCurveList.append( plot2dCurve);
 
   int nbPoint = xList.size();
   double xVal, yVal;
@@ -1005,7 +1168,9 @@ void Plot2d_ViewFrame::createSegment( double *X, double *Y, int nbPoint,
 */
 void Plot2d_ViewFrame::displayCurve( Plot2d_Curve* curve, bool update )
 {
-  displayObject( curve, update );
+  QwtPlotItem* anItem = displayObject( curve, update );
+  // To deallocate in EraseAll()
+  myQwtPlotCurveList.append( anItem);
 }
 
 /*!
@@ -1127,10 +1292,11 @@ CurveDict Plot2d_ViewFrame::getCurves() const
 /*!
   Adds object into view
 */
-void Plot2d_ViewFrame::displayObject( Plot2d_Object* object, bool update )
+QwtPlotItem* Plot2d_ViewFrame::displayObject( Plot2d_Object* object, bool update )
 {
+  QwtPlotItem* anItem = 0;
   if ( !object )
-    return;
+    return anItem;
   
   if ( object->getYAxis() == QwtPlot::yRight )
     mySecondY = true;
@@ -1151,7 +1317,7 @@ void Plot2d_ViewFrame::displayObject( Plot2d_Object* object, bool update )
     updateObject( object, update );
   }
   else {
-    QwtPlotItem* anItem = object->createPlotItem();
+    anItem = object->createPlotItem();
     anItem->attach( myPlot );
     myObjects.insert( anItem, object );
     //myPlot->setCurveYAxis(curveKey, curve->getYAxis());
@@ -1180,6 +1346,7 @@ void Plot2d_ViewFrame::displayObject( Plot2d_Object* object, bool update )
   if ( update )
     myPlot->replot();
   if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
+  return anItem;
 }
 
 /*!
@@ -2695,7 +2862,8 @@ Plot2d_Plot2d::Plot2d_Plot2d( QWidget* parent )
   setAxisAutoScale( QwtPlot::yLeft );
   setAxisAutoScale( QwtPlot::yRight );
   setAxisAutoScale( QwtPlot::xBottom );
-
+  
+  myScaleDraw = NULL;
 // grid
   myGrid = new QwtPlotGrid();
   QPen aMajPen = myGrid->majPen();
@@ -2806,9 +2974,17 @@ void Plot2d_Plot2d::setPickerMousePattern( int button, int state )
 }
 
 /*!
+ * Set the point picker associated with a graphic view
+ */
+void Plot2d_Plot2d::setPicker( Plot2d_QwtPlotPicker *picker)
+{
+  myPicker = picker;
+}
+
+/*!
  * Create marker and tooltip associed with a point
  */
-void Plot2d_Plot2d::createMarkerAndTooltip( QwtSymbol symbol,
+QwtPlotMarker* Plot2d_Plot2d::createMarkerAndTooltip( QwtSymbol symbol,
                                             double    X,
                                             double    Y,
                                             QString & tooltip,
@@ -2834,6 +3010,7 @@ void Plot2d_Plot2d::createMarkerAndTooltip( QwtSymbol symbol,
   //
   picker->pMarkers.append( aPlotMarker); 
   picker->pMarkersToolTip[ aPlotMarker] = text;
+  return aPlotMarker;
 }
 
 bool Plot2d_Plot2d::polished() const
@@ -3121,6 +3298,13 @@ void Plot2d_Plot2d::createSeparationLine( double Xpos)
   aPlotMarker->setXValue( Xpos);
   aPlotMarker->setLinePen( QPen(Qt::black));
   aPlotMarker->attach(this);  // Add to drawing zone
+  // To deallocate in EraseAll()
+  mySeparationLineList.append( aPlotMarker);
+}
+
+void Plot2d_Plot2d::clearSeparationLineList()
+{
+  mySeparationLineList.clear();
 }
 
 /*!
@@ -3702,8 +3886,8 @@ void Plot2d_ViewFrame::updatePlotItem(Plot2d_Object* theObject, QwtPlotItem* the
         yNew[j] = itTmp.value().at(j).second;
       }
       cu->setData(xNew, yNew,j);
-      delete xNew;
-      delete yNew;
+      delete [] xNew;
+      delete [] yNew;
       if(aNormAlgo->getNormalizationMode() != Plot2d_NormalizeAlgorithm::NormalizeNone) {
         QString name = c->getName().isEmpty() ? c->getVerTitle() : c->getName();
         name = name + QString("(B=%1, K=%2)");
@@ -3876,6 +4060,19 @@ QwtText Plot2d_ScaleDraw::label( double value ) const
   }
 
   return QwtScaleDraw::label( value );
+}
+
+Plot2d_YScaleDraw::Plot2d_YScaleDraw()
+  : QwtScaleDraw()
+{
+}
+
+QwtText Plot2d_YScaleDraw::label( double value ) const
+{
+  // Axis labels format
+  QString strD = QString( "%1").arg( value, 10, 'e', 3); // format 10.3e
+
+  return QwtText( strD);
 }
 
 /* Definition of X axis graduations

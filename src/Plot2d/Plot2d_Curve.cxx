@@ -148,8 +148,8 @@ void Plot2d_Curve::updatePlotItem( QwtPlotItem* theItem )
   long nb = getData( &x, &y );
   if(nb > 0 && x && y) {
     aCurve->setData( x, y, nb );
-    delete x;
-    delete y;
+    delete [] x;
+    delete [] y;
     QList<int> idx;
     getDeviationData(min, max, idx);
     if(idx.size() > 0 && min && max) {
@@ -339,8 +339,9 @@ double Plot2d_Curve::getMinY() const
   pointList::const_iterator aIt;
   double coeff = 0.0;
   for (aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt) {    
-   (*aIt).minDeviation(coeff);
-    aMinY = qMin( aMinY, myScale * (*aIt).y - coeff);
+    aMinY = qMin( aMinY, myScale * (*aIt).y );
+    if((*aIt).minDeviation(coeff))
+      aMinY = qMin( aMinY, coeff );
   }
   return aMinY;
 }
@@ -354,8 +355,9 @@ double Plot2d_Curve::getMaxY() const
   pointList::const_iterator aIt;
   double coeff = 0.0;
   for (aIt = myPoints.begin(); aIt != myPoints.end(); ++aIt) {
-    (*aIt).maxDeviation(coeff);
-    aMaxY = qMax( aMaxY, myScale * (*aIt).y + coeff);
+    aMaxY = qMax( aMaxY, myScale * (*aIt).y);
+    if((*aIt).maxDeviation(coeff))
+      aMaxY = qMax( aMaxY, coeff);
   }
   return aMaxY;
 }

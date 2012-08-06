@@ -133,7 +133,7 @@ public:
   void           processFiltering(bool = false);
 
   /* objects operations */
-  void           displayObject( Plot2d_Object*, bool = false );
+  QwtPlotItem*   displayObject( Plot2d_Object*, bool = false );
   void           displayObjects( const objectList&, bool = false );
   void           eraseObject( Plot2d_Object*, bool = false );
   void           eraseObjects( const objectList&, bool = false );
@@ -314,9 +314,17 @@ protected:
   Plot2d_NormalizeAlgorithm* myRNormAlgo;
   bool                myIsDefTitle;
  private:
+  // List of QwtPlotCurve curves to draw (created by Plot2d_Curve::createPlotItem() )
+  QList<QwtPlotItem*> myQwtPlotCurveList;
+  
   // List of intermittent segments to connect curves
-  // (cf displayPlot2dCurveList() and createSegment(() )
   QList<QwtPlotCurve*> myIntermittentSegmentList;
+
+  // List of markers associated with curves points
+  QList<QwtPlotMarker*> myMarkerList;
+
+  // List of curves Plot2d_Curve
+  QList<Plot2d_Curve*> myPlot2dCurveList;
 };
 
 class Plot2d_Plot2d : public QwtPlot 
@@ -334,8 +342,12 @@ public:
   QSize          minimumSizeHint() const;
   void           defaultPicker();
   void           setPickerMousePattern( int, int = Qt::NoButton );
-
-  void createMarkerAndTooltip( QwtSymbol symbol,
+  void           setPicker( Plot2d_QwtPlotPicker *picker);
+  Plot2d_QwtPlotPicker* getPicker() { return myPicker; }
+  Plot2d_AxisScaleDraw* getScaleDraw() { return myScaleDraw; }
+  QList<QwtPlotMarker*> getSeparationLineList() { return mySeparationLineList; }
+  void clearSeparationLineList();
+  QwtPlotMarker *createMarkerAndTooltip( QwtSymbol symbol,
                                double    X,
                                double    Y,
                                QString & tooltip,
@@ -372,6 +384,11 @@ protected:
   bool           myIsPolished;
   QwtPlotZoomer* myPlotZoomer;
   Plot2d_AxisScaleDraw* myScaleDraw;
+  // The point picker associated with the graphic view
+  Plot2d_QwtPlotPicker *myPicker;
+private:
+  // List of verticals segments between two curves
+  QList<QwtPlotMarker*> mySeparationLineList;
 };
 
 class Plot2d_ScaleDraw: public QwtScaleDraw
@@ -387,6 +404,14 @@ public:
 private:
   char myFormat;
   int  myPrecision;
+};
+
+class Plot2d_YScaleDraw: public QwtScaleDraw
+{
+public:
+  Plot2d_YScaleDraw();
+
+  virtual QwtText label( double value ) const;
 };
 
 /* Definition of X axis graduations

@@ -645,6 +645,10 @@ bool QtxResourceMgr::IniFormat::save( const QString& fname, const QMap<QString, 
 
   QTextStream ts( &file );
 
+  ts << "# This file is automatically created by SALOME application." << endl;
+  ts << "# Changes made in this file can be lost!" << endl;
+  ts << endl;
+
   bool res = true;
   for ( QMap<QString, Section>::ConstIterator it = secMap.begin(); it != secMap.end() && res; ++it )
   {
@@ -890,6 +894,8 @@ bool QtxResourceMgr::XmlFormat::save( const QString& fname, const QMap<QString, 
     return false;
 
   QDomDocument doc( docTag() );
+  QDomComment comment = doc.createComment( "\nThis file is automatically created by SALOME application.\nChanges made in this file can be lost!\n" );
+  doc.appendChild( comment );
   QDomElement root = doc.createElement( docTag() );
   doc.appendChild( root );
 

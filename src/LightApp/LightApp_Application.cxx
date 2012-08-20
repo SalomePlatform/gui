@@ -2020,6 +2020,9 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   // ... "Look and feel" group <<start>>
   int lookGroup = pref->addPreference( tr( "PREF_GROUP_LOOK_AND_FEEL" ), genTab );
+  pref->setItemProperty( "columns", 2, lookGroup );
+  // .... -> show splash-screen
+  pref->addPreference( tr( "PREF_SHOW_SPLASH" ), lookGroup, LightApp_Preferences::Bool, "launch", "splash" );
   // .... -> opaque resize
   pref->addPreference( tr( "PREF_OPAQUE_RESIZE" ), lookGroup, LightApp_Preferences::Bool, "desktop", "opaque_resize" );
   // .... -> drop-down buttons 

@@ -608,7 +608,7 @@ Les modifications seront appliquées à la prochaine session.</translation>
     </message>
     <message>
         <source>PREF_SHOW_SPLASH</source>
-        <translation>Show splash screen at start-up</translation>
+        <translation>Afficher l'écran de démarrage</translation>
     </message>
     <message>
         <source>PREF_OPAQUE_RESIZE</source>

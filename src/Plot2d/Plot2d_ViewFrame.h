@@ -92,14 +92,16 @@ public:
   void createCurveTooltips( Plot2d_Curve *curve,
                             Plot2d_QwtPlotPicker *picker);
 
-  void displayPlot2dCurveList( QList< QList<Plot2d_Curve*> > sysCoCurveList,
-                               Plot2d_QwtPlotPicker*         picker,
-                               bool                          displayLegend);
+  void displayPlot2dCurveList( const QList< QList<Plot2d_Curve*> >& sysCoCurveList,
+                               Plot2d_QwtPlotPicker*                picker,
+                               bool                                 displayLegend,
+                               const QList< QList<bool> >&          sides);
   
-  void displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
-                                                int  groupsize,
+  void displayPlot2dCurveList( const QList<Plot2d_Curve*>&  curveList,
+                               int  groupsize,
                                Plot2d_QwtPlotPicker* picker,
-                                               bool  displayLegend);
+                               bool  displayLegend,
+                               const QList< bool >& sides);
   
   Plot2d_Curve* createPlot2dCurve( QString & title,
                                    QString & unit,
@@ -120,7 +122,8 @@ public:
                       Qt::PenStyle lineKind,
                       int lineWidth,
                       QColor & lineColor,
-                      QwtSymbol::Style markerKind);
+                      QwtSymbol::Style markerKind,
+                      bool side=false);
 
   /* curves operations [ obsolete ] */
   void           displayCurve( Plot2d_Curve*, bool = false );

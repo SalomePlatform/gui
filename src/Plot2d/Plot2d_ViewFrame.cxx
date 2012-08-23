@@ -67,6 +67,7 @@
 #include <qwt_curve_fitter.h>
 
 #include <stdlib.h>
+#include <limits>
 #include <qprinter.h>
 
 #include <qwt_legend.h>
@@ -697,9 +698,10 @@ void Plot2d_ViewFrame::createCurveTooltips( Plot2d_Curve *curve,
  * Draw points markers and create associated tooltips.
  * Draw connection segments (intermittent line) between all the curves of a component.
  */
-void Plot2d_ViewFrame::displayPlot2dCurveList( QList< QList<Plot2d_Curve*> > sysCoCurveList,
+void Plot2d_ViewFrame::displayPlot2dCurveList( const QList< QList<Plot2d_Curve*> >& sysCoCurveList,
                                                Plot2d_QwtPlotPicker*         picker,
-                                               bool                          displayLegend)
+                                               bool                          displayLegend,
+                                               const QList< QList<bool> >&   sides)
 {
   //std::cout << "Plot2d_ViewFrame::displayPlot2dCurveList() 1" << std::endl;
 
@@ -710,11 +712,6 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList< QList<Plot2d_Curve*> > sys
   int nbComponent = (sysCoCurveList.at(0)).size();
 
   // Total number of curves
-  //int nbAllCurve = nbSystem*nbComponent;
-
-   //std::cout << "  Number of systems       = " << nbSystem << std::endl;
-   //std::cout << "  Number of components    = " << nbComponent << std::endl;
-   //std::cout << "  Number total of courbes = " << nbAllCurve << std::endl;
 
    // 1)- Construction of a list by component and by system
  
@@ -722,40 +719,28 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList< QList<Plot2d_Curve*> > sys
    // | syst1 syst2 ... systN | syst1 syst2 ... systN | ..... | syst1 syst2 ... systN |
 
   QList<Plot2d_Curve*> plot2dCurveCoSysList;
-
-  //std::cout << "  Liste par composant et par systeme :" << std::endl;
-
+  QList<bool>          sidesList;
   for (int icom = 0; icom < nbComponent; icom++)
   {
       for (int isys = 0; isys < nbSystem; isys++)
       {
-          //std::cout << "    icom= " << icom << " idev= " << isys << std::endl;
-
 	  // The system curves list
-          QList<Plot2d_Curve*> sysCurveList = sysCoCurveList.at(isys);
-
-	  Plot2d_Curve *curve = sysCurveList.at(icom);
-
-          plot2dCurveCoSysList.append( curve);
+          const QList<Plot2d_Curve*>& sysCurveList=sysCoCurveList.at(isys);
+	  plot2dCurveCoSysList.append(sysCurveList.at(icom));
+          //
+          const QList<bool>& sysSideList=sides.at(isys);
+          sidesList.append(sysSideList.at(icom));
       }
   }
-
   // 2)- Display list curves by a component's curves group
   //     Draw connection segments (intermittent line) between the curves
-
-  displayPlot2dCurveList( plot2dCurveCoSysList, nbSystem, picker, displayLegend);
-
+  displayPlot2dCurveList( plot2dCurveCoSysList, nbSystem, picker, displayLegend, sidesList);
   // 3)- Size of graduations labels and texts under X axis
-
   QwtScaleWidget *wid = myPlot->axisWidget( QwtPlot::xBottom);
-  wid->setTitle( "  "); // indispensable pour que les noms des systemes apparaissent
-                        // sous l'axe des X !!
-
+  wid->setTitle("  "); // to make the names readable under X axis.
   QFont xFont = myPlot->axisFont(QwtPlot::xBottom);
   xFont.setPointSize(8); 
   myPlot->setAxisFont( QwtPlot::xBottom, xFont);
-
-  //std::cout << "Ok for Plot2d_ViewFrame::displayPlot2dCurveList() 1" << std::endl;
 }
 
 
@@ -764,14 +749,13 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList< QList<Plot2d_Curve*> > sys
  *
  * Draw points markers and create associated tooltips
  * Draw connection segments (intermittent line) between the curves
+ * \param [in] sides sorted as in \b curveList. If true->right if false->left
  */
-void Plot2d_ViewFrame::displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
-                                                                int  groupSize,
+void Plot2d_ViewFrame::displayPlot2dCurveList( const QList<Plot2d_Curve*>& curveList,
+                                               int  groupSize,
                                                Plot2d_QwtPlotPicker* picker,
-                                                               bool  displayLegend)
+                                               bool  displayLegend, const QList< bool >& sides)
 {
-  //std::cout << "Plot2d_ViewFrame::displayPlot2dCurveList() 2" << std::endl;
-
   // Consider the new legend's entries
   // (PB: to update the legend we must remove it and put a new QwtLegend in the QwtPlot)
   myPlot->insertLegend( (QwtLegend*)NULL); // we remove here, we shall put at the end
@@ -781,15 +765,13 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
   int ig, icur;
   int icur1, icur2;  // curves indices in a group
 
-  //std::cout << "  " << nbGroups << " groupes a " << groupSize << " courbes" << std::endl;
   // I)- Compute X range and Y range for all the curves' points of all groups
   //     In the graphic view, set the Y range 's bounds for all groups of curves
 
   // For all groups of curves
-  double XallGroupMin, XallGroupMax;
-  double YallGroupMin, YallGroupMax;
-  bool isFirstGroup = true;
-
+  double XallGroupMin=std::numeric_limits<double>::max(), XallGroupMax=-std::numeric_limits<double>::max();
+  double YRightallGroupMin=std::numeric_limits<double>::max(), YRightallGroupMax=-std::numeric_limits<double>::max();
+  double YLeftallGroupMin=std::numeric_limits<double>::max(), YLeftallGroupMax=-std::numeric_limits<double>::max();
   icur1 = 0;
   for (ig=0; ig < nbGroups; ig++)  //*1*
   {
@@ -807,11 +789,11 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
       int nbPoints;
 
       // Compute X range and Y range for all the curves' points in the group
-
+      bool side=false;
       for (icur=icur1; icur <= icur2; icur++)  //*2*
       {
           Plot2d_Curve *plot2dCurve = curveList.at(icur);
-
+          side=sides.at(icur);
           // Curve points
           nbPoints = plot2dCurve->getData( &Xval, &Yval);  // dynamic allocation
 
@@ -833,10 +815,6 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
           delete [] Xval;
           delete [] Yval;
 
-          //std::cout << "  Pour la courbe d'indice " << icur << " :" << std::endl;
-          //std::cout << "    Xmin= " << XcurveMin << "  Xmax= " << XcurveMax << std::endl;
-          //std::cout << "    Ymin= " << YcurveMin << "  Ymax= " << YcurveMax << std::endl;
-
           if (icur == icur1)  // first curve
           {
               XgroupMin = XcurveMin;  XgroupMax = XcurveMax;
@@ -851,49 +829,41 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
           }
       } //*2*
 
-      //std::cout << "  Pour les courbes du groupe d'indice " << ig << " :" << std::endl;
-      //std::cout << "    Xmin= " << XgroupMin << "  Xmax= " << XgroupMax << std::endl;
-      //std::cout << "    Ymin= " << YgroupMin << "  Ymax= " << YgroupMax << std::endl;
-
-      if (isFirstGroup)
-      {
-          XallGroupMin = XgroupMin;  XallGroupMax = XgroupMax;
-          YallGroupMin = YgroupMin;  YallGroupMax = YgroupMax;
-          isFirstGroup = false;
-      }
+      if (XgroupMin < XallGroupMin)  XallGroupMin = XgroupMin;
+      if (XgroupMax > XallGroupMax)  XallGroupMax = XgroupMax;
+      if(side)
+        {
+          if (YgroupMin < YRightallGroupMin)  YRightallGroupMin = YgroupMin;
+          if (YgroupMax > YRightallGroupMax)  YRightallGroupMax = YgroupMax;
+        }
       else
-      {
-          if (XgroupMin < XallGroupMin)  XallGroupMin = XgroupMin;
-          if (XgroupMax > XallGroupMax)  XallGroupMax = XgroupMax;
-          if (YgroupMin < YallGroupMin)  YallGroupMin = YgroupMin;
-          if (YgroupMax > YallGroupMax)  YallGroupMax = YgroupMax;
-      }
-
+        {
+          if (YgroupMin < YLeftallGroupMin)  YLeftallGroupMin = YgroupMin;
+          if (YgroupMax > YLeftallGroupMax)  YLeftallGroupMax = YgroupMax;
+        }
       // First curve of the following group
       icur1 = icur2 + 1;
   } //*1*
-
-  //std::cout << "  Pour tous les groupes de courbes :" << std::endl;
-  //std::cout << "    Xmin= " << XallGroupMin << "  Xmax= " << XallGroupMax << std::endl;
-  //std::cout << "    Ymin= " << YallGroupMin << "  Ymax= " << YallGroupMax << std::endl;
-
-  double deltaY = YallGroupMax - YallGroupMin;
-
   // Set the XY range 's bounds for all groups of curves
-//myPlot->setAxisScale( QwtPlot::xBottom, XallGroupMin, XallGroupMax);
-  myPlot->setAxisScale( QwtPlot::yLeft, YallGroupMin - 0.05*deltaY, YallGroupMax + 0.05*deltaY);
-
+  if(YRightallGroupMin!=std::numeric_limits<double>::max())
+    {
+      double deltaY = YRightallGroupMax - YRightallGroupMin;
+      YRightallGroupMin-=0.05*deltaY; YRightallGroupMax+= 0.05*deltaY;
+      myPlot->setAxisScale( QwtPlot::yRight, YRightallGroupMin,YRightallGroupMax);
+    }
+  if(YLeftallGroupMin!=std::numeric_limits<double>::max())
+    {
+      double deltaY = YLeftallGroupMax - YLeftallGroupMin;
+      YLeftallGroupMin-=0.05*deltaY; YLeftallGroupMax+= 0.05*deltaY;
+      myPlot->setAxisScale( QwtPlot::yLeft, YLeftallGroupMin, YLeftallGroupMax);
+    }
   // II)- Drawing curves, points markers and connection segments
 
   icur1 = 0;
   for (ig=0; ig < nbGroups; ig++)
   {
       icur2 = icur1 + groupSize -1;
-
-      //std::cout << "  Indices des courbes du groupe " << ig << " : " << icur1
-      //                                                      << " a " << icur2 << std::endl;
       int nbCurves = icur2 - icur1 + 1;
-      //std::cout << "    groupe a " << nbCurves << " courbes" << std::endl;
 
       // 1)- Graphical attributs of group's curves
 
@@ -929,9 +899,6 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
 
           QString title = plot2dCurve->getVerTitle();
           std::string std_title = title.toStdString();
-          //const char *c_title = std_title.c_str();
-          //std::cout << "    courbe d'indice " << icur << " : |" << c_title << "|" << std::endl;
-
           // Create the graphic curve (QwtPlotCurve) et display it in the drawing zone
           // (Qwtplot)
           displayCurve( plot2dCurve);
@@ -975,7 +942,7 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
           int nbPoints;
           double Xseg[2], Yseg[2];
           Plot2d_Curve *plot2dCurve1 = curveList.at(icur1);
-
+          bool side = sides.at(icur1);
           // Last point of the first curve
           nbPoints = plot2dCurve1->getData( &Xval, &Yval);  // dynamic allocation
           Xseg[0] = Xval[ nbPoints -1];
@@ -992,11 +959,7 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
               Xseg[1] = Xval[0];
               Yseg[1] = Yval[0];
 
-              createSegment( Xseg, Yseg, 2,
-                             Qt::DotLine,
-                             lineWidth1,
-                             color1,
-                             QwtSymbol::NoSymbol);
+              createSegment( Xseg, Yseg, 2, Qt::DotLine, lineWidth1, color1, QwtSymbol::NoSymbol,side);
 
               // Last curve's point
               Xseg[0] = Xval[ nbPoints -1];
@@ -1012,10 +975,9 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( QList<Plot2d_Curve*>  curveList,
   if (displayLegend)
     {
       // Consider the new legend's entries
-      showLegend( true, true);  // show, update
+      if(!curveList.empty())
+        showLegend( true, true);  // show, update
     }
-
-  //std::cout << "Ok for Plot2d_ViewFrame::displayPlot2dCurveList() 2" << std::endl;
 }
 
 
@@ -1144,7 +1106,7 @@ void Plot2d_ViewFrame::createSegment( double *X, double *Y, int nbPoint,
                                       Qt::PenStyle lineKind,
                                       int lineWidth,
                                       QColor & lineColor,
-                                      QwtSymbol::Style markerKind)
+                                      QwtSymbol::Style markerKind, bool side)
 {
   QwtPlotCurve* aPCurve = new QwtPlotCurve();
 
@@ -1158,9 +1120,10 @@ void Plot2d_ViewFrame::createSegment( double *X, double *Y, int nbPoint,
   // The segment must not have legend's entry
   aPCurve->setItemAttribute( QwtPlotItem::Legend, false);
 
-  aPCurve->attach( myPlot);
+  aPCurve->attach(myPlot);
+  aPCurve->setYAxis(side ? QwtPlot::yRight : QwtPlot::yLeft);
   // To deallocate in EraseAll()
-  myIntermittentSegmentList.append( aPCurve);
+  myIntermittentSegmentList.append(aPCurve);
 }
 
 /*!

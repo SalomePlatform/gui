@@ -3910,16 +3910,20 @@ Plot2d_Curve* Plot2d_ViewFrame::getClosestCurve( QPoint p, double& distance, int
 {
   CurveDict aCurves = getCurves();
   CurveDict::iterator it = aCurves.begin();
-  QwtPlotCurve* aCurve;
+  Plot2d_Curve* pCurve = 0;
+  distance = -1.;
   for ( ; it != aCurves.end(); it++ ) {
-    aCurve = it.key();
+    QwtPlotCurve* aCurve = it.key();
     if ( !aCurve )
       continue;
-    index = aCurve->closestPoint( p, &distance );
-    if ( index > -1 )
-      return it.value();
+    double d;
+    index = aCurve->closestPoint( p, &d );
+    if ( index > -1 && ( distance < 0 || d < distance ) ) {
+      pCurve = it.value();
+      distance = d;
+    }
   }
-  return 0;
+  return pCurve;
 }
 
 /*!

@@ -57,6 +57,7 @@
 #include <QXmlStreamReader>
 
 #include <qwt_math.h>
+#include <qwt_plot_layout.h>
 #include <qwt_plot_canvas.h>
 #include <qwt_scale_div.h>
 #include <qwt_plot_marker.h>
@@ -191,6 +192,7 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
   myLNormAlgo = new Plot2d_NormalizeAlgorithm(this);
   /* Plot 2d View */
   QVBoxLayout* aLayout = new QVBoxLayout( this ); 
+  aLayout->setMargin(0);
   myPlot = new Plot2d_Plot2d( this );
   new Plot2d_ToolTip( this );
 
@@ -2616,25 +2618,47 @@ void Plot2d_ViewFrame::plotMouseReleased( const QMouseEvent& me )
 */
 void Plot2d_ViewFrame::wheelEvent(QWheelEvent* event)
 { 
+  QwtPlotLayout* pl = myPlot->plotLayout();
+
+  // compute zooming factor
   double aDelta = event->delta();
   double aScale = (aDelta < 0) ? 100./(-aDelta) : aDelta/100.; 
 
-  QwtScaleMap xMap = myPlot->canvasMap( QwtPlot::xBottom );
-  QwtScaleMap yMap = myPlot->canvasMap( QwtPlot::yLeft );
+  bool scaleXBottom = pl->scaleRect(QwtPlot::xBottom).contains( event->pos() ) || 
+                      pl->canvasRect().contains( event->pos() );
+  bool scaleYLeft   = pl->scaleRect(QwtPlot::yLeft).contains( event->pos() ) || 
+                      pl->canvasRect().contains( event->pos() );
+  bool scaleYRight  = mySecondY && ( pl->scaleRect(QwtPlot::yRight).contains( event->pos() ) || 
+				     pl->canvasRect().contains( event->pos() ) );
 
-  if ( ((yMap.s2() - yMap.s1()) < 10e-13 || (xMap.s2() - xMap.s1()) < 10e-13 ) && aScale < 1 )
-    return;
-
-  myPlot->setAxisScale( QwtPlot::yLeft, yMap.s1(), yMap.s1() + aScale*(yMap.s2() - yMap.s1()) );
-  myPlot->setAxisScale( QwtPlot::xBottom, xMap.s1(), xMap.s1() + aScale*(xMap.s2() - xMap.s1()) );
-  if (mySecondY) {
-    QwtScaleMap y2Map = myPlot->canvasMap( QwtPlot::yRight );
-    if ( ((y2Map.s2() - y2Map.s1()) < 10e-13  ) && aScale < 1 ) return;
-    myPlot->setAxisScale( QwtPlot::yRight, y2Map.s1(), y2Map.s1() + aScale*(y2Map.s2() - y2Map.s1()) );
+  // scale x bottom axis
+  if ( scaleXBottom ) { 
+    QwtScaleMap xMap = myPlot->canvasMap( QwtPlot::xBottom );
+    if ( xMap.s2() - xMap.s1() > 1.0e-12 || aScale > 1 )
+      myPlot->setAxisScale( QwtPlot::xBottom, xMap.s1(), xMap.s1() + aScale*(xMap.s2() - xMap.s1()) );
   }
+  
+  // scale y left axis
+  if ( scaleYLeft ) {
+    QwtScaleMap yMap = myPlot->canvasMap( QwtPlot::yLeft );
+    if ( yMap.s2() - yMap.s1() > 1.0e-12 || aScale > 1 )
+      myPlot->setAxisScale( QwtPlot::yLeft, yMap.s1(), yMap.s1() + aScale*(yMap.s2() - yMap.s1()) );
+  }
+
+  // scale y right axis (note: mySecondY value is checked above)
+  if ( scaleYRight ) {
+    QwtScaleMap yMap = myPlot->canvasMap( QwtPlot::yRight );
+    if ( yMap.s2() - yMap.s1() > 10e-12 || aScale > 1 )
+      myPlot->setAxisScale( QwtPlot::yRight, yMap.s1(), yMap.s1() + aScale*(yMap.s2() - yMap.s1()) );
+  }
+  
+  // redraw
   myPlot->replot();
+  // update zoomer
   if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
+  // store current mouse position
   myPnt = event->pos();
+  // update analytical curves
   updateAnalyticalCurves();
 }
 

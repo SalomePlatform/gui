@@ -79,7 +79,7 @@ void Plot2d_Object::updatePlotItem( QwtPlotItem* theItem )
     return;
 
   if ( theItem->yAxis() != getYAxis() || theItem->xAxis() != getXAxis() ) {
-    theItem->setAxis( getXAxis(), getYAxis() );
+    theItem->setAxes( getXAxis(), getYAxis() );
 
     QwtPlot* aPlot = theItem->plot();
     theItem->detach();

@@ -716,7 +716,7 @@ void Plot2d_ViewWindow::onPrintView()
   }
 
   QMap< QwtPlotCurve*, QPen > aCurvToPen;
-  QMap< QwtPlotCurve*, QwtSymbol > aCurvToSymbol;
+  QMap< QwtPlotCurve*, const QwtSymbol* > aCurvToSymbol;
 
   if ( needColorCorrection )
   {
@@ -741,14 +741,12 @@ void Plot2d_ViewWindow::onPrintView()
       aCurve->setPen( aPen );
 
       // symbol
-      QwtSymbol aSymbol = aCurve->symbol();
+      const QwtSymbol* aSymbol = aCurve->symbol();
       aCurvToSymbol[ aCurve ] = aSymbol;
-      aPen = aSymbol.pen();
+      aPen = aSymbol->pen();
       aPen.setColor( QColor( 0, 0, 0 ) );
       aPen.setWidthF( 1.5 );
-      aSymbol.setPen( aPen );
-
-      aCurve->setSymbol( aSymbol );
+      aCurve->setSymbol( new QwtSymbol( aSymbol->style(), aSymbol->brush(), aPen, aSymbol->size() ) );
     }
   }
 

@@ -4,7 +4,7 @@ win32:TEMPLATE = vclib
 include(../Common.pro)
 
 INCLUDEPATH += $$(PYTHONINC)
-unix:LIBS  += -L$$(PYTHONLIB) -lpython2.5 -lSUIT -lPyInterp
+unix:LIBS  += -L$$(PYTHONLIB) -lpython2.7 -lSUIT -lPyInterp
 win32:LIBS  += -L$$(PYTHONLIB) -lSUIT -lPyInterp -lQtx
 win32:CONFIG_MODE= $$(CONFIG_MODE)
 contains( CONFIG_MODE, debug ) {

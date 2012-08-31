@@ -14,12 +14,13 @@
 #include <qglobal.h>
 #include <qcolor.h>
 #include "qwt_plot_item.h" 
-#include "qwt_interval_data.h"
+#include "qwt_series_data.h"
+#include "qwt_compat.h"
 #include "QColor"
 
 #include <QMap>
 
-class QwtIntervalData;
+class QwtIntervalSeriesData;
 class QwtLegend;
 class QString;
 
@@ -29,7 +30,7 @@ protected:
   class PrivateData {
     public:
       int             attributes;
-      QwtIntervalData data;
+      QVector<QwtIntervalSample> data;
       QColor          color;
       double          reference;
   };
@@ -38,8 +39,8 @@ public:
   explicit Plot2d_HistogramQwtItem( const QwtText& );
   virtual ~Plot2d_HistogramQwtItem();
 
-  void         setData( const QwtIntervalData& );
-  const QwtIntervalData& data() const;
+  void         setData( const QwtIntervalSeriesData& );
+  const QwtIntervalSeriesData& data() const;
 
   void         setColor( const QColor & );
   QColor       color() const;
@@ -47,7 +48,7 @@ public:
   virtual QwtDoubleRect boundingRect() const;
   virtual int  rtti() const;
   virtual void draw( QPainter *, const QwtScaleMap &xMap, 
-                     const QwtScaleMap &yMap, const QRect & ) const;
+                     const QwtScaleMap &yMap, const QRectF & ) const;
 
   void         setBaseline( double );
   double       baseline() const;

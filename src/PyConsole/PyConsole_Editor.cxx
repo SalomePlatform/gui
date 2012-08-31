@@ -1,6 +1,6 @@
-//  SALOME SALOMEGUI : implementation of desktop and GUI kernel
+// Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
 //
-//  Copyright (C) 2003  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
+// Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 //  CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS 
 // 
 //  This library is free software; you can redistribute it and/or 
@@ -370,8 +370,11 @@ void PyConsole_Editor::execAndWait( const QString& command )
 */
 void PyConsole_Editor::handleReturn()
 {
-  // get last line
-  QTextBlock par = document()->end().previous();
+  //SBH: Porting to the Qt v4.7.2: Since Qt 4.4. "lastBlock()" is more
+  //suitable method for retrieving last valid block of text from QTextDocument
+  //than "document()->end().previous()". Moreover, in the Acheron this
+  //obsolete construction returns invalid block, which leads to issues.
+  QTextBlock par = document()->lastBlock();
   if ( !par.isValid() ) return;
 
   // get command
@@ -407,7 +410,7 @@ void PyConsole_Editor::dropEvent( QDropEvent* event )
   QPoint pos = event->pos();
   QTextCursor cur = cursorForPosition( event->pos() );
   // if the position is not in the last line move it to the end of the command line
-  if ( cur.position() < document()->end().previous().position() + PROMPT_SIZE ) {
+  if ( cur.position() < document()->lastBlock().position() + PROMPT_SIZE ) {
     moveCursor( QTextCursor::End );
     pos = cursorRect().center();
   }
@@ -444,7 +447,7 @@ void PyConsole_Editor::mouseReleaseEvent( QMouseEvent* event )
       text = QApplication::clipboard()->text( QClipboard::Clipboard );
     QTextCursor cur = cursorForPosition( event->pos() );
     // if the position is not in the last line move it to the end of the command line
-    if ( cur.position() < document()->end().previous().position() + PROMPT_SIZE ) {
+    if ( cur.position() < document()->lastBlock().position() + PROMPT_SIZE ) {
       moveCursor( QTextCursor::End );
     }
     else {
@@ -561,7 +564,7 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
 	  // set history browsing mode
 	  myCmdInHistory = myHistory.count();
 	  // remember current command
-	  QTextBlock par = document()->end().previous();
+	  QTextBlock par = document()->lastBlock();
 	  myCurrentCommand = par.text().remove( 0, PROMPT_SIZE );
 	}
 	if ( myCmdInHistory > 0 ) {
@@ -705,7 +708,7 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
 	  // set history browsing mode
 	  myCmdInHistory = myHistory.count();
 	  // remember current command
-	  QTextBlock par = document()->end().previous();
+	  QTextBlock par = document()->lastBlock();
 	  myCurrentCommand = par.text().remove( 0, PROMPT_SIZE );
 	}
 	if ( myCmdInHistory > 0 ) {
@@ -824,13 +827,13 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
       if ( cur.hasSelection() ) {
 	cut();
       }
-      else if ( cur.position() > document()->end().previous().position() + PROMPT_SIZE ) {
+      else if ( cur.position() > document()->lastBlock().position() + PROMPT_SIZE ) {
 	if ( shftPressed ) {
 	  moveCursor( QTextCursor::PreviousWord, QTextCursor::KeepAnchor );
 	  textCursor().removeSelectedText();
 	}
 	else if ( ctrlPressed ) {
-	  cur.setPosition( document()->end().previous().position() + PROMPT_SIZE, 
+	  cur.setPosition( document()->lastBlock().position() + PROMPT_SIZE,
 			   QTextCursor::KeepAnchor );
 	  setTextCursor( cur );
 	  textCursor().removeSelectedText();
@@ -840,7 +843,7 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
 	}
       }
       else {
-	cur.setPosition( document()->end().previous().position() + PROMPT_SIZE );
+	cur.setPosition( document()->lastBlock().position() + PROMPT_SIZE );
 	setTextCursor( cur );
 	horizontalScrollBar()->setValue( horizontalScrollBar()->minimum() );
       }
@@ -856,7 +859,7 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
       if ( cur.hasSelection() ) {
 	cut();
       }
-      else if ( cur.position() > document()->end().previous().position() + PROMPT_SIZE-1 ) {
+      else if ( cur.position() > document()->lastBlock().position() + PROMPT_SIZE-1 ) {
 	if ( shftPressed ) {
 	  moveCursor( QTextCursor::NextWord, QTextCursor::KeepAnchor );
 	  textCursor().removeSelectedText();
@@ -870,7 +873,7 @@ void PyConsole_Editor::keyPressEvent( QKeyEvent* event )
 	}
       }
       else {
-	cur.setPosition( document()->end().previous().position() + PROMPT_SIZE );
+	cur.setPosition( document()->lastBlock().position() + PROMPT_SIZE );
 	setTextCursor( cur );
 	horizontalScrollBar()->setValue( horizontalScrollBar()->minimum() );
       }
@@ -914,7 +917,7 @@ void PyConsole_Editor::customEvent( QEvent* event )
     // clear command buffer
     myCommandBuffer.truncate( 0 );
     // add caret return line if necessary
-    QTextBlock par = document()->end().previous();
+    QTextBlock par = document()->lastBlock();
     QString txt = par.text();
     txt.truncate( txt.length() - 1 );
     // IPAL19397 : addText moved to handleReturn() method
@@ -935,7 +938,7 @@ void PyConsole_Editor::customEvent( QEvent* event )
     // extend command buffer (multi-line command)
     myCommandBuffer.append( "\n" );
     // add caret return line if necessary
-    QTextBlock par = document()->end().previous();
+    QTextBlock par = document()->lastBlock();
     QString txt = par.text();
     txt.truncate( txt.length() - 1 );
     // IPAL19397 : addText moved to handleReturn() method
@@ -1022,11 +1025,11 @@ void PyConsole_Editor::cut()
   if ( cur.hasSelection() ) {
     QApplication::clipboard()->setText( cur.selectedText() );
     int startSelection = cur.selectionStart();
-    if ( startSelection < document()->end().previous().position() + PROMPT_SIZE )
-      startSelection = document()->end().previous().position() + PROMPT_SIZE;
+    if ( startSelection < document()->lastBlock().position() + PROMPT_SIZE )
+      startSelection = document()->lastBlock().position() + PROMPT_SIZE;
     int endSelection = cur.selectionEnd();
-    if ( endSelection < document()->end().previous().position() + PROMPT_SIZE )
-      endSelection = document()->end().previous().position() + PROMPT_SIZE;
+    if ( endSelection < document()->lastBlock().position() + PROMPT_SIZE )
+      endSelection = document()->lastBlock().position() + PROMPT_SIZE;
     cur.setPosition( startSelection );
     cur.setPosition( endSelection, QTextCursor::KeepAnchor );
     horizontalScrollBar()->setValue( horizontalScrollBar()->minimum() );
@@ -1046,18 +1049,18 @@ void PyConsole_Editor::paste()
   QTextCursor cur = textCursor();
   if ( cur.hasSelection() ) {
     int startSelection = cur.selectionStart();
-    if ( startSelection < document()->end().previous().position() + PROMPT_SIZE )
-      startSelection = document()->end().previous().position() + PROMPT_SIZE;
+    if ( startSelection < document()->lastBlock().position() + PROMPT_SIZE )
+      startSelection = document()->lastBlock().position() + PROMPT_SIZE;
     int endSelection = cur.selectionEnd();
-    if ( endSelection < document()->end().previous().position() + PROMPT_SIZE )
-      endSelection = document()->end().previous().position() + PROMPT_SIZE;
+    if ( endSelection < document()->lastBlock().position() + PROMPT_SIZE )
+      endSelection = document()->lastBlock().position() + PROMPT_SIZE;
     cur.setPosition( startSelection );
     cur.setPosition( endSelection, QTextCursor::KeepAnchor );
     horizontalScrollBar()->setValue( horizontalScrollBar()->minimum() );
     setTextCursor( cur );
     textCursor().removeSelectedText();
   }
-  if ( textCursor().position() < document()->end().previous().position() + PROMPT_SIZE )
+  if ( textCursor().position() < document()->lastBlock().position() + PROMPT_SIZE )
     moveCursor( QTextCursor::End );
   QTextEdit::paste();
 }

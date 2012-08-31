@@ -4,7 +4,7 @@ win32:TEMPLATE = vclib
 include(../Common.pro)
 
 INCLUDEPATH += $$(PYTHONINC)
-unix:LIBS  += -lEvent -L$$(PYTHONLIB) -lpython2.5 
+unix:LIBS  += -lEvent -L$$(PYTHONLIB) -lpython2.7 
 win32:LIBS += -lEvent -L$$(PYTHONLIB)
 win32:CONFIG_MODE= $$(CONFIG_MODE)
 contains( CONFIG_MODE, debug ) {

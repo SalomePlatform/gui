@@ -6,10 +6,9 @@
 
 #include <Plot2d_Histogram.h>
 
-#include <qwt_double_interval.h>
-#include <qwt_interval_data.h>
+#include <qwt_series_data.h>
 #include <qwt_plot_curve.h>
-
+//#include <qwt_compat.h>
 #include <QColor>
 #include <math.h>
 
@@ -95,22 +94,24 @@ void Plot2d_Histogram::setData( const QList<double>& theXVals,
 /**
  * Returns data
  */
-QwtIntervalData Plot2d_Histogram::getData() const
+QwtIntervalSeriesData Plot2d_Histogram::getData() const
 {
   pointList aPoints = getPointList();
   int aSize = aPoints.size();
-
+  QVector<QwtIntervalSample> anIntervalsVect;
   QwtArray<QwtDoubleInterval> anIntervals( aSize );
   QwtArray<double> aValues( aSize );
   double aX;
   double aWidth = isAutoAssign() ? m_dDefWidth : m_dWidth;
   for ( int i = 0; i < aSize; i++ ) {
     aX = aPoints[i].x;
-    anIntervals[i] = QwtDoubleInterval( aX - aWidth/2, aX + aWidth/2 );
-    aValues[i] = aPoints[i].y;
+    //anIntervals[i] = QwtDoubleInterval( aX - aWidth/2, aX + aWidth/2 );
+    //aValues[i] = aPoints[i].y;
+    QwtIntervalSample anInt( aPoints[i].y, QwtDoubleInterval( aX - aWidth/2, aX + aWidth/2 ) );
+    anIntervalsVect.append( anInt );
   }
 
-  return QwtIntervalData( anIntervals, aValues );
+  return QwtIntervalSeriesData( anIntervalsVect );
 }
 
 /**

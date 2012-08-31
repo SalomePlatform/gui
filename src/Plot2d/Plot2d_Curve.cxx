@@ -118,10 +118,11 @@ void Plot2d_Curve::updatePlotItem( QwtPlotItem* theItem )
   QwtSymbol::Style ms = Plot2d::plot2qwtMarker( getMarker() );
 
   aCurve->setPen( QPen( getColor(), getLineWidth(), ps ) );
-  aCurve->setSymbol( QwtSymbol( ms, QBrush( getColor() ), 
+  aCurve->setSymbol( new  QwtSymbol( ms, QBrush( getColor() ), 
                                  QPen( getColor() ), 
                                  QSize( myMarkerSize, myMarkerSize ) ) );
-  aCurve->setData( horData(), verData(), nbPoints() );
+  aCurve->setSamples( horData(), verData(), nbPoints() );
+  //aCurve->setLegendAttribute( QwtPlotCurve::LegendShowSymbol,true );//ema:TODO
 }
 
 /*!
@@ -301,7 +302,7 @@ bool Plot2d_Curve::existMarker( const QwtPlot* thePlot, const QwtSymbol::Style t
     if( anItem && anItem->rtti() == rtti() ) {
       QwtPlotCurve* crv = dynamic_cast<QwtPlotCurve*>( anItem );
       if ( crv ) {
-        QwtSymbol::Style aStyle = crv->symbol().style();
+        QwtSymbol::Style aStyle = crv->symbol()->style();
         QColor           aColor = crv->pen().color();
         Qt::PenStyle     aLine  = crv->pen().style();
         if ( aStyle == typeMarker && closeColors( aColor,color ) && aLine == typeLine )

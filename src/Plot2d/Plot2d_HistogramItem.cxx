@@ -11,13 +11,13 @@
 #include <qstring.h>
 #include <qpainter.h>
 #include <qwt_plot.h>
-#include <qwt_interval_data.h>
 #include <qwt_painter.h>
 #include <qwt_scale_map.h>
 #include <qwt_legend.h>
 #include <qwt_legend_item.h>
 #include <qwt_symbol.h>
 #include <qwt_plot_dict.h>
+#include <QPixmap>
 
 
 /**
@@ -83,18 +83,18 @@ double Plot2d_HistogramQwtItem::baseline() const
 /**
  * Sets data to object
  */
-void Plot2d_HistogramQwtItem::setData( const QwtIntervalData& theData )
+void Plot2d_HistogramQwtItem::setData( const QwtIntervalSeriesData& theData )
 {
-  m_pData->data = theData;
+  m_pData->data = theData.samples();
   itemChanged();
 }
 
 /**
  * Returns data from object
  */
-const QwtIntervalData &Plot2d_HistogramQwtItem::data() const
+const QwtIntervalSeriesData &Plot2d_HistogramQwtItem::data() const
 {
-  return m_pData->data;
+  return QwtIntervalSeriesData( m_pData->data );
 }
 
 /**
@@ -120,7 +120,9 @@ QColor Plot2d_HistogramQwtItem::color() const
  */
 QwtDoubleRect Plot2d_HistogramQwtItem::boundingRect() const
 {
-  QwtDoubleRect aRect = m_pData->data.boundingRect();
+  QwtIntervalSeriesData iData( m_pData->data );
+  //QwtDoubleRect aRect = m_pData->data.boundingRect();
+  QwtDoubleRect aRect = iData.boundingRect();
   if ( !aRect.isValid() ) 
       return aRect;
 
@@ -180,29 +182,29 @@ bool Plot2d_HistogramQwtItem::testHistogramAttribute(
 void Plot2d_HistogramQwtItem::draw( QPainter *thePainter,
                                   const QwtScaleMap& theXMap, 
                                   const QwtScaleMap& theYMap,
-                                  const QRect& ) const
+                                  const QRectF& ) const
 {
-  const QwtIntervalData &iData = m_pData->data;
   thePainter->setPen( QPen( m_pData->color ) );
 
-  const int x0 = theXMap.transform( baseline() );
-  const int y0 = theYMap.transform( baseline() );
-
+  const double x0 = theXMap.transform( baseline() );
+  const double y0 = theYMap.transform( baseline() );
+  const QVector<QwtIntervalSample>& iData = m_pData->data;
   for ( int i = 0; i < (int)iData.size(); i++ ) {
+    
     if ( m_pData->attributes & Plot2d_HistogramQwtItem::Xfy ) {
-      const int x2 = theXMap.transform( iData.value( i ) );
+      const double x2 = theXMap.transform( iData.at(i).value );
       if ( x2 == x0 )
         continue;
-      int y1 = theYMap.transform( iData.interval( i ).minValue() );
-      int y2 = theYMap.transform( iData.interval( i ).maxValue() );
+      double y1 = theYMap.transform( iData.at(i).interval.minValue() );
+      double y2 = theYMap.transform( iData.at(i).interval.maxValue() );
       if ( y1 > y2 )
         qSwap( y1, y2 );
 
       if ( i < (int)iData.size() - 2 ) {
-        const int yy1 = theYMap.transform( iData.interval(i+1).minValue() );
-        const int yy2 = theYMap.transform( iData.interval(i+1).maxValue() );
+        const double yy1 = theYMap.transform( iData.at( i+1 ).interval.minValue() );
+        const double yy2 = theYMap.transform( iData.at( i+1 ). interval.maxValue() );
         if ( y2 == qwtMin( yy1, yy2 ) ) {
-          const int xx2 = theXMap.transform( iData.interval(i+1).minValue() );
+          const double xx2 = theXMap.transform( iData.at( i+1 ).interval.minValue() );
           if ( xx2 != x0 && ( ( xx2 < x0 && x2 < x0 ) ||
                               ( xx2 > x0 && x2 > x0 ) ) ) {
             // One pixel distance between neighboured bars
@@ -213,19 +215,19 @@ void Plot2d_HistogramQwtItem::draw( QPainter *thePainter,
       drawBar( thePainter, Qt::Horizontal, QRect( x0, y1, x2 - x0, y2 - y1 ) );
     }
     else {
-      const int y2 = theYMap.transform( iData.value( i ) );
+      const double y2 = theYMap.transform( iData.at(i).value );
       if ( y2 == y0 )
         continue;
-      int x1 = theXMap.transform( iData.interval( i ).minValue() );
-      int x2 = theXMap.transform( iData.interval( i ).maxValue() );
+      double x1 = theXMap.transform( iData.at( i ).interval.minValue() );
+      double x2 = theXMap.transform( iData.at( i ).interval.maxValue() );
       if ( x1 > x2 )
         qSwap( x1, x2 );
 
       if ( i < (int)iData.size() - 2 ) {
-        const int xx1 = theXMap.transform( iData.interval(i+1).minValue() );
-        const int xx2 = theXMap.transform( iData.interval(i+1).maxValue() );
+        const double xx1 = theXMap.transform( iData.at( i+1 ).interval.minValue() );
+        const double xx2 = theXMap.transform( iData.at( i+1 ).interval.maxValue() );
         if ( x2 == qwtMin( xx1, xx2 ) ) {
-          const int yy2 = theYMap.transform( iData.value(i+1) );
+          const double yy2 = theYMap.transform( iData.at( i+1 ).value );
           if ( yy2 != y0 && ( ( yy2 < y0 && y2 < y0 ) ||
                               ( yy2 > y0 && y2 > y0 ) ) ) {
             // One pixel distance between neighboured bars
@@ -349,9 +351,12 @@ void Plot2d_HistogramItem::updateLegend( QwtLegend* theLegend ) const
   int aSize = aFMetrics.height();
   QwtSymbol aSymbol( QwtSymbol::Rect, QBrush( color() ),
                      QPen( color() ), QSize( aSize, aSize ) );
-  anItem->setSymbol( aSymbol );
-  anItem->setIdentifierMode( theLegend->identifierMode()
-                           | QwtLegendItem::ShowSymbol ); 
+  //anItem->setSymbol( aSymbol );
+  //anItem->setIdentifierMode( theLegend->identifierMode() 
+  //                         | QwtLegendItem::ShowSymbol );
+  QPixmap aPixMap( 8, 8);
+  aPixMap.fill( color() );
+  anItem->setIdentifier( aPixMap );
   anItem->update();
 }
 
@@ -367,26 +372,25 @@ void Plot2d_HistogramItem::draw( QPainter *thePainter,
   Plot2d_HistogramItem* anItem = (Plot2d_HistogramItem*)this;
   anItem->m_BarItems.clear();
 
-  const QwtIntervalData &iData = m_pData->data;
   thePainter->setPen( QPen( m_pData->color ) );
-  const int x0 = theXMap.transform( baseline() );
-  const int y0 = theYMap.transform( baseline() );
-
+  const double x0 = theXMap.transform( baseline() );
+  const double y0 = theYMap.transform( baseline() );
+  const QVector<QwtIntervalSample>& iData = m_pData->data;
   for ( int i = 0; i < (int)iData.size(); i++ ) {
     if ( m_pData->attributes & Plot2d_HistogramItem::Xfy ) {
-      const int x2 = theXMap.transform( iData.value( i ) );
+      const double x2 = theXMap.transform( iData.at(i).value );
       if ( x2 == x0 )
         continue;
-      int y1 = theYMap.transform( iData.interval( i ).minValue() );
-      int y2 = theYMap.transform( iData.interval( i ).maxValue() );
+      double y1 = theYMap.transform( iData.at(i).interval.minValue() );
+      double y2 = theYMap.transform( iData.at(i).interval.maxValue() );
       if ( y1 > y2 )
         qSwap( y1, y2 );
 
       if ( i < (int)iData.size() - 2 ) {
-        const int yy1 = theYMap.transform( iData.interval(i+1).minValue() );
-        const int yy2 = theYMap.transform( iData.interval(i+1).maxValue() );
+        const double yy1 = theYMap.transform( iData.at( i+1 ).interval.minValue() );
+        const double yy2 = theYMap.transform( iData.at( i+1 ).interval.maxValue() );
         if ( y2 == qwtMin( yy1, yy2 ) ) {
-          const int xx2 = theXMap.transform( iData.interval(i+1).minValue() );
+          const double xx2 = theXMap.transform( iData.at( i+1 ).interval.minValue() );
           if ( xx2 != x0 && ( ( xx2 < x0 && x2 < x0 ) ||
                               ( xx2 > x0 && x2 > x0 ) ) ) {
             // One pixel distance between neighboured bars
@@ -400,19 +404,19 @@ void Plot2d_HistogramItem::draw( QPainter *thePainter,
       anItem->m_BarItems.append( aRect );
     }
     else {
-      const int y2 = theYMap.transform( iData.value( i ) );
+      const double y2 = theYMap.transform( iData.at( i ).value );
       if ( y2 == y0 )
         continue;
-      int x1 = theXMap.transform( iData.interval( i ).minValue() );
-      int x2 = theXMap.transform( iData.interval( i ).maxValue() );
+      double x1 = theXMap.transform( iData.at( i ).interval.minValue() );
+      double x2 = theXMap.transform( iData.at( i ).interval.maxValue() );
       if ( x1 > x2 )
         qSwap( x1, x2 );
 
       if ( i < (int)iData.size() - 2 ) {
-        const int xx1 = theXMap.transform( iData.interval(i+1).minValue() );
-        const int xx2 = theXMap.transform( iData.interval(i+1).maxValue() );
+        const double xx1 = theXMap.transform( iData.at( i+1 ).interval.minValue() );
+        const double xx2 = theXMap.transform( iData.at( i+1 ).interval.maxValue() );
         if ( x2 == qwtMin( xx1, xx2 ) ) {
-          const int yy2 = theYMap.transform( iData.value(i+1) );
+          const double yy2 = theYMap.transform(iData.at( i+1 ).value );
           if ( yy2 != y0 && ( ( yy2 < y0 && y2 < y0 ) ||
                               ( yy2 > y0 && y2 > y0 ) ) ) {
             // One pixel distance between neighboured bars

@@ -14,7 +14,7 @@
 
 class QString;
 class QColor;
-class QwtIntervalData;
+class QwtIntervalSeriesData;
 
 class PLOT2D_EXPORT Plot2d_Histogram : public Plot2d_Object
 {
@@ -28,7 +28,7 @@ public:
   virtual void      updatePlotItem( QwtPlotItem* );
 
   void              setData( const QList<double>&, const QList<double>& );
-  QwtIntervalData   getData() const;
+  QwtIntervalSeriesData   getData() const;
 
   QColor            getColor() const;
   void              setColor( const QColor& );

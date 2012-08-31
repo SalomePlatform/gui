@@ -54,6 +54,9 @@
 #include <qwt_scale_engine.h>
 #include <qwt_plot_zoomer.h>
 #include <qwt_curve_fitter.h>
+#include <qwt_compat.h>
+#include <qwt_plot_renderer.h>
+#include <qwt_plot_layout.h>
 
 #include <iostream>
 #include <stdlib.h>
@@ -178,7 +181,7 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
   /* Initial Setup - get from the preferences */
   readPreferences();
 
-  myPlot->setMargin( 5 );
+  aLayout->setMargin( 5 );
   setCurveType( myCurveType, false );
   setXGrid( myXGridMajorEnabled, myXGridMaxMajor, myXGridMinorEnabled, myXGridMaxMinor, false );
   setYGrid( myYGridMajorEnabled, myYGridMaxMajor, myYGridMinorEnabled, myYGridMaxMinor,
@@ -911,25 +914,30 @@ int Plot2d_ViewFrame::testOperation( const QMouseEvent& me )
   const int zoomBtn = Qt::ControlModifier | Qt::LeftButton;
   const int panBtn  = Qt::ControlModifier | Qt::MidButton;
   const int fitBtn  = Qt::ControlModifier | Qt::RightButton;
-
-  switch (btn)
-  {
-  case zoomBtn:
-    {
-      QPixmap zoomPixmap (imageZoomCursor);
-      QCursor zoomCursor (zoomPixmap);
-      myPlot->canvas()->setCursor( zoomCursor );
-      return ZoomId;
-    }
-  case panBtn:
+  
+  if ( btn == zoomBtn ) {
+    QPixmap zoomPixmap( imageZoomCursor );
+    QCursor zoomCursor( zoomPixmap );
+    myPlot->canvas()->setCursor( zoomCursor );
+    return ZoomId;
+  } else if ( btn == panBtn ) {
     myPlot->canvas()->setCursor( QCursor( Qt::SizeAllCursor ) );
     return PanId;
-  case fitBtn:
+  } else if ( btn == fitBtn ) {
     myPlot->canvas()->setCursor( QCursor( Qt::PointingHandCursor ) );
     return FitAreaId;
-  default :
+  } else {
     return NoOpId;
   }
+}
+/*!
+  Protected virtual method called by onSettings() slot, 
+  can be redefined to customize the dialog box appearance.
+  \param theDlg a pointer to the 2D plot settings dialog box instance
+  \sa onSettings()
+*/
+void Plot2d_ViewFrame::setupSettingsDlg( Plot2d_SetupViewDlg* /*theDlg*/ )
+{
 }
 
 /*!
@@ -1192,9 +1200,10 @@ void Plot2d_ViewFrame::setMarkerSize( const int size, bool update )
       QwtPlotCurve* crv = it.key();
       if ( crv )
       {
-        QwtSymbol aSymbol = crv->symbol();
-        aSymbol.setSize( myMarkerSize, myMarkerSize );
-        crv->setSymbol( aSymbol );
+       const QwtSymbol* aSymbol = crv->symbol();
+       QwtSymbol* aSymbolNew =  new QwtSymbol( aSymbol->style(), aSymbol->brush(), aSymbol->pen(), aSymbol->size() ); 
+        aSymbolNew->setSize( myMarkerSize, myMarkerSize );
+        crv->setSymbol( aSymbolNew );
       }
     }
     if ( update )
@@ -1748,7 +1757,7 @@ Plot2d_Plot2d::Plot2d_Plot2d( QWidget* parent )
     myIsPolished( false )
 {
   myPlotZoomer = new Plot2d_QwtPlotZoomer( QwtPlot::xBottom, QwtPlot::yLeft, canvas() );
-  myPlotZoomer->setSelectionFlags( QwtPicker::DragSelection | QwtPicker::CornerToCorner );
+  //myPlotZoomer->setSelectionFlags( QwtPicker::DragSelection | QwtPicker::CornerToCorner );
   myPlotZoomer->setTrackerMode( QwtPicker::AlwaysOff );
   myPlotZoomer->setRubberBand( QwtPicker::RectRubberBand );
   myPlotZoomer->setRubberBandPen( QColor( Qt::green ) );
@@ -1841,10 +1850,12 @@ void Plot2d_Plot2d::setPickerMousePattern( int button, int state )
 /*!
   Sets the flag saying that QwtPlot geometry has been fully defined.
 */
-void Plot2d_Plot2d::polish()
+bool Plot2d_Plot2d::event( QEvent* e )
 {
-  QwtPlot::polish();
-  myIsPolished = true;
+  if( e->type() == QEvent::Polish ){
+    myIsPolished = true;
+  }
+  return QwtPlot::event( e );
 }
 
 
@@ -1998,7 +2009,8 @@ bool Plot2d_ViewFrame::print( const QString& file, const QString& format ) const
 
     if( pd )
     {
-      myPlot->print( *pd );
+      QwtPlotRenderer aRend;
+      aRend.renderTo( myPlot, *pd );
       res = true;
       delete pd;
     }
@@ -2010,10 +2022,10 @@ bool Plot2d_ViewFrame::print( const QString& file, const QString& format ) const
 /**
  * Print Plot2d window
  */
-void Plot2d_ViewFrame::printPlot( QPainter* p, const QRect& rect,
-                                  const QwtPlotPrintFilter& filter ) const
+void Plot2d_ViewFrame::printPlot( QPainter* p, const QRectF& rect) const
 {
-  myPlot->print( p, rect, filter );
+  QwtPlotRenderer aRend;
+      aRend.render( myPlot, p, rect );
 }
 
 /*!

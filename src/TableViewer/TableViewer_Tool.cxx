@@ -37,7 +37,7 @@ TCollection_ExtendedString TableViewer_Tool::ToExtString( const QString& src )
     return TCollection_ExtendedString();
 
   Standard_Integer len = src.length();
-  Standard_ExtString extStr = new Standard_ExtCharacter [( len + 1 ) * 2];
+  Standard_ExtCharacter* extStr = new Standard_ExtCharacter [( len + 1 ) * 2];
   memcpy( extStr, src.unicode(), len * 2 );
   extStr[len] = 0;
 

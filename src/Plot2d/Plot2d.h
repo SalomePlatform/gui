@@ -35,6 +35,7 @@
 
 #include <qwt_symbol.h>
 #include <Qt>
+#include <QColor>
 
 class QPainter;
 

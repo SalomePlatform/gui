@@ -631,6 +631,8 @@ public:
 
   virtual bool     eventFilter( QObject*, QEvent* );
 
+  public:
+    
 protected:
   virtual QWidget* createWidget( QWidget* );
   virtual void     deleteWidget( QWidget* );
@@ -671,46 +673,14 @@ bool QtxMenu::Expander::eventFilter( QObject* o, QEvent* e )
 */
 QWidget* QtxMenu::Expander::createWidget( QWidget* parent )
 {
-  class Button : public QToolButton
-  {
-  public:
-    Button( QWidget* p = 0 ) : QToolButton( p ) {};
-    virtual ~Button() {};
-
-  protected:
-    virtual void resizeEvent( QResizeEvent* e )
-    {
-      QToolButton::resizeEvent( e );
-      /*
-      QPixmap pix( size() );
-      QPainter p( &pix );
-      icon().paint( &p, rect() );
-      p.end();
-
-      if ( pix.mask().isNull() )
-      {
-        QBitmap bm;
-        QImage img = pix.toImage();
-	if ( img.hasAlphaChannel() )
-	bm = QPixmap::fromImage( img.createAlphaMask() );
-	else
-	bm = QPixmap::fromImage( img.createHeuristicMask() );
-
-	pix.setMask( bm );
-	}
-
-	if ( !pix.mask().isNull() )
-	setMask( pix.mask() );
-      */
-    };
-  };
 
   QToolButton* tb = new QToolButton( parent );
   QPixmap pix( expand_button_xpm );
   tb->setIcon( pix );
   tb->setAutoRaise( true );
   tb->installEventFilter( this );
-
+  // added by AVO 2012.08.09 to hide expand button shown in menu if Expander is not added
+  tb->setVisible(false);
   connect( tb, SIGNAL( clicked( bool ) ), this, SIGNAL( triggered( bool ) ) );
 
   return tb;
@@ -844,10 +814,10 @@ void QtxMenu::setMenuCollapsible( bool on )
   if ( menuCollapsible() == on )
     return;
 
-  if ( on )
+  if ( on ) {
     myExpandAction = new Expander( this );
-  else
-  {
+    // myExpandAction->setVisible(false);
+  } else {
     if ( isMenuCollapsed() )
       expandMenu();
 
@@ -1412,7 +1382,11 @@ void QtxMenu::onExpandMenu()
 void QtxMenu::onActionHovered( QAction* a )
 {
   if ( a == myExpandAction ) {
+    QtxMenu::Expander* savedExpAction = myExpandAction;
+    myExpandAction = NULL;
     setActiveAction( myExpandAction );
+    myExpandAction = savedExpAction;
+    
     if ( expandingDelay() )
       myShortTimer->start();
   }

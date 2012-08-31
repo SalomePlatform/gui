@@ -941,16 +941,6 @@ void Plot2d_ViewFrame::setupSettingsDlg( Plot2d_SetupViewDlg* /*theDlg*/ )
 }
 
 /*!
-  Protected virtual method called by onSettings() slot, 
-  can be redefined to customize the dialog box appearance.
-  \param theDlg a pointer to the 2D plot settings dialog box instance
-  \sa onSettings()
-*/
-void Plot2d_ViewFrame::setupSettingsDlg( Plot2d_SetupViewDlg* /*theDlg*/ )
-{
-}
-
-/*!
   "Settings" toolbar action slot
 */
 void Plot2d_ViewFrame::onSettings()

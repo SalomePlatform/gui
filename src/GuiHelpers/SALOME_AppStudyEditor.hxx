@@ -29,6 +29,11 @@
 
 #include "SALOME_StudyEditor.hxx"
 
+/*!
+ * This class is a specialization of the KERNEL StudyEditor for
+ * the GUI context. The concept of active study is introduced here
+ * while it does not exist in the pure KERNEL context.
+ */
 class SALOME_AppStudyEditor: public SALOME_StudyEditor {
 public:
   SALOME_AppStudyEditor(SalomeApp_Application * salomeApp);

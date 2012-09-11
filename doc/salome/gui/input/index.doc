@@ -76,8 +76,8 @@ This part of documentation on Salome also covers
 common for all modules, such as study management, Salome viewers,
 preferences, etc.
 
-And finally, there is an additional chapter, which provides a short
-guide about the \subpage tui_page "usage of Python module salome.py" to access main SALOME
-functionalities from the Python code.
 
+And finally, there is an additional chapter, which provides a short
+guide about the \subpage tui_page "usage of SALOME GUI Python interface" to access SALOME GUI
+functionalities from the Python code.
 */

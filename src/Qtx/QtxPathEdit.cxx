@@ -197,6 +197,41 @@ void QtxPathEdit::setValidator( QValidator* v )
 }
 
 /*!
+  \brief Set base path. If thePath is not empty the editor
+  becomes relative path editor.
+  \param thePath the base path. If thePath is not empty the editor become
+  relative path editor. If thePath is empty the editor become absolute path
+  editor
+*/
+void QtxPathEdit::setBasePath( const QString& theBasePath )
+{
+  if( myBasePath.isEmpty() && !theBasePath.isEmpty() ){
+//Switch to relative path editor
+    QString aNewPath = Qtx::relativePath( theBasePath, myPath->text() );
+    myPath->setText( aNewPath );
+  }
+  if( !myBasePath.isEmpty() && theBasePath.isEmpty() ){
+//Switch to absolute path editor
+    QString aNewPath = Qtx::relativePath( theBasePath, myPath->text() );
+    myPath->setText( aNewPath );
+  }
+  if( !myBasePath.isEmpty() && !theBasePath.isEmpty() ){
+    QString anAbsPath = Qtx::absolutePath( myBasePath, myPath->text() );
+    QString aNewPath = Qtx::relativePath( theBasePath, anAbsPath );
+    myPath->setText( aNewPath );
+  }
+  myBasePath = theBasePath;
+}
+
+/*!
+  \brief Return base path. 
+ */
+QString QtxPathEdit::basePath() const
+{
+  return myBasePath;
+}
+
+/*!
   \brief Called when user clicks "Browse" button.
 
   Invokes standard browsng dialog box depending on the used widget mode.
@@ -206,8 +241,12 @@ void QtxPathEdit::setValidator( QValidator* v )
 */
 void QtxPathEdit::onBrowse( bool /*on*/ )
 {
+  emit beforeBrowse();
   QString path;
-  QString initial = QFileInfo( myPath->text() ).path();
+  QString initial = myPath->text();
+  if( !myBasePath.isEmpty()  )
+    initial = Qtx::absolutePath( myBasePath, initial );
+  initial = QFileInfo( initial ).path();
   switch ( pathType() )
   {
   case Qtx::PT_OpenFile:
@@ -222,7 +261,10 @@ void QtxPathEdit::onBrowse( bool /*on*/ )
   }
 
   if ( !path.isEmpty() ) {
-    QString txt = QDir::convertSeparators( path );
+    QString txt = path;
+    if( !myBasePath.isEmpty()  )
+      txt = Qtx::relativePath(myBasePath, path );
+    txt = QDir::convertSeparators( txt );
     bool block = myPath->signalsBlocked();
     myPath->blockSignals( true );
     myPath->setText( txt );

@@ -52,10 +52,14 @@ public:
   const QValidator* validator() const;
   void              setValidator( QValidator* );
 
+  void              setBasePath( const QString& theBasePath );
+  QString           basePath() const;
+
 signals:
   void              returnPressed();
   void              pathChanged( const QString& );
   void              pathSelected( const QString& );
+  void              beforeBrowse();
 
 private slots:
   void              onBrowse( bool = false );
@@ -68,6 +72,7 @@ private:
   QLineEdit*        myPath;
   Qtx::PathType     myType;
   QString           myFilter;
+  QString           myBasePath;
 };
 
 #endif

@@ -156,6 +156,8 @@ public:
   static QString     dir( const QString&, const bool = true );
   static QString     file( const QString&, const bool = true );
   static QString     extension( const QString&, const bool = false );
+  static QString     relativePath( const QString&, const QString& );
+  static QString     absolutePath( const QString&, const QString& );
 
   static QString     library( const QString& );
 

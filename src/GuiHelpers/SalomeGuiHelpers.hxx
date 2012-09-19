@@ -38,4 +38,4 @@
 #pragma warning ( disable: 4786 )
 #endif
 
-#endif SALOMEGUIHELPERS_HXX
+#endif // SALOMEGUIHELPERS_HXX

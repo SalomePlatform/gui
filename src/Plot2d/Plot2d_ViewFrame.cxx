@@ -709,11 +709,12 @@ void Plot2d_ViewFrame::createCurveTooltips( Plot2d_Curve *curve,
  *
  * Draw points markers and create associated tooltips.
  * Draw connection segments (intermittent line) between all the curves of a component.
+ * \return the list of underlying plot curve that defines the complex cuve at once. In case of success the vector is at least of size 1. The first one is the curve used by the legend.
  */
-void Plot2d_ViewFrame::displayPlot2dCurveList( const QList< QList<Plot2d_Curve*> >& sysCoCurveList,
-                                               Plot2d_QwtPlotPicker*         picker,
-                                               bool                          displayLegend,
-                                               const QList< QList<bool> >&   sides)
+QVector< QVector<QwtPlotCurve *> > Plot2d_ViewFrame::displayPlot2dCurveList( const QList< QList<Plot2d_Curve*> >& sysCoCurveList,
+                                                                             Plot2d_QwtPlotPicker*         picker,
+                                                                             bool                          displayLegend,
+                                                                             const QList< QList<bool> >&   sides)
 {
   //std::cout << "Plot2d_ViewFrame::displayPlot2dCurveList() 1" << std::endl;
 
@@ -746,13 +747,14 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( const QList< QList<Plot2d_Curve*>
   }
   // 2)- Display list curves by a component's curves group
   //     Draw connection segments (intermittent line) between the curves
-  displayPlot2dCurveList( plot2dCurveCoSysList, nbSystem, picker, displayLegend, sidesList);
+  QVector< QVector<QwtPlotCurve *> > ret=displayPlot2dCurveList( plot2dCurveCoSysList, nbSystem, picker, displayLegend, sidesList);
   // 3)- Size of graduations labels and texts under X axis
   QwtScaleWidget *wid = myPlot->axisWidget( QwtPlot::xBottom);
   wid->setTitle("  "); // to make the names readable under X axis.
   QFont xFont = myPlot->axisFont(QwtPlot::xBottom);
   xFont.setPointSize(8); 
-  myPlot->setAxisFont( QwtPlot::xBottom, xFont);
+  myPlot->setAxisFont(QwtPlot::xBottom, xFont);
+  return ret;
 }
 
 
@@ -762,11 +764,12 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( const QList< QList<Plot2d_Curve*>
  * Draw points markers and create associated tooltips
  * Draw connection segments (intermittent line) between the curves
  * \param [in] sides sorted as in \b curveList. If true->right if false->left
+ * \return the list of underlying plot curve that defines the complex cuve at once. In case of success the vector is at least of size 1. The first one is the curve used by the legend.
  */
-void Plot2d_ViewFrame::displayPlot2dCurveList( const QList<Plot2d_Curve*>& curveList,
-                                               int  groupSize,
-                                               Plot2d_QwtPlotPicker* picker,
-                                               bool  displayLegend, const QList< bool >& sides)
+QVector< QVector<QwtPlotCurve *> > Plot2d_ViewFrame::displayPlot2dCurveList( const QList<Plot2d_Curve*>& curveList,
+                                                                             int  groupSize,
+                                                                             Plot2d_QwtPlotPicker* picker,
+                                                                             bool  displayLegend, const QList< bool >& sides)
 {
   // Consider the new legend's entries
   // (PB: to update the legend we must remove it and put a new QwtLegend in the QwtPlot)
@@ -774,6 +777,7 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( const QList<Plot2d_Curve*>& curve
 
   int nbAllCurves = curveList.size();
   int nbGroups    = nbAllCurves / groupSize;
+  QVector< QVector<QwtPlotCurve *> > vectCurve(nbGroups);
   int ig, icur;
   int icur1, icur2;  // curves indices in a group
 
@@ -887,7 +891,6 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( const QList<Plot2d_Curve*>& curve
       Plot2d::LineType linetype1 = plot2dCurve1->getLine();
       int lineWidth1 = plot2dCurve1->getLineWidth();
       QwtSymbol::Style symbolStyle1 = plot2dCurve1->getMarkerStyle();
-
       if (nbCurves > 1)
       {
           // We attribute to the current group's curve, the color, the line's kind
@@ -919,8 +922,8 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( const QList<Plot2d_Curve*>& curve
           createCurveTooltips( plot2dCurve, picker);
 
           // Get the graphic curve
-          QwtPlotCurve* plotCurve = dynamic_cast<QwtPlotCurve *>( getPlotObject( plot2dCurve));
-
+          QwtPlotCurve* plotCurve = dynamic_cast<QwtPlotCurve *>(getPlotObject( plot2dCurve));
+          vectCurve[ig].push_back(plotCurve);
           // Modify the points' markers
           QwtSymbol symbol (plotCurve->symbol()) ;
           symbol.setStyle( symbolStyle1);
@@ -971,7 +974,7 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( const QList<Plot2d_Curve*>& curve
               Xseg[1] = Xval[0];
               Yseg[1] = Yval[0];
 
-              createSegment( Xseg, Yseg, 2, Qt::DotLine, lineWidth1, color1, QwtSymbol::NoSymbol,side);
+              vectCurve[ig].push_back(createSegment(Xseg,Yseg,2,Qt::DotLine,lineWidth1,color1,QwtSymbol::NoSymbol,side));
 
               // Last curve's point
               Xseg[0] = Xval[ nbPoints -1];
@@ -990,6 +993,7 @@ void Plot2d_ViewFrame::displayPlot2dCurveList( const QList<Plot2d_Curve*>& curve
       if(!curveList.empty())
         showLegend( true, true);  // show, update
     }
+  return vectCurve;
 }
 
 
@@ -1114,11 +1118,11 @@ QColor Plot2d_ViewFrame::getPlot2dCurveColor( Plot2d_Curve* plot2dCurve)
 /*!
  * Create and display a segment with nbPoint=2 points
  */
-void Plot2d_ViewFrame::createSegment( double *X, double *Y, int nbPoint,
-                                      Qt::PenStyle lineKind,
-                                      int lineWidth,
-                                      QColor & lineColor,
-                                      QwtSymbol::Style markerKind, bool side)
+QwtPlotCurve *Plot2d_ViewFrame::createSegment( double *X, double *Y, int nbPoint,
+                                               Qt::PenStyle lineKind,
+                                               int lineWidth,
+                                               QColor & lineColor,
+                                               QwtSymbol::Style markerKind, bool side)
 {
   QwtPlotCurve* aPCurve = new QwtPlotCurve();
 
@@ -1136,6 +1140,7 @@ void Plot2d_ViewFrame::createSegment( double *X, double *Y, int nbPoint,
   aPCurve->setYAxis(side ? QwtPlot::yRight : QwtPlot::yLeft);
   // To deallocate in EraseAll()
   myIntermittentSegmentList.append(aPCurve);
+  return aPCurve;
 }
 
 /*!

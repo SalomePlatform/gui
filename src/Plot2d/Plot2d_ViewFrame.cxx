@@ -3922,10 +3922,11 @@ Plot2d_Curve* Plot2d_ViewFrame::getClosestCurve( QPoint p, double& distance, int
     if ( !aCurve )
       continue;
     double d;
-    index = aCurve->closestPoint( p, &d );
+    int i = aCurve->closestPoint( p, &d );
     if ( index > -1 && ( distance < 0 || d < distance ) ) {
       pCurve = it.value();
       distance = d;
+      index = i;
     }
   }
   return pCurve;

@@ -878,9 +878,6 @@ QVector< QVector<QwtPlotCurve *> > Plot2d_ViewFrame::displayPlot2dCurveList( con
   icur1 = 0;
   for (ig=0; ig < nbGroups; ig++)
   {
-      icur2 = icur1 + groupSize -1;
-      int nbCurves = icur2 - icur1 + 1;
-
       // 1)- Graphical attributs of group's curves
 
       // Graphical attributes of the first group's curve
@@ -891,24 +888,21 @@ QVector< QVector<QwtPlotCurve *> > Plot2d_ViewFrame::displayPlot2dCurveList( con
       Plot2d::LineType linetype1 = plot2dCurve1->getLine();
       int lineWidth1 = plot2dCurve1->getLineWidth();
       QwtSymbol::Style symbolStyle1 = plot2dCurve1->getMarkerStyle();
-      if (nbCurves > 1)
-      {
-          // We attribute to the current group's curve, the color, the line's kind
-          // and the marker's kind of the first group's curve
-
-          for (icur=icur1 +1; icur <= icur2; icur++)
-          {
-              Plot2d_Curve *plot2dCurve = curveList.at(icur);
-              //
-              plot2dCurve->setColor( color1);
-              plot2dCurve->setLine( linetype1, lineWidth1);
-              plot2dCurve->setMarkerStyle( symbolStyle1);
-          }
-      }
+      // We attribute to the current group's curve, the color, the line's kind
+      // and the marker's kind of the first group's curve
+      
+      for (icur=icur1+1; icur<icur1+groupSize; icur++)
+        {
+          Plot2d_Curve *plot2dCurve = curveList.at(icur);
+          //
+          plot2dCurve->setColor(color1);
+          plot2dCurve->setLine(linetype1,lineWidth1);
+          plot2dCurve->setMarkerStyle(symbolStyle1);
+        }
 
       // 2)- Display the group's curves
 
-      for (icur=icur1; icur <= icur2; icur++)
+      for (icur=icur1; icur<icur1+groupSize; icur++)
       {
           Plot2d_Curve *plot2dCurve = curveList.at(icur);
 
@@ -916,24 +910,24 @@ QVector< QVector<QwtPlotCurve *> > Plot2d_ViewFrame::displayPlot2dCurveList( con
           std::string std_title = title.toStdString();
           // Create the graphic curve (QwtPlotCurve) et display it in the drawing zone
           // (Qwtplot)
-          displayCurve( plot2dCurve);
+          displayCurve(plot2dCurve);
 
 	  // Draw the points' markers and create the associated tooltips
-          createCurveTooltips( plot2dCurve, picker);
+          //createCurveTooltips( plot2dCurve, picker);
 
           // Get the graphic curve
-          QwtPlotCurve* plotCurve = dynamic_cast<QwtPlotCurve *>(getPlotObject( plot2dCurve));
+          QwtPlotCurve* plotCurve = dynamic_cast<QwtPlotCurve *>(getPlotObject(plot2dCurve));
           vectCurve[ig].push_back(plotCurve);
           // Modify the points' markers
-          QwtSymbol symbol (plotCurve->symbol()) ;
-          symbol.setStyle( symbolStyle1);
-          symbol.setPen( QPen( color1, lineWidth1));
-          symbol.setBrush( QBrush( color1));
-          QSize size = 0.5*(symbol.size());
-          symbol.setSize(size);
+          QwtSymbol symbol(plotCurve->symbol()) ;
+          symbol.setStyle(symbolStyle1);
+          symbol.setPen(QPen(color1,lineWidth1));
+          //symbol.setBrush( QBrush( color1));
+          //QSize size = 0.5*(symbol.size());
+          //symbol.setSize(size);
           //
-          plotCurve->setPen( QPen( color1, lineWidth1));
-          plotCurve->setSymbol( symbol);
+          plotCurve->setPen(QPen(color1,lineWidth1));
+          plotCurve->setSymbol(symbol);
 
           if (icur > icur1)
           {
@@ -950,7 +944,7 @@ QVector< QVector<QwtPlotCurve *> > Plot2d_ViewFrame::displayPlot2dCurveList( con
 
       // 3)- Intermittent segments to connect all the group's curves
 
-      if (nbCurves > 1)
+      if (groupSize > 1)
       {
           double *Xval;
           double *Yval;
@@ -965,7 +959,7 @@ QVector< QVector<QwtPlotCurve *> > Plot2d_ViewFrame::displayPlot2dCurveList( con
           delete [] Xval;
           delete [] Yval;
 
-          for (icur=icur1 +1; icur <= icur2; icur++)
+          for (icur=icur1+1; icur<icur1+groupSize; icur++)
           {
               Plot2d_Curve *plot2dCurve = curveList.at(icur);
 
@@ -984,7 +978,7 @@ QVector< QVector<QwtPlotCurve *> > Plot2d_ViewFrame::displayPlot2dCurveList( con
           }
       }
       // First curve of the following group
-      icur1 = icur2 + 1;
+      icur1 += groupSize;
   }
 
   if (displayLegend)
@@ -1057,7 +1051,7 @@ Plot2d_Curve* Plot2d_ViewFrame::createPlot2dCurve( QString & title,
       displayCurve( plot2dCurve);
 
       // plot points marker create associated tooltips
-      createCurveTooltips( plot2dCurve, picker);
+      //createCurveTooltips( plot2dCurve, picker);
 
       // Get the graphical curve
       QwtPlotCurve* plotCurve = dynamic_cast<QwtPlotCurve *>( getPlotObject( plot2dCurve));

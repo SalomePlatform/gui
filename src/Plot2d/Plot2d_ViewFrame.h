@@ -140,6 +140,8 @@ public:
   void           displayObjects( const objectList&, bool = false );
   void           eraseObject( Plot2d_Object*, bool = false );
   void           eraseObjects( const objectList&, bool = false );
+  void           eraseBasicObject( QwtPlotItem*, bool = false );
+  void           eraseBasicObjects( const QList<QwtPlotItem*> &, bool = false );
   int            getObjects( objectList& ) const;
   bool           isVisible( Plot2d_Object* ) const;
   void           updateObject( Plot2d_Object*, bool = false );

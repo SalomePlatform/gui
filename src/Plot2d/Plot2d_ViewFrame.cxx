@@ -1354,15 +1354,22 @@ void Plot2d_ViewFrame::eraseObject( Plot2d_Object* object, bool update )
 
   if ( hasPlotObject( object ) ) {
     QwtPlotItem* anObject = getPlotObject( object );
-    anObject->hide();
-    anObject->detach();
-    myObjects.remove( anObject );
-    updateTitles();
-    myPlot->updateYAxisIdentifiers();
-    if ( update )
-      myPlot->replot();
+    eraseBasicObject(anObject,update);
   }
   if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
+}
+
+void Plot2d_ViewFrame::eraseBasicObject( QwtPlotItem *object, bool update )
+{
+  if(!object)
+    return;
+  object->hide();
+  object->detach();
+  myObjects.remove(object);
+  updateTitles();
+  myPlot->updateYAxisIdentifiers();
+  if ( update )
+    myPlot->replot();
 }
 
 /*!
@@ -1373,6 +1380,16 @@ void Plot2d_ViewFrame::eraseObjects( const objectList& objects, bool update )
   foreach ( Plot2d_Object* object, objects )
     eraseObject( object, false );
 
+  //  fitAll();
+  if ( update )
+    myPlot->replot();
+  if ( myPlot->zoomer() ) myPlot->zoomer()->setZoomBase();
+}
+
+void Plot2d_ViewFrame::eraseBasicObjects( const QList<QwtPlotItem*> &objects, bool update)
+{
+  foreach ( QwtPlotItem* object, objects )
+    eraseBasicObject( object, false );
   //  fitAll();
   if ( update )
     myPlot->replot();

@@ -88,18 +88,12 @@ public:
   void           setTitle( const QString& );
   QString        getTitle() const;
 
-  /* addition MultiX */
-  void createCurveTooltips( Plot2d_Curve *curve,
-                            Plot2d_QwtPlotPicker *picker);
-
   QVector< QVector<QwtPlotCurve *> > displayPlot2dCurveList( const QList< QList<Plot2d_Curve*> >& sysCoCurveList,
-                                                             Plot2d_QwtPlotPicker*                picker,
                                                              bool                                 displayLegend,
                                                              const QList< QList<bool> >&          sides);
   
   QVector< QVector<QwtPlotCurve *> > displayPlot2dCurveList( const QList<Plot2d_Curve*>&  curveList,
                                                              int  groupsize,
-                                                             Plot2d_QwtPlotPicker* picker,
                                                              bool  displayLegend,
                                                              const QList< bool >& sides);
   

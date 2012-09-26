@@ -666,43 +666,6 @@ QString Plot2d_ViewFrame::getInfo( const QPoint& pnt )
 }
 
 /*!
- * Create markers and tooltips associated with curve points
- */
-void Plot2d_ViewFrame::createCurveTooltips( Plot2d_Curve *curve,
-                                            Plot2d_QwtPlotPicker *picker)
-{	
-  // Dans Plot2d.h : pointList == QList<Plot2d_Point> 
-  double x, y;
-  QString tooltip;
-
-  pointList points = curve->getPointList();
-  QColor    color  = curve->getColor();
-
-  // Point marker
-  QwtSymbol symbol;
-  symbol.setStyle(QwtSymbol::Ellipse);
-  symbol.setSize(1,1);
-  symbol.setPen( QPen(color));
-  symbol.setBrush( QBrush(color));
-
-  for (int ip=0; ip < points.count(); ip++)
-  {
-      x = points[ip].x;
-      y = points[ip].y;
-      tooltip = points[ip].text;
-
-      QwtPlotMarker *marker = myPlot->createMarkerAndTooltip( symbol,
-                                                              x,
-                                                              y,
-                                                              tooltip,
-                                                              picker);
-      // To deallocate in EraseAll()
-      myMarkerList.append( marker);
-  }
-}
-
-
-/*!
  * Display curves of the list of lists by systems and components
  * - the first level list contains NbSytems lists of second level
  * - a second level list contains NbComponents curves
@@ -714,7 +677,6 @@ void Plot2d_ViewFrame::createCurveTooltips( Plot2d_Curve *curve,
  * \return the list of underlying plot curve that defines the complex cuve at once. In case of success the vector is at least of size 1. The first one is the curve used by the legend.
  */
 QVector< QVector<QwtPlotCurve *> > Plot2d_ViewFrame::displayPlot2dCurveList( const QList< QList<Plot2d_Curve*> >& sysCoCurveList,
-                                                                             Plot2d_QwtPlotPicker*         picker,
                                                                              bool                          displayLegend,
                                                                              const QList< QList<bool> >&   sides)
 {
@@ -749,7 +711,7 @@ QVector< QVector<QwtPlotCurve *> > Plot2d_ViewFrame::displayPlot2dCurveList( con
   }
   // 2)- Display list curves by a component's curves group
   //     Draw connection segments (intermittent line) between the curves
-  QVector< QVector<QwtPlotCurve *> > ret=displayPlot2dCurveList( plot2dCurveCoSysList, nbSystem, picker, displayLegend, sidesList);
+  QVector< QVector<QwtPlotCurve *> > ret=displayPlot2dCurveList( plot2dCurveCoSysList, nbSystem, displayLegend, sidesList);
   // 3)- Size of graduations labels and texts under X axis
   QwtScaleWidget *wid = myPlot->axisWidget( QwtPlot::xBottom);
   wid->setTitle("  "); // to make the names readable under X axis.
@@ -770,7 +732,6 @@ QVector< QVector<QwtPlotCurve *> > Plot2d_ViewFrame::displayPlot2dCurveList( con
  */
 QVector< QVector<QwtPlotCurve *> > Plot2d_ViewFrame::displayPlot2dCurveList( const QList<Plot2d_Curve*>& curveList,
                                                                              int  groupSize,
-                                                                             Plot2d_QwtPlotPicker* picker,
                                                                              bool  displayLegend, const QList< bool >& sides)
 {
   // Consider the new legend's entries
@@ -914,9 +875,6 @@ QVector< QVector<QwtPlotCurve *> > Plot2d_ViewFrame::displayPlot2dCurveList( con
           // (Qwtplot)
           displayCurve(plot2dCurve);
 
-	  // Draw the points' markers and create the associated tooltips
-          //createCurveTooltips( plot2dCurve, picker);
-
           // Get the graphic curve
           QwtPlotCurve* plotCurve = dynamic_cast<QwtPlotCurve *>(getPlotObject(plot2dCurve));
           vectCurve[ig].push_back(plotCurve);
@@ -1051,9 +1009,6 @@ Plot2d_Curve* Plot2d_ViewFrame::createPlot2dCurve( QString & title,
           myPlot->insertLegend( (QwtLegend*)NULL);
         }
       displayCurve( plot2dCurve);
-
-      // plot points marker create associated tooltips
-      //createCurveTooltips( plot2dCurve, picker);
 
       // Get the graphical curve
       QwtPlotCurve* plotCurve = dynamic_cast<QwtPlotCurve *>( getPlotObject( plot2dCurve));

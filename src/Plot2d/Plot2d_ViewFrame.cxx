@@ -318,8 +318,10 @@ void Plot2d_ViewFrame::EraseAll()
   Plot2d_QwtPlotPicker *picker = myPlot->getPicker();
 
   // Clear points markers list and associations (marker,tooltip)
-  picker->pMarkers.clear();         // QList<QwtPlotMarker*>
-  picker->pMarkersToolTip.clear();  // QMap<QwtPlotMarker*, QwtText>
+  if ( picker ) {
+    picker->pMarkers.clear();         // QList<QwtPlotMarker*>
+    picker->pMarkersToolTip.clear();  // QMap<QwtPlotMarker*, QwtText>
+  }
 
   // 3)- Erase all QwtPlotCurve associated with the Plot2d_Curve
 
@@ -3021,8 +3023,10 @@ QwtPlotMarker* Plot2d_Plot2d::createMarkerAndTooltip( QwtSymbol symbol,
   QColor tooltipColor( 253, 245, 230);            // OldLace
   text.setBackgroundBrush( QBrush(tooltipColor)); //, Qt::SolidPattern));
   //
-  picker->pMarkers.append( aPlotMarker); 
-  picker->pMarkersToolTip[ aPlotMarker] = text;
+  if ( picker ) {
+    picker->pMarkers.append( aPlotMarker); 
+    picker->pMarkersToolTip[ aPlotMarker] = text;
+  }
   return aPlotMarker;
 }
 

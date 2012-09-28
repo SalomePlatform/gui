@@ -108,7 +108,7 @@ namespace
                    SALOME_Actor *theActor, 
                    vtkIdType theObjId)
   {
-    switch(theMode){
+    switch(theMode) {
     case CellSelection:
       return true;
     case EdgeSelection:
@@ -117,6 +117,15 @@ namespace
       return ( theActor->GetObjDimension( theObjId ) == 2 );
     case VolumeSelection:
       return ( theActor->GetObjDimension( theObjId ) == 3 );
+    case Elem0DSelection:        
+      return ((theActor->GetObjDimension( theObjId ) == 0) &&
+               theActor->GetElemCell(theObjId) && 
+              (theActor->GetElemCell(theObjId)->GetCellType() == VTK_VERTEX));
+    case BallSelection:
+      return ((theActor->GetObjDimension( theObjId ) == 0) &&
+               theActor->GetElemCell(theObjId) && 
+              (theActor->GetElemCell(theObjId)->GetCellType() == VTK_POLY_VERTEX));
+
     };
     return false;
   }
@@ -442,6 +451,8 @@ SALOME_Actor
       case EdgeSelection:
       case FaceSelection:
       case VolumeSelection:
+      case Elem0DSelection: 
+      case BallSelection: 
         myHighlightActor->GetProperty()->SetRepresentationToSurface();
         myHighlightActor->MapCells( this, aMapIndex );
         break;
@@ -538,6 +549,8 @@ SALOME_Actor
     case EdgeSelection:
     case FaceSelection:
     case VolumeSelection: 
+    case Elem0DSelection:        
+    case BallSelection: 
     {
       SVTK::TPickLimiter aPickLimiter( myCellPicker, this );
       myCellPicker->Pick( x, y, z, aRenderer );
@@ -675,6 +688,8 @@ SALOME_Actor
     case EdgeSelection:
     case FaceSelection:
     case VolumeSelection: 
+    case Elem0DSelection:        
+    case BallSelection: 
     {
       SVTK::TPickLimiter aPickLimiter( myCellPicker, this );
       myCellPicker->Pick( x, y, z, aRenderer );
@@ -798,6 +813,8 @@ SALOME_Actor
     case EdgeSelection:
     case FaceSelection:
     case VolumeSelection: 
+    case Elem0DSelection:        
+    case BallSelection: 
     {
       SVTK::TPickLimiter aPickLimiter( myCellRectPicker, this );
       myCellRectPicker->Pick( x1, y1, z1, x2, y2, z2, aRenderer );

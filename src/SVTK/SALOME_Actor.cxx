@@ -273,8 +273,8 @@ SALOME_Actor
 
   myRenderer = theRenderer;
 
-  theRenderer->AddActor( myPreHighlightActor.GetPointer() );
-  theRenderer->AddActor( myHighlightActor.GetPointer() );
+  myHighlightActor->AddToRender(theRenderer);
+  myPreHighlightActor->AddToRender(theRenderer);
   theRenderer->AddActor( myOutlineActor.GetPointer() );
   theRenderer->AddActor( myNameActor.GetPointer() );
 }
@@ -287,6 +287,9 @@ SALOME_Actor
 ::RemoveFromRender(vtkRenderer* theRenderer)
 {
   Superclass::RemoveFromRender(theRenderer);
+
+  myHighlightActor->RemoveFromRender(theRenderer);
+  myPreHighlightActor->RemoveFromRender(theRenderer);
 
   theRenderer->RemoveActor( myPreHighlightActor.GetPointer() );
   theRenderer->RemoveActor( myHighlightActor.GetPointer() );

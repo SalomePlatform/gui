@@ -749,3 +749,11 @@ void SVTK_DeviceActor::SetCoincident3DAllowed(bool theFlag) {
 bool SVTK_DeviceActor::IsCoincident3DAllowed() const {
   return myGeomFilter->GetAppendCoincident3D();
 }
+
+void
+SVTK_DeviceActor
+::SetResolveCoincidentTopology(bool theIsResolve)
+{
+  myIsResolveCoincidentTopology = theIsResolve;
+}
+  

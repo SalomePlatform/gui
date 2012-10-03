@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
+# Copyright (C) 2012  CEA/DEN, EDF R&D, OPEN CASCADE
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -17,19 +17,26 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-INCLUDE(FindQt4)
-INCLUDE(UseQt4)
-SET(QT_INCLUDE_DIRS ${QT_INCLUDES})
-SET(DIRS)
-FOREACH(D ${QT_INCLUDES})
-SET(DIRS ${DIRS} -I${D})
-ENDFOREACH(D ${QT_INCLUDES})
-SET(QT_INCLUDES ${DIRS}) # to be removed
-SET(QT_INCLUDES ${QT_INCLUDES} -DQT_THREAD_SUPPORT) # to be removed
-SET(QT_DEFINITIONS -DQT_THREAD_SUPPORT)
-SET(QT_MT_LIBS ${QT_LIBRARIES} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTWEBKIT_LIBRARY})
-SET(QT_LIBS ${QT_MT_LIBS})
-SET(qt4_ldflags ${QT_MT_LIBS})
-SET(QT_LIBS ${QT_MT_LIBS})
+#
+# Note that the plugins files should be installed in the directory
+# <salomepluginsdir> (ROOT_DIR/share/salome/plugins) or one of this
+# sub-directories (the search of plugins by the plugin manager is
+# recurcive from this folder, in each SALOME module, i.e. each
+# variable *_ROOT_DIR).  
+#
 
-FIND_PROGRAM(QT_LRELEASE_EXECUTABLE lrelease)
+INCLUDE(${KERNEL_ROOT_DIR}/salome_adm/cmake_files/SalomeMacros.cmake)
+
+SET(plugins_PYTHON
+  salome_plugins.py
+  smesh_plugins.py
+  trihedron.py
+  tubedialog_ui.py
+  tubedialog.py
+  tubebuilder.py
+  xalome.py
+  minmax_dialog.py
+  minmax_plugin.py
+)
+
+SALOME_INSTALL_SCRIPTS("${plugins_PYTHON}" ${GUI_salomepluginsdir}/demo DEF_PERMS)

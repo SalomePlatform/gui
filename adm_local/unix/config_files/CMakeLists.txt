@@ -1,5 +1,8 @@
 # Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
 #
+# Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
+# CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -14,22 +17,29 @@
 # License along with this library; if not, write to the Free Software
 # Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
 #
-# See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
-#
 
-INCLUDE(FindQt4)
-INCLUDE(UseQt4)
-SET(QT_INCLUDE_DIRS ${QT_INCLUDES})
-SET(DIRS)
-FOREACH(D ${QT_INCLUDES})
-SET(DIRS ${DIRS} -I${D})
-ENDFOREACH(D ${QT_INCLUDES})
-SET(QT_INCLUDES ${DIRS}) # to be removed
-SET(QT_INCLUDES ${QT_INCLUDES} -DQT_THREAD_SUPPORT) # to be removed
-SET(QT_DEFINITIONS -DQT_THREAD_SUPPORT)
-SET(QT_MT_LIBS ${QT_LIBRARIES} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTWEBKIT_LIBRARY})
-SET(QT_LIBS ${QT_MT_LIBS})
-SET(qt4_ldflags ${QT_MT_LIBS})
-SET(QT_LIBS ${QT_MT_LIBS})
-
-FIND_PROGRAM(QT_LRELEASE_EXECUTABLE lrelease)
+SET(dist_admlocalm4_DATA
+  check_disable_Corba.m4
+  check_GLViewer.m4
+  check_GUI.m4
+  check_msg2qm.m4
+  check_OCCViewer.m4
+  check_opengl.m4
+  check_Plot2dViewer.m4
+  check_PyConsole.m4
+  check_pyqt.m4
+  check_qt.m4
+  check_qwt.m4
+  check_SalomeObject.m4
+  check_sip.m4
+  check_SupervGraphViewer.m4
+  check_VTKViewer.m4
+  check_QxGraphViewer.m4
+  check_TestRecorder.m4
+  check_salome_version.m4
+)
+            
+FOREACH(f ${dist_admlocalm4_DATA})
+  SET(DEST adm_local/unix/config_files)
+  INSTALL(FILES ${f} DESTINATION ${DEST})
+ENDFOREACH(f ${dist_admlocalm4_DATA})

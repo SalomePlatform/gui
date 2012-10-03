@@ -1,4 +1,4 @@
-# Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
+# Copyright (C) 2012  CEA/DEN, EDF R&D, OPEN CASCADE
 #
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
@@ -17,19 +17,22 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-INCLUDE(FindQt4)
-INCLUDE(UseQt4)
-SET(QT_INCLUDE_DIRS ${QT_INCLUDES})
-SET(DIRS)
-FOREACH(D ${QT_INCLUDES})
-SET(DIRS ${DIRS} -I${D})
-ENDFOREACH(D ${QT_INCLUDES})
-SET(QT_INCLUDES ${DIRS}) # to be removed
-SET(QT_INCLUDES ${QT_INCLUDES} -DQT_THREAD_SUPPORT) # to be removed
-SET(QT_DEFINITIONS -DQT_THREAD_SUPPORT)
-SET(QT_MT_LIBS ${QT_LIBRARIES} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTWEBKIT_LIBRARY})
-SET(QT_LIBS ${QT_MT_LIBS})
-SET(qt4_ldflags ${QT_MT_LIBS})
-SET(QT_LIBS ${QT_MT_LIBS})
+INCLUDE_DIRECTORIES(
+  ${PTHREAD_INCLUDE_DIRS}
+  ${KERNEL_ROOT_DIR}/include/salome
+)
 
-FIND_PROGRAM(QT_LRELEASE_EXECUTABLE lrelease)
+SET(COMMON_FLAGS "${PLATFORM_DEFINITIONS}")
+SET(COMMON_LIBS ${OGL_LIBS} ${SALOMELocalTrace})
+
+ADD_LIBRARY(OpenGLUtils SHARED OpenGLUtils_FrameBuffer.cxx)
+SET_TARGET_PROPERTIES(OpenGLUtils PROPERTIES COMPILE_FLAGS "${COMMON_FLAGS}")
+TARGET_LINK_LIBRARIES(OpenGLUtils ${COMMON_LIBS})
+INSTALL(TARGETS OpenGLUtils DESTINATION ${GUI_salomelib_LIBS})
+
+SET(COMMON_HEADERS_H 
+  OpenGLUtils.h
+  OpenGLUtils_FrameBuffer.h
+)
+
+INSTALL(FILES ${COMMON_HEADERS_H} DESTINATION ${GUI_salomeinclude_HEADERS})

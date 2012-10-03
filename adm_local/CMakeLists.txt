@@ -1,5 +1,8 @@
 # Copyright (C) 2007-2012  CEA/DEN, EDF R&D, OPEN CASCADE
 #
+# Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
+# CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
+#
 # This library is free software; you can redistribute it and/or
 # modify it under the terms of the GNU Lesser General Public
 # License as published by the Free Software Foundation; either
@@ -17,19 +20,5 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-INCLUDE(FindQt4)
-INCLUDE(UseQt4)
-SET(QT_INCLUDE_DIRS ${QT_INCLUDES})
-SET(DIRS)
-FOREACH(D ${QT_INCLUDES})
-SET(DIRS ${DIRS} -I${D})
-ENDFOREACH(D ${QT_INCLUDES})
-SET(QT_INCLUDES ${DIRS}) # to be removed
-SET(QT_INCLUDES ${QT_INCLUDES} -DQT_THREAD_SUPPORT) # to be removed
-SET(QT_DEFINITIONS -DQT_THREAD_SUPPORT)
-SET(QT_MT_LIBS ${QT_LIBRARIES} ${QT_QTXML_LIBRARY} ${QT_QTOPENGL_LIBRARY} ${QT_QTWEBKIT_LIBRARY})
-SET(QT_LIBS ${QT_MT_LIBS})
-SET(qt4_ldflags ${QT_MT_LIBS})
-SET(QT_LIBS ${QT_MT_LIBS})
-
-FIND_PROGRAM(QT_LRELEASE_EXECUTABLE lrelease)
+ADD_SUBDIRECTORY(unix)
+ADD_SUBDIRECTORY(cmake_files)

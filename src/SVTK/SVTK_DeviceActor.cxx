@@ -756,4 +756,3 @@ SVTK_DeviceActor
 {
   myIsResolveCoincidentTopology = theIsResolve;
 }
-  

@@ -389,6 +389,42 @@ QString Qtx::extension( const QString& path, const bool full )
 }
 
 /*!
+  \brief Return path to file relative to theBase directory.
+
+  \param theBase path to base directory
+  \param theFileName  the file name
+  \return relative file path
+*/
+QString Qtx::relativePath( const QString& theBase, const QString& theFileName )
+{
+  QString aCanBase;
+  QFileInfo aBaseFInfo( theBase );
+  if( aBaseFInfo.exists() )
+    aCanBase = aBaseFInfo.canonicalFilePath();
+  else
+    aCanBase = QDir::cleanPath(theBase);
+  QFileInfo aFInfo(theFileName);
+  QString aCanFileName = QDir::cleanPath(theFileName);
+  QDir aDir(aCanBase);
+  return aDir.relativeFilePath( aCanFileName );
+}
+
+/*!
+  \brief Return avsolute path.
+
+  \param theBase path to base directory
+  \param theFile  the file name
+  \return absolute file path
+*/
+QString Qtx::absolutePath( const QString& theBase, const QString& theFile )
+{
+  QFileInfo aFInfo( theBase, theFile );
+  QString aPath = QDir::cleanPath( aFInfo.filePath() );
+  QFileInfo aCleanFInfo(aPath);
+  return aCleanFInfo.canonicalFilePath();  
+}
+
+/*!
   \brief Convert the given parameter to the platform-specific library name.
 
   The function appends platform-specific prefix (lib) and suffix (.dll/.so)

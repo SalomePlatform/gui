@@ -205,21 +205,6 @@ void QtxPathEdit::setValidator( QValidator* v )
 */
 void QtxPathEdit::setBasePath( const QString& theBasePath )
 {
-  if( myBasePath.isEmpty() && !theBasePath.isEmpty() ){
-//Switch to relative path editor
-    QString aNewPath = Qtx::relativePath( theBasePath, myPath->text() );
-    myPath->setText( aNewPath );
-  }
-  if( !myBasePath.isEmpty() && theBasePath.isEmpty() ){
-//Switch to absolute path editor
-    QString aNewPath = Qtx::relativePath( theBasePath, myPath->text() );
-    myPath->setText( aNewPath );
-  }
-  if( !myBasePath.isEmpty() && !theBasePath.isEmpty() ){
-    QString anAbsPath = Qtx::absolutePath( myBasePath, myPath->text() );
-    QString aNewPath = Qtx::relativePath( theBasePath, anAbsPath );
-    myPath->setText( aNewPath );
-  }
   myBasePath = theBasePath;
 }
 

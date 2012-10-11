@@ -122,7 +122,7 @@ void Plot2d_Curve::updatePlotItem( QwtPlotItem* theItem )
                                  QPen( getColor() ), 
                                  QSize( myMarkerSize, myMarkerSize ) ) );
   aCurve->setSamples( horData(), verData(), nbPoints() );
-  //aCurve->setLegendAttribute( QwtPlotCurve::LegendShowSymbol,true );//ema:TODO
+  aCurve->setLegendAttribute( QwtPlotCurve::LegendShowSymbol, true );
 }
 
 /*!

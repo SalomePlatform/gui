@@ -154,6 +154,9 @@ public:
   void           getFitRangeByCurves( double&, double&, double&, double&,
 				      double&, double& );
 
+  void           getFitRangeByMarkers(double&, double&, double&, double&,
+                                      double&, double& );
+
   void              addAnalyticalCurve( Plot2d_AnalyticalCurve* );
   void              removeAnalyticalCurve( Plot2d_AnalyticalCurve* );
   void              updateAnalyticalCurve( Plot2d_AnalyticalCurve*, bool = false );

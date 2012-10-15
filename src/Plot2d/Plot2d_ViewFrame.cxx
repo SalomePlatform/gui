@@ -1411,6 +1411,7 @@ void Plot2d_ViewFrame::fitAll()
 
   double xmin, xmax, y1min, y1max, y2min, y2max;
   getFitRangeByCurves(xmin, xmax, y1min, y1max, y2min, y2max);
+  getFitRangeByMarkers(xmin, xmax, y1min, y1max, y2min, y2max);
 
   myPlot->setAxisScale( QwtPlot::xBottom, xmin, xmax );
   myPlot->setAxisScale( QwtPlot::yLeft, y1min, y1max );
@@ -1547,6 +1548,62 @@ void Plot2d_ViewFrame::getFitRangeByCurves(double& xMin,  double& xMax,
       y2Max = y2Max == 0. ?  1  : y2Max + y2Max/10.;
     }
   }
+  // default values
+  if ( emptyV1 && emptyV2 ) {
+    xMin = isModeHorLinear() ? 0.    : 1.;
+    xMax = isModeHorLinear() ? 1000. : 1e5;
+  }
+  if ( emptyV1  ) {
+    yMin = isModeVerLinear() ? 0.    : 1.;
+    yMax = isModeVerLinear() ? 1000. : 1e5;
+  }
+  if ( emptyV2  ) {
+    y2Min = isModeVerLinear() ? 0.    : 1.;
+    y2Max = isModeVerLinear() ? 1000. : 1e5;
+  }
+}
+
+/*!
+  Gets current fit ranges by Markers
+  All parameters are inout.
+*/
+void Plot2d_ViewFrame::getFitRangeByMarkers(double& xMin,  double& xMax,
+                                            double& yMin,  double& yMax,
+                                            double& y2Min, double& y2Max)
+{
+  Plot2d_QwtPlotPicker *picker=myPlot->getPicker();
+  if(!picker)
+    return;
+  if(picker->pMarkers.empty())
+    return;
+  bool emptyV1 = true, emptyV2 = true;
+  foreach(QwtPlotMarker *mrker,picker->pMarkers)
+    {
+      bool isV2 = mrker->yAxis() == QwtPlot::yRight;
+      isV2 ? emptyV2 = false : emptyV1 = false;
+      xMin = qMin( xMin, mrker->xValue() );
+      xMax = qMax( xMax, mrker->xValue() );
+      if ( isV2 ) {
+        y2Min = qMin( y2Min, mrker->yValue() );
+        y2Max = qMax( y2Max, mrker->yValue() );
+      }
+      else {
+        yMin = qMin( yMin, mrker->yValue() );
+        yMax = qMax( yMax, mrker->yValue() );
+      }
+      if ( xMin == xMax ) {
+        xMin = xMin == 0. ? -1. : xMin - xMin/10.;
+        xMax = xMax == 0. ?  1. : xMax + xMax/10.;
+      }
+      if ( yMin == yMax ) {
+        yMin = yMin == 0. ? -1. : yMin - yMin/10.;
+        yMax = yMax == 0. ?  1  : yMax + yMax/10.;
+      }
+      if ( y2Min == y2Max ) {
+        y2Min = y2Min == 0. ? -1. : y2Min - y2Min/10.;
+        y2Max = y2Max == 0. ?  1  : y2Max + y2Max/10.;
+      }
+    }
   // default values
   if ( emptyV1 && emptyV2 ) {
     xMin = isModeHorLinear() ? 0.    : 1.;

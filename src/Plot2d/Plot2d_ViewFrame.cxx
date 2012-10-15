@@ -4270,28 +4270,28 @@ Plot2d_QwtPlotPicker::~Plot2d_QwtPlotPicker()
  */
 QwtText Plot2d_QwtPlotPicker::trackerText( const QwtDoublePoint & pos ) const
 {
-  for (QList<QwtPlotMarker* >::const_iterator pMarkerIt = pMarkers.begin();
-                                              pMarkerIt != pMarkers.end();
-                                              ++pMarkerIt )
-  {
+  for (QList<QwtPlotMarker* >::const_iterator pMarkerIt = pMarkers.begin();pMarkerIt != pMarkers.end(); ++pMarkerIt )
+    {
       QwtPlotMarker* pMarker = *pMarkerIt;
       if ( pMarker != NULL )
-      {
-          QwtDoubleRect  bound0        = pMarker->boundingRect();
-          QwtDoublePoint center_bound0 = bound0.center();
-          double left = center_bound0.x()-(BOUND_HV_SIZE/2.);
-          double top  = center_bound0.y()-(BOUND_HV_SIZE/2.);
-	  
-          QwtDoubleRect  bound( left, top , BOUND_HV_SIZE, BOUND_HV_SIZE);
-	  
-          if( bound.contains(pos) )
-          {
-            //QString toolTip =  "X="  + QString::number( pMarker->xValue() )
-            //                 + " Y=" + QString::number( pMarker->yValue() );
-            return pMarkersToolTip[pMarker];
-          }
-      }	
+        {
+          const QwtSymbol &symb=pMarker->symbol();
+          const QSize& sz=symb.size();
+          const QwtScaleMap yMapRef=plot()->canvasMap(QwtPlot::yLeft);
+          const QwtScaleMap xMap=plot()->canvasMap(pMarker->xAxis());
+          const QwtScaleMap yMap=plot()->canvasMap(pMarker->yAxis());
+          QwtDoubleRect  bound0=pMarker->boundingRect();
+          QRect bound00=pMarker->transform(xMap,yMap,bound0);
+          QPoint toto(xMap.transform(pos.x()),yMapRef.transform(pos.y()));
+          bound00.setX(bound00.x()-sz.width());
+          bound00.setY(bound00.y()-sz.height());
+          bound00.setWidth(bound00.width()+sz.width());
+          bound00.setHeight(bound00.height()+sz.height());
+          if( bound00.contains(toto) )
+            {
+              return pMarkersToolTip[pMarker];
+            }
+        }
   }
-      
   return QwtText();      
 }

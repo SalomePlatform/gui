@@ -299,15 +299,6 @@ void Plot2d_ViewFrame::EraseAll()
       myIntermittentSegmentList.clear();
   }
   
-  // The graphic view's picker
-  Plot2d_QwtPlotPicker *picker = myPlot->getPicker();
-
-  // Clear points markers list and associations (marker,tooltip)
-  if ( picker ) {
-    picker->pMarkers.clear();         // QList<QwtPlotMarker*>
-    picker->pMarkersToolTip.clear();  // QMap<QwtPlotMarker*, QwtText>
-  }
-
   // 3)- Erase all QwtPlotCurve associated with the Plot2d_Curve
 
   int nbCur1 = myQwtPlotCurveList.size();

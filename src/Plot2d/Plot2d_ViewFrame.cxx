@@ -298,22 +298,7 @@ void Plot2d_ViewFrame::EraseAll()
       }
       myIntermittentSegmentList.clear();
   }
-
-  // 2)- Erase all curves points markers
-
-  int nbMark = myMarkerList.size();
-  if (nbMark > 0)
-  {
-      for (int imar=0; imar < nbMark; imar++)
-      {
-          QwtPlotMarker *marker = myMarkerList[imar];
-
-          marker->detach();  // erase in QwtPlot window
-          delete marker;
-      }
-      myMarkerList.clear();
-  }
-
+  
   // The graphic view's picker
   Plot2d_QwtPlotPicker *picker = myPlot->getPicker();
 

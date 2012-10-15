@@ -319,9 +319,6 @@ protected:
   // List of intermittent segments to connect curves
   QList<QwtPlotCurve*> myIntermittentSegmentList;
 
-  // List of markers associated with curves points
-  QList<QwtPlotMarker*> myMarkerList;
-
   // List of curves Plot2d_Curve
   QList<Plot2d_Curve*> myPlot2dCurveList;
 };

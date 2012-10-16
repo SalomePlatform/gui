@@ -57,7 +57,8 @@ salomeinclude_HEADERS =			\
 	SalomeApp_ExitDlg.h             \
 	SalomeApp_NoteBookDlg.h         \
 	SalomeApp_DoubleSpinBox.h       \
-	SalomeApp_IntSpinBox.h
+	SalomeApp_IntSpinBox.h		\
+	SalomeApp_Engine_i.h
 
 dist_libSalomeApp_la_SOURCES =			\
 	SalomeApp_Module.cxx			\
@@ -79,7 +80,8 @@ dist_libSalomeApp_la_SOURCES =			\
 	SalomeApp_ExitDlg.cxx                   \
 	SalomeApp_NoteBookDlg.cxx               \
 	SalomeApp_DoubleSpinBox.cxx             \
-	SalomeApp_IntSpinBox.cxx
+	SalomeApp_IntSpinBox.cxx		\
+	SalomeApp_Engine_i.cxx
 
 MOC_FILES =					\
 	SalomeApp_Application_moc.cxx		\

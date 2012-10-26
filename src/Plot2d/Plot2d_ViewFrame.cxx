@@ -2846,7 +2846,8 @@ public:
 */
 Plot2d_Plot2d::Plot2d_Plot2d( QWidget* parent )
   : QwtPlot( parent ),
-    myIsPolished( false )
+    myIsPolished( false ),
+    myPicker( 0 )
 {
   // Create alternative scales
   setAxisScaleDraw( QwtPlot::yLeft,   new Plot2d_ScaleDraw() );

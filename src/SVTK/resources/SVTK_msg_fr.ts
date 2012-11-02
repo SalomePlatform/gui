@@ -180,18 +180,6 @@
         <translation>Changer les paramètres de la vue</translation>
     </message>
     <message>
-        <source>MNU_SYNCHRONIZE_VIEW</source>
-        <translation>Synchroniser</translation>
-    </message>
-    <message>
-        <source>DSC_SYNCHRONIZE_VIEW</source>
-        <translation>Synchroniser la vue</translation>
-    </message>
-    <message>
-        <source>MNU_SYNC_NO_VIEW</source>
-        <translation>[ Pas de vue appropriée ]</translation>
-    </message>
-    <message>
         <source>MNU_SVTK_PARALLEL_MODE</source>
         <translation>Mode orthogonal</translation>
     </message>

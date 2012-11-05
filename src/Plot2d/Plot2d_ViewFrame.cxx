@@ -1576,11 +1576,9 @@ void Plot2d_ViewFrame::getFitRangeByMarkers(double& xMin,  double& xMax,
     return;
   if(picker->pMarkers.empty())
     return;
-  bool emptyV1 = true, emptyV2 = true;
   foreach(QwtPlotMarker *mrker,picker->pMarkers)
     {
       bool isV2 = mrker->yAxis() == QwtPlot::yRight;
-      isV2 ? emptyV2 = false : emptyV1 = false;
       xMin = qMin( xMin, mrker->xValue() );
       xMax = qMax( xMax, mrker->xValue() );
       if ( isV2 ) {
@@ -1604,19 +1602,6 @@ void Plot2d_ViewFrame::getFitRangeByMarkers(double& xMin,  double& xMax,
         y2Max = y2Max == 0. ?  1  : y2Max + y2Max/10.;
       }
     }
-  // default values
-  if ( emptyV1 && emptyV2 ) {
-    xMin = isModeHorLinear() ? 0.    : 1.;
-    xMax = isModeHorLinear() ? 1000. : 1e5;
-  }
-  if ( emptyV1  ) {
-    yMin = isModeVerLinear() ? 0.    : 1.;
-    yMax = isModeVerLinear() ? 1000. : 1e5;
-  }
-  if ( emptyV2  ) {
-    y2Min = isModeVerLinear() ? 0.    : 1.;
-    y2Max = isModeVerLinear() ? 1000. : 1e5;
-  }
 }
 
 /*!

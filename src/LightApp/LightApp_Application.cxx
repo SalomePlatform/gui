@@ -1290,7 +1290,7 @@ LogWindow* LightApp_Application::logWindow()
 PyConsole_Console* LightApp_Application::pythonConsole(const bool force)
 {
   QWidget* wid = dockWindow( WT_PyConsole );
-  if ( !wid and force==true) {
+  if ( !wid && force==true) {
     wid = getWindow(WT_PyConsole);
   }
   return qobject_cast<PyConsole_Console*>( wid );

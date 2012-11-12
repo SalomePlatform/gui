@@ -254,6 +254,7 @@ LightApp_Application::LightApp_Application()
 
   STD_TabDesktop* desk = new STD_TabDesktop();
   desk->setFullScreenAllowed(false);
+  desk->setMinimizeAllowed(false);
 
   setDesktop( desk );
 

@@ -22,7 +22,7 @@ be updated according to the functionality of the currently active component. In
 general, these menus contain all functional options of SALOME
 platform.</li>
 <li><b>Standard toolbar</b> - This toolbar contains standard actions
-that allow creating new or opening existing stusy, saving study, deleting
+that allow creating new or opening existing study, saving study, deleting
 objects etc.</li>
 <li><b>Components toolbar</b> - This toolbar allows activating
 components in SALOME platform.</li>

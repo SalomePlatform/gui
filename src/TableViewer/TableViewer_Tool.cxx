@@ -107,11 +107,13 @@ QString TableViewer_Tool::DoubleToQString( const double value,
     delete aBuf;
     std::string aNewResult = "";
     int aCounter = 0;
-    for ( int jj = aResultStr.size()-1; jj >=aWholePartStr.size(); --jj ) {
-      if ( aResultStr.at(jj) == '0' || aResultStr.at( jj ) == '.' )
-	aCounter++;
-      else
-        break;
+    if ( aResultStr.find( '.' ) != std::string::npos ) {
+      for ( int jj = aResultStr.size()-1; jj >=aWholePartStr.size(); --jj ) {
+        if ( aResultStr.at(jj) == '0' || aResultStr.at( jj ) == '.' )
+          aCounter++;
+        else
+          break;
+      }
     }
     for ( int ii = 0;  ii<aResultStr.size()-aCounter; ii++)
       aNewResult += aResultStr.at( ii );

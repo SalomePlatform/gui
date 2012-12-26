@@ -13,21 +13,21 @@ win32:QMAKE_MOC=$(QTDIR)\bin\moc.exe
 isEmpty( HEADERS ):HEADERS = *.h
 isEmpty( SOURCES ):SOURCES = *.cxx
 
-MOC_DIR = ../../../tmp/$$(CONFIG_ID)/moc
+MOC_DIR = $$(TMP_DIR)/moc
 
 unix {
-  OBJECTS_DIR = ../../../tmp/$$(CONFIG_ID)/obj
+  OBJECTS_DIR = $$(TMP_DIR)/obj
   contains( TEMPLATE, lib ) {
-    DESTDIR = ../../../SUIT/$(CONFIG_ID)/lib
+    DESTDIR = $(LIB_DIR)
   } else {
-    DESTDIR = ../../../SUIT/$(CONFIG_ID)/bin
+    DESTDIR = $(BIN_DIR)
   }
 
-  HEADERS_DIR = ../../../SUIT/$(CONFIG_ID)/include
+  HEADERS_DIR = $$(BUILD_DIR)/include
   INCLUDEPATH += $${HEADERS_DIR}
-  LIBS += -L../../../SUIT/$(CONFIG_ID)/lib
+  LIBS += -L$(LIB_DIR)
 
-  GUIResources = ../../../SUIT/$(CONFIG_ID)/resources
+  GUIResources = $(RES_DIR)
 
   includes.files = $$HEADERS
   includes.path = $${HEADERS_DIR}

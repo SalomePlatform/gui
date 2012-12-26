@@ -18,16 +18,16 @@ MOC_DIR = $$(TMP_DIR)/moc
 unix {
   OBJECTS_DIR = $$(TMP_DIR)/obj
   contains( TEMPLATE, lib ) {
-    DESTDIR = $(LIB_DIR)
+    DESTDIR = $$(LIB_DIR)
   } else {
-    DESTDIR = $(BIN_DIR)
+    DESTDIR = $$(BIN_DIR)
   }
 
   HEADERS_DIR = $$(BUILD_DIR)/include
   INCLUDEPATH += $${HEADERS_DIR}
   LIBS += -L$(LIB_DIR)
 
-  GUIResources = $(RES_DIR)
+  GUIResources = $$(RES_DIR)
 
   includes.files = $$HEADERS
   includes.path = $${HEADERS_DIR}

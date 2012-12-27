@@ -43,7 +43,7 @@ unix {
   install_resources.path = $$(TARGET_DIR)
   INSTALLS *= install_resources
 
-  install_config_run.files = ./run.config/*.*
+  install_config_run.files = $$(ROOT_DIR)/run.config/*.*
   install_config_run.path = $$(TARGET_DIR)
   INSTALLS *= install_config_run
 

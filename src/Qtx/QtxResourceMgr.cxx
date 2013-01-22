@@ -1091,8 +1091,11 @@ bool QtxResourceMgr::Format::save( Resources* res )
 
   Qtx::mkDir( Qtx::dir( res->myFileName ) );
 
+  QString name = res->myFileName;
   QtxResourceMgr* mgr = res->resMgr();
-  QString name = mgr ? mgr->userFileName( mgr->appName(), false ) : res->myFileName;
+  if( mgr && name.isEmpty() ) {
+    name = mgr->userFileName( mgr->appName(), false );
+  }
   return save( name, res->mySections );
 }
 
@@ -2236,6 +2239,37 @@ bool QtxResourceMgr::save()
     return true;
 
   return fmt->save( myResources[0] );
+}
+
+/*!
+  \brief Save all resources to a resource file with given name.
+  \param theFileName resources file name
+  \return \c true on success and \c false on error
+*/
+bool QtxResourceMgr::saveAs( const QString& theFileName )
+{
+  initialize( true );
+
+  Format* fmt = format( currentFormat() );
+  if ( !fmt )
+    return false;
+
+  if ( myResources.isEmpty() || !myHasUserValues )
+    return true;
+
+  Resources* allResources = myResources[0];
+  allResources->setFile( theFileName );
+  if( hasValue("import-export-settings", "exportable-sections") ){
+    QSet<QString> allSections = allResources->sections().toSet();
+    QString expSections;
+    value( "import-export-settings", "exportable-sections", expSections );
+    QSet<QString> exportSections = expSections.split(",").toSet();
+    QSet<QString> excludedSections = allSections.subtract( exportSections );
+    foreach( QString eachSection, excludedSections ) {
+      allResources->removeSection( eachSection );
+    }
+  }
+  return fmt->save( allResources );
 }
 
 /*!

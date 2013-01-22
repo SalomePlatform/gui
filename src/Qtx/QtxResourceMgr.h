@@ -156,6 +156,7 @@ public:
   bool             load();
   bool             import( const QString& );
   bool             save();
+  bool             saveAs( const QString& );
 
   QStringList      sections() const;
   QStringList      sections(const QRegExp&) const;

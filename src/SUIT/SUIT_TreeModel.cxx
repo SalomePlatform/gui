@@ -1078,7 +1078,8 @@ void SUIT_TreeModel::removeItem( SUIT_TreeModel::TreeItem* item )
 
   // Warning! obj can be deleted at this point!
 
-  SUIT_DataObject* parentObj = object( item->parent() );
+  TreeItem* parent=item->parent();
+  SUIT_DataObject* parentObj = object( parent );
   QModelIndex parentIdx = index( parentObj, 0 );
   int row = item->position();
 
@@ -1088,7 +1089,7 @@ void SUIT_TreeModel::removeItem( SUIT_TreeModel::TreeItem* item )
   if ( obj == root() )
     setRoot( 0 );
   else if ( item->parent() )
-    item->parent()->removeChild( item );
+    parent->removeChild( item );
 
   delete item;
 

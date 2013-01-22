@@ -63,7 +63,7 @@ public:
   SUIT_DataObject( SUIT_DataObject* = 0 );
   virtual ~SUIT_DataObject();
 
-  SUIT_DataObject*            root() const;
+  virtual SUIT_DataObject*    root() const;
   SUIT_DataObject*            lastChild() const;
   SUIT_DataObject*            firstChild() const;
 

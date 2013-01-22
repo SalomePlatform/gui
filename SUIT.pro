@@ -31,7 +31,8 @@ SUBDIRS = src/Qtx \
 	  src/Prs \
 	  src/SVTK \
           src/STD \
-          src/CAM
+          src/CAM \
+          src/OCCViewer
 
 #--------------------------------------------------------------------------------------
 unix {

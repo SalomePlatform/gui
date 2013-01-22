@@ -30,6 +30,7 @@
 #endif
 
 #include <QTreeView>
+#include <QHeaderView>
 
 class QTX_EXPORT QtxTreeView : public QTreeView
 {
@@ -93,6 +94,48 @@ private:
   bool     myKeySearchEnabled;
 
   friend class QtxTreeView::Header;
+};
+
+/*!
+  \class QtxTreeView::Header
+  \brief Custom tree view header class.
+  \internal
+*/
+
+class QtxTreeView::Header : public QHeaderView
+{
+  Q_OBJECT
+public:
+  Header( const bool, QWidget* = 0 );
+  ~Header();
+
+  void         setSortMenuEnabled( const bool );
+  bool         sortMenuEnabled() const;
+
+  void         setSortingEnabled( const bool );
+  bool         sortingEnabled() const;
+  void         setMultiSortEnabled( const bool );
+  bool         multiSortEnabled() const;
+  void         setSortIndicators( const QVector<int>&, const QVector<Qt::SortOrder>& );
+  void         sortIndicators( QVector<int>&, QVector<Qt::SortOrder>& ) const;
+  void         clearSortIndicators();
+  bool         sortIndicatorsShown() const;
+
+  void         addMenuAction( QAction* );
+protected:
+  virtual void contextMenuEvent( QContextMenuEvent* );
+  virtual void paintSection( QPainter* painter, const QRect& rect, int logicalIndex ) const;
+
+private slots:
+  void         onSectionClicked( int logicalIndex );
+
+private:
+  typedef QMap<int, QAction*> ActionsMap;
+  bool                   myEnableSortMenu;
+  ActionsMap             myActions;
+  bool                   myEnableMultiSort;
+  QVector<int>           mySortSections;
+  QVector<Qt::SortOrder> mySortOrders;
 };
 
 #ifdef WIN32

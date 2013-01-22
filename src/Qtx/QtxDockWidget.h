@@ -23,8 +23,11 @@
 #define QTXDOCKWIDGET_H
 
 #include "Qtx.h"
-
 #include <QDockWidget>
+#include <QWindowsStyle>
+#include <QLabel>
+
+class QToolButton;
 
 class QTX_EXPORT QtxDockWidget : public QDockWidget
 {
@@ -77,5 +80,100 @@ private:
   Watcher*        myWatcher;       //!< watcher object
   Qt::Orientation myOrientation;   //!< dockable window orientation
 };
+
+/*!
+  \class QtxDockTitleStyle
+  \internal
+  \brief Internal class that implements customizable label style for a dock widget.
+*/
+class QtxDockTitleStyle : public QWindowsStyle
+{
+  Q_OBJECT
+
+public:
+  QtxDockTitleStyle( const bool& isVertical );
+  virtual ~QtxDockTitleStyle();
+
+  void   setVertical( const bool& isVertical );
+  bool   isVertical() const;
+
+  virtual void drawItemText( QPainter* painter, const QRect& rectangle,
+                      int alignment, const QPalette& palette,
+                      bool enabled, const QString& text,
+		      QPalette::ColorRole textRole = QPalette::NoRole ) const;
+private:
+  bool   m_bIsVertical;
+};
+
+/*!
+  \class QtxDockTitleLabel
+  \internal
+  \brief Internal class that implements customizable title label for a dock widget.
+*/
+class QtxDockTitleLabel : public QLabel
+{
+  Q_OBJECT
+public:
+
+  QtxDockTitleLabel( const QString& theText, QWidget* theParent );
+  virtual ~QtxDockTitleLabel();
+
+  void          setVertical( const bool& isVertical );
+  bool          isVertical() const;
+
+  virtual QSize sizeHint() const;
+  virtual QSize minimumSizeHint() const;
+
+private:
+  bool          m_bIsVertical;
+  bool          m_bIsModified;
+};
+
+/*!
+  \class QtxDockWidgetTitle
+  \internal
+  \brief Internal class that implements customizable title bar for a dock widget.
+
+  This is a convenient implementation of an application-defined title bar widget.
+  It contains a label with the window title, Undock and Close buttons by default, 
+  and any number of widgets can be inserted at required position into the title's QHBoxLayout.
+  Support for vertical title bar is not yet implemented.
+*/
+
+class QtxDockWidgetTitle : public QWidget
+{
+  Q_OBJECT
+
+public:
+
+  QtxDockWidgetTitle( QtxDockWidget* parent );
+  virtual ~QtxDockWidgetTitle();
+
+  QWidget*            widget( const int ) const;
+  int                 role( QWidget* ) const;
+
+  void                insertWidget( const int, QWidget* widget, const int = QtxDockWidget::Last );
+  void                removeWidget( const int );
+
+protected:
+  virtual void        paintEvent ( QPaintEvent* event );
+
+public slots:
+  virtual void        updateTitleBar();
+
+private:
+  void                initStyleOption( QStyleOptionDockWidget* ) const;
+  void                setupButton( QToolButton*, const int, QStyleOptionDockWidget*, QDockWidget* );
+  void                setLayout( const bool& );
+  void                fillLayout();
+
+
+private:
+  typedef QPair< int, QWidget* > RoleWidget;
+  typedef QList< RoleWidget > RoleWidgetList;
+
+  RoleWidgetList      myWidgets;
+};
+
 
 #endif // QTXDOCKWIDGET_H

@@ -103,6 +103,8 @@ public:
   //! Invokes application-specific "Select Directory" dialog and returns the selected directory name.
   virtual QString getDirectory( const QString& initial, const QString& caption, QWidget* parent ) = 0;
 
+  QAction*              action( const int ) const;
+
 signals:
   void                  applicationClosed( SUIT_Application* );
   void                  activated( SUIT_Application* );
@@ -151,7 +153,6 @@ protected:
   void                  setActionShown( const int, const bool );
 
   static QAction*       separator();
-  QAction*              action( const int ) const;
   int                   actionId( const QAction* ) const;
 
   QList<QAction*>       actions() const;

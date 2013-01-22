@@ -25,85 +25,69 @@
 #include <QApplication>
 #include <QHBoxLayout>
 #include <QVBoxLayout>
-#include <QLabel>
 #include <QLayout>
 #include <QMainWindow>
 #include <QResizeEvent>
 #include <QStyleOption>
 #include <QStylePainter>
 #include <QToolButton>
-#include <QWindowsStyle>
 
-/*!
-  \class QtxDockTitleStyle
-  \internal
-  \brief Internal class that implements customizable label style for a dock widget.
-*/
-class QtxDockTitleStyle : public QWindowsStyle
+QtxDockTitleStyle::QtxDockTitleStyle( const bool& isVertical )
+  : QWindowsStyle(), m_bIsVertical( isVertical )
 {
-  Q_OBJECT
-public:
-  QtxDockTitleStyle( const bool& isVertical ) : QWindowsStyle(), m_bIsVertical( isVertical ) {};
-  virtual ~QtxDockTitleStyle() {};
+}
 
-  void   setVertical( const bool& isVertical ) { m_bIsVertical = isVertical; }
-  bool   isVertical() const { return m_bIsVertical; }
+QtxDockTitleStyle::~QtxDockTitleStyle()
+{
+}
 
-  virtual void drawItemText( QPainter* painter, const QRect& rectangle,
+void QtxDockTitleStyle::setVertical( const bool& isVertical )
+{
+  m_bIsVertical = isVertical;
+}
+
+bool QtxDockTitleStyle::isVertical() const
+{
+  return m_bIsVertical;
+}
+
+void QtxDockTitleStyle::drawItemText( QPainter* painter, const QRect& rectangle,
                       int alignment, const QPalette& palette,
                       bool enabled, const QString& text,
-                      QPalette::ColorRole textRole = QPalette::NoRole ) const
-  {
-    QRect r = rectangle;
-    if ( isVertical() ) {
-      QSize s = r.size();
-      s.transpose();
-      r.setSize( s );
-      painter->save();
-      painter->translate( r.left(), r.top() + r.width() );
-      painter->rotate( -90 );
-      painter->translate( -r.left(), -r.top() );
-
-    }
-    QWindowsStyle::drawItemText( painter, r, alignment, palette,
-                                 enabled, text, textRole );
-    if ( isVertical() )
-      painter->restore();
-  }
-
-private:
-  bool   m_bIsVertical;
-};
-
-/*!
-  \class QtxDockTitleLabel
-  \internal
-  \brief Internal class that implements customizable title label for a dock widget.
-*/
-class QtxDockTitleLabel : public QLabel
+                      QPalette::ColorRole textRole ) const
 {
-  Q_OBJECT
-public:
+  QRect r = rectangle;
+  if ( isVertical() ) {
+    QSize s = r.size();
+    s.transpose();
+    r.setSize( s );
+    painter->save();
+    painter->translate( r.left(), r.top() + r.width() );
+    painter->rotate( -90 );
+    painter->translate( -r.left(), -r.top() );
+  }
+  QWindowsStyle::drawItemText( painter, r, alignment, palette,
+                               enabled, text, textRole );
+  if ( isVertical() )
+    painter->restore();
+}
 
-  QtxDockTitleLabel( const QString& theText, QWidget* theParent );
-  virtual ~QtxDockTitleLabel() {}
 
-  void          setVertical( const bool& isVertical );
-  bool          isVertical() const { return m_bIsVertical; }
-
-  virtual QSize sizeHint() const;
-  virtual QSize minimumSizeHint() const;
-
-private:
-  bool          m_bIsVertical;
-  bool          m_bIsModified;
-};
 
 
 QtxDockTitleLabel::QtxDockTitleLabel( const QString& theText, QWidget* theParent )
 : QLabel( theText, theParent ), m_bIsVertical( false ), m_bIsModified( false )
 {
   setStyle( new QtxDockTitleStyle( m_bIsVertical ) );
+}
+
+QtxDockTitleLabel::~QtxDockTitleLabel()
+{
+}
+
+bool QtxDockTitleLabel::isVertical() const
+{
+  return m_bIsVertical;
 }
 
 void QtxDockTitleLabel::setVertical( const bool& isVertical )
@@ -140,51 +124,7 @@ QSize QtxDockTitleLabel::minimumSizeHint() const
   return QSize( 0, 0 );
 }
 
-/*!
-  \class QtxDockWidgetTitle
-  \internal
-  \brief Internal class that implements customizable title bar for a dock widget.
 
-  This is a convenient implementation of an application-defined title bar widget.
-  It contains a label with the window title, Undock and Close buttons by default, 
-  and any number of widgets can be inserted at required position into the title's QHBoxLayout.
-  Support for vertical title bar is not yet implemented.
-*/
-
-class QtxDockWidgetTitle : public QWidget
-{
-  Q_OBJECT
-
-public:
-
-  QtxDockWidgetTitle( QtxDockWidget* parent );
-  virtual ~QtxDockWidgetTitle();
-
-  QWidget*            widget( const int ) const;
-  int                 role( QWidget* ) const;
-
-  void                insertWidget( const int, QWidget* widget, const int = QtxDockWidget::Last );
-  void                removeWidget( const int );
-
-protected:
-  virtual void        paintEvent ( QPaintEvent* event );
-
-public slots:
-  virtual void        updateTitleBar();
-
-private:
-  void                initStyleOption( QStyleOptionDockWidget* ) const;
-  void                setupButton( QToolButton*, const int, QStyleOptionDockWidget*, QDockWidget* );
-  void                setLayout( const bool& );
-  void                fillLayout();
-
-
-private:
-  typedef QPair< int, QWidget* > RoleWidget;
-  typedef QList< RoleWidget > RoleWidgetList;
-
-  RoleWidgetList      myWidgets;
-};
 
 static inline bool hasFeature(const QDockWidget *dockwidget, QDockWidget::DockWidgetFeature feature)
 { return (dockwidget->features() & feature) == feature; }
@@ -973,5 +913,3 @@ void QtxDockWidget::updateState()
   \brief Emitted when the dockable window orientation is changed.
   \param o new window orientation
 */
-
-#include <QtxDockWidget.moc>

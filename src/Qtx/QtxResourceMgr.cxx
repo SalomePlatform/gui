@@ -1071,11 +1071,14 @@ bool QtxResourceMgr::Format::load( Resources* res )
 
   QMap<QString, Section> sections;
   bool status = load( res->myFileName, sections );
-  if ( status )
-    res->mySections = sections;
-  else
+  if ( status ) {
+    QMap<QString, Section>::iterator it = sections.begin();
+    for ( ; it != sections.end(); it++ ) {
+      res->mySections.insert( it.key(), it.value() );
+    }
+  } else {
     qDebug() << "QtxResourceMgr: Can't load resource file:" << res->myFileName;
-
+  }
   return status;
 }
 
@@ -2257,8 +2260,16 @@ bool QtxResourceMgr::saveAs( const QString& theFileName )
   if ( myResources.isEmpty() || !myHasUserValues )
     return true;
 
-  Resources* allResources = myResources[0];
-  allResources->setFile( theFileName );
+  //Combine all resource in one with given filename
+  Resources* allResources = new Resources( this, theFileName );
+  QStringList sl = sections();
+  foreach ( QString sect, sl ) {
+    QStringList pl = parameters( sect );
+    foreach ( QString param, pl ){
+      allResources->setValue( sect, param, stringValue( sect, param ) );
+    }
+  }
+  //Filter sections that shouldn't be exported
   if( hasValue("import-export-settings", "exportable-sections") ){
     QSet<QString> allSections = allResources->sections().toSet();
     QString expSections;
@@ -2269,7 +2280,9 @@ bool QtxResourceMgr::saveAs( const QString& theFileName )
       allResources->removeSection( eachSection );
     }
   }
-  return fmt->save( allResources );
+  bool result = fmt->save( allResources );
+  delete allResources;
+  return result;
 }
 
 /*!

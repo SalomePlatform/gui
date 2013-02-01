@@ -473,6 +473,25 @@ void QtxSearchTool::setShortcuts( const QList<QKeySequence>& accels )
 }
 
 /*!
+  \brief Delete shortcut.
+  \param accel shortcut bindings to be deleted
+  \sa shortcuts()
+*/
+void QtxSearchTool::deleteShortcut( const QKeySequence& accel  )
+{
+  ShortcutList::Iterator it;
+  for ( it = myShortcuts.begin(); it != myShortcuts.end(); ++it )
+  {
+    if ( !(*it).isNull() )
+    {
+      QShortcut* sc = (*it);
+      if ( sc->key() == accel )
+        delete sc;
+    }
+  }
+}
+
+/*!
   \brief Add custom widget.
   \param w custom widget to be added
   \param id widget unique ID to be used (if < 0, automatically assigned)

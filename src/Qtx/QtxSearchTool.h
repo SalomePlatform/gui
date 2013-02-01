@@ -99,6 +99,7 @@ public:
   QList<QKeySequence> shortcuts() const;
   void                setShortcuts( const QKeySequence& );
   void                setShortcuts( const QList<QKeySequence>& );
+  void                deleteShortcut( const QKeySequence& );
 
   int                 addCustomWidget( QWidget*, int = -1 );
   QWidget*            customWidget( int ) const;

@@ -42,6 +42,9 @@ public:
   bool              isOpaqueResize() const;
   void              setOpaqueResize( bool );
 
+  bool              isResizerEnabled() const;
+  void              setResizerEnabled( bool );
+
   bool              isDockableMenuBar() const;
   void              setDockableMenuBar( const bool );
 
@@ -67,6 +70,8 @@ private:
   bool              myOpaque;
   Resizer*          myResizer;
   QMouseEvent*      myMouseMove;
+  
+  bool              myResizerEnabled;
 };
 
 #endif // QTXMAINWINDOW_H

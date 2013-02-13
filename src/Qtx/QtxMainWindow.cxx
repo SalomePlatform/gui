@@ -236,7 +236,8 @@ QtxMainWindow::QtxMainWindow( QWidget* parent, Qt::WindowFlags f )
   myStatusBar( 0 ),
   myOpaque( true ),
   myResizer( 0 ),
-  myMouseMove( 0 )
+  myMouseMove( 0 ),
+  myResizerEnabled( true )
 {
 }
 
@@ -354,6 +355,25 @@ void QtxMainWindow::setOpaqueResize( bool on )
 {
   myOpaque = on;
 }
+
+/*!
+  \brief Returns whether a resizer is enabled or not
+  \return boolean flag
+ */ 
+bool QtxMainWindow::isResizerEnabled() const
+{
+  return myResizerEnabled;
+}
+
+/*!
+  \brief Sets a flag that controls whether a resizer is enabled or not
+  \param on boolean flag
+ */ 
+void QtxMainWindow::setResizerEnabled( bool on )
+{
+  myResizerEnabled = on; 
+}
+   
 
 /*!
   \brief Dump main window geometry to the string.
@@ -564,7 +584,10 @@ bool QtxMainWindow::event( QEvent* e )
     QMouseEvent* me = static_cast<QMouseEvent*>( e );
     myResizer->setFinalEvent( new QMouseEvent( me->type(), me->pos(), me->globalPos(),
 					       me->button(), me->buttons(), me->modifiers() ) );
-    myResizer = 0;
+    if(myResizer) {
+      delete myResizer;					       
+      myResizer = 0;
+    }
     return true;
   }
 
@@ -595,7 +618,14 @@ bool QtxMainWindow::event( QEvent* e )
 	}
       if ( status ) {
 	QMouseEvent* me = static_cast<QMouseEvent*>( e );
-	myResizer = new Resizer( me->globalPos(), o, this );
+	if(myResizerEnabled)
+    	  myResizer = new Resizer( me->globalPos(), o, this );
+    	else {
+    	  if(myResizer) {
+    	    delete myResizer;
+    	    myResizer = 0;    
+    	  }
+    	}
       }
     }
   }

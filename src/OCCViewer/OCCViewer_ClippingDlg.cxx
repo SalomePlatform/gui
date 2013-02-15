@@ -71,8 +71,8 @@ OCCViewer_ClippingDlg::OCCViewer_ClippingDlg( OCCViewer_ViewWindow* view, QWidge
   /***************************************************************/
   GroupPoint = new QGroupBox( "GroupPoint", this );
   GroupPoint->setTitle( tr("Base point") );
-  GroupPoint->layout()->setSpacing( 0 );
-  GroupPoint->layout()->setMargin( 0 );
+  //GroupPoint->layout()->setSpacing( 0 );
+  //GroupPoint->layout()->setMargin( 0 );
   QGridLayout* GroupPointLayout = new QGridLayout( GroupPoint );
   GroupPointLayout->setAlignment( Qt::AlignTop );
   GroupPointLayout->setSpacing( 6 );
@@ -116,8 +116,8 @@ OCCViewer_ClippingDlg::OCCViewer_ClippingDlg( OCCViewer_ViewWindow* view, QWidge
   /***************************************************************/
   GroupDirection = new QGroupBox( "GroupDirection", this );
   GroupDirection->setTitle( tr("Direction") );
-  GroupDirection->layout()->setSpacing( 0 );
-  GroupDirection->layout()->setMargin( 0 );
+  //GroupDirection->layout()->setSpacing( 0 );
+  //GroupDirection->layout()->setMargin( 0 );
   QGridLayout* GroupDirectionLayout = new QGridLayout( GroupDirection );
   GroupDirectionLayout->setAlignment( Qt::AlignTop );
   GroupDirectionLayout->setSpacing( 6 );
@@ -166,8 +166,8 @@ OCCViewer_ClippingDlg::OCCViewer_ClippingDlg( OCCViewer_ViewWindow* view, QWidge
   
   /***************************************************************/
   QGroupBox* GroupButtons = new QGroupBox( "GroupButtons", this );
-  GroupButtons->layout()->setMargin( 0 );
-  GroupButtons->layout()->setSpacing( 0 ); 
+  //GroupButtons->layout()->setMargin( 0 );
+  //GroupButtons->layout()->setSpacing( 0 ); 
   QHBoxLayout* GroupButtonsLayout = new QHBoxLayout( GroupButtons );
   GroupButtonsLayout->setAlignment( Qt::AlignTop );
   GroupButtonsLayout->setMargin( 11 ); GroupButtonsLayout->setSpacing( 6 );

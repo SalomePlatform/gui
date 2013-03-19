@@ -28,9 +28,9 @@
 #include <qcursor.h>
 #include <QList>
 
+class QtxRectRubberBand;
 class SUIT_Desktop;
 class OCCViewer_ViewPort3d;
-
 class OCCViewer_ClippingDlg;
 
 #ifdef WIN32
@@ -46,7 +46,7 @@ public:
                       FRONTVIEW, BACKVIEW, TOPVIEW, BOTTOMVIEW, LEFTVIEW, RIGHTVIEW };
 
   OCCViewer_ViewWindow(SUIT_Desktop* theDesktop, OCCViewer_Viewer* theModel);
-	virtual ~OCCViewer_ViewWindow() {};
+  virtual ~OCCViewer_ViewWindow();
 
   OCCViewer_ViewPort3d* getViewPort() { return myViewPort; }
 
@@ -118,6 +118,7 @@ protected:
 
   void resetState();
   void drawRect();
+  void endDrawRect();
 
   void createActions();
   void createToolBar();
@@ -152,7 +153,7 @@ protected:
 private:
   OCCViewer_ClippingDlg* myClippingDlg;
   QtxAction* myClippingAction;
-  
+  QtxRectRubberBand* myRectBand; //!< selection rectangle rubber band  
 };
 
 #ifdef WIN32

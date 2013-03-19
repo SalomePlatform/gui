@@ -34,6 +34,7 @@
 
 #include <QtxActionToolMgr.h>
 #include <QtxMultiAction.h>
+#include <QtxRubberBand.h>
 
 #include <QToolBar>
 #include <QMouseEvent>
@@ -173,6 +174,12 @@ OCCViewer_ViewWindow::OCCViewer_ViewWindow(SUIT_Desktop* theDesktop, OCCViewer_V
   updateEnabledDrawMode();
   myClippingDlg = 0;
   myToolbarId = -1;
+  myRectBand = 0;
+}
+
+OCCViewer_ViewWindow::~OCCViewer_ViewWindow()
+{
+  endDrawRect();
 }
 
 /*!
@@ -457,7 +464,7 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent(QMouseEvent* theEvent)
     
   default:
     int aState = theEvent->modifiers();
-    int aButton = theEvent->button();
+    int aButton = theEvent->buttons();
     if ( aButton == Qt::LeftButton )
     {
       myDrawRect = myEnableDrawMode;
@@ -519,6 +526,7 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
 	    myCurrY = theEvent->y();
 	    QRect rect = SUIT_Tools::makeRect(myStartX, myStartY, myCurrX, myCurrY);
 	    if ( !rect.isEmpty() ) myViewPort->fitRect(rect);
+	    endDrawRect();
 	    resetState();
 	  }
     break;
@@ -530,6 +538,7 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
   if ( theEvent->button() == Qt::LeftButton && myDrawRect ) {
     myDrawRect = false;
     drawRect();
+    endDrawRect();
     resetState(); 
     myViewPort->update();
   }
@@ -564,14 +573,44 @@ void OCCViewer_ViewWindow::resetState()
 */
 void OCCViewer_ViewWindow::drawRect()
 {
-  QPainter aPainter(myViewPort);
-  aPainter.setCompositionMode( QPainter::RasterOp_SourceXorDestination );
-  aPainter.setPen(Qt::white);
+  if ( !myRectBand ) {
+    myRectBand = new QtxRectRubberBand( myViewPort );
+    //QPalette palette;
+    //palette.setColor(myRectBand->foregroundRole(), Qt::white);
+    //myRectBand->setPalette(palette);
+  }
+  //myRectBand->hide();
+
+  myRectBand->setUpdatesEnabled ( false );
   QRect aRect = SUIT_Tools::makeRect(myStartX, myStartY, myCurrX, myCurrY);
-  if ( !myRect.isEmpty() )
-	  aPainter.drawRect( myRect );
-  aPainter.drawRect(aRect);
-  myRect = aRect;
+  myRectBand->initGeometry( aRect );
+
+  if ( !myRectBand->isVisible() )
+    myRectBand->show();
+
+  myRectBand->setUpdatesEnabled ( true );
+  //myRectBand->repaint();
+
+  //myRectBand->setVisible( aRect.isValid() );
+  //if ( myRectBand->isVisible() )
+  //  myRectBand->repaint();
+  //else
+  //  myRectBand->show();
+  //myRectBand->repaint();
+}
+
+/*!
+  \brief Clear rubber band rectangle on the end on the dragging operation.
+*/
+void OCCViewer_ViewWindow::endDrawRect()
+{
+  //delete myRectBand;
+  //myRectBand = 0;
+  if ( myRectBand )
+    {
+      myRectBand->clearGeometry();
+      myRectBand->hide();
+    }
 }
 
 /*!

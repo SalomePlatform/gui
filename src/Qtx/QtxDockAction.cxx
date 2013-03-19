@@ -159,7 +159,11 @@ void QtxDockAction::dockWidgets( QList<QDockWidget*>& lst ) const
   for ( QList<QDockWidget*>::iterator it = dockwidgets.begin(); it != dockwidgets.end(); ++it )
   {
     QDockWidget* dw = *it;
-    if ( dw->parentWidget() == mw )
+    bool isOK = dw->parentWidget() == mw;
+    QVariant isAppropriate = dw->property( "appropriate" );
+    if( isAppropriate.isValid() && isAppropriate.type()==QVariant::Bool )
+      isOK = isAppropriate.toBool();
+    if( isOK )
       lst.append( dw );
   }
 }

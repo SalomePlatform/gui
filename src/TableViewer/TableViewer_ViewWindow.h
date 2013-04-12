@@ -31,9 +31,8 @@ class SUIT_Desktop;
 class Handle(HTMLService_HTMLTable);
 class QImage;
 class QFont;
-class QtxTable;
+class QtxTableInterface;
 class QToolBar;
-class QTableWidgetItem;
 class QItemSelection;
 
 class TABLEVIEWER_EXPORT TableViewer_ViewWindow: public SUIT_ViewWindow
@@ -44,7 +43,7 @@ public:
   TableViewer_ViewWindow( SUIT_Desktop* , TableViewer_Viewer* );
   ~TableViewer_ViewWindow();
 
-  QtxTable*           table() const;
+  QtxTableInterface*  table() const;
   QToolBar*           getToolBar() { return myToolBar; }
 
   virtual void        initLayout();
@@ -73,7 +72,7 @@ protected:
   virtual bool        canCopy( const int, const int );
   virtual bool        canPaste( const int, const int, const QString& );
 
-  virtual QtxTable*   createTable();
+  virtual QtxTableInterface* createTable();
   void                registerAction( const int, QtxAction* );
   QtxAction*          createAction( const int, const QString&, const QPixmap&, const QString&,
                                     const QString&, const int = 0, QObject* = 0 );
@@ -88,18 +87,21 @@ protected:
   QColor              foregroundColor( const ContentType, const int, const int ) const;
   QColor              backgroundColor( const ContentType, const int, const int ) const;
 
+  QVariant            value( const ContentType theType, const int theRow,
+                             const int theColumn, const int theRole ) const;
+
 protected slots:
   virtual void        selectionChanged();
   void                onActivated();
 
 public:
   typedef struct {
-    QString myText;
-    QColor  myBgCol;
-    QColor  myFgCol;
-    QFont   myFont;
-    int     myRow;
-    int     myCol;
+    QVariant myText;
+    QVariant myBgCol;
+    QVariant myFgCol;
+    QVariant myFont;
+    int      myRow;
+    int      myCol;
   } TableDataItem;
 
 protected:
@@ -108,7 +110,7 @@ protected:
   QList<TableDataItem> myCopyLst;
 
 private:
-  QtxTable*           myTable;
+  QtxTableInterface*  myTable;
   QToolBar*           myToolBar;
 };
 

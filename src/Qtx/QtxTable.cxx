@@ -644,6 +644,22 @@ QtxTable::~QtxTable()
   //delete myStyleWrapper;
 }
 
+/*!
+  Returns a table row count
+ */
+int QtxTable::rowCount() const
+{
+  return QTableWidget::rowCount();
+}
+
+/**
+ * Returns a table column count
+ */
+int QtxTable::columnCount() const
+{
+  return QTableWidget::columnCount();
+}
+
 bool QtxTable::isSelectAllEnabled() const
 {
   return true;//mySelectAll;
@@ -1127,19 +1143,29 @@ void QtxTable::setNumHeaders( const Qt::Orientation o, const int n )
   */
 }
 
-QVariant QtxTable::headerData( const Qt::Orientation o, const int section, const int role ) const
+/* Returns a table header value
+ * @param theSection
+ *   a header section
+ * @param theOrientation
+ *   a horizontal or vertical orientation
+ * @param theRole
+ *   a type of modification, that should be applyed to table
+ */
+QVariant QtxTable::headerData( const int theSection,
+                               const Qt::Orientation theOrientation,
+                               const int theRole ) const
 {
-  QVariant res;
+  QVariant aRes;
   if ( model() )
-    res = model()->headerData( section, o, role );
-  return res;
+    aRes = model()->headerData( theSection, theOrientation, theRole );
+  return aRes;
 }
 
 QFont QtxTable::headerFont( const Qt::Orientation o, const int section ) const
 {
   QFont res = o == Qt::Horizontal ? horizontalHeader()->font() :
                                     verticalHeader()->font();
-  QVariant aVar = headerData( o, section, Qt::FontRole );
+  QVariant aVar = headerData( section, o, Qt::FontRole );
   if ( aVar.isValid() && aVar.canConvert( QVariant::Font ) )
     res = aVar.value<QFont>();
   return res;
@@ -1148,7 +1174,7 @@ QFont QtxTable::headerFont( const Qt::Orientation o, const int section ) const
 QColor QtxTable::headerForeground( const Qt::Orientation o, const int section ) const
 {
   QColor res;
-  QVariant aVar = headerData( o, section, Qt::ForegroundRole );
+  QVariant aVar = headerData( section, o, Qt::ForegroundRole );
   if ( aVar.isValid() && aVar.canConvert( QVariant::Color ) )
     res = aVar.value<QColor>();
   return res;
@@ -1157,7 +1183,7 @@ QColor QtxTable::headerForeground( const Qt::Orientation o, const int section ) 
 QColor QtxTable::headerBackground( const Qt::Orientation o, const int section ) const
 {
   QColor res;
-  QVariant aVar = headerData( o, section, Qt::BackgroundRole );
+  QVariant aVar = headerData( section, o, Qt::BackgroundRole );
   if ( aVar.isValid() && aVar.canConvert( QVariant::Color ) )
     res = aVar.value<QColor>();
   return res;
@@ -1166,51 +1192,95 @@ QColor QtxTable::headerBackground( const Qt::Orientation o, const int section ) 
 QIcon QtxTable::headerIcon( const Qt::Orientation o, const int section ) const
 {
   QIcon res;
-  QVariant aVar = headerData( o, section, Qt::DecorationRole );
+  QVariant aVar = headerData( section, o, Qt::DecorationRole );
   if ( aVar.isValid() && aVar.canConvert( QVariant::Icon ) )
     res = aVar.value<QIcon>();
   return res;
 }
 
-void QtxTable::setHeaderData( const Qt::Orientation o, const int section, const QVariant& var,
-                              const int role )
+/* Sets a table header value
+ * @param theSection
+ *   a header section
+ * @param theOrientation
+ *   a horizontal or vertical orientation
+ * @param theValue
+ *   a value
+ * @param theRole
+ *   a type of modification, that should be applyed to table
+ */
+void QtxTable::setHeaderData( const int theSection,
+                              const Qt::Orientation theOrientation,
+                              const QVariant& theValue,
+                              const int theRole )
 {
   QTableWidgetItem* anItem = 0;
-  if ( o == Qt::Horizontal )
-    anItem = horizontalHeaderItem( section );
+  if ( theOrientation == Qt::Horizontal )
+    anItem = horizontalHeaderItem( theSection );
   else
-    anItem = verticalHeaderItem( section );
+    anItem = verticalHeaderItem( theSection );
 
   if ( anItem )
-    anItem->setData( role, var );
+    anItem->setData( theRole, theValue );
   else {
     anItem = new QTableWidgetItem();
-    anItem->setData( role, var );
-    if ( o == Qt::Horizontal )
-      setHorizontalHeaderItem( section, anItem );
+    anItem->setData( theRole, theValue );
+    if ( theOrientation == Qt::Horizontal )
+      setHorizontalHeaderItem( theSection, anItem );
     else
-      setVerticalHeaderItem( section, anItem );
+      setVerticalHeaderItem( theSection, anItem );
   }
 }
 
 void QtxTable::setHeaderFont( const Qt::Orientation o, const int section, const QFont& font )
 {
-  setHeaderData( o, section, QVariant( font ), Qt::FontRole );
+  setHeaderData( section, o, QVariant( font ), Qt::FontRole );
 }
 
 void QtxTable::setHeaderForeground( const Qt::Orientation o, const int section, const QColor& c )
 {
-  setHeaderData( o, section, QVariant( c ), Qt::ForegroundRole );
+  setHeaderData( section, o, QVariant( c ), Qt::ForegroundRole );
 }
 
 void QtxTable::setHeaderBackground( const Qt::Orientation o, const int section, const QColor& c )
 {
-  setHeaderData( o, section, QVariant( c ), Qt::BackgroundRole );
+  setHeaderData( section, o, QVariant( c ), Qt::BackgroundRole );
 }
 
 void QtxTable::setHeaderIcon( const Qt::Orientation o, const int section, const QIcon& icon )
 {
-  setHeaderData( o, section, QVariant( icon ), Qt::DecorationRole );
+  setHeaderData( section, o, QVariant( icon ), Qt::DecorationRole );
+}
+
+/*!
+ * Returns a table cell value
+ * @param theRow
+ *   a row position
+ * @param theColumn
+ *   a column position
+ * @param theRole
+ *   a type of modification, that should be applyed to table
+ */
+QVariant QtxTable::data( const int theRow, const int theColumn,
+                         const int theRole ) const
+{
+  QVariant aValue;
+  switch ( theRole ) {
+    case Qt::DisplayRole:
+      aValue = cellData( theRow, theColumn );
+    break;
+    case Qt::FontRole:
+      aValue = cellFont( theRow, theColumn );
+    break;
+    case Qt::ForegroundRole:
+      aValue = cellForeground( theRow, theColumn );
+    break;
+    case  Qt::BackgroundRole:
+      aValue = cellBackground( theRow, theColumn );
+    break;
+    default:
+    break;
+  }
+  return aValue;
 }
 
 QVariant QtxTable::cellData( const int row, const int col ) const
@@ -1259,6 +1329,52 @@ QIcon QtxTable::cellIcon( const int row, const int col ) const
     res = anItem->icon();
   
   return res;
+}
+
+/*!
+ * Set the value into a table cell
+ * @param theRow
+ *   a row position
+ * @param theColumn
+ *   a column position
+ * @param theValue
+ *   a value
+ * @param theRole
+ *   a type of modification, that should be applyed to table
+ */
+void QtxTable::setData( const int theRow, const int theColumn,
+                        const QVariant& theValue, const int theRole )
+{
+  // to check the best solution:
+  if ( false ) {
+  QTableWidgetItem* anItem = getItem( theRow, theColumn );
+  if ( anItem ) {
+    anItem->setData( theRole, theValue );
+  }
+  }
+
+  switch ( theRole ) {
+    case Qt::DisplayRole:
+      setCellData( theRow, theColumn, theValue );
+    break;
+    case Qt::FontRole: {
+      if ( theValue.isValid() && theValue.canConvert( QVariant::Font ) )
+        setCellFont( theRow, theColumn, theValue.value<QFont>() );
+    }
+    break;
+    case Qt::ForegroundRole: {
+      if ( theValue.isValid() && theValue.canConvert( QVariant::Font ) )
+        setCellForeground( theRow, theColumn, theValue.value<QColor>() );
+    }
+    break;
+    case  Qt::BackgroundRole: {
+      if ( theValue.isValid() && theValue.canConvert( QVariant::Font ) )
+        setCellBackground( theRow, theColumn, theValue.value<QColor>() );
+    }
+    break;
+    default:
+    break;
+  }
 }
 
 void QtxTable::setCellData( const int row, const int col, const QVariant& val )
@@ -1319,7 +1435,15 @@ QTableWidgetItem* QtxTable::getItem( const int row, const int col, const bool cr
   return anItem;
 }
 
-QModelIndexList QtxTable::getSelectedIndexes()
+/*!
+ * Returns the table selection model
+ */
+QItemSelectionModel* QtxTable::selectionModel() const
+{
+  return QTableWidget::selectionModel();
+}
+
+QModelIndexList QtxTable::getSelectedIndexes() const
 {
   return selectedIndexes();
 }

@@ -32,8 +32,9 @@
 #include <HTMLService_HTMLTableCell.hxx>
 
 #include <QtxToolBar.h>
-
 #include <QtxTable.h>
+#include <QtxTableInterface.h>
+
 #include <QImage>
 #include <QPixmap>
 #include <QApplication>
@@ -50,34 +51,6 @@ TableViewer_ViewWindow::TableViewer_ViewWindow( SUIT_Desktop* theDesktop,
 {
   myModel = theModel;
   myToolBar = new QtxToolBar( true, tr("LBL_TOOLBAR_LABEL"), this );
-
-  // fill table
-  /*
-  myTable->setColumnCount(3);
-  myTable->setRowCount(5);
-  myTable->setCellBackground( 1, 1, Qt::red );
-  myTable->setCellForeground( 1, 1, Qt::blue );
-  QFont aFont = myTable->font();
-  aFont.setItalic( true );
-  myTable->setCellFont( 1, 1, aFont );
-  myTable->setCellFont( 0, 0, aFont );
-
-  aFont.setUnderline( true );
-  myTable->setCellFont( 0, 1, aFont );
-
-  myTable->setCellBackground( 2, 2, myTable->cellBackground( 1, 1 ) );
-  myTable->setCellForeground( 2, 2, myTable->cellForeground( 1, 1 ) );
-  aFont = myTable->cellFont( 1, 1 );
-  myTable->setCellFont( 2, 2, aFont );
-  myTable->setCellBackground( 0, 1, myTable->cellBackground( 0, 0 ) );
-
-  myTable->setHeaderData( Qt::Horizontal, 1, "Caption");
-  myTable->setHeaderBackground( Qt::Horizontal, 1, Qt::green );
-  myTable->setHeaderFont(Qt::Horizontal, 0, aFont );
-
-  myTable->setHeaderFont(Qt::Vertical, 4, myTable->headerFont( Qt::Horizontal, 0 ) );
-  //backgroundColor( HorizontalHeader, 1, 1 ) );
-  */
 }
 
 /*!
@@ -87,7 +60,7 @@ TableViewer_ViewWindow::~TableViewer_ViewWindow()
 {
 }
 
-QtxTable* TableViewer_ViewWindow::table() const
+QtxTableInterface* TableViewer_ViewWindow::table() const
 {
   return myTable;
 }
@@ -99,7 +72,9 @@ QtxTable* TableViewer_ViewWindow::table() const
 void TableViewer_ViewWindow::initLayout()
 {
   myTable = createTable();
-  setCentralWidget( myTable );
+  QWidget* aWidget = dynamic_cast<QWidget*>( myTable );
+  if ( aWidget )
+    setCentralWidget( aWidget );
 
   createActions();
   createToolBar();
@@ -107,7 +82,8 @@ void TableViewer_ViewWindow::initLayout()
 
 QImage TableViewer_ViewWindow::dumpView()
 {
-  return QPixmap::grabWidget( table() ).toImage();
+  QWidget* aWidget = dynamic_cast<QWidget*>( table() );
+  return aWidget ? QPixmap::grabWidget( aWidget ).toImage() : QImage();
   //return QPixmap::grabWindow( table()->winId() ).toImage();
 }
 
@@ -172,21 +148,8 @@ int TableViewer_ViewWindow::numCols( const ContentType type ) const
 
 QString TableViewer_ViewWindow::text( const ContentType type, const int row, const int col ) const
 {
-  QString aTxt = "";
-  switch ( type ) {
-    case VerticalHeader:
-      aTxt = myTable->headerData( Qt::Vertical, row ).toString();
-      break;
-    case HorizontalHeader:
-      aTxt = myTable->headerData( Qt::Horizontal, col ).toString();
-      break;
-    case Cells:
-      aTxt = myTable->cellData( row, col ).toString();
-      break;
-    default:
-      break;
-  }
-  return aTxt;
+  QVariant aValue = value( type, row, col, Qt::DisplayRole );
+  return aValue.isValid() ? aValue.toString() : "";
 }
 
 QString TableViewer_ViewWindow::image( const ContentType, const int, const int ) const
@@ -194,21 +157,18 @@ QString TableViewer_ViewWindow::image( const ContentType, const int, const int )
   return "";
 }
 
-QFont TableViewer_ViewWindow::font( const ContentType type, const int row, const int col ) const
+QFont TableViewer_ViewWindow::font( const ContentType type, const int row,
+                                    const int col ) const
 {
-  QFont aFont = myTable->font();
-  switch ( type ) {
-    case VerticalHeader:
-      aFont = myTable->headerFont( Qt::Vertical, row );
-      break;
-    case HorizontalHeader:
-      aFont = myTable->headerFont( Qt::Horizontal, col );
-      break;
-    case Cells:
-      aFont = myTable->cellFont( row, col );
-      break;
-    default:
-      break;
+  QVariant aValue = value( type, row, col, Qt::FontRole );
+
+  QFont aFont;
+  if ( aValue.isValid() && aValue.canConvert( QVariant::Font ) )
+    aFont = aValue.value<QFont>();
+  else {
+    QWidget* aWidget = dynamic_cast<QWidget*>( myTable );
+    if ( aWidget )
+      aFont = aWidget->font();
   }
   return aFont;
 }
@@ -233,43 +193,46 @@ int TableViewer_ViewWindow::fontFlags( const ContentType type, const int row, co
 QColor TableViewer_ViewWindow::foregroundColor( const ContentType type, const int row,
                                                 const int col ) const
 {
+  QVariant aValue = value( type, row, col, Qt::ForegroundRole );
+
   QColor aColor;
-  switch ( type ) {
-    case VerticalHeader:
-    case HorizontalHeader: {
-      bool aHor = type == HorizontalHeader;
-      aColor = myTable->headerForeground( aHor ? Qt::Horizontal : Qt::Vertical,
-                                          aHor ? col : row );
-    }
-      break;
-    case Cells:
-      aColor = myTable->cellForeground( row, col );
-      break;
-    default:
-      break;
-  }
+  if ( aValue.isValid() && aValue.canConvert( QVariant::Color ) )
+    aColor = aValue.value<QColor>();
+
   return aColor;
 }
 
 QColor TableViewer_ViewWindow::backgroundColor( const ContentType type, const int row,
                                                 const int col ) const
 {
+  QVariant aValue = value( type, row, col, Qt::BackgroundRole );
+
   QColor aColor;
-  switch ( type ) {
+  if ( aValue.isValid() && aValue.canConvert( QVariant::Color ) )
+    aColor = aValue.value<QColor>();
+  return aColor;
+}
+
+QVariant TableViewer_ViewWindow::value( const ContentType theType, const int theRow,
+                                        const int theColumn, const int theRole ) const
+{
+  QVariant aValue;
+  switch ( theType ) {
     case VerticalHeader:
     case HorizontalHeader: {
-      bool aHor = type == HorizontalHeader;
-      aColor = myTable->headerBackground( aHor ? Qt::Horizontal : Qt::Vertical,
-                                          aHor ? col : row );
-      }
-      break;
+      bool aHor = theType == HorizontalHeader;
+      aValue = myTable->headerData( aHor ? theColumn : theRow,
+                                    aHor ? Qt::Horizontal : Qt::Vertical,
+                                    theRole );
+    }
+    break;
     case Cells:
-      aColor = myTable->cellBackground( row, col );
+      aValue = myTable->data( theRow, theColumn, theRole );
       break;
     default:
       break;
   }
-  return aColor;
+  return aValue;
 }
 
 void TableViewer_ViewWindow::createToolBar()
@@ -326,9 +289,20 @@ QtxAction* TableViewer_ViewWindow::createAction( const int id, const QString& me
 
 void TableViewer_ViewWindow::selectionChanged()
 {
-  bool anEnable = myTable->getSelectedIndexes().count() > 0;
-  myActionsMap[CopyId]->setEnabled( anEnable );
-  myActionsMap[PasteId]->setEnabled( anEnable && myCopyLst.count() > 0 );
+  QModelIndexList anItems = myTable->getSelectedIndexes();
+  bool anEnable = anItems.count() > 0;
+  bool aCopyEnable = anEnable,
+       aPasteEnable = anEnable && myCopyLst.count() > 0;
+  QModelIndexList::const_iterator anIt = anItems.begin(), aLast = anItems.end();
+  int aRow, aCol;
+  for ( anIt = anItems.begin(); anIt != aLast; ++anIt ) {
+    aRow = (*anIt).row();
+    aCol = (*anIt).column();
+    aCopyEnable = aCopyEnable || canCopy( aRow, aCol );
+    aPasteEnable = aPasteEnable && canPaste( aRow, aCol, "" ); // this should be the cell value
+  }
+  myActionsMap[CopyId]->setEnabled( aCopyEnable );
+  myActionsMap[PasteId]->setEnabled( aPasteEnable );
 }
 
 void TableViewer_ViewWindow::onActivated()
@@ -413,7 +387,7 @@ void TableViewer_ViewWindow::copyData()
   for ( ; anIt != aLast; ++anIt ) {
     aRow = (*anIt).row();
     aCol = (*anIt).column();
-    if ( !canPaste( aRow, aCol, "" ) )
+    if ( !canCopy( aRow, aCol ) )
       continue;
     if ( aCol < aLeftCol )
       aLeftCol = aCol;
@@ -429,10 +403,10 @@ void TableViewer_ViewWindow::copyData()
       continue;
     aCopyItem.myRow = aRow-aTopRow;
     aCopyItem.myCol = aCol-aLeftCol;
-    aCopyItem.myText = text( Cells, aRow, aCol );
-    aCopyItem.myBgCol = backgroundColor( Cells, aRow, aCol );
-    aCopyItem.myFgCol = foregroundColor( Cells, aRow, aCol );
-    aCopyItem.myFont = font( Cells, aRow, aCol );
+    aCopyItem.myText = value( Cells, aRow, aCol, Qt::DisplayRole );
+    aCopyItem.myBgCol = value( Cells, aRow, aCol, Qt::BackgroundRole );
+    aCopyItem.myFgCol = value( Cells, aRow, aCol, Qt::ForegroundRole );
+    aCopyItem.myFont = value( Cells, aRow, aCol, Qt::FontRole );
     myCopyLst.append( aCopyItem );
   }
 }
@@ -463,13 +437,13 @@ void TableViewer_ViewWindow::pasteData()
     aCopyItem = *aCopyIt;
     aCol = aCopyItem.myCol+aLeftCol;
     aRow = aCopyItem.myRow+aTopRow;
-    if ( !canPaste( aRow, aCol, aCopyItem.myText ) )
+    if ( !canPaste( aRow, aCol, aCopyItem.myText.toString() ) )
       continue;
 
-    myTable->setCellData( aRow, aCol, aCopyItem.myText );
-    myTable->setCellBackground( aRow, aCol, aCopyItem.myBgCol );
-    myTable->setCellForeground( aRow, aCol, aCopyItem.myFgCol );
-    myTable->setCellFont( aRow, aCol, aCopyItem.myFont );
+    myTable->setData( aRow, aCol, aCopyItem.myText, Qt::DisplayRole );
+    myTable->setData( aRow, aCol, aCopyItem.myBgCol, Qt::BackgroundRole );
+    myTable->setData( aRow, aCol, aCopyItem.myFgCol, Qt::ForegroundRole );
+    myTable->setData( aRow, aCol, aCopyItem.myFont, Qt::FontRole );
   }
 }
 
@@ -504,7 +478,7 @@ bool TableViewer_ViewWindow::canPasteData()
     aCopyItem = *aCopyIt;
     aCol = aCopyItem.myCol+aLeftCol;
     aRow = aCopyItem.myRow+aTopRow;
-    aCanPaste = canPaste( aRow, aCol, aCopyItem.myText );
+    aCanPaste = canPaste( aRow, aCol, aCopyItem.myText.toString() );
   }
   return aCanPaste;
 }
@@ -577,9 +551,9 @@ bool TableViewer_ViewWindow::canPaste( const int theRow, const int theCol, const
          theCol < myTable->columnCount() & theCol >= 0;
 }
 
-QtxTable* TableViewer_ViewWindow::createTable()
+QtxTableInterface* TableViewer_ViewWindow::createTable()
 {
-  QtxTable* aTable = new QtxTable( this );
+  QtxTableInterface* aTable = new QtxTable( this );
   connect( aTable->selectionModel(), SIGNAL( selectionChanged(
                        const QItemSelection&, const QItemSelection& ) ),
            this, SLOT( selectionChanged() ) );

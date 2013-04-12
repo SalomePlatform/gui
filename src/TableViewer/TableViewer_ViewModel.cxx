@@ -22,7 +22,8 @@
 #include "TableViewer_ViewWindow.h"
 #include "TableViewer_ViewManager.h"
 
-#include <QtxTable.h>
+#include <QtxTableInterface.h>
+
 /*!
   Constructor
 */
@@ -56,7 +57,7 @@ SUIT_ViewWindow* TableViewer_Viewer::createView( SUIT_Desktop* theDesktop )
 void TableViewer_Viewer::initView( TableViewer_ViewWindow* theVW )
 {
   theVW->initLayout();
-  QtxTable* tbl = theVW->table();
+  QtxTableInterface* tbl = theVW->table();
   //if ( tbl && getViewManager() )
   //  tbl->viewport()->installEventFilter( getViewManager() );
 }

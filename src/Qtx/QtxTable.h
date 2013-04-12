@@ -23,6 +23,7 @@
 #define QTXTABLE_H
 
 #include "Qtx.h"
+#include "QtxTableInterface.h"
 
 #include <QMap>
 #include <QVector>
@@ -44,7 +45,7 @@ class QtxStyleWrap;
 #pragma warning( disable : 4251 )
 #endif
 
-class QTX_EXPORT QtxTable : public QTableWidget
+class QTX_EXPORT QtxTable : public QTableWidget, public QtxTableInterface
 {
   Q_OBJECT
 
@@ -57,6 +58,9 @@ public:
   QtxTable( QWidget* = 0, const char* = 0 );
   QtxTable( int, int, QWidget* = 0, const char* = 0 );
   virtual ~QtxTable();
+
+  virtual int      rowCount() const;
+  virtual int      columnCount() const;
 
   bool             headerEditable( Qt::Orientation, const int = -1 ) const;
 
@@ -79,25 +83,31 @@ public:
   int              numHeaders( const Qt::Orientation ) const;
   void             setNumHeaders( const Qt::Orientation, const int );
 
-  virtual QVariant headerData( const Qt::Orientation, const int, const int = Qt::DisplayRole ) const;
+  virtual QVariant headerData( const int, const Qt::Orientation,
+                               const int = Qt::DisplayRole ) const;
   virtual QFont    headerFont( const Qt::Orientation, const int ) const;
   virtual QColor   headerForeground( const Qt::Orientation, const int ) const;
   virtual QColor   headerBackground( const Qt::Orientation, const int ) const;
   virtual QIcon    headerIcon( const Qt::Orientation, const int ) const;
 
-  virtual void     setHeaderData( const Qt::Orientation, const int, const QVariant&,
+  virtual void     setHeaderData( const int, const Qt::Orientation, const QVariant&,
                                   const int = Qt::DisplayRole );
   virtual void     setHeaderFont( const Qt::Orientation, const int, const QFont& );
   virtual void     setHeaderForeground( const Qt::Orientation, const int, const QColor& );
   virtual void     setHeaderBackground( const Qt::Orientation, const int, const QColor& );
   virtual void     setHeaderIcon( const Qt::Orientation, const int, const QIcon& );
 
+  virtual QVariant data( const int theRow, const int theColumn,
+                         const int theRole = Qt::DisplayRole ) const;
   virtual QVariant cellData( const int, const int ) const;
   virtual QFont    cellFont( const int, const int ) const;
   virtual QColor   cellForeground( const int, const int ) const;
   virtual QColor   cellBackground( const int, const int ) const;
   virtual QIcon    cellIcon( const int, const int ) const;
 
+  virtual void     setData( const int theRow, const int theColumn,
+                            const QVariant& theValue,
+                            const int theRole = Qt::DisplayRole );
   virtual void     setCellData( const int, const int, const QVariant& );
   virtual void     setCellFont( const int, const int, const QFont& );
   virtual void     setCellForeground( const int, const int, const QColor& );
@@ -105,7 +115,10 @@ public:
   virtual void     setCellIcon( const int, const int, QIcon& );
 
   virtual QTableWidgetItem* getItem( const int, const int, const bool = true );
-  virtual QModelIndexList   getSelectedIndexes();
+
+  virtual QItemSelectionModel* selectionModel() const;
+  virtual QModelIndexList getSelectedIndexes() const;
+
   bool             indexPosition( const QModelIndex&, int&, int& ) const;
 
   //virtual void     paintCell( QPainter*, int, int, const QRect&, bool, const QColorGroup& );

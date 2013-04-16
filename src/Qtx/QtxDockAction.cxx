@@ -250,8 +250,12 @@ void QtxDockAction::updateMenu()
   {
     QList<QToolBar*> tbList;
     toolBars( tbList );
-    for ( QList<QToolBar*>::iterator it = tbList.begin(); it != tbList.end(); ++it )
-      pm->addAction( (*it)->toggleViewAction() );
+    for ( QList<QToolBar*>::iterator it = tbList.begin(); it != tbList.end(); ++it ){
+      QAction* act = (*it)->toggleViewAction();
+      if( act->text().isEmpty() )
+        continue;
+      pm->addAction( act );
+    }
   }
 
   Qtx::simplifySeparators( pm );

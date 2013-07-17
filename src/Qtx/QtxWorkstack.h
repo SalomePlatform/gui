@@ -214,7 +214,7 @@ public slots:
   virtual void        setVisible( bool );
 
 private slots:
-  void                onClose();
+  void                onClose( int );
   void                onCurrentChanged( int );
 
   void                onWidgetDestroyed();
@@ -272,7 +272,6 @@ private:
 
 private:
   QtxWorkstackTabBar* myBar;     //!< workarea tab bar header
-  QAbstractButton*    myClose;   //!< close button
   QStackedWidget*     myStack;   //!< widget stack
 
   QWidgetList         myList;    //!< child widgets list

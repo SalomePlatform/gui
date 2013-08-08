@@ -28,6 +28,7 @@
 class Plot2d_Plot2d;
 class Plot2d_Prs;
 class Plot2d_SetupViewDlg;
+class Plot2d_Legend;
 class QCustomEvent;
 class QwtPlotCurve;
 class QwtPlotGrid;
@@ -201,6 +202,9 @@ signals:
   void    vpCurveChanged();
   void    contextMenuRequested( QContextMenuEvent *e );
 
+private:
+  void    setExternalLegendPos( int );
+
 protected:
   Plot2d_Plot2d* myPlot;
   int            myOperation;
@@ -208,6 +212,7 @@ protected:
 
   int            myCurveType;
   bool           myShowLegend;
+  bool           myIsLegendOnCanvas;
   int            myLegendPos;
   int            myMarkerSize;
   QColor         myBackground;
@@ -233,14 +238,9 @@ public:
 
   void       setLogScale( int axisId, bool log10 );
 
-  void       replot();
-  QwtLegend* getLegend() {
-#if QWT_VERSION < 0x040200
-     return d_legend;
-#else  
-     return legend(); /* mpv: porting to the Qwt 4.2.0 */
-#endif
-  }
+  void           replot();
+  Plot2d_Legend* getLegend();
+
   virtual QSize       sizeHint() const;
   virtual QSizePolicy sizePolicy() const;
   virtual QSize       minimumSizeHint() const;

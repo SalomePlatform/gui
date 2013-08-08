@@ -85,13 +85,15 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent,
 
   // legend
   myLegendCheck = new QCheckBox( tr( "PLOT2D_ENABLE_LEGEND" ), this );
+  myLegendTypeCombo = new QComboBox( this );
+  myLegendTypeCombo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
+  myLegendTypeCombo->setMinimumWidth( MIN_COMBO_WIDTH );
+  myLegendTypeCombo->addItem( tr("PLOT2D_EXTERNAL") );
+  myLegendTypeCombo->addItem( tr("PLOT2D_EMBEDDED") );
   myLegendCombo = new QComboBox( this );
   myLegendCombo->setSizePolicy( QSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed ) );
   myLegendCombo->setMinimumWidth( MIN_COMBO_WIDTH );
-  myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_LEFT" ) );
-  myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_RIGHT" ) );
-  myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_TOP" ) );
-  myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_BOTTOM" ) );
+  onLegendTypeChanged();
 
   // marker size
   QLabel* aMarkerLab  = new QLabel( tr( "PLOT2D_MARKER_SIZE_LBL" ), this );
@@ -320,20 +322,22 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent,
   topLayout->addWidget( myTitleEdit,   0, 1, 1, 3 );
   topLayout->addWidget( aCurveLab,     1,    0    );
   topLayout->addWidget( myCurveCombo,  1,    1    );
-  topLayout->addWidget( myLegendCheck, 1,    2    );
-  topLayout->addWidget( myLegendCombo, 1,    3    );
-  topLayout->addWidget( aMarkerLab,    2,    0    );
-  topLayout->addWidget( myMarkerSpin,  2,    1    );
+  topLayout->addWidget( myLegendCheck, 2,    0    );
+  topLayout->addWidget( myLegendTypeCombo, 2,    1    );
+  topLayout->addWidget( myLegendCombo, 2,    2, 1, 1  );
+  topLayout->addWidget( aMarkerLab,    3,    0    );
+  topLayout->addWidget( myMarkerSpin,  3,    1    );
   QHBoxLayout* bgLayout = new QHBoxLayout;
-  bgLayout->addWidget( myBackgroundBtn ); bgLayout->addStretch();
-  topLayout->addWidget( aBGLab,        2,    2    );
-  topLayout->addLayout( bgLayout,      2,    3    );
-  topLayout->addWidget( aScaleGrp,     3, 0, 1, 4 );
-  topLayout->addWidget( aTabWidget,    4, 0, 1, 4 );
-  topLayout->addWidget( myDefCheck,    5, 0, 1, 4 );
+  bgLayout->addWidget( myBackgroundBtn );
+  bgLayout->addStretch();
+  topLayout->addWidget( aBGLab,        3,    2    );
+  topLayout->addLayout( bgLayout,      3,    3    );
+  topLayout->addWidget( aScaleGrp,     4, 0, 1, 4 );
+  topLayout->addWidget( aTabWidget,    5, 0, 1, 4 );
+  topLayout->addWidget( myDefCheck,    6, 0, 1, 4 );
   topLayout->setRowStretch( 5, 5 );
 
-  topLayout->addLayout( btnLayout,     6, 0, 1, 4 );
+  topLayout->addLayout( btnLayout,     7, 0, 1, 4 );
   
   if ( !showDefCheck )
     myDefCheck->hide();
@@ -356,6 +360,8 @@ Plot2d_SetupViewDlg::Plot2d_SetupViewDlg( QWidget* parent,
     connect( myY2GridCheck,    SIGNAL( clicked() ), this, SLOT( onY2GridMajorChecked() ) );
     connect( myY2MinGridCheck, SIGNAL( clicked() ), this, SLOT( onY2GridMinorChecked() ) );
   }
+  connect( myLegendTypeCombo,   SIGNAL( activated ( int ) ), this, SLOT( onLegendTypeChanged() ) );
+
 
   // init fields
   setBackgroundColor( Qt::gray );
@@ -632,6 +638,23 @@ void Plot2d_SetupViewDlg::setLegend( bool enable, int pos )
 }
 
 /*!
+  \brief Set legend on canvas.
+  \param if \c true legend is on canvas (embedded)
+  \sa isLegendEnabled(), getLegendPos()
+*/
+void Plot2d_SetupViewDlg::setLegendOnCanvas( bool isOn )
+{
+  myLegendTypeCombo->setCurrentIndex( isOn ? 1 /*Embedded*/ : 0 /*External*/ );
+  onLegendTypeChanged();
+}
+
+bool Plot2d_SetupViewDlg::isLegendOnCanvas()
+{
+  return myLegendTypeCombo->currentIndex() == 1;
+}
+
+
+/*!
   \brief Check if legend is enabled.
   \return \c true if legend is enabled
   \sa setLegend()
@@ -871,6 +894,7 @@ void Plot2d_SetupViewDlg::onY2TitleChecked()
 void Plot2d_SetupViewDlg::onLegendChecked()
 {
   myLegendCombo->setEnabled( myLegendCheck->isChecked() );
+  myLegendTypeCombo->setEnabled( myLegendCheck->isChecked() );
 }
 
 /*!
@@ -916,6 +940,27 @@ void Plot2d_SetupViewDlg::onYGridMinorChecked()
 */
 void Plot2d_SetupViewDlg::onY2GridMinorChecked()
 {
+}
+
+void Plot2d_SetupViewDlg::onLegendTypeChanged()
+{
+  if( !myLegendTypeCombo )
+    return;
+  int idx = myLegendCombo->currentIndex();
+  myLegendCombo->clear();
+  myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_BOTTOM" ) );
+  myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_TOP" ) );
+  myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_RIGHT" ) );
+  myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_LEFT" ) );
+  if( myLegendTypeCombo->currentIndex() == 1 ) { //Embedded
+    myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_TOPLEFT" ) );
+    myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_TOPRIGHT" ) );
+    myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_BOTTOMLEFT" ) );
+    myLegendCombo->addItem( tr( "PLOT2D_LEGEND_POSITION_BOTTOMRIGHT" ) );
+  }
+  if( idx >= myLegendCombo->count() )
+    idx = 0;
+  myLegendCombo->setCurrentIndex( idx );
 }
 
 /*!

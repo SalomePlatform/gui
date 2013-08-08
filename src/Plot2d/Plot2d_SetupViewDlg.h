@@ -71,6 +71,8 @@ public:
 
   void            setLegend( bool, int );
   bool            isLegendEnabled();
+  void            setLegendOnCanvas( bool );
+  bool            isLegendOnCanvas();
   int             getLegendPos();
   
   void            setMarkerSize( const int );
@@ -103,6 +105,7 @@ protected slots:
   void            onYGridMinorChecked();
   void            onY2GridMinorChecked();
   void            onHelp();
+  void            onLegendTypeChanged();
 
 private:
   QCheckBox*      myTitleCheck;
@@ -128,6 +131,7 @@ private:
   QSpinBox*       myY2MinGridSpin;
   QComboBox*      myCurveCombo;
   QCheckBox*      myLegendCheck;
+  QComboBox*      myLegendTypeCombo;
   QComboBox*      myLegendCombo;
   QSpinBox*       myMarkerSpin;
   QComboBox*      myXModeCombo;

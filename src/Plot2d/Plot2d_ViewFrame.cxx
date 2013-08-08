@@ -24,6 +24,7 @@
 #include "Plot2d_ViewWindow.h"
 #include "Plot2d_SetupViewDlg.h"
 #include "Plot2d_ToolTip.h"
+#include "Plot2d_Legend.h"
 
 #include "SUIT_Tools.h"
 #include "SUIT_Session.h"
@@ -154,7 +155,7 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
      : QWidget (parent, 0),
        myOperation( NoOpId ), 
        myCurveType( 1 ), 
-       myShowLegend( true ), myLegendPos( 1 ),
+       myShowLegend( true ), myLegendPos( 1 ), myIsLegendOnCanvas( false ),
        myMarkerSize( DEFAULT_MARKER_SIZE ),
        myBackground( Qt::white ),
        myTitle( "" ), myXTitle( "" ), myYTitle( "" ), myY2Title( "" ),
@@ -197,7 +198,7 @@ Plot2d_ViewFrame::Plot2d_ViewFrame( QWidget* parent, const QString& title )
   setVerScaleMode( myYMode, false );
   setBackgroundColor( myBackground );
   setLegendPos( myLegendPos );
-  showLegend( myShowLegend, false );
+  showLegend( myShowLegend, true );
   myPlot->replot();
 
   if ( parent ) {
@@ -380,6 +381,7 @@ void Plot2d_ViewFrame::readPreferences()
   setCurveType( resMgr->integerValue( "Plot2d", "CurveType", myCurveType ) );
 
   myShowLegend = resMgr->booleanValue( "Plot2d", "ShowLegend", myShowLegend );
+  myIsLegendOnCanvas = resMgr->booleanValue( "Plot2d", "IsLegendOnCanvas", myIsLegendOnCanvas );
   myLegendPos = resMgr->integerValue( "Plot2d", "LegendPos", myLegendPos );
   myMarkerSize = resMgr->integerValue( "Plot2d", "MarkerSize", myMarkerSize );
   myBackground = resMgr->colorValue( "Plot2d", "Background", myBackground );
@@ -423,6 +425,7 @@ void Plot2d_ViewFrame::writePreferences()
 
   resMgr->setValue( "Plot2d", "CurveType", myCurveType );
   resMgr->setValue( "Plot2d", "ShowLegend", myShowLegend );
+  resMgr->setValue( "Plot2d", "IsLegendOnCanvas", myIsLegendOnCanvas );
   resMgr->setValue( "Plot2d", "LegendPos", myLegendPos );
   resMgr->setValue( "Plot2d", "MarkerSize", myMarkerSize );
   resMgr->setValue( "Plot2d", "Background", myBackground );
@@ -995,6 +998,7 @@ void Plot2d_ViewFrame::onSettings()
   if (mySecondY)
     dlg->setY2Title( myY2TitleEnabled, myY2Title );
   dlg->setCurveType( myCurveType );
+  dlg->setLegendOnCanvas( myIsLegendOnCanvas );
   dlg->setLegend( myShowLegend, myLegendPos );
   dlg->setMarkerSize( myMarkerSize );
   dlg->setBackgroundColor( myBackground );
@@ -1007,6 +1011,7 @@ void Plot2d_ViewFrame::onSettings()
          myYGridMinorEnabled, myPlot->axisMaxMinor( QwtPlot::yLeft ),
          myY2GridMinorEnabled, myPlot->axisMaxMinor( QwtPlot::yRight ) );
   if ( dlg->exec() == QDialog::Accepted ) {
+
     // horizontal axis title
     setTitle( dlg->isXTitleEnabled(), dlg->getXTitle(), XTitle, false );
     // vertical left axis title
@@ -1022,13 +1027,13 @@ void Plot2d_ViewFrame::onSettings()
     if ( myCurveType != dlg->getCurveType() ) {
       setCurveType( dlg->getCurveType(), false );
     }
-    // legend
-    if ( myShowLegend != dlg->isLegendEnabled() ) {
-      showLegend( dlg->isLegendEnabled(), false );
-    }
-    if ( myLegendPos != dlg->getLegendPos() ) {
-      setLegendPos( dlg->getLegendPos() );
-    }
+
+    // Set legend props
+    myIsLegendOnCanvas = dlg->isLegendOnCanvas();
+    setLegendPos( dlg->getLegendPos() );
+    //Show/Hide or just update it
+    showLegend( dlg->isLegendEnabled(), true );
+
     // marker size
     if ( myMarkerSize != dlg->getMarkerSize() ) {
       setMarkerSize( dlg->getMarkerSize(), false );
@@ -1137,43 +1142,37 @@ void Plot2d_ViewFrame::setObjectTitle( Plot2d_Object* object, const QString& tit
 void Plot2d_ViewFrame::showLegend( bool show, bool update )
 {
   myShowLegend = show;
-  if ( myShowLegend ) {
-    QwtLegend* legend = myPlot->legend();
-    if ( !legend ) {
-      legend = new QwtLegend( myPlot );
-      legend->setFrameStyle( QFrame::Box | QFrame::Sunken );
+  Plot2d_Legend* aLegend = myPlot->getLegend();
+  if( !aLegend ) {
+    QwtLegend* anOldLegend = myPlot->legend();
+    if( anOldLegend ){
+      myPlot->insertLegend(0);
+      anOldLegend->deleteLater();
     }
-    legend->setItemMode( QwtLegend::ClickableItem );
-    myPlot->insertLegend( legend );
-    setLegendPos( myLegendPos );
+    aLegend = new Plot2d_Legend( myPlot );
+    aLegend->setItemMode( Plot2d_Legend::ClickableItem );
   }
-  else
-    myPlot->insertLegend( 0 );
+  if( !myIsLegendOnCanvas )
+    myPlot->insertLegend( aLegend );
+  setLegendPos( myLegendPos );
+  aLegend->setEnabled( show );
+
   if ( update )
     myPlot->replot();
 }
 
 /*!
-  Sets legend position : 0 - left, 1 - right, 2 - top, 3 - bottom
+  Sets legend position : Bottom 0, Top = 1, Right = 2, Left = 3,
+                         TopLeft = 4, TopRight = 5, BottomLeft = 6, BottomRight = 7
 */
 void Plot2d_ViewFrame::setLegendPos( int pos )
 {
   myLegendPos = pos;
-  QwtLegend* legend = myPlot->legend();
-  switch( pos ) {
-  case 0:
-    myPlot->insertLegend( legend, QwtPlot::LeftLegend );
-    break;
-  case 1:
-    myPlot->insertLegend( legend, QwtPlot::RightLegend );
-    break;
-  case 2:
-    myPlot->insertLegend( legend, QwtPlot::TopLegend );
-    break;
-  case 3:
-    myPlot->insertLegend( legend, QwtPlot::BottomLegend );
-    break;
-  }
+  Plot2d_Legend* legend = myPlot->getLegend();
+  if( !legend )
+    return;
+  legend->setOnCanvas( myIsLegendOnCanvas );
+  legend->setPositionType( static_cast<Plot2d_Legend::LegendPosition>( pos ) );
 }
 
 /*!
@@ -1798,6 +1797,18 @@ void Plot2d_Plot2d::replot()
   QwtPlot::replot(); 
 }
 
+/*
+ * Returns legend.
+ */
+Plot2d_Legend* Plot2d_Plot2d::getLegend()
+{
+#if QWT_VERSION < 0x040200
+  return d_legend;
+#else
+  return dynamic_cast<Plot2d_Legend*>( legend() );
+#endif
+}
+
 /*!
   \return the default layout behavior of the widget
 */
@@ -1869,6 +1880,7 @@ void Plot2d_ViewFrame::copyPreferences( Plot2d_ViewFrame* vf )
 
   myCurveType = vf->myCurveType;
   myShowLegend = vf->myShowLegend;
+  myIsLegendOnCanvas = vf->myIsLegendOnCanvas;
   myLegendPos = vf->myLegendPos;
   myMarkerSize = vf->myMarkerSize;
   myBackground = vf->myBackground;
@@ -2193,3 +2205,5 @@ void Plot2d_ViewFrame::customEvent( QEvent* ce )
   if ( ce->type() == FITALL_EVENT )
     fitAll();
 }
+
+

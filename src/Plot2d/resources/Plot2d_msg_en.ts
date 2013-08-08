@@ -324,6 +324,30 @@ Logarithmic scale for ordinate axis is not allowed.</translation>
         <translation>Right</translation>
     </message>
     <message>
+        <source>PLOT2D_LEGEND_POSITION_TOPLEFT</source>
+        <translation>Top Left</translation>
+    </message>
+    <message>
+        <source>PLOT2D_LEGEND_POSITION_TOPRIGHT</source>
+        <translation>Top Right</translation>
+    </message>
+    <message>
+        <source>PLOT2D_LEGEND_POSITION_BOTTOMLEFT</source>
+        <translation>Bottom Left</translation>
+    </message>
+    <message>
+        <source>PLOT2D_LEGEND_POSITION_BOTTOMRIGHT</source>
+        <translation>Bottom Right</translation>
+    </message>
+    <message>
+        <source>PLOT2D_EXTERNAL</source>
+        <translation>External</translation>
+    </message>
+    <message>
+        <source>PLOT2D_EMBEDDED</source>
+        <translation>Embedded</translation>
+    </message>
+    <message>
         <source>DSC_DUMP_VIEW</source>
         <translation>Saves the active view in the image file</translation>
     </message>

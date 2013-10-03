@@ -26,6 +26,7 @@
 //  Module : SALOME
 //  $Header$
 
+//-------------------------------------------------------------------------
 #include "SVTK_RenderWindowInteractor.h"
 //#include "SVTK_GenericRenderWindowInteractor.h"
 
@@ -63,9 +64,8 @@ static bool GENERATE_SUIT_EVENTS = true;
 static bool FOCUS_UNDER_MOUSE = false;
 
 
-/*!
-  Constructor
-*/
+//-------------------------------------------------------------------------
+/*! Constructor */
 QVTK_RenderWindowInteractor
 ::QVTK_RenderWindowInteractor(QWidget* theParent, 
 			      const char* theName):
@@ -88,9 +88,8 @@ QVTK_RenderWindowInteractor
   myRenderWindow->SetWindowId((void*)winId());
 }
 
-/*!
-  To initialize by vtkGenericRenderWindowInteractor instance
-*/
+//-------------------------------------------------------------------------
+/*! To initialize by vtkGenericRenderWindowInteractor instance */
 void 
 QVTK_RenderWindowInteractor
 ::Initialize(vtkGenericRenderWindowInteractor* theDevice)
@@ -104,9 +103,8 @@ QVTK_RenderWindowInteractor
     theDevice->SetRenderWindow( getRenderWindow() );
 }
 
-/*!
-  Destructor
-*/
+//-------------------------------------------------------------------------
+/*! Destructor */
 QVTK_RenderWindowInteractor
 ::~QVTK_RenderWindowInteractor() 
 {
@@ -117,7 +115,7 @@ QVTK_RenderWindowInteractor
 #endif
 }
 
-
+//-------------------------------------------------------------------------
 /*!
   \return corresponding render window interactor
 */
@@ -128,6 +126,7 @@ QVTK_RenderWindowInteractor
   return myDevice.GetPointer();
 }
 
+//-------------------------------------------------------------------------
 /*!
   \return corresponding render window
 */
@@ -138,9 +137,8 @@ QVTK_RenderWindowInteractor
   return myRenderWindow.GetPointer();
 }
 
-/*!
-  Just to simplify usage of its device (vtkGenericRenderWindowInteractor)
-*/
+//-------------------------------------------------------------------------
+/*! Just to simplify usage of its device (vtkGenericRenderWindowInteractor) */
 void
 QVTK_RenderWindowInteractor
 ::InvokeEvent(unsigned long theEvent, void* theCallData)
@@ -148,9 +146,8 @@ QVTK_RenderWindowInteractor
   GetDevice()->InvokeEvent(theEvent,theCallData);
 }
 
-/*!
-  Need for initial contents display on Win32
-*/
+//-------------------------------------------------------------------------
+/*! Need for initial contents display on Win32 */
 void
 QVTK_RenderWindowInteractor
 ::show()
@@ -159,9 +156,8 @@ QVTK_RenderWindowInteractor
   update(); // needed for initial contents display on Win32
 }
 
-/*!
-  To implement final initialization, just before the widget is displayed
-*/
+//-------------------------------------------------------------------------
+/*! To implement final initialization, just before the widget is displayed */
 void
 QVTK_RenderWindowInteractor
 ::polish()
@@ -174,9 +170,8 @@ QVTK_RenderWindowInteractor
   }
 }
 
-/*!
-  To adjust widget and vtkRenderWindow size
-*/
+//-------------------------------------------------------------------------
+/*! To adjust widget and vtkRenderWindow size */
 void
 QVTK_RenderWindowInteractor
 ::resize(int w, int h) 
@@ -184,9 +179,8 @@ QVTK_RenderWindowInteractor
   GetDevice()->UpdateSize(w,h);
 }
 
-/*!
-  Custom paint event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom paint event handler */
 void
 QVTK_RenderWindowInteractor
 ::paintEvent( QPaintEvent* theEvent ) 
@@ -194,10 +188,8 @@ QVTK_RenderWindowInteractor
   GetDevice()->CreateTimer(VTKI_TIMER_FIRST);
 }
 
-
-/*!
-  Custom resize event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom resize event handler */
 void
 QVTK_RenderWindowInteractor
 ::resizeEvent( QResizeEvent* theEvent )
@@ -228,19 +220,15 @@ QVTK_RenderWindowInteractor
   update(); 
 }
 
-
-
-/*!
-  Custom context menu event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom context menu event handler */
 void
 QVTK_RenderWindowInteractor
 ::contextMenuEvent( QContextMenuEvent* event )
 {}
 
-/*!
-  Custom mouse move event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom mouse move event handler */
 void
 QVTK_RenderWindowInteractor
 ::mouseMoveEvent( QMouseEvent* event ) 
@@ -252,10 +240,8 @@ QVTK_RenderWindowInteractor
   GetDevice()->MouseMoveEvent();
 }
 
-
-/*!
-  Custom mouse press event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom mouse press event handler */
 void
 QVTK_RenderWindowInteractor
 ::mousePressEvent( QMouseEvent* event ) 
@@ -272,10 +258,8 @@ QVTK_RenderWindowInteractor
     GetDevice()->RightButtonPressEvent();
 }
 
-
-/*!
-  Custom mouse release event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom mouse release event handler */
 void
 QVTK_RenderWindowInteractor
 ::mouseReleaseEvent( QMouseEvent *event )
@@ -293,19 +277,28 @@ QVTK_RenderWindowInteractor
     GetDevice()->RightButtonReleaseEvent();
 }
 
-
-/*!
-  Custom mouse double click event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom mouse double click event handler */
 void
 QVTK_RenderWindowInteractor
 ::mouseDoubleClickEvent( QMouseEvent* event )
-{}
+{
+  GetDevice()->SetEventInformationFlipY(event->x(), 
+					event->y(),
+					event->modifiers() & Qt::ControlModifier,
+					event->modifiers() & Qt::ShiftModifier,
+					0,
+					event->type() == QEvent::MouseButtonDblClick);
+  if( event->button() & Qt::LeftButton )
+    GetDevice()->LeftButtonPressEvent();
+  else if( event->button() & Qt::MidButton )
+    GetDevice()->MiddleButtonPressEvent();
+  else if( event->button() & Qt::RightButton )
+    GetDevice()->RightButtonPressEvent();
+}
 
-
-/*!
-  Custom mouse wheel event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom mouse wheel event handler */
 void
 QVTK_RenderWindowInteractor
 ::wheelEvent( QWheelEvent* event )
@@ -314,10 +307,8 @@ QVTK_RenderWindowInteractor
   setFocus();
 }
 
-
-/*!
-  Custom key press event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom key press event handler */
 void
 QVTK_RenderWindowInteractor
 ::keyPressEvent( QKeyEvent* event ) 
@@ -329,9 +320,8 @@ QVTK_RenderWindowInteractor
   GetDevice()->CharEvent();
 }
 
-/*!
-  Custom key release event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom key release event handler */
 void
 QVTK_RenderWindowInteractor
 ::keyReleaseEvent( QKeyEvent * event ) 
@@ -342,10 +332,8 @@ QVTK_RenderWindowInteractor
   GetDevice()->KeyReleaseEvent();
 }
 
-
-/*!
-  Custom enter event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom enter event handler */
 void  
 QVTK_RenderWindowInteractor
 ::enterEvent( QEvent* event )
@@ -357,9 +345,8 @@ QVTK_RenderWindowInteractor
   GetDevice()->EnterEvent();
 }
 
-/*!
-  Custom leave event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom leave event handler */
 void  
 QVTK_RenderWindowInteractor
 ::leaveEvent( QEvent * )
@@ -367,10 +354,9 @@ QVTK_RenderWindowInteractor
   GetDevice()->LeaveEvent();
 }
 
-/*!
-  Reimplemented from QWidget in order to set window - receiver
-  of space mouse events. 
-*/
+//-------------------------------------------------------------------------
+/*! Reimplemented from QWidget in order to set window - receiver
+  of space mouse events. */
 void  
 QVTK_RenderWindowInteractor
 ::focusInEvent( QFocusEvent* event )
@@ -392,10 +378,9 @@ QVTK_RenderWindowInteractor
 #endif
 }
 
-/*!
-  Reimplemented from QWidget in order to set window - receiver
-  of space mouse events. 
-*/
+//-------------------------------------------------------------------------
+/*! Reimplemented from QWidget in order to set window - receiver
+  of space mouse events. */
 void  
 QVTK_RenderWindowInteractor
 ::focusOutEvent ( QFocusEvent* event )
@@ -413,9 +398,8 @@ QVTK_RenderWindowInteractor
 
 #ifdef WIN32
 
-/*!
-  To handle native Win32 events (from such devices as SpaceMouse)
-*/
+//-------------------------------------------------------------------------
+/*! To handle native Win32 events (from such devices as SpaceMouse) */
 bool QVTK_RenderWindowInteractor::winEvent( MSG* msg, long* result )
 {
   // TODO: Implement event handling for SpaceMouse
@@ -424,9 +408,8 @@ bool QVTK_RenderWindowInteractor::winEvent( MSG* msg, long* result )
 
 #else
 
-/*!
-  To handle native X11 events (from such devices as SpaceMouse)
-*/
+//-------------------------------------------------------------------------
+/*! To handle native X11 events (from such devices as SpaceMouse) */
 bool 
 QVTK_RenderWindowInteractor
 ::x11Event( XEvent *xEvent )
@@ -458,9 +441,8 @@ QVTK_RenderWindowInteractor
 
 #endif
 
-/*!
-  Constructor
-*/
+//-------------------------------------------------------------------------
+/*! Constructor */
 SVTK_RenderWindowInteractor
 ::SVTK_RenderWindowInteractor(QWidget* theParent, 
 			       const char* theName):
@@ -475,9 +457,8 @@ SVTK_RenderWindowInteractor
   myEventCallbackCommand->SetCallback(SVTK_RenderWindowInteractor::ProcessEvents);
 }
 
-/*!
-  To initialize properly the class
-*/
+//-------------------------------------------------------------------------
+/*! To initialize properly the class */
 void
 SVTK_RenderWindowInteractor
 ::Initialize(vtkGenericRenderWindowInteractor* theDevice,
@@ -489,9 +470,8 @@ SVTK_RenderWindowInteractor
   SetSelector(theSelector);
 }
 
-/*!
-  Destructor
-*/
+//-------------------------------------------------------------------------
+/*! Destructor */
 SVTK_RenderWindowInteractor
 ::~SVTK_RenderWindowInteractor() 
 {
@@ -509,9 +489,8 @@ SVTK_RenderWindowInteractor
   GetDevice()->SetRenderWindow(NULL);
 }
 
-/*!
-  To get corresponding SVTK_Renderer instance
-*/
+//-------------------------------------------------------------------------
+/*! To get corresponding SVTK_Renderer instance */
 SVTK_Renderer* 
 SVTK_RenderWindowInteractor
 ::GetRenderer()
@@ -519,9 +498,8 @@ SVTK_RenderWindowInteractor
   return myRenderer.GetPointer();
 }
 
-/*!
-  To get corresponding SVTK_Renderer device (just to simplify collobaration with SVTK_Renderer)
-*/
+//-------------------------------------------------------------------------
+/*! To get corresponding SVTK_Renderer device (just to simplify collobaration with SVTK_Renderer) */
 vtkRenderer* 
 SVTK_RenderWindowInteractor
 ::getRenderer()
@@ -529,8 +507,8 @@ SVTK_RenderWindowInteractor
   return GetRenderer()->GetDevice();
 }
 
-/*!
-  Changes renderer
+//-------------------------------------------------------------------------
+/*! Changes renderer
   \param theRenderer - new renderer
 */
 void
@@ -549,9 +527,8 @@ SVTK_RenderWindowInteractor
     myRenderWindow->AddRenderer(getRenderer());
 }
 
-
-/*!
-  Changes interactor style
+//-------------------------------------------------------------------------
+/*! Changes interactor style
   \param theStyle - new interactor style
 */
 void
@@ -561,9 +538,8 @@ SVTK_RenderWindowInteractor
   GetDevice()->SetInteractorStyle(theStyle); 
 }
 
-/*!
-  To change current interactor style by pushing the new one into the container
-*/
+//-------------------------------------------------------------------------
+/*! To change current interactor style by pushing the new one into the container */
 void
 SVTK_RenderWindowInteractor
 ::PushInteractorStyle(vtkInteractorStyle* theStyle)
@@ -572,9 +548,8 @@ SVTK_RenderWindowInteractor
   InitInteractorStyle(theStyle);
 }
 
-/*!
-  To restore previous interactor style
-*/
+//-------------------------------------------------------------------------
+/*! To restore previous interactor style */
 void
 SVTK_RenderWindowInteractor
 ::PopInteractorStyle()
@@ -586,9 +561,8 @@ SVTK_RenderWindowInteractor
     InitInteractorStyle(GetInteractorStyle());
 }
 
-/*!
-  To get current interactor style
-*/
+//-------------------------------------------------------------------------
+/*! To get current interactor style */
 vtkInteractorStyle* 
 SVTK_RenderWindowInteractor
 ::GetInteractorStyle()
@@ -596,10 +570,8 @@ SVTK_RenderWindowInteractor
   return myInteractorStyles.empty() ? 0 : myInteractorStyles.top().GetPointer();
 }
 
-
-/*!
-  To get current selector
-*/
+//-------------------------------------------------------------------------
+/*! To get current selector */
 SVTK_Selector* 
 SVTK_RenderWindowInteractor
 ::GetSelector() 
@@ -607,9 +579,8 @@ SVTK_RenderWindowInteractor
   return mySelector.GetPointer(); 
 }
 
-
-/*!
-  Changes selector
+//-------------------------------------------------------------------------
+/*! Changes selector
   \param theSelector - new selector
 */
 void
@@ -627,9 +598,8 @@ SVTK_RenderWindowInteractor
 			    myPriority);
 }
 
-/*!
-  Main process VTK event method
-*/
+//-------------------------------------------------------------------------
+/*! Main process VTK event method */
 void 
 SVTK_RenderWindowInteractor
 ::ProcessEvents(vtkObject* vtkNotUsed(theObject), 
@@ -646,9 +616,8 @@ SVTK_RenderWindowInteractor
   }
 }
 
-/*!
-  To change selection mode (just to simplify collobaration with SVTK_Selector)
-*/
+//-------------------------------------------------------------------------
+/*! To change selection mode (just to simplify collobaration with SVTK_Selector) */
 void
 SVTK_RenderWindowInteractor
 ::SetSelectionMode(Selection_Mode theMode)
@@ -656,9 +625,8 @@ SVTK_RenderWindowInteractor
   mySelector->SetSelectionMode(theMode);
 }
 
-/*!
-  To get current selection mode (just to simplify collobaration with SVTK_Selector)
-*/
+//-------------------------------------------------------------------------
+/*! To get current selection mode (just to simplify collobaration with SVTK_Selector) */
 Selection_Mode
 SVTK_RenderWindowInteractor
 ::SelectionMode() const
@@ -666,10 +634,8 @@ SVTK_RenderWindowInteractor
   return mySelector->SelectionMode();
 }
 
-
-/*!
-  Emits signal selectionChanged()
-*/
+//-------------------------------------------------------------------------
+/*! Emits signal selectionChanged() */
 void
 SVTK_RenderWindowInteractor
 ::onEmitSelectionChanged()
@@ -677,10 +643,8 @@ SVTK_RenderWindowInteractor
   return emit selectionChanged();
 }
 
-
-/*!
-  Custom mouse move event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom mouse move event handler */
 void
 SVTK_RenderWindowInteractor
 ::mouseMoveEvent( QMouseEvent* event ) 
@@ -691,10 +655,8 @@ SVTK_RenderWindowInteractor
     emit MouseMove( event );
 }
 
-
-/*!
-  Custom mouse press event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom mouse press event handler */
 void
 SVTK_RenderWindowInteractor
 ::mousePressEvent( QMouseEvent* event ) 
@@ -705,10 +667,8 @@ SVTK_RenderWindowInteractor
     emit MouseButtonPressed( event );
 }
 
-
-/*!
-  Custom mouse release event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom mouse release event handler */
 void
 SVTK_RenderWindowInteractor
 ::mouseReleaseEvent( QMouseEvent *event )
@@ -733,10 +693,8 @@ SVTK_RenderWindowInteractor
     emit MouseButtonReleased( event );
 }
 
-
-/*!
-  Custom mouse double click event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom mouse double click event handler */
 void
 SVTK_RenderWindowInteractor
 ::mouseDoubleClickEvent( QMouseEvent* event )
@@ -747,10 +705,8 @@ SVTK_RenderWindowInteractor
     emit MouseDoubleClicked( event );
 }
 
-
-/*!
-  Custom mouse wheel event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom mouse wheel event handler */
 void
 SVTK_RenderWindowInteractor
 ::wheelEvent( QWheelEvent* event )
@@ -766,9 +722,8 @@ SVTK_RenderWindowInteractor
     emit WheelMoved( event );
 }
 
-/*!
-  Custom key press event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom key press event handler */
 void
 SVTK_RenderWindowInteractor
 ::keyPressEvent( QKeyEvent* event ) 
@@ -779,9 +734,8 @@ SVTK_RenderWindowInteractor
     emit KeyPressed( event );
 }
 
-/*!
-  Custom key release event handler
-*/
+//-------------------------------------------------------------------------
+/*! Custom key release event handler */
 void
 SVTK_RenderWindowInteractor
 ::keyReleaseEvent( QKeyEvent * event ) 
@@ -792,3 +746,4 @@ SVTK_RenderWindowInteractor
     emit KeyReleased( event );
 }
 
+//-------------------------------------------------------------------------

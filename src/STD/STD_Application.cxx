@@ -420,6 +420,7 @@ bool STD_Application::closeAction( const int choice, bool& closePermanently )
       res = false;
     break;
   case CloseDiscard:
+    emit saveDiscard();
     break;
   case CloseCancel:
   default:

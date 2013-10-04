@@ -87,6 +87,7 @@ protected:
 private slots:
   void                         onApplicationClosed( SUIT_Application* );
   void                         onApplicationActivated( SUIT_Application* ); 
+  void                         onAppClosedDiscard();
 
 private:
   typedef QList<SUIT_Application*> AppList;

@@ -107,6 +107,7 @@ public:
 
 signals:
   void                  applicationClosed( SUIT_Application* );
+  void                  saveDiscard();
   void                  activated( SUIT_Application* );
   void                  infoChanged( QString );
 

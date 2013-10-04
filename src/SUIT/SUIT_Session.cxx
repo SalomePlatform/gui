@@ -169,6 +169,7 @@ void SUIT_Session::insertApplication( SUIT_Application* app )
 
   connect( app, SIGNAL( applicationClosed( SUIT_Application* ) ),
            this, SLOT( onApplicationClosed( SUIT_Application* ) ) );
+  connect( app, SIGNAL( saveDiscard() ), this, SLOT( onAppClosedDiscard() ) );
   connect( app, SIGNAL( activated( SUIT_Application* ) ), 
 	         this, SLOT( onApplicationActivated( SUIT_Application* ) ) );
 }
@@ -215,6 +216,15 @@ SUIT_ResourceMgr* SUIT_Session::resourceMgr() const
 }
 
 /*!
+  Set exit status to forced in case of changes discarded.
+  If it is a last application the session will be closed.
+*/
+void SUIT_Session::onAppClosedDiscard()
+{
+  myExitStatus = FORCED;
+}
+
+/*!
   Removes the application from the list of launched applications.
   If it is a last application the session will be closed.
 */
@@ -240,8 +250,20 @@ void SUIT_Session::onApplicationClosed( SUIT_Application* theApp )
 */
 void SUIT_Session::closeSession( int mode, int flags )
 {
+  myExitStatus = NORMAL;
   AppList apps = myAppList;
+  AppList aModifyedApps;
   for ( AppList::const_iterator it = apps.begin(); it != apps.end(); ++it )
+  {
+    SUIT_Application* app = *it;
+    SUIT_Study* study = app->activeStudy();
+    if( study ){
+      if( study->isModified() ){
+        aModifyedApps.append( app );
+      } 
+    }
+  }
+  for ( AppList::const_iterator it = aModifyedApps.begin(); it != aModifyedApps.end(); ++it )
   {
     SUIT_Application* app = *it;
     bool closePermanently;
@@ -260,7 +282,17 @@ void SUIT_Session::closeSession( int mode, int flags )
 
     app->closeApplication();
   }
-
+  for ( AppList::const_iterator it = myAppList.begin(); it != myAppList.end(); ++it ){
+    SUIT_Application* app = *it;
+    SUIT_Study* study = app->activeStudy();
+    if( study ){
+      if( study->isModified() ){
+        myExitStatus = FORCED;
+      } 
+      app->closeApplication();
+    }
+  }
+  
   myExitFlags = flags;
 }
 

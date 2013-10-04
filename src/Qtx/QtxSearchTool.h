@@ -205,15 +205,19 @@ protected:
   virtual void            showItem( const QModelIndex& ) = 0;
   virtual QModelIndexList selectedItems() const = 0;
   virtual QAbstractItemModel* model() const = 0;
+  virtual QModelIndexList match( const QModelIndex &start, int role,
+                                 const QVariant &value, int hits,
+                                 Qt::MatchFlags flags) const;
 
   inline void             setCurrentIndex( const QModelIndex& index );
   inline const QPersistentModelIndex& currentIndex() const;
-  
+
 private:
   QModelIndexList         findItems( const QString&, QtxSearchTool* );
   QModelIndex             findNearest( const QModelIndex&, const QModelIndexList&, bool );
+protected:
   QModelIndexList         getId( const QModelIndex& ) const;
-  int                     compareIndices( const QModelIndex&, const QModelIndex& ) const;
+  virtual int             compareIndices( const QModelIndex&, const QModelIndex& ) const;
 
 private:
   int                     myColumn;
@@ -247,6 +251,13 @@ protected:
   virtual void            showItem( const QModelIndex& );
   virtual QModelIndexList selectedItems() const;
   virtual QAbstractItemModel* model() const;
+
+protected:
+  virtual QModelIndexList match( const QModelIndex &start, int role,
+                                 const QVariant &value, int hits,
+                                 Qt::MatchFlags flags) const;
+
+  virtual int             compareIndices( const QModelIndex&, const QModelIndex& ) const;
 
 private:
   QTreeView*              myView;

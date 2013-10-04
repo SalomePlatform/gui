@@ -1411,10 +1411,22 @@ QModelIndexList QtxViewSearcher::findItems( const QString& text, QtxSearchTool* 
   }
 
   if ( model() )
-    return model()->match( model()->index( 0, myColumn ),
+    return match( model()->index( 0, myColumn ),
 			   Qt::DisplayRole,
 			   s, -1, fl );
   return QModelIndexList();
+}
+
+/*!
+  \brief Returns list of indexes like QAbstractItemModel::match.
+  \internal
+  \details Uses default QAbstractItemModel::match.
+*/
+QModelIndexList QtxViewSearcher::match(const QModelIndex &start, int role,
+                                          const QVariant &value, int hits,
+                                          Qt::MatchFlags flags) const
+{
+  return model()->match( start, role, value, hits, flags );
 }
 
 /*!
@@ -1436,7 +1448,7 @@ QModelIndex QtxViewSearcher::findNearest( const QModelIndex& index,
     {
       QModelIndex found = it.next();
       if ( compareIndices( found, index ) > 0 )
-	return found;
+        return found;
     }
   }
   else
@@ -1447,7 +1459,7 @@ QModelIndex QtxViewSearcher::findNearest( const QModelIndex& index,
     {
       QModelIndex found = it.previous();
       if ( compareIndices( found, index ) < 0 )
-	return found;
+        return found;
     }
   }
   return QModelIndex();
@@ -1614,9 +1626,20 @@ void QtxTreeViewSearcher::showItem( const QModelIndex& index )
 */
 QModelIndexList QtxTreeViewSearcher::selectedItems() const
 {
-  return ( myView && myView->selectionModel() ) ?
-    myView->selectionModel()->selectedIndexes() : 
-    QModelIndexList();
+  QModelIndexList anSelectedIndexes = ( myView && myView->selectionModel() ) ?
+                                      myView->selectionModel()->selectedIndexes() :
+                                      QModelIndexList();
+  // filter indexes by column for eliminate finding the same line
+  QModelIndexList anFilteredIndexes;
+  QListIterator<QModelIndex> it( anSelectedIndexes );
+  while ( it.hasNext() )
+  {
+    QModelIndex anIndex = it.next();
+    if ( anIndex.column() == searchColumn() )
+      anFilteredIndexes.push_back( anIndex );
+  }
+
+  return anFilteredIndexes;
 }
 
 /*!
@@ -1626,6 +1649,110 @@ QModelIndexList QtxTreeViewSearcher::selectedItems() const
 QAbstractItemModel* QtxTreeViewSearcher::model() const
 {
   return myView ? myView->model() : 0; 
+}
+
+/*!
+  \brief Copy from Qt to fix problem with trees organized by first column.
+  \internal
+  \details "model()->" is added for functions call (e.g. rowCount, data...).
+  For recurse match first column is used.
+  Adjusted for tree models with hierarchy based on first column
+*/
+QModelIndexList QtxTreeViewSearcher::match(const QModelIndex &start, int role,
+                                           const QVariant &value, int hits,
+                                           Qt::MatchFlags flags) const
+{
+    QModelIndexList result;
+    uint matchType = flags & 0x0F;
+    Qt::CaseSensitivity cs = flags & Qt::MatchCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive;
+    bool recurse = flags & Qt::MatchRecursive;
+    bool wrap = flags & Qt::MatchWrap;
+    bool allHits = (hits == -1);
+    QString text; // only convert to a string if it is needed
+    QModelIndex p = model()->parent(start); // "model()->" added
+    int from = start.row();
+    int to = model()->rowCount(p); // "model()->" added
+
+    // iterates twice if wrapping
+    for (int i = 0; (wrap && i < 2) || (!wrap && i < 1); ++i) {
+        for (int r = from; (r < to) && (allHits || result.count() < hits); ++r) {
+            QModelIndex idx = model()->index(r, start.column(), p); // "model()->" added
+            if (!idx.isValid())
+                 continue;
+            QVariant v = model()->data(idx, role); // "model()->" added
+            // QVariant based matching
+            if (matchType == Qt::MatchExactly) {
+                if (value == v)
+                    result.append(idx);
+            } else { // QString based matching
+                if (text.isEmpty()) // lazy conversion
+                    text = value.toString();
+                QString t = v.toString();
+                switch (matchType) {
+                case Qt::MatchRegExp:
+                    if (QRegExp(text, cs).exactMatch(t))
+                        result.append(idx);
+                    break;
+                case Qt::MatchWildcard:
+                    if (QRegExp(text, cs, QRegExp::Wildcard).exactMatch(t))
+                        result.append(idx);
+                    break;
+                case Qt::MatchStartsWith:
+                    if (t.startsWith(text, cs))
+                        result.append(idx);
+                    break;
+                case Qt::MatchEndsWith:
+                    if (t.endsWith(text, cs))
+                        result.append(idx);
+                    break;
+                case Qt::MatchFixedString:
+                    if (t.compare(text, cs) == 0)
+                        result.append(idx);
+                    break;
+                case Qt::MatchContains:
+                default:
+                    if (t.contains(text, cs))
+                        result.append(idx);
+                }
+            }
+            QModelIndex treeIdx = model()->index( idx.row(), 0, idx.parent() ); // all added
+            if (recurse && model()->hasChildren(treeIdx)) { // search the hierarchy // "model()->" added // idx -> treeIdx
+                result += match(model()->index(0, idx.column(), treeIdx), role, // "model()->" added // idx -> treeIdx
+                                (text.isEmpty() ? value : text),
+                                (allHits ? -1 : hits - result.count()), flags);
+            }
+        }
+        // prepare for the next iteration
+        from = 0;
+        to = start.row();
+    }
+    return result;
+}
+
+/*!
+  \brief Compare items.
+  \param left first model index to be compared
+  \param right last model index to be compared
+  \return 0 if items are equal, negative value if left item is less than right one
+  and positive value otherwise
+  \details Adjusted for tree models with hierarchy based on first column
+*/
+int QtxTreeViewSearcher::compareIndices( const QModelIndex& left,
+                     const QModelIndex& right ) const
+{
+  QModelIndexList idsLeft = getId( left );
+  QModelIndexList idsRight = getId( right );
+  for ( int i = 0; i < idsLeft.count() && i < idsRight.count(); i++ )
+  {
+    QModelIndex lid = idsLeft[i];
+    QModelIndex rid = idsRight[i];
+    if ( lid.row() != rid.row() )
+      return lid.row() - rid.row();
+//    else if ( lid.column() != rid.column() )
+//      return lid.column() - rid.column();
+  }
+  return idsLeft.count() < idsRight.count() ? -1 :
+    ( idsLeft.count() == idsRight.count() ? 0 : 1 );
 }
 
 //------------------------------------------------------------------------------

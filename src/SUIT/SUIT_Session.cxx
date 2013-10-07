@@ -289,8 +289,8 @@ void SUIT_Session::closeSession( int mode, int flags )
       if( study->isModified() ){
         myExitStatus = FORCED;
       } 
-      app->closeApplication();
     }
+    app->closeApplication();
   }
   
   myExitFlags = flags;

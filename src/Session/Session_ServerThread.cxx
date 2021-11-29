@@ -35,9 +35,7 @@
 
 #include "Session_Session_i.hxx"
 
-#include <Utils_ORB_INIT.hxx>
-#include <Utils_SINGLETON.hxx>
-#include <Utils_SALOME_Exception.hxx>
+#include <Utils_CommException.hxx>
 #include <Basics_Utils.hxx>
 #include <NamingService_WaitForServerReadiness.hxx>
 #include <utilities.h>

@@ -20,6 +20,7 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
+#include <ArgvKeeper.hxx>
 #include <Container_init_python.hxx> // this include must be the first one as it includes Python.h
 #include <Basics_Utils.hxx>
 #include <ConnectionManager_i.hxx>
@@ -579,15 +580,14 @@ int AbstractGUIAppMain(int argc, char **argv)
   try
   {
     // ...create ORB, get RootPOA object, NamingService, etc.
-    ORB_INIT &init = *SINGLETON_<ORB_INIT>::Instance();
-    ASSERT(SINGLETON_<ORB_INIT>::IsAlreadyExisting());
     int orbArgc = 1;
     if (std::string(argv[1]).find("-ORBInitRef") != std::string::npos)
     {
       orbArgc = 3;
       remoteLauncher = true;
     }
-    orb = init(orbArgc, argv);
+    SetArgcArgv(orbArgc, argv);
+    orb = KERNEL::GetRefToORB();
 
     CORBA::Object_var obj = orb->resolve_initial_references("RootPOA");
     poa = PortableServer::POA::_narrow(obj);

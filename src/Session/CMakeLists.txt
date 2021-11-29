@@ -57,6 +57,7 @@ SET(_link_LIBRARIES
   ${QT_LIBRARIES}
   ${OpenCASCADE_FoundationClasses_LIBRARIES}
   ${OMNIORB_LIBRARIES}
+  ${KERNEL_ArgvKeeper}
   ${KERNEL_SalomeNS}
   ${KERNEL_SalomeLifeCycleCORBA}
   ${KERNEL_OpUtil}

@@ -32,7 +32,6 @@
 #include CORBA_CLIENT_HEADER(SALOME_ModuleCatalog)
 #include CORBA_CLIENT_HEADER(SALOME_Component)
 
-#include "Utils_ORB_INIT.hxx"
 #include "Utils_SINGLETON.hxx"
 #include "SALOME_NamingService.hxx"
 #include "Basics_Utils.hxx"

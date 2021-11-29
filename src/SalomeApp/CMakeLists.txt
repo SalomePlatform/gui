@@ -76,7 +76,7 @@ SET(_link_LIBRARIES
   ${OpenCASCADE_FoundationClasses_LIBRARIES}
   ${QT_LIBRARIES}
   ${PYTHON_LIBRARIES}
-  ${KERNEL_OpUtil} ${KERNEL_SALOMELocalTrace} ${KERNEL_SalomeDSClient} ${KERNEL_TOOLSDS}
+  ${KERNEL_ArgvKeeper} ${KERNEL_OpUtil} ${KERNEL_SALOMELocalTrace} ${KERNEL_SalomeDSClient} ${KERNEL_TOOLSDS}
   CASCatch suit std CAM ObjBrowser SalomePrs Event
   LogWindow LightApp SalomePrs ToolsGUI
 )

@@ -33,8 +33,8 @@
 
 #include <SALOME_NamingService.hxx>
 #include <SALOMEDS_Tool.hxx>
-#include <Utils_ORB_INIT.hxx>
-#include <Utils_SINGLETON.hxx>
+#include <ArgvKeeper.hxx>
+#include <OpUtil.hxx>
 #include <Utils_SALOME_Exception.hxx>
 #include <utilities.h>
 
@@ -343,8 +343,8 @@ CORBA::ORB_var SalomeApp_Engine_i::orb()
 
   if ( CORBA::is_nil( _orb ) ) {
     Qtx::CmdLineArgs args;
-    ORB_INIT& init = *SINGLETON_<ORB_INIT>::Instance();
-    _orb = init( args.argc(), args.argv() );
+    SetArgcArgv( args.argc(), args.argv() );
+    _orb = KERNEL::GetRefToORB();
   }
 
   return _orb;

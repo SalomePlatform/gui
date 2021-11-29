@@ -80,8 +80,6 @@
 //#include <OB_ListItem.h>
 
 
-#include <Utils_ORB_INIT.hxx>
-#include <Utils_SINGLETON.hxx>
 #include <SALOME_LifeCycleCORBA.hxx>
 
 #include <QApplication>
@@ -97,7 +95,9 @@
 #include <QtDebug>
 
 #include <SALOMEDSClient_ClientFactory.hxx>
+#include <ArgvKeeper.hxx>
 #include <Basics_Utils.hxx>
+#include <OpUtil.hxx>
 
 #include <SALOME_ListIO.hxx>
 #include <SALOME_Prs.h>
@@ -1347,8 +1347,8 @@ CORBA::ORB_var SalomeApp_Application::orb()
 
   if ( CORBA::is_nil( _orb ) ) {
     Qtx::CmdLineArgs args;
-    ORB_INIT& init = *SINGLETON_<ORB_INIT>::Instance();
-    _orb = init( args.argc(), args.argv() );
+    SetArgcArgv( args.argc(), args.argv() );
+    _orb = KERNEL::GetRefToORB();
   }
 
   return _orb;

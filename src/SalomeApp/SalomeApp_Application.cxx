@@ -173,6 +173,25 @@ namespace
     bool  myPrevState;
     bool& myLock; //! External 'Lock state' boolean flag
   };
+
+  /*!
+    \brief Dynamic property manager
+  */
+  class PropertyMgr
+  {
+    QObject* myObject;
+    QString myProperty;
+  public:
+    PropertyMgr(QObject* object, const QString& property, const QVariant& value)
+      : myObject(object), myProperty(property)
+    {
+      myObject->setProperty(qPrintable(myProperty), value);
+    }
+    ~PropertyMgr()
+    {
+      myObject->setProperty(qPrintable(myProperty), QVariant());
+    }
+  };
 }
 
 /*!Constructor.*/
@@ -255,10 +274,12 @@ void SalomeApp_Application::start()
     LightApp_Application::start();
     SALOME_EventFilter::Init();
 
-    setProperty("open_study_from_command_line", true);
-    if ( !hdffile.isEmpty() ) // open hdf file given as parameter
+    if ( !hdffile.isEmpty() )
+    {
+      // open hdf file given as parameter
+      PropertyMgr propm( this, "open_study_from_command_line", true );
       onOpenDoc( hdffile );
-    setProperty("open_study_from_command_line", QVariant());
+    }
 
 #ifndef DISABLE_PYCONSOLE
     // import/execute python scripts
@@ -287,6 +308,7 @@ void SalomeApp_Application::start()
 
               script.remove( QRegExp("^python.*[\\s]+") );
               QString command = QString( "exec(open(\"%1\", \"rb\").read(), args=(%2))" ).arg(script).arg(args.join(","));
+              PropertyMgr propm( this, "IsLoadedScript", true );
               pyConsole->exec(command);
             }
           } // end for loop on pyfiles QStringList
@@ -523,11 +545,10 @@ void SalomeApp_Application::onNewWithScript()
   {
     onNewDoc();
 
-    QString command = QString("exec(open(\"%1\", \"rb\").read())").arg(aFile);
-
 #ifndef DISABLE_PYCONSOLE
+    QString command = QString("exec(open(\"%1\", \"rb\").read())").arg(aFile);
     PyConsole_Console* pyConsole = pythonConsole();
-
+    PropertyMgr propm( this, "IsLoadedScript", true );
     if ( pyConsole )
       pyConsole->exec( command );
 #endif
@@ -998,14 +1019,12 @@ void SalomeApp_Application::onLoadScript( )
 
   if ( !aFile.isEmpty() )
   {
-
-    QString command = QString("exec(compile(open('%1', 'rb').read(), '%1', 'exec'))").arg(aFile);
-
 #ifndef DISABLE_PYCONSOLE
+    QString command = QString("exec(compile(open('%1', 'rb').read(), '%1', 'exec'))").arg(aFile);
     PyConsole_Console* pyConsole = pythonConsole();
-
+    PropertyMgr propm( this, "IsLoadedScript", true );
     if ( pyConsole )
-      pyConsole->exec( command );
+      pyConsole->exec(command);
 #endif
   }
 }
@@ -2046,8 +2065,10 @@ bool SalomeApp_Application::onRestoreStudy( const QString& theDumpScript,
 
 #ifndef DISABLE_PYCONSOLE
   PyConsole_Console* pyConsole = app->pythonConsole();
-  if ( pyConsole )
+  if ( pyConsole ) {
+    PropertyMgr propm( this, "IsLoadedScript", true );
     pyConsole->execAndWait( command );
+  }
 #endif
 
   // remove temporary directory

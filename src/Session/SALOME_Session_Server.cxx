@@ -23,7 +23,6 @@
 #include <ArgvKeeper.hxx>
 #include <Container_init_python.hxx> // this include must be the first one as it includes Python.h
 #include <Basics_Utils.hxx>
-#include <ConnectionManager_i.hxx>
 #include <OpUtil.hxx>
 #include <RegistryService.hxx>
 #include <SALOME_LifeCycleCORBA.hxx>

@@ -19,6 +19,7 @@
 # Author : Adrien BRUNETON (CEA)
 #
 
+import salome
 from omniORB import CORBA
 from SALOME_NamingServicePy import SALOME_NamingServicePy_i
 import SALOMEDS
@@ -28,7 +29,7 @@ import PVSERVER_ORB
 
 ###
 # Get verbose level
-### 
+###
 __verbose__ = None
 def verbose():
     import os
@@ -45,41 +46,32 @@ def verbose():
 ###
 # Get ORB reference
 ###
-__orb__ = None
 def getORB():
-    global __orb__
-    if __orb__ is None:
-        __orb__ = CORBA.ORB_init( [''], CORBA.ORB_ID )
-        pass
-    return __orb__
-
-###
-# Get naming service instance
-###
-__naming_service__ = None
-def getNS():
-    global __naming_service__
-    if __naming_service__ is None:
-        __naming_service__ = SALOME_NamingServicePy_i( getORB() )
-        pass
-    return __naming_service__
+    salome.salome_init()
+    return salome.orb
 
 ###
 # Get PVSERVER service
 ###
 __service__ = None
 __serviceLoader__ = None
-def getService():    
+def getService():
     global __service__, __serviceLoader__
+    import KernelBasis
     containerName = "FactoryServer"
-    if __serviceLoader__ is None:
-        __serviceLoader__ = PVServer_ServiceLoader() 
-    if __service__ is None:
-        import PVSERVER
-        ior = __serviceLoader__.findOrLoadService(containerName)
-        obj = getORB().string_to_object( ior )
-        __service__ = obj._narrow(PVSERVER.PVSERVER)
-        pass
+    if KernelBasis.getSSLMode():
+        if __service__ is None:
+            salome.salome_init()
+            __service__ = salome.lcc.FindOrLoadComponent(containerName, "PVSERVER")
+    else:
+        if __serviceLoader__ is None:
+            __serviceLoader__ = PVServer_ServiceLoader()
+        if __service__ is None:
+            import PVSERVER
+            ior = __serviceLoader__.findOrLoadService(containerName)
+            obj = getORB().string_to_object( ior )
+            __service__ = obj._narrow(PVSERVER.PVSERVER)
+            pass
     return __service__
 
 ###

@@ -20,7 +20,8 @@
 #
 
 import PVSERVER_ORB__POA
-from SALOME_NamingServicePy import SALOME_NamingServicePy_i
+import SALOME_ComponentPy
+import SALOME_Embedded_NamingService_ClientPy
 from PVSERVER_impl import PVSERVER_impl, MESSAGE 
     
 class PVSERVER(PVSERVER_ORB__POA.PVSERVER_Gen,
@@ -43,16 +44,26 @@ class PVSERVER(PVSERVER_ORB__POA.PVSERVER_Gen,
 #         self._interfaceName = interfaceName
         self._containerName = containerName
 #         self._contId = contID
+        self._compo_o = None
 
-        self._naming_service = SALOME_NamingServicePy_i(self._orb)
+        emb_ns = contID.get_embedded_NS_if_ssl()
+        import CORBA
+        if CORBA.is_nil(emb_ns):
+            self._naming_service = SALOME_ComponentPy.SALOME_NamingServicePy_i( self._orb )
+        else:
+            self._naming_service = SALOME_Embedded_NamingService_ClientPy.SALOME_Embedded_NamingService_ClientPy(emb_ns)
+
         Component_path = self._containerName + "/" + self._instanceName
         MESSAGE(  'SALOME_ComponentPy_i Register' + str( Component_path ) )
         id_o = poa.activate_object(self)
-        compo_o = poa.id_to_reference(id_o)
+        self._compo_o = poa.id_to_reference(id_o)
         
         ## And launch registration
         ##
-        self._naming_service.Register(compo_o, Component_path)        
+        self._naming_service.Register(self._compo_o, Component_path)
+
+    def getCorbaRef(self):
+        return self._compo_o
 
     """ Override base class destroy to make sure we try to kill the pvserver
         before leaving.
@@ -60,4 +71,5 @@ class PVSERVER(PVSERVER_ORB__POA.PVSERVER_Gen,
     def destroy(self):
         # TODO
         self.StopPVServer()
+
   

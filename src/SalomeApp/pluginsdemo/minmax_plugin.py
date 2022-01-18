@@ -142,12 +142,12 @@ def minmax(context):
       pass
 
     def helpMessage(self):
-      QMessageBox.about(None, "About Min/Max value of control",
+      QMessageBox.about(None, "About Min/Max and Average value of control",
       """
-      Displays the min/max value of a control
-      ---------------------------------
+      Displays the min/max and average value of a control
+      ---------------------------------------------------
 
-This plugin displays the min and max value of a control
+      This plugin displays the min, max and average value of a control
 on a mesh.
 Inputs:
   - The mesh to analyse
@@ -160,11 +160,20 @@ Inputs:
       if self.mm and control:
         fun = smesh.GetFunctor(controls_dict[str(control)])
         fun.SetMesh(self.mm)
-        hist = fun.GetHistogram(1,False)
-        maxVal = hist[0].max
+        nbRectangles = int(max(100, self.mm.NbElements() / 100 ))
+        hist = fun.GetHistogram(nbRectangles,False)
+        maxVal = hist[-1].max
         minVal = hist[0].min
+        avgVal = 0
+        nbElems = 0
+        for rect in hist:
+          avgVal += 0.5 * ( hist[0].max + hist[0].min ) * rect.nbEvents
+          nbElems += rect.nbEvents
+        if nbElems > 0:
+          avgVal /= nbElems
         self.ui.maxvalue.setText("%f"%(maxVal))
         self.ui.minvalue.setText("%f"%(minVal))
+        self.ui.avgvalue.setText("%f"%(avgVal))
       else:
         pass
       pass

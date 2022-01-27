@@ -281,7 +281,8 @@ class PluginsManager:
               sys.path.insert(0,directory)
               logger.debug("The directory %s has been added to PYTHONPATH"%directory)
             try:
-              exec(compile(open(plugins_file,'rb').read(), plugins_file, 'exec'),globals(),{})
+              with open(plugins_file, 'rb') as fp:
+                exec(compile(fp.read(), plugins_file, 'exec'), globals(), {})
             except:
               logger.critical("Error while loading plugins from file %s"%plugins_file)
               traceback.print_exc()

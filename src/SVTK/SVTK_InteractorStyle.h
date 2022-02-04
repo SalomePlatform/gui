@@ -145,6 +145,7 @@ class QtxRectRubberBand;
 #define VTK_INTERACTOR_STYLE_CAMERA_SELECT     6
 #define VTK_INTERACTOR_STYLE_CAMERA_GLOBAL_PAN 7
 #define VTK_INTERACTOR_STYLE_CAMERA_SELECT_ROTATION_POINT 8
+#define VTK_INTERACTOR_STYLE_CAMERA_INTERACTIVE_SELECTION 9
 
 enum PolygonState { Disable, Start, InProcess, Finished, Closed, NotValid };
 
@@ -281,6 +282,9 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
   void
   IncrementalRotate( const int incrX, const int incrY );
 
+  void
+  InteractiveSelection();
+
   // Main process event method (reimplemented from #vtkInteractorStyle)
   static 
   void
@@ -303,6 +307,7 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
 
   void startPointSelection();
   void startFocalPointSelection();
+  void startInteractiveSelection();
 
  protected:
   void loadCursors();
@@ -369,6 +374,7 @@ class SVTK_EXPORT SVTK_InteractorStyle: public vtkInteractorStyle
   vtkSmartPointer<vtkPointPicker> myPointPicker;
   
   double                          myBBCenter[3];
+  double                          myInteractivePoint[3];
   bool                            myBBFirstCheck;
 
   QtxRectRubberBand*              myRectBand; //!< selection rectangle rubber band

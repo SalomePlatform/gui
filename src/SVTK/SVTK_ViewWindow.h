@@ -328,6 +328,8 @@ public slots:
   void activateSetFocalPointGravity();
   void activateSetFocalPointSelected();
   void activateStartFocalPointSelection();
+  void activateInteractiveSelection();
+  void deactivateCurrectOperation();
 
   void onViewParameters(bool theIsActivate);
 

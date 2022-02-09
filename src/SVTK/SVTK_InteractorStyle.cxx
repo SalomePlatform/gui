@@ -95,7 +95,8 @@ SVTK_InteractorStyle::SVTK_InteractorStyle():
   myRectBand(0),
   myPolygonBand(0),
   myPoligonState(Disable),
-  myIsAdvancedZoomingEnabled(false)
+  myIsAdvancedZoomingEnabled(false),
+  myInteractivePoint{0.0, 0.0, 0.0}
 {
   myPointPicker->Delete();
 
@@ -660,7 +661,11 @@ void SVTK_InteractorStyle::OnLeftButtonUp(int vtkNotUsed(ctrl),
   // finishing current viewer operation
   if (State != VTK_INTERACTOR_STYLE_CAMERA_NONE) {
     onFinishOperation();
+    int lastOperation = State;
     startOperation(VTK_INTERACTOR_STYLE_CAMERA_NONE);
+    if (lastOperation == VTK_INTERACTOR_STYLE_CAMERA_INTERACTIVE_SELECTION) {
+      InvokeEvent(SVTK::InteractiveSelectionFinished, nullptr);
+    }
   }
 }
 
@@ -685,7 +690,8 @@ void SVTK_InteractorStyle::OnMiddleButtonDown(int ctrl,
     startOperation(VTK_INTERACTOR_STYLE_CAMERA_NONE);
   }
   myOtherPoint = myPoint = QPoint(x, y);
-  if (ForcedState != VTK_INTERACTOR_STYLE_CAMERA_NONE) {
+  if (ForcedState != VTK_INTERACTOR_STYLE_CAMERA_NONE &&
+      ForcedState != VTK_INTERACTOR_STYLE_CAMERA_INTERACTIVE_SELECTION) {
     startOperation(ForcedState);
   }
   else {
@@ -743,7 +749,8 @@ void SVTK_InteractorStyle::OnRightButtonDown(int ctrl,
     startOperation(VTK_INTERACTOR_STYLE_CAMERA_NONE);
   }
   myOtherPoint = myPoint = QPoint(x, y);
-  if (ForcedState != VTK_INTERACTOR_STYLE_CAMERA_NONE) {
+  if (ForcedState != VTK_INTERACTOR_STYLE_CAMERA_NONE && 
+      ForcedState != VTK_INTERACTOR_STYLE_CAMERA_INTERACTIVE_SELECTION) {
     startOperation(ForcedState);
   }
   else {
@@ -918,6 +925,20 @@ void SVTK_InteractorStyle::startRotate()
 }
 
 /*!
+  Starts Interactive Selection operation
+*/
+void SVTK_InteractorStyle::startInteractiveSelection()
+{
+	if (State != VTK_INTERACTOR_STYLE_CAMERA_NONE)
+	{
+		onFinishOperation();
+		startOperation(VTK_INTERACTOR_STYLE_CAMERA_NONE);
+	}
+	ForcedState = VTK_INTERACTOR_STYLE_CAMERA_INTERACTIVE_SELECTION;
+}
+
+
+/*!
   Set rotation point selected by user
 */
 void SVTK_InteractorStyle::startPointSelection()
@@ -1058,6 +1079,7 @@ void SVTK_InteractorStyle::startOperation(int operation)
   case VTK_INTERACTOR_STYLE_CAMERA_SPIN:
   case VTK_INTERACTOR_STYLE_CAMERA_FIT:
   case VTK_INTERACTOR_STYLE_CAMERA_SELECT:
+  case VTK_INTERACTOR_STYLE_CAMERA_INTERACTIVE_SELECTION:
     if (State != VTK_INTERACTOR_STYLE_CAMERA_NONE)
       startOperation(VTK_INTERACTOR_STYLE_CAMERA_NONE);
     State = operation;
@@ -1140,6 +1162,11 @@ void SVTK_InteractorStyle::onStartOperation()
         drawPolygon();
       else
         drawRect();
+      break;
+    }
+    case VTK_INTERACTOR_STYLE_CAMERA_INTERACTIVE_SELECTION:
+    {
+      InteractiveSelection();
       break;
     }
     case VTK_INTERACTOR_STYLE_CAMERA_ZOOM:
@@ -1336,6 +1363,8 @@ void SVTK_InteractorStyle::onOperation(QPoint mousePos)
         drawRect();
       break;
     }
+  case VTK_INTERACTOR_STYLE_CAMERA_INTERACTIVE_SELECTION:
+	  this->InteractiveSelection();
   }
 }
 
@@ -1492,6 +1521,23 @@ void SVTK_InteractorStyle::IncrementalRotate( const int incrX, const int incrY )
   this->RotateXY( incrX, -incrY );
 }
 
+void SVTK_InteractorStyle::InteractiveSelection() 
+{
+  if (vtkCamera *cam = GetCurrentRenderer()->GetActiveCamera()) {
+    int posX, posY;
+    this->Interactor->GetEventPosition(posX, posY);
+    double viewFocus[3], z;
+    double* focalPointWorld = cam->GetFocalPoint();
+	  this->ComputeWorldToDisplay(focalPointWorld[0], focalPointWorld[1],
+		  focalPointWorld[2], viewFocus);
+	  z = viewFocus[2];
+
+	  this->ComputeDisplayToWorld(double(posX), double(posY),
+		z, this->myInteractivePoint);
+	  InvokeEvent(SVTK::InteractiveSelectionChanged, (void*)this->myInteractivePoint);
+  }
+}
+
 /*!
   Redefined in order to add an observer (callback) for custorm event (space mouse event)
 */
@@ -1538,6 +1584,8 @@ void SVTK_InteractorStyle::SetInteractor( vtkRenderWindowInteractor* theInteract
     theInteractor->AddObserver( SVTK::SetFocalPointGravity, EventCallbackCommand, Priority );
     theInteractor->AddObserver( SVTK::StartFocalPointSelection, EventCallbackCommand, Priority );
     theInteractor->AddObserver( SVTK::SetFocalPointSelected, EventCallbackCommand, Priority );
+	  theInteractor->AddObserver( SVTK::StartInteractiveSelection, EventCallbackCommand, Priority);
+    theInteractor->AddObserver( SVTK::StopCurrentOperation, EventCallbackCommand, Priority);
   }
 }
 
@@ -1923,7 +1971,9 @@ void SVTK_InteractorStyle::ProcessEvents( vtkObject* object,
       case SVTK::StartFocalPointSelection:
         self->startFocalPointSelection();
         return;
-
+      case SVTK::StartInteractiveSelection:
+        self->startInteractiveSelection();
+        return;
       case SVTK::SetFocalPointSelected:
         if ( self->myCurrFocalPointType == SVTK::StartFocalPointSelection )
         {
@@ -1935,6 +1985,9 @@ void SVTK_InteractorStyle::ProcessEvents( vtkObject* object,
         self->myPrevFocalPointType = self->myCurrFocalPointType;
         self->myCurrFocalPointType = SVTK::SetFocalPointSelected;
         return;
+      case SVTK::StopCurrentOperation:
+        self->onFinishOperation();
+        self->startOperation(VTK_INTERACTOR_STYLE_CAMERA_NONE);
       }
     }
   }

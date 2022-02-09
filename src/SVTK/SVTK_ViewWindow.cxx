@@ -1046,6 +1046,21 @@ void SVTK_ViewWindow::activateSetFocalPointGravity()
 }
 
 /*!
+  Activate interactive selection
+*/
+void SVTK_ViewWindow::activateInteractiveSelection()
+{
+  myEventDispatcher->InvokeEvent(SVTK::StartInteractiveSelection, 0);
+}
+
+/*
+  Deactivate current active operation
+*/
+void SVTK_ViewWindow::deactivateCurrectOperation() {
+  myEventDispatcher->InvokeEvent(SVTK::StopCurrentOperation, 0);
+}
+
+/*!
   Set the selected point as a focal point
 */
 void SVTK_ViewWindow::activateSetFocalPointSelected()

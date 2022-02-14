@@ -130,7 +130,7 @@ protected:
   //special cases for performance
   
   /*! \fn void UnstructuredGridExecute();
-   * \brief Filter culculation method for data object type is VTK_UNSTRUCTURED_GRID.
+   * \brief Filter calculation method for data object type is VTK_UNSTRUCTURED_GRID.
    */
   int UnstructuredGridExecute (vtkDataSet *, vtkPolyData *, vtkInformation *);
 
@@ -140,6 +140,12 @@ protected:
                          vtkPolyData *output,
                          TMapOfVectorId& theDimension2VTK2ObjIds,
                          bool triangulate = false);
+
+  /*! \fn void FillVTK2ObjIds(vtkPolyData *output);
+   * \brief fill myVTK2ObjIds to get the correspondence between vtk ids (displayed edges and faces
+   * computed in vtkGeometryFilter::UnstructuredGridExecute) and original cell ids (mesh cells)
+   */
+  void FillVTK2ObjIds(vtkPolyData *output);
 
   // Delegate VTKViewer_GeometryFilter::UnstructuredGridExecute to vtkGeometryFilter::UnstructuredGridExecute
   bool delegateToVtk = false;

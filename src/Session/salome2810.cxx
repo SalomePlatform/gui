@@ -26,7 +26,6 @@
 int main(int argc, char *argv[])
 {
   constexpr char MAIN_PROGRAM[] = "SALOME_Session_Server_No_Server";
-  constexpr char NO_SERVER_ENV_VAR[] = "SALOME_EMB_SERVANT";
   constexpr char PYQT5_NOT_MASTER[] = "PYQT5_NOT_MASTER";
 #ifndef WIN32
   const char *MODULES[]={"SHAPERSTUDY","GEOM","SMESH","YACS","HYBRIDPLUGIN","GHS3DPLUGIN","BLSURFPLUGIN","GMSHPLUGIN","HEXABLOCKPLUGIN","HEXOTICPLUGIN","GHS3DPRLPLUGIN","NETGENPLUGIN"};
@@ -52,7 +51,6 @@ int main(int argc, char *argv[])
   QString appconfig_val( modulesPaths.join(QDir::listSeparator()));
   pe.insert(APPCONFIG,appconfig_val);
   //tells shutup to salome.salome_init invoked at shaper engine ignition
-  pe.insert(NO_SERVER_ENV_VAR,"1");
   pe.insert(PYQT5_NOT_MASTER,"1");
   //resource file retrieve
   QString resfile;
@@ -90,7 +88,6 @@ int main(int argc, char *argv[])
   if( pe.contains("VERBOSE") )
   {
     std::cout << "Overloaded env var :" << std::endl;
-    std::cout << " - " << NO_SERVER_ENV_VAR << std::endl;
     std::cout << " - " << APPCONFIG << " = " << appconfig_val.toStdString() << std::endl;
     std::cout << "Command launched :" << std::endl;
     std::cout << MAIN_PROGRAM << " " << args.join(" ").toStdString() << std::endl;

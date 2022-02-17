@@ -197,6 +197,10 @@
 #include <utilities.h>
 
 #define FIRST_HELP_ID 1000000
+#define HAS_WWW_URL true
+#define HAS_FORUM_URL true
+#define HAS_YOUTUBE_URL true
+#define HAS_TUTORIAL_URL false
 
 #ifndef DISABLE_SALOMEOBJECT
   #include <SALOME_InteractiveObject.hxx>
@@ -300,6 +304,24 @@ namespace
     else
       result = QLocale( lang ).nativeLanguageName();
     return result;
+  }
+
+  QString getHelpItem( const QString& section, const QString& parameter, const QString& root = QString() )
+  {
+    SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+    foreach( QString item, resMgr->stringValue( section, parameter ).split( ";;", QString::SkipEmptyParts ) )
+    {
+      if ( item.startsWith( "http", Qt::CaseInsensitive ) )
+        return item;
+      QString path = item;
+      path.remove( QRegExp( "#.*$" ) );
+      QFileInfo fi( path );
+      if ( fi.isRelative() && !root.isEmpty() )
+        path = Qtx::addSlash( root ) + path;
+      if ( QFile::exists( path ) )
+        return item;
+    }
+    return QString();
   }
 }
 
@@ -601,54 +623,63 @@ void LightApp_Application::createActions()
 
   int id = LightApp_Application::UserID + FIRST_HELP_ID;
 
+  QString url;
+
   // a) Link to web site
-  QString url = resMgr->stringValue("GUI", "site_url");
-  if ( !url.isEmpty() ) {
-    QString title = tr ( "SALOME_SITE" );
-    QAction* as = createAction( WebSiteId, title,
-				resMgr->loadPixmap( "LightApp", tr( "ICON_WWW" ), false ),
-				title, title,
-				0, desk, false, this, SLOT( onHelpContentsModule() ) );
-    as->setData( url );
-    createMenu( as, helpMenu, -1, 0 );
+  if ( HAS_WWW_URL ) {
+    url = resMgr->stringValue("GUI", "site_url");
+    if ( !url.isEmpty() ) {
+      QString title = tr ( "SALOME_SITE" );
+      QAction* as = createAction( WebSiteId, title,
+                                  resMgr->loadPixmap( "LightApp", tr( "ICON_WWW" ), false ),
+                                  title, title,
+                                  0, desk, false, this, SLOT( onHelpContentsModule() ) );
+      as->setData( url );
+      createMenu( as, helpMenu, -1, 0 );
+    }
   }
 
   // b) Link to Forum
-  url = resMgr->stringValue("GUI", "forum_url");
-  if ( !url.isEmpty() ) {
-    QString title = tr ( "SALOME_FORUM" );
-    QAction* af = createAction( ForumId, title,
-				resMgr->loadPixmap( "LightApp", tr( "ICON_WWW" ), false ),
-				title, title,
-				0, desk, false, this, SLOT( onHelpContentsModule() ) );
-    af->setData( url );
-    createMenu( af, helpMenu, -1, 0 );
+  if ( HAS_FORUM_URL ) {
+    url = resMgr->stringValue("GUI", "forum_url");
+    if ( !url.isEmpty() ) {
+      QString title = tr ( "SALOME_FORUM" );
+      QAction* af = createAction( ForumId, title,
+                                  resMgr->loadPixmap( "LightApp", tr( "ICON_WWW" ), false ),
+                                  title, title,
+                                  0, desk, false, this, SLOT( onHelpContentsModule() ) );
+      af->setData( url );
+      createMenu( af, helpMenu, -1, 0 );
+    }
   }
 
   // c) Link to YouTube channel
-  url = resMgr->stringValue("GUI", "channel_url");
-  if ( !url.isEmpty() ) {
-    createMenu( separator(), helpMenu, -1, 0 );
-    QString title = tr ( "SALOME_VIDEO_TUTORIALS" );
-    QAction* av = createAction( VideosId, title,
-				resMgr->loadPixmap( "LightApp", tr( "ICON_LIFE_RIGN" ), false ),
-				title, tr( "PRP_SALOME_VIDEO_TUTORIALS" ),
-				0, desk, false, this, SLOT( onHelpContentsModule() ) );
-    av->setData( url );
-    createMenu( av, helpMenu, -1, 0 );
+  if ( HAS_YOUTUBE_URL ) {
+    url = resMgr->stringValue("GUI", "channel_url");
+    if ( !url.isEmpty() ) {
+      createMenu( separator(), helpMenu, -1, 0 );
+      QString title = tr ( "SALOME_VIDEO_TUTORIALS" );
+      QAction* av = createAction( VideosId, title,
+                                  resMgr->loadPixmap( "LightApp", tr( "ICON_LIFE_RIGN" ), false ),
+                                  title, tr( "PRP_SALOME_VIDEO_TUTORIALS" ),
+                                  0, desk, false, this, SLOT( onHelpContentsModule() ) );
+      av->setData( url );
+      createMenu( av, helpMenu, -1, 0 );
+    }
   }
 
   // d) Link to Tutorials
-
-  url = resMgr->stringValue("GUI", "tutorials_url");
-  if ( !url.isEmpty() ) {
-    QString title = tr ( "SALOME_TUTORIALS" );
-    QAction* as = createAction( TutorialsId, title,
-				resMgr->loadPixmap( "LightApp", tr( "ICON_WWW" ), false ),
-				title, tr( "PRP_SALOME_TUTORIALS" ),
-				0, desk, false, this, SLOT( onHelpContentsModule() ) );
-    as->setData( url );
-    createMenu( as, helpMenu, -1, 0 );
+  if ( HAS_TUTORIAL_URL ) {
+    url = resMgr->stringValue("GUI", "tutorials_url");
+    if ( !url.isEmpty() ) {
+      QString title = tr ( "SALOME_TUTORIALS" );
+      QAction* as = createAction( TutorialsId, title,
+                                  resMgr->loadPixmap( "LightApp", tr( "ICON_WWW" ), false ),
+                                  title, tr( "PRP_SALOME_TUTORIALS" ),
+                                  0, desk, false, this, SLOT( onHelpContentsModule() ) );
+      as->setData( url );
+      createMenu( as, helpMenu, -1, 0 );
+    }
   }
 
   // e) Help for modules
@@ -673,7 +704,7 @@ void LightApp_Application::createActions()
     QString modName = moduleName( aModule );                         // module name
     if ( modName.isEmpty() ) modName = aModule;                      // for KERNEL and GUI
     QString rootDir = QString( "%1_ROOT_DIR" ).arg( modName );       // module root dir env variable
-    QString modDir  = Qtx::getenv( rootDir.toUtf8().constData() );        // module root dir path
+    QString modDir  = Qtx::getenv( rootDir.toUtf8().constData() );   // module root dir path
     QString docSection;
     if (resMgr->hasValue( modName, "documentation" ) )
       docSection = resMgr->stringValue(modName, "documentation");
@@ -683,29 +714,11 @@ void LightApp_Application::createActions()
       helpSubMenu = resMgr->stringValue( docSection, "sub_menu", "" );
       if ( helpSubMenu.contains( "%1" ) )
         helpSubMenu = helpSubMenu.arg( aModule );
-      QStringList listOfParam = resMgr->parameters( docSection );
-      foreach( QString paramName, listOfParam ) {
-        QString valueStr = resMgr->stringValue( docSection, paramName );
-        if ( !valueStr.isEmpty() ) {
-          QStringList valueItems = valueStr.split( ";;", QString::SkipEmptyParts );
-          foreach( QString item, valueItems ) {
-            if ( item.startsWith( "http", Qt::CaseInsensitive ) ) {
-              QString key = paramName.contains( "%1" ) ? paramName.arg( aModule ) : paramName;
-              helpData.insert( key, item );
-              break;
-            }
-            else {
-              QFileInfo fi( item );
-              if ( fi.isRelative() && !modDir.isEmpty() )
-                item = Qtx::addSlash( modDir ) + item;
-              if ( QFile::exists( item ) ) {
-                QString key = paramName.contains( "%1" ) ? paramName.arg( aModule ) : paramName;
-                helpData.insert( key, item );
-                break;
-              }
-            }
-          }
-        }
+      foreach( QString paramName, resMgr->parameters( docSection ) ) {
+        QString key = paramName.contains( "%1" ) ? paramName.arg( aModule ) : paramName;
+        QString helpItem = getHelpItem( docSection, paramName );
+        if ( !helpItem.isEmpty() )
+          helpData.insert( key, helpItem );
       }
     }
 
@@ -756,20 +769,15 @@ void LightApp_Application::createActions()
 
   QStringList addHelpItems = resMgr->parameters( "add_help" );
   foreach ( QString paramName, addHelpItems ) {
-    QString valueStr = resMgr->stringValue( "add_help", paramName );
-    if ( !valueStr.isEmpty() ) {
-      QStringList valueItems = valueStr.split( ";;", QString::SkipEmptyParts );
-      foreach( QString item, valueItems ) {
-        if ( item.startsWith( "http", Qt::CaseInsensitive ) || QFile::exists( item ) ) {
-          QPixmap helpIcon = item.startsWith( "http", Qt::CaseInsensitive ) ?
-            resMgr->loadPixmap( "STD", tr( "ICON_WWW" ), false ) : resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false );
-          QAction* a = createAction( id++, paramName, helpIcon, paramName, paramName,
-                                     0, desk, false, this, SLOT( onHelpContentsModule() ) );
-          a->setData( item );
-          createMenu( a, helpMenu, -1, 10 );
-          break;
-        }
-      }
+    QString helpItem = getHelpItem( "add_help", paramName );
+    if ( !helpItem.isEmpty() )
+    {
+      QPixmap helpIcon = helpItem.startsWith( "http", Qt::CaseInsensitive ) ?
+        resMgr->loadPixmap( "STD", tr( "ICON_WWW" ), false ) : resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false );
+      QAction* a = createAction( id++, paramName, helpIcon, paramName, paramName,
+                                 0, desk, false, this, SLOT( onHelpContentsModule() ) );
+      a->setData( helpItem );
+      createMenu( a, helpMenu, -1, 10 );
     }
   }
 
@@ -4180,8 +4188,10 @@ void LightApp_Application::updateWindows()
     infoPanel()->addLabel( action( FileNewId )->statusTip(), grp );
     infoPanel()->addAction( action( FileOpenId ), grp );
     infoPanel()->addLabel( action( FileOpenId )->statusTip(), grp );
-    infoPanel()->addAction( action( TutorialsId ), grp );
-    infoPanel()->addLabel( action( TutorialsId )->statusTip(), grp );
+    if ( HAS_TUTORIAL_URL ) {
+      infoPanel()->addAction( action( TutorialsId ), grp );
+      infoPanel()->addLabel( action( TutorialsId )->statusTip(), grp );
+    }
     infoPanel()->addAction( action( VideosId ), grp );
     infoPanel()->addLabel( action( VideosId )->statusTip(), grp );
 

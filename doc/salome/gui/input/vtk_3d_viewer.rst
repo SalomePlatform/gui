@@ -48,7 +48,11 @@ only for parallel (non-perspective) view's mode.
 ____
 
 
-.. image:: ../../../../src/SVTK/resources/vtk_view_highlight.png
+.. image:: ../../../../src/SVTK/resources/vtk_view_highlight_std.png
+	:align: center
+.. image:: ../../../../src/SVTK/resources/vtk_view_highlight_dyn.png
+	:align: center
+.. image:: ../../../../src/SVTK/resources/vtk_view_highlight_off.png
 	:align: center
 
 These buttons allow switching between three pre-selection (highlighting) modes:

@@ -21,6 +21,7 @@
 // Author:    Margarita KARPUNINA, Open CASCADE S.A.S.
 //
 #include "SalomeApp_ExitDlg.h"
+#include "KernelBasis.hxx"
 
 #include <QLabel> 
 #include <QVBoxLayout> 
@@ -58,6 +59,7 @@ SalomeApp_ExitDlg::SalomeApp_ExitDlg( QWidget* parent )
 
   myServersShutdown = new QCheckBox( tr( "SHUTDOWN_SERVERS" ), this );
   myServersShutdown->setChecked( true );
+  myServersShutdown->setVisible( !getSSLMode() );
   
   QVBoxLayout* m_vl1 = new QVBoxLayout();
   m_vl1->setMargin( 10 ); m_vl1->setSpacing( 16 );

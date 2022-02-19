@@ -244,8 +244,13 @@ class PluginsManager:
 
     def importPlugins(self):
         """Execute the salome_plugins file that contains plugins definition """
+        ior_fake_ns = None
+        prefix_ior = "--iorfakens="
+        presence_ior = [elt for elt in QApplication.arguments() if elt[:len(prefix_ior)]==prefix_ior]
+        if any(presence_ior):
+          ior_fake_ns = presence_ior[-1][len(prefix_ior):]
         if self.lasttime ==0 or salome.myStudy == None:
-          salome.salome_init(embedded=True)
+          salome.salome_init(embedded=True,iorfakensfile=ior_fake_ns)
 
         lasttime=0
 

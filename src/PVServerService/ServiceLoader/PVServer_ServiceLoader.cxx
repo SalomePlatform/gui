@@ -24,14 +24,22 @@
 #include <SALOME_NamingService.hxx>
 #include <utilities.h> // MESSAGE() macro
 #include <SALOMEconfig.h>
+#include "KernelBasis.hxx"
+
 #include CORBA_CLIENT_HEADER(SALOME_ContainerManager)
 
 PVServer_ServiceLoader::PVServer_ServiceLoader():
-  myLcc( 0 )
+  myLcc( nullptr )
 {
   try
   {
-      myLcc = new SALOME_LifeCycleCORBA();
+      SALOME_NamingService_Abstract *ns(nullptr);
+      if( getSSLMode() )
+      {
+        mySSLNS.reset( new SALOME_Fake_NamingService );
+        ns = mySSLNS.get();
+      }
+      myLcc = new SALOME_LifeCycleCORBA(ns);
   }
   catch(...)
   {

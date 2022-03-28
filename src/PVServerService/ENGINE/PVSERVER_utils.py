@@ -62,16 +62,14 @@ def getService():
     if KernelBasis.getSSLMode():
         if __service__ is None:
             salome.salome_init()
-            __service__ = salome.lcc.FindOrLoadComponent(containerName, "PVSERVER")
-    else:
-        if __serviceLoader__ is None:
-            __serviceLoader__ = PVServer_ServiceLoader()
-        if __service__ is None:
-            import PVSERVER
-            ior = __serviceLoader__.findOrLoadService(containerName)
-            obj = getORB().string_to_object( ior )
-            __service__ = obj._narrow(PVSERVER.PVSERVER)
-            pass
+    if __serviceLoader__ is None:
+        __serviceLoader__ = PVServer_ServiceLoader()
+    if __service__ is None:
+        import PVSERVER
+        ior = __serviceLoader__.findOrLoadService(containerName)
+        obj = getORB().string_to_object( ior )
+        __service__ = obj._narrow(PVSERVER.PVSERVER)
+        pass
     return __service__
 
 ###

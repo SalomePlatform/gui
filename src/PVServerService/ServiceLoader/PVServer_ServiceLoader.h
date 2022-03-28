@@ -22,10 +22,12 @@
 #define PVSERVERSERVICELOADER_H_
 
 #include "PVServerServiceLoader.h"
+#include "SALOME_Fake_NamingService.hxx"
 #include <SALOMEconfig.h>
 #include CORBA_CLIENT_HEADER(SALOME_Component)
 #include <string>
 #include <exception>
+#include <memory>
 
 class SALOME_LifeCycleCORBA;
 
@@ -56,6 +58,7 @@ private:
 
 private:
   SALOME_LifeCycleCORBA* myLcc;
+  std::unique_ptr<SALOME_Fake_NamingService> mySSLNS;
 };
 
 #endif /* PVSERVERSERVICELOADER_H_ */

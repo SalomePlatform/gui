@@ -27,6 +27,8 @@
 
 #include <PyConsole_Interp.h>
 
+class SUIT_ResourceMgr;
+
 class SalomeApp_PyInterp : public PyConsole_Interp
 {
   friend class SalomeApp_Application;
@@ -38,13 +40,14 @@ public:
   virtual void closeContext();
 
 protected:
-  SalomeApp_PyInterp();
+  SalomeApp_PyInterp(SUIT_ResourceMgr*);
   virtual bool initContext();
   virtual int  beforeRun();
 
 private:
   bool myFirstRun;
   bool myFirstInitStudy;
+  SUIT_ResourceMgr* myResourceMgr;
 };
 
 #endif // SALOMEAPP_PYINTERP_H

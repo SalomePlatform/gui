@@ -23,12 +23,13 @@
 //  Author : Nicolas REJNERI
 
 #include "SalomeApp_PyInterp.h"
+#include "SUIT_ResourceMgr.h"
 
 /*!
   \brief Constructor
 */
-SalomeApp_PyInterp::SalomeApp_PyInterp()
-  : myFirstRun( true ), myFirstInitStudy( false )
+SalomeApp_PyInterp::SalomeApp_PyInterp( SUIT_ResourceMgr* resMgr )
+  : myFirstRun( true ), myFirstInitStudy( false ), myResourceMgr( resMgr )
 {
 }
 
@@ -63,6 +64,13 @@ int SalomeApp_PyInterp::beforeRun()
 {
   if ( myFirstRun ) {
     myFirstRun = false;
+    QStringList parameters = myResourceMgr->parameters( "pythonpath" );
+    foreach ( QString parameter, parameters ) {
+      QStringList paths = myResourceMgr->stringValue( "pythonpath", parameter ).split( ";;" );
+      int index = 0;
+      foreach( QString path, paths )
+        simpleRun( QString( "import sys; sys.path.insert(%1, '%2')" ).arg( index++ ).arg( path ).toUtf8().constData(), false );
+    }
     int ret = simpleRun( "from Help import *", false );
     if ( ret )
       return ret;

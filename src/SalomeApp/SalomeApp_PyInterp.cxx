@@ -67,9 +67,8 @@ int SalomeApp_PyInterp::beforeRun()
     QStringList parameters = myResourceMgr->parameters( "pythonpath" );
     foreach ( QString parameter, parameters ) {
       QStringList paths = myResourceMgr->stringValue( "pythonpath", parameter ).split( ";;" );
-      int index = 0;
       foreach( QString path, paths )
-        simpleRun( QString( "import sys; sys.path.insert(%1, '%2')" ).arg( index++ ).arg( path ).toUtf8().constData(), false );
+        simpleRun( QString( "import sys; sys.path.append('%1')" ).arg( path ).toUtf8().constData(), false );
     }
     int ret = simpleRun( "from Help import *", false );
     if ( ret )

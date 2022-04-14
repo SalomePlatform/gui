@@ -25,7 +25,6 @@ IF(NOT SALOME_LIGHT_ONLY)
   LIST(APPEND _bin_SCRIPTS
       PVSERVER.py
       PVSERVER_utils.py
-      PVSERVER_SalomeSessionless.py
   )
 ENDIF()
 

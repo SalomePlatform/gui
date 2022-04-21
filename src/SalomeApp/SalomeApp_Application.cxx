@@ -110,6 +110,9 @@
 
 #include <SALOMEDS_Tool.hxx>
 
+#include <SALOMEconfig.h>
+#include CORBA_CLIENT_HEADER(SALOME_ModuleCatalog)
+
 std::unique_ptr<SALOME_NamingService_Abstract> SalomeApp_Application::_ns;
 
 /*!Internal class that updates object browser item properties */
@@ -2154,5 +2157,21 @@ void SalomeApp_Application::ensureShaperIsActivated()
 	
     if (shaper && !shaperIsActive)
       onDesktopMessage("register_module_in_study/Shaper");
+  }
+}
+
+void SalomeApp_Application::addCatalogue( const QString& moduleName, const QString& catalogue )
+{
+  CORBA::Object_var obj = namingService()->Resolve( "/Kernel/ModulCatalog" );
+  SALOME_ModuleCatalog::ModuleCatalog_var moduleCatalogue = SALOME_ModuleCatalog::ModuleCatalog::_narrow( obj );
+  QFileInfo fi( catalogue );
+  if ( !CORBA::is_nil( moduleCatalogue ) && fi.isFile() )
+  {
+    SALOME_ModuleCatalog::ListOfComponents_var known = moduleCatalogue->GetComponentList();
+    bool loaded = false;
+    for ( int i = 0; i < (int)known->length() && !loaded; i++ )
+      loaded = QString( known[i].in() ) == moduleName;
+    if ( !loaded )
+      moduleCatalogue->ImportXmlCatalogFile( catalogue.toUtf8().constData() );
   }
 }

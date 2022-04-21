@@ -36,6 +36,7 @@
 #include <SUIT_DataObject.h>
 #include <CAM_Application.h>
 
+#include <QPixmap>
 #include <QPointer>
 #include <QStringList>
 
@@ -194,6 +195,7 @@ public:
 #endif
 
 signals:
+  void                                moduleActivated( const QString& );
   void                                studyOpened();
   void                                studySaved();
   void                                studyClosed();
@@ -217,6 +219,7 @@ public slots:
 protected:
   void                                showHelp( const QString& );
   virtual void                        createActions();
+  virtual void                        customize();
   virtual void                        createActionForViewer( const int id,
                                                              const int parentId,
                                                              const QString& suffix,
@@ -251,6 +254,8 @@ protected:
   virtual PyConsole_Interp*           createPyInterp();
 #endif
 
+  virtual void                        addCatalogue( const QString&, const QString& ) {}
+
 protected slots:
   virtual void                        onDesktopActivated();
   virtual void                        onViewManagerRemoved( SUIT_ViewManager* );
@@ -258,6 +263,8 @@ protected slots:
 
   void                                onNewWindow();
   virtual void                        onModuleActivation( const QString& );
+  void                                onModuleAdding();
+  void                                onModuleRemoving( const QString& );
   void                                onCloseView( SUIT_ViewManager* );
 
   virtual void                        onStudyCreated( SUIT_Study* );
@@ -293,7 +300,6 @@ protected:
   void                                updateWindows();
   void                                updateViewManagers();
   void                                updateModuleActions();
-  void                                removeModuleAction( const QString& );
 
   bool                                checkModule( const QString& );
 
@@ -309,7 +315,7 @@ protected:
   QString                             defaultModule() const;
   virtual void                        currentWindows( QMap<int, int>& ) const;
   void                                currentViewManagers( QStringList& ) const;
-  void                                moduleIconNames( QMap<QString, QString>& ) const;
+  QPixmap                             moduleIcon( const QString&, const int = -1 ) const;
 
   QDockWidget*                        windowDock( QWidget* ) const;
   QByteArray                          dockWindowsState( const QMap<QString, bool>&, const QMap<QString, bool>& ) const;
@@ -322,20 +328,25 @@ protected:
   void                                showPreferences( const QStringList& );
 
 private:
+  bool                                addUserModule( const QString&, const QString&, bool = false );
   void                                emptyPreferences( const QString& );
   QList<QToolBar*>                    findToolBars( const QStringList& names = QStringList() );
+  void                                createHelpItems( const QString& );
+  void                                removeHelpItems( const QString& );
 
   QByteArray                          processState(QByteArray& input,
-						   const bool processWin,
-						   const bool processTb,
-						   const bool isRestoring,
-						   QByteArray defaultState = QByteArray());
+                                                   const bool processWin,
+                                                   const bool processTb,
+                                                   const bool isRestoring,
+                                                   QByteArray defaultState = QByteArray());
 
 protected:
-  typedef QPointer<QWidget>         WinPtr;
-  typedef QMap<int, WinPtr>         WinMap;
-  typedef QMap<QString, QByteArray> WinVis;
-  typedef QMap<QString, QByteArray> WinGeom;
+  typedef QPointer<QWidget>          WinPtr;
+  typedef QMap<int, WinPtr>          WinMap;
+  typedef QMap<QString, QByteArray>  WinVis;
+  typedef QMap<QString, QByteArray>  WinGeom;
+  typedef QList<int>                 IdList;
+  typedef QMap<QString, IdList>      IdMap;
 
   enum { OpenReload = CAM_Application::OpenExist + 1 };
 
@@ -347,6 +358,7 @@ protected:
 
   WinMap                              myWin;
   WinVis                              myWinVis;
+  IdMap                               myHelpItems;
 
   SUIT_Accel*                         myAccel;
   QTimer*                             myAutoSaveTimer;

@@ -53,6 +53,8 @@ class QTX_EXPORT QtxResourceMgr
 {
   class IniFormat;
   class XmlFormat;
+  class JsonFormat;
+  class SalomexFormat;
   class Resources;
 
 public:
@@ -71,6 +73,7 @@ public:
   } WorkingMode;
 
 public:
+  QtxResourceMgr();
   QtxResourceMgr( const QString&, const QString& = QString() );
   virtual ~QtxResourceMgr();
 
@@ -168,6 +171,7 @@ public:
   bool             load();
   bool             import( const QString& );
   bool             save();
+  bool             addResource( const QString& );
 
   QStringList      sections() const;
   QStringList      sections(const QRegExp&) const;

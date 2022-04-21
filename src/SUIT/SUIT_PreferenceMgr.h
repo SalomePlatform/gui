@@ -53,6 +53,7 @@ public:
 
   int                addItem( const QString&, const int pId = -1, const PrefItemType = Auto,
                               const QString& = QString(), const QString& = QString() );
+  void               removeItem( const QString& );
 
 protected:
   virtual QVariant   optionValue( const QString& ) const;

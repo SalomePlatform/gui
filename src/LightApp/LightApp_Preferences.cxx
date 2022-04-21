@@ -62,6 +62,21 @@ int LightApp_Preferences::addPreference( const QString& mod, const QString& labe
 }
 
 /*!
+  Remove module preferences.
+*/
+void LightApp_Preferences::removeModule( const QString& mod )
+{
+  QMutableMapIterator<int, QString> it( myPrefMod );
+  while ( it.hasNext() )
+  {
+    it.next();
+    if ( it.value() == mod )
+      it.remove();
+  }
+  removeItem( mod );
+}
+
+/*!
   Checks: is preferences has module with name \a mod.
 */
 bool LightApp_Preferences::hasModule( const QString& mod ) const

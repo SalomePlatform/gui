@@ -440,21 +440,51 @@ QString Qtx::extension( const QString& path, const bool full )
 }
 
 /*!
+  \brief EXtract base library name.
+
+  The function removes platform-specific prefix (lib) and suffix (.dll/.so)
+  from the library file name.
+  For example, if \a str = "libmylib.so", "mylib" is returned..
+
+  \param libName library name
+  \return base library name
+*/
+QString Qtx::libraryName( const QString& libName )
+{
+  QString fullName = file( libName );
+#if defined(WIN32)
+  QString libExt = QString( "dll" );
+#elif defined(__APPLE__)
+  QString libExt = QString( "dylib" );
+#else
+  QString libExt = QString( "so" );
+#endif
+  if ( extension( fullName ).toLower() == libExt )
+    fullName.truncate( fullName.length() - libExt.length() - 1 );
+#ifndef WIN32
+  QString prefix = QString( "lib" );
+  if ( fullName.startsWith( prefix ) )
+    fullName.remove( 0, prefix.length() );
+#endif
+  return fullName;
+}
+
+/*!
   \brief Convert the given parameter to the platform-specific library name.
 
   The function appends platform-specific prefix (lib) and suffix (.dll/.so)
   to the library file name.
-  For example, if \a str = "mylib", "libmylib.so" is returned for Linux and
+  For example, if \a libName = "mylib", "libmylib.so" is returned for Linux and
   mylib.dll for Windows.
 
-  \param str short library name
+  \param libName short library name
   \return full library name
 */
-QString Qtx::library( const QString& str )
+QString Qtx::library( const QString& libName )
 {
-  QString path = dir( str, false );
-  QString name = file( str, false );
-  QString ext  = extension( str );
+  QString path = dir( libName, false );
+  QString name = file( libName, false );
+  QString ext  = extension( libName );
 
 #ifndef WIN32
   if ( !name.startsWith( "lib" ) )
@@ -554,6 +584,17 @@ QString Qtx::addSlash( const QString& path )
        res.at( res.length() - 1 ) != QChar( '\\' ) )
   res += QDir::separator();
   return res;
+}
+
+/*!
+  \brief Return full path obtained by joining given components with
+  the native directory separator.
+  \param path Separate path components
+  \return complete path
+*/
+QString Qtx::joinPath( const QStringList& path )
+{
+  return path.join( QDir::separator() );
 }
 
 /*!

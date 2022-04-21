@@ -234,6 +234,7 @@ public:
   static QString     file( const QString&, const bool = true );
   static QString     extension( const QString&, const bool = false );
 
+  static QString     libraryName( const QString& );
   static QString     library( const QString& );
 
   static QString     tmpDir();
@@ -241,6 +242,7 @@ public:
   static bool        rmDir( const QString& );
   static bool        dos2unix( const QString& );
   static QString     addSlash( const QString& );
+  static QString     joinPath( const QStringList& );
 
   static QCompleter* pathCompleter( const PathType, const QString& = QString() );
   static QString     findEnvVar( const QString&, int&, int& );

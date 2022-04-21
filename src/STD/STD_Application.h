@@ -125,7 +125,7 @@ public slots:
   virtual bool          onNewDoc( const QString& );
 
   virtual void          onCloseDoc( bool ask = true );
-  virtual void          onSaveDoc();
+  virtual bool          onSaveDoc();
   virtual bool          onSaveAsDoc();
 
   virtual void          onOpenDoc();
@@ -154,6 +154,7 @@ protected:
 
 protected:
   virtual void          createActions();
+  virtual void          customize();
   virtual void          updateCommandsStatus();
 
   virtual void          setDesktop( SUIT_Desktop* );

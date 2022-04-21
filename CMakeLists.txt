@@ -63,6 +63,7 @@ SET(BUILD_SHARED_LIBS TRUE)
 OPTION(SALOME_BUILD_DOC "Generate SALOME GUI documentation" ON)
 OPTION(SALOME_BUILD_TESTS "Build SALOME tests" ON)
 OPTION(SALOME_GUI_USE_OBSERVERS "Use study observers in GUI (advanced)" ON)
+OPTION(SALOME_ON_DEMAND "Activate SALOME on demand feature" OFF)
 CMAKE_DEPENDENT_OPTION(SALOME_GUI_BUILD_FRENCH_DOC "Generate SALOME GUI French documentation" OFF
                        "SALOME_BUILD_DOC" OFF)
 
@@ -134,6 +135,11 @@ FIND_PACKAGE(SalomeSIP REQUIRED)  # should come after Python and before PyQt
 # Build with GUI observers feature
 IF(SALOME_GUI_USE_OBSERVERS)
   ADD_DEFINITIONS(-DWITH_SALOMEDS_OBSERVER)
+ENDIF()
+
+# SALOME on demand
+IF(SALOME_ON_DEMAND)
+  ADD_DEFINITIONS(-DWITH_SALOME_ON_DEMAND)
 ENDIF()
 
 # Single-study GUI

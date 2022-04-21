@@ -1149,6 +1149,62 @@ File does not exist</translation>
     <source>INFO_AVAILABLE_MODULES</source>
     <translation>Available modules</translation>
   </message>
+  <message>
+    <source>WRN_MODULE_BAD_SALOMEX_FILE</source>
+    <translation>Cannot read module description file:
+%1.</translation>
+  </message>
+  <message>
+    <source>WRN_MODULE_EMPTY_NAME</source>
+    <translation>Empty or invalid module name in:
+%1.</translation>
+  </message>
+  <message>
+    <source>WRN_MODULE_EMPTY_ROOT</source>
+    <translation>Module root directory is not set or incorrectly specified in:
+%1.</translation>
+  </message>
+  <message>
+    <source>WRN_MODULE_ROOT_DOES_NOT_EXIST</source>
+    <translation>Module root directory does not exist:
+%1.</translation>
+  </message>
+  <message>
+    <source>WRN_MODULE_DUPLICATED</source>
+    <translation>Module &quot;%1&quot; is already present in this session</translation>
+  </message>
+  <message>
+    <source>WRN_MODULE_BAD_RESDIR</source>
+    <translation>Bad or non-existing resources directory:
+%1.</translation>
+  </message>
+  <message>
+    <source>WRN_MODULE_CANNOT_READ_CFG</source>
+    <translation>Cannot read XML configuration file for the module from:
+%1.</translation>
+  </message>
+  <message>
+    <source>WRN_MODULE_BAD_CFG_FILE</source>
+    <translation>XML configuration file for the module &quot;%1&quot; is bad or incomplete</translation>
+  </message>
+  <message>
+    <source>TLT_REMOVE_MODULE</source>
+    <translation>Remove module</translation>
+  </message>
+  <message>
+    <source>QUE_REMOVE_MODULE_DIR</source>
+    <translation>Do you also want to remove module directory:
+%1?
+
+If you answer &quot;Yes&quot;, you may need to save your study before removal.</translation>
+  </message>
+  <message>
+    <source>WRN_CANNOT_REMOVE_DIR</source>
+    <translation>Cannot remove directory:
+%1.
+
+Continue?</translation>
+  </message>
 </context>
 <context>
     <name>LightApp_Module</name>
@@ -1268,6 +1324,14 @@ File does not exist</translation>
     <message>
         <source>ACTIVATE_MODULE_TOP</source>
         <translation>Activate/deactivate %1 module</translation>
+    </message>
+    <message>
+        <source>ADD_MODULE</source>
+        <translation>Add modules</translation>
+    </message>
+    <message>
+        <source>REMOVE_MODULE</source>
+        <translation>Remove modules</translation>
     </message>
 </context>
 <context>

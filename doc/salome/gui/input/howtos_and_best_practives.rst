@@ -13,4 +13,4 @@ and usage examples of SALOME platform.
 	drag_and_drop.rst
 	using_pluginsmanager.rst
 	using_help_panel.rst
-
+	extend_salome.rst

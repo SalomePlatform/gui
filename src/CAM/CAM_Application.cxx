@@ -912,7 +912,7 @@ CAM_Application::ModuleShortInfoList CAM_Application::getVersionInfo()
 
   for(int i = 0; i < myInfoList.size(); i++) {
     ModuleShortInfo infoItem;
-    infoItem.name = myInfoList.at(i).title;
+    infoItem.name = myInfoList.at(i).title.isEmpty() ? myInfoList.at(i).name : myInfoList.at(i).title;
     infoItem.version = myInfoList.at(i).version;
     info.append(infoItem);
   }  

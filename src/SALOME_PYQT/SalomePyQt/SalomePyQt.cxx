@@ -5104,3 +5104,43 @@ void SalomePyQt::stopPyLog()
   };
   ProcessVoidEvent( new TEvent() );
 }
+
+/*!
+  \brief Log GUI event.
+  \param eventDescription GUI event description.
+*/
+void SalomePyQt::logUserEvent( const QString& eventDescription )
+{
+  class TEvent: public SALOME_Event
+  {
+    QString myEventDescription;
+  public:
+    TEvent( const QString& theDescription ) : myEventDescription( theDescription ) {}
+    virtual void Execute() 
+    {
+      LightApp_Application::logUserEvent( myEventDescription );
+    }
+  };
+  ProcessVoidEvent( new TEvent( eventDescription ) );
+}
+
+/*!
+  \brief Log given action.
+  \param action GUI action being logged.
+  \param moduleName optional name of module, owning an action
+*/
+void SalomePyQt::logAction( QAction* action, const QString& moduleName )
+{
+  class TEvent: public SALOME_Event
+  {
+    QAction* myAction;
+    QString myModuleName;
+  public:
+    TEvent( QAction* theAction, const QString& theModuleName ) : myAction( theAction ), myModuleName( theModuleName ) {}
+    virtual void Execute() 
+    {
+      LightApp_Application::logAction( myAction, myModuleName );
+    }
+  };
+  ProcessVoidEvent( new TEvent( action, moduleName ) );
+}

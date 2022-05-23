@@ -495,4 +495,7 @@ public:
 
   static void              startPyLog(const QString&) /ReleaseGIL/ ;
   static void              stopPyLog() /ReleaseGIL/ ;
+
+  static void              logUserEvent( const QString& ) /ReleaseGIL/ ;
+  static void              logAction( QAction*, const QString& = QString() ) /ReleaseGIL/ ;
 };

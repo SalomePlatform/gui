@@ -34,8 +34,14 @@
 #include <KERNEL_version.h>
 #include <GUI_version.h>
 
+#include <QAction>
 #include <QApplication>
+#include <QDir>
+#include <QFileInfo>
+#include <QMutex>
+#include <QMutexLocker>
 #include <QRegExp>
+#include <QTextStream>
 
 #ifdef WIN32
 #include <windows.h>
@@ -73,9 +79,9 @@ extern "C" CAM_EXPORT SUIT_Application* createApplication()
 /*!
   \class CAM_Application
   \brief Introduces an application class which provides modular architecture.
-  
+
   This class defines multi-modular application configuration and behaviour.
-  Each module (CAM_Module) can have own data model, document windows and 
+  Each module (CAM_Module) can have own data model, document windows and
   viewers, etc.
 
   An application provides all necessary functionality for modules management,
@@ -90,7 +96,7 @@ CAM_Application::ModuleInfoList CAM_Application::myInfoList;
 /*!
   \brief Constructor.
 
-  Read modules list (from command line or from resource file). 
+  Read modules list (from command line or from resource file).
   If \a autoLoad parameter is \c true all the modules will be loaded
   immediately after application starting, otherwise each module will
   be loaded by demand (with activateModule()).
@@ -118,7 +124,7 @@ CAM_Application::~CAM_Application()
   myModules.clear();
 }
 
-/*! 
+/*!
   \brief Start an application.
 
   Load all modules, if "auto loading" flag has been set to \c true.
@@ -128,13 +134,13 @@ CAM_Application::~CAM_Application()
 void CAM_Application::start()
 {
   // check modules
-  for ( ModuleInfoList::iterator it = myInfoList.begin(); 
+  for ( ModuleInfoList::iterator it = myInfoList.begin();
         it != myInfoList.end(); ++it )
   {
     if ( (*it).status == stUnknown )
       (*it).status = checkModule( (*it).title ) ? stReady : stInaccessible;
   }
-  
+
   // auto-load modules
   if ( myAutoLoad )
     loadModules();
@@ -158,7 +164,7 @@ CAM_Module* CAM_Application::activeModule() const
 CAM_Module* CAM_Application::module(  const QString& modName ) const
 {
   CAM_Module* mod = 0;
-  for ( QList<CAM_Module*>::const_iterator it = myModules.begin(); 
+  for ( QList<CAM_Module*>::const_iterator it = myModules.begin();
         it != myModules.end() && !mod; ++it )
     if ( (*it)->moduleName() == modName )
       mod = *it;
@@ -182,7 +188,7 @@ void CAM_Application::modules( CAM_Application::ModuleList& out ) const
 {
   out.clear();
 
-  for ( QList<CAM_Module*>::const_iterator it = myModules.begin(); 
+  for ( QList<CAM_Module*>::const_iterator it = myModules.begin();
         it != myModules.end(); ++it )
     out.append( *it );
 }
@@ -190,9 +196,9 @@ void CAM_Application::modules( CAM_Application::ModuleList& out ) const
 /*!
   \brief Get names of all modules.
 
-  Get loaded modules names if \a loaded is \c true, 
+  Get loaded modules names if \a loaded is \c true,
   otherwise get all avaiable modules names.
-  
+
   \param lst output list of modules names
   \param loaded boolean flag, defines what modules names to return
 */
@@ -202,13 +208,13 @@ void CAM_Application::modules( QStringList& lst, const bool loaded ) const
 
   if ( loaded )
   {
-    for ( QList<CAM_Module*>::const_iterator it = myModules.begin(); 
+    for ( QList<CAM_Module*>::const_iterator it = myModules.begin();
           it != myModules.end(); ++it )
       lst.append( (*it)->moduleName() );
   }
   else
   {
-    for ( ModuleInfoList::const_iterator it = myInfoList.begin(); 
+    for ( ModuleInfoList::const_iterator it = myInfoList.begin();
           it != myInfoList.end(); ++it )
       if ( (*it).status != stNoGui )
         lst.append( (*it).title );
@@ -219,8 +225,8 @@ void CAM_Application::modules( QStringList& lst, const bool loaded ) const
   \brief Add module \a mod to the modules list.
 
   Performes module initialization. Does nothing if the module
-  is already added. 
-  
+  is already added.
+
   \param mod module being added
   \sa CAM_Module::initialize()
 */
@@ -234,7 +240,7 @@ void CAM_Application::addModule( CAM_Module* mod )
   QMap<CAM_Module*, int> map;
 
   ModuleList newList;
-  for ( ModuleInfoList::const_iterator it = myInfoList.begin(); 
+  for ( ModuleInfoList::const_iterator it = myInfoList.begin();
         it != myInfoList.end(); ++it )
   {
     if ( (*it).title == mod->moduleName() )
@@ -264,7 +270,7 @@ void CAM_Application::addModule( CAM_Module* mod )
 
 /*!
   \brief Load modules from the modules information list.
-  
+
   If some module can not be loaded, an error message is shown.
 */
 void CAM_Application::loadModules()
@@ -279,7 +285,7 @@ void CAM_Application::loadModules()
       if ( desktop() && desktop()->isVisible() )
         SUIT_MessageBox::critical( desktop(), tr( "Loading modules" ), wrn );
       else
-        qWarning( qPrintable( wrn ) ); 
+        qWarning( qPrintable( wrn ) );
     }
   }
 }
@@ -333,7 +339,7 @@ CAM_Module* CAM_Application::loadModule( const QString& modName, const bool show
                      FORMAT_MESSAGE_IGNORE_INSERTS, 0, ::GetLastError(), 0, (LPTSTR)&lpMsgBuf, 0, 0 );
 #ifdef UNICODE
 	QString out_err = QString::fromWCharArray((LPTSTR)lpMsgBuf);
-#else 
+#else
 	QString out_err = (LPTSTR)lpMsgBuf;
 #endif
     err = QString( "Failed to load  %1. %2" ).arg( libName ).arg(out_err);
@@ -349,7 +355,7 @@ CAM_Module* CAM_Application::loadModule( const QString& modName, const bool show
                        FORMAT_MESSAGE_IGNORE_INSERTS, 0, ::GetLastError(), 0, (LPTSTR)&lpMsgBuf, 0, 0 );
 #ifdef UNICODE
 	  QString out_err = QString::fromWCharArray((LPTSTR)lpMsgBuf);
-#else 
+#else
 	  QString out_err = (LPTSTR)lpMsgBuf;
 #endif
 
@@ -384,12 +390,12 @@ CAM_Module* CAM_Application::loadModule( const QString& modName, const bool show
     if ( desktop() && desktop()->isVisible() )
       SUIT_MessageBox::warning( desktop(), tr( "Error" ), err );
     else
-      qWarning( qPrintable( err ) ); 
+      qWarning( qPrintable( err ) );
   }
 
   char* version = getVersion ? getVersion() : 0;
 
-  if ( version ) {    
+  if ( version ) {
     for ( ModuleInfoList::iterator it = myInfoList.begin(); it != myInfoList.end(); ++it ) {
       if ( (*it).title == modName ) {
         if( (*it).version.isEmpty() ) {
@@ -399,7 +405,7 @@ CAM_Module* CAM_Application::loadModule( const QString& modName, const bool show
       }
     }
   }
-  
+
   return module;
 }
 
@@ -463,7 +469,7 @@ bool CAM_Application::activateModule( CAM_Module* mod )
       // ???
     }
     moduleDeactivated( myModule );
-  }     
+  }
   myModule = mod;
 
   if ( myModule )
@@ -478,7 +484,7 @@ bool CAM_Application::activateModule( CAM_Module* mod )
       if ( desktop() && desktop()->isVisible() )
         SUIT_MessageBox::critical( desktop(), tr( "ERROR_TLT" ), wrn );
       else
-        qWarning( qPrintable( wrn ) ); 
+        qWarning( qPrintable( wrn ) );
       myModule = 0;
       return false;
     }
@@ -548,8 +554,8 @@ bool CAM_Application::activateOperation( const QString& modName,
   \brief Create new study.
   \return study object pointer
 */
-SUIT_Study* CAM_Application::createNewStudy() 
-{ 
+SUIT_Study* CAM_Application::createNewStudy()
+{
   return new CAM_Study( this );
 }
 
@@ -568,7 +574,7 @@ void CAM_Application::updateCommandsStatus()
   \brief Prepare application to study closing.
 
   Closes all modules in study \a theDoc.
-  
+
   \param theDoc study
 */
 void CAM_Application::beforeCloseDoc( SUIT_Study* theDoc )
@@ -605,7 +611,7 @@ bool CAM_Application::checkModule( const QString& )
 
 /*!
   \brief Callback function, called when the module is added to the application.
-  
+
   This virtual method can be re-implemented in the successors. Base implementation
   does nothing.
 
@@ -617,7 +623,7 @@ void CAM_Application::moduleAdded( CAM_Module* /*mod*/ )
 
 /*!
   \brief Callback function, called when the module is just deactivated.
-  
+
   This virtual method can be re-implemented in the successors. Base implementation
   does nothing.
 
@@ -741,12 +747,12 @@ QString CAM_Application::moduleDisplayer( const QString& name )
   the application command line arguments, looking for the
   "--modules ( <mod_name>[:<mod_name>...] )" option.
   List of modules is separated by colon symbol (":").
-  
+
   If "--modules" command line option is not used, the list of modules
   is retrieved from the application resource file: parameter "modules" of
   the section "launch".
 
-  Then the information about each module (module title (user name), 
+  Then the information about each module (module title (user name),
   library name) is retrieved from the corresponding section of resource
   file with help of resources manager.
 
@@ -924,7 +930,7 @@ void CAM_Application::removeModuleInfo( const QString& modName )
 void CAM_Application::contextMenuPopup( const QString& type, QMenu* menu, QString& title )
 {
   // to do : add common items for popup menu ( if they are exist )
-  if ( activeModule() ) 
+  if ( activeModule() )
     activeModule()->contextMenuPopup( type, menu, title );
 }
 
@@ -959,15 +965,15 @@ CAM_Application::ModuleShortInfoList CAM_Application::getVersionInfo()
     infoItem.name = myInfoList.at(i).title.isEmpty() ? myInfoList.at(i).name : myInfoList.at(i).title;
     infoItem.version = myInfoList.at(i).version;
     info.append(infoItem);
-  }  
+  }
   return info;
 }
 
 /*!
   \brief Abort active operations if there are any
- 
+
   Iterates through all modules and asks each of them if there are pending operations that cannot be aborted.
- 
+
   \return \c false if some operation cannot be aborted
 */
 bool CAM_Application::abortAllOperations()
@@ -978,4 +984,81 @@ bool CAM_Application::abortAllOperations()
     aborted = (*it)->abortAllOperations();
   }
   return aborted;
+}
+
+/*!
+  \brief Log GUI event.
+  \param eventDescription GUI event description.
+*/
+void CAM_Application::logUserEvent( const QString& eventDescription )
+{
+  static QString guiLogFile; // null string means log file was not initialized yet
+  static QMutex aGUILogMutex;
+
+  if ( guiLogFile.isNull() )
+  {
+    // log file was not initialized yet, try to do that by parsing command line arguments
+    guiLogFile = ""; // empty string means initialization was done but log file was not set
+    QStringList args = QApplication::arguments();
+    for ( int i = 1; i < args.count(); i++ )
+    {
+      QRegExp rxs ( "--gui-log-file=(.+)" );
+      if ( rxs.indexIn( args[i] ) >= 0 && rxs.capturedTexts().count() > 1 )
+      {
+        QString file = rxs.capturedTexts()[1];
+        QFileInfo fi ( file );
+        if ( !fi.isDir() && fi.dir().exists() )
+	{
+	  guiLogFile = fi.absoluteFilePath();
+	  if ( fi.exists() ) {
+	    QFile file ( guiLogFile );
+	    file.remove(); // remove probably existing log file, to start with empty one
+          }
+        }
+        break;
+      }
+    }
+  }
+  if ( !guiLogFile.isEmpty() ) // non-empty string means log file was already initialized
+  {
+    QMutexLocker aLocker( &aGUILogMutex );
+    QFile file ( guiLogFile );
+    if ( file.open( QFile::Append ) ) // append to log file
+    {
+      QTextStream stream( &file );
+      stream << eventDescription << endl;
+      file.close();
+    }
+  }
+}
+
+/*!
+  \brief Log given action.
+  \param action GUI action being logged.
+  \param moduleName optional name of module, owning an action
+*/
+void CAM_Application::logAction( QAction* action, const QString& moduleName )
+{
+  QString text = action->toolTip();
+  if ( text.isEmpty() )
+    text = action->text();
+  if ( text.isEmpty() )
+    text = action->iconText();
+  if ( !text.isEmpty() )
+  {
+    QStringList message;
+    if ( !moduleName.isEmpty() )
+      message << moduleName;
+    if ( action->isCheckable() )
+    {
+      message << tr( "ACTION_TOGGLED" );
+      message << ( action->isChecked() ? tr( "ACTION_ON" ) : tr( "ACTION_OFF" ) );
+    }
+    else
+    {
+      message << tr( "ACTION_TRIGGERED" );
+    }
+    message << text;
+    logUserEvent( message.join( ": " ) );
+  }
 }

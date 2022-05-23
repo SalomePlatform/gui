@@ -82,6 +82,9 @@ public:
 
   static ModuleShortInfoList getVersionInfo();
 
+  static void         logUserEvent( const QString& );
+  static void         logAction( QAction*, const QString& = QString() );
+
 protected:
   virtual SUIT_Study* createNewStudy();
   virtual void        updateCommandsStatus();

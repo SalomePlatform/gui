@@ -207,8 +207,6 @@
 #include <QMimeData>
 #include <QShortcut>
 #include <QRegExp>
-#include <QMutex>
-#include <QMutexLocker>
 
 #include <utilities.h>
 
@@ -5773,45 +5771,6 @@ bool LightApp_Application::checkExistingDoc( bool closeExistingDoc )
     }
   }
   return result;
-}
-
-/*!
-  Log GUI action
-*/
-void LightApp_Application::logUserEvent(const QString& eventDescription)
-{
-  static QString _gui_log_file_ = "Not initialized";
-  static QMutex aGUILogMutex;
-  if (_gui_log_file_ == "Not initialized") {
-    _gui_log_file_ = "";
-    QStringList args = QApplication::arguments();
-    for (int i = 1; i < args.count(); i++) {
-      QRegExp rxs ("--gui-log-file=(.+)");
-      if (rxs.indexIn( args[i] ) >= 0 && rxs.capturedTexts().count() > 1) {
-        QString file = rxs.capturedTexts()[1];
-        QFileInfo fi ( file );
-        if (!fi.isDir()) {
-          if (fi.dir().exists()) {
-            _gui_log_file_ = fi.absoluteFilePath();
-            if (fi.exists()) {
-              QFile file (_gui_log_file_);
-              file.remove();
-            }
-          }
-        }
-        break;
-      }
-    }
-  }
-  if (_gui_log_file_ != "") {
-    QMutexLocker aLocker (&aGUILogMutex);
-    QFile file (_gui_log_file_);
-    if (file.open(QFile::Append)) {
-      QTextStream stream( &file );
-      stream << eventDescription << endl;
-      file.close();
-    }
-  }
 }
 
 #ifndef DISABLE_PYCONSOLE

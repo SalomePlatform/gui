@@ -377,6 +377,8 @@ public:
   static void              startPyLog(const QString&);
   static void              stopPyLog();
 
+  static void              logUserEvent( const QString& );
+  static void              logAction( QAction*, const QString& = QString() );
 };
 
 #endif // SALOME_PYQT_H

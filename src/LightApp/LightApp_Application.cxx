@@ -5783,7 +5783,6 @@ void LightApp_Application::logUserEvent(const QString& eventDescription)
   static QString _gui_log_file_ = "Not initialized";
   static QMutex aGUILogMutex;
   if (_gui_log_file_ == "Not initialized") {
-    std::cout << "!!!***aaajfa***!!! _gui_log_file_ initialization" << std::endl;
     _gui_log_file_ = "";
     QStringList args = QApplication::arguments();
     for (int i = 1; i < args.count(); i++) {
@@ -5805,7 +5804,6 @@ void LightApp_Application::logUserEvent(const QString& eventDescription)
     }
   }
   if (_gui_log_file_ != "") {
-    std::cout << "!!!***aaajfa***!!! log User Event: " << eventDescription.toStdString() << std::endl;
     QMutexLocker aLocker (&aGUILogMutex);
     QFile file (_gui_log_file_);
     if (file.open(QFile::Append)) {

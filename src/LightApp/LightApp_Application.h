@@ -191,6 +191,8 @@ public:
 
   virtual bool                        checkExistingDoc( bool = true );
 
+  static void                         logUserEvent(const QString& eventDescription);
+
 #ifndef DISABLE_PYCONSOLE
   PyConsole_Interp*                   getPyInterp();
 #endif

@@ -1,4 +1,4 @@
-// Copyright (C) 2007-2021  CEA/DEN, EDF R&D, OPEN CASCADE
+// Copyright (C) 2007-2022  CEA/DEN, EDF R&D, OPEN CASCADE
 //
 // Copyright (C) 2003-2007  OPEN CASCADE, EADS/CCR, LIP6, CEA/DEN,
 // CEDRAT, EDF R&D, LEG, PRINCIPIA R&D, BUREAU VERITAS
@@ -912,7 +912,7 @@ CAM_Application::ModuleShortInfoList CAM_Application::getVersionInfo()
 
   for(int i = 0; i < myInfoList.size(); i++) {
     ModuleShortInfo infoItem;
-    infoItem.name = myInfoList.at(i).title;
+    infoItem.name = myInfoList.at(i).title.isEmpty() ? myInfoList.at(i).name : myInfoList.at(i).title;
     infoItem.version = myInfoList.at(i).version;
     info.append(infoItem);
   }  

@@ -234,6 +234,7 @@ protected:
   virtual void                        beforeCloseDoc( SUIT_Study* );
   virtual void                        afterCloseDoc();
   virtual void                        moduleAdded( CAM_Module* );
+  virtual void                        moduleDeactivated( CAM_Module* );
   virtual bool                        activateModule( CAM_Module* = 0 );
 
   LightApp_Preferences*               preferences( const bool ) const;

@@ -454,12 +454,14 @@ bool CAM_Application::activateModule( CAM_Module* mod )
   {
     if ( !myModule->deactivateModule( activeStudy() ) )
     {
-      // ....      
-    }    
+      // ???
+    }
+    moduleDeactivated( myModule );
   }     
   myModule = mod;
 
-  if ( myModule ){
+  if ( myModule )
+  {
     // Connect the module to the active study
     myModule->connectToStudy( dynamic_cast<CAM_Study*>( activeStudy() ) );
     if ( !myModule->activateModule( activeStudy() ) )
@@ -604,6 +606,18 @@ bool CAM_Application::checkModule( const QString& )
   \param mod module being added
 */
 void CAM_Application::moduleAdded( CAM_Module* /*mod*/ )
+{
+}
+
+/*!
+  \brief Callback function, called when the module is just deactivated.
+  
+  This virtual method can be re-implemented in the successors. Base implementation
+  does nothing.
+
+  \param mod module just deactivated
+*/
+void CAM_Application::moduleDeactivated( CAM_Module* /*mod*/ )
 {
 }
 

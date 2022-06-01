@@ -96,10 +96,30 @@ void QtxInfoPanel::Container::addLabel( const QString& text, Qt::Alignment align
 
 void QtxInfoPanel::Container::addAction( QAction* action, const int id )
 {
+  static const char* empty_xpm[] = {"16 16 1 1",
+                                    " 	c None",
+                                    "                ",
+                                    "                ",
+                                    "                ",
+                                    "                ",
+                                    "                ",
+                                    "                ",
+                                    "                ",
+                                    "                ",
+                                    "                ",
+                                    "                ",
+                                    "                ",
+                                    "                ",
+                                    "                ",
+                                    "                ",
+                                    "                ",
+                                    "                "};
   QToolButton* button = new QToolButton( this );
   button->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
   button->setToolButtonStyle(Qt::ToolButtonTextBesideIcon);
   button->setAutoRaise( true );
+  if ( action->icon().isNull() )
+    action->setIcon( QPixmap(empty_xpm) );
   button->setDefaultAction( action );
   put( button );
   ids[ id ] = button;

@@ -2330,6 +2330,12 @@ void LightApp_Application::moduleAdded( CAM_Module* mod )
   }
 }
 
+void LightApp_Application::moduleDeactivated( CAM_Module* /*mod*/ )
+{
+  if ( infoPanel() )
+    infoPanel()->clear();
+}
+
 void LightApp_Application::emptyPreferences( const QString& modName )
 {
   QtxPreferenceItem* item = myPrefs->findItem( modName, true );

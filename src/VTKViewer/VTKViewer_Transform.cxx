@@ -30,6 +30,8 @@
 #include <vtkObjectFactory.h>
 #include <vtkMatrix4x4.h>
 
+#include <math.h>
+
 static double EPS = 10e-4;
 
 

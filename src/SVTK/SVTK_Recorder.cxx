@@ -34,6 +34,7 @@
 #include <sstream>
 #include <iomanip>
 #include <iostream>
+#include <math.h>
 
 #ifndef WIN32
 #include <unistd.h>

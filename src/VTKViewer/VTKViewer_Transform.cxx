@@ -25,6 +25,7 @@
 //  Author : Laurent CORNABE with help of Nicolas REJNERI
 //  Module : SALOME
 //
+
 #include "VTKViewer_Transform.h"
 
 #include <vtkObjectFactory.h>
@@ -38,10 +39,10 @@ static double EPS = 10e-4;
 vtkStandardNewMacro(VTKViewer_Transform)
 
 /*!Sets matrix scale.*/
-void VTKViewer_Transform::SetMatrixScale(double theScaleX, double theScaleY, double theScaleZ){ 
-  double aMatrix[16] = {theScaleX,0,0,0, 
-                        0,theScaleY,0,0, 
-                        0,0,theScaleZ,0, 
+void VTKViewer_Transform::SetMatrixScale(double theScaleX, double theScaleY, double theScaleZ){
+  double aMatrix[16] = {theScaleX,0,0,0,
+                        0,theScaleY,0,0,
+                        0,0,theScaleZ,0,
                         0,0,0,1.0000000};
   this->SetMatrix(aMatrix);
 }
@@ -60,10 +61,10 @@ void VTKViewer_Transform::GetMatrixScale(double theScale[3]){
 /*!Checks: Is matrix identity, where used EPS value.
  *If |aScaleX-1|<EPS && |aScaleY-1|<EPS && |aScaleY-1|<EPS return 1, esle 0.
  */
-int VTKViewer_Transform::IsIdentity(){ 
+int VTKViewer_Transform::IsIdentity(){
   double aScale[3];
   this->GetMatrixScale(aScale);
-  return (fabs(aScale[0] - 1.0) < EPS && 
-          fabs(aScale[1] - 1.0) < EPS && 
+  return (fabs(aScale[0] - 1.0) < EPS &&
+          fabs(aScale[1] - 1.0) < EPS &&
           fabs(aScale[2] - 1.0) < EPS);
 }

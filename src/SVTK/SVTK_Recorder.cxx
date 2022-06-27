@@ -58,7 +58,7 @@ namespace
   //----------------------------------------------------------------------------
   inline
   void
-  GetNameJPEG(const std::string& thePreffix,  
+  GetNameJPEG(const std::string& thePreffix,
               const int theIndex,
               std::string& theName)
   {
@@ -92,7 +92,7 @@ SVTK_Recorder
   myFilter(vtkWindowToImageFilter::New()),
   myWriterMgr(new SVTK_ImageWriterMgr)
 {
-  myCommand->SetClientData(this); 
+  myCommand->SetClientData(this);
   myCommand->SetCallback(SVTK_Recorder::ProcessEvents);
 }
 
@@ -134,7 +134,7 @@ SVTK_Recorder
   myName = theName;
 }
 
-const char* 
+const char*
 SVTK_Recorder::Name() const
 {
   return myName.c_str();
@@ -174,14 +174,14 @@ SVTK_Recorder
 
 
 //----------------------------------------------------------------------------
-void 
+void
 SVTK_Recorder
 ::SetRenderWindow(vtkRenderWindow* theRenderWindow)
 {
   myRenderWindow = theRenderWindow;
 }
 
-vtkRenderWindow* 
+vtkRenderWindow*
 SVTK_Recorder
 ::RenderWindow()
 {
@@ -240,12 +240,12 @@ SVTK_Recorder
 //----------------------------------------------------------------------------
 void
 SVTK_Recorder
-::ProcessEvents(vtkObject* vtkNotUsed(theObject), 
+::ProcessEvents(vtkObject* vtkNotUsed(theObject),
                 unsigned long theEvent,
-                void* theClientData, 
+                void* theClientData,
                 void* vtkNotUsed(theCallData))
 {
-  if(vtkObject* anObj = reinterpret_cast<vtkObject*>(theClientData)){ 
+  if(vtkObject* anObj = reinterpret_cast<vtkObject*>(theClientData)){
     if(SVTK_Recorder* aSelf = dynamic_cast<SVTK_Recorder*>(anObj)){
       if(theEvent==vtkCommand::EndEvent){
         if(aSelf->State() == SVTK_Recorder::SVTK_Recorder_Record){
@@ -285,7 +285,7 @@ SVTK_Recorder
 {
   QApplication::setOverrideCursor( Qt::WaitCursor );
 
-  if(myState == SVTK_Recorder_Record){ 
+  if(myState == SVTK_Recorder_Record){
     if(!myPaused)
       DoRecord();
 
@@ -319,7 +319,7 @@ SVTK_Recorder
 
 
 //----------------------------------------------------------------------------
-inline 
+inline
 int
 GetFrameIndex(double theStartTime,
               double theFPS)
@@ -349,7 +349,7 @@ SVTK_Recorder
     if(aLastFrameIndex < 0){
       myFrameIndexes.back() = abs(myFrameIndexes.back());
       double aPauseTime = fabs((double)(aFrameIndex - myFrameIndex - 1)) / myNbFPS;
-      if(MYDEBUG) 
+      if(MYDEBUG)
         cout<<"SVTK_Recorder::DoRecord - aFrameIndex = "<<aFrameIndex<<
           "; aPauseTime = "<<aPauseTime<<endl;
       myTimeStart += aPauseTime;
@@ -373,7 +373,7 @@ SVTK_Recorder
 
   PreWrite();
 
-  vtkImageData *anImageData = vtkImageData::New(); 
+  vtkImageData *anImageData = vtkImageData::New();
   anImageData->DeepCopy(myFilter->GetOutput());
 
   myWriterMgr->StartImageWriter(myFilter,anImageData,aName,myProgressiveMode,myQuality);
@@ -466,7 +466,7 @@ SVTK_Recorder
     " -j \""<<myName<<"_%06d.jpeg\" "<<
     "| yuv2lav"<<" -o \""<<myName<<"\"";
 #ifdef WIN32
-  aStream<<" -f aA";   
+  aStream<<" -f aA";
 #endif
   std::string aString(aStream.str());
   myErrorStatus = system(aString.c_str());
@@ -478,7 +478,7 @@ SVTK_Recorder
   QString aBaseName = aFileInfo.fileName();
   QString aCommand;
 #ifndef WIN32
-  aCommand = QString("(cd ") + aDirPath + 
+  aCommand = QString("(cd ") + aDirPath +
     "; ls " +
     " | egrep '" + aBaseName + "_[0-9]*.jpeg'" +
     " | xargs rm " +
@@ -486,8 +486,8 @@ SVTK_Recorder
 #else
   QString tmpFile = QString("_") + aBaseName + "_tempfile";
   QString diskName = aDirPath.split("/")[0];
-  aCommand = diskName + " && (cd " + aDirPath.replace("/","\\\\") + 
-	" && ((dir /b | findstr " + aBaseName + "_[0-9]*.jpeg > " + tmpFile + 
+  aCommand = diskName + " && (cd " + aDirPath.replace("/","\\\\") +
+	" && ((dir /b | findstr " + aBaseName + "_[0-9]*.jpeg > " + tmpFile +
 	") & (for /f %i in (" + tmpFile + ") do (del \"%i\")) & (del " + tmpFile + "))) > NUL";
 #endif
 

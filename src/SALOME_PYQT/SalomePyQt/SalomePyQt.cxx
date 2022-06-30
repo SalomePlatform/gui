@@ -225,6 +225,25 @@ namespace
     \internal
   */
   const char* DEFAULT_SECTION = "SalomePyQt";
+
+  struct Activator
+  {
+    QWidget* myActiveWindow;
+    QWidget* myFocusedWidget;
+    Activator()
+    {
+      myActiveWindow = QApplication::activeWindow();
+      myFocusedWidget = QApplication::focusWidget();
+      QApplication::setActiveWindow( getApplication()->desktop() );
+    }
+    ~Activator()
+    {
+      if ( myActiveWindow )
+	QApplication::setActiveWindow( myActiveWindow );
+      if ( myFocusedWidget )
+	myFocusedWidget->setFocus();
+    }
+  };
 }
 
 /*!
@@ -934,6 +953,7 @@ public:
   virtual void Execute() 
   {
     if ( LightApp_Application* anApp = getApplication() ) {
+      Activator activator;
       myResult = anApp->activateModule( myModuleName );
     }
   }
@@ -3616,6 +3636,7 @@ public:
     SUIT_ViewWindow* wnd = getWnd( myWndId );
     MESSAGE("window id:" << myWndId << " SUIT_ViewWindow*: " << wnd);
     if ( wnd ) {
+      Activator activator;
       wnd->setFocus();
       myResult = true;
     }

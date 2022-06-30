@@ -415,13 +415,17 @@ bool CAM_Application::activateModule( const QString& modName )
   // See issues 0021307, 0021373
   BusyLocker lock( myBlocked );
 
+  QString name = modName;
+  if ( !name.isEmpty() && !moduleTitle( modName ).isEmpty() )
+    name = moduleTitle( modName );
+
   bool res = false;
-  if ( !modName.isEmpty() )
+  if ( !name.isEmpty() )
   {
     setProperty("activateModule", true);
-    CAM_Module* mod = module( modName );
+    CAM_Module* mod = module( name );
     if ( !mod )
-      mod = loadModule( modName );
+      mod = loadModule( name );
     addModule( mod );
 
     if ( mod )

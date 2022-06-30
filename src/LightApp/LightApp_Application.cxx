@@ -542,17 +542,21 @@ bool LightApp_Application::activateModule( const QString& modName )
   if ( prevMod )
     actName = prevMod->moduleName();
 
-  if ( actName == modName )
+  QString name = modName;
+  if ( !name.isEmpty() && !moduleTitle( modName ).isEmpty() )
+    name = moduleTitle( modName );
+
+  if ( actName == name )
     return true;
 
-  putInfo( tr( "ACTIVATING_MODULE" ).arg( modName ) );
+  putInfo( tr( "ACTIVATING_MODULE" ).arg( name ) );
 
   saveDockWindowsState();
 
   if ( infoPanel() )
     infoPanel()->clear();
 
-  bool status = CAM_Application::activateModule( modName );
+  bool status = CAM_Application::activateModule( name );
 
   updateModuleActions();
 

@@ -88,6 +88,7 @@ QString STD_Application::applicationName() const
 void STD_Application::start()
 {
   createActions();
+  customize();
 
   updateDesktopTitle();
   updateCommandsStatus();
@@ -268,6 +269,13 @@ void STD_Application::createActions()
   createTool( separator(), stdTBar );
   createTool( EditCopyId, stdTBar );
   createTool( EditPasteId, stdTBar );
+}
+
+/*!
+  Customize actions.
+*/
+void STD_Application::customize()
+{
 }
 
 /*!Opens new application*/
@@ -561,13 +569,13 @@ bool STD_Application::openAction( const int choice, const QString& aName )
 }
 
 /*!Save document if all ok, else error message.*/
-void STD_Application::onSaveDoc()
+bool STD_Application::onSaveDoc()
 {
   if ( !activeStudy() )
-    return;
+    return false;
 
   if ( !abortAllOperations() )
-    return;
+    return false;
 
   bool isOk = false;
   if ( activeStudy()->isSaved() )
@@ -594,7 +602,8 @@ void STD_Application::onSaveDoc()
   if ( isOk )
     studySaved( activeStudy() );
   else
-    onSaveAsDoc();
+    isOk = onSaveAsDoc();
+  return isOk;
 }
 
 /*! \retval \c true, if document saved successfully, else \c false.*/

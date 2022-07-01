@@ -323,6 +323,13 @@ namespace
     }
     return QString();
   }
+
+  const bool HAS_SALOME_ON_DEMAND =
+#if defined(WITH_SALOME_ON_DEMAND)
+    true;
+#else
+    false;
+#endif
 }
 
 /*!Create new instance of LightApp_Application.*/
@@ -625,8 +632,6 @@ void LightApp_Application::createActions()
 
   int helpMenu = createMenu( tr( "MEN_DESK_HELP" ), -1, -1, 1000 );
 
-  int id = LightApp_Application::UserID + FIRST_HELP_ID;
-
   QString url;
 
   // a) Link to web site
@@ -688,87 +693,17 @@ void LightApp_Application::createActions()
 
   // e) Help for modules
 
-  // - First create top-level menus to preserve correct order
-  QString userGuide = "User's Guide";
-  QString devGuide = "Developer's Guide";
-  createMenu( userGuide, helpMenu, -1, 5 );
-  createMenu( devGuide, helpMenu, -1, 5 );
-
   QStringList aModuleList;
   modules( aModuleList, false );
   aModuleList.prepend( "GUI" );
   aModuleList.prepend( "KERNEL" );
 
-  QString aModule;
-  foreach( aModule, aModuleList ) {
-    if ( aModule.isEmpty() )                                         // module title (user name)
-      continue;
-    IMap <QString, QString> helpData;                                // list of help files for the module
-    QString helpSubMenu;                                             // help submenu name (empty if not needed)
-    QString modName = moduleName( aModule );                         // module name
-    if ( modName.isEmpty() ) modName = aModule;                      // for KERNEL and GUI
-    QString rootDir = QString( "%1_ROOT_DIR" ).arg( modName );       // module root dir env variable
-    QString modDir  = Qtx::getenv( rootDir.toUtf8().constData() );   // module root dir path
-    QString docSection;
-    if (resMgr->hasValue( modName, "documentation" ) )
-      docSection = resMgr->stringValue(modName, "documentation");
-    else if ( resMgr->hasSection( modName + "_documentation" ) )
-      docSection = modName + "_documentation";
-    if ( !docSection.isEmpty() ) {
-      helpSubMenu = resMgr->stringValue( docSection, "sub_menu", "" );
-      if ( helpSubMenu.contains( "%1" ) )
-        helpSubMenu = helpSubMenu.arg( aModule );
-      foreach( QString paramName, resMgr->parameters( docSection ) ) {
-        QString key = paramName.contains( "%1" ) ? paramName.arg( aModule ) : paramName;
-        QString helpItem = getHelpItem( docSection, paramName );
-        if ( !helpItem.isEmpty() )
-          helpData.insert( key, helpItem );
-      }
-    }
+  foreach( QString aModule, aModuleList )
+    createHelpItems( aModule );
+  
+  // f) Additional help items
 
-    if ( helpData.isEmpty() && !modDir.isEmpty() ) {
-      QStringList idxLst = QStringList() << modDir << "share" << "doc" << "salome" << "gui" << modName << "index.html";
-      QString indexFile = idxLst.join( QDir::separator() );          // index file
-      if ( QFile::exists( indexFile ) )
-        helpData.insert( tr( "%1 module Users's Guide" ).arg( aModule ), indexFile );
-    }
-
-    IMapConstIterator<QString, QString > fileIt;
-    for ( fileIt = helpData.begin(); fileIt != helpData.end(); fileIt++ ) {
-      QString helpItemPath = fileIt.key();
-      // remove all '//' occurances
-      while ( helpItemPath.contains( "//" ) )
-        helpItemPath.replace( "//", "" );
-      // obtain submenus hierarchy if given
-      QStringList smenus = helpItemPath.split( "/" );
-      helpItemPath = smenus.takeLast();
-      // workaround for User's Guide and Developer's Guide to avoid having single item in module's submenu.
-      if ( helpItemPath == userGuide || helpItemPath == devGuide ) {
-	QString menuPath = smenus.join( "/" );
-	QStringList allKeys = helpData.keys();
-	QStringList total = allKeys.filter( QRegExp( QString( "^%1" ).arg( menuPath ) ) );
-	if ( total.count() == 1 && smenus.count() > 0 )
-	  helpItemPath = smenus.takeLast();
-      }
-      QPixmap helpIcon = fileIt.value().startsWith( "http", Qt::CaseInsensitive ) ?
-        resMgr->loadPixmap( "STD", tr( "ICON_WWW" ), false ) : resMgr->loadPixmap( "STD", tr( "ICON_HELP" ), false );
-      QAction* a = createAction( id, helpItemPath, helpIcon, helpItemPath, helpItemPath,
-                                 0, desk, false, this, SLOT( onHelpContentsModule() ) );
-      a->setData( fileIt.value() );
-      if ( !helpSubMenu.isEmpty() ) {
-        smenus.prepend( helpSubMenu );
-      }
-      // create sub-menus hierarchy
-      int menuId = helpMenu;
-      foreach ( QString subMenu, smenus )
-        menuId = createMenu( subMenu, menuId, -1, 5 );
-      createMenu( a, menuId, -1, ( menuId != helpMenu && (helpItemPath == userGuide || helpItemPath == devGuide) ) ? 0 : 5 );
-      id++;
-    }
-  }
-
-  // - Additional help items
-
+  int id = LightApp_Application::UserID + FIRST_HELP_ID + 1000;
   createMenu( separator(), helpMenu, -1, 10 );
 
   QStringList addHelpItems = resMgr->parameters( "add_help" );
@@ -790,57 +725,24 @@ void LightApp_Application::createActions()
   connect( mru, SIGNAL( activated( const QString& ) ), this, SLOT( onMRUActivated( const QString& ) ) );
   registerAction( MRUId, mru );
 
-  // default icon for neutral point ('SALOME' module)
-  QPixmap defIcon = resMgr->loadPixmap( "LightApp", tr( "APP_DEFAULT_ICO" ), false );
-  if ( defIcon.isNull() )
-    defIcon = QPixmap( imageEmptyIcon );
-
-  //! default icon for any module
-  QPixmap modIcon = resMgr->loadPixmap( "LightApp", tr( "APP_MODULE_ICO" ), false );
-  if ( modIcon.isNull() )
-    modIcon = QPixmap( imageEmptyIcon );
-
+  // List of modules
+  LightApp_ModuleAction* moduleAction = new LightApp_ModuleAction( resMgr, desk );
+  registerAction( ModulesListId, moduleAction );
+  // a. here we add regular modules (specified to GUI via --modules cmd line option, or default list from configuration)
+  // b. custom modules are added in customize() method
   QStringList modList;
   modules( modList, false );
+  foreach ( QString aModule, modList )
+    moduleAction->insertModule( aModule, moduleIcon( aModule, 20 ) ); // scale icon to 20x20 pix
 
-  if ( modList.count() > 1 )
-  {
-    LightApp_ModuleAction* moduleAction =
-      new LightApp_ModuleAction( tr( "APP_NAME" ), defIcon, desk );
-
-    QMap<QString, QString> iconMap;
-    moduleIconNames( iconMap );
-
-    const int iconSize = 20;
-
-    QStringList::Iterator it;
-    for ( it = modList.begin(); it != modList.end(); ++it )
-    {
-      QString modName = moduleName( *it );
-
-      QString iconName;
-      if ( iconMap.contains( *it ) )
-        iconName = iconMap[*it];
-
-      QPixmap icon = resMgr->loadPixmap( modName, iconName, false );
-      if ( icon.isNull() )
-      {
-        icon = modIcon;
-        INFOS( std::endl <<
-               "****************************************************************" << std::endl <<
-               "     Warning: icon for " << qPrintable(*it) << " is not found!" << std::endl <<
-               "     Using the default icon." << std::endl <<
-               "****************************************************************" << std::endl);
-      }
-      icon = Qtx::scaleIcon( icon, iconSize );
-
-      moduleAction->insertModule( *it, icon );
-    }
-
-    connect( moduleAction, SIGNAL( moduleActivated( const QString& ) ),
-             this, SLOT( onModuleActivation( const QString& ) ) );
-    registerAction( ModulesListId, moduleAction );
-  }
+  connect( this, SIGNAL( moduleActivated( QString ) ),
+           moduleAction, SLOT( setActiveModule( QString ) ) );
+  connect( moduleAction, SIGNAL( moduleActivated( const QString& ) ),
+           this, SLOT( onModuleActivation( const QString& ) ) );
+  connect( moduleAction, SIGNAL( adding() ),
+           this, SLOT( onModuleAdding() ) );
+  connect( moduleAction, SIGNAL( removing( QString ) ),
+           this, SLOT( onModuleRemoving( QString ) ) );
 
   // New window
   int windowMenu = createMenu( tr( "MEN_DESK_WINDOW" ), -1, MenuWindowId, 100 );
@@ -910,26 +812,44 @@ void LightApp_Application::createActions()
   createMenu( StyleId, viewMenu, 20, -1 );
 #endif // USE_SALOME_STYLE
   createMenu( FullScreenId, viewMenu, 20, -1 );
+  createMenu( separator(), viewMenu, -1, 20, -1 );
+  createMenu( ModulesListId, viewMenu );
 
   int modTBar = createTool( tr( "INF_TOOLBAR_MODULES" ),    // title (language-dependant)
                             QString( "SalomeModules" ) );   // name (language-independant)
   createTool( ModulesListId, modTBar );
 }
 
+/*!
+  Customize actions.
+*/
+void LightApp_Application::customize()
+{
+  // List of modules
+  LightApp_ModuleAction* moduleAction = qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
+  // a. regular modules were added in createActions() method
+  // b. here we add custom modules (manually added by the user)
+  if ( HAS_SALOME_ON_DEMAND )
+  {
+    QStringList modList = resourceMgr()->stringValue( "launch", "user_modules" ).split( ";", QString::SkipEmptyParts );
+    foreach ( QString aModule, modList )
+      addUserModule(  aModule, resourceMgr()->stringValue( "user_modules", aModule ) );
+  }
+  else
+  {
+    moduleAction->setModeEnabled( LightApp_ModuleAction::AddRemove, false );
+  }
+}
+
 /*!On module activation action.*/
-void LightApp_Application::onModuleActivation( const QString& modName )
+void LightApp_Application::onModuleActivation( const QString& modTitle )
 {
   // Force user to create/open a study before module activation
-  QMap<QString, QString> iconMap;
-  moduleIconNames( iconMap );
-  QPixmap icon = resourceMgr()->loadPixmap( moduleName( modName ), iconMap[ modName ], false );
-  if ( icon.isNull() )
-    icon = resourceMgr()->loadPixmap( "LightApp", tr( "APP_MODULE_BIG_ICO" ), false ); // default icon for any module
-
+  QPixmap icon = moduleIcon( modTitle );
   bool cancelled = false;
 
-  while ( !modName.isEmpty() && !activeStudy() && !cancelled ){
-    LightApp_ModuleDlg aDlg( desktop(), modName, icon );
+  while ( !modTitle.isEmpty() && !activeStudy() && !cancelled ){
+    LightApp_ModuleDlg aDlg( desktop(), modTitle, icon );
     QMap<int, QString> opmap = activateModuleActions();
     for ( QMap<int, QString>::ConstIterator it = opmap.begin(); it != opmap.end(); ++it )
       aDlg.addButton( it.value(), it.key() );
@@ -942,17 +862,186 @@ void LightApp_Application::onModuleActivation( const QString& modName )
     else {
       // cancelled
       putInfo( tr("INF_CANCELLED") );
-
-      LightApp_ModuleAction* moduleAction =
-        qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
-      if ( moduleAction )
-        moduleAction->setActiveModule( QString() );
+      emit moduleActivated( QString() );
       cancelled = true;
     }
   }
 
   if ( !cancelled )
-    activateModule( modName );
+    activateModule( modTitle );
+}
+
+/*!On module adding action.*/
+void LightApp_Application::onModuleAdding()
+{
+  // show dialog to browse configuration file
+  QStringList filters = ( QStringList() << tr( "Config files") + " (*.salomex)" << tr( "All files" ) + " (*)" );
+  QStringList paths = getOpenFileNames( QString(), filters.join( ";;" ), QString(), desktop() );
+  if ( paths.isEmpty() ) // cancelled
+    return;
+
+  // loop via selected configuration files
+  foreach( QString path, paths )
+  {
+    // read description file (.salomex) and check it's OK
+    QtxResourceMgr resMgr;
+    if ( !resMgr.addResource( path ) )
+    {
+      SUIT_MessageBox::warning( desktop(), tr( "WRN_WARNING" ), tr( "WRN_MODULE_BAD_SALOMEX_FILE" ).arg( path ) );
+      continue;
+    }
+    // retrieve module name
+    QString name = resMgr.stringValue( "General", "name" ).trimmed();
+    if ( name.isEmpty() )
+    {
+      SUIT_MessageBox::warning( desktop(), tr( "WRN_WARNING" ), tr( "WRN_MODULE_EMPTY_NAME" ).arg( path ) );
+      continue;
+    }
+    // retrieve root directory
+    QString root = resMgr.stringValue( "General", "root" ).trimmed();
+    if ( root.isEmpty() )
+    {
+      SUIT_MessageBox::warning( desktop(), tr( "WRN_WARNING" ), tr( "WRN_MODULE_EMPTY_ROOT" ).arg( path ) );
+      continue;
+    }
+    addUserModule( name, root, true );
+  }
+}
+
+/*Add user module.*/
+bool LightApp_Application::addUserModule( const QString& name, const QString& root, bool interactive )
+{
+  if ( name.isEmpty() || root.isEmpty() )
+    return false;
+
+  if ( !moduleTitle( name ).isEmpty() ) // module alread in current session
+  {
+    if ( interactive )
+      SUIT_MessageBox::warning( desktop(), tr( "WRN_WARNING" ), tr( "WRN_MODULE_DUPLICATED" ).arg( name ) );
+    return false;
+  }
+  if ( !QFileInfo( root ).exists() ) // root directory does not exist
+  {
+    if ( interactive )
+      SUIT_MessageBox::warning( desktop(), tr( "WRN_WARNING" ), tr( "WRN_MODULE_ROOT_DOES_NOT_EXIST" ).arg( root ) );
+    return false;
+  }
+  // resources directory
+  QString resDir = Qtx::joinPath( QStringList() << root << "share" << "salome" << "resources" << name.toLower() );
+  if ( !QFileInfo( resDir ).exists() ) // resources directory does not exist
+  {
+    if ( interactive )
+      SUIT_MessageBox::warning( desktop(), tr( "WRN_WARNING" ), tr( "WRN_MODULE_BAD_RESDIR" ).arg( resDir ) );
+    return false;
+  }
+  // read XML configuration file
+  resourceMgr()->setConstant( QString( "%1_ROOT_DIR" ).arg( name ), root );
+  if ( !resourceMgr()->addResource( resDir ) ) // cannot read configuration
+  {
+    if ( interactive )
+      SUIT_MessageBox::warning( desktop(), tr( "WRN_WARNING" ), tr( "WRN_MODULE_CANNOT_READ_CFG" ).arg( resDir ) );
+    return false;
+  }
+  // fill in information about module
+  if ( !appendModuleInfo( name ) ) // cannot append module information to internal table
+  {
+    if ( interactive )
+      SUIT_MessageBox::warning( desktop(), tr( "WRN_WARNING" ), tr( "WRN_MODULE_BAD_CFG_FILE" ).arg( name ) );
+    return false;
+  }
+  // load translations
+  resourceMgr()->loadLanguage( name );
+  // append module to the menu / toolbar
+  LightApp_ModuleAction* moduleAction = qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
+  if ( moduleAction )
+    moduleAction->insertModule( moduleTitle( name ), moduleIcon( moduleTitle( name ), 20 ), true ); // scale icon to 20x20 pix
+  // add empty page to Preferences dialog
+  LightApp_Preferences* prefs = preferences();
+  if ( prefs && !prefs->hasModule( moduleTitle( name ) ) )
+  {
+    int prefId = prefs->addPreference( moduleTitle( name ) );
+    prefs->setItemIcon( prefId, moduleIcon( moduleTitle( name ), 20 ) ); // scale icon to 20x20 pix
+    LightApp_Module* m = qobject_cast<LightApp_Module*>( module( moduleTitle( name ) ) );
+    if ( m )
+    {
+      m->createPreferences();
+      emptyPreferences( moduleTitle( name ) );
+    }
+  }
+  // add Help items
+  createHelpItems( moduleTitle( name ) );
+  // extend module catalog
+  QString catalogue = QDir( resDir ).filePath( QString( "%1Catalog.xml" ).arg( name ) );
+  addCatalogue( name, catalogue );
+  // update windows (in particular, Info panel)
+  updateWindows();
+  // save module in the resource manager
+  if ( interactive )
+  {
+    QStringList customModules = resourceMgr()->stringValue( "launch", "user_modules" ).split( ";", QString::SkipEmptyParts );
+    customModules << name;
+    customModules.removeDuplicates();
+    resourceMgr()->setValue( "launch", "user_modules", customModules.join( ";" ) );
+    resourceMgr()->setValue( "user_modules", name, root );
+  }
+  return true;
+}
+
+/*!On module removing action.*/
+void LightApp_Application::onModuleRemoving( const QString& title )
+{
+  QString root = resourceMgr()->stringValue( "user_modules", moduleName( title ) );
+  QDir rootDirectory = QDir( root );
+
+  if ( rootDirectory.exists() )
+  {
+    int answer = SUIT_MessageBox::question( desktop(),
+					    tr( "TLT_REMOVE_MODULE" ),
+					    tr( "QUE_REMOVE_MODULE_DIR" ).arg( root ),
+					    SUIT_MessageBox::Yes | SUIT_MessageBox::No | SUIT_MessageBox::Cancel,
+					    SUIT_MessageBox::No );
+    if ( answer == SUIT_MessageBox::Cancel )
+      return; // cancelled
+    if ( answer == SUIT_MessageBox::Yes )
+    {
+      if ( activeStudy() && activeStudy()->isModified() && !onSaveDoc() )
+        // doc is not saved, or saving cancelled
+        return;
+      if ( !rootDirectory.removeRecursively() )
+      {
+        // canont remove directory
+        if ( SUIT_MessageBox::question( desktop(),
+                                        tr( "WRN_WARNING" ),
+                                        tr( "WRN_CANNOT_REMOVE_DIR" ).arg( root ),
+                                        SUIT_MessageBox::Yes | SUIT_MessageBox::No,
+                                        SUIT_MessageBox::No ) == SUIT_MessageBox::No )
+        return; // removal is cancelled
+      }
+    }
+  }
+
+  if ( activeModule() && activeModule()->moduleName() == title )
+    activateModule( "" );
+
+  // remove from "Modules" menu and toolbar
+  LightApp_ModuleAction* moduleAction = qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
+  if ( moduleAction )
+  {
+    moduleAction->removeModule( title );
+  }
+  // remove Help menu items
+  removeHelpItems( title );
+  // remove Preferences
+  LightApp_Preferences* prefs = preferences();
+  if ( prefs )
+    prefs->removeModule( title );
+  // remove settings
+  QStringList customModules = resourceMgr()->stringValue( "launch", "user_modules" ).split( ";", QString::SkipEmptyParts );
+  customModules.removeAll( moduleName( title ) );
+  resourceMgr()->setValue( "launch", "user_modules", customModules.join( ";" ) );
+  removeModuleInfo( moduleName( title ) );
+  // update windows (in particular, Info panel)
+  updateWindows();
 }
 
 /*!Default module activation.*/
@@ -1220,7 +1309,7 @@ protected:
     {
       // normalize path
       if ( myUrl.startsWith( "file://", Qt::CaseInsensitive ) )
-	myUrl = myUrl.remove( 0, QString( "file://" ).count() );
+        myUrl = myUrl.remove( 0, QString( "file://" ).count() );
       // For the external browser we always specify 'file://' protocol,
       // because some web browsers (e.g. Mozilla Firefox) can't open local file without protocol.
       myUrl = myUrl.prepend( "file://" );
@@ -1335,7 +1424,7 @@ void LightApp_Application::onHelpContextModule( const QString& component,
       QString rootDir = Qtx::getenv( (component + "_ROOT_DIR").toLatin1().constData() );
       if ( !rootDir.isEmpty() )
       {
-	path = (QStringList() << rootDir << "share" << "doc" << "salome" << "gui" << component << url).join( QDir::separator() );
+        path = (QStringList() << rootDir << "share" << "doc" << "salome" << "gui" << component << url).join( QDir::separator() );
       }
     }
   }
@@ -2260,8 +2349,6 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
   if ( !crt )
     return myPrefs;
 
-  SUIT_ResourceMgr* resMgr = resourceMgr();
-
   QList<SUIT_Application*> appList = SUIT_Session::session()->applications();
   for ( QList<SUIT_Application*>::iterator appIt = appList.begin(); appIt != appList.end(); ++appIt )
   {
@@ -2273,10 +2360,6 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
     QStringList names;
     app->modules( names, false );
 
-    // icons of modules
-    QMap<QString, QString> icons;
-    app->moduleIconNames( icons );
-
     // step 1: iterate through list of all available modules
     // and add empty preferences page
     for ( QStringList::const_iterator it = names.begin(); it != names.end(); ++it )
@@ -2284,9 +2367,7 @@ LightApp_Preferences* LightApp_Application::preferences( const bool crt ) const
       if ( !_prefs_->hasModule( *it ) ) // prevent possible duplications
       {
         int modId = _prefs_->addPreference( *it ); // add empty page
-        if ( icons.contains( *it ) )               // set icon
-          _prefs_->setItemIcon( modId, Qtx::scaleIcon( resMgr->loadPixmap( moduleName( *it ),
-                                                                           icons[*it], false ), 20 ) );
+        _prefs_->setItemIcon( modId, moduleIcon( *it, 20 ) ); // scale icon to 20x20 pix
       }
     }
 
@@ -4045,22 +4126,7 @@ void LightApp_Application::afterCloseDoc()
 */
 void LightApp_Application::updateModuleActions()
 {
-  QString modName;
-  if ( activeModule() )
-    modName = activeModule()->moduleName();
-
-  LightApp_ModuleAction* moduleAction =
-    qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
-  if ( moduleAction )
-    moduleAction->setActiveModule( modName );
-}
-
-void LightApp_Application::removeModuleAction( const QString& modName )
-{
-  LightApp_ModuleAction* moduleAction =
-    qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
-  if ( moduleAction )
-    moduleAction->removeModule( modName );
+  emit moduleActivated( activeModule() ? activeModule()->moduleName() : QString() );
 }
 
 bool LightApp_Application::checkModule( const QString& title )
@@ -4452,34 +4518,18 @@ void LightApp_Application::dockWindowsState( const QByteArray& arr, QMap<QString
   }
 }
 
-/*!
-  Adds icon names for modules
-*/
-void LightApp_Application::moduleIconNames( QMap<QString, QString>& iconMap ) const
+QPixmap LightApp_Application::moduleIcon( const QString& moduleTitle, const int size ) const
 {
-  iconMap.clear();
-
-  SUIT_ResourceMgr* resMgr = resourceMgr();
-  if ( !resMgr )
-    return;
-
-  QStringList modList;
-  modules( modList, false );
-
-  for ( QStringList::const_iterator it = modList.begin(); it != modList.end(); ++it )
+  QPixmap icon;
+  if ( resourceMgr() )
   {
-    QString modName = *it;
-    QString modIntr = moduleName( modName );
-    QString modIcon = resMgr->stringValue( modIntr, "icon", QString() );
-
-    if ( modIcon.isEmpty() )
-      continue;
-
-    if ( SUIT_Tools::extension( modIcon ).isEmpty() )
-      modIcon += QString( ".png" );
-
-    iconMap.insert( modName, modIcon );
+    QPixmap defaultIcon = resourceMgr()->loadPixmap( "LightApp", tr( "APP_MODULE_ICO" ), QPixmap( imageEmptyIcon ) );
+    QString iconName = resourceMgr()->stringValue( moduleName( moduleTitle ), "icon", QString() );
+    icon = resourceMgr()->loadPixmap( moduleName( moduleTitle ), iconName, defaultIcon );
+    if ( size > 0 )
+      icon = Qtx::scaleIcon( icon, size );
   }
+  return icon;
 }
 
 /*!
@@ -5401,17 +5451,17 @@ bool LightApp_Application::checkExistingDoc( bool closeExistingDoc )
   if( activeStudy() ) {
     int answer = !activeStudy()->isModified() ? 1 :
                  SUIT_MessageBox::question( desktop(),
-					    tr( "APPCLOSE_CAPTION" ),
-					    tr( "STUDYCLOSE_DESCRIPTION" ),
-					    tr( "APPCLOSE_SAVE" ),
-					    tr( "APPCLOSE_CLOSE" ),
-					    tr( "APPCLOSE_CANCEL" ), 0 );
+                                            tr( "APPCLOSE_CAPTION" ),
+                                            tr( "STUDYCLOSE_DESCRIPTION" ),
+                                            tr( "APPCLOSE_SAVE" ),
+                                            tr( "APPCLOSE_CLOSE" ),
+                                            tr( "APPCLOSE_CANCEL" ), 0 );
     if(answer == 0) {
       if ( activeStudy()->isSaved() ) {
         onSaveDoc();
-		if (closeExistingDoc) {
-			closeDoc(false);
-		}
+                if (closeExistingDoc) {
+                        closeDoc(false);
+                }
       } else if ( onSaveAsDoc() ) {
          if (closeExistingDoc) {
            if( !closeDoc( false ) ) {
@@ -5424,7 +5474,7 @@ bool LightApp_Application::checkExistingDoc( bool closeExistingDoc )
     }
     else if( answer == 1 ) {
       if (closeExistingDoc) {
-	closeDoc( false );
+        closeDoc( false );
       }
     } else if( answer == 2 ) {
       result = false;
@@ -5451,3 +5501,98 @@ PyConsole_Interp* LightApp_Application::createPyInterp()
 }
 
 #endif // DISABLE_PYCONSOLE
+
+void LightApp_Application::createHelpItems( const QString& modTitle )
+{
+  if ( modTitle.isEmpty() )
+    return;
+
+  QString userGuide = "User's Guide";
+  QString devGuide = "Developer's Guide";
+
+  int helpMenu = createMenu( tr( "MEN_DESK_HELP" ), -1, -1, 1000 );
+
+  createMenu( userGuide, helpMenu, -1, 5 );
+  createMenu( devGuide, helpMenu, -1, 5 );
+
+  IMap <QString, QString> helpData;                                 // list of help files for the module
+  QString helpSubMenu;                                              // help submenu name (empty if not needed)
+  QString modName = moduleName( modTitle );                         // module name
+  if ( modName.isEmpty() ) modName = modTitle;                      // for KERNEL and GUI
+  QString rootDir = QString( "%1_ROOT_DIR" ).arg( modName );        // module root dir env variable
+  QString modDir = Qtx::getenv( rootDir.toUtf8().constData() );     // module root dir path
+  QString docSection;
+  if ( resourceMgr()->hasValue( modName, "documentation" ) )
+    docSection = resourceMgr()->stringValue( modName, "documentation" );
+  else if ( resourceMgr()->hasSection( modName + "_documentation" ) )
+    docSection = modName + "_documentation";
+  if ( !docSection.isEmpty() )
+  {
+    helpSubMenu = resourceMgr()->stringValue( docSection, "sub_menu", "" );
+    if ( helpSubMenu.contains( "%1" ) )
+      helpSubMenu = helpSubMenu.arg( modTitle );
+    foreach( QString paramName, resourceMgr()->parameters( docSection ) )
+    {
+      QString key = paramName.contains( "%1" ) ? paramName.arg( modTitle ) : paramName;
+      QString helpItem = getHelpItem( docSection, paramName );
+      if ( !helpItem.isEmpty() )
+        helpData.insert( key, helpItem );
+    }
+  }
+
+  if ( helpData.isEmpty() && !modDir.isEmpty() )
+  {
+    QStringList idxLst = QStringList() << modDir << "share" << "doc" << "salome" << "gui" << modName << "index.html";
+    QString indexFile = idxLst.join( QDir::separator() );          // index file
+    if ( QFile::exists( indexFile ) )
+      helpData.insert( tr( "%1 module Users's Guide" ).arg( modTitle ), indexFile );
+  }
+
+  IMapConstIterator<QString, QString > fileIt;
+  for ( fileIt = helpData.begin(); fileIt != helpData.end(); fileIt++ )
+  {
+    QString helpItemPath = fileIt.key();
+    // remove all '//' occurances
+    while ( helpItemPath.contains( "//" ) )
+      helpItemPath.replace( "//", "" );
+    // obtain submenus hierarchy if given
+    QStringList smenus = helpItemPath.split( "/" );
+    helpItemPath = smenus.takeLast();
+    // workaround for User's Guide and Developer's Guide to avoid having single item in module's submenu.
+    if ( helpItemPath == userGuide || helpItemPath == devGuide )
+    {
+      QString menuPath = smenus.join( "/" );
+      QStringList allKeys = helpData.keys();
+      QStringList total = allKeys.filter( QRegExp( QString( "^%1" ).arg( menuPath ) ) );
+      if ( total.count() == 1 && smenus.count() > 0 )
+        helpItemPath = smenus.takeLast();
+    }
+    QPixmap helpIcon = fileIt.value().startsWith( "http", Qt::CaseInsensitive ) ?
+      resourceMgr()->loadPixmap( "STD", tr( "ICON_WWW" ), false ) :
+      resourceMgr()->loadPixmap( "STD", tr( "ICON_HELP" ), false );
+    QAction* a = createAction( -1, helpItemPath, helpIcon, helpItemPath, helpItemPath,
+                               0, desktop(), false, this, SLOT( onHelpContentsModule() ) );
+    a->setData( fileIt.value() );
+    if ( !helpSubMenu.isEmpty() )
+      smenus.prepend( helpSubMenu );
+    // create sub-menus hierarchy
+    int menuId = helpMenu;
+    foreach ( QString subMenu, smenus )
+      menuId = createMenu( subMenu, menuId, -1, 5 );
+    createMenu( a, menuId, -1, ( menuId != helpMenu && ( helpItemPath == userGuide || helpItemPath == devGuide ) ) ? 0 : 5 );
+    if ( !myHelpItems.contains( modName ) )
+      myHelpItems[modName] = IdList();
+    myHelpItems[modName].append( actionId( a ) );
+  }
+}
+
+void LightApp_Application::removeHelpItems( const QString& modTitle )
+{
+  QString modName = moduleName( modTitle );
+  if ( myHelpItems.contains( modName ) )
+  {
+    foreach( int id, myHelpItems[modName] )
+      setMenuShown( id, false );
+    myHelpItems.remove( modName );
+  }
+}

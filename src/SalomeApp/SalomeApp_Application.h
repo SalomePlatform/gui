@@ -178,6 +178,8 @@ protected:
   virtual bool                        canOpenDoc( const QString& );
   virtual void                        afterCloseDoc();
 
+  virtual void                        addCatalogue( const QString&, const QString& );
+
 private slots:
   void                                onDeleteInvalidReferences();
   void                                onDblClick( SUIT_DataObject* );

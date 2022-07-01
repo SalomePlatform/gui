@@ -32,6 +32,8 @@
 #endif
 
 class QtxComboBox;
+class QtxResourceMgr;
+class QSignalMapper;
 
 class LIGHTAPP_EXPORT LightApp_ModuleAction : public QtxAction
 {
@@ -43,11 +45,14 @@ private:
   class ActivateEvent;
 
 public:
-  enum { None = 0x00, Buttons = 0x01, ComboItem = 0x02, All = Buttons | ComboItem };
+  typedef enum { Buttons   = 0x01,
+                 List      = 0x02,
+                 AddRemove = 0x04,
+                 All       = Buttons | List | AddRemove
+  } Mode;
 
 public:
-  LightApp_ModuleAction( const QString&, QObject* = 0 );
-  LightApp_ModuleAction( const QString&, const QIcon&, QObject* = 0 );
+  LightApp_ModuleAction( QtxResourceMgr*, QObject* = 0 );
   virtual ~LightApp_ModuleAction();
 
   int              count() const;
@@ -59,13 +64,18 @@ public:
   QAction*         moduleAction( const QString& ) const;
 
   void             insertModule( const QString&, const QIcon&, const int = -1 );
+  void             insertModule( const QString&, const QIcon&, bool, const int = -1 );
   void             removeModule( const QString& );
 
   QString          activeModule() const;
+
+  void             setMode( const Mode& );
+  void             setModeEnabled( const Mode&, bool );
+  bool             isModeEnabled( const Mode& ) const;
+
+public slots:
   void             setActiveModule( const QString& );
 
-  void             setMode( const int );
-  int              mode() const;
 
 protected:
   virtual void     addedTo( QWidget* );
@@ -75,10 +85,10 @@ protected:
 
 signals:
   void             moduleActivated( const QString& );
+  void             adding();
+  void             removing( const QString& );
 
 private:
-  void             init();
-
   void             update();
   void             update( QtxComboBox* );
 
@@ -92,8 +102,12 @@ private slots:
 
 private:
   ComboAction*     myCombo;
+  QtxAction*       myAdd;
+  QtxAction*       myRemove;
   ActionSet*       mySet;
+  QAction*         mySeparator;
   int              myMode;
+  QSignalMapper*   myMapper;
 };
 
 class LightApp_ModuleAction::ComboAction : public QtxAction

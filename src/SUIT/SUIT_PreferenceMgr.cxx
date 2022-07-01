@@ -174,6 +174,18 @@ int SUIT_PreferenceMgr::addItem( const QString& title, const int pId,
   return item ? item->id() : -1;
 }
 
+void SUIT_PreferenceMgr::removeItem( const QString& title )
+{
+  if ( myRoot )
+  {
+    QtxPreferenceItem* item = myRoot->findItem( title, false );
+    if ( item ) {
+      QtxPagePrefMgr::removeItem( item );
+      delete item;
+    }
+  }
+}
+
 QVariant SUIT_PreferenceMgr::optionValue( const QString& name ) const
 {
   QVariant val = QtxPagePrefMgr::optionValue( name );

@@ -53,6 +53,7 @@ public:
                                       const QString& section = QString(), const QString& param = QString() );
 
   bool                 hasModule( const QString& ) const;
+  void                 removeModule( const QString& );
 
   void                 activateItem( const QString& );
   void                 activateItem( const QStringList& );

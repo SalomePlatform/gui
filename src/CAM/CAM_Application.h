@@ -97,21 +97,25 @@ protected:
 
   virtual bool        abortAllOperations();
 
+protected:
+  bool                appendModuleInfo( const QString& );
+  void                removeModuleInfo( const QString& );
+
 private:
+  enum { stInvalid = -1, stUnknown = 0, stNoGui, stInaccessible, stReady };
+  struct ModuleInfo
+  {
+    QString name, title, icon, library, version, description, displayer;
+    int status;
+    ModuleInfo() : status( stInvalid ) {}
+  };
   void                readModuleList();
 
 private:
-  enum { stUnknown = 0, stNoGui, stInaccessible, stReady };
-  typedef struct { 
-    QString name, title, icon, library, version, description, displayer;
-    int status;
-  } ModuleInfo;
   typedef QList<ModuleInfo> ModuleInfoList;
-
-private:
+  static ModuleInfoList myInfoList;      //!< modules info list
   CAM_Module*           myModule;        //!< active module
   ModuleList            myModules;       //!< loaded modules list
-  static ModuleInfoList myInfoList;      //!< modules info list
   bool                  myAutoLoad;      //!< auto loading flag
   bool                  myBlocked;       //!< "blocked" flag, internal usage
 };

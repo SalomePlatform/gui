@@ -224,10 +224,11 @@ SET(_other_RESOURCES
   resources/icon_applogo.png
   resources/icon_default.png
   resources/icon_module.png
-  resources/icon_module_big.png
   resources/icon_select.png
   resources/icon_earth.png
   resources/icon_life_ring.png
+  resources/icon_add_module.png
+  resources/icon_remove_module.png
   resources/LightApp.xml
 )
 

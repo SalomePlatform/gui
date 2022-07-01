@@ -757,6 +757,7 @@ void CAM_Application::readModuleList()
   if ( !myInfoList.isEmpty() )
     return;
 
+  // we cannot use own resourceMgr() as this method can be called from constructor
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
 
   QStringList modList;
@@ -801,78 +802,11 @@ void CAM_Application::readModuleList()
     modList = mods.split( ",", QString::SkipEmptyParts );
   }
 
-  for ( QStringList::const_iterator it = modList.begin(); it != modList.end(); ++it )
-  {
-    QString modName = (*it).trimmed();
+  // extra modules loaded manually on previous session
+  // ...
 
-    if ( modName.isEmpty() )
-      continue;  // empty module name
-
-    if ( !moduleTitle( modName ).isEmpty() )
-      continue;  // already added
-
-    if ( modName == "KERNEL" || modName == "GUI" )
-      continue; // omit KERNEL and GUI modules
-
-    bool hasGui = resMgr->booleanValue( *it, "gui", true );
-
-    QString modTitle, modIcon, modLibrary, modDescription;
-
-    if ( hasGui )
-    {
-      // if module has GUI, check that it is present
-      modTitle = resMgr->stringValue( *it, "name", QString() );
-      if ( modTitle.isEmpty() )
-      {
-        printf( "****************************************************************\n" );
-        printf( "     Warning: module %s is improperly configured!\n", qPrintable(*it) );
-        printf( "     Module %s will not be available in GUI mode!\n", qPrintable(*it) );
-        printf( "****************************************************************\n" );
-        continue;
-      }
-
-      modIcon = resMgr->stringValue( *it, "icon", QString() );
-
-      modDescription = resMgr->stringValue( *it, "description", QString() );
-
-      modLibrary = resMgr->stringValue( *it, "library", QString() ).trimmed();
-      if ( !modLibrary.isEmpty() )
-      {
-        modLibrary = SUIT_Tools::file( modLibrary.trimmed() );
-#if defined(WIN32)
-        QString libExt = QString( "dll" );
-#elif defined(__APPLE__)
-        QString libExt = QString( "dylib" );
-#else
-        QString libExt = QString( "so" );
-#endif
-        if ( SUIT_Tools::extension( modLibrary ).toLower() == libExt )
-          modLibrary.truncate( modLibrary.length() - libExt.length() - 1 );
-#ifndef WIN32
-        QString prefix = QString( "lib" );
-        if ( modLibrary.startsWith( prefix ) )
-          modLibrary.remove( 0, prefix.length() );
-#endif
-      }
-      else
-        modLibrary = modName;
-    }
-
-    QString version = resMgr->stringValue( *it, "version", QString() );
-
-    QString modDisplayer = resMgr->stringValue( *it, "displayer", QString() );
-
-    ModuleInfo inf;
-    inf.name = modName;
-    inf.title = modTitle;
-    inf.status = hasGui ? stUnknown : stNoGui;
-    if ( hasGui ) inf.library = modLibrary;
-    inf.icon = modIcon;
-    inf.description = modDescription;
-    inf.displayer = modDisplayer;
-    inf.version = version;
-    myInfoList.append( inf );
-  }
+  foreach ( QString modName, modList )
+    appendModuleInfo( modName.trimmed() );
 
   if ( myInfoList.isEmpty() ) {
     if ( desktop() && desktop()->isVisible() )
@@ -883,6 +817,70 @@ void CAM_Application::readModuleList()
         printf( "*    Warning: modules list is empty.\n" );
         printf( "****************************************************************\n" );
       }
+  }
+}
+
+bool CAM_Application::appendModuleInfo( const QString& modName )
+{
+  if ( modName.isEmpty() )
+    return false;  // empty module name
+
+  if ( !moduleTitle( modName ).isEmpty() )
+    return false;  // already added
+
+  if ( modName == "KERNEL" || modName == "GUI" )
+    return false; // skip KERNEL and GUI modules
+
+  // we cannot use own resourceMgr() as this method can be called from constructor
+  SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+
+  // "gui" option explicitly says that module has GUI
+  bool hasGui = resMgr->booleanValue( modName, "gui", true );
+
+  ModuleInfo inf;
+
+  // module internal name
+  inf.name = modName;
+  // module version
+  inf.version = resMgr->stringValue( modName, "version", QString() ).trimmed();
+  // displayer, if module does not have GUI, displayer may be delegated to other module
+  inf.displayer = resMgr->stringValue( modName, "displayer", QString() ).trimmed();
+  // status; if module has GUI, availability will be checked on activation
+  inf.status = hasGui ? stUnknown : stNoGui;
+
+  if ( hasGui )
+  {
+    // module with GUI must explicitly specify title (GUI name)
+    inf.title = resMgr->stringValue( modName, "name", QString() ).trimmed();
+    if ( inf.title.isEmpty() )
+      inf.status = stInvalid;
+    // icon
+    inf.icon = resMgr->stringValue( modName, "icon", QString() ).trimmed();
+    // description, for Info panel
+    inf.description = resMgr->stringValue( modName, "description", QString() );
+    // library; if not specified, we use internal module name
+    inf.library = SUIT_Tools::libraryName( resMgr->stringValue( modName, "library", QString() ).trimmed() );
+    if ( inf.library.isEmpty() )
+      inf.library = modName;
+  }
+
+  if ( inf.status != stInvalid )
+    myInfoList.append( inf );
+
+  return true;
+}
+
+void CAM_Application::removeModuleInfo( const QString& modName )
+{
+  QMutableListIterator<ModuleInfo> it( myInfoList );
+  while ( it.hasNext() )
+  {
+    ModuleInfo info = it.next();
+    if ( info.name == modName )
+    {
+      it.remove();
+      break;
+    }
   }
 }
 

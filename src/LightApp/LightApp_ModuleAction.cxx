@@ -22,11 +22,14 @@
 //
 #include "LightApp_ModuleAction.h"
 
-#include <QtxComboBox.h>
 #include <QtxActionSet.h>
+#include <QtxComboBox.h>
+#include <QtxResourceMgr.h>
 #include <QVBoxLayout>
 #include <QApplication>
 #include <QEvent>
+#include <QMenu>
+#include <QSignalMapper>
 
 /*!
   \class LightApp_ModuleAction::ActionSet
@@ -146,7 +149,7 @@ QList<QtxComboBox*> LightApp_ModuleAction::ComboAction::widgets() const
 
   QList<QWidget*> wlist = createdWidgets();
   for ( QList<QWidget*>::const_iterator wit = wlist.begin(); wit != wlist.end(); ++wit )
-    lst += (*wit)->findChildren<QtxComboBox*>();
+    lst += qobject_cast<QtxComboBox*>(*wit);
 
   return lst;
 }
@@ -162,18 +165,11 @@ QWidget* LightApp_ModuleAction::ComboAction::createWidget( QWidget* parent )
   if ( !parent->inherits( "QToolBar" ) )
     return 0;
 
-  QWidget* dumb = new QWidget( parent );
-  QVBoxLayout* l = new QVBoxLayout( dumb );
-  l->setSpacing( 0 ); l->setMargin( 0 );
-  QtxComboBox* cb = new QtxComboBox( dumb );
+  QtxComboBox* cb = new QtxComboBox( parent );
   cb->setSizeAdjustPolicy( QComboBox::AdjustToContents );
   cb->setFocusPolicy( Qt::NoFocus );
-  l->addWidget( cb );
-  l->addSpacing( 3 );
-
   connect( cb, SIGNAL( activatedId( int ) ), this, SIGNAL( activatedId( int ) ) );
-
-  return dumb;
+  return cb;
 }
 
 /*!
@@ -205,63 +201,71 @@ private:
   \brief An action, representing the list of modules to be inserted to the
   toolbar.
 
-  This action is represented in the toolbar as combo box and a set of buttons 
-  for each module. In addition to the modules items, the combo box contains 
-  an item corresponding to the "neutral point" of the application 
-  (when there is no active module).
-  
-  The action can be constructed with up to two parameters, defining the text
-  and icon to be displayed for the "neutral point".
+  In the toolbar this action is represented as the combo box with the list of
+  available modules, and a set of buttons for each module. Additionally, combo box
+  contains an item representing "neutral point" of the application (i.e. no active module).
+
+  In menu, the action is represented as a plain list of items, one per module.
 
   Only one module can be active at the moment. It can be set programmatically 
   with setActiveModule() function. Use this method with empty string to turn
   to the "neutral point". To get active module, use activeModule() function.
 
-  When user activates/deactivates any module, the signal moduleActivated() 
+  When user activates/deactivates a module, the moduleActivated() signal
   is emitted.
 
-  The action can be represented in the toolbar in different modes:
-  * as combo box only (Qtx::ComboItem)
-  * as set of modules buttons only (Qtx::Buttons)
-  * as combo box followed by the set of modules buttons (Qtx::All)
-  * as none (Qtx::None)
-  By default, both combo box and buttons set are shown. Use method 
-  setMode() to change this behavior.
+  The action also provides an additional separate item "Add modules"; when
+  this button is pressed, a adding() signal is emitted. This signal
+  can be connected to a dedicated slot aimed to dynamically add a new module
+  into the application. In addition, a button "Remove module" shows a dropdown menu
+  with the list of user modules; when any item is selected, the removing() signal
+  is emitted. This signal may be connected to a slot aimed to dynamically remove
+  selected user module from application.
 
-  An action can be also added to the popup menu, but combo box is never shown
-  in this case, only modules buttons.
+  It is possible to customize which elements to show via the setMode() of setModeEnabled()
+  functions. By default, all elements are shown. The following choices are possible:
+
+  - LightApp_ModuleAction::Buttons: show separate items for all modules
+  - LightApp_ModuleAction::List: show combo box with list of modules (in toolbar only)
+  - LightApp_ModuleAction::AddRemove: show "Add modules" and "Remove modules" items
+  - LightApp_ModuleAction::All: show all items
 */
 
 /*!
   \brief Constructor
-
-  Creates an module action with "neutral point" item described by \a text.
-
-  \param text "neutral point" item's text
+  \param resMgr resource manager
   \param parent parent object
 */
-LightApp_ModuleAction::LightApp_ModuleAction( const QString& text, QObject* parent )
+LightApp_ModuleAction::LightApp_ModuleAction( QtxResourceMgr* resMgr, QObject* parent )
 : QtxAction( parent )
 {
-  setText( text );
-  init();
-}
+  setText( tr( "APP_NAME" ) );
+  setIcon( resMgr->loadPixmap( "LightApp", tr( "APP_DEFAULT_ICO" ), false ) );
+  setVisible( false );
 
-/*!
-  \brief Constructor
+  myMode = All;
+  myCombo = new ComboAction( this );
+  myAdd = new QtxAction( tr( "ADD_MODULE"),
+			 resMgr->loadPixmap( "LightApp", tr( "ICON_ADD_MODULE" ), false ),
+			 tr( "ADD_MODULE"),
+			 0, this );
+  myRemove = new QtxAction( tr( "REMOVE_MODULE"),
+			    resMgr->loadPixmap( "LightApp", tr( "ICON_REMOVE_MODULE" ), false ),
+			    tr( "REMOVE_MODULE"),
+			    0, this );
+  myRemove->setEnabled( false );
+  myRemove->setMenu( new QMenu() );
+  mySeparator = new QAction( this );
+  mySeparator->setSeparator( true );
+  mySet = new ActionSet( this );
 
-  Creates an module action with "neutral point" item described by \a text and \a ico.
+  myMapper = new QSignalMapper( this );
 
-  \param text "neutral point" item's text
-  \param ico "neutral point" item's icon
-  \param parent parent object
-*/
-LightApp_ModuleAction::LightApp_ModuleAction( const QString& text, const QIcon& ico, QObject* parent )
-: QtxAction( parent )
-{
-  setText( text );
-  setIcon( ico );
-  init();
+  connect( this,     SIGNAL( changed() ),          this, SLOT( onChanged() ) );
+  connect( myAdd,    SIGNAL( triggered( bool ) ),  this, SIGNAL( adding() ) );
+  connect( mySet,    SIGNAL( triggered( int ) ),   this, SLOT( onTriggered( int ) ) );
+  connect( myCombo,  SIGNAL( activatedId( int ) ), this, SLOT( onComboActivated( int ) ) );
+  connect( myMapper, SIGNAL( mapped( QString ) ),  this, SIGNAL( removing( QString ) ) );
 }
 
 /*!
@@ -342,8 +346,31 @@ QAction* LightApp_ModuleAction::moduleAction( const QString& name ) const
 void LightApp_ModuleAction::insertModule( const QString& name, const QIcon& ico,
                                           const int idx )
 {
+  insertModule( name, ico, false, idx );
+}
+
+/*!
+  \brief Add module into the list.
+  \param name module name
+  \param ico module icon
+  \param isCustom \c false to insert regular module, \c true to insert user module
+  \param idx position in the module list (if -1, the module is added to the end of list)
+  \sa removeModule()
+*/
+void LightApp_ModuleAction::insertModule( const QString& name, const QIcon& ico,
+					  bool isCustom, const int idx)
+
+{
   QtxAction* a = new QtxAction( name, ico, name, 0, this, true );
   a->setStatusTip( tr( "ACTIVATE_MODULE_TOP" ).arg( name ) );
+  a->setData( isCustom );
+  if ( isCustom )
+  {
+    myRemove->setEnabled( true );
+    QAction* inserted = myRemove->menu()->addAction( name );
+    connect( inserted, SIGNAL( triggered() ), myMapper, SLOT( map() ) );
+    myMapper->setMapping( inserted, name );
+  }
 
   mySet->insertAction( a, -1, idx );
   update();
@@ -360,7 +387,23 @@ void LightApp_ModuleAction::removeModule( const QString& name )
   if ( id == -1 )
     return;
 
+  QAction* a = moduleAction( name );
+  bool isCustom = a->data().toBool();
+
   mySet->removeAction( id );
+  if ( isCustom )
+  {
+    foreach ( QAction* ma, myRemove->menu()->actions() )
+    {
+      if ( ma->text() == name )
+      {
+        myRemove->menu()->removeAction( ma );
+        break;
+      }
+    }
+    myRemove->setEnabled( !myRemove->menu()->actions().isEmpty() );
+  }
+
   update();
 }
 
@@ -399,19 +442,27 @@ void LightApp_ModuleAction::setActiveModule( const QString& name )
 
 /*!
   \brief Set action display mode.
-
-  Action can be represented in the toolbar as
-  * combo box only (Qtx::ComboItem)
-  * set of modules buttons only (Qtx::Buttons)
-  * combo box followed by the set of modules buttons (Qtx::All)
-  * none (Qtx::None)
-
-  \param mode action display mode
+  \param mode action display options (combination of flags)
   \sa mode()
 */
-void LightApp_ModuleAction::setMode( const int mode )
+void LightApp_ModuleAction::setMode( const LightApp_ModuleAction::Mode& mode )
 {
   myMode = mode;
+  update();
+}
+
+/*!
+  \brief Enable / disable action display mode.
+  \param mode action display options (combination of flags)
+  \param enabled \c true to enable mode, \c false to disable mode
+  \sa mode()
+*/
+void LightApp_ModuleAction::setModeEnabled( const LightApp_ModuleAction::Mode& mode, bool enabled )
+{
+  if ( enabled )
+    myMode |= mode;
+  else
+    myMode &= ~mode;
   update();
 }
 
@@ -420,9 +471,9 @@ void LightApp_ModuleAction::setMode( const int mode )
   \param mode action display mode
   \sa setMode()
 */
-int LightApp_ModuleAction::mode() const
+bool LightApp_ModuleAction::isModeEnabled( const LightApp_ModuleAction::Mode& mode ) const
 {
-  return myMode;
+  return (bool)( myMode & mode );
 }
 
 /*!
@@ -433,6 +484,9 @@ void LightApp_ModuleAction::addedTo( QWidget* w )
 {
   if ( w->inherits( "QToolBar" ) )
     w->insertAction( this, myCombo );
+  w->insertAction( this, myAdd );
+  w->insertAction( this, myRemove );
+  w->insertAction( this, mySeparator );
   w->insertAction( this, mySet );
   update();
 }
@@ -447,6 +501,9 @@ void LightApp_ModuleAction::removedFrom( QWidget* w )
 {
   if ( w->inherits( "QToolBar" ) )
     w->removeAction( myCombo );
+  w->removeAction( myAdd );
+  w->removeAction( myRemove );
+  w->removeAction( mySeparator );
   w->removeAction( mySet );
 }
 
@@ -471,23 +528,6 @@ bool LightApp_ModuleAction::event( QEvent* e )
 */
 
 /*!
-  \brief Initialize an action,
-  \internal
-*/
-void LightApp_ModuleAction::init()
-{
-  setVisible( false );
-
-  myMode = All;
-  myCombo = new ComboAction( this );
-  mySet = new ActionSet( this );
-
-  connect( this,    SIGNAL( changed() ),          this, SLOT( onChanged() ) );
-  connect( mySet,   SIGNAL( triggered( int ) ),   this, SLOT( onTriggered( int ) ) );
-  connect( myCombo, SIGNAL( activatedId( int ) ), this, SLOT( onComboActivated( int ) ) );
-}
-
-/*!
   \brief Update an action.
   \internal
 */
@@ -497,7 +537,9 @@ void LightApp_ModuleAction::update()
   for ( QList<QtxComboBox*>::const_iterator it = lst.begin(); it != lst.end(); ++it )
     update( *it );
 
-  myCombo->setVisible( myMode & ComboItem );
+  myCombo->setVisible( myMode & List );
+  myAdd->setVisible( myMode & AddRemove );
+  myRemove->setVisible( myMode & AddRemove );
   mySet->setVisible( myMode & Buttons );
 }
 

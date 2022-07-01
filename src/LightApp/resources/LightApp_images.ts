@@ -16,10 +16,6 @@
         <translation>icon_about.png</translation>
     </message>
     <message>
-        <source>APP_MODULE_BIG_ICO</source>
-        <translation>icon_module_big.png</translation>
-    </message>
-    <message>
         <source>APP_BASE_LOGO</source>
         <translation>icon_applogo.png</translation>
     </message>
@@ -38,6 +34,14 @@
     <message>
         <source>ICON_LIFE_RIGN</source>
         <translation>icon_life_ring.png</translation>
+    </message>
+    <message>
+        <source>ICON_ADD_MODULE</source>
+        <translation>icon_add_module.png</translation>
+    </message>
+    <message>
+        <source>ICON_REMOVE_MODULE</source>
+        <translation>icon_remove_module.png</translation>
     </message>
 </context>
 </TS>

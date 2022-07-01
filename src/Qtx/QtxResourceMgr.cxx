@@ -30,6 +30,8 @@
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
+#include <QJsonDocument>
+#include <QJsonObject>
 #include <QRegExp>
 #include <QTextStream>
 #include <QApplication>
@@ -536,7 +538,7 @@ bool QtxResourceMgr::IniFormat::load( const QString& fname, QMap<QString, Sectio
 
 
 /*!
-  \brief Load resources from xml-file.
+  \brief Load resources from ini-file.
   \param fname resources file name
   \param secMap resources map to be filled in
   \param importHistory list of already imported resources files (to prevent import loops)
@@ -618,8 +620,8 @@ bool QtxResourceMgr::IniFormat::load( const QString& fname, QMap<QString, Sectio
       QString impFile = QDir::toNativeSeparators( Qtx::makeEnvVarSubst( data, Qtx::Always ) );
       QFileInfo impFInfo( impFile );
       if ( impFInfo.isRelative() )
-	      impFInfo.setFile( aFinfo.absoluteDir(), impFile );
-    
+        impFInfo.setFile( aFinfo.absoluteDir(), impFile );
+
       QMap<QString, Section> impMap;
       if ( !load( impFInfo.absoluteFilePath(), impMap, importHistory ) )
       {
@@ -1033,6 +1035,222 @@ QString QtxResourceMgr::XmlFormat::valueAttribute() const
 }
 
 /*!
+  \class QtxResourceMgr::JsonFormat
+  \internal
+  \brief Reader/writer for .json resources files.
+*/
+
+class QtxResourceMgr::JsonFormat : public Format
+{
+public:
+  JsonFormat();
+  ~JsonFormat();
+
+protected:
+  JsonFormat( const QString& );
+  virtual bool load( const QString&, QMap<QString, Section>& );
+  virtual bool save( const QString&, const QMap<QString, Section>& );
+
+private:
+  bool         load( const QString&, QMap<QString, Section>&, QSet<QString>& );
+};
+
+/*!
+  \brief Constructor.
+*/
+QtxResourceMgr::JsonFormat::JsonFormat()
+: QtxResourceMgr::JsonFormat( "json" )
+{
+}
+
+/*!
+  \brief Constructor.
+*/
+QtxResourceMgr::JsonFormat::JsonFormat( const QString& fmt )
+: Format( fmt )
+{
+}
+
+/*!
+  \brief Destructor.
+*/
+QtxResourceMgr::JsonFormat::~JsonFormat()
+{
+}
+
+/*!
+  \brief Load resources from json-file.
+  \param fname resources file name
+  \param secMap resources map to be filled in
+  \return \c true on success and \c false on error
+*/
+bool QtxResourceMgr::JsonFormat::load( const QString& fname, QMap<QString, Section>& secMap )
+{
+  QSet<QString> importHistory;
+  return load( fname, secMap, importHistory );
+}
+
+/*!
+  \brief Load resources from json-file.
+  \param fname resources file name
+  \param secMap resources map to be filled in
+  \param importHistory list of already imported resources files (to prevent import loops)
+  \return \c true on success or \c false on error
+*/
+bool QtxResourceMgr::JsonFormat::load( const QString& fname, QMap<QString, Section>& secMap, QSet<QString>& importHistory )
+{
+  QString aFName = fname.trimmed();
+  if ( !QFileInfo( aFName ).exists() )
+  {
+    if ( QFileInfo( aFName + ".json" ).exists() )
+      aFName += ".json";
+    else if ( QFileInfo( aFName + ".JSON" ).exists() )
+      aFName += ".JSON";
+    else
+      return false; // file does not exist
+  }
+  QFileInfo aFinfo( aFName );
+  aFName = aFinfo.canonicalFilePath();
+
+  if ( !importHistory.contains( aFName ) )
+    importHistory.insert( aFName );
+  else
+    return true;   // already imported (prevent import loops)
+
+  QFile file( aFName );
+  if ( !file.open( QFile::ReadOnly ) )
+    return false;  // file is not accessible
+
+  QJsonDocument document = QJsonDocument::fromJson( file.readAll() );
+  if ( document.isNull() )
+    return false;  // invalid json file
+
+  QJsonObject root = document.object();
+  foreach ( QString sectionName, root.keys() )
+  {
+    if ( sectionName == "import" )
+    {
+      QString impFile = root.value( sectionName ).toString();
+      if ( impFile.isEmpty() )
+        continue;
+      QString impPath = QDir::toNativeSeparators( Qtx::makeEnvVarSubst( impFile, Qtx::Always ) );
+      QFileInfo impFInfo( impPath );
+      if ( impFInfo.isRelative() )
+        impFInfo.setFile( aFinfo.absoluteDir(), impPath );
+      QMap<QString, Section> impMap;
+      if ( !load( impFInfo.absoluteFilePath(), impMap, importHistory ) )
+      {
+        qDebug() << "QtxResourceMgr: Error with importing file:" << impPath;
+      }
+      else
+      {
+        QMap<QString, Section>::const_iterator it = impMap.constBegin();
+        for ( ; it != impMap.constEnd() ; ++it )
+        {
+          if ( !secMap.contains( it.key() ) )
+          {
+            // insert full section
+            secMap.insert( it.key(), it.value() );
+          }
+          else
+          {
+            // insert all parameters from the section
+            Section::ConstIterator paramIt = it.value().begin();
+            for ( ; paramIt != it.value().end() ; ++paramIt )
+            {
+              if ( !secMap[it.key()].contains( paramIt.key() ) )
+                secMap[it.key()].insert( paramIt.key(), paramIt.value() );
+            }
+          }
+        }
+      }
+    }
+    else
+    {
+      QJsonObject section = root.value( sectionName ).toObject();
+      if ( !section.isEmpty() )
+      {
+	// case when a top-level item is a section
+        foreach ( QString parameterName, section.keys() )
+        {
+          // each value must be a string, number, or boolean
+          QJsonValue parameter = section.value( parameterName );
+          if ( parameter.isDouble() )
+            secMap[sectionName].insert( parameterName, QString::number( parameter.toDouble() ) );
+          else if ( parameter.isBool() )
+            secMap[sectionName].insert( parameterName, QString( parameter.toBool() ? "true" : "false" ) );
+          else if ( parameter.isString() )
+            secMap[sectionName].insert( parameterName, parameter.toString() );
+        }
+      }
+      else
+      {
+        QString parameterName = sectionName;
+        sectionName = "General"; // default section name for top-level items
+        // each value must be a string, number, or boolean
+        QJsonValue parameter = root.value( parameterName );
+        if ( parameter.isDouble() )
+          secMap[sectionName].insert( parameterName, QString::number( parameter.toDouble() ) );
+        else if ( parameter.isBool() )
+          secMap[sectionName].insert( parameterName, QString( parameter.toBool() ? "true" : "false" ) );
+        else if ( parameter.isString() )
+          secMap[sectionName].insert( parameterName, parameter.toString() );
+      }
+    }
+  }
+
+  if ( !secMap.isEmpty() )
+    qDebug() << "QtxResourceMgr: File" << fname << "is loaded successfully";
+  return true;
+}
+
+/*!
+  \brief Save resources to the json-file.
+  \param fname resources file name
+  \param secMap resources map
+  \return \c true on success and \c false on error
+*/
+bool QtxResourceMgr::JsonFormat::save( const QString& fname, const QMap<QString, Section>& secMap )
+{
+  if ( !Qtx::mkDir( QFileInfo( fname ).absolutePath() ) )
+    return false;
+
+  QFile file( fname );
+  if ( !file.open( QFile::WriteOnly ) )
+    return false;
+
+  QJsonObject root;
+  for ( QMap<QString, Section>::ConstIterator it = secMap.begin(); it != secMap.end(); ++it )
+  {
+    // note: we write all values as string, as it's enough to store resources as strings
+    // anyway resource manager converts values to strings when reading JSON file
+    QJsonObject section;
+    for ( Section::ConstIterator iter = it.value().begin(); iter != it.value().end(); ++iter )
+      section.insert( iter.key(), iter.value() );
+    root.insert( it.key(), section );
+  }
+
+  QJsonDocument document;
+  document.setObject( root );
+  file.write( document.toJson() );
+  file.close();
+  return true;
+}
+
+/*!
+  \class QtxResourceMgr::SalomexFormat
+  \internal
+  \brief Reader/writer for .salomex resources files. This is an alias for JSON format.
+*/
+
+class QtxResourceMgr::SalomexFormat : public JsonFormat
+{
+public:
+  SalomexFormat() : JsonFormat( "salomex" ) {}
+};
+
+
+/*!
   \class QtxResourceMgr::Format
   \brief Generic resources files reader/writer class.
 */
@@ -1127,9 +1345,13 @@ bool QtxResourceMgr::Format::save( Resources* res )
   if ( !res )
     return false;
 
+  QtxResourceMgr* mgr = res->resMgr();
+
+  if ( mgr->appName().isEmpty() )
+    return false;
+
   Qtx::mkDir( Qtx::dir( res->myFileName ) );
 
-  QtxResourceMgr* mgr = res->resMgr();
   QString name = mgr ? mgr->userFileName( mgr->appName(), false ) : res->myFileName;
   return save( name, res->mySections );
 }
@@ -1168,7 +1390,7 @@ bool QtxResourceMgr::Format::save( Resources* res )
   (internationalization mechanism), load pixmaps and other resources from
   external files, etc.
 
-  Currently it supports .ini and .xml resources file formats. To implement
+  Currently it supports .ini, .xml, and .json resources file formats. To implement
   own resources file format, inherit from the Format class and implement virtual
   Format::load() and Format::save() methods.
 
@@ -1264,6 +1486,26 @@ QtxResourceMgr::QtxResourceMgr( const QString& appName, const QString& resVarTem
 
   installFormat( new XmlFormat() );
   installFormat( new IniFormat() );
+  installFormat( new JsonFormat() );
+  installFormat( new SalomexFormat() );
+
+  setOption( "translators", QString( "%P_msg_%L.qm|%P_images.qm" ) );
+}
+
+/*!
+  \brief Default constructor
+*/
+QtxResourceMgr::QtxResourceMgr()
+: myCheckExist( true ),
+  myDefaultPix( 0 ),
+  myIsPixmapCached( true ),
+  myHasUserValues( false ),
+  myWorkingMode( IgnoreUserValues )
+{
+  installFormat( new XmlFormat() );
+  installFormat( new IniFormat() );
+  installFormat( new JsonFormat() );
+  installFormat( new SalomexFormat() );
 
   setOption( "translators", QString( "%P_msg_%L.qm|%P_images.qm" ) );
 }
@@ -1339,7 +1581,7 @@ QStringList QtxResourceMgr::dirList() const
 */
 void QtxResourceMgr::initialize( const bool autoLoad ) const
 {
-  if ( !myResources.isEmpty() )
+  if ( !myResources.isEmpty() || appName().isEmpty() )
     return;
 
   QtxResourceMgr* that = (QtxResourceMgr*)this;
@@ -2189,7 +2431,7 @@ void QtxResourceMgr::setCurrentFormat( const QString& fmt )
   myFormats.removeAll( form );
   myFormats.prepend( form );
 
-  if ( myResources.isEmpty() )
+  if ( myResources.isEmpty() || appName().isEmpty() )
     return;
 
   ResList::Iterator resIt = myResources.begin();
@@ -2380,6 +2622,42 @@ bool QtxResourceMgr::save()
   saved();
 
   return result;
+}
+
+/*!
+  \brief Load resource from given file.
+*/
+bool QtxResourceMgr::addResource( const QString& fname )
+{
+  if ( fname.isEmpty() )
+    return false;
+
+  QFileInfo fi( fname );
+
+  if ( fi.exists() && fi.isDir() && !appName().isEmpty() )
+    fi.setFile( QDir( fname ).filePath( globalFileName( appName() ) ) );
+
+  if ( !fi.exists() )
+    return false;
+
+  QString dirName = fi.absolutePath();
+  if ( myDirList.contains( dirName ) )
+    return true; // file already loaded
+
+  Format* fmt = format( fi.suffix() );
+  if ( !fmt )
+    return false;
+
+  Resources* resource = new Resources( this, fi.absoluteFilePath() );
+  if ( !fmt->load( resource ) )
+  {
+    delete resource;
+    return false;
+  }
+
+  myDirList << dirName;
+  myResources << resource;
+  return true;
 }
 
 /*!
@@ -2744,7 +3022,8 @@ void QtxResourceMgr::loadLanguage( const QString& pref, const QString& preferabl
   initialize( true );
 
   QMap<QChar, QString> substMap;
-  substMap.insert( 'A', appName() );
+  if ( !appName().isEmpty() )
+    substMap.insert( 'A', appName() );
 
   QString lang = language( preferableLanguage );
 

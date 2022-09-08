@@ -42,7 +42,7 @@
 #include <vtkPNGWriter.h>
 #include <vtkOpenGLTexture.h>
 #include <vtkTimerLog.h>
-#include <vtkOpenGL.h>
+#include <vtk_glew.h>
 #include <vtkObjectFactory.h>
 
 #include <Basics_Utils.hxx>

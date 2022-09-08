@@ -41,7 +41,7 @@
 #include <VTKViewer_PolyDataMapper.h>
 #include <VTKViewer_DataSetMapper.h>
 
-#include <vtkPassThroughFilter.h>
+#include <vtkPassThrough.h>
 
 vtkStandardNewMacro(SVTK_DeviceActor)
 
@@ -76,7 +76,7 @@ SVTK_DeviceActor
   myTransformFilter = VTKViewer_TransformFilter::New();
 
   for(int i = 0; i < 6; i++)
-    myPassFilter.push_back(vtkPassThroughFilter::New());
+    myPassFilter.push_back(vtkPassThrough::New());
 }
 
 /*!
@@ -150,7 +150,7 @@ vtkDataSet*
 SVTK_DeviceActor
 ::GetInput()
 {
-  return myPassFilter.front()->GetOutput();
+  return static_cast<vtkDataSet *>(myPassFilter.front()->GetOutput());
 }
 
 /*!
@@ -266,7 +266,7 @@ SVTK_DeviceActor
   if ( vtkAlgorithmOutput* anOutput = myPassFilter[ 0 ]->GetOutputPort() )
   {     
     myPassFilter[ 0 ]->Update();
-    if ( vtkDataSet* aDataSet = myPassFilter[ 0 ]->GetOutput() )
+    if ( vtkDataSet* aDataSet = static_cast<vtkDataSet *>( myPassFilter[ 0 ]->GetOutput() ) )
     {
       vtkIdType numCells=aDataSet->GetNumberOfCells();
       vtkIdType numPts = aDataSet->GetNumberOfPoints();

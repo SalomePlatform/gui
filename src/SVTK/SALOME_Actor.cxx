@@ -63,7 +63,7 @@
 
 #include <vtkInteractorStyle.h>
 #include <vtkRenderWindowInteractor.h>
-#include <vtkPassThroughFilter.h>
+#include <vtkPassThrough.h>
 
 #include <TColStd_MapOfInteger.hxx>
 #include <TColStd_IndexedMapOfInteger.hxx>

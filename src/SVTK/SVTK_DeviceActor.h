@@ -46,7 +46,7 @@ class vtkDataSet;
 class vtkShrinkFilter;
 class vtkFeatureEdges;
 class VTKViewer_DataSetMapper;
-class vtkPassThroughFilter;
+class vtkPassThrough;
 class vtkAlgorithmOutput;
 
 #ifdef WIN32
@@ -279,7 +279,7 @@ class SVTK_EXPORT SVTK_DeviceActor: public vtkLODActor
 
   VTKViewer_GeometryFilter *myGeomFilter;
   VTKViewer_TransformFilter *myTransformFilter;
-  std::vector<vtkPassThroughFilter*> myPassFilter;
+  std::vector<vtkPassThrough*> myPassFilter;
   vtkShrinkFilter* myShrinkFilter;
   vtkFeatureEdges* myFeatureEdges;
   VTKViewer_DataSetMapper* myMapper;

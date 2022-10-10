@@ -42,7 +42,7 @@
 #include <vtkDataSetMapper.h>
 #include <vtkPolyDataMapper.h>
 #include <vtkRenderer.h>
-#include <vtkPassThroughFilter.h>
+#include <vtkPassThrough.h>
 
 #if defined __GNUC__
   #if __GNUC__ == 2
@@ -78,7 +78,7 @@ VTKViewer_Actor
 						     myPolygonOffsetUnits);
 
   for(int i = 0; i < 6; i++)
-    myPassFilter.push_back(vtkPassThroughFilter::New());
+    myPassFilter.push_back(vtkPassThrough::New());
 }
 
 /*!
@@ -339,7 +339,7 @@ vtkDataSet*
 VTKViewer_Actor
 ::GetInput()
 {
-  return myPassFilter.front()->GetOutput();
+  return static_cast<vtkDataSet *>( myPassFilter.front()->GetOutput() );
 }
 
 /*!

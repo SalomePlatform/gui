@@ -25,7 +25,6 @@
 #include "VTKViewer_Algorithm.h"
 
 // VTK Includes
-#include <vtkConfigure.h>
 #include <vtkMath.h>
 #include <vtkMapper.h>
 #include <vtkDataSet.h>

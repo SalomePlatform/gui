@@ -359,7 +359,7 @@ void VTKViewer_RenderWindowInteractor::TimerFunc()
     return ;
   }
   
-  ((vtkInteractorStyle*)this->InteractorStyle)->OnTimer() ;
+  ((vtkInteractorStyle*)this->InteractorStyle.Get())->OnTimer() ;
   emit RenderWindowModified() ;
 }
 

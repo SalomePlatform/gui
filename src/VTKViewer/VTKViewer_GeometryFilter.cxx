@@ -219,9 +219,10 @@ VTKViewer_GeometryFilter
      vtkInformation* excInfo = inputVector[1]->GetInformationObject(0);
 
      vtkExcludedFaces exc; // Will delete exc->Links when goes out of scope
+     vtkPolyData* excFaces = nullptr;
      if (excInfo)
        {
-        vtkPolyData* excFaces = vtkPolyData::SafeDownCast(excInfo->Get(vtkDataObject::DATA_OBJECT()));
+        excFaces = vtkPolyData::SafeDownCast(excInfo->Get(vtkDataObject::DATA_OBJECT()));
         vtkCellArray* excPolys = excFaces->GetPolys();
         if (excPolys->GetNumberOfCells() > 0)
           {
@@ -233,7 +234,7 @@ VTKViewer_GeometryFilter
      switch (input->GetDataObjectType())
      {
        case VTK_POLY_DATA:
-          return this->vtkGeometryFilter::PolyDataExecute(input, output, &exc);
+          return this->vtkGeometryFilter::PolyDataExecute(input, output, excFaces);
        case VTK_UNSTRUCTURED_GRID:
          {
           vtkUnstructuredGrid* inputUnstructured = static_cast<vtkUnstructuredGrid*>(input);
@@ -282,20 +283,20 @@ VTKViewer_GeometryFilter
             if ( myStoreMapping ) {
               // pass through cell ids to get original cell ids
               this->PassThroughCellIds = true;
-              ret = this->vtkGeometryFilter::UnstructuredGridExecute(input, output, info, &exc);
+              ret = this->vtkGeometryFilter::UnstructuredGridExecute(input, output, info, excFaces);
               FillVTK2ObjIds(output);
             }
             else {
               // no need to get original cell ids
               this->PassThroughCellIds = false;
-              ret = this->vtkGeometryFilter::UnstructuredGridExecute(input, output, info, &exc);
+              ret = this->vtkGeometryFilter::UnstructuredGridExecute(input, output, info, excFaces);
             }
             return ret;
            }
          }
      }
 
-     return this->vtkGeometryFilter::DataSetExecute(input, output, &exc);
+     return this->vtkGeometryFilter::DataSetExecute(input, output, excFaces);
     }  
     else // !delegateToVtk
 #endif

@@ -20,19 +20,14 @@
 #include "SVTK_ImageWriterMgr.h"
 #include "SVTK_ImageWriter.h"
 
+#include "utilities.h"
+
 #include <vtkAlgorithm.h>
 #include <vtkImageData.h>
 
 #include <QSemaphore>
 
 #include <limits>
-
-
-#ifdef _DEBUG_
-static int MYDEBUG = 0;
-#else
-static int MYDEBUG = 0;
-#endif
 
 //----------------------------------------------------------------------------
 SVTK_ImageWriterMgr
@@ -41,9 +36,8 @@ SVTK_ImageWriterMgr
   int aMax = std::numeric_limits<int>::max() / 2;
   mySemaphore = new QSemaphore(aMax);
   mySemaphore->acquire( aMax );
-  if(MYDEBUG) cout<<"SVTK_ImageWriterMgr::SVTK_ImageWriterMgr "<<
-                //"- total = "<<mySemaphore->total()<<
-                "; available = "<<mySemaphore->available()<<endl;
+  if(SALOME::VerbosityActivated())
+    cout << "SVTK_ImageWriterMgr::SVTK_ImageWriterMgr; available = " << mySemaphore->available() << endl;
 }
 
 
@@ -84,10 +78,14 @@ void
 SVTK_ImageWriterMgr
 ::Stop()
 {
-  if(MYDEBUG) cout<<"SVTK_ImageWriterMgr::Stop "<<
-                //"- total = "<<mySemaphore->total()<<
-                "; available = "<<mySemaphore->available()<<endl;
-  if(MYDEBUG) cout<<"SVTK_ImageWriterMgr::Stop - *mySemaphore += "<<myThreads.size()<<endl;
+  if(SALOME::VerbosityActivated())
+    cout << "SVTK_ImageWriterMgr::Stop " <<
+    //"- total = "<<mySemaphore->total()<<
+    "; available = " << mySemaphore->available() << endl;
+
+  if(SALOME::VerbosityActivated())
+    cout << "SVTK_ImageWriterMgr::Stop - *mySemaphore += " << myThreads.size() << endl;
+    
   mySemaphore->acquire( (int)myThreads.size() ); //!< TODO: conversion from size_t to int
 
   for(size_t anId = 0, anEnd = myThreads.size(); anId < anEnd; anId++){

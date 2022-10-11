@@ -44,7 +44,7 @@
 PVViewer_ViewManager::PVViewer_ViewManager(SUIT_Study* study, SUIT_Desktop* desktop)
 : SUIT_ViewManager( study, desktop, new PVViewer_Viewer() )
 {
-  MESSAGE("PVViewer - view manager created ...")
+  MESSAGE("PVViewer - view manager created ...");
   setTitle( tr( "PARAVIEW_VIEW_TITLE" ) );
 
   // Initialize minimal paraview stuff (if not already done)

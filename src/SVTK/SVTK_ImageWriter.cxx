@@ -19,6 +19,8 @@
 
 #include "SVTK_ImageWriter.h"
 
+#include "utilities.h"
+
 #include <QSemaphore>
 
 #include <vtkAlgorithm.h>
@@ -26,12 +28,6 @@
 #include <vtkImageClip.h>
 #include <vtkJPEGWriter.h>
 #include <vtkSmartPointer.h>
-
-#ifdef _DEBUG_
-static int MYDEBUG = 0;
-#else
-static int MYDEBUG = 0;
-#endif
 
 
 //----------------------------------------------------------------------------
@@ -55,7 +51,8 @@ SVTK_ImageWriter
 SVTK_ImageWriter
 ::~SVTK_ImageWriter()
 {
-  if(MYDEBUG) cout<<"SVTK_ImageWriter::~SVTK_ImageWriter - this = "<<this<<endl;
+  if(SALOME::VerbosityActivated())
+    cout << "SVTK_ImageWriter::~SVTK_ImageWriter - this = " << this << endl;
 }
 
 
@@ -101,10 +98,11 @@ SVTK_ImageWriter
   aWriter->Delete();
   myImageData->Delete();
 
-  if(MYDEBUG) cout<<"SVTK_ImageWriter::run "<<
-                "- this = "<<this<<
-                //"; total = "<<mySemaphore->total()<<
-                "; available = "<<mySemaphore->available()<<endl;
+  if(SALOME::VerbosityActivated())
+    cout << "SVTK_ImageWriter::run - this = " << this <<
+    //"; total = "<<mySemaphore->total()<<
+    "; available = " << mySemaphore->available() << endl;
+    
   mySemaphore->release();
 }
 

@@ -390,13 +390,13 @@ int VTKViewer_ExtractUnstructuredGrid::RequestData(vtkInformation *vtkNotUsed(re
       cellTypesVec[ *type ] = *type;
   }
 
-/*  if(MYDEBUG){
+/*  
     MESSAGE("Execute - anInput->GetNumberOfCells() = "<<anInput->GetNumberOfCells());
     MESSAGE("Execute - myCellTypes.size() = "<<myCellTypes.size());
     MESSAGE("Execute - myCellIds.size() = "<<myCellIds.size());
     MESSAGE("Execute - myExtractionMode = "<<myExtractionMode);
     MESSAGE("Execute - myChangeMode = "<<myChangeMode);
-  }*/
+*/
   vtkIdType aNbElems = 0;
   if(myExtractionMode == eCells)
   {
@@ -618,12 +618,12 @@ int VTKViewer_ExtractUnstructuredGrid::RequestData(vtkInformation *vtkNotUsed(re
     myPassAll = true;
     TVectorId().swap( myOut2InId );
   }
-/*  if(MYDEBUG){
+/*
     MESSAGE("Execute - anOutput->GetNumberOfCells() = "<<anOutput->GetNumberOfCells());
     if(myStoreMapping){
       MESSAGE("Execute - myOut2InId.size() = "<<myOut2InId.size());
       MESSAGE("Execute - myIn2OutId.size() = "<<myIn2OutId.size());
     }
-  }*/
+*/
   return 1;
 }

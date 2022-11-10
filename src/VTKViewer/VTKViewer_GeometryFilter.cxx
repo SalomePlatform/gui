@@ -267,11 +267,6 @@ VTKViewer_GeometryFilter
              ElementsNotFitToDelegate.insert( VTK_BIQUADRATIC_QUADRATIC_WEDGE );
              ElementsNotFitToDelegate.insert( VTK_QUADRATIC_PYRAMID );
 
-             // Some openMP tests reveal that  meshes with  polyhedrons  can  sometimes cause
-             // problems as such we avoide delegation = ElementsNotFitToDelegate. It would be
-             // nice to investigate and resolve the problem with multi-therding in future.   
-             ElementsNotFitToDelegate.insert( VTK_POLYHEDRON );
-
              for ( int i = 0; i < types->GetNumberOfTuples() && !NotFitForDelegation; ++i )
                 NotFitForDelegation = ElementsNotFitToDelegate.count( types->GetValue(i) );
             }

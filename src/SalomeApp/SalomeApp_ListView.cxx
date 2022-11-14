@@ -812,7 +812,7 @@ UpdateType SalomeApp_ListViewItem::finishEditing(SalomeApp_EntityEdit* theWidget
     }
   }
   catch (...) {
-    MESSAGE( "System error has been caught - SalomeApp_ListViewItem::finishEditing" )
+    MESSAGE( "System error has been caught - SalomeApp_ListViewItem::finishEditing" );
   }
   return aNeedsUpdate;
 }

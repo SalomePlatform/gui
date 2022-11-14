@@ -3104,7 +3104,7 @@ void OCCViewer_ViewWindow::onSketchingStarted()
 */
 void OCCViewer_ViewWindow::onSketchingFinished()
 {
-  MESSAGE("OCCViewer_ViewWindow::onSketchingFinished()")
+  MESSAGE("OCCViewer_ViewWindow::onSketchingFinished()");
   if ( mypSketcher && mypSketcher->result() == OCCViewer_ViewSketcher::Accept )
   {
     Handle(AIS_InteractiveContext) ic = myModel->getAISContext();

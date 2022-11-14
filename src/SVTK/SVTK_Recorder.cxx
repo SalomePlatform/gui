@@ -44,13 +44,7 @@
 #include <QFileInfo>
 #include <QDir>
 
-//#include "utilities.h"
-
-#ifdef _DEBUG_
-static int MYDEBUG = 0;
-#else
-static int MYDEBUG = 0;
-#endif
+#include "utilities.h"
 
 
 namespace
@@ -313,7 +307,9 @@ SVTK_Recorder
   myPaused = myPaused ? 0 : 1;
   if(myPaused && !myFrameIndexes.empty()){
     myFrameIndexes.back() *= -1;
-    if(MYDEBUG) cout<<"SVTK_Recorder::Pause - myFrameIndexes.back() = "<<myFrameIndexes.back()<<endl;
+
+    if(SALOME::VerbosityActivated())
+      cout << "SVTK_Recorder::Pause - myFrameIndexes.back() = " << myFrameIndexes.back() << endl;
   }
 }
 
@@ -349,9 +345,11 @@ SVTK_Recorder
     if(aLastFrameIndex < 0){
       myFrameIndexes.back() = abs(myFrameIndexes.back());
       double aPauseTime = fabs((double)(aFrameIndex - myFrameIndex - 1)) / myNbFPS;
-      if(MYDEBUG)
-        cout<<"SVTK_Recorder::DoRecord - aFrameIndex = "<<aFrameIndex<<
-          "; aPauseTime = "<<aPauseTime<<endl;
+
+      if(SALOME::VerbosityActivated())
+        cout << "SVTK_Recorder::DoRecord - aFrameIndex = " << aFrameIndex <<
+        "; aPauseTime = " << aPauseTime << endl;
+
       myTimeStart += aPauseTime;
     }
 
@@ -363,7 +361,8 @@ SVTK_Recorder
   }
 
   myFrameIndexes.push_back(myFrameIndex);
-  if(MYDEBUG) cout<<"SVTK_Recorder::DoRecord - myFrameIndex = "<<myFrameIndex<<endl;
+  if(SALOME::VerbosityActivated())
+    cout << "SVTK_Recorder::DoRecord - myFrameIndex = " << myFrameIndex << endl;
 
   myRenderWindow->RemoveObserver(myCommand);
   myFilter->Modified();
@@ -445,7 +444,8 @@ SVTK_Recorder
     }
     std::string aString(aStream.str());
     system(aString.c_str());
-    if(MYDEBUG) cout<<"SVTK_Recorder::AddSkippedFrames - "<<aString<<endl;
+    if(SALOME::VerbosityActivated())
+      cout << "SVTK_Recorder::AddSkippedFrames - " << aString << endl;
   }
 }
 
@@ -471,7 +471,8 @@ SVTK_Recorder
   std::string aString(aStream.str());
   myErrorStatus = system(aString.c_str());
 
-  if(MYDEBUG) cout<<"SVTK_Recorder::MakeFileAVI - "<<aString<<endl;
+  if(SALOME::VerbosityActivated())
+    cout << "SVTK_Recorder::MakeFileAVI - " << aString << endl;
 
   QFileInfo aFileInfo(myName.c_str());
   QString aDirPath = aFileInfo.absoluteDir().path();
@@ -491,6 +492,8 @@ SVTK_Recorder
 	") & (for /f %i in (" + tmpFile + ") do (del \"%i\")) & (del " + tmpFile + "))) > NUL";
 #endif
 
-  if(MYDEBUG) cout<<"SVTK_Recorder::MakeFileAVI - "<<(const char*)aCommand.toUtf8()<<endl;
+  if(SALOME::VerbosityActivated())
+    cout << "SVTK_Recorder::MakeFileAVI - " << (const char*)aCommand.toUtf8() << endl;
+    
   system((const char*)aCommand.toUtf8());
 }

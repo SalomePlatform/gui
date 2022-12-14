@@ -25,6 +25,7 @@
 #include <QHeaderView>
 #include <QMenu>
 #include <QMouseEvent>
+#include <QScrollBar>
 
 /*!
   \class QtxTreeView::Header
@@ -388,6 +389,21 @@ void QtxTreeView::setModel( QAbstractItemModel* m )
   if ( model() )
     connect( model(), SIGNAL( headerDataChanged( Qt::Orientation, int, int ) ),
              this, SLOT( onAppropriate( Qt::Orientation, int, int ) ) );
+}
+
+// This method fixes problem with Object Browser horizontal scrollbar automatic scrolling to the right
+void QtxTreeView::scrollTo(const QModelIndex &index,
+                           QAbstractItemView::ScrollHint hint)
+{
+  QScrollBar* aScrollBar = horizontalScrollBar();
+  if (aScrollBar) {
+    int horPos = aScrollBar->value();
+    QTreeView::scrollTo(index, hint);
+    aScrollBar->setValue(horPos);
+  }
+  else {
+    QTreeView::scrollTo(index, hint);
+  }
 }
 
 void QtxTreeView::onAppropriate( Qt::Orientation orient, int first, int last )

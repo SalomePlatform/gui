@@ -55,6 +55,9 @@ public:
 
   virtual void setModel( QAbstractItemModel* );
 
+  virtual void scrollTo(const QModelIndex &index,
+                        QAbstractItemView::ScrollHint hint = QAbstractItemView::EnsureVisible);
+
 protected slots:
   void     onHeaderClicked( int );
   void     rowsAboutToBeRemoved( const QModelIndex&, int, int );

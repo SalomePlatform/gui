@@ -37,6 +37,7 @@
 #include <V3d_View.hxx>
 #include <AIS_ColorScale.hxx>
 #include <AIS_Trihedron.hxx>
+#include <AIS_ViewCube.hxx>
 #include <AIS_InteractiveContext.hxx>
 #include <AIS_ListOfInteractive.hxx>
 #include <Graphic3d_SequenceOfHClipPlane.hxx>
@@ -134,7 +135,6 @@ public:
   //! returns true if 3d Trihedron in viewer was created
   bool                            trihedronActivated() const { return !myTrihedron.IsNull(); }
 
-  void                            toggleTrihedron();
   bool                            isTrihedronVisible() const;
   virtual void                    setTrihedronShown( const bool );
 
@@ -149,6 +149,11 @@ public:
 
   void                            updateTrihedron();
   
+  // View Cube methods
+  bool                            viewCubeActivated() const { return !myViewCube.IsNull(); }
+  bool                            isViewCubeVisible() const;
+  virtual void                    setViewCubeShown( const bool );
+  void                            setViewCubeParamsFromPreferences();
 
   virtual OCCViewer_ViewWindow*   createSubWindow();
 
@@ -169,6 +174,7 @@ public:
   Handle(AIS_InteractiveContext)  getAISContext()  const { return myAISContext; }
   Handle(AIS_ColorScale)          getColorScale()  const { return myColorScale; }
   Handle(AIS_Trihedron)           getTrihedron()   const { return myTrihedron; }
+  Handle(AIS_ViewCube)            getViewCube()    const { return myViewCube; }
 
   int                             getTopLayerId();
 
@@ -275,6 +281,7 @@ protected:
   Handle(V3d_Viewer)              myV3dViewer;
   Handle(AIS_ColorScale)          myColorScale;
   Handle(AIS_Trihedron)           myTrihedron;
+  Handle(AIS_ViewCube)            myViewCube;
   Handle(AIS_InteractiveContext)  myAISContext;
 
   int                             myInteractionStyle;

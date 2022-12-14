@@ -154,6 +154,13 @@
     <parameter name="xz_background"   value="bt=2;fn=;tm=0;ts=false;c1=#cddbff;c2=#698fff;gt=1;gr=" />
     <parameter name="yz_background"   value="bt=2;fn=;tm=0;ts=false;c1=#cddbff;c2=#698fff;gt=1;gr=" />
     <parameter name="xy_background"   value="bt=2;fn=;tm=0;ts=false;c1=#cddbff;c2=#698fff;gt=1;gr=" />
+    <parameter name="viewcube_show"       value="true"/>
+    <parameter name="viewcube_axes"       value="false"/>
+    <parameter name="viewcube_custom"     value="false"/>
+    <parameter name="viewcube_color"      value="255, 255, 255"/>
+    <parameter name="viewcube_size"       value="70.0"/>
+    <parameter name="viewcube_text_color" value="0, 0, 0"/>
+    <parameter name="viewcube_duration"   value="0.5"/>
  </section>
  <section name="VTKViewer" >
     <!-- VTK viewer preferences -->

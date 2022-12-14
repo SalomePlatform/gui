@@ -952,6 +952,40 @@ The changes will be applied on the next application session.</translation>
         <source>PREF_LIGHT_COLOR</source>
         <translation>Color</translation>
     </message>
+
+    <message>
+        <source>PREF_GROUP_VIEWCUBE</source>
+        <translation>Navigation Cube</translation>
+    </message>
+    <message>
+        <source>PREF_VIEWCUBE_SHOW</source>
+        <translation>Show navigation cube on start</translation>
+    </message>
+    <message>
+        <source>PREF_VIEWCUBE_AXES</source>
+        <translation>Show navigation cube axes</translation>
+    </message>
+    <message>
+        <source>PREF_VIEWCUBE_CUSTOM</source>
+        <translation>Customize navigation cube appearance</translation>
+    </message>
+    <message>
+        <source>PREF_VIEWCUBE_COLOR</source>
+        <translation>Cube color</translation>
+    </message>
+    <message>
+        <source>PREF_VIEWCUBE_SIZE</source>
+        <translation>Cube size</translation>
+    </message>
+    <message>
+        <source>PREF_VIEWCUBE_TEXTCOLOR</source>
+        <translation>Text color</translation>
+    </message>
+    <message>
+        <source>PREF_VIEWCUBE_DURATION</source>
+        <translation>Animation duration (sec)</translation>
+    </message>
+
     <message>
         <source>TOT_CLOSE</source>
         <translation>Close</translation>

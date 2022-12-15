@@ -43,5 +43,9 @@
         <source>ICON_REMOVE_MODULE</source>
         <translation>icon_remove_module.png</translation>
     </message>
+    <message>
+        <source>ICON_INFO_MODULE</source>
+        <translation>icon_info_module.png</translation>
+    </message>
 </context>
 </TS>

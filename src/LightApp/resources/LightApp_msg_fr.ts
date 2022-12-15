@@ -27,6 +27,10 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>Modules</translation>
     </message>
     <message>
+        <source>EXT_INFO_CAPTION</source>
+        <translation>Informations sur les extensions</translation>
+    </message>
+    <message>
         <source>ABOUT_UNKNOWN_VERSION</source>
         <translation>Inconnue</translation>
     </message>
@@ -1174,6 +1178,36 @@ Le fichier n&apos;existe pas</translation>
       <translation>Module &quot;%1&quot; is already present in this session</translation>
     </message>
     <message>
+        <source>WRN_FAILED_UNPACK_EXTENSION</source>
+        <translation>Échec de la décompression d'une extension salome à partir d'un fichier: %1.</translation>
+    </message>
+    <message>
+        <source>WRN_FAILED_REMOVE_EXTENSION</source>
+        <translation>Échec de la suppression d'une extension Salomé: %1.</translation>
+    </message>
+    <message>
+        <source>WRN_SALOME_APPLICATION_DIR</source>
+        <translation>Impossible d'obtenir la variable d'environnement SALOME_APPLICATION_DIR!
+Annulez l'opération d'extensions en cours.
+        </translation>
+    </message>
+    <message>
+        <source>TLT_REMOVE_EXTENSION</source>
+        <translation>Supprimer l'extension</translation>
+    </message>
+    <message>
+        <source>QUE_REMOVE_EXTENSION</source>
+        <translation>Voulez-vous supprimer complètement une extension %1 et tous ses modules et fichiers?
+Si vous répondez &quot;Ok&quot;, vous devrez peut-être enregistrer votre étude avant de la supprimer.
+Continuer?
+        </translation>
+    </message>
+    <message>
+        <source>WRN_CANCEL_REMOVE_EXTENSION_UNSAVE</source>
+        <translation>La suppression d'une extension salome %1 a été annulée car la documentation actuelle n'est pas enregistrée.
+        </translation>
+    </message>
+    <message>
       <source>WRN_MODULE_BAD_RESDIR</source>
       <translation>Bad or non-existing resources directory:
 %1.</translation>
@@ -1332,6 +1366,10 @@ Continue?</translation>
     <message>
         <source>REMOVE_MODULE</source>
         <translation>Supprimer les modules</translation>
+    </message>
+    <message>
+        <source>INFO_MODULE</source>
+        <translation>Information sur le module</translation>
     </message>
 </context>
 <context>

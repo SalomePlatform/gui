@@ -27,6 +27,10 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
       <translation>モジュール情報</translation>
     </message>
     <message>
+        <source>EXT_INFO_CAPTION</source>
+        <translation>内線情報</translation>
+    </message>
+    <message>
       <source>ABOUT_UNKNOWN_VERSION</source>
       <translation>不明</translation>
     </message>
@@ -1202,6 +1206,36 @@ If you answer &quot;Yes&quot;, you may need to save your study before removal.</
 %1.
 
 Continue?</translation>
+    </message>
+    <message>
+      <source>WRN_FAILED_UNPACK_EXTENSION</source>
+      <translation>ファイルからサロメ拡張機能を解凍できませんでした: %1.</translation>
+    </message>
+    <message>
+      <source>WRN_FAILED_REMOVE_EXTENSION</source>
+      <translation>サロメ エクステンションの削除に失敗しました: %1.</translation>
+    </message>
+    <message>
+        <source>WRN_SALOME_APPLICATION_DIR</source>
+        <translation>SALOME_APPLICATION_DIR 環境変数を取得できません!
+現在の拡張操作をキャンセルします.
+        </translation>
+    </message>
+    <message>
+        <source>TLT_REMOVE_EXTENSION</source>
+        <translation>拡張子を削除</translation>
+    </message>
+    <message>
+        <source>QUE_REMOVE_EXTENSION</source>
+        <translation>拡張機能を完全に削除しますか %1 およびそのすべてのモジュールとファイル?
+&quot;Ok&quot; と答えた場合、削除する前にスタディを保存する必要があるかもしれません。
+続く？
+        </translation>
+    </message>
+    <message>
+        <source>WRN_CANCEL_REMOVE_EXTENSION_UNSAVE</source>
+        <translation>サロメ拡張の除去 %1 現在のドキュメントが保存されていないため、キャンセルされました。
+        </translation>
     </message>
   </context>
   <context>

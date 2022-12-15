@@ -34,7 +34,11 @@ INCLUDE_DIRECTORIES(
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 # libraries to link to
-SET(_link_LIBRARIES ${QT_LIBRARIES} qtx suit std)
+SET(_link_LIBRARIES
+  ${QT_LIBRARIES}
+  ${KERNEL_SALOMELocalTrace}
+  qtx suit std
+  )
 
 # --- headers ---
 

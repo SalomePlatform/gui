@@ -51,6 +51,7 @@ class LightApp_Preferences;
 class LightApp_SelectionMgr;
 class LightApp_FullScreenHelper;
 class LightApp_DataObject;
+class LightApp_ModuleAction;
 class SUIT_DataBrowser;
 class SUIT_Study;
 class SUIT_Accel;
@@ -219,6 +220,7 @@ public slots:
 protected:
   void                                showHelp( const QString& );
   virtual void                        createActions();
+  virtual void                        addExtensionsActions(LightApp_ModuleAction* moduleAction);
   virtual void                        customize();
   virtual void                        createActionForViewer( const int id,
                                                              const int parentId,
@@ -263,8 +265,9 @@ protected slots:
 
   void                                onNewWindow();
   virtual void                        onModuleActivation( const QString& );
-  void                                onModuleAdding();
-  void                                onModuleRemoving( const QString& );
+  void                                onExtAdding();
+  void                                onExtRemoving( const QString& );
+  void                                onShowExtInfo();
   void                                onCloseView( SUIT_ViewManager* );
 
   virtual void                        onStudyCreated( SUIT_Study* );
@@ -329,6 +332,7 @@ protected:
 
 private:
   bool                                addUserModule( const QString&, const QString&, bool = false );
+  void                                removeUserModule(const QString& moduleInnerName, LightApp_ModuleAction* moduleAction);
   void                                emptyPreferences( const QString& );
   QList<QToolBar*>                    findToolBars( const QStringList& names = QStringList() );
   void                                createHelpItems( const QString& );

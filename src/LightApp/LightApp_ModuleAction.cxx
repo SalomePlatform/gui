@@ -31,6 +31,14 @@
 #include <QMenu>
 #include <QSignalMapper>
 
+#include <utilities.h>
+
+// Prevent slot compilation error
+#pragma push_macro("slots")
+#undef slots
+#include "PyInterp_Utils.h"
+#pragma pop_macro("slots")
+
 /*!
   \class LightApp_ModuleAction::ActionSet
   \brief Internal class to represent list of modules buttons.
@@ -53,7 +61,7 @@ public:
   \param parent parent object
 */
 LightApp_ModuleAction::ActionSet::ActionSet( QObject* parent )
-: QtxActionSet( parent ) 
+: QtxActionSet( parent )
 {
 }
 
@@ -207,7 +215,7 @@ private:
 
   In menu, the action is represented as a plain list of items, one per module.
 
-  Only one module can be active at the moment. It can be set programmatically 
+  Only one module can be active at the moment. It can be set programmatically
   with setActiveModule() function. Use this method with empty string to turn
   to the "neutral point". To get active module, use activeModule() function.
 
@@ -255,6 +263,10 @@ LightApp_ModuleAction::LightApp_ModuleAction( QtxResourceMgr* resMgr, QObject* p
 			    0, this );
   myRemove->setEnabled( false );
   myRemove->setMenu( new QMenu() );
+  myInfo = new QtxAction( tr( "INFO_MODULE"),
+			    resMgr->loadPixmap( "LightApp", tr( "ICON_INFO_MODULE" ), false ),
+			    tr( "INFO_MODULE"),
+			    0, this );
   mySeparator = new QAction( this );
   mySeparator->setSeparator( true );
   mySet = new ActionSet( this );
@@ -263,6 +275,7 @@ LightApp_ModuleAction::LightApp_ModuleAction( QtxResourceMgr* resMgr, QObject* p
 
   connect( this,     SIGNAL( changed() ),          this, SLOT( onChanged() ) );
   connect( myAdd,    SIGNAL( triggered( bool ) ),  this, SIGNAL( adding() ) );
+  connect( myInfo,   SIGNAL( triggered( bool ) ),  this, SIGNAL( showExtInfo() ) );
   connect( mySet,    SIGNAL( triggered( int ) ),   this, SLOT( onTriggered( int ) ) );
   connect( myCombo,  SIGNAL( activatedId( int ) ), this, SLOT( onComboActivated( int ) ) );
   connect( myMapper, SIGNAL( mapped( QString ) ),  this, SIGNAL( removing( QString ) ) );
@@ -363,14 +376,11 @@ void LightApp_ModuleAction::insertModule( const QString& name, const QIcon& ico,
 {
   QtxAction* a = new QtxAction( name, ico, name, 0, this, true );
   a->setStatusTip( tr( "ACTIVATE_MODULE_TOP" ).arg( name ) );
-  a->setData( isCustom );
-  if ( isCustom )
-  {
-    myRemove->setEnabled( true );
-    QAction* inserted = myRemove->menu()->addAction( name );
-    connect( inserted, SIGNAL( triggered() ), myMapper, SLOT( map() ) );
-    myMapper->setMapping( inserted, name );
-  }
+ 
+  // Commented because the next call mySet->insertAction() overrides it with
+  // action id int != 0 value, so test a->data().toBool() is always true after that.
+  // Leave it here to mention that we need other approach to mark module as custom.
+  // a->setData( isCustom );
 
   mySet->insertAction( a, -1, idx );
   update();
@@ -383,34 +393,94 @@ void LightApp_ModuleAction::insertModule( const QString& name, const QIcon& ico,
 */
 void LightApp_ModuleAction::removeModule( const QString& name )
 {
+  MESSAGE("Start to remove module...");
+
   int id = mySet->moduleId( name );
+  SCRUTE(id);
   if ( id == -1 )
-    return;
-
-  QAction* a = moduleAction( name );
-  bool isCustom = a->data().toBool();
-
-  mySet->removeAction( id );
-  if ( isCustom )
   {
-    foreach ( QAction* ma, myRemove->menu()->actions() )
-    {
-      if ( ma->text() == name )
-      {
-        myRemove->menu()->removeAction( ma );
-        break;
-      }
-    }
-    myRemove->setEnabled( !myRemove->menu()->actions().isEmpty() );
+    MESSAGE("Can't get a module's id! Return");
+    return;
   }
 
+  MESSAGE("Remove action by id...");
+  mySet->removeAction(id);
+
+  update();
+
+  MESSAGE("Module was removed");
+}
+
+/*!
+  \brief Add an installed extension. Now only to the Remove button's menu.
+  \param name an extension's name
+  \sa removeExtension()
+*/
+void LightApp_ModuleAction::insertExtension(const QString& name)
+{
+  MESSAGE("Insert an extension's action...");
+  SCRUTE(name.toStdString());
+
+  myRemove->setEnabled(true);
+
+  // Find a place to insert in the alphabetical order
+  QAction* insertBefore = nullptr;
+  foreach(QAction* curAction, myRemove->menu()->actions())
+  {
+    int compareRes = QString::compare(curAction->text(), name, Qt::CaseInsensitive);
+    if (!compareRes)
+    {
+      return; // already added
+    }
+    else if (compareRes > 0)
+    {
+      insertBefore = curAction;
+
+      SCRUTE(insertBefore->text().toStdString());
+      break;
+    }
+  }
+
+  QAction* inserted = new QAction(name);
+
+  myRemove->menu()->insertAction(insertBefore, inserted);
+  connect(inserted, SIGNAL(triggered()), myMapper, SLOT(map()));
+  myMapper->setMapping(inserted, name);
+
+  MESSAGE("An extension's action was inserted");
+}
+
+/*!
+  \brief Remove an installed extension.
+  \param name an extension's name
+  \sa insertExtension()
+*/
+void LightApp_ModuleAction::removeExtension(const QString& name)
+{
+  MESSAGE("Remove an extension's action...");
+  SCRUTE(name.toStdString());
+
+  foreach(QAction* ma, myRemove->menu()->actions())
+  {
+    if (ma->text() == name)
+    {
+      myRemove->menu()->removeAction(ma);
+
+      MESSAGE("Extension's action was removed");
+      break;
+    }
+  }
+
+  myRemove->setEnabled(!myRemove->menu()->actions().isEmpty());
+
+  updateExtActions();
   update();
 }
 
 /*!
   \brief Get active module.
 
-  If there is no active module ("neutral point"), then the null string 
+  If there is no active module ("neutral point"), then the null string
   is returned.
 
   \return active module name
@@ -486,6 +556,7 @@ void LightApp_ModuleAction::addedTo( QWidget* w )
     w->insertAction( this, myCombo );
   w->insertAction( this, myAdd );
   w->insertAction( this, myRemove );
+  w->insertAction( this, myInfo );
   w->insertAction( this, mySeparator );
   w->insertAction( this, mySet );
   update();
@@ -503,6 +574,7 @@ void LightApp_ModuleAction::removedFrom( QWidget* w )
     w->removeAction( myCombo );
   w->removeAction( myAdd );
   w->removeAction( myRemove );
+  w->removeAction( myInfo );
   w->removeAction( mySeparator );
   w->removeAction( mySet );
 }
@@ -537,9 +609,20 @@ void LightApp_ModuleAction::update()
   for ( QList<QtxComboBox*>::const_iterator it = lst.begin(); it != lst.end(); ++it )
     update( *it );
 
+
   myCombo->setVisible( myMode & List );
-  myAdd->setVisible( myMode & AddRemove );
-  myRemove->setVisible( myMode & AddRemove );
+  if ( QString::compare(getenv("SALOME_ON_DEMAND"),"HIDE", Qt::CaseInsensitive) != 0)
+  {
+    myAdd->setVisible( myMode & AddRemove );
+    myRemove->setVisible( myMode & AddRemove );
+    myInfo->setVisible( myMode & All );
+  }
+  else
+  {
+    myAdd->setVisible(false);
+    myRemove->setVisible( false );
+    myInfo->setVisible( false );
+  }
   mySet->setVisible( myMode & Buttons );
 }
 
@@ -557,7 +640,7 @@ void LightApp_ModuleAction::update( QtxComboBox* cb )
   int curId = mySet->moduleId( active() );
   QList<QAction*> alist = mySet->actions();
   cb->clear();
-  
+
   cb->addItem( icon(), text() );
   cb->setId( 0, -1 );
 
@@ -571,6 +654,59 @@ void LightApp_ModuleAction::update( QtxComboBox* cb )
 
   cb->setCurrentId( curId );
   cb->blockSignals( blocked );
+}
+
+/*!
+  \brief Update extension actions based on dependencies.
+  \internal
+  \param
+*/
+void LightApp_ModuleAction::updateExtActions()
+{
+  MESSAGE("Check dependencies to update extensions actions...");
+
+  // It should be set on the app start
+  auto extRootDir = getenv("SALOME_APPLICATION_DIR");
+  if (!extRootDir)
+  {
+    MESSAGE("Cannot get SALOME_APPLICATION_DIR env variable! Cancel adding selected extensions.");
+    return;
+  }
+  SCRUTE(extRootDir);
+
+  // Import Python module that manages SALOME extensions.
+  PyLockWrapper lck; // acquire GIL
+  PyObjWrapper extensionQuery = PyImport_ImportModule((char*)"SalomeOnDemandTK.extension_query");
+  PyObjWrapper extCanRemoveDict = PyObject_CallMethod(extensionQuery, (char*)"ext_canremove_flags", (char*)"s", extRootDir);
+  if (!extCanRemoveDict || extCanRemoveDict == Py_None)
+  {
+    MESSAGE("Couldn't get <ext>:<can_remove> dictionary from SalomeOnDemandTK.extension_query! Return.");
+    return;
+  }
+
+  // Iterate extensions' actions to disable ones we can't remove because of dependencies.
+  foreach(QAction* curAction, myRemove->menu()->actions())
+  {
+    const std::string action_name = curAction->text().toStdString();
+    SCRUTE(action_name);
+
+    PyObject* canRemoveObject = PyDict_GetItemString(extCanRemoveDict, action_name.c_str());
+    if (!canRemoveObject)
+    {
+      MESSAGE("Couldn't get can remove flag from dictionary! Skip.");
+      continue;
+    }
+
+    const int isTrueRes = PyObject_IsTrue(canRemoveObject);
+    if (isTrueRes == -1)
+    {
+      MESSAGE("PyObject_IsTrue() failed. Using false value instead.");
+    }
+    const bool canRemove = isTrueRes == 1;
+    SCRUTE(canRemove);
+
+    curAction->setEnabled(canRemove);
+  }
 }
 
 /*!
@@ -641,7 +777,7 @@ void LightApp_ModuleAction::onTriggered( int id )
 /*!
   \brief Called when action state is changed.
   \internal
-  
+
   This slot is used to prevent making the parent action visible.
 */
 void LightApp_ModuleAction::onChanged()
@@ -662,4 +798,4 @@ void LightApp_ModuleAction::onChanged()
 void LightApp_ModuleAction::onComboActivated( int id )
 {
   QApplication::postEvent( this, new ActivateEvent( QEvent::MaxUser, id ) );
-} 
+}

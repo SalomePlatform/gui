@@ -66,6 +66,9 @@ public:
   void             insertModule( const QString&, const QIcon&, const int = -1 );
   void             insertModule( const QString&, const QIcon&, bool, const int = -1 );
   void             removeModule( const QString& );
+  void             insertExtension(const QString&);
+  void             removeExtension(const QString&);
+  void             updateExtActions();
 
   QString          activeModule() const;
 
@@ -87,6 +90,7 @@ signals:
   void             moduleActivated( const QString& );
   void             adding();
   void             removing( const QString& );
+  void             showExtInfo();
 
 private:
   void             update();
@@ -104,6 +108,7 @@ private:
   ComboAction*     myCombo;
   QtxAction*       myAdd;
   QtxAction*       myRemove;
+  QtxAction*       myInfo;
   ActionSet*       mySet;
   QAction*         mySeparator;
   int              myMode;

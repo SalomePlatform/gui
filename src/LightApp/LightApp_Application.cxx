@@ -23,7 +23,6 @@
 // File:      LightApp_Application.cxx
 // Created:   6/20/2005 18:39:45 PM
 // Author:    Natalia Donis
-
 #ifdef WIN32
 // E.A. : On windows with python 2.6, there is a conflict
 // E.A. : between pymath.h and Standard_math.h which define
@@ -50,6 +49,7 @@
 #include "LightApp_PreferencesDlg.h"
 #include "LightApp_ModuleDlg.h"
 #include "LightApp_AboutDlg.h"
+#include "LightApp_ExtInfoDlg.h"
 #include "LightApp_ModuleAction.h"
 // temporary commented
 #include "LightApp_EventFilter.h"
@@ -263,6 +263,11 @@ static const char* imageEmptyIcon[] = {
 //Find toolbar marker position in the array in the following way:
 //since the 'toolbar marker' is not unique, find index of first occurrence of the
 //'toolbar marker' in the array and check that next string is name of the toolbar
+
+namespace
+{
+  const char* salomeAppDir = "SALOME_APPLICATION_DIR";
+}
 
 void LightAppCleanUpAppResources()
 {
@@ -714,7 +719,7 @@ void LightApp_Application::createActions()
 
   foreach( QString aModule, aModuleList )
     createHelpItems( aModule );
-  
+
   // f) Additional help items
 
   int id = LightApp_Application::UserID + FIRST_HELP_ID + 1000;
@@ -754,9 +759,13 @@ void LightApp_Application::createActions()
   connect( moduleAction, SIGNAL( moduleActivated( const QString& ) ),
            this, SLOT( onModuleActivation( const QString& ) ) );
   connect( moduleAction, SIGNAL( adding() ),
-           this, SLOT( onModuleAdding() ) );
+           this, SLOT( onExtAdding() ) );
   connect( moduleAction, SIGNAL( removing( QString ) ),
-           this, SLOT( onModuleRemoving( QString ) ) );
+           this, SLOT( onExtRemoving( QString ) ) );
+  connect( moduleAction, SIGNAL(showExtInfo()),
+           this, SLOT(onShowExtInfo()));
+
+  addExtensionsActions(moduleAction);
 
   // New window
   int windowMenu = createMenu( tr( "MEN_DESK_WINDOW" ), -1, MenuWindowId, 100 );
@@ -837,6 +846,49 @@ void LightApp_Application::createActions()
   createTool( ModulesListId, modTBar );
 }
 
+/*!Create actions for installed extensions:*/
+void LightApp_Application::addExtensionsActions(LightApp_ModuleAction* moduleAction)
+{
+  if (!moduleAction)
+  {
+    MESSAGE("Couldn't get a moduleAction! Return.");
+    return;
+  }
+
+  // It should be set on the app start if we use an --on_demand 1 command line option
+  auto extRootDir = getenv(salomeAppDir);
+  if (!extRootDir)
+  {
+    // It's ok if we don't use --on_demand
+    return;
+  }
+  SCRUTE(extRootDir);
+
+   // Import Python module that manages SALOME extensions.
+  PyLockWrapper lck; // acquire GIL
+  PyObjWrapper extensionQuery = PyImport_ImportModule((char*)"SalomeOnDemandTK.extension_query");
+  PyObjWrapper installedExtensions = PyObject_CallMethod(
+      extensionQuery, (char*)"ext_by_name", (char*)"s", extRootDir);
+  if (!installedExtensions)
+  {
+    return;
+  }
+
+  // Iterate installed extensions
+  for (Py_ssize_t pos = 0; pos < PyList_Size(installedExtensions); ++pos)
+  {
+    // Get the current ext name
+    auto extNameItem = PyList_GetItem(installedExtensions, pos);
+    QString extName(PyUnicode_AsUTF8(extNameItem));
+    SCRUTE(extName.toStdString());
+
+    moduleAction->insertExtension(extName);
+  }
+
+  // Udate actions only once after all of them were already inserted
+  moduleAction->updateExtActions();
+}
+
 /*!
   Customize actions.
 */
@@ -888,41 +940,79 @@ void LightApp_Application::onModuleActivation( const QString& modTitle )
     activateModule( modTitle );
 }
 
-/*!On module adding action.*/
-void LightApp_Application::onModuleAdding()
+/*!On extension adding action.*/
+void LightApp_Application::onExtAdding()
 {
-  // show dialog to browse configuration file
-  QStringList filters = ( QStringList() << tr( "Config files") + " (*.salomex)" << tr( "All files" ) + " (*)" );
-  QStringList paths = getOpenFileNames( QString(), filters.join( ";;" ), QString(), desktop() );
-  if ( paths.isEmpty() ) // cancelled
-    return;
-
-  // loop via selected configuration files
-  foreach( QString path, paths )
+  // Show dialog to browse a salome extension file
+  QStringList filters = (QStringList() << tr("Salome extension files") + " (*.salomex)" << tr("All files") + " (*)");
+  QStringList paths = getOpenFileNames(QString(), filters.join(";;"), QString(), desktop());
+  if (paths.isEmpty())
   {
-    // read description file (.salomex) and check it's OK
-    QtxResourceMgr resMgr;
-    if ( !resMgr.addResource( path ) )
-    {
-      SUIT_MessageBox::warning( desktop(), tr( "WRN_WARNING" ), tr( "WRN_MODULE_BAD_SALOMEX_FILE" ).arg( path ) );
-      continue;
-    }
-    // retrieve module name
-    QString name = resMgr.stringValue( "General", "name" ).trimmed();
-    if ( name.isEmpty() )
-    {
-      SUIT_MessageBox::warning( desktop(), tr( "WRN_WARNING" ), tr( "WRN_MODULE_EMPTY_NAME" ).arg( path ) );
-      continue;
-    }
-    // retrieve root directory
-    QString root = resMgr.stringValue( "General", "root" ).trimmed();
-    if ( root.isEmpty() )
-    {
-      SUIT_MessageBox::warning( desktop(), tr( "WRN_WARNING" ), tr( "WRN_MODULE_EMPTY_ROOT" ).arg( path ) );
-      continue;
-    }
-    addUserModule( name, root, true );
+    MESSAGE("Adding an extension was cancelled.");
+    return;
   }
+
+  LightApp_ModuleAction* moduleAction = qobject_cast<LightApp_ModuleAction*>(action(ModulesListId));
+  if (!moduleAction)
+  {
+    MESSAGE("Couldn't get a moduleAction! Return.");
+    return;
+  }
+
+  // It should be set on the app start
+  auto extRootDir = getenv(salomeAppDir);
+  if (!extRootDir)
+  {
+    SUIT_MessageBox::warning(desktop(), tr("WRN_WARNING"), tr("WRN_SALOME_APPLICATION_DIR"));
+    return;
+  }
+  SCRUTE(extRootDir);
+
+  // We'll load all the extensions modules from this path
+  auto SalomeExtDir = QDir::cleanPath(QString(extRootDir) + QDir::separator() + "__SALOME_EXT__");
+  SCRUTE(SalomeExtDir.toStdString());
+
+  // Import Python module that manages SALOME extensions.
+  // It seems to be faster to lock and unlock once than on each iteration,
+  // but I didn't compare the performance for each case.
+  PyLockWrapper lck; // acquire GIL
+  PyObjWrapper extensionUnpacker = PyImport_ImportModule((char*)"SalomeOnDemandTK.extension_unpacker");
+
+  // Loop via selected extensions files
+  foreach(QString path, paths)
+  {
+    std::string extPath = path.toStdString();
+    SCRUTE(extPath);
+
+    PyObjWrapper unpackedModules = PyObject_CallMethod(
+      extensionUnpacker, (char*)"install_salomex", (char*)"s", extPath.c_str());
+    if (!unpackedModules || unpackedModules == Py_None)
+    {
+      SUIT_MessageBox::warning(desktop(), tr("WRN_WARNING"), tr("WRN_FAILED_UNPACK_EXTENSION").arg(path) );
+      continue;
+    }
+
+    // Iterate all the components (modules) for this extension
+    for (Py_ssize_t pos = 0; pos < PyList_Size(unpackedModules); ++pos)
+    {
+      auto moduleNameItem = PyList_GetItem(unpackedModules, pos);
+      QString moduleName(PyUnicode_AsUTF8(moduleNameItem));
+      SCRUTE(moduleName.toStdString());
+
+      addUserModule(moduleName, SalomeExtDir, true);
+    }
+
+    // Add an extension to GUI
+    if (moduleAction)
+    {
+      QFileInfo extFileInfo(path);
+      QString extName = extFileInfo.baseName();
+      moduleAction->insertExtension(extName);
+    }
+  }
+
+  // Udate actions only once after all of them were already inserted
+  moduleAction->updateExtActions();
 }
 
 /*Add user module.*/
@@ -951,9 +1041,12 @@ bool LightApp_Application::addUserModule( const QString& name, const QString& ro
       SUIT_MessageBox::warning( desktop(), tr( "WRN_WARNING" ), tr( "WRN_MODULE_BAD_RESDIR" ).arg( resDir ) );
     return false;
   }
+
+  SUIT_ResourceMgr* resMgr = resourceMgr();
+
   // read XML configuration file
-  resourceMgr()->setConstant( QString( "%1_ROOT_DIR" ).arg( name ), root );
-  if ( !resourceMgr()->addResource( resDir ) ) // cannot read configuration
+  resMgr->setConstant(QString("%1_ROOT_DIR").arg(name), root);
+  if (!resMgr->addResource(resDir)) // cannot read configuration
   {
     if ( interactive )
       SUIT_MessageBox::warning( desktop(), tr( "WRN_WARNING" ), tr( "WRN_MODULE_CANNOT_READ_CFG" ).arg( resDir ) );
@@ -966,12 +1059,26 @@ bool LightApp_Application::addUserModule( const QString& name, const QString& ro
       SUIT_MessageBox::warning( desktop(), tr( "WRN_WARNING" ), tr( "WRN_MODULE_BAD_CFG_FILE" ).arg( name ) );
     return false;
   }
+
   // load translations
-  resourceMgr()->loadLanguage( name );
-  // append module to the menu / toolbar
-  LightApp_ModuleAction* moduleAction = qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
-  if ( moduleAction )
-    moduleAction->insertModule( moduleTitle( name ), moduleIcon( moduleTitle( name ), 20 ), true ); // scale icon to 20x20 pix
+  resMgr->loadLanguage(name);
+
+  // Do all the GUI related stuff only if the module supports that.
+  // We already did check for GUI inside CAM_Application::appendModuleInfo, but
+  // need to do that again.
+  // TODO: Maybe it's better to return ModuleInfo from appendModuleInfo() and check status.
+  const QString title = resMgr->stringValue(name, "name", QString()).trimmed();
+  if (resMgr->booleanValue(name, "gui", false) || !title.isEmpty())
+  {
+    // Append module to the menu / toolbar
+    LightApp_ModuleAction* moduleAction = qobject_cast<LightApp_ModuleAction*>(action(ModulesListId));
+    if (moduleAction)
+    {
+      // Scale icon to 20x20 pix
+      moduleAction->insertModule(moduleTitle(name), moduleIcon(moduleTitle(name), 20), true);
+    }
+  }
+
   // add empty page to Preferences dialog
   LightApp_Preferences* prefs = preferences();
   if ( prefs && !prefs->hasModule( moduleTitle( name ) ) )
@@ -995,70 +1102,143 @@ bool LightApp_Application::addUserModule( const QString& name, const QString& ro
   // save module in the resource manager
   if ( interactive )
   {
-    QStringList customModules = resourceMgr()->stringValue( "launch", "user_modules" ).split( ";", QString::SkipEmptyParts );
+    QStringList customModules = resMgr->stringValue("launch", "user_modules").split(";", QString::SkipEmptyParts);
     customModules << name;
     customModules.removeDuplicates();
-    resourceMgr()->setValue( "launch", "user_modules", customModules.join( ";" ) );
-    resourceMgr()->setValue( "user_modules", name, root );
+    resMgr->setValue( "launch", "user_modules", customModules.join( ";" ) );
+    resMgr->setValue( "user_modules", name, root );
   }
   return true;
 }
 
-/*!On module removing action.*/
-void LightApp_Application::onModuleRemoving( const QString& title )
+/*!Remove user module from UI.*/
+void LightApp_Application::removeUserModule(const QString& moduleInnerName, LightApp_ModuleAction* moduleAction)
 {
-  QString root = resourceMgr()->stringValue( "user_modules", moduleName( title ) );
-  QDir rootDirectory = QDir( root );
+  MESSAGE("Remove a module from UI...");
+  SCRUTE(moduleInnerName.toStdString());
 
-  if ( rootDirectory.exists() )
+  // There is a some confusion point, because now we have a module's 'inner' name
+  // from the extension's salomexd file.
+  // But, in the next GUI methods we need to use a module title (user name).
+  // For example, PYHELLO (inner name) and PyHello (user name to display in GUI).
+  // Then, from the inner module's name we need to get a user one.
+  QString moduleUserName = moduleTitle(moduleInnerName);
+  SCRUTE(moduleUserName.toStdString());
+
+  // Set current state in modules combo box
+  // Don't confuse again, because activeModule()->moduleName() returns a module title, not an inner one!
+  if (activeModule() && activeModule()->moduleName() == moduleUserName)
+    activateModule("");
+
+  // Remove from "Modules" menu and toolbar
+  if (moduleAction)
   {
-    int answer = SUIT_MessageBox::question( desktop(),
-					    tr( "TLT_REMOVE_MODULE" ),
-					    tr( "QUE_REMOVE_MODULE_DIR" ).arg( root ),
-					    SUIT_MessageBox::Yes | SUIT_MessageBox::No | SUIT_MessageBox::Cancel,
-					    SUIT_MessageBox::No );
-    if ( answer == SUIT_MessageBox::Cancel )
-      return; // cancelled
-    if ( answer == SUIT_MessageBox::Yes )
-    {
-      if ( activeStudy() && activeStudy()->isModified() && !onSaveDoc() )
-        // doc is not saved, or saving cancelled
-        return;
-      if ( !rootDirectory.removeRecursively() )
-      {
-        // canont remove directory
-        if ( SUIT_MessageBox::question( desktop(),
-                                        tr( "WRN_WARNING" ),
-                                        tr( "WRN_CANNOT_REMOVE_DIR" ).arg( root ),
-                                        SUIT_MessageBox::Yes | SUIT_MessageBox::No,
-                                        SUIT_MessageBox::No ) == SUIT_MessageBox::No )
-        return; // removal is cancelled
-      }
-    }
+    moduleAction->removeModule(moduleUserName);
   }
 
-  if ( activeModule() && activeModule()->moduleName() == title )
-    activateModule( "" );
+  // Remove Help menu items
+  removeHelpItems(moduleUserName);
 
-  // remove from "Modules" menu and toolbar
-  LightApp_ModuleAction* moduleAction = qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
-  if ( moduleAction )
-  {
-    moduleAction->removeModule( title );
-  }
-  // remove Help menu items
-  removeHelpItems( title );
-  // remove Preferences
+  // Remove Preferences
   LightApp_Preferences* prefs = preferences();
-  if ( prefs )
-    prefs->removeModule( title );
-  // remove settings
-  QStringList customModules = resourceMgr()->stringValue( "launch", "user_modules" ).split( ";", QString::SkipEmptyParts );
-  customModules.removeAll( moduleName( title ) );
-  resourceMgr()->setValue( "launch", "user_modules", customModules.join( ";" ) );
-  removeModuleInfo( moduleName( title ) );
-  // update windows (in particular, Info panel)
+  if (prefs)
+    prefs->removeModule(moduleUserName);
+
+  // Remove settings
+  // Here we use an inner module name!
+  QStringList customModules = resourceMgr()->stringValue("launch", "user_modules").split(";", QString::SkipEmptyParts);
+  customModules.removeAll(moduleInnerName);
+  resourceMgr()->setValue("launch", "user_modules", customModules.join(";"));
+  removeModuleInfo(moduleInnerName);
+}
+
+/*!On module removing action.*/
+void LightApp_Application::onExtRemoving(const QString& title)
+{
+  MESSAGE("Remove an extension...");
+  std::string extName = title.toStdString();
+  SCRUTE(extName);
+
+  // Ask user if he's ready to completely remove an extension and all its modules.
+  int answer = SUIT_MessageBox::question(
+    desktop(),
+    tr("TLT_REMOVE_EXTENSION"),
+    tr("QUE_REMOVE_EXTENSION").arg(title),
+    SUIT_MessageBox::Ok | SUIT_MessageBox::Cancel,
+    SUIT_MessageBox::Ok
+  );
+
+  if (answer == SUIT_MessageBox::Cancel)
+  {
+    MESSAGE("Removing of an extension was cancelled");
+    return; // cancelled
+  }
+  
+  if (activeStudy() && activeStudy()->isModified() && !onSaveDoc())
+  {
+    // doc is not saved, or saving cancelled
+    SUIT_MessageBox::warning(
+      desktop(),
+      tr("WRN_WARNING"), tr("WRN_CANCEL_REMOVE_EXTENSION_UNSAVE").arg(title)
+    );
+
+    return;
+  }
+
+  // It should be set on the app start
+  auto extRootDir = getenv(salomeAppDir);
+  if (!extRootDir)
+  {
+    SUIT_MessageBox::warning(desktop(), tr("WRN_WARNING"), tr("WRN_SALOME_APPLICATION_DIR"));
+    return;
+  }
+  SCRUTE(extRootDir);
+
+  // Import Python module that manages SALOME extensions.
+  PyLockWrapper lck; // acquire GIL
+  PyObjWrapper extensionRemover = PyImport_ImportModule((char*)"SalomeOnDemandTK.extension_remover");
+  PyObjWrapper removedModules = PyObject_CallMethod(
+      extensionRemover, (char*)"remove_salomex", (char*)"ss", extRootDir, extName.c_str());
+  if (!removedModules || removedModules == Py_None)
+  {
+    SUIT_MessageBox::warning(desktop(), tr("WRN_WARNING"), tr("WRN_FAILED_REMOVE_EXTENSION").arg(title));
+    return;
+  }
+
+  // We need it to remove ext and modules from UI
+  LightApp_ModuleAction* moduleAction = qobject_cast<LightApp_ModuleAction*>(action(ModulesListId));
+  if (!moduleAction)
+  {
+    MESSAGE("Cannot get a pointer to LightApp_ModuleAction! Removing from menue and toolbars will skipped.");
+  }
+
+  // Module's content was already removed on python remove_salomex call,
+  // then all we do next - just remove UI items.
+  for (Py_ssize_t pos = 0; pos < PyList_Size(removedModules); ++pos)
+  {
+    // Get the current module's name
+    auto moduleNameItem = PyList_GetItem(removedModules, pos);
+    const QString moduleInnerName(PyUnicode_AsUTF8(moduleNameItem));
+
+    removeUserModule(moduleInnerName, moduleAction);
+  }
+
+  // Remove an ext from UI
+  if (moduleAction)
+  {
+    moduleAction->removeExtension(title);
+  }
+
+  // Update windows (in particular, Info panel)
   updateWindows();
+}
+
+/*!On show extension info action.*/
+void LightApp_Application::onShowExtInfo()
+{
+  // Show dialog with information about loaded salome extensions
+  LightApp_ExtInfoDlg dlg(desktop());
+  dlg.exec();
 }
 
 /*!Default module activation.*/
@@ -1153,16 +1333,16 @@ void LightApp_Application::onNewDoc()
 void LightApp_Application::onOpenDoc()
 {
   SUIT_Study* study = activeStudy();
-  
+
   if ( !checkExistingDoc( false ) )
     return;
-  
+
   QString aName = getFileName( true, QString(), getFileFilter( true ), QString(), 0 );
   if ( aName.isNull() ) //Cancel
     return;
-  
+
   onOpenDoc( aName );
-  
+
   if ( !study ) // new study will be create in THIS application
   {
     updateWindows();
@@ -1355,7 +1535,7 @@ protected:
 #else
       QString cmdLine = QString( "%1 %2 \"%3\"" ).arg( myBrowser, myParameters, myUrl );
       // remove LD_LIBRARY_PATH from the environement before starting launcher to avoid bad interactions.
-      // (especially in the case of universal binaries) 
+      // (especially in the case of universal binaries)
       env.remove("LD_LIBRARY_PATH");
 #endif
       QProcess* proc = new QProcess();
@@ -3038,7 +3218,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   int vtkSelectionGroup = pref->addPreference( tr( "PREF_GROUP_SELECTION" ), vtkGroup );
   pref->setItemProperty( "columns", 2, vtkSelectionGroup );
   // .... -> preselection
-  int vtkPreselection = pref->addPreference( tr( "PREF_PRESELECTION" ),  vtkSelectionGroup, 
+  int vtkPreselection = pref->addPreference( tr( "PREF_PRESELECTION" ),  vtkSelectionGroup,
                                              LightApp_Preferences::Selector, "VTKViewer", "preselection" );
   aValuesList.clear();
   anIndicesList.clear();
@@ -3063,7 +3243,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   int spacemousePref2 = pref->addPreference( tr( "PREF_SPACEMOUSE_FUNC_2" ), vtkSM,
                                              LightApp_Preferences::Selector, "VTKViewer",
                                              "spacemouse_func2_btn" );
-  // .... -> dominant / combined switch  
+  // .... -> dominant / combined switch
   int spacemousePref3 = pref->addPreference( tr( "PREF_SPACEMOUSE_FUNC_3" ), vtkSM,
                                              LightApp_Preferences::Selector, "VTKViewer",
                                              "spacemouse_func5_btn" ); //
@@ -4428,7 +4608,7 @@ void LightApp_Application::loadDockWindowsState()
   aResMgr->value( "windows_visibility", modName, aDefaultVisibility );
   bool hasDefaultVisibility = !aDefaultVisibility.isEmpty();
   aResMgr->setWorkingMode( prevMode );
-  
+
   if( !storeWin && !storeTb && aDefaultState.isEmpty() && !hasDefaultVisibility)
     return;
 
@@ -4453,13 +4633,13 @@ void LightApp_Application::loadDockWindowsState()
 
   QMap<QString, bool> *tbMap = 0;
   QMap<QString, bool> *dwMap = 0;
-  
+
   QMap<QString, bool> userTbMap, userDwMap;
   dockWindowsState( myWinVis[modName], userTbMap, userDwMap );
 
   QMap<QString, bool> defaultTbMap, defaultDwMap;
   if(hasDefaultVisibility) {
-    dockWindowsState( aDefaultVisibility, defaultTbMap, defaultDwMap);    
+    dockWindowsState( aDefaultVisibility, defaultTbMap, defaultDwMap);
   }
 
   if(storeTb) {
@@ -4481,9 +4661,9 @@ void LightApp_Application::loadDockWindowsState()
   if(tbMap) {
     QList<QToolBar*> tbList = findToolBars();
     for ( QList<QToolBar*>::iterator tit = tbList.begin(); tit != tbList.end(); ++tit )
-      { 
+      {
         QToolBar* tb = *tit;
-        if ( tbMap->contains( tb->objectName() ) ) {      
+        if ( tbMap->contains( tb->objectName() ) ) {
           tb->setVisible( (*tbMap)[tb->objectName()] );
         }
       }
@@ -4494,11 +4674,11 @@ void LightApp_Application::loadDockWindowsState()
     for ( QList<QDockWidget*>::iterator dit = dwList.begin(); dit != dwList.end(); ++dit )
       {
         QDockWidget* dw = *dit;
-        
+
         QObject* po = Qtx::findParent( dw, "QMainWindow" );
         if ( po != desktop() )
           continue;
-        
+
         if ( dwMap->contains( dw->objectName() ) )
           dw->setVisible( (*dwMap)[dw->objectName()] );
       }
@@ -5209,7 +5389,7 @@ void LightApp_Application::onDesktopMessage( const QString& message )
   }
   else if ( message.toLower().startsWith("register_module_in_study" ) ) {
     QString moduleName = message.split( sectionSeparator ).last();
-    // Check name of current activating module name in order to avoid ciclik 
+    // Check name of current activating module name in order to avoid ciclik
     // call because of messages
     if (!property("activateModule").toBool()) {
       CAM_Module* mod = module(moduleName);
@@ -5272,7 +5452,7 @@ void LightApp_Application::onInfoPanelShown()
 }
 
 /*!
-  Internal method. 
+  Internal method.
   Returns all top level toolbars.
   Note : Result list contains only main window toolbars, not including toolbars from viewers.
 */

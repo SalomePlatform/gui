@@ -106,9 +106,11 @@ SET(_link_LIBRARIES
   ${OpenCASCADE_FoundationClasses_LIBRARIES}
   ${QT_LIBRARIES}
   ${HDF5_LIBRARIES}
-  CASCatch qtx suit std SalomeStyle SalomePrs CAM LogWindow ObjBrowser Event 
+  CASCatch qtx suit std SalomeStyle SalomePrs CAM LogWindow ObjBrowser Event
   ${KERNEL_SalomeHDFPersist} ${KERNEL_SALOMELocalTrace}
+  ${GRAPHVIZ_LIBRARIES}
 )
+
 IF(SALOME_USE_SALOMEOBJECT)
   LIST(APPEND _link_LIBRARIES SalomeObject)
 ENDIF()
@@ -158,7 +160,7 @@ ENDIF()
 # --- headers ---
 
 # header files / to be processed by moc
-SET(_moc_HEADERS   
+SET(_moc_HEADERS
   LightApp_AboutDlg.h
   LightApp_Application.h
   LightApp_DataModel.h
@@ -176,6 +178,7 @@ SET(_moc_HEADERS
   LightApp_Study.h
   LightApp_SwitchOp.h
   LightApp_WgViewModel.h
+  LightApp_ExtInfoDlg.h
 )
 IF(SALOME_USE_GLVIEWER)
   LIST(APPEND _moc_HEADERS LightApp_GLSelector.h)
@@ -246,6 +249,7 @@ SET(_other_RESOURCES
   resources/icon_life_ring.png
   resources/icon_add_module.png
   resources/icon_remove_module.png
+  resources/icon_info_module.png
   resources/LightApp.xml
 )
 
@@ -286,6 +290,7 @@ SET(_other_SOURCES
   LightApp_Study.cxx
   LightApp_SwitchOp.cxx
   LightApp_WgViewModel.cxx
+  LightApp_ExtInfoDlg.cxx
 )
 IF(SALOME_USE_GLVIEWER)
   LIST(APPEND _other_SOURCES LightApp_GLSelector.cxx)

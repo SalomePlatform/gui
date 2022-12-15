@@ -46,6 +46,8 @@
 #include <cstdio>
 #include <iostream>
 
+#include <utilities.h>
+
 namespace
 {
 class BusyLocker
@@ -822,6 +824,9 @@ void CAM_Application::readModuleList()
 
 bool CAM_Application::appendModuleInfo( const QString& modName )
 {
+  MESSAGE("Start to append module info for a given module name: ");
+  SCRUTE(modName.toStdString());
+
   if ( modName.isEmpty() )
     return false;  // empty module name
 
@@ -834,9 +839,6 @@ bool CAM_Application::appendModuleInfo( const QString& modName )
   // we cannot use own resourceMgr() as this method can be called from constructor
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
 
-  // "gui" option explicitly says that module has GUI
-  bool hasGui = resMgr->booleanValue( modName, "gui", true );
-
   ModuleInfo inf;
 
   // module internal name
@@ -845,15 +847,32 @@ bool CAM_Application::appendModuleInfo( const QString& modName )
   inf.version = resMgr->stringValue( modName, "version", QString() ).trimmed();
   // displayer, if module does not have GUI, displayer may be delegated to other module
   inf.displayer = resMgr->stringValue( modName, "displayer", QString() ).trimmed();
+
+  // "gui" option explicitly says that module has GUI
+  // Now trying to get the "gui" option value, we always get a default one,
+  // then we can't rely on it.
+  bool hasGui = resMgr->booleanValue(modName, "gui", false);
+
+  // Additional check if the module actually has a title and icon.
+  // Module with GUI must explicitly specify title (GUI name).
+  inf.title = resMgr->stringValue(modName, "name", QString()).trimmed();
+  const bool hasTitle = !inf.title.isEmpty();
+  SCRUTE(hasGui);
+  SCRUTE(hasTitle);
+  if (hasGui && !hasTitle)
+  {
+    MESSAGE("Invalid config! The module has gui option, but doesn't have a title.");
+    return false;
+  }
+
+  // While we can't rely on gui option, use a title to make a decision about gui.
+  hasGui = hasTitle;
+
   // status; if module has GUI, availability will be checked on activation
   inf.status = hasGui ? stUnknown : stNoGui;
 
   if ( hasGui )
   {
-    // module with GUI must explicitly specify title (GUI name)
-    inf.title = resMgr->stringValue( modName, "name", QString() ).trimmed();
-    if ( inf.title.isEmpty() )
-      inf.status = stInvalid;
     // icon
     inf.icon = resMgr->stringValue( modName, "icon", QString() ).trimmed();
     // description, for Info panel
@@ -864,8 +883,17 @@ bool CAM_Application::appendModuleInfo( const QString& modName )
       inf.library = modName;
   }
 
-  if ( inf.status != stInvalid )
-    myInfoList.append( inf );
+  // At this point we should have only valid inf object.
+  myInfoList.append(inf);
+
+  SCRUTE(inf.name.toStdString());
+  SCRUTE(inf.version.toStdString());
+  SCRUTE(inf.displayer.toStdString());
+  SCRUTE(inf.status);
+  SCRUTE(inf.title.toStdString());
+  SCRUTE(inf.icon.toStdString());
+  SCRUTE(inf.description.toStdString());
+  SCRUTE(inf.library.toStdString());
 
   return true;
 }

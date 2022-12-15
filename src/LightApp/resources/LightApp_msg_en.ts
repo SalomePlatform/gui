@@ -27,6 +27,10 @@ CEA/DEN, CEDRAT, EDF R&amp;D, LEG, PRINCIPIA R&amp;D, BUREAU VERITAS</translatio
         <translation>Modules information</translation>
     </message>
     <message>
+        <source>EXT_INFO_CAPTION</source>
+        <translation>Extensions information</translation>
+    </message>
+    <message>
         <source>ABOUT_UNKNOWN_VERSION</source>
         <translation>Unknown</translation>
     </message>
@@ -1243,6 +1247,36 @@ If you answer &quot;Yes&quot;, you may need to save your study before removal.</
 
 Continue?</translation>
   </message>
+    <message>
+        <source>WRN_FAILED_UNPACK_EXTENSION</source>
+        <translation>Failed to unpack a salome extension from file: %1.</translation>
+    </message>
+    <message>
+        <source>WRN_FAILED_REMOVE_EXTENSION</source>
+        <translation>Failed to remove a salome extension: %1.</translation>
+    </message>
+    <message>
+        <source>WRN_SALOME_APPLICATION_DIR</source>
+        <translation>Cannot get SALOME_APPLICATION_DIR env variable!
+Cancel current extensions operation.
+        </translation>
+    </message>
+    <message>
+        <source>TLT_REMOVE_EXTENSION</source>
+        <translation>Remove extension</translation>
+    </message>
+    <message>
+        <source>QUE_REMOVE_EXTENSION</source>
+        <translation>Do you want to completely remove an extension %1 and all its modules and files?
+If you answer &quot;Ok&quot;, you may need to save your study before removal.
+Continue?
+        </translation>
+    </message>
+    <message>
+        <source>WRN_CANCEL_REMOVE_EXTENSION_UNSAVE</source>
+        <translation>Removing of a salome extension %1 was cancelled because current doc is unsaved.
+        </translation>
+    </message>
 </context>
 <context>
     <name>LightApp_Module</name>
@@ -1370,6 +1404,10 @@ Continue?</translation>
     <message>
         <source>REMOVE_MODULE</source>
         <translation>Remove modules</translation>
+    </message>
+    <message>
+        <source>INFO_MODULE</source>
+        <translation>Module information</translation>
     </message>
 </context>
 <context>

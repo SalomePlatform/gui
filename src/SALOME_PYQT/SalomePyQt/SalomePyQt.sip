@@ -498,4 +498,5 @@ public:
 
   static void              logUserEvent( const QString& ) /ReleaseGIL/ ;
   static void              logAction( QAction*, const QString& = QString() ) /ReleaseGIL/ ;
+  static void              setActionLoggingEnabled( bool ) /ReleaseGIL/ ;
 };

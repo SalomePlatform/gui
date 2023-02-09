@@ -35,5 +35,13 @@
         <source>OPERATION_APPLIED</source>
         <translation>operation applied</translation>
     </message>
+    <message>
+        <source>MODULE_ACTIVATED</source>
+        <translation>Module %1 activated</translation>
+    </message>
+    <message>
+        <source>MODULE_DEACTIVATED</source>
+        <translation>Module %1 deactivated</translation>
+    </message>
 </context>
 </TS>

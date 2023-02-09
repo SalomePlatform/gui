@@ -379,6 +379,7 @@ public:
 
   static void              logUserEvent( const QString& );
   static void              logAction( QAction*, const QString& = QString() );
+  static void              setActionLoggingEnabled( bool );
 };
 
 #endif // SALOME_PYQT_H

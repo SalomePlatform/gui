@@ -5144,3 +5144,23 @@ void SalomePyQt::logAction( QAction* action, const QString& moduleName )
   };
   ProcessVoidEvent( new TEvent( action, moduleName ) );
 }
+
+/*!
+  \brief Enable/disable action logging.
+*/
+void SalomePyQt::setActionLoggingEnabled( bool enabled )
+{
+  class TEvent: public SALOME_Event
+  {
+    bool myEnabled;
+  public:
+    TEvent( bool theEnabled ) : myEnabled( theEnabled ) {}
+    virtual void Execute() 
+    {
+      LightApp_Module* module = getActiveModule();
+      if ( module )
+        module->setActionLoggingEnabled( myEnabled );
+    }
+  };
+  ProcessVoidEvent( new TEvent( enabled ) );
+}

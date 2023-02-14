@@ -41,7 +41,6 @@
 #include <QTimer>
 
 #include <V3d_View.hxx>
-#include <Quantity_Ratio.hxx>
 
 #include "utilities.h"
 

@@ -36,13 +36,20 @@
 #include <Xw_Window.hxx>
 #endif
 
+#include <Basics_OCCTVersion.hxx>
+
 /*!
     Create native view window for CasCade view [ static ]
 */
 Handle(Aspect_Window) OCCViewer_VService::CreateWindow( const Handle(V3d_View)& view,
 							WId winId )
 {
+#if OCC_VERSION_LARGE < 0x07070000
   Aspect_Handle aWindowHandle = (Aspect_Handle)winId;
+#else
+  Aspect_Drawable aWindowHandle = (Aspect_Drawable)winId;
+#endif
+
 #if defined(WIN32)
   Handle(WNT_Window) viewWindow = new WNT_Window( aWindowHandle );
 #elif defined(__APPLE__)

@@ -35,6 +35,8 @@
 #include <QGroupBox>
 #include <QLineEdit>
 
+#include <Basics_OCCTVersion.hxx>
+
 /*!
   \class OCCViewer_CubeAxesDlg::AxisWidget
   \brief Axis tab widget of the "Graduated axis" dialog box
@@ -267,7 +269,11 @@ void OCCViewer_CubeAxesDlg::ApplyData( const Handle(V3d_View)& theView )
     gt.SetGridColor(Quantity_NOC_WHITE); // grid color
     // axes params
     for ( int i = 0; i < 3; i++ ) {
+#if OCC_VERSION_LARGE < 0x07070000
       Graphic3d_AxisAspect& aspect = gt.ChangeAxisAspect(i);
+#else
+      Graphic3d_GraduatedTrihedron::AxisAspect& aspect = gt.ChangeAxisAspect(i);
+#endif
       aspect.SetName(anAxisData[i].Name.toUtf8().constData());
       aspect.SetDrawName(anAxisData[i].DrawName);
       aspect.SetDrawValues(anAxisData[i].DrawValues);

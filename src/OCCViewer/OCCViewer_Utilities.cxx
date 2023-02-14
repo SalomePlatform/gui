@@ -42,7 +42,12 @@ Handle(Image_PixMap) OCCViewer_Utilities::imageToPixmap( const QImage& anImage )
 {
   Handle(Image_PixMap) aPixmap = new Image_PixMap();
   if ( !anImage.isNull() ) {
+#if OCC_VERSION_LARGE < 0x07070000
     aPixmap->InitTrash( Image_PixMap::ImgBGRA, anImage.width(), anImage.height() );
+#else
+    aPixmap->InitTrash( Image_Format_BGRA, anImage.width(), anImage.height() );
+#endif
+
 #if OCC_VERSION_LARGE < 0x07050000
     aPixmap->SetTopDown( Standard_True );
 #endif

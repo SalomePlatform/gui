@@ -145,8 +145,12 @@ OCCViewer_Viewer::OCCViewer_Viewer( bool DisplayTrihedron)
   // create color scale
   myColorScale = new AIS_ColorScale();
   myColorScale->SetZLayer( Graphic3d_ZLayerId_TopOSD );
+#if OCC_VERSION_LARGE < 0x07070000
   myColorScale->SetTransformPersistence( Graphic3d_TransformPers::FromDeprecatedParams( Graphic3d_TMF_2d, gp_Pnt(-1, -1, 0) ) );
-  
+#else
+  myColorScale->SetTransformPersistence( new Graphic3d_TransformPers (Graphic3d_TMF_2d, Aspect_TOTP_LEFT_LOWER) );
+#endif
+
   /* create trihedron */
   if ( DisplayTrihedron )
   {

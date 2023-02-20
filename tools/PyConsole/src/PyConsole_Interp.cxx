@@ -23,6 +23,7 @@
 // Author : Nicolas REJNERI (OPEN CASCADE), Adrien BRUNETON (CEA/DEN), Vadim SANDLER (OPEN CASCADE)
 
 #include "PyConsole_Interp.h"
+#include <QRegularExpression>
 
 /*!
   \class PyConsole_Interp
@@ -90,7 +91,7 @@ int PyConsole_Interp::afterRun()
   \internal
   \param dirArgument Python expression to pass to the dir command. The parsing of what the
   user actually started typing is dedicated to the caller
-  \param startMatch string representing the begining of the patter to be completed. For example, when
+  \param startMatch string representing the beginning of the pattern to be completed. For example, when
   the user types "a_string_variable.rsp <TAB>", this is "rsp".
   \param[out] matches resulting list of matches
   \param[out] docString resulting docstring of single match
@@ -159,7 +160,7 @@ bool PyConsole_Interp::runDirAndExtract( const QString& dirArgument,
                                          QStringList& result,
                                          bool discardSwig ) const
 {
-  QRegExp re( "^[A-Z].+_[A-Z]+[a-z]+.+$" ); // REX to discard SWIG static method, e.g. MEDCouplingUMesh_Blabla
+  QRegularExpression re( "^[A-Z].+_[A-Z]+[a-z]+.+$" ); // REX to discard SWIG static method, e.g. MEDCouplingUMesh_Blabla
 
   // Execute dir() command
   QString command( "dir(" + dirArgument + ")" );
@@ -187,7 +188,7 @@ bool PyConsole_Interp::runDirAndExtract( const QString& dirArgument,
     // if the method is not from swig, not static (guessed from the reg exp) and matches
     // what is already there
     if ( s.startsWith( startMatch ) ) {
-      if ( !discardSwig || ( !re.exactMatch( s ) && !s.contains( "swig" ) ) )
+      if ( !discardSwig || ( !re.match( s ).hasMatch() && !s.contains( "swig" ) ) )
         result.append( s );
     }
     Py_DECREF( it );

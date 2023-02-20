@@ -35,7 +35,7 @@
 #include <sstream>
 #include <algorithm>
 
-#include <QRegExp>
+#include <QRegularExpression>
 #include <QStringList>
 
 #define TOP_HISTORY_PY   "--- top of history ---"
@@ -185,7 +185,7 @@ char* PyInterp_Interp::_argv[] = {(char*)""};
   \brief Basic constructor.
 
   After construction the interpreter instance successor classes
-  must call virtual method initalize().
+  must call virtual method initialize().
 */
 PyInterp_Interp::PyInterp_Interp():
   _vout(0), _verr(0), _global_context(0), _local_context(0), _initialized(false)
@@ -203,7 +203,7 @@ PyInterp_Interp::~PyInterp_Interp()
 /*!
   \brief Initialize embedded interpreter.
 
-  This method shoud be called after construction of the interpreter.
+  This method should be called after construction of the interpreter.
   The method initialize() calls virtuals methods
   - initPython()  to initialize global Python interpreter
   - initContext() to initialize interpreter internal context
@@ -341,7 +341,7 @@ void PyInterp_Interp::closeContext()
 /*!
   \brief Compile Python command and evaluate it in the
          python dictionary contexts if possible. This is not thread-safe.
-         This is the caller's responsability to make this thread-safe.
+         This is the caller's responsibility to make this thread-safe.
   \internal
   \param command Python command string
   \return -1 on fatal error, 1 if command is incomplete and 0
@@ -479,11 +479,12 @@ static int compile_command(const char *command, PyObject * global_ctxt, PyObject
   QString singleCommand = command;
   QString commandArgs = "";
 
-  QRegExp rx("exec\\s*\\(.*open\\s*\\(\\s*(.*)\\s*\\)\\s*\\.\\s*read\\s*\\(\\)(\\s*,\\s*args\\s*=\\s*\\(.*\\))\\s*\\)");
-  if (rx.indexIn(command) != -1) {
-    commandArgs = rx.cap(2).remove(0, rx.cap(2).indexOf("(")); // arguments of command
-    commandArgs.insert(commandArgs.indexOf('(')+1, rx.cap(1).split(",")[0].trimmed() + ","); // prepend arguments list by the script file itself
-    singleCommand = singleCommand.remove(rx.pos(2), rx.cap(2).size()); // command for execution without arguments
+  QRegularExpression rx("exec\\s*\\(.*open\\s*\\(\\s*(.*)\\s*\\)\\s*\\.\\s*read\\s*\\(\\)(\\s*,\\s*args\\s*=\\s*\\(.*\\))\\s*\\)");
+  QRegularExpressionMatch match = rx.match(command);
+  if (match.hasMatch()) {
+    commandArgs = match.captured(2).remove(0, match.captured(2).indexOf("(")); // arguments of command
+    commandArgs.insert(commandArgs.indexOf('(')+1, match.captured(1).split(",")[0].trimmed() + ","); // prepend arguments list by the script file itself
+    singleCommand = singleCommand.remove(match.capturedStart(2), match.captured(2).size()); // command for execution without arguments
   }
 
   if (commandArgs.isEmpty()) {
@@ -514,7 +515,7 @@ int PyInterp_Interp::run(const char *command)
 }
 
 /**
- * Called before a command is run (when calling run() method). Not thread-safe. Caller's responsability
+ * Called before a command is run (when calling run() method). Not thread-safe. Caller's responsibility
  * to acquire GIL if needed.
  */
 int PyInterp_Interp::beforeRun()
@@ -523,7 +524,7 @@ int PyInterp_Interp::beforeRun()
 }
 
 /**
- * Called after a command is run (when calling run() method). Not thread-safe. Caller's responsability
+ * Called after a command is run (when calling run() method). Not thread-safe. Caller's responsibility
  * to acquire GIL if needed.
  */
 int PyInterp_Interp::afterRun()
@@ -532,7 +533,7 @@ int PyInterp_Interp::afterRun()
 }
 
 /*!
-  \brief Run Python command (used internally). Not thread-safe. GIL acquisition is caller's responsability.
+  \brief Run Python command (used internally). Not thread-safe. GIL acquisition is caller's responsibility.
   \param command Python command
   \param addToHistory if \c true (default), the command is added to the commands history
   \return command status

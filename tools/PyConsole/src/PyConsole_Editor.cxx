@@ -167,7 +167,7 @@ PyConsole_Editor::PyConsole_Editor( QWidget* parent )
   
   Creates python editor window.
   \param parent parent widget
-  \param interp python interper
+  \param interp python interpreter
 */
 PyConsole_Editor::PyConsole_Editor( QWidget*          parent,
                                     PyConsole_Interp* interp )
@@ -198,7 +198,7 @@ void PyConsole_Editor::init()
   setWordWrapMode( QTextOption::WrapAnywhere );
   setAcceptRichText( false );
 
-  // set callbacks to interpeter
+  // set callbacks to interpreter
   myInterp->setvoutcb( PyConsole_CallbackStdout, this );
   myInterp->setverrcb( PyConsole_CallbackStderr, this );
   // print banner
@@ -387,7 +387,7 @@ void PyConsole_Editor::exec( const QString& command )
 {
   if ( isReadOnly() ) {
     // some interactive command is being executed in this editor...
-    // shedule the command to the queue
+    // schedule the command to the queue
     myQueue.push_back( command );
     return;
   }
@@ -633,8 +633,12 @@ void PyConsole_Editor::handleBackTab()
 void PyConsole_Editor::dropEvent( QDropEvent* event )
 {
   // get the initial drop position
+#if QT_VERSION >= 0x060000
+  QPoint pos = event->position().toPoint();
+#else
   QPoint pos = event->pos();
-  QTextCursor aCursor = cursorForPosition( event->pos() );
+#endif
+  QTextCursor aCursor = cursorForPosition( pos );
 
   // if the position is not in the last line move it to the end of the command line
   if ( aCursor.position() < document()->end().previous().position() + promptSize() ) {
@@ -646,8 +650,13 @@ void PyConsole_Editor::dropEvent( QDropEvent* event )
   QDropEvent de( pos,
                  event->possibleActions(),
                  event->mimeData(),
+#if QT_VERSION >= 0x060000
+                 event->buttons(),
+                 event->modifiers(),
+#else
                  event->mouseButtons(),
                  event->keyboardModifiers(),
+#endif
                  event->type() );
   QTextEdit::dropEvent( &de );
 
@@ -684,7 +693,7 @@ void PyConsole_Editor::mouseReleaseEvent( QMouseEvent* event )
   if ( event->button() == Qt::LeftButton ) {
     QTextEdit::mouseReleaseEvent( event );
   }
-  else if ( event->button() == Qt::MidButton ) {
+  else if ( event->button() == Qt::MiddleButton ) {
     QTextCursor aCursor = cursorForPosition( event->pos() );
     // if the position is not in the last line move it to the end of the command line
     if ( aCursor.position() < document()->end().previous().position() + promptSize() ) {
@@ -1306,7 +1315,7 @@ void PyConsole_Editor::customEvent( QEvent* event )
 
   if ( (int)event->type() == (int)PyInterp_Event::ES_OK && myQueue.count() > 0 )
   {
-    // process the next sheduled command from the queue (if there is any)
+    // process the next scheduled command from the queue (if there is any)
     QString nextcmd = myQueue[0];
     myQueue.pop_front();
     exec( nextcmd );
@@ -1393,7 +1402,7 @@ bool PyConsole_Editor::dump( const QString& fileName )
     if ( file.open( QFile::WriteOnly ) ) {
       QTextStream out( &file );
       for ( int i = 0; i < myHistory.count(); i++ ) {
-#if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
+#if QT_VERSION >= QT_VERSION_CHECK(5,14,0)
         out << myHistory[i] << Qt::endl;
 #else
         out << myHistory[i] << endl;

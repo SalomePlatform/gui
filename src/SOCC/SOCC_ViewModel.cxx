@@ -412,14 +412,17 @@ void SOCC_Viewer::EraseAll( SALOME_Displayer* d, const bool forced )
   Handle(AIS_InteractiveContext) ic = getAISContext();
 
   // check if trihedron is displayed
-  Standard_Boolean isTrihedronDisplayed = ic->IsDisplayed( getTrihedron() );
+  Standard_Boolean isTrihedronDisplayed = isTrihedronVisible();
+  Standard_Boolean isViewCubeDisplayed  = isViewCubeVisible();
 
   // get objects to be erased (all currently displayed objects)
   AIS_ListOfInteractive aList;
   ic->DisplayedObjects( aList );
   AIS_ListIteratorOfListOfInteractive anIter( aList );
   for ( ; anIter.More(); anIter.Next() ) {
-    if ( (isTrihedronDisplayed && anIter.Value()->DynamicType() == STANDARD_TYPE( AIS_Trihedron ) ) )
+    if ( isTrihedronDisplayed && anIter.Value()->DynamicType() == STANDARD_TYPE( AIS_Trihedron ) )
+      continue;
+    if ( isViewCubeDisplayed && anIter.Value()->DynamicType() == STANDARD_TYPE( AIS_ViewCube ) )
       continue;
 
     // erase an object
@@ -514,6 +517,10 @@ void SOCC_Viewer::LocalSelection( const SALOME_OCCPrs* thePrs, const std::list<i
         ic->Load( anAIS, -1 );
         for( it = sel_modes.begin(); it != sel_modes.end(); ++it )
           ic->Activate( anAIS, AIS_Shape::SelectionMode( (TopAbs_ShapeEnum)*it ) );
+      }
+      else if ( anAIS->DynamicType() == STANDARD_TYPE(AIS_ViewCube) )
+      {
+        ic->Activate( anAIS, 0 );
       }
       else if ( anAIS->DynamicType() != STANDARD_TYPE(AIS_Trihedron) )
       {

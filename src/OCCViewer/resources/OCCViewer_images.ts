@@ -100,6 +100,10 @@
         <translation>occ_view_triedre.png</translation>
     </message>
     <message>
+        <source>ICON_OCCVIEWER_VIEW_VIEWCUBE</source>
+        <translation>occ_view_viewcube.png</translation>
+    </message>
+    <message>
         <source>ICON_OCCVIEWER_SCALING</source>
         <translation>occ_view_scaling.png</translation>
     </message>

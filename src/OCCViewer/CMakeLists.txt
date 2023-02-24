@@ -144,6 +144,7 @@ SET(_other_RESOURCES
   resources/occ_view_style_switch.png
   resources/occ_view_top.png
   resources/occ_view_triedre.png
+  resources/occ_view_viewcube.png
   resources/occ_view_zoom.png
   resources/occ_view_zooming_style_switch.png
   resources/occ_view_ray_tracing.png

@@ -53,6 +53,13 @@ ____
 
 ____
 
+.. image:: ../../../../src/OCCViewer/resources/occ_view_viewcube.png
+	:align: center
+
+**Show/Hide view cube** - shows or hides navigation cube.
+
+____
+
 .. image:: ../../../../src/OCCViewer/resources/occ_view_preselection.png
 	:align: center
 

@@ -171,6 +171,10 @@ OCCViewer_Viewer::OCCViewer_Viewer( bool DisplayTrihedron)
     }
   }
 
+  /* create view cube */
+  myViewCube  = new AIS_ViewCube();
+  setViewCubeParamsFromPreferences();
+
   // set interaction style to standard
   myInteractionStyle = 0;
 
@@ -483,9 +487,15 @@ void OCCViewer_Viewer::onViewClosed(OCCViewer_ViewPort3d*)
 
 void OCCViewer_Viewer::onViewMapped(OCCViewer_ViewPort3d* viewPort)
 {
-  setTrihedronShown( true );
-  bool showStaticTrihedron = true;
   SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+
+  setTrihedronShown( true );
+
+  bool showViewCube = true;
+  if ( resMgr ) showViewCube = resMgr->booleanValue( "OCCViewer", "viewcube_show", true );
+  setViewCubeShown( showViewCube );
+
+  bool showStaticTrihedron = true;
   if ( resMgr ) showStaticTrihedron = resMgr->booleanValue( "3DViewer", "show_static_trihedron", true );
   viewPort->showStaticTrihedron( showStaticTrihedron );
 }
@@ -1288,19 +1298,19 @@ void OCCViewer_Viewer::setColorScaleShown( const bool on )
 }
 
 /*!
-  Changes visibility of trihedron to opposite
-*/
-void OCCViewer_Viewer::toggleTrihedron()
-{
-  setTrihedronShown( !isTrihedronVisible() );
-}
-
-/*!
   \return true if trihedron is visible
 */
 bool OCCViewer_Viewer::isTrihedronVisible() const
 {
   return !myTrihedron.IsNull() && !myAISContext.IsNull() && myAISContext->IsDisplayed( myTrihedron );
+}
+
+/*!
+  \return true if view cube is visible
+*/
+bool OCCViewer_Viewer::isViewCubeVisible() const
+{
+  return !myViewCube.IsNull() && !myAISContext.IsNull() && myAISContext->IsDisplayed( myViewCube );
 }
 
 /*!
@@ -1324,6 +1334,70 @@ void OCCViewer_Viewer::setTrihedronShown( const bool on )
   else {
     myAISContext->Erase( myTrihedron , Standard_True );
   }
+}
+
+/*!
+  Sets visibility state of view cube
+  \param on - new state
+*/
+
+void OCCViewer_Viewer::setViewCubeShown( const bool on )
+{
+  if ( myViewCube.IsNull() )
+    return;
+
+  if ( on ) {
+    myAISContext->Display( myViewCube,
+                           0 /*wireframe*/,
+                           0 /* selection mode */,
+                           Standard_True /* update viewer*/,
+                           AIS_DS_Displayed /* display status */);
+  }
+  else {
+    myAISContext->Erase( myViewCube, Standard_True );
+  }
+}
+
+/*!
+  Set View Cube parameters from preferences
+*/
+void OCCViewer_Viewer::setViewCubeParamsFromPreferences()
+{
+  // Resource manager
+  SUIT_ResourceMgr* resMgr = SUIT_Session::session()->resourceMgr();
+  if (!resMgr || myViewCube.IsNull())
+    return;
+
+  bool isVisibleVC = isVisible(myViewCube);
+
+  if (resMgr->booleanValue("OCCViewer", "viewcube_custom", false)) {
+    // Use custom settings from preferences
+    QColor aColor;
+
+    // Box color
+    aColor = resMgr->colorValue("OCCViewer", "viewcube_color", QColor(255, 255, 255));
+    myViewCube->SetBoxColor(OCCViewer::color(aColor));
+
+    // Size
+    myViewCube->SetSize(resMgr->doubleValue("OCCViewer", "viewcube_size", 70.0));
+
+    // Text color
+    aColor = resMgr->colorValue("OCCViewer", "viewcube_text_color", QColor(0, 0, 0));
+    myViewCube->SetTextColor(OCCViewer::color(aColor));
+  }
+  else {
+    myViewCube->ResetStyles();
+  }
+
+  // Axes
+  myViewCube->SetDrawAxes(resMgr->booleanValue("OCCViewer", "viewcube_axes", false));
+
+  // Animation duration (sec)
+  myViewCube->SetDuration(resMgr->doubleValue("OCCViewer", "viewcube_duration", 0.5));
+
+  // Update the viewer
+  if (isVisibleVC)
+    myAISContext->Redisplay( myViewCube, Standard_True);
 }
 
 /*!

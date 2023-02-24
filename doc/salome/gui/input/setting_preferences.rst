@@ -175,6 +175,16 @@ OCC 3D Viewer Preferences
   - **Color** - allows to change the color of light source.
   - **Dx, Dy, Dz** - sets direction coordinates.
 
+- **Navigation Cube** - allows to manage parameters of navigation cube.
+
+  - **Show navigation cube on start** - if checked, navigation cube will appear in a new occ viewer.
+  - **Animation duration (sec)** - duration of animation of camera rotation.
+  - **Customize navigation cube appearance** - if checked, below defined parameters will be used instead of default ones.
+  - **Cube color** - color of the navigation cube.
+  - **Text color** - color of text on the navigation cube faces.
+  - **Cube size** - size of the navigation cube.
+  - **Show navigation cube axes** - show navigation cube own axes.
+
 .. _vtk_preferences:
 
 VTK 3D Viewer Preferences

@@ -2855,6 +2855,41 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "step", 0.1, light_dz );
   // ... "Light source" group <<end>>
 
+  // ... "View cube" group <<start>>
+  int occViewCubeGroup = pref->addPreference( tr( "PREF_GROUP_VIEWCUBE" ), occGroup );
+  pref->setItemProperty( "columns", 2, occViewCubeGroup );
+  // .... -> show view cube on viewer start
+  pref->addPreference( tr( "PREF_VIEWCUBE_SHOW" ), occViewCubeGroup,
+               LightApp_Preferences::Bool, "OCCViewer", "viewcube_show" );
+  // .... -> view cube duration of animation (sec)
+  int viewcube_dur = pref->addPreference( tr( "PREF_VIEWCUBE_DURATION" ), occViewCubeGroup,
+               LightApp_Preferences::DblSpin, "OCCViewer", "viewcube_duration" );
+  pref->setItemProperty( "min", 0.1, viewcube_dur );
+  pref->setItemProperty( "max", 10.0, viewcube_dur );
+  pref->setItemProperty( "step", 0.1, viewcube_dur );
+  // .... -> show view cube axes
+  pref->addPreference( tr( "PREF_VIEWCUBE_AXES" ), occViewCubeGroup,
+               LightApp_Preferences::Bool, "OCCViewer", "viewcube_axes" );
+  // ... "View cube" group <<end>>
+
+  // ... "View cube default (OCCT) attributes" group <<start>>
+  int occViewCubeAttrsGroup = pref->addPreference( tr( "PREF_VIEWCUBE_CUSTOM" ), occGroup,
+               LightApp_Preferences::Auto, "OCCViewer", "viewcube_custom" );
+  pref->setItemProperty( "columns", 2, occViewCubeAttrsGroup );
+  // .... -> box color
+  pref->addPreference( tr( "PREF_VIEWCUBE_COLOR" ), occViewCubeAttrsGroup,
+               LightApp_Preferences::Color, "OCCViewer", "viewcube_color" );
+  // .... -> view cube size
+  int viewcube_size = pref->addPreference( tr( "PREF_VIEWCUBE_SIZE" ), occViewCubeAttrsGroup,
+               LightApp_Preferences::DblSpin, "OCCViewer", "viewcube_size" );
+  pref->setItemProperty( "min",  30.0, viewcube_size );
+  pref->setItemProperty( "max", 100.0, viewcube_size );
+  pref->setItemProperty( "step", 10.0, viewcube_size );
+  // .... -> text color
+  pref->addPreference( tr( "PREF_VIEWCUBE_TEXTCOLOR" ), occViewCubeAttrsGroup,
+               LightApp_Preferences::Color, "OCCViewer", "viewcube_text_color" );
+  // ... "View cube" group <<end>>
+
   // ... -> empty frame (for layout) <<start>>
   int occGen = pref->addPreference( "", occGroup, LightApp_Preferences::Frame );
   pref->setItemProperty( "margin",  0, occGen );
@@ -3636,6 +3671,24 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 
       OCCViewer_Viewer* occVM = (OCCViewer_Viewer*)vm;
       occVM->setQuadBufferSupport( enable );
+    }
+  }
+#endif
+
+#ifndef DISABLE_OCCVIEWER
+  if ( sec == QString( "OCCViewer" ) && param.contains( "viewcube" ) )
+  {
+    QList<SUIT_ViewManager*> lst;
+    viewManagers( OCCViewer_Viewer::Type(), lst );
+    QListIterator<SUIT_ViewManager*> it( lst );
+    while ( it.hasNext() )
+    {
+      SUIT_ViewModel* vm = it.next()->getViewModel();
+      if ( !vm || !vm->inherits( "OCCViewer_Viewer" ) )
+        continue;
+
+      OCCViewer_Viewer* occVM = (OCCViewer_Viewer*)vm;
+      occVM->setViewCubeParamsFromPreferences();
     }
   }
 #endif

@@ -1404,6 +1404,16 @@ void OCCViewer_ViewWindow::createActions()
     toolMgr()->registerAction( aAction, TrihedronShowId );
   }
 
+  if (myModel->viewCubeActivated()) {
+    aAction = new QtxAction(tr("MNU_SHOW_VIEWCUBE"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_VIEWCUBE" ) ),
+                             tr( "MNU_SHOW_VIEWCUBE" ), 0, this);
+    aAction->setCheckable( true );
+    aAction->setChecked( aResMgr->booleanValue( "OCCViewer", "viewcube_show", true ) );
+    aAction->setStatusTip(tr("DSC_SHOW_VIEWCUBE"));
+    connect(aAction, SIGNAL(toggled(bool)), this, SLOT(onViewCubeShow(bool)));
+    toolMgr()->registerAction( aAction, ViewCubeShowId );
+  }
+
   // Scale
   aAction = new QtxAction(tr("MNU_SCALING"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_SCALING" ) ),
                            tr( "MNU_SCALING" ), 0, this);
@@ -1563,6 +1573,9 @@ void OCCViewer_ViewWindow::createToolBar()
 
   if( myModel->trihedronActivated() )
     toolMgr()->append( TrihedronShowId, tid );
+
+  if( myModel->viewCubeActivated() )
+    toolMgr()->append( ViewCubeShowId, tid );
 
   QtxMultiAction* aScaleAction = new QtxMultiAction( this );
   aScaleAction->insertAction( toolMgr()->action( FitAllId ) );
@@ -2100,6 +2113,8 @@ void OCCViewer_ViewWindow::performRestoring( const viewAspect& anItem, bool base
     myModel->setTrihedronShown( anItem.isVisible );
     myModel->setTrihedronSize( anItem.size );
 
+    myModel->setViewCubeShown( anItem.vcIsVisible );
+
     // graduated trihedron
     bool anIsVisible = anItem.gtIsVisible;
     OCCViewer_AxisWidget::AxisData anAxisData[3];
@@ -2165,6 +2180,14 @@ void OCCViewer_ViewWindow::setRestoreFlag()
 void OCCViewer_ViewWindow::onTrihedronShow(bool show)
 {
   myModel->setTrihedronShown(show);
+}
+
+/*!
+  \brief Called when action "show/hide view cube" is activated.
+*/
+void OCCViewer_ViewWindow::onViewCubeShow(bool show)
+{
+  myModel->setViewCubeShown(show);
 }
 
 /*!
@@ -2523,6 +2546,8 @@ viewAspect OCCViewer_ViewWindow::getViewParams() const
   bool isShown = myModel->isTrihedronVisible();
   double size = myModel->trihedronSize();
 
+  bool isVCShown = myModel->isViewCubeVisible();
+
   QString aName = QTime::currentTime().toString() + QString::fromLatin1( " h:m:s" );
 
   viewAspect params;
@@ -2541,8 +2566,13 @@ viewAspect OCCViewer_ViewWindow::getViewParams() const
   params.scaleY   = aScaleY;
   params.scaleZ   = aScaleZ;
   params.name     = aName;
+
+  // trihedron
   params.isVisible= isShown;
   params.size     = size;
+
+  // view cube
+  params.vcIsVisible= isVCShown;
 
   // graduated trihedron
   bool anIsVisible = false;

@@ -69,6 +69,14 @@
         <translation>Show/Hide trihedron in the current view</translation>
     </message>
     <message>
+        <source>MNU_SHOW_VIEWCUBE</source>
+        <translation>Show/Hide navigation cube</translation>
+    </message>
+    <message>
+        <source>DSC_SHOW_VIEWCUBE</source>
+        <translation>Show/Hide navigation cube in the current view</translation>
+    </message>
+    <message>
         <source>MNU_ROTATE_VIEW</source>
         <translation>Rotation</translation>
     </message>

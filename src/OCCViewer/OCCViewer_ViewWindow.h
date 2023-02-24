@@ -60,8 +60,11 @@ public:
   double   scaleY;
   double   scaleZ;
   QString    name;
+  // trihedron
   bool     isVisible;
   double   size;
+  // view cube
+  bool     vcIsVisible;
   // graduated trihedron
   bool    gtIsVisible;
   bool    gtDrawNameX;
@@ -116,6 +119,7 @@ public:
     name(),
     isVisible( false ),
     size( 0.0 ),
+    vcIsVisible( false ),
     gtIsVisible( false ),
     gtDrawNameX( false ), gtDrawNameY( false ), gtDrawNameZ( false ),
     gtNameX(), gtNameY(), gtNameZ(), 
@@ -144,16 +148,17 @@ class OCCVIEWER_EXPORT OCCViewer_ViewWindow : public SUIT_ViewWindow
 
 public:
   enum ActionId { DumpId, FitAllId, FitRectId, FitSelectionId, ZoomId, PanId, GlobalPanId,
-         ChangeRotationPointId, RotationId,
-         FrontId, BackId, TopId, BottomId, LeftId, RightId, ClockWiseId, AntiClockWiseId,
-	 ResetId, CloneId, ClippingId, MemId, RestoreId,
-         TrihedronShowId, AxialScaleId, GraduatedAxesId, AmbientId,
-	 SwitchInteractionStyleId, SwitchZoomingStyleId, 
-	 SwitchPreselectionId, SwitchSelectionId,
-	 MaximizedId, SynchronizeId, ReturnTo3dViewId,
-	 OrthographicId, PerspectiveId, StereoId, RayTracingId, EnvTextureId, LightSourceId,
-   RectangleSelectionStyleId, PolygonSelectionStyleId, CircleSelectionStyleId,
-	 UserId };
+                  ChangeRotationPointId, RotationId,
+                  FrontId, BackId, TopId, BottomId, LeftId, RightId, ClockWiseId, AntiClockWiseId,
+                  ResetId, CloneId, ClippingId, MemId, RestoreId,
+                  TrihedronShowId, AxialScaleId, GraduatedAxesId, AmbientId,
+                  SwitchInteractionStyleId, SwitchZoomingStyleId, 
+                  SwitchPreselectionId, SwitchSelectionId,
+                  MaximizedId, SynchronizeId, ReturnTo3dViewId,
+                  OrthographicId, PerspectiveId, StereoId, RayTracingId, EnvTextureId, LightSourceId,
+                  RectangleSelectionStyleId, PolygonSelectionStyleId, CircleSelectionStyleId,
+                  ViewCubeShowId,
+                  UserId };
 
   enum OperationType{ NOVIEWOP, PANVIEW, ZOOMVIEW, ROTATE, 
                       PANGLOBAL, WINDOWFIT, FITALLVIEW, FITSELECTION, RESETVIEW,
@@ -314,6 +319,7 @@ public slots:
   virtual void onMemorizeView();
   virtual void onRestoreView();
   virtual void onTrihedronShow(bool);
+  virtual void onViewCubeShow(bool);
   virtual void setRestoreFlag();
   virtual void onSwitchInteractionStyle( bool on );
   virtual void onSwitchZoomingStyle( bool on );

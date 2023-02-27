@@ -22,6 +22,8 @@
 
 #include "ViewerData_AISShape.hxx"
 
+#include <Basics_OCCTVersion.hxx>
+
 IMPLEMENT_STANDARD_RTTIEXT(ViewerData_AISShape, AIS_ColoredShape)
 
 /*!
@@ -32,6 +34,9 @@ ViewerData_AISShape::ViewerData_AISShape(const TopoDS_Shape& theShape)
 : AIS_ColoredShape(theShape),
   myIsClippable(true)
 {
+#if OCC_VERSION_LARGE >= 0x07070000
+  myDrawer->SetupOwnDefaults();
+#endif
 }
 
 /*!

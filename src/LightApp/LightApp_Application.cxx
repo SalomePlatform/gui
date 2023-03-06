@@ -166,6 +166,20 @@
   #include <PyViewer_ViewWindow.h>
 #endif
 
+#ifndef DISABLE_PV3DVIEWER
+#ifndef DISABLE_SALOMEOBJECT
+  #include <SPV3D_ViewModel.h>
+  #include <SPV3D_ViewManager.h>
+  #include "LightApp_PV3DSelector.h"
+#else
+  #include <PV3DViewer_ViewModel.h>
+  #include <PV3DViewer_ViewManager.h>
+#endif
+  #include <PV3DViewer_ViewManager.h>
+  #include <PV3DViewer_ViewModel.h>
+  #include "PV3DViewer_ViewWindow.h"
+#endif
+
 
 #define VISIBILITY_COLUMN_WIDTH 25
 
@@ -784,6 +798,9 @@ void LightApp_Application::createActions()
 #ifndef DISABLE_PYVIEWER
   createActionForViewer( NewPyViewerId, newWinMenu, QString::number( 7 ), Qt::ALT+Qt::Key_Y );
 #endif
+#ifndef DISABLE_PV3DVIEWER
+  createActionForViewer( NewPV3DViewId, newWinMenu, QString::number( 8 ), Qt::ALT+Qt::Key_3 );
+#endif
 
   createAction( RenameId, tr( "TOT_RENAME" ), QIcon(), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ),
                 Qt::ALT+Qt::SHIFT+Qt::Key_R, desk, false, this, SLOT( onRenameWindow() ) );
@@ -1105,6 +1122,11 @@ void LightApp_Application::onNewWindow()
     type = PyViewer_Viewer::Type();
     break;
 #endif
+#ifndef DISABLE_PV3DVIEWER
+  case NewPV3DViewId:
+    type = PV3DViewer_ViewModel::Type();
+    break;
+#endif
   }
 
   if ( !type.isEmpty() )
@@ -1275,6 +1297,12 @@ void LightApp_Application::updateCommandsStatus()
 
 #ifndef DISABLE_PYVIEWER
   a = action( NewPyViewerId );
+  if( a )
+    a->setEnabled( activeStudy() );
+#endif
+
+#ifndef DISABLE_PV3DVIEWER
+  a = action( NewPV3DViewId );
   if( a )
     a->setEnabled( activeStudy() );
 #endif
@@ -1842,6 +1870,32 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
 #endif
   }
 #endif
+
+#ifndef DISABLE_PV3DVIEWER
+# ifndef DISABLE_SALOMEOBJECT
+  if ( vmType == SPV3D_ViewModel::Type() )
+# else
+  if ( vmType == PV3DViewer_ViewModel::Type() )
+# endif
+  {
+    viewMgr = new SPV3D_ViewManager( activeStudy(), desktop() );
+    SPV3D_ViewModel* vm = dynamic_cast<SPV3D_ViewModel*>( viewMgr->getViewModel() );
+    if ( vm )
+    {
+      // vm->setBackground(...); //NYI
+      // vm->...
+
+      new LightApp_PV3DSelector( vm, mySelMgr );
+    }
+#else
+    viewMgr = new PV3DViewer_ViewManager( activeStudy(), desktop() );
+    PV3DViewer_ViewModel* vm = dynamic_cast<PV3DViewer_ViewModel*>( viewMgr->getViewModel() );
+    if ( vm )
+    {
+      // vm->setBackground(...); //NYI
+    }
+#endif
+  }
 
   if ( !viewMgr )
     return 0;
@@ -4966,6 +5020,9 @@ QStringList LightApp_Application::viewManagersTypes() const
  #else
   aTypesList<<VTKViewer_Viewer::Type();
  #endif
+#endif
+#ifndef DISABLE_PV3DVIEWER
+  aTypesList<<PV3DViewer_ViewModel::Type();
 #endif
   return aTypesList;
 }

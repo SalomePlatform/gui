@@ -28,7 +28,7 @@ void PVViewer_InitSingleton::Init(QMainWindow* desktop)
 {
   if(IS_INIT)
     return ;
-  PVViewer_Core::ParaviewInitApp(desktop);
+  PVViewer_Core::ParaviewInitApp();
   // Finish ParaView set up: behaviors, connection and configurations.
   const QString configPath(PVViewer_ViewManager::GetPVConfigPath());
   PVViewer_Core::ParaviewInitBehaviors(true, desktop);

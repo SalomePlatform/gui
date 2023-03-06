@@ -39,4 +39,3 @@ SUIT_ViewWindow* PVViewer_Viewer::createView(SUIT_Desktop* desktop)
 {
   return new PVViewer_ViewWindow(desktop, this);
 }
-

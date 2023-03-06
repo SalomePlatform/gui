@@ -38,9 +38,11 @@ class PVVIEWER_EXPORT PVViewer_Core
 {
 public:
   static pqPVApplicationCore* GetPVApplication();
+  static bool ParaViewInitAppCore();
+  static pqPVApplicationCore *GetPVAppCore() { return MyCoreApp; }
 
   //! Initialize ParaView if not yet done (once per session)
-  static bool ParaviewInitApp(QMainWindow*);
+  static bool ParaviewInitApp();
   static void ParaviewInitBehaviors(bool = false, QMainWindow* = 0);
   static void ParaviewLoadConfigurations(const QString&, bool = false);
   static void ParaviewCleanup();
@@ -50,6 +52,7 @@ private:
   virtual ~PVViewer_Core(){};
 
   static pqPVApplicationCore* MyCoreApp;
+  static bool MyPqTabWidSingletonLoaded;
   static bool ConfigLoaded;
   static PVViewer_Behaviors* ParaviewBehaviors;
 };

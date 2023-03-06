@@ -53,6 +53,10 @@
 #include "PVViewer_ViewManager.h"
 #include "PVViewer_ViewModel.h"
 #endif // DISABLE_PVVIEWER
+#ifndef DISABLE_PV3DVIEWER
+#include "PV3DViewer_ViewManager.h"
+#include "PV3DViewer_ViewModel.h"
+#endif // DISABLE_PV3DVIEWER
 #include "QtxActionMenuMgr.h"
 #include "QtxWorkstack.h"
 #include "QtxTreeView.h"
@@ -3450,6 +3454,18 @@ public:
             myResult = true;
           }
 #endif // DISABLE_PVVIEWER
+        }
+        else if ( type == "ParaView3D") {
+#ifndef DISABLE_PV3DVIEWER
+          // specific processing for ParaView3D viewer:
+          // hierarchy of ParaView3D viewer is much more complex than for usual view;
+          // we look for sub-widget named "Viewport"
+          QList<QWidget*> lst = wnd->findChildren<QWidget*>( "Viewport" );
+          if ( !lst.isEmpty() ) {
+            lst[0]->resize( myWndWidth, myWndHeight );
+            myResult = true;
+          }
+#endif // DISABLE_PV3DVIEWER
         }
         else {
           if ( wnd->centralWidget() ) {

@@ -495,6 +495,7 @@ int AbstractGUIAppMain(int argc, char **argv)
 
   // Create Qt application instance: this should be done as early as possible!
   // Note: QApplication forces setting locale LC_ALL to system one: setlocale(LC_ALL, "").
+  SetArgcArgv(argc,argv);
   Application app(argc, argv);
 
   // Initialize Python (only once)

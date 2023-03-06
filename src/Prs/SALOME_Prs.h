@@ -195,6 +195,51 @@ public:
 };
 
 /*!
+ \class SALOME_PV3DPrs
+ Base class for PV3D graphic object (pqPipelineSource) wrappers.
+ This intermediate class is necessary to avoid dependencies from ParaView libs.
+*/
+
+class PRS_EXPORT SALOME_PV3DPrs : public SALOME_Prs
+{
+public:
+  //! Constructor
+  explicit SALOME_PV3DPrs(const char* e) : SALOME_Prs(e) {}
+
+  //! It uses double dispatch in order to
+  //! invoke Display() method corresponding to the actual type of presentation.
+  virtual void DisplayIn( SALOME_View* ) const;
+
+  //! It uses double dispatch in order to
+  //! invoke Erase() method corresponding to the actual type of presentation.
+  virtual void EraseIn( SALOME_View*, const bool = false ) const;
+
+  //! It uses double dispatch in order to
+  //! invoke BeforeDisplayIn() method corresponding to the actual type of presentation.
+  virtual void BeforeDisplayIn( SALOME_Displayer*, SALOME_View* ) const;
+
+  //! It uses double dispatch in order to
+  //! invoke AfterDisplayIn() method corresponding to the actual type of presentation.
+  virtual void AfterDisplayIn( SALOME_Displayer*, SALOME_View* ) const;
+
+  //! It uses double dispatch in order to
+  //! invoke BeforeEraseIn() method corresponding to the actual type of presentation.
+  virtual void BeforeEraseIn( SALOME_Displayer*, SALOME_View* ) const;
+
+  //! It uses double dispatch in order to
+  //! invoke AfterEraseIn() method corresponding to the actual type of presentation.
+  virtual void AfterEraseIn( SALOME_Displayer*, SALOME_View* ) const;
+
+  //! It uses double dispatch in order to
+  //! invoke Update() method corresponding to the actual type of presentation.
+  virtual void Update( SALOME_Displayer* );
+
+  //! Key method for double dispatch of activation of sub-shapes selection
+  virtual void LocalSelectionIn( SALOME_View*, const int ) const;
+  virtual void LocalSelectionIn( SALOME_View*, const std::list<int> ) const;
+};
+
+/*!
  \class SALOME_Prs2d
  Base class for Plot2d graphic object (Plot2d_Curve) wrappers.
 */
@@ -274,12 +319,14 @@ public:
   // Display() methods for ALL kinds of presentation should appear here
   virtual void Display( const SALOME_OCCPrs* );//!< Display SALOME_OCCPrs presentation.
   virtual void Display( const SALOME_VTKPrs* );//!< Display SALOME_VTKPrs presentation.
+  virtual void Display( const SALOME_PV3DPrs* );//!< Display SALOME_PV3DPrs presentation.
   virtual void Display( const SALOME_Prs2d*  );//!< Display SALOME_Prs2d  presentation.
   // Add new Display() methods here...
 
   // Erase() methods for ALL kinds of presentation should appear here
   virtual void Erase( const SALOME_OCCPrs*, const bool = false );//!< Erase SALOME_OCCPrs
   virtual void Erase( const SALOME_VTKPrs*, const bool = false );//!< Erase SALOME_VTKPrs
+  virtual void Erase( const SALOME_PV3DPrs*, const bool = false );//!< Erase SALOME_PV3DPrs
   virtual void Erase( const SALOME_Prs2d*,  const bool = false );//!< Erase SALOME_Prs2d
   // Add new Erase() methods here...
 
@@ -287,12 +334,13 @@ public:
   virtual void LocalSelection( const SALOME_OCCPrs*, const int );           //!< Local selection SALOME_OCCPrs
   virtual void LocalSelection( const SALOME_OCCPrs*, const std::list<int> );//!< Multiple local selection SALOME_OCCPrs
   virtual void LocalSelection( const SALOME_VTKPrs*, const int );           //!< Local selection SALOME_VTKPrs
+  virtual void LocalSelection( const SALOME_PV3DPrs*, const int );          //!< Local selection SALOME_PV3DPrs
   virtual void LocalSelection( const SALOME_Prs2d* , const int );           //!< Local selection SALOME_Prs2d
 
   //! Deactivates selection of sub-shapes (must be redefined with OCC viewer)
   virtual void GlobalSelection( const bool = false ) const;
 
-  //! Creates empty presenation of corresponding type
+  //! Creates empty presentation of corresponding type
   virtual SALOME_Prs* CreatePrs( const char* /*entry*/ = 0 ) { return 0; }
 
   // Axiluary methods called before and after displaying of objects
@@ -330,26 +378,31 @@ public:
   // Update() methods for ALL kinds of presentation should appear here
   virtual void Update( SALOME_OCCPrs* );//!< Update SALOME_OCCPrs presentation.
   virtual void Update( SALOME_VTKPrs* );//!< Update SALOME_VTKPrs presentation.
+  virtual void Update( SALOME_PV3DPrs* );//!< Update SALOME_PV3DPrs presentation.
   virtual void Update( SALOME_Prs2d* );//!< Update SALOME_Prs2d presentation.
   // Add new Update() methods here...
 
-  // Axiluary methods called before and after displaying of objects
+  // Auxiliary methods called before and after displaying of objects
   virtual void BeforeDisplay( SALOME_View*, const SALOME_OCCPrs* ) {} //! Null body here
   virtual void AfterDisplay ( SALOME_View*, const SALOME_OCCPrs* ) {} //! Null body here
   virtual void BeforeDisplay( SALOME_View*, const SALOME_VTKPrs* ) {} //! Null body here
   virtual void AfterDisplay ( SALOME_View*, const SALOME_VTKPrs* ) {} //! Null body here
+  virtual void BeforeDisplay( SALOME_View*, const SALOME_PV3DPrs* ) {} //! Null body here
+  virtual void AfterDisplay ( SALOME_View*, const SALOME_PV3DPrs* ) {} //! Null body here
   virtual void BeforeDisplay( SALOME_View*, const SALOME_Prs2d*  ) {} //! Null body here
   virtual void AfterDisplay ( SALOME_View*, const SALOME_Prs2d*  ) {} //! Null body here
 
-  // Axiluary methods called before and after erasing of objects
+  // Auxiliary methods called before and after erasing of objects
   virtual void BeforeErase( SALOME_View*, const SALOME_OCCPrs* ) {} //! Null body here
   virtual void AfterErase ( SALOME_View*, const SALOME_OCCPrs* ) {} //! Null body here
   virtual void BeforeErase( SALOME_View*, const SALOME_VTKPrs* ) {} //! Null body here
   virtual void AfterErase ( SALOME_View*, const SALOME_VTKPrs* ) {} //! Null body here
+  virtual void BeforeErase( SALOME_View*, const SALOME_PV3DPrs* ) {} //! Null body here
+  virtual void AfterErase ( SALOME_View*, const SALOME_PV3DPrs* ) {} //! Null body here
   virtual void BeforeErase( SALOME_View*, const SALOME_Prs2d*  ) {} //! Null body here
   virtual void AfterErase ( SALOME_View*, const SALOME_Prs2d*  ) {} //! Null body here
 
-  // Axiluary method called to update visibility state of presentation
+  // Auxiliary method called to update visibility state of presentation
   virtual void UpdateVisibility( SALOME_View*, const SALOME_Prs*, bool );
 };
 

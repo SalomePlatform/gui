@@ -81,6 +81,10 @@
   #include <PVViewer_ViewManager.h>
   #include <PVViewer_ViewWindow.h>
 #endif
+#ifndef DISABLE_PV3DVIEWER
+  #include <PV3DViewer_ViewWindow.h>
+  #include <PV3DViewer_ViewModel.h>
+#endif
 #ifndef DISABLE_PLOT2DVIEWER
   #include <Plot2d_ViewWindow.h>
   #include <Plot2d_ViewFrame.h>
@@ -377,6 +381,12 @@ void LightApp_Module::update( const int theFlags )
           ( (VTKViewer_ViewWindow*)viewWnd )->Repaint();
 #endif
 #endif
+#ifndef DISABLE_PV3DVIEWER
+        // if ( viewWnd->inherits( "SPV3D_ViewWindow" ) )
+        //   ( (SPV3D_ViewWindow*)viewWnd )->Repaint();
+        // if ( viewWnd->inherits( "PV3DViewer_ViewWindow" ) )
+        //   ( (PV3DViewer_ViewWindow*)viewWnd )->getMultiViewManager()->Repaint();
+#endif
 #ifndef DISABLE_OCCVIEWER
         if ( viewWnd->inherits( "OCCViewer_ViewWindow" ) )
           ( (OCCViewer_ViewWindow*)viewWnd )->getViewPort()->onUpdate();
@@ -485,6 +495,13 @@ QtxPopupMgr* LightApp_Module::popupMgr()
 #else
     viewers.append( VTKViewer_Viewer::Type() );
 #endif
+#endif
+#ifndef DISABLE_PV3DVIEWER
+// #ifndef DISABLE_SALOMEOBJECT
+//     viewers.append( SPV3D_ViewModel::Type() );
+// #else
+    viewers.append( PV3DViewer_ViewModel::Type() );
+// #endif
 #endif
 #ifndef DISABLE_PLOT2DVIEWER
 #ifndef DISABLE_SALOMEOBJECT

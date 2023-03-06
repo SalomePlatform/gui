@@ -190,6 +190,80 @@ void SALOME_VTKPrs::Update( SALOME_Displayer* d )
 /*!
   Dispatches display operation to proper Display() method of SALOME_View
 */
+void SALOME_PV3DPrs::DisplayIn( SALOME_View* v ) const
+{
+  if ( v ) v->Display( this );
+}
+
+/*!
+  Dispatches display operation to proper Erase() method of SALOME_View
+*/
+void SALOME_PV3DPrs::EraseIn( SALOME_View* v, const bool forced ) const
+{
+  if ( v ) v->Erase( this, forced );
+}
+
+/*!
+  Dispatches display operation to proper BeforeDisplay() method of SALOME_Displayer
+*/
+void SALOME_PV3DPrs::BeforeDisplayIn( SALOME_Displayer* d, SALOME_View* v ) const
+{
+  d->BeforeDisplay( v, this );
+}
+
+/*!
+  Dispatches display operation to proper AfterDisplay() method of SALOME_Displayer
+*/
+void SALOME_PV3DPrs::AfterDisplayIn( SALOME_Displayer* d, SALOME_View* v ) const
+{
+  d->AfterDisplay( v, this );
+}
+
+/*!
+  Dispatches display operation to proper BeforeErase() method of SALOME_Displayer
+*/
+void SALOME_PV3DPrs::BeforeEraseIn( SALOME_Displayer* d, SALOME_View* v ) const
+{
+  d->BeforeErase( v, this );
+}
+
+/*!
+  Dispatches display operation to proper AfterErase() method of SALOME_Displayer
+*/
+void SALOME_PV3DPrs::AfterEraseIn( SALOME_Displayer* d, SALOME_View* v ) const
+{
+  d->AfterErase( v, this );
+}
+
+/*!
+  Dispatches operation to proper LocalSelectionIn() method of SALOME_View
+*/
+void SALOME_PV3DPrs::LocalSelectionIn( SALOME_View* v, const int mode ) const
+{
+  std::list<int> modes;
+  modes.push_back( mode );
+  LocalSelectionIn( v, modes );
+}
+
+/*!
+  Dispatches operation to proper LocalSelectionIn() method of SALOME_View
+*/
+void SALOME_PV3DPrs::LocalSelectionIn( SALOME_View* v, const std::list<int> modes ) const
+{
+  if ( v && !modes.empty() ) v->LocalSelection( this, modes );
+}
+
+/*!
+   Dispatches update operation to proper Update() method of SALOME_Displayer
+*/
+void SALOME_PV3DPrs::Update( SALOME_Displayer* d )
+{
+  if ( d ) d->Update( this );
+}
+
+/*!
+  Dispatches display operation to proper Display() method of SALOME_View
+*/
 void SALOME_Prs2d::DisplayIn( SALOME_View* v ) const
 {
   if ( v ) v->Display( this );
@@ -306,6 +380,14 @@ void SALOME_View::Display( const SALOME_VTKPrs* )
 /*!
   Virtual method, should be reimplemented in successors, by default issues a warning and does nothing.
 */
+void SALOME_View::Display( const SALOME_PV3DPrs* )
+{
+//  MESSAGE( "SALOME_View::Display( const SALOME_PV3DPrs& ) called! Probably, presentation is being displayed in uncompatible viewframe." );
+}
+
+/*!
+  Virtual method, should be reimplemented in successors, by default issues a warning and does nothing.
+*/
 void SALOME_View::Display( const SALOME_Prs2d* )
 {
 //  MESSAGE( "SALOME_View::Display( const SALOME_Prs2d& ) called! Probably, presentation is being displayed in uncompatible viewframe." );
@@ -325,6 +407,14 @@ void SALOME_View::Erase( const SALOME_OCCPrs*, const bool )
 void SALOME_View::Erase( const SALOME_VTKPrs*, const bool )
 {
 //  MESSAGE( "SALOME_View::Erase( const SALOME_VTKPrs& ) called! Probably, presentation is being erased in uncompatible viewframe." );
+}
+
+/*!
+  Virtual method, should be reimplemented in successors, by default issues a warning and does nothing.
+*/
+void SALOME_View::Erase( const SALOME_PV3DPrs*, const bool )
+{
+//  MESSAGE( "SALOME_View::Erase( const SALOME_PV3DPrs& ) called! Probably, presentation is being erased in uncompatible viewframe." );
 }
 
 /*!
@@ -368,6 +458,15 @@ void SALOME_View::LocalSelection( const SALOME_OCCPrs*, const std::list<int> )
 void SALOME_View::LocalSelection( const SALOME_VTKPrs*, const int )
 {
 //  MESSAGE( "SALOME_View::LocalSelection( const SALOME_VTKPrs* ) called!
+//   Probably, selection is being activated in uncompatible viewframe." );
+}
+
+/*!
+  Virtual method, should be reimplemented in successors, by default issues a warning and does nothing.
+*/
+void SALOME_View::LocalSelection( const SALOME_PV3DPrs*, const int )
+{
+//  MESSAGE( "SALOME_View::LocalSelection( const SALOME_PV3DPrs* ) called!
 //   Probably, selection is being activated in uncompatible viewframe." );
 }
 
@@ -431,6 +530,14 @@ void SALOME_Displayer::Update( SALOME_OCCPrs* )
 void SALOME_Displayer::Update( SALOME_VTKPrs* )
 {
 //  MESSAGE( "SALOME_Displayer::Update( SALOME_VTKPrs* ) called! Probably, presentation is being updated in uncompatible viewframe." );
+}
+
+/*!
+  Virtual method, should be reimplemented in successors, by default issues a warning and does nothing.
+*/
+void SALOME_Displayer::Update( SALOME_PV3DPrs* )
+{
+//  MESSAGE( "SALOME_Displayer::Update( SALOME_PV3DPrs* ) called! Probably, presentation is being updated in uncompatible viewframe." );
 }
 
 /*!

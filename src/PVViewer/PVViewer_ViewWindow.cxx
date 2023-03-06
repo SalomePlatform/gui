@@ -32,7 +32,7 @@
 
 #include <pqTabbedMultiViewWidget.h>
 #include <pqApplicationCore.h>
-
+#include "pqActiveObjects.h"
 
 /*!
   \class PVViewer_ViewWindow
@@ -50,6 +50,7 @@ PVViewer_ViewWindow::PVViewer_ViewWindow( SUIT_Desktop* theDesktop, PVViewer_Vie
   myDesktop = theDesktop;
   myModel = theModel;
   setViewManager(myModel->getViewManager());
+  pqActiveObjects::instance().setActiveView(nullptr);
   myPVMgr = qobject_cast<pqTabbedMultiViewWidget*>(pqApplicationCore::instance()->manager("MULTIVIEW_WIDGET"));
   if (myPVMgr) {
     SUIT_Application* app = SUIT_Session::session()->activeApplication();
@@ -108,7 +109,6 @@ void PVViewer_ViewWindow::setVisualParameters( const QString& parameters )
 {
   SUIT_ViewWindow::setVisualParameters( parameters );
 }
-
 
 /*!
   \brief Returns the ParaView multi-view manager previously set with setMultiViewManager()

@@ -44,23 +44,18 @@
 #include <pqPipelineBrowserWidget.h>
 #include <pqServerDisconnectReaction.h>
 
-
 //---------- Static init -----------------
-pqPVApplicationCore* PVViewer_Core::MyCoreApp = 0;
+pqPVApplicationCore* PVViewer_Core::MyCoreApp = nullptr;
+bool PVViewer_Core::MyPqTabWidSingletonLoaded = false;
 bool PVViewer_Core::ConfigLoaded = false;
-PVViewer_Behaviors * PVViewer_Core::ParaviewBehaviors = NULL;
+PVViewer_Behaviors * PVViewer_Core::ParaviewBehaviors = nullptr;
 
 pqPVApplicationCore * PVViewer_Core::GetPVApplication()
 {
   return MyCoreApp;
 }
 
-/*!
-  \brief Static method, performs initialization of ParaView session.
-  \param fullSetup whether to instanciate all behaviors or just the minimal ones.
-  \return \c true if ParaView has been initialized successfully, otherwise false
-*/
-bool PVViewer_Core::ParaviewInitApp(QMainWindow * /*aDesktop*/)
+bool PVViewer_Core::ParaViewInitAppCore()
 {
   if ( ! MyCoreApp) {
       // Obtain command-line arguments
@@ -99,28 +94,44 @@ bool PVViewer_Core::ParaviewInitApp(QMainWindow * /*aDesktop*/)
         }
       //
       MyCoreApp = new pqPVApplicationCore (argc, argv);
+      for (int i = 0; i < argc; i++)
+        free(argv[i]);
+      delete[] argv;
       if (MyCoreApp->getOptions()->GetHelpSelected() ||
           MyCoreApp->getOptions()->GetUnknownArgument() ||
           MyCoreApp->getOptions()->GetErrorMessage() ||
           MyCoreApp->getOptions()->GetTellVersion()) {
           return false;
       }
-
-      // Direct VTK log messages to our SALOME window - TODO: review this
-      PVViewer_OutputWindow * w = PVViewer_OutputWindow::New();
-      vtkOutputWindow::SetInstance(w);
-
-      new pqTabbedMultiViewWidget(); // registers a "MULTIVIEW_WIDGET" on creation
-
-      for (int i = 0; i < argc; i++)
-        free(argv[i]);
-      delete[] argv;
   }
-   // Initialization of ParaView GUI widgets will be done when these widgets are
-   // really needed.
-   // PVViewer_GUIElements* inst = PVViewer_GUIElements::GetInstance(aDesktop);
-   // inst->getPropertiesPanel();
-   return true;
+  return true;
+}
+
+/*!
+  \brief Static method, performs initialization of ParaView session.
+  \param fullSetup whether to instanciate all behaviors or just the minimal ones.
+  \return \c true if ParaView has been initialized successfully, otherwise false
+*/
+bool PVViewer_Core::ParaviewInitApp()
+{
+  if( ! MyPqTabWidSingletonLoaded )
+  {
+    if( ! ParaViewInitAppCore() )
+      return false;
+
+    // Direct VTK log messages to our SALOME window - TODO: review this
+    PVViewer_OutputWindow * w = PVViewer_OutputWindow::New();
+    vtkOutputWindow::SetInstance(w);
+    pqActiveObjects::instance().setActiveView(nullptr);
+    new pqTabbedMultiViewWidget(); // registers a "MULTIVIEW_WIDGET" on creation
+    // Initialization of ParaView GUI widgets will be done when these widgets are
+    // really needed.
+    // PVViewer_GUIElements* inst = PVViewer_GUIElements::GetInstance(aDesktop);
+    // inst->getPropertiesPanel();
+    PVViewer_Core::MyPqTabWidSingletonLoaded = true;
+    return true;
+  }
+  return true;
 }
 
 void PVViewer_Core::ParaviewInitBehaviors(bool fullSetup, QMainWindow* aDesktop)

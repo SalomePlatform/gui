@@ -257,7 +257,7 @@ void PVViewer_GUIElements::buildPVWidgets()
 }
 
 void PVViewer_GUIElements::setToolBarVisible(bool show)
-{  
+{
   QCoreApplication::processEvents();
   if (!myPVWidgetsFlag)
     return;

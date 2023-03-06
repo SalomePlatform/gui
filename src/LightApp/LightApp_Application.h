@@ -91,7 +91,7 @@ public:
          CloseId, CloseAllId, GroupAllId,
          PreferencesId, MRUId, ModulesListId,
          NewGLViewId, NewPlot2dId, NewOCCViewId, NewVTKViewId,
-         NewQxSceneViewId, NewGraphicsViewId, NewPVViewId, NewPyViewerId, StyleId, FullScreenId,
+         NewQxSceneViewId, NewGraphicsViewId, NewPVViewId, NewPyViewerId, NewPV3DViewId, StyleId, FullScreenId,
          WebSiteId, ForumId, VideosId, TutorialsId,
          UserID };
 

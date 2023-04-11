@@ -42,6 +42,7 @@
 #include <QMutexLocker>
 #include <QRegExp>
 #include <QTextStream>
+#include <QDateTime>
 
 #ifdef WIN32
 #include <windows.h>
@@ -1029,8 +1030,9 @@ void CAM_Application::logUserEvent( const QString& eventDescription )
     QFile file ( guiLogFile );
     if ( file.open( QFile::Append ) ) // append to log file
     {
+      QDateTime current = QDateTime::currentDateTime();
       QTextStream stream( &file );
-      stream << eventDescription << endl;
+      stream << current.toString("yyyyMMdd-hhmmss") << ": " << eventDescription << endl;
       file.close();
     }
   }

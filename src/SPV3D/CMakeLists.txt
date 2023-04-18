@@ -49,6 +49,7 @@ SET(_link_LIBRARIES
   SalomeObject SalomePrs PV3DViewer PVViewer PVServerService
   ParaView::pqApplicationComponents
   ParaView::pqPython
+  ParaView::RemotingViews
 )
 
 # --- headers ---

@@ -98,6 +98,7 @@
 #include <QtxMap.h>
 
 #include <LogWindow.h>
+#include <SalomeApprc_utils.h>
 
 #ifndef DISABLE_GLVIEWER
   #include <GLViewer_Viewer.h>
@@ -900,6 +901,9 @@ void LightApp_Application::customize()
   // b. here we add custom modules (manually added by the user)
   if ( HAS_SALOME_ON_DEMAND )
   {
+    // Update rc file
+    updateSalomeApprc();
+
     QStringList modList = resourceMgr()->stringValue( "launch", "user_modules" ).split( ";", QString::SkipEmptyParts );
     foreach ( QString aModule, modList )
       addUserModule(  aModule, resourceMgr()->stringValue( "user_modules", aModule ) );
@@ -908,6 +912,21 @@ void LightApp_Application::customize()
   {
     moduleAction->setModeEnabled( LightApp_ModuleAction::AddRemove, false );
   }
+}
+
+/*!
+  Update rc file with SALOME_APPLICATION_DIR or with SALOME_MODULES.
+*/
+void LightApp_Application::updateSalomeApprc()
+{
+    SUIT_ResourceMgr* resMgr = resourceMgr();
+    auto extRootDir = getenv(salomeAppDir);
+
+    QString salomemodules(getenv("SALOME_MODULES"));
+    if(salomemodules.isEmpty())
+        AddComponents_from_salomeappdir(  QDir(extRootDir), resMgr );
+    else
+        AddComponents_from_salomemodules(salomemodules, QDir(extRootDir), resMgr);
 }
 
 /*!On module activation action.*/
@@ -977,6 +996,7 @@ void LightApp_Application::onExtAdding()
   // but I didn't compare the performance for each case.
   PyLockWrapper lck; // acquire GIL
   PyObjWrapper extensionUnpacker = PyImport_ImportModule((char*)"SalomeOnDemandTK.extension_unpacker");
+  PyObjWrapper runSalomeOnDemand = PyImport_ImportModule((char*)"runSalomeOnDemand");
 
   // Loop via selected extensions files
   foreach(QString path, paths)
@@ -992,22 +1012,33 @@ void LightApp_Application::onExtAdding()
       continue;
     }
 
+    PyObjWrapper pKeys = PyDict_Keys(unpackedModules);
     // Iterate all the components (modules) for this extension
-    for (Py_ssize_t pos = 0; pos < PyList_Size(unpackedModules); ++pos)
+    for (Py_ssize_t pos = 0; pos < PyDict_Size(unpackedModules); ++pos)
     {
-      auto moduleNameItem = PyList_GetItem(unpackedModules, pos);
+      auto moduleNameItem = PyList_GetItem(pKeys, pos);
+      auto interactiveItem = PyDict_GetItem(unpackedModules, moduleNameItem);
+
       QString moduleName(PyUnicode_AsUTF8(moduleNameItem));
       SCRUTE(moduleName.toStdString());
-
-      addUserModule(moduleName, SalomeExtDir, true);
+      addUserModule(moduleName, SalomeExtDir, PyObject_IsTrue(interactiveItem));
     }
 
     // Add an extension to GUI
+    QFileInfo extFileInfo(path);
+    QString extName = extFileInfo.baseName();
     if (moduleAction)
     {
-      QFileInfo extFileInfo(path);
-      QString extName = extFileInfo.baseName();
       moduleAction->insertExtension(extName);
+    }
+
+    // Update environment of salome
+    PyObjWrapper update_env = PyObject_CallMethod(
+      runSalomeOnDemand, (char*)"set_selext_env", (char*)"ss", extRootDir, extName.toStdString().c_str());
+    if (!update_env)
+    {
+      SUIT_MessageBox::warning(desktop(), tr("WRN_WARNING"), tr("WRN_FAILED_UPDATE_ENV").arg(extName + "_env.py") );
+      continue;
     }
   }
 

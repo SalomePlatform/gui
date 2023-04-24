@@ -52,6 +52,9 @@ ELSE(EXISTS ${KERNEL_ROOT_DIR})
   MESSAGE(FATAL_ERROR "We absolutely need a Salome KERNEL, please define KERNEL_ROOT_DIR")
 ENDIF(EXISTS ${KERNEL_ROOT_DIR})
 
+# Find SalomeBootstrap
+FIND_PACKAGE(SalomeBootstrap REQUIRED)
+
 # Platform setup
 # ==============
 INCLUDE(SalomeSetupPlatform)   # From CONFIGURATION
@@ -332,6 +335,7 @@ SET(_${PROJECT_NAME}_exposed_targets
     CAM CASCatch DDS Event LightApp LogWindow ObjBrowser
     QDS qtx SalomePrs SalomeStyle std SUITApp suit ViewerTools ViewerData
     ImageComposer
+    SalomeApprc_utils
 )
 
 IF(SALOME_USE_OCCVIEWER OR SALOME_USE_VTKVIEWER OR SALOME_USE_GLVIEWER)

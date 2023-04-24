@@ -1252,6 +1252,10 @@ Continue?</translation>
         <translation>Failed to unpack a salome extension from file: %1.</translation>
     </message>
     <message>
+        <source>WRN_FAILED_UPDATE_ENV</source>
+        <translation>Failed to update salome environment from file: %1.</translation>
+    </message>
+    <message>
         <source>WRN_FAILED_REMOVE_EXTENSION</source>
         <translation>Failed to remove a salome extension: %1.</translation>
     </message>

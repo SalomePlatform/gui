@@ -39,6 +39,7 @@ INCLUDE_DIRECTORIES(
   ${PROJECT_SOURCE_DIR}/src/STD
   ${PROJECT_SOURCE_DIR}/src/SUIT
   ${PROJECT_SOURCE_DIR}/src/Style
+  ${PROJECT_SOURCE_DIR}/src/SalomeApprc_utils
 )
 IF(SALOME_USE_SALOMEOBJECT)
   INCLUDE_DIRECTORIES(${PROJECT_SOURCE_DIR}/src/OBJECT)
@@ -107,7 +108,8 @@ SET(_link_LIBRARIES
   ${OpenCASCADE_FoundationClasses_LIBRARIES}
   ${QT_LIBRARIES}
   ${HDF5_LIBRARIES}
-  CASCatch qtx suit std SalomeStyle SalomePrs CAM LogWindow ObjBrowser Event
+  CASCatch qtx suit std SalomeStyle SalomePrs CAM LogWindow ObjBrowser Event 
+  SalomeApprc_utils
   ${KERNEL_SalomeHDFPersist} ${KERNEL_SALOMELocalTrace}
   ${GRAPHVIZ_LIBRARIES}
 )

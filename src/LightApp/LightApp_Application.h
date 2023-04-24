@@ -337,6 +337,7 @@ private:
   QList<QToolBar*>                    findToolBars( const QStringList& names = QStringList() );
   void                                createHelpItems( const QString& );
   void                                removeHelpItems( const QString& );
+  void                                updateSalomeApprc();
 
   QByteArray                          processState(QByteArray& input,
                                                    const bool processWin,

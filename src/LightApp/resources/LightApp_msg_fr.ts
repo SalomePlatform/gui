@@ -1182,6 +1182,10 @@ Le fichier n&apos;existe pas</translation>
         <translation>Échec de la décompression d'une extension salome à partir d'un fichier: %1.</translation>
     </message>
     <message>
+        <source>WRN_FAILED_UPDATE_ENV</source>
+        <translation>Échec de la mise à jour de l'environnement de salome à partir du fichier: %1.</translation>
+    </message>
+    <message>
         <source>WRN_FAILED_REMOVE_EXTENSION</source>
         <translation>Échec de la suppression d'une extension Salomé: %1.</translation>
     </message>

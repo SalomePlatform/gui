@@ -369,8 +369,6 @@ void PyConsole_Editor::addText( const QString& str,
     aCursor.insertBlock();
   if ( isError )
     cf.setForeground( QBrush( Qt::red ) );
-  else
-    cf.setForeground( QBrush( Qt::black ) );
   aCursor.insertText( str, cf );
   moveCursor( QTextCursor::End );
   ensureCursorVisible();

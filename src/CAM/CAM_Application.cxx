@@ -467,7 +467,10 @@ bool CAM_Application::activateModule( CAM_Module* mod )
   {
     if ( myModule->deactivateModule( activeStudy() ) )
     {
-      logUserEvent( tr( "MODULE_DEACTIVATED" ).arg( myModule->moduleName() ) );
+      logStructuredUserEvent( myModule->moduleName(),
+                              "",
+                              "",
+                              "deactivated" );
     }
     moduleDeactivated( myModule );
   }
@@ -479,7 +482,10 @@ bool CAM_Application::activateModule( CAM_Module* mod )
     myModule->connectToStudy( dynamic_cast<CAM_Study*>( activeStudy() ) );
     if ( myModule->activateModule( activeStudy() ) )
     {
-      logUserEvent( tr( "MODULE_ACTIVATED" ).arg( myModule->moduleName() ) );
+      logStructuredUserEvent( myModule->moduleName(),
+                              "",
+                              "",
+                              "activated" );
     }
     else
     {
@@ -1034,7 +1040,9 @@ void CAM_Application::logUserEvent( const QString& eventDescription )
     {
       QDateTime current = QDateTime::currentDateTime();
       QTextStream stream( &file );
-      stream << current.toString("yyyyMMdd-hhmmss") << ": " << eventDescription << endl;
+      stream << current.toString("yyyyMMdd-hhmmss")
+             << "," << eventDescription
+             << endl;
       file.close();
     }
   }
@@ -1067,21 +1075,24 @@ void CAM_Application::logAction( QAction* action, const QString& moduleName )
     text = action->text();
   if ( text.isEmpty() )
     text = action->iconText();
+
   if ( !text.isEmpty() )
   {
-    QStringList message;
-    if ( !moduleName.isEmpty() )
-      message << moduleName;
     if ( action->isCheckable() )
     {
-      message << tr( "ACTION_TOGGLED" );
-      message << ( action->isChecked() ? tr( "ACTION_ON" ) : tr( "ACTION_OFF" ) );
+      logStructuredUserEvent ( moduleName,
+                               "",
+                               tr( "ACTION_TOGGLED" ),
+                               action->isChecked() ? tr( "ACTION_ON" ) : tr( "ACTION_OFF" ),
+                               text );
     }
     else
     {
-      message << tr( "ACTION_TRIGGERED" );
+      logStructuredUserEvent ( moduleName,
+                               "",
+                               tr( "ACTION_TRIGGERED" ),
+                               "",
+                               text );
     }
-    message << text;
-    logUserEvent( message.join( ": " ) );
   }
 }

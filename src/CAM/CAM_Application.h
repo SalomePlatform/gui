@@ -89,6 +89,11 @@ public:
 
   static void         logUserEvent( const QString& );
   static void         logAction( QAction*, const QString& = QString() );
+  static void         logStructuredUserEvent( const QString& module,
+                                              const QString& section,
+                                              const QString& action,
+                                              const QString& event,
+                                              const QString& message = "" );
 
 protected:
   virtual SUIT_Study* createNewStudy();

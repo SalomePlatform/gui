@@ -1040,6 +1040,21 @@ void CAM_Application::logUserEvent( const QString& eventDescription )
   }
 }
 
+void CAM_Application::logStructuredUserEvent( const QString& module,
+                                              const QString& section,
+                                              const QString& action,
+                                              const QString& event,
+                                              const QString& message )
+{
+  const QStringList mes = (QStringList() << module
+                           << section
+                           << action
+                           << event
+                           << message);
+
+  logUserEvent( mes.join( "," ) );
+}
+
 /*!
   \brief Log given action.
   \param action GUI action being logged.

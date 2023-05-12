@@ -507,7 +507,8 @@ bool CAM_Application::activateModule( CAM_Module* mod )
   \param actionId is a numerical unique operation identifier
   \return \c true in case of success and \c false otherwise
 */
-bool CAM_Application::activateOperation( const QString& modName, int actionId )
+bool CAM_Application::activateOperation( const QString& modName,
+                                         const int actionId )
 {
   CAM_Module* mod = loadModule(modName, false);
   if (mod) {
@@ -524,7 +525,8 @@ bool CAM_Application::activateOperation( const QString& modName, int actionId )
   \param actionId is a string unique operation identifier
   \return \c true in case of success and \c false otherwise
 */
-bool CAM_Application::activateOperation( const QString& modName, const QString& actionId )
+bool CAM_Application::activateOperation( const QString& modName,
+                                         const QString& actionId )
 {
   CAM_Module* mod = loadModule(modName, false);
   if (mod) {

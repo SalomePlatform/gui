@@ -17,9 +17,6 @@
 # See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 #
 
-# Install ParaView filters, etc ...
-ADD_SUBDIRECTORY(resources)
-
 INCLUDE(UseQtExt)
 
 # --- options ---

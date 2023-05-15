@@ -1082,15 +1082,15 @@ void CAM_Application::logAction( QAction* action, const QString& moduleName )
     {
       logStructuredUserEvent ( moduleName,
                                "",
-                               tr( "ACTION_TOGGLED" ),
-                               action->isChecked() ? tr( "ACTION_ON" ) : tr( "ACTION_OFF" ),
+                               "toggled",
+                               action->isChecked() ? "on" : "off",
                                text );
     }
     else
     {
       logStructuredUserEvent ( moduleName,
                                "",
-                               tr( "ACTION_TRIGGERED" ),
+                               "triggered",
                                "",
                                text );
     }

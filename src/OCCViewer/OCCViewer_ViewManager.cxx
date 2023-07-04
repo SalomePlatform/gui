@@ -21,6 +21,7 @@
 //
 
 #include "OCCViewer_ViewManager.h"
+#include "OCCViewer_ViewFrame.h"
 #include "OCCViewer_ViewWindow.h"
 #include "SUIT_Desktop.h"
 
@@ -60,4 +61,29 @@ bool OCCViewer_ViewManager::isChainedOperations() const
 void OCCViewer_ViewManager::setChainedOperations( bool isChainedOperations )
 {
   myIsChainedOperations = isChainedOperations;
+}
+
+bool OCCViewer_ViewManager::isAutoRotation() const
+{
+  return myIsAutoRotation;
+}
+
+void OCCViewer_ViewManager::setAutoRotation( bool isAutoRotation )
+{
+  myIsAutoRotation = isAutoRotation;
+
+  // Update the auto rotation in all OCC views
+  QVector<SUIT_ViewWindow*> views = getViews();
+  for ( int i = 0; i < views.count(); i++ )
+  {
+    if ( views[i] ) {
+      OCCViewer_ViewWindow *aView = dynamic_cast<OCCViewer_ViewWindow*>(views[i]);
+      if (aView) {
+        OCCViewer_ViewWindow* aWnd = aView->getView(OCCViewer_ViewFrame::MAIN_VIEW);
+        if (aWnd) {
+          aWnd->enableAutoRotation(isAutoRotation);
+        }
+      }
+    }
+  }
 }

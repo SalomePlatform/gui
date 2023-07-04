@@ -34,6 +34,7 @@ class QtxRectRubberBand;
 class SUIT_Desktop;
 class OCCViewer_ViewPort3d;
 class OCCViewer_ViewSketcher;
+class OCCViewer_AutoRotate;
 class OCCViewer_AxialScaleDlg;
 class OCCViewer_SetRotationPointDlg;
 class OCCViewer_Viewer;
@@ -256,6 +257,8 @@ public:
   virtual bool                    isAutomaticZoom() const;
   virtual void                    setAutomaticZoom( const bool );
 
+  virtual void                    enableAutoRotation( const bool );
+
   void setTransformEnabled( const OperationType, const bool );
   bool transformEnabled( const OperationType ) const;
 
@@ -413,12 +416,14 @@ protected:
   gp_Pnt                mySelectedPoint;
   bool                  myRotationPointSelection;
 
-  int                                   myRestoreFlag;
+  int                   myRestoreFlag;
 
-  int                                   myStartX;
-  int                                   myStartY;
-  int                                   myCurrX;
-  int                                   myCurrY;
+  int                   myStartX;
+  int                   myStartY;
+  qint64                myStartTime;          
+  int                   myCurrX;
+  int                   myCurrY;
+  qint64                myCurrTime;          
 
   bool                  myEventStarted;       // set when transformation is in process 
   bool                  myCursorIsHand;                 
@@ -440,6 +445,8 @@ private:
   QtxAction* mySetRotationPointAction;
 
   QtxRectRubberBand* myRectBand; //!< selection rectangle rubber band
+
+  OCCViewer_AutoRotate *myAutoRotate;
 
   bool mySelectionEnabled;
   bool myPreselectionEnabled;

@@ -39,7 +39,9 @@
 #include <QResizeEvent>
 #include <QApplication>
 #include <QTimer>
+#include <QDateTime>
 
+#include <gp_Quaternion.hxx>
 #include <V3d_View.hxx>
 
 #include "utilities.h"
@@ -65,7 +67,9 @@ OCCViewer_ViewPort3d::OCCViewer_ViewPort3d( QWidget* parent, const Handle( V3d_V
   : OCCViewer_ViewPort( parent ),
     myBusy( true ),
     myScale( 1.0 ),
-    myIsAdvancedZoomingEnabled( false )
+    myIsAdvancedZoomingEnabled( false ),
+    myIsRotating( false ),
+    myRotAngle( 0.0 )
 {
   // VSR: 01/07/2010 commented to avoid SIGSEGV at SALOME exit
   //selectVisualId();
@@ -75,6 +79,7 @@ OCCViewer_ViewPort3d::OCCViewer_ViewPort3d( QWidget* parent, const Handle( V3d_V
   setDefaultParams();
 
   myCursor = NULL;
+  myRotTimer = NULL;
 }
 
 /*!
@@ -82,6 +87,13 @@ OCCViewer_ViewPort3d::OCCViewer_ViewPort3d( QWidget* parent, const Handle( V3d_V
 */
 OCCViewer_ViewPort3d::~OCCViewer_ViewPort3d()
 {
+  if ( myRotTimer )
+  {
+    myRotTimer->stop();
+    delete myRotTimer;
+    myRotTimer = NULL;
+  }
+
   if ( myCursor )
   {
     delete myCursor;
@@ -398,6 +410,9 @@ void OCCViewer_ViewPort3d::fitRect( const QRect& rect )
 */
 void OCCViewer_ViewPort3d::startZoomAtPoint( int x, int y )
 {
+  // if (myIsRotating)
+  //   stopRotation();
+
   if ( !activeView().IsNull() && isAdvancedZoomingEnabled() )
     activeView()->StartZoomAtPoint( x, y );
 }
@@ -407,6 +422,9 @@ void OCCViewer_ViewPort3d::startZoomAtPoint( int x, int y )
 */
 void OCCViewer_ViewPort3d::zoom( int x0, int y0, int x, int y )
 {
+  // if (myIsRotating)
+  //   stopRotation();
+
   if ( !activeView().IsNull() ) {
     // as OCCT respects a sign of only dx,
     // but we want both signes to be taken into account
@@ -424,6 +442,9 @@ void OCCViewer_ViewPort3d::zoom( int x0, int y0, int x, int y )
 */
 void OCCViewer_ViewPort3d::setCenter( int x, int y )
 {
+  if (myIsRotating)
+    stopRotation();
+
   if ( !activeView().IsNull() ) {
     activeView()->Place( x, y, myScale );
     emit vpTransformed( this );
@@ -435,6 +456,9 @@ void OCCViewer_ViewPort3d::setCenter( int x, int y )
 */
 void OCCViewer_ViewPort3d::pan( int dx, int dy )
 {
+  if (myIsRotating)
+    stopRotation();
+
   if ( !activeView().IsNull() ) {
     activeView()->Pan( dx, dy, 1.0 );
     emit vpTransformed( this );
@@ -448,28 +472,36 @@ void OCCViewer_ViewPort3d::startRotation( int x, int y,
                                           int theRotationPointType,
                                           const gp_Pnt& theSelectedPoint )
 {
+  if (myIsRotating)
+    stopRotation();
+
   if ( !activeView().IsNull() ) {
-    //double gx, gy, gz;
-    //double gx = activeView()->gx;
-    //activeView()->Gravity(gx,gy,gz);
+
+    Standard_Real zRotationThreshold, X, Y;
+    sx = x; sy = y;
+    activeView()->Size(X,Y);
+    rx = Standard_Real(activeView()->Convert(X));
+    ry = Standard_Real(activeView()->Convert(Y));
+    gp_Pnt centerPnt;
 
     switch ( theRotationPointType ) {
     case OCCViewer_ViewWindow::BBCENTER:
+      centerPnt = activeView()->GravityPoint();
+      zRotation = Standard_False;
+      zRotationThreshold = 0.45;
+      if( zRotationThreshold > 0. ) {
+        Standard_Real dx = Abs(sx - rx/2.);
+        Standard_Real dy = Abs(sy - ry/2.);
+        Standard_Real dd = zRotationThreshold * (rx + ry)/2.;
+        if( dx > dd || dy > dd ) zRotation = Standard_True;
+      }
       activeView()->StartRotation( x, y, 0.45 );
       break;
     case OCCViewer_ViewWindow::SELECTED:
-      sx = x; sy = y;
-
-      double X,Y;
-      activeView()->Size(X,Y);
-      rx = Standard_Real(activeView()->Convert(X));
-      ry = Standard_Real(activeView()->Convert(Y));
-
       activeView()->Rotate( 0., 0., 0.,
                             theSelectedPoint.X(),theSelectedPoint.Y(), theSelectedPoint.Z(),
                             Standard_True );
 
-      Standard_Real zRotationThreshold;
       zRotation = Standard_False;
       zRotationThreshold = 0.45;
       if( zRotationThreshold > 0. ) {
@@ -536,6 +568,70 @@ void OCCViewer_ViewPort3d::endRotation()
 }
 
 /*!
+  Set the rotation axis and start automatic rotation
+*/
+void OCCViewer_ViewPort3d::setRotationAxis(const gp_Vec& theAxis, double theAngle, double theZAngle)
+{
+  myRotAxis.SetLocation(activeView()->GravityPoint());
+  if (zRotation) {
+    gp_Dir anAxisDir = activeView()->Camera()->Direction();
+    myRotAxis.SetDirection(anAxisDir.Reversed());
+    myRotAngle = theZAngle;
+  }
+  else {
+    myRotAxis.SetDirection(gp_Dir(theAxis));
+    myRotAngle = theAngle;
+  }
+  if (!myRotTimer) {
+    myRotTimer = new QTimer(this);
+    myRotTimer->setSingleShot(true);
+    connect(myRotTimer, SIGNAL(timeout()), this, SLOT(updateRotation()));
+  }
+  else
+    myRotTimer->stop();
+
+  myIsRotating = true;
+  myLastRender = QDateTime::currentMSecsSinceEpoch();
+  Handle(Graphic3d_Camera) aCamera = activeView()->Camera();
+  gp_Trsf trsfRot;
+  trsfRot.SetRotation (myRotAxis, myRotAngle);
+  aCamera->Transform(trsfRot);
+  activeView()->SetCamera(aCamera);
+  myRotTimer->start(20);
+}
+
+/*!
+  Stop the automatic rotation
+*/
+void OCCViewer_ViewPort3d::stopRotation()
+{
+  myIsRotating = false;
+  if (myRotTimer)
+    myRotTimer->stop();
+}
+
+/*!
+  Update the automatic rotation animation
+*/
+void OCCViewer_ViewPort3d::updateRotation()
+{
+  if (!myIsRotating)
+    return;
+
+  qint64 curTime = QDateTime::currentMSecsSinceEpoch();
+  double angle = myRotAngle * (curTime - myLastRender) / 100.;
+  Handle(Graphic3d_Camera) aCamera = activeView()->Camera();
+  gp_Trsf trsfRot;
+  trsfRot.SetRotation(myRotAxis, angle);
+  aCamera->Transform(trsfRot);
+  activeView()->SetCamera(aCamera);
+
+  myLastRender = curTime;
+  if (myRotTimer)
+    myRotTimer->start(20);
+}
+
+/*!
   Repaints the viewport. [ virtual protected ]
 */
 void OCCViewer_ViewPort3d::paintEvent( QPaintEvent* e )
@@ -584,6 +680,9 @@ void OCCViewer_ViewPort3d::fitAll( bool keepScale, bool /*withZ*/, bool upd )
   if ( activeView().IsNull() )
     return;
 
+  if (myIsRotating)
+    stopRotation();
+
   if ( keepScale )
     myScale = activeView()->Scale();
 
@@ -599,6 +698,9 @@ void OCCViewer_ViewPort3d::fitAll( bool keepScale, bool /*withZ*/, bool upd )
 */
 void OCCViewer_ViewPort3d::reset()
 {
+  if (myIsRotating)
+    stopRotation();
+
   //  double zsize = getZSize();
   if ( !activeView().IsNull() ) {
     activeView()->Reset();
@@ -614,6 +716,9 @@ void OCCViewer_ViewPort3d::rotateXY( double degrees )
 {
   if ( activeView().IsNull() )
     return;
+
+  if (myIsRotating)
+    stopRotation();
 
   int x = width()/2, y = height()/2;
   double X, Y, Z;

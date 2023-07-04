@@ -41,6 +41,7 @@ SET(_moc_HEADERS
   SUIT_Accel.h  
   SUIT_ActionOperation.h 
   SUIT_Application.h 
+  SUIT_AutoRotate.h 
   SUIT_DataBrowser.h 
   SUIT_DataObject.h 
   SUIT_Desktop.h 
@@ -108,6 +109,7 @@ SET(_other_SOURCES
   SUIT_Accel.cxx
   SUIT_ActionOperation.cxx
   SUIT_Application.cxx
+  SUIT_AutoRotate.cxx
   SUIT_CameraProperties.cxx
   SUIT_DataBrowser.cxx
   SUIT_DataObject.cxx

@@ -329,6 +329,19 @@ bool SUIT_ViewWindow::dropDownButtons() const
   return myIsDropDown;
 }
 
+void SUIT_ViewWindow::enableAutoRotation( const bool aEnable )
+{
+  myIsAutoRotation = aEnable;
+}
+
+/*!
+  \return automatic rotation enable flag
+*/
+bool SUIT_ViewWindow::isAutoRotationEnabled() const
+{
+  return myIsAutoRotation;
+}
+
 /*!
   \return window unique identifier
 */

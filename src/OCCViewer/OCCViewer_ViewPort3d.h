@@ -29,6 +29,8 @@
 #include <V3d_View.hxx>
 #include <V3d_Viewer.hxx>
 
+#include <gp_Ax1.hxx>
+
 class QColor;
 class QString;
 class QRect;
@@ -81,6 +83,12 @@ public:
   virtual void          startRotation( int, int, int, const gp_Pnt& );
   virtual void          rotate( int, int, int, const gp_Pnt& );
   virtual void          endRotation();
+
+  // Set the rotation axis and start automatic rotation
+  void                  setRotationAxis(const gp_Vec& theAxis, double theAngle, double theZAngle);
+  // Stop the automatic rotation
+  void                  stopRotation();
+
   bool                  isBusy() {return myBusy;} // check that View Port is fully initialized
 
   void                  setAdvancedZoomingEnabled( const bool theState ) { myIsAdvancedZoomingEnabled = theState; }
@@ -101,6 +109,7 @@ public slots:
   virtual bool          synchronize( OCCViewer_ViewPort* );
 
 private slots:
+  void                  updateRotation();
   void                  repaintViewAfterMove();
 
 protected:
@@ -129,6 +138,12 @@ private:
   int                   myBgImgHeight;
   int                   myBgImgWidth;
   QCursor*              myCursor;
+  // Fields for automatic rotation
+  gp_Ax1                myRotAxis;    // The rotation axis
+  double                myRotAngle;   // The angular rotation speed
+  bool                  myIsRotating; // Whether rotation animation is active
+  qint64                myLastRender; // Timestamp of last paint event
+  QTimer*               myRotTimer;   // Rotation timer
 };
 
 #ifdef WIN32

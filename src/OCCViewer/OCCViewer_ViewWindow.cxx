@@ -32,6 +32,7 @@
 #include "OCCViewer_CreateRestoreViewDlg.h"
 #include "OCCViewer_ClipPlane.h"
 #include "OCCViewer_SetRotationPointDlg.h"
+#include "OCCViewer_AutoRotate.h"
 #include "OCCViewer_AxialScaleDlg.h"
 #include "OCCViewer_CubeAxesDlg.h"
 #include "OCCViewer_ClippingDlg.h"
@@ -250,6 +251,7 @@ const char* imageCrossCursor[] = {
 OCCViewer_ViewWindow::OCCViewer_ViewWindow( SUIT_Desktop*     theDesktop,
                                             OCCViewer_Viewer* theModel )
 : SUIT_ViewWindow( theDesktop )
+, myAutoRotate( 0 )
 {
   myModel = theModel;
   myRestoreFlag = 0;
@@ -284,6 +286,7 @@ OCCViewer_ViewWindow::OCCViewer_ViewWindow( SUIT_Desktop*     theDesktop,
 */
 OCCViewer_ViewWindow::~OCCViewer_ViewWindow()
 {
+  if (myAutoRotate) delete myAutoRotate;
   endDrawRect();
   qDeleteAll( mySketchers );
 }
@@ -468,6 +471,7 @@ void OCCViewer_ViewWindow::vpMousePressEvent( QMouseEvent* theEvent )
 {
   myStartX = theEvent->x();
   myStartY = theEvent->y();
+  myStartTime = QDateTime::currentMSecsSinceEpoch();
   int anInteractionStyle = interactionStyle();
 
   // in "key free" interaction style zoom operation is activated by two buttons (simultaneously pressed),
@@ -514,6 +518,7 @@ void OCCViewer_ViewWindow::vpMousePressEvent( QMouseEvent* theEvent )
     else if ( theEvent->button() == Qt::LeftButton ) {
       myViewPort->startRotation(myStartX, myStartY, myCurrPointType, mySelectedPoint);
       emit vpTransformationStarted ( ROTATE );
+      emit vpStartRotate(myStartX, myStartY, myStartTime);
     }
     break;
 
@@ -537,6 +542,7 @@ void OCCViewer_ViewWindow::vpMousePressEvent( QMouseEvent* theEvent )
     case ROTATE:
       activateRotation();
       myViewPort->startRotation(myStartX, myStartY, myCurrPointType, mySelectedPoint);
+      emit vpStartRotate(myStartX, myStartY, myStartTime);
       break;
     default:
       if ( myRotationPointSelection )
@@ -941,6 +947,7 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent( QMouseEvent* theEvent )
     case ROTATE:
       activateRotation();
       myViewPort->startRotation(myStartX, myStartY, myCurrPointType, mySelectedPoint);
+      emit vpStartRotate(myStartX, myStartY, myStartTime);
       break;
     default:
       break;
@@ -949,9 +956,11 @@ void OCCViewer_ViewWindow::vpMouseMoveEvent( QMouseEvent* theEvent )
 
   myCurrX = theEvent->x();
   myCurrY = theEvent->y();
+  myCurrTime = QDateTime::currentMSecsSinceEpoch();
   switch (myOperation) {
   case ROTATE:
     myViewPort->rotate(myCurrX, myCurrY, myCurrPointType, mySelectedPoint);
+    emit vpRotate(myCurrX, myCurrY, myCurrTime);
     break;
 
   case ZOOMVIEW:
@@ -1078,7 +1087,11 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
     }
     break;
   case ROTATE:
+    myCurrX = theEvent->x();
+    myCurrY = theEvent->y(),
+    myCurrTime = QDateTime::currentMSecsSinceEpoch();
     myViewPort->endRotation();
+    emit vpEndRotate(myCurrX, myCurrY, myCurrTime);
     resetState();
     break;
 
@@ -3852,3 +3865,15 @@ void OCCViewer_ViewWindow::setAutomaticZoom(const bool isOn)
   myAutomaticZoom = isOn;
 }
 
+
+void OCCViewer_ViewWindow::enableAutoRotation( const bool isEnable )
+{
+  SUIT_ViewWindow::enableAutoRotation(isEnable);
+  if (myAutoRotate) {
+    delete myAutoRotate;
+    myAutoRotate = nullptr;
+  }
+  if (isEnable) {
+    myAutoRotate = new OCCViewer_AutoRotate(this);
+  }
+}

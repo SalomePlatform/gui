@@ -20,36 +20,26 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#ifndef OCCVIEWER_VIEWMANAGER_H
-#define OCCVIEWER_VIEWMANAGER_H
+#ifndef OCCVIEWER_AUTOROTATE_H
+#define OCCVIEWER_AUTOROTATE_H
 
-#include "OCCViewer_ViewModel.h"
+#include "OCCViewer.h"
+#include "SUIT_AutoRotate.h"
 
-#include "SUIT_ViewManager.h"
 
-class SUIT_Desktop;
+class SUIT_ViewWindow;
 
-class OCCVIEWER_EXPORT OCCViewer_ViewManager : public SUIT_ViewManager
+
+class OCCVIEWER_EXPORT OCCViewer_AutoRotate : public SUIT_AutoRotate
 {
   Q_OBJECT
 
 public:
-  OCCViewer_ViewManager( SUIT_Study* study, SUIT_Desktop* theDesktop, bool DisplayTrihedron = true );
-  ~OCCViewer_ViewManager();
+  OCCViewer_AutoRotate(SUIT_ViewWindow* theWindow);
+  virtual ~OCCViewer_AutoRotate();
 
-  OCCViewer_Viewer* getOCCViewer() { return (OCCViewer_Viewer*) myViewModel; }
-
-  virtual void      contextMenuPopup( QMenu* );
-
-  bool isChainedOperations() const;
-  void setChainedOperations( bool );
-
-  bool isAutoRotation() const;
-  void setAutoRotation( bool );
-
-private:
-  bool myIsChainedOperations;
-  bool myIsAutoRotation;
+  virtual bool  startAnimation();
+  virtual bool  stopAnimation();
 };
 
 #endif

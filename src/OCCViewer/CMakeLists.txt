@@ -56,6 +56,7 @@ SET(_link_LIBRARIES
 # header files / to be processed by moc
 SET(_moc_HEADERS   
   OCCViewer_AISSelector.h
+  OCCViewer_AutoRotate.h
   OCCViewer_AxialScaleDlg.h
   OCCViewer_ClippingDlg.h
   OCCViewer_RayTracingDlg.h
@@ -167,6 +168,7 @@ QT_ADD_RESOURCES(_rcc_SOURCES ${_rcc_RESOURCES})
 SET(_other_SOURCES
   OCCViewer.cxx
   OCCViewer_AISSelector.cxx
+  OCCViewer_AutoRotate.cxx
   OCCViewer_AxialScaleDlg.cxx
   OCCViewer_ClippingDlg.cxx
   OCCViewer_RayTracingDlg.cxx

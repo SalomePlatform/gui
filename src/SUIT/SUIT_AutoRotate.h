@@ -20,36 +20,48 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#ifndef OCCVIEWER_VIEWMANAGER_H
-#define OCCVIEWER_VIEWMANAGER_H
+#ifndef SUIT_AUTOROTATE_H
+#define SUIT_AUTOROTATE_H
 
-#include "OCCViewer_ViewModel.h"
+#include "SUIT.h"
+#include <QObject>
 
-#include "SUIT_ViewManager.h"
 
-class SUIT_Desktop;
+class SUIT_ViewWindow;
+class QMouseEvent;
+class QPoint;
 
-class OCCVIEWER_EXPORT OCCViewer_ViewManager : public SUIT_ViewManager
+
+class SUIT_EXPORT SUIT_AutoRotate : public QObject
 {
   Q_OBJECT
 
 public:
-  OCCViewer_ViewManager( SUIT_Study* study, SUIT_Desktop* theDesktop, bool DisplayTrihedron = true );
-  ~OCCViewer_ViewManager();
+  SUIT_AutoRotate(SUIT_ViewWindow* theWindow);
+  virtual ~SUIT_AutoRotate();
 
-  OCCViewer_Viewer* getOCCViewer() { return (OCCViewer_Viewer*) myViewModel; }
+  virtual void  initialize();
 
-  virtual void      contextMenuPopup( QMenu* );
+  virtual bool  startAnimation();
+  virtual bool  stopAnimation();
 
-  bool isChainedOperations() const;
-  void setChainedOperations( bool );
+public slots:
+  virtual void  onStartRotate(int theMouseX, int theMouseY, qint64 theTime);
+  virtual void  onRotate(int theMouseX, int theMouseY, qint64 theTime);
+  virtual void  onEndRotate(int theMouseX, int theMouseY, qint64 theTime);
+  virtual void  onStopRotate();
 
-  bool isAutoRotation() const;
-  void setAutoRotation( bool );
+protected:
+  void  addToLog(const QPoint& thePos, qint64 theTime);
 
-private:
-  bool myIsChainedOperations;
-  bool myIsAutoRotation;
+  struct { // tracking mouse movement in a log
+    short    mySize;
+    short    myHistorySize;
+    QPoint*  myPosition;
+    qint64*  myTime;
+  } myLog;
+
+  SUIT_ViewWindow*  myWindow;
 };
 
 #endif

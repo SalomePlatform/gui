@@ -72,6 +72,9 @@ public:
   virtual void      setDropDownButtons( bool );
   bool              dropDownButtons() const;
 
+  virtual void      enableAutoRotation( const bool );
+  virtual bool      isAutoRotationEnabled() const;
+
   virtual SUIT_CameraProperties cameraProperties();
 
 public slots:
@@ -90,7 +93,10 @@ signals:
   void              keyReleased( SUIT_ViewWindow*, QKeyEvent* );
   void              contextMenuRequested( QContextMenuEvent *e );
   void              viewModified( SUIT_ViewWindow* );
-  
+  void              vpStartRotate( int, int, qint64 );
+  void              vpRotate( int, int, qint64 );
+  void              vpEndRotate( int, int, qint64 );
+
 protected:
   void              closeEvent( QCloseEvent* );
   virtual void      contextMenuEvent( QContextMenuEvent* );
@@ -115,6 +121,7 @@ private:
 
   QtxActionToolMgr* myToolMgr;
   bool              myIsDropDown;
+  bool              myIsAutoRotation;
   ActionsMap        myMultiActions;
   QAction*          mySyncAction;
 };

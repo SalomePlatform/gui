@@ -107,15 +107,3 @@ void SUIT_AutoRotate::addToLog(const QPoint& thePos, qint64 theTime)
   if (myLog.myHistorySize < myLog.mySize)
     myLog.myHistorySize++;
 }
-
-
-bool SUIT_AutoRotate::startAnimation()
-{
-  // override this method in derived classes
-}
-
-
-bool SUIT_AutoRotate::stopAnimation()
-{
-  // override this method in derived classes
-}

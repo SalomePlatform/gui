@@ -42,8 +42,8 @@ public:
 
   virtual void  initialize();
 
-  virtual bool  startAnimation();
-  virtual bool  stopAnimation();
+  virtual bool  startAnimation() = 0;
+  virtual bool  stopAnimation() = 0;
 
 public slots:
   virtual void  onStartRotate(int theMouseX, int theMouseY, qint64 theTime);

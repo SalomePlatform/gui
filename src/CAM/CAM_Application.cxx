@@ -38,6 +38,7 @@
 #include <QApplication>
 #include <QDir>
 #include <QFileInfo>
+#include <QLockFile>
 #include <QMutex>
 #include <QMutexLocker>
 #include <QRegExp>
@@ -1038,11 +1039,19 @@ void CAM_Application::logUserEvent( const QString& eventDescription )
     QFile file ( guiLogFile );
     if ( file.open( QFile::Append ) ) // append to log file
     {
+      // lock for multiple processes, if more than one salome instance
+      // is running on the same computer.
+      QString lockFilename = file.fileName() + ".lock";
+      QLockFile fLock( lockFilename );
+      fLock.lock();
+
       QDateTime current = QDateTime::currentDateTime();
       QTextStream stream( &file );
       stream << current.toString("yyyyMMdd-hhmmss")
              << "," << eventDescription
              << endl;
+
+      fLock.unlock();
       file.close();
     }
   }

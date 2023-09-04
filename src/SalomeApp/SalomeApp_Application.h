@@ -199,6 +199,9 @@ private:
   void                                createExtraActions();
   void                                ensureShaperIsActivated();
 
+  QString                             getScriptFileName();
+  void                                execScript(bool isNewDoc);
+
 private:
 #ifndef DISABLE_PYCONSOLE
   QPointer<SalomeApp_NoteBook>        myNoteBook;        // Notebook instance

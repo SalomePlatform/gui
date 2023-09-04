@@ -534,28 +534,7 @@ void SalomeApp_Application::onUnloadDoc( bool ask )
 /*!SLOT. Create new study and load script*/
 void SalomeApp_Application::onNewWithScript()
 {
-  QStringList filtersList;
-  filtersList.append(tr("PYTHON_FILES_FILTER"));
-  filtersList.append(tr("ALL_FILES_FILTER"));
-
-  QString anInitialPath = "";
-  if ( SUIT_FileDlg::getLastVisitedPath().isEmpty() )
-    anInitialPath = QDir::currentPath();
-
-  QString aFile = SUIT_FileDlg::getFileName( desktop(), anInitialPath, filtersList, tr( "TOT_DESK_FILE_LOAD_SCRIPT" ), true, true );
-
-  if ( !aFile.isEmpty() )
-  {
-    onNewDoc();
-
-#ifndef DISABLE_PYCONSOLE
-    QString command = QString("exec(open(\"%1\", \"rb\").read())").arg(aFile);
-    PyConsole_Console* pyConsole = pythonConsole();
-    PropertyMgr propm( this, "IsLoadedScript", true );
-    if ( pyConsole )
-      pyConsole->exec( command );
-#endif
-  }
+  execScript(true);
 }
 
 
@@ -1010,26 +989,7 @@ void SalomeApp_Application::onLoadScript( )
     return;
   }
 
-  QStringList filtersList;
-  filtersList.append(tr("PYTHON_FILES_FILTER"));
-  filtersList.append(tr("ALL_FILES_FILTER"));
-
-  QString anInitialPath = "";
-  if ( SUIT_FileDlg::getLastVisitedPath().isEmpty() )
-    anInitialPath = QDir::currentPath();
-
-  QString aFile = SUIT_FileDlg::getFileName( desktop(), anInitialPath, filtersList, tr( "TOT_DESK_FILE_LOAD_SCRIPT" ), true, true );
-
-  if ( !aFile.isEmpty() )
-  {
-#ifndef DISABLE_PYCONSOLE
-    QString command = QString("exec(compile(open('%1', 'rb').read(), '%1', 'exec'))").arg(aFile);
-    PyConsole_Console* pyConsole = pythonConsole();
-    PropertyMgr propm( this, "IsLoadedScript", true );
-    if ( pyConsole )
-      pyConsole->exec(command);
-#endif
-  }
+  execScript(false);
 }
 
 /*!Private SLOT. On save GUI state.*/
@@ -2141,6 +2101,50 @@ PyConsole_Interp* SalomeApp_Application::createPyInterp()
 }
 
 #endif // DISABLE_PYCONSOLE
+
+/*
+  Opens a file dialog to choose a python script.
+*/
+QString SalomeApp_Application::getScriptFileName()
+{
+  QStringList filtersList;
+  filtersList.append(tr("PYTHON_FILES_FILTER"));
+  filtersList.append(tr("ALL_FILES_FILTER"));
+
+  const QString anInitialPath =
+    SUIT_FileDlg::getLastVisitedPath().isEmpty() ? QDir::currentPath() : "";
+    
+  return SUIT_FileDlg::getFileName(desktop(), anInitialPath, filtersList, tr("TOT_DESK_FILE_LOAD_SCRIPT"), true, true);
+}
+
+/*
+  Execute script in python console.
+*/
+void SalomeApp_Application::execScript(bool isNewDoc)
+{
+  const QString aFile = getScriptFileName();
+  if (aFile.isEmpty())
+  {
+    return;
+  }
+
+  if (isNewDoc)
+  {
+    onNewDoc();
+  }
+
+#ifndef DISABLE_PYCONSOLE
+  PyConsole_Console* pyConsole = pythonConsole();
+  PropertyMgr propm(this, "IsLoadedScript", true);
+  if (pyConsole)
+  {
+    QString command = QString("exec(compile(open('%1', 'rb').read(), '%1', 'exec'))").arg(aFile);
+    SUIT_Tools::addTraceToPythonCommand(aFile, command);
+
+    pyConsole->exec(command);
+  }
+#endif
+}
 
 void SalomeApp_Application::ensureShaperIsActivated()
 {

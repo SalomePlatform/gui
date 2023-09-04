@@ -62,7 +62,8 @@ input fields.
 	using_notebook.rst
 	themes.rst
 	using_catalog_generator.rst
-	working_with_python_scripts.rst 
+	working_with_python_scripts.rst
+	working_with_python_console.rst
 	using_registry_tool.rst
 	viewers_chapter.rst
 	setting_preferences.rst

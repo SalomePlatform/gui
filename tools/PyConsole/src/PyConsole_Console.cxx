@@ -93,8 +93,14 @@ void PyConsole_Console::init( PyConsole_Editor* editor )
   lay->addWidget( myEditor );
 
   // force synchronous mode
+  // By default we set PyConsole_Editor::myIsSync = false, so we have async as default mode.
+  // But in previous versions of Salome we used sync mode by default because of our testing setup
+  // where VTK must run in the main thread (see assert(vtkGarbageCollectorIsMainThread())).
+  // So, here for compatibility reasons we consider undefined PYTHON_CONSOLE_SYNC as true as well.
+  // One who needs to run scripts in async mode to see intermediate output during execution,
+  // must expicitly set PYTHON_CONSOLE_SYNC=0 before Salome start.
   QString synchronous = qgetenv( "PYTHON_CONSOLE_SYNC" );
-  if ( !synchronous.isEmpty() && synchronous.toInt() > 0 )
+  if (synchronous.isEmpty() || synchronous.toInt() > 0)
     setIsSync( true );
 
   // create actions

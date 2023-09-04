@@ -183,7 +183,7 @@ void PyConsole_Editor::init()
   myCmdInHistory = -1;
   myEventLoop = 0;
   myShowBanner = true;
-  myIsSync = true;
+  myIsSync = false;
   myIsSuppressOutput = false;
   myMultiLinePaste = false;
   myAutoCompletion = false;

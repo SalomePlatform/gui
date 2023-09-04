@@ -44,6 +44,8 @@ public:
   static QString fontToString( const QFont& font );
 
   static void    centerWidget( QWidget* src, const QWidget* ref );
+
+  static void addTraceToPythonCommand(const QString& fileName, QString& command);
 };
 
 #endif

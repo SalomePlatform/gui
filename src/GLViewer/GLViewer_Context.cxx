@@ -108,7 +108,8 @@ int GLViewer_Context::MoveTo( int xi, int yi, bool byCircle )
         GLViewer_Object* object = *it;
 
         GLViewer_Rect* rect = object->getUpdateRect();
-        if( rect->contains( GLViewer_Pnt( x, y ) ) )
+        if( object->isSelectable() &&
+            rect->contains( GLViewer_Pnt( x, y ) ) )
         {
             onObject = GL_TRUE;
             object->highlight( x, y, myTolerance, GL_FALSE );

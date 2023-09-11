@@ -35,7 +35,7 @@ class CAM_Module;
 #pragma warning( disable:4251 )
 #endif
 
-class CAM_EXPORT CAM_Application : public STD_Application  
+class CAM_EXPORT CAM_Application : public STD_Application
 {
   Q_OBJECT
 
@@ -55,7 +55,8 @@ public:
 
   ModuleList          modules() const;
   void                modules( ModuleList& ) const;
-  void                modules( QStringList&, const bool loaded = true ) const;
+  void                modules( QStringList&,
+                               const bool loaded = true ) const;
 
   virtual void        addModule( CAM_Module* );
 
@@ -64,9 +65,12 @@ public:
 
   virtual bool        activateModule( const QString& );
 
-  bool                activateOperation( const QString& modName, int actionId );
-  bool                activateOperation( const QString& modName, const QString& actionId );
-  bool                activateOperation( const QString& modName, const QString& actionId,
+  bool                activateOperation( const QString& modName,
+                                         const int actionId );
+  bool                activateOperation( const QString& modName,
+                                         const QString& actionId );
+  bool                activateOperation( const QString& modName,
+                                         const QString& actionId,
                                          const QString& pluginName );
 
   virtual void        contextMenuPopup( const QString&, QMenu*, QString& );
@@ -75,12 +79,21 @@ public:
   static QString      moduleTitle( const QString& );
   static QString      moduleIcon( const QString& );
   static QString      moduleDescription( const QString& );
-  static QString      moduleLibrary( const QString&, const bool = true );
+  static QString      moduleLibrary( const QString&,
+                                     const bool = true );
   static QString      moduleDisplayer( const QString& );
 
   virtual void        createEmptyStudy();
 
   static ModuleShortInfoList getVersionInfo();
+
+  static void         logUserEvent( const QString& );
+  static void         logAction( QAction*, const QString& = QString() );
+  static void         logStructuredUserEvent( const QString& module,
+                                              const QString& section,
+                                              const QString& action,
+                                              const QString& event,
+                                              const QString& message = "" );
 
 protected:
   virtual SUIT_Study* createNewStudy();

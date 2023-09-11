@@ -92,7 +92,8 @@ CAM_Module::CAM_Module( const QString& name )
   myName( name ),
   myDataModel( 0 ),
   myMenuShown( false ),
-  myToolShown( false )
+  myToolShown( false ),
+  myActionLoggingEnabled( false )
 {
 }
 
@@ -1018,6 +1019,8 @@ QAction* CAM_Module::createAction( const int id, const QString& text, const QIco
   QtxAction* a = new QtxAction( text, icon, menu, key, parent, toggle, shortcutAction );
   a->setStatusTip( tip );
 
+  connect( a, SIGNAL( triggered( bool ) ), this, SLOT( moduleActionActivated() ), Qt::UniqueConnection );
+
   if ( reciever && member )
     connect( a, SIGNAL( triggered( bool ) ), reciever, member );
 
@@ -1214,4 +1217,42 @@ void CAM_Module::connectToStudy( CAM_Study* camStudy )
 bool CAM_Module::abortAllOperations()
 {
   return true;
+}
+
+/*!
+  \brief Called when an action is triggered
+*/
+void CAM_Module::moduleActionActivated()
+{
+  QAction* action = qobject_cast<QAction*>( sender() );
+  if ( action && !action->isSeparator() && isActionLoggingEnabled() )
+    logAction( action );
+}
+
+/*!
+  \brief Log given action.
+  \param action GUI action being logged.
+
+  Default implementation just forwards to CAM_Applicaion::logAction();
+*/
+void CAM_Module::logAction( QAction* action )
+{
+  CAM_Application::logAction( action, moduleName() );
+}
+
+/*!
+  \brief Return \c true if action logging is enabled.
+*/
+bool CAM_Module::isActionLoggingEnabled() const
+{
+  return myActionLoggingEnabled;
+}
+
+/*!
+  \brief Enable / disable action logging.
+  \param enabled \c true to enable logging, or \c false to disable it.
+*/
+void CAM_Module::setActionLoggingEnabled( bool enabled )
+{
+  myActionLoggingEnabled = enabled;
 }

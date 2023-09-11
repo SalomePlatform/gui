@@ -122,6 +122,10 @@ public:
   int                    createMenu( QAction*, const int, const int = -1, const int = -1, const int = -1 );
   int                    createMenu( QAction*, const QString&, const int = -1, const int = -1, const int = -1 );
 
+  virtual void           logAction( QAction* );
+  bool                   isActionLoggingEnabled() const;
+  void                   setActionLoggingEnabled( bool );
+  
   static QAction*        separator();
 
 public slots:
@@ -134,6 +138,8 @@ public slots:
   virtual void           studyChanged( SUIT_Study*, SUIT_Study* );
 
   virtual void           onApplicationClosed( SUIT_Application* );
+
+  virtual void           moduleActionActivated();
 
 private slots:
   void                   onInfoChanged( QString );
@@ -164,6 +170,7 @@ private:
   QMap<int, QAction*>    myActionMap;       //!< menu actions
   bool                   myMenuShown;       //!< menu shown flag
   bool                   myToolShown;       //!< tool shown flag
+  bool                   myActionLoggingEnabled; //!< action logging enabled 
 
   friend class CAM_Application;
 };

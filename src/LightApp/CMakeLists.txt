@@ -102,7 +102,6 @@ ENDIF()
 IF(SALOME_USE_PYCONSOLE)
   ADD_DEFINITIONS(${PYTHON_DEFINITIONS})
 ENDIF()
-
 # libraries to link to
 SET(_link_LIBRARIES
   ${OpenCASCADE_FoundationClasses_LIBRARIES}
@@ -325,8 +324,13 @@ ENDIF()
 SET(LightApp_SOURCES ${_other_SOURCES} ${_moc_SOURCES} ${_rcc_SOURCES})
 
 # --- rules ---
-
 ADD_LIBRARY(LightApp ${LightApp_SOURCES})
+
+IF(WIN32)
+  # Ensure that SalomeApprc_utils static library is a prerequisite
+  Add_dependencies (LightApp SalomeApprc_utils SalomeApprc_utils_lib)
+ENDIF(WIN32)
+
 TARGET_LINK_LIBRARIES(LightApp ${_link_LIBRARIES})
 INSTALL(TARGETS LightApp EXPORT ${PROJECT_NAME}TargetGroup DESTINATION ${SALOME_INSTALL_LIBS})
 

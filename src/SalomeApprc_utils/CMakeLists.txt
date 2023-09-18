@@ -57,9 +57,15 @@ QT5_WRAP_CPP(_moc_SOURCES SalomeApprc_utils.cxx)
 # --- rules ---
 
 ADD_LIBRARY(SalomeApprc_utils SalomeApprc_utils.cxx)
-
 TARGET_LINK_LIBRARIES(SalomeApprc_utils ${_link_LIBRARIES})
 INSTALL(TARGETS SalomeApprc_utils EXPORT ${PROJECT_NAME}TargetGroup DESTINATION ${SALOME_INSTALL_LIBS})
-#INSTALL(TARGETS suit EXPORT ${PROJECT_NAME}TargetGroup DESTINATION ${SALOME_INSTALL_LIBS})
+
+if(WIN32)
+   MESSAGE(STATUS "Add SalomeApprc_utils static library")
+  add_library(SalomeApprc_utils_lib STATIC  SalomeApprc_utils.cxx)
+  TARGET_LINK_LIBRARIES(SalomeApprc_utils_lib ${_link_LIBRARIES})
+  set_target_properties(SalomeApprc_utils_lib PROPERTIES OUTPUT_NAME SalomeApprc_utils)
+  INSTALL(TARGETS SalomeApprc_utils_lib DESTINATION ${SALOME_INSTALL_LIBS})
+endif(WIN32)
 
 INSTALL(FILES ${SalomeApprc_utils_HEADERS} DESTINATION ${SALOME_INSTALL_HEADERS})

@@ -25,6 +25,7 @@
 #include "OCCViewer_VService.h"
 #include "OCCViewer_ViewWindow.h"
 #include "OCCViewer_ViewModel.h"
+#include "OCCViewer_TrihedronSetup.h"
 
 #include <SUIT_ViewManager.h>
 #include <SUIT_ViewModel.h>
@@ -874,10 +875,43 @@ void OCCViewer_ViewPort3d::showStaticTrihedron( bool on )
   if ( on ) {
     aView->ZBufferTriedronSetup();
     aView->TriedronDisplay( Aspect_TOTP_LEFT_LOWER, Quantity_NOC_WHITE, 0.05, V3d_ZBUFFER );
+
+    setStaticTrihedronTextFont();
+    setStaticTrihedronTextColor();
   } else {
     aView->TriedronErase();
   }
   aView->Update();
+}
+
+/*!
+  Set the font for axes labels of static trihedron
+*/
+void OCCViewer_ViewPort3d::setStaticTrihedronTextFont()
+{
+  Handle(V3d_View) aView = activeView();
+  if (!aView)
+    return;
+    
+#if OCC_VERSION_LARGE >= 0x07070000
+  OCCViewer_TrihedronSetupV3d trihedronSetup(aView->Trihedron());
+  trihedronSetup.setTextFont();
+#endif // OCC_VERSION_LARGE >= 0x0707000
+}
+
+/*!
+  Set the color for axes labels of static trihedron
+*/
+void OCCViewer_ViewPort3d::setStaticTrihedronTextColor()
+{
+  Handle(V3d_View) aView = activeView();
+  if (!aView)
+    return;
+
+#if OCC_VERSION_LARGE >= 0x07070000
+  OCCViewer_TrihedronSetupV3d trihedronSetup(aView->Trihedron());
+  trihedronSetup.setTextColor();
+#endif // OCC_VERSION_LARGE >= 0x0707000
 }
 
 /*

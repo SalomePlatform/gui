@@ -278,6 +278,9 @@ class SVTK_EXPORT SVTK_ViewWindow : public SUIT_ViewWindow
   //! Set visibility status of the static trihedron
   virtual void SetStaticTrihedronVisible( const bool );
 
+  //! Sets static trihedron's text color
+  virtual void setStaticTrihedronTextColor();
+
   //! Methods to save/restore visual parameters of a view (pan, zoom, etc.)
   virtual QString getVisualParameters();
   

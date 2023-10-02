@@ -100,6 +100,7 @@ SET(_other_HEADERS
    SVTK_SelectionEvent.h
    SVTK_Selector.h
    SVTK_SpaceMouse.h
+   SVTK_TrihedronSetup.h
    SVTK_Utils.h
    SVTK_Hash.h
 )
@@ -180,6 +181,7 @@ SET(_other_SOURCES
   SVTK_SetRotationPointDlg.cxx
   SVTK_SpaceMouse.cxx
   SVTK_Trihedron.cxx
+  SVTK_TrihedronSetup.cxx
   SVTK_UpdateRateDlg.cxx
   SVTK_Utils.cxx
   SVTK_View.cxx

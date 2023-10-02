@@ -36,9 +36,11 @@
 #include "SVTK_Renderer.h"
 //#include "SVTK_MainWindow.h"
 #include "SVTK_Prs.h"
+#include "SVTK_TrihedronSetup.h"
 
 #include "VTKViewer_Algorithm.h"
 #include "VTKViewer_ViewModel.h"
+#include "VTKViewer_Trihedron.h"
 
 #include "SUIT_ViewModel.h"
 #include "SUIT_ViewManager.h"
@@ -228,6 +230,29 @@ void SVTK_Viewer::setTrihedronSize( const double theSize, const bool theRelative
 }
 
 /*!
+  Set color of trihedron's text of the viewer
+*/
+void SVTK_Viewer::setTrihedronTextColor()
+{
+  const SUIT_ViewManager* aViewManager = getViewManager();
+  if (!aViewManager)
+  {
+    return;
+  }
+
+  const QVector<SUIT_ViewWindow*> aViews = aViewManager->getViews();
+  for (int i = 0; i < aViews.count(); i++)
+  {
+    if (TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at(i)))
+    {
+      VTKViewer_Trihedron* trihedron = aView->GetRenderer()->GetTrihedron();
+      SVTK_TrihedronSetupVTK trihedronSetup(trihedron);
+      trihedronSetup.setTextColor();
+    }
+  }
+}
+
+/*!
   \return visibility status of the static trihedron
 */
 bool SVTK_Viewer::isStaticTrihedronVisible() const
@@ -250,6 +275,25 @@ void SVTK_Viewer::setStaticTrihedronVisible( const bool theIsVisible )
       if ( TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at( i )) )
         aView->SetStaticTrihedronVisible( theIsVisible );
     }
+  }
+}
+
+/*!
+  Sets static trihedron's text color
+*/
+void SVTK_Viewer::setStaticTrihedronTextColor()
+{
+  const SUIT_ViewManager* aViewManager = getViewManager();
+  if (!aViewManager)
+    return;
+
+  QVector<SUIT_ViewWindow*> aViews = aViewManager->getViews();
+  for (int i = 0; i < aViews.count(); i++)
+  {
+    if (TViewWindow* aView = dynamic_cast<TViewWindow*>(aViews.at(i)))
+    {
+      aView->setStaticTrihedronTextColor();
+    }      
   }
 }
 
@@ -875,4 +919,7 @@ void SVTK_Viewer::onViewCreated( SUIT_ViewWindow* view) {
   if ( SVTK_ViewWindow* svw = dynamic_cast<SVTK_ViewWindow*>( view ) )
     QTimer::singleShot(500, [svw] () { svw->Repaint(); } );
 #endif
+
+  setTrihedronTextColor();
+  setStaticTrihedronTextColor();
 }

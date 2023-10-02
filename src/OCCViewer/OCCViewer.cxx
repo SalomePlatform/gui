@@ -27,11 +27,10 @@
 */
 Quantity_Color OCCViewer::color( const QColor& c )
 {
-  Quantity_Color aColor;
-  if ( c.isValid() )
-    aColor = Quantity_Color( c.red()   / 255., c.green() / 255.,
-                             c.blue()  / 255., Quantity_TOC_RGB );
-  return aColor;
+  if (c.isValid())
+    return Quantity_Color(c.redF(), c.greenF(), c.blueF(), Quantity_TOC_RGB);
+
+  return {};
 }
 
 /*!

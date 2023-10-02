@@ -181,6 +181,38 @@ The changes will be applied on the next application session.</translation>
         <translation>Size</translation>
     </message>
     <message>
+        <source>PREF_TRIHEDRON_TEXT_FONT_CUSTOM</source>
+        <translation>Use Custom Text Font</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_TEXT_COLOR_CUSTOM</source>
+        <translation>Use Custom Text Color</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_X_TEXT_FONT</source>
+        <translation>X Text Font</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_X_TEXT_COLOR</source>
+        <translation>X Text Color</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_Y_TEXT_FONT</source>
+        <translation>Y Text Font</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_Y_TEXT_COLOR</source>
+        <translation>Y Text Color</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_Z_TEXT_FONT</source>
+        <translation>Z Text Font</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_Z_TEXT_COLOR</source>
+        <translation>Z Text Color</translation>
+    </message>
+    <message>
         <source>OBJECT_BROWSER</source>
         <translation>Object Browser</translation>
     </message>

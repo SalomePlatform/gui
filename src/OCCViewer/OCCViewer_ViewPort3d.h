@@ -95,6 +95,8 @@ public:
   bool                  isAdvancedZoomingEnabled() const { return myIsAdvancedZoomingEnabled; }
 
   void                  showStaticTrihedron( bool );
+  void                  setStaticTrihedronTextFont();
+  void                  setStaticTrihedronTextColor();
 
   void                  setDefaultCursor( Qt::CursorShape theCursorShape );
   QCursor*              getDefaultCursor() const;

@@ -110,11 +110,17 @@ public:
   //! Set size of trihedron of the viewer (see #SVTK_Renderer::SetTrihedronSize)
   void setTrihedronSize( const double, const bool = true );
 
+  //! Set color of trihedron's text of the viewer
+  void setTrihedronTextColor();
+
   //! Get visibility status of the static trihedron
   bool isStaticTrihedronVisible() const;
 
   //! Set visibility status of the static trihedron
   void setStaticTrihedronVisible( const bool );
+
+  //! Sets static trihedron's text color
+  void setStaticTrihedronTextColor();
 
   //! Gets projection mode
   int projectionMode() const;

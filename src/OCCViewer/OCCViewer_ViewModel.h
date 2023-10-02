@@ -133,6 +133,10 @@ public:
   bool                            isColorScaleVisible() const;
   virtual void                    setColorScaleShown( const bool );
 
+  void                            initTrihedron();
+  void                            setTrihedronTextFont();
+  void                            setTrihedronTextColor();
+
   //! returns true if 3d Trihedron in viewer was created
   bool                            trihedronActivated() const { return !myTrihedron.IsNull(); }
 
@@ -240,6 +244,10 @@ public:
   int                             getSelectionCount() const { return (!myAISContext.IsNull())? myAISContext->NbSelected():0; }
 
   void                            setStaticTrihedronDisplayed(const bool on);
+  void                            setStaticTrihedronTextFont();
+  void                            setStaticTrihedronTextColor();
+
+  OCCViewer_ViewPort3d*           getViewPort();
 
   /* Clip planes management */
   Handle(Graphic3d_ClipPlane)     createClipPlane(const gp_Pln& thePlane, const Standard_Boolean theIsOn);

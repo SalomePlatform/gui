@@ -97,6 +97,25 @@ General Preferences
   - **Relative** - if this option is switched on, trihedron axes scale to fit the size of the scene displayed in 3D viewer.
   - **Show static trihedron** - allows to show/hide the static mini-trihedron located in the bottom-left corner of the viewer.
 
+  The settings below are for trihedron labels.
+
+  - **Use Custom Text Font** - allows to change text's font for trihedron labels individually for each axis (only for OCC 3D Viewer):
+
+    - X Text Font
+    - Y Text Font
+    - Z Text Font
+
+    Notes:
+      - Not all fonts are supported and could be automatically replaced by the similar ones.
+      - Changing the size of the font is not implemented at the moment.
+      - Works only with OCCT V7_7_0 and greater. With older versions altering the font settings does nothing.
+
+  - **Use Custom Text Color** - allows to change text's color for trihedron labels individually for each axis (only for OCC 3D Viewer and VTK 3D Viewer):
+
+    - X Text Color
+    - Y Text Color
+    - Z Text Color
+
 .. _occ_preferences:
 
 OCC 3D Viewer Preferences

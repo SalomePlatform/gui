@@ -143,6 +143,9 @@ protected:
 /*!This class provide support trihedron object in vtk viewer.*/
 class VTKVIEWER_EXPORT VTKViewer_Trihedron : public vtkObject
 {
+public:
+  enum Axis { X = 0, Y, Z };
+
 protected:
   /*!Initialize fields by default values.*/
   VTKViewer_Trihedron();
@@ -205,6 +208,14 @@ public:
    */
   virtual bool        OwnActor(const vtkActor* theActor);
 
+  /*! Sets a color to a text for the given axis
+   * \param axis - axis to change a text color
+   * \param theRed - red color component
+   * \param theGreen - green color component
+   * \param theBlue - blue color component
+   */
+  virtual void        SetTextColor(Axis axis, double theRed, double theGreen, double theBlue);
+
 protected:
   /*! Actor collection*/
   vtkActorCollection* myPresent;
@@ -258,6 +269,13 @@ public:
    * \param theBlue - blue component of the color
    */
   virtual void SetColor(double theRed, double theGreen, double theBlue);
+
+  /*! Sets color for myLabelActor
+   * \param theRed - red component of the color
+   * \param theGreen - green component of the color
+   * \param theBlue - blue component of the color
+   */
+  virtual void SetTextColor(double theRed, double theGreen, double theBlue);
   
   /*! Set size of VTKViewer_Axis
    */

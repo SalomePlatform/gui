@@ -2101,6 +2101,11 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
     SVTK_Viewer* vm = dynamic_cast<SVTK_Viewer*>( viewMgr->getViewModel() );
     if( vm )
     {
+      // TODO:
+      // Methods like setTrihedronSize() and setStaticTrihedronVisible() do nothing for a created view here
+      // because such a view doesn't exist on this step.
+      // It's going to be created on viewMgr->createViewWindow() way below.
+      // As a workaround we could update a view inside SVTK_Viewer::onViewCreated() method.
       vm->setProjectionMode( resMgr->integerValue( "VTKViewer", "projection_mode", vm->projectionMode() ) );
       vm->setStereoType( resMgr->integerValue( "VTKViewer", "stereo_type", vm->stereoType() ) );
       vm->setAnaglyphFilter( resMgr->integerValue( "VTKViewer", "anaglyph_filter", vm->anaglyphFilter() ) );
@@ -2908,6 +2913,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   anIndicesList << 0                            << 1;
   pref->setItemProperty( "strings", aValuesList,   occZoomingStyleMode );
   pref->setItemProperty( "indexes", anIndicesList, occZoomingStyleMode );
+
   // ... "Trihedron" group <<start>>
   int occTriGroup = pref->addPreference( tr( "PREF_TRIHEDRON" ), Viewer3DGroup );
   pref->setItemProperty( "columns", 2, occTriGroup );
@@ -2918,6 +2924,26 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->setItemProperty( "max", 1000, occTS );
   // .... -> relative size of trihedron
   pref->addPreference( tr( "PREF_RELATIVE_SIZE" ), occTriGroup, LightApp_Preferences::Bool, "3DViewer", "relative_size" );
+
+  // .... -> trihedron text's font
+  const int trihedronTxtFontDef = pref->addPreference(tr("PREF_TRIHEDRON_TEXT_FONT_CUSTOM"), Viewer3DGroup, LightApp_Preferences::Auto, "3DViewer", "trihedron_text_font_custom");
+  pref->setItemProperty("columns", 1, trihedronTxtFontDef);
+
+  int trihedronFont = pref->addPreference(tr("PREF_TRIHEDRON_X_TEXT_FONT"), trihedronTxtFontDef, LightApp_Preferences::Font, "3DViewer", "trihedron_x_text_font");
+  pref->setItemProperty("features", QtxFontEdit::Family | QtxFontEdit::Bold | QtxFontEdit::Italic, trihedronFont);
+  trihedronFont = pref->addPreference(tr("PREF_TRIHEDRON_Y_TEXT_FONT"), trihedronTxtFontDef, LightApp_Preferences::Font, "3DViewer", "trihedron_y_text_font");
+  pref->setItemProperty("features", QtxFontEdit::Family | QtxFontEdit::Bold | QtxFontEdit::Italic, trihedronFont);
+  trihedronFont = pref->addPreference(tr("PREF_TRIHEDRON_Z_TEXT_FONT"), trihedronTxtFontDef, LightApp_Preferences::Font, "3DViewer", "trihedron_z_text_font");
+  pref->setItemProperty("features", QtxFontEdit::Family | QtxFontEdit::Bold | QtxFontEdit::Italic, trihedronFont);
+
+  // .... -> trihedron text's color
+  const int trihedronTxtColorDef = pref->addPreference(tr("PREF_TRIHEDRON_TEXT_COLOR_CUSTOM"), Viewer3DGroup, LightApp_Preferences::Auto, "3DViewer", "trihedron_text_color_custom");
+  pref->setItemProperty("columns", 3, trihedronTxtColorDef);
+
+  pref->addPreference(tr("PREF_TRIHEDRON_X_TEXT_COLOR"), trihedronTxtColorDef, LightApp_Preferences::Color, "3DViewer", "trihedron_x_text_color");
+  pref->addPreference(tr("PREF_TRIHEDRON_Y_TEXT_COLOR"), trihedronTxtColorDef, LightApp_Preferences::Color, "3DViewer", "trihedron_y_text_color");
+  pref->addPreference(tr("PREF_TRIHEDRON_Z_TEXT_COLOR"), trihedronTxtColorDef, LightApp_Preferences::Color, "3DViewer", "trihedron_z_text_color");
+
   // .... -> show static trihedron
   pref->addPreference( tr( "PREF_SHOW_STATIC_TRIHEDRON" ), occTriGroup, LightApp_Preferences::Bool, "3DViewer", "show_static_trihedron" );
   // ... "Trihedron" group <<end>>
@@ -3592,6 +3618,65 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
   pref->retrieve();
 }
 
+// Helper funcitons to reduce code repetition
+namespace
+{
+#ifndef DISABLE_OCCVIEWER
+  /*!
+  Iterates all OCCT viewers and call a given functor with each viewer as an argument.
+  \param app - current application
+  \param functor - function to call 
+  */
+  template<typename T>
+  void forEachOcctViewer(const LightApp_Application& app, T functor)
+  {
+    QList<SUIT_ViewManager*> lst;
+
+    app.viewManagers(OCCViewer_Viewer::Type(), lst);
+    QListIterator<SUIT_ViewManager*> itOCC(lst);
+    while (itOCC.hasNext())
+    {
+      SUIT_ViewModel* vm = itOCC.next()->getViewModel();
+      if (!vm || !vm->inherits("OCCViewer_Viewer"))
+        continue;
+
+      OCCViewer_Viewer* occVM = (OCCViewer_Viewer*)vm;
+      functor(occVM);
+      occVM->getAISContext()->UpdateCurrentViewer();
+    }
+  }
+#endif
+
+#if !defined DISABLE_VTKVIEWER && !defined DISABLE_SALOMEOBJECT
+/*!
+  Iterates all Vtk viewers and call a given functor with each viewer as an argument
+  \param app - current application
+  \param functor - function to call 
+  */
+  template<typename T>
+  void forEachVtkViewer(const LightApp_Application& app, T functor)
+  {
+    QList<SUIT_ViewManager*> lst;
+
+    app.viewManagers(SVTK_Viewer::Type(), lst);
+    QListIterator<SUIT_ViewManager*> itVTK(lst);
+    while (itVTK.hasNext())
+    {
+      SUIT_ViewModel* vm = itVTK.next()->getViewModel();
+      if (!vm || !vm->inherits("SVTK_Viewer"))
+        continue;
+
+      SVTK_Viewer* vtkVM = dynamic_cast<SVTK_Viewer*>(vm);
+      if(vtkVM)
+      {
+        functor(vtkVM);
+        vtkVM->Repaint();
+      }
+    }
+  }
+#endif
+}
+
 /*!
   Changes appearance of application according to changed preferences
   \param sec - section
@@ -3652,6 +3737,40 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
     }
 #endif
 #endif
+  }
+
+  if (sec == QString("3DViewer"))
+  {
+    if (param == QString("trihedron_text_font_custom") ||
+      param == QString("trihedron_x_text_font") ||
+      param == QString("trihedron_y_text_font") ||
+      param == QString("trihedron_z_text_font"))
+    {
+#ifndef DISABLE_OCCVIEWER
+      forEachOcctViewer(*this, [](OCCViewer_Viewer* occVM) {
+        occVM->setTrihedronTextFont();
+        occVM->setStaticTrihedronTextFont();
+        });
+#endif
+    }
+    else if (param == QString("trihedron_text_color_custom") ||
+      param == QString("trihedron_x_text_color") ||
+      param == QString("trihedron_y_text_color") ||
+      param == QString("trihedron_z_text_color"))
+    {
+#ifndef DISABLE_OCCVIEWER
+      forEachOcctViewer(*this, [](OCCViewer_Viewer* occVM) {
+        occVM->setTrihedronTextColor();
+        occVM->setStaticTrihedronTextColor();
+        });
+#endif
+#if !defined DISABLE_VTKVIEWER && !defined DISABLE_SALOMEOBJECT
+      forEachVtkViewer(*this, [](SVTK_Viewer* vtkVM) {
+        vtkVM->setTrihedronTextColor();
+        vtkVM->setStaticTrihedronTextColor();
+        });
+#endif
+    }
   }
 
   if ( sec == QString( "3DViewer" ) && param == QString( "show_static_trihedron" ) )

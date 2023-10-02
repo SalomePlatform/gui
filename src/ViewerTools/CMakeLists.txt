@@ -25,6 +25,7 @@ INCLUDE(UseQtExt)
 INCLUDE_DIRECTORIES(
   ${QT_INCLUDES}
   ${PROJECT_SOURCE_DIR}/src/Qtx
+  ${PROJECT_SOURCE_DIR}/src/SUIT
 )
 
 # additional preprocessor / compiler flags
@@ -34,7 +35,8 @@ ADD_DEFINITIONS(${QT_DEFINITIONS})
 SET(_link_LIBRARIES
   ${QT_LIBRARIES}
   ${KERNEL_SALOMELocalTrace}
-  qtx)
+  qtx
+  suit)
 
 # --- headers ---
 
@@ -47,7 +49,10 @@ SET(_moc_HEADERS
 )
 
 # header files / no moc processing
-SET(_other_HEADERS ViewerTools.h)
+SET(_other_HEADERS
+  ViewerTools.h
+  ViewerTools_TrihedronSetup.h
+)
 
 # header files / to install
 SET(ViewerTools_HEADERS ${_moc_HEADERS} ${_other_HEADERS})
@@ -72,6 +77,7 @@ SET(_other_SOURCES
   ViewerTools_DialogBase.cxx
   ViewerTools_FontWidgetBase.cxx
   ViewerTools_ScreenScaling.cxx
+  ViewerTools_TrihedronSetup.cxx
 )
 
 # sources / to compile

@@ -82,6 +82,7 @@ SET(_moc_HEADERS
 SET(_other_HEADERS
   OCCViewer.h
   OCCViewer_ClipPlane.h
+  OCCViewer_TrihedronSetup.h
   OCCViewer_VService.h
   OCCViewer_Utilities.h
 )
@@ -180,6 +181,7 @@ SET(_other_SOURCES
   OCCViewer_FontWidget.cxx
   OCCViewer_SetRotationPointDlg.cxx
   OCCViewer_ToolTip.cxx
+  OCCViewer_TrihedronSetup.cxx
   OCCViewer_VService.cxx
   OCCViewer_ViewFrame.cxx
   OCCViewer_ViewManager.cxx

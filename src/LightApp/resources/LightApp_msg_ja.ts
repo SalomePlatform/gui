@@ -180,6 +180,38 @@ Pythonファイルは、文字、数字、アンダースコアが含まれて�
       <translation>サイズ</translation>
     </message>
     <message>
+      <source>PREF_TRIHEDRON_TEXT_FONT_CUSTOM</source>
+      <translation>カスタムテキストフォントを使用する</translation>
+  </message>
+    <message>
+      <source>PREF_TRIHEDRON_TEXT_COLOR_CUSTOM</source>
+      <translation>カスタムテキストカラーを使用する</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_X_TEXT_FONT</source>
+        <translation>X テキストフォント</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_X_TEXT_COLOR</source>
+        <translation>X テキストの色</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_Y_TEXT_FONT</source>
+        <translation>Y テキストフォント</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_Y_TEXT_COLOR</source>
+        <translation>Y テキストの色</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_Z_TEXT_FONT</source>
+        <translation>Z テキストフォント</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_Z_TEXT_COLOR</source>
+        <translation>Z テキストの色</translation>
+    </message>
+    <message>
       <source>OBJECT_BROWSER</source>
       <translation>オブジェクトブラウザー</translation>
     </message>

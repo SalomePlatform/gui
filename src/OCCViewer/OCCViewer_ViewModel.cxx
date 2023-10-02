@@ -26,6 +26,7 @@
 #include "OCCViewer_ViewPort3d.h"
 #include "OCCViewer_ClippingDlg.h"
 #include "OCCViewer_Utilities.h"
+#include "OCCViewer_TrihedronSetup.h"
 
 #include "SUIT_ViewWindow.h"
 #include "SUIT_ViewManager.h"
@@ -151,24 +152,9 @@ OCCViewer_Viewer::OCCViewer_Viewer( bool DisplayTrihedron)
   myColorScale->SetTransformPersistence( new Graphic3d_TransformPers (Graphic3d_TMF_2d, Aspect_TOTP_LEFT_LOWER) );
 #endif
 
-  /* create trihedron */
-  if ( DisplayTrihedron )
+  if (DisplayTrihedron)
   {
-    Handle(Geom_Axis2Placement) anAxis = new Geom_Axis2Placement(gp::XOY());
-    myTrihedron = new AIS_Trihedron(anAxis);
-    myTrihedron->SetInfiniteState( Standard_True );
-
-    Quantity_Color Col(193/255., 205/255., 193/255., Quantity_TOC_RGB);
-    //myTrihedron->SetColor( Col );
-    myTrihedron->SetArrowColor( Col.Name() );
-    myTrihedron->SetSize(100);
-    Handle(Prs3d_Drawer) drawer = myTrihedron->Attributes();
-    if (drawer->HasOwnDatumAspect()) {
-      Handle(Prs3d_DatumAspect) daspect = drawer->DatumAspect();
-      daspect->LineAspect(Prs3d_DP_XAxis)->SetColor(Quantity_Color(1.0, 0.0, 0.0, Quantity_TOC_RGB));
-      daspect->LineAspect(Prs3d_DP_YAxis)->SetColor(Quantity_Color(0.0, 1.0, 0.0, Quantity_TOC_RGB));
-      daspect->LineAspect(Prs3d_DP_ZAxis)->SetColor(Quantity_Color(0.0, 0.0, 1.0, Quantity_TOC_RGB));
-    }
+    initTrihedron();
   }
 
   /* create view cube */
@@ -1334,6 +1320,68 @@ void OCCViewer_Viewer::setColorScaleShown( const bool on )
 }
 
 /*!
+  Inits trihedron if it's enabled
+*/
+void OCCViewer_Viewer::initTrihedron()
+{
+  // Basic params
+  Handle(Geom_Axis2Placement) anAxis = new Geom_Axis2Placement(gp::XOY());
+  myTrihedron = new AIS_Trihedron(anAxis);
+  myTrihedron->SetInfiniteState(Standard_True);
+  myTrihedron->SetSize(100);
+
+  // Init default colors
+  const Quantity_Color rColor(1.0, 0.0, 0.0, Quantity_TOC_RGB);
+  const Quantity_Color gColor(0.0, 1.0, 0.0, Quantity_TOC_RGB);
+  const Quantity_Color bColor(0.0, 0.0, 1.0, Quantity_TOC_RGB);
+
+#if OCC_VERSION_LARGE >= 0x07070000
+  // Set colors for axes
+  myTrihedron->SetDatumPartColor(Prs3d_DP_XAxis, rColor);
+  myTrihedron->SetDatumPartColor(Prs3d_DP_YAxis, gColor);
+  myTrihedron->SetDatumPartColor(Prs3d_DP_ZAxis, bColor);
+
+  // Set the same colors for axes' arrows
+  myTrihedron->SetArrowColor(Prs3d_DP_XAxis, rColor);
+  myTrihedron->SetArrowColor(Prs3d_DP_YAxis, gColor);
+  myTrihedron->SetArrowColor(Prs3d_DP_ZAxis, bColor);
+#else
+  Quantity_Color Col(193/255., 205/255., 193/255., Quantity_TOC_RGB);
+  myTrihedron->SetArrowColor( Col.Name() );
+  Handle(Prs3d_Drawer) drawer = myTrihedron->Attributes();
+  if (drawer->HasOwnDatumAspect())
+  {
+    Handle(Prs3d_DatumAspect) daspect = drawer->DatumAspect();
+
+    daspect->LineAspect(Prs3d_DP_XAxis)->SetColor(rColor);
+    daspect->LineAspect(Prs3d_DP_YAxis)->SetColor(gColor);
+    daspect->LineAspect(Prs3d_DP_ZAxis)->SetColor(bColor);
+  }
+#endif
+
+  setTrihedronTextFont();
+  setTrihedronTextColor();
+}
+
+/*!
+  Sets font for trihedron labels from the 3D Viewer settings
+*/
+void OCCViewer_Viewer::setTrihedronTextFont()
+{
+  OCCViewer_TrihedronSetupAIS trihedronSetup(myTrihedron);
+  trihedronSetup.setTextFont();
+}
+
+/*!
+  Sets color for trihedron labels from the 3D Viewer settings
+*/
+void OCCViewer_Viewer::setTrihedronTextColor()
+{
+  OCCViewer_TrihedronSetupAIS trihedronSetup(myTrihedron);
+  trihedronSetup.setTextColor();
+}
+
+/*!
   \return true if trihedron is visible
 */
 bool OCCViewer_Viewer::isTrihedronVisible() const
@@ -1533,6 +1581,43 @@ void OCCViewer_Viewer::setStaticTrihedronDisplayed(const bool on)
 {
   OCCViewer_ViewWindow* aView = (OCCViewer_ViewWindow*)(myViewManager->getActiveView());
   if ( aView ) aView->showStaticTrihedron( on );
+}
+
+/*!
+  Set the font for axes labels of static trihedron
+*/
+void OCCViewer_Viewer::setStaticTrihedronTextFont()
+{
+  OCCViewer_ViewPort3d* viewport = getViewPort();
+  if (!viewport)
+    return;
+
+  viewport->setStaticTrihedronTextFont();
+}
+
+
+/*!
+  Set the color for axes labels of static trihedron
+*/
+void OCCViewer_Viewer::setStaticTrihedronTextColor()
+{
+  OCCViewer_ViewPort3d* viewport = getViewPort();
+  if (!viewport)
+    return;
+
+  viewport->setStaticTrihedronTextColor();
+}
+
+/*!
+  Get the viewport for active view
+*/
+OCCViewer_ViewPort3d* OCCViewer_Viewer::getViewPort()
+{
+  OCCViewer_ViewWindow* aView = (OCCViewer_ViewWindow*)(myViewManager->getActiveView());
+  if (!aView)
+    return nullptr;
+
+  return aView->getViewPort();
 }
 
 /*!

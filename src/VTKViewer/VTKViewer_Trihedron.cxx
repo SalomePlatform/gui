@@ -305,6 +305,25 @@ void VTKViewer_Axis::SetColor(double theRed, double theGreen, double theBlue)
 #endif
 }
 
+/*! Sets color for myLabelActor
+ */
+void VTKViewer_Axis::SetTextColor(double theRed, double theGreen, double theBlue)
+{
+#ifdef IPAL21440
+  vtkTextProperty* aProperty = vtkTextProperty::New();
+  aProperty->SetColor(theRed, theGreen, theBlue);
+
+  myLabelActor->SetTextProperty(aProperty);
+#else
+  vtkProperty* aProperty = vtkProperty::New();
+  aProperty->SetColor(theRed, theGreen, theBlue);
+
+  myLabelActor->SetProperty(aProperty);
+#endif
+
+aProperty->Delete();
+}
+
 /*! Set size of VTKViewer_Axis
  */
 void VTKViewer_Axis::SetSize(double theSize)
@@ -542,4 +561,15 @@ bool VTKViewer_Trihedron::OwnActor(const vtkActor* theActor)
     if ( myAxis[i]->OwnActor(theActor) ) return true;
   }
   return false;
+}
+
+/*! Sets a color to a text for the given axis
+  * \param axis - axis to change a text color
+  * \param theRed - red color component
+  * \param theGreen - green color component
+  * \param theBlue - blue color component
+  */
+void VTKViewer_Trihedron::SetTextColor(Axis axis, double theRed, double theGreen, double theBlue)
+{
+  myAxis[axis]->SetTextColor(theRed, theGreen, theBlue);
 }

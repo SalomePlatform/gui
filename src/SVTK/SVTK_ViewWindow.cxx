@@ -95,6 +95,7 @@
 #include "SVTK_Selector.h"
 #include "SVTK_Recorder.h"
 #include "SVTK_RecorderDlg.h"
+#include "SVTK_TrihedronSetup.h"
 
 #include "salomevtkPVAxesWidget.h"
 #include "salomevtkPVAxesActor.h"
@@ -1525,6 +1526,15 @@ bool SVTK_ViewWindow::IsStaticTrihedronVisible() const
 void SVTK_ViewWindow::SetStaticTrihedronVisible( const bool theIsVisible )
 {
   myAxesWidget->SetEnabled( (int)theIsVisible );
+}
+
+/*!
+  Sets static trihedron's text color
+*/
+void SVTK_ViewWindow::setStaticTrihedronTextColor()
+{
+  SVTK_TrihedronSetupPVAxes trihedronSetup(myAxesWidget);
+  trihedronSetup.setTextColor();
 }
 
 /*!

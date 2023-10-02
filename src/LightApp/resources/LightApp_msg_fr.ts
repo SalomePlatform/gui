@@ -181,6 +181,38 @@ Les modifications seront appliquées à la prochaine session.</translation>
         <translation>Taille</translation>
     </message>
     <message>
+        <source>PREF_TRIHEDRON_TEXT_FONT_CUSTOM</source>
+        <translation>Utiliser une police de texte personnalisée</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_TEXT_COLOR_CUSTOM</source>
+        <translation>Utiliser une couleur de texte personnalisée</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_X_TEXT_FONT</source>
+        <translation>X Police du texte</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_X_TEXT_COLOR</source>
+        <translation>X Couleur du texte</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_Y_TEXT_FONT</source>
+        <translation>Y Police du texte</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_Y_TEXT_COLOR</source>
+        <translation>Y Couleur du texte</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_Z_TEXT_FONT</source>
+        <translation>Z Police du texte</translation>
+    </message>
+    <message>
+        <source>PREF_TRIHEDRON_Z_TEXT_COLOR</source>
+        <translation>Z Couleur du texte</translation>
+    </message>
+    <message>
         <source>OBJECT_BROWSER</source>
         <translation>Arbre d&apos;étude</translation>
     </message>

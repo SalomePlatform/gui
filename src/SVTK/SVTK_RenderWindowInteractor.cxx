@@ -30,6 +30,7 @@
 #include "SVTK_Renderer.h"
 #include "SVTK_Functor.h"
 #include "SALOME_Actor.h"
+#include "ViewerTools_ScreenScaling.h"
 
 // QT Includes
 // Put Qt includes before the X11 includes which #define the symbol None
@@ -175,7 +176,8 @@ QVTK_RenderWindowInteractor
 ::polish()
 {
   // Final initialization just before the widget is displayed
-  GetDevice()->SetSize(width(),height());
+  const double pixelRatio = ViewerTools_ScreenScaling::getPR();
+  GetDevice()->SetSize(width() * pixelRatio, height() * pixelRatio);
   if(!GetDevice()->GetInitialized() && GetDevice()->GetRenderWindow()){
     GetDevice()->Initialize();
     GetDevice()->ConfigureEvent();
@@ -208,13 +210,15 @@ QVTK_RenderWindowInteractor
 */
 void
 QVTK_RenderWindowInteractor
-::resizeEvent( QResizeEvent* /*theEvent*/ )
+::resizeEvent( QResizeEvent* /* theEvent */ )
 {
+
   int* aSize = getRenderWindow()->GetSize();
   int aWidth = aSize[0];
   int aHeight = aSize[1];
 
-  GetDevice()->UpdateSize(width(),height());
+  const double pixelRatio = ViewerTools_ScreenScaling::getPR();
+  GetDevice()->UpdateSize(width() * pixelRatio, height() * pixelRatio);
 
   if(isVisible() && aWidth && aHeight){
     if( aWidth != width() || aHeight != height() ) {
@@ -695,6 +699,7 @@ void
 SVTK_RenderWindowInteractor
 ::mouseMoveEvent( QMouseEvent* event ) 
 {
+  event = static_cast<QMouseEvent*>(ViewerTools_ScreenScaling::getDpiAwareEvent(event));
   QVTK_RenderWindowInteractor::mouseMoveEvent(event);
 
   if(GENERATE_SUIT_EVENTS)
@@ -709,6 +714,7 @@ void
 SVTK_RenderWindowInteractor
 ::mousePressEvent( QMouseEvent* event ) 
 {
+  event = static_cast<QMouseEvent*>(ViewerTools_ScreenScaling::getDpiAwareEvent(event));
   QVTK_RenderWindowInteractor::mousePressEvent(event);
 
   if(GENERATE_SUIT_EVENTS)
@@ -733,6 +739,7 @@ SVTK_RenderWindowInteractor
       isOperation = style->CurrentState() != VTK_INTERACTOR_STYLE_CAMERA_NONE;
   }
 
+  event = static_cast<QMouseEvent*>(ViewerTools_ScreenScaling::getDpiAwareEvent(event));
   QVTK_RenderWindowInteractor::mouseReleaseEvent(event);
 
   if ( style ) {
@@ -743,8 +750,10 @@ SVTK_RenderWindowInteractor
   if ( aRightBtn && !isOperation && !isPolygonalSelection &&
        !( event->modifiers() & Qt::ControlModifier ) &&
        !( event->modifiers() & Qt::ShiftModifier ) ) {
+    // We need to pass unscaled coordinates to get a menu painted in a right place.
+    const double pixelRatio = ViewerTools_ScreenScaling::getPR();
     QContextMenuEvent aEvent( QContextMenuEvent::Mouse,
-                              event->pos(), event->globalPos() );
+                              event->pos() / pixelRatio, event->globalPos() / pixelRatio);
     emit contextMenuRequested( &aEvent );
   }
   if(GENERATE_SUIT_EVENTS)
@@ -759,6 +768,8 @@ void
 SVTK_RenderWindowInteractor
 ::mouseDoubleClickEvent( QMouseEvent* event )
 {
+  event = static_cast<QMouseEvent*>(ViewerTools_ScreenScaling::getDpiAwareEvent(event));
+
   if( GetInteractorStyle() && event->button() == Qt::LeftButton ) {
     SVTK_InteractorStyle* style = dynamic_cast<SVTK_InteractorStyle*>( GetInteractorStyle() );
     if ( style )
@@ -779,6 +790,8 @@ void
 SVTK_RenderWindowInteractor
 ::wheelEvent( QWheelEvent* event )
 {
+  event = static_cast<QWheelEvent*>(ViewerTools_ScreenScaling::getDpiAwareEvent(event));
+
   QVTK_RenderWindowInteractor::wheelEvent(event);
 
   if(event->delta() > 0)

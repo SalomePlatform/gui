@@ -31,7 +31,10 @@ INCLUDE_DIRECTORIES(
 ADD_DEFINITIONS(${QT_DEFINITIONS})
 
 # libraries to link to
-SET(_link_LIBRARIES ${QT_LIBRARIES} qtx)
+SET(_link_LIBRARIES
+  ${QT_LIBRARIES}
+  ${KERNEL_SALOMELocalTrace}
+  qtx)
 
 # --- headers ---
 
@@ -40,6 +43,7 @@ SET(_moc_HEADERS
   ViewerTools_CubeAxesDlgBase.h
   ViewerTools_DialogBase.h
   ViewerTools_FontWidgetBase.h
+  ViewerTools_ScreenScaling.h
 )
 
 # header files / no moc processing
@@ -67,6 +71,7 @@ SET(_other_SOURCES
   ViewerTools_CubeAxesDlgBase.cxx
   ViewerTools_DialogBase.cxx
   ViewerTools_FontWidgetBase.cxx
+  ViewerTools_ScreenScaling.cxx
 )
 
 # sources / to compile

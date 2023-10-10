@@ -41,6 +41,7 @@
 
 #include "SUIT_Tools.h"
 #include "SALOME_Actor.h"
+#include "ViewerTools_ScreenScaling.h"
 
 #include <vtkObjectFactory.h>
 #include <vtkMath.h>
@@ -646,7 +647,12 @@ void SVTK_InteractorStyle::OnLeftButtonUp(int vtkNotUsed(ctrl),
 {
   myShiftState = shift;
   if( myPoligonState == InProcess ) { // add a new point of polygon
-    myPolygonPoints.append( QPoint( x, y ) );
+    // The mouse events were already scaled up with a pixel ratio for a proper selection,
+    // but rubber band's implemented with QPainter scales them on its own.
+    // So, we need to pass unscaled coordinates to get a polygon painted in a right place.
+    const double pixelRatio = ViewerTools_ScreenScaling::getPR();
+
+    myPolygonPoints.append(QPoint(x / pixelRatio, y / pixelRatio));
     this->Interactor->GetEventPosition( mySelectionEvent->myX, mySelectionEvent->myY );
     mySelectionEvent->myPolygonPoints.append( QPoint( mySelectionEvent->myX, mySelectionEvent->myY ) );
     return;
@@ -1672,7 +1678,17 @@ void SVTK_InteractorStyle::drawRect()
     myRectBand = new QtxRectRubberBand( GetRenderWidget() );
 
   myRectBand->setUpdatesEnabled ( false );
-  QRect aRect = SUIT_Tools::makeRect(myPoint.x(), myPoint.y(), myOtherPoint.x(), myOtherPoint.y());
+
+  // The mouse events were already scaled up with a pixel ratio for a proper selection,
+  // but rubber band's implemented with QPainter scales them on its own.
+  // So, we need to pass unscaled coordinates to get a rectangle painted in a right place.
+  const double pixelRatio = ViewerTools_ScreenScaling::getPR();
+  QRect aRect = SUIT_Tools::makeRect(
+    myPoint.x() / pixelRatio,
+    myPoint.y() / pixelRatio,
+    myOtherPoint.x() / pixelRatio,
+    myOtherPoint.y() / pixelRatio);
+
   myRectBand->initGeometry( aRect );
 
   if ( !myRectBand->isVisible() )
@@ -1771,27 +1787,34 @@ bool isValid( const QPolygon* thePoints, const QPoint& theCurrent )
 */
 void SVTK_InteractorStyle::drawPolygon()
 {
+  // The mouse events were already scaled up with a pixel ratio for a proper selection,
+  // but rubber band's implemented with QPainter scales them on its own.
+  // So, we need to pass unscaled coordinates to get a polygon painted in a right place.
+  const double pixelRatio = ViewerTools_ScreenScaling::getPR();
+  const QPoint myPointCopy(myPoint.x() / pixelRatio, myPoint.y() / pixelRatio);
+  const QPoint myOtherPointCopy(myOtherPoint.x() / pixelRatio, myOtherPoint.y() / pixelRatio);
+
   QSize aToler( 5, 5 );
   if ( !myPolygonBand ) {
     myPolygonBand = new QtxPolyRubberBand( GetRenderWidget() );
     QPalette palette;
     palette.setColor( myPolygonBand->foregroundRole(), Qt::white );
     myPolygonBand->setPalette( palette );
-    myPolygonPoints.append( QPoint( myPoint.x(), myPoint.y() ) );
+    myPolygonPoints.append(myPointCopy);
   }
   myPolygonBand->hide();
 
   bool closed = false;
-  bool valid = GetRenderWidget()->rect().contains( QPoint( myOtherPoint.x(), myOtherPoint.y() ) );
+  bool valid = GetRenderWidget()->rect().contains(myOtherPointCopy);
   if ( !myPolygonPoints.at(0).isNull() )
   {
     QRect aRect( myPolygonPoints.at(0).x() - aToler.width(), myPolygonPoints.at(0).y() - aToler.height(),
                  2 * aToler.width(), 2 * aToler.height() );
-    closed = aRect.contains( QPoint( myOtherPoint.x(), myOtherPoint.y() ) );
+    closed = aRect.contains(myOtherPointCopy);
   }
 
   QPolygon* points = new QPolygon( myPolygonPoints );
-  valid = valid && isValid( points, QPoint( myOtherPoint.x(), myOtherPoint.y() ) );
+  valid = valid && isValid(points, myOtherPointCopy);
   myPoligonState = valid ? InProcess : NotValid;
   delete points;
   if ( closed && !valid )
@@ -1806,7 +1829,7 @@ void SVTK_InteractorStyle::drawPolygon()
   else
     GetRenderWidget()->setCursor( Qt::ForbiddenCursor );
 
-  myPolygonPoints.append( QPoint( myOtherPoint.x(), myOtherPoint.y() ) );
+  myPolygonPoints.append(myOtherPointCopy);
 
   QPolygon aPolygon( myPolygonPoints );
   myPolygonBand->initGeometry( aPolygon );

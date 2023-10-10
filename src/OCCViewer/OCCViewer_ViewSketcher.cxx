@@ -20,6 +20,7 @@
 #include "OCCViewer_ViewSketcher.h"
 #include "OCCViewer_ViewWindow.h"
 #include "OCCViewer_ViewPort3d.h"
+#include "ViewerTools_ScreenScaling.h"
 
 #include "QtxRubberBand.h"
 
@@ -121,6 +122,13 @@ bool OCCViewer_ViewSketcher::isDefault() const
 bool OCCViewer_ViewSketcher::eventFilter( QObject* o, QEvent* e )
 {
   OCCViewer_ViewPort3d* avp = mypViewWindow->getViewPort();
+
+  // We need to downscale only non-system events here
+  if (!e->spontaneous())
+  {
+    // Make a copy event with updated coordinates
+    e = ViewerTools_ScreenScaling::getDpiAwareEvent(e, false);
+  }
 
   QMouseEvent* me = (QMouseEvent*)e;
   SketchState state = EnTrain;

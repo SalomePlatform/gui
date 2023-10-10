@@ -40,6 +40,7 @@
 #include "OCCViewer_EnvTextureDlg.h"
 #include "OCCViewer_LightSourceDlg.h"
 #include "OCCViewer_Utilities.h"
+#include "ViewerTools_ScreenScaling.h"
 
 #include <SUIT_Desktop.h>
 #include <SUIT_Session.h>
@@ -373,6 +374,9 @@ OCCViewer_ViewWindow::getButtonState( QMouseEvent* theEvent, int theInteractionS
 bool OCCViewer_ViewWindow::eventFilter( QObject* watched, QEvent* e )
 {
   if ( watched == myViewPort ) {
+    // Makes a copy event with updated coordinates if we need so
+    e = ViewerTools_ScreenScaling::getDpiAwareEvent(e);
+
     int aType = e->type();
     switch(aType) {
     case QEvent::MouseButtonPress:
@@ -1080,8 +1084,10 @@ void OCCViewer_ViewWindow::vpMouseReleaseEvent(QMouseEvent* theEvent)
       emit mouseReleased(this, theEvent);
       if(theEvent->button() == Qt::RightButton && prevState == -1)
       {
+        // We need to pass unscaled coordinates to get a menu painted in a right place.
+        const double pixelRatio = ViewerTools_ScreenScaling::getPR();
         QContextMenuEvent aEvent( QContextMenuEvent::Mouse,
-                                  theEvent->pos(), theEvent->globalPos() );
+                                  theEvent->pos() / pixelRatio, theEvent->globalPos() / pixelRatio );
         emit contextMenuRequested( &aEvent );
       }
     }
@@ -3153,6 +3159,11 @@ void OCCViewer_ViewWindow::onSketchingFinished()
   {
     Handle(AIS_InteractiveContext) ic = myModel->getAISContext();
     bool append = mypSketcher->isHasShift();
+
+    // Sketcher uses unscaled coordinates to draw a rubber band,
+    // then we need to scale them here for proper selection.
+    const double pixelRatio = ViewerTools_ScreenScaling::getPR();
+
     switch( mypSketcher->type() )
     {
     case Rect:
@@ -3160,10 +3171,10 @@ void OCCViewer_ViewWindow::onSketchingFinished()
         QRect* aRect = (QRect*)mypSketcher->data();
         if ( aRect )
         {
-          int aLeft = aRect->left();
-          int aRight = aRect->right();
-          int aTop = aRect->top();
-          int aBottom = aRect->bottom();
+          int aLeft = aRect->left() * pixelRatio;
+          int aRight = aRect->right() * pixelRatio;
+          int aTop = aRect->top() * pixelRatio;
+          int aBottom = aRect->bottom() * pixelRatio;
 //           myRect = aRect;
 
           if( append )
@@ -3186,7 +3197,7 @@ void OCCViewer_ViewWindow::onSketchingFinished()
           for (int index = 1; it != itEnd; ++it, index++)
           {
             QPoint aPoint = *it;
-            anArray.SetValue(index, gp_Pnt2d(aPoint.x(), aPoint.y()));
+            anArray.SetValue(index, gp_Pnt2d(aPoint.x() * pixelRatio, aPoint.y() * pixelRatio));
           }
 
           if (append)

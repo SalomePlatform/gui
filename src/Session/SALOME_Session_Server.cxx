@@ -477,6 +477,25 @@ int AbstractGUIAppMain(int argc, char **argv)
   QApplication::setApplicationName("salome");
   QApplication::setApplicationVersion(salomeVersion());
 
+  // supports HDPI
+  MESSAGE("Set QApplication attributes to supports HDPI...");
+
+  // Make QIcon::pixmap() generate high-dpi pixmaps that can be larger than the requested size.
+  // Such pixmaps will have devicePixelRatio() set to a value higher than 1.
+  // After setting this attribute, application code that uses pixmap sizes in layout geometry calculations
+  // should typically divide by devicePixelRatio() to get device-independent layout geometry.
+  QCoreApplication::setAttribute(Qt::AA_UseHighDpiPixmaps);
+
+  // The lines below do the same - enables automatic scaling, based on the monitor's pixel density.
+  // This won't change the size of point-sized fonts, since point is a physical measurement unit.
+  // Using them can make an impression of large icons among small fonts.
+  // qputenv("QT_AUTO_SCREEN_SCALE_FACTOR", "1");
+  // QApplication::setAttribute(Qt::AA_EnableHighDpiScaling); // Doesn't scale fonts
+
+  // Keep this line as an example of using explicit scale factor.
+  // Defines a global scale factor for the whole application, including point-sized fonts.
+  // qputenv("QT_SCALE_FACTOR", "1.5"); // Scales everything
+
   // Install Qt debug messages handler
   MsgHandler msgHandler;
   qInstallMessageHandler(QtxMsgHandler);

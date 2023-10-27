@@ -26,7 +26,6 @@
 
 #include <stdio.h>
 #include <stdarg.h>
-#include <iostream>
 
 /*!
   Traces output to log-file.
@@ -77,48 +76,4 @@ QString SUIT_Tools::fontToString( const QFont& font )
 void SUIT_Tools::centerWidget( QWidget* src, const QWidget* ref )
 {
   SUIT_Tools::alignWidget( src, ref, Qt::AlignCenter );
-}
-
-/*!
-  Add tracing code to given python command if it was activated by PYCONSOLE_TRACE env variable.
-  Immediately return if PYCONSOLE_TRACE wasn't set.
-*/
-void SUIT_Tools::addTraceToPythonCommand(const QString& fileName, QString& command)
-{
-  auto isPythonTraceEnabled = []() -> bool
-  {
-    const char* envVar = std::getenv("PYCONSOLE_TRACE");
-
-    if (envVar && (envVar[0] != '\0'))
-    {
-      try
-      {
-        const long long numValue = std::stoll(envVar);
-        return numValue > 0;
-      }
-      catch(const std::exception& e)
-      {
-        std::cerr << e.what() << '\n';
-      }
-    }
-
-    return false;
-  };
-
-  static const bool isActivated = isPythonTraceEnabled();
-  if (!isActivated)
-  {
-    return;
-  }
-
-  // Using sys.setprofile() instead of sys.settrace() because we don't need any other events except of 'call' and 'return'.
-  // Another reason: the trace function for sys.settrace() must return itself, so we can't use it properly with lambda.
-  command = QString("sys.setprofile(lambda frame, event, arg: "
-    "print('>>', frame.f_lineno, ': ', frame.f_code.co_name) if event == 'call' and frame.f_code.co_filename == '%1' and frame.f_code.co_name != '<module>' else "
-    "print('<<', frame.f_lineno, ': ', frame.f_code.co_name) if event == 'return' and frame.f_code.co_filename == '%1' and frame.f_code.co_name != '<module>' else "
-    "None); "
-    "%2; "
-    "sys.setprofile(None); ").
-    arg(fileName).
-    arg(command);
 }

@@ -325,7 +325,7 @@ int QtxActionMenuMgr::insert( const QString& title, const int pId, const int gro
   for ( NodeList::iterator it = pNode->children.begin(); it != pNode->children.end() && fid == -1; ++it )
   {
     if ( myMenus.contains( (*it)->id ) &&
-         clearTitle( myMenus[(*it)->id]->text() ) == clearTitle( title ) )
+         clearTitle( myMenus[(*it)->id]->text() ) == clearTitle( title ) && ((*it)->group == group || group == -1 ))
       fid = (*it)->id;
   }
 

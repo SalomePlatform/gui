@@ -151,6 +151,9 @@ int SUIT_PreferenceMgr::addItem( const QString& title, const int pId,
   case File:
     item = new QtxPagePrefPathItem( Qtx::PT_OpenFile, title, parent, sect, param );
     break;
+  case Directory:
+    item = new QtxPagePrefPathItem( Qtx::PT_Directory, title, parent, sect, param );
+    break;
   case DirList:
     item = new QtxPagePrefPathListItem( Qtx::PT_Directory, title, parent, sect, param );
     break;

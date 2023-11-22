@@ -59,8 +59,11 @@ bool OCCViewer_AutoRotate::startAnimation()
   const int PrevIdx = 10;
   if (myLog.myHistorySize > PrevIdx) {
     qint64 aStopTime = (QDateTime::currentMSecsSinceEpoch() - myLog.myTime[LastIdx]);
-    qint64 delta = (myLog.myTime[LastIdx] - myLog.myTime[PrevIdx]);
-    if (aStopTime < (qint64)100 && delta < (qint64)100) {
+    // Compute the maximum time spent between two distinct mouse move events until we consider the
+    // mouse being move at the time, the manual rotation action stops (mouse button released).
+    // If the mouse was moving, then we trigger the continuous view animation.
+    qint64 maxTime = qint64((myLog.myTime[LastIdx] - myLog.myTime[PrevIdx]) * 1.2);
+    if (aStopTime < (qint64)maxTime) {
       OCCViewer_ViewWindow *aWnd = dynamic_cast<OCCViewer_ViewWindow*>(myWindow);
       if (aWnd) {
         OCCViewer_ViewPort3d* aViewPort = aWnd->getViewPort();
@@ -74,7 +77,7 @@ bool OCCViewer_AutoRotate::startAnimation()
             dx = (Standard_Real(this->myLog.myPosition[LastIdx].x()) - this->myLog.myPosition[PrevIdx].x()) * M_PI / rx;
             dy = (this->myLog.myPosition[PrevIdx].y() - Standard_Real(this->myLog.myPosition[LastIdx].y())) * M_PI / ry;
             dz = atan2(Standard_Real(this->myLog.myPosition[LastIdx].x())-rx/2., ry/2.-Standard_Real(this->myLog.myPosition[LastIdx].y()))
-               - atan2(this->myLog.myPosition[PrevIdx].x()-rx/2.,ry/2.-this->myLog.myPosition[PrevIdx].y());
+               - atan2(Standard_Real(this->myLog.myPosition[PrevIdx].x())-rx/2., ry/2.-Standard_Real(this->myLog.myPosition[PrevIdx].y()));
 
             Handle(Graphic3d_Camera) aCamera = aView->Camera();
             gp_Pnt aRCenter = aView->GravityPoint();
@@ -96,10 +99,10 @@ bool OCCViewer_AutoRotate::startAnimation()
             quat.GetVectorAndAngle(aAxis, anAngle);
             aScale = aView->Scale();
             // std::cout << "Axis=[" << aAxis.X() << " , " << aAxis.Y() << " , " << aAxis.Z()
-            //           << "]   Angle=" << anAngle * 180. / M_PI 
-            //           << " deg   z-Angle=" << dz * 180. / M_PI << " deg   Scale=" << aScale << std::endl;
+            //           << "]   Angle=" << anAngle * 180. * 3./aScale / M_PI 
+            //           << " deg   z-Angle=" << dz * 180. * 12./aScale / M_PI << " deg   Scale=" << aScale << std::endl;
             if (anAngle != 0.)
-              aViewPort->setRotationAxis(aAxis, anAngle*3./aScale, dz*3./aScale);
+              aViewPort->setRotationAxis(aAxis, anAngle*3./aScale, dz*12./aScale);
           }
         }
         return true;

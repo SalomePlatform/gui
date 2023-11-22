@@ -68,8 +68,8 @@ OCCViewer_ViewPort3d::OCCViewer_ViewPort3d( QWidget* parent, const Handle( V3d_V
     myBusy( true ),
     myScale( 1.0 ),
     myIsAdvancedZoomingEnabled( false ),
-    myIsRotating( false ),
-    myRotAngle( 0.0 )
+    myRotAngle( 0.0 ),
+    myIsRotating( false )
 {
   // VSR: 01/07/2010 commented to avoid SIGSEGV at SALOME exit
   //selectVisualId();

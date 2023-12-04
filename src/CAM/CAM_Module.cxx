@@ -34,6 +34,7 @@
 #include <SUIT_Desktop.h>
 #include <SUIT_Session.h>
 #include <SUIT_ResourceMgr.h>
+#include <SUIT_ShortcutMgr.h>
 
 #include <QMenu>
 
@@ -640,7 +641,7 @@ int CAM_Module::createMenu( const QString& subMenu, const int menu,
 {
   if ( !menuMgr() )
     return -1;
-  
+
   return menuMgr()->insert( subMenu, menu, group, id, idx, menuObj );
 }
 
@@ -704,7 +705,7 @@ int CAM_Module::createMenu( QAction* a, const int menu, const int id, const int 
 {
   if ( !a || !menuMgr() )
     return -1;
-  
+
   ActionMgrLocker lock( menuMgr(), !myMenuShown );
 
   int regId = registerAction( id, a );
@@ -754,7 +755,7 @@ int CAM_Module::createMenu( QAction* a, const QString& menu, const int id, const
 
   if ( !myMenuShown )
     setMenuShown( a, false );
-  
+
   return intId != -1 ? regId : -1;
 }
 
@@ -932,6 +933,11 @@ void CAM_Module::setToolShown( const int id, const bool on )
   setToolShown( action( id ), on );
 }
 
+QString CAM_Module::makeActionID(const QString& theInModuleActionID) const
+{
+  return SUIT_ShortcutMgr::makeActionID(name(), theInModuleActionID);
+}
+
 /*!
   \brief Get action by specified \a id.
   \param id action ID
@@ -978,18 +984,19 @@ int CAM_Module::actionId( const QAction* a ) const
   \param icon action icon
   \param menu menu text
   \param tip status bar tip
-  \param key keyboard accelerator
+  \param key will be disabled by SUIT_ShortcutMgr!
   \param parent parent object
   \param toggle if \c true, the action will be toggled
   \param reciever action activation signal receiver object
   \param member action activation signal receiver slot
+  \param inModuleActionID module-unique action ID
 */
 QAction* CAM_Module::createAction( const int id, const QString& text, const QIcon& icon,
                                    const QString& menu, const QString& tip, const int key,
                                    QObject* parent, const bool toggle, QObject* reciever,
-				   const char* member, const QString& shortcutAction )
+				   const char* member, const QString& inModuleActionID )
 {
-  return createAction( id, text, icon, menu, tip, QKeySequence(key), parent, toggle, reciever, member, shortcutAction );
+  return createAction( id, text, icon, menu, tip, QKeySequence(key), parent, toggle, reciever, member, inModuleActionID );
 }
 
 /*!
@@ -1005,18 +1012,20 @@ QAction* CAM_Module::createAction( const int id, const QString& text, const QIco
   \param icon action icon
   \param menu menu text
   \param tip status bar tip
-  \param key keyboard accelerator
+  \param key will be disabled by SUIT_ShortcutMgr!
   \param parent parent object
   \param toggle if \c true, the action will be toggled
   \param reciever action activation signal receiver object
   \param member action activation signal receiver slot
+  \param inModuleActionID module-unique action ID
 */
 QAction* CAM_Module::createAction( const int id, const QString& text, const QIcon& icon,
                                    const QString& menu, const QString& tip, const QKeySequence& key,
                                    QObject* parent, const bool toggle, QObject* reciever,
-				   const char* member, const QString& shortcutAction )
+				   const char* member, const QString& inModuleActionID )
 {
-  QtxAction* a = new QtxAction( text, icon, menu, key, parent, toggle, shortcutAction );
+  const QString actionID = makeActionID(inModuleActionID);
+  QtxAction* a = new QtxAction( text, icon, menu, key, parent, toggle, actionID );
   a->setStatusTip( tip );
 
   connect( a, SIGNAL( triggered( bool ) ), this, SLOT( moduleActionActivated() ), Qt::UniqueConnection );

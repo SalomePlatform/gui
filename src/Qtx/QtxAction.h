@@ -29,8 +29,7 @@
 #include "Qtx.h"
 
 #include <QWidgetAction>
-
-class QIcon;
+#include <QIcon>
 
 #ifdef WIN32
 #pragma warning ( disable:4251 )
@@ -44,16 +43,24 @@ class QTX_EXPORT QtxAction : public QWidgetAction
 
 public:
   QtxAction( QObject* = 0, bool = false, const QString& = QString() );
-  QtxAction( const QString&, const QString&, int, QObject*, bool = false, const QString& = QString() );
+  QtxAction( QObject*,     bool,         const QString&, const QString&, const QString& = QString(), const QIcon& = QIcon());
+  QtxAction( const QString&, const QString&, int                , QObject*, bool = false, const QString& = QString() );
   QtxAction( const QString&, const QString&, const QKeySequence&, QObject*, bool = false, const QString& = QString() );
-  QtxAction( const QString&, const QIcon&, const QString&, int, QObject*, bool = false, const QString& = QString() );
+  QtxAction( const QString&, const QIcon&, const QString&, int                , QObject*, bool = false, const QString& = QString() );
   QtxAction( const QString&, const QIcon&, const QString&, const QKeySequence&, QObject*, bool = false, const QString& = QString() );
   virtual ~QtxAction();
 
   virtual bool eventFilter( QObject*, QEvent* );
 
+  [[deprecated("Use ID() instead.")]]
   QString shortcutActionName() const;
+
+  [[deprecated("Use setID() instead.")]]
   void setShortcutActionName( const QString& );
+
+  /** Unique for the entire application ID. */
+  const QString& ID() const;
+  void setID( const QString& theID);
 
 protected:
   virtual void addedTo( QWidget* );
@@ -62,7 +69,7 @@ protected:
   virtual void customEvent( QEvent* );
 
 private:
-  QString myShortcutActionName;
+  QString myID;
 };
 
 #ifdef WIN32

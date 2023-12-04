@@ -17,71 +17,249 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#ifndef QTXSHORTCUTEDIT_H
-#define QTXSHORTCUTEDIT_H
+#ifndef QTXSHORTCUTTREE_H
+#define QTXSHORTCUTTREE_H
 
 #include "Qtx.h"
-
+#include <QDialog>
 #include <QFrame>
 #include <QTreeWidget>
+#include "SUIT_ShortcutMgr.h"
+#include <memory>
+#include <map>
+#include <set>
+#include <functional>
+
 
 class QLineEdit;
+class QLabel;
 class QPushButton;
 class QTreeWidgetItem;
 
-typedef QMap< QString, QString > ShortcutMap;
-
-class QTX_EXPORT QtxShortcutEdit : public QFrame
+class QTX_EXPORT QtxKeySequenceEdit : public QFrame
 {
   Q_OBJECT
 
 public:
-  QtxShortcutEdit( QWidget* = 0 );
-  virtual ~QtxShortcutEdit();
-  void           setShortcut( const QKeySequence& );
-  QKeySequence   shortcut();
-  static QString parseEvent( QKeyEvent* );
-  static bool    isValidKey( int );
+  QtxKeySequenceEdit(QWidget* = nullptr);
+  virtual ~QtxKeySequenceEdit() = default;
 
+  void           setConfirmedKeySequence(const QKeySequence&);
+  void           setEditedKeySequence(const QKeySequence&);
+  QKeySequence   editedKeySequence() const;
+  bool           isKeySequenceModified() const;
+  void           restoreKeySequence();
+
+  static QString parseEvent(QKeyEvent*);
+  static bool    isValidKey(int);
+
+signals:
+  void           editingStarted();
+  void           editingFinished();
+  void           restoreFromShortcutMgrClicked();
 
 private slots:
-  void           onCliked();
+  void           onClear();
   void           onEditingFinished();
 
 protected:
-  virtual bool   eventFilter( QObject*, QEvent* );
+  virtual bool   eventFilter(QObject*, QEvent*);
 
 private:
   void           initialize();
 
 private:
-  QLineEdit*     myShortcut;
-  QString        myPrevShortcutText;
+  QLineEdit*     myKeySequenceLineEdit;
+  QString        myConfirmedKeySequenceString;
+
+  // Last valid key sequence string from myKeySequenceLineEdit.
+  QString        myPrevKeySequenceString;
 };
+
+
+class QtxShortcutTree;
+class QtxShortcutTreeItem;
+class QtxShortcutTreeFolder;
+class QtxShortcutTreeAction;
+class QTextEdit;
+
+
+class QTX_EXPORT QtxEditKeySequenceDialog : public QDialog
+{
+  Q_OBJECT
+
+public:
+  QtxEditKeySequenceDialog(QtxShortcutTree* theParent);
+  QtxEditKeySequenceDialog(const QtxEditKeySequenceDialog&) = delete;
+  QtxEditKeySequenceDialog& operator=(const QtxEditKeySequenceDialog&) = delete;
+  virtual ~QtxEditKeySequenceDialog() = default;
+
+  void setModuleAndActionID(const QString& theModuleID, const QString& theInModuleActionID);
+  const QString& moduleID() const;
+  const QString& inModuleActionID() const;
+
+  void setModuleAndActionName(const QString& theModuleName, const QString& theActionName, const QString& theActionToolTip = "");
+
+  void setConfirmedKeySequence(const QKeySequence& theSequence);
+  QKeySequence editedKeySequence() const;
+
+  void updateConflictsMessage();
+
+  int exec();
+
+private slots:
+  void onEditingStarted();
+  void onEditingFinished();
+  void onRestoreFromShortcutMgr();
+  void onConfirm();
+
+private:
+  QString myModuleID;
+  QString myInModuleActionID;
+  QLabel* myActionName;
+  QtxKeySequenceEdit* myKeySequenceEdit;
+  QTextEdit* myTextEdit;
+};
+
 
 class QTX_EXPORT QtxShortcutTree : public QTreeWidget
 {
   Q_OBJECT
 
 public:
-  QtxShortcutTree( QWidget * parent = 0 );
+  enum ElementIdx {
+    Name = 0,
+    KeySequence = 1, // Empty, if item is folder item.
+  };
+
+  enum class SortKey {
+    ID,
+    Name,
+    ToolTip,
+    KeySequence,
+  };
+
+  enum class SortOrder {
+    Ascending,
+    Descending
+  };
+
+  QtxShortcutTree(
+    std::shared_ptr<SUIT_ShortcutContainer> theContainer = std::shared_ptr<SUIT_ShortcutContainer>(),
+    QWidget* theParent = nullptr
+  );
+  QtxShortcutTree(const QtxShortcutTree&) = delete;
+  QtxShortcutTree& operator=(const QtxShortcutTree&) = delete;
   virtual ~QtxShortcutTree();
-  void                      setBindings( const QString&, const ShortcutMap& );
-  ShortcutMap*              bindings( const QString& ) const;
-  QStringList               sections() const;
-  void                      setGeneralSections( const QStringList& );
 
-protected:
-  virtual bool              eventFilter( QObject*, QEvent* );
-  virtual void              focusOutEvent( QFocusEvent* );
-  virtual bool              checkUniqueness( QTreeWidgetItem*, const QString& );
+  void setShortcutsFromManager();
+  void setDefaultShortcuts();
+  void applyChangesToShortcutMgr();
 
-private slots:
-  void                      onCurrentItemChanged( QTreeWidgetItem*, QTreeWidgetItem* );
+  std::shared_ptr<const SUIT_ShortcutContainer> shortcutContainer() const;
+
+  void sort(QtxShortcutTree::SortKey theKey, QtxShortcutTree::SortOrder theOrder);
 
 private:
-  QMap< QString, ShortcutMap > myPrevBindings;
-  QStringList myGeneralSections;
+  void updateItems(bool theHighlightModified, bool theUpdateSyncTrees);
+  std::pair<QtxShortcutTreeFolder*, int> findModuleFolderItem(const QString& theModuleID) const;
+
+  std::set<QtxShortcutTreeItem*, std::function<bool(QtxShortcutTreeItem*, QtxShortcutTreeItem*)>> getSortedChildren(QtxShortcutTreeFolder* theParentItem);
+
+  void insertChild(
+    QtxShortcutTreeFolder* theParentItem,
+    std::set<QtxShortcutTreeItem*, std::function<bool(QtxShortcutTreeItem*, QtxShortcutTreeItem*)>>& theSortedChildren,
+    QtxShortcutTreeItem* theChildItem
+  );
+
+private slots:
+  void onItemDoubleClicked(QTreeWidgetItem* theWidgetItem, int theColIdx);
+
+public:
+  /** Keeps IDs of modules, which will are shown on setShortcutsFromManager(). */
+  std::set<QString> myModuleIDs;
+
+  static const QList<std::pair<QtxShortcutTree::SortKey, QtxShortcutTree::SortOrder>> DEFAULT_SORT_SCHEMA;
+
+private:
+  /** Allows to modify plenty of shortcuts and then apply them to SUIT_ShortcutMgr as a batch. */
+  const std::shared_ptr<SUIT_ShortcutContainer> myShortcutContainer;
+
+  QtxEditKeySequenceDialog* myEditDialog;
+
+  QtxShortcutTree::SortKey mySortKey;
+  QtxShortcutTree::SortOrder mySortOrder;
+
+  /**
+   * Ensures that, if several QtxShortcutTree instances coexist,
+   * all of them are updated when one of them applies pending changes to SUIT_ShortcutMgr.
+   *
+   * Sharing of SUIT_ShortcutContainer allows to keep some trees synchronized even without
+   * applying changes to SUIT_ShortcutMgr. Why? See QtxPagePrefShortcutTreeItem.
+   *
+   * Access is not synchronized in assumption, that all instances live in the same thread.
+  */
+  static std::map<SUIT_ShortcutContainer*, std::set<QtxShortcutTree*>> instances;
 };
 
-#endif // QTXSHORTCUTEDIT_H
+
+class QtxShortcutTreeItem : public QTreeWidgetItem
+{
+public:
+  enum Type {
+    Folder = 0,
+    Action = 1,
+  };
+
+protected:
+  QtxShortcutTreeItem(const QString& theModuleID);
+
+public:
+  virtual ~QtxShortcutTreeItem() = default;
+  virtual QtxShortcutTreeItem::Type type() const = 0;
+
+  virtual void setAssets(std::shared_ptr<const SUIT_ActionAssets> theAssets, const QString& theLang) = 0;
+  QString name() const;
+
+  virtual QString getValue(QtxShortcutTree::SortKey theKey) const = 0;
+
+public:
+  const QString myModuleID;
+};
+
+
+class QtxShortcutTreeFolder : public QtxShortcutTreeItem
+{
+public:
+  QtxShortcutTreeFolder(const QString& theModuleID);
+  virtual ~QtxShortcutTreeFolder() = default;
+  virtual QtxShortcutTreeItem::Type type() const { return QtxShortcutTreeItem::Type::Folder; };
+
+  virtual void setAssets(std::shared_ptr<const SUIT_ActionAssets> theAssets, const QString& theLang);
+
+  virtual QString getValue(QtxShortcutTree::SortKey theKey) const;
+};
+
+
+class QtxShortcutTreeAction : public QtxShortcutTreeItem
+{
+private:
+  QtxShortcutTreeAction(const QString& theModuleID, const QString& theInModuleActionID);
+
+public:
+  static QtxShortcutTreeAction* create(const QString& theModuleID, const QString& theInModuleActionID);
+  virtual ~QtxShortcutTreeAction() = default;
+  virtual QtxShortcutTreeItem::Type type() const { return QtxShortcutTreeItem::Type::Action; };
+
+  virtual void setAssets(std::shared_ptr<const SUIT_ActionAssets> theAssets, const QString& theLang);
+
+  virtual QString getValue(QtxShortcutTree::SortKey theKey) const;
+
+  void setKeySequence(const QString& theKeySequence);
+  QString keySequence() const;
+  void highlightKeySequenceAsModified(bool theHighlight);
+
+  const QString myInModuleActionID;
+};
+
+#endif // QTXSHORTCUTTREE_H

@@ -159,7 +159,7 @@ void LightApp_Module::contextMenuPopup( const QString& client, QMenu* menu, QStr
 /*!Update object browser.
  * For updating model or whole object browser use update() method can be used.
 */
-void LightApp_Module::updateObjBrowser( bool theIsUpdateDataModel, 
+void LightApp_Module::updateObjBrowser( bool theIsUpdateDataModel,
                                         SUIT_DataObject* theDataObject )
 {
   if (!getApp()->objectBrowser())
@@ -242,7 +242,7 @@ bool LightApp_Module::activateModule( SUIT_Study* study )
   if ( action(myErase) )
     action(myErase)->setEnabled(true);
 
-  application()->shortcutMgr()->setSectionEnabled( moduleName() );
+  application()->shortcutMgr()->setActionsWithPrefixInIDEnabled( moduleName() );
 
   /*  BUG 0020498 : The Entry column is always shown at module activation
       The registration of column is moved into LightApp_Application
@@ -282,8 +282,8 @@ bool LightApp_Module::deactivateModule( SUIT_Study* study )
   if ( action(myErase) )
     action(myErase)->setEnabled(false);
 
-  application()->shortcutMgr()->setSectionEnabled( moduleName(), false );
-  
+  application()->shortcutMgr()->setActionsWithPrefixInIDEnabled( moduleName(), false );
+
   /*  BUG 0020498 : The Entry column is always shown at module activation
   QString EntryCol = QObject::tr( "ENTRY_COLUMN" );
   LightApp_DataModel* m = dynamic_cast<LightApp_DataModel*>( dataModel() );
@@ -302,9 +302,9 @@ bool LightApp_Module::deactivateModule( SUIT_Study* study )
 void LightApp_Module::studyClosed( SUIT_Study* theStudy )
 {
   CAM_Module::studyClosed( theStudy );
-  
+
   myIsFirstActivate = true;
-  
+
   LightApp_Application* app = dynamic_cast<LightApp_Application*>(application());
   if ( app ) {
     SUIT_DataBrowser* ob = app->objectBrowser();
@@ -452,12 +452,12 @@ QtxPopupMgr* LightApp_Module::popupMgr()
 
     QPixmap p;
     SUIT_Desktop* d = application()->desktop();
-    
-    QAction 
+
+    QAction
       *disp = createAction( -1, tr( "TOP_SHOW" ), p, tr( "MEN_SHOW" ), tr( "STB_SHOW" ),
-                            0, d, false, this, SLOT( onShowHide() ), QString("General:Show object(s)") ),
+                            0, d, false, this, SLOT( onShowHide() ), QString("#General/Object(s)/Show") ),
       *erase = createAction( -1, tr( "TOP_HIDE" ), p, tr( "MEN_HIDE" ), tr( "STB_HIDE" ),
-                             0, d, false, this, SLOT( onShowHide() ) , QString("General:Hide object(s)") ),
+                             0, d, false, this, SLOT( onShowHide() ) , QString("#General/Object(s)/Hide") ),
       *dispOnly = createAction( -1, tr( "TOP_DISPLAY_ONLY" ), p, tr( "MEN_DISPLAY_ONLY" ), tr( "STB_DISPLAY_ONLY" ),
                                 0, d, false, this, SLOT( onShowHide() ) ),
       *eraseAll = createAction( -1, tr( "TOP_ERASE_ALL" ), p, tr( "MEN_ERASE_ALL" ), tr( "STB_ERASE_ALL" ),
@@ -467,7 +467,7 @@ QtxPopupMgr* LightApp_Module::popupMgr()
     myDisplayOnly = actionId( dispOnly );
     myEraseAll    = actionId( eraseAll );
 
-    myPopupMgr->insert( disp, -1, 0 ); 
+    myPopupMgr->insert( disp, -1, 0 );
     myPopupMgr->insert( erase, -1, 0 );
     myPopupMgr->insert( dispOnly, -1, 0 );
     myPopupMgr->insert( eraseAll, -1, 0 );
@@ -616,7 +616,7 @@ void LightApp_Module::startOperation( const int id )
 *
 * Creates operation with given id. You should not call this method, it will be called
 * automatically from startOperation. You may redefine this method in concrete module to
-* create operations. 
+* create operations.
 */
 LightApp_Operation* LightApp_Module::createOperation( const int id ) const
 {
@@ -711,7 +711,7 @@ void LightApp_Module::onViewManagerRemoved( SUIT_ViewManager* )
 /*!
   \brief Returns instance of operation by its id; if there is no operation
   corresponding to this id, null pointer is returned
-  \param id - operation id 
+  \param id - operation id
   \return operation instance
 */
 LightApp_Operation* LightApp_Module::operation( const int id ) const
@@ -725,7 +725,7 @@ LightApp_Operation* LightApp_Module::operation( const int id ) const
 bool LightApp_Module::reusableOperation( const int /*id*/ )
 {
  return true;
-} 
+}
 
 /*!
   virtual method
@@ -816,7 +816,7 @@ void LightApp_Module::updateModuleVisibilityState()
   // update visibility state of objects
   LightApp_Application* app = dynamic_cast<LightApp_Application*>(SUIT_Session::session()->activeApplication());
   if ( !app ) return;
-  
+
   SUIT_DataBrowser* ob = app->objectBrowser();
   if ( !ob || !ob->model() ) return;
 
@@ -834,9 +834,9 @@ void LightApp_Module::updateModuleVisibilityState()
 
   SUIT_DataObject* rootObj = ob->root();
   if ( !rootObj ) return;
-  
+
   DataObjectList listObj = rootObj->children( true );
-  
+
   SUIT_ViewModel* vmod = 0;
   if ( SUIT_ViewManager* vman = app->activeViewManager() )
     vmod = vman->getViewModel();
@@ -861,15 +861,15 @@ void LightApp_Module::onObjectClicked( SUIT_DataObject* theObject, int theColumn
 
   LightApp_DataObject* lo = dynamic_cast<LightApp_DataObject*>( theObject );
   if ( !lo ) return;
-  
+
   // detect action index (from LightApp level)
   int id = -1;
-  
+
   if ( study->visibilityState( lo->entry() ) == Qtx::ShownState )
     id = myErase;
   else if ( study->visibilityState( lo->entry() ) == Qtx::HiddenState )
     id = myDisplay;
-  
+
   if ( id != -1 )
     startOperation( id );
 }

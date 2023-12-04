@@ -27,8 +27,8 @@
 
 #include <QObject>
 #include <QMap>
+#include <QIcon>
 
-class QIcon;
 class QLabel;
 class QString;
 class QAction;
@@ -50,8 +50,8 @@ class SUIT_Study;
  */
 /*!
   An <b>Application</b> is a class which defines application configuration and behaviour.
-  For example Application object defines what Viewers are used in this application, what auxilliary windows
-  are present, how user can dial with them. Also Application object defines an sertain type of data structure by 
+  For example, Application object defines what Viewers are used in this application, what auxilliary windows
+  are present, how user can dial with them. Also Application object defines an certain type of data structure by
   holding of pointer on an instance of SUIT_Study class (which represents Document data structure). In other words
   Application defines type of sata structure, type of used Viewers, type of main GUI widget (Desktop),
   and other auxilliary tools.
@@ -68,7 +68,7 @@ public:
   //! Returns main widget (Desktop) of the application (if it exists)
   virtual SUIT_Desktop* desktop();
 
-  /*! Returns \c false if application can not be closed (because of non saved data for example). 
+  /*! Returns \c false if application can not be closed (because of non saved data for example).
       This method called by SUIT_Session whin closing of application was requested. */
   virtual bool          isPossibleToClose( bool& );
 
@@ -93,7 +93,7 @@ public:
   //! Creates new empty Study if active Study = 0
   virtual void          createEmptyStudy();
 
-  /*! Returns number of Studies. 
+  /*! Returns number of Studies.
    *  Must be redefined in Applications which support several studies for one Application instance. */
   virtual int           getNbStudies() const;
 
@@ -101,11 +101,11 @@ public:
 
   SUIT_ShortcutMgr*     shortcutMgr() const;
 
-  //! Puts the message to the status bar  
+  //! Puts the message to the status bar
   void                  putInfo ( const QString&, const int = 0 );
 
   //! Invokes application-specific "Open/Save File" dialog and returns the selected file name.
-  virtual QString       getFileName( bool open, const QString& initial, const QString& filters, 
+  virtual QString       getFileName( bool open, const QString& initial, const QString& filters,
                                      const QString& caption, QWidget* parent ) = 0;
 
   //! Invokes application-specific "Select Directory" dialog and returns the selected directory name.
@@ -156,7 +156,7 @@ protected:
   //! Creates a new Study instance. Must be redefined in new application according to its Study type.
   virtual SUIT_Study*   createNewStudy();
   virtual void          setActiveStudy( SUIT_Study* );
-  
+
   /** @name Set menu shown functions*/ //@{
   void                  setMenuShown( QAction*, const bool );
   void                  setMenuShown( const int, const bool );//@}
@@ -177,11 +177,14 @@ protected:
   QAction*              createAction( const int, const QString&, const QIcon&, const QString&,
                                       const QString&, const int, QObject* = 0,
                                       const bool = false, QObject* = 0, const char* = 0,
-				      const QString& = QString() );
+				                              const QString& = QString() );
   QAction*              createAction( const int, const QString&, const QIcon&, const QString&,
                                       const QString&, const QKeySequence&, QObject* = 0,
                                       const bool = false, QObject* = 0, const char* = 0,
-				      const QString& = QString() );
+				                              const QString& = QString() );
+  QAction*              createAction( const int, QObject*, const bool, const QString&,
+                                      const QString&, const QString&, const QString&, const QIcon& = QIcon(),
+                                      QObject* = nullptr, const char* = nullptr);
 
 protected slots:
   virtual void          onDesktopActivated();

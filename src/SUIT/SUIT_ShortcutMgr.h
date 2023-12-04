@@ -26,46 +26,447 @@
 #include "SUIT.h"
 
 #include <QObject>
-#include <QMultiMap>
+#include <QString>
+#include <QIcon>
+#include <map>
+#include <set>
+#include <memory>
+#include <utility>
 
+class QAction;
 class QtxAction;
-
 class QKeySequence;
+class QJsonObject;
 
 #if defined WIN32
 #pragma warning( disable: 4251 )
 #endif
 
+// Define SHORTCUT_MGR_DBG to enable SUIT_ShortcutMgr debug logging.
+// #define SHORTCUT_MGR_DBG
+/*! \returns true, if SUIT_ShortcutMgr debug logging is enabled. */
+SUIT_EXPORT extern inline bool ShCutDbg() {
+#ifdef SHORTCUT_MGR_DBG
+  return true;
+#else
+  return false;
+#endif
+}
+/*! \brief Prints theString to std::wcout, if SUIT_ShortcutMgr debug logging is enabled. */
+SUIT_EXPORT extern bool ShCutDbg(const QString& theString);
+/*! \brief Prints theString to std::wcout, if SUIT_ShortcutMgr debug logging is enabled. */
+SUIT_EXPORT extern bool ShCutDbg(const char* theString);
+
+
 /*!
-  \class SUIT_ShortcutMgr
-  \brief Class which manages shortcuts customization.
+  \class SUIT_ShortcutContainer
+  \brief Provides means to keep and edit shortcuts in compliance with the application logics.
+  \ref See SUIT_ShortcutMgr for details.
 */
-class SUIT_EXPORT SUIT_ShortcutMgr: public QObject 
+class SUIT_EXPORT SUIT_ShortcutContainer
 {
-  Q_OBJECT
 public:
-  static void Init();
-  static SUIT_ShortcutMgr* getShortcutMgr();
+  SUIT_ShortcutContainer();
 
-  void setSectionEnabled( const QString&, const bool = true );
-  void updateShortcuts();
+  /*! \returns IDs of modules, which interfere with the module:
+  if the module is root (theModuleID is empty) - returns all module IDs, otherwise returns ["", theModuleID]. */
+  std::set<QString> getIDsOfInterferingModules(const QString& theModuleID) const;
 
-protected:
-  SUIT_ShortcutMgr();
-  virtual ~SUIT_ShortcutMgr();
+  std::set<QString> getIDsOfAllModules() const;
 
-private slots:
-  void onActionDestroyed( QObject* );
+  /*! \brief Checks for conflicts. If theOverride, modifies incoming and disables all conflicting shortcuts.
+  Redefining a key sequence for the action, if theKeySequence does not conflict with other shortcuts, is not considered as a conflict.
+  \param theModuleID The method has no effect if theModuleID is invalid. \ref See SUIT_ShortcutMgr::isModuleIDValid(const QString&) for details.
+  \param theInModuleActionID The method has no effect if theInModuleActionID is invalid. \ref See SUIT_ShortcutMgr::isInModuleActionIDValid(const QString&).
+  If theInModuleActionID is meta-action ID, the shortcut is set to root module, and theModuleID is ignored.
+  \param theKeySequence Empty theKeySequence does not cause conflicts, in this case
+  a shortcut for the action is disabled: theInModuleActionID is added/retained in the container but mapped to empty key sequence.
+  \param theOverride If true, conflicting shortcuts are disabled.
+  \returns {moduleID, inModuleActionID}[] - Set of conflicting actions if theOverride = false,
+  otherwise set of actions (without incoming one), whose shortcuts have been disabled. */
+  std::set<std::pair<QString, QString>> setShortcut(
+    QString theModuleID,
+    const QString& theInModuleActionID,
+    const QKeySequence& theKeySequence,
+    bool theOverride
+  );
+
+  /*! \brief Checks for conflicts. Existence of a shortcut with another key sequence for the action,
+  if theKeySequence does not conflict with other shortcuts, is not considered as a conflict.
+  \param theInModuleActionID If theInModuleActionID is meta-action ID, the shortcut is looked for in root module, and theModuleID is ignored.
+  \param theKeySequence Empty theKeySequence does not have conflicts.
+  \returns {moduleID, inModuleActionID}[] - Set of conflicting actions. */
+  std::set<std::pair<QString, QString>> getConflicts(
+    QString theModuleID,
+    const QString& theInModuleActionID,
+    const QKeySequence& theKeySequence
+  ) const;
+
+  /*! \returns empty key sequence if shortcut for the action is not set.
+  \param theInModuleActionID If theInModuleActionID is meta-action ID, seeks in root module, and theModuleID is ignored.*/
+  const QKeySequence& getKeySequence(QString theModuleID, const QString& theInModuleActionID) const;
+
+  /*! \returns true, if shortcut for the action is set (even if the mapped key sequence is empty).
+   \param theInModuleActionID If theInModuleActionID is meta-action ID, seeks in root module, and theModuleID is ignored.*/
+  bool hasShortcut(QString theModuleID, const QString& theInModuleActionID) const;
+
+  /*! \returns {inModuleActionID, keySequence}[] - If the module was not added, the map is empty. */
+  const std::map<QString, QKeySequence>& getModuleShortcutsInversed(const QString& theModuleID) const;
+
+  /*! \brief Seeks for shortcuts in the module with in-module action IDs, which start with theInModuleActionIDPrefix.
+  \returns {inModuleActionID, keySequence}[] - If the module was not added, the map is empty. */
+  const std::map<QString, QKeySequence> getModuleShortcutsInversed(const QString& theModuleID, const QString& theInModuleActionIDPrefix) const;
+
+  /*! \brief Merges shortcuts of theOther into this.
+  \param theOverride if true, overrides conflicting shortcuts.
+  If false, and this has no shortcut for an incoming action, and the incoming shortcut conflicts
+  with an existing shortcut, disabled shortcut for the incoming action is set.
+  \param theTreatAbsentIncomingAsDisabled If theOverride == false, theTreatAbsentIncomingAsDisabled is ignored.
+  If theOverride and theTreatAbsentIncomingAsDisabled, and theOther has no shortcut for an action, which exists in this,
+  the existing shortcut in this is set disabled.
+  \returns { moduleID, { inModuleActionID, keySequence }[] }[] - Modiified shortcuts inversed. */
+  std::map<QString, std::map<QString, QKeySequence>> merge(
+    const SUIT_ShortcutContainer& theOther,
+    bool theOverride,
+    bool theTreatAbsentIncomingAsDisabled = false
+  );
+
+  /*! \brief Generates human-readable text representation of content. */
+  QString toString() const;
 
 private:
-  virtual bool eventFilter( QObject* o, QEvent* e );
+  /** { moduleID, { keySequence, inModuleActionID }[] }[]. keySequence can not be empty.
+   * Can not contain entries like { <non-root module ID>, { keySequence, <meta-action ID> } }. */
+  std::map<QString, std::map<QKeySequence, QString>> myShortcuts;
 
-  void processAction( QtxAction* );
-  QKeySequence getShortcutByActionName( const QString& ) const;
+  /** { moduleID, { inModuleActionID, keySequence }[] }[]. keySequence can be empty.
+   * Can not contain entries like { <non-root module ID>, { <meta-action ID>, keySequence } }. */
+  std::map<QString, std::map<QString, QKeySequence>> myShortcutsInversed;
+};
+
+
+/*! \brief GUI-related assets. */
+struct SUIT_EXPORT SUIT_ActionAssets
+{
+  struct LangDependentAssets
+  {
+    static const QString PROP_ID_NAME;
+    static const QString PROP_ID_TOOLTIP;
+
+    bool fromJSON(const QJsonObject& theJsonObject);
+    void toJSON(QJsonObject& oJsonObject) const;
+
+    QString myName;
+    QString myToolTip;
+  };
+
+  static const QString STRUCT_ID;
+  static const QString PROP_ID_LANG_DEPENDENT_ASSETS;
+  static const QString PROP_ID_ICON_PATH;
+
+  bool fromJSON(const QJsonObject& theJsonObject);
+  void toJSON(QJsonObject& oJsonObject) const;
+  QString toString() const;
+
+  QStringList getLangs() const;
+  void clearAllLangsExcept(const QString& theLang);
+
+  /*! \param theOverride If true, values of theOther override conflicting values of this. */
+  void merge(const SUIT_ActionAssets& theOther, bool theOverride);
+
+  std::map<QString, LangDependentAssets> myLangDependentAssets;
+  QString myIconPath;
+
+  /*! Is not serialized. */
+  QIcon myIcon;
+};
+
+
+/*!
+  \class SUIT_ShortcutMgr
+  \brief Handles action shortcut customization.
+
+  Register actions under action IDs. Set shortcuts, which are [action ID]<->[key sequence] mappings.
+  Every time an action is registered or a shorcut is set, if there are an action and a shortcut,
+  which are mapped to the same action ID, the action is bound to the key sequence of the shortcut.
+  Action IDs are also used to (de)serialize shortcut settings.
+  Several QActions may be registered under the same ID.
+
+  Most of actions are intercepted on creation in SUIT_ShortcutMgr:eventFilter(QObject* theObject, QEvent* theEvent).
+  If an intercepted action is instance of QtxAction, it is registered automatically.
+  Since non-QtxActions have no member ID(), SUIT_ShortcutMgr is unable to register them automatically
+  in SUIT_ShortcutMgr::eventFilter(). Thus, every non-QtxAction should be
+  passed to SUIT_ShortcutMgr::registerAction(const QString& theActionID, QAction* theAction).
+
+  Action ID is application-unique must be composed as <moduleID>/<inModuleActionID>.
+  If an action belongs to a desktop or is available even if no module is active (e.g. 'Save As'),
+  use empty string as <moduleID>. Let's call such actions as root actions.
+
+  There is a need to keep multiple actions, which do the same from user' perspective,
+  bound to the same key sequence. E.g. 'Front view'. Let's call such set of actions as meta-action.
+  Actions of a meta-action may belong to different modules, and/or there may be several actions
+  of the same meta-action in the same module. <inModuleActionID> of all members of a meta-action
+  must be the same and start with "#".
+  Meta-action is root action when it comes to checking for conflicts.
+  Shortcuts of meta-actions are (de)serialized to the same section of preference files as root shortcuts.
+
+  <inModuleActionID> can contain several "/". Go to \ref isInModuleActionIDValid(const QString&) for details.
+  You can refer to multiple actions, whose <inModuleActionID> starts with the prefix.
+
+  Only one module can be active at instance. So a key sequence must be unique within a joined temporary table of
+  root and active module shortcuts. An action is allowed to be bound with only key sequence.
+
+  WARNING!
+  Avoid assigning shortcuts to instances of QAction and all its descendants directly.
+  (1) Key sequence being bound directly to any registered/intercepted action with valid ID,
+      if the key sequence does not conflict with shortcuts kept by SUIT_ShortcutMgr,
+      is added to the manager and appears in user preference file. If it does conflict,
+      it is reassigned with a key sequence from preference files or
+      disabled and added to user preference files (if the files have no shortcut for the action).
+  (2) Key sequences being bound directly to non-QtxAction instances are disabled.
+*/
+class SUIT_EXPORT SUIT_ShortcutMgr: public QObject
+{
+  Q_OBJECT
+
+private:
+  SUIT_ShortcutMgr();
+  SUIT_ShortcutMgr(const SUIT_ShortcutMgr&) = delete;
+  SUIT_ShortcutMgr& operator=(const SUIT_ShortcutMgr&) = delete;
+
+protected:
+  virtual ~SUIT_ShortcutMgr();
+
+public:
+  /*! \brief Create new singleton-instance of shortcut manager, if it has not been created. */
+  static void Init();
+
+  static SUIT_ShortcutMgr* get();
+
+  /*! \brief Checks whether the theKeySequence is platform-compatible. */
+  static bool isKeySequenceValid(const QKeySequence& theKeySequence);
+
+  /*! \returns {false, _ } if  theKeySequenceString is invalid. */
+  static std::pair<bool, QKeySequence> toKeySequenceIfValid(const QString& theKeySequenceString);
+
+  /*! \brief Valid module ID does not contain "/" and equals to result of QString(theModuleID).simplified().
+  Empty module ID is valid - it is root module ID. */
+  static bool isModuleIDValid(const QString& theModuleID);
+
+  /*! \brief Valid in-module action ID may consist of several tokens, separated by "/":
+  <token_0>/<token_1>...<token_N>/<token_N-1>.
+  Each <token> must be non-empty and be equal to QString(<token>).simplified().
+  Empty or "#" in-module action ID is not valid. */
+  static bool isInModuleActionIDValid(const QString& theInModuleActionID);
+
+  /*! \returns true, is theInModuleActionID starts with "#". */
+  static bool isInModuleMetaActionID(const QString& theInModuleActionID);
+
+  /*! \brief Extracts module ID and in-module action ID from application-unique action ID.
+  The theActionID must be composed as <moduleID>/<inModuleActionID>.
+  \returns { _ , "" }, if theActionID is invalid. */
+  static std::pair<QString, QString> splitIntoModuleIDAndInModuleID(const QString& theActionID);
+
+  /*! See \ref splitIntoModuleIDAndInModuleID(const QString&). */
+  static bool isActionIDValid(const QString& theActionID);
+
+  /*! \brief Creates application-unique action ID. Reverse to splitIntoModuleIDAndInModuleID.
+  \returns Emppty string, if either theModuleID or theInModuleActionID is invalid*/
+  static QString makeActionID(const QString& theModuleID, const QString& theInModuleActionID);
+
+  /*! \brief Sets all shortcuts from preferences to theContainer. Incoming shortcuts override existing ones.
+  If the container has shortcut for an action, which is absent in preferences, and the existing shortcut
+  does not conflict with incoming ones, it is untouched.
+  See \ref setShortcutsFromPreferences() for details.
+  \param theDefaultOnly If true, user preferences are ignored and only default preferences are used. */
+  static void fillContainerFromPreferences(SUIT_ShortcutContainer& theContainer, bool theDefaultOnly);
+
+  /*! \brief Checks the resource manager directly.
+  \returns {assetsExist, assets}. */
+  static std::pair<bool, SUIT_ActionAssets> getActionAssetsFromResources(const QString& theActionID);
+
+  /*! \returns Language being set in resource manager. */
+  static QString getLang();
+
+
+  /*! \brief Add theAction to map of managed actions. */
+  void registerAction(const QString& theActionID, QAction* theAction);
+
+  /*! \brief Add theAction to map of managed actions. QtxAction::ID() is used as action ID. */
+  void registerAction(QtxAction* theAction);
+
+  /*! \brief Get registered actions. If theInModuleActionID is meta-action ID, seeks in all modules. */
+  std::set<QAction*> getActions(const QString& theModuleID, const QString& theInModuleActionID) const;
+
+  /*! \brief Get module ID and in-module-ID of theAction.
+  \returns { _ , "" } if theAction is not registered. */
+  std::pair<QString, QString> getModuleIDAndInModuleID(const QAction* theAction) const;
+
+  /*! Returns true if theAction is registered. */
+  bool hasAction(const QAction* theAction) const;
+
+  /*! \brief Get action ID of theActon.
+  \returns empty string if theAction is not registered. */
+  QString getActionID(const QAction* theAction) const;
+
+  /*! \brief Enables/disable actions of the module.
+  Only those actions are affected, whose parent widget is active desktop. */
+  void setActionsOfModuleEnabled(const QString& theModuleID, const bool theEnable = true) const;
+
+  /*! \brief Enables/disables all registered actions whose in-module action ID begins with theInModuleActionIDPrefix.
+  Only those actions are affected, whose parent widget is active desktop. */
+  void setActionsWithPrefixInIDEnabled(const QString& theInModuleActionIDPrefix, bool theEnable = true) const;
+
+  [[deprecated("Use setActionsWithPrefixInIDEnabled(const QString&, bool) instead.")]]
+  void setSectionEnabled(const QString& theInModuleActionIDPrefix, bool theEnable = true) const;
+
+  /*! \brief For all registered actions binds key sequences from myShortcutContainer. */
+  void rebindActionsToKeySequences() const;
+
+  [[deprecated("Use rebindActionsToKeySequences() instead.")]]
+  void updateShortcuts() const;
+
+  /*! \brief Checks for conflicts. If theOverride, modifies incoming and disables all conflicting shortcuts.
+  Then binds key sequences with corresponding registered actions. Saves changes to preferences.
+
+  Redefining a key sequence for the action, if the key sequence does not conflict with other shortcuts, is not considered as a conflict.
+  \param theInModuleActionID The method has no effect if theInModuleActionID is empty.
+  \param theKeySequence Empty theKeySequence does not cause conflicts, in this case
+  a shortcut for the action is disabled: theInModuleActionID is added/retained in the container but mapped to empty key sequence.
+  \param theOverride If true, conflicting shortcuts are disabled.
+  \returns {moduleID, inModuleActionID}[] - Set of conflicting actions if theOverride = false,
+  otherwise set of actions (without incoming one), whose shortcuts have been disabled. */
+  std::set<std::pair<QString, QString>> setShortcut(const QString& theActionID, const QKeySequence& theKeySequence, bool theOverride = false);
+  std::set<std::pair<QString, QString>> setShortcut(const QString& theModuleID, const QString& theInModuleActionID, const QKeySequence& theKeySequence, bool theOverride = false);
+
+  const SUIT_ShortcutContainer& getShortcutContainer() const;
+
+  /*! \brief Does not perform validity checks on theModuleID and theInModuleActionID. */
+  void mergeShortcutContainer(const SUIT_ShortcutContainer& theContainer, bool theOverride = true, bool theTreatAbsentIncomingAsDisabled = false);
+
+  /*! \brief Get a key sequence mapped to the action. */
+  QKeySequence getKeySequence(const QString& theModuleID, const QString& theInModuleActionID) const;
+
+  /*! \returns {inModuleActionID, keySequence}[] */
+  const std::map<QString, QKeySequence>& getModuleShortcutsInversed(const QString& theModuleID) const;
+
+  /*! \returns All module IDs, which were added to myShortcutContainer. */
+  std::set<QString> getShortcutModuleIDs() const;
+
+  /*! \returns IDs of modules, which interfere with the module:
+  if the module is root (theModuleID is empty) - returns all module IDs, otherwise returns ["", theModuleID]. */
+  std::set<QString> getIDsOfInterferingModules(const QString& theModuleID) const;
+
+  std::shared_ptr<const SUIT_ActionAssets> getModuleAssets(const QString& theModuleID) const;
+
+  /*! \brief Retrieves module name, if the asset was loaded using \ref setAssetsFromResources(). If theLang is empty, it is effectively current language. */
+  QString getModuleName(const QString& theModuleID, const QString& theLang = "") const;
+
+  std::shared_ptr<const SUIT_ActionAssets> getActionAssets(const QString& theModuleID, const QString& theInModuleActionID) const;
+
+  std::shared_ptr<const SUIT_ActionAssets> getActionAssets(const QString& theActionID) const;
+
+  /*! \brief Retrieves action name, if the asset was loaded using \ref setAssetsFromResources(). If theLang is empty, it is effectively current language. */
+  QString getActionName(const QString& theModuleID, const QString& theInModuleActionID, const QString& theLang = "") const;
+
+private slots:
+  /*!
+  \brief Called when the corresponding action is destroyed.
+  Removes destroyed action from maps of registered actions. Preserves shortcut.
+  \param theObject action being destroyed.
+  */
+  void onActionDestroyed(QObject* theObject);
+
+private:
+  /*! \brief Overrides QObject::eventFilter().
+  If theEvent is QEvent::ActionAdded and the action is instance of QtxAction, registers it. */
+  virtual bool eventFilter(QObject* theObject, QEvent* theEvent);
+
+  /*! \brief Does not perform validity checks on theModuleID and theInModuleActionID. */
+  std::set<std::pair<QString, QString>> setShortcutNoIDChecks(const QString& theModuleID, const QString& theInModuleActionID, const QKeySequence& theKeySequence, bool theOverride);
+
+  /*! \brief Set shortcuts from preference files. The method is intended to be called before any calls to setShortcut() or mergeShortcutContainer().
+  Definition of this method assumes, that shortcut settings are serialized as prerefence entries {name=<inModuleActionID>, val=<keySequence>}
+  in dedicated section for each module, with names of sections being composed as "shortcuts:<moduleID>".
+
+  E.g. in case of XML file it may look like this:
+  <!--
+  <section name="<module ID>">
+    ...
+    <parameter name="<in-module action ID>" value="key sequence">
+    ...
+  </section>
+  -->
+  <section name="shortcuts:">
+    <parameter name="TOT_DESK_FILE_NEW" value="Ctrl+N"/>
+    <parameter name="TOT_DESK_FILE_OPEN" value="Ctrl+O"/>
+    <parameter name="#General/Show object(s)" value="Ctrl+Alt+S"/>
+    <parameter name="#General/Hide object(s)" value="Ctrl+Alt+H"/>
+    <parameter name="#Viewers/Back view" value="Ctrl+Alt+B"/>
+    <parameter name="#Viewers/Front view" value="Ctrl+Alt+F"/>
+  </section>
+   <section name="shortcuts:GEOM">
+    <parameter name="Isolines/Increase number" value="Meta+I"/>
+    <parameter name="Isolines/Decrease number" value="Meta+D"/>
+    <parameter name="Transparency/Increase" value="Meta+Y"/>
+    <parameter name="Transparency/Decrease" value="Meta+T"/>
+  </section>
+
+  Empty inModuleActionIDs are ignored.
+
+  nb! For any theQtxAction you wish user be able to assign it to a shortcut,
+  add theQtxAction.ID() to default resource files (you can map it to no key sequence).*/
+  void setShortcutsFromPreferences();
+
+  /*! \brief Writes shortcuts to preference files.
+  \param theShortcuts { moduleID, { inModuleActionID, keySequence }[] }[]. Empty inModuleActionIDs are ignored. */
+  static void saveShortcutsToPreferences(const std::map<QString, std::map<QString, QKeySequence>>& theShortcutsInversed);
+
+  /*! Fills myActionAssets from asset files in theLanguage.
+  \param theLanguage If default, fills assets in current language.
+  If an asset in requested language is not found, seeks for the asset EN in and then in FR.
+
+  Asset files must be structured like this:
+  {
+    ...
+    actionID : {
+      "langDependentAssets": {
+        ...
+        lang: {
+          "name": name,
+          "tooltip": tooltip
+        },
+        ...
+      },
+      "iconPath": iconPath
+    },
+    ...
+  }
+  */
+  void setAssetsFromResources(QString theLanguage = QString());
 
 private:
   static SUIT_ShortcutMgr* myShortcutMgr;
-  QMultiMap<QString, QtxAction*> myShortcutActions;
+
+  /** { moduleID, { inModuleActionID, action[] }[] }[]. May contain entries like { <non-root module ID>, { <meta-action ID>, actions[] } }. */
+  std::map<QString, std::map<QString, std::set<QAction*>>> myActions;
+
+  /** { action, { moduleID, inModuleActionID } }[]. May contain entries like { <non-root module ID>, { <meta-action ID>, actions[] } }. */
+  std::map<QAction*, std::pair<QString, QString>> myActionIDs; // To maintain uniqueness of actions and effectively retrieve IDs of registered actions.
+
+  /** Can not contain entries like { <non-root module ID>, { <meta-action ID>, actions[] } }. */
+  SUIT_ShortcutContainer myShortcutContainer;
+
+  /* nb!
+  Sets of moduleIDs and inModuleActionIDs are equal for myActions and myActionIDs.
+  Sets of moduleIDs and inModuleActionIDs may NOT be equal for myActions and myShortcutContainer.
+  */
+
+  /* {actionID, assets}[] */
+  std::map<QString, std::shared_ptr<SUIT_ActionAssets>> myActionAssets;
+
+  /* {moduleID, assets}[] */
+  mutable std::map<QString, std::shared_ptr<SUIT_ActionAssets>> myModuleAssets;
 };
 
 #if defined WIN32

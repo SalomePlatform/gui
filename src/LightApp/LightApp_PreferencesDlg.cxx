@@ -150,7 +150,7 @@ void LightApp_PreferencesDlg::onDefault()
     if ( myPrefs && myPrefs->resourceMgr() )
     {
       QtxResourceMgr::WorkingMode prev = myPrefs->resourceMgr()->setWorkingMode( QtxResourceMgr::IgnoreUserValues );
-      myPrefs->retrieve();
+      myPrefs->retrieveDefault();
       myPrefs->resourceMgr()->setWorkingMode( prev );
     }
     emit defaultPressed();

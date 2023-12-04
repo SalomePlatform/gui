@@ -1,0 +1,699 @@
+{
+    "/#TOT_DESK_EDIT_COPY": {
+        "iconPath": "${GUI_ROOT_DIR}/share/salome/resources/gui/copy.png",
+        "langDependentAssets": {
+            "en": {
+                "name": "Copy",
+                "tooltip": "Copy the selection to the Clipboard"
+            },
+            "fr": {
+                "name": "Copier",
+                "tooltip": "Copier la sélection dans le presse-papiers"
+            },
+            "ja": {
+                "name": "コピー",
+                "tooltip": "選択範囲をクリップボードにコピー"
+            }
+        }
+    },
+    "/#Viewers/View/Reset": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Reset",
+                "tooltip": "Reset View Point"
+            },
+            "fr": {
+                "name": "Restaurer",
+                "tooltip": "Restaurer le point de vue"
+            },
+            "ja": {
+                "name": "復元",
+                "tooltip": "ビューのポイントを復元します。"
+            }
+        }
+    },
+    "/#Viewers/View/Rotate anticlockwise": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Rotate counterclockwise",
+                "tooltip": "Rotate view counterclockwise"
+            },
+            "fr": {
+                "name": "Tourner la vue à gauche",
+                "tooltip": "Tourner la vue à gauche"
+            },
+            "ja": {
+                "name": "表示を左に",
+                "tooltip": "表示を左に"
+            }
+        }
+    },
+    "/#Viewers/View/Rotate clockwise": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Rotate clockwise",
+                "tooltip": "Rotate View Clockwise"
+            },
+            "fr": {
+                "name": "Tourner la vue à droite",
+                "tooltip": "Tourner la vue à droite"
+            },
+            "ja": {
+                "name": "右のビューを回転させる",
+                "tooltip": "右のビューを回転させる"
+            }
+        }
+    },
+    "/#Viewers/View/Set X+": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "+OX",
+                "tooltip": "+OX View"
+            },
+            "fr": {
+                "name": "+OX",
+                "tooltip": "Vue +OX"
+            },
+            "ja": {
+                "name": "+OX",
+                "tooltip": "+OX View"
+            }
+        }
+    },
+    "/#Viewers/View/Set X-": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "-OX",
+                "tooltip": "-OX View"
+            },
+            "fr": {
+                "name": "-OX",
+                "tooltip": "Vue -OX"
+            },
+            "ja": {
+                "name": "-OX",
+                "tooltip": "-OX View"
+            }
+        }
+    },
+    "/#Viewers/View/Set Y+": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "+OY",
+                "tooltip": "+OY View"
+            },
+            "fr": {
+                "name": "+OY",
+                "tooltip": "Vue +OY"
+            },
+            "ja": {
+                "name": "+OY",
+                "tooltip": "+OY View"
+            }
+        }
+    },
+    "/#Viewers/View/Set Y-": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "-OY",
+                "tooltip": "-OY View"
+            },
+            "fr": {
+                "name": "-OY",
+                "tooltip": "Vue -OY"
+            },
+            "ja": {
+                "name": "-OY",
+                "tooltip": "-OY View"
+            }
+        }
+    },
+    "/#Viewers/View/Set Z+": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "+OZ",
+                "tooltip": "+OZ View"
+            },
+            "fr": {
+                "name": "+OZ",
+                "tooltip": "Vue +OZ"
+            },
+            "ja": {
+                "name": "+OZ",
+                "tooltip": "+OZ View"
+            }
+        }
+    },
+    "/#Viewers/View/Set Z-": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "-OZ",
+                "tooltip": "-OZ View"
+            },
+            "fr": {
+                "name": "-OZ",
+                "tooltip": "Vue -OZ"
+            },
+            "ja": {
+                "name": "-OZ",
+                "tooltip": "-OZ View"
+            }
+        }
+    },
+    "/#General/Object(s)/Hide": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Hide",
+                "tooltip": "Hide"
+            },
+            "fr": {
+                "name": "Cacher",
+                "tooltip": "Cacher"
+            },
+            "ja": {
+                "name": "非表示",
+                "tooltip": "非表示"
+            }
+        }
+    },
+    "/#General/Object(s)/Show": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Show",
+                "tooltip": "Show"
+            },
+            "fr": {
+                "name": "Afficher",
+                "tooltip": "Afficher"
+            },
+            "ja": {
+                "name": "表示",
+                "tooltip": "表示"
+            }
+        }
+    },
+    "/PRP_CLOSE": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Close",
+                "tooltip": "Close active window"
+            },
+            "fr": {
+                "name": "Fermer",
+                "tooltip": "Fermer la fenêtre active"
+            },
+            "ja": {
+                "name": "閉じる",
+                "tooltip": "アクティブ ウィンドウを閉じる"
+            }
+        }
+    },
+    "/PRP_CREATE_NEW_WINDOW_FOR_VIEWER_0": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "GL 2D view",
+                "tooltip": "Create new GL 2D view"
+            },
+            "fr": {
+                "name": "Scène GL ",
+                "tooltip": "Créer une nouvelle Scène GL "
+            },
+            "ja": {
+                "name": "GL 2D view",
+                "tooltip": "新しい GL 2D view を作成します。"
+            }
+        }
+    },
+    "/PRP_CREATE_NEW_WINDOW_FOR_VIEWER_1": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Plot 2D view",
+                "tooltip": "Create new Plot 2D view"
+            },
+            "fr": {
+                "name": "Scène Plot2d ",
+                "tooltip": "Créer une nouvelle Scène Plot2d "
+            },
+            "ja": {
+                "name": "Plot 2D View",
+                "tooltip": "新しい Plot 2D View を作成します。"
+            }
+        }
+    },
+    "/PRP_CREATE_NEW_WINDOW_FOR_VIEWER_2": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "OCC 3D view",
+                "tooltip": "Create new OCC 3D view"
+            },
+            "fr": {
+                "name": "Scène OCC",
+                "tooltip": "Créer une nouvelle Scène OCC"
+            },
+            "ja": {
+                "name": "OCC 3D　View",
+                "tooltip": "新しい OCC 3D　View を作成します。"
+            }
+        }
+    },
+    "/PRP_CREATE_NEW_WINDOW_FOR_VIEWER_3": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "VTK 3D view",
+                "tooltip": "Create new VTK 3D view"
+            },
+            "fr": {
+                "name": "Scène VTK",
+                "tooltip": "Créer une nouvelle Scène VTK"
+            },
+            "ja": {
+                "name": "VTK 3D View",
+                "tooltip": "新しい VTK 3D View を作成します。"
+            }
+        }
+    },
+    "/PRP_CREATE_NEW_WINDOW_FOR_VIEWER_4": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "QxScene 2D view",
+                "tooltip": "Create new QxScene 2D view"
+            },
+            "fr": {
+                "name": "Scène QxScene",
+                "tooltip": "Créer une nouvelle Scène QxScene"
+            },
+            "ja": {
+                "name": "シーン QxScene",
+                "tooltip": "新しい シーン QxScene を作成します。"
+            }
+        }
+    },
+    "/PRP_CREATE_NEW_WINDOW_FOR_VIEWER_5": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Graphics view",
+                "tooltip": "Create new Graphics view"
+            },
+            "fr": {
+                "name": "Scène Graphiques",
+                "tooltip": "Créer une nouvelle Scène Graphiques"
+            },
+            "ja": {
+                "name": "グラフィックの表示",
+                "tooltip": "新しい グラフィックの表示 を作成します。"
+            }
+        }
+    },
+    "/PRP_CREATE_NEW_WINDOW_FOR_VIEWER_6": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "ParaView view",
+                "tooltip": "Create new ParaView view"
+            },
+            "fr": {
+                "name": "Scène ParaView",
+                "tooltip": "Créer une nouvelle Scène ParaView"
+            },
+            "ja": {
+                "name": "ParaView 表示 ",
+                "tooltip": "新しい ParaView 表示  を作成します。"
+            }
+        }
+    },
+    "/PRP_CREATE_NEW_WINDOW_FOR_VIEWER_7": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Python view",
+                "tooltip": "Create new Python view"
+            },
+            "fr": {
+                "name": "Vue Python",
+                "tooltip": "Créer une nouvelle Vue Python"
+            },
+            "ja": {
+                "name": "Python view",
+                "tooltip": "新しい Python view を作成します。"
+            }
+        }
+    },
+    "/PRP_CREATE_NEW_WINDOW_FOR_VIEWER_8": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "ParaView3D view",
+                "tooltip": "Create new ParaView3D view"
+            },
+            "fr": {
+                "name": "ParaView3D view",
+                "tooltip": "Créer une nouvelle ParaView3D view"
+            },
+            "ja": {
+                "name": "ParaView3D view",
+                "tooltip": "新しい ParaView3D view を作成します。"
+            }
+        }
+    },
+    "/PRP_DESK_CATALOG_GENERATOR": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Catalog Generator",
+                "tooltip": "Generates XML catalog of a component's interface"
+            },
+            "fr": {
+                "name": "Genérateur de catalogue",
+                "tooltip": "Génére un catalogue XML de l'interface du composant"
+            },
+            "ja": {
+                "name": "カタログ ジェネレーター",
+                "tooltip": "コンポーネントインターフェイスのXMLカタログを生成"
+            }
+        }
+    },
+    "/PRP_DESK_CONNECT": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Connect",
+                "tooltip": "Connect active study"
+            },
+            "fr": {
+                "name": "Connecter",
+                "tooltip": "Connecter l'étude en cours"
+            },
+            "ja": {
+                "name": "接続",
+                "tooltip": "アクティブスタディの接続"
+            }
+        }
+    },
+    "/PRP_DESK_DISCONNECT": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Disconnect",
+                "tooltip": "Disconnect the current study"
+            },
+            "fr": {
+                "name": "Déconnecter",
+                "tooltip": "Déconnecter l'étude en cours"
+            },
+            "ja": {
+                "name": "切断",
+                "tooltip": "カレントスタディの切断"
+            }
+        }
+    },
+    "/PRP_DESK_FILE_DUMP_STUDY": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Dump Study...",
+                "tooltip": "Dumps study to the python script"
+            },
+            "fr": {
+                "name": "Générer le script de l'étude...",
+                "tooltip": "Génère le script python de l'étude"
+            },
+            "ja": {
+                "name": "スクリプトを保存",
+                "tooltip": "Pythonスクリプトにスタディをダンプする"
+            }
+        }
+    },
+    "/PRP_DESK_FILE_LOAD_SCRIPT": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Load Script...",
+                "tooltip": "Loads python script from file"
+            },
+            "fr": {
+                "name": "Exécuter un script...",
+                "tooltip": "Exécute un script Python à partir d'un fichier"
+            },
+            "ja": {
+                "name": "スクリプトを読込み...",
+                "tooltip": "ファイルからPythonスクリプトを読込み"
+            }
+        }
+    },
+    "/PRP_DESK_HELP_ABOUT": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "About...",
+                "tooltip": "Shows 'About' dialog"
+            },
+            "fr": {
+                "name": "A propos de...",
+                "tooltip": "Montre la boîte de dialogue 'A propos'"
+            },
+            "ja": {
+                "name": "バージョン情報...",
+                "tooltip": "ソフト情報の表示"
+            }
+        }
+    },
+    "/PRP_DESK_PREFERENCES": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Preferences...",
+                "tooltip": "Allow to change the preferences"
+            },
+            "fr": {
+                "name": "Préférences...",
+                "tooltip": "Permettre de changer les préférences"
+            },
+            "ja": {
+                "name": "環境設定...",
+                "tooltip": "設定を変更することができます。"
+            }
+        }
+    },
+    "/PRP_DESK_VIEW_STATUSBAR": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Status Bar",
+                "tooltip": "Toggles status bar view on/off"
+            },
+            "fr": {
+                "name": "Barre de status",
+                "tooltip": "Activer ou désactiver la barre de status"
+            },
+            "ja": {
+                "name": "ステータス バー",
+                "tooltip": "ステータスバーの有効/無効"
+            }
+        }
+    },
+    "/PRP_DESK_WINDOW_HSPLIT": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Split Horizontally",
+                "tooltip": "Splits the active window on two horizontal parts"
+            },
+            "fr": {
+                "name": "Séparation horizontale",
+                "tooltip": "Diviser la fenêtre actuelle en deux parties horizontales"
+            },
+            "ja": {
+                "name": "水平分割",
+                "tooltip": "現在のウィンドウを 2つに水平分割"
+            }
+        }
+    },
+    "/PRP_DESK_WINDOW_VSPLIT": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Split Vertically",
+                "tooltip": "Splits the active window on two vertical parts"
+            },
+            "fr": {
+                "name": "Séparation verticale",
+                "tooltip": "Diviser la fenêtre actuelle en deux parties verticales"
+            },
+            "ja": {
+                "name": "垂直分割",
+                "tooltip": "現在のウィンドウを２つに上下分割"
+            }
+        }
+    },
+    "/PRP_FULLSCREEN": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Full screen",
+                "tooltip": "Switch to full screen mode"
+            },
+            "fr": {
+                "name": "Plein écran",
+                "tooltip": "Basculer en mode plein écran"
+            },
+            "ja": {
+                "name": "全画面表示",
+                "tooltip": "全画面表示モードに切り替え"
+            }
+        }
+    },
+    "/PRP_RENAME": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Rename",
+                "tooltip": "Rename active window"
+            },
+            "fr": {
+                "name": "Renommer",
+                "tooltip": "Renommer la fenêtre active"
+            },
+            "ja": {
+                "name": "名前変更",
+                "tooltip": "アクティブなウィンドウの名前を変更"
+            }
+        }
+    },
+    "/TOT_DESK_EDIT_PASTE": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Paste",
+                "tooltip": "Inserts the Clipboard content at the insertion point"
+            },
+            "fr": {
+                "name": "Coller",
+                "tooltip": "Insérer le contenu du presse-papiers au point d'insertion"
+            },
+            "ja": {
+                "name": "貼り付け",
+                "tooltip": "クリップボードの内容を挿入"
+            }
+        }
+    },
+    "/TOT_DESK_FILE_CLOSE": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Close",
+                "tooltip": "Closes the active document"
+            },
+            "fr": {
+                "name": "Fermer",
+                "tooltip": "Ferme le document actuel"
+            },
+            "ja": {
+                "name": "閉じる",
+                "tooltip": "現在のドキュメントを閉じる"
+            }
+        }
+    },
+    "/TOT_DESK_FILE_EXIT": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Exit",
+                "tooltip": "Exits the application"
+            },
+            "fr": {
+                "name": "Quitter",
+                "tooltip": "Quitte l'application"
+            },
+            "ja": {
+                "name": "終了",
+                "tooltip": "アプリケーションを終了"
+            }
+        }
+    },
+    "/TOT_DESK_FILE_NEW": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "New",
+                "tooltip": "Create a new document"
+            },
+            "fr": {
+                "name": "Nouveau",
+                "tooltip": "Créer une nouvelle étude"
+            },
+            "ja": {
+                "name": "新規作成",
+                "tooltip": "新しいドキュメントを作成"
+            }
+        }
+    },
+    "/TOT_DESK_FILE_OPEN": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Open...",
+                "tooltip": "Open an existing document"
+            },
+            "fr": {
+                "name": "Ouvrir...",
+                "tooltip": "Ouvre une étude existant"
+            },
+            "ja": {
+                "name": "開く...",
+                "tooltip": "既存のドキュメントを開く"
+            }
+        }
+    },
+    "/TOT_DESK_FILE_SAVE": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Save",
+                "tooltip": "Save the active document"
+            },
+            "fr": {
+                "name": "Enregistrer",
+                "tooltip": "Sauvegarder l'étude actuelle"
+            },
+            "ja": {
+                "name": "保存",
+                "tooltip": "現在のドキュメントを保存"
+            }
+        }
+    },
+    "/TOT_DESK_FILE_SAVEAS": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Save As...",
+                "tooltip": "Saves the active document with a new name"
+            },
+            "fr": {
+                "name": "Enregistrer sous...",
+                "tooltip": "Sauvegarder le document actuel sous un nouveau nom"
+            },
+            "ja": {
+                "name": "別名保存...",
+                "tooltip": "現在のドキュメントを新しい名前で保存"
+            }
+        }
+    }
+}

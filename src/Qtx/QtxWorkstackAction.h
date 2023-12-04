@@ -67,7 +67,6 @@ public:
   int           accel( const int ) const;
   QString       statusTip( const int ) const;
 
-  void          setAccel( const int, const int );
   void          setIcon( const int, const QIcon& );
   void          setText( const int, const QString& );
   void          setStatusTip( const int, const QString& );

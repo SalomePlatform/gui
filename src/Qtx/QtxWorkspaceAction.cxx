@@ -78,8 +78,8 @@ QtxWorkspace* QtxWorkspaceAction::workspace() const
 
 /*!
   \brief Set actions to be visible in the menu.
-  
-  Actions, which IDs are set in \a flags parameter, will be shown in the 
+
+  Actions, which IDs are set in \a flags parameter, will be shown in the
   menu bar. Other actions will not be shown.
 
   \param flags ORed together actions flags
@@ -162,17 +162,6 @@ QString QtxWorkspaceAction::statusTip( const int id ) const
   if ( action( id ) )
     txt = action( id )->statusTip();
   return txt;
-}
-
-/*!
-  \brief Set keyboard accelerator for the specified action.
-  \param id menu action ID
-  \param a new keyboard accelerator
-*/
-void QtxWorkspaceAction::setAccel( const int id, const int a )
-{
-  if ( action( id ) )
-    action( id )->setShortcut( a );
 }
 
 /*!
@@ -403,7 +392,7 @@ void QtxWorkspaceAction::activateItem( const int idx )
 
 /*!
   \brief Called when menu item is activated by the user.
-  
+
   Perform the corresponding action.
 
   \param id menu item identifier

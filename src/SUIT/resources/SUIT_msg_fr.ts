@@ -170,5 +170,32 @@ Voulez-vous l&apos;écraser ?</translation>
         <source>TLT_IMAGE_FILES</source>
         <translation>Fichiers images (*.bmp *.png *.jpg *.jpeg)</translation>
     </message>
-</context>	
+</context>
+<context>
+    <name>SUIT_ShortcutMgr</name>
+    <message>
+        <source>General</source>
+        <translation>Général</translation>
+    </message>
+     <message>
+        <source>Invalid module IDs</source>
+        <translation>ID de module invalides</translation>
+    </message>
+    <message>
+        <source>Invalid shortcuts</source>
+        <translation>Raccourcis invalides</translation>
+    </message>
+    <message>
+        <source>These shortcuts have not been set, because they conflict with previously parsed ones</source>
+        <translation>Ces raccourcis n'ont pas été définis car ils entrent en conflit avec ceux analysés précédemment</translation>
+    </message>
+    <message>
+        <source>Invalid shortcuts in preferences</source>
+        <translation>Raccourcis invalides dans les préférence</translation>
+    </message>
+    <message>
+        <source>Fix the following entries in the preference files manually</source>
+        <translation>Corrigez manuellement les entrées suivantes dans les fichiers de préférences</translation>
+    </message>
+</context>
 </TS>

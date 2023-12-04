@@ -342,12 +342,12 @@ void SalomeApp_Application::createActions()
   //! Dump study
   createAction( DumpStudyId, tr( "TOT_DESK_FILE_DUMP_STUDY" ), QIcon(),
                 tr( "MEN_DESK_FILE_DUMP_STUDY" ), tr( "PRP_DESK_FILE_DUMP_STUDY" ),
-                Qt::CTRL+Qt::Key_D, desk, false, this, SLOT( onDumpStudy() ) );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onDumpStudy() ), "/PRP_DESK_FILE_DUMP_STUDY" );
 
   //! Load script
   createAction( LoadScriptId, tr( "TOT_DESK_FILE_LOAD_SCRIPT" ), QIcon(),
                 tr( "MEN_DESK_FILE_LOAD_SCRIPT" ), tr( "PRP_DESK_FILE_LOAD_SCRIPT" ),
-                Qt::CTRL+Qt::Key_T, desk, false, this, SLOT( onLoadScript() ) );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onLoadScript() ), "/PRP_DESK_FILE_LOAD_SCRIPT" );
 
   //! Properties
   createAction( PropertiesId, tr( "TOT_DESK_PROPERTIES" ), QIcon(),
@@ -357,7 +357,7 @@ void SalomeApp_Application::createActions()
   //! Catalog Generator
   createAction( CatalogGenId, tr( "TOT_DESK_CATALOG_GENERATOR" ),  QIcon(),
                 tr( "MEN_DESK_CATALOG_GENERATOR" ), tr( "PRP_DESK_CATALOG_GENERATOR" ),
-                Qt::ALT+Qt::SHIFT+Qt::Key_G, desk, false, this, SLOT( onCatalogGen() ) );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onCatalogGen() ), "/PRP_DESK_CATALOG_GENERATOR" );
 
   //! Registry Display
   createAction( RegDisplayId, tr( "TOT_DESK_REGISTRY_DISPLAY" ),  QIcon(),
@@ -366,13 +366,13 @@ void SalomeApp_Application::createActions()
 
   createAction( ConnectId, tr( "TOT_DESK_CONNECT_STUDY" ), QIcon(),
                 tr( "MEN_DESK_CONNECT" ), tr( "PRP_DESK_CONNECT" ),
-                Qt::CTRL+Qt::Key_L, desk, false, this, SLOT( onLoadDoc() ) );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onLoadDoc() ), "/PRP_DESK_CONNECT" );
   //no need at this action for mono-study application because study is always exists
   action( ConnectId )->setVisible( false );
 
   createAction( DisconnectId, tr( "TOT_DESK_DISCONNECT_STUDY" ), QIcon(),
                 tr( "MEN_DESK_DISCONNECT" ), tr( "PRP_DESK_DISCONNECT" ),
-                Qt::CTRL+Qt::Key_U, desk, false, this, SLOT( onUnloadDoc() ) );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onUnloadDoc() ), "/PRP_DESK_DISCONNECT" );
   //no need at this action for mono-study application because study is always exists
   action( DisconnectId )->setVisible( false );
 
@@ -2155,7 +2155,7 @@ void SalomeApp_Application::ensureShaperIsActivated()
     study->dataModels( models );
     for( int i = 0; i < models.count() && !shaperIsActive; i++ )
       shaperIsActive = models[i]->module()->moduleName() == "Shaper";
-	
+
     if (shaper && !shaperIsActive)
       onDesktopMessage("register_module_in_study/Shaper");
   }

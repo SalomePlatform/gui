@@ -22,7 +22,10 @@ INCLUDE(UseQtExt)
 # --- options ---
 
 # additional include directories
-INCLUDE_DIRECTORIES(${QT_INCLUDES})
+INCLUDE_DIRECTORIES(
+  ${QT_INCLUDES}
+  ${PROJECT_SOURCE_DIR}/src/SUIT
+)
 
 # additional preprocessor / compiler flags
 ADD_DEFINITIONS(${QT_DEFINITIONS})

@@ -83,6 +83,7 @@ public:
 
   virtual void              store() = 0;
   virtual void              retrieve() = 0;
+  virtual void              retrieveDefault();
 
   QString                   resourceValue() const;
   void                      setResourceValue( const QString& );
@@ -160,6 +161,7 @@ public:
 
   virtual void              store();
   virtual void              retrieve();
+  virtual void              retrieveDefault();
 
   virtual void              update();
 

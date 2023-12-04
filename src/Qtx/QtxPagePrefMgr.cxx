@@ -34,6 +34,8 @@
 #include "QtxBackgroundTool.h"
 #include "QtxResourceMgr.h"
 
+#include "SUIT_ShortcutMgr.h"
+
 #include <QEvent>
 #include <QLayout>
 #include <QToolBox>
@@ -2216,7 +2218,7 @@ void QtxPagePrefEditItem::setDecimals( const int dec )
 {
   if ( myDecimals == dec )
     return;
-  
+
   myDecimals = dec;
   updateEditor();
 }
@@ -2237,10 +2239,10 @@ int QtxPagePrefEditItem::echoMode() const
   \sa echoMode()
 */
 void QtxPagePrefEditItem::setEchoMode( const int echo )
-{   
+{
   if ( myEchoMode == echo )
     return;
-  
+
   myEchoMode = echo;
   updateEditor();
 }
@@ -2329,7 +2331,7 @@ void QtxPagePrefEditItem::updateEditor()
     default:
       myEditor->setEchoMode(QLineEdit::Normal);
   }
-  
+
   QValidator* val = 0;
   switch ( inputType() )
   {
@@ -2370,14 +2372,14 @@ QtxPagePrefSliderItem::QtxPagePrefSliderItem( const QString& title, QtxPreferenc
 {
   setControl( mySlider = new QSlider( Qt::Horizontal ) );
   widget()->layout()->addWidget( myLabel = new QLabel( ) );
-    
+
   setMinimum( 0 );
   setMaximum( 0 );
   setSingleStep( 1 );
   setPageStep( 1 );
-  
+
   mySlider->setTickPosition( QSlider::TicksBothSides );
-  
+
   connect (mySlider, SIGNAL(valueChanged(int)), this, SLOT(setIcon(int)));
   updateSlider();
 }
@@ -2488,17 +2490,17 @@ void QtxPagePrefSliderItem::setMaximum( const int& max )
 */
 void QtxPagePrefSliderItem::setIcons( const QList<QIcon>& icns )
 {
-  if ( icns.isEmpty() ) 
+  if ( icns.isEmpty() )
     return;
   myIcons = icns;
-  
-  QSize maxsize(0, 0); 
+
+  QSize maxsize(0, 0);
   for ( QList<QIcon>::const_iterator it = myIcons.begin(); it != myIcons.end(); ++it ) {
     if ( (*it).isNull() ) continue;
     maxsize = maxsize.expandedTo( (*it).availableSizes().first() );
   }
   myLabel->setFixedSize( maxsize );
-  
+
   updateSlider();
 }
 
@@ -2597,13 +2599,13 @@ void QtxPagePrefSliderItem::updateSlider()
 
   control()->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Fixed );
   mySlider->setFocusPolicy(Qt::StrongFocus);
-  
+
   mySlider->setValue( val );
   setSingleStep( stp );
   setPageStep( ptp );
   setMinimum( min );
   setMaximum( max );
-  
+
   myLabel->setVisible( !myIcons.empty() );
   widget()->layout()->setSpacing( !myIcons.empty() ? 6 : 0 );
 }
@@ -2781,7 +2783,7 @@ void QtxPagePrefSelectItem::setNumbers( const QList<QVariant>& ids )
   for ( QList<QVariant>::const_iterator it = ids.begin(); it != ids.end(); ++it, i++ ) {
     if ( i >= mySelector->count() )
       mySelector->addItem(QString("") );
-    
+
     mySelector->setId( i, *it );
   }
 }
@@ -2831,7 +2833,7 @@ void QtxPagePrefSelectItem::store()
 void QtxPagePrefSelectItem::retrieve()
 {
   QString txt = getString();
-  
+
   // try to find via the id
   int idx = mySelector->index( txt );
   if ( idx < 0 )
@@ -3539,7 +3541,7 @@ void QtxPagePrefColorItem::retrieve()
   \brief GUI implementation of the resources item to store a bi-color value.
 
   The main color is specified explicitly. The secondary color is calculated
-  by changing "value" and "saturation" parameters of the main color in the 
+  by changing "value" and "saturation" parameters of the main color in the
   HSV notation using specified delta.
 */
 
@@ -3700,10 +3702,10 @@ void QtxPagePrefFontItem::setFeatures( const int f )
 }
 
 /*!
-  \brief Specifies whether widget works in Native or Custom mode. Native mode 
-  is intended for working with system fonts. Custom mode is intended for 
-  working with manually defined set of fonts. Set of custom fonts can be 
-  specified with setFonts() method 
+  \brief Specifies whether widget works in Native or Custom mode. Native mode
+  is intended for working with system fonts. Custom mode is intended for
+  working with manually defined set of fonts. Set of custom fonts can be
+  specified with setFonts() method
   \param mode mode from QtxFontEdit::Mode enumeration
   \sa mode()
 */
@@ -3723,7 +3725,7 @@ int QtxPagePrefFontItem::mode() const
 }
 
 /*!
-  \brief Sets list of custom fonts. 
+  \brief Sets list of custom fonts.
   <b>This method is intended for working in Custom mode only.</b>
   \param fams list of families
   \sa fonts(), setMode()
@@ -3734,7 +3736,7 @@ void QtxPagePrefFontItem::setFonts( const QStringList& fams )
 }
 
 /*!
-  \brief Gets list of custom fonts 
+  \brief Gets list of custom fonts
   \return list of families
   \sa setFonts(), setMode()
 */
@@ -3744,8 +3746,8 @@ QStringList QtxPagePrefFontItem::fonts() const
 }
 
 /*!
-  \brief Sets list of available font sizes. 
-  <b>This method is intended for working in Custom mode only.</b> The list of sizes can 
+  \brief Sets list of available font sizes.
+  <b>This method is intended for working in Custom mode only.</b> The list of sizes can
   be empty. In this case system generate listof size automatically from 8 till 72.
   \param sizes list of sizes
   \sa sizes(), setMode()
@@ -3756,7 +3758,7 @@ void QtxPagePrefFontItem::setSizes( const QList<int>& sizes )
 }
 
 /*!
-  \brief Gets list of custom fonts 
+  \brief Gets list of custom fonts
   \return list of families
   \sa setFonts(), setMode()
 */
@@ -4454,118 +4456,67 @@ void QtxPagePrefDateTimeItem::updateDateTime()
   myDateTime->setDisplayFormat( dispFmt );
 }
 
+
 /*!
-  \brief Constructor.
-  \param title preference item title
-  \param parent parent preference item
-  \param sect resource file section associated with the preference item
-  \param param resource file parameter associated with the preference item
+  \brief Creates preference item for editing of key bindings
+  \param theParent parent preference item. Must not be nullptr.
 */
-QtxPagePrefShortcutBtnsItem::QtxPagePrefShortcutBtnsItem( const QString& title, QtxPreferenceItem* parent, const QString& sect,
-                                                          const QString& param ): QtxPageNamedPrefItem( title, parent, sect, param )
+QtxPagePrefShortcutTreeItem::QtxPagePrefShortcutTreeItem(QtxPreferenceItem* theParent)
+ : QtxPagePrefItem(QString(), theParent)
 {
-  setControl( myShortcut = new QtxShortcutEdit() );
-}
-
-/*!
-  \brief Destructor.
-*/  
-QtxPagePrefShortcutBtnsItem::~QtxPagePrefShortcutBtnsItem()
-{
-}
-
-/*!
-  \brief Store preference item to the resource manager.
-  \sa retrieve()
-*/
-void QtxPagePrefShortcutBtnsItem::store()
-{
-  setString( myShortcut->shortcut().toString() );
-}
-
-/*!
-  \brief Retrieve preference item from the resource manager.
-  \sa store()
-*/
-void QtxPagePrefShortcutBtnsItem::retrieve()
-{
-  myShortcut->setShortcut( QKeySequence::fromString( getString() ) );
-}
-
-/*!
-  \brief Constructor.
-
-  Creates preference item for editing of key bindings
-
-  \param title preference item title
-  \param parent parent preference item
-  \param sect resource file section associated with the preference item
-  \param param resource file parameter associated with the preference item
-*/
-QtxPagePrefShortcutTreeItem::QtxPagePrefShortcutTreeItem( const QString& title, QtxPreferenceItem* parent, const QString& sect, 
-                                                          const QString& /*param*/ ): QtxPageNamedPrefItem( title, parent, sect, "" )
-{
-  mySection = sect;
-
-  myShortcutTree = new QtxShortcutTree();
-
-  // Retrieve shortcuts common sections from resources
-  QtxResourceMgr* resMgr = resourceMgr();
-  if ( resMgr ){
-    QString generalSections = resourceMgr()->stringValue( "shortcuts_settings", "general_sections", QString() );
-    QStringList sectionsList = generalSections.split( ";", QString::SkipEmptyParts );
-    myShortcutTree->setGeneralSections( sectionsList );
+  auto container = std::shared_ptr<SUIT_ShortcutContainer>();
+  const auto itContainers = QtxPagePrefShortcutTreeItem::shortcutContainers.find(rootItem());
+  if (itContainers == QtxPagePrefShortcutTreeItem::shortcutContainers.end()) {
+    container.reset(new SUIT_ShortcutContainer());
+    QtxPagePrefShortcutTreeItem::shortcutContainers.emplace(rootItem(), container);
   }
- 
-  setControl( myShortcutTree );
+  else {
+    container = itContainers->second.lock();
+    if (!container) {
+      container.reset(new SUIT_ShortcutContainer());
+      itContainers->second = container;
+    }
+  }
+
+  QtxShortcutTree* tree = new QtxShortcutTree(container);
+  tree->myModuleIDs = SUIT_ShortcutMgr::get()->getShortcutModuleIDs();
+  setWidget(tree);
 }
 
 /*!
-  \brief Destructor.
-*/
-QtxPagePrefShortcutTreeItem::~QtxPagePrefShortcutTreeItem()
-{
-}
-						    
-/*!
-  \brief Retrieve preference item from the resource manager.
+  \brief Retrieves shortcut preferences from ShortcutMgr.
+  Updates UI of controlling widget.
   \sa store()
 */
 void QtxPagePrefShortcutTreeItem::retrieve()
 {
-  QtxResourceMgr* resMgr = resourceMgr();
-  if ( resMgr ){
-    QStringList secLst = resMgr->subSections( mySection, false );
-    ShortcutMap aMap; QStringList paramLst;
-    for( int i = 0; i < secLst.size(); i++ ) {
-      paramLst = resMgr->parameters( QStringList() << mySection << secLst.at( i ) );
-      for( int j = 0; j < paramLst.size(); j++ )
-        resMgr->value( mySection + resMgr->sectionsToken() + secLst.at( i ), paramLst.at( j ),aMap[ paramLst.at( j ) ], false );
-      myShortcutTree->setBindings( secLst.at( i ), aMap );
-      aMap.clear();
-    }
-  }
+  static_cast<QtxShortcutTree*>(widget())->setShortcutsFromManager();
 }
-	      
+
 /*!
-  \brief Store preference item to the resource manager.
+  \brief Retrieves shortcut preferences from resource files, ignoring user preferences.
+  Updates UI of controlling widget.
+  \sa store()
+*/
+void QtxPagePrefShortcutTreeItem::retrieveDefault()
+{
+  static_cast<QtxShortcutTree*>(widget())->setDefaultShortcuts();
+}
+
+/*!
+  \brief Applies modified shortcut preferences to ShortcutMgr.
+  Updates UI of controlling widget.
+  And ShortcutMgr, in turn, serilizes shortcut preferences using the resource manager.
   \sa retrieve()
 */
 void QtxPagePrefShortcutTreeItem::store()
 {
-  QStringList lst = myShortcutTree->sections();
-  QString aSection;
-  QtxResourceMgr* resMgr = resourceMgr();
-  
-  if ( resMgr ) {
-    for( int i = 0; i < lst.size(); i++ ) {
-      ShortcutMap* aMap( myShortcutTree->bindings( lst.at( i ) ) );
-      aSection = mySection + resMgr->sectionsToken() + lst.at( i );
-      for( ShortcutMap::const_iterator it = aMap->constBegin(); it != aMap->constEnd(); ++it )
-	resMgr->setValue( aSection, it.key(), it.value() );
-    }
-  }
+  static_cast<QtxShortcutTree*>(widget())->applyChangesToShortcutMgr();
 }
+
+/*static*/ std::map<QtxPreferenceItem*, std::weak_ptr<SUIT_ShortcutContainer>> QtxPagePrefShortcutTreeItem::shortcutContainers =
+std::map<QtxPreferenceItem*, std::weak_ptr<SUIT_ShortcutContainer>>();
+
 
 /*!
   \class QtxPagePrefBackgroundItem
@@ -4576,7 +4527,7 @@ void QtxPagePrefShortcutTreeItem::store()
   - texture image file
   - simple two-color gradient
   - complex custom gradient (NOT IMPLEMENTED YET)
-  
+
   Allowed background modes can be specified using setModeAllowed() method.
   Texture modes can be enabled/disabled using setTextureModeAllowed() method.
   Also, showing texture controls can be enabled/disabled by means of
@@ -4863,9 +4814,9 @@ void QtxPagePrefBackgroundItem::setOptionValue( const QString& name, const QVari
 /*!
   \brief Constructor.
 
-  Creates preference item of user defined widget. The item widget has to be inherited from 
+  Creates preference item of user defined widget. The item widget has to be inherited from
   QtxUserDefinedContent class. An instance of this class has to be installed into the item
-  with help of setContent method. Methods optionValue and setOptionValue use pointer on the 
+  with help of setContent method. Methods optionValue and setOptionValue use pointer on the
   content widget an qint64 value.
 
   \param parent parent preference item
@@ -4874,7 +4825,7 @@ QtxUserDefinedItem::QtxUserDefinedItem( QtxPreferenceItem* parent )
   : QtxPageNamedPrefItem(QString(), parent), myContent(0)
 {
 }
-  
+
 /*!
   \brief Lets to Store preferences for content instance
   \sa retrieve()
@@ -4912,7 +4863,7 @@ QVariant QtxUserDefinedItem::optionValue( const QString& theName ) const
 
 /*!
  * \brief Sets option value
- * \param theName is a string "content" 
+ * \param theName is a string "content"
  * \param theVal is a pointer on QtxUserDefinedContent class instance represented as qint64 value
  */
 void QtxUserDefinedItem::setOptionValue( const QString& theName, const QVariant& theVal)
@@ -4924,14 +4875,14 @@ void QtxUserDefinedItem::setOptionValue( const QString& theName, const QVariant&
   } else
     QtxPreferenceItem::setOptionValue( theName, theVal );
 }
-  
+
 /*!
- * \brief Defines content of the property item as a Widget which has to be inherited from 
+ * \brief Defines content of the property item as a Widget which has to be inherited from
  * QtxUserDefinedContent class.
  * \param theContent is an QtxUserDefinedContent class instance.
  */
-void QtxUserDefinedItem::setContent( QtxUserDefinedContent* theContent ) 
-{ 
-  myContent = theContent; 
+void QtxUserDefinedItem::setContent( QtxUserDefinedContent* theContent )
+{
+  myContent = theContent;
   setControl(myContent);
 }

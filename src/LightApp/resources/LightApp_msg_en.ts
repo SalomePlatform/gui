@@ -1093,7 +1093,7 @@ File does not exist</translation>
     </message>
     <message>
         <source>PREF_GROUP_SHORTCUTS</source>
-        <translation>Shortcuts settings</translation>
+        <translation>Shortcut settings</translation>
     </message>
     <message>
         <source>PREF_GROUP_FULL_SCREEN</source>

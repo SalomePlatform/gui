@@ -54,32 +54,30 @@ private:
   \class QtxAction
   \brief Generic action class.
 
-  The class QtxAction inherits QWidgetAction class and can be used 
+  The class QtxAction inherits QWidgetAction class and can be used
   as base class when implementing any custom menu/toolbar actions.
-  It is necessary to subclass from QtxAction and redefine virtual 
+  It is necessary to subclass from QtxAction and redefine virtual
   callback methods addedTo(), removedFrom() (which are called automatically
   when the action is added to the widget and removed from it) to customize
-  the action behavior.  
+  the action behavior.
 */
 
 /*!
   \brief Constructor.
 
-  Creates an action owned by \a parent. 
+  Creates an action owned by \a parent.
   Parameter \a toggle can be used to make the action checkable.
-  Parameter \a shortcutAction can be used to assign the shortcut from
-  preferences. This parameter value corresponds to shortcut action identifier
-  in shortcut preferences.
+  Parameter \a ID is used to de(serialize) shortcut settings.
 
   \param parent parent object
   \param toggle if \c true the action will be a toggle action
-  \param shortcutAction shortcut action identifier
+  \param ID shortcut action identifier
 */
-QtxAction::QtxAction( QObject* parent, bool toggle, const QString& shortcutAction )
+QtxAction::QtxAction( QObject* parent, bool toggle, const QString& ID )
 : QWidgetAction( parent )
 {
   setCheckable( toggle );
-  setShortcutActionName(shortcutAction);
+  setID(ID);
 
   QApplication::instance()->installEventFilter( this );
 }
@@ -88,30 +86,55 @@ QtxAction::QtxAction( QObject* parent, bool toggle, const QString& shortcutActio
   \brief Constructor.
 
   Creates an action owned by \a parent. Parameters \a text,
-  \a icon, \a menuText and \a accel specify the action's attributes.
+  \a menuText and \a ID specify the action's attributes.
   Parameter \a toggle can be used to make the action checkable.
-  Parameter \a shortcutAction can be used to assign the shortcut from
-  preferences. This parameter value corresponds to shortcut action identifier
-  in shortcut preferences.
+  Parameter \a ID is used to de(serialize) shortcut settings.
+
+  \param parent parent object
+  \param toggle if \c true the action is a toggle action
+  \param ID shortcut action identifier
+  \param toolTip tooltip text
+  \param text menu text
+*/
+QtxAction::QtxAction( QObject* parent, bool toggle, const QString& ID,
+                      const QString& toolTip, const QString& text, const QIcon& icon )
+: QWidgetAction( parent )
+{
+  setCheckable( toggle );
+  setID(ID);
+  setToolTip( toolTip );
+  setText( text );
+  setIcon( icon );
+
+  QApplication::instance()->installEventFilter( this );
+}
+
+/*!
+  \brief Constructor.
+
+  Creates an action owned by \a parent. Parameters \a text,
+  \a icon, \a menuText and \a ID specify the action's attributes.
+  Parameter \a toggle can be used to make the action checkable.
+  Parameter \a ID is used to de(serialize) shortcut settings.
 
   \param text tooltip text
   \param icon iconset
   \param menuText menu text
-  \param accel shortcut key sequence
+  \param accel will be disabled by SUIT_ShortcutMgr!
   \param parent parent object
   \param toggle if \c true the action will be a toggle action
-  \param shortcutAction shortcut action identifier
+  \param ID shortcut action identifier
 */
-QtxAction::QtxAction( const QString& text, const QIcon& icon, const QString& menuText, 
-		      int accel, QObject* parent, bool toggle, const QString& shortcutAction )
+QtxAction::QtxAction( const QString& text, const QIcon& icon, const QString& menuText,
+		      int accel, QObject* parent, bool toggle, const QString& ID )
 : QWidgetAction( parent )
 {
   setIcon( icon );
   setText( menuText );
   setToolTip( text );
-  setShortcut( accel );
   setCheckable( toggle );
-  setShortcutActionName(shortcutAction);
+  setID(ID);
+  setShortcut(accel);
 
   QApplication::instance()->installEventFilter( this );
 }
@@ -120,30 +143,28 @@ QtxAction::QtxAction( const QString& text, const QIcon& icon, const QString& men
   \brief Constructor.
 
   Creates an action owned by \a parent. Parameters \a text,
-  \a icon, \a menuText and \a accel specify the action's attributes.
+  \a icon, \a menuText and \a ID specify the action's attributes.
   Parameter \a toggle can be used to make the action checkable.
-  Parameter \a shortcutAction can be used to assign the shortcut from
-  preferences. This parameter value corresponds to shortcut action identifier
-  in shortcut preferences.
+  Parameter \a ID is used to de(serialize) shortcut settings.
 
   \param text tooltip text
   \param icon iconset
   \param menuText menu text
-  \param accel shortcut key sequence
+  \param accel will be disabled by SUIT_ShortcutMgr!
   \param parent parent object
   \param toggle if \c true the action will be a toggle action
-  \param shortcutAction shortcut action identifier
+  \param ID shortcut action identifier
 */
-QtxAction::QtxAction( const QString& text, const QIcon& icon, const QString& menuText, 
-		      const QKeySequence& accel, QObject* parent, bool toggle, const QString& shortcutAction )
+QtxAction::QtxAction( const QString& text, const QIcon& icon, const QString& menuText,
+		      const QKeySequence& accel, QObject* parent, bool toggle, const QString& ID )
 : QWidgetAction( parent )
 {
   setIcon( icon );
   setText( menuText );
   setToolTip( text );
-  setShortcut( accel );
   setCheckable( toggle );
-  setShortcutActionName(shortcutAction);
+  setID(ID);
+  setShortcut(accel);
 
   QApplication::instance()->installEventFilter( this );
 }
@@ -152,29 +173,27 @@ QtxAction::QtxAction( const QString& text, const QIcon& icon, const QString& men
   \brief Constructor.
 
   Creates an action owned by \a parent. Parameters \a text,
-  \a menuText and \a accel specify the action's attributes.
+  \a menuText and \a ID specify the action's attributes.
   Parameter \a toggle can be used to make the action checkable.
-  Parameter \a shortcutAction can be used to assign the shortcut from
-  preferences. This parameter value corresponds to shortcut action identifier
-  in shortcut preferences.
+  Parameter \a ID is used to de(serialize) shortcut settings.
 
   \param text tooltip text
   \param menuText menu text
-  \param accel shortcut key sequence
+  \param accel will be disabled by SUIT_ShortcutMgr!
   \param parent parent object
   \param toggle if \c true the action is a toggle action
-  \param shortcutAction shortcut action identifier
+  \param ID shortcut action identifier
 */
 QtxAction::QtxAction( const QString& text, const QString& menuText,
-                      int accel, QObject* parent, bool toggle, const QString& shortcutAction )
+                      int accel, QObject* parent, bool toggle, const QString& ID )
 : QWidgetAction( parent )
 {
   setText( menuText );
   setToolTip( text );
-  setShortcut( accel );
   setCheckable( toggle );
-  setShortcutActionName(shortcutAction);
-  
+  setID(ID);
+  setShortcut(accel);
+
   QApplication::instance()->installEventFilter( this );
 }
 
@@ -182,29 +201,27 @@ QtxAction::QtxAction( const QString& text, const QString& menuText,
   \brief Constructor.
 
   Creates an action owned by \a parent. Parameters \a text,
-  \a menuText and \a accel specify the action's attributes.
+  \a menuText and \a ID specify the action's attributes.
   Parameter \a toggle can be used to make the action checkable.
-  Parameter \a shortcutAction can be used to assign the shortcut from
-  preferences. This parameter value corresponds to shortcut action identifier
-  in shortcut preferences.
+  Parameter \a ID is used to de(serialize) shortcut settings.
 
   \param text tooltip text
   \param menuText menu text
-  \param accel shortcut key sequence
+  \param accel will be disabled by SUIT_ShortcutMgr!
   \param parent parent object
   \param toggle if \c true the action is a toggle action
-  \param shortcutAction shortcut action identifier
+  \param ID shortcut action identifier
 */
 QtxAction::QtxAction( const QString& text, const QString& menuText,
-                      const QKeySequence& accel, QObject* parent, bool toggle, const QString& shortcutAction )
+                      const QKeySequence& accel, QObject* parent, bool toggle, const QString& ID )
 : QWidgetAction( parent )
 {
   setText( menuText );
   setToolTip( text );
-  setShortcut( accel );
   setCheckable( toggle );
-  setShortcutActionName(shortcutAction);
-  
+  setID(ID);
+  setShortcut(accel);
+
   QApplication::instance()->installEventFilter( this );
 }
 
@@ -217,8 +234,8 @@ QtxAction::~QtxAction()
 
 /*!
   \brief Customize action events.
-  
-  Sends a notification event to the action when it is added to 
+
+  Sends a notification event to the action when it is added to
   the widget or removed from it in order to perform custom processing.
 
   \param o object
@@ -238,11 +255,29 @@ bool QtxAction::eventFilter( QObject* o, QEvent* e )
   return QWidgetAction::eventFilter( o, e );
 }
 
+QString QtxAction::shortcutActionName() const
+{
+  return myID;
+}
+
+void QtxAction::setShortcutActionName( const QString& shortcutAction )
+{
+  myID = shortcutAction;
+}
+
+const QString& QtxAction::ID() const {
+  return myID;
+}
+
+void QtxAction::setID( const QString& theID) {
+  myID = theID;
+}
+
 /*!
   \brief Called when the action is added to the widget.
 
-  This method can be redefined in the subclasses to customize 
-  the action behavior. Base implementation does nothing. 
+  This method can be redefined in the subclasses to customize
+  the action behavior. Base implementation does nothing.
 
   \param w widget (should be menu or toolbar)
   \sa removedFrom()
@@ -266,7 +301,7 @@ void QtxAction::removedFrom( QWidget* /*w*/ )
 
 /*!
   \brief Process notification events.
-  
+
   Calls addedTo() method when the action is added to the widget
   and removedFrom() when it is removed from the widget
   in order to perform custom processing.
@@ -284,28 +319,4 @@ void QtxAction::customEvent( QEvent* e )
     addedTo( ae->widget() );
   else
     removedFrom( ae->widget() );
-}
-
-/*!
-  \brief Return shortcut action name for the action.
-  
-  \return shortcut action name
-  \sa setShortcutActionName()
-*/
-QString QtxAction::shortcutActionName() const
-{
-  return myShortcutActionName;
-}
-
-/*!
-  \brief Set shortcut action name to the action.
-
-  Shortcut action name is used for shortcuts customization.
-
-  \param shortcutAction shortcut action name
-  \sa shortcutActionName()
-*/
-void QtxAction::setShortcutActionName( const QString& shortcutAction )
-{
-  myShortcutActionName = shortcutAction;
 }

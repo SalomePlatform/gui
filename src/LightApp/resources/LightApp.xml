@@ -147,7 +147,7 @@
     <parameter name="rt_reflection"       value="true"/>
     <parameter name="rt_antialiasing"     value="false"/>
     <parameter name="rt_shadow"           value="true"/>
-    <parameter name="rt_trans_shadow"     value="false"/>                     
+    <parameter name="rt_trans_shadow"     value="false"/>
     <parameter name="light_color"         value="255, 255, 255"/>
     <parameter name="light_dx"            value="0.0"/>
     <parameter name="light_dy"            value="0.0"/>
@@ -249,28 +249,55 @@
     <parameter name="animation" value="0"/>
     <parameter name="size" value="300"/>
   </section>
-  <!--Salome shortcut settings-->
-  <section name="shortcuts_settings">
-    <parameter name="general_sections" value="General;Viewers"/>
+  <section name="action_assets">
+    <parameter name="${GUI_ROOT_DIR}/share/salome/resources/gui/action_assets.json" value=""/>
   </section>
-  <section name="shortcuts:General">
-    <parameter name="Show object(s)" value="Ctrl+Alt+S"/>
-    <parameter name="Hide object(s)" value="Ctrl+Alt+H"/>
-  </section>
-  <section name="shortcuts:Viewers">
-    <parameter name="Front view" value="Ctrl+Alt+F"/>
-    <parameter name="Back view" value="Ctrl+Alt+B"/>
-    <parameter name="Top view" value="Ctrl+Alt+P"/>
-    <parameter name="Bottom view" value="Ctrl+Alt+O"/>
-    <parameter name="Left view" value="Ctrl+Alt+J"/>
-    <parameter name="Right view" value="Ctrl+Alt+G"/>
-    <parameter name="Reset view" value="Ctrl+Alt+E"/>
-  </section>
-  <section name="shortcuts:Geometry">
-    <parameter name="Increase number of isolines" value="Meta+I"/>
-    <parameter name="Decrease number of isolines" value="Meta+D"/>
-    <parameter name="Increase transparency" value="Meta+Y"/>
-    <parameter name="Decrease transparency" value="Meta+T"/>
+  <!--Salome shortcut settings
+       See SUIT_ShortcutMgr for details.
+  -->
+  <section name="shortcuts:">
+    <!--Actions of these shortcuts are available even if no module is active-->
+    <parameter name="PRP_DESK_FILE_LOAD_SCRIPT" value="Ctrl+T"/>
+    <parameter name="PRP_DESK_FILE_DUMP_STUDY" value="Ctrl+D"/>
+    <parameter name="PRP_DESK_CONNECT" value="Ctrl+L"/>
+    <parameter name="PRP_DESK_DISCONNECT" value="Ctrl+U"/>
+    <parameter name="PRP_DESK_CATALOG_GENERATOR" value="Alt+Shift+G"/>
+    <parameter name="PRP_DESK_PREFERENCES" value="Ctrl+P"/>
+    <parameter name="PRP_RENAME" value="Alt+Shift+R"/>
+    <parameter name="PRP_CLOSE" value="Ctrl+F4"/>
+    <parameter name="PRP_FULLSCREEN" value="F11"/>
+    <parameter name="PRP_DESK_WINDOW_HSPLIT" value="Alt+Shift+H"/>
+    <parameter name="PRP_DESK_WINDOW_VSPLIT" value="Alt+Shift+V"/>
+    <parameter name="PRP_DESK_VIEW_STATUSBAR" value="Alt+Shift+S"/>
+    <parameter name="PRP_DESK_HELP_ABOUT" value="Alt+Shift+A"/>
+    <parameter name="TOT_DESK_FILE_NEW" value="Ctrl+N"/>
+    <parameter name="TOT_DESK_FILE_OPEN" value="Ctrl+O"/>
+    <parameter name="TOT_DESK_FILE_CLOSE" value="Ctrl+W"/>
+    <parameter name="TOT_DESK_FILE_EXIT" value="Ctrl+Q"/>
+    <parameter name="TOT_DESK_FILE_SAVE" value="Ctrl+S"/>
+    <parameter name="TOT_DESK_FILE_SAVEAS" value="Ctrl+Shift+S"/>
+    <parameter name="#TOT_DESK_EDIT_COPY" value="Ctrl+C"/>
+    <parameter name="TOT_DESK_EDIT_PASTE" value="Ctrl+V"/>
+    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_0" value="Alt+G"/>
+    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_1" value="Alt+P"/>
+    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_2" value="Alt+O"/>
+    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_3" value="Alt+K"/>
+    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_4" value="Alt+S"/>
+    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_5" value="Alt+C"/>
+    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_6" value="Alt+A"/>
+    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_7" value="Alt+Y"/>
+    <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_8" value="Alt+3"/>
+    <parameter name="#General/Object(s)/Show" value="Ctrl+Alt+S"/>
+    <parameter name="#General/Object(s)/Hide" value="Ctrl+Alt+H"/>
+    <parameter name="#Viewers/View/Set X+" value="Ctrl+Alt+B"/>
+    <parameter name="#Viewers/View/Set X-" value="Ctrl+Alt+F"/>
+    <parameter name="#Viewers/View/Set Y+" value="Ctrl+Alt+J"/>
+    <parameter name="#Viewers/View/Set Y-" value="Ctrl+Alt+G"/>
+    <parameter name="#Viewers/View/Set Z+" value="Ctrl+Alt+O"/>
+    <parameter name="#Viewers/View/Set Z-" value="Ctrl+Alt+P"/>
+    <parameter name="#Viewers/View/Rotate anticlockwise" value=""/>
+    <parameter name="#Viewers/View/Rotate clockwise" value=""/>
+    <parameter name="#Viewers/View/Reset" value="Ctrl+Alt+E"/>
   </section>
   <section name="ExternalBrowser" >
     <!-- External HELP browser settings -->

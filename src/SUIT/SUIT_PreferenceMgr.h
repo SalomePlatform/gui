@@ -38,7 +38,7 @@ public:
   typedef enum { Auto, Space, Bool, Color, String, Selector,
                  DblSpin, IntSpin, Double, Integer,
                  GroupBox, Tab, Frame, Font, DirList, File,
-		 Slider, Shortcut, ShortcutTree, BiColor, Background, Directory,		 
+                 Slider, Shortcut, ShortcutTree, BiColor, Background, Directory,		 
                  UserDefined = 1000 } PrefItemType;
 
 public:

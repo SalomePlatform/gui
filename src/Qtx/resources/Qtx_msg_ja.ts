@@ -495,4 +495,53 @@
       <translation>%1 は %2 を使用して開発されています。</translation>
     </message>
   </context>
+  <context>
+    <name>QtxKeySequenceEdit</name>
+    <message>
+        <source>Disable shortcut.</source>
+        <translation>ショートカットを無効にします。</translation>
+    </message>
+    <message>
+        <source>Restore the currently applied key sequence.</source>
+        <translation>現在適用されているキー シーケンスを復元します。</translation>
+    </message>
+  </context>
+  <context>
+      <name>QtxEditKeySequenceDialog</name>
+      <message>
+          <source>Change key sequence</source>
+          <translation>キーシーケンスを変更する</translation>
+      </message>
+      <message>
+          <source>No conflicts.</source>
+          <translation>競合はありません。</translation>
+      </message>
+      <message>
+          <source>Confirm</source>
+          <translation>確認する</translation>
+      </message>
+      <message>
+          <source>Cancel</source>
+          <translation>キャンセル</translation>
+      </message>
+      <message>
+          <source>These shortcuts will be disabled on confirm:</source>
+          <translation>これらのショートカットは確認時に無効になります。</translation>
+      </message>
+  </context>
+  <context>
+      <name>QtxShortcutTree</name>
+      <message>
+        <source>Action</source>
+        <translation>アクション</translation>
+      </message>
+      <message>
+          <source>Key sequence</source>
+          <translation>キーシーケンス</translation>
+      </message>
+      <message>
+          <source>Double click to edit key sequence.</source>
+          <translation>ダブルクリックしてキー シーケンスを編集します。</translation>
+      </message>
+  </context>
 </TS>

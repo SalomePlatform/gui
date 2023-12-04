@@ -1728,10 +1728,10 @@ QtxWorkstack::QtxWorkstack( QWidget* parent )
   myWorkWin( 0 ),
   myWorkArea( 0 )
 {
-  myActionsMap.insert( SplitVertical,   new QtxAction( QString(), tr( "Split vertically" ), 0, this ) );
-  myActionsMap.insert( SplitHorizontal, new QtxAction( QString(), tr( "Split horizontally" ), 0, this ) );
-  myActionsMap.insert( Close,           new QtxAction( QString(), tr( "Close" ), 0, this ) );
-  myActionsMap.insert( Rename,          new QtxAction( QString(), tr( "Rename" ), 0, this ) );
+  myActionsMap.insert( SplitVertical,   new QtxAction( this, false /*toggle*/, "/PRP_DESK_WINDOW_VSPLIT", tr( "Split vertically" ) ) );
+  myActionsMap.insert( SplitHorizontal, new QtxAction( this, false /*toggle*/, "/PRP_DESK_WINDOW_HSPLIT", tr( "Split horizontally" ) ) );
+  myActionsMap.insert( Close,           new QtxAction( this, false /*toggle*/, tr( "Close" ) ) );
+  myActionsMap.insert( Rename,          new QtxAction( this, false /*toggle*/, tr( "Rename" ) ) );
 
   connect( myActionsMap[SplitVertical], SIGNAL( triggered( bool ) ), this, SLOT( splitVertical() ) );
   connect( myActionsMap[SplitHorizontal], SIGNAL( triggered( bool ) ), this, SLOT( splitHorizontal() ) );
@@ -2179,19 +2179,6 @@ void QtxWorkstack::SetRelativePosition( QWidget* wid, const Qt::Orientation o,
   {
     // impossible to set required position
   }
-}
-
-/*!
-  \brief Set accelerator key-combination for the action with specified \a id.
-  \param id action ID
-  \param accel action accelerator
-*/
-void QtxWorkstack::setAccel( const int id, const int accel )
-{
-  if ( !myActionsMap.contains( id ) )
-    return;
-
-  myActionsMap[id]->setShortcut( accel );
 }
 
 /*!

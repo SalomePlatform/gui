@@ -96,7 +96,6 @@ public:
   void                setActiveWindow( QWidget* );
 
   int                 accel( const int ) const;
-  void                setAccel( const int, const int );
 
   QIcon               icon( const int ) const;
   void                setIcon( const int, const QIcon& );
@@ -112,7 +111,7 @@ public:
 
   QByteArray          saveState( int ) const;
   bool                restoreState( const QByteArray&, int );
-  
+
   void                setOpaqueResize( bool = true );
   bool                opaqueResize() const;
 

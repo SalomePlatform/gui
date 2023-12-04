@@ -122,7 +122,7 @@ void QtxPreferenceItem::Updater::customEvent( QEvent* /*e*/ )
   \class QtxPreferenceItem
   \brief Base class for implementing of all the preference items.
 
-  To implement any specific preference item, cubclass from the
+  To implement any specific preference item, subclass from the
   QtxPreferenceItem and redefine store() and retrieve() methods.
 */
 
@@ -258,7 +258,7 @@ void QtxPreferenceItem::appendItem( QtxPreferenceItem* item )
 
 /*!
   \brief Insert child preference item before specified item.
-  If the before item is 0 then new item is appended.
+  If the before item is 0, then new item is appended.
 
   Removes (if necessary) the item from the previous parent.
 
@@ -510,6 +510,14 @@ void QtxPreferenceItem::setRestartRequired( const bool on )
 
   \sa store()
 */
+
+/*! \brief Restore preference item (for example, from the resource file, ignoring user preferences).
+  If not overridden, it is equivalent to \ref retrieve().
+*/
+void QtxPreferenceItem::retrieveDefault()
+{
+  retrieve();
+}
 
 /*!
   \brief Get the value of the associated resource file setting.
@@ -994,6 +1002,17 @@ void QtxPreferenceMgr::retrieve()
   QList<QtxPreferenceItem*> items = childItems( true );
   for ( QList<QtxPreferenceItem*>::iterator it = items.begin(); it != items.end(); ++it )
     (*it)->retrieve();
+}
+
+/*!
+  \brief Retrieve all preference items from the resource manager, ignoring user preferences.
+  \sa store()
+*/
+void QtxPreferenceMgr::retrieveDefault()
+{
+  QList<QtxPreferenceItem*> items = childItems( true );
+  for ( QList<QtxPreferenceItem*>::iterator it = items.begin(); it != items.end(); ++it )
+    (*it)->retrieveDefault();
 }
 
 /*!

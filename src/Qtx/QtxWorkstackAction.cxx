@@ -125,14 +125,14 @@ QtxWorkstackAction::QtxWorkstackAction( QtxWorkstack* ws, QObject* parent )
   if ( myWorkstack )
     insertAction( myWorkstack->action( QtxWorkstack::SplitVertical ), SplitVertical );
   else
-    insertAction( new QtxAction( tr( "Split the active window on two vertical parts" ),
-                                 tr( "Split vertically" ), 0, this ), SplitVertical );
+    insertAction( new QtxAction(this, false /*toggle*/, "/PRP_DESK_WINDOW_VSPLIT",
+      tr( "Split the active window on two vertical parts" ), tr( "Split vertically" )), SplitVertical);
 
   if ( myWorkstack )
     insertAction( myWorkstack->action( QtxWorkstack::SplitHorizontal ), SplitHorizontal );
   else
-    insertAction( new QtxAction( tr( "Split the active window on two horizontal parts" ),
-                                 tr( "Split horizontally" ), 0, this ), SplitHorizontal );
+    insertAction( new QtxAction(this, false /*toggle*/, "/PRP_DESK_WINDOW_HSPLIT",
+      tr( "Split the active window on two horizontal parts" ), tr( "Split horizontally" )), SplitHorizontal);
 
   connect( this, SIGNAL( triggered( int ) ), this, SLOT( onTriggered( int ) ) );
 
@@ -247,17 +247,6 @@ QString QtxWorkstackAction::statusTip( const int id ) const
   if ( action( id ) )
     txt = action( id )->statusTip();
   return txt;
-}
-
-/*!
-  \brief Set keyboard accelerator for the specified action.
-  \param id menu action ID
-  \param a new keyboard accelerator
-*/
-void QtxWorkstackAction::setAccel( const int id, const int a )
-{
-  if ( action( id ) )
-    action( id )->setShortcut( a );
 }
 
 /*!

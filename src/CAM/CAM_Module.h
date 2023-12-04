@@ -98,6 +98,8 @@ public:
   QtxActionMenuMgr*      menuMgr() const;
   QtxActionToolMgr*      toolMgr() const;
 
+  QString                makeActionID(const QString& theInModuleActionID) const;
+
   virtual QAction*       action( const int ) const;
   virtual int            actionId( const QAction* ) const;
   virtual QAction*       createAction( const int, const QString&, const QIcon&, const QString&,
@@ -125,7 +127,7 @@ public:
   virtual void           logAction( QAction* );
   bool                   isActionLoggingEnabled() const;
   void                   setActionLoggingEnabled( bool );
-  
+
   static QAction*        separator();
 
 public slots:
@@ -144,7 +146,7 @@ public slots:
 private slots:
   void                   onInfoChanged( QString );
 
-protected: 
+protected:
   virtual bool           isSelectionCompatible();
 
   virtual CAM_DataModel* createDataModel();
@@ -170,7 +172,7 @@ private:
   QMap<int, QAction*>    myActionMap;       //!< menu actions
   bool                   myMenuShown;       //!< menu shown flag
   bool                   myToolShown;       //!< tool shown flag
-  bool                   myActionLoggingEnabled; //!< action logging enabled 
+  bool                   myActionLoggingEnabled; //!< action logging enabled
 
   friend class CAM_Application;
 };

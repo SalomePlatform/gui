@@ -636,21 +636,14 @@ LightApp_SelectionMgr* LightApp_Application::selectionMgr() const
 /*!Creat action "New window" for certain type of viewer:*/
 void LightApp_Application::createActionForViewer( const int id,
                                                   const int parentId,
-                                                  const QString& suffix,
-                                                  const int accel )
+                                                  const QString& suffix )
 {
   QString vtlt = tr( QString( "NEW_WINDOW_%1" ).arg( suffix ).toLatin1().constData() );
   QString tip = tr( "CREATING_NEW_WINDOW" ).arg( vtlt.remove( "&" ) );
-  QAction* a = createAction( id,                      // menu action id
-                             tip,                     // status tip
-                             QIcon(),                 // icon
-                             vtlt,                    // menu text
-                             tip,                     // tooltip
-                             accel,                   // shortcut
-                             desktop(),               // parent
-                             false,                   // toggle flag
-                             this,                    // receiver
-                             SLOT( onNewWindow() ) ); // slot
+  QAction* a = createAction(id, desktop(), false /*toggle*/, "/PRP_CREATE_NEW_WINDOW_FOR_VIEWER_" + suffix,
+                            tip, vtlt, tip, QIcon(),
+                            this, SLOT(onNewWindow()));
+
   createMenu( a, parentId, -1 );
 }
 
@@ -666,7 +659,7 @@ void LightApp_Application::createActions()
   // Preferences
   createAction( PreferencesId, tr( "TOT_DESK_PREFERENCES" ), QIcon(),
                 tr( "MEN_DESK_PREFERENCES" ), tr( "PRP_DESK_PREFERENCES" ),
-                Qt::CTRL+Qt::Key_P, desk, false, this, SLOT( onPreferences() ) );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onPreferences() ), "/PRP_DESK_PREFERENCES" );
 
   // Help menu
 
@@ -794,6 +787,11 @@ void LightApp_Application::createActions()
 
   createAction( CloseId, tr( "TOT_CLOSE" ), QIcon(), tr( "MEN_DESK_CLOSE" ), tr( "PRP_CLOSE" ),
                 Qt::CTRL+Qt::Key_F4, desk, false, this, SLOT( onCloseWindow() ) );
+
+  createAction( CloseId, desk, false /*toggle*/, "/PRP_CLOSE",
+                tr( "TOT_CLOSE" ), tr( "MEN_DESK_CLOSE" ), tr( "PRP_CLOSE" ), QIcon(),
+                this, SLOT( onCloseWindow() ) );
+
   createAction( CloseAllId, tr( "TOT_CLOSE_ALL" ), QIcon(), tr( "MEN_DESK_CLOSE_ALL" ), tr( "PRP_CLOSE_ALL" ),
                 0, desk, false, this, SLOT( onCloseAllWindow() ) );
   createAction( GroupAllId, tr( "TOT_GROUP_ALL" ), QIcon(), tr( "MEN_DESK_GROUP_ALL" ), tr( "PRP_GROUP_ALL" ),
@@ -805,35 +803,37 @@ void LightApp_Application::createActions()
   createMenu( separator(), windowMenu, -1, 0 );
 
 #ifndef DISABLE_GLVIEWER
-  createActionForViewer( NewGLViewId, newWinMenu, QString::number( 0 ), Qt::ALT+Qt::Key_G );
+  createActionForViewer( NewGLViewId, newWinMenu, QString::number( 0 ) );
 #endif
 #ifndef DISABLE_PLOT2DVIEWER
-  createActionForViewer( NewPlot2dId, newWinMenu, QString::number( 1 ), Qt::ALT+Qt::Key_P );
+  createActionForViewer( NewPlot2dId, newWinMenu, QString::number( 1 ) );
 #endif
 #ifndef DISABLE_OCCVIEWER
-  createActionForViewer( NewOCCViewId, newWinMenu, QString::number( 2 ), Qt::ALT+Qt::Key_O );
+  createActionForViewer( NewOCCViewId, newWinMenu, QString::number( 2 ) );
 #endif
 #ifndef DISABLE_VTKVIEWER
-  createActionForViewer( NewVTKViewId, newWinMenu, QString::number( 3 ), Qt::ALT+Qt::Key_K );
+  createActionForViewer( NewVTKViewId, newWinMenu, QString::number( 3 ) );
 #endif
 #ifndef DISABLE_QXGRAPHVIEWER
-  createActionForViewer( NewQxSceneViewId, newWinMenu, QString::number( 4 ), Qt::ALT+Qt::Key_S );
+  createActionForViewer( NewQxSceneViewId, newWinMenu, QString::number( 4 ) );
 #endif
 #ifndef DISABLE_GRAPHICSVIEW
-  createActionForViewer( NewGraphicsViewId, newWinMenu, QString::number( 5 ), Qt::ALT+Qt::Key_C );
+  createActionForViewer( NewGraphicsViewId, newWinMenu, QString::number( 5 ) );
 #endif
 #ifndef DISABLE_PVVIEWER
-  createActionForViewer( NewPVViewId, newWinMenu, QString::number( 6 ), Qt::ALT+Qt::Key_A );
+  createActionForViewer( NewPVViewId, newWinMenu, QString::number( 6 ) );
 #endif
 #ifndef DISABLE_PYVIEWER
-  createActionForViewer( NewPyViewerId, newWinMenu, QString::number( 7 ), Qt::ALT+Qt::Key_Y );
+  createActionForViewer( NewPyViewerId, newWinMenu, QString::number( 7 ) );
 #endif
 #ifndef DISABLE_PV3DVIEWER
-  createActionForViewer( NewPV3DViewId, newWinMenu, QString::number( 8 ), Qt::ALT+Qt::Key_3 );
+  createActionForViewer( NewPV3DViewId, newWinMenu, QString::number( 8 ) );
 #endif
 
-  createAction( RenameId, tr( "TOT_RENAME" ), QIcon(), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ),
-                Qt::ALT+Qt::SHIFT+Qt::Key_R, desk, false, this, SLOT( onRenameWindow() ) );
+  createAction( RenameId, desk, false /*toggle*/, "/PRP_RENAME",
+                tr( "TOT_RENAME" ), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ), QIcon(),
+                this, SLOT( onRenameWindow() ) );
+
   createMenu( RenameId, windowMenu, -1 );
 
   int fileMenu = createMenu( tr( "MEN_DESK_FILE" ), -1 );
@@ -850,7 +850,7 @@ void LightApp_Application::createActions()
 #endif // USE_SALOME_STYLE
 
   createAction( FullScreenId, tr( "TOT_FULLSCREEN" ), QIcon(), tr( "MEN_DESK_FULLSCREEN" ), tr( "PRP_FULLSCREEN" ),
-                Qt::Key_F11, desk, false, this, SLOT( onFullScreen() ) );
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onFullScreen() ), "/PRP_FULLSCREEN" );
 
 
   int viewMenu = createMenu( tr( "MEN_DESK_VIEW" ), -1 );
@@ -1227,7 +1227,7 @@ void LightApp_Application::onExtRemoving(const QString& title)
     MESSAGE("Removing of an extension was cancelled");
     return; // cancelled
   }
-  
+
   if (activeStudy() && activeStudy()->isModified() && !onSaveDoc())
   {
     // doc is not saved, or saving cancelled
@@ -2443,7 +2443,7 @@ void LightApp_Application::showPreferences( const QStringList& path )
     resourceMgr()->save();
 
     // Update shortcuts
-    shortcutMgr()->updateShortcuts();
+    shortcutMgr()->rebindActionsToKeySequences();
   }
 
   delete prefDlg;
@@ -3561,11 +3561,7 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   // .. "Shortcuts" preferences tab <<start>>
   int shortcutTab = pref->addPreference( tr( "PREF_TAB_SHORTCUTS" ), salomeCat );
-  // ... "Shortcuts settings" group <<start>>
-  int shortcutGroup = pref->addPreference( tr( "PREF_GROUP_SHORTCUTS" ), shortcutTab );
-  pref->addPreference( tr( "" ), shortcutGroup,
-                       LightApp_Preferences::ShortcutTree, "shortcuts" );
-  // ... "Shortcuts settings" group <<end>>
+  pref->addPreference( tr( "" ), shortcutTab, LightApp_Preferences::ShortcutTree, "shortcuts" );
   // .. "Shortcuts" preferences tab <<end>>
   // . Top-level "SALOME" preferences group <<end>>
 

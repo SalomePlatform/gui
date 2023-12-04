@@ -189,7 +189,7 @@ SUIT_ResourceMgr* SUIT_Application::resourceMgr() const
 */
 SUIT_ShortcutMgr* SUIT_Application::shortcutMgr() const
 {
-  return SUIT_ShortcutMgr::getShortcutMgr();
+  return SUIT_ShortcutMgr::get();
 }
 
 #define DEFAULT_MESSAGE_DELAY 3000
@@ -639,13 +639,14 @@ QList<int> SUIT_Application::actionIds() const
   \param toggle - if it is \c true the action will be a toggle action, otherwise it will be a command action
   \param reciever - object that contains slot
   \param member - slot to be called when action is activated
+  \param actionID - application-unique action ID. Required by SUIT_ShortcutMgr for shortcut customization. May be left blank.
 */
 QAction* SUIT_Application::createAction( const int id, const QString& text, const QIcon& icon,
                                          const QString& menu, const QString& tip, const int key,
-                                         QObject* parent, const bool toggle, QObject* reciever, 
-					 const char* member, const QString& shortcutAction )
+                                         QObject* parent, const bool toggle, QObject* reciever,
+					 const char* member, const QString& actionID )
 {
-  return createAction( id, text, icon, menu, tip, QKeySequence(key), parent, toggle, reciever, member, shortcutAction );
+  return createAction( id, text, icon, menu, tip, QKeySequence(key), parent, toggle, reciever, member, actionID );
 }
 
 /*!
@@ -661,14 +662,44 @@ QAction* SUIT_Application::createAction( const int id, const QString& text, cons
   \param toggle - if it is TRUE the action will be a toggle action, otherwise it will be a command action
   \param reciever - object that contains slot
   \param member - slot to be called when action is activated
+  \param actionID - application-unique action ID. Required by SUIT_ShortcutMgr for shortcut customization. May be left blank.
 */
 QAction* SUIT_Application::createAction( const int id, const QString& text, const QIcon& icon,
                                          const QString& menu, const QString& tip, const QKeySequence& key,
-                                         QObject* parent, const bool toggle, QObject* reciever, 
-					 const char* member, const QString& shortcutAction )
+                                         QObject* parent, const bool toggle, QObject* reciever,
+					 const char* member, const QString& actionID )
 {
-  QtxAction* a = new QtxAction( text, icon, menu, key, parent, toggle, shortcutAction );
+  QtxAction* a = new QtxAction( text, icon, menu, key, parent, toggle, actionID );
   a->setStatusTip( tip );
+
+  if ( reciever && member )
+    connect( a, SIGNAL( triggered( bool ) ), reciever, member );
+
+  registerAction( id, a );
+
+  return a;
+}
+
+/*!
+  Creates action and registers it both in menu manager and tool manager
+  \return new instance of action
+  \param id proposed SUIT identificator
+  \param parent parent object
+  \param toggle if it is TRUE the action will be a toggle action, otherwise it will be a command action
+  \param actionID application-unique action ID. Required by SUIT_ShortcutMgr for shortcut customization. May be left blank.
+  \param toolTip
+  \param menuText can be later retrieved using QAction::text();
+  \param statusTip
+  \param icon icon for toolbar
+  \param reciever object that contains slot
+  \param member slot to be called when action is activated
+*/
+QAction* SUIT_Application::createAction( const int id, QObject* parent, const bool toggle, const QString& actionID,
+                                         const QString& toolTip, const QString& menuText, const QString& statusTip, const QIcon& icon,
+                                         QObject* reciever, const char* member )
+{
+  QtxAction* a = new QtxAction( parent, toggle, actionID, toolTip, menuText, icon);
+  a->setStatusTip( statusTip );
 
   if ( reciever && member )
     connect( a, SIGNAL( triggered( bool ) ), reciever, member );

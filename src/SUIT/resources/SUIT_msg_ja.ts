@@ -164,5 +164,32 @@
       <source>TLT_IMAGE_FILES</source>
       <translation>イメージ (*.bmp *.png *.jpg *.jpeg) ファイル</translation>
     </message>
-</context>	
+</context>
+<context>
+    <name>SUIT_ShortcutMgr</name>
+    <message>
+        <source>General</source>
+        <translation>一般的な</translation>
+    </message>
+     <message>
+        <source>Invalid module IDs</source>
+        <translation>無効なモジュール ID</translation>
+    </message>
+    <message>
+        <source>Invalid shortcuts</source>
+        <translation>無効なショートカットです</translation>
+    </message>
+    <message>
+        <source>These shortcuts have not been set, because they conflict with previously parsed ones</source>
+        <translation>これらのショートカットは、以前に解析されたショートカットと競合するため、設定されていません</translation>
+    </message>
+    <message>
+        <source>Invalid shortcuts in preferences</source>
+        <translation>環境設定のショートカットが無効です</translation>
+    </message>
+    <message>
+        <source>Fix the following entries in the preference files manually</source>
+        <translation>設定ファイル内の次のエントリを手動で修正します</translation>
+    </message>
+</context>
 </TS>

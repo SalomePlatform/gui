@@ -33,13 +33,15 @@
 #include <QPointer>
 #include <QIcon>
 
+#include <map>
+#include <memory>
+
 class QtxGridBox;
 class QtxFontEdit;
 class QtxGroupBox;
 class QtxComboBox;
 class QtxColorButton;
 class QtxBiColorTool;
-class QtxShortcutEdit;
 class QtxShortcutTree;
 class QtxBackgroundTool;
 
@@ -409,7 +411,7 @@ public:
 
   int              decimals() const;
   void             setDecimals( const int );
-  
+
   int              echoMode() const;
   void             setEchoMode( const int );
 
@@ -443,7 +445,7 @@ public:
   int              pageStep() const;
   int              minimum() const;
   int              maximum() const;
-  QList<QIcon>     icons() const; 
+  QList<QIcon>     icons() const;
 
   void             setSingleStep( const int& );
   void             setPageStep( const int& );
@@ -741,31 +743,35 @@ private:
   QDateTimeEdit*   myDateTime;
 };
 
-class QTX_EXPORT QtxPagePrefShortcutBtnsItem : public QtxPageNamedPrefItem
+
+class SUIT_ShortcutContainer;
+
+
+class QTX_EXPORT QtxPagePrefShortcutTreeItem : public QtxPagePrefItem
 {
 public:
-  QtxPagePrefShortcutBtnsItem( const QString&, QtxPreferenceItem* = 0,
-                               const QString& = QString(), const QString& = QString() );
-  virtual ~QtxPagePrefShortcutBtnsItem();
-  virtual void     store();
-  virtual void     retrieve();
+  QtxPagePrefShortcutTreeItem(QtxPreferenceItem* theParent);
+  virtual ~QtxPagePrefShortcutTreeItem() = default;
 
-private:
-  QtxShortcutEdit* myShortcut;
-};
-
-class QTX_EXPORT QtxPagePrefShortcutTreeItem : public QtxPageNamedPrefItem
-{
-public:
-  QtxPagePrefShortcutTreeItem( const QString&, QtxPreferenceItem* = 0, 
-                               const QString& = QString(), const QString& = QString() );
-  virtual ~QtxPagePrefShortcutTreeItem();
-  virtual void     store();
   virtual void     retrieve();
-								   
+  virtual void     retrieveDefault();
+  virtual void     store();
+
 private:
   QtxShortcutTree* myShortcutTree;
-  QString          mySection;
+
+  // { root item (preference window), shortcut container of synchronized trees (widgets within the same window) }
+  static std::map<QtxPreferenceItem*, std::weak_ptr<SUIT_ShortcutContainer>> shortcutContainers;
+  /** Why is this?
+   * Every QtxPagePrefMgr is eventually a preference window. Each preference window has button "Apply".
+   * When the button is pressed, all descendants of the QtxPagePrefMgr store changes they carry into preferences.
+   * The pitfall with shortcut trees is as follows: made in independent shortcut trees, changes may conflict,
+   * and merge of such changes is ambiguous. And the solution is to keep shortcut trees within the same window
+   * synchronized - all changes being made in a tree of a synchronized bundle are projected to other trees from the bundle
+   * without interacting with SUIT_ShortcutMgr.
+   *
+   * Every time shortcut preferences stored to the ShortcutMgr, all instances of QtxShortcutTree are updated.
+  */
 };
 
 class QTX_EXPORT QtxPagePrefBackgroundItem : public QObject, public QtxPageNamedPrefItem

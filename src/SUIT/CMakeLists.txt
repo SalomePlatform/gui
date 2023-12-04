@@ -37,28 +37,28 @@ SET(_link_LIBRARIES ${PLATFORM_LIBS} ${QT_LIBRARIES} qtx ObjBrowser)
 # --- headers ---
 
 # header files / to be processed by moc
-SET(_moc_HEADERS   
-  SUIT_Accel.h  
-  SUIT_ActionOperation.h 
-  SUIT_Application.h 
-  SUIT_AutoRotate.h 
-  SUIT_DataBrowser.h 
-  SUIT_DataObject.h 
-  SUIT_Desktop.h 
-  SUIT_FileDlg.h 
+SET(_moc_HEADERS
+  SUIT_Accel.h
+  SUIT_ActionOperation.h
+  SUIT_Application.h
+  SUIT_AutoRotate.h
+  SUIT_DataBrowser.h
+  SUIT_DataObject.h
+  SUIT_Desktop.h
+  SUIT_FileDlg.h
   SUIT_LicenseDlg.h
   SUIT_MessageBox.h
-  SUIT_Operation.h 
-  SUIT_PopupClient.h 
-  SUIT_PreferenceMgr.h 
-  SUIT_SelectionMgr.h 
-  SUIT_Session.h 
+  SUIT_Operation.h
+  SUIT_PopupClient.h
+  SUIT_PreferenceMgr.h
+  SUIT_SelectionMgr.h
+  SUIT_Session.h
   SUIT_ShortcutMgr.h
   SUIT_Study.h
-  SUIT_TreeModel.h 
-  SUIT_ViewManager.h 
-  SUIT_ViewModel.h 
-  SUIT_ViewWindow.h 
+  SUIT_TreeModel.h
+  SUIT_ViewManager.h
+  SUIT_ViewModel.h
+  SUIT_ViewWindow.h
 )
 
 # header files / no moc processing
@@ -97,6 +97,7 @@ SET(_other_RESOURCES
   resources/icon_visibility_on.png
   resources/icon_visibility_off.png
   resources/view_sync.png
+  resources/action_assets.json
 )
 
 # --- sources ---
@@ -153,4 +154,3 @@ INSTALL(FILES ${suit_HEADERS} DESTINATION ${SALOME_INSTALL_HEADERS})
 QT_INSTALL_TS_RESOURCES("${_ts_RESOURCES}" "${SALOME_GUI_INSTALL_RES_DATA}")
 
 INSTALL(FILES ${_other_RESOURCES} DESTINATION ${SALOME_GUI_INSTALL_RES_DATA})
-

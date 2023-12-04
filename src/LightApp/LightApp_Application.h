@@ -224,8 +224,7 @@ protected:
   virtual void                        customize();
   virtual void                        createActionForViewer( const int id,
                                                              const int parentId,
-                                                             const QString& suffix,
-                                                             const int accel );
+                                                             const QString& suffix );
   virtual SUIT_Study*                 createNewStudy();
   virtual QWidget*                    createWindow( const int );
   virtual void                        defaultWindows( QMap<int, int>& ) const;

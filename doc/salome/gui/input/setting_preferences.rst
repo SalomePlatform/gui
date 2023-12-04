@@ -1,4 +1,4 @@
-.. _setting_preferences_page: 
+.. _setting_preferences_page:
 
 *******************
 Setting Preferences
@@ -13,7 +13,7 @@ The **Preferences** dialog box consists of two parts:
 - Available preferences sections are listed in the left part of the dialog box; usually this list contains "SALOME" item that specifies general application preferences and a separate section for each SALOME module available in the current session.
 - The tabbed widget at the right side of the dialog box provides controls that can be used to customize the preferences.
 
-.. note:: The preferences for modules become accessible only after explicit loading of these modules. Until then the dialog box will show the corresponding warning message. 
+.. note:: The preferences for modules become accessible only after explicit loading of these modules. Until then the dialog box will show the corresponding warning message.
 
 More detailed information about preferences for certain modules can be found in the User's guide of the corresponding module.
 
@@ -23,7 +23,7 @@ application look-n-feel and common functionality.
 
 If the study has just been started and other
 modules have not been loaded yet, it will be possible to change only the settings which refer to
-the whole GUI SALOME session. 
+the whole GUI SALOME session.
 
 General Preferences
 ###################
@@ -40,11 +40,11 @@ General Preferences
 
   - **Show splash screen at start-up** - allows showing or hiding the splash screen at start-up.
   - **Opaque resize** - force opaque resize mode for viewers area (tabbed workspace). Clear this checkbox for less perfomant workstations.
-  - **Drop-down buttons in toolbars for action groups** - when checked, the action groups are represented in the viewer toolbars as a single drop-down button, switchable by the user. Otherwise, all the buttons from the action groups are displayed in the toolbar. 
+  - **Drop-down buttons in toolbars for action groups** - when checked, the action groups are represented in the viewer toolbars as a single drop-down button, switchable by the user. Otherwise, all the buttons from the action groups are displayed in the toolbar.
 
 - **Study Properties**
 
-  - **Multi file save** - if checked in, your study will be saved in several HDF files (one basic HDF file which will store the main information about the saved study and several other files for the data created by each component used during the study session). Opening of this study requires that **ALL** saved files should be stored in the **SAME** directory. If you would like to copy your saved study in another directory or machine, you should copy all stored files. Otherwise, if you try to open this study, some data will be lost and it will lead to invalid functioning of the SALOME platform. 
+  - **Multi file save** - if checked in, your study will be saved in several HDF files (one basic HDF file which will store the main information about the saved study and several other files for the data created by each component used during the study session). Opening of this study requires that **ALL** saved files should be stored in the **SAME** directory. If you would like to copy your saved study in another directory or machine, you should copy all stored files. Otherwise, if you try to open this study, some data will be lost and it will lead to invalid functioning of the SALOME platform.
   - **ASCII save** - if checked in, your study will be saved in ASCII format file (or files).
   - **Automatic loading of light modules when opening study** -  if checked in, Light Modules of the current study will be automatically loaded at the next study opening, allowing completion of object browser.
   - **Store positions of windows** -  if checked in, positions of windows will be saved in a special file at the end of the current session and then restored for a new session.
@@ -55,7 +55,7 @@ General Preferences
   - **Multi file python dump** - allows to generate multiple files (separately for each component) for dumping of a study to a python script. If the option is disabled, the study is dumped to a single python script.
   - **Save GUI state in python dump** - if this option is switched on, the Python script resulting from Dump Python operation will include commands related to the GUI state.
 
-- **External browser** - allows to define what browser will be used to show SALOME reference manuals: internal (built-in SALOME browser) or external (IE, Netscape, Mozilla, ...). In addition, it is possible to specify 
+- **External browser** - allows to define what browser will be used to show SALOME reference manuals: internal (built-in SALOME browser) or external (IE, Netscape, Mozilla, ...). In addition, it is possible to specify
 
     - **Application** - this option allows you to set an external browser (IE, Netscape) which will be used for viewing SALOME reference manuals. By default, Mozilla is used.
     - **Parameters** - additional parameters required for launching of the external browser (if applicable).
@@ -65,13 +65,13 @@ General Preferences
     - **Font** - allows quickly setting the parameters (style, size, face) of the :ref:`font_color_dlg` used in embedded Python console.
     - **Show banner** - this option allows to show/hide the Python banner on top of the console window.
 
-- **Show MRU items** - allows to define the maximum **Number** of items in **Most Recently Used** list and the **Link type**: 
+- **Show MRU items** - allows to define the maximum **Number** of items in **Most Recently Used** list and the **Link type**:
 
-  - **Long** - shows the full path to the file. 
+  - **Long** - shows the full path to the file.
   - **Short** - shows the file name only.
   - **Auto** - shows full paths to the files only if some files from different locations have the same name.
 
-- **Full-screen** 
+- **Full-screen**
 
   - **Hide object browser and viewers toolbars** - switches automatic hiding of Object Browser and OCC viewer toolbar in full-screen mode.
 
@@ -135,10 +135,10 @@ OCC 3D Viewer Preferences
   - **Enable V-Sync** - activates vertical synchronization.
   - **Enable quad-buffer support** - allows quad-buffered rendering.
 
-  .. note:: 
+  .. note::
 	It is neccessary to enable quad-buffered stereoscopic rendering manually in graphic driver settings. SALOME does not do it automatically.
 
-  .. note:: 
+  .. note::
 	All existing OCC 3D views should be re-created for quad-buffer support.
 
 - **Background** - specifies the default background for the viewers, separately for (for more details, refer to the :ref:`viewer_background` page"):
@@ -220,7 +220,7 @@ VTK 3D Viewer Preferences
     - Checkerboard
     - Split View Port Horizontal
 
-    .. note:: 
+    .. note::
 		The stereo pair type selected in this combobox is applied for all existing VTK 3D views with stereo rendering already turned on within the same SALOME GUI session. It is not possible to use different stereo modes in several VTK 3D views at the same time within the same SALOME GUI session.
 
   - **Anaglyph filter** - specifies the format of anaglyph stereo pair:
@@ -231,9 +231,9 @@ VTK 3D Viewer Preferences
 
   - **Enable quad-buffer support** - allows quad-buffered rendering.
 
-  .. note:: 
+  .. note::
 		It is neccessary to enable quad-buffered stereoscopic rendering manually in graphic driver settings. SALOME does not do it automatically.
-  .. note:: 
+  .. note::
 		All existing VTK 3D views should be re-created for quad-buffer support.
 
 - **Selection**
@@ -241,7 +241,7 @@ VTK 3D Viewer Preferences
   - **Preselection** - allows to choose among three possible preselection modes:
 
     - **Standard** - this mode works quickly, by checking only bounding boxes of objects. It does not deal with the order of actors in the view or with their data (points/ cells).
-    - **Dynamic** - works directly with cells of actors, which provides the exact area of preselection. This mode is much more slower. 
+    - **Dynamic** - works directly with cells of actors, which provides the exact area of preselection. This mode is much more slower.
     - **Disabled** - switches off the preselection.
 
   - **Enable selection** - switches selection on/off.
@@ -250,13 +250,13 @@ VTK 3D Viewer Preferences
 
   - **Decrease Speed Increment** - decreases by 1 the speed increment used for the keyboard (same as [-] key).
   - **Increase Speed Increment** - increase by 1 the speed increment used for the keyboard (same as [+] key).
-  - **Dominant / combined switch** - toggles button to switch to dominant or combined movements. 
+  - **Dominant / combined switch** - toggles button to switch to dominant or combined movements.
 
 - **AVI Recording**
 
   - **Mode** - allows to choose from two recording regimes:
 
-    - **Recording all displayed frames** - records exactly at the FPS rate specified by the user. 
+    - **Recording all displayed frames** - records exactly at the FPS rate specified by the user.
     - **Recording at a given FPS** - records only when the contents of the viewer change (some activity is performed).  In the AVI file non-recorded images are substituted with the copies of the latest recorded image, which produces files with lower quality but requires less system resources.
 
   - **FPS** - allows to define the FPS (frames per second) rate for the clip. Set greater value for better quality.
@@ -278,15 +278,15 @@ Plot 2D Viewer Preferences
 	:align: center
 
 - **Background color** - this submenu allows to select the background color. Click on the colored line to access to the :ref:`select_color_and_font_page` dialog box.
-- **Selection color** - this submenu allows to select the color of selected object in the viewer. 
+- **Selection color** - this submenu allows to select the color of selected object in the viewer.
 - **Viewer** - allows specifying the properties of the Plot 2D Viewer.
 
   - **Curve Type** - this allows to set the representation of graphs in your presentations. You can see only **Points**, points connected with **Lines** or points connected with smooth **Splines**.
   - **Marker Size** - this submenu allows you to set the size of markers in your graphs.
   - **Horizontal** and **Vertical axis scale** - this submenus allow you to set the scale for vertical and horizontal axes. It can be either **Linear** or **Logarithmic**. Note that the **Logarithmic** scale can be used only if the minimum value of corresponding component (abscissa or ordinate) of all points displayed in the viewer is greater than zero. If this condition is not met, the scale is switched to **Linear** automatically, even if it is set to **Logarithmic**.
-  - **Deviation marker color** - this submenu allows to select the color of the deviation marker. 
-  - **Deviation marker line width** allows to define line width of the deviation marker. 
-  - **Deviation marker tick size** allows to define size of the upper and lower horizontal lines of the deviation marker. 
+  - **Deviation marker color** - this submenu allows to select the color of the deviation marker.
+  - **Deviation marker line width** allows to define line width of the deviation marker.
+  - **Deviation marker tick size** allows to define size of the upper and lower horizontal lines of the deviation marker.
 
 - **Legend** - allows specifying the properties of the legend.
 
@@ -294,8 +294,8 @@ Plot 2D Viewer Preferences
   - **Legend Position** - this submenu allows to set the default position of the legend, it can be located to the left, to the right, on top or on bottom of the graph.
   - **Symbol type** you can select the type of legend item symbol from "Marker on line" or "Marker above line"
   - **Legend font** - this allows to set type and face for the font of Legend item.
-  - **Legend font color** - this allows to select the color of the font of the legend item. 
-  - **Highlighted legend font color** - this submenu allows to select the color of the font of the selected legend item. 
+  - **Legend font color** - this allows to select the color of the font of the legend item.
+  - **Highlighted legend font color** - this submenu allows to select the color of the font of the selected legend item.
 
 .. _default_python_preferences:
 
@@ -305,7 +305,7 @@ Python Viewer Preferences
 .. image:: ../images/pref_salome_pythonviewer.png
 	:align: center
 
-.. note:: 
+.. note::
 	The following settings are default and will be applied only for newly created Python viewers. Customization of already opened viewers can be done using local :ref:`custom_python_preferences` called by clicking on the corresponding icon of :ref:`python_viewer_page`.
 
 - **Font settings** allows setting font variant, size and style.
@@ -368,13 +368,13 @@ Object Browser Preferences
 
 - **Default columns** - these checkboxes allow to display or hide **Value**, **Entry**, **IOR** and **Reference entry** columns in the Object Browser.
 
-Shortcuts Preferences
+Shortcut Preferences
 #####################
 
 .. image:: ../images/pref_salome_shortcuts.png
 	:align: center
 
-- **Shortcuts settings** widget allows to define custom shortcuts for various operations. To change keyboard sequence for a certain action - select the action and press the custom keys combination.
+- **Shortcut settings** widget allows to define custom shortcuts for various operations. To change keyboard sequence for a certain action - select the action and press the custom keys combination.
 
 
 :ref:`select_color_and_font_page`: "Font and color preferences"
@@ -383,7 +383,7 @@ are most oftenly used types of user settings.
 When you change settings (click **OK** or **Apply** button) each module
 receives the notification about what preferences are changed. You can
 also click **Defaults** button to restore default preferences or **Close**
-button to quit the dialog box without any changes. 
+button to quit the dialog box without any changes.
 
 **Import** button allows loading specific user file containing
 preferences from any location at the computer through a standard
@@ -400,7 +400,7 @@ separate preferences file for each SALOME version in use. Preferences
 are saved to the file in the end of the working session and restored
 at the application start-up.
 
-.. note:: 
+.. note::
 	The preferences you set will be default preferences for all **new** objects, but they are not retroactive and do not automatically apply to the existing objects.
 
 

@@ -72,7 +72,7 @@ enum MenuName {
   Preferences = 4,
   Tools       = 5,
   Window      = 6,
-  Help        = 7  
+  Help        = 7
 };
 
 enum WindowType {
@@ -86,25 +86,24 @@ enum WindowType {
   WT_User
 };
 
-enum PrefType { 
+enum PrefType {
   PT_Auto,
   PT_Space,
-  PT_Bool, 
+  PT_Bool,
   PT_Color,
-  PT_String, 
-  PT_Selector, 
-  PT_DblSpin, 
-  PT_IntSpin, 
-  PT_Double, 
-  PT_Integer, 
-  PT_GroupBox, 
-  PT_Tab, 
-  PT_Frame, 
-  PT_Font, 
-  PT_DirList, 
-  PT_File, 
+  PT_String,
+  PT_Selector,
+  PT_DblSpin,
+  PT_IntSpin,
+  PT_Double,
+  PT_Integer,
+  PT_GroupBox,
+  PT_Tab,
+  PT_Frame,
+  PT_Font,
+  PT_DirList,
+  PT_File,
   PT_Slider,
-  PT_Shortcut,
   PT_ShortcutTree,
   PT_BiColor,
   PT_Background,
@@ -112,14 +111,14 @@ enum PrefType {
 };
 
 enum Orientation {
-  Horizontal = 0, 
-  Vertical   = 1  
+  Horizontal = 0,
+  Vertical   = 1
 };
 
 enum Action {
-  MoveWidget   = 0, 
-  LeaveWidget  = 1, 
-  SplitAt      = 2  
+  MoveWidget   = 0,
+  LeaveWidget  = 1,
+  SplitAt      = 2
 };
 
 class QtxAction : QWidgetAction
@@ -264,11 +263,11 @@ public:
   virtual void retrieve();
 };
 
-enum VisibilityState 
+enum VisibilityState
 {
   ShownState,
   HiddenState,
-  UnpresentableState 
+  UnpresentableState
 };
 
 class SalomePyQt
@@ -334,7 +333,7 @@ public:
   static QString           getFileName         ( QWidget*, const QString&, const QStringList&, const QString&, bool ) /ReleaseGIL/ ;
   static QStringList       getOpenFileNames    ( QWidget*, const QString&, const QStringList&, const QString& ) /ReleaseGIL/ ;
   static QString           getExistingDirectory( QWidget*, const QString&, const QString& ) /ReleaseGIL/ ;
-			 
+
   static void              createRoot() /ReleaseGIL/ ;
   static QString           createObject( const QString& = QString("") )  /ReleaseGIL/ ;
   static QString           createObject( const QString&,
@@ -357,7 +356,7 @@ public:
   static void              setColor( const QString&, const QColor& ) /ReleaseGIL/ ;
   static QColor            getColor( const QString& ) /ReleaseGIL/ ;
 
-  static void              setReference( const QString& ,const QString& ) /ReleaseGIL/ ; 
+  static void              setReference( const QString& ,const QString& ) /ReleaseGIL/ ;
   static QString           getReference( const QString& ) /ReleaseGIL/ ;
 
   static void              removeObject(const QString&  )    /ReleaseGIL/ ;
@@ -381,20 +380,20 @@ public:
 
   static int               createMenu( const QString&, const int,
 				       const int = -1, const int = -1, const int = -1 ) /ReleaseGIL/ ;
-  static int               createMenu( const QString&, const QString&, 
+  static int               createMenu( const QString&, const QString&,
 				       const int = -1, const int = -1, const int = -1 ) /ReleaseGIL/ ;
   static int               createMenu( const int,      const int,
 				       const int = -1, const int = -1 ) /ReleaseGIL/ ;
-  static int               createMenu( const int,      const QString&, 
+  static int               createMenu( const int,      const QString&,
 				       const int = -1, const int = -1 ) /ReleaseGIL/ ;
-  static int               createMenu( QAction*,       const int,      const int = -1, 
+  static int               createMenu( QAction*,       const int,      const int = -1,
 	                               const int = -1, const int = -1 ) /ReleaseGIL/ ;
-  static int               createMenu( QAction*,       const QString&, const int = -1, 
+  static int               createMenu( QAction*,       const QString&, const int = -1,
 	                               const int = -1, const int = -1 ) /ReleaseGIL/ ;
   static QAction*          createSeparator() /ReleaseGIL/ ;
 
-  static QAction*          createAction( const int, const QString&, 
-	                                 const QString& = QString(), const QString& = QString(), 
+  static QAction*          createAction( const int, const QString&,
+	                                 const QString& = QString(), const QString& = QString(),
 					 const QString& = QString(), const int = 0, const bool = false ) /ReleaseGIL/ ;
 
   static QtxActionGroup*   createActionGroup( const int, const bool = true ) /ReleaseGIL/ ;
@@ -438,20 +437,20 @@ public:
                                           const QString& = QString(),
 				          const QString& = QString() ) /ReleaseGIL/ ;
   static QVariant          preferenceProperty( const int, const QString& ) /ReleaseGIL/ ;
-  static void              setPreferenceProperty( const int, 
+  static void              setPreferenceProperty( const int,
                                                   const QString&,
                                                   const QVariant& ) /ReleaseGIL/ ;
-  static void              setPreferencePropertyWg( const int, 
-                                                    const QString&,	
+  static void              setPreferencePropertyWg( const int,
+                                                    const QString&,
                                                     UserDefinedContent* ) /ReleaseGIL/ ;
-  static void              addPreferenceProperty( const int, 
-                                                  const QString&, 
-						  const int, 
+  static void              addPreferenceProperty( const int,
+                                                  const QString&,
+						  const int,
 						  const QVariant& ) /ReleaseGIL/ ;
 
   static void              message( const QString&, bool = true ) /ReleaseGIL/ ;
   static void              clearMessages() /ReleaseGIL/ ;
-  
+
   static QList<int>        getViews() /ReleaseGIL/ ;
   static int               getActiveView() /ReleaseGIL/ ;
   static QString           getViewType( const int ) /ReleaseGIL/ ;
@@ -471,12 +470,12 @@ public:
   static bool              isViewVisible( const int id ) /ReleaseGIL/ ;
   static void              setViewClosable( const int id, const bool ) /ReleaseGIL/ ;
   static bool              isViewClosable( const int id ) /ReleaseGIL/ ;
-  
+
   static bool              groupAllViews() /ReleaseGIL/ ;
   static bool              splitView( const int, Orientation, Action ) /ReleaseGIL/ ;
   static bool              moveView( const int, const int, const bool ) /ReleaseGIL/ ;
   static QList<int>        neighbourViews( const int ) /ReleaseGIL/ ;
-  
+
 %If (ENABLE_PLOT2D)
 // start Plot2d-related functionality
   static void              displayCurve(const int, Plot2d_Curve*) /ReleaseGIL/ ;

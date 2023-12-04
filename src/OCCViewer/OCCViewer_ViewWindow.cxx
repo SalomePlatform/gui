@@ -242,7 +242,7 @@ const char* imageCrossCursor[] = {
   "................................",
   "................................"};
 
- 
+
   /*!
   \brief Constructor
   \param theDesktop main window of application
@@ -1285,42 +1285,42 @@ void OCCViewer_ViewWindow::createActions()
 
   // Projections
   aAction = new QtxAction(tr("MNU_FRONT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_FRONT" ) ),
-                           tr( "MNU_FRONT_VIEW" ), 0, this, false, "Viewers:Front view");
+                           tr( "MNU_FRONT_VIEW" ), 0, this, false, "/#Viewers/View/Set X-");
   aAction->setStatusTip(tr("DSC_FRONT_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onFrontView()));
   this->addAction(aAction);
   toolMgr()->registerAction( aAction, FrontId );
 
   aAction = new QtxAction(tr("MNU_BACK_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_BACK" ) ),
-                           tr( "MNU_BACK_VIEW" ), 0, this, false, "Viewers:Back view");
+                           tr( "MNU_BACK_VIEW" ), 0, this, false, "/#Viewers/View/Set X+");
   aAction->setStatusTip(tr("DSC_BACK_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onBackView()));
   this->addAction(aAction);
   toolMgr()->registerAction( aAction, BackId );
 
   aAction = new QtxAction(tr("MNU_TOP_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_TOP" ) ),
-                           tr( "MNU_TOP_VIEW" ), 0, this, false, "Viewers:Top view");
+                           tr( "MNU_TOP_VIEW" ), 0, this, false, "/#Viewers/View/Set Z-");
   aAction->setStatusTip(tr("DSC_TOP_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onTopView()));
   this->addAction(aAction);
   toolMgr()->registerAction( aAction, TopId );
 
   aAction = new QtxAction(tr("MNU_BOTTOM_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_BOTTOM" ) ),
-                           tr( "MNU_BOTTOM_VIEW" ), 0, this, false, "Viewers:Bottom view");
+                           tr( "MNU_BOTTOM_VIEW" ), 0, this, false, "/#Viewers/View/Set Z+");
   aAction->setStatusTip(tr("DSC_BOTTOM_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onBottomView()));
   this->addAction(aAction);
   toolMgr()->registerAction( aAction, BottomId );
 
   aAction = new QtxAction(tr("MNU_LEFT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_LEFT" ) ),
-                           tr( "MNU_LEFT_VIEW" ), 0, this, false, "Viewers:Left view");
+                           tr( "MNU_LEFT_VIEW" ), 0, this, false, "/#Viewers/View/Set Y+");
   aAction->setStatusTip(tr("DSC_LEFT_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onLeftView()));
   this->addAction(aAction);
   toolMgr()->registerAction( aAction, LeftId );
 
   aAction = new QtxAction(tr("MNU_RIGHT_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_RIGHT" ) ),
-                           tr( "MNU_RIGHT_VIEW" ), 0, this, false, "Viewers:Right view");
+                           tr( "MNU_RIGHT_VIEW" ), 0, this, false, "/#Viewers/View/Set Y-");
   aAction->setStatusTip(tr("DSC_RIGHT_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onRightView()));
   this->addAction(aAction);
@@ -1328,7 +1328,7 @@ void OCCViewer_ViewWindow::createActions()
 
   // rotate anticlockwise
   aAction = new QtxAction(tr("MNU_ANTICLOCKWISE_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_ANTICLOCKWISE" ) ),
-                           tr( "MNU_ANTICLOCKWISE_VIEW" ), 0, this, false, "Viewers:Rotate anticlockwise");
+                           tr( "MNU_ANTICLOCKWISE_VIEW" ), 0, this, false, "/#Viewers/View/Rotate anticlockwise");
   aAction->setStatusTip(tr("DSC_ANTICLOCKWISE_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onAntiClockWiseView()));
   this->addAction(aAction);
@@ -1336,7 +1336,7 @@ void OCCViewer_ViewWindow::createActions()
 
   // rotate clockwise
   aAction = new QtxAction(tr("MNU_CLOCKWISE_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_CLOCKWISE" ) ),
-                           tr( "MNU_CLOCKWISE_VIEW" ), 0, this, false, "Viewers:Rotate clockwise");
+                           tr( "MNU_CLOCKWISE_VIEW" ), 0, this, false, "/#Viewers/View/Rotate clockwise");
   aAction->setStatusTip(tr("DSC_CLOCKWISE_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onClockWiseView()));
   this->addAction(aAction);
@@ -1371,10 +1371,10 @@ void OCCViewer_ViewWindow::createActions()
   aProjectionGroup->addAction( toolMgr()->action( OrthographicId ) );
   aProjectionGroup->addAction( toolMgr()->action( PerspectiveId ) );
   connect(aProjectionGroup, SIGNAL(triggered(QAction*)), this, SLOT(onProjectionType(QAction*)));
-  
+
   // Reset
   aAction = new QtxAction(tr("MNU_RESET_VIEW"), aResMgr->loadPixmap( "OCCViewer", tr( "ICON_OCCVIEWER_VIEW_RESET" ) ),
-                           tr( "MNU_RESET_VIEW" ), 0, this, false, "Viewers:Reset view");
+                           tr( "MNU_RESET_VIEW" ), 0, this, false, "/#Viewers/View/Reset");
   aAction->setStatusTip(tr("DSC_RESET_VIEW"));
   connect(aAction, SIGNAL(triggered()), this, SLOT(onResetView()));
   this->addAction(aAction);
@@ -1665,7 +1665,7 @@ void OCCViewer_ViewWindow::onFrontView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if (myAutomaticZoom)
   {
-    if ( !aView3d.IsNull() ) 
+    if ( !aView3d.IsNull() )
       aView3d->SetProj (V3d_Xpos);
     onViewFitAll();
   }
@@ -1683,7 +1683,7 @@ void OCCViewer_ViewWindow::onBackView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if (myAutomaticZoom)
   {
-    if ( !aView3d.IsNull() ) 
+    if ( !aView3d.IsNull() )
       aView3d->SetProj (V3d_Xneg);
     onViewFitAll();
   }
@@ -1701,7 +1701,7 @@ void OCCViewer_ViewWindow::onTopView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if (myAutomaticZoom)
   {
-    if ( !aView3d.IsNull() ) 
+    if ( !aView3d.IsNull() )
       aView3d->SetProj (V3d_Zpos);
     onViewFitAll();
   }
@@ -1719,7 +1719,7 @@ void OCCViewer_ViewWindow::onBottomView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if (myAutomaticZoom)
   {
-    if ( !aView3d.IsNull() ) 
+    if ( !aView3d.IsNull() )
       aView3d->SetProj (V3d_Zneg);
     onViewFitAll();
   }
@@ -1737,7 +1737,7 @@ void OCCViewer_ViewWindow::onLeftView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if (myAutomaticZoom)
   {
-    if ( !aView3d.IsNull() ) 
+    if ( !aView3d.IsNull() )
       aView3d->SetProj (V3d_Yneg);
     onViewFitAll();
   }
@@ -1755,7 +1755,7 @@ void OCCViewer_ViewWindow::onRightView()
   Handle(V3d_View) aView3d = myViewPort->getView();
   if (myAutomaticZoom)
   {
-    if ( !aView3d.IsNull() ) 
+    if ( !aView3d.IsNull() )
       aView3d->SetProj (V3d_Ypos);
     onViewFitAll();
   }
@@ -2420,7 +2420,7 @@ QImage OCCViewer_ViewWindow::dumpView()
 
   Image_PixMap aPix;
   view->ToPixMap(aPix, aWidth, aHeight, Graphic3d_BT_RGB);
-  
+
   QImage anImage( aWidth, aHeight, QImage::Format_ARGB32 );
   for ( int i = 0; i < aWidth; i++ ) {
     for ( int j = 0; j < aHeight; j++ ) {
@@ -2429,7 +2429,7 @@ QImage OCCViewer_ViewWindow::dumpView()
       anImage.setPixelColor( i, j, color );
     }
   }
-    
+
   if ( aPix.IsTopDown() )
     anImage = anImage.mirrored();
   return anImage;
@@ -3660,7 +3660,7 @@ void OCCViewer_ViewWindow::synchronize( SUIT_ViewWindow* theView )
   aProps.getPosition( aPosition[0], aPosition[1], aPosition[2] );
   aProps.getViewUp( anUpDir[0], anUpDir[1], anUpDir[2] );
   aProps.getAxialScale( anAxialScale[0], anAxialScale[1], anAxialScale[2] );
-  
+
   try {
     aDestView->SetAt( aFocalPoint[0], aFocalPoint[1], aFocalPoint[2] );
     aDestView->SetEye( aPosition[0], aPosition[1], aPosition[2] );
@@ -3670,7 +3670,7 @@ void OCCViewer_ViewWindow::synchronize( SUIT_ViewWindow* theView )
     getViewPort()->setAxialScale( anAxialScale[0], anAxialScale[1], anAxialScale[2] );
     aDestView->SetImmediateUpdate( Standard_True );
     aDestView->Redraw();
-  } 
+  }
   catch (Standard_Failure&) {
   }
 

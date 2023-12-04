@@ -82,7 +82,7 @@ enum MenuName {
   Preferences = 4,
   Tools       = 5,
   Window      = 6,
-  Help        = 7  
+  Help        = 7
 };
 
 enum {
@@ -98,29 +98,28 @@ enum {
 #endif
 };
 
-enum { 
+enum {
   PT_Auto     = LightApp_Preferences::Auto,
   PT_Space    = LightApp_Preferences::Space,
-  PT_Bool     = LightApp_Preferences::Bool, 
+  PT_Bool     = LightApp_Preferences::Bool,
   PT_Color    = LightApp_Preferences::Color,
-  PT_String   = LightApp_Preferences::String, 
-  PT_Selector = LightApp_Preferences::Selector, 
-  PT_DblSpin  = LightApp_Preferences::DblSpin, 
-  PT_IntSpin  = LightApp_Preferences::IntSpin, 
-  PT_Double   = LightApp_Preferences::Double, 
-  PT_Integer  = LightApp_Preferences::Integer, 
-  PT_GroupBox = LightApp_Preferences::GroupBox, 
-  PT_Tab      = LightApp_Preferences::Tab, 
-  PT_Frame    = LightApp_Preferences::Frame, 
-  PT_Font     = LightApp_Preferences::Font, 
-  PT_DirList  = LightApp_Preferences::DirList, 
-  PT_File     = LightApp_Preferences::File, 
-  PT_Slider       = LightApp_Preferences::Slider, 
-  PT_Shortcut     = LightApp_Preferences::Shortcut, 
-  PT_ShortcutTree = LightApp_Preferences::ShortcutTree, 
-  PT_BiColor      = LightApp_Preferences::BiColor, 
-  PT_Background   = LightApp_Preferences::Background, 
-  PT_UserDefined  = LightApp_Preferences::UserDefined, 
+  PT_String   = LightApp_Preferences::String,
+  PT_Selector = LightApp_Preferences::Selector,
+  PT_DblSpin  = LightApp_Preferences::DblSpin,
+  PT_IntSpin  = LightApp_Preferences::IntSpin,
+  PT_Double   = LightApp_Preferences::Double,
+  PT_Integer  = LightApp_Preferences::Integer,
+  PT_GroupBox = LightApp_Preferences::GroupBox,
+  PT_Tab      = LightApp_Preferences::Tab,
+  PT_Frame    = LightApp_Preferences::Frame,
+  PT_Font     = LightApp_Preferences::Font,
+  PT_DirList  = LightApp_Preferences::DirList,
+  PT_File     = LightApp_Preferences::File,
+  PT_Slider       = LightApp_Preferences::Slider,
+  PT_ShortcutTree = LightApp_Preferences::ShortcutTree,
+  PT_BiColor      = LightApp_Preferences::BiColor,
+  PT_Background   = LightApp_Preferences::Background,
+  PT_UserDefined  = LightApp_Preferences::UserDefined,
 };
 
 class UserDefinedContent: public QWidget
@@ -136,7 +135,7 @@ public:
 
 //! Orientation
 enum Orientation {
-  Horizontal = 0, //!< Horizontal orientation 
+  Horizontal = 0, //!< Horizontal orientation
   Vertical   = 1  //!< Vertical orientation
 };
 
@@ -161,11 +160,11 @@ enum ObjectType
 };
 #endif
 
-enum VisibilityState 
+enum VisibilityState
 {
   ShownState,             //!< Object is shown in viewer
   HiddenState,            //!< Object is hidden in viewer
-  UnpresentableState      //!< Unpresentable object    
+  UnpresentableState      //!< Unpresentable object
 };
 
 #ifndef DISABLE_PLOT2DVIEWER
@@ -174,7 +173,7 @@ enum Axis {
   yRight   = QwtPlot::yRight,
   xBottom  = QwtPlot::xBottom,
   xTop     = QwtPlot::xTop,
-};	
+};
 #endif
 
 class SalomePyQt
@@ -247,7 +246,7 @@ public:
   static void              setColor( const QString&, const QColor& );
   static QColor            getColor( const QString& );
 
-  static void              setReference( const QString&, const QString& ); 
+  static void              setReference( const QString&, const QString& );
   static QString           getReference( const QString& );
 
   static QIcon             loadIcon( const QString&, const QString& );
@@ -267,23 +266,23 @@ public:
 
   static int               createMenu( const QString&, const int = -1,
                                        const int = -1, const int = -1, const int = -1 );
-  static int               createMenu( const QString&, const QString& = QString(), 
+  static int               createMenu( const QString&, const QString& = QString(),
                                        const int = -1, const int = -1, const int = -1 );
   static int               createMenu( const int,      const int = -1,
                                        const int = -1, const int = -1 );
-  static int               createMenu( const int,      const QString& = QString(), 
+  static int               createMenu( const int,      const QString& = QString(),
                                        const int = -1, const int = -1 );
-  static int               createMenu( QAction*,     const int,      const int = -1, 
+  static int               createMenu( QAction*,     const int,      const int = -1,
                                        const int = -1, const int = -1 );
-  static int               createMenu( QAction*,     const QString&, const int = -1, 
+  static int               createMenu( QAction*,     const QString&, const int = -1,
                                        const int = -1, const int = -1 );
 
   static QAction*          createSeparator();
 
   static QAction*          createAction( const int, const QString&,
-                                         const QString& = QString(), const QString& = QString(), 
+                                         const QString& = QString(), const QString& = QString(),
                                          const QString& = QString(), const int = 0, const bool = false );
-  
+
   static QtxActionGroup*   createActionGroup( const int, const bool = true );
 
   static QAction*          action( const int );
@@ -323,7 +322,7 @@ public:
 
   static void              message( const QString&, bool = true );
   static void              clearMessages();
-  
+
   static QList<int>        getViews();
   static int               getActiveView();
   static QString           getViewType( const int );

@@ -1175,7 +1175,7 @@ msgstr ""
 # e081f044dacf408690aa128eca010f21
 #: ../../../../../../SRC/GUI_SRC/doc/salome/gui/input/setting_preferences.rst:357
 msgid ""
-"**Shortcuts settings** widget allows to define custom shortcuts for "
+"**Shortcut settings** widget allows to define custom shortcuts for "
 "various operations. To change keyboard sequence for a certain action - "
 "select the action and press the custom keys combination."
 msgstr ""

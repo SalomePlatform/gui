@@ -69,6 +69,13 @@ GLViewer_Viewer2d::~GLViewer_Viewer2d()
 {    
     //myGLSketcher = 0;
     //delete myGLSketcher;
+
+  qDeleteAll(myDrawers);
+  myDrawers.clear();
+
+  delete myGLContext;
+  myGLContext = nullptr;
+
   GLViewer_TexFont::clearTextBases();
 }
 

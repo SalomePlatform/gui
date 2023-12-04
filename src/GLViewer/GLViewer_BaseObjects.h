@@ -127,7 +127,7 @@ class GLVIEWER_API GLViewer_Polyline: public GLViewer_Object
 {
 public:
   GLViewer_Polyline( int number = 1, float size = 5.0, const QString& toolTip = "GLPolyline" );
- ~GLViewer_Polyline();
+ virtual ~GLViewer_Polyline();
   
   // redefined  methods
   virtual void            compute();

@@ -69,9 +69,13 @@ GLViewer_Context::GLViewer_Context( GLViewer_Viewer2d* v ) :
 */
 GLViewer_Context::~GLViewer_Context()
 {
-    myActiveObjects.clear();
-    myInactiveObjects.clear();
-    mySelectedObjects.clear();
+  qDeleteAll(myActiveObjects);
+  myActiveObjects.clear();
+
+  qDeleteAll(myInactiveObjects);
+  myInactiveObjects.clear();
+
+  mySelectedObjects.clear();
 }
 
 /*!
@@ -115,6 +119,8 @@ int GLViewer_Context::MoveTo( int xi, int yi, bool byCircle )
             object->highlight( x, y, myTolerance, GL_FALSE );
             isHigh = object->isHighlighted();
         }
+        delete rect;
+        rect = nullptr;
 
         if( isHigh )
         {

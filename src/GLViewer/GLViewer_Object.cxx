@@ -42,8 +42,8 @@ GLViewer_Object::GLViewer_Object()
   myIsHigh = GL_FALSE;
   myIsSel = GL_FALSE;
   
-  myRect = new GLViewer_Rect();;  
-  myUpdateRect = new GLViewer_Rect();;  
+  myRect = new GLViewer_Rect(); 
+  myUpdateRect = new GLViewer_Rect();  
   myGLText = new GLViewer_Text( 0, 0, 0, QColor(0,0,0) );
 
   myAspectLine = new GLViewer_AspectLine();
@@ -64,17 +64,20 @@ GLViewer_Object::GLViewer_Object()
 */
 GLViewer_Object::~GLViewer_Object()
 {
-  if( myRect )
-    delete myRect;
+  delete myRect;
+  myRect = nullptr;
 
-  if( myUpdateRect )
-    delete myUpdateRect;
+  delete myUpdateRect;
+  myUpdateRect = nullptr;
 
-  if( myGLText )
-    delete myGLText;
+  delete myGLText;
+  myGLText = nullptr;
 
-  if( myAspectLine )
-    delete myAspectLine;
+  delete myAspectLine;
+  myAspectLine = nullptr;
+
+  delete myOwner;
+  myOwner = nullptr;
 }
 
 /*!

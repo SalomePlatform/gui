@@ -59,10 +59,11 @@ GLViewer_MarkerSet::GLViewer_MarkerSet( int number, float size, const QString& t
 */
 GLViewer_MarkerSet::~GLViewer_MarkerSet()
 {
-    if ( myXCoord )
-        delete[] myXCoord;
-    if ( myYCoord )
-        delete[] myYCoord;
+  delete[] myXCoord;
+  delete[] myYCoord;
+
+  myXCoord = nullptr;
+  myYCoord = nullptr;
 }
 
 /*!
@@ -590,6 +591,9 @@ GLViewer_Rect* GLViewer_MarkerSet::getUpdateRect()
 */
 void GLViewer_MarkerSet::setXCoord( GLfloat* xCoord, int size )
 {
+  delete[] myXCoord;
+  myXCoord = nullptr;
+
   myXCoord = new GLfloat[ size ];
   for( int i = 0; i < size; i++ )
      myXCoord[i] = xCoord[i];
@@ -602,6 +606,9 @@ void GLViewer_MarkerSet::setXCoord( GLfloat* xCoord, int size )
 */
 void GLViewer_MarkerSet::setYCoord( GLfloat* yCoord, int size )
 {
+  delete[] myYCoord;
+  myYCoord = nullptr;
+
   myYCoord = new GLfloat[ size ];
   for( int i = 0; i < size; i++ )
      myYCoord[i] = yCoord[i];
@@ -840,10 +847,11 @@ GLViewer_Polyline::GLViewer_Polyline( int number, float /*size*/, const QString&
 */
 GLViewer_Polyline::~GLViewer_Polyline()
 {
-  if ( myXCoord )
-    delete[] myXCoord;
-  if ( myYCoord )
-    delete[] myYCoord;
+  delete[] myXCoord;
+  delete[] myYCoord;
+
+  myXCoord = nullptr;
+  myYCoord = nullptr;
 }
 
 /*!
@@ -993,7 +1001,9 @@ GLViewer_Rect* GLViewer_Polyline::getUpdateRect()
 GLViewer_Drawer* GLViewer_Polyline::createDrawer()
 {
 //  cout << "GLViewer_MarkerSet::createDrawer" << endl;
-    return myDrawer = new GLViewer_PolylineDrawer();
+  delete myDrawer;
+  myDrawer = nullptr;
+  return myDrawer = new GLViewer_PolylineDrawer();
 }
 
 /*!
@@ -1177,6 +1187,9 @@ GLboolean GLViewer_Polyline::unselect()
 */
 void GLViewer_Polyline::setXCoord( GLfloat* xCoord, int size )
 {
+  delete[] myXCoord;
+  myXCoord = nullptr;
+
   myXCoord = new GLfloat[ size ];
   for( int i = 0; i < size; i++ )
      myXCoord[i] = xCoord[i];
@@ -1189,6 +1202,9 @@ void GLViewer_Polyline::setXCoord( GLfloat* xCoord, int size )
 */
 void GLViewer_Polyline::setYCoord( GLfloat* yCoord, int size )
 {
+  delete[] myYCoord;
+  myYCoord = nullptr;
+
   myYCoord = new GLfloat[ size ];
   for( int i = 0; i < size; i++ )
      myYCoord[i] = yCoord[i];

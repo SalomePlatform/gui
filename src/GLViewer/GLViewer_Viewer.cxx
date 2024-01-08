@@ -315,18 +315,16 @@ bool GLViewer_Viewer::eventFilter( QObject* o, QEvent* e )
     if( !getActiveView() )
         return false;
 
-    if( getActiveView()->getViewPort() == o->parent() )
-      o = o->parent();
+    if (e->type() == QEvent::KeyPress)
+      {    
+        QKeyEvent* keyEvent = static_cast<QKeyEvent*>(e);
+        if (keyEvent->key() == Qt::Key_Escape)
+          {
+            activateTransform( NoTransform );
+            activateSketching( NoSketching );
+          }
+      }
 
-    bool mouseClickedOutside = ( e->type() == QEvent::MouseButtonPress &&
-                                 o != getActiveView()->getViewPort() );
-    bool anyKeyPressed = ( e->type() == QEvent::KeyPress );
-    if ( mouseClickedOutside || anyKeyPressed )
-    {   /* terminate all */
-        activateTransform( NoTransform );
-        activateSketching( NoSketching );
-        //cout << "mouseClickedOutside || anyKeyPressed" << endl;
-    }
     return QObject::eventFilter( o, e );
 }
 

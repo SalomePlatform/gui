@@ -658,6 +658,9 @@ public:
 
   QString          pathFilter() const;
   void             setPathFilter( const QString& );
+ 
+  QFileDialog::Options pathOptions() const;
+  void setPathOptions(const QFileDialog::Options);
 
   virtual void     store();
   virtual void     retrieve();

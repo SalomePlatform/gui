@@ -26,6 +26,7 @@
 #include "Qtx.h"
 
 #include <QFrame>
+#include <QFileDialog>
 
 class QLineEdit;
 
@@ -47,6 +48,9 @@ public:
   QString       pathFilter() const;
   void          setPathFilter( const QString& );
 
+  QFileDialog::Options pathOptions() const;
+  void setPathOptions( const QFileDialog::Options );
+
 private slots:
   void          onBrowse( bool = false );
 
@@ -61,6 +65,7 @@ private:
   QLineEdit*    myPath;
   Qtx::PathType myType;
   QString       myFilter;
+  QFileDialog::Options myOptions;
   bool          myBrowse;
 };
 

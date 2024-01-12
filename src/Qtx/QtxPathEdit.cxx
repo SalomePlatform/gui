@@ -29,7 +29,6 @@
 #include <QCompleter>
 #include <QKeyEvent>
 #include <QToolButton>
-#include <QFileDialog>
 #include <QRegExpValidator>
 
 static const char* browse_icon[] = {
@@ -186,6 +185,30 @@ void QtxPathEdit::setPathFilter( const QString& f )
 }
 
 /*!
+  \brief Set path file dialog options.
+  \param f new file or directory path options
+  \sa pathOptions()
+*/
+void QtxPathEdit::setPathOptions(const QFileDialog::Options options)
+{
+  if ( myOptions == options )
+    return;
+
+  myOptions = options;
+}
+
+/*!
+  \brief Get currently used path options.
+  \return file or directory path options
+  \sa setPathOptions()
+*/
+QFileDialog::Options QtxPathEdit::pathOptions() const
+{
+  return myOptions;
+}
+
+
+/*!
   \brief Called when user clicks "Browse" button. 
 
   Invokes standard browsng dialog box depending on the used widget mode.
@@ -200,13 +223,13 @@ void QtxPathEdit::onBrowse( bool /*on*/ )
   switch ( pathType() )
   {
   case Qtx::PT_OpenFile:
-    path = QFileDialog::getOpenFileName( myPath, QString(), initial, pathFilter() );
+    path = QFileDialog::getOpenFileName( myPath, QString(), initial, pathFilter(), nullptr, pathOptions() );
     break;
   case Qtx::PT_SaveFile:
-    path = QFileDialog::getSaveFileName( myPath, QString(), initial, pathFilter() );
+    path = QFileDialog::getSaveFileName( myPath, QString(), initial, pathFilter(), nullptr, pathOptions() );
     break;
   case Qtx::PT_Directory:
-    path = QFileDialog::getExistingDirectory( myPath, QString(), initial );
+    path = QFileDialog::getExistingDirectory( myPath, QString(), initial, pathOptions() );
     break;
   }
 

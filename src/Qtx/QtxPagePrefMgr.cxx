@@ -3933,6 +3933,27 @@ void QtxPagePrefPathItem::setPathFilter( const QString& f )
 }
 
 /*!
+  \brief Get currently used path widget options.
+  \return file or directory path options
+  \sa setPathOptions()
+*/
+QFileDialog::Options QtxPagePrefPathItem::pathOptions() const
+{
+  return myPath->pathOptions();
+}
+
+/*!
+  \brief Set path widget options.
+  \param f new file or directory path options
+  \sa pathOptions()
+*/
+void QtxPagePrefPathItem::setPathOptions( const QFileDialog::Options options )
+{
+  myPath->setPathOptions( options );
+}
+
+
+/*!
   \brief Store preference item to the resource manager.
   \sa retrieve()
 */
@@ -3962,6 +3983,8 @@ QVariant QtxPagePrefPathItem::optionValue( const QString& name ) const
     return pathType();
   else if ( name == "path_filter" )
     return pathFilter();
+  else if ( name == "path_options" )
+    return QVariant::fromValue(pathOptions());
   else
     return QtxPageNamedPrefItem::optionValue( name );
 }
@@ -3983,6 +4006,11 @@ void QtxPagePrefPathItem::setOptionValue( const QString& name, const QVariant& v
   {
     if ( val.canConvert( QVariant::String ) )
       setPathFilter( val.toString() );
+  }
+  else if ( name == "path_options" )
+  {
+    if ( val.canConvert( QVariant::Int ) )
+      setPathOptions( (QFileDialog::Options)val.toInt() );
   }
   else
     QtxPageNamedPrefItem::setOptionValue( name, val );

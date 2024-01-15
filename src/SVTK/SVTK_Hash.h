@@ -34,9 +34,12 @@
 #include <vtkType.h>
 #include <limits>
 
+#include <Basics_OCCTVersion.hxx>
+
 typedef std::vector<Standard_Integer> SVTK_ListOfInteger;
 typedef std::vector<vtkIdType> SVTK_ListOfVtk;
 
+#if OCC_VERSION_LARGE < 0x07080000
 class SVTK_Hasher {
 
 public:
@@ -89,6 +92,59 @@ struct svtkIdHasher
     return id1 == id2;
   }
 };
+
+#else
+
+class SVTK_Hasher {
+
+public:
+  size_t operator()(const std::vector<Standard_Integer> ids) const
+  {
+    Standard_Integer seed = (Standard_Integer)ids.size();
+    for ( Standard_Integer v : ids )
+      seed ^= v + 0x9e3779b9 + ( seed << 6 ) + ( seed >> 2 );
+    return (size_t)(seed & IntegerLast());
+  }
+
+  bool operator()(const SVTK_ListOfInteger& theKey1,
+                  const SVTK_ListOfInteger& theKey2) const
+  {
+    return theKey1 == theKey2;
+  }
+};
+
+class SVTK_vtkHasher {
+
+public:
+  size_t operator()(const std::vector<vtkIdType> ids) const
+  {
+    vtkIdType seed = (vtkIdType)ids.size();
+    for ( vtkIdType v : ids )
+      seed ^= v + 0x9e3779b97f4a7c15 + ( seed << 6 ) + ( seed >> 2 );
+    return (size_t)(seed & (std::numeric_limits<vtkIdType>::max)());
+  }
+
+  bool operator()(const SVTK_ListOfVtk& theKey1,
+                  const SVTK_ListOfVtk& theKey2) const
+  {
+    return theKey1 == theKey2;
+  }
+};
+
+struct svtkIdHasher
+{
+  size_t operator()(const vtkIdType theValue) const
+  {
+    return (size_t)(theValue & (std::numeric_limits<vtkIdType>::max)());
+  }
+
+  bool operator()(const vtkIdType& id1, const vtkIdType& id2) const
+  {
+    return id1 == id2;
+  }
+};
+
+#endif // OCC_VERSION_LARGE < 0x07080000
 
 typedef NCollection_IndexedMap<SVTK_ListOfInteger,SVTK_Hasher> SVTK_IndexedMapOfIds;
 typedef NCollection_IndexedMap<SVTK_ListOfVtk, SVTK_vtkHasher> SVTK_IndexedMapOfVtkIds;

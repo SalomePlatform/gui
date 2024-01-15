@@ -24,7 +24,6 @@
 #define DDS_H
 
 #include <TCollection_AsciiString.hxx>
-#include <NCollection_DefineDataMap.hxx>
 
 #define UNIT_SYSTEM_SI "SI"
 

@@ -58,7 +58,7 @@ static int sx = 0;
 static int sy = 0;
 static Standard_Boolean zRotation = Standard_False;
 
-//#include <Standard_Version.hxx>
+#include <Basics_OCCTVersion.hxx>
 
 /*!
   Constructor
@@ -324,28 +324,28 @@ void OCCViewer_ViewPort3d::updateBackground()
 	activeView()->SetBgImageStyle( Aspect_FM_NONE );    // cancel texture background
 	switch ( type ) {
 	case OCCViewer_Viewer::HorizontalGradient:
-	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_HOR, Standard_True );
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GradientFillMethod_Horizontal, Standard_True );
 	  break;
 	case OCCViewer_Viewer::VerticalGradient:
-	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_VER, Standard_True );
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GradientFillMethod_Vertical, Standard_True );
 	  break;
 	case OCCViewer_Viewer::Diagonal1Gradient:
-	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_DIAG1, Standard_True );
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GradientFillMethod_Diagonal1, Standard_True );
 	  break;
 	case OCCViewer_Viewer::Diagonal2Gradient:
-	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_DIAG2, Standard_True );
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GradientFillMethod_Diagonal2, Standard_True );
 	  break;
 	case OCCViewer_Viewer::Corner1Gradient:
-	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_CORNER1, Standard_True );
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GradientFillMethod_Corner1, Standard_True );
 	  break;
 	case OCCViewer_Viewer::Corner2Gradient:
-	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_CORNER2, Standard_True );
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GradientFillMethod_Corner2, Standard_True );
 	  break;
 	case OCCViewer_Viewer::Corner3Gradient:
-	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_CORNER3, Standard_True );
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GradientFillMethod_Corner3, Standard_True );
 	  break;
 	case OCCViewer_Viewer::Corner4Gradient:
-	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_CORNER4, Standard_True );
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GradientFillMethod_Corner4, Standard_True );
 	  break;
 	default:
 	  break;
@@ -760,6 +760,26 @@ void OCCViewer_ViewPort3d::attachWindow( const Handle(V3d_View)& view,
                                          const Handle(Aspect_Window)& window)
 {
   if (!view.IsNull()) {
+#if OCC_VERSION_LARGE > 0x07070000
+    // Workaround for OCCT bug 33647 (porting to OCCT 7.8.0 regression).
+    if (myBackground.isValid()) {
+      if (myBackground.mode() == Qtx::SimpleGradientBackground) {
+        QColor c1, c2;
+        int type = myBackground.gradient(c1, c2);
+        if (type >= OCCViewer_Viewer::Corner1Gradient &&
+            type <= OCCViewer_Viewer::Corner4Gradient) {
+          if (!c2.isValid()) c2 = c1;
+          Quantity_Color qCol1 (c1.red()/255., c1.green()/255., c1.blue()/255., Quantity_TOC_RGB);
+          Quantity_Color qCol2 (c2.red()/255., c2.green()/255., c2.blue()/255., Quantity_TOC_RGB);
+          view->SetBgImageStyle(Aspect_FM_NONE);    // cancel texture background
+          // Set first horizontal gradient background, as first
+          // initialization with corner gradient leads to a bug.
+	  //view->SetBgGradientColors(qCol1, qCol2, Aspect_GradientFillMethod_Horizontal, Standard_True);
+	  view->SetBgGradientColors(qCol1, qCol2, Aspect_GradientFillMethod_Horizontal);
+        }
+      }
+    }
+#endif
     view->SetWindow( window );
     updateBackground();
   }

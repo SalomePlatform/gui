@@ -65,7 +65,7 @@ void AddComponents_from_salomemodules(const QString& salomemodules, const QDir& 
 }
 void AddGuiComponent(const QString& comp, const QString& CompRoot, SUIT_ResourceMgr* ResMgr)
 {
-	QStringList CompsResMgr = ResMgr->stringValue("launch", "user_modules").split(";", QString::SkipEmptyParts);
+	QStringList CompsResMgr;
 	ResMgr->setValue( "user_modules", comp, CompRoot );
 
 	CompsResMgr << comp;

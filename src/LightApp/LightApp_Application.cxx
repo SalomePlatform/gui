@@ -1099,7 +1099,7 @@ bool LightApp_Application::addUserModule( const QString& name, const QString& ro
   // need to do that again.
   // TODO: Maybe it's better to return ModuleInfo from appendModuleInfo() and check status.
   const QString title = resMgr->stringValue(name, "name", QString()).trimmed();
-  if (resMgr->booleanValue(name, "gui", false) || !title.isEmpty())
+  if (resMgr->booleanValue(name, "gui", false) || !title.isEmpty() && interactive)
   {
     // Append module to the menu / toolbar
     LightApp_ModuleAction* moduleAction = qobject_cast<LightApp_ModuleAction*>(action(ModulesListId));

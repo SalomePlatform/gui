@@ -899,14 +899,14 @@ void LightApp_Application::customize()
   LightApp_ModuleAction* moduleAction = qobject_cast<LightApp_ModuleAction*>( action( ModulesListId ) );
   // a. regular modules were added in createActions() method
   // b. here we add custom modules (manually added by the user)
-  if ( HAS_SALOME_ON_DEMAND )
+  if ( HAS_SALOME_ON_DEMAND && QString::compare(getenv("SALOME_ON_DEMAND"),"HIDE", Qt::CaseInsensitive) != 0)
   {
     // Update rc file
     updateSalomeApprc();
 
     QStringList modList = resourceMgr()->stringValue( "launch", "user_modules" ).split( ";", QString::SkipEmptyParts );
     foreach ( QString aModule, modList )
-      addUserModule(  aModule, resourceMgr()->stringValue( "user_modules", aModule ) );
+      addUserModule(  aModule, resourceMgr()->stringValue( "user_modules", aModule ), true );
   }
   else
   {
@@ -924,9 +924,9 @@ void LightApp_Application::updateSalomeApprc()
 
     QString salomemodules(getenv("SALOME_MODULES"));
     if(salomemodules.isEmpty())
-        AddComponents_from_salomeappdir(  QDir(extRootDir), resMgr );
+        UpdateCompInfo_with_salomeappdir(  QDir(extRootDir), resMgr );
     else
-        AddComponents_from_salomemodules(salomemodules, QDir(extRootDir), resMgr);
+        UpdateCompInfo_with_salomemodules(salomemodules, QDir(extRootDir), resMgr);
 }
 
 /*!On module activation action.*/
@@ -1049,6 +1049,9 @@ void LightApp_Application::onExtAdding()
 /*Add user module.*/
 bool LightApp_Application::addUserModule( const QString& name, const QString& root, bool interactive )
 {
+  if ( name == "KERNEL" || name == "GUI" )
+    return false; // skip KERNEL and GUI modules
+
   if ( name.isEmpty() || root.isEmpty() )
     return false;
 

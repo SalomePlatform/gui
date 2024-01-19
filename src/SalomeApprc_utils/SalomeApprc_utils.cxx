@@ -1,7 +1,11 @@
 #include "SalomeApprc_utils.h"
 
-void AddComponents_from_salomeappdir(const QDir& salomeappdir, SUIT_ResourceMgr* ResMgr)
+void UpdateCompInfo_with_salomeappdir(const QDir& salomeappdir, SUIT_ResourceMgr* ResMgr)
 {
+	// Remove module list and  module_root_dirs list
+	ResMgr->remove("launch", "user_modules");
+	ResMgr->remove("user_modules");
+
 	QFileInfoList salomexd_list = salomeappdir.entryInfoList(QStringList() << "*.salomexd",QDir::Files);
 	foreach(QFileInfo filename, salomexd_list)
     {
@@ -46,8 +50,12 @@ void AddComponents_from_salomeappdir(const QDir& salomeappdir, SUIT_ResourceMgr*
     }
 }
 
-void AddComponents_from_salomemodules(const QString& salomemodules, const QDir& salomeappdir, SUIT_ResourceMgr* ResMgr)
+void UpdateCompInfo_with_salomemodules(const QString& salomemodules, const QDir& salomeappdir, SUIT_ResourceMgr* ResMgr)
 {
+	// Remove module list and  module_root_dirs list
+	ResMgr->remove("launch", "user_modules");
+	ResMgr->remove("user_modules");
+
 	QRegularExpression sep(":|,");
 	QStringList components_list = salomemodules.split(sep,QString::SkipEmptyParts);
 	foreach (QString comp, components_list)
@@ -61,11 +69,10 @@ void AddComponents_from_salomemodules(const QString& salomemodules, const QDir& 
 		AddGuiComponent(comp, comp_root_dir, ResMgr);
 	}
 
-
 }
 void AddGuiComponent(const QString& comp, const QString& CompRoot, SUIT_ResourceMgr* ResMgr)
 {
-	QStringList CompsResMgr;
+	QStringList CompsResMgr = ResMgr->stringValue("launch", "user_modules").split(";", QString::SkipEmptyParts);
 	ResMgr->setValue( "user_modules", comp, CompRoot );
 
 	CompsResMgr << comp;

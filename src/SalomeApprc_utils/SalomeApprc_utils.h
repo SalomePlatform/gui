@@ -11,8 +11,8 @@
 
 const QString ITERACTIVE_EXTCOMPONENT_KEY("salome_interactive");
 
-void AddComponents_from_salomeappdir(const QDir& salomeappdir, SUIT_ResourceMgr* ResMgr);
-void AddComponents_from_salomemodules(const QString& salomemodules, const QDir& salomeappdir, SUIT_ResourceMgr* ResMgr);
+void UpdateCompInfo_with_salomeappdir(const QDir& salomeappdir, SUIT_ResourceMgr* ResMgr);
+void UpdateCompInfo_with_salomemodules(const QString& salomemodules, const QDir& salomeappdir, SUIT_ResourceMgr* ResMgr);
 void AddGuiComponent(const QString& comp, const QString& CompRoot, SUIT_ResourceMgr* ResMgr );
 
 #endif

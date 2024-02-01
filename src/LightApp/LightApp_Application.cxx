@@ -599,6 +599,25 @@ bool LightApp_Application::activateModule( const QString& modName )
     if ( objectBrowser()->root() != activeStudy()->root() )
       objectBrowser()->setRoot( activeStudy()->root() );
     updateObjectBrowser( true );
+
+    // expand SHAPERSTUDY data after leaving Shaper module
+    // bos #40645 [CEA] Automatically expand tree in Object Browser
+    if (actName == "Shaper") {
+      SUIT_AbstractModel* aModel = dynamic_cast<SUIT_AbstractModel*>(objectBrowser()->model());
+      LightApp_Study* aStudy = dynamic_cast<LightApp_Study*>( activeStudy() );
+      if (aModel && aStudy) {
+        DataObjectList aComps;
+        aStudy->root()->children(aComps);
+        for(auto aCompSUIT : aComps){
+          LightApp_DataObject* aComp = dynamic_cast<LightApp_DataObject*>( aCompSUIT );
+          if ( aComp && aComp->componentDataType() == "SHAPERSTUDY") {
+            QModelIndex anIndex = aModel->index(aComp);
+            objectBrowser()->treeView()->expand(anIndex);
+            break;
+          }
+        }
+      }
+    }
   }
 
   if ( activeModule() ) activeModule()->updateModuleVisibilityState();

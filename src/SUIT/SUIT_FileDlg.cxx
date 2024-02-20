@@ -192,6 +192,45 @@ SUIT_FileDlg::SUIT_FileDlg( QWidget* parent, bool open, bool showQuickDir, bool 
 }
 
 /*!
+  \brief Constructor.
+  \param parent parent widget
+  \param initial initial file (or directory) dialog box to be opened on
+  \param filters file filters list
+  \param caption dialog box title
+  \param open if \c true dialog box is used for file opening, otherwise - for saving
+  \param showQuickDir if \c true the quick directory list widgets will be shown
+  \param validator custom file validator
+*/
+SUIT_FileDlg::SUIT_FileDlg(QWidget* parent,
+                           const QString& initial,
+                           const QStringList& filters,
+                           const QString& caption /* = QString()*/,
+                           const bool open /* = true*/,
+                           const bool showQuickDir /* = true*/,
+                           SUIT_FileValidator* validator /* = 0*/)
+: SUIT_FileDlg (parent, open, showQuickDir, true)
+{
+  setFileMode(open ? ExistingFile : AnyFile);
+
+  QString tmpfilename = initial;
+  tmpfilename = tmpfilename.simplified();
+  tmpfilename = tmpfilename.replace(QRegExp("\\*"), "").replace(QRegExp("\\?"), "" );
+  if (!tmpfilename.isEmpty())
+    processPath(tmpfilename);
+
+  if (filters.isEmpty())
+    setNameFilter(tr("ALL_FILES_FILTER")); // All files (*)
+  else
+    setNameFilters(filters);
+
+  if (!caption.isEmpty())
+    setWindowTitle(caption);
+
+  if (validator)
+    setValidator(validator);
+}
+
+/*!
   \brief Destructor.
 */
 SUIT_FileDlg::~SUIT_FileDlg() 
@@ -507,7 +546,7 @@ QString SUIT_FileDlg::addExtension( const QString& fileName ) const
     return fileName;
 
   // current file extension
-  QString anExt = "." + SUIT_Tools::extension( fname ).trimmed();
+  QString anExt = "." + SUIT_Tools::extension(fname, true).trimmed();
 
   // If the file already has extension and it does not match the filter there are two choices:
   // - to leave it 'as is'
@@ -776,28 +815,8 @@ QString SUIT_FileDlg::getFileName( QWidget* parent, const QString& initial,
                                    const QStringList& filters, const QString& caption, 
                                    const bool open, const bool showQuickDir,
                                    SUIT_FileValidator* validator )
-{            
-  SUIT_FileDlg fd( parent, open, showQuickDir, true );    
-
-  fd.setFileMode( open ? ExistingFile : AnyFile );
-
-  QString tmpfilename = initial;
-  tmpfilename = tmpfilename.simplified();
-  tmpfilename = tmpfilename.replace(QRegExp("\\*"), "" ).replace(QRegExp("\\?"), "" );
-
-  if ( filters.isEmpty() )
-    fd.setNameFilter( tr( "ALL_FILES_FILTER" ) ); // All files (*)
-  else
-    fd.setNameFilters( filters );
-
-  if ( !caption.isEmpty() )
-    fd.setWindowTitle( caption );
-
-  if ( !tmpfilename.isEmpty() )
-    fd.processPath( tmpfilename );
-
-  if ( validator )
-    fd.setValidator( validator );
+{
+  SUIT_FileDlg fd(parent, initial, filters, caption, open, showQuickDir, validator);
 
   QString filename;
 
@@ -852,6 +871,66 @@ QString SUIT_FileDlg::getFileName( QWidget* parent, const QString& initial,
 {
   return getFileName( parent, initial, filters.split( ";;", QString::SkipEmptyParts ), 
                       caption, open, showQuickDir, validator );
+}
+
+/*!
+  \brief Show dialog box for the file opening/saving.
+
+  This method can be used to select the file for opening
+  or saving. The behavior is defined by the \a open parameter.
+  Note, that selection validation depends on the dialog mode used.
+
+  If \a initial parameter is not null string it is used as starting directory
+  or file at which dialog box is opened.
+
+  The parameter \a filters defines file filters (wildcards) to be used.
+  If filters list is empty, "All files (*)" is used by default.
+
+  The parameter \a selectedFilter outputs a filter selected by user.
+
+  The parameter \a caption is used as dialog box title. If it is
+  is empty, the default title is used.
+
+  The parameter \a showQuickDir specifies if it is necessary to 
+  show additional quick directories list controls in the bottom part
+  of the dialog box.
+
+  The validation of the user selection is done with help of the file 
+  validator (SUIT_FileValidator class). The last parameter \a validator
+  can be used to pass the custom file validator to the dialog box.
+
+  \param parent parent widget
+  \param initial initial file (or directory) dialog box to be opened on
+  \param filters file filters list
+  \param selectedFilter outputs a filter selected by user
+  \param caption dialog box title
+  \param open if \c true dialog box is used for file opening, otherwise - for saving
+  \param showQuickDir if \c true the quick directory list widgets will be shown
+  \param validator custom file validator
+  \return selected file name or null string if dialog box is cancelled
+  \sa getOpenFileNames(), getExistingDirectory()
+*/
+QString SUIT_FileDlg::getFileName(QWidget* parent,
+                                  const QString& initial,
+                                  const QStringList& filters,
+                                  QString& selectedFilter,
+                                  const QString& caption /* = QString()*/,
+                                  const bool open /* = true*/,
+                                  const bool showQuickDir /* = true*/,
+                                  SUIT_FileValidator* validator /* = 0*/)
+{            
+  SUIT_FileDlg fd(parent, initial, filters, caption, open, showQuickDir, validator);
+
+  QString filename;
+  if (fd.exec() == QDialog::Accepted)
+  {
+    filename = fd.selectedFile();
+    selectedFilter = fd.selectedNameFilter();
+  }
+
+  QApplication::processEvents();
+
+  return filename;
 }
 
 /*!

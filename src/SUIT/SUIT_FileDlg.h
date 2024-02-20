@@ -43,6 +43,15 @@ class SUIT_EXPORT SUIT_FileDlg : public QFileDialog
 
 public:
   SUIT_FileDlg( QWidget*, bool, bool = true, bool = true );
+
+  SUIT_FileDlg(QWidget* parent,
+               const QString& initial, 
+               const QStringList& filters,
+               const QString& caption = QString(), 
+               const bool open = true,
+               const bool showQuickDir = true,
+               SUIT_FileValidator* validator = 0);
+
   virtual ~SUIT_FileDlg();
 
   bool                isOpenDlg()    const;    
@@ -76,6 +85,15 @@ public:
                                    const bool = true,
                                    const bool = true,
                                    SUIT_FileValidator* = 0 );
+
+  static QString      getFileName(QWidget* parent, 
+                                  const QString& initial, 
+                                  const QStringList& filters,
+                                  QString& selectedFilter, 
+                                  const QString& caption = QString(), 
+                                  const bool open = true, 
+                                  const bool showQuickDir = true,
+                                  SUIT_FileValidator* validator = 0);
 
   static QStringList  getOpenFileNames( QWidget*, 
                                         const QString&,

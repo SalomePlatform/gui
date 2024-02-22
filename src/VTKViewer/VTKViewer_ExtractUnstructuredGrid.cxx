@@ -359,6 +359,64 @@ inline void InsertPointCell(vtkCellArray *theConnectivity,
   }
 }
 
+#if VTK_XVERSION > 50700
+// Method dealing VTK93 -> VTK94 in case of presence of polyhedra
+static void AssignDataSetWithPolyhedra(vtkUnstructuredGrid *anOutput, vtkUnsignedCharArray* aCellTypesArray, vtkIdTypeArray* aCellLocationsArray, vtkCellArray *aConnectivity, vtkIdTypeArray *newFaceLocations, vtkIdTypeArray *newFaces)
+{
+  if( !newFaces )
+  {// no polyhedra -> as before.
+    anOutput->SetCells(aCellTypesArray,aCellLocationsArray,aConnectivity);
+    return ;
+  }
+  // presence of polyhedra -> do conversion
+  vtkIdType nbCells( aCellTypesArray->GetNumberOfTuples() );
+  const unsigned char *ptType( aCellTypesArray->GetPointer(0) );
+  const vtkIdType *facesInPtr( newFaces->GetPointer(0) );
+  //
+  vtkNew<vtkCellArray> zeFaceLocations;
+  vtkNew<vtkIdTypeArray> faceLocationsOffset,faceLocationsConn;
+  vtkNew<vtkCellArray> zeFaces;
+  vtkNew<vtkIdTypeArray> facesOffset,facesConn;
+  //
+  faceLocationsOffset->SetNumberOfComponents(1); faceLocationsOffset->SetNumberOfTuples(nbCells+1);
+  vtkIdType *flo( faceLocationsOffset->GetPointer(0) ); *flo = 0;
+  std::vector<vtkIdType> faceLocationsConnV, facesOffsetV(1,0), facesConnV;
+  vtkIdType iFaceGlobal(0);
+  for( vtkIdType i = 0 ; i < nbCells ; ++i )
+  {
+    if( ptType[i] != VTK_POLYHEDRON )
+    {
+      flo[1] = flo[0];
+    }
+    else
+    {
+      vtkIdType nbFaces( *facesInPtr++ );
+      for( vtkIdType iFace = 0 ; iFace < nbFaces ; ++iFace )
+      {
+        faceLocationsConnV.push_back( iFaceGlobal++ );
+        vtkIdType nbPtsInFace( *facesInPtr++ );
+        facesConnV.insert(facesConnV.end(),facesInPtr,facesInPtr+nbPtsInFace);
+        facesInPtr += nbPtsInFace;
+        facesOffsetV.push_back( facesOffsetV.back() + nbPtsInFace );
+      }
+      flo[1] = flo[0] + nbFaces;
+    }
+    //
+    ++flo;
+  }
+  //
+  faceLocationsConn->SetNumberOfComponents(1); faceLocationsConn->SetNumberOfTuples( faceLocationsConnV.size() );
+  std::copy( faceLocationsConnV.begin(), faceLocationsConnV.end(), faceLocationsConn->GetPointer(0) );
+  facesOffset->SetNumberOfComponents(1); facesOffset->SetNumberOfTuples( facesOffsetV.size() );
+  std::copy(facesOffsetV.begin(),facesOffsetV.end(),facesOffset->GetPointer(0));
+  facesConn->SetNumberOfComponents(1); facesConn->SetNumberOfTuples( facesConnV.size() );
+  std::copy( facesConnV.begin(), facesConnV.end(), facesConn->GetPointer(0) );
+  //
+  zeFaceLocations->SetData(faceLocationsOffset,faceLocationsConn);
+  zeFaces->SetData( facesOffset, facesConn);
+  anOutput->SetPolyhedralCells(aCellTypesArray,aConnectivity,zeFaceLocations,zeFaces);
+}
+#endif
 
 int VTKViewer_ExtractUnstructuredGrid::RequestData(vtkInformation *vtkNotUsed(request),
                                                    vtkInformationVector **inputVector,
@@ -499,7 +557,7 @@ int VTKViewer_ExtractUnstructuredGrid::RequestData(vtkInformation *vtkNotUsed(re
           aCellLocationsArray->SetValue(i,aConnectivity->GetTraversalLocation(npts));
         }
 #if VTK_XVERSION > 50700
-        anOutput->SetCells(aCellTypesArray,aCellLocationsArray,aConnectivity,newFaceLocations,newFaces);
+        AssignDataSetWithPolyhedra(anOutput,aCellTypesArray,aCellLocationsArray,aConnectivity,newFaceLocations,newFaces);
 #else
         anOutput->SetCells(aCellTypesArray,aCellLocationsArray,aConnectivity);
 #endif

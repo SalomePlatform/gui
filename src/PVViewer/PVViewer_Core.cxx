@@ -35,7 +35,6 @@
 
 #include <string>
 
-#include <pqOptions.h>
 #include <pqSettings.h>
 #include <pqPVApplicationCore.h>
 #include <pqTabbedMultiViewWidget.h>
@@ -97,12 +96,6 @@ bool PVViewer_Core::ParaViewInitAppCore()
       for (int i = 0; i < argc; i++)
         free(argv[i]);
       delete[] argv;
-      if (MyCoreApp->getOptions()->GetHelpSelected() ||
-          MyCoreApp->getOptions()->GetUnknownArgument() ||
-          MyCoreApp->getOptions()->GetErrorMessage() ||
-          MyCoreApp->getOptions()->GetTellVersion()) {
-          return false;
-      }
   }
   return true;
 }

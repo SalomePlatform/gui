@@ -38,7 +38,6 @@
 #include "vtkOpenGLRenderWindow.h"
 #include "vtkTransform.h"
 #include "vtkPixelBufferObject.h"
-#include "vtk_glew.h"
 #include <vtkObjectFactory.h>
 
 vtkStandardNewMacro(VTKViewer_Texture)

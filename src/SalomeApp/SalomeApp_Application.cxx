@@ -30,6 +30,7 @@
   // E.A. : some same symbols : acosh, asinh, ...
   #include <Standard_math.hxx>
   #ifndef DISABLE_PYCONSOLE
+    #include <Python.h>
     #include <pymath.h>
   #endif
 #endif

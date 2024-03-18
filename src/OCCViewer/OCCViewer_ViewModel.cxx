@@ -207,6 +207,8 @@ OCCViewer_Viewer::OCCViewer_Viewer( bool DisplayTrihedron)
   myClippingTexture = QString();
   myTextureModulated = true;
   myClippingTextureScale = 1.0;
+  // By default, use the object color in the clipping plane
+  myClippingUseObjColor = true;
 
 }
 
@@ -924,6 +926,31 @@ void OCCViewer_Viewer::enableMultiselection(bool isEnable)
 }
 
 /*!
+  Sets whether to use the color of the clipped object for the clipped region
+  \param theUseObjColor - whether to use color of clipped object
+*/
+void OCCViewer_Viewer::setClippingUseObjColor( bool theUseObjColor )
+{
+  myClippingUseObjColor = theUseObjColor;
+
+  if( myInternalClipPlanes.IsEmpty() )
+    return;
+
+  for ( Graphic3d_SequenceOfHClipPlane::Iterator aPlaneIt ( myInternalClipPlanes ); aPlaneIt.More(); aPlaneIt.Next() )
+    aPlaneIt.Value()->SetUseObjectMaterial(theUseObjColor);
+
+  update();
+}
+
+/*!
+  \return whether object color is used for clipping region
+*/
+bool OCCViewer_Viewer::isClippingObjColorUsed() const
+{
+  return myClippingUseObjColor;
+}
+
+/*!
   Sets a color of the clipped region
   \param theColor - a new color of the clipped region
 */
@@ -948,6 +975,14 @@ QColor OCCViewer_Viewer::clippingColor() const
   return myClippingColor;
 }
 
+/*!
+  Set the texture's scale factor
+*/
+inline void setTextureScale(Handle(Graphic3d_TextureMap) aTexture, double theScale)
+{
+  aTexture->GetParams()->SetScale( Graphic3d_Vec2( 1/( theScale*100 ), -1 / ( theScale*100 ) ) );
+}
+
 // initialize a texture for clipped region
 Handle(Graphic3d_Texture2Dmanual) initClippingTexture( const bool isDefault, const QString& theTexture,
                                                        const bool isModulate, const double theScale )
@@ -959,7 +994,7 @@ Handle(Graphic3d_Texture2Dmanual) initClippingTexture( const bool isDefault, con
   if( aTexture->IsDone() ) {
     aTexture->EnableRepeat();
     isModulate ? aTexture->EnableModulate() : aTexture->DisableModulate();
-    aTexture->GetParams()->SetScale( Graphic3d_Vec2( 1/( theScale*100 ), -1 / ( theScale*100 ) ) );
+    setTextureScale( aTexture, theScale );
   }
   return aTexture;
 }
@@ -982,9 +1017,10 @@ void OCCViewer_Viewer::setClippingTextureParams( const bool isDefault, const QSt
   if( myInternalClipPlanes.IsEmpty() )
     return;
 
+  double hatchScale = computeHatchScale();
   Handle(Graphic3d_Texture2Dmanual) aTexture =
     initClippingTexture( myDefaultTextureUsed, myClippingTexture,
-                         myTextureModulated, myClippingTextureScale );
+                         myTextureModulated, hatchScale);
   for ( Graphic3d_SequenceOfHClipPlane::Iterator aPlaneIt ( myInternalClipPlanes ); aPlaneIt.More(); aPlaneIt.Next() )
     aPlaneIt.Value()->SetCappingTexture( aTexture );
 
@@ -1519,6 +1555,7 @@ bool OCCViewer_Viewer::computeTrihedronSize( double& theNewSize, double& theSize
     return false;
 
   double aMaxSide = computeSceneSize( view3d );
+  setClippingTextureParams(myDefaultTextureUsed, myClippingTexture, myTextureModulated, myClippingTextureScale);
 
   // IPAL21687
   // The boundary box of the view may be initialized but nullified
@@ -1566,7 +1603,8 @@ double OCCViewer_Viewer::computeSceneSize(const Handle(V3d_View)& view3d) const
 /*! 
  * Update the size of the trihedron
  */
-void OCCViewer_Viewer::updateTrihedron() {
+void OCCViewer_Viewer::updateTrihedron()
+{
   if ( myTrihedron.IsNull() )
     return;
 
@@ -1610,8 +1648,10 @@ Handle(Graphic3d_ClipPlane) OCCViewer_Viewer::createClipPlane(const gp_Pln& theP
   setCappingColor( aGraphic3dPlane, myClippingColor );
 
   // set capping texture
+  double hatchScale = computeHatchScale();
   aGraphic3dPlane->SetCappingTexture( initClippingTexture( myDefaultTextureUsed, myClippingTexture,
-                                                           myTextureModulated, myClippingTextureScale ) );
+                                                           myTextureModulated, hatchScale ) );
+  aGraphic3dPlane->SetUseObjectMaterial(myClippingUseObjColor);
 
   return aGraphic3dPlane;
 }
@@ -1640,16 +1680,7 @@ void OCCViewer_Viewer::setClipPlanes(ClipPlanesList theList)
     myClipPlanes.push_back( aPlane );
   }
 
-  // 3. Apply clipping planes
-  AIS_ListOfInteractive aList;
-  myAISContext->DisplayedObjects (aList);
-  for ( AIS_ListIteratorOfListOfInteractive anIter (aList); anIter.More(); anIter.Next() ) {
-    Handle(AIS_InteractiveObject) anObj = anIter.Value();
-    Handle(ViewerData_AISShape) aShape = Handle(ViewerData_AISShape)::DownCast (anObj);
-    if (!aShape.IsNull() && aShape->IsClippable()) {
-      aShape->SetClipPlanes(new Graphic3d_SequenceOfHClipPlane(myInternalClipPlanes)); // todo: store clipping planes in a handle?
-    }
-  }
+  applyClippingPlanes(false);
 }
 
 /*!
@@ -1667,6 +1698,34 @@ void OCCViewer_Viewer::applyExistingClipPlanesToObject (const Handle(AIS_Interac
   if (!aShape.IsNull() && aShape->IsClippable())
   {
     aShape->SetClipPlanes (new Graphic3d_SequenceOfHClipPlane(myInternalClipPlanes)); // todo: store clipping planes in a handle?
+  }
+}
+
+/*!
+  Applies clipping planes to all visible (and clippable) objects
+*/
+void OCCViewer_Viewer::applyClippingPlanes(bool theUpdateHatch)
+{
+  if (myInternalClipPlanes.IsEmpty()) {
+    return; // Nothing to do
+  }
+
+  if (theUpdateHatch) {
+    double hatchScale = computeHatchScale();
+    for ( Graphic3d_SequenceOfHClipPlane::Iterator aPlaneIt ( myInternalClipPlanes ); aPlaneIt.More(); aPlaneIt.Next() ) {
+      Handle(Graphic3d_TextureMap) aTexture = aPlaneIt.Value()->CappingTexture();
+      setTextureScale(aTexture, hatchScale);
+    }
+  }
+
+  AIS_ListOfInteractive aList;
+  myAISContext->DisplayedObjects (aList);
+  for ( AIS_ListIteratorOfListOfInteractive anIter (aList); anIter.More(); anIter.Next() ) {
+    Handle(AIS_InteractiveObject) anObj = anIter.Value();
+    Handle(ViewerData_AISShape) aShape = Handle(ViewerData_AISShape)::DownCast (anObj);
+    if (!aShape.IsNull() && aShape->IsClippable()) {
+      aShape->SetClipPlanes(new Graphic3d_SequenceOfHClipPlane(myInternalClipPlanes));
+    }
   }
 }
 
@@ -1705,3 +1764,22 @@ bool OCCViewer_Viewer::enableDrawMode( bool on )
   }
   return prev;
 }
+
+ double OCCViewer_Viewer::computeHatchScale() const
+ {
+  // bos#40617:
+  // Update the hatch scale of the clipping texture based on the total size of all visible objects
+  double hatchScale = myClippingTextureScale;
+  Handle(V3d_Viewer) viewer = getViewer3d();
+  viewer->InitActiveViews();
+  if (viewer->MoreActiveViews())
+  {
+    Handle(V3d_View) view3d = viewer->ActiveView();
+    if ( !view3d.IsNull() )
+    {
+      double aMaxSide = computeSceneSize( view3d );
+      hatchScale = aMaxSide * myClippingTextureScale * 0.01;
+    }
+  }
+  return hatchScale;
+ }

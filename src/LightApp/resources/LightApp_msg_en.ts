@@ -905,6 +905,10 @@ The changes will be applied on the next application session.</translation>
         <translation>Clipping parameters</translation>
     </message>
     <message>
+        <source>PREF_CLIPPING_USE_OBJECT_COLOR</source>
+        <translation>Use color of clipped object</translation>
+    </message>
+    <message>
         <source>PREF_CLIPPING_COLOR</source>
         <translation>Color</translation>
     </message>

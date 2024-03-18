@@ -2492,6 +2492,7 @@ void OCCViewer_ViewWindow::setCuttingPlane( bool on, const double x,  const doub
       Handle(Graphic3d_ClipPlane) aClipPlane = anIter.Value();
       aClipPlane->SetEquation(pln);
       aClipPlane->SetOn(Standard_True);
+      aClipPlane->SetUseObjectMaterial(true);
     } else {
       view->AddClipPlane( myModel->createClipPlane( pln, Standard_True ) );
     }

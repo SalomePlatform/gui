@@ -109,7 +109,8 @@ public:
   virtual QString                 getType() const { return Type(); }
 
   virtual void                    contextMenuPopup(QMenu*);
-  
+  virtual void                    applyClippingPlanes(bool theUpdateHatch);
+
   void                            getSelectedObjects(AIS_ListOfInteractive& theList);
   void                            setObjectsSelected(const AIS_ListOfInteractive& theList);
   void                            setSelected(const Handle(AIS_InteractiveObject)& theIO) { myAISContext->SetSelected(theIO,Standard_True);}
@@ -224,6 +225,9 @@ public:
 
   bool                            enableDrawMode( bool on );
 
+  void                            setClippingUseObjColor( bool use );
+  bool                            isClippingObjColorUsed() const;
+
   void                            setClippingColor( const QColor& );
   QColor                          clippingColor() const;
 
@@ -278,6 +282,9 @@ protected slots:
 
 protected:
 
+  double    computeHatchScale() const;
+
+
   Handle(V3d_Viewer)              myV3dViewer;
   Handle(AIS_ColorScale)          myColorScale;
   Handle(AIS_Trihedron)           myTrihedron;
@@ -318,6 +325,7 @@ protected:
   ClipPlanesList                  myClipPlanes;
   Graphic3d_SequenceOfHClipPlane  myInternalClipPlanes;
 
+  bool                            myClippingUseObjColor;
   QColor                          myClippingColor;
   bool                            myDefaultTextureUsed;
   QString                         myClippingTexture;

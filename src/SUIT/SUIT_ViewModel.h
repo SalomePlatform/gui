@@ -67,6 +67,7 @@ public:
   virtual QString   getType() const { return "SUIT_ViewModel"; }
 
   virtual void      contextMenuPopup( QMenu* ) {}
+  virtual void      applyClippingPlanes( bool theUpdateHatch ) {}
 
   static void       setHotButton( InteractionStyle theInteractionStyle, HotOperation theOper,
                                   Qt::KeyboardModifiers theState, Qt::MouseButtons theButton );

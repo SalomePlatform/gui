@@ -281,7 +281,7 @@ void XYZToDistance ( const Handle(AIS_InteractiveContext)& theIC,
   double aDistance = aZmax;
 
   double aRelativeDistance = aLength > 0.01 ? aDistance / aLength : 0.0;
-  aRelativeDistance = qMin( aRelativeDistance, aLength );
+  aRelativeDistance = qMin( aRelativeDistance, 1.0 );
   aRelativeDistance = qMax( aRelativeDistance, 0.0 );
   theDistance = aRelativeDistance;
 }
@@ -978,6 +978,7 @@ void OCCViewer_ClippingDlg::erasePreview()
     }
   }
   myPreviewPlaneVector.clear();
+  myModel->updateTrihedron();
   myModel->update();
   myInteractor->setEnabled( false );
 }

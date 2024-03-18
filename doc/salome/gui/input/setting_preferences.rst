@@ -156,9 +156,18 @@ OCC 3D Viewer Preferences
 
 - **Clipping parameters** - specifies the default clipping plane parameters.
 
-  - **Color** - allows to change the color of the clipped region.
+  - **Use color of clipped object** - allows to use the color of the clipped object in its clipped region.
+  - **Color** - allows to change the color of the entire clipped region (only used, if "Use color of clipped object" is switched off).
+
+    .. note::
+		Any of the above colors is only used, if "Modulate" is switched on and either "Use default texture" is checked or any texture with "non-black" pixels is given.
+
   - **Use default texture** - if this option is switched on, the default texture will be used for clipping texture, otherwise - the texture specified in "Texture" field.
   - **Texture** - allows to change the texture of the clipped region (enable if "Use default texture" is switched off).
+
+    .. note::
+		If "Use default texture" is switched off and no texture is given, the clipping region will be black. If you want the clipping region to be colored, provide a small white texture image, e.g. 8x8 pixels, and check the "Modulate" option.
+
   - **Modulate** - controls if "Texture" should be mixed with "Color" parameter or not.
   - **Scale factor** - sets the scale factor for default and custom textures.
 

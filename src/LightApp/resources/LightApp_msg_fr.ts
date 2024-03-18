@@ -901,6 +901,10 @@ Les modifications seront appliquées à la prochaine session.</translation>
         <translation>Plan de coupe</translation>
     </message>
     <message>
+        <source>PREF_CLIPPING_USE_OBJECT_COLOR</source>
+        <translation>Utiliser la couleur de l&apos;objet découpé</translation>
+    </message>
+    <message>
         <source>PREF_CLIPPING_COLOR</source>
         <translation>Couleur</translation>
     </message>

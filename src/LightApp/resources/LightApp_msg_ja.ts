@@ -900,6 +900,10 @@ Pythonファイルは、文字、数字、アンダースコアが含まれて�
       <translation>クリッピングパラメータ</translation>
     </message>
     <message>
+        <source>PREF_CLIPPING_USE_OBJECT_COLOR</source>
+        <translation>切り取られたオブジェクトの色を使用する</translation>
+    </message>
+    <message>
       <source>PREF_CLIPPING_COLOR</source>
       <translation>色</translation>
     </message>

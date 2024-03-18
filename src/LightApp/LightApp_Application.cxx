@@ -2058,7 +2058,7 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
                                   resMgr->stringValue( "OCCViewer", "clipping_texture", vm->clippingTexture() ),
                                   resMgr->booleanValue( "OCCViewer", "clipping_modulate", vm->isTextureModulated() ),
                                   resMgr->doubleValue( "OCCViewer", "clipping_scale", vm->clippingTextureScale() ) );
-
+    vm->setClippingUseObjColor( resMgr->booleanValue( "OCCViewer", "clipping_use_object_color", vm->isClippingObjColorUsed() ) );
 
     viewMgr->setViewModel( vm );// custom view model, which extends SALOME_View interface
     new LightApp_OCCSelector( (OCCViewer_Viewer*)viewMgr->getViewModel(), mySelMgr );
@@ -3063,11 +3063,16 @@ void LightApp_Application::createPreferences( LightApp_Preferences* pref )
 
   // ... "Clipping" group <<start>>
   int occClippingGroup = pref->addPreference( tr( "PREF_GROUP_CLIPPING" ), occGroup );
-  // .... -> clipping color
-  pref->addPreference( tr( "PREF_CLIPPING_COLOR" ), occClippingGroup,
-                       LightApp_Preferences::Color, "OCCViewer", "clipping_color" );
   int texturePref = pref->addPreference( "", occClippingGroup, LightApp_Preferences::Frame );
   pref->setItemProperty( "columns", 2, texturePref );
+
+  // .... -> use object color
+  pref->addPreference( tr( "PREF_CLIPPING_USE_OBJECT_COLOR" ), texturePref,
+               LightApp_Preferences::Bool, "OCCViewer", "clipping_use_object_color" );
+  // .... -> clipping color
+  pref->addPreference( tr( "PREF_CLIPPING_COLOR" ), texturePref,
+                       LightApp_Preferences::Color, "OCCViewer", "clipping_color" );
+
   // .... -> use default texture
   pref->addPreference( tr( "PREF_CLIPPING_DEFAULT_TEXTURE" ), texturePref,
                LightApp_Preferences::Bool, "OCCViewer", "clipping_use_default_texture" );
@@ -3781,6 +3786,25 @@ void LightApp_Application::preferencesChanged( const QString& sec, const QString
 
       OCCViewer_Viewer* occVM = (OCCViewer_Viewer*)vm;
       occVM->setClippingTextureParams( isDefaultTextureUsed, aTexture, isModulated, aScale );
+    }
+  }
+#endif
+
+#ifndef DISABLE_OCCVIEWER
+  if ( sec == QString( "OCCViewer" ) && param == QString( "clipping_use_object_color" ) )
+  {
+    bool useObjColor = resMgr->booleanValue( "OCCViewer", "clipping_use_object_color" );
+    QList<SUIT_ViewManager*> lst;
+    viewManagers( OCCViewer_Viewer::Type(), lst );
+    QListIterator<SUIT_ViewManager*> it( lst );
+    while ( it.hasNext() )
+    {
+      SUIT_ViewModel* vm = it.next()->getViewModel();
+      if ( !vm || !vm->inherits( "OCCViewer_Viewer" ) )
+        continue;
+
+      OCCViewer_Viewer* occVM = (OCCViewer_Viewer*)vm;
+      occVM->setClippingUseObjColor( useObjColor );
     }
   }
 #endif

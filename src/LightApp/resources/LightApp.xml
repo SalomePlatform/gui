@@ -138,6 +138,7 @@
     <parameter name="enable_quad_buffer_support" value="false"/>
     <parameter name="enable_preselection" value="true"/>
     <parameter name="enable_selection"    value="true"/>
+    <parameter name="clipping_use_object_color" value="true"/>
     <parameter name="clipping_color"      value="50, 50, 50"/>
     <parameter name="clipping_use_default_texture" value="true"/>
     <parameter name="clipping_modulate"   value="true"/>

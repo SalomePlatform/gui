@@ -71,9 +71,11 @@ protected:
   State                     isValid( const QString&, double& ) const;
 
   double                    defaultValue() const;
-  bool                      checkRange( const double ) const;
+  virtual bool              checkRange( const double ) const;
 
   SearchState               findVariable( const QString&, double& ) const;
+
+  virtual void              showValidationToolTip(const QValidator::State state) const;
 
 protected:
   virtual void              keyPressEvent( QKeyEvent* );

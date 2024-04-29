@@ -258,42 +258,9 @@ QValidator::State SalomeApp_DoubleSpinBox::validate( QString& str, int& pos ) co
   
   // Show tooltip in case of invalid manual input
   if ( isShowTipOnValidate() && lineEdit()->hasFocus() ){
-    if ( res != QValidator::Acceptable ){ // san: do we need to warn the user in Intermediate state???
-      SalomeApp_DoubleSpinBox* that = const_cast<SalomeApp_DoubleSpinBox*>( this );
-      QPoint pos( size().width(), 0. );
-      QPoint globalPos = mapToGlobal( pos );
-      QString minVal = textFromValue( minimum() );
-      QString maxVal = textFromValue( maximum() );
-      
-      // Same stuff as in QtxDoubleSpinBox::textFromValue()
-      int digits = getPrecision();
-      
-      // For 'g' format, max. number of digits after the decimal point is getPrecision() - 1
-      // See also QtxDoubleSpinBox::validate()
-      if ( digits < 0 )
-        digits = qAbs( digits ) - 1;
-      
-      QString templ( isAcceptNames() ? tr( "VALID_RANGE_VAR_MSG" ) : tr( "VALID_RANGE_NOVAR_MSG" ) );
-      QString msg( templ.arg( minVal ).arg( maxVal ).arg( digits ) );
-      
-      // Add extra hints to the message (if any passed through dynamic properties)
-      QVariant propVal = property( "validity_tune_hint" );
-      if ( propVal.isValid() ){
-        QString extraInfo = propVal.toString();
-        if ( !extraInfo.isEmpty() ){
-          msg += "\n";
-          msg += extraInfo;
-        }
-      }
-      
-      QToolTip::showText( globalPos, 
-                          msg, 
-                          that );
-    }
-    else
-      QToolTip::hideText();
+    showValidationToolTip(res);
   }
-      
+
   return res;
 }
 
@@ -457,6 +424,47 @@ SalomeApp_DoubleSpinBox::SearchState SalomeApp_DoubleSpinBox::findVariable( cons
     }
   }
   return NotFound;
+}
+
+void SalomeApp_DoubleSpinBox::showValidationToolTip(const QValidator::State state) const
+{
+  // san: do we need to warn the user in Intermediate state???
+  if ( state == QValidator::Acceptable )
+  {
+    QToolTip::hideText();
+    return;
+  }
+
+  SalomeApp_DoubleSpinBox* that = const_cast<SalomeApp_DoubleSpinBox*>( this );
+  QPoint pos( size().width(), 0. );
+  QPoint globalPos = mapToGlobal( pos );
+  QString minVal = textFromValue( minimum() );
+  QString maxVal = textFromValue( maximum() );
+  
+  // Same stuff as in QtxDoubleSpinBox::textFromValue()
+  int digits = getPrecision();
+  
+  // For 'g' format, max. number of digits after the decimal point is getPrecision() - 1
+  // See also QtxDoubleSpinBox::validate()
+  if ( digits < 0 )
+    digits = qAbs( digits ) - 1;
+
+  QString templ( isAcceptNames() ? tr( "VALID_RANGE_VAR_MSG" ) : tr( "VALID_RANGE_NOVAR_MSG" ) );
+  QString msg( templ.arg( minVal ).arg( maxVal ).arg( digits ) );
+
+  // Add extra hints to the message (if any passed through dynamic properties)
+  QVariant propVal = property( "validity_tune_hint" );
+  if ( propVal.isValid() ){
+    QString extraInfo = propVal.toString();
+    if ( !extraInfo.isEmpty() ){
+      msg += "\n";
+      msg += extraInfo;
+    }
+  }
+
+  QToolTip::showText( globalPos, 
+                      msg, 
+                      that );
 }
 
 /*!

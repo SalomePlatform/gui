@@ -17,7 +17,7 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#include "QtxShortcutEdit.h"
+#include "SUIT_ShortcutTree.h"
 
 #include <QWidget>
 #include <QLayout>
@@ -45,7 +45,7 @@
 #define COLUMN_SIZE  500
 
 
-QtxKeySequenceEdit::QtxKeySequenceEdit(QWidget* parent)
+SUIT_KeySequenceEdit::SUIT_KeySequenceEdit(QWidget* parent)
 : QFrame(parent)
 {
   initialize();
@@ -53,33 +53,33 @@ QtxKeySequenceEdit::QtxKeySequenceEdit(QWidget* parent)
 }
 
 /*! \brief Set a key sequence to edit. */
-void QtxKeySequenceEdit::setConfirmedKeySequence(const QKeySequence& theKeySequence)
+void SUIT_KeySequenceEdit::setConfirmedKeySequence(const QKeySequence& theKeySequence)
 {
   myConfirmedKeySequenceString = theKeySequence.toString();
   myKeySequenceLineEdit->setText(myConfirmedKeySequenceString);
   myPrevKeySequenceString = myConfirmedKeySequenceString;
 }
 
-void QtxKeySequenceEdit::setEditedKeySequence(const QKeySequence& theKeySequence)
+void SUIT_KeySequenceEdit::setEditedKeySequence(const QKeySequence& theKeySequence)
 {
   const QString keySequenceString = theKeySequence.toString();
   myKeySequenceLineEdit->setText(keySequenceString);
   myPrevKeySequenceString = keySequenceString;
 }
 
-QKeySequence QtxKeySequenceEdit::editedKeySequence() const
+QKeySequence SUIT_KeySequenceEdit::editedKeySequence() const
 {
   return QKeySequence::fromString(myKeySequenceLineEdit->text());
 }
 
 /*! \returns true, if the edited key sequence differs from confirmed one. */
-bool QtxKeySequenceEdit::isKeySequenceModified() const
+bool SUIT_KeySequenceEdit::isKeySequenceModified() const
 {
   return QKeySequence(myConfirmedKeySequenceString) != editedKeySequence();
 }
 
 /*! \brief Set confirmed key sequence to line editor. */
-void QtxKeySequenceEdit::restoreKeySequence()
+void SUIT_KeySequenceEdit::restoreKeySequence()
 {
   myKeySequenceLineEdit->setText(myConfirmedKeySequenceString);
   myPrevKeySequenceString = myConfirmedKeySequenceString;
@@ -90,7 +90,7 @@ void QtxKeySequenceEdit::restoreKeySequence()
   \param e a key event
   \returns a string representation of the key sequence
 */
-/*static*/ QString QtxKeySequenceEdit::parseEvent(QKeyEvent* e)
+/*static*/ QString SUIT_KeySequenceEdit::parseEvent(QKeyEvent* e)
 {
   bool isShiftPressed = e->modifiers() & Qt::ShiftModifier;
   bool isControlPressed = e->modifiers() & Qt::ControlModifier;
@@ -119,21 +119,20 @@ void QtxKeySequenceEdit::restoreKeySequence()
   \param theKey the code of the key
   \returns \c true if the key is 'valid'
 */
-/*static*/ bool QtxKeySequenceEdit::isValidKey(int theKey)
+/*static*/ bool SUIT_KeySequenceEdit::isValidKey(int theKey)
 {
   if ( theKey == Qt::Key_Underscore || theKey == Qt::Key_Escape ||
      ( theKey >= Qt::Key_Backspace && theKey <= Qt::Key_Delete ) ||
      ( theKey >= Qt::Key_Home && theKey <= Qt::Key_PageDown ) ||
      ( theKey >= Qt::Key_F1 && theKey <= Qt::Key_F12 )  ||
      ( theKey >= Qt::Key_Space && theKey <= Qt::Key_Asterisk ) ||
-     ( theKey >= Qt::Key_Comma && theKey <= Qt::Key_Question ) ||
-     ( theKey >= Qt::Key_A && theKey <= Qt::Key_AsciiTilde ) )
+     ( theKey >= Qt::Key_Comma && theKey <= Qt::Key_AsciiTilde ) )
     return true;
   return false;
 }
 
 /*! \brief Called when "Clear" button is clicked. */
-void QtxKeySequenceEdit::onClear()
+void SUIT_KeySequenceEdit::onClear()
 {
   myKeySequenceLineEdit->setText("");
   myPrevKeySequenceString = "";
@@ -141,7 +140,7 @@ void QtxKeySequenceEdit::onClear()
 }
 
 /*! \brief Called when myKeySequenceLineEdit loses focus. */
-void QtxKeySequenceEdit::onEditingFinished()
+void SUIT_KeySequenceEdit::onEditingFinished()
 {
   if (myKeySequenceLineEdit->text().endsWith("+"))
     myKeySequenceLineEdit->setText(myPrevKeySequenceString);
@@ -156,7 +155,7 @@ void QtxKeySequenceEdit::onEditingFinished()
   \param event event
   \returns \c true if further event processing should be stopped
 */
-bool QtxKeySequenceEdit::eventFilter(QObject* theObject, QEvent* theEvent)
+bool SUIT_KeySequenceEdit::eventFilter(QObject* theObject, QEvent* theEvent)
 {
   if (theObject == myKeySequenceLineEdit) {
     if (theEvent->type() == QEvent::KeyPress) {
@@ -181,7 +180,7 @@ bool QtxKeySequenceEdit::eventFilter(QObject* theObject, QEvent* theEvent)
 /*
   \brief Perform internal intialization.
 */
-void QtxKeySequenceEdit::initialize()
+void SUIT_KeySequenceEdit::initialize()
 {
   static const int PIXMAP_SIZE = 30;
 
@@ -217,7 +216,7 @@ void QtxKeySequenceEdit::initialize()
 
 
 /*! \param theParent must not be nullptr. */
-QtxEditKeySequenceDialog::QtxEditKeySequenceDialog(QtxShortcutTree* theParent)
+SUIT_EditKeySequenceDialog::SUIT_EditKeySequenceDialog(SUIT_ShortcutTree* theParent)
 : QDialog(theParent)
 {
   setMinimumWidth(500);
@@ -225,7 +224,7 @@ QtxEditKeySequenceDialog::QtxEditKeySequenceDialog(QtxShortcutTree* theParent)
   QVBoxLayout* layout = new QVBoxLayout(this);
   myActionName = new QLabel(this);
   myActionName->setTextFormat(Qt::RichText);
-  myKeySequenceEdit = new QtxKeySequenceEdit(this);
+  myKeySequenceEdit = new SUIT_KeySequenceEdit(this);
   myTextEdit = new QTextEdit(this);
   layout->addWidget(myActionName);
   layout->addWidget(myKeySequenceEdit);
@@ -255,48 +254,48 @@ QtxEditKeySequenceDialog::QtxEditKeySequenceDialog(QtxShortcutTree* theParent)
   connect(cancelButton, SIGNAL(clicked()), this, SLOT(reject()));
 }
 
-void QtxEditKeySequenceDialog::setModuleAndActionID(const QString& theModuleID, const QString& theInModuleActionID)
+void SUIT_EditKeySequenceDialog::setModuleAndActionID(const QString& theModuleID, const QString& theInModuleActionID)
 {
   myModuleID = theModuleID;
   myInModuleActionID = theInModuleActionID;
 }
 
-const QString& QtxEditKeySequenceDialog::moduleID() const { return myModuleID; }
-const QString& QtxEditKeySequenceDialog::inModuleActionID() const { return myInModuleActionID; }
+const QString& SUIT_EditKeySequenceDialog::moduleID() const { return myModuleID; }
+const QString& SUIT_EditKeySequenceDialog::inModuleActionID() const { return myInModuleActionID; }
 
-void QtxEditKeySequenceDialog::setModuleAndActionName(const QString& theModuleName, const QString& theActionName, const QString& theActionToolTip)
+void SUIT_EditKeySequenceDialog::setModuleAndActionName(const QString& theModuleName, const QString& theActionName, const QString& theActionToolTip)
 {
   myActionName->setText("<b>" + theModuleName + "</b>&nbsp;&nbsp;" + theActionName);
   myActionName->setToolTip(theActionToolTip);
 }
 
-void QtxEditKeySequenceDialog::setConfirmedKeySequence(const QKeySequence& theSequence)
+void SUIT_EditKeySequenceDialog::setConfirmedKeySequence(const QKeySequence& theSequence)
 {
   myKeySequenceEdit->setConfirmedKeySequence(theSequence);
 }
 
-QKeySequence QtxEditKeySequenceDialog::editedKeySequence() const
+QKeySequence SUIT_EditKeySequenceDialog::editedKeySequence() const
 {
   return myKeySequenceEdit->editedKeySequence();
 }
 
-int QtxEditKeySequenceDialog::exec()
+int SUIT_EditKeySequenceDialog::exec()
 {
   myKeySequenceEdit->setFocus(Qt::ActiveWindowFocusReason);
   return QDialog::exec();
 }
 
-void QtxEditKeySequenceDialog::onEditingStarted()
+void SUIT_EditKeySequenceDialog::onEditingStarted()
 {
   myTextEdit->setEnabled(false);
 }
 
-void QtxEditKeySequenceDialog::onEditingFinished()
+void SUIT_EditKeySequenceDialog::onEditingFinished()
 {
   updateConflictsMessage();
 }
 
-void QtxEditKeySequenceDialog::onRestoreFromShortcutMgr()
+void SUIT_EditKeySequenceDialog::onRestoreFromShortcutMgr()
 {
   const auto shortcutMgr = SUIT_ShortcutMgr::get();
   myKeySequenceEdit->setEditedKeySequence(shortcutMgr->getKeySequence(myModuleID, myInModuleActionID));
@@ -304,7 +303,7 @@ void QtxEditKeySequenceDialog::onRestoreFromShortcutMgr()
 }
 
 /*! Updates message with list of actions, whose shortcuts will be disabled on Confirm. */
-void QtxEditKeySequenceDialog::updateConflictsMessage()
+void SUIT_EditKeySequenceDialog::updateConflictsMessage()
 {
   myTextEdit->setEnabled(true);
   QTextDocument* doc = myTextEdit->document();
@@ -320,7 +319,7 @@ void QtxEditKeySequenceDialog::updateConflictsMessage()
 
   const QKeySequence newKeySequence = editedKeySequence();
 
-  const auto shortcutTree = static_cast<QtxShortcutTree*>(parentWidget());
+  const auto shortcutTree = static_cast<SUIT_ShortcutTree*>(parentWidget());
   /** {moduleID, inModuleActionID}[] */
   std::set<std::pair<QString, QString>> conflicts = shortcutTree->shortcutContainer()->getConflicts(myModuleID, myInModuleActionID, newKeySequence);
   if (!conflicts.empty()) {
@@ -343,7 +342,7 @@ void QtxEditKeySequenceDialog::updateConflictsMessage()
   }
 }
 
-void QtxEditKeySequenceDialog::onConfirm()
+void SUIT_EditKeySequenceDialog::onConfirm()
 {
   if (myKeySequenceEdit->isKeySequenceModified())
     accept();
@@ -375,12 +374,12 @@ size_t indexOf(
 /*! \param theContainer Share the same container between several trees,
 to edit them synchronously even without exchange of changes with SUIT_ShortcutMgr.
 Pass nullptr to create non-synchronized tree. */
-QtxShortcutTree::QtxShortcutTree(
+SUIT_ShortcutTree::SUIT_ShortcutTree(
   std::shared_ptr<SUIT_ShortcutContainer> theContainer,
   QWidget* theParent
 ) : QTreeWidget(theParent),
 myShortcutContainer(theContainer ? theContainer : std::shared_ptr<SUIT_ShortcutContainer>(new SUIT_ShortcutContainer())),
-mySortKey(QtxShortcutTree::SortKey::Name), mySortOrder(QtxShortcutTree::SortOrder::Ascending)
+mySortKey(SUIT_ShortcutTree::SortKey::Name), mySortOrder(SUIT_ShortcutTree::SortOrder::Ascending)
 {
   setColumnCount(2);
   setSelectionMode(QAbstractItemView::SingleSelection);
@@ -389,31 +388,31 @@ mySortKey(QtxShortcutTree::SortKey::Name), mySortOrder(QtxShortcutTree::SortOrde
   header()->setSectionResizeMode(QHeaderView::Interactive);
   {
     QMap<int, QString> labelMap;
-    labelMap[QtxShortcutTree::ElementIdx::Name]        = tr("Action");
-    labelMap[QtxShortcutTree::ElementIdx::KeySequence] = tr("Key sequence");
+    labelMap[SUIT_ShortcutTree::ElementIdx::Name]        = tr("Action");
+    labelMap[SUIT_ShortcutTree::ElementIdx::KeySequence] = tr("Key sequence");
     setHeaderLabels(labelMap.values());
   }
   setExpandsOnDoubleClick(false); // Open shortcut editor on double click instead.
   setSortingEnabled(false);
   setSizeAdjustPolicy(QAbstractScrollArea::AdjustToContents);
   setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-  myEditDialog = new QtxEditKeySequenceDialog(this);
+  myEditDialog = new SUIT_EditKeySequenceDialog(this);
 
   this->installEventFilter(this);
   connect(this, SIGNAL(itemDoubleClicked(QTreeWidgetItem*, int)), this, SLOT(onItemDoubleClicked(QTreeWidgetItem*, int)));
 
-  QtxShortcutTree::instances[myShortcutContainer.get()].emplace(this);
+  SUIT_ShortcutTree::instances[myShortcutContainer.get()].emplace(this);
 }
 
-QtxShortcutTree::~QtxShortcutTree()
+SUIT_ShortcutTree::~SUIT_ShortcutTree()
 {
-  QtxShortcutTree::instances[myShortcutContainer.get()].erase(this);
-  if (QtxShortcutTree::instances[myShortcutContainer.get()].empty())
-    QtxShortcutTree::instances.erase(myShortcutContainer.get());
+  SUIT_ShortcutTree::instances[myShortcutContainer.get()].erase(this);
+  if (SUIT_ShortcutTree::instances[myShortcutContainer.get()].empty())
+    SUIT_ShortcutTree::instances.erase(myShortcutContainer.get());
 }
 
 /*! \brief Copies shortcuts from ShortcutMgr. (Re)displays shortcuts of myModuleIDs. */
-void QtxShortcutTree::setShortcutsFromManager()
+void SUIT_ShortcutTree::setShortcutsFromManager()
 {
   const auto shortcutMgr = SUIT_ShortcutMgr::get();
   *myShortcutContainer = shortcutMgr->getShortcutContainer();
@@ -423,7 +422,7 @@ void QtxShortcutTree::setShortcutsFromManager()
 }
 
 /*! \brief Copies shortcuts from resources, user files are not accounted. (Re)displays shortcuts of myModuleIDs. */
-void QtxShortcutTree::setDefaultShortcuts()
+void SUIT_ShortcutTree::setDefaultShortcuts()
 {
   SUIT_ShortcutContainer defaultShortcuts;
   SUIT_ShortcutMgr::fillContainerFromPreferences(defaultShortcuts, true /*theDefaultOnly*/);
@@ -434,18 +433,18 @@ void QtxShortcutTree::setDefaultShortcuts()
   updateItems(true /*theHighlightModified*/, true /*theUpdateSyncTrees*/);
 }
 
-/*! \brief Applies pending changes to ShortcutMgr. Updates other instances of QtxShortcutTree. */
-void QtxShortcutTree::applyChangesToShortcutMgr()
+/*! \brief Applies pending changes to ShortcutMgr. Updates other instances of SUIT_ShortcutTree. */
+void SUIT_ShortcutTree::applyChangesToShortcutMgr()
 {
   const auto mgr = SUIT_ShortcutMgr::get();
   mgr->mergeShortcutContainer(*myShortcutContainer);
 
   // Update non-synchronized with this instances.
-  for (const auto& containerAndSyncTrees : QtxShortcutTree::instances) {
+  for (const auto& containerAndSyncTrees : SUIT_ShortcutTree::instances) {
     if (containerAndSyncTrees.first == myShortcutContainer.get())
       continue;
 
-    const std::set<QtxShortcutTree*>& syncTrees = containerAndSyncTrees.second;
+    const std::set<SUIT_ShortcutTree*>& syncTrees = containerAndSyncTrees.second;
     const auto itFirstSyncTree = syncTrees.begin();
     if (itFirstSyncTree == syncTrees.end())
       continue;
@@ -457,13 +456,13 @@ void QtxShortcutTree::applyChangesToShortcutMgr()
   }
 }
 
-std::shared_ptr<const SUIT_ShortcutContainer> QtxShortcutTree::shortcutContainer() const
+std::shared_ptr<const SUIT_ShortcutContainer> SUIT_ShortcutTree::shortcutContainer() const
 {
   return myShortcutContainer;
 }
 
 /*! \brief Does not sort modules. */
-void QtxShortcutTree::sort(QtxShortcutTree::SortKey theKey, QtxShortcutTree::SortOrder theOrder)
+void SUIT_ShortcutTree::sort(SUIT_ShortcutTree::SortKey theKey, SUIT_ShortcutTree::SortOrder theOrder)
 {
   if (theKey == mySortKey && theOrder == mySortOrder)
     return;
@@ -472,7 +471,7 @@ void QtxShortcutTree::sort(QtxShortcutTree::SortKey theKey, QtxShortcutTree::Sor
   mySortOrder = theOrder;
 
   for (int moduleIdx = 0; moduleIdx < topLevelItemCount(); moduleIdx++) {
-    const auto moduleItem = static_cast<QtxShortcutTreeFolder*>(topLevelItem(moduleIdx));
+    const auto moduleItem = static_cast<SUIT_ShortcutTreeFolder*>(topLevelItem(moduleIdx));
     const auto sortedChildren = getSortedChildren(moduleItem);
     moduleItem->takeChildren();
 
@@ -483,7 +482,7 @@ void QtxShortcutTree::sort(QtxShortcutTree::SortKey theKey, QtxShortcutTree::Sor
 }
 
 /*! \param If theUpdateSyncTrees, trees sharing the same shortcut container are updated. */
-void QtxShortcutTree::updateItems(bool theHighlightModified, bool theUpdateSyncTrees)
+void SUIT_ShortcutTree::updateItems(bool theHighlightModified, bool theUpdateSyncTrees)
 {
   const auto shortcutMgr = SUIT_ShortcutMgr::get();
   const QString lang = SUIT_ShortcutMgr::getLang();
@@ -500,9 +499,9 @@ void QtxShortcutTree::updateItems(bool theHighlightModified, bool theUpdateSyncT
     }
 
     const auto moduleItemAndIdx = findModuleFolderItem(moduleID);
-    QtxShortcutTreeFolder* moduleItem = moduleItemAndIdx.first;
+    SUIT_ShortcutTreeFolder* moduleItem = moduleItemAndIdx.first;
     if (!moduleItem) {
-      moduleItem = new QtxShortcutTreeFolder(moduleID);
+      moduleItem = new SUIT_ShortcutTreeFolder(moduleID);
       moduleItem->setAssets(shortcutMgr->getModuleAssets(moduleID), lang);
       addTopLevelItem(moduleItem);
       moduleItem->setFlags(Qt::ItemIsEnabled);
@@ -513,9 +512,9 @@ void QtxShortcutTree::updateItems(bool theHighlightModified, bool theUpdateSyncT
         const QKeySequence& keySequence = shortcut.second;
         const QString keySequenceString = keySequence.toString();
 
-        auto actionItem = QtxShortcutTreeAction::create(moduleID, inModuleActionID);
+        auto actionItem = SUIT_ShortcutTreeAction::create(moduleID, inModuleActionID);
         if (!actionItem) {
-          ShCutDbg("QtxShortcutTree can't create child item for action ID = \"" + SUIT_ShortcutMgr::makeActionID(moduleID, inModuleActionID) + "\".");
+          ShCutDbg("SUIT_ShortcutTree can't create child item for action ID = \"" + SUIT_ShortcutMgr::makeActionID(moduleID, inModuleActionID) + "\".");
           continue;
         }
 
@@ -535,7 +534,7 @@ void QtxShortcutTree::updateItems(bool theHighlightModified, bool theUpdateSyncT
     else /* if the tree has the module-item */ {
       for (int childIdx = 0; childIdx < moduleItem->childCount(); childIdx++) {
         // Update exisiting items of a module.
-        QtxShortcutTreeAction* const childItem = static_cast<QtxShortcutTreeAction*>(moduleItem->child(childIdx));
+        SUIT_ShortcutTreeAction* const childItem = static_cast<SUIT_ShortcutTreeAction*>(moduleItem->child(childIdx));
         const auto itShortcut = moduleShortcuts.find(childItem->myInModuleActionID);
         if (itShortcut == moduleShortcuts.end()) {
           // Shortcut of the item has been removed from myShortcutContainer - impossible.
@@ -560,14 +559,14 @@ void QtxShortcutTree::updateItems(bool theHighlightModified, bool theUpdateSyncT
         auto sortedChildren = getSortedChildren(moduleItem);
         for (const auto& shortcut : moduleShortcuts) {
           const QString& inModuleActionID = shortcut.first;
-          const auto predicate = [&inModuleActionID](const QtxShortcutTreeItem* const theItem) -> bool {
-            return static_cast<const QtxShortcutTreeAction* const>(theItem)->myInModuleActionID == inModuleActionID;
+          const auto predicate = [&inModuleActionID](const SUIT_ShortcutTreeItem* const theItem) -> bool {
+            return static_cast<const SUIT_ShortcutTreeAction* const>(theItem)->myInModuleActionID == inModuleActionID;
           };
 
           if (std::find_if(sortedChildren.begin(), sortedChildren.end(), predicate) == sortedChildren.end()) {
-            const auto actionItem = QtxShortcutTreeAction::create(moduleID, inModuleActionID);
+            const auto actionItem = SUIT_ShortcutTreeAction::create(moduleID, inModuleActionID);
             if (!actionItem) {
-              ShCutDbg("QtxShortcutTree can't create child item for action ID = \"" + SUIT_ShortcutMgr::makeActionID(moduleID, inModuleActionID) + "\".");
+              ShCutDbg("SUIT_ShortcutTree can't create child item for action ID = \"" + SUIT_ShortcutMgr::makeActionID(moduleID, inModuleActionID) + "\".");
               continue;
             }
 
@@ -588,7 +587,7 @@ void QtxShortcutTree::updateItems(bool theHighlightModified, bool theUpdateSyncT
   }
 
   if (theUpdateSyncTrees) {
-    const std::set<QtxShortcutTree*>& syncTrees = QtxShortcutTree::instances[myShortcutContainer.get()];
+    const std::set<SUIT_ShortcutTree*>& syncTrees = SUIT_ShortcutTree::instances[myShortcutContainer.get()];
     for (const auto syncTree: syncTrees) {
       if (syncTree == this)
         continue;
@@ -603,20 +602,20 @@ void QtxShortcutTree::updateItems(bool theHighlightModified, bool theUpdateSyncT
 
 /*! \returns Pointer and index of top-level item.
 If the tree does not contain an item with theModuleID, returns {nullptr, -1}. */
-std::pair<QtxShortcutTreeFolder*, int> QtxShortcutTree::findModuleFolderItem(const QString& theModuleID) const
+std::pair<SUIT_ShortcutTreeFolder*, int> SUIT_ShortcutTree::findModuleFolderItem(const QString& theModuleID) const
 {
   for (int moduleIdx = 0; moduleIdx < topLevelItemCount(); moduleIdx++) {
-    QtxShortcutTreeFolder* moduleItem = static_cast<QtxShortcutTreeFolder*>(topLevelItem(moduleIdx));
+    SUIT_ShortcutTreeFolder* moduleItem = static_cast<SUIT_ShortcutTreeFolder*>(topLevelItem(moduleIdx));
     if (moduleItem->myModuleID == theModuleID)
-      return std::pair<QtxShortcutTreeFolder*, int>(moduleItem, moduleIdx);
+      return std::pair<SUIT_ShortcutTreeFolder*, int>(moduleItem, moduleIdx);
   }
-  return std::pair<QtxShortcutTreeFolder*, int>(nullptr, -1);
+  return std::pair<SUIT_ShortcutTreeFolder*, int>(nullptr, -1);
 }
 
 /*! \returns Children of theParentItem being sorted according to current sort mode and order. */
-std::set<QtxShortcutTreeItem*, std::function<bool(QtxShortcutTreeItem*, QtxShortcutTreeItem*)>> QtxShortcutTree::getSortedChildren(QtxShortcutTreeFolder* theParentItem)
+std::set<SUIT_ShortcutTreeItem*, std::function<bool(SUIT_ShortcutTreeItem*, SUIT_ShortcutTreeItem*)>> SUIT_ShortcutTree::getSortedChildren(SUIT_ShortcutTreeFolder* theParentItem)
 {
-  QList<std::pair<QtxShortcutTree::SortKey, QtxShortcutTree::SortOrder>> sortSchema = QtxShortcutTree::DEFAULT_SORT_SCHEMA;
+  QList<std::pair<SUIT_ShortcutTree::SortKey, SUIT_ShortcutTree::SortOrder>> sortSchema = SUIT_ShortcutTree::DEFAULT_SORT_SCHEMA;
   {
     for (auto itSameKey = sortSchema.begin(); itSameKey != sortSchema.end(); itSameKey++) {
       if (itSameKey->first == mySortKey) {
@@ -624,25 +623,23 @@ std::set<QtxShortcutTreeItem*, std::function<bool(QtxShortcutTreeItem*, QtxShort
         break;
       }
     }
-    sortSchema.push_front(std::pair<QtxShortcutTree::SortKey, QtxShortcutTree::SortOrder>(mySortKey, mySortOrder));
+    sortSchema.push_front(std::pair<SUIT_ShortcutTree::SortKey, SUIT_ShortcutTree::SortOrder>(mySortKey, mySortOrder));
   }
 
   static const QCollator collator;
-  const std::function<bool(QtxShortcutTreeItem*, QtxShortcutTreeItem*)> comparator =
-  [this, sortSchema, &collator](const QtxShortcutTreeItem* theItemA, const QtxShortcutTreeItem* theItemB) {
-    int res = 0;
+  const std::function<bool(SUIT_ShortcutTreeItem*, SUIT_ShortcutTreeItem*)> comparator =
+  [this, sortSchema, &collator](const SUIT_ShortcutTreeItem* theItemA, const SUIT_ShortcutTreeItem* theItemB) {
     for (const auto& keyAndOrder : sortSchema) {
-      int res = 0;
-      res = collator.compare(theItemA->getValue(keyAndOrder.first), theItemB->getValue(keyAndOrder.first));
+      const int res = collator.compare(theItemA->getValue(keyAndOrder.first), theItemB->getValue(keyAndOrder.first));
       if (res != 0)
-        return keyAndOrder.second == QtxShortcutTree::SortOrder::Ascending ? res < 0 : res > 0;
+        return keyAndOrder.second == SUIT_ShortcutTree::SortOrder::Ascending ? res < 0 : res > 0;
     }
     return false;
   };
 
-  std::set<QtxShortcutTreeItem*, std::function<bool(QtxShortcutTreeItem*, QtxShortcutTreeItem*)>> sortedChildren(comparator);
+  std::set<SUIT_ShortcutTreeItem*, std::function<bool(SUIT_ShortcutTreeItem*, SUIT_ShortcutTreeItem*)>> sortedChildren(comparator);
   for (int childIdx = 0; childIdx < theParentItem->childCount(); childIdx++) {
-    QtxShortcutTreeAction* const childItem = static_cast<QtxShortcutTreeAction*>(theParentItem->child(childIdx));
+    SUIT_ShortcutTreeAction* const childItem = static_cast<SUIT_ShortcutTreeAction*>(theParentItem->child(childIdx));
     sortedChildren.emplace(childItem);
   }
   return sortedChildren;
@@ -651,31 +648,31 @@ std::set<QtxShortcutTreeItem*, std::function<bool(QtxShortcutTreeItem*, QtxShort
 /*! \brief Inserts theChildItem to theParentItem and theSortedChildren.
 Does not check whether theSortedChildren are actually child items of theParentItem.
 Does not check whether current item sort schema is same as one of theSortedChildren. */
-void QtxShortcutTree::insertChild(
-  QtxShortcutTreeFolder* theParentItem,
-  std::set<QtxShortcutTreeItem*, std::function<bool(QtxShortcutTreeItem*, QtxShortcutTreeItem*)>>& theSortedChildren,
-  QtxShortcutTreeItem* theChildItem
+void SUIT_ShortcutTree::insertChild(
+  SUIT_ShortcutTreeFolder* theParentItem,
+  std::set<SUIT_ShortcutTreeItem*, std::function<bool(SUIT_ShortcutTreeItem*, SUIT_ShortcutTreeItem*)>>& theSortedChildren,
+  SUIT_ShortcutTreeItem* theChildItem
 ) {
   auto emplaceRes = theSortedChildren.emplace(theChildItem);
   theParentItem->insertChild(indexOf(theSortedChildren, emplaceRes.first), theChildItem);
 }
 
-void QtxShortcutTree::onItemDoubleClicked(QTreeWidgetItem* theItem, int theColIdx)
+void SUIT_ShortcutTree::onItemDoubleClicked(QTreeWidgetItem* theItem, int theColIdx)
 {
   {
-    QtxShortcutTreeItem* const item = static_cast<QtxShortcutTreeItem*>(theItem);
+    SUIT_ShortcutTreeItem* const item = static_cast<SUIT_ShortcutTreeItem*>(theItem);
     // Do not react if folder-item is clicked.
-    if (item->type() != QtxShortcutTreeItem::Type::Action)
+    if (item->type() != SUIT_ShortcutTreeItem::Type::Action)
       return;
   }
 
-  QtxShortcutTreeAction* const actionItem = static_cast<QtxShortcutTreeAction*>(theItem);
+  SUIT_ShortcutTreeAction* const actionItem = static_cast<SUIT_ShortcutTreeAction*>(theItem);
 
   myEditDialog->setModuleAndActionID(actionItem->myModuleID, actionItem->myInModuleActionID);
-  QString actionToolTip = actionItem->toolTip(QtxShortcutTree::ElementIdx::Name);
+  QString actionToolTip = actionItem->toolTip(SUIT_ShortcutTree::ElementIdx::Name);
   actionToolTip.truncate(actionToolTip.lastIndexOf('\n') + 1);
   myEditDialog->setModuleAndActionName(
-    static_cast<QtxShortcutTreeItem*>(actionItem->parent())->name(),
+    static_cast<SUIT_ShortcutTreeItem*>(actionItem->parent())->name(),
     actionItem->name(),
     actionToolTip
   );
@@ -712,7 +709,7 @@ void QtxShortcutTree::onItemDoubleClicked(QTreeWidgetItem* theItem, int theColId
 
     // Go through module' shortcut items, and highlight those, whose key sequences differ from applied key sequences.
     for (int childIdx = 0; childIdx < moduleItem->childCount(); childIdx++) {
-      QtxShortcutTreeAction* const childItem = static_cast<QtxShortcutTreeAction*>(moduleItem->child(childIdx));
+      SUIT_ShortcutTreeAction* const childItem = static_cast<SUIT_ShortcutTreeAction*>(moduleItem->child(childIdx));
       const auto itChange = moduleChanges.find(childItem->myInModuleActionID);
       if (itChange == moduleChanges.end()) {
         // The shortcut has not been changed.
@@ -727,48 +724,48 @@ void QtxShortcutTree::onItemDoubleClicked(QTreeWidgetItem* theItem, int theColId
   }
 }
 
-/*static*/ const QList<std::pair<QtxShortcutTree::SortKey, QtxShortcutTree::SortOrder>> QtxShortcutTree::DEFAULT_SORT_SCHEMA =
+/*static*/ const QList<std::pair<SUIT_ShortcutTree::SortKey, SUIT_ShortcutTree::SortOrder>> SUIT_ShortcutTree::DEFAULT_SORT_SCHEMA =
 {
-  {QtxShortcutTree::SortKey::Name, QtxShortcutTree::SortOrder::Ascending},
-  {QtxShortcutTree::SortKey::ToolTip, QtxShortcutTree::SortOrder::Ascending},
-  {QtxShortcutTree::SortKey::KeySequence, QtxShortcutTree::SortOrder::Ascending},
-  {QtxShortcutTree::SortKey::ID, QtxShortcutTree::SortOrder::Ascending}
+  {SUIT_ShortcutTree::SortKey::Name, SUIT_ShortcutTree::SortOrder::Ascending},
+  {SUIT_ShortcutTree::SortKey::ToolTip, SUIT_ShortcutTree::SortOrder::Ascending},
+  {SUIT_ShortcutTree::SortKey::KeySequence, SUIT_ShortcutTree::SortOrder::Ascending},
+  {SUIT_ShortcutTree::SortKey::ID, SUIT_ShortcutTree::SortOrder::Ascending}
 };
 
-/*static*/ std::map<SUIT_ShortcutContainer*, std::set<QtxShortcutTree*>> QtxShortcutTree::instances =
-std::map<SUIT_ShortcutContainer*, std::set<QtxShortcutTree*>>();
+/*static*/ std::map<SUIT_ShortcutContainer*, std::set<SUIT_ShortcutTree*>> SUIT_ShortcutTree::instances =
+std::map<SUIT_ShortcutContainer*, std::set<SUIT_ShortcutTree*>>();
 
 
 
-QtxShortcutTreeItem::QtxShortcutTreeItem(const QString& theModuleID)
+SUIT_ShortcutTreeItem::SUIT_ShortcutTreeItem(const QString& theModuleID)
 : QTreeWidgetItem(), myModuleID(theModuleID)
 { }
 
-QString QtxShortcutTreeItem::name() const
+QString SUIT_ShortcutTreeItem::name() const
 {
-  return text(QtxShortcutTree::ElementIdx::Name);
+  return text(SUIT_ShortcutTree::ElementIdx::Name);
 }
 
 
-QtxShortcutTreeFolder::QtxShortcutTreeFolder(const QString& theModuleID)
-: QtxShortcutTreeItem(theModuleID)
+SUIT_ShortcutTreeFolder::SUIT_ShortcutTreeFolder(const QString& theModuleID)
+: SUIT_ShortcutTreeItem(theModuleID)
 {
-  QFont f = font(QtxShortcutTree::ElementIdx::Name);
+  QFont f = font(SUIT_ShortcutTree::ElementIdx::Name);
   f.setBold(true);
-  setFont(QtxShortcutTree::ElementIdx::Name, f);
-  setText(QtxShortcutTree::ElementIdx::Name, theModuleID);
+  setFont(SUIT_ShortcutTree::ElementIdx::Name, f);
+  setText(SUIT_ShortcutTree::ElementIdx::Name, theModuleID);
 }
 
-void QtxShortcutTreeFolder::setAssets(std::shared_ptr<const SUIT_ActionAssets> theAssets, const QString& theLang)
+void SUIT_ShortcutTreeFolder::setAssets(std::shared_ptr<const SUIT_ActionAssets> theAssets, const QString& theLang)
 {
   if (!theAssets)
     return;
 
-  setIcon(QtxShortcutTree::ElementIdx::Name, theAssets->myIcon);
+  setIcon(SUIT_ShortcutTree::ElementIdx::Name, theAssets->myIcon);
 
   const auto& ldaMap = theAssets->myLangDependentAssets;
   if (ldaMap.empty()) {
-    setText(QtxShortcutTree::ElementIdx::Name, myModuleID);
+    setText(SUIT_ShortcutTree::ElementIdx::Name, myModuleID);
     return;
   }
 
@@ -778,17 +775,17 @@ void QtxShortcutTreeFolder::setAssets(std::shared_ptr<const SUIT_ActionAssets> t
 
   const SUIT_ActionAssets::LangDependentAssets& lda = itLDA->second;
   const QString& name = lda.myName.isEmpty() ? myModuleID : lda.myName;
-  setText(QtxShortcutTree::ElementIdx::Name, name);
+  setText(SUIT_ShortcutTree::ElementIdx::Name, name);
 }
 
-QString QtxShortcutTreeFolder::getValue(QtxShortcutTree::SortKey theKey) const
+QString SUIT_ShortcutTreeFolder::getValue(SUIT_ShortcutTree::SortKey theKey) const
 {
   switch (theKey) {
-    case QtxShortcutTree::SortKey::ID:
+    case SUIT_ShortcutTree::SortKey::ID:
       return myModuleID;
-    case QtxShortcutTree::SortKey::Name:
+    case SUIT_ShortcutTree::SortKey::Name:
       return name();
-    case QtxShortcutTree::SortKey::ToolTip:
+    case SUIT_ShortcutTree::SortKey::ToolTip:
       return name();
     default:
       return QString();
@@ -796,37 +793,37 @@ QString QtxShortcutTreeFolder::getValue(QtxShortcutTree::SortKey theKey) const
 }
 
 
-QtxShortcutTreeAction::QtxShortcutTreeAction(const QString& theModuleID, const QString& theInModuleActionID)
-: QtxShortcutTreeItem(theModuleID), myInModuleActionID(theInModuleActionID)
+SUIT_ShortcutTreeAction::SUIT_ShortcutTreeAction(const QString& theModuleID, const QString& theInModuleActionID)
+: SUIT_ShortcutTreeItem(theModuleID), myInModuleActionID(theInModuleActionID)
 {
-  setText(QtxShortcutTree::ElementIdx::Name, theInModuleActionID);
+  setText(SUIT_ShortcutTree::ElementIdx::Name, theInModuleActionID);
   setToolTip(
-    QtxShortcutTree::ElementIdx::Name,
-    theInModuleActionID + (theInModuleActionID.at(theInModuleActionID.length()-1) == "." ? "\n" : ".\n") + QtxShortcutTree::tr("Double click to edit key sequence.")
+    SUIT_ShortcutTree::ElementIdx::Name,
+    theInModuleActionID + (theInModuleActionID.at(theInModuleActionID.length()-1) == "." ? "\n" : ".\n") + SUIT_ShortcutTree::tr("Double click to edit key sequence.")
   );
-  setToolTip(QtxShortcutTree::ElementIdx::KeySequence, QtxShortcutTree::tr("Double click to edit key sequence."));
+  setToolTip(SUIT_ShortcutTree::ElementIdx::KeySequence, SUIT_ShortcutTree::tr("Double click to edit key sequence."));
 }
 
-/*static*/ QtxShortcutTreeAction* QtxShortcutTreeAction::create(const QString& theModuleID, const QString& theInModuleActionID)
+/*static*/ SUIT_ShortcutTreeAction* SUIT_ShortcutTreeAction::create(const QString& theModuleID, const QString& theInModuleActionID)
 {
   if (theInModuleActionID.isEmpty()) {
-    ShCutDbg("QtxShortcutTreeItem: attempt to create item with empty action ID.");
+    ShCutDbg("SUIT_ShortcutTreeItem: attempt to create item with empty action ID.");
     return nullptr;
   }
 
-  return new QtxShortcutTreeAction(theModuleID, theInModuleActionID);
+  return new SUIT_ShortcutTreeAction(theModuleID, theInModuleActionID);
 }
 
-void QtxShortcutTreeAction::setAssets(std::shared_ptr<const SUIT_ActionAssets> theAssets, const QString& theLang)
+void SUIT_ShortcutTreeAction::setAssets(std::shared_ptr<const SUIT_ActionAssets> theAssets, const QString& theLang)
 {
   if (!theAssets)
     return;
 
-  setIcon(QtxShortcutTree::ElementIdx::Name, theAssets->myIcon);
+  setIcon(SUIT_ShortcutTree::ElementIdx::Name, theAssets->myIcon);
 
   const auto& ldaMap = theAssets->myLangDependentAssets;
   if (ldaMap.empty()) {
-    setText(QtxShortcutTree::ElementIdx::Name, myInModuleActionID);
+    setText(SUIT_ShortcutTree::ElementIdx::Name, myInModuleActionID);
     return;
   }
 
@@ -836,48 +833,48 @@ void QtxShortcutTreeAction::setAssets(std::shared_ptr<const SUIT_ActionAssets> t
 
   const SUIT_ActionAssets::LangDependentAssets& lda = itLDA->second;
   const QString& name = lda.myName.isEmpty() ? myInModuleActionID : lda.myName;
-  setText(QtxShortcutTree::ElementIdx::Name, name);
+  setText(SUIT_ShortcutTree::ElementIdx::Name, name);
 
   const QString& actionToolTip = lda.myToolTip.isEmpty() ? name : lda.myToolTip;
   setToolTip(
-    QtxShortcutTree::ElementIdx::Name,
-    actionToolTip + (actionToolTip.at(actionToolTip.length()-1) == "." ? "\n" : ".\n") + QtxShortcutTree::tr("Double click to edit key sequence.")
+    SUIT_ShortcutTree::ElementIdx::Name,
+    actionToolTip + (actionToolTip.at(actionToolTip.length()-1) == "." ? "\n" : ".\n") + SUIT_ShortcutTree::tr("Double click to edit key sequence.")
   );
 }
 
-QString QtxShortcutTreeAction::getValue(QtxShortcutTree::SortKey theKey) const
+QString SUIT_ShortcutTreeAction::getValue(SUIT_ShortcutTree::SortKey theKey) const
 {
   switch (theKey) {
-    case QtxShortcutTree::SortKey::ID:
+    case SUIT_ShortcutTree::SortKey::ID:
       return myInModuleActionID;
-    case QtxShortcutTree::SortKey::Name:
+    case SUIT_ShortcutTree::SortKey::Name:
       return name();
-    case QtxShortcutTree::SortKey::ToolTip:
-      return toolTip(QtxShortcutTree::ElementIdx::Name);
-    case QtxShortcutTree::SortKey::KeySequence:
+    case SUIT_ShortcutTree::SortKey::ToolTip:
+      return toolTip(SUIT_ShortcutTree::ElementIdx::Name);
+    case SUIT_ShortcutTree::SortKey::KeySequence:
       return keySequence();
     default:
       return QString();
   }
 }
 
-void QtxShortcutTreeAction::setKeySequence(const QString& theKeySequence)
+void SUIT_ShortcutTreeAction::setKeySequence(const QString& theKeySequence)
 {
-  setText(QtxShortcutTree::ElementIdx::KeySequence, theKeySequence);
+  setText(SUIT_ShortcutTree::ElementIdx::KeySequence, theKeySequence);
 }
 
-QString QtxShortcutTreeAction::keySequence() const
+QString SUIT_ShortcutTreeAction::keySequence() const
 {
-  return text(QtxShortcutTree::ElementIdx::KeySequence);
+  return text(SUIT_ShortcutTree::ElementIdx::KeySequence);
 }
 
 /*! \brief Highlights text at ElementIdx::KeySequence. */
-void QtxShortcutTreeAction::highlightKeySequenceAsModified(bool theHighlight)
+void SUIT_ShortcutTreeAction::highlightKeySequenceAsModified(bool theHighlight)
 {
   static const QBrush bgHighlitingBrush = QBrush(Qt::darkGreen);
   static const QBrush fgHighlitingBrush = QBrush(Qt::white);
   static const QBrush noBrush = QBrush();
 
-  setBackground(QtxShortcutTree::ElementIdx::KeySequence, theHighlight ? bgHighlitingBrush : noBrush);
-  setForeground(QtxShortcutTree::ElementIdx::KeySequence, theHighlight ? fgHighlitingBrush : noBrush);
+  setBackground(SUIT_ShortcutTree::ElementIdx::KeySequence, theHighlight ? bgHighlitingBrush : noBrush);
+  setForeground(SUIT_ShortcutTree::ElementIdx::KeySequence, theHighlight ? fgHighlitingBrush : noBrush);
 }

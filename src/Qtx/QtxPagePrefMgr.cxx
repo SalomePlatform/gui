@@ -30,11 +30,8 @@
 #include "QtxColorButton.h"
 #include "QtxBiColorTool.h"
 #include "QtxDoubleSpinBox.h"
-#include "QtxShortcutEdit.h"
 #include "QtxBackgroundTool.h"
 #include "QtxResourceMgr.h"
-
-#include "SUIT_ShortcutMgr.h"
 
 #include <QEvent>
 #include <QLayout>
@@ -4455,67 +4452,6 @@ void QtxPagePrefDateTimeItem::updateDateTime()
 
   myDateTime->setDisplayFormat( dispFmt );
 }
-
-
-/*!
-  \brief Creates preference item for editing of key bindings
-  \param theParent parent preference item. Must not be nullptr.
-*/
-QtxPagePrefShortcutTreeItem::QtxPagePrefShortcutTreeItem(QtxPreferenceItem* theParent)
- : QtxPagePrefItem(QString(), theParent)
-{
-  auto container = std::shared_ptr<SUIT_ShortcutContainer>();
-  const auto itContainers = QtxPagePrefShortcutTreeItem::shortcutContainers.find(rootItem());
-  if (itContainers == QtxPagePrefShortcutTreeItem::shortcutContainers.end()) {
-    container.reset(new SUIT_ShortcutContainer());
-    QtxPagePrefShortcutTreeItem::shortcutContainers.emplace(rootItem(), container);
-  }
-  else {
-    container = itContainers->second.lock();
-    if (!container) {
-      container.reset(new SUIT_ShortcutContainer());
-      itContainers->second = container;
-    }
-  }
-
-  QtxShortcutTree* tree = new QtxShortcutTree(container);
-  tree->myModuleIDs = SUIT_ShortcutMgr::get()->getShortcutModuleIDs();
-  setWidget(tree);
-}
-
-/*!
-  \brief Retrieves shortcut preferences from ShortcutMgr.
-  Updates UI of controlling widget.
-  \sa store()
-*/
-void QtxPagePrefShortcutTreeItem::retrieve()
-{
-  static_cast<QtxShortcutTree*>(widget())->setShortcutsFromManager();
-}
-
-/*!
-  \brief Retrieves shortcut preferences from resource files, ignoring user preferences.
-  Updates UI of controlling widget.
-  \sa store()
-*/
-void QtxPagePrefShortcutTreeItem::retrieveDefault()
-{
-  static_cast<QtxShortcutTree*>(widget())->setDefaultShortcuts();
-}
-
-/*!
-  \brief Applies modified shortcut preferences to ShortcutMgr.
-  Updates UI of controlling widget.
-  And ShortcutMgr, in turn, serilizes shortcut preferences using the resource manager.
-  \sa retrieve()
-*/
-void QtxPagePrefShortcutTreeItem::store()
-{
-  static_cast<QtxShortcutTree*>(widget())->applyChangesToShortcutMgr();
-}
-
-/*static*/ std::map<QtxPreferenceItem*, std::weak_ptr<SUIT_ShortcutContainer>> QtxPagePrefShortcutTreeItem::shortcutContainers =
-std::map<QtxPreferenceItem*, std::weak_ptr<SUIT_ShortcutContainer>>();
 
 
 /*!

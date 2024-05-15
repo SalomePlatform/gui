@@ -165,6 +165,10 @@
       <translation>レジストリの表示(&amp;D)</translation>
     </message>
     <message>
+      <source>MEN_DESK_FIND_ACTION</source>
+      <translation>検索アクション</translation>
+    </message>
+    <message>
       <source>TOT_DESK_FILE_LOAD_SCRIPT</source>
       <translation>Python スクリプトを実行</translation>
     </message>
@@ -237,6 +241,10 @@
       <translation>CORBAサーバーの登録内容を表示</translation>
     </message>
     <message>
+        <source>PRP_DESK_FIND_ACTION</source>
+        <translation>アクション検索ダイアログを開きます</translation>
+    </message>
+    <message>
       <source>APPCLOSE_DESCRIPTION</source>
       <translation>閉じる、または閉じる前にスタディをアンロードしますか？</translation>
     </message>
@@ -259,6 +267,10 @@
     <message>
       <source>TOT_DESK_REGISTRY_DISPLAY</source>
       <translation>レジストリの表示</translation>
+    </message>
+    <message>
+        <source>TOT_DESK_FIND_ACTION</source>
+        <translation>検索アクション</translation>
     </message>
     <message>
       <source>OBJ_BROWSER_COLUMN_0</source>

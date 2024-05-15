@@ -154,6 +154,29 @@
       <translation>すべてのファイル (*)</translation>
     </message>
   </context>
+  <context>
+    <name>SUIT_FindActionDialog</name>
+    <message>
+        <source>Find action</source>
+        <translation>検索アクション</translation>
+    </message>
+    <message>
+        <source>Unavailable actions</source>
+        <translation>利用できないアクション</translation>
+    </message>
+    <message>
+        <source>Inactive modules</source>
+        <translation>非アクティブなモジュール</translation>
+    </message>
+    <message>
+        <source>Action</source>
+        <translation>アクション</translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation>説明</translation>
+    </message>
+  </context>
 <context>
     <name>SUIT_ViewWindow</name>
     <message>
@@ -192,4 +215,53 @@
         <translation>設定ファイル内の次のエントリを手動で修正します</translation>
     </message>
 </context>
+  <context>
+    <name>SUIT_KeySequenceEdit</name>
+    <message>
+        <source>Disable shortcut.</source>
+        <translation>ショートカットを無効にします。</translation>
+    </message>
+    <message>
+        <source>Restore the currently applied key sequence.</source>
+        <translation>現在適用されているキー シーケンスを復元します。</translation>
+    </message>
+  </context>
+  <context>
+      <name>SUIT_EditKeySequenceDialog</name>
+      <message>
+          <source>Change key sequence</source>
+          <translation>キーシーケンスを変更する</translation>
+      </message>
+      <message>
+          <source>No conflicts.</source>
+          <translation>競合はありません。</translation>
+      </message>
+      <message>
+          <source>Confirm</source>
+          <translation>確認する</translation>
+      </message>
+      <message>
+          <source>Cancel</source>
+          <translation>キャンセル</translation>
+      </message>
+      <message>
+          <source>These shortcuts will be disabled on confirm:</source>
+          <translation>これらのショートカットは確認時に無効になります。</translation>
+      </message>
+  </context>
+  <context>
+      <name>SUIT_ShortcutTree</name>
+      <message>
+        <source>Action</source>
+        <translation>アクション</translation>
+      </message>
+      <message>
+          <source>Key sequence</source>
+          <translation>キーシーケンス</translation>
+      </message>
+      <message>
+          <source>Double click to edit key sequence.</source>
+          <translation>ダブルクリックしてキー シーケンスを編集します。</translation>
+      </message>
+  </context>
 </TS>

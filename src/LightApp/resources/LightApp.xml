@@ -286,6 +286,7 @@
     <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_5" value="Alt+C"/>
     <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_6" value="Alt+A"/>
     <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_7" value="Alt+Y"/>
+    <parameter name="PRP_DESK_FIND_ACTION" value="Ctrl+Shift+Space"/>
     <parameter name="PRP_CREATE_NEW_WINDOW_FOR_VIEWER_8" value="Alt+3"/>
     <parameter name="#General/Object(s)/Show" value="Ctrl+Alt+S"/>
     <parameter name="#General/Object(s)/Hide" value="Ctrl+Alt+H"/>

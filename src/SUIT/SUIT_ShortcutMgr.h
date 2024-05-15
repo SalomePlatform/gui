@@ -27,11 +27,13 @@
 
 #include <QObject>
 #include <QString>
+#include <QStringList>
 #include <QIcon>
 #include <map>
 #include <set>
 #include <memory>
 #include <utility>
+#include <limits>
 
 class QAction;
 class QtxAction;
@@ -238,6 +240,8 @@ protected:
   virtual ~SUIT_ShortcutMgr();
 
 public:
+  static const QString ROOT_MODULE_ID;
+
   /*! \brief Create new singleton-instance of shortcut manager, if it has not been created. */
   static void Init();
 
@@ -285,7 +289,7 @@ public:
   \returns {assetsExist, assets}. */
   static std::pair<bool, SUIT_ActionAssets> getActionAssetsFromResources(const QString& theActionID);
 
-  /*! \returns Language being set in resource manager. */
+  /*! \returns Language, which is set in resource manager. */
   static QString getLang();
 
 
@@ -357,7 +361,11 @@ public:
   if the module is root (theModuleID is empty) - returns all module IDs, otherwise returns ["", theModuleID]. */
   std::set<QString> getIDsOfInterferingModules(const QString& theModuleID) const;
 
+  /*! \returns assets, which describe module's header, not its content. */
   std::shared_ptr<const SUIT_ActionAssets> getModuleAssets(const QString& theModuleID) const;
+
+  /*! \returns assets, which describe modules' headers, not their content. */
+  std::map<QString, std::shared_ptr<SUIT_ActionAssets>> getModuleAssets() const { return myModuleAssets; }
 
   /*! \brief Retrieves module name, if the asset was loaded using \ref setAssetsFromResources(). If theLang is empty, it is effectively current language. */
   QString getModuleName(const QString& theModuleID, const QString& theLang = "") const;
@@ -365,6 +373,8 @@ public:
   std::shared_ptr<const SUIT_ActionAssets> getActionAssets(const QString& theModuleID, const QString& theInModuleActionID) const;
 
   std::shared_ptr<const SUIT_ActionAssets> getActionAssets(const QString& theActionID) const;
+
+  std::map<QString, std::map<QString, std::shared_ptr<SUIT_ActionAssets>>> getActionAssets() const { return myActionAssets; }
 
   /*! \brief Retrieves action name, if the asset was loaded using \ref setAssetsFromResources(). If theLang is empty, it is effectively current language. */
   QString getActionName(const QString& theModuleID, const QString& theInModuleActionID, const QString& theLang = "") const;
@@ -462,12 +472,178 @@ private:
   Sets of moduleIDs and inModuleActionIDs may NOT be equal for myActions and myShortcutContainer.
   */
 
-  /* {actionID, assets}[] */
-  std::map<QString, std::shared_ptr<SUIT_ActionAssets>> myActionAssets;
+  /* { moduleID, {inModuleActionID, assets}[] }[] */
+  std::map<QString, std::map<QString, std::shared_ptr<SUIT_ActionAssets>>> myActionAssets;
 
   /* {moduleID, assets}[] */
   mutable std::map<QString, std::shared_ptr<SUIT_ActionAssets>> myModuleAssets;
 };
+
+
+/*!
+  \class SUIT_SentenceMatcher
+  \brief Approximate string matcher, treats strings as sentences composed of words.
+*/
+class SUIT_EXPORT SUIT_SentenceMatcher
+{
+public:
+  /*! Default config:
+    Exact word order = false;
+    Fuzzy words = true;
+    Case sensitive = false;
+    Query = ""; // matches nothing.
+  */
+  SUIT_SentenceMatcher();
+
+  void setUseExactWordOrder(bool theOn);
+  void setUseFuzzyWords(bool theOn);
+  void setCaseSensitive(bool theOn);
+  inline bool isCaseSensitive() const { return myIsCaseSensitive; };
+
+  /*! \param theQuery should not be regex. */
+  void setQuery(QString theQuery);
+
+  inline const QString& getQuery() const { return myQuery; };
+
+  /*! \returns match metrics. The metrics >= 0. INF means mismatch.
+  The class is unable to differentiate exact match with some approximate matches! */
+  double match(const QString& theInputString) const;
+
+  /** \brief For debug. */
+  QString toString() const;
+
+private:
+  static bool makePermutatedSentences(const QStringList& theWords, QList<QStringList>& theSentences);
+  static void makeFuzzyWords(const QStringList& theWords, QStringList& theFuzzyWords);
+
+  /*! \returns number of characters in matched words. The number >= 0. */
+  static int matchWithSentenceIgnoreEndings(const QString& theInputString, const QStringList& theSentence, bool theCaseSensitive);
+  /*! \returns number of characters in matched words. The number >= 0. */
+  static int matchWithSentencesIgnoreEndings(const QString& theInputString, const QList<QStringList>& theSentences, bool theCaseSensitive);
+
+  /*! \returns number of characters in matched words. The number >= 0. */
+  static int matchAtLeastOneWord(const QString& theInputString, const QStringList& theWords, bool theCaseSensitive);
+
+  /*! \returns number of characters in matched words. The number >= 0. */
+  static int match(
+    const QString& theInputString,
+    const QStringList& theSentence,
+    bool theCaseSensitive
+  );
+
+  /*! \returns number of characters in matched words. The number >= 0. */
+  static int match(
+    const QString& theInputString,
+    const QList<QStringList>& theSentences,
+    bool theCaseSensitive
+  );
+
+  bool myUseExactWordOrder; // If false, try to match with sentences, composed of query's words in different orders.
+  bool myUseFuzzyWords; // Try to match with sentences, composed of query's truncated words.
+  bool myIsCaseSensitive;
+  QString myQuery;
+
+  QStringList myWords; // It is also original search sentence.
+  QList<QStringList> myPermutatedSentences;
+
+  QStringList myFuzzyWords; // Regexes.
+  QList<QStringList> myFuzzyPermutatedSentences;
+};
+
+
+/*!
+  \class SUIT_ActionSearcher
+  \brief Searches in data, provided in action asset files and shortcut preferences.
+*/
+class SUIT_EXPORT SUIT_ActionSearcher
+{
+public:
+  enum MatchField {
+    ID,
+    Name,
+    ToolTip,
+    KeySequence
+  };
+
+  class AssetsAndSearchData
+  {
+  public:
+    AssetsAndSearchData(std::shared_ptr<const SUIT_ActionAssets> theAssets = nullptr, double theMatchMetrics = std::numeric_limits<double>::infinity());
+
+    void setMatchMetrics(double theMatchMetrics);
+    double matchMetrics() const { return myMatchMetrics; };
+
+    std::shared_ptr<const SUIT_ActionAssets> myAssets;
+
+    void toJSON(QJsonObject& oJsonObject) const;
+    QString toString() const;
+
+  private:
+    /*! \brief Ideally it should be number of weighted character permutations. Now it is just a number of characters in unmatched words. */
+    double myMatchMetrics;
+  };
+
+  /*! Default config:
+      Included modules' IDs = { ROOT_MODULE_ID };
+      Include disabled actions = false;
+      Fields to match = { Name, Tooltip };
+      Case sensitive = false;
+      Fuzzy matching = true;
+      Query = ""; // matches everything.
+  */
+  SUIT_ActionSearcher();
+  SUIT_ActionSearcher(const SUIT_ActionSearcher&) = delete;
+  SUIT_ActionSearcher& operator=(const SUIT_ActionSearcher&) = delete;
+  virtual ~SUIT_ActionSearcher() = default;
+
+  /*! \returns true, if set of results is changed. */
+  bool setIncludedModuleIDs(std::set<QString> theIncludedModuleIDs);
+
+  /*! \returns true, if set of results is changed. */
+  bool includeDisabledActions(bool theOn);
+  inline bool areDisabledActionsIncluded() const {return myIncludeDisabledActions;};
+
+  /*! \returns true, if set of results is changed. */
+  bool setFieldsToMatch(const std::set<SUIT_ActionSearcher::MatchField>& theFields);
+
+  /*! \returns true, if set of results is changed. */
+  bool setCaseSensitive(bool theOn);
+
+  /*! \returns true, if set of results is changed. */
+  bool setQuery(const QString& theQuery);
+  inline const QString& getQuery() const {return myMatcher.getQuery();};
+
+  const std::map<QString, std::map<QString, SUIT_ActionSearcher::AssetsAndSearchData>>& getSearchResults() const;
+
+
+private:
+  /*! \brief Applies filter to all actions, provided in asset files for SUIT_ShortcutMgr.
+  \returns { true, _ } if set of results is changed; { _ , true } if matching metrics is changed for at least one result. */
+  std::pair<bool, bool> filter();
+
+  /*! \brief Applies filter to search results only.
+  \returns { true, _ } if set of results is shrunk; { _ , true } if matching metrics is changed for at least one result. */
+  std::pair<bool, bool> filterResults();
+
+  /*! \brief Applies filter only to actions, which are not in search results.
+  \returns True, if set of results is extended. */
+  bool extendResults();
+
+  double matchAction(const QString& theModuleID, const QString& theInModuleActionID, std::shared_ptr<const SUIT_ActionAssets> theAssets);
+
+  QString toString() const;
+
+
+  std::set<QString> myIncludedModuleIDs;
+  bool myIncludeDisabledActions;
+
+  std::set<SUIT_ActionSearcher::MatchField> myFieldsToMatch;
+  SUIT_SentenceMatcher myMatcher;
+
+  /* { moduleID, {inModuleActionID, assetsAndSearchData}[] }[]. */
+  std::map<QString, std::map<QString, SUIT_ActionSearcher::AssetsAndSearchData>> mySearchResults;
+};
+
 
 #if defined WIN32
 #pragma warning( default: 4251 )

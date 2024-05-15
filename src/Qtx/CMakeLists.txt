@@ -22,10 +22,7 @@ INCLUDE(UseQtExt)
 # --- options ---
 
 # additional include directories
-INCLUDE_DIRECTORIES(
-  ${QT_INCLUDES}
-  ${PROJECT_SOURCE_DIR}/src/SUIT
-)
+INCLUDE_DIRECTORIES(${QT_INCLUDES})
 
 # additional preprocessor / compiler flags
 ADD_DEFINITIONS(${QT_DEFINITIONS})
@@ -73,7 +70,6 @@ SET(_moc_HEADERS
   QtxPopupMgr.h
   QtxRubberBand.h
   QtxSearchTool.h
-  QtxShortcutEdit.h
   QtxSlider.h
   QtxSplash.h
   QtxToolBar.h
@@ -170,7 +166,6 @@ SET(_other_SOURCES
   QtxResourceMgr.cxx
   QtxRubberBand.cxx
   QtxSearchTool.cxx
-  QtxShortcutEdit.cxx
   QtxSlider.cxx
   QtxSplash.cxx
   QtxToolBar.cxx

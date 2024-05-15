@@ -17,7 +17,7 @@
         }
     },
     "/#Viewers/View/Reset": {
-        "iconPath": "",
+        "iconPath": "${GUI_ROOT_DIR}/share/salome/resources/gui/reset.png",
         "langDependentAssets": {
             "en": {
                 "name": "Reset",
@@ -390,6 +390,23 @@
             }
         }
     },
+    "/PRP_DESK_FIND_ACTION": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "Find action",
+                "tooltip": "Opens action search dialog"
+            },
+            "fr": {
+                "name": "Trouver une action",
+                "tooltip": "Ouvre la boîte de dialogue de recherche d'action"
+            },
+            "ja": {
+                "name": "検索アクション",
+                "tooltip": "アクション検索ダイアログを開きます"
+            }
+        }
+    },
     "/PRP_DESK_CONNECT": {
         "iconPath": "",
         "langDependentAssets": {
@@ -459,7 +476,7 @@
         }
     },
     "/PRP_DESK_HELP_ABOUT": {
-        "iconPath": "",
+        "iconPath": "${GUI_ROOT_DIR}/share/salome/resources/gui/about.png",
         "langDependentAssets": {
             "en": {
                 "name": "About...",
@@ -510,7 +527,7 @@
         }
     },
     "/PRP_DESK_WINDOW_HSPLIT": {
-        "iconPath": "",
+        "iconPath": "${GUI_ROOT_DIR}/share/salome/resources/gui/htile.png",
         "langDependentAssets": {
             "en": {
                 "name": "Split Horizontally",
@@ -527,7 +544,7 @@
         }
     },
     "/PRP_DESK_WINDOW_VSPLIT": {
-        "iconPath": "",
+        "iconPath": "${GUI_ROOT_DIR}/share/salome/resources/gui/vtile.png",
         "langDependentAssets": {
             "en": {
                 "name": "Split Vertically",
@@ -578,7 +595,7 @@
         }
     },
     "/TOT_DESK_EDIT_PASTE": {
-        "iconPath": "",
+        "iconPath": "${GUI_ROOT_DIR}/share/salome/resources/gui/paste.png",
         "langDependentAssets": {
             "en": {
                 "name": "Paste",
@@ -595,7 +612,7 @@
         }
     },
     "/TOT_DESK_FILE_CLOSE": {
-        "iconPath": "",
+        "iconPath": "${GUI_ROOT_DIR}/share/salome/resources/gui/close.png",
         "langDependentAssets": {
             "en": {
                 "name": "Close",
@@ -629,7 +646,7 @@
         }
     },
     "/TOT_DESK_FILE_NEW": {
-        "iconPath": "",
+        "iconPath": "${GUI_ROOT_DIR}/share/salome/resources/gui/new.png",
         "langDependentAssets": {
             "en": {
                 "name": "New",
@@ -646,7 +663,7 @@
         }
     },
     "/TOT_DESK_FILE_OPEN": {
-        "iconPath": "",
+        "iconPath": "${GUI_ROOT_DIR}/share/salome/resources/gui/open.png",
         "langDependentAssets": {
             "en": {
                 "name": "Open...",
@@ -663,7 +680,7 @@
         }
     },
     "/TOT_DESK_FILE_SAVE": {
-        "iconPath": "",
+        "iconPath": "${GUI_ROOT_DIR}/share/salome/resources/gui/save.png",
         "langDependentAssets": {
             "en": {
                 "name": "Save",

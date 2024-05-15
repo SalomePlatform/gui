@@ -71,7 +71,7 @@ class SALOMEAPPIMPL_EXPORT SalomeApp_Application : public LightApp_Application
 public:
   enum { MenuToolsId = 5 };
   enum { DumpStudyId = LightApp_Application::UserID, LoadScriptId, PropertiesId,
-         CatalogGenId, RegDisplayId, SaveGUIStateId, ConnectId, DisconnectId,
+         CatalogGenId, RegDisplayId, FindActionId, SaveGUIStateId, ConnectId, DisconnectId,
          UserID };
 
   typedef enum { WT_NoteBook = LightApp_Application::WT_User,
@@ -192,6 +192,7 @@ private slots:
 
   void                                onCatalogGen();
   void                                onRegDisplay();
+  void                                onFindAction();
   void                                onOpenWith();
   void                                onExtAction();
 

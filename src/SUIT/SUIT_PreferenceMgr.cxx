@@ -21,6 +21,7 @@
 // Author:    Sergey TELKOV
 //
 #include "SUIT_PreferenceMgr.h"
+#include "SUIT_PagePrefShortcutTreeItem.h"
 
 SUIT_PreferenceMgr::SUIT_PreferenceMgr( QtxResourceMgr* resMgr, QWidget* parent )
 : QtxPagePrefMgr( resMgr, parent ),
@@ -158,7 +159,7 @@ int SUIT_PreferenceMgr::addItem( const QString& title, const int pId,
     item = new QtxPagePrefPathListItem( Qtx::PT_Directory, title, parent, sect, param );
     break;
   case ShortcutTree:
-    item = new QtxPagePrefShortcutTreeItem( parent );
+    item = new SUIT_PagePrefShortcutTreeItem( parent );
     break;
   case BiColor:
     item = new QtxPagePrefBiColorItem( title, parent, sect, param );

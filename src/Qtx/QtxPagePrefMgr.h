@@ -42,7 +42,6 @@ class QtxGroupBox;
 class QtxComboBox;
 class QtxColorButton;
 class QtxBiColorTool;
-class QtxShortcutTree;
 class QtxBackgroundTool;
 
 class QToolBox;
@@ -741,37 +740,6 @@ private:
 private:
   int              myType;
   QDateTimeEdit*   myDateTime;
-};
-
-
-class SUIT_ShortcutContainer;
-
-
-class QTX_EXPORT QtxPagePrefShortcutTreeItem : public QtxPagePrefItem
-{
-public:
-  QtxPagePrefShortcutTreeItem(QtxPreferenceItem* theParent);
-  virtual ~QtxPagePrefShortcutTreeItem() = default;
-
-  virtual void     retrieve();
-  virtual void     retrieveDefault();
-  virtual void     store();
-
-private:
-  QtxShortcutTree* myShortcutTree;
-
-  // { root item (preference window), shortcut container of synchronized trees (widgets within the same window) }
-  static std::map<QtxPreferenceItem*, std::weak_ptr<SUIT_ShortcutContainer>> shortcutContainers;
-  /** Why is this?
-   * Every QtxPagePrefMgr is eventually a preference window. Each preference window has button "Apply".
-   * When the button is pressed, all descendants of the QtxPagePrefMgr store changes they carry into preferences.
-   * The pitfall with shortcut trees is as follows: made in independent shortcut trees, changes may conflict,
-   * and merge of such changes is ambiguous. And the solution is to keep shortcut trees within the same window
-   * synchronized - all changes being made in a tree of a synchronized bundle are projected to other trees from the bundle
-   * without interacting with SUIT_ShortcutMgr.
-   *
-   * Every time shortcut preferences stored to the ShortcutMgr, all instances of QtxShortcutTree are updated.
-  */
 };
 
 class QTX_EXPORT QtxPagePrefBackgroundItem : public QObject, public QtxPageNamedPrefItem

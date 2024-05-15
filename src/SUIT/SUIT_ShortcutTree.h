@@ -17,10 +17,10 @@
 // See http://www.salome-platform.org/ or email : webmaster.salome@opencascade.com
 //
 
-#ifndef QTXSHORTCUTTREE_H
-#define QTXSHORTCUTTREE_H
+#ifndef SUIT_SHORTCUTTREE_H
+#define SUIT_SHORTCUTTREE_H
 
-#include "Qtx.h"
+#include "SUIT.h"
 #include <QDialog>
 #include <QFrame>
 #include <QTreeWidget>
@@ -36,13 +36,13 @@ class QLabel;
 class QPushButton;
 class QTreeWidgetItem;
 
-class QTX_EXPORT QtxKeySequenceEdit : public QFrame
+class SUIT_EXPORT SUIT_KeySequenceEdit : public QFrame
 {
   Q_OBJECT
 
 public:
-  QtxKeySequenceEdit(QWidget* = nullptr);
-  virtual ~QtxKeySequenceEdit() = default;
+  SUIT_KeySequenceEdit(QWidget* = nullptr);
+  virtual ~SUIT_KeySequenceEdit() = default;
 
   void           setConfirmedKeySequence(const QKeySequence&);
   void           setEditedKeySequence(const QKeySequence&);
@@ -77,22 +77,22 @@ private:
 };
 
 
-class QtxShortcutTree;
-class QtxShortcutTreeItem;
-class QtxShortcutTreeFolder;
-class QtxShortcutTreeAction;
+class SUIT_ShortcutTree;
+class SUIT_ShortcutTreeItem;
+class SUIT_ShortcutTreeFolder;
+class SUIT_ShortcutTreeAction;
 class QTextEdit;
 
 
-class QTX_EXPORT QtxEditKeySequenceDialog : public QDialog
+class SUIT_EXPORT SUIT_EditKeySequenceDialog : public QDialog
 {
   Q_OBJECT
 
 public:
-  QtxEditKeySequenceDialog(QtxShortcutTree* theParent);
-  QtxEditKeySequenceDialog(const QtxEditKeySequenceDialog&) = delete;
-  QtxEditKeySequenceDialog& operator=(const QtxEditKeySequenceDialog&) = delete;
-  virtual ~QtxEditKeySequenceDialog() = default;
+  SUIT_EditKeySequenceDialog(SUIT_ShortcutTree* theParent);
+  SUIT_EditKeySequenceDialog(const SUIT_EditKeySequenceDialog&) = delete;
+  SUIT_EditKeySequenceDialog& operator=(const SUIT_EditKeySequenceDialog&) = delete;
+  virtual ~SUIT_EditKeySequenceDialog() = default;
 
   void setModuleAndActionID(const QString& theModuleID, const QString& theInModuleActionID);
   const QString& moduleID() const;
@@ -117,12 +117,12 @@ private:
   QString myModuleID;
   QString myInModuleActionID;
   QLabel* myActionName;
-  QtxKeySequenceEdit* myKeySequenceEdit;
+  SUIT_KeySequenceEdit* myKeySequenceEdit;
   QTextEdit* myTextEdit;
 };
 
 
-class QTX_EXPORT QtxShortcutTree : public QTreeWidget
+class SUIT_EXPORT SUIT_ShortcutTree : public QTreeWidget
 {
   Q_OBJECT
 
@@ -144,13 +144,13 @@ public:
     Descending
   };
 
-  QtxShortcutTree(
+  SUIT_ShortcutTree(
     std::shared_ptr<SUIT_ShortcutContainer> theContainer = std::shared_ptr<SUIT_ShortcutContainer>(),
     QWidget* theParent = nullptr
   );
-  QtxShortcutTree(const QtxShortcutTree&) = delete;
-  QtxShortcutTree& operator=(const QtxShortcutTree&) = delete;
-  virtual ~QtxShortcutTree();
+  SUIT_ShortcutTree(const SUIT_ShortcutTree&) = delete;
+  SUIT_ShortcutTree& operator=(const SUIT_ShortcutTree&) = delete;
+  virtual ~SUIT_ShortcutTree();
 
   void setShortcutsFromManager();
   void setDefaultShortcuts();
@@ -158,18 +158,18 @@ public:
 
   std::shared_ptr<const SUIT_ShortcutContainer> shortcutContainer() const;
 
-  void sort(QtxShortcutTree::SortKey theKey, QtxShortcutTree::SortOrder theOrder);
+  void sort(SUIT_ShortcutTree::SortKey theKey, SUIT_ShortcutTree::SortOrder theOrder);
 
 private:
   void updateItems(bool theHighlightModified, bool theUpdateSyncTrees);
-  std::pair<QtxShortcutTreeFolder*, int> findModuleFolderItem(const QString& theModuleID) const;
+  std::pair<SUIT_ShortcutTreeFolder*, int> findModuleFolderItem(const QString& theModuleID) const;
 
-  std::set<QtxShortcutTreeItem*, std::function<bool(QtxShortcutTreeItem*, QtxShortcutTreeItem*)>> getSortedChildren(QtxShortcutTreeFolder* theParentItem);
+  std::set<SUIT_ShortcutTreeItem*, std::function<bool(SUIT_ShortcutTreeItem*, SUIT_ShortcutTreeItem*)>> getSortedChildren(SUIT_ShortcutTreeFolder* theParentItem);
 
   void insertChild(
-    QtxShortcutTreeFolder* theParentItem,
-    std::set<QtxShortcutTreeItem*, std::function<bool(QtxShortcutTreeItem*, QtxShortcutTreeItem*)>>& theSortedChildren,
-    QtxShortcutTreeItem* theChildItem
+    SUIT_ShortcutTreeFolder* theParentItem,
+    std::set<SUIT_ShortcutTreeItem*, std::function<bool(SUIT_ShortcutTreeItem*, SUIT_ShortcutTreeItem*)>>& theSortedChildren,
+    SUIT_ShortcutTreeItem* theChildItem
   );
 
 private slots:
@@ -179,31 +179,31 @@ public:
   /** Keeps IDs of modules, which will are shown on setShortcutsFromManager(). */
   std::set<QString> myModuleIDs;
 
-  static const QList<std::pair<QtxShortcutTree::SortKey, QtxShortcutTree::SortOrder>> DEFAULT_SORT_SCHEMA;
+  static const QList<std::pair<SUIT_ShortcutTree::SortKey, SUIT_ShortcutTree::SortOrder>> DEFAULT_SORT_SCHEMA;
 
 private:
   /** Allows to modify plenty of shortcuts and then apply them to SUIT_ShortcutMgr as a batch. */
   const std::shared_ptr<SUIT_ShortcutContainer> myShortcutContainer;
 
-  QtxEditKeySequenceDialog* myEditDialog;
+  SUIT_EditKeySequenceDialog* myEditDialog;
 
-  QtxShortcutTree::SortKey mySortKey;
-  QtxShortcutTree::SortOrder mySortOrder;
+  SUIT_ShortcutTree::SortKey mySortKey;
+  SUIT_ShortcutTree::SortOrder mySortOrder;
 
   /**
-   * Ensures that, if several QtxShortcutTree instances coexist,
+   * Ensures that, if several SUIT_ShortcutTree instances coexist,
    * all of them are updated when one of them applies pending changes to SUIT_ShortcutMgr.
    *
    * Sharing of SUIT_ShortcutContainer allows to keep some trees synchronized even without
-   * applying changes to SUIT_ShortcutMgr. Why? See QtxPagePrefShortcutTreeItem.
+   * applying changes to SUIT_ShortcutMgr. Why? See SUIT_PagePrefShortcutTreeItem.
    *
    * Access is not synchronized in assumption, that all instances live in the same thread.
   */
-  static std::map<SUIT_ShortcutContainer*, std::set<QtxShortcutTree*>> instances;
+  static std::map<SUIT_ShortcutContainer*, std::set<SUIT_ShortcutTree*>> instances;
 };
 
 
-class QtxShortcutTreeItem : public QTreeWidgetItem
+class SUIT_ShortcutTreeItem : public QTreeWidgetItem
 {
 public:
   enum Type {
@@ -212,48 +212,48 @@ public:
   };
 
 protected:
-  QtxShortcutTreeItem(const QString& theModuleID);
+  SUIT_ShortcutTreeItem(const QString& theModuleID);
 
 public:
-  virtual ~QtxShortcutTreeItem() = default;
-  virtual QtxShortcutTreeItem::Type type() const = 0;
+  virtual ~SUIT_ShortcutTreeItem() = default;
+  virtual SUIT_ShortcutTreeItem::Type type() const = 0;
 
   virtual void setAssets(std::shared_ptr<const SUIT_ActionAssets> theAssets, const QString& theLang) = 0;
   QString name() const;
 
-  virtual QString getValue(QtxShortcutTree::SortKey theKey) const = 0;
+  virtual QString getValue(SUIT_ShortcutTree::SortKey theKey) const = 0;
 
 public:
   const QString myModuleID;
 };
 
 
-class QtxShortcutTreeFolder : public QtxShortcutTreeItem
+class SUIT_ShortcutTreeFolder : public SUIT_ShortcutTreeItem
 {
 public:
-  QtxShortcutTreeFolder(const QString& theModuleID);
-  virtual ~QtxShortcutTreeFolder() = default;
-  virtual QtxShortcutTreeItem::Type type() const { return QtxShortcutTreeItem::Type::Folder; };
+  SUIT_ShortcutTreeFolder(const QString& theModuleID);
+  virtual ~SUIT_ShortcutTreeFolder() = default;
+  virtual SUIT_ShortcutTreeItem::Type type() const { return SUIT_ShortcutTreeItem::Type::Folder; };
 
   virtual void setAssets(std::shared_ptr<const SUIT_ActionAssets> theAssets, const QString& theLang);
 
-  virtual QString getValue(QtxShortcutTree::SortKey theKey) const;
+  virtual QString getValue(SUIT_ShortcutTree::SortKey theKey) const;
 };
 
 
-class QtxShortcutTreeAction : public QtxShortcutTreeItem
+class SUIT_ShortcutTreeAction : public SUIT_ShortcutTreeItem
 {
 private:
-  QtxShortcutTreeAction(const QString& theModuleID, const QString& theInModuleActionID);
+  SUIT_ShortcutTreeAction(const QString& theModuleID, const QString& theInModuleActionID);
 
 public:
-  static QtxShortcutTreeAction* create(const QString& theModuleID, const QString& theInModuleActionID);
-  virtual ~QtxShortcutTreeAction() = default;
-  virtual QtxShortcutTreeItem::Type type() const { return QtxShortcutTreeItem::Type::Action; };
+  static SUIT_ShortcutTreeAction* create(const QString& theModuleID, const QString& theInModuleActionID);
+  virtual ~SUIT_ShortcutTreeAction() = default;
+  virtual SUIT_ShortcutTreeItem::Type type() const { return SUIT_ShortcutTreeItem::Type::Action; };
 
   virtual void setAssets(std::shared_ptr<const SUIT_ActionAssets> theAssets, const QString& theLang);
 
-  virtual QString getValue(QtxShortcutTree::SortKey theKey) const;
+  virtual QString getValue(SUIT_ShortcutTree::SortKey theKey) const;
 
   void setKeySequence(const QString& theKeySequence);
   QString keySequence() const;
@@ -262,4 +262,4 @@ public:
   const QString myInModuleActionID;
 };
 
-#endif // QTXSHORTCUTTREE_H
+#endif // SUIT_SHORTCUTTREE_H

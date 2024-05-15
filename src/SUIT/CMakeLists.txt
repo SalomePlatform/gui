@@ -46,14 +46,17 @@ SET(_moc_HEADERS
   SUIT_DataObject.h
   SUIT_Desktop.h
   SUIT_FileDlg.h
+  SUIT_FindActionDialog.h
   SUIT_LicenseDlg.h
   SUIT_MessageBox.h
   SUIT_Operation.h
+  SUIT_PagePrefShortcutTreeItem.h
   SUIT_PopupClient.h
   SUIT_PreferenceMgr.h
   SUIT_SelectionMgr.h
   SUIT_Session.h
   SUIT_ShortcutMgr.h
+  SUIT_ShortcutTree.h
   SUIT_Study.h
   SUIT_TreeModel.h
   SUIT_ViewManager.h
@@ -121,10 +124,12 @@ SET(_other_SOURCES
   SUIT_ExceptionHandler.cxx
   SUIT_FileDlg.cxx
   SUIT_FileValidator.cxx
+  SUIT_FindActionDialog.cxx
   SUIT_LicenseDlg.cxx
   SUIT_MessageBox.cxx
   SUIT_Operation.cxx
   SUIT_OverrideCursor.cxx
+  SUIT_PagePrefShortcutTreeItem.cxx
   SUIT_PopupClient.cxx
   SUIT_PreferenceMgr.cxx
   SUIT_ResourceMgr.cxx
@@ -133,6 +138,7 @@ SET(_other_SOURCES
   SUIT_Selector.cxx
   SUIT_Session.cxx
   SUIT_ShortcutMgr.cxx
+  SUIT_ShortcutTree.cxx
   SUIT_Study.cxx
   SUIT_Tools.cxx
   SUIT_TreeModel.cxx

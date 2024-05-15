@@ -165,6 +165,10 @@ Launch a new session or close the study.</translation>
         <translation>Registry &amp;Display</translation>
     </message>
     <message>
+        <source>MEN_DESK_FIND_ACTION</source>
+        <translation>Find action</translation>
+    </message>
+    <message>
         <source>TOT_DESK_FILE_LOAD_SCRIPT</source>
         <translation>Load python script</translation>
     </message>
@@ -238,6 +242,10 @@ Do you want to reload it ?</translation>
         <translation>Displays content of the Registry CORBA server</translation>
     </message>
     <message>
+        <source>PRP_DESK_FIND_ACTION</source>
+        <translation>Opens action search dialog</translation>
+    </message>
+    <message>
         <source>APPCLOSE_DESCRIPTION</source>
         <translation>Do you want to save study before closing?</translation>
     </message>
@@ -260,6 +268,10 @@ Do you want to reload it ?</translation>
     <message>
         <source>TOT_DESK_REGISTRY_DISPLAY</source>
         <translation>Registry display</translation>
+    </message>
+    <message>
+        <source>TOT_DESK_FIND_ACTION</source>
+        <translation>Find action</translation>
     </message>
     <message>
         <source>OBJ_BROWSER_COLUMN_0</source>

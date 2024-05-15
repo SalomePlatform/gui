@@ -165,6 +165,10 @@ Lancez une nouvelle session ou fermez l&apos;étude en cours.</translation>
         <translation>Affichage du registre CORBA</translation>
     </message>
     <message>
+        <source>MEN_DESK_FIND_ACTION</source>
+        <translation>Trouver une action</translation>
+    </message>
+    <message>
         <source>TOT_DESK_FILE_LOAD_SCRIPT</source>
         <translation>Exécuter un script python</translation>
     </message>
@@ -238,6 +242,10 @@ Voulez-vous le recharger ?</translation>
         <translation>Visualiser le contenu du registre du serveur CORBA</translation>
     </message>
     <message>
+        <source>PRP_DESK_FIND_ACTION</source>
+        <translation>Ouvre la boîte de dialogue de recherche d'action</translation>
+    </message>
+    <message>
         <source>APPCLOSE_DESCRIPTION</source>
         <translation>Voulez-vous sauvegarder l&apos;étude avant de quitter ?</translation>
     </message>
@@ -260,6 +268,10 @@ Voulez-vous le recharger ?</translation>
     <message>
         <source>TOT_DESK_REGISTRY_DISPLAY</source>
         <translation>Visualiser le registre CORBA</translation>
+    </message>
+    <message>
+        <source>TOT_DESK_FIND_ACTION</source>
+        <translation>Trouver une action</translation>
     </message>
     <message>
         <source>OBJ_BROWSER_COLUMN_0</source>

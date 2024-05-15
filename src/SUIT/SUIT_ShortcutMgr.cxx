@@ -78,7 +78,7 @@ static const QKeySequence NO_KEYSEQUENCE = QKeySequence(QString(""));
 static const QString NO_ACTION = QString("");
 /** Separates tokens in action ID. */
 static const QString TOKEN_SEPARATOR = QString("/");
-static const QString ROOT_MODULE_ID = QString("");
+/*static*/ const QString SUIT_ShortcutMgr::ROOT_MODULE_ID = QString("");
 static const QString META_ACTION_PREFIX = QString("#");
 
 /** Prefix of names of shortcut setting sections in preference files. */
@@ -158,7 +158,7 @@ public:
       moduleShortcuts[theInModuleActionID] = theKeySequence.toString();
 
       const QString fileName = theModuleID + DevTools::SHORTCUTS_OF_META_SUFFIX;
-      const QString sectionName = SECTION_NAME_PREFIX + DevTools::XML_SECTION_TOKENS_SEPARATOR + ROOT_MODULE_ID;
+      const QString sectionName = SECTION_NAME_PREFIX + DevTools::XML_SECTION_TOKENS_SEPARATOR + SUIT_ShortcutMgr::ROOT_MODULE_ID;
       std::map<QString, std::map<QString, QString>> sections;
       sections[sectionName] = moduleShortcuts;
       writeToXMLFile(fileName, sections);
@@ -182,7 +182,7 @@ public:
     const QAction* theAction
   ) {
     if (SUIT_ShortcutMgr::isInModuleMetaActionID(theInModuleActionID)) {
-      QString actionID = SUIT_ShortcutMgr::makeActionID(ROOT_MODULE_ID, theInModuleActionID);
+      QString actionID = SUIT_ShortcutMgr::makeActionID(SUIT_ShortcutMgr::ROOT_MODULE_ID, theInModuleActionID);
       // { actionID, assets } []
       auto& moduleAssets = myAssetsOfMetaActions[theModuleID];
 
@@ -490,21 +490,21 @@ public:
 
 SUIT_ShortcutContainer::SUIT_ShortcutContainer()
 {
-  myShortcuts.emplace(ROOT_MODULE_ID, std::map<QKeySequence, QString>());
-  myShortcutsInversed.emplace(ROOT_MODULE_ID, std::map<QString, QKeySequence>());
+  myShortcuts.emplace(SUIT_ShortcutMgr::ROOT_MODULE_ID, std::map<QKeySequence, QString>());
+  myShortcutsInversed.emplace(SUIT_ShortcutMgr::ROOT_MODULE_ID, std::map<QString, QKeySequence>());
 }
 
 std::set<QString> SUIT_ShortcutContainer::getIDsOfInterferingModules(const QString& theModuleID) const
 {
   std::set<QString> IDsOfInterferingModules;
-  if (theModuleID == ROOT_MODULE_ID) {
+  if (theModuleID == SUIT_ShortcutMgr::ROOT_MODULE_ID) {
     for (const auto& moduleIDAndShortcuts : myShortcuts) {
       IDsOfInterferingModules.emplace(moduleIDAndShortcuts.first);
     }
   }
   else {
-    IDsOfInterferingModules.emplace(ROOT_MODULE_ID);
-    if (theModuleID != ROOT_MODULE_ID)
+    IDsOfInterferingModules.emplace(SUIT_ShortcutMgr::ROOT_MODULE_ID);
+    if (theModuleID != SUIT_ShortcutMgr::ROOT_MODULE_ID)
       IDsOfInterferingModules.emplace(theModuleID);
   }
   return IDsOfInterferingModules;
@@ -532,7 +532,7 @@ std::set<std::pair<QString, QString>> SUIT_ShortcutContainer::setShortcut(QStrin
   }
 
   if (SUIT_ShortcutMgr::isInModuleMetaActionID(theInModuleActionID))
-    theModuleID = ROOT_MODULE_ID;
+    theModuleID = SUIT_ShortcutMgr::ROOT_MODULE_ID;
 
   auto itModuleShortcuts = myShortcuts.find(theModuleID);
   auto itModuleShortcutsInversed = myShortcutsInversed.find(theModuleID);
@@ -629,7 +629,7 @@ std::set<std::pair<QString, QString>> SUIT_ShortcutContainer::getConflicts(
     return std::set<std::pair<QString, QString>>();
 
   if (SUIT_ShortcutMgr::isInModuleMetaActionID(theInModuleActionID))
-    theModuleID = ROOT_MODULE_ID;
+    theModuleID = SUIT_ShortcutMgr::ROOT_MODULE_ID;
 
   { // Check if the shortcut is set.
     const auto itModuleShortcuts = myShortcuts.find(theModuleID);
@@ -663,7 +663,7 @@ std::set<std::pair<QString, QString>> SUIT_ShortcutContainer::getConflicts(
 const QKeySequence& SUIT_ShortcutContainer::getKeySequence(QString theModuleID, const QString& theInModuleActionID) const
 {
   if (SUIT_ShortcutMgr::isInModuleMetaActionID(theInModuleActionID))
-    theModuleID = ROOT_MODULE_ID;
+    theModuleID = SUIT_ShortcutMgr::ROOT_MODULE_ID;
 
   const auto itModuleShortcutsInversed = myShortcutsInversed.find(theModuleID);
   if (itModuleShortcutsInversed == myShortcutsInversed.end())
@@ -680,7 +680,7 @@ const QKeySequence& SUIT_ShortcutContainer::getKeySequence(QString theModuleID, 
 bool SUIT_ShortcutContainer::hasShortcut(QString theModuleID, const QString& theInModuleActionID) const
 {
   if (SUIT_ShortcutMgr::isInModuleMetaActionID(theInModuleActionID))
-    theModuleID = ROOT_MODULE_ID;
+    theModuleID = SUIT_ShortcutMgr::ROOT_MODULE_ID;
 
   const auto itModuleShortcutsInversed = myShortcutsInversed.find(theModuleID);
   if (itModuleShortcutsInversed == myShortcutsInversed.end())
@@ -1079,7 +1079,7 @@ SUIT_ShortcutMgr::~SUIT_ShortcutMgr()
     else
       ShCutDbg("Discovered shortcut modules: \"" + moduleIDs.join("\", \"") + ".");
   }
-  moduleIDs.push_front(ROOT_MODULE_ID); // Resource manager filters out empty section suffices.
+  moduleIDs.push_front(SUIT_ShortcutMgr::ROOT_MODULE_ID); // Resource manager filters out empty section suffices.
   moduleIDs.removeDuplicates();
 
   for (size_t i = 0; i < moduleIDs.size(); i++) {
@@ -1102,7 +1102,7 @@ SUIT_ShortcutMgr::~SUIT_ShortcutMgr()
       if (
         !SUIT_ShortcutMgr::isInModuleActionIDValid(inModuleActionID) ||
         !keySequence.first ||
-        SUIT_ShortcutMgr::isInModuleMetaActionID(inModuleActionID) && moduleID != ROOT_MODULE_ID
+        SUIT_ShortcutMgr::isInModuleMetaActionID(inModuleActionID) && moduleID != SUIT_ShortcutMgr::ROOT_MODULE_ID
       ) {
         std::list<std::pair<QString, QString>>& moduleInvalidShortcuts = invalidShortcuts[moduleID];
         moduleInvalidShortcuts.push_back(std::pair<QString, QString>(inModuleActionID, keySequenceString));
@@ -1353,7 +1353,7 @@ void SUIT_ShortcutMgr::registerAction(const QString& theActionID, QAction* theAc
   else {
     ShCutDbg(
       "Action with ID \"" +
-      (SUIT_ShortcutMgr::isInModuleMetaActionID(inModuleActionID) ? ROOT_MODULE_ID + TOKEN_SEPARATOR + inModuleActionID : theActionID) +
+      (SUIT_ShortcutMgr::isInModuleMetaActionID(inModuleActionID) ? SUIT_ShortcutMgr::ROOT_MODULE_ID + TOKEN_SEPARATOR + inModuleActionID : theActionID) +
       "\" is not added to default resource files."
     );
     auto conflicts = myShortcutContainer.setShortcut(moduleID, inModuleActionID, theAction->shortcut(), false);
@@ -1600,11 +1600,26 @@ std::shared_ptr<const SUIT_ActionAssets> SUIT_ShortcutMgr::getActionAssets(const
 
 std::shared_ptr<const SUIT_ActionAssets> SUIT_ShortcutMgr::getActionAssets(const QString& theActionID) const
 {
-  const auto it = myActionAssets.find(theActionID);
-  if (it == myActionAssets.end())
+  const auto moduleIDAndActionID = SUIT_ShortcutMgr::splitIntoModuleIDAndInModuleID(theActionID);
+  const QString& moduleID = moduleIDAndActionID.first;
+  const QString& inModuleActionID = moduleIDAndActionID.second;
+
+  if (inModuleActionID.isEmpty()) {
+    ShCutDbg() && ShCutDbg("Attempt to get assets of an action with invalid ID \"" + theActionID + "\".");
     return std::shared_ptr<const SUIT_ActionAssets>(nullptr);
-  else
-    return it->second;
+  }
+
+  const auto itModuleActionAssets = myActionAssets.find(moduleID);
+  if (itModuleActionAssets == myActionAssets.end())
+    return std::shared_ptr<const SUIT_ActionAssets>(nullptr);
+  else {
+    const auto moduleActionAssets = itModuleActionAssets->second;
+    const auto itActionAssets = moduleActionAssets.find(inModuleActionID);
+    if (itActionAssets == moduleActionAssets.end())
+      return std::shared_ptr<const SUIT_ActionAssets>(nullptr);
+    else
+      return itActionAssets->second;
+  }
 }
 
 QString SUIT_ShortcutMgr::getActionName(const QString& theModuleID, const QString& theInModuleActionID, const QString& theLang) const
@@ -1615,8 +1630,13 @@ QString SUIT_ShortcutMgr::getActionName(const QString& theModuleID, const QStrin
     return actionID;
   }
 
-  const auto itActionAssets = myActionAssets.find(actionID);
-  if (itActionAssets != myActionAssets.end() && !itActionAssets->second->myLangDependentAssets.empty()) {
+  const auto itModuleActionAssets = myActionAssets.find(theModuleID);
+  if (itModuleActionAssets == myActionAssets.end())
+    return actionID;
+
+  const auto moduleActionAssets = itModuleActionAssets->second;
+  const auto itActionAssets = moduleActionAssets.find(theInModuleActionID);
+  if (itActionAssets != moduleActionAssets.end() && !itActionAssets->second->myLangDependentAssets.empty()) {
     const auto& ldaMap = itActionAssets->second->myLangDependentAssets;
     if (ldaMap.empty())
       return theInModuleActionID;
@@ -1839,7 +1859,11 @@ void SUIT_ShortcutMgr::setAssetsFromResources(QString theLanguage)
       QJsonObject object = document.object();
       SUIT_ActionAssets actionAssets;
       for (const QString& actionID : object.keys()) {
-        if (!SUIT_ShortcutMgr::isActionIDValid(actionID)) {
+        const auto moduleIDAndActionID = SUIT_ShortcutMgr::splitIntoModuleIDAndInModuleID(actionID);
+        const QString& moduleID = moduleIDAndActionID.first;
+        const QString& inModuleActionID = moduleIDAndActionID.second;
+
+        if (inModuleActionID.isEmpty()) {
           ShCutDbg("Action asset file \"" + path + "\" contains invalid action ID \"" + actionID + "\".");
           continue;
         }
@@ -1875,10 +1899,11 @@ void SUIT_ShortcutMgr::setAssetsFromResources(QString theLanguage)
           #endif
         }
 
-        auto itAssets = myActionAssets.find(actionID);
-        if (itAssets == myActionAssets.end()) {
+        auto& moduleActionAssets = myActionAssets[moduleID];
+        auto itAssets = moduleActionAssets.find(inModuleActionID);
+        if (itAssets == moduleActionAssets.end()) {
           auto pAssets = std::shared_ptr<SUIT_ActionAssets>(new SUIT_ActionAssets(actionAssets));
-          itAssets = myActionAssets.emplace(actionID, pAssets).first;
+          itAssets = moduleActionAssets.emplace(inModuleActionID, pAssets).first;
         }
         else
           itAssets->second->merge(actionAssets, true);
@@ -1893,11 +1918,14 @@ void SUIT_ShortcutMgr::setAssetsFromResources(QString theLanguage)
   #ifdef SHORTCUT_MGR_DBG
   ShCutDbg("Parsed assets: ");
   QJsonObject object;
-  for (const auto& actionIDAndAssets : myActionAssets) {
-    actionIDAndAssets.second->toJSON(object);
-    QJsonDocument doc(object);
-    QString strJson = doc.toJson(QJsonDocument::Indented);
-    ShCutDbg(actionIDAndAssets.first + " : " +  strJson);
+  for (const auto& moduleIDAndAssets : myActionAssets) {
+    for (const auto& actionIDAndAssets : moduleIDAndAssets.second) {
+      actionIDAndAssets.second->toJSON(object);
+      QJsonDocument doc(object);
+      QString strJson = doc.toJson(QJsonDocument::Indented);
+      const QString actionID = SUIT_ShortcutMgr::makeActionID(moduleIDAndAssets.first, actionIDAndAssets.first);
+      ShCutDbg(actionID + " : " +  strJson);
+    }
   }
   #endif
 
@@ -1906,7 +1934,7 @@ void SUIT_ShortcutMgr::setAssetsFromResources(QString theLanguage)
     const auto assets = std::shared_ptr<SUIT_ActionAssets>(new SUIT_ActionAssets());
     auto& lda = assets->myLangDependentAssets[DEFAULT_LANG];
 
-    if (moduleID == ROOT_MODULE_ID) {
+    if (moduleID == SUIT_ShortcutMgr::ROOT_MODULE_ID) {
       lda.myName = tr("General");
 
       { // Load icon.
@@ -1936,4 +1964,643 @@ void SUIT_ShortcutMgr::setAssetsFromResources(QString theLanguage)
 
     myModuleAssets.emplace(moduleID, std::move(assets));
   }
+}
+
+
+
+SUIT_SentenceMatcher::SUIT_SentenceMatcher()
+{
+  myUseExactWordOrder = false;
+  myUseFuzzyWords = true;
+  myIsCaseSensitive = false;
+}
+
+void SUIT_SentenceMatcher::setUseExactWordOrder(bool theOn)
+{
+  if (myUseExactWordOrder == theOn)
+    return;
+
+  myUseExactWordOrder = theOn;
+  if (theOn) {
+    myPermutatedSentences.clear();
+    myFuzzyPermutatedSentences.clear();
+    return;
+  }
+
+  if (myPermutatedSentences.isEmpty())
+    SUIT_SentenceMatcher::makePermutatedSentences(myWords, myPermutatedSentences);
+
+  if (myUseFuzzyWords && myFuzzyPermutatedSentences.isEmpty())
+    SUIT_SentenceMatcher::makePermutatedSentences(myFuzzyWords, myFuzzyPermutatedSentences);
+}
+
+void SUIT_SentenceMatcher::setUseFuzzyWords(bool theOn)
+{
+  if (myUseFuzzyWords == theOn)
+    return;
+
+  myUseFuzzyWords = theOn;
+  if (myWords.isEmpty() || !theOn) {
+    myFuzzyWords.clear();
+    myFuzzyPermutatedSentences.clear();
+    return;
+  }
+
+  myFuzzyWords.clear();
+  SUIT_SentenceMatcher::makeFuzzyWords(myWords, myFuzzyWords);
+
+  if (!myUseExactWordOrder) {
+    myFuzzyPermutatedSentences.clear();
+    SUIT_SentenceMatcher::makePermutatedSentences(myFuzzyWords, myFuzzyPermutatedSentences);
+  }
+}
+
+void SUIT_SentenceMatcher::setCaseSensitive(bool theOn)
+{
+  myIsCaseSensitive = theOn;
+}
+
+void SUIT_SentenceMatcher::setQuery(QString theQuery)
+{
+  theQuery = theQuery.simplified();
+  if (theQuery == myQuery)
+    return;
+
+  myQuery = theQuery;
+  myWords = theQuery.split(" ", QString::SkipEmptyParts);
+
+  { // Set permutated sentences.
+    myPermutatedSentences.clear();
+    if (!myUseExactWordOrder)
+      SUIT_SentenceMatcher::makePermutatedSentences(myWords, myPermutatedSentences);
+  }
+
+  // Set fuzzy words and sentences.
+  myFuzzyWords.clear();
+  myFuzzyPermutatedSentences.clear();
+
+  if (myUseFuzzyWords) {
+    SUIT_SentenceMatcher::makeFuzzyWords(myWords, myFuzzyWords);
+    if (!myUseExactWordOrder)
+      SUIT_SentenceMatcher::makePermutatedSentences(myFuzzyWords, myFuzzyPermutatedSentences);
+  }
+}
+
+double SUIT_SentenceMatcher::match(const QString& theInputString) const
+{
+  int n = 0;
+  if (myUseExactWordOrder) {
+    n = SUIT_SentenceMatcher::match(theInputString, myWords, myIsCaseSensitive);
+    if (n != theInputString.length() && myUseFuzzyWords) {
+      const int nFuzzy = SUIT_SentenceMatcher::match(theInputString, myFuzzyWords, myIsCaseSensitive);
+      if (nFuzzy > n)
+        n = nFuzzy;
+    }
+  }
+  else /* if match with permutated query sentences */ {
+    n = SUIT_SentenceMatcher::match(theInputString, myPermutatedSentences, myIsCaseSensitive);
+    if (n != theInputString.length() && myUseFuzzyWords) {
+      const int nFuzzy = SUIT_SentenceMatcher::match(theInputString, myFuzzyPermutatedSentences, myIsCaseSensitive);
+      if (nFuzzy > n)
+        n = nFuzzy;
+    }
+  }
+
+  if (n <= 0)
+    return std::numeric_limits<double>::infinity();
+
+  const auto strLength = theInputString.length() > myQuery.length() ? theInputString.length() : myQuery.length();
+
+  if (n > strLength)
+    return 0; // Exact match or almost exact.
+
+  return double(strLength - n);
+}
+
+QString SUIT_SentenceMatcher::toString() const
+{
+  QString res = QString("myUseExactWordOrder: ") + (myUseExactWordOrder ? "true" : "false") + ";\n";
+  res += QString("myUseFuzzyWords: ") + (myUseFuzzyWords ? "true" : "false") + ";\n";
+  res += QString("myIsCaseSensitive: ") + (myIsCaseSensitive ? "true" : "false") + ";\n";
+  res += QString("myQuery: ") + myQuery + ";\n";
+  res += QString("myWords: ") + myWords.join(", ") + ";\n";
+  res += QString("myFuzzyWords: ") + myFuzzyWords.join(", ") + ";\n";
+
+  res += "myPermutatedSentences:\n";
+  for (const auto& sentence : myPermutatedSentences) {
+    res += "\t" + sentence.join(", ") + ";\n";
+  }
+
+  res += "myFuzzyPermutatedSentences:\n";
+  for (const auto& sentence : myFuzzyPermutatedSentences) {
+    res += "\t" + sentence.join(", ") + ";\n";
+  }
+
+  res += ".";
+  return res;
+}
+
+/*static*/ bool SUIT_SentenceMatcher::makePermutatedSentences(const QStringList& theWords, QList<QStringList>& theSentences)
+{
+  theSentences.clear();
+  theSentences.push_back(theWords);
+  QStringList nextPerm = theWords;
+  QStringList prevPerm = theWords;
+
+  bool hasNextPerm = true;
+  bool hasPrevPerm = true;
+
+  while (hasNextPerm || hasPrevPerm) {
+    if (hasNextPerm)
+      hasNextPerm = std::next_permutation(nextPerm.begin(), nextPerm.end());
+
+    if (hasNextPerm && !theSentences.contains(nextPerm))
+      theSentences.push_back(nextPerm);
+
+    if (hasPrevPerm)
+      hasPrevPerm = std::prev_permutation(prevPerm.begin(), prevPerm.end());
+
+    if (hasPrevPerm && !theSentences.contains(prevPerm))
+      theSentences.push_back(prevPerm);
+  }
+
+  return theSentences.size() > 1;
+}
+
+/*static*/ void SUIT_SentenceMatcher::makeFuzzyWords(const QStringList& theWords, QStringList& theFuzzyWords)
+{
+  theFuzzyWords.clear();
+  for (const QString& word : theWords) {
+    QString fuzzyWord;
+    for (int i = 0; i < word.size(); i++) {
+      fuzzyWord += word[i];
+      fuzzyWord += "\\w*";
+    }
+    theFuzzyWords.push_back(fuzzyWord);
+  }
+}
+
+/*static*/ int SUIT_SentenceMatcher::matchWithSentenceIgnoreEndings(const QString& theInputString, const QStringList& theSentence, bool theCaseSensitive)
+{
+  const QRegExp regExp("^" + theSentence.join("\\w*\\W+"), theCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
+  regExp.indexIn(theInputString);
+  const int matchMetrics = regExp.matchedLength();
+  return matchMetrics > 0 ? matchMetrics : 0;
+}
+
+/*static*/ int SUIT_SentenceMatcher::matchWithSentencesIgnoreEndings(const QString& theInputString, const QList<QStringList>& theSentences, bool theCaseSensitive)
+{
+  int res = 0;
+  for (const QStringList& sentence : theSentences) {
+    const int matchMetrics = SUIT_SentenceMatcher::matchWithSentenceIgnoreEndings(theInputString, sentence, theCaseSensitive);
+    if (matchMetrics > res) {
+      res = matchMetrics;
+      if (res == theInputString.length())
+        return res;
+    }
+  }
+  return res;
+}
+
+/*static*/ int SUIT_SentenceMatcher::matchAtLeastOneWord(const QString& theInputString, const QStringList& theWords, bool theCaseSensitive)
+{
+  int res = 0;
+  for (const QString& word : theWords) {
+    const auto regExp = QRegExp(word, theCaseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive);
+    regExp.indexIn(theInputString);
+    const int matchMetrics = regExp.matchedLength();
+    // The same input word can be counted multiple times. Nobody cares.
+    if (matchMetrics > 0)
+      res += matchMetrics;
+  }
+  return res;
+}
+
+/*static*/ int SUIT_SentenceMatcher::match(
+  const QString& theInputString,
+  const QStringList& theSentence,
+  bool theCaseSensitive
+) {
+  int res = SUIT_SentenceMatcher::matchWithSentenceIgnoreEndings(theInputString, theSentence, theCaseSensitive);
+  if (res == theInputString.length())
+    return res;
+
+  const int matchMetrics = SUIT_SentenceMatcher::matchAtLeastOneWord(theInputString, theSentence, theCaseSensitive);
+  if (matchMetrics > res)
+    res = matchMetrics;
+
+  return res;
+}
+
+/*static*/ int SUIT_SentenceMatcher::match(
+  const QString& theInputString,
+  const QList<QStringList>& theSentences,
+  bool theCaseSensitive
+) {
+  int res = SUIT_SentenceMatcher::matchWithSentencesIgnoreEndings(theInputString, theSentences, theCaseSensitive);
+  if (res == theInputString.length())
+    return res;
+
+  if (theSentences.size() > 0) {
+    const int matchMetrics = SUIT_SentenceMatcher::matchAtLeastOneWord(theInputString, theSentences[0], theCaseSensitive);
+    if (matchMetrics > res)
+      res = matchMetrics;
+  }
+
+  return res;
+}
+
+
+SUIT_ActionSearcher::AssetsAndSearchData::AssetsAndSearchData(std::shared_ptr<const SUIT_ActionAssets> theAssets, double theMatchMetrics)
+: myAssets(theAssets), myMatchMetrics(theMatchMetrics)
+{
+  if (theMatchMetrics < 0) {
+    myMatchMetrics = std::numeric_limits<double>::infinity();
+    ShCutDbg("WARNING: SUIT_ActionSearcher::AssetsAndSearchData: match metrics < 0. INF is assigned instead.");
+  }
+}
+
+void SUIT_ActionSearcher::AssetsAndSearchData::setMatchMetrics(double theMatchMetrics)
+{
+  if (theMatchMetrics < 0) {
+    myMatchMetrics = std::numeric_limits<double>::infinity();
+    ShCutDbg("WARNING: SUIT_ActionSearcher::AssetsAndSearchData: match metrics < 0. INF is assigned instead.");
+    return;
+  }
+
+  myMatchMetrics = theMatchMetrics;
+}
+
+void SUIT_ActionSearcher::AssetsAndSearchData::toJSON(QJsonObject& oJsonObject) const
+{
+  oJsonObject["myMatchMetrics"] = myMatchMetrics;
+
+  if (myAssets) {
+    QJsonObject assetsJSON;
+    myAssets->toJSON(assetsJSON);
+    oJsonObject["myAssets"] = assetsJSON;
+  }
+}
+
+QString SUIT_ActionSearcher::AssetsAndSearchData::toString() const
+{
+  QJsonObject json;
+  toJSON(json);
+  QJsonDocument doc(json);
+  return QString(doc.toJson(QJsonDocument::Indented));
+}
+
+SUIT_ActionSearcher::SUIT_ActionSearcher()
+{
+  myIncludedModuleIDs = { SUIT_ShortcutMgr::ROOT_MODULE_ID };
+  myIncludeDisabledActions = false;
+  myFieldsToMatch = { SUIT_ActionSearcher::MatchField::Name, SUIT_ActionSearcher::MatchField::ToolTip };
+  myMatcher.setCaseSensitive(false);
+  myMatcher.setUseExactWordOrder(false);
+  myMatcher.setUseFuzzyWords(true);
+}
+
+bool SUIT_ActionSearcher::setIncludedModuleIDs(std::set<QString> theIncludedModuleIDs)
+{
+  ShCutDbg("SUIT_ActionSearcher::setIncludedModuleIDs");
+
+  if (myIncludedModuleIDs == theIncludedModuleIDs)
+    return false;
+
+  myIncludedModuleIDs = theIncludedModuleIDs;
+
+  bool res = false;
+  // Erase search results from excluded modules. Erase IDs of modules, which are already in search results, from theIncludedModuleIDs.
+  for (auto itFound = mySearchResults.begin(); itFound != mySearchResults.end(); ) {
+    const auto itModuleID = theIncludedModuleIDs.find(itFound->first);
+    if (itModuleID == theIncludedModuleIDs.end()) {
+      itFound = mySearchResults.erase(itFound);
+      res = true;
+    }
+    else {
+      itFound++;
+      theIncludedModuleIDs.erase(itModuleID);
+    }
+  }
+
+  // Filter assets of added modules.
+  const auto& allAssets = SUIT_ShortcutMgr::get()->getActionAssets();
+  for (const auto& moduleIDAndAssets : allAssets) {
+    const QString& moduleID = moduleIDAndAssets.first;
+    const auto& actionIDsAndAssets = moduleIDAndAssets.second;
+    if (theIncludedModuleIDs.find(moduleID) == theIncludedModuleIDs.end())
+      continue;
+
+    for (const auto& actionIDAndAssets : actionIDsAndAssets) {
+      const QString& inModuleActionID = actionIDAndAssets.first;
+      const double matchMetrics = matchAction(moduleID, inModuleActionID, actionIDAndAssets.second);
+      if (matchMetrics < std::numeric_limits<double>::infinity()) {
+        mySearchResults[moduleID][inModuleActionID] = SUIT_ActionSearcher::AssetsAndSearchData(actionIDAndAssets.second, matchMetrics);
+        res = true;
+      }
+    }
+  }
+
+  ShCutDbg() && ShCutDbg(toString());
+
+  return res;
+}
+
+bool SUIT_ActionSearcher::includeDisabledActions(bool theOn)
+{
+  ShCutDbg("SUIT_ActionSearcher::includeDisabledActions");
+
+  if (myIncludeDisabledActions == theOn)
+    return false;
+
+  myIncludeDisabledActions = theOn;
+
+  bool res;
+  if (myIncludeDisabledActions)
+    res = extendResults();
+  else
+    res = filterResults().first;
+
+  ShCutDbg() && ShCutDbg(toString());
+  return res;
+}
+
+bool SUIT_ActionSearcher::setFieldsToMatch(const std::set<SUIT_ActionSearcher::MatchField>& theFields)
+{
+  if (myFieldsToMatch == theFields)
+    return false;
+
+  if (theFields.empty()) {
+    myFieldsToMatch = theFields;
+    mySearchResults.clear();
+    return true;
+  }
+
+  bool narrows = true;
+  for (const SUIT_ActionSearcher::MatchField field : theFields) {
+    if (myFieldsToMatch.find(field) == myFieldsToMatch.end()) {
+      narrows = false;
+      break;
+    }
+  }
+
+  bool extends = true;
+  for (const SUIT_ActionSearcher::MatchField field : myFieldsToMatch) {
+    if (theFields.find(field) == theFields.end()) {
+      extends = false;
+      break;
+    }
+  }
+
+  myFieldsToMatch = theFields;
+
+  bool res;
+  if (narrows)
+    res = filterResults().first;
+  else if (extends)
+    res = extendResults();
+  else
+    res = filter().first;
+
+  ShCutDbg() && ShCutDbg(toString());
+  return res;
+}
+
+bool SUIT_ActionSearcher::setCaseSensitive(bool theOn)
+{
+  if (myMatcher.isCaseSensitive() == theOn)
+    return false;
+
+  myMatcher.setCaseSensitive(theOn);
+
+  bool res;
+  if (theOn)
+    res = filterResults().first;
+  else
+    res = extendResults();
+
+  ShCutDbg() && ShCutDbg(toString());
+  return res;
+}
+
+bool SUIT_ActionSearcher::setQuery(const QString& theQuery)
+{
+  ShCutDbg("SUIT_ActionSearcher::setQuery");
+
+  if (theQuery.simplified() == myMatcher.getQuery().simplified())
+    return false;
+
+  myMatcher.setQuery(theQuery);
+  bool res = filter().first;
+  ShCutDbg() && ShCutDbg(toString());
+  return res;
+}
+
+const std::map<QString, std::map<QString, SUIT_ActionSearcher::AssetsAndSearchData>>& SUIT_ActionSearcher::getSearchResults() const
+{
+  return mySearchResults;
+}
+
+std::pair<bool, bool> SUIT_ActionSearcher::filter()
+{
+  ShCutDbg("SUIT_ActionSearcher::filter()");
+
+  auto res = std::pair<bool, bool>(false, false);
+
+  for (const auto& moduleIDAndAssets : SUIT_ShortcutMgr::get()->getActionAssets()) {
+    const auto& moduleID = moduleIDAndAssets.first;
+    if (myIncludedModuleIDs.find(moduleID) == myIncludedModuleIDs.end())
+      continue;
+
+    const auto& actionIDsAndAssets = moduleIDAndAssets.second;
+
+    auto itFoundModuleIDAndAssets = mySearchResults.find(moduleID);
+    for (const auto& actionIDAndAssets : actionIDsAndAssets) {
+      const QString& inModuleActionID = actionIDAndAssets.first;
+
+      if (itFoundModuleIDAndAssets != mySearchResults.end()) {
+        auto& foundActionIDsAndAssets = itFoundModuleIDAndAssets->second;
+        auto itFoundActionIDAndAssets = foundActionIDsAndAssets.find(inModuleActionID);
+        if (itFoundActionIDAndAssets != foundActionIDsAndAssets.end()) {
+          // Action is already in search results.
+          SUIT_ActionSearcher::AssetsAndSearchData& aAndD = itFoundActionIDAndAssets->second;
+          const double matchMetrics = matchAction(moduleID, inModuleActionID, aAndD.myAssets);
+          if (matchMetrics < std::numeric_limits<double>::infinity()) {
+            if (matchMetrics != aAndD.matchMetrics()) {
+              aAndD.setMatchMetrics(matchMetrics);
+              res.second = true;
+            }
+          }
+          else /* if n == 0 */ {
+            foundActionIDsAndAssets.erase(itFoundActionIDAndAssets);
+            res.first = true;
+          }
+          continue;
+        }
+      }
+
+      const double matchMetrics = matchAction(moduleID, inModuleActionID, actionIDAndAssets.second);
+      if (matchMetrics < std::numeric_limits<double>::infinity()) {
+        if (itFoundModuleIDAndAssets == mySearchResults.end())
+          itFoundModuleIDAndAssets = mySearchResults.emplace(moduleID, std::map<QString, SUIT_ActionSearcher::AssetsAndSearchData>()).first;
+
+        itFoundModuleIDAndAssets->second.emplace(inModuleActionID, SUIT_ActionSearcher::AssetsAndSearchData(actionIDAndAssets.second, matchMetrics));
+        res.first = true;
+      }
+    }
+  }
+
+  return res;
+}
+
+std::pair<bool, bool> SUIT_ActionSearcher::filterResults()
+{
+  auto res = std::pair<bool, bool>(false, false);
+
+  for (auto itFoundModuleIDAndAssets = mySearchResults.begin(); itFoundModuleIDAndAssets != mySearchResults.end(); ) {
+    const QString& moduleID = itFoundModuleIDAndAssets->first;
+    auto& actionIDsAndAssets = itFoundModuleIDAndAssets->second;
+    for (auto itActionIDAndAssets = actionIDsAndAssets.begin(); itActionIDAndAssets != actionIDsAndAssets.end(); ) {
+      const QString& inModuleActionID = itActionIDAndAssets->first;
+      SUIT_ActionSearcher::AssetsAndSearchData& assetsAndSearchData = itActionIDAndAssets->second;
+      const double matchMetrics = matchAction(moduleID, inModuleActionID, assetsAndSearchData.myAssets);
+      if (matchMetrics == std::numeric_limits<double>::infinity()) {
+        itActionIDAndAssets = actionIDsAndAssets.erase(itActionIDAndAssets);
+        res.first = true;
+      }
+      else {
+        if (assetsAndSearchData.matchMetrics() != matchMetrics) {
+          assetsAndSearchData.setMatchMetrics(matchMetrics);
+          res.second = true;
+        }
+        itActionIDAndAssets++;
+      }
+    }
+
+    if (actionIDsAndAssets.empty())
+      itFoundModuleIDAndAssets = mySearchResults.erase(itFoundModuleIDAndAssets);
+    else
+      itFoundModuleIDAndAssets++;
+  }
+
+  return res;
+}
+
+bool SUIT_ActionSearcher::extendResults()
+{
+  ShCutDbg("SUIT_ActionSearcher::extendResults()");
+
+  bool res = false;
+  for (const auto& moduleIDAndAssets : SUIT_ShortcutMgr::get()->getActionAssets()) {
+    const auto& moduleID = moduleIDAndAssets.first;
+    if (myIncludedModuleIDs.find(moduleID) == myIncludedModuleIDs.end())
+      continue;
+
+    const auto& actionIDsAndAssets = moduleIDAndAssets.second;
+
+    auto itFoundModuleIDAndAssets = mySearchResults.find(moduleID);
+    for (const auto& actionIDAndAssets : actionIDsAndAssets) {
+      const QString& inModuleActionID = actionIDAndAssets.first;
+
+      if (itFoundModuleIDAndAssets != mySearchResults.end()) {
+        const auto& foundActionIDsAndAssets = itFoundModuleIDAndAssets->second;
+        if (foundActionIDsAndAssets.find(inModuleActionID) != foundActionIDsAndAssets.end())
+          continue; // Action is already in search results.
+      }
+
+      ShCutDbg() && ShCutDbg("SUIT_ActionSearcher::extendResults(): " + moduleID + "/" + inModuleActionID + "." );
+      const double matchMetrics = matchAction(moduleID, inModuleActionID, actionIDAndAssets.second);
+      if (matchMetrics < std::numeric_limits<double>::infinity()) {
+        ShCutDbg("SUIT_ActionSearcher::extendResults(): match, metrics = " + QString::fromStdString(std::to_string(matchMetrics)));
+        if (itFoundModuleIDAndAssets == mySearchResults.end())
+          itFoundModuleIDAndAssets = mySearchResults.emplace(moduleID, std::map<QString, SUIT_ActionSearcher::AssetsAndSearchData>()).first;
+
+        itFoundModuleIDAndAssets->second.emplace(inModuleActionID, SUIT_ActionSearcher::AssetsAndSearchData(actionIDAndAssets.second, matchMetrics));
+        res = true;
+      }
+    }
+  }
+  return res;
+}
+
+double SUIT_ActionSearcher::matchAction(const QString& theModuleID, const QString& theInModuleActionID, std::shared_ptr<const SUIT_ActionAssets> theAssets)
+{
+  if (!theAssets) {
+    ShCutDbg("WARNING: SUIT_ActionSearcher::matchAction: theAssets is nullptr.");
+    return std::numeric_limits<double>::infinity();
+  }
+
+  if (!myIncludeDisabledActions) {
+    const auto& actions = SUIT_ShortcutMgr::get()->getActions(theModuleID, theInModuleActionID);
+    const bool actionEnabled = std::find_if(actions.begin(), actions.end(), [](const QAction* const theAction){ return theAction->isEnabled(); } ) != actions.end();
+    if (!actionEnabled)
+      return std::numeric_limits<double>::infinity();
+  }
+
+  double res = std::numeric_limits<double>::infinity();
+
+  for (const auto& langAndLDA : theAssets->myLangDependentAssets) {
+    if (myFieldsToMatch.find(SUIT_ActionSearcher::MatchField::ToolTip) != myFieldsToMatch.end()) {
+      const double matchMetrics = myMatcher.match(langAndLDA.second.myToolTip);
+      if (matchMetrics < res)
+        res = matchMetrics;
+    }
+
+    if (myFieldsToMatch.find(SUIT_ActionSearcher::MatchField::Name) != myFieldsToMatch.end()) {
+      const double matchMetrics = myMatcher.match(langAndLDA.second.myName);
+      if (matchMetrics < res)
+        res = matchMetrics;
+    }
+  }
+
+  if (myFieldsToMatch.find(SUIT_ActionSearcher::MatchField::ID) != myFieldsToMatch.end()) {
+    const double matchMetrics = myMatcher.match(SUIT_ShortcutMgr::makeActionID(theModuleID, theInModuleActionID));
+    if (matchMetrics < res)
+        res = matchMetrics;
+  }
+
+  if (myFieldsToMatch.find(SUIT_ActionSearcher::MatchField::KeySequence) != myFieldsToMatch.end()) {
+    const QString keySequence = SUIT_ShortcutMgr::get()->getKeySequence(theModuleID, theInModuleActionID).toString();
+    const double matchMetrics = myMatcher.match(keySequence);
+    if (matchMetrics < res)
+        res = matchMetrics;
+  }
+
+  return res;
+}
+
+QString SUIT_ActionSearcher::toString() const
+{
+  QString res;
+
+  res += "myMatcher: {\n";
+  res += myMatcher.toString();
+  res += "};\n";
+
+  res += "myIncludedModuleIDs: ";
+  for (const QString& moduleID : myIncludedModuleIDs) {
+    res += moduleID + ", ";
+  }
+  res += ";\n";
+
+  res += QString("myIncludeDisabledActions: ") + (myIncludeDisabledActions ? "true" : "false") + ";\n";
+
+  res += "myFieldsToMatch: ";
+  for (const auto& field : myFieldsToMatch) {
+    res += QString::number(int(field)) + ", ";
+  }
+  res += ";\n";
+
+  res += "mySearchResults:\n";
+  for (const auto& moduleIDAndAssets : mySearchResults ) {
+    res += "\tModule ID: " + moduleIDAndAssets.first + ":\n";
+    for (const auto& actionIDAndAssets : moduleIDAndAssets.second) {
+      const auto& assetsAndSearchData = actionIDAndAssets.second;
+      res += "\t\tAction ID: " + actionIDAndAssets.first + ": {";
+      res += "\t\t: " + actionIDAndAssets.second.toString();
+      res += "\t\t}";
+    }
+  }
+
+  return res;
 }

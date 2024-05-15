@@ -72,6 +72,7 @@
 #include <SUIT_ViewManager.h>
 #include <SUIT_ViewModel.h>
 #include <SUIT_OverrideCursor.h>
+#include <SUIT_FindActionDialog.h>
 
 #include <QtxTreeView.h>
 
@@ -108,6 +109,7 @@
 #include <ToolsGUI_RegWidget.h>
 
 #include <vector>
+#include <iostream>
 
 #include <SALOMEDS_Tool.hxx>
 
@@ -364,6 +366,11 @@ void SalomeApp_Application::createActions()
                 tr( "MEN_DESK_REGISTRY_DISPLAY" ), tr( "PRP_DESK_REGISTRY_DISPLAY" ),
                 /*Qt::SHIFT+Qt::Key_D*/0, desk, false, this, SLOT( onRegDisplay() ) );
 
+  //! Find action dialog
+  createAction( FindActionId, tr( "TOT_DESK_FIND_ACTION" ),  QIcon(),
+                tr( "MEN_DESK_FIND_ACTION" ), tr( "PRP_DESK_FIND_ACTION" ),
+                QKeySequence::UnknownKey, desk, false, this, SLOT( onFindAction() ), "/PRP_DESK_FIND_ACTION" );
+
   createAction( ConnectId, tr( "TOT_DESK_CONNECT_STUDY" ), QIcon(),
                 tr( "MEN_DESK_CONNECT" ), tr( "PRP_DESK_CONNECT" ),
                 QKeySequence::UnknownKey, desk, false, this, SLOT( onLoadDoc() ), "/PRP_DESK_CONNECT" );
@@ -396,6 +403,7 @@ void SalomeApp_Application::createActions()
   int toolsMenu = createMenu( tr( "MEN_DESK_TOOLS" ), -1, MenuToolsId, 50 );
   createMenu( CatalogGenId, toolsMenu, 10, -1 );
   createMenu( RegDisplayId, toolsMenu, 10, -1 );
+  createMenu( FindActionId, toolsMenu, 10, -1 );
   createMenu( separator(), toolsMenu, -1, 15, -1 );
 
   createExtraActions();
@@ -1573,6 +1581,25 @@ void SalomeApp_Application::onRegDisplay()
   regWnd->show();
   regWnd->raise();
   regWnd->activateWindow();
+}
+
+/*!Display Action Search dialog */
+void SalomeApp_Application::onFindAction()
+{
+  const auto pActiveModule = activeModule();
+  if (pActiveModule && pActiveModule->name() == "PARAVIS") {
+    return;
+    // ParaViS module has its own action search dialog (Quick Launch dialog).
+    // Keep this conditional block until ParaViS's actions are not added to ShortcutMgr resource and asset files.
+  }
+
+  SUIT_FindActionDialog aDlg( desktop() );
+  if (pActiveModule)
+    aDlg.setActiveModuleID(pActiveModule->name());
+  else
+    aDlg.setActiveModuleID();
+
+  aDlg.exec();
 }
 
 /*!find original object by double click on item */

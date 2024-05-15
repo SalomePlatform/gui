@@ -161,6 +161,29 @@ Voulez-vous l&apos;écraser ?</translation>
     </message>
 </context>
 <context>
+    <name>SUIT_FindActionDialog</name>
+    <message>
+        <source>Find action</source>
+        <translation>Trouver une action</translation>
+    </message>
+    <message>
+        <source>Unavailable actions</source>
+        <translation>Actions indisponibles</translation>
+    </message>
+    <message>
+        <source>Inactive modules</source>
+        <translation>Modules inactifs</translation>
+    </message>
+    <message>
+        <source>Action</source>
+        <translation>Action</translation>
+    </message>
+    <message>
+        <source>Description</source>
+        <translation>Description</translation>
+    </message>
+</context>
+<context>
     <name>SUIT_ViewWindow</name>
     <message>
         <source>TLT_DUMP_VIEW</source>
@@ -196,6 +219,55 @@ Voulez-vous l&apos;écraser ?</translation>
     <message>
         <source>Fix the following entries in the preference files manually</source>
         <translation>Corrigez manuellement les entrées suivantes dans les fichiers de préférences</translation>
+    </message>
+</context>
+<context>
+    <name>SUIT_KeySequenceEdit</name>
+    <message>
+        <source>Disable shortcut.</source>
+        <translation>Désactivez le raccourci.</translation>
+    </message>
+    <message>
+        <source>Restore the currently applied key sequence.</source>
+        <translation>Restaurez la séquence de touches actuellement appliquée.</translation>
+    </message>
+</context>
+<context>
+    <name>SUIT_EditKeySequenceDialog</name>
+    <message>
+        <source>Change key sequence</source>
+        <translation>Modifier la séquence de touches</translation>
+    </message>
+    <message>
+        <source>No conflicts.</source>
+        <translation>Aucun conflit.</translation>
+    </message>
+    <message>
+        <source>Confirm</source>
+        <translation>Confirmer</translation>
+    </message>
+    <message>
+        <source>Cancel</source>
+        <translation>Annuler</translation>
+    </message>
+    <message>
+        <source>These shortcuts will be disabled on confirm:</source>
+        <translation>Ces raccourcis seront désactivés lors de la confirmation :</translation>
+    </message>
+</context>
+<context>
+    <name>SUIT_ShortcutTree</name>
+    <message>
+        <source>Action</source>
+        <translation>Action</translation>
+    </message>
+    <message>
+        <source>Key sequence</source>
+        <translation>Séquence de touches</translation>
+    </message>
+    <message>
+        <source>Double click to edit key sequence.</source>
+        <translation>Double-cliquez pour modifier la séquence de touches.</translation>
     </message>
 </context>
 </TS>

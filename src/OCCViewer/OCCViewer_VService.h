@@ -28,7 +28,6 @@
 #include <V3d_Viewer.hxx>
 #include <Standard_Boolean.hxx>
 #include <Standard_CString.hxx>
-#include <Standard_ExtString.hxx>
 #include <V3d_TypeOfOrientation.hxx>
 
 #include <QWidget>

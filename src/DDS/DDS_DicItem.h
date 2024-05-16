@@ -33,7 +33,7 @@
 #include <TColStd_HArray1OfExtendedString.hxx>
 
 #include <NCollection_DataMap.hxx>
-#include <NCollection_DefineIndexedDataMap.hxx>
+#include <NCollection_IndexedDataMap.hxx>
 
 #include <TColStd_MapOfReal.hxx>
 #include <TColStd_SequenceOfInteger.hxx>

@@ -27,6 +27,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QKeySequence>
 #include <QStringList>
 #include <QIcon>
 #include <map>
@@ -37,7 +38,6 @@
 
 class QAction;
 class QtxAction;
-class QKeySequence;
 class QJsonObject;
 
 #if defined WIN32

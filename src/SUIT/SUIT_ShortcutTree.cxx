@@ -467,7 +467,7 @@ void SUIT_ShortcutTree::sort(SUIT_ShortcutTree::SortKey theKey, SUIT_ShortcutTre
   if (theKey == mySortKey && theOrder == mySortOrder)
     return;
 
-  mySortKey == theKey;
+  mySortKey = theKey;
   mySortOrder = theOrder;
 
   for (int moduleIdx = 0; moduleIdx < topLevelItemCount(); moduleIdx++) {
@@ -626,9 +626,9 @@ std::set<SUIT_ShortcutTreeItem*, std::function<bool(SUIT_ShortcutTreeItem*, SUIT
     sortSchema.push_front(std::pair<SUIT_ShortcutTree::SortKey, SUIT_ShortcutTree::SortOrder>(mySortKey, mySortOrder));
   }
 
-  static const QCollator collator;
   const std::function<bool(SUIT_ShortcutTreeItem*, SUIT_ShortcutTreeItem*)> comparator =
-  [this, sortSchema, &collator](const SUIT_ShortcutTreeItem* theItemA, const SUIT_ShortcutTreeItem* theItemB) {
+  [this, sortSchema](const SUIT_ShortcutTreeItem* theItemA, const SUIT_ShortcutTreeItem* theItemB) {
+    const auto collator = QCollator();
     for (const auto& keyAndOrder : sortSchema) {
       const int res = collator.compare(theItemA->getValue(keyAndOrder.first), theItemB->getValue(keyAndOrder.first));
       if (res != 0)

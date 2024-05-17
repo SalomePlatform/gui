@@ -267,7 +267,7 @@ void SUIT_FoundActionTree::sort(SUIT_FoundActionTree::SortKey theKey, SUIT_Found
   if (theKey == mySortKey && theOrder == mySortOrder)
     return;
 
-  mySortKey == theKey;
+  mySortKey = theKey;
   mySortOrder = theOrder;
 
   for (int moduleIdx = 0; moduleIdx < topLevelItemCount(); moduleIdx++) {
@@ -341,9 +341,9 @@ std::set<SUIT_FoundActionTreeAction*, std::function<bool(SUIT_FoundActionTreeAct
     sortSchema.push_front(std::pair<SUIT_FoundActionTree::SortKey, SUIT_FoundActionTree::SortOrder>(mySortKey, mySortOrder));
   }
 
-  static const QCollator collator;
   const std::function<bool(SUIT_FoundActionTreeAction*, SUIT_FoundActionTreeAction*)> comparator =
-  [sortSchema, &collator](const SUIT_FoundActionTreeAction* theItemA, const SUIT_FoundActionTreeAction* theItemB) {
+  [sortSchema](const SUIT_FoundActionTreeAction* theItemA, const SUIT_FoundActionTreeAction* theItemB) {
+    const auto collator = QCollator();
     for (const auto& keyAndOrder : sortSchema) {
       const QVariant fieldOfA = theItemA->getValue(keyAndOrder.first);
       const QVariant fieldOfB = theItemB->getValue(keyAndOrder.first);

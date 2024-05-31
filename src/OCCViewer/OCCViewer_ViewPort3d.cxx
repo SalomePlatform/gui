@@ -322,6 +322,7 @@ void OCCViewer_ViewPort3d::updateBackground()
 	Quantity_Color qCol1( c1.red()/255., c1.green()/255., c1.blue()/255., Quantity_TOC_RGB );
 	Quantity_Color qCol2( c2.red()/255., c2.green()/255., c2.blue()/255., Quantity_TOC_RGB );
 	activeView()->SetBgImageStyle( Aspect_FM_NONE );    // cancel texture background
+#if OCC_VERSION_LARGE > 0x07070000
 	switch ( type ) {
 	case OCCViewer_Viewer::HorizontalGradient:
 	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GradientFillMethod_Horizontal, Standard_True );
@@ -350,6 +351,36 @@ void OCCViewer_ViewPort3d::updateBackground()
 	default:
 	  break;
 	}
+#else
+	switch ( type ) {
+	case OCCViewer_Viewer::HorizontalGradient:
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_HOR, Standard_True );
+ 	  break;
+ 	case OCCViewer_Viewer::VerticalGradient:
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_VER, Standard_True );
+ 	  break;
+ 	case OCCViewer_Viewer::Diagonal1Gradient:
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_DIAG1, Standard_True );
+ 	  break;
+ 	case OCCViewer_Viewer::Diagonal2Gradient:
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_DIAG2, Standard_True );
+ 	  break;
+ 	case OCCViewer_Viewer::Corner1Gradient:
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_CORNER1, Standard_True );
+ 	  break;
+ 	case OCCViewer_Viewer::Corner2Gradient:
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_CORNER2, Standard_True );
+ 	  break;
+ 	case OCCViewer_Viewer::Corner3Gradient:
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_CORNER3, Standard_True );
+ 	  break;
+ 	case OCCViewer_Viewer::Corner4Gradient:
+	  activeView()->SetBgGradientColors( qCol1, qCol2, Aspect_GFM_CORNER4, Standard_True );
+	  break;
+	default:
+	  break;
+	}
+#endif
       }
       break;
     }

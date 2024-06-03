@@ -156,6 +156,12 @@
   #include "LightApp_GVSelector.h"
 #endif
 
+#ifndef DISABLE_QTVIEWER
+  #include "QtViewer_Viewer.h"
+  #include "QtViewer_ViewManager.h"
+  #include "LightApp_QTVSelector.h"
+#endif
+
 #ifndef DISABLE_PVVIEWER
   #include "PVViewer_ViewManager.h"
   #include "PVViewer_ViewWindow.h"
@@ -829,6 +835,9 @@ void LightApp_Application::createActions()
 #ifndef DISABLE_PV3DVIEWER
   createActionForViewer( NewPV3DViewId, newWinMenu, QString::number( 8 ) );
 #endif
+#ifndef DISABLE_QTVIEWER
+  createActionForViewer( NewQtViewId, newWinMenu, QString::number( 9 ) );
+#endif
 
   createAction( RenameId, desk, false /*toggle*/, "/PRP_RENAME",
                 tr( "TOT_RENAME" ), tr( "MEN_DESK_RENAME" ), tr( "PRP_RENAME" ), QIcon(),
@@ -1346,6 +1355,11 @@ void LightApp_Application::onNewWindow()
     type = GraphicsView_Viewer::Type();
     break;
 #endif
+#ifndef DISABLE_QTVIEWER
+  case NewQtViewId:
+    type = QtViewer_Viewer::Type();
+    break;
+#endif
 #ifndef DISABLE_PVVIEWER
   case NewPVViewId:
     type = PVViewer_Viewer::Type();
@@ -1519,6 +1533,12 @@ void LightApp_Application::updateCommandsStatus()
 
 #ifndef DISABLE_GRAPHICSVIEW
   a = action( NewGraphicsViewId );
+  if( a )
+    a->setEnabled( activeStudy() );
+#endif
+
+#ifndef DISABLE_QTVIEWER
+  a = action( NewQtViewId );
   if( a )
     a->setEnabled( activeStudy() );
 #endif
@@ -1998,6 +2018,13 @@ SUIT_ViewManager* LightApp_Application::createViewManager( const QString& vmType
   {
     viewMgr = new GraphicsView_ViewManager( activeStudy(), desktop() );
     new LightApp_GVSelector( (GraphicsView_Viewer*)viewMgr->getViewModel(), mySelMgr );
+  }
+#endif
+#ifndef DISABLE_QTVIEWER
+  if( vmType == QtViewer_Viewer::Type() )
+  {
+    viewMgr = new QtViewer_ViewManager( activeStudy(), desktop() );
+    new LightApp_QTVSelector( (QtViewer_Viewer*)viewMgr->getViewModel(), mySelMgr );
   }
 #endif
 #ifndef DISABLE_PVVIEWER

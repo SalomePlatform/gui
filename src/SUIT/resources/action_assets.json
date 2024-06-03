@@ -373,6 +373,23 @@
             }
         }
     },
+    "/PRP_CREATE_NEW_WINDOW_FOR_VIEWER_9": {
+        "iconPath": "",
+        "langDependentAssets": {
+            "en": {
+                "name": "QtView view",
+                "tooltip": "Create new QtView view"
+            },
+            "fr": {
+                "name": "QtView view",
+                "tooltip": "Créer une nouvelle QtView view"
+            },
+            "ja": {
+                "name": "QtView view",
+                "tooltip": "新しい QtView view を作成します。"
+            }
+        }
+    },
     "/PRP_DESK_CATALOG_GENERATOR": {
         "iconPath": "",
         "langDependentAssets": {

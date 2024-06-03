@@ -569,6 +569,10 @@ The changes will be applied on the next application session.</translation>
         <translation>ParaView&amp;3D view</translation>
     </message>
     <message>
+        <source>NEW_WINDOW_9</source>
+        <translation>Q&amp;t view</translation>
+    </message>
+    <message>
         <source>CREATING_NEW_WINDOW</source>
         <translation>Create new %1</translation>
     </message>

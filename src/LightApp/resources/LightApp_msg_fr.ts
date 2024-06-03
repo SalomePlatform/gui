@@ -565,6 +565,14 @@ Les modifications seront appliquées à la prochaine session.</translation>
         <translation>Vue P&amp;ython</translation>
     </message>
     <message>
+        <source>NEW_WINDOW_8</source>
+        <translation>ParaView&amp;3D view</translation>
+    </message>
+    <message>
+        <source>NEW_WINDOW_9</source>
+        <translation>Q&amp;t view</translation>
+    </message>
+    <message>
         <source>CREATING_NEW_WINDOW</source>
         <translation>Créer une nouvelle %1</translation>
     </message>

@@ -78,6 +78,7 @@ OPTION(SALOME_USE_OCCVIEWER "Enable OCC visualization (Mandatory in classic conf
 OPTION(SALOME_USE_PV3DVIEWER "Enable ParaView3D visualization (Optionally in classic configurations)" ON)
 OPTION(SALOME_USE_GLVIEWER "Enable OpenGL visualization (Mandatory in classic configurations)" ON)
 OPTION(SALOME_USE_GRAPHICSVIEW "Enable GraphicsView visualization (Mandatory in classic configurations)" ON)
+OPTION(SALOME_USE_QTVIEWER "Enable Qt viewer visualization (Mandatory in classic configurations)" ON)
 OPTION(SALOME_USE_PYVIEWER "Enable Python viewer (Mandatory in classic configurations)" ON)
 OPTION(SALOME_USE_PLOT2DVIEWER "Enable Plot2D visualization (Mandatory in classic configurations)" ON)
 OPTION(SALOME_USE_PYCONSOLE "Enable Python GUI interface (Mandatory in classic configurations)" ON)
@@ -87,7 +88,7 @@ OPTION(SALOME_USE_PVVIEWER "Enable ParaView visualization (Mandatory in classic 
 CMAKE_DEPENDENT_OPTION(SALOME_USE_SALOMEOBJECT "Enable Salome Object (Mandatory in classic configurations)" ON
                        "SALOME_LIGHT_ONLY" ON)
 
-MARK_AS_ADVANCED(SALOME_LIGHT_ONLY SALOME_USE_VTKVIEWER SALOME_USE_GRAPHICSVIEW SALOME_USE_PVVIEWER)
+MARK_AS_ADVANCED(SALOME_LIGHT_ONLY SALOME_USE_VTKVIEWER SALOME_USE_GRAPHICSVIEW SALOME_USE_QTVIEWER SALOME_USE_PVVIEWER)
 MARK_AS_ADVANCED(SALOME_USE_SALOMEOBJECT SALOME_USE_OCCVIEWER SALOME_USE_GLVIEWER SALOME_USE_PLOT2DVIEWER)
 MARK_AS_ADVANCED(SALOME_USE_PYCONSOLE SALOME_USE_QXGRAPHVIEWER SALOME_USE_PYVIEWER SALOME_USE_PV3DVIEWER)
 
@@ -229,6 +230,11 @@ ENDIF()
 # - Graphics viewer: no prereqs
 IF (NOT SALOME_USE_GRAPHICSVIEW)
   ADD_DEFINITIONS("-DDISABLE_GRAPHICSVIEW")
+ENDIF()
+
+# - Qt viewer: no prereqs
+IF (NOT SALOME_USE_QTVIEWER)
+  ADD_DEFINITIONS("-DDISABLE_QTVIEWER")
 ENDIF()
 
 # - Python editor: no prereqs
@@ -408,6 +414,12 @@ IF(SALOME_USE_GRAPHICSVIEW)
   LIST(APPEND _${PROJECT_NAME}_exposed_targets
        GraphicsView)
 ENDIF(SALOME_USE_GRAPHICSVIEW)
+
+# QtViewer specific targets:
+IF(SALOME_USE_QTVIEWER)
+  LIST(APPEND _${PROJECT_NAME}_exposed_targets
+       QtViewer)
+ENDIF(SALOME_USE_QTVIEWER)
 
 # PyEditor/Viewer specific targets:
 IF(SALOME_USE_PYVIEWER)

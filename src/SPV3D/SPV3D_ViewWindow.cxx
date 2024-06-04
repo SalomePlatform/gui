@@ -114,6 +114,9 @@ void SPV3D_ViewWindow::init()
   QAction *selectionAction =  toolMgr()->toolBar(myToolBar)->addAction(SUIT_Session::session()->resourceMgr()->loadPixmap( "VTKViewer", tr( "ICON_SVTK_PRESELECTION_STANDARD" ) ), tr( "MNU_SVTK_PRESELECTION_STANDARD" ) );
   selectionAction->setCheckable(true);
   QObject::connect(selectionAction, &QAction::toggled, this, &SPV3D_ViewWindow::goSelect);
+  
+  SPV3D_EXPORTSPV3DData* rawPtr = new SPV3D_EXPORTSPV3DData();
+  myPrs.reset(rawPtr);
 }
 
 void SPV3D_ViewWindow::goSelect(bool val)
@@ -125,15 +128,12 @@ void SPV3D_ViewWindow::goSelect(bool val)
       {
         return;
       }
-      for(const auto& elt : myPrs)
+      pqPipelineSource *geometrySource = myPrs->GetSourceProducer();
+      if(geometrySource)
       {
-        pqPipelineSource *geometrySource = elt.second->GetSourceProducer();
-        if(geometrySource)
-        {
-          vtkSMProxy* repr = activeView->getViewProxy()->FindRepresentation(
-            geometrySource->getSourceProxy(), 0);
-          repr->InvokeCommand("Reset");
-        }
+        vtkSMProxy* repr = activeView->getViewProxy()->FindRepresentation(
+          geometrySource->getSourceProxy(), 0);
+        repr->InvokeCommand("Reset");
       }
       activeView->forceRender();
       activeView->render();
@@ -234,34 +234,26 @@ void SPV3D_ViewWindow::showCenterAxes(bool show_axes)
   renderView->render();
 }
 
+
 SPV3D_Prs *SPV3D_ViewWindow::findOrCreatePrs( const char* entry )
-{
-  std::string entryCpp( entry );
+{//en cours
   SPV3D_Prs *prsOut( new SPV3D_Prs( entry, this ) );
-  for(auto& prs : myPrs)
-  {
-    if(entryCpp == prs.first)
-    {
-      prsOut->SetPVRenderInfo( prs.second.get() );
-      return prsOut;
-    }
-  }
-  std::unique_ptr<SPV3D_EXPORTSPV3DData> data(new SPV3D_EXPORTSPV3DData);
-  prsOut->SetPVRenderInfo( data.get() );
-  std::pair<std::string, std::unique_ptr<SPV3D_EXPORTSPV3DData> > p(entryCpp,std::move(data));
-  myPrs.emplace_back( std::move(p) );
+  prsOut->SetPVRenderInfo( myPrs.get() );
   return prsOut;
 }
 
-SPV3D_EXPORTSPV3DData *SPV3D_ViewWindow::isEntryAlreadyExist( const char* entry ) const
+unsigned int SPV3D_ViewWindow::isEntryAlreadyExist( const char* entry ) const
 {
-  std::string entryCpp( entry );
-  for(const auto& prs : myPrs)
-  {
-    if(entryCpp == prs.first)
-      return prs.second.get();
-  }
-  return nullptr;
+  unsigned int id;
+  if(myPrs->havePrs(entry, id))
+    return id;
+  else
+    return -1;
+}
+
+void SPV3D_ViewWindow::ExportToSPV3D(vtkPolyData* ds, const char* entry)
+{
+  myPrs->SetPrs(ds, entry);
 }
 
 /*!
@@ -273,11 +265,11 @@ SPV3D_ViewWindow::~SPV3D_ViewWindow()
 
 bool SPV3D_ViewWindow::isVisible(const Handle(SALOME_InteractiveObject)& theIObject)
 {
-  std::string entryCpp( theIObject->getEntry() );
-  for(auto& prs : myPrs)
+  auto entry =  theIObject->getEntry();
+  unsigned int id;
+  if (myPrs->havePrs(entry, id))
   {
-    if(entryCpp == prs.first )
-      return prs.second->IsVisible();
+    return true;
   }
   return false;
 }
@@ -323,10 +315,7 @@ void SPV3D_ViewWindow::DisplayAll()
 */
 void SPV3D_ViewWindow::EraseAll() 
 {
-  for(auto& prs : myPrs)
-  {
-    prs.second->Hide();
-  }
+  myPrs->Hide();
   if(myModel)
     myModel->render();
 }

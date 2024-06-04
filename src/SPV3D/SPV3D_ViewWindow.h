@@ -48,7 +48,9 @@ class SPV3D_EXPORT SPV3D_ViewWindow : public PV3DViewer_ViewWindow
 
   SPV3D_Prs *findOrCreatePrs( const char* entry );
 
-  SPV3D_EXPORTSPV3DData *isEntryAlreadyExist( const char* entry ) const;
+  unsigned int isEntryAlreadyExist( const char* entry ) const;
+
+  void ExportToSPV3D(vtkPolyData* ds, const char*);
 
   void init();
 
@@ -104,7 +106,9 @@ protected:
   SPV3D_CADSelection *mySelection = nullptr;
   int myToolBar = -1;
   SPV3D_ViewModel* myModel;
-  std::list< std::pair<std::string, std::unique_ptr<SPV3D_EXPORTSPV3DData> > > myPrs;
+  //std::list< std::pair<std::string, std::unique_ptr<SPV3D_EXPORTSPV3DData> > > myPrs;
+  std::list< std::pair<std::string, SPV3D_Prs* > > Prs;
+  std::unique_ptr<SPV3D_EXPORTSPV3DData> myPrs;
 };
 
 #ifdef WIN32

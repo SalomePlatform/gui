@@ -21,12 +21,12 @@
 #include <QColorDialog>
 #include <QToolBar>
 #include <QTimer>
+#include <QDebug>
 
 #include <vtkActorCollection.h>
 
 #include "SPV3D_ViewModel.h"
 #include "SPV3D_ViewWindow.h"
-#include "SPV3D_Prs.h"
 #include "PVViewer_Core.h"
 
 #include <pqActiveObjects.h>
@@ -196,6 +196,28 @@ pqView *SPV3D_ViewModel::getView() const
   return _view;
 }
 
+void SPV3D_ViewModel::updatePVPrsPipeline(const SPV3D_Prs* aPrs)
+{
+  if (aPrs->GetRepresentation())
+  {
+    aPrs->GetRepresentation()->setVisible(0);
+    delete(aPrs->GetRepresentation());
+  }
+  pqObjectBuilder *builder(pqApplicationCore::instance()->getObjectBuilder());
+  pqActiveObjects::instance().setActiveView(getView());
+  pqPipelineSource *mySourceProducer = aPrs->GetSourceProducer();
+  pqDataRepresentation* myRepr(builder->createDataRepresentation(mySourceProducer->getOutputPort(0),getView(),"CADRepresentation"));//"GeometryRepresentation"
+  vtkSMViewProxy::RepresentationVisibilityChanged(myRepr->getViewProxy(), myRepr->getProxy(), true);
+  aPrs->SetRepresentation(myRepr);
+  myRepr->setVisible(1);
+  vtkSMPVRepresentationProxy* proxy(dynamic_cast<vtkSMPVRepresentationProxy*>(myRepr->getProxy()));
+  if(proxy)
+  {
+    vtkSMPropertyHelper inputHelper(proxy, "Input");
+    vtkSMSourceProxy* input = vtkSMSourceProxy::SafeDownCast(inputHelper.GetAsProxy());
+    input->UpdatePipeline();
+  }
+}
 /*!
   Display presentation
   \param prs - presentation
@@ -204,27 +226,13 @@ void SPV3D_ViewModel::Display( const SALOME_PV3DPrs* prs )
 {
   if(const SPV3D_Prs* aPrs = dynamic_cast<const SPV3D_Prs*>( prs ))
   {
-    if( !aPrs->GetRepresentation() )
-    {
-      pqObjectBuilder *builder(pqApplicationCore::instance()->getObjectBuilder());
-      pqActiveObjects::instance().setActiveView(getView());
-      pqPipelineSource *mySourceProducer = aPrs->GetSourceProducer();
-      aPrs->SetSourceProducer( mySourceProducer );
-      pqDataRepresentation* myRepr(builder->createDataRepresentation(mySourceProducer->getOutputPort(0),getView(),"CADRepresentation"));//"GeometryRepresentation"
-      vtkSMViewProxy::RepresentationVisibilityChanged(myRepr->getViewProxy(), myRepr->getProxy(), true);
-      aPrs->SetRepresentation(myRepr);
-    }
-    pqDataRepresentation* myRepr = aPrs->GetRepresentation();
-    myRepr->setVisible(1);
-    vtkSMPVRepresentationProxy* proxy(dynamic_cast<vtkSMPVRepresentationProxy*>(myRepr->getProxy()));
-    if(proxy)
-    {
-      vtkSMPropertyHelper inputHelper(proxy, "Input");
-      vtkSMSourceProxy* input = vtkSMSourceProxy::SafeDownCast(inputHelper.GetAsProxy());
-      input->UpdatePipeline();
-    }
+    updatePVPrsPipeline(aPrs);
     getView()->resetDisplay();
     getView()->render();
+  }
+  else
+  {
+    qWarning()<< "SPV3D_ViewModel::Display: Something wrong";
   }
 }
 
@@ -239,11 +247,10 @@ void SPV3D_ViewModel::Erase( const SALOME_PV3DPrs* prs, const bool /*forced*/ )
   if(const SPV3D_Prs* aPrs = dynamic_cast<const SPV3D_Prs*>( prs )){
     if(aPrs->IsNull())
       return;
-    aPrs->GetRepresentation()->setVisible(0);
+    aPrs->hide();
+    updatePVPrsPipeline(aPrs);
+    getView()->resetDisplay();
     getView()->render();
-    //pqObjectBuilder* builder = pqApplicationCore::instance()->getObjectBuilder();
-    //pqServer* activeServer = pqActiveObjects::instance().activeServer();
-    //builder->destroySources(activeServer);
   }
 }
 

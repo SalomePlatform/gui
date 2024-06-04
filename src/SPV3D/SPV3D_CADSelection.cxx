@@ -38,6 +38,12 @@
 #include <vtkSMRepresentationProxy.h>
 #include <vtkPVDataSetAttributesInformation.h>
 
+#include <QDebug>
+
+#include "SPV3D_Prs.h"
+
+
+
 //-----------------------------------------------------------------------------
 SPV3D_CADSelection::SPV3D_CADSelection(QObject *parent,
   pqRenderView* view, SelectionMode mode):QObject(parent)
@@ -275,6 +281,32 @@ void SPV3D_CADSelection::onMouseMove()
   {
     this->fastSelection(true);
   }
+
+  // get preselected id here
+  vtkSMProxy* proxyRepresentation = this->Representation->getProxy();
+  if (!proxyRepresentation)
+  {
+    qWarning()<< "There is no representation in the active view for the Geometry Source.";
+    return;
+  }
+
+
+  // Retrieve the wanted information property
+  vtkSMProperty* PreselectedIDProperty =
+    proxyRepresentation->GetProperty("PreSelectedID");
+  if (!PreselectedIDProperty)
+  {
+    qWarning()<< "The representation named '" << proxyRepresentation->GetXMLName()<< "' didn't have a property named 'SelectedIDInfo'.";
+    return;
+  }
+
+  // Force to update the information property
+  proxyRepresentation->UpdatePropertyInformation(PreselectedIDProperty);
+
+  vtkIdType PreSelectedID =
+    vtkSMPropertyHelper(proxyRepresentation,"PreSelectedID").GetAsInt(0);
+  qInfo() << "entry from client: "<< SPV3D_Prs::FromVtkIdToEntry(PreSelectedID);
+  
 }
 
 //-----------------------------------------------------------------------------

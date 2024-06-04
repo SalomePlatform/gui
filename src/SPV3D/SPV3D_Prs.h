@@ -22,6 +22,12 @@
 #include "SPV3D.h"
 #include "SALOME_Prs.h"
 
+#include "vtkPolyData.h"
+#include "vtkCellData.h"
+#include <vtkMultiBlockDataSet.h>
+#include <vtkSmartPointer.h>
+
+#include <set>
 class vtkActor;
 class pqPipelineSource;
 class pqDataRepresentation;
@@ -29,21 +35,32 @@ class pqDataRepresentation;
 class SPV3D_EXPORTSPV3DData
 {
 public:
-  SPV3D_EXPORTSPV3DData() = default;
+  SPV3D_EXPORTSPV3DData();
   SPV3D_EXPORTSPV3DData *deepCopy() { return new SPV3D_EXPORTSPV3DData(*this); }
-  void SetSourceProducer(pqPipelineSource *sourceProducer) const { _sourceProducer = sourceProducer; }
+  void SetPrs(vtkPolyData* ds, const char* entry);
+  void SetPolyData(vtkPolyData* ds);
+  void RemovePrs(const char* entry);
+
+  // the source producer is initialized in the instantiation of SPV3D_EXPORTSPV3DData
+  // Normaly, we shouldn't copy another src in SPV3D_EXPORTSPV3DData
+  //void SetSourceProducer(pqPipelineSource *sourceProducer) const { _sourceProducer = sourceProducer; }
   pqPipelineSource *GetSourceProducer() const { return _sourceProducer; }
   
   void SetRepresentation(pqDataRepresentation *repr) const { _repr = repr; }
   pqDataRepresentation *GetRepresentation() const { return _repr; }
   
+  void updateSource_for_display();
   bool IsNull() const { return !_sourceProducer && !_repr; }
 
   bool IsVisible() const;
+  bool havePrs(const char* entry, unsigned int & id);
   void Hide() const;
+
 private:
   SPV3D_EXPORTSPV3DData(const SPV3D_EXPORTSPV3DData& other) = default;
 private:
+  vtkSmartPointer<vtkMultiBlockDataSet> _multiGEOMData;
+  vtkIdType nbsolid;
   mutable pqPipelineSource *_sourceProducer = nullptr;
   mutable pqDataRepresentation *_repr = nullptr;
 };
@@ -64,24 +81,26 @@ public:
 
   void DisplayIn( SALOME_View* v ) const override;
 
-  void CopyInfo(SPV3D_EXPORTSPV3DData *info) const;
-
   void SetPVRenderInfo(SPV3D_EXPORTSPV3DData *pvRendInfo) { _pvRendInfo = pvRendInfo; }
 
-  void SetSourceProducer(pqPipelineSource *sourceProducer) const { if(_pvRendInfo) _pvRendInfo->SetSourceProducer(sourceProducer); }
+  // the source producer is initialized in the instantiation of SPV3D_EXPORTSPV3DData
+  // Normaly, we shouldn't copy another src in SPV3D_EXPORTSPV3DData
+  //void SetSourceProducer(pqPipelineSource *sourceProducer) const { if(_pvRendInfo) _pvRendInfo->SetSourceProducer(sourceProducer); }
   pqPipelineSource *GetSourceProducer() const { if(_pvRendInfo) return _pvRendInfo->GetSourceProducer(); return nullptr; }
   
   void SetRepresentation(pqDataRepresentation *repr) const { if(_pvRendInfo) _pvRendInfo->SetRepresentation(repr); }
   pqDataRepresentation *GetRepresentation() const { if(_pvRendInfo) return _pvRendInfo->GetRepresentation(); return nullptr; }
 
   bool IsNull() const override;
+  static vtkIdType FromEntryToVtkId (const char*);
+  static const char* FromVtkIdToEntry (vtkIdType);
 
 private:
 
   SPV3D_Prs(const SPV3D_Prs& other) = default;
 
 public:
-  void hide() const { if(_pvRendInfo) return _pvRendInfo->Hide(); }
+  void hide() const { if(_pvRendInfo) return _pvRendInfo->RemovePrs(GetEntry()); }
   bool isVisible() const { if(_pvRendInfo) return _pvRendInfo->IsVisible(); return false; }
 
 private:
@@ -90,4 +109,7 @@ private:
   SPV3D_ViewWindow *_view = nullptr;
   //! Name attached to the displayable object in the study
   std::string _name;
+  static vtkIdType cellid;
+  static vtkIdType nbsolid;
+
 };

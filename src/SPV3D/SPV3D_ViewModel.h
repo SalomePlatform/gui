@@ -26,6 +26,9 @@
 #include <SALOME_InteractiveObject.hxx>
 #include <SALOME_ListIO.hxx>
 
+#include "SPV3D_Prs.h"
+
+
 class QMouseEvent;
 class pqPipelineSource;
 class pqView;
@@ -62,7 +65,7 @@ public:
 public:
   void enableSelection(bool isEnabled);
   bool isSelectionEnabled() const { return mySelectionEnabled; }
-
+  void updatePVPrsPipeline( const SPV3D_Prs* aPrs);
   /* Reimplemented from SALOME_View */
 
   //! See #SALOME_View::Display( const SALOME_Prs* )

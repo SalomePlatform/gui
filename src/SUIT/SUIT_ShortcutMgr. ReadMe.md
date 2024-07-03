@@ -16,22 +16,27 @@ The tool also logs assets of intercepted actions with invalid IDs. The intent is
 
 Shortcuts and assets for all actions of SHAPER and GEOM and those actions of desktop, which were bound (hardcoded) to non-empty key sequences, have been added to resource files. Now they are available for hot key remapping via GUI, no conflicts guaranteed. Any hardcoded shortcut is disabled, unless the same shortcut persists in resource files.
 
-## Possible conflicts between shortcuts of desktop and modules, except SHAPER and GEOM
+## Conflicts between shortcuts of desktop and modules, except SHAPER and GEOM
 
-Most of remaining actions can not be made available for shortcut customization without further meticulous inspection of all other modules' code, devising and typing proper action IDs for all such occurrences.
+Most of remaining actions (which have no action IDs) can not be made available for shortcut customization without further meticulous inspection of all other modules' code, devising and typing proper action IDs for all such occurrences.
 
-Since desktop shortcuts are allowed for remapping, user can end up with conflicting shortcuts of desktop actions and those actions of unprocessed modules (all, except SHAPER and GEOM), which are hardcoded to non-empty key sequences.
+Since desktop shortcuts are allowed for remapping, user could end up with conflicting shortcuts of desktop actions and those actions of unprocessed modules (all, except SHAPER and GEOM), which are hardcoded to non-empty key sequences.
 
-Now actions with invalid IDs are disabled by `SUIT_ShortcutMgr` at runtime and not available for binding neither using UI, neither by editing of preference file. There are four approaches how to handle this:
+Actions without action IDs or with invalid ones are called anonymous actions. Now they are handled as following.
+All anonymous actions with non-empty shortcut key sequences are also registered by `SUIT_ShortcutMgr`.
+If a shortcut for an anonymous action clashes with a shortcut for an action with defined ID (identified action/shortcut),
+the shortcut for the anonymous action is disabled, but [the anonymous action, the hard-coded key sequence] pair remains within the `SUIT_ShortcutMgr`.
+If user redefines key sequences for identified actions, and the clash is gone, `SUIT_ShortcutMgr` enables back the shortcut for the anonymous action.
+It is not possible to reassign key sequences for anonymous actions using the `SUIT_ShortcutTree` GUI.
+It is not possible to always warn user, if a key sequence, he assigns to an identified action,
+disables an anonymous shortcut, because SUIT_ShortcutMgr has no data about anonymous actions until they appear in runtime.
+To prevent the user from relying on such warnings, they are completely disabled.
 
-1. Keep as is: user can remap shortcuts of desktop, SHAPER and GEOM - no conflicts guaranteed, hardcoded (now means all) shortcuts of other modules are disabled.
+There are other approaches how to handle anonymous actions:
 
-2. Go through unprocessed repositories and add valid ID in every occurrence of action creation. Or at least only for those invalid-ID actions, which are currently assigned non-empty key sequences. It should not be just dumb slapping of unique IDs: some actions comprise meta-action (see `SUIT_ShortcutMgr` class documentation) and must get the same ID, e.g. “Undo”, and some actions with similar names do absolutely unrelated things and must be given with different IDs.
+1. Go through unprocessed repositories and add valid ID in every occurrence of action creation. Or at least only for those invalid-ID actions, which are currently assigned non-empty key sequences. It should not be just dumb slapping of unique IDs: some actions comprise meta-action (see `SUIT_ShortcutMgr` class documentation) and must get the same ID, e.g. “Undo”, and some actions with similar names do absolutely unrelated things and must be given with different IDs.
 
-3. Comment the line in `SUIT_ShortcutMgr` code, which disables shortcuts of inavlid-ID actions. At that rate, users will get back all the shortcuts of unprocessed modules they have accustomed to, but since these actions can not be taken into account during conflict detection,
-users may face with shortcut interference, if a desktop action is bound to the same key sequence as a hardcoded shortcut from unprocessed module.
-
-4. Forbid user to edit shortcuts of desktop and shortcuts of unprocessed modules. When another module will be processed, allow to modify its shortcuts. When all modules will be processed, make desktop shortcuts available for customization.
+2. Forbid user to edit shortcuts of desktop and shortcuts of unprocessed modules. When another module will be processed, allow to modify its shortcuts. When all modules will be processed, make desktop shortcuts available for customization.
 
 ## Issue with ampersand-shortcuts
 
@@ -50,7 +55,7 @@ Then help menu has different shortcuts if the application is run in EN or FR.
 
 **A part of the issue** is that some ampersand-shortcuts interfere between each other. You can witness this in master-native application. Switch language to FR, run the app, click on the area, where viewers appear, and stroke *Alt+A*. You will get a Qt-generated notification *"Ambiguous shortcut detected"*, because *Alt+A* is bound to *"New ParaView window"* and to *"Affichage"* simultaneously. If you stroke the sequence again, *"Affichage"* menu expands, since the button tray, where the menu-button resides, has gained focus.
 
-**Another part of the issue** is that ampersand-shortcuts are not always intercepted by `SUIT_ShortcutMgr::eventFilter(_)`. Normally, if the manager catches an unregistered `QAction`, it disables the action' shortcut. But, non-intercepted ampersand-shortcut remains enabled, and, if user binds some action to the same key sequence in the shortcut editor, the editor is not able to detect conflict and prevent interfering binding. Then user faces with the *"Ambiguous shortcut detected"* notification or button-menu is opened instead of executing the action, mapped to the key sequence in shortcut editor.
+**Another part of the issue** is that ampersand-shortcuts are not always intercepted by `SUIT_ShortcutMgr::eventFilter(_)`. Normally, the manager catches an unregistered `QAction`. But, non-intercepted ampersand-shortcut always remains enabled, and, if user binds some action to the same key sequence in the shortcut editor, the editor is not able to detect conflict and prevent interfering binding. Then user faces with the *"Ambiguous shortcut detected"* notification or button-menu is opened instead of executing the action, mapped to the key sequence in shortcut editor.
 
 **The question is how to handle ampersand-shortcuts?**
 1. Resolve conflicts between ampersand-shortcuts for all localizations. Prohibit binding actions to *Alt+\<char>* key sequences in shortcut editor.

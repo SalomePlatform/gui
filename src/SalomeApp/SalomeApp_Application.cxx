@@ -1116,7 +1116,7 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
       ob->setAutoSizeFirstColumn(autoSizeFirst);
       ob->setAutoSizeColumns(autoSize);
       ob->setResizeOnExpandItem(resizeOnExpandItem);
-      ob->setProperty( "shortcut", QKeySequence( "Ctrl+Shift+O" ) );
+      ob->setProperty( "shortcut", QKeySequence( "Alt+Shift+O" ) );
 
       for ( int i = SalomeApp_DataObject::EntryId; i < SalomeApp_DataObject::LastId; i++ )
       {
@@ -1151,7 +1151,7 @@ QWidget* SalomeApp_Application::createWindow( const int flag )
     pyCons->setFont(resourceMgr()->fontValue( "PyConsole", "font" ));
     pyCons->setIsShowBanner(resourceMgr()->booleanValue( "PyConsole", "show_banner", true ));
     pyCons->setAutoCompletion( resMgr->booleanValue( "PyConsole", "auto_completion", true ) );
-    pyCons->setProperty( "shortcut", QKeySequence( "Ctrl+Shift+P" ) );
+    pyCons->setProperty( "shortcut", QKeySequence( "Alt+Shift+P" ) );
     wid = pyCons;
   }
   else if ( flag == WT_NoteBook )
